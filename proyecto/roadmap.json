@@ -143,6 +143,16 @@
      "estado": "hecho"
     },
     {
+     "nombre": "Arreglo del arco: no soltar antes del 50% de tensión, correr cancela el tensado, 0,8 s para encajar otra flecha (piedras 0,5 s), con pruebas",
+     "estado": "hecho",
+     "inicio": "2026-10-24T19:13:50+02:00",
+     "fin": "2026-10-24T19:23:09+02:00"
+    },
+    {
+     "nombre": "Escudo provisional: opción «Espada y escudo» (espada de una mano), para flechas y piedras de frente, parada más barata, se ve en el brazo izquierdo y se levanta al parar; también para el rival",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Cámara táctil con un dedo durante el combate",
      "estado": "espera_decision"
     },
@@ -286,6 +296,13 @@
      "archivo": "jugar/combate/v2.html",
      "capturas": "capturas/combate-v2",
      "notas": "Rosa de golpes y defensa en tres capas."
+    },
+    {
+     "v": "v3",
+     "fecha": "2026-10-24",
+     "archivo": "jugar/combate/v3.html",
+     "capturas": "capturas/combate-v3",
+     "notas": "Arco arreglado: tensión mínima, sin tensar corriendo y 0,8 s para encajar flecha."
     }
    ]
   },

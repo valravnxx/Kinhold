@@ -27,8 +27,8 @@ export const ZONAS_POR_LINEA = {
 export const ARMAS = {
   espada_larga: { nombre: 'Espada larga', tipo: 'cuerpo', alcance: 1.9, alcanceEstocada: 2.15, prep: 0.42, prepEstocada: 0.32, golpe: 0.12, recup: 0.35, danio: 1.0, cansancio: 12 },
   palo:         { nombre: 'Palo', tipo: 'cuerpo', alcance: 1.5, alcanceEstocada: 1.6, prep: 0.5, prepEstocada: 0.4, golpe: 0.12, recup: 0.4, danio: 0.55, contundente: true, cansancio: 9 },
-  arco:         { nombre: 'Arco', tipo: 'distancia', tensado: 1.0, vMin: 18, vMax: 55, danio: 0.95, danioTipo: 'perforante', cansancio: 6 },
-  piedras:      { nombre: 'Piedras', tipo: 'distancia', tensado: 0.5, vMin: 8, vMax: 19, danio: 0.45, danioTipo: 'contundente', cansancio: 5 },
+  arco:         { nombre: 'Arco', tipo: 'distancia', tensado: 1.0, recarga: 0.8, vMin: 18, vMax: 55, danio: 0.95, danioTipo: 'perforante', cansancio: 6 },
+  piedras:      { nombre: 'Piedras', tipo: 'distancia', tensado: 0.5, recarga: 0.5, vMin: 8, vMax: 19, danio: 0.45, danioTipo: 'contundente', cansancio: 5 },
 };
 
 export const ARMADURAS = {
@@ -57,6 +57,7 @@ export const T = {
   aturdidoMaestro: 0.6,
   costeParada: 10, costeFallo: 6, costeFinta: 8,
   limiteFinta: 0.6,        // se puede fintar hasta el 60% de la propia preparación
+  tensionMinima: 0.5,      // por debajo, soltar cancela el tiro sin disparar
   guardiaRota: 95,         // con este cansancio la parada normal cede
   cambioGuardia: 0.35, ventanaGuardia: 0.6, factorGuardia: 0.5, factorRapida: 0.7, factorLenta: 1.15,
   anguloAtaque: 60 * Math.PI / 180,
@@ -95,7 +96,7 @@ export class Luchador {
     this.bloqueando = false; this.lineaBloqueo = 'alto'; this.tBloqueo = 0;
     this.guardia = 'vom_tag'; this.contraHasta = -1;
     this.heridas = []; this.sangre = 100; this.cansancio = 0;
-    this.tension = 0; this.tTenso = 0;
+    this.tension = 0; this.tTenso = 0; this.corriendo = false; this.cancelado = null;
     this.fuera = false; this.motivoFuera = '';
     this.reloj = 0;
   }
@@ -183,16 +184,22 @@ export class Luchador {
 
   // ---------- Distancia ----------
   empezarTensar() {
-    if (!this.puedeActuar() || this.def.tipo !== 'distancia') return false;
+    if (!this.puedeActuar() || this.def.tipo !== 'distancia' || this.corriendo) return false;
     this.accion = 'tensando'; this.tAccion = 0; this.tension = 0; this.tTenso = 0;
     return true;
   }
   soltar() {
     if (this.accion !== 'tensando') return null;
+    if (this.tension < T.tensionMinima) { this.cancelarTensado('flojo'); return null; }
     const t = { tension: this.tension, tTenso: this.tTenso };
-    this.accion = 'recuperando'; this.tAccion = 0; this.duracion = 0.35;
+    // sacar y encajar la siguiente flecha (o coger otra piedra)
+    this.accion = 'recuperando'; this.tAccion = 0; this.duracion = this.def.recarga ?? 0.35;
     this.cansancio = Math.min(100, this.cansancio + this.def.cansancio);
     return t;
+  }
+
+  cancelarTensado(motivo) {
+    this.accion = 'libre'; this.tAccion = 0; this.tension = 0; this.tTenso = 0; this.cancelado = motivo;
   }
 
   // ---------- Daño ----------
@@ -216,6 +223,8 @@ export class Luchador {
   // ---------- Paso de tiempo ----------
   actualizar(dt, corriendo = false) {
     this.reloj += dt;
+    this.corriendo = corriendo;
+    if (corriendo && this.accion === 'tensando') this.cancelarTensado('correr'); // no se tensa corriendo
     const ev = [];
     let s = 0;
     for (const h of this.heridas) { s += h.sangrado; if (h.gravedad === 'leve') h.sangrado *= Math.exp(-dt / 20); }

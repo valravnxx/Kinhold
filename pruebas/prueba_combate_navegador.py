@@ -160,8 +160,9 @@ with sync_playwright() as p:
       const d = {D}; const tensiones = [];
       for (let k = 0; k < 6; k++) {{
         d.apuntar(0, 1.3, 18);
-        d.jugador.empezarTensar();
         let e = 0;
+        while (d.jugador.accion !== 'libre' && e < 8000) {{ await new Promise(r => setTimeout(r, 50)); e += 50; }}  // encajar la flecha (v3)
+        d.jugador.empezarTensar();
         while ((d.jugador.tension < 1 || d.jugador.tTenso < 0.15) && e < 8000) {{ await new Promise(r => setTimeout(r, 50)); e += 50; }}
         tensiones.push(+d.jugador.tension.toFixed(2));
         d.disparar();
@@ -170,6 +171,15 @@ with sync_playwright() as p:
       return {{...d.stats, tensiones}};
     }})()""")
     comprobar('a plena tensión se acierta la diana de 20 m', aciertos['aciertos'] >= 5, json.dumps(aciertos))
+    # arco v3: soltar con poca tensión no dispara y lo avisa
+    hasta(f"{D}.jugador.accion === 'libre'", 3000)
+    antes = ev(f"{D}.stats.flechas")
+    ev(f"{D}.apuntar(0,1.3,18); {D}.jugador.empezarTensar()")
+    espera(120)
+    ev(f"{D}.disparar()")
+    espera(150)
+    reg = pg.inner_text('#registro')
+    comprobar('soltar flojo no dispara y avisa', ev(f"{D}.stats.flechas") == antes and 'flojo' in reg, reg.split('\n')[0])
     ev(f"{D}.cam.yaw=Math.PI+0.25; {D}.cam.pitch=0.35; {D}.cam.dist=9")
     pg.mouse.move(640, 330)
     ev(f"{D}.apuntar(0,1.3,18); {D}.jugador.empezarTensar()")

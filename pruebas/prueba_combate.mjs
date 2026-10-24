@@ -1,7 +1,11 @@
 // Pruebas de la lógica de combate de Kinhold. Con MUTAR=1 se rompen reglas a propósito: deben fallar.
-import { Luchador, resolverGolpe, crearProyectil, moverProyectil, elevacionPara, IA, azar, T, GUARDIAS, LINEAS, ARMADURAS } from '../src/combate/logica.js';
+import { Luchador, resolverGolpe, crearProyectil, moverProyectil, elevacionPara, IA, azar, T, GUARDIAS, LINEAS, ARMADURAS, ARMAS } from '../src/combate/logica.js';
 
-if (process.env.MUTAR === '1') { T.ventanaPerfecta = 99; T.ventanaMaestro = 0; ARMADURAS.malla.corte = 1.0; }
+if (process.env.MUTAR === '1') {
+  T.ventanaPerfecta = 99; T.ventanaMaestro = 0; ARMADURAS.malla.corte = 1.0;
+  T.tensionMinima = 0; ARMAS.arco.recarga = 0.1; Luchador.prototype.cancelarTensado = function () {}; // arco roto como antes
+  Object.defineProperty(Luchador.prototype, 'corriendo', { get() { return false; }, set() {} });
+}
 
 let ok = 0, mal = 0;
 const comprobar = (n, c, d = '') => { c ? ok++ : mal++; console.log(`  ${c ? 'OK  ' : 'FALLA'} ${n}${d ? ' — ' + d : ''}`); };
@@ -208,6 +212,42 @@ console.log('6. Balística');
   const d1 = dispersion(0.5), d2 = dispersion(5);
   comprobar('aguantar tenso 5 s hace temblar el pulso', d2 > d1 * 2, `${r2(d1)} m → ${r2(d2)} m`);
   comprobar('el arco no llega a 400 m (máximo realista unos 300 m)', elevacionPara(400, 55) === null && elevacionPara(250, 55) !== null);
+}
+
+console.log('6b. Arco: tensión mínima, correr y recarga');
+{
+  const tensar = (L, s, corriendo = false) => { for (let t = 0; t < s - 1e-9; t += 0.01) L.actualizar(0.01, corriendo); };
+  let A = new Luchador({ arma: 'arco' });
+  A.empezarTensar(); tensar(A, 0.3);
+  const flojo = A.soltar();
+  comprobar('soltar antes del 50% de tensión no dispara y cancela', flojo === null && A.accion === 'libre' && A.cancelado === 'flojo', `tensión ${r2(A.tension)}, acción ${A.accion}`);
+  A = new Luchador({ arma: 'arco' });
+  A.empezarTensar(); tensar(A, 0.6);
+  comprobar('soltar a partir del 50% sí dispara', A.soltar() !== null);
+  A = new Luchador({ arma: 'arco' });
+  A.empezarTensar(); tensar(A, 0.5); tensar(A, 0.05, true);
+  comprobar('correr cancela el tensado', A.accion !== 'tensando' && A.cancelado === 'correr', A.accion);
+  A = new Luchador({ arma: 'arco' });
+  A.actualizar(0.01, true);
+  comprobar('no se puede empezar a tensar corriendo', A.empezarTensar() === false && A.accion !== 'tensando');
+  // cadencia: disparando todo lo rápido que se deja durante 10 s
+  const cadencia = (arma) => {
+    const L = new Luchador({ arma }); let n = 0;
+    for (let t = 0; t < 10; t += 0.01) {
+      if (L.accion === 'libre') L.empezarTensar();
+      if (L.accion === 'tensando' && L.tension >= T.tensionMinima && L.soltar()) n++;
+      L.actualizar(0.01); L.cansancio = 0;
+    }
+    return n;
+  };
+  const nA = cadencia('arco'), nP = cadencia('piedras');
+  // arco: 0,5 s de tensado mínimo + 0,8 s de recarga ≈ 1,3 s por flecha → 7 u 8 en 10 s
+  comprobar('el arco no dispara más de una flecha cada 1,3 s', nA <= 8, `${nA} flechas en 10 s`);
+  comprobar('las piedras: una cada 0,75 s como mucho', nP <= 14, `${nP} piedras en 10 s`);
+  A = new Luchador({ arma: 'arco' }); A.empezarTensar(); tensar(A, 1); A.soltar();
+  tensar(A, 0.7); const aun = A.empezarTensar();
+  tensar(A, 0.15); const ya = A.empezarTensar();
+  comprobar('tras disparar, 0,8 s para encajar la siguiente flecha', !aun && ya, `a 0,7 s: ${aun}, a 0,85 s: ${ya}`);
 }
 
 console.log('7. Flechas contra personas y dianas');

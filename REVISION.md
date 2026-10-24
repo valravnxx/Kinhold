@@ -4,6 +4,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ---
 
+(escribe aquí)
+
+---
+
+## Procesado
+
+### 24 oct 2026 (19:14) — dos tareas nuevas en el hito 5 (Duelo)
+
 **24 oct, 19:00 — prueba del combate v2 con un amigo (pasado por el chat). Crear tareas en el hito 5 (Duelo), estado pendiente:**
 
 1. **El arco está roto: se puede correr y disparar como una ametralladora.** Arreglo provisional:
@@ -20,7 +28,3 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
    Anotar en `registro.js` que es provisional y que Pedro lo revisará.
 
 (Idea descartada por Pedro, no hacer: elegir el golpe por la dirección en que mueves el ratón; ya se probó en la v1 y era caótico.)
-
----
-
-## Procesado

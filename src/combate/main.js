@@ -364,7 +364,10 @@ function atacar(linea) {
 }
 function disparar() {
   const tiro = jugador.soltar();
-  if (!tiro) return;
+  if (!tiro) {
+    if (jugador.cancelado === 'flojo') { registrar('Demasiado flojo: el tiro se cancela (hace falta tensar al menos la mitad)', 'aviso'); jugador.cancelado = null; }
+    return;
+  }
   const obj = apuntado || { x: jugador.x + Math.sin(jugador.rot) * 20, y: 0, z: jugador.z + Math.cos(jugador.rot) * 20 };
   lanzar(jugador, obj, tiro);
   stats.flechas++;
@@ -414,13 +417,15 @@ function paso() {
   renderer.render(escena, camara);
   requestAnimationFrame(paso);
 }
+let jugadorCorre = false;
 function tick(dtReal) {
   // la pausa de impacto congela el combate unas centésimas; la cámara y las partículas siguen
   let dt = dtReal;
   if (pausa > 0) { pausa -= dtReal; dt = 0; }
   reloj += dt;
   moverJugador(dt);
-  const evJ = jugador.actualizar(dt, teclas.has('shift'));
+  const evJ = jugador.actualizar(dt, jugadorCorre);
+  if (jugador.cancelado === 'correr') { registrar('Al echar a correr aflojas el arco', 'aviso'); jugador.cancelado = null; }
   let vR = 0;
   if (rival) {
     const m = ia.pensar(dt, jugador);
@@ -483,6 +488,7 @@ function moverJugador(dt) {
   if (teclas.has('e')) { cam.yaw -= dt * 1.6; cam.manual = reloj; }
   const mag = Math.min(1, Math.hypot(ax, az));
   const corriendo = teclas.has('shift') && mag > 0.1;
+  jugadorCorre = corriendo;
   const v = jugador.velocidad(corriendo) * mag;
   jugador.velocidadActual = mag > 0.05 ? v : 0;
   const obj = objetivoCercano();
