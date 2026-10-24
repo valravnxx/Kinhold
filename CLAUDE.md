@@ -13,7 +13,7 @@ Kinhold es el juego de Pedro: supervivencia medieval "tipo MMO" en el navegador,
 - `src/` — código. `src/logica/` y `src/combate/logica.js` son lógica pura (sin three.js) para que el servidor la pueda ejecutar luego sin rehacerla. Mantenerlo así.
 - `pruebas/` — pruebas de lógica (node) y de navegador (Python Playwright con Chromium sin pantalla).
 - `docs/` — la web pública (GitHub Pages, rama main, carpeta /docs). Se genera con `node herramientas/construir_web.mjs`. Las versiones jugables están en `docs/jugar/<prototipo>/<vN>.html` y **nunca se borran ni se sobrescriben**.
-- Web: https://valravnxx.github.io/kinhold/
+- Web: https://valravnxx.github.io/Kinhold/ (con K mayúscula: el repositorio se llama Kinhold y la dirección distingue mayúsculas)
 
 ## Una sesión de trabajo (tarea programada cada hora)
 
