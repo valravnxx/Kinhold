@@ -26,6 +26,8 @@ export const ZONAS_POR_LINEA = {
 
 export const ARMAS = {
   espada_larga: { nombre: 'Espada larga', tipo: 'cuerpo', alcance: 1.9, alcanceEstocada: 2.15, prep: 0.42, prepEstocada: 0.32, golpe: 0.12, recup: 0.35, danio: 1.0, cansancio: 12 },
+  // Provisional (v4, lo revisará Pedro): espada de una mano, algo más corta que la larga, con escudo redondo.
+  espada_escudo: { nombre: 'Espada y escudo', tipo: 'cuerpo', alcance: 1.7, alcanceEstocada: 1.9, prep: 0.38, prepEstocada: 0.3, golpe: 0.12, recup: 0.33, danio: 0.9, cansancio: 10, escudo: true },
   palo:         { nombre: 'Palo', tipo: 'cuerpo', alcance: 1.5, alcanceEstocada: 1.6, prep: 0.5, prepEstocada: 0.4, golpe: 0.12, recup: 0.4, danio: 0.55, contundente: true, cansancio: 9 },
   arco:         { nombre: 'Arco', tipo: 'distancia', tensado: 1.0, recarga: 0.8, vMin: 18, vMax: 55, danio: 0.95, danioTipo: 'perforante', cansancio: 6 },
   piedras:      { nombre: 'Piedras', tipo: 'distancia', tensado: 0.5, recarga: 0.5, vMin: 8, vMax: 19, danio: 0.45, danioTipo: 'contundente', cansancio: 5 },
@@ -58,6 +60,8 @@ export const T = {
   costeParada: 10, costeFallo: 6, costeFinta: 8,
   limiteFinta: 0.6,        // se puede fintar hasta el 60% de la propia preparación
   tensionMinima: 0.5,      // por debajo, soltar cancela el tiro sin disparar
+  factorEscudo: 0.6,       // parar con escudo cuesta este tanto del aliento de parar con la espada
+  anguloEscudo: 70 * Math.PI / 180, // el escudo para lo que viene dentro de este ángulo a cada lado del frente
   guardiaRota: 95,         // con este cansancio la parada normal cede
   cambioGuardia: 0.35, ventanaGuardia: 0.6, factorGuardia: 0.5, factorRapida: 0.7, factorLenta: 1.15,
   anguloAtaque: 60 * Math.PI / 180,
@@ -180,6 +184,12 @@ export class Luchador {
     if (this.fuera) return false;
     if (this.modo === 'guardias') return this.accion !== 'cambioGuardia' && this.accion !== 'aturdido' && GUARDIAS[this.guardia].cubre.includes(linea);
     return this.bloqueando && this.accion === 'libre';
+  }
+
+  // ¿El escudo levantado para un proyectil que viaja con esta velocidad horizontal (vx, vz)?
+  paraConEscudo(vx, vz) {
+    if (!this.def.escudo || !this.bloqueando || this.accion !== 'libre' || this.fuera) return false;
+    return difAngulo(this.rot, Math.atan2(-vx, -vz)) <= T.anguloEscudo; // viene de frente
   }
 
   // ---------- Distancia ----------
@@ -315,7 +325,7 @@ export function resolverGolpe(at, de, linea, r) {
     // con el cansancio al límite, la parada cede
     if (de.cansancio >= T.guardiaRota) { de.aturdir(0.5); return herir(0.7, 'guardia rota'); }
     // 1. Parada normal
-    de.cansancio = Math.min(100, de.cansancio + T.costeParada * (a.contundente ? 1.3 : 1));
+    de.cansancio = Math.min(100, de.cansancio + T.costeParada * (a.contundente ? 1.3 : 1) * (de.def.escudo ? T.factorEscudo : 1));
     return { resultado: 'parada' };
   }
   return herir(1, at.imparable ? 'imparable' : undefined);
@@ -379,6 +389,10 @@ export function moverProyectil(p, dt, blancos, r, dianas = []) {
       const ex = p.x - L.x, ez = p.z - L.z;
       if (Math.hypot(ex, ez) <= 0.3 && p.y > 0 && p.y < 1.8) {
         p.activo = false;
+        if (L.paraConEscudo(p.vx, p.vz)) {
+          L.cansancio = Math.min(100, L.cansancio + T.costeParada * T.factorEscudo);
+          return { tipo: 'escudo', luchador: L };
+        }
         // lado respecto a hacia dónde mira el blanco
         const lateral = ex * Math.cos(L.rot) - ez * Math.sin(L.rot);
         const zona = zonaPorAltura(L, p.y, lateral);
@@ -425,6 +439,7 @@ export class IA {
     this.plan = null;       // 'perfecta' | 'normal' | 'nada'
     this.retroceso = 0; this.retrocederTras = false;
     this.carga = false;
+    this.tTiro = 0;         // tiempo viendo al rival tensar (para levantar el escudo)
   }
   pensar(dt, rival) {
     const b = this.bot, r = this.r, d = this.d;
@@ -449,9 +464,13 @@ export class IA {
       }
       // la parada perfecta se empieza justo antes del impacto
       if (this.plan === 'perfecta' && b.accion === 'libre' && !b.bloqueando && rival.hastaImpacto() <= T.ventanaPerfecta * 0.6) b.bloquear(true);
+    } else if (b.def.escudo && rival.def.tipo === 'distancia' && (rival.accion === 'tensando' || rival.accion === 'recuperando')) {
+      // le apuntan con arco u honda: levanta el escudo en cuanto reacciona y lo mantiene mientras recarga
+      this.tTiro += dt;
+      if (this.tTiro >= d.reaccion && b.accion === 'libre' && !b.bloqueando) b.bloquear(true);
     } else if (rival.accion !== 'golpeando') {
       if (b.bloqueando) b.bloquear(false);
-      this.plan = null;
+      this.plan = null; this.tTiro = 0;
     }
 
     // ---- moverse: acercarse hasta el alcance, retroceder después de golpear ----

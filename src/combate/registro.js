@@ -1,5 +1,5 @@
 // Decisiones tomadas en el prototipo de combate, para revisar.
-export const VERSION_COMBATE = 'Combate · v3';
+export const VERSION_COMBATE = 'Combate · v4';
 export const REGISTRO_COMBATE = [
   'v2, por qué: en la v1 había que arrastrar el ratón para elegir el golpe y elegir también la línea de la parada, y la cámara y el movimiento iban a su aire. Se ha rehecho tomando lo que mejor funciona en los juegos de esgrima de referencia: rosa de golpes, parada perfecta, golpe maestro, contraataque, finta, parada sin dirección en dificultad baja y peso físico de los golpes.',
   'Atacar: sobre el rival aparece una rosa de cinco zonas (alto, izquierda, derecha, bajo y estocada en el centro). Apuntas con el cursor o tocas la zona y golpeas. Izquierda y derecha son las de tu pantalla.',
@@ -17,6 +17,9 @@ export const REGISTRO_COMBATE = [
   'Heridas por zona y gravedad (leve, grave, muy grave) sin barras de vida. Muy grave en la cabeza deja fuera de combate. El torso sangra mucho. Brazo de la espada herido: golpes más lentos y flojos. Pierna herida: más despacio y cojeando. Los cortes leves dejan de sangrar solos; los contundentes sangran poco pero aturden.',
   'Armaduras: el gambesón reduce el tajo a la mitad; la malla casi lo anula, pero para peor la estocada y el golpe contundente.',
   'v3, arreglo provisional del arco (pedido por Pedro tras probarlo): si sueltas por debajo de la mitad de tensión el tiro se cancela sin disparar; echar a correr afloja el arco y no se puede empezar a tensar corriendo; después de cada disparo hay 0,8 s para sacar y encajar la siguiente flecha (0,5 s para coger otra piedra). Antes se podía correr y disparar sin parar.',
-  'Arco: tensar del todo tarda 1 s. El círculo de puntería se cierra al tensar y se pone verde cuando está a plena tensión; si sueltas antes, la flecha se queda corta. A partir de 2,5 s tenso, el pulso tiembla y el círculo se abre en rojo. Las flechas no se paran con la espada (sin escudo todavía).',
+  'v4, escudo PROVISIONAL (pedido por Pedro; lo revisará él): nueva arma «Espada y escudo». Espada de una mano: 1,7 m de alcance (la larga 1,9), estocada 1,9 m, se prepara algo más rápido (0,38 s) y hiere algo menos. Escudo redondo de tablas con borde de cuero y umbo, en el brazo izquierdo; al parar se levanta delante.',
+  'v4: con escudo, Parar también detiene flechas y piedras que vengan de frente (70° a cada lado de donde miras); por la espalda o de lado no. Parar con escudo cuesta un 60% del aliento que cuesta con la espada. La parada perfecta y el golpe maestro funcionan igual.',
+  'v4: nueva opción «Arma del rival» (como la tuya, espada larga, espada y escudo o palo). El rival con escudo lo levanta cuando le apuntas con arco u honda y lo mantiene mientras recargas.',
+  'Arco: tensar del todo tarda 1 s. El círculo de puntería se cierra al tensar y se pone verde cuando está a plena tensión; si sueltas antes, la flecha se queda corta. A partir de 2,5 s tenso, el pulso tiembla y el círculo se abre en rojo. Las flechas no se paran con la espada; con escudo, sí (v4).',
   'El rival de la máquina tarda en reaccionar y según la dificultad lee mejor tus golpes, intenta paradas perfectas, golpes maestros y fintas. Se queda quieto mientras golpea y a veces retrocede después. Tu cinta es azul y la suya amarilla.',
 ];

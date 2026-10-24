@@ -166,8 +166,9 @@
     },
     {
      "nombre": "Escudo provisional: opción «Espada y escudo» (espada de una mano), para flechas y piedras de frente, parada más barata, se ve en el brazo izquierdo y se levanta al parar; también para el rival",
-     "estado": "en_curso",
-     "inicio": "2026-10-24T20:20:27+02:00"
+     "estado": "hecho",
+     "inicio": "2026-10-24T20:20:27+02:00",
+     "fin": "2026-10-24T20:36:27+02:00"
     },
     {
      "nombre": "Cámara táctil con un dedo durante el combate",
@@ -320,6 +321,13 @@
      "archivo": "jugar/combate/v3.html",
      "capturas": "capturas/combate-v3",
      "notas": "Arco arreglado: tensión mínima, sin tensar corriendo y 0,8 s para encajar flecha."
+    },
+    {
+     "v": "v4",
+     "fecha": "2026-10-24",
+     "archivo": "jugar/combate/v4.html",
+     "capturas": "capturas/combate-v4",
+     "notas": "Escudo provisional: nueva arma «Espada y escudo» (espada de una mano, 1,7 m de alcance). Al parar se levanta el escudo, que detiene también flechas y piedras de frente y cansa menos que parar con la espada. Nueva opción «Arma del rival»: el rival con escudo lo levanta cuando le apuntas."
     }
    ]
   },

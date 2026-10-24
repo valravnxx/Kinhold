@@ -163,5 +163,23 @@
   "pruebas": "Lógica 35/35, modelos 21/21, combate 59/59; navegador construcción, combate, estilo v3 (MUTAR=1 falla como debe) y web: todo correcto.",
   "capturas": "capturas/estilo-v3",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T20:20:27+02:00",
+  "fin": "2026-10-24T20:36:27+02:00",
+  "titulo": "Hito 5: escudo provisional (combate v4)",
+  "hito": "duelo",
+  "hecho": [
+   "Nueva arma «Espada y escudo»: espada de una mano con 1,7 m de alcance (la larga 1,9), algo más rápida y algo menos dañina.",
+   "Escudo redondo de tablas con borde de cuero y umbo, en el brazo izquierdo; al parar se levanta delante del pecho.",
+   "Con escudo, Parar detiene también flechas y piedras que vienen de frente (70° a cada lado); de espaldas o de lado no.",
+   "Parar con escudo cuesta el 60% del aliento que cuesta con la espada. La parada perfecta y el golpe maestro funcionan igual.",
+   "Nueva opción «Arma del rival» (como la tuya, espada larga, espada y escudo o palo). El rival con escudo lo levanta cuando le apuntas con arco u honda y lo mantiene mientras recargas.",
+   "Todo apuntado como provisional en el registro de decisiones del prototipo, para que lo revises.",
+   "Los guardados de opciones anteriores siguen valiendo: si no tienen arma del rival, se usa «Como la tuya»."
+  ],
+  "pruebas": "Construcción 35/35, modelos 21/21, combate 69/69 (10 nuevas del escudo, fallan con MUTAR=1), navegador de combate PC y móvil correcto (8 comprobaciones nuevas, fallan con el escudo roto a propósito), estilo y web correctos",
+  "capturas": "capturas/combate-v4",
+  "estado": "ok"
  }
 ]

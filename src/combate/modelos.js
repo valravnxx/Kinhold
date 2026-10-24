@@ -29,6 +29,18 @@ export function modeloArma(tipo) {
     punta.translate(0, 1.17, 0);
     const mp = pieza(punta, 0xc9ccd0); mp.scale.z = 0.25; g.add(mp);
     marcador(g, 'punta', 1.2); marcador(g, 'medio', 0.55);
+  } else if (tipo === 'espada_escudo') {
+    // espada de una mano: más corta y con el puño para una sola mano
+    g.add(pieza(new THREE.CylinderGeometry(0.017, 0.019, 0.13, 6), 0x3a2618, 0, 0.0, 0));      // puño
+    g.add(pieza(new THREE.IcosahedronGeometry(0.03, 0), 0x6f6f72, 0, -0.085, 0));             // pomo
+    g.add(pieza(new THREE.BoxGeometry(0.2, 0.022, 0.028), 0x6f6f72, 0, 0.075, 0));            // cruz
+    const hoja = new THREE.BoxGeometry(0.042, 0.72, 0.008);
+    hoja.translate(0, 0.45, 0);
+    g.add(pieza(hoja, 0xc9ccd0));
+    const punta = new THREE.ConeGeometry(0.024, 0.09, 4);
+    punta.translate(0, 0.855, 0);
+    const mp = pieza(punta, 0xc9ccd0); mp.scale.z = 0.25; g.add(mp);
+    marcador(g, 'punta', 0.88); marcador(g, 'medio', 0.4);
   } else if (tipo === 'palo') {
     g.add(pieza(new THREE.CylinderGeometry(0.03, 0.045, 1.4, 6), COLORES.vara, 0, 0.45, 0));
     marcador(g, 'punta', 1.15); marcador(g, 'medio', 0.5);
@@ -44,6 +56,23 @@ export function modeloArma(tipo) {
     g.add(p);
   }
   g.userData.tipo = tipo;
+  return g;
+}
+// Escudo redondo de tablas con borde de cuero y umbo de hierro. Mira hacia +z; el asa queda en el origen.
+export function modeloEscudo(radio = 0.32) {
+  const g = new THREE.Group();
+  const disco = new THREE.CylinderGeometry(radio, radio, 0.025, 16); disco.rotateX(Math.PI / 2);
+  g.add(pieza(disco, 0x7d5f3e, 0, 0, 0.05));
+  // juntas entre tablas (líneas verticales algo más oscuras en la cara)
+  for (const x of [-0.17, -0.06, 0.06, 0.17]) {
+    const alto = 2 * Math.sqrt(radio * radio - x * x) - 0.02;
+    g.add(pieza(new THREE.BoxGeometry(0.008, alto, 0.004), 0x5c452c, x, 0, 0.064));
+  }
+  const borde = new THREE.TorusGeometry(radio, 0.014, 4, 18);
+  g.add(pieza(borde, 0x4a3424, 0, 0, 0.05));
+  const umbo = new THREE.SphereGeometry(0.075, 8, 4, 0, Math.PI * 2, 0, Math.PI / 2); umbo.rotateX(Math.PI / 2);
+  g.add(pieza(umbo, 0x66676a, 0, 0, 0.062));
+  g.name = 'escudo';
   return g;
 }
 export function modeloFlecha() {
@@ -94,6 +123,9 @@ const POSES = {
   bajo:      { p: { m: V(-0.3, 0.95, 0.05), d: V(-0.6, -0.5, -0.5) }, f: { m: V(0.25, 0.95, 0.45), d: V(0.6, -0.6, 0.8) } },
   estocada:  { p: { m: V(0, 1.22, 0.08), d: V(0, 0.1, 1) },       f: { m: V(0, 1.3, 0.8), d: V(0, 0.03, 1) } },
 };
+// Con escudo, la espada se lleva en la derecha, adelantada; al parar se retira un poco detrás del escudo
+const POSE_ESCUDO = { m: V(-0.24, 1.15, 0.36), d: V(-0.05, 0.6, 1) };
+const POSE_ESCUDO_PARANDO = { m: V(-0.3, 1.25, 0.2), d: V(-0.2, 0.9, 0.5) };
 const PARADAS = {
   alto:      { m: V(0, 1.72, 0.36),  d: V(1, 0.15, 0) },
   izquierda: { m: V(0.3, 1.3, 0.36), d: V(0.15, 1, 0.2) },
@@ -151,7 +183,16 @@ export function ponerArma(raiz, tipo) {
   if (u.arma) u.manos.remove(u.arma);
   u.arma = modeloArma(tipo);
   u.manos.add(u.arma);
+  if (u.escudo) { u.cuerpo.remove(u.escudo); u.escudo = null; }
+  if (tipo === 'espada_escudo') {
+    u.escudo = modeloEscudo();
+    u.escudo.position.copy(ESCUDO_REPOSO.p); u.escudo.rotation.y = ESCUDO_REPOSO.giro;
+    u.cuerpo.add(u.escudo);
+  }
 }
+// Escudo en el brazo izquierdo (+x): bajado al costado o levantado delante al parar
+const ESCUDO_REPOSO = { p: new THREE.Vector3(0.34, 1.05, 0.26), giro: 0.55, inclina: 0.15 };
+const ESCUDO_ALTO = { p: new THREE.Vector3(0.1, 1.3, 0.44), giro: 0.08, inclina: -0.05 };
 
 // Apunta un brazo (que cuelga hacia -Y desde el hombro) hacia un punto del cuerpo
 const abajo = V(0, -1, 0);
@@ -223,20 +264,32 @@ export function animarCombatiente(raiz, L, dt, velocidad, cojea, lineaParada) {
   // arma
   const tipo = L.arma;
   let obj;
-  if (tipo === 'espada_larga' || tipo === 'palo') {
-    const base = L.modo === 'guardias' ? GUARDIAS_POSE[L.guardia] : POSES.base;
+  if (tipo === 'espada_larga' || tipo === 'palo' || tipo === 'espada_escudo') {
+    const conEscudo = tipo === 'espada_escudo';
+    const base = L.modo === 'guardias' ? GUARDIAS_POSE[L.guardia] : conEscudo ? POSE_ESCUDO : POSES.base;
     if (L.accion === 'preparando') obj = mezclar(base, POSES[L.linea].p, suave(t));
     else if (L.accion === 'golpeando') obj = mezclar(POSES[L.linea].p, POSES[L.linea].f, suave(t));
     else if (L.accion === 'recuperando' && L.linea) obj = mezclar(POSES[L.linea].f, base, suave(t));
     else if (L.accion === 'aturdido') obj = { m: V(0.1, 1.55, -0.05), d: V(0.3, 0.9, -0.6) }; // arma desviada hacia atrás
-    else if (L.bloqueando) obj = PARADAS[lineaParada || 'estocada'];
+    else if (L.bloqueando) obj = conEscudo ? POSE_ESCUDO_PARANDO : PARADAS[lineaParada || 'estocada'];
     else obj = base;
     const kk = L.accion === 'golpeando' ? 1 : Math.min(1, dt * 16);
     u.pose.m.lerp(obj.m, kk); u.pose.d.lerp(obj.d, kk).normalize();
     u.manos.position.copy(u.pose.m);
     u.manos.quaternion.setFromUnitVectors(V(0, 1, 0), u.pose.d);
-    apuntarBrazo(u.brazos[0], u.pose.m.clone().add(V(0.05, 0, 0)));
-    apuntarBrazo(u.brazos[1], u.pose.m.clone().add(V(-0.05, 0, 0)));
+    if (conEscudo && u.escudo) {
+      // la espada va solo en la derecha; el escudo sube al parar
+      const e = L.bloqueando ? ESCUDO_ALTO : ESCUDO_REPOSO;
+      const ke = Math.min(1, dt * 14);
+      u.escudo.position.lerp(e.p, ke);
+      u.escudo.rotation.y += (e.giro - u.escudo.rotation.y) * ke;
+      u.escudo.rotation.x += (e.inclina - u.escudo.rotation.x) * ke;
+      apuntarBrazo(u.brazos[0], u.escudo.position.clone().add(V(0, 0, -0.04)));
+      apuntarBrazo(u.brazos[1], u.pose.m);
+    } else {
+      apuntarBrazo(u.brazos[0], u.pose.m.clone().add(V(0.05, 0, 0)));
+      apuntarBrazo(u.brazos[1], u.pose.m.clone().add(V(-0.05, 0, 0)));
+    }
   } else if (tipo === 'arco') {
     const tensando = L.accion === 'tensando';
     const manoArco = tensando ? V(0.05, 1.42, 0.6) : V(0.3, 1.0, 0.2);

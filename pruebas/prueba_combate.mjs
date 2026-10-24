@@ -5,6 +5,7 @@ if (process.env.MUTAR === '1') {
   T.ventanaPerfecta = 99; T.ventanaMaestro = 0; ARMADURAS.malla.corte = 1.0;
   T.tensionMinima = 0; ARMAS.arco.recarga = 0.1; Luchador.prototype.cancelarTensado = function () {}; // arco roto como antes
   Object.defineProperty(Luchador.prototype, 'corriendo', { get() { return false; }, set() {} });
+  Luchador.prototype.paraConEscudo = function () { return false; }; T.factorEscudo = 1; // escudo que no sirve
 }
 
 let ok = 0, mal = 0;
@@ -250,6 +251,80 @@ console.log('6b. Arco: tensión mínima, correr y recarga');
   comprobar('tras disparar, 0,8 s para encajar la siguiente flecha', !aun && ya, `a 0,7 s: ${aun}, a 0,85 s: ${ya}`);
 }
 
+console.log('6c. Escudo (provisional)');
+{
+  // tira 40 flechas (o piedras) a 15 m contra B y cuenta qué pasa
+  const tiros = (arma, prepararB) => {
+    const cuenta = { escudo: 0, blanco: 0, otro: 0 };
+    for (let s = 0; s < 40; s++) {
+      const A = new Luchador({ arma, x: 0, z: 0 });
+      const B = new Luchador({ arma: 'espada_escudo', x: 0, z: arma === 'piedras' ? 10 : 15, rot: Math.PI });
+      prepararB(B);
+      const p = crearProyectil(A, { x: 0, y: 1.3, z: B.z }, { tension: 1, tTenso: 0.3 }, azar(s + 31));
+      let res = null; while (!res) res = moverProyectil(p, 0.01, [A, B], azar(s));
+      cuenta[res.tipo in cuenta ? res.tipo : 'otro']++;
+    }
+    return cuenta;
+  };
+  let c = tiros('arco', B => B.bloquear(true));
+  comprobar('con el escudo levantado, las flechas de frente se paran', c.escudo >= 30 && c.blanco === 0, JSON.stringify(c));
+  c = tiros('piedras', B => B.bloquear(true));
+  comprobar('y las piedras también', c.escudo >= 30 && c.blanco === 0, JSON.stringify(c));
+  c = tiros('arco', () => {});
+  comprobar('con el escudo bajado, las flechas hieren', c.escudo === 0 && c.blanco >= 30, JSON.stringify(c));
+  c = tiros('arco', B => { B.rot = 0; B.bloquear(true); });
+  comprobar('por la espalda el escudo no para', c.escudo === 0 && c.blanco >= 30, JSON.stringify(c));
+  c = tiros('arco', B => { B.arma = 'espada_larga'; B.bloquear(true); });
+  comprobar('con la espada larga no se paran flechas', c.escudo === 0 && c.blanco >= 30, JSON.stringify(c));
+  // aliento de una parada normal con espada larga y con escudo
+  const costeParada = (arma) => {
+    const [a, b] = pareja(1.5, {}, { arma });
+    b.bloquear(true); b.tBloqueo = 1;
+    const c0 = b.cansancio;
+    const res = golpeCompleto(a, b, 'alto', azar(3));
+    return { res: res.resultado, coste: b.cansancio - c0 };
+  };
+  const larga = costeParada('espada_larga'), escudo = costeParada('espada_escudo');
+  comprobar('parar con escudo cuesta menos aliento', escudo.res === 'parada' && larga.res === 'parada' && escudo.coste < larga.coste * 0.75, `escudo +${r2(escudo.coste)}, espada larga +${r2(larga.coste)}`);
+  {
+    const [a, b] = pareja(1.5, {}, { arma: 'espada_escudo' });
+    const res = golpeCompleto(a, b, 'bajo', azar(4), { margen: 0.15, fn: () => b.bloquear(true) });
+    comprobar('con escudo la parada perfecta funciona igual', res.resultado === 'parada perfecta' && b.puedeContraatacar(), res.resultado);
+  }
+  {
+    const [a, b] = pareja(1.5, {}, { arma: 'espada_escudo' });
+    a.atacar('izquierda');
+    let res = null, t = 0, lanzado = false;
+    while (t < 2 && !res) {
+      if (!lanzado && a.progreso() >= 0.2) { b.atacar('derecha'); lanzado = true; }
+      for (const e of a.actualizar(0.01)) if (e.tipo === 'impacto') res = resolverGolpe(a, b, e.linea, azar(5));
+      b.actualizar(0.01); t += 0.01;
+    }
+    comprobar('con escudo el golpe maestro funciona igual', res && res.resultado === 'golpe maestro', res && res.resultado);
+  }
+  {
+    const [a] = pareja(1.5, {}, {}); const e = new Luchador({ arma: 'espada_escudo' });
+    comprobar('la espada de una mano es algo más corta que la larga', e.def.alcance < a.def.alcance && e.def.alcance >= 1.5, `${e.def.alcance} m frente a ${a.def.alcance} m`);
+  }
+  // el rival de la máquina con escudo lo levanta cuando le apuntan y para la flecha
+  {
+    let parados = 0;
+    for (let s = 0; s < 10; s++) {
+      const A = new Luchador({ arma: 'arco', x: 0, z: 0 });
+      const B = new Luchador({ arma: 'espada_escudo', x: 0, z: 15, rot: Math.PI });
+      const ia = new IA(B, 'aprendiz', azar(s + 3));
+      A.empezarTensar();
+      for (let t = 0; t < 1.2; t += 0.02) { A.actualizar(0.02); ia.pensar(0.02, A); B.actualizar(0.02); }
+      const tiro = A.soltar();
+      const p = crearProyectil(A, { x: B.x, y: 1.3, z: B.z }, tiro, azar(s + 70));
+      let res = null;
+      while (!res) { res = moverProyectil(p, 0.01, [A, B], azar(s)); A.actualizar(0.01); ia.pensar(0.01, A); B.actualizar(0.01); }
+      if (res.tipo === 'escudo') parados++;
+    }
+    comprobar('el rival con escudo lo levanta al verte tensar y para la flecha', parados >= 9, `${parados}/10`);
+  }
+}
+
 console.log('7. Flechas contra personas y dianas');
 {
   let blancos = 0, zonas = {};
@@ -316,7 +391,7 @@ console.log('9. Combates completos simulados (máquina contra máquina)');
 for (const modo of ['capas', 'guardias']) {
   let fin = 0, tiempos = [];
   for (let s = 0; s < 20; s++) {
-    const [a, b] = pareja(3, { modo }, { modo });
+    const [a, b] = pareja(3, { modo }, { modo, arma: modo === 'capas' && s % 2 ? 'espada_escudo' : 'espada_larga' });
     const ia1 = new IA(a, 'normal', azar(s + 1)), ia2 = new IA(b, 'normal', azar(s + 500));
     const r = azar(s + 77);
     let t = 0;

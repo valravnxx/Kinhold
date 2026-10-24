@@ -13,16 +13,24 @@ const esTactil = matchMedia('(pointer: coarse)').matches;
 const CLAVE = 'kinhold_combate_v2';
 
 // ---------------- Opciones ----------------
+// Armas que puede llevar el rival (solo cuerpo a cuerpo)
+const ARMAS_RIVAL = { igual: { nombre: 'Como la tuya' }, espada_larga: ARMAS.espada_larga, espada_escudo: ARMAS.espada_escudo, palo: ARMAS.palo };
 const opc = cargarOpciones();
 function cargarOpciones() {
-  const def = { modo: 'duelo', arma: 'espada_larga', armadura: 'lino', armaduraRival: 'lino', dificultad: 'aprendiz', sonido: true };
+  const def = { modo: 'duelo', arma: 'espada_larga', armadura: 'lino', armaduraRival: 'lino', armaRival: 'igual', dificultad: 'aprendiz', sonido: true };
   try {
     const o = { ...def, ...JSON.parse(localStorage.getItem(CLAVE) || '{}') };
     if (!RITMO[o.dificultad]) o.dificultad = 'aprendiz';
+    if (!ARMAS_RIVAL[o.armaRival]) o.armaRival = 'igual'; // guardados de antes de la v4 no lo tienen
+    if (!ARMAS[o.arma]) o.arma = 'espada_larga';
     return o;
   } catch (e) { return def; }
 }
 function guardarOpciones() { try { localStorage.setItem(CLAVE, JSON.stringify(opc)); } catch (e) { /* sin almacenamiento */ } }
+function armaDelRival() {
+  if (opc.armaRival !== 'igual' && ARMAS_RIVAL[opc.armaRival]) return opc.armaRival;
+  return ARMAS[opc.arma].tipo === 'cuerpo' ? opc.arma : 'espada_larga';
+}
 // Qué ayudas visuales da cada dificultad
 const AYUDAS = {
   aprendiz: { amenaza: true, verde: true },
@@ -94,7 +102,7 @@ function nuevaPartida() {
   rival = null; ia = null;
   if (mRival) { escena.remove(mRival); mRival = null; }
   if (opc.modo === 'duelo' || opc.modo === 'carga') {
-    const armaRival = ARMAS[opc.arma].tipo === 'cuerpo' ? opc.arma : 'espada_larga';
+    const armaRival = armaDelRival();
     const dist = opc.modo === 'carga' ? 40 : 3.5;
     rival = new Luchador({ nombre: 'Rival', arma: armaRival, armadura: opc.armaduraRival, ritmo, x: 0, z: -2 + dist, rot: Math.PI });
     ia = new IA(rival, opc.dificultad, azar((Date.now() >> 3) & 0xffff));
@@ -525,6 +533,14 @@ function moverProyectiles(dt) {
           particulas.emitir(pr.p.x, pr.p.y, pr.p.z, 12, 0x8a1410, 2, 9.8, 0.5);
           sacudir(acierto ? mRival : mJugador, 0.8); sonido.corte(); pausa = 0.05;
         }
+        if (res.tipo === 'escudo') {
+          const mio = res.luchador === jugador;
+          if (mio) stats.paradas++;
+          registrar(mio ? `Tu escudo para ${pr.p.arma === 'arco' ? 'la flecha' : 'la piedra'}` : `El rival para ${pr.p.arma === 'arco' ? 'tu flecha' : 'tu piedra'} con el escudo`, mio ? 'bien' : '');
+          particulas.emitir(pr.p.x, pr.p.y, pr.p.z, 8, 0x9a7a52, 2, 9.8, 0.4);
+          sacudir(mio ? mJugador : mRival, 0.4);
+          if (pr.p.arma === 'arco') sonido.clavar(); else sonido.golpeSordo();
+        }
         if (res.tipo === 'diana') { stats.aciertos++; stats.puntos += res.puntos; registrar(`Diana a ${res.diana.distancia} m: ${res.puntos} puntos`, 'bien'); sonido.clavar(); }
         if (res.tipo === 'suelo') registrar(`Al suelo a ${Math.round(pr.p.recorrido)} m`, '');
       }
@@ -602,6 +618,7 @@ selector('selModo', { duelo: { nombre: 'Duelo' }, carga: { nombre: 'Carga desde 
 selector('selArma', ARMAS, 'arma');
 selector('selArmadura', ARMADURAS, 'armadura');
 selector('selArmaduraRival', ARMADURAS, 'armaduraRival');
+selector('selArmaRival', ARMAS_RIVAL, 'armaRival');
 selector('selDificultad', { aprendiz: { nombre: 'Aprendiz (lento, con avisos)' }, normal: { nombre: 'Normal (solo ves el lado)' }, realista: { nombre: 'Realista (sin avisos)' } }, 'dificultad');
 $('chkSonido').checked = opc.sonido;
 $('chkSonido').onchange = (e) => { opc.sonido = e.target.checked; guardarOpciones(); sonido.silenciar(!opc.sonido); };
@@ -633,6 +650,7 @@ window.__duelo = {
   get jugador() { return jugador; }, get rival() { return rival; }, get ia() { return ia; }, get stats() { return stats; }, opc, cam, rosa,
   get proyectiles() { return proyectiles; }, get terminado() { return terminado; }, get lineaSel() { return lineaSel; },
   get pausa() { return pausa; }, get pausas() { return pausas; },
+  get mJugador() { return mJugador; }, get mRival() { return mRival; },
   nuevaPartida, atacar, disparar, lanzar, tick, registrar, parar, lineaDesdePantalla,
   configurar(o) { Object.assign(opc, o); nuevaPartida(); },
   apuntar(x, y, z) { apuntado = { x, y, z }; },
