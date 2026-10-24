@@ -7,6 +7,11 @@ import { crearCombatiente, ponerArma, animarCombatiente, pintarHeridas, sacudir,
 import { arbol, COLORES } from '../juego/modelos.js';
 import * as sonido from './sonido.js';
 import { REGISTRO_COMBATE, VERSION_COMBATE } from './registro.js';
+import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
+
+// lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
+traducirPagina();
+botonesIdioma(document.getElementById('menu'));
 
 const $ = (id) => document.getElementById(id);
 const esTactil = matchMedia('(pointer: coarse)').matches;
@@ -130,10 +135,10 @@ function nuevaPartida() {
   actualizarPanel();
 }
 function textoInicio() {
-  if (opc.modo === 'practicas') return 'Prácticas: poste a la izquierda, dianas a 10, 20 y 35 m.';
-  if (opc.modo === 'carga') return 'Carga: el rival corre hacia ti desde 40 m. Dispara antes de que llegue.';
-  if (ARMAS[opc.arma].tipo !== 'cuerpo') return 'Duelo a distancia: mantén pulsado para tensar y suelta.';
-  return 'Duelo. Haz clic o toca una zona de la rosa para golpear por ese lado.';
+  if (opc.modo === 'practicas') return tr('Prácticas: poste a la izquierda, dianas a 10, 20 y 35 m.');
+  if (opc.modo === 'carga') return tr('Carga: el rival corre hacia ti desde 40 m. Dispara antes de que llegue.');
+  if (ARMAS[opc.arma].tipo !== 'cuerpo') return tr('Duelo a distancia: mantén pulsado para tensar y suelta.');
+  return tr('Duelo. Haz clic o toca una zona de la rosa para golpear por ese lado.');
 }
 
 // ---------------- Registro ----------------
@@ -218,7 +223,7 @@ function actualizarRosa() {
   el.classList.toggle('preparando', jugador.accion === 'preparando');
   el.classList.toggle('parando', !!jugador.bloqueando);
   const pista = $('pistaRosa');
-  pista.textContent = jugador.puedeContraatacar() ? '¡Contraataca!' : verde ? '¡Para ahora!' : maestro ? 'Golpe maestro: golpea ese lado' : jugador.bloqueando ? 'Parando' : '';
+  pista.textContent = tr(jugador.puedeContraatacar() ? '¡Contraataca!' : verde ? '¡Para ahora!' : maestro ? 'Golpe maestro: golpea ese lado' : jugador.bloqueando ? 'Parando' : '');
 }
 
 // ---------------- Entrada ----------------
@@ -365,15 +370,15 @@ function atacar(linea) {
   const preparaba = jugador.accion === 'preparando';
   const contra = jugador.puedeContraatacar();
   if (!jugador.atacar(linea)) return false;
-  if (preparaba) registrar(`Finta: cambias a ${NOMBRE_LINEA[linea].toLowerCase()}`, 'aviso');
-  else { stats.golpes++; if (contra) registrar('Contraataque: solo se para con una parada perfecta', 'aviso'); }
+  if (preparaba) registrar(tr('Finta: cambias a {l}', { l: tr(NOMBRE_LINEA[linea]).toLowerCase() }), 'aviso');
+  else { stats.golpes++; if (contra) registrar(tr('Contraataque: solo se para con una parada perfecta'), 'aviso'); }
   $('btnParar').classList.remove('activo');
   return true;
 }
 function disparar() {
   const tiro = jugador.soltar();
   if (!tiro) {
-    if (jugador.cancelado === 'flojo') { registrar('Demasiado flojo: el tiro se cancela (hace falta tensar al menos la mitad)', 'aviso'); jugador.cancelado = null; }
+    if (jugador.cancelado === 'flojo') { registrar(tr('Demasiado flojo: el tiro se cancela (hace falta tensar al menos la mitad)'), 'aviso'); jugador.cancelado = null; }
     return;
   }
   const obj = apuntado || { x: jugador.x + Math.sin(jugador.rot) * 20, y: 0, z: jugador.z + Math.cos(jugador.rot) * 20 };
@@ -433,7 +438,7 @@ function tick(dtReal) {
   reloj += dt;
   moverJugador(dt);
   const evJ = jugador.actualizar(dt, jugadorCorre);
-  if (jugador.cancelado === 'correr') { registrar('Al echar a correr aflojas el arco', 'aviso'); jugador.cancelado = null; }
+  if (jugador.cancelado === 'correr') { registrar(tr('Al echar a correr aflojas el arco'), 'aviso'); jugador.cancelado = null; }
   let vR = 0;
   if (rival) {
     const m = ia.pensar(dt, jugador);
@@ -471,18 +476,18 @@ function contarYDecir(res, delJugador, linea) {
   if (delJugador) {
     if (res.resultado === 'herida') {
       stats.heridasDadas++;
-      if (!rival) registrar(`Poste: ${NOMBRE_LINEA[linea].toLowerCase()} a ${NOMBRE_ZONA[res.zona]} · golpe ${res.gravedad} · fuerza ${Math.min(100, Math.round(res.sev * 100))}%`, 'bien');
-      else registrar(`${res.nota === 'imparable' ? 'Tu contraataque entra' : 'Hieres al rival'}: ${res.gravedad} en ${NOMBRE_ZONA[res.zona]}${res.nota === 'guardia rota' ? ' (está agotado y su parada cede)' : ''}`, 'bien');
-    } else if (res.resultado === 'parada') registrar('El rival para tu golpe', '');
-    else if (res.resultado === 'parada perfecta') registrar('El rival para en el momento justo: quedas descolocado', 'mal');
-    else if (res.resultado === 'golpe maestro') registrar('¡Golpe maestro del rival! Desvía el tuyo', 'mal');
-    else if (res.resultado === 'fallo') registrar('Golpe al aire: fuera de alcance', '');
+      if (!rival) registrar(tr('Poste: {l} a {z} · golpe {g} · fuerza {f}%', { l: tr(NOMBRE_LINEA[linea]).toLowerCase(), z: tr(NOMBRE_ZONA[res.zona]), g: tr(res.gravedad), f: Math.min(100, Math.round(res.sev * 100)) }), 'bien');
+      else registrar(tr(res.nota === 'imparable' ? 'Tu contraataque entra: {g} en {z}' : res.nota === 'guardia rota' ? 'Hieres al rival: {g} en {z} (está agotado y su parada cede)' : 'Hieres al rival: {g} en {z}', { g: tr(res.gravedad), z: tr(NOMBRE_ZONA[res.zona]) }), 'bien');
+    } else if (res.resultado === 'parada') registrar(tr('El rival para tu golpe'), '');
+    else if (res.resultado === 'parada perfecta') registrar(tr('El rival para en el momento justo: quedas descolocado'), 'mal');
+    else if (res.resultado === 'golpe maestro') registrar(tr('¡Golpe maestro del rival! Desvía el tuyo'), 'mal');
+    else if (res.resultado === 'fallo') registrar(tr('Golpe al aire: fuera de alcance'), '');
   } else {
-    if (res.resultado === 'herida') { stats.recibidas++; registrar(`Te hieren: ${res.gravedad} en ${NOMBRE_ZONA[res.zona]}${res.nota === 'imparable' ? ' (era un contraataque: solo lo para una parada perfecta)' : res.nota === 'guardia rota' ? ' (estás agotado y tu parada cede)' : ''}`, 'mal'); }
-    else if (res.resultado === 'parada') { stats.paradas++; registrar('Paras el golpe', ''); }
-    else if (res.resultado === 'parada perfecta') { stats.paradas++; stats.perfectas++; registrar('¡Parada perfecta! Contraataca ya', 'bien'); }
-    else if (res.resultado === 'golpe maestro') { stats.maestros++; registrar('¡Golpe maestro! Desvías su golpe y el tuyo entra', 'bien'); }
-    else if (res.resultado === 'fallo') registrar('El rival golpea al aire', '');
+    if (res.resultado === 'herida') { stats.recibidas++; registrar(tr(res.nota === 'imparable' ? 'Te hieren: {g} en {z} (era un contraataque: solo lo para una parada perfecta)' : res.nota === 'guardia rota' ? 'Te hieren: {g} en {z} (estás agotado y tu parada cede)' : 'Te hieren: {g} en {z}', { g: tr(res.gravedad), z: tr(NOMBRE_ZONA[res.zona]) }), 'mal'); }
+    else if (res.resultado === 'parada') { stats.paradas++; registrar(tr('Paras el golpe'), ''); }
+    else if (res.resultado === 'parada perfecta') { stats.paradas++; stats.perfectas++; registrar(tr('¡Parada perfecta! Contraataca ya'), 'bien'); }
+    else if (res.resultado === 'golpe maestro') { stats.maestros++; registrar(tr('¡Golpe maestro! Desvías su golpe y el tuyo entra'), 'bien'); }
+    else if (res.resultado === 'fallo') registrar(tr('El rival golpea al aire'), '');
   }
 }
 function moverJugador(dt) {
@@ -529,20 +534,20 @@ function moverProyectiles(dt) {
         if (res.tipo === 'blanco') {
           const acierto = res.luchador === rival;
           if (acierto) stats.aciertos++; else stats.recibidas++;
-          registrar(`${acierto ? 'Aciertas' : 'Te alcanza'}: herida ${res.gravedad} en ${NOMBRE_ZONA[res.zona]}`, acierto ? 'bien' : 'mal');
+          registrar(tr(acierto ? 'Aciertas: herida {g} en {z}' : 'Te alcanza: herida {g} en {z}', { g: tr(res.gravedad), z: tr(NOMBRE_ZONA[res.zona]) }), acierto ? 'bien' : 'mal');
           particulas.emitir(pr.p.x, pr.p.y, pr.p.z, 12, 0x8a1410, 2, 9.8, 0.5);
           sacudir(acierto ? mRival : mJugador, 0.8); sonido.corte(); pausa = 0.05;
         }
         if (res.tipo === 'escudo') {
           const mio = res.luchador === jugador;
           if (mio) stats.paradas++;
-          registrar(mio ? `Tu escudo para ${pr.p.arma === 'arco' ? 'la flecha' : 'la piedra'}` : `El rival para ${pr.p.arma === 'arco' ? 'tu flecha' : 'tu piedra'} con el escudo`, mio ? 'bien' : '');
+          registrar(tr(mio ? (pr.p.arma === 'arco' ? 'Tu escudo para la flecha' : 'Tu escudo para la piedra') : (pr.p.arma === 'arco' ? 'El rival para tu flecha con el escudo' : 'El rival para tu piedra con el escudo')), mio ? 'bien' : '');
           particulas.emitir(pr.p.x, pr.p.y, pr.p.z, 8, 0x9a7a52, 2, 9.8, 0.4);
           sacudir(mio ? mJugador : mRival, 0.4);
           if (pr.p.arma === 'arco') sonido.clavar(); else sonido.golpeSordo();
         }
-        if (res.tipo === 'diana') { stats.aciertos++; stats.puntos += res.puntos; registrar(`Diana a ${res.diana.distancia} m: ${res.puntos} puntos`, 'bien'); sonido.clavar(); }
-        if (res.tipo === 'suelo') registrar(`Al suelo a ${Math.round(pr.p.recorrido)} m`, '');
+        if (res.tipo === 'diana') { stats.aciertos++; stats.puntos += res.puntos; registrar(tr('Diana a {d} m: {p} puntos', { d: res.diana.distancia, p: res.puntos }), 'bien'); sonido.clavar(); }
+        if (res.tipo === 'suelo') registrar(tr('Al suelo a {d} m', { d: Math.round(pr.p.recorrido) }), '');
       }
     } else pr.vida -= dt;
   }
@@ -572,13 +577,13 @@ function comprobarFinal() {
     terminado = true;
     parar(false);
     const gana = rival.fuera && !jugador.fuera;
-    $('tituloFinal').textContent = gana ? 'Has vencido' : 'Has caído';
-    $('motivoFinal').textContent = gana ? `El rival: ${rival.motivoFuera.toLowerCase()}.` : `${jugador.motivoFuera}.`;
+    $('tituloFinal').textContent = tr(gana ? 'Has vencido' : 'Has caído');
+    $('motivoFinal').textContent = gana ? tr('El rival: {m}.', { m: tr(rival.motivoFuera).toLowerCase() }) : `${tr(jugador.motivoFuera)}.`;
     $('statsFinal').innerHTML = [
       ['Golpes lanzados', stats.golpes], ['Heridas causadas', stats.heridasDadas], ['Golpes parados', stats.paradas],
       ['Paradas perfectas', stats.perfectas], ['Golpes maestros', stats.maestros], ['Heridas recibidas', stats.recibidas],
       ...(stats.flechas ? [['Tiros', stats.flechas], ['Aciertos', stats.aciertos]] : []),
-    ].map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('');
+    ].map(([k, v]) => `<div><span>${tr(k)}</span><b>${v}</b></div>`).join('');
     $('final').hidden = false;
   }
 }
@@ -587,30 +592,30 @@ function comprobarFinal() {
 function actualizarPanel() {
   const av = [];
   const sangrado = jugador.heridas.reduce((a, h) => a + h.sangrado, 0);
-  if (jugador.cansancio > 30) av.push({ c: jugador.cansancio >= T.guardiaRota ? 'rojo' : 'gris', t: 'Cansancio', d: `${Math.round(jugador.cansancio)}%. Atacar, parar, fintar y fallar cansan; mantener la parada también. Por encima del 70% tus golpes son más lentos y al ${T.guardiaRota}% tu parada cede.`, n: jugador.cansancio / 100 });
-  if (sangrado > 0.05) av.push({ c: 'rojo', t: 'Sangrado', d: `Pierdes sangre. Te queda ${Math.round(jugador.sangre)}%.`, n: 1 - jugador.sangre / 100 });
-  for (const h of jugador.heridas) av.push({ c: h.gravedad === 'leve' ? 'naranja' : 'rojo', t: `Herida ${h.gravedad}`, d: `${NOMBRE_ZONA[h.zona]} (${h.tipo})${efectoHerida(h.zona)}`, n: h.gravedad === 'leve' ? 0.3 : h.gravedad === 'grave' ? 0.65 : 1 });
-  if (jugador.accion === 'aturdido') av.push({ c: 'naranja', t: 'Descolocado', d: 'No puedes atacar ni parar un momento.', n: 1 });
+  if (jugador.cansancio > 30) av.push({ c: jugador.cansancio >= T.guardiaRota ? 'rojo' : 'gris', t: tr('Cansancio'), d: tr('{c}%. Atacar, parar, fintar y fallar cansan; mantener la parada también. Por encima del 70% tus golpes son más lentos y al {r}% tu parada cede.', { c: Math.round(jugador.cansancio), r: T.guardiaRota }), n: jugador.cansancio / 100 });
+  if (sangrado > 0.05) av.push({ c: 'rojo', t: tr('Sangrado'), d: tr('Pierdes sangre. Te queda {s}%.', { s: Math.round(jugador.sangre) }), n: 1 - jugador.sangre / 100 });
+  for (const h of jugador.heridas) av.push({ c: h.gravedad === 'leve' ? 'naranja' : 'rojo', t: tr('Herida {g}', { g: tr(h.gravedad) }), d: `${tr(NOMBRE_ZONA[h.zona])} (${tr(h.tipo)})${efectoHerida(h.zona)}`, n: h.gravedad === 'leve' ? 0.3 : h.gravedad === 'grave' ? 0.65 : 1 });
+  if (jugador.accion === 'aturdido') av.push({ c: 'naranja', t: tr('Descolocado'), d: tr('No puedes atacar ni parar un momento.'), n: 1 });
   const cont = $('avisos');
   const html = av.map((a, i) => `<button class="aviso ${a.c}" data-i="${i}" style="--n:${Math.min(1, a.n).toFixed(2)}"><span></span><em>${a.t}</em></button>`).join('');
   if (cont.dataset.html !== html) {
     cont.dataset.html = html; cont.innerHTML = html;
     cont.querySelectorAll('.aviso').forEach(b => b.onclick = () => { const a = av[+b.dataset.i]; $('detalle').hidden = false; $('detalle').innerHTML = `<b>${a.t}</b><br>${a.d}`; });
   }
-  $('estado').textContent = ARMAS[jugador.arma].nombre + (jugador.bloqueando ? ' · parando' : '');
+  $('estado').textContent = tr(ARMAS[jugador.arma].nombre) + (jugador.bloqueando ? ' · ' + tr('parando') : '');
 }
 function efectoHerida(z) {
-  if (z === 'brazoD') return ': golpes y tiros más lentos y flojos';
-  if (z === 'brazoI') return ': algo más lento';
-  if (z.startsWith('pierna')) return ': te mueves más despacio';
-  if (z === 'torso') return ': sangra mucho';
+  if (z === 'brazoD') return ': ' + tr('golpes y tiros más lentos y flojos');
+  if (z === 'brazoI') return ': ' + tr('algo más lento');
+  if (z.startsWith('pierna')) return ': ' + tr('te mueves más despacio');
+  if (z === 'torso') return ': ' + tr('sangra mucho');
   return '';
 }
 
 // ---------------- Menú ----------------
 function selector(id, valores, clave) {
   const el = $(id);
-  el.innerHTML = Object.entries(valores).map(([k, v]) => `<option value="${k}">${v.nombre}</option>`).join('');
+  el.innerHTML = Object.entries(valores).map(([k, v]) => `<option value="${k}">${tr(v.nombre)}</option>`).join('');
   el.value = opc[clave];
   el.onchange = () => { opc[clave] = el.value; guardarOpciones(); nuevaPartida(); el.blur(); };
 }
@@ -629,8 +634,8 @@ $('btnAyuda').onclick = () => { $('panelAyuda').hidden = !$('panelAyuda').hidden
 $('btnDecisiones').onclick = () => { $('panelRegistro').hidden = !$('panelRegistro').hidden; $('panelAyuda').hidden = true; };
 for (const b of document.querySelectorAll('.cerrar')) b.onclick = () => { b.closest('.panel').hidden = true; };
 $('detalle').onclick = () => { $('detalle').hidden = true; };
-$('listaRegistro').innerHTML = REGISTRO_COMBATE.map(r => `<li>${r}</li>`).join('');
-$('version').textContent = VERSION_COMBATE;
+$('listaRegistro').innerHTML = REGISTRO_COMBATE.map(r => `<li>${tr(r)}</li>`).join('');
+$('version').textContent = tr(VERSION_COMBATE);
 function ajustarControles() {
   const cuerpo = ARMAS[opc.arma].tipo === 'cuerpo';
   $('btnParar').hidden = !esTactil || !cuerpo;

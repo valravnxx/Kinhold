@@ -1,4 +1,5 @@
-// Textos de la interfaz. Español completo; inglés y ruso se añaden en sus diccionarios.
+// Textos de la interfaz (español). Las traducciones están en src/idiomas/<idioma>.json, con el español como clave.
+import { tr } from '../idioma.js';
 const ES = {
   yaMojon: 'Ya tienes un mojón.',
   faltanMateriales: 'Faltan materiales.',
@@ -25,9 +26,4 @@ const ES = {
   consejoMojon: 'Pulsa Construir → Tierra → Mojón para reclamar tu tierra.',
   confirmaReinicio: '¿Seguro? Pulsa otra vez para borrar todo.',
 };
-const EN = {};
-const RU = {};
-const DICC = { es: ES, en: EN, ru: RU };
-let idioma = 'es';
-export function ponerIdioma(i) { if (DICC[i]) idioma = i; }
-export function t(k) { return (DICC[idioma] && DICC[idioma][k]) || ES[k] || k; }
+export function t(k) { return tr(ES[k] || k); }

@@ -6,6 +6,11 @@ import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, arbol, roc
 import { crearPersonaje, animarPersonaje } from './personaje.js';
 import { REGISTRO, VERSION } from './registro.js';
 import { t } from './textos.js';
+import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
+
+// lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
+traducirPagina();
+botonesIdioma(document.getElementById('menu'));
 
 const CLAVE_GUARDADO = 'kinhold_h1_v1';
 const $ = (id) => document.getElementById(id);
@@ -232,7 +237,7 @@ function evaluarColocacion() {
   if (sel.clase === 'mojon') {
     fantasma.position.set(x, 0, z); fantasma.rotation.set(0, 0, 0);
     const v = mundo.mojon ? { ok: false, motivo: t('yaMojon') } : mundo.puedePagar(PIEZAS.mojon.coste) ? { ok: true } : { ok: false, motivo: t('faltanMateriales') };
-    pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : v.motivo, !v.ok);
+    pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
     estado.candidato = { tipo: 'mojon', x, z, v };
     return;
   }
@@ -243,7 +248,7 @@ function evaluarColocacion() {
     if (!mundo.mojon) v = { ok: false, motivo: t('primeroMojon') };
     else if (!mundo.dentroDeTierra(x, z)) v = { ok: false, motivo: t('fueraTierra') };
     else if (!mundo.puedePagar(DECORACION[sel.tipo].coste)) v = { ok: false, motivo: t('faltanMateriales') };
-    pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : v.motivo, !v.ok);
+    pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
     estado.candidato = { tipo: 'deco', x, y, z, v };
     return;
   }
@@ -269,9 +274,9 @@ function evaluarColocacion() {
     const o = objDe(c, v.debil);
     if (o) resaltar(o, MAT_ROJO);
     const pd = c.piezas.get(v.debil) || cand.pieza;
-    mostrarAviso(`${v.motivo} ${t('puntoDebil')}: ${PIEZAS[pd.tipo].nombre} (${Math.round(v.carga)} / ${v.cap} kg)`, true);
+    mostrarAviso(`${tr(v.motivo)} ${t('puntoDebil')}: ${tr(PIEZAS[pd.tipo].nombre)} (${Math.round(v.carga)} / ${v.cap} kg)`, true);
   } else {
-    mostrarAviso(v.ok ? (cand.nueva ? t('nuevaConstruccion') : '') : v.motivo, !v.ok);
+    mostrarAviso(v.ok ? (cand.nueva ? t('nuevaConstruccion') : '') : tr(v.motivo), !v.ok);
   }
   estado.candidato = { tipo: 'pieza', cand, v };
 }
@@ -279,7 +284,7 @@ function evaluarColocacion() {
 function colocar() {
   const ca = estado.candidato;
   if (!ca) return;
-  if (!ca.v.ok) { mostrarAviso(ca.v.motivo, true); return; }
+  if (!ca.v.ok) { mostrarAviso(tr(ca.v.motivo), true); return; }
   let r;
   if (ca.tipo === 'mojon') r = mundo.colocarMojon(ca.x, ca.z);
   else if (ca.tipo === 'deco') r = mundo.colocarDecoracion(estado.sel.tipo, ca.x, ca.y, ca.z, estado.rotDeco || 0);
@@ -287,7 +292,7 @@ function colocar() {
   if (r.ok) {
     if (ca.tipo === 'mojon') { estado.sel = { clase: 'pieza', tipo: 'cim_piedra' }; marcarSeleccion(); }
     guardar(); reconstruir(); evaluarColocacion();
-  } else mostrarAviso(r.motivo, true);
+  } else mostrarAviso(tr(r.motivo), true);
 }
 
 // ---------------- Desmontar ----------------
@@ -300,7 +305,7 @@ function evaluarDesmontaje(hit) {
   if (obj.userData.deco) {
     resaltar(obj, MAT_NARANJA);
     estado.pendienteDesmontar = { deco: obj.userData.deco };
-    mostrarAviso(`${DECORACION[obj.userData.deco.tipo].nombre}: ${t('recuperas75')}`);
+    mostrarAviso(`${tr(DECORACION[obj.userData.deco.tipo].nombre)}: ${t('recuperas75')}`);
     return;
   }
   const { c, key } = obj.userData;
@@ -309,11 +314,11 @@ function evaluarDesmontaje(hit) {
   for (const k2 of pre.caen || []) { const o = objDe(c, k2); if (o) resaltar(o, MAT_ROJO); }
   if (!pre.ok) {
     const o = objDe(c, pre.debil); if (o) resaltar(o, MAT_ROJO);
-    mostrarAviso(pre.motivo, true);
+    mostrarAviso(tr(pre.motivo), true);
     return;
   }
   estado.pendienteDesmontar = { c, key, caen: pre.caen.length };
-  const nombre = PIEZAS[c.piezas.get(key).tipo].nombre;
+  const nombre = tr(PIEZAS[c.piezas.get(key).tipo].nombre);
   mostrarAviso(pre.caen.length === 1 ? `${nombre}: ${t('caera1')}` : pre.caen.length ? `${nombre}: ${t('caeran')} ${pre.caen.length} ${t('piezasEncima')}` : `${nombre}: ${t('recuperas75')}`, pre.caen.length > 0);
 }
 function confirmarDesmontaje() {
@@ -324,10 +329,10 @@ function confirmarDesmontaje() {
   else r = mundo.desmontar(pd.c, pd.key);
   estado.pendienteDesmontar = null;
   if (r.ok) {
-    const dev = Object.entries(r.devuelto || {}).map(([m, n]) => `+${n} ${MATERIALES[m].toLowerCase()}`).join(', ');
+    const dev = Object.entries(r.devuelto || {}).map(([m, n]) => `+${n} ${tr(MATERIALES[m]).toLowerCase()}`).join(', ');
     guardar(); reconstruir();
     mostrarAviso(`${t('desmontado')}${dev ? ': ' + dev : ''}${r.caen && r.caen.length ? ' · ' + r.caen.length + ' ' + (r.caen.length === 1 ? t('destruida1') : t('destruidas')) : ''}`);
-  } else mostrarAviso(r.motivo, true);
+  } else mostrarAviso(tr(r.motivo), true);
   limpiarResaltado();
   $('confirmar').hidden = true;
 }
@@ -698,8 +703,8 @@ function construirBarra() {
   for (const e of entradas) {
     const b = document.createElement('button');
     b.className = 'pieza' + (estado.sel.tipo === e.tipo ? ' sel' : '');
-    const coste = Object.entries(e.def.coste).map(([m, n]) => `${n} ${MATERIALES[m].toLowerCase()}`).join(' · ');
-    b.innerHTML = `<b>${e.def.nombre}</b><small>${coste}</small>`;
+    const coste = Object.entries(e.def.coste).map(([m, n]) => `${n} ${tr(MATERIALES[m]).toLowerCase()}`).join(' · ');
+    b.innerHTML = `<b>${tr(e.def.nombre)}</b><small>${coste}</small>`;
     b.onclick = () => {
       estado.sel = { clase: e.clase, tipo: e.tipo };
       estado.dir = 0;
@@ -713,7 +718,7 @@ function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : 
 
 function actualizarUI() {
   const m = $('materiales');
-  m.innerHTML = Object.entries(MATERIALES).map(([k, n]) => `<span><b>${mundo.materiales[k] ?? 0}</b> ${n.toLowerCase()}</span>`).join('');
+  m.innerHTML = Object.entries(MATERIALES).map(([k, n]) => `<span><b>${mundo.materiales[k] ?? 0}</b> ${tr(n).toLowerCase()}</span>`).join('');
   for (const b of document.querySelectorAll('#modos button')) b.classList.toggle('sel', b.dataset.modo === estado.modo);
   $('barra').hidden = estado.modo !== 'construir';
   $('btnColocar').hidden = !(estado.modo === 'construir' && estado.esTactil);
@@ -755,8 +760,8 @@ $('btnRellenar').onclick = () => { for (const k of Object.keys(mundo.materiales)
 $('btnRegistro').onclick = () => { $('panelRegistro').hidden = !$('panelRegistro').hidden; $('panelAyuda').hidden = true; };
 $('btnAyuda').onclick = () => { $('panelAyuda').hidden = !$('panelAyuda').hidden; $('panelRegistro').hidden = true; };
 for (const b of document.querySelectorAll('.cerrar')) b.onclick = () => { b.closest('.panel').hidden = true; };
-$('listaRegistro').innerHTML = REGISTRO.map(r => `<li>${r}</li>`).join('');
-$('version').textContent = VERSION;
+$('listaRegistro').innerHTML = REGISTRO.map(r => `<li>${tr(r)}</li>`).join('');
+$('version').textContent = tr(VERSION);
 $('ayudaPC').hidden = estado.esTactil;
 $('ayudaTactil').hidden = !estado.esTactil;
 $('joystick').hidden = !estado.esTactil;
