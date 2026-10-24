@@ -72,7 +72,7 @@
    "A · Plano sobrio: caras planas, poco detalle, luz de mediodía. B · Suave y natural: sombreado suave, oclusión horneada en vértices, más detalle, tonos de cine. C · Texturas pintadas: texturas hechas por código, luz baja de tarde, niebla y gradación cálida.",
    "Personaje nuevo de 1,76 m, articulado: camisa de lino, túnica de lana, cinto con bolsa, calzas, vendas en las piernas, zapatos de cuero, pelo y barba cortos; cara con párpados, cejas, nariz, orejas y boca.",
    "Medido en el navegador de pruebas: A 16 mil triángulos, B 39 mil, C 86 mil; entre 94 y 129 dibujados por fotograma tras juntar las mallas fijas (antes hasta 1000).",
-   "Arreglado: las capturas de construcción v3 y combate v2 nunca se subieron (el .gitignore ignoraba docs/capturas) y la web daba error 404. Regeneradas con el mismo código y corregido el .gitignore.",
+   "Las capturas de construcción v3 y combate v2 daban 404 en la web (el .gitignore excluía docs/capturas). Lo arreglé aquí y a la vez llegó el mismo arreglo en otro commit; al juntar ambos me quedé con sus capturas.",
    "No comprobado: los fps en un móvil real (el navegador de pruebas no tiene tarjeta gráfica; da 1-3 fps en todos). El prototipo muestra los fps arriba a la derecha para medirlo en tu móvil."
   ],
   "pruebas": "Lógica 35/35, modelos 21/21, combate 52/52; navegador construcción, combate, pruebas de estilo (PC y móvil, con rotura a propósito MUTAR=1 que falla como debe) y web: todo correcto.",
