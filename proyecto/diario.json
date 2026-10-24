@@ -34,15 +34,16 @@
  },
  {
   "inicio": "2026-10-24T18:04:00+02:00",
-  "fin": null,
+  "fin": "2026-10-24T18:19:37+02:00",
   "titulo": "Infraestructura: repositorio, web de progreso y trabajo automático",
   "hito": "infra",
   "hecho": [
    "Repositorio valravnxx/kinhold con código, documentos de diseño y reglas de trabajo.",
    "Web de progreso en GitHub Pages: jugar, roadmap, diario, tiempos, decisiones y documentos.",
-   "Tarea programada cada hora que avanza el roadmap y se para al terminar cada hito para tu revisión."
+   "Tarea programada a los :19 de cada hora: hace una tarea del roadmap por sesión y se para al terminar cada hito para tu revisión.",
+   "Pendiente de ti: activar GitHub Pages (Settings → Pages → rama main, carpeta /docs); desde aquí no tengo permiso."
   ],
-  "pruebas": "",
+  "pruebas": "Todas las pruebas del proyecto en verde (lógica, modelos, combate, navegador PC y móvil, web). Corregida una prueba del combate que fallaba a veces si el rival te mataba antes de pulsar los paneles.",
   "capturas": null,
   "estado": "ok"
  }
