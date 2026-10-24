@@ -51,8 +51,12 @@ export function textura(tipo) {
     for (let n = 0; n < 1400; n++) { const x = r() * N, y = r() * N, rr = 1 + r() * 7, v = 160 + r() * 95; envolver(() => { g.fillStyle = gris(v, 0.35); g.beginPath(); g.arc(x, y, rr, 0, 7); g.fill(); }); }
     for (let n = 0; n < 9; n++) { let x = r() * N, y = r() * N; g.strokeStyle = gris(120, 0.55); g.lineWidth = 1; g.beginPath(); g.moveTo(x, y); for (let k = 0; k < 5; k++) { x += (r() - 0.5) * 40; y += (r() - 0.5) * 40; g.lineTo(x, y); } g.stroke(); }
   } else if (tipo === 'hojas') {
-    g.fillStyle = gris(185); g.fillRect(0, 0, N, N);
-    for (let n = 0; n < 900; n++) { const x = r() * N, y = r() * N, a = r() * 6, v = 130 + r() * 125; envolver(() => { g.fillStyle = gris(v, 0.9); g.beginPath(); g.ellipse(x, y, 3 + r() * 3, 6 + r() * 5, a, 0, 7); g.fill(); }); }
+    // follaje: manchas redondas y suaves de luz y sombra (racimos de hojas vistos de lejos), sin trazos
+    g.fillStyle = gris(200); g.fillRect(0, 0, N, N);
+    for (let n = 0; n < 700; n++) {
+      const x = r() * N, y = r() * N, rr = 3 + r() * 9, v = 150 + r() * 105;
+      envolver(() => { const gr = g.createRadialGradient(x, y, 0, x, y, rr); gr.addColorStop(0, gris(v, 0.75)); gr.addColorStop(1, gris(v, 0)); g.fillStyle = gr; g.beginPath(); g.arc(x, y, rr, 0, 7); g.fill(); });
+    }
   } else if (tipo === 'suelo') {
     for (let n = 0; n < 5000; n++) { const x = r() * N, y = r() * N, v = 140 + r() * 115; envolver(() => { g.fillStyle = gris(v, 0.55); g.fillRect(x, y, 1 + r() * 1.5, 2 + r() * 5); }); }
     for (let n = 0; n < 60; n++) { const x = r() * N, y = r() * N, v = 150 + r() * 60; envolver(() => { g.fillStyle = gris(v, 0.5); g.beginPath(); g.arc(x, y, 1.5 + r() * 3, 0, 7); g.fill(); }); }
@@ -67,8 +71,8 @@ export const TEX = {
   piedra: 'piedra', piedraOsc: 'piedra', mortero: 'piedra', corteza: 'corteza',
   hoja: 'hojas', hojaOsc: 'hojas', hojaClara: 'hojas', pino: 'hojas', pinoOsc: 'hojas',
 };
-export const DENSIDAD = { veta: 1.1, anillos: 1, paja: 0.9, piedra: 1.6, corteza: 1.4, hojas: 0.9 };
-const RELIEVE = { veta: 1.2, anillos: 0.8, paja: 2.0, piedra: 1.6, corteza: 2.4, hojas: 0.8, suelo: 1.0 };
+export const DENSIDAD = { veta: 1.1, anillos: 1, paja: 0.9, piedra: 1.6, corteza: 1.4, hojas: 1.2 };
+const RELIEVE = { veta: 1.2, anillos: 0.8, paja: 2.0, piedra: 1.6, corteza: 2.4, hojas: 0.5, suelo: 1.0 };
 export function materialTex(tipo) {
   const k = 'tex_' + tipo;
   if (!mats[k]) {
@@ -123,6 +127,7 @@ export class Lote {
         if (!p.opc.sinSuelo) { const h = Math.max(0, (v.y - this.suelo) / this.rangoSuelo); k *= 0.55 + 0.45 * Math.min(1, Math.sqrt(h)); }
         k *= 0.8 + 0.2 * (n.y * 0.5 + 0.5);
         if (oclusion) k *= oclusion(v, n);
+        if (p.opc.copa) k *= 0.62 + 0.5 * (n.y * 0.5 + 0.5) + 0.12 * Math.min(1, Math.max(0, (v.y - p.opc.copa) / 2)); // copas: luz arriba, sombra dentro
         if (p.opc.brillo) k *= p.opc.brillo;
         if (p.opc.rayas) k *= p.opc.rayas(v);
         if (tipo !== 'liso') k *= 1.12; // la textura oscurece un poco: se compensa
@@ -147,7 +152,10 @@ function proyectarUV(g, tipo) {
     const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
     const ax = Math.abs(nr.getX(i)), ay = Math.abs(nr.getY(i)), az = Math.abs(nr.getZ(i));
     let u, w;
-    if (tipo === 'anillos') { // centrado: el plano perpendicular al eje más corto
+    if (tipo === 'hojas') { // copas: proyección cilíndrica alrededor de la pieza (sin costuras entre caras)
+      const dx = x - c.x, dz = z - c.z, rad = Math.max(0.3, Math.max(tam.x, tam.z) / 2);
+      u = (Math.atan2(dz, dx) / (2 * Math.PI) + 0.5) * Math.max(1, Math.round(2 * Math.PI * rad * D)); w = y * D;
+    } else if (tipo === 'anillos') { // centrado: el plano perpendicular al eje más corto
       const corto = Math.min(tam.x, tam.y, tam.z);
       if (corto === tam.y) { u = (x - c.x) / Math.max(tam.x, 1e-3); w = (z - c.z) / Math.max(tam.z, 1e-3); }
       else if (corto === tam.x) { u = (z - c.z) / Math.max(tam.z, 1e-3); w = (y - c.y) / Math.max(tam.y, 1e-3); }

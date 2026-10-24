@@ -198,5 +198,21 @@
   "pruebas": "Lógica 35/35, modelos 21/21, combate 59/59; navegador construcción, combate, estilo v4 (MUTAR=1 falla como debe) y web: todo correcto.",
   "capturas": "capturas/estilo-v4",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T20:53:26+02:00",
+  "fin": "2026-10-24T21:01:31+02:00",
+  "titulo": "Hito 1b: prueba de estilo v5, árboles rehechos",
+  "hito": "arte",
+  "hecho": [
+   "Tu revisión de la v4: la casa bien, los árboles fatal, con rayajos raros.",
+   "Causa: la textura de hojas se proyectaba cara a cara sobre las copas y salían trazos cortados en cada cara.",
+   "Copas nuevas: bolas suaves con bultos, como racimos, más claras arriba y oscuras por dentro, con una textura de manchas redondas que envuelve la copa sin costuras.",
+   "Pinos: cada piso acaba en puntas caídas, como ramas, en vez de un cono liso.",
+   "Medido: 49 mil triángulos y 21 dibujados (algo menos de hierba para no pasar de 50 mil)."
+  ],
+  "pruebas": "Lógica 35/35, modelos 21/21, combate 69/69; navegador construcción, combate, estilo v5 y web: todo correcto.",
+  "capturas": "capturas/estilo-v5",
+  "estado": "ok"
  }
 ]

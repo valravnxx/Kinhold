@@ -2,9 +2,36 @@
 // claro abierto que sigue hasta el horizonte, cabaña de troncos sobre zócalo de piedra,
 // leña, tocón con hacha, barril, banco, cerca, árboles, matas y flores.
 import * as THREE from 'three';
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { PALETA, Lote, material, materialTex } from './estilos.js';
+
+// Copa de árbol: esfera con bultos (racimos), mismo desplazamiento en vértices repetidos para no abrir grietas
+function copa(radio, detalle, semilla) {
+  let g = new THREE.IcosahedronGeometry(radio, detalle); g.deleteAttribute('normal'); g.deleteAttribute('uv');
+  g = mergeVertices(g); // vértices compartidos: sombreado suave, no facetado
+  const p = g.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i).normalize();
+    const b = 1 + 0.13 * Math.sin(v.x * 5.3 + semilla) * Math.sin(v.y * 4.1 + semilla * 2) + 0.08 * Math.sin(v.z * 7.7 + v.x * 3 + semilla);
+    v.multiplyScalar(radio * b * (v.y < -0.3 ? 0.88 : 1)); // un poco plana por debajo
+    p.setXYZ(i, v.x, v.y, v.z);
+  }
+  g.computeVertexNormals(); return g;
+}
+// Piso de pino: cono con el borde de abajo en puntas caídas (ramas), no un cono liso
+function pisoPino(radio, alto, lados, semilla) {
+  const g = new THREE.ConeGeometry(radio, alto, lados, 2, true), p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+    if (y < -alto / 2 + 1e-3) { // anillo de abajo
+      const a = Math.atan2(z, x), j = Math.round((a / (2 * Math.PI)) * lados * 2), punta = j % 2 === 0;
+      const f = punta ? 1.12 : 0.82;
+      p.setXYZ(i, x * f, y + (punta ? -0.12 * alto : 0.06 * alto) + Math.sin(a * 3 + semilla) * 0.04 * alto, z * f);
+    }
+  }
+  g.computeVertexNormals(); return g;
+}
 
 function azar(semilla) { let s = semilla >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
 const cil = (r1, r2, h, lados, abierto = false) => new THREE.CylinderGeometry(r1, r2, h, lados, 1, abierto);
@@ -88,14 +115,14 @@ function bosque(raiz, r) {
   };
   const pino = hacer((L) => {
     L.add(cil(0.12, 0.24, 2.2, 6), 'corteza', 0, 1.1, 0);
-    [[1.7, 2.1, 1.8], [1.35, 1.9, 2.9], [0.95, 1.7, 3.9], [0.55, 1.4, 4.8]].forEach(([rad, h, y], i) => L.add(new THREE.ConeGeometry(rad, h, 7), i % 2 ? 'pinoOsc' : 'pino', 0, y, 0, { y: i }));
+    [[1.7, 2.1, 1.8], [1.35, 1.9, 2.9], [0.95, 1.7, 3.9], [0.55, 1.4, 4.8]].forEach(([rad, h, y], i) => L.add(pisoPino(rad, h, 8, i), i % 2 ? 'pinoOsc' : 'pino', 0, y, 0, { y: i }, { copa: 0 }));
   });
   const frond = hacer((L) => {
     L.add(cil(0.16, 0.26, 2.6, 6), 'corteza', 0, 1.3, 0);
-    [[0, 3.4, 0, 1.4], [0.9, 2.9, 0.3, 1.0], [-0.9, 3.0, -0.2, 1.05], [0.1, 2.9, -0.9, 0.95]].forEach(([x, y, z, s], i) => L.add(new THREE.IcosahedronGeometry(s, 0), ['hoja', 'hojaOsc', 'hojaClara'][i % 3], x, y, z, { x: i, y: i * 2 }));
+    [[0, 3.4, 0, 1.4], [0.9, 2.9, 0.3, 1.0], [-0.9, 3.0, -0.2, 1.05], [0.1, 2.9, -0.9, 0.95]].forEach(([x, y, z, s], i) => L.add(copa(s, 1, i), ['hoja', 'hojaOsc', 'hojaClara'][i % 3], x, y, z, { x: i, y: i * 2 }, { copa: 2 }));
   });
   const sitios = { p: [], f: [] };
-  for (let i = 0; i < 42; i++) {
+  for (let i = 0; i < 36; i++) {
     const a = r() * Math.PI * 2, d = 15 + Math.pow(r(), 0.8) * 45;
     const x = Math.cos(a) * d, z = Math.sin(a) * d;
     if (x > -4 && z > 4 && d < 38) continue; // libre la vista desde la cámara
@@ -254,21 +281,21 @@ function arboles(L, r, sombras) {
     L.add(cil(0.14 * s, 0.24 * s, 2.4 * s, 10), 'corteza', x, 1.2 * s, z);
     L.add(cil(0.06 * s, 0.09 * s, 1.0 * s, 8), 'corteza', x + 0.3 * s, 2.3 * s, z, { z: -0.6 });
     const bolas = [[0, 3.3, 0, 1.25], [0.85, 2.85, 0.25, 0.9], [-0.8, 2.95, -0.15, 0.95], [0.15, 2.8, -0.85, 0.85], [-0.2, 2.9, 0.85, 0.85], [0.25, 4.0, 0.15, 0.8]];
-    bolas.forEach(([bx, by, bz, br], i) => L.add(new THREE.IcosahedronGeometry(br * s, 1), ['hoja', 'hojaOsc', 'hojaClara'][i % 3], x + bx * s, by * s, z + bz * s));
+    bolas.forEach(([bx, by, bz, br], i) => L.add(copa(br * s, 1, i + x), ['hoja', 'hojaOsc', 'hojaClara'][i % 3], x + bx * s, by * s, z + bz * s, null, { copa: 2.4 * s }));
     sombras.push([x, z, 2.2 * s, 0.4]);
   };
   const pino = (x, z, s) => {
     L.add(cil(0.1 * s, 0.2 * s, 2.0 * s, 8), 'corteza', x, 1.0 * s, z);
     [[1.5, 1.9, 1.6], [1.2, 1.7, 2.6], [0.85, 1.5, 3.5], [0.5, 1.2, 4.3]].forEach(([rad, h, y], i) =>
-      L.add(new THREE.ConeGeometry(rad * s, h * s, 10), i % 2 ? 'pinoOsc' : 'pino', x, y * s, z));
+      L.add(pisoPino(rad * s, h * s, 10, i + z), i % 2 ? 'pinoOsc' : 'pino', x, y * s, z, { y: i * 0.7 }, { copa: 0 }));
     sombras.push([x, z, 1.7 * s, 0.4]);
   };
   frondoso(-6.2, -3.2, 1.05); frondoso(5.6, -5.4, 0.9); frondoso(-4.6, 5.8, 0.8);
   pino(-3.2, -6.8, 1.1); pino(-7.8, 1.2, 0.95); pino(2.4, -8.2, 1.2); pino(7.6, -1.6, 0.85); pino(-8.4, -4.6, 0.8);
   // matorrales redondos
   for (const [x, z, s] of [[-2.9, -2.4, 0.55], [3.0, -2.6, 0.5], [-5.5, 2.0, 0.6], [6.4, 2.6, 0.5], [2.9, 6.6, 0.45]]) {
-    L.add(new THREE.IcosahedronGeometry(s, 1), 'hojaOsc', x, s * 0.6, z, null, { escala: new THREE.Vector3(1.2, 0.8, 1) });
-    L.add(new THREE.IcosahedronGeometry(s * 0.7, 1), 'hoja', x + s * 0.5, s * 0.5, z + s * 0.2);
+    L.add(copa(s, 1, x), 'hojaOsc', x, s * 0.6, z, null, { escala: new THREE.Vector3(1.2, 0.8, 1), copa: 0 });
+    L.add(copa(s * 0.7, 1, z), 'hoja', x + s * 0.5, s * 0.5, z + s * 0.2, null, { copa: 0 });
     sombras.push([x, z, s * 1.8, 0.4]);
   }
   // rocas
@@ -299,7 +326,7 @@ function plantas(raiz, r) {
     });
     im.receiveShadow = true; raiz.add(im);
   };
-  poner(mata, sitios(260), (c) => c.setScalar(0.85 + r() * 0.3), material('doble'));
+  poner(mata, sitios(170), (c) => c.setScalar(0.85 + r() * 0.3), material('doble'));
   // flores de colores apagados (blanco roto, amarillo pálido, malva)
   const FLORES = [0xe8e2d0, 0xd9c27a, 0xa98aa6];
   poner(flor, sitios(70), (c) => c.set(FLORES[Math.floor(r() * 3)]), material('fijo'));

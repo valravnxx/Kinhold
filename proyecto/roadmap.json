@@ -78,6 +78,12 @@
      "fin": "2026-10-24T20:50:32+02:00"
     },
     {
+     "nombre": "Prueba de estilo v5: árboles rehechos (Pedro: «los árboles fatal, se ven como rayajos raros; la casa está bien»)",
+     "estado": "hecho",
+     "inicio": "2026-10-24T20:53:26+02:00",
+     "fin": "2026-10-24T21:01:31+02:00"
+    },
+    {
      "nombre": "Personaje nuevo por código (decidido por Pedro), vistoso y con el estilo de maqueta: una sola malla continua con esqueleto y animación, proporciones creíbles algo estilizadas",
      "estado": "pendiente"
     },
@@ -369,6 +375,13 @@
      "archivo": "jugar/estilo/v4.html",
      "capturas": "capturas/estilo-v4",
      "notas": "Realismo en miniatura: la maqueta con texturas por código y el mundo sin recortar."
+    },
+    {
+     "v": "v5",
+     "fecha": "2026-10-24",
+     "archivo": "jugar/estilo/v5.html",
+     "capturas": "capturas/estilo-v5",
+     "notas": "Árboles rehechos: copas suaves en racimos y pinos con puntas, sin rayajos."
     }
    ]
   }
@@ -376,7 +389,7 @@
  "decisiones_pendientes": [
   {
    "id": "estilo-v4",
-   "pregunta": "¿Te vale como base el «realismo en miniatura» de la prueba de estilo v4 (la maqueta de la v3 con texturas y el mundo sin recortar)? Mírala también en tu móvil (arriba salen fps y resolución).",
+   "pregunta": "¿Te vale como base el «realismo en miniatura» de la prueba de estilo v5 (texturas, mundo sin recortar y árboles rehechos)? Mírala también en tu móvil (arriba salen fps y resolución).",
    "desde": "2026-10-24",
    "hito": "arte"
   },

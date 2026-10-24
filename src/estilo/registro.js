@@ -1,6 +1,7 @@
 // Decisiones tomadas en la prueba de estilo, para revisar.
-export const VERSION_ESTILO = 'Prueba de estilo · v4 (realismo en miniatura)';
+export const VERSION_ESTILO = 'Prueba de estilo · v5 (realismo en miniatura, árboles rehechos)';
 export const REGISTRO_ESTILO = [
+  'v5, por qué: en la v4 los árboles se veían con rayajos raros (la textura de hojas se proyectaba por caras y hacía trazos). Ahora las copas son bolas suaves con bultos, como racimos, con luz arriba y sombra dentro, y una textura de manchas redondas que envuelve la copa sin costuras. Los pinos tienen el borde de cada piso en puntas caídas. La cabaña no cambia.',
   'v4, por qué: te gustó la maqueta de la v3, pero el mundo no estará recortado y querías probar el «realismo en miniatura» con algo de textura.',
   'Es la v3 con texturas hechas por código: veta en troncos y tablas, anillos en los cortes, paja en hebras, piedra, corteza, hojas y suelo. Las texturas son en gris y dan el detalle y el relieve (bumpMap); el color sigue saliendo de la paleta.',
   'Las texturas se colocan a escala real: la veta sigue el largo de cada tronco y tabla, la paja baja por la pendiente y los anillos se centran en cada corte.',
