@@ -1,4 +1,4 @@
-# Prueba en navegador de la prueba de estilo v2 (hito 1b): las dos luces, las tres vistas, PC y móvil.
+# Prueba en navegador de la prueba de estilo v3 (hito 1b): las dos luces, las tres vistas, PC y móvil.
 # Uso: python3 pruebas/prueba_estilo_navegador.py <html> <carpeta_capturas>
 # Comprueba que cada combinación se dibuja (la franja central de la imagen tiene contenido),
 # que se cumple el presupuesto (triángulos y dibujados), que las luces se distinguen,
@@ -46,7 +46,7 @@ with sync_playwright() as p:
         for luz in ['manana', 'tarde']:
             pg.click(f'[data-luz="{luz}"]')
             comprobar(f'luz {luz} puesta y marcada', pg.evaluate(f'{E}.estado().luz') == luz and 'sel' in (pg.get_attribute(f'[data-luz="{luz}"]', 'class') or ''))
-            for v in ['escena', 'cabana', 'bosque']:
+            for v in ['maqueta', 'cabana', 'lado']:
                 pg.click(f'[data-vista="{v}"]')
                 pg.evaluate(f'{E}.dibujar()')
                 png = pg.screenshot(path=f'{SALIDA}/{nombre}_{luz}_{v}.png')
@@ -56,8 +56,8 @@ with sync_playwright() as p:
                 m = pg.evaluate(f'{E}.medida()')
                 comprobar(f'{luz}/{v}: dentro del presupuesto', 1000 < m['triangulos'] <= presu['triangulos'] and 0 < m['dibujados'] <= presu['dibujados'],
                           f"{m['triangulos']} triángulos (máx. {presu['triangulos']}), {m['dibujados']} dibujados (máx. {presu['dibujados']})")
-        comprobar('mañana y tarde se distinguen', diferencia(imagenes[('manana', 'escena')], imagenes[('tarde', 'escena')]) > 4)
-        comprobar('las vistas son distintas', diferencia(imagenes[('manana', 'escena')], imagenes[('manana', 'cabana')]) > 8)
+        comprobar('mañana y tarde se distinguen', diferencia(imagenes[('manana', 'maqueta')], imagenes[('tarde', 'maqueta')]) > 4)
+        comprobar('las vistas son distintas', diferencia(imagenes[('manana', 'maqueta')], imagenes[('manana', 'cabana')]) > 8)
         ancho = pg.evaluate('document.documentElement.scrollWidth')
         comprobar('sin desplazamiento horizontal', ancho <= vista['width'], f'{ancho}px')
         for sel in ['#estilos', '#inferior', '#medida']:
@@ -67,13 +67,18 @@ with sync_playwright() as p:
         comprobar('las notas se abren', pg.is_visible('#notas') and len(pg.inner_text('#notas')) > 200)
         pg.screenshot(path=f'{SALIDA}/{nombre}_notas.png')
         pg.click('#btnNotas')
-        pg.click('[data-vista="escena"]'); pg.evaluate(f'{E}.dibujar()')
+        pg.click('[data-vista="maqueta"]'); pg.evaluate(f'{E}.dibujar()')
         if not movil:
             p0 = analizar(pg.screenshot())[0]
             pg.mouse.move(640, 450); pg.mouse.down(); pg.mouse.move(760, 430, steps=8); pg.mouse.up()
             pg.wait_for_timeout(300)
             d = diferencia(p0, analizar(pg.screenshot())[0])
             comprobar('arrastrar gira la cámara', d > 3, f'diferencia {d:.1f}')
+        # el desenfoque se quita y se pone
+        pg.click('#btnDesenfoque')
+        comprobar('el botón quita el desenfoque', not pg.evaluate('document.body.classList.contains("desenfoque")') and not pg.is_visible('.foco.arriba'))
+        pg.click('#btnDesenfoque')
+        comprobar('y lo vuelve a poner', pg.is_visible('.foco.arriba'))
         pg.click('[data-luz="tarde"]'); pg.click('[data-vista="cabana"]')
         pg.reload(); pg.wait_for_function(f'{E} !== undefined', timeout=30000)
         st = pg.evaluate(f'{E}.estado()')

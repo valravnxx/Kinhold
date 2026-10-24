@@ -1,13 +1,15 @@
 // Decisiones tomadas en la prueba de estilo, para revisar.
-export const VERSION_ESTILO = 'Prueba de estilo · v2';
+export const VERSION_ESTILO = 'Prueba de estilo · v3 (maqueta en miniatura)';
 export const REGISTRO_ESTILO = [
-  'v2, por qué: en la v1 había un solo modelo con tres acabados, B y C iban muy lentos y el personaje no valía. Ahora hay un solo estilo, estilizado y sobrio, hecho para que vaya bien en móvil.',
-  'Sombreado de dibujo con tres tonos (luz, medio y sombra) y caras planas: se lee bien de lejos y es barato. El color va en los vértices con algo de variación y oclusión horneada (más oscuro al pie de las cosas y bajo el alero). Sin texturas.',
-  'Presupuesto medido: como mucho 30 mil triángulos y 60 dibujados por imagen. Toda la parte fija (cabaña, leña, tocón, barril, banco, cerca) es un solo dibujado; árboles, rocas y matas van repetidos con instancias, un dibujado por tipo.',
-  'Una sola luz con sombra, de 1024 px y ajustada a la zona cercana. Cielo con degradado y niebla, sin efectos de posproceso.',
-  'Resolución adaptativa: empieza a 1,5× como mucho; si en 2 s no llegas a 50 fps baja un escalón (hasta 0,75×) y si vas sobrado sube. Arriba se ve lo medido en tu aparato.',
-  'Tejado de paja grueso con flecos en el alero y franjas de atado, para que se lea como paja y no como tablas.',
-  'Dos luces para comparar con el mismo coste: mañana y tarde.',
-  'El personaje no está: espera tu decisión (malla continua por código o modelos libres ya animados).',
+  'v3, por qué: la v2 recordaba a juegos gratuitos de motor genérico y las piedras del cimiento se veían sueltas. Elegiste «maqueta en miniatura».',
+  'La escena es un pedazo de tierra redondo con el corte de tierra a la vista (hierba arriba, tierra y tierra oscura abajo), sobre un fondo liso con degradado, como una maqueta fotografiada.',
+  'Formas limpias y redondeadas: cantos suaves en tablas, puertas y vigas; troncos con las puntas abombadas; tejado de paja en tres hiladas gruesas de canto redondeado; árboles de copas redondas.',
+  'Cimiento: zócalo continuo de mampostería, con piedras redondeadas bien juntas en dos hiladas sobre un núcleo de mortero. Ya no hay huecos.',
+  'Luz suave con sombras de bordes blandos y sombras de contacto horneadas: el suelo se oscurece al pie de la cabaña, árboles, barril, leña y postes.',
+  'Cámara de teleobjetivo (poca perspectiva) y desenfoque arriba y abajo de la pantalla, como en las fotos de maquetas. El desenfoque se puede quitar con su botón.',
+  'Presupuesto medido: como mucho 50 mil triángulos (contando la pasada de sombra) y 60 dibujados; subido desde 30 mil porque los cantos redondeados piden más triángulos, pero los dibujados bajan de 12 a 6, que es lo que más pesa en móvil. Lo fijo es una sola malla; hierba y flores, instanciadas. Una sola sombra de 1024 px.',
+  'Resolución adaptativa: empieza a 1,5× como mucho y baja hasta 0,75× si no llegas a 50 fps. Arriba se ve lo medido en tu aparato.',
+  'Flores en colores apagados (blanco roto, amarillo pálido, malva) para dar vida sin chillar.',
+  'El personaje sigue esperando tu decisión (malla continua por código o modelos libres ya animados).',
   'Puedes girar la cámara arrastrando (un dedo en el móvil) y acercarte con la rueda o pellizcando.',
 ];

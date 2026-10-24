@@ -1,51 +1,39 @@
-// Kinhold — estilo visual v2 (hito 1b): un solo estilo, estilizado y sobrio, pensado para móvil.
-// Cómo se consigue que sea ligero:
-//  - Un único material de dibujo (toon de 3 tonos) para todo lo fijo: el color va en los vértices,
-//    así toda la escena fija se junta en una sola malla (un dibujado).
-//  - Lo repetido (árboles, matas, piedras) va instanciado: un dibujado por tipo.
-//  - Una sola luz con sombra, de 1024 px y ajustada a la zona cercana.
-//  - Resolución adaptativa: si el aparato no llega a ~50 fps, se dibuja a menos resolución.
+// Kinhold — estilo visual v3 (hito 1b): «maqueta en miniatura».
+// Formas limpias y redondeadas, sombreado suave, luz cálida y suave con sombras blandas,
+// oclusión de contacto horneada en los vértices y fondo desenfocado (como una foto de maqueta).
+// Ligero igual que la v2: todo lo fijo en una malla, lo repetido instanciado, una sola sombra.
 import * as THREE from 'three';
 
-// Paleta apagada y natural. Todo color sale de aquí.
+// Paleta: apagada y natural, un punto más cálida y limpia que la v2
 export const PALETA = {
-  madera: 0x6b4f35, maderaOsc: 0x4f3a27, corte: 0xb8955f, tabla: 0x86654a,
-  paja: 0xa48a58, pajaOsc: 0x84703f, piedra: 0x8b877e, piedraOsc: 0x67645d,
-  hierro: 0x4a4a4c, hierba: 0x6a8048, hierbaClara: 0x87955a, tierra: 0x6f5e47, camino: 0x857256,
-  hoja: 0x4d6534, hojaOsc: 0x3c5229, hojaClara: 0x627a3f, pino: 0x3f5634, pinoOsc: 0x30452a, corteza: 0x4a3a2c,
+  madera: 0x7a5a3f, maderaOsc: 0x5c4330, corte: 0xc9a777, tabla: 0x93714f,
+  paja: 0xb59d6c, pajaOsc: 0x9a8457, piedra: 0x9c978d, piedraOsc: 0x7d7970, mortero: 0x8a8274,
+  hierro: 0x55555a, hierba: 0x7d9455, hierbaClara: 0x98a866, tierra: 0x7f6a4f, camino: 0x9a8566,
+  tierraCorte: 0x6a5440, tierraCorteOsc: 0x4f3f31, raiz: 0x5a4632,
+  hoja: 0x6f8a4a, hojaOsc: 0x587340, hojaClara: 0x8aa05a, pino: 0x52693f, pinoOsc: 0x445a35, corteza: 0x5e4a38,
 };
 
-// Dos ambientes de luz para comparar (misma escena, mismo coste)
 export const LUCES = {
-  manana: { nombre: 'Mañana', sol: [0xfff0d8, 2.4, [14, 16, 9]], hemi: [0xdbe6ec, 0x5d5140, 1.25], niebla: [0xcfd9dc, 30, 110], cielo: [0x9fb8c8, 0xdfe3dc] },
-  tarde:  { nombre: 'Tarde',  sol: [0xffcf94, 2.6, [18, 7, 4]],   hemi: [0xc9cfd6, 0x5a4634, 1.15], niebla: [0xd8c7aa, 24, 95],  cielo: [0xa9b4bb, 0xe6cfa8] },
+  manana: { nombre: 'Mañana', sol: [0xfff1dc, 2.2, [10, 14, 8]], hemi: [0xe6eef2, 0x6a5b47, 1.6], fondo: [0xdfe6e4, 0xb9c9cc] },
+  tarde:  { nombre: 'Tarde',  sol: [0xffd8a6, 2.4, [13, 8, 3]],  hemi: [0xe2ddd6, 0x6a5240, 1.45], fondo: [0xeadcc6, 0xc9b9a2] },
 };
 
-// Gradiente de 3 tonos para el material toon (sombra, medio, luz)
-let degradado = null;
-function texturaDegradado() {
-  if (degradado) return degradado;
-  degradado = new THREE.DataTexture(new Uint8Array([95, 175, 255]), 3, 1, THREE.RedFormat);
-  degradado.minFilter = degradado.magFilter = THREE.NearestFilter;
-  degradado.needsUpdate = true;
-  return degradado;
-}
 const mats = {};
 export function material(tipo = 'fijo') {
   if (!mats[tipo]) {
-    mats[tipo] = new THREE.MeshToonMaterial({ color: 0xffffff, vertexColors: true, gradientMap: texturaDegradado() });
+    mats[tipo] = new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true });
     if (tipo === 'doble') mats[tipo].side = THREE.DoubleSide;
   }
   return mats[tipo];
 }
 
-// ---------- Lote: junta geometrías con su color en una sola ----------
+// ---------- Lote: junta geometrías con su color horneado en una sola ----------
 // add(geo, color, x, y, z, giro, opc) — giro: {x, y, z} en radianes o una Matrix4.
-// Al cerrar se hornea el color en los vértices: paleta × variación × oclusión
-// (más oscuro cerca del suelo, en caras que miran abajo y donde diga la función 'oclusion').
+// opc: escala (Vector3), plano (caras planas), brillo, rayas(v), sinSuelo (sin oscurecer al pie).
+// Al cerrar: color × variación suave × oclusión de contacto (más oscuro al pie y en lo que mira abajo)
 function ruido3(x, y, z) { const s = Math.sin(x * 12.99 + y * 78.23 + z * 37.71) * 43758.55; return s - Math.floor(s); }
 export class Lote {
-  constructor({ variacion = 0.07, rangoSuelo = 0.8 } = {}) { this.piezas = []; this.variacion = variacion; this.rangoSuelo = rangoSuelo; }
+  constructor({ variacion = 0.05, rangoSuelo = 0.6, suelo = 0 } = {}) { this.piezas = []; this.variacion = variacion; this.rangoSuelo = rangoSuelo; this.suelo = suelo; }
   add(geo, color, x = 0, y = 0, z = 0, giro = null, opc = {}) {
     const m = new THREE.Matrix4();
     if (giro && giro.isMatrix4) m.copy(giro);
@@ -59,16 +47,16 @@ export class Lote {
     for (const p of this.piezas) {
       let g = p.geo.index ? p.geo.toNonIndexed() : p.geo.clone();
       g.applyMatrix4(p.m);
-      if (!p.opc.suave) g.computeVertexNormals(); // sin índice: cada triángulo con su normal (caras planas)
+      if (p.opc.plano) g.computeVertexNormals();
       for (const k of Object.keys(g.attributes)) if (k !== 'position' && k !== 'normal') g.deleteAttribute(k);
       const pos = g.attributes.position, nor = g.attributes.normal, col = new Float32Array(pos.count * 3);
-      const e = p.m.elements, tono = 1 + (ruido3(e[12], e[13], e[14]) - 0.5) * 2 * this.variacion; // cada pieza, un poco distinta
+      const e = p.m.elements, tono = 1 + (ruido3(e[12], e[13], e[14]) - 0.5) * 2 * this.variacion;
       for (let i = 0; i < pos.count; i++) {
         v.fromBufferAttribute(pos, i); n.fromBufferAttribute(nor, i);
-        let k = tono * (1 + (ruido3(Math.floor(v.x * 4), Math.floor(v.y * 4), Math.floor(v.z * 4)) - 0.5) * this.variacion);
-        k *= 0.7 + 0.3 * Math.min(1, Math.max(0, v.y / this.rangoSuelo)); // contacto con el suelo
-        k *= 0.88 + 0.12 * (n.y * 0.5 + 0.5);                             // lo que mira abajo, más oscuro
-        if (oclusion) k *= oclusion(v);
+        let k = tono;
+        if (!p.opc.sinSuelo) { const h = Math.max(0, (v.y - this.suelo) / this.rangoSuelo); k *= 0.55 + 0.45 * Math.min(1, Math.sqrt(h)); }
+        k *= 0.8 + 0.2 * (n.y * 0.5 + 0.5);
+        if (oclusion) k *= oclusion(v, n);
         if (p.opc.brillo) k *= p.opc.brillo;
         if (p.opc.rayas) k *= p.opc.rayas(v);
         col[i * 3] = p.color.r * k; col[i * 3 + 1] = p.color.g * k; col[i * 3 + 2] = p.color.b * k;

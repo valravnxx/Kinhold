@@ -22,15 +22,20 @@ button.sel{background:var(--acento);color:#241b10;border-color:transparent;font-
 #notas{position:fixed;inset:auto 10px calc(64px + env(safe-area-inset-bottom,0px)) 10px;max-width:560px;margin:0 auto;max-height:60vh;overflow:auto;background:var(--panel);border-radius:12px;padding:10px 14px;font-size:13px}
 #notas ul{padding-left:18px;margin:6px 0 0} #notas li{margin:0 0 6px}
 @media (max-width:600px){ #medida{margin-left:0} #estilos button{padding:6px 8px;font-size:12.5px} #resumen{top:auto;bottom:calc(64px + env(safe-area-inset-bottom,0px))} }
+.foco{position:fixed;left:0;right:0;pointer-events:none;display:none;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.foco.arriba{top:0;height:30%;-webkit-mask-image:linear-gradient(#000,transparent);mask-image:linear-gradient(#000,transparent)}
+.foco.abajo{bottom:0;height:26%;-webkit-mask-image:linear-gradient(transparent,#000);mask-image:linear-gradient(transparent,#000)}
+body.desenfoque .foco{display:block}
 </style>
 </head>
 <body>
 <canvas id="lienzo"></canvas>
+<div class="foco arriba"></div><div class="foco abajo"></div>
 <div id="superior">
-  <div id="estilos"><button data-luz="manana">Mañana</button><button data-luz="tarde">Tarde</button></div>
+  <div id="estilos"><button data-luz="manana">Mañana</button><button data-luz="tarde">Tarde</button><button id="btnDesenfoque">Desenfoque</button></div>
   <div id="medida">midiendo…</div>
 </div>
-<div id="inferior"><button data-vista="escena">Escena</button><button data-vista="cabana">Cabaña</button><button data-vista="bosque">Bosque</button><button id="btnNotas">Notas</button></div>
+<div id="inferior"><button data-vista="maqueta">Maqueta</button><button data-vista="cabana">Cabaña</button><button data-vista="lado">Lado</button><button id="btnNotas">Notas</button></div>
 <div id="notas" hidden></div>
 <script>/*APP*/</script>
 </body>

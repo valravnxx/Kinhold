@@ -144,5 +144,24 @@
   "pruebas": "No aplica (trabajo descartado).",
   "capturas": "",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-24T20:21:00+02:00",
+  "fin": "2026-10-24T20:30:15+02:00",
+  "titulo": "Hito 1b: prueba de estilo v3, maqueta en miniatura",
+  "hito": "arte",
+  "hecho": [
+   "Tu revisión de la v2: recordaba a juegos gratuitos de motor genérico y las piedras del cimiento se veían sueltas. Elegiste «maqueta en miniatura».",
+   "La escena es un pedazo de tierra redondo con el corte de tierra visto, sobre fondo liso con degradado. Cámara de teleobjetivo y desenfoque arriba y abajo (se puede quitar).",
+   "Formas redondeadas: cantos suaves, troncos con puntas abombadas, tejado de paja en tres hiladas gruesas, copas redondas, matorrales y flores de colores apagados.",
+   "Zócalo de piedra continuo: núcleo de mortero con dos hiladas de piedras bien juntas.",
+   "Luz suave, sombras de bordes blandos y sombras de contacto horneadas en el suelo.",
+   "Medido: 47 mil triángulos (con la pasada de sombra) y 6 dibujados. Subido el presupuesto de 30 a 50 mil por los cantos redondeados; los dibujados bajan de 12 a 6.",
+   "Decidido por ti en el chat: los personajes se hacen por código. La tarea del personaje pasa a pendiente.",
+   "No comprobado: los fps en un aparato real."
+  ],
+  "pruebas": "Lógica 35/35, modelos 21/21, combate 59/59; navegador construcción, combate, estilo v3 (MUTAR=1 falla como debe) y web: todo correcto.",
+  "capturas": "capturas/estilo-v3",
+  "estado": "ok"
  }
 ]
