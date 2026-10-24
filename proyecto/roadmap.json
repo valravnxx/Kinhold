@@ -143,6 +143,10 @@
    "estado": "pendiente",
    "tareas": [
     {
+     "nombre": "Más resistencia en la madera (Pedro: «la madera es demasiado débil, no deja hacer 2 pisos con tejado»): una casa de 2 plantas con tejado hecha solo con piezas básicas de madera (cimiento, muros y suelo de troncos) tiene que poder construirse sin trucos; construir sin volverse loco, pero que se puedan hacer cosas. Prueba de lógica que lo garantice y capturas de la casa",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Planificar el hito: lista de piezas sacada del GDD y del documento de sistemas",
      "estado": "pendiente"
     }
