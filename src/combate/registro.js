@@ -1,5 +1,5 @@
 // Decisiones tomadas en el prototipo de combate, para revisar.
-export const VERSION_COMBATE = 'Combate · v4';
+export const VERSION_COMBATE = 'Combate · v5';
 export const REGISTRO_COMBATE = [
   'v2, por qué: en la v1 había que arrastrar el ratón para elegir el golpe y elegir también la línea de la parada, y la cámara y el movimiento iban a su aire. Se ha rehecho tomando lo que mejor funciona en los juegos de esgrima de referencia: rosa de golpes, parada perfecta, golpe maestro, contraataque, finta, parada sin dirección en dificultad baja y peso físico de los golpes.',
   'Atacar: sobre el rival aparece una rosa de cinco zonas (alto, izquierda, derecha, bajo y estocada en el centro). Apuntas con el cursor o tocas la zona y golpeas. Izquierda y derecha son las de tu pantalla.',
@@ -22,4 +22,5 @@ export const REGISTRO_COMBATE = [
   'v4: nueva opción «Arma del rival» (como la tuya, espada larga, espada y escudo o palo). El rival con escudo lo levanta cuando le apuntas con arco u honda y lo mantiene mientras recargas.',
   'Arco: tensar del todo tarda 1 s. El círculo de puntería se cierra al tensar y se pone verde cuando está a plena tensión; si sueltas antes, la flecha se queda corta. A partir de 2,5 s tenso, el pulso tiembla y el círculo se abre en rojo. Las flechas no se paran con la espada; con escudo, sí (v4).',
   'El rival de la máquina tarda en reaccionar y según la dificultad lee mejor tus golpes, intenta paradas perfectas, golpes maestros y fintas. Se queda quieto mientras golpea y a veces retrocede después. Tu cinta es azul y la suya amarilla.',
+  'v5: textos en español e inglés (botón arriba a la derecha); el ruso está preparado y llegará más adelante.',
 ];

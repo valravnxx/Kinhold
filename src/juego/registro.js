@@ -1,5 +1,5 @@
 // Decisiones que he tomado yo en el hito 1, para que las revises.
-export const VERSION = 'Hito 1 · v4';
+export const VERSION = 'Hito 1 · v5';
 export const REGISTRO = [
   'Terreno llano en este hito. Las cuestas y su efecto en los cimientos llegan con el mundo generado.',
   'Los materiales vienen dados (y hay botón para rellenar). Recolectarlos llega en el hito 2.',
@@ -21,5 +21,5 @@ export const REGISTRO = [
   'Los muros de troncos van en 10 hiladas de 25 cm: todos acaban a 2,5 m y sus troncos coinciden en altura. La puerta mide 2 m (8 hiladas) y la ventana va de 1 a 1,75 m.',
   'Las ventanas no tienen contraventana todavía.',
   'La partida se guarda sola en el navegador (con botón para reiniciar).',
-  'Textos de la interfaz preparados para traducir; inglés y ruso llegan más adelante.',
+  'Textos de la interfaz en español e inglés (botón arriba a la derecha); el ruso está preparado y llegará más adelante.',
 ];

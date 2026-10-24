@@ -21,6 +21,7 @@ button.sel{background:var(--acento);color:#241b10;border-color:transparent;font-
 #estado{pointer-events:auto;background:var(--panel);border-radius:10px;padding:7px 11px;font-weight:600}
 #menu{pointer-events:auto;margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 #menu button{padding:6px 10px;font-size:12.5px}
+#menu button.idioma{padding:6px 8px;font-weight:700}
 
 #opciones{position:fixed;top:calc(56px + env(safe-area-inset-top,0px));left:calc(10px + env(safe-area-inset-left,0px));background:var(--panel);border-radius:12px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;font-size:13px;max-width:min(360px,94vw)}
 #opciones label{color:var(--muted)}
@@ -78,6 +79,7 @@ button.sel{background:var(--acento);color:#241b10;border-color:transparent;font-
   #registro{width:92vw;bottom:auto;top:calc(120px + env(safe-area-inset-top,0px));flex-direction:column}
   #registro div:nth-child(n+4){display:none}
   #menu button{padding:5px 8px;font-size:11.5px}
+  #menu button.idioma.sel{display:none} /* en el móvil solo se ve el botón del otro idioma */
 }
 </style>
 </head>

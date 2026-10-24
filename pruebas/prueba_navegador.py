@@ -19,7 +19,7 @@ def esperar(pg, ms=400):
 with sync_playwright() as p:
     nav = p.chromium.launch(args=ARGS)
     # ---------- PC ----------
-    pg = nav.new_page(viewport={'width': 1280, 'height': 800})
+    pg = nav.new_page(viewport={'width': 1280, 'height': 800}, locale='es-ES')
     errores = []
     pg.on('pageerror', lambda e: errores.append(str(e)))
     pg.on('console', lambda m: errores.append(m.text) if m.type == 'error' else None)
@@ -208,7 +208,7 @@ with sync_playwright() as p:
 
     # ---------- Móvil ----------
     print('Móvil')
-    ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
+    ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True, locale='es-ES')
     mv = ctx.new_page()
     err2 = []
     mv.on('pageerror', lambda e: err2.append(str(e)))

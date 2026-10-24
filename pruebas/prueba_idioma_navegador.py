@@ -1,0 +1,132 @@
+# Prueba en navegador del juego en inglés (construcción y combate), en PC y móvil.
+# Uso: python3 pruebas/prueba_idioma_navegador.py <html_construccion> <html_combate> <carpeta_capturas>
+# Comprueba: que no queda ningún texto sin traducir (window.__idioma.faltan), que no quedan palabras
+# en español a la vista, que el botón ES/EN cambia el idioma, lo recuerda y no borra la partida.
+# MUTAR=1 → mete a propósito un texto en español en la página: la prueba tiene que fallar.
+import sys, os, re
+from playwright.sync_api import sync_playwright
+
+CONSTR = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_hito1.html')
+COMB = os.path.abspath(sys.argv[2] if len(sys.argv) > 2 else 'dist/kinhold_combate.html')
+SALIDA = sys.argv[3] if len(sys.argv) > 3 else 'capturas/idioma'
+os.makedirs(SALIDA, exist_ok=True)
+ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
+MUTAR = bool(os.environ.get('MUTAR'))
+
+fallos = []
+def comprobar(nombre, cond, detalle=''):
+    print(('  OK   ' if cond else '  FALLA ') + nombre + (f' — {detalle}' if detalle else ''))
+    if not cond: fallos.append(nombre)
+
+# palabras que solo salen en español (si alguna se ve con el juego en inglés, algo se ha quedado sin traducir)
+ESPANOL = re.compile(r'\b(Construir|Desmontar|Ayuda|Decisiones|Reiniciar|Opciones|Parar|Planta|Muro|Tejado|Suelo|Cimiento|'
+                     r'piedra|tronco|vara|barro|paja|cuerda|tabla|clavo|hierro|Espada|Lino|Duelo|Dificultad|Sonido|rival|'
+                     r'golpe|herida|pulsa|toca|mantén|cansancio|que|del|los|las|para|con|una)\b')
+
+def texto_visible(pg):
+    return pg.evaluate("""() => { const t = []; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      while (w.nextNode()) { const n = w.currentNode, e = n.parentElement; if (!e || e.closest('script,style')) continue;
+        if (e.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) t.push(n.nodeValue.trim()); }
+      return t.filter(Boolean).join(' | '); }""")
+
+def revisar(pg, donde):
+    if MUTAR: pg.evaluate("document.getElementById('menu').insertAdjacentHTML('beforeend', '<button>Pulsa para construir</button>')")
+    falt = pg.evaluate('[...window.__idioma.faltan]')
+    comprobar(f'{donde}: ningún texto sin traducir', len(falt) == 0, '; '.join(falt[:4]))
+    vis = texto_visible(pg)
+    m = sorted(set(ESPANOL.findall(vis)))
+    comprobar(f'{donde}: no se ve español', not m, ', '.join(m[:8]) + ' … ' + vis[:200])
+
+with sync_playwright() as p:
+    nav = p.chromium.launch(args=ARGS)
+    for movil in (False, True):
+        etiqueta = 'móvil' if movil else 'PC'
+        print(etiqueta)
+        if movil:
+            ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True, locale='es-ES')
+        else:
+            ctx = nav.new_context(viewport={'width': 1280, 'height': 800}, locale='es-ES')
+        pg = ctx.new_page()
+        err = []
+        pg.on('pageerror', lambda e: err.append(str(e)))
+        pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
+        sufijo = 'movil' if movil else 'pc'
+
+        # ---------- construcción ----------
+        pg.goto('file://' + CONSTR + '?lang=en')
+        pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
+        pg.evaluate('localStorage.clear(); window.__kinhold.reiniciar()')
+        pg.wait_for_timeout(500)
+        K = 'window.__kinhold'
+        comprobar('construcción: idioma inglés con ?lang=en', pg.evaluate('document.documentElement.lang') == 'en')
+        comprobar('construcción: botón Build', 'Build' in pg.inner_text('#modos'))
+        pg.screenshot(path=f'{SALIDA}/construccion_{sufijo}_01_inicio.png')
+        pg.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('mojon','mojon'); {K}.apuntar(-3,-6); {K}.colocar()")
+        pg.evaluate(f"{K}.seleccionar('pieza','muro_tronco'); {K}.apuntar(10,10)")  # fuera de la tierra: aviso
+        pg.wait_for_timeout(300)
+        av = pg.inner_text('#aviso').strip()
+        comprobar('construcción: aviso en inglés', av and not ESPANOL.search(av), av)
+        pg.screenshot(path=f'{SALIDA}/construccion_{sufijo}_02_construir.png')
+        revisar(pg, f'construcción {etiqueta}, construyendo')
+        pg.evaluate(f"{K}.cambiarModo('mover')")
+        pg.click('#btnAyuda'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/construccion_{sufijo}_03_ayuda.png')
+        revisar(pg, f'construcción {etiqueta}, ayuda')
+        pg.click('#panelAyuda .cerrar'); pg.click('#btnRegistro'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/construccion_{sufijo}_04_decisiones.png')
+        revisar(pg, f'construcción {etiqueta}, decisiones')
+        pg.click('#panelRegistro .cerrar')
+        # cambiar a español con el botón: recarga, recuerda el idioma y la partida sigue
+        # sin ?lang ni nada guardado manda el idioma del navegador (aquí, español)
+        pg.goto('file://' + CONSTR)
+        pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
+        comprobar('construcción: navegador en español → juego en español', pg.evaluate('document.documentElement.lang') == 'es' and 'Construir' in pg.inner_text('#modos'))
+        comprobar('construcción: la partida sigue al cambiar de idioma', pg.evaluate(f"!!{K}.mundo.mojon"))
+        pg.click('button.idioma[data-idioma="en"]')
+        pg.wait_for_function('window.__kinhold !== undefined && document.documentElement.lang === "en"', timeout=20000)
+        pg.wait_for_timeout(300)
+        comprobar('construcción: el botón EN cambia a inglés', 'Build' in pg.inner_text('#modos'))
+        comprobar('construcción: la partida sigue tras el botón', pg.evaluate(f"!!{K}.mundo.mojon"))
+        pg.reload(); pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
+        comprobar('construcción: recuerda el inglés al volver', pg.evaluate('document.documentElement.lang') == 'en')
+        pg.click('button.idioma[data-idioma="es"]')
+        pg.wait_for_function('window.__kinhold !== undefined && document.documentElement.lang === "es"', timeout=20000)
+        comprobar('construcción: el botón ES vuelve al español', 'Construir' in pg.inner_text('#modos'))
+        pg.click('button.idioma[data-idioma="en"]')
+        pg.wait_for_function('window.__kinhold !== undefined && document.documentElement.lang === "en"', timeout=20000)
+
+        # ---------- combate ---------- (el inglés ya está guardado por el botón: vale para los dos)
+        pg.goto('file://' + COMB)
+        pg.wait_for_function('window.__duelo !== undefined', timeout=20000)
+        D = 'window.__duelo'
+        comprobar('combate: recuerda el inglés elegido en la construcción', pg.evaluate('document.documentElement.lang') == 'en')
+        pg.evaluate(f"{D}.configurar({{modo:'duelo', arma:'espada_larga', dificultad:'aprendiz'}}); {D}.ia.pensar = () => ({{mx:0,mz:0,correr:false}}); {D}.jugador.z={D}.rival.z-1.7")
+        pg.wait_for_timeout(600)
+        pg.evaluate(f"{D}.atacar('bajo')")
+        pg.wait_for_timeout(1500)
+        pg.screenshot(path=f'{SALIDA}/combate_{sufijo}_01_duelo.png')
+        revisar(pg, f'combate {etiqueta}, duelo')
+        pg.click('#btnOpciones'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/combate_{sufijo}_02_opciones.png')
+        revisar(pg, f'combate {etiqueta}, opciones')
+        comprobar('combate: armas en inglés en el menú', 'Longsword' in pg.inner_text('#selArma'))
+        pg.click('#btnOpciones'); pg.click('#btnAyuda'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/combate_{sufijo}_03_ayuda.png')
+        revisar(pg, f'combate {etiqueta}, ayuda')
+        pg.click('#panelAyuda .cerrar'); pg.click('#btnDecisiones'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/combate_{sufijo}_04_decisiones.png')
+        revisar(pg, f'combate {etiqueta}, decisiones')
+        pg.click('#panelRegistro .cerrar')
+        # que el rival caiga: pantalla final en inglés
+        pg.evaluate(f"{D}.rival.caer('Desangrado')")
+        pg.wait_for_timeout(500)
+        pg.screenshot(path=f'{SALIDA}/combate_{sufijo}_05_final.png')
+        comprobar('combate: pantalla final en inglés', 'won' in pg.inner_text('#tituloFinal') and 'bled out' in pg.inner_text('#motivoFinal').lower(), pg.inner_text('#final'))
+        revisar(pg, f'combate {etiqueta}, final')
+        comprobar(f'sin errores ({etiqueta})', not err, '; '.join(err[:3]))
+        ctx.close()
+    nav.close()
+
+print()
+print('TODO CORRECTO' if not fallos else f'FALLAN {len(fallos)}: ' + ', '.join(fallos))
+sys.exit(1 if fallos else 0)

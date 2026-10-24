@@ -16,7 +16,7 @@ QUIETO = f"{D}.ia.pensar = () => ({{mx:0,mz:0,correr:false}})"
 
 with sync_playwright() as p:
     nav = p.chromium.launch(args=ARGS)
-    pg = nav.new_page(viewport={'width': 1280, 'height': 800})
+    pg = nav.new_page(viewport={'width': 1280, 'height': 800}, locale='es-ES')
     err = []
     pg.on('pageerror', lambda e: err.append(str(e)))
     pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
@@ -282,7 +282,7 @@ with sync_playwright() as p:
     pg.close()
 
     print('Móvil')
-    ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
+    ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True, locale='es-ES')
     mv = ctx.new_page()
     err2 = []
     mv.on('pageerror', lambda e: err2.append(str(e)))
