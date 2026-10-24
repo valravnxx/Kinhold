@@ -41,11 +41,15 @@ const VISTAS = {
 };
 const ANIMS = { quieto: 'Quieto', andar: 'Andar', talar: 'Talar', guardia: 'En guardia', golpe: 'Golpe', cargar: 'Cargar' };
 
-let estado = { luz: 'manana', vista: 'cuerpo', modo: 'quieto', sexo: 'hombre', ropa: 'campesino', pelo: 'raya', colorPelo: 'castano', piel: 'clara', barba: 'si' };
+// en móviles y tabletas empieza en calidad ligera (material sencillo); se puede cambiar con el botón
+const TACTIL = matchMedia('(pointer: coarse)').matches;
+let estado = { luz: 'manana', vista: 'cuerpo', modo: 'quieto', sexo: 'hombre', ropa: 'campesino', pelo: 'raya', colorPelo: 'castano', piel: 'clara', barba: 'si', calidad: TACTIL ? 'ligera' : 'alta' };
 try { estado = { ...estado, ...JSON.parse(localStorage.getItem(CLAVE) || '{}') }; } catch (e) { /* sin almacenamiento */ }
 if (!LUCES[estado.luz]) estado.luz = 'manana';
 if (!VISTAS[estado.vista]) estado.vista = 'cuerpo';
 if (!ANIMS[estado.modo]) estado.modo = 'quieto';
+if (estado.ropa !== 'campesino') estado.ropa = 'campesino'; // el explorador era demasiado de fantasía (Pedro)
+estado.sombras ??= true; estado.escena ??= true;
 const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch (e) { /* sin almacenamiento */ } };
 
 let pj = null, cargando = 0;
@@ -90,15 +94,29 @@ function marcar(tipo, v) { for (const b of document.querySelectorAll(`[data-${ti
 function pintarOpciones() {
   const grupo = (clave, valores, titulo) => `<div class="grupo"><span>${titulo}</span>${Object.entries(valores).map(([k, v]) =>
     `<button data-op="${clave}" data-v="${k}" class="${estado[clave] === k ? 'sel' : ''}">${Array.isArray(v) ? `<i style="background:#${new THREE.Color(v[1]).getHexString()}"></i>${v[0]}` : v}</button>`).join('')}</div>`;
-  $('opciones').innerHTML = grupo('sexo', OPCIONES.sexo, 'Cuerpo') + grupo('ropa', OPCIONES.ropa, 'Ropa') + grupo('pelo', OPCIONES.pelo[estado.sexo], 'Pelo') +
+  $('opciones').innerHTML = grupo('sexo', OPCIONES.sexo, 'Cuerpo') + grupo('ropa', { campesino: OPCIONES.ropa.campesino }, 'Ropa') + grupo('pelo', OPCIONES.pelo[estado.sexo], 'Pelo') +
     grupo('colorPelo', OPCIONES.colorPelo, 'Color del pelo') + grupo('piel', OPCIONES.piel, 'Piel') + (estado.sexo === 'hombre' ? grupo('barba', OPCIONES.barba, 'Barba') : '') +
+    grupo('calidad', { alta: 'Alta', ligera: 'Ligera (móvil)' }, 'Calidad') +
+    `<div class="grupo"><span>Prueba de rendimiento (mira los fps arriba)</span><button data-diag="sombras" class="${estado.sombras ? 'sel' : ''}">Sombras</button><button data-diag="escena" class="${estado.escena ? 'sel' : ''}">Cabaña y suelo</button></div>` +
     `<div class="grupo"><span>Animación</span>${Object.entries(ANIMS).map(([k, v]) => `<button data-modo="${k}" class="${estado.modo === k ? 'sel' : ''}">${v}</button>`).join('')}</div>`;
   for (const b of $('opciones').querySelectorAll('[data-op]')) b.onclick = () => { estado[b.dataset.op] = b.dataset.v; rehacer(); };
   for (const b of $('opciones').querySelectorAll('[data-modo]')) b.onclick = () => ponerModo(b.dataset.modo);
+  for (const b of $('opciones').querySelectorAll('[data-diag]')) b.onclick = () => { estado[b.dataset.diag] = !estado[b.dataset.diag]; aplicarDiag(); pintarOpciones(); guardar(); };
 }
 
+// interruptores para averiguar en el móvil qué pesa: sombras y escenario
+const decorado = escena.children[0];
+function aplicarDiag() {
+  decorado.visible = estado.escena;
+  if (renderer.shadowMap.enabled !== estado.sombras) {
+    renderer.shadowMap.enabled = estado.sombras;
+    escena.traverse(o => { if (o.material) for (const m of [].concat(o.material)) m.needsUpdate = true; });
+  }
+  dibujar();
+}
 const RES_MAX = Math.min(devicePixelRatio || 1, 2);
-let resolucion = Math.min(RES_MAX, 1.5);
+let resolucion = Math.min(RES_MAX, TACTIL ? 1 : 1.5);
+const RES_MIN = TACTIL ? 0.5 : 0.75;
 function ajustar() {
   renderer.setPixelRatio(resolucion); renderer.setSize(innerWidth, innerHeight, false);
   camara.aspect = innerWidth / innerHeight; camara.fov = camara.aspect < 1 ? 40 : 30; camara.updateProjectionMatrix();
@@ -118,7 +136,7 @@ function bucle() {
   control.update(); dibujar(); cuenta++;
   if (ahora - t0 >= 2000) {
     medida.fps = Math.round(cuenta * 1000 / (ahora - t0)); ventanas++;
-    if (medida.fps < 50 && resolucion > 0.75) { resolucion = Math.max(0.75, resolucion - 0.25); ajustar(); }
+    if (medida.fps < 50 && resolucion > RES_MIN) { resolucion = Math.max(RES_MIN, resolucion - 0.25); ajustar(); }
     else if (medida.fps >= 59 && resolucion < RES_MAX && ventanas > 2) { resolucion = Math.min(RES_MAX, resolucion + 0.25); ajustar(); }
     $('medida').textContent = `${medida.fps} fps · resolución ${resolucion}× · personaje ${(medida.trianglesPersonaje / 1000).toFixed(1)} mil triángulos · escena ${(medida.triangulos / 1000).toFixed(1)} mil · ${medida.dibujados} dibujados`;
     cuenta = 0; t0 = ahora;
@@ -131,7 +149,10 @@ $('btnNotas').onclick = () => { $('notas').hidden = !$('notas').hidden; };
 $('btnOpciones').onclick = () => { $('opciones').hidden = !$('opciones').hidden; $('btnOpciones').classList.toggle('sel', !$('opciones').hidden); };
 $('notas').innerHTML = `<b>${VERSION_PERSONAJE}</b><ul>${REGISTRO_PERSONAJE.map(t => `<li>${t}</li>`).join('')}</ul>`;
 
+// en el móvil el panel tapa medio personaje: empieza cerrado
+if (TACTIL) { $('opciones').hidden = true; $('btnOpciones').classList.remove('sel'); }
 ajustar();
+aplicarDiag();
 ponerLuz(estado.luz);
 ponerVista(estado.vista);
 rehacer().catch(e => { $('cargando').textContent = 'No se pudo cargar el personaje: ' + e.message; console.error(e); });
@@ -153,5 +174,8 @@ window.__personaje = {
   },
   medida: () => { dibujar(); return { ...medida, triangulos: renderer.info.render.triangles, dibujados: renderer.info.render.calls }; },
   estado: () => ({ ...estado }),
+  // milisegundos por fotograma dibujando n veces (para comparar calidades en las pruebas)
+  tiempo: (n = 10) => { const gl = renderer.getContext(), px = new Uint8Array(4), sync = () => gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); dibujar(); sync(); const t = performance.now(); for (let i = 0; i < n; i++) { dibujar(); sync(); } return (performance.now() - t) / n; },
+  diag: () => ({ escena, renderer, pj, sol, THREE }),
   hueso: (n) => { const v = new THREE.Vector3(); pj.hueso[n].getWorldPosition(v); return [v.x, v.y, v.z]; },
 };

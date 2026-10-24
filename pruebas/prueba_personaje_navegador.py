@@ -65,7 +65,7 @@ with sync_playwright() as p:
         # personalización: cada cambio carga y se ve distinto
         antes = contenido(pg.screenshot())[0]
         for i, cambio in enumerate([{'sexo': 'mujer', 'pelo': 'mono', 'colorPelo': 'negro', 'piel': 'media'},
-                                    {'sexo': 'hombre', 'ropa': 'explorador', 'pelo': 'rapado', 'colorPelo': 'pelirrojo', 'piel': 'morena', 'barba': 'si'},
+                                    {'sexo': 'hombre', 'pelo': 'rapado', 'colorPelo': 'pelirrojo', 'piel': 'morena', 'barba': 'si', 'calidad': 'ligera'},
                                     {'sexo': 'mujer', 'ropa': 'campesino', 'pelo': 'largo', 'colorPelo': 'rubio', 'piel': 'clara'}]):
             pg.evaluate(f'{E}.cambiar({cambio})'); listo(pg)
             pg.evaluate(f"{E}.ponerModo('quieto')"); pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)')
@@ -77,6 +77,20 @@ with sync_playwright() as p:
             pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)')
             png = pg.screenshot(path=f'{SALIDA}/{nombre}_variante{i + 1}_cara.png')
             comprobar(f'variante {i + 1}: se ve la cara', contenido(png)[1] > 15)
+        if movil: comprobar('en el móvil el panel empieza cerrado', not pg.is_visible('#opciones'))
+        if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
+        # calidad ligera (móvil): material sencillo sin relieve
+        lig = pg.evaluate(f"(() => {{ const d = {E}.diag(); let n = 0, std = 0; d.pj.modelo.traverse(o => {{ if (o.isMesh) {{ n++; if (o.material.type !== 'MeshLambertMaterial') std++; }} }}); return [n, std, {E}.estado().calidad]; }})()")
+        comprobar('calidad ligera: todo con material sencillo', lig[0] > 0 and lig[1] == 0 and lig[2] == 'ligera', str(lig))
+        esq = pg.evaluate(f"(() => {{ const s = new Set(); {E}.diag().pj.modelo.traverse(o => {{ if (o.isSkinnedMesh) s.add(o.skeleton); }}); return s.size; }})()")
+        comprobar('ropa, pelo y barba comparten un solo esqueleto', esq <= 2, f'{esq} esqueletos')
+        comprobar('el traje de explorador no se ofrece (demasiado de fantasía)', pg.locator('[data-op="ropa"][data-v="explorador"]').count() == 0)
+        # interruptores de la prueba de rendimiento
+        pg.click('[data-diag="sombras"]'); pg.click('[data-diag="escena"]')
+        d = pg.evaluate(f"(() => {{ const d = {E}.diag(); return [d.renderer.shadowMap.enabled, d.escena.children[0].visible]; }})()")
+        comprobar('los interruptores quitan sombras y escenario', d == [False, False], str(d))
+        pg.screenshot(path=f'{SALIDA}/{nombre}_sin_escena.png')
+        pg.click('[data-diag="sombras"]'); pg.click('[data-diag="escena"]')
         # botones de la personalización (clic de verdad)
         pg.click('[data-op="sexo"][data-v="hombre"]'); listo(pg)
         comprobar('el botón Hombre cambia el personaje', pg.evaluate(f'{E}.estado().sexo') == 'hombre')

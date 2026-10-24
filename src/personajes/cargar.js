@@ -42,7 +42,7 @@ function soloCabeza(malla) {
 
 // Crea un personaje. `base` es la carpeta de los .glb (con barra final).
 export async function crearPersonaje(op = {}, base = 'recursos/personajes/') {
-  const o = { sexo: 'hombre', ropa: 'campesino', pelo: null, colorPelo: 'castano', piel: 'clara', barba: 'si', ...op };
+  const o = { sexo: 'hombre', ropa: 'campesino', pelo: null, colorPelo: 'castano', piel: 'clara', barba: 'si', calidad: 'alta', ...op };
   if (!OPCIONES.pelo[o.sexo][o.pelo]) o.pelo = Object.keys(OPCIONES.pelo[o.sexo])[0];
   const conBarba = o.sexo === 'hombre' && o.barba === 'si';
   const [ropa, cuerpo, pelo, barba, anim] = await Promise.all([
@@ -59,9 +59,11 @@ export async function crearPersonaje(op = {}, base = 'recursos/personajes/') {
 
   const colorPiel = new THREE.Color(OPCIONES.piel[o.piel][1]), colorPelo = new THREE.Color(OPCIONES.colorPelo[o.colorPelo][1]);
   const materiales = new Map(); // cada personaje con sus propios materiales (color de piel y pelo)
+  // calidad «ligera» (móvil): material sencillo solo con el color, sin relieve ni rugosidad
+  const simplificar = (m) => o.calidad === 'alta' ? m.clone() : new THREE.MeshLambertMaterial({ name: m.name, map: m.map, color: m.color.clone(), transparent: m.transparent, alphaTest: m.alphaTest, side: THREE.FrontSide });
   const material = (m) => {
     if (!materiales.has(m)) {
-      const c = m.clone();
+      const c = simplificar(m);
       if (/Hair/.test(m.name)) c.color.copy(colorPelo);
       else if (/Superhero|Regular/.test(m.name)) c.color.copy(colorPiel);
       materiales.set(m, c);
@@ -83,6 +85,16 @@ export async function crearPersonaje(op = {}, base = 'recursos/personajes/') {
   for (const m of sueltas) atar(m, /Face/.test(m.name) ? null : soloCabeza(m)); // ojos y cejas enteros; del cuerpo, solo la cabeza
   for (const extra of [pelo, barba]) if (extra) extra.scene.traverse(n => { if (n.isSkinnedMesh) atar(n); });
 
+  // un solo esqueleto para todas las mallas que comparten posición de reposo (ropa, pelo, barba):
+  // así los huesos se calculan y se suben a la tarjeta una vez por fotograma, no una vez por malla
+  const mallas = [];
+  modelo.traverse(n => { if (n.isSkinnedMesh) mallas.push(n); });
+  const ref = esqueleto;
+  for (const m of mallas) {
+    if (m.skeleton === ref || m.skeleton.bones.length !== ref.bones.length) continue;
+    const iguales = m.skeleton.bones.every((b, i) => b === ref.bones[i] && m.skeleton.boneInverses[i].equals(ref.boneInverses[i]));
+    if (iguales) m.bind(ref, m.bindMatrix);
+  }
   let triangulos = 0;
   modelo.traverse(n => { if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; n.frustumCulled = false; triangulos += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3; } });
 

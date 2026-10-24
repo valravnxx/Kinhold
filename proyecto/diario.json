@@ -333,5 +333,22 @@
   "pruebas": "Construcción 46/46, modelos 21/21, combate 69/69; navegador: construcción, combate, estilo, personaje v2 (vistas, animación, tres variantes y botones, PC y móvil; MUTAR=1 falla como debe) y web: todo correcto.",
   "capturas": "capturas/personaje-v2",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T23:38:00+02:00",
+  "fin": "2026-10-24T23:49:54+02:00",
+  "titulo": "Personaje v3: más ligero en el móvil",
+  "hito": "arte",
+  "hecho": [
+   "Pedro: en su móvil el personaje v2 iba a 10 fps y el traje de explorador es demasiado de fantasía.",
+   "En pantallas táctiles empieza en calidad ligera: material sencillo con el color, sin relieve ni brillo. Resolución de partida 1× y puede bajar hasta 0,5×.",
+   "La ropa, el pelo y la barba comparten un solo esqueleto; antes cada malla calculaba el suyo en cada fotograma.",
+   "Interruptores de prueba (calidad, sombras, cabaña y suelo) para ver en el móvil qué pesa, con los fps arriba. En el móvil el panel empieza cerrado para no tapar al personaje.",
+   "Quitado el traje de explorador de las opciones.",
+   "No comprobado: si con esto llega a fps buenos en el móvil de Pedro. Aquí no hay tarjeta gráfica y las medidas no se parecen a un móvil."
+  ],
+  "pruebas": "Personaje en navegador PC y móvil (vistas, animación, variantes, calidad ligera, esqueleto compartido, interruptores): todo correcto.",
+  "capturas": "capturas/personaje-v3",
+  "estado": "ok"
  }
 ]

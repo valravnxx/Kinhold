@@ -117,6 +117,12 @@
      "fin": "2026-10-24T23:31:24+02:00"
     },
     {
+     "nombre": "Personaje v3: rendimiento en el móvil (iba a 10 fps) y fuera el traje de explorador por ser de fantasía",
+     "estado": "hecho",
+     "inicio": "2026-10-24T23:38:00+02:00",
+     "fin": "2026-10-24T23:49:54+02:00"
+    },
+    {
      "nombre": "Heridas y sangrado visibles en el personaje: corte, golpe y estocada se pintan donde entran (también rompen y manchan la ropa), el sangrado se extiende con el tiempo y el vendaje se ve puesto",
      "estado": "pendiente"
     },
@@ -465,6 +471,13 @@
      "archivo": "jugar/personaje/v2.html",
      "capturas": "capturas/personaje-v2",
      "notas": "Personaje con bases libres (CC0) ya hechas y personalización: hombre o mujer, ropa, peinado, color de pelo, piel y barba."
+    },
+    {
+     "v": "v3",
+     "fecha": "2026-10-24",
+     "archivo": "jugar/personaje/v3.html",
+     "capturas": "capturas/personaje-v3",
+     "notas": "Más ligero en el móvil (calidad ligera, un solo esqueleto, menos resolución) con interruptores para medir; sin el traje de explorador."
     }
    ]
   }
