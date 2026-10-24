@@ -21,6 +21,9 @@ Kinhold es el juego de Pedro: supervivencia medieval "tipo MMO" en el navegador,
 ## Una sesión de trabajo (tarea programada cada hora)
 
 1. `git pull`. Instalar dependencias si faltan (`npm install`). Apuntar la hora de inicio (`date -Iseconds`).
+   - **Una sola sesión a la vez.** Mirar `proyecto/sesion.json`. Si dice que hay otra sesión trabajando y empezó hace menos de 70 minutos, **terminar sin hacer nada** (puede que Pedro esté hablando con ella). Si no, escribir en él `{"inicio": "<hora>", "tarea": "<nombre>", "rama": "trabajo/<AAAAMMDD-HHMM>"}`, commit y push enseguida. Al terminar la sesión (bien o mal), dejarlo en `{}` en el último commit.
+   - **No perder trabajo a medias:** mientras se trabaja, subir el avance cada 15 minutos más o menos a la rama `trabajo/<AAAAMMDD-HHMM>` (commit "Avance: …"). Al acabar, fusionar en main. Si la sesión se corta, lo hecho queda en esa rama y la siguiente sesión lo retoma desde ahí en vez de empezar de cero (mirar `git ls-remote origin 'trabajo/*'`).
+   - Si Pedro habla contigo dentro de la sesión, lo que pida va a `REVISION.md` y se sube enseguida, para que no dependa de esta conversación.
 2. Leer `REVISION.md`. Si Pedro ha escrito algo nuevo debajo de la línea, **eso va primero**:
    - Aprobación de un hito en revisión → marcarlo `hecho`.
    - Cambios pedidos → crear tareas en ese hito (estado `pendiente`) y dejarlo `en_curso`.
