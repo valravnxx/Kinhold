@@ -3,6 +3,7 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync, copyFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { execFileSync } from 'child_process';
+import { createHash } from 'crypto';
 import { fileURLToPath } from 'url';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -12,9 +13,25 @@ const diario = leer('proyecto/diario.json');
 const docs = join(raiz, 'docs');
 const errores = [];
 
-// documentos de diseño
-mkdirSync(join(docs, 'diseno'), { recursive: true });
-for (const f of readdirSync(join(raiz, 'diseno'))) copyFileSync(join(raiz, 'diseno', f), join(docs, 'diseno', f));
+// documentos de diseño: el español en diseno/, la traducción en diseno/en/ con la huella del original
+// (<meta name="kinhold-origen" content="sha1 del archivo en español">). Si el español cambia, hay que volver a traducir.
+// Al copiarlos a docs/ se les pone arriba el selector ES · EN.
+const huella = (txt) => createHash('sha1').update(txt).digest('hex');
+const selector = (f, l) => `<div id="kh-idioma" style="position:fixed;top:8px;right:8px;z-index:9;font:700 12.5px system-ui,sans-serif;display:flex;gap:4px">` +
+  [['es', 'ES', l === 'es' ? f : '../' + f], ['en', 'EN', l === 'en' ? f : 'en/' + f]].map(([id, t, h]) =>
+    `<a data-l="${id}" href="${h}" onclick="try{localStorage.setItem('kinhold_web_idioma','${id}')}catch(e){}" style="padding:4px 9px;border-radius:8px;text-decoration:none;border:1px solid #8888;${id === l ? 'background:#c9a46a;color:#241b10' : 'background:#8882;color:inherit'}">${t}</a>`).join('') + `</div>`;
+const conSelector = (html, f, l) => html.replace(/<body([^>]*)>/, (m) => m + selector(f, l));
+mkdirSync(join(docs, 'diseno', 'en'), { recursive: true });
+for (const f of readdirSync(join(raiz, 'diseno')).filter(f => f.endsWith('.html'))) {
+  const es = readFileSync(join(raiz, 'diseno', f), 'utf8');
+  writeFileSync(join(docs, 'diseno', f), conSelector(es, f, 'es'));
+  const rutaEn = join(raiz, 'diseno', 'en', f);
+  if (!existsSync(rutaEn)) { errores.push(`falta la traducción diseno/en/${f}`); continue; }
+  const en = readFileSync(rutaEn, 'utf8');
+  const origen = (en.match(/<meta name="kinhold-origen" content="([0-9a-f]+)">/) || [])[1];
+  if (origen !== huella(es)) errores.push(`diseno/${f} ha cambiado desde que se tradujo: actualiza diseno/en/${f} y pon en su <meta name="kinhold-origen"> la huella ${huella(es)}`);
+  writeFileSync(join(docs, 'diseno', 'en', f), conSelector(en, f, 'en'));
+}
 
 // capturas por carpeta
 const capturas = {};

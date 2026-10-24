@@ -9,6 +9,7 @@ Kinhold es el juego de Pedro: supervivencia medieval "tipo MMO" en el navegador,
 ## Dónde está cada cosa
 
 - `diseno/gdd.html` — GDD (fuente de verdad del diseño). `diseno/sistemas.html` — recursos, recetas, piezas, valores. `diseno/analisis.html` — análisis y propuestas (lo marcado PROPUESTA no está decidido).
+- `diseno/en/` — los mismos documentos en inglés. Cada uno lleva `<meta name="kinhold-origen">` con la huella (sha1) del original; si el español cambia, `construir_web.mjs` falla hasta que se retraduce y se pone la huella nueva.
 - `proyecto/roadmap.json` — hitos y tareas con su estado. **Es lo que decide qué se hace.**
 - `proyecto/diario.json` — una entrada por sesión de trabajo, con hora de inicio y fin reales.
 - `REVISION.md` — donde Pedro deja revisiones y respuestas. Se lee al empezar cada sesión.
