@@ -94,5 +94,22 @@
   "pruebas": "Lógica 35/35, modelos 21/21, combate 59/59 (7 nuevas, fallan con MUTAR=1); navegador construcción, combate (nueva: soltar flojo no dispara), estilo y web correctos.",
   "capturas": "capturas/combate-v3",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T19:44:00+02:00",
+  "fin": "2026-10-24T19:24:41+02:00",
+  "titulo": "Revisión de las pruebas de estilo: investigación y replanteo",
+  "hito": "arte",
+  "hecho": [
+   "Pedro: las pruebas de estilo v1 no valen (tres acabados sobre el mismo modelo, B y C muy lentos, personaje feo).",
+   "Causas de la lentitud: material físico (Standard) en B y C, sombra de 2048, resolución doble en móvil y hasta 86 mil triángulos en C.",
+   "Investigado: con menos de 100-150 dibujados, un material barato, una sola luz con sombra y sombras de 1024 o 512, la escena va fluida en móvil medio. Ayudan también el material toon con textura de degradado, juntar mallas e instanciar.",
+   "Personaje: el problema de fondo es montarlo con piezas sueltas (esferas y cilindros pegados). Propuesta: una sola malla continua con esqueleto, o modelos libres CC0 ya animados. Queda para que decidas.",
+   "Nueva tarea en el hito 1b para rehacer las pruebas con presupuesto medido."
+  ],
+  "pruebas": "Sin cambios de código en esta parte.",
+  "capturas": null,
+  "estado": "ok",
+  "inicio_aprox": true
  }
 ]

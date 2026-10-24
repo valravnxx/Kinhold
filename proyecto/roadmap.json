@@ -60,6 +60,14 @@
      "fin": "2026-10-24T19:12:43+02:00"
     },
     {
+     "nombre": "Rehacer las pruebas de estilo (revisión de Pedro: B y C van muy lentos y el personaje no vale): un solo estilo estilizado y ligero (material barato tipo toon o Lambert, paleta en una textura pequeña, una luz con sombra de 1024, resolución adaptativa), presupuesto medido: escena ≤ 30 mil triángulos y ≤ 60 dibujados, 60 fps en móvil medio",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Personaje nuevo según lo que decida Pedro: malla continua por código con esqueleto y pesos, o modelos libres CC0 ya animados",
+     "estado": "espera_decision"
+    },
+    {
      "nombre": "Personaje base articulado con el estilo elegido (también el rival del combate)",
      "estado": "espera_decision"
     },
@@ -323,8 +331,8 @@
  ],
  "decisiones_pendientes": [
   {
-   "id": "estilo",
-   "pregunta": "Elegir estilo visual: en Jugar → «Pruebas de estilo» están A (plano sobrio), B (suave y natural) y C (texturas pintadas), con vistas de escena, personaje y cara. Vale elegir uno o una mezcla (p. ej. la luz de B con las texturas de C). Mira también los fps que marca en tu móvil. Hasta entonces el resto del hito de arte espera.",
+   "id": "personaje-origen",
+   "pregunta": "Personajes: (1) seguir generándolos por código pero bien hechos: una sola malla continua (torso, brazos, piernas y cabeza cosidos, no piezas pegadas) con esqueleto y animación, algo estilizada (cabeza y manos un poco mayores) y ~3-5 mil triángulos; o (2) usar modelos libres CC0 ya hechos y animados (p. ej. KayKit Adventurers o los 100 Avatars de Polygonal Mind) y adaptarlos al estilo, sabiendo que el GDD decía «generado por código». ¿Cuál?",
    "desde": "2026-10-24",
    "hito": "arte"
   },
