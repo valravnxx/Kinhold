@@ -1,15 +1,13 @@
 // Decisiones tomadas en la prueba de estilo, para revisar.
-export const VERSION_ESTILO = 'Prueba de estilo · v3 (maqueta en miniatura)';
+export const VERSION_ESTILO = 'Prueba de estilo · v4 (realismo en miniatura)';
 export const REGISTRO_ESTILO = [
-  'v3, por qué: la v2 recordaba a juegos gratuitos de motor genérico y las piedras del cimiento se veían sueltas. Elegiste «maqueta en miniatura».',
-  'La escena es un pedazo de tierra redondo con el corte de tierra a la vista (hierba arriba, tierra y tierra oscura abajo), sobre un fondo liso con degradado, como una maqueta fotografiada.',
-  'Formas limpias y redondeadas: cantos suaves en tablas, puertas y vigas; troncos con las puntas abombadas; tejado de paja en tres hiladas gruesas de canto redondeado; árboles de copas redondas.',
-  'Cimiento: zócalo continuo de mampostería, con piedras redondeadas bien juntas en dos hiladas sobre un núcleo de mortero. Ya no hay huecos.',
-  'Luz suave con sombras de bordes blandos y sombras de contacto horneadas: el suelo se oscurece al pie de la cabaña, árboles, barril, leña y postes.',
-  'Cámara de teleobjetivo (poca perspectiva) y desenfoque arriba y abajo de la pantalla, como en las fotos de maquetas. El desenfoque se puede quitar con su botón.',
-  'Presupuesto medido: como mucho 50 mil triángulos (contando la pasada de sombra) y 60 dibujados; subido desde 30 mil porque los cantos redondeados piden más triángulos, pero los dibujados bajan de 12 a 6, que es lo que más pesa en móvil. Lo fijo es una sola malla; hierba y flores, instanciadas. Una sola sombra de 1024 px.',
-  'Resolución adaptativa: empieza a 1,5× como mucho y baja hasta 0,75× si no llegas a 50 fps. Arriba se ve lo medido en tu aparato.',
-  'Flores en colores apagados (blanco roto, amarillo pálido, malva) para dar vida sin chillar.',
-  'El personaje sigue esperando tu decisión (malla continua por código o modelos libres ya animados).',
+  'v4, por qué: te gustó la maqueta de la v3, pero el mundo no estará recortado y querías probar el «realismo en miniatura» con algo de textura.',
+  'Es la v3 con texturas hechas por código: veta en troncos y tablas, anillos en los cortes, paja en hebras, piedra, corteza, hojas y suelo. Las texturas son en gris y dan el detalle y el relieve (bumpMap); el color sigue saliendo de la paleta.',
+  'Las texturas se colocan a escala real: la veta sigue el largo de cada tronco y tabla, la paja baja por la pendiente y los anillos se centran en cada corte.',
+  'El suelo ya no acaba en un borde: sigue con lomas suaves hasta el horizonte, con un bosque lejano repetido con instancias y niebla del color del cielo.',
+  'Se mantiene de la v3: formas redondeadas, zócalo de piedra continuo, luz suave con sombras blandas y de contacto, teleobjetivo y desenfoque arriba y abajo (con botón para quitarlo).',
+  'Una malla por textura (unas siete) en vez de una sola: sigue muy por debajo del límite de dibujados.',
+  'Presupuesto medido: como mucho 50 mil triángulos (contando la pasada de sombra) y 60 dibujados. Una sola sombra de 1024 px. Resolución adaptativa: empieza a 1,5× como mucho y baja hasta 0,75× si no llegas a 50 fps.',
+  'El personaje se hará por código (lo decidiste); llega en la tarea siguiente.',
   'Puedes girar la cámara arrastrando (un dedo en el móvil) y acercarte con la rueda o pellizcando.',
 ];

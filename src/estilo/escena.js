@@ -1,10 +1,10 @@
-// Kinhold — escena de la prueba de estilo v3 («maqueta en miniatura»):
-// un pedazo de tierra redondo con su corte de tierra visto, cabaña de troncos sobre zócalo de piedra,
+// Kinhold — escena de la prueba de estilo v4 («realismo en miniatura»):
+// claro abierto que sigue hasta el horizonte, cabaña de troncos sobre zócalo de piedra,
 // leña, tocón con hacha, barril, banco, cerca, árboles, matas y flores.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
-import { PALETA, Lote, material } from './estilos.js';
+import { PALETA, Lote, material, materialTex } from './estilos.js';
 
 function azar(semilla) { let s = semilla >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
 const cil = (r1, r2, h, lados, abierto = false) => new THREE.CylinderGeometry(r1, r2, h, lados, 1, abierto);
@@ -25,77 +25,91 @@ export function crearEscena() {
   enseres(fijo, r, sombras);
   arboles(fijo, r, sombras);
   const { AX, AZ, ZOCALO, N, HIL } = CAB, ALTO = ZOCALO + N * HIL + HIL / 2;
-  const geos = fijo.cerrar((v, n) => {
+  const grupos = fijo.cerrar((v, n) => {
     const dentro = Math.abs(v.x) < AX + 0.35 && Math.abs(v.z) < AZ + 0.35;
     return dentro && v.y > ALTO - 0.6 && v.y < ALTO + 0.1 && n.y < 0.5 ? 0.72 : 1; // bajo el alero
-  });
-  const m = new THREE.Mesh(mergeGeometries(geos), material('fijo'));
-  m.castShadow = m.receiveShadow = true; m.name = 'fijo';
-  raiz.add(m);
-  raiz.add(base(sombras));
+  }, true);
+  // una malla por textura (madera, paja, piedra, corteza, hojas, cortes y lo liso)
+  for (const [tipo, geos] of Object.entries(grupos)) {
+    const m = new THREE.Mesh(mergeGeometries(geos), materialTex(tipo));
+    m.castShadow = m.receiveShadow = true; m.name = 'fijo_' + tipo;
+    raiz.add(m);
+  }
+  raiz.add(suelo(sombras));
+  bosque(raiz, r);
   plantas(raiz, r);
   return raiz;
 }
 
-// ---------- La base: tierra con hierba arriba y el corte de tierra a la vista ----------
-function base(sombras) {
-  const ANILLOS = 18, LADOS = 72;
+// ---------- Suelo: sigue hasta el horizonte (el mundo no está recortado) ----------
+// Anillos concéntricos cada vez más separados: detalle cerca, poco lejos. Color en vértices
+// (hierba, claros, tierra pisada, camino y sombras de contacto) y textura de suelo repetida.
+function suelo(sombras) {
+  const ANILLOS = 30, LADOS = 64, LEJOS = 90;
   const H = new THREE.Color(PALETA.hierba), C = new THREE.Color(PALETA.hierbaClara), T = new THREE.Color(PALETA.tierra), K = new THREE.Color(PALETA.camino);
-  const pos = [], col = [], idx = [], k = new THREE.Color();
+  const pos = [], col = [], uv = [], idx = [], k = new THREE.Color();
   const { AX, AZ } = CAB;
-  // superficie: anillos concéntricos hasta el borde irregular
-  pos.push(0, 0, 0); col.push(...colorSuelo(0, 0));
-  for (let i = 1; i <= ANILLOS; i++) for (let j = 0; j < LADOS; j++) {
-    const a = j / LADOS * Math.PI * 2, t = i / ANILLOS, rr = borde(a) * t;
-    const x = Math.cos(a) * rr, z = Math.sin(a) * rr;
-    const y = t > 0.55 ? Math.sin(a * 2 + 1) * 0.25 * (t - 0.55) / 0.45 * Math.sin(t * Math.PI) : 0; // lomas suaves hacia el borde
-    pos.push(x, y, z); col.push(...colorSuelo(x, z));
-  }
+  const radio = (i) => { const t = i / ANILLOS; return t < 0.6 ? t / 0.6 * RADIO * 1.3 : RADIO * 1.3 + Math.pow((t - 0.6) / 0.4, 1.6) * (LEJOS - RADIO * 1.3); };
+  const altura = (x, z) => { const d = Math.hypot(x, z); if (d < 12) return 0; const f = Math.min(1, (d - 12) / 14); return f * (Math.sin(x * 0.07) * Math.cos(z * 0.06) * 2.2 + Math.sin((x + z) * 0.03) * 1.6 + 0.6); };
+  const punto = (x, z) => { pos.push(x, altura(x, z), z); col.push(...colorSuelo(x, z)); uv.push(x * 0.5, z * 0.5); };
+  punto(0, 0);
+  for (let i = 1; i <= ANILLOS; i++) for (let j = 0; j < LADOS; j++) { const a = j / LADOS * Math.PI * 2, rr = radio(i); punto(Math.cos(a) * rr, Math.sin(a) * rr); }
   const id = (i, j) => (i === 0 ? 0 : 1 + (i - 1) * LADOS + (j % LADOS));
   for (let j = 0; j < LADOS; j++) idx.push(0, id(1, j + 1), id(1, j));
-  for (let i = 1; i < ANILLOS; i++) for (let j = 0; j < LADOS; j++) {
-    const a = id(i, j), b = id(i, j + 1), c = id(i + 1, j), d = id(i + 1, j + 1);
-    idx.push(a, b, d, a, d, c);
-  }
+  for (let i = 1; i < ANILLOS; i++) for (let j = 0; j < LADOS; j++) { const a = id(i, j), b = id(i, j + 1), c = id(i + 1, j), d = id(i + 1, j + 1); idx.push(a, b, d, a, d, c); }
   function colorSuelo(x, z) {
-    const d = Math.hypot(x, z);
-    const m = Math.sin(x * 0.45 + 1) * Math.cos(z * 0.4) * 0.5 + 0.5;
-    k.copy(H).lerp(C, m * 0.5);
-    const camino = Math.max(0, 1 - Math.abs(x - 0.2 - Math.sin(z * 0.5) * 0.5) / 1.0) * (z > 1.9 ? 1 : 0) * (d < RADIO - 0.6 ? 1 : 0);
+    const m = Math.sin(x * 0.45 + 1) * Math.cos(z * 0.4) * 0.5 + 0.5, m2 = Math.sin(x * 0.11 - 2) * Math.sin(z * 0.13 + 1) * 0.5 + 0.5;
+    k.copy(H).lerp(C, m * 0.45 + m2 * 0.2);
+    const camino = Math.max(0, 1 - Math.abs(x - 0.2 - Math.sin(z * 0.5) * 0.5) / 1.0) * (z > 1.9 ? 1 : 0);
     k.lerp(K, Math.min(0.85, camino * 1.2));
     const dCab = Math.hypot(Math.max(0, Math.abs(x) - AX), Math.max(0, Math.abs(z) - AZ));
     k.lerp(T, dCab < 0.6 ? 0.55 : dCab < 1.4 ? 0.55 * (1.4 - dCab) / 0.8 : 0);
-    let o = 1 - 0.38 * Math.max(0, 1 - dCab / 0.9); // sombra de contacto al pie de la cabaña
+    let o = 1 - 0.38 * Math.max(0, 1 - dCab / 0.9);
     for (const [sx, sz, sr, f] of sombras) { const dd = Math.hypot(x - sx, z - sz); if (dd < sr) o *= 1 - f * (1 - dd / sr) ** 2; }
+    o *= 1.1; // la textura oscurece un poco
     return [k.r * o, k.g * o, k.b * o];
   }
-  const sup = new THREE.BufferGeometry();
-  sup.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  sup.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-  sup.setIndex(idx); sup.computeVertexNormals();
-  // corte de tierra: pared alrededor con franjas (hierba arriba, tierra, tierra oscura abajo) y fondo
-  const ALTO_CORTE = 1.6, FR = [[0, PALETA.hierba], [0.12, PALETA.tierraCorte], [0.5, PALETA.tierraCorte], [0.62, PALETA.tierraCorteOsc], [1, PALETA.tierraCorteOsc]];
-  const p2 = [], c2 = [], i2 = [];
-  for (let f = 0; f < FR.length; f++) for (let j = 0; j <= LADOS; j++) {
-    const a = j / LADOS * Math.PI * 2, rr = borde(a) * (1 - FR[f][0] * 0.04);
-    const ruido = f > 0 && f < FR.length - 1 ? Math.sin(a * 11 + f * 3) * 0.04 : 0;
-    p2.push(Math.cos(a) * rr, -FR[f][0] * ALTO_CORTE + ruido, Math.sin(a) * rr);
-    const cc = new THREE.Color(FR[f][1]).multiplyScalar(0.92 + Math.sin(a * 5 + f) * 0.06);
-    c2.push(cc.r, cc.g, cc.b);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  geo.setIndex(idx); geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, materialTex('suelo')); m.receiveShadow = true; m.name = 'suelo';
+  return m;
+}
+
+// ---------- Bosque lejano: dos tipos de árbol instanciados, sin sombra (fuera del alcance de la sombra) ----------
+function bosque(raiz, r) {
+  const hacer = (fn) => {
+    const L = new Lote({ rangoSuelo: 2.5 }); fn(L);
+    const grupos = L.cerrar(null, true), tipos = Object.keys(grupos);
+    const geo = mergeGeometries(tipos.map(t => mergeGeometries(grupos[t])), true);
+    return { geo, mats: tipos.map(t => materialTex(t)) };
+  };
+  const pino = hacer((L) => {
+    L.add(cil(0.12, 0.24, 2.2, 6), 'corteza', 0, 1.1, 0);
+    [[1.7, 2.1, 1.8], [1.35, 1.9, 2.9], [0.95, 1.7, 3.9], [0.55, 1.4, 4.8]].forEach(([rad, h, y], i) => L.add(new THREE.ConeGeometry(rad, h, 7), i % 2 ? 'pinoOsc' : 'pino', 0, y, 0, { y: i }));
+  });
+  const frond = hacer((L) => {
+    L.add(cil(0.16, 0.26, 2.6, 6), 'corteza', 0, 1.3, 0);
+    [[0, 3.4, 0, 1.4], [0.9, 2.9, 0.3, 1.0], [-0.9, 3.0, -0.2, 1.05], [0.1, 2.9, -0.9, 0.95]].forEach(([x, y, z, s], i) => L.add(new THREE.IcosahedronGeometry(s, 0), ['hoja', 'hojaOsc', 'hojaClara'][i % 3], x, y, z, { x: i, y: i * 2 }));
+  });
+  const sitios = { p: [], f: [] };
+  for (let i = 0; i < 42; i++) {
+    const a = r() * Math.PI * 2, d = 15 + Math.pow(r(), 0.8) * 45;
+    const x = Math.cos(a) * d, z = Math.sin(a) * d;
+    if (x > -4 && z > 4 && d < 38) continue; // libre la vista desde la cámara
+    (i % 3 === 0 ? sitios.f : sitios.p).push([x, z, 0.8 + r() * 0.7, r() * 6, 0.85 + r() * 0.3]);
   }
-  for (let f = 0; f < FR.length - 1; f++) for (let j = 0; j < LADOS; j++) {
-    const a = f * (LADOS + 1) + j, b = a + 1, c = a + LADOS + 1, d = c + 1;
-    i2.push(a, c, b, b, c, d);
+  for (const [mod, lista] of [[pino, sitios.p], [frond, sitios.f]]) {
+    const im = new THREE.InstancedMesh(mod.geo, mod.mats, lista.length), o = new THREE.Object3D(), c = new THREE.Color();
+    lista.forEach(([x, z, s, g, t], i) => {
+      const d = Math.hypot(x, z), y = d < 12 ? 0 : Math.min(1, (d - 12) / 14) * (Math.sin(x * 0.07) * Math.cos(z * 0.06) * 2.2 + Math.sin((x + z) * 0.03) * 1.6 + 0.6);
+      o.position.set(x, y - 0.1, z); o.rotation.set(0, g, 0); o.scale.setScalar(s); o.updateMatrix();
+      im.setMatrixAt(i, o.matrix); im.setColorAt(i, c.setScalar(t));
+    });
+    im.receiveShadow = true; raiz.add(im);
   }
-  const corte = new THREE.BufferGeometry();
-  corte.setAttribute('position', new THREE.Float32BufferAttribute(p2, 3));
-  corte.setAttribute('color', new THREE.Float32BufferAttribute(c2, 3));
-  corte.setIndex(i2); corte.computeVertexNormals();
-  const g = new THREE.Group();
-  const ms = new THREE.Mesh(sup, material('fijo')); ms.receiveShadow = true; ms.name = 'suelo';
-  const mc = new THREE.Mesh(corte, material('doble')); mc.name = 'corte';
-  g.add(ms, mc);
-  return g;
 }
 
 // ---------- Cabaña ----------
@@ -106,7 +120,7 @@ function cabana(L, r, sombras) {
     L.add(cil(RAD, RAD, largo, 8, true), color, x, y, z, giro);
     for (const s of [-1, 1]) { // punta redondeada con el corte claro
       const d = largo / 2;
-      const tapa = new THREE.SphereGeometry(RAD, 8, 2, 0, Math.PI * 2, 0, Math.PI / 2); tapa.scale(1, 0.3, 1);
+      const tapa = new THREE.ConeGeometry(RAD, RAD * 0.25, 8, 1, true); tapa.translate(0, RAD * 0.125, 0); // punta un poco abombada, 8 triángulos
       const rot = eje === 'x' ? { z: -s * Math.PI / 2 } : { x: s * Math.PI / 2 };
       L.add(tapa, 'corte', x + (eje === 'x' ? s * d : 0), y, z + (eje === 'z' ? s * d : 0), rot);
     }
@@ -285,7 +299,7 @@ function plantas(raiz, r) {
     });
     im.receiveShadow = true; raiz.add(im);
   };
-  poner(mata, sitios(320), (c) => c.setScalar(0.85 + r() * 0.3), material('doble'));
+  poner(mata, sitios(260), (c) => c.setScalar(0.85 + r() * 0.3), material('doble'));
   // flores de colores apagados (blanco roto, amarillo pálido, malva)
   const FLORES = [0xe8e2d0, 0xd9c27a, 0xa98aa6];
   poner(flor, sitios(70), (c) => c.set(FLORES[Math.floor(r() * 3)]), material('fijo'));

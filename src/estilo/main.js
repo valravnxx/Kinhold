@@ -1,4 +1,4 @@
-// Kinhold — prueba de estilo v3: «maqueta en miniatura», con presupuesto medido.
+// Kinhold — prueba de estilo v4: «realismo en miniatura» (la maqueta de la v3 con texturas y sin recortar el mundo).
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { LUCES } from './estilos.js';
@@ -6,7 +6,7 @@ import { crearEscena, RADIO } from './escena.js';
 import { VERSION_ESTILO, REGISTRO_ESTILO } from './registro.js';
 
 const $ = (id) => document.getElementById(id);
-const CLAVE = 'kinhold_estilo_v3';
+const CLAVE = 'kinhold_estilo_v4';
 // Presupuesto de la escena (lo comprueban las pruebas)
 // v3: 50 mil (la v2 tenía 30 mil): las formas redondeadas piden más triángulos; a cambio, 6 dibujados en vez de 12.
 export const PRESUPUESTO = { triangulos: 50000, dibujados: 60 };
@@ -50,8 +50,10 @@ function ponerLuz(id) {
   estado.luz = id; const L = LUCES[id];
   sol.color.set(L.sol[0]); sol.intensity = L.sol[1]; sol.position.set(...L.sol[2]).multiplyScalar(1.6);
   hemi.color.set(L.hemi[0]); hemi.groundColor.set(L.hemi[1]); hemi.intensity = L.hemi[2];
+  // cielo con degradado (lo pinta la página) y niebla del color del horizonte
   const [a, b] = L.fondo.map(c => '#' + new THREE.Color(c).getHexString());
-  document.body.style.background = `radial-gradient(ellipse at 50% 40%, ${a} 0%, ${b} 75%)`;
+  document.body.style.background = `linear-gradient(${b} 0%, ${a} 60%, ${a} 100%)`;
+  escena.fog = new THREE.Fog(L.fondo[0], 45, 130);
   for (const btn of document.querySelectorAll('[data-luz]')) btn.classList.toggle('sel', btn.dataset.luz === id);
   guardar(); dibujar();
 }

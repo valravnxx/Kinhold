@@ -1,4 +1,4 @@
-# Prueba en navegador de la prueba de estilo v3 (hito 1b): las dos luces, las tres vistas, PC y móvil.
+# Prueba en navegador de la prueba de estilo v4 (hito 1b): las dos luces, las tres vistas, PC y móvil.
 # Uso: python3 pruebas/prueba_estilo_navegador.py <html> <carpeta_capturas>
 # Comprueba que cada combinación se dibuja (la franja central de la imagen tiene contenido),
 # que se cumple el presupuesto (triángulos y dibujados), que las luces se distinguen,

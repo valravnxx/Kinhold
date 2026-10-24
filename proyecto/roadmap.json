@@ -72,6 +72,12 @@
      "fin": "2026-10-24T20:30:15+02:00"
     },
     {
+     "nombre": "Prueba de estilo v4, «realismo en miniatura» (pedido por Pedro): la v3 con texturas por código y el mundo sin recortar",
+     "estado": "hecho",
+     "inicio": "2026-10-24T20:34:49+02:00",
+     "fin": "2026-10-24T20:50:32+02:00"
+    },
+    {
      "nombre": "Personaje nuevo por código (decidido por Pedro), vistoso y con el estilo de maqueta: una sola malla continua con esqueleto y animación, proporciones creíbles algo estilizadas",
      "estado": "pendiente"
     },
@@ -326,7 +332,7 @@
   {
    "id": "estilo",
    "nombre": "Prueba de estilo",
-   "descripcion": "Cabaña en un claro hecha como una maqueta en miniatura: el estilo propuesto para el juego.",
+   "descripcion": "Cabaña en un claro con el estilo propuesto: realismo en miniatura.",
    "versiones": [
     {
      "v": "v1",
@@ -348,14 +354,21 @@
      "archivo": "jugar/estilo/v3.html",
      "capturas": "capturas/estilo-v3",
      "notas": "Maqueta en miniatura: formas redondeadas, luz suave, sombras de contacto y desenfoque; zócalo de piedra continuo."
+    },
+    {
+     "v": "v4",
+     "fecha": "2026-10-24",
+     "archivo": "jugar/estilo/v4.html",
+     "capturas": "capturas/estilo-v4",
+     "notas": "Realismo en miniatura: la maqueta con texturas por código y el mundo sin recortar."
     }
    ]
   }
  ],
  "decisiones_pendientes": [
   {
-   "id": "estilo-v3",
-   "pregunta": "¿Te vale como base el estilo «maqueta en miniatura» de la prueba de estilo v3? Mírala también en tu móvil (arriba salen fps y resolución).",
+   "id": "estilo-v4",
+   "pregunta": "¿Te vale como base el «realismo en miniatura» de la prueba de estilo v4 (la maqueta de la v3 con texturas y el mundo sin recortar)? Mírala también en tu móvil (arriba salen fps y resolución).",
    "desde": "2026-10-24",
    "hito": "arte"
   },

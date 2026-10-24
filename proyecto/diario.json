@@ -163,5 +163,22 @@
   "pruebas": "Lógica 35/35, modelos 21/21, combate 59/59; navegador construcción, combate, estilo v3 (MUTAR=1 falla como debe) y web: todo correcto.",
   "capturas": "capturas/estilo-v3",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T20:34:49+02:00",
+  "fin": "2026-10-24T20:50:32+02:00",
+  "titulo": "Hito 1b: prueba de estilo v4, realismo en miniatura",
+  "hito": "arte",
+  "hecho": [
+   "Tu revisión de la v3: te gusta, pero el mundo no estará recortado; pediste probar el «realismo en miniatura» con algo de textura.",
+   "Texturas hechas por código, en gris, que dan detalle y relieve: veta, anillos de los cortes, paja en hebras, piedra, corteza, hojas y suelo. El color sigue saliendo de la paleta.",
+   "Las texturas van a escala real: la veta sigue el largo de cada tronco y tabla, la paja baja por la pendiente y los anillos se centran en cada corte.",
+   "El suelo sigue con lomas hasta el horizonte, con bosque lejano instanciado y niebla del color del cielo.",
+   "Medido: 47 mil triángulos y 21 dibujados (una malla por textura), dentro del presupuesto de 50 mil y 60.",
+   "No comprobado: los fps en un aparato real."
+  ],
+  "pruebas": "Lógica 35/35, modelos 21/21, combate 59/59; navegador construcción, combate, estilo v4 (MUTAR=1 falla como debe) y web: todo correcto.",
+  "capturas": "capturas/estilo-v4",
+  "estado": "ok"
  }
 ]
