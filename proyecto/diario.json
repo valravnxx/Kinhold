@@ -33,21 +33,6 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-24T17:20:03+00:00",
-  "fin": "2026-10-24T17:44:04+00:00",
-  "titulo": "Sesión duplicada: arreglo del arco hecho dos veces",
-  "hito": "duelo",
-  "hecho": [
-   "Esta sesión empezó a la vez que otra (19:13 hora de Madrid) y las dos cogieron la misma tarea: el arreglo del arco.",
-   "La otra publicó antes la combate v3; al ir a subir la mía, el repositorio ya la tenía. Descarto mi versión para no pisar la publicada (las versiones no se sobrescriben).",
-   "Mi copia también pasaba todas las pruebas (combate 63/63, navegador correcto); no aporta nada que no esté ya en la v3 publicada.",
-   "Aviso: hay dos tareas automáticas corriendo a la vez sobre el repositorio. Conviene dejar solo una para que no repitan trabajo ni se pisen."
-  ],
-  "pruebas": "No aplica (trabajo descartado).",
-  "capturas": "",
-  "estado": "fallo"
- },
- {
   "inicio": "2026-10-24T18:04:00+02:00",
   "fin": "2026-10-24T18:19:37+02:00",
   "titulo": "Infraestructura: repositorio, web de progreso y trabajo automático",
@@ -109,6 +94,21 @@
   "pruebas": "Lógica 35/35, modelos 21/21, combate 59/59 (7 nuevas, fallan con MUTAR=1); navegador construcción, combate (nueva: soltar flojo no dispara), estilo y web correctos.",
   "capturas": "capturas/combate-v3",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T17:20:03+00:00",
+  "fin": "2026-10-24T17:44:04+00:00",
+  "titulo": "Sesión duplicada: arreglo del arco hecho dos veces",
+  "hito": "duelo",
+  "hecho": [
+   "Esta sesión empezó a la vez que otra (19:13 hora de Madrid) y las dos cogieron la misma tarea: el arreglo del arco.",
+   "La otra publicó antes la combate v3; al ir a subir la mía, el repositorio ya la tenía. Descarto mi versión para no pisar la publicada (las versiones no se sobrescriben).",
+   "Mi copia también pasaba todas las pruebas (combate 63/63, navegador correcto); no aporta nada que no esté ya en la v3 publicada.",
+   "Aviso: hay dos tareas automáticas corriendo a la vez sobre el repositorio. Conviene dejar solo una para que no repitan trabajo ni se pisen."
+  ],
+  "pruebas": "No aplica (trabajo descartado).",
+  "capturas": "",
+  "estado": "fallo"
  },
  {
   "inicio": "2026-10-24T19:23:09+02:00",
@@ -268,8 +268,24 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-24T22:16:00+02:00",
+  "fin": "2026-10-24T22:32:23+02:00",
+  "titulo": "Construcción v4: madera más resistente y casa de dos plantas",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Causa del tejado que no entraba en las esquinas: el cimiento de troncos de cada esquina carga con dos muros por planta y con la segunda planta se pasaba (1320 kg de 1200).",
+   "Más aguante en todas las piezas de madera y piedra. Una casa de troncos de 2 plantas con tejado ya entra entera y ninguna pieza pasa del 75%.",
+   "Siguen existiendo límites: 3 plantas piden cimiento de piedra y el zarzo no da para dos plantas.",
+   "Vano de una casilla: un suelo en alto o un tramo de tejado sin muros debajo se apoya en el de al lado. Hasta 4×4 casillas no hacen falta vigas por dentro; en 5×5 el centro sí las pide.",
+   "Los valores nuevos están en Decisiones dentro del juego, como provisionales."
+  ],
+  "pruebas": "Construcción 46/46 (11 nuevas con casas de 2 y 3 plantas; fallan con MUTAR=1), modelos 21/21, combate 69/69; navegador de construcción (casa de 4×4 de dos plantas con tejado a dos aguas), combate, estilo y web: todo correcto.",
+  "capturas": "capturas/construccion-v4",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-24T22:19:24+02:00",
-  "fin": "2026-10-24T22:34:35+02:00",
+  "fin": "2026-10-24T22:43:43+02:00",
   "titulo": "Documentos de diseño en inglés",
   "hito": "infra",
   "hecho": [
@@ -278,7 +294,7 @@
    "Cada traducción guarda la huella del original en español: si el español cambia y no se vuelve a traducir, la web no se genera y dice qué archivo falta.",
    "Decisión provisional: los documentos traducidos son archivos aparte (no van en en.json), porque son textos largos con tablas."
   ],
-  "pruebas": "Todas correctas: lógica 35/35, modelos 21/21, combate 69/69, navegador de construcción, combate, estilo y web (PC y móvil, documentos en los dos idiomas). Romper a propósito los enlaces o la traducción hace fallar la prueba de la web; cambiar el español sin retraducir hace fallar la generación.",
+  "pruebas": "Todas correctas: construcción 46/46 (ya con la v4 de otra sesión), modelos 21/21, combate 69/69, navegador de construcción, combate, estilo y web (PC y móvil, documentos en los dos idiomas). Romper a propósito los enlaces o la traducción hace fallar la prueba de la web; cambiar el español sin retraducir hace fallar la generación.",
   "capturas": "capturas/documentos-en",
   "estado": "ok"
  }

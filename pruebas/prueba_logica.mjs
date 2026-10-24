@@ -1,11 +1,12 @@
 // Pruebas de la lógica de construcción de Kinhold. Ejecutar: node pruebas/prueba_logica.mjs
 // Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR.
-import { Mundo, clave, localAMundo, mundoALocal, geometriaTejados } from '../src/logica/construccion.js';
+import { Mundo, clave, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista } from '../src/logica/construccion.js';
 import { PIEZAS } from '../src/logica/piezas.js';
 
 if (process.env.MUTAR === '1') {
   PIEZAS.muro_zarzo.cap = 1000;   // un muro de zarzo que aguanta cualquier cosa
   PIEZAS.viga.cap = 5000;         // una viga que nunca se sobrecarga
+  PIEZAS.cim_tronco.cap = 5000;   // un cimiento de troncos que aguanta tres plantas
 }
 
 let ok = 0, mal = 0;
@@ -102,8 +103,9 @@ console.log('6. Carga: torre de muros de troncos');
   const res = [];
   for (let k = 0; k <= 3; k++) res.push(m.colocar(enRejilla(m, c, 'muro_tronco', 0, 0, k, 0)));
   const cs = m.cargas(c);
-  comprobar('plantas 0, 1 y 2 admitidas', res[0].ok && res[1].ok && res[2].ok, `carga muro bajo=${cs.get(clave('e', 0, 0, 0, 0))}`);
-  comprobar('cuarta planta rechazada por carga', !res[3].ok && res[3].motivo === 'La estructura no soporta ese peso.', `carga=${res[3].carga} cap=${res[3].cap}`);
+  comprobar('cuatro plantas de muro admitidas (el máximo de plantas)', res.every(r => r.ok), `carga muro bajo=${cs.get(clave('e', 0, 0, 0, 0))}`);
+  const r5 = m.colocar(enRejilla(m, c, 'muro_tronco', 0, 0, 4, 0));
+  comprobar('quinta planta rechazada', !r5.ok && r5.motivo === 'Planta no permitida.', r5.motivo);
 }
 
 console.log('7. Desmontar: cascada y recuperación del 75%');
@@ -130,11 +132,12 @@ console.log('8. Desmontar bloqueado por sobrecarga');
   m.colocar(enRejilla(m, c, 'viga', 0, 0, 0, 0));
   m.colocar(enRejilla(m, c, 'viga', 0, 1, 0, 0));
   const s = m.colocar(enRejilla(m, c, 'suelo_tronco', 0, 0, 1));
-  const mu = m.colocar(enRejilla(m, c, 'muro_tronco', 0, 0, 1, 1));
+  // cuatro muros encima: dos sobre las vigas y dos que descansan en el suelo
+  const mus = [[0, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1]].map(([i, j, d]) => m.colocar(enRejilla(m, c, 'muro_tronco', i, j, 1, d)));
   const cs = m.cargas(c);
-  comprobar('suelo sobre dos vigas y muro encima', s.ok && mu.ok, `carga por viga=${cs.get(clave('b', 0, 0, 0, 0))}`);
+  comprobar('suelo sobre dos vigas y cuatro muros encima', s.ok && mus.every(r => r.ok), `carga por viga=${cs.get(clave('b', 0, 0, 0, 0))}`);
   const pre = m.previsualizarDesmontaje(c, clave('b', 0, 0, 0, 0));
-  comprobar('quitar una viga queda bloqueado (la otra cargaría 420 > 400)', !pre.ok && pre.debil === clave('b', 0, 1, 0, 0));
+  comprobar('quitar una viga queda bloqueado (la otra cargaría 1020 > 1000)', !pre.ok && pre.debil === clave('b', 0, 1, 0, 0), JSON.stringify(pre));
 }
 
 console.log('9. Materiales');
@@ -208,6 +211,70 @@ console.log('12. Lo que no aguanta peso no cuenta como apoyo');
   const v = m.validar(enRejilla(m, c, 'cerca', 0, 1, 0, 0)); // cerca justo bajo el borde del tejado
   comprobar('una cerca bajo el borde de un tejado se puede poner', v.ok, JSON.stringify(v));
   comprobar('y el tejado no la usa de apoyo', m.soportes(c, c.piezas.get(clave('r', 0, 0, 1))).lista.length === 1);
+}
+
+console.log('13. Casas de varias plantas (Pedro: «la madera es demasiado débil»)');
+{
+  // casa de N×M casillas: cimientos, muros por fuera en cada planta, suelos en alto y tejado
+  function casaPlantas(N, M, plantas, cim = 'cim_tronco', muro = 'muro_tronco') {
+    const m = new Mundo(); m.colocarMojon(0, 0);
+    for (const k in m.materiales) m.materiales[k] = 1e6;
+    const c = nuevaConstruccion(m);
+    const fallos = [];
+    const pon = (q, tipo, i, j, k, d) => { const r = m.colocar(enRejilla(m, c, tipo, i, j, k, d)); if (!r.ok) fallos.push(`${q}: ${r.motivo}`); };
+    const celdas = [];
+    for (let i = 0; i < N; i++) for (let j = 0; j < M; j++) celdas.push([i, j]);
+    const borde = ([i, j]) => Math.min(i, N - 1 - i, j, M - 1 - j);
+    celdas.sort((a, b) => borde(a) - borde(b)); // de fuera hacia dentro, como se construye
+    for (const [i, j] of celdas) pon(`cimiento ${i},${j}`, cim, i, j, 0);
+    for (let k = 0; k < plantas; k++) {
+      if (k > 0) for (const [i, j] of celdas) pon(`suelo k${k} ${i},${j}`, 'suelo_tronco', i, j, k);
+      for (const [i, j] of celdas) for (const [ai, aj, , ad] of aristasDeCasilla(i, j, k)) {
+        if (c.piezas.has(clave('e', ai, aj, k, ad))) continue;
+        const dentro = casillasDeArista(ai, aj, ad).filter(([x, y]) => x >= 0 && y >= 0 && x < N && y < M);
+        if (dentro.length === 1) pon(`muro k${k} ${ai},${aj},${ad}`, muro, ai, aj, k, ad);
+      }
+    }
+    for (const [i, j] of celdas) pon(`tejado ${i},${j}`, 'tejado_paja', i, j, plantas);
+    return { m, c, fallos };
+  }
+  for (const [N, M] of [[3, 3], [4, 3], [4, 4]]) {
+    const { fallos } = casaPlantas(N, M, 2);
+    comprobar(`casa de ${N}×${M}, 2 plantas y tejado, toda de troncos: se puede hacer entera`, fallos.length === 0, fallos.slice(0, 2).join(' | '));
+  }
+  {
+    const { m, c, fallos } = casaPlantas(4, 3, 2);
+    let peor = 0; for (const [k, carga] of m.cargas(c)) { const cap = PIEZAS[c.piezas.get(k).tipo].cap; if (cap) peor = Math.max(peor, carga / cap); }
+    comprobar('y con margen: ninguna pieza pasa del 75% de lo que aguanta', !fallos.length && peor <= 0.75, `peor ${Math.round(peor * 100)}%`);
+  }
+  {
+    const { fallos } = casaPlantas(4, 3, 3);
+    comprobar('3 plantas sobre cimiento de troncos: no aguanta (hace falta piedra)', fallos.some(f => f.includes('no soporta ese peso')), fallos.slice(0, 1).join(''));
+    const p = casaPlantas(4, 3, 3, 'cim_piedra');
+    comprobar('3 plantas sobre cimiento de piedra: se puede', p.fallos.length === 0, p.fallos.slice(0, 2).join(' | '));
+  }
+  {
+    const { fallos } = casaPlantas(3, 3, 2, 'cim_tronco', 'muro_zarzo');
+    comprobar('el zarzo no da para dos plantas', fallos.length > 0);
+  }
+  {
+    const { fallos } = casaPlantas(5, 5, 2);
+    comprobar('casa de 5×5: el centro no se sostiene sin vigas (vano de una casilla como mucho)', fallos.some(f => f.startsWith('suelo k1 2,2')) && fallos.some(f => f.startsWith('tejado 2,2')), fallos.join(' | '));
+  }
+  {
+    // el tejado de una casilla sin muros debajo se apoya en el tramo de al lado; si se quita ese, cae
+    const m = new Mundo(); m.colocarMojon(0, 0);
+    const c = nuevaConstruccion(m);
+    m.colocar(enRejilla(m, c, 'cim_tronco', 0, 0, 0));
+    m.colocar(enRejilla(m, c, 'muro_tronco', 0, 0, 0, 1));
+    m.colocar(enRejilla(m, c, 'tejado_paja', 0, 0, 1));
+    const r = m.colocar(enRejilla(m, c, 'tejado_paja', 1, 0, 1));
+    comprobar('tejado apoyado en el tramo de al lado', r.ok, r.motivo || '');
+    const pre = m.previsualizarDesmontaje(c, clave('r', 0, 0, 1));
+    comprobar('y cae si se quita el tramo en el que se apoya', pre.ok && pre.caen.includes(clave('r', 1, 0, 1)), `caen=${(pre.caen || []).join(' ')}`);
+    const r2 = m.validar(enRejilla(m, c, 'tejado_paja', 2, 0, 1));
+    comprobar('pero no se encadena: dos casillas sin muro no se sostienen', !r2.ok, r2.motivo || '');
+  }
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

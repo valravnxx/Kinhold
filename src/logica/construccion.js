@@ -137,15 +137,27 @@ export class Mundo {
   soportes(c, p) {
     const def = PIEZAS[p.tipo];
     const { i, j, k } = p;
-    // solo cuentan como apoyo las piezas que pueden sostener peso (cercas, empalizadas,
-    // medio muro y tejados tienen capacidad 0 y nunca sostienen nada)
+    // solo cuentan como apoyo las piezas que pueden sostener peso (cercas, empalizadas y
+    // medio muro tienen capacidad 0 y nunca sostienen nada; los tejados solo sostienen
+    // el tramo de tejado de al lado, nunca muros ni suelos)
     const tiene = (key) => { const q = c.piezas.get(key); return !!q && PIEZAS[q.tipo].cap > 0; };
     const filtra = (keys) => keys.filter(tiene);
+    // piezas iguales (suelo o tejado) en las casillas de al lado que descansan directamente en muros o vigas
+    const vecinasApoyadas = (hueco, i, j, k) => [[1, 0], [-1, 0], [0, 1], [0, -1]]
+      .map(([di, dj]) => clave(hueco, i + di, j + dj, k))
+      .filter(key => {
+        const q = c.piezas.get(key);
+        if (!q) return false;
+        return aristasDeCasilla(q.i, q.j, k - 1).some(a => tiene(clave('e', ...a)) || tiene(clave('b', ...a)));
+      });
 
     switch (p.hueco) {
       case 'f': {
         if (k === 0) return { suelo: true, lista: [] };
-        return { suelo: false, lista: filtra(aristasDeCasilla(i, j, k - 1).flatMap(a => [clave('e', ...a), clave('b', ...a)])) };
+        const directo = filtra(aristasDeCasilla(i, j, k - 1).flatMap(a => [clave('e', ...a), clave('b', ...a)]));
+        if (directo.length) return { suelo: false, lista: directo };
+        // vano de una casilla: se apoya en los suelos vecinos que sí tienen muros o vigas debajo
+        return { suelo: false, lista: vecinasApoyadas('f', i, j, k) };
       }
       case 'v': {
         if (k === 0) return { suelo: true, lista: [] };
@@ -171,7 +183,10 @@ export class Mundo {
       }
       case 'r': {
         if (k === 0) return { suelo: false, lista: [] };
-        return { suelo: false, lista: filtra(aristasDeCasilla(i, j, k - 1).flatMap(a => [clave('e', ...a), clave('b', ...a)])) };
+        const directo = filtra(aristasDeCasilla(i, j, k - 1).flatMap(a => [clave('e', ...a), clave('b', ...a)]));
+        if (directo.length) return { suelo: false, lista: directo };
+        // vano de una casilla: se apoya en los tramos de tejado vecinos que sí descansan en muros o vigas
+        return { suelo: false, lista: vecinasApoyadas('r', i, j, k) };
       }
       case 'g': {
         if (k === 0) return { suelo: false, lista: [] };
@@ -435,11 +450,11 @@ export { aristasDeCasilla, verticesDeArista, casillasDeArista };
 
 function motivoSinApoyo(p) {
   switch (p.hueco) {
-    case 'f': return 'Un suelo en alto necesita muros o vigas debajo.';
+    case 'f': return 'Un suelo en alto necesita muros o vigas debajo, o un suelo al lado que los tenga.';
     case 'v': return 'El poste necesita otro poste o un suelo debajo.';
     case 'e': return 'El muro necesita un cimiento o suelo al lado, un muro debajo o postes en los dos extremos.';
     case 'b': return 'La viga necesita postes en los dos extremos o un muro debajo.';
-    case 'r': return 'El tejado necesita muros o vigas debajo.';
+    case 'r': return 'El tejado necesita muros o vigas debajo, o un tramo de tejado al lado que los tenga.';
     case 'g': return 'El hastial va encima de un muro o una viga.';
     case 'p': return 'La puerta va en un muro con hueco de puerta.';
     case 'l': return 'La escalera necesita un suelo.';

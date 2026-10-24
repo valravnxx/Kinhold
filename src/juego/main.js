@@ -785,5 +785,6 @@ window.__kinhold = {
   apuntarPieza(cx, cy) { evaluarDesmontaje(piezaBajo(cx, cy)); },
   proyectar(x, y, z) { const v = new THREE.Vector3(x, y, z).project(camara); return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight }; },
   reiniciar() { mundo = new Mundo(); reconstruir(); },
+  reconstruir() { reconstruir(); },
   render() { renderer.render(escena, camara); },
 };

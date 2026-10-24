@@ -165,6 +165,38 @@ with sync_playwright() as p:
     n2 = ev(f"{K}.mundo.construcciones.reduce((a,c)=>a+c.piezas.size,0)")
     comprobar('la partida se conserva al recargar', n2 > 20, f'piezas={n2}')
 
+    print('PC: casa de dos plantas con tejado (madera más resistente)')
+    res = ev("""(() => {
+      const K = window.__kinhold, m = K.mundo;
+      const c = { id: m.siguienteId++, ox: -15, oz: -3, rot: 0, piezas: new Map() }; m.construcciones.push(c);
+      const H = { cim_tronco: 'f', suelo_tronco: 'f', muro_tronco: 'e', muro_tronco_puerta: 'e', muro_tronco_ventana: 'e', tejado_paja: 'r', escalera_mano: 'l' };
+      const fallos = [];
+      const pon = (tipo, i, j, k, d = 0, dir = 0) => { const p = { tipo, hueco: H[tipo], i, j, k, dir, abierta: false }; if (H[tipo] === 'e') p.d = d;
+        const r = m.colocar({ construccion: c, nueva: false, pieza: p }); if (!r.ok) fallos.push(`${tipo} ${i},${j},${k}: ${r.motivo}`); };
+      for (const k in m.materiales) m.materiales[k] += 500;
+      const N = 4, M = 4;
+      const celdas = []; for (let i = 0; i < N; i++) for (let j = 0; j < M; j++) celdas.push([i, j]);
+      const borde = ([i, j]) => Math.min(i, N - 1 - i, j, M - 1 - j); celdas.sort((a, b) => borde(a) - borde(b)); // de fuera hacia dentro
+      for (const [i, j] of celdas) pon('cim_tronco', i, j, 0);
+      for (let k = 0; k < 2; k++) {
+        if (k) for (const [i, j] of celdas) if (!(i === 0 && j === 1)) pon('suelo_tronco', i, j, k);
+        for (let i = 0; i < N; i++) { pon(k === 0 && i === 1 ? 'muro_tronco_puerta' : 'muro_tronco', i, 0, k, 0); pon(i === 2 ? 'muro_tronco_ventana' : 'muro_tronco', i, M, k, 0); }
+        for (let j = 0; j < M; j++) { pon('muro_tronco', 0, j, k, 1); pon(j === 1 ? 'muro_tronco_ventana' : 'muro_tronco', N, j, k, 1); }
+      }
+      pon('escalera_mano', 0, 1, 0);
+      // tejado a dos aguas: la mitad de delante sube hacia atrás y la de atrás hacia delante
+      for (const [i, j] of celdas) pon('tejado_paja', i, j, 2, 0, j < M / 2 ? 0 : 2);
+      K.reconstruir();
+      return { fallos, n: c.piezas.size };
+    })()""")
+    comprobar('casa de 4×4, dos plantas y tejado de troncos: entra entera (también las esquinas del tejado)', not res['fallos'], json.dumps(res, ensure_ascii=False)[:300])
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-11; {K}.pj.z=-5; {K}.cam.yaw=Math.PI+0.7; {K}.cam.pitch=0.5; {K}.cam.dist=24")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/12_casa_dos_plantas.png')
+    ev(f"{K}.pj.x=-11; {K}.pj.z=8; {K}.cam.yaw=0.7; {K}.cam.pitch=0.5; {K}.cam.dist=24")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/13_casa_dos_plantas_detras.png')
+
     print('PC: barra de construcción')
     ev(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','muro_entramado'); {K}.pj.x=2; {K}.pj.z=-4; {K}.cam.yaw=Math.PI+0.3; {K}.cam.pitch=0.85; {K}.cam.dist=15; {K}.estado.planta=0; {K}.apuntar(-1, 3)")
     esperar(pg, 900)
