@@ -1,12 +1,12 @@
 // Decisiones tomadas en el personaje, para revisar.
-export const VERSION_PERSONAJE = 'Personaje · v1 (por código)';
+export const VERSION_PERSONAJE = 'Personaje · v1 (esculpido por código)';
 export const REGISTRO_PERSONAJE = [
-  'Hecho por código como decidiste, pero sin piezas pegadas: cada parte es un tubo por secciones con el perfil de un cuerpo real (cintura, pecho, nalgas, muslo, rodilla, pantorrilla, tobillo, deltoides, codo, muñeca).',
-  'Es una sola malla con esqueleto de 17 huesos (pelvis, columna, pecho, cuello, cabeza, hombros, codos, muñecas, caderas, rodillas y tobillos). Cerca de cada articulación los vértices se reparten entre los dos huesos, así no se abre al doblar.',
-  'La cabeza es una esfera moldeada: mandíbula que se estrecha, mentón, cráneo, arco de la ceja, cuencas, pómulos, nariz con aletas, línea de la boca y labio. Ojos metidos en la cuenca, orejas, pelo corto con mechones, barba corta y bigote como capas encima.',
-  'Manos con palma, cuatro dedos algo recogidos y pulgar. Zapatos de cuero de una pieza.',
-  'Ropa: camisa de lino (asoma en cuello y puños), túnica de lana verde apagado hasta la rodilla con el borde más oscuro, cinto de cuero con hebilla, calzas de lana y vendas de lino en las piernas. La falda de la túnica sigue un poco a cada muslo al andar.',
-  'Medidas: 1,76 m; cabeza de 23 cm (1/7,6 de la altura). Todo en P dentro de cuerpo.js: se ajusta cambiando números.',
-  'Animaciones de prueba: quieto (respira y mira un poco a los lados) y andar en el sitio.',
-  'Sin textura de momento (color en los vértices y sombra horneada en pies, entrepierna y bajo la barbilla). La personalización (complexión, cara, pelo, piel) y las capas de armadura son las tareas siguientes.',
-];
+  'Cómo está hecho: esculpido con campos de distancia, la técnica con la que se hacen criaturas orgánicas solo con código. Unas 120 formas simples (elipsoides, conos redondeados, cápsulas) fundidas con mezcla suave, como arcilla, y colocadas sobre el esqueleto. Se convierte en malla fina (3 mm), se simplifica con meshoptimizer (deja detalle en cara y manos) y se hornea al construir: en el juego carga al instante.',
+  'Proporciones de figura humana: 1,76 m; cabeza de 23 cm; ojos a media altura de la cabeza; base de la nariz a medio camino entre cejas y mentón; boca a un tercio de la nariz al mentón; orejas entre ceja y nariz; un ojo de separación entre los ojos.',
+  'Cara: cráneo, frente, arco de las cejas, pómulos, maxilar, mandíbula y mentón; nariz con puente, punta, aletas y fosas; labios; cuencas con párpados y ojos aparte (globo con iris y pupila); orejas. Pelo corto, cejas, barba corta y bigote como capas encima, con su línea del pelo.',
+  'Cuerpo con músculos marcados (pectorales, deltoides, bíceps, antebrazo, cuádriceps, pantorrilla, glúteos) y manos con cuatro dedos de dos falanges y pulgar.',
+  'Ropa como capas que siguen al cuerpo: camisa de lino (cuello y puños), túnica de lana hasta la rodilla con pliegues y borde oscuro, cinto con hebilla, calzas, vendas de lino y zapatos de cuero. La falda sigue a cada muslo al andar.',
+  'Esqueleto de 17 huesos. Cada vértice se reparte entre los huesos según qué formas tiene cerca, así se dobla bien. Sombra de contacto horneada (entre dedos, bajo la barbilla, axilas, cuencas).',
+  'Dos niveles de detalle: cerca, unos 23 mil triángulos (para tu personaje y quien tengas al lado) y lejos, unos 4 mil (para los demás). La personalización (complexión, cara, pelo, piel) y las armaduras por capas son las tareas siguientes, con este mismo método.',
+  'Animaciones de prueba: quieto (respira) y andar en el sitio.',
+]

@@ -230,5 +230,24 @@
   "pruebas": "Sin prueba de navegador propia todavía (no publicado). Lo demás sin cambios.",
   "capturas": null,
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-24T22:05:00+02:00",
+  "fin": "2026-10-24T22:40:12+02:00",
+  "aprox": true,
+  "titulo": "Hito 1b: personaje esculpido por código (v1)",
+  "hito": "arte",
+  "hecho": [
+   "Tu revisión: el avance anterior no valía; pediste investigar y hacerlo de la forma óptima, costase lo que costase.",
+   "Investigado: la técnica que da criaturas orgánicas solo con código es esculpir con campos de distancia (formas simples fundidas con mezcla suave sobre el esqueleto), pasar a malla fina, simplificar y pesar al esqueleto por cercanía. Es lo que usa un proyecto abierto de animales procedurales para three.js.",
+   "Hecho así: unas 120 formas (cráneo, frente, cejas, pómulos, maxilar, mandíbula, mentón, nariz con aletas y fosas, labios, cuencas con párpados, orejas; músculos del tronco, brazos y piernas; manos con dedos). Ojos aparte con iris y pupila.",
+   "Ropa, pelo y barba como capas que siguen al cuerpo (camisa, túnica con pliegues, cinto, calzas, vendas, zapatos). La falda sigue a los muslos al andar.",
+   "Horneado al construir (herramientas/hornear_personaje.mjs): rejilla de 3 mm, superficie por surface nets, simplificación con meshoptimizer (la cabeza con más presupuesto), normales y oclusión sacadas del campo. Tarda 95 s; en el juego carga al instante.",
+   "Medido: cerca 22,8 mil triángulos y lejos 4 mil; 17 huesos.",
+   "Pendiente de pulir: el pelo es algo áspero, la barba tiene el borde irregular, un bulto en el dorso de la muñeca y el cuello de la camisa queda grueso. No comprobado: los fps en un aparato real."
+  ],
+  "pruebas": "Lógica 35/35, modelos 21/21, combate 69/69, personaje horneado 11/11 (nuevas, fallan con MUTAR=1); navegador construcción, combate, estilo, personaje (nueva, falla con MUTAR=1) y web: todo correcto.",
+  "capturas": "capturas/personaje-v1",
+  "estado": "ok"
  }
 ]

@@ -85,11 +85,13 @@
     },
     {
      "nombre": "Personaje nuevo por código (decidido por Pedro), vistoso y con el estilo de maqueta: una sola malla continua con esqueleto y animación, proporciones creíbles algo estilizadas",
-     "estado": "en_curso"
+     "estado": "hecho",
+     "inicio": "2026-10-24T21:13:13+02:00",
+     "fin": "2026-10-24T22:40:12+02:00"
     },
     {
-     "nombre": "Personaje base articulado con el estilo elegido (también el rival del combate)",
-     "estado": "espera_decision"
+     "nombre": "Personaje base articulado con el estilo elegido (también el rival del combate) (hecho con el personaje nuevo por código)",
+     "estado": "hecho"
     },
     {
      "nombre": "Personalización del personaje: complexión, cara, pelo, barba, tono de piel",
@@ -384,9 +386,29 @@
      "notas": "Árboles rehechos: copas suaves en racimos y pinos con puntas, sin rayajos."
     }
    ]
+  },
+  {
+   "id": "personaje",
+   "nombre": "Personaje",
+   "descripcion": "El humano base esculpido por código, con ropa por capas, esqueleto y andar, delante de la cabaña.",
+   "versiones": [
+    {
+     "v": "v1",
+     "fecha": "2026-10-24",
+     "archivo": "jugar/personaje/v1.html",
+     "capturas": "capturas/personaje-v1",
+     "notas": "Personaje esculpido por código: cara, manos, ropa por capas, esqueleto y andar."
+    }
+   ]
   }
  ],
  "decisiones_pendientes": [
+  {
+   "id": "personaje-v1",
+   "pregunta": "Personaje v1 (en Jugar → Personaje): ¿va por buen camino la cara y el cuerpo? Di qué cambiarías (proporciones, cara, pelo, barba, ropa) antes de hacer la personalización y las armaduras con este método.",
+   "desde": "2026-10-24",
+   "hito": "arte"
+  },
   {
    "id": "estilo-v4",
    "pregunta": "¿Te vale como base el «realismo en miniatura» de la prueba de estilo v5 (texturas, mundo sin recortar y árboles rehechos)? Mírala también en tu móvil (arriba salen fps y resolución).",

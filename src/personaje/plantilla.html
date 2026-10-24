@@ -18,7 +18,7 @@ button.sel{background:var(--acento);color:#241b10;border-color:transparent;font-
 #estilos{display:flex;gap:6px;flex-wrap:wrap}
 #medida{margin-left:auto;background:var(--panel);border-radius:10px;padding:6px 10px;font-size:12px;color:var(--muted)}
 #resumen{position:fixed;left:calc(10px + env(safe-area-inset-left,0px));top:calc(58px + env(safe-area-inset-top,0px));max-width:min(380px,calc(100vw - 20px));background:var(--panel);border-radius:10px;padding:8px 11px;font-size:12.5px;color:var(--muted)}
-#inferior{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;gap:6px}
+#inferior{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;gap:6px;flex-wrap:wrap;justify-content:center;width:max-content;max-width:calc(100vw - 20px)}
 #notas{position:fixed;inset:auto 10px calc(64px + env(safe-area-inset-bottom,0px)) 10px;max-width:560px;margin:0 auto;max-height:60vh;overflow:auto;background:var(--panel);border-radius:12px;padding:10px 14px;font-size:13px}
 #notas ul{padding-left:18px;margin:6px 0 0} #notas li{margin:0 0 6px}
 @media (max-width:600px){ #medida{margin-left:0} #estilos button{padding:6px 8px;font-size:12.5px} #resumen{top:auto;bottom:calc(64px + env(safe-area-inset-bottom,0px))} }
@@ -34,7 +34,7 @@ body.desenfoque .foco{display:block}
   <div id="estilos"><button data-modo="quieto">Quieto</button><button data-modo="andar">Andar</button><button data-luz="manana">Mañana</button><button data-luz="tarde">Tarde</button></div>
   <div id="medida">midiendo…</div>
 </div>
-<div id="inferior"><button data-vista="cuerpo">Cuerpo</button><button data-vista="cara">Cara</button><button data-vista="manos">Manos</button><button data-vista="espalda">Espalda</button><button id="btnNotas">Notas</button></div>
+<div id="inferior"><button data-vista="cuerpo">Cuerpo</button><button data-vista="cara">Cara</button><button data-vista="perfil">Perfil</button><button data-vista="manos">Manos</button><button data-vista="espalda">Espalda</button><button id="btnNotas">Notas</button></div>
 <div id="notas" hidden></div>
 <script>/*APP*/</script>
 </body>

@@ -27,7 +27,7 @@ Object.assign(sol.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12, n
 sol.shadow.bias = -0.0005; sol.shadow.normalBias = 0.03;
 escena.add(hemi, sol, sol.target);
 
-const POS = new THREE.Vector3(1.4, 0, 4.2), GIRO = 0.45;
+const POS = new THREE.Vector3(1.6, 0, 4.8), GIRO = 0.45;
 const pj = crearPersonaje();
 pj.position.copy(POS); pj.rotation.y = GIRO;
 escena.add(pj);
@@ -37,8 +37,9 @@ const rel = (x, y, z) => new THREE.Vector3(x, y, z).applyAxisAngle(new THREE.Vec
 const VISTAS = {
   cuerpo:  () => [rel(0.9, 1.35, 3.1), rel(0, 0.9, 0)],
   cara:    () => [rel(0.18, 1.69, 0.62), rel(0, 1.66, 0)],
+  perfil:  () => [rel(0.62, 1.68, 0.12), rel(0, 1.66, 0.02)],
   manos:   () => [rel(0.75, 1.05, 0.55), rel(0.2, 0.84, 0)],
-  espalda: () => [rel(-0.9, 1.45, -2.7), rel(0, 1.0, 0)],
+  espalda: () => [rel(-1.9, 1.4, -1.5), rel(0, 1.0, 0)],
 };
 
 let estado = { luz: 'manana', vista: 'cuerpo', modo: 'quieto' };
@@ -60,7 +61,7 @@ function ponerLuz(id) {
 function ponerVista(v) {
   estado.vista = v;
   const [pos, mira] = VISTAS[v]();
-  if (camara.aspect < 1) pos.sub(mira).multiplyScalar(1.45).add(mira);
+  if (camara.aspect < 1) pos.sub(mira).multiplyScalar(v === 'espalda' ? 1.15 : 1.45).add(mira);
   camara.position.copy(pos); control.target.copy(mira); control.update();
   marcar('vista', v); guardar(); dibujar();
 }
