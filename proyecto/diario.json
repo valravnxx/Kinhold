@@ -365,5 +365,22 @@
   "pruebas": "Personaje v4 en navegador PC y móvil: todo correcto. Taller: tres humanos creados y exportables sin errores.",
   "capturas": "capturas/taller-makehuman",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T00:13:00+02:00",
+  "fin": "2026-10-25T01:12:00+02:00",
+  "titulo": "Taller propio: vestir y acabar por código un humano de MakeHuman",
+  "hito": "arte",
+  "hecho": [
+   "Ropa y acabado hechos por código encima del cuerpo de MakeHuman, sin paquetes de fuera: túnica, calzas, zapatos, cinturón, vestido largo y cofia con toca de lino.",
+   "Cada prenda sale de las mallas de ayuda que trae la propia base (malla ceñida y falda), así que hereda los pesos de los huesos y se moverá con el esqueleto sin pintar nada a mano.",
+   "Piel, cejas, labios, rojeces, pelo corto y barba pintados en texturas calculadas punto a punto; los bordes del pelo, la barba, el escote y las mangas salen suaves, sin escalones.",
+   "Se quita la piel que tapa la ropa: unos 19 mil triángulos por personaje (la base sola tenía 26,8 mil).",
+   "Comprobado también en three.js, con la luz y la cabaña de la prueba de estilo: se carga y se ve igual que en Blender.",
+   "Falta: que se mueva (el esqueleto de MakeHuman está en otra postura que las animaciones de Quaternius y hay que pasarlas de uno a otro), caras más finas y más tipos de pelo."
+  ],
+  "pruebas": "Prueba de taller, no publicada como versión jugable: dos personajes exportados sin errores, vistos en Blender y en three.js sin errores en consola. No comprobado: animaciones ni rendimiento en móvil.",
+  "capturas": "capturas/taller-vestir",
+  "estado": "ok"
  }
 ]
