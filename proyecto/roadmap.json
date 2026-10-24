@@ -49,13 +49,15 @@
    "id": "arte",
    "num": "1b",
    "nombre": "Dirección de arte y personajes",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "jugable": "Personaje con proporciones y detalle realistas, personalización (cuerpo, cara, pelo, piel) y ropa y armaduras que se ven puestas; luz, materiales y paleta sobrios; terreno y piezas de construcción con más detalle. Low-poly por código, pero que se vea bien y aguante en móvil.",
    "nota": "Prioridad alta: antes de añadir más piezas o sistemas, para no rehacerlos luego con el estilo nuevo.",
    "tareas": [
     {
      "nombre": "Tres pruebas de estilo (personaje y una escena con cabaña) con distinta luz, materiales y nivel de detalle, para que Pedro elija",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-24T18:41:34+02:00",
+     "fin": "2026-10-24T19:12:43+02:00"
     },
     {
      "nombre": "Personaje base articulado con el estilo elegido (también el rival del combate)",
@@ -286,12 +288,26 @@
      "notas": "Rosa de golpes y defensa en tres capas."
     }
    ]
+  },
+  {
+   "id": "estilo",
+   "nombre": "Pruebas de estilo",
+   "descripcion": "La misma cabaña y el mismo personaje dibujados de tres maneras para elegir la dirección de arte.",
+   "versiones": [
+    {
+     "v": "v1",
+     "fecha": "2026-10-24",
+     "archivo": "jugar/estilo/v1.html",
+     "capturas": "capturas/estilo-v1",
+     "notas": "Tres estilos (A plano, B suave, C texturas) con cabaña y personaje: elige uno."
+    }
+   ]
   }
  ],
  "decisiones_pendientes": [
   {
    "id": "estilo",
-   "pregunta": "Elegir estilo visual entre las tres pruebas de estilo (aparecerán en Jugar cuando estén hechas). Hasta entonces el resto del hito de arte espera.",
+   "pregunta": "Elegir estilo visual: en Jugar → «Pruebas de estilo» están A (plano sobrio), B (suave y natural) y C (texturas pintadas), con vistas de escena, personaje y cara. Vale elegir uno o una mezcla (p. ej. la luz de B con las texturas de C). Mira también los fps que marca en tu móvil. Hasta entonces el resto del hito de arte espera.",
    "desde": "2026-10-24",
    "hito": "arte"
   },
