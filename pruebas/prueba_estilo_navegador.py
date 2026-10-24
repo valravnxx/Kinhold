@@ -1,12 +1,12 @@
-# Prueba en navegador de las pruebas de estilo (hito 1b): los tres estilos, las tres vistas, PC y móvil.
+# Prueba en navegador de la prueba de estilo v2 (hito 1b): las dos luces, las tres vistas, PC y móvil.
 # Uso: python3 pruebas/prueba_estilo_navegador.py <html> <carpeta_capturas>
-# Comprueba que cada combinación se dibuja (imagen con contenido, no vacía ni de un color),
-# que los estilos se distinguen entre sí, que la interfaz cabe, que no hay errores
-# y que el guardado (estilo y vista) se recuerda al recargar.
-# MUTAR=1 oculta el dibujo para comprobar que la prueba falla cuando debe.
+# Comprueba que cada combinación se dibuja (la franja central de la imagen tiene contenido),
+# que se cumple el presupuesto (triángulos y dibujados), que las luces se distinguen,
+# que la interfaz cabe, que no hay errores y que luz y vista se recuerdan al recargar.
+# MUTAR=1 oculta el dibujo y pone un presupuesto imposible para comprobar que la prueba falla cuando debe.
 import sys, os, io
 from playwright.sync_api import sync_playwright
-from PIL import Image, ImageStat
+from PIL import Image, ImageStat, ImageChops
 
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_estilo.html')
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_estilo'
@@ -21,8 +21,10 @@ def comprobar(n, c, d=''):
 def analizar(png):
     im = Image.open(io.BytesIO(png)).convert('RGB').resize((160, 100))
     # el contenido se mide en la franja central, donde no hay botones ni paneles
-    st = ImageStat.Stat(im.crop((24, 25, 136, 65)))
-    return im, sum(st.stddev) / 3, st.mean
+    return im, sum(ImageStat.Stat(im.crop((24, 25, 136, 65))).stddev) / 3
+
+def diferencia(a, b):
+    return sum(ImageStat.Stat(ImageChops.difference(a, b)).mean) / 3
 
 with sync_playwright() as p:
     nav = p.chromium.launch(args=ARGS)
@@ -35,55 +37,47 @@ with sync_playwright() as p:
         pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
         pg.goto('file://' + RUTA)
         pg.wait_for_function(f'{E} !== undefined', timeout=30000)
-        if os.environ.get('MUTAR'):  # rotura a propósito: sin dibujo, la prueba tiene que fallar
+        if os.environ.get('MUTAR'):
             pg.add_style_tag(content='canvas{visibility:hidden}')
         pg.evaluate(f'{E}.pausar(true)')  # sin tarjeta gráfica cada fotograma tarda segundos: se dibuja a mano
+        presu = pg.evaluate(f'{E}.PRESUPUESTO')
+        if os.environ.get('MUTAR'): presu = {'triangulos': 5000, 'dibujados': 5}  # y un presupuesto imposible
         imagenes = {}
-        for est in 'ABC':
-            pg.click(f'[data-estilo="{est}"]')
-            pg.wait_for_timeout(300)
-            comprobar(f'estilo {est} seleccionado', pg.evaluate(f'{E}.estado().estilo') == est)
-            comprobar(f'{est}: botón marcado', 'sel' in (pg.get_attribute(f'[data-estilo="{est}"]', 'class') or ''))
-            for v in ['escena', 'personaje', 'cara']:
+        for luz in ['manana', 'tarde']:
+            pg.click(f'[data-luz="{luz}"]')
+            comprobar(f'luz {luz} puesta y marcada', pg.evaluate(f'{E}.estado().luz') == luz and 'sel' in (pg.get_attribute(f'[data-luz="{luz}"]', 'class') or ''))
+            for v in ['escena', 'cabana', 'bosque']:
                 pg.click(f'[data-vista="{v}"]')
                 pg.evaluate(f'{E}.dibujar()')
-                png = pg.screenshot(path=f'{SALIDA}/{nombre}_{est}_{v}.png')
-                im, desv, media = analizar(png)
-                imagenes[(est, v)] = im
-                comprobar(f'{est}/{v}: la imagen tiene contenido', desv > 18, f'desviación {desv:.0f}')
-            m = pg.evaluate(f'{E}.medida()')
-            print(f'     medida {est}: {m["triangulosAhora"]} triángulos, {m["llamadasAhora"]} dibujados')
-            comprobar(f'{est}: triángulos y dibujados razonables para móvil', 1000 < m['triangulosAhora'] < 250000 and 0 < m['llamadasAhora'] < 400, f"{m['triangulosAhora']} / {m['llamadasAhora']}")
-        # los estilos se ven distintos (diferencia media de píxeles entre A, B y C en la misma vista)
-        from PIL import ImageChops
-        for a, b in [('A', 'B'), ('B', 'C'), ('A', 'C')]:
-            dif = sum(ImageStat.Stat(ImageChops.difference(imagenes[(a, 'escena')], imagenes[(b, 'escena')])).mean) / 3
-            comprobar(f'{a} y {b} se distinguen', dif > 4, f'diferencia {dif:.1f}')
-        # la interfaz cabe sin salirse
+                png = pg.screenshot(path=f'{SALIDA}/{nombre}_{luz}_{v}.png')
+                im, desv = analizar(png)
+                imagenes[(luz, v)] = im
+                comprobar(f'{luz}/{v}: la imagen tiene contenido', desv > 18, f'desviación {desv:.0f}')
+                m = pg.evaluate(f'{E}.medida()')
+                comprobar(f'{luz}/{v}: dentro del presupuesto', 1000 < m['triangulos'] <= presu['triangulos'] and 0 < m['dibujados'] <= presu['dibujados'],
+                          f"{m['triangulos']} triángulos (máx. {presu['triangulos']}), {m['dibujados']} dibujados (máx. {presu['dibujados']})")
+        comprobar('mañana y tarde se distinguen', diferencia(imagenes[('manana', 'escena')], imagenes[('tarde', 'escena')]) > 4)
+        comprobar('las vistas son distintas', diferencia(imagenes[('manana', 'escena')], imagenes[('manana', 'cabana')]) > 8)
         ancho = pg.evaluate('document.documentElement.scrollWidth')
         comprobar('sin desplazamiento horizontal', ancho <= vista['width'], f'{ancho}px')
-        for sel in ['#estilos', '#inferior', '#resumen']:
+        for sel in ['#estilos', '#inferior', '#medida']:
             caja = pg.locator(sel).bounding_box()
             comprobar(f'{sel} dentro de la pantalla', caja and caja['x'] >= 0 and caja['x'] + caja['width'] <= vista['width'] + 1 and caja['y'] + caja['height'] <= vista['height'] + 1)
-        # notas
         pg.click('#btnNotas'); pg.wait_for_timeout(200); pg.evaluate(f'{E}.dibujar()')
         comprobar('las notas se abren', pg.is_visible('#notas') and len(pg.inner_text('#notas')) > 200)
         pg.screenshot(path=f'{SALIDA}/{nombre}_notas.png')
         pg.click('#btnNotas')
-        # girar la cámara arrastrando
-        antes = pg.evaluate('JSON.stringify(window.__estilo.estado())')
         pg.click('[data-vista="escena"]'); pg.evaluate(f'{E}.dibujar()')
-        p0 = pg.screenshot()
         if not movil:
+            p0 = analizar(pg.screenshot())[0]
             pg.mouse.move(640, 450); pg.mouse.down(); pg.mouse.move(760, 430, steps=8); pg.mouse.up()
             pg.wait_for_timeout(300)
-            d = sum(ImageStat.Stat(ImageChops.difference(analizar(p0)[0], analizar(pg.screenshot())[0])).mean) / 3
+            d = diferencia(p0, analizar(pg.screenshot())[0])
             comprobar('arrastrar gira la cámara', d > 3, f'diferencia {d:.1f}')
-        # se recuerda estilo y vista al recargar
-        pg.click('[data-estilo="A"]'); pg.click('[data-vista="cara"]'); pg.wait_for_timeout(200)
+        pg.click('[data-luz="tarde"]'); pg.click('[data-vista="cabana"]')
         pg.reload(); pg.wait_for_function(f'{E} !== undefined', timeout=30000)
         st = pg.evaluate(f'{E}.estado()')
-        comprobar('recuerda estilo y vista al recargar', st['estilo'] == 'A' and st['vista'] == 'cara', str(st))
+        comprobar('recuerda luz y vista al recargar', st['luz'] == 'tarde' and st['vista'] == 'cabana', str(st))
         comprobar(f'sin errores en consola ({nombre})', not err, '; '.join(err[:3]))
         ctx.close()
     nav.close()

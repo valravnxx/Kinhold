@@ -96,7 +96,7 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-24T19:44:00+02:00",
+  "inicio": "2026-10-24T19:23:09+02:00",
   "fin": "2026-10-24T19:24:41+02:00",
   "titulo": "Revisión de las pruebas de estilo: investigación y replanteo",
   "hito": "arte",
@@ -110,6 +110,24 @@
   "pruebas": "Sin cambios de código en esta parte.",
   "capturas": null,
   "estado": "ok",
-  "inicio_aprox": true
+  "aprox": true
+ },
+ {
+  "inicio": "2026-10-24T19:26:45+02:00",
+  "fin": "2026-10-24T19:42:11+02:00",
+  "titulo": "Hito 1b: prueba de estilo v2, ligera y estilizada",
+  "hito": "arte",
+  "hecho": [
+   "Un solo estilo en vez de tres acabados: sombreado de dibujo de 3 tonos, caras planas, colores apagados en los vértices con variación y oclusión horneada, sin texturas.",
+   "Toda la parte fija (cabaña, leña, tocón, barril, banco, cerca) es un solo dibujado; árboles, rocas y matas, instanciados. Medido: 29,6 mil triángulos y 12 dibujados (la v1 llegaba a 86 mil y 1000 antes de juntarla).",
+   "Una sola sombra de 1024 px; solo echan sombra los árboles cercanos. Cielo con degradado y niebla, sin posproceso.",
+   "Resolución adaptativa: empieza a 1,5× como mucho y baja hasta 0,75× si no llega a 50 fps.",
+   "Tejado de paja con bordes redondeados y vetas de color. Dos luces para comparar: mañana y tarde.",
+   "Quitado el personaje de la v1: el nuevo espera tu decisión (malla continua por código o modelos CC0).",
+   "No comprobado: los fps en un móvil o PC real (el navegador de pruebas no tiene tarjeta gráfica)."
+  ],
+  "pruebas": "Lógica 35/35, modelos 21/21, combate 59/59; navegador construcción, combate, estilo v2 (con presupuesto; MUTAR=1 falla como debe) y web: todo correcto.",
+  "capturas": "capturas/estilo-v2",
+  "estado": "ok"
  }
 ]
