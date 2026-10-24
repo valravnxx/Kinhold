@@ -33,6 +33,21 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-24T17:20:03+00:00",
+  "fin": "2026-10-24T17:44:04+00:00",
+  "titulo": "Sesión duplicada: arreglo del arco hecho dos veces",
+  "hito": "duelo",
+  "hecho": [
+   "Esta sesión empezó a la vez que otra (19:13 hora de Madrid) y las dos cogieron la misma tarea: el arreglo del arco.",
+   "La otra publicó antes la combate v3; al ir a subir la mía, el repositorio ya la tenía. Descarto mi versión para no pisar la publicada (las versiones no se sobrescriben).",
+   "Mi copia también pasaba todas las pruebas (combate 63/63, navegador correcto); no aporta nada que no esté ya en la v3 publicada.",
+   "Aviso: hay dos tareas automáticas corriendo a la vez sobre el repositorio. Conviene dejar solo una para que no repitan trabajo ni se pisen."
+  ],
+  "pruebas": "No aplica (trabajo descartado).",
+  "capturas": "",
+  "estado": "fallo"
+ },
+ {
   "inicio": "2026-10-24T18:04:00+02:00",
   "fin": "2026-10-24T18:19:37+02:00",
   "titulo": "Infraestructura: repositorio, web de progreso y trabajo automático",
@@ -131,19 +146,22 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-24T17:20:03+00:00",
-  "fin": "2026-10-24T17:44:04+00:00",
-  "titulo": "Sesión duplicada: arreglo del arco hecho dos veces",
+  "inicio": "2026-10-24T20:20:27+02:00",
+  "fin": "2026-10-24T20:36:27+02:00",
+  "titulo": "Hito 5: escudo provisional (combate v4)",
   "hito": "duelo",
   "hecho": [
-   "Esta sesión empezó a la vez que otra (19:13 hora de Madrid) y las dos cogieron la misma tarea: el arreglo del arco.",
-   "La otra publicó antes la combate v3; al ir a subir la mía, el repositorio ya la tenía. Descarto mi versión para no pisar la publicada (las versiones no se sobrescriben).",
-   "Mi copia también pasaba todas las pruebas (combate 63/63, navegador correcto); no aporta nada que no esté ya en la v3 publicada.",
-   "Aviso: hay dos tareas automáticas corriendo a la vez sobre el repositorio. Conviene dejar solo una para que no repitan trabajo ni se pisen."
+   "Nueva arma «Espada y escudo»: espada de una mano con 1,7 m de alcance (la larga 1,9), algo más rápida y algo menos dañina.",
+   "Escudo redondo de tablas con borde de cuero y umbo, en el brazo izquierdo; al parar se levanta delante del pecho.",
+   "Con escudo, Parar detiene también flechas y piedras que vienen de frente (70° a cada lado); de espaldas o de lado no.",
+   "Parar con escudo cuesta el 60% del aliento que cuesta con la espada. La parada perfecta y el golpe maestro funcionan igual.",
+   "Nueva opción «Arma del rival» (como la tuya, espada larga, espada y escudo o palo). El rival con escudo lo levanta cuando le apuntas con arco u honda y lo mantiene mientras recargas.",
+   "Todo apuntado como provisional en el registro de decisiones del prototipo, para que lo revises.",
+   "Los guardados de opciones anteriores siguen valiendo: si no tienen arma del rival, se usa «Como la tuya»."
   ],
-  "pruebas": "No aplica (trabajo descartado).",
-  "capturas": "",
-  "estado": "fallo"
+  "pruebas": "Construcción 35/35, modelos 21/21, combate 69/69 (10 nuevas del escudo, fallan con MUTAR=1), navegador de combate PC y móvil correcto (8 comprobaciones nuevas, fallan con el escudo roto a propósito), estilo y web correctos",
+  "capturas": "capturas/combate-v4",
+  "estado": "ok"
  },
  {
   "inicio": "2026-10-24T20:21:00+02:00",
