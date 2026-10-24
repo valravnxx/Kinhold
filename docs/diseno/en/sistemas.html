@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="kinhold-origen" content="c1e0e34bbbb4f5fcba5f02b9cd5bd6c6427693f7">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kinhold Systems and Content</title>
+<style>
+:root{
+  --bg:#f6f2ea; --card:#fffdf8; --ink:#2b2520; --muted:#6f655b; --line:#e2d8c8;
+  --accent:#8a3b1f; --ok:#2f6b3a; --ok-bg:#e6f1e4; --open:#8a5a00; --open-bg:#fbf0d6;
+  --method:#24507a; --method-bg:#e3ecf6; --prop:#5b2a86; --prop-bg:#efe5f8; --gap:#8a1f3b; --gap-bg:#f8e3e8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1815; --card:#24201c; --ink:#ece4d8; --muted:#a59a8c; --line:#3a332c;
+    --accent:#e08a5f; --ok:#8fd09a; --ok-bg:#1f3323; --open:#f0c46a; --open-bg:#3a2f15;
+    --method:#8fb8e6; --method-bg:#1b2a3a; --prop:#c9a6ee; --prop-bg:#2c2038; --gap:#f09ab0; --gap-bg:#3a1b24;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1815; --card:#24201c; --ink:#ece4d8; --muted:#a59a8c; --line:#3a332c;
+  --accent:#e08a5f; --ok:#8fd09a; --ok-bg:#1f3323; --open:#f0c46a; --open-bg:#3a2f15;
+  --method:#8fb8e6; --method-bg:#1b2a3a; --prop:#c9a6ee; --prop-bg:#2c2038; --gap:#f09ab0; --gap-bg:#3a1b24;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Georgia,"Times New Roman",serif}
+.wrap{max-width:940px;margin:0 auto;padding:24px 16px 64px}
+header{border-bottom:2px solid var(--accent);margin-bottom:24px;padding-bottom:12px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.95rem}
+nav{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:24px}
+nav ol{margin:0;padding-left:20px;columns:2;column-gap:24px}
+nav a{color:var(--accent);text-decoration:none}
+@media (max-width:560px){nav ol{columns:1}}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:18px}
+h2{font-size:1.25rem;margin:0 0 10px;color:var(--accent)}
+h3{font-size:1.02rem;margin:16px 0 6px}
+p{margin:6px 0}
+ul,ol{margin:6px 0;padding-left:22px}
+li{margin:3px 0}
+.tag{display:inline-block;font:600 .72rem/1.4 system-ui,sans-serif;padding:2px 8px;border-radius:99px;margin-right:6px;vertical-align:2px}
+.ok{background:var(--ok-bg);color:var(--ok)}
+.open{background:var(--open-bg);color:var(--open)}
+.prop{background:var(--prop-bg);color:var(--prop)}
+.gap{background:var(--gap-bg);color:var(--gap)}
+.legend{font-family:system-ui,sans-serif;font-size:.85rem;color:var(--muted)}
+.tw{overflow-x:auto;margin:8px 0}
+table{width:100%;border-collapse:collapse;font-size:.88rem;min-width:600px}
+th,td{border-bottom:1px solid var(--line);padding:6px 5px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.76rem;text-transform:uppercase;letter-spacing:.04em}
+.note{font-size:.9rem;color:var(--muted)}
+.q li{margin:7px 0}
+.flow{font-family:system-ui,sans-serif;font-size:.88rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:8px 0}
+</style>
+</head>
+<body><div id="kh-idioma" style="position:fixed;top:8px;right:8px;z-index:9;font:700 12.5px system-ui,sans-serif;display:flex;gap:4px"><a data-l="es" href="../sistemas.html" onclick="try{localStorage.setItem('kinhold_web_idioma','es')}catch(e){}" style="padding:4px 9px;border-radius:8px;text-decoration:none;border:1px solid #8888;background:#8882;color:inherit">ES</a><a data-l="en" href="sistemas.html" onclick="try{localStorage.setItem('kinhold_web_idioma','en')}catch(e){}" style="padding:4px 9px;border-radius:8px;text-decoration:none;border:1px solid #8888;background:#c9a46a;color:#241b10">EN</a></div>
+<div class="wrap">
+<header>
+  <h1>Kinhold — Systems and content analysis</h1>
+  <div class="sub">Version 1.1 · 24 Oct 2026 · Based on GDD v0.6 · Complements the analysis document (catalogue)</div>
+  <p class="legend" style="margin-top:10px">
+    <span class="tag ok">DECIDED</span> comes from the GDD
+    <span class="tag prop">PROPOSAL</span> new content or value for your approval
+    <span class="tag gap">MISSING</span> not defined yet
+    <span class="tag open">QUESTION</span> yours to decide
+  </p>
+  <p class="note">All figures (times, yields, capacities, durabilities) are starting values to be tuned through testing. None has been verified in play.</p>
+</header>
+
+<nav><ol>
+  <li><a href="#diag">Diagnosis: what we had and what was missing</a></li>
+  <li><a href="#tiers">Technology tiers</a></li>
+  <li><a href="#recoleccion">Gathering: what, where, with what and how much</a></li>
+  <li><a href="#caza">Hunting, butchering and fishing</a></li>
+  <li><a href="#agri">Agriculture: sowing and harvesting</a></li>
+  <li><a href="#ganado">Livestock and breeding</a></li>
+  <li><a href="#estaciones">Workstations and their cost</a></li>
+  <li><a href="#recetas">Recipes</a></li>
+  <li><a href="#piezas">Building pieces</a></li>
+  <li><a href="#sistemas">Values for each system</a></li>
+  <li><a href="#flujo">A player's first day</a></li>
+  <li><a href="#faltan">What is still missing</a></li>
+  <li><a href="#preguntas">Questions</a></li>
+</ol></nav>
+
+<!-- 1 -->
+<section id="diag">
+<h2>1. Diagnosis: what we had and what was missing</h2>
+<p>GDD v0.6 has the <b>rules</b> of each system. The analysis document had <b>lists</b> of content. What almost all of them lacked was the <b>concrete workings</b>: which tool gets each thing, how much it yields, at which station it is made, what it costs, how long it lasts. This document covers that as far as needed to start and move forward.</p>
+<div class="tw"><table>
+<tr><th>System</th><th>Rules (GDD)</th><th>Content</th><th>Concrete workings</th><th>Now</th></tr>
+<tr><td>Gathering</td><td>Yes</td><td>List</td><td><span class="tag gap">MISSING</span>tool, action, yield</td><td>Section 3</td></tr>
+<tr><td>Hunting and fishing</td><td>Yes</td><td>List</td><td><span class="tag gap">MISSING</span>butchering, products</td><td>Section 4</td></tr>
+<tr><td>Agriculture</td><td>Yes</td><td>Table by climate</td><td><span class="tag gap">MISSING</span>sowing cycle, tending, harvest, processing</td><td>Section 5</td></tr>
+<tr><td>Livestock</td><td>Yes</td><td>List</td><td><span class="tag gap">MISSING</span>feeding, breeding, products</td><td>Section 6</td></tr>
+<tr><td>Technologies</td><td>Yes (by stations)</td><td>List of stations</td><td><span class="tag gap">MISSING</span>tiers, cost of each station, what unlocks what</td><td>Sections 2 and 7</td></tr>
+<tr><td>Crafting</td><td>Yes</td><td>Chains</td><td><span class="tag gap">MISSING</span>recipes with inputs and outputs</td><td>Section 8</td></tr>
+<tr><td>Building</td><td>Yes</td><td>List of pieces</td><td><span class="tag gap">MISSING</span>dimensions, material, weight, capacity</td><td>Section 9</td></tr>
+<tr><td>Survival</td><td>Yes</td><td>—</td><td><span class="tag gap">MISSING</span>rates of hunger, thirst, cold, fatigue</td><td>Section 10</td></tr>
+<tr><td>Durability and decay</td><td>Yes</td><td>—</td><td><span class="tag gap">MISSING</span>figures</td><td>Section 10</td></tr>
+<tr><td>Boundary stone</td><td>Yes</td><td>—</td><td><span class="tag gap">MISSING</span>levels, radii, upkeep</td><td>Section 10</td></tr>
+<tr><td>Combat and wounds</td><td>Yes</td><td>Healing</td><td>Defined while testing the duel milestone</td><td>Pending</td></tr>
+<tr><td>Horses, ships, cartography</td><td>Yes</td><td>Partial</td><td>Detailed when their milestones arrive</td><td>Pending</td></tr>
+</table></div>
+</section>
+
+<!-- 2 -->
+<section id="tiers">
+<h2>2. Technology tiers <span class="tag ok">APPROVED (provisional)</span></h2>
+<p>The GDD says progress runs from the Early to the Late Middle Ages through stations, and that the boundary stone is upgraded with materials of the technology tier. For both to work, concrete tiers are needed. I propose five:</p>
+<div class="tw"><table>
+<tr><th>Tier</th><th>Period</th><th>Entered by building</th><th>Typical materials (for the boundary stone)</th><th>What it unlocks</th></tr>
+<tr><td><b>N0 Survival</b></td><td>—</td><td>Nothing: it is the start</td><td>Sticks, loose stone, fibre</td><td>Stone and flint tools, campfire, branch shelter, cord, firewood frame</td></tr>
+<tr><td><b>N1 Settlement</b></td><td>Early (first half)</td><td>Log workbench</td><td>Logs, branches, reeds, mud, rope</td><td>Log and wattle huts, basketry, basic tanning, drying rack, first plots</td></tr>
+<tr><td><b>N2 Iron</b></td><td>Early</td><td>Bloomery</td><td>Charcoal, wrought iron, planks, leather</td><td>Iron tools and weapons, forge, loom, pottery, hand mill, palisade</td></tr>
+<tr><td><b>N3 Stone</b></td><td>High</td><td>Lime kiln</td><td>Lime, ashlar, mortar, roof tile</td><td>Rubble masonry and ashlar masonry, stone castles, watermill, mail, crossbow, boats</td></tr>
+<tr><td><b>N4 Steel</b></td><td>Late</td><td>Blast furnace</td><td>Steel, glass, bronze</td><td>Plate, longsword, cranequin crossbow, trebuchet, large ships, glass, cartography</td></tr>
+</table></div>
+<p class="note">Each tier is entered by building a specific station, and that station needs materials from the previous tier. This way progress feels natural and there is no tech tree to memorise.</p>
+</section>
+
+<!-- 3 -->
+<section id="recoleccion">
+<h2>3. Gathering: what, where, with what and how much <span class="tag prop">PROPOSAL</span></h2>
+<p>Item size (decides the slot): <b>S</b> small (belt), <b>M</b> medium (hand or container), <b>L</b> large (two hands, back), <b>H</b> huge (dragged, cart or several people).</p>
+<h3>From the ground and plants</h3>
+<div class="tw"><table>
+<tr><th>Resource</th><th>Where</th><th>With</th><th>Action</th><th>Yields</th><th>Size</th><th>Respawns</th></tr>
+<tr><td>Fallen branches</td><td>Forest</td><td>Hands</td><td>Pick up</td><td>1–3 branches</td><td>M</td><td>A few real days</td></tr>
+<tr><td>Loose stone</td><td>Rivers, slopes</td><td>Hands</td><td>Pick up</td><td>1 stone</td><td>M</td><td>Slow (weeks)</td></tr>
+<tr><td>Flint</td><td>Limestone areas, rivers</td><td>Hands</td><td>Pick up</td><td>1 nodule</td><td>S</td><td>Slow</td></tr>
+<tr><td>Fibre (nettle, long grass)</td><td>Clearings, riverbanks</td><td>Hands</td><td>Pull up</td><td>2–4 raw fibre</td><td>S</td><td>One season</td></tr>
+<tr><td>Reeds</td><td>Riverbanks, marshes</td><td>Knife</td><td>Cut</td><td>1 bundle</td><td>M</td><td>One season</td></tr>
+<tr><td>Withies (willow)</td><td>Riverbanks</td><td>Knife</td><td>Cut rods</td><td>1 bundle of rods</td><td>M</td><td>One season</td></tr>
+<tr><td>Berries, mushrooms, nuts</td><td>Forest (by season)</td><td>Hands</td><td>Pick</td><td>3–6 units</td><td>S</td><td>The following season</td></tr>
+<tr><td>Medicinal and cooking herbs</td><td>By biome</td><td>Hands or knife</td><td>Pick</td><td>1–2 bunches</td><td>S</td><td>One season</td></tr>
+<tr><td>Bark</td><td>Standing tree or log</td><td>Knife, axe</td><td>Strip bark</td><td>1–2 bark</td><td>M</td><td>—</td></tr>
+<tr><td>Resin</td><td>Standing conifers</td><td>Knife</td><td>Tap (takes real hours)</td><td>1 resin</td><td>S</td><td>Repeatable</td></tr>
+<tr><td>Mud</td><td>Riverbanks, mudflats</td><td>Hands (a little), spade</td><td>Dig</td><td>1 basket of mud</td><td>M</td><td>Inexhaustible</td></tr>
+<tr><td>Clay</td><td>Specific riverbanks</td><td>Spade</td><td>Dig</td><td>1 basket of clay</td><td>M</td><td>Large deposit</td></tr>
+<tr><td>Sand</td><td>Beaches, rivers</td><td>Spade</td><td>Dig</td><td>1 sack</td><td>M</td><td>Inexhaustible</td></tr>
+<tr><td>Peat</td><td>Peat bogs (north)</td><td>Spade</td><td>Cut blocks; dry</td><td>2 blocks</td><td>M</td><td>Large deposit</td></tr>
+<tr><td>Water</td><td>Rivers, lakes, wells</td><td>Waterskin, bucket, jar</td><td>Fill</td><td>Depends on container</td><td>S–M</td><td>Inexhaustible</td></tr>
+<tr><td>Wild honey and wax</td><td>Hollow trees</td><td>Knife + torch (smoke)</td><td>Smoke out and cut</td><td>1 honeycomb</td><td>S</td><td>One season</td></tr>
+<tr><td>Wild eggs</td><td>Nests</td><td>Hands</td><td>Pick up</td><td>1–3</td><td>S</td><td>Spring</td></tr>
+</table></div>
+<h3>From trees</h3>
+<div class="tw"><table>
+<tr><th>Step</th><th>With</th><th>Result</th><th>Size</th></tr>
+<tr><td>Fell a young tree</td><td>Stone or iron axe</td><td>1 thin log + branches</td><td>L</td></tr>
+<tr><td>Fell a mature tree</td><td>Iron axe (with stone it takes very long)</td><td>1 long log + many branches; leaves a stump</td><td>H</td></tr>
+<tr><td>Cross-cut the long log</td><td>Axe (slow) or crosscut saw (fast, best with two people)</td><td>3–4 short logs</td><td>L</td></tr>
+<tr><td>Split a short log</td><td>Axe + wedges and maul</td><td>Firewood or half-logs</td><td>M–L</td></tr>
+<tr><td>Hew / saw</td><td>Adze, saw (on a bench or sawhorse)</td><td>Beams, planks, posts</td><td>L</td></tr>
+<tr><td>Replant</td><td>Hands (sapling or seed)</td><td>A tree that grows in real weeks</td><td>—</td></tr>
+</table></div>
+<p class="note">Species by band (from the analysis): fir and birch in the north; oak, beech and ash in the temperate zone; olive, cork oak and pine in the south. Oak gives the best building timber and bark for tanning; pine, resin; yew, bows; ash, handles.</p>
+<h3>From the earth (quarries and mines)</h3>
+<div class="tw"><table>
+<tr><th>Resource</th><th>Where</th><th>With</th><th>Yields</th><th>Size</th><th>Tier</th></tr>
+<tr><td>Quarry stone</td><td>Rock outcrops</td><td>Pick, wedges and maul</td><td>1 rough block</td><td>H</td><td>N2</td></tr>
+<tr><td>Limestone</td><td>Limestone areas</td><td>Pick</td><td>Stone for lime</td><td>L</td><td>N3</td></tr>
+<tr><td>Slate</td><td>Mountains</td><td>Pick + chisel</td><td>Slabs for roofing</td><td>M</td><td>N3</td></tr>
+<tr><td>Bog iron</td><td>Marshes, peat bogs</td><td>Spade + sieve</td><td>1 basket of ore</td><td>M</td><td>N2</td></tr>
+<tr><td>Rock iron ore</td><td>Mountain veins</td><td>Pick</td><td>1 ore</td><td>M</td><td>N2</td></tr>
+<tr><td>Copper, tin, lead</td><td>Mountain veins</td><td>Pick</td><td>1 ore</td><td>M</td><td>N3</td></tr>
+<tr><td>Silver</td><td>Scarce veins</td><td>Pick</td><td>1 ore</td><td>M</td><td>N4 (decorative; coin is minted by NPCs)</td></tr>
+<tr><td>Salt</td><td>Coastal salt pans; salt mines</td><td>Built salt pan (evaporation) or pick</td><td>1 sack of salt</td><td>M</td><td>N2</td></tr>
+</table></div>
+</section>
+
+<!-- 4 -->
+<section id="caza">
+<h2>4. Hunting, butchering and fishing <span class="tag prop">PROPOSAL</span></h2>
+<div class="flow">Hunt → the animal falls → <b>butcher with a knife</b> (on the spot or after carrying it whole) → products → the meat spoils over time unless cooked or preserved.</div>
+<div class="tw"><table>
+<tr><th>Prey</th><th>How</th><th>Whole</th><th>Butchering</th></tr>
+<tr><td>Hare, rabbit, bird</td><td>Throwing spear, sling, snare, bow</td><td>M</td><td>Meat ×1, small hide, feathers (birds)</td></tr>
+<tr><td>Fox</td><td>Trap, bow</td><td>M</td><td>Meat ×1, fox pelt</td></tr>
+<tr><td>Roe deer</td><td>Bow, spear</td><td>L</td><td>Meat ×4, hide, bone, sinew, fat</td></tr>
+<tr><td>Red deer</td><td>Bow, spear</td><td>H</td><td>Meat ×8, large hide, antler, bone, sinew, fat</td></tr>
+<tr><td>Wild boar</td><td>Spear (dangerous if cornered)</td><td>H</td><td>Meat ×8, thick hide, tusks, fat</td></tr>
+<tr><td>Wolf</td><td>Spear, bow (attacks)</td><td>L</td><td>Meat ×3, wolf pelt</td></tr>
+<tr><td>Bear</td><td>Group with spears (very dangerous)</td><td>H</td><td>Meat ×12, bear pelt, plenty of fat</td></tr>
+</table></div>
+<h3>Fishing</h3>
+<div class="tw"><table>
+<tr><th>Method</th><th>Tier</th><th>Where</th><th>Notes</th></tr>
+<tr><td>Wooden harpoon</td><td>N0</td><td>Shallow water</td><td>Requires skill (aiming)</td></tr>
+<tr><td>Line and bone hook</td><td>N1</td><td>Rivers, lakes, coast</td><td>Bait: worms, scraps</td></tr>
+<tr><td>Wicker fish trap</td><td>N1</td><td>Rivers</td><td>Left in place; checked later</td></tr>
+<tr><td>Net</td><td>N2</td><td>Wide rivers, coast, boat</td><td>Bigger catch</td></tr>
+</table></div>
+</section>
+
+<!-- 5 -->
+<section id="agri">
+<h2>5. Agriculture: sowing and harvesting <span class="tag prop">PROPOSAL</span></h2>
+<p><span class="tag ok">DECIDED</span>One season per real month; yield by climate band (good, poor, unviable).</p>
+<h3>The cycle</h3>
+<ol>
+  <li><b>Seeds.</b> Three sources: wild plants of your biome (wild cereal and pulses, wild vegetables), NPC merchants (seeds from other bands) and keeping part of your harvest.</li>
+  <li><b>Prepare the plot.</b> The unit is a 2 × 2 m crop tile, on the same grid as building. With a hoe it is prepared tile by tile; with a plough and a draught animal, several at once (for large fields).</li>
+  <li><b>Sow in season.</b> Each crop has a sowing window. Outside it, the seed does not germinate.</li>
+  <li><b>Tend.</b> The biome's rain waters on its own; in the south, in summer, you must water with a bucket or an irrigation channel. Manure from your animals increases yield.</li>
+  <li><b>Grow.</b> The crop advances through visible stages (sprout, growing, ripe). If winter arrives in the north before harvest, it is lost.</li>
+  <li><b>Harvest</b> with the right tool (table).</li>
+  <li><b>Process</b> the harvest to make it useful (threshing, milling, drying, retting…).</li>
+  <li><b>Store</b> seed for the next sowing and the produce in a granary or storehouse.</li>
+</ol>
+<h3>Crops: sowing, harvest and processing</h3>
+<div class="tw"><table>
+<tr><th>Crop</th><th>Sowing</th><th>Harvest</th><th>Tool</th><th>Processing</th><th>Product</th></tr>
+<tr><td>Wheat, rye (winter)</td><td>Autumn</td><td>Summer</td><td>Sickle or scythe</td><td>Sheaves → thresh on a threshing floor with a flail → winnow → mill</td><td>Flour, straw, seed</td></tr>
+<tr><td>Barley, oats (spring)</td><td>Spring</td><td>Summer</td><td>Sickle or scythe</td><td>The same; barley also for ale</td><td>Flour, grain, straw</td></tr>
+<tr><td>Flax</td><td>Spring</td><td>Summer</td><td>Pull up by hand</td><td>Ret in water → dry → break → hackle</td><td>Flax fibre, linseed</td></tr>
+<tr><td>Hemp</td><td>Spring</td><td>Summer</td><td>Sickle</td><td>Ret → dry → break</td><td>Fibre for rope and coarse cloth</td></tr>
+<tr><td>Peas, broad beans</td><td>Spring</td><td>Summer</td><td>Hands</td><td>Dry → shell</td><td>Dried pulses</td></tr>
+<tr><td>Chickpeas, lentils</td><td>Spring</td><td>Summer</td><td>Hands</td><td>Dry → shell</td><td>Dried pulses</td></tr>
+<tr><td>Turnip, cabbage, onion</td><td>Spring or summer</td><td>Autumn</td><td>Hands, knife</td><td>—</td><td>Vegetable (spoils)</td></tr>
+<tr><td>Hops</td><td>Sapling, once</td><td>Autumn every year</td><td>Knife</td><td>Dry</td><td>Hops (beer)</td></tr>
+<tr><td>Apple, pear</td><td>Sapling, once</td><td>Autumn, from the second game year</td><td>Hands</td><td>Press (cider) or eat</td><td>Fruit</td></tr>
+<tr><td>Vine</td><td>Cutting, once</td><td>Autumn, from the second year</td><td>Knife</td><td>Press → ferment in a barrel</td><td>Grapes, wine</td></tr>
+<tr><td>Olive</td><td>Sapling, once</td><td>Winter, from the third year</td><td>Beat with poles + hands</td><td>Oil press</td><td>Oil, olives</td></tr>
+<tr><td>Fig, almond</td><td>Sapling, once</td><td>Summer/autumn, from the second year</td><td>Hands</td><td>Dry</td><td>Dried figs, almonds</td></tr>
+</table></div>
+<p class="note">A game year is 4 real months, so a fruit tree gives its first harvest after 4–8 real months: it is a long-term investment, as in real life.</p>
+<div class="tw"><table>
+<tr><th>Calendar (north)</th><th>Spring</th><th>Summer</th><th>Autumn</th><th>Winter</th></tr>
+<tr><td>What is done</td><td>Sow spring cereal, flax, pulses, vegetables</td><td>Harvest cereal, flax, pulses</td><td>Sow winter cereal; harvest vegetables and fruit</td><td>Nothing grows; live off what was stored</td></tr>
+</table></div>
+<p class="note">In the south winter is mild and the problem is summer drought: there you irrigate.</p>
+<div class="tw"><table>
+<tr><th>Rule</th><th>What it is</th></tr>
+<tr><td><span class="tag ok">DECIDED</span>Fallow</td><td>Repeating the same crop on the same tile yields less each time. Leaving it fallow for a season (or sowing pulses) restores it.</td></tr>
+</table></div>
+</section>
+
+<!-- 6 -->
+<section id="ganado">
+<h2>6. Livestock and breeding <span class="tag prop">PROPOSAL</span></h2>
+<div class="flow">Get an animal (tame it in its biome or buy from an NPC merchant) → pen it (fence, pen, stable) → give it food, water and shelter → produce → breed (male + female).</div>
+<div class="tw"><table>
+<tr><th>Animal</th><th>Eats</th><th>Needs</th><th>Produces</th><th>Breeding (gestation)</th></tr>
+<tr><td>Hen</td><td>Grain, scraps</td><td>Henhouse</td><td>Eggs (every game day), feathers, meat</td><td>Broods eggs: a few real days</td></tr>
+<tr><td>Goose, duck</td><td>Grain, pasture</td><td>Pen with water</td><td>Eggs, feathers, meat</td><td>The same</td></tr>
+<tr><td>Pig</td><td>Scraps, acorns (forest)</td><td>Pigsty</td><td>Meat, fat, leather</td><td>One season</td></tr>
+<tr><td>Goat</td><td>Pasture, branches</td><td>Pen</td><td>Milk, meat, hide</td><td>One season</td></tr>
+<tr><td>Sheep</td><td>Pasture, hay</td><td>Pen, sheepfold</td><td>Wool (shear in spring), milk, meat</td><td>One season</td></tr>
+<tr><td>Cow, ox</td><td>Pasture, hay</td><td>Byre</td><td>Milk, meat, leather; the ox pulls the plough and the cart</td><td>One and a half seasons</td></tr>
+<tr><td>Donkey, mule</td><td>Pasture, hay</td><td>Byre</td><td>Carrying with a packsaddle, light draught</td><td>One and a half seasons</td></tr>
+<tr><td>Horse</td><td>Pasture, hay, grain (for hard work)</td><td>Stable, horseshoes (N2)</td><td>Riding, draught, carrying</td><td>Two seasons; heritable traits</td></tr>
+<tr><td>Dog</td><td>Meat, scraps</td><td>—</td><td>Guarding, hunting, herding</td><td>One season</td></tr>
+<tr><td>Bees</td><td>Nearby flowers</td><td>Hive</td><td>Honey and wax (summer and autumn)</td><td>New swarm in spring</td></tr>
+</table></div>
+<p><b>Pasture:</b> animals in a meadow eat the grass, which grows back; if there are too many for the size of the meadow, it runs out and they must be given hay. <b>Hay:</b> grass is cut with a scythe in summer and dried for winter.</p>
+<p><b>If neglected:</b> without food or water, the animal falls ill and stops producing. <span class="tag ok">DECIDED</span>It does not die: once cared for again, it slowly recovers. Calculations are based on elapsed time, so this happens even when you are away.</p>
+</section>
+
+<!-- 7 -->
+<section id="estaciones">
+<h2>7. Workstations and their cost <span class="tag prop">PROPOSAL</span></h2>
+<div class="tw"><table>
+<tr><th>Station</th><th>Tier</th><th>Building cost</th><th>Makes</th></tr>
+<tr><td>Campfire</td><td>N0</td><td>6 loose stones + 4 branches</td><td>Cooking, warmth, fire-hardening, torches</td></tr>
+<tr><td>Knapping stone (on the ground)</td><td>N0</td><td>1 large stone</td><td>Stone and flint tools</td></tr>
+<tr><td>Log workbench</td><td>N1 (entry)</td><td>2 short logs + stone tool</td><td>Woodwork, handles, basketry, first building pieces</td></tr>
+<tr><td>Drying rack</td><td>N1</td><td>4 posts + 2 ropes</td><td>Drying meat, hides, fibres, herbs, hay</td></tr>
+<tr><td>Hide scraper (frame)</td><td>N1</td><td>4 rods + rope</td><td>Cleaning hides</td></tr>
+<tr><td>Tanning pits</td><td>N1</td><td>Pit + mud + 2 logs</td><td>Leather (with oak bark and water)</td></tr>
+<tr><td>Clay oven</td><td>N1</td><td>10 mud + 6 stones + straw</td><td>Bread, roasts, drying clay</td></tr>
+<tr><td>Charcoal clamp</td><td>N1</td><td>Stacked firewood + earth (consumed)</td><td>Charcoal</td></tr>
+<tr><td>Spindle (tool)</td><td>N1</td><td>Rod + stone or bone</td><td>Spinning fibre and wool</td></tr>
+<tr><td>Bloomery</td><td>N2 (entry)</td><td>20 mud + 10 stones + 4 charcoal</td><td>Iron ore → bloom</td></tr>
+<tr><td>Forge and anvil</td><td>N2</td><td>Stones + mud + bellows (leather and wood) + anvil (stone at first, iron later)</td><td>Bars, nails, tools, weapons, horseshoes, repairing metal</td></tr>
+<tr><td>Whetstone</td><td>N2</td><td>Sandstone + wooden frame</td><td>Sharpening (restores some edge durability)</td></tr>
+<tr><td>Carpenter's bench</td><td>N2</td><td>Planks + nails</td><td>Furniture, wheels, carts, doors, fine pieces</td></tr>
+<tr><td>Loom</td><td>N2</td><td>Planks + rope + nails</td><td>Linen and woollen cloth</td></tr>
+<tr><td>Pottery kiln</td><td>N2</td><td>Clay + stones</td><td>Jars, roof tiles, bricks</td></tr>
+<tr><td>Hand mill</td><td>N2</td><td>2 dressed stones + wood</td><td>Flour (slow)</td></tr>
+<tr><td>Threshing floor</td><td>N1</td><td>Levelled floor of stone or rammed earth</td><td>Separating grain and straw</td></tr>
+<tr><td>Smokehouse</td><td>N2</td><td>Planks + mud</td><td>Smoked meat and fish</td></tr>
+<tr><td>Writing desk</td><td>N2</td><td>Planks + nails</td><td>Recipe books, letters</td></tr>
+<tr><td>Lime kiln</td><td>N3 (entry)</td><td>Stones + mud + limestone</td><td>Lime</td></tr>
+<tr><td>Stonemason's workshop</td><td>N3</td><td>Bench + chisels</td><td>Ashlar blocks</td></tr>
+<tr><td>Watermill</td><td>N3</td><td>Wooden wheel + millstones + building beside a river</td><td>Fast flour</td></tr>
+<tr><td>Press</td><td>N3</td><td>Beam + wooden screw + vat</td><td>Oil, wine, cider</td></tr>
+<tr><td>Mailmaker's workshop</td><td>N3</td><td>Bench + pliers + wire</td><td>Mail</td></tr>
+<tr><td>Shipyard</td><td>N3</td><td>Slipway by the water + framework</td><td>Boats (large ships at N4)</td></tr>
+<tr><td>Blast furnace</td><td>N4 (entry)</td><td>Bricks + stone + large bellows</td><td>Steel</td></tr>
+<tr><td>Armourer's workshop</td><td>N4</td><td>Advanced forge + anvils</td><td>Plate, longsword</td></tr>
+<tr><td>Glass furnace</td><td>N4</td><td>Bricks + fireclay</td><td>Glass</td></tr>
+<tr><td>Siege workshop</td><td>N2 (ram) to N4 (trebuchet)</td><td>Planks + beams + rope</td><td>Siege equipment</td></tr>
+<tr><td>Cartographer's table</td><td>N4</td><td>Planks + instruments</td><td>Maps</td></tr>
+</table></div>
+</section>
+
+<!-- 8 -->
+<section id="recetas">
+<h2>8. Recipes <span class="tag prop">PROPOSAL</span></h2>
+<p>Tiers N0 to N2 are detailed (the ones the first milestones need). N3 and N4 will be detailed when we reach them; their stations and products are in section 7.</p>
+
+<h3>N0 — Survival (no station, or campfire / knapping stone)</h3>
+<div class="tw"><table>
+<tr><th>Item</th><th>Materials</th><th>Where</th><th>Notes</th></tr>
+<tr><td>Fibre cord</td><td>3 raw fibre</td><td>Hands</td><td>Also works as a cord belt (1 slot)</td></tr>
+<tr><td>Flint flake (knife)</td><td>1 flint + 1 stone</td><td>Knapping stone</td><td>Cuts fibre, reeds; butchers</td></tr>
+<tr><td>Stone axe</td><td>1 stone + 1 branch + 2 cord</td><td>Knapping stone</td><td>Fells young trees; mature ones very slowly</td></tr>
+<tr><td>Fire-hardened spear</td><td>1 long branch</td><td>Campfire</td><td>Hunting and defence</td></tr>
+<tr><td>Digging stick</td><td>1 branch</td><td>Hands</td><td>Digs mud and roots, not very efficient</td></tr>
+<tr><td>Sling</td><td>2 cord + 1 small hide</td><td>Hands</td><td>Small game</td></tr>
+<tr><td>Torch</td><td>1 branch + 1 fibre (or resin)</td><td>Campfire</td><td>Light; lasts a while</td></tr>
+<tr><td>Firewood frame (double-L frame)</td><td>4 branches + 2 cord</td><td>Hands</td><td>Only firewood and short logs</td></tr>
+<tr><td>Tied bundle</td><td>2 cord</td><td>Hands</td><td>Hides, fibres, straw</td></tr>
+<tr><td>Branch shelter</td><td>12 branches + 4 cord</td><td>On the ground</td><td>First roof; counts as a bindable bed</td></tr>
+<tr><td>Harpoon</td><td>1 branch + 1 flint flake + cord</td><td>Hands</td><td>Fishing</td></tr>
+<tr><td>Hide foot wraps</td><td>1 hide + 1 cord</td><td>Hands</td><td>Better than barefoot</td></tr>
+</table></div>
+
+<h3>N1 — Settlement (log bench, drying rack, tanning, clay oven)</h3>
+<div class="tw"><table>
+<tr><th>Item</th><th>Materials</th><th>Where</th><th>Notes</th></tr>
+<tr><td>Rope</td><td>3 cord (or 2 flax/hemp fibre)</td><td>Bench</td><td>Basis of almost everything</td></tr>
+<tr><td>Rope belt</td><td>2 rope</td><td>Bench</td><td>2 small slots</td></tr>
+<tr><td>Gathering basket</td><td>2 bundles of withies or reeds</td><td>Bench</td><td>Gathering backpack</td></tr>
+<tr><td>Fisherman's creel</td><td>2 bundles of withies</td><td>Bench</td><td>Fish and tackle</td></tr>
+<tr><td>Fish trap</td><td>2 bundles of withies</td><td>Bench</td><td>Fishing trap</td></tr>
+<tr><td>Hook and line</td><td>1 bone + 1 cord</td><td>Bench</td><td>Fishing</td></tr>
+<tr><td>Snare</td><td>1 rope + 2 branches</td><td>Bench</td><td>Small game</td></tr>
+<tr><td>Wooden spade</td><td>1 short log</td><td>Bench</td><td>Mud, clay, sand, earth</td></tr>
+<tr><td>Wood-and-stone hoe</td><td>1 branch + 1 stone + rope</td><td>Bench</td><td>Preparing crop tiles</td></tr>
+<tr><td>Flint sickle</td><td>1 curved branch + 3 flakes</td><td>Bench</td><td>Harvesting cereal</td></tr>
+<tr><td>Flail</td><td>2 branches + rope</td><td>Bench</td><td>Threshing</td></tr>
+<tr><td>Wooden bucket</td><td>1 short log</td><td>Bench</td><td>Water, milk</td></tr>
+<tr><td>Waterskin</td><td>1 hide + cord</td><td>Hands</td><td>Water (shoulder)</td></tr>
+<tr><td>Clean hide</td><td>1 hide</td><td>Scraper</td><td>Step before leather</td></tr>
+<tr><td>Leather</td><td>1 clean hide + 2 oak bark + water</td><td>Tanning pits</td><td>Takes real days</td></tr>
+<tr><td>Hide satchel</td><td>2 clean hide + cord</td><td>Bench</td><td>Small mixed backpack</td></tr>
+<tr><td>Hide vest</td><td>3 clean hide + cord</td><td>Bench</td><td>Warmth</td></tr>
+<tr><td>Thread</td><td>2 flax fibre or wool</td><td>Spindle</td><td>For sewing and weaving</td></tr>
+<tr><td>Charcoal</td><td>10 firewood</td><td>Charcoal clamp</td><td>Takes real hours; yields 4 charcoal</td></tr>
+<tr><td>Bread</td><td>2 flour + water</td><td>Clay oven</td><td>Food that keeps</td></tr>
+<tr><td>Dried meat</td><td>2 meat + (salt optional)</td><td>Drying rack</td><td>Keeps a long time</td></tr>
+<tr><td>Hay</td><td>Cut grass</td><td>Drying rack or in the sun</td><td>Winter fodder</td></tr>
+<tr><td>Bandages</td><td>1 coarse cloth or fibre</td><td>Hands</td><td>Treating cuts</td></tr>
+</table></div>
+
+<h3>N2 — Iron (bloomery, forge, carpenter, loom, pottery)</h3>
+<div class="tw"><table>
+<tr><th>Item</th><th>Materials</th><th>Where</th><th>Notes</th></tr>
+<tr><td>Iron bloom</td><td>3 ore + 4 charcoal</td><td>Bloomery</td><td>Raw iron</td></tr>
+<tr><td>Iron bar</td><td>1 bloom + 1 charcoal</td><td>Forge</td><td>Base material for metal</td></tr>
+<tr><td>Nails (×10)</td><td>1 bar</td><td>Forge</td><td>Carpentry</td></tr>
+<tr><td>Iron axe</td><td>1 bar + 1 ash handle</td><td>Forge</td><td>Fast felling</td></tr>
+<tr><td>Crosscut saw</td><td>2 bars + 2 handles</td><td>Forge</td><td>Best with two people</td></tr>
+<tr><td>Adze, chisel, brace</td><td>1 bar + handle</td><td>Forge</td><td>Fine carpentry</td></tr>
+<tr><td>Pick</td><td>1 bar + handle</td><td>Forge</td><td>Quarry, mines</td></tr>
+<tr><td>Iron spade</td><td>1 bar + handle</td><td>Forge</td><td>Faster</td></tr>
+<tr><td>Sickle, scythe</td><td>1–2 bars + handle</td><td>Forge</td><td>Harvest and hay</td></tr>
+<tr><td>Ploughshare</td><td>2 bars</td><td>Forge</td><td>Plough + draught animal</td></tr>
+<tr><td>Iron knife</td><td>1 bar + bone handle</td><td>Forge</td><td>Better than flint</td></tr>
+<tr><td>Shears</td><td>1 bar</td><td>Forge</td><td>Wool</td></tr>
+<tr><td>Horseshoes (×4)</td><td>1 bar</td><td>Forge</td><td>Horses</td></tr>
+<tr><td>Iron buckle</td><td>fraction of a bar</td><td>Forge</td><td>Better belts</td></tr>
+<tr><td>Leather belt</td><td>2 leather + buckle (bone or iron)</td><td>Bench</td><td>3 slots (one medium)</td></tr>
+<tr><td>Belt with rings</td><td>2 leather + iron buckle + 2 rings</td><td>Bench</td><td>4 slots (two medium)</td></tr>
+<tr><td>Sword belt</td><td>3 leather + iron buckle</td><td>Bench</td><td>Scabbard + 2 small</td></tr>
+<tr><td>Frame backpack</td><td>Planks + 2 leather + rope</td><td>Carpenter</td><td>Large mixed</td></tr>
+<tr><td>Stone carrier</td><td>Planks + rope</td><td>Carpenter</td><td>Stones and blocks</td></tr>
+<tr><td>Back-carried tool chest</td><td>Planks + leather + nails</td><td>Carpenter</td><td>Tools</td></tr>
+<tr><td>Quiver</td><td>1 leather</td><td>Bench</td><td>Arrows</td></tr>
+<tr><td>Linen / woollen cloth</td><td>4 thread</td><td>Loom</td><td>Clothing, bandages, ship sails</td></tr>
+<tr><td>Woollen shirt and trousers</td><td>2 woollen cloth + thread</td><td>Bench</td><td>Warmer than linen</td></tr>
+<tr><td>Gambeson</td><td>4 cloth + padding (wool or flax) + thread</td><td>Bench</td><td>Basic protection</td></tr>
+<tr><td>Hood, cloak</td><td>1–2 woollen cloth</td><td>Bench</td><td>Cold and rain</td></tr>
+<tr><td>Shoes, boots</td><td>1–2 leather + thread</td><td>Bench</td><td>Feet</td></tr>
+<tr><td>Leather gloves</td><td>1 leather</td><td>Bench</td><td>Hands</td></tr>
+<tr><td>Hardened leather (pieces)</td><td>Leather + wax or hot water</td><td>Bench + campfire</td><td>Light armour</td></tr>
+<tr><td>Round shield</td><td>Planks + leather + bar (shield boss)</td><td>Carpenter</td><td>Defence</td></tr>
+<tr><td>Iron spear</td><td>Fraction of a bar + shaft</td><td>Forge</td><td>Polearm</td></tr>
+<tr><td>War axe</td><td>1 bar + handle</td><td>Forge</td><td>Weapon</td></tr>
+<tr><td>One-handed sword</td><td>2 bars</td><td>Forge</td><td>Weapon (the longsword is N4)</td></tr>
+<tr><td>Self bow</td><td>1 yew or ash stave + sinew string</td><td>Bench</td><td>Ranged (later milestone)</td></tr>
+<tr><td>Arrows (×10)</td><td>Shafts + feathers + heads (flint or iron)</td><td>Bench</td><td>—</td></tr>
+<tr><td>Jar, storage jar</td><td>Clay</td><td>Pottery kiln</td><td>Storage for liquids and grain</td></tr>
+<tr><td>Roof tile (×10)</td><td>Clay</td><td>Pottery kiln</td><td>Roof that does not rot</td></tr>
+<tr><td>Barrel</td><td>Planks + iron hoops</td><td>Carpenter</td><td>Liquids, salting</td></tr>
+<tr><td>Chest</td><td>Planks + nails</td><td>Carpenter</td><td>Storage</td></tr>
+<tr><td>Wheelbarrow</td><td>Planks + wheel</td><td>Carpenter</td><td>Hand transport</td></tr>
+<tr><td>Two-wheeled cart</td><td>Planks + 2 wheels + nails</td><td>Carpenter</td><td>Draught animal</td></tr>
+<tr><td>Hand ram</td><td>1 log + bar (head)</td><td>Siege workshop</td><td>Against gates and palisades</td></tr>
+<tr><td>Parchment</td><td>Clean hide + lime or ash</td><td>Bench</td><td>Books and letters</td></tr>
+<tr><td>Ink</td><td>Soot + water (or oak galls)</td><td>Bench</td><td>Books and letters</td></tr>
+<tr><td>Recipe book</td><td>Parchment + ink</td><td>Writing desk</td><td>Teaches recipes you know</td></tr>
+<tr><td>Smoked meat</td><td>Meat</td><td>Smokehouse</td><td>Keeps a long time</td></tr>
+<tr><td>Salt curing</td><td>Meat or fish + salt</td><td>Barrel</td><td>Keeps longer than anything</td></tr>
+</table></div>
+</section>
+
+<!-- 9 -->
+<section id="piezas">
+<h2>9. Building pieces <span class="tag prop">PROPOSAL</span></h2>
+<p><span class="tag ok">DECIDED</span><b>Grid module:</b> 2 m horizontally and 2.5 m of height per storey. It is the size of a crop tile, of a wall section and of a palisade section.</p>
+<p><b>Load:</b> each piece has its own weight (kg) and a capacity (kg it can hold on top). Weight is passed down through the supports to the ground. The figures are for internal calculation; the player does not carry by weight.</p>
+
+<h3>Milestone 1 pieces (N0–N2)</h3>
+<div class="tw"><table>
+<tr><th>Piece</th><th>Tier</th><th>Materials</th><th>Weight</th><th>Holds</th><th>Notes</th></tr>
+<tr><td>Boundary stone</td><td>N0</td><td>3 loose stones</td><td>—</td><td>—</td><td>Claims land; levels up with materials</td></tr>
+<tr><td>Loose-stone foundation (2×2)</td><td>N1</td><td>8 loose stones</td><td>400</td><td>3000</td><td>Rests on the ground; base for anything heavy</td></tr>
+<tr><td>Log foundation (2×2)</td><td>N1</td><td>2 short logs</td><td>150</td><td>1200</td><td>Rots faster</td></tr>
+<tr><td>Log post</td><td>N1</td><td>1 thin log</td><td>60</td><td>800</td><td>Vertical, at the grid corners</td></tr>
+<tr><td>Log beam</td><td>N1</td><td>1 thin log</td><td>60</td><td>400</td><td>Horizontal between posts; holds floors and roof</td></tr>
+<tr><td>Split-log floor</td><td>N1</td><td>2 half-logs</td><td>120</td><td>300</td><td>Needs beams or a foundation underneath</td></tr>
+<tr><td>Wattle-and-daub wall</td><td>N1</td><td>4 rods + 4 mud</td><td>150</td><td>150</td><td>Cheap; cannot hold a second storey</td></tr>
+<tr><td>Log wall</td><td>N1</td><td>4 thin logs</td><td>300</td><td>600</td><td>Solid; holds one storey above</td></tr>
+<tr><td>Wall with door / window opening</td><td>N1</td><td>As its wall, a little less</td><td>—</td><td>A little less</td><td>Variants of each wall</td></tr>
+<tr><td>Half wall</td><td>N1</td><td>Half</td><td>—</td><td>—</td><td>Fences, railings, pens</td></tr>
+<tr><td>Thatched roof (sloped section)</td><td>N1</td><td>2 rods + 4 bundles of straw or reeds</td><td>80</td><td>—</td><td>Must be renewed; burns</td></tr>
+<tr><td>Roof finish</td><td>N1</td><td>The same</td><td>40</td><td>—</td><td>Ridge and corners</td></tr>
+<tr><td>Ladder</td><td>N1</td><td>2 long branches + rope</td><td>15</td><td>—</td><td>Access to height</td></tr>
+<tr><td>Rod door</td><td>N1</td><td>4 rods + rope</td><td>20</td><td>—</td><td>Weak</td></tr>
+<tr><td>Rod fence</td><td>N1</td><td>4 rods + rope</td><td>20</td><td>—</td><td>For animals</td></tr>
+<tr><td>Plank floor</td><td>N2</td><td>4 planks + nails</td><td>100</td><td>400</td><td>—</td></tr>
+<tr><td>Plank wall</td><td>N2</td><td>6 planks + nails</td><td>200</td><td>400</td><td>—</td></tr>
+<tr><td>Timber-framed wall</td><td>N2</td><td>Beams + wattle + mud</td><td>250</td><td>700</td><td>Typically medieval; holds a storey</td></tr>
+<tr><td>Plank staircase</td><td>N2</td><td>6 planks + nails</td><td>100</td><td>—</td><td>Between storeys</td></tr>
+<tr><td>Plank door</td><td>N2</td><td>4 planks + nails + hinges</td><td>40</td><td>—</td><td>With family permissions</td></tr>
+<tr><td>Shutter, trapdoor</td><td>N2</td><td>2 planks + nails</td><td>20</td><td>—</td><td>—</td></tr>
+<tr><td>Shingle roof</td><td>N2</td><td>Shingles + nails</td><td>100</td><td>—</td><td>Lasts longer than thatch</td></tr>
+<tr><td>Tiled roof</td><td>N2</td><td>10 tiles + beams</td><td>200</td><td>—</td><td>Does not rot or burn easily; heavy</td></tr>
+<tr><td><b>Palisade (2 m × 3 m section)</b></td><td>N2</td><td>6 sharpened thin logs</td><td>500</td><td>—</td><td>Almost immune without a siege</td></tr>
+<tr><td>Palisade gate</td><td>N2</td><td>Logs + iron bars + hinges</td><td>400</td><td>—</td><td>Weak point against the ram</td></tr>
+<tr><td>Wall-walk</td><td>N2</td><td>Planks + posts</td><td>100</td><td>300</td><td>Behind the palisade</td></tr>
+<tr><td>Log bridge (section)</td><td>N2</td><td>Logs + beams</td><td>400</td><td>600</td><td>Resting on banks or piers</td></tr>
+<tr><td>Chimney / indoor hearth</td><td>N2</td><td>Stones + mud</td><td>600</td><td>—</td><td>Warmth indoors without the house catching fire</td></tr>
+</table></div>
+<h3>Decoration (free placement)</h3>
+<p>Straw bed (N0), wooden bed (N2), bench, table, stool, shelf, chest, storage jar, barrel, wall torch, tallow lamp, hide rug, tapestry (cloth), family banner, tool hooks.</p>
+<h3>N3–N4 (detailed when we get there)</h3>
+<p>Rubble masonry wall, ashlar wall, tower, crenellations, portcullis, drawbridge, moat, slate roof, stone bridge, glazed window, bartizan.</p>
+</section>
+
+<!-- 10 -->
+<section id="sistemas">
+<h2>10. Values for each system <span class="tag prop">PROPOSAL</span></h2>
+<p class="note">One game day = 3 real hours (2 of daylight, 1 of night).</p>
+<h3>Survival</h3>
+<div class="tw"><table>
+<tr><th>Need</th><th>Rate</th><th>Warning</th><th>If it reaches the maximum</th><th>Recovered by</th></tr>
+<tr><td>Hunger</td><td>You must eat 2–3 times per game day</td><td>Orange circle</td><td>Faster fatigue, then slow wounds</td><td>Food; cooked food is more filling</td></tr>
+<tr><td>Thirst</td><td>Faster than hunger</td><td>Blue circle</td><td>The same, faster</td><td>Water, milk, ale</td></tr>
+<tr><td>Cold</td><td>Depends on biome, season, night, rain and clothing</td><td>Light blue circle</td><td>Clumsy movement, fatigue, slow wounds</td><td>Fire, roof, clothing</td></tr>
+<tr><td>Heat</td><td>Depends on biome, season, sun and armour</td><td>Red circle</td><td>Faster fatigue and thirst</td><td>Shade, water, light clothing</td></tr>
+<tr><td>Fatigue</td><td>Rises when working, running, carrying, fighting</td><td>Grey circle</td><td>You cannot run or strike hard</td><td>Resting seated; sleeping fully restores it</td></tr>
+</table></div>
+<h3>Durability</h3>
+<div class="tw"><table>
+<tr><th>Item</th><th>Stone / wood</th><th>Iron</th><th>Steel</th></tr>
+<tr><td>Axe (mature trees felled)</td><td>~3</td><td>~30</td><td>~60</td></tr>
+<tr><td>Pick (quarry blocks)</td><td>—</td><td>~40</td><td>~80</td></tr>
+<tr><td>Weapon (blows taken or dealt)</td><td>~50</td><td>~400</td><td>~800</td></tr>
+<tr><td>Clothing and armour</td><td colspan="3">Wears out when taking blows and with use; repaired at its station with its material</td></tr>
+</table></div>
+<h3>Decay and upkeep</h3>
+<div class="tw"><table>
+<tr><th>Material</th><th>Without upkeep, starts to fail after…</th><th>Disappears after…</th><th>Kept up with (in the boundary stone)</th></tr>
+<tr><td>Straw and reeds</td><td>~1 real week</td><td>~3 weeks</td><td>Straw</td></tr>
+<tr><td>Untreated wood</td><td>~2 weeks (less in damp areas)</td><td>~6 weeks</td><td>Wood</td></tr>
+<tr><td>Treated wood (pitch)</td><td>~5 weeks</td><td>~12 weeks</td><td>Wood + resin</td></tr>
+<tr><td>Stone</td><td>Never disappears: remains as a ruin</td><td>—</td><td>Lime</td></tr>
+</table></div>
+<p>Boundary stone consumption: a small amount per real week according to what is built (for example, 1 unit of each material for every 10 pieces of that material). So a hut is kept up with a couple of logs a week.</p>
+<h3>Boundary stone</h3>
+<div class="tw"><table>
+<tr><th>Level</th><th>Upgraded with</th><th>Land radius</th><th>Exclusion radius</th></tr>
+<tr><td>1</td><td>Placing it (3 stones)</td><td>20 m</td><td>300 m</td></tr>
+<tr><td>2</td><td>N1 materials (logs, rope, mud)</td><td>40 m</td><td>500 m</td></tr>
+<tr><td>3</td><td>N2 materials (iron bars, planks, leather)</td><td>80 m</td><td>800 m</td></tr>
+<tr><td>4</td><td>N3 materials (lime, ashlar)</td><td>150 m</td><td>1,2 km</td></tr>
+<tr><td>5</td><td>N4 materials (steel, glass)</td><td>250 m</td><td>2 km</td></tr>
+</table></div>
+<h3>Death</h3>
+<ul>
+  <li>Roughly half of what you carry stays on the body to be looted; the other half breaks, chosen at random.</li>
+  <li>The body lasts for a while (for example, 1 real hour) and then disappears with whatever is left.</li>
+</ul>
+<h3>Hired NPCs</h3>
+<div class="tw"><table>
+<tr><th>Type</th><th>Pay</th><th>Eats</th><th>Needs</th></tr>
+<tr><td>Mercenary / sentry</td><td>High, per real week</td><td>2 rations per game day</td><td>Weapon, armour, bed</td></tr>
+<tr><td>Woodcutter</td><td>Low</td><td>2 rations</td><td>Axe</td></tr>
+<tr><td>Day labourer</td><td>Low</td><td>2 rations</td><td>Hoe, sickle</td></tr>
+<tr><td>Shepherd</td><td>Low</td><td>2 rations</td><td>Crook, dog (optional)</td></tr>
+<tr><td>Messenger</td><td>Per journey, by distance</td><td>—</td><td>—</td></tr>
+</table></div>
+</section>
+
+<!-- 11 -->
+<section id="flujo">
+<h2>11. A player's first day</h2>
+<p>A check that everything fits together: what someone does in their first session with what is defined above.</p>
+<ol>
+  <li>Appears in a linen shirt and trousers, barefoot, at an accessible spot in their country.</li>
+  <li>Thirst warnings: finds a river and drinks with their hands.</li>
+  <li>Pulls up fibre and makes cord; ties the cord on as a belt (1 slot).</li>
+  <li>Gathers flint and stone, sets up a knapping stone and makes a flake and a stone axe.</li>
+  <li>Gathers branches, makes a firewood frame, lights a campfire for the night.</li>
+  <li>Plants their boundary stone (3 stones) and builds a branch shelter, which binds as a bed.</li>
+  <li>With the fire-hardened spear hunts a hare, butchers it with the flake and roasts it.</li>
+  <li>Fells a young tree, makes the log bench and enters N1.</li>
+</ol>
+<p>No step needs anything that is not defined. From there on: the log cabin, the basket, the spade and the first crop tiles.</p>
+</section>
+
+<!-- 12 -->
+<section id="faltan">
+<h2>12. What is still missing</h2>
+<div class="tw"><table>
+<tr><th>What</th><th>When it is defined</th></tr>
+<tr><td>Detailed N3 and N4 recipes and pieces</td><td>When development reaches those tiers</td></tr>
+<tr><td>Combat: fencing approach, weapons by type of blow, effect of each wound</td><td>Duel milestone</td></tr>
+<tr><td>Step-by-step healing</td><td>Survival and duel milestone</td></tr>
+<tr><td>Taming horses and other wild animals</td><td>Horses milestone</td></tr>
+<tr><td>Ship design and buoyancy</td><td>Navigation milestone</td></tr>
+<tr><td>List of NPC commissions and prices in coin</td><td>Economy milestone</td></tr>
+<tr><td>Specific style of each of the 5 countries (architecture, clothing, names)</td><td>World milestone; affects the piece variants</td></tr>
+<tr><td>Premium content catalogue (cosmetics, furniture)</td><td>Before launch</td></tr>
+<tr><td>Values in this document</td><td>Testing each milestone</td></tr>
+</table></div>
+</section>
+
+<!-- 13 -->
+<section id="preguntas">
+<h2>13. Questions</h2>
+<p>None pending.</p>
+</section>
+</div>
+</body>
+</html>

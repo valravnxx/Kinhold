@@ -55,8 +55,31 @@ with sync_playwright() as p:
         comprobar('y ES la devuelve al español', pg.inner_text('nav button[data-s=jugar]') == 'Jugar')
         pg.goto(URL + '?lang=en'); pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
         comprobar('?lang=en abre la web en inglés', pg.inner_text('nav button[data-s=jugar]') == 'Play')
+        # documentos de diseño en inglés: la web en inglés enlaza a diseno/en/ y cada documento tiene selector ES · EN
+        docs_en = pg.evaluate("[...document.querySelectorAll('a[data-doc]')].map(a => a.getAttribute('href'))")
+        comprobar('en inglés, los documentos de diseño enlazan a la versión inglesa', len(docs_en) == 3 and all(h.startswith('diseno/en/') for h in docs_en), ', '.join(docs_en))
+        for d in ['gdd', 'sistemas', 'analisis']:
+            pg.goto(URL + f'diseno/{d}.html'); pg.wait_for_timeout(150)
+            es_txt = pg.inner_text('body')
+            if d == 'gdd': pg.screenshot(path=f'{SALIDA}/{nombre}_10_doc_{d}_es.png')
+            with pg.expect_navigation():
+                pg.click('#kh-idioma a[data-l=en]')
+            en_txt = pg.inner_text('body')
+            comprobar(f'{d}: el selector EN abre la traducción', pg.url.endswith(f'diseno/en/{d}.html') and pg.evaluate('document.documentElement.lang') == 'en')
+            # misma estructura (mismas secciones) y texto distinto: no es una copia sin traducir
+            mismo = pg.evaluate("[...document.querySelectorAll('section[id],h2,h3,li,tr')].length")
+            comprobar(f'{d}: en inglés hay texto propio, sin restos típicos del español', es_txt != en_txt and not any(w in en_txt for w in [' de la ', ' que ', ' para ', 'ción ']))
+            ancho = pg.evaluate('document.documentElement.scrollWidth')
+            comprobar(f'{d} (inglés): sin desplazamiento horizontal', ancho <= vista['width'], f'{ancho}px')
+            pg.screenshot(path=f'{SALIDA}/{nombre}_11_doc_{d}_en.png')
+            with pg.expect_navigation():
+                pg.click('#kh-idioma a[data-l=es]')
+            comprobar(f'{d}: el selector ES vuelve al español', pg.url.endswith(f'diseno/{d}.html') and '/en/' not in pg.url and pg.evaluate('document.documentElement.lang') == 'es')
+            comprobar(f'{d}: mismas secciones en los dos idiomas', mismo == pg.evaluate("[...document.querySelectorAll('section[id],h2,h3,li,tr')].length"))
         pg.goto(URL); pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
         pg.click('#idiomas button[data-l=es]'); pg.wait_for_timeout(200)
+        docs_es = pg.evaluate("[...document.querySelectorAll('a[data-doc]')].map(a => a.getAttribute('href'))")
+        comprobar('en español, los documentos enlazan al original', all(not h.startswith('diseno/en/') for h in docs_es) and len(docs_es) == 3)
         # los enlaces internos existen
         enlaces = pg.evaluate("[...document.querySelectorAll('a[href]')].map(a => a.getAttribute('href')).filter(h => !h.startsWith('http'))")
         for h in set(enlaces):

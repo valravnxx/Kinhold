@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="kinhold-origen" content="2202d3b2196ed59a80ecd891b8fa59936e8fb98a">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Medieval GDD Analysis</title>
+<style>
+:root{
+  --bg:#f6f2ea; --card:#fffdf8; --ink:#2b2520; --muted:#6f655b; --line:#e2d8c8;
+  --accent:#8a3b1f; --ok:#2f6b3a; --ok-bg:#e6f1e4; --open:#8a5a00; --open-bg:#fbf0d6;
+  --method:#24507a; --method-bg:#e3ecf6; --gap:#8a1f3b; --gap-bg:#f8e3e8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1815; --card:#24201c; --ink:#ece4d8; --muted:#a59a8c; --line:#3a332c;
+    --accent:#e08a5f; --ok:#8fd09a; --ok-bg:#1f3323; --open:#f0c46a; --open-bg:#3a2f15;
+    --method:#8fb8e6; --method-bg:#1b2a3a; --gap:#f09ab0; --gap-bg:#3a1b24;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1815; --card:#24201c; --ink:#ece4d8; --muted:#a59a8c; --line:#3a332c;
+  --accent:#e08a5f; --ok:#8fd09a; --ok-bg:#1f3323; --open:#f0c46a; --open-bg:#3a2f15;
+  --method:#8fb8e6; --method-bg:#1b2a3a; --gap:#f09ab0; --gap-bg:#3a1b24;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Georgia,"Times New Roman",serif}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 64px}
+header{border-bottom:2px solid var(--accent);margin-bottom:24px;padding-bottom:12px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.95rem}
+nav{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:24px}
+nav ol{margin:0;padding-left:20px}
+nav a{color:var(--accent);text-decoration:none}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:18px}
+h2{font-size:1.25rem;margin:0 0 10px;color:var(--accent)}
+h3{font-size:1.02rem;margin:16px 0 6px}
+p{margin:6px 0}
+ul,ol{margin:6px 0;padding-left:22px}
+li{margin:3px 0}
+.tag{display:inline-block;font:600 .72rem/1.4 system-ui,sans-serif;padding:2px 8px;border-radius:99px;margin-right:6px;vertical-align:2px}
+.gap{background:var(--gap-bg);color:var(--gap)}
+.open{background:var(--open-bg);color:var(--open)}
+.prop{background:var(--method-bg);color:var(--method)}
+.legend{font-family:system-ui,sans-serif;font-size:.85rem;color:var(--muted)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem;margin:8px 0;min-width:520px}
+th,td{border-bottom:1px solid var(--line);padding:6px 5px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+.q li{margin:7px 0}
+.q b{color:var(--accent)}
+.note{font-size:.9rem;color:var(--muted)}
+</style>
+</head>
+<body><div id="kh-idioma" style="position:fixed;top:8px;right:8px;z-index:9;font:700 12.5px system-ui,sans-serif;display:flex;gap:4px"><a data-l="es" href="../analisis.html" onclick="try{localStorage.setItem('kinhold_web_idioma','es')}catch(e){}" style="padding:4px 9px;border-radius:8px;text-decoration:none;border:1px solid #8888;background:#8882;color:inherit">ES</a><a data-l="en" href="analisis.html" onclick="try{localStorage.setItem('kinhold_web_idioma','en')}catch(e){}" style="padding:4px 9px;border-radius:8px;text-decoration:none;border:1px solid #8888;background:#c9a46a;color:#241b10">EN</a></div>
+<div class="wrap">
+<header>
+  <h1>Analysis of GDD v0.2 — gaps, catalogue and questions</h1>
+  <div class="sub">24 Oct 2026 · Medieval browser game (untitled)</div>
+  <p class="legend" style="margin-top:10px">
+    <span class="tag gap">MISSING</span> system the GDD does not cover yet
+    <span class="tag prop">PROPOSAL</span> catalogue to prune: nothing goes in without your approval
+    <span class="tag open">QUESTION</span> answer it by number
+  </p>
+</header>
+
+<nav><ol>
+  <li><a href="#resumen">Summary of the analysis</a></li>
+  <li><a href="#huecos">Systems missing from the GDD</a></li>
+  <li><a href="#recursos">Gatherables and natural resources</a></li>
+  <li><a href="#materiales">Processed materials and production chains</a></li>
+  <li><a href="#estaciones">Workstations</a></li>
+  <li><a href="#herramientas">Tools</a></li>
+  <li><a href="#armas">Weapons and shields</a></li>
+  <li><a href="#armadura">Armour and clothing</a></li>
+  <li><a href="#contenedores">Containers and transport</a></li>
+  <li><a href="#construccion">Building and defence pieces</a></li>
+  <li><a href="#asedio">Siege equipment</a></li>
+  <li><a href="#animales">Animals</a></li>
+  <li><a href="#cultivos">Crops by climate band</a></li>
+  <li><a href="#comida">Food, drink and preservation</a></li>
+  <li><a href="#medicina">Healing wounds</a></li>
+  <li><a href="#preguntas">All the questions, numbered</a></li>
+</ol></nav>
+
+<section id="resumen">
+<h2>1. Summary of the analysis</h2>
+<p>GDD v0.2 has the pillars and the big systems well defined (world, building, combat, animals, social, offline defence). What it lacks falls into three kinds:</p>
+<ul>
+  <li><b>Whole systems not mentioned</b> that a game like this needs in order to work: character progression, economy and trade, sea travel, decay of what is built, map and orientation, locks, communication, monetisation, and whether solo mode is a separate world or the same online world. They are in section 2.</li>
+  <li><b>All the concrete content:</b> what is gathered, what is crafted, with what, at which workstation. Sections 3 to 15 hold a proposed catalogue, thought out with medieval realism and real production chains. It is there to prune: strike it out, extend it or change it.</li>
+  <li><b>A foundational decision that changes the whole catalogue:</b> which medieval period is depicted. The longsword belongs to the Late Middle Ages; technology, armour, weapons and architecture change a lot from century to century (question 1).</li>
+</ul>
+<p class="note">About the catalogue: it is written with realism as the guide. Being listed does not mean it must go in; on the contrary, the less there is at the start, the sooner it is playable. What is marked under "Basic" would be the minimum for the first milestones.</p>
+</section>
+
+<section id="huecos">
+<h2>2. Systems missing from the GDD</h2>
+<div class="tw"><table>
+<tr><th>System</th><th>Why it is needed</th><th>Question</th></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Solo mode</b></td><td>Is it a world of its own in the browser (no server) or the same online world where you play isolated? It changes the architecture and whether progress is shared.</td><td>2</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Character progression</b></td><td>It is not defined whether the character improves (skills through use, strength, trades) or how, or whether there is a cap.</td><td>8–10</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Economy and trade</b></td><td>Crops by climate push trade between countries, but there is no currency, no markets and no exchange system.</td><td>27–29</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Sea and river travel</b></td><td>The sea is consistent and separates countries: can you sail it? Boats, ships, ferries, ports.</td><td>23</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Travel infrastructure</b></td><td>Travelling is hard: roads, bridges, fords, post stations. Do players build them?</td><td>22</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Map and orientation</b></td><td>In a huge world, is there a map? Is it drawn by exploring (cartography) or complete from the start? Compass, sun, stars?</td><td>21</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>NPCs and hostile wildlife</b></td><td>Apart from the sentries there are no NPCs. Villages, traders, bandits? Wolves, bears, boars that attack?</td><td>24–25</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Decay and abandonment</b></td><td>In an MMO, the bases of players who leave fill the world forever. It must be decided whether what is built decays without upkeep.</td><td>33</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Item durability</b></td><td>Do tools and weapons wear out, get repaired, get sharpened?</td><td>11</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Locks and access</b></td><td>Chests, doors and gates: locks with keys? Permissions by family?</td><td>34</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Weather and seasons</b></td><td>They affect crops, cold, frozen rivers, muddy roads. Only mentioned as a question.</td><td>19–20</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Fire and light</b></td><td>Night, torches, hearths, fires in wooden structures.</td><td>36</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Communication</b></td><td>Global chat, proximity chat, voice, messengers/letters (fits with travelling far).</td><td>37</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Heraldry and family customisation</b></td><td>Coats of arms, banners, family colours: reinforces the kingdoms side.</td><td>38</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Character creation</b></td><td>Appearance, sex, age, country of origin.</td><td>39</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Interface without bars</b></td><td>How inventory, load, hunger, wounds and crafting are shown without a classic HUD.</td><td>40</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Introduction for new players</b></td><td>A realistic survival game with no guidance drives people away in the first minutes.</td><td>41</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Monetisation</b></td><td>It is a commercial product with a paid server and there is no business model defined.</td><td>42</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Rules, moderation and cheating</b></td><td>Reports, bans, offensive names, multiple accounts for looting.</td><td>43</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Languages and requirements</b></td><td>Languages of the game and minimum computers/phones that must run it.</td><td>44–45</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Sound and music</b></td><td>Not mentioned.</td><td>46</td></tr>
+</table></div>
+</section>
+
+<section id="recursos">
+<h2>3. Gatherables and natural resources <span class="tag prop">PROPOSAL</span></h2>
+<div class="tw"><table>
+<tr><th>Group</th><th>Items</th><th>Where</th><th>Basic</th></tr>
+<tr><td>Trees</td><td>Oak, pine, fir, birch, beech, ash, chestnut, willow, yew, olive, cork oak. They give trunk, branches, bark, resin (conifers), acorns/chestnuts.</td><td>By band: fir and birch in the north; oak, beech and ash in the temperate band; olive, cork oak and pine in the south.</td><td>Oak, pine, birch</td></tr>
+<tr><td>Plants and fibres</td><td>Flax, hemp, nettles, rushes, straw (from cereal), wicker, dry grass/hay.</td><td>Flax and hemp farmed; rushes on riverbanks.</td><td>Rushes, thin branches</td></tr>
+<tr><td>Wild food</td><td>Berries, mushrooms, nuts, roots, wild honey, bird eggs.</td><td>Forests and clearings.</td><td>Berries, mushrooms</td></tr>
+<tr><td>Herbs</td><td>Medicinal and cooking herbs (yarrow, sage, thyme, wild garlic…).</td><td>By biome.</td><td>—</td></tr>
+<tr><td>Stone</td><td>Loose stone, flint, limestone, granite, slate, sandstone.</td><td>Rivers and slopes (loose); quarries.</td><td>Loose stone, flint</td></tr>
+<tr><td>Earth</td><td>Clay, sand, mud, peat (north), lime (from limestone).</td><td>Riverbanks, peat bogs.</td><td>Mud, clay</td></tr>
+<tr><td>Minerals</td><td>Bog iron, iron ore, copper, tin, lead, silver, salt (mines or salt marshes).</td><td>Mountains, marshes, coast.</td><td>—</td></tr>
+<tr><td>Water</td><td>Rivers, lakes, springs, rain; built wells. Undrinkable water?</td><td>Everywhere.</td><td>Yes</td></tr>
+<tr><td>Animal products (from hunting)</td><td>Meat, hide, bone, antler, sinew, fat/tallow, feathers.</td><td>Hunting.</td><td>Meat, hide</td></tr>
+<tr><td>Fishing</td><td>River and sea fish, shellfish.</td><td>Rivers and coast.</td><td>—</td></tr>
+</table></div>
+</section>
+
+<section id="materiales">
+<h2>4. Processed materials and production chains <span class="tag prop">PROPOSAL</span></h2>
+<div class="tw"><table>
+<tr><th>Chain</th><th>Steps</th></tr>
+<tr><td>Wood</td><td>Trunk → (axe) short logs → (saw/wedges) planks, beams, posts, stakes → (carpenter's bench) fine pieces. Branches → firewood, rods, handles.</td></tr>
+<tr><td>Charcoal</td><td>Firewood stacked and covered (charcoal clamp) → charcoal. Needed for the forge.</td></tr>
+<tr><td>Rope and textiles</td><td>Flax/hemp/nettle → retting and drying → fibre → (distaff/spindle) thread → (loom) cloth. Fibre → rope. Wool → yarn → woollen cloth / felt.</td></tr>
+<tr><td>Leather</td><td>Hide → scraping → tanning in vats (oak bark, lime) → leather. Leather → hardened (armour). Hide with hair → furs.</td></tr>
+<tr><td>Iron</td><td>Ore → (bloomery furnace + charcoal) bloom → (forge) wrought iron → bars. Steel: a more advanced process.</td></tr>
+<tr><td>Bronze, lead, silver</td><td>Copper + tin → bronze (bells, parts). Lead (roofs, weights). Silver (coins, if there is an economy).</td></tr>
+<tr><td>Ceramics</td><td>Clay → shaping → drying → (pottery kiln) pots, roof tiles, bricks.</td></tr>
+<tr><td>Lime and mortar</td><td>Limestone → (lime kiln) lime → + sand + water → mortar for stone walls.</td></tr>
+<tr><td>Dressed stone</td><td>Quarry block → (chisel, mallet) ashlars.</td></tr>
+<tr><td>Wax and tallow</td><td>Honeycombs → wax (fine candles); animal fat → tallow (cheap candles, greasing).</td></tr>
+<tr><td>Glass</td><td>Sand + ash + very hot furnace → glass (windows, advanced). <i>Does it go in?</i></td></tr>
+</table></div>
+</section>
+
+<section id="estaciones">
+<h2>5. Workstations <span class="tag prop">PROPOSAL</span></h2>
+<div class="tw"><table>
+<tr><th>Station</th><th>What for</th><th>Stage</th></tr>
+<tr><td>Campfire</td><td>Cooking, warming up, fire-hardening points, drying.</td><td>Start</td></tr>
+<tr><td>Log work surface</td><td>Basic wood and stone work.</td><td>Start</td></tr>
+<tr><td>Drying rack/line</td><td>Drying meat, hides, fibres, herbs.</td><td>Start</td></tr>
+<tr><td>Carpenter's bench</td><td>Furniture, handles, wheels, fine pieces.</td><td>Early</td></tr>
+<tr><td>Clay oven / bread oven</td><td>Bread, roasts.</td><td>Early</td></tr>
+<tr><td>Charcoal clamp</td><td>Charcoal.</td><td>Early</td></tr>
+<tr><td>Tanning vats</td><td>Leather.</td><td>Early</td></tr>
+<tr><td>Distaff/spindle and loom</td><td>Thread and cloth.</td><td>Mid</td></tr>
+<tr><td>Pottery kiln</td><td>Pots, roof tiles, bricks.</td><td>Mid</td></tr>
+<tr><td>Bloomery furnace</td><td>Iron from ore.</td><td>Mid</td></tr>
+<tr><td>Forge + anvil + whetstone</td><td>Tools, weapons, horseshoes, nails, armour.</td><td>Mid</td></tr>
+<tr><td>Lime kiln</td><td>Lime.</td><td>Mid</td></tr>
+<tr><td>Hand mill / watermill / windmill</td><td>Flour (and other uses in the watermill).</td><td>Mid → advanced</td></tr>
+<tr><td>Press</td><td>Oil and wine.</td><td>Mid (south)</td></tr>
+<tr><td>Smokehouse, salting</td><td>Preserving food.</td><td>Early–mid</td></tr>
+<tr><td>Beehives</td><td>Honey and wax.</td><td>Mid</td></tr>
+<tr><td>Well</td><td>Water next to the house.</td><td>Early</td></tr>
+<tr><td>Armourer's / mail-maker's workshop</td><td>Mail, plate (if the period allows it).</td><td>Advanced</td></tr>
+<tr><td>Siege workshop</td><td>Rams and engines.</td><td>Advanced</td></tr>
+<tr><td>Shipyard</td><td>Boats and ships (if there is sailing).</td><td>Advanced</td></tr>
+</table></div>
+</section>
+
+<section id="herramientas">
+<h2>6. Tools <span class="tag prop">PROPOSAL</span></h2>
+<div class="tw"><table>
+<tr><th>Level</th><th>Tools</th></tr>
+<tr><td>Primitive (stone, wood)</td><td>Hammerstone, flint flake (knife), stone axe, digging stick, fire-hardened wooden spear, sling.</td></tr>
+<tr><td>Iron — wood</td><td>Felling axe, hatchet, crosscut saw (2 people), handsaw, adze, wedges, mallet, brace, chisel, drawknife.</td></tr>
+<tr><td>Iron — earth and stone</td><td>Pick, shovel, hoe, stonemason's hammer, chisel, crowbar.</td></tr>
+<tr><td>Iron — field</td><td>Sickle, scythe, pitchfork, plough (animal-drawn), rake, threshing board.</td></tr>
+<tr><td>Iron — trades</td><td>Hammer, tongs, knife, awl, needle, shearing scissors, hide scraper.</td></tr>
+<tr><td>Utility</td><td>Rope, pulley/block and tackle (lifting beams and stones), bucket, torch, lantern, tinderbox (flint and steel).</td></tr>
+</table></div>
+</section>
+
+<section id="armas">
+<h2>7. Weapons and shields <span class="tag prop">PROPOSAL</span></h2>
+<div class="tw"><table>
+<tr><th>Type</th><th>Weapons</th></tr>
+<tr><td>Improvised</td><td>Throwing stone, stick, club, tools used as weapons (axe, pitchfork, mallet).</td></tr>
+<tr><td>Polearms</td><td>Spear, cavalry lance, bill/halberd (by period), staff.</td></tr>
+<tr><td>Short</td><td>Knife, dagger, rondel dagger (late), long knife.</td></tr>
+<tr><td>Swords</td><td>One-handed (arming) sword, hand-and-a-half sword, longsword, single-edged war knife.</td></tr>
+<tr><td>Blunt</td><td>Mace, war hammer, hand flail.</td></tr>
+<tr><td>Axes</td><td>One-handed war axe, two-handed Dane axe.</td></tr>
+<tr><td>Ranged</td><td>Sling, javelin, self bow, longbow, crossbow (stirrup, cranequin by period).</td></tr>
+<tr><td>Shields</td><td>Round plank shield, kite, triangular (heater), buckler, pavise (crossbowmen).</td></tr>
+</table></div>
+</section>
+
+<section id="armadura">
+<h2>8. Armour and clothing <span class="tag prop">PROPOSAL</span></h2>
+<div class="tw"><table>
+<tr><th>Type</th><th>Pieces</th></tr>
+<tr><td>Clothing</td><td>Shirt, tunic, hose, smock, cloak, hood, hat, fur coat, mittens, boots/shoes, belt.</td></tr>
+<tr><td>Padded</td><td>Gambeson (the base for everything else), padded coif.</td></tr>
+<tr><td>Leather</td><td>Hardened leather for arms and legs, gloves.</td></tr>
+<tr><td>Mail</td><td>Mail shirt, coif (hood), mail chausses.</td></tr>
+<tr><td>Plate (by period)</td><td>Kettle hat, great helm, bascinet, breastplate, brigandine, gauntlets, greaves, separate pieces.</td></tr>
+<tr><td>Horse</td><td>Saddle, bridle, horseshoes, caparison, barding (horse armour, advanced).</td></tr>
+</table></div>
+<p class="note">Clothing should matter for the cold of the north and the heat of the south, and armour should weigh for real within the load system.</p>
+</section>
+
+<section id="contenedores">
+<h2>9. Containers and transport <span class="tag prop">PROPOSAL</span></h2>
+<div class="tw"><table>
+<tr><th>Type</th><th>Items</th></tr>
+<tr><td>Carried</td><td>Bundle tied with rope, satchel, back basket, frame pack, belt pouch, waterskin.</td></tr>
+<tr><td>Storage</td><td>Sack, basket, barrel, large jar, chest, shelf, granary, hayloft.</td></tr>
+<tr><td>Wheeled or dragged</td><td>Log sledge/drag, wheelbarrow, two-wheeled cart, four-wheeled wagon.</td></tr>
+<tr><td>Animals</td><td>Saddlebags, pack saddle (donkey/mule), horse or ox team.</td></tr>
+<tr><td>Water (if there is sailing)</td><td>Raft, rowing boat, sailing ship.</td></tr>
+</table></div>
+</section>
+
+<section id="construccion">
+<h2>10. Building and defence pieces <span class="tag prop">PROPOSAL</span></h2>
+<div class="tw"><table>
+<tr><th>Group</th><th>Pieces</th></tr>
+<tr><td>Early shelters</td><td>Branch lean-to, hide tent, mud-and-straw hut.</td></tr>
+<tr><td>Structure</td><td>Stone foundation, post, beam, sill beam, plank floor, staircase, ladder.</td></tr>
+<tr><td>Walls</td><td>Wattle and daub, planks, logs, timber framing, rubble masonry, ashlar masonry.</td></tr>
+<tr><td>Roofs</td><td>Straw, rushes, shingles, tile, slate, lead sheet.</td></tr>
+<tr><td>Openings</td><td>Door, gate, shutter, window (with glass if it goes in), trapdoor.</td></tr>
+<tr><td>Defence</td><td>Palisade, palisade gate, ditch, earthwork bank, stakes, stone wall, tower, battlements, wall-walk, portcullis, drawbridge, watch posts.</td></tr>
+<tr><td>Interior and decoration</td><td>Bed, table, bench, chair, fireplace, hearth, shelf, tapestries, banners, rugs, candelabra.</td></tr>
+<tr><td>Field and farm</td><td>Fence, pen, henhouse, pigsty, cowshed, stable, water trough, feeder, hayloft.</td></tr>
+<tr><td>Infrastructure</td><td>Paved road, wooden/stone bridge, jetty, mill.</td></tr>
+</table></div>
+</section>
+
+<section id="asedio">
+<h2>11. Siege equipment <span class="tag prop">PROPOSAL</span></h2>
+<ul>
+  <li><b>Battering ram</b> (hand-held and with a mobile roof): against gates and palisades.</li>
+  <li><b>Scaling ladders</b>: getting over walls without breaking them.</li>
+  <li><b>Mantlet</b>: mobile shield for getting close.</li>
+  <li><b>Siege tower</b>: advanced.</li>
+  <li><b>Mangonel / trebuchet</b>: against stone; very advanced and expensive.</li>
+  <li><b>Sapping</b>: mining under a wall (does it go in?).</li>
+  <li><b>Fire</b>: against wood, if it is decided that fire does damage.</li>
+</ul>
+</section>
+
+<section id="animales">
+<h2>12. Animals <span class="tag prop">PROPOSAL</span></h2>
+<div class="tw"><table>
+<tr><th>Type</th><th>Animals</th><th>What for</th></tr>
+<tr><td>Riding and draught</td><td>Horse (several breeds by country/biome), donkey, mule, ox.</td><td>Riding, carrying, ploughing, carts.</td></tr>
+<tr><td>Farm</td><td>Hen, goose, duck, pig, goat, sheep, cow.</td><td>Eggs, meat, milk, wool, leather, feathers.</td></tr>
+<tr><td>Other domestic</td><td>Dog (guarding, hunting, herding), cat (pests), bees.</td><td>Help, honey, wax.</td></tr>
+<tr><td>Small game</td><td>Hare, rabbit, partridge, pheasant, wild duck.</td><td>Meat, feathers, pelts.</td></tr>
+<tr><td>Big game</td><td>Red deer, roe deer, wild boar, chamois/ibex, elk (north).</td><td>Meat, leather, antler.</td></tr>
+<tr><td>Predators</td><td>Wolf, bear, lynx, fox.</td><td>Threat; pelts.</td></tr>
+<tr><td>Water</td><td>River and sea fish, shellfish.</td><td>Food.</td></tr>
+</table></div>
+</section>
+
+<section id="cultivos">
+<h2>13. Crops by climate band <span class="tag prop">PROPOSAL</span></h2>
+<div class="tw"><table>
+<tr><th>Crop</th><th>North (cold)</th><th>Temperate</th><th>South (warm)</th></tr>
+<tr><td>Rye</td><td>Good</td><td>Good</td><td>Poor</td></tr>
+<tr><td>Oats</td><td>Good</td><td>Good</td><td>Poor</td></tr>
+<tr><td>Barley</td><td>Good</td><td>Good</td><td>Good</td></tr>
+<tr><td>Wheat</td><td>Poor</td><td>Good</td><td>Good</td></tr>
+<tr><td>Flax</td><td>Good</td><td>Good</td><td>Poor</td></tr>
+<tr><td>Hemp</td><td>Poor</td><td>Good</td><td>Good</td></tr>
+<tr><td>Turnip, cabbage, onion</td><td>Good</td><td>Good</td><td>Poor</td></tr>
+<tr><td>Peas, broad beans</td><td>Poor</td><td>Good</td><td>Good</td></tr>
+<tr><td>Chickpeas, lentils</td><td>Unviable</td><td>Poor</td><td>Good</td></tr>
+<tr><td>Apple, pear</td><td>Poor</td><td>Good</td><td>Poor</td></tr>
+<tr><td>Grapevine</td><td>Unviable</td><td>Poor</td><td>Good</td></tr>
+<tr><td>Olive</td><td>Unviable</td><td>Unviable</td><td>Good</td></tr>
+<tr><td>Fig, almond</td><td>Unviable</td><td>Poor</td><td>Good</td></tr>
+<tr><td>Hops</td><td>Good</td><td>Good</td><td>Unviable</td></tr>
+</table></div>
+<p class="note">Rough classification based on the climate of real Europe; it gets adjusted to whatever design you decide.</p>
+</section>
+
+<section id="comida">
+<h2>14. Food, drink and preservation <span class="tag prop">PROPOSAL</span></h2>
+<ul>
+  <li><b>Cooking:</b> roast meat and fish, porridge, pottage, bread (flour + oven), flatbreads, soup, cheese, butter, sausage.</li>
+  <li><b>Drink:</b> water, milk, beer (cereal, hops in the north), cider, wine (south), mead.</li>
+  <li><b>Preservation:</b> salting (needs salt), smoking, drying, pickling, storing somewhere cool. Fresh food spoils over real time.</li>
+</ul>
+</section>
+
+<section id="medicina">
+<h2>15. Healing wounds <span class="tag prop">PROPOSAL</span></h2>
+<p>It fits combat without bars: each wound is treated with its own remedy.</p>
+<ul>
+  <li><b>Bandaging</b> (cloth): for cuts and bleeding.</li>
+  <li><b>Stitching</b> (needle and thread): deep cuts.</li>
+  <li><b>Cauterising</b> (iron in the fire): stops severe bleeding, leaves a lasting effect.</li>
+  <li><b>Splinting</b> (splints and bandages): fractures.</li>
+  <li><b>Poultices and infusions</b> (herbs): infection, fever, faster recovery.</li>
+  <li><b>Rest</b>: wounds heal over time; eating and sleeping well speeds it up.</li>
+</ul>
+</section>
+
+<section id="preguntas">
+<h2>16. All the questions, numbered</h2>
+<p class="note">Answer them by number whenever you like, in whatever order you like. Those in blocks A and B are the ones blocking the first milestone.</p>
+
+<h3>A. Project foundations</h3>
+<ol class="q" start="1">
+  <li><b>Period.</b> Which centuries does it depict? For example: Early Middle Ages (Vikings, mail, wooden castles), High (mail, stone castles) or Late (longsword, plate, cranequin crossbow). It can be a progression within the game.</li>
+  <li><b>Solo mode.</b> A world of its own with no server in the browser, or the same online world where you play isolated? Does progress carry over from one to the other?</li>
+  <li><b>Visual style.</b> Low-poly 3D made in code, third-party/commissioned models, or isometric 2D.</li>
+  <li><b>Platforms.</b> PC only, or also phone and tablet?</li>
+  <li><b>Fantasy or pure realism?</b> Is there anything supernatural (creatures, magic) or is it 100% invented history?</li>
+</ol>
+
+<h3>B. Building (milestone 1)</h3>
+<ol class="q" start="6">
+  <li><b>Grid or free placement.</b></li>
+  <li><b>Removing pieces.</b> Can you dismantle a piece that holds up others? Is material recovered when dismantling?</li>
+</ol>
+
+<h3>C. Character and progression</h3>
+<ol class="q" start="8">
+  <li>Does the character improve? Skills that rise with use, trades, or nothing (only the player improves)?</li>
+  <li>If there are skills: a total cap that forces specialisation (and depending on others)?</li>
+  <li>Do strength and endurance rise with training (affects how much you carry)?</li>
+  <li>Durability and repair of tools, weapons and armour?</li>
+  <li>How are technologies unlocked: by use, by discovery, by players teaching each other, by stations built, or a mix? Do they belong to the character or to the family?</li>
+  <li>Does item quality depend on material, tool and skill?</li>
+</ol>
+
+<h3>D. Survival and death</h3>
+<ol class="q" start="14">
+  <li>Which needs are simulated: hunger, thirst, cold/heat, fatigue, sleep, illness?</li>
+  <li>How are they shown without bars: only on the character or with some discreet indicator?</li>
+  <li>On death: where do you respawn, what do you lose, what stays on the ground? Permanent death of any kind?</li>
+  <li>Logged-out character: does it disappear, or sleep in the world where it can be attacked?</li>
+  <li>Does food spoil over time?</li>
+</ol>
+
+<h3>E. World and travel</h3>
+<ol class="q" start="19">
+  <li>Day/night cycle: at what pace compared with real time?</li>
+  <li>Seasons and weather: do they exist? How long does a game year last?</li>
+  <li>Map: complete from the start, drawn by exploring, or none?</li>
+  <li>Do players build roads and bridges?</li>
+  <li>Can you sail the sea and rivers? With which vessels?</li>
+  <li>Are there NPCs apart from sentries (villages, traders, bandits)?</li>
+  <li>Is there wildlife that attacks (wolves, bears, boars)?</li>
+  <li>Can trees be planted, and do they grow just as slowly? Do ores and stone run out?</li>
+</ol>
+
+<h3>F. Economy</h3>
+<ol class="q" start="27">
+  <li>Is there currency? Do players mint it (with silver) or is it barter?</li>
+  <li>Markets or stalls that work without the owner online?</li>
+  <li>Does each country have exclusive resources to force trade?</li>
+</ol>
+
+<h3>G. Social, lands and PvP</h3>
+<ol class="q" start="30">
+  <li>How is land claimed? Is there a size limit?</li>
+  <li>Vassalage: what does it mean in mechanics (tributes, defence, permissions)?</li>
+  <li>Do alliances turn off PvP between allies?</li>
+  <li>Does what is built decay if nobody maintains it? What happens to abandoned bases?</li>
+  <li>Locks with keys on doors and chests, permissions by family, or both?</li>
+  <li>Siege: can a base be besieged while its owners are offline, or do only the sentries hold it back? Which milestones unlock sentries?</li>
+  <li>Does fire damage wooden structures?</li>
+  <li>Communication: global chat, proximity chat, voice, messengers/letters?</li>
+  <li>Family heraldry (coats of arms, banners, colours)?</li>
+</ol>
+
+<h3>H. Product</h3>
+<ol class="q" start="39">
+  <li>Character creation: what is chosen (appearance, sex, age, country)?</li>
+  <li>Interface: how do inventory and crafting look without a classic HUD?</li>
+  <li>New players: tutorial, protected starting zone, or nothing?</li>
+  <li>Monetisation: free with something paid (cosmetic, subscription), one-off purchase, subscription?</li>
+  <li>Rules: how are cheating, multiple accounts and toxic players handled?</li>
+  <li>Languages of the game.</li>
+  <li>Minimum hardware that must run it.</li>
+  <li>Sound and music: what style?</li>
+</ol>
+</section>
+</div>
+</body>
+</html>

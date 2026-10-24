@@ -266,5 +266,20 @@
   "pruebas": "Web en PC y móvil, en español y en inglés (botón, recargar, ?lang=en): todo correcto; quitar una traducción a propósito hace fallar la generación de la web.",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T22:19:24+02:00",
+  "fin": "2026-10-24T22:34:35+02:00",
+  "titulo": "Documentos de diseño en inglés",
+  "hito": "infra",
+  "hecho": [
+   "GDD, sistemas y análisis traducidos enteros al inglés, en diseno/en/, con la misma estructura que el original.",
+   "Cada documento tiene arriba un selector ES · EN; la web en inglés enlaza directamente a la versión inglesa.",
+   "Cada traducción guarda la huella del original en español: si el español cambia y no se vuelve a traducir, la web no se genera y dice qué archivo falta.",
+   "Decisión provisional: los documentos traducidos son archivos aparte (no van en en.json), porque son textos largos con tablas."
+  ],
+  "pruebas": "Todas correctas: lógica 35/35, modelos 21/21, combate 69/69, navegador de construcción, combate, estilo y web (PC y móvil, documentos en los dos idiomas). Romper a propósito los enlaces o la traducción hace fallar la prueba de la web; cambiar el español sin retraducir hace fallar la generación.",
+  "capturas": "capturas/documentos-en",
+  "estado": "ok"
  }
 ]

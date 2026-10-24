@@ -21,7 +21,9 @@
     },
     {
      "nombre": "Documentos de diseño en inglés (GDD, sistemas y análisis), con selector de idioma",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-24T22:19:24+02:00",
+     "fin": "2026-10-24T22:34:35+02:00"
     },
     {
      "nombre": "Juego en inglés: textos de los prototipos con selector de idioma, preparado para añadir ruso",

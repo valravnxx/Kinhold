@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="kinhold-origen" content="379fc16b6666c141bb9bd8554ca3e8e546262189">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kinhold GDD v0.6</title>
+<style>
+:root{
+  --bg:#f6f2ea; --card:#fffdf8; --ink:#2b2520; --muted:#6f655b; --line:#e2d8c8;
+  --accent:#8a3b1f; --ok:#2f6b3a; --ok-bg:#e6f1e4; --open:#8a5a00; --open-bg:#fbf0d6;
+  --method:#24507a; --method-bg:#e3ecf6; --prop:#5b2a86; --prop-bg:#efe5f8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1815; --card:#24201c; --ink:#ece4d8; --muted:#a59a8c; --line:#3a332c;
+    --accent:#e08a5f; --ok:#8fd09a; --ok-bg:#1f3323; --open:#f0c46a; --open-bg:#3a2f15;
+    --method:#8fb8e6; --method-bg:#1b2a3a; --prop:#c9a6ee; --prop-bg:#2c2038;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1815; --card:#24201c; --ink:#ece4d8; --muted:#a59a8c; --line:#3a332c;
+  --accent:#e08a5f; --ok:#8fd09a; --ok-bg:#1f3323; --open:#f0c46a; --open-bg:#3a2f15;
+  --method:#8fb8e6; --method-bg:#1b2a3a; --prop:#c9a6ee; --prop-bg:#2c2038;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Georgia,"Times New Roman",serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 64px}
+header{border-bottom:2px solid var(--accent);margin-bottom:24px;padding-bottom:12px}
+h1{font-size:1.7rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.95rem}
+nav{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:24px}
+nav ol{margin:0;padding-left:20px;columns:2;column-gap:24px}
+nav a{color:var(--accent);text-decoration:none}
+@media (max-width:560px){nav ol{columns:1}}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:18px}
+h2{font-size:1.25rem;margin:0 0 10px;color:var(--accent)}
+h3{font-size:1.02rem;margin:14px 0 6px}
+p{margin:6px 0}
+ul,ol{margin:6px 0;padding-left:22px}
+li{margin:3px 0}
+.tag{display:inline-block;font:600 .72rem/1.4 system-ui,sans-serif;padding:2px 8px;border-radius:99px;margin-right:6px;vertical-align:2px}
+.ok{background:var(--ok-bg);color:var(--ok)}
+.open{background:var(--open-bg);color:var(--open)}
+.method{background:var(--method-bg);color:var(--method)}
+.prop{background:var(--prop-bg);color:var(--prop)}
+.box{border-left:3px solid var(--line);padding:4px 0 4px 12px;margin:10px 0}
+.box.m{border-color:var(--method)}
+.box.o{border-color:var(--open)}
+.box.p{border-color:var(--prop)}
+.legend{font-family:system-ui,sans-serif;font-size:.85rem;color:var(--muted)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem;margin:8px 0;min-width:480px}
+th,td{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+.note{font-size:.9rem;color:var(--muted)}
+.q li{margin:7px 0}
+</style>
+</head>
+<body><div id="kh-idioma" style="position:fixed;top:8px;right:8px;z-index:9;font:700 12.5px system-ui,sans-serif;display:flex;gap:4px"><a data-l="es" href="../gdd.html" onclick="try{localStorage.setItem('kinhold_web_idioma','es')}catch(e){}" style="padding:4px 9px;border-radius:8px;text-decoration:none;border:1px solid #8888;background:#8882;color:inherit">ES</a><a data-l="en" href="gdd.html" onclick="try{localStorage.setItem('kinhold_web_idioma','en')}catch(e){}" style="padding:4px 9px;border-radius:8px;text-decoration:none;border:1px solid #8888;background:#c9a46a;color:#241b10">EN</a></div>
+<div class="wrap">
+<header>
+  <h1>GDD — Kinhold</h1>
+  <div class="sub">Version 0.6 · 24 Oct 2026 · All questions answered · The content catalogue remains in the analysis document</div>
+  <p class="legend" style="margin-top:10px">
+    <span class="tag ok">DECIDED</span> you said so
+    <span class="tag method">METHOD</span> how to do it technically
+    <span class="tag prop">PROPOSAL</span> awaiting your approval
+    <span class="tag open">OPEN</span> your call
+  </p>
+</header>
+
+<nav><ol>
+  <li><a href="#vision">Vision, pillars and era</a></li>
+  <li><a href="#plataforma">Platform, camera and product</a></li>
+  <li><a href="#arte">Visual style and sound</a></li>
+  <li><a href="#mundo">World and size</a></li>
+  <li><a href="#viaje">Travel, map and sailing</a></li>
+  <li><a href="#personaje">Character, death and logging out</a></li>
+  <li><a href="#equipo">Equipment, clothing and inventory</a></li>
+  <li><a href="#tala">Gathering and resources</a></li>
+  <li><a href="#progresion">Progression and technologies</a></li>
+  <li><a href="#construccion">Building</a></li>
+  <li><a href="#tierras">Lands and boundary stones</a></li>
+  <li><a href="#offline">Offline raiding and war</a></li>
+  <li><a href="#combate">Combat</a></li>
+  <li><a href="#animales">Animals and wildlife</a></li>
+  <li><a href="#agricultura">Agriculture</a></li>
+  <li><a href="#economia">Economy and NPCs</a></li>
+  <li><a href="#social">Families, alliances and vassalages</a></li>
+  <li><a href="#tecnica">Technical architecture</a></li>
+  <li><a href="#hitos">Milestones</a></li>
+  <li><a href="#preguntas">Open questions</a></li>
+</ol></nav>
+
+<section id="vision">
+<h2>1. Vision, pillars and era</h2>
+<p><span class="tag ok">DECIDED</span>Medieval survival and building game, 100% in the browser. A single online world: play alone, as a pair or in a group within the same world, with PvP.</p>
+<p><span class="tag ok">DECIDED</span>An era with progression: you start in the Early Middle Ages and technology advances up to the Late Middle Ages. No fantasy for now.</p>
+<h3>Pillars</h3>
+<ul>
+  <li><b>Realistic mechanics.</b> What you would do in real life costs what it would cost.</li>
+  <li><b>The world is huge and travel matters.</b></li>
+  <li><b>From survival to kingdom,</b> or to living well in isolation.</li>
+  <li><b>The solo player has a complete game.</b></li>
+  <li><b>Everything rests on knowledge, skill and equipment,</b> not on character levels or stats.</li>
+  <li><b>Skill-based combat,</b> without health bars.</li>
+  <li><b>What is yours is safe while you are away.</b></li>
+</ul>
+</section>
+
+<section id="plataforma">
+<h2>2. Platform, camera and product</h2>
+<p><span class="tag ok">DECIDED</span>Own website with accounts. Paid server if needed. PC, mobile and tablet.</p>
+<p><span class="tag ok">DECIDED</span>Semi-isometric third person with <b>free rotation</b>.</p>
+<p><span class="tag ok">DECIDED</span>Languages: <b>English, Spanish and Russian.</b></p>
+<p><span class="tag ok">DECIDED</span><b>Free</b> with cosmetic-only premium content: unique skins and furniture.</p>
+<p><span class="tag ok">DECIDED</span><b>Optional tutorial</b> always available in the pause menu: you can read about every system in the game.</p>
+<p><span class="tag ok">DECIDED</span><b>Cheaters: immediate ban</b>, also by IP.</p>
+<p><span class="tag ok">DECIDED</span>Minimum requirements: to be decided midway through development.</p>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li>Mouse and keyboard controls and touch controls from the start.</li>
+  <li>Game texts in translation files from the first milestone, so adding languages does not require touching the code.</li>
+  <li>IP bans: note that an IP is sometimes shared by several people (a household, a residence hall, some mobile carriers) and that a VPN gets around it. Best combined with banning the account and its email.</li>
+</ul></div>
+<p><span class="tag ok">DECIDED</span>Name: <b>Kinhold</b>. Domain and trademark registration still to be checked.</p>
+</section>
+
+<section id="arte">
+<h2>3. Visual style and sound</h2>
+<p><span class="tag ok">DECIDED</span>Code-generated low-poly 3D, with your reviews to fine-tune it.</p>
+<p><span class="tag ok">DECIDED</span>Sound and music that are <b>relaxing and not harsh.</b></p>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li>Models defined by parameters (proportions, colours, sides): your adjustments are applied by changing numbers.</li>
+  <li>Screenshots of every new model in each delivery for you to review.</li>
+  <li>One palette per material so everything is consistent.</li>
+</ul></div>
+</section>
+
+<section id="mundo">
+<h2>4. World and size</h2>
+<p><span class="tag ok">DECIDED</span>An invented pseudo-Europe, <b>5 countries with their own style</b> (architecture, clothing, names). Biomes larger than 100 km² in northern, temperate and southern bands. A coherent sea.</p>
+<p><span class="tag ok">DECIDED</span>A 2 h day and a 1 h night. One season per real month.</p>
+<p><span class="tag ok">DECIDED</span>Each country has its own resources to trade, but none are essential.</p>
+<h3>Size calculation</h3>
+<p>Assumptions: walking at about 5 km/h, a horse at a sustained trot at about 12 km/h, and the sea adds around 40% to the side of the map. One day-night cycle is 3 real hours.</p>
+<div class="tw"><table>
+<tr><th>Option</th><th>Country</th><th>Biomes per country</th><th>Total world</th><th>Crossing a country</th><th>Crossing the world</th></tr>
+<tr><td><b>Compact</b></td><td>30 × 30 km</td><td>~9</td><td>~94 × 94 km</td><td>6 h on foot · 2.5 h on horseback</td><td>19 h on foot · 8 h on horseback</td></tr>
+<tr><td><b>Medium</b></td><td>60 × 60 km</td><td>~36</td><td>~188 × 188 km</td><td>12 h on foot · 5 h on horseback</td><td>38 h on foot · 16 h on horseback</td></tr>
+<tr><td><b>Large</b></td><td>100 × 100 km</td><td>~100</td><td>~313 × 313 km</td><td>20 h on foot · 8 h on horseback</td><td>63 h on foot · 26 h on horseback</td></tr>
+</table></div>
+<p><span class="tag ok">DECIDED</span><b>We start with the medium size:</b> countries of about 60 × 60 km, a world of about 188 × 188 km including the sea. Crossing a country takes about 12 hours on foot or 5 on horseback.</p>
+<div class="box m"><span class="tag method">METHOD</span>
+<p>Since the world comes from a seed, it can be expanded at the edges later without touching what already exists. With few people at first, the medium world may feel empty: we will keep an eye on it once there are players.</p></div>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li>Continent outline first; climate by latitude and sea; large biomes with gradual transitions; natural borders.</li>
+  <li>Seed-based generation, in chunks, saving only the changes.</li>
+</ul></div>
+</section>
+
+<section id="viaje">
+<h2>5. Travel, map and sailing</h2>
+<p><span class="tag ok">DECIDED</span>The map is discovered by exploring. <b>Endgame cartography:</b> a cartographer's table to draw what has been explored on paper; the map is an item that can be copied, sold or stolen from you.</p>
+<p><span class="tag ok">DECIDED</span>Paths form through use. Buildable bridges in various materials and shapes.</p>
+<p><span class="tag ok">DECIDED</span>Sailing in a late phase: design ships and sail with others.</p>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li>Each ground tile stores how much it is walked on: trail, then road; without use, the grass returns.</li>
+  <li>Bridges and ships use the building system; ships with buoyancy rules.</li>
+</ul></div>
+</section>
+
+<section id="personaje">
+<h2>6. Character, death and logging out</h2>
+<p><span class="tag ok">DECIDED</span><b>Creation:</b> a few appearance settings, man or woman, and starting country. You start at a <b>random accessible spot</b> in the chosen country (never in the sea or on a peak).</p>
+<p><span class="tag ok">DECIDED</span>Needs: hunger, thirst, cold, heat and fatigue, with warnings in circles on the right; tapping them shows the effect and information.</p>
+<p><span class="tag ok">DECIDED</span>The character <b>does not improve through levels or stats</b>: everything depends on the player's knowledge, skill and equipment.</p>
+<p><span class="tag ok">DECIDED</span><b>Death:</b> you respawn in your bound bed; without a bed, where you started the game. On death, <b>roughly half of what you carry can be looted and the other half breaks.</b> Permadeath is left for a future version.</p>
+<p><span class="tag ok">DECIDED</span><b>Logging out:</b> the character falls asleep in the world, goes to their bed automatically if not already in it, and shows a disconnected symbol above them.</p>
+<p><span class="tag ok">DECIDED</span>What breaks on death is <b>always chosen at random</b>, to prevent exploits.</p>
+<h3>Can a sleeping character be attacked outside their lands?</h3>
+<div class="tw"><table>
+<tr><th>Option</th><th>For</th><th>Against</th></tr>
+<tr><td>Always attackable</td><td>Realistic; nobody escapes a fight by logging out.</td><td>On mobile the connection drops on its own; losing half your gear to a dropout in the middle of the forest is unfair, especially for the solo player.</td></tr>
+<tr><td>Never attackable</td><td>Nobody loses anything by logging out.</td><td>Logging out becomes a way to escape a fight or a chase.</td></tr>
+<tr><td>Attackable for a few minutes, then not</td><td>Stops escape by logging out and protects against dropouts and normal exits.</td><td>During those minutes there is real risk if you log out in a bad spot.</td></tr>
+</table></div>
+<p><span class="tag ok">DECIDED (provisional)</span><b>Attackable for a few minutes, then not.</b></p>
+<ul>
+  <li><b>Inside your lands</b> (or your family's): the sleeping character is protected like your base, with offline protection.</li>
+  <li><b>Outside your lands:</b> when you log out, the character falls asleep and stays attackable where they are for a few minutes (for example, 5). After that time, if they have a bed they move to it; if not, they stay where they were, but nothing can be done to them any more.</li>
+  <li><b>If you were in combat</b> in the last minute before logging out, the vulnerable time is longer (for example, 15 minutes).</li>
+  <li>The times are numbers to tune when we test.</li>
+</ul>
+</section>
+
+<section id="equipo">
+<h2>7. Equipment, clothing and inventory</h2>
+<p><span class="tag ok">DECIDED</span>Equipment matters and <b>everything is craftable.</b> You start with little more than what you wear: <b>a basic linen shirt and trousers.</b></p>
+<p><span class="tag ok">DECIDED</span>Carrying works by slots. <b>Carrying large things slows you down.</b></p>
+<p><span class="tag ok">DECIDED</span>The <b>belt</b> can be crafted in several ways. <b>Backpacks have unique functions</b>: for example, the firewood one is a frame of sticks shaped like a double L for carrying firewood on your back. At the base you leave some and pick up others, or none if you want to travel light.</p>
+<p><span class="tag ok">DECIDED</span>Clothing and armour matter for combat.</p>
+<p><span class="tag ok">DECIDED</span>The <b>inventory is a panel with the slots of each body location</b>, and the slots depend on the equipment you wear.</p>
+
+<h3>Base character slots</h3>
+<div class="box p"><span class="tag prop">PROPOSAL</span>
+<ul>
+  <li><b>Hands:</b> right and left; large items take both.</li>
+  <li><b>Back:</b> empty or with a backpack/frame, which defines what and how much you carry there.</li>
+  <li><b>Waist:</b> without a belt there are no waist slots; the belt you wear defines them.</li>
+  <li><b>Shoulder:</b> a shoulder bag, a sack over the shoulder or a waterskin.</li>
+  <li><b>Body (clothing and armour) in layers:</b> inner layer, warmth or protection layer, outer layer; plus head, hands and feet.</li>
+</ul></div>
+
+<h3>Belts</h3>
+<div class="box p"><span class="tag prop">PROPOSAL</span>
+<div class="tw"><table>
+<tr><th>Belt</th><th>Material</th><th>Slots</th></tr>
+<tr><td>Fibre cord</td><td>Twisted fibres (start)</td><td>1 small (knife or small pouch)</td></tr>
+<tr><td>Braided rope</td><td>Rope</td><td>2 small</td></tr>
+<tr><td>Leather belt</td><td>Leather + bone or wood buckle</td><td>3, one can be medium (hand axe)</td></tr>
+<tr><td>Belt with iron buckle and rings</td><td>Leather + iron</td><td>4, two medium</td></tr>
+<tr><td>Sword belt</td><td>Leather + iron</td><td>Sword scabbard + 2 small</td></tr>
+</table></div>
+<p>Belt add-ons: leather pouch, knife sheath, tool hook, sling-stone pouch, seed pouch, coin purse, bandage kit.</p>
+</div>
+
+<h3>Single-function backpacks and frames</h3>
+<div class="box p"><span class="tag prop">PROPOSAL</span>
+<div class="tw"><table>
+<tr><th>Back</th><th>What it carries</th><th>Material</th></tr>
+<tr><td><b>Firewood frame</b> (double-L frame of sticks)</td><td>Only firewood and short logs, in large quantity</td><td>Sticks + rope (start)</td></tr>
+<tr><td><b>Gathering basket</b></td><td>Berries, mushrooms, herbs, fruit, eggs</td><td>Wicker or rushes</td></tr>
+<tr><td><b>Tied bundle</b></td><td>Hides, cloth, fibres, straw</td><td>Rope (start)</td></tr>
+<tr><td><b>Hide satchel</b></td><td>Mixed, a few small and medium items</td><td>Hide</td></tr>
+<tr><td><b>Frame backpack</b></td><td>Mixed, more capacity; slows you down when full</td><td>Wood + leather</td></tr>
+<tr><td><b>Stone carrier</b> (back litter)</td><td>Stones and blocks</td><td>Wood + rope</td></tr>
+<tr><td><b>Back toolbox</b></td><td>Trade tools</td><td>Wood + leather</td></tr>
+<tr><td><b>Quiver</b></td><td>Arrows or bolts</td><td>Leather or bark</td></tr>
+<tr><td><b>Fisher's creel</b></td><td>Fish and tackle</td><td>Wicker</td></tr>
+<tr><td><b>Shield on the back</b></td><td>The shield, nothing else</td><td>Leather strap</td></tr>
+</table></div>
+<p>Shoulder: sack (grain, flour, soil), shoulder bag, waterskin.</p>
+</div>
+
+<h3>Clothing and protection in layers</h3>
+<div class="box p"><span class="tag prop">PROPOSAL</span>
+<div class="tw"><table>
+<tr><th>Layer</th><th>Options</th><th>What for</th></tr>
+<tr><td>Inner</td><td>Linen shirt and trousers (start), wool ones</td><td>Base; wool is warmer</td></tr>
+<tr><td>Warmth / protection</td><td>Wool tunic, hide vest, hide coat; padded gambeson</td><td>Northern cold; the gambeson protects and is the base for armour</td></tr>
+<tr><td>Outer / armour</td><td>Hardened leather, mail, brigandine, plate (Late Middle Ages)</td><td>Protection by zone; heavy and slows you down</td></tr>
+<tr><td>Over everything</td><td>Cloak, surcoat with the family heraldry</td><td>Rain, cold, identification</td></tr>
+<tr><td>Head</td><td>Hood, cap, padded coif, kettle hat, helm</td><td>Cold, sun, protection</td></tr>
+<tr><td>Hands</td><td>Mittens, leather gloves, gauntlets</td><td>Cold, grip, protection</td></tr>
+<tr><td>Feet</td><td>Barefoot (start), hide wraps, shoes, boots</td><td>Speed on hard ground, cold</td></tr>
+</table></div>
+<p>Clothing is for cold and heat; armour is for wounds. Heavy armour slows you down and tires you, like everything large.</p>
+</div>
+
+<h3>Inventory panel</h3>
+<div class="box p"><span class="tag prop">PROPOSAL</span>
+<p>Character silhouette with a box for each location (hands, back, waist, shoulder, body layers). Tapping a box holding a container opens its inner slots. If you wear no belt, no waist boxes appear. On mobile, the same panel full screen.</p></div>
+<p><span class="tag ok">DECIDED</span>The lists in this section are approved for now.</p>
+<p><span class="tag ok">DECIDED</span>Slowdown: only if you are loaded to the maximum in everything does walking speed drop to <b>80%</b>.</p>
+<div class="box m"><span class="tag method">METHOD</span>
+<p>The reduction grows with how full you are: with a light load it is not noticeable, and at the maximum in every slot it reaches 80%.</p></div>
+</section>
+
+<section id="tala">
+<h2>8. Gathering and resources</h2>
+<p><span class="tag ok">DECIDED</span>Trees fall, are transported and are cut; they grow back in real weeks and can be planted.</p>
+<p><span class="tag ok">DECIDED</span>Ore veins <b>do not regenerate</b>, but the world has plenty of material: it is not a scarce resource.</p>
+<p class="note">Proposed gatherables: section 3 of the analysis document.</p>
+</section>
+
+<section id="progresion">
+<h2>9. Progression and technologies</h2>
+<p><span class="tag ok">DECIDED</span>Character technologies, unlocked through stations:</p>
+<ol>
+  <li>Building the station gives its basic recipes.</li>
+  <li>Practising at it opens the next ones.</li>
+  <li>Some recipes let you build new stations (that is how you advance from the Early to the Late Middle Ages).</li>
+  <li>Whoever knows a recipe can write it into a <b>tome</b> to teach it to others.</li>
+</ol>
+<p><span class="tag ok">DECIDED</span>No forced specialisations; the limit is play time.</p>
+<p><span class="tag ok">DECIDED</span>Durability on tools, weapons and armour. They are <b>repaired at the station that made them, with material of the same type.</b> No quality tiers for now.</p>
+</section>
+
+<section id="construccion">
+<h2>10. Building</h2>
+<p><span class="tag ok">DECIDED</span>It is the first thing to be developed.</p>
+<p><span class="tag ok">DECIDED</span>Free placement that turns into a grid with the first structural piece; free decoration.</p>
+<p><span class="tag ok">DECIDED</span>If it cannot bear the weight, you cannot build on top. If a piece holding up others is dismantled or broken in a siege, <b>what is above is destroyed.</b></p>
+<p><span class="tag ok">DECIDED</span>Dismantling recovers <b>75%</b> of the material.</p>
+<p><span class="tag ok">DECIDED</span>Palisades almost impossible to bring down without a siege. <b>Stone is almost impossible to break</b>: in a siege of a castle, gates and wooden elements break, not the walls.</p>
+<p><span class="tag ok">DECIDED</span><b>Fire damages wood</b> with temporary damage over time, and it is visible.</p>
+<p><span class="tag ok">DECIDED</span>Buildings decay. Decay is prevented by <b>depositing materials in the boundary stone</b>, in a low amount so as not to force farming.</p>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li>Grid anchored per building; support graph for load.</li>
+  <li>Before dismantling a support, what would fall is highlighted in red and confirmation is asked for.</li>
+  <li>Resistance by material and damage type (blow, siege, fire).</li>
+  <li>Upkeep: the boundary stone slowly consumes the deposited materials (wood for wooden parts, straw for roofs, lime for stone). While there is some, nothing decays; if it runs out, slow decay begins, with warnings.</li>
+</ul></div>
+<p><span class="tag ok">DECIDED</span>End of decay: <b>stone remains as a ruin</b> indefinitely, gradually covered by plants and roots. <b>Wood rots and disappears.</b></p>
+<p><span class="tag ok">DECIDED</span>Ruins belong to nobody. <b>They can be cleared, but they give no stone back</b>: it is no longer dressed stone but rubble. Clearing them takes time.</p>
+</section>
+
+<section id="tierras">
+<h2>11. Lands and boundary stones</h2>
+<p><span class="tag ok">DECIDED</span>Land is claimed with a boundary stone placed in person. You can claim a mountain pass, a bridge or a ford and charge a toll: whoever does not want to pay can find another way.</p>
+<p><span class="tag ok">DECIDED</span>No waiting period for new accounts: everyone must be able to settle soon.</p>
+<p><span class="tag ok">DECIDED</span><b>Exclusion radius:</b> if a house is settled within a certain distance, you cannot settle there, even if your plot is small. The radius grows with the boundary stone's level. People from the same family can settle inside the radius if the boundary stone allows it in its options.</p>
+<p><span class="tag ok">DECIDED</span><b>Conquest:</b> you conquer by destroying the enemy's boundary stones. If you have a high-level territory, its surroundings count as your land, so when the nearby enemy boundary stones are removed that land becomes yours.</p>
+<p><span class="tag ok">DECIDED</span><b>Boundary stone level:</b> it rises by depositing materials of the corresponding technology level. The higher the level, the larger the exclusion radius and the territory.</p>
+<p><span class="tag ok">DECIDED</span>Access to doors and chests through <b>family permissions</b>.</p>
+<div class="box p"><span class="tag prop">PROPOSAL</span> Rules kept from v0.3:
+<ul>
+  <li>Land grows with what is built on it, not with the number of accounts.</li>
+  <li>Land with no activity or upkeep eventually becomes free.</li>
+  <li>Limit on claims per character.</li>
+  <li>Important veins cannot be hoarded entirely.</li>
+  <li>No claims near the starting areas.</li>
+</ul></div>
+<div class="box m"><span class="tag method">METHOD</span>
+<p>The boundary stone is the key piece of each land: it can be attacked with siege equipment only when offline protection is not active or war has been declared.</p></div>
+<p><span class="tag ok">DECIDED</span>When a boundary stone falls, its buildings <b>pass to the conqueror if they lie within their territory</b>; if not, they remain ownerless until someone places their own boundary stone.</p>
+</section>
+
+<section id="offline">
+<h2>12. Offline raiding and war</h2>
+<p><span class="tag ok">DECIDED</span><b>Offline protection:</b> if no family member is online, their buildings cannot be damaged. It activates a few minutes after the last one logs out and does not activate if the base is under attack.</p>
+<p><span class="tag ok">DECIDED</span><b>Exception:</b> if war has been declared between the two families, a siege is allowed even while they are offline.</p>
+<p><span class="tag ok">DECIDED</span>The problem to solve: declaring war must not become the easy way to raid offline.</p>
+<div class="box p"><span class="tag prop">PROPOSAL</span> How a war is declared:
+<ul>
+  <li><b>Only with a cause:</b> non-payment of a vassalage (what you already decided) or a war accepted by both sides. Without a cause, there is no war and offline protection stays.</li>
+  <li><b>Advance notice:</b> the war starts some time after it is declared (for example, 24 real hours), and the attacked family is notified. This gives time to log in, pay what is owed or prepare the defence.</li>
+  <li><b>Paying what is owed stops the war</b> before it starts.</li>
+  <li><b>Limited duration</b> and, when it ends, a period during which war cannot be declared again on the same family.</li>
+</ul>
+<p>That way, war only exists when someone has accepted a vassalage and not paid it, or when both want to fight.</p>
+</div>
+<p><span class="tag ok">DECIDED</span>War rules approved: <b>war requires a casus belli.</b></p>
+</section>
+
+<section id="combate">
+<h2>13. Combat</h2>
+<p><span class="tag ok">DECIDED</span>No health bars; direct and skill-based. PvP on; off within the family.</p>
+<p><span class="tag ok">DECIDED</span>Mounted and ranged combat later, when their turn comes in development.</p>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li>Localised wounds, bleeding and fatigue, visible on the character and in the warnings.</li>
+  <li>Armour by zone and type of blow.</li>
+  <li>Healing by wound type (analysis, section 15).</li>
+</ul></div>
+<div class="box o"><span class="tag open">OPEN</span>
+<ul><li>Fencing approach: directional, or guards and timing. To be decided by testing the duel milestone.</li></ul></div>
+</section>
+
+<section id="animales">
+<h2>14. Animals and wildlife</h2>
+<p><span class="tag ok">DECIDED</span>Hunting; tameable horses; realistic breeding and care; livestock.</p>
+<p><span class="tag ok">DECIDED</span>Realistic wildlife: animals flee unless cornered; scarce wolves in mountains and deep forest that do attack.</p>
+<p><span class="tag ok">DECIDED</span>NPCs who sell animals from other biomes.</p>
+</section>
+
+<section id="agricultura">
+<h2>15. Agriculture</h2>
+<p><span class="tag ok">DECIDED</span>Crops with yield by climate band and a calendar by season.</p>
+</section>
+
+<section id="economia">
+<h2>16. Economy and NPCs</h2>
+<p><span class="tag ok">DECIDED</span><b>Coins are minted only by NPCs.</b> They are earned through <b>NPC orders</b>: they ask for what they need and you bring it; they do not buy whatever you want to sell.</p>
+<p><span class="tag ok">DECIDED</span>Market stalls that work while you are offline.</p>
+<p><span class="tag ok">DECIDED</span><b>NPCs in your service, like the mercenaries of the era:</b> you have to get them the gear they will wear, their food and their pay; you keep them as long as you can support them. Comfort affects these NPCs. Sentries work this way.</p>
+<p><span class="tag ok">DECIDED</span>No NPC villages or bandits at first.</p>
+<div class="box p"><span class="tag prop">PROPOSAL</span>
+<ul>
+  <li>Between players: barter or coin, as they wish.</li>
+  <li>NPC traders are in few places in each country; their orders rotate and ask for things from the area or from other bands, to give reasons to travel.</li>
+  <li>A hired NPC eats and is paid at regular intervals.</li>
+</ul></div>
+<p><span class="tag ok">DECIDED</span>If not paid, <b>the NPC leaves and takes the gear.</b></p>
+<p><span class="tag ok">DECIDED</span>The NPCs for hire are <b>travelling merchants and mercenaries who arrive at your town or settlement.</b></p>
+<div class="box p"><span class="tag ok">APPROVED</span> How they arrive and what types there are:
+<ul>
+  <li><b>Arrival:</b> every so often a traveller passes through your settlement (you need a boundary stone for them to come). They stay for a while; if you do not hire them, they move on. With a higher boundary stone level they come more often and in more types.</li>
+  <li><b>Also in NPC towns:</b> there is always someone available there, in exchange for travelling to get them.</li>
+  <li><b>Types:</b>
+    <ul>
+      <li><b>Mercenary / sentry:</b> guards and defends your lands.</li>
+      <li><b>Woodcutter:</b> fells trees and stacks firewood on your land.</li>
+      <li><b>Day labourer:</b> sows, waters and harvests.</li>
+      <li><b>Herder:</b> looks after, feeds and takes your animals out to graze.</li>
+      <li><b>Messenger:</b> carries your letters.</li>
+      <li><b>Travelling merchant:</b> not hired; brings orders and the odd product from another region.</li>
+    </ul></li>
+  <li><b>Each one needs</b> their tools or weapons (you provide them), food and pay in coin. With comfort (bed, roof, better food) they work better or ask for less.</li>
+</ul></div>
+</section>
+
+<section id="social">
+<h2>17. Families, alliances and vassalages</h2>
+<p><span class="tag ok">DECIDED</span>Families, with PvP off inside them.</p>
+<p><span class="tag ok">DECIDED</span><b>Vassalage:</b> an alliance that requires a periodic payment. If it is not paid on time, the lord has the right to declare war.</p>
+<p><span class="tag ok">DECIDED</span><b>Alliances:</b> PvP between allies is turned off only if both sides enable it.</p>
+<p><span class="tag ok">DECIDED</span><b>Proximity-only communication.</b></p>
+<p><span class="tag ok">DECIDED</span><b>Coat of arms editor</b> of its own for each family.</p>
+<p><span class="tag ok">DECIDED</span>Vassalage is paid <b>in coin</b>.</p>
+<p><span class="tag ok">DECIDED</span><b>Letters by NPC messenger:</b> you send a messenger to a town or settlement you know; they travel there and deliver the letter to a member of your family who is at that place.</p>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li>You write the letter (with parchment and ink, or on simple paper at first) and give it to the messenger with their pay.</li>
+  <li>The messenger really covers the distance, at the speed of a traveller on foot or on horseback; the letter takes as long as it would take.</li>
+  <li>On arrival, they leave it at the settlement's boundary stone or mailbox, and any family member passing by picks it up.</li>
+  <li>You can only send to places your character has already visited.</li>
+</ul></div>
+<p><span class="tag ok">DECIDED</span>Messengers <b>cannot be intercepted or killed.</b></p>
+</section>
+
+<section id="tecnica">
+<h2>18. Technical architecture</h2>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li>A single online world; playing solo also needs a connection.</li>
+  <li>The first milestones are prototyped in the browser without a server; the logic is written so the server can run it later without rewriting it.</li>
+  <li>Authoritative server over websockets; database with accounts, characters and world changes.</li>
+  <li>Versioned saves so progress is not lost with each update.</li>
+  <li>Tests before each delivery: headless browser, real screenshots; online, several clients and bots with simulated lag.</li>
+  <li>Deployment: GitHub → host, to be chosen when we get to online.</li>
+</ul></div>
+</section>
+
+<section id="hitos">
+<h2>19. Milestones by importance (draft)</h2>
+<div class="tw"><table>
+<tr><th>#</th><th>Milestone</th><th>Playable when finished</th></tr>
+<tr><td>1</td><td>Building</td><td>Move with a free camera (PC and touch) and build with an anchored grid, load, cascading dismantling with 75% recovery and free decoration.</td></tr>
+<tr><td>2</td><td>Equipment and slot-based carrying</td><td>Inventory panel, belts, firewood frame and other backpacks; felling, transport and slowdown from carrying.</td></tr>
+<tr><td>3</td><td>Stations and crafting</td><td>First stations, recipes, unlocking through practice, durability and repair.</td></tr>
+<tr><td>4</td><td>Survival</td><td>Needs with warnings, clothing against the cold, bound bed and death with partial looting.</td></tr>
+<tr><td>5</td><td>Duel</td><td>Fencing against a bot, with wounds.</td></tr>
+<tr><td>6</td><td>Siege, fire and upkeep</td><td>Battering ram, fire damage, boundary stone with materials.</td></tr>
+<tr><td>7</td><td>Wildlife and hunting</td><td>Realistic animals.</td></tr>
+<tr><td>8</td><td>Horses</td><td>Tame, ride, stable and pasture.</td></tr>
+<tr><td>9</td><td>Farming and seasons</td><td>Sowing by band, livestock.</td></tr>
+<tr><td>10</td><td>World</td><td>Seed-based pseudo-Europe, 5 countries with their own style, paths through use, bridges.</td></tr>
+<tr><td>11</td><td>Server and accounts</td><td>Registration, character creation, persistent world.</td></tr>
+<tr><td>12</td><td>Online PvP and offline protection</td><td>Combat and sieges between players; war rules.</td></tr>
+<tr><td>13</td><td>Lands and families</td><td>Boundary stones, exclusion radius, tolls, conquest, families, vassalages, alliances, coats of arms.</td></tr>
+<tr><td>14</td><td>Economy and NPCs</td><td>Orders and coin, offline stalls, tomes, hired travelling NPCs, sentries and messengers.</td></tr>
+<tr><td>15</td><td>Mounted and ranged combat</td><td>Bows, crossbows, cavalry lances.</td></tr>
+<tr><td>16</td><td>Sailing</td><td>Shipyard, ships, sailing with others.</td></tr>
+<tr><td>17</td><td>Cartography</td><td>Cartographer's table and maps as items.</td></tr>
+</table></div>
+</section>
+
+<section id="preguntas">
+<h2>20. Open questions</h2>
+<p>None. Whatever remains open will be decided by testing each milestone.</p>
+</section>
+</div>
+</body>
+</html>
