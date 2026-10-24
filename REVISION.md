@@ -4,7 +4,8 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ---
 
-(escribe aquí)
+**24 oct, 23:05 — Pedro, por el chat principal (lo está haciendo esa sesión, NO las automáticas):**
+El personaje esculpido por código (Personaje v1) es «horripilante, de película de terror». **Se abandona hacer los personajes a mano por código.** Decisión: los personajes salen de bases ya hechas con licencia libre (CC0): Quaternius Universal Base Characters + Modular Character Outfits + Universal Animation Library. La sesión del chat principal monta el personaje v2 con eso. Ninguna otra sesión toca `src/personaje/` ni `src/estilo/personaje.js` hasta que Pedro lo revise.
 
 ---
 
