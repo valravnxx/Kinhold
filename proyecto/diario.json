@@ -46,5 +46,20 @@
   "pruebas": "Todas las pruebas del proyecto en verde (lógica, modelos, combate, navegador PC y móvil, web). Corregida una prueba del combate que fallaba a veces si el rival te mataba antes de pulsar los paneles.",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T18:36:00+02:00",
+  "fin": "2026-10-24T18:37:25+02:00",
+  "titulo": "Alcance del proyecto: arte y seguridad al roadmap",
+  "hito": "infra",
+  "hecho": [
+   "Nuevo hito 1b «Dirección de arte y personajes», con prioridad sobre las piezas nuevas: personaje realista, personalización y armaduras visibles. Empieza con tres pruebas de estilo para que elijas.",
+   "Nuevo hito 11b «Administración, registros y seguridad»: roles, panel de administración, registros, detección de trampas y sanciones.",
+   "Ampliado el hito 11 (cuentas seguras) y fijado en las reglas: toda acción que cambia el mundo lleva autor, para poder registrarla.",
+   "Las reglas de trabajo recogen el listón visual: sobrio y realista dentro del low-poly, nada de estética infantil, y que aguante en móvil."
+  ],
+  "pruebas": "Web regenerada y probada en PC y móvil.",
+  "capturas": null,
+  "estado": "ok"
  }
 ]

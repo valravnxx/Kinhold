@@ -27,6 +27,8 @@ Kinhold es el juego de Pedro: supervivencia medieval "tipo MMO" en el navegador,
    - **Si hay un hito en `revision` (terminado, esperando a Pedro), no se empieza ningún hito nuevo.** Solo se pueden hacer tareas `pendiente` de hitos ya `en_curso`. Si no hay ninguna, la sesión termina sin cambios (no hace falta entrada en el diario ni commit).
    - Si no: la primera tarea `pendiente` del primer hito `en_curso`; si no hay, el siguiente hito `pendiente` en el orden del roadmap (pasa a `en_curso`).
    - Las tareas en `espera_decision` no se tocan.
+   - **Un hito con `"bloquea": true` que tenga tareas en `espera_decision` tampoco deja empezar hitos nuevos** (ej.: la dirección de arte; no se construye nada encima de un estilo sin elegir).
+   - Si una tarea termina con algo que Pedro tiene que elegir (pruebas de estilo, propuestas), al acabarla se añade la pregunta a `decisiones_pendientes`.
 4. Si la tarea es "Planificar el hito": leer las partes del GDD y de sistemas que tocan, y desglosar el hito en tareas de **una sesión cada una** (algo que se pueda hacer, probar y publicar en menos de una hora). La última tarea de cada hito es siempre "Revisión completa y publicación".
 5. Hacer la tarea **una sola por sesión**, entera: código, pruebas, capturas, publicación.
 6. Pruebas (todas, siempre, no solo las de lo tocado — a Pedro le molesta que al arreglar algo se rompa otra cosa):
@@ -46,6 +48,14 @@ Kinhold es el juego de Pedro: supervivencia medieval "tipo MMO" en el navegador,
  "capturas": "capturas/construccion-v4", "estado": "ok"}
 ```
 Las horas son reales (`date -Iseconds`), nunca estimadas. Las tareas guardan también `inicio` y `fin`.
+
+## Alcance y listón visual (que quede claro siempre)
+
+- Es un **juego online persistente tipo MMO**, aunque sea pequeño al principio: pensado para que algún día tenga muchos jugadores. Cuentas, administración, registros y seguridad son **prioridad alta**, no un añadido (hitos 11 y 11b).
+- **Toda acción que cambia el mundo** (construir, desmontar, coger, soltar, comerciar, herir, matar) pasa por la lógica pura con un **autor** (quién la hace), aunque hoy sea un solo jugador. Así el servidor podrá validarla y registrarla sin rehacer nada.
+- **Aspecto: sobrio y realista dentro del low-poly.** Nada de colores chillones ni muñecos de cubos de estética infantil. Proporciones humanas creíbles, materiales y paleta apagados y naturales, buena luz y sombras. Técnicas por código permitidas y deseables: geometría con más detalle donde se ve (cara, manos, bordes), variación de color por vértice, texturas generadas por código (canvas), sombreado plano o suave según la pieza, oclusión ambiental horneada en vértices, niebla, gradación de color y posproceso ligero.
+- **Personajes:** personalización (complexión, cara, pelo, barba, piel) y **la ropa y la armadura se ven puestas**, por capas. Es de lo más importante del juego: cada cambio sale en capturas de cerca para Pedro.
+- **Tiene que aguantar en móvil.** Medir los fotogramas; si hace falta, niveles de detalle.
 
 ## Reglas de Pedro
 

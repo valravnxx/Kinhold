@@ -46,8 +46,51 @@
    "nota": "Hecho el 24 oct entre las 15:55 y las 16:40 aprox. (sacado de las fechas de los archivos; los tiempos exactos de esta parte no se registraron)."
   },
   {
-   "id": "construccion-mas",
+   "id": "arte",
    "num": "1b",
+   "nombre": "Dirección de arte y personajes",
+   "estado": "pendiente",
+   "jugable": "Personaje con proporciones y detalle realistas, personalización (cuerpo, cara, pelo, piel) y ropa y armaduras que se ven puestas; luz, materiales y paleta sobrios; terreno y piezas de construcción con más detalle. Low-poly por código, pero que se vea bien y aguante en móvil.",
+   "nota": "Prioridad alta: antes de añadir más piezas o sistemas, para no rehacerlos luego con el estilo nuevo.",
+   "tareas": [
+    {
+     "nombre": "Tres pruebas de estilo (personaje y una escena con cabaña) con distinta luz, materiales y nivel de detalle, para que Pedro elija",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Personaje base articulado con el estilo elegido (también el rival del combate)",
+     "estado": "espera_decision"
+    },
+    {
+     "nombre": "Personalización del personaje: complexión, cara, pelo, barba, tono de piel",
+     "estado": "espera_decision"
+    },
+    {
+     "nombre": "Ropa y armaduras visibles por capas: lino, gambesón, cota de malla",
+     "estado": "espera_decision"
+    },
+    {
+     "nombre": "Terreno, hierba, árboles y luz con el estilo elegido",
+     "estado": "espera_decision"
+    },
+    {
+     "nombre": "Piezas de construcción con más detalle: corteza, juntas, tablas, paja",
+     "estado": "espera_decision"
+    },
+    {
+     "nombre": "Rendimiento en móvil: medir y ajustar el nivel de detalle",
+     "estado": "espera_decision"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "espera_decision"
+    }
+   ],
+   "bloquea": true
+  },
+  {
+   "id": "construccion-mas",
+   "num": "1c",
    "nombre": "Más piezas de construcción",
    "jugable": "Escaleras de caminar de un bloque, barandillas, vallas y más piezas para que construir dé juego.",
    "estado": "pendiente",
@@ -152,8 +195,18 @@
    "id": "servidor",
    "num": "11",
    "nombre": "Servidor y cuentas",
-   "jugable": "Registro, creación de personaje, mundo persistente.",
+   "jugable": "Registro e inicio de sesión seguros, recuperación de cuenta, creación de personaje, mundo persistente con servidor autoritativo.",
    "estado": "pendiente",
+   "tareas": [],
+   "nota": "Prioridad alta. Contraseñas con hash, conexión cifrada, límite de intentos, copias de seguridad."
+  },
+  {
+   "id": "admin",
+   "num": "11b",
+   "nombre": "Administración, registros y seguridad",
+   "estado": "pendiente",
+   "jugable": "Roles (jugador, moderador, administrador) para la cuenta de Pedro y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
+   "nota": "Prioridad alta: es un juego online persistente. Desde ya, toda acción que cambia el mundo pasa por la lógica con autor, para poder registrarla después.",
    "tareas": []
   },
   {
@@ -236,6 +289,12 @@
   }
  ],
  "decisiones_pendientes": [
+  {
+   "id": "estilo",
+   "pregunta": "Elegir estilo visual entre las tres pruebas de estilo (aparecerán en Jugar cuando estén hechas). Hasta entonces el resto del hito de arte espera.",
+   "desde": "2026-10-24",
+   "hito": "arte"
+  },
   {
    "id": "camara-tactil",
    "pregunta": "Cámara táctil: ¿arrastrar un dedo en zona libre gira la cámara (tocar sin arrastrar sigue golpeando) y con el arco la cámara sigue sola a donde apuntas?",
