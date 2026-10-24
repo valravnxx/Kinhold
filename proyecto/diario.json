@@ -232,6 +232,26 @@
   "estado": "fallo"
  },
  {
+  "inicio": "2026-10-24T21:19:25+02:00",
+  "fin": "2026-10-24T21:41:55+02:00",
+  "titulo": "Hito 1b: personaje nuevo por código (prueba de estilo v6)",
+  "hito": "arte",
+  "hecho": [
+   "Personaje hecho todo por código, como decidiste: una sola malla continua, sin piezas sueltas. El cuerpo es una suma suave de formas (cráneo, cara, nariz, cejas, orejas, tronco, brazos, manos con pulgar, piernas y pies) que se convierte en malla.",
+   "Más detalle donde se ve: la rejilla es más fina en la cara y las manos. Medido: 9.836 triángulos y 5.611 vértices.",
+   "Esqueleto de 17 huesos con pesos calculados por cercanía a las formas de cada hueso. Dos animaciones por código: quieto (respira y se balancea) y andar (va y viene por el camino).",
+   "Hombre adulto de 1,72 m con barba corta; ropa base pintada en la malla (camisa de lino, cinturón con relieve, calzas y zapatos), provisional hasta la tarea de ropa por capas.",
+   "Oclusión ambiental horneada en los vértices y ojos con brillo. Vistas nuevas «Personaje» y «Cara» que le siguen, y botón Quieto/Andando (se recuerda al recargar).",
+   "El presupuesto de la escena sube de 50 mil a 72 mil triángulos (con el personaje y su sombra son 68,8 mil). Anotado en el registro.",
+   "Se ve tosco de cerca: pelo como casquete liso, cara aún simple y bordes de color algo borrosos en el cuello de la camisa y la barba. Queda preguntado en las decisiones.",
+   "No comprobado: los fps en un móvil de verdad (aquí, sin tarjeta gráfica, no sirve medirlos).",
+   "Coincidió con otra sesión (21:13–21:20) que avanzó el personaje por otro camino (src/personaje/, por secciones, sin publicar). Se conservan las dos; esta es la que se publica en la prueba de estilo v6."
+  ],
+  "pruebas": "Lógica 35/35, modelos 21/21, combate 69/69; navegador construcción, combate, estilo v6 (con pruebas nuevas del personaje; MUTAR=1 falla como debe) y web: todo correcto.",
+  "capturas": "capturas/estilo-v6",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-24T22:05:00+02:00",
   "fin": "2026-10-24T22:40:12+02:00",
   "aprox": true,
@@ -248,6 +268,38 @@
   ],
   "pruebas": "Lógica 35/35, modelos 21/21, combate 69/69, personaje horneado 11/11 (nuevas, fallan con MUTAR=1); navegador construcción, combate, estilo, personaje (nueva, falla con MUTAR=1) y web: todo correcto.",
   "capturas": "capturas/personaje-v1",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T22:06:00+02:00",
+  "fin": "2026-10-24T22:11:29+02:00",
+  "titulo": "Web de progreso en inglés",
+  "hito": "infra",
+  "hecho": [
+   "Selector ES / EN arriba a la derecha; se recuerda al volver y se puede abrir directamente con ?lang=en.",
+   "Traducidos al inglés los 206 textos del roadmap, el diario, las decisiones y las notas de versión, y todos los textos fijos de la web.",
+   "Las traducciones viven en proyecto/idiomas/en.json; la web no se genera si falta alguna, así que todo lo nuevo saldrá también en inglés.",
+   "Preparado para el ruso: basta con añadir proyecto/idiomas/ru.json y sus textos fijos.",
+   "Nuevas tareas: documentos de diseño en inglés y el juego en inglés."
+  ],
+  "pruebas": "Web en PC y móvil, en español y en inglés (botón, recargar, ?lang=en): todo correcto; quitar una traducción a propósito hace fallar la generación de la web.",
+  "capturas": null,
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T22:16:00+02:00",
+  "fin": "2026-10-24T22:32:23+02:00",
+  "titulo": "Construcción v4: madera más resistente y casa de dos plantas",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Causa del tejado que no entraba en las esquinas: el cimiento de troncos de cada esquina carga con dos muros por planta y con la segunda planta se pasaba (1320 kg de 1200).",
+   "Más aguante en todas las piezas de madera y piedra. Una casa de troncos de 2 plantas con tejado ya entra entera y ninguna pieza pasa del 75%.",
+   "Siguen existiendo límites: 3 plantas piden cimiento de piedra y el zarzo no da para dos plantas.",
+   "Vano de una casilla: un suelo en alto o un tramo de tejado sin muros debajo se apoya en el de al lado. Hasta 4×4 casillas no hacen falta vigas por dentro; en 5×5 el centro sí las pide.",
+   "Los valores nuevos están en Decisiones dentro del juego, como provisionales."
+  ],
+  "pruebas": "Construcción 46/46 (11 nuevas con casas de 2 y 3 plantas; fallan con MUTAR=1), modelos 21/21, combate 69/69; navegador de construcción (casa de 4×4 de dos plantas con tejado a dos aguas), combate, estilo y web: todo correcto.",
+  "capturas": "capturas/construccion-v4",
   "estado": "ok"
  }
 ]

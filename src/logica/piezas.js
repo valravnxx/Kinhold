@@ -26,25 +26,25 @@ export const MATERIALES = {
 export const PIEZAS = {
   mojon:              { nombre: 'Mojón', hueco: 'libre', nivel: 0, peso: 0,   cap: 0,    coste: { piedra: 3 }, cat: 'tierra' },
 
-  cim_piedra:         { nombre: 'Cimiento de piedra', hueco: 'f', nivel: 1, peso: 400, cap: 3000, coste: { piedra: 8 }, soloPlanta0: true, cat: 'base' },
-  cim_tronco:         { nombre: 'Cimiento de troncos', hueco: 'f', nivel: 1, peso: 150, cap: 1200, coste: { tronco: 2 }, soloPlanta0: true, cat: 'base' },
-  suelo_tronco:       { nombre: 'Suelo de troncos', hueco: 'f', nivel: 1, peso: 120, cap: 300, coste: { tronco: 2 }, noPlanta0: true, cat: 'base' },
-  suelo_tabla:        { nombre: 'Suelo de tablas', hueco: 'f', nivel: 2, peso: 100, cap: 400, coste: { tabla: 4, clavo: 4 }, noPlanta0: true, cat: 'base' },
+  cim_piedra:         { nombre: 'Cimiento de piedra', hueco: 'f', nivel: 1, peso: 400, cap: 6000, coste: { piedra: 8 }, soloPlanta0: true, cat: 'base' },
+  cim_tronco:         { nombre: 'Cimiento de troncos', hueco: 'f', nivel: 1, peso: 150, cap: 2000, coste: { tronco: 2 }, soloPlanta0: true, cat: 'base' },
+  suelo_tronco:       { nombre: 'Suelo de troncos', hueco: 'f', nivel: 1, peso: 120, cap: 900, coste: { tronco: 2 }, noPlanta0: true, cat: 'base' },
+  suelo_tabla:        { nombre: 'Suelo de tablas', hueco: 'f', nivel: 2, peso: 100, cap: 1000, coste: { tabla: 4, clavo: 4 }, noPlanta0: true, cat: 'base' },
 
-  poste:              { nombre: 'Poste', hueco: 'v', nivel: 1, peso: 60, cap: 800, coste: { tronco: 1 }, cat: 'estructura' },
-  viga:               { nombre: 'Viga', hueco: 'b', nivel: 1, peso: 60, cap: 400, coste: { tronco: 1 }, cat: 'estructura' },
+  poste:              { nombre: 'Poste', hueco: 'v', nivel: 1, peso: 60, cap: 2000, coste: { tronco: 1 }, cat: 'estructura' },
+  viga:               { nombre: 'Viga', hueco: 'b', nivel: 1, peso: 60, cap: 1000, coste: { tronco: 1 }, cat: 'estructura' },
 
-  muro_zarzo:         { nombre: 'Muro de zarzo y barro', hueco: 'e', nivel: 1, peso: 150, cap: 120, coste: { vara: 4, barro: 4 }, cat: 'muro' },
-  muro_tronco:        { nombre: 'Muro de troncos', hueco: 'e', nivel: 1, peso: 300, cap: 600, coste: { tronco: 4 }, cat: 'muro' },
-  muro_tronco_puerta: { nombre: 'Muro de troncos con puerta', hueco: 'e', nivel: 1, peso: 220, cap: 400, coste: { tronco: 3 }, conPuerta: true, cat: 'muro' },
-  muro_tronco_ventana:{ nombre: 'Muro de troncos con ventana', hueco: 'e', nivel: 1, peso: 260, cap: 500, coste: { tronco: 3 }, conVentana: true, cat: 'muro' },
-  muro_entramado:     { nombre: 'Muro de entramado', hueco: 'e', nivel: 2, peso: 250, cap: 700, coste: { tronco: 2, vara: 2, barro: 3 }, cat: 'muro' },
-  muro_tabla:         { nombre: 'Muro de tablas', hueco: 'e', nivel: 2, peso: 200, cap: 400, coste: { tabla: 6, clavo: 6 }, cat: 'muro' },
-  muro_tabla_puerta:  { nombre: 'Muro de tablas con puerta', hueco: 'e', nivel: 2, peso: 150, cap: 260, coste: { tabla: 4, clavo: 4 }, conPuerta: true, cat: 'muro' },
+  muro_zarzo:         { nombre: 'Muro de zarzo y barro', hueco: 'e', nivel: 1, peso: 150, cap: 250, coste: { vara: 4, barro: 4 }, cat: 'muro' },
+  muro_tronco:        { nombre: 'Muro de troncos', hueco: 'e', nivel: 1, peso: 300, cap: 1200, coste: { tronco: 4 }, cat: 'muro' },
+  muro_tronco_puerta: { nombre: 'Muro de troncos con puerta', hueco: 'e', nivel: 1, peso: 220, cap: 850, coste: { tronco: 3 }, conPuerta: true, cat: 'muro' },
+  muro_tronco_ventana:{ nombre: 'Muro de troncos con ventana', hueco: 'e', nivel: 1, peso: 260, cap: 1000, coste: { tronco: 3 }, conVentana: true, cat: 'muro' },
+  muro_entramado:     { nombre: 'Muro de entramado', hueco: 'e', nivel: 2, peso: 250, cap: 1400, coste: { tronco: 2, vara: 2, barro: 3 }, cat: 'muro' },
+  muro_tabla:         { nombre: 'Muro de tablas', hueco: 'e', nivel: 2, peso: 200, cap: 900, coste: { tabla: 6, clavo: 6 }, cat: 'muro' },
+  muro_tabla_puerta:  { nombre: 'Muro de tablas con puerta', hueco: 'e', nivel: 2, peso: 150, cap: 600, coste: { tabla: 4, clavo: 4 }, conPuerta: true, cat: 'muro' },
   medio_muro:         { nombre: 'Medio muro', hueco: 'e', nivel: 1, peso: 80, cap: 0, coste: { tronco: 1, vara: 2 }, medio: true, cat: 'muro' },
 
-  tejado_paja:        { nombre: 'Tejado de paja', hueco: 'r', nivel: 1, peso: 80, cap: 0, coste: { vara: 2, paja: 4 }, cat: 'tejado' },
-  tejado_tablilla:    { nombre: 'Tejado de tablillas', hueco: 'r', nivel: 2, peso: 100, cap: 0, coste: { tabla: 3, clavo: 4 }, cat: 'tejado' },
+  tejado_paja:        { nombre: 'Tejado de paja', hueco: 'r', nivel: 1, peso: 80, cap: 400, coste: { vara: 2, paja: 4 }, cat: 'tejado' },
+  tejado_tablilla:    { nombre: 'Tejado de tablillas', hueco: 'r', nivel: 2, peso: 100, cap: 500, coste: { tabla: 3, clavo: 4 }, cat: 'tejado' },
   // El hastial ya se dibuja solo con el tejado; la pieza queda oculta para no romper partidas guardadas.
   hastial:            { nombre: 'Hastial (remate)', hueco: 'g', nivel: 1, peso: 100, cap: 0, coste: { tronco: 2 }, cat: 'oculto' },
 

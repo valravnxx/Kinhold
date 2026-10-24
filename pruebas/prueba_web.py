@@ -30,7 +30,7 @@ with sync_playwright() as p:
         malos = []
         pg.on('response', lambda r: malos.append(r.url) if r.status >= 400 else None)
         pg.goto(URL)
-        pg.wait_for_selector('#listaJuegos .tarjeta')
+        pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
         comprobar('se ven los prototipos jugables', pg.locator('#listaJuegos .tarjeta').count() >= 2)
         ancho = pg.evaluate('document.documentElement.scrollWidth')
         comprobar('sin desplazamiento horizontal', ancho <= vista['width'], f'{ancho}px')
@@ -41,6 +41,22 @@ with sync_playwright() as p:
             pg.wait_for_timeout(250)
             comprobar(f'pestaña {s} visible y con contenido', pg.is_visible(f'#{s}') and len(pg.inner_text(f'#{s}').strip()) > 20)
             pg.screenshot(path=f'{SALIDA}/{nombre}_{i}_{s}.png', full_page=True)
+        # idiomas: botón EN y ?lang=en
+        pg.click('nav button[data-s=roadmap]')
+        pg.click('#idiomas button[data-l=en]')
+        pg.wait_for_timeout(250)
+        comprobar('el botón EN pasa la web a inglés', pg.inner_text('nav button[data-s=jugar]') == 'Play' and 'Building' in pg.inner_text('#roadmap') and 'Construcción' not in pg.inner_text('#roadmap'))
+        pg.screenshot(path=f'{SALIDA}/{nombre}_8_roadmap_en.png', full_page=True)
+        pg.click('nav button[data-s=diario]'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_9_diario_en.png')
+        pg.reload(); pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
+        comprobar('el idioma elegido se recuerda al recargar', pg.inner_text('nav button[data-s=jugar]') == 'Play')
+        pg.click('#idiomas button[data-l=es]'); pg.wait_for_timeout(200)
+        comprobar('y ES la devuelve al español', pg.inner_text('nav button[data-s=jugar]') == 'Jugar')
+        pg.goto(URL + '?lang=en'); pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
+        comprobar('?lang=en abre la web en inglés', pg.inner_text('nav button[data-s=jugar]') == 'Play')
+        pg.goto(URL); pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
+        pg.click('#idiomas button[data-l=es]'); pg.wait_for_timeout(200)
         # los enlaces internos existen
         enlaces = pg.evaluate("[...document.querySelectorAll('a[href]')].map(a => a.getAttribute('href')).filter(h => !h.startsWith('http'))")
         for h in set(enlaces):

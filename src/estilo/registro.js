@@ -1,14 +1,13 @@
 // Decisiones tomadas en la prueba de estilo, para revisar.
-export const VERSION_ESTILO = 'Prueba de estilo · v5 (realismo en miniatura, árboles rehechos)';
+export const VERSION_ESTILO = 'Prueba de estilo · v6 (realismo en miniatura, con el personaje por código)';
 export const REGISTRO_ESTILO = [
-  'v5, por qué: en la v4 los árboles se veían con rayajos raros (la textura de hojas se proyectaba por caras y hacía trazos). Ahora las copas son bolas suaves con bultos, como racimos, con luz arriba y sombra dentro, y una textura de manchas redondas que envuelve la copa sin costuras. Los pinos tienen el borde de cada piso en puntas caídas. La cabaña no cambia.',
-  'v4, por qué: te gustó la maqueta de la v3, pero el mundo no estará recortado y querías probar el «realismo en miniatura» con algo de textura.',
-  'Es la v3 con texturas hechas por código: veta en troncos y tablas, anillos en los cortes, paja en hebras, piedra, corteza, hojas y suelo. Las texturas son en gris y dan el detalle y el relieve (bumpMap); el color sigue saliendo de la paleta.',
-  'Las texturas se colocan a escala real: la veta sigue el largo de cada tronco y tabla, la paja baja por la pendiente y los anillos se centran en cada corte.',
-  'El suelo ya no acaba en un borde: sigue con lomas suaves hasta el horizonte, con un bosque lejano repetido con instancias y niebla del color del cielo.',
-  'Se mantiene de la v3: formas redondeadas, zócalo de piedra continuo, luz suave con sombras blandas y de contacto, teleobjetivo y desenfoque arriba y abajo (con botón para quitarlo).',
-  'Una malla por textura (unas siete) en vez de una sola: sigue muy por debajo del límite de dibujados.',
-  'Presupuesto medido: como mucho 50 mil triángulos (contando la pasada de sombra) y 60 dibujados. Una sola sombra de 1024 px. Resolución adaptativa: empieza a 1,5× como mucho y baja hasta 0,75× si no llegas a 50 fps.',
-  'El personaje se hará por código (lo decidiste); llega en la tarea siguiente.',
+  'v6, el personaje: hecho todo por código, como decidiste. Es una sola malla continua (sin piezas sueltas ni juntas): el cuerpo se describe como una suma suave de formas (cráneo, cara, nariz, cejas, orejas, tronco, brazos, manos con pulgar, piernas, pies) y se convierte en malla, con más detalle en la cara y las manos.',
+  'Lleva esqueleto de 17 huesos y dos animaciones hechas por código: quieto (respira y se balancea un poco) y andar (botón «Quieto/Andando»: va y viene por el camino). Las vistas «Personaje» y «Cara» le siguen.',
+  'Proporciones creíbles algo estilizadas: 1,72 m, cabeza un poco grande (1/7 de la altura) para que se lea en miniatura. Hombre adulto con barba corta.',
+  'Ropa base pintada en la misma malla, provisional: camisa de lino, cinturón de cuero (con relieve), calzas de lana y zapatos. La ropa y la armadura por capas, que se ven puestas, son una tarea aparte.',
+  'Colores apagados, oclusión ambiental horneada (pliegues, axilas y entre las piernas más oscuros) y ojos con un pequeño brillo.',
+  'Pendiente de mejorar, a la vista en las capturas de cerca: el pelo es un casquete liso, la cara aún es tosca de cerca y los bordes de color (cuello de la camisa, barba) son algo borrosos.',
+  'Presupuesto: el personaje son unos 10 mil triángulos (unos 20 mil con su sombra). El límite de la escena sube de 50 mil a 72 mil. No comprobado en un móvil de verdad.',
+  'v5: copas de los árboles en racimos suaves y pinos con puntas. v4: texturas por código y mundo sin recortar. Se mantienen.',
   'Puedes girar la cámara arrastrando (un dedo en el móvil) y acercarte con la rueda o pellizcando.',
 ];

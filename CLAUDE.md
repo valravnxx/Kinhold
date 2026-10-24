@@ -4,6 +4,8 @@ Kinhold es el juego de Pedro: supervivencia medieval "tipo MMO" en el navegador,
 
 **Todo en español**: código, comentarios, textos del juego, commits, diario y mensajes a Pedro.
 
+**Y también en inglés lo que se publica** (más adelante, ruso): cada texto nuevo o cambiado del roadmap, el diario, las decisiones y las notas de versión se añade en `proyecto/idiomas/en.json` (clave: el texto exacto en español; valor: la traducción). `construir_web.mjs` falla si falta alguna, y lista cuáles. Si se cambia un texto en español, hay que volver a traducirlo. Los textos fijos de la web están en el diccionario `UI` de `herramientas/plantilla_web.html`.
+
 ## Dónde está cada cosa
 
 - `diseno/gdd.html` — GDD (fuente de verdad del diseño). `diseno/sistemas.html` — recursos, recetas, piezas, valores. `diseno/analisis.html` — análisis y propuestas (lo marcado PROPUESTA no está decidido).
@@ -18,6 +20,9 @@ Kinhold es el juego de Pedro: supervivencia medieval "tipo MMO" en el navegador,
 ## Una sesión de trabajo (tarea programada cada hora)
 
 1. `git pull`. Instalar dependencias si faltan (`npm install`). Apuntar la hora de inicio (`date -Iseconds`).
+   - **Una sola sesión a la vez.** Mirar `proyecto/sesion.json`. Si dice que hay otra sesión trabajando y empezó hace menos de 70 minutos, **terminar sin hacer nada** (puede que Pedro esté hablando con ella). Si no, escribir en él `{"inicio": "<hora>", "tarea": "<nombre>", "rama": "trabajo/<AAAAMMDD-HHMM>"}`, commit y push enseguida. Al terminar la sesión (bien o mal), dejarlo en `{}` en el último commit.
+   - **No perder trabajo a medias:** mientras se trabaja, subir el avance cada 15 minutos más o menos a la rama `trabajo/<AAAAMMDD-HHMM>` (commit "Avance: …"). Al acabar, fusionar en main. Si la sesión se corta, lo hecho queda en esa rama y la siguiente sesión lo retoma desde ahí en vez de empezar de cero (mirar `git ls-remote origin 'trabajo/*'`).
+   - Si Pedro habla contigo dentro de la sesión, lo que pida va a `REVISION.md` y se sube enseguida, para que no dependa de esta conversación.
 2. Leer `REVISION.md`. Si Pedro ha escrito algo nuevo debajo de la línea, **eso va primero**:
    - Aprobación de un hito en revisión → marcarlo `hecho`.
    - Cambios pedidos → crear tareas en ese hito (estado `pendiente`) y dejarlo `en_curso`.

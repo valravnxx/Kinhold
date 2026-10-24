@@ -5,15 +5,30 @@
    "num": "0",
    "nombre": "Infraestructura",
    "jugable": "Repositorio en GitHub, web de progreso y trabajo automático por horas.",
-   "estado": "hecho",
+   "estado": "en_curso",
    "tareas": [
     {
      "nombre": "Repositorio, web de progreso y tarea programada",
      "estado": "hecho",
      "fin": "2026-10-24T18:19:37+02:00",
      "inicio": "2026-10-24T18:04:00+02:00"
+    },
+    {
+     "nombre": "Web de progreso en inglés: selector ES/EN y todo el roadmap y el diario traducidos",
+     "estado": "hecho",
+     "inicio": "2026-10-24T22:06:00+02:00",
+     "fin": "2026-10-24T22:11:29+02:00"
+    },
+    {
+     "nombre": "Documentos de diseño en inglés (GDD, sistemas y análisis), con selector de idioma",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Juego en inglés: textos de los prototipos con selector de idioma, preparado para añadir ruso",
+     "estado": "pendiente"
     }
-   ]
+   ],
+   "nota": "Idiomas: español e inglés ya en la web; el ruso, más adelante, cuando Pedro lo pida."
   },
   {
    "id": "construccion",
@@ -86,8 +101,8 @@
     {
      "nombre": "Personaje nuevo por código (decidido por Pedro), vistoso y con el estilo de maqueta: una sola malla continua con esqueleto y animación, proporciones creíbles algo estilizadas",
      "estado": "hecho",
-     "inicio": "2026-10-24T21:13:13+02:00",
-     "fin": "2026-10-24T22:40:12+02:00"
+     "inicio": "2026-10-24T21:19:25+02:00",
+     "fin": "2026-10-24T21:41:55+02:00"
     },
     {
      "nombre": "Personaje base articulado con el estilo elegido (también el rival del combate) (hecho con el personaje nuevo por código)",
@@ -128,10 +143,17 @@
    "estado": "pendiente",
    "tareas": [
     {
+     "nombre": "Más resistencia en la madera (Pedro: «la madera es demasiado débil, no deja hacer 2 pisos con tejado»): una casa de 2 plantas con tejado hecha solo con piezas básicas de madera (cimiento, muros y suelo de troncos) tiene que poder construirse sin trucos; construir sin volverse loco, pero que se puedan hacer cosas. Prueba de lógica que lo garantice y capturas de la casa",
+     "estado": "hecho",
+     "inicio": "2026-10-24T22:16:00+02:00",
+     "fin": "2026-10-24T22:32:23+02:00"
+    },
+    {
      "nombre": "Planificar el hito: lista de piezas sacada del GDD y del documento de sistemas",
      "estado": "pendiente"
     }
-   ]
+   ],
+   "nota": "La primera tarea (madera más resistente) se adelantó el 24 oct porque la casa de dos plantas de Pedro y su pareja no admitía el tejado en las esquinas."
   },
   {
    "id": "equipo",
@@ -314,6 +336,13 @@
      "archivo": "jugar/construccion/v3.html",
      "capturas": "capturas/construccion-v3",
      "notas": "Muros exactos a 2,5 m por hiladas."
+    },
+    {
+     "v": "v4",
+     "fecha": "2026-10-24",
+     "archivo": "jugar/construccion/v4.html",
+     "capturas": "capturas/construccion-v4",
+     "notas": "Madera más resistente: casa de 2 plantas con tejado de troncos; vano de una casilla en suelos y tejados."
     }
    ]
   },
@@ -384,6 +413,13 @@
      "archivo": "jugar/estilo/v5.html",
      "capturas": "capturas/estilo-v5",
      "notas": "Árboles rehechos: copas suaves en racimos y pinos con puntas, sin rayajos."
+    },
+    {
+     "v": "v6",
+     "fecha": "2026-10-24",
+     "archivo": "jugar/estilo/v6.html",
+     "capturas": "capturas/estilo-v6",
+     "notas": "Personaje por código: una sola malla con esqueleto, quieto y andando; vistas Personaje y Cara"
     }
    ]
   },
@@ -405,7 +441,7 @@
  "decisiones_pendientes": [
   {
    "id": "personaje-v1",
-   "pregunta": "Personaje v1 (en Jugar → Personaje): ¿va por buen camino la cara y el cuerpo? Di qué cambiarías (proporciones, cara, pelo, barba, ropa) antes de hacer la personalización y las armaduras con este método.",
+   "pregunta": "Hay dos personajes hechos por código en paralelo: el de la prueba de estilo v6 y el de Personaje v1 (esculpido con campos de distancia, en Jugar → Personaje). ¿Cuál sigue adelante, y qué cambiarías (proporciones, cara, pelo, barba, ropa) antes de hacer la personalización y las armaduras con ese método?",
    "desde": "2026-10-24",
    "hito": "arte"
   },
