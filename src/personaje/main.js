@@ -1,13 +1,15 @@
-// Kinhold — prototipo del personaje por código (hito 1b), delante de la cabaña de la prueba de estilo v5.
+// Kinhold — personaje v2: bases CC0 (Quaternius) con personalización, delante de la cabaña de la prueba de estilo.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { LUCES } from '../estilo/estilos.js';
 import { crearEscena } from '../estilo/escena.js';
-import { crearPersonaje, animar } from './cuerpo.js';
+import { crearPersonaje, OPCIONES } from '../personajes/cargar.js';
 import { VERSION_PERSONAJE, REGISTRO_PERSONAJE } from './registro.js';
 
 const $ = (id) => document.getElementById(id);
-const CLAVE = 'kinhold_personaje_v1';
+const CLAVE = 'kinhold_personaje_v2';
+// carpeta de los modelos: la versión publicada vive en jugar/personaje/, los modelos en recursos/personajes/v1/
+const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../recursos/personajes/v1/';
 
 const lienzo = $('lienzo');
 const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, alpha: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
@@ -28,26 +30,42 @@ sol.shadow.bias = -0.0005; sol.shadow.normalBias = 0.03;
 escena.add(hemi, sol, sol.target);
 
 const POS = new THREE.Vector3(1.6, 0, 4.8), GIRO = 0.45;
-const pj = crearPersonaje();
-pj.position.copy(POS); pj.rotation.y = GIRO;
-escena.add(pj);
-
-// vistas relativas al personaje (en su marco: z hacia donde mira)
 const rel = (x, y, z) => new THREE.Vector3(x, y, z).applyAxisAngle(new THREE.Vector3(0, 1, 0), GIRO).add(POS);
+// la cara se encuadra con la altura real de la cabeza (las mujeres son algo más bajas)
+const alturaCara = () => { if (!pj) return 1.6; const v = new THREE.Vector3(); pj.hueso.Head.getWorldPosition(v); return v.y + 0.08; };
 const VISTAS = {
   cuerpo:  () => [rel(0.9, 1.35, 3.1), rel(0, 0.9, 0)],
-  cara:    () => [rel(0.18, 1.69, 0.62), rel(0, 1.66, 0)],
-  perfil:  () => [rel(0.62, 1.68, 0.12), rel(0, 1.66, 0.02)],
-  manos:   () => [rel(0.75, 1.05, 0.55), rel(0.2, 0.84, 0)],
-  espalda: () => [rel(-1.9, 1.4, -1.5), rel(0, 1.0, 0)],
+  cara:    () => { const y = alturaCara(); return [rel(0.22, y + 0.03, 0.78), rel(0, y - 0.02, 0)]; },
+  perfil:  () => { const y = alturaCara(); return [rel(0.78, y + 0.02, 0.12), rel(0, y - 0.02, 0.02)]; },
+  espalda: () => [rel(-1.9, 1.4, -1.6), rel(0, 1.0, 0)],
 };
+const ANIMS = { quieto: 'Quieto', andar: 'Andar', talar: 'Talar', guardia: 'En guardia', golpe: 'Golpe', cargar: 'Cargar' };
 
-let estado = { luz: 'manana', vista: 'cuerpo', modo: 'quieto' };
+let estado = { luz: 'manana', vista: 'cuerpo', modo: 'quieto', sexo: 'hombre', ropa: 'campesino', pelo: 'raya', colorPelo: 'castano', piel: 'clara', barba: 'si' };
 try { estado = { ...estado, ...JSON.parse(localStorage.getItem(CLAVE) || '{}') }; } catch (e) { /* sin almacenamiento */ }
 if (!LUCES[estado.luz]) estado.luz = 'manana';
 if (!VISTAS[estado.vista]) estado.vista = 'cuerpo';
-if (!['quieto', 'andar'].includes(estado.modo)) estado.modo = 'quieto';
+if (!ANIMS[estado.modo]) estado.modo = 'quieto';
 const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch (e) { /* sin almacenamiento */ } };
+
+let pj = null, cargando = 0;
+async function rehacer() {
+  const n = ++cargando;
+  $('cargando').hidden = false;
+  if (!OPCIONES.pelo[estado.sexo][estado.pelo]) estado.pelo = Object.keys(OPCIONES.pelo[estado.sexo])[0];
+  const nuevo = await crearPersonaje(estado, RECURSOS);
+  if (n !== cargando) return; // llegó otro cambio mientras cargaba
+  if (pj) escena.remove(pj.raiz);
+  pj = nuevo;
+  pj.raiz.position.copy(POS); pj.raiz.rotation.y = GIRO;
+  escena.add(pj.raiz);
+  pj.poner(estado.modo, 0); pj.mezclador.update(0.5);
+  pj.raiz.updateMatrixWorld(true);
+  if (estado.vista === 'cara' || estado.vista === 'perfil') ponerVista(estado.vista);
+  medida.trianglesPersonaje = pj.triangulos;
+  $('cargando').hidden = true;
+  pintarOpciones(); guardar(); dibujar();
+}
 
 function ponerLuz(id) {
   estado.luz = id; const L = LUCES[id];
@@ -65,8 +83,19 @@ function ponerVista(v) {
   camara.position.copy(pos); control.target.copy(mira); control.update();
   marcar('vista', v); guardar(); dibujar();
 }
-function ponerModo(m) { estado.modo = m; marcar('modo', m); guardar(); animar(pj, reloj, m); dibujar(); }
+function ponerModo(m) { estado.modo = m; if (pj) pj.poner(m); marcar('modo', m); guardar(); }
 function marcar(tipo, v) { for (const b of document.querySelectorAll(`[data-${tipo}]`)) b.classList.toggle('sel', b.dataset[tipo] === v); }
+
+// panel de personalización
+function pintarOpciones() {
+  const grupo = (clave, valores, titulo) => `<div class="grupo"><span>${titulo}</span>${Object.entries(valores).map(([k, v]) =>
+    `<button data-op="${clave}" data-v="${k}" class="${estado[clave] === k ? 'sel' : ''}">${Array.isArray(v) ? `<i style="background:#${new THREE.Color(v[1]).getHexString()}"></i>${v[0]}` : v}</button>`).join('')}</div>`;
+  $('opciones').innerHTML = grupo('sexo', OPCIONES.sexo, 'Cuerpo') + grupo('ropa', OPCIONES.ropa, 'Ropa') + grupo('pelo', OPCIONES.pelo[estado.sexo], 'Pelo') +
+    grupo('colorPelo', OPCIONES.colorPelo, 'Color del pelo') + grupo('piel', OPCIONES.piel, 'Piel') + (estado.sexo === 'hombre' ? grupo('barba', OPCIONES.barba, 'Barba') : '') +
+    `<div class="grupo"><span>Animación</span>${Object.entries(ANIMS).map(([k, v]) => `<button data-modo="${k}" class="${estado.modo === k ? 'sel' : ''}">${v}</button>`).join('')}</div>`;
+  for (const b of $('opciones').querySelectorAll('[data-op]')) b.onclick = () => { estado[b.dataset.op] = b.dataset.v; rehacer(); };
+  for (const b of $('opciones').querySelectorAll('[data-modo]')) b.onclick = () => ponerModo(b.dataset.modo);
+}
 
 const RES_MAX = Math.min(devicePixelRatio || 1, 2);
 let resolucion = Math.min(RES_MAX, 1.5);
@@ -76,8 +105,8 @@ function ajustar() {
 }
 addEventListener('resize', () => { ajustar(); dibujar(); });
 
-const medida = { fps: 0, triangulos: 0, dibujados: 0, trianglesPersonaje: pj.geometry.index.count / 3 };
-let pausado = false, reloj = 0, antes = performance.now();
+const medida = { fps: 0, triangulos: 0, dibujados: 0, trianglesPersonaje: 0 };
+let pausado = false, antes = performance.now();
 function dibujar() { renderer.render(escena, camara); medida.triangulos = renderer.info.render.triangles; medida.dibujados = renderer.info.render.calls; }
 control.addEventListener('change', () => { if (pausado) dibujar(); });
 let cuenta = 0, t0 = performance.now(), ventanas = 0;
@@ -85,9 +114,7 @@ function bucle() {
   requestAnimationFrame(bucle);
   const ahora = performance.now(), dt = Math.min(0.05, (ahora - antes) / 1000); antes = ahora;
   if (pausado) return;
-  reloj += dt;
-  // andando, da vueltas en un círculo pequeño delante de la cabaña
-  animar(pj, reloj, estado.modo);
+  if (pj) pj.mezclador.update(dt);
   control.update(); dibujar(); cuenta++;
   if (ahora - t0 >= 2000) {
     medida.fps = Math.round(cuenta * 1000 / (ahora - t0)); ventanas++;
@@ -100,22 +127,31 @@ function bucle() {
 
 for (const b of document.querySelectorAll('[data-luz]')) b.onclick = () => ponerLuz(b.dataset.luz);
 for (const b of document.querySelectorAll('[data-vista]')) b.onclick = () => ponerVista(b.dataset.vista);
-for (const b of document.querySelectorAll('[data-modo]')) b.onclick = () => ponerModo(b.dataset.modo);
 $('btnNotas').onclick = () => { $('notas').hidden = !$('notas').hidden; };
+$('btnOpciones').onclick = () => { $('opciones').hidden = !$('opciones').hidden; $('btnOpciones').classList.toggle('sel', !$('opciones').hidden); };
 $('notas').innerHTML = `<b>${VERSION_PERSONAJE}</b><ul>${REGISTRO_PERSONAJE.map(t => `<li>${t}</li>`).join('')}</ul>`;
 
 ajustar();
 ponerLuz(estado.luz);
-ponerModo(estado.modo);
 ponerVista(estado.vista);
+rehacer().catch(e => { $('cargando').textContent = 'No se pudo cargar el personaje: ' + e.message; console.error(e); });
 bucle();
 
 window.__personaje = {
   ponerLuz, ponerVista, ponerModo, dibujar, pausar: (v) => { pausado = v; },
-  // fija el instante de la animación (para capturas reproducibles)
-  instante: (t) => { reloj = t; animar(pj, reloj, estado.modo); dibujar(); },
+  listo: () => !!pj && $('cargando').hidden,
+  cambiar: (o) => { Object.assign(estado, o); return rehacer(); },
+  // fija el instante de la animación (para capturas repetibles)
+  instante: (t) => {
+    if (pj) {
+      // solo la animación elegida, con todo su peso, en el instante t
+      pj.mezclador.stopAllAction();
+      const a = pj.acciones[estado.modo] || pj.acciones.quieto;
+      a.reset().setEffectiveWeight(1).play(); a.time = t; pj.mezclador.update(0);
+    }
+    dibujar();
+  },
   medida: () => { dibujar(); return { ...medida, triangulos: renderer.info.render.triangles, dibujados: renderer.info.render.calls }; },
   estado: () => ({ ...estado }),
-  // posición en pantalla de un hueso (para comprobar que la animación mueve de verdad)
-  hueso: (n) => { const v = new THREE.Vector3(); pj.userData.huesos[pj.userData.H[n]].getWorldPosition(v); return [v.x, v.y, v.z]; },
+  hueso: (n) => { const v = new THREE.Vector3(); pj.hueso[n].getWorldPosition(v); return [v.x, v.y, v.z]; },
 };

@@ -111,6 +111,12 @@
      "estado": "hecho"
     },
     {
+     "nombre": "Personaje v2 con bases libres (CC0) ya hechas en vez de esculpirlo por código (Pedro: «horripilante»): cabeza, ropa, pelo y animaciones del paquete, con personalización",
+     "estado": "hecho",
+     "inicio": "2026-10-24T23:05:00+02:00",
+     "fin": "2026-10-24T23:31:24+02:00"
+    },
+    {
      "nombre": "Personalización del personaje: complexión, cara, pelo, barba, tono de piel",
      "estado": "espera_decision"
     },
@@ -436,14 +442,21 @@
      "archivo": "jugar/personaje/v1.html",
      "capturas": "capturas/personaje-v1",
      "notas": "Personaje esculpido por código: cara, manos, ropa por capas, esqueleto y andar."
+    },
+    {
+     "v": "v2",
+     "fecha": "2026-10-24",
+     "archivo": "jugar/personaje/v2.html",
+     "capturas": "capturas/personaje-v2",
+     "notas": "Personaje con bases libres (CC0) ya hechas y personalización: hombre o mujer, ropa, peinado, color de pelo, piel y barba."
     }
    ]
   }
  ],
  "decisiones_pendientes": [
   {
-   "id": "personaje-v1",
-   "pregunta": "Hay dos personajes hechos por código en paralelo: el de la prueba de estilo v6 y el de Personaje v1 (esculpido con campos de distancia, en Jugar → Personaje). ¿Cuál sigue adelante, y qué cambiarías (proporciones, cara, pelo, barba, ropa) antes de hacer la personalización y las armaduras con ese método?",
+   "id": "personaje-v2",
+   "pregunta": "¿Te vale como base del juego el personaje v2 (bases libres ya hechas, en Jugar → Personaje)? Si sí, se pasa al combate y a la construcción y se buscan ropas medievales (gambesón, cota de malla, capas) del mismo tipo. Dime también qué no te gusta (cara, proporciones, ropa).",
    "desde": "2026-10-24",
    "hito": "arte"
   },
