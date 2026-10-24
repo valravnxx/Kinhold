@@ -85,7 +85,9 @@
     },
     {
      "nombre": "Personaje nuevo por código (decidido por Pedro), vistoso y con el estilo de maqueta: una sola malla continua con esqueleto y animación, proporciones creíbles algo estilizadas",
-     "estado": "en_curso"
+     "estado": "hecho",
+     "inicio": "2026-10-24T21:19:25+02:00",
+     "fin": "2026-10-24T21:41:55+02:00"
     },
     {
      "nombre": "Personaje base articulado con el estilo elegido (también el rival del combate)",
@@ -382,6 +384,13 @@
      "archivo": "jugar/estilo/v5.html",
      "capturas": "capturas/estilo-v5",
      "notas": "Árboles rehechos: copas suaves en racimos y pinos con puntas, sin rayajos."
+    },
+    {
+     "v": "v6",
+     "fecha": "2026-10-24",
+     "archivo": "jugar/estilo/v6.html",
+     "capturas": "capturas/estilo-v6",
+     "notas": "Personaje por código: una sola malla con esqueleto, quieto y andando; vistas Personaje y Cara"
     }
    ]
   }
@@ -410,6 +419,12 @@
    "pregunta": "Fuego amigo en peleas de grupo: ¿un tajo que alcanza a un aliado le hiere, no le hace nada o solo le empuja? (Propuesta: hiere.)",
    "desde": "2026-10-24",
    "hito": "pvp"
+  },
+  {
+   "id": "personaje-v6",
+   "pregunta": "¿Te vale como base el personaje de la prueba de estilo v6 (todo por código, una sola malla con esqueleto, quieto y andando)? Míralo en las vistas «Personaje» y «Cara» y dime qué cambiarías (cara, pelo, proporciones).",
+   "desde": "2026-10-24",
+   "hito": "arte"
   }
  ]
 }

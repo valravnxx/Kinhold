@@ -214,5 +214,24 @@
   "pruebas": "Lógica 35/35, modelos 21/21, combate 69/69; navegador construcción, combate, estilo v5 y web: todo correcto.",
   "capturas": "capturas/estilo-v5",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T21:19:25+02:00",
+  "fin": "2026-10-24T21:41:55+02:00",
+  "titulo": "Hito 1b: personaje nuevo por código (prueba de estilo v6)",
+  "hito": "arte",
+  "hecho": [
+   "Personaje hecho todo por código, como decidiste: una sola malla continua, sin piezas sueltas. El cuerpo es una suma suave de formas (cráneo, cara, nariz, cejas, orejas, tronco, brazos, manos con pulgar, piernas y pies) que se convierte en malla.",
+   "Más detalle donde se ve: la rejilla es más fina en la cara y las manos. Medido: 9.836 triángulos y 5.611 vértices.",
+   "Esqueleto de 17 huesos con pesos calculados por cercanía a las formas de cada hueso. Dos animaciones por código: quieto (respira y se balancea) y andar (va y viene por el camino).",
+   "Hombre adulto de 1,72 m con barba corta; ropa base pintada en la malla (camisa de lino, cinturón con relieve, calzas y zapatos), provisional hasta la tarea de ropa por capas.",
+   "Oclusión ambiental horneada en los vértices y ojos con brillo. Vistas nuevas «Personaje» y «Cara» que le siguen, y botón Quieto/Andando (se recuerda al recargar).",
+   "El presupuesto de la escena sube de 50 mil a 72 mil triángulos (con el personaje y su sombra son 68,8 mil). Anotado en el registro.",
+   "Se ve tosco de cerca: pelo como casquete liso, cara aún simple y bordes de color algo borrosos en el cuello de la camisa y la barba. Queda preguntado en las decisiones.",
+   "No comprobado: los fps en un móvil de verdad (aquí, sin tarjeta gráfica, no sirve medirlos)."
+  ],
+  "pruebas": "Lógica 35/35, modelos 21/21, combate 69/69; navegador construcción, combate, estilo v6 (con pruebas nuevas del personaje; MUTAR=1 falla como debe) y web: todo correcto.",
+  "capturas": "capturas/estilo-v6",
+  "estado": "ok"
  }
 ]
