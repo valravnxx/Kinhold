@@ -266,5 +266,21 @@
   "pruebas": "Web en PC y móvil, en español y en inglés (botón, recargar, ?lang=en): todo correcto; quitar una traducción a propósito hace fallar la generación de la web.",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T22:16:00+02:00",
+  "fin": "2026-10-24T22:32:23+02:00",
+  "titulo": "Construcción v4: madera más resistente y casa de dos plantas",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Causa del tejado que no entraba en las esquinas: el cimiento de troncos de cada esquina carga con dos muros por planta y con la segunda planta se pasaba (1320 kg de 1200).",
+   "Más aguante en todas las piezas de madera y piedra. Una casa de troncos de 2 plantas con tejado ya entra entera y ninguna pieza pasa del 75%.",
+   "Siguen existiendo límites: 3 plantas piden cimiento de piedra y el zarzo no da para dos plantas.",
+   "Vano de una casilla: un suelo en alto o un tramo de tejado sin muros debajo se apoya en el de al lado. Hasta 4×4 casillas no hacen falta vigas por dentro; en 5×5 el centro sí las pide.",
+   "Los valores nuevos están en Decisiones dentro del juego, como provisionales."
+  ],
+  "pruebas": "Construcción 46/46 (11 nuevas con casas de 2 y 3 plantas; fallan con MUTAR=1), modelos 21/21, combate 69/69; navegador de construcción (casa de 4×4 de dos plantas con tejado a dos aguas), combate, estilo y web: todo correcto.",
+  "capturas": "capturas/construccion-v4",
+  "estado": "ok"
  }
 ]

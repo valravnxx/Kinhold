@@ -1,5 +1,5 @@
 // Decisiones que he tomado yo en el hito 1, para que las revises.
-export const VERSION = 'Hito 1 · v3';
+export const VERSION = 'Hito 1 · v4';
 export const REGISTRO = [
   'Terreno llano en este hito. Las cuestas y su efecto en los cimientos llegan con el mundo generado.',
   'Los materiales vienen dados (y hay botón para rellenar). Recolectarlos llega en el hito 2.',
@@ -11,7 +11,10 @@ export const REGISTRO = [
   'Si al desmontar una pieza otra quedaría sobrecargada (no sin apoyo, sino con demasiado peso), el desmontaje se bloquea y se marca la pieza que fallaría.',
   'Los muros que quedan debajo de un tejado se cierran solos hasta tocarlo, con su mismo material: ya no hace falta poner hastiales a mano (la pieza se ha quitado del menú).',
   'Cada tramo de tejado sube 1,2 m en sus 2 m. Tramos seguidos en la misma dirección forman una sola pendiente continua; dos tramos enfrentados forman la cumbrera.',
-  'Las piezas que no aguantan peso (cercas, empalizadas, medio muro, tejados) nunca cuentan como apoyo de otras.',
+  'Las piezas que no aguantan peso (cercas, empalizadas, medio muro) nunca cuentan como apoyo de otras. Un tramo de tejado solo puede sostener el tramo de tejado de al lado.',
+  'v4 (Pedro: «la madera es demasiado débil»): la madera aguanta bastante más. Una casa de troncos de 2 plantas con tejado se hace sin trucos y sin pasar del 75% en ninguna pieza; 3 plantas piden cimiento de piedra; el zarzo no da para dos plantas.',
+  'v4: vano de una casilla. Un suelo en alto o un tramo de tejado sin muros debajo se apoya en el suelo o el tramo de al lado que sí los tenga. Así una casa de hasta 4×4 casillas no necesita vigas por dentro; de 5×5 en adelante, el centro sí.',
+  'v4: lo que aguanta cada pieza (kg): cimiento de piedra 6000, de troncos 2000; muro de troncos 1200 (con puerta 850, con ventana 1000), entramado 1400, tablas 900 (con puerta 600), zarzo 250; poste 2000, viga 1000; suelo de troncos 900, de tablas 1000. Todo provisional, para que lo ajustes.',
   'La decoración no suma peso a la estructura.',
   'Quedan para más adelante: escalera de tablas, adarve, chimenea y puentes (los puentes necesitan agua en el mapa).',
   'Escalera de mano: se usa con el botón Usar para subir o bajar de planta si hay suelo arriba.',
