@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kinhold · desarrollo</title>
+<style>
+:root{
+  --fondo:#1b1712; --panel:#26201a; --panel2:#30281f; --tinta:#f1e8d8; --suave:#bfb19a; --tenue:#8c806d;
+  --acento:#d9a441; --verde:#7ccf86; --rojo:#e0574f; --azul:#7fb2d9; --naranja:#e89a3c; --linea:rgba(241,232,216,.12);
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--fondo);color:var(--tinta);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--acento)}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:700;letter-spacing:.01em}
+.envoltura{max-width:980px;margin:0 auto;padding:0 16px 60px}
+header{padding:28px 0 10px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+header h1{margin:0;font-size:38px;color:var(--acento)}
+header p{margin:2px 0 0;color:var(--suave)}
+#resumen{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0 8px}
+.dato{background:var(--panel);border:1px solid var(--linea);border-radius:12px;padding:12px 14px}
+.dato b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
+.dato span{color:var(--suave);font-size:13px}
+nav{position:sticky;top:0;z-index:5;background:var(--fondo);display:flex;gap:4px;padding:10px 0;border-bottom:1px solid var(--linea);overflow-x:auto}
+nav button{font:inherit;color:var(--suave);background:none;border:0;padding:8px 12px;border-radius:9px;cursor:pointer;white-space:nowrap}
+nav button.sel{background:var(--panel2);color:var(--tinta);font-weight:600}
+nav button .n{display:inline-block;min-width:20px;padding:0 6px;margin-left:4px;border-radius:999px;background:var(--acento);color:#241b10;font-size:12px;font-weight:700}
+section{display:none;padding-top:18px} section.sel{display:block}
+.tarjetas{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.tarjeta{background:var(--panel);border:1px solid var(--linea);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.tarjeta img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#111}
+.tarjeta .cuerpo{padding:12px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.tarjeta h3{margin:0;font-size:20px}
+.tarjeta p{margin:0;color:var(--suave);font-size:14px}
+.boton{display:inline-block;text-align:center;background:var(--acento);color:#241b10;font-weight:700;text-decoration:none;padding:10px 14px;border-radius:10px}
+.fila{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+select{font:inherit;color:var(--tinta);background:var(--panel2);border:1px solid var(--linea);border-radius:9px;padding:7px 9px}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--panel2);color:var(--suave);white-space:nowrap}
+.chip.hecho{background:rgba(124,207,134,.16);color:var(--verde)}
+.chip.en_curso{background:rgba(127,178,217,.16);color:var(--azul)}
+.chip.revision{background:rgba(217,164,65,.2);color:var(--acento)}
+.chip.espera_decision{background:rgba(232,154,60,.16);color:var(--naranja)}
+.chip.fallo{background:rgba(224,87,79,.16);color:var(--rojo)}
+.hito{background:var(--panel);border:1px solid var(--linea);border-radius:12px;margin-bottom:10px}
+.hito > summary{list-style:none;cursor:pointer;padding:12px 14px;display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center}
+.hito > summary::-webkit-details-marker{display:none}
+.hito .num{font-family:Georgia,serif;font-size:20px;color:var(--tenue);text-align:center}
+.hito.activo{border-color:rgba(127,178,217,.5)}
+.hito h3{margin:0;font-size:17px}
+.barra{height:6px;border-radius:3px;background:rgba(241,232,216,.08);margin-top:6px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--verde);border-radius:3px}
+.hito .det{padding:0 14px 14px 68px;color:var(--suave);font-size:14px}
+.hito ul{margin:8px 0 0;padding:0;list-style:none}
+.hito li{display:flex;gap:8px;align-items:baseline;justify-content:space-between;padding:5px 0;border-top:1px solid var(--linea);color:var(--tinta)}
+.hito li em{font-style:normal;color:var(--tenue);font-size:12.5px;white-space:nowrap}
+.entrada{background:var(--panel);border:1px solid var(--linea);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.entrada h3{margin:0 0 2px;font-size:17px}
+.entrada .meta{color:var(--tenue);font-size:13px}
+.entrada ul{margin:8px 0;padding-left:18px}
+.entrada li{margin:3px 0}
+.miniaturas{display:flex;gap:6px;overflow-x:auto;padding-top:4px}
+.miniaturas a{flex:0 0 auto}
+.miniaturas img{height:84px;border-radius:7px;display:block;border:1px solid var(--linea)}
+.decision{background:var(--panel);border:1px solid rgba(232,154,60,.35);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.decision .meta{color:var(--tenue);font-size:13px;margin-top:4px}
+.nota{color:var(--suave);font-size:14px;background:var(--panel);border-radius:12px;padding:12px 14px;border:1px dashed var(--linea)}
+.docs a{display:block;background:var(--panel);border:1px solid var(--linea);border-radius:12px;padding:12px 14px;margin-bottom:10px;text-decoration:none;color:var(--tinta)}
+.docs a span{display:block;color:var(--suave);font-size:14px}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+td,th{padding:7px 6px;border-bottom:1px solid var(--linea);text-align:left}
+th{color:var(--suave);font-weight:600}
+td.n{text-align:right}
+#visor{position:fixed;inset:0;background:rgba(0,0,0,.88);display:grid;place-items:center;padding:12px;z-index:20}
+#visor img{max-width:100%;max-height:100%;border-radius:8px}
+[hidden]{display:none!important}
+footer{color:var(--tenue);font-size:13px;margin-top:30px}
+@media (max-width:640px){
+  header h1{font-size:30px}
+  #resumen{grid-template-columns:repeat(2,1fr)}
+  .hito > summary{grid-template-columns:32px 1fr;}
+  .hito > summary .chip{grid-column:2;justify-self:start}
+  .hito .det{padding-left:14px}
+}
+</style>
+</head>
+<body>
+<div class="envoltura">
+  <header>
+    <div><h1>Kinhold</h1><p>Supervivencia medieval en el navegador · diario de desarrollo</p></div>
+    <div class="meta" id="actualizado" style="color:var(--tenue);font-size:13px"></div>
+  </header>
+  <div id="resumen"></div>
+  <nav id="pestanas">
+    <button data-s="jugar" class="sel">Jugar</button>
+    <button data-s="roadmap">Roadmap</button>
+    <button data-s="diario">Diario</button>
+    <button data-s="tiempos">Tiempos</button>
+    <button data-s="decisiones">Te espera</button>
+    <button data-s="documentos">Diseño</button>
+  </nav>
+  <section id="jugar" class="sel"><div class="tarjetas" id="listaJuegos"></div>
+    <p class="nota" style="margin-top:14px">Cada versión se queda guardada: si una nueva no te convence, puedes abrir la anterior desde el desplegable. Lo que guarda el juego en tu navegador se conserva entre versiones.</p></section>
+  <section id="roadmap"><div id="listaHitos"></div></section>
+  <section id="diario"><div id="listaDiario"></div></section>
+  <section id="tiempos"><div id="tablaTiempos"></div></section>
+  <section id="decisiones"><div id="listaDecisiones"></div>
+    <p class="nota">Para responder o pedir cambios: dímelo en el chat, o edita el archivo <a href="https://github.com/valravnxx/kinhold/edit/main/REVISION.md">REVISION.md</a> en GitHub. El trabajo automático lo lee al empezar cada hora.</p></section>
+  <section id="documentos" class="docs">
+    <a href="diseno/gdd.html"><b>GDD</b><span>Documento de diseño: visión, mundo, sistemas y orden de hitos.</span></a>
+    <a href="diseno/sistemas.html"><b>Sistemas y contenido</b><span>Recursos, recetas, piezas, estaciones y valores.</span></a>
+    <a href="diseno/analisis.html"><b>Análisis del GDD</b><span>Lo que faltaba, propuestas y preguntas respondidas.</span></a>
+    <a href="https://github.com/valravnxx/kinhold"><b>Código</b><span>Repositorio en GitHub.</span></a>
+  </section>
+  <footer>Esta página se genera sola con cada cambio del repositorio.</footer>
+</div>
+<div id="visor" hidden><img alt=""></div>
+<script>
+const DATOS = {"roadmap":{"hitos":[{"id":"infra","num":"0","nombre":"Infraestructura","jugable":"Repositorio en GitHub, web de progreso y trabajo automático por horas.","estado":"hecho","tareas":[{"nombre":"Repositorio, web de progreso y tarea programada","estado":"hecho","fin":"2026-10-24T18:30:00+02:00"}]},{"id":"construccion","num":"1","nombre":"Construcción","jugable":"Moverse con cámara libre (PC y táctil) y construir con rejilla anclada, carga, desmontaje en cascada con 75% de recuperación y decoración libre.","estado":"hecho","tareas":[{"nombre":"Lógica: rejilla anclada, apoyos, carga, desmontaje en cascada","estado":"hecho"},{"nombre":"Piezas low-poly por código y personaje","estado":"hecho"},{"nombre":"Cámara libre y controles PC y táctil","estado":"hecho"},{"nombre":"v2: los muros cierran hasta el tejado y los tejados seguidos forman una sola pendiente","estado":"hecho"},{"nombre":"v3: todos los muros llegan exactamente a 2,5 m (10 hiladas de 25 cm)","estado":"hecho"}],"nota":"Hecho el 24 oct entre las 15:55 y las 16:40 aprox. (sacado de las fechas de los archivos; los tiempos exactos de esta parte no se registraron)."},{"id":"construccion-mas","num":"1b","nombre":"Más piezas de construcción","jugable":"Escaleras de caminar de un bloque, barandillas, vallas y más piezas para que construir dé juego.","estado":"pendiente","tareas":[{"nombre":"Planificar el hito: lista de piezas sacada del GDD y del documento de sistemas","estado":"pendiente"}]},{"id":"equipo","num":"2","nombre":"Equipo y carga por huecos","jugable":"Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.","estado":"pendiente","tareas":[]},{"id":"crafting","num":"3","nombre":"Estaciones y crafting","jugable":"Primeras estaciones, recetas, desbloqueo por práctica, durabilidad y reparación.","estado":"pendiente","tareas":[]},{"id":"supervivencia","num":"4","nombre":"Supervivencia","jugable":"Necesidades con avisos, ropa contra el frío, cama ligada y muerte con saqueo parcial.","estado":"pendiente","tareas":[]},{"id":"duelo","num":"5","nombre":"Duelo","jugable":"Esgrima contra un bot con heridas.","estado":"en_curso","tareas":[{"nombre":"Combate v1: líneas de golpe, guardias, heridas, arco","estado":"hecho"},{"nombre":"Combate v2: rosa de golpes, parada perfecta, golpe maestro, fintas, peso de los golpes","estado":"hecho"},{"nombre":"Cámara táctil con un dedo durante el combate","estado":"espera_decision"},{"nombre":"Curación de heridas","estado":"espera_decision"}],"nota":"El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."},{"id":"asedio","num":"6","nombre":"Asedio, fuego y mantenimiento","jugable":"Ariete, daño por fuego, mojón con materiales.","estado":"pendiente","tareas":[]},{"id":"fauna","num":"7","nombre":"Fauna y caza","jugable":"Animales realistas.","estado":"pendiente","tareas":[]},{"id":"caballos","num":"8","nombre":"Caballos","jugable":"Domar, montar, cuadra y pasto.","estado":"pendiente","tareas":[]},{"id":"granja","num":"9","nombre":"Granja y estaciones del año","jugable":"Siembras por franja, ganado.","estado":"pendiente","tareas":[]},{"id":"mundo","num":"10","nombre":"Mundo","jugable":"Pseudo-Europa por semilla, 5 países con estilo propio, caminos por uso, puentes.","estado":"pendiente","tareas":[]},{"id":"servidor","num":"11","nombre":"Servidor y cuentas","jugable":"Registro, creación de personaje, mundo persistente.","estado":"pendiente","tareas":[]},{"id":"pvp","num":"12","nombre":"PvP online y protección offline","jugable":"Combate y asedio entre jugadores; reglas de guerra.","estado":"pendiente","tareas":[]},{"id":"tierras","num":"13","nombre":"Tierras y familias","jugable":"Mojones, radio de exclusión, peajes, conquista, familias, vasallajes, alianzas, escudos de armas.","estado":"pendiente","tareas":[]},{"id":"economia","num":"14","nombre":"Economía y NPCs","jugable":"Encargos y moneda, puestos sin conexión, tomos, NPCs ambulantes a sueldo, centinelas y mensajeros.","estado":"pendiente","tareas":[]},{"id":"distancia","num":"15","nombre":"Combate a caballo y a distancia","jugable":"Arcos, ballestas, lanzas de caballería.","estado":"pendiente","tareas":[]},{"id":"navegacion","num":"16","nombre":"Navegación","jugable":"Astillero, barcos, navegar con otros.","estado":"pendiente","tareas":[]},{"id":"cartografia","num":"17","nombre":"Cartografía","jugable":"Mesa de cartógrafo y mapas como objetos.","estado":"pendiente","tareas":[]}],"prototipos":[{"id":"construccion","nombre":"Construcción","descripcion":"Construye una cabaña: cimientos, suelos, muros, tejados y muebles, con límite de carga.","versiones":[{"v":"v3","fecha":"2026-10-24","archivo":"jugar/construccion/v3.html","capturas":"capturas/construccion-v3","notas":"Muros exactos a 2,5 m por hiladas."}]},{"id":"combate","nombre":"Combate","descripcion":"Campo de pruebas: duelo con espada o palo, prácticas con poste y dianas, carga a distancia.","versiones":[{"v":"v2","fecha":"2026-10-24","archivo":"jugar/combate/v2.html","capturas":"capturas/combate-v2","notas":"Rosa de golpes y defensa en tres capas."}]}],"decisiones_pendientes":[{"id":"camara-tactil","pregunta":"Cámara táctil: ¿arrastrar un dedo en zona libre gira la cámara (tocar sin arrastrar sigue golpeando) y con el arco la cámara sigue sola a donde apuntas?","desde":"2026-10-24","hito":"duelo"},{"id":"curacion","pregunta":"Curación: ¿se usa como base la tabla del análisis (vendar, coser, cauterizar, entablillar, hierbas, descanso)? ¿Curarse en pleno combate debe poder hacerse (lento y vendido) o solo fuera?","desde":"2026-10-24","hito":"duelo"},{"id":"fuego-amigo","pregunta":"Fuego amigo en peleas de grupo: ¿un tajo que alcanza a un aliado le hiere, no le hace nada o solo le empuja? (Propuesta: hiere.)","desde":"2026-10-24","hito":"pvp"}]},"diario":[{"inicio":"2026-10-24T15:55:00+02:00","fin":"2026-10-24T16:40:00+02:00","aprox":true,"titulo":"Hito 1: construcción (v1 a v3)","hito":"construccion","hecho":["Rejilla anclada a la primera pieza, módulo de 2 m × 2,5 m, apoyos y reparto de carga.","Desmontaje en cascada con 75% de recuperación, bloqueado si sobrecarga otra pieza.","v2: los muros se rellenan hasta el tejado y los tejados seguidos forman una pendiente continua.","v3: muros de 10 hiladas de 25 cm, todos exactos a 2,5 m."],"pruebas":"Lógica 35/35, modelos 21/21, navegador PC y móvil correctos.","capturas":"capturas/construccion-v3","estado":"ok"},{"inicio":"2026-10-24T16:45:00+02:00","fin":"2026-10-24T17:25:00+02:00","aprox":true,"titulo":"Campo de pruebas de combate v1 y v2","hito":"duelo","hecho":["v1: cinco líneas de golpe, guardias, heridas por zona sin barras de vida, arco con balística.","Comparado con juegos de esgrima de referencia: la v1 era poco intuitiva (arrastrar para golpear, elegir lado al parar, cámara a su aire).","v2: rosa de golpes sobre el rival, parada sin lado + parada perfecta + golpe maestro, fintas, aliento.","Movimiento encarado (los lados rodean al rival), cámara con margen, pausa de impacto, chispas, sangre, sonido y estela.","Dificultad = ritmo + ayudas: aprendiz (lento, con avisos), normal, realista (sin avisos)."],"pruebas":"Lógica 52/52 (con mutaciones que fallan como deben); navegador PC y móvil: todo correcto.","capturas":"capturas/combate-v2","estado":"ok"},{"inicio":"2026-10-24T18:04:00+02:00","fin":null,"titulo":"Infraestructura: repositorio, web de progreso y trabajo automático","hito":"infra","hecho":["Repositorio valravnxx/kinhold con código, documentos de diseño y reglas de trabajo.","Web de progreso en GitHub Pages: jugar, roadmap, diario, tiempos, decisiones y documentos.","Tarea programada cada hora que avanza el roadmap y se para al terminar cada hito para tu revisión."],"pruebas":"","capturas":null,"estado":"ok"}],"capturas":{"capturas/construccion-v3":["01_cabana_vista_general.jpg","02_interior_sin_tejado.jpg","03_rechazo_por_carga.jpg","04_desmontar_cascada.jpg","05_barra_construccion_pc.jpg","06_movil_mover.jpg","07_movil_construir.jpg","08_cobertizo_pendiente_continua.jpg","09_cabana_desde_atras.jpg","10_primer_plano_fachada.jpg","11_primer_plano_trasera_ventana.jpg"],"capturas/combate-v2":["01_duelo_rosa.jpg","02_preparando_golpe.jpg","03_aviso_rojo.jpg","04_aviso_verde.jpg","05_contraataque.jpg","07_rodeando.jpg","08_duelo_normal.jpg","09_victoria.jpg","10_arco_tensado.jpg","11_flechas_en_dianas.jpg","12_carga.jpg","13_opciones.jpg","14_ayuda.jpg","15_movil_duelo.jpg","16_movil_golpe.jpg","17_movil_ayuda.jpg"]},"generado":"2026-10-24T16:18:20.505Z"};
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (t) => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const R = DATOS.roadmap, D = DATOS.diario, CAPT = DATOS.capturas;
+const NOMBRE_ESTADO = { hecho: 'Hecho', en_curso: 'En curso', revision: 'Esperando tu revisión', espera_decision: 'Espera tu decisión', pendiente: 'Pendiente', fallo: 'Falló' };
+const chip = (e) => `<span class="chip ${e}">${NOMBRE_ESTADO[e] || e}</span>`;
+const fecha = (iso) => iso ? new Date(iso).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+const minutos = (a, b) => (a && b) ? Math.max(0, (new Date(b) - new Date(a)) / 60000) : null;
+const durTexto = (m) => m == null ? '—' : m < 60 ? `${Math.round(m)} min` : `${Math.floor(m / 60)} h ${String(Math.round(m % 60)).padStart(2, '0')} min`;
+
+// ---------- Resumen ----------
+const tareas = R.hitos.flatMap(h => h.tareas.map(t => ({ ...t, hito: h })));
+const hechas = tareas.filter(t => t.estado === 'hecho').length;
+const hitosHechos = R.hitos.filter(h => h.estado === 'hecho').length;
+const activo = R.hitos.find(h => h.estado === 'en_curso' && h.tareas.some(t => t.estado === 'pendiente' || t.estado === 'en_curso'))
+  || R.hitos.find(h => h.estado === 'revision') || R.hitos.find(h => h.estado === 'pendiente');
+const trabajado = D.reduce((a, e) => a + (minutos(e.inicio, e.fin) || 0), 0);
+$('#resumen').innerHTML = [
+  [`${hitosHechos} / ${R.hitos.length}`, 'hitos terminados'],
+  [`${hechas} / ${tareas.length}`, 'tareas hechas (de las ya desglosadas)'],
+  [activo ? `${activo.num}. ${activo.nombre}` : '—', activo ? NOMBRE_ESTADO[activo.estado].toLowerCase() : ''],
+  [(D.some(e => e.aprox && e.fin) ? '≈ ' : '') + durTexto(trabajado), 'de trabajo registrado'],
+].map(([b, s]) => `<div class="dato"><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join('');
+$('#resumen .dato:nth-child(3) b').style.fontSize = '17px';
+$('#actualizado').textContent = 'Actualizado: ' + fecha(DATOS.generado);
+
+// ---------- Jugar ----------
+$('#listaJuegos').innerHTML = R.prototipos.map(p => {
+  const vs = [...p.versiones].reverse(), u = vs[0];
+  const portada = (CAPT[u.capturas] || [])[0];
+  return `<div class="tarjeta">${portada ? `<img src="${esc(u.capturas + '/' + portada)}" alt="" loading="lazy">` : ''}
+    <div class="cuerpo"><h3>${esc(p.nombre)} <span class="chip">${esc(u.v)}</span></h3><p>${esc(p.descripcion)}</p><p>${esc(u.notas || '')}</p>
+    <div class="fila" style="margin-top:auto"><a class="boton" data-juego href="${esc(u.archivo)}">Jugar</a>
+    ${vs.length > 1 ? `<select aria-label="Versión">${vs.map(v => `<option value="${esc(v.archivo)}">${esc(v.v)} · ${esc(v.fecha)}</option>`).join('')}</select>` : ''}</div></div></div>`;
+}).join('');
+document.querySelectorAll('#listaJuegos select').forEach(s => s.onchange = () => { s.closest('.cuerpo').querySelector('[data-juego]').href = s.value; });
+
+// ---------- Roadmap ----------
+$('#listaHitos').innerHTML = R.hitos.map(h => {
+  const n = h.tareas.length, k = h.tareas.filter(t => t.estado === 'hecho').length;
+  const pct = h.estado === 'hecho' ? 100 : n ? Math.round(k / n * 100) : 0;
+  const lista = h.tareas.map(t => {
+    const m = minutos(t.inicio, t.fin);
+    return `<li><span>${esc(t.nombre)}</span><em>${t.estado === 'hecho' ? (m != null ? durTexto(m) : 'hecho') : NOMBRE_ESTADO[t.estado]}</em></li>`;
+  }).join('');
+  return `<details class="hito ${h === activo ? 'activo' : ''}" ${h === activo ? 'open' : ''}>
+    <summary><div class="num">${esc(h.num)}</div><div><h3>${esc(h.nombre)}</h3><div class="barra"><i style="width:${pct}%"></i></div></div>${chip(h.estado)}</summary>
+    <div class="det"><div>${esc(h.jugable)}</div>${h.nota ? `<div style="margin-top:6px;color:var(--tenue)">${esc(h.nota)}</div>` : ''}
+    ${n ? `<ul>${lista}</ul>` : '<div style="margin-top:6px;color:var(--tenue)">Sin desglosar: se planifica al empezar el hito.</div>'}</div></details>`;
+}).join('');
+
+// ---------- Diario ----------
+$('#listaDiario').innerHTML = [...D].reverse().map(e => {
+  const caps = e.capturas ? (CAPT[e.capturas] || []) : [];
+  return `<div class="entrada"><h3>${esc(e.titulo)} ${e.estado && e.estado !== 'ok' ? chip(e.estado) : ''}</h3>
+    <div class="meta">${fecha(e.inicio)}${e.fin ? ' → ' + fecha(e.fin) + ' · ' + (e.aprox ? '≈ ' : '') + durTexto(minutos(e.inicio, e.fin)) : ' · en curso'}</div>
+    <ul>${(e.hecho || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+    ${e.pruebas ? `<div class="meta">Pruebas: ${esc(e.pruebas)}</div>` : ''}
+    ${caps.length ? `<div class="miniaturas">${caps.map(c => `<a href="${esc(e.capturas + '/' + c)}"><img src="${esc(e.capturas + '/' + c)}" alt="${esc(c)}" loading="lazy"></a>`).join('')}</div>` : ''}</div>`;
+}).join('') || '<p class="nota">Todavía no hay entradas.</p>';
+
+// ---------- Tiempos ----------
+{
+  const porHito = R.hitos.map(h => {
+    const ents = D.filter(e => e.hito === h.id && e.inicio && e.fin);
+    const m = ents.reduce((a, e) => a + minutos(e.inicio, e.fin), 0);
+    return { h, m: ents.length ? m : null, aprox: ents.some(e => e.aprox) };
+  });
+  // tareas medidas de verdad (con inicio y fin registrados)
+  const medidas = tareas.filter(t => t.estado === 'hecho' && t.inicio && t.fin).map(t => minutos(t.inicio, t.fin));
+  const media = medidas.length ? medidas.reduce((a, b) => a + b, 0) / medidas.length : null;
+  const pendientesActivo = activo ? activo.tareas.filter(t => t.estado !== 'hecho' && t.estado !== 'espera_decision').length : 0;
+  let est;
+  if (medidas.length < 3) est = `Todavía no hay datos suficientes para estimar: hacen falta al menos 3 tareas medidas (hay ${medidas.length}). Cada tarea queda registrada con su hora de inicio y fin, y la estimación aparecerá sola.`;
+  else est = `Media real por tarea: <b>${durTexto(media)}</b> (${medidas.length} tareas medidas). En el hito activo quedan ${pendientesActivo} tareas ya desglosadas: unas <b>${durTexto(media * pendientesActivo)}</b> de trabajo. Como se trabaja una tarea por hora como mucho, en calendario son al menos ${pendientesActivo} h, más lo que tarde tu revisión. Los hitos sin desglosar no se estiman.`;
+  $('#tablaTiempos').innerHTML = `<p class="nota">${est}</p>
+    <table><thead><tr><th>Hito</th><th>Estado</th><th class="n">Trabajo registrado</th></tr></thead><tbody>
+    ${porHito.map(({ h, m, aprox }) => `<tr><td>${esc(h.num)}. ${esc(h.nombre)}</td><td>${chip(h.estado)}</td><td class="n">${m == null ? '—' : (aprox ? '≈ ' : '') + durTexto(m)}</td></tr>`).join('')}
+    </tbody></table>
+    <p style="color:var(--tenue);font-size:13px">≈ = tiempo aproximado sacado de las fechas de los archivos (trabajo anterior a que se registraran las horas).</p>`;
+}
+
+// ---------- Te espera ----------
+{
+  const revisar = R.hitos.filter(h => h.estado === 'revision');
+  const dec = R.decisiones_pendientes || [];
+  $('#listaDecisiones').innerHTML =
+    revisar.map(h => `<div class="decision"><b>Revisa el hito ${esc(h.num)}: ${esc(h.nombre)}</b><div class="meta">Terminado y publicado en Jugar. El trabajo automático no empezará el siguiente hito hasta que lo apruebes o pidas cambios.</div></div>`).join('') +
+    dec.map(d => `<div class="decision">${esc(d.pregunta)}<div class="meta">Desde ${esc(d.desde)}${d.hito ? ' · hito ' + esc((R.hitos.find(h => h.id === d.hito) || {}).nombre || d.hito) : ''}</div></div>`).join('') ||
+    '<p class="nota">Nada pendiente por tu parte.</p>';
+  const n = revisar.length + dec.length;
+  if (n) $('[data-s=decisiones]').insertAdjacentHTML('beforeend', `<span class="n">${n}</span>`);
+}
+
+// ---------- Pestañas y visor ----------
+function ir(s) {
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('sel', b.dataset.s === s));
+  document.querySelectorAll('section').forEach(x => x.classList.toggle('sel', x.id === s));
+}
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => { ir(b.dataset.s); b.scrollIntoView({ block: 'nearest', inline: 'center' }); history.replaceState(null, '', '#' + b.dataset.s); });
+{ const s0 = location.hash.slice(1); const el = s0 && document.getElementById(s0); if (el && el.tagName === 'SECTION') ir(s0); }
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('.miniaturas a');
+  if (!a) return;
+  e.preventDefault(); $('#visor img').src = a.href; $('#visor').hidden = false;
+});
+$('#visor').onclick = () => { $('#visor').hidden = true; };
+</script>
+</body>
+</html>

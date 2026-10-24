@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Análisis GDD Medieval</title>
+<style>
+:root{
+  --bg:#f6f2ea; --card:#fffdf8; --ink:#2b2520; --muted:#6f655b; --line:#e2d8c8;
+  --accent:#8a3b1f; --ok:#2f6b3a; --ok-bg:#e6f1e4; --open:#8a5a00; --open-bg:#fbf0d6;
+  --method:#24507a; --method-bg:#e3ecf6; --gap:#8a1f3b; --gap-bg:#f8e3e8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1815; --card:#24201c; --ink:#ece4d8; --muted:#a59a8c; --line:#3a332c;
+    --accent:#e08a5f; --ok:#8fd09a; --ok-bg:#1f3323; --open:#f0c46a; --open-bg:#3a2f15;
+    --method:#8fb8e6; --method-bg:#1b2a3a; --gap:#f09ab0; --gap-bg:#3a1b24;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1815; --card:#24201c; --ink:#ece4d8; --muted:#a59a8c; --line:#3a332c;
+  --accent:#e08a5f; --ok:#8fd09a; --ok-bg:#1f3323; --open:#f0c46a; --open-bg:#3a2f15;
+  --method:#8fb8e6; --method-bg:#1b2a3a; --gap:#f09ab0; --gap-bg:#3a1b24;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Georgia,"Times New Roman",serif}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 64px}
+header{border-bottom:2px solid var(--accent);margin-bottom:24px;padding-bottom:12px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.95rem}
+nav{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:24px}
+nav ol{margin:0;padding-left:20px}
+nav a{color:var(--accent);text-decoration:none}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:18px}
+h2{font-size:1.25rem;margin:0 0 10px;color:var(--accent)}
+h3{font-size:1.02rem;margin:16px 0 6px}
+p{margin:6px 0}
+ul,ol{margin:6px 0;padding-left:22px}
+li{margin:3px 0}
+.tag{display:inline-block;font:600 .72rem/1.4 system-ui,sans-serif;padding:2px 8px;border-radius:99px;margin-right:6px;vertical-align:2px}
+.gap{background:var(--gap-bg);color:var(--gap)}
+.open{background:var(--open-bg);color:var(--open)}
+.prop{background:var(--method-bg);color:var(--method)}
+.legend{font-family:system-ui,sans-serif;font-size:.85rem;color:var(--muted)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem;margin:8px 0;min-width:520px}
+th,td{border-bottom:1px solid var(--line);padding:6px 5px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+.q li{margin:7px 0}
+.q b{color:var(--accent)}
+.note{font-size:.9rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Análisis del GDD v0.2 — huecos, catálogo y preguntas</h1>
+  <div class="sub">24 oct 2026 · Juego medieval de navegador (sin nombre)</div>
+  <p class="legend" style="margin-top:10px">
+    <span class="tag gap">FALTA</span> sistema que el GDD no cubre todavía
+    <span class="tag prop">PROPUESTA</span> catálogo para podar: nada entra sin tu visto bueno
+    <span class="tag open">PREGUNTA</span> respóndela por número
+  </p>
+</header>
+
+<nav><ol>
+  <li><a href="#resumen">Resumen del análisis</a></li>
+  <li><a href="#huecos">Sistemas que faltan en el GDD</a></li>
+  <li><a href="#recursos">Recolectables y recursos naturales</a></li>
+  <li><a href="#materiales">Materiales elaborados y cadenas de producción</a></li>
+  <li><a href="#estaciones">Estaciones de trabajo</a></li>
+  <li><a href="#herramientas">Herramientas</a></li>
+  <li><a href="#armas">Armas y escudos</a></li>
+  <li><a href="#armadura">Armadura y ropa</a></li>
+  <li><a href="#contenedores">Contenedores y transporte</a></li>
+  <li><a href="#construccion">Piezas de construcción y defensa</a></li>
+  <li><a href="#asedio">Equipo de asedio</a></li>
+  <li><a href="#animales">Animales</a></li>
+  <li><a href="#cultivos">Cultivos por franja climática</a></li>
+  <li><a href="#comida">Comida, bebida y conservación</a></li>
+  <li><a href="#medicina">Curación de heridas</a></li>
+  <li><a href="#preguntas">Todas las preguntas, numeradas</a></li>
+</ol></nav>
+
+<section id="resumen">
+<h2>1. Resumen del análisis</h2>
+<p>El GDD v0.2 tiene bien definidos los pilares y los sistemas grandes (mundo, construcción, combate, animales, social, defensa offline). Lo que le falta es de tres tipos:</p>
+<ul>
+  <li><b>Sistemas enteros sin mencionar</b> que un juego así necesita para funcionar: progresión del personaje, economía y comercio, navegación por mar, deterioro de lo construido, mapa y orientación, cerraduras, comunicación, monetización, y si el modo solitario es un mundo aparte o el mismo mundo online. Están en el apartado 2.</li>
+  <li><b>Todo el contenido concreto:</b> qué se recoge, qué se fabrica, con qué, en qué estación de trabajo. Del apartado 3 al 15 hay un catálogo propuesto, pensado con realismo medieval y cadenas de producción reales. Es para podar: táchalo, amplíalo o cámbialo.</li>
+  <li><b>Una decisión de base que cambia el catálogo entero:</b> la época medieval que se representa. La espada larga es de la Baja Edad Media; la tecnología, las armaduras, las armas y la arquitectura cambian mucho entre siglos (pregunta 1).</li>
+</ul>
+<p class="note">Sobre el catálogo: está escrito con el realismo como guía. Que esté listado no significa que deba entrar; al revés, cuanto menos haya al principio, antes es jugable. Lo marcado en "Básico" sería lo mínimo para los primeros hitos.</p>
+</section>
+
+<section id="huecos">
+<h2>2. Sistemas que faltan en el GDD</h2>
+<div class="tw"><table>
+<tr><th>Sistema</th><th>Por qué hace falta</th><th>Pregunta</th></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Modo solitario</b></td><td>¿Es un mundo propio en el navegador (sin servidor) o el mismo mundo online donde juegas aislado? Cambia la arquitectura y si el progreso se comparte.</td><td>2</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Progresión del personaje</b></td><td>No está definido si el personaje mejora (habilidades por uso, fuerza, oficios) ni cómo, ni si hay límite.</td><td>8–10</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Economía y comercio</b></td><td>Los cultivos por clima empujan a comerciar entre países, pero no hay moneda, mercados ni sistema de intercambio.</td><td>27–29</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Navegación por mar y ríos</b></td><td>El mar es coherente y separa países: ¿se puede navegar? Barcas, barcos, ferris, puertos.</td><td>23</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Infraestructura de viaje</b></td><td>Viajar es complicado: caminos, puentes, vados, postas. ¿Los construyen los jugadores?</td><td>22</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Mapa y orientación</b></td><td>En un mundo enorme, ¿hay mapa? ¿Se dibuja explorando (cartografía) o es completo desde el inicio? ¿Brújula, sol, estrellas?</td><td>21</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>NPCs y fauna hostil</b></td><td>Aparte de los centinelas no hay NPCs. ¿Aldeas, comerciantes, bandidos? ¿Lobos, osos, jabalíes que atacan?</td><td>24–25</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Deterioro y abandono</b></td><td>En un MMO, las bases de jugadores que se van llenan el mundo para siempre. Hace falta decidir si lo construido se deteriora sin mantenimiento.</td><td>33</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Durabilidad de objetos</b></td><td>¿Las herramientas y armas se desgastan, se reparan, se afilan?</td><td>11</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Cerraduras y acceso</b></td><td>Arcones, puertas y portones: ¿cerraduras con llave? ¿Permisos por familia?</td><td>34</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Clima y estaciones</b></td><td>Afectan a cultivos, frío, ríos helados, caminos embarrados. Solo mencionado como pregunta.</td><td>19–20</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Fuego y luz</b></td><td>Noche, antorchas, hogares, incendios de estructuras de madera.</td><td>36</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Comunicación</b></td><td>Chat global, de proximidad, voz, mensajeros/cartas (encaja con viajar lejos).</td><td>37</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Heráldica y personalización de familia</b></td><td>Escudos de armas, estandartes, colores de familia: refuerza el lado de reinos.</td><td>38</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Creación del personaje</b></td><td>Aspecto, sexo, edad, país de origen.</td><td>39</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Interfaz sin barras</b></td><td>Cómo se ve inventario, carga, hambre, heridas y crafting sin un HUD clásico.</td><td>40</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Introducción para jugadores nuevos</b></td><td>Un survival realista sin guía espanta en los primeros minutos.</td><td>41</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Monetización</b></td><td>Es un producto comercial con servidor de pago y no hay modelo de negocio definido.</td><td>42</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Normas, moderación y trampas</b></td><td>Reportes, baneos, nombres ofensivos, cuentas múltiples para saquear.</td><td>43</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Idiomas y requisitos</b></td><td>Idiomas del juego y ordenadores/móviles mínimos que deben moverlo.</td><td>44–45</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Sonido y música</b></td><td>No mencionado.</td><td>46</td></tr>
+</table></div>
+</section>
+
+<section id="recursos">
+<h2>3. Recolectables y recursos naturales <span class="tag prop">PROPUESTA</span></h2>
+<div class="tw"><table>
+<tr><th>Grupo</th><th>Elementos</th><th>Dónde</th><th>Básico</th></tr>
+<tr><td>Árboles</td><td>Roble, pino, abeto, abedul, haya, fresno, castaño, sauce, tejo, olivo, alcornoque. Dan tronco, ramas, corteza, resina (coníferas), bellotas/castañas.</td><td>Según franja: abeto y abedul al norte; roble, haya y fresno templado; olivo, alcornoque y pino al sur.</td><td>Roble, pino, abedul</td></tr>
+<tr><td>Plantas y fibras</td><td>Lino, cáñamo, ortigas, juncos, paja (de cereal), mimbre, hierba seca/heno.</td><td>Lino y cáñamo cultivados; juncos en riberas.</td><td>Juncos, ramas finas</td></tr>
+<tr><td>Comida silvestre</td><td>Bayas, setas, frutos secos, raíces, miel silvestre, huevos de aves.</td><td>Bosques y claros.</td><td>Bayas, setas</td></tr>
+<tr><td>Hierbas</td><td>Hierbas medicinales y de cocina (milenrama, salvia, tomillo, ajo silvestre…).</td><td>Según bioma.</td><td>—</td></tr>
+<tr><td>Piedra</td><td>Piedra suelta, sílex, caliza, granito, pizarra, arenisca.</td><td>Ríos y laderas (suelta); canteras.</td><td>Piedra suelta, sílex</td></tr>
+<tr><td>Tierra</td><td>Arcilla, arena, barro, turba (norte), cal (de caliza).</td><td>Riberas, turberas.</td><td>Barro, arcilla</td></tr>
+<tr><td>Minerales</td><td>Hierro de pantano, mineral de hierro, cobre, estaño, plomo, plata, sal (minas o marismas).</td><td>Montañas, pantanos, costa.</td><td>—</td></tr>
+<tr><td>Agua</td><td>Ríos, lagos, manantiales, lluvia; pozos construidos. ¿Agua no potable?</td><td>Todo el mundo.</td><td>Sí</td></tr>
+<tr><td>Productos animales (de caza)</td><td>Carne, piel, hueso, asta, tendón, grasa/sebo, plumas.</td><td>Caza.</td><td>Carne, piel</td></tr>
+<tr><td>Pesca</td><td>Peces de río y de mar, marisco.</td><td>Ríos y costa.</td><td>—</td></tr>
+</table></div>
+</section>
+
+<section id="materiales">
+<h2>4. Materiales elaborados y cadenas de producción <span class="tag prop">PROPUESTA</span></h2>
+<div class="tw"><table>
+<tr><th>Cadena</th><th>Pasos</th></tr>
+<tr><td>Madera</td><td>Tronco → (hacha) troncos cortos → (sierra/cuñas) tablones, vigas, postes, estacas → (banco de carpintero) piezas finas. Ramas → leña, varas, mangos.</td></tr>
+<tr><td>Carbón vegetal</td><td>Leña apilada y cubierta (carbonera) → carbón. Necesario para fragua.</td></tr>
+<tr><td>Cuerda y textil</td><td>Lino/cáñamo/ortiga → enriado y secado → fibra → (rueca/huso) hilo → (telar) tela. Fibra → cuerda. Lana → hilo → tela de lana / fieltro.</td></tr>
+<tr><td>Cuero</td><td>Piel → raspado → curtido en cubas (corteza de roble, cal) → cuero. Cuero → endurecido (armadura). Piel con pelo → peletería.</td></tr>
+<tr><td>Hierro</td><td>Mineral → (horno de reducción + carbón) lupia → (fragua) hierro forjado → barras. Acero: proceso más avanzado.</td></tr>
+<tr><td>Bronce, plomo, plata</td><td>Cobre + estaño → bronce (campanas, piezas). Plomo (tejados, pesos). Plata (monedas, si hay economía).</td></tr>
+<tr><td>Cerámica</td><td>Arcilla → modelado → secado → (horno cerámico) vasijas, tejas, ladrillos.</td></tr>
+<tr><td>Cal y mortero</td><td>Caliza → (calera) cal → + arena + agua → mortero para muros de piedra.</td></tr>
+<tr><td>Piedra labrada</td><td>Bloque de cantera → (cincel, mazo) sillares.</td></tr>
+<tr><td>Cera y sebo</td><td>Panales → cera (velas finas); grasa animal → sebo (velas baratas, engrase).</td></tr>
+<tr><td>Vidrio</td><td>Arena + ceniza + horno muy caliente → vidrio (ventanas, avanzado). <i>¿Entra?</i></td></tr>
+</table></div>
+</section>
+
+<section id="estaciones">
+<h2>5. Estaciones de trabajo <span class="tag prop">PROPUESTA</span></h2>
+<div class="tw"><table>
+<tr><th>Estación</th><th>Para qué</th><th>Etapa</th></tr>
+<tr><td>Hoguera</td><td>Cocinar, calentarse, endurecer puntas, secar.</td><td>Inicio</td></tr>
+<tr><td>Superficie de trabajo de tronco</td><td>Trabajos básicos de madera y piedra.</td><td>Inicio</td></tr>
+<tr><td>Secadero/tendedero</td><td>Secar carne, pieles, fibras, hierbas.</td><td>Inicio</td></tr>
+<tr><td>Banco de carpintero</td><td>Muebles, mangos, ruedas, piezas finas.</td><td>Temprana</td></tr>
+<tr><td>Horno de barro / horno de pan</td><td>Pan, asados.</td><td>Temprana</td></tr>
+<tr><td>Carbonera</td><td>Carbón vegetal.</td><td>Temprana</td></tr>
+<tr><td>Cubas de curtido</td><td>Cuero.</td><td>Temprana</td></tr>
+<tr><td>Rueca/huso y telar</td><td>Hilo y tela.</td><td>Media</td></tr>
+<tr><td>Horno cerámico</td><td>Vasijas, tejas, ladrillos.</td><td>Media</td></tr>
+<tr><td>Horno de reducción</td><td>Hierro desde mineral.</td><td>Media</td></tr>
+<tr><td>Fragua + yunque + piedra de afilar</td><td>Herramientas, armas, herraduras, clavos, armadura.</td><td>Media</td></tr>
+<tr><td>Calera</td><td>Cal.</td><td>Media</td></tr>
+<tr><td>Molino de mano / de agua / de viento</td><td>Harina (y otros usos en el de agua).</td><td>Media → avanzada</td></tr>
+<tr><td>Prensa</td><td>Aceite y vino.</td><td>Media (sur)</td></tr>
+<tr><td>Ahumadero, salazón</td><td>Conservar comida.</td><td>Temprana–media</td></tr>
+<tr><td>Colmenas</td><td>Miel y cera.</td><td>Media</td></tr>
+<tr><td>Pozo</td><td>Agua junto a casa.</td><td>Temprana</td></tr>
+<tr><td>Taller de armero / cotero</td><td>Cota de malla, placas (si la época lo permite).</td><td>Avanzada</td></tr>
+<tr><td>Taller de asedio</td><td>Arietes y máquinas.</td><td>Avanzada</td></tr>
+<tr><td>Astillero</td><td>Barcas y barcos (si hay navegación).</td><td>Avanzada</td></tr>
+</table></div>
+</section>
+
+<section id="herramientas">
+<h2>6. Herramientas <span class="tag prop">PROPUESTA</span></h2>
+<div class="tw"><table>
+<tr><th>Nivel</th><th>Herramientas</th></tr>
+<tr><td>Primitivo (piedra, madera)</td><td>Piedra de golpeo, lasca de sílex (cuchillo), hacha de piedra, palo cavador, lanza de madera endurecida al fuego, honda.</td></tr>
+<tr><td>Hierro — madera</td><td>Hacha de talar, hacha de mano, sierra de tronzar (2 personas), sierra de mano, azuela, cuñas, mazo, berbiquí, escoplo, cuchilla de desbastar.</td></tr>
+<tr><td>Hierro — tierra y piedra</td><td>Pico, pala, azada, mazo de cantero, cincel, palanca.</td></tr>
+<tr><td>Hierro — campo</td><td>Hoz, guadaña, horca, arado (de tracción animal), rastrillo, trillo.</td></tr>
+<tr><td>Hierro — oficios</td><td>Martillo, tenazas, cuchillo, punzón, aguja, tijeras de esquilar, raspador de pieles.</td></tr>
+<tr><td>Utilidad</td><td>Cuerda, polea/aparejo (levantar vigas y piedras), cubo, antorcha, farol, yesquero (pedernal y eslabón).</td></tr>
+</table></div>
+</section>
+
+<section id="armas">
+<h2>7. Armas y escudos <span class="tag prop">PROPUESTA</span></h2>
+<div class="tw"><table>
+<tr><th>Tipo</th><th>Armas</th></tr>
+<tr><td>Improvisadas</td><td>Piedra arrojadiza, palo, garrote, herramientas usadas como arma (hacha, horca, mazo).</td></tr>
+<tr><td>Asta</td><td>Lanza, lanza de caballería, bisarma/alabarda (según época), bastón.</td></tr>
+<tr><td>Cortas</td><td>Cuchillo, daga, puñal de rondel (tardía), cuchillo largo.</td></tr>
+<tr><td>Espadas</td><td>Espada de una mano (de armas), espada de mano y media, espada larga, cuchillo de guerra de un filo.</td></tr>
+<tr><td>Contundentes</td><td>Maza, martillo de guerra, mangual de mano.</td></tr>
+<tr><td>Hachas</td><td>Hacha de guerra de una mano, hacha danesa de dos manos.</td></tr>
+<tr><td>A distancia</td><td>Honda, jabalina, arco simple, arco largo, ballesta (de estribo, de cranequín según época).</td></tr>
+<tr><td>Escudos</td><td>Redondo de tablas, de cometa, triangular (heater), broquel, pavés (ballesteros).</td></tr>
+</table></div>
+</section>
+
+<section id="armadura">
+<h2>8. Armadura y ropa <span class="tag prop">PROPUESTA</span></h2>
+<div class="tw"><table>
+<tr><th>Tipo</th><th>Piezas</th></tr>
+<tr><td>Ropa</td><td>Camisa, túnica, calzas, sayo, capa, capucha, sombrero, abrigo de piel, mitones, botas/zapatos, cinturón.</td></tr>
+<tr><td>Acolchada</td><td>Gambesón (base de todo lo demás), cofia acolchada.</td></tr>
+<tr><td>Cuero</td><td>Cuero endurecido para brazos y piernas, guantes.</td></tr>
+<tr><td>Malla</td><td>Cota de malla, almófar (capucha), calzas de malla.</td></tr>
+<tr><td>Placa (según época)</td><td>Capacete, yelmo cerrado, bacinete, coraza, brigantina, guanteletes, grebas, piezas sueltas.</td></tr>
+<tr><td>Caballo</td><td>Silla, brida, herraduras, gualdrapa, barda (armadura de caballo, avanzado).</td></tr>
+</table></div>
+<p class="note">La ropa debería importar para el frío del norte y el calor del sur, y la armadura pesar de verdad dentro del sistema de carga.</p>
+</section>
+
+<section id="contenedores">
+<h2>9. Contenedores y transporte <span class="tag prop">PROPUESTA</span></h2>
+<div class="tw"><table>
+<tr><th>Tipo</th><th>Elementos</th></tr>
+<tr><td>A cuestas</td><td>Fardo atado con cuerda, zurrón, cesta a la espalda, mochila de bastidor, bolsa de cinturón, odre.</td></tr>
+<tr><td>Almacén</td><td>Saco, cesta, barril, tinaja, arcón, estantería, granero, pajar.</td></tr>
+<tr><td>Con ruedas o arrastre</td><td>Rastra/trineo de troncos, carretilla, carro de dos ruedas, carreta de cuatro ruedas.</td></tr>
+<tr><td>Animales</td><td>Alforjas, albarda (burro/mula), tiro de caballo o buey.</td></tr>
+<tr><td>Agua (si hay navegación)</td><td>Balsa, barca de remos, barco de vela.</td></tr>
+</table></div>
+</section>
+
+<section id="construccion">
+<h2>10. Piezas de construcción y defensa <span class="tag prop">PROPUESTA</span></h2>
+<div class="tw"><table>
+<tr><th>Grupo</th><th>Piezas</th></tr>
+<tr><td>Refugios iniciales</td><td>Cobertizo de ramas, tienda de pieles, choza de barro y paja.</td></tr>
+<tr><td>Estructura</td><td>Cimiento de piedra, poste, viga, solera, suelo de tablas, escalera, escalera de mano.</td></tr>
+<tr><td>Muros</td><td>Zarzo y barro, tablas, troncos, entramado, mampostería, sillería.</td></tr>
+<tr><td>Tejados</td><td>Paja, juncos, tablillas, teja, pizarra, lámina de plomo.</td></tr>
+<tr><td>Aberturas</td><td>Puerta, portón, contraventana, ventana (con vidrio si entra), trampilla.</td></tr>
+<tr><td>Defensa</td><td>Empalizada, puerta de empalizada, foso, terraplén, estacas, muralla de piedra, torre, almenas, adarve, rastrillo, puente levadizo, garitas.</td></tr>
+<tr><td>Interior y decoración</td><td>Cama, mesa, banco, silla, chimenea, hogar, estantería, tapices, estandartes, alfombras, candelabros.</td></tr>
+<tr><td>Campo y granja</td><td>Cerca, corral, gallinero, pocilga, establo, cuadra, abrevadero, comedero, pajar.</td></tr>
+<tr><td>Infraestructura</td><td>Camino empedrado, puente de madera/piedra, embarcadero, molino.</td></tr>
+</table></div>
+</section>
+
+<section id="asedio">
+<h2>11. Equipo de asedio <span class="tag prop">PROPUESTA</span></h2>
+<ul>
+  <li><b>Ariete</b> (de mano y con cubierta móvil): contra puertas y empalizadas.</li>
+  <li><b>Escalas</b>: superar muros sin romperlos.</li>
+  <li><b>Mantelete</b>: escudo móvil para acercarse.</li>
+  <li><b>Torre de asedio</b>: avanzado.</li>
+  <li><b>Mangonel / trabuquete</b>: contra piedra; muy avanzado y caro.</li>
+  <li><b>Zapa</b>: minar bajo una muralla (¿entra?).</li>
+  <li><b>Fuego</b>: contra madera, si se decide que el fuego daña.</li>
+</ul>
+</section>
+
+<section id="animales">
+<h2>12. Animales <span class="tag prop">PROPUESTA</span></h2>
+<div class="tw"><table>
+<tr><th>Tipo</th><th>Animales</th><th>Para qué</th></tr>
+<tr><td>Montura y tiro</td><td>Caballo (varias razas por país/bioma), burro, mula, buey.</td><td>Monta, carga, arado, carros.</td></tr>
+<tr><td>Granja</td><td>Gallina, oca, pato, cerdo, cabra, oveja, vaca.</td><td>Huevos, carne, leche, lana, cuero, plumas.</td></tr>
+<tr><td>Otros domésticos</td><td>Perro (guarda, caza, pastoreo), gato (plagas), abejas.</td><td>Ayuda, miel, cera.</td></tr>
+<tr><td>Caza menor</td><td>Liebre, conejo, perdiz, faisán, pato salvaje.</td><td>Carne, plumas, pieles.</td></tr>
+<tr><td>Caza mayor</td><td>Ciervo, corzo, jabalí, rebeco/cabra montés, alce (norte).</td><td>Carne, cuero, asta.</td></tr>
+<tr><td>Depredadores</td><td>Lobo, oso, lince, zorro.</td><td>Amenaza; pieles.</td></tr>
+<tr><td>Agua</td><td>Peces de río y de mar, marisco.</td><td>Comida.</td></tr>
+</table></div>
+</section>
+
+<section id="cultivos">
+<h2>13. Cultivos por franja climática <span class="tag prop">PROPUESTA</span></h2>
+<div class="tw"><table>
+<tr><th>Cultivo</th><th>Norte (frío)</th><th>Templado</th><th>Sur (cálido)</th></tr>
+<tr><td>Centeno</td><td>Bueno</td><td>Bueno</td><td>Malo</td></tr>
+<tr><td>Avena</td><td>Bueno</td><td>Bueno</td><td>Malo</td></tr>
+<tr><td>Cebada</td><td>Bueno</td><td>Bueno</td><td>Bueno</td></tr>
+<tr><td>Trigo</td><td>Malo</td><td>Bueno</td><td>Bueno</td></tr>
+<tr><td>Lino</td><td>Bueno</td><td>Bueno</td><td>Malo</td></tr>
+<tr><td>Cáñamo</td><td>Malo</td><td>Bueno</td><td>Bueno</td></tr>
+<tr><td>Nabo, col, cebolla</td><td>Bueno</td><td>Bueno</td><td>Malo</td></tr>
+<tr><td>Guisantes, habas</td><td>Malo</td><td>Bueno</td><td>Bueno</td></tr>
+<tr><td>Garbanzos, lentejas</td><td>Inviable</td><td>Malo</td><td>Bueno</td></tr>
+<tr><td>Manzana, pera</td><td>Malo</td><td>Bueno</td><td>Malo</td></tr>
+<tr><td>Vid</td><td>Inviable</td><td>Malo</td><td>Bueno</td></tr>
+<tr><td>Olivo</td><td>Inviable</td><td>Inviable</td><td>Bueno</td></tr>
+<tr><td>Higo, almendra</td><td>Inviable</td><td>Malo</td><td>Bueno</td></tr>
+<tr><td>Lúpulo</td><td>Bueno</td><td>Bueno</td><td>Inviable</td></tr>
+</table></div>
+<p class="note">Clasificación orientativa basada en el clima de la Europa real; se ajusta al diseño que decidas.</p>
+</section>
+
+<section id="comida">
+<h2>14. Comida, bebida y conservación <span class="tag prop">PROPUESTA</span></h2>
+<ul>
+  <li><b>Cocina:</b> carne y pescado asados, gachas, potaje, pan (harina + horno), tortas, sopa, queso, mantequilla, embutido.</li>
+  <li><b>Bebida:</b> agua, leche, cerveza (cereal, lúpulo en el norte), sidra, vino (sur), hidromiel.</li>
+  <li><b>Conservación:</b> salazón (necesita sal), ahumado, secado, encurtido, guardar en sitio fresco. La comida fresca se estropea con el tiempo real.</li>
+</ul>
+</section>
+
+<section id="medicina">
+<h2>15. Curación de heridas <span class="tag prop">PROPUESTA</span></h2>
+<p>Encaja con el combate sin barras: cada herida se trata con lo suyo.</p>
+<ul>
+  <li><b>Vendaje</b> (tela): para cortes y sangrado.</li>
+  <li><b>Coser</b> (aguja e hilo): cortes profundos.</li>
+  <li><b>Cauterizar</b> (hierro al fuego): parar sangrado grave, deja secuela.</li>
+  <li><b>Entablillar</b> (tablillas y vendas): fracturas.</li>
+  <li><b>Emplastos e infusiones</b> (hierbas): infección, fiebre, recuperación más rápida.</li>
+  <li><b>Descanso</b>: las heridas sanan con el tiempo; comer y dormir bien acelera.</li>
+</ul>
+</section>
+
+<section id="preguntas">
+<h2>16. Todas las preguntas, numeradas</h2>
+<p class="note">Respóndelas por número cuando quieras, en el orden que quieras. Las de los bloques A y B son las que bloquean el primer hito.</p>
+
+<h3>A. Base del proyecto</h3>
+<ol class="q" start="1">
+  <li><b>Época.</b> ¿Qué siglos representa? Por ejemplo: Alta Edad Media (vikingos, malla, castillos de madera), Plena (malla, castillos de piedra) o Baja (espada larga, placa, ballesta de cranequín). Puede ser una progresión dentro del juego.</li>
+  <li><b>Modo solitario.</b> ¿Mundo propio sin servidor en el navegador, o el mismo mundo online donde juegas aislado? ¿El progreso pasa de uno a otro?</li>
+  <li><b>Estilo visual.</b> 3D low-poly por código, modelos de terceros/encargados, o 2D isométrico.</li>
+  <li><b>Plataformas.</b> ¿Solo PC, o también móvil y tablet?</li>
+  <li><b>¿Fantasía o realismo puro?</b> ¿Hay algo sobrenatural (criaturas, magia) o es 100% histórico inventado?</li>
+</ol>
+
+<h3>B. Construcción (hito 1)</h3>
+<ol class="q" start="6">
+  <li><b>Rejilla o colocación libre.</b></li>
+  <li><b>Quitar piezas.</b> ¿Se puede desmontar una pieza que sostiene a otras? ¿Se recupera material al desmontar?</li>
+</ol>
+
+<h3>C. Personaje y progresión</h3>
+<ol class="q" start="8">
+  <li>¿El personaje mejora? ¿Habilidades que suben con el uso, oficios, o nada (solo mejora el jugador)?</li>
+  <li>Si hay habilidades: ¿límite total que obliga a especializarse (y a depender de otros)?</li>
+  <li>¿La fuerza y el aguante suben entrenando (afecta a cuánto cargas)?</li>
+  <li>¿Durabilidad y reparación de herramientas, armas y armaduras?</li>
+  <li>¿Cómo se desbloquean las tecnologías: por uso, por descubrimiento, enseñándose entre jugadores, por estaciones construidas o mezcla? ¿Son del personaje o de la familia?</li>
+  <li>¿La calidad de los objetos depende de material, herramienta y habilidad?</li>
+</ol>
+
+<h3>D. Supervivencia y muerte</h3>
+<ol class="q" start="14">
+  <li>¿Qué necesidades se simulan: hambre, sed, frío/calor, cansancio, sueño, enfermedad?</li>
+  <li>¿Cómo se ven sin barras: solo en el personaje o con algún indicador discreto?</li>
+  <li>Al morir: ¿dónde reapareces, qué pierdes, qué queda en el suelo? ¿Muerte permanente de algún tipo?</li>
+  <li>Personaje desconectado: ¿desaparece, duerme en el mundo y se le puede atacar?</li>
+  <li>¿La comida se estropea con el tiempo?</li>
+</ol>
+
+<h3>E. Mundo y viaje</h3>
+<ol class="q" start="19">
+  <li>Ciclo día/noche: ¿a qué ritmo respecto al real?</li>
+  <li>Estaciones y clima: ¿existen? ¿Cuánto dura un año de juego?</li>
+  <li>Mapa: ¿completo desde el inicio, se dibuja explorando, o no hay?</li>
+  <li>¿Los jugadores construyen caminos y puentes?</li>
+  <li>¿Se navega por mar y ríos? ¿Con qué embarcaciones?</li>
+  <li>¿Hay NPCs aparte de centinelas (aldeas, comerciantes, bandidos)?</li>
+  <li>¿Hay fauna que ataca (lobos, osos, jabalíes)?</li>
+  <li>¿Los árboles se pueden plantar y crecen igual de lento? ¿Los minerales y la piedra se agotan?</li>
+</ol>
+
+<h3>F. Economía</h3>
+<ol class="q" start="27">
+  <li>¿Hay moneda? ¿La acuñan los jugadores (con plata) o es trueque?</li>
+  <li>¿Mercados o puestos de venta que funcionan sin el dueño conectado?</li>
+  <li>¿Cada país tiene recursos exclusivos para forzar el comercio?</li>
+</ol>
+
+<h3>G. Social, tierras y PvP</h3>
+<ol class="q" start="30">
+  <li>¿Cómo se reclama tierra? ¿Hay límite de tamaño?</li>
+  <li>Vasallajes: ¿qué implican en mecánicas (tributos, defensa, permisos)?</li>
+  <li>¿Las alianzas desactivan el PvP entre aliados?</li>
+  <li>¿Lo construido se deteriora si nadie lo mantiene? ¿Qué pasa con las bases abandonadas?</li>
+  <li>¿Cerraduras con llave en puertas y arcones, permisos por familia o ambas?</li>
+  <li>Asedio: ¿se puede asediar una base con sus dueños desconectados, o solo la frenan los centinelas? ¿Qué hitos desbloquean centinelas?</li>
+  <li>¿El fuego daña estructuras de madera?</li>
+  <li>Comunicación: ¿chat global, de proximidad, voz, mensajeros/cartas?</li>
+  <li>¿Heráldica de familia (escudos de armas, estandartes, colores)?</li>
+</ol>
+
+<h3>H. Producto</h3>
+<ol class="q" start="39">
+  <li>Creación de personaje: ¿qué se elige (aspecto, sexo, edad, país)?</li>
+  <li>Interfaz: ¿cómo se ve el inventario y el crafting sin HUD clásico?</li>
+  <li>Jugadores nuevos: ¿tutorial, zona de inicio protegida, o nada?</li>
+  <li>Monetización: ¿gratis con algo de pago (cosmético, suscripción), compra única, suscripción?</li>
+  <li>Normas: ¿cómo se tratan trampas, cuentas múltiples y jugadores tóxicos?</li>
+  <li>Idiomas del juego.</li>
+  <li>Equipo mínimo que debe moverlo.</li>
+  <li>Sonido y música: ¿estilo?</li>
+</ol>
+</section>
+</div>
+</body>
+</html>

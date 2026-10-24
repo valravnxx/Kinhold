@@ -1,0 +1,16 @@
+{
+  "name": "kinhold",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "bash herramientas/probar_todo.sh", "web": "node herramientas/construir_web.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "esbuild": "^0.28.2",
+    "three": "^0.186.1"
+  }
+}

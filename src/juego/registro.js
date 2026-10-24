@@ -1,0 +1,22 @@
+// Decisiones que he tomado yo en el hito 1, para que las revises.
+export const VERSION = 'Hito 1 · v3';
+export const REGISTRO = [
+  'Terreno llano en este hito. Las cuestas y su efecto en los cimientos llegan con el mundo generado.',
+  'Los materiales vienen dados (y hay botón para rellenar). Recolectarlos llega en el hito 2.',
+  'Para construir hace falta tu mojón; la tierra es un círculo de 20 m (mojón de nivel 1). Subir de nivel el mojón llega más adelante.',
+  'La primera pieza estructural fija la rejilla: posición donde apuntas y giro libre en pasos de 15°. Toda pieza a menos de 6 m de una construcción encaja en su rejilla.',
+  'Los apoyos siguen un orden realista: un muro descansa primero en el muro o la viga de debajo, si no en postes en sus dos extremos, y si no en el suelo o cimiento de al lado.',
+  'La carga se reparte a partes iguales entre los apoyos de cada pieza.',
+  'Al desmontar recuperas el 75% de esa pieza. Lo que cae en cascada encima se destruye sin devolver material.',
+  'Si al desmontar una pieza otra quedaría sobrecargada (no sin apoyo, sino con demasiado peso), el desmontaje se bloquea y se marca la pieza que fallaría.',
+  'Los muros que quedan debajo de un tejado se cierran solos hasta tocarlo, con su mismo material: ya no hace falta poner hastiales a mano (la pieza se ha quitado del menú).',
+  'Cada tramo de tejado sube 1,2 m en sus 2 m. Tramos seguidos en la misma dirección forman una sola pendiente continua; dos tramos enfrentados forman la cumbrera.',
+  'Las piezas que no aguantan peso (cercas, empalizadas, medio muro, tejados) nunca cuentan como apoyo de otras.',
+  'La decoración no suma peso a la estructura.',
+  'Quedan para más adelante: escalera de tablas, adarve, chimenea y puentes (los puentes necesitan agua en el mapa).',
+  'Escalera de mano: se usa con el botón Usar para subir o bajar de planta si hay suelo arriba.',
+  'Los muros de troncos van en 10 hiladas de 25 cm: todos acaban a 2,5 m y sus troncos coinciden en altura. La puerta mide 2 m (8 hiladas) y la ventana va de 1 a 1,75 m.',
+  'Las ventanas no tienen contraventana todavía.',
+  'La partida se guarda sola en el navegador (con botón para reiniciar).',
+  'Textos de la interfaz preparados para traducir; inglés y ruso llegan más adelante.',
+];

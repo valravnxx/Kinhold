@@ -1,0 +1,299 @@
+// Pruebas de la lógica de combate de Kinhold. Con MUTAR=1 se rompen reglas a propósito: deben fallar.
+import { Luchador, resolverGolpe, crearProyectil, moverProyectil, elevacionPara, IA, azar, T, GUARDIAS, LINEAS, ARMADURAS } from '../src/combate/logica.js';
+
+if (process.env.MUTAR === '1') { T.ventanaPerfecta = 99; T.ventanaMaestro = 0; ARMADURAS.malla.corte = 1.0; }
+
+let ok = 0, mal = 0;
+const comprobar = (n, c, d = '') => { c ? ok++ : mal++; console.log(`  ${c ? 'OK  ' : 'FALLA'} ${n}${d ? ' — ' + d : ''}`); };
+const r2 = (x) => Math.round(x * 100) / 100;
+// dos luchadores frente a frente a una distancia
+function pareja(dist = 1.5, opA = {}, opB = {}) {
+  const a = new Luchador({ nombre: 'A', x: 0, z: 0, rot: 0, ...opA });
+  const b = new Luchador({ nombre: 'B', x: 0, z: dist, rot: Math.PI, ...opB });
+  return [a, b];
+}
+// avanza a hasta su impacto y lo resuelve contra b
+function golpeCompleto(a, b, linea, r, antesDelImpacto = null) {
+  a.atacar(linea);
+  let res = null, t = 0;
+  while (!res && t < 3) {
+    const ev = a.actualizar(0.01); b.actualizar(0.01); t += 0.01;
+    if (antesDelImpacto && a.accion === 'preparando' && a.duracion - a.tAccion <= antesDelImpacto.margen && !antesDelImpacto.hecho) { antesDelImpacto.fn(); antesDelImpacto.hecho = true; }
+    for (const e of ev) if (e.tipo === 'impacto') res = resolverGolpe(a, b, e.linea, r);
+  }
+  return res;
+}
+
+console.log('1. Alcance y orientación');
+{
+  const r = azar(1);
+  let [a, b] = pareja(1.5);
+  comprobar('a 1,5 m la espada larga alcanza', golpeCompleto(a, b, 'alto', r).resultado === 'herida');
+  [a, b] = pareja(2.5);
+  comprobar('a 2,5 m no alcanza', golpeCompleto(a, b, 'alto', r).resultado === 'fallo');
+  [a, b] = pareja(1.5); a.rot = Math.PI;
+  comprobar('de espaldas no alcanza', golpeCompleto(a, b, 'alto', r).resultado === 'fallo');
+  [a, b] = pareja(2.05);
+  comprobar('la estocada llega más lejos que el tajo', golpeCompleto(a, b, 'estocada', r).resultado === 'herida');
+}
+
+console.log('2. Defensa por capas');
+{
+  const r = azar(2);
+  // 1. parada normal: cualquier línea, cansa
+  for (const linea of ['alto', 'bajo', 'izquierda']) {
+    const [a, b] = pareja(1.5);
+    b.bloquear(true); b.tBloqueo = 1;
+    const c0 = b.cansancio;
+    const res = golpeCompleto(a, b, linea, r);
+    comprobar(`parar sin elegir línea detiene un golpe ${linea}`, res.resultado === 'parada' && b.cansancio > c0, `cansancio +${r2(b.cansancio - c0)}`);
+  }
+  // 2. parada perfecta
+  {
+    const [a, b] = pareja(1.5);
+    const res = golpeCompleto(a, b, 'derecha', r, { margen: 0.15, fn: () => b.bloquear(true) });
+    comprobar('parar justo antes del impacto es parada perfecta', res.resultado === 'parada perfecta' && a.accion === 'aturdido', res.resultado);
+    comprobar('y abre un contraataque', b.puedeContraatacar());
+    const prepContra = b.duracionPreparacion('alto'), prepNormal = new Luchador().duracionPreparacion('alto');
+    comprobar('el contraataque se prepara más rápido', prepContra < prepNormal * 0.7, `${r2(prepContra)} s frente a ${r2(prepNormal)} s`);
+    b.bloquear(false); b.atacar('alto');
+    comprobar('y es imparable', b.imparable);
+    a.accion = 'libre'; a.bloquear(true); a.tBloqueo = 1;
+    let res2 = null, t = 0;
+    while (!res2 && t < 2) { for (const e of b.actualizar(0.01)) if (e.tipo === 'impacto') res2 = resolverGolpe(b, a, e.linea, r); a.actualizar(0.01); t += 0.01; }
+    comprobar('una parada normal no detiene el contraataque', res2.resultado === 'herida' && res2.nota === 'imparable', JSON.stringify({ r: res2.resultado, nota: res2.nota }));
+  }
+  {
+    const [a, b] = pareja(1.5);
+    const res = golpeCompleto(a, b, 'derecha', r, { margen: 0.4, fn: () => b.bloquear(true) });
+    comprobar('parar con mucha antelación es parada normal', res.resultado === 'parada', res.resultado);
+  }
+  // 3. golpe maestro
+  const maestro = (lineaA, lineaB, fraccion) => {
+    const [a, b] = pareja(1.5);
+    a.atacar(lineaA);
+    let res = null, resB = null, t = 0, lanzado = false;
+    while (t < 3 && !(res && resB)) {
+      if (!lanzado && a.accion === 'preparando' && a.progreso() >= fraccion) { b.atacar(lineaB); lanzado = true; }
+      for (const e of a.actualizar(0.01)) if (e.tipo === 'impacto') res = resolverGolpe(a, b, e.linea, azar(5));
+      for (const e of b.actualizar(0.01)) if (e.tipo === 'impacto') resB = resolverGolpe(b, a, e.linea, azar(6));
+      t += 0.01;
+    }
+    return { res, resB, a, b };
+  };
+  {
+    const { res, resB } = maestro('izquierda', 'derecha', 0.2);
+    comprobar('atacar por el mismo lado al principio es golpe maestro', res && res.resultado === 'golpe maestro', res && res.resultado);
+    comprobar('y el golpe maestro entra', resB && resB.resultado === 'herida', resB && resB.resultado);
+  }
+  {
+    const { res } = maestro('izquierda', 'izquierda', 0.2);
+    comprobar('por el lado contrario no es golpe maestro', res && res.resultado !== 'golpe maestro', res && res.resultado);
+  }
+  {
+    const { res } = maestro('alto', 'alto', 0.7);
+    comprobar('demasiado tarde no es golpe maestro', res && res.resultado !== 'golpe maestro', res && res.resultado);
+  }
+  // finta
+  {
+    const a = new Luchador(); a.atacar('alto');
+    for (let k = 0; k < 10; k++) a.actualizar(0.01);
+    const c0 = a.cansancio;
+    comprobar('cambiar de línea al principio es una finta', a.atacar('bajo') && a.linea === 'bajo' && a.cansancio > c0, `cansancio +${r2(a.cansancio - c0)}`);
+    for (let k = 0; k < 30; k++) a.actualizar(0.01);
+    comprobar('pasado el 60% ya no se puede fintar', !a.atacar('alto') && a.linea === 'bajo');
+  }
+  // guardia rota, fallos y parada mantenida
+  {
+    const [a, b] = pareja(1.5);
+    b.bloquear(true); b.tBloqueo = 1; b.cansancio = 97;
+    const res = golpeCompleto(a, b, 'alto', r);
+    comprobar('agotado, la parada cede', res.resultado === 'herida' && res.nota === 'guardia rota', JSON.stringify({ r: res.resultado, nota: res.nota }));
+  }
+  {
+    const [a, b] = pareja(3);
+    const c0 = a.cansancio; golpeCompleto(a, b, 'alto', r);
+    comprobar('un golpe al aire cansa más', a.cansancio - c0 > a.def.cansancio, `+${r2(a.cansancio - c0)}`);
+    const L = new Luchador(); L.bloquear(true);
+    for (let k = 0; k < 500; k++) L.actualizar(0.01);
+    comprobar('mantener la parada 5 s cansa', L.cansancio >= 9, `${r2(L.cansancio)}%`);
+  }
+}
+
+console.log('3. Guardias y tiempo');
+{
+  const r = azar(3);
+  let [a, b] = pareja(1.5, { modo: 'guardias' }, { modo: 'guardias' });
+  b.guardia = 'pflug';
+  comprobar('el arado cubre la estocada', golpeCompleto(a, b, 'estocada', r).resultado === 'parada');
+  comprobar('y abre una ventana de contraataque', b.reloj <= b.contraHasta);
+  const prepNormal = (() => { const x = new Luchador({ modo: 'guardias' }); x.guardia = 'pflug'; return x.duracionPreparacion('estocada'); })();
+  comprobar('el contraataque se prepara en la mitad de tiempo', Math.abs(b.duracionPreparacion('estocada') - prepNormal * T.factorGuardia) < 1e-9, `${r2(b.duracionPreparacion('estocada'))} s frente a ${r2(prepNormal)} s`);
+  [a, b] = pareja(1.5, { modo: 'guardias' }, { modo: 'guardias' });
+  b.guardia = 'pflug';
+  comprobar('el arado deja abierto el alto', golpeCompleto(a, b, 'alto', r).resultado === 'herida');
+  [a, b] = pareja(1.5, { modo: 'guardias' }, { modo: 'guardias' });
+  b.guardia = 'vom_tag'; b.cambiarGuardia('pflug');
+  comprobar('mientras cambia de guardia no cubre nada', !b.cubre('estocada') && !b.cubre('bajo'));
+  const x = new Luchador({ modo: 'guardias' }); x.guardia = 'ochs';
+  comprobar('desde el buey la estocada es rápida y el bajo lento', x.duracionPreparacion('estocada') < x.duracionPreparacion('bajo'),
+    `${r2(x.duracionPreparacion('estocada'))} s / ${r2(x.duracionPreparacion('bajo'))} s`);
+  const todas = new Set(Object.values(GUARDIAS).flatMap(g => g.cubre));
+  comprobar('entre las cuatro guardias se cubren las cinco líneas', LINEAS.every(l => todas.has(l)));
+}
+
+console.log('4. Armaduras');
+{
+  const media = (armadura, linea) => {
+    let s = 0;
+    for (let n = 0; n < 400; n++) { const [a, b] = pareja(1.5, {}, { armadura }); s += golpeCompleto(a, b, linea, azar(100 + n)).sev; }
+    return s / 400;
+  };
+  const lino = media('lino', 'derecha'), gamb = media('gambeson', 'derecha'), malla = media('malla', 'derecha');
+  comprobar('contra el tajo: malla < gambesón < lino', malla < gamb && gamb < lino, `lino ${r2(lino)} · gambesón ${r2(gamb)} · malla ${r2(malla)}`);
+  const mallaEst = media('malla', 'estocada');
+  comprobar('la malla para peor la estocada que el tajo', mallaEst > malla, `estocada ${r2(mallaEst)} vs tajo ${r2(malla)}`);
+}
+
+console.log('5. Heridas y sus efectos');
+{
+  const a = new Luchador();
+  const v0 = a.velocidad();
+  a.recibirHerida('piernaD', 0.6, 'corte');
+  comprobar('una pierna herida grave te frena', a.velocidad() < v0 * 0.7, `${r2(v0)} → ${r2(a.velocidad())} m/s`);
+  const b = new Luchador();
+  const p0 = b.duracionPreparacion('alto');
+  b.recibirHerida('brazoD', 0.6, 'corte');
+  comprobar('un brazo de la espada herido hace los golpes más lentos', b.duracionPreparacion('alto') > p0 * 1.3, `${r2(p0)} → ${r2(b.duracionPreparacion('alto'))} s`);
+  const c = new Luchador();
+  c.recibirHerida('cabeza', 0.9, 'corte');
+  comprobar('herida muy grave en la cabeza: fuera de combate', c.fuera);
+  const d = new Luchador();
+  d.recibirHerida('torso', 0.9, 'corte');
+  let t = 0; while (!d.fuera && t < 120) { d.actualizar(0.1); t += 0.1; }
+  comprobar('una herida muy grave en el torso desangra en segundos', d.fuera && t < 25, `cae a los ${r2(t)} s`);
+  const e = new Luchador();
+  e.recibirHerida('brazoI', 0.2, 'corte');
+  t = 0; while (t < 120) { e.actualizar(0.1); t += 0.1; }
+  comprobar('un corte leve deja de sangrar y no te mata', !e.fuera && e.sangre > 60, `sangre ${r2(e.sangre)} tras 2 min`);
+  const f = new Luchador();
+  f.recibirHerida('torso', 0.5, 'contundente');
+  comprobar('un golpe contundente fuerte aturde', f.accion === 'aturdido');
+  const g = new Luchador(); g.atacar('alto'); g.recibirHerida('brazoI', 0.5, 'corte');
+  comprobar('una herida grave interrumpe el golpe que preparabas', g.accion === 'aturdido');
+}
+
+console.log('6. Balística');
+{
+  const tirador = (d) => { const L = new Luchador({ arma: 'arco', x: 0, z: 0 }); return L; };
+  for (const d of [10, 20, 35, 50]) {
+    let suma = 0, n = 0;
+    for (let s = 0; s < 40; s++) {
+      const L = tirador(); const p = crearProyectil(L, { x: 0, z: d }, { tension: 1, tTenso: 0.5 }, azar(s + 1));
+      let res = null; while (!res) res = moverProyectil(p, 0.01, []);
+      suma += Math.hypot(p.x, p.z - d); n++;
+    }
+    comprobar(`a plena tensión cae cerca del punto a ${d} m`, suma / n < Math.max(0.6, d * 0.03), `error medio ${r2(suma / n)} m`);
+  }
+  {
+    const L = tirador(); const p = crearProyectil(L, { x: 0, z: 30 }, { tension: 0.5, tTenso: 0 }, azar(3));
+    let res = null; while (!res) res = moverProyectil(p, 0.01, []);
+    comprobar('a media tensión se queda corta', p.z < 20, `cae a ${r2(p.z)} m de 30`);
+  }
+  const dispersion = (tTenso) => {
+    let s = 0;
+    for (let k = 0; k < 60; k++) { const L = tirador(); const p = crearProyectil(L, { x: 0, z: 30 }, { tension: 1, tTenso }, azar(k + 50)); let res = null; while (!res) res = moverProyectil(p, 0.01, []); s += Math.hypot(p.x, p.z - 30); }
+    return s / 60;
+  };
+  const d1 = dispersion(0.5), d2 = dispersion(5);
+  comprobar('aguantar tenso 5 s hace temblar el pulso', d2 > d1 * 2, `${r2(d1)} m → ${r2(d2)} m`);
+  comprobar('el arco no llega a 400 m (máximo realista unos 300 m)', elevacionPara(400, 55) === null && elevacionPara(250, 55) !== null);
+}
+
+console.log('7. Flechas contra personas y dianas');
+{
+  let blancos = 0, zonas = {};
+  for (let s = 0; s < 40; s++) {
+    const A = new Luchador({ arma: 'arco', x: 0, z: 0 });
+    const B = new Luchador({ x: 0, z: 15, rot: Math.PI });
+    const p = crearProyectil(A, { x: 0, y: 1.3, z: 15 }, { tension: 1, tTenso: 0.3 }, azar(s + 9)); // apuntando al pecho
+    let res = null; while (!res) res = moverProyectil(p, 0.01, [A, B], azar(s));
+    if (res.tipo === 'blanco') { blancos++; zonas[res.zona] = (zonas[res.zona] || 0) + 1; }
+  }
+  comprobar('a 15 m, apuntando al pecho, casi todas aciertan', blancos >= 30, `${blancos}/40 ${JSON.stringify(zonas)}`);
+  comprobar('y la mayoría da en torso o brazos', ((zonas.torso || 0) + (zonas.brazoI || 0) + (zonas.brazoD || 0)) >= blancos * 0.6);
+  const D = { x: 0, y: 1.3, z: 20, nx: 0, nz: -1, radio: 0.6 };
+  const A = new Luchador({ arma: 'arco', x: 0, z: 0 });
+  const p = crearProyectil(A, { x: 0, y: 1.3, z: 20 }, { tension: 1, tTenso: 0.3 }, azar(4));
+  let res = null; while (!res) res = moverProyectil(p, 0.01, [], azar(1), [D]);
+  comprobar('la diana puntúa', res.tipo === 'diana' && res.puntos >= 2, JSON.stringify({ tipo: res.tipo, puntos: res.puntos }));
+}
+
+console.log('8. El rival lee los ataques según la dificultad');
+{
+  const lee = (dif) => {
+    let paradas = 0;
+    for (let s = 0; s < 300; s++) {
+      const [a, b] = pareja(1.5);
+      const ia = new IA(b, dif, azar(s + 1000));
+      ia.esperaAtaque = 99;
+      a.atacar(LINEAS[s % 5]);
+      let res = null, t = 0;
+      while (!res && t < 2) {
+        ia.pensar(0.01, a);
+        const ev = a.actualizar(0.01); b.actualizar(0.01); t += 0.01;
+        for (const e of ev) if (e.tipo === 'impacto') res = resolverGolpe(a, b, e.linea, azar(s));
+      }
+      if (res.resultado.startsWith('parada') || res.resultado === 'golpe maestro') paradas++;
+    }
+    return paradas / 300;
+  };
+  const f = lee('aprendiz'), n = lee('normal'), d = lee('realista');
+  comprobar('aprendiz detiene menos que normal y normal menos que realista', f < n && n < d, `aprendiz ${Math.round(f * 100)}% · normal ${Math.round(n * 100)}% · realista ${Math.round(d * 100)}%`);
+}
+
+console.log('8b. El rival no se aleja durante su propio golpe');
+{
+  let fallos = 0, golpes = 0;
+  for (let s = 0; s < 60; s++) {
+    const [a, b] = pareja(1.6);
+    const ia = new IA(b, 'normal', azar(s + 3000));
+    ia.esperaAtaque = 0;
+    let t = 0;
+    while (t < 4) {
+      const m = ia.pensar(0.02, a);
+      const v = b.velocidad();
+      b.x += m.mx * v * 0.02; b.z += m.mz * v * 0.02;
+      for (const e of b.actualizar(0.02)) if (e.tipo === 'impacto') { golpes++; if (resolverGolpe(b, a, e.linea, azar(s)).resultado === 'fallo') fallos++; }
+      a.actualizar(0.02); a.heridas = []; a.sangre = 100; a.fuera = false; a.accion = 'libre';
+      t += 0.02;
+    }
+  }
+  comprobar('contra alguien quieto a su alcance, ningún golpe al aire', golpes > 60 && fallos === 0, `${golpes} golpes, ${fallos} al aire`);
+}
+
+console.log('9. Combates completos simulados (máquina contra máquina)');
+for (const modo of ['capas', 'guardias']) {
+  let fin = 0, tiempos = [];
+  for (let s = 0; s < 20; s++) {
+    const [a, b] = pareja(3, { modo }, { modo });
+    const ia1 = new IA(a, 'normal', azar(s + 1)), ia2 = new IA(b, 'normal', azar(s + 500));
+    const r = azar(s + 77);
+    let t = 0;
+    while (!a.fuera && !b.fuera && t < 300) {
+      for (const [L, ia, rv] of [[a, ia1, b], [b, ia2, a]]) {
+        const m = ia.pensar(0.02, rv);
+        const v = L.velocidad();
+        L.x += m.mx * v * 0.02; L.z += m.mz * v * 0.02;
+        for (const e of L.actualizar(0.02)) if (e.tipo === 'impacto') resolverGolpe(L, rv, e.linea, r);
+      }
+      t += 0.02;
+    }
+    if (a.fuera || b.fuera) { fin++; tiempos.push(t); }
+  }
+  tiempos.sort((x, y) => x - y);
+  comprobar(`modo ${modo}: los combates terminan`, fin >= 18, `${fin}/20 · mediana ${r2(tiempos[Math.floor(tiempos.length / 2)])} s · rango ${r2(tiempos[0])}–${r2(tiempos[tiempos.length - 1])} s`);
+}
+
+console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
+process.exit(mal ? 1 : 0);

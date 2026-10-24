@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kinhold Sistema y Contenido</title>
+<style>
+:root{
+  --bg:#f6f2ea; --card:#fffdf8; --ink:#2b2520; --muted:#6f655b; --line:#e2d8c8;
+  --accent:#8a3b1f; --ok:#2f6b3a; --ok-bg:#e6f1e4; --open:#8a5a00; --open-bg:#fbf0d6;
+  --method:#24507a; --method-bg:#e3ecf6; --prop:#5b2a86; --prop-bg:#efe5f8; --gap:#8a1f3b; --gap-bg:#f8e3e8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1815; --card:#24201c; --ink:#ece4d8; --muted:#a59a8c; --line:#3a332c;
+    --accent:#e08a5f; --ok:#8fd09a; --ok-bg:#1f3323; --open:#f0c46a; --open-bg:#3a2f15;
+    --method:#8fb8e6; --method-bg:#1b2a3a; --prop:#c9a6ee; --prop-bg:#2c2038; --gap:#f09ab0; --gap-bg:#3a1b24;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1815; --card:#24201c; --ink:#ece4d8; --muted:#a59a8c; --line:#3a332c;
+  --accent:#e08a5f; --ok:#8fd09a; --ok-bg:#1f3323; --open:#f0c46a; --open-bg:#3a2f15;
+  --method:#8fb8e6; --method-bg:#1b2a3a; --prop:#c9a6ee; --prop-bg:#2c2038; --gap:#f09ab0; --gap-bg:#3a1b24;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Georgia,"Times New Roman",serif}
+.wrap{max-width:940px;margin:0 auto;padding:24px 16px 64px}
+header{border-bottom:2px solid var(--accent);margin-bottom:24px;padding-bottom:12px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.95rem}
+nav{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:24px}
+nav ol{margin:0;padding-left:20px;columns:2;column-gap:24px}
+nav a{color:var(--accent);text-decoration:none}
+@media (max-width:560px){nav ol{columns:1}}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:18px}
+h2{font-size:1.25rem;margin:0 0 10px;color:var(--accent)}
+h3{font-size:1.02rem;margin:16px 0 6px}
+p{margin:6px 0}
+ul,ol{margin:6px 0;padding-left:22px}
+li{margin:3px 0}
+.tag{display:inline-block;font:600 .72rem/1.4 system-ui,sans-serif;padding:2px 8px;border-radius:99px;margin-right:6px;vertical-align:2px}
+.ok{background:var(--ok-bg);color:var(--ok)}
+.open{background:var(--open-bg);color:var(--open)}
+.prop{background:var(--prop-bg);color:var(--prop)}
+.gap{background:var(--gap-bg);color:var(--gap)}
+.legend{font-family:system-ui,sans-serif;font-size:.85rem;color:var(--muted)}
+.tw{overflow-x:auto;margin:8px 0}
+table{width:100%;border-collapse:collapse;font-size:.88rem;min-width:600px}
+th,td{border-bottom:1px solid var(--line);padding:6px 5px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.76rem;text-transform:uppercase;letter-spacing:.04em}
+.note{font-size:.9rem;color:var(--muted)}
+.q li{margin:7px 0}
+.flow{font-family:system-ui,sans-serif;font-size:.88rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:8px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Kinhold — Análisis del sistema y contenido</h1>
+  <div class="sub">Versión 1.1 · 24 oct 2026 · Basado en el GDD v0.6 · Complementa al documento de análisis (catálogo)</div>
+  <p class="legend" style="margin-top:10px">
+    <span class="tag ok">DECIDIDO</span> viene del GDD
+    <span class="tag prop">PROPUESTA</span> contenido o valor nuevo para tu visto bueno
+    <span class="tag gap">FALTA</span> no definido todavía
+    <span class="tag open">PREGUNTA</span> te toca decidir
+  </p>
+  <p class="note">Todas las cifras (tiempos, rendimientos, capacidades, durabilidades) son valores iniciales para ajustar probando. Ninguna está comprobada en juego.</p>
+</header>
+
+<nav><ol>
+  <li><a href="#diag">Diagnóstico: qué teníamos y qué faltaba</a></li>
+  <li><a href="#tiers">Niveles tecnológicos</a></li>
+  <li><a href="#recoleccion">Recolección: qué, dónde, con qué y cuánto</a></li>
+  <li><a href="#caza">Caza, despiece y pesca</a></li>
+  <li><a href="#agri">Agricultura: plantar y cosechar</a></li>
+  <li><a href="#ganado">Ganadería y cría</a></li>
+  <li><a href="#estaciones">Estaciones de trabajo y su coste</a></li>
+  <li><a href="#recetas">Recetas</a></li>
+  <li><a href="#piezas">Piezas de construcción</a></li>
+  <li><a href="#sistemas">Valores de cada sistema</a></li>
+  <li><a href="#flujo">El primer día de un jugador</a></li>
+  <li><a href="#faltan">Lo que sigue faltando</a></li>
+  <li><a href="#preguntas">Preguntas</a></li>
+</ol></nav>
+
+<!-- 1 -->
+<section id="diag">
+<h2>1. Diagnóstico: qué teníamos y qué faltaba</h2>
+<p>El GDD v0.6 tiene las <b>reglas</b> de cada sistema. El documento de análisis tenía <b>listas</b> de contenido. Lo que faltaba en casi todos era el <b>funcionamiento concreto</b>: con qué herramienta se saca cada cosa, cuánto da, en qué estación se fabrica, qué cuesta, cuánto aguanta. Este documento lo cubre hasta donde hace falta para empezar y avanzar.</p>
+<div class="tw"><table>
+<tr><th>Sistema</th><th>Reglas (GDD)</th><th>Contenido</th><th>Funcionamiento concreto</th><th>Ahora</th></tr>
+<tr><td>Recolección</td><td>Sí</td><td>Lista</td><td><span class="tag gap">FALTA</span>herramienta, acción, rendimiento</td><td>Apartado 3</td></tr>
+<tr><td>Caza y pesca</td><td>Sí</td><td>Lista</td><td><span class="tag gap">FALTA</span>despiece, productos</td><td>Apartado 4</td></tr>
+<tr><td>Agricultura</td><td>Sí</td><td>Tabla por clima</td><td><span class="tag gap">FALTA</span>ciclo de siembra, cuidado, cosecha, procesado</td><td>Apartado 5</td></tr>
+<tr><td>Ganadería</td><td>Sí</td><td>Lista</td><td><span class="tag gap">FALTA</span>alimentación, cría, productos</td><td>Apartado 6</td></tr>
+<tr><td>Tecnologías</td><td>Sí (por estaciones)</td><td>Lista de estaciones</td><td><span class="tag gap">FALTA</span>niveles, coste de cada estación, qué abre qué</td><td>Apartados 2 y 7</td></tr>
+<tr><td>Crafting</td><td>Sí</td><td>Cadenas</td><td><span class="tag gap">FALTA</span>recetas con entradas y salidas</td><td>Apartado 8</td></tr>
+<tr><td>Construcción</td><td>Sí</td><td>Lista de piezas</td><td><span class="tag gap">FALTA</span>medidas, material, peso, capacidad</td><td>Apartado 9</td></tr>
+<tr><td>Supervivencia</td><td>Sí</td><td>—</td><td><span class="tag gap">FALTA</span>ritmos de hambre, sed, frío, cansancio</td><td>Apartado 10</td></tr>
+<tr><td>Durabilidad y deterioro</td><td>Sí</td><td>—</td><td><span class="tag gap">FALTA</span>cifras</td><td>Apartado 10</td></tr>
+<tr><td>Mojón</td><td>Sí</td><td>—</td><td><span class="tag gap">FALTA</span>niveles, radios, mantenimiento</td><td>Apartado 10</td></tr>
+<tr><td>Combate y heridas</td><td>Sí</td><td>Curación</td><td>Se define probando el hito de duelo</td><td>Pendiente</td></tr>
+<tr><td>Caballos, barcos, cartografía</td><td>Sí</td><td>Parcial</td><td>Se detalla al llegar a sus hitos</td><td>Pendiente</td></tr>
+</table></div>
+</section>
+
+<!-- 2 -->
+<section id="tiers">
+<h2>2. Niveles tecnológicos <span class="tag ok">APROBADO (provisional)</span></h2>
+<p>El GDD dice que se avanza de la Alta a la Baja Edad Media por estaciones, y que el mojón sube con materiales del nivel tecnológico. Para que ambas cosas funcionen hacen falta niveles concretos. Propongo cinco:</p>
+<div class="tw"><table>
+<tr><th>Nivel</th><th>Época</th><th>Se entra al construir</th><th>Materiales típicos (para el mojón)</th><th>Qué abre</th></tr>
+<tr><td><b>N0 Supervivencia</b></td><td>—</td><td>Nada: es el inicio</td><td>Palos, piedra suelta, fibra</td><td>Herramientas de piedra y sílex, hoguera, refugio de ramas, cordel, leñero</td></tr>
+<tr><td><b>N1 Asentamiento</b></td><td>Alta temprana</td><td>Banco de trabajo de tronco</td><td>Troncos, ramas, juncos, barro, cuerda</td><td>Cabañas de troncos y zarzo, cestería, curtido básico, secadero, primeras parcelas</td></tr>
+<tr><td><b>N2 Hierro</b></td><td>Alta</td><td>Horno de reducción</td><td>Carbón, hierro forjado, tablas, cuero</td><td>Herramientas y armas de hierro, fragua, telar, cerámica, molino de mano, empalizada</td></tr>
+<tr><td><b>N3 Piedra</b></td><td>Plena</td><td>Calera</td><td>Cal, sillares, mortero, teja</td><td>Mampostería y sillería, castillos de piedra, molino de agua, cota de malla, ballesta, barcas</td></tr>
+<tr><td><b>N4 Acero</b></td><td>Baja</td><td>Horno alto</td><td>Acero, vidrio, bronce</td><td>Placa, espada larga, ballesta de cranequín, trabuquete, barcos grandes, vidrio, cartografía</td></tr>
+</table></div>
+<p class="note">Cada nivel se entra construyendo una estación concreta, y esa estación necesita materiales del nivel anterior. Así el avance es natural y no hay árbol de tecnologías que memorizar.</p>
+</section>
+
+<!-- 3 -->
+<section id="recoleccion">
+<h2>3. Recolección: qué, dónde, con qué y cuánto <span class="tag prop">PROPUESTA</span></h2>
+<p>Tamaño del objeto (decide el hueco): <b>P</b> pequeño (cinturón), <b>M</b> mediano (mano o contenedor), <b>G</b> grande (dos manos, espalda), <b>E</b> enorme (arrastre, carro o entre varios).</p>
+<h3>Del suelo y las plantas</h3>
+<div class="tw"><table>
+<tr><th>Recurso</th><th>Dónde</th><th>Con qué</th><th>Acción</th><th>Da</th><th>Tam.</th><th>Vuelve</th></tr>
+<tr><td>Ramas caídas</td><td>Bosque</td><td>Manos</td><td>Recoger</td><td>1–3 ramas</td><td>M</td><td>Unos días reales</td></tr>
+<tr><td>Piedra suelta</td><td>Ríos, laderas</td><td>Manos</td><td>Recoger</td><td>1 piedra</td><td>M</td><td>Lento (semanas)</td></tr>
+<tr><td>Sílex</td><td>Zonas calizas, ríos</td><td>Manos</td><td>Recoger</td><td>1 nódulo</td><td>P</td><td>Lento</td></tr>
+<tr><td>Fibra (ortiga, hierba larga)</td><td>Claros, riberas</td><td>Manos</td><td>Arrancar</td><td>2–4 fibra cruda</td><td>P</td><td>Una estación</td></tr>
+<tr><td>Juncos</td><td>Riberas, pantanos</td><td>Cuchillo</td><td>Cortar</td><td>1 haz</td><td>M</td><td>Una estación</td></tr>
+<tr><td>Mimbre (sauce)</td><td>Riberas</td><td>Cuchillo</td><td>Cortar varas</td><td>1 haz de varas</td><td>M</td><td>Una estación</td></tr>
+<tr><td>Bayas, setas, frutos secos</td><td>Bosque (según estación)</td><td>Manos</td><td>Recoger</td><td>3–6 unidades</td><td>P</td><td>La siguiente temporada</td></tr>
+<tr><td>Hierbas medicinales y de cocina</td><td>Según bioma</td><td>Manos o cuchillo</td><td>Recoger</td><td>1–2 manojos</td><td>P</td><td>Una estación</td></tr>
+<tr><td>Corteza</td><td>Árbol en pie o tronco</td><td>Cuchillo, hacha</td><td>Descortezar</td><td>1–2 corteza</td><td>M</td><td>—</td></tr>
+<tr><td>Resina</td><td>Coníferas en pie</td><td>Cuchillo</td><td>Sangrar (tarda horas reales)</td><td>1 resina</td><td>P</td><td>Repetible</td></tr>
+<tr><td>Barro</td><td>Riberas, lodazales</td><td>Manos (poco), pala</td><td>Cavar</td><td>1 cesta de barro</td><td>M</td><td>Inagotable</td></tr>
+<tr><td>Arcilla</td><td>Riberas concretas</td><td>Pala</td><td>Cavar</td><td>1 cesta de arcilla</td><td>M</td><td>Depósito grande</td></tr>
+<tr><td>Arena</td><td>Playas, ríos</td><td>Pala</td><td>Cavar</td><td>1 saco</td><td>M</td><td>Inagotable</td></tr>
+<tr><td>Turba</td><td>Turberas (norte)</td><td>Pala</td><td>Cortar bloques; secar</td><td>2 bloques</td><td>M</td><td>Depósito grande</td></tr>
+<tr><td>Agua</td><td>Ríos, lagos, pozos</td><td>Odre, cubo, vasija</td><td>Llenar</td><td>Según recipiente</td><td>P–M</td><td>Inagotable</td></tr>
+<tr><td>Miel y cera silvestres</td><td>Árboles huecos</td><td>Cuchillo + antorcha (humo)</td><td>Ahumar y cortar</td><td>1 panal</td><td>P</td><td>Una estación</td></tr>
+<tr><td>Huevos silvestres</td><td>Nidos</td><td>Manos</td><td>Recoger</td><td>1–3</td><td>P</td><td>Primavera</td></tr>
+</table></div>
+<h3>De los árboles</h3>
+<div class="tw"><table>
+<tr><th>Paso</th><th>Con qué</th><th>Resultado</th><th>Tam.</th></tr>
+<tr><td>Talar un árbol joven</td><td>Hacha de piedra o hierro</td><td>1 tronco delgado + ramas</td><td>G</td></tr>
+<tr><td>Talar un árbol adulto</td><td>Hacha de hierro (con piedra tarda mucho)</td><td>1 tronco largo + muchas ramas; queda tocón</td><td>E</td></tr>
+<tr><td>Tronzar el tronco largo</td><td>Hacha (lento) o sierra de tronzar (rápido, mejor entre dos)</td><td>3–4 troncos cortos</td><td>G</td></tr>
+<tr><td>Partir tronco corto</td><td>Hacha + cuñas y mazo</td><td>Leña o medios troncos</td><td>M–G</td></tr>
+<tr><td>Escuadrar / serrar</td><td>Azuela, sierra (en banco o caballete)</td><td>Vigas, tablas, postes</td><td>G</td></tr>
+<tr><td>Replantar</td><td>Manos (plantón o semilla)</td><td>Árbol que crece en semanas reales</td><td>—</td></tr>
+</table></div>
+<p class="note">Especies por franja (del análisis): abeto y abedul al norte; roble, haya y fresno en lo templado; olivo, alcornoque y pino al sur. El roble da mejor madera de construcción y corteza para curtir; el pino, resina; el tejo, arcos; el fresno, mangos.</p>
+<h3>De la tierra (canteras y minas)</h3>
+<div class="tw"><table>
+<tr><th>Recurso</th><th>Dónde</th><th>Con qué</th><th>Da</th><th>Tam.</th><th>Nivel</th></tr>
+<tr><td>Piedra de cantera</td><td>Afloramientos rocosos</td><td>Pico, cuñas y mazo</td><td>1 bloque en bruto</td><td>E</td><td>N2</td></tr>
+<tr><td>Caliza</td><td>Zonas calizas</td><td>Pico</td><td>Piedra para cal</td><td>G</td><td>N3</td></tr>
+<tr><td>Pizarra</td><td>Montaña</td><td>Pico + cincel</td><td>Lajas para tejado</td><td>M</td><td>N3</td></tr>
+<tr><td>Hierro de pantano</td><td>Pantanos, turberas</td><td>Pala + criba</td><td>1 cesta de mineral</td><td>M</td><td>N2</td></tr>
+<tr><td>Mineral de hierro de roca</td><td>Vetas de montaña</td><td>Pico</td><td>1 mineral</td><td>M</td><td>N2</td></tr>
+<tr><td>Cobre, estaño, plomo</td><td>Vetas de montaña</td><td>Pico</td><td>1 mineral</td><td>M</td><td>N3</td></tr>
+<tr><td>Plata</td><td>Vetas escasas</td><td>Pico</td><td>1 mineral</td><td>M</td><td>N4 (decorativo; la moneda la acuñan los NPCs)</td></tr>
+<tr><td>Sal</td><td>Salinas en costa; minas de sal</td><td>Salina construida (evaporación) o pico</td><td>1 saco de sal</td><td>M</td><td>N2</td></tr>
+</table></div>
+</section>
+
+<!-- 4 -->
+<section id="caza">
+<h2>4. Caza, despiece y pesca <span class="tag prop">PROPUESTA</span></h2>
+<div class="flow">Cazar → el animal cae → <b>despiezar con cuchillo</b> (en el sitio o tras llevarlo entero) → productos → la carne se estropea con el tiempo si no se cocina o se conserva.</div>
+<div class="tw"><table>
+<tr><th>Presa</th><th>Cómo</th><th>Entero</th><th>Despiece</th></tr>
+<tr><td>Liebre, conejo, ave</td><td>Lanza arrojadiza, honda, trampa de lazo, arco</td><td>M</td><td>Carne ×1, piel pequeña, plumas (aves)</td></tr>
+<tr><td>Zorro</td><td>Trampa, arco</td><td>M</td><td>Carne ×1, piel de zorro</td></tr>
+<tr><td>Corzo</td><td>Arco, lanza</td><td>G</td><td>Carne ×4, piel, hueso, tendón, grasa</td></tr>
+<tr><td>Ciervo</td><td>Arco, lanza</td><td>E</td><td>Carne ×8, piel grande, asta, hueso, tendón, grasa</td></tr>
+<tr><td>Jabalí</td><td>Lanza (peligroso si se acorrala)</td><td>E</td><td>Carne ×8, piel gruesa, colmillos, grasa</td></tr>
+<tr><td>Lobo</td><td>Lanza, arco (ataca)</td><td>G</td><td>Carne ×3, piel de lobo</td></tr>
+<tr><td>Oso</td><td>Grupo con lanzas (muy peligroso)</td><td>E</td><td>Carne ×12, piel de oso, grasa abundante</td></tr>
+</table></div>
+<h3>Pesca</h3>
+<div class="tw"><table>
+<tr><th>Método</th><th>Nivel</th><th>Dónde</th><th>Notas</th></tr>
+<tr><td>Arpón de madera</td><td>N0</td><td>Aguas poco profundas</td><td>Requiere habilidad (apuntar)</td></tr>
+<tr><td>Sedal y anzuelo de hueso</td><td>N1</td><td>Ríos, lagos, costa</td><td>Cebo: gusanos, restos</td></tr>
+<tr><td>Nasa de mimbre</td><td>N1</td><td>Ríos</td><td>Se deja puesta; se revisa después</td></tr>
+<tr><td>Red</td><td>N2</td><td>Ríos anchos, costa, barca</td><td>Más captura</td></tr>
+</table></div>
+</section>
+
+<!-- 5 -->
+<section id="agri">
+<h2>5. Agricultura: plantar y cosechar <span class="tag prop">PROPUESTA</span></h2>
+<p><span class="tag ok">DECIDIDO</span>Una estación por mes real; rendimiento por franja climática (bueno, malo, inviable).</p>
+<h3>El ciclo</h3>
+<ol>
+  <li><b>Semillas.</b> Tres fuentes: plantas silvestres de tu bioma (cereal y legumbre silvestres, hortalizas silvestres), mercaderes NPC (semillas de otras franjas) y guardar parte de tu cosecha.</li>
+  <li><b>Preparar la parcela.</b> La unidad es una casilla de cultivo de 2 × 2 m, la misma rejilla que la construcción. Con azada se prepara casilla a casilla; con arado y animal de tiro, varias de golpe (para campos grandes).</li>
+  <li><b>Sembrar en su estación.</b> Cada cultivo tiene ventana de siembra. Fuera de ella, la semilla no germina.</li>
+  <li><b>Cuidar.</b> La lluvia del bioma riega sola; en el sur, en verano, hay que regar con cubo o con acequia. El estiércol de tus animales aumenta el rendimiento.</li>
+  <li><b>Crecer.</b> El cultivo avanza por fases visibles (brote, crecimiento, maduro). Si llega el invierno en el norte sin cosechar, se pierde.</li>
+  <li><b>Cosechar</b> con la herramienta adecuada (tabla).</li>
+  <li><b>Procesar</b> lo cosechado para que sea útil (trillar, moler, secar, enriar…).</li>
+  <li><b>Guardar</b> semillas para la próxima siembra y el producto en granero o almacén.</li>
+</ol>
+<h3>Cultivos: siembra, cosecha y procesado</h3>
+<div class="tw"><table>
+<tr><th>Cultivo</th><th>Siembra</th><th>Cosecha</th><th>Herramienta</th><th>Procesado</th><th>Producto</th></tr>
+<tr><td>Trigo, centeno (de invierno)</td><td>Otoño</td><td>Verano</td><td>Hoz o guadaña</td><td>Gavillas → trillar en era con mayal → aventar → moler</td><td>Harina, paja, semilla</td></tr>
+<tr><td>Cebada, avena (de primavera)</td><td>Primavera</td><td>Verano</td><td>Hoz o guadaña</td><td>Igual; la cebada también para cerveza</td><td>Harina, grano, paja</td></tr>
+<tr><td>Lino</td><td>Primavera</td><td>Verano</td><td>Arrancar a mano</td><td>Enriar en agua → secar → agramar → rastrillar</td><td>Fibra de lino, linaza</td></tr>
+<tr><td>Cáñamo</td><td>Primavera</td><td>Verano</td><td>Hoz</td><td>Enriar → secar → agramar</td><td>Fibra para cuerda y tela basta</td></tr>
+<tr><td>Guisantes, habas</td><td>Primavera</td><td>Verano</td><td>Manos</td><td>Secar → desgranar</td><td>Legumbre seca</td></tr>
+<tr><td>Garbanzos, lentejas</td><td>Primavera</td><td>Verano</td><td>Manos</td><td>Secar → desgranar</td><td>Legumbre seca</td></tr>
+<tr><td>Nabo, col, cebolla</td><td>Primavera o verano</td><td>Otoño</td><td>Manos, cuchillo</td><td>—</td><td>Hortaliza (se estropea)</td></tr>
+<tr><td>Lúpulo</td><td>Plantón, una vez</td><td>Otoño cada año</td><td>Cuchillo</td><td>Secar</td><td>Lúpulo (cerveza)</td></tr>
+<tr><td>Manzano, peral</td><td>Plantón, una vez</td><td>Otoño, desde el segundo año de juego</td><td>Manos</td><td>Prensa (sidra) o comer</td><td>Fruta</td></tr>
+<tr><td>Vid</td><td>Esqueje, una vez</td><td>Otoño, desde el segundo año</td><td>Cuchillo</td><td>Prensa → fermentar en barril</td><td>Uva, vino</td></tr>
+<tr><td>Olivo</td><td>Plantón, una vez</td><td>Invierno, desde el tercer año</td><td>Varear + manos</td><td>Prensa de aceite</td><td>Aceite, aceitunas</td></tr>
+<tr><td>Higuera, almendro</td><td>Plantón, una vez</td><td>Verano/otoño, desde el segundo año</td><td>Manos</td><td>Secar</td><td>Higos secos, almendras</td></tr>
+</table></div>
+<p class="note">Un año de juego son 4 meses reales, así que un frutal da su primera cosecha a los 4–8 meses reales: es una inversión de largo plazo, como en la vida real.</p>
+<div class="tw"><table>
+<tr><th>Calendario (norte)</th><th>Primavera</th><th>Verano</th><th>Otoño</th><th>Invierno</th></tr>
+<tr><td>Qué se hace</td><td>Sembrar cereal de primavera, lino, legumbre, hortaliza</td><td>Cosechar cereal, lino, legumbre</td><td>Sembrar cereal de invierno; cosechar hortaliza y fruta</td><td>Nada crece; vivir de lo guardado</td></tr>
+</table></div>
+<p class="note">En el sur el invierno es suave y el problema es la sequía del verano: allí se riega.</p>
+<div class="tw"><table>
+<tr><th>Regla</th><th>Qué es</th></tr>
+<tr><td><span class="tag ok">DECIDIDO</span>Barbecho</td><td>Repetir el mismo cultivo en la misma casilla rinde menos cada vez. Dejarla en barbecho una estación (o sembrar legumbres) la recupera.</td></tr>
+</table></div>
+</section>
+
+<!-- 6 -->
+<section id="ganado">
+<h2>6. Ganadería y cría <span class="tag prop">PROPUESTA</span></h2>
+<div class="flow">Conseguir animal (domar en su bioma o comprar a mercader NPC) → encerrarlo (cerca, corral, cuadra) → darle comida, agua y refugio → producir → criar (macho + hembra).</div>
+<div class="tw"><table>
+<tr><th>Animal</th><th>Come</th><th>Necesita</th><th>Produce</th><th>Cría (gestación)</th></tr>
+<tr><td>Gallina</td><td>Grano, restos</td><td>Gallinero</td><td>Huevos (cada día de juego), plumas, carne</td><td>Incuba huevos: unos días reales</td></tr>
+<tr><td>Oca, pato</td><td>Grano, pasto</td><td>Corral con agua</td><td>Huevos, plumas, carne</td><td>Igual</td></tr>
+<tr><td>Cerdo</td><td>Restos, bellotas (bosque)</td><td>Pocilga</td><td>Carne, grasa, cuero</td><td>Una estación</td></tr>
+<tr><td>Cabra</td><td>Pasto, ramas</td><td>Corral</td><td>Leche, carne, piel</td><td>Una estación</td></tr>
+<tr><td>Oveja</td><td>Pasto, heno</td><td>Corral, redil</td><td>Lana (esquilar en primavera), leche, carne</td><td>Una estación</td></tr>
+<tr><td>Vaca, buey</td><td>Pasto, heno</td><td>Establo</td><td>Leche, carne, cuero; el buey tira del arado y del carro</td><td>Una estación y media</td></tr>
+<tr><td>Burro, mula</td><td>Pasto, heno</td><td>Establo</td><td>Carga con albarda, tiro ligero</td><td>Una estación y media</td></tr>
+<tr><td>Caballo</td><td>Pasto, heno, grano (para trabajo duro)</td><td>Cuadra, herraduras (N2)</td><td>Monta, tiro, carga</td><td>Dos estaciones; rasgos heredables</td></tr>
+<tr><td>Perro</td><td>Carne, restos</td><td>—</td><td>Guarda, caza, pastoreo</td><td>Una estación</td></tr>
+<tr><td>Abejas</td><td>Flores cercanas</td><td>Colmena</td><td>Miel y cera (verano y otoño)</td><td>Enjambre nuevo en primavera</td></tr>
+</table></div>
+<p><b>Pasto:</b> los animales en un prado consumen la hierba, que vuelve a crecer; si hay demasiados para el tamaño del prado, se agota y hay que darles heno. <b>Heno:</b> se corta hierba con guadaña en verano y se seca para el invierno.</p>
+<p><b>Si se descuidan:</b> sin comida o agua, el animal enferma y deja de producir. <span class="tag ok">DECIDIDO</span>No muere: al volver a cuidarlo, se recupera poco a poco. Los cálculos se hacen por tiempo transcurrido, así que pasa igual aunque no estés.</p>
+</section>
+
+<!-- 7 -->
+<section id="estaciones">
+<h2>7. Estaciones de trabajo y su coste <span class="tag prop">PROPUESTA</span></h2>
+<div class="tw"><table>
+<tr><th>Estación</th><th>Nivel</th><th>Coste de construcción</th><th>Hace</th></tr>
+<tr><td>Hoguera</td><td>N0</td><td>6 piedras sueltas + 4 ramas</td><td>Cocinar, calentarse, endurecer al fuego, antorchas</td></tr>
+<tr><td>Piedra de tallar (en el suelo)</td><td>N0</td><td>1 piedra grande</td><td>Herramientas de piedra y sílex</td></tr>
+<tr><td>Banco de trabajo de tronco</td><td>N1 (entrada)</td><td>2 troncos cortos + herramienta de piedra</td><td>Trabajos de madera, mangos, cestería, primeras piezas de construcción</td></tr>
+<tr><td>Secadero</td><td>N1</td><td>4 postes + 2 cuerdas</td><td>Secar carne, pieles, fibras, hierbas, heno</td></tr>
+<tr><td>Raspador de pieles (bastidor)</td><td>N1</td><td>4 varas + cuerda</td><td>Limpiar pieles</td></tr>
+<tr><td>Cubas de curtido</td><td>N1</td><td>Hoyo + barro + 2 troncos</td><td>Cuero (con corteza de roble y agua)</td></tr>
+<tr><td>Horno de barro</td><td>N1</td><td>10 barro + 6 piedras + paja</td><td>Pan, asados, secar arcilla</td></tr>
+<tr><td>Carbonera</td><td>N1</td><td>Leña apilada + tierra (se consume)</td><td>Carbón vegetal</td></tr>
+<tr><td>Huso (herramienta)</td><td>N1</td><td>Vara + piedra o hueso</td><td>Hilar fibra y lana</td></tr>
+<tr><td>Horno de reducción</td><td>N2 (entrada)</td><td>20 barro + 10 piedras + 4 carbón</td><td>Mineral de hierro → lupia</td></tr>
+<tr><td>Fragua y yunque</td><td>N2</td><td>Piedras + barro + fuelle (cuero y madera) + yunque (piedra al principio, hierro después)</td><td>Barras, clavos, herramientas, armas, herraduras, reparar metal</td></tr>
+<tr><td>Piedra de afilar</td><td>N2</td><td>Piedra arenisca + bastidor de madera</td><td>Afilar (recupera algo de durabilidad del filo)</td></tr>
+<tr><td>Banco de carpintero</td><td>N2</td><td>Tablas + clavos</td><td>Muebles, ruedas, carros, puertas, piezas finas</td></tr>
+<tr><td>Telar</td><td>N2</td><td>Tablas + cuerda + clavos</td><td>Tela de lino y lana</td></tr>
+<tr><td>Horno cerámico</td><td>N2</td><td>Arcilla + piedras</td><td>Vasijas, tejas, ladrillos</td></tr>
+<tr><td>Molino de mano</td><td>N2</td><td>2 piedras labradas + madera</td><td>Harina (lento)</td></tr>
+<tr><td>Era de trillar</td><td>N1</td><td>Suelo aplanado de piedra o tierra batida</td><td>Separar grano y paja</td></tr>
+<tr><td>Ahumadero</td><td>N2</td><td>Tablas + barro</td><td>Carne y pescado ahumados</td></tr>
+<tr><td>Escritorio</td><td>N2</td><td>Tablas + clavos</td><td>Tomos de recetas, cartas</td></tr>
+<tr><td>Calera</td><td>N3 (entrada)</td><td>Piedras + barro + caliza</td><td>Cal</td></tr>
+<tr><td>Taller de cantero</td><td>N3</td><td>Banco + cinceles</td><td>Sillares</td></tr>
+<tr><td>Molino de agua</td><td>N3</td><td>Rueda de madera + piedras de moler + edificio junto a un río</td><td>Harina rápida</td></tr>
+<tr><td>Prensa</td><td>N3</td><td>Viga + tornillo de madera + cuba</td><td>Aceite, vino, sidra</td></tr>
+<tr><td>Taller de cotero</td><td>N3</td><td>Banco + tenazas + alambre</td><td>Cota de malla</td></tr>
+<tr><td>Astillero</td><td>N3</td><td>Rampa junto al agua + estructura</td><td>Barcas (barcos grandes en N4)</td></tr>
+<tr><td>Horno alto</td><td>N4 (entrada)</td><td>Ladrillos + piedra + fuelles grandes</td><td>Acero</td></tr>
+<tr><td>Taller de armero</td><td>N4</td><td>Fragua avanzada + yunques</td><td>Placa, espada larga</td></tr>
+<tr><td>Horno de vidrio</td><td>N4</td><td>Ladrillos + arcilla refractaria</td><td>Vidrio</td></tr>
+<tr><td>Taller de asedio</td><td>N2 (ariete) a N4 (trabuquete)</td><td>Tablas + vigas + cuerda</td><td>Equipo de asedio</td></tr>
+<tr><td>Mesa de cartógrafo</td><td>N4</td><td>Tablas + instrumentos</td><td>Mapas</td></tr>
+</table></div>
+</section>
+
+<!-- 8 -->
+<section id="recetas">
+<h2>8. Recetas <span class="tag prop">PROPUESTA</span></h2>
+<p>Detalladas los niveles N0 a N2 (los que necesitan los primeros hitos). N3 y N4 se detallarán al llegar a ellos; sus estaciones y productos están en el apartado 7.</p>
+
+<h3>N0 — Supervivencia (sin estación o con hoguera / piedra de tallar)</h3>
+<div class="tw"><table>
+<tr><th>Objeto</th><th>Materiales</th><th>Dónde</th><th>Notas</th></tr>
+<tr><td>Cordel de fibra</td><td>3 fibra cruda</td><td>Manos</td><td>También sirve como cinturón de cordel (1 hueco)</td></tr>
+<tr><td>Lasca de sílex (cuchillo)</td><td>1 sílex + 1 piedra</td><td>Piedra de tallar</td><td>Corta fibra, juncos, despieza</td></tr>
+<tr><td>Hacha de piedra</td><td>1 piedra + 1 rama + 2 cordel</td><td>Piedra de tallar</td><td>Tala árboles jóvenes; adultos muy lento</td></tr>
+<tr><td>Lanza endurecida</td><td>1 rama larga</td><td>Hoguera</td><td>Caza y defensa</td></tr>
+<tr><td>Palo cavador</td><td>1 rama</td><td>Manos</td><td>Cava barro y raíces, poco eficiente</td></tr>
+<tr><td>Honda</td><td>2 cordel + 1 piel pequeña</td><td>Manos</td><td>Caza menor</td></tr>
+<tr><td>Antorcha</td><td>1 rama + 1 fibra (o resina)</td><td>Hoguera</td><td>Luz; dura un rato</td></tr>
+<tr><td>Leñero (bastidor de doble L)</td><td>4 ramas + 2 cordel</td><td>Manos</td><td>Solo leña y troncos cortos</td></tr>
+<tr><td>Fardo atado</td><td>2 cordel</td><td>Manos</td><td>Pieles, fibras, paja</td></tr>
+<tr><td>Refugio de ramas</td><td>12 ramas + 4 cordel</td><td>En el suelo</td><td>Primer techo; cuenta como cama ligable</td></tr>
+<tr><td>Arpón</td><td>1 rama + 1 lasca de sílex + cordel</td><td>Manos</td><td>Pesca</td></tr>
+<tr><td>Envueltas de piel (pies)</td><td>1 piel + 1 cordel</td><td>Manos</td><td>Mejor que descalzo</td></tr>
+</table></div>
+
+<h3>N1 — Asentamiento (banco de tronco, secadero, curtido, horno de barro)</h3>
+<div class="tw"><table>
+<tr><th>Objeto</th><th>Materiales</th><th>Dónde</th><th>Notas</th></tr>
+<tr><td>Cuerda</td><td>3 cordel (o 2 fibra de lino/cáñamo)</td><td>Banco</td><td>Base de casi todo</td></tr>
+<tr><td>Cinturón de cuerda</td><td>2 cuerda</td><td>Banco</td><td>2 huecos pequeños</td></tr>
+<tr><td>Cesta de recolección</td><td>2 haces de mimbre o juncos</td><td>Banco</td><td>Mochila de recolección</td></tr>
+<tr><td>Cesto de pescador</td><td>2 haces de mimbre</td><td>Banco</td><td>Pescado y aparejos</td></tr>
+<tr><td>Nasa</td><td>2 haces de mimbre</td><td>Banco</td><td>Trampa de pesca</td></tr>
+<tr><td>Anzuelo y sedal</td><td>1 hueso + 1 cordel</td><td>Banco</td><td>Pesca</td></tr>
+<tr><td>Trampa de lazo</td><td>1 cuerda + 2 ramas</td><td>Banco</td><td>Caza menor</td></tr>
+<tr><td>Pala de madera</td><td>1 tronco corto</td><td>Banco</td><td>Barro, arcilla, arena, tierra</td></tr>
+<tr><td>Azada de madera y piedra</td><td>1 rama + 1 piedra + cuerda</td><td>Banco</td><td>Preparar casillas de cultivo</td></tr>
+<tr><td>Hoz de sílex</td><td>1 rama curva + 3 lascas</td><td>Banco</td><td>Cosechar cereal</td></tr>
+<tr><td>Mayal</td><td>2 ramas + cuerda</td><td>Banco</td><td>Trillar</td></tr>
+<tr><td>Cubo de madera</td><td>1 tronco corto</td><td>Banco</td><td>Agua, leche</td></tr>
+<tr><td>Odre</td><td>1 piel + cordel</td><td>Manos</td><td>Agua (hombro)</td></tr>
+<tr><td>Piel limpia</td><td>1 piel</td><td>Raspador</td><td>Paso previo al cuero</td></tr>
+<tr><td>Cuero</td><td>1 piel limpia + 2 corteza de roble + agua</td><td>Cubas de curtido</td><td>Tarda días reales</td></tr>
+<tr><td>Zurrón de piel</td><td>2 piel limpia + cordel</td><td>Banco</td><td>Mochila mixta pequeña</td></tr>
+<tr><td>Chaleco de piel</td><td>3 piel limpia + cordel</td><td>Banco</td><td>Abrigo</td></tr>
+<tr><td>Hilo</td><td>2 fibra de lino o lana</td><td>Huso</td><td>Para coser y tejer</td></tr>
+<tr><td>Carbón vegetal</td><td>10 leña</td><td>Carbonera</td><td>Tarda horas reales; da 4 carbón</td></tr>
+<tr><td>Pan</td><td>2 harina + agua</td><td>Horno de barro</td><td>Comida que dura</td></tr>
+<tr><td>Carne seca</td><td>2 carne + (sal opcional)</td><td>Secadero</td><td>Dura mucho</td></tr>
+<tr><td>Heno</td><td>Hierba cortada</td><td>Secadero o al sol</td><td>Comida de invierno</td></tr>
+<tr><td>Vendas</td><td>1 tela basta o fibra</td><td>Manos</td><td>Curar cortes</td></tr>
+</table></div>
+
+<h3>N2 — Hierro (horno de reducción, fragua, carpintero, telar, cerámica)</h3>
+<div class="tw"><table>
+<tr><th>Objeto</th><th>Materiales</th><th>Dónde</th><th>Notas</th></tr>
+<tr><td>Lupia de hierro</td><td>3 mineral + 4 carbón</td><td>Horno de reducción</td><td>Hierro en bruto</td></tr>
+<tr><td>Barra de hierro</td><td>1 lupia + 1 carbón</td><td>Fragua</td><td>Material base del metal</td></tr>
+<tr><td>Clavos (×10)</td><td>1 barra</td><td>Fragua</td><td>Carpintería</td></tr>
+<tr><td>Hacha de hierro</td><td>1 barra + 1 mango de fresno</td><td>Fragua</td><td>Tala rápida</td></tr>
+<tr><td>Sierra de tronzar</td><td>2 barras + 2 mangos</td><td>Fragua</td><td>Mejor entre dos</td></tr>
+<tr><td>Azuela, escoplo, berbiquí</td><td>1 barra + mango</td><td>Fragua</td><td>Carpintería fina</td></tr>
+<tr><td>Pico</td><td>1 barra + mango</td><td>Fragua</td><td>Cantera, minas</td></tr>
+<tr><td>Pala de hierro</td><td>1 barra + mango</td><td>Fragua</td><td>Más rápida</td></tr>
+<tr><td>Hoz, guadaña</td><td>1–2 barras + mango</td><td>Fragua</td><td>Cosecha y heno</td></tr>
+<tr><td>Reja de arado</td><td>2 barras</td><td>Fragua</td><td>Arado + animal de tiro</td></tr>
+<tr><td>Cuchillo de hierro</td><td>1 barra + mango de hueso</td><td>Fragua</td><td>Mejor que el sílex</td></tr>
+<tr><td>Tijeras de esquilar</td><td>1 barra</td><td>Fragua</td><td>Lana</td></tr>
+<tr><td>Herraduras (×4)</td><td>1 barra</td><td>Fragua</td><td>Caballos</td></tr>
+<tr><td>Hebilla de hierro</td><td>fracción de barra</td><td>Fragua</td><td>Cinturones mejores</td></tr>
+<tr><td>Cinto de cuero</td><td>2 cuero + hebilla (hueso o hierro)</td><td>Banco</td><td>3 huecos (uno mediano)</td></tr>
+<tr><td>Cinto con anillas</td><td>2 cuero + hebilla de hierro + 2 anillas</td><td>Banco</td><td>4 huecos (dos medianos)</td></tr>
+<tr><td>Cinto de armas</td><td>3 cuero + hebilla de hierro</td><td>Banco</td><td>Vaina + 2 pequeños</td></tr>
+<tr><td>Mochila de bastidor</td><td>Tablas + 2 cuero + cuerda</td><td>Carpintero</td><td>Mixta grande</td></tr>
+<tr><td>Porta-piedras</td><td>Tablas + cuerda</td><td>Carpintero</td><td>Piedras y bloques</td></tr>
+<tr><td>Caja de herramientas de espalda</td><td>Tablas + cuero + clavos</td><td>Carpintero</td><td>Herramientas</td></tr>
+<tr><td>Carcaj</td><td>1 cuero</td><td>Banco</td><td>Flechas</td></tr>
+<tr><td>Tela de lino / de lana</td><td>4 hilo</td><td>Telar</td><td>Ropa, vendas, velas de barco</td></tr>
+<tr><td>Camisa y pantalón de lana</td><td>2 tela de lana + hilo</td><td>Banco</td><td>Abrigan más que el lino</td></tr>
+<tr><td>Gambesón</td><td>4 tela + relleno (lana o lino) + hilo</td><td>Banco</td><td>Protección base</td></tr>
+<tr><td>Capucha, capa</td><td>1–2 tela de lana</td><td>Banco</td><td>Frío y lluvia</td></tr>
+<tr><td>Zapatos, botas</td><td>1–2 cuero + hilo</td><td>Banco</td><td>Pies</td></tr>
+<tr><td>Guantes de cuero</td><td>1 cuero</td><td>Banco</td><td>Manos</td></tr>
+<tr><td>Cuero endurecido (piezas)</td><td>Cuero + cera o agua caliente</td><td>Banco + hoguera</td><td>Armadura ligera</td></tr>
+<tr><td>Escudo redondo</td><td>Tablas + cuero + barra (umbo)</td><td>Carpintero</td><td>Defensa</td></tr>
+<tr><td>Lanza de hierro</td><td>Fracción de barra + asta</td><td>Fragua</td><td>Arma de asta</td></tr>
+<tr><td>Hacha de guerra</td><td>1 barra + mango</td><td>Fragua</td><td>Arma</td></tr>
+<tr><td>Espada de una mano</td><td>2 barras</td><td>Fragua</td><td>Arma (la espada larga es N4)</td></tr>
+<tr><td>Arco simple</td><td>1 vara de tejo o fresno + cuerda de tendón</td><td>Banco</td><td>A distancia (hito posterior)</td></tr>
+<tr><td>Flechas (×10)</td><td>Varas + plumas + puntas (sílex o hierro)</td><td>Banco</td><td>—</td></tr>
+<tr><td>Vasija, tinaja</td><td>Arcilla</td><td>Horno cerámico</td><td>Almacén de líquidos y grano</td></tr>
+<tr><td>Teja (×10)</td><td>Arcilla</td><td>Horno cerámico</td><td>Tejado que no se pudre</td></tr>
+<tr><td>Barril</td><td>Tablas + aros de hierro</td><td>Carpintero</td><td>Líquidos, salazón</td></tr>
+<tr><td>Arcón</td><td>Tablas + clavos</td><td>Carpintero</td><td>Almacén</td></tr>
+<tr><td>Carretilla</td><td>Tablas + rueda</td><td>Carpintero</td><td>Transporte a mano</td></tr>
+<tr><td>Carro de dos ruedas</td><td>Tablas + 2 ruedas + clavos</td><td>Carpintero</td><td>Animal de tiro</td></tr>
+<tr><td>Ariete de mano</td><td>1 tronco + barra (punta)</td><td>Taller de asedio</td><td>Contra puertas y empalizadas</td></tr>
+<tr><td>Pergamino</td><td>Piel limpia + cal o ceniza</td><td>Banco</td><td>Tomos y cartas</td></tr>
+<tr><td>Tinta</td><td>Hollín + agua (o agallas de roble)</td><td>Banco</td><td>Tomos y cartas</td></tr>
+<tr><td>Tomo de recetas</td><td>Pergamino + tinta</td><td>Escritorio</td><td>Enseña recetas que conoces</td></tr>
+<tr><td>Carne ahumada</td><td>Carne</td><td>Ahumadero</td><td>Dura mucho</td></tr>
+<tr><td>Salazón</td><td>Carne o pescado + sal</td><td>Barril</td><td>Dura más que nada</td></tr>
+</table></div>
+</section>
+
+<!-- 9 -->
+<section id="piezas">
+<h2>9. Piezas de construcción <span class="tag prop">PROPUESTA</span></h2>
+<p><span class="tag ok">DECIDIDO</span><b>Módulo de rejilla:</b> 2 m en horizontal y 2,5 m de altura por planta. Es la medida de una casilla de cultivo, de un tramo de muro y de un tramo de empalizada.</p>
+<p><b>Carga:</b> cada pieza tiene un peso propio (kg) y una capacidad (kg que puede sostener encima). El peso se reparte hacia abajo por los apoyos hasta el suelo. Las cifras son para el cálculo interno; el jugador no carga por peso.</p>
+
+<h3>Piezas del hito 1 (N0–N2)</h3>
+<div class="tw"><table>
+<tr><th>Pieza</th><th>Nivel</th><th>Materiales</th><th>Peso</th><th>Sostiene</th><th>Notas</th></tr>
+<tr><td>Mojón</td><td>N0</td><td>3 piedras sueltas</td><td>—</td><td>—</td><td>Reclama tierra; sube de nivel con materiales</td></tr>
+<tr><td>Cimiento de piedra suelta (2×2)</td><td>N1</td><td>8 piedras sueltas</td><td>400</td><td>3000</td><td>Apoya en el suelo; base de todo lo pesado</td></tr>
+<tr><td>Cimiento de troncos (2×2)</td><td>N1</td><td>2 troncos cortos</td><td>150</td><td>1200</td><td>Se pudre más rápido</td></tr>
+<tr><td>Poste de tronco</td><td>N1</td><td>1 tronco delgado</td><td>60</td><td>800</td><td>Vertical, en las esquinas de la rejilla</td></tr>
+<tr><td>Viga de tronco</td><td>N1</td><td>1 tronco delgado</td><td>60</td><td>400</td><td>Horizontal entre postes; sostiene suelos y tejado</td></tr>
+<tr><td>Suelo de troncos partidos</td><td>N1</td><td>2 medios troncos</td><td>120</td><td>300</td><td>Necesita vigas o cimiento debajo</td></tr>
+<tr><td>Muro de zarzo y barro</td><td>N1</td><td>4 varas + 4 barro</td><td>150</td><td>150</td><td>Barato; no sostiene una segunda planta</td></tr>
+<tr><td>Muro de troncos</td><td>N1</td><td>4 troncos delgados</td><td>300</td><td>600</td><td>Sólido; sostiene una planta encima</td></tr>
+<tr><td>Muro con hueco de puerta / ventana</td><td>N1</td><td>Como su muro, algo menos</td><td>—</td><td>Algo menos</td><td>Variantes de cada muro</td></tr>
+<tr><td>Medio muro</td><td>N1</td><td>Mitad</td><td>—</td><td>—</td><td>Cercas, barandillas, corrales</td></tr>
+<tr><td>Tejado de paja (tramo inclinado)</td><td>N1</td><td>2 varas + 4 haces de paja o juncos</td><td>80</td><td>—</td><td>Hay que renovarlo; arde</td></tr>
+<tr><td>Remate de tejado</td><td>N1</td><td>Igual</td><td>40</td><td>—</td><td>Cumbrera y esquinas</td></tr>
+<tr><td>Escalera de mano</td><td>N1</td><td>2 ramas largas + cuerda</td><td>15</td><td>—</td><td>Acceso a altura</td></tr>
+<tr><td>Puerta de varas</td><td>N1</td><td>4 varas + cuerda</td><td>20</td><td>—</td><td>Débil</td></tr>
+<tr><td>Cerca de varas</td><td>N1</td><td>4 varas + cuerda</td><td>20</td><td>—</td><td>Para animales</td></tr>
+<tr><td>Suelo de tablas</td><td>N2</td><td>4 tablas + clavos</td><td>100</td><td>400</td><td>—</td></tr>
+<tr><td>Muro de tablas</td><td>N2</td><td>6 tablas + clavos</td><td>200</td><td>400</td><td>—</td></tr>
+<tr><td>Muro de entramado</td><td>N2</td><td>Vigas + zarzo + barro</td><td>250</td><td>700</td><td>Típico medieval; sostiene planta</td></tr>
+<tr><td>Escalera de tablas</td><td>N2</td><td>6 tablas + clavos</td><td>100</td><td>—</td><td>Entre plantas</td></tr>
+<tr><td>Puerta de tablas</td><td>N2</td><td>4 tablas + clavos + bisagras</td><td>40</td><td>—</td><td>Con permisos de familia</td></tr>
+<tr><td>Contraventana, trampilla</td><td>N2</td><td>2 tablas + clavos</td><td>20</td><td>—</td><td>—</td></tr>
+<tr><td>Tejado de tablillas</td><td>N2</td><td>Tablillas + clavos</td><td>100</td><td>—</td><td>Dura más que la paja</td></tr>
+<tr><td>Tejado de teja</td><td>N2</td><td>10 tejas + vigas</td><td>200</td><td>—</td><td>No se pudre ni arde fácil; pesa</td></tr>
+<tr><td><b>Empalizada (tramo 2 m × 3 m)</b></td><td>N2</td><td>6 troncos delgados aguzados</td><td>500</td><td>—</td><td>Casi inmune sin asedio</td></tr>
+<tr><td>Puerta de empalizada</td><td>N2</td><td>Troncos + barras de hierro + bisagras</td><td>400</td><td>—</td><td>Punto débil frente al ariete</td></tr>
+<tr><td>Adarve (pasarela)</td><td>N2</td><td>Tablas + postes</td><td>100</td><td>300</td><td>Por detrás de la empalizada</td></tr>
+<tr><td>Puente de troncos (tramo)</td><td>N2</td><td>Troncos + vigas</td><td>400</td><td>600</td><td>Apoyado en orillas o pilares</td></tr>
+<tr><td>Chimenea / hogar interior</td><td>N2</td><td>Piedras + barro</td><td>600</td><td>—</td><td>Calor dentro sin que arda la casa</td></tr>
+</table></div>
+<h3>Decoración (colocación libre)</h3>
+<p>Cama de paja (N0), cama de madera (N2), banco, mesa, taburete, estantería, arcón, tinaja, barril, antorcha de pared, candil de sebo, alfombra de piel, tapiz (tela), estandarte de familia, ganchos para herramientas.</p>
+<h3>N3–N4 (se detallan al llegar)</h3>
+<p>Muro de mampostería, muro de sillería, torre, almenas, rastrillo, puente levadizo, foso, tejado de pizarra, puente de piedra, ventana con vidrio, garita.</p>
+</section>
+
+<!-- 10 -->
+<section id="sistemas">
+<h2>10. Valores de cada sistema <span class="tag prop">PROPUESTA</span></h2>
+<p class="note">Un día de juego = 3 horas reales (2 de día, 1 de noche).</p>
+<h3>Supervivencia</h3>
+<div class="tw"><table>
+<tr><th>Necesidad</th><th>Ritmo</th><th>Aviso</th><th>Si llega al máximo</th><th>Se recupera</th></tr>
+<tr><td>Hambre</td><td>Hay que comer 2–3 veces por día de juego</td><td>Círculo naranja</td><td>Cansancio acelerado, luego heridas lentas</td><td>Comida; cocinada sacia más</td></tr>
+<tr><td>Sed</td><td>Más rápida que el hambre</td><td>Círculo azul</td><td>Igual, más rápido</td><td>Agua, leche, cerveza</td></tr>
+<tr><td>Frío</td><td>Según bioma, estación, noche, lluvia y ropa</td><td>Círculo celeste</td><td>Movimiento torpe, cansancio, heridas lentas</td><td>Fuego, techo, ropa</td></tr>
+<tr><td>Calor</td><td>Según bioma, estación, sol y armadura</td><td>Círculo rojo</td><td>Cansancio y sed aceleradas</td><td>Sombra, agua, ropa ligera</td></tr>
+<tr><td>Cansancio</td><td>Sube al trabajar, correr, cargar, combatir</td><td>Círculo gris</td><td>No puedes correr ni golpear fuerte</td><td>Descansar sentado; dormir del todo</td></tr>
+</table></div>
+<h3>Durabilidad</h3>
+<div class="tw"><table>
+<tr><th>Objeto</th><th>Piedra / madera</th><th>Hierro</th><th>Acero</th></tr>
+<tr><td>Hacha (árboles adultos talados)</td><td>~3</td><td>~30</td><td>~60</td></tr>
+<tr><td>Pico (bloques de cantera)</td><td>—</td><td>~40</td><td>~80</td></tr>
+<tr><td>Arma (golpes recibidos o dados)</td><td>~50</td><td>~400</td><td>~800</td></tr>
+<tr><td>Ropa y armadura</td><td colspan="3">Se desgasta al recibir golpes y con el uso; se repara en su estación con su material</td></tr>
+</table></div>
+<h3>Deterioro y mantenimiento</h3>
+<div class="tw"><table>
+<tr><th>Material</th><th>Sin mantenimiento, empieza a fallar a los…</th><th>Desaparece a los…</th><th>Se mantiene con (en el mojón)</th></tr>
+<tr><td>Paja y juncos</td><td>~1 semana real</td><td>~3 semanas</td><td>Paja</td></tr>
+<tr><td>Madera sin tratar</td><td>~2 semanas (menos en zonas húmedas)</td><td>~6 semanas</td><td>Madera</td></tr>
+<tr><td>Madera tratada (brea)</td><td>~5 semanas</td><td>~12 semanas</td><td>Madera + resina</td></tr>
+<tr><td>Piedra</td><td>Nunca desaparece: queda como ruina</td><td>—</td><td>Cal</td></tr>
+</table></div>
+<p>Consumo del mojón: una cantidad pequeña por semana real según lo construido (por ejemplo, 1 unidad de cada material por cada 10 piezas de ese material). Así una cabaña se mantiene con un par de troncos a la semana.</p>
+<h3>Mojón</h3>
+<div class="tw"><table>
+<tr><th>Nivel</th><th>Se sube con</th><th>Radio de tierra</th><th>Radio de exclusión</th></tr>
+<tr><td>1</td><td>Colocarlo (3 piedras)</td><td>20 m</td><td>300 m</td></tr>
+<tr><td>2</td><td>Materiales N1 (troncos, cuerda, barro)</td><td>40 m</td><td>500 m</td></tr>
+<tr><td>3</td><td>Materiales N2 (barras de hierro, tablas, cuero)</td><td>80 m</td><td>800 m</td></tr>
+<tr><td>4</td><td>Materiales N3 (cal, sillares)</td><td>150 m</td><td>1,2 km</td></tr>
+<tr><td>5</td><td>Materiales N4 (acero, vidrio)</td><td>250 m</td><td>2 km</td></tr>
+</table></div>
+<h3>Muerte</h3>
+<ul>
+  <li>Aproximadamente la mitad de lo que llevas queda en el cuerpo para saquear; la otra mitad se rompe, elegida al azar.</li>
+  <li>El cuerpo dura un tiempo (por ejemplo, 1 hora real) y luego desaparece con lo que quede.</li>
+</ul>
+<h3>NPCs a sueldo</h3>
+<div class="tw"><table>
+<tr><th>Tipo</th><th>Paga</th><th>Come</th><th>Necesita</th></tr>
+<tr><td>Mercenario / centinela</td><td>Alta, por semana real</td><td>2 raciones por día de juego</td><td>Arma, armadura, cama</td></tr>
+<tr><td>Leñador</td><td>Baja</td><td>2 raciones</td><td>Hacha</td></tr>
+<tr><td>Jornalero</td><td>Baja</td><td>2 raciones</td><td>Azada, hoz</td></tr>
+<tr><td>Pastor</td><td>Baja</td><td>2 raciones</td><td>Cayado, perro (opcional)</td></tr>
+<tr><td>Mensajero</td><td>Por viaje, según distancia</td><td>—</td><td>—</td></tr>
+</table></div>
+</section>
+
+<!-- 11 -->
+<section id="flujo">
+<h2>11. El primer día de un jugador</h2>
+<p>Comprobación de que todo encaja: qué hace alguien en su primera sesión con lo definido arriba.</p>
+<ol>
+  <li>Aparece en camisa y pantalón de lino, descalzo, en un lugar accesible de su país.</li>
+  <li>Avisos de sed: busca un río y bebe con las manos.</li>
+  <li>Arranca fibra y hace cordel; se ata el cordel como cinturón (1 hueco).</li>
+  <li>Recoge sílex y piedra, monta una piedra de tallar y hace una lasca y un hacha de piedra.</li>
+  <li>Recoge ramas, hace un leñero, enciende hoguera para la noche.</li>
+  <li>Planta su mojón (3 piedras) y construye un refugio de ramas, que liga como cama.</li>
+  <li>Con la lanza endurecida caza una liebre, la despieza con la lasca y la asa.</li>
+  <li>Tala un árbol joven, hace el banco de tronco y entra en N1.</li>
+</ol>
+<p>Ningún paso necesita algo que no esté definido. A partir de ahí, la cabaña de troncos, la cesta, la pala y las primeras casillas de cultivo.</p>
+</section>
+
+<!-- 12 -->
+<section id="faltan">
+<h2>12. Lo que sigue faltando</h2>
+<div class="tw"><table>
+<tr><th>Qué</th><th>Cuándo se define</th></tr>
+<tr><td>Recetas y piezas detalladas de N3 y N4</td><td>Al llegar a esos niveles en el desarrollo</td></tr>
+<tr><td>Combate: enfoque de esgrima, armas por tipo de golpe, efecto de cada herida</td><td>Hito de duelo</td></tr>
+<tr><td>Curación paso a paso</td><td>Hito de supervivencia y duelo</td></tr>
+<tr><td>Doma de caballos y otros animales salvajes</td><td>Hito de caballos</td></tr>
+<tr><td>Diseño de barcos y flotación</td><td>Hito de navegación</td></tr>
+<tr><td>Lista de encargos de los NPCs y precios en moneda</td><td>Hito de economía</td></tr>
+<tr><td>Estilo concreto de cada uno de los 5 países (arquitectura, ropa, nombres)</td><td>Hito de mundo; afecta a las variantes de piezas</td></tr>
+<tr><td>Catálogo de contenido premium (aspectos, muebles)</td><td>Antes del lanzamiento</td></tr>
+<tr><td>Valores de este documento</td><td>Probando cada hito</td></tr>
+</table></div>
+</section>
+
+<!-- 13 -->
+<section id="preguntas">
+<h2>13. Preguntas</h2>
+<p>Ninguna pendiente.</p>
+</section>
+</div>
+</body>
+</html>

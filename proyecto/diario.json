@@ -1,0 +1,49 @@
+[
+ {
+  "inicio": "2026-10-24T15:55:00+02:00",
+  "fin": "2026-10-24T16:40:00+02:00",
+  "aprox": true,
+  "titulo": "Hito 1: construcción (v1 a v3)",
+  "hito": "construccion",
+  "hecho": [
+   "Rejilla anclada a la primera pieza, módulo de 2 m × 2,5 m, apoyos y reparto de carga.",
+   "Desmontaje en cascada con 75% de recuperación, bloqueado si sobrecarga otra pieza.",
+   "v2: los muros se rellenan hasta el tejado y los tejados seguidos forman una pendiente continua.",
+   "v3: muros de 10 hiladas de 25 cm, todos exactos a 2,5 m."
+  ],
+  "pruebas": "Lógica 35/35, modelos 21/21, navegador PC y móvil correctos.",
+  "capturas": "capturas/construccion-v3",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T16:45:00+02:00",
+  "fin": "2026-10-24T17:25:00+02:00",
+  "aprox": true,
+  "titulo": "Campo de pruebas de combate v1 y v2",
+  "hito": "duelo",
+  "hecho": [
+   "v1: cinco líneas de golpe, guardias, heridas por zona sin barras de vida, arco con balística.",
+   "Comparado con juegos de esgrima de referencia: la v1 era poco intuitiva (arrastrar para golpear, elegir lado al parar, cámara a su aire).",
+   "v2: rosa de golpes sobre el rival, parada sin lado + parada perfecta + golpe maestro, fintas, aliento.",
+   "Movimiento encarado (los lados rodean al rival), cámara con margen, pausa de impacto, chispas, sangre, sonido y estela.",
+   "Dificultad = ritmo + ayudas: aprendiz (lento, con avisos), normal, realista (sin avisos)."
+  ],
+  "pruebas": "Lógica 52/52 (con mutaciones que fallan como deben); navegador PC y móvil: todo correcto.",
+  "capturas": "capturas/combate-v2",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T18:04:00+02:00",
+  "fin": null,
+  "titulo": "Infraestructura: repositorio, web de progreso y trabajo automático",
+  "hito": "infra",
+  "hecho": [
+   "Repositorio valravnxx/kinhold con código, documentos de diseño y reglas de trabajo.",
+   "Web de progreso en GitHub Pages: jugar, roadmap, diario, tiempos, decisiones y documentos.",
+   "Tarea programada cada hora que avanza el roadmap y se para al terminar cada hito para tu revisión."
+  ],
+  "pruebas": "",
+  "capturas": null,
+  "estado": "ok"
+ }
+]

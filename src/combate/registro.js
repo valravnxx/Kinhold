@@ -1,0 +1,21 @@
+// Decisiones tomadas en el prototipo de combate, para revisar.
+export const VERSION_COMBATE = 'Combate · v2';
+export const REGISTRO_COMBATE = [
+  'v2, por qué: en la v1 había que arrastrar el ratón para elegir el golpe y elegir también la línea de la parada, y la cámara y el movimiento iban a su aire. Se ha rehecho tomando lo que mejor funciona en los juegos de esgrima de referencia: rosa de golpes, parada perfecta, golpe maestro, contraataque, finta, parada sin dirección en dificultad baja y peso físico de los golpes.',
+  'Atacar: sobre el rival aparece una rosa de cinco zonas (alto, izquierda, derecha, bajo y estocada en el centro). Apuntas con el cursor o tocas la zona y golpeas. Izquierda y derecha son las de tu pantalla.',
+  'Defensa en tres capas. Parada: mantener Parar detiene cualquier golpe sin elegir lado, pero cuesta aliento. Parada perfecta: empezar a parar en los últimos 0,25 s antes del impacto descoloca al rival 0,7 s y abre 0,8 s de contraataque.',
+  'El contraataque se prepara un 40% más rápido y solo se para con otra parada perfecta.',
+  'Golpe maestro: si golpeas por el mismo lado por el que te viene el golpe durante la primera mitad de su preparación, desvías el suyo y el tuyo sale casi de inmediato (también imparable salvo parada perfecta).',
+  'Finta: mientras preparas, elegir otra zona cambia el golpe, hasta el 60% de la preparación. Cuesta aliento. Sirve contra quien para demasiado pronto.',
+  'Aliento: atacar, parar, fintar, mantener la parada y fallar golpes cansan. Por encima del 70% los golpes salen más lentos; al 95% tu parada cede.',
+  'Dificultad = ritmo + ayudas. Aprendiz: golpes un 60% más lentos y la rosa te enseña el lado del golpe que viene (rojo), cuándo parar (verde) y cuándo cabe el golpe maestro (borde dorado). Normal: un 25% más lentos, solo ves el lado. Realista: velocidad real y sin avisos.',
+  'Movimiento encarado: cerca del rival, adelante y atrás te acercan o alejan y los lados le rodean sin dejar de mirarle.',
+  'Cámara con margen: solo se recoloca si el rival se sale bastante del encuadre, y te respeta 3 s después de que la gires tú.',
+  'Peso de los golpes: pausa de 50 a 100 ms en cada choque, chispas al chocar aceros, sangre al herir, retroceso del golpeado, una sacudida leve de la cámara, estela de la hoja y sonidos sintetizados (se pueden quitar en Opciones).',
+  'Las guardias de la v1 siguen en el código como modo avanzado pero no están en el menú: liaban más de lo que aportaban en un primer contacto.',
+  'Espada larga: tajo 1,9 m de alcance y 0,42 s de preparación a ritmo real; estocada 2,15 m y 0,32 s. Palo: 1,5 m, más lento y contundente.',
+  'Heridas por zona y gravedad (leve, grave, muy grave) sin barras de vida. Muy grave en la cabeza deja fuera de combate. El torso sangra mucho. Brazo de la espada herido: golpes más lentos y flojos. Pierna herida: más despacio y cojeando. Los cortes leves dejan de sangrar solos; los contundentes sangran poco pero aturden.',
+  'Armaduras: el gambesón reduce el tajo a la mitad; la malla casi lo anula, pero para peor la estocada y el golpe contundente.',
+  'Arco: tensar del todo tarda 1 s. El círculo de puntería se cierra al tensar y se pone verde cuando está a plena tensión; si sueltas antes, la flecha se queda corta. A partir de 2,5 s tenso, el pulso tiembla y el círculo se abre en rojo. Las flechas no se paran con la espada (sin escudo todavía).',
+  'El rival de la máquina tarda en reaccionar y según la dificultad lee mejor tus golpes, intenta paradas perfectas, golpes maestros y fintas. Se queda quieto mientras golpea y a veces retrocede después. Tu cinta es azul y la suya amarilla.',
+];

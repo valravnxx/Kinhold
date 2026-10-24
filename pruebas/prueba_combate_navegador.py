@@ -1,0 +1,251 @@
+# Prueba en navegador real del campo de pruebas de combate de Kinhold (v2).
+import sys, os, json
+from playwright.sync_api import sync_playwright
+
+RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_combate.html')
+SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_combate'
+os.makedirs(SALIDA, exist_ok=True)
+ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
+D = 'window.__duelo'
+fallos = []
+def comprobar(n, c, d=''):
+    print(('  OK   ' if c else '  FALLA ') + n + (f' — {d}' if d else ''))
+    if not c: fallos.append(n)
+
+QUIETO = f"{D}.ia.pensar = () => ({{mx:0,mz:0,correr:false}})"
+
+with sync_playwright() as p:
+    nav = p.chromium.launch(args=ARGS)
+    pg = nav.new_page(viewport={'width': 1280, 'height': 800})
+    err = []
+    pg.on('pageerror', lambda e: err.append(str(e)))
+    pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
+    pg.goto('file://' + RUTA)
+    pg.wait_for_function(f'{D} !== undefined', timeout=20000)
+    ev = pg.evaluate
+    def espera(ms): pg.wait_for_timeout(ms)
+    def hasta(cond, ms=8000):
+        try: pg.wait_for_function(cond, timeout=ms); return True
+        except Exception: return False
+    def centro_sector(linea):
+        r = ev(f"({{x:{D}.rosa.x, y:{D}.rosa.y, r:{D}.rosa.r}})")
+        off = {'alto': (0, -0.7), 'bajo': (0, 0.7), 'izquierda': (-0.7, 0), 'derecha': (0.7, 0), 'estocada': (0, 0)}[linea]
+        return r['x'] + off[0] * r['r'], r['y'] + off[1] * r['r']
+
+    print('Duelo: rosa y ataque con el ratón')
+    ev(f"{D}.configurar({{modo:'duelo', arma:'espada_larga', armadura:'lino', armaduraRival:'lino', dificultad:'aprendiz'}})")
+    ev(QUIETO)
+    ev(f"{D}.jugador.z = {D}.rival.z - 1.7")
+    espera(900)
+    comprobar('la rosa aparece sobre el rival', pg.is_visible('#rosa'))
+    pos = ev(f"(() => {{ const r = document.getElementById('rosa').getBoundingClientRect(); return [r.left, r.top, r.width, r.height]; }})()")
+    comprobar('la rosa está dentro de la pantalla', pos[0] >= 0 and pos[1] >= 0 and pos[0] + pos[2] <= 1280 and pos[1] + pos[3] <= 800, str([round(v) for v in pos]))
+    pg.screenshot(path=f'{SALIDA}/01_duelo_rosa.png')
+    # el cursor elige la zona: comprobamos las cinco
+    bien = True
+    for l in ['alto', 'izquierda', 'derecha', 'bajo', 'estocada']:
+        x, y = centro_sector(l); pg.mouse.move(x, y); espera(60)
+        if ev(f"{D}.lineaSel") != l: bien = False; print('    zona', l, '->', ev(f"{D}.lineaSel"))
+    comprobar('el cursor elige cada una de las cinco zonas', bien)
+    comprobar('la zona bajo el cursor se resalta', ev("document.querySelector('#rosa [data-l=estocada]').classList.contains('sel')"))
+    x, y = centro_sector('alto'); pg.mouse.move(x, y); espera(60)
+    pg.mouse.down(); pg.mouse.up()
+    comprobar('el clic empieza el golpe por la zona elegida', ev(f"{D}.jugador.accion") == 'preparando' and ev(f"{D}.jugador.linea") == 'alto')
+    # finta: clic en otra zona durante la preparación
+    x, y = centro_sector('derecha'); pg.mouse.move(x, y); pg.mouse.down(); pg.mouse.up()
+    comprobar('clic en otra zona mientras preparas = finta', ev(f"{D}.jugador.linea") == 'derecha' and ev(f"{D}.jugador.finta"), f"progreso {ev(f'{D}.jugador.progreso()')}")
+    pg.screenshot(path=f'{SALIDA}/02_preparando_golpe.png')
+    hasta(f"{D}.rival.heridas.length >= 1")
+    comprobar('el golpe sin parada hiere al rival', ev(f"{D}.rival.heridas.length") >= 1, json.dumps(ev(f"{D}.rival.heridas")))
+
+    print('Parada del rival y pausa de impacto')
+    ev(f"{D}.configurar({{modo:'duelo', dificultad:'aprendiz'}})")
+    ev(QUIETO)
+    ev(f"{D}.jugador.z = {D}.rival.z - 1.7")
+    espera(300)
+    ev(f"{D}.rival.bloquear(true); {D}.rival.tBloqueo = 1")
+    antes = ev(f"{D}.rival.heridas.length")
+    hasta(f"{D}.jugador.accion === 'libre'")
+    p0 = ev(f"{D}.pausas")
+    ev(f"{D}.atacar('izquierda')")
+    hasta(f"{D}.jugador.accion === 'recuperando'", 6000)
+    vio_pausa = ev(f"{D}.pausas") > p0
+    comprobar('el rival para con la parada sin elegir lado', ev(f"{D}.rival.heridas.length") == antes and 'para tu golpe' in pg.inner_text('#registro'))
+    comprobar('el choque produce pausa de impacto', vio_pausa)
+
+    print('Aprendiz: avisos en la rosa y parada perfecta')
+    ev(f"{D}.configurar({{modo:'duelo', dificultad:'aprendiz'}})")
+    ev(QUIETO)
+    ev(f"{D}.jugador.z = {D}.rival.z - 1.6")
+    espera(300)
+    ev(f"{D}.rival.atacar('izquierda')")  # su izquierda entra por tu derecha
+    rojo = hasta("document.querySelector('#rosa [data-l=derecha]').classList.contains('amenaza')", 3000)
+    comprobar('la zona del golpe que viene se pone roja (lado espejo)', rojo)
+    pg.screenshot(path=f'{SALIDA}/03_aviso_rojo.png')
+    verde = hasta("document.querySelector('#rosa [data-l=derecha]').classList.contains('verde')", 5000)
+    comprobar('se pone verde en la ventana de parada perfecta', verde)
+    pg.keyboard.down(' ')
+    hasta(f"{D}.rival.accion !== 'preparando'", 4000)
+    espera(100)
+    pg.keyboard.up(' ')
+    st = ev(f"{D}.stats")
+    comprobar('parar con Espacio en verde da parada perfecta', st['perfectas'] == 1, json.dumps(st))
+    comprobar('y abre el contraataque', ev(f"{D}.jugador.puedeContraatacar()") and ev("document.getElementById('rosa').classList.contains('contra')"))
+    pg.screenshot(path=f'{SALIDA}/05_contraataque.png')
+    ev(f"{D}.atacar('alto')")
+    comprobar('el contraataque es imparable', ev(f"{D}.jugador.imparable"))
+    ev(f"{D}.rival.bloquear(true); {D}.rival.tBloqueo = 1")  # para "normal": no basta
+    hasta(f"{D}.jugador.accion !== 'preparando'", 5000)
+    espera(200)
+    comprobar('una parada normal no detiene el contraataque', ev(f"{D}.rival.heridas.length") >= 1)
+
+    # captura del aviso verde (sin parar)
+    ev(f"{D}.configurar({{modo:'duelo', dificultad:'aprendiz'}})"); ev(QUIETO); ev(f"{D}.jugador.z = {D}.rival.z - 1.6")
+    espera(300); ev(f"{D}.rival.atacar('alto')")
+    hasta("document.querySelector('#rosa [data-l=alto]').classList.contains('verde')", 5000)
+    pg.screenshot(path=f'{SALIDA}/04_aviso_verde.png')
+    espera(800)
+
+    print('Golpe maestro')
+    ev(f"{D}.configurar({{modo:'duelo', dificultad:'aprendiz'}})")
+    ev(QUIETO)
+    ev(f"{D}.jugador.z = {D}.rival.z - 1.6")
+    espera(300)
+    ev(f"{D}.rival.atacar('derecha')")
+    hasta(f"{D}.rival.progreso() > 0.1", 3000)
+    dorado = ev("document.querySelector('#rosa [data-l=izquierda]').classList.contains('maestro')")
+    ev(f"{D}.atacar('izquierda')")
+    comprobar('el borde dorado marca que cabe el golpe maestro', dorado)
+    hasta(f"{D}.rival.accion !== 'preparando'", 4000)
+    hasta(f"{D}.rival.heridas.length >= 1", 4000)
+    st = ev(f"{D}.stats")
+    comprobar('golpear por el lado espejo a tiempo es golpe maestro y hiere', st['maestros'] == 1 and ev(f"{D}.rival.heridas.length") >= 1 and ev(f"{D}.jugador.heridas.length") == 0, json.dumps(st))
+
+    print('Movimiento encarado')
+    ev(f"{D}.configurar({{modo:'duelo', dificultad:'aprendiz'}})")
+    ev(QUIETO)
+    ev(f"{D}.jugador.z = {D}.rival.z - 2.5")
+    espera(200)
+    r0 = ev(f"Math.hypot({D}.jugador.x-{D}.rival.x, {D}.jugador.z-{D}.rival.z)")
+    pg.keyboard.down('d'); espera(1500); pg.keyboard.up('d')
+    r1 = ev(f"Math.hypot({D}.jugador.x-{D}.rival.x, {D}.jugador.z-{D}.rival.z)")
+    x1 = ev(f"{D}.jugador.x")
+    comprobar('el lateral rodea al rival sin alejarse mucho', abs(x1) > 0.5 and abs(r1 - r0) < 0.6, f'distancia {r0:.2f} -> {r1:.2f}, x={x1:.2f}')
+    mira = ev(f"(() => {{ const j={D}.jugador, r={D}.rival; let d = Math.atan2(r.x-j.x, r.z-j.z) - j.rot; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; return Math.abs(d); }})()")
+    comprobar('y sigue de cara al rival', mira < 0.25, f'{mira:.2f} rad')
+    espera(600)
+    pg.screenshot(path=f'{SALIDA}/07_rodeando.png')
+
+    print('Combate libre contra la máquina (normal)')
+    ev(f"{D}.configurar({{modo:'duelo', dificultad:'normal'}})")
+    ev(f"{D}.jugador.z = {D}.rival.z - 1.6")
+    # el jugador para cuando viene el golpe (sin ayuda de lado)
+    for n in range(120):
+        ev(f"""(() => {{ const d={D}; if (d.rival.accion==='preparando' && d.rival.hastaImpacto() < 0.2 && d.jugador.accion==='libre') d.parar(true); else if (d.rival.accion!=='preparando' && d.rival.accion!=='golpeando') d.parar(false); }})()""")
+        espera(60)
+    st = ev(f"{D}.stats")
+    comprobar('el rival ataca y el jugador para sus golpes', st['paradas'] >= 2, json.dumps(st))
+    comprobar('ningún golpe del rival va al aire', 'al aire' not in pg.inner_text('#registro'))
+    pg.screenshot(path=f'{SALIDA}/08_duelo_normal.png')
+    ev(f"{D}.rival.caer('Desangrado')")
+    espera(700)
+    comprobar('al caer el rival aparece la pantalla de victoria', pg.is_visible('#final') and 'vencido' in pg.inner_text('#tituloFinal'))
+    pg.screenshot(path=f'{SALIDA}/09_victoria.png')
+
+    print('Prácticas: arco, retícula y dianas')
+    ev(f"{D}.configurar({{modo:'practicas', arma:'arco'}})")
+    espera(300)
+    comprobar('la rosa no aparece con arco y sí la retícula', not pg.is_visible('#rosa') and pg.is_visible('#reticula'))
+    aciertos = ev(f"""(async () => {{
+      const d = {D}; const tensiones = [];
+      for (let k = 0; k < 6; k++) {{
+        d.apuntar(0, 1.3, 18);
+        d.jugador.empezarTensar();
+        let e = 0;
+        while ((d.jugador.tension < 1 || d.jugador.tTenso < 0.15) && e < 8000) {{ await new Promise(r => setTimeout(r, 50)); e += 50; }}
+        tensiones.push(+d.jugador.tension.toFixed(2));
+        d.disparar();
+        await new Promise(r => setTimeout(r, 1200));
+      }}
+      return {{...d.stats, tensiones}};
+    }})()""")
+    comprobar('a plena tensión se acierta la diana de 20 m', aciertos['aciertos'] >= 5, json.dumps(aciertos))
+    ev(f"{D}.cam.yaw=Math.PI+0.25; {D}.cam.pitch=0.35; {D}.cam.dist=9")
+    pg.mouse.move(640, 330)
+    ev(f"{D}.apuntar(0,1.3,18); {D}.jugador.empezarTensar()")
+    hasta(f"{D}.jugador.tension >= 1", 5000)
+    espera(200)
+    comprobar('la retícula se cierra y se pone verde a plena tensión', ev("document.getElementById('reticula').classList.contains('lista')") and ev("document.getElementById('reticula').offsetWidth") < 30)
+    pg.screenshot(path=f'{SALIDA}/10_arco_tensado.png')
+    ev(f"{D}.disparar()")
+    espera(400)
+    ev(f"{D}.cam.yaw=Math.PI; {D}.cam.pitch=0.25; {D}.cam.dist=26")
+    espera(900)
+    pg.screenshot(path=f'{SALIDA}/11_flechas_en_dianas.png')
+
+    print('Prácticas: poste')
+    ev(f"{D}.configurar({{modo:'practicas', arma:'espada_larga'}})")
+    ev(f"{D}.jugador.x = -3; {D}.jugador.z = -3.6")
+    espera(600)
+    comprobar('la rosa aparece sobre el poste', pg.is_visible('#rosa'))
+    ev(f"{D}.atacar('izquierda')")
+    hasta(f"{D}.jugador.accion === 'recuperando' || {D}.jugador.accion === 'libre'", 5000)
+    espera(200)
+    reg = pg.inner_text('#registro')
+    comprobar('el poste registra el golpe y su fuerza', 'Poste' in reg, reg.split('\n')[0])
+
+    print('Carga desde 40 m')
+    ev(f"{D}.configurar({{modo:'carga', arma:'arco'}})")
+    z0, t0 = ev(f"[{D}.rival.z, {D}.rival.reloj]")
+    espera(1500)
+    z1, t1 = ev(f"[{D}.rival.z, {D}.rival.reloj]")
+    v = (z0 - z1) / max(t1 - t0, 1e-3)
+    comprobar('el rival corre hacia ti', v > 4.5, f'{v:.1f} m/s en tiempo de juego')
+    pg.screenshot(path=f'{SALIDA}/12_carga.png')
+
+    print('Paneles')
+    ev(f"{D}.configurar({{modo:'practicas', arma:'espada_larga'}})")  # sin rival: que nadie caiga y tape los botones
+    espera(200)
+    pg.click('#btnOpciones'); espera(200)
+    comprobar('opciones sin selector de sistema, con sonido', pg.query_selector('#selSistema') is None and pg.is_visible('#chkSonido'))
+    pg.screenshot(path=f'{SALIDA}/13_opciones.png')
+    pg.click('#btnOpciones')
+    pg.click('#btnAyuda'); espera(200)
+    pg.screenshot(path=f'{SALIDA}/14_ayuda.png')
+    pg.click('#panelAyuda .cerrar')
+    pg.click('#btnDecisiones'); espera(200)
+    comprobar('el panel de decisiones dice v2', 'v2' in pg.inner_text('#panelRegistro'))
+    pg.click('#panelRegistro .cerrar')
+
+    fps = ev("""new Promise(r => { let n = 0; const t0 = performance.now(); const f = () => { n++; if (performance.now() - t0 < 2000) requestAnimationFrame(f); else r(n / 2); }; requestAnimationFrame(f); })""")
+    print(f'  (fotogramas por segundo en el navegador de pruebas, sin GPU: {fps})')
+    comprobar('sin errores en consola (PC)', len(err) == 0, '; '.join(err[:3]))
+    pg.close()
+
+    print('Móvil')
+    ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
+    mv = ctx.new_page()
+    err2 = []
+    mv.on('pageerror', lambda e: err2.append(str(e)))
+    mv.goto('file://' + RUTA)
+    mv.wait_for_function(f'{D} !== undefined', timeout=20000)
+    mv.evaluate(f"{D}.configurar({{modo:'duelo', arma:'espada_larga', dificultad:'aprendiz'}}); {QUIETO}; {D}.jugador.z={D}.rival.z-1.7")
+    mv.wait_for_timeout(900)
+    comprobar('botón Parar, joystick y rosa visibles en táctil', mv.is_visible('#btnParar') and mv.is_visible('#joystick') and mv.is_visible('#rosa'))
+    r = mv.evaluate(f"({{x:{D}.rosa.x, y:{D}.rosa.y, r:{D}.rosa.r}})")
+    pb = mv.evaluate("(() => { const b = document.getElementById('btnParar').getBoundingClientRect(); const j = document.getElementById('joystick').getBoundingClientRect(); return [b.left, b.top, j.right, j.top]; })()")
+    comprobar('la rosa no tapa el botón Parar ni el joystick', r['y'] + r['r'] < pb[1] and r['y'] + r['r'] < pb[3], f"rosa hasta y={r['y']+r['r']:.0f}, parar y={pb[1]:.0f}")
+    mv.screenshot(path=f'{SALIDA}/15_movil_duelo.png')
+    mv.touchscreen.tap(r['x'] - r['r'] * 0.7, r['y'])
+    mv.wait_for_timeout(100)
+    comprobar('tocar la zona izquierda de la rosa golpea por la izquierda', mv.evaluate(f"{D}.jugador.linea") == 'izquierda' and mv.evaluate(f"{D}.jugador.accion") in ('preparando', 'golpeando', 'recuperando'))
+    mv.wait_for_timeout(200)
+    mv.screenshot(path=f'{SALIDA}/16_movil_golpe.png')
+    mv.click('#btnAyuda')
+    mv.wait_for_timeout(300)
+    mv.screenshot(path=f'{SALIDA}/17_movil_ayuda.png')
+    comprobar('sin errores en consola (móvil)', len(err2) == 0, '; '.join(err2[:3]))
+    nav.close()
+
+print(f"\nResultado: {'TODO CORRECTO' if not fallos else str(len(fallos)) + ' fallos: ' + ', '.join(fallos)}")
+sys.exit(1 if fallos else 0)

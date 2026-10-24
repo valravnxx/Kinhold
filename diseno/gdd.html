@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kinhold GDD v0.6</title>
+<style>
+:root{
+  --bg:#f6f2ea; --card:#fffdf8; --ink:#2b2520; --muted:#6f655b; --line:#e2d8c8;
+  --accent:#8a3b1f; --ok:#2f6b3a; --ok-bg:#e6f1e4; --open:#8a5a00; --open-bg:#fbf0d6;
+  --method:#24507a; --method-bg:#e3ecf6; --prop:#5b2a86; --prop-bg:#efe5f8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1815; --card:#24201c; --ink:#ece4d8; --muted:#a59a8c; --line:#3a332c;
+    --accent:#e08a5f; --ok:#8fd09a; --ok-bg:#1f3323; --open:#f0c46a; --open-bg:#3a2f15;
+    --method:#8fb8e6; --method-bg:#1b2a3a; --prop:#c9a6ee; --prop-bg:#2c2038;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1815; --card:#24201c; --ink:#ece4d8; --muted:#a59a8c; --line:#3a332c;
+  --accent:#e08a5f; --ok:#8fd09a; --ok-bg:#1f3323; --open:#f0c46a; --open-bg:#3a2f15;
+  --method:#8fb8e6; --method-bg:#1b2a3a; --prop:#c9a6ee; --prop-bg:#2c2038;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Georgia,"Times New Roman",serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 64px}
+header{border-bottom:2px solid var(--accent);margin-bottom:24px;padding-bottom:12px}
+h1{font-size:1.7rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.95rem}
+nav{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:24px}
+nav ol{margin:0;padding-left:20px;columns:2;column-gap:24px}
+nav a{color:var(--accent);text-decoration:none}
+@media (max-width:560px){nav ol{columns:1}}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:18px}
+h2{font-size:1.25rem;margin:0 0 10px;color:var(--accent)}
+h3{font-size:1.02rem;margin:14px 0 6px}
+p{margin:6px 0}
+ul,ol{margin:6px 0;padding-left:22px}
+li{margin:3px 0}
+.tag{display:inline-block;font:600 .72rem/1.4 system-ui,sans-serif;padding:2px 8px;border-radius:99px;margin-right:6px;vertical-align:2px}
+.ok{background:var(--ok-bg);color:var(--ok)}
+.open{background:var(--open-bg);color:var(--open)}
+.method{background:var(--method-bg);color:var(--method)}
+.prop{background:var(--prop-bg);color:var(--prop)}
+.box{border-left:3px solid var(--line);padding:4px 0 4px 12px;margin:10px 0}
+.box.m{border-color:var(--method)}
+.box.o{border-color:var(--open)}
+.box.p{border-color:var(--prop)}
+.legend{font-family:system-ui,sans-serif;font-size:.85rem;color:var(--muted)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem;margin:8px 0;min-width:480px}
+th,td{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+.note{font-size:.9rem;color:var(--muted)}
+.q li{margin:7px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>GDD — Kinhold</h1>
+  <div class="sub">Versión 0.6 · 24 oct 2026 · Todas las preguntas respondidas · El catálogo de contenido sigue en el documento de análisis</div>
+  <p class="legend" style="margin-top:10px">
+    <span class="tag ok">DECIDIDO</span> lo has dicho tú
+    <span class="tag method">MÉTODO</span> cómo hacerlo técnicamente
+    <span class="tag prop">PROPUESTA</span> pendiente de tu visto bueno
+    <span class="tag open">ABIERTO</span> te toca decidir
+  </p>
+</header>
+
+<nav><ol>
+  <li><a href="#vision">Visión, pilares y época</a></li>
+  <li><a href="#plataforma">Plataforma, cámara y producto</a></li>
+  <li><a href="#arte">Estilo visual y sonido</a></li>
+  <li><a href="#mundo">Mundo y tamaño</a></li>
+  <li><a href="#viaje">Viaje, mapa y navegación</a></li>
+  <li><a href="#personaje">Personaje, muerte y desconexión</a></li>
+  <li><a href="#equipo">Equipo, ropa e inventario</a></li>
+  <li><a href="#tala">Recolección y recursos</a></li>
+  <li><a href="#progresion">Progresión y tecnologías</a></li>
+  <li><a href="#construccion">Construcción</a></li>
+  <li><a href="#tierras">Tierras y mojones</a></li>
+  <li><a href="#offline">Saqueo offline y guerra</a></li>
+  <li><a href="#combate">Combate</a></li>
+  <li><a href="#animales">Animales y fauna</a></li>
+  <li><a href="#agricultura">Agricultura</a></li>
+  <li><a href="#economia">Economía y NPCs</a></li>
+  <li><a href="#social">Familias, alianzas y vasallajes</a></li>
+  <li><a href="#tecnica">Arquitectura técnica</a></li>
+  <li><a href="#hitos">Hitos</a></li>
+  <li><a href="#preguntas">Preguntas pendientes</a></li>
+</ol></nav>
+
+<section id="vision">
+<h2>1. Visión, pilares y época</h2>
+<p><span class="tag ok">DECIDIDO</span>Juego medieval de supervivencia y construcción, 100% de navegador. Un único mundo online: se juega solo, en pareja o en grupo dentro del mismo mundo, con PvP.</p>
+<p><span class="tag ok">DECIDIDO</span>Época con progresión: se empieza en la Alta Edad Media y la tecnología avanza hasta la Baja. Sin fantasía por ahora.</p>
+<h3>Pilares</h3>
+<ul>
+  <li><b>Realismo de mecánicas.</b> Lo que harías en la vida real cuesta lo que costaría.</li>
+  <li><b>El mundo es enorme y viajar importa.</b></li>
+  <li><b>Del survival al reino,</b> o a vivir aislado y bien.</li>
+  <li><b>El jugador solitario tiene un juego completo.</b></li>
+  <li><b>Todo se basa en conocimiento, habilidad y equipo,</b> no en niveles ni estadísticas del personaje.</li>
+  <li><b>Combate de habilidad,</b> sin barras de vida.</li>
+  <li><b>Lo tuyo está a salvo mientras no estás.</b></li>
+</ul>
+</section>
+
+<section id="plataforma">
+<h2>2. Plataforma, cámara y producto</h2>
+<p><span class="tag ok">DECIDIDO</span>Web propia con cuentas. Servidor de pago si hace falta. PC, móvil y tablet.</p>
+<p><span class="tag ok">DECIDIDO</span>Tercera persona semiisométrica con <b>rotación libre</b>.</p>
+<p><span class="tag ok">DECIDIDO</span>Idiomas: <b>inglés, español y ruso.</b></p>
+<p><span class="tag ok">DECIDIDO</span><b>Gratis</b> con contenido premium solo estético: aspectos y muebles únicos.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Tutorial opcional</b> siempre disponible en el menú de pausa: se puede leer sobre todos los sistemas del juego.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Tramposos: baneo inmediato</b>, también por IP.</p>
+<p><span class="tag ok">DECIDIDO</span>Requisitos mínimos: se decidirán a mitad de desarrollo.</p>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<ul>
+  <li>Control por ratón y teclado y control táctil desde el principio.</li>
+  <li>Textos del juego en archivos de traducción desde el primer hito, para que añadir idiomas no obligue a tocar el código.</li>
+  <li>Baneo por IP: hay que saber que una IP la comparten a veces varias personas (una casa, una residencia, algunas operadoras móviles) y que con una VPN se esquiva. Conviene combinarlo con el baneo de la cuenta y de su correo.</li>
+</ul></div>
+<p><span class="tag ok">DECIDIDO</span>Nombre: <b>Kinhold</b>. Pendiente de comprobar dominio y registro de marca.</p>
+</section>
+
+<section id="arte">
+<h2>3. Estilo visual y sonido</h2>
+<p><span class="tag ok">DECIDIDO</span>3D low-poly generado por código, con tus revisiones para ajustar.</p>
+<p><span class="tag ok">DECIDIDO</span>Sonido y música <b>relajantes y poco estridentes.</b></p>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<ul>
+  <li>Modelos definidos por parámetros (proporciones, colores, lados): tus ajustes se aplican cambiando números.</li>
+  <li>Capturas de cada modelo nuevo en cada entrega para que los revises.</li>
+  <li>Una paleta por material para que todo sea coherente.</li>
+</ul></div>
+</section>
+
+<section id="mundo">
+<h2>4. Mundo y tamaño</h2>
+<p><span class="tag ok">DECIDIDO</span>Pseudo-Europa inventada, <b>5 países con estilo propio</b> (arquitectura, ropa, nombres). Biomas de más de 100 km² en franjas norte, templada y sur. Mar coherente.</p>
+<p><span class="tag ok">DECIDIDO</span>Día de 2 h y noche de 1 h. Una estación por mes real.</p>
+<p><span class="tag ok">DECIDIDO</span>Cada país tiene recursos propios para comerciar, pero no imprescindibles.</p>
+<h3>Cálculo del tamaño</h3>
+<p>Supuestos: se camina a unos 5 km/h, un caballo a trote sostenido a unos 12 km/h, y el mar añade alrededor de un 40% al lado del mapa. Un ciclo día-noche son 3 horas reales.</p>
+<div class="tw"><table>
+<tr><th>Opción</th><th>País</th><th>Biomas por país</th><th>Mundo total</th><th>Cruzar un país</th><th>Cruzar el mundo</th></tr>
+<tr><td><b>Compacto</b></td><td>30 × 30 km</td><td>~9</td><td>~94 × 94 km</td><td>6 h a pie · 2,5 h a caballo</td><td>19 h a pie · 8 h a caballo</td></tr>
+<tr><td><b>Medio</b></td><td>60 × 60 km</td><td>~36</td><td>~188 × 188 km</td><td>12 h a pie · 5 h a caballo</td><td>38 h a pie · 16 h a caballo</td></tr>
+<tr><td><b>Grande</b></td><td>100 × 100 km</td><td>~100</td><td>~313 × 313 km</td><td>20 h a pie · 8 h a caballo</td><td>63 h a pie · 26 h a caballo</td></tr>
+</table></div>
+<p><span class="tag ok">DECIDIDO</span><b>Se empieza con el tamaño medio:</b> países de unos 60 × 60 km, mundo de unos 188 × 188 km con el mar. Cruzar un país son unas 12 horas a pie o 5 a caballo.</p>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<p>Como el mundo sale de una semilla, se puede ampliar por los bordes más adelante sin tocar lo que ya existe. Con poca gente al principio, el mundo medio puede sentirse vacío: lo vigilaremos cuando haya jugadores.</p></div>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<ul>
+  <li>Silueta del continente primero; clima por latitud y mar; biomas grandes con transiciones graduales; fronteras naturales.</li>
+  <li>Generación por semilla, por trozos, guardando solo los cambios.</li>
+</ul></div>
+</section>
+
+<section id="viaje">
+<h2>5. Viaje, mapa y navegación</h2>
+<p><span class="tag ok">DECIDIDO</span>El mapa se descubre explorando. <b>Cartografía de final de juego:</b> mesa de cartógrafo para dibujar en papel lo explorado; el mapa es un objeto que se copia, se vende o te roban.</p>
+<p><span class="tag ok">DECIDIDO</span>Los caminos se forman con el uso. Puentes construibles con varios materiales y formas.</p>
+<p><span class="tag ok">DECIDIDO</span>Navegación en fase tardía: diseñar barcos y navegar con otros.</p>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<ul>
+  <li>Cada casilla del suelo guarda cuánto se pisa: senda, luego camino; sin uso, vuelve la hierba.</li>
+  <li>Puentes y barcos usan el sistema de construcción; los barcos con reglas de flotación.</li>
+</ul></div>
+</section>
+
+<section id="personaje">
+<h2>6. Personaje, muerte y desconexión</h2>
+<p><span class="tag ok">DECIDIDO</span><b>Creación:</b> algunos ajustes de aspecto, hombre o mujer, y país de inicio. Empiezas en un <b>lugar aleatorio accesible</b> del país elegido (nunca en el mar ni en un pico).</p>
+<p><span class="tag ok">DECIDIDO</span>Necesidades: hambre, sed, frío, calor y cansancio, con avisos en círculos a la derecha; al pulsarlos, efecto e información.</p>
+<p><span class="tag ok">DECIDIDO</span>El personaje <b>no mejora con niveles ni estadísticas</b>: todo depende del conocimiento del jugador, su habilidad y su equipo.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Muerte:</b> reapareces en tu cama ligada; sin cama, donde empezaste el juego. Al morir, <b>aproximadamente la mitad de lo que llevas se puede saquear y la otra mitad se rompe.</b> La muerte permanente queda para una versión futura.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Desconexión:</b> el personaje se queda dormido en el mundo, va a su cama automáticamente si no estaba en ella, y muestra un símbolo de desconectado encima.</p>
+<p><span class="tag ok">DECIDIDO</span>Lo que se rompe al morir se elige <b>siempre al azar</b>, para evitar exploits.</p>
+<h3>¿Se puede atacar a un personaje dormido fuera de sus tierras?</h3>
+<div class="tw"><table>
+<tr><th>Opción</th><th>A favor</th><th>En contra</th></tr>
+<tr><td>Siempre atacable</td><td>Realista; nadie se salva de un combate desconectándose.</td><td>En móvil la conexión se cae sola; perder la mitad del equipo por un corte en mitad del bosque es injusto, sobre todo para el jugador solitario.</td></tr>
+<tr><td>Nunca atacable</td><td>Nadie pierde nada por desconectarse.</td><td>Desconectarse se vuelve una forma de escapar de un combate o de una persecución.</td></tr>
+<tr><td>Atacable unos minutos y luego no</td><td>Corta la huida por desconexión y protege ante cortes y cierres normales.</td><td>Durante esos minutos hay riesgo real si te desconectas en mal sitio.</td></tr>
+</table></div>
+<p><span class="tag ok">DECIDIDO (temporal)</span><b>Atacable unos minutos y luego no.</b></p>
+<ul>
+  <li><b>Dentro de tus tierras</b> (o de las de tu familia): el personaje dormido está protegido como tu base, con la protección offline.</li>
+  <li><b>Fuera de tus tierras:</b> al desconectarte, el personaje se queda dormido y atacable donde está durante unos minutos (por ejemplo, 5). Pasado ese tiempo, si tiene cama pasa a ella; si no, se queda donde estaba, pero ya no se le puede hacer nada.</li>
+  <li><b>Si estabas en combate</b> en el último minuto antes de desconectarte, el tiempo vulnerable es mayor (por ejemplo, 15 minutos).</li>
+  <li>Los tiempos son números para ajustar cuando probemos.</li>
+</ul>
+</section>
+
+<section id="equipo">
+<h2>7. Equipo, ropa e inventario</h2>
+<p><span class="tag ok">DECIDIDO</span>El equipo es importante y <b>todo es fabricable.</b> Empiezas casi con lo puesto: <b>camisa y pantalón básicos de lino.</b></p>
+<p><span class="tag ok">DECIDIDO</span>La carga va por huecos. <b>Llevar cosas grandes te ralentiza.</b></p>
+<p><span class="tag ok">DECIDIDO</span>El <b>cinturón</b> se fabrica de varias formas. Las <b>mochilas tienen funciones únicas</b>: por ejemplo, la de leña es un bastidor de palos en forma de doble L para cargar leña a la espalda. En la base dejas unas y coges otras, o ninguna si quieres ir ligero.</p>
+<p><span class="tag ok">DECIDIDO</span>La ropa y la armadura importan para el combate.</p>
+<p><span class="tag ok">DECIDIDO</span>El <b>inventario es un panel con los huecos de cada lugar del cuerpo</b>, y los huecos dependen del equipo que llevas.</p>
+
+<h3>Huecos base del personaje</h3>
+<div class="box p"><span class="tag prop">PROPUESTA</span>
+<ul>
+  <li><b>Manos:</b> derecha e izquierda; lo grande ocupa las dos.</li>
+  <li><b>Espalda:</b> vacía o con una mochila/bastidor, que define qué y cuánto llevas ahí.</li>
+  <li><b>Cintura:</b> sin cinturón no hay huecos de cintura; el cinturón que lleves los define.</li>
+  <li><b>Hombro:</b> una bandolera, un saco al hombro o un odre.</li>
+  <li><b>Cuerpo (ropa y armadura) por capas:</b> capa interior, capa de abrigo o protección, capa exterior; más cabeza, manos y pies.</li>
+</ul></div>
+
+<h3>Cinturones</h3>
+<div class="box p"><span class="tag prop">PROPUESTA</span>
+<div class="tw"><table>
+<tr><th>Cinturón</th><th>Material</th><th>Huecos</th></tr>
+<tr><td>Cordel de fibra</td><td>Fibras retorcidas (inicio)</td><td>1 pequeño (cuchillo o bolsita)</td></tr>
+<tr><td>Cuerda trenzada</td><td>Cuerda</td><td>2 pequeños</td></tr>
+<tr><td>Cinto de cuero</td><td>Cuero + hebilla de hueso o madera</td><td>3, uno puede ser mediano (hacha de mano)</td></tr>
+<tr><td>Cinto con hebilla de hierro y anillas</td><td>Cuero + hierro</td><td>4, dos medianos</td></tr>
+<tr><td>Cinto de armas</td><td>Cuero + hierro</td><td>Vaina para espada + 2 pequeños</td></tr>
+</table></div>
+<p>Añadidos al cinturón: bolsa de cuero, vaina de cuchillo, gancho para herramienta, bolsa de piedras de honda, bolsa de semillas, bolsa de monedas, botiquín de vendas.</p>
+</div>
+
+<h3>Mochilas y bastidores de función única</h3>
+<div class="box p"><span class="tag prop">PROPUESTA</span>
+<div class="tw"><table>
+<tr><th>Espalda</th><th>Qué lleva</th><th>Material</th></tr>
+<tr><td><b>Leñero</b> (bastidor de palos en doble L)</td><td>Solo leña y troncos cortos, en gran cantidad</td><td>Palos + cuerda (inicio)</td></tr>
+<tr><td><b>Cesta de recolección</b></td><td>Bayas, setas, hierbas, frutos, huevos</td><td>Mimbre o juncos</td></tr>
+<tr><td><b>Fardo atado</b></td><td>Pieles, telas, fibras, paja</td><td>Cuerda (inicio)</td></tr>
+<tr><td><b>Zurrón de piel</b></td><td>Mixto, pocos objetos pequeños y medianos</td><td>Piel</td></tr>
+<tr><td><b>Mochila de bastidor</b></td><td>Mixto, más capacidad; ralentiza al ir llena</td><td>Madera + cuero</td></tr>
+<tr><td><b>Porta-piedras</b> (parihuela de espalda)</td><td>Piedras y bloques</td><td>Madera + cuerda</td></tr>
+<tr><td><b>Caja de herramientas de espalda</b></td><td>Herramientas de oficio</td><td>Madera + cuero</td></tr>
+<tr><td><b>Carcaj</b></td><td>Flechas o virotes</td><td>Cuero o corteza</td></tr>
+<tr><td><b>Cesto de pescador</b></td><td>Pescado y aparejos</td><td>Mimbre</td></tr>
+<tr><td><b>Escudo a la espalda</b></td><td>El escudo, nada más</td><td>Correa de cuero</td></tr>
+</table></div>
+<p>Hombro: saco (grano, harina, tierra), bandolera, odre de agua.</p>
+</div>
+
+<h3>Ropa y protección por capas</h3>
+<div class="box p"><span class="tag prop">PROPUESTA</span>
+<div class="tw"><table>
+<tr><th>Capa</th><th>Opciones</th><th>Para qué</th></tr>
+<tr><td>Interior</td><td>Camisa y pantalón de lino (inicio), de lana</td><td>Base; la lana abriga más</td></tr>
+<tr><td>Abrigo / protección</td><td>Túnica de lana, chaleco de piel, abrigo de piel; gambesón acolchado</td><td>Frío del norte; el gambesón protege y es la base de la armadura</td></tr>
+<tr><td>Exterior / armadura</td><td>Cuero endurecido, cota de malla, brigantina, placa (Baja Edad Media)</td><td>Protección por zonas; pesa y ralentiza</td></tr>
+<tr><td>Sobre todo</td><td>Capa, sobreveste con la heráldica de la familia</td><td>Lluvia, frío, identificarse</td></tr>
+<tr><td>Cabeza</td><td>Capucha, gorro, cofia acolchada, capacete, yelmo</td><td>Frío, sol, protección</td></tr>
+<tr><td>Manos</td><td>Mitones, guantes de cuero, guanteletes</td><td>Frío, agarre, protección</td></tr>
+<tr><td>Pies</td><td>Descalzo (inicio), envueltas de piel, zapatos, botas</td><td>Velocidad en terreno duro, frío</td></tr>
+</table></div>
+<p>La ropa sirve para el frío y el calor; la armadura, para las heridas. La armadura pesada ralentiza y cansa, como todo lo grande.</p>
+</div>
+
+<h3>Panel de inventario</h3>
+<div class="box p"><span class="tag prop">PROPUESTA</span>
+<p>Silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro, capas del cuerpo). Al tocar un cuadro con contenedor, se abren sus huecos interiores. Si no llevas cinturón, no aparecen cuadros de cintura. En móvil, el mismo panel a pantalla completa.</p></div>
+<p><span class="tag ok">DECIDIDO</span>Las listas de este apartado quedan aprobadas por ahora.</p>
+<p><span class="tag ok">DECIDIDO</span>Ralentización: solo si vas cargado al máximo en todo, la velocidad al caminar baja hasta el <b>80%</b>.</p>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<p>La reducción crece con lo lleno que vas: con poca carga no se nota, y al máximo en todos los huecos se llega al 80%.</p></div>
+</section>
+
+<section id="tala">
+<h2>8. Recolección y recursos</h2>
+<p><span class="tag ok">DECIDIDO</span>Los árboles caen, se transportan y se cortan; vuelven a crecer en semanas reales y se pueden plantar.</p>
+<p><span class="tag ok">DECIDIDO</span>Las vetas de mineral <b>no se regeneran</b>, pero el mundo tiene material de sobra: no es un recurso escaso.</p>
+<p class="note">Recolectables propuestos: apartado 3 del documento de análisis.</p>
+</section>
+
+<section id="progresion">
+<h2>9. Progresión y tecnologías</h2>
+<p><span class="tag ok">DECIDIDO</span>Tecnologías del personaje, desbloqueadas por estaciones:</p>
+<ol>
+  <li>Construir la estación da sus recetas básicas.</li>
+  <li>Practicar en ella abre las siguientes.</li>
+  <li>Algunas recetas permiten construir estaciones nuevas (así se avanza de la Alta a la Baja Edad Media).</li>
+  <li>Quien conoce una receta puede escribirla en un <b>tomo</b> para enseñarla a otros.</li>
+</ol>
+<p><span class="tag ok">DECIDIDO</span>Sin especializaciones forzosas; el límite es el tiempo de juego.</p>
+<p><span class="tag ok">DECIDIDO</span>Durabilidad en herramientas, armas y armaduras. Se <b>reparan en la estación que las fabricó, con material del mismo tipo.</b> Sin calidades por ahora.</p>
+</section>
+
+<section id="construccion">
+<h2>10. Construcción</h2>
+<p><span class="tag ok">DECIDIDO</span>Es lo primero que se desarrolla.</p>
+<p><span class="tag ok">DECIDIDO</span>Colocación libre que se convierte en rejilla con la primera pieza estructural; decoración libre.</p>
+<p><span class="tag ok">DECIDIDO</span>Si no soporta el peso, no deja construir encima. Si se desmonta o se rompe en un asedio una pieza que sostiene otras, <b>lo de encima se destruye.</b></p>
+<p><span class="tag ok">DECIDIDO</span>Al desmontar se recupera el <b>75%</b> del material.</p>
+<p><span class="tag ok">DECIDIDO</span>Empalizadas casi imposibles de derribar sin asedio. <b>La piedra es casi imposible de romper</b>: en un asedio a un castillo se rompen puertas y elementos de madera, no los muros.</p>
+<p><span class="tag ok">DECIDIDO</span><b>El fuego daña la madera</b> con un daño continuado temporal, y se ve.</p>
+<p><span class="tag ok">DECIDIDO</span>Las construcciones se deterioran. El deterioro se evita <b>depositando materiales en el mojón</b>, en una cantidad baja para no obligar a farmear.</p>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<ul>
+  <li>Rejilla anclada por construcción; grafo de apoyos para la carga.</li>
+  <li>Antes de desmontar un apoyo, se resalta en rojo lo que caería y se pide confirmación.</li>
+  <li>Resistencia por material y tipo de daño (golpe, asedio, fuego).</li>
+  <li>Mantenimiento: el mojón consume poco a poco los materiales depositados (madera para lo de madera, paja para tejados, cal para la piedra). Mientras haya, nada se deteriora; si se acaba, empieza el deterioro lento con avisos.</li>
+</ul></div>
+<p><span class="tag ok">DECIDIDO</span>Final del deterioro: <b>la piedra queda como ruina</b> de forma indefinida, cubierta poco a poco de plantas y raíces. <b>La madera se pudre y desaparece.</b></p>
+<p><span class="tag ok">DECIDIDO</span>Las ruinas no son de nadie. <b>Se pueden limpiar, pero no devuelven piedra</b>: ya no es piedra tallada sino escombro. Limpiarlas cuesta tiempo.</p>
+</section>
+
+<section id="tierras">
+<h2>11. Tierras y mojones</h2>
+<p><span class="tag ok">DECIDIDO</span>Se reclama con un mojón puesto en persona. Se puede reclamar un paso de montaña, un puente o un vado y cobrar peaje: quien no quiera pagar, que busque otro camino.</p>
+<p><span class="tag ok">DECIDIDO</span>Sin periodo de espera para cuentas nuevas: todo el mundo debe poder instalarse pronto.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Radio de exclusión:</b> si hay una casa instalada a cierta distancia, no puedes instalarte ahí, aunque tu terreno sea pequeño. El radio crece con el nivel del mojón. La gente de la misma familia sí puede instalarse dentro del radio si el mojón lo permite en sus opciones.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Conquista:</b> se conquista destruyendo los mojones del enemigo. Si tienes un territorio de nivel alto, sus alrededores cuentan como tierra tuya, así que al quitar los mojones enemigos cercanos esa tierra pasa a ser tuya.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Nivel del mojón:</b> sube depositando materiales del nivel tecnológico correspondiente. Cuanto más alto el nivel, mayor el radio de exclusión y el territorio.</p>
+<p><span class="tag ok">DECIDIDO</span>Acceso a puertas y arcones por <b>permisos de familia</b>.</p>
+<div class="box p"><span class="tag prop">PROPUESTA</span> Reglas que se mantienen de la v0.3:
+<ul>
+  <li>La tierra crece con lo construido dentro, no con el número de cuentas.</li>
+  <li>Una tierra sin actividad ni mantenimiento acaba quedando libre.</li>
+  <li>Límite de reclamaciones por personaje.</li>
+  <li>Las vetas importantes no se pueden acaparar enteras.</li>
+  <li>Nada de reclamaciones cerca de las zonas de inicio.</li>
+</ul></div>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<p>El mojón es la pieza clave de cada tierra: se puede atacar con equipo de asedio solo cuando la protección offline no está activa o hay guerra declarada.</p></div>
+<p><span class="tag ok">DECIDIDO</span>Al caer un mojón, sus construcciones <b>pasan al conquistador si quedan dentro de su territorio</b>; si no, quedan sin dueño hasta que alguien ponga su propio mojón.</p>
+</section>
+
+<section id="offline">
+<h2>12. Saqueo offline y guerra</h2>
+<p><span class="tag ok">DECIDIDO</span><b>Protección offline:</b> si no hay ningún miembro de la familia conectado, sus construcciones no se pueden dañar. Se activa unos minutos después de que se desconecte el último y no se activa si la base está siendo atacada.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Excepción:</b> si hay guerra declarada entre las dos familias, sí se puede asediar aunque estén desconectados.</p>
+<p><span class="tag ok">DECIDIDO</span>El problema a resolver: que declarar la guerra no se convierta en la forma fácil de saquear offline.</p>
+<div class="box p"><span class="tag prop">PROPUESTA</span> Cómo se declara una guerra:
+<ul>
+  <li><b>Solo con causa:</b> impago de un vasallaje (lo que ya decidiste) o guerra aceptada por las dos partes. Sin causa, no hay guerra y la protección offline sigue.</li>
+  <li><b>Aviso previo:</b> la guerra empieza un tiempo después de declararla (por ejemplo, 24 horas reales), y la familia atacada recibe aviso. Da tiempo a conectarse, pagar lo debido o preparar la defensa.</li>
+  <li><b>Pagar lo debido detiene la guerra</b> antes de que empiece.</li>
+  <li><b>Duración limitada</b> y, al terminar, un periodo sin poder volver a declararla a la misma familia.</li>
+</ul>
+<p>Así la guerra solo existe cuando alguien ha aceptado un vasallaje y no lo ha pagado, o cuando ambos quieren pelear.</p>
+</div>
+<p><span class="tag ok">DECIDIDO</span>Reglas de guerra aprobadas: <b>la guerra exige casus belli.</b></p>
+</section>
+
+<section id="combate">
+<h2>13. Combate</h2>
+<p><span class="tag ok">DECIDIDO</span>Sin barras de vida; directo y de habilidad. PvP activo; desactivado en la familia.</p>
+<p><span class="tag ok">DECIDIDO</span>Combate a caballo y a distancia más adelante, cuando toque en el desarrollo.</p>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<ul>
+  <li>Heridas localizadas, sangrado y cansancio, visibles en el personaje y en los avisos.</li>
+  <li>Armadura por zona y tipo de golpe.</li>
+  <li>Curación por tipo de herida (análisis, apartado 15).</li>
+</ul></div>
+<div class="box o"><span class="tag open">ABIERTO</span>
+<ul><li>Enfoque de esgrima: direccional o guardias y tiempo. Se decide probando el hito de duelo.</li></ul></div>
+</section>
+
+<section id="animales">
+<h2>14. Animales y fauna</h2>
+<p><span class="tag ok">DECIDIDO</span>Caza; caballos domables; cría y cuidado realistas; ganado.</p>
+<p><span class="tag ok">DECIDIDO</span>Fauna realista: huyen salvo acorralados; lobos escasos en montaña y bosque profundo que sí atacan.</p>
+<p><span class="tag ok">DECIDIDO</span>NPCs que venden animales de otros biomas.</p>
+</section>
+
+<section id="agricultura">
+<h2>15. Agricultura</h2>
+<p><span class="tag ok">DECIDIDO</span>Cultivos con rendimiento por franja climática y calendario por estación.</p>
+</section>
+
+<section id="economia">
+<h2>16. Economía y NPCs</h2>
+<p><span class="tag ok">DECIDIDO</span><b>La moneda la acuñan solo los NPCs.</b> Se gana con <b>encargos de los NPCs</b>: ellos piden lo que necesitan y tú se lo traes; no compran cualquier cosa que quieras vender.</p>
+<p><span class="tag ok">DECIDIDO</span>Puestos de venta que funcionan sin estar conectado.</p>
+<p><span class="tag ok">DECIDIDO</span><b>NPCs a tu servicio, como mercenarios de la época:</b> hay que conseguirles el equipo que llevarán, su comida y su paga; los tienes mientras puedas mantenerlos. La comodidad afecta a estos NPCs. Los centinelas funcionan así.</p>
+<p><span class="tag ok">DECIDIDO</span>Sin aldeas ni bandidos NPC al principio.</p>
+<div class="box p"><span class="tag prop">PROPUESTA</span>
+<ul>
+  <li>Entre jugadores: trueque o moneda, como quieran.</li>
+  <li>Los NPCs comerciantes están en pocos lugares de cada país; sus encargos rotan y piden cosas de la zona o de otras franjas, para dar motivos de viaje.</li>
+  <li>Un NPC a sueldo come y cobra cada cierto tiempo.</li>
+</ul></div>
+<p><span class="tag ok">DECIDIDO</span>Si no se le paga, <b>el NPC se marcha y se lleva el equipo.</b></p>
+<p><span class="tag ok">DECIDIDO</span>Los NPCs para contratar son <b>mercaderes y mercenarios ambulantes que llegan a tu ciudad o asentamiento.</b></p>
+<div class="box p"><span class="tag ok">APROBADO</span> Cómo llegan y qué tipos hay:
+<ul>
+  <li><b>Llegada:</b> cada cierto tiempo pasa por tu asentamiento un ambulante (necesitas un mojón para que vengan). Se queda un tiempo; si no lo contratas, sigue su camino. Con más nivel de mojón vienen más a menudo y de más tipos.</li>
+  <li><b>También en las ciudades NPC:</b> allí siempre hay alguno disponible, a cambio de viajar a por él.</li>
+  <li><b>Tipos:</b>
+    <ul>
+      <li><b>Mercenario / centinela:</b> vigila y defiende tus tierras.</li>
+      <li><b>Leñador:</b> tala y apila leña en tu tierra.</li>
+      <li><b>Jornalero:</b> siembra, riega y cosecha.</li>
+      <li><b>Pastor:</b> cuida, alimenta y saca a pastar a tus animales.</li>
+      <li><b>Mensajero:</b> lleva tus cartas.</li>
+      <li><b>Mercader ambulante:</b> no se contrata; trae encargos y algún producto de otra región.</li>
+    </ul></li>
+  <li><b>Cada uno necesita</b> sus herramientas o armas (las pones tú), comida y paga en moneda. Con comodidad (cama, techo, comida mejor) rinden más o piden menos.</li>
+</ul></div>
+</section>
+
+<section id="social">
+<h2>17. Familias, alianzas y vasallajes</h2>
+<p><span class="tag ok">DECIDIDO</span>Familias, con PvP desactivado dentro.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Vasallaje:</b> una alianza que exige un pago periódico. Si no se paga a tiempo, el señor tiene derecho a declarar la guerra.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Alianzas:</b> el PvP entre aliados se desactiva solo si las dos partes lo activan.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Comunicación solo por proximidad.</b></p>
+<p><span class="tag ok">DECIDIDO</span><b>Editor de escudo de armas</b> propio para cada familia.</p>
+<p><span class="tag ok">DECIDIDO</span>El pago de vasallaje es <b>en moneda</b>.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Cartas por mensajero NPC:</b> envías un mensajero a una ciudad o asentamiento que conozcas; viaja hasta allí y entrega la carta a un miembro de tu familia que esté en ese lugar.</p>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<ul>
+  <li>Escribes la carta (con pergamino y tinta, o en un papel simple al principio) y se la das al mensajero con su paga.</li>
+  <li>El mensajero recorre la distancia de verdad, a la velocidad de un viajero a pie o a caballo; la carta tarda lo que tardaría.</li>
+  <li>Al llegar, la deja en el mojón o el buzón del asentamiento, y la recoge cualquier miembro de la familia que pase por allí.</li>
+  <li>Solo se puede enviar a sitios que tu personaje ya ha visitado.</li>
+</ul></div>
+<p><span class="tag ok">DECIDIDO</span>Los mensajeros <b>no se pueden interceptar ni matar.</b></p>
+</section>
+
+<section id="tecnica">
+<h2>18. Arquitectura técnica</h2>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<ul>
+  <li>Un único mundo online; jugar solo también necesita conexión.</li>
+  <li>Los primeros hitos se prototipan en el navegador sin servidor; la lógica se escribe para que luego la ejecute el servidor sin rehacerla.</li>
+  <li>Servidor autoritativo por websockets; base de datos con cuentas, personajes y cambios del mundo.</li>
+  <li>Guardados versionados para no perder progreso con cada actualización.</li>
+  <li>Pruebas antes de cada entrega: navegador sin pantalla, capturas reales; en online, varios clientes y bots con lag simulado.</li>
+  <li>Despliegue: GitHub → host, que se elige al llegar al online.</li>
+</ul></div>
+</section>
+
+<section id="hitos">
+<h2>19. Hitos por importancia (borrador)</h2>
+<div class="tw"><table>
+<tr><th>#</th><th>Hito</th><th>Jugable al terminar</th></tr>
+<tr><td>1</td><td>Construcción</td><td>Moverse con cámara libre (PC y táctil) y construir con rejilla anclada, carga, desmontaje en cascada con 75% de recuperación y decoración libre.</td></tr>
+<tr><td>2</td><td>Equipo y carga por huecos</td><td>Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.</td></tr>
+<tr><td>3</td><td>Estaciones y crafting</td><td>Primeras estaciones, recetas, desbloqueo por práctica, durabilidad y reparación.</td></tr>
+<tr><td>4</td><td>Supervivencia</td><td>Necesidades con avisos, ropa contra el frío, cama ligada y muerte con saqueo parcial.</td></tr>
+<tr><td>5</td><td>Duelo</td><td>Esgrima contra un bot con heridas.</td></tr>
+<tr><td>6</td><td>Asedio, fuego y mantenimiento</td><td>Ariete, daño por fuego, mojón con materiales.</td></tr>
+<tr><td>7</td><td>Fauna y caza</td><td>Animales realistas.</td></tr>
+<tr><td>8</td><td>Caballos</td><td>Domar, montar, cuadra y pasto.</td></tr>
+<tr><td>9</td><td>Granja y estaciones del año</td><td>Siembras por franja, ganado.</td></tr>
+<tr><td>10</td><td>Mundo</td><td>Pseudo-Europa por semilla, 5 países con estilo propio, caminos por uso, puentes.</td></tr>
+<tr><td>11</td><td>Servidor y cuentas</td><td>Registro, creación de personaje, mundo persistente.</td></tr>
+<tr><td>12</td><td>PvP online y protección offline</td><td>Combate y asedio entre jugadores; reglas de guerra.</td></tr>
+<tr><td>13</td><td>Tierras y familias</td><td>Mojones, radio de exclusión, peajes, conquista, familias, vasallajes, alianzas, escudos de armas.</td></tr>
+<tr><td>14</td><td>Economía y NPCs</td><td>Encargos y moneda, puestos sin conexión, tomos, NPCs ambulantes a sueldo, centinelas y mensajeros.</td></tr>
+<tr><td>15</td><td>Combate a caballo y a distancia</td><td>Arcos, ballestas, lanzas de caballería.</td></tr>
+<tr><td>16</td><td>Navegación</td><td>Astillero, barcos, navegar con otros.</td></tr>
+<tr><td>17</td><td>Cartografía</td><td>Mesa de cartógrafo y mapas como objetos.</td></tr>
+</table></div>
+</section>
+
+<section id="preguntas">
+<h2>20. Preguntas pendientes</h2>
+<p>Ninguna. Lo que quede abierto se decidirá probando cada hito.</p>
+</section>
+</div>
+</body>
+</html>

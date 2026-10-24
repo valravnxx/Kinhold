@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Kinhold Combate</title>
+<style>
+:root{
+  --panel: rgba(36,30,24,.86); --panel2: rgba(58,48,38,.92); --ink:#f1e8d8; --muted:#bfb19a;
+  --acento:#d9a441; --rojo:#e0574f; --verde:#7ccf86; --naranja:#e89a3c; --gris:#a9a196; --linea: rgba(241,232,216,.15);
+  color-scheme: dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#b9d3e3;font:14px/1.35 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none}
+canvas{display:block;position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+button,select{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:7px 11px;cursor:pointer}
+button.sel{background:var(--acento);color:#241b10;border-color:transparent;font-weight:600}
+[hidden]{display:none!important}
+
+#superior{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:calc(10px + env(safe-area-inset-left,0px));right:calc(10px + env(safe-area-inset-right,0px));display:flex;gap:8px;align-items:flex-start;pointer-events:none}
+#estado{pointer-events:auto;background:var(--panel);border-radius:10px;padding:7px 11px;font-weight:600}
+#menu{pointer-events:auto;margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+#menu button{padding:6px 10px;font-size:12.5px}
+
+#opciones{position:fixed;top:calc(56px + env(safe-area-inset-top,0px));left:calc(10px + env(safe-area-inset-left,0px));background:var(--panel);border-radius:12px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;font-size:13px;max-width:min(360px,94vw)}
+#opciones label{color:var(--muted)}
+
+#avisos{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));top:calc(64px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.aviso{display:flex;align-items:center;gap:8px;background:transparent;border:0;padding:0}
+.aviso span{width:34px;height:34px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--n)*360deg), rgba(36,30,24,.7) 0);border:2px solid rgba(36,30,24,.85);box-shadow:0 0 0 1px var(--c)}
+.aviso em{font-style:normal;font-size:12px;background:var(--panel);padding:3px 7px;border-radius:7px}
+.aviso.rojo{--c:var(--rojo)} .aviso.naranja{--c:var(--naranja)} .aviso.gris{--c:var(--gris)} .aviso.verde{--c:var(--verde)}
+#detalle{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));top:calc(64px + env(safe-area-inset-top,0px));transform:translateX(calc(-100% - 150px));max-width:240px;background:var(--panel);padding:8px 10px;border-radius:10px;font-size:13px}
+
+#registro{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(520px,70vw);text-align:center;pointer-events:none;display:flex;flex-direction:column-reverse;gap:3px}
+#registro div{background:var(--panel);border-radius:8px;padding:5px 10px;font-size:13px}
+#registro .bien{border-left:3px solid var(--verde)} #registro .mal{border-left:3px solid var(--rojo)} #registro .aviso{border-left:3px solid var(--acento)}
+
+#rosa{position:fixed;left:0;top:0;pointer-events:none;transition:opacity .15s;opacity:.8}
+#rosa svg{width:100%;height:100%;overflow:visible}
+#rosa .s{fill:rgba(36,30,24,.06);stroke:rgba(241,232,216,.4);stroke-width:1.5;transition:fill .08s}
+#rosa text{fill:rgba(241,232,216,.85);font:600 13px system-ui,sans-serif;text-anchor:middle;dominant-baseline:middle;paint-order:stroke;stroke:rgba(36,30,24,.6);stroke-width:3px}
+#rosa .s.sel{fill:rgba(217,164,65,.3);stroke:#f0c46a}
+#rosa .s.amenaza{fill:rgba(224,87,79,.42);stroke:#ff8a80}
+#rosa .s.verde{fill:rgba(124,207,134,.6);stroke:#c8ffd0;stroke-width:4}
+#rosa .s.maestro{stroke:#ffd36b;stroke-width:5;stroke-dasharray:10 6}
+#rosa.preparando{opacity:1}
+#rosa.contra .anillo{stroke:#7ccf86;stroke-width:6;opacity:1}
+#rosa.parando .anillo{stroke:#d9a441;stroke-width:4;opacity:.9}
+#rosa .anillo{fill:none;stroke:transparent;opacity:0}
+#pistaRosa{position:absolute;left:50%;top:-30px;transform:translateX(-50%);white-space:nowrap;background:var(--panel);padding:3px 9px;border-radius:999px;font-weight:700;font-size:13px}
+#pistaRosa:empty{display:none}
+#reticula{position:fixed;width:48px;height:48px;transform:translate(-50%,-50%);border:2px solid rgba(241,232,216,.9);border-radius:50%;pointer-events:none;box-shadow:0 0 0 1px rgba(36,30,24,.6)}
+#reticula::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px;border-radius:50%;background:#f1e8d8}
+#reticula.lista{border-color:var(--verde)}
+#reticula.tiembla{border-color:var(--rojo)}
+#btnParar{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(120px + env(safe-area-inset-bottom,0px));width:90px;height:90px;border-radius:50%;font-weight:700;font-size:15px;touch-action:none}
+#btnParar.activo{background:var(--acento);color:#241b10}
+#joystick{position:fixed;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(30px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;background:rgba(36,30,24,.35);border:2px solid rgba(241,232,216,.3);touch-action:none}
+#pomo{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(241,232,216,.75)}
+
+#final{position:fixed;inset:0;display:grid;place-items:center;background:rgba(20,16,12,.45)}
+#final > div{background:var(--panel);border-radius:16px;padding:18px 22px;min-width:min(320px,90vw);text-align:center}
+#final h2{margin:0 0 4px;color:var(--acento);font-size:22px}
+#statsFinal{display:grid;gap:4px;margin:12px 0;text-align:left;font-variant-numeric:tabular-nums}
+#statsFinal div{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid var(--linea);padding:2px 0}
+
+.panel{position:fixed;inset:60px 12px auto 12px;margin:auto;max-width:640px;max-height:72vh;overflow:auto;background:var(--panel);border-radius:14px;padding:14px 16px;border:1px solid var(--linea);-webkit-user-select:text;user-select:text}
+.panel h2{margin:0 0 8px;font-size:16px;color:var(--acento)}
+.panel h3{margin:12px 0 4px;font-size:14px}
+.panel li{margin:5px 0}
+.panel .cerrar{position:absolute;right:10px;top:10px;padding:4px 10px}
+.panel kbd{background:#4a3e30;border-radius:4px;padding:1px 6px;font-size:12px}
+.panel table{border-collapse:collapse;width:100%;font-size:13px}
+.panel td,.panel th{border-bottom:1px solid var(--linea);padding:4px;text-align:left}
+#version{color:var(--muted);font-size:12px}
+@media (max-width:640px){
+  #registro{width:92vw;bottom:auto;top:calc(120px + env(safe-area-inset-top,0px));flex-direction:column}
+  #registro div:nth-child(n+4){display:none}
+  #menu button{padding:5px 8px;font-size:11.5px}
+}
+</style>
+</head>
+<body>
+<canvas id="lienzo"></canvas>
+<div id="superior">
+  <div id="estado"></div>
+  <div id="menu">
+    <button id="btnOpciones">Opciones</button>
+    <button id="btnDecisiones">Decisiones</button>
+    <button id="btnAyuda">Ayuda</button>
+    <button id="btnReiniciar">Reiniciar</button>
+  </div>
+</div>
+<div id="opciones" hidden>
+  <label for="selModo">Modo</label><select id="selModo"></select>
+  <label for="selArma">Tu arma</label><select id="selArma"></select>
+  <label for="selArmadura">Tu ropa</label><select id="selArmadura"></select>
+  <label for="selArmaduraRival">Ropa del rival</label><select id="selArmaduraRival"></select>
+  <label for="selDificultad">Dificultad</label><select id="selDificultad"></select>
+  <label for="chkSonido">Sonido</label><input type="checkbox" id="chkSonido" style="justify-self:start;width:20px;height:20px">
+</div>
+<div id="avisos"></div>
+<div id="detalle" hidden></div>
+<div id="registro"></div>
+<div id="rosa" hidden><div id="pistaRosa"></div><svg viewBox="-104 -104 208 208">
+  <circle class="anillo" r="102"/>
+  <path class="s" data-l="alto" d="M-70.7 -70.7A100 100 0 0 1 70.7 -70.7L25.5 -25.5A36 36 0 0 0 -25.5 -25.5Z"/>
+  <path class="s" data-l="derecha" d="M70.7 -70.7A100 100 0 0 1 70.7 70.7L25.5 25.5A36 36 0 0 0 25.5 -25.5Z"/>
+  <path class="s" data-l="bajo" d="M70.7 70.7A100 100 0 0 1 -70.7 70.7L-25.5 25.5A36 36 0 0 0 25.5 25.5Z"/>
+  <path class="s" data-l="izquierda" d="M-70.7 70.7A100 100 0 0 1 -70.7 -70.7L-25.5 -25.5A36 36 0 0 0 -25.5 25.5Z"/>
+  <circle class="s" data-l="estocada" r="33"/>
+  <text y="-70">Alto</text><text x="70">Der.</text><text y="72">Bajo</text><text x="-70">Izq.</text><text>Estoc.</text>
+</svg></div>
+<div id="reticula" hidden></div>
+<button id="btnParar" hidden>Parar</button>
+<div id="joystick" hidden><div id="pomo"></div></div>
+
+<div id="final" hidden><div>
+  <h2 id="tituloFinal"></h2>
+  <div id="motivoFinal"></div>
+  <div id="statsFinal"></div>
+  <button id="btnOtra" class="sel">Otra vez</button>
+</div></div>
+
+<div id="panelAyuda" class="panel" hidden>
+  <button class="cerrar">✕</button>
+  <h2>Cómo se combate</h2>
+  <div id="ayudaPC">
+    <p><kbd>W A S D</kbd> moverte · <kbd>Mayús</kbd> correr · <kbd>Q</kbd>/<kbd>E</kbd> o botón central: girar cámara · rueda: zoom</p>
+    <p>Cerca del rival, adelante y atrás te acercan o alejan y los lados le rodean, siempre de cara.</p>
+    <p><b>Atacar:</b> sobre el rival aparece una rosa de cinco zonas. Pon el cursor en la zona por la que quieres golpear y haz clic. El centro es la estocada. También <kbd>8</kbd> <kbd>4</kbd> <kbd>6</kbd> <kbd>2</kbd> <kbd>5</kbd> del teclado numérico.</p>
+    <p><b>Finta:</b> mientras preparas el golpe, haz clic en otra zona para cambiarlo (hasta la mitad de la preparación, cuesta aliento).</p>
+    <p><b>Parar:</b> mantén el botón derecho o <kbd>Espacio</kbd>. No hace falta elegir lado.</p>
+    <p><b>Arco y piedras:</b> mantén el botón izquierdo para tensar, apunta y suelta. El círculo se cierra al tensar y se pone verde cuando está listo; si aguantas demasiado tiembla.</p>
+  </div>
+  <div id="ayudaTactil">
+    <p>Joystick a la izquierda para moverte; cerca del rival los lados le rodean. Dos dedos giran la cámara.</p>
+    <p><b>Atacar:</b> toca una zona de la rosa que aparece sobre el rival. El centro es la estocada. Tocar otra zona mientras preparas es una finta.</p>
+    <p><b>Parar:</b> mantén el botón Parar.</p>
+    <p><b>Arco y piedras:</b> mantén el dedo para tensar, arrastra para apuntar y suelta.</p>
+  </div>
+  <h3>Las tres capas de defensa</h3>
+  <p><b>Parada:</b> mantener Parar detiene cualquier golpe, pero cansa. Agotado (95%), cede.</p>
+  <p><b>Parada perfecta:</b> empieza a parar justo antes del impacto (zona en <span style="color:var(--verde)">verde</span> en aprendiz). El rival queda descolocado y tu contraataque sale rápido y solo se para con otra parada perfecta.</p>
+  <p><b>Golpe maestro:</b> si ves venir un golpe por un lado (zona en <span style="color:var(--rojo)">rojo</span>), golpea tú por ese mismo lado al principio de su preparación (borde dorado). Desvías su golpe y el tuyo entra.</p>
+  <p>En <b>aprendiz</b> los golpes son lentos y ves el lado y el momento. En <b>normal</b> solo ves el lado. En <b>realista</b> no hay avisos: hay que leer el cuerpo del rival.</p>
+  <h3>Avisos</h3>
+  <p>Los círculos de la derecha avisan de cansancio, sangrado y heridas. Tócalos para ver qué efecto tienen.</p>
+</div>
+<div id="panelRegistro" class="panel" hidden>
+  <button class="cerrar">✕</button>
+  <h2>Decisiones tomadas en el combate</h2>
+  <div id="version"></div>
+  <ol id="listaRegistro"></ol>
+</div>
+<script>/*APP*/</script>
+</body>
+</html>

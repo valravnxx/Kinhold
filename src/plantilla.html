@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Kinhold</title>
+<style>
+:root{
+  --panel: rgba(36,30,24,.86); --panel2: rgba(58,48,38,.92); --ink:#f1e8d8; --muted:#bfb19a;
+  --acento:#d9a441; --rojo:#e0574f; --verde:#7ccf86; --linea: rgba(241,232,216,.15);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#b9d3e3;color-scheme:dark;font:14px/1.35 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
+canvas{display:block;position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+button{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:8px 12px;cursor:pointer}
+button.sel{background:var(--acento);color:#241b10;border-color:transparent;font-weight:600}
+button:active{transform:scale(.97)}
+[hidden]{display:none!important}
+
+#superior{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:calc(10px + env(safe-area-inset-left,0px));right:calc(10px + env(safe-area-inset-right,0px));display:flex;gap:8px;align-items:flex-start;pointer-events:none}
+#materiales{pointer-events:auto;background:var(--panel);border-radius:12px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:4px 10px;max-width:min(520px,70vw);font-size:12.5px}
+#materiales b{color:var(--acento)}
+#menu{pointer-events:auto;margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+#menu button{padding:6px 10px;font-size:12.5px}
+
+#aviso{position:fixed;top:calc(64px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);max-width:min(560px,92vw);background:var(--panel);border-left:4px solid var(--verde);padding:8px 12px;border-radius:8px;font-size:13.5px;pointer-events:none}
+#aviso.error{border-left-color:var(--rojo)}
+
+#modos{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px}
+#modos button,#acciones button{min-width:96px}
+#acciones{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(178px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+#btnUsar.activo{background:var(--verde);color:#14240f;font-weight:600}
+#controlPlanta{display:flex;gap:6px;align-items:center;background:var(--panel);border-radius:10px;padding:4px}
+#controlPlanta span{min-width:62px;text-align:center}
+#acciones #controlPlanta button{min-width:0;padding:6px 10px}
+
+#barra{position:fixed;left:0;right:0;bottom:0;background:var(--panel);padding:8px max(10px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));border-top:1px solid var(--linea)}
+#pestanas{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+#pestanas button{white-space:nowrap;padding:5px 10px;font-size:12.5px}
+#piezas{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin}
+.pieza{display:flex;flex-direction:column;align-items:flex-start;min-width:150px;max-width:180px;text-align:left}
+.pieza small{color:var(--muted);font-size:11.5px;margin-top:2px}
+.pieza.sel small{color:#3a2c18}
+
+#confirmar{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--panel);padding:10px;border-radius:12px;display:flex;gap:8px}
+#btnConfirmar{background:var(--rojo);color:#fff;border-color:transparent}
+
+#joystick{position:fixed;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(30px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;background:rgba(36,30,24,.35);border:2px solid rgba(241,232,216,.3);touch-action:none}
+#pomo{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(241,232,216,.75)}
+body.construyendo #joystick{bottom:calc(178px + env(safe-area-inset-bottom,0px));width:100px;height:100px}
+body.construyendo #pomo{left:25px;top:25px}
+
+.panel{position:fixed;inset:60px 12px auto 12px;margin:auto;max-width:620px;max-height:70vh;overflow:auto;background:var(--panel);border-radius:14px;padding:14px 16px;border:1px solid var(--linea)}
+.panel h2{margin:0 0 8px;font-size:16px;color:var(--acento)}
+.panel li{margin:5px 0}
+.panel .cerrar{position:absolute;right:10px;top:10px;padding:4px 10px}
+.panel kbd{background:#4a3e30;border-radius:4px;padding:1px 6px;font-size:12px}
+#version{color:var(--muted);font-size:12px}
+
+@media (max-width:640px){
+  #materiales{font-size:11.5px;max-width:58vw}
+  #menu button{padding:5px 8px;font-size:11.5px}
+  #modos{top:auto;bottom:auto;top:120px;transform:none}
+  #modos button,#acciones button{min-width:84px;padding:8px 10px}
+  .pieza{min-width:128px}
+}
+</style>
+</head>
+<body>
+<canvas id="lienzo"></canvas>
+
+<div id="superior">
+  <div id="materiales"></div>
+  <div id="menu">
+    <button id="btnRellenar">+ Materiales</button>
+    <button id="btnRegistro">Decisiones</button>
+    <button id="btnAyuda">Ayuda</button>
+    <button id="btnReiniciar">Reiniciar</button>
+  </div>
+</div>
+<div id="aviso" hidden></div>
+
+<div id="modos">
+  <button data-modo="mover">Mover</button>
+  <button data-modo="construir">Construir</button>
+  <button data-modo="desmontar">Desmontar</button>
+</div>
+<div id="acciones">
+  <div id="controlPlanta"><button id="btnBaja">▼</button><span id="planta">Planta 0</span><button id="btnSube">▲</button></div>
+  <button id="btnGirar">Girar</button>
+  <button id="btnColocar" class="sel">Colocar</button>
+  <button id="btnUsar">Usar</button>
+</div>
+
+<div id="barra" hidden>
+  <div id="pestanas"></div>
+  <div id="piezas"></div>
+</div>
+
+<div id="confirmar" hidden>
+  <button id="btnConfirmar">Desmontar</button>
+  <button id="btnCancelar">Cancelar</button>
+</div>
+
+<div id="joystick" hidden><div id="pomo"></div></div>
+
+<div id="panelRegistro" class="panel" hidden>
+  <button class="cerrar">✕</button>
+  <h2>Decisiones tomadas en este hito</h2>
+  <div id="version"></div>
+  <ol id="listaRegistro"></ol>
+</div>
+<div id="panelAyuda" class="panel" hidden>
+  <button class="cerrar">✕</button>
+  <h2>Cómo se juega este hito</h2>
+  <ol>
+    <li>Pulsa <b>Construir</b>, pestaña <b>Tierra</b>, y coloca tu <b>mojón</b>: tu tierra es el círculo claro de 20 m.</li>
+    <li>Empieza por un <b>cimiento</b> (pestaña Base). Esa primera pieza fija la rejilla; puedes girarla antes de colocarla.</li>
+    <li>Pon <b>muros</b> junto al cimiento, un <b>suelo</b> en la planta 1 encima de los muros, y <b>tejado</b> arriba.</li>
+    <li>Si algo no aguanta el peso, se marca en rojo la pieza débil y no se coloca.</li>
+    <li>En <b>Desmontar</b>, la pieza se marca en naranja y lo que caería encima en rojo. Recuperas el 75%.</li>
+    <li>Las puertas y la escalera de mano se usan con <b>Usar</b>.</li>
+  </ol>
+  <div id="ayudaPC">
+    <p><kbd>W A S D</kbd> moverse · <kbd>Mayús</kbd> correr · <kbd>Q</kbd>/<kbd>E</kbd> o botón derecho: girar cámara · rueda: zoom</p>
+    <p><kbd>B</kbd> construir · <kbd>X</kbd> desmontar · <kbd>R</kbd> girar pieza · <kbd>RePág</kbd>/<kbd>AvPág</kbd> planta · <kbd>F</kbd> usar · <kbd>Esc</kbd> salir</p>
+  </div>
+  <div id="ayudaTactil">
+    <p>Joystick abajo a la izquierda para moverte. Arrastra con un dedo para girar la cámara y pellizca para el zoom.</p>
+    <p>Al construir, toca el suelo donde quieres la pieza y pulsa <b>Colocar</b>.</p>
+    <p id="filaSigue"><label><input type="checkbox" id="chkSigue"> La pieza sigue al personaje (en vez de tocar el suelo)</label></p>
+  </div>
+</div>
+
+<script>/*APP*/</script>
+</body>
+</html>
