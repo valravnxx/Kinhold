@@ -214,5 +214,21 @@
   "pruebas": "Lógica 35/35, modelos 21/21, combate 69/69; navegador construcción, combate, estilo v5 y web: todo correcto.",
   "capturas": "capturas/estilo-v5",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T21:13:13+02:00",
+  "fin": "2026-10-24T21:20:45+02:00",
+  "titulo": "Hito 1b: personaje por código (avance, sin publicar)",
+  "hito": "arte",
+  "hecho": [
+   "Cuerpo hecho por secciones con perfil real (cintura, pecho, muslo, rodilla, pantorrilla, deltoides, codo) en una sola malla con esqueleto de 17 huesos: anda y respira sin abrirse en las articulaciones.",
+   "Manos con palma, cuatro dedos recogidos y pulgar; zapatos de una pieza; túnica con pliegues en la falda que sigue a los muslos al andar; camisa en cuello y puños; cinto con hebilla; vendas en las piernas.",
+   "Cabeza: esfera moldeada (mandíbula, mentón, ceja, cuencas, pómulos, nariz, boca) con pelo y barba como abultamiento de la misma malla. No da el nivel: de cerca la cara se ve blanda y rara. No se publica.",
+   "Siguiente paso propuesto: hacer la cabeza a partir de una malla base con planos marcados (frente, cuencas, pómulos, nariz, mandíbula), escrita como datos en el código, en vez de deformar una esfera.",
+   "Personaje: 5,9 mil triángulos."
+  ],
+  "pruebas": "Sin prueba de navegador propia todavía (no publicado). Lo demás sin cambios.",
+  "capturas": null,
+  "estado": "fallo"
  }
 ]
