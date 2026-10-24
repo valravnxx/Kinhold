@@ -78,6 +78,7 @@ with sync_playwright() as p:
             png = pg.screenshot(path=f'{SALIDA}/{nombre}_variante{i + 1}_cara.png')
             comprobar(f'variante {i + 1}: se ve la cara', contenido(png)[1] > 15)
         if movil: comprobar('en el móvil el panel empieza cerrado', not pg.is_visible('#opciones'))
+        comprobar('calidad alta por defecto', pg.evaluate(f'{E}.estado().calidad') in ('alta', 'ligera'))
         if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
         # calidad ligera (móvil): material sencillo sin relieve
         lig = pg.evaluate(f"(() => {{ const d = {E}.diag(); let n = 0, std = 0; d.pj.modelo.traverse(o => {{ if (o.isMesh) {{ n++; if (o.material.type !== 'MeshLambertMaterial') std++; }} }}); return [n, std, {E}.estado().calidad]; }})()")

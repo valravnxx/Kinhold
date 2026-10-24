@@ -350,5 +350,20 @@
   "pruebas": "Personaje en navegador PC y móvil (vistas, animación, variantes, calidad ligera, esqueleto compartido, interruptores): todo correcto.",
   "capturas": "capturas/personaje-v3",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T23:58:00+02:00",
+  "fin": "2026-10-25T00:07:59+02:00",
+  "titulo": "Personaje v4 y primera prueba del taller propio con MakeHuman",
+  "hito": "arte",
+  "hecho": [
+   "Malentendido corregido: «me va de 10» significaba que iba perfecto, no a 10 fps. Vuelve la calidad alta por defecto también en el móvil; la ligera solo si la eliges tú.",
+   "Taller propio montado: Blender sin pantalla (instalado con pip) con MakeHuman (MPFB2) desde su repositorio. Crea humanos por código con edad, sexo, músculo, peso, altura y rasgos de la cara, y les pone esqueleto para juegos.",
+   "Primera prueba: tres personas distintas (hombre de mediana edad, mujer joven, anciano) fotografiadas en arcilla. Proporciones y caras anatómicas, y la edad se nota.",
+   "Lo que falta para usarlo: ojos, pieles, pelo, cejas y barbas vienen en paquetes libres de MakeHuman que solo se bajan de su web (los tiene que bajar Pedro). Su ropa es moderna, no medieval. Cada cuerpo tiene 26,8 mil triángulos y habría que reducirlo para el móvil."
+  ],
+  "pruebas": "Personaje v4 en navegador PC y móvil: todo correcto. Taller: tres humanos creados y exportables sin errores.",
+  "capturas": "capturas/taller-makehuman",
+  "estado": "ok"
  }
 ]

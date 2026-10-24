@@ -128,7 +128,7 @@
     },
     {
      "nombre": "Taller propio sin pantalla (Blender por pip) para reasignar animaciones, reducir mallas y probar a crear cuerpos y caras propios con MakeHuman (MPFB2), con su esqueleto compatible",
-     "estado": "pendiente"
+     "estado": "en_curso"
     },
     {
      "nombre": "Heridas y sangrado visibles en el personaje: corte, golpe y estocada se pintan donde entran (también rompen y manchan la ropa), el sangrado se extiende con el tiempo y el vendaje se ve puesto",
@@ -486,6 +486,13 @@
      "archivo": "jugar/personaje/v3.html",
      "capturas": "capturas/personaje-v3",
      "notas": "Más ligero en el móvil (calidad ligera, un solo esqueleto, menos resolución) con interruptores para medir; sin el traje de explorador."
+    },
+    {
+     "v": "v4",
+     "fecha": "2026-10-24",
+     "archivo": "jugar/personaje/v4.html",
+     "capturas": "capturas/personaje-v4",
+     "notas": "Vuelve la calidad alta por defecto en el móvil (iba perfecto); la ligera sigue como opción."
     }
    ]
   }

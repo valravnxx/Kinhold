@@ -41,15 +41,17 @@ const VISTAS = {
 };
 const ANIMS = { quieto: 'Quieto', andar: 'Andar', talar: 'Talar', guardia: 'En guardia', golpe: 'Golpe', cargar: 'Cargar' };
 
-// en móviles y tabletas empieza en calidad ligera (material sencillo); se puede cambiar con el botón
+// calidad alta en todos lados (en el móvil de Pedro va perfecto); la ligera queda como opción
 const TACTIL = matchMedia('(pointer: coarse)').matches;
-let estado = { luz: 'manana', vista: 'cuerpo', modo: 'quieto', sexo: 'hombre', ropa: 'campesino', pelo: 'raya', colorPelo: 'castano', piel: 'clara', barba: 'si', calidad: TACTIL ? 'ligera' : 'alta' };
+let estado = { luz: 'manana', vista: 'cuerpo', modo: 'quieto', sexo: 'hombre', ropa: 'campesino', pelo: 'raya', colorPelo: 'castano', piel: 'clara', barba: 'si', calidad: 'alta' };
 try { estado = { ...estado, ...JSON.parse(localStorage.getItem(CLAVE) || '{}') }; } catch (e) { /* sin almacenamiento */ }
 if (!LUCES[estado.luz]) estado.luz = 'manana';
 if (!VISTAS[estado.vista]) estado.vista = 'cuerpo';
 if (!ANIMS[estado.modo]) estado.modo = 'quieto';
 if (estado.ropa !== 'campesino') estado.ropa = 'campesino'; // el explorador era demasiado de fantasía (Pedro)
 estado.sombras ??= true; estado.escena ??= true;
+// la v3 ponía «ligera» sola en el móvil: si no la eligió Pedro a mano, vuelve a alta
+if (!estado.calidadElegida) estado.calidad = 'alta';
 const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch (e) { /* sin almacenamiento */ } };
 
 let pj = null, cargando = 0;
@@ -99,7 +101,7 @@ function pintarOpciones() {
     grupo('calidad', { alta: 'Alta', ligera: 'Ligera (móvil)' }, 'Calidad') +
     `<div class="grupo"><span>Prueba de rendimiento (mira los fps arriba)</span><button data-diag="sombras" class="${estado.sombras ? 'sel' : ''}">Sombras</button><button data-diag="escena" class="${estado.escena ? 'sel' : ''}">Cabaña y suelo</button></div>` +
     `<div class="grupo"><span>Animación</span>${Object.entries(ANIMS).map(([k, v]) => `<button data-modo="${k}" class="${estado.modo === k ? 'sel' : ''}">${v}</button>`).join('')}</div>`;
-  for (const b of $('opciones').querySelectorAll('[data-op]')) b.onclick = () => { estado[b.dataset.op] = b.dataset.v; rehacer(); };
+  for (const b of $('opciones').querySelectorAll('[data-op]')) b.onclick = () => { estado[b.dataset.op] = b.dataset.v; if (b.dataset.op === 'calidad') estado.calidadElegida = true; rehacer(); };
   for (const b of $('opciones').querySelectorAll('[data-modo]')) b.onclick = () => ponerModo(b.dataset.modo);
   for (const b of $('opciones').querySelectorAll('[data-diag]')) b.onclick = () => { estado[b.dataset.diag] = !estado[b.dataset.diag]; aplicarDiag(); pintarOpciones(); guardar(); };
 }
@@ -115,7 +117,7 @@ function aplicarDiag() {
   dibujar();
 }
 const RES_MAX = Math.min(devicePixelRatio || 1, 2);
-let resolucion = Math.min(RES_MAX, TACTIL ? 1 : 1.5);
+let resolucion = Math.min(RES_MAX, 1.5);
 const RES_MIN = TACTIL ? 0.5 : 0.75;
 function ajustar() {
   renderer.setPixelRatio(resolucion); renderer.setSize(innerWidth, innerHeight, false);
