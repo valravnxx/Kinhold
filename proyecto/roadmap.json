@@ -117,6 +117,22 @@
      "fin": "2026-10-24T23:31:24+02:00"
     },
     {
+     "nombre": "Heridas y sangrado visibles en el personaje: corte, golpe y estocada se pintan donde entran (también rompen y manchan la ropa), el sangrado se extiende con el tiempo y el vendaje se ve puesto",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Más personalización sobre la base: altura y complexión, color de ojos, cicatrices y tintes de la ropa",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, tinte y calidad, sobre el mismo esqueleto",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Formas de ropa nuevas (noble, más armaduras) del paquete completo de ropa, si Pedro lo consigue",
+     "estado": "espera_decision"
+    },
+    {
      "nombre": "Personalización del personaje: complexión, cara, pelo, barba, tono de piel",
      "estado": "espera_decision"
     },
@@ -457,6 +473,12 @@
   {
    "id": "personaje-v2",
    "pregunta": "¿Te vale como base del juego el personaje v2 (bases libres ya hechas, en Jugar → Personaje)? Si sí, se pasa al combate y a la construcción y se buscan ropas medievales (gambesón, cota de malla, capas) del mismo tipo. Dime también qué no te gusta (cara, proporciones, ropa).",
+   "desde": "2026-10-24",
+   "hito": "arte"
+  },
+  {
+   "id": "paquete-ropa",
+   "pregunta": "Ropa nueva: el paquete libre que tenemos solo trae campesino y explorador. El completo (12 conjuntos, con noble y más; misma licencia libre) cuesta 20 $ en la página del autor. ¿Lo compras y me pasas los archivos, o seguimos solo con variantes hechas sobre las dos formas que hay?",
    "desde": "2026-10-24",
    "hito": "arte"
   },
