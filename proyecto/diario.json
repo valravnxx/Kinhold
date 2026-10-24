@@ -250,5 +250,21 @@
   "pruebas": "Lógica 35/35, modelos 21/21, combate 69/69; navegador construcción, combate, estilo v6 (con pruebas nuevas del personaje; MUTAR=1 falla como debe) y web: todo correcto.",
   "capturas": "capturas/estilo-v6",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-24T22:06:00+02:00",
+  "fin": "2026-10-24T22:11:29+02:00",
+  "titulo": "Web de progreso en inglés",
+  "hito": "infra",
+  "hecho": [
+   "Selector ES / EN arriba a la derecha; se recuerda al volver y se puede abrir directamente con ?lang=en.",
+   "Traducidos al inglés los 206 textos del roadmap, el diario, las decisiones y las notas de versión, y todos los textos fijos de la web.",
+   "Las traducciones viven en proyecto/idiomas/en.json; la web no se genera si falta alguna, así que todo lo nuevo saldrá también en inglés.",
+   "Preparado para el ruso: basta con añadir proyecto/idiomas/ru.json y sus textos fijos.",
+   "Nuevas tareas: documentos de diseño en inglés y el juego en inglés."
+  ],
+  "pruebas": "Web en PC y móvil, en español y en inglés (botón, recargar, ?lang=en): todo correcto; quitar una traducción a propósito hace fallar la generación de la web.",
+  "capturas": null,
+  "estado": "ok"
  }
 ]

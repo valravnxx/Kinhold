@@ -38,11 +38,29 @@ const enlazado = [...Object.keys(capturas).map(c => join('docs', c, capturas[c][
 for (const f of enlazado) {
   try { execFileSync('git', ['check-ignore', '-q', '--no-index', f], { cwd: raiz }); errores.push(`git ignora ${f}: no llegaría a la web`); } catch (e) { /* no ignorado: bien */ }
 }
+// traducciones: todo texto del roadmap y del diario tiene que estar en proyecto/idiomas/en.json
+// (ru.json se añadirá más adelante; en cuanto exista, también se exige completo)
+const textos = new Set();
+const anade = (x) => { if (typeof x === 'string' && x.trim()) textos.add(x); };
+for (const h of roadmap.hitos) { anade(h.nombre); anade(h.jugable); anade(h.nota); for (const t of h.tareas) { anade(t.nombre); anade(t.notas); } }
+for (const p of roadmap.prototipos) { anade(p.nombre); anade(p.descripcion); for (const v of p.versiones) anade(v.notas); }
+for (const d of roadmap.decisiones_pendientes || []) anade(d.pregunta);
+for (const e of diario) { anade(e.titulo); anade(e.pruebas); for (const x of e.hecho || []) anade(x); }
+const idiomas = {};
+const carpetaIdiomas = join(raiz, 'proyecto/idiomas');
+for (const f of existsSync(carpetaIdiomas) ? readdirSync(carpetaIdiomas).filter(f => f.endsWith('.json')) : []) {
+  const id = f.slice(0, -5), dic = JSON.parse(readFileSync(join(carpetaIdiomas, f), 'utf8'));
+  const faltan = [...textos].filter(t => !dic[t]);
+  if (faltan.length) errores.push(`faltan ${faltan.length} traducciones en proyecto/idiomas/${f} (añade la clave en español con su traducción):\n     · ` + faltan.slice(0, 15).join('\n     · ') + (faltan.length > 15 ? '\n     · …' : ''));
+  // solo se publica lo que se usa
+  idiomas[id] = Object.fromEntries([...textos].filter(t => dic[t]).map(t => [t, dic[t]]));
+}
+if (!idiomas.en) errores.push('falta proyecto/idiomas/en.json');
 if (errores.length) { console.error('ERRORES:\n - ' + errores.join('\n - ')); process.exit(1); }
 
-const datos = { roadmap, diario, capturas, generado: new Date().toISOString() };
+const datos = { roadmap, diario, capturas, idiomas, generado: new Date().toISOString() };
 const json = JSON.stringify(datos).replace(/</g, '\\u003c');
 const html = readFileSync(join(raiz, 'herramientas/plantilla_web.html'), 'utf8').replace('/*DATOS*/null', () => json);
 writeFileSync(join(docs, 'index.html'), html);
 writeFileSync(join(docs, '.nojekyll'), '');
-console.log('docs/index.html listo ·', roadmap.hitos.length, 'hitos ·', diario.length, 'entradas de diario');
+console.log('docs/index.html listo ·', roadmap.hitos.length, 'hitos ·', diario.length, 'entradas de diario ·', Object.keys(idiomas).map(k => k + ' ' + Object.keys(idiomas[k]).length + ' textos').join(', '));

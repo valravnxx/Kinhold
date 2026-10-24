@@ -4,6 +4,8 @@ Kinhold es el juego de Pedro: supervivencia medieval "tipo MMO" en el navegador,
 
 **Todo en español**: código, comentarios, textos del juego, commits, diario y mensajes a Pedro.
 
+**Y también en inglés lo que se publica** (más adelante, ruso): cada texto nuevo o cambiado del roadmap, el diario, las decisiones y las notas de versión se añade en `proyecto/idiomas/en.json` (clave: el texto exacto en español; valor: la traducción). `construir_web.mjs` falla si falta alguna, y lista cuáles. Si se cambia un texto en español, hay que volver a traducirlo. Los textos fijos de la web están en el diccionario `UI` de `herramientas/plantilla_web.html`.
+
 ## Dónde está cada cosa
 
 - `diseno/gdd.html` — GDD (fuente de verdad del diseño). `diseno/sistemas.html` — recursos, recetas, piezas, valores. `diseno/analisis.html` — análisis y propuestas (lo marcado PROPUESTA no está decidido).

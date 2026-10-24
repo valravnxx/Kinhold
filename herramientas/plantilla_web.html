@@ -75,44 +75,49 @@ td.n{text-align:right}
 #visor img{max-width:100%;max-height:100%;border-radius:8px}
 [hidden]{display:none!important}
 footer{color:var(--tenue);font-size:13px;margin-top:30px}
+#idiomas{display:flex;gap:4px}
+#idiomas button{font:inherit;font-size:12.5px;font-weight:700;color:var(--suave);background:var(--panel);border:1px solid var(--linea);border-radius:8px;padding:4px 9px;cursor:pointer}
+#idiomas button.sel{background:var(--acento);color:#241b10;border-color:transparent}
+.derecha{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 @media (max-width:640px){
   header h1{font-size:30px}
   #resumen{grid-template-columns:repeat(2,1fr)}
   .hito > summary{grid-template-columns:32px 1fr;}
   .hito > summary .chip{grid-column:2;justify-self:start}
   .hito .det{padding-left:14px}
+  .derecha{align-items:flex-start}
 }
 </style>
 </head>
 <body>
 <div class="envoltura">
   <header>
-    <div><h1>Kinhold</h1><p>Supervivencia medieval en el navegador · diario de desarrollo</p></div>
-    <div class="meta" id="actualizado" style="color:var(--tenue);font-size:13px"></div>
+    <div><h1>Kinhold</h1><p data-t="lema"></p></div>
+    <div class="derecha"><div id="idiomas"></div><div id="actualizado" style="color:var(--tenue);font-size:13px"></div></div>
   </header>
   <div id="resumen"></div>
   <nav id="pestanas">
-    <button data-s="jugar" class="sel">Jugar</button>
-    <button data-s="roadmap">Roadmap</button>
-    <button data-s="diario">Diario</button>
-    <button data-s="tiempos">Tiempos</button>
-    <button data-s="decisiones">Te espera</button>
-    <button data-s="documentos">Diseño</button>
+    <button data-s="jugar" class="sel" data-t="t_jugar"></button>
+    <button data-s="roadmap" data-t="t_roadmap"></button>
+    <button data-s="diario" data-t="t_diario"></button>
+    <button data-s="tiempos" data-t="t_tiempos"></button>
+    <button data-s="decisiones"><span data-t="t_espera"></span></button>
+    <button data-s="documentos" data-t="t_diseno"></button>
   </nav>
   <section id="jugar" class="sel"><div class="tarjetas" id="listaJuegos"></div>
-    <p class="nota" style="margin-top:14px">Cada versión se queda guardada: si una nueva no te convence, puedes abrir la anterior desde el desplegable. Lo que guarda el juego en tu navegador se conserva entre versiones.</p></section>
+    <p class="nota" style="margin-top:14px" data-t="nota_jugar"></p></section>
   <section id="roadmap"><div id="listaHitos"></div></section>
   <section id="diario"><div id="listaDiario"></div></section>
   <section id="tiempos"><div id="tablaTiempos"></div></section>
   <section id="decisiones"><div id="listaDecisiones"></div>
-    <p class="nota">Para responder o pedir cambios: dímelo en el chat, o edita el archivo <a href="https://github.com/valravnxx/kinhold/edit/main/REVISION.md">REVISION.md</a> en GitHub. El trabajo automático lo lee al empezar cada hora.</p></section>
+    <p class="nota" data-t="nota_revision" data-html></p></section>
   <section id="documentos" class="docs">
-    <a href="diseno/gdd.html"><b>GDD</b><span>Documento de diseño: visión, mundo, sistemas y orden de hitos.</span></a>
-    <a href="diseno/sistemas.html"><b>Sistemas y contenido</b><span>Recursos, recetas, piezas, estaciones y valores.</span></a>
-    <a href="diseno/analisis.html"><b>Análisis del GDD</b><span>Lo que faltaba, propuestas y preguntas respondidas.</span></a>
-    <a href="https://github.com/valravnxx/kinhold"><b>Código</b><span>Repositorio en GitHub.</span></a>
+    <a href="diseno/gdd.html"><b>GDD</b><span data-t="doc_gdd"></span></a>
+    <a href="diseno/sistemas.html"><b data-t="doc_sis_t"></b><span data-t="doc_sis"></span></a>
+    <a href="diseno/analisis.html"><b data-t="doc_ana_t"></b><span data-t="doc_ana"></span></a>
+    <a href="https://github.com/valravnxx/kinhold"><b data-t="doc_cod_t"></b><span data-t="doc_cod"></span></a>
   </section>
-  <footer>Esta página se genera sola con cada cambio del repositorio.</footer>
+  <footer data-t="pie"></footer>
 </div>
 <div id="visor" hidden><img alt=""></div>
 <script>
@@ -120,94 +125,160 @@ const DATOS = /*DATOS*/null;
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (t) => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const R = DATOS.roadmap, D = DATOS.diario, CAPT = DATOS.capturas;
-const NOMBRE_ESTADO = { hecho: 'Hecho', en_curso: 'En curso', revision: 'Esperando tu revisión', espera_decision: 'Espera tu decisión', pendiente: 'Pendiente', fallo: 'Falló' };
-const chip = (e) => `<span class="chip ${e}">${NOMBRE_ESTADO[e] || e}</span>`;
-const fecha = (iso) => iso ? new Date(iso).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+
+// ---------- Idiomas ----------
+// Textos fijos de la página. Los del roadmap y el diario se traducen con proyecto/idiomas/<idioma>.json.
+const UI = {
+  es: {
+    lema: 'Supervivencia medieval en el navegador · diario de desarrollo', actualizado: 'Actualizado',
+    t_jugar: 'Jugar', t_roadmap: 'Roadmap', t_diario: 'Diario', t_tiempos: 'Tiempos', t_espera: 'Te espera', t_diseno: 'Diseño',
+    nota_jugar: 'Cada versión se queda guardada: si una nueva no te convence, puedes abrir la anterior desde el desplegable. Lo que guarda el juego en tu navegador se conserva entre versiones.',
+    nota_revision: 'Para responder o pedir cambios: dímelo en el chat, o edita el archivo <a href="https://github.com/valravnxx/kinhold/edit/main/REVISION.md">REVISION.md</a> en GitHub. El trabajo automático lo lee al empezar cada hora.',
+    doc_gdd: 'Documento de diseño: visión, mundo, sistemas y orden de hitos.', doc_sis_t: 'Sistemas y contenido', doc_sis: 'Recursos, recetas, piezas, estaciones y valores.',
+    doc_ana_t: 'Análisis del GDD', doc_ana: 'Lo que faltaba, propuestas y preguntas respondidas.', doc_cod_t: 'Código', doc_cod: 'Repositorio en GitHub.',
+    pie: 'Esta página se genera sola con cada cambio del repositorio.',
+    estado: { hecho: 'Hecho', en_curso: 'En curso', revision: 'Esperando tu revisión', espera_decision: 'Espera tu decisión', pendiente: 'Pendiente', fallo: 'Falló' },
+    r_hitos: 'hitos terminados', r_tareas: 'tareas hechas (de las ya desglosadas)', r_trabajo: 'de trabajo registrado',
+    jugar: 'Jugar', version: 'Versión', sin_desglosar: 'Sin desglosar: se planifica al empezar el hito.', hecho: 'hecho',
+    en_curso_d: 'en curso', pruebas: 'Pruebas', sin_entradas: 'Todavía no hay entradas.',
+    est_pocos: (n) => `Todavía no hay datos suficientes para estimar: hacen falta al menos 3 tareas medidas (hay ${n}). Cada tarea queda registrada con su hora de inicio y fin, y la estimación aparecerá sola.`,
+    est: (m, n, k, t, c) => `Media real por tarea: <b>${m}</b> (${n} tareas medidas). En el hito activo quedan ${k} tareas ya desglosadas: unas <b>${t}</b> de trabajo. Como se trabaja una tarea por hora como mucho, en calendario son al menos ${c} h, más lo que tarde tu revisión. Los hitos sin desglosar no se estiman.`,
+    th_hito: 'Hito', th_estado: 'Estado', th_trabajo: 'Trabajo registrado',
+    aprox: '≈ = tiempo aproximado sacado de las fechas de los archivos (trabajo anterior a que se registraran las horas).',
+    revisa: 'Revisa el hito', revisa_d: 'Terminado y publicado en Jugar. El trabajo automático no empezará el siguiente hito hasta que lo apruebes o pidas cambios.',
+    desde: 'Desde', hito: 'hito', nada: 'Nada pendiente por tu parte.', min: 'min', h: 'h',
+  },
+  en: {
+    lema: 'Medieval survival in the browser · development log', actualizado: 'Updated',
+    t_jugar: 'Play', t_roadmap: 'Roadmap', t_diario: 'Log', t_tiempos: 'Times', t_espera: 'Waiting on you', t_diseno: 'Design',
+    nota_jugar: 'Every version is kept: if a new one doesn’t convince you, you can open the previous one from the drop-down. What the game saves in your browser carries over between versions.',
+    nota_revision: 'To reply or ask for changes: tell me in the chat, or edit the <a href="https://github.com/valravnxx/kinhold/edit/main/REVISION.md">REVISION.md</a> file on GitHub. The automatic work reads it at the start of every hour.',
+    doc_gdd: 'Design document: vision, world, systems and milestone order. (In Spanish for now.)', doc_sis_t: 'Systems and content', doc_sis: 'Resources, recipes, pieces, workstations and values. (In Spanish for now.)',
+    doc_ana_t: 'GDD analysis', doc_ana: 'What was missing, proposals and answered questions. (In Spanish for now.)', doc_cod_t: 'Code', doc_cod: 'Repository on GitHub.',
+    pie: 'This page is generated automatically with every change to the repository.',
+    estado: { hecho: 'Done', en_curso: 'In progress', revision: 'Awaiting your review', espera_decision: 'Awaiting your decision', pendiente: 'Pending', fallo: 'Failed' },
+    r_hitos: 'milestones finished', r_tareas: 'tasks done (of those broken down so far)', r_trabajo: 'of logged work',
+    jugar: 'Play', version: 'Version', sin_desglosar: 'Not broken down yet: planned when the milestone starts.', hecho: 'done',
+    en_curso_d: 'in progress', pruebas: 'Tests', sin_entradas: 'No entries yet.',
+    est_pocos: (n) => `Not enough data to estimate yet: at least 3 measured tasks are needed (there are ${n}). Every task is logged with its start and end time, and the estimate will appear on its own.`,
+    est: (m, n, k, t, c) => `Real average per task: <b>${m}</b> (${n} measured tasks). The active milestone has ${k} tasks left that are already broken down: about <b>${t}</b> of work. Since at most one task is done per hour, that is at least ${c} h on the calendar, plus however long your review takes. Milestones not yet broken down are not estimated.`,
+    th_hito: 'Milestone', th_estado: 'Status', th_trabajo: 'Logged work',
+    aprox: '≈ = approximate time taken from file dates (work done before hours were being logged).',
+    revisa: 'Review milestone', revisa_d: 'Finished and published under Play. The automatic work won’t start the next milestone until you approve it or ask for changes.',
+    desde: 'Since', hito: 'milestone', nada: 'Nothing waiting on you.', min: 'min', h: 'h',
+  },
+};
+const IDIOMAS = DATOS.idiomas || {};            // { en: {texto en español: traducción}, ru: {...} }
+const DISPONIBLES = ['es', ...Object.keys(IDIOMAS).filter(k => UI[k])];
+const NOMBRE_IDIOMA = { es: 'ES', en: 'EN', ru: 'RU' };
+const LOCALE = { es: 'es-ES', en: 'en-GB', ru: 'ru-RU' };
+let idioma = (() => {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (DISPONIBLES.includes(q)) return q;
+  try { const g = localStorage.getItem('kinhold_web_idioma'); if (DISPONIBLES.includes(g)) return g; } catch (e) { /* sin almacenamiento */ }
+  const n = (navigator.language || 'es').slice(0, 2);
+  return DISPONIBLES.includes(n) ? n : (n === 'es' || n === 'ca' ? 'es' : DISPONIBLES.includes('en') ? 'en' : 'es');
+})();
+const u = (k) => UI[idioma][k] ?? UI.es[k];
+const tr = (s) => (idioma === 'es' || !s) ? s : ((IDIOMAS[idioma] || {})[s] ?? s);
+
+const chip = (e) => `<span class="chip ${e}">${u('estado')[e] || e}</span>`;
+const fecha = (iso) => iso ? new Date(iso).toLocaleString(LOCALE[idioma], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
 const minutos = (a, b) => (a && b) ? Math.max(0, (new Date(b) - new Date(a)) / 60000) : null;
-const durTexto = (m) => m == null ? '—' : m < 60 ? `${Math.round(m)} min` : `${Math.floor(m / 60)} h ${String(Math.round(m % 60)).padStart(2, '0')} min`;
+const durTexto = (m) => m == null ? '—' : m < 60 ? `${Math.round(m)} ${u('min')}` : `${Math.floor(m / 60)} ${u('h')} ${String(Math.round(m % 60)).padStart(2, '0')} ${u('min')}`;
 
-// ---------- Resumen ----------
-const tareas = R.hitos.flatMap(h => h.tareas.map(t => ({ ...t, hito: h })));
-const hechas = tareas.filter(t => t.estado === 'hecho').length;
-const hitosHechos = R.hitos.filter(h => h.estado === 'hecho').length;
-const activo = R.hitos.find(h => h.estado === 'en_curso' && h.tareas.some(t => t.estado === 'pendiente' || t.estado === 'en_curso'))
-  || R.hitos.find(h => h.estado === 'revision') || R.hitos.find(h => h.estado === 'pendiente');
-const trabajado = D.reduce((a, e) => a + (minutos(e.inicio, e.fin) || 0), 0);
-$('#resumen').innerHTML = [
-  [`${hitosHechos} / ${R.hitos.length}`, 'hitos terminados'],
-  [`${hechas} / ${tareas.length}`, 'tareas hechas (de las ya desglosadas)'],
-  [activo ? `${activo.num}. ${activo.nombre}` : '—', activo ? NOMBRE_ESTADO[activo.estado].toLowerCase() : ''],
-  [(D.some(e => e.aprox && e.fin) ? '≈ ' : '') + durTexto(trabajado), 'de trabajo registrado'],
-].map(([b, s]) => `<div class="dato"><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join('');
-$('#resumen .dato:nth-child(3) b').style.fontSize = '17px';
-$('#actualizado').textContent = 'Actualizado: ' + fecha(DATOS.generado);
-
-// ---------- Jugar ----------
-$('#listaJuegos').innerHTML = R.prototipos.map(p => {
-  const vs = [...p.versiones].reverse(), u = vs[0];
-  const portada = (CAPT[u.capturas] || [])[0];
-  return `<div class="tarjeta">${portada ? `<img src="${esc(u.capturas + '/' + portada)}" alt="" loading="lazy">` : ''}
-    <div class="cuerpo"><h3>${esc(p.nombre)} <span class="chip">${esc(u.v)}</span></h3><p>${esc(p.descripcion)}</p><p>${esc(u.notas || '')}</p>
-    <div class="fila" style="margin-top:auto"><a class="boton" data-juego href="${esc(u.archivo)}">Jugar</a>
-    ${vs.length > 1 ? `<select aria-label="Versión">${vs.map(v => `<option value="${esc(v.archivo)}">${esc(v.v)} · ${esc(v.fecha)}</option>`).join('')}</select>` : ''}</div></div></div>`;
-}).join('');
-document.querySelectorAll('#listaJuegos select').forEach(s => s.onchange = () => { s.closest('.cuerpo').querySelector('[data-juego]').href = s.value; });
-
-// ---------- Roadmap ----------
-$('#listaHitos').innerHTML = R.hitos.map(h => {
-  const n = h.tareas.length, k = h.tareas.filter(t => t.estado === 'hecho').length;
-  const pct = h.estado === 'hecho' ? 100 : n ? Math.round(k / n * 100) : 0;
-  const lista = h.tareas.map(t => {
-    const m = minutos(t.inicio, t.fin);
-    return `<li><span>${esc(t.nombre)}</span><em>${t.estado === 'hecho' ? (m != null ? durTexto(m) : 'hecho') : NOMBRE_ESTADO[t.estado]}</em></li>`;
-  }).join('');
-  return `<details class="hito ${h === activo ? 'activo' : ''}" ${h === activo ? 'open' : ''}>
-    <summary><div class="num">${esc(h.num)}</div><div><h3>${esc(h.nombre)}</h3><div class="barra"><i style="width:${pct}%"></i></div></div>${chip(h.estado)}</summary>
-    <div class="det"><div>${esc(h.jugable)}</div>${h.nota ? `<div style="margin-top:6px;color:var(--tenue)">${esc(h.nota)}</div>` : ''}
-    ${n ? `<ul>${lista}</ul>` : '<div style="margin-top:6px;color:var(--tenue)">Sin desglosar: se planifica al empezar el hito.</div>'}</div></details>`;
-}).join('');
-
-// ---------- Diario ----------
-$('#listaDiario').innerHTML = [...D].reverse().map(e => {
-  const caps = e.capturas ? (CAPT[e.capturas] || []) : [];
-  return `<div class="entrada"><h3>${esc(e.titulo)} ${e.estado && e.estado !== 'ok' ? chip(e.estado) : ''}</h3>
-    <div class="meta">${fecha(e.inicio)}${e.fin ? ' → ' + fecha(e.fin) + ' · ' + (e.aprox ? '≈ ' : '') + durTexto(minutos(e.inicio, e.fin)) : ' · en curso'}</div>
-    <ul>${(e.hecho || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul>
-    ${e.pruebas ? `<div class="meta">Pruebas: ${esc(e.pruebas)}</div>` : ''}
-    ${caps.length ? `<div class="miniaturas">${caps.map(c => `<a href="${esc(e.capturas + '/' + c)}"><img src="${esc(e.capturas + '/' + c)}" alt="${esc(c)}" loading="lazy"></a>`).join('')}</div>` : ''}</div>`;
-}).join('') || '<p class="nota">Todavía no hay entradas.</p>';
-
-// ---------- Tiempos ----------
-{
-  const porHito = R.hitos.map(h => {
-    const ents = D.filter(e => e.hito === h.id && e.inicio && e.fin);
-    const m = ents.reduce((a, e) => a + minutos(e.inicio, e.fin), 0);
-    return { h, m: ents.length ? m : null, aprox: ents.some(e => e.aprox) };
+function pintar() {
+  document.documentElement.lang = idioma;
+  document.querySelectorAll('[data-t]').forEach(el => { const t = u(el.dataset.t); if (el.hasAttribute('data-html')) el.innerHTML = t; else el.textContent = t; });
+  $('#idiomas').innerHTML = DISPONIBLES.length > 1 ? DISPONIBLES.map(l => `<button data-l="${l}" class="${l === idioma ? 'sel' : ''}">${NOMBRE_IDIOMA[l]}</button>`).join('') : '';
+  document.querySelectorAll('#idiomas button').forEach(b => b.onclick = () => {
+    idioma = b.dataset.l;
+    try { localStorage.setItem('kinhold_web_idioma', idioma); } catch (e) { /* sin almacenamiento */ }
+    pintar();
   });
-  // tareas medidas de verdad (con inicio y fin registrados)
-  const medidas = tareas.filter(t => t.estado === 'hecho' && t.inicio && t.fin).map(t => minutos(t.inicio, t.fin));
-  const media = medidas.length ? medidas.reduce((a, b) => a + b, 0) / medidas.length : null;
-  const pendientesActivo = activo ? activo.tareas.filter(t => t.estado !== 'hecho' && t.estado !== 'espera_decision').length : 0;
-  let est;
-  if (medidas.length < 3) est = `Todavía no hay datos suficientes para estimar: hacen falta al menos 3 tareas medidas (hay ${medidas.length}). Cada tarea queda registrada con su hora de inicio y fin, y la estimación aparecerá sola.`;
-  else est = `Media real por tarea: <b>${durTexto(media)}</b> (${medidas.length} tareas medidas). En el hito activo quedan ${pendientesActivo} tareas ya desglosadas: unas <b>${durTexto(media * pendientesActivo)}</b> de trabajo. Como se trabaja una tarea por hora como mucho, en calendario son al menos ${pendientesActivo} h, más lo que tarde tu revisión. Los hitos sin desglosar no se estiman.`;
-  $('#tablaTiempos').innerHTML = `<p class="nota">${est}</p>
-    <table><thead><tr><th>Hito</th><th>Estado</th><th class="n">Trabajo registrado</th></tr></thead><tbody>
-    ${porHito.map(({ h, m, aprox }) => `<tr><td>${esc(h.num)}. ${esc(h.nombre)}</td><td>${chip(h.estado)}</td><td class="n">${m == null ? '—' : (aprox ? '≈ ' : '') + durTexto(m)}</td></tr>`).join('')}
-    </tbody></table>
-    <p style="color:var(--tenue);font-size:13px">≈ = tiempo aproximado sacado de las fechas de los archivos (trabajo anterior a que se registraran las horas).</p>`;
-}
 
-// ---------- Te espera ----------
-{
-  const revisar = R.hitos.filter(h => h.estado === 'revision');
-  const dec = R.decisiones_pendientes || [];
-  $('#listaDecisiones').innerHTML =
-    revisar.map(h => `<div class="decision"><b>Revisa el hito ${esc(h.num)}: ${esc(h.nombre)}</b><div class="meta">Terminado y publicado en Jugar. El trabajo automático no empezará el siguiente hito hasta que lo apruebes o pidas cambios.</div></div>`).join('') +
-    dec.map(d => `<div class="decision">${esc(d.pregunta)}<div class="meta">Desde ${esc(d.desde)}${d.hito ? ' · hito ' + esc((R.hitos.find(h => h.id === d.hito) || {}).nombre || d.hito) : ''}</div></div>`).join('') ||
-    '<p class="nota">Nada pendiente por tu parte.</p>';
-  const n = revisar.length + dec.length;
-  if (n) $('[data-s=decisiones]').insertAdjacentHTML('beforeend', `<span class="n">${n}</span>`);
+  // ---------- Resumen ----------
+  const tareas = R.hitos.flatMap(h => h.tareas.map(t => ({ ...t, hito: h })));
+  const hechas = tareas.filter(t => t.estado === 'hecho').length;
+  const hitosHechos = R.hitos.filter(h => h.estado === 'hecho').length;
+  const activo = R.hitos.find(h => h.estado === 'en_curso' && h.tareas.some(t => t.estado === 'pendiente' || t.estado === 'en_curso'))
+    || R.hitos.find(h => h.estado === 'revision') || R.hitos.find(h => h.estado === 'en_curso') || R.hitos.find(h => h.estado === 'pendiente');
+  const trabajado = D.reduce((a, e) => a + (minutos(e.inicio, e.fin) || 0), 0);
+  $('#resumen').innerHTML = [
+    [`${hitosHechos} / ${R.hitos.length}`, u('r_hitos')],
+    [`${hechas} / ${tareas.length}`, u('r_tareas')],
+    [activo ? `${activo.num}. ${tr(activo.nombre)}` : '—', activo ? u('estado')[activo.estado].toLowerCase() : ''],
+    [(D.some(e => e.aprox && e.fin) ? '≈ ' : '') + durTexto(trabajado), u('r_trabajo')],
+  ].map(([b, s]) => `<div class="dato"><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join('');
+  $('#resumen .dato:nth-child(3) b').style.fontSize = '17px';
+  $('#actualizado').textContent = u('actualizado') + ': ' + fecha(DATOS.generado);
+
+  // ---------- Jugar ----------
+  $('#listaJuegos').innerHTML = R.prototipos.map(p => {
+    const vs = [...p.versiones].reverse(), ul = vs[0];
+    const portada = (CAPT[ul.capturas] || [])[0];
+    return `<div class="tarjeta">${portada ? `<img src="${esc(ul.capturas + '/' + portada)}" alt="" loading="lazy">` : ''}
+      <div class="cuerpo"><h3>${esc(tr(p.nombre))} <span class="chip">${esc(ul.v)}</span></h3><p>${esc(tr(p.descripcion))}</p><p>${esc(tr(ul.notas || ''))}</p>
+      <div class="fila" style="margin-top:auto"><a class="boton" data-juego href="${esc(ul.archivo)}">${u('jugar')}</a>
+      ${vs.length > 1 ? `<select aria-label="${u('version')}">${vs.map(v => `<option value="${esc(v.archivo)}">${esc(v.v)} · ${esc(v.fecha)}</option>`).join('')}</select>` : ''}</div></div></div>`;
+  }).join('');
+  document.querySelectorAll('#listaJuegos select').forEach(s => s.onchange = () => { s.closest('.cuerpo').querySelector('[data-juego]').href = s.value; });
+
+  // ---------- Roadmap ----------
+  $('#listaHitos').innerHTML = R.hitos.map(h => {
+    const n = h.tareas.length, k = h.tareas.filter(t => t.estado === 'hecho').length;
+    const pct = h.estado === 'hecho' ? 100 : n ? Math.round(k / n * 100) : 0;
+    const lista = h.tareas.map(t => {
+      const m = minutos(t.inicio, t.fin);
+      return `<li><span>${esc(tr(t.nombre))}</span><em>${t.estado === 'hecho' ? (m != null ? durTexto(m) : u('hecho')) : u('estado')[t.estado]}</em></li>`;
+    }).join('');
+    return `<details class="hito ${h === activo ? 'activo' : ''}" ${h === activo ? 'open' : ''}>
+      <summary><div class="num">${esc(h.num)}</div><div><h3>${esc(tr(h.nombre))}</h3><div class="barra"><i style="width:${pct}%"></i></div></div>${chip(h.estado)}</summary>
+      <div class="det"><div>${esc(tr(h.jugable))}</div>${h.nota ? `<div style="margin-top:6px;color:var(--tenue)">${esc(tr(h.nota))}</div>` : ''}
+      ${n ? `<ul>${lista}</ul>` : `<div style="margin-top:6px;color:var(--tenue)">${u('sin_desglosar')}</div>`}</div></details>`;
+  }).join('');
+
+  // ---------- Diario ----------
+  $('#listaDiario').innerHTML = [...D].reverse().map(e => {
+    const caps = e.capturas ? (CAPT[e.capturas] || []) : [];
+    return `<div class="entrada"><h3>${esc(tr(e.titulo))} ${e.estado && e.estado !== 'ok' ? chip(e.estado) : ''}</h3>
+      <div class="meta">${fecha(e.inicio)}${e.fin ? ' → ' + fecha(e.fin) + ' · ' + (e.aprox ? '≈ ' : '') + durTexto(minutos(e.inicio, e.fin)) : ' · ' + u('en_curso_d')}</div>
+      <ul>${(e.hecho || []).map(x => `<li>${esc(tr(x))}</li>`).join('')}</ul>
+      ${e.pruebas ? `<div class="meta">${u('pruebas')}: ${esc(tr(e.pruebas))}</div>` : ''}
+      ${caps.length ? `<div class="miniaturas">${caps.map(c => `<a href="${esc(e.capturas + '/' + c)}"><img src="${esc(e.capturas + '/' + c)}" alt="${esc(c)}" loading="lazy"></a>`).join('')}</div>` : ''}</div>`;
+  }).join('') || `<p class="nota">${u('sin_entradas')}</p>`;
+
+  // ---------- Tiempos ----------
+  {
+    const porHito = R.hitos.map(h => {
+      const ents = D.filter(e => e.hito === h.id && e.inicio && e.fin);
+      const m = ents.reduce((a, e) => a + minutos(e.inicio, e.fin), 0);
+      return { h, m: ents.length ? m : null, aprox: ents.some(e => e.aprox) };
+    });
+    const medidas = tareas.filter(t => t.estado === 'hecho' && t.inicio && t.fin).map(t => minutos(t.inicio, t.fin));
+    const media = medidas.length ? medidas.reduce((a, b) => a + b, 0) / medidas.length : null;
+    const pend = activo ? activo.tareas.filter(t => t.estado !== 'hecho' && t.estado !== 'espera_decision').length : 0;
+    const est = medidas.length < 3 ? u('est_pocos')(medidas.length) : u('est')(durTexto(media), medidas.length, pend, durTexto(media * pend), pend);
+    $('#tablaTiempos').innerHTML = `<p class="nota">${est}</p>
+      <table><thead><tr><th>${u('th_hito')}</th><th>${u('th_estado')}</th><th class="n">${u('th_trabajo')}</th></tr></thead><tbody>
+      ${porHito.map(({ h, m, aprox }) => `<tr><td>${esc(h.num)}. ${esc(tr(h.nombre))}</td><td>${chip(h.estado)}</td><td class="n">${m == null ? '—' : (aprox ? '≈ ' : '') + durTexto(m)}</td></tr>`).join('')}
+      </tbody></table>
+      <p style="color:var(--tenue);font-size:13px">${u('aprox')}</p>`;
+  }
+
+  // ---------- Te espera ----------
+  {
+    const revisar = R.hitos.filter(h => h.estado === 'revision');
+    const dec = R.decisiones_pendientes || [];
+    $('#listaDecisiones').innerHTML =
+      revisar.map(h => `<div class="decision"><b>${u('revisa')} ${esc(h.num)}: ${esc(tr(h.nombre))}</b><div class="meta">${u('revisa_d')}</div></div>`).join('') +
+      dec.map(d => `<div class="decision">${esc(tr(d.pregunta))}<div class="meta">${u('desde')} ${esc(d.desde)}${d.hito ? ' · ' + u('hito') + ' ' + esc(tr((R.hitos.find(h => h.id === d.hito) || {}).nombre || d.hito)) : ''}</div></div>`).join('') ||
+      `<p class="nota">${u('nada')}</p>`;
+    const n = revisar.length + dec.length;
+    const b = $('[data-s=decisiones]');
+    b.querySelector('.n')?.remove();
+    if (n) b.insertAdjacentHTML('beforeend', `<span class="n">${n}</span>`);
+  }
 }
 
 // ---------- Pestañas y visor ----------
@@ -215,7 +286,7 @@ function ir(s) {
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('sel', b.dataset.s === s));
   document.querySelectorAll('section').forEach(x => x.classList.toggle('sel', x.id === s));
 }
-document.querySelectorAll('nav button').forEach(b => b.onclick = () => { ir(b.dataset.s); b.scrollIntoView({ block: 'nearest', inline: 'center' }); history.replaceState(null, '', '#' + b.dataset.s); });
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => { ir(b.dataset.s); b.scrollIntoView({ block: 'nearest', inline: 'center' }); history.replaceState(null, '', location.search + '#' + b.dataset.s); });
 { const s0 = location.hash.slice(1); const el = s0 && document.getElementById(s0); if (el && el.tagName === 'SECTION') ir(s0); }
 document.addEventListener('click', (e) => {
   const a = e.target.closest('.miniaturas a');
@@ -223,6 +294,7 @@ document.addEventListener('click', (e) => {
   e.preventDefault(); $('#visor img').src = a.href; $('#visor').hidden = false;
 });
 $('#visor').onclick = () => { $('#visor').hidden = true; };
+pintar();
 </script>
 </body>
 </html>

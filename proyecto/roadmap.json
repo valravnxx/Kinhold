@@ -5,15 +5,30 @@
    "num": "0",
    "nombre": "Infraestructura",
    "jugable": "Repositorio en GitHub, web de progreso y trabajo automático por horas.",
-   "estado": "hecho",
+   "estado": "en_curso",
    "tareas": [
     {
      "nombre": "Repositorio, web de progreso y tarea programada",
      "estado": "hecho",
      "fin": "2026-10-24T18:19:37+02:00",
      "inicio": "2026-10-24T18:04:00+02:00"
+    },
+    {
+     "nombre": "Web de progreso en inglés: selector ES/EN y todo el roadmap y el diario traducidos",
+     "estado": "hecho",
+     "inicio": "2026-10-24T22:06:00+02:00",
+     "fin": "2026-10-24T22:11:29+02:00"
+    },
+    {
+     "nombre": "Documentos de diseño en inglés (GDD, sistemas y análisis), con selector de idioma",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Juego en inglés: textos de los prototipos con selector de idioma, preparado para añadir ruso",
+     "estado": "pendiente"
     }
-   ]
+   ],
+   "nota": "Idiomas: español e inglés ya en la web; el ruso, más adelante, cuando Pedro lo pida."
   },
   {
    "id": "construccion",
