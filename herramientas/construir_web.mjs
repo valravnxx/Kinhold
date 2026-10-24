@@ -36,7 +36,7 @@ for (const h of roadmap.hitos) {
 // nada de lo que enlaza la web puede estar excluido de git (si no, en GitHub Pages sale roto)
 const enlazado = [...Object.keys(capturas).map(c => join('docs', c, capturas[c][0] || '')), ...roadmap.prototipos.flatMap(p => p.versiones.map(v => join('docs', v.archivo)))];
 for (const f of enlazado) {
-  try { execFileSync('git', ['check-ignore', '-q', f], { cwd: raiz }); errores.push(`git ignora ${f}: no llegaría a la web`); } catch (e) { /* no ignorado: bien */ }
+  try { execFileSync('git', ['check-ignore', '-q', '--no-index', f], { cwd: raiz }); errores.push(`git ignora ${f}: no llegaría a la web`); } catch (e) { /* no ignorado: bien */ }
 }
 if (errores.length) { console.error('ERRORES:\n - ' + errores.join('\n - ')); process.exit(1); }
 
