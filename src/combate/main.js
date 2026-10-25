@@ -4,7 +4,8 @@ import { Luchador, IA, azar, angulo, T,
   ARMAS, ARMADURAS, NOMBRE_LINEA, NOMBRE_ZONA, LINEAS, ESPEJO, RITMO } from './logica.js';
 import { crearCombatiente, ponerArma, animarCombatiente, pintarHeridas, sacudir, Rastro, Particulas,
   modeloFlecha, modeloPiedra, modeloPoste, modeloDiana } from './modelos.js';
-import { arbol, COLORES } from '../juego/modelos.js';
+import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
+import { crearDecorado } from '../mundo/decorado.js';
 import * as sonido from './sonido.js';
 import { RegistroAcciones, ejecutarCombate, avanzarProyectil } from '../logica/acciones.js';
 import { REGISTRO_COMBATE, VERSION_COMBATE } from './registro.js';
@@ -48,38 +49,14 @@ const AYUDAS = {
 const lienzo = $('lienzo');
 const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+prepararRenderer(renderer); // sombras blandas, sRGB y ACES: los de la escena común
 const escena = new THREE.Scene();
-escena.background = new THREE.Color(0xb9d3e3);
-escena.fog = new THREE.Fog(0xb9d3e3, 60, 170);
 const camara = new THREE.PerspectiveCamera(45, 1, 0.1, 400);
-escena.add(new THREE.HemisphereLight(0xdfeaf2, 0x6b5a3e, 0.9));
-const sol = new THREE.DirectionalLight(0xfff1d6, 1.6);
-sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048);
-Object.assign(sol.shadow.camera, { left: -25, right: 25, top: 25, bottom: -25, near: 1, far: 120 });
-sol.shadow.bias = -0.0005;
-escena.add(sol, sol.target);
-{
-  const geo = new THREE.PlaneGeometry(300, 300, 60, 60); geo.rotateX(-Math.PI / 2);
-  const col = [], a = new THREE.Color(COLORES.hierba), b = new THREE.Color(0x7d9a50), c = new THREE.Color(COLORES.tierra);
-  const pos = geo.attributes.position;
-  for (let n = 0; n < pos.count; n++) {
-    const x = pos.getX(n), z = pos.getZ(n);
-    const r = (Math.sin(x * 0.13) + Math.cos(z * 0.17) + Math.sin((x + z) * 0.05)) / 3;
-    const k = a.clone().lerp(r > 0.2 ? b : c, Math.abs(r) * 0.5);
-    if (Math.hypot(x, z) < 9) k.lerp(c, 0.55);
-    col.push(k.r, k.g, k.b);
-  }
-  geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-  const suelo = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true }));
-  suelo.receiveShadow = true;
-  escena.add(suelo);
-  for (let n = 0; n < 160; n++) {
-    const ang = n * 2.39996, dist = 30 + ((n * 41) % 110);
-    const t = arbol(n + 3); t.position.set(Math.cos(ang) * dist, 0, Math.sin(ang) * dist); escena.add(t);
-  }
-}
+// cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
+const ambiente = crearAmbiente(escena, { alcance: 25, mapa: 2048, niebla: [60, 170] });
+// decorado común (src/mundo/decorado.js): liza de tierra pisada en el centro, hierba alrededor y bosque
+escena.add(crearDecorado({ semilla: 11, llano: 45, lejos: 200, arboles: 160, bosqueDesde: 30, bosqueHasta: 140,
+  hierba: 1100, flores: 300, hierbaDesde: 9, hierbaHasta: 34, tierra: 8, rocas: 24 }).raiz);
 const particulas = new Particulas(escena);
 const rastroJ = new Rastro(escena), rastroR = new Rastro(escena);
 
@@ -181,8 +158,7 @@ function actualizarCamara(dt) {
   const cp = Math.cos(pitch);
   camara.position.set(ox + Math.sin(cam.yaw) * cp * dist + sx, oy + Math.sin(pitch) * dist + sy, oz + Math.cos(cam.yaw) * cp * dist);
   camara.lookAt(ox + sx * 0.5, oy, oz);
-  sol.position.set(jugador.x + 20, 40, jugador.z + 12);
-  sol.target.position.set(jugador.x, 0, jugador.z);
+  ambiente.seguir(jugador.x, jugador.z);
 }
 
 // ---------------- Rosa de golpes ----------------

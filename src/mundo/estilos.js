@@ -1,4 +1,4 @@
-// Kinhold — estilo visual v3 (hito 1b): «maqueta en miniatura».
+// Kinhold — estilo visual del mundo («realismo en miniatura», decidido en la prueba de estilo v5).
 // Formas limpias y redondeadas, sombreado suave, luz cálida y suave con sombras blandas,
 // oclusión de contacto horneada en los vértices y fondo desenfocado (como una foto de maqueta).
 // Ligero igual que la v2: todo lo fijo en una malla, lo repetido instanciado, una sola sombra.

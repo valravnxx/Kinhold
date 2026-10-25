@@ -1,40 +1,12 @@
-// Kinhold — escena de la prueba de estilo v4 («realismo en miniatura»):
+// Kinhold — escena de la prueba de estilo v4 (suelo, bosque y hierba vienen de la escena común, src/mundo/) («realismo en miniatura»):
 // claro abierto que sigue hasta el horizonte, cabaña de troncos sobre zócalo de piedra,
 // leña, tocón con hacha, barril, banco, cerca, árboles, matas y flores.
 import * as THREE from 'three';
-import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
-import { PALETA, Lote, material, materialTex } from './estilos.js';
+import { PALETA, Lote, materialTex } from '../mundo/estilos.js';
+import { azar, cil, copa, pisoPino, suelo as sueloComun, bosque as bosqueComun, plantas as plantasComun } from '../mundo/decorado.js';
 
-// Copa de árbol: esfera con bultos (racimos), mismo desplazamiento en vértices repetidos para no abrir grietas
-function copa(radio, detalle, semilla) {
-  let g = new THREE.IcosahedronGeometry(radio, detalle); g.deleteAttribute('normal'); g.deleteAttribute('uv');
-  g = mergeVertices(g); // vértices compartidos: sombreado suave, no facetado
-  const p = g.attributes.position, v = new THREE.Vector3();
-  for (let i = 0; i < p.count; i++) {
-    v.fromBufferAttribute(p, i).normalize();
-    const b = 1 + 0.13 * Math.sin(v.x * 5.3 + semilla) * Math.sin(v.y * 4.1 + semilla * 2) + 0.08 * Math.sin(v.z * 7.7 + v.x * 3 + semilla);
-    v.multiplyScalar(radio * b * (v.y < -0.3 ? 0.88 : 1)); // un poco plana por debajo
-    p.setXYZ(i, v.x, v.y, v.z);
-  }
-  g.computeVertexNormals(); return g;
-}
-// Piso de pino: cono con el borde de abajo en puntas caídas (ramas), no un cono liso
-function pisoPino(radio, alto, lados, semilla) {
-  const g = new THREE.ConeGeometry(radio, alto, lados, 2, true), p = g.attributes.position;
-  for (let i = 0; i < p.count; i++) {
-    const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
-    if (y < -alto / 2 + 1e-3) { // anillo de abajo
-      const a = Math.atan2(z, x), j = Math.round((a / (2 * Math.PI)) * lados * 2), punta = j % 2 === 0;
-      const f = punta ? 1.12 : 0.82;
-      p.setXYZ(i, x * f, y + (punta ? -0.12 * alto : 0.06 * alto) + Math.sin(a * 3 + semilla) * 0.04 * alto, z * f);
-    }
-  }
-  g.computeVertexNormals(); return g;
-}
-
-function azar(semilla) { let s = semilla >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
-const cil = (r1, r2, h, lados, abierto = false) => new THREE.CylinderGeometry(r1, r2, h, lados, 1, abierto);
 const caja = (w, h, d, radio = 0.025) => new RoundedBoxGeometry(w, h, d, 1, Math.min(radio, w / 2.05, h / 2.05, d / 2.05));
 
 export const CAB = { AX: 2.0, AZ: 1.8, ZOCALO: 0.42, HIL: 0.25, N: 9, RAD: 0.135, SAL: 0.3, SUB: 1.6, VUELO: 0.5 };
@@ -68,75 +40,32 @@ export function crearEscena() {
   return raiz;
 }
 
-// ---------- Suelo: sigue hasta el horizonte (el mundo no está recortado) ----------
-// Anillos concéntricos cada vez más separados: detalle cerca, poco lejos. Color en vértices
-// (hierba, claros, tierra pisada, camino y sombras de contacto) y textura de suelo repetida.
+// ---------- Suelo, bosque lejano y hierba: los de la escena común, con lo propio de la cabaña ----------
 function suelo(sombras) {
-  const ANILLOS = 30, LADOS = 64, LEJOS = 90;
-  const H = new THREE.Color(PALETA.hierba), C = new THREE.Color(PALETA.hierbaClara), T = new THREE.Color(PALETA.tierra), K = new THREE.Color(PALETA.camino);
-  const pos = [], col = [], uv = [], idx = [], k = new THREE.Color();
+  const T = new THREE.Color(PALETA.tierra), K = new THREE.Color(PALETA.camino);
   const { AX, AZ } = CAB;
-  const radio = (i) => { const t = i / ANILLOS; return t < 0.6 ? t / 0.6 * RADIO * 1.3 : RADIO * 1.3 + Math.pow((t - 0.6) / 0.4, 1.6) * (LEJOS - RADIO * 1.3); };
-  const altura = (x, z) => { const d = Math.hypot(x, z); if (d < 12) return 0; const f = Math.min(1, (d - 12) / 14); return f * (Math.sin(x * 0.07) * Math.cos(z * 0.06) * 2.2 + Math.sin((x + z) * 0.03) * 1.6 + 0.6); };
-  const punto = (x, z) => { pos.push(x, altura(x, z), z); col.push(...colorSuelo(x, z)); uv.push(x * 0.5, z * 0.5); };
-  punto(0, 0);
-  for (let i = 1; i <= ANILLOS; i++) for (let j = 0; j < LADOS; j++) { const a = j / LADOS * Math.PI * 2, rr = radio(i); punto(Math.cos(a) * rr, Math.sin(a) * rr); }
-  const id = (i, j) => (i === 0 ? 0 : 1 + (i - 1) * LADOS + (j % LADOS));
-  for (let j = 0; j < LADOS; j++) idx.push(0, id(1, j + 1), id(1, j));
-  for (let i = 1; i < ANILLOS; i++) for (let j = 0; j < LADOS; j++) { const a = id(i, j), b = id(i, j + 1), c = id(i + 1, j), d = id(i + 1, j + 1); idx.push(a, b, d, a, d, c); }
-  function colorSuelo(x, z) {
-    const m = Math.sin(x * 0.45 + 1) * Math.cos(z * 0.4) * 0.5 + 0.5, m2 = Math.sin(x * 0.11 - 2) * Math.sin(z * 0.13 + 1) * 0.5 + 0.5;
-    k.copy(H).lerp(C, m * 0.45 + m2 * 0.2);
+  const tinte = (x, z, k) => {
     const camino = Math.max(0, 1 - Math.abs(x - 0.2 - Math.sin(z * 0.5) * 0.5) / 1.0) * (z > 1.9 ? 1 : 0);
     k.lerp(K, Math.min(0.85, camino * 1.2));
     const dCab = Math.hypot(Math.max(0, Math.abs(x) - AX), Math.max(0, Math.abs(z) - AZ));
     k.lerp(T, dCab < 0.6 ? 0.55 : dCab < 1.4 ? 0.55 * (1.4 - dCab) / 0.8 : 0);
-    let o = 1 - 0.38 * Math.max(0, 1 - dCab / 0.9);
-    for (const [sx, sz, sr, f] of sombras) { const dd = Math.hypot(x - sx, z - sz); if (dd < sr) o *= 1 - f * (1 - dd / sr) ** 2; }
-    o *= 1.1; // la textura oscurece un poco
-    return [k.r * o, k.g * o, k.b * o];
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
-  geo.setIndex(idx); geo.computeVertexNormals();
-  const m = new THREE.Mesh(geo, materialTex('suelo')); m.receiveShadow = true; m.name = 'suelo';
-  return m;
-}
-
-// ---------- Bosque lejano: dos tipos de árbol instanciados, sin sombra (fuera del alcance de la sombra) ----------
-function bosque(raiz, r) {
-  const hacer = (fn) => {
-    const L = new Lote({ rangoSuelo: 2.5 }); fn(L);
-    const grupos = L.cerrar(null, true), tipos = Object.keys(grupos);
-    const geo = mergeGeometries(tipos.map(t => mergeGeometries(grupos[t])), true);
-    return { geo, mats: tipos.map(t => materialTex(t)) };
+    return 1 - 0.38 * Math.max(0, 1 - dCab / 0.9);
   };
-  const pino = hacer((L) => {
-    L.add(cil(0.12, 0.24, 2.2, 6), 'corteza', 0, 1.1, 0);
-    [[1.7, 2.1, 1.8], [1.35, 1.9, 2.9], [0.95, 1.7, 3.9], [0.55, 1.4, 4.8]].forEach(([rad, h, y], i) => L.add(pisoPino(rad, h, 8, i), i % 2 ? 'pinoOsc' : 'pino', 0, y, 0, { y: i }, { copa: 0 }));
-  });
-  const frond = hacer((L) => {
-    L.add(cil(0.16, 0.26, 2.6, 6), 'corteza', 0, 1.3, 0);
-    [[0, 3.4, 0, 1.4], [0.9, 2.9, 0.3, 1.0], [-0.9, 3.0, -0.2, 1.05], [0.1, 2.9, -0.9, 0.95]].forEach(([x, y, z, s], i) => L.add(copa(s, 1, i), ['hoja', 'hojaOsc', 'hojaClara'][i % 3], x, y, z, { x: i, y: i * 2 }, { copa: 2 }));
-  });
-  const sitios = { p: [], f: [] };
-  for (let i = 0; i < 36; i++) {
-    const a = r() * Math.PI * 2, d = 15 + Math.pow(r(), 0.8) * 45;
-    const x = Math.cos(a) * d, z = Math.sin(a) * d;
-    if (x > -4 && z > 4 && d < 38) continue; // libre la vista desde la cámara
-    (i % 3 === 0 ? sitios.f : sitios.p).push([x, z, 0.8 + r() * 0.7, r() * 6, 0.85 + r() * 0.3]);
-  }
-  for (const [mod, lista] of [[pino, sitios.p], [frond, sitios.f]]) {
-    const im = new THREE.InstancedMesh(mod.geo, mod.mats, lista.length), o = new THREE.Object3D(), c = new THREE.Color();
-    lista.forEach(([x, z, s, g, t], i) => {
-      const d = Math.hypot(x, z), y = d < 12 ? 0 : Math.min(1, (d - 12) / 14) * (Math.sin(x * 0.07) * Math.cos(z * 0.06) * 2.2 + Math.sin((x + z) * 0.03) * 1.6 + 0.6);
-      o.position.set(x, y - 0.1, z); o.rotation.set(0, g, 0); o.scale.setScalar(s); o.updateMatrix();
-      im.setMatrixAt(i, o.matrix); im.setColorAt(i, c.setScalar(t));
-    });
-    im.receiveShadow = true; raiz.add(im);
-  }
+  return sueloComun({ llano: 12, cerca: RADIO * 1.3, lejos: 90, sombras, tinte });
+}
+function bosque(raiz, r) {
+  bosqueComun(raiz, r, { n: 36, desde: 15, hasta: 60, reparto: 0.8, llano: 12, libre: (x, z, d) => !(x > -4 && z > 4 && d < 38) }); // libre la vista desde la cámara
+}
+function plantas(raiz, r) {
+  const { AX, AZ } = CAB;
+  const libre = (x, z) => {
+    const d = Math.hypot(x, z);
+    if (d > RADIO - 0.7) return false;
+    if (Math.abs(x) < AX + 1.0 && Math.abs(z) < AZ + 1.0) return false; // al pie de la cabaña, tierra
+    if (Math.abs(x - 0.2) < 1.1 && z > 1.9) return false; // el camino
+    return true;
+  };
+  plantasComun(raiz, r, { hierba: 170, flores: 70, radio: RADIO, libre });
 }
 
 // ---------- Cabaña ----------
@@ -303,31 +232,4 @@ function arboles(L, r, sombras) {
     L.add(new THREE.IcosahedronGeometry(1, 1), 'piedraOsc', x, s * 0.25, z, { y: r() * 6 }, { escala: new THREE.Vector3(s * 1.3, s * 0.65, s), plano: true });
     sombras.push([x, z, s * 1.6, 0.35]);
   }
-}
-
-// ---------- Hierba y flores instanciadas ----------
-function plantas(raiz, r) {
-  const { AX, AZ } = CAB;
-  const libre = (x, z) => {
-    const d = Math.hypot(x, z);
-    if (d > RADIO - 0.7) return false;
-    if (Math.abs(x) < AX + 1.0 && Math.abs(z) < AZ + 1.0) return false; // al pie de la cabaña, tierra
-    if (Math.abs(x - 0.2) < 1.1 && z > 1.9) return false; // el camino
-    return true;
-  };
-  const sitios = (n, sem) => { const lista = []; let t = 0; while (lista.length < n && t++ < n * 10) { const a = r() * 7, d = Math.sqrt(r()) * RADIO; const x = Math.cos(a) * d, z = Math.sin(a) * d; if (libre(x, z)) lista.push([x, z]); } return lista; };
-  const mata = (() => { const L = new Lote({ rangoSuelo: 0.3, variacion: 0 }); for (let k = 0; k < 3; k++) { const g = new THREE.ConeGeometry(0.03, 0.26, 3); g.translate(0, 0.13, 0); L.add(g, k % 2 ? 'hierbaClara' : 'hierba', 0, 0, 0, { y: k * 2.1, z: (k - 1) * 0.3 }, { brillo: 1.1 }); } return mergeGeometries(L.cerrar()); })();
-  const flor = (() => { const L = new Lote({ variacion: 0, rangoSuelo: 0.01 }); L.add(cil(0.006, 0.006, 0.2, 3), 'hierba', 0, 0.1, 0, null, { sinSuelo: true }); L.add(new THREE.IcosahedronGeometry(0.035, 0), 0xffffff, 0, 0.21, 0, null, { sinSuelo: true }); return mergeGeometries(L.cerrar()); })();
-  const poner = (geo, lista, color, mat) => {
-    const im = new THREE.InstancedMesh(geo, mat, lista.length), o = new THREE.Object3D(), c = new THREE.Color();
-    lista.forEach(([x, z], i) => {
-      o.position.set(x, 0, z); o.rotation.set(0, r() * 6, 0); o.scale.setScalar(0.7 + r() * 0.8); o.updateMatrix();
-      im.setMatrixAt(i, o.matrix); im.setColorAt(i, color(c));
-    });
-    im.receiveShadow = true; raiz.add(im);
-  };
-  poner(mata, sitios(170), (c) => c.setScalar(0.85 + r() * 0.3), material('doble'));
-  // flores de colores apagados (blanco roto, amarillo pálido, malva)
-  const FLORES = [0xe8e2d0, 0xd9c27a, 0xa98aa6];
-  poner(flor, sitios(70), (c) => c.set(FLORES[Math.floor(r() * 3)]), material('fijo'));
 }

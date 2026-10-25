@@ -1,7 +1,8 @@
 // Kinhold — prueba de estilo: «realismo en miniatura» (la escena; el personaje está en el visor de personaje).
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { LUCES } from './estilos.js';
+import { LUCES } from '../mundo/estilos.js';
+import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearEscena, RADIO } from './escena.js';
 import { VERSION_ESTILO, REGISTRO_ESTILO } from './registro.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
@@ -21,10 +22,7 @@ const lienzo = $('lienzo');
 // fondo transparente: el degradado del fondo lo pone la página (no cuesta nada dibujarlo)
 const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, alpha: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
 renderer.setClearColor(0x000000, 0);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap; // sombras de bordes blandos
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+prepararRenderer(renderer); // sombras blandas, sRGB y ACES: los de la escena común
 // teleobjetivo: poca perspectiva, como al fotografiar una maqueta
 const camara = new THREE.PerspectiveCamera(26, 1, 0.5, 200);
 const control = new OrbitControls(camara, lienzo);
@@ -45,23 +43,12 @@ const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(estado)
 
 const escena = new THREE.Scene();
 escena.add(crearEscena());
-const hemi = new THREE.HemisphereLight();
-const sol = new THREE.DirectionalLight();
-sol.castShadow = true; sol.shadow.mapSize.set(1024, 1024); sol.shadow.radius = 4;
-const R = RADIO + 1;
-Object.assign(sol.shadow.camera, { left: -R, right: R, top: R, bottom: -R, near: 1, far: 60 });
-sol.shadow.bias = -0.0005; sol.shadow.normalBias = 0.04;
-escena.add(hemi, sol, sol.target);
+// cielo (lo pinta la página), sol, luz del cielo y niebla: el ambiente común (src/mundo/ambiente.js)
+const ambiente = crearAmbiente(escena, { luz: estado.luz, alcance: RADIO + 1, fondoPagina: true });
 
 function ponerLuz(id) {
-  estado.luz = id; const L = LUCES[id];
-  sol.color.set(L.sol[0]); sol.intensity = L.sol[1]; sol.position.set(...L.sol[2]).multiplyScalar(1.6);
-  hemi.color.set(L.hemi[0]); hemi.groundColor.set(L.hemi[1]); hemi.intensity = L.hemi[2];
-  // cielo con degradado (lo pinta la página) y niebla del color del horizonte
-  const [a, b] = L.fondo.map(c => '#' + new THREE.Color(c).getHexString());
-  document.body.style.background = `linear-gradient(${b} 0%, ${a} 60%, ${a} 100%)`;
-  escena.fog = new THREE.Fog(L.fondo[0], 45, 130);
-  for (const btn of document.querySelectorAll('[data-luz]')) btn.classList.toggle('sel', btn.dataset.luz === id);
+  estado.luz = ambiente.ponerLuz(id);
+  for (const btn of document.querySelectorAll('[data-luz]')) btn.classList.toggle('sel', btn.dataset.luz === estado.luz);
   guardar(); dibujar();
 }
 function ponerVista(v) {

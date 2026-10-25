@@ -1,7 +1,8 @@
 // Kinhold — personaje v2: bases CC0 (Quaternius) con personalización, delante de la cabaña de la prueba de estilo.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { LUCES } from '../estilo/estilos.js';
+import { LUCES } from '../mundo/estilos.js';
+import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearEscena } from '../estilo/escena.js';
 import { crearPersonaje, OPCIONES } from '../personajes/cargar.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
@@ -37,20 +38,15 @@ const capasMH = () => (estado.capas && estado.capas[estado.sexo]) || [estado.sex
 const lienzo = $('lienzo');
 const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, alpha: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
 renderer.setClearColor(0x000000, 0);
-renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+prepararRenderer(renderer); // sombras blandas, sRGB y ACES: los de la escena común
 const camara = new THREE.PerspectiveCamera(30, 1, 0.05, 200);
 const control = new OrbitControls(camara, lienzo);
 control.enableDamping = true; control.maxPolarAngle = Math.PI * 0.55; control.minDistance = 0.35; control.maxDistance = 25;
 
 const escena = new THREE.Scene();
 escena.add(crearEscena());
-const hemi = new THREE.HemisphereLight(), sol = new THREE.DirectionalLight();
-sol.castShadow = true; sol.shadow.mapSize.set(1024, 1024); sol.shadow.radius = 4;
-Object.assign(sol.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12, near: 1, far: 60 });
-sol.shadow.bias = -0.0005; sol.shadow.normalBias = 0.03;
-escena.add(hemi, sol, sol.target);
+// cielo (lo pinta la página), sol, luz del cielo y niebla: el ambiente común (src/mundo/ambiente.js)
+const ambiente = crearAmbiente(escena, { alcance: 12, normalBias: 0.03, fondoPagina: true }), sol = ambiente.sol;
 
 const POS = new THREE.Vector3(1.6, 0, 4.8), GIRO = 0.45;
 const rel = (x, y, z) => new THREE.Vector3(x, y, z).applyAxisAngle(new THREE.Vector3(0, 1, 0), GIRO).add(POS);
@@ -97,12 +93,7 @@ async function rehacer() {
 }
 
 function ponerLuz(id) {
-  estado.luz = id; const L = LUCES[id];
-  sol.color.set(L.sol[0]); sol.intensity = L.sol[1]; sol.position.set(...L.sol[2]).multiplyScalar(1.6);
-  hemi.color.set(L.hemi[0]); hemi.groundColor.set(L.hemi[1]); hemi.intensity = L.hemi[2];
-  const [a, b] = L.fondo.map(c => '#' + new THREE.Color(c).getHexString());
-  document.body.style.background = `linear-gradient(${b} 0%, ${a} 60%, ${a} 100%)`;
-  escena.fog = new THREE.Fog(L.fondo[0], 45, 130);
+  estado.luz = id = ambiente.ponerLuz(id);
   marcar('luz', id); guardar(); dibujar();
 }
 function ponerVista(v) {

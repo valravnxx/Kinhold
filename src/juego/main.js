@@ -3,11 +3,13 @@ import * as THREE from 'three';
 import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, progresoEscalera } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, AUTOR_LOCAL } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
-import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, arbol, roca, mat, COLORES, P, rellenoTejado } from './modelos.js';
+import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado } from './modelos.js';
 import { crearPersonaje, animarPersonaje } from './personaje.js';
 import { REGISTRO, VERSION } from './registro.js';
 import { t } from './textos.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
+import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
+import { crearDecorado } from '../mundo/decorado.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -58,56 +60,18 @@ function guardar() {
 const lienzo = $('lienzo');
 const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+prepararRenderer(renderer); // sombras blandas, sRGB y ACES: los de la escena común
 const escena = new THREE.Scene();
-escena.background = new THREE.Color(0xb9d3e3);
-escena.fog = new THREE.Fog(0xb9d3e3, 70, 190);
 const camara = new THREE.PerspectiveCamera(45, 1, 0.1, 500);
+// cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
+const ambiente = crearAmbiente(escena, { alcance: 30, mapa: 2048, niebla: [70, 200] });
 
-escena.add(new THREE.HemisphereLight(0xdfeaf2, 0x6b5a3e, 0.9));
-const sol = new THREE.DirectionalLight(0xfff1d6, 1.6);
-sol.castShadow = true;
-sol.shadow.mapSize.set(2048, 2048);
-const sc = sol.shadow.camera; sc.left = -30; sc.right = 30; sc.top = 30; sc.bottom = -30; sc.near = 1; sc.far = 120;
-sol.shadow.bias = -0.0005;
-escena.add(sol); escena.add(sol.target);
-
-// terreno llano con color irregular
-{
-  const geo = new THREE.PlaneGeometry(400, 400, 80, 80);
-  geo.rotateX(-Math.PI / 2);
-  const col = [];
-  const c1 = new THREE.Color(COLORES.hierba), c2 = new THREE.Color(0x7d9a50), c3 = new THREE.Color(COLORES.tierra);
-  const pos = geo.attributes.position;
-  for (let n = 0; n < pos.count; n++) {
-    const x = pos.getX(n), z = pos.getZ(n);
-    const r = (Math.sin(x * 0.13) + Math.cos(z * 0.17) + Math.sin((x + z) * 0.05)) / 3;
-    const c = c1.clone().lerp(r > 0.2 ? c2 : c3, Math.abs(r) * 0.5);
-    col.push(c.r, c.g, c.b);
-  }
-  geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-  const suelo = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true }));
-  suelo.receiveShadow = true;
-  suelo.name = 'terreno';
-  escena.add(suelo);
-}
-// árboles y rocas (decorado, con colisión en el tronco)
-const obstaculos = []; // {x,z,r}
-{
-  let s = 1;
-  for (let n = 0; n < 220; n++) {
-    const ang = (n * 2.39996) % (Math.PI * 2);
-    const dist = 28 + ((n * 37) % 150);
-    const x = Math.cos(ang) * dist, z = Math.sin(ang) * dist;
-    const a = arbol(s++); a.position.set(x, 0, z); escena.add(a);
-    obstaculos.push({ x, z, r: 0.45 });
-  }
-  for (let n = 0; n < 50; n++) {
-    const ang = n * 1.7, dist = 24 + ((n * 53) % 120);
-    const r = roca(n + 100); r.position.set(Math.cos(ang) * dist, 0, Math.sin(ang) * dist); escena.add(r);
-  }
-}
+// decorado común (src/mundo/decorado.js): llano para construir, bosque, hierba y rocas con colisión.
+// La hierba empieza a 16 m: dentro se construye y asomaría por los cimientos (decisión provisional).
+const decorado = crearDecorado({ semilla: 7, llano: 60, lejos: 230, arboles: 220, bosqueDesde: 28, bosqueHasta: 175,
+  hierba: 1400, flores: 380, hierbaDesde: 16, hierbaHasta: 48, rocas: 40 });
+escena.add(decorado.raiz);
+const obstaculos = decorado.obstaculos; // {x,z,r}
 
 // ---------------- Personaje y cámara ----------------
 const jugador = crearPersonaje();
@@ -123,8 +87,7 @@ function actualizarCamara() {
     objetivo.y + Math.sin(cam.pitch) * cam.dist,
     objetivo.z + Math.cos(cam.yaw) * cp * cam.dist);
   camara.lookAt(objetivo);
-  sol.position.set(pj.x + 25, 45, pj.z + 15);
-  sol.target.position.set(pj.x, 0, pj.z);
+  ambiente.seguir(pj.x, pj.z);
 }
 
 // ---------------- Construcciones en pantalla ----------------
