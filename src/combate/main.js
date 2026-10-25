@@ -10,6 +10,8 @@ import * as sonido from './sonido.js';
 import { RegistroAcciones, ejecutarCombate, avanzarProyectil } from '../logica/acciones.js';
 import { REGISTRO_COMBATE, VERSION_COMBATE } from './registro.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
+import { personajeElegido, capasDuelo } from '../demo/eleccion.js';
+import { CAPAS_ARMADURA } from './taller.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -85,7 +87,10 @@ function nuevaPartida() {
   const ritmo = RITMO[opc.dificultad] || 1;
   jugador = new Luchador({ nombre: 'Tú', arma: opc.arma, armadura: opc.armadura, ritmo, x: 0, z: -2, rot: 0 });
   if (mJugador) escena.remove(mJugador);
-  mJugador = crearCombatiente({ armadura: opc.armadura, colorCinta: 0x2f6fb0, recursos: RECURSOS_MH });
+  // el jugador es el personaje elegido en el visor (cuerpo y ropa), con la armadura del duelo encima; el rival, el de siempre
+  const elegido = personajeElegido();
+  mJugador = crearCombatiente({ armadura: opc.armadura, colorCinta: 0x2f6fb0, recursos: RECURSOS_MH,
+    ...(elegido ? { sexo: elegido.sexo, capas: capasDuelo(elegido.capas, opc.armadura, CAPAS_ARMADURA) } : {}) });
   ponerArma(mJugador, opc.arma);
   escena.add(mJugador);
   rival = null; ia = null;

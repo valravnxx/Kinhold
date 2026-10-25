@@ -51,10 +51,11 @@ function cerrarMano(b, eje) {
 }
 
 // Viste el combatiente de modelos.js con el personaje del taller. Mientras carga (o si no carga) se queda el muñeco.
-export function vestirConTaller(raiz, { armadura = 'lino', colorCinta = 0xc0392b, sexo = 'hombre' } = {}, recursos) {
+// `capas`: si se da, la ropa que se ve (la del personaje elegido, ya ajustada a la armadura); si no, la de la armadura.
+export function vestirConTaller(raiz, { armadura = 'lino', colorCinta = 0xc0392b, sexo = 'hombre', capas = null } = {}, recursos) {
   const u = raiz.userData;
   u.taller = { estado: 'cargando' };
-  return crearPersonajeMH({ sexo, capas: CAPAS_ARMADURA[armadura] || [] }, recursos).then(mh => {
+  return crearPersonajeMH({ sexo, capas: capas || CAPAS_ARMADURA[armadura] || [] }, recursos).then(mh => {
     for (const hijo of [...u.cuerpo.children]) if (hijo !== u.armas) hijo.visible = false;
     u.cuerpo.add(mh.raiz);
     mh.raiz.updateMatrixWorld(true);

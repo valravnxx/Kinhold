@@ -67,12 +67,13 @@ function animarMuneco(g, velocidad, dt) {
 }
 
 // Devuelve { raiz, animar(velocidad, dt, talando), cargado(), modo(), mh }. `recursos`: carpeta de los .glb del taller.
-export function crearJugador(recursos, sexo = 'hombre') {
+// `sexo` y `capas`: los del personaje elegido en el visor (por defecto, hombre con camisa y calzas).
+export function crearJugador(recursos, sexo = 'hombre', capas = []) {
   const raiz = new THREE.Group();
   const muneco = crearMuneco();
   raiz.add(muneco);
   const j = { raiz, mh: null, error: null, modo: 'quieto' };
-  j.listo = crearPersonajeMH({ sexo, capas: [] }, recursos).then(mh => {
+  j.listo = crearPersonajeMH({ sexo, capas }, recursos).then(mh => {
     raiz.remove(muneco);
     raiz.add(mh.raiz);
     j.mh = mh;
