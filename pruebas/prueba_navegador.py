@@ -162,6 +162,7 @@ with sync_playwright() as p:
     # el ratón cruza el suelo (y lo que haya) camino del botón
     pg.mouse.move(caja['x'] + caja['width'] / 2, caja['y'] + caja['height'] / 2, steps=25)
     comprobar('al mover el ratón hacia «Confirmar» el barril sigue elegido', ev(f"!!({K}.estado.pendienteDesmontar && {K}.estado.pendienteDesmontar.deco && {K}.estado.pendienteDesmontar.deco.id === {barril['id']})") and pg.is_visible('#btnConfirmar'))
+    pg.screenshot(path=f'{SALIDA}/04b_quitar_mueble_confirmar.png')
     pg.click('#btnConfirmar')
     comprobar('confirmando, el barril se quita', ev(f"{K}.mundo.decoracion.length") == ndeco - 1 and not ev(f"{K}.mundo.decoracion.some(d => d.id === {barril['id']})"))
     # con nada elegido, pasar el ratón sigue enseñando qué se quitaría

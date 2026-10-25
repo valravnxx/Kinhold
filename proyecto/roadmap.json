@@ -308,8 +308,9 @@
    "tareas": [
     {
      "nombre": "Arreglo (pedido de Pedro): en PC no se pueden quitar muebles ni piezas, porque al mover el ratón hacia «Confirmar» se pierde lo elegido. Lo elegido con clic se queda fijo hasta confirmar o cancelar",
-     "estado": "en_curso",
-     "inicio": "2026-10-25T17:52:07+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-25T17:52:07+00:00",
+     "fin": "2026-10-25T18:19:25+00:00"
     },
     {
      "nombre": "Más resistencia en la madera (Pedro: «la madera es demasiado débil, no deja hacer 2 pisos con tejado»): una casa de 2 plantas con tejado hecha solo con piezas básicas de madera (cimiento, muros y suelo de troncos) tiene que poder construirse sin trucos; construir sin volverse loco, pero que se puedan hacer cosas. Prueba de lógica que lo garantice y capturas de la casa",
@@ -595,6 +596,13 @@
      "archivo": "jugar/construccion/v7.html",
      "capturas": "capturas/construccion-v7",
      "notas": "v7: también en ruso (botón RU arriba; en el móvil, el idioma se elige en un desplegable y los botones de modo se colocan debajo del menú)."
+    },
+    {
+     "v": "v8",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/construccion/v8.html",
+     "capturas": "capturas/construccion-v8",
+     "notas": "Quitar muebles y piezas con el ratón: lo que eliges con clic se queda elegido hasta confirmar o cancelar, aunque muevas el ratón hasta el botón"
     }
    ]
   },

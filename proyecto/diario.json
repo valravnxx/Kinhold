@@ -735,5 +735,21 @@
   "pruebas": "Todas correctas (lógica 63, modelos 21, combate 69, acciones 25, unión 19, taller, traducciones y navegador: construcción, combate, estilo, personaje, recursos, inglés y web), PC y móvil. Construcción y combate repetidas tras el arreglo de la prueba.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T17:52:07+00:00",
+  "fin": "2026-10-25T18:19:25+00:00",
+  "titulo": "Arreglo: quitar muebles con el ratón",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Pedro: en PC no se podían quitar muebles; al mover el ratón hacia el botón de confirmar se perdía lo elegido.",
+   "Causa: en Desmontar, pasar el ratón volvía a elegir lo que hubiera debajo y escondía el botón. Pasaba también con las piezas.",
+   "Ahora el clic elige y lo elegido se queda fijo hasta confirmar o cancelar; sin nada elegido, pasar el ratón sigue resaltando lo que se quitaría.",
+   "Prueba nueva con el ratón de verdad: clic en un barril, mover el ratón hasta el botón y confirmar. Con el código de antes falla, como le pasaba a Pedro.",
+   "Construcción v8 publicada; las versiones anteriores siguen en la web."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, acciones, unión, taller, traducciones y navegador de los cuatro prototipos, recursos, inglés y web), PC y móvil. No comprobado: en una pantalla táctil de verdad (el toque no cambia: elige y pide confirmar como antes).",
+  "capturas": "capturas/construccion-v8",
+  "estado": "ok"
  }
 ]
