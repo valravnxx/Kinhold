@@ -176,19 +176,19 @@
     },
     {
      "nombre": "Terreno, hierba, árboles y luz con el estilo elegido",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     },
     {
      "nombre": "Piezas de construcción con más detalle: corteza, juntas, tablas, paja",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     },
     {
      "nombre": "Rendimiento en móvil: medir y ajustar el nivel de detalle",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     }
    ],
    "bloquea": true
@@ -304,11 +304,11 @@
     },
     {
      "nombre": "Cámara táctil con un dedo durante el combate",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     },
     {
      "nombre": "Curación de heridas",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     }
    ],
    "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
@@ -597,30 +597,5 @@
    ]
   }
  ],
- "decisiones_pendientes": [
-  {
-   "id": "estilo-v4",
-   "pregunta": "¿Te vale como base el «realismo en miniatura» de la prueba de estilo v5 (texturas, mundo sin recortar y árboles rehechos)? Mírala también en tu móvil (arriba salen fps y resolución).",
-   "desde": "2026-10-24",
-   "hito": "arte"
-  },
-  {
-   "id": "camara-tactil",
-   "pregunta": "Cámara táctil: ¿arrastrar un dedo en zona libre gira la cámara (tocar sin arrastrar sigue golpeando) y con el arco la cámara sigue sola a donde apuntas?",
-   "desde": "2026-10-24",
-   "hito": "duelo"
-  },
-  {
-   "id": "curacion",
-   "pregunta": "Curación: ¿se usa como base la tabla del análisis (vendar, coser, cauterizar, entablillar, hierbas, descanso)? ¿Curarse en pleno combate debe poder hacerse (lento y vendido) o solo fuera?",
-   "desde": "2026-10-24",
-   "hito": "duelo"
-  },
-  {
-   "id": "fuego-amigo",
-   "pregunta": "Fuego amigo en peleas de grupo: ¿un tajo que alcanza a un aliado le hiere, no le hace nada o solo le empuja? (Propuesta: hiere.)",
-   "desde": "2026-10-24",
-   "hito": "pvp"
-  }
- ]
+ "decisiones_pendientes": []
 }

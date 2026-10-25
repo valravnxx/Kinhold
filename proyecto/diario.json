@@ -530,5 +530,21 @@
   "pruebas": "Sin cambios de código. Web reconstruida sin errores.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T09:58:47+01:00",
+  "fin": "2026-10-25T09:58:47+01:00",
+  "titulo": "Decisiones de Pedro: estilo, cámara táctil, curación y fuego amigo",
+  "hito": "arte",
+  "hecho": [
+   "Estilo del mundo: el «realismo en miniatura» de la prueba de estilo v5 es la base. Se desbloquean terreno, hierba, árboles, más detalle en las piezas de construcción y el rendimiento en el móvil.",
+   "Cámara táctil en el combate: arrastrar un dedo por zona libre gira la cámara, tocar sin arrastrar sigue golpeando, y con el arco la cámara sigue sola a donde apuntas.",
+   "Curación: base la tabla del análisis (vendar, coser, cauterizar, entablillar, hierbas, descanso); en pleno combate se puede, pero lento y quedando vendido.",
+   "Fuego amigo: sigue al PvP, como dice el diseño (PvP activo, desactivado dentro de la familia): a alguien de tu familia un tajo no le hace nada; a cualquier otro le hiere como un golpe normal.",
+   "Ya no queda ninguna decisión pendiente: todas las tareas en espera pasan a pendientes."
+  ],
+  "pruebas": "Sin cambios de código.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

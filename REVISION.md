@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 25 oct 2026 (09:53) — por el chat: decisiones pendientes
+
+Estilo: el realismo en miniatura de la v5 es la base. Cámara táctil: como se propuso. Curación: la tabla del análisis; en combate se puede, lento y vendido. Fuego amigo: sigue al PvP (desactivado dentro de la familia: no hace nada; fuera, hiere). Pedro pide además que la sesión del chat pueda trabajar en paralelo a otras sesiones.
+
 ### 25 oct 2026 (09:39) — por el chat: algo no relacionado con la ropa
 
 «Puedes hacer, están haciendo los modelados de ropa; haz algo no relacionado.» Elige planificar el hito de construcción (1c). Hecho: 9 tareas nuevas en el roadmap; los puentes se dejan para el hito Mundo.
