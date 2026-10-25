@@ -147,6 +147,27 @@ with sync_playwright() as p:
               {'mojon', 'colocar', 'usar', 'desmontar'} <= tipos and all(a == 'jugador:local' for a, _, _ in reg) and reg[-1][1] == 'desmontar',
               f'{len(reg)} acciones: ' + ', '.join(sorted(tipos)))
 
+    print('PC: quitar un mueble con el ratón (clic, mover el ratón hasta «Confirmar» y confirmar)')
+    poner('deco', 'barril', -6, 3)
+    ndeco = ev(f"{K}.mundo.decoracion.length")
+    barril = ev(f"{K}.mundo.decoracion.at(-1)")
+    ev(f"{K}.cambiarModo('desmontar'); {K}.pj.x=-6; {K}.pj.z=0; {K}.cam.yaw=Math.PI; {K}.cam.pitch=0.7; {K}.cam.dist=9")
+    esperar(pg, 900)
+    pt = ev(f"{K}.proyectar({barril['x']}, {barril['y']} + 0.4, {barril['z']})")
+    pg.mouse.move(pt['x'], pt['y'])
+    pg.mouse.click(pt['x'], pt['y'])
+    esperar(pg, 200)
+    comprobar('el clic elige el barril y pide confirmar', ev(f"!!({K}.estado.pendienteDesmontar && {K}.estado.pendienteDesmontar.deco)") and pg.is_visible('#btnConfirmar'))
+    caja = pg.locator('#btnConfirmar').bounding_box()
+    # el ratón cruza el suelo (y lo que haya) camino del botón
+    pg.mouse.move(caja['x'] + caja['width'] / 2, caja['y'] + caja['height'] / 2, steps=25)
+    comprobar('al mover el ratón hacia «Confirmar» el barril sigue elegido', ev(f"!!({K}.estado.pendienteDesmontar && {K}.estado.pendienteDesmontar.deco && {K}.estado.pendienteDesmontar.deco.id === {barril['id']})") and pg.is_visible('#btnConfirmar'))
+    pg.click('#btnConfirmar')
+    comprobar('confirmando, el barril se quita', ev(f"{K}.mundo.decoracion.length") == ndeco - 1 and not ev(f"{K}.mundo.decoracion.some(d => d.id === {barril['id']})"))
+    # con nada elegido, pasar el ratón sigue enseñando qué se quitaría
+    pg.mouse.move(pt['x'] + 40, pt['y'] + 40); pg.mouse.move(pt['x'], pt['y'])
+    comprobar('sin nada elegido, el botón de confirmar no aparece al pasar el ratón', not pg.is_visible('#btnConfirmar'))
+
     print('PC: cobertizo de pendiente continua')
     ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-6; {K}.pj.z=1; {K}.cam.yaw=-Math.PI/2+0.5; {K}.cam.pitch=0.5; {K}.cam.dist=14")
     esperar(pg, 900)

@@ -433,7 +433,7 @@ lienzo.addEventListener('pointermove', (e) => {
     cam.yaw -= dx * 0.006;
     cam.pitch = THREE.MathUtils.clamp(cam.pitch + dy * 0.004, 0.45, 1.35);
   }
-  if (e.pointerType === 'mouse' && p.boton === 0 && estado.modo !== 'mover') alPasar(e.clientX, e.clientY);
+  if (e.pointerType === 'mouse' && p.boton === 0 && estado.modo === 'construir') alPasar(e.clientX, e.clientY);
 });
 lienzo.addEventListener('pointerup', (e) => {
   const p = punteros.get(e.pointerId);
@@ -441,16 +441,14 @@ lienzo.addEventListener('pointerup', (e) => {
   if (punteros.size < 2) pinzaDist = 0;
   if (!p || arrastrando) return;
   // toque o clic sin arrastre
-  if (e.pointerType === 'mouse') {
-    if (p.boton !== 0) return;
-    alPasar(e.clientX, e.clientY);
-    if (estado.modo === 'construir') colocar();
-    else if (estado.modo === 'desmontar' && estado.pendienteDesmontar) $('confirmar').hidden = false;
-  } else {
-    // táctil: el toque fija el puntero; se confirma con el botón
-    alPasar(e.clientX, e.clientY);
-    if (estado.modo === 'desmontar' && estado.pendienteDesmontar) $('confirmar').hidden = false;
+  if (e.pointerType === 'mouse' && p.boton !== 0) return;
+  if (estado.modo === 'desmontar') {
+    // el clic o el toque elige la pieza o el mueble y lo deja fijo hasta confirmar o cancelar
+    elegirDesmontaje(e.clientX, e.clientY);
+    return;
   }
+  alPasar(e.clientX, e.clientY);
+  if (e.pointerType === 'mouse' && estado.modo === 'construir') colocar();
 });
 lienzo.addEventListener('wheel', (e) => {
   e.preventDefault();
@@ -461,10 +459,15 @@ function alPasar(cx, cy) {
   if (estado.modo === 'construir') {
     estado.puntero = punteroDesde(cx, cy);
     evaluarColocacion();
-  } else if (estado.modo === 'desmontar') {
-    $('confirmar').hidden = true;
+  } else if (estado.modo === 'desmontar' && $('confirmar').hidden) {
+    // pasar el ratón solo enseña qué se quitaría; si ya hay algo elegido esperando confirmación, no se toca
     evaluarDesmontaje(piezaBajo(cx, cy));
   }
+}
+function elegirDesmontaje(cx, cy) {
+  $('confirmar').hidden = true;
+  evaluarDesmontaje(piezaBajo(cx, cy));
+  if (estado.pendienteDesmontar) $('confirmar').hidden = false;
 }
 
 // Joystick táctil
