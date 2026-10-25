@@ -4,12 +4,13 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ---
 
-**24 oct, 23:05 — Pedro, por el chat principal (lo está haciendo esa sesión, NO las automáticas):**
-El personaje esculpido por código (Personaje v1) es «horripilante, de película de terror». **Se abandona hacer los personajes a mano por código.** Decisión: los personajes salen de bases ya hechas con licencia libre (CC0): Quaternius Universal Base Characters + Modular Character Outfits + Universal Animation Library. La sesión del chat principal monta el personaje v2 con eso. Ninguna otra sesión toca `src/personaje/` ni `src/estilo/personaje.js` hasta que Pedro lo revise.
-
----
-
 ## Procesado
+
+### 25 oct 2026 (09:14) — por el chat: base de los personajes
+
+«Lo veo bien, sigue» y elige el **taller propio** (MakeHuman con ropa por código) como base de los personajes. Se cierran las decisiones personaje-v2 y paquete-ropa; tareas del hito de arte rehechas para el taller. Ya no hace falta que solo la sesión del chat toque `src/personaje/`: las sesiones automáticas pueden seguir con las tareas del taller (que no toquen a la vez lo que esté haciendo la sesión del chat: mirar `proyecto/sesion.json`).
+
+(Nota anterior, ya superada, del 24 oct 23:05: personajes con las bases de Quaternius y solo la sesión del chat toca el personaje.)
 
 ### 25 oct 2026 (08:21 y 08:35) — por el chat: pecho, postura y hombros del hombre
 

@@ -33,7 +33,7 @@
     },
     {
      "nombre": "Pruebas de estilo y personaje en inglés (con el mismo módulo de idioma), cuando Pedro haya revisado el personaje: ahora mismo nadie más toca su código",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     }
    ],
    "nota": "Idiomas: español e inglés ya en la web; el ruso, más adelante, cuando Pedro lo pida."
@@ -135,38 +135,43 @@
      "fin": "2026-10-25T02:48:34+01:00"
     },
     {
-     "nombre": "Prototipo del personaje con los recursos v2 y un selector con las animaciones extra (espera a que Pedro revise el personaje: REVISION.md pide que solo la sesión del chat toque src/personaje/)",
-     "estado": "espera_decision"
-    },
-    {
      "nombre": "Taller propio sin pantalla (Blender por pip) para reasignar animaciones, reducir mallas y probar a crear cuerpos y caras propios con MakeHuman (MPFB2), con su esqueleto compatible",
      "estado": "hecho",
      "inicio": "2026-10-24T23:58:00+02:00",
      "fin": "2026-10-25T07:15:00+01:00"
     },
     {
-     "nombre": "Heridas y sangrado visibles en el personaje: corte, golpe y estocada se pintan donde entran (también rompen y manchan la ropa), el sangrado se extiende con el tiempo y el vendaje se ve puesto",
-     "estado": "espera_decision"
+     "nombre": "Taller: ropa por capas, primera tanda — camisa de lino bajo la túnica y gambesón acolchado encima, hechos por código sobre el cuerpo de MakeHuman, que se ponen y se quitan como capas",
+     "estado": "en_curso",
+     "inicio": "2026-10-25T09:15:48+01:00"
     },
     {
-     "nombre": "Más personalización sobre la base: altura y complexión, color de ojos, cicatrices y tintes de la ropa",
-     "estado": "espera_decision"
+     "nombre": "Taller: cota de malla (anillas por código) y sobreveste encima, como capas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Taller: capa con capucha, calzado y tocados (capucha suelta, sombrero de paja, toca)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Taller: personalización — altura, complexión y cara con los ajustes de MakeHuman, tono de piel, color de ojos, peinado y barba",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Taller: pasar también las 39 animaciones extra (trabajos, arco, espada, bloqueo, vendarse, pasos) al esqueleto de MakeHuman",
+     "estado": "pendiente"
     },
     {
      "nombre": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, tinte y calidad, sobre el mismo esqueleto",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     },
     {
-     "nombre": "Formas de ropa nuevas (noble, más armaduras) del paquete completo de ropa, si Pedro lo consigue",
-     "estado": "espera_decision"
-    },
-    {
-     "nombre": "Personalización del personaje: complexión, cara, pelo, barba, tono de piel",
-     "estado": "espera_decision"
-    },
-    {
-     "nombre": "Ropa y armaduras visibles por capas: lino, gambesón, cota de malla",
-     "estado": "espera_decision"
+     "nombre": "Heridas y sangrado visibles en el personaje: corte, golpe y estocada se pintan donde entran (también rompen y manchan la ropa), el sangrado se extiende con el tiempo y el vendaje se ve puesto",
+     "estado": "pendiente"
     },
     {
      "nombre": "Terreno, hierba, árboles y luz con el estilo elegido",
@@ -547,18 +552,6 @@
   }
  ],
  "decisiones_pendientes": [
-  {
-   "id": "personaje-v2",
-   "pregunta": "¿Te vale como base del juego el personaje v2 (bases libres ya hechas, en Jugar → Personaje)? Si sí, se pasa al combate y a la construcción y se buscan ropas medievales (gambesón, cota de malla, capas) del mismo tipo. Dime también qué no te gusta (cara, proporciones, ropa).",
-   "desde": "2026-10-24",
-   "hito": "arte"
-  },
-  {
-   "id": "paquete-ropa",
-   "pregunta": "Ropa histórica: en GitHub no hay ropa ni armadura medieval libre que encaje con nuestro esqueleto. Opciones: (a) comprar las versiones completas de Quaternius, ropa 20 $ (12 conjuntos, con noble) y bases 19,99 $ (quizá 20 peinados, sin confirmar), y pasarme los archivos; (b) bajar tú los paquetes libres de MakeHuman (makehuman_system_assets y ropa: shirts, pants, shoes, hats02) para el taller propio; (c) encargar un juego de ropa a un artista (referencia 300-800 $ por personaje). ¿Qué hacemos?",
-   "desde": "2026-10-24",
-   "hito": "arte"
-  },
   {
    "id": "estilo-v4",
    "pregunta": "¿Te vale como base el «realismo en miniatura» de la prueba de estilo v5 (texturas, mundo sin recortar y árboles rehechos)? Mírala también en tu móvil (arriba salen fps y resolución).",

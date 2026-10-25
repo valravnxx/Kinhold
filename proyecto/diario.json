@@ -483,5 +483,19 @@
   "pruebas": "Todas las pruebas correctas (lógica, construcción, combate, estilo, personaje, recursos, inglés y web), en PC y móvil.",
   "capturas": "capturas/personaje-v7",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T09:15:48+01:00",
+  "fin": "2026-10-25T09:15:48+01:00",
+  "titulo": "Decisión de Pedro: el taller propio es la base de los personajes",
+  "hito": "arte",
+  "hecho": [
+   "Pedro, tras ver el personaje v7: «lo veo bien, sigue», y elige el taller propio (cuerpo de MakeHuman con ropa hecha por código) como base de los personajes del juego. El paquete de Quaternius queda solo para comparar y como fuente de animaciones.",
+   "Se cierran las decisiones del personaje y de la ropa: la ropa histórica se hace por código en el taller; no hace falta comprar paquetes ni encargarla.",
+   "Las tareas del hito de arte se rehacen para el taller, de una sesión cada una: ropa por capas (camisa y gambesón; cota de malla y sobreveste; capa, calzado y tocados), personalización, más peinados y barbas, las 39 animaciones extra, ropa fabricable y heridas visibles."
+  ],
+  "pruebas": "Sin cambios de código.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
