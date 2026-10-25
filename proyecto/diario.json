@@ -33,6 +33,21 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-24T17:20:03+00:00",
+  "fin": "2026-10-24T17:44:04+00:00",
+  "titulo": "Sesión duplicada: arreglo del arco hecho dos veces",
+  "hito": "duelo",
+  "hecho": [
+   "Esta sesión empezó a la vez que otra (19:13 hora de Madrid) y las dos cogieron la misma tarea: el arreglo del arco.",
+   "La otra publicó antes la combate v3; al ir a subir la mía, el repositorio ya la tenía. Descarto mi versión para no pisar la publicada (las versiones no se sobrescriben).",
+   "Mi copia también pasaba todas las pruebas (combate 63/63, navegador correcto); no aporta nada que no esté ya en la v3 publicada.",
+   "Aviso: hay dos tareas automáticas corriendo a la vez sobre el repositorio. Conviene dejar solo una para que no repitan trabajo ni se pisen."
+  ],
+  "pruebas": "No aplica (trabajo descartado).",
+  "capturas": "",
+  "estado": "fallo"
+ },
+ {
   "inicio": "2026-10-24T18:04:00+02:00",
   "fin": "2026-10-24T18:19:37+02:00",
   "titulo": "Infraestructura: repositorio, web de progreso y trabajo automático",
@@ -94,21 +109,6 @@
   "pruebas": "Lógica 35/35, modelos 21/21, combate 59/59 (7 nuevas, fallan con MUTAR=1); navegador construcción, combate (nueva: soltar flojo no dispara), estilo y web correctos.",
   "capturas": "capturas/combate-v3",
   "estado": "ok"
- },
- {
-  "inicio": "2026-10-24T17:20:03+00:00",
-  "fin": "2026-10-24T17:44:04+00:00",
-  "titulo": "Sesión duplicada: arreglo del arco hecho dos veces",
-  "hito": "duelo",
-  "hecho": [
-   "Esta sesión empezó a la vez que otra (19:13 hora de Madrid) y las dos cogieron la misma tarea: el arreglo del arco.",
-   "La otra publicó antes la combate v3; al ir a subir la mía, el repositorio ya la tenía. Descarto mi versión para no pisar la publicada (las versiones no se sobrescriben).",
-   "Mi copia también pasaba todas las pruebas (combate 63/63, navegador correcto); no aporta nada que no esté ya en la v3 publicada.",
-   "Aviso: hay dos tareas automáticas corriendo a la vez sobre el repositorio. Conviene dejar solo una para que no repitan trabajo ni se pisen."
-  ],
-  "pruebas": "No aplica (trabajo descartado).",
-  "capturas": "",
-  "estado": "fallo"
  },
  {
   "inicio": "2026-10-24T19:23:09+02:00",
@@ -513,6 +513,22 @@
   ],
   "pruebas": "Todas las pruebas correctas (lógica, construcción, combate, estilo, personaje, recursos, inglés y web), en PC y móvil. No comprobado: fps en un móvil de verdad.",
   "capturas": "capturas/personaje-v8",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T09:39:58+01:00",
+  "fin": "2026-10-25T09:42:16+01:00",
+  "titulo": "Hito 1c: planificación de las piezas nuevas",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Pedro, por el chat: «puedes hacer, están haciendo los modelados de ropa; haz algo no relacionado». Elige planificar el hito de construcción, que no toca el personaje. Se hace aunque el hito de arte bloquee empezar hitos nuevos, porque lo pide él.",
+   "Comparadas las piezas del documento de sistemas con las que ya hay en el juego. Faltan: escalera de tablas, contraventana, trampilla, tejado de teja, remate de tejado, chimenea, adarve, puente de troncos y parte de la decoración.",
+   "Hito desglosado en 9 tareas de una sesión: escalera de tablas, barandillas y vallas, contraventana y trampilla, tejado de teja, remate de tejado, chimenea, adarve, decoración que falta y revisión final.",
+   "Los puentes de troncos se dejan para el hito Mundo, porque necesitan agua en el mapa.",
+   "Esta sesión no toca proyecto/sesion.json, que es de la sesión de la ropa."
+  ],
+  "pruebas": "Sin cambios de código. Web reconstruida sin errores.",
+  "capturas": "",
   "estado": "ok"
  }
 ]
