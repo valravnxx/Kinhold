@@ -80,7 +80,8 @@
     },
     {
      "nombre": "Diario y traducciones sin choques: una herramienta que une diario.json y en.json al fusionar ramas de varias sesiones, y su regla en CLAUDE.md",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-25T16:05:19+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
