@@ -4,7 +4,7 @@
 # MUTAR=1 borra lo guardado al cambiar de parte (como si no se pasara el personaje): la prueba tiene que fallar.
 import sys, os, io, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
-from PIL import Image, ImageStat
+from PIL import Image, ImageStat, ImageChops
 
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
@@ -21,6 +21,7 @@ srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, dir
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html'
 MUTAR = bool(os.environ.get('MUTAR'))
+PG = [None]
 
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 fallos = []
@@ -28,8 +29,12 @@ def comprobar(n, c, d=''):
     print(('  OK   ' if c else '  FALLA ') + n + (f' — {d}' if d else ''))
     if not c: fallos.append(n)
 def variedad(png):
-    im = Image.open(io.BytesIO(png)).convert('RGB').resize((160, 100))
-    return sum(ImageStat.Stat(im).stddev) / 3
+    """cuánto cambia la imagen al esconder el lienzo 3D (si no dibuja nada, casi nada)"""
+    pg = PG[0]
+    st = pg.add_style_tag(content='canvas{visibility:hidden!important}')
+    sin = pg.screenshot(); pg.evaluate('e => e.remove()', st)
+    a, b = [Image.open(io.BytesIO(x)).convert('RGB').resize((160, 100)) for x in (png, sin)]
+    return sum(ImageStat.Stat(ImageChops.difference(a, b)).mean) / 3
 def tapado(pg, sel):
     """True si el centro del elemento lo tapa otra cosa"""
     return pg.evaluate("""s => { const e = document.querySelector(s); if (!e) return 'no está'; const r = e.getBoundingClientRect();
@@ -44,7 +49,7 @@ with sync_playwright() as p:
     for nombre, vista, movil in [('pc', {'width': 1280, 'height': 800}, False), ('movil', {'width': 390, 'height': 844}, True)]:
         print('Vista', nombre)
         ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
-        pg = ctx.new_page()
+        pg = ctx.new_page(); PG[:] = [pg]
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
         pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
@@ -63,7 +68,7 @@ with sync_playwright() as p:
         pg.wait_for_function('window.__personaje.listo()', timeout=180000)
         pg.evaluate("window.__personaje.ponerVista('cuerpo')"); pg.evaluate('window.__personaje.pausar(true)'); pg.evaluate('window.__personaje.instante(1.0)')
         png = pg.screenshot(path=f'{SALIDA}/{nombre}_personaje.png')
-        comprobar('personaje: se dibuja la escena', variedad(png) > 12, f'{variedad(png):.1f}')
+        v = variedad(png); comprobar('personaje: se dibuja la escena', v > 8, f'{v:.1f}')
         # 3. vuelta al menú
         ir(pg, '#btnDemoMenu')
         r = pg.inner_text('#demoPersonaje')
@@ -76,7 +81,7 @@ with sync_playwright() as p:
         t = tapado(pg, '#btnDemoMenu'); comprobar('construir: botón Menú libre', t == '', t)
         pg.wait_for_timeout(1500)
         png = pg.screenshot(path=f'{SALIDA}/{nombre}_construir.png')
-        comprobar('construir: se dibuja', variedad(png) > 12, f'{variedad(png):.1f}')
+        v = variedad(png); comprobar('construir: se dibuja', v > 8, f'{v:.1f}')
         # 5. duelo: con lino lleva su vestido sin gambesón; con malla, gambesón y cota
         ir(pg, '#btnDemoMenu'); ir(pg, '[data-ir=duelo]')
         pg.wait_for_function("window.__duelo && window.__duelo.mJugador.userData.taller && window.__duelo.mJugador.userData.taller.estado === 'listo'", timeout=180000)
@@ -93,7 +98,7 @@ with sync_playwright() as p:
         t = tapado(pg, '#btnDemoMenu'); comprobar('duelo: botón Menú libre', t == '', t)
         pg.wait_for_timeout(1500)
         png = pg.screenshot(path=f'{SALIDA}/{nombre}_duelo.png')
-        comprobar('duelo: se dibuja', variedad(png) > 12, f'{variedad(png):.1f}')
+        v = variedad(png); comprobar('duelo: se dibuja', v > 8, f'{v:.1f}')
         ir(pg, '#btnDemoMenu')
         comprobar('vuelve al menú', pg.locator('a.parte').count() == 3)
         errores = [e for e in err if 'favicon' not in e]
