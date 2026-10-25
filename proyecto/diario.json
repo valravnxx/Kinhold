@@ -382,5 +382,24 @@
   "pruebas": "Prueba de taller, no publicada como versión jugable: dos personajes exportados sin errores, vistos en Blender y en three.js sin errores en consola. No comprobado: animaciones ni rendimiento en móvil.",
   "capturas": "capturas/taller-vestir",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T01:20:28+02:00",
+  "fin": "2026-10-25T02:03:30+02:00",
+  "titulo": "Juego en inglés: construcción y combate con botón ES/EN",
+  "hito": "infra",
+  "hecho": [
+   "Módulo de idioma común (src/idioma.js): el texto en español es la clave y src/idiomas/en.json da la traducción; el ruso está preparado (ru.json vacío) y se ofrece en cuanto tenga textos.",
+   "Botón ES/EN arriba a la derecha en la construcción (v5) y en el combate (v5). Recuerda el idioma con la misma clave que la web: si eliges inglés en la web, el juego sale en inglés. Sin elección, manda el idioma del navegador.",
+   "Traducidos todos los textos: botones, ayuda, avisos, motivos de la lógica, piezas, materiales, armas, heridas, registro de combate, pantalla final y decisiones (unos 290).",
+   "Cambiar de idioma recarga la página sin perder la partida guardada.",
+   "En el móvil solo se ve el botón del otro idioma, para que el menú no crezca; el panel de opciones del combate baja para no tapar el menú.",
+   "Pruebas nuevas: prueba_idiomas.mjs (todo texto del código tiene traducción y las mismas variables) y prueba_idioma_navegador.py (PC y móvil, sin textos sin traducir ni palabras en español a la vista, el botón cambia, recuerda y no borra la partida). Las dos se rompieron a propósito una vez (MUTAR=1) y fallaron.",
+   "Decisión provisional: las pruebas de estilo y el personaje quedan en español hasta que Pedro revise el personaje (ninguna otra sesión toca su código); queda como tarea en espera.",
+   "Capturas de la construcción en capturas/construccion-v5."
+  ],
+  "pruebas": "Todas correctas (probar_todo.sh): lógica 46/46, modelos 21/21, combate 69/69, personaje horneado, textos traducidos 231/231, navegador construcción, combate, estilo, personaje, juego en inglés (PC y móvil) y web. Capturas en inglés miradas en PC y móvil. No comprobado: en un móvil real.",
+  "capturas": "capturas/combate-v5",
+  "estado": "ok"
  }
 ]

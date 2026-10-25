@@ -27,7 +27,13 @@
     },
     {
      "nombre": "Juego en inglés: textos de los prototipos con selector de idioma, preparado para añadir ruso",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-25T01:20:28+02:00",
+     "fin": "2026-10-25T02:03:30+02:00"
+    },
+    {
+     "nombre": "Pruebas de estilo y personaje en inglés (con el mismo módulo de idioma), cuando Pedro haya revisado el personaje: ahora mismo nadie más toca su código",
+     "estado": "espera_decision"
     }
    ],
    "nota": "Idiomas: español e inglés ya en la web; el ruso, más adelante, cuando Pedro lo pida."
@@ -381,6 +387,13 @@
      "archivo": "jugar/construccion/v4.html",
      "capturas": "capturas/construccion-v4",
      "notas": "Madera más resistente: casa de 2 plantas con tejado de troncos; vano de una casilla en suelos y tejados."
+    },
+    {
+     "v": "v5",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/construccion/v5.html",
+     "capturas": "capturas/construccion-v5",
+     "notas": "Juego en inglés: botón ES/EN arriba a la derecha (recuerda el idioma elegido, también el de la web) y todos los textos traducidos; la partida no se pierde al cambiar."
     }
    ]
   },
@@ -409,6 +422,13 @@
      "archivo": "jugar/combate/v4.html",
      "capturas": "capturas/combate-v4",
      "notas": "Escudo provisional: nueva arma «Espada y escudo» (espada de una mano, 1,7 m de alcance). Al parar se levanta el escudo, que detiene también flechas y piedras de frente y cansa menos que parar con la espada. Nueva opción «Arma del rival»: el rival con escudo lo levanta cuando le apuntas."
+    },
+    {
+     "v": "v5",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/combate/v5.html",
+     "capturas": "capturas/combate-v5",
+     "notas": "Combate en inglés: botón ES/EN arriba a la derecha y todos los textos traducidos (ayuda, avisos, registro, menús y decisiones). En el móvil, el panel de opciones ya no tapa el menú."
     }
    ]
   },

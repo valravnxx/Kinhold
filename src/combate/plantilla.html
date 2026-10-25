@@ -76,6 +76,7 @@ button.sel{background:var(--acento);color:#241b10;border-color:transparent;font-
 .panel td,.panel th{border-bottom:1px solid var(--linea);padding:4px;text-align:left}
 #version{color:var(--muted);font-size:12px}
 @media (max-width:640px){
+  #opciones{top:calc(96px + env(safe-area-inset-top,0px));z-index:2} /* debajo de la segunda fila del menú y por encima del registro */
   #registro{width:92vw;bottom:auto;top:calc(120px + env(safe-area-inset-top,0px));flex-direction:column}
   #registro div:nth-child(n+4){display:none}
   #menu button{padding:5px 8px;font-size:11.5px}
