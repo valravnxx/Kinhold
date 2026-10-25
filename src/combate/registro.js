@@ -1,5 +1,5 @@
 // Decisiones tomadas en el prototipo de combate, para revisar.
-export const VERSION_COMBATE = 'Combate · v7';
+export const VERSION_COMBATE = 'Combate · v8';
 export const REGISTRO_COMBATE = [
   'v2, por qué: en la v1 había que arrastrar el ratón para elegir el golpe y elegir también la línea de la parada, y la cámara y el movimiento iban a su aire. Se ha rehecho tomando lo que mejor funciona en los juegos de esgrima de referencia: rosa de golpes, parada perfecta, golpe maestro, contraataque, finta, parada sin dirección en dificultad baja y peso físico de los golpes.',
   'Atacar: sobre el rival aparece una rosa de cinco zonas (alto, izquierda, derecha, bajo y estocada en el centro). Apuntas con el cursor o tocas la zona y golpeas. Izquierda y derecha son las de tu pantalla.',
@@ -25,4 +25,7 @@ export const REGISTRO_COMBATE = [
   'v5: textos en español e inglés (botón arriba a la derecha); el ruso está preparado y llegará más adelante.',
   'v6: también en ruso; en el móvil, el idioma se elige en un desplegable.',
   'v7: escena común del estilo elegido (src/mundo/): mismo cielo, sol, sombras blandas, niebla, suelo con textura, bosque, hierba, flores y rocas que la prueba de estilo, con la liza de tierra pisada en el centro.',
+  'v8: los dos luchadores son el personaje del taller propio (MakeHuman vestido por capas). La armadura del duelo son las capas del taller: lino = camisa y calzas, gambesón = gambesón, cota de malla = cota encima del gambesón. Mientras carga se ve el muñeco de antes.',
+  'v8: las piernas y el cuerpo van con las animaciones del taller (guardia de espada quieto, andar y correr); los brazos se colocan cada fotograma con cinemática inversa para que las manos agarren el arma donde la ponen las poses de siempre. Si el brazo no llega (estocada a fondo), el arma se queda en la mano en vez de flotar. La mano izquierda copia el puño cerrado de la derecha. Los golpes siguen siendo los de antes; los de las cinco direcciones con animación propia son otra tarea del duelo.',
+  'v8: las heridas se pintan como antes (mancha de sangre o moratón, más grande cuanto más grave), pero pegadas a la superficie del cuerpo o de la ropa donde entra el golpe y colgadas del hueso, así que siguen al personaje al moverse. Las dos figuras son el hombre del taller; las distingue la cinta (azul la tuya, amarilla la del rival). Cojear ya no se ve: lo hacía el muñeco y las animaciones del taller no lo traen.',
 ];

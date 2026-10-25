@@ -63,7 +63,7 @@ export function vestirConTaller(raiz, { armadura = 'lino', colorCinta = 0xc0392b
     // zonas de herida: el hueso al que se pega la mancha y el tramo del cuerpo donde puede entrar
     const hombros = [h.upperarm_l, h.upperarm_r], caderas = [h.thigh_l, h.thigh_r];
     const zonas = {
-      cabeza: { hueso: h.head, de: h.head, a: h.head, alto: 0.03, par: hombros },
+      cabeza: { hueso: h.head, de: h.head, a: h.head, alto: 0.03 }, // sin par: la cabeza mira al frente aunque el tronco gire
       torso: { hueso: h.spine_02, de: h.spine_01, a: h.spine_03, alto: 0.08, par: hombros },
       brazoI: { hueso: h.upperarm_l, de: h.upperarm_l, a: h.lowerarm_l, par: hombros },
       brazoD: { hueso: h.upperarm_r, de: h.upperarm_r, a: h.lowerarm_r, par: hombros },
@@ -119,9 +119,9 @@ const SANGRE = 0x8a1410, MORADO = 0x5b3a5e;
 export function pintarHeridaTaller(u, h, n) {
   const z = u.taller.zonas[h.zona];
   if (!z) return;
-  const tam = TAM[h.gravedad] || 0.07;
+  const tam = (TAM[h.gravedad] || 0.07) * (h.zona === 'cabeza' ? 0.6 : 1); // en la cara, más pequeña
   const geo = h.tipo === 'perforante' ? new THREE.CircleGeometry(tam * 0.45, 8) : new THREE.PlaneGeometry(tam * (h.tipo === 'corte' ? 0.45 : 1), tam * 1.3);
-  const m = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: h.tipo === 'contundente' ? MORADO : SANGRE, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2 }));
+  const m = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: h.tipo === 'contundente' ? MORADO : SANGRE, transparent: true, opacity: h.tipo === 'contundente' ? 0.7 : 0.92, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2 }));
   m.name = 'herida';
   const desplaz = ((n * 37) % 7 - 3) * 0.02;
   const lado = h.zona === 'torso' ? desplaz * 2.2 : h.zona === 'cabeza' ? desplaz * 1.2 : 0;
