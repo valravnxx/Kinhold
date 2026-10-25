@@ -12,12 +12,15 @@
 # (y si es labio, oreja, uña…), y el color sale de funciones de ese punto. La misma técnica sirve luego para heridas.
 # Resultado: un .glb por personaje, sus texturas y fotos de prueba (Cycles en CPU).
 # Uso: python3 herramientas/taller/vestir_mpfb.py <carpeta de salida>      (FOTOS=pocas: solo cuerpos y caras)
-import bpy, bmesh, addon_utils, importlib, math, os, sys
-import numpy as np
-from mathutils import Vector
-
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import comprobar_taller  # versiones fijadas (versiones.json): para aquí si el taller no está montado con ellas
 SALIDA = sys.argv[-1] if len(sys.argv) > 1 and not sys.argv[-1].endswith('.py') else '/tmp/claude-0/mh/vestir'
 os.makedirs(SALIDA, exist_ok=True)
+comprobar_taller.comprobar(os.path.join(SALIDA, 'taller_versiones.json'))
+import bpy, bmesh, addon_utils, importlib, math
+import numpy as np
+from mathutils import Vector
 addon_utils.enable('bl_ext.user_default.mpfb', default_set=True)
 M = 'bl_ext.user_default.mpfb.'
 HS = importlib.import_module(M + 'services.humanservice').HumanService

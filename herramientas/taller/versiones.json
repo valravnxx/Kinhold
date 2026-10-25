@@ -1,0 +1,22 @@
+{
+ "nota": "Versiones fijadas del taller de personajes. Las comprueba herramientas/taller/comprobar_taller.py (al empezar vestir_mpfb.py y mpfb_prueba.py) y las instala herramientas/taller/montar_taller.sh. Si se cambia alguna, volver a generar los personajes y comprobar que salen igual antes de publicar.",
+ "python": "3.13",
+ "pip": {
+  "bpy": "5.2.3",
+  "numpy": "2.5.3",
+  "pillow": "12.3.0"
+ },
+ "mpfb2": {
+  "repositorio": "https://github.com/makehumancommunity/mpfb2.git",
+  "commit": "6ff1eb358f6c1959ced77e79e6dd2406d9a71f49",
+  "version": "2.0.18"
+ },
+ "node": "22",
+ "npm": {
+  "three": "0.186.1",
+  "@gltf-transform/core": "4.5.1",
+  "@gltf-transform/extensions": "4.5.1",
+  "@gltf-transform/functions": "4.5.1",
+  "meshoptimizer": "1.3.0"
+ }
+}
