@@ -411,5 +411,6 @@
  "Cantidad no válida.": "Недопустимое количество.",
  "El autor no está en el combate.": "Автора нет в бою.",
  "El autor está fuera de combate.": "Автор выбыл из боя.",
- "El objetivo no está en el combate.": "Цели нет в бою."
+ "El objetivo no está en el combate.": "Цели нет в бою.",
+ "Toda acción que cambia el mundo (mojón, colocar, desmontar, muebles, abrir puertas) es un mensaje con autor que la lógica comprueba y anota; mientras no haya cuentas, el autor es «jugador:local» y el registro vive solo en memoria durante la partida (el guardado no cambia).": "Каждое действие, меняющее мир (межевой камень, постройка, разборка, мебель, открытие дверей), — это сообщение с автором, которое логика проверяет и записывает; пока нет учётных записей, автор — «jugador:local», а журнал хранится только в памяти во время игры (сохранение не меняется)."
 }

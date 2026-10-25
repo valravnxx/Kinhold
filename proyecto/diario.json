@@ -651,5 +651,23 @@
   "pruebas": "Todas correctas con probar_todo.sh (lógica 63, modelos 21, combate 69, personaje 11, textos traducidos, navegador de los cuatro prototipos, idiomas y web 109 comprobaciones), PC y móvil; la prueba nueva de los documentos en ruso se rompió a propósito una vez y falló",
   "capturas": "capturas/diseno-ru",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T13:20:40+00:00",
+  "fin": "2026-10-25T14:03:35+00:00",
+  "titulo": "Hito 0b: acciones con autor",
+  "hito": "base",
+  "hecho": [
+   "Nuevo módulo de lógica pura src/logica/acciones.js: cada acción es un mensaje con autor, tipo y datos sencillos; se comprueba, se aplica y se anota en un registro, salga bien o mal (con el motivo).",
+   "Construcción: el mojón, colocar y desmontar piezas, poner y quitar muebles, abrir y cerrar puertas y el botón de materiales pasan ya por las acciones. Con el registro se rehace el mismo mundo desde cero, como hará el servidor.",
+   "Combate: cada golpe cuerpo a cuerpo y cada disparo son acciones con autor y objetivo; la herida de una flecha se anota como impacto del mismo autor. Quien no está en el combate o ya ha caído no puede herir.",
+   "Prueba nueva (prueba_acciones.mjs, 25 comprobaciones): falla si una acción se salta el registro, porque el mundo rehecho ya no coincide, y revisa el código del juego para que nada fuera de la lógica pura cambie el mundo directamente.",
+   "Decisión provisional (anotada en el registro de decisiones de la construcción): mientras no haya cuentas, el autor es «jugador:local» y el registro vive solo en memoria; el guardado no cambia de formato.",
+   "Sin versión jugable nueva: no cambia nada a la vista.",
+   "No comprobado: las dos comprobaciones nuevas de navegador (registro de acciones en la construcción y en el combate) no se rompieron a propósito; la prueba de lógica sí (MUTAR=1 falla en 2 comprobaciones)."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh (lógica 63, modelos 21, combate 69, acciones 25, personaje 11, textos traducidos, navegador de los cuatro prototipos, recursos, idiomas y web), PC y móvil; la prueba nueva de acciones se rompió a propósito una vez y falló",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

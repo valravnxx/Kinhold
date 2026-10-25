@@ -62,7 +62,9 @@
    "tareas": [
     {
      "nombre": "Acciones con autor: toda acción que cambia el mundo (construir, desmontar, golpear, herir) pasa por la lógica pura como un mensaje con autor (quién, qué, dónde), se valida y se guarda en un registro; pruebas que lo comprueban y que fallan si una acción se salta el registro",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-25T13:20:40+00:00",
+     "fin": "2026-10-25T14:03:35+00:00"
     },
     {
      "nombre": "Quitar código muerto: el personaje esculpido abandonado (cuerpo, campos de distancia, datos horneados y su herramienta y prueba) y el muñeco de la prueba de estilo, sin tocar las versiones ya publicadas",

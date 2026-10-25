@@ -23,5 +23,6 @@ export const REGISTRO = [
   'Los muros de troncos van en 10 hiladas de 25 cm: todos acaban a 2,5 m y sus troncos coinciden en altura. La puerta mide 2 m (8 hiladas) y la ventana va de 1 a 1,75 m.',
   'Las ventanas no tienen contraventana todavía.',
   'La partida se guarda sola en el navegador (con botón para reiniciar).',
+  'Toda acción que cambia el mundo (mojón, colocar, desmontar, muebles, abrir puertas) es un mensaje con autor que la lógica comprueba y anota; mientras no haya cuentas, el autor es «jugador:local» y el registro vive solo en memoria durante la partida (el guardado no cambia).',
   'Textos de la interfaz en español, inglés y ruso (botones arriba a la derecha; en el móvil, un desplegable con el idioma).',
 ];

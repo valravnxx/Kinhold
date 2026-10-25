@@ -411,5 +411,6 @@
  "Cantidad no válida.": "Invalid amount.",
  "El autor no está en el combate.": "The author is not in the fight.",
  "El autor está fuera de combate.": "The author is out of the fight.",
- "El objetivo no está en el combate.": "The target is not in the fight."
+ "El objetivo no está en el combate.": "The target is not in the fight.",
+ "Toda acción que cambia el mundo (mojón, colocar, desmontar, muebles, abrir puertas) es un mensaje con autor que la lógica comprueba y anota; mientras no haya cuentas, el autor es «jugador:local» y el registro vive solo en memoria durante la partida (el guardado no cambia).": "Every action that changes the world (boundary stone, placing, dismantling, furniture, opening doors) is a message with an author that the logic checks and records; until there are accounts, the author is “jugador:local” and the log lives only in memory during the game (the save does not change)."
 }
