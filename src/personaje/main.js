@@ -4,12 +4,16 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { LUCES } from '../estilo/estilos.js';
 import { crearEscena } from '../estilo/escena.js';
 import { crearPersonaje, OPCIONES } from '../personajes/cargar.js';
+import { crearPersonajeMH } from '../personajes/makehuman.js';
 import { VERSION_PERSONAJE, REGISTRO_PERSONAJE } from './registro.js';
 
 const $ = (id) => document.getElementById(id);
 const CLAVE = 'kinhold_personaje_v2';
 // carpeta de los modelos: la versión publicada vive en jugar/personaje/, los modelos en recursos/personajes/v1/
 const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../recursos/personajes/v1/';
+// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v1/
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v1/';
+const BASES = { quaternius: 'Paquete Quaternius', makehuman: 'Taller propio (MakeHuman)' };
 
 const lienzo = $('lienzo');
 const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, alpha: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
@@ -50,6 +54,7 @@ if (!VISTAS[estado.vista]) estado.vista = 'cuerpo';
 if (!ANIMS[estado.modo]) estado.modo = 'quieto';
 if (estado.ropa !== 'campesino') estado.ropa = 'campesino'; // el explorador era demasiado de fantasía (Pedro)
 estado.sombras ??= true; estado.escena ??= true;
+if (!BASES[estado.base]) estado.base = 'quaternius';
 // la v3 ponía «ligera» sola en el móvil: si no la eligió Pedro a mano, vuelve a alta
 if (!estado.calidadElegida) estado.calidad = 'alta';
 const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch (e) { /* sin almacenamiento */ } };
@@ -59,7 +64,7 @@ async function rehacer() {
   const n = ++cargando;
   $('cargando').hidden = false;
   if (!OPCIONES.pelo[estado.sexo][estado.pelo]) estado.pelo = Object.keys(OPCIONES.pelo[estado.sexo])[0];
-  const nuevo = await crearPersonaje(estado, RECURSOS);
+  const nuevo = estado.base === 'makehuman' ? await crearPersonajeMH(estado, RECURSOS_MH) : await crearPersonaje(estado, RECURSOS);
   if (n !== cargando) return; // llegó otro cambio mientras cargaba
   if (pj) escena.remove(pj.raiz);
   pj = nuevo;
@@ -96,8 +101,11 @@ function marcar(tipo, v) { for (const b of document.querySelectorAll(`[data-${ti
 function pintarOpciones() {
   const grupo = (clave, valores, titulo) => `<div class="grupo"><span>${titulo}</span>${Object.entries(valores).map(([k, v]) =>
     `<button data-op="${clave}" data-v="${k}" class="${estado[clave] === k ? 'sel' : ''}">${Array.isArray(v) ? `<i style="background:#${new THREE.Color(v[1]).getHexString()}"></i>${v[0]}` : v}</button>`).join('')}</div>`;
-  $('opciones').innerHTML = grupo('sexo', OPCIONES.sexo, 'Cuerpo') + grupo('ropa', { campesino: OPCIONES.ropa.campesino }, 'Ropa') + grupo('pelo', OPCIONES.pelo[estado.sexo], 'Pelo') +
-    grupo('colorPelo', OPCIONES.colorPelo, 'Color del pelo') + grupo('piel', OPCIONES.piel, 'Piel') + (estado.sexo === 'hombre' ? grupo('barba', OPCIONES.barba, 'Barba') : '') +
+  const mh = estado.base === 'makehuman';
+  $('opciones').innerHTML = grupo('base', BASES, 'Base del personaje') + grupo('sexo', OPCIONES.sexo, 'Cuerpo') +
+    (mh ? '<div class="grupo"><span>Taller propio: de momento un hombre (túnica, calzas, barba) y una mujer (vestido y cofia). Pelo, piel y ropa aún no se cambian.</span></div>'
+      : grupo('ropa', { campesino: OPCIONES.ropa.campesino }, 'Ropa') + grupo('pelo', OPCIONES.pelo[estado.sexo], 'Pelo') +
+    grupo('colorPelo', OPCIONES.colorPelo, 'Color del pelo') + grupo('piel', OPCIONES.piel, 'Piel') + (estado.sexo === 'hombre' ? grupo('barba', OPCIONES.barba, 'Barba') : '')) +
     grupo('calidad', { alta: 'Alta', ligera: 'Ligera (móvil)' }, 'Calidad') +
     `<div class="grupo"><span>Prueba de rendimiento (mira los fps arriba)</span><button data-diag="sombras" class="${estado.sombras ? 'sel' : ''}">Sombras</button><button data-diag="escena" class="${estado.escena ? 'sel' : ''}">Cabaña y suelo</button></div>` +
     `<div class="grupo"><span>Animación</span>${Object.entries(ANIMS).map(([k, v]) => `<button data-modo="${k}" class="${estado.modo === k ? 'sel' : ''}">${v}</button>`).join('')}</div>`;

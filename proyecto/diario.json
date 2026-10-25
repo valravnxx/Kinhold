@@ -435,5 +435,21 @@
   "pruebas": "Prueba de taller, no publicada como versión jugable: dos personajes exportados y vistos en Blender y en three.js sin errores en consola. No comprobado: animaciones ni rendimiento en móvil.",
   "capturas": "capturas/taller-vestir-2",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T06:39:00+01:00",
+  "fin": "2026-10-25T07:16:00+01:00",
+  "titulo": "Personaje v5: el personaje del taller propio ya se mueve",
+  "hito": "arte",
+  "hecho": [
+   "Las animaciones de Quaternius se pasan al esqueleto de MakeHuman con un programa propio: el reposo de MakeHuman (brazos en «A») se lleva a la postura del original y en cada fotograma se copia el giro de cada hueso respecto a su reposo; la pelvis copia también los botes, escalados por la altura.",
+   "Probado con las nueve animaciones que usa el juego: quieto, andar, correr, talar, en guardia, golpe, parar, andar cargando y recoger. Los dos personajes las hacen bien, también la mujer con el vestido.",
+   "Personaje v5 publicado: en el visor hay una opción nueva, «Base del personaje», para elegir entre el paquete de Quaternius y el taller propio y compararlos.",
+   "Cada personaje del taller pesa unos 530 KB con ropa, texturas y animaciones (comprimido con WebP y meshopt) y tiene unos 19 mil triángulos.",
+   "Pruebas nuevas del taller en el visor: carga, se ve el cuerpo y la cara, y al andar se mueven piernas y brazos. Rotas a propósito: fallan como deben."
+  ],
+  "pruebas": "Todas las pruebas correctas (lógica, construcción, combate, estilo, personaje, recursos, inglés y web), en PC y móvil. No comprobado: fps en un móvil de verdad.",
+  "capturas": "capturas/personaje-v5",
+  "estado": "ok"
  }
 ]

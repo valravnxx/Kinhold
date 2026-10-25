@@ -140,7 +140,9 @@
     },
     {
      "nombre": "Taller propio sin pantalla (Blender por pip) para reasignar animaciones, reducir mallas y probar a crear cuerpos y caras propios con MakeHuman (MPFB2), con su esqueleto compatible",
-     "estado": "en_curso"
+     "estado": "hecho",
+     "inicio": "2026-10-24T23:58:00+02:00",
+     "fin": "2026-10-25T07:15:00+01:00"
     },
     {
      "nombre": "Heridas y sangrado visibles en el personaje: corte, golpe y estocada se pintan donde entran (también rompen y manchan la ropa), el sangrado se extiende con el tiempo y el vendaje se ve puesto",
@@ -519,6 +521,13 @@
      "archivo": "jugar/personaje/v4.html",
      "capturas": "capturas/personaje-v4",
      "notas": "Vuelve la calidad alta por defecto en el móvil (iba perfecto); la ligera sigue como opción."
+    },
+    {
+     "v": "v5",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/personaje/v5.html",
+     "capturas": "capturas/personaje-v5",
+     "notas": "Nueva opción «Base del personaje»: el taller propio (cuerpo de MakeHuman con ropa, pelo y barba hechos por código) ya anda, tala y lucha con las animaciones de Quaternius pasadas a su esqueleto."
     }
    ]
   }

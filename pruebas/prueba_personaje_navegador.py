@@ -14,6 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v1'), f'{sitio}/recursos/personajes/taller-v1')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -29,6 +30,12 @@ def comprobar(n, c, d=''):
 def contenido(png):
     im = Image.open(io.BytesIO(png)).convert('RGB').resize((160, 100))
     return im, sum(ImageStat.Stat(im.crop((40, 15, 140, 75))).stddev) / 3
+def se_ve(pg, png):
+    """cuánto cambia la imagen al esconder el personaje (si no se dibuja, nada)"""
+    pg.evaluate(f'{E}.diag().pj.raiz.visible = false'); pg.evaluate(f'{E}.dibujar()')
+    sin = pg.screenshot(); pg.evaluate(f'{E}.diag().pj.raiz.visible = true'); pg.evaluate(f'{E}.dibujar()')
+    a, b = [Image.open(io.BytesIO(x)).convert('RGB').resize((160, 100)) for x in (png, sin)]
+    return sum(ImageStat.Stat(ImageChops.difference(a, b)).mean) / 3
 def listo(pg): pg.wait_for_function(f'{E} && {E}.listo()', timeout=180000)
 
 with sync_playwright() as p:
@@ -103,6 +110,28 @@ with sync_playwright() as p:
         pg.click('#btnNotas'); pg.wait_for_timeout(150)
         comprobar('las notas se abren', pg.is_visible('#notas') and len(pg.inner_text('#notas')) > 200)
         pg.click('#btnNotas')
+        # base del taller propio (MakeHuman vestido por código): carga, se ve, anda y cambia de sexo
+        pg.click('[data-op="base"][data-v="makehuman"]'); listo(pg)
+        comprobar('taller propio: carga el personaje de MakeHuman', pg.evaluate(f'{E}.estado().base') == 'makehuman' and pg.evaluate(f"{E}.diag().pj.clips.includes('Walk_Loop')"))
+        for sexo in ['hombre', 'mujer']:
+            pg.evaluate(f"{E}.cambiar({{sexo: '{sexo}'}})"); listo(pg)
+            pg.evaluate(f"{E}.ponerModo('quieto')"); pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)')
+            png = pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}.png')
+            comprobar(f'taller propio ({sexo}): se ve', se_ve(pg, png) > 1, f'{se_ve(pg, png):.1f}')
+            pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)')
+            png = pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_cara.png')
+            comprobar(f'taller propio ({sexo}): se ve la cara', se_ve(pg, png) > 4, f'{se_ve(pg, png):.1f}')
+            pg.evaluate(f"{E}.ponerModo('andar')"); pg.click('[data-vista="cuerpo"]')
+            pg.evaluate(f'{E}.instante(0.2)'); a = pg.evaluate(f"[{E}.hueso('calf_l'), {E}.hueso('hand_r')]")
+            pg.evaluate(f'{E}.instante(0.65)'); b = pg.evaluate(f"[{E}.hueso('calf_l'), {E}.hueso('hand_r')]")
+            mov = max(abs(a[i][k] - b[i][k]) for i in range(2) for k in range(3))
+            comprobar(f'taller propio ({sexo}): al andar se mueven piernas y brazos', mov > 0.05, f'{mov:.3f} m')
+            pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_andar.png')
+        tri = pg.evaluate(f'{E}.medida()')['trianglesPersonaje']
+        comprobar('taller propio dentro de presupuesto (≤ 36 mil triángulos)', 5000 < tri <= 36000, str(tri))
+        pg.evaluate(f"{E}.cambiar({{sexo: 'hombre'}})"); listo(pg)
+        pg.click('[data-op="base"][data-v="quaternius"]'); listo(pg)
+        comprobar('vuelve a la base de Quaternius', pg.evaluate(f'{E}.estado().base') == 'quaternius')
         pg.click('[data-vista="perfil"]')
         pg.reload(); listo(pg)
         st = pg.evaluate(f'{E}.estado()')

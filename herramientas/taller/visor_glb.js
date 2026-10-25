@@ -25,7 +25,7 @@ const POS = new THREE.Vector3(1.6, 0, 4.8);
 
 const archivos = (new URLSearchParams(location.search).get('glb') || '').split(',').filter(Boolean);
 const cargador = new GLTFLoader();
-const gente = [];
+const gente = [], mezcladores = [];
 let triangulos = 0;
 Promise.all(archivos.map(a => cargador.loadAsync(a))).then(res => {
   res.forEach((g, k) => {
@@ -41,16 +41,27 @@ Promise.all(archivos.map(a => cargador.loadAsync(a))).then(res => {
       triangulos += o.geometry.index.count / 3;
     });
     escena.add(m); gente.push(m);
+    const mz = new THREE.AnimationMixer(m); mz.clips = g.animations; mezcladores.push(mz);
   });
-  window.__visor = { listo: true, triangulos, foto };
+  window.__visor = { listo: true, triangulos, foto, poner, clips: () => mezcladores[0]?.clips.map(c => c.name), hueso };
 });
 
+// pone a todos en un clip y un instante concretos (para fotos y pruebas repetibles)
+function poner(nombre, t) {
+  for (const mz of mezcladores) {
+    mz.stopAllAction();
+    const clip = mz.clips.find(c => c.name === nombre);
+    if (clip) { const a = mz.clipAction(clip); a.reset().play(); mz.setTime(t); }
+  }
+}
+function hueso(nombre, persona = 0) { const v = new THREE.Vector3(); gente[persona].getObjectByName(nombre)?.getWorldPosition(v); return v.toArray(); }
 function foto(cual, ancho, alto) {
   renderer.setSize(ancho, alto, false); camara.aspect = ancho / alto; camara.updateProjectionMatrix();
   const m = gente[cual.persona ?? 0], c = m.position.clone();
   const cabeza = new THREE.Vector3(); m.getObjectByName('head')?.getWorldPosition(cabeza);
   if (cual.vista === 'cuerpo') { camara.position.set(POS.x, 1.2, POS.z + 4.4); camara.lookAt(POS.x, 0.85, POS.z); }
   else if (cual.vista === 'cara') { camara.position.set(c.x + 0.15, cabeza.y + 0.06, c.z + 0.95); camara.lookAt(c.x, cabeza.y + 0.03, c.z); /* cabeza entera, con la barbilla */ }
+  else if (cual.vista === 'lado') { camara.position.set(POS.x + 5.2, 1.1, POS.z + 1.0); camara.lookAt(POS.x, 0.85, POS.z); }
   else if (cual.vista === 'espalda') { camara.position.set(c.x - 1.2, 1.4, c.z - 2.6); camara.lookAt(c.x, 0.9, c.z); }
   renderer.render(escena, camara);
 }
