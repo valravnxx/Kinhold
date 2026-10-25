@@ -1,8 +1,11 @@
 // Personajes a partir de las bases CC0 de Quaternius (preparadas con herramientas/preparar_personajes.mjs).
 // Un personaje = cabeza de la base (solo cabeza y cuello: el resto lo tapa la ropa) + ropa + pelo (+ barba),
 // todo atado al mismo esqueleto de 65 huesos, más las animaciones compartidas.
+// Recursos v2: los mismos modelos comprimidos (meshopt y WebP, herramientas/preparar_personajes_v2.mjs), y
+// opcionalmente las 39 animaciones extra (op.extra = true: se bajan aparte, ~1 MB).
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 export const OPCIONES = {
@@ -20,8 +23,20 @@ export const CLIPS = {
   quieto: 'Idle_Loop', andar: 'Walk_Loop', correr: 'Jog_Fwd_Loop', talar: 'TreeChopping_Loop',
   guardia: 'Sword_Idle', golpe: 'Sword_Regular_A', parar: 'Sword_Block', cargar: 'Walk_Carry_Loop', recoger: 'Farm_Harvest',
 };
+// las de animaciones_extra.glb (solo con op.extra); todas se pueden poner también por su nombre original
+export const CLIPS_EXTRA = {
+  vendarse: 'Bandage_Loop', apuntar: 'Bow_Aim_Neutral', apuntarArriba: 'Bow_Aim_Up', apuntarAbajo: 'Bow_Aim_Down', flecha: 'Bow_Notch', disparar: 'Bow_Shoot',
+  minar: 'Mining_Loop', cogerFruta: 'Farm_PickingTree', sembrarVoleo: 'Farm_ScatteringSeeds', plantar: 'Farm_PlantSeed', regar: 'Farm_Watering',
+  lanzarCana: 'Fish_Cast', pescar: 'Fish_Cast_Idle_Loop', recogerSedal: 'Fish_Reel',
+  golpeLigero1: 'Sword_Light_A', golpeLigero2: 'Sword_Light_B', golpeLigero3: 'Sword_Light_C', golpeLigero4: 'Sword_Light_D',
+  golpePesado1: 'Sword_Heavy_A', golpePesado2: 'Sword_Heavy_B', golpePesado3: 'Sword_Heavy_C', golpePesado4: 'Sword_Heavy_D',
+  guardiaEscudo: 'Idle_Shield_Loop', golpeEscudo: 'Shield_OneShot',
+  andarAdelante: 'Walk_Fwd_Loop', andarAtras: 'Walk_Bwd_Loop', andarIzquierda: 'Walk_L_Loop', andarDerecha: 'Walk_R_Loop', girarIzquierda: 'Turn180_L', girarDerecha: 'Turn180_R',
+  trepar: 'ClimbUp_1m', comer: 'Consume', abrirCofre: 'Chest_Open', tumbarse: 'IdleToLay', levantarse: 'LayToIdle', brazosCruzados: 'Idle_FoldArms_Loop',
+  empujado: 'Hit_Knockback', lanzar: 'OverhandThrow',
+};
 
-const cargador = new GLTFLoader();
+const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder); // la v2 va comprimida con meshopt
 const cache = new Map();
 function cargar(url) {
   if (!cache.has(url)) cache.set(url, new Promise((ok, mal) => cargador.load(url, ok, undefined, mal)));
@@ -42,12 +57,12 @@ function soloCabeza(malla) {
 
 // Crea un personaje. `base` es la carpeta de los .glb (con barra final).
 export async function crearPersonaje(op = {}, base = 'recursos/personajes/') {
-  const o = { sexo: 'hombre', ropa: 'campesino', pelo: null, colorPelo: 'castano', piel: 'clara', barba: 'si', calidad: 'alta', ...op };
+  const o = { sexo: 'hombre', ropa: 'campesino', pelo: null, colorPelo: 'castano', piel: 'clara', barba: 'si', calidad: 'alta', extra: false, ...op };
   if (!OPCIONES.pelo[o.sexo][o.pelo]) o.pelo = Object.keys(OPCIONES.pelo[o.sexo])[0];
   const conBarba = o.sexo === 'hombre' && o.barba === 'si';
-  const [ropa, cuerpo, pelo, barba, anim] = await Promise.all([
+  const [ropa, cuerpo, pelo, barba, anim, animExtra] = await Promise.all([
     cargar(`${base}ropa_${o.ropa}_${o.sexo}.glb`), cargar(`${base}base_${o.sexo}.glb`), cargar(`${base}pelo_${o.pelo}.glb`),
-    conBarba ? cargar(`${base}barba.glb`) : null, cargar(`${base}animaciones.glb`)]);
+    conBarba ? cargar(`${base}barba.glb`) : null, cargar(`${base}animaciones.glb`), o.extra ? cargar(`${base}animaciones_extra.glb`) : null]);
 
   const raiz = new THREE.Group();
   // la ropa trae el esqueleto que manda; se clona para poder tener varios personajes a la vez
@@ -100,10 +115,15 @@ export async function crearPersonaje(op = {}, base = 'recursos/personajes/') {
 
   const mezclador = new THREE.AnimationMixer(modelo);
   const acciones = {};
-  for (const [id, nombre] of Object.entries(CLIPS)) {
-    const clip = anim.animations.find(a => a.name === nombre);
-    if (clip) acciones[id] = mezclador.clipAction(clip);
+  for (const clip of anim.animations) acciones[clip.name] = mezclador.clipAction(clip);
+  for (const [id, nombre] of Object.entries(CLIPS)) if (acciones[nombre]) acciones[id] = acciones[nombre];
+  // cinco extra se llaman igual que una de las básicas (son otra versión): la básica conserva el nombre y la extra va como «nombre_2»
+  const extra = {};
+  for (const clip of animExtra ? animExtra.animations : []) {
+    extra[clip.name] = acciones[clip.name] ? clip.name + '_2' : clip.name;
+    acciones[extra[clip.name]] = mezclador.clipAction(clip);
   }
+  for (const [id, nombre] of Object.entries(CLIPS_EXTRA)) if (extra[nombre]) acciones[id] = acciones[extra[nombre]];
   let actual = null;
   const poner = (id, mezcla = 0.25) => {
     const a = acciones[id] || acciones.quieto;
@@ -113,5 +133,6 @@ export async function crearPersonaje(op = {}, base = 'recursos/personajes/') {
     actual = a;
   };
   poner('quieto', 0);
-  return { raiz, modelo, mezclador, acciones, poner, triangulos, opciones: o, hueso };
+  const clips = [...anim.animations.map(c => c.name), ...Object.values(extra)];
+  return { raiz, modelo, mezclador, acciones, poner, triangulos, opciones: o, hueso, clips };
 }
