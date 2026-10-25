@@ -47,13 +47,14 @@ const AYUDAS = {
 
 // ---------------- Escena ----------------
 const lienzo = $('lienzo');
-const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, preserveDrawingBuffer: true });
+const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setClearColor(0x000000, 0); // el cielo lo pinta la página (un degradado CSS no cuesta nada dibujarlo)
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 prepararRenderer(renderer); // sombras blandas, sRGB y ACES: los de la escena común
 const escena = new THREE.Scene();
 const camara = new THREE.PerspectiveCamera(45, 1, 0.1, 400);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
-const ambiente = crearAmbiente(escena, { alcance: 25, mapa: 2048, niebla: [60, 170] });
+const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 25, mapa: 2048, niebla: [60, 170] });
 // decorado común (src/mundo/decorado.js): liza de tierra pisada en el centro, hierba alrededor y bosque
 escena.add(crearDecorado({ semilla: 11, llano: 45, lejos: 200, arboles: 160, bosqueDesde: 30, bosqueHasta: 140,
   hierba: 1100, flores: 300, hierbaDesde: 9, hierbaHasta: 34, tierra: 8, rocas: 24 }).raiz);

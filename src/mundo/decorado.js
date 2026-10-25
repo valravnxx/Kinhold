@@ -50,7 +50,7 @@ export function alturaTerreno(llano = 12) {
 // (hierba, claros y sombras de contacto) y textura de suelo repetida.
 // opc: llano, cerca (radio con detalle fino), lejos (radio total), sombras [[x, z, radio, fuerza]],
 // tinte(x, z, color) → oscurecimiento propio de cada sitio (caminos, tierra pisada…).
-export function suelo({ llano = 12, cerca = 15, lejos = 90, anillos = 30, lados = 64, sombras = [], tinte = null } = {}) {
+export function suelo({ llano = 12, cerca = 15, lejos = 90, anillos = 30, lados = 64, sombras = [], tinte = null, relieve = true } = {}) {
   const H = new THREE.Color(PALETA.hierba), C = new THREE.Color(PALETA.hierbaClara);
   const pos = [], col = [], uv = [], idx = [], k = new THREE.Color();
   const altura = alturaTerreno(llano);
@@ -74,7 +74,7 @@ export function suelo({ llano = 12, cerca = 15, lejos = 90, anillos = 30, lados 
   geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
   geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
   geo.setIndex(idx); geo.computeVertexNormals();
-  const m = new THREE.Mesh(geo, materialTex('suelo')); m.receiveShadow = true; m.name = 'suelo';
+  const m = new THREE.Mesh(geo, materialTex('suelo', { relieve })); m.receiveShadow = true; m.name = 'suelo';
   return m;
 }
 
@@ -148,10 +148,11 @@ export function plantas(raiz, r, { hierba = 170, flores = 70, radio = 11.5, desd
 }
 
 // ---------- Mundo abierto para jugar (construcción, combate) ----------
-// Llano grande con suelo, bosque y hierba del estilo v5. «claro» deja libre de hierba y de árboles el centro.
+// Llano grande con suelo, bosque, hierba y rocas del estilo v5. «claro(x, z)» dice dónde puede haber hierba.
+// El suelo va sin relieve (bumpMap) salvo relieveSuelo: es lo que más cuesta dibujar y a la distancia de juego no se ve.
 // Devuelve { raiz, obstaculos, altura }.
 export function crearDecorado({ semilla = 7, llano = 40, lejos = 220, arboles = 160, bosqueDesde = 28, bosqueHasta = 160,
-  hierba = 900, flores = 260, hierbaDesde = 0, hierbaHasta = 40, claro = null, tierra = null, sombraArboles = true, rocas = 24 } = {}) {
+  hierba = 900, flores = 260, hierbaDesde = 0, hierbaHasta = 40, claro = null, tierra = null, sombraArboles = false, rocas = 24, relieveSuelo = false } = {}) {
   const raiz = new THREE.Group(); raiz.name = 'decorado';
   const r = azar(semilla);
   const T = new THREE.Color(PALETA.tierra);
@@ -159,7 +160,7 @@ export function crearDecorado({ semilla = 7, llano = 40, lejos = 220, arboles = 
   const tinte = tierra ? (x, z, k) => { const d = Math.hypot(x, z); const f = d < tierra ? 0.55 : d < tierra + 2 ? 0.55 * (tierra + 2 - d) / 2 : 0; k.lerp(T, f); return 1; } : null;
   const obstaculos = bosque(raiz, r, { n: arboles, desde: bosqueDesde, hasta: bosqueHasta, reparto: 1, llano, sombra: sombraArboles });
   const sombras = obstaculos.filter(o => Math.hypot(o.x, o.z) < llano + 30).map(o => [o.x, o.z, o.r * 7, 0.35]);
-  raiz.add(suelo({ llano, cerca: llano * 1.2, lejos, sombras, tinte }));
+  raiz.add(suelo({ llano, cerca: llano * 1.2, lejos, sombras, tinte, relieve: relieveSuelo }));
   plantas(raiz, r, { hierba, flores, radio: hierbaHasta, desde: hierbaDesde, libre: claro });
   // rocas sueltas entre la hierba y el bosque (una sola malla)
   if (rocas) {

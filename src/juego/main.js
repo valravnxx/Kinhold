@@ -58,13 +58,14 @@ function guardar() {
 
 // ---------------- Escena ----------------
 const lienzo = $('lienzo');
-const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, preserveDrawingBuffer: true });
+const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setClearColor(0x000000, 0); // el cielo lo pinta la página (un degradado CSS no cuesta nada dibujarlo)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 prepararRenderer(renderer); // sombras blandas, sRGB y ACES: los de la escena común
 const escena = new THREE.Scene();
 const camara = new THREE.PerspectiveCamera(45, 1, 0.1, 500);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
-const ambiente = crearAmbiente(escena, { alcance: 30, mapa: 2048, niebla: [70, 200] });
+const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2048, niebla: [70, 200] });
 
 // decorado común (src/mundo/decorado.js): llano para construir, bosque, hierba y rocas con colisión.
 // La hierba empieza a 16 m: dentro se construye y asomaría por los cimientos (decisión provisional).
@@ -787,7 +788,7 @@ paso();
 
 // acceso para pruebas automáticas
 window.__kinhold = {
-  get mundo() { return mundo; }, estado, pj, cam,
+  get mundo() { return mundo; }, estado, pj, cam, escena, renderer,
   cambiarModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
   seleccionar(clase, tipo) { estado.sel = { clase, tipo }; estado.dir = 0; marcarSeleccion(); evaluarColocacion(); },
   apuntar(x, z, y = 0) { estado.puntero = { x, z, ySuperficie: y }; evaluarColocacion(); },
