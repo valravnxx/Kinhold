@@ -669,5 +669,21 @@
   "pruebas": "Todas correctas con probar_todo.sh (lógica 63, modelos 21, combate 69, acciones 25, personaje 11, textos traducidos, navegador de los cuatro prototipos, recursos, idiomas y web), PC y móvil; la prueba nueva de acciones se rompió a propósito una vez y falló",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T14:20:18+00:00",
+  "fin": "2026-10-25T14:59:27+00:00",
+  "titulo": "Hito 0b: quitar código muerto",
+  "hito": "base",
+  "hecho": [
+   "Quitado el personaje esculpido abandonado: cuerpo, campos de distancia, datos horneados (560 KB), la herramienta que los horneaba y su prueba. Nada del juego los usaba.",
+   "Quitado el muñeco por código de la prueba de estilo, con sus vistas «Personaje» y «Cara» y el botón «Quieto/Andando». La escena no cambia y su límite vuelve a 50 mil triángulos (usa 49,1 mil).",
+   "Los guardados de la prueba de estilo se adaptan: si se había quedado en una vista de personaje, vuelve a la general.",
+   "Prueba de estilo v9 publicada; las versiones anteriores (con el muñeco) siguen en la web sin tocar.",
+   "La prueba de estilo comprueba ahora que no queda nada del muñeco y que un guardado de la v8 se adapta; rota a propósito una vez (MUTAR=1) y falló."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh (lógica 63, modelos 21, combate 69, acciones 25, textos traducidos, navegador de los cuatro prototipos, recursos, idiomas y web), PC y móvil",
+  "capturas": "capturas/estilo-v9",
+  "estado": "ok"
  }
 ]

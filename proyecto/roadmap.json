@@ -68,7 +68,9 @@
     },
     {
      "nombre": "Quitar código muerto: el personaje esculpido abandonado (cuerpo, campos de distancia, datos horneados y su herramienta y prueba) y el muñeco de la prueba de estilo, sin tocar las versiones ya publicadas",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-25T14:20:18+00:00",
+     "fin": "2026-10-25T14:59:27+00:00"
     },
     {
      "nombre": "Taller con versiones fijadas: anotar y comprobar al empezar la versión de Blender, el commit de MPFB2 y los paquetes, con una guía para volver a montarlo desde cero",
@@ -683,6 +685,13 @@
      "archivo": "jugar/estilo/v8.html",
      "capturas": "capturas/estilo-v8",
      "notas": "v8: también en ruso. La escena no cambia."
+    },
+    {
+     "v": "v9",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/estilo/v9.html",
+     "capturas": "capturas/estilo-v9",
+     "notas": "Sin el muñeco hecho por código (el personaje está ahora en el visor de personaje); la escena no cambia"
     }
    ]
   },
