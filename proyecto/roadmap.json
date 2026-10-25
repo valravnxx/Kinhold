@@ -56,7 +56,7 @@
    "id": "base",
    "num": "0b",
    "nombre": "Bases técnicas",
-   "estado": "revision",
+   "estado": "hecho",
    "jugable": "Nada nuevo a la vista: el proyecto queda preparado para el online y para trabajar varias sesiones a la vez sin pisarse.",
    "nota": "Salió del análisis del 25 oct (pedido de Pedro). Va antes que lo demás porque cuanto más código se escriba sin esto, más cuesta arreglarlo.",
    "tareas": [

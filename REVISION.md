@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 25 oct 2026 (17:45) — por el chat: hito 0b (Bases técnicas)
+
+«No tengo forma de revisar algo así, no sé de coding, haz un review rápido tú y apruébalo si lo ves bien» → Revisión del código hecha por Claude: las acciones con autor (`src/logica/acciones.js`) rechazan bien los mensajes mal formados, las piezas que no existen y los autores que no están en el combate; la unión del diario y las traducciones (`herramientas/unir_json.mjs`) solo se para ante un choque de verdad; todas las pruebas pasan. Detalles menores sin importancia (quitar un mueble que no existe no dice el motivo; el botón «rellenar» de materiales es solo del prototipo y el servidor tendrá que rechazarlo). Hito aprobado y marcado como hecho.
+
 ### 25 oct 2026 (14:28) — por el chat: hito 0 (Infraestructura)
 
 «Perfecto, revisado» → Hito de infraestructura aprobado y marcado como hecho (documentos de diseño en ruso incluidos).
