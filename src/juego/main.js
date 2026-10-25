@@ -4,7 +4,7 @@ import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geome
 import { RegistroAcciones, ejecutar, seAbre, AUTOR_LOCAL } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado } from './modelos.js';
-import { crearPersonaje, animarPersonaje } from './personaje.js';
+import { crearJugador } from './personaje.js';
 import { REGISTRO, VERSION } from './registro.js';
 import { t } from './textos.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
@@ -75,8 +75,10 @@ escena.add(decorado.raiz);
 const obstaculos = decorado.obstaculos; // {x,z,r}
 
 // ---------------- Personaje y cámara ----------------
-const jugador = crearPersonaje();
-escena.add(jugador);
+// personaje del taller propio: la versión publicada vive en jugar/construccion/, los modelos en recursos/personajes/taller-v4/
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v4/';
+const jugador = crearJugador(RECURSOS_MH);
+escena.add(jugador.raiz);
 const pj = { x: 0, y: 0, z: 4, k: 0, rot: Math.PI, vel: 0 };
 const cam = { yaw: Math.PI * 0.25, pitch: 0.9, dist: 16 };
 
@@ -508,9 +510,25 @@ function interactivoCercano() {
   }
   return mejor;
 }
+// árbol al alcance del hacha (a menos de 1 m de su tronco), en la planta baja
+function arbolCercano() {
+  if (pj.k !== 0) return null;
+  let mejor = null, md = 1.0;
+  for (const o of obstaculos) {
+    if (!o.arbol) continue;
+    const d = Math.hypot(o.x - pj.x, o.z - pj.z) - o.r;
+    if (d < md) { md = d; mejor = o; }
+  }
+  return mejor;
+}
 function usar() {
   const it = interactivoCercano();
-  if (!it) { mostrarAviso(t('nadaQueUsar')); return; }
+  if (!it) {
+    // junto a un árbol, se tala (por ahora solo el gesto: la madera llega con la recolección)
+    const a = arbolCercano();
+    if (a) { estado.talando = a; pj.rot = Math.atan2(a.x - pj.x, a.z - pj.z); mostrarAviso(t('talando')); return; }
+    mostrarAviso(t('nadaQueUsar')); return;
+  }
   if (it.tipo === 'puerta') {
     const r = accion({ tipo: 'usar', construccion: it.c.id, clave: it.key });
     if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
@@ -645,6 +663,7 @@ function paso() {
   const correr = teclas.has('shift');
   const vel = (correr ? 6 : 3.6) * mag;
   if (mag > 0.05) {
+    estado.talando = null; // moverse deja de talar
     const s = Math.sin(cam.yaw), co = Math.cos(cam.yaw);
     const dx = (ax * co + az * s) / Math.hypot(ax, az);
     const dz = (-ax * s + az * co) / Math.hypot(ax, az);
@@ -665,9 +684,9 @@ function paso() {
   pj.vel = vel;
   const yObjetivo = alturaSuelo();
   pj.y += (yObjetivo - pj.y) * Math.min(1, dt * 14);
-  jugador.position.set(pj.x, pj.y, pj.z);
-  jugador.rotation.y = pj.rot;
-  animarPersonaje(jugador, mag > 0.05 ? vel : 0, dt);
+  jugador.raiz.position.set(pj.x, pj.y, pj.z);
+  jugador.raiz.rotation.y = pj.rot;
+  jugador.animar(mag > 0.05 ? vel : 0, dt, !!estado.talando);
 
   // interiores: ocultar plantas superiores y tejados si estás bajo techo
   for (const g of raizConstr.children) {
@@ -679,7 +698,7 @@ function paso() {
     for (const obj of g.children) obj.visible = !techo || obj.userData.k <= pj.k;
   }
   const it = interactivoCercano();
-  $('btnUsar').classList.toggle('activo', !!it);
+  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano());
 
   actualizarCamara();
   renderer.render(escena, camara);
@@ -788,7 +807,7 @@ paso();
 
 // acceso para pruebas automáticas
 window.__kinhold = {
-  get mundo() { return mundo; }, estado, pj, cam, escena, renderer,
+  get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos,
   cambiarModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
   seleccionar(clase, tipo) { estado.sel = { clase, tipo }; estado.dir = 0; marcarSeleccion(); evaluarColocacion(); },
   apuntar(x, z, y = 0) { estado.puntero = { x, z, ySuperficie: y }; evaluarColocacion(); },

@@ -1,8 +1,14 @@
-// Kinhold — personaje inicial: camisa y pantalón de lino, descalzo.
+// Kinhold — el jugador de la construcción: el personaje del taller propio (MakeHuman vestido por código, con las
+// animaciones de Quaternius) con camisa y calzas de lino y descalzo, como empieza según el GDD.
+// Mientras se carga (o si no se puede cargar, p. ej. abriendo el html suelto sin servidor) se ve el muñeco inicial.
 import * as THREE from 'three';
 import { mat } from './modelos.js';
+import { crearPersonajeMH } from '../personajes/makehuman.js';
 
 const PIEL = 0xd6a77a, LINO = 0xd9cfb8, LINO_OSC = 0xbfb498, PELO = 0x4a3324, CORDEL = 0x8a7a55;
+
+// velocidad natural de las animaciones del taller (m/s), medida con el pie en un ciclo: andar 0,97, correr 2,59
+const VEL_ANDAR = 0.97, VEL_CORRER = 2.59;
 
 function pieza(geo, color, x, y, z) {
   const m = new THREE.Mesh(geo, mat(color));
@@ -11,12 +17,11 @@ function pieza(geo, color, x, y, z) {
   return m;
 }
 
-export function crearPersonaje() {
+// muñeco provisional (el de siempre), solo mientras carga el del taller
+function crearMuneco() {
   const g = new THREE.Group();
   const cuerpo = new THREE.Group();
   g.add(cuerpo);
-
-  // piernas (pivotan en la cadera)
   const piernas = [];
   for (const lado of [-1, 1]) {
     const cadera = new THREE.Group();
@@ -26,10 +31,8 @@ export function crearPersonaje() {
     cuerpo.add(cadera);
     piernas.push(cadera);
   }
-  // torso
   cuerpo.add(pieza(new THREE.BoxGeometry(0.46, 0.62, 0.26), LINO, 0, 1.22, 0));
-  cuerpo.add(pieza(new THREE.BoxGeometry(0.48, 0.06, 0.28), CORDEL, 0, 0.93, 0)); // cordel a la cintura
-  // brazos (pivotan en el hombro)
+  cuerpo.add(pieza(new THREE.BoxGeometry(0.48, 0.06, 0.28), CORDEL, 0, 0.93, 0));
   const brazos = [];
   for (const lado of [-1, 1]) {
     const hombro = new THREE.Group();
@@ -39,22 +42,16 @@ export function crearPersonaje() {
     cuerpo.add(hombro);
     brazos.push(hombro);
   }
-  // cabeza
   const cabeza = new THREE.Group();
   cabeza.position.set(0, 1.62, 0);
   cabeza.add(pieza(new THREE.BoxGeometry(0.1, 0.1, 0.1), PIEL, 0, 0.02, 0));
   cabeza.add(pieza(new THREE.IcosahedronGeometry(0.15, 0), PIEL, 0, 0.2, 0));
   cabeza.add(pieza(new THREE.IcosahedronGeometry(0.155, 0), PELO, 0, 0.26, -0.03));
-  cabeza.add(pieza(new THREE.BoxGeometry(0.03, 0.03, 0.02), 0x2a2018, -0.055, 0.21, 0.135));
-  cabeza.add(pieza(new THREE.BoxGeometry(0.03, 0.03, 0.02), 0x2a2018, 0.055, 0.21, 0.135));
   cuerpo.add(cabeza);
-
   g.userData = { piernas, brazos, cuerpo, fase: 0 };
   return g;
 }
-
-// velocidad en m/s; dt en segundos
-export function animarPersonaje(g, velocidad, dt) {
+function animarMuneco(g, velocidad, dt) {
   const u = g.userData;
   if (velocidad > 0.1) {
     u.fase += dt * velocidad * 2.4;
@@ -66,4 +63,32 @@ export function animarPersonaje(g, velocidad, dt) {
     for (const p of [...u.piernas, ...u.brazos]) p.rotation.x *= 0.8;
     u.cuerpo.position.y *= 0.8;
   }
+}
+
+// Devuelve { raiz, animar(velocidad, dt, talando), cargado(), modo(), mh }. `recursos`: carpeta de los .glb del taller.
+export function crearJugador(recursos, sexo = 'hombre') {
+  const raiz = new THREE.Group();
+  const muneco = crearMuneco();
+  raiz.add(muneco);
+  const j = { raiz, mh: null, error: null, modo: 'quieto' };
+  j.listo = crearPersonajeMH({ sexo, capas: [], descalzo: true }, recursos).then(mh => {
+    raiz.remove(muneco);
+    raiz.add(mh.raiz);
+    j.mh = mh;
+  }).catch(e => { j.error = e.message || String(e); console.warn('Personaje del taller no cargado, sigue el muñeco:', e); });
+  j.animar = (velocidad, dt, talando = false) => {
+    if (!j.mh) { animarMuneco(muneco, velocidad, dt); return; }
+    // andar despacio (joystick a medias), correr a partir de 1,8 m/s; la animación se acelera con la velocidad,
+    // hasta 1,6× (más rápido se ve atropellado; a 6 m/s los pies resbalan algo)
+    let m = 'quieto', ritmo = 1;
+    if (velocidad > 0.1) {
+      if (velocidad < 1.8) { m = 'andar'; ritmo = velocidad / VEL_ANDAR; }
+      else { m = 'correr'; ritmo = velocidad / VEL_CORRER; }
+      ritmo = THREE.MathUtils.clamp(ritmo, 0.6, 1.6);
+    } else if (talando) m = 'talar';
+    if (m !== j.modo) { j.mh.poner(m, 0.2); j.modo = m; }
+    j.mh.acciones[m].timeScale = ritmo;
+    j.mh.mezclador.update(dt);
+  };
+  return j;
 }

@@ -1,11 +1,23 @@
 # Prueba en navegador real (Chromium sin pantalla) del hito 1 de Kinhold.
 # Construye una cabaña usando el propio juego, comprueba el estado y saca capturas.
-import sys, os, json
+# Se sirve por HTTP con la misma estructura que la web (jugar/construccion/ y recursos/personajes/taller-v4/), porque el
+# personaje del taller se carga de un .glb aparte. MUTAR=1 apunta a una carpeta de modelos que no existe: tiene que fallar.
+import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_hito1.html')
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas'
 os.makedirs(SALIDA, exist_ok=True)
+RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+sitio = tempfile.mkdtemp()
+os.makedirs(f'{sitio}/jugar/construccion'); os.makedirs(f'{sitio}/recursos/personajes')
+shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v4'), f'{sitio}/recursos/personajes/taller-v4')
+class Silencioso(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, *a): pass
+srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
+threading.Thread(target=srv.serve_forever, daemon=True).start()
+URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/construccion/prueba.html' + ('?recursosMH=../../no-existe/' if os.environ.get('MUTAR') else '')
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 
 fallos = []
@@ -23,7 +35,7 @@ with sync_playwright() as p:
     errores = []
     pg.on('pageerror', lambda e: errores.append(str(e)))
     pg.on('console', lambda m: errores.append(m.text) if m.type == 'error' else None)
-    pg.goto('file://' + RUTA)
+    pg.goto(URL)
     pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
     pg.evaluate('localStorage.clear(); window.__kinhold.reiniciar()')
     esperar(pg, 800)
@@ -280,6 +292,46 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/14_escalera_de_tablas.png')
 
+    print('PC: personaje del taller (camisa y calzas de lino, descalzo; anda, corre y tala)')
+    try:
+        pg.wait_for_function(f'{K}.jugador.mh || {K}.jugador.error', timeout=180000)
+    except Exception:
+        pass
+    mh = ev(f"!!{K}.jugador.mh")
+    comprobar('carga el personaje del taller (no el muñeco)', mh, ev(f"{K}.jugador.error || ''"))
+    if mh:
+        vis = ev(f"""(() => {{ const v = {{}}; {K}.jugador.mh.modelo.traverse(n => {{ if (n.isMesh) v[n.name] = n.visible; }}); return v; }})()""")
+        comprobar('lleva camisa y calzas', vis.get('hombre_capa_camisa') and vis.get('hombre_capa_calzas'))
+        comprobar('va descalzo y sin túnica ni armadura', not any(vis.get(f'hombre_capa_{c}') for c in ['zapatos', 'tunica', 'gambeson', 'cota', 'sobreveste']),
+                  ', '.join(k for k, x in vis.items() if x))
+        modos = ev(f"(() => {{ const j = {K}.jugador, r = []; for (const [v, t] of [[1.0, false], [3.6, false], [6, false], [0, false], [0, true]]) {{ j.animar(v, 0.016, t); r.push(j.modo + ':' + j.mh.acciones[j.modo].timeScale.toFixed(2)); }} return r; }})()")
+        comprobar('andar, correr, quieto y talar según la velocidad', [m.split(':')[0] for m in modos] == ['andar', 'correr', 'correr', 'quieto', 'talar'], ', '.join(modos))
+        comprobar('la animación se acelera con la velocidad (tope 1,6×)', modos[1].endswith('1.39') and modos[2].endswith('1.60'), ', '.join(modos))
+        # junto a un árbol: Usar tala; moverse lo para
+        ev(f"""(() => {{ const K = {K}; K.cambiarModo('mover'); const a = K.obstaculos.filter(o => o.arbol).sort((p, q) => Math.hypot(p.x, p.z) - Math.hypot(q.x, q.z))[0];
+            const d = Math.hypot(a.x, a.z); K.pj.k = 0; K.pj.x = a.x - a.x / d * (a.r + 0.6); K.pj.z = a.z - a.z / d * (a.r + 0.6); K.pj.y = 0;
+            K.cam.yaw = Math.atan2(-a.x, -a.z) + 0.9; K.cam.pitch = 0.3; K.cam.dist = 4.2; }})()""")
+        esperar(pg, 300)
+        ev(f"{K}.usar()")
+        esperar(pg, 1200)
+        comprobar('Usar junto a un árbol: tala', ev(f"!!{K}.estado.talando && {K}.jugador.modo === 'talar'"), ev(f"{K}.jugador.modo"))
+        comprobar('el botón Usar se enciende junto al árbol', ev("document.getElementById('btnUsar').classList.contains('activo')"))
+        pg.screenshot(path=f'{SALIDA}/17_personaje_talando.png')
+        pg.keyboard.down('w'); esperar(pg, 500)
+        comprobar('moverse deja de talar', ev(f"!{K}.estado.talando && {K}.jugador.modo !== 'talar'"), ev(f"{K}.jugador.modo"))
+        pg.keyboard.up('w')
+        # de cerca, quieto y andando, junto a la cabaña
+        ev(f"{K}.pj.x=2; {K}.pj.z=-2.5; {K}.pj.k=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI*0.95; {K}.cam.pitch=0.25; {K}.cam.dist=3.6")
+        esperar(pg, 1500)
+        pg.screenshot(path=f'{SALIDA}/18_personaje_de_cerca.png')
+        ev(f"{K}.cam.yaw=Math.PI*0.95 + 2.6")
+        esperar(pg, 900)
+        pg.screenshot(path=f'{SALIDA}/19_personaje_de_espaldas.png')
+        pg.keyboard.down('shift'); pg.keyboard.down('a'); esperar(pg, 700)
+        pg.screenshot(path=f'{SALIDA}/20_personaje_corriendo.png')
+        comprobar('corre con Mayús', ev(f"{K}.jugador.modo") == 'correr', ev(f"{K}.jugador.modo"))
+        pg.keyboard.up('a'); pg.keyboard.up('shift')
+
     print('PC: barra de construcción')
     ev(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','muro_entramado'); {K}.pj.x=2; {K}.pj.z=-4; {K}.cam.yaw=Math.PI+0.3; {K}.cam.pitch=0.85; {K}.cam.dist=15; {K}.estado.planta=0; {K}.apuntar(-1, 3)")
     esperar(pg, 900)
@@ -295,7 +347,7 @@ with sync_playwright() as p:
     mv = ctx.new_page()
     err2 = []
     mv.on('pageerror', lambda e: err2.append(str(e)))
-    mv.goto('file://' + RUTA)
+    mv.goto(URL)
     mv.wait_for_function('window.__kinhold !== undefined', timeout=20000)
     mv.evaluate(f"localStorage.setItem('kinhold_h1_v1', {json.dumps(estado)}); location.reload()")
     mv.wait_for_function('window.__kinhold !== undefined', timeout=20000)
@@ -311,7 +363,16 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.seleccionar('pieza','cim_tronco'); {K}.apuntar(-2, 2)")
     mv.wait_for_timeout(700)
     comprobar('botón Colocar visible al construir en táctil', mv.is_visible('#btnColocar'))
+    try:
+        mv.wait_for_function(f'{K}.jugador.mh || {K}.jugador.error', timeout=180000)
+    except Exception:
+        pass
+    comprobar('carga el personaje del taller en el móvil', mv.evaluate(f"!!{K}.jugador.mh"))
     mv.screenshot(path=f'{SALIDA}/07_movil_construir.png')
+    mv.click('#modos button[data-modo=mover]')
+    mv.evaluate(f"{K}.pj.x=2; {K}.pj.z=-2.5; {K}.pj.k=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI*0.95; {K}.cam.pitch=0.3; {K}.cam.dist=4.5")
+    mv.wait_for_timeout(1200)
+    mv.screenshot(path=f'{SALIDA}/07b_movil_personaje_de_cerca.png')
     comprobar('sin errores en consola (móvil)', len(err2) == 0, '; '.join(err2[:3]))
     nav.close()
 

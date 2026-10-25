@@ -105,7 +105,7 @@ export function bosque(raiz, r, { n = 36, desde = 15, hasta = 60, reparto = 0.8,
     if (libre && !libre(x, z, d)) continue;
     const s = 0.8 + r() * 0.7;
     (i % 3 === 0 ? sitios.f : sitios.p).push([x, z, s, r() * 6, 0.85 + r() * 0.3]);
-    obstaculos.push({ x, z, r: (i % 3 === 0 ? 0.26 : 0.24) * s + 0.1 });
+    obstaculos.push({ x, z, r: (i % 3 === 0 ? 0.26 : 0.24) * s + 0.1, arbol: true });
   }
   for (const [mod, lista] of [[pino, sitios.p], [frond, sitios.f]]) {
     if (!lista.length) continue;
