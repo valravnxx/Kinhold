@@ -236,7 +236,8 @@ with sync_playwright() as p:
         ev(f"{D}.jugador.x = 0; {D}.jugador.z = -3.6; {D}.jugador.rot = 0")
         espera(100)
         if parando: ev(f"{D}.parar(true)")
-        ev(f"""{D}.lanzar({{arma:'arco', x:0, z:12, rot:Math.PI, def:{{vMin:18, vMax:55}}, factorBrazo:()=>1}}, {{x:0, y:1.3, z:-3.6}}, {{tension:1, tTenso:0.2}})""")
+        ev(f"""{D}.ctx.luchadores.tirador = {{arma:'arco', x:0, z:12, rot:Math.PI, def:{{vMin:18, vMax:55}}, factorBrazo:()=>1}}""")
+        ev(f"""{D}.lanzar('tirador', {{x:0, y:1.3, z:-3.6}}, {{tension:1, tTenso:0.2}})""")
         espera(1200)
         res = (ev(f"{D}.jugador.heridas.length"), pg.inner_text('#registro').split('\n')[0])
         ev(f"{D}.parar(false)")
@@ -245,6 +246,11 @@ with sync_playwright() as p:
     comprobar('tu escudo levantado para una flecha de frente', h == 0 and 'escudo' in reg, reg)
     h, reg = flecha_contra_jugador(False)
     comprobar('sin parar, la flecha te hiere', h >= 1, reg)
+    ult = ev(f"{D}.registroAcciones.entradas.slice(-2)")
+    comprobar('el disparo y su herida quedan en el registro de acciones con su autor',
+              ult[0]['tipo'] == 'disparo' and ult[1]['tipo'] == 'impacto' and ult[1]['autor'] == 'tirador' and ult[1]['datos']['objetivo'] == 'jugador' and ult[1]['resultado'] == 'herida', str(ult))
+    golpes = ev(f"{D}.registroAcciones.entradas.filter(e => e.tipo === 'golpe').map(e => e.autor)")
+    comprobar('los golpes cuerpo a cuerpo de la partida quedan anotados con su autor', len(golpes) > 0 and set(golpes) <= {'jugador', 'rival'}, f'{len(golpes)} golpes')
     # el rival con escudo para tus flechas
     ev(f"{D}.configurar({{modo:'duelo', arma:'arco', armaRival:'espada_escudo', dificultad:'aprendiz'}})")
     ev(f"{D}.rival.z = {D}.jugador.z + 14")

@@ -141,6 +141,11 @@ with sync_playwright() as p:
     ev(f"{K}.confirmarDesmontaje()")
     despues = ev(f"{K}.mundo.materiales.vara")
     comprobar('recupera 3 varas (75% de 4)', despues - antes == 3, f'{antes} → {despues}')
+    reg = ev(f"{K}.registroAcciones.entradas.map(e => [e.autor, e.tipo, e.ok])")
+    tipos = {t for _, t, okk in reg if okk}
+    comprobar('lo construido, abierto y desmontado queda en el registro de acciones con su autor',
+              {'mojon', 'colocar', 'usar', 'desmontar'} <= tipos and all(a == 'jugador:local' for a, _, _ in reg) and reg[-1][1] == 'desmontar',
+              f'{len(reg)} acciones: ' + ', '.join(sorted(tipos)))
 
     print('PC: cobertizo de pendiente continua')
     ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-6; {K}.pj.z=1; {K}.cam.yaw=-Math.PI/2+0.5; {K}.cam.pitch=0.5; {K}.cam.dist=14")

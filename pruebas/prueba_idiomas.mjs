@@ -33,6 +33,7 @@ for (const m of opciones.matchAll(/:\s*\[?'([^']+)'/g)) meter(m[1]);
 // 2. textos de la lógica que llegan a la pantalla (motivos de construcción y de caer en combate)
 const constr = leer('src/logica/construccion.js');
 for (const m of constr.matchAll(/motivo: '([^']+)'/g)) meter(m[1]);
+for (const m of leer('src/logica/acciones.js').matchAll(/motivo: '([^']+)'|return '([^']+)'/g)) meter(m[1] || m[2]);
 for (const m of constr.slice(constr.indexOf('function motivoSinApoyo')).matchAll(/return '([^']+)'/g)) meter(m[1]);
 for (const linea of leer('src/combate/logica.js').split('\n')) if (/(this|\w+)\.caer\(/.test(linea)) for (const m of linea.matchAll(/'([A-ZÁÉÍÓÚ][^']+)'/g)) meter(m[1]);
 

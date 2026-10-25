@@ -1,11 +1,12 @@
 // Kinhold — campo de pruebas de combate, v2
 import * as THREE from 'three';
-import { Luchador, IA, resolverGolpe, crearProyectil, moverProyectil, azar, angulo, T,
+import { Luchador, IA, azar, angulo, T,
   ARMAS, ARMADURAS, NOMBRE_LINEA, NOMBRE_ZONA, LINEAS, ESPEJO, RITMO } from './logica.js';
 import { crearCombatiente, ponerArma, animarCombatiente, pintarHeridas, sacudir, Rastro, Particulas,
   modeloFlecha, modeloPiedra, modeloPoste, modeloDiana } from './modelos.js';
 import { arbol, COLORES } from '../juego/modelos.js';
 import * as sonido from './sonido.js';
+import { RegistroAcciones, ejecutarCombate, avanzarProyectil } from '../logica/acciones.js';
 import { REGISTRO_COMBATE, VERSION_COMBATE } from './registro.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 
@@ -86,6 +87,9 @@ const rastroJ = new Rastro(escena), rastroR = new Rastro(escena);
 const rnd = azar(Date.now() & 0xffff);
 let jugador, rival, ia, mJugador, mRival;
 let objetos = [], proyectiles = [], dianas = [], postes = [];
+// Toda herida pasa por las acciones con autor (golpe, disparo) y queda en el registro.
+const registroAcciones = new RegistroAcciones(2000);
+let ctxCombate = { luchadores: {}, r: rnd };
 let stats, terminado = false;
 let pausa = 0, pausas = 0; // pausa de impacto (s) y cuántas ha habido
 let temblor = 0;        // sacudida de cámara (m)
@@ -128,6 +132,9 @@ function nuevaPartida() {
     }
     jugador.z = -3.6; jugador.x = 0;
   }
+  ctxCombate = { luchadores: { jugador }, r: rnd };
+  if (rival) ctxCombate.luchadores.rival = rival;
+  if (postes[0]) ctxCombate.luchadores.poste = postes[0];
   cam.yaw = Math.PI + LADO_CAMARA; cam.manual = -99;
   lineasRegistro.length = 0;
   registrar(textoInicio());
@@ -382,12 +389,14 @@ function disparar() {
     return;
   }
   const obj = apuntado || { x: jugador.x + Math.sin(jugador.rot) * 20, y: 0, z: jugador.z + Math.cos(jugador.rot) * 20 };
-  lanzar(jugador, obj, tiro);
+  lanzar('jugador', obj, tiro);
   stats.flechas++;
   sonido.cuerda();
 }
-function lanzar(tirador, obj, tiro) {
-  const p = crearProyectil(tirador, obj, tiro, rnd);
+function lanzar(autor, obj, tiro) {
+  const r = ejecutarCombate(ctxCombate, registroAcciones, { autor, tipo: 'disparo', x: obj.x, y: obj.y || 0, z: obj.z, tension: tiro.tension, tTenso: tiro.tTenso });
+  if (!r.ok) return;
+  const p = r.proyectil, tirador = ctxCombate.luchadores[autor];
   const malla = tirador.arma === 'arco' ? modeloFlecha() : modeloPiedra();
   malla.position.set(p.x, p.y, p.z);
   escena.add(malla);
@@ -445,7 +454,8 @@ function tick(dtReal) {
     if (m.mx || m.mz) { vR = rival.velocidad(m.correr); rival.x += m.mx * vR * dt; rival.z += m.mz * vR * dt; }
     const evR = rival.actualizar(dt, m.correr);
     for (const e of evR) if (e.tipo === 'impacto') {
-      const res = resolverGolpe(rival, jugador, e.linea, rnd);
+      const res = ejecutarCombate(ctxCombate, registroAcciones, { autor: 'rival', tipo: 'golpe', objetivo: 'jugador', linea: e.linea });
+      if (!res.ok) continue;
       contarYDecir(res, false, e.linea);
       efectos(res, rival, jugador, mRival, mJugador);
       if (!jugador.bloqueando) $('btnParar').classList.remove('activo');
@@ -455,7 +465,8 @@ function tick(dtReal) {
   for (const e of evJ) if (e.tipo === 'impacto') {
     const objetivo = rival || postes[0];
     if (!objetivo) { sonido.silbido(); continue; }
-    const res = resolverGolpe(jugador, objetivo, e.linea, rnd);
+    const res = ejecutarCombate(ctxCombate, registroAcciones, { autor: 'jugador', tipo: 'golpe', objetivo: rival ? 'rival' : 'poste', linea: e.linea });
+    if (!res.ok) continue;
     contarYDecir(res, true, e.linea);
     efectos(res, jugador, objetivo, mJugador, rival ? mRival : null);
   }
@@ -527,7 +538,7 @@ function moverJugador(dt) {
 function moverProyectiles(dt) {
   for (const pr of proyectiles) {
     if (pr.p.activo) {
-      const res = moverProyectil(pr.p, dt, [jugador, rival].filter(Boolean), rnd, dianas);
+      const res = avanzarProyectil(ctxCombate, registroAcciones, pr.p, dt, [jugador, rival].filter(Boolean), dianas);
       pr.malla.position.set(pr.p.x, pr.p.y, pr.p.z);
       pr.malla.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), new THREE.Vector3(pr.p.vx, pr.p.vy, pr.p.vz).normalize());
       if (res) {
@@ -656,6 +667,7 @@ window.__duelo = {
   get proyectiles() { return proyectiles; }, get terminado() { return terminado; }, get lineaSel() { return lineaSel; },
   get pausa() { return pausa; }, get pausas() { return pausas; },
   get mJugador() { return mJugador; }, get mRival() { return mRival; },
+  get ctx() { return ctxCombate; }, registroAcciones,
   nuevaPartida, atacar, disparar, lanzar, tick, registrar, parar, lineaDesdePantalla,
   configurar(o) { Object.assign(opc, o); nuevaPartida(); },
   apuntar(x, y, z) { apuntado = { x, y, z }; },

@@ -12,6 +12,7 @@ paso "Construir personaje" node construir_personaje.mjs
 paso "Lógica de construcción" node pruebas/prueba_logica.mjs
 paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
+paso "Acciones con autor" node pruebas/prueba_acciones.mjs
 paso "Personaje horneado" node pruebas/prueba_personaje.mjs
 paso "Textos traducidos" node pruebas/prueba_idiomas.mjs
 paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold_hito1.html "$C/construccion"

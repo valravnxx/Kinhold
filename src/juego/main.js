@@ -1,6 +1,7 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
 import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, progresoEscalera } from '../logica/construccion.js';
+import { RegistroAcciones, ejecutar, seAbre, AUTOR_LOCAL } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, arbol, roca, mat, COLORES, P, rellenoTejado } from './modelos.js';
 import { crearPersonaje, animarPersonaje } from './personaje.js';
@@ -27,6 +28,9 @@ const $ = (id) => document.getElementById(id);
 
 // ---------------- Estado ----------------
 let mundo = cargar();
+// Toda acción que cambia el mundo pasa por la lógica pura con su autor y queda anotada (src/logica/acciones.js).
+let registroAcciones = new RegistroAcciones();
+function accion(a) { return ejecutar(mundo, registroAcciones, { autor: AUTOR_LOCAL, ...a }); }
 const estado = {
   modo: 'mover',            // mover | construir | desmontar
   sel: { clase: 'pieza', tipo: 'cim_piedra' },
@@ -262,7 +266,8 @@ function evaluarColocacion() {
     estado.candidato = { tipo: 'deco', x, y, z, v };
     return;
   }
-  const cand = mundo.candidata(sel.tipo, x, z, estado.planta, estado.rotLibre, estado.dir);
+  const datos = { pieza: sel.tipo, x, z, k: estado.planta, rot: estado.rotLibre, dir: estado.dir };
+  const cand = mundo.candidata(datos.pieza, x, z, datos.k, datos.rot, datos.dir);
   const v = mundo.validar(cand);
   // colocar el fantasma en la rejilla de su construcción
   const c = cand.construccion;
@@ -288,7 +293,7 @@ function evaluarColocacion() {
   } else {
     mostrarAviso(v.ok ? (cand.nueva ? t('nuevaConstruccion') : '') : tr(v.motivo), !v.ok);
   }
-  estado.candidato = { tipo: 'pieza', cand, v };
+  estado.candidato = { tipo: 'pieza', cand, v, datos };
 }
 
 function colocar() {
@@ -296,9 +301,9 @@ function colocar() {
   if (!ca) return;
   if (!ca.v.ok) { mostrarAviso(tr(ca.v.motivo), true); return; }
   let r;
-  if (ca.tipo === 'mojon') r = mundo.colocarMojon(ca.x, ca.z);
-  else if (ca.tipo === 'deco') r = mundo.colocarDecoracion(estado.sel.tipo, ca.x, ca.y, ca.z, estado.rotDeco || 0);
-  else r = mundo.colocar(ca.cand);
+  if (ca.tipo === 'mojon') r = accion({ tipo: 'mojon', x: ca.x, z: ca.z });
+  else if (ca.tipo === 'deco') r = accion({ tipo: 'decorar', pieza: estado.sel.tipo, x: ca.x, y: ca.y, z: ca.z, rot: estado.rotDeco || 0 });
+  else r = accion({ tipo: 'colocar', ...ca.datos });
   if (r.ok) {
     if (ca.tipo === 'mojon') { estado.sel = { clase: 'pieza', tipo: 'cim_piedra' }; marcarSeleccion(); }
     guardar(); reconstruir(); evaluarColocacion();
@@ -335,8 +340,8 @@ function confirmarDesmontaje() {
   const pd = estado.pendienteDesmontar;
   if (!pd) return;
   let r;
-  if (pd.deco) r = mundo.quitarDecoracion(pd.deco.id);
-  else r = mundo.desmontar(pd.c, pd.key);
+  if (pd.deco) r = accion({ tipo: 'quitar', id: pd.deco.id });
+  else r = accion({ tipo: 'desmontar', construccion: pd.c.id, clave: pd.key });
   estado.pendienteDesmontar = null;
   if (r.ok) {
     const dev = Object.entries(r.devuelto || {}).map(([m, n]) => `+${n} ${tr(MATERIALES[m]).toLowerCase()}`).join(', ');
@@ -525,7 +530,7 @@ function interactivoCercano() {
   let mejor = null, md = 1.8;
   for (const c of mundo.construcciones) {
     for (const [key, p] of c.piezas) {
-      const puerta = p.hueco === 'p' || p.tipo === 'empalizada_puerta';
+      const puerta = seAbre(p);
       const esc = p.hueco === 'l' && !PIEZAS[p.tipo].andando; // la de tablas se sube andando
       if (!puerta && !esc) continue;
       const m = localAMundo(c, centroLocal(p).lx, centroLocal(p).lz);
@@ -540,7 +545,8 @@ function usar() {
   const it = interactivoCercano();
   if (!it) { mostrarAviso(t('nadaQueUsar')); return; }
   if (it.tipo === 'puerta') {
-    it.p.abierta = !it.p.abierta;
+    const r = accion({ tipo: 'usar', construccion: it.c.id, clave: it.key });
+    if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
     guardar(); reconstruir();
     mostrarAviso(it.p.abierta ? t('abierta') : t('cerrada'));
     return;
@@ -776,7 +782,7 @@ $('btnBaja').onclick = () => cambiarPlanta(-1);
 $('btnUsar').onclick = usar;
 $('btnConfirmar').onclick = confirmarDesmontaje;
 $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltado(); estado.pendienteDesmontar = null; mostrarAviso(''); };
-$('btnRellenar').onclick = () => { for (const k of Object.keys(mundo.materiales)) mundo.materiales[k] += 50; guardar(); actualizarUI(); evaluarColocacion(); };
+$('btnRellenar').onclick = () => { accion({ tipo: 'rellenar', cantidad: 50 }); guardar(); actualizarUI(); evaluarColocacion(); };
 {
   let armado = false, tmr = null;
   $('btnReiniciar').onclick = () => {
@@ -786,7 +792,7 @@ $('btnRellenar').onclick = () => { for (const k of Object.keys(mundo.materiales)
       return;
     }
     armado = false;
-    mundo = new Mundo(); guardar(); reconstruir(); cambiarModo('mover');
+    mundo = new Mundo(); registroAcciones = new RegistroAcciones(); guardar(); reconstruir(); cambiarModo('mover');
   };
 }
 $('btnRegistro').onclick = () => { $('panelRegistro').hidden = !$('panelRegistro').hidden; $('panelAyuda').hidden = true; };
@@ -821,7 +827,8 @@ window.__kinhold = {
   apuntar(x, z, y = 0) { estado.puntero = { x, z, ySuperficie: y }; evaluarColocacion(); },
   apuntarPieza(cx, cy) { evaluarDesmontaje(piezaBajo(cx, cy)); },
   proyectar(x, y, z) { const v = new THREE.Vector3(x, y, z).project(camara); return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight }; },
-  reiniciar() { mundo = new Mundo(); reconstruir(); },
+  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); reconstruir(); },
+  get registroAcciones() { return registroAcciones; },
   reconstruir() { reconstruir(); },
   render() { renderer.render(escena, camara); },
 };

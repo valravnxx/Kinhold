@@ -402,5 +402,14 @@
  "v6: también en ruso; en el móvil, el idioma se elige en un desplegable.": "v6: теперь и на русском; на телефоне язык выбирается в выпадающем списке.",
  "Combate · v6": "Бой · v6",
  "Prueba de estilo · v8 (realismo en miniatura, con el personaje por código; también en inglés y en ruso)": "Тест стиля · v8 (миниатюрный реализм, с персонажем из кода; также на английском и русском)",
- "Personaje · v11 (taller propio con MakeHuman, ropa por capas y armadura; también en inglés y en ruso)": "Персонаж · v11 (собственная мастерская с MakeHuman, многослойная одежда и доспехи; также на английском и русском)"
+ "Personaje · v11 (taller propio con MakeHuman, ropa por capas y armadura; también en inglés y en ruso)": "Персонаж · v11 (собственная мастерская с MakeHuman, многослойная одежда и доспехи; также на английском и русском)",
+ "Acción no válida.": "Недопустимое действие.",
+ "Acción sin autor.": "Действие без автора.",
+ "Acción desconocida.": "Неизвестное действие.",
+ "Datos no válidos.": "Недопустимые данные.",
+ "Eso no se abre.": "Это не открывается.",
+ "Cantidad no válida.": "Недопустимое количество.",
+ "El autor no está en el combate.": "Автора нет в бою.",
+ "El autor está fuera de combate.": "Автор выбыл из боя.",
+ "El objetivo no está en el combate.": "Цели нет в бою."
 }
