@@ -130,7 +130,13 @@
     },
     {
      "nombre": "Recursos de personaje v2: todo comprimido (las animaciones bajan de 4,4 MB a unos 0,7 MB) y el personaje con las 39 animaciones extra (trabajos, arco, espada ligera y pesada, bloqueo, vendarse, pasos en todas direcciones)",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-25T02:20:44+01:00",
+     "fin": "2026-10-25T02:48:34+01:00"
+    },
+    {
+     "nombre": "Prototipo del personaje con los recursos v2 y un selector con las animaciones extra (espera a que Pedro revise el personaje: REVISION.md pide que solo la sesión del chat toque src/personaje/)",
+     "estado": "espera_decision"
     },
     {
      "nombre": "Taller propio sin pantalla (Blender por pip) para reasignar animaciones, reducir mallas y probar a crear cuerpos y caras propios con MakeHuman (MPFB2), con su esqueleto compatible",

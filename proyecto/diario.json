@@ -401,5 +401,24 @@
   "pruebas": "Todas correctas (probar_todo.sh): lógica 46/46, modelos 21/21, combate 69/69, personaje horneado, textos traducidos 231/231, navegador construcción, combate, estilo, personaje, juego en inglés (PC y móvil) y web. Capturas en inglés miradas en PC y móvil. No comprobado: en un móvil real.",
   "capturas": "capturas/combate-v5",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T02:20:44+01:00",
+  "fin": "2026-10-25T02:48:34+01:00",
+  "titulo": "Recursos de personaje v2: comprimidos y con las 39 animaciones extra",
+  "hito": "arte",
+  "hecho": [
+   "Recursos v2 del personaje: los mismos modelos de la v1, con la geometría y las animaciones comprimidas (meshopt) y las texturas en WebP. La v1 publicada no se toca.",
+   "Un personaje (hombre campesino con pelo, barba y animaciones) baja 1,7 MB en vez de 8,1 MB; las animaciones, de 4,4 MB a 0,7 MB.",
+   "Las posiciones de los vértices no se comprimen: así la ropa, el pelo y la barba siguen compartiendo un solo esqueleto, como en la v3 del personaje.",
+   "El cargador de personajes abre los archivos comprimidos y, si se le pide, las 39 animaciones extra (vendarse, arco, minar, campo, pesca, espada ligera y pesada, escudo, pasos en todas direcciones, trepar, tumbarse…), cada una con un nombre en español.",
+   "Cinco extra se llaman igual que una básica (bloqueo, escudo, comer, brazos cruzados, empujón): la básica se queda como estaba y la extra va aparte, para no cambiar nada sin querer.",
+   "Prueba nueva en navegador: la v2 se ve igual que la v1 (diferencia media menor de 1 sobre 255), mismos triángulos y esqueletos, y cada animación extra mueve el cuerpo. Hoja con las 39 poses en las capturas.",
+   "No se ha cambiado el prototipo del personaje (REVISION.md pide que solo lo toque la sesión del chat hasta que Pedro lo revise): pasarlo a la v2 y añadir el selector de animaciones queda como tarea en espera.",
+   "No comprobado: cuánto tarda en bajar en un móvil real."
+  ],
+  "pruebas": "Todas correctas: construcción 46/46, modelos 21/21, combate 69/69, personaje horneado 11/11, textos traducidos, navegador de construcción, combate, estilo, personaje, recursos v2 (PC y móvil), inglés y web. La prueba de recursos falla a propósito con MUTAR=1 (12 fallos).",
+  "capturas": "capturas/recursos-personaje-v2",
+  "estado": "ok"
  }
 ]
