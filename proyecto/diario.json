@@ -546,5 +546,22 @@
   "pruebas": "Sin cambios de código.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T10:19:54+01:00",
+  "fin": "2026-10-25T10:48:43+01:00",
+  "titulo": "Hito 1c: escalera de tablas",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Pieza nueva «Escalera de tablas» (6 tablas y 6 clavos, 100 kg, en Acceso): ocupa una casilla y sube una planta.",
+   "Se sube y se baja andando, sin botón: se entra por el lado bajo y se sale arriba a la casilla de al lado; gira con R hacia dónde sube.",
+   "Encima queda el hueco abierto: no deja poner suelo sobre la escalera, ni la escalera bajo un suelo; en la última planta no cabe.",
+   "Se apoya en el cimiento o suelo de su casilla (o en la tierra en la planta baja) y suma su peso; si se quita ese suelo, cae.",
+   "Por debajo del tramo alto se puede pasar sin subir. Por el hueco se puede caer a la escalera desde arriba: las barandillas llegan en la tarea siguiente (anotado en el registro de decisiones).",
+   "Construcción v6 publicada."
+  ],
+  "pruebas": "Todas con herramientas/probar_todo.sh: lógica de construcción 63/63 (17 nuevas de la escalera), modelos 21/21, combate 69/69, personaje 11/11, textos traducidos, y navegador de construcción (subir y bajar andando, hueco, pasar por debajo), combate, estilo, personaje, recursos, inglés y web correctos. Las pruebas nuevas se rompieron a propósito una vez (sin hueco, sin giro, sin subir andando) y fallaron.",
+  "capturas": "capturas/construccion-v6",
+  "estado": "ok"
  }
 ]

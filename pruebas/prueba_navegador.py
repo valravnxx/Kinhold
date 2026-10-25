@@ -249,7 +249,7 @@ with sync_playwright() as p:
     esperar(pg, 300)
     k, y = ev(f"{K}.pj.k"), ev(f"{K}.pj.y")
     comprobar('por debajo del tramo alto se pasa sin subir', k == 0 and y < 0.3, f'planta={k} y={y:.2f}')
-    ev(f"{K}.pj.x=12.5; {K}.pj.z=-16; {K}.pj.k=0; {K}.cam.yaw=Math.PI+0.75; {K}.cam.pitch=0.42; {K}.cam.dist=8")
+    ev(f"{K}.pj.x=10.2; {K}.pj.z=-15; {K}.pj.k=0; {K}.pj.rot=Math.PI; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.4; {K}.cam.dist=8.5")
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/14_escalera_de_tablas.png')
 
@@ -277,7 +277,7 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=1; {K}.pj.z=-4; {K}.cam.yaw=Math.PI+0.5; {K}.cam.pitch=0.85; {K}.cam.dist=20")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06_movil_mover.png')
-    mv.evaluate(f"{K}.pj.x=12.5; {K}.pj.z=-16; {K}.pj.k=0; {K}.cam.yaw=Math.PI+0.75; {K}.cam.pitch=0.5; {K}.cam.dist=10")
+    mv.evaluate(f"{K}.pj.x=10.2; {K}.pj.z=-15; {K}.pj.k=0; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.5; {K}.cam.dist=11")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06b_movil_escalera.png')
     mv.click('#modos button[data-modo=construir]')

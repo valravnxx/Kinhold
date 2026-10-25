@@ -215,7 +215,9 @@
     },
     {
      "nombre": "Escalera de tablas (N2: 6 tablas y clavos): ocupa una casilla, sube una planta y se sube andando, sin botón; deja el hueco abierto en el suelo de arriba. Pruebas de lógica (apoyos y hueco) y de navegador (subir y bajar andando)",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-25T10:19:54+01:00",
+     "fin": "2026-10-25T10:48:43+01:00"
     },
     {
      "nombre": "Barandillas y vallas: medio muro como barandilla en el borde de un suelo en alto (no se puede caer por ahí) y portillo para la cerca de varas (corrales), que se abre con Usar como las puertas",
@@ -447,6 +449,13 @@
      "archivo": "jugar/construccion/v5.html",
      "capturas": "capturas/construccion-v5",
      "notas": "Juego en inglés: botón ES/EN arriba a la derecha (recuerda el idioma elegido, también el de la web) y todos los textos traducidos; la partida no se pierde al cambiar."
+    },
+    {
+     "v": "v6",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/construccion/v6.html",
+     "capturas": "capturas/construccion-v6",
+     "notas": "Escalera de tablas: ocupa una casilla y se sube andando, sin botón; encima deja el hueco abierto."
     }
    ]
   },
