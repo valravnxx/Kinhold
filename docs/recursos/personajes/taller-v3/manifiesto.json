@@ -1,0 +1,34 @@
+{
+ "mh_hombre": {
+  "kb": 659,
+  "kb_antes": 4469,
+  "sha256": "5e8fefbf73cc9e51c69e76730a912d7a52951de9234dd7dedf7e7f1328c9bd04",
+  "clips": [
+   "Idle_Loop",
+   "Walk_Loop",
+   "Jog_Fwd_Loop",
+   "TreeChopping_Loop",
+   "Sword_Idle",
+   "Sword_Regular_A",
+   "Sword_Block",
+   "Walk_Carry_Loop",
+   "Farm_Harvest"
+  ]
+ },
+ "mh_mujer": {
+  "kb": 679,
+  "kb_antes": 4475,
+  "sha256": "3293a63b7ed7f7f09b1c1573416e20337d65bc07d7cc26871cea290286a12760",
+  "clips": [
+   "Idle_Loop",
+   "Walk_Loop",
+   "Jog_Fwd_Loop",
+   "TreeChopping_Loop",
+   "Sword_Idle",
+   "Sword_Regular_A",
+   "Sword_Block",
+   "Walk_Carry_Loop",
+   "Farm_Harvest"
+  ]
+ }
+}

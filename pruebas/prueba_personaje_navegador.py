@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v2'), f'{sitio}/recursos/personajes/taller-v2')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v3'), f'{sitio}/recursos/personajes/taller-v3')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -48,6 +48,8 @@ with sync_playwright() as p:
         pg.on('pageerror', lambda e: err.append(str(e)))
         pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
         pg.goto(URL); listo(pg)
+        comprobar('por defecto sale el taller propio', pg.evaluate(f'{E}.estado().base') == 'makehuman')
+        pg.evaluate(f"{E}.cambiar({{base: 'quaternius'}})"); listo(pg)  # las primeras pruebas son de la base de Quaternius
         if os.environ.get('MUTAR'):
             pg.add_style_tag(content='canvas{visibility:hidden}')
             pg.evaluate(f"{E}.ponerModo = () => {{}}")
@@ -134,6 +136,19 @@ with sync_playwright() as p:
             mov = max(abs(a[i][k] - b[i][k]) for i in range(2) for k in range(3))
             comprobar(f'taller propio ({sexo}): al andar se mueven piernas y brazos', mov > 0.05, f'{mov:.3f} m')
             pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_andar.png')
+        # ropa por capas: el botón Gambesón lo pone encima (y esconde el cuerpo del vestido, que queda tapado)
+        vis = lambda: pg.evaluate(f"(() => {{ const v = []; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.visible) v.push(o.name); }}); return v; }})()")
+        if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
+        antes = vis()
+        pg.click('[data-capa="gambeson"]'); pg.wait_for_timeout(200)
+        con = vis()
+        if os.environ.get('MUTAR'): con = antes
+        comprobar('capas: el gambesón se pone encima y tapa el cuerpo de la prenda de debajo',
+                  'mujer_capa_gambeson' in con and 'mujer_capa_vestido' not in con and 'mujer_capa_vestido_falda' in con and 'mujer_cinturon_gambeson' in con and 'mujer_cinturon_vestido' not in con,
+                  ', '.join(sorted(set(con) ^ set(antes))))
+        pg.evaluate(f"{E}.instante(1.0)"); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_gambeson.png')
+        pg.click('[data-capa="gambeson"]'); pg.wait_for_timeout(200)
+        comprobar('capas: al quitarlo vuelve como estaba', sorted(vis()) == sorted(antes))
         # en calidad alta, toda la ropa y el pelo escriben profundidad (si no, la piel se pinta encima: v5)
         pg.evaluate(f"{E}.cambiar({{calidad: 'alta'}})"); listo(pg)
         malos = pg.evaluate(f"(() => {{ const m = []; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && (!o.material.depthWrite || o.material.transparent)) m.push(o.name); }}); return m; }})()")

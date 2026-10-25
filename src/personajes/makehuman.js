@@ -30,6 +30,30 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     Object.assign(n.material, { transparent: false, depthWrite: true, alphaTest: recorte ? 0.5 : 0, side: THREE.DoubleSide });
     triangulos += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3;
   });
+  // ropa por capas, de dentro afuera. Lo que queda tapado del todo no se dibuja: el cuerpo de una capa se esconde si
+  // lleva otra encima, y su falda solo asoma si es más larga que las de encima (así no se atraviesan al moverse).
+  const ORDEN = ['camisa', 'tunica', 'vestido', 'gambeson'];
+  const SIEMPRE = ['calzas', 'zapatos'];
+  const capaDe = (n) => { const m = n.name.match(/_(capa|cinturon)_([a-z]+)(_falda)?/); return m && { tipo: m[1], capa: m[2], falda: !!m[3] }; };
+  const bajo = new Map(); // altura del bajo de cada falda (en reposo)
+  modelo.traverse(n => { const c = n.isMesh && capaDe(n); if (c && c.falda) { n.geometry.computeBoundingBox(); bajo.set(c.capa, n.geometry.boundingBox.min.y); } });
+  const ponerCapas = (lista) => {
+    const puestas = ORDEN.filter(c => c === 'camisa' || lista.includes(c));
+    const fuera = puestas[puestas.length - 1];
+    let tri = 0;
+    modelo.traverse(n => {
+      if (!n.isMesh) return;
+      const c = capaDe(n);
+      if (c && c.tipo === 'cinturon') n.visible = c.capa === fuera && c.capa !== 'camisa';
+      else if (c && SIEMPRE.includes(c.capa)) n.visible = true;
+      else if (c) {
+        const k = puestas.indexOf(c.capa), encima = puestas.slice(k + 1);
+        n.visible = k >= 0 && (c.falda ? encima.every(e => bajo.get(c.capa) < bajo.get(e) - 0.01) : encima.length === 0);
+      }
+      if (n.visible) tri += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3;
+    });
+    resultado.triangulos = tri; resultado.capas = [...lista];
+  };
   const hueso = {};
   modelo.traverse(n => { if (n.isBone || n.type === 'Object3D') hueso[n.name] = n; });
   hueso.Head = hueso.head; hueso.root = hueso.Root; // mismos nombres que el esqueleto de Quaternius
@@ -46,5 +70,8 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     actual = a;
   };
   poner('quieto', 0);
-  return { raiz, modelo, mezclador, acciones, poner, triangulos, opciones: o, hueso, clips: g.animations.map(c => c.name) };
+  const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, opciones: o, hueso, clips: g.animations.map(c => c.name), ponerCapas,
+    capasPosibles: ORDEN.filter(c => c !== 'camisa' && modelo.getObjectByName(`${o.sexo}_capa_${c}`)) };
+  ponerCapas(o.capas || [o.sexo === 'mujer' ? 'vestido' : 'tunica']);
+  return resultado;
 }

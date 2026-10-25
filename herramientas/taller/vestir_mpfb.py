@@ -410,36 +410,66 @@ def personaje(nombre, macros, objetivos, ropa):
         empuje = lambda c, i: 0.003 + 0.007 * min(1.0, max(0.0, c.z - ojo_arriba) / 0.1)
         piezas.append(trozo(base, nombre + '_pelo', cab, empuje=empuje, textura=(1024, pintar_pelo), rugosidad=0.55, diezmar=DIEZMAR))
 
-    # --- ropa: túnica (o vestido), calzas, zapatos, cinturón (color por vértice; el tejido se añade en el juego) ---
+    # --- ropa por capas (color o textura por código). Cada prenda se llama <nombre>_capa_<capa>[_falda]: en el juego
+    # se enseñan las capas puestas. Las de base (camisa, calzas, zapatos) van siempre; encima, túnica o vestido, gambesón…
+    # Cada capa va más separada de la piel que la de debajo, así no se atraviesan.
     def tela(c):
         c = lin(c); return lambda P, A: c[None, :] * (0.88 + 0.16 * fbm(P, 25)[:, None])
-    # túnica: se coge de más y el escote y el final de las mangas se recortan en la textura (borde suave, sin escalones)
-    arriba = lambda i, c: en(i, 'helper-tights') and cintura_z - 0.06 < c.z < cuello_z + 0.03 and not cerca_muneca(c, 0.015) and not mano(i)
-    colt = lin(ropa['tunica'])
-    def pintar_tunica(P, A):
+    def corte_cuello_mangas(P, alto_cuello, hueco_muneca, escote):
+        """transparencia del borde: escote (más bajo por delante) y final de las mangas, sin escalones"""
         x, y, z = np.abs(P[..., 0]), P[..., 1], P[..., 2]
-        corte = cuello_z - 0.004 - 0.02 * suave(-0.03, -0.09, y) * suave(0.075, 0.03, x)
+        corte = cuello_z + alto_cuello - escote * suave(-0.03, -0.09, y) * suave(0.075, 0.03, x)
         a = suave(0.0015, -0.0015, z - corte)
         d = np.minimum(*[np.linalg.norm(P - m, axis=-1) for m in muneca])
-        a = a * suave(0.041, 0.045, d)
-        col = colt[None, None, :] * (0.88 + 0.16 * fbm(P, 25)[..., None]) * (0.95 + 0.05 * ruido(P, 900)[..., None])
-        return np.concatenate([col, a[..., None]], -1)
-    # el tronco de la túnica se alisa como tela que cuelga de los hombros (si no, marca el pecho: Pedro, «el hombre tiene tetas»);
-    # en el vestido de mujer, menos (va más ajustado)
+        return a * suave(hueco_muneca - 0.002, hueco_muneca + 0.002, d)
+    def acolchado(P):
+        """canales del acolchado del gambesón: costuras verticales en el cuerpo y en anillos en las mangas"""
+        x, y, z = P[..., 0], P[..., 1], P[..., 2]
+        arco = np.arctan2(x, -y) * 0.15  # distancia alrededor del tronco
+        canal_tronco = np.abs(np.sin(np.pi * arco / 0.038))
+        canal_manga = np.abs(np.sin(np.pi * (np.sqrt(x * x + (z - cuello_z) ** 2)) / 0.045))
+        manga = suave(0.15, 0.19, np.abs(x)) * (z > cintura_z)
+        c = canal_tronco * (1 - manga) + canal_manga * manga
+        return 0.72 + 0.28 * np.sqrt(c)  # oscuro en la costura, claro en el centro del canal (bulto)
+    arriba = lambda alto: (lambda i, c: en(i, 'helper-tights') and cintura_z - 0.06 < c.z < cuello_z + alto and not cerca_muneca(c, 0.015) and not mano(i))
     tronco = lambda c, i: abs(c.x) < 0.15 and cintura_z - 0.05 < c.z < cuello_z - 0.05
-    tunica = trozo(base, nombre + '_tunica', arriba, empuje=lambda c, i: 0.012 if abs(c.x) < 0.17 else 0.007, textura=(1024, pintar_tunica),
-                   rugosidad=0.95, ajustar_uv=True, colgar=None if mujer else (cintura_z, cuello_z - 0.03, 0.16), alisar=(tronco, 8 if mujer else 25, 0.008))
-    piezas.append(tunica)
+    def prenda(capa, color, empuje_tronco, empuje_manga, largo, alto_cuello=-0.004, escote=0.02, muneca_hueco=0.043,
+               alisado=None, colgar_pecho=False, dibujo=None, rugosidad=0.95):
+        colp = lin(color)
+        def pintar(P, A):
+            col = colp[None, None, :] * (0.88 + 0.16 * fbm(P, 25)[..., None]) * (0.95 + 0.05 * ruido(P, 900)[..., None])
+            if dibujo: col = col * dibujo(P)[..., None]
+            return np.concatenate([col, corte_cuello_mangas(P, alto_cuello, muneca_hueco, escote)[..., None]], -1)
+        cuerpo_ = trozo(base, f'{nombre}_capa_{capa}', arriba(alto_cuello + 0.03), empuje=lambda c, i: empuje_tronco if abs(c.x) < 0.17 else empuje_manga,
+                        textura=(1024, pintar), rugosidad=rugosidad, ajustar_uv=True,
+                        colgar=(cintura_z, cuello_z - 0.03, 0.16) if colgar_pecho else None, alisar=alisado)
+        def color_falda(P, A):
+            col = colp[None, :] * (0.88 + 0.16 * fbm(P, 25)[:, None])
+            return col * dibujo(P[None])[0][:, None] if dibujo else col
+        falda_ = trozo(base, f'{nombre}_capa_{capa}_falda', lambda i, c: en(i, 'helper-skirt') and largo < c.z < cintura_z + 0.012,  # el empalme queda bajo el cinturón (más arriba asomaba por la tripa)
+                      
+                       empuje=empuje_tronco, color=color_falda, rugosidad=rugosidad)
+        return [cuerpo_, falda_]
+    # base: camisa de lino (más larga en la mujer: camisa hasta los tobillos)
+    largo_camisa = tobillo_z + 0.05 if mujer else rodilla_z + 0.12
+    piezas += prenda('camisa', ropa.get('camisa', (206, 196, 172)), 0.006, 0.003, largo_camisa, alto_cuello=0.0, escote=0.012, muneca_hueco=0.041)
+    # túnica (hombre, hasta la rodilla) o vestido (mujer, hasta los tobillos): alisada en el pecho (Pedro: «el hombre tiene tetas»)
+    capa_media = 'vestido' if ropa.get('vestido') else 'tunica'
     largo = tobillo_z + 0.03 if ropa.get('vestido') else rodilla_z - 0.03
-    falda = trozo(base, nombre + '_falda', lambda i, c: en(i, 'helper-skirt') and largo < c.z < cintura_z + 0.06,
-                  empuje=0.012, color=tela(ropa['tunica']), rugosidad=0.95)
-    piezas.append(falda)
-    if not ropa.get('vestido'):
-        piezas.append(trozo(base, nombre + '_calzas', lambda i, c: en(i, 'helper-tights') and tobillo_z + 0.03 < c.z < cintura_z + 0.02,
+    media = prenda(capa_media, ropa['tunica'], 0.012, 0.007, largo, colgar_pecho=not mujer, alisado=(tronco, 8 if mujer else 25, 0.008))
+    piezas += media
+    piezas.append(cinturon(f'{nombre}_cinturon_{capa_media}', media, cintura_z, lin((40, 26, 17))))
+    # gambesón acolchado encima, hasta medio muslo, con cuello alto
+    gambeson = prenda('gambeson', ropa.get('gambeson', (172, 156, 122)), 0.026, 0.017, cintura_z - 0.33, alto_cuello=0.022, escote=0.0,
+                      muneca_hueco=0.04, alisado=(tronco, 25, 0.024), colgar_pecho=True, dibujo=acolchado)
+    piezas += gambeson
+    piezas.append(cinturon(f'{nombre}_cinturon_gambeson', gambeson, cintura_z, lin((40, 26, 17))))
+    if not mujer:
+        piezas.append(trozo(base, nombre + '_capa_calzas', lambda i, c: en(i, 'helper-tights') and tobillo_z + 0.03 < c.z < largo_camisa + 0.10,  # bajo la camisa no hacen falta (se atravesaban)
+                           
                             empuje=0.003, color=tela(ropa['calzas']), rugosidad=0.95))
-    piezas.append(trozo(base, nombre + '_zapatos', lambda i, c: en(i, 'helper-tights') and c.z < tobillo_z + 0.05,
+    piezas.append(trozo(base, nombre + '_capa_zapatos', lambda i, c: en(i, 'helper-tights') and c.z < tobillo_z + 0.05,
                         empuje=0.006, color=tela((52, 34, 22)), rugosidad=0.55))
-    piezas.append(cinturon(nombre + '_cinturon', [tunica, falda], cintura_z, lin((40, 26, 17))))
     bpy.data.objects.remove(base)
     tri = 0
     for ob in piezas:
@@ -471,6 +501,8 @@ for rig, piezas, pos in gente:
 gente[0][0].location.x, gente[1][0].location.x = -0.55, 0.55
 
 # ---------- fotos (Cycles en CPU) ----------
+if os.environ.get('FOTOS') == 'ninguna':
+    print('listo', SALIDA); sys.exit(0)
 esc = bpy.context.scene
 esc.render.engine = 'CYCLES'; esc.cycles.device = 'CPU'; esc.cycles.samples = 48; esc.cycles.use_denoising = True
 esc.view_settings.view_transform = 'AgX'; esc.view_settings.look = 'AgX - Base Contrast'
