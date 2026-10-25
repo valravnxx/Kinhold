@@ -751,5 +751,24 @@
   "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, acciones, unión, taller, traducciones y navegador de los cuatro prototipos, recursos, inglés y web), PC y móvil. No comprobado: en una pantalla táctil de verdad (el toque no cambia: elige y pide confirmar como antes).",
   "capturas": "capturas/construccion-v8",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T18:20:48+00:00",
+  "fin": "2026-10-25T19:45:09+00:00",
+  "titulo": "Hito 1d: escena común (src/mundo/)",
+  "hito": "unificacion",
+  "hecho": [
+   "Escena común en src/mundo/: estilos.js (paleta, luces, texturas por código), ambiente.js (cielo, sol con sombras blandas, luz del cielo, niebla y gradación ACES) y decorado.js (suelo hasta el horizonte, bosque instanciado, hierba, flores y rocas).",
+   "La construcción y el combate dejan su cielo azul liso, su suelo de color y sus árboles de conos y usan la escena del estilo v5. El combate tiene la liza de tierra pisada en el centro.",
+   "La prueba de estilo y el visor de personaje usan los mismos módulos; se ven igual que antes (la prueba de estilo difiere de su captura publicada solo por la compresión JPG).",
+   "La sombra sigue al jugador. Los cientos de árboles van instanciados: unas pocas llamadas de dibujo en vez de cerca de 900 de la construcción anterior.",
+   "Decisión provisional: en la construcción la hierba empieza a 16 m de la salida, porque dentro se construye y asomaría por los cimientos. Anotada en el registro del prototipo.",
+   "Decisión provisional por rendimiento: en la construcción y el combate el suelo va sin relieve ni filtrado anisótropo, los árboles lejanos no echan sombra y el cielo lo pinta la página. Medido sin tarjeta gráfica: el relieve del suelo era lo que más costaba.",
+   "La prueba de combate espera a que la flecha acabe su vuelo en vez de un tiempo fijo; con fotogramas más lentos fallaba sin que el juego fallase.",
+   "Construcción v9 y combate v7 publicados; las versiones anteriores siguen en la web."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, acciones, unión, taller, traducciones y navegador de construcción, combate, estilo, personaje, inglés y ruso, y web), PC y móvil; la de recursos de personaje falló por una ruta de importación y, arreglada, pasó repetida. Medido sin tarjeta gráfica (aquí no hay otra): construcción 346 ms por fotograma frente a 142 de la v8, combate 280 frente a 145 de la v6. No comprobado: los fotogramas con tarjeta gráfica ni en el móvil de Pedro (es la tarea de rendimiento de este hito). Las comprobaciones de la prueba de combate cambiadas son las mismas (solo cambia la espera), no se rompieron a propósito.",
+  "capturas": "capturas/construccion-v9",
+  "estado": "ok"
  }
 ]

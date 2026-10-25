@@ -102,7 +102,9 @@
    "tareas": [
     {
      "nombre": "Escena común (src/mundo/): cielo, luz, niebla, suelo y decorado con el estilo v5 en un solo módulo, que usan la construcción, el combate y el visor de personaje",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-25T18:20:48+00:00",
+     "fin": "2026-10-25T19:45:09+00:00"
     },
     {
      "nombre": "Personaje del taller en la construcción: sustituye al muñeco inicial; anda, corre y tala con sus animaciones, y empieza con camisa y calzas de lino como dice el GDD",
@@ -603,6 +605,13 @@
      "archivo": "jugar/construccion/v8.html",
      "capturas": "capturas/construccion-v8",
      "notas": "Quitar muebles y piezas con el ratón: lo que eliges con clic se queda elegido hasta confirmar o cancelar, aunque muevas el ratón hasta el botón"
+    },
+    {
+     "v": "v9",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/construccion/v9.html",
+     "capturas": "capturas/construccion-v9",
+     "notas": "Escena común del estilo elegido: cielo, luz, sombras blandas, suelo con textura, bosque, hierba, flores y rocas"
     }
    ]
   },
@@ -645,6 +654,13 @@
      "archivo": "jugar/combate/v6.html",
      "capturas": "capturas/combate-v6",
      "notas": "v6: también en ruso, con el mismo selector de idioma."
+    },
+    {
+     "v": "v7",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/combate/v7.html",
+     "capturas": "capturas/combate-v7",
+     "notas": "Escena común del estilo elegido: cielo, luz, sombras blandas, suelo con textura, bosque, hierba, flores y rocas, con la liza de tierra en el centro"
     }
    ]
   },

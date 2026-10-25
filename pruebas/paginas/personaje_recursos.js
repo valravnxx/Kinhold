@@ -1,7 +1,7 @@
 // Página de prueba (no se publica): carga el personaje con los recursos v1 o v2 y las animaciones extra,
 // con la misma luz y cabaña que el prototipo del personaje, para comparar y hacer capturas repetibles.
 import * as THREE from 'three';
-import { LUCES } from '../../src/estilo/estilos.js';
+import { LUCES } from '../../src/mundo/estilos.js';
 import { crearEscena } from '../../src/estilo/escena.js';
 import { crearPersonaje } from '../../src/personajes/cargar.js';
 
