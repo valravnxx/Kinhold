@@ -789,5 +789,26 @@
   "pruebas": "Todas correctas con probar_todo.sh, PC y móvil, salvo la de idiomas, que fallaba porque abría la construcción sin servidor y el modelo no se carga así; servida por HTTP, pasa entera (repetida aparte). La prueba nueva del personaje se rompió a propósito (MUTAR=1, modelos en una carpeta que no existe) y falló como debía. Capturas de cerca miradas: quieto, de espaldas, corriendo, talando y en el móvil. No comprobado: los fotogramas con tarjeta gráfica ni en el móvil (es la tarea de rendimiento de este hito); la prueba de idiomas no se rompió a propósito tras el cambio (solo cambia cómo se sirven las páginas).",
   "capturas": "capturas/construccion-v10",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T21:20:16+00:00",
+  "fin": "2026-10-25T22:52:11+00:00",
+  "titulo": "Hito 1d: el personaje del taller en el combate",
+  "hito": "unificacion",
+  "hecho": [
+   "Los dos luchadores del duelo son el personaje del taller propio en vez del muñeco de cubos; mientras carga (o si no carga) se ve el muñeco de antes.",
+   "La armadura del duelo es la ropa por capas del taller: lino = camisa y calzas, gambesón = gambesón, cota de malla = cota encima del gambesón. Lo que protege sigue en la lógica de combate, que no cambia.",
+   "Piernas y cuerpo con las animaciones del taller (guardia de espada quieto, andar y correr). Los brazos se colocan cada fotograma con cinemática inversa de dos huesos para que las manos agarren el arma donde la ponen las poses de siempre; si el brazo no llega, el arma se queda en la mano. Con escudo, la mano izquierda lo coge por el asa; con arco, una mano en el arco y otra en la cuerda.",
+   "El arma sube o baja con los hombros del personaje: las poses estaban hechas para hombros a 1,48 m y el del taller los tiene más bajos, y más aún agachado en guardia.",
+   "La mano izquierda venía abierta en la animación de guardia (es de espada de una mano): ahora copia el puño cerrado de la derecha.",
+   "Las heridas se pintan como antes (sangre o moratón, más grande cuanto más grave), pero pegadas a la superficie del cuerpo o de la ropa donde entra el golpe y colgadas del hueso, así que siguen al personaje. En la cara, más pequeñas.",
+   "La cinta azul o amarilla va en el pecho, encima de la ropa: los dos luchadores son el mismo hombre del taller y es lo que los distingue.",
+   "Decisión provisional, anotada en el registro del combate: cojear ya no se ve; lo hacía el muñeco y las animaciones del taller no lo traen.",
+   "La prueba de navegador del combate sirve la página por HTTP, como en la web, y tiene comprobaciones nuevas: los dos son el personaje del taller, llevan las capas de su armadura, el muñeco no se ve, las manos están en el puño en guardia y en las cinco líneas de golpe, el escudo se agarra por el asa y cada herida se pega en su hueso.",
+   "Combate v8 publicado; las versiones anteriores siguen en la web."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh (lógica 63/63, modelos 21/21, combate 69/69, acciones 25/25, navegador de construcción, combate, estilo, personaje, recursos, idiomas y web), en PC y móvil. La prueba nueva del combate se rompió a propósito (MUTAR=1, modelos en una carpeta que no existe) y falló como debía. Capturas miradas: de cerca en guardia, golpes de las cinco líneas, heridas, cara, rival con cota, escudo, palo y arco; y el duelo entero en PC y móvil. No comprobado: los fotogramas con tarjeta gráfica ni en el móvil (cada luchador tiene unos 16.000 a 18.000 triángulos; es la tarea de rendimiento de este hito). A medio golpe las cinco líneas se ven parecidas: es el movimiento de antes, y los golpes con animación propia son otra tarea del duelo.",
+  "capturas": "capturas/combate-v8",
+  "estado": "ok"
  }
 ]

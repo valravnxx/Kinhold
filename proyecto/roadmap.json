@@ -114,7 +114,9 @@
     },
     {
      "nombre": "Personaje del taller en el combate: los dos luchadores con su ropa por capas (la armadura del duelo pasa a ser gambesón y cota del taller), con las animaciones que hay y las heridas pintadas como ahora",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-25T21:20:16+00:00",
+     "fin": "2026-10-25T22:52:11+00:00"
     },
     {
      "nombre": "Demo única: una página con menú (Construir, Duelo, Personaje); el personaje que eliges y su ropa se usan en todo; la web enlaza a ella y las versiones antiguas se quedan",
@@ -674,6 +676,13 @@
      "archivo": "jugar/combate/v7.html",
      "capturas": "capturas/combate-v7",
      "notas": "Escena común del estilo elegido: cielo, luz, sombras blandas, suelo con textura, bosque, hierba, flores y rocas, con la liza de tierra en el centro"
+    },
+    {
+     "v": "v8",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/combate/v8.html",
+     "capturas": "capturas/combate-v8",
+     "notas": "Los dos luchadores son el personaje del taller: la armadura es su ropa por capas (lino, gambesón, cota sobre gambesón), los brazos agarran el arma con cinemática inversa y las heridas se pegan al cuerpo donde entra el golpe"
     }
    ]
   },
