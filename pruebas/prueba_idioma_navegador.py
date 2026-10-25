@@ -154,13 +154,10 @@ with sync_playwright() as p:
         pg.wait_for_function('window.__estilo !== undefined', timeout=90000)
         S = 'window.__estilo'
         comprobar('estilo: recuerda el inglés elegido', pg.evaluate('document.documentElement.lang') == 'en')
-        pg.evaluate(f"{S}.pausar(true); {S}.ponerAndar(false)")
-        comprobar('estilo: botones en inglés', all(x in pg.inner_text('#superior') for x in ('Morning', 'Afternoon', 'Blur', 'Idle')), pg.inner_text('#superior'))
-        pg.click('#btnAndar'); pg.evaluate(f"{S}.instante(1.0)")
-        comprobar('estilo: «Walking» al andar', 'Walking' in pg.inner_text('#btnAndar'))
-        pg.click('#btnAndar')
-        for i, v in enumerate(['maqueta', 'cabana', 'lado', 'personaje', 'cara']):
-            pg.click(f'[data-vista="{v}"]'); pg.evaluate(f"{S}.instante(1.0)")
+        pg.evaluate(f"{S}.pausar(true)")
+        comprobar('estilo: botones en inglés', all(x in pg.inner_text('#superior') for x in ('Morning', 'Afternoon', 'Blur')), pg.inner_text('#superior'))
+        for i, v in enumerate(['maqueta', 'cabana', 'lado']):
+            pg.click(f'[data-vista="{v}"]'); pg.evaluate(f"{S}.dibujar()")
             pg.screenshot(path=f'{SALIDA}/estilo_{sufijo}_0{i + 1}_{v}.png')
         pg.evaluate("document.getElementById('medida').textContent = ''")
         pg.evaluate(f"{S}.pausar(false)"); pg.wait_for_timeout(2600); pg.evaluate(f"{S}.pausar(true)")
@@ -270,9 +267,9 @@ with sync_playwright() as p:
         pg.click('#panelRegistro .cerrar'); pg.evaluate(f"{D}.rival.caer('Desangrado')"); pg.wait_for_timeout(500)
         pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_05_final.png'); revisar_ru(pg, f'ru combate {etiqueta}, final')
         pg.goto('file://' + ESTILO); pg.wait_for_function('window.__estilo !== undefined', timeout=90000)
-        pg.evaluate(f"{S}.pausar(true); {S}.ponerAndar(false)")
-        for i, v in enumerate(['maqueta', 'cabana', 'lado', 'personaje', 'cara']):
-            pg.click(f'[data-vista="{v}"]'); pg.evaluate(f"{S}.instante(1.0)")
+        pg.evaluate(f"{S}.pausar(true)")
+        for i, v in enumerate(['maqueta', 'cabana', 'lado']):
+            pg.click(f'[data-vista="{v}"]'); pg.evaluate(f"{S}.dibujar()")
             pg.screenshot(path=f'{SALIDA}/ru_estilo_{sufijo}_0{i + 1}_{v}.png')
         pg.evaluate("document.getElementById('medida').textContent = ''")
         pg.evaluate(f"{S}.pausar(false)"); pg.wait_for_timeout(2600); pg.evaluate(f"{S}.pausar(true)")
