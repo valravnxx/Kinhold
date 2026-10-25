@@ -9,6 +9,10 @@ El personaje esculpido por código (Personaje v1) es «horripilante, de películ
 
 ---
 
+**25 oct, 06:38 — Pedro, por el chat principal:** «Adelante» → la sesión del chat principal pasa las animaciones de Quaternius al esqueleto de MakeHuman y pone el personaje vestido en el visor para verlo andar.
+
+---
+
 ## Procesado
 
 ### 25 oct 2026 (06:37) — por el chat, sobre el taller MakeHuman
