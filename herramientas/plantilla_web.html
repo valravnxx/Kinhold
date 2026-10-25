@@ -167,11 +167,32 @@ const UI = {
     revisa: 'Review milestone', revisa_d: 'Finished and published under Play. The automatic work won’t start the next milestone until you approve it or ask for changes.',
     desde: 'Since', hito: 'milestone', nada: 'Nothing waiting on you.', min: 'min', h: 'h',
   },
+  ru: {
+    lema: 'Средневековое выживание в браузере · дневник разработки', actualizado: 'Обновлено',
+    t_jugar: 'Играть', t_roadmap: 'План', t_diario: 'Дневник', t_tiempos: 'Время', t_espera: 'Ждёт тебя', t_diseno: 'Дизайн',
+    nota_jugar: 'Каждая версия сохраняется: если новая не понравится, предыдущую можно открыть из выпадающего списка. То, что игра сохраняет в браузере, переходит из версии в версию.',
+    nota_revision: 'Чтобы ответить или попросить изменения: напиши мне в чате или отредактируй файл <a href="https://github.com/valravnxx/kinhold/edit/main/REVISION.md">REVISION.md</a> на GitHub. Автоматическая работа читает его в начале каждого часа.',
+    doc_gdd: 'Дизайн-документ: замысел, мир, системы и порядок этапов (пока на английском).', doc_sis_t: 'Системы и содержание', doc_sis: 'Ресурсы, рецепты, детали, станки и значения (пока на английском).',
+    doc_ana_t: 'Разбор GDD', doc_ana: 'Чего не хватало, предложения и вопросы с ответами (пока на английском).', doc_cod_t: 'Код', doc_cod: 'Репозиторий на GitHub.',
+    pie: 'Эта страница создаётся автоматически при каждом изменении в репозитории.',
+    estado: { hecho: 'Готово', en_curso: 'В работе', revision: 'Ждёт твоей проверки', espera_decision: 'Ждёт твоего решения', pendiente: 'Ожидает', fallo: 'Сбой' },
+    r_hitos: 'этапов завершено', r_tareas: 'задач выполнено (из уже расписанных)', r_trabajo: 'учтённой работы',
+    jugar: 'Играть', version: 'Версия', sin_desglosar: 'Ещё не расписан: задачи появятся, когда этап начнётся.', hecho: 'готово',
+    en_curso_d: 'в работе', pruebas: 'Тесты', sin_entradas: 'Записей пока нет.',
+    est_pocos: (n) => `Пока недостаточно данных для оценки: нужно хотя бы 3 измеренные задачи (сейчас ${n}). У каждой задачи записывается время начала и конца, и оценка появится сама.`,
+    est: (m, n, k, t, c) => `Реальное среднее на задачу: <b>${m}</b> (измерено задач: ${n}). В активном этапе осталось ${k} уже расписанных задач: примерно <b>${t}</b> работы. Поскольку за час делается не больше одной задачи, по календарю это не меньше ${c} ч, плюс время на твою проверку. Нерасписанные этапы не оцениваются.`,
+    th_hito: 'Этап', th_estado: 'Состояние', th_trabajo: 'Учтённая работа',
+    aprox: '≈ = примерное время по датам файлов (работа до того, как начали записывать часы).',
+    revisa: 'Проверь этап', revisa_d: 'Готов и опубликован в разделе «Играть». Автоматическая работа не начнёт следующий этап, пока ты его не одобришь или не попросишь изменений.',
+    desde: 'С', hito: 'этап', nada: 'От тебя ничего не ждут.', min: 'мин', h: 'ч',
+  },
 };
 const IDIOMAS = DATOS.idiomas || {};            // { en: {texto en español: traducción}, ru: {...} }
 const DISPONIBLES = ['es', ...Object.keys(IDIOMAS).filter(k => UI[k])];
 const NOMBRE_IDIOMA = { es: 'ES', en: 'EN', ru: 'RU' };
 const LOCALE = { es: 'es-ES', en: 'en-GB', ru: 'ru-RU' };
+// idiomas con documentos de diseño propios (los demás enlazan al inglés)
+const DOCS_IDIOMA = { en: 'en' };
 let idioma = (() => {
   const q = new URLSearchParams(location.search).get('lang');
   if (DISPONIBLES.includes(q)) return q;
@@ -190,8 +211,9 @@ const durTexto = (m) => m == null ? '—' : m < 60 ? `${Math.round(m)} ${u('min'
 function pintar() {
   document.documentElement.lang = idioma;
   document.querySelectorAll('[data-t]').forEach(el => { const t = u(el.dataset.t); if (el.hasAttribute('data-html')) el.innerHTML = t; else el.textContent = t; });
-  // documentos de diseño: el inglés está en diseno/en/ (los demás idiomas, cuando existan, en diseno/<idioma>/)
-  document.querySelectorAll('a[data-doc]').forEach(a => a.setAttribute('href', `diseno/${idioma === 'es' ? '' : idioma + '/'}${a.dataset.doc}.html`));
+  // documentos de diseño: el inglés está en diseno/en/; el ruso aún no existe y enlaza al inglés (DOCS_IDIOMA)
+  const carpetaDoc = idioma === 'es' ? '' : (DOCS_IDIOMA[idioma] || 'en') + '/';
+  document.querySelectorAll('a[data-doc]').forEach(a => a.setAttribute('href', `diseno/${carpetaDoc}${a.dataset.doc}.html`));
   $('#idiomas').innerHTML = DISPONIBLES.length > 1 ? DISPONIBLES.map(l => `<button data-l="${l}" class="${l === idioma ? 'sel' : ''}">${NOMBRE_IDIOMA[l]}</button>`).join('') : '';
   document.querySelectorAll('#idiomas button').forEach(b => b.onclick = () => {
     idioma = b.dataset.l;

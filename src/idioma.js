@@ -1,12 +1,12 @@
 // Idioma de los prototipos jugables. La clave de cada texto es el propio texto en español;
 // los diccionarios (src/idiomas/<idioma>.json) dan la traducción. Si falta una, sale el español
 // y se apunta en window.__idioma.faltan (las pruebas fallan si queda alguna).
-// Para añadir un idioma (ruso): llenar src/idiomas/ru.json y ponerlo en DISPONIBLES.
+// Idiomas: español (las claves), inglés y ruso. Para añadir otro: su .json aquí y en NOMBRE.
 import EN from './idiomas/en.json';
 import RU from './idiomas/ru.json';
 
 const DICC = { en: EN, ru: RU };
-// Solo se ofrecen los idiomas con diccionario lleno. El ruso está preparado pero vacío.
+// Solo se ofrecen los idiomas con diccionario lleno.
 export const DISPONIBLES = ['es', ...Object.keys(DICC).filter(k => Object.keys(DICC[k]).length)];
 const NOMBRE = { es: 'ES', en: 'EN', ru: 'RU' };
 // Misma clave que la web de progreso: elegir idioma en la web vale también para el juego.

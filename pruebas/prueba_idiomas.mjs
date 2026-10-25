@@ -1,8 +1,8 @@
 // Comprueba que todos los textos del juego (construcción, combate, prueba de estilo y visor de personaje)
-// tienen traducción al inglés.
+// tienen traducción al inglés y al ruso.
 // Uso: node pruebas/prueba_idiomas.mjs            → falla y lista los que faltan
 //      node pruebas/prueba_idiomas.mjs --faltan   → escribe solo la lista de los que faltan (JSON)
-//      MUTAR=1 node pruebas/prueba_idiomas.mjs    → quita una traducción a propósito: tiene que fallar
+//      MUTAR=1 (o MUTAR=ru) node pruebas/prueba_idiomas.mjs → quita una traducción (inglés o ruso) a propósito: tiene que fallar
 // Los textos de la página fija (plantillas HTML) se comprueban en el navegador (prueba_idioma_navegador.py).
 import { readFileSync } from 'fs';
 import { PIEZAS, DECORACION, MATERIALES } from '../src/logica/piezas.js';
@@ -13,8 +13,8 @@ import { REGISTRO_ESTILO, VERSION_ESTILO } from '../src/estilo/registro.js';
 import { REGISTRO_PERSONAJE, VERSION_PERSONAJE } from '../src/personaje/registro.js';
 import { BASES, CAPAS, ANIMS } from '../src/personaje/textos.js';
 
-const EN = JSON.parse(readFileSync('src/idiomas/en.json', 'utf8'));
-if (process.env.MUTAR) delete EN['Espada larga'];
+const DICC = { en: JSON.parse(readFileSync('src/idiomas/en.json', 'utf8')), ru: JSON.parse(readFileSync('src/idiomas/ru.json', 'utf8')) };
+if (process.env.MUTAR) delete DICC[process.env.MUTAR === 'ru' ? 'ru' : 'en']['Espada larga'];
 const leer = (f) => readFileSync(f, 'utf8');
 const textos = new Set();
 const meter = (s) => { if (s && /[A-Za-zÁÉÍÓÚáéíóúñÑ]/.test(s)) textos.add(s); };
@@ -69,12 +69,21 @@ for (const f of ['src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js
   for (const m of src.matchAll(/\['([^']+)', stats\./g)) meter(m[1]); // filas de la pantalla final
 }
 
-const faltan = [...textos].filter(t => EN[t] === undefined);
-if (process.argv.includes('--faltan')) { console.log(JSON.stringify(faltan, null, 1)); process.exit(0); }
-// las variables {x} de cada plantilla tienen que estar también en la traducción
-const malVars = [...textos].filter(t => EN[t] !== undefined && (t.match(/\{\w+\}/g) || []).sort().join() !== (EN[t].match(/\{\w+\}/g) || []).sort().join());
-console.log(`Textos del juego: ${textos.size}; sin traducir al inglés: ${faltan.length}; con variables distintas: ${malVars.length}`);
-for (const t of faltan.slice(0, 20)) console.log('  FALTA  ' + t);
-for (const t of malVars) console.log('  VARIABLES  ' + t);
-if (faltan.length || malVars.length) process.exit(1);
+let fallo = false;
+const todasFaltan = [];
+for (const [id, D] of Object.entries(DICC)) {
+  const faltan = [...textos].filter(t => D[t] === undefined);
+  todasFaltan.push(...faltan.map(t => id + ': ' + t));
+  // las variables {x} de cada plantilla tienen que estar también en la traducción
+  const malVars = [...textos].filter(t => D[t] !== undefined && (t.match(/\{\w+\}/g) || []).sort().join() !== (D[t].match(/\{\w+\}/g) || []).sort().join());
+  // el ruso tiene que estar escrito en cirílico (si no, es que se copió el español o el inglés)
+  const sinCirilico = id === 'ru' ? [...textos].filter(t => D[t] !== undefined && /[A-Za-zñ]{4,}/.test(t) && !/[А-Яа-яЁё]/.test(D[t]) && !/^Kinhold|^v\d/.test(t)) : [];
+  console.log(`Textos del juego: ${textos.size}; sin traducir (${id}): ${faltan.length}; con variables distintas: ${malVars.length}` + (id === 'ru' ? `; sin cirílico: ${sinCirilico.length}` : ''));
+  for (const t of faltan.slice(0, 20)) console.log(`  FALTA (${id})  ` + t);
+  for (const t of malVars) console.log(`  VARIABLES (${id})  ` + t);
+  for (const t of sinCirilico) console.log(`  SIN CIRÍLICO  ` + t + ' → ' + D[t]);
+  if (faltan.length || malVars.length || sinCirilico.length) fallo = true;
+}
+if (process.argv.includes('--faltan')) { console.log(JSON.stringify(todasFaltan, null, 1)); process.exit(0); }
+if (fallo) process.exit(1);
 console.log('TODO CORRECTO');

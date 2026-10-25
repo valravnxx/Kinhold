@@ -55,8 +55,7 @@ const enlazado = [...Object.keys(capturas).map(c => join('docs', c, capturas[c][
 for (const f of enlazado) {
   try { execFileSync('git', ['check-ignore', '-q', '--no-index', f], { cwd: raiz }); errores.push(`git ignora ${f}: no llegaría a la web`); } catch (e) { /* no ignorado: bien */ }
 }
-// traducciones: todo texto del roadmap y del diario tiene que estar en proyecto/idiomas/en.json
-// (ru.json se añadirá más adelante; en cuanto exista, también se exige completo)
+// traducciones: todo texto del roadmap y del diario tiene que estar en proyecto/idiomas/en.json y ru.json
 const textos = new Set();
 const anade = (x) => { if (typeof x === 'string' && x.trim()) textos.add(x); };
 for (const h of roadmap.hitos) { anade(h.nombre); anade(h.jugable); anade(h.nota); for (const t of h.tareas) { anade(t.nombre); anade(t.notas); } }
@@ -73,6 +72,7 @@ for (const f of existsSync(carpetaIdiomas) ? readdirSync(carpetaIdiomas).filter(
   idiomas[id] = Object.fromEntries([...textos].filter(t => dic[t]).map(t => [t, dic[t]]));
 }
 if (!idiomas.en) errores.push('falta proyecto/idiomas/en.json');
+if (!idiomas.ru) errores.push('falta proyecto/idiomas/ru.json');
 if (errores.length) { console.error('ERRORES:\n - ' + errores.join('\n - ')); process.exit(1); }
 
 const datos = { roadmap, diario, capturas, idiomas, generado: new Date().toISOString() };

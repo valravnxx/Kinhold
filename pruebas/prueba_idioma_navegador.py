@@ -1,8 +1,9 @@
-# Prueba en navegador del juego en inglés (construcción, combate, prueba de estilo y visor de personaje), en PC y móvil.
+# Prueba en navegador del juego en inglés y en ruso (construcción, combate, prueba de estilo y visor de personaje), en PC y móvil.
 # Uso: python3 pruebas/prueba_idioma_navegador.py <html_construccion> <html_combate> <html_estilo> <html_personaje> <carpeta_capturas>
 # El personaje se sirve por HTTP con sus recursos (docs/recursos/personajes/), como en la web.
 # Comprueba: que no queda ningún texto sin traducir (window.__idioma.faltan), que no quedan palabras
 # en español a la vista, que el botón ES/EN cambia el idioma, lo recuerda y no borra la partida.
+# En ruso: todas las vistas con ?lang=ru, sin textos sin traducir, sin español ni inglés a la vista, con cirílico y botón RU.
 # MUTAR=1 → mete a propósito un texto en español en la página: la prueba tiene que fallar.
 import sys, os, re, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
@@ -201,6 +202,88 @@ with sync_playwright() as p:
         pg.wait_for_function(f'document.documentElement.lang === "en" && {P} && {P}.listo()', timeout=180000)
         comprobar('personaje: el botón EN cambia a inglés', 'Body' in pg.inner_text('#inferior'))
         comprobar(f'sin errores ({etiqueta})', not err, '; '.join(err[:3]))
+        ctx.close()
+
+    # ---------- ruso: todas las vistas de los cuatro prototipos ----------
+    INGLES = re.compile(r'\b(Build|Dismantle|Help|Decisions|Reset|Options|Stop|Floor|Wall|Roof|Foundation|Longsword|Duel|Difficulty|'
+                        r'Sound|Morning|Afternoon|Blur|Idle|Walking|Body|Face|Notes|Man|Woman|Tunic|Hair|Skin|Beard|Quality|the|and|with|press)\b')
+    def revisar_ru(pg, donde):
+        if MUTAR: pg.evaluate("(document.getElementById('menu') || document.getElementById('superior')).insertAdjacentHTML('beforeend', '<button>Pulsa para construir</button>')")
+        falt = pg.evaluate('[...window.__idioma.faltan]')
+        comprobar(f'{donde}: ningún texto sin traducir', len(falt) == 0, '; '.join(falt[:4]))
+        vis = texto_visible(pg)
+        m = sorted(set(ESPANOL.findall(vis)) | set(INGLES.findall(vis)))
+        comprobar(f'{donde}: no se ve español ni inglés', not m, ', '.join(m[:8]) + ' … ' + vis[:200])
+        comprobar(f'{donde}: se ve cirílico', len(re.findall('[А-Яа-яЁё]', vis)) > 20, vis[:120])
+        # que ningún texto ruso (más largo) se salga de la pantalla por los lados
+        ancho = pg.evaluate("document.documentElement.scrollWidth - window.innerWidth")
+        comprobar(f'{donde}: nada se sale por los lados', ancho <= 1, f'{ancho}px de más')
+    for movil in (False, True):
+        etiqueta = 'móvil' if movil else 'PC'; sufijo = 'movil' if movil else 'pc'
+        print(etiqueta, '(ruso)')
+        if movil: ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True, locale='es-ES')
+        else: ctx = nav.new_context(viewport={'width': 1280, 'height': 800}, locale='es-ES')
+        pg = ctx.new_page(); err = []
+        pg.on('pageerror', lambda e: err.append(str(e)))
+        pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
+        K, D, S, P = 'window.__kinhold', 'window.__duelo', 'window.__estilo', 'window.__personaje'
+        pg.goto('file://' + CONSTR + '?lang=ru')
+        pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
+        pg.evaluate('localStorage.clear(); window.__kinhold.reiniciar()'); pg.wait_for_timeout(400)
+        comprobar('ruso: construcción con ?lang=ru', pg.evaluate('document.documentElement.lang') == 'ru')
+        comprobar('ruso: hay botón RU', pg.locator('button.idioma[data-idioma="ru"]').count() == 1)
+        pg.screenshot(path=f'{SALIDA}/ru_construccion_{sufijo}_01_inicio.png'); revisar_ru(pg, f'ru construcción {etiqueta}')
+        pg.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('mojon','mojon'); {K}.apuntar(-3,-6); {K}.colocar()")
+        pg.evaluate(f"{K}.seleccionar('pieza','muro_tronco'); {K}.apuntar(10,10)"); pg.wait_for_timeout(300)
+        av = pg.inner_text('#aviso').strip()
+        comprobar('ruso: aviso de construcción en ruso', bool(re.search('[А-Яа-я]', av)), av)
+        pg.screenshot(path=f'{SALIDA}/ru_construccion_{sufijo}_02_construir.png'); revisar_ru(pg, f'ru construcción {etiqueta}, construyendo')
+        pg.evaluate(f"{K}.cambiarModo('mover')"); pg.click('#btnAyuda'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/ru_construccion_{sufijo}_03_ayuda.png'); revisar_ru(pg, f'ru construcción {etiqueta}, ayuda')
+        pg.click('#panelAyuda .cerrar'); pg.click('#btnRegistro'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/ru_construccion_{sufijo}_04_decisiones.png'); revisar_ru(pg, f'ru construcción {etiqueta}, decisiones')
+        pg.click('#panelRegistro .cerrar')
+        # el botón RU guarda el ruso para todos los prototipos y no borra la partida
+        pg.goto('file://' + CONSTR); pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
+        pg.click('button.idioma[data-idioma="ru"]')
+        pg.wait_for_function('window.__kinhold !== undefined && document.documentElement.lang === "ru"', timeout=20000)
+        comprobar('ruso: el botón RU cambia a ruso y la partida sigue', pg.evaluate(f"!!{K}.mundo.mojon"))
+        pg.goto('file://' + COMB); pg.wait_for_function('window.__duelo !== undefined', timeout=20000)
+        comprobar('ruso: el combate recuerda el ruso', pg.evaluate('document.documentElement.lang') == 'ru')
+        pg.evaluate(f"{D}.configurar({{modo:'duelo', arma:'espada_larga', dificultad:'aprendiz'}}); {D}.ia.pensar = () => ({{mx:0,mz:0,correr:false}}); {D}.jugador.z={D}.rival.z-1.7")
+        pg.wait_for_timeout(600); pg.evaluate(f"{D}.atacar('bajo')"); pg.wait_for_timeout(1500)
+        pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_01_duelo.png'); revisar_ru(pg, f'ru combate {etiqueta}, duelo')
+        pg.click('#btnOpciones'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_02_opciones.png'); revisar_ru(pg, f'ru combate {etiqueta}, opciones')
+        pg.click('#btnOpciones'); pg.click('#btnAyuda'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_03_ayuda.png'); revisar_ru(pg, f'ru combate {etiqueta}, ayuda')
+        pg.click('#panelAyuda .cerrar'); pg.click('#btnDecisiones'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_04_decisiones.png'); revisar_ru(pg, f'ru combate {etiqueta}, decisiones')
+        pg.click('#panelRegistro .cerrar'); pg.evaluate(f"{D}.rival.caer('Desangrado')"); pg.wait_for_timeout(500)
+        pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_05_final.png'); revisar_ru(pg, f'ru combate {etiqueta}, final')
+        pg.goto('file://' + ESTILO); pg.wait_for_function('window.__estilo !== undefined', timeout=90000)
+        pg.evaluate(f"{S}.pausar(true); {S}.ponerAndar(false)")
+        for i, v in enumerate(['maqueta', 'cabana', 'lado', 'personaje', 'cara']):
+            pg.click(f'[data-vista="{v}"]'); pg.evaluate(f"{S}.instante(1.0)")
+            pg.screenshot(path=f'{SALIDA}/ru_estilo_{sufijo}_0{i + 1}_{v}.png')
+        pg.evaluate("document.getElementById('medida').textContent = ''")
+        pg.evaluate(f"{S}.pausar(false)"); pg.wait_for_timeout(2600); pg.evaluate(f"{S}.pausar(true)")
+        revisar_ru(pg, f'ru estilo {etiqueta}')
+        pg.click('#btnNotas'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/ru_estilo_{sufijo}_06_notas.png'); revisar_ru(pg, f'ru estilo {etiqueta}, notas')
+        pg.goto(URL_PERSONAJE + '?lang=ru'); pg.wait_for_function(f'{P} && {P}.listo()', timeout=180000)
+        pg.evaluate(f"{P}.pausar(true)")
+        if pg.is_hidden('#opciones'): pg.click('#btnOpciones')
+        pg.click('[data-vista="cuerpo"]'); pg.evaluate(f"{P}.instante(1.0)")
+        pg.screenshot(path=f'{SALIDA}/ru_personaje_{sufijo}_opciones.png'); revisar_ru(pg, f'ru personaje {etiqueta}, opciones')
+        pg.click('#btnOpciones')
+        for v in ('cara', 'perfil', 'espalda'):
+            pg.click(f'[data-vista="{v}"]'); pg.evaluate(f"{P}.instante(1.0)")
+            pg.screenshot(path=f'{SALIDA}/ru_personaje_{sufijo}_{v}.png')
+        revisar_ru(pg, f'ru personaje {etiqueta}')
+        pg.click('#btnNotas'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/ru_personaje_{sufijo}_notas.png'); revisar_ru(pg, f'ru personaje {etiqueta}, notas')
+        comprobar(f'ruso: sin errores ({etiqueta})', not err, '; '.join(err[:3]))
         ctx.close()
     nav.close()
 

@@ -1,6 +1,6 @@
 # Prueba de la web de progreso (docs/) servida por HTTP como en GitHub Pages.
 # Uso: python3 pruebas/prueba_web.py [carpeta_capturas]
-import sys, os, threading, http.server, functools, socketserver
+import sys, os, re, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'docs')
@@ -80,6 +80,23 @@ with sync_playwright() as p:
         pg.click('#idiomas button[data-l=es]'); pg.wait_for_timeout(200)
         docs_es = pg.evaluate("[...document.querySelectorAll('a[data-doc]')].map(a => a.getAttribute('href'))")
         comprobar('en español, los documentos enlazan al original', all(not h.startswith('diseno/en/') for h in docs_es) and len(docs_es) == 3)
+        # ruso: botón RU, textos del roadmap y del diario en cirílico, documentos de diseño al inglés (aún no hay ruso)
+        pg.click('#idiomas button[data-l=ru]'); pg.wait_for_timeout(200)
+        comprobar('botón RU: la web en ruso', pg.inner_text('nav button[data-s=jugar]') == 'Играть' and pg.evaluate('document.documentElement.lang') == 'ru')
+        pg.click('nav button[data-s=roadmap]'); pg.wait_for_timeout(200)
+        txt = pg.inner_text('#roadmap')
+        comprobar('en ruso, el roadmap está en cirílico', len(re.findall('[А-Яа-яЁё]', txt)) > 2000 and not any(w in txt for w in [' de la ', ' para ', 'Pendiente', 'Hecho']), txt[:120])
+        pg.screenshot(path=f'{SALIDA}/{nombre}_12_roadmap_ru.png', full_page=True)
+        pg.click('nav button[data-s=diario]'); pg.wait_for_timeout(200)
+        txt = pg.inner_text('#diario')
+        comprobar('en ruso, el diario está en cirílico', len(re.findall('[А-Яа-яЁё]', txt)) > 2000 and ' de la ' not in txt, txt[:120])
+        pg.screenshot(path=f'{SALIDA}/{nombre}_13_diario_ru.png')
+        pg.click('nav button[data-s=jugar]'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_14_jugar_ru.png')
+        docs_ru = pg.evaluate("[...document.querySelectorAll('a[data-doc]')].map(a => a.getAttribute('href'))")
+        comprobar('en ruso, los documentos de diseño enlazan al inglés', len(docs_ru) == 3 and all(h.startswith('diseno/en/') for h in docs_ru), ', '.join(docs_ru))
+        comprobar('en ruso, nada se sale por los lados', pg.evaluate("document.documentElement.scrollWidth - window.innerWidth") <= 1)
+        pg.click('#idiomas button[data-l=es]'); pg.wait_for_timeout(200)
         # los enlaces internos existen
         enlaces = pg.evaluate("[...document.querySelectorAll('a[href]')].map(a => a.getAttribute('href')).filter(h => !h.startsWith('http'))")
         for h in set(enlaces):
