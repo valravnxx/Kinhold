@@ -548,6 +548,23 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-25T09:59:09+01:00",
+  "fin": "2026-10-25T10:57:23+01:00",
+  "titulo": "Personaje v9: cota de malla y sobreveste",
+  "hito": "arte",
+  "hecho": [
+   "Cota de malla como capa, sobre el gambesón: hasta la rodilla, mangas hasta medio antebrazo (asoma el gambesón por debajo) y anillas pintadas por código en filas cruzadas, del mismo tamaño en el cuerpo, las mangas y la falda.",
+   "El metal va a medias: sin reflejos del entorno, el metal puro salía casi negro en el juego.",
+   "Sobreveste sin mangas de lana teñida, por encima de todo, hasta media pierna (en la mujer, hasta los tobillos).",
+   "Cada prenda va ahora partida en cuerpo, mangas y falda: la sobreveste deja ver las mangas y el cuello de la cota y del gambesón; las mangas de debajo solo se dibujan si asoman.",
+   "Arreglos vistos en las capturas: con la cota se abrían agujeros en lo alto de los hombros (el corte del cuello llegaba hasta ahí) y quedaban huecos entre el cuerpo y las mangas; ya no.",
+   "Prueba nueva: con la sobreveste se ven las mangas y el cuello de la cota. Rota a propósito: falla."
+  ],
+  "pruebas": "Todas las pruebas correctas (lógica, construcción, combate, estilo, personaje, recursos, inglés y web), en PC y móvil. Unos 1,5 MB por personaje con todas las prendas. No comprobado: fps en un móvil de verdad.",
+  "capturas": "capturas/personaje-v9",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-25T10:19:54+01:00",
   "fin": "2026-10-25T10:48:43+01:00",
   "titulo": "Hito 1c: escalera de tablas",

@@ -148,8 +148,9 @@
     },
     {
      "nombre": "Taller: cota de malla (anillas por código) y sobreveste encima, como capas",
-     "estado": "en_curso",
-     "inicio": "2026-10-25T09:59:09+01:00"
+     "estado": "hecho",
+     "inicio": "2026-10-25T09:59:09+01:00",
+     "fin": "2026-10-25T10:57:23+01:00"
     },
     {
      "nombre": "Taller: capa con capucha, calzado y tocados (capucha suelta, sombrero de paja, toca)",
@@ -603,6 +604,13 @@
      "archivo": "jugar/personaje/v8.html",
      "capturas": "capturas/personaje-v8",
      "notas": "El taller propio pasa a ser la base (elegido por Pedro) y sale por defecto. Ropa por capas: camisa de lino, calzas y zapatos siempre; encima túnica o vestido y gambesón acolchado, que se ponen y se quitan con botones."
+    },
+    {
+     "v": "v9",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/personaje/v9.html",
+     "capturas": "capturas/personaje-v9",
+     "notas": "Cota de malla y sobreveste como capas del taller propio, sobre la camisa, la túnica o el vestido y el gambesón."
     }
    ]
   }

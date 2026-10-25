@@ -32,9 +32,11 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   });
   // ropa por capas, de dentro afuera. Lo que queda tapado del todo no se dibuja: el cuerpo de una capa se esconde si
   // lleva otra encima, y su falda solo asoma si es más larga que las de encima (así no se atraviesan al moverse).
-  const ORDEN = ['camisa', 'tunica', 'vestido', 'gambeson'];
+  const ORDEN = ['camisa', 'tunica', 'vestido', 'gambeson', 'cota', 'sobreveste'];
   const SIEMPRE = ['calzas', 'zapatos'];
-  const capaDe = (n) => { const m = n.name.match(/_(capa|cinturon)_([a-z]+)(_falda)?/); return m && { tipo: m[1], capa: m[2], falda: !!m[3] }; };
+  const capaDe = (n) => { const m = n.name.match(/_(capa|cinturon)_([a-z]+)(_falda|_mangas)?/); return m && { tipo: m[1], capa: m[2], falda: m[3] === '_falda', mangas: m[3] === '_mangas' }; };
+  // dónde acaba cada manga (distancia a la muñeca, en m): una manga de debajo asoma si las de encima son más cortas
+  const MANGA = { camisa: 0.041, tunica: 0.043, vestido: 0.043, gambeson: 0.04, cota: 0.09 };
   const bajo = new Map(); // altura del bajo de cada falda (en reposo)
   modelo.traverse(n => { const c = n.isMesh && capaDe(n); if (c && c.falda) { n.geometry.computeBoundingBox(); bajo.set(c.capa, n.geometry.boundingBox.min.y); } });
   const ponerCapas = (lista) => {
@@ -48,7 +50,10 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
       else if (c && SIEMPRE.includes(c.capa)) n.visible = true;
       else if (c) {
         const k = puestas.indexOf(c.capa), encima = puestas.slice(k + 1);
-        n.visible = k >= 0 && (c.falda ? encima.every(e => bajo.get(c.capa) < bajo.get(e) - 0.01) : encima.length === 0);
+        if (k < 0) n.visible = false;
+        else if (c.falda) n.visible = encima.every(e => !bajo.has(e) || bajo.get(c.capa) < bajo.get(e) - 0.01);
+        else if (c.mangas) n.visible = encima.every(e => !(e in MANGA) || MANGA[e] > MANGA[c.capa] + 0.005);
+        else n.visible = encima.every(e => e === 'sobreveste'); // la sobreveste deja ver el cuello y los hombros de lo de debajo
       }
       if (n.visible) tri += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3;
     });
