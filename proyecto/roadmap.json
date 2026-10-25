@@ -74,7 +74,9 @@
     },
     {
      "nombre": "Taller con versiones fijadas: anotar y comprobar al empezar la versión de Blender, el commit de MPFB2 y los paquetes, con una guía para volver a montarlo desde cero",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-25T15:05:18+00:00",
+     "fin": "2026-10-25T15:57:44+00:00"
     },
     {
      "nombre": "Diario y traducciones sin choques: una herramienta que une diario.json y en.json al fusionar ramas de varias sesiones, y su regla en CLAUDE.md",
@@ -237,6 +239,10 @@
      "estado": "hecho",
      "inicio": "2026-10-25T09:59:09+01:00",
      "fin": "2026-10-25T10:57:23+01:00"
+    },
+    {
+     "nombre": "Taller: el cinturón de encima de la cota sobresale hacia los lados hasta la altura de los brazos (se ve en las fotos del taller con los brazos abiertos; ya estaba en los recursos taller-v4)",
+     "estado": "pendiente"
     },
     {
      "nombre": "Taller: capa con capucha, calzado y tocados (capucha suelta, sombrero de paja, toca)",

@@ -685,5 +685,22 @@
   "pruebas": "Todas correctas con probar_todo.sh (lógica 63, modelos 21, combate 69, acciones 25, textos traducidos, navegador de los cuatro prototipos, recursos, idiomas y web), PC y móvil",
   "capturas": "capturas/estilo-v9",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T15:05:18+00:00",
+  "fin": "2026-10-25T15:57:44+00:00",
+  "titulo": "Hito 0b: taller con versiones fijadas",
+  "hito": "base",
+  "hecho": [
+   "Versiones del taller fijadas en herramientas/taller/versiones.json: Python 3.13, Blender por pip (bpy 5.2.3), numpy, Pillow, MPFB2 en su commit exacto (versión 2.0.18) y los paquetes de node.",
+   "Los programas del taller comprueban las versiones al empezar: si algo no coincide, paran y dicen qué; lo encontrado queda anotado junto a los personajes que salen.",
+   "Guía para montarlo desde cero (herramientas/taller/LEEME.md) y un programa que lo monta solo con esas versiones.",
+   "Comprobado montándolo desde cero en una máquina vacía: los dos personajes salen con las mismas 47 mallas (mismos vértices y tamaño) que los recursos publicados taller-v4.",
+   "Visto en las fotos del taller: el cinturón de encima de la cota sobresale hacia los lados (ya estaba publicado así); queda como tarea en el hito de arte.",
+   "Prueba nueva sin Blender (formato de las versiones y que una diferencia se detecta), rota a propósito una vez (MUTAR=1): falla."
+  ],
+  "pruebas": "Todas las pruebas correctas (lógica 63, modelos 21, combate 69, acciones 25, taller, traducciones y navegador: construcción, combate, estilo, personaje, recursos, inglés y web). Después solo cambiaron roadmap, diario y traducciones: repetidas web y traducciones. Sin cambios jugables: no hay versión nueva. No comprobado: que las texturas salgan idénticas píxel a píxel, ni que el commit de MPFB2 sea exactamente el usado al principio (es el último del 24 oct, anterior a montar el taller).",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
