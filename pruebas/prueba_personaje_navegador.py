@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v1'), f'{sitio}/recursos/personajes/taller-v1')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v2'), f'{sitio}/recursos/personajes/taller-v2')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -121,6 +121,13 @@ with sync_playwright() as p:
             pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)')
             png = pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_cara.png')
             comprobar(f'taller propio ({sexo}): se ve la cara', se_ve(pg, png) > 4, f'{se_ve(pg, png):.1f}')
+            # postura al estar quieto (Pedro: «doblado hacia delante», «hombros muy para atrás»): cabeza y hombros sobre la pelvis
+            pg.evaluate(f"{E}.ponerModo('quieto')"); pg.evaluate(f'{E}.instante(1.0)')
+            post = pg.evaluate(f"""(() => {{ const d = {E}.diag(), h = d.pj.hueso, v = (n) => {{ const p = new d.THREE.Vector3(); h[n].getWorldPosition(p); return d.pj.modelo.worldToLocal(p); }};
+              const pel = v('pelvis'); return [v('head').z - pel.z, v('upperarm_l').z - pel.z, v('upperarm_r').z - pel.z, v('lowerarm_l').z - v('upperarm_l').z]; }})()""")
+            if os.environ.get('MUTAR'): post = [0.2, -0.05, -0.05, -0.08]
+            comprobar(f'taller propio ({sexo}): de pie recto (cabeza y hombros sobre la pelvis, brazos sin irse atrás)',
+                      post[0] < 0.10 and min(post[1], post[2]) > -0.01 and post[3] > -0.03, ', '.join(f'{x * 100:.1f} cm' for x in post))
             pg.evaluate(f"{E}.ponerModo('andar')"); pg.click('[data-vista="cuerpo"]')
             pg.evaluate(f'{E}.instante(0.2)'); a = pg.evaluate(f"[{E}.hueso('calf_l'), {E}.hueso('hand_r')]")
             pg.evaluate(f'{E}.instante(0.65)'); b = pg.evaluate(f"[{E}.hueso('calf_l'), {E}.hueso('hand_r')]")

@@ -54,10 +54,17 @@ for (const [b, a] of pares) {
   const h = hijoDe(b.getName().toLowerCase());
   const hb = h && B.porNombre.get(h), ha = h && A.porNombre.get(h);
   let q = null;
-  if (hb && ha) {
+  // solo los brazos y las manos cambian de verdad de postura (brazos en «A» → en cruz). El tronco, la pelvis y las
+  // piernas ya están de pie en los dos: si se «igualan», las pequeñas diferencias de cómo están puestos los huesos
+  // (la pelvis apunta 35° distinto) doblan el cuerpo hacia delante (fallo de la v5/v6, lo vio Pedro)
+  // la clavícula tampoco: si se iguala, el hombro se va hacia atrás (Pedro: «hombros muy para atrás»)
+  const brazo = /^(upperarm|lowerarm|hand|index|middle|ring|pinky|thumb)/.test(b.getName().toLowerCase());
+  if (!brazo) q = new THREE.Quaternion();
+  else if (hb && ha) {
     const db = pos(WB0.get(hb)).sub(pos(WB0.get(b))).normalize(), da = pos(WA0.get(ha)).sub(pos(WA0.get(a))).normalize();
     q = new THREE.Quaternion().setFromUnitVectors(db, da);
   }
+  if (q && process.env.VER) console.log(b.getName().padEnd(14), (2 * Math.acos(Math.min(1, Math.abs(q.w))) * 180 / Math.PI).toFixed(1), '°');
   alinear.set(b, q);
 }
 // los huesos sin hijo (cabeza, puntas de los dedos, punta del pie) heredan el giro de su padre
@@ -83,29 +90,82 @@ const altura = pos(WB0.get(B.porNombre.get('pelvis'))).y / pos(WA0.get(A.porNomb
 const pelvisB = B.porNombre.get('pelvis'), pelvisA = A.porNombre.get('pelvis');
 const buf = T.getRoot().listBuffers()[0];
 for (const anim of T.getRoot().listAnimations()) anim.dispose();
-const hechos = [];
-for (const clip of CLIPS) {
-  const an = S.getRoot().listAnimations().find(a => a.getName() === clip);
-  if (!an) { console.log('no está:', clip); continue; }
-  const canales = new Map();
-  let dur = 0;
+function canalesDe(an) {
+  const canales = new Map(); let dur = 0;
   for (const c of an.listChannels()) {
     const n = c.getTargetNode(); if (!n) continue;
     if (!canales.has(n)) canales.set(n, {});
     canales.get(n)[c.getTargetPath()] = muestreador(c.getSampler());
     dur = Math.max(dur, c.getSampler().getInput().getMax([])[0]);
   }
+  return { canales, dur };
+}
+const mundoOrigen = (canales, x) => A.mundo((n) => {
+  const r = A.reposo(n), c = canales.get(n);
+  return c ? { t: c.translation ? c.translation(x) : r.t, r: c.rotation ? c.rotation(x) : r.r, s: r.s } : r;
+});
+const giroDesdeReposo = (WA, a) => rot(WA.get(a)).multiply(RA0.get(a).clone().invert());
+// Postura: las animaciones del paquete van con el cuello y la cabeza adelantados (estilo de sus muñecos de cabeza grande).
+// En un cuerpo de proporciones reales queda encorvado (Pedro: «doblado hacia adelante»). Se mide esa inclinación en
+// la animación de estar quieto y se quita de todas, dejando solo una parte (ENDEREZAR = cuánto se quita).
+const ENDEREZAR = Number(process.env.ENDEREZAR ?? 0.7);
+const TRONCO = ['spine_01', 'spine_02', 'spine_03', 'neck_01', 'head', 'clavicle_l', 'clavicle_r']; // con las clavículas: si no, los hombros se quedan adelantados
+const sesgo = new Map();
+{
+  const { canales, dur } = canalesDe(S.getRoot().listAnimations().find(a => a.getName() === 'Idle_Loop'));
+  for (const nombre of TRONCO) {
+    const a = A.porNombre.get(nombre), suma = new THREE.Vector4(); let ref = null;
+    for (let x = 0; x <= dur; x += 1 / FPS) {
+      const q = giroDesdeReposo(mundoOrigen(canales, x), a);
+      if (ref && q.dot(ref) < 0) q.set(-q.x, -q.y, -q.z, -q.w);
+      ref = ref || q.clone(); suma.add(new THREE.Vector4(q.x, q.y, q.z, q.w));
+    }
+    const media = new THREE.Quaternion(suma.x, suma.y, suma.z, suma.w).normalize();
+    // corrección = media⁻¹ · (parte de la media que se deja)
+    sesgo.set(B.porNombre.get(nombre), media.clone().invert().premultiply(new THREE.Quaternion().slerp(media, 1 - ENDEREZAR)));
+  }
+}
+// Brazos: en las animaciones del paquete los brazos cuelgan unos 14° hacia atrás (va con su cuerpo inclinado hacia
+// delante). Con el tronco enderezado quedan por detrás del cuerpo. Se mide su ángulo al estar quieto y se gira todo
+// el brazo desde el hombro, en todas las animaciones, para que cuelgue recto (DELANTE_BRAZO grados hacia delante).
+const DELANTE_BRAZO = Number(process.env.DELANTE_BRAZO ?? 0);
+const giroBrazo = new Map(); // 'l' / 'r' → giro en el mundo para toda la cadena del brazo
+{
+  // un mismo giro para los dos brazos (la media de los dos): el quieto del paquete es asimétrico a propósito
+  const { canales, dur } = canalesDe(S.getRoot().listAnimations().find(a => a.getName() === 'Idle_Loop'));
+  let suma = 0, n = 0;
+  for (let x = 0; x <= dur; x += 1 / FPS) {
+    const WA = mundoOrigen(canales, x);
+    for (const lado of ['l', 'r']) {
+      const d = pos(WA.get(A.porNombre.get('lowerarm_' + lado))).sub(pos(WA.get(A.porNombre.get('upperarm_' + lado))));
+      suma += Math.atan2(d.z, -d.y); n++; // ángulo hacia delante (z) respecto a la vertical
+    }
+  }
+  const angulo = suma / n, falta = DELANTE_BRAZO * Math.PI / 180 - angulo;
+  // girar alrededor del eje lateral (x): llevar -y hacia +z es un giro negativo
+  const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -falta);
+  giroBrazo.set('l', q); giroBrazo.set('r', q);
+  if (process.env.VER) console.log('brazos: cuelgan', (angulo * 180 / Math.PI).toFixed(1), '° → se giran', (falta * 180 / Math.PI).toFixed(1), '°');
+}
+const ladoBrazo = (b) => { const m = b.getName().toLowerCase().match(/^(upperarm|lowerarm|hand|index|middle|ring|pinky|thumb).*_([lr])$/); return m && m[2]; };
+const hechos = [];
+for (const clip of CLIPS) {
+  const an = S.getRoot().listAnimations().find(a => a.getName() === clip);
+  if (!an) { console.log('no está:', clip); continue; }
+  const { canales, dur } = canalesDe(an);
   const nf = Math.max(2, Math.round(dur * FPS) + 1), tiempos = new Float32Array(nf);
   const salidaRot = new Map(pares.map(([b]) => [b, new Float32Array(nf * 4)])), salidaPel = new Float32Array(nf * 3);
   for (let f = 0; f < nf; f++) {
     const x = Math.min(dur, f / FPS); tiempos[f] = x;
-    const WA = A.mundo((n) => {
-      const r = A.reposo(n), c = canales.get(n);
-      return c ? { t: c.translation ? c.translation(x) : r.t, r: c.rotation ? c.rotation(x) : r.r, s: r.s } : r;
-    });
-    // giros en el mundo del destino
+    const WA = mundoOrigen(canales, x);
+    // giros en el mundo del destino (el tronco, sin la inclinación de estilo del paquete)
     const WBr = new Map();
-    for (const [b, a] of pares) WBr.set(b, rot(WA.get(a)).multiply(RA0.get(a).clone().invert()).multiply(M.get(b)));
+    for (const [b, a] of pares) {
+      const d = giroDesdeReposo(WA, a);
+      if (sesgo.has(b)) d.multiply(sesgo.get(b));
+      const lado = ladoBrazo(b); if (lado) d.premultiply(giroBrazo.get(lado));
+      WBr.set(b, d.multiply(M.get(b)));
+    }
     // a giros locales: hace falta el mundo del padre ya animado
     const mundoB = new Map();
     const deB = (n) => {
@@ -125,6 +185,12 @@ for (const clip of CLIPS) {
       return w;
     };
     for (const [b] of pares) deB(b);
+    if (process.env.VER && f === 30) { // postura: dónde quedan cuello y cabeza respecto a la pelvis (adelante = +z)
+      const rel = (W, n, p) => pos(W.get(n)).sub(pos(W.get(p))).toArray().map(x => x.toFixed(3));
+      console.log(clip, 'origen cabeza', rel(WA, A.porNombre.get('head'), pelvisA), 'destino cabeza', rel(mundoB, B.porNombre.get('head'), pelvisB));
+      for (const h of ['upperarm_l', 'lowerarm_l', 'hand_l']) console.log(clip, h, 'origen', rel(WA, A.porNombre.get(h), pelvisA), 'destino', rel(mundoB, B.porNombre.get(h), pelvisB), 'reposo destino', rel(WB0, B.porNombre.get(h), pelvisB));
+      console.log(clip, 'reposo origen', rel(WA0, A.porNombre.get('head'), pelvisA), 'reposo destino', rel(WB0, B.porNombre.get('head'), pelvisB));
+    }
   }
   const nueva = T.createAnimation(clip);
   const entrada = T.createAccessor().setType('SCALAR').setArray(tiempos).setBuffer(buf);

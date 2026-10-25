@@ -11,8 +11,8 @@ const $ = (id) => document.getElementById(id);
 const CLAVE = 'kinhold_personaje_v2';
 // carpeta de los modelos: la versión publicada vive en jugar/personaje/, los modelos en recursos/personajes/v1/
 const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../recursos/personajes/v1/';
-// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v1/
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v1/';
+// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v2/ (la v1 publicada no se toca)
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v2/';
 const BASES = { quaternius: 'Paquete Quaternius', makehuman: 'Taller propio (MakeHuman)' };
 
 const lienzo = $('lienzo');

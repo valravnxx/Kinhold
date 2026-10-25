@@ -114,7 +114,7 @@ def material(nombre, rugosidad=0.8, sss=0.0, imagen=None, alfa=False, brillo=0.0
     return m
 
 # ---------- trozos de la malla ----------
-def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None):
+def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None):
     """copia de `base` con solo los vértices para los que quedarse(i, co) es cierto; la empuja por la normal.
     color(P, A) da el color por vértice; textura=(res, fn(P, A) → rgba) pinta una textura en su mapa UV"""
     ob = base.copy(); ob.data = base.data.copy(); ob.name = nombre
@@ -133,12 +133,30 @@ def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosida
             c = v.co.copy(); d = e(c, v[capa])  # e puede mover también el punto (c)
             nuevas.append((v, c + v.normal * d))
         for v, c in nuevas: v.co = c
+    if colgar:  # la tela cae recta desde lo más saliente del pecho hasta el cinturón, sin meterse por debajo del pecho
+        z_cinto, z_arriba, ancho = colgar
+        delante = [v for v in bm.verts if v.co.y < -0.03 and abs(v.co.x) < ancho and z_cinto - 0.01 < v.co.z < z_arriba]
+        columnas = {}
+        for v in delante: columnas.setdefault(round(v.co.x / 0.012), []).append(v)
+        for vs in columnas.values():
+            apice = min(vs, key=lambda v: v.co.y)  # lo más adelantado (y negativo = delante)
+            abajo = min(vs, key=lambda v: abs(v.co.z - z_cinto))
+            if apice.co.z - abajo.co.z < 0.03: continue
+            for v in vs:
+                if abajo.co.z < v.co.z < apice.co.z:
+                    t = (v.co.z - abajo.co.z) / (apice.co.z - abajo.co.z)
+                    v.co.y = min(v.co.y, abajo.co.y * (1 - t) + apice.co.y * t)
     if alisar:  # la tela pasa por encima como una membrana: se suavizan esos puntos con sus vecinos
-        cuales, veces = alisar
+        cuales, veces = alisar[:2]
+        holgura = alisar[2] if len(alisar) > 2 else None  # distancia mínima a la piel (la tela no se mete dentro)
         zona = [v for v in bm.verts if cuales(v.co, v[capa])]
         for _ in range(veces):
             nuevos = [sum((e.other_vert(v).co for e in v.link_edges), Vector()) / len(v.link_edges) for v in zona]
-            for v, c in zip(zona, nuevos): v.co = c
+            for v, c in zip(zona, nuevos):
+                if holgura:
+                    sitio, normal, _, _ = CUERPO.find_nearest(c)
+                    if sitio is not None and (c - sitio).dot(normal) < holgura: c = sitio + normal * holgura
+                v.co = c
     bm.to_mesh(ob.data); bm.free()
     for p in ob.data.polygons: p.use_smooth = True
     me = ob.data
@@ -231,6 +249,12 @@ def personaje(nombre, macros, objetivos, ropa):
     base = bpy.data.objects.new(nombre + '_base', me)
     for g in h.vertex_groups: base.vertex_groups.new(name=g.name)
     bpy.data.objects.remove(h)
+    # superficie de la piel, para que la ropa alisada no se meta dentro del cuerpo
+    global CUERPO
+    from mathutils.bvhtree import BVHTree
+    bmc = bmesh.new(); bmc.from_mesh(me); grupo = base.vertex_groups['body'].index; deform = bmc.verts.layers.deform.active
+    bmesh.ops.delete(bmc, geom=[v for v in bmc.verts if v[deform].get(grupo, 0) < 0.5], context='VERTS')
+    CUERPO = BVHTree.FromBMesh(bmc); bmc.free()
     nombres = {g.index: g.name for g in base.vertex_groups}
     W = [{nombres[g.group]: g.weight for g in v.groups} for v in base.data.vertices]
     co = [v.co.copy() for v in base.data.vertices]
@@ -400,8 +424,11 @@ def personaje(nombre, macros, objetivos, ropa):
         a = a * suave(0.041, 0.045, d)
         col = colt[None, None, :] * (0.88 + 0.16 * fbm(P, 25)[..., None]) * (0.95 + 0.05 * ruido(P, 900)[..., None])
         return np.concatenate([col, a[..., None]], -1)
+    # el tronco de la túnica se alisa como tela que cuelga de los hombros (si no, marca el pecho: Pedro, «el hombre tiene tetas»);
+    # en el vestido de mujer, menos (va más ajustado)
+    tronco = lambda c, i: abs(c.x) < 0.15 and cintura_z - 0.05 < c.z < cuello_z - 0.05
     tunica = trozo(base, nombre + '_tunica', arriba, empuje=lambda c, i: 0.012 if abs(c.x) < 0.17 else 0.007, textura=(1024, pintar_tunica),
-                   rugosidad=0.95, ajustar_uv=True)
+                   rugosidad=0.95, ajustar_uv=True, colgar=None if mujer else (cintura_z, cuello_z - 0.03, 0.16), alisar=(tronco, 8 if mujer else 25, 0.008))
     piezas.append(tunica)
     largo = tobillo_z + 0.03 if ropa.get('vestido') else rodilla_z - 0.03
     falda = trozo(base, nombre + '_falda', lambda i, c: en(i, 'helper-skirt') and largo < c.z < cintura_z + 0.06,
