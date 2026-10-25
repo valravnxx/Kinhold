@@ -108,7 +108,9 @@
     },
     {
      "nombre": "Personaje del taller en la construcción: sustituye al muñeco inicial; anda, corre y tala con sus animaciones, y empieza con camisa y calzas de lino como dice el GDD",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-25T19:54:00+00:00",
+     "fin": "2026-10-25T21:07:17+00:00"
     },
     {
      "nombre": "Personaje del taller en el combate: los dos luchadores con su ropa por capas (la armadura del duelo pasa a ser gambesón y cota del taller), con las animaciones que hay y las heridas pintadas como ahora",
@@ -616,6 +618,13 @@
      "archivo": "jugar/construccion/v9.html",
      "capturas": "capturas/construccion-v9",
      "notas": "Escena común del estilo elegido: cielo, luz, sombras blandas, suelo con textura, bosque, hierba, flores y rocas"
+    },
+    {
+     "v": "v10",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/construccion/v10.html",
+     "capturas": "capturas/construccion-v10",
+     "notas": "El jugador es el personaje del taller propio (camisa y calzas de lino): anda, corre y tala con sus animaciones"
     }
    ]
   },

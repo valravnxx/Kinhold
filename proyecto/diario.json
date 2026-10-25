@@ -770,5 +770,24 @@
   "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, acciones, unión, taller, traducciones y navegador de construcción, combate, estilo, personaje, inglés y ruso, y web), PC y móvil; la de recursos de personaje falló por una ruta de importación y, arreglada, pasó repetida. Medido sin tarjeta gráfica (aquí no hay otra): construcción 346 ms por fotograma frente a 142 de la v8, combate 280 frente a 145 de la v6. No comprobado: los fotogramas con tarjeta gráfica ni en el móvil de Pedro (es la tarea de rendimiento de este hito). Las comprobaciones de la prueba de combate cambiadas son las mismas (solo cambia la espera), no se rompieron a propósito.",
   "capturas": "capturas/construccion-v9",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T19:54:00+00:00",
+  "fin": "2026-10-25T21:07:17+00:00",
+  "titulo": "Hito 1d: el personaje del taller en la construcción",
+  "hito": "unificacion",
+  "hecho": [
+   "El jugador de la construcción es el personaje del taller propio (cuerpo de MakeHuman vestido por código) en vez del muñeco: camisa y calzas de lino, sin túnica.",
+   "Anda, corre y tala con las animaciones de Quaternius pasadas a su esqueleto. Medida la velocidad natural de las animaciones con el pie en un ciclo: andar 0,97 m/s y correr 2,59 m/s; se aceleran con la velocidad del juego hasta 1,6×.",
+   "Talar: junto a un árbol del bosque, Usar (F) hace el gesto de talar y moverse lo para. Solo el gesto: sin hacha en la mano y sin madera, que llega con la recolección del hito 2.",
+   "Mientras carga el personaje (o si no se puede cargar) se ve el muñeco de antes, así el juego no se queda sin jugador.",
+   "Decisión provisional: lleva zapatos aunque el GDD dice que se empieza descalzo. Comprobado en las capturas: sin zapatos se ve sin pies, porque el cuerpo del taller no los tiene debajo. Tarea nueva en el hito de arte para los pies descalzos.",
+   "Decisión provisional: las velocidades del juego (3,6 m/s andando y 6 con Mayús) no se cambian; con ellas se usa la animación de correr y a 6 m/s los pies resbalan algo. Anotado en el registro del prototipo.",
+   "Las pruebas de navegador de la construcción y de idiomas sirven las páginas por HTTP, como en la web, para poder cargar el modelo.",
+   "Construcción v10 publicada; las versiones anteriores siguen en la web."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh, PC y móvil, salvo la de idiomas, que fallaba porque abría la construcción sin servidor y el modelo no se carga así; servida por HTTP, pasa entera (repetida aparte). La prueba nueva del personaje se rompió a propósito (MUTAR=1, modelos en una carpeta que no existe) y falló como debía. Capturas de cerca miradas: quieto, de espaldas, corriendo, talando y en el móvil. No comprobado: los fotogramas con tarjeta gráfica ni en el móvil (es la tarea de rendimiento de este hito); la prueba de idiomas no se rompió a propósito tras el cambio (solo cambia cómo se sirven las páginas).",
+  "capturas": "capturas/construccion-v10",
+  "estado": "ok"
  }
 ]
