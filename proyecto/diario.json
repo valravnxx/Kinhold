@@ -718,5 +718,22 @@
   "pruebas": "Todas las pruebas correctas (lógica 63, modelos 21, combate 69, acciones 25, unión 19, taller, traducciones y navegador: construcción, combate, estilo, personaje, recursos, inglés y web). Sin cambios jugables ni visuales: no hay versión nueva ni capturas. No comprobado: el orden exacto del diario en una fusión antigua, donde la entrada se había colocado a mano fuera de su hora.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T17:04:32+00:00",
+  "fin": "2026-10-25T17:43:19+00:00",
+  "titulo": "Hito 0b: revisión completa",
+  "hito": "base",
+  "hecho": [
+   "Pasadas todas las pruebas del proyecto con probar_todo.sh: las cuatro demos en PC y móvil, inglés, recursos de personaje, taller, traducciones y web.",
+   "Revisadas las capturas de construcción, combate, estilo, personaje y web: todo se ve como antes del hito, que no cambia nada a la vista.",
+   "Quedaba sin comprobar que las pruebas de navegador del registro de acciones fallan si una acción no se anota: comprobado quitando el apunte en el registro; la de la construcción y las dos del combate fallan.",
+   "Arreglada la del combate: con el registro vacío rompía la prueba entera en vez de fallar esa comprobación y seguir.",
+   "Sin versión jugable nueva: el hito prepara el proyecto, no cambia nada a la vista.",
+   "El hito 0b queda en revisión, esperando a Pedro."
+  ],
+  "pruebas": "Todas correctas (lógica 63, modelos 21, combate 69, acciones 25, unión 19, taller, traducciones y navegador: construcción, combate, estilo, personaje, recursos, inglés y web), PC y móvil. Construcción y combate repetidas tras el arreglo de la prueba.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
