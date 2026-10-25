@@ -1,6 +1,6 @@
 # Prueba en navegador del juego en inglés y en ruso (construcción, combate, prueba de estilo y visor de personaje), en PC y móvil.
 # Uso: python3 pruebas/prueba_idioma_navegador.py <html_construccion> <html_combate> <html_estilo> <html_personaje> <carpeta_capturas>
-# El personaje se sirve por HTTP con sus recursos (docs/recursos/personajes/), como en la web.
+# Todo se sirve por HTTP desde un mismo sitio con los recursos (docs/recursos/personajes/), como en la web.
 # Comprueba: que no queda ningún texto sin traducir (window.__idioma.faltan), que no quedan palabras
 # en español a la vista, que el botón ES/EN cambia el idioma, lo recuerda y no borra la partida.
 # En ruso: todas las vistas con ?lang=ru, sin textos sin traducir, sin español ni inglés a la vista, con cirílico y botón RU.
@@ -15,10 +15,13 @@ ESTILO = os.path.abspath(sys.argv[3] if len(sys.argv) > 3 else 'dist/kinhold_est
 PERSONAJE = os.path.abspath(sys.argv[4] if len(sys.argv) > 4 else 'dist/kinhold_personaje.html')
 SALIDA = sys.argv[5] if len(sys.argv) > 5 else 'capturas/idioma'
 
-# el visor de personaje carga sus modelos de ../../recursos/personajes/: se sirve como en la web
+# el visor de personaje y la construcción (su jugador es el personaje del taller) cargan sus modelos de
+# ../../recursos/personajes/: se sirven como en la web
 sitio = tempfile.mkdtemp()
-os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
-shutil.copy(PERSONAJE, f'{sitio}/jugar/personaje/prueba.html')
+# (los cuatro desde el mismo sitio: el idioma elegido se guarda en el navegador y tiene que valer en todos)
+for carpeta, html in (('personaje', PERSONAJE), ('construccion', CONSTR), ('combate', COMB), ('estilo', ESTILO)):
+    os.makedirs(f'{sitio}/jugar/{carpeta}'); shutil.copy(html, f'{sitio}/jugar/{carpeta}/prueba.html')
+os.makedirs(f'{sitio}/recursos/personajes')
 for c in ('v1', 'taller-v4'):
     shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes', c), f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
@@ -26,6 +29,9 @@ class Silencioso(http.server.SimpleHTTPRequestHandler):
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 URL_PERSONAJE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/personaje/prueba.html'
+URL_CONSTR = f'http://127.0.0.1:{srv.server_address[1]}/jugar/construccion/prueba.html'
+URL_COMB = f'http://127.0.0.1:{srv.server_address[1]}/jugar/combate/prueba.html'
+URL_ESTILO = f'http://127.0.0.1:{srv.server_address[1]}/jugar/estilo/prueba.html'
 os.makedirs(SALIDA, exist_ok=True)
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 MUTAR = bool(os.environ.get('MUTAR'))
@@ -78,7 +84,7 @@ with sync_playwright() as p:
         sufijo = 'movil' if movil else 'pc'
 
         # ---------- construcción ----------
-        pg.goto('file://' + CONSTR + '?lang=en')
+        pg.goto(URL_CONSTR + '?lang=en')
         pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
         pg.evaluate('localStorage.clear(); window.__kinhold.reiniciar()')
         pg.wait_for_timeout(500)
@@ -103,7 +109,7 @@ with sync_playwright() as p:
         pg.click('#panelRegistro .cerrar')
         # cambiar a español con el botón: recarga, recuerda el idioma y la partida sigue
         # sin ?lang ni nada guardado manda el idioma del navegador (aquí, español)
-        pg.goto('file://' + CONSTR)
+        pg.goto(URL_CONSTR)
         pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
         comprobar('construcción: navegador en español → juego en español', pg.evaluate('document.documentElement.lang') == 'es' and 'Construir' in pg.inner_text('#modos'))
         comprobar('construcción: la partida sigue al cambiar de idioma', pg.evaluate(f"!!{K}.mundo.mojon"))
@@ -121,7 +127,7 @@ with sync_playwright() as p:
         pg.wait_for_function('window.__kinhold !== undefined && document.documentElement.lang === "en"', timeout=20000)
 
         # ---------- combate ---------- (el inglés ya está guardado por el botón: vale para los dos)
-        pg.goto('file://' + COMB)
+        pg.goto(URL_COMB)
         pg.wait_for_function('window.__duelo !== undefined', timeout=20000)
         D = 'window.__duelo'
         comprobar('combate: recuerda el inglés elegido en la construcción', pg.evaluate('document.documentElement.lang') == 'en')
@@ -150,7 +156,7 @@ with sync_playwright() as p:
         revisar(pg, f'combate {etiqueta}, final')
 
         # ---------- prueba de estilo ---------- (el inglés sigue guardado)
-        pg.goto('file://' + ESTILO)
+        pg.goto(URL_ESTILO)
         pg.wait_for_function('window.__estilo !== undefined', timeout=90000)
         S = 'window.__estilo'
         comprobar('estilo: recuerda el inglés elegido', pg.evaluate('document.documentElement.lang') == 'en')
@@ -230,7 +236,7 @@ with sync_playwright() as p:
         pg.on('pageerror', lambda e: err.append(str(e)))
         pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
         K, D, S, P = 'window.__kinhold', 'window.__duelo', 'window.__estilo', 'window.__personaje'
-        pg.goto('file://' + CONSTR + '?lang=ru')
+        pg.goto(URL_CONSTR + '?lang=ru')
         pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
         pg.evaluate('localStorage.clear(); window.__kinhold.reiniciar()'); pg.wait_for_timeout(400)
         comprobar('ruso: construcción con ?lang=ru', pg.evaluate('document.documentElement.lang') == 'ru')
@@ -249,11 +255,11 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/ru_construccion_{sufijo}_04_decisiones.png'); revisar_ru(pg, f'ru construcción {etiqueta}, decisiones')
         pg.click('#panelRegistro .cerrar')
         # el botón RU guarda el ruso para todos los prototipos y no borra la partida
-        pg.goto('file://' + CONSTR); pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
+        pg.goto(URL_CONSTR); pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
         elegir_idioma(pg, 'ru')
         pg.wait_for_function('window.__kinhold !== undefined && document.documentElement.lang === "ru"', timeout=20000)
         comprobar('ruso: el botón RU cambia a ruso y la partida sigue', pg.evaluate(f"!!{K}.mundo.mojon"))
-        pg.goto('file://' + COMB); pg.wait_for_function('window.__duelo !== undefined', timeout=20000)
+        pg.goto(URL_COMB); pg.wait_for_function('window.__duelo !== undefined', timeout=20000)
         comprobar('ruso: el combate recuerda el ruso', pg.evaluate('document.documentElement.lang') == 'ru')
         pg.evaluate(f"{D}.configurar({{modo:'duelo', arma:'espada_larga', dificultad:'aprendiz'}}); {D}.ia.pensar = () => ({{mx:0,mz:0,correr:false}}); {D}.jugador.z={D}.rival.z-1.7")
         pg.wait_for_timeout(600); pg.evaluate(f"{D}.atacar('bajo')"); pg.wait_for_timeout(1500)
@@ -266,7 +272,7 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_04_decisiones.png'); revisar_ru(pg, f'ru combate {etiqueta}, decisiones')
         pg.click('#panelRegistro .cerrar'); pg.evaluate(f"{D}.rival.caer('Desangrado')"); pg.wait_for_timeout(500)
         pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_05_final.png'); revisar_ru(pg, f'ru combate {etiqueta}, final')
-        pg.goto('file://' + ESTILO); pg.wait_for_function('window.__estilo !== undefined', timeout=90000)
+        pg.goto(URL_ESTILO); pg.wait_for_function('window.__estilo !== undefined', timeout=90000)
         pg.evaluate(f"{S}.pausar(true)")
         for i, v in enumerate(['maqueta', 'cabana', 'lado']):
             pg.click(f'[data-vista="{v}"]'); pg.evaluate(f"{S}.dibujar()")
