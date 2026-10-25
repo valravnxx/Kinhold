@@ -1,10 +1,23 @@
-# Prueba en navegador real del campo de pruebas de combate de Kinhold (v2).
-import sys, os, json
+# Prueba en navegador real del campo de pruebas de combate de Kinhold.
+# Se sirve por HTTP con la misma estructura que la web (jugar/combate/ y recursos/personajes/taller-v4/), porque los
+# luchadores son el personaje del taller y se cargan de un .glb aparte. MUTAR=1 apunta a una carpeta de modelos que no
+# existe: tiene que fallar.
+import sys, os, json, base64, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_combate.html')
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_combate'
 os.makedirs(SALIDA, exist_ok=True)
+RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+sitio = tempfile.mkdtemp()
+os.makedirs(f'{sitio}/jugar/combate'); os.makedirs(f'{sitio}/recursos/personajes')
+shutil.copy(RUTA, f'{sitio}/jugar/combate/prueba.html')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v4'), f'{sitio}/recursos/personajes/taller-v4')
+class Silencioso(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, *a): pass
+srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
+threading.Thread(target=srv.serve_forever, daemon=True).start()
+URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/combate/prueba.html' + ('?recursosMH=../../no-existe/' if os.environ.get('MUTAR') else '')
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 D = 'window.__duelo'
 fallos = []
@@ -20,7 +33,7 @@ with sync_playwright() as p:
     err = []
     pg.on('pageerror', lambda e: err.append(str(e)))
     pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
-    pg.goto('file://' + RUTA)
+    pg.goto(URL)
     pg.wait_for_function(f'{D} !== undefined', timeout=20000)
     ev = pg.evaluate
     def espera(ms): pg.wait_for_timeout(ms)
@@ -31,6 +44,73 @@ with sync_playwright() as p:
         r = ev(f"({{x:{D}.rosa.x, y:{D}.rosa.y, r:{D}.rosa.r}})")
         off = {'alto': (0, -0.7), 'bajo': (0, 0.7), 'izquierda': (-0.7, 0), 'derecha': (0.7, 0), 'estocada': (0, 0)}[linea]
         return r['x'] + off[0] * r['r'], r['y'] + off[1] * r['r']
+
+    def foto(ruta, quien='mJugador', ang=0.0, dist=1.9, alto=1.15, mira=1.05):
+        # foto de cerca con una cámara aparte (la del juego sigue igual)
+        url = ev(f"""(()=>{{const d={D}; const m=d.{quien}; const c=new d.camara.constructor(35,1,0.05,100);
+          const a=m.rotation.y+{ang}; c.position.set(m.position.x+Math.sin(a)*{dist}, {alto}, m.position.z+Math.cos(a)*{dist});
+          c.lookAt(m.position.x, {mira}, m.position.z); const r=d.renderer; const w=r.domElement.width/r.getPixelRatio(), h=r.domElement.height/r.getPixelRatio();
+          r.setSize(800,800,false); r.setClearColor(0xa9c4dc,1); r.render(d.escena,c); const u=r.domElement.toDataURL('image/png');
+          r.setClearColor(0,0); r.setSize(w,h,false); return u;}})()""")
+        open(ruta, 'wb').write(base64.b64decode(url.split(',')[1]))
+    def taller_listo():
+        return hasta(f"{D}.mJugador.userData.taller.estado !== 'cargando' && (!{D}.mRival || {D}.mRival.userData.taller.estado !== 'cargando')", 30000) and \
+            ev(f"{D}.mJugador.userData.taller.estado === 'listo' && (!{D}.mRival || {D}.mRival.userData.taller.estado === 'listo')")
+    # distancia de cada muñeca al sitio del puño donde tiene que estar (el arma la coloca la lógica de poses)
+    MANOS = f"""(()=>{{const u={D}.mJugador.userData, t=u.taller, V=u.manos.position.constructor;
+        const eje=new V(0,1,0).transformDirection(u.manos.matrixWorld), o=u.manos.getWorldPosition(new V());
+        const r=[]; for (const [l,s] of [['d',0.07],['i',-0.07]]) {{ const b=t.brazos[l]; const p=o.clone().addScaledVector(eje,s);
+          const m=b.mano.getWorldPosition(new V()), f=b.dedo.getWorldPosition(new V()); r.push(+m.clone().lerp(f,0.5).distanceTo(p).toFixed(3)); }}
+        return r; }})()"""
+
+    print('Personaje del taller en el duelo')
+    for arm, capas in [('lino', []), ('gambeson', ['gambeson']), ('malla', ['gambeson', 'cota'])]:
+        ev(f"{D}.configurar({{modo:'duelo', arma:'espada_larga', armadura:'{arm}', armaduraRival:'{arm}', dificultad:'aprendiz'}})")
+        ok = taller_listo()
+        comprobar(f'{arm}: los dos luchadores son el personaje del taller', ok, json.dumps(ev(f"{D}.mJugador.userData.taller.estado")))
+        if not ok: continue
+        # se ve la capa de fuera (lo tapado del todo no se dibuja)
+        vis = ev(f"""(()=>{{const r=[]; {D}.mJugador.userData.taller.mh.modelo.traverse(n=>{{if(n.isMesh&&n.visible&&/_capa_(camisa|gambeson|cota)$/.test(n.name)) r.push(n.name.split('_').pop())}}); return r.sort()}})()""")
+        fuera = (capas or ['camisa'])[-1]
+        comprobar(f'{arm}: lleva puestas las capas {capas or "de lino (camisa y calzas)"}', ev(f"{D}.mJugador.userData.taller.capas") == capas and vis == [fuera], str(vis))
+        comprobar(f'{arm}: el muñeco de antes ya no se ve', ev(f"(() => {{ const u = {D}.mJugador.userData; return u.cuerpo.children.filter(h => h.visible && h !== u.armas && h !== u.taller.mh.raiz).length; }})()") == 0)
+    ev(f"{D}.configurar({{modo:'duelo', arma:'espada_larga', armadura:'lino', armaduraRival:'malla', dificultad:'aprendiz'}})")
+    taller_listo()
+    ev(QUIETO)
+    ev(f"{D}.rival.actualizar = () => []; {D}.jugador.z = {D}.rival.z - 8")
+    espera(700)
+    d = ev(MANOS)
+    comprobar('en guardia, las dos manos agarran el puño de la espada', max(d) < 0.09, f'{d} m')
+    foto(f'{SALIDA}/00a_taller_guardia.png', ang=0.5)
+    foto(f'{SALIDA}/00b_taller_guardia_lado.png', ang=1.6)
+    # golpes de las cinco líneas a medio camino: las manos siguen en el puño
+    peor = 0
+    for n, l in enumerate(['alto', 'izquierda', 'derecha', 'bajo', 'estocada']):
+        ev(f"(()=>{{const j={D}.jugador; j._act = j._act || j.actualizar; j.actualizar=()=>[]; j.accion='golpeando'; j.linea='{l}'; j.duracion=1; j.tAccion=0.5;}})()")
+        espera(350)
+        dd = ev(MANOS); peor = max(peor, *dd)
+        if max(dd) >= 0.09: print('    ', l, dd)
+        foto(f'{SALIDA}/00c_taller_golpe_{n + 1}_{l}.png', ang=0.7, dist=2.7, alto=1.4, mira=1.2)
+    comprobar('en los golpes de las cinco líneas las manos siguen en el puño', peor < 0.09, f'peor {peor} m')
+    ev(f"(()=>{{const j={D}.jugador; j.actualizar=j._act; j.accion='quieto'; j.linea=null;}})()")
+    ev(f"(()=>{{const j={D}.jugador; for (const [z,s,t] of [['torso',0.5,'corte'],['cabeza',0.2,'contundente'],['brazoI',0.5,'perforante'],['piernaD',0.9,'corte']]) j.recibirHerida(z,s,t);}})()")
+    espera(400)
+    her = ev(f"""(()=>{{const r=[]; {D}.mJugador.traverse(n=>{{if(n.name==='herida'&&n.visible!==false) r.push([n.parent.name, n.userData.superficie])}}); return r}})()""")
+    comprobar('cada herida se pinta pegada al cuerpo, en su hueso', len(her) == 4 and all(s for _, s in her) and sorted(h[0] for h in her) == ['head', 'spine_02', 'thigh_r', 'upperarm_l'], json.dumps(her))
+    foto(f'{SALIDA}/00d_taller_heridas.png', ang=0.2)
+    foto(f'{SALIDA}/00e_taller_herida_cabeza.png', ang=0.1, dist=0.9, alto=1.45, mira=1.35)
+    foto(f'{SALIDA}/00f_rival_malla.png', quien='mRival', ang=0.4)
+    for arma in ['espada_escudo', 'palo', 'arco']:
+        ev(f"{D}.configurar({{modo:'duelo', arma:'{arma}', armadura:'gambeson', dificultad:'aprendiz'}}); {QUIETO}; {D}.rival.actualizar = () => []; {D}.jugador.z = {D}.rival.z - 8")
+        taller_listo(); espera(500)
+        foto(f'{SALIDA}/00g_taller_{arma}.png', ang=0.5)
+        if arma == 'espada_escudo':
+            ev(f"{D}.parar(true)"); espera(500)
+            asa = ev(f"""(()=>{{const u={D}.mJugador.userData, V=u.manos.position.constructor; const b=u.taller.brazos.i;
+              const a=new V(0,0,-0.07).applyMatrix4(u.escudo.matrixWorld); return +b.mano.getWorldPosition(new V()).lerp(b.dedo.getWorldPosition(new V()),0.5).distanceTo(a).toFixed(3)}})()""")
+            comprobar('con escudo, la mano izquierda lo agarra por el asa al pararlo', asa < 0.1, f'{asa} m')
+            foto(f'{SALIDA}/00h_taller_escudo_parando.png', ang=0.5)
+            ev(f"{D}.parar(false)")
 
     print('Duelo: rosa y ataque con el ratón')
     ev(f"{D}.configurar({{modo:'duelo', arma:'espada_larga', armadura:'lino', armaduraRival:'lino', dificultad:'aprendiz'}})")
@@ -293,7 +373,7 @@ with sync_playwright() as p:
     mv = ctx.new_page()
     err2 = []
     mv.on('pageerror', lambda e: err2.append(str(e)))
-    mv.goto('file://' + RUTA)
+    mv.goto(URL)
     mv.wait_for_function(f'{D} !== undefined', timeout=20000)
     mv.evaluate(f"{D}.configurar({{modo:'duelo', arma:'espada_larga', dificultad:'aprendiz'}}); {QUIETO}; {D}.jugador.z={D}.rival.z-1.7")
     mv.wait_for_timeout(900)

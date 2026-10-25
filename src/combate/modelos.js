@@ -1,6 +1,7 @@
 // Kinhold — modelos y animación del campo de pruebas de combate (low-poly por código)
 import * as THREE from 'three';
 import { mat, COLORES } from '../juego/modelos.js';
+import { vestirConTaller, pintarHeridaTaller, animarTaller } from './taller.js';
 
 const PIEL = 0xd6a77a, LINO = 0xd9cfb8, LINO_OSC = 0xbfb498, PELO = 0x4a3324, CORDEL = 0x8a7a55;
 const ROPA = { lino: [LINO, LINO_OSC], gambeson: [0xb59a6a, 0x8f7a52], malla: [0x8a8f94, 0x5f6368] };
@@ -143,7 +144,8 @@ function mezclar(a, b, t) { return { m: a.m.clone().lerp(b.m, t), d: a.d.clone()
 const suave = (t) => t * t * (3 - 2 * t);
 
 // ---------- Combatiente ----------
-export function crearCombatiente({ armadura = 'lino', colorCinta = 0xc0392b } = {}) {
+// recursos: carpeta de los .glb del taller; con ella el muñeco se cambia por el personaje del taller en cuanto carga
+export function crearCombatiente({ armadura = 'lino', colorCinta = 0xc0392b, recursos = null } = {}) {
   const raiz = new THREE.Group();
   const cuerpo = new THREE.Group(); raiz.add(cuerpo);
   const [c1, c2] = ROPA[armadura] || ROPA.lino;
@@ -174,8 +176,11 @@ export function crearCombatiente({ armadura = 'lino', colorCinta = 0xc0392b } = 
   cabeza.add(pieza(new THREE.BoxGeometry(0.03, 0.03, 0.02), 0x2a2018, -0.055, 0.21, 0.135));
   cabeza.add(pieza(new THREE.BoxGeometry(0.03, 0.03, 0.02), 0x2a2018, 0.055, 0.21, 0.135));
   cuerpo.add(cabeza); zonas.cabeza = cabeza;
-  const manos = new THREE.Group(); cuerpo.add(manos);
-  raiz.userData = { cuerpo, piernas, brazos, zonas, manos, arma: null, fase: 0, heridasPintadas: 0, pose: { m: POSES.base.m.clone(), d: POSES.base.d.clone() } };
+  // las manos (con el arma) y el escudo van en su propio grupo: con el personaje del taller sube o baja con sus hombros
+  const armas = new THREE.Group(); cuerpo.add(armas);
+  const manos = new THREE.Group(); armas.add(manos);
+  raiz.userData = { cuerpo, piernas, brazos, zonas, armas, manos, arma: null, fase: 0, heridasPintadas: 0, pose: { m: POSES.base.m.clone(), d: POSES.base.d.clone() } };
+  if (recursos) raiz.userData.listo = vestirConTaller(raiz, { armadura, colorCinta }, recursos);
   return raiz;
 }
 export function ponerArma(raiz, tipo) {
@@ -183,11 +188,11 @@ export function ponerArma(raiz, tipo) {
   if (u.arma) u.manos.remove(u.arma);
   u.arma = modeloArma(tipo);
   u.manos.add(u.arma);
-  if (u.escudo) { u.cuerpo.remove(u.escudo); u.escudo = null; }
+  if (u.escudo) { u.escudo.removeFromParent(); u.escudo = null; }
   if (tipo === 'espada_escudo') {
     u.escudo = modeloEscudo();
     u.escudo.position.copy(ESCUDO_REPOSO.p); u.escudo.rotation.y = ESCUDO_REPOSO.giro;
-    u.cuerpo.add(u.escudo);
+    u.armas.add(u.escudo);
   }
 }
 // Escudo en el brazo izquierdo (+x): bajado al costado o levantado delante al parar
@@ -206,8 +211,10 @@ function apuntarBrazo(hombro, objetivo) {
 const COLOR_GRAVEDAD = { leve: [0.07, 0.6], grave: [0.11, 0.85], 'muy grave': [0.16, 1] };
 export function pintarHeridas(raiz, heridas) {
   const u = raiz.userData;
+  const taller = u.taller && u.taller.estado === 'listo';
   for (let n = u.heridasPintadas; n < heridas.length; n++) {
     const h = heridas[n];
+    if (taller) { pintarHeridaTaller(u, h, n); continue; }
     const [tam] = COLOR_GRAVEDAD[h.gravedad];
     const zona = u.zonas[h.zona];
     const m = pieza(new THREE.BoxGeometry(tam, tam * 1.3, 0.02), h.tipo === 'contundente' ? 0x5b3a5e : SANGRE);
@@ -235,6 +242,7 @@ export function animarCombatiente(raiz, L, dt, velocidad, cojea, lineaParada) {
     u.cuerpo.rotation.x += (-Math.PI / 2 - u.cuerpo.rotation.x) * Math.min(1, dt * 4);
     u.cuerpo.position.y += (0.15 - u.cuerpo.position.y) * Math.min(1, dt * 4);
     u.cuerpo.position.z = 0;
+    animarTaller(u, L, dt, 0, null);
     return;
   }
   // piernas
@@ -286,9 +294,16 @@ export function animarCombatiente(raiz, L, dt, velocidad, cojea, lineaParada) {
       u.escudo.rotation.x += (e.inclina - u.escudo.rotation.x) * ke;
       apuntarBrazo(u.brazos[0], u.escudo.position.clone().add(V(0, 0, -0.04)));
       apuntarBrazo(u.brazos[1], u.pose.m);
+      const ejeEscudo = V(0, 1, 0).applyEuler(u.escudo.rotation);
+      // la mano izquierda agarra el asa por detrás de las tablas
+      const asa = V(0, 0, -0.07).applyEuler(u.escudo.rotation).add(u.escudo.position);
+      animarTaller(u, L, dt, velocidad, { d: u.pose.m.clone(), i: asa }, { d: u.pose.d, i: ejeEscudo });
     } else {
       apuntarBrazo(u.brazos[0], u.pose.m.clone().add(V(0.05, 0, 0)));
       apuntarBrazo(u.brazos[1], u.pose.m.clone().add(V(-0.05, 0, 0)));
+      // dos manos en el puño: la derecha junto a la cruz y la izquierda junto al pomo (en el palo, más separadas)
+      const [sd, si] = tipo === 'palo' ? [0.1, -0.22] : [0.07, -0.07];
+      animarTaller(u, L, dt, velocidad, { d: u.pose.m.clone().addScaledVector(u.pose.d, sd), i: u.pose.m.clone().addScaledVector(u.pose.d, si), dosManos: true }, { d: u.pose.d, i: u.pose.d });
     }
   } else if (tipo === 'arco') {
     const tensando = L.accion === 'tensando';
@@ -298,8 +313,10 @@ export function animarCombatiente(raiz, L, dt, velocidad, cojea, lineaParada) {
     const cuerda = u.arma && u.arma.getObjectByName('cuerda');
     const tirada = tensando ? L.tension * 0.55 : 0;
     if (cuerda) { const pos = cuerda.geometry.attributes.position; pos.setXYZ(1, 0, 0, -tirada); pos.needsUpdate = true; }
+    const manoCuerda = tensando ? V(-0.05, 1.42, 0.6 - tirada) : V(-0.3, 1.0, 0.1);
     apuntarBrazo(u.brazos[0], manoArco);
-    apuntarBrazo(u.brazos[1], tensando ? V(-0.05, 1.42, 0.6 - tirada) : V(-0.3, 1.0, 0.1));
+    apuntarBrazo(u.brazos[1], manoCuerda);
+    animarTaller(u, L, dt, velocidad, { i: manoArco.clone(), d: manoCuerda, arma: false }, { i: V(0, 1, 0).applyQuaternion(u.manos.quaternion) });
   } else if (tipo === 'piedras') {
     const tensando = L.accion === 'tensando';
     const m = tensando ? V(-0.3, 1.5 + L.tension * 0.2, -0.25 - L.tension * 0.2) : V(-0.3, 1.0, 0.15);
@@ -307,6 +324,7 @@ export function animarCombatiente(raiz, L, dt, velocidad, cojea, lineaParada) {
     if (u.arma) u.arma.visible = L.accion !== 'recuperando';
     apuntarBrazo(u.brazos[1], m);
     apuntarBrazo(u.brazos[0], V(0.35, 1.0, 0.15));
+    animarTaller(u, L, dt, velocidad, { d: m.clone() }, null);
   }
 }
 

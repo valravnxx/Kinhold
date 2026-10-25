@@ -18,6 +18,8 @@ botonesIdioma(document.getElementById('menu'));
 const $ = (id) => document.getElementById(id);
 const esTactil = matchMedia('(pointer: coarse)').matches;
 const CLAVE = 'kinhold_combate_v2';
+// personaje del taller propio: la versión publicada vive en jugar/combate/, los modelos en recursos/personajes/taller-v4/
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v4/';
 
 // ---------------- Opciones ----------------
 // Armas que puede llevar el rival (solo cuerpo a cuerpo)
@@ -83,7 +85,7 @@ function nuevaPartida() {
   const ritmo = RITMO[opc.dificultad] || 1;
   jugador = new Luchador({ nombre: 'Tú', arma: opc.arma, armadura: opc.armadura, ritmo, x: 0, z: -2, rot: 0 });
   if (mJugador) escena.remove(mJugador);
-  mJugador = crearCombatiente({ armadura: opc.armadura, colorCinta: 0x2f6fb0 });
+  mJugador = crearCombatiente({ armadura: opc.armadura, colorCinta: 0x2f6fb0, recursos: RECURSOS_MH });
   ponerArma(mJugador, opc.arma);
   escena.add(mJugador);
   rival = null; ia = null;
@@ -95,7 +97,7 @@ function nuevaPartida() {
     ia = new IA(rival, opc.dificultad, azar((Date.now() >> 3) & 0xffff));
     ia.carga = opc.modo === 'carga';
     if (opc.modo === 'carga') ia.esperaAtaque = 0.5;
-    mRival = crearCombatiente({ armadura: opc.armaduraRival, colorCinta: 0xe2b93b });
+    mRival = crearCombatiente({ armadura: opc.armaduraRival, colorCinta: 0xe2b93b, recursos: RECURSOS_MH });
     ponerArma(mRival, armaRival);
     escena.add(mRival);
   }
@@ -644,7 +646,7 @@ window.__duelo = {
   get proyectiles() { return proyectiles; }, get terminado() { return terminado; }, get lineaSel() { return lineaSel; },
   get pausa() { return pausa; }, get pausas() { return pausas; },
   get mJugador() { return mJugador; }, get mRival() { return mRival; },
-  get ctx() { return ctxCombate; }, registroAcciones, escena, renderer, render() { renderer.render(escena, camara); },
+  get ctx() { return ctxCombate; }, registroAcciones, escena, renderer, camara, render() { renderer.render(escena, camara); },
   nuevaPartida, atacar, disparar, lanzar, tick, registrar, parar, lineaDesdePantalla,
   configurar(o) { Object.assign(opc, o); nuevaPartida(); },
   apuntar(x, y, z) { apuntado = { x, y, z }; },
