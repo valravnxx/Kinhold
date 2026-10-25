@@ -5,7 +5,7 @@
    "num": "0",
    "nombre": "Infraestructura",
    "jugable": "Repositorio en GitHub, web de progreso y trabajo automático por horas.",
-   "estado": "en_curso",
+   "estado": "revision",
    "tareas": [
     {
      "nombre": "Repositorio, web de progreso y tarea programada",
@@ -45,10 +45,12 @@
     },
     {
      "nombre": "Documentos de diseño en ruso (GDD, sistemas y análisis), con selector de idioma; mientras tanto, la web en ruso enlaza a los documentos en inglés",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-25T12:20:58+00:00",
+     "fin": "2026-10-25T12:55:37+00:00"
     }
    ],
-   "nota": "Idiomas: español e inglés ya en la web; el ruso, más adelante, cuando Pedro lo pida."
+   "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
   },
   {
    "id": "base",

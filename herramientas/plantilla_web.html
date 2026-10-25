@@ -172,8 +172,8 @@ const UI = {
     t_jugar: 'Играть', t_roadmap: 'План', t_diario: 'Дневник', t_tiempos: 'Время', t_espera: 'Ждёт тебя', t_diseno: 'Дизайн',
     nota_jugar: 'Каждая версия сохраняется: если новая не понравится, предыдущую можно открыть из выпадающего списка. То, что игра сохраняет в браузере, переходит из версии в версию.',
     nota_revision: 'Чтобы ответить или попросить изменения: напиши мне в чате или отредактируй файл <a href="https://github.com/valravnxx/kinhold/edit/main/REVISION.md">REVISION.md</a> на GitHub. Автоматическая работа читает его в начале каждого часа.',
-    doc_gdd: 'Дизайн-документ: замысел, мир, системы и порядок этапов (пока на английском).', doc_sis_t: 'Системы и содержание', doc_sis: 'Ресурсы, рецепты, детали, станки и значения (пока на английском).',
-    doc_ana_t: 'Разбор GDD', doc_ana: 'Чего не хватало, предложения и вопросы с ответами (пока на английском).', doc_cod_t: 'Код', doc_cod: 'Репозиторий на GitHub.',
+    doc_gdd: 'Дизайн-документ: замысел, мир, системы и порядок этапов.', doc_sis_t: 'Системы и содержание', doc_sis: 'Ресурсы, рецепты, детали, станки и значения.',
+    doc_ana_t: 'Разбор GDD', doc_ana: 'Чего не хватало, предложения и вопросы с ответами.', doc_cod_t: 'Код', doc_cod: 'Репозиторий на GitHub.',
     pie: 'Эта страница создаётся автоматически при каждом изменении в репозитории.',
     estado: { hecho: 'Готово', en_curso: 'В работе', revision: 'Ждёт твоей проверки', espera_decision: 'Ждёт твоего решения', pendiente: 'Ожидает', fallo: 'Сбой' },
     r_hitos: 'этапов завершено', r_tareas: 'задач выполнено (из уже расписанных)', r_trabajo: 'учтённой работы',
@@ -192,7 +192,7 @@ const DISPONIBLES = ['es', ...Object.keys(IDIOMAS).filter(k => UI[k])];
 const NOMBRE_IDIOMA = { es: 'ES', en: 'EN', ru: 'RU' };
 const LOCALE = { es: 'es-ES', en: 'en-GB', ru: 'ru-RU' };
 // idiomas con documentos de diseño propios (los demás enlazan al inglés)
-const DOCS_IDIOMA = { en: 'en' };
+const DOCS_IDIOMA = { en: 'en', ru: 'ru' };
 let idioma = (() => {
   const q = new URLSearchParams(location.search).get('lang');
   if (DISPONIBLES.includes(q)) return q;
@@ -211,7 +211,7 @@ const durTexto = (m) => m == null ? '—' : m < 60 ? `${Math.round(m)} ${u('min'
 function pintar() {
   document.documentElement.lang = idioma;
   document.querySelectorAll('[data-t]').forEach(el => { const t = u(el.dataset.t); if (el.hasAttribute('data-html')) el.innerHTML = t; else el.textContent = t; });
-  // documentos de diseño: el inglés está en diseno/en/; el ruso aún no existe y enlaza al inglés (DOCS_IDIOMA)
+  // documentos de diseño: cada traducción está en diseno/<idioma>/ (DOCS_IDIOMA); si falta una, enlaza al inglés
   const carpetaDoc = idioma === 'es' ? '' : (DOCS_IDIOMA[idioma] || 'en') + '/';
   document.querySelectorAll('a[data-doc]').forEach(a => a.setAttribute('href', `diseno/${carpetaDoc}${a.dataset.doc}.html`));
   $('#idiomas').innerHTML = DISPONIBLES.length > 1 ? DISPONIBLES.map(l => `<button data-l="${l}" class="${l === idioma ? 'sel' : ''}">${NOMBRE_IDIOMA[l]}</button>`).join('') : '';

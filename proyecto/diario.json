@@ -635,5 +635,21 @@
   "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, personaje horneado, textos traducidos 322/322 en inglés y ruso, navegador de construcción, combate, estilo, personaje, recursos, inglés y ruso, y web), PC y móvil",
   "capturas": "capturas/construccion-v7",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T12:20:58+00:00",
+  "fin": "2026-10-25T12:55:37+00:00",
+  "titulo": "Documentos de diseño en ruso",
+  "hito": "infra",
+  "hecho": [
+   "El GDD, el documento de sistemas y el de análisis están en ruso, en diseno/ru/, con la huella del original como los de inglés.",
+   "Cada documento tiene arriba el selector ES · EN · RU, y la web en ruso enlaza ya a los documentos en ruso (antes iban al inglés).",
+   "construir_web.mjs comprueba también el ruso: falla si falta una traducción o si el español ha cambiado desde que se tradujo.",
+   "Con esto se terminan las tareas del hito de infraestructura: queda en revisión para Pedro.",
+   "No comprobado: las traducciones al ruso no las ha revisado una persona que hable ruso."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh (lógica 63, modelos 21, combate 69, personaje 11, textos traducidos, navegador de los cuatro prototipos, idiomas y web 109 comprobaciones), PC y móvil; la prueba nueva de los documentos en ruso se rompió a propósito una vez y falló",
+  "capturas": "capturas/diseno-ru",
+  "estado": "ok"
  }
 ]

@@ -80,7 +80,7 @@ with sync_playwright() as p:
         pg.click('#idiomas button[data-l=es]'); pg.wait_for_timeout(200)
         docs_es = pg.evaluate("[...document.querySelectorAll('a[data-doc]')].map(a => a.getAttribute('href'))")
         comprobar('en español, los documentos enlazan al original', all(not h.startswith('diseno/en/') for h in docs_es) and len(docs_es) == 3)
-        # ruso: botón RU, textos del roadmap y del diario en cirílico, documentos de diseño al inglés (aún no hay ruso)
+        # ruso: botón RU, textos del roadmap y del diario en cirílico, documentos de diseño en ruso
         pg.click('#idiomas button[data-l=ru]'); pg.wait_for_timeout(200)
         comprobar('botón RU: la web en ruso', pg.inner_text('nav button[data-s=jugar]') == 'Играть' and pg.evaluate('document.documentElement.lang') == 'ru')
         pg.click('nav button[data-s=roadmap]'); pg.wait_for_timeout(200)
@@ -94,7 +94,30 @@ with sync_playwright() as p:
         pg.click('nav button[data-s=jugar]'); pg.wait_for_timeout(200)
         pg.screenshot(path=f'{SALIDA}/{nombre}_14_jugar_ru.png')
         docs_ru = pg.evaluate("[...document.querySelectorAll('a[data-doc]')].map(a => a.getAttribute('href'))")
-        comprobar('en ruso, los documentos de diseño enlazan al inglés', len(docs_ru) == 3 and all(h.startswith('diseno/en/') for h in docs_ru), ', '.join(docs_ru))
+        comprobar('en ruso, los documentos de diseño enlazan a la versión rusa', len(docs_ru) == 3 and all(h.startswith('diseno/ru/') for h in docs_ru), ', '.join(docs_ru))
+        comprobar('en ruso, las tarjetas de documentos ya no dicen «пока на английском»', 'на английском' not in pg.inner_text('body'))
+        # documentos de diseño en ruso: selector ES · EN · RU, misma estructura, texto en cirílico sin restos del español
+        for d in ['gdd', 'sistemas', 'analisis']:
+            pg.goto(URL + f'diseno/{d}.html'); pg.wait_for_timeout(150)
+            n_es = pg.evaluate("[...document.querySelectorAll('section[id],h2,h3,li,tr,td,p')].length")
+            with pg.expect_navigation():
+                pg.click('#kh-idioma a[data-l=ru]')
+            ru_txt = pg.inner_text('body')
+            comprobar(f'{d}: el selector RU abre la traducción rusa', pg.url.endswith(f'diseno/ru/{d}.html') and pg.evaluate('document.documentElement.lang') == 'ru')
+            comprobar(f'{d}: en ruso hay texto en cirílico, sin restos típicos del español', len(re.findall('[А-Яа-яЁё]', ru_txt)) > 3000 and not any(w in ru_txt for w in [' de la ', ' que ', ' para ', 'ción ']))
+            comprobar(f'{d}: mismas secciones en español y en ruso', n_es == pg.evaluate("[...document.querySelectorAll('section[id],h2,h3,li,tr,td,p')].length"))
+            ancho = pg.evaluate('document.documentElement.scrollWidth')
+            comprobar(f'{d} (ruso): sin desplazamiento horizontal', ancho <= vista['width'], f'{ancho}px')
+            pg.screenshot(path=f'{SALIDA}/{nombre}_15_doc_{d}_ru.png')
+            with pg.expect_navigation():
+                pg.click('#kh-idioma a[data-l=en]')
+            comprobar(f'{d}: desde el ruso, EN abre el inglés', pg.url.endswith(f'diseno/en/{d}.html'))
+            with pg.expect_navigation():
+                pg.click('#kh-idioma a[data-l=ru]')
+            with pg.expect_navigation():
+                pg.click('#kh-idioma a[data-l=es]')
+            comprobar(f'{d}: desde el ruso, ES vuelve al español', pg.url.endswith(f'diseno/{d}.html') and pg.evaluate('document.documentElement.lang') == 'es')
+        pg.goto(URL + '?lang=ru'); pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
         comprobar('en ruso, nada se sale por los lados', pg.evaluate("document.documentElement.scrollWidth - window.innerWidth") <= 1)
         pg.click('#idiomas button[data-l=es]'); pg.wait_for_timeout(200)
         # los enlaces internos existen
