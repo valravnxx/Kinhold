@@ -9,11 +9,11 @@ El personaje esculpido por código (Personaje v1) es «horripilante, de películ
 
 ---
 
-**25 oct, 08:21 — Pedro, por el chat principal (con captura):** «El hombre tiene tetas y la estructura está doblada hacia adelante del cuerpo, toca corregir.» → Lo arregla la sesión del chat principal.
-
----
-
 ## Procesado
+
+### 25 oct 2026 (08:21 y 08:35) — por el chat: pecho, postura y hombros del hombre
+
+Arreglado en personaje v7: tronco enderezado, hombros en su sitio, brazos colgando rectos y túnica que cae desde el pecho. Prueba nueva de postura.
 
 ### 25 oct 2026 (07:35) — por el chat: ropa del taller «al revés»
 

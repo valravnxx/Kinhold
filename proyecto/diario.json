@@ -466,5 +466,22 @@
   "pruebas": "Todas las pruebas correctas (lógica, construcción, combate, estilo, personaje, recursos, inglés y web), en PC y móvil.",
   "capturas": "capturas/personaje-v6",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T08:22:00+01:00",
+  "fin": "2026-10-25T09:07:48+01:00",
+  "titulo": "Personaje v7: postura y pecho del taller propio",
+  "hito": "arte",
+  "hecho": [
+   "Pedro: el hombre marcaba pecho, el cuerpo iba doblado hacia delante y los hombros muy para atrás.",
+   "Causa de la postura: las animaciones del paquete llevan el tronco y el cuello inclinados hacia delante y los brazos colgando hacia atrás, a juego con sus muñecos de cabeza grande; además, al igualar la pelvis y las clavículas a las del paquete, la cadera se giraba 35° y los hombros se iban atrás.",
+   "Arreglo: solo los brazos se igualan al paquete; la inclinación del tronco, el cuello y las clavículas se mide en la animación de estar quieto y se quita en todas (queda un 30 %); y los brazos se giran desde el hombro para colgar rectos.",
+   "La túnica del hombre se alisa en el pecho para que caiga como tela, sin meterse dentro del cuerpo.",
+   "Recursos nuevos en recursos/personajes/taller-v2 (los de la v1 publicada no se tocan).",
+   "Prueba nueva de postura: cabeza y hombros sobre la pelvis y brazos sin irse atrás. Con los modelos de la v6 falla, como debe."
+  ],
+  "pruebas": "Todas las pruebas correctas (lógica, construcción, combate, estilo, personaje, recursos, inglés y web), en PC y móvil.",
+  "capturas": "capturas/personaje-v7",
+  "estado": "ok"
  }
 ]

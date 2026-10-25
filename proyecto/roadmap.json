@@ -535,6 +535,13 @@
      "archivo": "jugar/personaje/v6.html",
      "capturas": "capturas/personaje-v6",
      "notas": "Arreglo: en calidad alta la ropa, el pelo y la cofia del taller propio se veían del revés (la piel se pintaba encima). Prueba nueva que lo vigila."
+    },
+    {
+     "v": "v7",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/personaje/v7.html",
+     "capturas": "capturas/personaje-v7",
+     "notas": "Taller propio: postura arreglada (tronco recto, hombros en su sitio, brazos colgando rectos) y túnica del hombre que ya no marca pecho."
     }
    ]
   }
