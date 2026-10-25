@@ -702,5 +702,21 @@
   "pruebas": "Todas las pruebas correctas (lógica 63, modelos 21, combate 69, acciones 25, taller, traducciones y navegador: construcción, combate, estilo, personaje, recursos, inglés y web). Después solo cambiaron roadmap, diario y traducciones: repetidas web y traducciones. Sin cambios jugables: no hay versión nueva. No comprobado: que las texturas salgan idénticas píxel a píxel, ni que el commit de MPFB2 sea exactamente el usado al principio (es el último del 24 oct, anterior a montar el taller).",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T16:05:19+00:00",
+  "fin": "2026-10-25T16:42:46+00:00",
+  "titulo": "Hito 0b: diario y traducciones sin choques",
+  "hito": "base",
+  "hecho": [
+   "Herramienta nueva (herramientas/unir_json.mjs) que une diario.json y las traducciones al fusionar ramas: entran las entradas y los textos de las dos ramas, y el diario queda en orden de hora.",
+   "Git la usa sola al fusionar (se activa en cada clon con --instalar); solo se para si dos ramas cambian distinto la misma entrada o traducción.",
+   "Comprobado rehaciendo las cuatro fusiones anteriores de main: el diario y las traducciones salen con el mismo contenido que se unió a mano y sin conflictos en esos archivos.",
+   "Regla en CLAUDE.md: activarla al empezar cada sesión, y si choca la web generada, volver a generarla en vez de unirla a mano.",
+   "Prueba nueva con casos pequeños y un caso real con git de dos sesiones en paralelo; rota a propósito una vez (MUTAR=1): falla."
+  ],
+  "pruebas": "Todas las pruebas correctas (lógica 63, modelos 21, combate 69, acciones 25, unión 19, taller, traducciones y navegador: construcción, combate, estilo, personaje, recursos, inglés y web). Sin cambios jugables ni visuales: no hay versión nueva ni capturas. No comprobado: el orden exacto del diario en una fusión antigua, donde la entrada se había colocado a mano fuera de su hora.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
