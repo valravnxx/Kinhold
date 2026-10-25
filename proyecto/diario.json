@@ -597,5 +597,22 @@
   "pruebas": "Web regenerada y comprobada (enlaces, inglés y documentos). Sin cambios de código del juego.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T10:19:28+00:00",
+  "fin": "2026-10-25T11:09:16+00:00",
+  "titulo": "Prueba de estilo y visor de personaje en inglés",
+  "hito": "infra",
+  "hecho": [
+   "La prueba de estilo (v7) y el visor de personaje (v10) usan el mismo módulo de idioma que la construcción y el combate: botón ES/EN arriba, que recuerda el idioma elegido (también el de la web).",
+   "Traducidos al inglés todos sus textos: botones, vistas, opciones del personaje (base, cuerpo, capas de ropa, pelo, piel, barba, calidad, animación), la medida de fps y las notas de cada versión (99 textos nuevos).",
+   "Las opciones del visor de personaje pasan a src/personaje/textos.js para que la prueba de idiomas las lea sin navegador.",
+   "Prueba de idiomas ampliada a estilo y personaje; la de navegador del inglés recorre ahora también las vistas y las notas de los dos, en PC y móvil. Rota a propósito (quitando dos traducciones) falla donde debe.",
+   "Las pruebas de navegador de estilo y personaje se abren con el navegador en español, para que sus capturas sigan en español; el inglés lo prueba la de idiomas.",
+   "Capturas de la prueba de estilo en capturas/estilo-v7."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, personaje horneado, textos traducidos 321/321, navegador de construcción, combate, estilo, personaje, recursos, inglés y web), PC y móvil",
+  "capturas": "capturas/personaje-v10",
+  "estado": "ok"
  }
 ]

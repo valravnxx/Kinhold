@@ -33,7 +33,9 @@
     },
     {
      "nombre": "Prueba de estilo y visor de personaje en inglés, con el mismo módulo de idioma",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-25T10:19:28+00:00",
+     "fin": "2026-10-25T11:09:16+00:00"
     },
     {
      "nombre": "Ruso: traducir el juego y la web (el archivo de ruso está vacío), con la misma comprobación que el inglés",
@@ -639,6 +641,13 @@
      "archivo": "jugar/estilo/v6.html",
      "capturas": "capturas/estilo-v6",
      "notas": "Personaje por código: una sola malla con esqueleto, quieto y andando; vistas Personaje y Cara"
+    },
+    {
+     "v": "v7",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/estilo/v7.html",
+     "capturas": "capturas/estilo-v7",
+     "notas": "Prueba de estilo en inglés: botón ES/EN arriba (recuerda el idioma elegido, también el de la web); la escena no cambia."
     }
    ]
   },
@@ -709,6 +718,13 @@
      "archivo": "jugar/personaje/v9.html",
      "capturas": "capturas/personaje-v9",
      "notas": "Cota de malla y sobreveste como capas del taller propio, sobre la camisa, la túnica o el vestido y el gambesón."
+    },
+    {
+     "v": "v10",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/personaje/v10.html",
+     "capturas": "capturas/personaje-v10",
+     "notas": "Visor de personaje en inglés: botón ES/EN arriba (recuerda el idioma elegido, también el de la web); el personaje no cambia."
     }
    ]
   }
