@@ -50,7 +50,7 @@ function foto(cual, ancho, alto) {
   const m = gente[cual.persona ?? 0], c = m.position.clone();
   const cabeza = new THREE.Vector3(); m.getObjectByName('head')?.getWorldPosition(cabeza);
   if (cual.vista === 'cuerpo') { camara.position.set(POS.x, 1.2, POS.z + 4.4); camara.lookAt(POS.x, 0.85, POS.z); }
-  else if (cual.vista === 'cara') { camara.position.set(c.x + 0.15, cabeza.y + 0.1, c.z + 0.75); camara.lookAt(c.x, cabeza.y + 0.07, c.z); }
+  else if (cual.vista === 'cara') { camara.position.set(c.x + 0.15, cabeza.y + 0.06, c.z + 0.95); camara.lookAt(c.x, cabeza.y + 0.03, c.z); /* cabeza entera, con la barbilla */ }
   else if (cual.vista === 'espalda') { camara.position.set(c.x - 1.2, 1.4, c.z - 2.6); camara.lookAt(c.x, 0.9, c.z); }
   renderer.render(escena, camara);
 }

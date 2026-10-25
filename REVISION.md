@@ -9,12 +9,11 @@ El personaje esculpido por código (Personaje v1) es «horripilante, de películ
 
 ---
 
-**25 oct, 05:41 — Pedro, por el chat principal (taller MakeHuman):**
-«La barba del hombre deja la barbilla mal, hazle solo un coloreado; sus labios son enormes.» → Lo hace la sesión del chat principal: barba pintada en la piel (sin cáscara) y labios más finos.
-
----
-
 ## Procesado
+
+### 25 oct 2026 (05:41) — por el chat, sobre el taller MakeHuman
+
+«La barba del hombre deja la barbilla mal, hazle solo un coloreado; sus labios son enormes.» → Barba pintada en la piel y labios más finos. Además se arregla el encuadre de las fotos, que cortaba la barbilla.
 
 ### 24 oct 2026 (20:53) — por el chat, sobre la prueba de estilo v4
 

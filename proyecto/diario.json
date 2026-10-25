@@ -420,5 +420,20 @@
   "pruebas": "Todas correctas: construcción 46/46, modelos 21/21, combate 69/69, personaje horneado 11/11, textos traducidos, navegador de construcción, combate, estilo, personaje, recursos v2 (PC y móvil), inglés y web. La prueba de recursos falla a propósito con MUTAR=1 (12 fallos).",
   "capturas": "capturas/recursos-personaje-v2",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T05:42:02+01:00",
+  "fin": "2026-10-25T06:35:50+01:00",
+  "titulo": "Taller MakeHuman: barba pintada, labios más finos y fotos de la cabeza entera",
+  "hito": "arte",
+  "hecho": [
+   "La barba ya no es una cáscara encima de la cara: va pintada en la piel, con bordes difusos y pelillos, y el bigote baja por las comisuras hasta unirse a la barba.",
+   "Labios más finos y menos salidos (altura, profundidad y anchura de la boca). Medido: el ajuste de «volumen» de MakeHuman casi no cambia nada; lo que sirve es la altura y la profundidad.",
+   "Fallo de las fotos corregido (lo vio Pedro): el encuadre de la cara cortaba la barbilla. Ahora sale la cabeza entera, del pelo al cuello, en Blender y en three.js.",
+   "Con el encuadre nuevo se veían dos fallos que antes quedaban fuera, ya arreglados: un hueco oscuro en el escote de la túnica y el borde dentado de la toca."
+  ],
+  "pruebas": "Prueba de taller, no publicada como versión jugable: dos personajes exportados y vistos en Blender y en three.js sin errores en consola. No comprobado: animaciones ni rendimiento en móvil.",
+  "capturas": "capturas/taller-vestir-2",
+  "estado": "ok"
  }
 ]

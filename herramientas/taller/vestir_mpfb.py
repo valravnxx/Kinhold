@@ -291,16 +291,21 @@ def personaje(nombre, macros, objetivos, ropa):
         borde = 0.004 * (fbm(P, 120) - 0.5)
         return suave(-0.003, 0.003, z - zl + borde)
     def zona_barba(P, A):
+        """barba corta pintada: bordes difusos y con pelillos; el bigote baja por las comisuras y se une a la barba"""
         x, y, z = np.abs(P[..., 0]), P[..., 1], P[..., 2]
-        t = suave(-0.135, -0.06, y)
-        zc = (boca_z + 0.02) * (1 - t) + (oreja_medio + 0.002) * t
-        centro = suave(0.046, 0.03, x) * suave(-0.10, -0.12, y)  # bajo el labio y en las comisuras, sin escalones
-        zc = zc * (1 - centro) + (boca_z - 0.006 + 0.25 * x * x * 10) * centro
-        borde = 0.005 * (fbm(P, 90) - 0.5)
-        m = suave(-0.003, 0.003, zc - z + borde) * suave(-0.004, 0.004, z - (cuello_z + 0.035) + borde)
-        bigote = suave(0.036, 0.03, x) * suave(-0.002, 0.002, z - (boca_z + 0.004)) * suave(0.002, -0.002, z - (boca_z + 0.017 - 0.12 * x * x * 10)) * suave(-0.11, -0.125, y)
-        m = np.maximum(m, bigote)
-        m *= suave(-0.01, -0.03, y) * (1 - suave(0.1, 0.35, A[..., 1])) * (1 - suave(0.05, 0.2, A[..., 0]))
+        t = suave(-0.14, -0.06, y)
+        zc = (boca_z + 0.012) * (1 - t) + (oreja_medio - 0.004) * t  # línea de la mejilla, en diagonal
+        centro = suave(0.044, 0.026, x) * suave(-0.10, -0.12, y)  # bajo el labio
+        zc = zc * (1 - centro) + (boca_z - 0.008 + 0.3 * x * x * 10) * centro
+        borde = 0.009 * (fbm(P, 70) - 0.5) + 0.003 * (ruido(P, 400) - 0.5)
+        arriba = suave(-0.006, 0.006, zc - z + borde)
+        abajo = suave(-0.012, 0.01, z - (cuello_z + 0.03) + borde)  # en el cuello se va aclarando, sin corte
+        m = arriba * abajo * (0.9 + 0.1 * suave(boca_z, boca_z - 0.04, z))  # más poblada en la barbilla
+        frente = suave(-0.11, -0.125, y)
+        bigote = suave(0.034, 0.026, x) * suave(-0.003, 0.002, z - (boca_z + 0.004)) * suave(0.003, -0.002, z - (boca_z + 0.016 - 0.1 * x * x * 10)) * frente
+        comisura = suave(0.019, 0.025, x) * suave(0.038, 0.031, x) * suave(-0.004, 0.002, z - (boca_z - 0.014)) * suave(0.004, -0.002, z - (boca_z + 0.012)) * suave(-0.10, -0.115, y)
+        m = np.maximum(m, 0.85 * np.maximum(bigote, comisura))
+        m *= suave(-0.01, -0.03, y) * (1 - suave(0.1, 0.35, A[..., 1])) * (1 - suave(0.3, 0.6, A[..., 0]))
         return m
     def zona_cofia(P):
         x, y, z = P[..., 0], P[..., 1], P[..., 2]
@@ -326,7 +331,7 @@ def personaje(nombre, macros, objetivos, ropa):
         for s in 'lr':  # párpados y ojeras algo más oscuros y rosados
             o = gauss(P, ojo_c[s] + np.array([0, -0.004, 0]), 0.018)
             col *= (1 - 0.1 * o[..., None] * np.array([0.8, 1.0, 1.0]))
-        lab = suave(0.15, 0.6, A[..., 0])[..., None]
+        lab = suave(0.45, 0.85, A[..., 0])[..., None]  # solo el labio, sin comerse la piel de alrededor
         col = col * (1 - lab) + (tono * np.array([0.86, 0.66, 0.64]))[None, None, :] * lab
         un = suave(0.2, 0.6, A[..., 2])[..., None]
         col = col * (1 - 0.5 * un) + np.array([0.7, 0.6, 0.56]) * 0.5 * un
@@ -335,15 +340,17 @@ def personaje(nombre, macros, objetivos, ropa):
             col *= (1 - 0.55 * (suave(0.0125, 0.0145, d) * suave(0.0175, 0.0150, d) * (P[..., 1] < ojo_c[s][1] - 0.004))[..., None])
         ceja = zona_cejas(P)[..., None]
         col = col * (1 - 0.85 * ceja) + colpelo * 0.85 * ceja
-        if ropa.get('barba'):  # sombra de la barba y del pelo bajo la cáscara
-            b = zona_barba(P, A)[..., None]; col = col * (1 - 0.6 * b) + colpelo * 0.6 * b
+        if ropa.get('barba'):  # barba pintada en la piel (Pedro: la cáscara dejaba mal la barbilla), con pelillos
+            b = zona_barba(P, A)[..., None]
+            pelillos = 0.7 + 0.45 * ruido(P, (900, 900, 500))[..., None]
+            col = col * (1 - 0.92 * b) + colpelo * pelillos * 0.92 * b
         if not ropa.get('cofia'):
             p = zona_pelo(P)[..., None] * (1 - suave(0.1, 0.35, A[..., 1]))[..., None]
             col = col * (1 - 0.7 * p) + colpelo * 0.7 * p
         return np.concatenate([col, np.ones(P.shape[:2] + (1,))], -1)
 
     # --- piel: solo lo que se ve (cabeza, cuello, manos y un poco de muñeca) ---
-    visible = lambda i, c: en(i, 'body') and not (ropa.get('cofia') and en(i, 'ears', 0.3)) and (PR[i] in ('head', 'neck_01') or mano(i) or cerca_muneca(c, 0.07) or c.z > cuello_z - 0.02)
+    visible = lambda i, c: en(i, 'body') and not (ropa.get('cofia') and en(i, 'ears', 0.3)) and (PR[i] in ('head', 'neck_01') or mano(i) or cerca_muneca(c, 0.07) or c.z > cuello_z - (0.05 if c.y < -0.03 else 0.02))  # el escote baja por delante
     piezas = [trozo(base, nombre + '_piel', visible, textura=(2048, pintar_piel), rugosidad=0.62, sss=0.2, diezmar=DIEZMAR)]
 
     # --- ojos y pestañas (color por vértice: el ojo tiene muy poco sitio en el mapa UV) ---
@@ -362,7 +369,8 @@ def personaje(nombre, macros, objetivos, ropa):
         lino = lin(ropa['cofia'])
         def pintar_cofia(P, A):
             col = lino[None, None, :] * (0.88 + 0.12 * fbm(P, 60)[..., None]) * (0.96 + 0.04 * ruido(P, 700)[..., None])
-            return np.concatenate([col, zona_cofia(P)[..., None]], -1)
+            borde = suave(-0.002, 0.002, P[..., 2] - (cuello_z + 0.006))  # bajo de la toca recto y limpio, sin dientes
+            return np.concatenate([col, (zona_cofia(P) * borde)[..., None]], -1)
         cof = lambda i, c: cabeza(i) and c.z > cuello_z - 0.035
         def empuje(c, i):  # las orejas quedan aplastadas bajo el lino (si no, la cofia sale arrugada)
             if ATR[i, 1] > 0.0: c[:] = kd_craneo.find(c)[0]  # la oreja se pega al cráneo; luego se alisa como una membrana
@@ -377,12 +385,6 @@ def personaje(nombre, macros, objetivos, ropa):
         cab = lambda i, c: cabeza(i) and not en(i, 'ears', 0.3) and not (c.y < -0.09 and c.z < ojo_arriba + 0.035) and c.z > boca_z - 0.03
         empuje = lambda c, i: 0.003 + 0.007 * min(1.0, max(0.0, c.z - ojo_arriba) / 0.1)
         piezas.append(trozo(base, nombre + '_pelo', cab, empuje=empuje, textura=(1024, pintar_pelo), rugosidad=0.55, diezmar=DIEZMAR))
-    if ropa.get('barba'):
-        def pintar_barba(P, A):
-            return np.concatenate([mechones(P, colpelo * 0.95), zona_barba(P, A)[..., None]], -1)
-        bar = lambda i, c: cabeza(i) and c.y < -0.01 and c.z < oreja_medio + 0.01 and c.z > cuello_z + 0.02 and not en(i, 'ears', 0.3)
-        empuje = lambda c, i: 0.0025 + 0.005 * min(1.0, max(0.0, boca_z - c.z) / 0.05)
-        piezas.append(trozo(base, nombre + '_barba', bar, empuje=empuje, textura=(1024, pintar_barba), rugosidad=0.6, diezmar=DIEZMAR))
 
     # --- ropa: túnica (o vestido), calzas, zapatos, cinturón (color por vértice; el tejido se añade en el juego) ---
     def tela(c):
@@ -419,7 +421,11 @@ def personaje(nombre, macros, objetivos, ropa):
     print(nombre, 'TOTAL', tri, 'triángulos')
     return RIG, piezas, pos
 
-LABIOS = [('mouth/mouth-lowerlip-volume-decr.target.gz', 0.45), ('mouth/mouth-upperlip-volume-decr.target.gz', 0.3)]  # la base trae labios muy gruesos
+# la base trae labios muy gruesos (medido: el volumen apenas cambia; lo que los afina es la altura y la profundidad)
+LABIOS = [('mouth/mouth-lowerlip-volume-decr.target.gz', 1.0), ('mouth/mouth-upperlip-volume-decr.target.gz', 1.0),
+          ('mouth/mouth-lowerlip-height-decr.target.gz', 1.5), ('mouth/mouth-upperlip-height-decr.target.gz', 1.3),
+          ('mouth/mouth-scale-depth-decr.target.gz', 1.5), ('mouth/mouth-scale-horiz-decr.target.gz', 0.4),
+          ('mouth/mouth-trans-backward.target.gz', 0.4)]
 gente = [
     personaje('hombre', {'gender': 1.0, 'age': 0.55, 'muscle': 0.6, 'weight': 0.5, 'height': 0.5}, [('nose/nose-hump-incr.target.gz', 0.4)] + LABIOS,
               {'piel': (224, 180, 152), 'ojos': (92, 70, 48), 'pelo': (62, 44, 30), 'barba': True, 'tunica': (96, 72, 52), 'calzas': (70, 62, 54)}),
@@ -462,8 +468,10 @@ for rig, piezas, pos in gente:
     for otro, op, _ in gente:
         for ob in [otro] + op: ob.hide_render = otro is not rig
     x = rig.location.x; cz = pos['head'].z + 0.07
-    foto((x, -0.75, cz + 0.02), (x, 0, cz), 85, os.path.join(SALIDA, rig.name + '_cara.png'))
-    foto((x - 0.62, -0.45, cz + 0.02), (x, 0, cz), 85, os.path.join(SALIDA, rig.name + '_cara34.png'))
+    # encuadre de toda la cabeza, de la coronilla al cuello (antes cortaba la barbilla: Pedro)
+    cz = pos['head'].z + 0.04
+    foto((x, -0.95, cz + 0.01), (x, 0, cz - 0.01), 85, os.path.join(SALIDA, rig.name + '_cara.png'))
+    foto((x - 0.78, -0.56, cz + 0.01), (x, 0, cz - 0.01), 85, os.path.join(SALIDA, rig.name + '_cara34.png'))
     if todas:
         foto((x + 2.6, 0.0, 1.0), (x, 0, 0.85), 50, os.path.join(SALIDA, rig.name + '_perfil.png'), 800, 1000)
         foto((x, 2.6, 1.0), (x, 0, 0.85), 50, os.path.join(SALIDA, rig.name + '_espalda.png'), 800, 1000)
