@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 25 oct 2026 (14:28) — por el chat: hito 0 (Infraestructura)
+
+«Perfecto, revisado» → Hito de infraestructura aprobado y marcado como hecho (documentos de diseño en ruso incluidos).
+
 ### 25 oct 2026 (11:13) — por el chat: análisis del proyecto
 
 «Arregla en el proyecto añadiendo hitos donde toque de todos estos puntos, actualiza el GDD y planifica unificar demos.» → Hitos nuevos 0b (bases técnicas) y 1d (una sola demo), tareas nuevas en infraestructura, duelo, arte, equipo y servidor, y GDD v0.7 (también en inglés).
