@@ -11,6 +11,10 @@ El personaje esculpido por código (Personaje v1) es «horripilante, de películ
 
 ## Procesado
 
+### 25 oct 2026 (06:37) — por el chat, sobre el taller MakeHuman
+
+«Sigue con una claridad en la barbilla, pero está decente para usar de placeholder por ahora.» → El personaje vestido de MakeHuman vale como provisional. Queda pendiente: oscurecer la barba bajo la barbilla (se aclara antes de tiempo hacia el cuello).
+
 ### 25 oct 2026 (05:41) — por el chat, sobre el taller MakeHuman
 
 «La barba del hombre deja la barbilla mal, hazle solo un coloreado; sus labios son enormes.» → Barba pintada en la piel y labios más finos. Además se arregla el encuadre de las fotos, que cortaba la barbilla.
