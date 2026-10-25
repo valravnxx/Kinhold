@@ -169,6 +169,10 @@
      "estado": "pendiente"
     },
     {
+     "nombre": "Personalización en el juego de toda la ropa y la armadura (pedido de Pedro): color o tinte de cada prenda, blasón o dibujo en la sobreveste, y qué capas lleva. Para eso las texturas de la ropa pasan a ir en gris con el color aparte, que se cambia sin rehacer el modelo",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, tinte y calidad, sobre el mismo esqueleto",
      "estado": "pendiente"
     },

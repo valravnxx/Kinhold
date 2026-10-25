@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 25 oct 2026 (10:59) — por el chat, sobre la ropa por capas
+
+«Que se pueda customizar más adelante in-game todo eso.» → Tarea nueva en el hito de arte: personalización en el juego de la ropa y la armadura (tintes, blasón de la sobreveste, capas).
+
 ### 25 oct 2026 (09:53) — por el chat: decisiones pendientes
 
 Estilo: el realismo en miniatura de la v5 es la base. Cámara táctil: como se propuso. Curación: la tabla del análisis; en combate se puede, lento y vendido. Fuego amigo: sigue al PvP (desactivado dentro de la familia: no hace nada; fuera, hiere). Pedro pide además que la sesión del chat pueda trabajar en paralelo a otras sesiones.
