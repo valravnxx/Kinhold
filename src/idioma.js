@@ -60,20 +60,40 @@ export function traducirPagina(raiz = document.body) {
   if (document.title) document.title = tr(document.title);
 }
 
-// Botones de idioma (ES · EN). Al cambiar se guarda y se recarga: la partida guardada no se pierde.
+// Botones de idioma (ES · EN · RU). Al cambiar se guarda y se recarga: la partida guardada no se pierde.
+// En el móvil (≤ 640 px) no caben tres botones: se ve un solo desplegable con el idioma actual.
+function cambiarIdioma(l) {
+  if (l === idioma) return;
+  try { localStorage.setItem(CLAVE, l); } catch (e) { /* sin almacenamiento */ }
+  const u = new URL(location.href); u.searchParams.delete('lang');
+  location.href = u.toString();
+}
 export function botonesIdioma(contenedor) {
   if (DISPONIBLES.length < 2) return;
+  if (!document.getElementById('estiloIdioma')) {
+    const st = document.createElement('style');
+    st.id = 'estiloIdioma';
+    st.textContent = 'select.idioma{display:none;font:inherit;font-size:12.5px;font-weight:700;color:inherit;background:rgba(30,26,22,.82);'
+      + 'border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:5px 6px;pointer-events:auto}'
+      + '@media (max-width:640px){button.idioma{display:none!important}select.idioma{display:inline-block}}';
+    document.head.appendChild(st);
+  }
   for (const l of DISPONIBLES) {
     const b = document.createElement('button');
     b.textContent = NOMBRE[l];
     b.className = 'idioma' + (l === idioma ? ' sel' : '');
     b.dataset.idioma = l;
-    b.onclick = () => {
-      if (l === idioma) return;
-      try { localStorage.setItem(CLAVE, l); } catch (e) { /* sin almacenamiento */ }
-      const u = new URL(location.href); u.searchParams.delete('lang');
-      location.href = u.toString();
-    };
+    b.onclick = () => cambiarIdioma(l);
     contenedor.appendChild(b);
   }
+  const sel = document.createElement('select');
+  sel.className = 'idioma';
+  sel.setAttribute('aria-label', 'Idioma · Language · Язык');
+  for (const l of DISPONIBLES) {
+    const o = document.createElement('option');
+    o.value = l; o.textContent = NOMBRE[l]; o.selected = l === idioma;
+    sel.appendChild(o);
+  }
+  sel.onchange = () => cambiarIdioma(sel.value);
+  contenedor.appendChild(sel);
 }

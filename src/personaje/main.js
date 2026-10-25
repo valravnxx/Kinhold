@@ -12,6 +12,18 @@ import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
 botonesIdioma(document.getElementById('estilos'));
+// En el móvil, el panel de opciones y el resumen quedan justo encima de la barra de vistas de abajo, que en
+// otros idiomas (ruso) puede ocupar dos filas: se colocan según lo que mide de verdad.
+function colocarPaneles() {
+  const inf = document.getElementById('inferior');
+  for (const id of ['opciones', 'resumen']) {
+    const el = document.getElementById(id);
+    if (!el || !inf) continue;
+    el.style.bottom = innerWidth > 600 ? '' : Math.ceil(innerHeight - inf.getBoundingClientRect().top + 8) + 'px';
+  }
+}
+requestAnimationFrame(colocarPaneles);
+addEventListener('resize', colocarPaneles);
 
 const $ = (id) => document.getElementById(id);
 const CLAVE = 'kinhold_personaje_v2';

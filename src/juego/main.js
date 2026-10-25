@@ -11,6 +11,16 @@ import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
 botonesIdioma(document.getElementById('menu'));
+// En el móvil, los botones de modo van debajo del menú de arriba; en otros idiomas (ruso) el menú
+// ocupa más filas, así que se colocan según lo que mida de verdad en vez de a una altura fija.
+function colocarModos() {
+  const modos = document.getElementById('modos'), menu = document.getElementById('menu');
+  if (!modos || !menu) return;
+  if (innerWidth > 640) { modos.style.top = ''; return; }
+  modos.style.top = Math.max(120, Math.ceil(menu.getBoundingClientRect().bottom) + 10) + 'px';
+}
+colocarModos();
+addEventListener('resize', colocarModos);
 
 const CLAVE_GUARDADO = 'kinhold_h1_v1';
 const $ = (id) => document.getElementById(id);

@@ -42,6 +42,12 @@ ESPANOL = re.compile(r'\b(Construir|Desmontar|Ayuda|Decisiones|Reiniciar|Opcione
                      r'Mañana|Tarde|Desenfoque|Cabaña|Lado|Cara|Notas|Quieto|Andando|Personalizar|Perfil|Espalda|Cuerpo|'
                      r'Hombre|Mujer|Túnica|Vestido|Pelo|Piel|Barba|Calidad|Sombras|Animación|midiendo|resolución|triángulos|dibujados)\b')
 
+def elegir_idioma(pg, l):
+    # en PC hay un botón por idioma; en el móvil, un desplegable
+    b = pg.locator(f'button.idioma[data-idioma="{l}"]')
+    if b.is_visible(): b.click()
+    else: pg.select_option('select.idioma', l)
+
 def texto_visible(pg):
     return pg.evaluate("""() => { const t = []; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
       while (w.nextNode()) { const n = w.currentNode, e = n.parentElement; if (!e || e.closest('script,style')) continue;
@@ -101,17 +107,17 @@ with sync_playwright() as p:
         pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
         comprobar('construcción: navegador en español → juego en español', pg.evaluate('document.documentElement.lang') == 'es' and 'Construir' in pg.inner_text('#modos'))
         comprobar('construcción: la partida sigue al cambiar de idioma', pg.evaluate(f"!!{K}.mundo.mojon"))
-        pg.click('button.idioma[data-idioma="en"]')
+        elegir_idioma(pg, 'en')
         pg.wait_for_function('window.__kinhold !== undefined && document.documentElement.lang === "en"', timeout=20000)
         pg.wait_for_timeout(300)
         comprobar('construcción: el botón EN cambia a inglés', 'Build' in pg.inner_text('#modos'))
         comprobar('construcción: la partida sigue tras el botón', pg.evaluate(f"!!{K}.mundo.mojon"))
         pg.reload(); pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
         comprobar('construcción: recuerda el inglés al volver', pg.evaluate('document.documentElement.lang') == 'en')
-        pg.click('button.idioma[data-idioma="es"]')
+        elegir_idioma(pg, 'es')
         pg.wait_for_function('window.__kinhold !== undefined && document.documentElement.lang === "es"', timeout=20000)
         comprobar('construcción: el botón ES vuelve al español', 'Construir' in pg.inner_text('#modos'))
-        pg.click('button.idioma[data-idioma="en"]')
+        elegir_idioma(pg, 'en')
         pg.wait_for_function('window.__kinhold !== undefined && document.documentElement.lang === "en"', timeout=20000)
 
         # ---------- combate ---------- (el inglés ya está guardado por el botón: vale para los dos)
@@ -164,10 +170,10 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/estilo_{sufijo}_06_notas.png')
         comprobar('estilo: notas en inglés', 'Style test' in pg.inner_text('#notas'), pg.inner_text('#notas')[:80])
         revisar(pg, f'estilo {etiqueta}, notas')
-        pg.click('button.idioma[data-idioma="es"]')
+        elegir_idioma(pg, 'es')
         pg.wait_for_function('window.__estilo !== undefined && document.documentElement.lang === "es"', timeout=90000)
         comprobar('estilo: el botón ES vuelve al español', 'Mañana' in pg.inner_text('#superior'))
-        pg.click('button.idioma[data-idioma="en"]')
+        elegir_idioma(pg, 'en')
         pg.wait_for_function('window.__estilo !== undefined && document.documentElement.lang === "en"', timeout=90000)
 
         # ---------- visor de personaje ----------
@@ -195,10 +201,10 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/personaje_{sufijo}_notas.png')
         comprobar('personaje: notas en inglés', 'Character' in pg.inner_text('#notas'), pg.inner_text('#notas')[:80])
         revisar(pg, f'personaje {etiqueta}, notas')
-        pg.click('button.idioma[data-idioma="es"]')
+        elegir_idioma(pg, 'es')
         pg.wait_for_function(f'document.documentElement.lang === "es" && {P} && {P}.listo()', timeout=180000)
         comprobar('personaje: el botón ES vuelve al español', 'Cuerpo' in pg.inner_text('#inferior'))
-        pg.click('button.idioma[data-idioma="en"]')
+        elegir_idioma(pg, 'en')
         pg.wait_for_function(f'document.documentElement.lang === "en" && {P} && {P}.listo()', timeout=180000)
         comprobar('personaje: el botón EN cambia a inglés', 'Body' in pg.inner_text('#inferior'))
         comprobar(f'sin errores ({etiqueta})', not err, '; '.join(err[:3]))
@@ -231,7 +237,9 @@ with sync_playwright() as p:
         pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
         pg.evaluate('localStorage.clear(); window.__kinhold.reiniciar()'); pg.wait_for_timeout(400)
         comprobar('ruso: construcción con ?lang=ru', pg.evaluate('document.documentElement.lang') == 'ru')
-        comprobar('ruso: hay botón RU', pg.locator('button.idioma[data-idioma="ru"]').count() == 1)
+        comprobar('ruso: se ve el selector de idioma', pg.locator('button.idioma[data-idioma="ru"]').is_visible() or pg.locator('select.idioma').is_visible())
+        solape = pg.evaluate("document.getElementById('menu').getBoundingClientRect().bottom - document.getElementById('modos').getBoundingClientRect().top")
+        comprobar('ruso: el menú de arriba no tapa los botones de modo', solape <= 0, f'{solape:.0f}px')
         pg.screenshot(path=f'{SALIDA}/ru_construccion_{sufijo}_01_inicio.png'); revisar_ru(pg, f'ru construcción {etiqueta}')
         pg.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('mojon','mojon'); {K}.apuntar(-3,-6); {K}.colocar()")
         pg.evaluate(f"{K}.seleccionar('pieza','muro_tronco'); {K}.apuntar(10,10)"); pg.wait_for_timeout(300)
@@ -245,7 +253,7 @@ with sync_playwright() as p:
         pg.click('#panelRegistro .cerrar')
         # el botón RU guarda el ruso para todos los prototipos y no borra la partida
         pg.goto('file://' + CONSTR); pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
-        pg.click('button.idioma[data-idioma="ru"]')
+        elegir_idioma(pg, 'ru')
         pg.wait_for_function('window.__kinhold !== undefined && document.documentElement.lang === "ru"', timeout=20000)
         comprobar('ruso: el botón RU cambia a ruso y la partida sigue', pg.evaluate(f"!!{K}.mundo.mojon"))
         pg.goto('file://' + COMB); pg.wait_for_function('window.__duelo !== undefined', timeout=20000)

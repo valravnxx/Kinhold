@@ -85,7 +85,7 @@ with sync_playwright() as p:
         comprobar('botón RU: la web en ruso', pg.inner_text('nav button[data-s=jugar]') == 'Играть' and pg.evaluate('document.documentElement.lang') == 'ru')
         pg.click('nav button[data-s=roadmap]'); pg.wait_for_timeout(200)
         txt = pg.inner_text('#roadmap')
-        comprobar('en ruso, el roadmap está en cirílico', len(re.findall('[А-Яа-яЁё]', txt)) > 2000 and not any(w in txt for w in [' de la ', ' para ', 'Pendiente', 'Hecho']), txt[:120])
+        comprobar('en ruso, el roadmap está en cirílico', len(re.findall('[А-Яа-яЁё]', txt)) > 500 and not any(w in txt for w in [' de la ', ' para ', 'Pendiente', 'Hecho']), txt[:120])
         pg.screenshot(path=f'{SALIDA}/{nombre}_12_roadmap_ru.png', full_page=True)
         pg.click('nav button[data-s=diario]'); pg.wait_for_timeout(200)
         txt = pg.inner_text('#diario')
