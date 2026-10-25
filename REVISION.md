@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 25 oct 2026 (09:39) — por el chat: algo no relacionado con la ropa
+
+«Puedes hacer, están haciendo los modelados de ropa; haz algo no relacionado.» Elige planificar el hito de construcción (1c). Hecho: 9 tareas nuevas en el roadmap; los puentes se dejan para el hito Mundo.
+
 ### 25 oct 2026 (09:14) — por el chat: base de los personajes
 
 «Lo veo bien, sigue» y elige el **taller propio** (MakeHuman con ropa por código) como base de los personajes. Se cierran las decisiones personaje-v2 y paquete-ropa; tareas del hito de arte rehechas para el taller. Ya no hace falta que solo la sesión del chat toque `src/personaje/`: las sesiones automáticas pueden seguir con las tareas del taller (que no toquen a la vez lo que esté haciendo la sesión del chat: mirar `proyecto/sesion.json`).

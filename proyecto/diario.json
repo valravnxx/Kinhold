@@ -497,5 +497,21 @@
   "pruebas": "Sin cambios de código.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T09:39:58+01:00",
+  "fin": "2026-10-25T09:42:16+01:00",
+  "titulo": "Hito 1c: planificación de las piezas nuevas",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Pedro, por el chat: «puedes hacer, están haciendo los modelados de ropa; haz algo no relacionado». Elige planificar el hito de construcción, que no toca el personaje. Se hace aunque el hito de arte bloquee empezar hitos nuevos, porque lo pide él.",
+   "Comparadas las piezas del documento de sistemas con las que ya hay en el juego. Faltan: escalera de tablas, contraventana, trampilla, tejado de teja, remate de tejado, chimenea, adarve, puente de troncos y parte de la decoración.",
+   "Hito desglosado en 9 tareas de una sesión: escalera de tablas, barandillas y vallas, contraventana y trampilla, tejado de teja, remate de tejado, chimenea, adarve, decoración que falta y revisión final.",
+   "Los puentes de troncos se dejan para el hito Mundo, porque necesitan agua en el mapa.",
+   "Esta sesión no toca proyecto/sesion.json, que es de la sesión de la ropa."
+  ],
+  "pruebas": "Sin cambios de código. Web reconstruida sin errores.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
