@@ -721,7 +721,7 @@
   {
    "id": "personaje",
    "nombre": "Personaje",
-   "descripcion": "El humano base esculpido por código, con ropa por capas, esqueleto y andar, delante de la cabaña.",
+   "descripcion": "Personajes del taller propio: cuerpo de MakeHuman con la ropa por capas hecha por código (camisa, túnica o vestido, gambesón, cota, sobreveste), andando delante de la cabaña.",
    "versiones": [
     {
      "v": "v1",
