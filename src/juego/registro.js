@@ -1,5 +1,5 @@
 // Decisiones que he tomado yo en el hito 1, para que las revises.
-export const VERSION = 'Hito 1 · v5';
+export const VERSION = 'Hito 1 · v6';
 export const REGISTRO = [
   'Terreno llano en este hito. Las cuestas y su efecto en los cimientos llegan con el mundo generado.',
   'Los materiales vienen dados (y hay botón para rellenar). Recolectarlos llega en el hito 2.',
@@ -16,8 +16,10 @@ export const REGISTRO = [
   'v4: vano de una casilla. Un suelo en alto o un tramo de tejado sin muros debajo se apoya en el suelo o el tramo de al lado que sí los tenga. Así una casa de hasta 4×4 casillas no necesita vigas por dentro; de 5×5 en adelante, el centro sí.',
   'v4: lo que aguanta cada pieza (kg): cimiento de piedra 6000, de troncos 2000; muro de troncos 1200 (con puerta 850, con ventana 1000), entramado 1400, tablas 900 (con puerta 600), zarzo 250; poste 2000, viga 1000; suelo de troncos 900, de tablas 1000. Todo provisional, para que lo ajustes.',
   'La decoración no suma peso a la estructura.',
-  'Quedan para más adelante: escalera de tablas, adarve, chimenea y puentes (los puentes necesitan agua en el mapa).',
+  'Quedan para más adelante: adarve, chimenea y puentes (los puentes necesitan agua en el mapa).',
   'Escalera de mano: se usa con el botón Usar para subir o bajar de planta si hay suelo arriba.',
+  'v6: escalera de tablas (6 tablas y 6 clavos, 100 kg). Ocupa una casilla y se sube andando, sin botón: se entra por el lado bajo y se sale arriba a la casilla de al lado (gira con R hacia dónde sube). Encima tiene que quedar el hueco abierto, así que no deja poner suelo ahí. Necesita cimiento o suelo debajo, o la tierra en la planta baja.',
+  'v6: por el hueco de la escalera se puede caer a ella desde arriba; las barandillas para cerrarlo llegan en la tarea siguiente. Por debajo del tramo alto se puede pasar sin subir.',
   'Los muros de troncos van en 10 hiladas de 25 cm: todos acaban a 2,5 m y sus troncos coinciden en altura. La puerta mide 2 m (8 hiladas) y la ventana va de 1 a 1,75 m.',
   'Las ventanas no tienen contraventana todavía.',
   'La partida se guarda sola en el navegador (con botón para reiniciar).',

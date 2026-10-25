@@ -272,6 +272,9 @@ export class Mundo {
     if (def.noPlanta0 && p.k === 0) return { ok: false, motivo: 'En la planta baja usa un cimiento.' };
     const key = clave(p.hueco, p.i, p.j, p.k, p.d);
     if (c.piezas.has(key)) return { ok: false, motivo: 'Ese hueco ya está ocupado.' };
+    if (def.andando && p.k >= MAX_PLANTA) return { ok: false, motivo: 'La escalera de tablas sube a la planta de arriba: en la última no cabe.' };
+    if (def.andando && c.piezas.has(clave('f', p.i, p.j, p.k + 1))) return { ok: false, motivo: 'Encima de la escalera tiene que quedar el hueco abierto: quita ese suelo.' };
+    if (p.hueco === 'f' && escaleraAndando(c, p.i, p.j, p.k - 1)) return { ok: false, motivo: 'Ahí está el hueco de una escalera.' };
     if (!this.puedePagar(def.coste)) return { ok: false, motivo: 'Faltan materiales.', faltan: this.faltan(def.coste) };
     if (!this.apoyada(c, p)) return { ok: false, motivo: motivoSinApoyo(p) };
     // prueba de carga con la pieza puesta
@@ -430,6 +433,26 @@ export function geometriaTejados(c) {
     res.set(key, { arranque: off, rellenos });
   }
   return res;
+}
+
+// ---------- Escalera de tablas ----------
+// Escalera que se sube andando en la casilla (i,j) de la planta k, o null.
+export function escaleraAndando(c, i, j, k) {
+  const p = c.piezas.get(clave('l', i, j, k));
+  return p && PIEZAS[p.tipo].andando ? p : null;
+}
+// Cuánto has subido (0 abajo, 1 arriba) en un punto local (m) de la casilla de la escalera.
+// Sube en la dirección dir (mismo convenio que los tejados): arriba se sale a la casilla de al lado.
+export function progresoEscalera(p, lx, lz) {
+  const [ui, uj] = SUBE[p.dir || 0];
+  const cx = (p.i + 0.5) * MODULO, cz = (p.j + 0.5) * MODULO;
+  const t = ((lx - cx) * ui + (lz - cz) * uj) / MODULO + 0.5;
+  return Math.max(0, Math.min(1, t));
+}
+// Casilla a la que se sale por arriba
+export function salidaEscalera(p) {
+  const [ui, uj] = SUBE[p.dir || 0];
+  return { i: p.i + ui, j: p.j + uj, k: p.k + 1 };
 }
 
 // ---------- utilidades de rejilla ----------

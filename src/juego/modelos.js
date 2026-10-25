@@ -279,6 +279,27 @@ function escaleraMano() {
   g.add(esc);
   return g;
 }
+// Escalera de tablas: sube hacia +z local desde el borde -z de la casilla hasta el suelo de la planta de arriba.
+function escaleraTablas() {
+  const g = new THREE.Group();
+  const S = MODULO, y0 = P.superficieSuelo, y1 = ALTURA + P.superficieSuelo;
+  const ancho = 1.1, peldanos = 10, sube = (y1 - y0) / peldanos, huella = S / peldanos;
+  const largo = Math.hypot(S, y1 - y0), ang = Math.atan2(y1 - y0, S);
+  // zancas: dos tablas gruesas en diagonal a los lados
+  for (const x of [-ancho / 2, ancho / 2]) {
+    const z = caja(0.06, 0.26, largo + 0.1, COLORES.tablaOscura, x, (y0 + y1) / 2 - 0.08, 0);
+    z.rotation.x = -ang;
+    g.add(z);
+  }
+  // peldaños de tabla, alternando un poco el tono
+  for (let n = 0; n < peldanos; n++) {
+    const y = y0 + sube * (n + 1) - 0.03, zc = -S / 2 + huella * (n + 0.5);
+    g.add(caja(ancho - 0.04, 0.05, huella + 0.04, n % 2 ? COLORES.tabla : 0x9a7248, 0, y, zc));
+  }
+  // pie: un taco bajo el arranque para que no flote sobre la tierra
+  g.add(caja(ancho + 0.06, y0 + 0.02, 0.12, COLORES.tablaOscura, 0, (y0 + 0.02) / 2, -S / 2 + 0.06));
+  return g;
+}
 function puerta(tipo) {
   const g = new THREE.Group();
   const hoja = new THREE.Group();
@@ -395,6 +416,7 @@ export function modeloPieza(tipo) {
     case 'tejado_tablilla': return tejado(COLORES.tablaOscura, COLORES.tabla);
     case 'hastial': return hastial();
     case 'escalera_mano': return escaleraMano();
+    case 'escalera_tabla': return escaleraTablas();
     case 'puerta_varas': return puerta('puerta_varas');
     case 'puerta_tabla': return puerta('puerta_tabla');
     case 'cerca': return cerca();

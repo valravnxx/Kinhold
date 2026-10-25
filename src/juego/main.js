@@ -1,6 +1,6 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados } from '../logica/construccion.js';
+import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, progresoEscalera } from '../logica/construccion.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, arbol, roca, mat, COLORES, P, rellenoTejado } from './modelos.js';
 import { crearPersonaje, animarPersonaje } from './personaje.js';
@@ -516,7 +516,7 @@ function interactivoCercano() {
   for (const c of mundo.construcciones) {
     for (const [key, p] of c.piezas) {
       const puerta = p.hueco === 'p' || p.tipo === 'empalizada_puerta';
-      const esc = p.hueco === 'l';
+      const esc = p.hueco === 'l' && !PIEZAS[p.tipo].andando; // la de tablas se sube andando
       if (!puerta && !esc) continue;
       const m = localAMundo(c, centroLocal(p).lx, centroLocal(p).lz);
       const d = Math.hypot(m.x - pj.x, m.z - pj.z);
@@ -611,7 +611,29 @@ function resolverColision(x, z, k) {
   return { x, z };
 }
 // altura del suelo bajo el jugador en su planta; baja de planta si no hay suelo
+// Escalera de tablas bajo el jugador: se sube andando. Devuelve { k, y } o null.
+// Si vienes por debajo del tramo alto (o caes por el hueco desde arriba muy por encima), no cuenta.
+function escaleraBajoJugador() {
+  for (const c of mundo.construcciones) {
+    const l = mundoALocal(c, pj.x, pj.z);
+    const i = Math.floor(l.lx / MODULO), j = Math.floor(l.lz / MODULO);
+    for (const k0 of [pj.k, pj.k - 1]) {
+      if (k0 < 0) continue;
+      const p = escaleraAndando(c, i, j, k0);
+      if (!p) continue;
+      const t = progresoEscalera(p, l.lx, l.lz);
+      const base = c.piezas.has(clave('f', i, j, k0)) ? (k0 === 0 ? P.superficieCimiento : P.superficieSuelo) : 0;
+      const y0 = k0 * ALTURA + base, y1 = (k0 + 1) * ALTURA + P.superficieSuelo;
+      const y = y0 + t * (y1 - y0);
+      if (pj.k === k0 && y - pj.y > 0.8) continue; // estás debajo de la escalera, no encima
+      return { k: t > 0.5 ? k0 + 1 : k0, y };
+    }
+  }
+  return null;
+}
 function alturaSuelo() {
+  const e = escaleraBajoJugador();
+  if (e) { pj.k = e.k; return e.y; }
   for (let k = pj.k; k >= 0; k--) {
     for (const c of mundo.construcciones) {
       const l = mundoALocal(c, pj.x, pj.z);

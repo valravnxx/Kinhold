@@ -1,6 +1,6 @@
 // Pruebas de la lógica de construcción de Kinhold. Ejecutar: node pruebas/prueba_logica.mjs
 // Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR.
-import { Mundo, clave, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista } from '../src/logica/construccion.js';
+import { Mundo, clave, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, progresoEscalera, salidaEscalera } from '../src/logica/construccion.js';
 import { PIEZAS } from '../src/logica/piezas.js';
 
 if (process.env.MUTAR === '1') {
@@ -275,6 +275,58 @@ console.log('13. Casas de varias plantas (Pedro: «la madera es demasiado débil
     const r2 = m.validar(enRejilla(m, c, 'tejado_paja', 2, 0, 1));
     comprobar('pero no se encadena: dos casillas sin muro no se sostienen', !r2.ok, r2.motivo || '');
   }
+}
+
+console.log('14. Escalera de tablas');
+{
+  const m = new Mundo(); m.colocarMojon(0, 0);
+  for (const k in m.materiales) m.materiales[k] += 500;
+  const c = nuevaConstruccion(m);
+  // dos casillas de cimiento con muros alrededor y suelo arriba solo en la casilla de salida (0,1)
+  m.colocar(enRejilla(m, c, 'cim_tronco', 0, 0, 0));
+  m.colocar(enRejilla(m, c, 'cim_tronco', 0, 1, 0));
+  for (const [i, j, d] of [[0, 0, 0], [0, 2, 0], [0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]]) m.colocar(enRejilla(m, c, 'muro_tronco', i, j, 0, d));
+  const t0 = m.materiales.tabla, c0 = m.materiales.clavo;
+  const r = m.colocar(enRejilla(m, c, 'escalera_tabla', 0, 0, 0, 0, 0));
+  comprobar('escalera de tablas sobre el cimiento', r.ok, r.motivo || '');
+  comprobar('cuesta 6 tablas y 6 clavos', t0 - m.materiales.tabla === 6 && c0 - m.materiales.clavo === 6);
+  const suelo = m.colocar(enRejilla(m, c, 'suelo_tronco', 0, 1, 1));
+  comprobar('suelo de arriba en la casilla de salida', suelo.ok, suelo.motivo || '');
+  const hueco = m.validar(enRejilla(m, c, 'suelo_tronco', 0, 0, 1));
+  comprobar('encima de la escalera queda el hueco abierto: no deja poner suelo', !hueco.ok && hueco.motivo === 'Ahí está el hueco de una escalera.', hueco.motivo || '');
+  comprobar('la escalera de mano no está en la misma casilla (una escalera por casilla)', !m.validar(enRejilla(m, c, 'escalera_mano', 0, 0, 0)).ok);
+  // al revés: con el suelo ya puesto, la escalera no entra
+  m.colocar(enRejilla(m, c, 'suelo_tronco', 0, 0, 1)); // rechazado, no hace nada
+  const c2 = nuevaConstruccion(m);
+  m.colocar(enRejilla(m, c2, 'cim_tronco', 0, 0, 0));
+  for (const [i, j, d] of [[0, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1]]) m.colocar(enRejilla(m, c2, 'muro_tronco', i, j, 0, d));
+  m.colocar(enRejilla(m, c2, 'suelo_tronco', 0, 0, 1));
+  const tapada = m.validar(enRejilla(m, c2, 'escalera_tabla', 0, 0, 0));
+  comprobar('con suelo encima no se puede poner (no habría hueco)', !tapada.ok && tapada.motivo.startsWith('Encima de la escalera'), tapada.motivo || '');
+  comprobar('en la última planta no cabe', !m.validar(enRejilla(m, c, 'escalera_tabla', 3, 3, 3)).ok);
+  // apoyos y carga: descansa en el cimiento y suma sus 100 kg
+  const sop = m.soportes(c, c.piezas.get(clave('l', 0, 0, 0)));
+  comprobar('se apoya en el cimiento de su casilla', sop.lista.length === 1 && sop.lista[0] === clave('f', 0, 0, 0));
+  const conEsc = m.cargas(c).get(clave('f', 0, 0, 0));
+  const sinEsc = m.cargas({ ...c, piezas: new Map([...c.piezas].filter(([k]) => k !== clave('l', 0, 0, 0))) }).get(clave('f', 0, 0, 0));
+  comprobar('el cimiento carga sus 100 kg de más', Math.abs(conEsc - sinEsc - 100) < 1e-6, `${sinEsc} → ${conEsc} kg`);
+  // en la planta 1 necesita suelo; si se quita el suelo, cae
+  const r1 = m.colocar(enRejilla(m, c, 'escalera_tabla', 0, 1, 1, 0, 2));
+  comprobar('en la planta 1 se apoya en un suelo', r1.ok, r1.motivo || '');
+  const pre = m.previsualizarDesmontaje(c, clave('f', 0, 1, 1));
+  comprobar('y cae si se quita ese suelo', pre.ok && pre.caen.includes(clave('l', 0, 1, 1)), `caen=${(pre.caen || []).join(' ')}`);
+  comprobar('sin suelo en alto no se pone', !m.validar(enRejilla(m, c, 'escalera_tabla', 5, 5, 1)).ok);
+  // subida: abajo 0, arriba 1, en la dirección elegida
+  const p = c.piezas.get(clave('l', 0, 0, 0));
+  comprobar('se sube andando: abajo en el borde de entrada, arriba en el de salida', progresoEscalera(p, 1, 0) === 0 && progresoEscalera(p, 1, 2) === 1 && Math.abs(progresoEscalera(p, 1, 1) - 0.5) < 1e-9);
+  const s = salidaEscalera(p);
+  comprobar('sale por arriba al suelo de la casilla de al lado', s.i === 0 && s.j === 1 && s.k === 1 && c.piezas.has(clave('f', s.i, s.j, s.k)));
+  const girada = { ...p, dir: 3 };
+  comprobar('girada sube hacia +x', progresoEscalera(girada, 0, 1) === 0 && progresoEscalera(girada, 2, 1) === 1 && salidaEscalera(girada).i === 1);
+  comprobar('la escalera de mano no se sube andando (va con Usar)', !escaleraAndando(c2, 0, 0, 0) && !PIEZAS.escalera_mano.andando);
+  // guardado: la pieza nueva entra y sale igual
+  const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  comprobar('se guarda y se carga', !!escaleraAndando(m2.construcciones.find(x => x.id === c.id), 0, 0, 0));
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

@@ -15,7 +15,7 @@ export const MAX_PLANTA = 3;  // plantas 0..3
 //  r = tejado sobre casilla               clave i,j,k
 //  g = hastial (triángulo) sobre arista   clave i,j,k,d
 //  p = hueco de puerta en un muro         clave i,j,k,d
-//  l = escalera de mano en casilla        clave i,j,k
+//  l = escalera (de mano o de tablas) en casilla  clave i,j,k
 
 export const MATERIALES = {
   piedra: 'Piedra', tronco: 'Tronco', vara: 'Vara', barro: 'Barro', paja: 'Paja',
@@ -49,6 +49,8 @@ export const PIEZAS = {
   hastial:            { nombre: 'Hastial (remate)', hueco: 'g', nivel: 1, peso: 100, cap: 0, coste: { tronco: 2 }, cat: 'oculto' },
 
   escalera_mano:      { nombre: 'Escalera de mano', hueco: 'l', nivel: 1, peso: 15, cap: 0, coste: { vara: 2, cuerda: 1 }, cat: 'acceso' },
+  // andando: se sube andando (sin botón); deja abierto el hueco del suelo de encima
+  escalera_tabla:     { nombre: 'Escalera de tablas', hueco: 'l', nivel: 2, peso: 100, cap: 0, coste: { tabla: 6, clavo: 6 }, andando: true, cat: 'acceso' },
   puerta_varas:       { nombre: 'Puerta de varas', hueco: 'p', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, cat: 'acceso' },
   puerta_tabla:       { nombre: 'Puerta de tablas', hueco: 'p', nivel: 2, peso: 40, cap: 0, coste: { tabla: 4, clavo: 4, hierro: 1 }, cat: 'acceso' },
 
