@@ -1,4 +1,5 @@
-// Comprueba que todos los textos del juego (construcción y combate) tienen traducción al inglés.
+// Comprueba que todos los textos del juego (construcción, combate, prueba de estilo y visor de personaje)
+// tienen traducción al inglés.
 // Uso: node pruebas/prueba_idiomas.mjs            → falla y lista los que faltan
 //      node pruebas/prueba_idiomas.mjs --faltan   → escribe solo la lista de los que faltan (JSON)
 //      MUTAR=1 node pruebas/prueba_idiomas.mjs    → quita una traducción a propósito: tiene que fallar
@@ -8,6 +9,9 @@ import { PIEZAS, DECORACION, MATERIALES } from '../src/logica/piezas.js';
 import { ARMAS, ARMADURAS, NOMBRE_LINEA, NOMBRE_ZONA } from '../src/combate/logica.js';
 import { REGISTRO, VERSION } from '../src/juego/registro.js';
 import { REGISTRO_COMBATE, VERSION_COMBATE } from '../src/combate/registro.js';
+import { REGISTRO_ESTILO, VERSION_ESTILO } from '../src/estilo/registro.js';
+import { REGISTRO_PERSONAJE, VERSION_PERSONAJE } from '../src/personaje/registro.js';
+import { BASES, CAPAS, ANIMS } from '../src/personaje/textos.js';
 
 const EN = JSON.parse(readFileSync('src/idiomas/en.json', 'utf8'));
 if (process.env.MUTAR) delete EN['Espada larga'];
@@ -19,7 +23,12 @@ const meter = (s) => { if (s && /[A-Za-zÁÉÍÓÚáéíóúñÑ]/.test(s)) text
 for (const d of [...Object.values(PIEZAS), ...Object.values(DECORACION), ...Object.values(ARMAS), ...Object.values(ARMADURAS)]) meter(d.nombre);
 for (const t of [...Object.values(MATERIALES), ...Object.values(NOMBRE_LINEA), ...Object.values(NOMBRE_ZONA)]) meter(t);
 for (const t of ['leve', 'grave', 'muy grave', 'corte', 'perforante', 'contundente']) meter(t); // gravedad y tipo de herida
-for (const t of [...REGISTRO, ...REGISTRO_COMBATE, VERSION, VERSION_COMBATE]) meter(t);
+for (const t of [...REGISTRO, ...REGISTRO_COMBATE, VERSION, VERSION_COMBATE, ...REGISTRO_ESTILO, VERSION_ESTILO, ...REGISTRO_PERSONAJE, VERSION_PERSONAJE]) meter(t);
+// opciones del visor de personaje (las de cargar.js se leen del código: el cargador necesita el navegador)
+for (const t of [...Object.values(BASES), ...Object.values(CAPAS), ...Object.values(ANIMS)]) meter(t);
+const cargarJs = leer('src/personajes/cargar.js');
+const opciones = cargarJs.slice(cargarJs.indexOf('export const OPCIONES'), cargarJs.indexOf('export const CLIPS'));
+for (const m of opciones.matchAll(/:\s*\[?'([^']+)'/g)) meter(m[1]);
 
 // 2. textos de la lógica que llegan a la pantalla (motivos de construcción y de caer en combate)
 const constr = leer('src/logica/construccion.js');
@@ -51,9 +60,11 @@ function literalesEnTr(src) {
     i = j;
   }
 }
-for (const f of ['src/juego/main.js', 'src/combate/main.js']) {
+for (const f of ['src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js', 'src/personaje/main.js']) {
   const src = leer(f);
   literalesEnTr(src);
+  // títulos y opciones de los grupos del panel del personaje: grupo('clave', valores, 'Título')
+  for (const m of src.matchAll(/grupo\('\w+', ([^;]*?), '([^']+)'\)/g)) { meter(m[2]); for (const v of m[1].matchAll(/: '([^']+)'/g)) meter(v[1]); }
   for (const m of src.matchAll(/nombre: '([^']+)'/g)) meter(m[1]);
   for (const m of src.matchAll(/\['([^']+)', stats\./g)) meter(m[1]); // filas de la pantalla final
 }

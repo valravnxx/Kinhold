@@ -5,6 +5,11 @@ import { LUCES } from './estilos.js';
 import { crearEscena, RADIO } from './escena.js';
 import { VERSION_ESTILO, REGISTRO_ESTILO } from './registro.js';
 import { crearPersonaje, posar } from './personaje.js';
+import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
+
+// lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
+traducirPagina();
+botonesIdioma(document.getElementById('estilos'));
 
 const $ = (id) => document.getElementById(id);
 const CLAVE = 'kinhold_estilo_v4'; // misma clave: el formato solo gana campos (andar)
@@ -81,7 +86,7 @@ function ponerLuz(id) {
   guardar(); dibujar();
 }
 function ponerAndar(v) {
-  estado.andar = v; $('btnAndar').classList.toggle('sel', v); $('btnAndar').textContent = v ? 'Andando' : 'Quieto';
+  estado.andar = v; $('btnAndar').classList.toggle('sel', v); $('btnAndar').textContent = tr(v ? 'Andando' : 'Quieto');
   colocar(reloj()); if (VISTAS[estado.vista] && (estado.vista === 'personaje' || estado.vista === 'cara')) ponerVista(estado.vista);
   guardar(); dibujar();
 }
@@ -132,7 +137,7 @@ function bucle() {
     if (medida.fps < 50 && resolucion > 0.75) { resolucion = Math.max(0.75, resolucion - 0.25); ajustar(); }
     else if (medida.fps >= 59 && resolucion < RES_MAX && ventanas > 2) { resolucion = Math.min(RES_MAX, resolucion + 0.25); ajustar(); }
     medida.resolucion = resolucion;
-    $('medida').textContent = `${medida.fps} fps · resolución ${resolucion}× · ${(medida.triangulos / 1000).toFixed(1)} mil triángulos · ${medida.dibujados} dibujados`;
+    $('medida').textContent = tr('{f} fps · resolución {r}× · {t} mil triángulos · {d} dibujados', { f: medida.fps, r: resolucion, t: (medida.triangulos / 1000).toFixed(1), d: medida.dibujados });
     cuenta = 0; t0 = t;
   }
 }
@@ -142,7 +147,7 @@ for (const b of document.querySelectorAll('[data-vista]')) b.onclick = () => pon
 $('btnDesenfoque').onclick = () => ponerDesenfoque(!estado.desenfoque);
 $('btnAndar').onclick = () => ponerAndar(!estado.andar);
 $('btnNotas').onclick = () => { $('notas').hidden = !$('notas').hidden; };
-$('notas').innerHTML = `<b>${VERSION_ESTILO}</b><ul>${REGISTRO_ESTILO.map(t => `<li>${t}</li>`).join('')}</ul>`;
+$('notas').innerHTML = `<b>${tr(VERSION_ESTILO)}</b><ul>${REGISTRO_ESTILO.map(t => `<li>${tr(t)}</li>`).join('')}</ul>`;
 
 ajustar();
 ponerDesenfoque(estado.desenfoque);

@@ -1,14 +1,30 @@
-# Prueba en navegador del juego en inglés (construcción y combate), en PC y móvil.
-# Uso: python3 pruebas/prueba_idioma_navegador.py <html_construccion> <html_combate> <carpeta_capturas>
+# Prueba en navegador del juego en inglés (construcción, combate, prueba de estilo y visor de personaje), en PC y móvil.
+# Uso: python3 pruebas/prueba_idioma_navegador.py <html_construccion> <html_combate> <html_estilo> <html_personaje> <carpeta_capturas>
+# El personaje se sirve por HTTP con sus recursos (docs/recursos/personajes/), como en la web.
 # Comprueba: que no queda ningún texto sin traducir (window.__idioma.faltan), que no quedan palabras
 # en español a la vista, que el botón ES/EN cambia el idioma, lo recuerda y no borra la partida.
 # MUTAR=1 → mete a propósito un texto en español en la página: la prueba tiene que fallar.
-import sys, os, re
+import sys, os, re, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
+RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 CONSTR = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_hito1.html')
 COMB = os.path.abspath(sys.argv[2] if len(sys.argv) > 2 else 'dist/kinhold_combate.html')
-SALIDA = sys.argv[3] if len(sys.argv) > 3 else 'capturas/idioma'
+ESTILO = os.path.abspath(sys.argv[3] if len(sys.argv) > 3 else 'dist/kinhold_estilo.html')
+PERSONAJE = os.path.abspath(sys.argv[4] if len(sys.argv) > 4 else 'dist/kinhold_personaje.html')
+SALIDA = sys.argv[5] if len(sys.argv) > 5 else 'capturas/idioma'
+
+# el visor de personaje carga sus modelos de ../../recursos/personajes/: se sirve como en la web
+sitio = tempfile.mkdtemp()
+os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
+shutil.copy(PERSONAJE, f'{sitio}/jugar/personaje/prueba.html')
+for c in ('v1', 'taller-v4'):
+    shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes', c), f'{sitio}/recursos/personajes/{c}')
+class Silencioso(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, *a): pass
+srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
+threading.Thread(target=srv.serve_forever, daemon=True).start()
+URL_PERSONAJE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/personaje/prueba.html'
 os.makedirs(SALIDA, exist_ok=True)
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 MUTAR = bool(os.environ.get('MUTAR'))
@@ -21,7 +37,9 @@ def comprobar(nombre, cond, detalle=''):
 # palabras que solo salen en español (si alguna se ve con el juego en inglés, algo se ha quedado sin traducir)
 ESPANOL = re.compile(r'\b(Construir|Desmontar|Ayuda|Decisiones|Reiniciar|Opciones|Parar|Planta|Muro|Tejado|Suelo|Cimiento|'
                      r'piedra|tronco|vara|barro|paja|cuerda|tabla|clavo|hierro|Espada|Lino|Duelo|Dificultad|Sonido|rival|'
-                     r'golpe|herida|pulsa|toca|mantén|cansancio|que|del|los|las|para|con|una)\b')
+                     r'golpe|herida|pulsa|toca|mantén|cansancio|que|del|los|las|para|con|una|'
+                     r'Mañana|Tarde|Desenfoque|Cabaña|Lado|Cara|Notas|Quieto|Andando|Personalizar|Perfil|Espalda|Cuerpo|'
+                     r'Hombre|Mujer|Túnica|Vestido|Pelo|Piel|Barba|Calidad|Sombras|Animación|midiendo|resolución|triángulos|dibujados)\b')
 
 def texto_visible(pg):
     return pg.evaluate("""() => { const t = []; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -30,7 +48,7 @@ def texto_visible(pg):
       return t.filter(Boolean).join(' | '); }""")
 
 def revisar(pg, donde):
-    if MUTAR: pg.evaluate("document.getElementById('menu').insertAdjacentHTML('beforeend', '<button>Pulsa para construir</button>')")
+    if MUTAR: pg.evaluate("(document.getElementById('menu') || document.getElementById('superior')).insertAdjacentHTML('beforeend', '<button>Pulsa para construir</button>')")
     falt = pg.evaluate('[...window.__idioma.faltan]')
     comprobar(f'{donde}: ningún texto sin traducir', len(falt) == 0, '; '.join(falt[:4]))
     vis = texto_visible(pg)
@@ -123,6 +141,65 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/combate_{sufijo}_05_final.png')
         comprobar('combate: pantalla final en inglés', 'won' in pg.inner_text('#tituloFinal') and 'bled out' in pg.inner_text('#motivoFinal').lower(), pg.inner_text('#final'))
         revisar(pg, f'combate {etiqueta}, final')
+
+        # ---------- prueba de estilo ---------- (el inglés sigue guardado)
+        pg.goto('file://' + ESTILO)
+        pg.wait_for_function('window.__estilo !== undefined', timeout=90000)
+        S = 'window.__estilo'
+        comprobar('estilo: recuerda el inglés elegido', pg.evaluate('document.documentElement.lang') == 'en')
+        pg.evaluate(f"{S}.pausar(true); {S}.ponerAndar(false)")
+        comprobar('estilo: botones en inglés', all(x in pg.inner_text('#superior') for x in ('Morning', 'Afternoon', 'Blur', 'Idle')), pg.inner_text('#superior'))
+        pg.click('#btnAndar'); pg.evaluate(f"{S}.instante(1.0)")
+        comprobar('estilo: «Walking» al andar', 'Walking' in pg.inner_text('#btnAndar'))
+        pg.click('#btnAndar')
+        for i, v in enumerate(['maqueta', 'cabana', 'lado', 'personaje', 'cara']):
+            pg.click(f'[data-vista="{v}"]'); pg.evaluate(f"{S}.instante(1.0)")
+            pg.screenshot(path=f'{SALIDA}/estilo_{sufijo}_0{i + 1}_{v}.png')
+        pg.evaluate("document.getElementById('medida').textContent = ''")
+        pg.evaluate(f"{S}.pausar(false)"); pg.wait_for_timeout(2600); pg.evaluate(f"{S}.pausar(true)")
+        comprobar('estilo: medida en inglés', 'resolution' in pg.inner_text('#medida'), pg.inner_text('#medida'))
+        revisar(pg, f'estilo {etiqueta}')
+        pg.click('#btnNotas'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/estilo_{sufijo}_06_notas.png')
+        comprobar('estilo: notas en inglés', 'Style test' in pg.inner_text('#notas'), pg.inner_text('#notas')[:80])
+        revisar(pg, f'estilo {etiqueta}, notas')
+        pg.click('button.idioma[data-idioma="es"]')
+        pg.wait_for_function('window.__estilo !== undefined && document.documentElement.lang === "es"', timeout=90000)
+        comprobar('estilo: el botón ES vuelve al español', 'Mañana' in pg.inner_text('#superior'))
+        pg.click('button.idioma[data-idioma="en"]')
+        pg.wait_for_function('window.__estilo !== undefined && document.documentElement.lang === "en"', timeout=90000)
+
+        # ---------- visor de personaje ----------
+        pg.goto(URL_PERSONAJE + '?lang=en')
+        P = 'window.__personaje'
+        pg.wait_for_function(f'{P} && {P}.listo()', timeout=180000)
+        comprobar('personaje: inglés con ?lang=en', pg.evaluate('document.documentElement.lang') == 'en')
+        pg.evaluate(f"{P}.pausar(true)")
+        if pg.is_hidden('#opciones'): pg.click('#btnOpciones')
+        for base in ('makehuman', 'quaternius'):
+            pg.evaluate(f"{P}.cambiar({{base: '{base}', sexo: 'hombre'}})")
+            pg.wait_for_function(f'{P}.listo()', timeout=180000)
+            pg.click('[data-vista="cuerpo"]'); pg.evaluate(f"{P}.instante(1.0)")
+            pg.screenshot(path=f'{SALIDA}/personaje_{sufijo}_{base}.png')
+            op = pg.inner_text('#opciones')
+            comprobar(f'personaje ({base}): opciones en inglés', all(x in op for x in ('CHARACTER BASE', 'Man', 'Idle', 'High')) or all(x in op for x in ('Character base', 'Man', 'Idle', 'High')), op[:120])
+            revisar(pg, f'personaje {etiqueta}, {base}')
+        pg.evaluate(f"{P}.cambiar({{base: 'makehuman'}})"); pg.wait_for_function(f'{P}.listo()', timeout=180000)
+        comprobar('personaje: capas en inglés', 'Tunic' in pg.inner_text('#opciones'), pg.inner_text('#opciones')[:200])
+        pg.click('#btnOpciones')
+        for v in ('cara', 'perfil', 'espalda'):
+            pg.click(f'[data-vista="{v}"]'); pg.evaluate(f"{P}.instante(1.0)")
+            pg.screenshot(path=f'{SALIDA}/personaje_{sufijo}_{v}.png')
+        pg.click('#btnNotas'); pg.wait_for_timeout(200)
+        pg.screenshot(path=f'{SALIDA}/personaje_{sufijo}_notas.png')
+        comprobar('personaje: notas en inglés', 'Character' in pg.inner_text('#notas'), pg.inner_text('#notas')[:80])
+        revisar(pg, f'personaje {etiqueta}, notas')
+        pg.click('button.idioma[data-idioma="es"]')
+        pg.wait_for_function(f'document.documentElement.lang === "es" && {P} && {P}.listo()', timeout=180000)
+        comprobar('personaje: el botón ES vuelve al español', 'Cuerpo' in pg.inner_text('#inferior'))
+        pg.click('button.idioma[data-idioma="en"]')
+        pg.wait_for_function(f'document.documentElement.lang === "en" && {P} && {P}.listo()', timeout=180000)
+        comprobar('personaje: el botón EN cambia a inglés', 'Body' in pg.inner_text('#inferior'))
         comprobar(f'sin errores ({etiqueta})', not err, '; '.join(err[:3]))
         ctx.close()
     nav.close()

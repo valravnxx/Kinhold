@@ -6,6 +6,12 @@ import { crearEscena } from '../estilo/escena.js';
 import { crearPersonaje, OPCIONES } from '../personajes/cargar.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
 import { VERSION_PERSONAJE, REGISTRO_PERSONAJE } from './registro.js';
+import { BASES, CAPAS, ANIMS } from './textos.js';
+import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
+
+// lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
+traducirPagina();
+botonesIdioma(document.getElementById('estilos'));
 
 const $ = (id) => document.getElementById(id);
 const CLAVE = 'kinhold_personaje_v2';
@@ -13,8 +19,6 @@ const CLAVE = 'kinhold_personaje_v2';
 const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../recursos/personajes/v1/';
 // personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v4/ (las anteriores publicadas no se tocan)
 const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v4/';
-const BASES = { quaternius: 'Paquete Quaternius', makehuman: 'Taller propio (MakeHuman)' };
-const CAPAS = { tunica: 'Túnica', vestido: 'Vestido', gambeson: 'Gambesón', cota: 'Cota de malla', sobreveste: 'Sobreveste' };
 // capas puestas en el taller propio, por sexo (por defecto: túnica en el hombre, vestido en la mujer)
 const capasMH = () => (estado.capas && estado.capas[estado.sexo]) || [estado.sexo === 'mujer' ? 'vestido' : 'tunica'];
 
@@ -46,7 +50,6 @@ const VISTAS = {
   perfil:  () => { const y = alturaCara(); return [rel(0.78, y + 0.02, 0.12), rel(0, y - 0.02, 0.02)]; },
   espalda: () => [rel(-1.9, 1.4, -1.6), rel(0, 1.0, 0)],
 };
-const ANIMS = { quieto: 'Quieto', andar: 'Andar', talar: 'Talar', guardia: 'En guardia', golpe: 'Golpe', cargar: 'Cargar' };
 
 // calidad alta en todos lados (en el móvil de Pedro va perfecto); la ligera queda como opción
 const TACTIL = matchMedia('(pointer: coarse)').matches;
@@ -102,18 +105,18 @@ function marcar(tipo, v) { for (const b of document.querySelectorAll(`[data-${ti
 
 // panel de personalización
 function pintarOpciones() {
-  const grupo = (clave, valores, titulo) => `<div class="grupo"><span>${titulo}</span>${Object.entries(valores).map(([k, v]) =>
-    `<button data-op="${clave}" data-v="${k}" class="${estado[clave] === k ? 'sel' : ''}">${Array.isArray(v) ? `<i style="background:#${new THREE.Color(v[1]).getHexString()}"></i>${v[0]}` : v}</button>`).join('')}</div>`;
+  const grupo = (clave, valores, titulo) => `<div class="grupo"><span>${tr(titulo)}</span>${Object.entries(valores).map(([k, v]) =>
+    `<button data-op="${clave}" data-v="${k}" class="${estado[clave] === k ? 'sel' : ''}">${Array.isArray(v) ? `<i style="background:#${new THREE.Color(v[1]).getHexString()}"></i>${tr(v[0])}` : tr(v)}</button>`).join('')}</div>`;
   const mh = estado.base === 'makehuman';
   $('opciones').innerHTML = grupo('base', BASES, 'Base del personaje') + grupo('sexo', OPCIONES.sexo, 'Cuerpo') +
-    (mh ? `<div class="grupo"><span>Ropa por capas (debajo siempre camisa${estado.sexo === 'hombre' ? ', calzas' : ''} y zapatos)</span>${(pj?.capasPosibles || []).map(c =>
-        `<button data-capa="${c}" class="${capasMH().includes(c) ? 'sel' : ''}">${CAPAS[c]}</button>`).join('')}</div>` +
-      '<div class="grupo"><span>Taller propio: pelo, piel y cara aún no se cambian.</span></div>'
+    (mh ? `<div class="grupo"><span>${tr(estado.sexo === 'hombre' ? 'Ropa por capas (debajo siempre camisa, calzas y zapatos)' : 'Ropa por capas (debajo siempre camisa y zapatos)')}</span>${(pj?.capasPosibles || []).map(c =>
+        `<button data-capa="${c}" class="${capasMH().includes(c) ? 'sel' : ''}">${tr(CAPAS[c])}</button>`).join('')}</div>` +
+      `<div class="grupo"><span>${tr('Taller propio: pelo, piel y cara aún no se cambian.')}</span></div>`
       : grupo('ropa', { campesino: OPCIONES.ropa.campesino }, 'Ropa') + grupo('pelo', OPCIONES.pelo[estado.sexo], 'Pelo') +
     grupo('colorPelo', OPCIONES.colorPelo, 'Color del pelo') + grupo('piel', OPCIONES.piel, 'Piel') + (estado.sexo === 'hombre' ? grupo('barba', OPCIONES.barba, 'Barba') : '')) +
     grupo('calidad', { alta: 'Alta', ligera: 'Ligera (móvil)' }, 'Calidad') +
-    `<div class="grupo"><span>Prueba de rendimiento (mira los fps arriba)</span><button data-diag="sombras" class="${estado.sombras ? 'sel' : ''}">Sombras</button><button data-diag="escena" class="${estado.escena ? 'sel' : ''}">Cabaña y suelo</button></div>` +
-    `<div class="grupo"><span>Animación</span>${Object.entries(ANIMS).map(([k, v]) => `<button data-modo="${k}" class="${estado.modo === k ? 'sel' : ''}">${v}</button>`).join('')}</div>`;
+    `<div class="grupo"><span>${tr('Prueba de rendimiento (mira los fps arriba)')}</span><button data-diag="sombras" class="${estado.sombras ? 'sel' : ''}">${tr('Sombras')}</button><button data-diag="escena" class="${estado.escena ? 'sel' : ''}">${tr('Cabaña y suelo')}</button></div>` +
+    `<div class="grupo"><span>${tr('Animación')}</span>${Object.entries(ANIMS).map(([k, v]) => `<button data-modo="${k}" class="${estado.modo === k ? 'sel' : ''}">${tr(v)}</button>`).join('')}</div>`;
   for (const b of $('opciones').querySelectorAll('[data-op]')) b.onclick = () => { estado[b.dataset.op] = b.dataset.v; if (b.dataset.op === 'calidad') estado.calidadElegida = true; rehacer(); };
   for (const b of $('opciones').querySelectorAll('[data-modo]')) b.onclick = () => ponerModo(b.dataset.modo);
   for (const b of $('opciones').querySelectorAll('[data-capa]')) b.onclick = () => {
@@ -159,7 +162,7 @@ function bucle() {
     medida.fps = Math.round(cuenta * 1000 / (ahora - t0)); ventanas++;
     if (medida.fps < 50 && resolucion > RES_MIN) { resolucion = Math.max(RES_MIN, resolucion - 0.25); ajustar(); }
     else if (medida.fps >= 59 && resolucion < RES_MAX && ventanas > 2) { resolucion = Math.min(RES_MAX, resolucion + 0.25); ajustar(); }
-    $('medida').textContent = `${medida.fps} fps · resolución ${resolucion}× · personaje ${(medida.trianglesPersonaje / 1000).toFixed(1)} mil triángulos · escena ${(medida.triangulos / 1000).toFixed(1)} mil · ${medida.dibujados} dibujados`;
+    $('medida').textContent = tr('{f} fps · resolución {r}× · personaje {p} mil triángulos · escena {t} mil · {d} dibujados', { f: medida.fps, r: resolucion, p: (medida.trianglesPersonaje / 1000).toFixed(1), t: (medida.triangulos / 1000).toFixed(1), d: medida.dibujados });
     cuenta = 0; t0 = ahora;
   }
 }
@@ -168,7 +171,7 @@ for (const b of document.querySelectorAll('[data-luz]')) b.onclick = () => poner
 for (const b of document.querySelectorAll('[data-vista]')) b.onclick = () => ponerVista(b.dataset.vista);
 $('btnNotas').onclick = () => { $('notas').hidden = !$('notas').hidden; };
 $('btnOpciones').onclick = () => { $('opciones').hidden = !$('opciones').hidden; $('btnOpciones').classList.toggle('sel', !$('opciones').hidden); };
-$('notas').innerHTML = `<b>${VERSION_PERSONAJE}</b><ul>${REGISTRO_PERSONAJE.map(t => `<li>${t}</li>`).join('')}</ul>`;
+$('notas').innerHTML = `<b>${tr(VERSION_PERSONAJE)}</b><ul>${REGISTRO_PERSONAJE.map(t => `<li>${tr(t)}</li>`).join('')}</ul>`;
 
 // en el móvil el panel tapa medio personaje: empieza cerrado
 if (TACTIL) { $('opciones').hidden = true; $('btnOpciones').classList.remove('sel'); }
@@ -176,7 +179,7 @@ ajustar();
 aplicarDiag();
 ponerLuz(estado.luz);
 ponerVista(estado.vista);
-rehacer().catch(e => { $('cargando').textContent = 'No se pudo cargar el personaje: ' + e.message; console.error(e); });
+rehacer().catch(e => { $('cargando').textContent = tr('No se pudo cargar el personaje: {e}', { e: e.message }); console.error(e); });
 bucle();
 
 window.__personaje = {
