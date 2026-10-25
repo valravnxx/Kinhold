@@ -142,8 +142,9 @@
     },
     {
      "nombre": "Taller: ropa por capas, primera tanda — camisa de lino bajo la túnica y gambesón acolchado encima, hechos por código sobre el cuerpo de MakeHuman, que se ponen y se quitan como capas",
-     "estado": "en_curso",
-     "inicio": "2026-10-25T09:15:48+01:00"
+     "estado": "hecho",
+     "inicio": "2026-10-25T09:15:48+01:00",
+     "fin": "2026-10-25T09:54:03+01:00"
     },
     {
      "nombre": "Taller: cota de malla (anillas por código) y sobreveste encima, como capas",
@@ -547,6 +548,13 @@
      "archivo": "jugar/personaje/v7.html",
      "capturas": "capturas/personaje-v7",
      "notas": "Taller propio: postura arreglada (tronco recto, hombros en su sitio, brazos colgando rectos) y túnica del hombre que ya no marca pecho."
+    },
+    {
+     "v": "v8",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/personaje/v8.html",
+     "capturas": "capturas/personaje-v8",
+     "notas": "El taller propio pasa a ser la base (elegido por Pedro) y sale por defecto. Ropa por capas: camisa de lino, calzas y zapatos siempre; encima túnica o vestido y gambesón acolchado, que se ponen y se quitan con botones."
     }
    ]
   }

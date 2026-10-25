@@ -497,5 +497,22 @@
   "pruebas": "Sin cambios de código.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T09:15:48+01:00",
+  "fin": "2026-10-25T09:54:03+01:00",
+  "titulo": "Personaje v8: ropa por capas en el taller propio",
+  "hito": "arte",
+  "hecho": [
+   "Primera tanda de ropa por capas hecha por código sobre el cuerpo de MakeHuman: camisa de lino (en la mujer, larga hasta los tobillos), calzas y zapatos siempre puestos; encima túnica (hombre) o vestido (mujer); y sobre todo, el gambesón acolchado, con los canales cosidos pintados en vertical en el cuerpo y en anillos en las mangas.",
+   "Cada capa va algo más separada de la piel que la de debajo, y lo que queda tapado del todo no se dibuja: el cuerpo de una prenda se esconde si lleva otra encima y su falda solo asoma si es más larga. Así no se atraviesan al moverse y se ahorran triángulos (unos 16 a 20 mil por personaje según lo que lleve).",
+   "Un cinturón por capa; solo se ve el de la capa de más fuera.",
+   "En el visor, botones «Túnica», «Vestido» y «Gambesón» para poner y quitar capas. El taller propio sale por defecto.",
+   "Arreglos vistos en las capturas: las calzas asomaban por la camisa y el vestido por la tripa del gambesón; ya no.",
+   "Pruebas nuevas: el gambesón se pone encima y tapa el cuerpo de la prenda de debajo, y al quitarlo vuelve como estaba; el taller sale por defecto. Rotas a propósito: fallan."
+  ],
+  "pruebas": "Todas las pruebas correctas (lógica, construcción, combate, estilo, personaje, recursos, inglés y web), en PC y móvil. No comprobado: fps en un móvil de verdad.",
+  "capturas": "capturas/personaje-v8",
+  "estado": "ok"
  }
 ]
