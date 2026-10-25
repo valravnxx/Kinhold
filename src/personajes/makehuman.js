@@ -47,7 +47,7 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
       if (!n.isMesh) return;
       const c = capaDe(n);
       if (c && c.tipo === 'cinturon') n.visible = c.capa === fuera && c.capa !== 'camisa';
-      else if (c && SIEMPRE.includes(c.capa)) n.visible = !(c.capa === 'zapatos' && o.descalzo); // descalzo: como se empieza (GDD)
+      else if (c && SIEMPRE.includes(c.capa)) n.visible = true;
       else if (c) {
         const k = puestas.indexOf(c.capa), encima = puestas.slice(k + 1);
         if (k < 0) n.visible = false;

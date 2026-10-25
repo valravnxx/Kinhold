@@ -1,5 +1,6 @@
 // Kinhold — el jugador de la construcción: el personaje del taller propio (MakeHuman vestido por código, con las
-// animaciones de Quaternius) con camisa y calzas de lino y descalzo, como empieza según el GDD.
+// animaciones de Quaternius) con camisa y calzas de lino, como empieza según el GDD. Los zapatos se quedan puestos de
+// momento: el cuerpo del taller no tiene pies debajo (se quitan al vestir), y descalzo se vería sin pies.
 // Mientras se carga (o si no se puede cargar, p. ej. abriendo el html suelto sin servidor) se ve el muñeco inicial.
 import * as THREE from 'three';
 import { mat } from './modelos.js';
@@ -71,7 +72,7 @@ export function crearJugador(recursos, sexo = 'hombre') {
   const muneco = crearMuneco();
   raiz.add(muneco);
   const j = { raiz, mh: null, error: null, modo: 'quieto' };
-  j.listo = crearPersonajeMH({ sexo, capas: [], descalzo: true }, recursos).then(mh => {
+  j.listo = crearPersonajeMH({ sexo, capas: [] }, recursos).then(mh => {
     raiz.remove(muneco);
     raiz.add(mh.raiz);
     j.mh = mh;

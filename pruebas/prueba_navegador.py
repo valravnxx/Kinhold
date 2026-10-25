@@ -292,7 +292,7 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/14_escalera_de_tablas.png')
 
-    print('PC: personaje del taller (camisa y calzas de lino, descalzo; anda, corre y tala)')
+    print('PC: personaje del taller (camisa y calzas de lino; anda, corre y tala)')
     try:
         pg.wait_for_function(f'{K}.jugador.mh || {K}.jugador.error', timeout=180000)
     except Exception:
@@ -302,7 +302,7 @@ with sync_playwright() as p:
     if mh:
         vis = ev(f"""(() => {{ const v = {{}}; {K}.jugador.mh.modelo.traverse(n => {{ if (n.isMesh) v[n.name] = n.visible; }}); return v; }})()""")
         comprobar('lleva camisa y calzas', vis.get('hombre_capa_camisa') and vis.get('hombre_capa_calzas'))
-        comprobar('va descalzo y sin túnica ni armadura', not any(vis.get(f'hombre_capa_{c}') for c in ['zapatos', 'tunica', 'gambeson', 'cota', 'sobreveste']),
+        comprobar('sin túnica ni armadura (y con zapatos: sin ellos el cuerpo del taller no tiene pies)', vis.get('hombre_capa_zapatos') and not any(vis.get(f'hombre_capa_{c}') for c in ['tunica', 'gambeson', 'cota', 'sobreveste']),
                   ', '.join(k for k, x in vis.items() if x))
         modos = ev(f"(() => {{ const j = {K}.jugador, r = []; for (const [v, t] of [[1.0, false], [3.6, false], [6, false], [0, false], [0, true]]) {{ j.animar(v, 0.016, t); r.push(j.modo + ':' + j.mh.acciones[j.modo].timeScale.toFixed(2)); }} return r; }})()")
         comprobar('andar, correr, quieto y talar según la velocidad', [m.split(':')[0] for m in modos] == ['andar', 'correr', 'correr', 'quieto', 'talar'], ', '.join(modos))
@@ -324,13 +324,13 @@ with sync_playwright() as p:
         ev(f"{K}.pj.x=2; {K}.pj.z=-2.5; {K}.pj.k=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI*0.95; {K}.cam.pitch=0.25; {K}.cam.dist=3.6")
         esperar(pg, 1500)
         pg.screenshot(path=f'{SALIDA}/18_personaje_de_cerca.png')
-        ev(f"{K}.cam.yaw=Math.PI*0.95 + 2.6")
+        ev(f"{K}.pj.rot=Math.PI*0.2; {K}.cam.yaw=Math.PI*1.2")
         esperar(pg, 900)
         pg.screenshot(path=f'{SALIDA}/19_personaje_de_espaldas.png')
-        pg.keyboard.down('shift'); pg.keyboard.down('a'); esperar(pg, 700)
+        pg.keyboard.down('Shift'); pg.keyboard.down('a'); esperar(pg, 700)
         pg.screenshot(path=f'{SALIDA}/20_personaje_corriendo.png')
         comprobar('corre con Mayús', ev(f"{K}.jugador.modo") == 'correr', ev(f"{K}.jugador.modo"))
-        pg.keyboard.up('a'); pg.keyboard.up('shift')
+        pg.keyboard.up('a'); pg.keyboard.up('Shift')
 
     print('PC: barra de construcción')
     ev(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','muro_entramado'); {K}.pj.x=2; {K}.pj.z=-4; {K}.cam.yaw=Math.PI+0.3; {K}.cam.pitch=0.85; {K}.cam.dist=15; {K}.estado.planta=0; {K}.apuntar(-1, 3)")
