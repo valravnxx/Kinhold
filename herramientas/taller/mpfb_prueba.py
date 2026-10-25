@@ -1,8 +1,11 @@
 # Prueba del taller propio: crea tres humanos con MakeHuman (MPFB2) dentro de Blender sin pantalla y los fotografía.
-# Requisitos: pip install bpy --break-system-packages; clonar github.com/makehumancommunity/mpfb2 y enlazar src/mpfb en
-# ~/.config/blender/5.2/extensions/user_default/mpfb. Sin los paquetes de MakeHuman (ojos, pieles, pelo) salen en arcilla.
+# Requisitos: el taller montado con bash herramientas/taller/montar_taller.sh (guía en herramientas/taller/LEEME.md).
+# Sin los paquetes de recursos de MakeHuman (ojos, pieles, pelo) salen en arcilla.
 # Uso: python3 herramientas/taller/mpfb_prueba.py
-import bpy, addon_utils, importlib, math, os
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import comprobar_taller; comprobar_taller.comprobar()
+import bpy, addon_utils, importlib, math
 addon_utils.enable('bl_ext.user_default.mpfb', default_set=True)
 M = 'bl_ext.user_default.mpfb.'
 HS = importlib.import_module(M+'services.humanservice').HumanService
