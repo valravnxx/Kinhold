@@ -144,15 +144,15 @@
     },
     {
      "nombre": "Heridas y sangrado visibles en el personaje: corte, golpe y estocada se pintan donde entran (también rompen y manchan la ropa), el sangrado se extiende con el tiempo y el vendaje se ve puesto",
-     "estado": "pendiente"
+     "estado": "espera_decision"
     },
     {
      "nombre": "Más personalización sobre la base: altura y complexión, color de ojos, cicatrices y tintes de la ropa",
-     "estado": "pendiente"
+     "estado": "espera_decision"
     },
     {
      "nombre": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, tinte y calidad, sobre el mismo esqueleto",
-     "estado": "pendiente"
+     "estado": "espera_decision"
     },
     {
      "nombre": "Formas de ropa nuevas (noble, más armaduras) del paquete completo de ropa, si Pedro lo consigue",
