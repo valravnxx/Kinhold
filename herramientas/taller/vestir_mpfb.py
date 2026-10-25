@@ -26,6 +26,8 @@ HOP = importlib.import_module(M + 'entities.objectproperties').HumanObjectProper
 LS = importlib.import_module(M + 'services.locationservice').LocationService
 for o in list(bpy.data.objects): bpy.data.objects.remove(o)
 TROOT = LS.get_mpfb_data('targets')
+REJILLA_UV = None
+UV_TROZO = np.array([0.07, 0.07])
 DIEZMAR = float(os.environ.get('DIEZMAR', '0.5'))  # proporción de triángulos que se quedan en piel y cáscaras
 
 def lin(c):  # color sRGB (0-255) a lineal
@@ -95,10 +97,11 @@ def dilatar(rgba, hay, pasos=6):
     return rgba
 
 # ---------- materiales ----------
-def material(nombre, rugosidad=0.8, sss=0.0, imagen=None, alfa=False, brillo=0.0):
+def material(nombre, rugosidad=0.8, sss=0.0, imagen=None, alfa=False, brillo=0.0, metal=0.0):
     m = bpy.data.materials.new(nombre)
     nt = m.node_tree; p = nt.nodes['Principled BSDF']
     p.inputs['Roughness'].default_value = rugosidad
+    p.inputs['Metallic'].default_value = metal
     if imagen is not None:
         tx = nt.nodes.new('ShaderNodeTexImage'); tx.image = imagen
         nt.links.new(tx.outputs['Color'], p.inputs['Base Color'])
@@ -114,7 +117,7 @@ def material(nombre, rugosidad=0.8, sss=0.0, imagen=None, alfa=False, brillo=0.0
     return m
 
 # ---------- trozos de la malla ----------
-def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None):
+def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None, metal=0.0):
     """copia de `base` con solo los vértices para los que quedarse(i, co) es cierto; la empuja por la normal.
     color(P, A) da el color por vértice; textura=(res, fn(P, A) → rgba) pinta una textura en su mapa UV"""
     ob = base.copy(); ob.data = base.data.copy(); ob.name = nombre
@@ -166,16 +169,19 @@ def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosida
     if ajustar_uv:  # las mallas auxiliares ocupan un rincón del mapa UV: se estira su trozo para que use toda la textura
         uv = np.zeros(len(me.loops) * 2); me.uv_layers['UVMap'].data.foreach_get('uv', uv); uv = uv.reshape(-1, 2)
         lo, hi = uv.min(0), uv.max(0); uv = 0.01 + 0.98 * (uv - lo) / (hi - lo)
+        global UV_TROZO; UV_TROZO = (hi - lo) / 0.98  # cuánto del mapa original ocupa (para dibujos de tamaño fijo)
         me.uv_layers['UVMap'].data.foreach_set('uv', uv.ravel())
     if textura:
         res, fn = textura
         img, hay = rasterizar(ob, res, ATR)
+        global REJILLA_UV  # coordenadas UV de cada píxel, para dibujos que van por la tela (anillas de la malla)
+        REJILLA_UV = np.meshgrid((np.arange(res) + 0.5) / res, (np.arange(res) + 0.5) / res)
         rgba = dilatar(fn(img[..., :3], img[..., 3:]), hay)
         im = bpy.data.images.new(nombre, res, res, alpha=True)
         rgba = np.clip(rgba, 0, 1); rgba[..., :3] = rgba[..., :3] ** (1 / 2.2)  # la imagen se guarda en sRGB
         im.pixels.foreach_set(rgba.astype(np.float32).ravel())
         im.filepath_raw = os.path.join(SALIDA, nombre + '.png'); im.file_format = 'PNG'; im.save()
-        me.materials.append(material(nombre, rugosidad, sss, im, alfa=rgba[..., 3].min() < 0.99, brillo=brillo))
+        me.materials.append(material(nombre, rugosidad, sss, im, alfa=rgba[..., 3].min() < 0.99, brillo=brillo, metal=metal))
     else:
         c = color(pos, ATR[orig])
         capa = me.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
@@ -420,6 +426,7 @@ def personaje(nombre, macros, objetivos, ropa):
         x, y, z = np.abs(P[..., 0]), P[..., 1], P[..., 2]
         corte = cuello_z + alto_cuello - escote * suave(-0.03, -0.09, y) * suave(0.075, 0.03, x)
         a = suave(0.0015, -0.0015, z - corte)
+        a = np.maximum(a, suave(0.068, 0.082, x))  # el escote solo alrededor del cuello: si no, con cuello alto cortaba lo alto de los hombros
         d = np.minimum(*[np.linalg.norm(P - m, axis=-1) for m in muneca])
         return a * suave(hueco_muneca - 0.002, hueco_muneca + 0.002, d)
     def acolchado(P):
@@ -434,22 +441,55 @@ def personaje(nombre, macros, objetivos, ropa):
     arriba = lambda alto: (lambda i, c: en(i, 'helper-tights') and cintura_z - 0.06 < c.z < cuello_z + alto and not cerca_muneca(c, 0.015) and not mano(i))
     tronco = lambda c, i: abs(c.x) < 0.15 and cintura_z - 0.05 < c.z < cuello_z - 0.05
     def prenda(capa, color, empuje_tronco, empuje_manga, largo, alto_cuello=-0.004, escote=0.02, muneca_hueco=0.043,
-               alisado=None, colgar_pecho=False, dibujo=None, rugosidad=0.95):
+               alisado=None, colgar_pecho=False, dibujo=None, rugosidad=0.95, metal=0.0, sin_mangas=False, manga_hasta=None, res=1024):
+        """una prenda: cuerpo (malla ceñida de la base) + falda (malla de falda de la base). Bordes por transparencia.
+        dibujo(P) multiplica el color (acolchado, anillas…); sin_mangas recorta la sisa; manga_hasta: distancia de la muñeca
+        a la que acaba la manga (más corta que la camisa)"""
         colp = lin(color)
+        hueco = manga_hasta or muneca_hueco
+        def separacion(c):  # de la piel: más en el tronco que en las mangas, con paso suave en el hombro (un escalón se veía como mancha oscura)
+            t = min(1.0, max(0.0, (abs(c.x) - 0.15) / 0.05)); t = t * t * (3 - 2 * t)
+            return empuje_tronco * (1 - t) + empuje_manga * t
+        def alfa(P):
+            a = corte_cuello_mangas(P, alto_cuello, hueco, escote)
+            if sin_mangas:  # sisa: sin mangas, desde el hombro
+                a = a * suave(0.165, 0.150, np.abs(P[..., 0]))
+            return a
         def pintar(P, A):
             col = colp[None, None, :] * (0.88 + 0.16 * fbm(P, 25)[..., None]) * (0.95 + 0.05 * ruido(P, 900)[..., None])
             if dibujo: col = col * dibujo(P)[..., None]
-            return np.concatenate([col, corte_cuello_mangas(P, alto_cuello, muneca_hueco, escote)[..., None]], -1)
-        cuerpo_ = trozo(base, f'{nombre}_capa_{capa}', arriba(alto_cuello + 0.03), empuje=lambda c, i: empuje_tronco if abs(c.x) < 0.17 else empuje_manga,
-                        textura=(1024, pintar), rugosidad=rugosidad, ajustar_uv=True,
+            return np.concatenate([col, alfa(P)[..., None]], -1)
+        def pintar_falda(P, A):
+            col = colp[None, None, :] * (0.88 + 0.16 * fbm(P, 25)[..., None])
+            if dibujo: col = col * dibujo(P)[..., None]
+            return np.concatenate([col, np.ones(P.shape[:2] + (1,))], -1)
+        # cuerpo y mangas por separado: en el juego, una capa sin mangas (sobreveste) no esconde las mangas de debajo
+        HOMBRO = 0.185
+        cuerpo_sel = (lambda i, c: arriba(alto_cuello + 0.03)(i, c) and abs(c.x) < (0.19 if sin_mangas else HOMBRO + 0.035))
+        cuerpo_ = trozo(base, f'{nombre}_capa_{capa}', cuerpo_sel, empuje=lambda c, i: separacion(c),
+                        textura=(res, pintar), rugosidad=rugosidad, ajustar_uv=True, metal=metal,
                         colgar=(cintura_z, cuello_z - 0.03, 0.16) if colgar_pecho else None, alisar=alisado)
-        def color_falda(P, A):
-            col = colp[None, :] * (0.88 + 0.16 * fbm(P, 25)[:, None])
-            return col * dibujo(P[None])[0][:, None] if dibujo else col
-        falda_ = trozo(base, f'{nombre}_capa_{capa}_falda', lambda i, c: en(i, 'helper-skirt') and largo < c.z < cintura_z + 0.012,  # el empalme queda bajo el cinturón (más arriba asomaba por la tripa)
-                      
-                       empuje=empuje_tronco, color=color_falda, rugosidad=rugosidad)
-        return [cuerpo_, falda_]
+        piezas_ = [cuerpo_]
+        if not sin_mangas:  # las mangas montan sobre el cuerpo para que no quede raja
+            piezas_.append(trozo(base, f'{nombre}_capa_{capa}_mangas', lambda i, c: arriba(alto_cuello + 0.03)(i, c) and abs(c.x) > HOMBRO - 0.035,  # solape ancho: los cuadros del hombro miden unos 3 cm y, si no, quedaba alguno sin nadie (agujero)
+                                
+                                 empuje=lambda c, i: separacion(c) + 0.002,  # +2 mm: donde montan, sin parpadeo
+                                 textura=(res // 2, pintar), rugosidad=rugosidad, ajustar_uv=True, metal=metal))
+        falda_ = trozo(base, f'{nombre}_capa_{capa}_falda', lambda i, c: en(i, 'helper-skirt') and largo < c.z < cintura_z + 0.012,  # el empalme queda bajo el cinturón
+                       empuje=empuje_tronco, textura=(res // 2, pintar_falda), ajustar_uv=True, rugosidad=rugosidad, metal=metal)
+        return piezas_ + [falda_]
+    def anillas(P):
+        """cota de malla: filas de anillas cruzadas (dibujo por la tela, en UV), con brillo arriba y hueco oscuro"""
+        U, V = REJILLA_UV
+        if U.shape != P.shape[:2]: return np.ones(P.shape[:2])
+        n = 1600 * UV_TROZO  # anillas por unidad del mapa original: mismo tamaño en el cuerpo, las mangas y la falda
+        su, sv = U * n[0], V * n[1] * 1.25
+        fila = np.floor(sv)
+        lu = (su + 0.5 * (fila % 2)) % 1 - 0.5; lv = sv % 1 - 0.5
+        r = np.sqrt(lu * lu + (lv * 0.8) ** 2)
+        aro = suave(0.16, 0.24, r) * suave(0.48, 0.38, r)  # el alambre de la anilla
+        brillo = 0.75 + 0.5 * suave(0.2, -0.3, lv)  # la parte de arriba de cada anilla coge luz
+        return 0.42 + 0.7 * aro * brillo  # el hueco no es negro: donde el mapa se estira, las anillas se funden en gris y no en manchas oscuras
     # base: camisa de lino (más larga en la mujer: camisa hasta los tobillos)
     largo_camisa = tobillo_z + 0.05 if mujer else rodilla_z + 0.12
     piezas += prenda('camisa', ropa.get('camisa', (206, 196, 172)), 0.006, 0.003, largo_camisa, alto_cuello=0.0, escote=0.012, muneca_hueco=0.041)
@@ -464,6 +504,17 @@ def personaje(nombre, macros, objetivos, ropa):
                       muneca_hueco=0.04, alisado=(tronco, 25, 0.024), colgar_pecho=True, dibujo=acolchado)
     piezas += gambeson
     piezas.append(cinturon(f'{nombre}_cinturon_gambeson', gambeson, cintura_z, lin((40, 26, 17))))
+    # cota de malla sobre el gambesón: hasta la rodilla, mangas hasta media mano del antebrazo; metal gris
+    # (metal a medias: sin reflejos del entorno en el juego, el metal puro sale negro)
+    cota = prenda('cota', (176, 176, 170), 0.034, 0.023, rodilla_z + 0.02, alto_cuello=0.026, escote=0.0, manga_hasta=0.09,
+                  alisado=(tronco, 25, 0.032), colgar_pecho=True, dibujo=anillas, rugosidad=0.5, metal=0.45)
+    piezas += cota
+    piezas.append(cinturon(f'{nombre}_cinturon_cota', cota, cintura_z, lin((40, 26, 17))))
+    # sobreveste encima de todo: sin mangas, hasta media pierna, de lana teñida
+    sobreveste = prenda('sobreveste', ropa.get('sobreveste', (118, 46, 38)), 0.042, 0.03, rodilla_z - 0.16 if not mujer else tobillo_z + 0.06,
+                        alto_cuello=-0.006, escote=0.018, sin_mangas=True, alisado=(tronco, 25, 0.04), colgar_pecho=True)
+    piezas += sobreveste
+    piezas.append(cinturon(f'{nombre}_cinturon_sobreveste', sobreveste, cintura_z, lin((40, 26, 17))))
     if not mujer:
         piezas.append(trozo(base, nombre + '_capa_calzas', lambda i, c: en(i, 'helper-tights') and tobillo_z + 0.03 < c.z < largo_camisa + 0.10,  # bajo la camisa no hacen falta (se atravesaban)
                            

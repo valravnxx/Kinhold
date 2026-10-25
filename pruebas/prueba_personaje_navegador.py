@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v3'), f'{sitio}/recursos/personajes/taller-v3')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v4'), f'{sitio}/recursos/personajes/taller-v4')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -149,6 +149,14 @@ with sync_playwright() as p:
         pg.evaluate(f"{E}.instante(1.0)"); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_gambeson.png')
         pg.click('[data-capa="gambeson"]'); pg.wait_for_timeout(200)
         comprobar('capas: al quitarlo vuelve como estaba', sorted(vis()) == sorted(antes))
+        # cota y sobreveste: la sobreveste no tiene mangas, así que deja ver las de la cota (y su cuello)
+        for c in ['cota', 'sobreveste']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
+        con = vis()
+        if os.environ.get('MUTAR'): con = [x for x in con if 'mangas' not in x]
+        comprobar('capas: con sobreveste se ven las mangas y el cuello de la cota', 'mujer_capa_sobreveste' in con and 'mujer_capa_cota_mangas' in con and 'mujer_capa_cota' in con,
+                  ', '.join(sorted(x for x in con if 'capa' in x)))
+        pg.evaluate(f"{E}.instante(1.0)"); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_sobreveste.png')
+        for c in ['cota', 'sobreveste']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
         # en calidad alta, toda la ropa y el pelo escriben profundidad (si no, la piel se pinta encima: v5)
         pg.evaluate(f"{E}.cambiar({{calidad: 'alta'}})"); listo(pg)
         malos = pg.evaluate(f"(() => {{ const m = []; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && (!o.material.depthWrite || o.material.transparent)) m.push(o.name); }}); return m; }})()")

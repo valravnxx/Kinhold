@@ -1,5 +1,5 @@
 // Decisiones tomadas en el personaje, para revisar.
-export const VERSION_PERSONAJE = 'Personaje · v8 (taller propio con MakeHuman, ropa por capas)';
+export const VERSION_PERSONAJE = 'Personaje · v9 (taller propio con MakeHuman, ropa por capas y armadura)';
 export const REGISTRO_PERSONAJE = [
   'v2, por qué: el personaje esculpido por código de la v1 daba grima. Pedro: nada de inventos, usar bases ya hechas. Se usan los paquetes libres (CC0, se pueden usar y vender sin pagar ni citar) de Quaternius: Universal Base Characters, Modular Character Outfits – Fantasy y Universal Animation Library. Licencias junto a los modelos, en recursos/personajes/v1/ de la web.',
   'Cómo se monta: de la base se usa solo la cabeza y el cuello (el resto lo tapa la ropa, como indica el propio paquete), más la ropa, el pelo y la barba. Todo comparte el mismo esqueleto de 65 huesos, así que la ropa y las armaduras que vengan después se ponen y se quitan como capas.',
@@ -17,5 +17,6 @@ export const REGISTRO_PERSONAJE = [
   'v7, taller propio (Pedro: «el hombre tiene tetas, el cuerpo doblado hacia delante, los hombros muy para atrás»): las animaciones del paquete van con el tronco y el cuello inclinados hacia delante y los brazos colgando hacia atrás, a juego con sus muñecos de cabeza grande. Ahora se mide esa inclinación en la animación de estar quieto y se quita (deja un 30 %), los hombros ya no se igualan al paquete y los brazos se giran para colgar rectos. La túnica del hombre se alisa en el pecho para que caiga como tela y no marque.',
   'v8: Pedro elige el taller propio como base de los personajes. Primera tanda de ropa por capas, hecha por código: debajo siempre la camisa de lino (en la mujer, larga hasta los tobillos), las calzas y los zapatos; encima, túnica (hombre) o vestido (mujer), y sobre todo el gambesón acolchado, con sus canales cosidos pintados. Cada capa va algo más separada de la piel que la de debajo.',
   'v8, cómo se ven las capas: lo que queda tapado del todo no se dibuja (el cuerpo de una prenda se esconde si lleva otra encima, y su falda solo asoma si es más larga), así no se atraviesan al moverse y se ahorran triángulos. El cinturón va sobre la capa de más fuera.',
+  'v9: cota de malla (hasta la rodilla, mangas hasta medio antebrazo; anillas pintadas por código, metal a medias porque sin reflejos del entorno el metal puro sale negro) y sobreveste sin mangas de lana teñida, por encima de todo. Cada prenda va partida en cuerpo, mangas y falda: la sobreveste deja ver las mangas y el cuello de la cota.',
   'Pendiente de decidir contigo: si el estilo de estas bases te vale como punto de partida para todo el juego (incluido el combate), y qué ropa medieval falta (gambesón, cota de malla, capas).',
 ]
