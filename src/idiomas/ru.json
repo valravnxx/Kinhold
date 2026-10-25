@@ -396,5 +396,11 @@
  "Espalda": "Спина",
  "Cargando personaje…": "Загрузка персонажа…",
  "Kinhold Estilo": "Kinhold: стиль",
- "Kinhold Personaje": "Kinhold: персонаж"
+ "Kinhold Personaje": "Kinhold: персонаж",
+ "Textos de la interfaz en español, inglés y ruso (botones arriba a la derecha; en el móvil, un desplegable con el idioma).": "Тексты интерфейса на испанском, английском и русском (кнопки вверху справа; на телефоне — выпадающий список языков).",
+ "Hito 1 · v7": "Этап 1 · v7",
+ "v6: también en ruso; en el móvil, el idioma se elige en un desplegable.": "v6: теперь и на русском; на телефоне язык выбирается в выпадающем списке.",
+ "Combate · v6": "Бой · v6",
+ "Prueba de estilo · v8 (realismo en miniatura, con el personaje por código; también en inglés y en ruso)": "Тест стиля · v8 (миниатюрный реализм, с персонажем из кода; также на английском и русском)",
+ "Personaje · v11 (taller propio con MakeHuman, ropa por capas y armadura; también en inglés y en ruso)": "Персонаж · v11 (собственная мастерская с MakeHuman, многослойная одежда и доспехи; также на английском и русском)"
 }

@@ -1,5 +1,5 @@
 // Decisiones tomadas en la prueba de estilo, para revisar.
-export const VERSION_ESTILO = 'Prueba de estilo · v7 (realismo en miniatura, con el personaje por código; también en inglés)';
+export const VERSION_ESTILO = 'Prueba de estilo · v8 (realismo en miniatura, con el personaje por código; también en inglés y en ruso)';
 export const REGISTRO_ESTILO = [
   'v7: también en inglés, con el botón ES/EN arriba como en la construcción y el combate (recuerda el idioma elegido, también el de la web). La escena no cambia.',
   'v6, el personaje: hecho todo por código, como decidiste. Es una sola malla continua (sin piezas sueltas ni juntas): el cuerpo se describe como una suma suave de formas (cráneo, cara, nariz, cejas, orejas, tronco, brazos, manos con pulgar, piernas, pies) y se convierte en malla, con más detalle en la cara y las manos.',

@@ -1,5 +1,5 @@
 // Decisiones tomadas en el personaje, para revisar.
-export const VERSION_PERSONAJE = 'Personaje · v10 (taller propio con MakeHuman, ropa por capas y armadura; también en inglés)';
+export const VERSION_PERSONAJE = 'Personaje · v11 (taller propio con MakeHuman, ropa por capas y armadura; también en inglés y en ruso)';
 export const REGISTRO_PERSONAJE = [
   'v2, por qué: el personaje esculpido por código de la v1 daba grima. Pedro: nada de inventos, usar bases ya hechas. Se usan los paquetes libres (CC0, se pueden usar y vender sin pagar ni citar) de Quaternius: Universal Base Characters, Modular Character Outfits – Fantasy y Universal Animation Library. Licencias junto a los modelos, en recursos/personajes/v1/ de la web.',
   'Cómo se monta: de la base se usa solo la cabeza y el cuello (el resto lo tapa la ropa, como indica el propio paquete), más la ropa, el pelo y la barba. Todo comparte el mismo esqueleto de 65 huesos, así que la ropa y las armaduras que vengan después se ponen y se quitan como capas.',

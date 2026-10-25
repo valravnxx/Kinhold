@@ -396,5 +396,11 @@
  "Espalda": "Back",
  "Cargando personaje…": "Loading character…",
  "Kinhold Estilo": "Kinhold Style",
- "Kinhold Personaje": "Kinhold Character"
+ "Kinhold Personaje": "Kinhold Character",
+ "Textos de la interfaz en español, inglés y ruso (botones arriba a la derecha; en el móvil, un desplegable con el idioma).": "Interface text in Spanish, English and Russian (buttons at the top right; on mobile, a drop-down with the language).",
+ "Hito 1 · v7": "Milestone 1 · v7",
+ "v6: también en ruso; en el móvil, el idioma se elige en un desplegable.": "v6: also in Russian; on mobile, the language is chosen from a drop-down.",
+ "Combate · v6": "Combat · v6",
+ "Prueba de estilo · v8 (realismo en miniatura, con el personaje por código; también en inglés y en ruso)": "Style test · v8 (miniature realism, with the code-made character; also in English and Russian)",
+ "Personaje · v11 (taller propio con MakeHuman, ropa por capas y armadura; también en inglés y en ruso)": "Character · v11 (own workshop with MakeHuman, layered clothing and armour; also in English and Russian)"
 }

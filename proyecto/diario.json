@@ -614,5 +614,26 @@
   "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, personaje horneado, textos traducidos 321/321, navegador de construcción, combate, estilo, personaje, recursos, inglés y web), PC y móvil",
   "capturas": "capturas/personaje-v10",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T11:21:12+00:00",
+  "fin": "2026-10-25T12:15:21+00:00",
+  "titulo": "Juego y web en ruso",
+  "hito": "infra",
+  "hecho": [
+   "Los cuatro prototipos (construcción v7, combate v6, prueba de estilo v8 y personaje v11) están también en ruso: 398 textos del juego en src/idiomas/ru.json.",
+   "La web de progreso tiene botón RU: textos fijos, roadmap y diario en ruso (427 textos en proyecto/idiomas/ru.json); construir_web.mjs exige ahora el ruso completo, igual que el inglés.",
+   "Los documentos de diseño aún no están en ruso: la web en ruso enlaza a los de inglés. Queda como tarea nueva del hito de infraestructura.",
+   "En el móvil no cabían tres botones de idioma: ahora hay un desplegable con el idioma (en PC siguen los botones ES · EN · RU).",
+   "En el móvil, los botones de modo de la construcción se colocan debajo del menú de arriba según lo que mide de verdad (en ruso el menú ocupa tres filas y los tapaba), y el panel de opciones del personaje se coloca encima de la barra de vistas aunque esta ocupe dos filas.",
+   "En ruso, el botón «Parar» del combate (Парировать) va con letra algo más pequeña para que quepa en el círculo.",
+   "La prueba de idiomas comprueba también el ruso (que no falte ningún texto, que las variables coincidan y que esté en cirílico); rota a propósito con MUTAR=ru, falla donde debe.",
+   "La prueba de navegador de idiomas recorre todas las vistas de los cuatro prototipos en ruso, en PC y móvil: sin textos sin traducir, sin español ni inglés a la vista, nada que se salga por los lados y el menú que no tapa los botones de modo. La de la web prueba el botón RU.",
+   "Visto en las capturas y apuntado como tarea: en el móvil, el aviso de la construcción tapa «Reiniciar» (ya pasaba en inglés) y las notas de la prueba de estilo tapan la barra de vistas.",
+   "No comprobado: la prueba de navegador del ruso y la de la web rotas a propósito (MUTAR=1); las traducciones al ruso no las ha revisado una persona que hable ruso."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, personaje horneado, textos traducidos 322/322 en inglés y ruso, navegador de construcción, combate, estilo, personaje, recursos, inglés y ruso, y web), PC y móvil",
+  "capturas": "capturas/construccion-v7",
+  "estado": "ok"
  }
 ]

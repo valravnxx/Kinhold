@@ -39,6 +39,12 @@
     },
     {
      "nombre": "Ruso: traducir el juego y la web (el archivo de ruso está vacío), con la misma comprobación que el inglés",
+     "estado": "hecho",
+     "inicio": "2026-10-25T11:21:12+00:00",
+     "fin": "2026-10-25T12:15:21+00:00"
+    },
+    {
+     "nombre": "Documentos de diseño en ruso (GDD, sistemas y análisis), con selector de idioma; mientras tanto, la web en ruso enlaza a los documentos en inglés",
      "estado": "pendiente"
     }
    ],
@@ -100,6 +106,10 @@
     },
     {
      "nombre": "Rendimiento de la demo única: medir fotogramas, triángulos y memoria con la escena y varios personajes, dejar los números a la vista y pedir a Pedro los fps en su móvil",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "En el móvil, ningún aviso ni panel tapa los menús: el aviso de la construcción tapa «Reiniciar» (más en inglés y en ruso) y las notas de la prueba de estilo tapan la barra de vistas cuando esta ocupa dos filas",
      "estado": "pendiente"
     },
     {
@@ -557,6 +567,13 @@
      "archivo": "jugar/construccion/v6.html",
      "capturas": "capturas/construccion-v6",
      "notas": "Escalera de tablas: ocupa una casilla y se sube andando, sin botón; encima deja el hueco abierto."
+    },
+    {
+     "v": "v7",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/construccion/v7.html",
+     "capturas": "capturas/construccion-v7",
+     "notas": "v7: también en ruso (botón RU arriba; en el móvil, el idioma se elige en un desplegable y los botones de modo se colocan debajo del menú)."
     }
    ]
   },
@@ -592,6 +609,13 @@
      "archivo": "jugar/combate/v5.html",
      "capturas": "capturas/combate-v5",
      "notas": "Combate en inglés: botón ES/EN arriba a la derecha y todos los textos traducidos (ayuda, avisos, registro, menús y decisiones). En el móvil, el panel de opciones ya no tapa el menú."
+    },
+    {
+     "v": "v6",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/combate/v6.html",
+     "capturas": "capturas/combate-v6",
+     "notas": "v6: también en ruso, con el mismo selector de idioma."
     }
    ]
   },
@@ -648,6 +672,13 @@
      "archivo": "jugar/estilo/v7.html",
      "capturas": "capturas/estilo-v7",
      "notas": "Prueba de estilo en inglés: botón ES/EN arriba (recuerda el idioma elegido, también el de la web); la escena no cambia."
+    },
+    {
+     "v": "v8",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/estilo/v8.html",
+     "capturas": "capturas/estilo-v8",
+     "notas": "v8: también en ruso. La escena no cambia."
     }
    ]
   },
@@ -725,6 +756,13 @@
      "archivo": "jugar/personaje/v10.html",
      "capturas": "capturas/personaje-v10",
      "notas": "Visor de personaje en inglés: botón ES/EN arriba (recuerda el idioma elegido, también el de la web); el personaje no cambia."
+    },
+    {
+     "v": "v11",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/personaje/v11.html",
+     "capturas": "capturas/personaje-v11",
+     "notas": "v11: también en ruso; en el móvil, el panel de opciones se coloca encima de la barra de vistas aunque esta ocupe dos filas."
     }
    ]
   }
