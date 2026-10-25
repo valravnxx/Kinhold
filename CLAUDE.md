@@ -13,6 +13,7 @@ Kinhold es el juego de Pedro: supervivencia medieval "tipo MMO" en el navegador,
 - `proyecto/roadmap.json` — hitos y tareas con su estado. **Es lo que decide qué se hace.**
 - `proyecto/diario.json` — una entrada por sesión de trabajo, con hora de inicio y fin reales.
 - `REVISION.md` — donde Pedro deja revisiones y respuestas. Se lee al empezar cada sesión.
+- `herramientas/taller/` — taller de personajes (Blender + MPFB2 sin pantalla): `vestir_mpfb.py` (cuerpo y ropa por capas), `pasar_animaciones.mjs`, `preparar_mh.mjs`. Recursos publicados en `docs/recursos/personajes/taller-vN/` (no se tocan; los nuevos van en otra carpeta).
 - `src/` — código. `src/logica/` y `src/combate/logica.js` son lógica pura (sin three.js) para que el servidor la pueda ejecutar luego sin rehacerla. Mantenerlo así.
 - `pruebas/` — pruebas de lógica (node) y de navegador (Python Playwright con Chromium sin pantalla).
 - `docs/` — la web pública (GitHub Pages, rama main, carpeta /docs). Se genera con `node herramientas/construir_web.mjs`. Las versiones jugables están en `docs/jugar/<prototipo>/<vN>.html` y **nunca se borran ni se sobrescriben**.

@@ -60,7 +60,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Versión 0.6 · 24 oct 2026 · Todas las preguntas respondidas · El catálogo de contenido sigue en el documento de análisis</div>
+  <div class="sub">Versión 0.7 · 25 oct 2026 · Puesto al día con lo decidido probando · El catálogo de contenido sigue en el documento de análisis</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDIDO</span> lo has dicho tú
     <span class="tag method">MÉTODO</span> cómo hacerlo técnicamente
@@ -130,11 +130,15 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h2>3. Estilo visual y sonido</h2>
 <p><span class="tag ok">DECIDIDO</span>3D low-poly generado por código, con tus revisiones para ajustar.</p>
 <p><span class="tag ok">DECIDIDO</span>Sonido y música <b>relajantes y poco estridentes.</b></p>
+<p><span class="tag ok">DECIDIDO</span>Estilo del mundo: <b>«realismo en miniatura»</b> (prueba de estilo v5): formas limpias, texturas por código, luz suave con sombras de contacto, mundo sin recortar.</p>
+<p><span class="tag ok">DECIDIDO</span>Personajes: <b>nunca esculpidos ni inventados por código.</b> El cuerpo sale de la malla libre de MakeHuman (CC0) y en el <b>taller propio</b> se le hacen por código la ropa, el pelo, la barba, la piel y los ojos. Las animaciones son de Quaternius (CC0), pasadas a ese esqueleto.</p>
 <div class="box m"><span class="tag method">MÉTODO</span>
 <ul>
   <li>Modelos definidos por parámetros (proporciones, colores, lados): tus ajustes se aplican cambiando números.</li>
   <li>Capturas de cada modelo nuevo en cada entrega para que los revises.</li>
   <li>Una paleta por material para que todo sea coherente.</li>
+  <li>Taller propio sin pantalla (Blender + MPFB2, con versiones fijadas): genera los personajes vestidos, reduce mallas y pasa animaciones de un esqueleto a otro.</li>
+  <li>Niveles de detalle: versiones más sencillas de personajes y piezas para verlas de lejos y aguantar mucha gente en el móvil.</li>
 </ul></div>
 </section>
 
@@ -268,6 +272,14 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span>Ralentización: solo si vas cargado al máximo en todo, la velocidad al caminar baja hasta el <b>80%</b>.</p>
 <div class="box m"><span class="tag method">MÉTODO</span>
 <p>La reducción crece con lo lleno que vas: con poca carga no se nota, y al máximo en todos los huecos se llega al 80%.</p></div>
+<h3>Ropa por capas en el personaje</h3>
+<p><span class="tag ok">DECIDIDO</span>La ropa y la armadura <b>se ven puestas, por capas</b>: camisa (y calzas) siempre; encima túnica o vestido; gambesón; cota de malla; sobreveste. Lo que queda tapado no se dibuja.</p>
+<p><span class="tag ok">DECIDIDO</span>Todo eso <b>se podrá personalizar en el juego</b>: tinte de cada prenda, blasón o dibujo en la sobreveste y qué capas llevas.</p>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<ul>
+  <li>Cada prenda tiene sus datos en la lógica pura: qué zonas cubre, protección por tipo de golpe, abrigo y peso. Lo que se ve y lo que protege salen de lo mismo.</li>
+  <li>Las texturas de la ropa van en gris y el color aparte, para teñir sin rehacer el modelo.</li>
+</ul></div>
 </section>
 
 <section id="tala">
@@ -357,9 +369,13 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Heridas localizadas, sangrado y cansancio, visibles en el personaje y en los avisos.</li>
   <li>Armadura por zona y tipo de golpe.</li>
   <li>Curación por tipo de herida (análisis, apartado 15).</li>
+  <li>Golpes en cinco direcciones con el personaje nuevo: se prueba mover el brazo hacia el objetivo (cinemática inversa) sobre una animación base, porque el paquete de animaciones solo trae unos pocos golpes.</li>
 </ul></div>
-<div class="box o"><span class="tag open">ABIERTO</span>
-<ul><li>Enfoque de esgrima: direccional o guardias y tiempo. Se decide probando el hito de duelo.</li></ul></div>
+<p><span class="tag ok">DECIDIDO</span>Esgrima con <b>rosa de golpes</b> (combate v2): sobre el rival, cinco zonas (alto, izquierda, derecha, bajo y estocada). Defensa en tres capas: parada sin lado que cansa, parada perfecta en el último momento y golpe maestro por el mismo lado. Finta y aliento. Las guardias quedan como modo avanzado.</p>
+<p><span class="tag ok">DECIDIDO</span>Escudo (provisional): para también flechas y piedras de frente.</p>
+<p><span class="tag ok">DECIDIDO</span>Cámara táctil: arrastrar un dedo por zona libre gira la cámara, tocar sin arrastrar golpea; con el arco, la cámara sigue a donde apuntas.</p>
+<p><span class="tag ok">DECIDIDO</span>Curación: base la tabla del análisis (vendar, coser, cauterizar, entablillar, hierbas, descanso). En pleno combate se puede, pero lento y quedando vendido.</p>
+<p><span class="tag ok">DECIDIDO</span>Fuego amigo: sigue al PvP. A alguien de tu familia un tajo no le hace nada; a cualquier otro le hiere como un golpe normal.</p>
 </section>
 
 <section id="animales">
@@ -434,6 +450,9 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Guardados versionados para no perder progreso con cada actualización.</li>
   <li>Pruebas antes de cada entrega: navegador sin pantalla, capturas reales; en online, varios clientes y bots con lag simulado.</li>
   <li>Despliegue: GitHub → host, que se elige al llegar al online.</li>
+  <li><b>Toda acción que cambia el mundo es un mensaje con autor</b> (quién, qué, dónde) que la lógica pura valida y aplica; se guarda en un registro. Así el servidor la podrá validar, registrar y reproducir sin rehacer nada.</li>
+  <li>Una sola escena y un solo cargador de personajes para todas las partes del juego (construcción, combate, personaje).</li>
+  <li>El mundo se carga y se descarga por trozos alrededor del jugador desde el primer terreno.</li>
 </ul></div>
 </section>
 
@@ -442,6 +461,10 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="tw"><table>
 <tr><th>#</th><th>Hito</th><th>Jugable al terminar</th></tr>
 <tr><td>1</td><td>Construcción</td><td>Moverse con cámara libre (PC y táctil) y construir con rejilla anclada, carga, desmontaje en cascada con 75% de recuperación y decoración libre.</td></tr>
+<tr><td>0b</td><td>Bases técnicas</td><td>Acciones con autor y registro, código muerto fuera, taller con versiones fijadas, diario sin choques al trabajar varias sesiones.</td></tr>
+<tr><td>1b</td><td>Dirección de arte y personajes</td><td>Estilo del mundo, personaje del taller con ropa por capas, personalización, heridas visibles, niveles de detalle.</td></tr>
+<tr><td>1c</td><td>Más piezas de construcción</td><td>Escaleras, barandillas, contraventanas, tejas, remates, chimenea, adarve, decoración.</td></tr>
+<tr><td>1d</td><td>Una sola demo</td><td>Construcción, combate y personaje en la misma página, con la misma escena y el mismo personaje.</td></tr>
 <tr><td>2</td><td>Equipo y carga por huecos</td><td>Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.</td></tr>
 <tr><td>3</td><td>Estaciones y crafting</td><td>Primeras estaciones, recetas, desbloqueo por práctica, durabilidad y reparación.</td></tr>
 <tr><td>4</td><td>Supervivencia</td><td>Necesidades con avisos, ropa contra el frío, cama ligada y muerte con saqueo parcial.</td></tr>
@@ -452,6 +475,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>9</td><td>Granja y estaciones del año</td><td>Siembras por franja, ganado.</td></tr>
 <tr><td>10</td><td>Mundo</td><td>Pseudo-Europa por semilla, 5 países con estilo propio, caminos por uso, puentes.</td></tr>
 <tr><td>11</td><td>Servidor y cuentas</td><td>Registro, creación de personaje, mundo persistente.</td></tr>
+<tr><td>11b</td><td>Administración, registros y seguridad</td><td>Poderes de administración, registros de lo que pasa, detección de trampas y baneos.</td></tr>
 <tr><td>12</td><td>PvP online y protección offline</td><td>Combate y asedio entre jugadores; reglas de guerra.</td></tr>
 <tr><td>13</td><td>Tierras y familias</td><td>Mojones, radio de exclusión, peajes, conquista, familias, vasallajes, alianzas, escudos de armas.</td></tr>
 <tr><td>14</td><td>Economía y NPCs</td><td>Encargos y moneda, puestos sin conexión, tomos, NPCs ambulantes a sueldo, centinelas y mensajeros.</td></tr>
@@ -463,7 +487,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 
 <section id="preguntas">
 <h2>20. Preguntas pendientes</h2>
-<p>Ninguna. Lo que quede abierto se decidirá probando cada hito.</p>
+<p>Ninguna que frene el trabajo. Para más adelante: el alojamiento del servidor y su coste (al llegar al hito 11), y los fps en tu móvil con la demo única (hito 1d).</p>
 </section>
 </div>
 </body>

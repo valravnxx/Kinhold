@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="379fc16b6666c141bb9bd8554ca3e8e546262189">
+<meta name="kinhold-origen" content="41816638fcc77186c77914a845056144d6318d56">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.6</title>
 <style>
@@ -61,7 +61,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Version 0.6 · 24 Oct 2026 · All questions answered · The content catalogue remains in the analysis document</div>
+  <div class="sub">Version 0.7 · 25 Oct 2026 · Updated with what was decided by testing · The content catalogue remains in the analysis document</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDED</span> you said so
     <span class="tag method">METHOD</span> how to do it technically
@@ -131,11 +131,15 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h2>3. Visual style and sound</h2>
 <p><span class="tag ok">DECIDED</span>Code-generated low-poly 3D, with your reviews to fine-tune it.</p>
 <p><span class="tag ok">DECIDED</span>Sound and music that are <b>relaxing and not harsh.</b></p>
+<p><span class="tag ok">DECIDED</span>World style: <b>«miniature realism»</b> (style test v5): clean shapes, textures made by code, soft light with contact shadows, an uncropped world.</p>
+<p><span class="tag ok">DECIDED</span>Characters: <b>never sculpted or invented by code.</b> The body comes from the free MakeHuman mesh (CC0) and in the <b>own workshop</b> its clothing, hair, beard, skin and eyes are made by code. The animations are Quaternius's (CC0), transferred to that skeleton.</p>
 <div class="box m"><span class="tag method">METHOD</span>
 <ul>
   <li>Models defined by parameters (proportions, colours, sides): your adjustments are applied by changing numbers.</li>
   <li>Screenshots of every new model in each delivery for you to review.</li>
   <li>One palette per material so everything is consistent.</li>
+  <li>Own headless workshop (Blender + MPFB2, with pinned versions): generates the dressed characters, reduces meshes and transfers animations from one skeleton to another.</li>
+  <li>Levels of detail: simpler versions of characters and pieces to see them from afar and cope with many people on mobile.</li>
 </ul></div>
 </section>
 
@@ -269,6 +273,14 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span>Slowdown: only if you are loaded to the maximum in everything does walking speed drop to <b>80%</b>.</p>
 <div class="box m"><span class="tag method">METHOD</span>
 <p>The reduction grows with how full you are: with a light load it is not noticeable, and at the maximum in every slot it reaches 80%.</p></div>
+<h3>Layered clothing on the character</h3>
+<p><span class="tag ok">DECIDED</span>Clothing and armour <b>are seen worn, in layers</b>: shirt (and hose) always; over them a tunic or dress; gambeson; mail; surcoat. Whatever is covered is not drawn.</p>
+<p><span class="tag ok">DECIDED</span>All of it <b>can be customized in game</b>: the dye of each garment, a coat of arms or design on the surcoat, and which layers you wear.</p>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li>Each garment has its data in the pure logic: which zones it covers, protection by type of blow, warmth and weight. What is seen and what protects come from the same thing.</li>
+  <li>Clothing textures are grey and the colour is kept separately, to dye without rebuilding the model.</li>
+</ul></div>
 </section>
 
 <section id="tala">
@@ -358,9 +370,13 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Localised wounds, bleeding and fatigue, visible on the character and in the warnings.</li>
   <li>Armour by zone and type of blow.</li>
   <li>Healing by wound type (analysis, section 15).</li>
+  <li>Strikes in five directions with the new character: we will test moving the arm towards the target (inverse kinematics) over a base animation, because the animation pack only has a few strikes.</li>
 </ul></div>
-<div class="box o"><span class="tag open">OPEN</span>
-<ul><li>Fencing approach: directional, or guards and timing. To be decided by testing the duel milestone.</li></ul></div>
+<p><span class="tag ok">DECIDED</span>Fencing with a <b>strike rose</b> (combat v2): over the opponent, five zones (high, left, right, low and thrust). Defence in three layers: a parry without side that tires you, a perfect parry at the last moment, and a master strike from the same side. Feints and stamina. Guards remain as an advanced mode.</p>
+<p><span class="tag ok">DECIDED</span>Shield (provisional): it also stops arrows and stones from the front.</p>
+<p><span class="tag ok">DECIDED</span>Touch camera: dragging a finger on a free area turns the camera, tapping without dragging strikes; with the bow, the camera follows where you aim.</p>
+<p><span class="tag ok">DECIDED</span>Healing: the analysis table is the base (bandaging, stitching, cauterizing, splinting, herbs, rest). It can be done mid-fight, but slowly and leaving you exposed.</p>
+<p><span class="tag ok">DECIDED</span>Friendly fire: follows PvP. A strike does nothing to a member of your family; anyone else is wounded like a normal hit.</p>
 </section>
 
 <section id="animales">
@@ -435,6 +451,9 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Versioned saves so progress is not lost with each update.</li>
   <li>Tests before each delivery: headless browser, real screenshots; online, several clients and bots with simulated lag.</li>
   <li>Deployment: GitHub → host, to be chosen when we get to online.</li>
+  <li><b>Every action that changes the world is a message with an author</b> (who, what, where) that the pure logic validates and applies; it is kept in a log. That way the server will be able to validate, log and replay it without rewriting anything.</li>
+  <li>A single scene and a single character loader for every part of the game (building, combat, character).</li>
+  <li>The world is loaded and unloaded in chunks around the player from the first terrain.</li>
 </ul></div>
 </section>
 
@@ -443,6 +462,10 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="tw"><table>
 <tr><th>#</th><th>Milestone</th><th>Playable when finished</th></tr>
 <tr><td>1</td><td>Building</td><td>Move with a free camera (PC and touch) and build with an anchored grid, load, cascading dismantling with 75% recovery and free decoration.</td></tr>
+<tr><td>0b</td><td>Technical foundations</td><td>Actions with author and log, dead code removed, workshop with pinned versions, diary without clashes when several sessions work.</td></tr>
+<tr><td>1b</td><td>Art direction and characters</td><td>World style, workshop character with layered clothing, customization, visible wounds, levels of detail.</td></tr>
+<tr><td>1c</td><td>More building pieces</td><td>Stairs, railings, shutters, tiles, ridges, chimney, wall-walk, decoration.</td></tr>
+<tr><td>1d</td><td>A single demo</td><td>Building, combat and character on the same page, with the same scene and the same character.</td></tr>
 <tr><td>2</td><td>Equipment and slot-based carrying</td><td>Inventory panel, belts, firewood frame and other backpacks; felling, transport and slowdown from carrying.</td></tr>
 <tr><td>3</td><td>Stations and crafting</td><td>First stations, recipes, unlocking through practice, durability and repair.</td></tr>
 <tr><td>4</td><td>Survival</td><td>Needs with warnings, clothing against the cold, bound bed and death with partial looting.</td></tr>
@@ -453,6 +476,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>9</td><td>Farming and seasons</td><td>Sowing by band, livestock.</td></tr>
 <tr><td>10</td><td>World</td><td>Seed-based pseudo-Europe, 5 countries with their own style, paths through use, bridges.</td></tr>
 <tr><td>11</td><td>Server and accounts</td><td>Registration, character creation, persistent world.</td></tr>
+<tr><td>11b</td><td>Administration, logs and security</td><td>Admin powers, logs of what happens, cheat detection and bans.</td></tr>
 <tr><td>12</td><td>Online PvP and offline protection</td><td>Combat and sieges between players; war rules.</td></tr>
 <tr><td>13</td><td>Lands and families</td><td>Boundary stones, exclusion radius, tolls, conquest, families, vassalages, alliances, coats of arms.</td></tr>
 <tr><td>14</td><td>Economy and NPCs</td><td>Orders and coin, offline stalls, tomes, hired travelling NPCs, sentries and messengers.</td></tr>
@@ -464,7 +488,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 
 <section id="preguntas">
 <h2>20. Open questions</h2>
-<p>None. Whatever remains open will be decided by testing each milestone.</p>
+<p>None blocking the work. For later: the server hosting and its cost (when we reach milestone 11), and the fps on your phone with the single demo (milestone 1d).</p>
 </section>
 </div>
 </body>

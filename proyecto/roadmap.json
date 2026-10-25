@@ -32,11 +32,79 @@
      "fin": "2026-10-25T02:03:30+02:00"
     },
     {
-     "nombre": "Pruebas de estilo y personaje en inglés (con el mismo módulo de idioma), cuando Pedro haya revisado el personaje: ahora mismo nadie más toca su código",
+     "nombre": "Prueba de estilo y visor de personaje en inglés, con el mismo módulo de idioma",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Ruso: traducir el juego y la web (el archivo de ruso está vacío), con la misma comprobación que el inglés",
      "estado": "pendiente"
     }
    ],
    "nota": "Idiomas: español e inglés ya en la web; el ruso, más adelante, cuando Pedro lo pida."
+  },
+  {
+   "id": "base",
+   "num": "0b",
+   "nombre": "Bases técnicas",
+   "estado": "en_curso",
+   "jugable": "Nada nuevo a la vista: el proyecto queda preparado para el online y para trabajar varias sesiones a la vez sin pisarse.",
+   "nota": "Salió del análisis del 25 oct (pedido de Pedro). Va antes que lo demás porque cuanto más código se escriba sin esto, más cuesta arreglarlo.",
+   "tareas": [
+    {
+     "nombre": "Acciones con autor: toda acción que cambia el mundo (construir, desmontar, golpear, herir) pasa por la lógica pura como un mensaje con autor (quién, qué, dónde), se valida y se guarda en un registro; pruebas que lo comprueban y que fallan si una acción se salta el registro",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Quitar código muerto: el personaje esculpido abandonado (cuerpo, campos de distancia, datos horneados y su herramienta y prueba) y el muñeco de la prueba de estilo, sin tocar las versiones ya publicadas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Taller con versiones fijadas: anotar y comprobar al empezar la versión de Blender, el commit de MPFB2 y los paquetes, con una guía para volver a montarlo desde cero",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Diario y traducciones sin choques: una herramienta que une diario.json y en.json al fusionar ramas de varias sesiones, y su regla en CLAUDE.md",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "unificacion",
+   "num": "1d",
+   "nombre": "Una sola demo",
+   "estado": "en_curso",
+   "jugable": "Una sola página con construcción, duelo y personaje, con la misma escena del estilo elegido y el mismo personaje del taller en todo.",
+   "nota": "Plan de unificación (pedido de Pedro, 25 oct): hoy son cuatro prototipos que no se hablan y cada mejora se queda en uno. Va antes que el resto del arte y de las piezas de construcción.",
+   "tareas": [
+    {
+     "nombre": "Escena común (src/mundo/): cielo, luz, niebla, suelo y decorado con el estilo v5 en un solo módulo, que usan la construcción, el combate y el visor de personaje",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Personaje del taller en la construcción: sustituye al muñeco inicial; anda, corre y tala con sus animaciones, y empieza con camisa y calzas de lino como dice el GDD",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Personaje del taller en el combate: los dos luchadores con su ropa por capas (la armadura del duelo pasa a ser gambesón y cota del taller), con las animaciones que hay y las heridas pintadas como ahora",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Demo única: una página con menú (Construir, Duelo, Personaje); el personaje que eliges y su ropa se usan en todo; la web enlaza a ella y las versiones antiguas se quedan",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Rendimiento de la demo única: medir fotogramas, triángulos y memoria con la escena y varios personajes, dejar los números a la vista y pedir a Pedro los fps en su móvil",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
   },
   {
    "id": "construccion",
@@ -181,11 +249,15 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Terreno, hierba, árboles y luz con el estilo elegido",
+     "nombre": "Terreno, hierba, árboles y luz con el estilo elegido, ya por trozos que se cargan y se descargan alrededor del jugador (para el mundo grande)",
      "estado": "pendiente"
     },
     {
      "nombre": "Piezas de construcción con más detalle: corteza, juntas, tablas, paja",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Niveles de detalle del personaje del taller: versiones reducidas para verlo de lejos, cambio automático por distancia y texturas juntas; medido con 20 personajes en pantalla",
      "estado": "pendiente"
     },
     {
@@ -265,7 +337,16 @@
    "nombre": "Equipo y carga por huecos",
    "jugable": "Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.",
    "estado": "pendiente",
-   "tareas": []
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
+     "estado": "pendiente"
+    }
+   ]
   },
   {
    "id": "crafting",
@@ -317,6 +398,10 @@
     {
      "nombre": "Curación de heridas",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Prueba de golpes en las cinco direcciones de la rosa con el personaje del taller: el brazo va hacia el objetivo (cinemática inversa) sobre una animación base, porque el paquete solo trae unos pocos golpes; si no convence, buscar otra vía antes de seguir",
+     "estado": "pendiente"
     }
    ],
    "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
@@ -367,7 +452,16 @@
    "nombre": "Servidor y cuentas",
    "jugable": "Registro e inicio de sesión seguros, recuperación de cuenta, creación de personaje, mundo persistente con servidor autoritativo.",
    "estado": "pendiente",
-   "tareas": [],
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Comparar alojamientos y costes para el servidor y la base de datos, y llevar las opciones a Pedro (la elección es suya)",
+     "estado": "pendiente"
+    }
+   ],
    "nota": "Prioridad alta. Contraseñas con hash, conexión cifrada, límite de intentos, copias de seguridad."
   },
   {
