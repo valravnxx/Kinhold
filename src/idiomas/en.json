@@ -398,9 +398,7 @@
  "Kinhold Estilo": "Kinhold Style",
  "Kinhold Personaje": "Kinhold Character",
  "Textos de la interfaz en español, inglés y ruso (botones arriba a la derecha; en el móvil, un desplegable con el idioma).": "Interface text in Spanish, English and Russian (buttons at the top right; on mobile, a drop-down with the language).",
- "Hito 1 · v7": "Milestone 1 · v7",
  "v6: también en ruso; en el móvil, el idioma se elige en un desplegable.": "v6: also in Russian; on mobile, the language is chosen from a drop-down.",
- "Combate · v6": "Combat · v6",
  "Prueba de estilo · v8 (realismo en miniatura, con el personaje por código; también en inglés y en ruso)": "Style test · v8 (miniature realism, with the code-made character; also in English and Russian)",
  "Personaje · v11 (taller propio con MakeHuman, ropa por capas y armadura; también en inglés y en ruso)": "Character · v11 (own workshop with MakeHuman, layered clothing and armour; also in English and Russian)",
  "Acción no válida.": "Invalid action.",
@@ -415,5 +413,9 @@
  "Toda acción que cambia el mundo (mojón, colocar, desmontar, muebles, abrir puertas) es un mensaje con autor que la lógica comprueba y anota; mientras no haya cuentas, el autor es «jugador:local» y el registro vive solo en memoria durante la partida (el guardado no cambia).": "Every action that changes the world (boundary stone, placing, dismantling, furniture, opening doors) is a message with an author that the logic checks and records; until there are accounts, the author is “jugador:local” and the log lives only in memory during the game (the save does not change).",
  "Prueba de estilo · v9 (realismo en miniatura; sin el muñeco por código)": "Style test · v9 (miniature realism; without the code-made figure)",
  "v9: se quita el muñeco hecho por código de la v6 (y sus vistas «Personaje» y «Cara» y el botón «Quieto/Andando»): los personajes salen ahora del taller y se ven en el visor de personaje. La escena no cambia; su límite vuelve a 50 mil triángulos.": "v9: the code-made figure from v6 is removed (along with its «Character» and «Face» views and the «Standing/Walking» button): characters now come from the workshop and are shown in the character viewer. The scene does not change; its limit goes back to 50 thousand triangles.",
- "v7: también en inglés, con el botón ES/EN arriba como en la construcción y el combate (recuerda el idioma elegido, también el de la web).": "v7: also in English, with the ES/EN button at the top as in building and combat (it remembers the chosen language, the website's too)."
+ "v7: también en inglés, con el botón ES/EN arriba como en la construcción y el combate (recuerda el idioma elegido, también el de la web).": "v7: also in English, with the ES/EN button at the top as in building and combat (it remembers the chosen language, the website's too).",
+ "Hito 1 · v9": "Milestone 1 · v9",
+ "Combate · v7": "Combat · v7",
+ "v9: escena común del estilo elegido (src/mundo/): mismo cielo, sol, sombras blandas, niebla, suelo con textura, bosque, hierba, flores y rocas que la prueba de estilo. La hierba empieza a 16 m de la salida, porque dentro se construye y asomaría por los cimientos (provisional, hasta que la hierba se aparte sola bajo lo construido).": "v9: shared scene in the chosen style (src/mundo/): the same sky, sun, soft shadows, fog, textured ground, forest, grass, flowers and rocks as the style test. Grass starts 16 m from the starting point, because building happens inside that area and it would poke through the foundations (provisional, until grass clears itself under what is built).",
+ "v7: escena común del estilo elegido (src/mundo/): mismo cielo, sol, sombras blandas, niebla, suelo con textura, bosque, hierba, flores y rocas que la prueba de estilo, con la liza de tierra pisada en el centro.": "v7: shared scene in the chosen style (src/mundo/): the same sky, sun, soft shadows, fog, textured ground, forest, grass, flowers and rocks as the style test, with a trodden-earth fighting ground in the middle."
 }

@@ -1,5 +1,5 @@
 // Decisiones que he tomado yo en el hito 1, para que las revises.
-export const VERSION = 'Hito 1 · v7';
+export const VERSION = 'Hito 1 · v9';
 export const REGISTRO = [
   'Terreno llano en este hito. Las cuestas y su efecto en los cimientos llegan con el mundo generado.',
   'Los materiales vienen dados (y hay botón para rellenar). Recolectarlos llega en el hito 2.',
@@ -25,4 +25,5 @@ export const REGISTRO = [
   'La partida se guarda sola en el navegador (con botón para reiniciar).',
   'Toda acción que cambia el mundo (mojón, colocar, desmontar, muebles, abrir puertas) es un mensaje con autor que la lógica comprueba y anota; mientras no haya cuentas, el autor es «jugador:local» y el registro vive solo en memoria durante la partida (el guardado no cambia).',
   'Textos de la interfaz en español, inglés y ruso (botones arriba a la derecha; en el móvil, un desplegable con el idioma).',
+  'v9: escena común del estilo elegido (src/mundo/): mismo cielo, sol, sombras blandas, niebla, suelo con textura, bosque, hierba, flores y rocas que la prueba de estilo. La hierba empieza a 16 m de la salida, porque dentro se construye y asomaría por los cimientos (provisional, hasta que la hierba se aparte sola bajo lo construido).',
 ];

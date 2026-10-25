@@ -73,13 +73,15 @@ export const TEX = {
 };
 export const DENSIDAD = { veta: 1.1, anillos: 1, paja: 0.9, piedra: 1.6, corteza: 1.4, hojas: 1.2 };
 const RELIEVE = { veta: 1.2, anillos: 0.8, paja: 2.0, piedra: 1.6, corteza: 2.4, hojas: 0.5, suelo: 1.0 };
-// relieve: false quita el bumpMap (el suelo de las partes jugables: casi no se nota a la distancia de juego y es lo que más cuesta dibujar)
+// relieve: false quita el bumpMap y el filtrado anisótropo (el suelo de las partes jugables: casi no se nota a la distancia de juego y es lo que más cuesta dibujar)
 export function materialTex(tipo, { relieve = true } = {}) {
   const k = 'tex_' + tipo + (relieve ? '' : '_liso');
   if (!mats[k]) {
     if (!tipo || tipo === 'liso') return material('fijo');
     const t = textura(tipo);
-    mats[k] = new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true, map: t, ...(relieve ? { bumpMap: t, bumpScale: RELIEVE[tipo] ?? 1 } : {}) });
+    let mapa = t;
+    if (!relieve) { mapa = t.clone(); mapa.anisotropy = 1; } // versión ligera: sin relieve ni filtrado anisótropo
+    mats[k] = new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true, map: mapa, ...(relieve ? { bumpMap: t, bumpScale: RELIEVE[tipo] ?? 1 } : {}) });
   }
   return mats[k];
 }

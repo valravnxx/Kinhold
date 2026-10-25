@@ -398,9 +398,7 @@
  "Kinhold Estilo": "Kinhold: стиль",
  "Kinhold Personaje": "Kinhold: персонаж",
  "Textos de la interfaz en español, inglés y ruso (botones arriba a la derecha; en el móvil, un desplegable con el idioma).": "Тексты интерфейса на испанском, английском и русском (кнопки вверху справа; на телефоне — выпадающий список языков).",
- "Hito 1 · v7": "Этап 1 · v7",
  "v6: también en ruso; en el móvil, el idioma se elige en un desplegable.": "v6: теперь и на русском; на телефоне язык выбирается в выпадающем списке.",
- "Combate · v6": "Бой · v6",
  "Prueba de estilo · v8 (realismo en miniatura, con el personaje por código; también en inglés y en ruso)": "Тест стиля · v8 (миниатюрный реализм, с персонажем из кода; также на английском и русском)",
  "Personaje · v11 (taller propio con MakeHuman, ropa por capas y armadura; también en inglés y en ruso)": "Персонаж · v11 (собственная мастерская с MakeHuman, многослойная одежда и доспехи; также на английском и русском)",
  "Acción no válida.": "Недопустимое действие.",
@@ -415,5 +413,9 @@
  "Toda acción que cambia el mundo (mojón, colocar, desmontar, muebles, abrir puertas) es un mensaje con autor que la lógica comprueba y anota; mientras no haya cuentas, el autor es «jugador:local» y el registro vive solo en memoria durante la partida (el guardado no cambia).": "Каждое действие, меняющее мир (межевой камень, постройка, разборка, мебель, открытие дверей), — это сообщение с автором, которое логика проверяет и записывает; пока нет учётных записей, автор — «jugador:local», а журнал хранится только в памяти во время игры (сохранение не меняется).",
  "Prueba de estilo · v9 (realismo en miniatura; sin el muñeco por código)": "Проба стиля · v9 (миниатюрный реализм; без фигуры, сделанной кодом)",
  "v9: se quita el muñeco hecho por código de la v6 (y sus vistas «Personaje» y «Cara» y el botón «Quieto/Andando»): los personajes salen ahora del taller y se ven en el visor de personaje. La escena no cambia; su límite vuelve a 50 mil triángulos.": "v9: убрана фигура, сделанная кодом в v6 (вместе с видами «Персонаж» и «Лицо» и кнопкой «Стоит/Идёт»): персонажи теперь делаются в мастерской и показываются в просмотрщике персонажа. Сцена не меняется; её предел снова 50 тысяч треугольников.",
- "v7: también en inglés, con el botón ES/EN arriba como en la construcción y el combate (recuerda el idioma elegido, también el de la web).": "v7: также на английском, с кнопкой ES/EN вверху, как в строительстве и бою (запоминает выбранный язык, и язык сайта тоже)."
+ "v7: también en inglés, con el botón ES/EN arriba como en la construcción y el combate (recuerda el idioma elegido, también el de la web).": "v7: также на английском, с кнопкой ES/EN вверху, как в строительстве и бою (запоминает выбранный язык, и язык сайта тоже).",
+ "Hito 1 · v9": "Этап 1 · v9",
+ "Combate · v7": "Бой · v7",
+ "v9: escena común del estilo elegido (src/mundo/): mismo cielo, sol, sombras blandas, niebla, suelo con textura, bosque, hierba, flores y rocas que la prueba de estilo. La hierba empieza a 16 m de la salida, porque dentro se construye y asomaría por los cimientos (provisional, hasta que la hierba se aparte sola bajo lo construido).": "v9: общая сцена в выбранном стиле (src/mundo/): то же небо, солнце, мягкие тени, туман, земля с текстурой, лес, трава, цветы и камни, что и в пробе стиля. Трава начинается в 16 м от места появления, потому что внутри строят, и она проступала бы сквозь фундаменты (временно, пока трава сама не будет убираться под постройками).",
+ "v7: escena común del estilo elegido (src/mundo/): mismo cielo, sol, sombras blandas, niebla, suelo con textura, bosque, hierba, flores y rocas que la prueba de estilo, con la liza de tierra pisada en el centro.": "v7: общая сцена в выбранном стиле (src/mundo/): то же небо, солнце, мягкие тени, туман, земля с текстурой, лес, трава, цветы и камни, что и в пробе стиля, с площадкой утоптанной земли для поединка в центре."
 }

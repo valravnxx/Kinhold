@@ -1,5 +1,5 @@
 // Decisiones tomadas en el prototipo de combate, para revisar.
-export const VERSION_COMBATE = 'Combate · v6';
+export const VERSION_COMBATE = 'Combate · v7';
 export const REGISTRO_COMBATE = [
   'v2, por qué: en la v1 había que arrastrar el ratón para elegir el golpe y elegir también la línea de la parada, y la cámara y el movimiento iban a su aire. Se ha rehecho tomando lo que mejor funciona en los juegos de esgrima de referencia: rosa de golpes, parada perfecta, golpe maestro, contraataque, finta, parada sin dirección en dificultad baja y peso físico de los golpes.',
   'Atacar: sobre el rival aparece una rosa de cinco zonas (alto, izquierda, derecha, bajo y estocada en el centro). Apuntas con el cursor o tocas la zona y golpeas. Izquierda y derecha son las de tu pantalla.',
@@ -24,4 +24,5 @@ export const REGISTRO_COMBATE = [
   'El rival de la máquina tarda en reaccionar y según la dificultad lee mejor tus golpes, intenta paradas perfectas, golpes maestros y fintas. Se queda quieto mientras golpea y a veces retrocede después. Tu cinta es azul y la suya amarilla.',
   'v5: textos en español e inglés (botón arriba a la derecha); el ruso está preparado y llegará más adelante.',
   'v6: también en ruso; en el móvil, el idioma se elige en un desplegable.',
+  'v7: escena común del estilo elegido (src/mundo/): mismo cielo, sol, sombras blandas, niebla, suelo con textura, bosque, hierba, flores y rocas que la prueba de estilo, con la liza de tierra pisada en el centro.',
 ];

@@ -644,7 +644,7 @@ window.__duelo = {
   get proyectiles() { return proyectiles; }, get terminado() { return terminado; }, get lineaSel() { return lineaSel; },
   get pausa() { return pausa; }, get pausas() { return pausas; },
   get mJugador() { return mJugador; }, get mRival() { return mRival; },
-  get ctx() { return ctxCombate; }, registroAcciones,
+  get ctx() { return ctxCombate; }, registroAcciones, escena, renderer, render() { renderer.render(escena, camara); },
   nuevaPartida, atacar, disparar, lanzar, tick, registrar, parar, lineaDesdePantalla,
   configurar(o) { Object.assign(opc, o); nuevaPartida(); },
   apuntar(x, y, z) { apuntado = { x, y, z }; },
