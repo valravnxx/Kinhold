@@ -248,7 +248,7 @@ with sync_playwright() as p:
     comprobar('sin parar, la flecha te hiere', h >= 1, reg)
     ult = ev(f"{D}.registroAcciones.entradas.slice(-2)")
     comprobar('el disparo y su herida quedan en el registro de acciones con su autor',
-              ult[0]['tipo'] == 'disparo' and ult[1]['tipo'] == 'impacto' and ult[1]['autor'] == 'tirador' and ult[1]['datos']['objetivo'] == 'jugador' and ult[1]['resultado'] == 'herida', str(ult))
+              len(ult) == 2 and ult[0]['tipo'] == 'disparo' and ult[1]['tipo'] == 'impacto' and ult[1]['autor'] == 'tirador' and ult[1]['datos']['objetivo'] == 'jugador' and ult[1]['resultado'] == 'herida', str(ult))
     golpes = ev(f"{D}.registroAcciones.entradas.filter(e => e.tipo === 'golpe').map(e => e.autor)")
     comprobar('los golpes cuerpo a cuerpo de la partida quedan anotados con su autor', len(golpes) > 0 and set(golpes) <= {'jugador', 'rival'}, f'{len(golpes)} golpes')
     # el rival con escudo para tus flechas
