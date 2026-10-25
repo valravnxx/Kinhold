@@ -1,0 +1,115 @@
+{
+ "origen": "v1 (mismos modelos, comprimidos)",
+ "clips": [
+  "Crouch_Idle_Loop",
+  "Death01",
+  "Hit_Chest",
+  "Hit_Head",
+  "Idle_Loop",
+  "Idle_Talking_Loop",
+  "Interact",
+  "Jog_Fwd_Loop",
+  "PickUp_Table",
+  "Roll",
+  "Sitting_Idle_Loop",
+  "Sprint_Loop",
+  "Sword_Attack",
+  "Sword_Idle",
+  "Walk_Loop",
+  "Consume",
+  "Farm_Harvest",
+  "Hit_Knockback",
+  "Idle_FoldArms_Loop",
+  "Idle_Shield_Loop",
+  "Sword_Block",
+  "Sword_Regular_A",
+  "Sword_Regular_B",
+  "Sword_Regular_C",
+  "TreeChopping_Loop",
+  "Walk_Carry_Loop"
+ ],
+ "resumen": {
+  "animaciones": {
+   "kb_v1": 4448,
+   "kb": 726
+  },
+  "animaciones_extra": {
+   "kb_v1": 1051,
+   "kb": 1051
+  },
+  "barba": {
+   "kb_v1": 501,
+   "kb": 120
+  },
+  "base_hombre": {
+   "kb_v1": 1466,
+   "kb": 385
+  },
+  "base_mujer": {
+   "kb_v1": 1520,
+   "kb": 406
+  },
+  "cejas_hombre": {
+   "kb_v1": 503,
+   "kb": 120
+  },
+  "cejas_mujer": {
+   "kb_v1": 609,
+   "kb": 147
+  },
+  "pelo_largo": {
+   "kb_v1": 724,
+   "kb": 184
+  },
+  "pelo_mono": {
+   "kb_v1": 748,
+   "kb": 192
+  },
+  "pelo_rapado": {
+   "kb_v1": 493,
+   "kb": 117
+  },
+  "pelo_rapado_mujer": {
+   "kb_v1": 493,
+   "kb": 118
+  },
+  "pelo_raya": {
+   "kb_v1": 510,
+   "kb": 123
+  },
+  "ropa_campesino_hombre": {
+   "kb_v1": 1359,
+   "kb": 406
+  },
+  "ropa_campesino_mujer": {
+   "kb_v1": 1039,
+   "kb": 350
+  },
+  "ropa_explorador_hombre": {
+   "kb_v1": 2339,
+   "kb": 713
+  },
+  "ropa_explorador_mujer": {
+   "kb_v1": 2335,
+   "kb": 718
+  }
+ },
+ "huellas": {
+  "animaciones": "2207bb8a8cd6945c05f58ebf99199e68ae6da9d1269272e909feb2e3035f28b5",
+  "animaciones_extra": "76f57802119c21eee3430532d2978730526d59207a9016137872ca6221e48a91",
+  "barba": "e8f58e9c1ec01d06168d9c18327802be73b2ae43f96886ffb73a580b812b1c45",
+  "base_hombre": "132ef864f73c2894e3714632c1430e74077532276a7f262ddfb7ee9173b49e95",
+  "base_mujer": "fe42efba5c73b8cc6fbe0b390d7f5c53db6efd83a251d05786ef56a60b1a884b",
+  "cejas_hombre": "995e856dfc3c2559e02b1c74a87514ae143dfb045cd6052d3eea3f9577e521b2",
+  "cejas_mujer": "eefd2bc6fcccb59a3131aaffe2e4ac408dc36049baa3808b29d3431a0cd57ed4",
+  "pelo_largo": "4e9b8224a88e4f6ec1da2a7124b61fa134bf80a694158a66198f2fd64cf2965e",
+  "pelo_mono": "f9e643d1ab082c9d5235c6195dc2d3575525ebabc7529ad7444f50b1977b4881",
+  "pelo_rapado": "abf1e08c424ba7e83bd42a7c0bfe392aa2c73a9c75ed409cbc688aa1f7640c1a",
+  "pelo_rapado_mujer": "b8afe02fe6831945fdfc780ee24eecc5fa88a4e83479a96dee424886cdd9dd42",
+  "pelo_raya": "a0fd1cce711a49c7c775ecc82a41ce0306edaca11d9a0966803c060601e98119",
+  "ropa_campesino_hombre": "e2e95943d2a9d272293a623d9c35a41d626e7ced575c268ecc6026a330776d39",
+  "ropa_campesino_mujer": "f95581bc8e32c232903aed752d4b42b06bf93e0f20f2dcdae0050bdb6c289754",
+  "ropa_explorador_hombre": "832e965dc787a2fc910f27323f9be41b00b6726be94072863419c760d463a657",
+  "ropa_explorador_mujer": "99f77f7ba3901c0f0c9f3c916ccba3977faaeff70dc67c1af53b6e6bf93c2ead"
+ }
+}
