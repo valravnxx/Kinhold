@@ -2,6 +2,7 @@
 // tal como los dibujaría el juego (three.js). Uso: se empaqueta con esbuild y se abre con ?glb=a.glb,b.glb
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { LUCES } from '../../src/estilo/estilos.js';
 import { crearEscena } from '../../src/estilo/escena.js';
 
@@ -24,7 +25,7 @@ const camara = new THREE.PerspectiveCamera(30, 1, 0.05, 200);
 const POS = new THREE.Vector3(1.6, 0, 4.8);
 
 const archivos = (new URLSearchParams(location.search).get('glb') || '').split(',').filter(Boolean);
-const cargador = new GLTFLoader();
+const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 const gente = [], mezcladores = [];
 let triangulos = 0;
 Promise.all(archivos.map(a => cargador.loadAsync(a))).then(res => {

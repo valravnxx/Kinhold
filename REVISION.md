@@ -9,11 +9,11 @@ El personaje esculpido por código (Personaje v1) es «horripilante, de películ
 
 ---
 
-**25 oct, 07:35 — Pedro, por el chat principal:** «Del hombre las texturas del pecho todas al revés; de la mujer igual, y de la cabeza: todo lo que has añadido está al revés.» → Lo arregla la sesión del chat principal (personaje v6).
-
----
-
 ## Procesado
+
+### 25 oct 2026 (07:35) — por el chat: ropa del taller «al revés»
+
+Arreglado en personaje v6: la ropa, el pelo y la cofia no escribían profundidad en calidad alta y la piel se pintaba encima.
 
 ### 25 oct 2026 (06:38) — por el chat: «adelante»
 

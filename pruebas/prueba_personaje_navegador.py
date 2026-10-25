@@ -127,6 +127,13 @@ with sync_playwright() as p:
             mov = max(abs(a[i][k] - b[i][k]) for i in range(2) for k in range(3))
             comprobar(f'taller propio ({sexo}): al andar se mueven piernas y brazos', mov > 0.05, f'{mov:.3f} m')
             pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_andar.png')
+        # en calidad alta, toda la ropa y el pelo escriben profundidad (si no, la piel se pinta encima: v5)
+        pg.evaluate(f"{E}.cambiar({{calidad: 'alta'}})"); listo(pg)
+        malos = pg.evaluate(f"(() => {{ const m = []; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && (!o.material.depthWrite || o.material.transparent)) m.push(o.name); }}); return m; }})()")
+        if os.environ.get('MUTAR'): malos = ['mutado']
+        comprobar('taller propio en calidad alta: todo escribe profundidad', not malos, ', '.join(malos))
+        pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_alta_cara.png')
+        pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_alta_cuerpo.png')
         tri = pg.evaluate(f'{E}.medida()')['trianglesPersonaje']
         comprobar('taller propio dentro de presupuesto (≤ 36 mil triángulos)', 5000 < tri <= 36000, str(tri))
         pg.evaluate(f"{E}.cambiar({{sexo: 'hombre'}})"); listo(pg)

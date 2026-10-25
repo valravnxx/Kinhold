@@ -451,5 +451,20 @@
   "pruebas": "Todas las pruebas correctas (lógica, construcción, combate, estilo, personaje, recursos, inglés y web), en PC y móvil. No comprobado: fps en un móvil de verdad.",
   "capturas": "capturas/personaje-v5",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T07:37:00+01:00",
+  "fin": "2026-10-25T08:14:46+01:00",
+  "titulo": "Personaje v6: arreglada la ropa del taller vista del revés",
+  "hito": "arte",
+  "hecho": [
+   "Fallo que vio Pedro en la v5: en calidad alta la túnica, el vestido, el pelo y la cofia del taller propio se veían del revés, con manchas, y el pelo desaparecía.",
+   "Causa: el cargador de modelos apaga la escritura de profundidad en los materiales con transparencia; al pasarlos a recorte no se volvía a encender, y la piel se pintaba encima. En calidad ligera no pasaba, y las pruebas solo miraban esa.",
+   "Arreglado y con prueba nueva: en calidad alta todo el personaje del taller tiene que escribir profundidad. Rota a propósito: falla como debe.",
+   "Revisadas las capturas de los dos personajes en calidad alta, en PC y en móvil."
+  ],
+  "pruebas": "Todas las pruebas correctas (lógica, construcción, combate, estilo, personaje, recursos, inglés y web), en PC y móvil.",
+  "capturas": "capturas/personaje-v6",
+  "estado": "ok"
  }
 ]

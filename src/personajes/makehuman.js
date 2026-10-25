@@ -25,7 +25,9 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     // el borde del pelo, la cofia, el escote y las mangas va en la transparencia de la textura: recorte, sin mezcla
     const recorte = !!(m.map && m.transparent);
     n.material = o.calidad === 'alta' ? m.clone() : new THREE.MeshLambertMaterial({ name: m.name, map: m.map, color: m.color.clone(), vertexColors: m.vertexColors });
-    Object.assign(n.material, { transparent: false, alphaTest: recorte ? 0.5 : 0, side: THREE.DoubleSide }); // DoubleSide: por dentro del escote y las mangas
+    // depthWrite: el cargador lo apaga en los materiales con transparencia, y entonces la piel se pinta encima del pelo
+    // y la ropa se ve del revés (fallo de la v5, lo vio Pedro). DoubleSide: por dentro del escote y las mangas
+    Object.assign(n.material, { transparent: false, depthWrite: true, alphaTest: recorte ? 0.5 : 0, side: THREE.DoubleSide });
     triangulos += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3;
   });
   const hueso = {};

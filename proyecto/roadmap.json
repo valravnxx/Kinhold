@@ -528,6 +528,13 @@
      "archivo": "jugar/personaje/v5.html",
      "capturas": "capturas/personaje-v5",
      "notas": "Nueva opción «Base del personaje»: el taller propio (cuerpo de MakeHuman con ropa, pelo y barba hechos por código) ya anda, tala y lucha con las animaciones de Quaternius pasadas a su esqueleto."
+    },
+    {
+     "v": "v6",
+     "fecha": "2026-10-25",
+     "archivo": "jugar/personaje/v6.html",
+     "capturas": "capturas/personaje-v6",
+     "notas": "Arreglo: en calidad alta la ropa, el pelo y la cofia del taller propio se veían del revés (la piel se pintaba encima). Prueba nueva que lo vigila."
     }
    ]
   }
