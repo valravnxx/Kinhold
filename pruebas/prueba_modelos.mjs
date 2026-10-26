@@ -55,5 +55,21 @@ for (const t of ['muro_tronco_puerta', 'muro_tronco_ventana']) {
   comprobar(`${PIEZAS[t].nombre}: cada tronco a la misma altura que en el muro liso`, otras.every(y => lisas.has(y)), otras.filter(y => !lisas.has(y)).join(' '));
 }
 
+console.log('Cimientos, suelos y escaleras con el estilo v5');
+// la superficie que se pisa queda donde dice la lógica y nada sale de la casilla más de 5 cm
+const esperado = { cim_piedra: P.superficieCimiento, cim_tronco: P.superficieCimiento, suelo_tronco: P.superficieSuelo, suelo_tabla: P.superficieSuelo };
+// MUTAR_SUELO=1 sube las piezas 5 cm: la prueba tiene que fallar
+if (process.env.MUTAR_SUELO) { P.superficieCimiento += 0.05; P.superficieSuelo += 0.05; }
+for (const [tipo, sup] of Object.entries(esperado)) {
+  const b = caja(modeloPieza(tipo));
+  comprobar(`${PIEZAS[tipo].nombre}: se pisa a ${sup} m`, Math.abs(b.max.y - sup) < 0.01, `arriba=${r3(b.max.y)}`);
+  const sale = Math.max(-b.min.x, b.max.x, -b.min.z, b.max.z) - 1;
+  comprobar(`${PIEZAS[tipo].nombre}: no sale de la casilla`, sale < 0.05, `sale ${r3(sale)} m`);
+}
+for (const tipo of [...Object.keys(esperado), 'escalera_mano', 'escalera_tabla']) {
+  const nombres = []; modeloPieza(tipo).traverse(o => { if (o.isMesh) nombres.push(o.name); });
+  comprobar(`${PIEZAS[tipo].nombre}: hecha con el estilo v5 (mallas por textura)`, nombres.length > 0 && nombres.every(n => n.startsWith('estilo_')), nombres.join(' '));
+}
+
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
 process.exit(mal ? 1 : 0);

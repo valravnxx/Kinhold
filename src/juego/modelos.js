@@ -275,8 +275,8 @@ function cimientoPiedra() {
     { y: giro + ruido(s) * 0.4, x: ruido(s + 1) * 0.3 }, { escala: new THREE.Vector3(0.15, 0.085, 0.07), plano: true });
   let s = 11;
   for (const lado of [-1, 1]) for (let t = -S / 2 + 0.14; t < S / 2 - 0.1; t += 0.24) {
-    piedraLado(t, -0.01, lado * (S / 2 - 0.02), 0, s++);
-    piedraLado(lado * (S / 2 - 0.02), -0.01, t + 0.06, Math.PI / 2, s++);
+    piedraLado(t, -0.01, lado * (S / 2 - 0.035), 0, s++);
+    piedraLado(lado * (S / 2 - 0.035), -0.01, t + 0.06, Math.PI / 2, s++);
   }
   return deLote(L);
 }
