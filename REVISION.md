@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 26 oct 2026 (05:04) — por el chat: revisión de la demo
+
+«Va muy bien de fps, pero la animación de correr me parece fea y exagerada, ¿podemos buscar otras?» → Se cierra la pregunta de los fps en el móvil (van bien). Tarea nueva en arte: correr más natural.
+
 ### 25 oct 2026 (17:51) — por el chat: no se pueden quitar muebles en PC
 
 «Al quitar un mueble en PC, pide clicarlo y confirmar, pero al mover el ratón para confirmar se desclica, haciendo imposible borrar muebles» → Tarea nueva en el hito 1c (en curso, la hace esta sesión de chat): en Desmontar, lo elegido con clic se queda fijo hasta confirmar o cancelar; pasar el ratón ya no lo cambia.

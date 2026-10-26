@@ -181,6 +181,10 @@
    "nota": "Prioridad alta: antes de añadir más piezas o sistemas, para no rehacerlos luego con el estilo nuevo.",
    "tareas": [
     {
+     "nombre": "Correr más natural (Pedro: «la animación de correr me parece fea y exagerada»): primero suavizar por código la del paquete (menos braceo, rebote e inclinación); después probar carreras de captura de movimiento libres para uso comercial (Rokoko o CMU) si Pedro las baja",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Tres pruebas de estilo (personaje y una escena con cabaña) con distinta luz, materiales y nivel de detalle, para que Pedro elija",
      "estado": "hecho",
      "inicio": "2026-10-24T18:41:34+02:00",
@@ -889,11 +893,5 @@
    ]
   }
  ],
- "decisiones_pendientes": [
-  {
-   "pregunta": "¿Cuántos fps ves en tu móvil en la demo única (v2), en «Construir» y en «Duelo»? Salen junto al botón «Menú»; al pulsarlos se ve el detalle. Dime también qué móvil es y, si puedes, los fps en «Construir» con 8 personajes de prueba. Con eso se decide cuánto detalle aguanta (niveles de detalle, sombras, resolución).",
-   "desde": "2026-10-26",
-   "hito": "unificacion"
-  }
- ]
+ "decisiones_pendientes": []
 }
