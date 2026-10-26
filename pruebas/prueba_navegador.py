@@ -489,6 +489,8 @@ with sync_playwright() as p:
         despues = mv.evaluate(f"{K}.mundo.construcciones.reduce((n, c) => n + c.piezas.size, 0)")
         comprobar('después de recargar sigue lo construido', despues == piezas and piezas > 0, f'{piezas} → {despues}')
         mv.evaluate("window.__marca = 1"); mv.evaluate(perder); mv.wait_for_timeout(2500)
+        try: mv.wait_for_selector('#avisoContexto button', state='visible', timeout=15000)  # a pocos fps tarda más
+        except Exception: pass
         comprobar('si vuelve a pasar enseguida no recarga en bucle: ofrece Recargar', mv.evaluate('window.__marca === 1') and mv.is_visible('#avisoContexto button'))
         mv.screenshot(path=f'{SALIDA}/07c_movil_dibujo_perdido.png')
     nav.close()
