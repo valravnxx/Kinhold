@@ -132,7 +132,9 @@
     },
     {
      "nombre": "En el móvil, ningún aviso ni panel tapa los menús: el aviso de la construcción tapa «Reiniciar» (más en inglés y en ruso) y las notas de la prueba de estilo tapan la barra de vistas cuando esta ocupa dos filas",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-26T02:20:16+00:00",
+     "fin": "2026-10-26T03:59:26+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -589,6 +591,13 @@
      "archivo": "jugar/demo/v2.html",
      "capturas": "capturas/demo-v2",
      "notas": "Los fps de tu aparato junto a «Menú» y, al pulsarlos, el detalle (tiempo de cada fotograma, triángulos, memoria y personajes en escena); en «Construir», personajes de prueba para medir con gente"
+    },
+    {
+     "v": "v3",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v3.html",
+     "capturas": "capturas/demo-v3",
+     "notas": "En el móvil, el aviso de «Construir» ya no tapa los botones del menú de arriba (tampoco en inglés y en ruso, ni con «Menú» y los fps). Lleva la construcción v11."
     }
    ]
   },
@@ -652,6 +661,13 @@
      "archivo": "jugar/construccion/v10.html",
      "capturas": "capturas/construccion-v10",
      "notas": "El jugador es el personaje del taller propio (camisa y calzas de lino): anda, corre y tala con sus animaciones"
+    },
+    {
+     "v": "v11",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/construccion/v11.html",
+     "capturas": "capturas/construccion-v11",
+     "notas": "En el móvil, el aviso de abajo del menú ya no tapa «Reiniciar» ni otros botones (tampoco en inglés y en ruso): se coloca según lo que mide el menú de arriba y a la izquierda de los botones de modo."
     }
    ]
   },
@@ -778,6 +794,13 @@
      "archivo": "jugar/estilo/v9.html",
      "capturas": "capturas/estilo-v9",
      "notas": "Sin el muñeco hecho por código (el personaje está ahora en el visor de personaje); la escena no cambia"
+    },
+    {
+     "v": "v10",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/estilo/v10.html",
+     "capturas": "capturas/estilo-v10",
+     "notas": "Las notas se colocan justo encima de la barra de vistas, aunque en el móvil esta ocupe dos filas."
     }
    ]
   },

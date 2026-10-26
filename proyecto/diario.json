@@ -844,5 +844,21 @@
   "pruebas": "Todas correctas (bash herramientas/probar_todo.sh): lógica, modelos, combate, acciones, taller, unión, textos, navegador de construcción, combate, estilo, personaje, demo, recursos, idiomas y web; capturas de la demo miradas en PC y móvil",
   "capturas": "capturas/demo-v2",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T02:20:16+00:00",
+  "fin": "2026-10-26T03:59:26+00:00",
+  "titulo": "Hito 1d: los avisos y las notas ya no tapan los menús en el móvil",
+  "hito": "unificacion",
+  "hecho": [
+   "En el móvil, el aviso de la construcción se coloca según lo que mide de verdad el menú de arriba (que en inglés y en ruso ocupa más filas, y en la demo lleva también «Menú» y los fps) y a la izquierda de los botones de modo: ya no tapa «Reiniciar» ni ningún otro botón. En PC sigue centrado, justo debajo del menú.",
+   "Las notas de la prueba de estilo se colocan justo encima de la barra de vistas, aunque esta ocupe dos filas, y nunca suben por encima de la barra de arriba.",
+   "Pruebas nuevas: en la de idiomas, que el aviso no tapa ningún botón (en inglés y en ruso, PC y móvil); en la de estilo, que las notas no tapan las barras, también con la barra de vistas estrechada a dos filas. Con MUTAR_SOLAPE=1 (aviso y notas a la altura fija de antes) fallan las dos, como deben.",
+   "Publicadas construcción v11, prueba de estilo v10 y demo única v3 (con la construcción v11).",
+   "No comprobado: en un móvil de verdad; solo en el navegador de pruebas a 390×844 (y a 320 de ancho en una prueba aparte)."
+  ],
+  "pruebas": "Todas correctas (bash herramientas/probar_todo.sh): lógica, modelos, combate, acciones, taller, unión, textos, navegador de construcción, combate, estilo, personaje, demo, recursos, idiomas y web; capturas miradas en PC y móvil",
+  "capturas": "capturas/demo-v3",
+  "estado": "ok"
  }
 ]
