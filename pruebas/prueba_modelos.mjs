@@ -1,7 +1,7 @@
 // Mide los modelos de muro: todos deben llegar exactamente a la altura de planta,
 // y los huecos de puerta y ventana deben quedar limpios.
 import * as THREE from 'three';
-import { modeloPieza, rellenoTejado, P } from '../src/juego/modelos.js';
+import { modeloPieza, rellenoTejado, mojon, P } from '../src/juego/modelos.js';
 import { PIEZAS, ALTURA, MODULO } from '../src/logica/piezas.js';
 
 let ok = 0, mal = 0;
@@ -106,6 +106,38 @@ console.log('Tejados y rellenos bajo el tejado con el estilo v5');
     comprobar(`relleno bajo el tejado (${PIEZAS[muro].nombre}): del muro al tejado, sin atravesarlo, con el estilo v5`,
       Math.abs(b.min.y) < 0.01 && b.max.y > sub - 0.06 && fuera < 0.005 && nombres.every(n => n.startsWith('estilo_')), `y de ${r3(b.min.y)} a ${r3(b.max.y)}, atraviesa ${r3(fuera)}`);
   }
+}
+
+console.log('Puertas, cercas, portillo, empalizada y mojón con el estilo v5');
+{
+  // MUTAR_PUERTA=1 ensancha la hoja de las puertas 20 cm: no cabe en el hueco y la prueba tiene que fallar
+  const nombresDe = (o) => { const n = []; o.traverse(m => { if (m.isMesh) n.push(m.name); }); return n; };
+  const conHoja = ['puerta_varas', 'puerta_tabla', 'cerca_portillo', 'empalizada_puerta'];
+  for (const tipo of [...conHoja, 'cerca', 'empalizada']) {
+    const o = modeloPieza(tipo), n = nombresDe(o);
+    comprobar(`${PIEZAS[tipo].nombre}: hecha con el estilo v5 (mallas por textura)`, n.length > 0 && n.every(x => x.startsWith('estilo_')), n.join(' '));
+    if (conHoja.includes(tipo)) {
+      const h = o.getObjectByName('hoja');
+      comprobar(`${PIEZAS[tipo].nombre}: la hoja que se abre va aparte`, !!h && nombresDe(h).length > 0);
+    }
+  }
+  const nm = nombresDe(mojon());
+  comprobar('Mojón: hecho con el estilo v5 (mallas por textura)', nm.length > 0 && nm.every(x => x.startsWith('estilo_')), nm.join(' '));
+  // la hoja de la puerta cabe en el hueco del muro (entre las jambas) y por debajo del dintel, cerrada y abierta
+  for (const tipo of ['puerta_varas', 'puerta_tabla']) {
+    const o = modeloPieza(tipo);
+    if (process.env.MUTAR_PUERTA) o.getObjectByName('hoja').scale.x = 1.2;
+    const b = caja(o), a = P.anchoPuerta / 2;
+    comprobar(`${PIEZAS[tipo].nombre}: cabe en el hueco del muro`, b.min.x >= -a - 0.005 && b.max.x <= a + 0.005 && b.min.y >= -0.005 && b.max.y <= P.altoPuerta, `x de ${r3(b.min.x)} a ${r3(b.max.x)}, y hasta ${r3(b.max.y)}`);
+    o.getObjectByName('hoja').rotation.y = -Math.PI / 2;
+    const bA = caja(o);
+    comprobar(`${PIEZAS[tipo].nombre}: abierta, deja libre el hueco`, bA.max.x <= -a + 0.12, `llega a x=${r3(bA.max.x)}`);
+  }
+  // las cercas seguidas se juntan: las varas llegan al borde de la casilla sin pasarse
+  const bc = caja(modeloPieza('cerca'));
+  comprobar('Cerca de varas: las varas llegan al borde de la casilla', bc.min.x > -MODULO / 2 - 0.05 && bc.min.x < -MODULO / 2 + 0.01 && bc.max.x < MODULO / 2 + 0.05, `x de ${r3(bc.min.x)} a ${r3(bc.max.x)}`);
+  const be = caja(modeloPieza('empalizada'));
+  comprobar(`Empalizada: unos ${P.altoEmpalizada} m de alto con las puntas`, be.max.y > P.altoEmpalizada && be.max.y < P.altoEmpalizada + 0.6 && Math.abs(be.min.y) < 0.02, `y de ${r3(be.min.y)} a ${r3(be.max.y)}`);
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

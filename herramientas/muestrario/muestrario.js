@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { prepararRenderer, crearAmbiente } from '../../src/mundo/ambiente.js';
 import { suelo } from '../../src/mundo/decorado.js';
-import { modeloPieza, decoracion } from '../../src/juego/modelos.js';
+import { modeloPieza, decoracion, mojon } from '../../src/juego/modelos.js';
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 prepararRenderer(renderer); document.body.style.margin = '0'; document.body.appendChild(renderer.domElement);
@@ -15,7 +15,10 @@ const q = new URLSearchParams(location.search);
 const lista = [...(q.get('piezas') || '').split(',').filter(Boolean).map(t => ['pieza', t]), ...(q.get('deco') || '').split(',').filter(Boolean).map(t => ['deco', t])];
 const SEP = 3.2, objetos = [];
 lista.forEach(([clase, t], i) => {
-  const o = clase === 'pieza' ? modeloPieza(t) : decoracion(t);
+  // «tipo@abierta»: con la hoja abierta (puertas y portillos); «mojon»: el mojón
+  const [tipo, extra] = t.split('@');
+  const o = clase !== 'pieza' ? decoracion(tipo) : tipo === 'mojon' ? mojon() : modeloPieza(tipo);
+  if (extra === 'abierta' && o.getObjectByName('hoja')) o.getObjectByName('hoja').rotation.y = -Math.PI / 2;
   o.position.set((i - (lista.length - 1) / 2) * SEP, 0, 0);
   o.traverse(m => { if (m.isMesh) m.castShadow = m.receiveShadow = true; });
   escena.add(o); objetos.push(o);

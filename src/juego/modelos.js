@@ -186,60 +186,85 @@ function medioMuro() {
   troncosHorizontales(L, -MODULO / 2 - SALE, MODULO / 2 + SALE, 0, ALTURA / 2);
   return deLote(L);
 }
-function cerca() {
-  const g = new THREE.Group();
-  for (const x of [-0.95, 0, 0.95]) g.add(cilindroY(0.06, 1.1, COLORES.vara, x, 0, 0, 5));
-  g.add(cilindroX(0.04, MODULO, COLORES.vara, 0, 0.45, 0, 5));
-  g.add(cilindroX(0.04, MODULO, COLORES.vara, 0, 0.9, 0, 5));
-  return g;
-}
-// Portillo de la cerca: dos postes y una hoja de varas con su tornapunta, que gira en el poste de la izquierda.
-function portillo() {
-  const g = new THREE.Group();
-  for (const x of [-0.95, 0.95]) g.add(cilindroY(0.07, 1.2, COLORES.troncoOscuro, x, 0, 0, 6));
-  const hoja = new THREE.Group();
-  const largo = 1.76; // de poste a poste, con holgura
-  for (const y of [0.3, 0.62, 0.94]) hoja.add(cilindroX(0.035, largo, COLORES.vara, 0.1 + largo / 2, y, 0, 5));
-  for (const x of [0.12, 0.1 + largo - 0.04]) hoja.add(cilindroY(0.04, 0.82, COLORES.vara, x, 0.22, 0, 5));
-  // tornapunta en diagonal, de abajo junto a las bisagras hacia arriba en el lado que cuelga
-  const dx = largo - 0.2, dy = 0.6, l = Math.hypot(dx, dy);
-  const t = cilindroX(0.03, l, COLORES.vara, 0.2 + dx / 2, 0.32 + dy / 2, 0.03, 5);
-  t.rotation.z = Math.atan2(dy, dx);
-  hoja.add(t);
-  // dos lazos de cuerda como bisagras
-  for (const y of [0.3, 0.94]) hoja.add(caja(0.09, 0.05, 0.16, COLORES.lino, 0.06, y, 0));
-  hoja.position.x = -0.95;
-  hoja.name = 'hoja';
+// ---------- Cercas, portillo y empalizada, con el estilo v5 ----------
+// Lo que se abre (la hoja) va en su propio grupo «hoja», que gira en las bisagras; el resto, fijo. Cada parte junta
+// lo suyo en una malla por textura, como las demás piezas del estilo v5.
+function conHoja(Lfijo, Lhoja, xBisagra) {
+  const g = Lfijo ? deLote(Lfijo) : new THREE.Group();
+  const hoja = deLote(Lhoja);
+  hoja.position.x = xBisagra; hoja.name = 'hoja';
   g.add(hoja);
   return g;
 }
+const CUERDA = 0xa8977a;
+// poste redondo descortezado, un poco más grueso al pie, con el corte claro arriba (como los de la cerca de la v5)
+function posteVara(L, x, alto, r, color = 'maderaOsc', z = 0, s = 1) {
+  L.add(cil(r * 0.82, r, alto, 8), color, x, alto / 2, z, { y: ruido(s) * 3 });
+  L.add(new THREE.CircleGeometry(r * 0.82, 8), 'corte', x, alto + 0.002, z, { x: -Math.PI / 2 }, { sinSuelo: true });
+}
+// vara tumbada a lo largo de X (con la veta a lo largo)
+function varaX(L, largo, r, color, x, y, z, giroZ = 0) { L.add(cil(r, r * 1.08, largo, 6), color, x, y, z, { z: Math.PI / 2 + giroZ }); }
+// lazada de cuerda alrededor de una vara vertical, a una altura
+function lazada(L, x, y, z, r) { L.add(new THREE.TorusGeometry(r + 0.012, 0.012, 4, 8), CUERDA, x, y, z, { x: Math.PI / 2 }, { sinSuelo: true }); }
+// Cerca de varas: como la de la prueba v5 (postes redondos y dos varas atadas); las varas llegan justo al borde de
+// la casilla, así los tramos seguidos parecen una sola cerca
+function cerca() {
+  const L = loteMuro();
+  [-0.95, 0, 0.95].forEach((x, i) => { posteVara(L, x, 1.15, 0.075, 'maderaOsc', 0, i + 1); for (const y of [0.45, 0.92]) lazada(L, x, y, 0, 0.065); });
+  varaX(L, MODULO, 0.035, 'madera', 0, 0.45, 0.06, 0.004);
+  varaX(L, MODULO, 0.035, 'madera', 0, 0.92, 0.06, -0.004);
+  return deLote(L);
+}
+// Portillo de la cerca: dos postes más gruesos y una hoja de varas con su tornapunta y lazadas de cuerda de bisagra,
+// que gira en el poste de la izquierda
+function portillo() {
+  const F = loteMuro();
+  for (const [i, x] of [-0.95, 0.95].entries()) posteVara(F, x, 1.25, 0.085, 'maderaOsc', 0, i + 5);
+  const H = loteMuro(), largo = 1.76; // de poste a poste, con holgura
+  for (const [i, y] of [0.3, 0.62, 0.94].entries()) varaX(H, largo, 0.033, i % 2 ? 'maderaOsc' : 'madera', 0.1 + largo / 2, y, 0.06);
+  for (const x of [0.13, 0.06 + largo]) H.add(cil(0.036, 0.04, 0.86, 6), 'madera', x, 0.2 + 0.43, 0.06);
+  // tornapunta en diagonal, de abajo junto a las bisagras hacia arriba en el lado que cuelga
+  const dx = largo - 0.2, dy = 0.6, l = Math.hypot(dx, dy);
+  H.add(cil(0.028, 0.03, l, 6), 'maderaOsc', 0.2 + dx / 2, 0.32 + dy / 2, 0.1, { z: Math.atan2(dy, dx) - Math.PI / 2 });
+  // lazos de cuerda que hacen de bisagra, y ataduras en los cruces
+  for (const y of [0.3, 0.94]) H.add(new THREE.TorusGeometry(0.1, 0.014, 4, 10), CUERDA, 0.02, y, 0.03, { x: Math.PI / 2 }, { sinSuelo: true, escala: new THREE.Vector3(1, 0.7, 1) });
+  for (const x of [0.13, 0.06 + largo]) for (const y of [0.3, 0.94]) lazada(H, x, y, 0.06, 0.036);
+  return conHoja(F, H, -0.95);
+}
+// Empalizada: troncos descortezados clavados de pie (como los de la cabaña de la prueba v5), cada uno de su alto y algo torcido, con la punta tallada (se ve la
+// madera clara) y dos traviesas detrás que los atan
 function empalizada(opc = {}) {
-  const g = new THREE.Group();
   if (opc.porton) {
-    const hoja = new THREE.Group();
-    for (let t = 0; t < 7; t++) {
-      const x = 0.14 + t * 0.27;
-      hoja.add(caja(0.25, 2.6, 0.12, t % 2 ? COLORES.tabla : COLORES.tablaOscura, x, 1.3, 0));
+    const F = loteMuro();
+    for (const s of [-1, 1]) {
+      F.add(cil(0.15, 0.17, P.altoEmpalizada + 0.2, 10), 'maderaOsc', s * MODULO / 2, (P.altoEmpalizada + 0.2) / 2, 0);
+      F.add(new THREE.ConeGeometry(0.15, 0.32, 10), 'tabla', s * MODULO / 2, P.altoEmpalizada + 0.36, 0, null, { sinSuelo: true });
     }
-    for (const y of [0.5, 1.4, 2.3]) hoja.add(caja(1.9, 0.08, 0.15, COLORES.hierro, 1.0, y, 0.04));
-    hoja.position.x = -MODULO / 2;
-    hoja.name = 'hoja';
-    g.add(hoja);
-    g.add(cilindroY(0.16, P.altoEmpalizada, COLORES.troncoOscuro, -MODULO / 2, 0, 0));
-    g.add(cilindroY(0.16, P.altoEmpalizada, COLORES.troncoOscuro, MODULO / 2, 0, 0));
-    return g;
+    const H = loteMuro(), n = 7, w = 0.27;
+    for (let t = 0; t < n; t++) {
+      const x = 0.15 + t * w, h = 2.6 + (t % 2 ? 0 : 0.06);
+      H.add(cajaR(w * 0.95, h, 0.12, 0.03), ruido(t * 2.7 + 4) > 0.5 ? 'tabla' : 'madera', x, h / 2 + 0.04, 0);
+      H.add(new THREE.ConeGeometry(w * 0.48, 0.22, 4, 1), 'tabla', x, h + 0.15, 0, { y: Math.PI / 4 }, { sinSuelo: true, escala: new THREE.Vector3(1, 1, 0.3), plano: true });
+    }
+    const ancho = n * w;
+    for (const y of [0.5, 1.4, 2.3]) {
+      H.add(cajaR(ancho, 0.16, 0.08, 0.02), 'maderaOsc', 0.15 - w / 2 + ancho / 2, y, -0.1); // traviesas por detrás
+      H.add(cajaR(ancho * 0.94, 0.07, 0.015, 0.006), 'hierro', 0.15 - w / 2 + ancho * 0.5, y, 0.068); // pletinas de hierro
+      for (let t = 0; t < n; t += 2) H.add(new THREE.SphereGeometry(0.022, 6, 4), 'hierro', 0.15 + t * w, y, 0.078, null, { sinSuelo: true }); // clavos
+    }
+    H.add(new THREE.TorusGeometry(0.08, 0.016, 5, 10), 'hierro', ancho - 0.25, 1.15, 0.09); // argolla
+    return conHoja(F, H, -MODULO / 2);
   }
-  const n = 7;
+  const L = loteMuro(), n = 7;
   for (let t = 0; t < n; t++) {
-    const x = -MODULO / 2 + (t + 0.5) * (MODULO / n);
-    const alto = P.altoEmpalizada - 0.15 + ruido(t + 3) * 0.3;
-    g.add(cilindroY(0.15, alto, t % 2 ? COLORES.tronco : COLORES.troncoOscuro, x, 0, 0));
-    const punta = new THREE.ConeGeometry(0.15, 0.4, P.ladosTronco);
-    g.add(malla(punta, COLORES.corte, x, alto + 0.2, 0));
+    const x = -MODULO / 2 + (t + 0.5) * (MODULO / n), alto = P.altoEmpalizada - 0.15 + ruido(t + 3) * 0.3;
+    const r = 0.135 + ruido(t * 5.1) * 0.025, inclina = (ruido(t * 1.9 + 2) - 0.5) * 0.04;
+    L.add(cil(r * 0.94, r, alto, 9), ruido(t * 7.7 + 1) > 0.5 ? 'madera' : 'maderaOsc', x, alto / 2, 0, { z: inclina, y: ruido(t) * 3 });
+    const punta = new THREE.ConeGeometry(r * 0.94, 0.4, 9); // la punta tallada a hachazos: madera clara, caras planas
+    L.add(punta, ruido(t * 3.3) > 0.5 ? 'tabla' : 'madera', x - Math.sin(inclina) * alto / 2, alto + 0.2, 0, { z: inclina }, { sinSuelo: true, plano: true });
   }
-  g.add(cilindroX(0.06, MODULO, COLORES.vara, 0, 1.0, -0.17, 5));
-  g.add(cilindroX(0.06, MODULO, COLORES.vara, 0, 2.2, -0.17, 5));
-  return g;
+  for (const y of [1.0, 2.2]) varaX(L, MODULO, 0.06, 'maderaOsc', 0, y, -0.2, y > 2 ? 0.006 : -0.006);
+  return deLote(L);
 }
 
 // ---------- Suelos y cimientos (centrados en la casilla), con el estilo v5 ----------
@@ -482,33 +507,44 @@ function escaleraTablas() {
   L.add(cajaR(ancho + 0.06, y0 + 0.02, 0.12, 0.015), 'maderaOsc', 0, (y0 + 0.02) / 2, -S / 2 + 0.06);
   return deLote(L);
 }
+// Puertas que van en el hueco de un muro, con el estilo v5: la de tablas como la de la cabaña de la prueba (cuatro
+// tablas, dos peinazos por detrás y bisagras largas de hierro); la de varas, varas atadas con su tornapunta
 function puerta(tipo) {
-  const g = new THREE.Group();
-  const hoja = new THREE.Group();
-  const w = P.anchoPuerta, h = P.altoPuerta - 0.05;
+  const H = loteMuro(), w = P.anchoPuerta - 0.02, h = P.altoPuerta - 0.05;
   if (tipo === 'puerta_varas') {
-    for (let x = 0.06; x < w; x += 0.13) hoja.add(cilindroY(0.04, h, COLORES.vara, x, 0, 0, 5));
-    hoja.add(cilindroX(0.03, w, COLORES.vara, w / 2, 0.4, 0.04, 5));
-    hoja.add(cilindroX(0.03, w, COLORES.vara, w / 2, 1.6, 0.04, 5));
+    let k = 0;
+    for (let x = 0.07; x < w - 0.03; x += 0.125) H.add(cil(0.038, 0.043, h - 0.04, 6), ruido(k++ * 2.3) > 0.5 ? 'madera' : 'maderaOsc', x, 0.02 + (h - 0.04) / 2, 0, { y: k });
+    for (const y of [0.4, 1.6]) { varaX(H, w, 0.032, 'maderaOsc', w / 2, y, 0.06); for (let x = 0.07; x < w - 0.03; x += 0.25) lazada(H, x, y, 0.03, 0.04); }
+    const dx = w - 0.2, dy = 1.1;
+    H.add(cil(0.03, 0.032, Math.hypot(dx, dy), 6), 'madera', w / 2, 1.0, 0.08, { z: Math.atan2(dy, dx) - Math.PI / 2 });
+    for (const y of [0.4, 1.6]) H.add(new THREE.TorusGeometry(0.04, 0.014, 4, 10), CUERDA, 0.06, y, 0.0, { x: Math.PI / 2 }, { sinSuelo: true });
   } else {
-    for (let t = 0; t < 4; t++) hoja.add(caja(w / 4 * 0.96, h, 0.06, t % 2 ? COLORES.tabla : COLORES.tablaOscura, w / 8 + t * w / 4, h / 2, 0));
-    for (const y of [0.4, 1.6]) hoja.add(caja(w * 0.9, 0.06, 0.04, COLORES.hierro, w / 2, y, 0.05));
+    const n = 4, tw = w / n;
+    for (let t = 0; t < n; t++) H.add(cajaR(tw * 0.96, h, 0.06, 0.012), t % 2 ? 'tabla' : 'madera', tw * (t + 0.5), h / 2, 0);
+    for (const y of [0.35, 1.6]) {
+      H.add(cajaR(w * 0.92, 0.11, 0.04, 0.015), 'maderaOsc', w / 2, y, -0.05); // peinazos por detrás
+      H.add(cajaR(w * 0.42, 0.045, 0.015, 0.007), 'hierro', 0.2, y, 0.037);   // bisagra larga
+      for (const x of [0.06, 0.2, 0.34]) H.add(new THREE.SphereGeometry(0.016, 6, 4), 'hierro', x, y, 0.045, null, { sinSuelo: true });
+    }
+    H.add(new THREE.TorusGeometry(0.055, 0.012, 5, 10), 'hierro', w - 0.13, 1.0, 0.05); // tirador de argolla
   }
-  hoja.position.x = -w / 2;
-  hoja.name = 'hoja';
-  g.add(hoja);
-  return g;
+  return conHoja(null, H, -P.anchoPuerta / 2 + 0.01);
 }
 
-// ---------- Mojón ----------
+// ---------- Mojón, con el estilo v5 ----------
+// Piedras apiladas (caras planas, como las de los cimientos) y una vara con un trapo atado
 export function mojon() {
-  const g = new THREE.Group();
-  g.add(piedra(0.32, COLORES.piedra, 0, 0.2, 0, 1));
-  g.add(piedra(0.25, COLORES.piedraOscura, 0.05, 0.55, 0, 2));
-  g.add(piedra(0.18, COLORES.piedra, -0.02, 0.82, 0.03, 3));
-  g.add(cilindroY(0.04, 1.6, COLORES.vara, 0.3, 0, 0.1, 5));
-  g.add(caja(0.35, 0.25, 0.02, COLORES.tela, 0.48, 1.4, 0.1));
-  return g;
+  const L = loteSuelo();
+  const piedraM = (r, x, y, z, s, color) => L.add(new THREE.IcosahedronGeometry(1, 0), color, x, y, z,
+    { y: ruido(s) * 3, x: (ruido(s + 1) - 0.5) * 0.4 }, { escala: new THREE.Vector3(r, r * 0.68, r * 0.92), plano: true, brillo: 0.9 + ruido(s + 2) * 0.15 });
+  piedraM(0.36, 0, 0.2, 0, 1, 'piedra');
+  piedraM(0.28, 0.04, 0.52, -0.02, 2, 'piedraOsc');
+  piedraM(0.2, -0.02, 0.79, 0.03, 3, 'piedra');
+  for (let i = 0; i < 6; i++) { const a = i * 1.05 + 0.3; piedraM(0.1 + ruido(i + 7) * 0.05, Math.cos(a) * 0.4, 0.04, Math.sin(a) * 0.4, i + 11, i % 2 ? 'piedraOsc' : 'piedra'); }
+  L.add(cil(0.032, 0.04, 1.62, 6), 'madera', 0.3, 0.81, 0.1, { z: -0.04 });
+  L.add(cajaR(0.34, 0.24, 0.015, 0.006), 0x7d3c30, 0.48, 1.4, 0.1, { y: 0.15, z: -0.06 }, { sinSuelo: true });
+  for (const y of [1.3, 1.5]) L.add(new THREE.TorusGeometry(0.045, 0.012, 4, 8), CUERDA, 0.305, y, 0.1, { x: Math.PI / 2 }, { sinSuelo: true });
+  return deLote(L);
 }
 
 // ---------- Decoración ----------
