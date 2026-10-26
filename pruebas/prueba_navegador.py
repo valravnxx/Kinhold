@@ -428,6 +428,12 @@ with sync_playwright() as p:
     comprobar('rehacer las piezas no deja memoria gráfica ocupada', g1 <= g0 + 5, f'geometrías {g0} → {g1} tras 20 reconstrucciones')
     comprobar('sin errores en consola (PC)', len(errores) == 0, '; '.join(errores[:3]))
     estado = pg.evaluate("localStorage.getItem('kinhold_h1_v1')")
+    # sin nada construido, toda la hierba, las flores y las matas vuelven a verse (y las matas vuelven a chocar)
+    vuelve = ev(f"""(() => {{ {K}.reiniciar(); let total = 0, visibles = 0;
+      {K}.escena.traverse(o => {{ if (o.isInstancedMesh && ['hierba', 'flores', 'matorrales'].includes(o.name)) for (let i = 0; i < o.count; i++) {{
+        const a = o.instanceMatrix.array, e = i * 16; total++; if (Math.hypot(a[e], a[e + 1], a[e + 2]) > 1e-6) visibles++; }} }});
+      return {{ total, visibles, ocultas: {K}.estado.plantasOcultas, matasOcultas: {K}.obstaculos.filter(o => o.oculto).length }}; }})()""")
+    comprobar('al quitarlo todo, la hierba y las matas vuelven', vuelve['total'] > 3000 and vuelve['visibles'] == vuelve['total'] and vuelve['ocultas'] == 0 and vuelve['matasOcultas'] == 0, json.dumps(vuelve))
     pg.close()
 
     # ---------- Móvil ----------

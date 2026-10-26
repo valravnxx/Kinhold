@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v8 (barandillas y portillo en «Construir»)';
+export const VERSION_DEMO = 'Demo única · v9 (escena con el estilo v5 en «Construir» y «Duelo»)';
 export const REGISTRO_DEMO = [
+  'v9: en «Construir» y en «Duelo», la escena como la prueba de estilo v5: hierba densa con flores, matorrales, calvas de tierra, rocas y árboles sueltos; la hierba ya no asoma por lo construido. Es la construcción v14 y el combate v10.',
   'v8: en «Construir», el medio muro hace de barandilla en el borde de un suelo en alto (por ahí ya no se cae) y hay portillo de varas para la cerca, que se abre con Usar. Es la construcción v13.',
   'v7: arreglo de la pantalla en blanco en el móvil (la construcción dejaba la memoria gráfica llena al rehacer las piezas) y aviso con recarga si se pierde el dibujo 3D. Los muros, postes y vigas con el estilo elegido. Es la construcción v12, el combate v9 y el personaje v14.',
   'v6: el cinturón de encima de la cota ya no sobresale hacia los brazos, en las tres partes. Es el personaje v14 (personajes del taller-v7), con la construcción v11 y el combate v8.',

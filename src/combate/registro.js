@@ -1,6 +1,7 @@
 // Decisiones tomadas en el prototipo de combate, para revisar.
-export const VERSION_COMBATE = 'Combate · v9';
+export const VERSION_COMBATE = 'Combate · v10';
 export const REGISTRO_COMBATE = [
+  'v10: alrededor de la liza, la escena como la prueba de estilo v5: hierba densa con flores, matorrales, calvas de tierra pisada, rocas y algunos árboles de copa sueltos antes del bosque.',
   'v9, arreglo: cada flecha disparada dejaba su malla ocupando memoria gráfica, y al empezar otra partida también las dianas y los postes; ahora se liberan. Si el navegador pierde el dibujo 3D, aviso y recarga sola, como en la construcción.',
   'v2, por qué: en la v1 había que arrastrar el ratón para elegir el golpe y elegir también la línea de la parada, y la cámara y el movimiento iban a su aire. Se ha rehecho tomando lo que mejor funciona en los juegos de esgrima de referencia: rosa de golpes, parada perfecta, golpe maestro, contraataque, finta, parada sin dirección en dificultad baja y peso físico de los golpes.',
   'Atacar: sobre el rival aparece una rosa de cinco zonas (alto, izquierda, derecha, bajo y estocada en el centro). Apuntas con el cursor o tocas la zona y golpeas. Izquierda y derecha son las de tu pantalla.',

@@ -199,8 +199,8 @@ with sync_playwright() as p:
     dorado = ev("document.querySelector('#rosa [data-l=izquierda]').classList.contains('maestro')")
     ev(f"{D}.atacar('izquierda')")
     comprobar('el borde dorado marca que cabe el golpe maestro', dorado)
-    hasta(f"{D}.rival.accion !== 'preparando'", 4000)
-    hasta(f"{D}.rival.heridas.length >= 1", 4000)
+    hasta(f"{D}.rival.accion !== 'preparando'", 15000)  # márgenes amplios: a 2-4 fps el juego va más lento
+    hasta(f"{D}.rival.heridas.length >= 1", 15000)
     st = ev(f"{D}.stats")
     comprobar('golpear por el lado espejo a tiempo es golpe maestro y hiere', st['maestros'] == 1 and ev(f"{D}.rival.heridas.length") >= 1 and ev(f"{D}.jugador.heridas.length") == 0, json.dumps(st))
 
@@ -210,7 +210,8 @@ with sync_playwright() as p:
     ev(f"{D}.jugador.z = {D}.rival.z - 2.5")
     espera(200)
     r0 = ev(f"Math.hypot({D}.jugador.x-{D}.rival.x, {D}.jugador.z-{D}.rival.z)")
-    pg.keyboard.down('d'); espera(1500); pg.keyboard.up('d')
+    # se mantiene la tecla hasta que se ha movido de lado (no un tiempo fijo: a 2-4 fps el juego va más lento)
+    pg.keyboard.down('d'); espera(1500); hasta(f"Math.abs({D}.jugador.x) > 0.7", 15000); pg.keyboard.up('d')
     r1 = ev(f"Math.hypot({D}.jugador.x-{D}.rival.x, {D}.jugador.z-{D}.rival.z)")
     x1 = ev(f"{D}.jugador.x")
     comprobar('el lateral rodea al rival sin alejarse mucho', abs(x1) > 0.5 and abs(r1 - r0) < 0.6, f'distancia {r0:.2f} -> {r1:.2f}, x={x1:.2f}')
