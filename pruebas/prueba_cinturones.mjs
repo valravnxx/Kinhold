@@ -1,8 +1,8 @@
 // Comprueba en los personajes del taller que cada cinturón ciñe su prenda y no se estira hasta los brazos
-// (en taller-v4 y v5 el de la cota llegaba a los brazos: los rayos que miden el contorno chocaban con las mangas).
+// (hasta taller-v6 el de la cota llegaba a los brazos: los rayos que miden el contorno chocaban con las mangas).
 // Mide, a la altura del cinturón, el ancho del cuerpo de la prenda y lo compara con el del cinturón.
 // Uso: node pruebas/prueba_cinturones.mjs [carpeta de recursos]   (por defecto, la última taller-vN publicada)
-//      MUTAR=1 → mira la taller-v5, que tiene el fallo: tiene que fallar.
+//      MUTAR=1 → mira la taller-v6, que tiene el fallo: tiene que fallar.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { MeshoptDecoder } from 'meshoptimizer';
@@ -10,7 +10,7 @@ import { readdirSync } from 'fs';
 
 const base = 'docs/recursos/personajes';
 const ultima = readdirSync(base).filter(d => /^taller-v\d+$/.test(d)).sort((a, b) => +a.slice(8) - +b.slice(8)).at(-1);
-const carpeta = process.env.MUTAR ? `${base}/taller-v5` : (process.argv[2] || `${base}/${ultima}`);
+const carpeta = process.env.MUTAR ? `${base}/taller-v6` : (process.argv[2] || `${base}/${ultima}`);
 await MeshoptDecoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
 
