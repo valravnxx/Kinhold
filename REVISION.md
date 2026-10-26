@@ -14,6 +14,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 «Los muebles y construcción son los low-poly iniciales, no lo de la prueba visual, tienes pendiente cambiar antes de añadir más, ¿no?» → Cierto: la escena (cielo, luz, suelo, decorado) ya tiene el estilo v5, pero las piezas y los muebles no. Cinco tareas nuevas en el hito 1c, justo después de las barandillas (que estaba a medias) y antes de cualquier pieza nueva: muros, cimientos y suelos, tejados, puertas y cercas, y muebles con el estilo de la prueba. Sustituyen a la tarea de arte «Piezas de construcción con más detalle».
 
+### 26 oct 2026 (07:36) — por el chat: hito 1d (Una sola demo)
+
+«1d aprobado, sigue» → Hito 1d aprobado y marcado como hecho. Ya no hay ningún hito en revisión: se pueden empezar hitos nuevos.
+
 ### 26 oct 2026 (06:49) — por el chat: la carrera nueva en la demo única
 
 «Ahora integra ese correr y todo en la única» → Demo única v4: el personaje del taller-v5 (carrera suavizada y a su velocidad) en construir, duelo y personaje, con lo último de cada prototipo.
