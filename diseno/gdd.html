@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kinhold GDD v0.8</title>
+<title>Kinhold GDD v0.9</title>
 <style>
 :root{
   --bg:#f6f2ea; --card:#fffdf8; --ink:#2b2520; --muted:#6f655b; --line:#e2d8c8;
@@ -60,7 +60,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Versión 0.8 · 26 oct 2026 · Mundo a escala real, agua y nado, y obras con materiales · El catálogo de contenido sigue en el documento de análisis</div>
+  <div class="sub">Versión 0.9 · 26 oct 2026 · Ampliación para un juego acabado: ciudades, comarcas, transporte, ropa tejida y convivencia online · El catálogo de contenido sigue en el documento de análisis</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDIDO</span> lo has dicho tú
     <span class="tag method">MÉTODO</span> cómo hacerlo técnicamente
@@ -89,6 +89,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li><a href="#social">Familias, alianzas y vasallajes</a></li>
   <li><a href="#tecnica">Arquitectura técnica</a></li>
   <li><a href="#hitos">Hitos</a></li>
+  <li><a href="#ampliacion">Ampliación para un juego acabado</a></li>
   <li><a href="#preguntas">Preguntas pendientes</a></li>
 </ol></nav>
 
@@ -113,7 +114,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span>Web propia con cuentas. Servidor de pago si hace falta. PC, móvil y tablet.</p>
 <p><span class="tag ok">DECIDIDO</span>Tercera persona semiisométrica con <b>rotación libre</b>.</p>
 <p><span class="tag ok">DECIDIDO</span>Idiomas: <b>inglés, español y ruso.</b></p>
-<p><span class="tag ok">DECIDIDO</span><b>Gratis</b> con contenido premium solo estético: aspectos y muebles únicos.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Gratis</b> con contenido premium solo estético: aspectos y muebles únicos que no se pueden fabricar (ver apartado 20).</p>
 <p><span class="tag ok">DECIDIDO</span><b>Tutorial opcional</b> siempre disponible en el menú de pausa: se puede leer sobre todos los sistemas del juego.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Tramposos: baneo inmediato</b>, también por IP.</p>
 <p><span class="tag ok">DECIDIDO</span>Requisitos mínimos: se decidirán a mitad de desarrollo.</p>
@@ -315,7 +316,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Quien conoce una receta puede escribirla en un <b>tomo</b> para enseñarla a otros.</li>
 </ol>
 <p><span class="tag ok">DECIDIDO</span>Sin especializaciones forzosas; el límite es el tiempo de juego.</p>
-<p><span class="tag ok">DECIDIDO</span>Durabilidad en herramientas, armas y armaduras. Se <b>reparan en la estación que las fabricó, con material del mismo tipo.</b> Sin calidades por ahora.</p>
+<p><span class="tag ok">DECIDIDO</span>Durabilidad en herramientas, armas y armaduras. Se <b>reparan en la estación que las fabricó, con material del mismo tipo.</b> Sin calidades de objetos.</p>
 </section>
 
 <section id="construccion">
@@ -525,9 +526,48 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 </table></div>
 </section>
 
+<section id="ampliacion">
+<h2>20. Ampliación para un juego acabado</h2>
+<p class="note">Aprobado por valravnx el 26 oct a partir del análisis de lo que faltaba para un juego acabado. Entre paréntesis, el hito donde se planifica cada cosa.</p>
+<h3>Mundo y ciudades</h3>
+<p><span class="tag ok">DECIDIDO</span><b>Ciudades NPC:</b> pocas por país (2–4), fijas, con mercader, tablón de encargos, mercenarios y mensajeros; <b>sin PvP dentro</b>. No son aldeas para vivir. Los jugadores empiezan cerca de una. Que la gente se asiente cerca es aceptable: crea rutas entre reinos y sitios de paso donde establecerse, y quien prefiera vivir solo o como bandido se va lejos. (Hitos 10 y 14)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Comarcas con nombre:</b> cada país se divide en comarcas que siguen el relieve (un valle, una vega, una sierra), con nombre al estilo del país. El mapa del mundo y sus nombres los revisa y ajusta valravnx a mano. (Hito 10)</p>
+<p><span class="tag ok">DECIDIDO</span>El mundo <b>no se reinicia nunca</b>. (Hito 11)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Clima:</b> despejado, nublado, lluvia, nieve (norte e invierno) y niebla, por zonas grandes y según la estación. En el norte, los ríos se hielan en invierno y se cruzan andando. (Hito 4)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Noche</b> oscura pero jugable: la luna, las antorchas, los candiles y las hogueras dan luz de verdad, y los lobos están más activos. No se obliga a dormir. (Hito 4)</p>
+<h3>Objetos, transporte y ropa</h3>
+<p><span class="tag ok">DECIDIDO</span><b>Objetos en el suelo:</b> lo que se suelta fuera de un contenedor desaparece pasado un tiempo (por ejemplo, 1 hora real), salvo dentro de tus tierras. Los troncos y las piedras se quedan como pila. <b>Pilas:</b> cada recurso tiene cuántas unidades caben en un hueco. (Hito 2)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Transporte desde el inicio:</b> la <b>rastra</b> (N0: dos varas largas con travesaños, se arrastra a mano) y la <b>carretilla de rueda maciza</b> (N1: la rueda es una rodaja de tronco). Los NPCs de la ciudad de inicio te dan una carretilla y te enseñan a hacerla. La carretilla se aparca y hace de contenedor: dentro de tus tierras está protegida; fuera, cualquiera puede coger lo que lleva. Después, el carro de dos ruedas (N2) y la carreta de cuatro (N3), con animales de tiro. (Hito 2)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Nada de calidades de objetos.</b> Lo que hace una prenda sale solo de su capa y su material (lino, lana, piel, gambesón, cuero endurecido, malla, placa). Lo que se ve se elige al tejer y coser: <b>corte</b> (túnica corta o larga, sayo, vestido, saya, capa con o sin capucha, calzas, sombrero o cofia), <b>tejido</b> (liso, sarga, espiguilla, cuadros, rayas), <b>tinte</b> de plantas de cada región (rubia para el rojo, gualda para el amarillo, glasto para el azul, cáscara de nuez para el marrón, agallas de roble con hierro para el negro) y, más adelante, orlas bordadas. Como los tintes están repartidos por franjas, dan motivos para comerciar. (Hitos 1b y 3)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Premium:</b> vende modelos y dibujos que no se pueden fabricar (cortes de prenda, tapices, muebles con forma propia). Lo fabricable da colores, tejidos y combinaciones, así que no compiten.</p>
+<h3>Fabricar, comer y pescar</h3>
+<p><span class="tag ok">DECIDIDO</span><b>Fabricar:</b> en la estación, con un tiempo según la receta y una pequeña cola por estación; usa lo que llevas encima y lo de los arcones a pocos pasos. (Hito 3)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Cocina:</b> recetas con utensilios (espetón, olla de barro, caldero, sartén); lo cocinado sacia más y dura más. El agua de río se bebe sin problema. (Hito 4)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Peces</b> según agua, franja, hora y estación, de tamaño variable. Ríos: trucha, salmón (norte, sube en otoño), tímalo, barbo, anguila, tenca, boga. Lagos: lucio, perca, carpa. Mar: arenque y bacalao (norte), lubina, caballa, sardina, dorada, besugo. Orilla: mejillón, ostra, cangrejo, lapa. Pescar con caña es de habilidad (recoger el sedal sin romperlo). Despiece: pescado limpio, espinas y escamas; se conserva seco, ahumado o en salazón. (Hito 7)</p>
+<h3>Convivencia online y dominio</h3>
+<p><span class="tag ok">DECIDIDO</span><b>Protección del recién llegado:</b> nadie le puede herir, ni él a nadie, durante sus primeras horas de juego o hasta que pone su mojón, lo que llegue antes. (Hito 12)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Contra el acoso:</b> lo construido fuera de tierras reclamadas se deteriora muy rápido, y no se puede construir a menos de cierta distancia de un mojón ajeno. (Hito 13)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Ventana de trueque:</b> cada uno pone lo suyo y los dos confirman; nada cambia de manos hasta que ambos aceptan. (Hito 14)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Dominar una comarca:</b> la familia con el mojón de más nivel dentro de una comarca es su señora; su escudo aparece sobre ella en los mapas y puede rebautizarla. La pierde si otra familia la supera o le tumba el mojón. <b>Títulos</b> según lo que se domina: señor, barón, conde, rey de un país. (Hito 13)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Asentamientos con nombre:</b> al poner un mojón se le da nombre al asentamiento; es el que sale en el mapa y al que se envían mensajeros. (Hito 13)</p>
+<p><span class="tag ok">DECIDIDO</span><b>El mapa como tablero</b>, respetando que se descubre explorando: en lo explorado y en los mapas de cartógrafo se ven los escudos de las familias sobre sus tierras y comarcas, en verde, azul o rojo (tuyo, aliado, enemigo), con avisos de combate en tus tierras y de mojones con el mantenimiento a punto de acabarse. Sin viaje rápido. (Hitos 13 y 17)</p>
+<h3>Técnica y producción</h3>
+<p><span class="tag method">MÉTODO</span>Todo proceso (curtido, cultivos, carbonera, secadero, deterioro, árboles) se calcula por tiempo transcurrido, para que el servidor no simule cada minuto. (Hito 11)</p>
+<p><span class="tag method">MÉTODO</span>Un sistema común de rutas para animales, ganado y NPCs (mallas de navegación por trozos), en la lógica pura; primero con la fauna. (Hito 7)</p>
+<p><span class="tag method">MÉTODO</span>Animaciones: antes de cada hito se buscan animaciones libres para lo que falta (nadar, montar, empujar o tirar de un carro, cavar, cargar entre dos, subir escalera de mano, forjar, serrar, despiezar, remar, llevar el timón, hilar, tejer) y se pasan al esqueleto con el taller.</p>
+<p><span class="tag method">MÉTODO</span>Sonido en cada hito: pasos según el suelo, herramientas, ambiente, lluvia, fuego y combate; música suave.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Menú de opciones:</b> calidad gráfica baja, media o alta, volumen, controles e idioma. (Hito 11)</p>
+<p><span class="tag method">MÉTODO</span><b>Barcos:</b> a bordo, la posición del personaje se guarda respecto al barco, así que se anda por la cubierta aunque se mueva; al bajar se vuelve a contar respecto al mundo. Un barco es una construcción anclada a algo que se mueve. La cámara se suaviza en el móvil para no marear. (Hito 16)</p>
+<h3>Más adelante (estético y ampliación)</h3>
+<p><span class="tag ok">DECIDIDO</span><b>Hogar:</b> vajilla y cerámica sobre la mesa, tapices tejidos con dibujo (con el mismo editor que el escudo de armas), cortinas, cojines y pieles, velas, candiles y candelabros, trofeos de caza y pesca, macetas, ristras, armeros y maniquí para la armadura.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Vida social:</b> juegos de mesa jugables entre jugadores (tablas, alquerque, dados), instrumentos sencillos (flauta, tambor, zanfoña), gestos (sentarse, saludar, reverencia, brindar) y gato como mascota.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Encuentros:</b> torneos de esgrima en las ciudades NPC y ferias de estación con mercaderes de otros países.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Asedio y granja:</b> escalas y mantelete, y el fuego que pasa de una pieza a otra (hito 6); abrevadero, comedero, pozos y acequias (hito 9).</p>
+</section>
+
 <section id="preguntas">
-<h2>20. Preguntas pendientes</h2>
-<p>Ninguna que frene el trabajo. Para más adelante: el alojamiento del servidor y su coste (al llegar al hito 11), y los fps en tu móvil con la demo única (hito 1d).</p>
+<h2>21. Preguntas pendientes</h2>
+<p>Ninguna que frene el trabajo. El coste del servidor se medirá con 100 jugadores simulados en el hito 1f.</p>
 </section>
 </div>
 </body>

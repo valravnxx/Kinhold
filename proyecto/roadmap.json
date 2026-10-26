@@ -356,7 +356,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, tinte y calidad, sobre el mismo esqueleto",
+     "nombre": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, corte, tejido y tinte (sin calidades), sobre el mismo esqueleto",
      "estado": "pendiente"
     },
     {
