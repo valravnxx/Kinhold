@@ -157,6 +157,26 @@ function cerca() {
   g.add(cilindroX(0.04, MODULO, COLORES.vara, 0, 0.9, 0, 5));
   return g;
 }
+// Portillo de la cerca: dos postes y una hoja de varas con su tornapunta, que gira en el poste de la izquierda.
+function portillo() {
+  const g = new THREE.Group();
+  for (const x of [-0.95, 0.95]) g.add(cilindroY(0.07, 1.2, COLORES.troncoOscuro, x, 0, 0, 6));
+  const hoja = new THREE.Group();
+  const largo = 1.76; // de poste a poste, con holgura
+  for (const y of [0.3, 0.62, 0.94]) hoja.add(cilindroX(0.035, largo, COLORES.vara, 0.1 + largo / 2, y, 0, 5));
+  for (const x of [0.12, 0.1 + largo - 0.04]) hoja.add(cilindroY(0.04, 0.82, COLORES.vara, x, 0.22, 0, 5));
+  // tornapunta en diagonal, de abajo junto a las bisagras hacia arriba en el lado que cuelga
+  const dx = largo - 0.2, dy = 0.6, l = Math.hypot(dx, dy);
+  const t = cilindroX(0.03, l, COLORES.vara, 0.2 + dx / 2, 0.32 + dy / 2, 0.03, 5);
+  t.rotation.z = Math.atan2(dy, dx);
+  hoja.add(t);
+  // dos lazos de cuerda como bisagras
+  for (const y of [0.3, 0.94]) hoja.add(caja(0.09, 0.05, 0.16, COLORES.lino, 0.06, y, 0));
+  hoja.position.x = -0.95;
+  hoja.name = 'hoja';
+  g.add(hoja);
+  return g;
+}
 function empalizada(opc = {}) {
   const g = new THREE.Group();
   if (opc.porton) {
@@ -420,6 +440,7 @@ export function modeloPieza(tipo) {
     case 'puerta_varas': return puerta('puerta_varas');
     case 'puerta_tabla': return puerta('puerta_tabla');
     case 'cerca': return cerca();
+    case 'cerca_portillo': return portillo();
     case 'empalizada': return empalizada();
     case 'empalizada_puerta': return empalizada({ porton: true });
   }

@@ -55,6 +55,8 @@ export const PIEZAS = {
   puerta_tabla:       { nombre: 'Puerta de tablas', hueco: 'p', nivel: 2, peso: 40, cap: 0, coste: { tabla: 4, clavo: 4, hierro: 1 }, cat: 'acceso' },
 
   cerca:              { nombre: 'Cerca de varas', hueco: 'e', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, suelo: true, soloPlanta0: true, bajo: true, cat: 'exterior' },
+  // portón: se abre y se cierra con Usar (abierto no corta el paso)
+  cerca_portillo:     { nombre: 'Portillo de varas', hueco: 'e', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, suelo: true, soloPlanta0: true, bajo: true, portón: true, cat: 'exterior' },
   empalizada:         { nombre: 'Empalizada', hueco: 'e', nivel: 2, peso: 500, cap: 0, coste: { tronco: 6 }, suelo: true, soloPlanta0: true, alto: true, cat: 'exterior' },
   empalizada_puerta:  { nombre: 'Puerta de empalizada', hueco: 'e', nivel: 2, peso: 400, cap: 0, coste: { tronco: 4, hierro: 2 }, suelo: true, soloPlanta0: true, alto: true, portón: true, cat: 'exterior' },
 };

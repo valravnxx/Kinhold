@@ -2,6 +2,7 @@
 // Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR.
 import { Mundo, clave, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, progresoEscalera, salidaEscalera } from '../src/logica/construccion.js';
 import { PIEZAS } from '../src/logica/piezas.js';
+import { ejecutar, RegistroAcciones, seAbre } from '../src/logica/acciones.js';
 
 if (process.env.MUTAR === '1') {
   PIEZAS.muro_zarzo.cap = 1000;   // un muro de zarzo que aguanta cualquier cosa
@@ -327,6 +328,54 @@ console.log('14. Escalera de tablas');
   // guardado: la pieza nueva entra y sale igual
   const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
   comprobar('se guarda y se carga', !!escaleraAndando(m2.construcciones.find(x => x.id === c.id), 0, 0, 0));
+}
+
+console.log('Barandillas y portillo');
+{
+  const m = new Mundo(); m.colocarMojon(0, 0);
+  const c = nuevaConstruccion(m);
+  // casa de 2×1 con suelo en la planta 1 y una escalera de tablas en la casilla (0,0)
+  for (const i of [0, 1]) m.colocar(enRejilla(m, c, 'cim_tronco', i, 0, 0));
+  for (const [i, j, d] of [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, 1], [2, 0, 1]]) m.colocar(enRejilla(m, c, 'muro_tronco', i, j, 0, d));
+  m.colocar(enRejilla(m, c, 'escalera_tabla', 0, 0, 0, 0, 3)); // sube hacia +x: sale a la casilla (1,0)
+  const s1 = m.colocar(enRejilla(m, c, 'suelo_tronco', 1, 0, 1));
+  comprobar('suelo de arriba junto al hueco de la escalera', s1.ok, s1.motivo || '');
+  // barandilla en el borde exterior del suelo en alto (encima de un muro) y alrededor del hueco
+  const b1 = m.colocar(enRejilla(m, c, 'medio_muro', 1, 0, 1, 0));
+  comprobar('medio muro como barandilla en el borde de un suelo en alto', b1.ok, b1.motivo || '');
+  const b2 = m.colocar(enRejilla(m, c, 'medio_muro', 1, 0, 1, 1));
+  comprobar('y en el borde del hueco de la escalera', b2.ok, b2.motivo || '');
+  const sop = m.soportes(c, c.piezas.get(clave('e', 1, 0, 1, 1)));
+  comprobar('la del hueco se apoya en el suelo de al lado', sop.lista.includes(clave('f', 1, 0, 1)), sop.lista.join(' '));
+  const sinSuelo = m.validar(enRejilla(m, c, 'medio_muro', 4, 4, 1, 0));
+  comprobar('en el aire no se pone', !sinSuelo.ok);
+  const pre = m.previsualizarDesmontaje(c, clave('f', 1, 0, 1));
+  comprobar('si se quita el suelo, la barandilla del hueco cae con él', pre.ok && pre.caen.includes(clave('e', 1, 0, 1, 1)), (pre.caen || []).join(' '));
+  comprobar('la barandilla no sostiene nada (capacidad 0)', PIEZAS.medio_muro.cap === 0);
+
+  // portillo de la cerca: corral en la planta baja
+  const R = new RegistroAcciones();
+  const A = (a) => ejecutar(m, R, { autor: 'jugador:prueba', ...a });
+  const antes = { ...m.materiales };
+  const p1 = A({ tipo: 'colocar', pieza: 'cerca_portillo', x: 9, z: 9, k: 0, rot: 0, dir: 0 });
+  comprobar('el portillo se pone en el suelo, como la cerca', p1.ok, p1.motivo || '');
+  comprobar('cuesta 4 varas y 1 cuerda', antes.vara - m.materiales.vara === 4 && antes.cuerda - m.materiales.cuerda === 1);
+  A({ tipo: 'colocar', pieza: 'cerca', x: 11, z: 9, k: 0, rot: 0, dir: 0 });
+  const cc = p1.construccion;
+  const kp = p1.clave, kc = [...cc.piezas.entries()].find(([, p]) => p.tipo === 'cerca')[0];
+  comprobar('portillo y cerca en la misma rejilla', cc.piezas.size === 2);
+  comprobar('solo en la planta baja', !m.validar(m.candidata('cerca_portillo', 9, 9, 1)).ok);
+  const u1 = A({ tipo: 'usar', construccion: cc.id, clave: kp });
+  comprobar('el portillo se abre con Usar', u1.ok && cc.piezas.get(kp).abierta === true);
+  const u2 = A({ tipo: 'usar', construccion: cc.id, clave: kp });
+  comprobar('y se vuelve a cerrar', u2.ok && cc.piezas.get(kp).abierta === false);
+  comprobar('la cerca normal no se abre', !A({ tipo: 'usar', construccion: cc.id, clave: kc }).ok && !seAbre(cc.piezas.get(kc)));
+  comprobar('el medio muro tampoco', !seAbre(c.piezas.get(clave('e', 1, 0, 1, 0))));
+  comprobar('el portón de la empalizada sigue abriéndose', seAbre({ tipo: 'empalizada_puerta', hueco: 'e' }));
+  comprobar('cada Usar queda anotado con su autor', R.entradas.filter(e => e.tipo === 'usar' && e.autor === 'jugador:prueba').length === 3);
+  A({ tipo: 'usar', construccion: cc.id, clave: kp });
+  const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  comprobar('abierto se guarda y se carga abierto', m2.construcciones.find(x => x.id === cc.id).piezas.get(kp).abierta === true);
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
