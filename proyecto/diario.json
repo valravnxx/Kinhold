@@ -862,6 +862,23 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-26T05:09:48+01:00",
+  "fin": "2026-10-26T06:36:44+01:00",
+  "titulo": "Correr más natural (personaje v12)",
+  "hito": "arte",
+  "hecho": [
+   "La carrera del paquete se suaviza por código al pasarla al taller: cada hueso se mueve menos alrededor de su postura media (brazos 50 %, tronco 55 %, piernas 60 %), el tronco se endereza, los brazos se acercan al cuerpo como al andar y la pelvis bota 10 cm en vez de 25.",
+   "Las demás animaciones salen idénticas (comprobado: diferencia máxima de 2·10⁻⁷ en sus datos).",
+   "Encontrado un fallo de antes: el juego trataba la carrera como si su velocidad natural fuera 2,59 m/s, pero medida con el pie apoyado era 5,8 m/s; a 3,6 m/s los pies resbalaban y se veía a cámara lenta. Ahora la velocidad natural de andar y correr se mide en el propio clip al cargar (carrera nueva: 3,5 m/s el hombre y 2,9 la mujer).",
+   "Personajes nuevos en recursos/personajes/taller-v5/ (la ropa, igual que la v4); la construcción, el duelo y el visor ya los usan.",
+   "Botón «Correr» en el visor de personaje y prueba nueva: zancada natural y poco bote (falla con la carrera de antes).",
+   "Personaje v12 publicado. La demo única recoge la carrera nueva en su próxima versión."
+  ],
+  "pruebas": "Lógica 63/63, modelos 21/21, combate 69/69, acciones 25/25, idiomas y unión correctos; navegador: construcción, combate, demo, estilo, personaje e idiomas correctos en PC y móvil. La prueba nueva falla con MUTAR=1. No comprobado: cómo se ve en un móvil de verdad.",
+  "capturas": "capturas/personaje-v12",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-26T04:19:56+00:00",
   "fin": "2026-10-26T05:14:30+00:00",
   "titulo": "Hito 1d: revisión completa",

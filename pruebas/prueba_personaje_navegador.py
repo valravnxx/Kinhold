@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v4'), f'{sitio}/recursos/personajes/taller-v4')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v5'), f'{sitio}/recursos/personajes/taller-v5')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -136,6 +136,19 @@ with sync_playwright() as p:
             mov = max(abs(a[i][k] - b[i][k]) for i in range(2) for k in range(3))
             comprobar(f'taller propio ({sexo}): al andar se mueven piernas y brazos', mov > 0.05, f'{mov:.3f} m')
             pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_andar.png')
+            # correr (Pedro: «fea y exagerada»): zancada a la medida de la velocidad del juego (3,6 m/s) y sin botes enormes
+            vel = pg.evaluate(f'{E}.diag().pj.velocidad')
+            pg.evaluate(f"{E}.ponerModo('correr')")
+            alto = []
+            for i in range(12):
+                pg.evaluate(f'{E}.instante({i * 0.078})'); alto.append(pg.evaluate(f"{E}.hueso('pelvis')")[1])
+            bote = max(alto) - min(alto)
+            if os.environ.get('MUTAR'): vel, bote = {'andar': 0.97, 'correr': 5.8}, 0.25
+            comprobar(f'taller propio ({sexo}): al correr, zancada natural y poco bote',
+                      2.4 < (vel.get('correr') or 0) < 4.5 and 0.5 < (vel.get('andar') or 0) < 1.5 and bote < 0.15,
+                      f"correr {vel.get('correr', 0):.2f} m/s, andar {vel.get('andar', 0):.2f} m/s, bote {bote * 100:.0f} cm")
+            pg.click('[data-vista="cuerpo"]')
+            pg.evaluate(f'{E}.instante(0.3)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_correr.png')
         # ropa por capas: el botón Gambesón lo pone encima (y esconde el cuerpo del vestido, que queda tapado)
         vis = lambda: pg.evaluate(f"(() => {{ const v = []; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.visible) v.push(o.name); }}); return v; }})()")
         if not pg.is_visible('#opciones'): pg.click('#btnOpciones')

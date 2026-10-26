@@ -140,7 +140,7 @@ export function animarTaller(u, L, dt, velocidad, manos, eje) {
   const mh = t.mh;
   let m = 'quieto', ritmo = 1;
   if (velocidad > 0.1) {
-    if (velocidad < 1.8) { m = 'andar'; ritmo = velocidad / 0.97; } else { m = 'correr'; ritmo = velocidad / 2.59; }
+    m = velocidad < 1.8 ? 'andar' : 'correr'; ritmo = velocidad / (mh.velocidad[m] || 1); // natural, medida al cargar
     ritmo = THREE.MathUtils.clamp(ritmo, 0.6, 1.6);
   } else if (L.def && L.def.tipo === 'cuerpo' && !L.fuera) m = 'guardia';
   if (m !== t.modo) { mh.poner(m, 0.2); t.modo = m; }
