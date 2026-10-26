@@ -810,5 +810,22 @@
   "pruebas": "Todas correctas con probar_todo.sh (lógica 63/63, modelos 21/21, combate 69/69, acciones 25/25, navegador de construcción, combate, estilo, personaje, recursos, idiomas y web), en PC y móvil. La prueba nueva del combate se rompió a propósito (MUTAR=1, modelos en una carpeta que no existe) y falló como debía. Capturas miradas: de cerca en guardia, golpes de las cinco líneas, heridas, cara, rival con cota, escudo, palo y arco; y el duelo entero en PC y móvil. No comprobado: los fotogramas con tarjeta gráfica ni en el móvil (cada luchador tiene unos 16.000 a 18.000 triángulos; es la tarea de rendimiento de este hito). A medio golpe las cinco líneas se ven parecidas: es el movimiento de antes, y los golpes con animación propia son otra tarea del duelo.",
   "capturas": "capturas/combate-v8",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T23:20:38+00:00",
+  "fin": "2026-10-26T00:17:59+00:00",
+  "titulo": "Hito 1d: demo única",
+  "hito": "unificacion",
+  "hecho": [
+   "Demo única publicada (jugar/demo/v1): una página con menú y tres partes, Construir, Duelo y Personaje, que son los últimos prototipos de cada cosa (construcción v10, combate v8, personaje v11). three.js va una sola vez: la página pesa 1,2 MB, frente a 1 MB de cada prototipo suelto.",
+   "Cada parte se abre con ?modo= y el botón «Menú» de arriba vuelve al menú recargando la página, para que nunca haya dos escenas ni dos WebGL a la vez en el móvil. Lo construido, las opciones del duelo y el personaje siguen guardados en el navegador al volver.",
+   "El personaje elegido en «Personaje» (hombre o mujer y su ropa por capas) es el que construye y el que lucha; el menú resume cuál es. Las próximas versiones de los prototipos sueltos también lo leerán (las ya publicadas no cambian).",
+   "Decisiones provisionales, anotadas en el registro de la demo: sin personaje elegido, en la construcción se sale con camisa y calzas de lino (GDD); en el duelo manda la armadura de sus opciones (con lino, tu ropa sin gambesón ni cota; con gambesón o cota, esas piezas y la sobreveste si la elegiste); el rival sigue siendo el hombre de siempre.",
+   "La web pone la demo única la primera en «Jugar»; las versiones antiguas de cada prototipo se quedan.",
+   "Prueba nueva de navegador de la demo (menú, las tres partes, el botón Menú, el personaje elegido en construcción y duelo, menú en inglés y ruso), metida en probar_todo.sh."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh (lógica 63/63, modelos 21/21, combate 69/69, acciones 25/25, textos traducidos, navegador de construcción, combate, estilo, personaje, demo, recursos, idiomas y web), en PC y móvil. La prueba nueva de la demo se rompió a propósito (MUTAR=1 borra lo guardado al cambiar de parte) y falló como debía. Capturas miradas del menú, el personaje, la construcción y el duelo con la mujer de vestido y gambesón, en PC y móvil, y el menú en ruso. Visto en las capturas: en el móvil el aviso de la construcción sigue tapando «Reiniciar», y con el botón «Menú» la barra de arriba ocupa una fila más; es la tarea siguiente del hito. No comprobado: los fotogramas con tarjeta gráfica ni en un móvil de verdad (es la tarea de rendimiento).",
+  "capturas": "capturas/demo-v1",
+  "estado": "ok"
  }
 ]

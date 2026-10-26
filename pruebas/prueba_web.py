@@ -132,7 +132,8 @@ with sync_playwright() as p:
             with pg.expect_navigation():
                 pg.locator('#listaJuegos [data-juego]').first.click()
             pg.wait_for_timeout(2500)
-            comprobar('el botón Jugar abre el juego', 'jugar/' in pg.url and pg.locator('canvas').count() >= 1, pg.url)
+            # la primera tarjeta es la demo única, que abre su menú (sin lienzo hasta elegir una parte)
+            comprobar('el botón Jugar abre el juego', 'jugar/' in pg.url and (pg.locator('canvas').count() >= 1 or pg.locator('#demoMenu a.parte').count() == 3), pg.url)
             pg.screenshot(path=f'{SALIDA}/{nombre}_7_juego_abierto.png')
         comprobar(f'sin errores en consola ({nombre})', not err, '; '.join(err[:3]))
         ctx.close()
