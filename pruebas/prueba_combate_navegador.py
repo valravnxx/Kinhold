@@ -37,6 +37,9 @@ with sync_playwright() as p:
     pg.wait_for_function(f'{D} !== undefined', timeout=20000)
     ev = pg.evaluate
     def espera(ms): pg.wait_for_timeout(ms)
+    # Sin tarjeta gráfica el navegador de pruebas va a 2-4 fps y el juego limita cada paso a 0,05 s:
+    # el tiempo de juego corre hasta 10 veces más lento que el real. Por eso se espera a condiciones
+    # con márgenes amplios, nunca un tiempo fijo, en lo que depende de la animación.
     def hasta(cond, ms=8000):
         try: pg.wait_for_function(cond, timeout=ms); return True
         except Exception: return False
@@ -148,7 +151,7 @@ with sync_playwright() as p:
     hasta(f"{D}.jugador.accion === 'libre'")
     p0 = ev(f"{D}.pausas")
     ev(f"{D}.atacar('izquierda')")
-    hasta(f"{D}.jugador.accion === 'recuperando'", 6000)
+    hasta(f"{D}.jugador.accion === 'recuperando'", 30000)
     vio_pausa = ev(f"{D}.pausas") > p0
     comprobar('el rival para con la parada sin elegir lado', ev(f"{D}.rival.heridas.length") == antes and 'para tu golpe' in pg.inner_text('#registro'))
     comprobar('el choque produce pausa de impacto', vio_pausa)
@@ -241,9 +244,9 @@ with sync_playwright() as p:
       for (let k = 0; k < 6; k++) {{
         d.apuntar(0, 1.3, 18);
         let e = 0;
-        while (d.jugador.accion !== 'libre' && e < 8000) {{ await new Promise(r => setTimeout(r, 50)); e += 50; }}  // encajar la flecha (v3)
+        while (d.jugador.accion !== 'libre' && e < 30000) {{ await new Promise(r => setTimeout(r, 50)); e += 50; }}  // encajar la flecha (v3)
         d.jugador.empezarTensar();
-        while ((d.jugador.tension < 1 || d.jugador.tTenso < 0.15) && e < 8000) {{ await new Promise(r => setTimeout(r, 50)); e += 50; }}
+        while ((d.jugador.tension < 1 || d.jugador.tTenso < 0.15) && e < 30000) {{ await new Promise(r => setTimeout(r, 50)); e += 50; }}
         tensiones.push(+d.jugador.tension.toFixed(2));
         d.disparar();
         await new Promise(r => setTimeout(r, 1200));
@@ -252,7 +255,7 @@ with sync_playwright() as p:
     }})()""")
     comprobar('a plena tensión se acierta la diana de 20 m', aciertos['aciertos'] >= 5, json.dumps(aciertos))
     # arco v3: soltar con poca tensión no dispara y lo avisa
-    hasta(f"{D}.jugador.accion === 'libre'", 3000)
+    hasta(f"{D}.jugador.accion === 'libre'", 30000)
     antes = ev(f"{D}.stats.flechas")
     ev(f"{D}.apuntar(0,1.3,18); {D}.jugador.empezarTensar()")
     espera(120)
@@ -263,8 +266,8 @@ with sync_playwright() as p:
     ev(f"{D}.cam.yaw=Math.PI+0.25; {D}.cam.pitch=0.35; {D}.cam.dist=9")
     pg.mouse.move(640, 330)
     ev(f"{D}.apuntar(0,1.3,18); {D}.jugador.empezarTensar()")
-    hasta(f"{D}.jugador.tension >= 1", 5000)
-    hasta("document.getElementById('reticula').classList.contains('lista') && document.getElementById('reticula').offsetWidth < 30", 4000)
+    hasta(f"{D}.jugador.tension >= 1", 30000)
+    hasta("document.getElementById('reticula').classList.contains('lista') && document.getElementById('reticula').offsetWidth < 30", 30000)
     comprobar('la retícula se cierra y se pone verde a plena tensión', ev("document.getElementById('reticula').classList.contains('lista')") and ev("document.getElementById('reticula').offsetWidth") < 30)
     pg.screenshot(path=f'{SALIDA}/10_arco_tensado.png')
     ev(f"{D}.disparar()")
@@ -279,8 +282,8 @@ with sync_playwright() as p:
     espera(600)
     comprobar('la rosa aparece sobre el poste', pg.is_visible('#rosa'))
     ev(f"{D}.atacar('izquierda')")
-    hasta(f"{D}.jugador.accion === 'recuperando' || {D}.jugador.accion === 'libre'", 5000)
-    espera(200)
+    hasta(f"{D}.jugador.accion === 'recuperando' || {D}.jugador.accion === 'libre'", 30000)
+    hasta("document.getElementById('registro').innerText.includes('Poste')", 15000)
     reg = pg.inner_text('#registro')
     comprobar('el poste registra el golpe y su fuerza', 'Poste' in reg, reg.split('\n')[0])
 
@@ -337,7 +340,7 @@ with sync_playwright() as p:
     ev(f"{D}.rival.z = {D}.jugador.z + 14")
     espera(200)
     ev(f"{D}.apuntar({D}.rival.x, 1.3, {D}.rival.z); {D}.jugador.empezarTensar()")
-    hasta(f"{D}.jugador.tension >= 1", 5000)
+    hasta(f"{D}.jugador.tension >= 1", 30000)
     espera(150)
     comprobar('el rival levanta el escudo al verte tensar', ev(f"{D}.rival.bloqueando"))
     ev(f"{D}.apuntar({D}.rival.x, 1.3, {D}.rival.z); {D}.disparar()")
