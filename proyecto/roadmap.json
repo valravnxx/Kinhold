@@ -266,8 +266,9 @@
     },
     {
      "nombre": "Taller: el cinturón de encima de la cota sobresale hacia los lados hasta la altura de los brazos (se ve en las fotos del taller con los brazos abiertos; ya estaba en los recursos taller-v4)",
-     "estado": "en_curso",
-     "inicio": "2026-10-26T07:37:25+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-26T07:37:25+00:00",
+     "fin": "2026-10-26T09:12:28+00:00"
     },
     {
      "nombre": "Taller: capa con capucha, calzado y tocados (capucha suelta, sombrero de paja, toca)",
@@ -640,6 +641,13 @@
      "archivo": "jugar/demo/v5.html",
      "capturas": "capturas/demo-v5",
      "notas": "Brazos naturales al correr en las tres partes (personaje v13)."
+    },
+    {
+     "v": "v6",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v6.html",
+     "capturas": "capturas/demo-v6",
+     "notas": "El cinturón de la cota ceñido, en las tres partes (personaje v14, taller-v7)."
     }
    ]
   },
@@ -941,6 +949,13 @@
      "archivo": "jugar/personaje/v13.html",
      "capturas": "capturas/personaje-v13",
      "notas": "Brazos naturales al correr: oscilan junto al cuerpo, con la mano de canto y la muñeca recta, en vez de ir torcidos hacia delante."
+    },
+    {
+     "v": "v14",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/personaje/v14.html",
+     "capturas": "capturas/personaje-v14",
+     "notas": "El cinturón de encima de la cota ya no sobresale hacia los brazos (personajes del taller-v7)."
     }
    ]
   }
