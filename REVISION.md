@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 26 oct 2026 (15:15) — por el chat: prueba online pronto
+
+valravnx está de acuerdo en que lo multijugador es el mayor riesgo y le preocupa el coste del servidor para unas 100 personas → Hito nuevo 1f, «Prueba online mínima», en curso justo después del 1e (estilo v5): dos jugadores en el mismo mundo desde dos dispositivos, y una medición con 100 jugadores simulados para saber qué servidor hace falta y cuánto cuesta al mes.
+
 ### 26 oct 2026 (15:10) — por el chat: el estilo v5 solo está en los muros
 
 «Revisa que la mejora gráfica de la construcción se aplique bien, he visto que has mejorado las paredes de troncos pero nada más… quiero que sea visualmente como aprobé en la prueba que hicimos, y eso aplica a todo» → Comprobado en las capturas de construcción v13 y demo v8: solo los muros de troncos tienen el estilo; tejados, cimientos, suelos, puertas, empalizada, muebles y el suelo de la escena siguen con el aspecto inicial. Hito nuevo 1e, «El estilo de la prueba v5 en todo», en curso y por delante del resto: reúne las cuatro tareas de estilo del 1c y añade la escena común (hierba, flores, matorrales, piedras, árboles de la v5), todo lo demás que se ve, y una revisión final comparando cada vista con la v5. Regla nueva en CLAUDE.md: la v5 vale para todo y nada se publica con el aspecto inicial.
