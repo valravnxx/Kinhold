@@ -145,7 +145,7 @@ const suave = (t) => t * t * (3 - 2 * t);
 
 // ---------- Combatiente ----------
 // recursos: carpeta de los .glb del taller; con ella el muñeco se cambia por el personaje del taller en cuanto carga
-export function crearCombatiente({ armadura = 'lino', colorCinta = 0xc0392b, recursos = null } = {}) {
+export function crearCombatiente({ armadura = 'lino', colorCinta = 0xc0392b, recursos = null, sexo = 'hombre', capas = null } = {}) {
   const raiz = new THREE.Group();
   const cuerpo = new THREE.Group(); raiz.add(cuerpo);
   const [c1, c2] = ROPA[armadura] || ROPA.lino;
@@ -180,7 +180,7 @@ export function crearCombatiente({ armadura = 'lino', colorCinta = 0xc0392b, rec
   const armas = new THREE.Group(); cuerpo.add(armas);
   const manos = new THREE.Group(); armas.add(manos);
   raiz.userData = { cuerpo, piernas, brazos, zonas, armas, manos, arma: null, fase: 0, heridasPintadas: 0, pose: { m: POSES.base.m.clone(), d: POSES.base.d.clone() } };
-  if (recursos) raiz.userData.listo = vestirConTaller(raiz, { armadura, colorCinta }, recursos);
+  if (recursos) raiz.userData.listo = vestirConTaller(raiz, { armadura, colorCinta, sexo, capas }, recursos);
   return raiz;
 }
 export function ponerArma(raiz, tipo) {

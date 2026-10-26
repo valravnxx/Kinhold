@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Kinhold</title>
+<style>
+#demoMenu{--panel: rgba(36,30,24,.86); --panel2: rgba(58,48,38,.92); --ink:#f1e8d8; --muted:#bfb19a; --acento:#d9a441; --linea: rgba(241,232,216,.15);
+  position:fixed;inset:0;overflow:auto;background:linear-gradient(180deg,#9fb3bb 0%,#c9cfc2 45%,#6f7a58 46%,#4e5a3c 100%);
+  font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
+#demoMenu *{box-sizing:border-box}
+#demoMenu .caja{background:var(--panel);border-radius:16px;padding:20px 20px 16px;width:min(460px,100%);box-shadow:0 10px 40px #0005}
+#demoMenu h1{margin:0;font:600 30px/1.1 Georgia,"Times New Roman",serif;letter-spacing:.06em}
+#demoMenu .sub{margin:4px 0 16px;color:var(--muted);font-size:13.5px}
+#demoMenu a.parte{display:block;text-decoration:none;color:var(--ink);background:var(--panel2);border:1px solid var(--linea);border-radius:12px;padding:12px 14px;margin:0 0 9px}
+#demoMenu a.parte:hover,#demoMenu a.parte:focus{border-color:var(--acento);outline:none}
+#demoMenu a.parte b{display:block;font-size:17px;color:var(--acento)}
+#demoMenu a.parte span{font-size:13px;color:var(--muted)}
+#demoMenu #demoPersonaje{font-size:13px;color:var(--ink);margin:12px 0 10px;padding:8px 10px;border-left:3px solid var(--acento);background:#0002;border-radius:4px}
+#demoMenu .pie{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+#demoMenu .pie a{color:var(--muted);font-size:13px;margin-right:auto}
+#demoMenu button{font:inherit;font-size:12.5px;color:var(--ink);background:var(--panel2);border:1px solid var(--linea);border-radius:9px;padding:6px 9px;cursor:pointer}
+#demoMenu button.sel{background:var(--acento);color:#241b10;border-color:transparent;font-weight:600}
+#demoMenu #demoNotas{font-size:12.5px;color:var(--muted);margin-top:10px}
+#demoMenu #demoNotas ul{padding-left:18px;margin:6px 0 0} #demoMenu #demoNotas li{margin:0 0 6px}
+#demoMenu [hidden]{display:none!important}
+</style>
+</head>
+<body style="margin:0">
+<div id="demoMenu">
+  <div class="caja">
+    <h1>KINHOLD</h1>
+    <p class="sub">Demo: supervivencia medieval. Elige qué quieres probar.</p>
+    <a class="parte" data-ir="construir" href="?modo=construir"><b>Construir</b><span>Levanta una cabaña: cimientos, suelos, muros, tejados y muebles.</span></a>
+    <a class="parte" data-ir="duelo" href="?modo=duelo"><b>Duelo</b><span>Combate de habilidad con espada o palo, prácticas y carga a distancia.</span></a>
+    <a class="parte" data-ir="personaje" href="?modo=personaje"><b>Personaje</b><span>Elige cuerpo y ropa por capas: es el que construye y el que lucha.</span></a>
+    <div id="demoPersonaje"></div>
+    <div class="pie"><a href="../../index.html">Progreso del proyecto</a><button id="btnDemoNotas">Notas</button><span id="demoIdioma" class="pie"></span></div>
+    <div id="demoNotas" hidden></div>
+  </div>
+</div>
+<script>/*APP*/</script>
+</body>
+</html>

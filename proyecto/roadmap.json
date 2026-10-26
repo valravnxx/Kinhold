@@ -120,7 +120,9 @@
     },
     {
      "nombre": "Demo única: una página con menú (Construir, Duelo, Personaje); el personaje que eliges y su ropa se usan en todo; la web enlaza a ella y las versiones antiguas se quedan",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-25T23:20:38+00:00",
+     "fin": "2026-10-26T00:17:59+00:00"
     },
     {
      "nombre": "Rendimiento de la demo única: medir fotogramas, triángulos y memoria con la escena y varios personajes, dejar los números a la vista y pedir a Pedro los fps en su móvil",
@@ -567,6 +569,20 @@
   }
  ],
  "prototipos": [
+  {
+   "id": "demo",
+   "nombre": "Demo única",
+   "descripcion": "Todo en una página: construir, duelo y personaje, con el mismo personaje del taller y la misma escena.",
+   "versiones": [
+    {
+     "v": "v1",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v1.html",
+     "capturas": "capturas/demo-v1",
+     "notas": "Primera demo única: menú con Construir, Duelo y Personaje; el personaje que eliges (cuerpo y ropa) es el que construye y el que lucha"
+    }
+   ]
+  },
   {
    "id": "construccion",
    "nombre": "Construcción",

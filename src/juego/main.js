@@ -5,6 +5,7 @@ import { RegistroAcciones, ejecutar, seAbre, AUTOR_LOCAL } from '../logica/accio
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado } from './modelos.js';
 import { crearJugador } from './personaje.js';
+import { personajeElegido } from '../demo/eleccion.js';
 import { REGISTRO, VERSION } from './registro.js';
 import { t } from './textos.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
@@ -77,7 +78,9 @@ const obstaculos = decorado.obstaculos; // {x,z,r}
 // ---------------- Personaje y cámara ----------------
 // personaje del taller propio: la versión publicada vive en jugar/construccion/, los modelos en recursos/personajes/taller-v4/
 const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v4/';
-const jugador = crearJugador(RECURSOS_MH);
+// el personaje elegido en el visor (cuerpo y ropa); si no se ha elegido ninguno, camisa y calzas de lino (GDD)
+const elegido = personajeElegido();
+const jugador = elegido ? crearJugador(RECURSOS_MH, elegido.sexo, elegido.capas) : crearJugador(RECURSOS_MH);
 escena.add(jugador.raiz);
 const pj = { x: 0, y: 0, z: 4, k: 0, rot: Math.PI, vel: 0 };
 const cam = { yaw: Math.PI * 0.25, pitch: 0.9, dist: 16 };

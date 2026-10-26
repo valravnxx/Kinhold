@@ -9,6 +9,7 @@ paso "Construir construcción" node construir.mjs
 paso "Construir combate" node construir_combate.mjs
 paso "Construir pruebas de estilo" node construir_estilo.mjs
 paso "Construir personaje" node construir_personaje.mjs
+paso "Construir demo única" node construir_demo.mjs
 paso "Lógica de construcción" node pruebas/prueba_logica.mjs
 paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
@@ -20,6 +21,7 @@ paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold
 paso "Navegador: combate" python3 pruebas/prueba_combate_navegador.py dist/kinhold_combate.html "$C/combate"
 paso "Navegador: pruebas de estilo" python3 pruebas/prueba_estilo_navegador.py dist/kinhold_estilo.html "$C/estilo"
 paso "Navegador: personaje" python3 pruebas/prueba_personaje_navegador.py dist/kinhold_personaje.html "$C/personaje"
+paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html "$C/demo"
 paso "Navegador: recursos de personaje v2" python3 pruebas/prueba_recursos_personaje.py "$C/recursos"
 paso "Navegador: juego en inglés (también estilo y personaje)" python3 pruebas/prueba_idioma_navegador.py dist/kinhold_hito1.html dist/kinhold_combate.html dist/kinhold_estilo.html dist/kinhold_personaje.html "$C/idioma"
 paso "Web de progreso" node herramientas/construir_web.mjs
