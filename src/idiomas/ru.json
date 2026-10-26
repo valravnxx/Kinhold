@@ -503,5 +503,10 @@
  "Combate · v9": "Бой · v9",
  "v7: arreglo de la pantalla en blanco en el móvil (la construcción dejaba la memoria gráfica llena al rehacer las piezas) y aviso con recarga si se pierde el dibujo 3D. Los muros, postes y vigas con el estilo elegido. Es la construcción v12, el combate v9 y el personaje v14.": "v7: исправлен белый экран на телефоне (строительство заполняло графическую память при пересборке деталей) и добавлено сообщение с перезагрузкой при потере 3D-изображения. Стены, столбы и балки в выбранном стиле. Это строительство v12, бой v9 и персонаж v14.",
  "Demo única · v7 (sin pantalla en blanco; muros con el estilo)": "Единое демо · v7 (без белого экрана; стены в стиле)",
- "Hito 1 · v13": "Этап 1 · v13"
+ "Hito 1 · v13": "Этап 1 · v13",
+ "Capa": "Плащ",
+ "Capucha": "Капюшон",
+ "Sombrero de paja": "Соломенная шляпа",
+ "Toca": "Апостольник",
+ "Botas": "Сапоги"
 }

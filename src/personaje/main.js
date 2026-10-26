@@ -126,7 +126,9 @@ function pintarOpciones() {
   for (const b of $('opciones').querySelectorAll('[data-modo]')) b.onclick = () => ponerModo(b.dataset.modo);
   for (const b of $('opciones').querySelectorAll('[data-capa]')) b.onclick = () => {
     const l = capasMH(), c = b.dataset.capa;
-    estado.capas = { ...(estado.capas || {}), [estado.sexo]: l.includes(c) ? l.filter(x => x !== c) : [...l, c] };
+    // los tocados van de uno en uno: poner uno quita el que hubiera
+    const tocados = pj?.tocados || [], sin = tocados.includes(c) ? l.filter(x => !tocados.includes(x)) : l;
+    estado.capas = { ...(estado.capas || {}), [estado.sexo]: l.includes(c) ? l.filter(x => x !== c) : [...sin, c] };
     if (pj?.ponerCapas) { pj.ponerCapas(capasMH()); medida.trianglesPersonaje = pj.triangulos; }
     pintarOpciones(); guardar(); dibujar();
   };

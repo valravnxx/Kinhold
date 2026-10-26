@@ -242,6 +242,60 @@ def cinturon(nombre, telas, z, color, alto=0.034, grueso=0.005, n=64):
     ob.modifiers.new('Armature', 'ARMATURE').object = RIG; ob.parent = RIG
     return ob
 
+def sombrero(nombre, co, cabeza, ojo_arriba, con_cofia, n=48):
+    """sombrero de paja hecho por código: copa y ala anchas, todo pegado al hueso de la cabeza (no se deforma).
+    La copa se ajusta al contorno de la cabeza medido a la altura de la frente; la paja va en vueltas trenzadas
+    (color por vértice) con una cinta oscura en la base de la copa"""
+    craneo = np.array([tuple(co[i]) for i in range(len(co)) if cabeza(i)])
+    cima = craneo[:, 2].max()
+    zb = ojo_arriba + 0.042
+    banda = craneo[np.abs(craneo[:, 2] - zb) < 0.012]
+    cx, cy = banda[:, 0].mean(), banda[:, 1].mean()
+    holgura = 0.02 if con_cofia else 0.016  # por encima del pelo (o de la cofia)
+    radio = []
+    for k in range(n):  # contorno de la cabeza en cada dirección
+        a = 2 * math.pi * k / n; d = np.array([math.cos(a), math.sin(a)])
+        rel = banda[:, :2] - np.array([cx, cy])
+        cerca = rel[np.abs(rel @ np.array([-d[1], d[0]])) < 0.02]
+        radio.append(max(0.06, (cerca @ d).max() if len(cerca) else 0.08) + holgura)
+    radio = np.array([(radio[k - 1] + 2 * radio[k] + radio[(k + 1) % n]) / 4 for k in range(n)])
+    anillos = []  # (factor del radio o radio extra, altura, color)
+    paja, cinta = lin((190, 164, 108)), lin((70, 50, 34))
+    alto = cima - zb + 0.045
+    for j in range(9):  # copa: de la base a la cima, algo cerrada arriba
+        t = j / 8
+        anillos.append(('copa', 1.0 - 0.12 * t ** 2 - 0.5 * max(0.0, t - 0.8) / 0.2, zb + alto * t, cinta if j < 2 else paja * (0.86 if j % 2 else 1.0)))
+    vs, cols = [], []
+    for tipo, f, z, c in anillos:
+        for k in range(n):
+            a = 2 * math.pi * k / n
+            vs.append((cx + radio[k] * f * math.cos(a), cy + radio[k] * f * math.sin(a), z)); cols.append(c)
+    for j in range(1, 9):  # ala: hacia fuera, cayendo un poco en el borde
+        s = j / 8
+        for k in range(n):
+            a = 2 * math.pi * k / n; r = radio[k] + 0.115 * s
+            vs.append((cx + r * math.cos(a), cy + r * math.sin(a), zb - 0.006 - 0.028 * s ** 1.6)); cols.append(paja * (0.84 if j % 2 else 1.0) * (0.92 if j == 8 else 1.0))
+    caras = []
+    filas = 9 + 8
+    def anillo(j): return j * n
+    for j in range(8):  # copa
+        for k in range(n): caras.append((anillo(j) + k, anillo(j) + (k + 1) % n, anillo(j + 1) + (k + 1) % n, anillo(j + 1) + k))
+    tapa = len(vs); vs.append((cx, cy, zb + alto + 0.002)); cols.append(paja)
+    for k in range(n): caras.append((anillo(8) + k, anillo(8) + (k + 1) % n, tapa))
+    for j in range(8):  # ala: desde la base de la copa (anillo 0) hacia fuera
+        a0 = anillo(0) if j == 0 else anillo(9 + j - 1); a1 = anillo(9 + j)
+        for k in range(n): caras.append((a0 + k, a1 + k, a1 + (k + 1) % n, a0 + (k + 1) % n))
+    me = bpy.data.meshes.new(nombre); me.from_pydata(vs, [], caras); me.update()
+    ob = bpy.data.objects.new(nombre, me); bpy.context.scene.collection.objects.link(ob)
+    g = ob.vertex_groups.new(name='head'); g.add(list(range(len(vs))), 1.0, 'REPLACE')
+    capa = me.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
+    for i, c in enumerate(cols):
+        v = np.array(vs[i]); capa.data[i].color = (*(np.asarray(c) * (0.92 + 0.16 * float(ruido(v[None, :], 160)[0]))), 1)
+    for p in me.polygons: p.use_smooth = False  # paja: facetas planas
+    me.materials.append(material(nombre, 0.9))
+    ob.modifiers.new('Armature', 'ARMATURE').object = RIG; ob.parent = RIG
+    return ob
+
 # ---------- un personaje ----------
 def personaje(nombre, macros, objetivos, ropa):
     global RIG, ATR
@@ -526,6 +580,73 @@ def personaje(nombre, macros, objetivos, ropa):
                             empuje=0.003, color=tela(ropa['calzas']), rugosidad=0.95))
     piezas.append(trozo(base, nombre + '_capa_zapatos', lambda i, c: en(i, 'helper-tights') and c.z < tobillo_z + 0.05,
                         empuje=0.006, color=tela((52, 34, 22)), rugosidad=0.55))
+    # ---- capa (manto) abierta por delante, encima de todo, hasta debajo de la rodilla ----
+    # Se llama «manto» en el modelo (<nombre>_capa_manto) para no chocar con la palabra «capa» de las capas de ropa.
+    colm = lin(ropa.get('manto', (78, 70, 58)))
+    def abertura(P, z_yugo):  # por delante queda abierta salvo un poco bajo el cuello, donde se cierra con un broche
+        x, y, z = np.abs(P[..., 0]), P[..., 1], P[..., 2]
+        return 1 - suave(-0.02, -0.045, y) * suave(0.15, 0.115, x) * suave(z_yugo + 0.01, z_yugo - 0.01, z)
+    def pintar_manto(P, A, cuello=True):
+        col = colm[None, None, :] * (0.86 + 0.18 * fbm(P, 22)[..., None]) * (0.95 + 0.05 * ruido(P, 800)[..., None])
+        a = abertura(P, cuello_z - 0.055)
+        if cuello: a = a * suave(0.0015, -0.0015, P[..., 2] - (cuello_z + 0.012))
+        return np.concatenate([col, a[..., None]], -1)
+    sel_manto = lambda i, c: en(i, 'helper-tights') and cintura_z - 0.06 < c.z < cuello_z + 0.045 and abs(c.x) < 0.215 and not mano(i)
+    piezas.append(trozo(base, f'{nombre}_capa_manto', sel_manto, empuje=0.056, textura=(1024, pintar_manto), rugosidad=0.95,
+                        ajustar_uv=True, alisar=(tronco, 25, 0.054)))
+    piezas.append(trozo(base, f'{nombre}_capa_manto_falda', lambda i, c: en(i, 'helper-skirt') and rodilla_z - 0.12 < c.z < cintura_z + 0.03,
+                        empuje=0.062, textura=(512, lambda P, A: pintar_manto(P, A, cuello=False)), rugosidad=0.95, ajustar_uv=True))
+
+    # ---- calzado: botas de cuero hasta debajo de la rodilla (en vez de los zapatos) ----
+    cuero = lin((60, 42, 28))
+    def color_botas(P, A):
+        z = P[:, 2]
+        c = cuero[None, :] * (0.85 + 0.2 * fbm(P, 30)[:, None])
+        vuelta = suave(rodilla_z - 0.11, rodilla_z - 0.10, z)[:, None]  # caña vuelta arriba, algo más clara
+        suela = suave(0.025, 0.015, z)[:, None]
+        return c * (1 + 0.25 * vuelta) * (1 - 0.5 * suela)
+    piezas.append(trozo(base, nombre + '_capa_botas', lambda i, c: en(i, 'helper-tights') and c.z < rodilla_z - 0.06,
+                        empuje=lambda c, i: 0.009 + (0.004 if c.z > rodilla_z - 0.11 else 0.0), color=color_botas, rugosidad=0.6))
+
+    # ---- tocados (uno cada vez): capucha suelta con esclavina, sombrero de paja y, en la mujer, toca ----
+    oreja_c = [orejas[orejas[:, 0] * sg > 0].mean(0) for sg in (1, -1)]
+    sobre_oreja = lambda c, i: min(np.linalg.norm(np.array(c) - o) for o in oreja_c) < 0.04
+    def hueco_cara(P, arriba, abajo, hx):  # óvalo de la cara (transparente) por delante
+        x, y, z = P[..., 0], P[..., 1], P[..., 2]
+        zc, hz = (arriba + abajo) / 2, (arriba - abajo) / 2
+        e = (x / hx) ** 2 + ((z - zc) / hz) ** 2
+        return 1 - (1 - suave(0.92, 1.0, e)) * suave(-0.04, -0.07, y)
+    def cubre(z_bajo):  # cabeza, cuello y hombros hasta z_bajo (sin brazos ni manos)
+        return lambda i, c: en(i, 'body') and not mano(i) and (cabeza(i) or (c.z > z_bajo - 0.02 and abs(c.x) < 0.24))
+    def separacion_tocado(cabeza_e, hombro_e, pico=0.0):
+        def e(c, i):
+            if ATR[i, 1] > 0.0: c[:] = kd_craneo.find(c)[0]  # orejas pegadas al cráneo, como en la cofia
+            t = suave(cuello_z + 0.06, cuello_z - 0.005, c.z)  # del cuello para abajo, por encima de la ropa
+            atras = pico * max(0.0, c.y) / 0.1 * max(0.0, c.z - ojo_arriba) / 0.06  # la capucha acaba en punta atrás
+            return cabeza_e * (1 - t) + hombro_e * t + atras
+        return e
+    def pintar_tocado(color, arriba, abajo, hx, z_bajo, lana=True):
+        c0 = lin(color)
+        def f(P, A):
+            col = c0[None, None, :] * (0.86 + 0.18 * fbm(P, 40 if lana else 60)[..., None]) * (0.95 + 0.05 * ruido(P, 700)[..., None])
+            orilla = suave(z_bajo + 0.012, z_bajo + 0.004, P[..., 2])  # dobladillo un poco más oscuro
+            col = col * (1 - 0.15 * orilla[..., None])
+            a = hueco_cara(P, arriba, abajo, hx) * suave(-0.002, 0.002, P[..., 2] - z_bajo - 0.004 * (ruido(P, 40) - 0.5))
+            return np.concatenate([col, a[..., None]], -1)
+        return f
+    zc_bajo = cuello_z - 0.13
+    piezas.append(trozo(base, nombre + '_capa_capucha', cubre(zc_bajo), empuje=separacion_tocado(0.02, 0.062, pico=0.03),
+                        alisar=(lambda c, i: True, 12, 0.012),
+                        textura=(1024, pintar_tocado(ropa.get('capucha', (92, 76, 58)), ojo_arriba + 0.05, boca_z - 0.055, 0.074, zc_bajo)),
+                        rugosidad=0.95, diezmar=DIEZMAR))
+    if mujer:
+        zt_bajo = cuello_z - 0.075
+        piezas.append(trozo(base, nombre + '_capa_toca', cubre(zt_bajo), empuje=separacion_tocado(0.012, 0.05),
+                            alisar=(lambda c, i: True, 10, 0.009),
+                            textura=(1024, pintar_tocado((226, 220, 204), ojo_arriba + 0.028, boca_z - 0.028, 0.058, zt_bajo, lana=False)),
+                            rugosidad=0.9, diezmar=DIEZMAR))
+    piezas.append(sombrero(f'{nombre}_capa_sombrero', co, cabeza, ojo_arriba, ropa.get('cofia') is not None))
+
     bpy.data.objects.remove(base)
     tri = 0
     for ob in piezas:

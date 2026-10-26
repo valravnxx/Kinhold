@@ -503,5 +503,10 @@
  "Combate · v9": "Combat · v9",
  "v7: arreglo de la pantalla en blanco en el móvil (la construcción dejaba la memoria gráfica llena al rehacer las piezas) y aviso con recarga si se pierde el dibujo 3D. Los muros, postes y vigas con el estilo elegido. Es la construcción v12, el combate v9 y el personaje v14.": "v7: fix for the blank screen on mobile (construction filled graphics memory when rebuilding pieces) and a notice with reload if the 3D view is lost. Walls, posts and beams in the chosen style. It is construction v12, combat v9 and character v14.",
  "Demo única · v7 (sin pantalla en blanco; muros con el estilo)": "Single demo · v7 (no blank screen; walls in the style)",
- "Hito 1 · v13": "Milestone 1 · v13"
+ "Hito 1 · v13": "Milestone 1 · v13",
+ "Capa": "Cloak",
+ "Capucha": "Hood",
+ "Sombrero de paja": "Straw hat",
+ "Toca": "Wimple",
+ "Botas": "Boots"
 }
