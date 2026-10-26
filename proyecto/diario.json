@@ -1037,5 +1037,22 @@
   "pruebas": "Lógica 81/81, modelos 22/22, combate 69/69, acciones 25/25, cinturones 8/8, unión 19/19, idiomas, taller; navegador de construcción, combate, estilo, personaje, demo, recursos e idioma correctos en PC y móvil.",
   "capturas": "capturas/construccion-v14",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T17:20:52+00:00",
+  "fin": "2026-10-26T18:16:06+00:00",
+  "titulo": "Hito 1e: cimientos, suelos y escaleras con el estilo v5",
+  "hito": "estilo",
+  "hecho": [
+   "Cimiento de piedra rehecho como el zócalo de la cabaña de la prueba v5: macizo de mortero, 16 losas con juntas y un tono distinto cada una, y una hilada de piedras redondeadas en los costados.",
+   "Cimiento de troncos, suelo de troncos (troncos partidos sobre dos durmientes de corteza) y suelo de tablas (tablas con veta a lo largo sobre dos rastreles) con las texturas por código y la oclusión horneada de la v5; lo que se pisa sigue a la misma altura.",
+   "Escalera de mano de varas descortezadas y escalera de tablas con zancas y peldaños con veta; cada pieza es ahora una sola malla por textura en vez de hasta 17 sueltas.",
+   "Prueba nueva en prueba_modelos.mjs: cimientos y suelos se pisan a la altura de la lógica, no salen de su casilla y las seis piezas están hechas con el estilo v5 (rota a propósito con MUTAR_SUELO=1: falla).",
+   "Publicadas construcción v15 y demo única v10, con fotos de cerca de cada pieza y una comparación lado a lado con la prueba v5.",
+   "Triángulos por pieza medidos en node: cimiento de piedra 2476 (antes 588), suelo de tablas 1080 (antes 108), escalera de tablas 1404 (antes 156); llamadas de dibujo por pieza de 6-17 a 1-3. No comprobado en un móvil de verdad."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh: lógica 81/81, modelos 36/36, combate 69/69, acciones 25/25, cinturones 8/8, unión 19/19, idiomas, taller; navegador de construcción, combate, estilo, personaje, demo, recursos, idioma y web, en PC y móvil.",
+  "capturas": "capturas/construccion-v15",
+  "estado": "ok"
  }
 ]

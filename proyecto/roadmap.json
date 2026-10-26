@@ -190,7 +190,9 @@
     },
     {
      "nombre": "Estilo elegido en las piezas: cimientos de piedra y de troncos, suelos de troncos y de tablas, y escaleras de mano y de tablas, como la prueba de estilo v5",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-26T17:20:52+00:00",
+     "fin": "2026-10-26T18:16:06+00:00"
     },
     {
      "nombre": "Estilo elegido en las piezas: tejados de paja (con mechones) y de tablillas, y hastiales, como la prueba de estilo v5",
@@ -737,6 +739,13 @@
      "archivo": "jugar/demo/v9.html",
      "capturas": "capturas/demo-v9",
      "notas": "Escena con el estilo v5 en «Construir» y «Duelo» (construcción v14, combate v10)"
+    },
+    {
+     "v": "v10",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v10.html",
+     "capturas": "capturas/demo-v10",
+     "notas": "Cimientos, suelos y escaleras con el estilo de la prueba v5, como en la construcción v15."
     }
    ]
   },
@@ -828,6 +837,13 @@
      "archivo": "jugar/construccion/v14.html",
      "capturas": "capturas/construccion-v14",
      "notas": "Escena como la prueba de estilo v5: hierba densa con flores también en el centro, matorrales, calvas de tierra pisada, rocas y árboles de copa sueltos; la hierba se esconde bajo lo construido y vuelve al quitarlo"
+    },
+    {
+     "v": "v15",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/construccion/v15.html",
+     "capturas": "capturas/construccion-v15",
+     "notas": "Cimientos de piedra y de troncos, suelos de troncos y de tablas y escaleras de mano y de tablas con el estilo de la prueba v5: losas sobre mortero con piedras en los costados, troncos con las testas claras, tablas con veta y rastreles, y varas descortezadas."
     }
    ]
   },
