@@ -1,6 +1,8 @@
 // Decisiones que he tomado yo en el hito 1, para que las revises.
-export const VERSION = 'Hito 1 · v11';
+export const VERSION = 'Hito 1 · v12';
 export const REGISTRO = [
+  'v12: barandillas. El medio muro hace de barandilla en el borde de un suelo en alto o alrededor del hueco de una escalera de tablas: se apoya en el suelo de al lado (o en el muro de debajo) y no deja pasar, así que por ahí ya no se cae. Por el lado por el que se sale de la escalera hay que dejarlo abierto.',
+  'v12: portillo de varas para la cerca, para los corrales. Cuesta lo mismo que la puerta de varas (4 varas y 1 cuerda), porque el documento de sistemas no lo dice. Va en el suelo como la cerca y se abre y se cierra con Usar (F); abierto deja pasar.',
   'Terreno llano en este hito. Las cuestas y su efecto en los cimientos llegan con el mundo generado.',
   'Los materiales vienen dados (y hay botón para rellenar). Recolectarlos llega en el hito 2.',
   'Para construir hace falta tu mojón; la tierra es un círculo de 20 m (mojón de nivel 1). Subir de nivel el mojón llega más adelante.',

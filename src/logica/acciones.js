@@ -5,6 +5,7 @@
 // Con el registro de la construcción se puede rehacer el mundo desde cero (reproducir): así el
 // servidor podrá validar y auditar lo que pasa, y las pruebas ven si algo cambia el mundo sin pasar por aquí.
 import { Mundo } from './construccion.js';
+import { PIEZAS } from './piezas.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
 
 // Autor provisional mientras no haya cuentas (hito de servidor): el jugador de este navegador.
@@ -43,8 +44,8 @@ function forma(accion, campos) {
 }
 
 // ---------------- Construcción ----------------
-// Piezas que se abren y cierran con Usar: las puertas de muro y el portón de la empalizada.
-export function seAbre(p) { return p.hueco === 'p' || p.tipo === 'empalizada_puerta'; }
+// Piezas que se abren y cierran con Usar: las puertas de muro y los portones (el de la empalizada y el portillo de la cerca).
+export function seAbre(p) { return p.hueco === 'p' || !!(PIEZAS[p.tipo] && PIEZAS[p.tipo].portón); }
 
 const CAMPOS_CONSTRUCCION = {
   mojon: { x: 'n', z: 'n' },

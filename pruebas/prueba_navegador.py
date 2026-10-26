@@ -292,6 +292,61 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/14_escalera_de_tablas.png')
 
+    print('PC: barandilla (medio muro en el borde del suelo de arriba)')
+    # el suelo de arriba (casillas de z=-11) da a la casilla de x=11, z=-13, que no tiene suelo en la planta 1
+    v = poner('pieza', 'medio_muro', 11, -12, planta=1)
+    comprobar('medio muro colocado como barandilla en la planta 1', bool(v) and v['ok'], json.dumps(v, ensure_ascii=False))
+    ev(f"{K}.cambiarModo('mover'); {K}.estado.planta=0")
+    def arriba_en(x, z):
+        ev(f"{K}.pj.x={x}; {K}.pj.z={z}; {K}.pj.k=1; {K}.pj.y=2.62")
+        esperar(pg, 300)
+    # control: por el borde sin barandilla (hacia +x) sí se cae a la planta 0
+    arriba_en(11, -11)
+    ev(f"{K}.cam.yaw=-Math.PI/2")
+    andar('w', f"{K}.pj.k === 0", 2500)
+    esperar(pg, 300)
+    comprobar('sin barandilla, por el borde se cae a la planta 0', ev(f"{K}.pj.k") == 0, f"planta={ev(f'{K}.pj.k')} x={ev(f'{K}.pj.x'):.2f}")
+    # con barandilla (hacia -z) no se pasa
+    arriba_en(11, -11)
+    ev(f"{K}.cam.yaw=0")
+    andar('w', f"{K}.pj.k === 0 || {K}.pj.z < -12.2", 2000)
+    esperar(pg, 300)
+    k, z = ev(f"{K}.pj.k"), ev(f"{K}.pj.z")
+    comprobar('con la barandilla no se cae: sigue en la planta 1, antes del borde', k == 1 and z > -12, f'planta={k} z={z:.2f}')
+    # desde fuera y desde abajo, para ver la barandilla en el borde
+    ev(f"{K}.pj.rot=Math.PI; {K}.cam.yaw=Math.PI-0.5; {K}.cam.pitch=0.25; {K}.cam.dist=7")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/21_barandilla_planta_1.png')
+
+    print('PC: portillo de la cerca (se abre con Usar)')
+    # dentro de la tierra (mojón en -3,-6, radio 20) y lejos de lo demás
+    for x in [-10, -6]:
+        poner('pieza', 'cerca', x, 12)
+    v = poner('pieza', 'cerca_portillo', -8, 12)
+    comprobar('portillo colocado entre dos tramos de cerca', bool(v) and v['ok'], json.dumps(v, ensure_ascii=False))
+    pc = ev(f"""(() => {{ for (const c of {K}.mundo.construcciones) for (const p of c.piezas.values()) if (p.tipo === 'cerca_portillo') {{
+        const lx = p.d === 0 ? (p.i + 0.5) * 2 : p.i * 2, lz = p.d === 0 ? p.j * 2 : (p.j + 0.5) * 2;
+        const co = Math.cos(c.rot), si = Math.sin(c.rot);
+        return {{ x: c.ox + lx * co + lz * si, z: c.oz - lx * si + lz * co, d: p.d, cercas: [...c.piezas.values()].filter(q => q.tipo === 'cerca').length }}; }} return null; }})()""")
+    comprobar('portillo en la misma rejilla que la cerca, en línea con ella', pc is not None and pc['d'] == 0 and pc['cercas'] == 2, json.dumps(pc))
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x={pc['x']}; {K}.pj.z={pc['z']}+1.4; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=0")
+    esperar(pg, 300)
+    andar('w', f"{K}.pj.z < {pc['z']} - 0.5", 1500)
+    comprobar('cerrado no deja pasar', ev(f"{K}.pj.z") > pc['z'], f"z={ev(f'{K}.pj.z'):.2f} portillo={pc['z']:.2f}")
+    ev(f"{K}.pj.rot=Math.PI; {K}.cam.yaw=0.6; {K}.cam.pitch=0.35; {K}.cam.dist=6")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/22_portillo_cerrado.png')
+    ev(f"{K}.usar()")
+    abierto = ev(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].find(p => p.tipo === 'cerca_portillo').abierta")
+    comprobar('Usar abre el portillo', abierto is True)
+    comprobar('y queda en el registro de acciones', ev(f"{K}.registroAcciones.entradas.at(-1).tipo === 'usar' && {K}.registroAcciones.entradas.at(-1).ok"))
+    ev(f"{K}.cam.yaw=0")
+    andar('w', f"{K}.pj.z < {pc['z']} - 0.8", 2500)
+    comprobar('abierto se pasa al otro lado', ev(f"{K}.pj.z") < pc['z'] - 0.5, f"z={ev(f'{K}.pj.z'):.2f}")
+    ev(f"{K}.pj.x={pc['x']}+0.6; {K}.pj.z={pc['z']}+1.8; {K}.pj.rot=Math.PI; {K}.cam.yaw=0.7; {K}.cam.pitch=0.4; {K}.cam.dist=6")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/23_portillo_abierto.png')
+
     print('PC: personaje del taller (camisa y calzas de lino; anda, corre y tala)')
     try:
         pg.wait_for_function(f'{K}.jugador.mh || {K}.jugador.error', timeout=180000)
