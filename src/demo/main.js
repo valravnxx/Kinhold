@@ -3,12 +3,14 @@
 // parte empiece limpia (sin dos escenas ni dos WebGL a la vez). three.js va una sola vez en el archivo: las
 // partes se cargan con import() y solo se ejecuta la elegida.
 // El personaje que se elige en «Personaje» (cuerpo y ropa) es el que sale en la construcción y en el duelo
-// (src/demo/eleccion.js).
+// (src/demo/eleccion.js). Junto a «Menú», los fotogramas por segundo y el detalle del rendimiento.
 import PLANTILLAS from 'plantillas-demo';
 import { tr, traducirPagina, botonesIdioma, idioma } from '../idioma.js';
 import { personajeElegido } from './eleccion.js';
 import { VERSION_DEMO, REGISTRO_DEMO } from './registro.js';
 import { CAPAS } from '../personaje/textos.js';
+import { ponerRendimiento } from './rendimiento.js';
+import { medidaRendimiento, genteDePrueba } from '../mundo/rendimiento.js';
 
 const MODOS = {
   construir: { carga: () => import('../juego/main.js'), menu: '#menu', nombre: 'Construir' },
@@ -48,7 +50,10 @@ if (MODOS[modo]) {
   b.id = 'btnDemoMenu'; b.textContent = 'Menú';
   b.onclick = () => { location.href = enlace(null); };
   if (caja) caja.prepend(b); else { b.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:9'; document.body.appendChild(b); }
+  // los números de rendimiento, junto a «Menú» (src/demo/rendimiento.js)
+  ponerRendimiento(b);
   window.__demo = { modo, listo: false };
+  window.__rendimiento = { medida: medidaRendimiento, gente: (n) => genteDePrueba() && genteDePrueba().poner(n) };
   MODOS[modo].carga().then(() => { window.__demo.listo = true; }).catch(e => { window.__demo.error = e.message; console.error(e); });
 } else {
   // el menú
