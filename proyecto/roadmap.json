@@ -633,6 +633,13 @@
      "archivo": "jugar/demo/v4.html",
      "capturas": "capturas/demo-v4",
      "notas": "Correr más natural en las tres partes: la carrera suavizada (menos zancada, braceo, bote e inclinación) y a su velocidad de verdad, sin resbalar ni cámara lenta. Es la construcción v11, el combate v8 y el personaje v12."
+    },
+    {
+     "v": "v5",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v5.html",
+     "capturas": "capturas/demo-v5",
+     "notas": "Brazos naturales al correr en las tres partes (personaje v13)."
     }
    ]
   },
@@ -927,16 +934,16 @@
      "archivo": "jugar/personaje/v12.html",
      "capturas": "capturas/personaje-v12",
      "notas": "Correr más natural: la carrera del paquete, suavizada por código (menos zancada, braceo, bote e inclinación, y los brazos más pegados), y a su velocidad de verdad: antes los pies resbalaban y se veía a cámara lenta. Botón «Correr» en Animación."
+    },
+    {
+     "v": "v13",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/personaje/v13.html",
+     "capturas": "capturas/personaje-v13",
+     "notas": "Brazos naturales al correr: oscilan junto al cuerpo, con la mano de canto y la muñeca recta, en vez de ir torcidos hacia delante."
     }
    ]
   }
  ],
- "decisiones_pendientes": [
-  {
-   "id": "carrera",
-   "pregunta": "Carrera: ¿te vale la carrera suavizada (personaje v12) o bajas las carreras de captura de movimiento gratuitas de Rokoko (piden rellenar un formulario) para probarlas?",
-   "desde": "2026-10-26",
-   "hito": "arte"
-  }
- ]
+ "decisiones_pendientes": []
 }

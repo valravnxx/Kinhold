@@ -64,6 +64,7 @@ function foto(cual, ancho, alto) {
   else if (cual.vista === 'cara') { camara.position.set(c.x + 0.15, cabeza.y + 0.06, c.z + 0.95); camara.lookAt(c.x, cabeza.y + 0.03, c.z); /* cabeza entera, con la barbilla */ }
   else if (cual.vista === 'perfil') { camara.position.set(c.x + 3.2, 1.05, c.z); camara.lookAt(c.x, 0.95, c.z); } // de lado, solo esa persona
   else if (cual.vista === 'lado') { camara.position.set(POS.x + 5.2, 1.1, POS.z + 1.0); camara.lookAt(POS.x, 0.85, POS.z); }
+  else if (cual.vista === 'libre') { camara.position.set(c.x + cual.cam[0], cual.cam[1], c.z + cual.cam[2]); camara.lookAt(c.x + cual.mira[0], cual.mira[1], c.z + cual.mira[2]); } // cámara a medida (relativa a la persona)
   else if (cual.vista === 'espalda') { camara.position.set(c.x - 1.2, 1.4, c.z - 2.6); camara.lookAt(c.x, 0.9, c.z); }
   gente.forEach((g, i) => { g.visible = cual.vista !== 'perfil' || i === (cual.persona ?? 0); });
   renderer.render(escena, camara);
