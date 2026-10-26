@@ -182,7 +182,8 @@
    "tareas": [
     {
      "nombre": "Correr más natural (Pedro: «la animación de correr me parece fea y exagerada»): primero suavizar por código la del paquete (menos braceo, rebote e inclinación); después probar carreras de captura de movimiento libres para uso comercial (Rokoko o CMU) si Pedro las baja",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-26T05:09:48+01:00"
     },
     {
      "nombre": "Tres pruebas de estilo (personaje y una escena con cabaña) con distinta luz, materiales y nivel de detalle, para que Pedro elija",
