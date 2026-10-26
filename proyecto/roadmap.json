@@ -196,7 +196,9 @@
     },
     {
      "nombre": "Estilo elegido en las piezas: tejados de paja (con mechones) y de tablillas, y hastiales, como la prueba de estilo v5",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-26T18:20:41+00:00",
+     "fin": "2026-10-26T19:33:32+00:00"
     },
     {
      "nombre": "Estilo elegido en las piezas: puertas de varas y de tablas, cerca de varas, empalizada y su puerta, mojón, y las barandillas y el portillo nuevos, como la prueba de estilo v5",
@@ -746,6 +748,13 @@
      "archivo": "jugar/demo/v10.html",
      "capturas": "capturas/demo-v10",
      "notas": "Cimientos, suelos y escaleras con el estilo de la prueba v5, como en la construcción v15."
+    },
+    {
+     "v": "v11",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v11.html",
+     "capturas": "capturas/demo-v11",
+     "notas": "Construcción v16: tejados de paja y de tablillas, y lo que cierra bajo el tejado, con el estilo v5"
     }
    ]
   },
@@ -844,6 +853,13 @@
      "archivo": "jugar/construccion/v15.html",
      "capturas": "capturas/construccion-v15",
      "notas": "Cimientos de piedra y de troncos, suelos de troncos y de tablas y escaleras de mano y de tablas con el estilo de la prueba v5: losas sobre mortero con piedras en los costados, troncos con las testas claras, tablas con veta y rastreles, y varas descortezadas."
+    },
+    {
+     "v": "v16",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/construccion/v16.html",
+     "capturas": "capturas/construccion-v16",
+     "notas": "Tejados de paja (dos hiladas, mechones en el alero y cumbrera redonda) y de tablillas (filas solapadas, tabla de remate y caballete) con el estilo v5; bajo el tejado se cierra con tablas de pie, barro y estacas o encalado y postes"
     }
    ]
   },

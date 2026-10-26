@@ -1054,5 +1054,25 @@
   "pruebas": "Todas correctas con probar_todo.sh: lógica 81/81, modelos 36/36, combate 69/69, acciones 25/25, cinturones 8/8, unión 19/19, idiomas, taller; navegador de construcción, combate, estilo, personaje, demo, recursos, idioma y web, en PC y móvil.",
   "capturas": "capturas/construccion-v15",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T18:20:41+00:00",
+  "fin": "2026-10-26T19:33:32+00:00",
+  "titulo": "Hito 1e: tejados de paja y de tablillas y hastiales con el estilo v5",
+  "hito": "estilo",
+  "hecho": [
+   "Tejado de paja como el de la cabaña de la prueba v5: dos hiladas gruesas con el canto redondeado (la del alero monta sobre la de arriba), una fila de manojos de paja asomando en el alero y la cumbrera redonda con sus remates.",
+   "Las hiladas de paja tienen los lados planos: los tramos que van de lado se juntan sin surco y el tejado grande ya no se ve a cuadros. Solo vuelan 20 cm los lados que no tienen otro tramo al lado.",
+   "Tejado de tablillas: tablazón debajo y filas de tablillas solapadas, desplazadas media tablilla y con el pie levantado; tabla de remate en los lados que vuelan y caballete en la cumbrera.",
+   "Lo que cierra bajo el tejado (los hastiales automáticos): tablas de pie cortadas con la pendiente en muros de troncos y de tablas; barro con estacas en el zarzo y encalado con postes en el entramado. El hastial suelto antiguo también, con tablas de pie.",
+   "La lógica (geometriaTejados) dice ahora qué lados de cada tramo vuelan, qué tramo pone la cumbrera (uno solo de los dos) y su paridad; el dibujo lo usa.",
+   "Muestrario nuevo de casas con tejado (herramientas/muestrario/tejados.js, fotos.py casas=1) para sacar fotos de cerca.",
+   "Pruebas nuevas: cumbrera de un solo tramo, lados que vuelan y paridad (lógica, rotas a propósito: fallan); tejados con el estilo v5, nada por debajo del plano del tejado, lados planos de la paja (rota con MUTAR_TEJADO=1: falla) y rellenos que llegan al tejado sin atravesarlo (modelos).",
+   "Publicadas construcción v16 y demo única v11, con comparación lado a lado con la prueba v5.",
+   "Triángulos por tramo medidos en node: paja 2072 (2520 con cumbrera), tablillas 2244, relleno de tablas 108 (antes unos 48 el tramo). No comprobado en un móvil de verdad."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh: lógica 86/86, modelos 47/47, combate, acciones, cinturones, unión, idiomas, taller; navegador de construcción, combate, estilo, personaje, demo, recursos, idioma y web, en PC y móvil.",
+  "capturas": "capturas/construccion-v16",
+  "estado": "ok"
  }
 ]
