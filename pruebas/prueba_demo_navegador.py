@@ -46,7 +46,8 @@ def tapado(pg, sel):
       return x === e || e.contains(x) ? '' : (x ? x.id || x.tagName : 'nada'); }""", sel)
 def medir(pg, nombre, parte, personajes):
     """el botón de fps junto a «Menú», su panel y la medida (se renueva cada segundo)"""
-    pg.wait_for_function('window.__rendimiento.medida() && window.__rendimiento.medida().fps > 0 && window.__rendimiento.medida().personajes >= %d' % personajes, timeout=60000)
+    try: pg.wait_for_function('window.__rendimiento.medida() && window.__rendimiento.medida().fps > 0 && window.__rendimiento.medida().personajes >= %d' % personajes, timeout=60000)
+    except Exception: pass  # lo dice la comprobación de abajo
     t = tapado(pg, '#btnDemoFps'); comprobar(f'{parte}: botón de fps libre', t == '', t)
     comprobar(f'{parte}: el botón dice los fps', pg.inner_text('#btnDemoFps').endswith('fps'), pg.inner_text('#btnDemoFps'))
     pg.wait_for_timeout(1100)
@@ -112,7 +113,7 @@ with sync_playwright() as p:
                     if t == 'demoRend' or t == 'btnDemoFps': comprobar(f'construir: el rendimiento no tapa {b}', False, t)
         if MUTAR_REND: pg.evaluate('window.__rendimiento.gente = () => {}')
         pg.evaluate('window.__rendimiento.gente(8)')
-        try: pg.wait_for_function('window.__rendimiento.medida().personajes >= 9', timeout=120000)
+        try: pg.wait_for_function('window.__rendimiento.medida().personajes >= 9', timeout=120000 if not MUTAR_REND else 5000)
         except Exception: pass
         m8 = medir(pg, nombre, 'construir_9', 9)
         comprobar('construir: con 8 más hay más triángulos', m8['triangulos'] > m0['triangulos'] * 1.3, f"{m0['triangulos']} → {m8['triangulos']}")

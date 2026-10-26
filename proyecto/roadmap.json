@@ -126,7 +126,9 @@
     },
     {
      "nombre": "Rendimiento de la demo única: medir fotogramas, triángulos y memoria con la escena y varios personajes, dejar los números a la vista y pedir a Pedro los fps en su móvil",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-26T00:21:01+00:00",
+     "fin": "2026-10-26T01:28:05+00:00"
     },
     {
      "nombre": "En el móvil, ningún aviso ni panel tapa los menús: el aviso de la construcción tapa «Reiniciar» (más en inglés y en ruso) y las notas de la prueba de estilo tapan la barra de vistas cuando esta ocupa dos filas",
@@ -580,6 +582,13 @@
      "archivo": "jugar/demo/v1.html",
      "capturas": "capturas/demo-v1",
      "notas": "Primera demo única: menú con Construir, Duelo y Personaje; el personaje que eliges (cuerpo y ropa) es el que construye y el que lucha"
+    },
+    {
+     "v": "v2",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v2.html",
+     "capturas": "capturas/demo-v2",
+     "notas": "Los fps de tu aparato junto a «Menú» y, al pulsarlos, el detalle (tiempo de cada fotograma, triángulos, memoria y personajes en escena); en «Construir», personajes de prueba para medir con gente"
     }
    ]
   },
@@ -857,5 +866,11 @@
    ]
   }
  ],
- "decisiones_pendientes": []
+ "decisiones_pendientes": [
+  {
+   "pregunta": "¿Cuántos fps ves en tu móvil en la demo única (v2), en «Construir» y en «Duelo»? Salen junto al botón «Menú»; al pulsarlos se ve el detalle. Dime también qué móvil es y, si puedes, los fps en «Construir» con 8 personajes de prueba. Con eso se decide cuánto detalle aguanta (niveles de detalle, sombras, resolución).",
+   "desde": "2026-10-26",
+   "hito": "unificacion"
+  }
+ ]
 }
