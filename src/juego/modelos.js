@@ -134,18 +134,13 @@ function muroTroncos(opc = {}) {
   }
   return deLote(L);
 }
-// Zarzo y barro: varas entretejidas entre estacas, tapadas con barro; en un desconchón se ve el zarzo
+// Zarzo y barro: varas entretejidas entre estacas, tapadas con barro (las estacas asoman)
 function muroZarzo() {
   const L = loteMuro();
-  const BARRO = 0x8c7356, BARRO2 = 0x7c6449;
+  const BARRO = 0x8c7356;
   L.add(cajaR(MODULO, ALTURA, 0.16, 0.05), BARRO, 0, ALTURA / 2, 0, null, { tex: 'piedra', rayas: (v) => 0.94 + 0.06 * Math.sin(v.x * 3.1 + v.y * 2.3) });
-  for (const x of [-0.95, 0, 0.95]) L.add(cil(0.075, 0.085, ALTURA, 8), 'corteza', x, ALTURA / 2, 0);
+  for (const x of [-0.93, 0, 0.93]) L.add(cil(0.085, 0.095, ALTURA - 0.12, 8), 'corteza', x, ALTURA / 2, 0); // estacas, asoman del barro
   for (const s of [-1, 1]) L.add(cajaR(MODULO, 0.12, 0.2, 0.03), 'maderaOsc', 0, s > 0 ? ALTURA - 0.06 : 0.06, 0); // durmiente y carrera
-  // desconchón: varas horizontales a la vista sobre un barro más oscuro
-  for (const sz of [-1, 1]) {
-    L.add(cajaR(0.5, 0.42, 0.02, 0.01), BARRO2, 0.45, 1.35, sz * 0.08);
-    for (let k = 0; k < 4; k++) L.add(cil(0.018, 0.018, 0.48, 5), 'madera', 0.45, 1.19 + k * 0.105, sz * (0.09 + (k % 2) * 0.008), { z: Math.PI / 2 });
-  }
   return deLote(L);
 }
 // Entramado: armazón de vigas con relleno de barro encalado
