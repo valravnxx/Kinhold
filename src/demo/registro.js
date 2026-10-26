@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v1 (Construir, Duelo y Personaje en una sola página)';
+export const VERSION_DEMO = 'Demo única · v2 (los números de rendimiento a la vista)';
 export const REGISTRO_DEMO = [
+  'v2: junto al botón «Menú» salen los fotogramas por segundo de tu aparato; al pulsarlo se abre el detalle: lo que tarda cada fotograma (de media y el más lento), la resolución, los triángulos y las llamadas de dibujo, la memoria gráfica y la de JavaScript (esta solo la dicen Chrome y los navegadores basados en él) y los personajes en escena. En el móvil, si junto a «Menú» no cabe, va a la izquierda de la pantalla.',
+  'v2, para medir con gente: en «Construir», el detalle tiene «Personajes de prueba» (0, 4, 8 o 16): personajes del taller que pasean en corro a tu alrededor. Solo se dibujan; no son jugadores ni cambian nada. Medido en el navegador de pruebas (dibuja sin tarjeta gráfica, así que sus fps no valen): cada personaje suma unos 37 mil triángulos por fotograma (contando su sombra), unas 10 geometrías y 12 texturas.',
   'v1: una sola página con menú: Construir, Duelo y Personaje. Cada parte es el último prototipo de cada cosa (construcción v10, combate v8, personaje v11), con la misma escena y el mismo personaje del taller. Las versiones antiguas de cada prototipo siguen en la web.',
   'v1, cómo se cambia de parte: el botón «Menú» de arriba vuelve al menú y la página se recarga. Así cada parte empieza limpia y en el móvil nunca hay dos escenas a la vez gastando memoria. Lo construido, las opciones del duelo y el personaje se guardan en el navegador y siguen ahí al volver.',
   'v1: el personaje que eliges en «Personaje» (hombre o mujer y su ropa por capas) es el que construye y el que lucha. Por ahora el taller solo cambia el cuerpo y la ropa; pelo, piel y cara vendrán con la personalización.',

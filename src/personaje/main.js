@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { LUCES } from '../mundo/estilos.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
+import { vigilar } from '../mundo/rendimiento.js';
 import { crearEscena } from '../estilo/escena.js';
 import { crearPersonaje, OPCIONES } from '../personajes/cargar.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
@@ -39,6 +40,7 @@ const lienzo = $('lienzo');
 const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, alpha: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
 renderer.setClearColor(0x000000, 0);
 prepararRenderer(renderer); // sombras blandas, sRGB y ACES: los de la escena común
+vigilar(renderer); // fotogramas, triángulos y memoria (src/mundo/rendimiento.js)
 const camara = new THREE.PerspectiveCamera(30, 1, 0.05, 200);
 const control = new OrbitControls(camara, lienzo);
 control.enableDamping = true; control.maxPolarAngle = Math.PI * 0.55; control.minDistance = 0.35; control.maxDistance = 25;

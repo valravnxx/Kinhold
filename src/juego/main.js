@@ -11,6 +11,7 @@ import { t } from './textos.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearDecorado } from '../mundo/decorado.js';
+import { vigilar, ofrecerGente } from '../mundo/rendimiento.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -63,6 +64,7 @@ const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, alph
 renderer.setClearColor(0x000000, 0); // el cielo lo pinta la página (un degradado CSS no cuesta nada dibujarlo)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 prepararRenderer(renderer); // sombras blandas, sRGB y ACES: los de la escena común
+vigilar(renderer); // fotogramas, triángulos y memoria (src/mundo/rendimiento.js)
 const escena = new THREE.Scene();
 const camara = new THREE.PerspectiveCamera(45, 1, 0.1, 500);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
@@ -84,6 +86,31 @@ const jugador = elegido ? crearJugador(RECURSOS_MH, elegido.sexo, elegido.capas)
 escena.add(jugador.raiz);
 const pj = { x: 0, y: 0, z: 4, k: 0, rot: Math.PI, vel: 0 };
 const cam = { yaw: Math.PI * 0.25, pitch: 0.9, dist: 16 };
+
+// Gente de prueba, solo para medir el rendimiento con varios personajes (botón de la demo): personajes del taller
+// que pasean en corro alrededor de donde estás. No son jugadores ni cambian el mundo: solo se dibujan.
+const ROPA_PRUEBA = { hombre: [['tunica'], ['gambeson'], ['gambeson', 'cota', 'sobreveste'], []], mujer: [['vestido'], ['vestido', 'gambeson'], []] };
+const gente = [];
+ofrecerGente({
+  cuantos: () => gente.length,
+  poner(n) {
+    while (gente.length > n) escena.remove(gente.pop().j.raiz);
+    while (gente.length < n) {
+      const i = gente.length, sexo = i % 2 ? 'mujer' : 'hombre', ropas = ROPA_PRUEBA[sexo];
+      const j = crearJugador(RECURSOS_MH, sexo, ropas[Math.floor(i / 2) % ropas.length]);
+      escena.add(j.raiz);
+      gente.push({ j, cx: pj.x, cz: pj.z, radio: 3 + (i % 4) * 1.2, ang: i * 2.4, sentido: i % 3 ? 1 : -1 });
+    }
+  },
+});
+function moverGente(dt) {
+  for (const g of gente) {
+    g.ang += g.sentido * 0.97 * dt / g.radio; // a paso de andar (0,97 m/s)
+    g.j.raiz.position.set(g.cx + Math.cos(g.ang) * g.radio, 0, g.cz + Math.sin(g.ang) * g.radio);
+    g.j.raiz.rotation.y = -g.ang + (g.sentido > 0 ? 0 : Math.PI); // mirando hacia donde anda
+    g.j.animar(0.97, dt);
+  }
+}
 
 function actualizarCamara() {
   const objetivo = new THREE.Vector3(pj.x, pj.y + 1.2, pj.z);
@@ -703,6 +730,7 @@ function paso() {
   const it = interactivoCercano();
   $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano());
 
+  moverGente(dt);
   actualizarCamara();
   renderer.render(escena, camara);
   requestAnimationFrame(paso);

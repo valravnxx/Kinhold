@@ -6,6 +6,7 @@ import { crearCombatiente, ponerArma, animarCombatiente, pintarHeridas, sacudir,
   modeloFlecha, modeloPiedra, modeloPoste, modeloDiana } from './modelos.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearDecorado } from '../mundo/decorado.js';
+import { vigilar } from '../mundo/rendimiento.js';
 import * as sonido from './sonido.js';
 import { RegistroAcciones, ejecutarCombate, avanzarProyectil } from '../logica/acciones.js';
 import { REGISTRO_COMBATE, VERSION_COMBATE } from './registro.js';
@@ -55,6 +56,7 @@ const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, alph
 renderer.setClearColor(0x000000, 0); // el cielo lo pinta la página (un degradado CSS no cuesta nada dibujarlo)
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 prepararRenderer(renderer); // sombras blandas, sRGB y ACES: los de la escena común
+vigilar(renderer); // fotogramas, triángulos y memoria (src/mundo/rendimiento.js)
 const escena = new THREE.Scene();
 const camara = new THREE.PerspectiveCamera(45, 1, 0.1, 400);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador

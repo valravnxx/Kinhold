@@ -827,5 +827,22 @@
   "pruebas": "Todas correctas con probar_todo.sh (lógica 63/63, modelos 21/21, combate 69/69, acciones 25/25, textos traducidos, navegador de construcción, combate, estilo, personaje, demo, recursos, idiomas y web), en PC y móvil. La prueba nueva de la demo se rompió a propósito (MUTAR=1 borra lo guardado al cambiar de parte) y falló como debía. Capturas miradas del menú, el personaje, la construcción y el duelo con la mujer de vestido y gambesón, en PC y móvil, y el menú en ruso. Visto en las capturas: en el móvil el aviso de la construcción sigue tapando «Reiniciar», y con el botón «Menú» la barra de arriba ocupa una fila más; es la tarea siguiente del hito. No comprobado: los fotogramas con tarjeta gráfica ni en un móvil de verdad (es la tarea de rendimiento).",
   "capturas": "capturas/demo-v1",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T00:21:01+00:00",
+  "fin": "2026-10-26T01:28:05+00:00",
+  "titulo": "Hito 1d: rendimiento de la demo única",
+  "hito": "unificacion",
+  "hecho": [
+   "Medida de rendimiento común (src/mundo/rendimiento.js): cada parte registra su renderer y se cuentan los fotogramas por segundo, el tiempo medio y el peor de cada fotograma, los triángulos y las llamadas de dibujo, la memoria gráfica (geometrías y texturas), la de JavaScript (solo en Chrome y similares) y los personajes en escena.",
+   "Demo única v2 publicada (jugar/demo/v2): los fps salen en un botón junto a «Menú» y al pulsarlo se abre el detalle con una nota para Pedro. En el móvil, si junto a «Menú» no cabe sin añadir otra fila de botones, va suelto a la izquierda de la pantalla.",
+   "En «Construir», «Personajes de prueba» (0, 4, 8 o 16): personajes del taller que pasean en corro alrededor del jugador, solo para medir con gente; no cambian el mundo.",
+   "Medido en el navegador de pruebas (dibujo por software, sus fps no valen): personaje 89 mil triángulos y 41 dibujos; construcción con 1 personaje 130 mil triángulos y 29 dibujos; con 9 personajes 426 mil y 185 (cada personaje suma unos 37 mil triángulos contando su sombra, unas 10 geometrías y 12 texturas); duelo con 2 personajes 143 mil y 72.",
+   "Pregunta añadida a Pedro en las decisiones pendientes: los fps en su móvil.",
+   "Prueba de la demo ampliada: botón de fps libre, panel con los números, cuenta de personajes en cada parte, más triángulos con 8 personajes de prueba y que el botón no tape el menú; con MUTAR_REND=1 falla como debe."
+  ],
+  "pruebas": "Todas correctas (bash herramientas/probar_todo.sh): lógica, modelos, combate, acciones, taller, unión, textos, navegador de construcción, combate, estilo, personaje, demo, recursos, idiomas y web; capturas de la demo miradas en PC y móvil",
+  "capturas": "capturas/demo-v2",
+  "estado": "ok"
  }
 ]
