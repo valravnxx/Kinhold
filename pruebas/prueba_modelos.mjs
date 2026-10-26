@@ -1,8 +1,8 @@
 // Mide los modelos de muro: todos deben llegar exactamente a la altura de planta,
 // y los huecos de puerta y ventana deben quedar limpios.
 import * as THREE from 'three';
-import { modeloPieza, rellenoTejado, mojon, P } from '../src/juego/modelos.js';
-import { PIEZAS, ALTURA, MODULO } from '../src/logica/piezas.js';
+import { modeloPieza, rellenoTejado, mojon, decoracion, P } from '../src/juego/modelos.js';
+import { PIEZAS, DECORACION, ALTURA, MODULO } from '../src/logica/piezas.js';
 
 let ok = 0, mal = 0;
 // MUTAR=1 mete un tablón en el hueco de la puerta: la prueba de huecos tiene que fallar
@@ -138,6 +138,28 @@ console.log('Puertas, cercas, portillo, empalizada y mojón con el estilo v5');
   comprobar('Cerca de varas: las varas llegan al borde de la casilla', bc.min.x > -MODULO / 2 - 0.05 && bc.min.x < -MODULO / 2 + 0.01 && bc.max.x < MODULO / 2 + 0.05, `x de ${r3(bc.min.x)} a ${r3(bc.max.x)}`);
   const be = caja(modeloPieza('empalizada'));
   comprobar(`Empalizada: unos ${P.altoEmpalizada} m de alto con las puntas`, be.max.y > P.altoEmpalizada && be.max.y < P.altoEmpalizada + 0.6 && Math.abs(be.min.y) < 0.02, `y de ${r3(be.min.y)} a ${r3(be.max.y)}`);
+}
+
+console.log('Muebles con el estilo v5');
+{
+  // cada mueble: hecho con el estilo v5 (mallas por textura; la llama de la antorcha aparte), apoyado en el suelo y sin
+  // ocupar más que su sitio (ancho en x, fondo en z), como antes de pasarlo al estilo
+  const SITIO = { cama_paja: [1.1, 2.1], cama_madera: [1.2, 2.2], mesa: [1.5, 0.9], banco: [1.3, 0.4], taburete: [0.5, 0.5], arcon: [1.1, 0.65],
+    barril: [0.7, 0.7], estanteria: [1.1, 0.45], candil: [0.5, 0.5], alfombra: [1.5, 1.5], estandarte: [0.9, 0.5] };
+  comprobar('Todos los muebles del juego tienen su medida en la prueba', Object.keys(DECORACION).every(t => SITIO[t]), Object.keys(DECORACION).filter(t => !SITIO[t]).join(' '));
+  for (const tipo of Object.keys(DECORACION)) {
+    const o = decoracion(tipo);
+    // MUTAR_MUEBLE=1 le añade a la mesa una caja de color plano (el aspecto inicial): la prueba tiene que fallar
+    if (process.env.MUTAR_MUEBLE && tipo === 'mesa') o.add(new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.2)));
+    const n = []; o.traverse(m => { if (m.isMesh) n.push(m.name); });
+    const nombre = DECORACION[tipo].nombre;
+    comprobar(`${nombre}: hecho con el estilo v5 (mallas por textura)`, n.some(x => x.startsWith('estilo_')) && n.every(x => x.startsWith('estilo_') || x === 'llama'), n.join(' '));
+    const b = caja(o), [ax, az] = SITIO[tipo];
+    comprobar(`${nombre}: apoyado en el suelo y dentro de su sitio`, Math.abs(b.min.y) < 0.02 && b.max.x - b.min.x <= ax && b.max.z - b.min.z <= az,
+      `y desde ${r3(b.min.y)}, ${r3(b.max.x - b.min.x)} × ${r3(b.max.z - b.min.z)} m`);
+  }
+  const ll = []; decoracion('candil').traverse(m => { if (m.name === 'llama') ll.push(m); });
+  comprobar('Antorcha de pie: la llama brilla y no da sombra', ll.length > 0 && ll.every(m => m.material.emissiveIntensity > 0 && !m.castShadow));
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

@@ -547,69 +547,216 @@ export function mojon() {
   return deLote(L);
 }
 
-// ---------- Decoración ----------
-export function decoracion(tipo) {
-  const g = new THREE.Group();
-  switch (tipo) {
-    case 'cama_paja':
-      g.add(caja(1.0, 0.22, 2.0, COLORES.paja, 0, 0.11, 0));
-      g.add(caja(0.95, 0.06, 1.2, COLORES.piel, 0, 0.25, 0.3));
-      break;
-    case 'cama_madera':
-      g.add(caja(1.1, 0.3, 2.1, COLORES.tablaOscura, 0, 0.25, 0));
-      g.add(caja(1.0, 0.15, 1.95, COLORES.paja, 0, 0.47, 0));
-      g.add(caja(0.95, 0.06, 1.2, COLORES.lino, 0, 0.56, 0.3));
-      g.add(caja(1.1, 0.6, 0.08, COLORES.tablaOscura, 0, 0.4, -1.05));
-      for (const [x, z] of [[-0.5, -1], [0.5, -1], [-0.5, 1], [0.5, 1]]) g.add(caja(0.08, 0.3, 0.08, COLORES.troncoOscuro, x, 0.15, z));
-      break;
-    case 'mesa':
-      g.add(caja(1.4, 0.07, 0.8, COLORES.tabla, 0, 0.75, 0));
-      for (const [x, z] of [[-0.6, -0.32], [0.6, -0.32], [-0.6, 0.32], [0.6, 0.32]]) g.add(caja(0.08, 0.72, 0.08, COLORES.tablaOscura, x, 0.36, z));
-      break;
-    case 'banco':
-      g.add(caja(1.2, 0.06, 0.3, COLORES.tabla, 0, 0.45, 0));
-      g.add(caja(0.06, 0.42, 0.26, COLORES.tablaOscura, -0.5, 0.21, 0));
-      g.add(caja(0.06, 0.42, 0.26, COLORES.tablaOscura, 0.5, 0.21, 0));
-      break;
-    case 'taburete':
-      g.add(cilindroY(0.2, 0.45, COLORES.tronco, 0, 0, 0, 7));
-      g.add(cilindroY(0.2, 0.02, COLORES.corte, 0, 0.45, 0, 7));
-      break;
-    case 'arcon':
-      g.add(caja(1.0, 0.5, 0.55, COLORES.tablaOscura, 0, 0.25, 0));
-      g.add(caja(1.02, 0.08, 0.57, COLORES.tabla, 0, 0.54, 0));
-      for (const x of [-0.35, 0.35]) g.add(caja(0.05, 0.6, 0.58, COLORES.hierro, x, 0.3, 0));
-      break;
-    case 'barril':
-      g.add(cilindroY(0.3, 0.8, COLORES.tabla, 0, 0, 0, 10, 0.28));
-      for (const y of [0.12, 0.66]) g.add(cilindroY(0.31, 0.04, COLORES.hierro, 0, y, 0, 10));
-      break;
-    case 'estanteria':
-      for (const x of [-0.48, 0.48]) g.add(caja(0.05, 1.8, 0.35, COLORES.tablaOscura, x, 0.9, 0));
-      for (const y of [0.1, 0.65, 1.2, 1.75]) g.add(caja(1.0, 0.04, 0.35, COLORES.tabla, 0, y, 0));
-      g.add(caja(0.25, 0.25, 0.2, COLORES.barro, -0.2, 0.8, 0));
-      g.add(cilindroY(0.1, 0.25, COLORES.barro, 0.2, 1.22, 0, 7));
-      break;
-    case 'candil': {
-      g.add(cilindroY(0.04, 1.4, COLORES.vara, 0, 0, 0, 5));
-      g.add(cilindroY(0.12, 0.12, COLORES.hierro, 0, 1.4, 0, 6, 0.16));
-      const llama = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.28, 5), mat(COLORES.llama, { emissive: COLORES.llama, emissiveIntensity: 1 }));
-      llama.position.y = 1.66;
-      g.add(llama);
-      break;
-    }
-    case 'alfombra':
-      g.add(caja(1.4, 0.02, 1.0, COLORES.piel, 0, 0.01, 0));
-      g.add(caja(1.2, 0.025, 0.8, 0x7a5a3e, 0, 0.012, 0));
-      break;
-    case 'estandarte':
-      g.add(cilindroY(0.04, 2.6, COLORES.vara, 0, 0, 0, 5));
-      g.add(cilindroX(0.03, 0.8, COLORES.vara, 0, 2.5, 0.0, 5));
-      g.add(caja(0.7, 1.0, 0.02, COLORES.tela, 0, 1.95, 0.03));
-      g.add(caja(0.2, 0.5, 0.025, 0xd9b44a, 0, 1.95, 0.04));
-      break;
+// ---------- Muebles y enseres, con el estilo v5 ----------
+// Como el banco, el barril y el tocón de la prueba de estilo: madera con veta, cortes claros, hierro oscuro, y los
+// paños (lino, lana, piel) con su textura de tejido. Mismo tamaño y apoyo que antes (la lógica no cambia).
+// La llama de la antorcha va aparte, en su malla «llama» que brilla.
+const loteMueble = () => new Lote({ variacion: 0.06, rangoSuelo: 0.4 });
+// pata o poste redondo con el corte claro arriba, inclinado (ix, iz: lo que se abre por abajo)
+function pata(L, x, z, alto, r, color = 'maderaOsc', ix = 0, iz = 0) {
+  const l = Math.hypot(alto, ix, iz);
+  const m = new THREE.Matrix4().makeRotationFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(-ix, alto, -iz).normalize()));
+  L.add(cil(r * 0.85, r, l, 7), color, x + ix / 2, alto / 2, z + iz / 2, m);
+}
+// colchón o saco relleno: caja redondeada y abombada (los bordes bajan un poco), con su tela
+function relleno(L, w, h, d, color, x, y, z, opc = {}) {
+  const g = new RoundedBoxGeometry(w, h, d, 2, Math.min(h * 0.45, 0.1));
+  const p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) { const ux = p.getX(i) / (w / 2), uz = p.getZ(i) / (d / 2); if (p.getY(i) > 0) p.setY(i, p.getY(i) * (1 - 0.35 * Math.max(ux * ux, uz * uz) ** 2)); }
+  g.computeVertexNormals();
+  L.add(g, color, x, y, z, null, { sinSuelo: true, ...opc });
+}
+// manta doblada encima de algo: paño fino que cae por los lados
+function manta(L, w, d, yTop, z, color, cae = 0.12) {
+  L.add(cajaR(w, 0.035, d, 0.015), color, 0, yTop + 0.017, z, null, { sinSuelo: true });
+  for (const s of [-1, 1]) L.add(cajaR(0.03, cae, d, 0.012), color, s * (w / 2 - 0.004), yTop + 0.03 - cae / 2, z, { z: s * 0.08 }, { sinSuelo: true, brillo: 0.85 });
+}
+// borde de pelo de una piel: mechones cortos alrededor de un contorno
+function pelo(L, puntos, y, color, s0 = 0) {
+  puntos.forEach(([x, z], i) => {
+    const mech = new THREE.ConeGeometry(0.035, 0.07, 4); mech.rotateZ(Math.PI / 2);
+    L.add(mech, color, x, y, z, { y: Math.atan2(-z, x) + (ruido(i + s0) - 0.5) * 0.4 }, { sinSuelo: true, escala: new THREE.Vector3(1, 0.4, 1), brillo: 0.85 + ruido(i * 3 + s0) * 0.25 });
+  });
+}
+// contorno de una piel curtida (lomo a lo largo de z, cuatro patas y cuello)
+function contornoPiel(largo, ancho) {
+  const a = ancho / 2, l = largo / 2, f = new THREE.Shape();
+  const pts = [[0, l], [a * 0.35, l * 0.92], [a * 0.5, l * 0.72], [a * 1.05, l * 0.78], [a * 0.9, l * 0.5], [a * 0.75, l * 0.1], [a * 0.8, -l * 0.45],
+    [a * 1.08, -l * 0.72], [a * 0.6, -l * 0.7], [a * 0.3, -l * 0.95], [0, -l]];
+  const todo = [...pts, ...pts.slice(1, -1).reverse().map(([x, z]) => [-x * (0.96 + 0.06 * Math.sin(z * 9)), z])];
+  todo.forEach(([x, z], i) => i ? f.lineTo(x, -z) : f.moveTo(x, -z));
+  return { forma: f, puntos: todo };
+}
+function camaPaja() {
+  const L = loteMueble();
+  // cuatro troncos finos hacen el marco en el suelo, y dentro la paja amontonada con un jergón de lino encima
+  for (const s of [-1, 1]) {
+    const tl = new THREE.Matrix4().makeRotationY(Math.PI / 2);
+    const tmp = new Lote(); troncoTumbado(tmp, 2.0, 0, 0.08, s * 0.42, 0.08, s < 0 ? 'madera' : 'maderaOsc');
+    for (const q of tmp.piezas) { q.m.premultiply(tl); L.piezas.push(q); }
   }
-  g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  for (const s of [-1, 1]) troncoTumbado(L, 0.8, 0, 0.07, s * 0.93, 0.07, 'maderaOsc');
+  relleno(L, 0.86, 0.16, 1.8, 'paja', 0, 0.1, 0, { rayas: RAYAS_PAJA });
+  relleno(L, 0.78, 0.1, 1.55, 'lino', 0, 0.21, 0.05);
+  manta(L, 0.82, 0.55, 0.26, 0.55, 'lana');
+  // mechones de paja que asoman por los lados
+  for (let i = 0; i < 18; i++) {
+    const s = i % 2 ? 1 : -1, z = -0.85 + (i >> 1) * 0.2, m = cil(0.012, 0.018, 0.16 + ruido(i) * 0.08, 4);
+    L.add(m, ruido(i + 3) > 0.5 ? 'paja' : 'pajaOsc', s * (0.4 + ruido(i + 7) * 0.02), 0.17, z, { z: -s * (0.7 + ruido(i + 1) * 0.4), y: ruido(i + 2) }, { sinSuelo: true });
+  }
+  return deLote(L);
+}
+function camaMadera() {
+  const L = loteMueble();
+  // cuatro postes con el corte arriba, largueros y travesaños de tabla, cabecero de tablas de pie
+  for (const [x, z, h] of [[-0.5, -1.0, 0.85], [0.5, -1.0, 0.85], [-0.5, 1.0, 0.5], [0.5, 1.0, 0.5]]) {
+    L.add(cajaR(0.09, h, 0.09, 0.02), 'maderaOsc', x, h / 2, z);
+    L.add(new THREE.ConeGeometry(0.06, 0.06, 4), 'corte', x, h + 0.03, z, { y: Math.PI / 4 }, { sinSuelo: true, plano: true });
+  }
+  for (const s of [-1, 1]) L.add(cajaR(0.05, 0.16, 1.92, 0.012), 'madera', s * 0.5, 0.32, 0); // largueros (veta a lo largo)
+  for (const z of [-1.0, 1.0]) tablaX(L, 0.92, 0.16, 0.05, 'madera', 0, 0.32, z);
+  for (let t = 0; t < 4; t++) L.add(cajaR(0.22, 0.42, 0.04, 0.01), t % 2 ? 'tabla' : 'madera', -0.345 + t * 0.23, 0.6, -1.0); // cabecero
+  tablaX(L, 1.04, 0.06, 0.08, 'maderaOsc', 0, 0.83, -1.0);
+  for (let t = 0; t < 7; t++) tablaX(L, 0.92, 0.025, 0.2, 'tabla', 0, 0.39, -0.84 + t * 0.28, { brillo: 0.7 }); // tablas del somier
+  relleno(L, 0.94, 0.15, 1.9, 'lino', 0, 0.475, 0);
+  relleno(L, 0.55, 0.09, 0.28, 'lino', 0, 0.58, -0.78, { brillo: 1.05 }); // almohada
+  manta(L, 1.0, 1.15, 0.54, 0.35, 'lana', 0.16);
+  tablaX(L, 1.0, 0.04, 0.14, 'lanaOsc', 0, 0.58, -0.2, { sinSuelo: true }); // embozo vuelto
+  return deLote(L);
+}
+function mesa() {
+  const L = loteMueble();
+  // tablero de tres tablas sobre dos caballetes (patas en tijera) y un travesaño
+  for (let t = 0; t < 3; t++) tablaX(L, 1.4, 0.06, 0.26, t === 1 ? 'tabla' : 'madera', 0, 0.72, -0.27 + t * 0.27, { brillo: 0.96 + t * 0.03 });
+  for (const sx of [-0.52, 0.52]) {
+    L.add(cajaR(0.1, 0.07, 0.72, 0.015), 'maderaOsc', sx, 0.655, 0); // cabezal del caballete
+    for (const sz of [-1, 1]) pata(L, sx, sz * 0.18, 0.63, 0.035, 'maderaOsc', 0, sz * 0.2);
+  }
+  varaX(L, 1.04, 0.03, 'madera', 0, 0.25, 0);
+  return deLote(L);
+}
+function banco() {
+  const L = loteMueble();
+  // como el banco de la prueba v5: tabla gruesa sobre dos tablones de pie
+  tablaX(L, 1.2, 0.08, 0.3, 'tabla', 0, 0.44, 0);
+  for (const x of [-0.45, 0.45]) {
+    L.add(cajaR(0.08, 0.4, 0.27, 0.02), 'maderaOsc', x, 0.2, 0);
+    L.add(cajaR(0.075, 0.004, 0.2, 0.001), 'corte', x, 0.481, 0, null, { sinSuelo: true, brillo: 0.85 }); // la espiga pasante, a ras
+  }
+  return deLote(L);
+}
+function taburete() {
+  const L = loteMueble();
+  // asiento redondo de una rodaja (se ve el corte) y tres patas abiertas
+  L.add(cil(0.2, 0.2, 0.06, 14), 'madera', 0, 0.42, 0);
+  L.add(new THREE.CircleGeometry(0.198, 14), 'corte', 0, 0.451, 0, { x: -Math.PI / 2 }, { sinSuelo: true });
+  for (let k = 0; k < 3; k++) { const a = k * 2.094 + 0.3; pata(L, Math.cos(a) * 0.1, Math.sin(a) * 0.1, 0.4, 0.03, 'maderaOsc', Math.cos(a) * 0.09, Math.sin(a) * 0.09); }
+  return deLote(L);
+}
+function arcon() {
+  const L = loteMueble();
+  // caja de tablas tumbadas, tapa de tres tablas, flejes y bisagras de hierro con clavos, y la cerradura
+  for (let t = 0; t < 3; t++) for (const s of [-1, 1]) tablaX(L, 1.0, 0.16, 0.035, t % 2 ? 'madera' : 'tabla', 0, 0.06 + 0.08 + t * 0.155, s * 0.258, { brillo: 0.95 + ruido(t + s) * 0.08 });
+  for (const s of [-1, 1]) L.add(cajaR(0.035, 0.47, 0.55, 0.01), 'maderaOsc', s * 0.483, 0.295, 0);
+  for (const s of [-1, 1]) L.add(cajaR(0.07, 0.06, 0.55, 0.012), 'maderaOsc', s * 0.45, 0.03, 0); // patines
+  for (let t = 0; t < 3; t++) tablaX(L, 1.04, 0.05, 0.19, t === 1 ? 'tabla' : 'madera', 0, 0.555, -0.19 + t * 0.19);
+  for (const x of [-0.32, 0.32]) {
+    L.add(cajaR(0.06, 0.012, 0.6, 0.005), 'hierro', x, 0.585, 0); // fleje por la tapa
+    for (const s of [-1, 1]) L.add(cajaR(0.06, 0.5, 0.012, 0.005), 'hierro', x, 0.3, s * 0.282);
+    for (const y of [0.12, 0.3, 0.48]) L.add(new THREE.SphereGeometry(0.014, 5, 3), 'hierro', x, y, 0.29, null, { sinSuelo: true });
+  }
+  L.add(cajaR(0.1, 0.12, 0.02, 0.006), 'hierro', 0, 0.47, 0.29); // cerradura
+  L.add(cajaR(0.035, 0.1, 0.015, 0.005), 'hierro', 0, 0.54, 0.297); // aldaba
+  return deLote(L);
+}
+function barril() {
+  const L = loteMueble();
+  // duelas abombadas (se ven las juntas), dos aros de hierro y la tapa de tablas
+  const perfil = [];
+  for (let i = 0; i <= 8; i++) { const t = i / 8; perfil.push(new THREE.Vector2(0.26 + 0.045 * Math.sin(Math.PI * t), t * 0.8)); }
+  const N = 14, hueco = 0.012;
+  for (let k = 0; k < N; k++) { // cada duela aparte, con una junta fina entre ellas
+    const duela = new THREE.LatheGeometry(perfil, 3, k * 2 * Math.PI / N + hueco / 2, 2 * Math.PI / N - hueco);
+    L.add(duela, ruido(k * 2.1 + 5) > 0.5 ? 'tabla' : 'madera', 0, 0, 0, null, { brillo: 0.92 + ruido(k + 1) * 0.14 });
+  }
+  L.add(cil(0.27, 0.25, 0.79, 14), 'maderaOsc', 0, 0.395, 0, null, { brillo: 0.4 }); // por dentro, se ve por las juntas
+  for (const y of [0.13, 0.67]) { const r = 0.26 + 0.045 * Math.sin(Math.PI * y / 0.8) + 0.008; L.add(cil(r, r, 0.05, 28, true), 'hierro', 0, y, 0, null, { sinSuelo: true }); }
+  for (let t = 0; t < 4; t++) tablaX(L, 0.5 - Math.abs(t - 1.5) * 0.08, 0.02, 0.125, t % 2 ? 'maderaOsc' : 'madera', 0, 0.775, -0.19 + t * 0.127, { sinSuelo: true, brillo: 0.8 });
+  return deLote(L);
+}
+// vasija de barro torneada
+function vasija(L, x, y, z, alto, r, s) {
+  const p = [[0.02, 0], [r * 0.7, 0], [r, alto * 0.35], [r * 0.85, alto * 0.75], [r * 0.5, alto * 0.9], [r * 0.6, alto]].map(([a, b]) => new THREE.Vector2(a, b));
+  L.add(new THREE.LatheGeometry(p, 12), 'barro', x, y, z, { y: s }, { sinSuelo: true, brillo: 0.9 + ruido(s) * 0.2 });
+}
+function estanteria() {
+  const L = loteMueble();
+  for (const x of [-0.48, 0.48]) L.add(cajaR(0.05, 1.8, 0.35, 0.012), 'maderaOsc', x, 0.9, 0);
+  for (const y of [0.1, 0.65, 1.2, 1.75]) tablaX(L, 1.0, 0.04, 0.35, 'tabla', 0, y, 0, { sinSuelo: true, brillo: 0.95 });
+  for (let t = 0; t < 5; t++) L.add(cajaR(0.19, 1.7, 0.02, 0.006), t % 2 ? 'maderaOsc' : 'madera', -0.38 + t * 0.19, 0.9, -0.165, null, { brillo: 0.55 }); // trasera de tablas
+  // enseres: vasijas, un cuenco, un rollo de paño y un manojo
+  vasija(L, -0.25, 0.12, 0.02, 0.3, 0.12, 1); vasija(L, 0.02, 0.12, 0.04, 0.22, 0.09, 2);
+  L.add(new THREE.SphereGeometry(0.11, 12, 6, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), 'madera', 0.27, 0.78, 0.03, { x: Math.PI }, { sinSuelo: true }); // cuenco
+  L.add(cil(0.08, 0.08, 0.42, 12), 'lana', -0.18, 0.75, 0.04, { z: Math.PI / 2 }, { sinSuelo: true }); // rollo de paño
+  vasija(L, 0.25, 1.22, 0.0, 0.26, 0.1, 3);
+  for (let i = 0; i < 6; i++) L.add(cil(0.01, 0.014, 0.4, 4), 'paja', -0.2 + i * 0.012, 1.24, 0.02 - i * 0.01, { z: Math.PI / 2 - 0.05 + i * 0.02 }, { sinSuelo: true });
+  return deLote(L);
+}
+function antorcha() {
+  const L = loteMueble();
+  // vara clavada entre piedras, con un cesto de hierro arriba y la estopa (paja) dentro
+  L.add(cil(0.03, 0.04, 1.42, 7), 'madera', 0, 0.71, 0);
+  for (let i = 0; i < 4; i++) { const a = i * 1.6 + 0.4; L.add(new THREE.IcosahedronGeometry(1, 0), i % 2 ? 'piedra' : 'piedraOsc', Math.cos(a) * 0.12, 0.04, Math.sin(a) * 0.12, { y: a }, { escala: new THREE.Vector3(0.09, 0.06, 0.07), plano: true }); }
+  for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; L.add(cil(0.008, 0.008, 0.2, 4), 'hierro', Math.cos(a) * 0.09, 1.48, Math.sin(a) * 0.09, { y: -a, z: 0.35 }, { sinSuelo: true }); }
+  for (const [y, r] of [[1.4, 0.06], [1.57, 0.125]]) L.add(new THREE.TorusGeometry(r, 0.01, 4, 12), 'hierro', 0, y, 0, { x: Math.PI / 2 }, { sinSuelo: true });
+  relleno(L, 0.17, 0.12, 0.17, 'pajaOsc', 0, 1.5, 0, { rayas: RAYAS_PAJA, brillo: 0.6 });
+  const g = deLote(L);
+  const llama = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.28, 6), mat(COLORES.llama, { emissive: COLORES.llama, emissiveIntensity: 1 }));
+  llama.position.y = 1.7; llama.name = 'llama'; llama.castShadow = false;
+  const nucleo = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.16, 6), mat(0xffe2a0, { emissive: 0xffe2a0, emissiveIntensity: 1 }));
+  nucleo.position.y = 1.64; nucleo.name = 'llama'; nucleo.castShadow = false;
+  g.add(llama, nucleo);
+  return g;
+}
+function alfombra() {
+  const L = loteMueble();
+  // piel curtida con su forma (patas y cuello), el pelo más oscuro por el lomo y mechones por el borde
+  const { forma, puntos } = contornoPiel(1.4, 1.0);
+  const g = new THREE.ExtrudeGeometry(forma, { depth: 0.025, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.012, bevelSegments: 1 });
+  g.rotateX(-Math.PI / 2);
+  L.add(g, 'piel', 0, 0.004, 0, null, { sinSuelo: true, tex: 'hojas' });
+  // el lomo, más oscuro: la misma forma estrecha encima
+  const lomo = new THREE.ExtrudeGeometry(contornoPiel(1.15, 0.38).forma, { depth: 0.006, bevelEnabled: true, bevelThickness: 0.004, bevelSize: 0.03, bevelSegments: 2 });
+  lomo.rotateX(-Math.PI / 2);
+  L.add(lomo, 0x6a5038, 0, 0.03, 0, null, { sinSuelo: true, tex: 'hojas' });
+  pelo(L, puntos, 0.02, 'piel', 5);
+  const piel = deLote(L);
+  piel.children.forEach(m => m.geometry.rotateY(Math.PI / 2)); // a lo largo de x, como la alfombra de antes
+  return piel;
+}
+function estandarte() {
+  const L = loteMueble();
+  // asta clavada entre piedras, travesaño atado y el paño colgando en pliegues, acabado en dos puntas, con una banda
+  L.add(cil(0.03, 0.042, 2.65, 7), 'madera', 0, 1.325, 0);
+  L.add(new THREE.ConeGeometry(0.035, 0.1, 6), 'hierro', 0, 2.7, 0, null, { sinSuelo: true });
+  for (let i = 0; i < 4; i++) { const a = i * 1.6 + 0.9; L.add(new THREE.IcosahedronGeometry(1, 0), i % 2 ? 'piedra' : 'piedraOsc', Math.cos(a) * 0.13, 0.04, Math.sin(a) * 0.13, { y: a }, { escala: new THREE.Vector3(0.1, 0.06, 0.08), plano: true }); }
+  varaX(L, 0.82, 0.022, 'maderaOsc', 0, 2.48, 0.05);
+  lazada(L, 0, 2.48, 0.0, 0.035);
+  const n = 7, ancho = 0.7, w = ancho / n, top = 2.46;
+  for (let t = 0; t < n; t++) {
+    const x = -ancho / 2 + w * (t + 0.5), u = Math.abs(x) / (ancho / 2);
+    const largo = 1.0 - 0.22 * (1 - u); // dos puntas: el centro más corto
+    const z = 0.06 + Math.sin(t * 1.9) * 0.025, gy = Math.cos(t * 1.9) * 0.25;
+    const tela = cajaR(w * 1.04, largo, 0.012, 0.004);
+    L.add(tela, 'pano', x, top - largo / 2, z, { y: gy }, { sinSuelo: true, brillo: 0.88 + 0.12 * Math.cos(t * 1.9) });
+    L.add(cajaR(w * 1.05, 0.16, 0.014, 0.004), 0xa88a4a, x, top - 0.45, z + Math.cos(gy) * 0.002, { y: gy }, { sinSuelo: true, tex: 'tejido', brillo: 0.88 + 0.12 * Math.cos(t * 1.9) });
+  }
+  return deLote(L);
+}
+const MUEBLES = { cama_paja: camaPaja, cama_madera: camaMadera, mesa, banco, taburete, arcon, barril, estanteria, candil: antorcha, alfombra, estandarte };
+export function decoracion(tipo) {
+  const g = MUEBLES[tipo] ? MUEBLES[tipo]() : new THREE.Group();
+  g.traverse(o => { if (o.isMesh && o.name !== 'llama') { o.castShadow = true; o.receiveShadow = true; } });
   return g;
 }
 
