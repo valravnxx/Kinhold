@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 26 oct 2026 (06:49) — por el chat: la carrera nueva en la demo única
+
+«Ahora integra ese correr y todo en la única» → Demo única v4: el personaje del taller-v5 (carrera suavizada y a su velocidad) en construir, duelo y personaje, con lo último de cada prototipo.
+
 ### 26 oct 2026 (05:04) — por el chat: revisión de la demo
 
 «Va muy bien de fps, pero la animación de correr me parece fea y exagerada, ¿podemos buscar otras?» → Se cierra la pregunta de los fps en el móvil (van bien). Tarea nueva en arte: correr más natural.
