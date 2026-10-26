@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v6'), f'{sitio}/recursos/personajes/taller-v6')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v7'), f'{sitio}/recursos/personajes/taller-v7')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -170,6 +170,18 @@ with sync_playwright() as p:
                   ', '.join(sorted(x for x in con if 'capa' in x)))
         pg.evaluate(f"{E}.instante(1.0)"); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_sobreveste.png')
         for c in ['cota', 'sobreveste']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
+        # hombre con cota: el cinturón ciñe la cota y no se estira hasta los brazos (hasta taller-v6 lo tenía; Pedro lo vio)
+        pg.evaluate(f"{E}.cambiar({{sexo: 'hombre'}})"); listo(pg)
+        pg.click('[data-capa="cota"]'); pg.wait_for_timeout(200)
+        cint = pg.evaluate(f"""(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === 'hombre_cinturon_cota') {{
+            o.geometry.computeBoundingBox(); const b = o.geometry.boundingBox; r = [o.visible, Math.max(-b.min.x, b.max.x)]; }} }}); return r; }})()""")
+        if os.environ.get('MUTAR'): cint = [True, 0.317]
+        comprobar('hombre con cota: se ve su cinturón y ciñe la cintura (no llega a los brazos)', bool(cint) and cint[0] and cint[1] < 0.22,
+                  f'medio ancho {cint[1]:.3f} m' if cint else 'sin cinturón')
+        pg.evaluate(f"{E}.ponerModo('quieto')"); pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)')
+        pg.screenshot(path=f'{SALIDA}/{nombre}_taller_hombre_cota.png')
+        pg.click('[data-capa="cota"]'); pg.wait_for_timeout(200)
+        pg.evaluate(f"{E}.cambiar({{sexo: 'mujer'}})"); listo(pg)
         # en calidad alta, toda la ropa y el pelo escriben profundidad (si no, la piel se pinta encima: v5)
         pg.evaluate(f"{E}.cambiar({{calidad: 'alta'}})"); listo(pg)
         malos = pg.evaluate(f"(() => {{ const m = []; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && (!o.material.depthWrite || o.material.transparent)) m.push(o.name); }}); return m; }})()")
