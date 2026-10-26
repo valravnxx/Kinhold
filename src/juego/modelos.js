@@ -1,8 +1,14 @@
 // Kinhold — modelos low-poly generados por código.
 // Todos los modelos se definen con parámetros (P) para poder ajustarlos sin rehacerlos.
-// Sin texturas: solo colores planos (evita problemas de orientación de texturas).
+// Las piezas ya pasadas al estilo elegido (v5, «realismo en miniatura») se hacen como la cabaña de la prueba de estilo:
+// formas redondeadas, color con oclusión horneado en los vértices y texturas por código (src/mundo/estilos.js),
+// todo junto en una malla por textura. Las que aún no se han pasado siguen con colores planos.
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { MODULO, ALTURA } from '../logica/piezas.js';
+import { Lote, materialTex, material as materialEstilo } from '../mundo/estilos.js';
+import { cil } from '../mundo/decorado.js';
 
 export const P = {
   radioTronco: 0.14,      // grosor de los troncos de muro (de canto)
@@ -61,94 +67,123 @@ function piedra(r, color, x, y, z, semilla) {
 // pseudoaleatorio estable
 function ruido(n) { const s = Math.sin(n * 12.9898) * 43758.5453; return s - Math.floor(s); }
 
-// ---------- Muros (a lo largo de X, de -1 a 1, altura 0..ALTURA) ----------
-// Rellena de troncos de y0 a y1 en hiladas exactas: cada tronco ocupa una hilada entera,
+// ---------- Estilo v5: piezas hechas con un Lote (src/mundo/estilos.js) ----------
+const hayDocumento = typeof document !== 'undefined'; // las pruebas de lógica cargan los modelos en node, sin texturas
+const cajaR = (w, h, d, radio = 0.02) => new RoundedBoxGeometry(w, h, d, 1, Math.min(radio, w / 2.05, h / 2.05, d / 2.05));
+// junta lo del lote en una malla por textura (madera, corte, piedra…), como la escena de la prueba de estilo
+function deLote(L) {
+  const g = new THREE.Group();
+  if (L.hiladas) g.userData.hiladas = [...L.hiladas];
+  for (const [tipo, geos] of Object.entries(L.cerrar(null, true))) {
+    const m = new THREE.Mesh(mergeGeometries(geos), hayDocumento ? materialTex(tipo) : materialEstilo('fijo'));
+    m.castShadow = m.receiveShadow = true; m.name = 'estilo_' + tipo;
+    g.add(m);
+  }
+  return g;
+}
+const loteMuro = () => new Lote({ variacion: 0.06, rangoSuelo: 0.5 });
+// Tronco tumbado a lo largo de X, de x0 a x1, con las testas (cortes claros) a la vista. Un poco más grueso por un
+// extremo, como los de verdad: así, donde dos muros seguidos se solapan, las superficies no coinciden (no parpadean).
+// alto: lo que ocupa en vertical (el tronco se aplasta un poco para que las hiladas encajen justas).
+function troncoX(L, x0, x1, y, z, color, alto = 2 * P.radioTronco) {
+  const r = P.radioTronco, largo = x1 - x0, k = alto / (2 * r * 1.03);
+  (L.hiladas ??= new Set()).add(y.toFixed(3)); // para la prueba de que las hiladas coinciden entre muros
+  const esc = new THREE.Vector3(k, 1, 1);
+  L.add(cil(r * 0.97, r * 1.03, largo, 9, true), color, (x0 + x1) / 2, y, z, { z: Math.PI / 2 }, { escala: esc });
+  for (const s of [-1, 1]) {
+    const rr = s < 0 ? r * 0.97 : r * 1.03;
+    const tapa = new THREE.ConeGeometry(rr, rr * 0.22, 9, 1, true); tapa.translate(0, rr * 0.11, 0);
+    L.add(tapa, 'corte', s < 0 ? x0 : x1, y, z, { z: -s * Math.PI / 2 }, { escala: esc, sinSuelo: true });
+  }
+}
+// Muros (a lo largo de X, de -1 a 1, altura 0..ALTURA). Hiladas exactas: cada tronco ocupa una hilada entera,
 // así todos los muros terminan a la misma altura y las hiladas coinciden entre muros vecinos.
-const HILADA = ALTURA / P.hiladas;
-function troncosHorizontales(g, desde, hasta, y0, y1) {
+const HILADA = ALTURA / P.hiladas, SALE = 0.15; // lo que asoma cada tronco por los extremos del muro (se ve la testa)
+const TESTA = P.radioTronco * 1.03 * 0.22;      // lo que abomba la testa: los troncos que dan a un hueco acaban antes
+function troncosHorizontales(L, desde, hasta, y0, y1) {
   const n = Math.max(1, Math.round((y1 - y0) / HILADA));
-  const paso = (y1 - y0) / n, r = P.radioTronco;
+  const paso = (y1 - y0) / n;
   for (let t = 0; t < n; t++) {
     const yHilada = Math.round((y0 + paso * t) / HILADA);
-    const color = ruido(yHilada * 7 + 3) > 0.5 ? COLORES.tronco : COLORES.troncoOscuro;
-    const c = cilindroX(r, hasta - desde, color, (desde + hasta) / 2, y0 + paso * (t + 0.5), 0);
-    c.scale.y = paso / (2 * r);
-    g.add(c);
+    const color = ruido(yHilada * 7 + 3) > 0.5 ? 'madera' : 'maderaOsc';
+    troncoX(L, desde, hasta, y0 + paso * (t + 0.5), 0, color, paso);
   }
 }
 function muroTroncos(opc = {}) {
-  const g = new THREE.Group();
-  const S = MODULO, H = ALTURA, mitad = S / 2 + 0.05;
+  const L = loteMuro();
+  const S = MODULO, H = ALTURA, m = S / 2 + SALE;
   if (opc.puerta) {
     const a = P.anchoPuerta / 2;
-    troncosHorizontales(g, -mitad, -a, 0, P.altoPuerta);
-    troncosHorizontales(g, a, mitad, 0, P.altoPuerta);
-    troncosHorizontales(g, -mitad, mitad, P.altoPuerta, H);
-    g.add(cilindroY(0.07, P.altoPuerta, COLORES.troncoOscuro, -a - 0.07, 0, 0, 6));
-    g.add(cilindroY(0.07, P.altoPuerta, COLORES.troncoOscuro, a + 0.07, 0, 0, 6));
+    troncosHorizontales(L, -m, -a - TESTA, 0, P.altoPuerta);
+    troncosHorizontales(L, a + TESTA, m, 0, P.altoPuerta);
+    troncosHorizontales(L, -m, m, P.altoPuerta, H);
+    for (const s of [-1, 1]) L.add(cajaR(0.12, P.altoPuerta, 0.3, 0.025), 'maderaOsc', s * (a + 0.06), P.altoPuerta / 2, 0); // jambas
+    L.add(cajaR(P.anchoPuerta + 0.3, 0.14, 0.3, 0.03), 'maderaOsc', 0, P.altoPuerta + 0.07, 0); // dintel
   } else if (opc.ventana) {
     const a = P.anchoVentana / 2;
-    troncosHorizontales(g, -mitad, mitad, 0, P.bajoVentana);
-    troncosHorizontales(g, -mitad, -a, P.bajoVentana, P.altoVentana);
-    troncosHorizontales(g, a, mitad, P.bajoVentana, P.altoVentana);
-    troncosHorizontales(g, -mitad, mitad, P.altoVentana, H);
-    g.add(caja(P.anchoVentana + 0.1, 0.06, 0.34, COLORES.tablaOscura, 0, P.bajoVentana, 0));
+    troncosHorizontales(L, -m, m, 0, P.bajoVentana);
+    troncosHorizontales(L, -m, -a - TESTA, P.bajoVentana, P.altoVentana);
+    troncosHorizontales(L, a + TESTA, m, P.bajoVentana, P.altoVentana);
+    troncosHorizontales(L, -m, m, P.altoVentana, H);
+    const alto = P.altoVentana - P.bajoVentana;
+    for (const s of [-1, 1]) L.add(cajaR(0.09, alto, 0.32, 0.02), 'maderaOsc', s * (a + 0.045), P.bajoVentana + alto / 2, 0); // marco
+    L.add(cajaR(P.anchoVentana + 0.24, 0.08, 0.36, 0.02), 'maderaOsc', 0, P.bajoVentana - 0.01, 0); // alféizar
+    L.add(cajaR(P.anchoVentana + 0.24, 0.08, 0.32, 0.02), 'maderaOsc', 0, P.altoVentana + 0.04, 0);
   } else {
-    troncosHorizontales(g, -mitad, mitad, 0, opc.alto || H);
+    troncosHorizontales(L, -m, m, 0, opc.alto || H);
   }
-  // cabezas de tronco en las esquinas
-  return g;
+  return deLote(L);
 }
+// Zarzo y barro: varas entretejidas entre estacas, tapadas con barro (las estacas asoman)
 function muroZarzo() {
-  const g = new THREE.Group();
-  g.add(caja(MODULO, ALTURA, 0.16, COLORES.barro, 0, ALTURA / 2, 0));
-  for (const x of [-0.95, 0, 0.95]) g.add(cilindroY(0.08, ALTURA, COLORES.vara, x, 0, 0, 6));
-  // franjas de varas entretejidas visibles
-  for (let y = 0.3; y < ALTURA; y += 0.5) g.add(caja(MODULO * 0.98, 0.05, 0.18, COLORES.pajaOscura, 0, y, 0));
-  return g;
+  const L = loteMuro();
+  const BARRO = 0x8c7356;
+  L.add(cajaR(MODULO, ALTURA, 0.16, 0.05), BARRO, 0, ALTURA / 2, 0, null, { tex: 'piedra', rayas: (v) => 0.94 + 0.06 * Math.sin(v.x * 3.1 + v.y * 2.3) });
+  for (const x of [-0.93, 0, 0.93]) L.add(cil(0.085, 0.095, ALTURA - 0.12, 8), 'corteza', x, ALTURA / 2, 0); // estacas, asoman del barro
+  for (const s of [-1, 1]) L.add(cajaR(MODULO, 0.12, 0.2, 0.03), 'maderaOsc', 0, s > 0 ? ALTURA - 0.06 : 0.06, 0); // durmiente y carrera
+  return deLote(L);
 }
+// Entramado: armazón de vigas con relleno de barro encalado
 function muroEntramado() {
-  const g = new THREE.Group();
-  g.add(caja(MODULO, ALTURA, 0.15, 0xd8c9a8, 0, ALTURA / 2, 0)); // revoco claro
-  const c = COLORES.troncoOscuro;
-  g.add(caja(0.18, ALTURA, 0.2, c, -0.91, ALTURA / 2, 0));
-  g.add(caja(0.18, ALTURA, 0.2, c, 0.91, ALTURA / 2, 0));
-  g.add(caja(MODULO, 0.18, 0.2, c, 0, 0.09, 0));
-  g.add(caja(MODULO, 0.18, 0.2, c, 0, ALTURA - 0.09, 0));
-  const diag = caja(0.14, Math.hypot(1.7, ALTURA - 0.36), 0.2, c, 0, ALTURA / 2, 0);
-  diag.rotation.z = Math.atan2(1.7, ALTURA - 0.36);
-  g.add(diag);
-  return g;
+  const L = loteMuro();
+  L.add(cajaR(MODULO - 0.1, ALTURA - 0.1, 0.13, 0.02), 0xd3c6a6, 0, ALTURA / 2, 0, null, { tex: 'piedra', brillo: 1.02 });
+  const c = 'maderaOsc';
+  for (const s of [-1, 1]) L.add(cajaR(0.18, ALTURA, 0.2, 0.03), c, s * 0.91, ALTURA / 2, 0);
+  L.add(cajaR(MODULO, 0.18, 0.2, 0.03), c, 0, 0.09, 0);
+  L.add(cajaR(MODULO, 0.18, 0.2, 0.03), c, 0, ALTURA - 0.09, 0);
+  L.add(cajaR(MODULO - 0.3, 0.14, 0.19, 0.03), c, 0, 1.25, 0); // riostra a media altura
+  const largo = Math.hypot(1.64, ALTURA - 0.36);
+  L.add(cajaR(0.14, largo, 0.19, 0.03), c, 0, ALTURA / 2, 0, { z: Math.atan2(1.64, ALTURA - 0.36) });
+  return deLote(L);
 }
+// Tablas de pie, con durmiente abajo y carrera arriba
 function muroTablas(opc = {}) {
-  const g = new THREE.Group();
+  const L = loteMuro();
   const n = 8, w = MODULO / n;
   for (let t = 0; t < n; t++) {
     const x = -MODULO / 2 + w / 2 + t * w;
-    const color = t % 2 ? COLORES.tabla : COLORES.tablaOscura;
+    const color = ruido(t * 3.7 + 1) > 0.5 ? 'tabla' : 'madera';
     if (opc.puerta && Math.abs(x) < P.anchoPuerta / 2) {
-      g.add(caja(w * 0.96, ALTURA - P.altoPuerta, P.grosorTabla, color, x, P.altoPuerta + (ALTURA - P.altoPuerta) / 2, 0));
-    } else {
-      g.add(caja(w * 0.96, ALTURA, P.grosorTabla, color, x, ALTURA / 2, 0));
-    }
+      const h = ALTURA - P.altoPuerta;
+      L.add(cajaR(w * 0.95, h, P.grosorTabla, 0.012), color, x, P.altoPuerta + h / 2, 0);
+    } else L.add(cajaR(w * 0.95, ALTURA, P.grosorTabla, 0.012), color, x, ALTURA / 2, 0);
   }
+  const c = 'maderaOsc';
   if (opc.puerta) {
-    // durmiente a los dos lados del hueco, nunca cruzándolo
+    // durmiente a los dos lados del hueco, nunca cruzándolo, y jambas
     const a = P.anchoPuerta / 2, lado = (MODULO / 2 - a);
-    g.add(caja(lado, 0.12, 0.14, COLORES.troncoOscuro, -a - lado / 2, 0.06, 0));
-    g.add(caja(lado, 0.12, 0.14, COLORES.troncoOscuro, a + lado / 2, 0.06, 0));
-    g.add(caja(0.1, P.altoPuerta, 0.14, COLORES.troncoOscuro, -a - 0.05, P.altoPuerta / 2, 0));
-    g.add(caja(0.1, P.altoPuerta, 0.14, COLORES.troncoOscuro, a + 0.05, P.altoPuerta / 2, 0));
-  } else {
-    g.add(caja(MODULO, 0.12, 0.14, COLORES.troncoOscuro, 0, 0.06, 0));
-  }
-  g.add(caja(MODULO, 0.12, 0.14, COLORES.troncoOscuro, 0, ALTURA - 0.06, 0));
-  return g;
+    for (const s of [-1, 1]) {
+      L.add(cajaR(lado, 0.12, 0.14, 0.02), c, s * (a + lado / 2), 0.06, 0);
+      L.add(cajaR(0.1, P.altoPuerta, 0.14, 0.02), c, s * (a + 0.05), P.altoPuerta / 2, 0);
+    }
+  } else L.add(cajaR(MODULO, 0.12, 0.14, 0.02), c, 0, 0.06, 0);
+  L.add(cajaR(MODULO, 0.12, 0.14, 0.02), c, 0, ALTURA - 0.06, 0);
+  return deLote(L);
 }
 function medioMuro() {
-  const g = new THREE.Group();
-  troncosHorizontales(g, -MODULO / 2 - 0.05, MODULO / 2 + 0.05, 0, ALTURA / 2);
-  return g;
+  const L = loteMuro();
+  troncosHorizontales(L, -MODULO / 2 - SALE, MODULO / 2 + SALE, 0, ALTURA / 2);
+  return deLote(L);
 }
 function cerca() {
   const g = new THREE.Group();
@@ -230,14 +265,15 @@ function sueloTablas() {
 
 // ---------- Estructura ----------
 function poste() {
-  const g = new THREE.Group();
-  g.add(cilindroY(0.14, ALTURA, COLORES.troncoOscuro, 0, 0, 0));
-  return g;
+  const L = loteMuro();
+  L.add(cil(0.13, 0.15, ALTURA - 0.01, 10), 'corteza', 0, (ALTURA - 0.01) / 2, 0);
+  L.add(new THREE.CircleGeometry(0.13, 10), 'corte', 0, ALTURA - 0.01, 0, { x: -Math.PI / 2 }, { sinSuelo: true });
+  return deLote(L);
 }
 function viga() {
-  const g = new THREE.Group();
-  g.add(caja(MODULO + 0.1, 0.22, 0.22, COLORES.troncoOscuro, 0, ALTURA - 0.11, 0));
-  return g;
+  const L = loteMuro();
+  L.add(cajaR(MODULO + 0.1, 0.22, 0.22, 0.035), 'maderaOsc', 0, ALTURA - 0.11, 0);
+  return deLote(L);
 }
 
 // ---------- Tejados ----------
