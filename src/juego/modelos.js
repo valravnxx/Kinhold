@@ -241,46 +241,73 @@ function empalizada(opc = {}) {
   return g;
 }
 
-// ---------- Suelos y cimientos (centrados en la casilla) ----------
-function cimientoPiedra() {
-  const g = new THREE.Group();
-  g.add(caja(MODULO, 0.3, MODULO, COLORES.piedraOscura, 0, P.superficieCimiento - 0.15, 0));
-  let s = 1;
-  for (let a = -0.75; a <= 0.76; a += 0.5) for (let b = -0.75; b <= 0.76; b += 0.5) {
-    const pz = piedra(0.21 + ruido(s) * 0.04, ruido(s + 9) > 0.5 ? COLORES.piedra : COLORES.piedraOscura, a, P.superficieCimiento - 0.07, b, s);
-    pz.scale.set(1.15, 0.35, 1.15);
-    g.add(pz);
-    s++;
+// ---------- Suelos y cimientos (centrados en la casilla), con el estilo v5 ----------
+// Lo que se pisa va sin el oscurecido de contacto (sinSuelo): la oclusión solo en los costados, junto a la tierra.
+const loteSuelo = () => new Lote({ variacion: 0.07, rangoSuelo: 0.35 });
+// tronco tumbado a lo largo de X con las testas claras; escV aplasta el tronco en vertical (suelo de troncos)
+function troncoTumbado(L, largo, x, y, z, r, color, escV = 1, opc = {}) {
+  const esc = new THREE.Vector3(escV, 1, 1);
+  L.add(cil(r * 0.97, r * 1.03, largo, 9, true), color, x, y, z, { z: Math.PI / 2 }, { escala: esc, ...opc });
+  for (const s of [-1, 1]) {
+    const rr = s < 0 ? r * 0.97 : r * 1.03;
+    const tapa = new THREE.ConeGeometry(rr, rr * 0.22, 9, 1, true); tapa.translate(0, rr * 0.11, 0);
+    L.add(tapa, 'corte', x + s * largo / 2, y, z, { z: -s * Math.PI / 2 }, { escala: esc, sinSuelo: true });
   }
-  return g;
 }
+// tabla a lo largo de X con la veta a lo largo (la caja se hace a lo largo de Z y se gira)
+function tablaX(L, largo, alto, ancho, color, x, y, z, opc = {}) {
+  L.add(cajaR(ancho, alto, largo, 0.012), color, x, y, z, { y: Math.PI / 2 }, opc);
+}
+// Cimiento de piedra: un macizo de mortero con losas encima y una hilada de piedras redondeadas en los costados,
+// como el zócalo de la cabaña de la prueba de estilo
+function cimientoPiedra() {
+  const L = loteSuelo(), S = MODULO, top = P.superficieCimiento;
+  L.add(cajaR(S - 0.02, 0.27, S - 0.02, 0.05), 'mortero', 0, top - 0.05 - 0.135, 0); // el mortero queda 5 cm bajo las losas: se ven las juntas
+  // losas: cuadrícula de 4×4 con juntas y un poco de giro, la cara de arriba justo en la superficie
+  const n = 4, w = S / n;
+  for (let a = 0; a < n; a++) for (let b = 0; b < n; b++) {
+    const s = a * 7 + b * 3 + 1, ga = (ruido(s) - 0.5) * 0.08;
+    const lw = w - 0.05 - ruido(s + 2) * 0.04, ld = w - 0.05 - ruido(s + 5) * 0.04;
+    L.add(cajaR(lw, 0.08, ld, 0.03), 'piedra', -S / 2 + w * (a + 0.5), top - 0.04 - ruido(s + 4) * 0.008, -S / 2 + w * (b + 0.5), { y: ga }, { sinSuelo: true, plano: true, brillo: 0.86 + ruido(s + 9) * 0.16 });
+  }
+  // piedras de los costados (no sobresalen de la casilla más de 4 cm: los cimientos vecinos se juntan)
+  const piedraLado = (x, y, z, giro, s) => L.add(new THREE.IcosahedronGeometry(1, 0), ruido(s * 3.1) > 0.5 ? 'piedra' : 'piedraOsc', x, y, z,
+    { y: giro + ruido(s) * 0.4, x: ruido(s + 1) * 0.3 }, { escala: new THREE.Vector3(0.15, 0.085, 0.07), plano: true });
+  let s = 11;
+  for (const lado of [-1, 1]) for (let t = -S / 2 + 0.14; t < S / 2 - 0.1; t += 0.24) {
+    piedraLado(t, -0.01, lado * (S / 2 - 0.02), 0, s++);
+    piedraLado(lado * (S / 2 - 0.02), -0.01, t + 0.06, Math.PI / 2, s++);
+  }
+  return deLote(L);
+}
+// Cimiento de troncos: seis troncos gruesos tumbados, con las testas a la vista
 function cimientoTroncos() {
-  const g = new THREE.Group();
+  const L = loteSuelo(), r = 0.17, testa = r * 1.03 * 0.22;
   for (let t = 0; t < 6; t++) {
     const z = -MODULO / 2 + 0.17 + t * 0.333;
-    const c = cilindroX(0.17, MODULO, t % 2 ? COLORES.tronco : COLORES.troncoOscuro, 0, P.superficieCimiento - 0.17, z);
-    g.add(c);
+    troncoTumbado(L, MODULO - 2 * testa, 0, P.superficieCimiento - r, z, r, ruido(t * 5 + 2) > 0.5 ? 'madera' : 'maderaOsc');
   }
-  return g;
+  return deLote(L);
 }
+// Suelo de troncos: siete troncos partidos (aplastados) sobre dos durmientes de corteza
 function sueloTroncos() {
-  const g = new THREE.Group();
+  const L = loteSuelo(), r = 0.14, testa = r * 1.03 * 0.22;
+  for (const x of [-0.7, 0.7]) L.add(cajaR(0.16, 0.08, MODULO - 0.06, 0.03), 'corteza', x, P.superficieSuelo - 0.13, 0);
   for (let t = 0; t < 7; t++) {
     const z = -MODULO / 2 + 0.143 + t * 0.286;
-    const c = cilindroX(0.14, MODULO, t % 2 ? COLORES.tronco : COLORES.troncoOscuro, 0, P.superficieSuelo - 0.07, z);
-    c.scale.set(1, 0.5, 1);
-    g.add(c);
+    troncoTumbado(L, MODULO - 2 * testa, 0, P.superficieSuelo - 0.07, z, r, ruido(t * 3 + 7) > 0.5 ? 'madera' : 'maderaOsc', 0.5);
   }
-  return g;
+  return deLote(L);
 }
+// Suelo de tablas: ocho tablas con juntas, clavadas a dos rastreles
 function sueloTablas() {
-  const g = new THREE.Group();
-  const n = 8, w = MODULO / n;
+  const L = loteSuelo(), n = 8, w = MODULO / n, top = P.superficieSuelo;
+  for (const x of [-0.7, 0.7]) L.add(cajaR(0.14, 0.12, MODULO - 0.04, 0.025), 'maderaOsc', x, top - 0.12, 0);
   for (let t = 0; t < n; t++) {
-    g.add(caja(MODULO, 0.06, w * 0.95, t % 2 ? COLORES.tabla : COLORES.tablaOscura, 0, P.superficieSuelo - 0.03, -MODULO / 2 + w / 2 + t * w));
+    const z = -MODULO / 2 + w / 2 + t * w;
+    tablaX(L, MODULO - 0.01, 0.06, w * 0.93, ruido(t * 3.7 + 2) > 0.5 ? 'tabla' : 'madera', 0, top - 0.03 - ruido(t + 1) * 0.004, z, { sinSuelo: true });
   }
-  g.add(caja(MODULO, 0.12, 0.16, COLORES.troncoOscuro, 0, P.superficieSuelo - 0.12, 0));
-  return g;
+  return deLote(L);
 }
 
 // ---------- Estructura ----------
@@ -322,39 +349,36 @@ function hastial() {
   return g;
 }
 
-// ---------- Acceso ----------
+// ---------- Acceso, con el estilo v5 ----------
+// añade una pieza con una matriz completa (giro y sitio de la escalera entera × los de la pieza)
+function addM(L, geo, color, M, opc) { const e = M.elements; L.add(geo, color, e[12], e[13], e[14], M, opc); }
+const mParte = (base, x, y, z, eu) => base.clone().multiply(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(eu?.x || 0, eu?.y || 0, eu?.z || 0, 'YXZ')).setPosition(x, y, z));
+// Escalera de mano: dos varas descortezadas y travesaños, apoyada hacia +z
 function escaleraMano() {
-  const g = new THREE.Group();
+  const L = loteSuelo();
   const largo = ALTURA + 0.6, ang = 0.32;
-  const esc = new THREE.Group();
-  esc.add(cilindroY(0.04, largo, COLORES.vara, -0.25, 0, 0, 5));
-  esc.add(cilindroY(0.04, largo, COLORES.vara, 0.25, 0, 0, 5));
-  for (let y = 0.3; y < largo; y += 0.32) esc.add(cilindroX(0.03, 0.5, COLORES.vara, 0, y, 0, 5));
-  esc.rotation.x = -ang;
-  esc.position.z = MODULO / 2 - 0.15 - Math.sin(ang) * largo;
-  g.add(esc);
-  return g;
+  const base = new THREE.Matrix4().makeTranslation(0, 0, MODULO / 2 - 0.15 - Math.sin(ang) * largo).multiply(new THREE.Matrix4().makeRotationX(-ang));
+  for (const x of [-0.25, 0.25]) addM(L, cil(0.04, 0.047, largo, 7), x < 0 ? 'madera' : 'maderaOsc', mParte(base, x, largo / 2, 0));
+  let k = 0;
+  for (let y = 0.3; y < largo; y += 0.32) addM(L, cil(0.028, 0.03, 0.58, 6), ruido(k++ + 4) > 0.5 ? 'tabla' : 'madera', mParte(base, 0, y, 0, { z: Math.PI / 2 }));
+  return deLote(L);
 }
 // Escalera de tablas: sube hacia +z local desde el borde -z de la casilla hasta el suelo de la planta de arriba.
 function escaleraTablas() {
-  const g = new THREE.Group();
+  const L = loteSuelo();
   const S = MODULO, y0 = P.superficieSuelo, y1 = ALTURA + P.superficieSuelo;
   const ancho = 1.1, peldanos = 10, sube = (y1 - y0) / peldanos, huella = S / peldanos;
   const largo = Math.hypot(S, y1 - y0), ang = Math.atan2(y1 - y0, S);
-  // zancas: dos tablas gruesas en diagonal a los lados
-  for (const x of [-ancho / 2, ancho / 2]) {
-    const z = caja(0.06, 0.26, largo + 0.1, COLORES.tablaOscura, x, (y0 + y1) / 2 - 0.08, 0);
-    z.rotation.x = -ang;
-    g.add(z);
-  }
-  // peldaños de tabla, alternando un poco el tono
+  // zancas: dos tablones gruesos en diagonal a los lados (la caja va a lo largo de Y para que la veta siga el tablón)
+  for (const x of [-ancho / 2, ancho / 2]) L.add(cajaR(0.06, largo + 0.1, 0.26, 0.015), 'maderaOsc', x, (y0 + y1) / 2 - 0.08, 0, { x: Math.PI / 2 - ang });
+  // peldaños de tabla, con la veta a lo ancho
   for (let n = 0; n < peldanos; n++) {
     const y = y0 + sube * (n + 1) - 0.03, zc = -S / 2 + huella * (n + 0.5);
-    g.add(caja(ancho - 0.04, 0.05, huella + 0.04, n % 2 ? COLORES.tabla : 0x9a7248, 0, y, zc));
+    tablaX(L, ancho - 0.04, 0.05, huella + 0.04, ruido(n * 2.3 + 1) > 0.5 ? 'tabla' : 'madera', 0, y, zc);
   }
   // pie: un taco bajo el arranque para que no flote sobre la tierra
-  g.add(caja(ancho + 0.06, y0 + 0.02, 0.12, COLORES.tablaOscura, 0, (y0 + 0.02) / 2, -S / 2 + 0.06));
-  return g;
+  L.add(cajaR(ancho + 0.06, y0 + 0.02, 0.12, 0.015), 'maderaOsc', 0, (y0 + 0.02) / 2, -S / 2 + 0.06);
+  return deLote(L);
 }
 function puerta(tipo) {
   const g = new THREE.Group();
