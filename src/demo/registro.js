@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v9 (escena con el estilo v5 en «Construir» y «Duelo»)';
+export const VERSION_DEMO = 'Demo única · v11 (tejados con el estilo v5 en «Construir»)';
 export const REGISTRO_DEMO = [
+  'v11: en «Construir», los tejados de paja y de tablillas, y lo que cierra bajo el tejado, con el estilo v5. Es la construcción v16.',
+  'v10: en «Construir», los cimientos, los suelos y las escaleras con el estilo v5. Es la construcción v15.',
   'v9: en «Construir» y en «Duelo», la escena como la prueba de estilo v5: hierba densa con flores, matorrales, calvas de tierra, rocas y árboles sueltos; la hierba ya no asoma por lo construido. Es la construcción v14 y el combate v10.',
   'v8: en «Construir», el medio muro hace de barandilla en el borde de un suelo en alto (por ahí ya no se cae) y hay portillo de varas para la cerca, que se abre con Usar. Es la construcción v13.',
   'v7: arreglo de la pantalla en blanco en el móvil (la construcción dejaba la memoria gráfica llena al rehacer las piezas) y aviso con recarga si se pierde el dibujo 3D. Los muros, postes y vigas con el estilo elegido. Es la construcción v12, el combate v9 y el personaje v14.',

@@ -367,8 +367,8 @@ function tejadoPaja(ctx = CTX_TEJADO) {
   const n = Math.round(M.ancho / 0.05);
   for (let fila = 0; fila < 2; fila++) for (let i = 0; i < n; i++) {
     const sd = i * 3.3 + fila * 17.1;
-    const x = M.x0 + 0.02 + (i + 0.5 * fila + 0.25) * (M.ancho - 0.04) / n + (ruido(sd) - 0.5) * 0.03;
-    if (x > M.x1 - 0.02) continue;
+    const x = M.x0 + 0.05 + (i + 0.5 * fila + 0.25) * (M.ancho - 0.1) / n + (ruido(sd) - 0.5) * 0.02;
+    if (x > M.x1 - 0.05) continue; // los manojos no pasan del borde del tramo (no se meten en el de al lado)
     const largo = 0.08 + ruido(sd + 5) * 0.08, t = GR * (fila ? 0.68 : 0.32) + (ruido(sd + 3) - 0.5) * 0.08 + (FILAS - 1) * 0.06;
     const base = M.punto(-M.V + 0.04, t);
     const dir = bajada.clone().add(new THREE.Vector3((ruido(sd + 9) - 0.5) * 0.35, -0.15 - fila * 0.1, 0)).normalize();
@@ -419,7 +419,7 @@ function tablasDePie(L, u0, u1, yBajo, arriba, plano, pos, grosor = 0.07) {
   const n = Math.max(1, Math.round((u1 - u0) / 0.22)), w = (u1 - u0) / n;
   for (let t = 0; t < n; t++) {
     const a = u0 + t * w + 0.006, b = u0 + (t + 1) * w - 0.006;
-    const ya = Math.max(yBajo + 0.04, arriba(a)), yb = Math.max(yBajo + 0.04, arriba(b));
+    const ya = Math.max(yBajo + 0.005, arriba(a)), yb = Math.max(yBajo + 0.005, arriba(b));
     const f = new THREE.Shape(); f.moveTo(a, yBajo); f.lineTo(b, yBajo); f.lineTo(b, yb); f.lineTo(a, ya); f.closePath();
     const g = new THREE.ExtrudeGeometry(f, { depth: grosor, bevelEnabled: false }); g.translate(0, 0, -grosor / 2);
     if (plano === 'z') { g.rotateY(-Math.PI / 2); g.translate(pos, 0, 0); } else g.translate(0, 0, pos);

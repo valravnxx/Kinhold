@@ -1,8 +1,8 @@
 // Mide los modelos de muro: todos deben llegar exactamente a la altura de planta,
 // y los huecos de puerta y ventana deben quedar limpios.
 import * as THREE from 'three';
-import { modeloPieza, P } from '../src/juego/modelos.js';
-import { PIEZAS, ALTURA } from '../src/logica/piezas.js';
+import { modeloPieza, rellenoTejado, P } from '../src/juego/modelos.js';
+import { PIEZAS, ALTURA, MODULO } from '../src/logica/piezas.js';
 
 let ok = 0, mal = 0;
 // MUTAR=1 mete un tablón en el hueco de la puerta: la prueba de huecos tiene que fallar
@@ -69,6 +69,43 @@ for (const [tipo, sup] of Object.entries(esperado)) {
 for (const tipo of [...Object.keys(esperado), 'escalera_mano', 'escalera_tabla']) {
   const nombres = []; modeloPieza(tipo).traverse(o => { if (o.isMesh) nombres.push(o.name); });
   comprobar(`${PIEZAS[tipo].nombre}: hecha con el estilo v5 (mallas por textura)`, nombres.length > 0 && nombres.every(n => n.startsWith('estilo_')), nombres.join(' '));
+}
+
+console.log('Tejados y rellenos bajo el tejado con el estilo v5');
+{
+  // MUTAR_TEJADO=1 hace que los tramos de paja monten sobre el de al lado: vuelve el surco y la prueba tiene que fallar
+  if (process.env.MUTAR_TEJADO) P.juntaPaja = 0.03;
+  const S = MODULO, sub = P.subidaTejado;
+  for (const tipo of ['tejado_paja', 'tejado_tablilla']) {
+    const nombres = []; modeloPieza(tipo).traverse(o => { if (o.isMesh) nombres.push(o.name); });
+    comprobar(`${PIEZAS[tipo].nombre}: hecho con el estilo v5 (mallas por textura)`, nombres.length > 0 && nombres.every(n => n.startsWith('estilo_')), nombres.join(' '));
+    // el tejado se apoya en lo alto de los muros: por dentro de la casilla, nada queda por debajo del plano del tejado
+    let bajo = 0;
+    modeloPieza(tipo).traverse(o => {
+      if (!o.isMesh) return; const pos = o.geometry.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+        if (Math.abs(x) < S / 2 - 0.05 && z > -S / 2 + 0.05 && z < S / 2 - 0.05) bajo = Math.max(bajo, (z + S / 2) / S * sub - y);
+      }
+    });
+    comprobar(`${PIEZAS[tipo].nombre}: nada asoma por debajo del plano del tejado dentro de la casilla`, bajo < 0.01, `asoma ${r3(bajo)} m`);
+  }
+  // paja: un tramo con vecinos a los dos lados acaba justo en la casilla (lados planos que se tocan: sin surco ni solape)
+  const medio = caja(modeloPieza('tejado_paja', { extremos: [], cumbrera: false, par: 0 }));
+  comprobar('Tejado de paja: entre tramos vecinos, lados planos que se tocan', Math.abs(medio.min.x + S / 2) < 0.005 && Math.abs(medio.max.x - S / 2) < 0.005, `x de ${r3(medio.min.x)} a ${r3(medio.max.x)}`);
+  const suelto = caja(modeloPieza('tejado_paja')), conCumbrera = caja(modeloPieza('tejado_paja', { extremos: [1, -1], cumbrera: true, par: 0 }));
+  comprobar('Tejado de paja: vuela 20 cm por los lados sueltos', Math.abs(suelto.max.x - S / 2 - 0.2) < 0.005, `x hasta ${r3(suelto.max.x)}`);
+  comprobar('Tejado de paja: la cumbrera redonda solo si se pide', conCumbrera.max.y > suelto.max.y + 0.1, `${r3(suelto.max.y)} → ${r3(conCumbrera.max.y)}`);
+  // rellenos: cierran del muro al tejado y no lo atraviesan
+  for (const muro of ['muro_tronco', 'muro_tabla', 'muro_zarzo', 'muro_entramado']) {
+    const r = rellenoTejado({ tipo: 'lado', lado: 1, muro, hBajo: 0, hAlto: 1 }, 0);
+    const b = caja(r); let fuera = 0;
+    r.traverse(o => { if (!o.isMesh) return; const pos = o.geometry.attributes.position;
+      for (let i = 0; i < pos.count; i++) fuera = Math.max(fuera, pos.getY(i) - ((pos.getZ(i) + S / 2) / S * sub + 0.03)); });
+    const nombres = []; r.traverse(o => { if (o.isMesh) nombres.push(o.name); });
+    comprobar(`relleno bajo el tejado (${PIEZAS[muro].nombre}): del muro al tejado, sin atravesarlo, con el estilo v5`,
+      Math.abs(b.min.y) < 0.01 && b.max.y > sub - 0.06 && fuera < 0.005 && nombres.every(n => n.startsWith('estilo_')), `y de ${r3(b.min.y)} a ${r3(b.max.y)}, atraviesa ${r3(fuera)}`);
+  }
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

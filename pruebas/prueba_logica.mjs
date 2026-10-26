@@ -179,6 +179,18 @@ console.log('11. Tejados: los muros cierran hasta el tejado');
     comprobar('dos aguas: cada tramo cierra sus dos extremos y nada en la cumbrera',
       r0.rellenos.length === 2 && r0.rellenos.every(x => x.tipo === 'lado') && r1.rellenos.length === 2 && r1.rellenos.every(x => x.tipo === 'lado'),
       JSON.stringify(r0.rellenos.map(x => x.tipo)));
+    comprobar('dos aguas: la cumbrera la remata uno solo de los dos tramos', [r0, r1].filter(x => x.cumbrera).length === 1, JSON.stringify([r0.cumbrera, r1.cumbrera]));
+    comprobar('dos aguas: cada tramo suelto vuela por sus dos lados', r0.extremos.length === 2 && r1.extremos.length === 2, JSON.stringify([r0.extremos, r1.extremos]));
+  }
+  // tres tramos de lado en la misma caída: el del medio no vuela por ningún lado y los de los bordes por uno
+  {
+    const { m, c } = casa(3, 1);
+    for (let i = 0; i < 3; i++) m.colocar(enRejilla(m, c, 'tejado_tablilla', i, 0, 1, 0, 0));
+    const g = geometriaTejados(c), ext = [0, 1, 2].map(i => g.get(clave('r', i, 0, 1)).extremos.length);
+    const par = [0, 1, 2].map(i => g.get(clave('r', i, 0, 1)).par);
+    comprobar('tramos de lado: solo vuelan los bordes (1, 0, 1 lados)', ext.join() === '1,0,1', `extremos=${ext.join()}`);
+    comprobar('tramos de lado: paridad alterna (no se montan a la misma altura)', par[0] !== par[1] && par[1] !== par[2], `par=${par.join()}`);
+    comprobar('una caída sin tramo enfrente: sin cumbrera', [0, 1, 2].every(i => !g.get(clave('r', i, 0, 1)).cumbrera));
   }
   // una sola caída: hay que cerrar el muro alto
   {
