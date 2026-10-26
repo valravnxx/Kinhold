@@ -158,7 +158,13 @@ function aplicarAperturas(obj, p) {
   if (hoja) hoja.rotation.y = p.abierta ? -Math.PI / 2 : 0;
 }
 
+// Libera en la tarjeta gráfica las mallas que se quitan. Sin esto, cada vez que se colocaba o se quitaba algo se
+// rehacían todas las piezas y las viejas se quedaban ocupando memoria gráfica: tras un rato construyendo, el móvil
+// se quedaba sin ella y la pantalla en blanco aunque fuera a más de 80 fps (lo vio Pedro). Los materiales son
+// compartidos (salen de una caché) y no se liberan.
+function liberar(obj) { if (window.__sinLiberar) return; obj.traverse(o => { if (o.isMesh) o.geometry.dispose(); }); } // __sinLiberar: solo para comprobar que la prueba de la fuga falla
 function reconstruir() {
+  for (const r of [raizConstr, raizDeco]) for (const h of r.children) liberar(h);
   raizConstr.clear(); raizDeco.clear();
   registroMallas.length = 0;
   for (const c of mundo.construcciones) {
@@ -192,8 +198,8 @@ function reconstruir() {
     raizDeco.add(obj);
     registroMallas.push({ obj, deco: d });
   }
-  if (mallaMojon) { escena.remove(mallaMojon); mallaMojon = null; }
-  if (anilloTierra) { escena.remove(anilloTierra); anilloTierra = null; }
+  if (mallaMojon) { escena.remove(mallaMojon); liberar(mallaMojon); mallaMojon = null; }
+  if (anilloTierra) { escena.remove(anilloTierra); liberar(anilloTierra); anilloTierra.material.dispose(); anilloTierra = null; }
   if (mundo.mojon) {
     mallaMojon = modeloMojon();
     mallaMojon.position.set(mundo.mojon.x, 0, mundo.mojon.z);
@@ -233,7 +239,7 @@ let fantasma = null, fantasmaTipo = null;
 function prepararFantasma() {
   const tipo = estado.modo === 'construir' ? estado.sel.clase + ':' + estado.sel.tipo : null;
   if (tipo === fantasmaTipo) return;
-  if (fantasma) { escena.remove(fantasma); fantasma = null; }
+  if (fantasma) { escena.remove(fantasma); liberar(fantasma); fantasma = null; }
   fantasmaTipo = tipo;
   if (!tipo) return;
   if (estado.sel.clase === 'pieza') fantasma = modeloPieza(estado.sel.tipo);

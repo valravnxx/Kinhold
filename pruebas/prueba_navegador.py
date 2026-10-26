@@ -341,6 +341,16 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/05_barra_construccion_pc.png')
 
+    # memoria gráfica (Pedro: pantalla en blanco tras un rato construyendo, a más de 80 fps): rehacer las piezas no
+    # deja mallas viejas ocupando la tarjeta gráfica
+    if os.environ.get('MUTAR_FUGA'): ev('window.__sinLiberar = true')
+    memoria = f"(() => {{ {K}.render(); return {K}.renderer.info.memory.geometries; }})()"
+    g0 = ev(memoria)
+    for _ in range(20): ev(f"{K}.reconstruir()")
+    for _ in range(10): ev(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','muro_tronco'); {K}.seleccionar('pieza','muro_tabla')")
+    ev(f"{K}.cambiarModo('mover')")
+    g1 = ev(memoria)
+    comprobar('rehacer las piezas no deja memoria gráfica ocupada', g1 <= g0 + 5, f'geometrías {g0} → {g1} tras 20 reconstrucciones')
     comprobar('sin errores en consola (PC)', len(errores) == 0, '; '.join(errores[:3]))
     estado = pg.evaluate("localStorage.getItem('kinhold_h1_v1')")
     pg.close()
