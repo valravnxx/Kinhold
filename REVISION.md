@@ -1,4 +1,4 @@
-# Revisión de Pedro
+# Revisión de valravnx
 
 Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir cambios, o responder a lo que te espera en la web. Basta con texto normal. El trabajo automático lo lee al empezar cada hora y lo mueve a "Procesado".
 
@@ -8,7 +8,7 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ### 26 oct 2026 (12:06) — por el chat: mundo a escala real, nado y obras con materiales (en conversación)
 
-Pedro quiere: mundo a escala real en todo (planicies, pero también valles, pasos y montañas tipo Pirineos, bosques frondosos, ríos de varios gruesos; un mundo aún inexplorado que no se sienta un llano gigante y que favorezca establecerse en sitios concretos, como junto a los ríos); saber si el nado está en el GDD (no lo está); y que construir sea poner el marco de la obra, llevarle los materiales y construir con un tiempo según la pieza, con andamios, poleas y poleas mayores para subir materiales y piedras a lo alto (complicado pero posible en grupo, y no demasiado para una casita de madera solo o en pareja). → Propuesta enviada en el chat. Pedro (12:11): «sí, todo» → GDD v0.8 (mundo a escala real, agua y nado, obras), tareas nuevas en el hito 1c y el hito 10 puesto al día.
+valravnx quiere: mundo a escala real en todo (planicies, pero también valles, pasos y montañas tipo Pirineos, bosques frondosos, ríos de varios gruesos; un mundo aún inexplorado que no se sienta un llano gigante y que favorezca establecerse en sitios concretos, como junto a los ríos); saber si el nado está en el GDD (no lo está); y que construir sea poner el marco de la obra, llevarle los materiales y construir con un tiempo según la pieza, con andamios, poleas y poleas mayores para subir materiales y piedras a lo alto (complicado pero posible en grupo, y no demasiado para una casita de madera solo o en pareja). → Propuesta enviada en el chat. valravnx (12:11): «sí, todo» → GDD v0.8 (mundo a escala real, agua y nado, obras), tareas nuevas en el hito 1c y el hito 10 puesto al día.
 
 ### 26 oct 2026 (09:28–10:14) — por el chat: pantalla en blanco en el móvil
 
@@ -56,7 +56,7 @@ Pedro quiere: mundo a escala real en todo (planicies, pero también valles, paso
 
 ### 25 oct 2026 (09:53) — por el chat: decisiones pendientes
 
-Estilo: el realismo en miniatura de la v5 es la base. Cámara táctil: como se propuso. Curación: la tabla del análisis; en combate se puede, lento y vendido. Fuego amigo: sigue al PvP (desactivado dentro de la familia: no hace nada; fuera, hiere). Pedro pide además que la sesión del chat pueda trabajar en paralelo a otras sesiones.
+Estilo: el realismo en miniatura de la v5 es la base. Cámara táctil: como se propuso. Curación: la tabla del análisis; en combate se puede, lento y vendido. Fuego amigo: sigue al PvP (desactivado dentro de la familia: no hace nada; fuera, hiere). valravnx pide además que la sesión del chat pueda trabajar en paralelo a otras sesiones.
 
 ### 25 oct 2026 (09:39) — por el chat: algo no relacionado con la ropa
 
@@ -123,6 +123,6 @@ Animaciones de Quaternius pasadas al esqueleto de MakeHuman; personaje v5 public
    - la parada con escudo cuesta menos aliento que con la espada; parada perfecta y golpe maestro funcionan igual;
    - el escudo se ve en el brazo izquierdo y se levanta al parar;
    - el rival de la máquina también puede llevarlo (opción "Ropa/arma del rival").
-   Anotar en `registro.js` que es provisional y que Pedro lo revisará.
+   Anotar en `registro.js` que es provisional y que valravnx lo revisará.
 
-(Idea descartada por Pedro, no hacer: elegir el golpe por la dirección en que mueves el ratón; ya se probó en la v1 y era caótico.)
+(Idea descartada por valravnx, no hacer: elegir el golpe por la dirección en que mueves el ratón; ya se probó en la v1 y era caótico.)

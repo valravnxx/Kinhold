@@ -59,7 +59,7 @@ export function ponerRendimiento(boton) {
     ];
     panel.innerHTML = `<b>${tr('Rendimiento en este aparato')}</b><table>${filas.map(f => `<tr><td>${f[0]}</td><td>${f[1]}</td></tr>`).join('')}</table>` +
       (g ? `<div class="gente">${tr('Personajes de prueba:')} ${GENTE.map(n => `<button data-gente="${n}" class="${g.cuantos() === n ? 'sel' : ''}">${n}</button>`).join('')}</div>` : '') +
-      `<p>${tr('Pedro: dime los fps que ves en tu móvil (y qué móvil es), en «Construir» y en «Duelo». Con eso se decide cuánto detalle aguanta.')}</p>`;
+      `<p>${tr('valravnx: dime los fps que ves en tu móvil (y qué móvil es), en «Construir» y en «Duelo». Con eso se decide cuánto detalle aguanta.')}</p>`;
     for (const x of panel.querySelectorAll('[data-gente]')) x.onclick = () => { g.poner(+x.dataset.gente); refrescar(); };
   }
   setInterval(refrescar, 1000);

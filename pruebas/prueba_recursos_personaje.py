@@ -84,7 +84,7 @@ with sync_playwright() as p:
                 cambio = max(max(abs(x[k] - y[k]) for k in range(3)) for x, y in zip(quieto + a, b + b))
                 if cambio < 0.03: quietas.append(f'{c} {cambio:.3f}')
             comprobar('cada animación extra mueve el cuerpo (más de 3 cm respecto a estar quieto o entre dos instantes)', not quietas, ', '.join(quietas))
-            # hoja con todas las poses (a mitad de cada animación), para Pedro
+            # hoja con todas las poses (a mitad de cada animación), para valravnx
             col, w, h = 8, 320, 200
             hoja = Image.new('RGB', (col * w, -(-len(fotos) // col) * h), (40, 40, 40))
             for k, (c, f) in enumerate(fotos):

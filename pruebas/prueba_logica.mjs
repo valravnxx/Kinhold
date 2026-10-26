@@ -214,7 +214,7 @@ console.log('12. Lo que no aguanta peso no cuenta como apoyo');
   comprobar('y el tejado no la usa de apoyo', m.soportes(c, c.piezas.get(clave('r', 0, 0, 1))).lista.length === 1);
 }
 
-console.log('13. Casas de varias plantas (Pedro: «la madera es demasiado débil»)');
+console.log('13. Casas de varias plantas (valravnx: «la madera es demasiado débil»)');
 {
   // casa de N×M casillas: cimientos, muros por fuera en cada planta, suelos en alto y tejado
   function casaPlantas(N, M, plantas, cim = 'cim_tronco', muro = 'muro_tronco') {

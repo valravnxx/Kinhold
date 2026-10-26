@@ -26,7 +26,7 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     const recorte = !!(m.map && m.transparent);
     n.material = o.calidad === 'alta' ? m.clone() : new THREE.MeshLambertMaterial({ name: m.name, map: m.map, color: m.color.clone(), vertexColors: m.vertexColors });
     // depthWrite: el cargador lo apaga en los materiales con transparencia, y entonces la piel se pinta encima del pelo
-    // y la ropa se ve del revés (fallo de la v5, lo vio Pedro). DoubleSide: por dentro del escote y las mangas
+    // y la ropa se ve del revés (fallo de la v5, lo vio valravnx). DoubleSide: por dentro del escote y las mangas
     Object.assign(n.material, { transparent: false, depthWrite: true, alphaTest: recorte ? 0.5 : 0, side: THREE.DoubleSide });
     triangulos += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3;
   });
@@ -69,7 +69,7 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   // velocidad natural de andar y correr (m/s): lo que retrocede el pie apoyado respecto al cuerpo, medido en el propio
   // clip al cargar. El juego acelera la animación con velocidad / natural para que los pies no resbalen. (Antes era un
   // número fijo para correr, 2,59, que no salía de medir bien: la carrera del paquete iba a 5,8 m/s y se veía a cámara
-  // lenta con zancadas enormes, una de las cosas por las que Pedro la vio «fea y exagerada».)
+  // lenta con zancadas enormes, una de las cosas por las que valravnx la vio «fea y exagerada».)
   const velocidad = {};
   {
     const mz = new THREE.AnimationMixer(modelo), pie = [hueso.ball_l, hueso.ball_r], v = new THREE.Vector3();

@@ -26,7 +26,7 @@ export const ZONAS_POR_LINEA = {
 
 export const ARMAS = {
   espada_larga: { nombre: 'Espada larga', tipo: 'cuerpo', alcance: 1.9, alcanceEstocada: 2.15, prep: 0.42, prepEstocada: 0.32, golpe: 0.12, recup: 0.35, danio: 1.0, cansancio: 12 },
-  // Provisional (v4, lo revisará Pedro): espada de una mano, algo más corta que la larga, con escudo redondo.
+  // Provisional (v4, lo revisará valravnx): espada de una mano, algo más corta que la larga, con escudo redondo.
   espada_escudo: { nombre: 'Espada y escudo', tipo: 'cuerpo', alcance: 1.7, alcanceEstocada: 1.9, prep: 0.38, prepEstocada: 0.3, golpe: 0.12, recup: 0.33, danio: 0.9, cansancio: 10, escudo: true },
   palo:         { nombre: 'Palo', tipo: 'cuerpo', alcance: 1.5, alcanceEstocada: 1.6, prep: 0.5, prepEstocada: 0.4, golpe: 0.12, recup: 0.4, danio: 0.55, contundente: true, cansancio: 9 },
   arco:         { nombre: 'Arco', tipo: 'distancia', tensado: 1.0, recarga: 0.8, vMin: 18, vMax: 55, danio: 0.95, danioTipo: 'perforante', cansancio: 6 },

@@ -42,7 +42,7 @@ with sync_playwright() as p:
     nav = p.chromium.launch(args=ARGS)
     for nombre, vista, movil in [('pc', {'width': 1280, 'height': 800}, False), ('movil', {'width': 390, 'height': 844}, True)]:
         print('Vista', nombre)
-        ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')  # en español, como Pedro (el inglés lo prueba prueba_idioma_navegador.py)
+        ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')  # en español, como valravnx (el inglés lo prueba prueba_idioma_navegador.py)
         pg = ctx.new_page()
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
@@ -123,7 +123,7 @@ with sync_playwright() as p:
             pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)')
             png = pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_cara.png')
             comprobar(f'taller propio ({sexo}): se ve la cara', se_ve(pg, png) > 4, f'{se_ve(pg, png):.1f}')
-            # postura al estar quieto (Pedro: «doblado hacia delante», «hombros muy para atrás»): cabeza y hombros sobre la pelvis
+            # postura al estar quieto (valravnx: «doblado hacia delante», «hombros muy para atrás»): cabeza y hombros sobre la pelvis
             pg.evaluate(f"{E}.ponerModo('quieto')"); pg.evaluate(f'{E}.instante(1.0)')
             post = pg.evaluate(f"""(() => {{ const d = {E}.diag(), h = d.pj.hueso, v = (n) => {{ const p = new d.THREE.Vector3(); h[n].getWorldPosition(p); return d.pj.modelo.worldToLocal(p); }};
               const pel = v('pelvis'); return [v('head').z - pel.z, v('upperarm_l').z - pel.z, v('upperarm_r').z - pel.z, v('lowerarm_l').z - v('upperarm_l').z]; }})()""")
@@ -136,7 +136,7 @@ with sync_playwright() as p:
             mov = max(abs(a[i][k] - b[i][k]) for i in range(2) for k in range(3))
             comprobar(f'taller propio ({sexo}): al andar se mueven piernas y brazos', mov > 0.05, f'{mov:.3f} m')
             pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_andar.png')
-            # correr (Pedro: «fea y exagerada»): zancada a la medida de la velocidad del juego (3,6 m/s) y sin botes enormes
+            # correr (valravnx: «fea y exagerada»): zancada a la medida de la velocidad del juego (3,6 m/s) y sin botes enormes
             vel = pg.evaluate(f'{E}.diag().pj.velocidad')
             pg.evaluate(f"{E}.ponerModo('correr')")
             alto = []
@@ -170,7 +170,7 @@ with sync_playwright() as p:
                   ', '.join(sorted(x for x in con if 'capa' in x)))
         pg.evaluate(f"{E}.instante(1.0)"); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_sobreveste.png')
         for c in ['cota', 'sobreveste']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
-        # hombre con cota: el cinturón ciñe la cota y no se estira hasta los brazos (hasta taller-v6 lo tenía; Pedro lo vio)
+        # hombre con cota: el cinturón ciñe la cota y no se estira hasta los brazos (hasta taller-v6 lo tenía; valravnx lo vio)
         pg.evaluate(f"{E}.cambiar({{sexo: 'hombre'}})"); listo(pg)
         pg.click('[data-capa="cota"]'); pg.wait_for_timeout(200)
         cint = pg.evaluate(f"""(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === 'hombre_cinturon_cota') {{

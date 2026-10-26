@@ -61,17 +61,17 @@ const VISTAS = {
   espalda: () => [rel(-1.9, 1.4, -1.6), rel(0, 1.0, 0)],
 };
 
-// calidad alta en todos lados (en el móvil de Pedro va perfecto); la ligera queda como opción
+// calidad alta en todos lados (en el móvil de valravnx va perfecto); la ligera queda como opción
 const TACTIL = matchMedia('(pointer: coarse)').matches;
 let estado = { luz: 'manana', vista: 'cuerpo', modo: 'quieto', sexo: 'hombre', ropa: 'campesino', pelo: 'raya', colorPelo: 'castano', piel: 'clara', barba: 'si', calidad: 'alta' };
 try { estado = { ...estado, ...JSON.parse(localStorage.getItem(CLAVE) || '{}') }; } catch (e) { /* sin almacenamiento */ }
 if (!LUCES[estado.luz]) estado.luz = 'manana';
 if (!VISTAS[estado.vista]) estado.vista = 'cuerpo';
 if (!ANIMS[estado.modo]) estado.modo = 'quieto';
-if (estado.ropa !== 'campesino') estado.ropa = 'campesino'; // el explorador era demasiado de fantasía (Pedro)
+if (estado.ropa !== 'campesino') estado.ropa = 'campesino'; // el explorador era demasiado de fantasía (valravnx)
 estado.sombras ??= true; estado.escena ??= true;
-if (!BASES[estado.base]) estado.base = 'makehuman'; // Pedro eligió el taller propio como base (25 oct)
-// la v3 ponía «ligera» sola en el móvil: si no la eligió Pedro a mano, vuelve a alta
+if (!BASES[estado.base]) estado.base = 'makehuman'; // valravnx eligió el taller propio como base (25 oct)
+// la v3 ponía «ligera» sola en el móvil: si no la eligió valravnx a mano, vuelve a alta
 if (!estado.calidadElegida) estado.calidad = 'alta';
 const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch (e) { /* sin almacenamiento */ } };
 
