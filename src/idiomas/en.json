@@ -508,5 +508,8 @@
  "Capucha": "Hood",
  "Sombrero de paja": "Straw hat",
  "Toca": "Wimple",
- "Botas": "Boots"
+ "Botas": "Boots",
+ "Personaje · v15 (capa, botas y tocados: capucha, sombrero de paja y toca)": "Character · v15 (cloak, boots and headwear: hood, straw hat and wimple)",
+ "v15: capa de lana abierta por delante (encima de todo, hasta debajo de la rodilla; deja ver la ropa y el cinturón de debajo), botas de cuero hasta debajo de la rodilla (en lugar de los zapatos) y tres tocados, de uno en uno: capucha suelta con esclavina sobre los hombros, sombrero de paja de ala ancha y, en la mujer, toca de lino que cubre la cabeza, la barbilla y el cuello. Personajes en recursos/personajes/taller-v8/.": "v15: a wool cloak open at the front (over everything, down to below the knee; the clothes and belt underneath stay visible), leather boots up to below the knee (instead of the shoes) and three kinds of headwear, one at a time: a loose hood with a shoulder cape, a wide-brimmed straw hat and, for the woman, a linen wimple covering the head, chin and neck. Characters in recursos/personajes/taller-v8/.",
+ "v15, decisión provisional: la capucha de la capa es el tocado «Capucha» (se pone o se quita aparte); con la capa sin capucha no se ve capucha caída a la espalda. El sombrero va rígido en el hueso de la cabeza. La capa y la esclavina siguen el esqueleto como el resto de la ropa (no ondean con el viento).": "v15, provisional decision: the cloak's hood is the «Hood» headwear (put on or taken off separately); a cloak without the hood shows no hood hanging down the back. The hat is fixed to the head bone. The cloak and the shoulder cape follow the skeleton like the rest of the clothes (they do not flutter in the wind)."
 }

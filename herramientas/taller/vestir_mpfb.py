@@ -351,6 +351,7 @@ def personaje(nombre, macros, objetivos, ropa):
               and orejas[:, 2].min() < co[i].z < oreja_arriba and orejas[:, 1].min() < co[i].y < orejas[:, 1].max()]
     from mathutils.kdtree import KDTree
     sin_oreja = [i for i in range(len(co)) if PR[i] == 'head' and en(i, 'body') and W[i].get('ears', 0) == 0]
+    NORMAL = [v.normal.copy() for v in base.data.vertices]
     kd_craneo = KDTree(len(sin_oreja))
     for k, i in enumerate(sin_oreja): kd_craneo.insert(co[i], k)
     kd_craneo.balance()
@@ -616,14 +617,23 @@ def personaje(nombre, macros, objetivos, ropa):
         zc, hz = (arriba + abajo) / 2, (arriba - abajo) / 2
         e = (x / hx) ** 2 + ((z - zc) / hz) ** 2
         return 1 - (1 - suave(0.92, 1.0, e)) * suave(-0.04, -0.07, y)
-    def cubre(z_bajo):  # cabeza, cuello y hombros hasta z_bajo (sin brazos ni manos)
-        return lambda i, c: en(i, 'body') and not mano(i) and (cabeza(i) or (c.z > z_bajo - 0.02 and abs(c.x) < 0.27))
+    def cubre(z_bajo, arriba, abajo, hx):  # cabeza, cuello y hombros hasta z_bajo (sin brazos ni manos)
+        # sin los puntos de dentro del hueco de la cara (labios, párpados): empujados hacia fuera salían como pinchos
+        zc, hz = (arriba + abajo) / 2, (arriba - abajo) / 2
+        cara_ = lambda c: c.y < -0.05 and (c.x / hx) ** 2 + ((c.z - zc) / hz) ** 2 < 0.45  # bien dentro del hueco: el borde lo hace la transparencia
+        return lambda i, c: en(i, 'body') and not mano(i) and not cara_(c) and (cabeza(i) or (c.z > z_bajo - 0.02 and abs(c.x) < 0.27))
     def separacion_tocado(cabeza_e, hombro_e, pico=0.0):
         def e(c, i):
-            if ATR[i, 1] > 0.0: c[:] = kd_craneo.find(c)[0]  # orejas pegadas al cráneo, como en la cofia
+            d = min(np.linalg.norm(np.array(c) - o) for o in oreja_c)
+            oreja = ATR[i, 1] > 0.0
+            if oreja:  # la oreja se lleva al cráneo y se empuja por la normal del cráneo (la suya va en todas direcciones: salía arrugada)
+                _, k, _ = kd_craneo.find(c); j = sin_oreja[k]; c[:] = co[j]
             t = suave(cuello_z + 0.06, cuello_z - 0.005, c.z)  # del cuello para abajo, por encima de la ropa
             atras = pico * max(0.0, c.y) / 0.1 * max(0.0, c.z - ojo_arriba) / 0.06  # la capucha acaba en punta atrás
-            return cabeza_e * (1 - t) + hombro_e * t + atras
+            total = cabeza_e * (1 - t) + hombro_e * t + atras + 0.022 * float(suave(0.055, 0.025, d))  # pasa por encima de la oreja
+            if oreja:
+                c[:] = c + NORMAL[j] * total; return 0.0
+            return total
         return e
     def pintar_tocado(color, arriba, abajo, hx, z_bajo, lana=True):
         c0 = lin(color)
@@ -636,13 +646,13 @@ def personaje(nombre, macros, objetivos, ropa):
             return np.concatenate([col, a[..., None]], -1)
         return f
     zc_bajo = cuello_z - 0.13
-    piezas.append(trozo(base, nombre + '_capa_capucha', cubre(zc_bajo), empuje=separacion_tocado(0.026, 0.09, pico=0.05),
+    piezas.append(trozo(base, nombre + '_capa_capucha', cubre(zc_bajo, ojo_arriba + 0.05, boca_z - 0.055, 0.074), empuje=separacion_tocado(0.026, 0.09, pico=0.05),
                         alisar=(sobre_oreja, 40),
                         textura=(1024, pintar_tocado(ropa.get('capucha', (92, 76, 58)), ojo_arriba + 0.05, boca_z - 0.055, 0.074, zc_bajo)),
                         rugosidad=0.95, diezmar=DIEZMAR))
     if mujer:
         zt_bajo = cuello_z - 0.075
-        piezas.append(trozo(base, nombre + '_capa_toca', cubre(zt_bajo), empuje=separacion_tocado(0.013, 0.08),
+        piezas.append(trozo(base, nombre + '_capa_toca', cubre(zt_bajo, ojo_arriba + 0.028, boca_z - 0.028, 0.058), empuje=separacion_tocado(0.013, 0.08),
                             alisar=(sobre_oreja, 40),
                             textura=(1024, pintar_tocado((226, 220, 204), ojo_arriba + 0.028, boca_z - 0.028, 0.058, zt_bajo, lana=False)),
                             rugosidad=0.9, diezmar=DIEZMAR))
