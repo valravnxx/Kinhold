@@ -325,7 +325,7 @@
    "id": "construccion-mas",
    "num": "1c",
    "nombre": "Más piezas de construcción",
-   "jugable": "Escaleras de caminar de un bloque, barandillas, vallas y más piezas para que construir dé juego.",
+   "jugable": "Piezas y muebles con el estilo elegido; obras con marco, materiales y tiempo, andamio, polea y polipasto; escaleras, barandillas, contraventanas, tejas, remates, chimenea, adarve y decoración; muros de piedra con grúa de rueda.",
    "estado": "en_curso",
    "tareas": [
     {
@@ -381,6 +381,22 @@
      "estado": "pendiente"
     },
     {
+     "nombre": "Obras (decidido por Pedro el 26 oct): poner el marco de la pieza, que se ve como un armazón; llevarle los materiales y construirla con un tiempo según la pieza; si te ayudan, tarda menos. Todo en la lógica pura, con el autor de cada entrega y de cada rato de trabajo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Obras: polipasto con torno para vigas grandes y sillares (uno tira y otro guía)",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Contraventana y trampilla (N2: 2 tablas y clavos): la contraventana cierra la ventana de un muro y la trampilla tapa el hueco de una escalera; las dos se abren y cierran con Usar. Añadir también el muro de tablas con ventana, que falta",
      "estado": "pendiente"
     },
@@ -402,6 +418,10 @@
     },
     {
      "nombre": "Decoración que falta del documento de sistemas: tinaja, antorcha de pared, tapiz y ganchos para herramientas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Muros de piedra (mampostería) y grúa de rueda para subir la piedra en grupo: una o dos personas andando en la rueda y alguien guiando; la grúa se sube de planta según crece la obra",
      "estado": "pendiente"
     },
     {
@@ -522,7 +542,7 @@
    "id": "mundo",
    "num": "10",
    "nombre": "Mundo",
-   "jugable": "Pseudo-Europa por semilla, 5 países con estilo propio, caminos por uso, puentes.",
+   "jugable": "Pseudo-Europa por semilla a escala real: cordilleras como los Pirineos, valles y collados, ríos de tres gruesos (arroyos que se vadean, ríos con pocos vados, grandes ríos con barca o puente), bosques frondosos, pendientes que frenan; agua y nado; 5 países con estilo propio, caminos por uso, puentes.",
    "estado": "pendiente",
    "tareas": []
   },

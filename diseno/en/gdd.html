@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="41816638fcc77186c77914a845056144d6318d56">
+<meta name="kinhold-origen" content="4cd4add0c9e41b330e40ba720bf6392ad96fa7a9">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kinhold GDD v0.6</title>
+<title>Kinhold GDD v0.8</title>
 <style>
 :root{
   --bg:#f6f2ea; --card:#fffdf8; --ink:#2b2520; --muted:#6f655b; --line:#e2d8c8;
@@ -61,7 +61,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Version 0.7 · 25 Oct 2026 · Updated with what was decided by testing · The content catalogue remains in the analysis document</div>
+  <div class="sub">Version 0.8 · 26 Oct 2026 · Real-scale world, water and swimming, and building works with materials · The content catalogue remains in the analysis document</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDED</span> you said so
     <span class="tag method">METHOD</span> how to do it technically
@@ -159,6 +159,21 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span><b>We start with the medium size:</b> countries of about 60 × 60 km, a world of about 188 × 188 km including the sea. Crossing a country takes about 12 hours on foot or 5 on horseback.</p>
 <div class="box m"><span class="tag method">METHOD</span>
 <p>Since the world comes from a seed, it can be expanded at the edges later without touching what already exists. With few people at first, the medium world may feel empty: we will keep an eye on it once there are players.</p></div>
+<h3>Relief, rivers and forests at real scale</h3>
+<p><span class="tag ok">DECIDED</span><b>Everything at real scale</b>, like a world still unexplored by man. There are plains, but the world does not feel like a giant flat: <b>mountain ranges like the Pyrenees</b>, with peaks of about 3,000 m, valleys about 1,000 m deep and <b>passes</b> to cross them; the plains lie in the low basins. From anywhere you can see relief on the horizon.</p>
+<p><span class="tag ok">DECIDED</span><b>Rivers of three sizes</b>, depending on the water they gather: <b>streams</b> 1 to 3 m wide, which can be forded; <b>rivers</b> 10 to 30 m wide, with few fords; <b>great rivers</b> 50 to 150 m wide, which need a boat or a bridge.</p>
+<p><span class="tag ok">DECIDED</span>Truly <b>dense forests</b>, with clearings. No paths at first: they form through use.</p>
+<p><span class="tag ok">DECIDED</span><b>Relief matters:</b> steep slopes slow you down when walking, carts cannot climb steep hills and on a hillside you have to level the ground to lay foundations.</p>
+<p><span class="tag ok">DECIDED</span><b>Settling makes sense in specific places</b> without forcing anyone: by the river there is water for thirst, fertile soil in the floodplain, current for the mill, and fords and bridges that can be controlled (and tolled).</p>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li><b>Water first, then the terrain</b> (like the most believable terrain generators, based on hydrology): the mountain ranges and the river network flowing from them to the sea are laid out first, like a tree; the terrain is carved from that network, so valleys appear where water runs and passes where two valleys meet at the top.</li>
+  <li>Each river's width comes from the water it gathers (how many tributaries reach it).</li>
+  <li>Forests with repeated single-mesh trees and simple versions at a distance, in chunks around the player, so they hold up on mobile.</li>
+</ul></div>
+<h3>Water and swimming</h3>
+<p><span class="tag ok">DECIDED</span>At <b>fords</b> you cross on foot. In deep water you <b>swim slowly and it tires you a lot</b>. <b>You cannot swim in armour or heavily loaded:</b> either you drop weight or you don't go in. In great rivers, <b>the current drags you</b> downstream.</p>
+<p><span class="tag ok">DECIDED</span><b>Carts only cross at fords and bridges.</b> That way fords and bridges are truly valuable.</p>
 <div class="box m"><span class="tag method">METHOD</span>
 <ul>
   <li>Continent outline first; climate by latitude and sea; large biomes with gradual transitions; natural borders.</li>
@@ -319,6 +334,30 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Resistance by material and damage type (blow, siege, fire).</li>
   <li>Upkeep: the boundary stone slowly consumes the deposited materials (wood for wooden parts, straw for roofs, lime for stone). While there is some, nothing decays; if it runs out, slow decay begins, with warnings.</li>
 </ul></div>
+<h3>Building works: frame, materials and time</h3>
+<p><span class="tag ok">DECIDED</span>Building is a work in progress: <b>you place the frame</b> of the piece, <b>bring it the materials</b> and press build; <b>it takes time</b> depending on the piece. If others help, it takes less.</p>
+<p><span class="tag ok">DECIDED</span>Each material has a <b>weight class</b>, and height matters: the material has to be brought to where the work is.</p>
+<div class="tw"><table>
+<tr><th>Class</th><th>Examples</th><th>How it is lifted</th></tr>
+<tr><td><b>Light</b></td><td>Planks, poles, straw, nails</td><td>By hand, up a ladder or scaffold</td></tr>
+<tr><td><b>Heavy</b></td><td>Wall logs, beams</td><td>Between two people, or one alone with a pulley or by rolling it up two slanted poles with a rope wrapped around it (slower)</td></tr>
+<tr><td><b>Very heavy</b></td><td>Dressed stone (ashlars)</td><td>Block and tackle with a windlass, or a treadwheel crane</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Method</th><th>What for</th><th>People</th><th>When</th></tr>
+<tr><td>By hand up a ladder</td><td>Light things</td><td>1</td><td>From the start</td></tr>
+<tr><td>Rolling logs up two poles with a rope</td><td>The logs of a cabin wall</td><td>1 slowly, 2 well</td><td>From the start</td></tr>
+<tr><td>Scaffold against the wall</td><td>Working and leaving material above the first floor</td><td>1</td><td>Carpentry</td></tr>
+<tr><td>Single pulley on a beam</td><td>Medium weights: a log, sacks, small stones</td><td>1</td><td>Carpentry</td></tr>
+<tr><td>Block and tackle with a windlass</td><td>Big beams and ashlars</td><td>2: one pulls and one guides</td><td>Masonry</td></tr>
+<tr><td>Treadwheel crane (people walking inside a big wheel)</td><td>Stone for castles and towers; it is raised a floor as the work grows</td><td>1–2 in the wheel and someone guiding</td><td>Late Middle Ages</td></tr>
+</table></div>
+<p><span class="tag ok">DECIDED</span>Balance: <b>alone or as a couple</b> you can easily build a one-floor log cabin, and a second wooden floor with a pulley. <b>A group of friends</b> can raise stone walls and towers, with a crane and people split between pulling, guiding and placing.</p>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li>The half-built work looks like a framework; it keeps the delivered materials and the work done (in the pure logic, with the author of each delivery and each stint of work).</li>
+  <li>Reference figures (human power): one person pulling about 50 kg lifts about 150–250 kg with a block of 3 or 5 pulleys, and 750–1,500 kg with a windlass; one or two people fit in a treadwheel crane.</li>
+</ul></div>
 <p><span class="tag ok">DECIDED</span>End of decay: <b>stone remains as a ruin</b> indefinitely, gradually covered by plants and roots. <b>Wood rots and disappears.</b></p>
 <p><span class="tag ok">DECIDED</span>Ruins belong to nobody. <b>They can be cleared, but they give no stone back</b>: it is no longer dressed stone but rubble. Clearing them takes time.</p>
 </section>
@@ -464,7 +503,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>1</td><td>Building</td><td>Move with a free camera (PC and touch) and build with an anchored grid, load, cascading dismantling with 75% recovery and free decoration.</td></tr>
 <tr><td>0b</td><td>Technical foundations</td><td>Actions with author and log, dead code removed, workshop with pinned versions, diary without clashes when several sessions work.</td></tr>
 <tr><td>1b</td><td>Art direction and characters</td><td>World style, workshop character with layered clothing, customization, visible wounds, levels of detail.</td></tr>
-<tr><td>1c</td><td>More building pieces</td><td>Stairs, railings, shutters, tiles, ridges, chimney, wall-walk, decoration.</td></tr>
+<tr><td>1c</td><td>More building pieces</td><td>Pieces and furniture in the chosen style; building works with frame, materials and time, scaffold, pulley and block and tackle; stone walls with a treadwheel crane; stairs, railings, shutters, tiles, ridges, chimney, wall-walk, decoration.</td></tr>
 <tr><td>1d</td><td>A single demo</td><td>Building, combat and character on the same page, with the same scene and the same character.</td></tr>
 <tr><td>2</td><td>Equipment and slot-based carrying</td><td>Inventory panel, belts, firewood frame and other backpacks; felling, transport and slowdown from carrying.</td></tr>
 <tr><td>3</td><td>Stations and crafting</td><td>First stations, recipes, unlocking through practice, durability and repair.</td></tr>
@@ -474,7 +513,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>7</td><td>Wildlife and hunting</td><td>Realistic animals.</td></tr>
 <tr><td>8</td><td>Horses</td><td>Tame, ride, stable and pasture.</td></tr>
 <tr><td>9</td><td>Farming and seasons</td><td>Sowing by band, livestock.</td></tr>
-<tr><td>10</td><td>World</td><td>Seed-based pseudo-Europe, 5 countries with their own style, paths through use, bridges.</td></tr>
+<tr><td>10</td><td>World</td><td>Seed-based pseudo-Europe at real scale: mountain ranges, valleys and passes, rivers of three sizes, dense forests; water and swimming; 5 countries with their own style, paths through use, bridges.</td></tr>
 <tr><td>11</td><td>Server and accounts</td><td>Registration, character creation, persistent world.</td></tr>
 <tr><td>11b</td><td>Administration, logs and security</td><td>Admin powers, logs of what happens, cheat detection and bans.</td></tr>
 <tr><td>12</td><td>Online PvP and offline protection</td><td>Combat and sieges between players; war rules.</td></tr>
