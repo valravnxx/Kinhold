@@ -443,9 +443,10 @@ with sync_playwright() as p:
     err2 = []
     mv.on('pageerror', lambda e: err2.append(str(e)))
     mv.goto(URL)
-    mv.wait_for_function('window.__kinhold !== undefined', timeout=20000)
+    # sin tarjeta gráfica y con la pantalla al doble de resolución, arrancar puede pasar de 20 s si la máquina va cargada
+    mv.wait_for_function('window.__kinhold !== undefined', timeout=60000)
     mv.evaluate(f"localStorage.setItem('kinhold_h1_v1', {json.dumps(estado)}); location.reload()")
-    mv.wait_for_function('window.__kinhold !== undefined', timeout=20000)
+    mv.wait_for_function('window.__kinhold !== undefined', timeout=60000)
     mv.wait_for_timeout(800)
     comprobar('joystick visible en táctil', mv.is_visible('#joystick'))
     mv.evaluate(f"{K}.pj.x=1; {K}.pj.z=-4; {K}.cam.yaw=Math.PI+0.5; {K}.cam.pitch=0.85; {K}.cam.dist=20")

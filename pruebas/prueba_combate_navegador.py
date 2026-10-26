@@ -178,8 +178,8 @@ with sync_playwright() as p:
     ev(f"{D}.atacar('alto')")
     comprobar('el contraataque es imparable', ev(f"{D}.jugador.imparable"))
     ev(f"{D}.rival.bloquear(true); {D}.rival.tBloqueo = 1")  # para "normal": no basta
-    hasta(f"{D}.jugador.accion !== 'preparando'", 5000)
-    espera(200)
+    hasta(f"{D}.jugador.accion !== 'preparando'", 15000)  # márgenes amplios: a 2-4 fps el juego va más lento
+    hasta(f"{D}.rival.heridas.length >= 1", 8000)
     comprobar('una parada normal no detiene el contraataque', ev(f"{D}.rival.heridas.length") >= 1)
 
     # captura del aviso verde (sin parar)
