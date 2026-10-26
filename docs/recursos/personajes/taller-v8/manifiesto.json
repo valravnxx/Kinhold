@@ -1,8 +1,8 @@
 {
  "mh_hombre": {
-  "kb": 1659,
-  "kb_antes": 9289,
-  "sha256": "864d1a8dff2b567d00cedac350dac01d2688af1170e70b03649ed3e5a93b6e3b",
+  "kb": 1676,
+  "kb_antes": 9361,
+  "sha256": "b5a92e279a95c6d047a650e110c47905bd6a90e108bdc17ab9e325be4182c8ad",
   "clips": [
    "Idle_Loop",
    "Walk_Loop",
@@ -16,9 +16,9 @@
   ]
  },
  "mh_mujer": {
-  "kb": 1732,
-  "kb_antes": 9966,
-  "sha256": "d1ce2993674105d74a1792bf0cf3937ea0562c245a4e9c1d77fd327987b0805b",
+  "kb": 1754,
+  "kb_antes": 10072,
+  "sha256": "22a086aa036bc88f5c3f587a986b0b2a5aa84a184c40d5d6e10ee1663461f519",
   "clips": [
    "Idle_Loop",
    "Walk_Loop",

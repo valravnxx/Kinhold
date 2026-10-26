@@ -441,7 +441,11 @@ def personaje(nombre, macros, objetivos, ropa):
 
     # --- piel: solo lo que se ve (cabeza, cuello, manos y un poco de muñeca) ---
     visible = lambda i, c: en(i, 'body') and not (ropa.get('cofia') and en(i, 'ears', 0.3)) and (PR[i] in ('head', 'neck_01') or mano(i) or cerca_muneca(c, 0.07) or c.z > cuello_z - (0.05 if c.y < -0.03 else 0.02))  # el escote baja por delante
-    piezas = [trozo(base, nombre + '_piel', visible, textura=(2048, pintar_piel), rugosidad=0.62, sss=0.2, diezmar=DIEZMAR)]
+    sin_orejas = lambda i, c: visible(i, c) and not en(i, 'ears', 0.3)
+    piezas = [trozo(base, nombre + '_piel', sin_orejas, textura=(2048, pintar_piel), rugosidad=0.62, sss=0.2, diezmar=DIEZMAR)]
+    if not ropa.get('cofia'):  # las orejas van aparte: en el juego se esconden bajo la capucha o la toca (si no, asoman)
+        piezas.append(trozo(base, nombre + '_orejas', lambda i, c: en(i, 'body') and en(i, 'ears', 0.1), textura=(512, pintar_piel),
+                            rugosidad=0.62, sss=0.2, ajustar_uv=True))
 
     # --- ojos y pestañas (color por vértice: el ojo tiene muy poco sitio en el mapa UV) ---
     for s in 'lr':
@@ -620,17 +624,17 @@ def personaje(nombre, macros, objetivos, ropa):
     def cubre(z_bajo, arriba, abajo, hx):  # cabeza, cuello y hombros hasta z_bajo (sin brazos ni manos)
         # sin los puntos de dentro del hueco de la cara (labios, párpados): empujados hacia fuera salían como pinchos
         zc, hz = (arriba + abajo) / 2, (arriba - abajo) / 2
-        cara_ = lambda c: c.y < -0.05 and (c.x / hx) ** 2 + ((c.z - zc) / hz) ** 2 < 0.45  # bien dentro del hueco: el borde lo hace la transparencia
+        cara_ = lambda c: c.y < -0.085 and (c.x / hx) ** 2 + ((c.z - zc) / hz) ** 2 < 0.45  # bien dentro del hueco: el borde lo hace la transparencia
         return lambda i, c: en(i, 'body') and not mano(i) and not cara_(c) and (cabeza(i) or (c.z > z_bajo - 0.02 and abs(c.x) < 0.27))
     def separacion_tocado(cabeza_e, hombro_e, pico=0.0):
         def e(c, i):
             d = min(np.linalg.norm(np.array(c) - o) for o in oreja_c)
             oreja = ATR[i, 1] > 0.0
             if oreja:  # la oreja se lleva al cráneo y se empuja por la normal del cráneo (la suya va en todas direcciones: salía arrugada)
-                _, k, _ = kd_craneo.find(c); j = sin_oreja[k]; c[:] = co[j]
+                _, k, _ = kd_craneo.find(c); j = sin_oreja[k]; c[:] = co[j]; d = 1.0
             t = suave(cuello_z + 0.06, cuello_z - 0.005, c.z)  # del cuello para abajo, por encima de la ropa
             atras = pico * max(0.0, c.y) / 0.1 * max(0.0, c.z - ojo_arriba) / 0.06  # la capucha acaba en punta atrás
-            total = cabeza_e * (1 - t) + hombro_e * t + atras + 0.022 * float(suave(0.055, 0.025, d))  # pasa por encima de la oreja
+            total = cabeza_e * (1 - t) + hombro_e * t + atras + 0.008 * float(suave(0.055, 0.025, d))  # algo de bulto sobre la oreja
             if oreja:
                 c[:] = c + NORMAL[j] * total; return 0.0
             return total
@@ -722,7 +726,8 @@ if os.environ.get('FOTOS') == 'prendas':  # de cerca, una pieza nueva cada vez (
             if not any(ob.name.startswith(rig.name + p) for ob in piezas for p in pp): continue
             for ob in piezas:
                 nueva = any(k in ob.name for k in NUEVAS)
-                ob.hide_render = (nueva and not any(ob.name.startswith(rig.name + p) for p in pp)) or (('_capa_botas' in pp) and '_capa_zapatos' in ob.name)
+                ob.hide_render = (nueva and not any(ob.name.startswith(rig.name + p) for p in pp)) or (('_capa_botas' in pp) and '_capa_zapatos' in ob.name) \
+                    or (ob.name.endswith('_orejas') and pp[0] in ('_capa_capucha', '_capa_toca'))  # como en el juego
             n = pp[0].replace('_capa_', '')
             if n == 'manto':
                 foto((x + 1.9, -2.0, 1.1), (x, 0, 0.85), 50, os.path.join(SALIDA, f'{rig.name}_{n}_34.png'), 800, 1000)

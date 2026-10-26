@@ -52,7 +52,8 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     modelo.traverse(n => {
       if (!n.isMesh) return;
       const c = capaDe(n);
-      if (c && c.tipo === 'cinturon') n.visible = c.capa === fuera && c.capa !== 'camisa';
+      if (n.name.endsWith('_orejas')) n.visible = tocado !== 'capucha' && tocado !== 'toca'; // bajo la tela no asoman
+      else if (c && c.tipo === 'cinturon') n.visible = c.capa === fuera && c.capa !== 'camisa';
       else if (c && c.capa === 'zapatos') n.visible = !lista.includes('botas');
       else if (c && SIEMPRE.includes(c.capa)) n.visible = true;
       else if (c && TOCADOS.includes(c.capa)) n.visible = c.capa === tocado;

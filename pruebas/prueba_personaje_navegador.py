@@ -192,6 +192,7 @@ with sync_playwright() as p:
         comprobar('tocados: de uno en uno (poner el sombrero quita la capucha) y se quitan',
                   'hombre_capa_capucha' in con1 and 'hombre_capa_sombrero' in con2 and 'hombre_capa_capucha' not in con2
                   and not any(t in con3 for t in ('hombre_capa_capucha', 'hombre_capa_sombrero')), ', '.join(x for x in con2 if 'capa_' in x))
+        comprobar('tocados: bajo la capucha no asoman las orejas; con el sombrero, sí', 'hombre_orejas' not in con1 and 'hombre_orejas' in con2 and 'hombre_orejas' in con3)
         for c in ['botas', 'manto']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
         con = vis()
         if os.environ.get('MUTAR'): con = [x for x in con if x != 'hombre_cinturon_tunica']
