@@ -396,6 +396,16 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/05_barra_construccion_pc.png')
 
+    # memoria gráfica (Pedro: pantalla en blanco tras un rato construyendo, a más de 80 fps): rehacer las piezas no
+    # deja mallas viejas ocupando la tarjeta gráfica
+    if os.environ.get('MUTAR_FUGA'): ev('window.__sinLiberar = true')
+    memoria = f"(() => {{ {K}.render(); return {K}.renderer.info.memory.geometries; }})()"
+    g0 = ev(memoria)
+    for _ in range(20): ev(f"{K}.reconstruir()")
+    for _ in range(10): ev(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','muro_tronco'); {K}.seleccionar('pieza','muro_tabla')")
+    ev(f"{K}.cambiarModo('mover')")
+    g1 = ev(memoria)
+    comprobar('rehacer las piezas no deja memoria gráfica ocupada', g1 <= g0 + 5, f'geometrías {g0} → {g1} tras 20 reconstrucciones')
     comprobar('sin errores en consola (PC)', len(errores) == 0, '; '.join(errores[:3]))
     estado = pg.evaluate("localStorage.getItem('kinhold_h1_v1')")
     pg.close()
@@ -433,6 +443,27 @@ with sync_playwright() as p:
     mv.wait_for_timeout(1200)
     mv.screenshot(path=f'{SALIDA}/07b_movil_personaje_de_cerca.png')
     comprobar('sin errores en consola (móvil)', len(err2) == 0, '; '.join(err2[:3]))
+    # pérdida del dibujo 3D (Pedro: pantalla en blanco en el móvil con los botones vivos): aviso, recarga sola y lo
+    # construido sigue ahí; si vuelve a pasar enseguida, no recarga en bucle (ofrece un botón)
+    print('Móvil: se pierde el dibujo 3D')
+    piezas = mv.evaluate(f"{K}.mundo.construcciones.reduce((n, c) => n + c.piezas.size, 0)")
+    if os.environ.get('MUTAR_CONTEXTO'): mv.evaluate('window.__sinRecargar = true')
+    perder = "(() => { const c = document.querySelector('canvas'); const gl = c.getContext('webgl2') || c.getContext('webgl'); gl.getExtension('WEBGL_lose_context').loseContext(); })()"
+    mv.evaluate("window.__marca = 1"); mv.evaluate(perder)
+    mv.wait_for_timeout(300)
+    hay_aviso = mv.is_visible('#avisoContexto')
+    try:
+        mv.wait_for_function('window.__kinhold !== undefined && window.__marca === undefined', timeout=20000); recargo = True
+    except Exception:
+        recargo = False
+    comprobar('al perder el dibujo 3D avisa y recarga sola', hay_aviso and recargo)
+    if recargo:
+        mv.wait_for_timeout(800)
+        despues = mv.evaluate(f"{K}.mundo.construcciones.reduce((n, c) => n + c.piezas.size, 0)")
+        comprobar('después de recargar sigue lo construido', despues == piezas and piezas > 0, f'{piezas} → {despues}')
+        mv.evaluate("window.__marca = 1"); mv.evaluate(perder); mv.wait_for_timeout(2500)
+        comprobar('si vuelve a pasar enseguida no recarga en bucle: ofrece Recargar', mv.evaluate('window.__marca === 1') and mv.is_visible('#avisoContexto button'))
+        mv.screenshot(path=f'{SALIDA}/07c_movil_dibujo_perdido.png')
     nav.close()
 
 print(f"\nResultado: {'TODO CORRECTO' if not fallos else str(len(fallos)) + ' fallos: ' + ', '.join(fallos)}")

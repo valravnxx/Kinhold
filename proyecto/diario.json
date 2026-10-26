@@ -955,5 +955,38 @@
   "pruebas": "Todas correctas con probar_todo.sh salvo el combate, que pasó aparte con los márgenes portados. Fotos del taller antes y después, y visor y demo en PC y móvil mirados.",
   "capturas": "capturas/personaje-v14",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T07:58:22+01:00",
+  "fin": "2026-10-26T11:58:37+01:00",
+  "titulo": "Pantalla en blanco en el móvil arreglada; muros con el estilo (construcción v12)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Pedro: la pantalla se queda en blanco jugando (con los botones vivos y a más de 80 fps) y sigue así aunque recargue.",
+   "Causa encontrada y medida: al colocar o quitar algo se rehacían todas las piezas y las viejas no se liberaban de la memoria gráfica (con 9 piezas, 20 reconstrucciones pasaban de 870 a 4.050 mallas). Con una casa grande, cada pieza colocada dejaba miles, hasta agotar la memoria del móvil.",
+   "Arreglado: las piezas, el mojón, el anillo de la tierra y la pieza fantasma se liberan al quitarlos (la cuenta queda igual tras 20 reconstrucciones). En el duelo, las flechas, dianas y postes también.",
+   "Si aun así el navegador pierde el dibujo 3D: aviso, recarga sola con lo construido guardado y, si vuelve a pasar enseguida, botón «Recargar» en vez de recargar en bucle.",
+   "Muros, postes y vigas con el estilo elegido (troncos redondos con testas, zarzo, entramado y tablas), cada pieza en una malla por textura. Muestrario nuevo para fotos de cerca (herramientas/muestrario/).",
+   "Publicados construcción v12, combate v9 y demo única v7. Se colaron en el repositorio dos enlaces a node_modules (de una copia de trabajo): quitados y ahora ignorados."
+  ],
+  "pruebas": "Todas correctas en PC y móvil. Pruebas nuevas, que fallan al romperlas: memoria gráfica estable al rehacer las piezas (MUTAR_FUGA=1: 822 → 16.672 geometrías), aviso y recarga al perder el dibujo 3D, huecos de puertas y ventanas mirados triángulo a triángulo. No comprobado: en el móvil de Pedro.",
+  "capturas": "capturas/construccion-v12",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T12:06:00+01:00",
+  "fin": "2026-10-26T12:13:41+01:00",
+  "titulo": "Decisiones de Pedro: mundo a escala real, agua y nado, y obras con materiales (GDD v0.8)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Pedro aprueba («sí, todo») la propuesta del mundo, el nado y las obras.",
+   "Mundo a escala real: cordilleras como los Pirineos (cumbres de unos 3.000 m, valles de unos 1.000 m, collados), llanuras en las cuencas, ríos de tres gruesos según el agua que recogen, bosques frondosos, pendientes que frenan y obligan a nivelar. Se genera primero la red de ríos y después el terreno.",
+   "Agua y nado (no estaba en el GDD): se vadea andando, en el agua honda se nada despacio y cansa, no con armadura o mucha carga, la corriente de los ríos grandes arrastra; los carros solo cruzan por vados y puentes.",
+   "Obras: marco, materiales y tiempo; clases de peso (ligero, pesado, muy pesado); escalera, varas para rodar troncos, andamio, polea, polipasto con torno y grúa de rueda. Solo o en pareja, una cabaña de troncos; en grupo, la piedra.",
+   "GDD v0.8 en español, inglés y ruso. Cinco tareas nuevas en el hito 1c (las obras, antes de las piezas nuevas, y los muros de piedra con grúa) y el hito 10 (Mundo) puesto al día."
+  ],
+  "pruebas": "Web y textos traducidos correctos. Sin cambios de código.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

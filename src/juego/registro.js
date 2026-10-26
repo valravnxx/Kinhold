@@ -1,8 +1,6 @@
 // Decisiones que he tomado yo en el hito 1, para que las revises.
-export const VERSION = 'Hito 1 · v12';
+export const VERSION = 'Hito 1 · v13';
 export const REGISTRO = [
-  'v12: barandillas. El medio muro hace de barandilla en el borde de un suelo en alto o alrededor del hueco de una escalera de tablas: se apoya en el suelo de al lado (o en el muro de debajo) y no deja pasar, así que por ahí ya no se cae. Por el lado por el que se sale de la escalera hay que dejarlo abierto.',
-  'v12: portillo de varas para la cerca, para los corrales. Cuesta lo mismo que la puerta de varas (4 varas y 1 cuerda), porque el documento de sistemas no lo dice. Va en el suelo como la cerca y se abre y se cierra con Usar (F); abierto deja pasar.',
   'Terreno llano en este hito. Las cuestas y su efecto en los cimientos llegan con el mundo generado.',
   'Los materiales vienen dados (y hay botón para rellenar). Recolectarlos llega en el hito 2.',
   'Para construir hace falta tu mojón; la tierra es un círculo de 20 m (mojón de nivel 1). Subir de nivel el mojón llega más adelante.',
@@ -29,6 +27,10 @@ export const REGISTRO = [
   'Textos de la interfaz en español, inglés y ruso (botones arriba a la derecha; en el móvil, un desplegable con el idioma).',
   'v9: escena común del estilo elegido (src/mundo/): mismo cielo, sol, sombras blandas, niebla, suelo con textura, bosque, hierba, flores y rocas que la prueba de estilo. La hierba empieza a 16 m de la salida, porque dentro se construye y asomaría por los cimientos (provisional, hasta que la hierba se aparte sola bajo lo construido).',
   'v10: el jugador es el personaje del taller propio (el de MakeHuman vestido por código), con camisa y calzas de lino, como se empieza según el GDD. Lleva zapatos aunque el GDD dice descalzo: el cuerpo del taller no tiene pies bajo los zapatos y sin ellos se vería sin pies (queda como tarea del taller). Anda, corre y tala con las animaciones de Quaternius, que se aceleran con la velocidad hasta 1,6× (a la carrera los pies resbalan algo: el juego va más rápido que la animación). Mientras carga se ve el muñeco de antes.',
+  'v12, arreglo importante (Pedro: pantalla en blanco en el móvil tras un rato construyendo, a más de 80 fps): cada vez que se colocaba o se quitaba algo se rehacían todas las piezas y las viejas se quedaban ocupando la memoria gráfica (medido: con 9 piezas, 20 reconstrucciones pasaban de 870 a 4.050 mallas en memoria). Ahora se liberan y la cuenta no sube. Si aun así el navegador pierde el dibujo 3D, sale un aviso y la página se recarga sola con lo construido guardado; si vuelve a pasar enseguida, ofrece un botón en vez de recargar en bucle.',
+  'v12: los muros, los postes y las vigas con el estilo elegido (el de la cabaña de la prueba de estilo v5): troncos redondos con su veta y las testas claras a la vista, un poco más gruesos por un extremo; jambas, dintel, marco y alféizar en puertas y ventanas; el zarzo con estacas que asoman del barro; el entramado con riostra y relleno encalado; las tablas con durmiente y carrera. Los tejados, los suelos, las cercas y los muebles pasan al estilo en las tareas siguientes.',
+  'v13: barandillas. El medio muro hace de barandilla en el borde de un suelo en alto o alrededor del hueco de una escalera de tablas: se apoya en el suelo de al lado (o en el muro de debajo) y no deja pasar, así que por ahí ya no se cae. Por el lado por el que se sale de la escalera hay que dejarlo abierto.',
+  'v13: portillo de varas para la cerca, para los corrales. Cuesta lo mismo que la puerta de varas (4 varas y 1 cuerda), porque el documento de sistemas no lo dice. Va en el suelo como la cerca y se abre y se cierra con Usar (F); abierto deja pasar.',
   'v11: en el móvil el aviso de abajo del menú ya no tapa «Reiniciar» ni otros botones: se coloca según lo que mida de verdad el menú de arriba (que en inglés y en ruso ocupa más filas) y a la izquierda de los botones de modo.',
   'v10: junto a un árbol, Usar (F) hace que el personaje tale; moverse lo para. De momento es solo el gesto, sin hacha en la mano y sin dar madera: recolectar llega con el hito 2.',
 ];

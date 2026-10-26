@@ -1,7 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v7 (barandillas y portillo en «Construir»)';
+export const VERSION_DEMO = 'Demo única · v8 (barandillas y portillo en «Construir»)';
 export const REGISTRO_DEMO = [
-  'v7: en «Construir», el medio muro hace de barandilla en el borde de un suelo en alto (por ahí ya no se cae) y hay portillo de varas para la cerca, que se abre con Usar. Es la construcción v12.',
+  'v8: en «Construir», el medio muro hace de barandilla en el borde de un suelo en alto (por ahí ya no se cae) y hay portillo de varas para la cerca, que se abre con Usar. Es la construcción v13.',
+  'v7: arreglo de la pantalla en blanco en el móvil (la construcción dejaba la memoria gráfica llena al rehacer las piezas) y aviso con recarga si se pierde el dibujo 3D. Los muros, postes y vigas con el estilo elegido. Es la construcción v12, el combate v9 y el personaje v14.',
   'v6: el cinturón de encima de la cota ya no sobresale hacia los brazos, en las tres partes. Es el personaje v14 (personajes del taller-v7), con la construcción v11 y el combate v8.',
   'v5: los brazos al correr, más naturales (Pedro los vio torcidos hacia delante): oscilan junto al cuerpo, con la mano de canto y la muñeca recta. Es el personaje v13, con la construcción v11 y el combate v8.',
   'v4: correr más natural, en las tres partes. La carrera va suavizada por código (menos zancada, braceo, bote e inclinación, y los brazos más pegados) y a su velocidad de verdad: antes los pies resbalaban y se veía a cámara lenta. Personajes del taller-v5; es la construcción v11, el combate v8 y el personaje v12. Corriendo deprisa (6 m/s, con la tecla Mayús) los pies aún resbalan algo.',

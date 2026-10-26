@@ -2,12 +2,43 @@
 // niebla del color del horizonte y gradación de color (ACES). Lo usan todos los prototipos.
 import * as THREE from 'three';
 import { LUCES } from './estilos.js';
+import { tr } from '../idioma.js';
 
 // Ajustes del dibujo que dan el aspecto del estilo: color sRGB, ACES y sombras blandas
 export function prepararRenderer(renderer) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  vigilarContexto(renderer);
+}
+
+// Si el navegador pierde el dibujo 3D (en el móvil pasa cuando se queda sin memoria gráfica, con muchas pestañas o
+// al volver de otra aplicación), la pantalla se queda en blanco aunque los botones sigan funcionando (lo vio Pedro).
+// three.js no recupera bien las texturas y las mallas al volver el contexto, así que se recarga la página: lo
+// construido y las opciones están guardados en el navegador. Si vuelve a pasar enseguida, no se recarga en bucle:
+// se ofrece un botón.
+function vigilarContexto(renderer) {
+  const lienzo = renderer.domElement;
+  if (lienzo.__vigilado) return; lienzo.__vigilado = true;
+  lienzo.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault();
+    let n = 0; try { n = Number(sessionStorage.getItem('kinhold_contexto') || 0); } catch (er) { /* sin almacenamiento */ }
+    const ahora = Date.now();
+    const reciente = ahora - n < 20000;
+    const aviso = document.createElement('div');
+    aviso.id = 'avisoContexto';
+    aviso.style.cssText = 'position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(40,34,28,.92);color:#f1e7d6;font:16px system-ui,sans-serif;z-index:9999;text-align:center;padding:24px';
+    aviso.innerHTML = `<div>${tr('Se ha perdido el dibujo 3D (el aparato se quedó sin memoria gráfica).')}</div><div>${reciente ? tr('Ha vuelto a pasar: cierra otras pestañas o aplicaciones y recarga.') : tr('Recargando… Lo construido está guardado.')}</div>`;
+    if (reciente) {
+      const b = document.createElement('button'); b.textContent = tr('Recargar');
+      b.style.cssText = 'font:inherit;padding:10px 22px;border-radius:10px;border:0;background:#d8a84a;color:#2b241c';
+      b.onclick = () => location.reload(); aviso.appendChild(b);
+    }
+    document.body.appendChild(aviso);
+    window.__contextoPerdido = (window.__contextoPerdido || 0) + 1;
+    try { sessionStorage.setItem('kinhold_contexto', String(ahora)); } catch (er) { /* sin almacenamiento */ }
+    if (!reciente && !window.__sinRecargar) setTimeout(() => location.reload(), 1200);
+  });
 }
 
 // cielo: degradado vertical pintado en un lienzo pequeño (lo mismo que el fondo de la prueba de estilo)

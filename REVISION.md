@@ -6,6 +6,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 26 oct 2026 (12:06) — por el chat: mundo a escala real, nado y obras con materiales (en conversación)
+
+Pedro quiere: mundo a escala real en todo (planicies, pero también valles, pasos y montañas tipo Pirineos, bosques frondosos, ríos de varios gruesos; un mundo aún inexplorado que no se sienta un llano gigante y que favorezca establecerse en sitios concretos, como junto a los ríos); saber si el nado está en el GDD (no lo está); y que construir sea poner el marco de la obra, llevarle los materiales y construir con un tiempo según la pieza, con andamios, poleas y poleas mayores para subir materiales y piedras a lo alto (complicado pero posible en grupo, y no demasiado para una casita de madera solo o en pareja). → Propuesta enviada en el chat. Pedro (12:11): «sí, todo» → GDD v0.8 (mundo a escala real, agua y nado, obras), tareas nuevas en el hito 1c y el hito 10 puesto al día.
+
+### 26 oct 2026 (09:28–10:14) — por el chat: pantalla en blanco en el móvil
+
+«Sufro crasheos aleatorios donde se queda el juego así» (pantalla en blanco con los botones vivos), «jugando seguido y se queda así aunque reinicie», «no iba lagueado ni por debajo de 80 fps» → Fuga de memoria gráfica al rehacer las piezas, arreglada (construcción v12, combate v9, demo v7), con aviso y recarga si se pierde el dibujo 3D. Para recuperar el navegador: cerrar Chrome del todo y volver a abrir.
+
 ### 26 oct 2026 (07:51) — por el chat: brazos de la carrera
 
 «La versión de carrera nueva tiene que mejorar en posición de brazos, están torcidos adelante en pose nada natural, arréglalo y aprobamos de una, y prueba el otro pendiente» → Brazos arreglados (personaje v13, demo v5) y carrera aprobada: se cierra la pregunta de la carrera. «El otro pendiente»: se empieza a pasar la construcción al estilo elegido (muros primero).

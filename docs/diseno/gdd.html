@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kinhold GDD v0.6</title>
+<title>Kinhold GDD v0.8</title>
 <style>
 :root{
   --bg:#f6f2ea; --card:#fffdf8; --ink:#2b2520; --muted:#6f655b; --line:#e2d8c8;
@@ -60,7 +60,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Versión 0.7 · 25 oct 2026 · Puesto al día con lo decidido probando · El catálogo de contenido sigue en el documento de análisis</div>
+  <div class="sub">Versión 0.8 · 26 oct 2026 · Mundo a escala real, agua y nado, y obras con materiales · El catálogo de contenido sigue en el documento de análisis</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDIDO</span> lo has dicho tú
     <span class="tag method">MÉTODO</span> cómo hacerlo técnicamente
@@ -158,6 +158,21 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span><b>Se empieza con el tamaño medio:</b> países de unos 60 × 60 km, mundo de unos 188 × 188 km con el mar. Cruzar un país son unas 12 horas a pie o 5 a caballo.</p>
 <div class="box m"><span class="tag method">MÉTODO</span>
 <p>Como el mundo sale de una semilla, se puede ampliar por los bordes más adelante sin tocar lo que ya existe. Con poca gente al principio, el mundo medio puede sentirse vacío: lo vigilaremos cuando haya jugadores.</p></div>
+<h3>Relieve, ríos y bosques a escala real</h3>
+<p><span class="tag ok">DECIDIDO</span><b>Todo a escala real</b>, como un mundo aún inexplorado por el hombre. Hay llanuras, pero el mundo no se siente un llano gigante: <b>cordilleras como los Pirineos</b>, con cumbres de unos 3.000 m, valles de unos 1.000 m de hondo y <b>collados</b> por donde cruzar; las llanuras quedan en las cuencas bajas. Desde cualquier sitio se ve relieve en el horizonte.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Ríos de tres gruesos</b>, según el agua que recogen: <b>arroyos</b> de 1 a 3 m, que se vadean; <b>ríos</b> de 10 a 30 m, con vados escasos; <b>grandes ríos</b> de 50 a 150 m, que piden barca o puente.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Bosques frondosos</b> de verdad, con claros. Sin caminos al principio: se forman con el uso.</p>
+<p><span class="tag ok">DECIDIDO</span><b>El relieve pesa:</b> la pendiente fuerte frena al andar, los carros no suben cuestas empinadas y en ladera hay que nivelar para poner cimientos.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Asentarse tiene sentido en sitios concretos</b> sin obligar a nadie: junto al río hay agua para la sed, tierra fértil en la vega, corriente para el molino, y vados y puentes que se pueden controlar (y cobrar peaje).</p>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<ul>
+  <li><b>Primero el agua, después el terreno</b> (como los generadores de terreno más creíbles, basados en la hidrología): se trazan las cordilleras y la red de ríos que baja de ellas al mar, como un árbol; el terreno se esculpe a partir de esa red, así que los valles salen donde corre el agua y los pasos donde dos valles se acercan por arriba.</li>
+  <li>El grosor de cada río sale del agua que recoge (cuántos afluentes le llegan).</li>
+  <li>Bosques con árboles repetidos de una sola malla y versiones sencillas de lejos, por trozos alrededor del jugador, para que aguanten en el móvil.</li>
+</ul></div>
+<h3>Agua y nado</h3>
+<p><span class="tag ok">DECIDIDO</span>En los <b>vados</b> se cruza andando. En el agua honda se <b>nada despacio y cansa mucho</b>. <b>Con armadura o muy cargado no se puede nadar:</b> o sueltas peso o no entras. En los ríos grandes, <b>la corriente te arrastra</b> río abajo.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Los carros solo cruzan por vados y puentes.</b> Así los vados y los puentes valen de verdad.</p>
 <div class="box m"><span class="tag method">MÉTODO</span>
 <ul>
   <li>Silueta del continente primero; clima por latitud y mar; biomas grandes con transiciones graduales; fronteras naturales.</li>
@@ -318,6 +333,30 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Resistencia por material y tipo de daño (golpe, asedio, fuego).</li>
   <li>Mantenimiento: el mojón consume poco a poco los materiales depositados (madera para lo de madera, paja para tejados, cal para la piedra). Mientras haya, nada se deteriora; si se acaba, empieza el deterioro lento con avisos.</li>
 </ul></div>
+<h3>Obras: marco, materiales y tiempo</h3>
+<p><span class="tag ok">DECIDIDO</span>Construir es una obra: <b>pones el marco</b> de la pieza, <b>le llevas los materiales</b> y le das a construir; <b>tarda un tiempo</b> según la pieza. Si te ayudan, tarda menos.</p>
+<p><span class="tag ok">DECIDIDO</span>Cada material tiene una <b>clase de peso</b>, y la altura cuenta: hay que llevar el material hasta donde está la obra.</p>
+<div class="tw"><table>
+<tr><th>Clase</th><th>Ejemplos</th><th>Cómo se sube</th></tr>
+<tr><td><b>Ligero</b></td><td>Tablas, varas, paja, clavos</td><td>A mano, por escalera o andamio</td></tr>
+<tr><td><b>Pesado</b></td><td>Troncos de muro, vigas</td><td>Entre dos personas, o una sola con polea o rodándolo por dos varas inclinadas con una cuerda que lo abraza (más despacio)</td></tr>
+<tr><td><b>Muy pesado</b></td><td>Piedra tallada (sillares)</td><td>Polipasto con torno o grúa de rueda</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Método</th><th>Para qué</th><th>Gente</th><th>Cuándo</th></tr>
+<tr><td>A mano por escalera</td><td>Lo ligero</td><td>1</td><td>Desde el principio</td></tr>
+<tr><td>Rodar troncos por dos varas con una cuerda</td><td>Los troncos de un muro de cabaña</td><td>1 despacio, 2 bien</td><td>Desde el principio</td></tr>
+<tr><td>Andamio pegado al muro</td><td>Trabajar y dejar material por encima de la primera planta</td><td>1</td><td>Carpintería</td></tr>
+<tr><td>Polea simple en una viga</td><td>Pesos medios: un tronco, sacos, piedras pequeñas</td><td>1</td><td>Carpintería</td></tr>
+<tr><td>Polipasto de varias poleas con torno</td><td>Vigas grandes y sillares</td><td>2: uno tira y otro guía</td><td>Mampostería</td></tr>
+<tr><td>Grúa de rueda (gente andando dentro de una rueda grande)</td><td>Piedra de castillos y torres; se sube de planta según crece la obra</td><td>1–2 en la rueda y alguien guiando</td><td>Baja Edad Media</td></tr>
+</table></div>
+<p><span class="tag ok">DECIDIDO</span>Equilibrio: <b>solo o en pareja</b> se hace sin problema una cabaña de troncos de una planta, y una segunda planta de madera con polea. <b>Un grupo de amigos</b> puede levantar muros y torres de piedra, con grúa y gente repartida entre tirar, guiar y colocar.</p>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<ul>
+  <li>La obra a medias se ve como un armazón; guarda los materiales entregados y el trabajo hecho (en la lógica pura, con el autor de cada entrega y de cada rato de trabajo).</li>
+  <li>Cifras de referencia (fuerza humana): una persona tirando unos 50 kg sube unos 150–250 kg con un polipasto de 3 o 5 poleas, y 750–1.500 kg con torno; en las grúas de rueda caben una o dos personas.</li>
+</ul></div>
 <p><span class="tag ok">DECIDIDO</span>Final del deterioro: <b>la piedra queda como ruina</b> de forma indefinida, cubierta poco a poco de plantas y raíces. <b>La madera se pudre y desaparece.</b></p>
 <p><span class="tag ok">DECIDIDO</span>Las ruinas no son de nadie. <b>Se pueden limpiar, pero no devuelven piedra</b>: ya no es piedra tallada sino escombro. Limpiarlas cuesta tiempo.</p>
 </section>
@@ -463,7 +502,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>1</td><td>Construcción</td><td>Moverse con cámara libre (PC y táctil) y construir con rejilla anclada, carga, desmontaje en cascada con 75% de recuperación y decoración libre.</td></tr>
 <tr><td>0b</td><td>Bases técnicas</td><td>Acciones con autor y registro, código muerto fuera, taller con versiones fijadas, diario sin choques al trabajar varias sesiones.</td></tr>
 <tr><td>1b</td><td>Dirección de arte y personajes</td><td>Estilo del mundo, personaje del taller con ropa por capas, personalización, heridas visibles, niveles de detalle.</td></tr>
-<tr><td>1c</td><td>Más piezas de construcción</td><td>Escaleras, barandillas, contraventanas, tejas, remates, chimenea, adarve, decoración.</td></tr>
+<tr><td>1c</td><td>Más piezas de construcción</td><td>Piezas y muebles con el estilo elegido; obras con marco, materiales y tiempo, andamio, polea y polipasto; escaleras, barandillas, contraventanas, tejas, remates, chimenea, adarve, decoración; muros de piedra con grúa de rueda.</td></tr>
 <tr><td>1d</td><td>Una sola demo</td><td>Construcción, combate y personaje en la misma página, con la misma escena y el mismo personaje.</td></tr>
 <tr><td>2</td><td>Equipo y carga por huecos</td><td>Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.</td></tr>
 <tr><td>3</td><td>Estaciones y crafting</td><td>Primeras estaciones, recetas, desbloqueo por práctica, durabilidad y reparación.</td></tr>
@@ -473,7 +512,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>7</td><td>Fauna y caza</td><td>Animales realistas.</td></tr>
 <tr><td>8</td><td>Caballos</td><td>Domar, montar, cuadra y pasto.</td></tr>
 <tr><td>9</td><td>Granja y estaciones del año</td><td>Siembras por franja, ganado.</td></tr>
-<tr><td>10</td><td>Mundo</td><td>Pseudo-Europa por semilla, 5 países con estilo propio, caminos por uso, puentes.</td></tr>
+<tr><td>10</td><td>Mundo</td><td>Pseudo-Europa por semilla a escala real: cordilleras, valles y collados, ríos de tres gruesos, bosques frondosos; agua y nado; 5 países con estilo propio, caminos por uso, puentes.</td></tr>
 <tr><td>11</td><td>Servidor y cuentas</td><td>Registro, creación de personaje, mundo persistente.</td></tr>
 <tr><td>11b</td><td>Administración, registros y seguridad</td><td>Poderes de administración, registros de lo que pasa, detección de trampas y baneos.</td></tr>
 <tr><td>12</td><td>PvP online y protección offline</td><td>Combate y asedio entre jugadores; reglas de guerra.</td></tr>

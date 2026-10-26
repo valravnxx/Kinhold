@@ -79,9 +79,11 @@ let pausa = 0, pausas = 0; // pausa de impacto (s) y cuántas ha habido
 let temblor = 0;        // sacudida de cámara (m)
 let reloj = 0;
 
+// libera en la tarjeta gráfica lo que se quita (dianas, postes, flechas): si no, cada flecha dejaba su malla ocupando memoria
+function liberar(obj) { obj.traverse(o => { if (o.isMesh) o.geometry.dispose(); }); }
 function nuevaPartida() {
-  for (const o of objetos) escena.remove(o);
-  for (const p of proyectiles) escena.remove(p.malla);
+  for (const o of objetos) { escena.remove(o); liberar(o); }
+  for (const p of proyectiles) { escena.remove(p.malla); liberar(p.malla); }
   objetos = []; proyectiles = []; dianas = []; postes = [];
   terminado = false; pausa = 0; temblor = 0;
   $('final').hidden = true;
@@ -548,7 +550,7 @@ function moverProyectiles(dt) {
       }
     } else pr.vida -= dt;
   }
-  proyectiles = proyectiles.filter(pr => { if (pr.vida <= 0) { escena.remove(pr.malla); return false; } return true; });
+  proyectiles = proyectiles.filter(pr => { if (pr.vida <= 0) { escena.remove(pr.malla); liberar(pr.malla); return false; } return true; });
 }
 function girarHacia(actual, objetivo, k) {
   let d = objetivo - actual;
