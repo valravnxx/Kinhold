@@ -219,8 +219,8 @@ export function crearDecorado({ semilla = 7, llano = 40, lejos = 220, arboles = 
   } : null;
   const obstaculos = bosque(raiz, r, { n: arboles, desde: bosqueDesde, hasta: bosqueHasta, reparto: 1, llano, sombra: sombraArboles });
   // árboles sueltos más cerca, que echan sombra (en la prueba v5 hay árboles de copa al lado de la cabaña);
-  // casi todos de copa: el pino tiene las ramas bajas y taparía la vista y al que tala
-  if (sueltos) obstaculos.push(...bosque(raiz, r, { n: sueltos, desde: sueltosDesde, hasta: bosqueDesde, reparto: 1, llano, sombra: true, frondosos: 0.85, libre: claro ? (x, z) => claro(x, z) : null }));
+  // todos de copa: el pino tiene las ramas bajas y taparía la vista y al que tala
+  if (sueltos) obstaculos.push(...bosque(raiz, r, { n: sueltos, desde: sueltosDesde, hasta: bosqueDesde, reparto: 1, llano, sombra: true, frondosos: 1, libre: claro ? (x, z) => claro(x, z) : null }));
   const sombras = obstaculos.filter(o => Math.hypot(o.x, o.z) < llano + 30).map(o => [o.x, o.z, o.r * 7, 0.35]);
   raiz.add(suelo({ llano, cerca: llano * 1.2, lejos, sombras, tinte, relieve: relieveSuelo }));
   const mallas = plantas(raiz, r, { hierba, flores, radio: hierbaHasta, desde: hierbaDesde, libre: claro });
