@@ -266,7 +266,8 @@
     },
     {
      "nombre": "Taller: el cinturón de encima de la cota sobresale hacia los lados hasta la altura de los brazos (se ve en las fotos del taller con los brazos abiertos; ya estaba en los recursos taller-v4)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-26T07:37:25+00:00"
     },
     {
      "nombre": "Taller: capa con capucha, calzado y tocados (capucha suelta, sombrero de paja, toca)",
