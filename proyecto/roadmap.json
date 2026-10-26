@@ -208,7 +208,9 @@
     },
     {
      "nombre": "Estilo elegido en los muebles: camas de paja y de madera, mesa, banco, taburete, arcón, barril, estantería, antorcha de pie, alfombra de piel y estandarte, como los enseres de la prueba de estilo v5",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-26T22:19:48+00:00",
+     "fin": "2026-10-26T23:42:06+00:00"
     },
     {
      "nombre": "Estilo elegido en todo lo demás que se ve en la construcción, el duelo y el visor: recursos del suelo, la pieza fantasma al construir, herramientas y armas en la mano y cualquier pieza que siga con el aspecto inicial, como la prueba de estilo v5",
@@ -764,6 +766,13 @@
      "archivo": "jugar/demo/v12.html",
      "capturas": "capturas/demo-v12",
      "notas": "Construcción v17: puertas, cercas, portillo, empalizada y mojón con el estilo v5"
+    },
+    {
+     "v": "v13",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v13.html",
+     "capturas": "capturas/demo-v13",
+     "notas": "Construcción v18: los muebles con el estilo v5"
     }
    ]
   },
@@ -876,6 +885,13 @@
      "archivo": "jugar/construccion/v17.html",
      "capturas": "capturas/construccion-v17",
      "notas": "Puertas de varas y de tablas, cerca, portillo, empalizada y su puerta, y mojón con el estilo v5: tablas con peinazos y bisagras de hierro, varas atadas con cuerda, postes con el corte claro, troncos descortezados con la punta tallada y piedras apiladas"
+    },
+    {
+     "v": "v18",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/construccion/v18.html",
+     "capturas": "capturas/construccion-v18",
+     "notas": "Los muebles con el estilo elegido (prueba de estilo v5): camas de paja y de madera, mesa de caballetes, banco, taburete, arcón, barril, estantería, antorcha de pie, alfombra de piel y estandarte"
     }
    ]
   },

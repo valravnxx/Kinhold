@@ -1096,5 +1096,26 @@
   "pruebas": "Todas correctas con probar_todo.sh: lógica 86/86, modelos 64/64, combate 69/69, acciones 25/25, cinturones, taller, unión, idiomas; navegador de construcción, combate, estilo, personaje, demo, recursos, idioma y web, en PC y móvil.",
   "capturas": "capturas/construccion-v17",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T22:19:48+00:00",
+  "fin": "2026-10-26T23:42:06+00:00",
+  "titulo": "Hito 1e: muebles con el estilo v5",
+  "hito": "estilo",
+  "hecho": [
+   "Los once muebles rehechos con el estilo v5, como el banco, el barril y el tocón de la prueba: madera con veta, cortes claros, hierro oscuro y oclusión horneada, juntos en una malla por textura.",
+   "Cama de paja: marco de cuatro troncos con las testas a la vista, paja amontonada con mechones que asoman, jergón de lino y manta de lana doblada. Cama de madera: postes, largueros y cabecero de tablas, somier de tablas, colchón y almohada de lino, manta con el embozo vuelto.",
+   "Mesa de tres tablas sobre dos caballetes con patas en tijera y travesaño; banco como el de la prueba, con la espiga pasante a ras; taburete de una rodaja (se ve el corte) con tres patas abiertas.",
+   "Arcón de tablas con patines, flejes, clavos, cerradura y aldaba de hierro; barril de catorce duelas abombadas con juntas, dos aros y tapa de tablas; estantería con trasera de tablas, vasijas de barro torneadas, un cuenco, un rollo de paño y un manojo.",
+   "Antorcha de pie: vara entre piedras con un cesto de hierro y estopa; la llama va aparte, brilla y no da sombra. Alfombra: piel curtida con su forma (patas y cuello) y el lomo más oscuro. Estandarte: asta con regatón entre piedras, travesaño atado y paño en pliegues con dos puntas y una banda.",
+   "Textura nueva por código para los paños (tejido de lino y lana) y colores de lino, lana, paño, piel y barro en la paleta.",
+   "Mismo tamaño y apoyo que antes: la lógica y los guardados no cambian.",
+   "Pruebas nuevas de modelos: cada mueble hecho con el estilo v5, apoyado en el suelo y dentro de su sitio, y la llama de la antorcha (rota con MUTAR_MUEBLE=1: falla). La de navegador pone los once muebles en fila y saca fotos de cerca.",
+   "Publicadas construcción v18 y demo única v13, con comparación lado a lado con la prueba v5.",
+   "Triángulos por mueble medidos en node: cama de paja 1356, cama de madera 3224, mesa 676, banco 540, taburete 154, arcón 2388, barril 1272, estantería 1824, antorcha 720, alfombra 552, estandarte 1720. No comprobado en un móvil de verdad."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh: lógica 86/86, modelos 88/88, combate 69/69, acciones 25/25, cinturones, taller, unión, idiomas; navegador de construcción, combate, estilo, personaje, demo, recursos, idioma y web, en PC y móvil.",
+  "capturas": "capturas/construccion-v18",
+  "estado": "ok"
  }
 ]

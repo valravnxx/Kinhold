@@ -367,6 +367,22 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/23_portillo_abierto.png')
 
+    print('PC: todos los muebles en fila, de cerca (estilo v5)')
+    nd = ev(f"{K}.mundo.decoracion.length")
+    muebles = ev(f"Object.keys({K}.DECORACION || {{}})") or ['cama_paja', 'cama_madera', 'mesa', 'banco', 'taburete', 'arcon', 'barril', 'estanteria', 'candil', 'alfombra', 'estandarte']
+    for i, t in enumerate(muebles):
+        poner('deco', t, -11 + i * 1.6, -12)
+    comprobar('los 11 muebles colocados en fila', ev(f"{K}.mundo.decoracion.length") == nd + len(muebles), f'{len(muebles)} muebles')
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-3; {K}.pj.z=-9.5; {K}.pj.y=0; {K}.pj.k=0; {K}.cam.yaw=0.35; {K}.cam.pitch=0.5; {K}.cam.dist=10")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/24_muebles_en_fila.png')
+    ev(f"{K}.pj.x=-8.5; {K}.pj.z=-10.5; {K}.cam.yaw=0.2; {K}.cam.pitch=0.45; {K}.cam.dist=5")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/25_muebles_camas_mesa_de_cerca.png')
+    ev(f"{K}.pj.x=0.5; {K}.pj.z=-10.5; {K}.cam.yaw=0.2; {K}.cam.pitch=0.4; {K}.cam.dist=5")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/26_muebles_estanteria_antorcha_de_cerca.png')
+
     print('PC: personaje del taller (camisa y calzas de lino; anda, corre y tala)')
     try:
         pg.wait_for_function(f'{K}.jugador.mh || {K}.jugador.error', timeout=180000)

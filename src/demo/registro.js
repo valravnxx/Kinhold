@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v12 (puertas, cercas, empalizada y mojón con el estilo v5 en «Construir»)';
+export const VERSION_DEMO = 'Demo única · v13 (muebles con el estilo v5 en «Construir»)';
 export const REGISTRO_DEMO = [
+  'v13: en «Construir», los muebles con el estilo v5. Es la construcción v18.',
   'v12: en «Construir», las puertas, las cercas, el portillo, la empalizada y el mojón con el estilo v5. Es la construcción v17.',
   'v11: en «Construir», los tejados de paja y de tablillas, y lo que cierra bajo el tejado, con el estilo v5. Es la construcción v16.',
   'v10: en «Construir», los cimientos, los suelos y las escaleras con el estilo v5. Es la construcción v15.',
