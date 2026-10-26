@@ -184,7 +184,9 @@
    "tareas": [
     {
      "nombre": "Escena común igual que la prueba de estilo v5: suelo con hierba densa, flores, matorrales, piedras y tierra pisada, y los árboles de la v5 (hoy el suelo de la construcción y del duelo es un llano verde con matas sueltas)",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-26T14:34:09+00:00",
+     "fin": "2026-10-26T17:08:57+00:00"
     },
     {
      "nombre": "Estilo elegido en las piezas: cimientos de piedra y de troncos, suelos de troncos y de tablas, y escaleras de mano y de tablas, como la prueba de estilo v5",
@@ -728,6 +730,13 @@
      "archivo": "jugar/demo/v8.html",
      "capturas": "capturas/demo-v8",
      "notas": "Barandillas y portillo en «Construir» (construcción v13)."
+    },
+    {
+     "v": "v9",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v9.html",
+     "capturas": "capturas/demo-v9",
+     "notas": "Escena con el estilo v5 en «Construir» y «Duelo» (construcción v14, combate v10)"
     }
    ]
   },
@@ -812,6 +821,13 @@
      "archivo": "jugar/construccion/v13.html",
      "capturas": "capturas/construccion-v13",
      "notas": "Barandillas y portillo: el medio muro hace de barandilla en el borde de un suelo en alto y alrededor del hueco de la escalera (por ahí ya no se cae), y portillo de varas para la cerca, que se abre y se cierra con Usar."
+    },
+    {
+     "v": "v14",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/construccion/v14.html",
+     "capturas": "capturas/construccion-v14",
+     "notas": "Escena como la prueba de estilo v5: hierba densa con flores también en el centro, matorrales, calvas de tierra pisada, rocas y árboles de copa sueltos; la hierba se esconde bajo lo construido y vuelve al quitarlo"
     }
    ]
   },
@@ -875,6 +891,13 @@
      "archivo": "jugar/combate/v9.html",
      "capturas": "capturas/combate-v9",
      "notas": "Las flechas, dianas y postes ya no dejan memoria gráfica ocupada; aviso y recarga si se pierde el dibujo 3D."
+    },
+    {
+     "v": "v10",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/combate/v10.html",
+     "capturas": "capturas/combate-v10",
+     "notas": "Alrededor de la liza, la escena como la prueba de estilo v5: hierba densa con flores, matorrales, calvas de tierra, rocas y árboles de copa sueltos"
     }
    ]
   },

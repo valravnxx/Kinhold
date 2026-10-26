@@ -1019,5 +1019,23 @@
   "pruebas": "Lógica, modelos, acciones, cinturones, piezas nuevas, idiomas y navegador de construcción correctos. No comprobado: navegador de combate, personaje, demo y web (cortadas por tiempo).",
   "capturas": "",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-26T14:34:09+00:00",
+  "fin": "2026-10-26T17:08:57+00:00",
+  "titulo": "Hito 1e: la escena común como la prueba de estilo v5",
+  "hito": "estilo",
+  "hecho": [
+   "Escena común (src/mundo/decorado.js) más cerca de la prueba de estilo v5: hierba densa con flores también en el centro, matorrales de tres bultos de hojas, calvas de tierra pisada, rocas más cerca y árboles de copa sueltos antes del bosque.",
+   "En la construcción la hierba, las flores y las matas se esconden solas bajo lo construido en la planta baja, los muebles del suelo y el mojón, y vuelven al quitarlo; las matas escondidas dejan de chocar.",
+   "Los árboles sueltos son solo de copa: con pinos cerca, sus ramas bajas tapaban la cámara al talar.",
+   "Publicadas construcción v14, combate v10 y demo única v9, con comparación lado a lado con la v5 en las capturas.",
+   "Pruebas nuevas: ninguna planta asoma por los cimientos (rota a propósito con MUTAR_HIERBA=1: falla) y al quitarlo todo vuelven todas (rota a propósito sin despejar: falla).",
+   "Algunas pruebas de navegador esperaban tiempos fijos y fallaban con el navegador de pruebas a 1-2 fps; ahora esperan a la condición con márgenes amplios (golpe maestro, rodeo lateral, parada normal, arranque en el móvil, dibujo 3D perdido).",
+   "Rendimiento medido solo en el navegador de pruebas sin tarjeta gráfica: en «Construir» con 8 personajes de prueba, 503 mil triángulos y 191 llamadas de dibujo (antes 426 mil y 185). No comprobado en un móvil de verdad."
+  ],
+  "pruebas": "Lógica 81/81, modelos 22/22, combate 69/69, acciones 25/25, cinturones 8/8, unión 19/19, idiomas, taller; navegador de construcción, combate, estilo, personaje, demo, recursos e idioma correctos en PC y móvil.",
+  "capturas": "capturas/construccion-v14",
+  "estado": "ok"
  }
 ]
