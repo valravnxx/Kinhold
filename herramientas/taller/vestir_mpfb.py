@@ -204,7 +204,9 @@ def cinturon(nombre, telas, z, color, alto=0.034, grueso=0.005, n=64):
     cada vértice copia los pesos del punto de tela más cercano"""
     from mathutils.bvhtree import BVHTree
     from mathutils.kdtree import KDTree
-    arboles = [BVHTree.FromObject(t, bpy.context.evaluated_depsgraph_get()) for t in telas]
+    # solo el cuerpo y la falda de la prenda: con las mangas (la cota baja hasta la mano, que cuelga a la altura de la
+    # cintura) los rayos chocaban con los brazos y el cinturón se estiraba hasta ellos (visto en taller-v4 y v5)
+    arboles = [BVHTree.FromObject(t, bpy.context.evaluated_depsgraph_get()) for t in telas if not t.name.endswith('_mangas')]
     cerca = [v.co for v in telas[0].data.vertices if abs(v.co.z - z) < 0.04]
     centro = sum(cerca, Vector()) / len(cerca); centro.z = z
     radio = []
