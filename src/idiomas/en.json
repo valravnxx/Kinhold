@@ -482,5 +482,9 @@
  "v13: los brazos al correr (Pedro: «torcidos hacia delante, en pose nada natural»). Ahora el brazo oscila alrededor de la vertical (el codo pasa por detrás del cuerpo), el antebrazo va un poco hacia arriba y hacia dentro, la mano va de canto con el pulgar arriba y la muñeca recta, en vez de los puños girados hacia abajo delante de la tripa. Personajes en recursos/personajes/taller-v6/.": "v13: the arms when running (Pedro: «twisted forward, in a pose that's not natural at all»). Now the arm swings around the vertical (the elbow goes behind the body), the forearm points slightly up and inward, the hand is edge-on with the thumb up and the wrist straight, instead of the fists turned down in front of the belly. Characters in recursos/personajes/taller-v6/.",
  "v5: los brazos al correr, más naturales (Pedro los vio torcidos hacia delante): oscilan junto al cuerpo, con la mano de canto y la muñeca recta. Es el personaje v13, con la construcción v11 y el combate v8.": "v5: more natural arms when running (Pedro saw them twisted forward): they swing next to the body, with the hand edge-on and the wrist straight. It is character v13, with construction v11 and combat v8.",
  "Personaje · v13 (brazos naturales al correr)": "Character · v13 (natural arms when running)",
- "Demo única · v5 (brazos naturales al correr)": "Single demo · v5 (natural arms when running)"
+ "Demo única · v5 (brazos naturales al correr)": "Single demo · v5 (natural arms when running)",
+ "Se ha perdido el dibujo 3D (el aparato se quedó sin memoria gráfica).": "The 3D view was lost (the device ran out of graphics memory).",
+ "Ha vuelto a pasar: cierra otras pestañas o aplicaciones y recarga.": "It happened again: close other tabs or apps and reload.",
+ "Recargando… Lo construido está guardado.": "Reloading… What you built is saved.",
+ "Recargar": "Reload"
 }

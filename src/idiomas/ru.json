@@ -482,5 +482,9 @@
  "v13: los brazos al correr (Pedro: «torcidos hacia delante, en pose nada natural»). Ahora el brazo oscila alrededor de la vertical (el codo pasa por detrás del cuerpo), el antebrazo va un poco hacia arriba y hacia dentro, la mano va de canto con el pulgar arriba y la muñeca recta, en vez de los puños girados hacia abajo delante de la tripa. Personajes en recursos/personajes/taller-v6/.": "v13: руки при беге (Педро: «вывернуты вперёд, совсем неестественная поза»). Теперь рука качается вокруг вертикали (локоть уходит за корпус), предплечье направлено немного вверх и внутрь, кисть стоит ребром, большим пальцем вверх, запястье прямое — вместо кулаков, повёрнутых вниз перед животом. Персонажи в recursos/personajes/taller-v6/.",
  "v5: los brazos al correr, más naturales (Pedro los vio torcidos hacia delante): oscilan junto al cuerpo, con la mano de canto y la muñeca recta. Es el personaje v13, con la construcción v11 y el combate v8.": "v5: руки при беге естественнее (Педро видел их вывернутыми вперёд): качаются вдоль тела, кисть ребром, запястье прямое. Это персонаж v13 со строительством v11 и боем v8.",
  "Personaje · v13 (brazos naturales al correr)": "Персонаж · v13 (естественные руки при беге)",
- "Demo única · v5 (brazos naturales al correr)": "Единое демо · v5 (естественные руки при беге)"
+ "Demo única · v5 (brazos naturales al correr)": "Единое демо · v5 (естественные руки при беге)",
+ "Se ha perdido el dibujo 3D (el aparato se quedó sin memoria gráfica).": "3D-изображение потеряно (у устройства закончилась графическая память).",
+ "Ha vuelto a pasar: cierra otras pestañas o aplicaciones y recarga.": "Это повторилось: закройте другие вкладки или приложения и перезагрузите.",
+ "Recargando… Lo construido está guardado.": "Перезагрузка… Построенное сохранено.",
+ "Recargar": "Перезагрузить"
 }
