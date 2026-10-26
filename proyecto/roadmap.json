@@ -202,7 +202,9 @@
     },
     {
      "nombre": "Estilo elegido en las piezas: puertas de varas y de tablas, cerca de varas, empalizada y su puerta, mojón, y las barandillas y el portillo nuevos, como la prueba de estilo v5",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-26T20:20:25+00:00",
+     "fin": "2026-10-26T21:47:46+00:00"
     },
     {
      "nombre": "Estilo elegido en los muebles: camas de paja y de madera, mesa, banco, taburete, arcón, barril, estantería, antorcha de pie, alfombra de piel y estandarte, como los enseres de la prueba de estilo v5",
@@ -755,6 +757,13 @@
      "archivo": "jugar/demo/v11.html",
      "capturas": "capturas/demo-v11",
      "notas": "Construcción v16: tejados de paja y de tablillas, y lo que cierra bajo el tejado, con el estilo v5"
+    },
+    {
+     "v": "v12",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v12.html",
+     "capturas": "capturas/demo-v12",
+     "notas": "Construcción v17: puertas, cercas, portillo, empalizada y mojón con el estilo v5"
     }
    ]
   },
@@ -860,6 +869,13 @@
      "archivo": "jugar/construccion/v16.html",
      "capturas": "capturas/construccion-v16",
      "notas": "Tejados de paja (dos hiladas, mechones en el alero y cumbrera redonda) y de tablillas (filas solapadas, tabla de remate y caballete) con el estilo v5; bajo el tejado se cierra con tablas de pie, barro y estacas o encalado y postes"
+    },
+    {
+     "v": "v17",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/construccion/v17.html",
+     "capturas": "capturas/construccion-v17",
+     "notas": "Puertas de varas y de tablas, cerca, portillo, empalizada y su puerta, y mojón con el estilo v5: tablas con peinazos y bisagras de hierro, varas atadas con cuerda, postes con el corte claro, troncos descortezados con la punta tallada y piedras apiladas"
     }
    ]
   },

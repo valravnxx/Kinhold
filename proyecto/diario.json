@@ -1074,5 +1074,27 @@
   "pruebas": "Todas correctas con probar_todo.sh: lógica 86/86, modelos 47/47, combate, acciones, cinturones, unión, idiomas, taller; navegador de construcción, combate, estilo, personaje, demo, recursos, idioma y web, en PC y móvil.",
   "capturas": "capturas/construccion-v16",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T20:20:25+00:00",
+  "fin": "2026-10-26T21:47:46+00:00",
+  "titulo": "Hito 1e: puertas, cercas, portillo, empalizada y mojón con el estilo v5",
+  "hito": "estilo",
+  "hecho": [
+   "Puertas con el estilo v5: la de tablas como la de la cabaña de la prueba (cuatro tablas, peinazos por detrás, bisagras largas de hierro con clavos y tirador de argolla); la de varas, varas atadas con cuerda a dos travesaños, con tornapunta.",
+   "Cerca de varas como la de la prueba v5: postes redondos con el corte claro arriba, dos varas atadas con lazadas de cuerda que llegan al borde de la casilla.",
+   "Portillo: postes más gruesos y hoja de varas con tornapunta, ataduras y lazos de cuerda que hacen de bisagra.",
+   "Empalizada: troncos descortezados como los de los muros, de distinto alto y algo torcidos, con la punta tallada clara y dos traviesas detrás. Su puerta: tablones con punta, traviesas por detrás, pletinas de hierro con clavos y argolla.",
+   "Mojón: piedras apiladas de caras planas, como las de los cimientos, y una vara con un trapo atado.",
+   "Lo que se abre (puertas, portillo y puerta de la empalizada) va en su propia malla, que gira en las bisagras; el resto, junto en una malla por textura como las demás piezas del estilo.",
+   "Las barandillas son el medio muro de troncos, que ya tenía el estilo desde la construcción v12.",
+   "El muestrario de piezas acepta «tipo@abierta» (hoja abierta) y «mojon».",
+   "Pruebas nuevas de modelos: estas piezas y el mojón hechos con el estilo v5, la hoja aparte, la puerta cabe en el hueco del muro y abierta lo deja libre (rota con MUTAR_PUERTA=1: falla), las varas de la cerca llegan al borde y el alto de la empalizada.",
+   "Publicadas construcción v17 y demo única v12, con comparación lado a lado con la prueba v5.",
+   "Triángulos por pieza medidos en node: puerta de varas 936, puerta de tablas 1180, cerca 552, portillo 640, empalizada 426, puerta de empalizada 2112, mojón 440. No comprobado en un móvil de verdad."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh: lógica 86/86, modelos 64/64, combate 69/69, acciones 25/25, cinturones, taller, unión, idiomas; navegador de construcción, combate, estilo, personaje, demo, recursos, idioma y web, en PC y móvil.",
+  "capturas": "capturas/construccion-v17",
+  "estado": "ok"
  }
 ]
