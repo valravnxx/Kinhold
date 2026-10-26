@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 26 oct 2026 (09:28–10:14) — por el chat: pantalla en blanco en el móvil
+
+«Sufro crasheos aleatorios donde se queda el juego así» (pantalla en blanco con los botones vivos), «jugando seguido y se queda así aunque reinicie», «no iba lagueado ni por debajo de 80 fps» → Fuga de memoria gráfica al rehacer las piezas, arreglada (construcción v12, combate v9, demo v7), con aviso y recarga si se pierde el dibujo 3D. Para recuperar el navegador: cerrar Chrome del todo y volver a abrir.
+
 ### 26 oct 2026 (07:51) — por el chat: brazos de la carrera
 
 «La versión de carrera nueva tiene que mejorar en posición de brazos, están torcidos adelante en pose nada natural, arréglalo y aprobamos de una, y prueba el otro pendiente» → Brazos arreglados (personaje v13, demo v5) y carrera aprobada: se cierra la pregunta de la carrera. «El otro pendiente»: se empieza a pasar la construcción al estilo elegido (muros primero).

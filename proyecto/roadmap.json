@@ -360,8 +360,9 @@
     },
     {
      "nombre": "Estilo elegido en las piezas (Pedro: «los muebles y la construcción son los low-poly iniciales, no lo de la prueba visual»; va antes de añadir más piezas): muros de troncos (también con puerta y ventana), de zarzo y barro, de entramado y de tablas, medio muro, postes y vigas, con los troncos, la corteza, las testas y las texturas por código de la cabaña de la prueba de estilo v5",
-     "estado": "en_curso",
-     "inicio": "2026-10-26T08:15:00+01:00"
+     "estado": "hecho",
+     "inicio": "2026-10-26T07:58:22+01:00",
+     "fin": "2026-10-26T11:58:37+01:00"
     },
     {
      "nombre": "Estilo elegido en las piezas: cimientos de piedra y de troncos, suelos de troncos y de tablas, y escaleras de mano y de tablas, como la prueba de estilo v5",
@@ -648,6 +649,13 @@
      "archivo": "jugar/demo/v6.html",
      "capturas": "capturas/demo-v6",
      "notas": "El cinturón de la cota ceñido, en las tres partes (personaje v14, taller-v7)."
+    },
+    {
+     "v": "v7",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v7.html",
+     "capturas": "capturas/demo-v7",
+     "notas": "Sin pantalla en blanco en el móvil (fuga de memoria gráfica arreglada), aviso si se pierde el dibujo 3D y muros con el estilo elegido."
     }
    ]
   },
@@ -718,6 +726,13 @@
      "archivo": "jugar/construccion/v11.html",
      "capturas": "capturas/construccion-v11",
      "notas": "En el móvil, el aviso de abajo del menú ya no tapa «Reiniciar» ni otros botones (tampoco en inglés y en ruso): se coloca según lo que mide el menú de arriba y a la izquierda de los botones de modo."
+    },
+    {
+     "v": "v12",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/construccion/v12.html",
+     "capturas": "capturas/construccion-v12",
+     "notas": "Arreglo de la pantalla en blanco en el móvil: al colocar o quitar piezas ya no se llena la memoria gráfica. Aviso y recarga si se pierde el dibujo 3D. Muros, postes y vigas con el estilo elegido."
     }
    ]
   },
@@ -774,6 +789,13 @@
      "archivo": "jugar/combate/v8.html",
      "capturas": "capturas/combate-v8",
      "notas": "Los dos luchadores son el personaje del taller: la armadura es su ropa por capas (lino, gambesón, cota sobre gambesón), los brazos agarran el arma con cinemática inversa y las heridas se pegan al cuerpo donde entra el golpe"
+    },
+    {
+     "v": "v9",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/combate/v9.html",
+     "capturas": "capturas/combate-v9",
+     "notas": "Las flechas, dianas y postes ya no dejan memoria gráfica ocupada; aviso y recarga si se pierde el dibujo 3D."
     }
    ]
   },

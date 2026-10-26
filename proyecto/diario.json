@@ -955,5 +955,22 @@
   "pruebas": "Todas correctas con probar_todo.sh salvo el combate, que pasó aparte con los márgenes portados. Fotos del taller antes y después, y visor y demo en PC y móvil mirados.",
   "capturas": "capturas/personaje-v14",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T07:58:22+01:00",
+  "fin": "2026-10-26T11:58:37+01:00",
+  "titulo": "Pantalla en blanco en el móvil arreglada; muros con el estilo (construcción v12)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Pedro: la pantalla se queda en blanco jugando (con los botones vivos y a más de 80 fps) y sigue así aunque recargue.",
+   "Causa encontrada y medida: al colocar o quitar algo se rehacían todas las piezas y las viejas no se liberaban de la memoria gráfica (con 9 piezas, 20 reconstrucciones pasaban de 870 a 4.050 mallas). Con una casa grande, cada pieza colocada dejaba miles, hasta agotar la memoria del móvil.",
+   "Arreglado: las piezas, el mojón, el anillo de la tierra y la pieza fantasma se liberan al quitarlos (la cuenta queda igual tras 20 reconstrucciones). En el duelo, las flechas, dianas y postes también.",
+   "Si aun así el navegador pierde el dibujo 3D: aviso, recarga sola con lo construido guardado y, si vuelve a pasar enseguida, botón «Recargar» en vez de recargar en bucle.",
+   "Muros, postes y vigas con el estilo elegido (troncos redondos con testas, zarzo, entramado y tablas), cada pieza en una malla por textura. Muestrario nuevo para fotos de cerca (herramientas/muestrario/).",
+   "Publicados construcción v12, combate v9 y demo única v7. Se colaron en el repositorio dos enlaces a node_modules (de una copia de trabajo): quitados y ahora ignorados."
+  ],
+  "pruebas": "Todas correctas en PC y móvil. Pruebas nuevas, que fallan al romperlas: memoria gráfica estable al rehacer las piezas (MUTAR_FUGA=1: 822 → 16.672 geometrías), aviso y recarga al perder el dibujo 3D, huecos de puertas y ventanas mirados triángulo a triángulo. No comprobado: en el móvil de Pedro.",
+  "capturas": "capturas/construccion-v12",
+  "estado": "ok"
  }
 ]
