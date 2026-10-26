@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v3 (los avisos no tapan los menús en el móvil)';
+export const VERSION_DEMO = 'Demo única · v4 (barandillas y portillo en «Construir»)';
 export const REGISTRO_DEMO = [
+  'v4: en «Construir», el medio muro hace de barandilla en el borde de un suelo en alto (por ahí ya no se cae) y hay portillo de varas para la cerca, que se abre con Usar. Es la construcción v12.',
   'v3: en el móvil, el aviso de «Construir» ya no tapa los botones del menú de arriba (tampoco en inglés y en ruso, ni con «Menú» y los fps). Es la construcción v11.',
   'v2: junto al botón «Menú» salen los fotogramas por segundo de tu aparato; al pulsarlo se abre el detalle: lo que tarda cada fotograma (de media y el más lento), la resolución, los triángulos y las llamadas de dibujo, la memoria gráfica y la de JavaScript (esta solo la dicen Chrome y los navegadores basados en él) y los personajes en escena. En el móvil, si junto a «Menú» no cabe, va a la izquierda de la pantalla.',
   'v2, para medir con gente: en «Construir», el detalle tiene «Personajes de prueba» (0, 4, 8 o 16): personajes del taller que pasean en corro a tu alrededor. Solo se dibujan; no son jugadores ni cambian nada. Medido en el navegador de pruebas (dibuja sin tarjeta gráfica, así que sus fps no valen): cada personaje suma unos 37 mil triángulos por fotograma (contando su sombra), unas 10 geometrías y 12 texturas.',
