@@ -6,6 +6,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 26 oct 2026 (15:59) — por el chat: cómo será el premium
+
+valravnx: el premium desbloqueará recetas para fabricar versiones más bonitas de las cosas, «pero ya se hará» → GDD (apartados 2 y 20, en los tres idiomas): el premium son recetas que se desbloquean, se fabrican en el juego con sus materiales y solo cambian el aspecto. Se concreta más adelante.
+
+### 26 oct 2026 (15:35) — por el chat: análisis de lo que falta para un juego acabado
+
+valravnx pidió analizar todos los sistemas y lo que faltaría (ropa tejida cosmética en vez de calidades, hogar, objetos, peces, una carreta de inicio, barcos por los que se pueda andar y comarcas con nombre que se dominan). Sus respuestas al análisis: el mapa del mundo lo revisará mucho a mano, así que los nombres se irán poniendo y ajustando; las ciudades NPC le parecen bien aunque la gente se arremoline cerca («un mal necesario»: crea rutas entre reinos, sitios de paso, y lejos queda sitio para bandidos y solitarios); la carretilla te la dan los NPCs además de enseñarte a hacerla; nada de calidades de objetos; el resto, como se propuso. → GDD v0.9, apartado 20 «Ampliación para un juego acabado» (también en inglés y ruso), con el hito donde se planifica cada cosa; documento de sistemas v1.2 (rastra en N0, carretilla de rueda maciza en N1); tarea de la ropa crafteable del hito 1b sin calidades.
+
 ### 26 oct 2026 (15:20) — por el chat: estados de simulación más variados
 
 valravnx propone estados más variados de simulación; acepta los cinco que encajan, «pero para más adelante» → GDD (sección 6, también en inglés y ruso): mojado, herida infectada, comida en mal estado, dolor y borracho, como ampliación posterior a la primera versión del hito de supervivencia. Aburrimiento, tristeza y pánico quedan fuera.
