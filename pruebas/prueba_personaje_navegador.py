@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v7'), f'{sitio}/recursos/personajes/taller-v7')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v8'), f'{sitio}/recursos/personajes/taller-v8')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -181,6 +181,25 @@ with sync_playwright() as p:
         pg.evaluate(f"{E}.ponerModo('quieto')"); pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)')
         pg.screenshot(path=f'{SALIDA}/{nombre}_taller_hombre_cota.png')
         pg.click('[data-capa="cota"]'); pg.wait_for_timeout(200)
+        # tocados de uno en uno, botas en lugar de los zapatos, y la capa abierta deja ver la túnica y su cinturón
+        pg.click('[data-capa="capucha"]'); pg.wait_for_timeout(200)
+        con1 = vis(); pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_capucha.png')
+        pg.click('[data-capa="sombrero"]'); pg.wait_for_timeout(200)
+        con2 = vis(); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_sombrero.png')
+        pg.click('[data-capa="sombrero"]'); pg.wait_for_timeout(200)
+        con3 = vis()
+        if os.environ.get('MUTAR'): con2 = con2 + ['hombre_capa_capucha']
+        comprobar('tocados: de uno en uno (poner el sombrero quita la capucha) y se quitan',
+                  'hombre_capa_capucha' in con1 and 'hombre_capa_sombrero' in con2 and 'hombre_capa_capucha' not in con2
+                  and not any(t in con3 for t in ('hombre_capa_capucha', 'hombre_capa_sombrero')), ', '.join(x for x in con2 if 'capa_' in x))
+        for c in ['botas', 'manto']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
+        con = vis()
+        if os.environ.get('MUTAR'): con = [x for x in con if x != 'hombre_cinturon_tunica']
+        comprobar('botas en lugar de zapatos; con la capa se siguen viendo la túnica y su cinturón',
+                  'hombre_capa_botas' in con and 'hombre_capa_zapatos' not in con and 'hombre_capa_manto' in con and 'hombre_capa_manto_falda' in con
+                  and 'hombre_capa_tunica' in con and 'hombre_cinturon_tunica' in con, ', '.join(sorted(x for x in con if 'capa' in x or 'cinturon' in x)))
+        pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_capa_botas.png')
+        for c in ['botas', 'manto']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
         pg.evaluate(f"{E}.cambiar({{sexo: 'mujer'}})"); listo(pg)
         # en calidad alta, toda la ropa y el pelo escriben profundidad (si no, la piel se pinta encima: v5)
         pg.evaluate(f"{E}.cambiar({{calidad: 'alta'}})"); listo(pg)

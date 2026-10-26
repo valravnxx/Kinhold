@@ -617,7 +617,7 @@ def personaje(nombre, macros, objetivos, ropa):
         e = (x / hx) ** 2 + ((z - zc) / hz) ** 2
         return 1 - (1 - suave(0.92, 1.0, e)) * suave(-0.04, -0.07, y)
     def cubre(z_bajo):  # cabeza, cuello y hombros hasta z_bajo (sin brazos ni manos)
-        return lambda i, c: en(i, 'body') and not mano(i) and (cabeza(i) or (c.z > z_bajo - 0.02 and abs(c.x) < 0.24))
+        return lambda i, c: en(i, 'body') and not mano(i) and (cabeza(i) or (c.z > z_bajo - 0.02 and abs(c.x) < 0.27))
     def separacion_tocado(cabeza_e, hombro_e, pico=0.0):
         def e(c, i):
             if ATR[i, 1] > 0.0: c[:] = kd_craneo.find(c)[0]  # orejas pegadas al cráneo, como en la cofia
@@ -632,17 +632,18 @@ def personaje(nombre, macros, objetivos, ropa):
             orilla = suave(z_bajo + 0.012, z_bajo + 0.004, P[..., 2])  # dobladillo un poco más oscuro
             col = col * (1 - 0.15 * orilla[..., None])
             a = hueco_cara(P, arriba, abajo, hx) * suave(-0.002, 0.002, P[..., 2] - z_bajo - 0.004 * (ruido(P, 40) - 0.5))
+            a = a * suave(0.255, 0.245, np.abs(P[..., 0]))  # sobre el brazo acaba en curva, no en los escalones de la malla
             return np.concatenate([col, a[..., None]], -1)
         return f
     zc_bajo = cuello_z - 0.13
-    piezas.append(trozo(base, nombre + '_capa_capucha', cubre(zc_bajo), empuje=separacion_tocado(0.02, 0.062, pico=0.03),
-                        alisar=(lambda c, i: True, 12, 0.012),
+    piezas.append(trozo(base, nombre + '_capa_capucha', cubre(zc_bajo), empuje=separacion_tocado(0.026, 0.09, pico=0.05),
+                        alisar=(sobre_oreja, 40),
                         textura=(1024, pintar_tocado(ropa.get('capucha', (92, 76, 58)), ojo_arriba + 0.05, boca_z - 0.055, 0.074, zc_bajo)),
                         rugosidad=0.95, diezmar=DIEZMAR))
     if mujer:
         zt_bajo = cuello_z - 0.075
-        piezas.append(trozo(base, nombre + '_capa_toca', cubre(zt_bajo), empuje=separacion_tocado(0.012, 0.05),
-                            alisar=(lambda c, i: True, 10, 0.009),
+        piezas.append(trozo(base, nombre + '_capa_toca', cubre(zt_bajo), empuje=separacion_tocado(0.013, 0.08),
+                            alisar=(sobre_oreja, 40),
                             textura=(1024, pintar_tocado((226, 220, 204), ojo_arriba + 0.028, boca_z - 0.028, 0.058, zt_bajo, lana=False)),
                             rugosidad=0.9, diezmar=DIEZMAR))
     piezas.append(sombrero(f'{nombre}_capa_sombrero', co, cabeza, ojo_arriba, ropa.get('cofia') is not None))
@@ -699,6 +700,31 @@ def foto(posc, mira, lente, ruta, ancho=1000, alto=1000):
     cam.rotation_euler = (Vector(mira) - Vector(posc)).to_track_quat('-Z', 'Y').to_euler()
     esc.render.filepath = ruta; bpy.ops.render.render(write_still=True)
 todas = os.environ.get('FOTOS', 'todas') == 'todas'
+NUEVAS = ('_capa_manto', '_capa_botas', '_capa_capucha', '_capa_toca', '_capa_sombrero')
+if os.environ.get('FOTOS') == 'prendas':  # de cerca, una pieza nueva cada vez (capa, botas y cada tocado)
+    esc.cycles.samples = 24
+    for rig, piezas, pos in gente:
+        for otro, op, _ in gente:
+            for ob in [otro] + op: ob.hide_render = otro is not rig
+        x = rig.location.x; cz = pos['head'].z + 0.04
+        for puesta in ('_capa_capucha', '_capa_toca', '_capa_sombrero', ('_capa_manto', '_capa_botas')):
+            pp = puesta if isinstance(puesta, tuple) else (puesta,)
+            if not any(ob.name.startswith(rig.name + p) for ob in piezas for p in pp): continue
+            for ob in piezas:
+                nueva = any(k in ob.name for k in NUEVAS)
+                ob.hide_render = (nueva and not any(ob.name.startswith(rig.name + p) for p in pp)) or (('_capa_botas' in pp) and '_capa_zapatos' in ob.name)
+            n = pp[0].replace('_capa_', '')
+            if n == 'manto':
+                foto((x + 1.9, -2.0, 1.1), (x, 0, 0.85), 50, os.path.join(SALIDA, f'{rig.name}_{n}_34.png'), 800, 1000)
+                foto((x - 1.0, 2.5, 1.1), (x, 0, 0.85), 50, os.path.join(SALIDA, f'{rig.name}_{n}_espalda.png'), 800, 1000)
+                foto((x + 0.5, -1.2, 0.35), (x, 0, 0.25), 50, os.path.join(SALIDA, f'{rig.name}_botas.png'), 800, 800)
+            else:
+                foto((x - 0.78, -0.56, cz + 0.01), (x, 0, cz - 0.01), 70, os.path.join(SALIDA, f'{rig.name}_{n}_34.png'))
+                foto((x + 0.75, 0.6, cz + 0.05), (x, 0, cz - 0.03), 70, os.path.join(SALIDA, f'{rig.name}_{n}_atras.png'))
+    print('listo', SALIDA); sys.exit(0)
+for rig, piezas, pos in gente:  # en las fotos de siempre, sin las piezas nuevas (tocados, capa y botas)
+    for ob in piezas:
+        if any(k in ob.name for k in NUEVAS): ob.hide_render = True
 foto((0, -4.6, 1.0), (0, 0, 0.85), 50, os.path.join(SALIDA, 'cuerpos.png'), 1200, 900)
 for rig, piezas, pos in gente:
     for otro, op, _ in gente:
