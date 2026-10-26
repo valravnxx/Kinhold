@@ -1,5 +1,5 @@
 # Prueba en navegador real del campo de pruebas de combate de Kinhold.
-# Se sirve por HTTP con la misma estructura que la web (jugar/combate/ y recursos/personajes/taller-v4/), porque los
+# Se sirve por HTTP con la misma estructura que la web (jugar/combate/ y recursos/personajes/taller-v5/), porque los
 # luchadores son el personaje del taller y se cargan de un .glb aparte. MUTAR=1 apunta a una carpeta de modelos que no
 # existe: tiene que fallar.
 import sys, os, json, base64, shutil, tempfile, threading, http.server, functools, socketserver
@@ -12,7 +12,7 @@ RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/combate'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/combate/prueba.html')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v4'), f'{sitio}/recursos/personajes/taller-v4')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v5'), f'{sitio}/recursos/personajes/taller-v5')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))

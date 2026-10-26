@@ -1,6 +1,6 @@
 # Prueba en navegador real (Chromium sin pantalla) del hito 1 de Kinhold.
 # Construye una cabaña usando el propio juego, comprueba el estado y saca capturas.
-# Se sirve por HTTP con la misma estructura que la web (jugar/construccion/ y recursos/personajes/taller-v4/), porque el
+# Se sirve por HTTP con la misma estructura que la web (jugar/construccion/ y recursos/personajes/taller-v5/), porque el
 # personaje del taller se carga de un .glb aparte. MUTAR=1 apunta a una carpeta de modelos que no existe: tiene que fallar.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
@@ -12,7 +12,7 @@ RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/construccion'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v4'), f'{sitio}/recursos/personajes/taller-v4')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v5'), f'{sitio}/recursos/personajes/taller-v5')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -306,7 +306,11 @@ with sync_playwright() as p:
                   ', '.join(k for k, x in vis.items() if x))
         modos = ev(f"(() => {{ const j = {K}.jugador, r = []; for (const [v, t] of [[1.0, false], [3.6, false], [6, false], [0, false], [0, true]]) {{ j.animar(v, 0.016, t); r.push(j.modo + ':' + j.mh.acciones[j.modo].timeScale.toFixed(2)); }} return r; }})()")
         comprobar('andar, correr, quieto y talar según la velocidad', [m.split(':')[0] for m in modos] == ['andar', 'correr', 'correr', 'quieto', 'talar'], ', '.join(modos))
-        comprobar('la animación se acelera con la velocidad (tope 1,6×)', modos[1].endswith('1.39') and modos[2].endswith('1.60'), ', '.join(modos))
+        # a 3,6 m/s (la velocidad normal) la carrera va casi a su ritmo natural (medido al cargar): sin resbalar ni cámara lenta
+        nat = ev(f'{K}.jugador.mh.velocidad.correr || 0')
+        r36 = float(modos[1].split(':')[1])
+        comprobar('la animación se acelera con la velocidad (a su medida natural, tope 1,6×)', nat > 0 and abs(r36 - 3.6 / nat) < 0.02 and 0.8 < r36 < 1.3 and modos[2].endswith('1.60'),
+                  f"{', '.join(modos)} · natural {nat:.2f} m/s")
         # junto a un árbol: Usar tala; moverse lo para
         ev(f"""(() => {{ const K = {K}; K.cambiarModo('mover'); const a = K.obstaculos.filter(o => o.arbol).sort((p, q) => Math.hypot(p.x, p.z) - Math.hypot(q.x, q.z))[0];
             const d = Math.hypot(a.x, a.z); K.pj.k = 0; K.pj.x = a.x - a.x / d * (a.r + 0.6); K.pj.z = a.z - a.z / d * (a.r + 0.6); K.pj.y = 0;

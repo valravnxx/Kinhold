@@ -148,6 +148,44 @@ const giroBrazo = new Map(); // 'l' / 'r' → giro en el mundo para toda la cade
   if (process.env.VER) console.log('brazos: cuelgan', (angulo * 180 / Math.PI).toFixed(1), '° → se giran', (falta * 180 / Math.PI).toFixed(1), '°');
 }
 const ladoBrazo = (b) => { const m = b.getName().toLowerCase().match(/^(upperarm|lowerarm|hand|index|middle|ring|pinky|thumb).*_([lr])$/); return m && m[2]; };
+// Correr más suave (Pedro: «la animación de correr me parece fea y exagerada»): la carrera del paquete es de dibujo
+// animado (zancada enorme, mucho braceo, cuerpo echado hacia delante y agachado, botes). Se calma por código: el giro
+// de cada hueso se acerca a su media en el ciclo (menos vaivén) y la media del tronco se acerca a estar derecho.
+// Factores: 1 = como el paquete, 0 = quieto en la media. Se pueden cambiar con variables de entorno para probar.
+const f = (n, x) => Number(process.env[n] ?? x);
+const SUAVIZAR = { Jog_Fwd_Loop: { brazos: f('S_BRAZOS', 0.5), pegados: f('S_PEGADOS', 0.6), tronco: f('S_TRONCO', 0.55), inclinacion: f('S_INCLINACION', 0.45),
+  piernas: f('S_PIERNAS', 0.6), bote: f('S_BOTE', 0.45), agachado: f('S_AGACHADO', 0.4) } };
+const grupoDe = (b) => { const n = b.getName().toLowerCase();
+  if (ladoBrazo(b) || /^clavicle/.test(n)) return 'brazos';
+  if (/^(thigh|calf|foot|ball)/.test(n)) return 'piernas';
+  if (/^(pelvis|spine|neck|head)/.test(n)) return 'tronco';
+  return null; };
+const mediaQ = (lista) => { const s = new THREE.Vector4(), ref = lista[0];
+  for (const q of lista) { const k = q.dot(ref) < 0 ? -1 : 1; s.x += k * q.x; s.y += k * q.y; s.z += k * q.z; s.w += k * q.w; }
+  return new THREE.Quaternion(s.x, s.y, s.z, s.w).normalize(); };
+// giros en el mundo (respecto al reposo) y desplazamiento de la pelvis en cada instante
+function girosDe(canales, tiempos) {
+  const giros = [], despl = [];
+  for (const x of tiempos) {
+    const WA = mundoOrigen(canales, x), g = new Map();
+    for (const [b, a] of pares) {
+      const d = giroDesdeReposo(WA, a);
+      if (sesgo.has(b)) d.multiply(sesgo.get(b)); // el tronco, sin la inclinación de estilo del paquete
+      const lado = ladoBrazo(b); if (lado) d.premultiply(giroBrazo.get(lado));
+      g.set(b, d);
+    }
+    giros.push(g);
+    despl.push(pos(WA.get(pelvisA)).sub(pos(WA0.get(pelvisA))).multiplyScalar(altura));
+  }
+  return { giros, despl };
+}
+// hacia dónde apunta de media el brazo (hombro → codo) en un clip
+function brazoMedio(giros, lado) {
+  const b = B.porNombre.get('upperarm_' + lado), a = A.porNombre.get('upperarm_' + lado);
+  const r = pos(WA0.get(A.porNombre.get('lowerarm_' + lado))).sub(pos(WA0.get(a))).normalize();
+  const s = new THREE.Vector3(); for (const g of giros) s.add(r.clone().applyQuaternion(g.get(b)));
+  return s.normalize();
+}
 const hechos = [];
 for (const clip of CLIPS) {
   const an = S.getRoot().listAnimations().find(a => a.getName() === clip);
@@ -155,42 +193,76 @@ for (const clip of CLIPS) {
   const { canales, dur } = canalesDe(an);
   const nf = Math.max(2, Math.round(dur * FPS) + 1), tiempos = new Float32Array(nf);
   const salidaRot = new Map(pares.map(([b]) => [b, new Float32Array(nf * 4)])), salidaPel = new Float32Array(nf * 3);
-  for (let f = 0; f < nf; f++) {
-    const x = Math.min(dur, f / FPS); tiempos[f] = x;
-    const WA = mundoOrigen(canales, x);
-    // giros en el mundo del destino (el tronco, sin la inclinación de estilo del paquete)
-    const WBr = new Map();
-    for (const [b, a] of pares) {
-      const d = giroDesdeReposo(WA, a);
-      if (sesgo.has(b)) d.multiply(sesgo.get(b));
-      const lado = ladoBrazo(b); if (lado) d.premultiply(giroBrazo.get(lado));
-      WBr.set(b, d.multiply(M.get(b)));
-    }
-    // a giros locales: hace falta el mundo del padre ya animado
-    const mundoB = new Map();
-    const deB = (n) => {
-      if (mundoB.has(n)) return mundoB.get(n);
-      const p = B.padre.get(n), r = B.reposo(n);
-      const pw = p ? deB(p) : new THREE.Matrix4();
-      let qL = new THREE.Quaternion(...r.r), t = new THREE.Vector3(...r.t);
-      if (WBr.has(n)) qL = rot(pw).invert().multiply(WBr.get(n));
-      if (n === pelvisB) { // desplazamiento de la pelvis (botes al andar, agacharse)
-        const d = pos(WA.get(pelvisA)).sub(pos(WA0.get(pelvisA))).multiplyScalar(altura);
-        t = pos(WB0.get(pelvisB)).add(d).applyMatrix4(pw.clone().invert());
-        salidaPel.set(t.toArray(), f * 3);
+  for (let fr = 0; fr < nf; fr++) tiempos[fr] = Math.min(dur, fr / FPS);
+  const { giros, despl } = girosDe(canales, tiempos);
+  // 2) suavizado (solo los clips de SUAVIZAR)
+  const su = SUAVIZAR[clip];
+  const girosPaquete = giros.map(g => new Map([...g].map(([k, q]) => [k, q.clone()]))), desplPaquete = despl.map(v => v.clone());
+  if (su) {
+    const ciclo = giros.slice(0, nf - 1); // el último fotograma repite el primero
+    for (const [b] of pares) {
+      const gr = grupoDe(b); if (!gr) continue;
+      let media = mediaQ(ciclo.map(g => g.get(b)));
+      if (gr === 'tronco') media = new THREE.Quaternion().slerp(media, su.inclinacion);
+      const mediaOrig = mediaQ(ciclo.map(g => g.get(b)));
+      for (const g of giros) {
+        const resto = mediaOrig.clone().invert().multiply(g.get(b)); // vaivén respecto a la media
+        g.set(b, media.clone().multiply(new THREE.Quaternion().slerp(resto, su[gr])));
       }
-      const w = pw.clone().multiply(new THREE.Matrix4().compose(t, qL, new THREE.Vector3(...r.s)));
-      mundoB.set(n, w);
-      if (salidaRot.has(n)) salidaRot.get(n).set(qL.toArray(), f * 4);
-      return w;
-    };
-    for (const [b] of pares) deB(b);
-    if (process.env.VER && f === 30) { // postura: dónde quedan cuello y cabeza respecto a la pelvis (adelante = +z)
-      const rel = (W, n, p) => pos(W.get(n)).sub(pos(W.get(p))).toArray().map(x => x.toFixed(3));
-      console.log(clip, 'origen cabeza', rel(WA, A.porNombre.get('head'), pelvisA), 'destino cabeza', rel(mundoB, B.porNombre.get('head'), pelvisB));
-      for (const h of ['upperarm_l', 'lowerarm_l', 'hand_l']) console.log(clip, h, 'origen', rel(WA, A.porNombre.get(h), pelvisA), 'destino', rel(mundoB, B.porNombre.get(h), pelvisB), 'reposo destino', rel(WB0, B.porNombre.get(h), pelvisB));
-      console.log(clip, 'reposo origen', rel(WA0, A.porNombre.get('head'), pelvisA), 'reposo destino', rel(WB0, B.porNombre.get('head'), pelvisB));
     }
+    // los codos van muy abiertos (de lado): el brazo entero, sin cambiar el codo, se acerca a como cuelga al andar
+    const andar = S.getRoot().listAnimations().find(x => x.getName() === 'Walk_Loop');
+    if (andar) {
+      const ca = canalesDe(andar), ta = []; for (let x = 0; x < ca.dur; x += 1 / FPS) ta.push(x);
+      const ga = girosDe(ca.canales, ta).giros;
+      for (const lado of ['l', 'r']) {
+        const q = new THREE.Quaternion().slerp(new THREE.Quaternion().setFromUnitVectors(brazoMedio(ciclo, lado), brazoMedio(ga, lado)), su.pegados);
+        for (const g of giros) for (const [b] of pares) if (ladoBrazo(b) === lado) g.get(b).premultiply(q);
+      }
+    }
+    const m = despl.slice(0, nf - 1).reduce((s, v) => s.add(v), new THREE.Vector3()).divideScalar(nf - 1);
+    for (const v of despl) { v.y = m.y * su.agachado + (v.y - m.y) * su.bote; v.x = m.x + (v.x - m.x) * su.tronco; }
+  }
+  // 3) a giros locales: hace falta el mundo del padre ya animado
+  const pies = [];
+  const local = (giros, despl, pelvisY) => {
+    const altos = [];
+    for (let fr = 0; fr < nf; fr++) {
+      const WBr = new Map(); for (const [b] of pares) WBr.set(b, giros[fr].get(b).clone().multiply(M.get(b)));
+      const mundoB = new Map();
+      const deB = (n) => {
+        if (mundoB.has(n)) return mundoB.get(n);
+        const p = B.padre.get(n), r = B.reposo(n);
+        const pw = p ? deB(p) : new THREE.Matrix4();
+        let qL = new THREE.Quaternion(...r.r), t = new THREE.Vector3(...r.t);
+        if (WBr.has(n)) qL = rot(pw).invert().multiply(WBr.get(n));
+        if (n === pelvisB) { // desplazamiento de la pelvis (botes al andar, agacharse)
+          const d = despl[fr].clone(); d.y += pelvisY;
+          t = pos(WB0.get(pelvisB)).add(d).applyMatrix4(pw.clone().invert());
+          salidaPel.set(t.toArray(), fr * 3);
+        }
+        const w = pw.clone().multiply(new THREE.Matrix4().compose(t, qL, new THREE.Vector3(...r.s)));
+        mundoB.set(n, w);
+        if (salidaRot.has(n)) salidaRot.get(n).set(qL.toArray(), fr * 4);
+        return w;
+      };
+      for (const [b] of pares) deB(b);
+      altos.push(Math.min(...['foot_l', 'foot_r', 'ball_l', 'ball_r'].map(h => pos(mundoB.get(B.porNombre.get(h))).y)));
+      if (process.env.VER && fr === 30) {
+        const rel = (W, n, p) => pos(W.get(n)).sub(pos(W.get(p))).toArray().map(x => x.toFixed(3));
+        console.log(clip, 'destino cabeza', rel(mundoB, B.porNombre.get('head'), pelvisB));
+      }
+    }
+    return altos;
+  };
+  let altos = local(giros, despl, 0);
+  if (su) {
+    // con piernas menos dobladas los pies bajan o suben: la pelvis se corrige para que el pie más bajo del ciclo
+    // pise donde pisaba en la carrera del paquete
+    const orig = local(girosPaquete, desplPaquete, 0);
+    const dy = Math.min(...orig) - Math.min(...altos);
+    altos = local(giros, despl, dy);
+    console.log(clip, 'suavizado: pelvis corregida', (dy * 100).toFixed(1), 'cm');
   }
   const nueva = T.createAnimation(clip);
   const entrada = T.createAccessor().setType('SCALAR').setArray(tiempos).setBuffer(buf);

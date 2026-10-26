@@ -8,8 +8,6 @@ import { crearPersonajeMH } from '../personajes/makehuman.js';
 
 const PIEL = 0xd6a77a, LINO = 0xd9cfb8, LINO_OSC = 0xbfb498, PELO = 0x4a3324, CORDEL = 0x8a7a55;
 
-// velocidad natural de las animaciones del taller (m/s), medida con el pie en un ciclo: andar 0,97, correr 2,59
-const VEL_ANDAR = 0.97, VEL_CORRER = 2.59;
 
 function pieza(geo, color, x, y, z) {
   const m = new THREE.Mesh(geo, mat(color));
@@ -84,8 +82,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = []) {
     // hasta 1,6× (más rápido se ve atropellado; a 6 m/s los pies resbalan algo)
     let m = 'quieto', ritmo = 1;
     if (velocidad > 0.1) {
-      if (velocidad < 1.8) { m = 'andar'; ritmo = velocidad / VEL_ANDAR; }
-      else { m = 'correr'; ritmo = velocidad / VEL_CORRER; }
+      m = velocidad < 1.8 ? 'andar' : 'correr'; ritmo = velocidad / (j.mh.velocidad[m] || 1); // natural, medida al cargar
       ritmo = THREE.MathUtils.clamp(ritmo, 0.6, 1.6);
     } else if (talando) m = 'talar';
     if (m !== j.modo) { j.mh.poner(m, 0.2); j.modo = m; }

@@ -66,6 +66,29 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   const acciones = {};
   for (const clip of g.animations) acciones[clip.name] = mezclador.clipAction(clip);
   for (const [id, nombre] of Object.entries(CLIPS)) if (acciones[nombre]) acciones[id] = acciones[nombre];
+  // velocidad natural de andar y correr (m/s): lo que retrocede el pie apoyado respecto al cuerpo, medido en el propio
+  // clip al cargar. El juego acelera la animación con velocidad / natural para que los pies no resbalen. (Antes era un
+  // número fijo para correr, 2,59, que no salía de medir bien: la carrera del paquete iba a 5,8 m/s y se veía a cámara
+  // lenta con zancadas enormes, una de las cosas por las que Pedro la vio «fea y exagerada».)
+  const velocidad = {};
+  {
+    const mz = new THREE.AnimationMixer(modelo), pie = [hueso.ball_l, hueso.ball_r], v = new THREE.Vector3();
+    for (const id of ['andar', 'correr']) {
+      const clip = acciones[CLIPS[id]]?.getClip(); if (!clip || !pie[0]) continue;
+      const a = mz.clipAction(clip).play(), N = 120, m = [];
+      for (let i = 0; i <= N; i++) {
+        mz.setTime(clip.duration * i / N); modelo.updateMatrixWorld(true);
+        m.push(pie.map(p => { p.getWorldPosition(v); return [v.y, v.z]; }));
+      }
+      a.stop();
+      const suelo = Math.min(...m.flat().map(x => x[0])), vs = [];
+      for (let i = 0; i < N; i++) for (const k of [0, 1])
+        if (m[i][k][0] < suelo + 0.05 && m[i + 1][k][0] < suelo + 0.05) vs.push((m[i][k][1] - m[i + 1][k][1]) / (clip.duration / N));
+      vs.sort((x, y) => x - y);
+      if (vs.length) velocidad[id] = vs[vs.length >> 1];
+    }
+    mz.uncacheRoot(modelo);
+  }
   let actual = null;
   const poner = (id, mezcla = 0.25) => {
     const a = acciones[id] || acciones.quieto;
@@ -75,7 +98,7 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     actual = a;
   };
   poner('quieto', 0);
-  const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, opciones: o, hueso, clips: g.animations.map(c => c.name), ponerCapas,
+  const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, velocidad, opciones: o, hueso, clips: g.animations.map(c => c.name), ponerCapas,
     capasPosibles: ORDEN.filter(c => c !== 'camisa' && modelo.getObjectByName(`${o.sexo}_capa_${c}`)) };
   ponerCapas(o.capas || [o.sexo === 'mujer' ? 'vestido' : 'tunica']);
   return resultado;
