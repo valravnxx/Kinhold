@@ -877,5 +877,21 @@
   "pruebas": "Lógica 63/63, modelos 21/21, combate 69/69, acciones 25/25, idiomas y unión correctos; navegador: construcción, combate, demo, estilo, personaje e idiomas correctos en PC y móvil. La prueba nueva falla con MUTAR=1. No comprobado: cómo se ve en un móvil de verdad.",
   "capturas": "capturas/personaje-v12",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T04:19:56+00:00",
+  "fin": "2026-10-26T05:14:30+00:00",
+  "titulo": "Hito 1d: revisión completa",
+  "hito": "unificacion",
+  "hecho": [
+   "Pasadas todas las pruebas del proyecto con probar_todo.sh: lógica, modelos, combate, acciones, taller, unión, textos y navegador de construcción, combate, estilo, personaje, demo única, recursos, idiomas y web.",
+   "Revisadas las capturas de la demo única en PC y móvil (menú en español, inglés y ruso, Construir, Duelo y Personaje), de la construcción, del combate y de la web: el mismo personaje del taller y la misma escena en todo, y ningún aviso tapa los menús.",
+   "Sin versión jugable nueva: desde la demo v3 no ha cambiado nada que se juegue.",
+   "Los fps de las capturas (1 a 4) son del navegador de pruebas sin tarjeta gráfica, no de un dispositivo de verdad; en su móvil Pedro dijo que van bien.",
+   "El hito 1d queda en revisión, esperando a Pedro."
+  ],
+  "pruebas": "Todas correctas (bash herramientas/probar_todo.sh), PC y móvil; capturas miradas.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

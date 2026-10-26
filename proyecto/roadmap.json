@@ -96,7 +96,7 @@
    "id": "unificacion",
    "num": "1d",
    "nombre": "Una sola demo",
-   "estado": "en_curso",
+   "estado": "revision",
    "jugable": "Una sola página con construcción, duelo y personaje, con la misma escena del estilo elegido y el mismo personaje del taller en todo.",
    "nota": "Plan de unificación (pedido de Pedro, 25 oct): hoy son cuatro prototipos que no se hablan y cada mejora se queda en uno. Va antes que el resto del arte y de las piezas de construcción.",
    "tareas": [
@@ -138,7 +138,9 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-26T04:19:56+00:00",
+     "fin": "2026-10-26T05:14:30+00:00"
     }
    ]
   },
