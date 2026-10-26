@@ -160,7 +160,7 @@ function aplicarAperturas(obj, p) {
 
 // Libera en la tarjeta gráfica las mallas que se quitan. Sin esto, cada vez que se colocaba o se quitaba algo se
 // rehacían todas las piezas y las viejas se quedaban ocupando memoria gráfica: tras un rato construyendo, el móvil
-// se quedaba sin ella y la pantalla en blanco aunque fuera a más de 80 fps (lo vio Pedro). Los materiales son
+// se quedaba sin ella y la pantalla en blanco aunque fuera a más de 80 fps (lo vio valravnx). Los materiales son
 // compartidos (salen de una caché) y no se liberan.
 function liberar(obj) { if (window.__sinLiberar) return; obj.traverse(o => { if (o.isMesh) o.geometry.dispose(); }); } // __sinLiberar: solo para comprobar que la prueba de la fuga falla
 function reconstruir() {

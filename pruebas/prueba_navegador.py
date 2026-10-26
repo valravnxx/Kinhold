@@ -341,7 +341,7 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/05_barra_construccion_pc.png')
 
-    # memoria gráfica (Pedro: pantalla en blanco tras un rato construyendo, a más de 80 fps): rehacer las piezas no
+    # memoria gráfica (valravnx: pantalla en blanco tras un rato construyendo, a más de 80 fps): rehacer las piezas no
     # deja mallas viejas ocupando la tarjeta gráfica
     if os.environ.get('MUTAR_FUGA'): ev('window.__sinLiberar = true')
     memoria = f"(() => {{ {K}.render(); return {K}.renderer.info.memory.geometries; }})()"
@@ -388,7 +388,7 @@ with sync_playwright() as p:
     mv.wait_for_timeout(1200)
     mv.screenshot(path=f'{SALIDA}/07b_movil_personaje_de_cerca.png')
     comprobar('sin errores en consola (móvil)', len(err2) == 0, '; '.join(err2[:3]))
-    # pérdida del dibujo 3D (Pedro: pantalla en blanco en el móvil con los botones vivos): aviso, recarga sola y lo
+    # pérdida del dibujo 3D (valravnx: pantalla en blanco en el móvil con los botones vivos): aviso, recarga sola y lo
     # construido sigue ahí; si vuelve a pasar enseguida, no recarga en bucle (ofrece un botón)
     print('Móvil: se pierde el dibujo 3D')
     piezas = mv.evaluate(f"{K}.mundo.construcciones.reduce((n, c) => n + c.piezas.size, 0)")

@@ -31,7 +31,7 @@ with sync_playwright() as p:
     nav = p.chromium.launch(args=ARGS)
     for nombre, vista, movil in [('pc', {'width': 1280, 'height': 800}, False), ('movil', {'width': 390, 'height': 844}, True)]:
         print('Vista', nombre)
-        ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')  # en español, como Pedro (el inglés lo prueba prueba_idioma_navegador.py)
+        ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')  # en español, como valravnx (el inglés lo prueba prueba_idioma_navegador.py)
         pg = ctx.new_page()
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))

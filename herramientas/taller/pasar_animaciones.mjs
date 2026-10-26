@@ -56,8 +56,8 @@ for (const [b, a] of pares) {
   let q = null;
   // solo los brazos y las manos cambian de verdad de postura (brazos en «A» → en cruz). El tronco, la pelvis y las
   // piernas ya están de pie en los dos: si se «igualan», las pequeñas diferencias de cómo están puestos los huesos
-  // (la pelvis apunta 35° distinto) doblan el cuerpo hacia delante (fallo de la v5/v6, lo vio Pedro)
-  // la clavícula tampoco: si se iguala, el hombro se va hacia atrás (Pedro: «hombros muy para atrás»)
+  // (la pelvis apunta 35° distinto) doblan el cuerpo hacia delante (fallo de la v5/v6, lo vio valravnx)
+  // la clavícula tampoco: si se iguala, el hombro se va hacia atrás (valravnx: «hombros muy para atrás»)
   const brazo = /^(upperarm|lowerarm|hand|index|middle|ring|pinky|thumb)/.test(b.getName().toLowerCase());
   if (!brazo) q = new THREE.Quaternion();
   else if (hb && ha) {
@@ -106,7 +106,7 @@ const mundoOrigen = (canales, x) => A.mundo((n) => {
 });
 const giroDesdeReposo = (WA, a) => rot(WA.get(a)).multiply(RA0.get(a).clone().invert());
 // Postura: las animaciones del paquete van con el cuello y la cabeza adelantados (estilo de sus muñecos de cabeza grande).
-// En un cuerpo de proporciones reales queda encorvado (Pedro: «doblado hacia adelante»). Se mide esa inclinación en
+// En un cuerpo de proporciones reales queda encorvado (valravnx: «doblado hacia adelante»). Se mide esa inclinación en
 // la animación de estar quieto y se quita de todas, dejando solo una parte (ENDEREZAR = cuánto se quita).
 const ENDEREZAR = Number(process.env.ENDEREZAR ?? 0.7);
 const TRONCO = ['spine_01', 'spine_02', 'spine_03', 'neck_01', 'head', 'clavicle_l', 'clavicle_r']; // con las clavículas: si no, los hombros se quedan adelantados
@@ -148,7 +148,7 @@ const giroBrazo = new Map(); // 'l' / 'r' → giro en el mundo para toda la cade
   if (process.env.VER) console.log('brazos: cuelgan', (angulo * 180 / Math.PI).toFixed(1), '° → se giran', (falta * 180 / Math.PI).toFixed(1), '°');
 }
 const ladoBrazo = (b) => { const m = b.getName().toLowerCase().match(/^(upperarm|lowerarm|hand|index|middle|ring|pinky|thumb).*_([lr])$/); return m && m[2]; };
-// Correr más suave (Pedro: «la animación de correr me parece fea y exagerada»): la carrera del paquete es de dibujo
+// Correr más suave (valravnx: «la animación de correr me parece fea y exagerada»): la carrera del paquete es de dibujo
 // animado (zancada enorme, mucho braceo, cuerpo echado hacia delante y agachado, botes). Se calma por código: el giro
 // de cada hueso se acerca a su media en el ciclo (menos vaivén) y la media del tronco se acerca a estar derecho.
 // Factores: 1 = como el paquete, 0 = quieto en la media. Se pueden cambiar con variables de entorno para probar.
@@ -220,7 +220,7 @@ for (const clip of CLIPS) {
         g.set(b, media.clone().multiply(new THREE.Quaternion().slerp(resto, su[gr])));
       }
     }
-    // Brazos: en la carrera del paquete van por delante del cuerpo y abiertos (Pedro: «torcidos hacia delante, en pose
+    // Brazos: en la carrera del paquete van por delante del cuerpo y abiertos (valravnx: «torcidos hacia delante, en pose
     // nada natural»). Al correr de verdad el brazo oscila alrededor de la vertical: el codo pasa por detrás del cuerpo
     // y la mano va de la cadera al pecho, cerca del costado. Se gira todo el brazo desde el hombro (sin cambiar el codo)
     // para que su dirección media quede como se pide: ADELANTE grados hacia delante y ABIERTO grados hacia fuera.

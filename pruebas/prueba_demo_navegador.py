@@ -104,7 +104,7 @@ with sync_playwright() as p:
         png = pg.screenshot(path=f'{SALIDA}/{nombre}_construir.png')
         v = variedad(png); comprobar('construir: se dibuja', v > 8, f'{v:.1f}')
         m0 = medir(pg, nombre, 'construir', 1)
-        # correr (Pedro: «fea y exagerada»): con la carrera del taller-v6, a su velocidad natural medida al cargar
+        # correr (valravnx: «fea y exagerada»): con la carrera del taller-v6, a su velocidad natural medida al cargar
         pg.keyboard.down('w'); pg.wait_for_timeout(1200)
         c = pg.evaluate('(() => { const j = window.__kinhold.jugador; return {m: j.modo, r: j.mh.acciones[j.modo].timeScale, n: j.mh.velocidad.correr || 0}; })()')
         pg.screenshot(path=f'{SALIDA}/{nombre}_construir_correr.png'); pg.keyboard.up('w'); pg.wait_for_timeout(300)

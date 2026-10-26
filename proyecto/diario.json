@@ -116,7 +116,7 @@
   "titulo": "Revisión de las pruebas de estilo: investigación y replanteo",
   "hito": "arte",
   "hecho": [
-   "Pedro: las pruebas de estilo v1 no valen (tres acabados sobre el mismo modelo, B y C muy lentos, personaje feo).",
+   "valravnx: las pruebas de estilo v1 no valen (tres acabados sobre el mismo modelo, B y C muy lentos, personaje feo).",
    "Causas de la lentitud: material físico (Standard) en B y C, sombra de 2048, resolución doble en móvil y hasta 86 mil triángulos en C.",
    "Investigado: con menos de 100-150 dibujados, un material barato, una sola luz con sombra y sombras de 1024 o 512, la escena va fluida en móvil medio. Ayudan también el material toon con textura de degradado, juntar mallas e instanciar.",
    "Personaje: el problema de fondo es montarlo con piezas sueltas (esferas y cilindros pegados). Propuesta: una sola malla continua con esqueleto, o modelos libres CC0 ya animados. Queda para que decidas.",
@@ -340,12 +340,12 @@
   "titulo": "Personaje v3: más ligero en el móvil",
   "hito": "arte",
   "hecho": [
-   "Pedro: en su móvil el personaje v2 iba a 10 fps y el traje de explorador es demasiado de fantasía.",
+   "valravnx: en su móvil el personaje v2 iba a 10 fps y el traje de explorador es demasiado de fantasía.",
    "En pantallas táctiles empieza en calidad ligera: material sencillo con el color, sin relieve ni brillo. Resolución de partida 1× y puede bajar hasta 0,5×.",
    "La ropa, el pelo y la barba comparten un solo esqueleto; antes cada malla calculaba el suyo en cada fotograma.",
    "Interruptores de prueba (calidad, sombras, cabaña y suelo) para ver en el móvil qué pesa, con los fps arriba. En el móvil el panel empieza cerrado para no tapar al personaje.",
    "Quitado el traje de explorador de las opciones.",
-   "No comprobado: si con esto llega a fps buenos en el móvil de Pedro. Aquí no hay tarjeta gráfica y las medidas no se parecen a un móvil."
+   "No comprobado: si con esto llega a fps buenos en el móvil de valravnx. Aquí no hay tarjeta gráfica y las medidas no se parecen a un móvil."
   ],
   "pruebas": "Personaje en navegador PC y móvil (vistas, animación, variantes, calidad ligera, esqueleto compartido, interruptores): todo correcto.",
   "capturas": "capturas/personaje-v3",
@@ -360,7 +360,7 @@
    "Malentendido corregido: «me va de 10» significaba que iba perfecto, no a 10 fps. Vuelve la calidad alta por defecto también en el móvil; la ligera solo si la eliges tú.",
    "Taller propio montado: Blender sin pantalla (instalado con pip) con MakeHuman (MPFB2) desde su repositorio. Crea humanos por código con edad, sexo, músculo, peso, altura y rasgos de la cara, y les pone esqueleto para juegos.",
    "Primera prueba: tres personas distintas (hombre de mediana edad, mujer joven, anciano) fotografiadas en arcilla. Proporciones y caras anatómicas, y la edad se nota.",
-   "Lo que falta para usarlo: ojos, pieles, pelo, cejas y barbas vienen en paquetes libres de MakeHuman que solo se bajan de su web (los tiene que bajar Pedro). Su ropa es moderna, no medieval. Cada cuerpo tiene 26,8 mil triángulos y habría que reducirlo para el móvil."
+   "Lo que falta para usarlo: ojos, pieles, pelo, cejas y barbas vienen en paquetes libres de MakeHuman que solo se bajan de su web (los tiene que bajar valravnx). Su ropa es moderna, no medieval. Cada cuerpo tiene 26,8 mil triángulos y habría que reducirlo para el móvil."
   ],
   "pruebas": "Personaje v4 en navegador PC y móvil: todo correcto. Taller: tres humanos creados y exportables sin errores.",
   "capturas": "capturas/taller-makehuman",
@@ -395,7 +395,7 @@
    "Cambiar de idioma recarga la página sin perder la partida guardada.",
    "En el móvil solo se ve el botón del otro idioma, para que el menú no crezca; el panel de opciones del combate baja para no tapar el menú.",
    "Pruebas nuevas: prueba_idiomas.mjs (todo texto del código tiene traducción y las mismas variables) y prueba_idioma_navegador.py (PC y móvil, sin textos sin traducir ni palabras en español a la vista, el botón cambia, recuerda y no borra la partida). Las dos se rompieron a propósito una vez (MUTAR=1) y fallaron.",
-   "Decisión provisional: las pruebas de estilo y el personaje quedan en español hasta que Pedro revise el personaje (ninguna otra sesión toca su código); queda como tarea en espera.",
+   "Decisión provisional: las pruebas de estilo y el personaje quedan en español hasta que valravnx revise el personaje (ninguna otra sesión toca su código); queda como tarea en espera.",
    "Capturas de la construcción en capturas/construccion-v5."
   ],
   "pruebas": "Todas correctas (probar_todo.sh): lógica 46/46, modelos 21/21, combate 69/69, personaje horneado, textos traducidos 231/231, navegador construcción, combate, estilo, personaje, juego en inglés (PC y móvil) y web. Capturas en inglés miradas en PC y móvil. No comprobado: en un móvil real.",
@@ -414,7 +414,7 @@
    "El cargador de personajes abre los archivos comprimidos y, si se le pide, las 39 animaciones extra (vendarse, arco, minar, campo, pesca, espada ligera y pesada, escudo, pasos en todas direcciones, trepar, tumbarse…), cada una con un nombre en español.",
    "Cinco extra se llaman igual que una básica (bloqueo, escudo, comer, brazos cruzados, empujón): la básica se queda como estaba y la extra va aparte, para no cambiar nada sin querer.",
    "Prueba nueva en navegador: la v2 se ve igual que la v1 (diferencia media menor de 1 sobre 255), mismos triángulos y esqueletos, y cada animación extra mueve el cuerpo. Hoja con las 39 poses en las capturas.",
-   "No se ha cambiado el prototipo del personaje (REVISION.md pide que solo lo toque la sesión del chat hasta que Pedro lo revise): pasarlo a la v2 y añadir el selector de animaciones queda como tarea en espera.",
+   "No se ha cambiado el prototipo del personaje (REVISION.md pide que solo lo toque la sesión del chat hasta que valravnx lo revise): pasarlo a la v2 y añadir el selector de animaciones queda como tarea en espera.",
    "No comprobado: cuánto tarda en bajar en un móvil real."
   ],
   "pruebas": "Todas correctas: construcción 46/46, modelos 21/21, combate 69/69, personaje horneado 11/11, textos traducidos, navegador de construcción, combate, estilo, personaje, recursos v2 (PC y móvil), inglés y web. La prueba de recursos falla a propósito con MUTAR=1 (12 fallos).",
@@ -429,7 +429,7 @@
   "hecho": [
    "La barba ya no es una cáscara encima de la cara: va pintada en la piel, con bordes difusos y pelillos, y el bigote baja por las comisuras hasta unirse a la barba.",
    "Labios más finos y menos salidos (altura, profundidad y anchura de la boca). Medido: el ajuste de «volumen» de MakeHuman casi no cambia nada; lo que sirve es la altura y la profundidad.",
-   "Fallo de las fotos corregido (lo vio Pedro): el encuadre de la cara cortaba la barbilla. Ahora sale la cabeza entera, del pelo al cuello, en Blender y en three.js.",
+   "Fallo de las fotos corregido (lo vio valravnx): el encuadre de la cara cortaba la barbilla. Ahora sale la cabeza entera, del pelo al cuello, en Blender y en three.js.",
    "Con el encuadre nuevo se veían dos fallos que antes quedaban fuera, ya arreglados: un hueco oscuro en el escote de la túnica y el borde dentado de la toca."
   ],
   "pruebas": "Prueba de taller, no publicada como versión jugable: dos personajes exportados y vistos en Blender y en three.js sin errores en consola. No comprobado: animaciones ni rendimiento en móvil.",
@@ -458,7 +458,7 @@
   "titulo": "Personaje v6: arreglada la ropa del taller vista del revés",
   "hito": "arte",
   "hecho": [
-   "Fallo que vio Pedro en la v5: en calidad alta la túnica, el vestido, el pelo y la cofia del taller propio se veían del revés, con manchas, y el pelo desaparecía.",
+   "Fallo que vio valravnx en la v5: en calidad alta la túnica, el vestido, el pelo y la cofia del taller propio se veían del revés, con manchas, y el pelo desaparecía.",
    "Causa: el cargador de modelos apaga la escritura de profundidad en los materiales con transparencia; al pasarlos a recorte no se volvía a encender, y la piel se pintaba encima. En calidad ligera no pasaba, y las pruebas solo miraban esa.",
    "Arreglado y con prueba nueva: en calidad alta todo el personaje del taller tiene que escribir profundidad. Rota a propósito: falla como debe.",
    "Revisadas las capturas de los dos personajes en calidad alta, en PC y en móvil."
@@ -473,7 +473,7 @@
   "titulo": "Personaje v7: postura y pecho del taller propio",
   "hito": "arte",
   "hecho": [
-   "Pedro: el hombre marcaba pecho, el cuerpo iba doblado hacia delante y los hombros muy para atrás.",
+   "valravnx: el hombre marcaba pecho, el cuerpo iba doblado hacia delante y los hombros muy para atrás.",
    "Causa de la postura: las animaciones del paquete llevan el tronco y el cuello inclinados hacia delante y los brazos colgando hacia atrás, a juego con sus muñecos de cabeza grande; además, al igualar la pelvis y las clavículas a las del paquete, la cadera se giraba 35° y los hombros se iban atrás.",
    "Arreglo: solo los brazos se igualan al paquete; la inclinación del tronco, el cuello y las clavículas se mide en la animación de estar quieto y se quita en todas (queda un 30 %); y los brazos se giran desde el hombro para colgar rectos.",
    "La túnica del hombre se alisa en el pecho para que caiga como tela, sin meterse dentro del cuerpo.",
@@ -487,10 +487,10 @@
  {
   "inicio": "2026-10-25T09:15:48+01:00",
   "fin": "2026-10-25T09:15:48+01:00",
-  "titulo": "Decisión de Pedro: el taller propio es la base de los personajes",
+  "titulo": "Decisión de valravnx: el taller propio es la base de los personajes",
   "hito": "arte",
   "hecho": [
-   "Pedro, tras ver el personaje v7: «lo veo bien, sigue», y elige el taller propio (cuerpo de MakeHuman con ropa hecha por código) como base de los personajes del juego. El paquete de Quaternius queda solo para comparar y como fuente de animaciones.",
+   "valravnx, tras ver el personaje v7: «lo veo bien, sigue», y elige el taller propio (cuerpo de MakeHuman con ropa hecha por código) como base de los personajes del juego. El paquete de Quaternius queda solo para comparar y como fuente de animaciones.",
    "Se cierran las decisiones del personaje y de la ropa: la ropa histórica se hace por código en el taller; no hace falta comprar paquetes ni encargarla.",
    "Las tareas del hito de arte se rehacen para el taller, de una sesión cada una: ropa por capas (camisa y gambesón; cota de malla y sobreveste; capa, calzado y tocados), personalización, más peinados y barbas, las 39 animaciones extra, ropa fabricable y heridas visibles."
   ],
@@ -521,7 +521,7 @@
   "titulo": "Hito 1c: planificación de las piezas nuevas",
   "hito": "construccion-mas",
   "hecho": [
-   "Pedro, por el chat: «puedes hacer, están haciendo los modelados de ropa; haz algo no relacionado». Elige planificar el hito de construcción, que no toca el personaje. Se hace aunque el hito de arte bloquee empezar hitos nuevos, porque lo pide él.",
+   "valravnx, por el chat: «puedes hacer, están haciendo los modelados de ropa; haz algo no relacionado». Elige planificar el hito de construcción, que no toca el personaje. Se hace aunque el hito de arte bloquee empezar hitos nuevos, porque lo pide él.",
    "Comparadas las piezas del documento de sistemas con las que ya hay en el juego. Faltan: escalera de tablas, contraventana, trampilla, tejado de teja, remate de tejado, chimenea, adarve, puente de troncos y parte de la decoración.",
    "Hito desglosado en 9 tareas de una sesión: escalera de tablas, barandillas y vallas, contraventana y trampilla, tejado de teja, remate de tejado, chimenea, adarve, decoración que falta y revisión final.",
    "Los puentes de troncos se dejan para el hito Mundo, porque necesitan agua en el mapa.",
@@ -534,7 +534,7 @@
  {
   "inicio": "2026-10-25T09:58:47+01:00",
   "fin": "2026-10-25T09:58:47+01:00",
-  "titulo": "Decisiones de Pedro: estilo, cámara táctil, curación y fuego amigo",
+  "titulo": "Decisiones de valravnx: estilo, cámara táctil, curación y fuego amigo",
   "hito": "arte",
   "hecho": [
    "Estilo del mundo: el «realismo en miniatura» de la prueba de estilo v5 es la base. Se desbloquean terreno, hierba, árboles, más detalle en las piezas de construcción y el rendimiento en el móvil.",
@@ -587,7 +587,7 @@
   "titulo": "Análisis del estado del proyecto, GDD v0.7 y plan para unificar las demos",
   "hito": "infra",
   "hecho": [
-   "Análisis pedido por Pedro: lo hecho frente al GDD, lo que falta y los problemas del desarrollo.",
+   "Análisis pedido por valravnx: lo hecho frente al GDD, lo que falta y los problemas del desarrollo.",
    "Problemas encontrados: las acciones aún no llevan autor (lo pide CLAUDE.md para el servidor); cuatro prototipos separados (construcción y combate siguen con muñecos hechos a mano y sin el estilo elegido); los golpes por dirección del combate no tienen animaciones; falta medir el rendimiento con mucha gente y en un móvil de verdad; el mundo grande por trozos y el servidor no están empezados; la ropa por capas aún no protege ni abriga; el GDD se había quedado atrás; el taller depende de versiones sin fijar; choques al fusionar el diario entre sesiones; código muerto del personaje esculpido; el ruso está sin empezar.",
    "Hito nuevo 0b «Bases técnicas»: acciones con autor y registro, quitar código muerto, taller con versiones fijadas y diario sin choques. Va primero.",
    "Hito nuevo 1d «Una sola demo»: escena común con el estilo v5, personaje del taller en la construcción y en el combate, una página con menú y medida de rendimiento. Va antes que el resto del arte y de las piezas de construcción.",
@@ -645,7 +645,7 @@
    "El GDD, el documento de sistemas y el de análisis están en ruso, en diseno/ru/, con la huella del original como los de inglés.",
    "Cada documento tiene arriba el selector ES · EN · RU, y la web en ruso enlaza ya a los documentos en ruso (antes iban al inglés).",
    "construir_web.mjs comprueba también el ruso: falla si falta una traducción o si el español ha cambiado desde que se tradujo.",
-   "Con esto se terminan las tareas del hito de infraestructura: queda en revisión para Pedro.",
+   "Con esto se terminan las tareas del hito de infraestructura: queda en revisión para valravnx.",
    "No comprobado: las traducciones al ruso no las ha revisado una persona que hable ruso."
   ],
   "pruebas": "Todas correctas con probar_todo.sh (lógica 63, modelos 21, combate 69, personaje 11, textos traducidos, navegador de los cuatro prototipos, idiomas y web 109 comprobaciones), PC y móvil; la prueba nueva de los documentos en ruso se rompió a propósito una vez y falló",
@@ -730,7 +730,7 @@
    "Quedaba sin comprobar que las pruebas de navegador del registro de acciones fallan si una acción no se anota: comprobado quitando el apunte en el registro; la de la construcción y las dos del combate fallan.",
    "Arreglada la del combate: con el registro vacío rompía la prueba entera en vez de fallar esa comprobación y seguir.",
    "Sin versión jugable nueva: el hito prepara el proyecto, no cambia nada a la vista.",
-   "El hito 0b queda en revisión, esperando a Pedro."
+   "El hito 0b queda en revisión, esperando a valravnx."
   ],
   "pruebas": "Todas correctas (lógica 63, modelos 21, combate 69, acciones 25, unión 19, taller, traducciones y navegador: construcción, combate, estilo, personaje, recursos, inglés y web), PC y móvil. Construcción y combate repetidas tras el arreglo de la prueba.",
   "capturas": "",
@@ -742,10 +742,10 @@
   "titulo": "Arreglo: quitar muebles con el ratón",
   "hito": "construccion-mas",
   "hecho": [
-   "Pedro: en PC no se podían quitar muebles; al mover el ratón hacia el botón de confirmar se perdía lo elegido.",
+   "valravnx: en PC no se podían quitar muebles; al mover el ratón hacia el botón de confirmar se perdía lo elegido.",
    "Causa: en Desmontar, pasar el ratón volvía a elegir lo que hubiera debajo y escondía el botón. Pasaba también con las piezas.",
    "Ahora el clic elige y lo elegido se queda fijo hasta confirmar o cancelar; sin nada elegido, pasar el ratón sigue resaltando lo que se quitaría.",
-   "Prueba nueva con el ratón de verdad: clic en un barril, mover el ratón hasta el botón y confirmar. Con el código de antes falla, como le pasaba a Pedro.",
+   "Prueba nueva con el ratón de verdad: clic en un barril, mover el ratón hasta el botón y confirmar. Con el código de antes falla, como le pasaba a valravnx.",
    "Construcción v8 publicada; las versiones anteriores siguen en la web."
   ],
   "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, acciones, unión, taller, traducciones y navegador de los cuatro prototipos, recursos, inglés y web), PC y móvil. No comprobado: en una pantalla táctil de verdad (el toque no cambia: elige y pide confirmar como antes).",
@@ -767,7 +767,7 @@
    "La prueba de combate espera a que la flecha acabe su vuelo en vez de un tiempo fijo; con fotogramas más lentos fallaba sin que el juego fallase.",
    "Construcción v9 y combate v7 publicados; las versiones anteriores siguen en la web."
   ],
-  "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, acciones, unión, taller, traducciones y navegador de construcción, combate, estilo, personaje, inglés y ruso, y web), PC y móvil; la de recursos de personaje falló por una ruta de importación y, arreglada, pasó repetida. Medido sin tarjeta gráfica (aquí no hay otra): construcción 346 ms por fotograma frente a 142 de la v8, combate 280 frente a 145 de la v6. No comprobado: los fotogramas con tarjeta gráfica ni en el móvil de Pedro (es la tarea de rendimiento de este hito). Las comprobaciones de la prueba de combate cambiadas son las mismas (solo cambia la espera), no se rompieron a propósito.",
+  "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, acciones, unión, taller, traducciones y navegador de construcción, combate, estilo, personaje, inglés y ruso, y web), PC y móvil; la de recursos de personaje falló por una ruta de importación y, arreglada, pasó repetida. Medido sin tarjeta gráfica (aquí no hay otra): construcción 346 ms por fotograma frente a 142 de la v8, combate 280 frente a 145 de la v6. No comprobado: los fotogramas con tarjeta gráfica ni en el móvil de valravnx (es la tarea de rendimiento de este hito). Las comprobaciones de la prueba de combate cambiadas son las mismas (solo cambia la espera), no se rompieron a propósito.",
   "capturas": "capturas/construccion-v9",
   "estado": "ok"
  },
@@ -835,10 +835,10 @@
   "hito": "unificacion",
   "hecho": [
    "Medida de rendimiento común (src/mundo/rendimiento.js): cada parte registra su renderer y se cuentan los fotogramas por segundo, el tiempo medio y el peor de cada fotograma, los triángulos y las llamadas de dibujo, la memoria gráfica (geometrías y texturas), la de JavaScript (solo en Chrome y similares) y los personajes en escena.",
-   "Demo única v2 publicada (jugar/demo/v2): los fps salen en un botón junto a «Menú» y al pulsarlo se abre el detalle con una nota para Pedro. En el móvil, si junto a «Menú» no cabe sin añadir otra fila de botones, va suelto a la izquierda de la pantalla.",
+   "Demo única v2 publicada (jugar/demo/v2): los fps salen en un botón junto a «Menú» y al pulsarlo se abre el detalle con una nota para valravnx. En el móvil, si junto a «Menú» no cabe sin añadir otra fila de botones, va suelto a la izquierda de la pantalla.",
    "En «Construir», «Personajes de prueba» (0, 4, 8 o 16): personajes del taller que pasean en corro alrededor del jugador, solo para medir con gente; no cambian el mundo.",
    "Medido en el navegador de pruebas (dibujo por software, sus fps no valen): personaje 89 mil triángulos y 41 dibujos; construcción con 1 personaje 130 mil triángulos y 29 dibujos; con 9 personajes 426 mil y 185 (cada personaje suma unos 37 mil triángulos contando su sombra, unas 10 geometrías y 12 texturas); duelo con 2 personajes 143 mil y 72.",
-   "Pregunta añadida a Pedro en las decisiones pendientes: los fps en su móvil.",
+   "Pregunta añadida a valravnx en las decisiones pendientes: los fps en su móvil.",
    "Prueba de la demo ampliada: botón de fps libre, panel con los números, cuenta de personajes en cada parte, más triángulos con 8 personajes de prueba y que el botón no tape el menú; con MUTAR_REND=1 falla como debe."
   ],
   "pruebas": "Todas correctas (bash herramientas/probar_todo.sh): lógica, modelos, combate, acciones, taller, unión, textos, navegador de construcción, combate, estilo, personaje, demo, recursos, idiomas y web; capturas de la demo miradas en PC y móvil",
@@ -887,8 +887,8 @@
    "Pasadas todas las pruebas del proyecto con probar_todo.sh: lógica, modelos, combate, acciones, taller, unión, textos y navegador de construcción, combate, estilo, personaje, demo única, recursos, idiomas y web.",
    "Revisadas las capturas de la demo única en PC y móvil (menú en español, inglés y ruso, Construir, Duelo y Personaje), de la construcción, del combate y de la web: el mismo personaje del taller y la misma escena en todo, y ningún aviso tapa los menús.",
    "Sin versión jugable nueva: desde la demo v3 no ha cambiado nada que se juegue.",
-   "Los fps de las capturas (1 a 4) son del navegador de pruebas sin tarjeta gráfica, no de un dispositivo de verdad; en su móvil Pedro dijo que van bien.",
-   "El hito 1d queda en revisión, esperando a Pedro."
+   "Los fps de las capturas (1 a 4) son del navegador de pruebas sin tarjeta gráfica, no de un dispositivo de verdad; en su móvil valravnx dijo que van bien.",
+   "El hito 1d queda en revisión, esperando a valravnx."
   ],
   "pruebas": "Todas correctas (bash herramientas/probar_todo.sh), PC y móvil; capturas miradas.",
   "capturas": "",
@@ -916,7 +916,7 @@
   "titulo": "Demo única v4: la carrera nueva en todo",
   "hito": "unificacion",
   "hecho": [
-   "Pedro pidió integrar la carrera nueva y todo en la demo única.",
+   "valravnx pidió integrar la carrera nueva y todo en la demo única.",
    "Demo única v4 publicada: construcción v11, combate v8 y personaje v12, con los personajes del taller-v5 (carrera suavizada y a su velocidad natural).",
    "Prueba nueva en la demo: en «Construir» el personaje corre con la carrera nueva a su ritmo natural (falla con MUTAR=1)."
   ],
@@ -930,7 +930,7 @@
   "titulo": "Brazos naturales al correr (personaje v13, demo v5)",
   "hito": "arte",
   "hecho": [
-   "Pedro: los brazos de la carrera nueva van torcidos hacia delante, en pose nada natural; arreglado eso, la aprueba (pregunta de la carrera cerrada: no hacen falta las de Rokoko).",
+   "valravnx: los brazos de la carrera nueva van torcidos hacia delante, en pose nada natural; arreglado eso, la aprueba (pregunta de la carrera cerrada: no hacen falta las de Rokoko).",
    "Los brazos se corrigen por código en la misma carrera: el brazo oscila alrededor de la vertical (de unos 25° atrás a unos 18° delante), el antebrazo va un poco hacia arriba y hacia dentro, la mano de canto con el pulgar arriba y la muñeca recta.",
    "Personajes en recursos/personajes/taller-v6/ (las demás animaciones salen idénticas: diferencia máxima de 2·10⁻⁷).",
    "Personaje v13 y demo única v5 publicados."
@@ -945,7 +945,7 @@
   "titulo": "Cinturón de la cota ceñido (taller-v7)",
   "hito": "arte",
   "hecho": [
-   "Pedro aprobó el hito 1d (una sola demo).",
+   "valravnx aprobó el hito 1d (una sola demo).",
    "El cinturón de encima de la cota del hombre se estiraba hasta los brazos (0,32 m de medio ancho frente a 0,18 de la cota): al medir el contorno de la cintura se contaban también las mangas, y las de la cota bajan hasta la mano. Ahora solo cuentan el cuerpo y la falda de la prenda.",
    "Personajes nuevos en recursos/personajes/taller-v7, encima de la v6 de los brazos al correr: solo cambia ese cinturón (comprobado malla a malla); las animaciones salen idénticas.",
    "Prueba nueva de los cinturones de todos los personajes y comprobación en el visor con el hombre y la cota; las dos fallan con la taller-v6.",
@@ -962,24 +962,24 @@
   "titulo": "Pantalla en blanco en el móvil arreglada; muros con el estilo (construcción v12)",
   "hito": "construccion-mas",
   "hecho": [
-   "Pedro: la pantalla se queda en blanco jugando (con los botones vivos y a más de 80 fps) y sigue así aunque recargue.",
+   "valravnx: la pantalla se queda en blanco jugando (con los botones vivos y a más de 80 fps) y sigue así aunque recargue.",
    "Causa encontrada y medida: al colocar o quitar algo se rehacían todas las piezas y las viejas no se liberaban de la memoria gráfica (con 9 piezas, 20 reconstrucciones pasaban de 870 a 4.050 mallas). Con una casa grande, cada pieza colocada dejaba miles, hasta agotar la memoria del móvil.",
    "Arreglado: las piezas, el mojón, el anillo de la tierra y la pieza fantasma se liberan al quitarlos (la cuenta queda igual tras 20 reconstrucciones). En el duelo, las flechas, dianas y postes también.",
    "Si aun así el navegador pierde el dibujo 3D: aviso, recarga sola con lo construido guardado y, si vuelve a pasar enseguida, botón «Recargar» en vez de recargar en bucle.",
    "Muros, postes y vigas con el estilo elegido (troncos redondos con testas, zarzo, entramado y tablas), cada pieza en una malla por textura. Muestrario nuevo para fotos de cerca (herramientas/muestrario/).",
    "Publicados construcción v12, combate v9 y demo única v7. Se colaron en el repositorio dos enlaces a node_modules (de una copia de trabajo): quitados y ahora ignorados."
   ],
-  "pruebas": "Todas correctas en PC y móvil. Pruebas nuevas, que fallan al romperlas: memoria gráfica estable al rehacer las piezas (MUTAR_FUGA=1: 822 → 16.672 geometrías), aviso y recarga al perder el dibujo 3D, huecos de puertas y ventanas mirados triángulo a triángulo. No comprobado: en el móvil de Pedro.",
+  "pruebas": "Todas correctas en PC y móvil. Pruebas nuevas, que fallan al romperlas: memoria gráfica estable al rehacer las piezas (MUTAR_FUGA=1: 822 → 16.672 geometrías), aviso y recarga al perder el dibujo 3D, huecos de puertas y ventanas mirados triángulo a triángulo. No comprobado: en el móvil de valravnx.",
   "capturas": "capturas/construccion-v12",
   "estado": "ok"
  },
  {
   "inicio": "2026-10-26T12:06:00+01:00",
   "fin": "2026-10-26T12:13:41+01:00",
-  "titulo": "Decisiones de Pedro: mundo a escala real, agua y nado, y obras con materiales (GDD v0.8)",
+  "titulo": "Decisiones de valravnx: mundo a escala real, agua y nado, y obras con materiales (GDD v0.8)",
   "hito": "construccion-mas",
   "hecho": [
-   "Pedro aprueba («sí, todo») la propuesta del mundo, el nado y las obras.",
+   "valravnx aprueba («sí, todo») la propuesta del mundo, el nado y las obras.",
    "Mundo a escala real: cordilleras como los Pirineos (cumbres de unos 3.000 m, valles de unos 1.000 m, collados), llanuras en las cuencas, ríos de tres gruesos según el agua que recogen, bosques frondosos, pendientes que frenan y obligan a nivelar. Se genera primero la red de ríos y después el terreno.",
    "Agua y nado (no estaba en el GDD): se vadea andando, en el agua honda se nada despacio y cansa, no con armadura o mucha carga, la corriente de los ríos grandes arrastra; los carros solo cruzan por vados y puentes.",
    "Obras: marco, materiales y tiempo; clases de peso (ligero, pesado, muy pesado); escalera, varas para rodar troncos, andamio, polea, polipasto con torno y grúa de rueda. Solo o en pareja, una cabaña de troncos; en grupo, la piedra.",

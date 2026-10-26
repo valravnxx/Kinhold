@@ -1,6 +1,6 @@
 # Marca de Kinhold (v1)
 
-- **Sello original:** imagen generada por Pedro con una herramienta de IA de imágenes (25 oct 2026), guardada en
+- **Sello original:** imagen generada por valravnx con una herramienta de IA de imágenes (25 oct 2026), guardada en
   `herramientas/marca/sello_original_gpt.png`.
 - **Edición por código** (`herramientas/marca/editar_sello.py`): se quita el «KINHOLD» repetido de la parte de abajo
   del anillo y se ponen en su lugar los mismos adornos de los lados (punto, cruz, punto).

@@ -58,7 +58,7 @@
    "nombre": "Bases técnicas",
    "estado": "hecho",
    "jugable": "Nada nuevo a la vista: el proyecto queda preparado para el online y para trabajar varias sesiones a la vez sin pisarse.",
-   "nota": "Salió del análisis del 25 oct (pedido de Pedro). Va antes que lo demás porque cuanto más código se escriba sin esto, más cuesta arreglarlo.",
+   "nota": "Salió del análisis del 25 oct (pedido de valravnx). Va antes que lo demás porque cuanto más código se escriba sin esto, más cuesta arreglarlo.",
    "tareas": [
     {
      "nombre": "Acciones con autor: toda acción que cambia el mundo (construir, desmontar, golpear, herir) pasa por la lógica pura como un mensaje con autor (quién, qué, dónde), se valida y se guarda en un registro; pruebas que lo comprueban y que fallan si una acción se salta el registro",
@@ -98,7 +98,7 @@
    "nombre": "Una sola demo",
    "estado": "hecho",
    "jugable": "Una sola página con construcción, duelo y personaje, con la misma escena del estilo elegido y el mismo personaje del taller en todo.",
-   "nota": "Plan de unificación (pedido de Pedro, 25 oct): hoy son cuatro prototipos que no se hablan y cada mejora se queda en uno. Va antes que el resto del arte y de las piezas de construcción.",
+   "nota": "Plan de unificación (pedido de valravnx, 25 oct): hoy son cuatro prototipos que no se hablan y cada mejora se queda en uno. Va antes que el resto del arte y de las piezas de construcción.",
    "tareas": [
     {
      "nombre": "Escena común (src/mundo/): cielo, luz, niebla, suelo y decorado con el estilo v5 en un solo módulo, que usan la construcción, el combate y el visor de personaje",
@@ -125,7 +125,7 @@
      "fin": "2026-10-26T00:17:59+00:00"
     },
     {
-     "nombre": "Rendimiento de la demo única: medir fotogramas, triángulos y memoria con la escena y varios personajes, dejar los números a la vista y pedir a Pedro los fps en su móvil",
+     "nombre": "Rendimiento de la demo única: medir fotogramas, triángulos y memoria con la escena y varios personajes, dejar los números a la vista y pedir a valravnx los fps en su móvil",
      "estado": "hecho",
      "inicio": "2026-10-26T00:21:01+00:00",
      "fin": "2026-10-26T01:28:05+00:00"
@@ -183,43 +183,43 @@
    "nota": "Prioridad alta: antes de añadir más piezas o sistemas, para no rehacerlos luego con el estilo nuevo.",
    "tareas": [
     {
-     "nombre": "Correr más natural (Pedro: «la animación de correr me parece fea y exagerada»): primero suavizar por código la del paquete (menos braceo, rebote e inclinación); después probar carreras de captura de movimiento libres para uso comercial (Rokoko o CMU) si Pedro las baja",
+     "nombre": "Correr más natural (valravnx: «la animación de correr me parece fea y exagerada»): primero suavizar por código la del paquete (menos braceo, rebote e inclinación); después probar carreras de captura de movimiento libres para uso comercial (Rokoko o CMU) si valravnx las baja",
      "estado": "hecho",
      "inicio": "2026-10-26T05:09:48+01:00",
      "fin": "2026-10-26T06:36:44+01:00"
     },
     {
-     "nombre": "Tres pruebas de estilo (personaje y una escena con cabaña) con distinta luz, materiales y nivel de detalle, para que Pedro elija",
+     "nombre": "Tres pruebas de estilo (personaje y una escena con cabaña) con distinta luz, materiales y nivel de detalle, para que valravnx elija",
      "estado": "hecho",
      "inicio": "2026-10-24T18:41:34+02:00",
      "fin": "2026-10-24T19:12:43+02:00"
     },
     {
-     "nombre": "Rehacer las pruebas de estilo (revisión de Pedro: B y C van muy lentos y el personaje no vale): un solo estilo estilizado y ligero (material barato tipo toon o Lambert, paleta en una textura pequeña, una luz con sombra de 1024, resolución adaptativa), presupuesto medido: escena ≤ 30 mil triángulos y ≤ 60 dibujados, 60 fps en móvil medio",
+     "nombre": "Rehacer las pruebas de estilo (revisión de valravnx: B y C van muy lentos y el personaje no vale): un solo estilo estilizado y ligero (material barato tipo toon o Lambert, paleta en una textura pequeña, una luz con sombra de 1024, resolución adaptativa), presupuesto medido: escena ≤ 30 mil triángulos y ≤ 60 dibujados, 60 fps en móvil medio",
      "estado": "hecho",
      "inicio": "2026-10-24T19:26:45+02:00",
      "fin": "2026-10-24T19:42:11+02:00"
     },
     {
-     "nombre": "Prueba de estilo v3, «maqueta en miniatura» (elegido por Pedro): formas limpias y redondeadas, luz suave con sombras de contacto, fondo desenfocado; cimiento de piedra continuo (no piedras sueltas); mismo presupuesto",
+     "nombre": "Prueba de estilo v3, «maqueta en miniatura» (elegido por valravnx): formas limpias y redondeadas, luz suave con sombras de contacto, fondo desenfocado; cimiento de piedra continuo (no piedras sueltas); mismo presupuesto",
      "estado": "hecho",
      "inicio": "2026-10-24T20:21:00+02:00",
      "fin": "2026-10-24T20:30:15+02:00"
     },
     {
-     "nombre": "Prueba de estilo v4, «realismo en miniatura» (pedido por Pedro): la v3 con texturas por código y el mundo sin recortar",
+     "nombre": "Prueba de estilo v4, «realismo en miniatura» (pedido por valravnx): la v3 con texturas por código y el mundo sin recortar",
      "estado": "hecho",
      "inicio": "2026-10-24T20:34:49+02:00",
      "fin": "2026-10-24T20:50:32+02:00"
     },
     {
-     "nombre": "Prueba de estilo v5: árboles rehechos (Pedro: «los árboles fatal, se ven como rayajos raros; la casa está bien»)",
+     "nombre": "Prueba de estilo v5: árboles rehechos (valravnx: «los árboles fatal, se ven como rayajos raros; la casa está bien»)",
      "estado": "hecho",
      "inicio": "2026-10-24T20:53:26+02:00",
      "fin": "2026-10-24T21:01:31+02:00"
     },
     {
-     "nombre": "Personaje nuevo por código (decidido por Pedro), vistoso y con el estilo de maqueta: una sola malla continua con esqueleto y animación, proporciones creíbles algo estilizadas",
+     "nombre": "Personaje nuevo por código (decidido por valravnx), vistoso y con el estilo de maqueta: una sola malla continua con esqueleto y animación, proporciones creíbles algo estilizadas",
      "estado": "hecho",
      "inicio": "2026-10-24T21:19:25+02:00",
      "fin": "2026-10-24T21:41:55+02:00"
@@ -229,7 +229,7 @@
      "estado": "hecho"
     },
     {
-     "nombre": "Personaje v2 con bases libres (CC0) ya hechas en vez de esculpirlo por código (Pedro: «horripilante»): cabeza, ropa, pelo y animaciones del paquete, con personalización",
+     "nombre": "Personaje v2 con bases libres (CC0) ya hechas en vez de esculpirlo por código (valravnx: «horripilante»): cabeza, ropa, pelo y animaciones del paquete, con personalización",
      "estado": "hecho",
      "inicio": "2026-10-24T23:05:00+02:00",
      "fin": "2026-10-24T23:31:24+02:00"
@@ -291,7 +291,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Personalización en el juego de toda la ropa y la armadura (pedido de Pedro): color o tinte de cada prenda, blasón o dibujo en la sobreveste, y qué capas lleva. Para eso las texturas de la ropa pasan a ir en gris con el color aparte, que se cambia sin rehacer el modelo",
+     "nombre": "Personalización en el juego de toda la ropa y la armadura (pedido de valravnx): color o tinte de cada prenda, blasón o dibujo en la sobreveste, y qué capas lleva. Para eso las texturas de la ropa pasan a ir en gris con el color aparte, que se cambia sin rehacer el modelo",
      "estado": "pendiente"
     },
     {
@@ -329,13 +329,13 @@
    "estado": "en_curso",
    "tareas": [
     {
-     "nombre": "Arreglo (pedido de Pedro): en PC no se pueden quitar muebles ni piezas, porque al mover el ratón hacia «Confirmar» se pierde lo elegido. Lo elegido con clic se queda fijo hasta confirmar o cancelar",
+     "nombre": "Arreglo (pedido de valravnx): en PC no se pueden quitar muebles ni piezas, porque al mover el ratón hacia «Confirmar» se pierde lo elegido. Lo elegido con clic se queda fijo hasta confirmar o cancelar",
      "estado": "hecho",
      "inicio": "2026-10-25T17:52:07+00:00",
      "fin": "2026-10-25T18:19:25+00:00"
     },
     {
-     "nombre": "Más resistencia en la madera (Pedro: «la madera es demasiado débil, no deja hacer 2 pisos con tejado»): una casa de 2 plantas con tejado hecha solo con piezas básicas de madera (cimiento, muros y suelo de troncos) tiene que poder construirse sin trucos; construir sin volverse loco, pero que se puedan hacer cosas. Prueba de lógica que lo garantice y capturas de la casa",
+     "nombre": "Más resistencia en la madera (valravnx: «la madera es demasiado débil, no deja hacer 2 pisos con tejado»): una casa de 2 plantas con tejado hecha solo con piezas básicas de madera (cimiento, muros y suelo de troncos) tiene que poder construirse sin trucos; construir sin volverse loco, pero que se puedan hacer cosas. Prueba de lógica que lo garantice y capturas de la casa",
      "estado": "hecho",
      "inicio": "2026-10-24T22:16:00+02:00",
      "fin": "2026-10-24T22:32:23+02:00"
@@ -359,7 +359,7 @@
      "nota": "Hecho en la rama trabajo/20261026-0519 (portillo, barandilla, pruebas y capturas); sin publicar porque la prueba del arco en el combate falla en main."
     },
     {
-     "nombre": "Estilo elegido en las piezas (Pedro: «los muebles y la construcción son los low-poly iniciales, no lo de la prueba visual»; va antes de añadir más piezas): muros de troncos (también con puerta y ventana), de zarzo y barro, de entramado y de tablas, medio muro, postes y vigas, con los troncos, la corteza, las testas y las texturas por código de la cabaña de la prueba de estilo v5",
+     "nombre": "Estilo elegido en las piezas (valravnx: «los muebles y la construcción son los low-poly iniciales, no lo de la prueba visual»; va antes de añadir más piezas): muros de troncos (también con puerta y ventana), de zarzo y barro, de entramado y de tablas, medio muro, postes y vigas, con los troncos, la corteza, las testas y las texturas por código de la cabaña de la prueba de estilo v5",
      "estado": "hecho",
      "inicio": "2026-10-26T07:58:22+01:00",
      "fin": "2026-10-26T11:58:37+01:00"
@@ -381,7 +381,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Obras (decidido por Pedro el 26 oct): poner el marco de la pieza, que se ve como un armazón; llevarle los materiales y construirla con un tiempo según la pieza; si te ayudan, tarda menos. Todo en la lógica pura, con el autor de cada entrega y de cada rato de trabajo",
+     "nombre": "Obras (decidido por valravnx el 26 oct): poner el marco de la pieza, que se ve como un armazón; llevarle los materiales y construirla con un tiempo según la pieza; si te ayudan, tarda menos. Todo en la lógica pura, con el autor de cada entrega y de cada rato de trabajo",
      "estado": "pendiente"
     },
     {
@@ -429,7 +429,7 @@
      "estado": "pendiente"
     }
    ],
-   "nota": "La primera tarea (madera más resistente) se adelantó el 24 oct porque la casa de dos plantas de Pedro y su pareja no admitía el tejado en las esquinas. Planificado el 25 oct a petición de Pedro por el chat, en paralelo a la sesión de la ropa. Los puentes de troncos no entran: necesitan agua en el mapa y llegan con el hito Mundo."
+   "nota": "La primera tarea (madera más resistente) se adelantó el 24 oct porque la casa de dos plantas de valravnx y su pareja no admitía el tejado en las esquinas. Planificado el 25 oct a petición de valravnx por el chat, en paralelo a la sesión de la ropa. Los puentes de troncos no entran: necesitan agua en el mapa y llegan con el hito Mundo."
   },
   {
    "id": "equipo",
@@ -558,7 +558,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Comparar alojamientos y costes para el servidor y la base de datos, y llevar las opciones a Pedro (la elección es suya)",
+     "nombre": "Comparar alojamientos y costes para el servidor y la base de datos, y llevar las opciones a valravnx (la elección es suya)",
      "estado": "pendiente"
     }
    ],
@@ -569,7 +569,7 @@
    "num": "11b",
    "nombre": "Administración, registros y seguridad",
    "estado": "pendiente",
-   "jugable": "Roles (jugador, moderador, administrador) para la cuenta de Pedro y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
+   "jugable": "Roles (jugador, moderador, administrador) para la cuenta de valravnx y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
    "nota": "Prioridad alta: es un juego online persistente. Desde ya, toda acción que cambia el mundo pasa por la lógica con autor, para poder registrarla después.",
    "tareas": []
   },
@@ -955,7 +955,7 @@
      "fecha": "2026-10-25",
      "archivo": "jugar/personaje/v8.html",
      "capturas": "capturas/personaje-v8",
-     "notas": "El taller propio pasa a ser la base (elegido por Pedro) y sale por defecto. Ropa por capas: camisa de lino, calzas y zapatos siempre; encima túnica o vestido y gambesón acolchado, que se ponen y se quitan con botones."
+     "notas": "El taller propio pasa a ser la base (elegido por valravnx) y sale por defecto. Ropa por capas: camisa de lino, calzas y zapatos siempre; encima túnica o vestido y gambesón acolchado, que se ponen y se quitan con botones."
     },
     {
      "v": "v9",

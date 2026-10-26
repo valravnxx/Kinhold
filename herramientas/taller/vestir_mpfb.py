@@ -375,7 +375,7 @@ def personaje(nombre, macros, objetivos, ropa):
             col *= (1 - 0.55 * (suave(0.0125, 0.0145, d) * suave(0.0175, 0.0150, d) * (P[..., 1] < ojo_c[s][1] - 0.004))[..., None])
         ceja = zona_cejas(P)[..., None]
         col = col * (1 - 0.85 * ceja) + colpelo * 0.85 * ceja
-        if ropa.get('barba'):  # barba pintada en la piel (Pedro: la cáscara dejaba mal la barbilla), con pelillos
+        if ropa.get('barba'):  # barba pintada en la piel (valravnx: la cáscara dejaba mal la barbilla), con pelillos
             b = zona_barba(P, A)[..., None]
             pelillos = 0.7 + 0.45 * ruido(P, (900, 900, 500))[..., None]
             col = col * (1 - 0.92 * b) + colpelo * pelillos * 0.92 * b
@@ -498,7 +498,7 @@ def personaje(nombre, macros, objetivos, ropa):
     # base: camisa de lino (más larga en la mujer: camisa hasta los tobillos)
     largo_camisa = tobillo_z + 0.05 if mujer else rodilla_z + 0.12
     piezas += prenda('camisa', ropa.get('camisa', (206, 196, 172)), 0.006, 0.003, largo_camisa, alto_cuello=0.0, escote=0.012, muneca_hueco=0.041)
-    # túnica (hombre, hasta la rodilla) o vestido (mujer, hasta los tobillos): alisada en el pecho (Pedro: «el hombre tiene tetas»)
+    # túnica (hombre, hasta la rodilla) o vestido (mujer, hasta los tobillos): alisada en el pecho (valravnx: «el hombre tiene tetas»)
     capa_media = 'vestido' if ropa.get('vestido') else 'tunica'
     largo = tobillo_z + 0.03 if ropa.get('vestido') else rodilla_z - 0.03
     media = prenda(capa_media, ropa['tunica'], 0.012, 0.007, largo, colgar_pecho=not mujer, alisado=(tronco, 8 if mujer else 25, 0.008))
@@ -583,7 +583,7 @@ for rig, piezas, pos in gente:
     for otro, op, _ in gente:
         for ob in [otro] + op: ob.hide_render = otro is not rig
     x = rig.location.x; cz = pos['head'].z + 0.07
-    # encuadre de toda la cabeza, de la coronilla al cuello (antes cortaba la barbilla: Pedro)
+    # encuadre de toda la cabeza, de la coronilla al cuello (antes cortaba la barbilla: valravnx)
     cz = pos['head'].z + 0.04
     foto((x, -0.95, cz + 0.01), (x, 0, cz - 0.01), 85, os.path.join(SALIDA, rig.name + '_cara.png'))
     foto((x - 0.78, -0.56, cz + 0.01), (x, 0, cz - 0.01), 85, os.path.join(SALIDA, rig.name + '_cara34.png'))

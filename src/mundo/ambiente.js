@@ -13,7 +13,7 @@ export function prepararRenderer(renderer) {
 }
 
 // Si el navegador pierde el dibujo 3D (en el móvil pasa cuando se queda sin memoria gráfica, con muchas pestañas o
-// al volver de otra aplicación), la pantalla se queda en blanco aunque los botones sigan funcionando (lo vio Pedro).
+// al volver de otra aplicación), la pantalla se queda en blanco aunque los botones sigan funcionando (lo vio valravnx).
 // three.js no recupera bien las texturas y las mallas al volver el contexto, así que se recarga la página: lo
 // construido y las opciones están guardados en el navegador. Si vuelve a pasar enseguida, no se recarga en bucle:
 // se ofrece un botón.
