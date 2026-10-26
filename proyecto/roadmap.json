@@ -356,7 +356,8 @@
     },
     {
      "nombre": "Estilo elegido en las piezas (Pedro: «los muebles y la construcción son los low-poly iniciales, no lo de la prueba visual»; va antes de añadir más piezas): muros de troncos (también con puerta y ventana), de zarzo y barro, de entramado y de tablas, medio muro, postes y vigas, con los troncos, la corteza, las testas y las texturas por código de la cabaña de la prueba de estilo v5",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-26T08:15:00+01:00"
     },
     {
      "nombre": "Estilo elegido en las piezas: cimientos de piedra y de troncos, suelos de troncos y de tablas, y escaleras de mano y de tablas, como la prueba de estilo v5",
