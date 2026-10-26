@@ -7,8 +7,9 @@ import { medidaRendimiento, genteDePrueba } from '../mundo/rendimiento.js';
 
 const CSS = `
 #btnDemoFps{min-width:62px;font-variant-numeric:tabular-nums}
-#btnDemoFps.lento{color:#f0b8a8}
-#demoRend{position:fixed;z-index:20;left:calc(10px + env(safe-area-inset-left,0px));width:min(340px,calc(100vw - 20px));background:rgba(36,30,24,.92);color:#f1e8d8;
+#btnDemoFps.lento:not(.sel){color:#f0b8a8}
+#btnDemoFps.suelto{position:fixed;z-index:9;left:calc(10px + env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%)}
+#demoRend{position:fixed;z-index:20;left:calc(10px + env(safe-area-inset-left,0px));width:min(340px,calc(100vw - 20px));background:rgba(36,30,24,.97);color:#f1e8d8;overflow:auto;
   border:1px solid rgba(241,232,216,.15);border-radius:12px;padding:10px 12px;font:12.5px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
 #demoRend b{color:#d9a441}
 #demoRend table{border-collapse:collapse;width:100%;margin:6px 0;font-variant-numeric:tabular-nums}
@@ -27,11 +28,14 @@ export function ponerRendimiento(boton) {
   const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
   const b = document.createElement('button');
   b.id = 'btnDemoFps'; b.textContent = '… fps'; b.title = tr('Rendimiento');
+  // junto a «Menú»; si ahí la fila de botones crece (móvil estrecho) y taparía otras cosas, va suelto a la izquierda
+  const caja = boton.parentElement, alto = caja.getBoundingClientRect().height;
   boton.after(b);
+  if (caja !== document.body && caja.getBoundingClientRect().height > alto + 4) { b.classList.add('suelto'); document.body.appendChild(b); }
   const panel = document.createElement('div');
   panel.id = 'demoRend'; panel.hidden = true;
   document.body.appendChild(panel);
-  const colocar = () => { const r = b.getBoundingClientRect(); panel.style.top = Math.round(r.bottom + 8) + 'px'; };
+  const colocar = () => { const r = b.getBoundingClientRect(); panel.style.top = Math.round(r.bottom + 8) + 'px'; panel.style.maxHeight = Math.max(160, innerHeight - r.bottom - 18) + 'px'; };
   b.onclick = () => { panel.hidden = !panel.hidden; b.classList.toggle('sel', !panel.hidden); colocar(); refrescar(); };
   addEventListener('resize', colocar);
 
