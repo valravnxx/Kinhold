@@ -2,3 +2,4 @@ node_modules/
 dist/
 /capturas*/
 __pycache__/
+node_modules
