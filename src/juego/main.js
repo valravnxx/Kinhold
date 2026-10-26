@@ -89,7 +89,7 @@ const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2
 // (decorado.despejar, en reconstruir) para que no asomen por los cimientos.
 const decorado = crearDecorado({ semilla: 7, llano: 60, lejos: 230, arboles: 220, bosqueDesde: 28, bosqueHasta: 175,
   hierba: 3200, flores: 900, hierbaDesde: 0, hierbaHasta: 46, rocas: 40, rocasDesde: 9, matas: 45, matasDesde: 7,
-  sueltos: 14, sueltosDesde: 17, calvas: 14, claro: (x, z) => Math.hypot(x, z - 4) > 1.5 }); // sin nada en el sitio de salida
+  sueltos: 10, sueltosDesde: 22, calvas: 14, claro: (x, z) => Math.hypot(x, z - 4) > 1.5 }); // sin nada en el sitio de salida
 escena.add(decorado.raiz);
 const obstaculos = decorado.obstaculos; // {x,z,r}
 

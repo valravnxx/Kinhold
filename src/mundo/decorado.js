@@ -82,7 +82,7 @@ export function suelo({ llano = 12, cerca = 15, lejos = 90, anillos = 30, lados 
 // opc: n (intentos), desde/hasta (anillo en metros), reparto (exponente: <1 más cerca del borde de dentro),
 // libre(x, z, d) para dejar huecos, llano (altura del terreno), sombra (si los árboles echan sombra).
 // Devuelve los troncos como obstáculos [{x, z, r}] para chocar con ellos.
-export function bosque(raiz, r, { n = 36, desde = 15, hasta = 60, reparto = 0.8, libre = null, llano = 12, sombra = false } = {}) {
+export function bosque(raiz, r, { n = 36, desde = 15, hasta = 60, reparto = 0.8, libre = null, llano = 12, sombra = false, frondosos = 1 / 3 } = {}) {
   const hacer = (fn) => {
     const L = new Lote({ rangoSuelo: 2.5 }); fn(L);
     const grupos = L.cerrar(null, true), tipos = Object.keys(grupos);
@@ -103,9 +103,9 @@ export function bosque(raiz, r, { n = 36, desde = 15, hasta = 60, reparto = 0.8,
     const a = r() * Math.PI * 2, d = desde + Math.pow(r(), reparto) * (hasta - desde);
     const x = Math.cos(a) * d, z = Math.sin(a) * d;
     if (libre && !libre(x, z, d)) continue;
-    const s = 0.8 + r() * 0.7;
-    (i % 3 === 0 ? sitios.f : sitios.p).push([x, z, s, r() * 6, 0.85 + r() * 0.3]);
-    obstaculos.push({ x, z, r: (i % 3 === 0 ? 0.26 : 0.24) * s + 0.1, arbol: true });
+    const s = 0.8 + r() * 0.7, f = frondosos === 1 / 3 ? i % 3 === 0 : r() < frondosos;
+    (f ? sitios.f : sitios.p).push([x, z, s, r() * 6, 0.85 + r() * 0.3]);
+    obstaculos.push({ x, z, r: (f ? 0.26 : 0.24) * s + 0.1, arbol: true });
   }
   for (const [mod, lista] of [[pino, sitios.p], [frond, sitios.f]]) {
     if (!lista.length) continue;
@@ -218,8 +218,9 @@ export function crearDecorado({ semilla = 7, llano = 40, lejos = 220, arboles = 
     k.lerp(T, f); return 1;
   } : null;
   const obstaculos = bosque(raiz, r, { n: arboles, desde: bosqueDesde, hasta: bosqueHasta, reparto: 1, llano, sombra: sombraArboles });
-  // árboles sueltos más cerca, que echan sombra (en la prueba v5 hay árboles al lado de la cabaña)
-  if (sueltos) obstaculos.push(...bosque(raiz, r, { n: sueltos, desde: sueltosDesde, hasta: bosqueDesde, reparto: 1, llano, sombra: true, libre: claro ? (x, z) => claro(x, z) : null }));
+  // árboles sueltos más cerca, que echan sombra (en la prueba v5 hay árboles de copa al lado de la cabaña);
+  // casi todos de copa: el pino tiene las ramas bajas y taparía la vista y al que tala
+  if (sueltos) obstaculos.push(...bosque(raiz, r, { n: sueltos, desde: sueltosDesde, hasta: bosqueDesde, reparto: 1, llano, sombra: true, frondosos: 0.85, libre: claro ? (x, z) => claro(x, z) : null }));
   const sombras = obstaculos.filter(o => Math.hypot(o.x, o.z) < llano + 30).map(o => [o.x, o.z, o.r * 7, 0.35]);
   raiz.add(suelo({ llano, cerca: llano * 1.2, lejos, sombras, tinte, relieve: relieveSuelo }));
   const mallas = plantas(raiz, r, { hierba, flores, radio: hierbaHasta, desde: hierbaDesde, libre: claro });
