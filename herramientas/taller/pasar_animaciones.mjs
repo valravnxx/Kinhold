@@ -153,7 +153,7 @@ const ladoBrazo = (b) => { const m = b.getName().toLowerCase().match(/^(upperarm
 // de cada hueso se acerca a su media en el ciclo (menos vaivén) y la media del tronco se acerca a estar derecho.
 // Factores: 1 = como el paquete, 0 = quieto en la media. Se pueden cambiar con variables de entorno para probar.
 const f = (n, x) => Number(process.env[n] ?? x);
-const SUAVIZAR = { Jog_Fwd_Loop: { brazos: f('S_BRAZOS', 0.5), pegados: f('S_PEGADOS', 0.6), tronco: f('S_TRONCO', 0.55), inclinacion: f('S_INCLINACION', 0.45),
+const SUAVIZAR = { Jog_Fwd_Loop: { brazos: f('S_BRAZOS', 0.5), adelante: f('S_ADELANTE', -4), abierto: f('S_ABIERTO', 10), dentro: f('S_DENTRO', 12), arriba: f('S_ARRIBA', 10), canto: f('S_CANTO', 1), muneca: f('S_MUNECA', 0.8), tronco: f('S_TRONCO', 0.55), inclinacion: f('S_INCLINACION', 0.45),
   piernas: f('S_PIERNAS', 0.6), bote: f('S_BOTE', 0.45), agachado: f('S_AGACHADO', 0.4) } };
 const grupoDe = (b) => { const n = b.getName().toLowerCase();
   if (ladoBrazo(b) || /^clavicle/.test(n)) return 'brazos';
@@ -179,11 +179,21 @@ function girosDe(canales, tiempos) {
   }
   return { giros, despl };
 }
-// hacia dónde apunta de media el brazo (hombro → codo) en un clip
-function brazoMedio(giros, lado) {
+// hacia dónde apunta el brazo (hombro → codo) en un fotograma, y de media en un clip
+function brazoDe(g, lado) {
   const b = B.porNombre.get('upperarm_' + lado), a = A.porNombre.get('upperarm_' + lado);
-  const r = pos(WA0.get(A.porNombre.get('lowerarm_' + lado))).sub(pos(WA0.get(a))).normalize();
-  const s = new THREE.Vector3(); for (const g of giros) s.add(r.clone().applyQuaternion(g.get(b)));
+  return pos(WA0.get(A.porNombre.get('lowerarm_' + lado))).sub(pos(WA0.get(a))).normalize().applyQuaternion(g.get(b));
+}
+function anteDe(g, lado) {
+  const b = B.porNombre.get('lowerarm_' + lado), a = A.porNombre.get('lowerarm_' + lado);
+  return pos(WA0.get(A.porNombre.get('hand_' + lado))).sub(pos(WA0.get(a))).normalize().applyQuaternion(g.get(b));
+}
+// vector de la articulación «hacia» menos la «desde» (las dos del mismo hueso o sus hijos), girado con el hueso
+function vectorEn(g, hueso, hacia, desde) {
+  return pos(WA0.get(A.porNombre.get(hacia))).sub(pos(WA0.get(A.porNombre.get(desde)))).normalize().applyQuaternion(g.get(B.porNombre.get(hueso)));
+}
+function brazoMedio(giros, lado) {
+  const s = new THREE.Vector3(); for (const g of giros) s.add(brazoDe(g, lado));
   return s.normalize();
 }
 const hechos = [];
@@ -210,15 +220,42 @@ for (const clip of CLIPS) {
         g.set(b, media.clone().multiply(new THREE.Quaternion().slerp(resto, su[gr])));
       }
     }
-    // los codos van muy abiertos (de lado): el brazo entero, sin cambiar el codo, se acerca a como cuelga al andar
-    const andar = S.getRoot().listAnimations().find(x => x.getName() === 'Walk_Loop');
-    if (andar) {
-      const ca = canalesDe(andar), ta = []; for (let x = 0; x < ca.dur; x += 1 / FPS) ta.push(x);
-      const ga = girosDe(ca.canales, ta).giros;
-      for (const lado of ['l', 'r']) {
-        const q = new THREE.Quaternion().slerp(new THREE.Quaternion().setFromUnitVectors(brazoMedio(ciclo, lado), brazoMedio(ga, lado)), su.pegados);
-        for (const g of giros) for (const [b] of pares) if (ladoBrazo(b) === lado) g.get(b).premultiply(q);
-      }
+    // Brazos: en la carrera del paquete van por delante del cuerpo y abiertos (Pedro: «torcidos hacia delante, en pose
+    // nada natural»). Al correr de verdad el brazo oscila alrededor de la vertical: el codo pasa por detrás del cuerpo
+    // y la mano va de la cadera al pecho, cerca del costado. Se gira todo el brazo desde el hombro (sin cambiar el codo)
+    // para que su dirección media quede como se pide: ADELANTE grados hacia delante y ABIERTO grados hacia fuera.
+    const angulos = (lado, lista) => lista.map(g => { const v = brazoDe(g, lado); return [Math.atan2(v.z, -v.y) * 180 / Math.PI, Math.atan2(Math.abs(v.x), -v.y) * 180 / Math.PI]; });
+    for (const lado of ['l', 'r']) {
+      const m0 = brazoMedio(ciclo, lado), signo = Math.sign(m0.x) || (lado === 'l' ? 1 : -1);
+      const ad = su.adelante * Math.PI / 180, ab = su.abierto * Math.PI / 180;
+      const objetivo = new THREE.Vector3(signo * Math.tan(ab), -1, Math.tan(ad)).normalize();
+      const q = new THREE.Quaternion().setFromUnitVectors(m0, objetivo);
+      for (const g of giros) for (const [b] of pares) if (ladoBrazo(b) === lado) g.get(b).premultiply(q);
+      // antebrazo y mano: el paquete corre con los puños girados hacia abajo, las muñecas dobladas y los antebrazos
+      // rectos hacia delante. Al correr, la mano va de canto (pulgar arriba), la muñeca recta y el antebrazo un poco
+      // hacia arriba y hacia dentro. Cada corrección es un giro fijo (el de la media del ciclo) de esa parte del brazo.
+      const re = (n) => (b) => new RegExp('^(' + n + ').*_' + lado + '$').test(b.getName().toLowerCase());
+      const ante = re('lowerarm|hand|index|middle|ring|pinky|thumb'), mano = re('hand|index|middle|ring|pinky|thumb');
+      const girar = (q, cual) => { for (const g of giros) for (const [b] of pares) if (cual(b)) g.get(b).premultiply(q); };
+      const media = (fn) => { const v = new THREE.Vector3(); for (const g of ciclo) v.add(fn(g)); return v.normalize(); };
+      const dirA = (g) => anteDe(g, lado);
+      const dentro = su.dentro * Math.PI / 180, arriba = su.arriba * Math.PI / 180;
+      girar(new THREE.Quaternion().setFromUnitVectors(media(dirA), new THREE.Vector3(-signo * Math.sin(dentro), Math.sin(arriba), 1).normalize()), ante);
+      // giro del antebrazo sobre sí mismo: los nudillos (del índice al meñique) en vertical, el índice arriba
+      const nudillos = (g) => vectorEn(g, 'hand_' + lado, 'index_01_' + lado, 'pinky_01_' + lado);
+      const eje = media(dirA), n0 = media(nudillos);
+      const proy = (v) => v.clone().sub(eje.clone().multiplyScalar(v.dot(eje))).normalize();
+      const de = proy(n0), a = proy(new THREE.Vector3(0, 1, 0));
+      let ang = Math.acos(THREE.MathUtils.clamp(de.dot(a), -1, 1)); if (new THREE.Vector3().crossVectors(de, a).dot(eje) < 0) ang = -ang;
+      girar(new THREE.Quaternion().setFromAxisAngle(eje, ang * su.canto), ante);
+      // muñeca recta: la mano sigue al antebrazo
+      const dirM = (g) => vectorEn(g, 'hand_' + lado, 'middle_01_' + lado, 'hand_' + lado);
+      girar(new THREE.Quaternion().slerp(new THREE.Quaternion().setFromUnitVectors(media(dirM), media(dirA)), su.muneca), mano);
+      if (process.env.VER) console.log('mano', lado, 'giro de canto', (ang * 180 / Math.PI).toFixed(0), '°');
+      if (process.env.VER) { const an = angulos(lado, ciclo); const fw = an.map(x => x[0]);
+        const ante = new THREE.Vector3(); for (const g of ciclo) ante.add(anteDe(g, lado)); ante.normalize();
+        console.log('antebrazo', lado, ante.toArray().map(x => x.toFixed(2)).join(' '));
+        console.log('brazo', lado, 'adelante', Math.min(...fw).toFixed(0), '…', Math.max(...fw).toFixed(0), '° · abierto medio', (an.reduce((s, x) => s + x[1], 0) / an.length).toFixed(0), '°'); }
     }
     const m = despl.slice(0, nf - 1).reduce((s, v) => s.add(v), new THREE.Vector3()).divideScalar(nf - 1);
     for (const v of despl) { v.y = m.y * su.agachado + (v.y - m.y) * su.bote; v.x = m.x + (v.x - m.x) * su.tronco; }
