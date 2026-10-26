@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 26 oct 2026 (07:51) — por el chat: brazos de la carrera
+
+«La versión de carrera nueva tiene que mejorar en posición de brazos, están torcidos adelante en pose nada natural, arréglalo y aprobamos de una, y prueba el otro pendiente» → Brazos arreglados (personaje v13, demo v5) y carrera aprobada: se cierra la pregunta de la carrera. «El otro pendiente»: se empieza a pasar la construcción al estilo elegido (muros primero).
+
 ### 26 oct 2026 (07:43) — por el chat: la construcción sigue con el aspecto inicial
 
 «Los muebles y construcción son los low-poly iniciales, no lo de la prueba visual, tienes pendiente cambiar antes de añadir más, ¿no?» → Cierto: la escena (cielo, luz, suelo, decorado) ya tiene el estilo v5, pero las piezas y los muebles no. Cinco tareas nuevas en el hito 1c, justo después de las barandillas (que estaba a medias) y antes de cualquier pieza nueva: muros, cimientos y suelos, tejados, puertas y cercas, y muebles con el estilo de la prueba. Sustituyen a la tarea de arte «Piezas de construcción con más detalle».
