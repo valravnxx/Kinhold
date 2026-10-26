@@ -313,9 +313,10 @@ with sync_playwright() as p:
     esperar(pg, 300)
     k, z = ev(f"{K}.pj.k"), ev(f"{K}.pj.z")
     comprobar('con la barandilla no se cae: sigue en la planta 1, antes del borde', k == 1 and z > -12, f'planta={k} z={z:.2f}')
-    ev(f"{K}.pj.rot=0; {K}.cam.yaw=-0.55; {K}.cam.pitch=0.35; {K}.cam.dist=6.5")
+    # desde fuera y desde abajo, para ver la barandilla en el borde
+    ev(f"{K}.pj.rot=Math.PI; {K}.cam.yaw=Math.PI-0.5; {K}.cam.pitch=0.25; {K}.cam.dist=7")
     esperar(pg, 900)
-    pg.screenshot(path=f'{SALIDA}/17_barandilla_planta_1.png')
+    pg.screenshot(path=f'{SALIDA}/21_barandilla_planta_1.png')
 
     print('PC: portillo de la cerca (se abre con Usar)')
     # dentro de la tierra (mojón en -3,-6, radio 20) y lejos de lo demás
@@ -334,7 +335,7 @@ with sync_playwright() as p:
     comprobar('cerrado no deja pasar', ev(f"{K}.pj.z") > pc['z'], f"z={ev(f'{K}.pj.z'):.2f} portillo={pc['z']:.2f}")
     ev(f"{K}.pj.rot=Math.PI; {K}.cam.yaw=0.6; {K}.cam.pitch=0.35; {K}.cam.dist=6")
     esperar(pg, 900)
-    pg.screenshot(path=f'{SALIDA}/18_portillo_cerrado.png')
+    pg.screenshot(path=f'{SALIDA}/22_portillo_cerrado.png')
     ev(f"{K}.usar()")
     abierto = ev(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].find(p => p.tipo === 'cerca_portillo').abierta")
     comprobar('Usar abre el portillo', abierto is True)
@@ -342,9 +343,9 @@ with sync_playwright() as p:
     ev(f"{K}.cam.yaw=0")
     andar('w', f"{K}.pj.z < {pc['z']} - 0.8", 2500)
     comprobar('abierto se pasa al otro lado', ev(f"{K}.pj.z") < pc['z'] - 0.5, f"z={ev(f'{K}.pj.z'):.2f}")
-    ev(f"{K}.pj.x={pc['x']}+0.4; {K}.pj.z={pc['z']}-1.6; {K}.pj.rot=Math.PI; {K}.cam.yaw=Math.PI+0.6; {K}.cam.pitch=0.4; {K}.cam.dist=6")
+    ev(f"{K}.pj.x={pc['x']}+0.6; {K}.pj.z={pc['z']}+1.8; {K}.pj.rot=Math.PI; {K}.cam.yaw=0.7; {K}.cam.pitch=0.4; {K}.cam.dist=6")
     esperar(pg, 900)
-    pg.screenshot(path=f'{SALIDA}/19_portillo_abierto.png')
+    pg.screenshot(path=f'{SALIDA}/23_portillo_abierto.png')
 
     print('PC: personaje del taller (camisa y calzas de lino; anda, corre y tala)')
     try:
