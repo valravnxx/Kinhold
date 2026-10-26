@@ -606,6 +606,13 @@
      "archivo": "jugar/demo/v3.html",
      "capturas": "capturas/demo-v3",
      "notas": "En el móvil, el aviso de «Construir» ya no tapa los botones del menú de arriba (tampoco en inglés y en ruso, ni con «Menú» y los fps). Lleva la construcción v11."
+    },
+    {
+     "v": "v4",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v4.html",
+     "capturas": "capturas/demo-v4",
+     "notas": "Correr más natural en las tres partes: la carrera suavizada (menos zancada, braceo, bote e inclinación) y a su velocidad de verdad, sin resbalar ni cámara lenta. Es la construcción v11, el combate v8 y el personaje v12."
     }
    ]
   },

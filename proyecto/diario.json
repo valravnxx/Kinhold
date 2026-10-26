@@ -893,5 +893,19 @@
   "pruebas": "Todas correctas (bash herramientas/probar_todo.sh), PC y móvil; capturas miradas.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T06:49:24+01:00",
+  "fin": "2026-10-26T07:04:12+01:00",
+  "titulo": "Demo única v4: la carrera nueva en todo",
+  "hito": "unificacion",
+  "hecho": [
+   "Pedro pidió integrar la carrera nueva y todo en la demo única.",
+   "Demo única v4 publicada: construcción v11, combate v8 y personaje v12, con los personajes del taller-v5 (carrera suavizada y a su velocidad natural).",
+   "Prueba nueva en la demo: en «Construir» el personaje corre con la carrera nueva a su ritmo natural (falla con MUTAR=1)."
+  ],
+  "pruebas": "Demo única correcta en PC y móvil (menú, construir, duelo, personaje, idiomas); textos traducidos correctos. Las demás pruebas, correctas en la sesión anterior con el mismo código. No comprobado: cómo se ve en un móvil de verdad.",
+  "capturas": "capturas/demo-v4",
+  "estado": "ok"
  }
 ]
