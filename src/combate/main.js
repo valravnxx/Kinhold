@@ -21,8 +21,8 @@ botonesIdioma(document.getElementById('menu'));
 const $ = (id) => document.getElementById(id);
 const esTactil = matchMedia('(pointer: coarse)').matches;
 const CLAVE = 'kinhold_combate_v2';
-// personaje del taller propio: la versión publicada vive en jugar/combate/, los modelos en recursos/personajes/taller-v5/
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v5/';
+// personaje del taller propio: la versión publicada vive en jugar/combate/, los modelos en recursos/personajes/taller-v6/
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v6/';
 
 // ---------------- Opciones ----------------
 // Armas que puede llevar el rival (solo cuerpo a cuerpo)
