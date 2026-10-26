@@ -60,6 +60,15 @@ def texto_visible(pg):
         if (e.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) t.push(n.nodeValue.trim()); }
       return t.filter(Boolean).join(' | '); }""")
 
+MUTAR_SOLAPE = bool(os.environ.get('MUTAR_SOLAPE'))  # pone el aviso a una altura fija, como antes: la prueba tiene que fallar
+def aviso_libre(pg, donde):
+    """el aviso no tapa ningún botón visible del menú de arriba ni de los modos"""
+    if MUTAR_SOLAPE: pg.evaluate("(() => { const a = document.getElementById('aviso'); a.style.top = '64px'; a.style.left = '50%'; a.style.transform = 'translateX(-50%)'; a.style.maxWidth = '92vw'; })()")
+    t = pg.evaluate("""() => { const a = document.getElementById('aviso'); if (a.hidden) return 'sin aviso'; const r = a.getBoundingClientRect();
+      return [...document.querySelectorAll('#superior button, #superior select, #modos button')].filter(b => b.offsetParent).filter(b => { const q = b.getBoundingClientRect();
+        return r.left < q.right && q.left < r.right && r.top < q.bottom && q.top < r.bottom; }).map(b => b.textContent.trim() || b.tagName).join(', '); }""")
+    comprobar(f'{donde}: el aviso no tapa ningún botón', t == '', t)
+
 def revisar(pg, donde):
     if MUTAR: pg.evaluate("(document.getElementById('menu') || document.getElementById('superior')).insertAdjacentHTML('beforeend', '<button>Pulsa para construir</button>')")
     falt = pg.evaluate('[...window.__idioma.faltan]')
@@ -97,6 +106,7 @@ with sync_playwright() as p:
         pg.wait_for_timeout(300)
         av = pg.inner_text('#aviso').strip()
         comprobar('construcción: aviso en inglés', av and not ESPANOL.search(av), av)
+        aviso_libre(pg, f'construcción {etiqueta} (inglés)')
         pg.screenshot(path=f'{SALIDA}/construccion_{sufijo}_02_construir.png')
         revisar(pg, f'construcción {etiqueta}, construyendo')
         pg.evaluate(f"{K}.cambiarModo('mover')")
@@ -248,6 +258,7 @@ with sync_playwright() as p:
         pg.evaluate(f"{K}.seleccionar('pieza','muro_tronco'); {K}.apuntar(10,10)"); pg.wait_for_timeout(300)
         av = pg.inner_text('#aviso').strip()
         comprobar('ruso: aviso de construcción en ruso', bool(re.search('[А-Яа-я]', av)), av)
+        aviso_libre(pg, f'ru construcción {etiqueta}')
         pg.screenshot(path=f'{SALIDA}/ru_construccion_{sufijo}_02_construir.png'); revisar_ru(pg, f'ru construcción {etiqueta}, construyendo')
         pg.evaluate(f"{K}.cambiarModo('mover')"); pg.click('#btnAyuda'); pg.wait_for_timeout(200)
         pg.screenshot(path=f'{SALIDA}/ru_construccion_{sufijo}_03_ayuda.png'); revisar_ru(pg, f'ru construcción {etiqueta}, ayuda')

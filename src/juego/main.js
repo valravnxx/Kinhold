@@ -24,8 +24,21 @@ function colocarModos() {
   if (innerWidth > 640) { modos.style.top = ''; return; }
   modos.style.top = Math.max(120, Math.ceil(menu.getBoundingClientRect().bottom) + 10) + 'px';
 }
-colocarModos();
-addEventListener('resize', colocarModos);
+// El aviso va justo debajo del menú de arriba (que en el móvil, y más en inglés o en ruso, ocupa varias filas)
+// y, en el móvil, a la izquierda de los botones de modo, para no tapar nada.
+function colocarAviso() {
+  const a = document.getElementById('aviso'), sup = document.getElementById('superior'), modos = document.getElementById('modos');
+  if (!a || !sup) return;
+  a.style.top = Math.ceil(sup.getBoundingClientRect().bottom) + 8 + 'px';
+  if (innerWidth > 640) { a.style.left = a.style.transform = a.style.maxWidth = ''; return; }
+  const izq = 10, der = modos && !modos.hidden ? modos.getBoundingClientRect().left - 8 : innerWidth - 10;
+  a.style.left = izq + 'px'; a.style.transform = 'none'; a.style.maxWidth = Math.max(140, der - izq) + 'px';
+}
+function colocarTodo() { colocarModos(); colocarAviso(); }
+colocarTodo();
+addEventListener('resize', colocarTodo);
+// si el menú cambia de tamaño (la demo añade «Menú» y los fps, o cambia el idioma), se recoloca
+if (window.ResizeObserver && document.getElementById('superior')) new ResizeObserver(colocarTodo).observe(document.getElementById('superior'));
 
 const CLAVE_GUARDADO = 'kinhold_h1_v1';
 const $ = (id) => document.getElementById(id);
@@ -789,6 +802,7 @@ function mostrarAviso(txt, error = false) {
   a.textContent = txt;
   a.className = error ? 'error' : '';
   a.hidden = !txt;
+  colocarAviso();
 }
 
 for (const b of document.querySelectorAll('#modos button')) b.onclick = () => cambiarModo(b.dataset.modo);

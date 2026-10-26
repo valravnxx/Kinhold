@@ -101,7 +101,18 @@ function bucle() {
 for (const b of document.querySelectorAll('[data-luz]')) b.onclick = () => ponerLuz(b.dataset.luz);
 for (const b of document.querySelectorAll('[data-vista]')) b.onclick = () => ponerVista(b.dataset.vista);
 $('btnDesenfoque').onclick = () => ponerDesenfoque(!estado.desenfoque);
-$('btnNotas').onclick = () => { $('notas').hidden = !$('notas').hidden; };
+// Las notas van justo encima de la barra de vistas (que en el móvil puede ocupar dos filas) y debajo de la de arriba.
+function colocarNotas() {
+  const n = $('notas'), inf = $('inferior'), sup = $('superior');
+  if (!n || !inf) return;
+  const arriba = inf.getBoundingClientRect().top;
+  n.style.bottom = Math.ceil(innerHeight - arriba) + 8 + 'px';
+  if (sup) n.style.maxHeight = Math.max(120, Math.floor(arriba - 16 - sup.getBoundingClientRect().bottom)) + 'px';
+}
+$('btnNotas').onclick = () => { $('notas').hidden = !$('notas').hidden; colocarNotas(); };
+colocarNotas();
+addEventListener('resize', colocarNotas);
+if (window.ResizeObserver) { const ro = new ResizeObserver(colocarNotas); ro.observe($('inferior')); ro.observe($('superior')); }
 $('notas').innerHTML = `<b>${tr(VERSION_ESTILO)}</b><ul>${REGISTRO_ESTILO.map(t => `<li>${tr(t)}</li>`).join('')}</ul>`;
 
 ajustar();

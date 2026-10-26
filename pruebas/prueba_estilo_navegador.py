@@ -70,6 +70,21 @@ with sync_playwright() as p:
             comprobar(f'{sel} dentro de la pantalla', caja and caja['x'] >= 0 and caja['x'] + caja['width'] <= vista['width'] + 1 and caja['y'] + caja['height'] <= vista['height'] + 1)
         pg.click('#btnNotas'); pg.wait_for_timeout(200); pg.evaluate(f'{E}.dibujar()')
         comprobar('las notas se abren', pg.is_visible('#notas') and len(pg.inner_text('#notas')) > 200)
+        # las notas no tapan la barra de vistas, tampoco cuando esta ocupa dos filas (se estrecha a propósito)
+        def notas_libres(caso):
+            if os.environ.get('MUTAR_SOLAPE'): pg.evaluate("document.getElementById('notas').style.bottom = '64px'")
+            s = pg.evaluate("""() => { const n = document.getElementById('notas').getBoundingClientRect(); const r = [];
+              for (const id of ['inferior', 'superior']) { const q = document.getElementById(id).getBoundingClientRect();
+                if (n.left < q.right && q.left < n.right && n.top < q.bottom && q.top < n.bottom) r.push(id); } return r.join(', '); }""")
+            comprobar(f'las notas no tapan las barras ({caso})', s == '', s)
+        notas_libres('una fila')
+        if movil:
+            pg.evaluate("document.getElementById('inferior').style.maxWidth = '200px'"); pg.wait_for_timeout(200)
+            filas = pg.evaluate("document.getElementById('inferior').getBoundingClientRect().height")
+            comprobar('la barra de vistas estrechada ocupa dos filas', filas > 50, f'{filas:.0f}px')
+            notas_libres('dos filas'); pg.evaluate(f'{E}.dibujar()')
+            pg.screenshot(path=f'{SALIDA}/{nombre}_notas_dos_filas.png')
+            pg.evaluate("document.getElementById('inferior').style.maxWidth = ''"); pg.wait_for_timeout(200)
         pg.screenshot(path=f'{SALIDA}/{nombre}_notas.png')
         pg.click('#btnNotas')
         pg.click('[data-vista="maqueta"]'); pg.evaluate(f'{E}.dibujar()')
