@@ -182,8 +182,9 @@
    "tareas": [
     {
      "nombre": "Correr más natural (Pedro: «la animación de correr me parece fea y exagerada»): primero suavizar por código la del paquete (menos braceo, rebote e inclinación); después probar carreras de captura de movimiento libres para uso comercial (Rokoko o CMU) si Pedro las baja",
-     "estado": "en_curso",
-     "inicio": "2026-10-26T05:09:48+01:00"
+     "estado": "hecho",
+     "inicio": "2026-10-26T05:09:48+01:00",
+     "fin": "2026-10-26T06:36:44+01:00"
     },
     {
      "nombre": "Tres pruebas de estilo (personaje y una escena con cabaña) con distinta luz, materiales y nivel de detalle, para que Pedro elija",
@@ -890,9 +891,23 @@
      "archivo": "jugar/personaje/v11.html",
      "capturas": "capturas/personaje-v11",
      "notas": "v11: también en ruso; en el móvil, el panel de opciones se coloca encima de la barra de vistas aunque esta ocupe dos filas."
+    },
+    {
+     "v": "v12",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/personaje/v12.html",
+     "capturas": "capturas/personaje-v12",
+     "notas": "Correr más natural: la carrera del paquete, suavizada por código (menos zancada, braceo, bote e inclinación, y los brazos más pegados), y a su velocidad de verdad: antes los pies resbalaban y se veía a cámara lenta. Botón «Correr» en Animación."
     }
    ]
   }
  ],
- "decisiones_pendientes": []
+ "decisiones_pendientes": [
+  {
+   "id": "carrera",
+   "pregunta": "Carrera: ¿te vale la carrera suavizada (personaje v12) o bajas las carreras de captura de movimiento gratuitas de Rokoko (piden rellenar un formulario) para probarlas?",
+   "desde": "2026-10-26",
+   "hito": "arte"
+  }
+ ]
 }
