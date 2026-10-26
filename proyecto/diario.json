@@ -938,5 +938,22 @@
   "pruebas": "Todas correctas en PC y móvil. La prueba del combate falló una vez con el servidor cargado (tiempos del arco y la pausa de impacto, que se miden en tiempo real) y pasó entera al repetirla sola. No comprobado: cómo se ve en un móvil de verdad.",
   "capturas": "capturas/personaje-v13",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T07:37:25+00:00",
+  "fin": "2026-10-26T09:12:28+00:00",
+  "titulo": "Cinturón de la cota ceñido (taller-v7)",
+  "hito": "arte",
+  "hecho": [
+   "Pedro aprobó el hito 1d (una sola demo).",
+   "El cinturón de encima de la cota del hombre se estiraba hasta los brazos (0,32 m de medio ancho frente a 0,18 de la cota): al medir el contorno de la cintura se contaban también las mangas, y las de la cota bajan hasta la mano. Ahora solo cuentan el cuerpo y la falda de la prenda.",
+   "Personajes nuevos en recursos/personajes/taller-v7, encima de la v6 de los brazos al correr: solo cambia ese cinturón (comprobado malla a malla); las animaciones salen idénticas.",
+   "Prueba nueva de los cinturones de todos los personajes y comprobación en el visor con el hombre y la cota; las dos fallan con la taller-v6.",
+   "Portado el arreglo de tiempos de la prueba del combate de la sesión automática (sin él fallaba el arco a 2 fps).",
+   "Personaje v14 y demo única v6 publicados."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh salvo el combate, que pasó aparte con los márgenes portados. Fotos del taller antes y después, y visor y demo en PC y móvil mirados.",
+  "capturas": "capturas/personaje-v14",
+  "estado": "ok"
  }
 ]
