@@ -895,20 +895,6 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-26T06:49:24+01:00",
-  "fin": "2026-10-26T07:04:12+01:00",
-  "titulo": "Demo única v4: la carrera nueva en todo",
-  "hito": "unificacion",
-  "hecho": [
-   "Pedro pidió integrar la carrera nueva y todo en la demo única.",
-   "Demo única v4 publicada: construcción v11, combate v8 y personaje v12, con los personajes del taller-v5 (carrera suavizada y a su velocidad natural).",
-   "Prueba nueva en la demo: en «Construir» el personaje corre con la carrera nueva a su ritmo natural (falla con MUTAR=1)."
-  ],
-  "pruebas": "Demo única correcta en PC y móvil (menú, construir, duelo, personaje, idiomas); textos traducidos correctos. Las demás pruebas, correctas en la sesión anterior con el mismo código. No comprobado: cómo se ve en un móvil de verdad.",
-  "capturas": "capturas/demo-v4",
-  "estado": "ok"
- },
- {
   "inicio": "2026-10-26T05:20:32+00:00",
   "fin": "2026-10-26T06:58:46+00:00",
   "titulo": "Hito 1c: barandillas y portillo (sin publicar)",
@@ -923,5 +909,34 @@
   "pruebas": "Lógica 81/81, modelos, acciones, idiomas, navegador de construcción (PC y móvil), estilo, personaje, demo, recursos, inglés y web correctos. FALLA el navegador de combate: «soltar flojo no dispara y avisa» y «la retícula se cierra a plena tensión». Falla igual en main sin mis cambios (desde la unión de la carrera nueva); aislado, soltar flojo sí avisa, así que parece de tiempos de la prueba. No comprobado: la causa exacta.",
   "capturas": "",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-26T06:49:24+01:00",
+  "fin": "2026-10-26T07:04:12+01:00",
+  "titulo": "Demo única v4: la carrera nueva en todo",
+  "hito": "unificacion",
+  "hecho": [
+   "Pedro pidió integrar la carrera nueva y todo en la demo única.",
+   "Demo única v4 publicada: construcción v11, combate v8 y personaje v12, con los personajes del taller-v5 (carrera suavizada y a su velocidad natural).",
+   "Prueba nueva en la demo: en «Construir» el personaje corre con la carrera nueva a su ritmo natural (falla con MUTAR=1)."
+  ],
+  "pruebas": "Demo única correcta en PC y móvil (menú, construir, duelo, personaje, idiomas); textos traducidos correctos. Las demás pruebas, correctas en la sesión anterior con el mismo código. No comprobado: cómo se ve en un móvil de verdad.",
+  "capturas": "capturas/demo-v4",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T07:51:47+01:00",
+  "fin": "2026-10-26T08:59:26+01:00",
+  "titulo": "Brazos naturales al correr (personaje v13, demo v5)",
+  "hito": "arte",
+  "hecho": [
+   "Pedro: los brazos de la carrera nueva van torcidos hacia delante, en pose nada natural; arreglado eso, la aprueba (pregunta de la carrera cerrada: no hacen falta las de Rokoko).",
+   "Los brazos se corrigen por código en la misma carrera: el brazo oscila alrededor de la vertical (de unos 25° atrás a unos 18° delante), el antebrazo va un poco hacia arriba y hacia dentro, la mano de canto con el pulgar arriba y la muñeca recta.",
+   "Personajes en recursos/personajes/taller-v6/ (las demás animaciones salen idénticas: diferencia máxima de 2·10⁻⁷).",
+   "Personaje v13 y demo única v5 publicados."
+  ],
+  "pruebas": "Todas correctas en PC y móvil. La prueba del combate falló una vez con el servidor cargado (tiempos del arco y la pausa de impacto, que se miden en tiempo real) y pasó entera al repetirla sola. No comprobado: cómo se ve en un móvil de verdad.",
+  "capturas": "capturas/personaje-v13",
+  "estado": "ok"
  }
 ]

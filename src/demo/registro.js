@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v4 (correr más natural)';
+export const VERSION_DEMO = 'Demo única · v5 (brazos naturales al correr)';
 export const REGISTRO_DEMO = [
+  'v5: los brazos al correr, más naturales (Pedro los vio torcidos hacia delante): oscilan junto al cuerpo, con la mano de canto y la muñeca recta. Es el personaje v13, con la construcción v11 y el combate v8.',
   'v4: correr más natural, en las tres partes. La carrera va suavizada por código (menos zancada, braceo, bote e inclinación, y los brazos más pegados) y a su velocidad de verdad: antes los pies resbalaban y se veía a cámara lenta. Personajes del taller-v5; es la construcción v11, el combate v8 y el personaje v12. Corriendo deprisa (6 m/s, con la tecla Mayús) los pies aún resbalan algo.',
   'v3: en el móvil, el aviso de «Construir» ya no tapa los botones del menú de arriba (tampoco en inglés y en ruso, ni con «Menú» y los fps). Es la construcción v11.',
   'v2: junto al botón «Menú» salen los fotogramas por segundo de tu aparato; al pulsarlo se abre el detalle: lo que tarda cada fotograma (de media y el más lento), la resolución, los triángulos y las llamadas de dibujo, la memoria gráfica y la de JavaScript (esta solo la dicen Chrome y los navegadores basados en él) y los personajes en escena. En el móvil, si junto a «Menú» no cabe, va a la izquierda de la pantalla.',
