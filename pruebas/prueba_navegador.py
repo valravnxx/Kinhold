@@ -93,6 +93,7 @@ with sync_playwright() as p:
         poner('pieza', 'empalizada', x, -4)
     rots = ev(f"{K}.mundo.construcciones.map(c=>+c.rot.toFixed(3))")
     comprobar('girar tejados no tuerce construcciones nuevas', all(r == 0 for r in rots), f'giros={rots}')
+    if os.environ.get('MUTAR_HIERBA'): ev('window.__sinDespejar = true')
     # cobertizo de una caída con pendiente continua de 2 casillas
     poner('pieza', 'cim_piedra', -11, 1)
     poner('pieza', 'cim_piedra', -11, 3)
@@ -102,6 +103,25 @@ with sync_playwright() as p:
     poner('pieza', 'tejado_tablilla', -11, 3, planta=1)
     nt = ev(f"{K}.mundo.construcciones.find(c=>c.piezas.size>=10 && [...c.piezas.values()].some(p=>p.tipo==='tejado_tablilla')).piezas.size")
     comprobar('cobertizo de tablas con dos tramos de tejado', nt == 10, f'piezas={nt}')
+    # la hierba, las flores y las matas no asoman por lo construido (estilo v5: hierba densa también en el centro)
+    hb = ev(f"""(() => {{
+      const ims = []; {K}.escena.traverse(o => {{ if (o.isInstancedMesh && ['hierba', 'flores', 'matorrales'].includes(o.name)) ims.push(o); }});
+      const celdas = [];
+      for (const c of {K}.mundo.construcciones) for (const p of c.piezas.values()) if (p.k === 0 && p.hueco === 'f') {{
+        const co = Math.cos(c.rot), si = Math.sin(c.rot), lx = (p.i + 0.5) * 2, lz = (p.j + 0.5) * 2;
+        celdas.push([c.ox + lx * co + lz * si, c.oz - lx * si + lz * co, c.rot]);
+      }}
+      let total = 0, dentro = 0, visibles = 0;
+      for (const im of ims) for (let i = 0; i < im.count; i++) {{
+        const a = im.instanceMatrix.array, e = i * 16; total++;
+        if (Math.hypot(a[e], a[e + 1], a[e + 2]) < 1e-6) continue; visibles++;
+        const x = a[e + 12], z = a[e + 14];
+        for (const [cx, cz, r] of celdas) {{ const dx = x - cx, dz = z - cz, co = Math.cos(r), si = Math.sin(r);
+          if (Math.abs(dx * co - dz * si) < 0.95 && Math.abs(dx * si + dz * co) < 0.95) {{ dentro++; break; }} }}
+      }}
+      return {{ total, visibles, dentro, celdas: celdas.length, mallas: ims.length }};
+    }})()""")
+    comprobar('hierba densa y ninguna planta asomando por los cimientos', hb['mallas'] == 3 and hb['total'] > 3000 and hb['celdas'] > 0 and hb['dentro'] == 0, json.dumps(hb))
     # un corral con cerca
     for z in [9, 11]:
         poner('pieza', 'cerca', 8, z)

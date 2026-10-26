@@ -61,9 +61,11 @@ const escena = new THREE.Scene();
 const camara = new THREE.PerspectiveCamera(45, 1, 0.1, 400);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
 const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 25, mapa: 2048, niebla: [60, 170] });
-// decorado común (src/mundo/decorado.js): liza de tierra pisada en el centro, hierba alrededor y bosque
+// decorado común (src/mundo/decorado.js): liza de tierra pisada en el centro y, alrededor, como la prueba de
+// estilo v5: hierba densa con flores, matorrales, calvas de tierra, rocas, árboles sueltos y el bosque
 escena.add(crearDecorado({ semilla: 11, llano: 45, lejos: 200, arboles: 160, bosqueDesde: 30, bosqueHasta: 140,
-  hierba: 1100, flores: 300, hierbaDesde: 9, hierbaHasta: 34, tierra: 8, rocas: 24 }).raiz);
+  hierba: 2400, flores: 650, hierbaDesde: 9, hierbaHasta: 36, tierra: 8, rocas: 30, rocasDesde: 12, matas: 36, matasDesde: 12,
+  sueltos: 10, sueltosDesde: 17, calvas: 8 }).raiz);
 const particulas = new Particulas(escena);
 const rastroJ = new Rastro(escena), rastroR = new Rastro(escena);
 

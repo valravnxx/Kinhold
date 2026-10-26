@@ -84,9 +84,12 @@ const camara = new THREE.PerspectiveCamera(45, 1, 0.1, 500);
 const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2048, niebla: [70, 200] });
 
 // decorado común (src/mundo/decorado.js): llano para construir, bosque, hierba y rocas con colisión.
-// La hierba empieza a 16 m: dentro se construye y asomaría por los cimientos (decisión provisional).
+// Como la prueba de estilo v5: hierba densa con flores desde el centro, matorrales, calvas de tierra pisada,
+// rocas y algunos árboles sueltos más cerca. Donde se construye, la hierba, las flores y las matas se esconden
+// (decorado.despejar, en reconstruir) para que no asomen por los cimientos.
 const decorado = crearDecorado({ semilla: 7, llano: 60, lejos: 230, arboles: 220, bosqueDesde: 28, bosqueHasta: 175,
-  hierba: 1400, flores: 380, hierbaDesde: 16, hierbaHasta: 48, rocas: 40 });
+  hierba: 3200, flores: 900, hierbaDesde: 0, hierbaHasta: 46, rocas: 40, rocasDesde: 9, matas: 45, matasDesde: 7,
+  sueltos: 14, sueltosDesde: 17, calvas: 14, claro: (x, z) => Math.hypot(x, z - 4) > 1.5 }); // sin nada en el sitio de salida
 escena.add(decorado.raiz);
 const obstaculos = decorado.obstaculos; // {x,z,r}
 
@@ -163,6 +166,19 @@ function aplicarAperturas(obj, p) {
 // se quedaba sin ella y la pantalla en blanco aunque fuera a más de 80 fps (lo vio valravnx). Los materiales son
 // compartidos (salen de una caché) y no se liberan.
 function liberar(obj) { if (window.__sinLiberar) return; obj.traverse(o => { if (o.isMesh) o.geometry.dispose(); }); } // __sinLiberar: solo para comprobar que la prueba de la fuga falla
+// Esconde la hierba, las flores y las matas bajo lo construido en la planta baja y bajo los muebles del suelo.
+function despejarDecorado() {
+  if (window.__sinDespejar) return; // solo para comprobar que la prueba de la hierba bajo lo construido falla
+  const circ = [];
+  for (const c of mundo.construcciones) for (const p of c.piezas.values()) {
+    if (p.k !== 0) continue;
+    const l = centroLocal(p), m = localAMundo(c, l.lx, l.lz);
+    circ.push([m.x, m.z, p.hueco === 'f' ? MODULO * 0.78 : MODULO * 0.45]);
+  }
+  for (const d of mundo.decoracion) if (d.y < 0.3) circ.push([d.x, d.z, 0.8]);
+  if (mundo.mojon) circ.push([mundo.mojon.x, mundo.mojon.z, 0.9]);
+  estado.plantasOcultas = decorado.despejar((x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r));
+}
 function reconstruir() {
   for (const r of [raizConstr, raizDeco]) for (const h of r.children) liberar(h);
   raizConstr.clear(); raizDeco.clear();
@@ -198,6 +214,7 @@ function reconstruir() {
     raizDeco.add(obj);
     registroMallas.push({ obj, deco: d });
   }
+  despejarDecorado();
   if (mallaMojon) { escena.remove(mallaMojon); liberar(mallaMojon); mallaMojon = null; }
   if (anilloTierra) { escena.remove(anilloTierra); liberar(anilloTierra); anilloTierra.material.dispose(); anilloTierra = null; }
   if (mundo.mojon) {
@@ -612,7 +629,7 @@ function usar() {
 // ---------------- Movimiento y colisiones ----------------
 function segmentosBloqueo(k) {
   const segs = []; // [x1,z1,x2,z2]
-  const circulos = [...obstaculos];
+  const circulos = obstaculos.filter(o => !o.oculto); // las matas escondidas bajo lo construido no chocan
   for (const c of mundo.construcciones) {
     for (const [key, p] of c.piezas) {
       if (p.k !== k) continue;

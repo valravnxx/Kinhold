@@ -133,18 +133,68 @@ export function plantas(raiz, r, { hierba = 170, flores = 70, radio = 11.5, desd
   };
   const mata = (() => { const L = new Lote({ rangoSuelo: 0.3, variacion: 0 }); for (let k = 0; k < 3; k++) { const g = new THREE.ConeGeometry(0.03, 0.26, 3); g.translate(0, 0.13, 0); L.add(g, k % 2 ? 'hierbaClara' : 'hierba', 0, 0, 0, { y: k * 2.1, z: (k - 1) * 0.3 }, { brillo: 1.1 }); } return mergeGeometries(L.cerrar()); })();
   const flor = (() => { const L = new Lote({ variacion: 0, rangoSuelo: 0.01 }); L.add(cil(0.006, 0.006, 0.2, 3), 'hierba', 0, 0.1, 0, null, { sinSuelo: true }); L.add(new THREE.IcosahedronGeometry(0.035, 0), 0xffffff, 0, 0.21, 0, null, { sinSuelo: true }); return mergeGeometries(L.cerrar()); })();
+  const mallas = [];
   const poner = (geo, lista, color, mat, nombre) => {
+    if (!lista.length) return;
     const im = new THREE.InstancedMesh(geo, mat, lista.length), o = new THREE.Object3D(), c = new THREE.Color();
     lista.forEach(([x, z], i) => {
       o.position.set(x, 0, z); o.rotation.set(0, r() * 6, 0); o.scale.setScalar(0.7 + r() * 0.8); o.updateMatrix();
       im.setMatrixAt(i, o.matrix); im.setColorAt(i, color(c));
     });
-    im.receiveShadow = true; im.name = nombre; raiz.add(im);
+    im.receiveShadow = true; im.name = nombre; raiz.add(im); mallas.push(guardarSitios(im, lista));
   };
   poner(mata, sitios(hierba), (c) => c.setScalar(0.85 + r() * 0.3), material('doble'), 'hierba');
   // flores de colores apagados (blanco roto, amarillo pálido, malva)
   const FLORES = [0xe8e2d0, 0xd9c27a, 0xa98aa6];
   poner(flor, sitios(flores), (c) => c.set(FLORES[Math.floor(r() * 3)]), material('fijo'), 'flores');
+  return mallas;
+}
+
+// Guarda dónde está cada ejemplar de una malla instanciada y su matriz, para poder esconderlo
+// (escala 0) donde se construye y volver a sacarlo si la pieza se quita.
+// obst: sus obstáculos, uno por ejemplar (las matas); el escondido se marca «oculto» y deja de chocar.
+function guardarSitios(im, lista, obst = null) {
+  const matrices = [];
+  for (let i = 0; i < im.count; i++) { const m = new THREE.Matrix4(); im.getMatrixAt(i, m); matrices.push(m); }
+  return { im, sitios: lista, matrices, obst };
+}
+const CERO = new THREE.Matrix4().makeScale(0, 0, 0);
+// ocupado(x, z) → true donde no debe asomar nada. Devuelve cuántos ejemplares quedan escondidos.
+export function despejarMallas(mallas, ocupado) {
+  let ocultos = 0;
+  for (const { im, sitios, matrices, obst } of mallas) {
+    sitios.forEach(([x, z], i) => {
+      const fuera = ocupado(x, z); if (fuera) ocultos++;
+      im.setMatrixAt(i, fuera ? CERO : matrices[i]); if (obst) obst[i].oculto = fuera;
+    });
+    im.instanceMatrix.needsUpdate = true;
+  }
+  return ocultos;
+}
+
+// ---------- Matorrales: dos o tres bultos de hojas juntos, como los de la prueba de estilo v5 ----------
+// Instanciados (una sola llamada de dibujo). Devuelve sus sitios como obstáculos bajos [{x, z, r}].
+export function matorrales(raiz, r, { n = 30, desde = 4, hasta = 40, libre = null, llano = 12 } = {}) {
+  const L = new Lote({ rangoSuelo: 0.5 });
+  L.add(copa(0.55, 1, 1), 'hojaOsc', 0, 0.33, 0, null, { escala: new THREE.Vector3(1.2, 0.8, 1), copa: 0 });
+  L.add(copa(0.4, 1, 2), 'hoja', 0.3, 0.3, 0.12, null, { copa: 0 });
+  L.add(copa(0.32, 1, 3), 'hojaClara', -0.28, 0.24, -0.18, null, { copa: 0 });
+  const grupos = L.cerrar(null, true), tipos = Object.keys(grupos);
+  const geo = mergeGeometries(tipos.map(t => mergeGeometries(grupos[t])), true), mats = tipos.map(t => materialTex(t));
+  const altura = alturaTerreno(llano), lista = [], obstaculos = [];
+  for (let i = 0, t = 0; lista.length < n && t < n * 10; t++) {
+    const a = r() * Math.PI * 2, d = desde + Math.sqrt(r()) * (hasta - desde), x = Math.cos(a) * d, z = Math.sin(a) * d;
+    if (libre && !libre(x, z)) continue;
+    const s = 0.85 + r() * 0.8; lista.push([x, z, s, r() * 6]); obstaculos.push({ x, z, r: 0.55 * s, mata: true });
+  }
+  if (!lista.length) return { obstaculos, malla: null };
+  const im = new THREE.InstancedMesh(geo, mats, lista.length), o = new THREE.Object3D(), c = new THREE.Color();
+  lista.forEach(([x, z, s, g], i) => {
+    o.position.set(x, altura(x, z) - 0.04, z); o.rotation.set(0, g, 0); o.scale.setScalar(s); o.updateMatrix();
+    im.setMatrixAt(i, o.matrix); im.setColorAt(i, c.setScalar(0.85 + r() * 0.3));
+  });
+  im.castShadow = im.receiveShadow = true; im.name = 'matorrales'; raiz.add(im);
+  return { obstaculos, malla: guardarSitios(im, lista, obstaculos) };
 }
 
 // ---------- Mundo abierto para jugar (construcción, combate) ----------
@@ -152,26 +202,42 @@ export function plantas(raiz, r, { hierba = 170, flores = 70, radio = 11.5, desd
 // El suelo va sin relieve (bumpMap) salvo relieveSuelo: es lo que más cuesta dibujar y a la distancia de juego no se ve.
 // Devuelve { raiz, obstaculos, altura }.
 export function crearDecorado({ semilla = 7, llano = 40, lejos = 220, arboles = 160, bosqueDesde = 28, bosqueHasta = 160,
-  hierba = 900, flores = 260, hierbaDesde = 0, hierbaHasta = 40, claro = null, tierra = null, sombraArboles = false, rocas = 24, relieveSuelo = false } = {}) {
+  hierba = 900, flores = 260, hierbaDesde = 0, hierbaHasta = 40, claro = null, tierra = null, sombraArboles = false, rocas = 24, relieveSuelo = false,
+  matas = 30, matasDesde = 6, rocasDesde = null, sueltos = 0, sueltosDesde = 14, calvas = 0 } = {}) {
   const raiz = new THREE.Group(); raiz.name = 'decorado';
   const r = azar(semilla);
   const T = new THREE.Color(PALETA.tierra);
   // tierra pisada en el centro (por ejemplo, la liza del duelo)
-  const tinte = tierra ? (x, z, k) => { const d = Math.hypot(x, z); const f = d < tierra ? 0.55 : d < tierra + 2 ? 0.55 * (tierra + 2 - d) / 2 : 0; k.lerp(T, f); return 1; } : null;
+  // calvas: manchas de tierra pisada entre la hierba, como el suelo de la prueba de estilo v5
+  const manchas = [], r2 = azar(semilla + 101); // su propio azar: no mueve los árboles de antes
+  for (let i = 0; i < calvas; i++) { const a = r2() * Math.PI * 2, d = 3 + r2() * (hierbaHasta - 3); manchas.push([Math.cos(a) * d, Math.sin(a) * d, 1.2 + r2() * 2.2]); }
+  const tinte = (tierra || manchas.length) ? (x, z, k) => {
+    let f = 0;
+    if (tierra) { const d = Math.hypot(x, z); f = d < tierra ? 0.55 : d < tierra + 2 ? 0.55 * (tierra + 2 - d) / 2 : 0; }
+    for (const [mx, mz, mr] of manchas) { const d = Math.hypot(x - mx, z - mz); if (d < mr) f = Math.max(f, 0.5 * (1 - (d / mr) ** 2)); }
+    k.lerp(T, f); return 1;
+  } : null;
   const obstaculos = bosque(raiz, r, { n: arboles, desde: bosqueDesde, hasta: bosqueHasta, reparto: 1, llano, sombra: sombraArboles });
+  // árboles sueltos más cerca, que echan sombra (en la prueba v5 hay árboles al lado de la cabaña)
+  if (sueltos) obstaculos.push(...bosque(raiz, r, { n: sueltos, desde: sueltosDesde, hasta: bosqueDesde, reparto: 1, llano, sombra: true, libre: claro ? (x, z) => claro(x, z) : null }));
   const sombras = obstaculos.filter(o => Math.hypot(o.x, o.z) < llano + 30).map(o => [o.x, o.z, o.r * 7, 0.35]);
   raiz.add(suelo({ llano, cerca: llano * 1.2, lejos, sombras, tinte, relieve: relieveSuelo }));
-  plantas(raiz, r, { hierba, flores, radio: hierbaHasta, desde: hierbaDesde, libre: claro });
+  const mallas = plantas(raiz, r, { hierba, flores, radio: hierbaHasta, desde: hierbaDesde, libre: claro });
+  if (matas) {
+    const m = matorrales(raiz, r, { n: matas, desde: matasDesde, hasta: Math.max(matasDesde + 4, bosqueDesde + 10), libre: claro, llano });
+    obstaculos.push(...m.obstaculos); if (m.malla) mallas.push(m.malla);
+  }
   // rocas sueltas entre la hierba y el bosque (una sola malla)
   if (rocas) {
     const L = new Lote(), alt = alturaTerreno(llano);
     for (let i = 0; i < rocas; i++) {
-      const a = r() * Math.PI * 2, d = hierbaDesde + 4 + r() * (bosqueHasta * 0.6 - hierbaDesde), x = Math.cos(a) * d, z = Math.sin(a) * d, s = 0.35 + r() * 0.4;
+      const d0 = rocasDesde ?? hierbaDesde + 4, a = r() * Math.PI * 2, d = d0 + r() * (bosqueHasta * 0.6 - d0), x = Math.cos(a) * d, z = Math.sin(a) * d, s = 0.35 + r() * 0.4;
       L.add(new THREE.IcosahedronGeometry(1, 1), r() > 0.5 ? 'piedraOsc' : 'piedra', x, alt(x, z) + s * 0.22, z, { y: r() * 6 }, { escala: new THREE.Vector3(s * 1.3, s * 0.65, s), plano: true });
       obstaculos.push({ x, z, r: s * 1.1 });
     }
     const grupos = L.cerrar(null, true);
     for (const [tipo, geos] of Object.entries(grupos)) { const m = new THREE.Mesh(mergeGeometries(geos), materialTex(tipo)); m.castShadow = m.receiveShadow = true; m.name = 'rocas'; raiz.add(m); }
   }
-  return { raiz, obstaculos, altura: alturaTerreno(llano) };
+  // despejar(ocupado): esconde la hierba, las flores y las matas donde ocupado(x, z) (lo que se construye)
+  return { raiz, obstaculos, altura: alturaTerreno(llano), despejar: (ocupado) => despejarMallas(mallas, ocupado) };
 }
