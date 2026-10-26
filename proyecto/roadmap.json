@@ -175,6 +175,44 @@
    "nota": "Hecho el 24 oct entre las 15:55 y las 16:40 aprox. (sacado de las fechas de los archivos; los tiempos exactos de esta parte no se registraron)."
   },
   {
+   "id": "estilo",
+   "num": "1e",
+   "nombre": "El estilo de la prueba v5 en todo",
+   "estado": "en_curso",
+   "jugable": "Todo lo que se ve (suelo, árboles, piezas de construcción, muebles y objetos) con el aspecto de la prueba de estilo v5 que aprobó valravnx, en la construcción, el duelo y la demo única.",
+   "nota": "Pedido de valravnx el 26 oct: solo se habían pasado al estilo los muros de troncos. Va antes que el resto del arte y que las piezas nuevas; reúne las tareas de estilo que estaban en el hito 1c.",
+   "tareas": [
+    {
+     "nombre": "Escena común igual que la prueba de estilo v5: suelo con hierba densa, flores, matorrales, piedras y tierra pisada, y los árboles de la v5 (hoy el suelo de la construcción y del duelo es un llano verde con matas sueltas)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Estilo elegido en las piezas: cimientos de piedra y de troncos, suelos de troncos y de tablas, y escaleras de mano y de tablas, como la prueba de estilo v5",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Estilo elegido en las piezas: tejados de paja (con mechones) y de tablillas, y hastiales, como la prueba de estilo v5",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Estilo elegido en las piezas: puertas de varas y de tablas, cerca de varas, empalizada y su puerta, mojón, y las barandillas y el portillo nuevos, como la prueba de estilo v5",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Estilo elegido en los muebles: camas de paja y de madera, mesa, banco, taburete, arcón, barril, estantería, antorcha de pie, alfombra de piel y estandarte, como los enseres de la prueba de estilo v5",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Estilo elegido en todo lo demás que se ve en la construcción, el duelo y el visor: recursos del suelo, la pieza fantasma al construir, herramientas y armas en la mano y cualquier pieza que siga con el aspecto inicial, como la prueba de estilo v5",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación: cada vista de cada prototipo y de la demo única, en PC y en móvil, comparada en capturas lado a lado con la prueba de estilo v5; lo que no se vea igual se arregla antes de cerrar el hito",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
    "id": "arte",
    "num": "1b",
    "nombre": "Dirección de arte y personajes",
@@ -363,22 +401,6 @@
      "estado": "hecho",
      "inicio": "2026-10-26T07:58:22+01:00",
      "fin": "2026-10-26T11:58:37+01:00"
-    },
-    {
-     "nombre": "Estilo elegido en las piezas: cimientos de piedra y de troncos, suelos de troncos y de tablas, y escaleras de mano y de tablas, como la prueba de estilo v5",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Estilo elegido en las piezas: tejados de paja (con mechones) y de tablillas, y hastiales, como la prueba de estilo v5",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Estilo elegido en las piezas: puertas de varas y de tablas, cerca de varas, empalizada y su puerta, mojón, y las barandillas y el portillo nuevos, como la prueba de estilo v5",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Estilo elegido en los muebles: camas de paja y de madera, mesa, banco, taburete, arcón, barril, estantería, antorcha de pie, alfombra de piel y estandarte, como los enseres de la prueba de estilo v5",
-     "estado": "pendiente"
     },
     {
      "nombre": "Obras (decidido por valravnx el 26 oct): poner el marco de la pieza, que se ve como un armazón; llevarle los materiales y construirla con un tiempo según la pieza; si te ayudan, tarda menos. Todo en la lógica pura, con el autor de cada entrega y de cada rato de trabajo",
