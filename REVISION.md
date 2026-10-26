@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 26 oct 2026 (15:20) — por el chat: estados de simulación más variados
+
+valravnx propone estados más variados de simulación; acepta los cinco que encajan, «pero para más adelante» → GDD (sección 6, también en inglés y ruso): mojado, herida infectada, comida en mal estado, dolor y borracho, como ampliación posterior a la primera versión del hito de supervivencia. Aburrimiento, tristeza y pánico quedan fuera.
+
 ### 26 oct 2026 (15:15) — por el chat: prueba online pronto
 
 valravnx está de acuerdo en que lo multijugador es el mayor riesgo y le preocupa el coste del servidor para unas 100 personas → Hito nuevo 1f, «Prueba online mínima», en curso justo después del 1e (estilo v5): dos jugadores en el mismo mundo desde dos dispositivos, y una medición con 100 jugadores simulados para saber qué servidor hace falta y cuánto cuesta al mes.
