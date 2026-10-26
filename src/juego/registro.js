@@ -1,5 +1,5 @@
 // Decisiones que he tomado yo en el hito 1, para que las revises.
-export const VERSION = 'Hito 1 · v11';
+export const VERSION = 'Hito 1 · v12';
 export const REGISTRO = [
   'Terreno llano en este hito. Las cuestas y su efecto en los cimientos llegan con el mundo generado.',
   'Los materiales vienen dados (y hay botón para rellenar). Recolectarlos llega en el hito 2.',
@@ -27,6 +27,7 @@ export const REGISTRO = [
   'Textos de la interfaz en español, inglés y ruso (botones arriba a la derecha; en el móvil, un desplegable con el idioma).',
   'v9: escena común del estilo elegido (src/mundo/): mismo cielo, sol, sombras blandas, niebla, suelo con textura, bosque, hierba, flores y rocas que la prueba de estilo. La hierba empieza a 16 m de la salida, porque dentro se construye y asomaría por los cimientos (provisional, hasta que la hierba se aparte sola bajo lo construido).',
   'v10: el jugador es el personaje del taller propio (el de MakeHuman vestido por código), con camisa y calzas de lino, como se empieza según el GDD. Lleva zapatos aunque el GDD dice descalzo: el cuerpo del taller no tiene pies bajo los zapatos y sin ellos se vería sin pies (queda como tarea del taller). Anda, corre y tala con las animaciones de Quaternius, que se aceleran con la velocidad hasta 1,6× (a la carrera los pies resbalan algo: el juego va más rápido que la animación). Mientras carga se ve el muñeco de antes.',
+  'v12: los muros, los postes y las vigas con el estilo elegido (el de la cabaña de la prueba de estilo v5): troncos redondos con su veta y las testas claras a la vista, un poco más gruesos por un extremo; jambas, dintel, marco y alféizar en puertas y ventanas; el zarzo con estacas que asoman del barro; el entramado con riostra y relleno encalado; las tablas con durmiente y carrera. Los tejados, los suelos, las cercas y los muebles pasan al estilo en las tareas siguientes.',
   'v11: en el móvil el aviso de abajo del menú ya no tapa «Reiniciar» ni otros botones: se coloca según lo que mida de verdad el menú de arriba (que en inglés y en ruso ocupa más filas) y a la izquierda de los botones de modo.',
   'v10: junto a un árbol, Usar (F) hace que el personaje tale; moverse lo para. De momento es solo el gesto, sin hacha en la mano y sin dar madera: recolectar llega con el hito 2.',
 ];
