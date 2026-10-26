@@ -1,4 +1,5 @@
 # Fotos del muestrario de piezas: python3 herramientas/muestrario/fotos.py <carpeta> piezas=muro_tronco,… [deco=mesa,…] [vistas=tres,frente,cerca]
+# Con casas=1, casas pequeñas con sus tejados y hastiales (herramientas/muestrario/tejados.js).
 # Construye el muestrario con esbuild, lo abre en Chromium sin pantalla y saca una foto por pieza y vista (más una general).
 import sys, os, subprocess, tempfile, threading, functools, http.server, socketserver
 from playwright.sync_api import sync_playwright
@@ -6,12 +7,13 @@ RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..')
 sal = sys.argv[1]; os.makedirs(sal, exist_ok=True)
 arg = dict(a.split('=', 1) for a in sys.argv[2:])
 d = tempfile.mkdtemp()
-subprocess.run(['npx', 'esbuild', os.path.join(RAIZ, 'herramientas/muestrario/muestrario.js'), '--bundle', '--format=esm', f'--outfile={d}/m.js', '--log-level=warning'], check=True, cwd=RAIZ)
+subprocess.run(['npx', 'esbuild', os.path.join(RAIZ, 'herramientas/muestrario/' + ('tejados.js' if arg.get('casas') else 'muestrario.js')), '--bundle', '--format=esm', f'--outfile={d}/m.js', '--log-level=warning'], check=True, cwd=RAIZ)
 open(f'{d}/index.html', 'w').write('<!doctype html><meta charset="utf-8"><body><script type="module" src="m.js"></script>')
 class S(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(S, directory=d)); threading.Thread(target=srv.serve_forever, daemon=True).start()
 nombres = [('pieza', t) for t in arg.get('piezas', '').split(',') if t] + [('deco', t) for t in arg.get('deco', '').split(',') if t]
+if arg.get('casas'): nombres = [('casa', t) for t in ['paja_dos_aguas', 'tablillas_dos_aguas', 'paja_una_caida', 'tablillas_una_caida']]
 vistas = arg.get('vistas', 'tres,frente,cerca').split(',')
 with sync_playwright() as p:
     b = p.chromium.launch(args=['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'])

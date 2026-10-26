@@ -19,6 +19,7 @@ export const P = {
   anchoVentana: 0.8, bajoVentana: 1.0, altoVentana: 1.75,
   subidaTejado: 1.2,      // lo que sube un tramo de tejado de 2 m
   voladizo: 0.25,
+  juntaPaja: 0,           // lo que monta un tramo de paja sobre el de al lado (0: lados planos que se tocan, sin surco)
   altoEmpalizada: 3.0,
   superficieCimiento: 0.12,
   superficieSuelo: 0.12,
@@ -323,30 +324,131 @@ function viga() {
   return deLote(L);
 }
 
-// ---------- Tejados ----------
-// Tramo que sube hacia +z: alero en z=-1 (y=0) y cumbrera en z=+1 (y=subida)
-function tejado(color, color2) {
-  const g = new THREE.Group();
-  const S = MODULO, sub = P.subidaTejado;
-  const largo = Math.hypot(S, sub) + P.voladizo;
-  const ang = Math.atan2(sub, S);
-  const capa = new THREE.Group();
-  capa.add(caja(S + 0.2, 0.16, largo, color, 0, 0, 0));
-  for (let t = -0.4; t <= 0.41; t += 0.4) capa.add(caja(S + 0.22, 0.05, 0.08, color2, 0, 0.09, t * largo));
-  capa.rotation.x = -ang;
-  capa.position.set(0, sub / 2 + 0.05, -P.voladizo / 2 * Math.cos(ang) + 0.0);
-  g.add(capa);
+// ---------- Tejados, con el estilo v5 ----------
+// Tramo que sube hacia +z: alero en z=-1 (y=0) y borde alto en z=+1 (y=subida). ctx (de geometriaTejados, en el juego):
+//   extremos: lados (±1 en x) sin tramo que siga, donde el tejado vuela y se remata; cumbrera: pone el remate de la
+//   cumbrera (solo uno de los dos tramos que la cierran); par: paridad de la casilla, para que los tramos vecinos se
+//   monten uno sobre otro sin coincidir (si coinciden, parpadean). Sin ctx (fantasma, muestrario): tramo suelto.
+const CTX_TEJADO = { extremos: [1, -1], cumbrera: false, par: 0 };
+const loteTejado = () => new Lote({ variacion: 0.05, rangoSuelo: 0.35 });
+function marcoTejado(ctx, junta = 0.03) {
+  const S = MODULO, sub = P.subidaTejado, ang = Math.atan2(sub, S), largo = Math.hypot(S, sub), V = P.voladizo;
+  const vuela = l => (ctx.extremos || []).includes(l) ? 0.2 : junta;
+  const x0 = -S / 2 - vuela(-1), x1 = S / 2 + vuela(1);
+  const giro = new THREE.Matrix4().makeRotationX(-ang);
+  // punto del plano del tejado a una distancia s del alero (por la pendiente) y t por encima (perpendicular)
+  const punto = (s, t) => new THREE.Vector3(0, s * Math.sin(ang) + t * Math.cos(ang), -S / 2 + s * Math.cos(ang) - t * Math.sin(ang));
+  return { S, sub, ang, largo, V, x0, x1, ancho: x1 - x0, cx: (x0 + x1) / 2, giro, punto, alza: (ctx.par ? 0.012 : 0) };
+}
+// Paja: dos hiladas gruesas y redondeadas (la del alero monta sobre la de arriba, como en la cabaña de la prueba v5),
+// con un fleco de mechones en el alero y la cumbrera redonda
+const RAYAS_PAJA = (v) => 1 + Math.sin(v.x * 8.1 + Math.sin(v.x * 1.7) * 2) * 0.05 + Math.sin(v.x * 21.3) * 0.03;
+const GRUESO_PAJA = 0.32;
+// una hilada: perfil redondeado por arriba y por abajo de la pendiente, pero con los lados planos, para que los tramos
+// vecinos se junten sin surco (si los lados fueran redondos, el tejado se vería acolchado, a cuadros)
+function hiladaPaja(ancho, grueso, largo, r = 0.14) {
+  const f = new THREE.Shape(), a = largo / 2, b = grueso / 2;
+  f.moveTo(-a + r, -b); f.lineTo(a - r, -b); f.quadraticCurveTo(a, -b, a, -b + r); f.lineTo(a, b - r); f.quadraticCurveTo(a, b, a - r, b);
+  f.lineTo(-a + r, b); f.quadraticCurveTo(-a, b, -a, b - r); f.lineTo(-a, -b + r); f.quadraticCurveTo(-a, -b, -a + r, -b);
+  const g = new THREE.ExtrudeGeometry(f, { depth: ancho, bevelEnabled: false, curveSegments: 4 });
+  g.translate(0, 0, -ancho / 2); g.rotateY(-Math.PI / 2);
   return g;
 }
+function tejadoPaja(ctx = CTX_TEJADO) {
+  const L = loteTejado(), M = marcoTejado(ctx, P.juntaPaja), GR = GRUESO_PAJA, FILAS = 2;
+  const total = M.largo + M.V, lf = total / FILAS;
+  for (let f = 0; f < FILAS; f++) {
+    const s0 = -M.V + f * lf, l = f === FILAS - 1 ? lf + 0.02 : lf * 1.3;
+    const c = M.punto(s0 + l / 2, GR / 2 + (FILAS - 1 - f) * 0.06);
+    L.add(hiladaPaja(M.ancho, GR, l), f % 2 ? 'pajaOsc' : 'paja', M.cx, c.y, c.z, M.giro, { rayas: RAYAS_PAJA, sinSuelo: true });
+  }
+  // mechones: manojos cortos y romos de paja que asoman del canto del alero, en dos filas, cada uno con su largo y giro
+  const bajada = new THREE.Vector3(0, -Math.sin(M.ang), -Math.cos(M.ang));
+  const n = Math.round(M.ancho / 0.05);
+  for (let fila = 0; fila < 2; fila++) for (let i = 0; i < n; i++) {
+    const sd = i * 3.3 + fila * 17.1;
+    const x = M.x0 + 0.02 + (i + 0.5 * fila + 0.25) * (M.ancho - 0.04) / n + (ruido(sd) - 0.5) * 0.03;
+    if (x > M.x1 - 0.02) continue;
+    const largo = 0.08 + ruido(sd + 5) * 0.08, t = GR * (fila ? 0.68 : 0.32) + (ruido(sd + 3) - 0.5) * 0.08 + (FILAS - 1) * 0.06;
+    const base = M.punto(-M.V + 0.04, t);
+    const dir = bajada.clone().add(new THREE.Vector3((ruido(sd + 9) - 0.5) * 0.35, -0.15 - fila * 0.1, 0)).normalize();
+    const m = new THREE.Matrix4().makeRotationFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir));
+    const manojo = cil(0.022, 0.032, largo, 5); manojo.translate(0, largo / 2 - 0.02, 0);
+    L.add(manojo, ruido(sd + 2) > 0.5 ? 'paja' : 'pajaOsc', x, base.y, base.z, m, { sinSuelo: true, escala: new THREE.Vector3(1.3, 1, 0.8), brillo: 0.85 + ruido(sd + 7) * 0.2 });
+  }
+  if (ctx.cumbrera) {
+    const yC = M.sub + GR * 0.78, r = 0.24;
+    L.add(cil(r, r, M.ancho, 14), 'pajaOsc', M.cx, yC, M.S / 2, { z: Math.PI / 2 }, { sinSuelo: true, rayas: RAYAS_PAJA });
+    for (const l of [-1, 1]) if ((ctx.extremos || []).includes(l))
+      L.add(new THREE.SphereGeometry(r, 14, 8), 'pajaOsc', l < 0 ? M.x0 : M.x1, yC, M.S / 2, null, { sinSuelo: true, escala: new THREE.Vector3(0.3, 1, 1) });
+  }
+  return deLote(L);
+}
+// Tablillas: tablazón debajo y filas de tablillas solapadas, cada fila desplazada media tablilla, con el pie un poco
+// levantado (se ve el canto de cada fila); tabla de remate en los lados que vuelan y caballete en la cumbrera
+function tejadoTablillas(ctx = CTX_TEJADO) {
+  const L = loteTejado(), M = marcoTejado(ctx);
+  const tz = M.punto(-M.V + (M.largo + M.V) / 2, 0.02 + M.alza);
+  L.add(cajaR(M.ancho, 0.04, M.largo + M.V, 0.01), 'maderaOsc', M.cx, tz.y, tz.z, M.giro, { sinSuelo: true, brillo: 0.6 });
+  const LARGO = 0.38, PASO = 0.19, GROSOR = 0.03, inclina = 0.11;
+  const filas = Math.ceil((M.largo + M.V - LARGO) / PASO) + 1;
+  const giroT = new THREE.Matrix4().makeRotationX(-(M.ang - inclina));
+  for (let f = 0; f < filas; f++) {
+    const s0 = Math.min(-M.V + f * PASO, M.largo + 0.01 - LARGO);
+    const c = M.punto(s0 + LARGO / 2, 0.04 + GROSOR / 2 + LARGO / 2 * Math.sin(inclina) + M.alza);
+    let x = M.x0 - (f % 2) * 0.1, k = 0;
+    while (x < M.x1 - 0.02) {
+      const w = Math.min(0.17 + ruido(f * 13.1 + k * 3.7) * 0.08, M.x1 - x), a = Math.max(x, M.x0), b = x + w;
+      const sd = f * 31 + k * 7;
+      L.add(new THREE.BoxGeometry(b - a - 0.012, GROSOR, LARGO), ruido(sd) > 0.45 ? 'tabla' : 'madera', (a + b) / 2, c.y, c.z, giroT,
+        { sinSuelo: true, brillo: 0.74 + ruido(sd + 3) * 0.36 });
+      x += w; k++;
+    }
+  }
+  // tablas de remate en los lados que vuelan
+  for (const l of [-1, 1]) if ((ctx.extremos || []).includes(l)) {
+    const c = M.punto(-M.V + (M.largo + M.V) / 2, 0.02 + M.alza);
+    L.add(cajaR(0.04, 0.2, M.largo + M.V, 0.01), 'maderaOsc', l < 0 ? M.x0 - 0.02 : M.x1 + 0.02, c.y, c.z, M.giro, { sinSuelo: true });
+  }
+  if (ctx.cumbrera) L.add(cajaR(M.ancho + 0.04, 0.17, 0.17, 0.02), 'maderaOsc', M.cx, M.sub + 0.1 + M.alza, M.S / 2, { x: Math.PI / 4 }, { sinSuelo: true });
+  return deLote(L);
+}
+// Tablas de pie que cierran un hueco bajo el tejado, en un plano vertical: u0..u1 a lo ancho, de yBajo hasta arriba(u)
+// (el corte de arriba sigue la pendiente). plano: 'x' (a lo largo de X, en z=pos) o 'z' (a lo largo de Z, en x=pos).
+function tablasDePie(L, u0, u1, yBajo, arriba, plano, pos, grosor = 0.07) {
+  const n = Math.max(1, Math.round((u1 - u0) / 0.22)), w = (u1 - u0) / n;
+  for (let t = 0; t < n; t++) {
+    const a = u0 + t * w + 0.006, b = u0 + (t + 1) * w - 0.006;
+    const ya = Math.max(yBajo + 0.04, arriba(a)), yb = Math.max(yBajo + 0.04, arriba(b));
+    const f = new THREE.Shape(); f.moveTo(a, yBajo); f.lineTo(b, yBajo); f.lineTo(b, yb); f.lineTo(a, ya); f.closePath();
+    const g = new THREE.ExtrudeGeometry(f, { depth: grosor, bevelEnabled: false }); g.translate(0, 0, -grosor / 2);
+    if (plano === 'z') { g.rotateY(-Math.PI / 2); g.translate(pos, 0, 0); } else g.translate(0, 0, pos);
+    L.add(g, ruido(t * 3.7 + u0 * 5) > 0.5 ? 'tabla' : 'madera', 0, 0, 0, null, { sinSuelo: true, brillo: 0.92 });
+  }
+}
+// Relleno liso (barro del zarzo, encalado del entramado) con la misma forma
+function rellenoLiso(L, u0, u1, yBajo, arriba, plano, pos, color) {
+  const f = new THREE.Shape(); f.moveTo(u0, yBajo); f.lineTo(u1, yBajo); f.lineTo(u1, arriba(u1)); f.lineTo(u0, arriba(u0)); f.closePath();
+  const g = new THREE.ExtrudeGeometry(f, { depth: 0.14, bevelEnabled: false }); g.translate(0, 0, -0.07);
+  if (plano === 'z') { g.rotateY(-Math.PI / 2); g.translate(pos, 0, 0); } else g.translate(0, 0, pos);
+  L.add(g, color, 0, 0, 0, null, { sinSuelo: true, tex: 'piedra', rayas: (v) => 0.94 + 0.06 * Math.sin(v.x * 3.1 + v.y * 2.3 + v.z * 1.7) });
+}
+// Lo que asoma del relleno liso, como en su muro: estacas del zarzo o postes del entramado, hasta el tejado
+function armazonRelleno(L, u0, u1, yBajo, arriba, plano, pos, muro) {
+  const us = muro === 'muro_zarzo' ? [-0.93, 0, 0.93] : [u0 + 0.09, (u0 + u1) / 2, u1 - 0.09];
+  for (const u of us) {
+    const h = arriba(u) - yBajo - 0.03;
+    if (h < 0.08) continue;
+    const [x, z] = plano === 'z' ? [pos, u] : [u, pos];
+    if (muro === 'muro_zarzo') L.add(cil(0.085, 0.095, h, 8), 'corteza', x, yBajo + h / 2, z, null, { sinSuelo: true });
+    else L.add(cajaR(plano === 'z' ? 0.2 : 0.18, h, plano === 'z' ? 0.18 : 0.2, 0.03), 'maderaOsc', x, yBajo + h / 2, z, null, { sinSuelo: true });
+  }
+}
+// Hastial suelto (ya no está en el menú, pero puede haberlo en construcciones guardadas): tablas de pie en triángulo
 function hastial() {
-  const g = new THREE.Group();
-  const S = MODULO, sub = P.subidaTejado;
-  const forma = new THREE.Shape();
-  forma.moveTo(-S / 2, 0); forma.lineTo(S / 2, 0); forma.lineTo(S / 2, sub); forma.closePath();
-  const geo = new THREE.ExtrudeGeometry(forma, { depth: 0.2, bevelEnabled: false });
-  geo.translate(0, 0, -0.1);
-  g.add(malla(geo, COLORES.tronco));
-  return g;
+  const L = loteMuro(), S = MODULO, sub = P.subidaTejado;
+  tablasDePie(L, -S / 2, S / 2, 0, u => (u + S / 2) / S * sub, 'x', 0);
+  return deLote(L);
 }
 
 // ---------- Acceso, con el estilo v5 ----------
@@ -476,7 +578,7 @@ export function decoracion(tipo) {
 }
 
 // ---------- Fábrica de piezas ----------
-export function modeloPieza(tipo) {
+export function modeloPieza(tipo, ctx) {
   switch (tipo) {
     case 'cim_piedra': return cimientoPiedra();
     case 'cim_tronco': return cimientoTroncos();
@@ -492,8 +594,8 @@ export function modeloPieza(tipo) {
     case 'muro_tabla': return muroTablas();
     case 'muro_tabla_puerta': return muroTablas({ puerta: true });
     case 'medio_muro': return medioMuro();
-    case 'tejado_paja': return tejado(COLORES.paja, COLORES.pajaOscura);
-    case 'tejado_tablilla': return tejado(COLORES.tablaOscura, COLORES.tabla);
+    case 'tejado_paja': return tejadoPaja(ctx || CTX_TEJADO);
+    case 'tejado_tablilla': return tejadoTablillas(ctx || CTX_TEJADO);
     case 'hastial': return hastial();
     case 'escalera_mano': return escaleraMano();
     case 'escalera_tabla': return escaleraTablas();
@@ -526,32 +628,25 @@ export function roca(semilla) {
   return g;
 }
 
-// ---------- Rellenos de muro bajo el tejado ----------
+// ---------- Rellenos de muro bajo el tejado, con el estilo v5 ----------
 // En el marco local del tramo de tejado (sube hacia +z; lados en x = ±1; borde alto en z = +1).
-// y = 0 es lo alto de la planta de los muros. 'arranque' en tramos.
-const COLOR_MURO = {
-  muro_zarzo: COLORES.barro, muro_entramado: 0xd8c9a8,
-  muro_tabla: COLORES.tabla, muro_tabla_puerta: COLORES.tabla,
-};
+// y = 0 es lo alto de la planta de los muros. 'arranque' en tramos. Como en la cabaña de la prueba v5, bajo el tejado
+// se cierra con tablas de pie (muros de troncos y de tablas); el zarzo con su barro y el entramado con su encalado.
+const RELLENO_LISO = { muro_zarzo: 0x8c7356, muro_entramado: 0xd3c6a6 };
 export function rellenoTejado(rel, arranque) {
-  const S = MODULO / 2, sub = P.subidaTejado, grosor = 0.2;
-  const color = COLOR_MURO[rel.muro] || COLORES.tronco;
-  const forma = new THREE.Shape();
-  let geo;
+  const S = MODULO / 2, sub = P.subidaTejado, L = loteMuro(), yBajo = -arranque * sub;
+  let u0, u1, arriba, plano, pos;
   if (rel.tipo === 'lado') {
-    // trapecio en el plano x = ±1, en coordenadas (-z, y) por el giro posterior
-    forma.moveTo(S, 0); forma.lineTo(-S, 0); forma.lineTo(-S, rel.hAlto * sub); forma.lineTo(S, rel.hBajo * sub); forma.closePath();
-    geo = new THREE.ExtrudeGeometry(forma, { depth: grosor, bevelEnabled: false });
-    geo.translate(0, 0, -grosor / 2);
-    geo.rotateY(Math.PI / 2);
-    geo.translate(rel.lado * S, 0, 0);
+    // trapecio en el plano x = ±1: de z = -1 (alto hBajo) a z = +1 (alto hAlto)
+    u0 = -S; u1 = S; plano = 'z'; pos = rel.lado * S;
+    arriba = z => yBajo + (rel.hBajo + (rel.hAlto - rel.hBajo) * (z + S) / (2 * S)) * sub;
   } else {
-    forma.moveTo(-S, 0); forma.lineTo(S, 0); forma.lineTo(S, rel.h * sub); forma.lineTo(-S, rel.h * sub); forma.closePath();
-    geo = new THREE.ExtrudeGeometry(forma, { depth: grosor, bevelEnabled: false });
-    geo.translate(0, 0, S - grosor / 2);
+    u0 = -S; u1 = S; plano = 'x'; pos = S; arriba = () => yBajo + rel.h * sub;
   }
-  const m = new THREE.Mesh(geo, mat(color));
-  m.castShadow = true; m.receiveShadow = true;
-  m.position.y = -arranque * sub;
-  return m;
+  if (RELLENO_LISO[rel.muro]) {
+    rellenoLiso(L, u0, u1, yBajo, arriba, plano, pos, RELLENO_LISO[rel.muro]);
+    armazonRelleno(L, u0, u1, yBajo, arriba, plano, pos, rel.muro);
+  }
+  else tablasDePie(L, u0, u1, yBajo, arriba, plano, pos);
+  return deLote(L);
 }

@@ -430,7 +430,13 @@ export function geometriaTejados(c) {
       const m = muroBajo(p, aristaHacia(p.i, p.j, ui, uj));
       if (m) rellenos.push({ tipo: 'alto', muro: m.tipo, h: off + 1 });
     }
-    res.set(key, { arranque: off, rellenos });
+    // para el dibujo: lados sin tramo que siga (ahí el tejado vuela y se remata), si cierra una cumbrera
+    // (la pone uno solo de los dos tramos) y la paridad de la casilla (los tramos vecinos se montan sin coincidir)
+    const extremos = [1, -1].filter(lado => {
+      const v = tejado(p.i + lado * xi, p.j + lado * xj, p.k);
+      return !(v && (v.dir || 0) === d && arranque(v) === off);
+    });
+    res.set(key, { arranque: off, rellenos, extremos, cumbrera: !!cumbrera && d < 2, par: ((p.i + p.j) % 2 + 2) % 2 });
   }
   return res;
 }

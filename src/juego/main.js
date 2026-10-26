@@ -190,10 +190,10 @@ function reconstruir() {
     g.userData.c = c;
     const tejados = geometriaTejados(c);
     for (const [key, p] of c.piezas) {
-      const obj = modeloPieza(p.tipo);
+      const tj = tejados.get(key);
+      const obj = modeloPieza(p.tipo, tj);
       transformarPieza(obj, p);
       aplicarAperturas(obj, p);
-      const tj = tejados.get(key);
       if (tj) {
         obj.position.y += tj.arranque * P.subidaTejado;
         for (const rel of tj.rellenos) obj.add(rellenoTejado(rel, tj.arranque));
