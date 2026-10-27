@@ -12,7 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "esbuild": "^0.28.2",
-    "three": "^0.186.1"
+    "three": "^0.186.1",
+    "ws": "^8.22.0"
   },
   "devDependencies": {
     "@gltf-transform/core": "^4.5.1",

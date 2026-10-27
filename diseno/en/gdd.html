@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="563a17a514781e408760c94c2ec910d7257e3c05">
+<meta name="kinhold-origen" content="381bed5b0cb7383e5d9d32d85b49504857c74de8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.9</title>
 <style>
@@ -61,7 +61,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Version 0.9 · 26 Oct 2026 · Expansion for a finished game: cities, districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
+  <div class="sub">Version 0.9 · 26 Oct 2026 · Expansion for a finished game: no NPC cities, districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDED</span> you said so
     <span class="tag method">METHOD</span> how to do it technically
@@ -451,15 +451,15 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="box p"><span class="tag prop">PROPOSAL</span>
 <ul>
   <li>Between players: barter or coin, as they wish.</li>
-  <li>NPC traders are in few places in each country; their orders rotate and ask for things from the area or from other bands, to give reasons to travel.</li>
+  <li>The travelling merchants' orders rotate and ask for things from the area or from other bands, to give reasons to travel.</li>
   <li>A hired NPC eats and is paid at regular intervals.</li>
 </ul></div>
 <p><span class="tag ok">DECIDED</span>If not paid, <b>the NPC leaves and takes the gear.</b></p>
-<p><span class="tag ok">DECIDED</span>The NPCs for hire are <b>travelling merchants and mercenaries who arrive at your town or settlement.</b></p>
+<p><span class="tag ok">DECIDED</span>The NPCs for hire are <b>travelling merchants and mercenaries who arrive at your settlement.</b></p>
 <div class="box p"><span class="tag ok">APPROVED</span> How they arrive and what types there are:
 <ul>
   <li><b>Arrival:</b> every so often a traveller passes through your settlement (you need a boundary stone for them to come). They stay for a while; if you do not hire them, they move on. With a higher boundary stone level they come more often and in more types.</li>
-  <li><b>Also in NPC towns:</b> there is always someone available there, in exchange for travelling to get them.</li>
+  <li><b>Where they come from:</b> they appear out of sight, about 2 km from any player, and walk to the settlement. There are no NPC cities. A merchant only stays permanently in a settlement if a system for it is created, like the one for hiring mercenaries; otherwise they trade and move on.</li>
   <li><b>Types:</b>
     <ul>
       <li><b>Mercenary / sentry:</b> guards and defends your lands.</li>
@@ -481,7 +481,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span><b>Proximity-only communication.</b></p>
 <p><span class="tag ok">DECIDED</span><b>Coat of arms editor</b> of its own for each family.</p>
 <p><span class="tag ok">DECIDED</span>Vassalage is paid <b>in coin</b>.</p>
-<p><span class="tag ok">DECIDED</span><b>Letters by NPC messenger:</b> you send a messenger to a town or settlement you know; they travel there and deliver the letter to a member of your family who is at that place.</p>
+<p><span class="tag ok">DECIDED</span><b>Letters by NPC messenger:</b> you send a messenger to a settlement you know; they travel there and deliver the letter to a member of your family who is at that place.</p>
 <div class="box m"><span class="tag method">METHOD</span>
 <ul>
   <li>You write the letter (with parchment and ink, or on simple paper at first) and give it to the messenger with their pay.</li>
@@ -542,15 +542,15 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <section id="ampliacion">
 <h2>20. Expansion for a finished game</h2>
 <p class="note">Approved by valravnx on 26 Oct from the analysis of what was missing for a finished game. In brackets, the milestone where each item is planned.</p>
-<h3>World and cities</h3>
-<p><span class="tag ok">DECIDED</span><b>NPC cities:</b> few per country (2–4), fixed, with a merchant, a job board, mercenaries and messengers; <b>no PvP inside</b>. They are not villages to live in. Players start near one. People settling nearby is acceptable: it creates routes between kingdoms and waypoints to settle in, and whoever prefers to live alone or as a bandit goes far away. (Milestones 10 and 14)</p>
+<h3>World</h3>
+<p><span class="tag ok">DECIDED</span><b>No NPC cities</b> (decided on 27 Oct): they would break the survival feeling of a world to explore. Dealing with NPCs comes with the travelling merchants and mercenaries, who appear about 2 km from any player and walk to the settlements (section 16). (Milestone 14)</p>
 <p><span class="tag ok">DECIDED</span><b>Named districts:</b> each country is divided into districts that follow the terrain (a valley, a river plain, a range), named in the country's style. valravnx reviews and adjusts the world map and its names by hand. (Milestone 10)</p>
 <p><span class="tag ok">DECIDED</span>The world is <b>never reset</b>. (Milestone 11)</p>
 <p><span class="tag ok">DECIDED</span><b>Weather:</b> clear, cloudy, rain, snow (north and winter) and fog, over large areas and by season. In the north, rivers freeze in winter and can be crossed on foot. (Milestone 4)</p>
 <p><span class="tag ok">DECIDED</span>Dark but playable <b>night</b>: the moon, torches, oil lamps and campfires give real light, and wolves are more active. Sleeping is not forced. (Milestone 4)</p>
 <h3>Objects, transport and clothing</h3>
 <p><span class="tag ok">DECIDED</span><b>Objects on the ground:</b> whatever is dropped outside a container disappears after a while (for example, 1 real hour), except inside your lands. Logs and stones stay as a pile. <b>Stacks:</b> each resource has how many units fit in one slot. (Milestone 2)</p>
-<p><span class="tag ok">DECIDED</span><b>Transport from the start:</b> the <b>drag sled</b> (N0: two long poles with crossbars, dragged by hand) and the <b>solid-wheel barrow</b> (N1: the wheel is a slice of a log). The NPCs in the starting city give you a barrow and teach you to make it. The barrow can be parked and works as a container: inside your lands it is protected; outside, anyone can take what it carries. Later, the two-wheeled cart (N2) and the four-wheeled wagon (N3), with draught animals. (Milestone 2)</p>
+<p><span class="tag ok">DECIDED</span><b>Transport from the start:</b> the <b>drag sled</b> (N0: two long poles with crossbars, dragged by hand) and the <b>solid-wheel barrow</b> (N1: the wheel is a slice of a log). The barrow can be parked and works as a container: inside your lands it is protected; outside, anyone can take what it carries. Later, the two-wheeled cart (N2) and the four-wheeled wagon (N3), with draught animals. (Milestone 2)</p>
 <p><span class="tag ok">DECIDED</span><b>No item quality tiers.</b> What a garment does comes only from its layer and material (linen, wool, fur, gambeson, hardened leather, mail, plate). What it looks like is chosen when weaving and sewing: <b>cut</b> (short or long tunic, smock, dress, skirt, cloak with or without hood, hose, hat or coif), <b>weave</b> (plain, twill, herringbone, check, stripes), <b>dye</b> from each region's plants (madder for red, weld for yellow, woad for blue, walnut husk for brown, oak galls with iron for black) and, later, embroidered borders. Since the dyes are spread across climate bands, they give reasons to trade. (Milestones 1b and 3)</p>
 <p><span class="tag ok">DECIDED</span><b>Premium:</b> unlocks recipes to craft nicer-looking versions of things (garment cuts, tapestries, furniture with its own shape). They are still crafted in the game with their materials and do nothing better: they only look different. To be detailed later.</p>
 <h3>Crafting, eating and fishing</h3>
@@ -574,7 +574,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h3>Later on (cosmetic and expansion)</h3>
 <p><span class="tag ok">DECIDED</span><b>Home:</b> tableware and pottery on the table, woven tapestries with designs (with the same editor as the coat of arms), curtains, cushions and furs, candles, oil lamps and candelabras, hunting and fishing trophies, flowerpots, strings of garlic and onions, weapon racks and a mannequin for armour.</p>
 <p><span class="tag ok">DECIDED</span><b>Social life:</b> board games playable between players (tables, alquerque, dice), simple instruments (flute, drum, hurdy-gurdy), emotes (sit, wave, bow, toast) and a cat as a pet.</p>
-<p><span class="tag ok">DECIDED</span><b>Gatherings:</b> fencing tournaments in NPC cities and seasonal fairs with merchants from other countries.</p>
+<p><span class="tag ok">DECIDED</span><b>Gatherings:</b> fencing tournaments and seasonal fairs with merchants from other countries; where they are held is still to be decided, now that there are no NPC cities.</p>
 <p><span class="tag ok">DECIDED</span><b>Siege and farm:</b> scaling ladders and mantlets, and fire spreading from one piece to another (milestone 6); water troughs, feeders, wells and irrigation ditches (milestone 9).</p>
 </section>
 

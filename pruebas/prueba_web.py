@@ -32,6 +32,26 @@ with sync_playwright() as p:
         pg.goto(URL)
         pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
         comprobar('se ven los prototipos jugables', pg.locator('#listaJuegos .tarjeta').count() >= 2)
+        # la alpha (la demo única, versión unificada) va arriba y sola; las pruebas sueltas, plegadas debajo
+        import json as _json
+        _rm = _json.load(open(os.path.join(RAIZ, '..', 'proyecto', 'roadmap.json'), encoding='utf-8'))
+        _demo = next(p for p in _rm['prototipos'] if p['id'] == 'demo')
+        _ult = _demo['versiones'][-1]['archivo']
+        comprobar('la alpha va arriba y abre la última versión de la demo única',
+                  pg.locator('#listaJuegos > .alpha').count() == 1 and pg.get_attribute('#listaJuegos .alpha [data-juego]', 'href') == _ult
+                  and pg.is_visible('#listaJuegos .alpha [data-juego]'), _ult)
+        comprobar('las pruebas sueltas están en un desplegable cerrado, con todas las demás',
+                  pg.locator('#listaJuegos details.otras:not([open])').count() == 1 and pg.locator('details.otras .tarjeta').count() == len(_rm['prototipos']) - 1
+                  and not pg.is_visible('details.otras .tarjeta [data-juego]'))
+        pg.click('details.otras > summary'); pg.wait_for_timeout(200)
+        comprobar('al abrir el desplegable se ven las pruebas sueltas', pg.is_visible('details.otras .tarjeta [data-juego]'))
+        pg.click('details.otras > summary'); pg.wait_for_timeout(200)
+        pg.evaluate('document.fonts.ready')
+        _cargadas = pg.evaluate("[...document.fonts].filter(f => f.status === 'loaded').map(f => f.family.replace(/\"/g, ''))")
+        comprobar('feria: guirnalda de banderines, cartel de madera y cada pestaña en un pergamino con dos rodillos',
+                  pg.locator('#guirnalda .banderin').count() >= 8 and pg.locator('.cabecera .tabla h1').count() == 1
+                  and pg.evaluate("[...document.querySelectorAll('section')].every(s => s.querySelector('.pergamino') && s.querySelectorAll('.pergamino > .rollo').length === 2)"))
+        comprobar('las fuentes medievales se cargan', all(any(n in f for f in _cargadas) for n in ['EB Garamond', 'Alegreya SC', 'Cinzel Decorative']), ', '.join(sorted(set(_cargadas))))
         ancho = pg.evaluate('document.documentElement.scrollWidth')
         comprobar('sin desplazamiento horizontal', ancho <= vista['width'], f'{ancho}px')
         pg.wait_for_timeout(400)
@@ -40,6 +60,10 @@ with sync_playwright() as p:
             pg.click(f'nav button[data-s={s}]')
             pg.wait_for_timeout(250)
             comprobar(f'pestaña {s} visible y con contenido', pg.is_visible(f'#{s}') and len(pg.inner_text(f'#{s}').strip()) > 20)
+            if s == 'diario':
+                _n = len(_json.load(open(os.path.join(RAIZ, '..', 'proyecto', 'diario.json'), encoding='utf-8')))
+                comprobar('diario: las 12 últimas a la vista y las demás en un desplegable',
+                          pg.locator('#listaDiario > .entrada').count() == min(12, _n) and pg.locator('details.anteriores .entrada').count() == max(0, _n - 12))
             pg.screenshot(path=f'{SALIDA}/{nombre}_{i}_{s}.png', full_page=True)
         # idiomas: botón EN y ?lang=en
         pg.click('nav button[data-s=roadmap]')

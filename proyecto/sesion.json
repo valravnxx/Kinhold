@@ -1,15 +1,15 @@
 {
  "A": {
-  "inicio": "2026-10-27T07:25:06+00:00",
-  "tarea": "Servidor mínimo en Node (carpeta servidor/, paquete ws): cada conexión recibe un autor que pone el servidor, nunca el que diga el cliente; las acciones de construcción pasan por la lógica pura (ejecutar), se reparten a todos y se guardan en un archivo, y al arrancar el mundo se rehace con reproducir. Prueba en node con dos clientes",
+  "inicio": "2026-10-27T08:38:20+00:00",
+  "tarea": "Jugadores que se ven: cada cliente manda su posición, giro y animación unas 10 veces por segundo; el servidor las reparte y los demás clientes las suavizan (interpolación). Prueba con lag simulado",
   "hito": "prueba-online",
-  "rama": "trabajo/20261027-0725"
+  "rama": "trabajo/20261027-0838",
+  "ultimo": "2026-10-27T08:44:56.000Z"
  },
  "B": {
-  "inicio": "2026-10-27T06:02:45+00:00",
-  "tarea": "Obras (decidido por valravnx el 26 oct): poner el marco de la pieza, que se ve como un armazón; llevarle los materiales y construirla con un tiempo según la pieza; si te ayudan, tarda menos. Todo en la lógica pura, con el autor de cada entrega y de cada rato de trabajo",
-  "hito": "construccion-mas",
-  "rama": "trabajo/20261027-0602",
-  "ultimo": "2026-10-27T07:14:17.000Z"
+  "inicio": "2026-10-27T09:50:06+00:00",
+  "tarea": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+  "hito": "equipo",
+  "rama": "trabajo/20261027-0950"
  }
 }

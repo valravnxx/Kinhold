@@ -3,3 +3,4 @@ dist/
 /capturas*/
 __pycache__/
 node_modules
+servidor/mundo.jsonl

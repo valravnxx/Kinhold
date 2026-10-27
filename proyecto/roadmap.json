@@ -48,6 +48,18 @@
      "estado": "hecho",
      "inicio": "2026-10-25T12:20:58+00:00",
      "fin": "2026-10-25T12:55:37+00:00"
+    },
+    {
+     "nombre": "Web de progreso con estilo medieval de pergamino (pedido de valravnx, 27 oct): la alpha unificada, la más actualizada, como protagonista arriba; las pruebas sueltas en un desplegable debajo; el resto (roadmap, diario, tiempos, lo que espera y diseño) más fácil de leer y bonito. Fuentes libres (OFL) servidas desde la propia web, con cirílico",
+     "estado": "hecho",
+     "inicio": "2026-10-27T09:43:31+01:00",
+     "fin": "2026-10-27T10:03:53+01:00"
+    },
+    {
+     "nombre": "Web de progreso como una feria medieval (pedido de valravnx, 27 oct: el pergamino solo «parece una web en modo claro»): fondo de tablones de madera, guirnalda de banderines, cartel de madera colgado entre estandartes, pestañas como estandartes que cuelgan de una viga y cada bloque de texto en un pergamino con rodillos",
+     "estado": "hecho",
+     "inicio": "2026-10-27T10:12:22+01:00",
+     "fin": "2026-10-27T10:28:16+01:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -242,12 +254,14 @@
     },
     {
      "nombre": "Servidor mínimo en Node (carpeta servidor/, paquete ws): cada conexión recibe un autor que pone el servidor, nunca el que diga el cliente; las acciones de construcción pasan por la lógica pura (ejecutar), se reparten a todos y se guardan en un archivo, y al arrancar el mundo se rehace con reproducir. Prueba en node con dos clientes",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T07:25:06+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T07:25:06+00:00",
+     "fin": "2026-10-27T08:32:19+00:00"
     },
     {
      "nombre": "Jugadores que se ven: cada cliente manda su posición, giro y animación unas 10 veces por segundo; el servidor las reparte y los demás clientes las suavizan (interpolación). Prueba con lag simulado",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T08:38:20+00:00"
     },
     {
      "nombre": "Demo en línea: «Jugar en línea» en la demo única, que se conecta al servidor (dirección en Opciones); construir sobre el mundo del servidor y ver al otro jugador con el personaje del taller. Prueba de navegador con dos páginas y un servidor local, capturas en PC y móvil",
@@ -274,8 +288,8 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos (espera su decisión: dónde se aloja)",
-     "estado": "espera_decision"
+     "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
+     "estado": "pendiente"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -472,8 +486,15 @@
     },
     {
      "nombre": "Obras (decidido por valravnx el 26 oct): poner el marco de la pieza, que se ve como un armazón; llevarle los materiales y construirla con un tiempo según la pieza; si te ayudan, tarda menos. Todo en la lógica pura, con el autor de cada entrega y de cada rato de trabajo",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T06:02:45+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T07:02:45+01:00",
+     "fin": "2026-10-27T09:55:53+01:00"
+    },
+    {
+     "nombre": "Arreglo (pedido de valravnx, 27 oct): con un piso encima, la decoración se ponía en el suelo de arriba y no en el de la planta en la que estás; el clic tiene que dar en el suelo de tu planta cuando el techo está oculto por estar dentro. Y los suelos de troncos, sin huequecitos entre tronco y tronco: que tapen del todo",
+     "estado": "hecho",
+     "inicio": "2026-10-27T10:14:47+01:00",
+     "fin": "2026-10-27T11:26:07+01:00"
     },
     {
      "nombre": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
@@ -567,11 +588,12 @@
    "num": "2",
    "nombre": "Equipo y carga por huecos",
    "jugable": "Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T09:50:06+00:00"
     },
     {
      "nombre": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
@@ -624,7 +646,9 @@
     },
     {
      "nombre": "Cámara táctil con un dedo durante el combate",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T08:50:44+00:00",
+     "rama": "trabajo/20261027-0850"
     },
     {
      "nombre": "Curación de heridas",
@@ -905,6 +929,20 @@
      "archivo": "jugar/demo/v15.html",
      "capturas": "capturas/demo-v15",
      "notas": "Construcción v20: enlosado de losas desiguales en el cimiento de piedra y mojón con piedras redondeadas, como la prueba de estilo v5"
+    },
+    {
+     "v": "v16",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v16.html",
+     "capturas": "capturas/demo-v16",
+     "notas": "En «Construir», se construye por obras: marco, material y tiempo (es la construcción v21)."
+    },
+    {
+     "v": "v17",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v17.html",
+     "capturas": "capturas/demo-v17",
+     "notas": "En «Construir», la decoración va al suelo de tu planta y los suelos de troncos tapan del todo (es la construcción v22)."
     }
    ]
   },
@@ -1038,6 +1076,20 @@
      "archivo": "jugar/construccion/v20.html",
      "capturas": "capturas/construccion-v20",
      "notas": "Revisión del estilo v5: el cimiento de piedra lleva un enlosado de losas desiguales y de dos tonos (antes parecía baldosa moderna) y el mojón tiene piedras redondeadas como las rocas de la prueba"
+    },
+    {
+     "v": "v21",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v21.html",
+     "capturas": "capturas/construccion-v21",
+     "notas": "Se construye por obras: colocar pone el marco de la pieza, que se ve tenue dentro de un armazón de varas; Usar (F) junto a la obra le lleva el material y te pone a construir; cada pieza tarda según su peso y, si te ayudan, menos."
+    },
+    {
+     "v": "v22",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v22.html",
+     "capturas": "capturas/construccion-v22",
+     "notas": "Arreglo: la decoración va al suelo de la planta en la que estás, no al piso de arriba. Los cimientos y suelos de troncos ya no dejan ver el suelo por las juntas."
     }
    ]
   },
@@ -1301,11 +1353,5 @@
    ]
   }
  ],
- "decisiones_pendientes": [
-  {
-   "pregunta": "Para la prueba online desde dos dispositivos, el servidor tiene que estar en internet con conexión cifrada (la web va por https y los navegadores no dejan que una página https se conecte a un servidor sin cifrar). ¿Dónde lo ponemos? (a) En un alojamiento en la nube con una cuenta tuya: yo preparo el servidor y los pasos, tú creas la cuenta y, si es de pago, eliges el plan. (b) En tu PC mientras dure la prueba, con un túnel que le da una dirección https: no necesita cuenta de alojamiento, pero solo funciona con tu PC encendido. La comparación de alojamientos y precios para el juego de verdad se hará con los datos de la medición de 100 jugadores.",
-   "desde": "2026-10-27",
-   "hito": "prueba-online"
-  }
- ]
+ "decisiones_pendientes": []
 }
