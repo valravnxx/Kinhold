@@ -266,8 +266,9 @@
     },
     {
      "nombre": "Demo en línea: «Jugar en línea» en la demo única, que se conecta al servidor (dirección en Opciones); construir sobre el mundo del servidor y ver al otro jugador con el personaje del taller. Prueba de navegador con dos páginas y un servidor local, capturas en PC y móvil",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T13:24:50+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T13:24:50+00:00",
+     "fin": "2026-10-27T19:00:50+00:00"
     },
     {
      "nombre": "Combate en el servidor: un luchador por jugador en la lógica pura; los clientes mandan intenciones (atacar en una línea, guardia, bloquear, tensar y soltar) y el servidor lleva los tiempos y resuelve golpes y heridas con su autor. Prueba en node con dos clientes y lag simulado",
@@ -1113,6 +1114,13 @@
      "archivo": "jugar/demo/v20.html",
      "capturas": "capturas/demo-v20",
      "notas": "Arreglo: varios suelos o cimientos de troncos seguidos se juntan de una, sin rendija ni testas en cada junta. Es la construcción v25."
+    },
+    {
+     "v": "v21",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v21.html",
+     "capturas": "capturas/demo-v21",
+     "notas": "Jugar en línea: construir en el mundo del servidor y ver a los demás con su personaje del taller; la dirección del servidor, en Opciones"
     }
    ]
   },

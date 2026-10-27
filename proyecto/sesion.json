@@ -1,11 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-27T13:24:50+00:00",
-  "tarea": "Demo en línea: «Jugar en línea» en la demo única, que se conecta al servidor (dirección en Opciones); construir sobre el mundo del servidor y ver al otro jugador con el personaje del taller. Prueba de navegador con dos páginas y un servidor local, capturas en PC y móvil",
-  "hito": "prueba-online",
-  "rama": "trabajo/20261027-1324",
-  "ultimo": "2026-10-27T16:45:19.000Z"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-27T16:52:02+00:00",
   "tarea": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",

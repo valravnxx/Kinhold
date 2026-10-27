@@ -1478,5 +1478,22 @@
   "pruebas": "Lógica 106/106, acciones 41/41, modelos 114/114 (6 fallan con la versión anterior), combate 80/80; navegador: construcción y demo única correctos en PC y móvil. El duelo no cambia (su compilado sale idéntico byte a byte al de main), así que no se ha vuelto a pasar su prueba de navegador.",
   "capturas": "capturas/construccion-v25",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T13:24:50+00:00",
+  "fin": "2026-10-27T19:00:50+00:00",
+  "titulo": "Hito 1f: jugar en línea en la demo única",
+  "hito": "prueba-online",
+  "hecho": [
+   "«Jugar en línea» en el menú de la demo y Opciones con la dirección del servidor (se guarda en el navegador; por defecto ws://localhost:8080)",
+   "En línea, la construcción usa el mundo del servidor: lo propio se ve al momento en una copia y el servidor lo confirma; si otro puso lo mismo antes, gana el servidor y se avisa",
+   "Los demás jugadores se ven con el personaje del taller que eligieron: el servidor reparte el aspecto (cuerpo y ropa), comprobado, y la posición suavizada",
+   "En línea no se guarda nada en el navegador y no está «Reiniciar»; si se corta la conexión, se avisa y no se construye",
+   "Prueba en node de dos clientes con el servidor (pedidos a la vez, red lenta, aspecto) y prueba de navegador con dos páginas (PC y móvil) y un servidor local"
+  ],
+  "pruebas": "Mundo en línea 16/16 (con MUTAR=1 falla), navegador de jugar en línea con dos páginas correcto (con MUTAR=1 falla), batería completa correcta antes de unir los últimos cambios de main; tras unirlos, lógica, modelos, combate, acciones, servidor, presencia, idiomas, demo y jugar en línea correctos",
+  "capturas": "capturas/demo-v21",
+  "estado": "ok",
+  "notas": "no comprobado: jugar desde dos aparatos de verdad (hace falta el servidor en internet, tarea pendiente del hito). En una pasada de la batería completa con la máquina cargada falló una vez la prueba de navegador del combate (pantalla de victoria); sola pasó entera. Tras unir los últimos cambios de main (suelos de troncos y mapa) no se repitió la batería entera, solo las pruebas listadas"
  }
 ]
