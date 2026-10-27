@@ -451,6 +451,11 @@
    "estado": "en_curso",
    "tareas": [
     {
+     "nombre": "Arreglo (pedido de valravnx, 27 oct): varios suelos de troncos seguidos no acaban de cerrar (rendija verde y testas de los troncos en cada junta); entre casillas del mismo suelo o cimiento de troncos, los troncos siguen de largo y la capa de debajo llega al borde",
+     "estado": "en_curso",
+     "inicio": "2026-10-27T18:24:55+01:00"
+    },
+    {
      "nombre": "Arreglo (pedido de valravnx, 27 oct): en construir se veían los muebles del piso de arriba estando abajo con el techo puesto, y WASD fallaba (con la distribución de teclado rusa, o si la ventana perdía el foco con una tecla pulsada): las teclas se leen por su posición física y se sueltan todas al perder el foco",
      "estado": "hecho",
      "inicio": "2026-10-27T13:53:25+01:00",
