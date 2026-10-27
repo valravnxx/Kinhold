@@ -1280,5 +1280,22 @@
   "pruebas": "Prueba de la web correcta en PC y móvil, en español, inglés y ruso; capturas miradas de todas las pestañas.",
   "capturas": "capturas/web-v2",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T10:12:22+01:00",
+  "fin": "2026-10-27T10:28:16+01:00",
+  "titulo": "Web de progreso como una feria medieval",
+  "hito": "infra",
+  "hecho": [
+   "Fondo de tablones de madera hecho por código: vetas estiradas y onduladas con ruido SVG (el desplazamiento solo en vertical para que el mosaico case), fibras finas, juntas entre tablas y luz cálida arriba.",
+   "Guirnalda de banderines de tela que cuelga en curva, cada uno girado según la pendiente de la cuerda y meciéndose un poco (quieto si el sistema pide menos movimiento).",
+   "Cabecera: cartel de madera con clavos colgado de la guirnalda, el sello encima y «Kinhold» pintado en oro; a los lados, dos estandartes (rojo y verde) con cruz dorada. En el móvil, solo el cartel.",
+   "El resumen, como notas de pergamino clavadas; las pestañas, como estandartes de tela que cuelgan de una viga (el elegido, rojo y más largo); el pie, una tabla clavada.",
+   "Cada pestaña dentro de un pergamino con rodillos de madera arriba y abajo, extremos enrollados y pomos, y su título en una cinta roja.",
+   "Prueba de la web ampliada: guirnalda, cartel y pergamino con dos rodillos en cada pestaña. Rota a propósito (sin guirnalda): falla, como debe."
+  ],
+  "pruebas": "Prueba de la web correcta en PC y móvil, en español, inglés y ruso; capturas miradas de todas las pestañas.",
+  "capturas": "capturas/web-v3",
+  "estado": "ok"
  }
 ]

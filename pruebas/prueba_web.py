@@ -48,6 +48,9 @@ with sync_playwright() as p:
         pg.click('details.otras > summary'); pg.wait_for_timeout(200)
         pg.evaluate('document.fonts.ready')
         _cargadas = pg.evaluate("[...document.fonts].filter(f => f.status === 'loaded').map(f => f.family.replace(/\"/g, ''))")
+        comprobar('feria: guirnalda de banderines, cartel de madera y cada pestaña en un pergamino con dos rodillos',
+                  pg.locator('#guirnalda .banderin').count() >= 8 and pg.locator('.cabecera .tabla h1').count() == 1
+                  and pg.evaluate("[...document.querySelectorAll('section')].every(s => s.querySelector('.pergamino') && s.querySelectorAll('.pergamino > .rollo').length === 2)"))
         comprobar('las fuentes medievales se cargan', all(any(n in f for f in _cargadas) for n in ['EB Garamond', 'Alegreya SC', 'Cinzel Decorative']), ', '.join(sorted(set(_cargadas))))
         ancho = pg.evaluate('document.documentElement.scrollWidth')
         comprobar('sin desplazamiento horizontal', ancho <= vista['width'], f'{ancho}px')
