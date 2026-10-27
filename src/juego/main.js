@@ -1108,6 +1108,7 @@ paso();
 window.__kinhold = {
   get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos,
   cambiarModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+  plantaDeco, get teclas() { return [...teclas]; },
   seleccionar(clase, tipo) { estado.sel = { clase, tipo }; estado.dir = 0; marcarSeleccion(); evaluarColocacion(); },
   apuntar(x, z, y = 0) { estado.puntero = { x, z, ySuperficie: y }; evaluarColocacion(); },
   apuntarPantalla(cx, cy) { estado.puntero = punteroDesde(cx, cy); evaluarColocacion(); return estado.puntero; },
@@ -1123,7 +1124,6 @@ window.__kinhold = {
   get rampa() { return rampa && { t: rampa.t, meta: rampa.meta, visible: !!rampa.g.parent }; },
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); reconstruir(); },
   get registroAcciones() { return registroAcciones; },
-  plantaDeco, get teclas() { return [...teclas]; },
   reconstruir() { reconstruir(); },
   render() { renderer.render(escena, camara); },
 };
