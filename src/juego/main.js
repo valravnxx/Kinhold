@@ -12,6 +12,7 @@ import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { vigilar, ofrecerGente } from '../mundo/rendimiento.js';
+import { conectarEnLinea } from './en_linea.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -41,13 +42,19 @@ addEventListener('resize', colocarTodo);
 if (window.ResizeObserver && document.getElementById('superior')) new ResizeObserver(colocarTodo).observe(document.getElementById('superior'));
 
 const CLAVE_GUARDADO = 'kinhold_h1_v1';
+// «Jugar en línea» (?enlinea=1): el mundo es el del servidor; nada se guarda en el navegador (src/juego/en_linea.js)
+const EN_LINEA = new URLSearchParams(location.search).get('enlinea') === '1';
+let enLinea = null;
 const $ = (id) => document.getElementById(id);
 
 // ---------------- Estado ----------------
-let mundo = cargar();
+let mundo = EN_LINEA ? new Mundo() : cargar();
 // Toda acción que cambia el mundo pasa por la lógica pura con su autor y queda anotada (src/logica/acciones.js).
 let registroAcciones = new RegistroAcciones();
-function accion(a) { return ejecutar(mundo, registroAcciones, { autor: AUTOR_LOCAL, ...a }); }
+function accion(a) {
+  if (enLinea) { const r = enLinea.red.accion(a); mundo = enLinea.red.mundo; return r; }
+  return ejecutar(mundo, registroAcciones, { autor: AUTOR_LOCAL, ...a });
+}
 const estado = {
   modo: 'mover',            // mover | construir | desmontar
   sel: { clase: 'pieza', tipo: 'cim_piedra' },
@@ -68,6 +75,7 @@ function cargar() {
   return new Mundo();
 }
 function guardar() {
+  if (EN_LINEA) return;
   try { localStorage.setItem(CLAVE_GUARDADO, JSON.stringify(mundo.exportar())); } catch (e) { /* sin almacenamiento */ }
 }
 
@@ -179,6 +187,13 @@ function despejarDecorado() {
   if (mundo.mojon) circ.push([mundo.mojon.x, mundo.mojon.z, 0.9]);
   estado.plantasOcultas = decorado.despejar((x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r));
 }
+// suelos y cimientos de troncos: qué casillas de al lado tienen el mismo suelo terminado, para juntarse con ellas
+const TIPOS_QUE_SE_JUNTAN = new Set(['suelo_tronco', 'cim_tronco']);
+function contextoSuelo(c, p) {
+  if (p.hueco !== 'f' || !TIPOS_QUE_SE_JUNTAN.has(p.tipo) || p.obra) return undefined;
+  const igual = (di, dj) => { const q = c.piezas.get(clave('f', p.i + di, p.j + dj, p.k)); return !!q && q.tipo === p.tipo && !q.obra; };
+  return { vecinos: { xn: igual(-1, 0), xp: igual(1, 0), zn: igual(0, -1), zp: igual(0, 1) } };
+}
 function reconstruir() {
   for (const r of [raizConstr, raizDeco]) for (const h of r.children) liberar(h);
   raizConstr.clear(); raizDeco.clear();
@@ -191,7 +206,7 @@ function reconstruir() {
     const tejados = geometriaTejados(c);
     for (const [key, p] of c.piezas) {
       const tj = tejados.get(key);
-      const obj = modeloPieza(p.tipo, tj);
+      const obj = modeloPieza(p.tipo, tj || contextoSuelo(c, p));
       transformarPieza(obj, p);
       aplicarAperturas(obj, p);
       if (tj) {
@@ -1058,6 +1073,7 @@ function paso() {
   $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana());
 
   moverGente(dt);
+  if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
   actualizarCamara();
   renderer.render(escena, camara);
   requestAnimationFrame(paso);
@@ -1162,7 +1178,42 @@ redimensionar();
 construirBarra();
 reconstruir();
 actualizarUI();
+if (EN_LINEA) iniciarEnLinea();
 paso();
+
+// En línea: lo que llega del servidor cambia el mundo; se redibuja solo si cambia lo que se ve (un rato de trabajo
+// de otro solo cuando su obra pasa de cuarto o se termina, como las propias).
+function iniciarEnLinea() {
+  $('btnReiniciar').hidden = true; // el mundo del servidor no se borra desde aquí
+  const marca = document.createElement('span');
+  marca.id = 'estadoRed';
+  marca.style.cssText = 'pointer-events:auto;align-self:center;background:var(--panel);color:var(--acento);border-radius:9px;padding:6px 9px;font-size:12px';
+  $('menu').prepend(marca);
+  const cuarto = (m, e) => {
+    const c = m.construcciones.find(x => x.id === e.datos.construccion), p = c && c.piezas.get(e.datos.clave);
+    return !p ? -1 : p.obra ? Math.floor(4 * p.obra.trabajo / tiempoObra(p.tipo)) : 4;
+  };
+  const vistos = new Map(); // obra → cuarto de trabajo con el que se dibujó
+  enLinea = conectarEnLinea({
+    escena, recursos: RECURSOS_MH, aspecto: elegido || { sexo: 'hombre', capas: [] },
+    avisar: mostrarAviso,
+    alEstado: (txt) => { marca.textContent = txt; },
+    alCambiar(info, msg) {
+      const antes = mundo;
+      mundo = enLinea.red.mundo;
+      const e = info.entrada;
+      let redibujar = info.cambio || antes !== mundo;
+      if (e && (e.tipo === 'trabajar' || e.tipo === 'entregar' || e.tipo === 'subir' || e.tipo === 'rellenar')) {
+        // el mundo puede ser el mismo objeto antes y después: se compara con el cuarto que se vio la última vez
+        redibujar = false;
+        if (e.tipo === 'trabajar') { const k = e.datos.construccion + '|' + e.datos.clave, n = cuarto(mundo, e); redibujar = vistos.get(k) !== n; vistos.set(k, n); }
+      }
+      if (msg.tipo === 'bienvenida' || info.rechazo) redibujar = true;
+      if (redibujar) { reconstruir(); if (estado.modo === 'construir') evaluarColocacion(); }
+      if (info.cambio || e) actualizarUI();
+    },
+  });
+}
 
 // acceso para pruebas automáticas
 window.__kinhold = {
@@ -1176,6 +1227,22 @@ window.__kinhold = {
   proyectar(x, y, z) { const v = new THREE.Vector3(x, y, z).project(camara); return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight }; },
   // atajo de prueba: lleva el material y termina todas las obras a medias, siempre con acciones
   terminarObras() {
+    if (enLinea) { // en línea, por el servidor: las mismas acciones que haría el jugador (llevar material y trabajar)
+      const obras = []; for (const c of mundo.construcciones) for (const [key, p] of c.piezas) if (p.obra) obras.push([c.id, key]);
+      for (const [id, key] of obras) {
+        const pieza = () => { const c = mundo.construcciones.find(x => x.id === id); return c && c.piezas.get(key); };
+        const planta = plantaObra(pieza());
+        for (const f of mundo.faltaEntregar(pieza())) {
+          if (planta > 0 && clasePeso(f.m) !== 'ligero') { // lo pesado, a una obra en alto, se sube por las varas
+            for (let i = 0; i < 10000 && pieza() && mundo.faltaEntregar(pieza()).some(x => x.m === f.m); i++)
+              if (!accion({ tipo: 'subir', construccion: id, clave: key, material: f.m, segundos: MAX_RATO, metodo: 'varas' }).ok) break;
+          } else accion({ tipo: 'entregar', construccion: id, clave: key, material: f.m, cantidad: f.n, desde: planta });
+        }
+        let r = { ok: true };
+        for (let i = 0; i < 1000 && r.ok && pieza() && pieza().obra; i++) r = accion({ tipo: 'trabajar', construccion: id, clave: key, segundos: MAX_RATO });
+      }
+      reconstruir(); return;
+    }
     for (const c of mundo.construcciones) for (const [key, p] of [...c.piezas]) if (p.obra) acabarObra(mundo, registroAcciones, AUTOR_LOCAL, c.id, key);
     guardar(); reconstruir();
   },
@@ -1188,6 +1255,7 @@ window.__kinhold = {
   interactivoCercano() { const o = interactivoCercano(); return o && { c: o.c.id, key: o.key, tipo: o.tipo }; },
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); reconstruir(); },
   get registroAcciones() { return registroAcciones; },
+  get enLinea() { return enLinea; },
   reconstruir() { reconstruir(); },
   render() { renderer.render(escena, camara); },
 };
