@@ -852,7 +852,7 @@ function polea() {
 // los dos, los ramales de la cuerda (cuantos más, menos fuerza hace falta); el cabo de tirar baja hasta el torno.
 // El motón de abajo y los ramales van aparte, en el grupo «aparejo»: al subir una carga, colgarPolipasto() lo baja
 // hasta ella. El torno (tornoSuelto) se pone en el suelo mientras se sube algo.
-export const POLIPASTO = { yEje: ALTURA - 0.66, r: 0.1, bajada: 0.62 };
+export const POLIPASTO = { yEje: ALTURA - 0.62, r: 0.1, bajada: 0.62, fuera: 0.42 };
 const XS_ARRIBA = [-0.075, 0, 0.075], XS_ABAJO = [-0.04, 0.04];
 function moton(L, xs, r, y, alto) {
   const w = 0.045, ancho = xs.length * w + 0.03;
@@ -869,10 +869,17 @@ function polipasto() {
   const L = loteSuelo();
   const { yEje, r } = POLIPASTO, yViga = POLEA.yViga, altoA = 2 * r + 0.16;
   for (const x of [-0.06, 0.06]) L.add(new THREE.TorusGeometry(0.16, 0.017, 5, 12), CUERDA, x, yViga, 0, { y: Math.PI / 2 }, { sinSuelo: true }); // gaza doble
-  for (const x of [-0.07, -0.05, 0.05, 0.07]) L.add(cil(0.014, 0.014, yViga - 0.16 - (yEje + altoA / 2 + 0.06), 5), CUERDA, x, (yViga - 0.16 + yEje + altoA / 2 + 0.06) / 2, 0, null, { sinSuelo: true });
-  moton(L, XS_ARRIBA, r, yEje, altoA);
-  L.add(new THREE.TorusGeometry(0.045, 0.013, 5, 8), 'hierro', 0, yEje + altoA / 2 + 0.05, 0, { y: Math.PI / 2 }, { sinSuelo: true }); // argolla
   const g = deLote(L);
+  // estrobo: de la gaza a la argolla del motón de arriba (cilindros de 1 m hacia -y, que se orientan y estiran)
+  const E = loteSuelo();
+  for (const x of [-0.06, 0.06]) E.add(cil(0.014, 0.014, 1, 5), CUERDA, x, -0.5, 0, null, { sinSuelo: true });
+  const estrobo = deLote(E); estrobo.name = 'estrobo'; estrobo.position.set(0, yViga - 0.16, 0);
+  g.add(estrobo);
+  // todo lo que cuelga va en «aparejo», que se aparta del muro hacia un lado (fuera)
+  const A = loteSuelo();
+  moton(A, XS_ARRIBA, r, yEje, altoA);
+  A.add(new THREE.TorusGeometry(0.045, 0.013, 5, 8), 'hierro', 0, yEje + altoA / 2 + 0.05, 0, { y: Math.PI / 2 }, { sinSuelo: true }); // argolla
+  const alto = deLote(A); alto.name = 'moton_alto';
   // motón de abajo (con su gancho) y ramales, que se mueven
   const B = loteSuelo(), altoB = 2 * 0.085 + 0.14;
   moton(B, XS_ABAJO, 0.085, 0, altoB);
@@ -885,29 +892,32 @@ function polipasto() {
     if (x === XS_ARRIBA[2] && z === -1) continue; // este es el cabo de tirar
     R.add(cil(0.012, 0.012, 1, 5), CUERDA, x, -0.5, z * (r + 0.01) * 0.8, null, { sinSuelo: true });
   }
-  const ramales = deLote(R); ramales.name = 'ramales';
+  const ramales = deLote(R); ramales.name = 'ramales'; ramales.position.y = yEje - r * 0.3;
   const cabo = deLote((() => { const C = loteSuelo(); C.add(cil(0.013, 0.013, 1, 5), CUERDA, 0, -0.5, 0, null, { sinSuelo: true }); return C; })());
   cabo.name = 'cabo'; cabo.position.set(XS_ARRIBA[2], yEje, -(r + 0.01));
-  const ap = new THREE.Group(); ap.name = 'aparejo'; ap.add(bajo, ramales, cabo);
+  const ap = new THREE.Group(); ap.name = 'aparejo'; ap.add(alto, bajo, ramales, cabo);
   g.add(ap);
   colgarPolipasto(g, yEje - POLIPASTO.bajada, 0.25);
   return g;
 }
-// Pone el motón de abajo a la altura y (en el marco de la pieza) y el cabo de tirar hasta yCabo (o, con haciaLocal,
-// hasta ese punto del marco de la pieza: el torno).
-export function colgarPolipasto(obj, y, yCabo, haciaLocal = null, fuera = 0) {
+// Pone el aparejo apartado del muro «fuera» m (en z de la pieza; sin carga, hacia +z), el motón de abajo a la altura y
+// (en el marco de la pieza) y el cabo de tirar hasta yCabo, o con haciaLocal hasta ese punto del marco de la pieza (el
+// tambor del torno).
+export function colgarPolipasto(obj, y, yCabo, haciaLocal = null, fuera = POLIPASTO.fuera) {
   const ap = obj.getObjectByName('aparejo');
   if (!ap) return;
-  const { yEje, r } = POLIPASTO, altoB = 2 * 0.085 + 0.14;
+  const { yEje, r } = POLIPASTO, altoA = 2 * r + 0.16, altoB = 2 * 0.085 + 0.14;
   const bajo = ap.getObjectByName('moton_bajo'), ramales = ap.getObjectByName('ramales'), cabo = ap.getObjectByName('cabo');
-  bajo.position.set(0, y, fuera);
-  // los ramales van del motón de arriba al de abajo (inclinados si la carga cuelga por fuera del muro)
-  const dr = new THREE.Vector3(0, y + altoB / 2 - 0.04 - (yEje - r * 0.3), fuera);
-  ramales.position.set(0, yEje - r * 0.3, 0);
-  ramales.scale.y = Math.max(0.05, dr.length());
-  ramales.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), dr.normalize());
+  ap.position.set(0, 0, fuera);
+  // estrobo: de la gaza (en la viga) a la argolla, inclinado hacia fuera
+  const est = obj.getObjectByName('estrobo');
+  const de = new THREE.Vector3(0, yEje + altoA / 2 + 0.09, fuera).sub(est.position);
+  est.scale.y = Math.max(0.05, de.length());
+  est.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), de.normalize());
+  bajo.position.set(0, y, 0);
+  ramales.scale.y = Math.max(0.05, ramales.position.y - (y + altoB / 2 - 0.04));
   const a = cabo.position;
-  const b = haciaLocal || new THREE.Vector3(a.x, yCabo, a.z);
+  const b = haciaLocal ? haciaLocal.clone().sub(ap.position) : new THREE.Vector3(a.x, yCabo, a.z);
   const d = new THREE.Vector3().subVectors(a, b);
   cabo.scale.set(1, Math.max(0.05, d.length()), 1);
   cabo.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());

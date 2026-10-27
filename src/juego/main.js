@@ -833,10 +833,10 @@ function ponerPolipasto(c, q, p) {
   quitarRampa();
   const m = centroMundo(c, q), qkey = clave('q', q.i, q.j, q.k, q.d);
   const g = new THREE.Group(); g.name = 'polipasto_subiendo';
-  // el torno, a 0,75 m delante de ti, mirando al polipasto
+  // el torno, a 0,95 m delante de ti, mirando al polipasto
   const dx = m.x - pj.x, dz = m.z - pj.z, l = Math.hypot(dx, dz) || 1;
   const torno = tornoSuelto();
-  torno.position.set(pj.x + dx / l * 0.75, pj.y, pj.z + dz / l * 0.75); torno.rotation.y = Math.atan2(dx, dz);
+  torno.position.set(pj.x + dx / l * 0.95, pj.y, pj.z + dz / l * 0.95); torno.rotation.y = Math.atan2(dx, dz);
   g.add(torno);
   // la carga: cuelga bajo la viga, del lado en el que estás
   const rot = c.rot + (q.d === 1 ? -Math.PI / 2 : 0);

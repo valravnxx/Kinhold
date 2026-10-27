@@ -569,7 +569,7 @@ with sync_playwright() as p:
     print('PC: polipasto con torno en una viga (sola, un tronco; lo muy pesado, entre dos)')
     for planta in (0, 1):
         poner('pieza', 'poste', -18, -12, planta)
-        if planta: poner('pieza', 'poste', -16, -12, planta)
+        poner('pieza', 'poste', -16, -12, planta)
     poner('pieza', 'viga', -17, -12, 1)
     poner('pieza', 'polipasto', -17, -12, 1)
     npp = ev(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'polipasto' && !p.obra).length")
@@ -602,10 +602,16 @@ with sync_playwright() as p:
     esperar(pg, 200)
     comprobar('moverse deja de subir, quita el torno y el motón vuelve arriba', not ev(f"{K}.obrando") and not ev(f"{K}.rampa") and ev(f"[...{K}.escena.getObjectsByProperty ? {K}.escena.getObjectsByProperty('name', 'moton_bajo') : []].every(o => o.position.y > 1)"))
     ev(f"{K}.terminarObras()")
-    # de cerca, recogido
-    ev(f"{K}.pj.x=-18.35; {K}.pj.z=-12.6; {K}.pj.k=1; {K}.pj.y=2.62; {K}.pj.rot=1.0; {K}.cam.yaw=Math.PI-0.35; {K}.cam.pitch=0.1; {K}.cam.dist=4.5")
+    # de cerca, recogido (apartado del muro hacia fuera): el personaje sube a un andamio pegado al muro para que la
+    # cámara llegue a la altura de la viga
+    poner('pieza', 'andamio', -17, -13, 0)
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-17.6; {K}.pj.z=-13.2; {K}.pj.k=1; {K}.pj.y=2.62; {K}.pj.rot=1.0; {K}.cam.yaw=0.35; {K}.cam.pitch=0.12; {K}.cam.dist=4.8")
     esperar(pg, 1500)
     pg.screenshot(path=f'{SALIDA}/37_polipasto_recogido_de_cerca.png')
+    ev(f"{K}.cam.yaw=-0.45; {K}.cam.pitch=0.02; {K}.cam.dist=3.6")
+    esperar(pg, 1200)
+    pg.screenshot(path=f'{SALIDA}/38_polipasto_motones_de_cerca.png')
+    ev(f"{K}.pj.k=0; {K}.pj.y=0; {K}.pj.x=-17; {K}.pj.z=-15")
 
     print('PC: todos los muebles en fila, de cerca (estilo v5)')
     nd = ev(f"{K}.mundo.decoracion.length")
