@@ -580,7 +580,7 @@ with sync_playwright() as p:
     ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-16.8; {K}.pj.z=-13.6; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.3; {K}.cam.dist=11")
     t0 = ev(f"{K}.mundo.materiales.tronco")
     ev(f"{K}.usar()")
-    comprobar('con polipasto (y sin polea), Usar sube los troncos con él y pone el torno', ev(f"{K}.obrando && {K}.obrando.metodo") == 'polipasto' and ev(f"{K}.rampa && {K}.rampa.tipo") == 'polipasto' and ev(f"{K}.rampa.torno"), json.dumps(ev(f"{K}.rampa")))
+    comprobar('con el polipasto más cerca de la obra que la polea, Usar sube los troncos con él y pone el torno', ev(f"{K}.obrando && {K}.obrando.metodo") == 'polipasto' and ev(f"{K}.rampa && {K}.rampa.tipo") == 'polipasto' and ev(f"{K}.rampa.torno"), json.dumps(ev(f"{K}.rampa")))
     entregado4 = f"{K}.mundo.construcciones.find(c => c.id === {alta4['c']}).piezas.get('{alta4['key']}').obra.entregado"
     ev(f"{K}.fijarSubida(0)"); esperar(pg, 300)
     y_abajo = ev(f"{K}.rampa.yMoton")

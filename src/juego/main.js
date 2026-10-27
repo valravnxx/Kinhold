@@ -745,11 +745,13 @@ function usarObra(o) {
   const m = centroMundo(c, p); pj.rot = Math.atan2(m.x - pj.x, m.z - pj.z);
   const pesado = mundo.faltaEntregar(p).find(f => hayQueSubir(p, f.m)) || (p.obra.subida && { m: p.obra.subida.material });
   if (pesado) {
-    // con una polea colgada de una viga de esta construcción (a la altura de la obra o más arriba), se tira de ella;
-    // si no la hay pero hay un polipasto, se sube con él dando vueltas al torno; si no, se rueda por dos varas.
-    // Lo muy pesado, solo con el polipasto (y hasta que otra persona guía la carga, no pasa de la mitad).
-    const q = clasePeso(pesado.m) === 'muy_pesado' ? null : poleaPara(c, p);
-    const qp = q ? null : polipastoPara(c, p);
+    // con una polea o un polipasto colgado de una viga de esta construcción (a la altura de la obra o más arriba), se
+    // usa el que esté más cerca de la obra: de la polea se tira; con el polipasto se da vueltas al torno. Si no hay
+    // ninguno, se rueda por dos varas. Lo muy pesado, solo con el polipasto (y hasta que otra persona guía la carga,
+    // no pasa de la mitad).
+    const dist = (a) => { const u = centroLocal(a), v = centroLocal(p); return Math.hypot(u.lx - v.lx, u.lz - v.lz); };
+    let q = clasePeso(pesado.m) === 'muy_pesado' ? null : poleaPara(c, p), qp = polipastoPara(c, p);
+    if (q && qp) { if (dist(qp) < dist(q)) q = null; else qp = null; }
     estado.obrando = { c, key, subir: pesado.m, metodo: q ? 'polea' : qp || clasePeso(pesado.m) === 'muy_pesado' ? 'polipasto' : 'varas' };
     if (q) ponerPolea(c, q, p); else if (qp) ponerPolipasto(c, qp, p); else ponerRampa(c, p);
     avisoSubida(p, pesado.m, 0, entregado);
