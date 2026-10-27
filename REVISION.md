@@ -6,6 +6,11 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (12:36) — por el chat: decisiones de cavar y diseño del mundo
+
+«Sí, aprueba lo del vano por material» (sin derrumbes: sin apoyo no se avanza). Escombro: «sacarlo con carretilla, sí, porque es importante que sea un material que se pueda utilizar». Hierro: «poco y malo en superficie, y lo bueno en la mina, sí». «Prohibimos cavar dentro del radio de mojón ajeno, y no solo eso, sino de su radio de influencia» (en el GDD, el radio de exclusión). → GDD apartado 8 (Cavar y minar) y tareas nuevas en el hito 1g.
+«Tendríamos que empezar a trabajar en el diseño de mundo… es un buen punto para empezar a hacer unos primeros bocetos» → Hito 10 (Mundo) lo lleva la sesión de chat; primera tarea: bocetos del mundo.
+
 ### 27 oct 2026 (12:27) — por el chat: cavar en todo el mundo, sin agujeros a lo loco
 
 Medida en su móvil (cavar v1): 70 fps, 13,0 mil triángulos, malla por golpe 23,7 ms de media y 52,3 ms el peor (98 golpes). «Funciona perfecto».

@@ -571,11 +571,31 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Entibado: postes y vigas en las galerías con el cálculo de cargas de la construcción; derrumbe si una galería larga se queda sin apoyo",
+     "nombre": "Sustentación: materiales por capas con su dureza y su vano (tierra 1 m, arcilla o grava 1,5 m, roca blanda 2,5 m, roca dura 4 m, menos cuanto más hondo); el golpe no se da si deja más techo suelto del que aguanta y avisa de entibar",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Entibado: postes y travesaño de troncos como obra (marco, material y tiempo); con entibos se puede seguir cavando. En tierra, pared vertical de 1,5 m como mucho y luego talud o entibar el pozo",
      "estado": "pendiente"
     },
     {
      "nombre": "El servidor solo manda los huecos que el jugador ha visto o tiene delante (nadie ve minas ni vetas ajenas a través de la roca)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Escombro: lo cavado se saca en cesto o carretilla y queda como material",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Vetas: hierro poco y malo en superficie con sus señales (agua rojiza, tierra encharcada), el bueno en vetas dentro de la roca; carbón en afloramientos de ladera",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Sin cavar en el territorio ni en el radio de exclusión de un mojón ajeno",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La malla de la roca se rehace en un hilo aparte, sin tirones al golpear",
      "estado": "pendiente"
     },
     {
@@ -751,9 +771,20 @@
    "id": "mundo",
    "num": "10",
    "nombre": "Mundo",
-   "jugable": "Pseudo-Europa por semilla a escala real: cordilleras como los Pirineos, valles y collados, ríos de tres gruesos (arroyos que se vadean, ríos con pocos vados, grandes ríos con barca o puente), bosques frondosos, pendientes que frenan; agua y nado; 5 países con estilo propio, caminos por uso, puentes.",
-   "estado": "pendiente",
-   "tareas": []
+   "jugable": "Pseudo-Europa por semilla a escala real: cordilleras como los Pirineos, valles y collados, ríos de tres gruesos (arroyos que se vadean, ríos con pocos vados, grandes ríos con barca o puente), bosques frondosos, pendientes que frenan; agua y nado; 5 países con estilo propio, caminos por uso, puentes; todo el terreno se puede cavar (relieve y materiales por semilla, malla suavizada cerca y niveles de detalle lejos).",
+   "estado": "en_curso",
+   "tareas": [
+    {
+     "nombre": "Bocetos del mundo: mapa del continente por semilla (silueta, cordilleras, ríos de tres gruesos, biomas, cinco países, roca madre y dónde salen hierro y carbón) para revisarlo con valravnx",
+     "estado": "en_curso",
+     "inicio": "2026-10-27T12:36:00+01:00"
+    },
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "pendiente"
+    }
+   ],
+   "lleva": "chat"
   },
   {
    "id": "pulido-animaciones",
