@@ -718,8 +718,10 @@ function recibirRed(msg) {
   } else if (msg.tipo === 'sale') { quitarOtro(msg.autor); }
   else if (msg.tipo === 'cortado') { for (const a of [...otros.keys()]) quitarOtro(a); }
 }
+const eventosRed = [];                // los últimos eventos del servidor (para las pruebas)
 function eventoRed(e) {
   const yo = red.yo;
+  eventosRed.push(e); if (eventosRed.length > 200) eventosRed.shift();
   if (e.tipo === 'golpe') {
     const at = luchadorDe(e.autor), de = e.objetivo ? luchadorDe(e.objetivo) : null;
     const res = resultadoDeEvento(e);
@@ -759,7 +761,15 @@ function eventoRed(e) {
       yaVencidos = new Set([...otros.values()].filter(o => o.L.fuera).map(o => o.L));
       stats = { golpes: 0, heridasDadas: 0, paradas: 0, perfectas: 0, maestros: 0, recibidas: 0, flechas: 0, aciertos: 0, puntos: 0 };
       registrar(tr('Vuelves a empezar, sano.'), 'aviso');
-    } else if (otros.has(e.autor)) { yaVencidos.delete(otros.get(e.autor).L); registrar(tr('Tu rival vuelve a empezar, sano.'), ''); }
+    } else if (otros.has(e.autor)) {
+      const L = otros.get(e.autor).L;
+      yaVencidos.delete(L);
+      // su copia, sana ya (su foto llega en el siguiente tic; si no, este fotograma aún lo vería caído)
+      Object.assign(L, { fuera: false, motivoFuera: '', accion: 'libre', tAccion: 0, heridas: [], sangre: 100, cansancio: 0, bloqueando: false });
+      registrar(tr('Tu rival vuelve a empezar, sano.'), '');
+      // si le habías vencido tú, la pelea sigue (con tus heridas): se quita la pantalla final
+      if (terminado && !jugador.fuera && L === rival) { terminado = false; $('final').hidden = true; }
+    }
   }
 }
 // Otra partida: en línea lo pide al servidor (solo si estás fuera de combate o no hay nadie en pie cerca)
@@ -844,9 +854,16 @@ function actualizarPanel() {
   const html = av.map((a, i) => `<button class="aviso ${a.c}" data-i="${i}" style="--n:${Math.min(1, a.n).toFixed(2)}"><span></span><em>${a.t}</em></button>`).join('');
   if (cont.dataset.html !== html) {
     cont.dataset.html = html; cont.innerHTML = html;
+    bajoElMenu();
     cont.querySelectorAll('.aviso').forEach(b => b.onclick = () => { const a = av[+b.dataset.i]; $('detalle').hidden = false; $('detalle').innerHTML = `<b>${a.t}</b><br>${a.d}`; });
   }
   $('estado').textContent = tr(ARMAS[jugador.arma].nombre) + (jugador.bloqueando ? ' · ' + tr('parando') : '');
+}
+// los avisos van debajo de los botones de arriba (en el móvil, con «Menú», los fps y el estado de la red, ocupan
+// varias filas y los avisos quedaban encima de ellos)
+function bajoElMenu() {
+  const m = $('menu'); if (!m) return;
+  $('avisos').style.top = Math.max(64, Math.round(m.getBoundingClientRect().bottom + 10)) + 'px';
 }
 function efectoHerida(z) {
   if (z === 'brazoD') return ': ' + tr('golpes y tiros más lentos y flojos');
@@ -888,7 +905,7 @@ function ajustarControles() {
 }
 // en línea, lo del rival lo pone el otro jugador: fuera de las opciones (también el modo: siempre duelo)
 if (EN_LINEA) for (const id of ['selModo', 'selArmaduraRival', 'selArmaRival']) { $(id).hidden = true; const l = document.querySelector(`label[for="${id}"]`); if (l) l.hidden = true; }
-function redimensionar() { renderer.setSize(innerWidth, innerHeight, false); camara.aspect = innerWidth / innerHeight; camara.updateProjectionMatrix(); }
+function redimensionar() { bajoElMenu(); renderer.setSize(innerWidth, innerHeight, false); camara.aspect = innerWidth / innerHeight; camara.updateProjectionMatrix(); }
 addEventListener('resize', redimensionar);
 redimensionar();
 if (EN_LINEA) conectar();
@@ -907,5 +924,5 @@ window.__duelo = {
   get dedoArco() { return dedoArco; }, nuevaPartida, atacar, disparar, lanzar, tick, registrar, parar, lineaDesdePantalla,
   configurar(o) { Object.assign(opc, o); nuevaPartida(); },
   apuntar(x, y, z) { apuntado = { x, y, z }; },
-  get red() { return red; }, get otros() { return otros; }, otraPartida, EN_LINEA,
+  get red() { return red; }, get otros() { return otros; }, eventosRed, otraPartida, EN_LINEA,
 };
