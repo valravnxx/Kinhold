@@ -1117,5 +1117,26 @@
   "pruebas": "Todas correctas con probar_todo.sh: lógica 86/86, modelos 88/88, combate 69/69, acciones 25/25, cinturones, taller, unión, idiomas; navegador de construcción, combate, estilo, personaje, demo, recursos, idioma y web, en PC y móvil.",
   "capturas": "capturas/construccion-v18",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T00:20:20+00:00",
+  "fin": "2026-10-27T02:51:05+00:00",
+  "titulo": "Hito 1e: armas, hacha, pieza fantasma y resaltados con el estilo v5",
+  "hito": "estilo",
+  "hecho": [
+   "Armas del duelo rehechas con el estilo v5: espadas con la hoja de sección de rombo y su vaceo, puño forrado de cuero con atadura, cruz y pomo de rueda de hierro; palo de vara descortezada con nudos y los cortes a la vista; arco de una pieza que adelgaza hacia las puntas, con puño de cuero.",
+   "Escudo de seis tablas con veta que llenan el círculo, canto forrado de cuero cosido y umbo con su aro y clavos; flecha con punta de hierro y tres plumas atadas; piedra de honda con textura de piedra.",
+   "Poste de práctica con dos haces de paja atados con cuerda y piedras calzando el pie; diana de paja con un paño pintado con tierras (ocre, almagre y carbón) en vez de los anillos azul, rojo y amarillo vivos. Las cintas de los luchadores, de paño teñido y más apagadas.",
+   "La pieza fantasma al construir ya no es un bloque verde o rojo: es la propia pieza con su textura y su color, translúcida, con un velo verde si cabe o rojo si no. Lo marcado al desmontar (naranja lo que se quita, rojo lo que caería) también conserva su textura.",
+   "Hacha en la mano al talar, como la del tocón de la prueba v5: mango de fresno con veta y cabeza de hierro con la pala abierta y el filo más claro. Se coloca con los huesos de la mano (mango atravesado a los dedos, filo hacia los nudillos) y solo se ve mientras tala.",
+   "Lo que se lleva en la mano echa sombra pero no la recibe: con una hoja de 9 mm el mapa de sombras la sombreaba entera y se veía negra.",
+   "Quitadas de modelos.js las funciones del aspecto inicial que ya no usaba nada (árbol, roca, cajas y cilindros de color plano); los recursos del suelo (árboles y rocas) ya eran los del decorado con el estilo v5.",
+   "Prueba nueva en prueba_modelos.mjs: armas, escudo, flecha, piedra, poste, diana y hacha hechos con el estilo v5, la hoja llega a la punta que marca el arma, las tablas del escudo llenan el círculo y el hacha mide lo que debe (rota a propósito con MUTAR_ARMA=1: falla).",
+   "El muestrario de piezas saca también fotos de las armas (armas=…). Publicadas construcción v19, combate v11 y demo única v14, con fotos de cerca y una comparación lado a lado con la prueba v5.",
+   "No cambiado: el anillo claro que marca la tierra del mojón (es una marca del juego, no una pieza) y el muñeco que se ve un instante mientras carga el personaje."
+  ],
+  "pruebas": "Todas las pruebas de herramientas/probar_todo.sh correctas (modelos 104/104, construcción, combate, estilo, personaje, demo, idiomas y web en el navegador); capturas revisadas en PC y móvil",
+  "capturas": "capturas/combate-v11",
+  "estado": "ok"
  }
 ]
