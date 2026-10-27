@@ -263,6 +263,8 @@ function leyenda() {
     filas.push(`<div><i style="background:#e8e0d0;border-radius:50%;box-shadow:0 0 0 2px #d9a441 inset"></i>${tr(VETAS.granCarbon.nombre)}</div>`);
   }
   $('leyenda').innerHTML = filas.join('');
+  // en el móvil la leyenda va justo debajo de los botones de arriba (que ocupan más o menos filas según el idioma)
+  if (innerWidth <= 640) $('leyenda').style.top = `${Math.round($('superior').getBoundingClientRect().bottom + 8)}px`;
 }
 function datosGenerales() {
   const r = resumen(mapa); window.__mapa.resumen = r;

@@ -43,6 +43,8 @@ with sync_playwright() as p:
             pg.click('#btnLeyenda'); pg.wait_for_timeout(150)
         pg.screenshot(path=f'{SALIDA}/{nombre}_3_roca_vetas.png')
         leyenda = pg.inner_text('#leyenda')
+        tapa = pg.evaluate("(() => { const a = document.getElementById('leyenda').getBoundingClientRect(), b = document.getElementById('superior').getBoundingClientRect(); return a.height > 0 && a.top < b.bottom; })()")
+        comprobar(f'{nombre}: la leyenda no tapa los botones de arriba', not tapa)
         if nombre == 'movil': pg.click('#btnLeyenda')
         comprobar(f'{nombre}: la leyenda enseña rocas y vetas', 'Caliza' in leyenda and 'Veta pequeña de carbón' in leyenda and 'Gran veta de hierro' in leyenda)
         # ampliar sobre el centro del país 2 y tocarlo

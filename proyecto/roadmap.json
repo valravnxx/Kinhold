@@ -800,8 +800,9 @@
     },
     {
      "nombre": "Recursos repartidos: vetas pequeñas de hierro y carbón cerca de cualquier sitio de tierra (nadie tiene que ir lejos para lo normal) y unas pocas grandes vetas marcadas en el mapa para explotar a fondo; mundo de 256 km con la semilla 66172",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T16:57:00+01:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T16:57:00+01:00",
+     "fin": "2026-10-27T18:36:13+01:00"
     },
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
@@ -1528,6 +1529,13 @@
      "archivo": "jugar/mapa/v1.html",
      "capturas": "capturas/mapa-v1",
      "notas": "Primer boceto del mundo por semilla: continente con golfos, penínsulas, mares interiores e islas, sin figuras fijas; una isla grande que es un país entero, apartada por mar; relieve con sierras y ríos, biomas, cinco países, roca madre y vetas. Se puede elegir 188 o 256 km."
+    },
+    {
+     "v": "v2",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/mapa/v2.html",
+     "capturas": "capturas/mapa-v2",
+     "notas": "Tu mundo (256 km, semilla 66172) se abre al entrar. Vetas pequeñas de hierro y carbón repartidas cerca de cualquier sitio y unas pocas grandes vetas marcadas en el mapa; al tocar, a cuántos km está el hierro y el carbón más cercanos. Las islas cercanas ya tienen país."
     }
    ]
   }
