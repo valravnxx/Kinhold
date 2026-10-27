@@ -1396,5 +1396,22 @@
   "capturas": "capturas/mapa-v1",
   "estado": "ok",
   "notas": "no comprobado: cuánto tarda en generar en un móvil de verdad (en el navegador de pruebas, unos 4 a 5 segundos)"
+ },
+ {
+  "inicio": "2026-10-27T11:50:57+00:00",
+  "fin": "2026-10-27T15:14:32+00:00",
+  "titulo": "Hito 1c: clase de peso de los materiales y subirlos a la obra (carril B)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Cada material tiene clase de peso: ligeros las tablas, varas, paja, clavos, cuerda, barro y hierro; pesados los troncos y la piedra sin tallar (provisional). Muy pesada será la piedra tallada, que aún no existe.",
+   "Obra en la planta 1 o más: lo ligero solo se entrega estando en su planta (subido a mano por la escalera); lo pesado se sube de uno en uno con la acción nueva «subir», con autor.",
+   "Entre dos: 2 × 2,5 s de trabajo por planta y tronco, sumando a los dos; una persona sola rodándolo por dos varas con una cuerda: el doble de trabajo (10 s por tronco a la planta 1). Sin varas, sola no puede: espera ayuda. Cifras provisionales.",
+   "En el juego, Usar junto a una obra en alto apoya dos varas en el borde de su planta y se ve el tronco subiendo abrazado por la cuerda; después se entrega lo ligero y se construye.",
+   "Decisión provisional: lo que se apoya en lo alto de la planta baja (vigas, tejado de una cabaña) se alcanza desde el suelo.",
+   "Publicadas la construcción v23 y la demo única v18."
+  ],
+  "pruebas": "Todas las pruebas correctas (bash herramientas/probar_todo.sh), también tras unir main: lógica 106/106 (20 nuevas, fallan con MUTAR=1), acciones 41/41, navegador de construcción con la subida por las varas (comprobado que falla si no se sube). Capturas miradas en PC y móvil. No comprobado: subir entre dos en el juego (aún se juega solo; probado solo en la lógica).",
+  "capturas": "capturas/construccion-v23",
+  "estado": "ok"
  }
 ]

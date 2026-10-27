@@ -22,6 +22,17 @@ export const MATERIALES = {
   cuerda: 'Cuerda', tabla: 'Tabla', clavo: 'Clavo', hierro: 'Hierro',
 };
 
+// Clase de peso de cada material (GDD, «Obras»): decide cómo se sube hasta la altura de la obra.
+//  ligero     → a mano, por escalera (o andamio, más adelante)
+//  pesado     → entre dos personas, o una sola rodándolo por dos varas con una cuerda (más despacio); polea, más adelante
+//  muy pesado → polipasto con torno o grúa de rueda (piedra tallada: aún no hay ningún material de esta clase)
+// La piedra (sin tallar) va como pesada: el GDD sube «piedras pequeñas» con polea (provisional).
+export const CLASES_PESO = { ligero: 'Ligero', pesado: 'Pesado', muy_pesado: 'Muy pesado' };
+export const CLASE_PESO = {
+  tabla: 'ligero', vara: 'ligero', paja: 'ligero', clavo: 'ligero', cuerda: 'ligero', barro: 'ligero', hierro: 'ligero',
+  tronco: 'pesado', piedra: 'pesado',
+};
+
 // suelo: true = se apoya directamente en el terreno (solo planta 0)
 export const PIEZAS = {
   mojon:              { nombre: 'Mojón', hueco: 'libre', nivel: 0, peso: 0,   cap: 0,    coste: { piedra: 3 }, cat: 'tierra' },

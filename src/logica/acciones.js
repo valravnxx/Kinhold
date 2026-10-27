@@ -4,7 +4,7 @@
 // nunca objetos de la escena. Se comprueba, se aplica y se anota en un registro, salga bien o no.
 // Con el registro de la construcción se puede rehacer el mundo desde cero (reproducir): así el
 // servidor podrá validar y auditar lo que pasa, y las pruebas ven si algo cambia el mundo sin pasar por aquí.
-import { Mundo, MAX_RATO } from './construccion.js';
+import { Mundo, MAX_RATO, plantaObra, clasePeso } from './construccion.js';
 import { PIEZAS } from './piezas.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
 
@@ -53,7 +53,8 @@ const CAMPOS_CONSTRUCCION = {
   decorar: { pieza: 't', x: 'n', y: 'n', z: 'n', rot: 'n' },
   desmontar: { construccion: 'n', clave: 't' },
   quitar: { id: 'n' },
-  entregar: { construccion: 'n', clave: 't', material: 't', cantidad: 'n' }, // llevar material a una obra
+  entregar: { construccion: 'n', clave: 't', material: 't', cantidad: 'n' }, // llevar material a una obra (desde: planta en la que estás)
+  subir: { construccion: 'n', clave: 't', material: 't', segundos: 'n', metodo: 't' }, // subir lo pesado a una obra en alto
   trabajar: { construccion: 'n', clave: 't', segundos: 'n' },                 // un rato de trabajo en una obra
   usar: { construccion: 'n', clave: 't' },           // abrir o cerrar una puerta o un portón
   rellenar: { cantidad: 'n' },                        // botón de pruebas del prototipo
@@ -64,10 +65,15 @@ function aplicarConstruccion(m, a) {
     case 'mojon': return m.colocarMojon(a.x, a.z);
     // se construye por obras (GDD): colocar pone el marco; luego se entregan los materiales y se trabaja
     case 'colocar': return m.colocar(m.candidata(a.pieza, a.x, a.z, a.k, a.rot, a.dir), true);
-    case 'entregar': case 'trabajar': {
+    case 'entregar': case 'trabajar': case 'subir': {
       const c = m.construcciones.find(x => x.id === a.construccion);
       if (!c) return { ok: false, motivo: 'No existe.' };
-      return a.tipo === 'entregar' ? m.entregar(c, a.clave, a.material, a.cantidad, a.autor) : m.trabajar(c, a.clave, a.segundos, a.autor);
+      if (a.tipo === 'entregar') {
+        if (a.desde !== undefined && !numero(a.desde)) return { ok: false, motivo: 'Datos no válidos.' };
+        return m.entregar(c, a.clave, a.material, a.cantidad, a.autor, a.desde === undefined ? 0 : a.desde);
+      }
+      if (a.tipo === 'subir') return m.subir(c, a.clave, a.material, a.segundos, a.autor, a.metodo);
+      return m.trabajar(c, a.clave, a.segundos, a.autor);
     }
     case 'decorar': return m.colocarDecoracion(a.pieza, a.x, a.y, a.z, a.rot);
     case 'quitar': return m.quitarDecoracion(a.id);
@@ -102,13 +108,22 @@ export function ejecutar(mundo, registro, accion) {
 }
 
 // Lleva todo el material que le falta a una obra y trabaja en ella hasta terminarla, siempre con acciones (una
-// entrega por material y ratos de MAX_RATO s). Para las pruebas y los atajos de prueba del prototipo.
+// entrega por material y ratos de MAX_RATO s). Si está en alto, lo ligero se lleva desde su planta y lo pesado se
+// sube rodándolo por dos varas (una persona sola). Para las pruebas y los atajos de prueba del prototipo.
 export function acabarObra(mundo, registro, autor, construccion, claveObra) {
   const c = mundo.construcciones.find(x => x.id === construccion);
   const p = c && c.piezas.get(claveObra);
   if (!p || !p.obra) return { ok: false, motivo: 'No hay obra ahí.' };
+  const planta = plantaObra(p);
   for (const f of mundo.faltaEntregar(p)) {
-    const r = ejecutar(mundo, registro, { autor, tipo: 'entregar', construccion, clave: claveObra, material: f.m, cantidad: f.n });
+    if (planta > 0 && clasePeso(f.m) !== 'ligero') {
+      for (let i = 0; i < 10000 && mundo.faltaEntregar(p).some(x => x.m === f.m); i++) {
+        const r = ejecutar(mundo, registro, { autor, tipo: 'subir', construccion, clave: claveObra, material: f.m, segundos: MAX_RATO, metodo: 'varas' });
+        if (!r.ok) return r;
+      }
+      continue;
+    }
+    const r = ejecutar(mundo, registro, { autor, tipo: 'entregar', construccion, clave: claveObra, material: f.m, cantidad: f.n, desde: planta });
     if (!r.ok) return r;
   }
   let r = { ok: true, terminada: false };

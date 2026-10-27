@@ -827,3 +827,20 @@ export function rellenoTejado(rel, arranque) {
   else tablasDePie(L, u0, u1, yBajo, arriba, plano, pos);
   return deLote(L);
 }
+
+// ---------- Subir un tronco rodándolo por dos varas con una cuerda (GDD, «Obras») ----------
+// Dos varas descortezadas apoyadas en el borde de la planta de la obra: van a lo largo de +z, desde el pie (z = 0,
+// en el suelo) hasta la cabeza (z = largo·cos, a la altura «alto»). Se ve mientras se sube algo pesado.
+export function rampaVaras(alto) {
+  const L = loteSuelo();
+  const ang = Math.atan2(alto, alto * 0.85), largo = Math.hypot(alto, alto * 0.85) + 0.35;
+  const base = new THREE.Matrix4().makeRotationX(Math.PI / 2 - ang);
+  for (const x of [-0.55, 0.55]) addM(L, cil(0.045, 0.055, largo, 7), x < 0 ? 'madera' : 'maderaOsc', mParte(base, x, largo / 2, 0));
+  return deLote(L);
+}
+// El tronco que se rueda: tumbado a lo largo de X, con las testas claras
+export function troncoSuelto(largo = 1.7, r = P.radioTronco) {
+  const L = loteSuelo();
+  troncoTumbado(L, largo, 0, 0, 0, r, 'corteza');
+  return deLote(L);
+}

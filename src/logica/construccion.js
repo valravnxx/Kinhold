@@ -1,5 +1,5 @@
 // Kinhold — lógica de construcción (sin gráficos, comprobable en Node)
-import { PIEZAS, DECORACION, MODULO, ALTURA, RECUPERACION, MAX_PLANTA, MATERIALES_INICIALES } from './piezas.js';
+import { PIEZAS, DECORACION, MODULO, ALTURA, RECUPERACION, MAX_PLANTA, MATERIALES_INICIALES, CLASE_PESO } from './piezas.js';
 
 export const RADIO_MOJON = 20;        // radio de tierra del mojón de nivel 1 (m)
 export const DIST_ENGANCHE = 3 * MODULO; // a esta distancia de una construcción, se encaja en su rejilla
@@ -8,6 +8,21 @@ export const MAX_RATO = 5;            // segundos de trabajo como mucho en una s
 // Segundos de trabajo de una persona para terminar una obra con todo su material (provisional: el GDD dice «un
 // tiempo según la pieza» sin cifras; aquí, 4 s más 1 s por cada 20 kg de la pieza).
 export function tiempoObra(tipo) { return Math.round(4 + PIEZAS[tipo].peso / 20); }
+
+// Subir lo pesado (GDD, «Obras»): segundos de trabajo, sumando los de todos, para subir UNA unidad (un tronco, una
+// piedra) una planta. Entre dos (o más): 2 × SUBIR_PLANTA por planta, o sea SUBIR_PLANTA de reloj si tiran a la vez.
+// Una persona sola rodándolo por dos varas con una cuerda: el doble de trabajo (y, sola, cuatro veces más de reloj).
+// Provisional: el GDD no da cifras.
+export const SUBIR_PLANTA = 2.5;
+export const VARAS_PARA_RODAR = { vara: 2, cuerda: 1 }; // no se gastan: se vuelven a usar
+// Planta a la que hay que llevar el material de una obra: la de la pieza (lo que se apoya en lo alto de la planta
+// baja, como las vigas o el tejado de una cabaña, se alcanza desde el suelo; provisional).
+export function plantaObra(p) { return p.k; }
+export function clasePeso(material) { return CLASE_PESO[material] || 'ligero'; }
+export function trabajoSubida(planta, personas, conVaras) {
+  if (personas >= 2) return 2 * SUBIR_PLANTA * planta;
+  return conVaras ? 4 * SUBIR_PLANTA * planta : Infinity;
+}
 
 const HUECOS_ARISTA = new Set(['e', 'b', 'g', 'p']);
 
@@ -318,19 +333,62 @@ export class Mundo {
     return Object.entries(PIEZAS[p.tipo].coste).map(([m, n]) => ({ m, n: n - (p.obra.entregado[m] || 0) })).filter(x => x.n > 0);
   }
   // Lleva material a una obra. Se entrega como mucho lo que le falta; queda anotado quién lo entrega.
-  entregar(c, key, material, cantidad, autor) {
+  // desde: planta en la que está quien lo lleva. Si la obra está en alto, lo ligero se sube a mano por la escalera
+  // (hay que estar en su planta) y lo pesado no se entrega así: se sube con subir().
+  entregar(c, key, material, cantidad, autor, desde = 0) {
     const p = c.piezas.get(key);
     if (!p) return { ok: false, motivo: 'No existe.' };
     if (!p.obra) return { ok: false, motivo: 'Esa pieza ya está terminada.' };
     const falta = this.faltaEntregar(p).find(x => x.m === material);
     if (!falta) return { ok: false, motivo: 'A esa obra no le falta ese material.' };
     if (!Number.isInteger(cantidad) || cantidad <= 0) return { ok: false, motivo: 'Cantidad no válida.' };
+    const planta = plantaObra(p);
+    if (planta > 0 && clasePeso(material) !== 'ligero') return { ok: false, motivo: 'Lo pesado no se sube a mano: entre dos, o rodándolo por dos varas con una cuerda.', subir: true };
+    if (planta > 0 && !(desde >= planta)) return { ok: false, motivo: 'Súbelo a mano por la escalera hasta la planta de la obra.', escalera: true };
     const n = Math.min(cantidad, falta.n);
     if ((this.materiales[material] || 0) < n) return { ok: false, motivo: 'Faltan materiales.', faltan: [{ m: material, n, hay: this.materiales[material] || 0 }] };
     this.materiales[material] -= n;
     p.obra.entregado[material] = (p.obra.entregado[material] || 0) + n;
     p.obra.aportes.push({ autor, entrega: material, n });
     return { ok: true, entregado: n, falta: this.faltaEntregar(p) };
+  }
+  // Un rato subiendo una unidad de material pesado hasta una obra en alto. metodo: 'entre_dos' (cada uno coge de un
+  // lado: hasta que no ayuda otro, no sube) o 'varas' (rodándolo por dos varas con una cuerda: puede una sola persona,
+  // más despacio). Los segundos de todos se suman; al llegar al trabajo de la subida, la unidad queda entregada.
+  subir(c, key, material, segundos, autor, metodo) {
+    const p = c.piezas.get(key);
+    if (!p) return { ok: false, motivo: 'No existe.' };
+    if (!p.obra) return { ok: false, motivo: 'Esa pieza ya está terminada.' };
+    if (!(segundos > 0 && segundos <= MAX_RATO)) return { ok: false, motivo: 'Rato de trabajo no válido.' };
+    if (metodo !== 'entre_dos' && metodo !== 'varas') return { ok: false, motivo: 'Datos no válidos.' };
+    const planta = plantaObra(p);
+    if (planta === 0) return { ok: false, motivo: 'Esa obra está a ras de suelo: no hace falta subir nada.' };
+    if (clasePeso(material) !== 'pesado') return { ok: false, motivo: 'Eso no hace falta subirlo así.' };
+    const s = p.obra.subida;
+    if (s && s.material !== material) return { ok: false, motivo: 'Ya se está subiendo otro material a esta obra.' };
+    if (!s && !this.faltaEntregar(p).some(x => x.m === material)) return { ok: false, motivo: 'A esa obra no le falta ese material.' };
+    if (metodo === 'varas' && !this.puedePagar(VARAS_PARA_RODAR)) return { ok: false, motivo: 'Para rodarlo hacen falta dos varas y una cuerda.' };
+    if (!s) { // la unidad sale de la reserva al empezar a subirla
+      if ((this.materiales[material] || 0) < 1) return { ok: false, motivo: 'Faltan materiales.', faltan: [{ m: material, n: 1, hay: this.materiales[material] || 0 }] };
+      this.materiales[material] -= 1;
+      p.obra.subida = { material, varas: false, seg: {} };
+    }
+    const sub = p.obra.subida;
+    if (metodo === 'varas') sub.varas = true;
+    sub.seg[autor] = +((sub.seg[autor] || 0) + segundos).toFixed(3);
+    const personas = Object.keys(sub.seg).length;
+    const hecho = Object.values(sub.seg).reduce((a, b) => a + b, 0);
+    const necesario = trabajoSubida(planta, personas, sub.varas);
+    if (hecho >= necesario - 1e-9) {
+      p.obra.entregado[material] = (p.obra.entregado[material] || 0) + 1;
+      p.obra.aportes.push({ sube: material, n: 1, planta, metodo: personas >= 2 ? 'entre_dos' : 'varas', autores: { ...sub.seg } });
+      delete p.obra.subida;
+      return { ok: true, subido: true, progreso: 1, falta: this.faltaEntregar(p) };
+    }
+    // sin varas y sin nadie más, se espera a que ayude otro (lo que se lleva hecho no pasa de la mitad)
+    const esperaAyuda = !Number.isFinite(necesario);
+    const progreso = esperaAyuda ? Math.min(0.5, hecho / trabajoSubida(planta, 2, false)) : hecho / necesario;
+    return { ok: true, subido: false, progreso, esperaAyuda };
   }
   // Un rato de trabajo en una obra con todo el material. Los segundos de todos los que trabajan se suman: si te
   // ayudan, se termina antes. Al llegar al tiempo de la pieza, queda terminada.
@@ -380,7 +438,9 @@ export class Mundo {
     c.piezas.delete(key);
     for (const k2 of pre.caen) c.piezas.delete(k2);
     // una obra a medias devuelve entero lo que se le había llevado (aún no se había gastado en nada)
-    const devuelto = p.obra ? this.devolver(p.obra.entregado, 1) : this.devolver(PIEZAS[p.tipo].coste, RECUPERACION);
+    const obra = p.obra && { ...p.obra.entregado };
+    if (p.obra && p.obra.subida) obra[p.obra.subida.material] = (obra[p.obra.subida.material] || 0) + 1; // la que iba subiendo
+    const devuelto = p.obra ? this.devolver(obra, 1) : this.devolver(PIEZAS[p.tipo].coste, RECUPERACION);
     if (c.piezas.size === 0) this.construcciones = this.construcciones.filter(x => x !== c);
     return { ok: true, caen: pre.caen, devuelto };
   }

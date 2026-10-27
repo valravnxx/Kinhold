@@ -1,13 +1,14 @@
 // Pruebas de la lógica de construcción de Kinhold. Ejecutar: node pruebas/prueba_logica.mjs
 // Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR.
-import { Mundo, clave, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, progresoEscalera, salidaEscalera } from '../src/logica/construccion.js';
-import { PIEZAS } from '../src/logica/piezas.js';
+import { Mundo, SUBIR_PLANTA, clave, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, progresoEscalera, salidaEscalera } from '../src/logica/construccion.js';
+import { PIEZAS, CLASE_PESO, MATERIALES } from '../src/logica/piezas.js';
 import { ejecutar, RegistroAcciones, seAbre, acabarObra } from '../src/logica/acciones.js';
 
 if (process.env.MUTAR === '1') {
   PIEZAS.muro_zarzo.cap = 1000;   // un muro de zarzo que aguanta cualquier cosa
   PIEZAS.viga.cap = 5000;         // una viga que nunca se sobrecarga
   PIEZAS.cim_tronco.cap = 5000;   // un cimiento de troncos que aguanta tres plantas
+  CLASE_PESO.tronco = 'ligero';   // troncos que se suben a mano por la escalera
 }
 
 let ok = 0, mal = 0;
@@ -390,6 +391,65 @@ console.log('Barandillas y portillo');
   A({ tipo: 'usar', construccion: cc.id, clave: kp });
   const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
   comprobar('abierto se guarda y se carga abierto', m2.construcciones.find(x => x.id === cc.id).piezas.get(kp).abierta === true);
+}
+
+console.log('15. Obras en alto: clase de peso y subir el material');
+{
+  comprobar('cada material tiene clase de peso', Object.keys(MATERIALES).every(x => ['ligero', 'pesado', 'muy_pesado'].includes(CLASE_PESO[x])));
+  comprobar('tablas, varas, paja y clavos son ligeros; troncos, pesados (GDD)', ['tabla', 'vara', 'paja', 'clavo'].every(x => CLASE_PESO[x] === 'ligero') && CLASE_PESO.tronco === 'pesado');
+  const m = new Mundo(); m.colocarMojon(0, 0);
+  const c = nuevaConstruccion(m);
+  const R = new RegistroAcciones();
+  const yo = 'jugador:uno', otro = 'jugador:dos';
+  const A = (autor, a) => ejecutar(m, R, { autor, construccion: c.id, ...a });
+  // casilla de 1×1 con cimiento, cuatro muros y suelo de troncos en la planta 1
+  m.colocar(enRejilla(m, c, 'cim_tronco', 0, 0, 0));
+  for (const [i, j, d] of [[0, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1]]) m.colocar(enRejilla(m, c, 'muro_tronco', i, j, 0, d));
+  m.colocar(enRejilla(m, c, 'suelo_tronco', 0, 0, 1));
+  // abajo, como siempre: los troncos se entregan desde el suelo
+  const ab = m.colocar(enRejilla(m, c, 'poste', 3, 3, 0), true);
+  comprobar('a ras de suelo, lo pesado se entrega sin subirlo', A(yo, { tipo: 'entregar', clave: ab.clave, material: 'tronco', cantidad: 1 }).ok);
+  // arriba: un muro de troncos (pesado) y un tejado de paja (ligero) en la planta 1
+  const mu = m.colocar(enRejilla(m, c, 'muro_tronco', 0, 0, 1, 0), true);
+  const kmu = mu.clave, pmu = c.piezas.get(kmu);
+  const t0 = m.materiales.tronco;
+  const e1 = A(yo, { tipo: 'entregar', clave: kmu, material: 'tronco', cantidad: 4, desde: 1 });
+  comprobar('en la planta 1, los troncos no se entregan a mano (ni estando arriba)', !e1.ok && pmu.obra.entregado.tronco === undefined && m.materiales.tronco === t0, e1.motivo || '');
+  // una persona sola, sin varas: coge de un lado y espera ayuda
+  const s1 = A(yo, { tipo: 'subir', clave: kmu, material: 'tronco', segundos: 5, metodo: 'entre_dos' });
+  comprobar('sola y sin varas, la subida no avanza de la mitad: espera ayuda', s1.ok && !s1.subido && s1.esperaAyuda && s1.progreso <= 0.5, JSON.stringify(s1));
+  comprobar('el tronco sale de la reserva al empezar a subirlo', m.materiales.tronco === t0 - 1);
+  // llega otra persona: entre dos sube (2 × 2,5 s por planta de trabajo sumado)
+  const s2 = A(otro, { tipo: 'subir', clave: kmu, material: 'tronco', segundos: 1, metodo: 'entre_dos' });
+  comprobar('entre dos, el tronco llega arriba', s2.ok && s2.subido && pmu.obra.entregado.tronco === 1, JSON.stringify(s2));
+  const ap = pmu.obra.aportes.find(x => x.sube);
+  comprobar('la subida queda anotada con los dos autores y sus segundos', ap && ap.metodo === 'entre_dos' && ap.autores[yo] === 5 && ap.autores[otro] === 1);
+  // una persona sola con dos varas y una cuerda: puede, más despacio (el doble de trabajo que entre dos)
+  let n = 0, r;
+  do { r = A(yo, { tipo: 'subir', clave: kmu, material: 'tronco', segundos: 1, metodo: 'varas' }); n++; } while (r.ok && !r.subido && n < 100);
+  comprobar('sola, rodándolo por dos varas con una cuerda, también lo sube', r.ok && r.subido && pmu.obra.entregado.tronco === 2);
+  comprobar('pero tarda el doble de trabajo que entre dos', n === 4 * SUBIR_PLANTA && 2 * 2 * SUBIR_PLANTA === 10, `${n} s sola`);
+  comprobar('las varas y la cuerda no se gastan', m.materiales.vara === 120 && m.materiales.cuerda === 40);
+  const sin = new Mundo(); Object.assign(sin, { materiales: { ...m.materiales, vara: 1 } }); sin.construcciones = m.construcciones;
+  comprobar('sin dos varas no se puede rodar', !sin.subir(c, kmu, 'tronco', 1, yo, 'varas').ok);
+  comprobar('lo ligero no se sube con varas', !A(yo, { tipo: 'subir', clave: kmu, material: 'paja', segundos: 1, metodo: 'varas' }).ok);
+  comprobar('a ras de suelo no hace falta subir', !A(yo, { tipo: 'subir', clave: ab.clave, material: 'tronco', segundos: 1, metodo: 'varas' }).ok);
+  // desmontar una obra con un tronco a medio subir lo devuelve también
+  A(yo, { tipo: 'subir', clave: kmu, material: 'tronco', segundos: 1, metodo: 'varas' });
+  const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  comprobar('la subida a medias se guarda y se carga', m2.construcciones[0].piezas.get(kmu).obra.subida?.seg[yo] === 1);
+  const tr1 = m.materiales.tronco;
+  const d = A(yo, { tipo: 'desmontar', clave: kmu });
+  comprobar('desmontar la obra devuelve lo subido y el tronco que iba subiendo', d.ok && m.materiales.tronco === tr1 + 3, `${tr1} → ${m.materiales.tronco}`);
+  // lo ligero: a mano por la escalera, hay que estar en la planta de la obra
+  const te = m.colocar(enRejilla(m, c, 'tejado_paja', 0, 0, 1), true);
+  const kte = te.clave;
+  const l1 = A(yo, { tipo: 'entregar', clave: kte, material: 'paja', cantidad: 4, desde: 0 });
+  comprobar('lo ligero no llega a la planta 1 desde abajo', te.ok && !l1.ok && l1.escalera, l1.motivo || te.motivo || '');
+  comprobar('sin decir desde dónde, cuenta como desde el suelo', !A(yo, { tipo: 'entregar', clave: kte, material: 'paja', cantidad: 4 }).ok);
+  const l2 = A(yo, { tipo: 'entregar', clave: kte, material: 'paja', cantidad: 4, desde: 1 });
+  comprobar('subido a mano por la escalera, sí se entrega', l2.ok && c.piezas.get(kte).obra.entregado.paja === 4);
+  comprobar('acabarObra termina una obra en alto con todo por acciones', acabarObra(m, R, yo, c.id, kte).terminada && !c.piezas.get(kte).obra);
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

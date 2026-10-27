@@ -3,13 +3,13 @@
   "inicio": "2026-10-27T13:24:50+00:00",
   "tarea": "Demo en línea: «Jugar en línea» en la demo única, que se conecta al servidor (dirección en Opciones); construir sobre el mundo del servidor y ver al otro jugador con el personaje del taller. Prueba de navegador con dos páginas y un servidor local, capturas en PC y móvil",
   "hito": "prueba-online",
-  "rama": "trabajo/20261027-1324"
+  "rama": "trabajo/20261027-1324",
+  "ultimo": "2026-10-27T15:20:25.000Z"
  },
  "B": {
-  "inicio": "2026-10-27T11:50:57+00:00",
-  "tarea": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
-  "hito": "construccion-mas",
-  "rama": "trabajo/20261027-1150",
-  "ultimo": "2026-10-27T12:42:16.000Z"
+  "inicio": "2026-10-27T15:23:40+00:00",
+  "tarea": "Lógica pura del inventario por huecos: cada objeto con su tamaño (P pequeño, M mediano, G grande, E enorme) y cada recurso con cuántas unidades caben en un hueco (pilas); huecos del cuerpo (mano derecha e izquierda, lo grande ocupa las dos; espalda, cintura según el cinturón, hombro); contenedores con sus huecos interiores y lo que admite cada uno. Acciones coger, soltar, mover y ponerse o quitarse, con autor y por jugador. Guardado en el navegador con migración. Pruebas de lógica",
+  "hito": "equipo",
+  "rama": "trabajo/20261027-1523"
  }
 }
