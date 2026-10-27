@@ -1151,5 +1151,23 @@
   "pruebas": "Todas las de herramientas/probar_todo.sh correctas: lógica 86/86, modelos 104/104, combate 69/69, acciones 25/25; navegador de construcción, combate, estilo, personaje, demo, idioma y web correctos en PC y móvil",
   "capturas": "capturas/combate-v11",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T04:03:18+00:00",
+  "fin": "2026-10-27T05:40:48+00:00",
+  "titulo": "Hito 1e: revisión completa con la prueba de estilo v5",
+  "hito": "estilo",
+  "hecho": [
+   "Comparadas en capturas con la prueba de estilo v5 todas las vistas de la construcción, el duelo, el visor de estilo, el personaje y la demo única, en PC y en móvil.",
+   "El suelo de piedra del cimiento parecía baldosa moderna (cuadrícula igual y clara): ahora son hileras de losas de largo desigual, de dos tonos y algo más oscuras.",
+   "Las piedras grandes del mojón tenían muy pocas caras: ahora son redondeadas como las rocas de la prueba v5.",
+   "Publicadas la construcción v20 y la demo v15, con una captura de comparación lado a lado con la v5.",
+   "Diferencia que no se decide aquí: el desenfoque de maqueta de la v5 no está en el juego; queda como pregunta para valravnx.",
+   "Las losas repiten el mismo dibujo en cada casilla; se nota poco de cerca, no se ha cambiado.",
+   "El hito 1e queda en revisión, esperando a valravnx."
+  ],
+  "pruebas": "Lógica 86/86, modelos 104/104, combate 69/69, acciones 25/25, cinturones 8/8, unión 19/19, textos traducidos y taller correctos; navegador de construcción, combate, estilo, personaje, demo, recursos e idioma correctos en PC y móvil. La de construcción falló una vez por tiempo de espera al correr a la vez que la de combate (máquina de 2 núcleos) y pasó entera al repetirla sola.",
+  "capturas": "capturas/construccion-v20",
+  "estado": "ok"
  }
 ]
