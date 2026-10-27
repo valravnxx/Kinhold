@@ -5,8 +5,8 @@
 // Con MUTAR=1 se abre una puerta y se desmonta una pieza saltándose el registro: las pruebas deben FALLAR.
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
-import { Mundo } from '../src/logica/construccion.js';
-import { RegistroAcciones, ejecutar, reproducir, ejecutarCombate, avanzarProyectil, AUTOR_LOCAL } from '../src/logica/acciones.js';
+import { Mundo, tiempoObra } from '../src/logica/construccion.js';
+import { RegistroAcciones, ejecutar, reproducir, ejecutarCombate, avanzarProyectil, AUTOR_LOCAL, acabarObra } from '../src/logica/acciones.js';
 import { Luchador, azar } from '../src/combate/logica.js';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -45,7 +45,8 @@ console.log('Construcción: cada acción con autor, validada y anotada');
     { tipo: 'decorar', pieza: 'cama_paja', x: -0.4, y: 0.2, z: 0.2, rot: 0 },
     { tipo: 'rellenar', cantidad: 50 },
   ];
-  const rs = pasos.map(A);
+  // se construye por obras: cada «colocar» pone el marco y luego se lleva el material y se trabaja hasta acabarla
+  const rs = pasos.map(a => { const r = A(a); return r.ok && r.obra ? acabarObra(m, reg, AUTOR_LOCAL, r.construccion.id, r.clave) : r; });
   comprobar('la partida corta sale bien paso a paso', rs.every(r => r.ok), rs.map(r => r.ok ? 'ok' : r.motivo).join(', '));
   const c = m.construcciones[0];
   const puerta = [...c.piezas.entries()].find(([, p]) => p.tipo === 'puerta_varas');
@@ -72,6 +73,55 @@ console.log('Construcción: cada acción con autor, validada y anotada');
     foto(rehecho) === foto(m) ? `${m.construcciones[0].piezas.size} piezas, ${m.decoracion.length} mueble` : 'algo cambió el mundo sin pasar por el registro');
   // y el mundo rehecho se guarda y se carga igual (el guardado no cambia de formato)
   comprobar('el guardado sigue siendo el de antes (versión 1)', JSON.parse(foto(m)).version === 1);
+}
+
+console.log('Obras: marco, materiales y tiempo, con el autor de cada entrega y de cada rato');
+{
+  const m = new Mundo(), reg = new RegistroAcciones();
+  const A = (autor, a) => ejecutar(m, reg, { autor, ...a });
+  const yo = 'jugador:a', otro = 'jugador:b';
+  A(yo, { tipo: 'mojon', x: 0, z: 0 });
+  const antes = { ...m.materiales };
+  const r = A(yo, { tipo: 'colocar', pieza: 'cim_piedra', x: 0, z: 0, k: 0, rot: 0, dir: 0 });
+  const c = r.construccion, kc = r.clave, cim = c.piezas.get(kc);
+  comprobar('colocar pone solo el marco: es una obra y no cobra nada', r.ok && r.obra && !!cim.obra && m.materiales.piedra === antes.piedra);
+  const mu = A(yo, { tipo: 'colocar', pieza: 'muro_tronco', x: 1, z: -0.95, k: 0, rot: 0, dir: 0 });
+  comprobar('una obra a medias no sostiene nada (no se pone un muro sobre el marco de un cimiento)', !mu.ok, mu.motivo || 'se puso');
+  comprobar('sin el material no se puede trabajar', !A(yo, { tipo: 'trabajar', construccion: c.id, clave: kc, segundos: 1 }).ok && cim.obra.trabajo === 0);
+  comprobar('no se entrega lo que la pieza no lleva', !A(yo, { tipo: 'entregar', construccion: c.id, clave: kc, material: 'paja', cantidad: 2 }).ok);
+  const e1 = A(yo, { tipo: 'entregar', construccion: c.id, clave: kc, material: 'piedra', cantidad: 5 });
+  const e2 = A(otro, { tipo: 'entregar', construccion: c.id, clave: kc, material: 'piedra', cantidad: 50 });
+  comprobar('se entrega como mucho lo que falta (5 + 3 de 8 piedras) y se cobra justo eso',
+    e1.ok && e2.ok && e2.entregado === 3 && cim.obra.entregado.piedra === 8 && antes.piedra - m.materiales.piedra === 8, `${cim.obra.entregado.piedra} entregadas`);
+  comprobar('cada entrega queda con su autor', cim.obra.aportes.filter(x => x.entrega).map(x => `${x.autor}:${x.n}`).join(' ') === `${yo}:5 ${otro}:3`);
+  comprobar('un rato de trabajo absurdo se rechaza', !A(yo, { tipo: 'trabajar', construccion: c.id, clave: kc, segundos: 999 }).ok && !A(yo, { tipo: 'trabajar', construccion: c.id, clave: kc, segundos: -1 }).ok);
+  // el guardado conserva la obra a medias
+  A(yo, { tipo: 'trabajar', construccion: c.id, clave: kc, segundos: 2 });
+  const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  const o2 = m2.construcciones[0].piezas.get(kc).obra;
+  comprobar('una obra a medias se guarda y se carga con su material y su trabajo', o2 && o2.entregado.piedra === 8 && o2.trabajo === 2);
+  // con ayuda se tarda menos: ratos de 0,5 s, uno solo contra dos a la vez
+  const T = tiempoObra('cim_piedra');
+  let rondas = 0, t;
+  do { rondas++; t = A(yo, { tipo: 'trabajar', construccion: c.id, clave: kc, segundos: 0.5 }); if (!t.terminada) t = A(otro, { tipo: 'trabajar', construccion: c.id, clave: kc, segundos: 0.5 }); } while (t.ok && !t.terminada && rondas < 1000);
+  comprobar(`entre dos se termina en la mitad de rondas (${T} s de trabajo; quedaban ${T - 2})`, t.terminada && rondas === Math.ceil((T - 2) / 1), `${rondas} rondas`);
+  comprobar('terminada deja de ser obra y ya sostiene (ahora sí cabe el muro)', !cim.obra && A(yo, { tipo: 'colocar', pieza: 'muro_tronco', x: 1, z: -0.95, k: 0, rot: 0, dir: 0 }).ok);
+  const fin = m.obrasTerminadas.find(x => x.clave === kc);
+  comprobar('queda anotado quién trabajó y cuánto', fin && fin.aportes.filter(x => x.trabajo !== undefined).map(x => x.autor).sort().join(' ') === [otro, yo].sort().join(' '),
+    fin ? fin.aportes.filter(x => x.trabajo !== undefined).map(x => `${x.autor}:${x.trabajo}s`).join(' ') : '');
+  comprobar('trabajar en una pieza terminada se rechaza', !A(yo, { tipo: 'trabajar', construccion: c.id, clave: kc, segundos: 1 }).ok);
+  // la puerta de un muro en obras no se abre; desmontar una obra devuelve entero lo entregado
+  const kmuro = [...c.piezas.entries()].find(([, p]) => p.tipo === 'muro_tronco')[0];
+  const tr0 = m.materiales.tronco;
+  A(yo, { tipo: 'entregar', construccion: c.id, clave: kmuro, material: 'tronco', cantidad: 3 });
+  const d = A(yo, { tipo: 'desmontar', construccion: c.id, clave: kmuro });
+  comprobar('desmontar una obra a medias devuelve todo lo entregado', d.ok && m.materiales.tronco === tr0, `${tr0} → ${m.materiales.tronco}`);
+  const rp = A(yo, { tipo: 'colocar', pieza: 'muro_tronco_puerta', x: 1, z: -0.95, k: 0, rot: 0, dir: 0 });
+  acabarObra(m, reg, yo, c.id, rp.clave);
+  const pu = A(yo, { tipo: 'colocar', pieza: 'puerta_varas', x: 1, z: -0.95, k: 0, rot: 0, dir: 0 });
+  const u = A(yo, { tipo: 'usar', construccion: c.id, clave: pu.clave });
+  comprobar('una puerta en obras no se abre', pu.ok && !u.ok && u.motivo === 'Está en obras.', u.motivo || '');
+  comprobar('con el registro se rehace el mismo mundo, obras a medias incluidas', foto(reproducir(reg.exportar())) === foto(m));
 }
 
 console.log('Combate: golpes y disparos con autor');

@@ -6,6 +6,18 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (10:13) — por el chat: la decoración se pone en el piso de arriba
+
+«Al construir con un piso encima decoraciones, estas se ponen en el piso de arriba y no en el que estás, eso no debería ocurrir jamás; hay que mirar que el clic sea en el suelo del piso en el que estés si es que tienes el techo quitado por estar ahí» (con captura en el móvil: cama de madera sobre el altillo) → Tarea de arreglo en el hito 1c, en curso por la sesión de chat.
+
+### 27 oct 2026 (10:15) — por el chat: suelos de troncos sin huecos
+
+«Y de paso modifica los suelos de troncos para que no dejen huequecitos en el suelo, que tapen del todo» → Va en la misma tarea de arreglo.
+
+### 27 oct 2026 (10:10) — por el chat: la web, de pergamino a feria medieval
+
+«Al ser todo papel, aunque se vea bien, se siente como una web en modo claro más que algo medieval… que el tema no sea solo papiro, sino feria medieval: los cuadros de texto sí van en papiro con dibujo de papiro envuelto arriba y abajo o a los lados, y el resto es madera y estandartes varios… investiga antes de hacer una nueva versión» → Tarea nueva en el hito 0, en curso en la sesión de chat.
+
 ### 27 oct 2026 (08:50 UTC) — en la sesión del carril B: más de dos sesiones a la vez
 
 El carril B estaba aún ocupado por la sesión de las obras (viva). valravnx: «hazla si no entorpece a los demás aunque sean varias a la vez» → Esta sesión hace la tarea «Cámara táctil con un dedo durante el combate» como una sesión de chat (tarea en curso en el roadmap y rama propia, sin tocar la reserva del carril en sesion.json), porque no comparte archivos con las demás ramas activas.
