@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Kinhold Cavar</title>
+<style>
+:root{ --panel: rgba(36,30,24,.86); --panel2: rgba(58,48,38,.92); --ink:#f1e8d8; --muted:#bfb19a; --acento:#d9a441; --linea: rgba(241,232,216,.15); color-scheme: dark; }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#c3d2d8;font:14px/1.35 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none}
+canvas{display:block;position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+button{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:7px 11px;cursor:pointer}
+[hidden]{display:none!important}
+#superior{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:calc(10px + env(safe-area-inset-left,0px));right:calc(10px + env(safe-area-inset-right,0px));display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;pointer-events:none}
+#superior > *{pointer-events:auto}
+#botones{display:flex;gap:6px;flex-wrap:wrap}
+#medida{margin-left:auto;background:var(--panel);border-radius:10px;padding:6px 10px;font-size:12px;color:var(--muted);max-width:100%}
+#ayuda{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--panel);border-radius:10px;padding:7px 12px;font-size:13px;max-width:calc(100vw - 20px);text-align:center}
+#notas{position:fixed;inset:auto 10px calc(64px + env(safe-area-inset-bottom,0px)) 10px;max-width:560px;margin:0 auto;max-height:60vh;overflow:auto;background:var(--panel);border-radius:12px;padding:10px 14px;font-size:13px}
+#notas ul{padding-left:18px;margin:6px 0 0} #notas li{margin:0 0 6px}
+@media (max-width:600px){ #medida{margin-left:0} #botones button{padding:6px 8px;font-size:12.5px} }
+</style>
+</head>
+<body>
+<canvas id="lienzo"></canvas>
+<div id="superior">
+  <div id="botones"><button id="btnTunel">Cavar túnel</button><button id="btnReiniciar">Reiniciar</button><button id="btnNotas">Notas</button></div>
+  <div id="medida">midiendo…</div>
+</div>
+<div id="ayuda">Toca o haz clic en la roca para cavar. Arrastra para girar la cámara.</div>
+<div id="notas" hidden></div>
+<script>/*APP*/</script>
+</body>
+</html>

@@ -10,6 +10,7 @@ paso "Construir combate" node construir_combate.mjs
 paso "Construir pruebas de estilo" node construir_estilo.mjs
 paso "Construir personaje" node construir_personaje.mjs
 paso "Construir demo única" node construir_demo.mjs
+paso "Construir prueba de cavar" node construir_mina.mjs
 paso "Lógica de construcción" node pruebas/prueba_logica.mjs
 paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
@@ -18,6 +19,7 @@ paso "Taller: los cinturones ciñen su prenda" node pruebas/prueba_cinturones.mj
 paso "Taller: versiones fijadas" python3 herramientas/taller/comprobar_taller.py --prueba
 paso "Unión del diario y las traducciones" node pruebas/prueba_unir_json.mjs
 paso "Dos carriles en paralelo sin pisarse" node pruebas/prueba_carriles.mjs
+paso "Excavación y malla de la roca" node pruebas/prueba_excavacion.mjs
 paso "Textos traducidos" node pruebas/prueba_idiomas.mjs
 paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold_hito1.html "$C/construccion"
 paso "Navegador: combate" python3 pruebas/prueba_combate_navegador.py dist/kinhold_combate.html "$C/combate"
@@ -26,6 +28,7 @@ paso "Navegador: personaje" python3 pruebas/prueba_personaje_navegador.py dist/k
 paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html "$C/demo"
 paso "Navegador: recursos de personaje v2" python3 pruebas/prueba_recursos_personaje.py "$C/recursos"
 paso "Navegador: juego en inglés (también estilo y personaje)" python3 pruebas/prueba_idioma_navegador.py dist/kinhold_hito1.html dist/kinhold_combate.html dist/kinhold_estilo.html dist/kinhold_personaje.html "$C/idioma"
+paso "Navegador: cavar" python3 pruebas/prueba_mina_navegador.py dist/kinhold_mina.html "$C/mina"
 paso "Web de progreso" node herramientas/construir_web.mjs
 paso "Navegador: web" python3 pruebas/prueba_web.py "$C/web"
 echo

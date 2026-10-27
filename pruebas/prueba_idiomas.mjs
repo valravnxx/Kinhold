@@ -10,6 +10,7 @@ import { ARMAS, ARMADURAS, NOMBRE_LINEA, NOMBRE_ZONA } from '../src/combate/logi
 import { REGISTRO, VERSION } from '../src/juego/registro.js';
 import { REGISTRO_COMBATE, VERSION_COMBATE } from '../src/combate/registro.js';
 import { REGISTRO_ESTILO, VERSION_ESTILO } from '../src/estilo/registro.js';
+import { REGISTRO_MINA, VERSION_MINA } from '../src/mina/registro.js';
 import { REGISTRO_PERSONAJE, VERSION_PERSONAJE } from '../src/personaje/registro.js';
 import { BASES, CAPAS, ANIMS } from '../src/personaje/textos.js';
 import { REGISTRO_DEMO, VERSION_DEMO } from '../src/demo/registro.js';
@@ -24,7 +25,7 @@ const meter = (s) => { if (s && /[A-Za-zÁÉÍÓÚáéíóúñÑ]/.test(s)) text
 for (const d of [...Object.values(PIEZAS), ...Object.values(DECORACION), ...Object.values(ARMAS), ...Object.values(ARMADURAS)]) meter(d.nombre);
 for (const t of [...Object.values(MATERIALES), ...Object.values(NOMBRE_LINEA), ...Object.values(NOMBRE_ZONA)]) meter(t);
 for (const t of ['leve', 'grave', 'muy grave', 'corte', 'perforante', 'contundente']) meter(t); // gravedad y tipo de herida
-for (const t of [...REGISTRO, ...REGISTRO_COMBATE, VERSION, VERSION_COMBATE, ...REGISTRO_ESTILO, VERSION_ESTILO, ...REGISTRO_PERSONAJE, VERSION_PERSONAJE, ...REGISTRO_DEMO, VERSION_DEMO]) meter(t);
+for (const t of [...REGISTRO, ...REGISTRO_COMBATE, VERSION, VERSION_COMBATE, ...REGISTRO_ESTILO, VERSION_ESTILO, ...REGISTRO_PERSONAJE, VERSION_PERSONAJE, ...REGISTRO_DEMO, VERSION_DEMO, ...REGISTRO_MINA, VERSION_MINA]) meter(t);
 // opciones del visor de personaje (las de cargar.js se leen del código: el cargador necesita el navegador)
 for (const t of [...Object.values(BASES), ...Object.values(CAPAS), ...Object.values(ANIMS)]) meter(t);
 const cargarJs = leer('src/personajes/cargar.js');
@@ -62,7 +63,7 @@ function literalesEnTr(src) {
     i = j;
   }
 }
-for (const f of ['src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js']) {
+for (const f of ['src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js', 'src/mina/main.js']) {
   const src = leer(f);
   literalesEnTr(src);
   // títulos y opciones de los grupos del panel del personaje: grupo('clave', valores, 'Título')
