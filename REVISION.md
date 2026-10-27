@@ -6,6 +6,26 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (10:13) — por el chat: la decoración se pone en el piso de arriba
+
+«Al construir con un piso encima decoraciones, estas se ponen en el piso de arriba y no en el que estás, eso no debería ocurrir jamás; hay que mirar que el clic sea en el suelo del piso en el que estés si es que tienes el techo quitado por estar ahí» (con captura en el móvil: cama de madera sobre el altillo) → Tarea de arreglo en el hito 1c, en curso por la sesión de chat.
+
+### 27 oct 2026 (10:15) — por el chat: suelos de troncos sin huecos
+
+«Y de paso modifica los suelos de troncos para que no dejen huequecitos en el suelo, que tapen del todo» → Va en la misma tarea de arreglo.
+
+### 27 oct 2026 (10:10) — por el chat: la web, de pergamino a feria medieval
+
+«Al ser todo papel, aunque se vea bien, se siente como una web en modo claro más que algo medieval… que el tema no sea solo papiro, sino feria medieval: los cuadros de texto sí van en papiro con dibujo de papiro envuelto arriba y abajo o a los lados, y el resto es madera y estandartes varios… investiga antes de hacer una nueva versión» → Tarea nueva en el hito 0, en curso en la sesión de chat.
+
+### 27 oct 2026 (08:50 UTC) — en la sesión del carril B: más de dos sesiones a la vez
+
+El carril B estaba aún ocupado por la sesión de las obras (viva). valravnx: «hazla si no entorpece a los demás aunque sean varias a la vez» → Esta sesión hace la tarea «Cámara táctil con un dedo durante el combate» como una sesión de chat (tarea en curso en el roadmap y rama propia, sin tocar la reserva del carril en sesion.json), porque no comparte archivos con las demás ramas activas.
+
+### 27 oct 2026 (09:41) — por el chat: web de progreso con estilo medieval
+
+«Tu trabajo ahora va a ser embellecer la página de Kinhold del desarrollo, volverla estilo medieval estilizada lo más bonita posible con estilos de pergamino… la prueba integral unificada es la de jugar alpha más actualizada y el resto deben estar escondidas debajo en desplegables… todo lo demás estilízalo para que sea más fácil de visualizar y a la vez bonito» → Tarea nueva en el hito 0 (infraestructura), en curso en la sesión de chat.
+
 ### 27 oct 2026 (09:28) — por el chat: sin ciudades NPC
 
 «Meter ciudades rompe el rollo de mundo a explorar que tenía la idea de survival, así que los quitaremos; los mercaderes aparecerán a cosa de 2 km de donde haya nadie cuando se dirijan a un asentamiento y solo se quedarán si se crea el sistema para ello, como el de reclutar soldados; y haremos lo del carro simple» → GDD (apartados 16 y 20) y documento de sistemas, en los tres idiomas: fuera las ciudades NPC; los mercaderes y mercenarios ambulantes aparecen a unos 2 km de cualquier jugador y llegan andando al asentamiento; un mercader solo se queda fijo si se crea un sistema para ello; los mensajeros van a asentamientos; la carretilla de rueda maciza se fabrica (ya no la regalan); dónde se celebran torneos y ferias queda por decidir.

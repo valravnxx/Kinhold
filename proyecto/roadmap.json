@@ -48,6 +48,18 @@
      "estado": "hecho",
      "inicio": "2026-10-25T12:20:58+00:00",
      "fin": "2026-10-25T12:55:37+00:00"
+    },
+    {
+     "nombre": "Web de progreso con estilo medieval de pergamino (pedido de valravnx, 27 oct): la alpha unificada, la más actualizada, como protagonista arriba; las pruebas sueltas en un desplegable debajo; el resto (roadmap, diario, tiempos, lo que espera y diseño) más fácil de leer y bonito. Fuentes libres (OFL) servidas desde la propia web, con cirílico",
+     "estado": "hecho",
+     "inicio": "2026-10-27T09:43:31+01:00",
+     "fin": "2026-10-27T10:03:53+01:00"
+    },
+    {
+     "nombre": "Web de progreso como una feria medieval (pedido de valravnx, 27 oct: el pergamino solo «parece una web en modo claro»): fondo de tablones de madera, guirnalda de banderines, cartel de madera colgado entre estandartes, pestañas como estandartes que cuelgan de una viga y cada bloque de texto en un pergamino con rodillos",
+     "estado": "hecho",
+     "inicio": "2026-10-27T10:12:22+01:00",
+     "fin": "2026-10-27T10:28:16+01:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -474,8 +486,15 @@
     },
     {
      "nombre": "Obras (decidido por valravnx el 26 oct): poner el marco de la pieza, que se ve como un armazón; llevarle los materiales y construirla con un tiempo según la pieza; si te ayudan, tarda menos. Todo en la lógica pura, con el autor de cada entrega y de cada rato de trabajo",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T06:02:45+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T07:02:45+01:00",
+     "fin": "2026-10-27T09:55:53+01:00"
+    },
+    {
+     "nombre": "Arreglo (pedido de valravnx, 27 oct): con un piso encima, la decoración se ponía en el suelo de arriba y no en el de la planta en la que estás; el clic tiene que dar en el suelo de tu planta cuando el techo está oculto por estar dentro. Y los suelos de troncos, sin huequecitos entre tronco y tronco: que tapen del todo",
+     "estado": "hecho",
+     "inicio": "2026-10-27T10:14:47+01:00",
+     "fin": "2026-10-27T11:26:07+01:00"
     },
     {
      "nombre": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
@@ -535,8 +554,9 @@
    "tareas": [
     {
      "nombre": "Prueba de rendimiento de cavar (vóxeles suavizados): un trozo de roca de 8 m con cubitos de 50 cm, golpes de pico que quitan un puñado redondeado, pared lisa con rugosidad por semilla fija; medir fotogramas y lo que tarda en rehacerse la malla en PC y móvil",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T09:09:00+01:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T09:09:00+01:00",
+     "fin": "2026-10-27T11:33:52+01:00"
     },
     {
      "nombre": "Lógica pura de la excavación: cubitos quitados por trozo del mundo, cada golpe con su autor, guardar solo lo tocado y rehacerlo al cargar",
@@ -569,11 +589,12 @@
    "num": "2",
    "nombre": "Equipo y carga por huecos",
    "jugable": "Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T09:50:06+00:00"
     },
     {
      "nombre": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
@@ -626,7 +647,9 @@
     },
     {
      "nombre": "Cámara táctil con un dedo durante el combate",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T08:50:44+00:00",
+     "rama": "trabajo/20261027-0850"
     },
     {
      "nombre": "Curación de heridas",
@@ -907,6 +930,20 @@
      "archivo": "jugar/demo/v15.html",
      "capturas": "capturas/demo-v15",
      "notas": "Construcción v20: enlosado de losas desiguales en el cimiento de piedra y mojón con piedras redondeadas, como la prueba de estilo v5"
+    },
+    {
+     "v": "v16",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v16.html",
+     "capturas": "capturas/demo-v16",
+     "notas": "En «Construir», se construye por obras: marco, material y tiempo (es la construcción v21)."
+    },
+    {
+     "v": "v17",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v17.html",
+     "capturas": "capturas/demo-v17",
+     "notas": "En «Construir», la decoración va al suelo de tu planta y los suelos de troncos tapan del todo (es la construcción v22)."
     }
    ]
   },
@@ -1040,6 +1077,20 @@
      "archivo": "jugar/construccion/v20.html",
      "capturas": "capturas/construccion-v20",
      "notas": "Revisión del estilo v5: el cimiento de piedra lleva un enlosado de losas desiguales y de dos tonos (antes parecía baldosa moderna) y el mojón tiene piedras redondeadas como las rocas de la prueba"
+    },
+    {
+     "v": "v21",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v21.html",
+     "capturas": "capturas/construccion-v21",
+     "notas": "Se construye por obras: colocar pone el marco de la pieza, que se ve tenue dentro de un armazón de varas; Usar (F) junto a la obra le lleva el material y te pone a construir; cada pieza tarda según su peso y, si te ayudan, menos."
+    },
+    {
+     "v": "v22",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v22.html",
+     "capturas": "capturas/construccion-v22",
+     "notas": "Arreglo: la decoración va al suelo de la planta en la que estás, no al piso de arriba. Los cimientos y suelos de troncos ya no dejan ver el suelo por las juntas."
     }
    ]
   },
@@ -1299,6 +1350,20 @@
      "archivo": "jugar/personaje/v14.html",
      "capturas": "capturas/personaje-v14",
      "notas": "El cinturón de encima de la cota ya no sobresale hacia los brazos (personajes del taller-v7)."
+    }
+   ]
+  },
+  {
+   "id": "mina",
+   "nombre": "Cavar y minar",
+   "descripcion": "Pruebas de cavar zanjas y minas en la roca, sin casillas a la vista.",
+   "versiones": [
+    {
+     "v": "v1",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/mina/v1.html",
+     "capturas": "capturas/mina-v1",
+     "notas": "Prueba de rendimiento de cavar: una loma de roca que se excava a golpes de pico, sin casillas a la vista (vóxeles suavizados con la roca irregular de semilla fija). Arriba a la derecha, los fps y los ms por golpe."
     }
    ]
   }
