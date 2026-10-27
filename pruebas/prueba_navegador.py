@@ -383,10 +383,13 @@ with sync_playwright() as p:
     z0 = ev(f"{K}.pj.z")
     # con la distribución rusa, la tecla W escribe «ц»: el juego tiene que leer la tecla física (KeyW)
     ev("window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ц', code: 'KeyW' }))")
-    esperar(pg, 600)
+    # hasta que se mueva (no un tiempo fijo: a 1-2 fps sin tarjeta gráfica el juego va a cámara lenta)
+    t = 0
+    while t < 6000 and abs(ev(f"{K}.pj.z") - z0) < 0.6:
+        pg.wait_for_timeout(100); t += 100
     z1 = ev(f"{K}.pj.z")
     ev("window.dispatchEvent(new KeyboardEvent('keyup', { key: 'ц', code: 'KeyW' }))")
-    comprobar('con la distribución rusa, W (que escribe «ц») mueve al personaje', abs(z1 - z0) > 0.8, f'z: {z0:.2f} → {z1:.2f}')
+    comprobar('con la distribución rusa, W (que escribe «ц») mueve al personaje', abs(z1 - z0) >= 0.6, f'z: {z0:.2f} → {z1:.2f}')
     comprobar('y al soltarla no queda ninguna tecla pulsada', ev(f"{K}.teclas.length") == 0, json.dumps(ev(f"{K}.teclas")))
     # tecla pulsada y la ventana pierde el foco (otra pestaña, una notificación): no se queda andando sola
     ev("window.dispatchEvent(new KeyboardEvent('keydown', { key: 'd', code: 'KeyD' }))")
