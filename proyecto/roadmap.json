@@ -274,8 +274,8 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos (espera su decisión: dónde se aloja)",
-     "estado": "espera_decision"
+     "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
+     "estado": "pendiente"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -1301,11 +1301,5 @@
    ]
   }
  ],
- "decisiones_pendientes": [
-  {
-   "pregunta": "Para la prueba online desde dos dispositivos, el servidor tiene que estar en internet con conexión cifrada (la web va por https y los navegadores no dejan que una página https se conecte a un servidor sin cifrar). ¿Dónde lo ponemos? (a) En un alojamiento en la nube con una cuenta tuya: yo preparo el servidor y los pasos, tú creas la cuenta y, si es de pago, eliges el plan. (b) En tu PC mientras dure la prueba, con un túnel que le da una dirección https: no necesita cuenta de alojamiento, pero solo funciona con tu PC encendido. La comparación de alojamientos y precios para el juego de verdad se hará con los datos de la medición de 100 jugadores.",
-   "desde": "2026-10-27",
-   "hito": "prueba-online"
-  }
- ]
+ "decisiones_pendientes": []
 }
