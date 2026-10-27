@@ -48,6 +48,11 @@
      "estado": "hecho",
      "inicio": "2026-10-25T12:20:58+00:00",
      "fin": "2026-10-25T12:55:37+00:00"
+    },
+    {
+     "nombre": "Web de progreso con estilo medieval de pergamino (pedido de valravnx, 27 oct): la alpha unificada, la más actualizada, como protagonista arriba; las pruebas sueltas en un desplegable debajo; el resto (roadmap, diario, tiempos, lo que espera y diseño) más fácil de leer y bonito. Fuentes libres (OFL) servidas desde la propia web, con cirílico",
+     "estado": "en_curso",
+     "inicio": "2026-10-27T09:43:31+01:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -236,10 +241,47 @@
    "tareas": [
     {
      "nombre": "Planificar el hito: leer lo que el GDD dice de servidor, cuentas y PvP, y desglosar la prueba online en tareas de una sesión",
+     "estado": "hecho",
+     "inicio": "2026-10-27T05:49:03+00:00",
+     "fin": "2026-10-27T06:54:09+00:00"
+    },
+    {
+     "nombre": "Servidor mínimo en Node (carpeta servidor/, paquete ws): cada conexión recibe un autor que pone el servidor, nunca el que diga el cliente; las acciones de construcción pasan por la lógica pura (ejecutar), se reparten a todos y se guardan en un archivo, y al arrancar el mundo se rehace con reproducir. Prueba en node con dos clientes",
+     "estado": "hecho",
+     "inicio": "2026-10-27T07:25:06+00:00",
+     "fin": "2026-10-27T08:32:19+00:00"
+    },
+    {
+     "nombre": "Jugadores que se ven: cada cliente manda su posición, giro y animación unas 10 veces por segundo; el servidor las reparte y los demás clientes las suavizan (interpolación). Prueba con lag simulado",
+     "estado": "en_curso",
+     "inicio": "2026-10-27T08:38:20+00:00"
+    },
+    {
+     "nombre": "Demo en línea: «Jugar en línea» en la demo única, que se conecta al servidor (dirección en Opciones); construir sobre el mundo del servidor y ver al otro jugador con el personaje del taller. Prueba de navegador con dos páginas y un servidor local, capturas en PC y móvil",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Combate en el servidor: un luchador por jugador en la lógica pura; los clientes mandan intenciones (atacar en una línea, guardia, bloquear, tensar y soltar) y el servidor lleva los tiempos y resuelve golpes y heridas con su autor. Prueba en node con dos clientes y lag simulado",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Combate en línea en la demo: dos jugadores pelean entre sí y los dos ven los mismos golpes y heridas. Prueba de navegador con dos páginas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Conexiones que se cortan y protección básica: volver a conectar sin perder al personaje, quitar al que se va, límite de mensajes por segundo y de tamaño por conexión, y rechazo de datos mal formados (con una prueba que los manda)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Bots: jugadores simulados en node que se conectan al servidor y andan, construyen y pelean, para la medición",
      "estado": "pendiente"
     },
     {
      "nombre": "Medir el servidor con 100 jugadores simulados (bots que andan, construyen y pelean): CPU, memoria y tráfico por jugador, para saber qué servidor hace falta y cuánto cuesta al mes",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
      "estado": "pendiente"
     },
     {
@@ -488,6 +530,46 @@
    "nota": "La primera tarea (madera más resistente) se adelantó el 24 oct porque la casa de dos plantas de valravnx y su pareja no admitía el tejado en las esquinas. Planificado el 25 oct a petición de valravnx por el chat, en paralelo a la sesión de la ropa. Los puentes de troncos no entran: necesitan agua en el mapa y llegan con el hito Mundo."
   },
   {
+   "id": "excavacion",
+   "num": "1g",
+   "nombre": "Cavar y minar",
+   "estado": "en_curso",
+   "lleva": "chat",
+   "jugable": "Cavar zanjas y nivelar con una brocha redonda, y abrir minas con roca irregular sin cuadros; dentro, lo de encima oculto y negro lo que no se ve, con entibado.",
+   "nota": "Lo lleva a mano la sesión de chat con valravnx (27 oct), en paralelo a los carriles A y B, que no lo tocan.",
+   "tareas": [
+    {
+     "nombre": "Prueba de rendimiento de cavar (vóxeles suavizados): un trozo de roca de 8 m con cubitos de 50 cm, golpes de pico que quitan un puñado redondeado, pared lisa con rugosidad por semilla fija; medir fotogramas y lo que tarda en rehacerse la malla en PC y móvil",
+     "estado": "en_curso",
+     "inicio": "2026-10-27T09:09:00+01:00"
+    },
+    {
+     "nombre": "Lógica pura de la excavación: cubitos quitados por trozo del mundo, cada golpe con su autor, guardar solo lo tocado y rehacerlo al cargar",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Mina jugable: cavar con el pico en una ladera de la construcción, entrar y salir; al entrar se oculta lo de encima y lo que no se ve funde a negro (lo abierto que alcanza la vista y lo que alumbra la antorcha)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Fuera de la mina: zanjas, fosos y nivelar para cimientos con una brocha redonda sobre la altura del terreno",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Entibado: postes y vigas en las galerías con el cálculo de cargas de la construcción; derrumbe si una galería larga se queda sin apoyo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El servidor solo manda los huecos que el jugador ha visto o tiene delante (nadie ve minas ni vetas ajenas a través de la roca)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
    "id": "equipo",
    "num": "2",
    "nombre": "Equipo y carga por huecos",
@@ -549,7 +631,9 @@
     },
     {
      "nombre": "Cámara táctil con un dedo durante el combate",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T08:50:44+00:00",
+     "rama": "trabajo/20261027-0850"
     },
     {
      "nombre": "Curación de heridas",

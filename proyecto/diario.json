@@ -1184,6 +1184,22 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-27T05:49:03+00:00",
+  "fin": "2026-10-27T06:54:09+00:00",
+  "titulo": "Hito 1f: plan de la prueba online mínima",
+  "hito": "prueba-online",
+  "hecho": [
+   "Leído lo que el GDD dice del online: un único mundo, servidor autoritativo por websockets, toda acción con autor validada por la lógica pura, pruebas con varios clientes y bots con lag simulado.",
+   "El hito queda en diez tareas de una sesión: servidor mínimo con la construcción, jugadores que se ven, demo en línea, combate en el servidor, combate en línea en la demo, cortes de conexión y protección básica, bots, medición con 100 jugadores, poner el servidor en internet y revisión final.",
+   "Decisión provisional: el servidor de prueba es Node con el paquete ws, y el autor de cada acción lo pone el servidor según la conexión, nunca el cliente.",
+   "Comprobado en Chromium sin pantalla que una página https no puede conectarse a un servidor sin cifrar (lo bloquea como contenido mixto): el servidor de prueba necesita conexión cifrada.",
+   "Pregunta nueva para valravnx: dónde se pone el servidor de prueba (alojamiento con cuenta suya, o su PC con un túnel https). Esa tarea espera su respuesta; las demás no."
+  ],
+  "pruebas": "Todas las pruebas correctas (probar_todo.sh); capturas de la web miradas en PC y móvil. Sin cambios de código.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-27T06:54:00+01:00",
   "fin": "2026-10-27T06:56:33+01:00",
   "titulo": "Dos sesiones automáticas en paralelo (carriles A y B)",
@@ -1196,6 +1212,37 @@
    "CLAUDE.md al día y prueba nueva (prueba_carriles.mjs, en probar_todo.sh), que falla si los carriles no se tienen en cuenta entre sí (MUTAR=1). Segunda tarea programada en el minuto 49 (carril B); la de siempre pasa a ser el carril A."
   ],
   "pruebas": "Prueba de carriles 10/10 (con MUTAR=1 fallan 2, como debe); web y textos traducidos correctos.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T07:25:06+00:00",
+  "fin": "2026-10-27T08:32:19+00:00",
+  "titulo": "Hito 1f: servidor mínimo en Node",
+  "hito": "prueba-online",
+  "hecho": [
+   "Servidor mínimo en servidor/servidor.mjs (Node con el paquete ws): se arranca con «node servidor/servidor.mjs [puerto] [archivo]».",
+   "Cada conexión recibe un autor «jugador:…» que pone el servidor; si el cliente manda otro autor, se pisa.",
+   "Las acciones de construcción pasan por la lógica pura (ejecutar); las que salen bien se reparten a todos los conectados y el que la manda recibe si salió bien o el motivo.",
+   "Todas las acciones, bien o mal, se guardan en un archivo, una por línea; al arrancar, el mundo se rehace con reproducir y un cliente nuevo recibe lo hecho hasta entonces. Una línea cortada por un apagado a medias se descarta.",
+   "Prueba nueva en node con dos clientes de verdad (15 comprobaciones), también en probar_todo.sh. Rota a propósito con MUTAR=1 (servidor que se fía del autor del cliente): falla.",
+   "Decisión provisional: de momento todos los jugadores comparten el mismo mundo de la lógica, con un solo mojón y un solo montón de materiales, como en el prototipo; separarlo por jugador queda para cuando haya cuentas.",
+   "No comprobado: el servidor con clientes en otra máquina o detrás de internet (eso es la tarea de ponerlo en línea, que espera la decisión de valravnx)."
+  ],
+  "pruebas": "Todas las pruebas correctas (probar_todo.sh), con la nueva del servidor 15/15; capturas de la web miradas en PC y móvil. Sin versión jugable nueva: el servidor aún no lo usa la demo.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T08:20:09+00:00",
+  "fin": "2026-10-27T08:20:09+00:00",
+  "titulo": "Hito 1f: valravnx elige dónde va el servidor de prueba",
+  "hito": "prueba-online",
+  "hecho": [
+   "valravnx responde a la pregunta del servidor de prueba: opción A, un alojamiento en la nube con una cuenta suya.",
+   "La tarea de poner el servidor en internet pasa de esperar su decisión a pendiente: se le prepararán el servidor y los pasos, y él creará la cuenta y, si es de pago, elegirá el plan."
+  ],
+  "pruebas": "Web y textos traducidos correctos. Sin cambios de código.",
   "capturas": "",
   "estado": "ok"
  }

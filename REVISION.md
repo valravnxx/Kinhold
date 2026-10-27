@@ -6,6 +6,26 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (08:50 UTC) — en la sesión del carril B: más de dos sesiones a la vez
+
+El carril B estaba aún ocupado por la sesión de las obras (viva). valravnx: «hazla si no entorpece a los demás aunque sean varias a la vez» → Esta sesión hace la tarea «Cámara táctil con un dedo durante el combate» como una sesión de chat (tarea en curso en el roadmap y rama propia, sin tocar la reserva del carril en sesion.json), porque no comparte archivos con las demás ramas activas.
+
+### 27 oct 2026 (09:41) — por el chat: web de progreso con estilo medieval
+
+«Tu trabajo ahora va a ser embellecer la página de Kinhold del desarrollo, volverla estilo medieval estilizada lo más bonita posible con estilos de pergamino… la prueba integral unificada es la de jugar alpha más actualizada y el resto deben estar escondidas debajo en desplegables… todo lo demás estilízalo para que sea más fácil de visualizar y a la vez bonito» → Tarea nueva en el hito 0 (infraestructura), en curso en la sesión de chat.
+
+### 27 oct 2026 (09:28) — por el chat: sin ciudades NPC
+
+«Meter ciudades rompe el rollo de mundo a explorar que tenía la idea de survival, así que los quitaremos; los mercaderes aparecerán a cosa de 2 km de donde haya nadie cuando se dirijan a un asentamiento y solo se quedarán si se crea el sistema para ello, como el de reclutar soldados; y haremos lo del carro simple» → GDD (apartados 16 y 20) y documento de sistemas, en los tres idiomas: fuera las ciudades NPC; los mercaderes y mercenarios ambulantes aparecen a unos 2 km de cualquier jugador y llegan andando al asentamiento; un mercader solo se queda fijo si se crea un sistema para ello; los mensajeros van a asentamientos; la carretilla de rueda maciza se fabrica (ya no la regalan); dónde se celebran torneos y ferias queda por decidir.
+
+### 27 oct 2026 (08:20 UTC) — por el chat: dónde va el servidor de prueba
+
+«Para la pregunta del hito, opción A» → Servidor de la prueba online (hito 1f) en un alojamiento en la nube con una cuenta de valravnx: se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan. Pregunta quitada de las pendientes; la tarea de poner el servidor en internet pasa a pendiente.
+
+### 27 oct 2026 (08:23) — por el chat: cavar y minar (en conversación)
+
+valravnx pregunta cuánta carga de servidor supondría modificar el terreno cavando o minando, con la idea de que al entrar en una mina desaparezca lo que hay encima (como el tejado de las casas) y lo que el personaje no ve funda a negro. → Respuesta en el chat. valravnx no quiere casillas («look terriblemente cuadriculado»); se queda el híbrido que propone: cubitos pequeños (unos 50 cm) y la roca dibujada lisa e irregular alrededor con semilla fija (09:04). A las 09:09: «vamos a trabajarlo en paralelo, tercero» → GDD (sección 8, tres idiomas) y hito nuevo 1g «Cavar y minar», que lleva a mano esta sesión de chat; los carriles A y B no lo tocan («lleva»: «chat» en el roadmap).
+
 ### 27 oct 2026 (06:51–06:54) — por el chat: dos sesiones en paralelo
 
 «¿Hay manera de duplicar el trabajo en paralelo sin romper nada?» y «que mida que no se pisen ni se estropeen entre ellas, que sean cosas diferentes, cambia y aplica para que haya dos siempre en paralelo» → Carriles A (minuto 19) y B (minuto 49) con herramientas/carriles.mjs, reglas nuevas en CLAUDE.md y su prueba.

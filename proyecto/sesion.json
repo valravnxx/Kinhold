@@ -1,13 +1,15 @@
 {
  "A": {
-  "inicio": "2026-10-27T05:49:03+00:00",
-  "tarea": "Prueba online mínima: planificar el hito",
-  "rama": "trabajo/20261027-0548"
+  "inicio": "2026-10-27T08:38:20+00:00",
+  "tarea": "Jugadores que se ven: cada cliente manda su posición, giro y animación unas 10 veces por segundo; el servidor las reparte y los demás clientes las suavizan (interpolación). Prueba con lag simulado",
+  "hito": "prueba-online",
+  "rama": "trabajo/20261027-0838"
  },
  "B": {
   "inicio": "2026-10-27T06:02:45+00:00",
   "tarea": "Obras (decidido por valravnx el 26 oct): poner el marco de la pieza, que se ve como un armazón; llevarle los materiales y construirla con un tiempo según la pieza; si te ayudan, tarda menos. Todo en la lógica pura, con el autor de cada entrega y de cada rato de trabajo",
   "hito": "construccion-mas",
-  "rama": "trabajo/20261027-0602"
+  "rama": "trabajo/20261027-0602",
+  "ultimo": "2026-10-27T08:38:12.000Z"
  }
 }

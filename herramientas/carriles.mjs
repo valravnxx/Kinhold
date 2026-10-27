@@ -49,6 +49,8 @@ export function elegir(roadmap, sesion, carril, ahora = Date.now()) {
   const ocupados = new Set();
   if (ocupado(c[otro], ahora)) ocupados.add(c[otro].hito || hitoDeTarea(roadmap, c[otro].tarea));
   for (const h of roadmap.hitos) if ((h.tareas || []).some(t => t.estado === 'en_curso')) ocupados.add(h.id);
+  // hitos que lleva a mano una sesión de chat con valravnx («lleva»: «chat»): los carriles no los tocan nunca
+  for (const h of roadmap.hitos) if (h.lleva === 'chat') ocupados.add(h.id);
   // si este mismo carril tenía una tarea a medias (sesión cortada), la retoma
   if (c[carril] && c[carril].tarea && !ocupado(c[carril], ahora)) {
     const id = c[carril].hito || hitoDeTarea(roadmap, c[carril].tarea);

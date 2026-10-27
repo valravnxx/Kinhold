@@ -60,7 +60,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Versión 0.9 · 26 oct 2026 · Ampliación para un juego acabado: ciudades, comarcas, transporte, ropa tejida y convivencia online · El catálogo de contenido sigue en el documento de análisis</div>
+  <div class="sub">Versión 0.9 · 26 oct 2026 · Ampliación para un juego acabado: sin ciudades NPC, comarcas, transporte, ropa tejida y convivencia online · El catálogo de contenido sigue en el documento de análisis</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDIDO</span> lo has dicho tú
     <span class="tag method">MÉTODO</span> cómo hacerlo técnicamente
@@ -304,6 +304,16 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span>Los árboles caen, se transportan y se cortan; vuelven a crecer en semanas reales y se pueden plantar.</p>
 <p><span class="tag ok">DECIDIDO</span>Las vetas de mineral <b>no se regeneran</b>, pero el mundo tiene material de sobra: no es un recurso escaso.</p>
 <p class="note">Recolectables propuestos: apartado 3 del documento de análisis.</p>
+<h3>Cavar y minar</h3>
+<p><span class="tag ok">DECIDIDO</span>Se puede <b>cavar el terreno y abrir minas</b>. Fuera, zanjas, fosos y nivelar para cimientos con una <b>brocha redonda</b> que rebaja o alisa con bordes suaves. Dentro de la roca, cada golpe de pico quita un puñado redondeado de roca hacia donde miras: los túneles van rectos, en cuesta o en curva.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Sin aspecto cuadriculado:</b> por dentro la roca se divide en cubitos de unos 50 cm, pero la pared se dibuja como una superficie lisa que los envuelve, con la rugosidad de la roca sacada de una semilla fija según la posición: todos ven la misma cueva irregular.</p>
+<p><span class="tag ok">DECIDIDO</span>Al entrar en una mina <b>se oculta lo que hay encima</b> (como el tejado de las casas) y <b>lo que el personaje no ve funde a negro</b>. Las galerías largas necesitan <b>entibado</b> (postes y vigas) con el cálculo de cargas de la construcción.</p>
+<div class="box m"><span class="tag method">MÉTODO</span>
+<ul>
+  <li>«Vóxeles suavizados»: el servidor guarda solo qué cubitos se han quitado en cada trozo del mundo de 8 × 8 × 8 m (unos cientos de bytes por trozo excavado; nada donde no ha cavado nadie), cada golpe con su autor. Cada cliente rehace solo la malla del trozo tocado.</li>
+  <li>Lo que se ve dentro de la mina: desde la casilla del personaje se recorre lo abierto y lo que alumbra su antorcha; lo demás queda en negro. El servidor solo manda los huecos que el jugador ha visto o tiene delante, para que nadie vea las minas y vetas de otros a través de la roca.</li>
+  <li>Antes de construirlo, una prueba de rendimiento en el móvil: un trozo de roca donde se cava, midiendo fotogramas y lo que tarda en rehacerse la malla.</li>
+</ul></div>
 </section>
 
 <section id="progresion">
@@ -440,15 +450,15 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="box p"><span class="tag prop">PROPUESTA</span>
 <ul>
   <li>Entre jugadores: trueque o moneda, como quieran.</li>
-  <li>Los NPCs comerciantes están en pocos lugares de cada país; sus encargos rotan y piden cosas de la zona o de otras franjas, para dar motivos de viaje.</li>
+  <li>Los encargos de los mercaderes ambulantes rotan y piden cosas de la zona o de otras franjas, para dar motivos de viaje.</li>
   <li>Un NPC a sueldo come y cobra cada cierto tiempo.</li>
 </ul></div>
 <p><span class="tag ok">DECIDIDO</span>Si no se le paga, <b>el NPC se marcha y se lleva el equipo.</b></p>
-<p><span class="tag ok">DECIDIDO</span>Los NPCs para contratar son <b>mercaderes y mercenarios ambulantes que llegan a tu ciudad o asentamiento.</b></p>
+<p><span class="tag ok">DECIDIDO</span>Los NPCs para contratar son <b>mercaderes y mercenarios ambulantes que llegan a tu asentamiento.</b></p>
 <div class="box p"><span class="tag ok">APROBADO</span> Cómo llegan y qué tipos hay:
 <ul>
   <li><b>Llegada:</b> cada cierto tiempo pasa por tu asentamiento un ambulante (necesitas un mojón para que vengan). Se queda un tiempo; si no lo contratas, sigue su camino. Con más nivel de mojón vienen más a menudo y de más tipos.</li>
-  <li><b>También en las ciudades NPC:</b> allí siempre hay alguno disponible, a cambio de viajar a por él.</li>
+  <li><b>De dónde salen:</b> aparecen fuera de la vista, a unos 2 km de cualquier jugador, y llegan andando al asentamiento. No hay ciudades NPC. Un mercader solo se queda fijo en un asentamiento si se crea un sistema para ello, como el de contratar mercenarios; si no, comercia y sigue su camino.</li>
   <li><b>Tipos:</b>
     <ul>
       <li><b>Mercenario / centinela:</b> vigila y defiende tus tierras.</li>
@@ -470,7 +480,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span><b>Comunicación solo por proximidad.</b></p>
 <p><span class="tag ok">DECIDIDO</span><b>Editor de escudo de armas</b> propio para cada familia.</p>
 <p><span class="tag ok">DECIDIDO</span>El pago de vasallaje es <b>en moneda</b>.</p>
-<p><span class="tag ok">DECIDIDO</span><b>Cartas por mensajero NPC:</b> envías un mensajero a una ciudad o asentamiento que conozcas; viaja hasta allí y entrega la carta a un miembro de tu familia que esté en ese lugar.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Cartas por mensajero NPC:</b> envías un mensajero a un asentamiento que conozcas; viaja hasta allí y entrega la carta a un miembro de tu familia que esté en ese lugar.</p>
 <div class="box m"><span class="tag method">MÉTODO</span>
 <ul>
   <li>Escribes la carta (con pergamino y tinta, o en un papel simple al principio) y se la das al mensajero con su paga.</li>
@@ -506,6 +516,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>1b</td><td>Dirección de arte y personajes</td><td>Estilo del mundo, personaje del taller con ropa por capas, personalización, heridas visibles, niveles de detalle.</td></tr>
 <tr><td>1c</td><td>Más piezas de construcción</td><td>Piezas y muebles con el estilo elegido; obras con marco, materiales y tiempo, andamio, polea y polipasto; escaleras, barandillas, contraventanas, tejas, remates, chimenea, adarve, decoración; muros de piedra con grúa de rueda.</td></tr>
 <tr><td>1d</td><td>Una sola demo</td><td>Construcción, combate y personaje en la misma página, con la misma escena y el mismo personaje.</td></tr>
+<tr><td>1g</td><td>Cavar y minar</td><td>Zanjas y nivelado con brocha redonda; minas con roca irregular sin cuadros, lo de encima oculto y negro lo que no se ve, entibado.</td></tr>
 <tr><td>2</td><td>Equipo y carga por huecos</td><td>Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.</td></tr>
 <tr><td>3</td><td>Estaciones y crafting</td><td>Primeras estaciones, recetas, desbloqueo por práctica, durabilidad y reparación.</td></tr>
 <tr><td>4</td><td>Supervivencia</td><td>Necesidades con avisos, ropa contra el frío, cama ligada y muerte con saqueo parcial.</td></tr>
@@ -530,15 +541,15 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <section id="ampliacion">
 <h2>20. Ampliación para un juego acabado</h2>
 <p class="note">Aprobado por valravnx el 26 oct a partir del análisis de lo que faltaba para un juego acabado. Entre paréntesis, el hito donde se planifica cada cosa.</p>
-<h3>Mundo y ciudades</h3>
-<p><span class="tag ok">DECIDIDO</span><b>Ciudades NPC:</b> pocas por país (2–4), fijas, con mercader, tablón de encargos, mercenarios y mensajeros; <b>sin PvP dentro</b>. No son aldeas para vivir. Los jugadores empiezan cerca de una. Que la gente se asiente cerca es aceptable: crea rutas entre reinos y sitios de paso donde establecerse, y quien prefiera vivir solo o como bandido se va lejos. (Hitos 10 y 14)</p>
+<h3>Mundo</h3>
+<p><span class="tag ok">DECIDIDO</span><b>Sin ciudades NPC</b> (decidido el 27 oct): romperían la sensación de mundo por explorar del survival. El trato con NPCs llega con los mercaderes y mercenarios ambulantes, que aparecen a unos 2 km de cualquier jugador y van andando a los asentamientos (apartado 16). (Hito 14)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Comarcas con nombre:</b> cada país se divide en comarcas que siguen el relieve (un valle, una vega, una sierra), con nombre al estilo del país. El mapa del mundo y sus nombres los revisa y ajusta valravnx a mano. (Hito 10)</p>
 <p><span class="tag ok">DECIDIDO</span>El mundo <b>no se reinicia nunca</b>. (Hito 11)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Clima:</b> despejado, nublado, lluvia, nieve (norte e invierno) y niebla, por zonas grandes y según la estación. En el norte, los ríos se hielan en invierno y se cruzan andando. (Hito 4)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Noche</b> oscura pero jugable: la luna, las antorchas, los candiles y las hogueras dan luz de verdad, y los lobos están más activos. No se obliga a dormir. (Hito 4)</p>
 <h3>Objetos, transporte y ropa</h3>
 <p><span class="tag ok">DECIDIDO</span><b>Objetos en el suelo:</b> lo que se suelta fuera de un contenedor desaparece pasado un tiempo (por ejemplo, 1 hora real), salvo dentro de tus tierras. Los troncos y las piedras se quedan como pila. <b>Pilas:</b> cada recurso tiene cuántas unidades caben en un hueco. (Hito 2)</p>
-<p><span class="tag ok">DECIDIDO</span><b>Transporte desde el inicio:</b> la <b>rastra</b> (N0: dos varas largas con travesaños, se arrastra a mano) y la <b>carretilla de rueda maciza</b> (N1: la rueda es una rodaja de tronco). Los NPCs de la ciudad de inicio te dan una carretilla y te enseñan a hacerla. La carretilla se aparca y hace de contenedor: dentro de tus tierras está protegida; fuera, cualquiera puede coger lo que lleva. Después, el carro de dos ruedas (N2) y la carreta de cuatro (N3), con animales de tiro. (Hito 2)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Transporte desde el inicio:</b> la <b>rastra</b> (N0: dos varas largas con travesaños, se arrastra a mano) y la <b>carretilla de rueda maciza</b> (N1: la rueda es una rodaja de tronco). La carretilla se aparca y hace de contenedor: dentro de tus tierras está protegida; fuera, cualquiera puede coger lo que lleva. Después, el carro de dos ruedas (N2) y la carreta de cuatro (N3), con animales de tiro. (Hito 2)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Nada de calidades de objetos.</b> Lo que hace una prenda sale solo de su capa y su material (lino, lana, piel, gambesón, cuero endurecido, malla, placa). Lo que se ve se elige al tejer y coser: <b>corte</b> (túnica corta o larga, sayo, vestido, saya, capa con o sin capucha, calzas, sombrero o cofia), <b>tejido</b> (liso, sarga, espiguilla, cuadros, rayas), <b>tinte</b> de plantas de cada región (rubia para el rojo, gualda para el amarillo, glasto para el azul, cáscara de nuez para el marrón, agallas de roble con hierro para el negro) y, más adelante, orlas bordadas. Como los tintes están repartidos por franjas, dan motivos para comerciar. (Hitos 1b y 3)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Premium:</b> desbloquea recetas para fabricar versiones más bonitas de las cosas (cortes de prenda, tapices, muebles con forma propia). Se siguen fabricando en el juego con sus materiales y no hacen nada mejor: solo se ven distinto. Se concreta más adelante.</p>
 <h3>Fabricar, comer y pescar</h3>
@@ -562,7 +573,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h3>Más adelante (estético y ampliación)</h3>
 <p><span class="tag ok">DECIDIDO</span><b>Hogar:</b> vajilla y cerámica sobre la mesa, tapices tejidos con dibujo (con el mismo editor que el escudo de armas), cortinas, cojines y pieles, velas, candiles y candelabros, trofeos de caza y pesca, macetas, ristras, armeros y maniquí para la armadura.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Vida social:</b> juegos de mesa jugables entre jugadores (tablas, alquerque, dados), instrumentos sencillos (flauta, tambor, zanfoña), gestos (sentarse, saludar, reverencia, brindar) y gato como mascota.</p>
-<p><span class="tag ok">DECIDIDO</span><b>Encuentros:</b> torneos de esgrima en las ciudades NPC y ferias de estación con mercaderes de otros países.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Encuentros:</b> torneos de esgrima y ferias de estación con mercaderes de otros países; dónde se celebran queda por decidir, ahora que no hay ciudades NPC.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Asedio y granja:</b> escalas y mantelete, y el fuego que pasa de una pieza a otra (hito 6); abrevadero, comedero, pozos y acequias (hito 9).</p>
 </section>
 
