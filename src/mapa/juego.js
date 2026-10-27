@@ -218,7 +218,7 @@ export function crearVistaJuego(est) {
     const ahora = new Set();
     for (const [lista, im] of vj.arboles) lista.forEach((e, k) => {
       const u = ((e[0] - P.x) * vx + (e[2] - P.z) * vz) / l2;
-      if (u < 0.04 || u > 1.1) return;
+      if (u * Math.sqrt(l2) < 0.6 || u > 1.1) return;   // también los que están justo delante del personaje
       const d = Math.hypot(e[0] - P.x - vx * u, e[2] - P.z - vz * u);
       if (d < e[3] * 1.4 + 1 && e[1] + e[3] * 5 > P.y + (C.y - P.y) * u - 1) ahora.add(im.name + ':' + k);
     });
