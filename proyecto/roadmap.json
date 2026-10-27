@@ -498,7 +498,8 @@
     },
     {
      "nombre": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T11:50:57+00:00"
     },
     {
      "nombre": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",

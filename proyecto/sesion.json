@@ -4,7 +4,12 @@
   "tarea": "Jugadores que se ven: cada cliente manda su posición, giro y animación unas 10 veces por segundo; el servidor las reparte y los demás clientes las suavizan (interpolación). Prueba con lag simulado",
   "hito": "prueba-online",
   "rama": "trabajo/20261027-0838",
-  "ultimo": "2026-10-27T08:44:56.000Z"
+  "ultimo": "2026-10-27T11:32:35.000Z"
  },
- "B": null
+ "B": {
+  "inicio": "2026-10-27T11:50:57+00:00",
+  "tarea": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
+  "hito": "construccion-mas",
+  "rama": "trabajo/20261027-1150"
+ }
 }
