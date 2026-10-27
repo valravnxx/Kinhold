@@ -1378,5 +1378,23 @@
   "pruebas": "Todas con probar_todo.sh: lógica 86/86, modelos 104/104, combate 80/80 (11 nuevas, comprobado que fallan con MUTAR=1), acciones 40/40, servidor 15/15, navegador de combate (5 comprobaciones táctiles nuevas; las dos principales fallan con la versión anterior), construcción, estilo, personaje, demo, idiomas, cavar y web correctos. Capturas miradas en PC y móvil.",
   "capturas": "capturas/combate-v12",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T12:36:00+01:00",
+  "fin": "2026-10-27T14:49:45+01:00",
+  "titulo": "Hito 10: primer boceto del mapa del mundo",
+  "hito": "mundo",
+  "hecho": [
+   "Generador del mapa por semilla en lógica pura: la misma semilla da el mismo mundo",
+   "Forma de las tierras sin figuras fijas, sumando colinas, sierras, fosas y hoyas al azar con dominio deformado y ruido fractal, como los generadores de mapas de fantasía más conocidos",
+   "Siempre una isla grande que es un país entero, a más de 20 km de mar de cualquier otra costa",
+   "Relieve por levantamiento de las sierras y erosión de los ríos; ancho de cada río según el área que drena",
+   "Clima por latitud y altura, lluvia que trae el viento del oeste, biomas, cinco países con fronteras naturales, roca madre por provincias y vetas de hierro y carbón",
+   "Visor en el navegador: relieve, biomas y roca, capas de ríos, países y vetas, semilla, tamaño del mundo (188 o 256 km), ampliar y tocar para ver qué hay"
+  ],
+  "pruebas": "Mapa 52/52, navegador del mapa PC y móvil correctos, batería completa correcta (construcción, combate, estilo, personaje, demo, cavar, idiomas y web)",
+  "capturas": "capturas/mapa-v1",
+  "estado": "ok",
+  "notas": "no comprobado: cuánto tarda en generar en un móvil de verdad (en el navegador de pruebas, unos 4 a 5 segundos)"
  }
 ]
