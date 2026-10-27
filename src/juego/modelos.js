@@ -284,17 +284,27 @@ function tablaX(L, largo, alto, ancho, color, x, y, z, opc = {}) {
 function cimientoPiedra() {
   const L = loteSuelo(), S = MODULO, top = P.superficieCimiento;
   L.add(cajaR(S - 0.02, 0.27, S - 0.02, 0.05), 'mortero', 0, top - 0.05 - 0.135, 0); // el mortero queda 5 cm bajo las losas: se ven las juntas
-  // losas: cuadrícula de 4×4 con juntas y un poco de giro, la cara de arriba justo en la superficie
+  // losas: cuatro hileras de losas de largo desigual (a soga, como un enlosado hecho a mano), con juntas, un poco de giro
+  // y tonos de dos piedras; la cara de arriba justo en la superficie. Una cuadrícula igual parecía baldosa moderna.
   const n = 4, w = S / n;
-  for (let a = 0; a < n; a++) for (let b = 0; b < n; b++) {
-    const s = a * 7 + b * 3 + 1, ga = (ruido(s) - 0.5) * 0.08;
-    const lw = w - 0.05 - ruido(s + 2) * 0.04, ld = w - 0.05 - ruido(s + 5) * 0.04;
-    L.add(cajaR(lw, 0.08, ld, 0.03), 'piedra', -S / 2 + w * (a + 0.5), top - 0.04 - ruido(s + 4) * 0.008, -S / 2 + w * (b + 0.5), { y: ga }, { sinSuelo: true, plano: true, brillo: 0.86 + ruido(s + 9) * 0.16 });
+  let s = 1;
+  for (let b = 0; b < n; b++) {
+    // cortes de la hilera: 3 o 4 losas, cada una entre 0,6 y 1,4 veces el largo medio
+    const k = ruido(b * 13 + 2) > 0.45 ? 4 : 3, largos = [];
+    for (let i = 0; i < k; i++) largos.push(0.6 + ruido(b * 17 + i * 5 + 3) * 0.8);
+    const suma = largos.reduce((a, c) => a + c, 0);
+    let x0 = -S / 2;
+    for (const l of largos) {
+      const lx = l / suma * S; s++;
+      const ga = (ruido(s) - 0.5) * 0.06, lw = lx - 0.045 - ruido(s + 2) * 0.03, ld = w - 0.045 - ruido(s + 5) * 0.035;
+      L.add(cajaR(lw, 0.08, ld, 0.03), ruido(s + 7) > 0.65 ? 'piedraOsc' : 'piedra', x0 + lx / 2, top - 0.04 - ruido(s + 4) * 0.01, -S / 2 + w * (b + 0.5), { y: ga }, { sinSuelo: true, plano: true, brillo: 0.74 + ruido(s + 9) * 0.2 });
+      x0 += lx;
+    }
   }
   // piedras de los costados (no sobresalen de la casilla más de 4 cm: los cimientos vecinos se juntan)
   const piedraLado = (x, y, z, giro, s) => L.add(new THREE.IcosahedronGeometry(1, 0), ruido(s * 3.1) > 0.5 ? 'piedra' : 'piedraOsc', x, y, z,
     { y: giro + ruido(s) * 0.4, x: ruido(s + 1) * 0.3 }, { escala: new THREE.Vector3(0.15, 0.085, 0.07), plano: true });
-  let s = 11;
+  s = 11;
   for (const lado of [-1, 1]) for (let t = -S / 2 + 0.14; t < S / 2 - 0.1; t += 0.24) {
     piedraLado(t, -0.01, lado * (S / 2 - 0.035), 0, s++);
     piedraLado(lado * (S / 2 - 0.035), -0.01, t + 0.06, Math.PI / 2, s++);
@@ -530,7 +540,8 @@ function puerta(tipo) {
 // Piedras apiladas (caras planas, como las de los cimientos) y una vara con un trapo atado
 export function mojon() {
   const L = loteSuelo();
-  const piedraM = (r, x, y, z, s, color) => L.add(new THREE.IcosahedronGeometry(1, 0), color, x, y, z,
+  // las grandes con más caras (detalle 1, como las rocas de la prueba v5); las pequeñas del pie, con 20 bastan
+  const piedraM = (r, x, y, z, s, color) => L.add(new THREE.IcosahedronGeometry(1, r > 0.15 ? 1 : 0), color, x, y, z,
     { y: ruido(s) * 3, x: (ruido(s + 1) - 0.5) * 0.4 }, { escala: new THREE.Vector3(r, r * 0.68, r * 0.92), plano: true, brillo: 0.9 + ruido(s + 2) * 0.15 });
   piedraM(0.36, 0, 0.2, 0, 1, 'piedra');
   piedraM(0.28, 0.04, 0.52, -0.02, 2, 'piedraOsc');
