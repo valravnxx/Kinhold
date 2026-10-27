@@ -3,6 +3,11 @@ import { PIEZAS, DECORACION, MODULO, ALTURA, RECUPERACION, MAX_PLANTA, MATERIALE
 
 export const RADIO_MOJON = 20;        // radio de tierra del mojón de nivel 1 (m)
 export const DIST_ENGANCHE = 3 * MODULO; // a esta distancia de una construcción, se encaja en su rejilla
+export const MAX_RATO = 5;            // segundos de trabajo como mucho en una sola acción «trabajar»
+
+// Segundos de trabajo de una persona para terminar una obra con todo su material (provisional: el GDD dice «un
+// tiempo según la pieza» sin cifras; aquí, 4 s más 1 s por cada 20 kg de la pieza).
+export function tiempoObra(tipo) { return Math.round(4 + PIEZAS[tipo].peso / 20); }
 
 const HUECOS_ARISTA = new Set(['e', 'b', 'g', 'p']);
 
@@ -62,6 +67,7 @@ export class Mundo {
     this.mojon = null; // { x, z }
     this.materiales = { ...MATERIALES_INICIALES };
     this.siguienteId = 1;
+    this.obrasTerminadas = []; // quién llevó qué y quién trabajó en cada obra terminada (para el servidor; no se guarda)
   }
 
   // --- materiales ---
@@ -140,14 +146,15 @@ export class Mundo {
     // solo cuentan como apoyo las piezas que pueden sostener peso (cercas, empalizadas y
     // medio muro tienen capacidad 0 y nunca sostienen nada; los tejados solo sostienen
     // el tramo de tejado de al lado, nunca muros ni suelos)
-    const tiene = (key) => { const q = c.piezas.get(key); return !!q && PIEZAS[q.tipo].cap > 0; };
+    // una obra a medias (solo el marco) tampoco sostiene nada hasta que se termina
+    const tiene = (key) => { const q = c.piezas.get(key); return !!q && !q.obra && PIEZAS[q.tipo].cap > 0; };
     const filtra = (keys) => keys.filter(tiene);
     // piezas iguales (suelo o tejado) en las casillas de al lado que descansan directamente en muros o vigas
     const vecinasApoyadas = (hueco, i, j, k) => [[1, 0], [-1, 0], [0, 1], [0, -1]]
       .map(([di, dj]) => clave(hueco, i + di, j + dj, k))
       .filter(key => {
         const q = c.piezas.get(key);
-        if (!q) return false;
+        if (!q || q.obra) return false;
         return aristasDeCasilla(q.i, q.j, k - 1).some(a => tiene(clave('e', ...a)) || tiene(clave('b', ...a)));
       });
 
@@ -194,7 +201,7 @@ export class Mundo {
       }
       case 'p': {
         const muro = c.piezas.get(clave('e', i, j, k, p.d));
-        if (muro && PIEZAS[muro.tipo].conPuerta) return { suelo: false, lista: [clave('e', i, j, k, p.d)] };
+        if (muro && !muro.obra && PIEZAS[muro.tipo].conPuerta) return { suelo: false, lista: [clave('e', i, j, k, p.d)] };
         return { suelo: false, lista: [] };
       }
       case 'l': {
@@ -260,7 +267,8 @@ export class Mundo {
   }
 
   // ---------- Validar y colocar ----------
-  validar(cand) {
+  // marco: se pone solo el marco de la obra (los materiales se entregan después), así que no se miran los materiales
+  validar(cand, marco = false) {
     if (!cand) return { ok: false, motivo: 'Pieza no válida.' };
     const { construccion: c, pieza: p } = cand;
     const def = PIEZAS[p.tipo];
@@ -275,7 +283,7 @@ export class Mundo {
     if (def.andando && p.k >= MAX_PLANTA) return { ok: false, motivo: 'La escalera de tablas sube a la planta de arriba: en la última no cabe.' };
     if (def.andando && c.piezas.has(clave('f', p.i, p.j, p.k + 1))) return { ok: false, motivo: 'Encima de la escalera tiene que quedar el hueco abierto: quita ese suelo.' };
     if (p.hueco === 'f' && escaleraAndando(c, p.i, p.j, p.k - 1)) return { ok: false, motivo: 'Ahí está el hueco de una escalera.' };
-    if (!this.puedePagar(def.coste)) return { ok: false, motivo: 'Faltan materiales.', faltan: this.faltan(def.coste) };
+    if (!marco && !this.puedePagar(def.coste)) return { ok: false, motivo: 'Faltan materiales.', faltan: this.faltan(def.coste) };
     if (!this.apoyada(c, p)) return { ok: false, motivo: motivoSinApoyo(p) };
     // prueba de carga con la pieza puesta
     c.piezas.set(key, p);
@@ -285,8 +293,11 @@ export class Mundo {
     return { ok: true, clave: key };
   }
 
-  colocar(cand) {
-    const v = this.validar(cand);
+  // Coloca una pieza. Con marco = true (como se construye en el juego: «Obras», GDD) solo pone el marco de la obra:
+  // no paga nada, se ve como un armazón, no sostiene nada y su peso ya cuenta (así, al terminarla, aguanta seguro).
+  // Sin marco, la pieza sale terminada y pagada de golpe (lo usan las pruebas de la estructura).
+  colocar(cand, marco = false) {
+    const v = this.validar(cand, marco);
     if (!v.ok) return v;
     let { construccion: c, pieza: p, nueva } = cand;
     if (nueva) {
@@ -295,8 +306,51 @@ export class Mundo {
     }
     p.id = this.siguienteId++;
     c.piezas.set(v.clave, p);
-    this.pagar(PIEZAS[p.tipo].coste);
-    return { ok: true, clave: v.clave, construccion: c };
+    if (marco) p.obra = { entregado: {}, trabajo: 0, aportes: [] };
+    else this.pagar(PIEZAS[p.tipo].coste);
+    return { ok: true, clave: v.clave, construccion: c, obra: !!marco };
+  }
+
+  // ---------- Obras: marco, materiales y tiempo ----------
+  // Lo que le falta a una obra por entregar: [{ m, n }]
+  faltaEntregar(p) {
+    if (!p.obra) return [];
+    return Object.entries(PIEZAS[p.tipo].coste).map(([m, n]) => ({ m, n: n - (p.obra.entregado[m] || 0) })).filter(x => x.n > 0);
+  }
+  // Lleva material a una obra. Se entrega como mucho lo que le falta; queda anotado quién lo entrega.
+  entregar(c, key, material, cantidad, autor) {
+    const p = c.piezas.get(key);
+    if (!p) return { ok: false, motivo: 'No existe.' };
+    if (!p.obra) return { ok: false, motivo: 'Esa pieza ya está terminada.' };
+    const falta = this.faltaEntregar(p).find(x => x.m === material);
+    if (!falta) return { ok: false, motivo: 'A esa obra no le falta ese material.' };
+    if (!Number.isInteger(cantidad) || cantidad <= 0) return { ok: false, motivo: 'Cantidad no válida.' };
+    const n = Math.min(cantidad, falta.n);
+    if ((this.materiales[material] || 0) < n) return { ok: false, motivo: 'Faltan materiales.', faltan: [{ m: material, n, hay: this.materiales[material] || 0 }] };
+    this.materiales[material] -= n;
+    p.obra.entregado[material] = (p.obra.entregado[material] || 0) + n;
+    p.obra.aportes.push({ autor, entrega: material, n });
+    return { ok: true, entregado: n, falta: this.faltaEntregar(p) };
+  }
+  // Un rato de trabajo en una obra con todo el material. Los segundos de todos los que trabajan se suman: si te
+  // ayudan, se termina antes. Al llegar al tiempo de la pieza, queda terminada.
+  trabajar(c, key, segundos, autor) {
+    const p = c.piezas.get(key);
+    if (!p) return { ok: false, motivo: 'No existe.' };
+    if (!p.obra) return { ok: false, motivo: 'Esa pieza ya está terminada.' };
+    if (!(segundos > 0 && segundos <= MAX_RATO)) return { ok: false, motivo: 'Rato de trabajo no válido.' };
+    if (this.faltaEntregar(p).length) return { ok: false, motivo: 'Primero hay que llevarle todo el material.' };
+    const total = tiempoObra(p.tipo);
+    p.obra.trabajo = Math.min(total, p.obra.trabajo + segundos);
+    const suyo = p.obra.aportes.find(x => x.autor === autor && x.trabajo !== undefined);
+    if (suyo) suyo.trabajo = +(suyo.trabajo + segundos).toFixed(3);
+    else p.obra.aportes.push({ autor, trabajo: +segundos.toFixed(3) });
+    if (p.obra.trabajo >= total - 1e-9) {
+      this.obrasTerminadas.push({ construccion: c.id, clave: key, tipo: p.tipo, aportes: p.obra.aportes });
+      delete p.obra;
+      return { ok: true, terminada: true, progreso: 1 };
+    }
+    return { ok: true, terminada: false, progreso: p.obra.trabajo / total };
   }
 
   // ---------- Desmontar ----------
@@ -325,7 +379,8 @@ export class Mundo {
     const p = c.piezas.get(key);
     c.piezas.delete(key);
     for (const k2 of pre.caen) c.piezas.delete(k2);
-    const devuelto = this.devolver(PIEZAS[p.tipo].coste, RECUPERACION);
+    // una obra a medias devuelve entero lo que se le había llevado (aún no se había gastado en nada)
+    const devuelto = p.obra ? this.devolver(p.obra.entregado, 1) : this.devolver(PIEZAS[p.tipo].coste, RECUPERACION);
     if (c.piezas.size === 0) this.construcciones = this.construcciones.filter(x => x !== c);
     return { ok: true, caen: pre.caen, devuelto };
   }
@@ -445,7 +500,7 @@ export function geometriaTejados(c) {
 // Escalera que se sube andando en la casilla (i,j) de la planta k, o null.
 export function escaleraAndando(c, i, j, k) {
   const p = c.piezas.get(clave('l', i, j, k));
-  return p && PIEZAS[p.tipo].andando ? p : null;
+  return p && !p.obra && PIEZAS[p.tipo].andando ? p : null;
 }
 // Cuánto has subido (0 abajo, 1 arriba) en un punto local (m) de la casilla de la escalera.
 // Sube en la dirección dir (mismo convenio que los tejados): arriba se sale a la casilla de al lado.

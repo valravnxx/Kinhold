@@ -4,7 +4,7 @@
 // nunca objetos de la escena. Se comprueba, se aplica y se anota en un registro, salga bien o no.
 // Con el registro de la construcción se puede rehacer el mundo desde cero (reproducir): así el
 // servidor podrá validar y auditar lo que pasa, y las pruebas ven si algo cambia el mundo sin pasar por aquí.
-import { Mundo } from './construccion.js';
+import { Mundo, MAX_RATO } from './construccion.js';
 import { PIEZAS } from './piezas.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
 
@@ -53,6 +53,8 @@ const CAMPOS_CONSTRUCCION = {
   decorar: { pieza: 't', x: 'n', y: 'n', z: 'n', rot: 'n' },
   desmontar: { construccion: 'n', clave: 't' },
   quitar: { id: 'n' },
+  entregar: { construccion: 'n', clave: 't', material: 't', cantidad: 'n' }, // llevar material a una obra
+  trabajar: { construccion: 'n', clave: 't', segundos: 'n' },                 // un rato de trabajo en una obra
   usar: { construccion: 'n', clave: 't' },           // abrir o cerrar una puerta o un portón
   rellenar: { cantidad: 'n' },                        // botón de pruebas del prototipo
 };
@@ -60,7 +62,13 @@ const CAMPOS_CONSTRUCCION = {
 function aplicarConstruccion(m, a) {
   switch (a.tipo) {
     case 'mojon': return m.colocarMojon(a.x, a.z);
-    case 'colocar': return m.colocar(m.candidata(a.pieza, a.x, a.z, a.k, a.rot, a.dir));
+    // se construye por obras (GDD): colocar pone el marco; luego se entregan los materiales y se trabaja
+    case 'colocar': return m.colocar(m.candidata(a.pieza, a.x, a.z, a.k, a.rot, a.dir), true);
+    case 'entregar': case 'trabajar': {
+      const c = m.construcciones.find(x => x.id === a.construccion);
+      if (!c) return { ok: false, motivo: 'No existe.' };
+      return a.tipo === 'entregar' ? m.entregar(c, a.clave, a.material, a.cantidad, a.autor) : m.trabajar(c, a.clave, a.segundos, a.autor);
+    }
     case 'decorar': return m.colocarDecoracion(a.pieza, a.x, a.y, a.z, a.rot);
     case 'quitar': return m.quitarDecoracion(a.id);
     case 'desmontar': {
@@ -72,6 +80,7 @@ function aplicarConstruccion(m, a) {
       const c = m.construcciones.find(x => x.id === a.construccion);
       const p = c && c.piezas.get(a.clave);
       if (!p) return { ok: false, motivo: 'No existe.' };
+      if (p.obra) return { ok: false, motivo: 'Está en obras.' };
       if (!seAbre(p)) return { ok: false, motivo: 'Eso no se abre.' };
       p.abierta = !p.abierta;
       return { ok: true, abierta: p.abierta };
@@ -89,6 +98,21 @@ export function ejecutar(mundo, registro, accion) {
   const fallo = forma(accion, CAMPOS_CONSTRUCCION);
   const r = fallo ? { ok: false, motivo: fallo } : aplicarConstruccion(mundo, accion);
   registro.anotar(accion, r);
+  return r;
+}
+
+// Lleva todo el material que le falta a una obra y trabaja en ella hasta terminarla, siempre con acciones (una
+// entrega por material y ratos de MAX_RATO s). Para las pruebas y los atajos de prueba del prototipo.
+export function acabarObra(mundo, registro, autor, construccion, claveObra) {
+  const c = mundo.construcciones.find(x => x.id === construccion);
+  const p = c && c.piezas.get(claveObra);
+  if (!p || !p.obra) return { ok: false, motivo: 'No hay obra ahí.' };
+  for (const f of mundo.faltaEntregar(p)) {
+    const r = ejecutar(mundo, registro, { autor, tipo: 'entregar', construccion, clave: claveObra, material: f.m, cantidad: f.n });
+    if (!r.ok) return r;
+  }
+  let r = { ok: true, terminada: false };
+  for (let i = 0; i < 1000 && r.ok && !r.terminada; i++) r = ejecutar(mundo, registro, { autor, tipo: 'trabajar', construccion, clave: claveObra, segundos: MAX_RATO });
   return r;
 }
 
