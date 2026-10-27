@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-27T07:25:06+00:00",
-  "tarea": "Servidor mínimo en Node (carpeta servidor/, paquete ws): cada conexión recibe un autor que pone el servidor, nunca el que diga el cliente; las acciones de construcción pasan por la lógica pura (ejecutar), se reparten a todos y se guardan en un archivo, y al arrancar el mundo se rehace con reproducir. Prueba en node con dos clientes",
-  "hito": "prueba-online",
-  "rama": "trabajo/20261027-0725"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-27T06:02:45+00:00",
   "tarea": "Obras (decidido por valravnx el 26 oct): poner el marco de la pieza, que se ve como un armazón; llevarle los materiales y construirla con un tiempo según la pieza; si te ayudan, tarda menos. Todo en la lógica pura, con el autor de cada entrega y de cada rato de trabajo",
