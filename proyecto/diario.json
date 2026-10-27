@@ -1262,5 +1262,23 @@
   "pruebas": "Lógica 86/86, acciones 40/40 (15 nuevas de obras, comprobado que fallan si una obra sostiene o si la puerta en obras se abre), modelos 104/104, combate 69/69; navegador de construcción (9 comprobaciones nuevas de obras, PC y móvil), combate, estilo, personaje, demo, idiomas y web correctos. Capturas de las obras miradas en PC y móvil.",
   "capturas": "capturas/construccion-v21",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T09:43:31+01:00",
+  "fin": "2026-10-27T10:03:53+01:00",
+  "titulo": "Web de progreso con estilo medieval de pergamino",
+  "hito": "infra",
+  "hecho": [
+   "Hoja de pergamino sobre una mesa oscura: grano, fibras y manchas hechos con ruido SVG en imágenes de fondo que se pintan una vez y se repiten, y bordes tostados con sombras interiores; tinta parda, rúbrica roja y oro.",
+   "Fuentes libres (OFL) servidas desde la propia web en recursos/fuentes/v1, con cirílico para el ruso: Cinzel Decorative para el nombre, Alegreya SC para títulos y pestañas, EB Garamond para el texto.",
+   "Jugar: la alpha (la demo única, siempre su última versión) arriba y sola, con tres capturas enmarcadas y el botón «Jugar la alpha»; las demás pruebas, en un desplegable cerrado debajo.",
+   "Roadmap como un camino de sellos: verde lo hecho, rojo lo que está en curso, con barra y «tantas de tantas tareas»; cada tarea con un rombo del color de su estado.",
+   "Diario con la fecha en rojo al margen y las capturas como fotos pegadas; las 12 últimas entradas a la vista y las anteriores en un desplegable.",
+   "Pestañas como cintas, tiempos como un libro de cuentas, lo que te espera con un sello de lacre y los documentos de diseño como fichas.",
+   "Prueba de la web ampliada: la alpha arriba con la última versión, las pruebas sueltas plegadas, el diario recortado y las fuentes cargadas. Rota a propósito (otra parte como alpha, 20 entradas, sin fuentes): falla, como debe."
+  ],
+  "pruebas": "Prueba de la web correcta en PC y móvil, en español, inglés y ruso; capturas miradas de todas las pestañas.",
+  "capturas": "capturas/web-v2",
+  "estado": "ok"
  }
 ]
