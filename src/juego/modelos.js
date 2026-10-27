@@ -785,6 +785,68 @@ function estandarte() {
   return deLote(L);
 }
 const MUEBLES = { cama_paja: camaPaja, cama_madera: camaMadera, mesa, banco, taburete, arcon, barril, estanteria, candil: antorcha, alfombra, estandarte };
+// ---------- Obras: andamio y polea (GDD, «Obras»), con el estilo v5 ----------
+// Andamio pegado al muro: cuatro pies de vara descortezada, largueros atados con cuerda, una plataforma de varas
+// juntas (como un zarzo) con su cara de arriba a la altura del suelo de la planta de encima, barandilla por fuera y
+// una escalerilla de varas por la cara de fuera. El muro queda hacia +z (la lógica lo gira solo hacia el muro).
+function varaZ(L, largo, r, color, x, y, z) { L.add(cil(r, r * 1.08, largo, 6), color, x, y, z, { x: Math.PI / 2 }); }
+function andamio() {
+  const L = loteSuelo();
+  const A = 0.78, tope = ALTURA + P.superficieSuelo, alto = tope + 1.0;
+  [[-A, -A], [A, -A], [-A, A], [A, A]].forEach(([x, z], n) => posteVara(L, x, z < 0 ? alto : tope - 0.02, 0.05, 'maderaOsc', z, n + 3));
+  // largueros a media altura y bajo la plataforma, por los cuatro lados, atados en cada pie
+  for (const y of [1.2, tope - 0.14]) {
+    for (const z of [-A, A]) varaX(L, 2 * A + 0.3, 0.032, 'madera', 0, y, z + (z < 0 ? -0.05 : 0.05));
+    for (const x of [-A, A]) varaZ(L, 2 * A + 0.3, 0.032, 'madera', x + (x < 0 ? -0.05 : 0.05), y + 0.05, 0);
+    for (const x of [-A, A]) for (const z of [-A, A]) lazada(L, x, y, z, 0.05);
+  }
+  // tornapuntas en cruz por los lados, para que no se ladee
+  const dy = tope - 0.35, largoD = Math.hypot(2 * A, dy);
+  for (const x of [-A, A]) L.add(cil(0.028, 0.03, largoD, 6), 'madera', x + (x < 0 ? -0.09 : 0.09), 0.2 + dy / 2, 0, { x: (x < 0 ? 1 : -1) * Math.atan2(2 * A, dy) });
+  // plataforma: varas juntas a lo largo de X sobre los largueros, con las puntas claras
+  const n = 14, paso = (2 * A + 0.1) / n;
+  for (let t = 0; t < n; t++) {
+    const z = -A - 0.05 + paso * (t + 0.5);
+    varaX(L, 2 * A + 0.16, paso * 0.5, ruido(t * 1.7 + 2) > 0.5 ? 'madera' : 'tabla', 0, tope - paso * 0.5, z, (ruido(t + 9) - 0.5) * 0.01);
+  }
+  // barandilla por fuera (-z) y por los lados, con hueco donde llega la escalerilla
+  for (const y of [tope + 0.5, tope + 0.95]) {
+    for (const s of [-1, 1]) varaX(L, A - 0.3, 0.028, 'madera', s * (A + 0.3) / 2, y, -A - 0.06);
+    for (const x of [-A, A]) varaZ(L, 2 * A, 0.028, 'madera', x + (x < 0 ? -0.06 : 0.06), y, 0);
+  }
+  // escalerilla de varas por fuera, de la tierra a la plataforma
+  const le = tope + 0.9;
+  for (const x of [-0.24, 0.24]) L.add(cil(0.034, 0.04, le, 7), x < 0 ? 'madera' : 'maderaOsc', x, le / 2, -A - 0.16);
+  let k = 0;
+  for (let y = 0.3; y < le - 0.1; y += 0.31) L.add(cil(0.024, 0.026, 0.56, 6), ruido(k++ + 6) > 0.5 ? 'tabla' : 'madera', 0, y, -A - 0.16, { z: Math.PI / 2 });
+  for (const x of [-0.24, 0.24]) for (const y of [1.2, tope - 0.14]) lazada(L, x, y, -A - 0.16, 0.036);
+  return deLote(L);
+}
+// Polea simple colgada de una viga (a lo largo de X, en lo alto de la planta como la viga): una gaza de cuerda
+// abraza la viga; de ella cuelga un motón de madera (dos quijadas y la roldana con su eje de hierro), y la cuerda
+// baja por los dos lados de la roldana, con un gancho de hierro en un extremo.
+export const POLEA = { yViga: ALTURA - 0.11, yEje: ALTURA - 0.62, rRoldana: 0.12 };
+function polea() {
+  const L = loteSuelo();
+  const { yViga, yEje, rRoldana: r } = POLEA;
+  L.add(new THREE.TorusGeometry(0.16, 0.016, 5, 12), CUERDA, 0, yViga, 0, { y: Math.PI / 2 }, { sinSuelo: true }); // gaza
+  for (const x of [-0.03, 0.03]) L.add(cil(0.014, 0.014, yViga - 0.16 - (yEje + 0.2), 5), CUERDA, x, (yViga - 0.16 + yEje + 0.2) / 2, 0, null, { sinSuelo: true });
+  for (const x of [-0.055, 0.055]) L.add(cajaR(0.03, 0.42, 0.3, 0.012), 'maderaOsc', x, yEje, 0); // quijadas
+  L.add(cil(r, r, 0.05, 12), 'madera', 0, yEje, 0, { z: Math.PI / 2 }); // roldana
+  L.add(cil(0.018, 0.018, 0.16, 6), 'hierro', 0, yEje, 0, { z: Math.PI / 2 }); // eje
+  L.add(new THREE.TorusGeometry(0.035, 0.012, 5, 8), 'hierro', 0, yEje + 0.24, 0, { y: Math.PI / 2 }, { sinSuelo: true }); // argolla
+  // la cuerda baja por los dos lados de la roldana; en un extremo, el gancho
+  const largos = [1.1, 0.75];
+  [-1, 1].forEach((s, n) => {
+    const l = largos[n];
+    L.add(cil(0.014, 0.014, l, 5), CUERDA, 0, yEje - l / 2, s * (r + 0.012), null, { sinSuelo: true });
+  });
+  const yg = yEje - largos[0] - 0.06;
+  L.add(cil(0.012, 0.012, 0.14, 5), 'hierro', 0, yg + 0.02, -(r + 0.012));
+  L.add(new THREE.TorusGeometry(0.045, 0.012, 5, 8, Math.PI * 1.3), 'hierro', 0, yg - 0.06, -(r + 0.012) + 0.03, { y: Math.PI / 2, z: Math.PI * 0.85 }, { sinSuelo: true });
+  return deLote(L);
+}
+
 export function decoracion(tipo) {
   const g = MUEBLES[tipo] ? MUEBLES[tipo]() : new THREE.Group();
   g.traverse(o => { if (o.isMesh && o.name !== 'llama') { o.castShadow = true; o.receiveShadow = true; } });
@@ -813,6 +875,8 @@ export function modeloPieza(tipo, ctx) {
     case 'hastial': return hastial();
     case 'escalera_mano': return escaleraMano();
     case 'escalera_tabla': return escaleraTablas();
+    case 'andamio': return andamio();
+    case 'polea': return polea();
     case 'puerta_varas': return puerta('puerta_varas');
     case 'puerta_tabla': return puerta('puerta_tabla');
     case 'cerca': return cerca();
