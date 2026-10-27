@@ -143,6 +143,16 @@ with sync_playwright() as p:
             comprobar(f'{d}: desde el ruso, ES vuelve al español', pg.url.endswith(f'diseno/{d}.html') and pg.evaluate('document.documentElement.lang') == 'es')
         pg.goto(URL + '?lang=ru'); pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
         comprobar('en ruso, nada se sale por los lados', pg.evaluate("document.documentElement.scrollWidth - window.innerWidth") <= 1)
+        # ninguna pestaña, en ningún idioma, ensancha la página (la tabla de tiempos en ruso lo hacía en el móvil)
+        _anchas = []
+        for _l in ['es', 'en', 'ru']:
+            pg.goto(URL + '?lang=' + _l); pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
+            for _s in ['jugar', 'roadmap', 'diario', 'tiempos', 'decisiones', 'documentos']:
+                pg.click(f'nav button[data-s={_s}]'); pg.wait_for_timeout(80)
+                _w = pg.evaluate('document.documentElement.scrollWidth')
+                if _w > vista['width']: _anchas.append(f'{_l}/{_s} {_w}px')
+        comprobar('ninguna pestaña se sale por los lados, en ningún idioma', not _anchas, ', '.join(_anchas))
+        pg.goto(URL + '?lang=ru'); pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
         pg.click('#idiomas button[data-l=es]'); pg.wait_for_timeout(200)
         # los enlaces internos existen
         enlaces = pg.evaluate("[...document.querySelectorAll('a[href]')].map(a => a.getAttribute('href')).filter(h => !h.startsWith('http'))")
