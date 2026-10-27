@@ -8,12 +8,12 @@ const MUTAR = !!process.env.MUTAR;
 
 const huella = (m) => { let h = 0; for (let i = 0; i < m.h.length; i += 7) h = (h * 31 + Math.round(m.h[i])) | 0; return h; };
 
-for (const [semilla, lado] of [[2, 256], [7, 256], [42, 256], [3, 188]]) {
+for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
   const t0 = Date.now(), m = generarMapa(semilla, { lado }), ms = Date.now() - t0;
   const N = m.N, NN = N * N, r = resumen(m), n = `semilla ${semilla}, ${lado} km`;
-  if (MUTAR) { m.separacionIsla = 4; m.vetas.push({ tipo: 'carbon', x: 0, y: 0 }); const i = m.tierra.indexOf(1); m.rec[i] = i; m.pais.fill(1, 0, NN / 2); }
+  if (MUTAR) { m.separacionIsla = 4; m.vetas.push({ tipo: 'granCarbon', x: 0, y: 0 }); m.vetas = m.vetas.filter(v => v.tipo !== 'hierroVeta'); const i = m.tierra.indexOf(1); m.rec[i] = i; m.pais.fill(1, 0, NN / 2); }
   console.log(`${n}: ${ms} ms · ${JSON.stringify(r)}`);
-  if (semilla === 2) comprobar(`${n}: la misma semilla da el mismo mundo`, huella(generarMapa(2, { lado })) === huella(m));
+  if (semilla === 66172) comprobar(`${n}: la misma semilla da el mismo mundo`, huella(generarMapa(66172, { lado })) === huella(m));
   comprobar(`${n}: hay tierra y mar (entre el 30 y el 60 % de tierra)`, r.fraccionTierra > 0.3 && r.fraccionTierra < 0.6, `${(r.fraccionTierra * 100).toFixed(0)} %`);
   comprobar(`${n}: cumbres de unos 3.000 m`, r.cumbre > 2200 && r.cumbre < 3900, `${r.cumbre} m`);
   comprobar(`${n}: la isla grande queda a más de 20 km de mar de cualquier otra costa`, m.separacionIsla >= 20, `${Math.round(m.separacionIsla)} km`);
@@ -34,11 +34,22 @@ for (const [semilla, lado] of [[2, 256], [7, 256], [42, 256], [3, 188]]) {
   // biomas y roca en toda la tierra
   let malBioma = 0; for (let i = 0; i < NN; i++) if (m.tierra[i] && (!BIOMAS[m.bioma[i]] || !ROCAS[m.roca[i]])) malBioma++;
   comprobar(`${n}: cada sitio de tierra tiene bioma y roca`, malBioma === 0, `${malBioma} sin`);
-  // vetas donde tocan
-  const ok = { hierroPantano: (i) => m.bioma[i] === 'turbera', hierroVeta: (i) => m.roca[i] === 'granito' || m.roca[i] === 'pizarra', carbon: (i) => m.roca[i] === 'arenisca' };
+  // vetas: las grandes donde tocan, separadas y pocas; las pequeñas, cerca de cualquier sitio con país
+  const ok = { hierroPantano: (i) => m.bioma[i] === 'turbera', hierroVeta: (i) => m.tierra[i] === 1, carbon: (i) => m.tierra[i] === 1,
+    granHierro: (i) => m.roca[i] === 'granito' || m.roca[i] === 'pizarra', granCarbon: (i) => m.roca[i] === 'arenisca' };
   const malas = m.vetas.filter(v => !ok[v.tipo](v.y * N + v.x));
-  comprobar(`${n}: hierro de pantano en turberas, vetas de hierro en granito o pizarra y carbón en arenisca`, malas.length === 0, `${m.vetas.length} vetas, ${malas.length} mal puestas`);
-  comprobar(`${n}: hay vetas de hierro en la roca`, m.vetas.some(v => v.tipo === 'hierroVeta'));
+  comprobar(`${n}: cada veta en su sitio (grandes de hierro en granito o pizarra, de carbón en arenisca, pantano en turberas)`, malas.length === 0, `${m.vetas.length} vetas, ${malas.length} mal puestas`);
+  for (const [tipo, nombre] of [['granHierro', 'hierro'], ['granCarbon', 'carbón']]) {
+    const g = m.vetas.filter(v => v.tipo === tipo); let minSep = Infinity;
+    for (const a of g) for (const b of g) if (a !== b) minSep = Math.min(minSep, Math.hypot(a.x - b.x, a.y - b.y) * m.celda / 1000);
+    comprobar(`${n}: pocas grandes vetas de ${nombre} (2 a 8) y a más de 45 km entre sí`, g.length >= 2 && g.length <= 8 && minSep > 45, `${g.length}, a ${Math.round(minSep)} km como poco`);
+  }
+  for (const [tipos, nombre] of [[['hierroVeta', 'granHierro'], 'hierro'], [['carbon', 'granCarbon'], 'carbón']]) {
+    const vs = m.vetas.filter(v => tipos.includes(v.tipo)); let max = 0;
+    for (let i = 0; i < NN; i += 3) if (m.tierra[i] && m.pais[i] >= 0) { const x = i % N + 0.5, y = Math.floor(i / N) + 0.5; let d = 1e9;
+      for (const v of vs) d = Math.min(d, Math.hypot(v.x + 0.5 - x, v.y + 0.5 - y)); max = Math.max(max, d * m.celda / 1000); }
+    comprobar(`${n}: desde cualquier sitio con país hay ${nombre} a menos de 25 km`, max < 25, `el más lejano a ${max.toFixed(1)} km`);
+  }
   // ríos
   comprobar(`${n}: desembocan ríos (de más de 5 m)`, r.bocas.rio + r.bocas.grande >= 10, JSON.stringify(r.bocas));
 }

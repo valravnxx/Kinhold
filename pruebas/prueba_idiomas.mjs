@@ -33,7 +33,7 @@ for (const d of [...Object.values(BIOMAS), ...Object.values(ROCAS), ...Object.va
 for (const m of readFileSync('src/logica/mapa.js', 'utf8').matchAll(/fase: '([^']+)'/g)) meter(m[1]);
 { const src = readFileSync('src/mapa/main.js', 'utf8');
   for (const m of src.matchAll(/'((?:gran )?(?:arroyo|río) de \{a\} m)'/g)) meter(m[1]);
-  for (const m of src.matchAll(/\['\w+', '([^']+)'\]/g)) meter(m[1]); }
+  for (const m of src.matchAll(/\['\w+', '([A-ZÁÉÍÓÚ][^']+)'\]/g)) meter(m[1]); }
 // opciones del visor de personaje (las de cargar.js se leen del código: el cargador necesita el navegador)
 for (const t of [...Object.values(BASES), ...Object.values(CAPAS), ...Object.values(ANIMS)]) meter(t);
 const cargarJs = leer('src/personajes/cargar.js');
