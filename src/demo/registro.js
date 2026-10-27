@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v18 (obras en alto: subir el material hasta su planta)';
+export const VERSION_DEMO = 'Demo única · v20 (andamio y polea)';
 export const REGISTRO_DEMO = [
+  'v20: en «Construir», andamio pegado al muro (se sube con Usar y desde su plataforma se lleva lo ligero y se trabaja en las obras de esa planta) y polea colgada de una viga (una persona sola sube los troncos con la mitad de trabajo que rodándolos por varas). Es la construcción v25.',
   'v18: en «Construir», una obra en alto pide subir el material: lo ligero a mano por la escalera y los troncos rodándolos por dos varas con una cuerda (o entre dos). Es la construcción v23.',
   'v17: en «Construir», la decoración va al suelo de la planta en la que estás (ya no al piso de arriba) y los cimientos y suelos de troncos tapan del todo. Es la construcción v22.',
   'v16: en «Construir», se construye por obras: colocar pone el marco, Usar (F) junto a la obra le lleva el material y te pone a construir, y cada pieza tarda un tiempo según su peso. Es la construcción v21.',

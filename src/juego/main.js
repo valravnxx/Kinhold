@@ -1,9 +1,9 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso } from '../logica/construccion.js';
+import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
-import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto } from './modelos.js';
+import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA } from './modelos.js';
 import { crearJugador } from './personaje.js';
 import { personajeElegido } from '../demo/eleccion.js';
 import { REGISTRO, VERSION } from './registro.js';
@@ -151,7 +151,7 @@ function transformarPieza(obj, p) {
   const l = centroLocal(p);
   obj.position.set(l.lx, p.k * ALTURA, l.lz);
   let ry = 0;
-  if (['e', 'b', 'p', 'g'].includes(p.hueco) && p.d === 1) ry = -Math.PI / 2;
+  if (['e', 'b', 'p', 'g', 'q'].includes(p.hueco) && p.d === 1) ry = -Math.PI / 2;
   if (p.hueco === 'g' && p.dir % 2 === 1) ry += Math.PI;
   if (p.hueco === 'r' || p.hueco === 'l') ry = -(p.dir || 0) * Math.PI / 2;
   obj.rotation.y = ry;
@@ -655,7 +655,9 @@ function interactivoCercano() {
       if (!puerta && !esc) continue;
       const m = localAMundo(c, centroLocal(p).lx, centroLocal(p).lz);
       const d = Math.hypot(m.x - pj.x, m.z - pj.z);
-      const mismaPlanta = p.k === pj.k || (esc && p.k === pj.k - 1);
+      let mismaPlanta = p.k === pj.k || (esc && p.k === pj.k - 1);
+      // en una pila de andamios, estando en una plataforma con otro andamio encima, Usar sube (no baja)
+      if (PIEZAS[p.tipo].andamio && p.k === pj.k - 1 && andamioEn(c, p.i, p.j, pj.k)) mismaPlanta = false;
       if (mismaPlanta && d < md) { md = d; mejor = { c, key, p, tipo: puerta ? 'puerta' : 'escalera' }; }
     }
   }
@@ -706,8 +708,11 @@ function usarObra(o) {
   const m = centroMundo(c, p); pj.rot = Math.atan2(m.x - pj.x, m.z - pj.z);
   const pesado = mundo.faltaEntregar(p).find(f => hayQueSubir(p, f.m)) || (p.obra.subida && { m: p.obra.subida.material });
   if (pesado) {
-    estado.obrando = { c, key, subir: pesado.m };
-    ponerRampa(c, p);
+    // con una polea colgada de una viga de esta construcción (a la altura de la obra o más arriba), se tira de ella;
+    // si no, se rueda por dos varas
+    const q = poleaPara(c, p);
+    estado.obrando = { c, key, subir: pesado.m, metodo: q ? 'polea' : 'varas' };
+    if (q) ponerPolea(c, q, p); else ponerRampa(c, p);
     avisoSubida(p, pesado.m, 0, entregado);
     return;
   }
@@ -721,7 +726,8 @@ function usarObra(o) {
 }
 function avisoSubida(p, m, progreso, entregado = false) {
   const quedan = (mundo.faltaEntregar(p).find(f => f.m === m) || { n: 0 }).n;
-  mostrarAviso(`${entregado ? t('materialEntregado') + ' ' : ''}${t('subiendoRodando')} ${tr(MATERIALES[m]).toLowerCase()} (${t('quedan')} ${quedan}): ${Math.round(100 * progreso)} %`);
+  const como = estado.obrando && estado.obrando.metodo === 'polea' ? t('subiendoPolea') : t('subiendoRodando');
+  mostrarAviso(`${entregado ? t('materialEntregado') + ' ' : ''}${como} ${tr(MATERIALES[m]).toLowerCase()} (${t('quedan')} ${quedan}): ${Math.round(100 * progreso)} %`);
 }
 // Las dos varas apoyadas en el borde de la planta de la obra, del lado en el que estás, y el tronco rodando por ellas
 // (dos cuerdas lo abrazan y van hasta arriba). Se quita al terminar de subir o al dejarlo.
@@ -752,10 +758,42 @@ function ponerRampa(c, p) {
   rampa = { g, tronco, cuerdas, alto, largo, t: 0, meta: 0 };
   moverRampa(0);
 }
+// Subir con la polea: el tronco cuelga de la cuerda, atado por el centro, un poco por fuera de la viga (del lado en
+// el que estás), y sube en vertical hasta la planta de la obra; el otro cabo baja de la roldana hasta tus manos.
+function cuerdaEntre(cu, a, b) {
+  const d = new THREE.Vector3().subVectors(b, a);
+  cu.position.copy(a).addScaledVector(d, 0.5); cu.scale.set(1, Math.max(0.01, d.length()), 1);
+  cu.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
+}
+function ponerPolea(c, q, p) {
+  quitarRampa();
+  const m = centroMundo(c, q), rot = c.rot + (q.d === 1 ? -Math.PI / 2 : 0);
+  const g = new THREE.Group(); g.name = 'polea_subiendo';
+  g.position.set(m.x, 0, m.z); g.rotation.y = rot;
+  // lado de la viga en el que estás (z local del grupo)
+  const lz = (pj.x - m.x) * Math.sin(rot) + (pj.z - m.z) * Math.cos(rot);
+  const lado = Math.sign(lz) || 1;
+  const tronco = troncoSuelto(); g.add(tronco);
+  const cuerdas = [0, 1].map(() => { const cu = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 1, 5), MAT_CUERDA); g.add(cu); return cu; });
+  escena.add(g);
+  const yEje = q.k * ALTURA + POLEA.yEje;
+  rampa = { tipo: 'polea', g, tronco, cuerdas, lado, yEje, bajo: 0.35, alto: plantaObra(p) * ALTURA + P.superficieSuelo + 0.3, t: 0, meta: 0 };
+  moverRampa(0);
+}
 // t: 0 al pie, 1 arriba. El tronco va subiendo poco a poco hacia lo que lleva la subida.
 function moverRampa(dt) {
   if (!rampa) return;
   rampa.t += Math.max(-1, Math.min(1, rampa.meta - rampa.t)) * Math.min(1, dt * 2.5);
+  if (rampa.tipo === 'polea') {
+    const { tronco, cuerdas, lado, yEje, bajo, alto, t: k, g } = rampa, fuera = 0.55 * lado;
+    const y = bajo + k * (Math.min(alto, yEje - 0.45) - bajo);
+    tronco.position.set(0, y, fuera); tronco.rotation.set(0, 0, 0);
+    // cabo del tronco: de la roldana al tronco; cabo de tirar: de la roldana a tus manos
+    cuerdaEntre(cuerdas[0], new THREE.Vector3(0, yEje - 0.12, 0.13 * lado), new THREE.Vector3(0, y + P.radioTronco, fuera));
+    const manos = g.worldToLocal(new THREE.Vector3(pj.x, pj.y + 1.25, pj.z));
+    cuerdaEntre(cuerdas[1], new THREE.Vector3(0, yEje - 0.12, -0.13 * lado), manos);
+    return;
+  }
   const { tronco, cuerdas, alto, largo, t: k } = rampa, r = P.radioTronco + 0.05;
   const ang = Math.atan2(alto, largo);
   const y = k * alto + r * Math.cos(ang), z = k * largo - r * Math.sin(ang) * 0.2;
@@ -778,7 +816,7 @@ function pasoObra() {
   const seg = (ahora - o.desde) / 1000;
   if (seg < 0.5) return;
   if (o.subir) { // subiendo un tronco por las varas
-    const r = accion({ tipo: 'subir', construccion: o.c.id, clave: o.key, material: o.subir, segundos: Math.min(seg, MAX_RATO), metodo: 'varas' });
+    const r = accion({ tipo: 'subir', construccion: o.c.id, clave: o.key, material: o.subir, segundos: Math.min(seg, MAX_RATO), metodo: o.metodo || 'varas' });
     o.desde = ahora;
     if (!r.ok) { estado.obrando = null; quitarRampa(); mostrarAviso(tr(r.motivo), true); return; }
     guardar(); actualizarUI();
@@ -807,8 +845,10 @@ function pasoObra() {
 }
 function usar() {
   const ob = obraCercana();
-  if (ob) { usarObra(ob); return; }
   const it = interactivoCercano();
+  // al pie de un andamio, con la obra más arriba que tú, Usar sube al andamio (desde allí se le lleva el material)
+  const subirAndamio = it && PIEZAS[it.p.tipo].andamio && it.p.k === pj.k && ob && ob.p.k > pj.k;
+  if (ob && !subirAndamio) { usarObra(ob); return; }
   if (!it) {
     // junto a un árbol, se tala (por ahora solo el gesto: la madera llega con la recolección)
     const a = arbolCercano();
@@ -824,10 +864,11 @@ function usar() {
   }
   // escalera: subir si estás en su planta, bajar si estás encima
   const { c, p } = it;
+  if (PIEZAS[p.tipo].andamio) { usarAndamio(c, p); return; }
   if (pj.k === p.k) {
     const destinos = [[p.i, p.j], [p.i + 1, p.j], [p.i - 1, p.j], [p.i, p.j + 1], [p.i, p.j - 1]];
     for (const [i, j] of destinos) {
-      if (c.piezas.has(clave('f', i, j, p.k + 1))) {
+      if (c.piezas.has(clave('f', i, j, p.k + 1)) || andamioEn(c, i, j, p.k)) {
         // quedas en el suelo de arriba, pero pegado a la escalera para poder volver a bajar
         const le = centroLocal(p);
         const lx = (i + 0.5) * MODULO + (le.lx - (i + 0.5) * MODULO) * 0.4;
@@ -844,6 +885,24 @@ function usar() {
     pj.x = m.x; pj.z = m.z; pj.k = p.k;
     mostrarAviso(`${t('bajas')} ${pj.k}`);
   }
+}
+
+// Andamio (GDD, «Obras»): Usar al pie sube por su escalerilla a la plataforma, que está a la altura del suelo de la
+// planta de encima; arriba, si hay otro andamio encima, sube a ese; en lo alto de la pila, baja hasta el pie.
+function usarAndamio(c, p) {
+  const m = centroMundo(c, p);
+  if (pj.k === p.k) {
+    pj.x = m.x; pj.z = m.z; pj.k = p.k + 1;
+    mostrarAviso(`${t('subesAndamio')} ${pj.k}`);
+    return;
+  }
+  let k = p.k;
+  while (k > 0 && andamioEn(c, p.i, p.j, k - 1)) k--;
+  // al pie del andamio de abajo, por fuera (por la escalerilla, lejos del muro)
+  const pie = andamioEn(c, p.i, p.j, k) || p, ang = c.rot - (pie.dir || 0) * Math.PI / 2;
+  const f = MODULO / 2 + 0.45;
+  pj.x = m.x - Math.sin(ang) * f; pj.z = m.z - Math.cos(ang) * f; pj.k = k;
+  mostrarAviso(`${t('bajas')} ${pj.k}`);
 }
 
 // ---------------- Movimiento y colisiones ----------------
@@ -927,6 +986,7 @@ function alturaSuelo() {
       const i = Math.floor(l.lx / MODULO), j = Math.floor(l.lz / MODULO);
       const f = c.piezas.get(clave('f', i, j, k));
       if (f && !f.obra) { pj.k = k; return k * ALTURA + (k === 0 ? P.superficieCimiento : P.superficieSuelo); }
+      if (k > 0 && andamioEn(c, i, j, k - 1)) { pj.k = k; return k * ALTURA + P.superficieSuelo; } // plataforma del andamio
     }
     if (k === 0) { pj.k = 0; return 0; }
   }
@@ -1121,7 +1181,8 @@ window.__kinhold = {
   },
   obraCercana() { const o = obraCercana(); return o && { c: o.c.id, key: o.key }; },
   get obrando() { return estado.obrando; },
-  get rampa() { return rampa && { t: rampa.t, meta: rampa.meta, visible: !!rampa.g.parent }; },
+  get rampa() { return rampa && { t: rampa.t, meta: rampa.meta, visible: !!rampa.g.parent, tipo: rampa.tipo || 'varas', yTronco: rampa.tronco.position.y }; },
+  interactivoCercano() { const o = interactivoCercano(); return o && { c: o.c.id, key: o.key, tipo: o.tipo }; },
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); reconstruir(); },
   get registroAcciones() { return registroAcciones; },
   reconstruir() { reconstruir(); },
