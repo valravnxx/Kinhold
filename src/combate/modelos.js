@@ -22,6 +22,9 @@ function marcador(g, nombre, y) { const o = new THREE.Object3D(); o.name = nombr
 // todo junto en una malla por textura (deLote). Lo que se lleva en la mano no se oscurece «al pie» (no toca el suelo).
 const ACERO = 0xc6c9c8, ACERO_OSC = 0x8a8c8c, CUERO = 0x4a3526, CUERO_CLARO = 0x6b4e36, PLUMA = 0xd5ccb8, PLUMA_OSC = 0x5b5149;
 const loteMano = () => new Lote({ variacion: 0.04, rangoSuelo: 0.001, suelo: -100 });
+// lo que se lleva en la mano es tan fino (una hoja de 9 mm) que el mapa de sombras lo sombrea entero sobre sí mismo:
+// echa sombra pero no la recibe, como antes
+function deMano(L) { const g = deLote(L); g.traverse(o => { if (o.isMesh) o.receiveShadow = false; }); return g; }
 // hoja de sección de rombo (con su arista en medio), de ancho a0 abajo a a1 arriba, a lo largo de +Y
 function hoja(L, a0, a1, largo, grueso, y0) {
   // el cilindro de 4 lados ya tiene sus aristas en los ejes: se aplasta en z hasta el grueso
@@ -47,7 +50,7 @@ function espada({ largoHoja, anchoBase, anchoPunta, largoPuno, anchoCruz }) {
   L.add(cil(0.011, 0.011, anchoCruz, 6), 'hierro', 0, yc, 0, { z: Math.PI / 2 }, { escala: new THREE.Vector3(1, 1, 1.25) });
   for (const s of [-1, 1]) L.add(new THREE.SphereGeometry(0.015, 6, 4), 'hierro', s * anchoCruz / 2, yc, 0);
   hoja(L, anchoBase, anchoPunta, largoHoja, 0.009, yc + 0.012);
-  return deLote(L);
+  return deMano(L);
 }
 export function modeloArma(tipo) {
   let g = new THREE.Group();
@@ -66,7 +69,7 @@ export function modeloArma(tipo) {
     for (const [y, a] of [[0.25, 0.4], [0.82, 2.6]]) L.add(new THREE.SphereGeometry(0.014, 5, 3), 'maderaOsc', Math.cos(a) * 0.032, y, Math.sin(a) * 0.032, null, { escala: new THREE.Vector3(1, 1.6, 1) });
     L.add(new THREE.CircleGeometry(0.027, 8), 'corte', 0.0115, 1.151, 0, { x: -Math.PI / 2 });
     L.add(new THREE.CircleGeometry(0.039, 8), 'corte', -0.0028, -0.251, 0, { x: Math.PI / 2 });
-    g = deLote(L);
+    g = deMano(L);
     marcador(g, 'punta', 1.15); marcador(g, 'medio', 0.5);
   } else if (tipo === 'arco') {
     // arco largo de una pieza de tejo: madera con veta, más gruesa en el centro, puño de cuero y los extremos con la muesca
@@ -82,7 +85,7 @@ export function modeloArma(tipo) {
     L.add(tubo, 'madera', 0, 0, 0, null, { tex: 'veta' });
     L.add(cil(0.023, 0.023, 0.13, 8), CUERO, 0, 0, 0.24, null, { tex: 'tejido' });
     for (const s of [-1, 1]) L.add(cil(0.012, 0.006, 0.05, 6), 'maderaOsc', 0, s * 0.74, 0.003, s < 0 ? { x: Math.PI } : null);
-    g = deLote(L);
+    g = deMano(L);
     // la cuerda, una línea fina de lino (se tensa al tirar)
     const cuerda = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -0.75, 0), new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0.75, 0)]);
     const linea = new THREE.Line(cuerda, new THREE.LineBasicMaterial({ color: 0xcbbf9f }));
@@ -119,7 +122,7 @@ export function modeloEscudo(radio = 0.32) {
   L.add(umbo, 'hierro', 0, 0, 0.062);
   L.add(new THREE.TorusGeometry(0.082, 0.008, 4, 16), 'hierro', 0, 0, 0.063);
   for (let k = 0; k < 4; k++) { const a = k / 4 * Math.PI * 2 + 0.4; L.add(new THREE.SphereGeometry(0.008, 5, 3), 'hierro', Math.cos(a) * 0.088, Math.sin(a) * 0.088, 0.064); }
-  const g = deLote(L); g.name = 'escudo';
+  const g = deMano(L); g.name = 'escudo';
   return g;
 }
 export function modeloFlecha() {
@@ -135,12 +138,12 @@ export function modeloFlecha() {
     L.add(pl, c, 0, 0, -0.3, { z: a }, { tex: 'tejido' });
   }
   for (const z of [-0.348, -0.252]) L.add(cil(0.0055, 0.0055, 0.008, 6), 0x6b5a45, 0, 0, z, { x: Math.PI / 2 });
-  return deLote(L);
+  return deMano(L);
 }
 export function modeloPiedra() {
   const L = loteMano();
   L.add(new THREE.IcosahedronGeometry(0.06, 1), 'piedra', 0, 0, 0, { y: 0.7, x: 0.3 }, { escala: new THREE.Vector3(1.15, 0.8, 1), plano: true });
-  return deLote(L);
+  return deMano(L);
 }
 
 // ---------- Poste de práctica y diana ----------

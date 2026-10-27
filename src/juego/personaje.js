@@ -75,11 +75,16 @@ export function modeloHacha() {
   L.add(new THREE.SphereGeometry(0.022, 8, 5), 'tabla', 0, -0.1, -0.003, null, { escala: new THREE.Vector3(1, 0.7, 1.3), tex: 'veta' });
   const y = 0.56;
   L.add(cajaR(0.034, 0.075, 0.07, 0.01), 'hierro', 0, y, 0.016);                                        // ojo
-  L.add(cajaR(0.016, 0.12, 0.1, 0.006), 'hierro', 0, y - 0.01, 0.085);                                    // pala
-  L.add(cajaR(0.01, 0.15, 0.022, 0.004), 0x8d8e8e, 0, y - 0.015, 0.142);                                  // filo
+  // pala que se abre hacia el filo (más larga por abajo, la «barba»), de perfil en el plano ZY y grosor en X
+  const perfil = new THREE.Shape([[0.03, 0.028], [0.135, 0.058], [0.14, -0.075], [0.105, -0.07], [0.03, -0.028]].map(([z, yy]) => new THREE.Vector2(z, yy)));
+  const pala = new THREE.ExtrudeGeometry(perfil, { depth: 0.012, bevelEnabled: true, bevelThickness: 0.003, bevelSize: 0.003, bevelSegments: 1 });
+  pala.translate(0, 0, -0.006); pala.rotateY(-Math.PI / 2); // el perfil va de X a Z
+  L.add(pala, 'hierro', 0, y, 0, null, { plano: true });
+  L.add(cil(0.004, 0.004, 0.13, 4), 0x9a9b9a, 0, y - 0.008, 0.141, { x: 0.04 }, { escala: new THREE.Vector3(2.2, 1, 1), plano: true, brillo: 1.15 }); // filo afilado, más claro
   L.add(cajaR(0.03, 0.04, 0.03, 0.008), 'hierro', 0, y, -0.035);                                          // cotillo
   L.add(new THREE.CircleGeometry(0.014, 6), 'corte', 0, y + 0.0385, 0.016, { x: -Math.PI / 2 });          // cuña
   const g = deLote(L); g.name = 'hacha';
+  g.traverse(o => { if (o.isMesh) o.receiveShadow = false; }); // fina: que no se sombree entera a sí misma
   return g;
 }
 // Pone el hacha en la mano derecha: el mango atravesado a los dedos (del meñique al índice, la cabeza por el lado
