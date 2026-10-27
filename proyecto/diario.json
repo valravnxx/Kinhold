@@ -1495,5 +1495,22 @@
   "capturas": "capturas/demo-v21",
   "estado": "ok",
   "notas": "no comprobado: jugar desde dos aparatos de verdad (hace falta el servidor en internet, tarea pendiente del hito). En una pasada de la batería completa con la máquina cargada falló una vez la prueba de navegador del combate (pantalla de victoria); sola pasó entera. Tras unir los últimos cambios de main (suelos de troncos y mapa) no se repitió la batería entera, solo las pruebas listadas"
+ },
+ {
+  "inicio": "2026-10-27T18:57:00+01:00",
+  "fin": "2026-10-27T21:07:38+01:00",
+  "titulo": "Hito 10: boceto de paisaje de cerca",
+  "hito": "mundo",
+  "hecho": [
+   "«Ver de cerca» en el mapa: un trozo de 4 × 4 km en 3D con el estilo v5, desde lo alto o a pie",
+   "Relieve de cerca en lógica pura: la forma grande del mapa con capas de detalle de 2 km a 15 m que se apagan donde la pendiente ya es grande (laderas lisas, crestas y vaguadas marcadas)",
+   "Cortado donde la tierra alta llega al mar y playa donde es baja",
+   "Bosque por bosquetes y claros según bioma, pendiente y altura; árboles cercanos con el modelo completo y lejanos con uno sencillo",
+   "Los ríos rebajan su cauce sin levantar muros (los valles de verdad van en su tarea)"
+  ],
+  "pruebas": "Mapa 64/64, navegador del mapa PC y móvil correctos (también de cerca), batería completa correcta",
+  "capturas": "capturas/mapa-v3",
+  "estado": "ok",
+  "notas": "no comprobado: fotogramas de la vista de cerca en un móvil de verdad (más de un millón de triángulos con el bosque)"
  }
 ]

@@ -815,7 +815,9 @@
     },
     {
      "nombre": "Boceto de paisaje de cerca: tocar un sitio del mapa y verlo en 3D (unos 4 × 4 km) para juzgar si es bonito antes de meterlo en el juego",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-27T18:57:00+01:00",
+     "fin": "2026-10-27T21:07:38+01:00"
     },
     {
      "nombre": "Relieve de detalle por escalas: el mapa da la forma grande y encima van colinas, lomas y quebradas con pendientes de todos los tamaños (como en el terreno de verdad), sin llanos enormes ni cuestas eternas",
@@ -1598,6 +1600,13 @@
      "archivo": "jugar/mapa/v2.html",
      "capturas": "capturas/mapa-v2",
      "notas": "Tu mundo (256 km, semilla 66172) se abre al entrar. Vetas pequeñas de hierro y carbón repartidas cerca de cualquier sitio y unas pocas grandes vetas marcadas en el mapa; al tocar, a cuántos km está el hierro y el carbón más cercanos. Las islas cercanas ya tienen país."
+    },
+    {
+     "v": "v3",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/mapa/v3.html",
+     "capturas": "capturas/mapa-v3",
+     "notas": "Ver de cerca: al tocar un sitio de tierra, sus 4 × 4 km en 3D con el estilo v5, desde lo alto o a pie. Relieve con detalle por escalas (laderas lisas, crestas y vaguadas marcadas), cortado donde la tierra alta llega al mar y playa donde es baja, bosque con claros y bosquetes."
     }
    ]
   }
