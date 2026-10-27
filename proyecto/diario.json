@@ -1312,5 +1312,21 @@
   "pruebas": "Lógica 86/86, acciones 40/40, modelos 104/104, combate 69/69, servidor 15/15; navegador de construcción (2 comprobaciones nuevas: la decoración bajo el altillo va al suelo de abajo y, arriba, al del altillo), combate, estilo, personaje, demo, idiomas y web correctos. Capturas miradas en PC y móvil.",
   "capturas": "capturas/construccion-v22",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T09:09:00+01:00",
+  "fin": "2026-10-27T11:33:52+01:00",
+  "titulo": "Hito 1g: prueba de rendimiento de cavar",
+  "hito": "excavacion",
+  "hecho": [
+   "Lógica pura de excavación: cubitos de 0,5 m en trozos de 8 m, solo se guardan los quitados (un bit por cubito) y cada golpe lleva autor",
+   "Malla de la roca con vóxeles suavizados (surface nets) y rugosidad de semilla fija: no se ven casillas y todos ven la misma pared",
+   "Prototipo «Cavar y minar» v1: una loma que se excava a golpes, con fps y ms por golpe en pantalla",
+   "Lo guardado de una galería de 13 golpes ocupa unos 1,4 KB"
+  ],
+  "pruebas": "Excavación 13/13, lógica 86/86, carriles 11/11, idiomas correcto, navegador de cavar PC y móvil correctos; Chromium sin GPU: media 14,2 ms por golpe, peor 52,8 ms, unos 11.800 triángulos",
+  "capturas": "capturas/mina-v1",
+  "estado": "ok",
+  "notas": "no comprobado: rendimiento en un móvil de verdad (lo mide valravnx)"
  }
 ]

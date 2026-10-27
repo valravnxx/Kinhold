@@ -554,8 +554,9 @@
    "tareas": [
     {
      "nombre": "Prueba de rendimiento de cavar (vóxeles suavizados): un trozo de roca de 8 m con cubitos de 50 cm, golpes de pico que quitan un puñado redondeado, pared lisa con rugosidad por semilla fija; medir fotogramas y lo que tarda en rehacerse la malla en PC y móvil",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T09:09:00+01:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T09:09:00+01:00",
+     "fin": "2026-10-27T11:33:52+01:00"
     },
     {
      "nombre": "Lógica pura de la excavación: cubitos quitados por trozo del mundo, cada golpe con su autor, guardar solo lo tocado y rehacerlo al cargar",
@@ -1349,6 +1350,20 @@
      "archivo": "jugar/personaje/v14.html",
      "capturas": "capturas/personaje-v14",
      "notas": "El cinturón de encima de la cota ya no sobresale hacia los brazos (personajes del taller-v7)."
+    }
+   ]
+  },
+  {
+   "id": "mina",
+   "nombre": "Cavar y minar",
+   "descripcion": "Pruebas de cavar zanjas y minas en la roca, sin casillas a la vista.",
+   "versiones": [
+    {
+     "v": "v1",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/mina/v1.html",
+     "capturas": "capturas/mina-v1",
+     "notas": "Prueba de rendimiento de cavar: una loma de roca que se excava a golpes de pico, sin casillas a la vista (vóxeles suavizados con la roca irregular de semilla fija). Arriba a la derecha, los fps y los ms por golpe."
     }
    ]
   }
