@@ -6,6 +6,11 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 — por el chat: fotogramas bajos al construir (jugando en línea)
+
+«Cuando estamos haciendo cualquiera de los dos una construcción (la carga de construir con el hacha) nos bajan los fps mucho… luego vuelve a normal» y «tiene los fps mucho más bajos durante todo el proceso, no a tirones» → Arreglado (construcción v26, demo v22): al avanzar una obra se rehace solo esa pieza y no todo lo construido.
+«Cada vez que salgo al menú y vuelvo dice que soy uno más… not big deal» (los que se van tardan en desaparecer a través del túnel) → va con la tarea pendiente de conexiones que se cortan del hito 1f.
+
 ### 27 oct 2026 — por el chat: probar en línea en casa, más fácil
 
 «¿Qué pongo para probar con otra persona?» (resumido) y «me lo ponías con textos en alguna terminal y lo hacía más rápido, ¿no?» → Archivos de doble clic en la raíz: `jugar_en_casa.bat` (Windows) y `jugar_en_casa.command` (Mac). Encienden el servidor y la web en su ordenador y dicen la dirección que hay que abrir en los dos aparatos (con el servidor ya puesto: no hace falta tocar Opciones). No comprobado en Windows ni en Mac de verdad; el paso de la dirección por la página, sí.
