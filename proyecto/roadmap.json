@@ -272,7 +272,8 @@
     },
     {
      "nombre": "Combate en el servidor: un luchador por jugador en la lógica pura; los clientes mandan intenciones (atacar en una línea, guardia, bloquear, tensar y soltar) y el servidor lleva los tiempos y resuelve golpes y heridas con su autor. Prueba en node con dos clientes y lag simulado",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T19:20:13+00:00"
     },
     {
      "nombre": "Combate en línea en la demo: dos jugadores pelean entre sí y los dos ven los mismos golpes y heridas. Prueba de navegador con dos páginas",
