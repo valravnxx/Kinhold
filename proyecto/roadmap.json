@@ -236,11 +236,45 @@
    "tareas": [
     {
      "nombre": "Planificar el hito: leer lo que el GDD dice de servidor, cuentas y PvP, y desglosar la prueba online en tareas de una sesión",
+     "estado": "hecho",
+     "inicio": "2026-10-27T05:49:03+00:00",
+     "fin": "2026-10-27T06:54:09+00:00"
+    },
+    {
+     "nombre": "Servidor mínimo en Node (carpeta servidor/, paquete ws): cada conexión recibe un autor que pone el servidor, nunca el que diga el cliente; las acciones de construcción pasan por la lógica pura (ejecutar), se reparten a todos y se guardan en un archivo, y al arrancar el mundo se rehace con reproducir. Prueba en node con dos clientes",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Jugadores que se ven: cada cliente manda su posición, giro y animación unas 10 veces por segundo; el servidor las reparte y los demás clientes las suavizan (interpolación). Prueba con lag simulado",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Demo en línea: «Jugar en línea» en la demo única, que se conecta al servidor (dirección en Opciones); construir sobre el mundo del servidor y ver al otro jugador con el personaje del taller. Prueba de navegador con dos páginas y un servidor local, capturas en PC y móvil",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Combate en el servidor: un luchador por jugador en la lógica pura; los clientes mandan intenciones (atacar en una línea, guardia, bloquear, tensar y soltar) y el servidor lleva los tiempos y resuelve golpes y heridas con su autor. Prueba en node con dos clientes y lag simulado",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Combate en línea en la demo: dos jugadores pelean entre sí y los dos ven los mismos golpes y heridas. Prueba de navegador con dos páginas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Conexiones que se cortan y protección básica: volver a conectar sin perder al personaje, quitar al que se va, límite de mensajes por segundo y de tamaño por conexión, y rechazo de datos mal formados (con una prueba que los manda)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Bots: jugadores simulados en node que se conectan al servidor y andan, construyen y pelean, para la medición",
      "estado": "pendiente"
     },
     {
      "nombre": "Medir el servidor con 100 jugadores simulados (bots que andan, construyen y pelean): CPU, memoria y tráfico por jugador, para saber qué servidor hace falta y cuánto cuesta al mes",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos (espera su decisión: dónde se aloja)",
+     "estado": "espera_decision"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -1226,5 +1260,11 @@
    ]
   }
  ],
- "decisiones_pendientes": []
+ "decisiones_pendientes": [
+  {
+   "pregunta": "Para la prueba online desde dos dispositivos, el servidor tiene que estar en internet con conexión cifrada (la web va por https y los navegadores no dejan que una página https se conecte a un servidor sin cifrar). ¿Dónde lo ponemos? (a) En un alojamiento en la nube con una cuenta tuya: yo preparo el servidor y los pasos, tú creas la cuenta y, si es de pago, eliges el plan. (b) En tu PC mientras dure la prueba, con un túnel que le da una dirección https: no necesita cuenta de alojamiento, pero solo funciona con tu PC encendido. La comparación de alojamientos y precios para el juego de verdad se hará con los datos de la medición de 100 jugadores.",
+   "desde": "2026-10-27",
+   "hito": "prueba-online"
+  }
+ ]
 }
