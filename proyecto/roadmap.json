@@ -728,9 +728,9 @@
     },
     {
      "nombre": "Cámara táctil con un dedo durante el combate",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-27T08:50:44+00:00",
-     "rama": "trabajo/20261027-0850"
+     "fin": "2026-10-27T13:40:27+00:00"
     },
     {
      "nombre": "Curación de heridas",
@@ -784,8 +784,9 @@
    "tareas": [
     {
      "nombre": "Bocetos del mundo: mapa del continente por semilla (silueta, cordilleras, ríos de tres gruesos, biomas, cinco países, roca madre y dónde salen hierro y carbón) para revisarlo con valravnx",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T12:36:00+01:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T12:36:00+01:00",
+     "fin": "2026-10-27T14:49:45+01:00"
     },
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
@@ -1260,6 +1261,13 @@
      "archivo": "jugar/combate/v11.html",
      "capturas": "capturas/combate-v11",
      "notas": "Espadas, palo, arco, escudo, flecha, poste de práctica y diana con el estilo v5; cintas de paño teñido más apagadas"
+    },
+    {
+     "v": "v12",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/combate/v12.html",
+     "capturas": "capturas/combate-v12",
+     "notas": "v12: cámara táctil con un dedo. En el móvil, arrastrar un dedo por una zona libre gira la cámara (antes hacían falta dos); un toque sin arrastrar no la mueve, y tocar la rosa sigue golpeando al instante. El dedo del joystick ya no cuenta como segundo dedo. Con arco o piedras, si al apuntar llevas el dedo cerca de un borde, la cámara gira hacia ese lado."
     }
    ]
   },
@@ -1458,7 +1466,28 @@
      "notas": "Prueba de rendimiento de cavar: una loma de roca que se excava a golpes de pico, sin casillas a la vista (vóxeles suavizados con la roca irregular de semilla fija). Arriba a la derecha, los fps y los ms por golpe."
     }
    ]
+  },
+  {
+   "id": "mapa",
+   "nombre": "Mapa del mundo",
+   "descripcion": "Bocetos del mundo generado por semilla: tierras, relieve, ríos, biomas, países, roca y vetas.",
+   "versiones": [
+    {
+     "v": "v1",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/mapa/v1.html",
+     "capturas": "capturas/mapa-v1",
+     "notas": "Primer boceto del mundo por semilla: continente con golfos, penínsulas, mares interiores e islas, sin figuras fijas; una isla grande que es un país entero, apartada por mar; relieve con sierras y ríos, biomas, cinco países, roca madre y vetas. Se puede elegir 188 o 256 km."
+    }
+   ]
   }
  ],
- "decisiones_pendientes": []
+ "decisiones_pendientes": [
+  {
+   "id": "tamano-mundo",
+   "pregunta": "Tamaño del mundo: 188 × 188 km (el del GDD; países de unos 55 × 55 km y la isla-país de unos 900 km²) o 256 × 256 km (países de unos 75 × 75 km y la isla de unos 2.000 km²). El boceto del mapa permite comparar los dos.",
+   "desde": "2026-10-27",
+   "hito": "mundo"
+  }
+ ]
 }
