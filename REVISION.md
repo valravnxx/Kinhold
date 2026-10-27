@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (09:28) — por el chat: sin ciudades NPC
+
+«Meter ciudades rompe el rollo de mundo a explorar que tenía la idea de survival, así que los quitaremos; los mercaderes aparecerán a cosa de 2 km de donde haya nadie cuando se dirijan a un asentamiento y solo se quedarán si se crea el sistema para ello, como el de reclutar soldados; y haremos lo del carro simple» → GDD (apartados 16 y 20) y documento de sistemas, en los tres idiomas: fuera las ciudades NPC; los mercaderes y mercenarios ambulantes aparecen a unos 2 km de cualquier jugador y llegan andando al asentamiento; un mercader solo se queda fijo si se crea un sistema para ello; los mensajeros van a asentamientos; la carretilla de rueda maciza se fabrica (ya no la regalan); dónde se celebran torneos y ferias queda por decidir.
+
 ### 27 oct 2026 (08:20 UTC) — por el chat: dónde va el servidor de prueba
 
 «Para la pregunta del hito, opción A» → Servidor de la prueba online (hito 1f) en un alojamiento en la nube con una cuenta de valravnx: se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan. Pregunta quitada de las pendientes; la tarea de poner el servidor en internet pasa a pendiente.
