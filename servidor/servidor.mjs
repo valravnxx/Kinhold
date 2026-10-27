@@ -17,6 +17,9 @@
 //   por segundo; el servidor le pone el autor y su hora, y cada tic (100 ms) manda a cada uno los que han
 //   cambiado: { tipo: 'estados', t, jugadores }. Al irse alguien: { tipo: 'sale', autor }. La bienvenida
 //   lleva también t y presentes (dónde está cada uno).
+//   Aspecto (cuerpo y ropa del taller): el cliente lo manda al conectar, { tipo: 'aspecto', sexo, capas }; el
+//   servidor lo comprueba y lo reparte a los demás, { tipo: 'aspecto', autor, sexo, capas }. La bienvenida
+//   lleva los de los que ya están (aspectos).
 //
 // Uso: node servidor/servidor.mjs [puerto] [archivo]   (por defecto 8080 y servidor/mundo.jsonl)
 import { WebSocketServer } from 'ws';
@@ -26,7 +29,7 @@ import { randomUUID } from 'crypto';
 import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
 import { RegistroAcciones, ejecutar, reproducir } from '../src/logica/acciones.js';
-import { PresenciaServidor, CADA } from '../src/logica/presencia.js';
+import { PresenciaServidor, CADA, validarAspecto } from '../src/logica/presencia.js';
 
 // Lee el archivo del mundo. Una línea cortada al final (el servidor se apagó a mitad) se descarta.
 export function leerArchivo(archivo) {
@@ -52,6 +55,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
 
   const wss = new WebSocketServer({ port: puerto });
   const clientes = new Map();   // ws → autor
+  const aspectos = new Map();   // autor → { sexo, capas }
 
   const enviar = (ws, msg) => { if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(msg)); };
   const reloj = () => Math.round(performance.now());   // hora del servidor (ms), la que llevan los estados
@@ -72,13 +76,21 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     const autor = 'jugador:' + randomUUID().slice(0, 8);
     clientes.set(ws, autor);
     registrar(`entra ${autor}`);
-    enviar(ws, { tipo: 'bienvenida', autor, entradas: hechas, t: reloj(), presentes: presencia.todos() });
+    enviar(ws, { tipo: 'bienvenida', autor, entradas: hechas, t: reloj(), presentes: presencia.todos(),
+      aspectos: [...aspectos].map(([a, e]) => ({ autor: a, ...e })) });
 
     ws.on('message', (datos) => {
       let msg;
       try { msg = JSON.parse(datos.toString()); } catch (e) { return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' }); }
       if (msg && msg.tipo === 'estado') {
         if (!presencia.recibir(autor, msg, reloj())) enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
+        return;
+      }
+      if (msg && msg.tipo === 'aspecto') {
+        const e = validarAspecto(msg);
+        if (!e) return enviar(ws, { tipo: 'error', motivo: 'Aspecto no válido.' });
+        aspectos.set(autor, e);
+        for (const [otro, a] of clientes) if (a !== autor) enviar(otro, { tipo: 'aspecto', autor, ...e });
         return;
       }
       if (!msg || msg.tipo !== 'accion' || !msg.accion || typeof msg.accion !== 'object' || Array.isArray(msg.accion))
@@ -96,7 +108,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       }
     });
     ws.on('close', () => {
-      clientes.delete(ws); presencia.quitar(autor); registrar(`sale ${autor}`);
+      clientes.delete(ws); aspectos.delete(autor); presencia.quitar(autor); registrar(`sale ${autor}`);
       for (const otro of clientes.keys()) enviar(otro, { tipo: 'sale', autor });
     });
   });

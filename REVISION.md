@@ -6,6 +6,12 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 — por el chat: probar en línea en casa, más fácil
+
+«¿Qué pongo para probar con otra persona?» (resumido) y «me lo ponías con textos en alguna terminal y lo hacía más rápido, ¿no?» → Archivos de doble clic en la raíz: `jugar_en_casa.bat` (Windows) y `jugar_en_casa.command` (Mac). Encienden el servidor y la web en su ordenador y dicen la dirección que hay que abrir en los dos aparatos (con el servidor ya puesto: no hace falta tocar Opciones). No comprobado en Windows ni en Mac de verdad; el paso de la dirección por la página, sí.
+«¿Me puedes hacer un bat que me lo haga todo, incluido descargar e instalar Node?» → `jugar_en_casa.bat` lo hace todo: si faltan, descarga Node.js portable (sin instalar nada en Windows) y el juego en la carpeta Kinhold del usuario; enciende el servidor (el mundo se guarda aparte, en Kinhold\mundo.jsonl, y no se pierde al actualizar) y la web (`herramientas/servir_web.mjs`, sin descargar nada más), y abre el juego. Se puede bajar suelto. La web local y la conexión, comprobadas aquí; el .bat, no comprobado en un Windows de verdad.
+La otra persona juega desde otro país; «en bat todo, en uno» → `jugar_en_casa.bat` pregunta si la otra persona está en la misma casa (1) o lejos (2). Con 2 (tras avisar de que quien tenga el enlace puede entrar al servidor del juego, que aún no tiene contraseñas): descarga el túnel gratuito de Cloudflare, saca el servidor del juego a internet sin abrir puertos y da el enlace a la web pública con el servidor ya puesto (copiado al portapapeles). Probado por valravnx el 27 oct con dos aparatos en países distintos: funciona (construyen juntos y se ven con su personaje, 60 fps en su PC).
+
 ### 27 oct 2026 (18:54) — por el chat: un paisaje bonito de cerca
 
 «Sobre todo topología final, frondosidad de bosques, que no parezcan llanos de 20 kilómetros hasta una colina que crezca otros 10 km hasta estar a los 6000 metros; que sean acantilados, lugares bellos, hacerlo de manera que el landscape sea bonito, ¿cómo lo hacemos?» → Planificado el hito 10 con tareas para el relieve de detalle por escalas, cortados y acantilados según la roca, valles tallados por los ríos, bosques densos con claros y lindes, y un boceto 3D de cerca para juzgar el paisaje antes de meterlo en el juego.

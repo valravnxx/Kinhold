@@ -31,6 +31,16 @@ export function validarEstado(m) {
   return e;
 }
 
+// Aspecto de un jugador (cuerpo y ropa del taller), para que los demás lo vean como se eligió. Se manda una vez
+// al conectar: { tipo: 'aspecto', sexo, capas }. Devuelve el aspecto limpio o null.
+export function validarAspecto(m) {
+  if (!m || typeof m !== 'object') return null;
+  if (m.sexo !== 'hombre' && m.sexo !== 'mujer') return null;
+  if (!Array.isArray(m.capas) || m.capas.length > 12) return null;
+  if (!m.capas.every(c => typeof c === 'string' && /^[a-z_0-9]{1,24}$/.test(c))) return null;
+  return { sexo: m.sexo, capas: [...m.capas] };
+}
+
 export function normalizarAngulo(a) {
   a = a % (2 * Math.PI);
   if (a > Math.PI) a -= 2 * Math.PI;
