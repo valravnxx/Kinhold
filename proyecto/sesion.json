@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-27T19:20:13+00:00",
-  "tarea": "Combate en el servidor: un luchador por jugador en la lógica pura; los clientes mandan intenciones (atacar en una línea, guardia, bloquear, tensar y soltar) y el servidor lleva los tiempos y resuelve golpes y heridas con su autor. Prueba en node con dos clientes y lag simulado",
-  "hito": "prueba-online",
-  "rama": "trabajo/20261027-1920"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-27T16:52:02+00:00",
   "tarea": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",
