@@ -1,10 +1,15 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-27T22:20:15+00:00",
+  "tarea": "Combate en línea en la demo: dos jugadores pelean entre sí y los dos ven los mismos golpes y heridas. Prueba de navegador con dos páginas",
+  "hito": "prueba-online",
+  "rama": "trabajo/20261027-2220"
+ },
  "B": {
   "inicio": "2026-10-27T16:52:02+00:00",
   "tarea": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",
   "hito": "construccion-mas",
   "rama": "trabajo/20261027-1652",
-  "ultimo": "2026-10-27T20:17:55.000Z"
+  "ultimo": "2026-10-27T22:01:19.000Z"
  }
 }

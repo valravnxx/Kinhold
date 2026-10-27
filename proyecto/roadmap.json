@@ -284,7 +284,8 @@
     },
     {
      "nombre": "Combate en línea en la demo: dos jugadores pelean entre sí y los dos ven los mismos golpes y heridas. Prueba de navegador con dos páginas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T22:20:15+00:00"
     },
     {
      "nombre": "Conexiones que se cortan y protección básica: volver a conectar sin perder al personaje, quitar al que se va, límite de mensajes por segundo y de tamaño por conexión, y rechazo de datos mal formados (con una prueba que los manda)",
