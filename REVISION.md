@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (16:57) — por el chat: semilla del mundo y recursos
+
+«66172 de seed en 256 me gusta. Lo que tienes que poner los recursos para que los jugadores normales puedan tener sin moverse 100 km; lo que sí puedes poner marcadas así las superbetas para explotar a muerte, eso sí» → Decidido el mundo de 256 × 256 km con la semilla 66172 (decisión «tamaño del mundo» resuelta). Tarea nueva en el hito 10, en curso en la sesión de chat: recursos comunes cerca de cualquier sitio y grandes vetas marcadas en el mapa.
+
 ### 27 oct 2026 (12:50 y 13:06) — por el chat: el mapa, con formas naturales a la europea
 
 «En vez de ser un país circular, me gustaría que fuera algo con más relieves. Piensa en estilo Europa, un país mínimo me gustaría que fuera insular, bastante apartado del continente para forzar el uso de barcos… zonas geográficamente muy separadas… para que no sea una gran masa de tierra circular en medio del mar.» Y después: «Este no deja de ser una especie de trapezoide con dos pequeños salientes y una isla circular… mira cómo es el mapa de Europa, mira cómo son mapas de fantasía diseñados en otros lados. Haz un research… No quiero formas predefinidas, quiero que tenga curvas, penínsulas, ínsulas, un poco de todo» → Investigado (generadores de mapas de fantasía por plantillas de colinas, sierras, fosas y hoyas; dominio deformado; costas fractales) y rehecho el generador sin figuras fijas, con una isla-país siempre apartada por mar. Publicado «Mapa del mundo» v1. Queda por decidir el tamaño del mundo (188 o 256 km).
