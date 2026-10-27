@@ -428,6 +428,30 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/29_obra_muro_de_cerca.png')
 
+    print('PC: obra en alto: subir los troncos rodándolos por dos varas con una cuerda')
+    ev(f"{K}.terminarObras()")
+    marco('muro_tronco', -15, -12, 1)
+    alta = ev(f"(() => {{ for (const c of {K}.mundo.construcciones) for (const [k, p] of c.piezas) if (p.obra && p.k === 1) return {{ c: c.id, key: k }}; return null; }})()")
+    comprobar('el marco de un muro en la planta 1 se pone', alta is not None)
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-15; {K}.pj.z=-13.4; {K}.pj.k=0; {K}.pj.y=0")
+    t0 = ev(f"{K}.mundo.materiales.tronco")
+    ev(f"{K}.usar()")
+    comprobar('Usar desde el suelo se pone a subir los troncos (no se entregan a mano)', ev(f"{K}.obrando && {K}.obrando.subir") == 'tronco' and ev(f"{K}.rampa && {K}.rampa.visible"), json.dumps(ev(f"{K}.obrando && {K}.obrando.subir")))
+    entregado = f"{K}.mundo.construcciones.find(c => c.id === {alta['c']}).piezas.get('{alta['key']}').obra.entregado"
+    try: pg.wait_for_function(f"{K}.rampa && {K}.rampa.t > 0.35", timeout=40000)
+    except Exception: pass
+    ev(f"{K}.pj.rot=Math.PI; {K}.cam.yaw=Math.PI*0.5+0.5; {K}.cam.pitch=0.25; {K}.cam.dist=6.5")
+    esperar(pg, 300)
+    pg.screenshot(path=f'{SALIDA}/30_subiendo_tronco_varas.png')
+    comprobar('el tronco va subiendo por las varas', ev(f"{K}.rampa ? {K}.rampa.t : 0") > 0.2, f"t={ev(f'{K}.rampa ? {K}.rampa.t : 0'):.2f}")
+    try: pg.wait_for_function(f"({entregado}.tronco || 0) >= 1", timeout=60000)
+    except Exception: pass
+    comprobar('sola, rodándolo, sube un tronco (10 s de trabajo) y queda entregado', ev(f"{entregado}.tronco || 0") >= 1 and t0 - ev(f"{K}.mundo.materiales.tronco") >= 1)
+    comprobar('cada rato subiendo queda en el registro con su autor y el método', ev(f"{K}.registroAcciones.entradas.filter(e => e.tipo === 'subir' && e.ok && e.autor === 'jugador:local' && e.datos.metodo === 'varas').length") >= 2)
+    pg.keyboard.down('s'); esperar(pg, 400); pg.keyboard.up('s')
+    esperar(pg, 200)
+    comprobar('moverse deja de subir y quita las varas', not ev(f"{K}.obrando") and not ev(f"{K}.rampa"))
+
     print('PC: todos los muebles en fila, de cerca (estilo v5)')
     nd = ev(f"{K}.mundo.decoracion.length")
     muebles = ev(f"Object.keys({K}.DECORACION || {{}})") or ['cama_paja', 'cama_madera', 'mesa', 'banco', 'taburete', 'arcon', 'barril', 'estanteria', 'candil', 'alfombra', 'estandarte']
