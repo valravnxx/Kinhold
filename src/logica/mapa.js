@@ -486,6 +486,36 @@ export function clasificarBioma(T, P, pendiente, h, celdasArriba) {
   return P > 0.45 ? 'encinar' : P > 0.25 ? 'mixto' : 'matorral';
 }
 
+// Ríos como líneas suavizadas (en km) desde el nacimiento hasta el mar o hasta otro río; cada punto lleva el área que
+// drena (m²) y la altura del cauce (m). Solo los de más de «minimo» m² de cuenca.
+export function riosDelMapa(m, minimo = 40e6) {
+  const { tierra, rec, A, N, h, jx, jy } = m, NN = N * N, km = m.lado / N;
+  const centro = (i) => [(i % N + 0.5 + jx[i]) * km, (((i / N) | 0) + 0.5 + jy[i]) * km];
+  const punto = (i) => ({ p: centro(i), a: A[i], h: tierra[i] ? h[i] : 0 });
+  const tieneArriba = new Uint8Array(NN);
+  for (let i = 0; i < NN; i++) if (tierra[i] && A[i] >= minimo && tierra[rec[i]]) tieneArriba[rec[i]] = 1;
+  const visto = new Uint8Array(NN), rios = [];
+  for (let i = 0; i < NN; i++) {
+    if (!tierra[i] || A[i] < minimo || tieneArriba[i]) continue;
+    let c = i; const pts = [];
+    for (;;) { pts.push(punto(c)); if (visto[c] || !tierra[c]) break; visto[c] = 1; c = rec[c]; }
+    rios.push(chaikin(pts));   // entra en otro río o en el mar: el último punto es la unión
+  }
+  for (let i = 0; i < NN; i++) if (tierra[i] && A[i] >= minimo && !visto[i]) { visto[i] = 1; rios.push(chaikin([punto(i), punto(rec[i])])); }
+  return rios;
+}
+function chaikin(pts) {
+  let r = pts;
+  const mezcla = (a, b, t) => ({ p: [a.p[0] * (1 - t) + b.p[0] * t, a.p[1] * (1 - t) + b.p[1] * t], a: t < 0.5 ? a.a : b.a, h: a.h * (1 - t) + b.h * t });
+  for (let k = 0; k < 2; k++) {
+    if (r.length < 3) break;
+    const n = [r[0]];
+    for (let i = 0; i < r.length - 1; i++) { n.push(mezcla(r[i], r[i + 1], 0.25)); n.push(mezcla(r[i], r[i + 1], 0.75)); }
+    n.push(r[r.length - 1]); r = n;
+  }
+  return r;
+}
+
 // Sin pasos (servidor, pruebas): genera del tirón.
 export function generarMapa(semilla, opciones) {
   const g = generar(semilla, opciones); let r;
