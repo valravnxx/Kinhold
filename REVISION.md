@@ -9,6 +9,7 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 ### 27 oct 2026 — por el chat: probar en línea en casa, más fácil
 
 «¿Qué pongo para probar con mi chica?» y «me lo ponías con textos en alguna terminal y lo hacía más rápido, ¿no?» → Archivos de doble clic en la raíz: `jugar_en_casa.bat` (Windows) y `jugar_en_casa.command` (Mac). Encienden el servidor y la web en su ordenador y dicen la dirección que hay que abrir en los dos aparatos (con el servidor ya puesto: no hace falta tocar Opciones). No comprobado en Windows ni en Mac de verdad; el paso de la dirección por la página, sí.
+«¿Me puedes hacer un bat que me lo haga todo, incluido descargar e instalar Node?» → `jugar_en_casa.bat` lo hace todo: si faltan, descarga Node.js portable (sin instalar nada en Windows) y el juego en la carpeta Kinhold del usuario; enciende el servidor (el mundo se guarda aparte, en Kinhold\mundo.jsonl, y no se pierde al actualizar) y la web (`herramientas/servir_web.mjs`, sin descargar nada más), y abre el juego. Se puede bajar suelto. La web local y la conexión, comprobadas aquí; el .bat, no comprobado en un Windows de verdad.
 
 ### 27 oct 2026 (18:54) — por el chat: un paisaje bonito de cerca
 

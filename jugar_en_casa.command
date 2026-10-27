@@ -6,7 +6,7 @@ if ! command -v node >/dev/null; then echo "Falta Node.js. Instálalo desde http
 [ -d node_modules/ws ] || { echo "Preparando por primera vez, espera un poco..."; npm install; }
 IP=$(ipconfig getifaddr en0 || ipconfig getifaddr en1 || echo localhost)
 node servidor/servidor.mjs 8080 &
-npx -y http-server docs -p 8000 -c-1 >/dev/null &
+node herramientas/servir_web.mjs 8000 >/dev/null &
 sleep 2
 echo
 echo "  Listo. No cierres esta ventana mientras jugáis."
