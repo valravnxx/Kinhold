@@ -505,8 +505,9 @@
     },
     {
      "nombre": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T11:50:57+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T11:50:57+00:00",
+     "fin": "2026-10-27T15:14:32+00:00"
     },
     {
      "nombre": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",
@@ -1037,6 +1038,13 @@
      "archivo": "jugar/demo/v17.html",
      "capturas": "capturas/demo-v17",
      "notas": "En «Construir», la decoración va al suelo de tu planta y los suelos de troncos tapan del todo (es la construcción v22)."
+    },
+    {
+     "v": "v18",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v18.html",
+     "capturas": "capturas/demo-v18",
+     "notas": "En «Construir», las obras en alto piden subir el material: lo ligero por la escalera y los troncos rodándolos por dos varas con una cuerda"
     }
    ]
   },
@@ -1184,6 +1192,13 @@
      "archivo": "jugar/construccion/v22.html",
      "capturas": "capturas/construccion-v22",
      "notas": "Arreglo: la decoración va al suelo de la planta en la que estás, no al piso de arriba. Los cimientos y suelos de troncos ya no dejan ver el suelo por las juntas."
+    },
+    {
+     "v": "v23",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v23.html",
+     "capturas": "capturas/construccion-v23",
+     "notas": "Obras en alto: cada material tiene su clase de peso; lo ligero se sube a mano por la escalera y los troncos se ruedan por dos varas con una cuerda (o entre dos)"
     }
    ]
   },
