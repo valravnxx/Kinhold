@@ -356,6 +356,49 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/21_barandilla_planta_1.png')
 
+    print('PC: los muebles del piso de arriba no se ven desde abajo con el techo puesto')
+    # un taburete arriba, sobre el suelo de la planta 1 (casilla de z=-11), y otro abajo, debajo de ese suelo
+    ev(f"{K}.cambiarModo('construir'); {K}.estado.planta=1; {K}.pj.k=1; {K}.seleccionar('deco','taburete'); {K}.apuntar(10.4, -10.6, 2.62); {K}.colocar()")
+    ev(f"{K}.cambiarModo('construir'); {K}.estado.planta=0; {K}.pj.k=0; {K}.seleccionar('deco','taburete'); {K}.apuntar(9.6, -10.6, 0); {K}.colocar()")
+    ev(f"{K}.cambiarModo('mover')")
+    ids = ev(f"(() => {{ const ds = {K}.mundo.decoracion.filter(d => d.tipo === 'taburete' && Math.abs(d.z + 10.6) < 0.01); return {{ arriba: (ds.find(d => d.y > 1) || {{}}).id, abajo: (ds.find(d => d.y < 1) || {{}}).id }}; }})()")
+    comprobar('taburetes colocados arriba y abajo', ids.get('arriba') is not None and ids.get('abajo') is not None, json.dumps(ids))
+    visible = lambda i: ev(f"(() => {{ let v = null; {K}.escena.traverse(x => {{ if (x.userData && x.userData.deco && x.userData.deco.id === {i}) v = x.visible; }}); return v; }})()")
+    ev(f"{K}.pj.x=10; {K}.pj.z=-10.5; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=Math.PI*0.75; {K}.cam.pitch=0.6; {K}.cam.dist=8")
+    esperar(pg, 500)
+    comprobar('abajo, bajo el suelo de arriba: el mueble de arriba no se ve y el de abajo sí',
+              visible(ids['arriba']) is False and visible(ids['abajo']) is True, f"arriba={visible(ids['arriba'])} abajo={visible(ids['abajo'])}")
+    pg.screenshot(path=f'{SALIDA}/21b_abajo_sin_muebles_de_arriba.png')
+    ev(f"{K}.pj.x=10; {K}.pj.z=-11.2; {K}.pj.k=1; {K}.pj.y=2.62")
+    esperar(pg, 500)
+    comprobar('arriba, el mueble de arriba se ve', visible(ids['arriba']) is True)
+    ev(f"{K}.pj.x=16; {K}.pj.z=-20; {K}.pj.k=0; {K}.pj.y=0")
+    esperar(pg, 400)
+    comprobar('fuera, al aire libre, se ven los dos', visible(ids['arriba']) is True and visible(ids['abajo']) is True)
+    ev(f"{K}.mundo.quitarDecoracion({ids['arriba']}); {K}.mundo.quitarDecoracion({ids['abajo']}); {K}.reconstruir()")
+
+    print('PC: WASD con la distribución de teclado rusa y sin teclas pegadas al perder el foco')
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=16; {K}.pj.z=-20; {K}.pj.k=0; {K}.cam.yaw=0")
+    esperar(pg, 200)
+    z0 = ev(f"{K}.pj.z")
+    # con la distribución rusa, la tecla W escribe «ц»: el juego tiene que leer la tecla física (KeyW)
+    ev("window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ц', code: 'KeyW' }))")
+    # hasta que se mueva (no un tiempo fijo: a 1-2 fps sin tarjeta gráfica el juego va a cámara lenta)
+    t = 0
+    while t < 6000 and abs(ev(f"{K}.pj.z") - z0) < 0.6:
+        pg.wait_for_timeout(100); t += 100
+    z1 = ev(f"{K}.pj.z")
+    ev("window.dispatchEvent(new KeyboardEvent('keyup', { key: 'ц', code: 'KeyW' }))")
+    comprobar('con la distribución rusa, W (que escribe «ц») mueve al personaje', abs(z1 - z0) >= 0.6, f'z: {z0:.2f} → {z1:.2f}')
+    comprobar('y al soltarla no queda ninguna tecla pulsada', ev(f"{K}.teclas.length") == 0, json.dumps(ev(f"{K}.teclas")))
+    # tecla pulsada y la ventana pierde el foco (otra pestaña, una notificación): no se queda andando sola
+    ev("window.dispatchEvent(new KeyboardEvent('keydown', { key: 'd', code: 'KeyD' }))")
+    esperar(pg, 300)
+    ev("window.dispatchEvent(new Event('blur'))")
+    esperar(pg, 100)
+    x1 = ev(f"{K}.pj.x"); esperar(pg, 600); x2 = ev(f"{K}.pj.x")
+    comprobar('al perder el foco se sueltan las teclas: no sigue andando', ev(f"{K}.teclas.length") == 0 and abs(x2 - x1) < 0.05, f'x: {x1:.2f} → {x2:.2f}')
+
     print('PC: portillo de la cerca (se abre con Usar)')
     # dentro de la tierra (mojón en -3,-6, radio 20) y lejos de lo demás
     for x in [-10, -6]:

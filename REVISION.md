@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (18:23) — por el chat: el suelo de troncos no cierra
+
+«El suelo de troncos no acaba de cerrar cuando hay varios, debería juntarse todo de una» (con captura: rendijas verdes y las testas de los troncos en cada junta) → Tarea de arreglo en el hito 1c, en curso en la sesión de chat.
+
 ### 27 oct 2026 (16:57) — por el chat: semilla del mundo y recursos
 
 «66172 de seed en 256 me gusta. Lo que tienes que poner los recursos para que los jugadores normales puedan tener sin moverse 100 km; lo que sí puedes poner marcadas así las superbetas para explotar a muerte, eso sí» → Decidido el mundo de 256 × 256 km con la semilla 66172 (decisión «tamaño del mundo» resuelta). Tarea nueva en el hito 10, en curso en la sesión de chat: recursos comunes cerca de cualquier sitio y grandes vetas marcadas en el mapa.
