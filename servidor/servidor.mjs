@@ -20,6 +20,12 @@
 //   Aspecto (cuerpo y ropa del taller): el cliente lo manda al conectar, { tipo: 'aspecto', sexo, capas }; el
 //   servidor lo comprueba y lo reparte a los demás, { tipo: 'aspecto', autor, sexo, capas }. La bienvenida
 //   lleva los de los que ya están (aspectos).
+//   Combate (src/logica/combate_servidor.js): cada conexión tiene un luchador; el cliente manda intenciones
+//   { tipo: 'combate', que, … } y el servidor lleva los tiempos y resuelve golpes y flechas con el autor de la
+//   conexión. A todos: { tipo: 'combate', eventos } en el mismo orden, y cada tic (50 ms) { tipo: 'luchadores',
+//   t, lista } con los que han cambiado (también el propio). Una intención que no se puede: { tipo:
+//   'combate_rechazo', que, motivo }. La bienvenida lleva tc (reloj del combate, ms) y luchadores. Lo que
+//   resuelve el combate (golpes, disparos, impactos) se guarda aparte, en combate.jsonl junto al mundo.
 //
 // Uso: node servidor/servidor.mjs [puerto] [archivo]   (por defecto 8080 y servidor/mundo.jsonl)
 import { WebSocketServer } from 'ws';
@@ -29,7 +35,8 @@ import { randomUUID } from 'crypto';
 import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
 import { RegistroAcciones, ejecutar, reproducir } from '../src/logica/acciones.js';
-import { PresenciaServidor, CADA, validarAspecto } from '../src/logica/presencia.js';
+import { PresenciaServidor, CADA, validarAspecto, validarEstado } from '../src/logica/presencia.js';
+import { CombateServidor } from '../src/logica/combate_servidor.js';
 
 // Lee el archivo del mundo. Una línea cortada al final (el servidor se apagó a mitad) se descarta.
 export function leerArchivo(archivo) {
@@ -42,8 +49,9 @@ export function leerArchivo(archivo) {
   return entradas;
 }
 
-export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA } = {}) {
+export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now() } = {}) {
   archivo = resolve(archivo);
+  const archivoCombate = resolve(dirname(archivo), 'combate.jsonl');
   mkdirSync(dirname(archivo), { recursive: true });
   const previas = leerArchivo(archivo);
   // si quedó una línea a medias, lo nuevo empieza en una línea aparte
@@ -59,6 +67,23 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
 
   const enviar = (ws, msg) => { if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(msg)); };
   const reloj = () => Math.round(performance.now());   // hora del servidor (ms), la que llevan los estados
+
+  // combate: el reloj es el del servidor; antes de cada intención se avanza hasta ahora
+  const combate = new CombateServidor({ semilla });
+  const t0 = reloj();
+  const ponerAlDia = () => combate.avanzarHasta((reloj() - t0) / 1000);
+  let escritas = 0;
+  const repartirCombate = () => {
+    const eventos = combate.sacarEventos();
+    if (eventos.length) for (const ws of clientes.keys()) enviar(ws, { tipo: 'combate', eventos });
+    const nuevas = combate.registro.entradas.filter(e => e.n > escritas);
+    if (nuevas.length) { appendFileSync(archivoCombate, nuevas.map(e => JSON.stringify(e)).join('\n') + '\n'); escritas = nuevas[nuevas.length - 1].n; }
+  };
+  const ticCombate = setInterval(() => {
+    ponerAlDia(); repartirCombate();
+    const lista = combate.cambiados();
+    if (lista.length) for (const ws of clientes.keys()) enviar(ws, { tipo: 'luchadores', t: combate.ms(), lista });
+  }, ticoCombate);
 
   // presencia: cada tic, a cada uno los que han cambiado menos él mismo
   const presencia = new PresenciaServidor();
@@ -76,14 +101,27 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     const autor = 'jugador:' + randomUUID().slice(0, 8);
     clientes.set(ws, autor);
     registrar(`entra ${autor}`);
+    ponerAlDia();
+    combate.entrar(autor);
     enviar(ws, { tipo: 'bienvenida', autor, entradas: hechas, t: reloj(), presentes: presencia.todos(),
-      aspectos: [...aspectos].map(([a, e]) => ({ autor: a, ...e })) });
+      aspectos: [...aspectos].map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true) });
 
     ws.on('message', (datos) => {
       let msg;
       try { msg = JSON.parse(datos.toString()); } catch (e) { return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' }); }
       if (msg && msg.tipo === 'estado') {
-        if (!presencia.recibir(autor, msg, reloj())) enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
+        if (!presencia.recibir(autor, msg, reloj())) return enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
+        ponerAlDia();
+        const e = validarEstado(msg);
+        combate.colocar(autor, e.x, e.z, e.giro);
+        return;
+      }
+      if (msg && msg.tipo === 'combate') {
+        // el autor es el de la conexión; lo que diga el mensaje no cuenta
+        ponerAlDia();
+        const r = combate.intencion(autor, msg);
+        if (!r.ok) enviar(ws, { tipo: 'combate_rechazo', que: typeof msg.que === 'string' ? msg.que.slice(0, 24) : null, motivo: r.motivo });
+        repartirCombate();
         return;
       }
       if (msg && msg.tipo === 'aspecto') {
@@ -108,15 +146,15 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       }
     });
     ws.on('close', () => {
-      clientes.delete(ws); aspectos.delete(autor); presencia.quitar(autor); registrar(`sale ${autor}`);
+      clientes.delete(ws); aspectos.delete(autor); presencia.quitar(autor); combate.quitar(autor); registrar(`sale ${autor}`);
       for (const otro of clientes.keys()) enviar(otro, { tipo: 'sale', autor });
     });
   });
 
   return {
-    wss, mundo, archivo, presencia,
+    wss, mundo, archivo, archivoCombate, presencia, combate,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
-    cerrar: () => new Promise(r => { clearInterval(tic); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
+    cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticCombate); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };
 }
 

@@ -1495,5 +1495,40 @@
   "capturas": "capturas/demo-v21",
   "estado": "ok",
   "notas": "no comprobado: jugar desde dos aparatos de verdad (hace falta el servidor en internet, tarea pendiente del hito). En una pasada de la batería completa con la máquina cargada falló una vez la prueba de navegador del combate (pantalla de victoria); sola pasó entera. Tras unir los últimos cambios de main (suelos de troncos y mapa) no se repitió la batería entera, solo las pruebas listadas"
+ },
+ {
+  "inicio": "2026-10-27T18:57:00+01:00",
+  "fin": "2026-10-27T21:07:38+01:00",
+  "titulo": "Hito 10: boceto de paisaje de cerca",
+  "hito": "mundo",
+  "hecho": [
+   "«Ver de cerca» en el mapa: un trozo de 4 × 4 km en 3D con el estilo v5, desde lo alto o a pie",
+   "Relieve de cerca en lógica pura: la forma grande del mapa con capas de detalle de 2 km a 15 m que se apagan donde la pendiente ya es grande (laderas lisas, crestas y vaguadas marcadas)",
+   "Cortado donde la tierra alta llega al mar y playa donde es baja",
+   "Bosque por bosquetes y claros según bioma, pendiente y altura; árboles cercanos con el modelo completo y lejanos con uno sencillo",
+   "Los ríos rebajan su cauce sin levantar muros (los valles de verdad van en su tarea)"
+  ],
+  "pruebas": "Mapa 64/64, navegador del mapa PC y móvil correctos (también de cerca), batería completa correcta",
+  "capturas": "capturas/mapa-v3",
+  "estado": "ok",
+  "notas": "no comprobado: fotogramas de la vista de cerca en un móvil de verdad (más de un millón de triángulos con el bosque)"
+ },
+ {
+  "inicio": "2026-10-27T19:20:13+00:00",
+  "fin": "2026-10-27T20:27:15+00:00",
+  "titulo": "Hito 1f: combate en el servidor",
+  "hito": "prueba-online",
+  "hecho": [
+   "Cada jugador conectado tiene un luchador en el servidor (lógica pura, src/logica/combate_servidor.js); su posición y su giro salen de la presencia",
+   "Los clientes solo mandan intenciones (atacar por una línea, parar, guardia, tensar, soltar, coger arma); el servidor las comprueba, lleva los tiempos y resuelve golpes y flechas con el autor de la conexión",
+   "A quién da un golpe lo decide el servidor: el rival más cercano delante y a su alcance; si no hay nadie, va al aire",
+   "Los golpes, disparos e impactos se reparten a todos en el mismo orden, y el estado de los luchadores cada 50 ms (solo los que cambian)",
+   "Lo que resuelve el combate se guarda con su autor en combate.jsonl, aparte del archivo del mundo",
+   "Decisión provisional: en línea, ritmo «normal» para todos y sin compensar el lag (una intención cuenta desde que llega al servidor)",
+   "Prueba en node: la lógica sin red y el servidor con dos clientes y lag distinto en cada uno (con MUTAR=1, un servidor que se fía del autor del cliente, falla)"
+  ],
+  "pruebas": "Combate en el servidor 37/37 (con MUTAR=1 falla), batería completa correcta (bash herramientas/probar_todo.sh); tras unir main, pruebas de node correctas",
+  "estado": "ok",
+  "notas": "sin capturas nuevas: no cambia nada que se vea (miradas las de jugar en línea en PC y móvil, siguen bien). no comprobado: pelear en línea desde el navegador (es la tarea siguiente del hito). Sin versión nueva publicada: el cambio no es jugable todavía"
  }
 ]
