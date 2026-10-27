@@ -1245,5 +1245,22 @@
   "pruebas": "Web y textos traducidos correctos. Sin cambios de código.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T07:02:45+01:00",
+  "fin": "2026-10-27T09:55:53+01:00",
+  "titulo": "Hito 1c: obras con marco, material y tiempo (carril B)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Colocar una pieza pone ahora solo su marco: no cuesta nada, se ve tenue dentro de un armazón de varas atadas, no sostiene nada, no corta el paso ni se pisa, y su peso ya cuenta, así que al terminarla aguanta seguro.",
+   "Junto a una obra, Usar (F) le lleva el material que le falta y el personaje se pone a construir; moverse lo para y Usar lo retoma. Cada pieza tarda 4 s más 1 s por cada 20 kg (provisional: el GDD no da cifras), por ejemplo un poste 7 s y un muro de troncos 19 s.",
+   "Todo en la lógica pura con acciones nuevas «entregar» y «trabajar», cada una con su autor: la obra guarda quién llevó cada material y quién trabajó cuánto; los segundos de todos se suman, así que con ayuda se acaba antes.",
+   "Desmontar una obra a medias devuelve entero lo entregado; una puerta en obras no se abre; la obra a medias se guarda y se carga.",
+   "El tiempo de obra cuenta con el reloj de verdad, no con el del fotograma: con pocos fotogramas por segundo no va más lenta.",
+   "Construcción v21 y demo única v16."
+  ],
+  "pruebas": "Lógica 86/86, acciones 40/40 (15 nuevas de obras, comprobado que fallan si una obra sostiene o si la puerta en obras se abre), modelos 104/104, combate 69/69; navegador de construcción (9 comprobaciones nuevas de obras, PC y móvil), combate, estilo, personaje, demo, idiomas y web correctos. Capturas de las obras miradas en PC y móvil.",
+  "capturas": "capturas/construccion-v21",
+  "estado": "ok"
  }
 ]
