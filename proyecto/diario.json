@@ -1430,5 +1430,21 @@
   "pruebas": "Todas las pruebas correctas (bash herramientas/probar_todo.sh); inventario 69/69 nuevas, 4 fallan con MUTAR=1 como deben. Capturas de la demo miradas en PC y móvil (sin cambios a la vista).",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T13:53:25+01:00",
+  "fin": "2026-10-27T17:29:45+01:00",
+  "titulo": "Arreglos: muebles del piso de arriba vistos desde abajo y WASD con otras distribuciones de teclado",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Los muebles de las plantas de arriba se ocultan cuando estás debajo con el techo puesto, igual que las piezas de esas plantas; al subir o al salir fuera se vuelven a ver.",
+   "WASD (y Q, E, R, B, X, F y Mayús) se leen por la posición física de la tecla: con la distribución rusa la W escribe «ц» y antes no movía. Arreglado también en el duelo.",
+   "Al perder el foco la ventana (otra pestaña, una notificación) se sueltan todas las teclas, para que el personaje no siga andando solo; Ctrl, Alt y Cmd con una letra ya no mueven.",
+   "Pruebas nuevas en construcción (muebles de arriba ocultos desde abajo, W con la distribución rusa, teclas sueltas al perder el foco) y en el duelo (D con la distribución rusa). Pasadas contra la versión anterior, fallan las tres, como deben.",
+   "Publicadas construcción v24, combate v13 y la alpha (demo única) v19."
+  ],
+  "pruebas": "Lógica 106/106, acciones 41/41, modelos 104/104, combate 80/80; navegador: construcción, duelo y demo única correctos en PC y móvil. No comprobado: con un teclado ruso de verdad (se simula con la tecla física y la letra rusa).",
+  "capturas": "capturas/construccion-v24",
+  "estado": "ok"
  }
 ]
