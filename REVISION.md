@@ -6,6 +6,11 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (12:27) — por el chat: cavar en todo el mundo, sin agujeros a lo loco
+
+Medida en su móvil (cavar v1): 70 fps, 13,0 mil triángulos, malla por golpe 23,7 ms de media y 52,3 ms el peor (98 golpes). «Funciona perfecto».
+«¿Cómo hacemos para que todo el mundo pueda ser editado de esta manera? Hay que hacerlo de una manera que esté bien. No podemos permitir que se hagan agujeros así a lo loco, y menos hacia abajo… más que se colapse, que no te permita avanzar si no tienes suficiente sustentación… si quieres hacer una mina profunda, tengas que poner sustentación en todas partes, ir poniendo los pilarcitos… los minerales y materiales como roca tengan diferentes tipos de sustentación, y que el hierro no se encuentre al aire libre excepto en ocasiones súper especiales, el carbón, tal… todo de manera realista… que no se abuse del cavar, que sea complejo y una labor que se tenga que hacer entre varios o que tome su tiempo hacer una mina decente» → En conversación: propuesta de diseño (mundo entero editable, sustentación por material, geología) pendiente de su visto bueno antes de pasarla al GDD y al hito 1g.
+
 ### 27 oct 2026 (10:13) — por el chat: la decoración se pone en el piso de arriba
 
 «Al construir con un piso encima decoraciones, estas se ponen en el piso de arriba y no en el que estás, eso no debería ocurrir jamás; hay que mirar que el clic sea en el suelo del piso en el que estés si es que tienes el techo quitado por estar ahí» (con captura en el móvil: cama de madera sobre el altillo) → Tarea de arreglo en el hito 1c, en curso por la sesión de chat.
