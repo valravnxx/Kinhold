@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 — por el chat: probar en línea en casa, más fácil
+
+«¿Qué pongo para probar con mi chica?» y «me lo ponías con textos en alguna terminal y lo hacía más rápido, ¿no?» → Archivos de doble clic en la raíz: `jugar_en_casa.bat` (Windows) y `jugar_en_casa.command` (Mac). Encienden el servidor y la web en su ordenador y dicen la dirección que hay que abrir en los dos aparatos (con el servidor ya puesto: no hace falta tocar Opciones). No comprobado en Windows ni en Mac de verdad; el paso de la dirección por la página, sí.
+
 ### 27 oct 2026 (18:54) — por el chat: un paisaje bonito de cerca
 
 «Sobre todo topología final, frondosidad de bosques, que no parezcan llanos de 20 kilómetros hasta una colina que crezca otros 10 km hasta estar a los 6000 metros; que sean acantilados, lugares bellos, hacerlo de manera que el landscape sea bonito, ¿cómo lo hacemos?» → Planificado el hito 10 con tareas para el relieve de detalle por escalas, cortados y acantilados según la roca, valles tallados por los ríos, bosques densos con claros y lindes, y un boceto 3D de cerca para juzgar el paisaje antes de meterlo en el juego.
