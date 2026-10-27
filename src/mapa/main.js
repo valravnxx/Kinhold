@@ -1,6 +1,6 @@
 // Kinhold — visor de los bocetos del mapa del mundo (canvas 2D, sin three.js).
 // El mapa lo genera la lógica pura (src/logica/mapa.js) por pasos, enseñando el progreso; aquí solo se dibuja.
-import { generar, clasificarBioma, BIOMAS, ROCAS, VETAS, LADO_KM, anchoRio, claseRio, fbm, resumen } from '../logica/mapa.js';
+import { generar, clasificarBioma, SEMILLA_MUNDO, LADO_MUNDO, BIOMAS, ROCAS, VETAS, LADO_KM, anchoRio, claseRio, fbm, resumen } from '../logica/mapa.js';
 import { VERSION_MAPA, REGISTRO_MAPA } from './registro.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 
@@ -11,7 +11,7 @@ const R = movil ? 1024 : 1536;                       // resolución de la imagen
 let N = 256;
 const LADO = () => (mapa ? mapa.lado : LADO_KM);
 let mapa = null, fondo = 'relieve';
-const capas = { rios: true, paises: true, vetas: false };
+const capas = { rios: true, paises: true, vetas: false, grandes: true };
 const imagenes = {};                                 // fondo → canvas ya pintado
 let rios = [];                                       // polilíneas de ríos en km, con su clase
 const vista = { x: 0, y: 0, z: 1 };                  // desplazamiento (px de pantalla) y zoom
@@ -20,9 +20,9 @@ let escalaBase = 1;
 // ---------- generar ----------
 function semillaInicial() {
   const q = new URLSearchParams(location.search).get('semilla');
-  return q && /^\d+$/.test(q) ? Number(q) : 2;
+  return q && /^\d+$/.test(q) ? Number(q) : SEMILLA_MUNDO;   // el mundo elegido por valravnx
 }
-let lado = Number(new URLSearchParams(location.search).get('lado')) === 188 ? 188 : 256;   // propuesta: 256 km (ver notas)
+let lado = Number(new URLSearchParams(location.search).get('lado')) === 188 ? 188 : LADO_MUNDO;
 let trabajo = 0;
 function crear(semilla) {
   const mio = ++trabajo;
@@ -202,12 +202,31 @@ function pintar() {
   if (capas.vetas) {
     const km = LADO() / N, t = 3.2 * Math.sqrt(vista.z);
     for (const v of mapa.vetas) {
+      if (v.tipo.startsWith('gran')) continue;
       const [x, y] = aPant([(v.x + 0.5) * km, (v.y + 0.5) * km]);
       ctx.beginPath();
       if (v.tipo === 'hierroPantano') { ctx.fillStyle = '#b5652e'; ctx.arc(x, y, t * 0.8, 0, Math.PI * 2); }
-      else if (v.tipo === 'hierroVeta') { ctx.fillStyle = '#8a2a1c'; ctx.moveTo(x, y - t * 1.2); ctx.lineTo(x + t, y + t * 0.8); ctx.lineTo(x - t, y + t * 0.8); ctx.closePath(); }
-      else { ctx.fillStyle = '#1c1a18'; ctx.rect(x - t * 0.7, y - t * 0.7, t * 1.4, t * 1.4); }
+      else if (v.tipo === 'hierroVeta') { ctx.fillStyle = '#8a2a1c'; ctx.moveTo(x, y - t * 1.1); ctx.lineTo(x + t * 0.9, y + t * 0.7); ctx.lineTo(x - t * 0.9, y + t * 0.7); ctx.closePath(); }
+      else { ctx.fillStyle = '#1c1a18'; ctx.rect(x - t * 0.6, y - t * 0.6, t * 1.2, t * 1.2); }
       ctx.fill(); ctx.strokeStyle = 'rgba(255,240,220,.7)'; ctx.lineWidth = 0.8; ctx.stroke();
+    }
+  }
+  if (capas.grandes) {
+    // las grandes vetas, bien marcadas y con su nombre
+    const km = LADO() / N, t = 7 * Math.sqrt(vista.z);
+    ctx.font = `600 ${movil ? 10 : 12}px system-ui, sans-serif`; ctx.textAlign = 'center';
+    for (const v of mapa.vetas) {
+      if (!v.tipo.startsWith('gran')) continue;
+      const [x, y] = aPant([(v.x + 0.5) * km, (v.y + 0.5) * km]);
+      ctx.beginPath(); ctx.arc(x, y, t * 1.15, 0, Math.PI * 2); ctx.fillStyle = 'rgba(30,24,18,.75)'; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = '#d9a441'; ctx.stroke();
+      ctx.beginPath();
+      if (v.tipo === 'granHierro') { ctx.fillStyle = '#c0442c'; ctx.moveTo(x, y - t * 0.75); ctx.lineTo(x + t * 0.65, y + t * 0.5); ctx.lineTo(x - t * 0.65, y + t * 0.5); ctx.closePath(); }
+      else { ctx.fillStyle = '#e8e0d0'; ctx.rect(x - t * 0.45, y - t * 0.45, t * 0.9, t * 0.9); }
+      ctx.fill();
+      if (movil && vista.z < 2) continue;   // en el móvil, el nombre solo al ampliar (si no, se pisan)
+      const txt = tr(VETAS[v.tipo].nombre);
+      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(40,30,24,.8)'; ctx.strokeText(txt, x, y + t * 1.15 + 12); ctx.fillStyle = '#f0d9a8'; ctx.fillText(txt, x, y + t * 1.15 + 12);
     }
   }
   if (capas.paises) {
@@ -239,7 +258,13 @@ function leyenda() {
     filas.push(`<div><i style="background:#8a2a1c;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>${tr(VETAS.hierroVeta.nombre)}</div>`);
     filas.push(`<div><i style="background:#1c1a18"></i>${tr(VETAS.carbon.nombre)}</div>`);
   }
+  if (capas.grandes) {
+    filas.push(`<div><i style="background:#c0442c;border-radius:50%;box-shadow:0 0 0 2px #d9a441 inset"></i>${tr(VETAS.granHierro.nombre)}</div>`);
+    filas.push(`<div><i style="background:#e8e0d0;border-radius:50%;box-shadow:0 0 0 2px #d9a441 inset"></i>${tr(VETAS.granCarbon.nombre)}</div>`);
+  }
   $('leyenda').innerHTML = filas.join('');
+  // en el móvil la leyenda va justo debajo de los botones de arriba (que ocupan más o menos filas según el idioma)
+  if (innerWidth <= 640) $('leyenda').style.top = `${Math.round($('superior').getBoundingClientRect().bottom + 8)}px`;
 }
 function datosGenerales() {
   const r = resumen(mapa); window.__mapa.resumen = r;
@@ -258,6 +283,10 @@ function info(cx, cy) {
   const partes = [tr('{h} m de altura', { h: h.toLocaleString('es') }), tr(BIOMAS[mapa.bioma[i]].nombre), tr(ROCAS[mapa.roca[i]].nombre), mapa.pais[i] >= 0 ? tr('País {n}', { n: mapa.pais[i] + 1 }) : tr('isla sin país')];
   if (mapa.A[i] >= 40e6) partes.push(tr({ arroyo: 'arroyo de {a} m', rio: 'río de {a} m', grande: 'gran río de {a} m' }[claseRio(ancho)], { a: Math.round(ancho) }));
   partes.push(tr('{t} °C de media', { t: Math.round(mapa.temp[i]) }));
+  // lo más cerca de hierro y de carbón (vetas pequeñas o grandes)
+  const k = LADO() / N, cerca = (tipos) => Math.min(...mapa.vetas.filter(v => tipos.includes(v.tipo)).map(v => Math.hypot(v.x + 0.5 - gx, v.y + 0.5 - gy) * k));
+  const aHierro = Math.round(cerca(['hierroVeta', 'granHierro', 'hierroPantano'])), aCarbon = Math.round(cerca(['carbon', 'granCarbon']));
+  partes.push(tr('hierro a {h} km, carbón a {c} km', { h: aHierro, c: aCarbon }));
   $('datos').innerHTML = `<b>${partes.join(' · ')}</b> · ${kmx}, ${kmy} km`;
   window.__mapa.ultimaInfo = $('datos').textContent;
 }

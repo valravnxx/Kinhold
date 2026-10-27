@@ -6,6 +6,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (18:54) — por el chat: un paisaje bonito de cerca
+
+«Sobre todo topología final, frondosidad de bosques, que no parezcan llanos de 20 kilómetros hasta una colina que crezca otros 10 km hasta estar a los 6000 metros; que sean acantilados, lugares bellos, hacerlo de manera que el landscape sea bonito, ¿cómo lo hacemos?» → Planificado el hito 10 con tareas para el relieve de detalle por escalas, cortados y acantilados según la roca, valles tallados por los ríos, bosques densos con claros y lindes, y un boceto 3D de cerca para juzgar el paisaje antes de meterlo en el juego.
+
+### 27 oct 2026 (18:23) — por el chat: el suelo de troncos no cierra
+
+«El suelo de troncos no acaba de cerrar cuando hay varios, debería juntarse todo de una» (con captura: rendijas verdes y las testas de los troncos en cada junta) → Tarea de arreglo en el hito 1c, en curso en la sesión de chat.
+
 ### 27 oct 2026 (16:57) — por el chat: semilla del mundo y recursos
 
 «66172 de seed en 256 me gusta. Lo que tienes que poner los recursos para que los jugadores normales puedan tener sin moverse 100 km; lo que sí puedes poner marcadas así las superbetas para explotar a muerte, eso sí» → Decidido el mundo de 256 × 256 km con la semilla 66172 (decisión «tamaño del mundo» resuelta). Tarea nueva en el hito 10, en curso en la sesión de chat: recursos comunes cerca de cualquier sitio y grandes vetas marcadas en el mapa.

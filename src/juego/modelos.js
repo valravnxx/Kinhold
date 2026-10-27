@@ -268,9 +268,14 @@ const loteSuelo = () => new Lote({ variacion: 0.07, rangoSuelo: 0.35 });
 // tronco tumbado a lo largo de X con las testas claras; escV aplasta el tronco en vertical (suelo de troncos)
 function troncoTumbado(L, largo, x, y, z, r, color, escV = 1, opc = {}) {
   const esc = new THREE.Vector3(escV, 1, 1);
-  L.add(cil(r * 0.97, r * 1.03, largo, 9, true), color, x, y, z, { z: Math.PI / 2 }, { escala: esc, ...opc });
+  // opc.tapas = [lado -x, lado +x]: sin tapa en un lado, el tronco sigue en la casilla de al lado (mismo grosor en las
+  // dos puntas para que no haya escalón en la junta)
+  const { tapas = [true, true], ...resto } = opc;
+  const seguido = !tapas[0] || !tapas[1];
+  L.add(cil(r * (seguido ? 1 : 0.97), r * (seguido ? 1 : 1.03), largo, 9, true), color, x, y, z, { z: Math.PI / 2 }, { escala: esc, ...resto });
   for (const s of [-1, 1]) {
-    const rr = s < 0 ? r * 0.97 : r * 1.03;
+    if (!tapas[s < 0 ? 0 : 1]) continue;
+    const rr = seguido ? r : (s < 0 ? r * 0.97 : r * 1.03);
     const tapa = new THREE.ConeGeometry(rr, rr * 0.22, 9, 1, true); tapa.translate(0, rr * 0.11, 0);
     L.add(tapa, 'corte', x + s * largo / 2, y, z, { z: -s * Math.PI / 2 }, { escala: esc, sinSuelo: true });
   }
@@ -311,28 +316,43 @@ function cimientoPiedra() {
   }
   return deLote(L);
 }
-// Cimiento de troncos: seis troncos gruesos tumbados, con las testas a la vista
-function cimientoTroncos() {
-  const L = loteSuelo(), r = 0.17, testa = r * 1.03 * 0.22;
-  // relleno oscuro entre los troncos (tierra apisonada y madera): no se ve el suelo verde por las juntas
-  L.add(cajaR(MODULO - 0.04, r, MODULO - 0.04, 0.01), 'maderaOsc', 0, P.superficieCimiento - r, 0);
-  for (let t = 0; t < 6; t++) {
-    const z = -MODULO / 2 + 0.17 + t * 0.333;
-    troncoTumbado(L, MODULO - 2 * testa, 0, P.superficieCimiento - r, z, r, ruido(t * 5 + 2) > 0.5 ? 'madera' : 'maderaOsc');
+// Varias casillas seguidas del mismo suelo o cimiento de troncos se juntan en una sola superficie (valravnx, 27 oct:
+// «debería juntarse todo de una»). vecinos = { xn, xp, zn, zp }: hay una casilla igual a ese lado. Hacia un vecino,
+// los troncos llegan al borde sin testa (siguen en la casilla de al lado) y la capa de debajo llega al borde: sin
+// rendija verde ni anillos de testa en la junta. Hacia fuera, como antes.
+const SIN_VECINOS = { xn: false, xp: false, zn: false, zp: false };
+// capa de relleno de debajo: del borde (si hay vecino) o con 2 cm de margen (si no)
+function rellenoJunto(L, v, alto, y, color) {
+  const m = 0.02, x0 = -MODULO / 2 + (v.xn ? 0 : m), x1 = MODULO / 2 - (v.xp ? 0 : m);
+  const z0 = -MODULO / 2 + (v.zn ? 0 : m), z1 = MODULO / 2 - (v.zp ? 0 : m);
+  L.add(cajaR(x1 - x0, alto, z1 - z0, 0.01), color, (x0 + x1) / 2, y, (z0 + z1) / 2);
+}
+// fila de troncos a lo largo de X, de testa a testa o seguida hacia los vecinos
+function troncosJuntos(L, v, n, paso, primero, y, r, escV, colorDe) {
+  const testa = r * 1.03 * 0.22;
+  const x0 = -MODULO / 2 + (v.xn ? 0 : testa), x1 = MODULO / 2 - (v.xp ? 0 : testa);
+  for (let t = 0; t < n; t++) {
+    const z = -MODULO / 2 + primero + t * paso;
+    troncoTumbado(L, x1 - x0, (x0 + x1) / 2, y, z, r, colorDe(t), escV, { tapas: [!v.xn, !v.xp] });
   }
+}
+// Cimiento de troncos: seis troncos gruesos tumbados, con las testas a la vista
+function cimientoTroncos(v = SIN_VECINOS) {
+  const L = loteSuelo(), r = 0.17;
+  // relleno oscuro entre los troncos (tierra apisonada y madera): no se ve el suelo verde por las juntas
+  rellenoJunto(L, v, r, P.superficieCimiento - r, 'maderaOsc');
+  troncosJuntos(L, v, 6, 0.333, 0.17, P.superficieCimiento - r, r, 1, (t) => ruido(t * 5 + 2) > 0.5 ? 'madera' : 'maderaOsc');
   return deLote(L);
 }
 // Suelo de troncos: siete troncos partidos (aplastados) sobre dos durmientes de corteza
-function sueloTroncos() {
-  const L = loteSuelo(), r = 0.14, testa = r * 1.03 * 0.22;
-  for (const x of [-0.7, 0.7]) L.add(cajaR(0.16, 0.08, MODULO - 0.06, 0.03), 'corteza', x, P.superficieSuelo - 0.13, 0);
+function sueloTroncos(v = SIN_VECINOS) {
+  const L = loteSuelo(), r = 0.14;
+  const dz0 = -MODULO / 2 + (v.zn ? 0 : 0.03), dz1 = MODULO / 2 - (v.zp ? 0 : 0.03);
+  for (const x of [-0.7, 0.7]) L.add(cajaR(0.16, 0.08, dz1 - dz0, 0.03), 'corteza', x, P.superficieSuelo - 0.13, (dz0 + dz1) / 2);
   // tablazón oscura a media altura de los troncos: entre tronco y tronco ya no se ve el suelo de abajo (valravnx:
   // «que tapen del todo»); solo asoma en el canal entre las dos curvas, como el relleno de barro y musgo
-  L.add(cajaR(MODULO - 0.04, 0.1, MODULO - 0.04, 0.01), 'maderaOsc', 0, P.superficieSuelo - 0.1, 0);
-  for (let t = 0; t < 7; t++) {
-    const z = -MODULO / 2 + 0.143 + t * 0.286;
-    troncoTumbado(L, MODULO - 2 * testa, 0, P.superficieSuelo - 0.07, z, r, ruido(t * 3 + 7) > 0.5 ? 'madera' : 'maderaOsc', 0.5);
-  }
+  rellenoJunto(L, v, 0.1, P.superficieSuelo - 0.1, 'maderaOsc');
+  troncosJuntos(L, v, 7, 0.286, 0.143, P.superficieSuelo - 0.07, r, 0.5, (t) => ruido(t * 3 + 7) > 0.5 ? 'madera' : 'maderaOsc');
   return deLote(L);
 }
 // Suelo de tablas: ocho tablas con juntas, clavadas a dos rastreles
@@ -775,8 +795,8 @@ export function decoracion(tipo) {
 export function modeloPieza(tipo, ctx) {
   switch (tipo) {
     case 'cim_piedra': return cimientoPiedra();
-    case 'cim_tronco': return cimientoTroncos();
-    case 'suelo_tronco': return sueloTroncos();
+    case 'cim_tronco': return cimientoTroncos(ctx && ctx.vecinos);
+    case 'suelo_tronco': return sueloTroncos(ctx && ctx.vecinos);
     case 'suelo_tabla': return sueloTablas();
     case 'poste': return poste();
     case 'viga': return viga();

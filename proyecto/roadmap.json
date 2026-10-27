@@ -451,6 +451,12 @@
    "estado": "en_curso",
    "tareas": [
     {
+     "nombre": "Arreglo (pedido de valravnx, 27 oct): varios suelos de troncos seguidos no acaban de cerrar (rendija verde y testas de los troncos en cada junta); entre casillas del mismo suelo o cimiento de troncos, los troncos siguen de largo y la capa de debajo llega al borde",
+     "estado": "hecho",
+     "inicio": "2026-10-27T18:24:55+01:00",
+     "fin": "2026-10-27T19:16:59+01:00"
+    },
+    {
      "nombre": "Arreglo (pedido de valravnx, 27 oct): en construir se veían los muebles del piso de arriba estando abajo con el techo puesto, y WASD fallaba (con la distribución de teclado rusa, o si la ventana perdía el foco con una tecla pulsada): las teclas se leen por su posición física y se sueltan todas al perder el foco",
      "estado": "hecho",
      "inicio": "2026-10-27T13:53:25+01:00",
@@ -795,11 +801,50 @@
     },
     {
      "nombre": "Recursos repartidos: vetas pequeñas de hierro y carbón cerca de cualquier sitio de tierra (nadie tiene que ir lejos para lo normal) y unas pocas grandes vetas marcadas en el mapa para explotar a fondo; mundo de 256 km con la semilla 66172",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T16:57:00+01:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T16:57:00+01:00",
+     "fin": "2026-10-27T18:36:13+01:00"
     },
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "hecho",
+     "inicio": "2026-10-27T18:54:00+01:00",
+     "fin": "2026-10-27T19:05:00+01:00"
+    },
+    {
+     "nombre": "Boceto de paisaje de cerca: tocar un sitio del mapa y verlo en 3D (unos 4 × 4 km) para juzgar si es bonito antes de meterlo en el juego",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Relieve de detalle por escalas: el mapa da la forma grande y encima van colinas, lomas y quebradas con pendientes de todos los tamaños (como en el terreno de verdad), sin llanos enormes ni cuestas eternas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Valles tallados por los ríos: gargantas en la montaña, vegas anchas abajo, saltos de agua donde el río cruza roca dura",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Que aguante en el móvil: el terreno por trozos alrededor del jugador, niveles de detalle, árboles repetidos de una sola malla y versiones sencillas de lejos (medir fotogramas)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Andar por el mundo de verdad en la demo: el personaje en el mundo elegido, con construir y cavar encima",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
     }
    ],
@@ -1061,6 +1106,13 @@
      "archivo": "jugar/demo/v19.html",
      "capturas": "capturas/demo-v19",
      "notas": "Construcción v24 y combate v13: los muebles del piso de arriba ya no se ven desde abajo con el techo puesto, y WASD funciona con la distribución de teclado rusa y sin teclas pegadas"
+    },
+    {
+     "v": "v20",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v20.html",
+     "capturas": "capturas/demo-v20",
+     "notas": "Arreglo: varios suelos o cimientos de troncos seguidos se juntan de una, sin rendija ni testas en cada junta. Es la construcción v25."
     }
    ]
   },
@@ -1222,6 +1274,13 @@
      "archivo": "jugar/construccion/v24.html",
      "capturas": "capturas/construccion-v24",
      "notas": "Arreglos: los muebles del piso de arriba ya no se ven desde abajo con el techo puesto, y WASD funciona con la distribución de teclado rusa (las teclas se leen por su posición) y no se quedan pulsadas al cambiar de ventana"
+    },
+    {
+     "v": "v25",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v25.html",
+     "capturas": "capturas/construccion-v25",
+     "notas": "Arreglo: varios suelos o cimientos de troncos seguidos se juntan de una, sin rendija ni testas en cada junta."
     }
    ]
   },
@@ -1523,6 +1582,13 @@
      "archivo": "jugar/mapa/v1.html",
      "capturas": "capturas/mapa-v1",
      "notas": "Primer boceto del mundo por semilla: continente con golfos, penínsulas, mares interiores e islas, sin figuras fijas; una isla grande que es un país entero, apartada por mar; relieve con sierras y ríos, biomas, cinco países, roca madre y vetas. Se puede elegir 188 o 256 km."
+    },
+    {
+     "v": "v2",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/mapa/v2.html",
+     "capturas": "capturas/mapa-v2",
+     "notas": "Tu mundo (256 km, semilla 66172) se abre al entrar. Vetas pequeñas de hierro y carbón repartidas cerca de cualquier sitio y unas pocas grandes vetas marcadas en el mapa; al tocar, a cuántos km está el hierro y el carbón más cercanos. Las islas cercanas ya tienen país."
     }
    ]
   }
