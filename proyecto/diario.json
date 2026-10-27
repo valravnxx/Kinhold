@@ -1214,5 +1214,23 @@
   "pruebas": "Prueba de carriles 10/10 (con MUTAR=1 fallan 2, como debe); web y textos traducidos correctos.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T07:25:06+00:00",
+  "fin": "2026-10-27T08:32:19+00:00",
+  "titulo": "Hito 1f: servidor mínimo en Node",
+  "hito": "prueba-online",
+  "hecho": [
+   "Servidor mínimo en servidor/servidor.mjs (Node con el paquete ws): se arranca con «node servidor/servidor.mjs [puerto] [archivo]».",
+   "Cada conexión recibe un autor «jugador:…» que pone el servidor; si el cliente manda otro autor, se pisa.",
+   "Las acciones de construcción pasan por la lógica pura (ejecutar); las que salen bien se reparten a todos los conectados y el que la manda recibe si salió bien o el motivo.",
+   "Todas las acciones, bien o mal, se guardan en un archivo, una por línea; al arrancar, el mundo se rehace con reproducir y un cliente nuevo recibe lo hecho hasta entonces. Una línea cortada por un apagado a medias se descarta.",
+   "Prueba nueva en node con dos clientes de verdad (15 comprobaciones), también en probar_todo.sh. Rota a propósito con MUTAR=1 (servidor que se fía del autor del cliente): falla.",
+   "Decisión provisional: de momento todos los jugadores comparten el mismo mundo de la lógica, con un solo mojón y un solo montón de materiales, como en el prototipo; separarlo por jugador queda para cuando haya cuentas.",
+   "No comprobado: el servidor con clientes en otra máquina o detrás de internet (eso es la tarea de ponerlo en línea, que espera la decisión de valravnx)."
+  ],
+  "pruebas": "Todas las pruebas correctas (probar_todo.sh), con la nueva del servidor 15/15; capturas de la web miradas en PC y móvil. Sin versión jugable nueva: el servidor aún no lo usa la demo.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
