@@ -452,8 +452,9 @@
    "tareas": [
     {
      "nombre": "Arreglo (pedido de valravnx, 27 oct): en construir se veían los muebles del piso de arriba estando abajo con el techo puesto, y WASD fallaba (con la distribución de teclado rusa, o si la ventana perdía el foco con una tecla pulsada): las teclas se leen por su posición física y se sueltan todas al perder el foco",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T13:53:25+01:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T13:53:25+01:00",
+     "fin": "2026-10-27T17:29:45+01:00"
     },
     {
      "nombre": "Arreglo (pedido de valravnx): en PC no se pueden quitar muebles ni piezas, porque al mover el ratón hacia «Confirmar» se pierde lo elegido. Lo elegido con clic se queda fijo hasta confirmar o cancelar",
@@ -511,7 +512,8 @@
     },
     {
      "nombre": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T16:52:02+00:00"
     },
     {
      "nombre": "Obras: polipasto con torno para vigas grandes y sillares (uno tira y otro guía)",
@@ -628,8 +630,9 @@
     },
     {
      "nombre": "Lógica pura del inventario por huecos: cada objeto con su tamaño (P pequeño, M mediano, G grande, E enorme) y cada recurso con cuántas unidades caben en un hueco (pilas); huecos del cuerpo (mano derecha e izquierda, lo grande ocupa las dos; espalda, cintura según el cinturón, hombro); contenedores con sus huecos interiores y lo que admite cada uno. Acciones coger, soltar, mover y ponerse o quitarse, con autor y por jugador. Guardado en el navegador con migración. Pruebas de lógica",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T15:23:40+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T15:23:40+00:00",
+     "fin": "2026-10-27T16:20:09+00:00"
     },
     {
      "nombre": "Equipo de carga en la lógica pura, con las listas aprobadas del GDD: los cinco cinturones (cordel de fibra, cuerda trenzada, cinto de cuero, cinto con anillas, cinto de armas) con sus huecos; las mochilas y bastidores de función única (leñero, cesta de recolección, fardo atado, zurrón de piel, mochila de bastidor, porta-piedras, caja de herramientas, carcaj, cesto de pescador, escudo a la espalda) y lo de hombro (saco, bandolera, odre), cada uno con lo que admite y cuánto",
@@ -789,6 +792,11 @@
      "estado": "hecho",
      "inicio": "2026-10-27T12:36:00+01:00",
      "fin": "2026-10-27T14:49:45+01:00"
+    },
+    {
+     "nombre": "Recursos repartidos: vetas pequeñas de hierro y carbón cerca de cualquier sitio de tierra (nadie tiene que ir lejos para lo normal) y unas pocas grandes vetas marcadas en el mapa para explotar a fondo; mundo de 256 km con la semilla 66172",
+     "estado": "en_curso",
+     "inicio": "2026-10-27T16:57:00+01:00"
     },
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
@@ -1046,6 +1054,13 @@
      "archivo": "jugar/demo/v18.html",
      "capturas": "capturas/demo-v18",
      "notas": "En «Construir», las obras en alto piden subir el material: lo ligero por la escalera y los troncos rodándolos por dos varas con una cuerda"
+    },
+    {
+     "v": "v19",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v19.html",
+     "capturas": "capturas/demo-v19",
+     "notas": "Construcción v24 y combate v13: los muebles del piso de arriba ya no se ven desde abajo con el techo puesto, y WASD funciona con la distribución de teclado rusa y sin teclas pegadas"
     }
    ]
   },
@@ -1200,6 +1215,13 @@
      "archivo": "jugar/construccion/v23.html",
      "capturas": "capturas/construccion-v23",
      "notas": "Obras en alto: cada material tiene su clase de peso; lo ligero se sube a mano por la escalera y los troncos se ruedan por dos varas con una cuerda (o entre dos)"
+    },
+    {
+     "v": "v24",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v24.html",
+     "capturas": "capturas/construccion-v24",
+     "notas": "Arreglos: los muebles del piso de arriba ya no se ven desde abajo con el techo puesto, y WASD funciona con la distribución de teclado rusa (las teclas se leen por su posición) y no se quedan pulsadas al cambiar de ventana"
     }
    ]
   },
@@ -1284,6 +1306,13 @@
      "archivo": "jugar/combate/v12.html",
      "capturas": "capturas/combate-v12",
      "notas": "v12: cámara táctil con un dedo. En el móvil, arrastrar un dedo por una zona libre gira la cámara (antes hacían falta dos); un toque sin arrastrar no la mueve, y tocar la rosa sigue golpeando al instante. El dedo del joystick ya no cuenta como segundo dedo. Con arco o piedras, si al apuntar llevas el dedo cerca de un borde, la cámara gira hacia ese lado."
+    },
+    {
+     "v": "v13",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/combate/v13.html",
+     "capturas": "capturas/combate-v13",
+     "notas": "Arreglo: mover con WASD funciona con la distribución de teclado rusa (las teclas se leen por su posición) y no se quedan pulsadas al cambiar de ventana"
     }
    ]
   },
@@ -1498,12 +1527,5 @@
    ]
   }
  ],
- "decisiones_pendientes": [
-  {
-   "id": "tamano-mundo",
-   "pregunta": "Tamaño del mundo: 188 × 188 km (el del GDD; países de unos 55 × 55 km y la isla-país de unos 900 km²) o 256 × 256 km (países de unos 75 × 75 km y la isla de unos 2.000 km²). El boceto del mapa permite comparar los dos.",
-   "desde": "2026-10-27",
-   "hito": "mundo"
-  }
- ]
+ "decisiones_pendientes": []
 }

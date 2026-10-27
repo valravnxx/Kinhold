@@ -227,16 +227,21 @@ function actualizarRosa() {
 // ---------------- Entrada ----------------
 const teclas = new Set();
 let apuntado = null;
+// teclas de mover por su posición física (e.code): con la distribución rusa W escribe «ц» y antes no movía
+const TECLAS_FISICAS = { KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', ShiftLeft: 'shift', ShiftRight: 'shift' };
+const nombreTecla = (e) => TECLAS_FISICAS[e.code] || (e.key || '').toLowerCase();
 addEventListener('keydown', (e) => {
   if (e.target && e.target.tagName === 'SELECT') return;
-  const k = e.key.toLowerCase(); teclas.add(k);
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = nombreTecla(e); teclas.add(k);
   sonido.activarSonido();
   if (k === ' ') { e.preventDefault(); if (!e.repeat) parar(true); }
   if (k === 'enter' && terminado) nuevaPartida();
   const atajos = { '8': 'alto', '4': 'izquierda', '6': 'derecha', '2': 'bajo', '5': 'estocada' };
   if (atajos[k] && !e.repeat) { lineaSel = atajos[k]; atacar(atajos[k]); }
 });
-addEventListener('keyup', (e) => { const k = e.key.toLowerCase(); teclas.delete(k); if (k === ' ') parar(false); });
+addEventListener('keyup', (e) => { const k = nombreTecla(e); teclas.delete(k); teclas.delete((e.key || '').toLowerCase()); if (k === ' ') parar(false); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { teclas.clear(); parar(false); } });
 addEventListener('blur', () => { teclas.clear(); parar(false); });
 
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
