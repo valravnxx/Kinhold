@@ -36,6 +36,7 @@ for (const m of opciones.matchAll(/:\s*\[?'([^']+)'/g)) meter(m[1]);
 const constr = leer('src/logica/construccion.js');
 for (const m of constr.matchAll(/motivo: '([^']+)'/g)) meter(m[1]);
 for (const m of leer('src/logica/acciones.js').matchAll(/motivo: '([^']+)'|return '([^']+)'/g)) meter(m[1] || m[2]);
+for (const m of leer('src/logica/en_linea.js').matchAll(/motivo: '([^']+)'|\|\| '([^']+)'/g)) meter(m[1] || m[2]); // jugar en línea
 for (const m of constr.slice(constr.indexOf('function motivoSinApoyo')).matchAll(/return '([^']+)'/g)) meter(m[1]);
 for (const linea of leer('src/combate/logica.js').split('\n')) if (/(this|\w+)\.caer\(/.test(linea)) for (const m of linea.matchAll(/'([A-ZÁÉÍÓÚ][^']+)'/g)) meter(m[1]);
 
@@ -63,7 +64,7 @@ function literalesEnTr(src) {
     i = j;
   }
 }
-for (const f of ['src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js', 'src/mina/main.js']) {
+for (const f of ['src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js', 'src/mina/main.js', 'src/juego/en_linea.js']) {
   const src = leer(f);
   literalesEnTr(src);
   // títulos y opciones de los grupos del panel del personaje: grupo('clave', valores, 'Título')

@@ -97,6 +97,8 @@ try:
         poner(B, 'pieza', 'cim_piedra', 1, 3)
         comprobar('el móvil construye sobre la obra de PC', esperar(B, f"{K}.enLinea.red.pendientes.length === 0", 15000) and piezas(B) == 3 and obras(B) == 0)
         comprobar('PC ve el cimiento del móvil, terminado', esperar(A, f"{K}.mundo.construcciones.reduce((t, c) => t + c.piezas.size, 0) === 3", 5000) and obras(A) == 0)
+        armazon = f"!{K}.escena.getObjectByName('armazon')"
+        comprobar('y las dos lo dibujan terminado (sin el armazón de obra)', esperar(A, armazon, 5000) and esperar(B, armazon, 5000))
         foto = lambda pg: pg.evaluate(f"JSON.stringify({K}.mundo.exportar())")
         comprobar('las dos páginas tienen el mismo mundo', esperar(A, 'true') and foto(A) == foto(B))
         comprobar('en línea no se guarda nada en el navegador', A.evaluate("localStorage.getItem('kinhold_h1_v1')") is None and B.evaluate("localStorage.getItem('kinhold_h1_v1')") is None)

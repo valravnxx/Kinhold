@@ -1019,6 +1019,7 @@ function iniciarEnLinea() {
     const c = m.construcciones.find(x => x.id === e.datos.construccion), p = c && c.piezas.get(e.datos.clave);
     return !p ? -1 : p.obra ? Math.floor(4 * p.obra.trabajo / tiempoObra(p.tipo)) : 4;
   };
+  const vistos = new Map(); // obra → cuarto de trabajo con el que se dibujó
   enLinea = conectarEnLinea({
     escena, recursos: RECURSOS_MH, aspecto: elegido || { sexo: 'hombre', capas: [] },
     avisar: mostrarAviso,
@@ -1028,7 +1029,11 @@ function iniciarEnLinea() {
       mundo = enLinea.red.mundo;
       const e = info.entrada;
       let redibujar = info.cambio || antes !== mundo;
-      if (e && (e.tipo === 'trabajar' || e.tipo === 'entregar' || e.tipo === 'rellenar')) redibujar = e.tipo === 'trabajar' && cuarto(antes, e) !== cuarto(mundo, e);
+      if (e && (e.tipo === 'trabajar' || e.tipo === 'entregar' || e.tipo === 'rellenar')) {
+        // el mundo puede ser el mismo objeto antes y después: se compara con el cuarto que se vio la última vez
+        redibujar = false;
+        if (e.tipo === 'trabajar') { const k = e.datos.construccion + '|' + e.datos.clave, n = cuarto(mundo, e); redibujar = vistos.get(k) !== n; vistos.set(k, n); }
+      }
       if (msg.tipo === 'bienvenida' || info.rechazo) redibujar = true;
       if (redibujar) { reconstruir(); if (estado.modo === 'construir') evaluarColocacion(); }
       if (info.cambio || e) actualizarUI();
