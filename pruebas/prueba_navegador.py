@@ -136,6 +136,23 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/02_interior_sin_tejado.png')
 
+    print('PC: decoración bajo el altillo (va al suelo de tu planta, no al de arriba)')
+    # valravnx: estando debajo de un piso, la cama se ponía en el piso de arriba. Se apunta con el ratón a la casilla
+    # de debajo del altillo (que se pinta por delante en la pantalla) y la mesa tiene que ir al cimiento de abajo.
+    ev(f"{K}.pj.x=1; {K}.pj.z=5; {K}.pj.k=0; {K}.pj.y=0.3; {K}.cam.yaw=Math.PI+0.6; {K}.cam.pitch=1.05; {K}.cam.dist=13")
+    esperar(pg, 600)
+    ev(f"{K}.cambiarModo('construir'); {K}.seleccionar('deco','mesa')")
+    sp = ev(f"{K}.proyectar(3, 0.3, 4.6)")
+    pu = ev(f"{K}.apuntarPantalla({sp['x']}, {sp['y']})")
+    comprobar('en la planta baja, bajo el altillo, la decoración apunta al suelo de abajo', pu is not None and pu['ySuperficie'] < 1.2, json.dumps(pu))
+    esperar(pg, 500)
+    pg.screenshot(path=f'{SALIDA}/02b_decoracion_bajo_el_altillo.png')
+    ev(f"{K}.pj.k=1; {K}.pj.y=2.62")
+    esperar(pg, 300)
+    pu1 = ev(f"{K}.apuntarPantalla({sp['x']}, {sp['y']})")
+    comprobar('y estando arriba, al suelo del altillo', pu1 is not None and pu1['ySuperficie'] > 2.4, json.dumps(pu1))
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.k=0; {K}.pj.y=0")
+
     print('PC: puerta y escalera')
     ev(f"{K}.pj.x=1; {K}.pj.z=-0.8; {K}.pj.k=0")
     esperar(pg, 300)

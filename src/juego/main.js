@@ -457,10 +457,16 @@ function rayoDesde(clientX, clientY) {
 function punteroDesde(clientX, clientY) {
   const rr = rayoDesde(clientX, clientY);
   if (estado.modo === 'construir' && estado.sel.clase === 'deco') {
-    // la decoración se apoya en suelos, cimientos o el terreno
-    const objetivos = registroMallas.filter(m => m.c && ['f'].includes(m.c.piezas.get(m.key)?.hueco)).map(m => m.obj);
+    // la decoración se apoya en los suelos o cimientos de la planta en la que estás, o en el terreno. Solo cuentan
+    // los de tu planta: el suelo de arriba (oculto o no) nunca recibe el clic (lo vio valravnx: la cama se iba al
+    // altillo estando debajo). Las obras a medias tampoco.
+    const objetivos = registroMallas.filter(m => {
+      const p = m.c && m.c.piezas.get(m.key);
+      return p && p.hueco === 'f' && p.k === pj.k && !p.obra && m.obj.visible;
+    }).map(m => m.obj);
     const hits = rr.intersectObjects(objetivos, true);
     if (hits.length) return { x: hits[0].point.x, z: hits[0].point.z, ySuperficie: hits[0].point.y };
+    if (pj.k > 0) return null; // arriba, fuera de los suelos de tu planta no hay dónde ponerla
   }
   const plano = new THREE.Plane(new THREE.Vector3(0, 1, 0), -estado.planta * ALTURA * (estado.sel.clase === 'pieza' ? 1 : 0));
   const pto = new THREE.Vector3();
@@ -997,6 +1003,7 @@ window.__kinhold = {
   cambiarModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
   seleccionar(clase, tipo) { estado.sel = { clase, tipo }; estado.dir = 0; marcarSeleccion(); evaluarColocacion(); },
   apuntar(x, z, y = 0) { estado.puntero = { x, z, ySuperficie: y }; evaluarColocacion(); },
+  apuntarPantalla(cx, cy) { estado.puntero = punteroDesde(cx, cy); evaluarColocacion(); return estado.puntero; },
   apuntarPieza(cx, cy) { evaluarDesmontaje(piezaBajo(cx, cy)); },
   proyectar(x, y, z) { const v = new THREE.Vector3(x, y, z).project(camara); return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight }; },
   // atajo de prueba: lleva el material y termina todas las obras a medias, siempre con acciones

@@ -314,6 +314,8 @@ function cimientoPiedra() {
 // Cimiento de troncos: seis troncos gruesos tumbados, con las testas a la vista
 function cimientoTroncos() {
   const L = loteSuelo(), r = 0.17, testa = r * 1.03 * 0.22;
+  // relleno oscuro entre los troncos (tierra apisonada y madera): no se ve el suelo verde por las juntas
+  L.add(cajaR(MODULO - 0.04, r, MODULO - 0.04, 0.01), 'maderaOsc', 0, P.superficieCimiento - r, 0);
   for (let t = 0; t < 6; t++) {
     const z = -MODULO / 2 + 0.17 + t * 0.333;
     troncoTumbado(L, MODULO - 2 * testa, 0, P.superficieCimiento - r, z, r, ruido(t * 5 + 2) > 0.5 ? 'madera' : 'maderaOsc');
@@ -324,6 +326,9 @@ function cimientoTroncos() {
 function sueloTroncos() {
   const L = loteSuelo(), r = 0.14, testa = r * 1.03 * 0.22;
   for (const x of [-0.7, 0.7]) L.add(cajaR(0.16, 0.08, MODULO - 0.06, 0.03), 'corteza', x, P.superficieSuelo - 0.13, 0);
+  // tablazón oscura a media altura de los troncos: entre tronco y tronco ya no se ve el suelo de abajo (valravnx:
+  // «que tapen del todo»); solo asoma en el canal entre las dos curvas, como el relleno de barro y musgo
+  L.add(cajaR(MODULO - 0.04, 0.1, MODULO - 0.04, 0.01), 'maderaOsc', 0, P.superficieSuelo - 0.1, 0);
   for (let t = 0; t < 7; t++) {
     const z = -MODULO / 2 + 0.143 + t * 0.286;
     troncoTumbado(L, MODULO - 2 * testa, 0, P.superficieSuelo - 0.07, z, r, ruido(t * 3 + 7) > 0.5 ? 'madera' : 'maderaOsc', 0.5);
