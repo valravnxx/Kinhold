@@ -1185,7 +1185,7 @@
  },
  {
   "inicio": "2026-10-27T05:49:03+00:00",
-  "fin": "2026-10-27T05:51:24+00:00",
+  "fin": "2026-10-27T06:54:09+00:00",
   "titulo": "Hito 1f: plan de la prueba online mínima",
   "hito": "prueba-online",
   "hecho": [
@@ -1195,7 +1195,7 @@
    "Comprobado en Chromium sin pantalla que una página https no puede conectarse a un servidor sin cifrar (lo bloquea como contenido mixto): el servidor de prueba necesita conexión cifrada.",
    "Pregunta nueva para valravnx: dónde se pone el servidor de prueba (alojamiento con cuenta suya, o su PC con un túnel https). Esa tarea espera su respuesta; las demás no."
   ],
-  "pruebas": "Web y textos traducidos correctos. Sin cambios de código.",
+  "pruebas": "Todas las pruebas correctas (probar_todo.sh); capturas de la web miradas en PC y móvil. Sin cambios de código.",
   "capturas": "",
   "estado": "ok"
  }

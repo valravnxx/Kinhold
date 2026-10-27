@@ -238,7 +238,7 @@
      "nombre": "Planificar el hito: leer lo que el GDD dice de servidor, cuentas y PvP, y desglosar la prueba online en tareas de una sesión",
      "estado": "hecho",
      "inicio": "2026-10-27T05:49:03+00:00",
-     "fin": "2026-10-27T05:50:33+00:00"
+     "fin": "2026-10-27T06:54:09+00:00"
     },
     {
      "nombre": "Servidor mínimo en Node (carpeta servidor/, paquete ws): cada conexión recibe un autor que pone el servidor, nunca el que diga el cliente; las acciones de construcción pasan por la lógica pura (ejecutar), se reparten a todos y se guardan en un archivo, y al arrancar el mundo se rehace con reproducir. Prueba en node con dos clientes",
