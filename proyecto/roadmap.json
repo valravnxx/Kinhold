@@ -248,7 +248,8 @@
     },
     {
      "nombre": "Jugadores que se ven: cada cliente manda su posición, giro y animación unas 10 veces por segundo; el servidor las reparte y los demás clientes las suavizan (interpolación). Prueba con lag simulado",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T08:38:20+00:00"
     },
     {
      "nombre": "Demo en línea: «Jugar en línea» en la demo única, que se conecta al servidor (dirección en Opciones); construir sobre el mundo del servidor y ver al otro jugador con el personaje del taller. Prueba de navegador con dos páginas y un servidor local, capturas en PC y móvil",
