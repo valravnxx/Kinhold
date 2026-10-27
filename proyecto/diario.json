@@ -1169,5 +1169,18 @@
   "pruebas": "Lógica 86/86, modelos 104/104, combate 69/69, acciones 25/25, cinturones 8/8, unión 19/19, textos traducidos y taller correctos; navegador de construcción, combate, estilo, personaje, demo, recursos e idioma correctos en PC y móvil. La de construcción falló una vez por tiempo de espera al correr a la vez que la de combate (máquina de 2 núcleos) y pasó entera al repetirla sola.",
   "capturas": "capturas/construccion-v20",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T06:46:00+01:00",
+  "fin": "2026-10-27T06:46:30+01:00",
+  "titulo": "Hito 1e aprobado por valravnx; lo que queda, al 10b",
+  "hito": "estilo",
+  "hecho": [
+   "valravnx aprueba el hito 1e (el estilo de la prueba v5 en todo) y deja lo que quede para pulir en el hito 10b.",
+   "Pasan al 10b: las losas del cimiento de piedra que repiten el mismo dibujo en cada casilla, y la pregunta del desenfoque de maqueta (que sale de las preguntas pendientes y se hará cuando llegue el 10b)."
+  ],
+  "pruebas": "Web y textos traducidos correctos. Sin cambios de código.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

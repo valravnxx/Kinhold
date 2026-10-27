@@ -178,7 +178,7 @@
    "id": "estilo",
    "num": "1e",
    "nombre": "El estilo de la prueba v5 en todo",
-   "estado": "revision",
+   "estado": "hecho",
    "jugable": "Todo lo que se ve (suelo, árboles, piezas de construcción, muebles y objetos) con el aspecto de la prueba de estilo v5 que aprobó valravnx, en la construcción, el duelo y la demo única.",
    "nota": "Pedido de valravnx el 26 oct: solo se habían pasado al estilo los muros de troncos. Va antes que el resto del arte y que las piezas nuevas; reúne las tareas de estilo que estaban en el hito 1c.",
    "tareas": [
@@ -627,6 +627,14 @@
     },
     {
      "nombre": "Heridas que se vean bien (Pedro, 27 oct: «ahora son cuadrados sobre el personaje»; para más adelante): corte, golpe y estocada se pintan donde entran (también rompen y manchan la ropa), el sangrado se extiende con el tiempo y el vendaje se ve puesto",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Losas del cimiento de piedra que no repitan el mismo dibujo en cada casilla (quedó del hito 1e)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Desenfoque de maqueta de la prueba de estilo v5 (quedó del hito 1e): preguntar a valravnx si lo quiere en la construcción, el duelo y la demo y, si es que sí, ponerlo como interruptor en Opciones, midiendo antes los fotogramas en el móvil",
      "estado": "pendiente"
     },
     {
@@ -1217,11 +1225,5 @@
    ]
   }
  ],
- "decisiones_pendientes": [
-  {
-   "pregunta": "En la prueba de estilo v5 las capturas llevan el «desenfoque de maqueta» (bandas borrosas arriba y abajo) y en el juego no. ¿Lo quieres también en la construcción, el duelo y la demo? Sería un interruptor en Opciones; en el móvil puede costar fotogramas, así que se mediría antes de dejarlo puesto.",
-   "desde": "2026-10-27",
-   "hito": "estilo"
-  }
- ]
+ "decisiones_pendientes": []
 }

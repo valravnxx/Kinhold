@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (06:46) — por el chat: hito 1e aprobado
+
+«Aprueba el 1e con pendiente a pulir todo lo que quede en el 10b» → Hito 1e aprobado y marcado como hecho. Pasan al hito 10b las losas del cimiento que repiten dibujo y la pregunta del desenfoque de maqueta (quitada de las preguntas pendientes).
+
 ### 27 oct 2026 (06:43) — por el chat: heridas, para más adelante
 
 «También el tema de heridas, ahora son cuadrados sobre el personaje, en un futuro ya haremos que se vean mejor, pero para más adelante, quiero algo jugable antes» → La tarea de heridas visibles pasa del hito de arte (1b) al hito 10b, que ahora se llama «Pulido de manos, animaciones y heridas».
