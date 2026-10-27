@@ -81,12 +81,13 @@ try {
   await B.esperar(m => m.tipo === 'accion' && m.entrada.tipo === 'colocar' && m.entrada.autor === A.bienvenida.autor);
 
   // lo que la lógica rechaza no se reparte
-  const antes = B.recibidos.length;
+  const repartidas = () => B.recibidos.filter(m => m.tipo === 'accion').length;   // (los luchadores van aparte, cada tic)
+  const antes = repartidas();
   const r4 = await A.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: 0, z: 0, k: 0, rot: 0, dir: 0 }); // ya ocupado
   const r5 = await A.accion({ tipo: 'volar', x: 1 });
   await pausa(100);
   comprobar('la lógica pura sigue mandando: lo ocupado y lo desconocido se rechazan', !r4.ok && !r5.ok, `${r4.motivo} · ${r5.motivo}`);
-  comprobar('lo rechazado no se reparte a los demás', B.recibidos.length === antes);
+  comprobar('lo rechazado no se reparte a los demás', repartidas() === antes);
 
   // basura: el servidor responde con un error y sigue vivo
   A.ws.send('esto no es json');

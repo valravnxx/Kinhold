@@ -2,6 +2,7 @@
 # una en PC y otra en móvil, que construyen en el mismo mundo y se ven la una a la otra con su personaje del taller.
 # Uso: python3 pruebas/prueba_en_linea_navegador.py <html de la demo> <carpeta_capturas>
 # MUTAR=1 tira los mensajes de posición que manda cada página (como si no se mandaran): la prueba tiene que fallar.
+# MUTAR_OBRA=1 rehace todo lo construido cada vez que una obra avanza (como antes del arreglo de los fotogramas): tiene que fallar.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
 from playwright.sync_api import sync_playwright
 
@@ -10,6 +11,7 @@ RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_en_linea'
 os.makedirs(SALIDA, exist_ok=True)
 MUTAR = bool(os.environ.get('MUTAR'))
+MUTAR_OBRA = bool(os.environ.get('MUTAR_OBRA'))
 
 # la web, como en GitHub Pages: la demo en jugar/demo/ y los personajes en recursos/personajes/
 sitio = tempfile.mkdtemp()
@@ -133,12 +135,30 @@ try:
         for nombre, (pg, _) in paginas.items():
             pg.screenshot(path=f'{SALIDA}/{nombre}_3_de_cerca.png')
 
+        print('Construir una obra sin rehacer todo')
+        # mientras alguien trabaja en una obra, solo se rehace esa pieza (en su página y en la del otro), no lo construido entero
+        if MUTAR_OBRA:
+            for pg in (A, B): pg.evaluate('window.__rehacerTodo = true')
+        A.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','cim_piedra'); {K}.apuntar(3,3); {K}.colocar(); {K}.cambiarModo('mover')")
+        A.evaluate(f"Object.assign({K}.pj, {{ x: 4.6, z: 3.2 }})"); A.wait_for_timeout(400)
+        comprobar('PC tiene la obra al alcance', A.evaluate(f"!!{K}.obraCercana()"))
+        esperar(B, f"{K}.mundo.construcciones.reduce((t, c) => t + c.piezas.size, 0) === 4", 5000); B.wait_for_timeout(500)
+        for pg in (A, B): pg.evaluate("window.__rehechos.todo = 0; window.__rehechos.pieza = 0")
+        A.evaluate(f"{K}.usar()")
+        comprobar('PC se pone a construir', A.evaluate(f"!!{K}.obrando"))
+        A.wait_for_timeout(7000)
+        ra, rb = A.evaluate("window.__rehechos"), B.evaluate("window.__rehechos")
+        comprobar('mientras construye, PC rehace solo la obra (nada entero)', ra['todo'] == 0 and ra['pieza'] >= 1, str(ra))
+        comprobar('y el otro tampoco rehace todo al verla avanzar', rb['todo'] == 0 and rb['pieza'] >= 1, str(rb))
+        A.evaluate(f"{K}.estado.obrando = null")  # deja de construir (como al moverse)
+        piezasAntes = piezas(A)
+
         print('El servidor se apaga')
         servidor.terminate(); servidor.wait(5)
         comprobar('PC dice que se ha perdido la conexión', esperar(A, "document.getElementById('estadoRed').textContent === 'Sin conexión'", 5000) and 'perdido' in A.inner_text('#aviso'))
         comprobar('y ya no ve al otro', A.evaluate(f"{K}.enLinea.remotos.size") == 0)
-        A.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','cim_piedra'); {K}.apuntar(3,3); {K}.colocar()")
-        comprobar('sin conexión no se construye', piezas(A) == 3 and 'conexión' in A.inner_text('#aviso'), A.inner_text('#aviso'))
+        A.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','cim_piedra'); {K}.apuntar(5,1); {K}.colocar()")
+        comprobar('sin conexión no se construye', piezas(A) == piezasAntes and 'conexión' in A.inner_text('#aviso'), A.inner_text('#aviso'))
         A.screenshot(path=f'{SALIDA}/pc_4_sin_conexion.png')
         for nombre, (pg, err) in paginas.items():
             malos = [e for e in err if 'WebSocket' not in e and 'ERR_CONNECTION_REFUSED' not in e]

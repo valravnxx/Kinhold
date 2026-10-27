@@ -272,17 +272,20 @@
     },
     {
      "nombre": "Arreglo (pedido de valravnx, 27 oct, jugando en línea): los fotogramas caen mucho todo el rato mientras alguien construye una obra, también en el aparato del otro jugador",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T20:07:34+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T20:07:34+00:00",
+     "fin": "2026-10-27T21:41:25+00:00"
     },
     {
      "nombre": "Combate en el servidor: un luchador por jugador en la lógica pura; los clientes mandan intenciones (atacar en una línea, guardia, bloquear, tensar y soltar) y el servidor lleva los tiempos y resuelve golpes y heridas con su autor. Prueba en node con dos clientes y lag simulado",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T19:20:13+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T19:20:13+00:00",
+     "fin": "2026-10-27T20:27:15+00:00"
     },
     {
      "nombre": "Combate en línea en la demo: dos jugadores pelean entre sí y los dos ven los mismos golpes y heridas. Prueba de navegador con dos páginas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T22:20:15+00:00"
     },
     {
      "nombre": "Conexiones que se cortan y protección básica: volver a conectar sin perder al personaje, quitar al que se va, límite de mensajes por segundo y de tamaño por conexión, y rechazo de datos mal formados (con una prueba que los manda)",
@@ -649,7 +652,9 @@
     },
     {
      "nombre": "Equipo de carga en la lógica pura, con las listas aprobadas del GDD: los cinco cinturones (cordel de fibra, cuerda trenzada, cinto de cuero, cinto con anillas, cinto de armas) con sus huecos; las mochilas y bastidores de función única (leñero, cesta de recolección, fardo atado, zurrón de piel, mochila de bastidor, porta-piedras, caja de herramientas, carcaj, cesto de pescador, escudo a la espalda) y lo de hombro (saco, bandolera, odre), cada uno con lo que admite y cuánto",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-27T20:35:05+00:00",
+     "fin": "2026-10-27T22:11:48+00:00"
     },
     {
      "nombre": "Ralentización por carga en la lógica pura, como dice el GDD: con poca carga no se nota y, cargado al máximo en todos los huecos, la velocidad al caminar baja hasta el 80%. Aplicada al andar del personaje en la demo, con pruebas de lógica y de navegador",
@@ -1134,6 +1139,13 @@
      "archivo": "jugar/demo/v21.html",
      "capturas": "capturas/demo-v21",
      "notas": "Jugar en línea: construir en el mundo del servidor y ver a los demás con su personaje del taller; la dirección del servidor, en Opciones"
+    },
+    {
+     "v": "v22",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v22.html",
+     "capturas": "capturas/demo-v22",
+     "notas": "Los fotogramas ya no caen mientras alguien construye una obra (también en línea); es la construcción v26"
     }
    ]
   },
@@ -1302,6 +1314,13 @@
      "archivo": "jugar/construccion/v25.html",
      "capturas": "capturas/construccion-v25",
      "notas": "Arreglo: varios suelos o cimientos de troncos seguidos se juntan de una, sin rendija ni testas en cada junta."
+    },
+    {
+     "v": "v26",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v26.html",
+     "capturas": "capturas/construccion-v26",
+     "notas": "Al construir una obra, solo se redibuja esa pieza al avanzar: los fotogramas ya no caen mientras se construye"
     }
    ]
   },

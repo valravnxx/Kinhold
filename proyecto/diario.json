@@ -1512,5 +1512,57 @@
   "capturas": "capturas/mapa-v3",
   "estado": "ok",
   "notas": "no comprobado: fotogramas de la vista de cerca en un móvil de verdad (más de un millón de triángulos con el bosque)"
+ },
+ {
+  "inicio": "2026-10-27T19:20:13+00:00",
+  "fin": "2026-10-27T20:27:15+00:00",
+  "titulo": "Hito 1f: combate en el servidor",
+  "hito": "prueba-online",
+  "hecho": [
+   "Cada jugador conectado tiene un luchador en el servidor (lógica pura, src/logica/combate_servidor.js); su posición y su giro salen de la presencia",
+   "Los clientes solo mandan intenciones (atacar por una línea, parar, guardia, tensar, soltar, coger arma); el servidor las comprueba, lleva los tiempos y resuelve golpes y flechas con el autor de la conexión",
+   "A quién da un golpe lo decide el servidor: el rival más cercano delante y a su alcance; si no hay nadie, va al aire",
+   "Los golpes, disparos e impactos se reparten a todos en el mismo orden, y el estado de los luchadores cada 50 ms (solo los que cambian)",
+   "Lo que resuelve el combate se guarda con su autor en combate.jsonl, aparte del archivo del mundo",
+   "Decisión provisional: en línea, ritmo «normal» para todos y sin compensar el lag (una intención cuenta desde que llega al servidor)",
+   "Prueba en node: la lógica sin red y el servidor con dos clientes y lag distinto en cada uno (con MUTAR=1, un servidor que se fía del autor del cliente, falla)"
+  ],
+  "pruebas": "Combate en el servidor 37/37 (con MUTAR=1 falla), batería completa correcta (bash herramientas/probar_todo.sh); tras unir main, pruebas de node correctas",
+  "estado": "ok",
+  "notas": "sin capturas nuevas: no cambia nada que se vea (miradas las de jugar en línea en PC y móvil, siguen bien). no comprobado: pelear en línea desde el navegador (es la tarea siguiente del hito). Sin versión nueva publicada: el cambio no es jugable todavía"
+ },
+ {
+  "inicio": "2026-10-27T20:07:34+00:00",
+  "fin": "2026-10-27T21:41:25+00:00",
+  "titulo": "Arreglo: fotogramas bajos mientras se construye una obra",
+  "hito": "prueba-online",
+  "hecho": [
+   "Medido en el navegador de pruebas con una cabaña y dos páginas en línea: mientras se construía, cada fotograma tardaba unos 490 ms de cálculo (en reposo, unos 5 ms)",
+   "La causa: cada cuarto de avance de una obra rehacía todo lo construido, dos veces en el aparato que construye y una en el del otro, y el anillo de la tierra obligaba a preparar de nuevo su sombreador",
+   "Ahora al avanzar una obra se rehace solo esa pieza; todo se rehace solo al terminarla; el anillo usa siempre el mismo material",
+   "Con el arreglo, unos 7 ms por fotograma mientras se construye, y nada se rehace entero",
+   "Prueba nueva en la de jugar en línea: mientras se construye, ninguna de las dos páginas rehace todo (con MUTAR_OBRA=1 falla)"
+  ],
+  "pruebas": "Batería completa correcta antes de unir main (salvo la traducción de esta misma tarea, añadida después); tras unir main, lógica, modelos, combate, acciones, servidor, presencia, mundo en línea, combate en el servidor, idiomas y navegador de jugar en línea correctos",
+  "capturas": "capturas/construccion-v26",
+  "estado": "ok",
+  "notas": "no comprobado: los fotogramas en un móvil de verdad (el navegador de pruebas dibuja sin tarjeta gráfica; lo medido es el tiempo de cálculo de cada fotograma)"
+ },
+ {
+  "inicio": "2026-10-27T20:35:05+00:00",
+  "fin": "2026-10-27T22:11:48+00:00",
+  "titulo": "Hito 2: equipo de carga en la lógica pura",
+  "hito": "equipo",
+  "hecho": [
+   "Los cinco cinturones del GDD con sus huecos: cordel de fibra (1 pequeño), cuerda trenzada (2 pequeños), cinto de cuero (3, uno mediano), cinto con anillas (4, dos medianos) y cinto de armas (vaina para la espada y 2 pequeños)",
+   "Las diez mochilas y bastidores de espalda, cada uno con lo que admite: leñero (leña y troncos cortos), cesta de recolección, fardo atado, zurrón de piel y mochila de bastidor (mixtos), porta-piedras, caja de herramientas, carcaj, cesto de pescador y correa del escudo",
+   "Al hombro: saco (grano, harina, arena), bandolera (mixta) y odre (agua)",
+   "capacidad() dice lo que admite cada contenedor y cuánto: por ejemplo, el leñero lleva 2 troncos cortos o 18 de leña",
+   "Recursos y objetos nuevos en el catálogo para lo que admiten: piel, tela, paja, pescado, grano, harina, agua, flechas, virotes, anzuelo y sedal, espada y escudo",
+   "Decisión provisional (el GDD solo dice «mucho» o «poco»): cuántos huecos lleva cada mochila y cada cosa de hombro; anotada en src/logica/inventario.js para ajustarla al probar"
+  ],
+  "pruebas": "Inventario 107/107 (con MUTAR=2, un leñero que admite piedras y un cinto de cuero sin hueco mediano, falla), batería completa correcta (bash herramientas/probar_todo.sh); tras unir main, pruebas de node correctas",
+  "estado": "ok",
+  "notas": "sin capturas nuevas: no cambia nada que se vea (miradas las de la demo en PC y móvil, siguen bien). Sin versión nueva publicada: el cambio no es jugable todavía (el panel de inventario es otra tarea del hito). Los añadidos al cinturón (bolsas, vainas, ganchos) llegan con la fabricación"
  }
 ]
