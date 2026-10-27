@@ -673,19 +673,22 @@ function usarObra(o) {
     }
   }
   if (faltan.length) { guardar(); actualizarUI(); }
-  estado.obrando = { c, key, acum: 0 };
+  estado.obrando = { c, key };
   estado.talando = null;
   const m = centroMundo(c, p); pj.rot = Math.atan2(m.x - pj.x, m.z - pj.z);
   mostrarAviso(`${faltan.length ? t('materialEntregado') + ' ' : ''}${t('construyendo')} ${Math.round(100 * p.obra.trabajo / tiempoObra(p.tipo))} %`);
 }
-// cada medio segundo construyendo se manda un rato de trabajo
-function pasoObra(dt) {
+// cada medio segundo construyendo se manda un rato de trabajo. Cuenta el tiempo de reloj de verdad, no el del
+// fotograma (que se recorta a 0,05 s): con pocos fotogramas por segundo la obra no debe ir más lenta.
+function pasoObra() {
   const o = estado.obrando;
   if (!o) return;
-  o.acum += dt;
-  if (o.acum < 0.5) return;
-  const r = accion({ tipo: 'trabajar', construccion: o.c.id, clave: o.key, segundos: Math.min(o.acum, MAX_RATO) });
-  o.acum = 0;
+  const ahora = performance.now();
+  if (o.desde === undefined) o.desde = ahora;
+  const seg = (ahora - o.desde) / 1000;
+  if (seg < 0.5) return;
+  const r = accion({ tipo: 'trabajar', construccion: o.c.id, clave: o.key, segundos: Math.min(seg, MAX_RATO) });
+  o.desde = ahora;
   if (!r.ok) { estado.obrando = null; mostrarAviso(tr(r.motivo), true); return; }
   guardar();
   if (r.terminada) {
@@ -694,8 +697,8 @@ function pasoObra(dt) {
     return;
   }
   // la pieza se va viendo menos tenue a cada cuarto de la obra
-  const antes = Math.floor(4 * (r.progreso - 0.5 / tiempoObra(o.c.piezas.get(o.key).tipo))), ahora = Math.floor(4 * r.progreso);
-  if (ahora !== antes) reconstruir();
+  const cuarto = Math.floor(4 * r.progreso);
+  if (cuarto !== o.cuarto) { o.cuarto = cuarto; reconstruir(); }
   mostrarAviso(`${t('construyendo')} ${Math.round(100 * r.progreso)} %`);
 }
 function usar() {
@@ -866,7 +869,7 @@ function paso() {
   pj.y += (yObjetivo - pj.y) * Math.min(1, dt * 14);
   jugador.raiz.position.set(pj.x, pj.y, pj.z);
   jugador.raiz.rotation.y = pj.rot;
-  pasoObra(dt);
+  pasoObra();
   jugador.animar(mag > 0.05 ? vel : 0, dt, !!estado.talando || !!estado.obrando);
 
   // interiores: ocultar plantas superiores y tejados si estás bajo techo
