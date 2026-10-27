@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v17 (decoración en el suelo de tu planta y suelos de troncos sin huecos)';
+export const VERSION_DEMO = 'Demo única · v18 (obras en alto: subir el material hasta su planta)';
 export const REGISTRO_DEMO = [
+  'v18: en «Construir», una obra en alto pide subir el material: lo ligero a mano por la escalera y los troncos rodándolos por dos varas con una cuerda (o entre dos). Es la construcción v23.',
   'v17: en «Construir», la decoración va al suelo de la planta en la que estás (ya no al piso de arriba) y los cimientos y suelos de troncos tapan del todo. Es la construcción v22.',
   'v16: en «Construir», se construye por obras: colocar pone el marco, Usar (F) junto a la obra le lleva el material y te pone a construir, y cada pieza tarda un tiempo según su peso. Es la construcción v21.',
   'v14: lo que quedaba con el aspecto inicial, con el estilo v5: en «Construir», la pieza que se ve al colocar (la propia pieza, translúcida, con un velo verde o rojo), lo que se marca al desmontar y el hacha en la mano al talar; en «Duelo», las espadas, el palo, el arco, el escudo, la flecha, el poste de práctica y la diana. Es la construcción v19 y el combate v11.',
