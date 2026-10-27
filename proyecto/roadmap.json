@@ -272,8 +272,9 @@
     },
     {
      "nombre": "Arreglo (pedido de valravnx, 27 oct, jugando en línea): los fotogramas caen mucho todo el rato mientras alguien construye una obra, también en el aparato del otro jugador",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T20:07:34+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T20:07:34+00:00",
+     "fin": "2026-10-27T21:41:25+00:00"
     },
     {
      "nombre": "Combate en el servidor: un luchador por jugador en la lógica pura; los clientes mandan intenciones (atacar en una línea, guardia, bloquear, tensar y soltar) y el servidor lleva los tiempos y resuelve golpes y heridas con su autor. Prueba en node con dos clientes y lag simulado",
@@ -1131,6 +1132,13 @@
      "archivo": "jugar/demo/v21.html",
      "capturas": "capturas/demo-v21",
      "notas": "Jugar en línea: construir en el mundo del servidor y ver a los demás con su personaje del taller; la dirección del servidor, en Opciones"
+    },
+    {
+     "v": "v22",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v22.html",
+     "capturas": "capturas/demo-v22",
+     "notas": "Los fotogramas ya no caen mientras alguien construye una obra (también en línea); es la construcción v26"
     }
    ]
   },
@@ -1299,6 +1307,13 @@
      "archivo": "jugar/construccion/v25.html",
      "capturas": "capturas/construccion-v25",
      "notas": "Arreglo: varios suelos o cimientos de troncos seguidos se juntan de una, sin rendija ni testas en cada junta."
+    },
+    {
+     "v": "v26",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v26.html",
+     "capturas": "capturas/construccion-v26",
+     "notas": "Al construir una obra, solo se redibuja esa pieza al avanzar: los fotogramas ya no caen mientras se construye"
     }
    ]
   },

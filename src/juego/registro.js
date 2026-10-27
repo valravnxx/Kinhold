@@ -1,6 +1,7 @@
 // Decisiones que he tomado yo en el hito 1, para que las revises.
-export const VERSION = 'Hito 1 · v23';
+export const VERSION = 'Hito 1 · v26';
 export const REGISTRO = [
+  'v26: mientras alguien construye una obra, al avanzar cada cuarto se vuelve a dibujar solo esa pieza, no todo lo construido; y el anillo de la tierra ya no obliga al navegador a preparar de nuevo su dibujo. Antes los fotogramas caían mucho todo el rato al construir, también en el aparato del otro jugador en línea (lo vio valravnx el 27 oct). Medido en el navegador de pruebas con una cabaña: de unos 490 ms a unos 7 ms de cálculo por fotograma mientras se construye.',
   'v23: cada material tiene una clase de peso (GDD, «Obras»): ligeros las tablas, las varas, la paja, los clavos, la cuerda, el barro y el hierro; pesados los troncos y la piedra sin tallar (el GDD sube «piedras pequeñas» con polea: provisional). Muy pesada será la piedra tallada, que aún no existe.',
   'v23: una obra en la planta 1 o más arriba pide subir el material hasta su planta. Lo ligero se lleva a mano subiendo por la escalera: Usar solo se lo entrega si estás en la planta de la obra. Lo que se apoya en lo alto de la planta baja (vigas, el tejado de una cabaña) cuenta como planta baja y se alcanza desde el suelo (provisional).',
   'v23: lo pesado se sube de uno en uno: entre dos personas (2 × 2,5 s de trabajo por planta, sumando los de las dos), o una sola rodándolo por dos varas inclinadas con una cuerda que lo abraza, con el doble de trabajo (10 s por tronco hasta la planta 1). Las varas y la cuerda no se gastan. Sin varas, una persona sola no puede: espera a que ayude otra. Las cifras son provisionales (el GDD no las da).',
