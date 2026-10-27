@@ -1580,5 +1580,23 @@
   "pruebas": "Todas correctas (bash herramientas/probar_todo.sh; tras las últimas uniones con main, otra vez las de node y las de navegador de construcción, demo y jugar en línea): lógica 134/134 (27 nuevas, fallan con MUTAR=1), modelos 117/117 (la plataforma a la altura del suelo falla con MUTAR_SUELO=1), navegador de construcción con andamio y polea; las comprobaciones nuevas de navegador fallaron mientras Usar no subía al andamio. Capturas de cerca miradas en PC y móvil. Una vez falló 1 de 37 en prueba_combate_servidor (del carril A) y pasó las 6 siguientes. No comprobado: el personaje usa el gesto de construir (con el hacha) al tirar de la polea, como ya pasaba con las varas.",
   "capturas": "capturas/construccion-v27",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T21:25:00+01:00",
+  "fin": "2026-10-28T00:18:08+01:00",
+  "titulo": "Hito 10: el paisaje de cerca, como se ve en el juego",
+  "hito": "mundo",
+  "hecho": [
+   "Vista nueva «Como en el juego» en el boceto de cerca: el personaje del taller con la cámara del juego (detrás y por encima, 16 m)",
+   "Alrededor del personaje, un trozo de 240 × 240 m (170 en el móvil) con rejilla de 1 m (1,25 en el móvil) y tres capas más de relieve, hasta unos 2 m",
+   "Hierba, flores, matorrales, piedras (más en lo empinado) y árboles completos del estilo v5, repartidos con las mismas reglas que el bosque de lejos; sombras del sol que siguen al personaje (también donde el terreno está alto)",
+   "Bajo el bosque, suelo de hojarasca y más matorral; en los prados, calvas de tierra",
+   "Se anda tocando el suelo; si te alejas, el trozo de cerca se rehace donde estás. El terreno de lejos se hunde bajo el trozo de cerca para no asomar",
+   "Los árboles entre la cámara y el personaje no se dibujan, para que una copa no tape la pantalla",
+   "Prueba del navegador del mapa ampliada (trozo de cerca, andar pegado al suelo, salir); ahora se sirve por http para que cargue el personaje"
+  ],
+  "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, idiomas, mapa; navegador de construcción, combate, estilo, personaje, demo, en línea, recursos, inglés, cavar y mapa en PC y móvil). Tras unir main: lógica, modelos, idiomas, construcción, demo y mapa otra vez",
+  "capturas": "capturas/mapa-v4",
+  "estado": "ok"
  }
 ]

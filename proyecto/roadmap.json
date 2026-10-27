@@ -833,8 +833,9 @@
     },
     {
      "nombre": "Paisaje de cerca como en el juego: el personaje con la cámara del juego y, a su alrededor, un trozo con todo el detalle (rejilla de 1 m, hierba, flores, matorrales, piedras, árboles completos y sombras); se anda tocando el suelo",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T21:25:00+01:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T21:25:00+01:00",
+     "fin": "2026-10-28T00:18:08+01:00"
     },
     {
      "nombre": "Relieve de detalle por escalas: el mapa da la forma grande y encima van colinas, lomas y quebradas con pendientes de todos los tamaños (como en el terreno de verdad), sin llanos enormes ni cuestas eternas",
@@ -1652,6 +1653,13 @@
      "archivo": "jugar/mapa/v3.html",
      "capturas": "capturas/mapa-v3",
      "notas": "Ver de cerca: al tocar un sitio de tierra, sus 4 × 4 km en 3D con el estilo v5, desde lo alto o a pie. Relieve con detalle por escalas (laderas lisas, crestas y vaguadas marcadas), cortado donde la tierra alta llega al mar y playa donde es baja, bosque con claros y bosquetes."
+    },
+    {
+     "v": "v4",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/mapa/v4.html",
+     "capturas": "capturas/mapa-v4",
+     "notas": "De cerca, nueva vista «Como en el juego»: el personaje con la cámara del juego y, a su alrededor, un trozo de 240 m con todo el detalle (rejilla de 1 m, hierba, flores, matorrales, piedras, árboles completos y sombras). Se anda tocando el suelo."
     }
    ]
   }
