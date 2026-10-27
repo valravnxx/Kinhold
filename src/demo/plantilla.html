@@ -23,6 +23,9 @@
 #demoMenu button.sel{background:var(--acento);color:#241b10;border-color:transparent;font-weight:600}
 #demoMenu #demoNotas{font-size:12.5px;color:var(--muted);margin-top:10px}
 #demoMenu #demoNotas ul{padding-left:18px;margin:6px 0 0} #demoMenu #demoNotas li{margin:0 0 6px}
+#demoMenu #demoOpciones{font-size:12.5px;color:var(--muted);margin-top:10px}
+#demoMenu #demoOpciones .fila{display:flex;gap:6px;margin:6px 0 4px}
+#demoMenu #demoOpciones input{flex:1;min-width:0;font:inherit;font-size:13px;color:var(--ink);background:#0003;border:1px solid var(--linea);border-radius:9px;padding:6px 8px}
 #demoMenu [hidden]{display:none!important}
 </style>
 </head>
@@ -33,9 +36,15 @@
     <p class="sub">Demo: supervivencia medieval. Elige qué quieres probar.</p>
     <a class="parte" data-ir="construir" href="?modo=construir"><b>Construir</b><span>Levanta una cabaña: cimientos, suelos, muros, tejados y muebles.</span></a>
     <a class="parte" data-ir="duelo" href="?modo=duelo"><b>Duelo</b><span>Combate de habilidad con espada o palo, prácticas y carga a distancia.</span></a>
+    <a class="parte" id="demoEnLinea" href="?modo=construir&amp;enlinea=1"><b>Jugar en línea</b><span>Construye con otros en el mundo del servidor y ve a cada uno con su personaje. Hace falta un servidor (su dirección, en Opciones).</span></a>
     <a class="parte" data-ir="personaje" href="?modo=personaje"><b>Personaje</b><span>Elige cuerpo y ropa por capas: es el que construye y el que lucha.</span></a>
     <div id="demoPersonaje"></div>
-    <div class="pie"><a href="../../index.html">Progreso del proyecto</a><button id="btnDemoNotas">Notas</button><span id="demoIdioma" class="pie"></span></div>
+    <div class="pie"><a href="../../index.html">Progreso del proyecto</a><button id="btnDemoOpciones">Opciones</button><button id="btnDemoNotas">Notas</button><span id="demoIdioma" class="pie"></span></div>
+    <div id="demoOpciones" hidden>
+      <label for="demoServidor">Dirección del servidor para jugar en línea</label>
+      <div class="fila"><input id="demoServidor" type="text" spellcheck="false" autocomplete="off"><button id="btnDemoGuardar">Guardar</button></div>
+      <small id="demoServidorNota"></small>
+    </div>
     <div id="demoNotas" hidden></div>
   </div>
 </div>
