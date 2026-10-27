@@ -806,6 +806,44 @@
     },
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "hecho",
+     "inicio": "2026-10-27T18:54:00+01:00",
+     "fin": "2026-10-27T19:05:00+01:00"
+    },
+    {
+     "nombre": "Boceto de paisaje de cerca: tocar un sitio del mapa y verlo en 3D (unos 4 × 4 km) para juzgar si es bonito antes de meterlo en el juego",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Relieve de detalle por escalas: el mapa da la forma grande y encima van colinas, lomas y quebradas con pendientes de todos los tamaños (como en el terreno de verdad), sin llanos enormes ni cuestas eternas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Valles tallados por los ríos: gargantas en la montaña, vegas anchas abajo, saltos de agua donde el río cruza roca dura",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Que aguante en el móvil: el terreno por trozos alrededor del jugador, niveles de detalle, árboles repetidos de una sola malla y versiones sencillas de lejos (medir fotogramas)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Andar por el mundo de verdad en la demo: el personaje en el mundo elegido, con construir y cavar encima",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
     }
    ],
