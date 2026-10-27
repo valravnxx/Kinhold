@@ -60,7 +60,14 @@ call npm install --omit=dev --no-audit --no-fund
 if not exist "node_modules\ws" goto fallo_npm
 
 :encender
-rem --- la IP de este PC en la wifi o el cable (la que tiene salida a internet) ---
+echo.
+echo  Donde esta la otra persona?
+echo    1 = en esta misma casa (misma wifi)
+echo    2 = lejos, por internet (otra casa, otra ciudad, otro pais)
+choice /c 12 /n /m "Pulsa 1 o 2: "
+if errorlevel 2 goto internet
+
+rem --- 1. misma wifi: la IP de este PC en la wifi o el cable (la que tiene salida a internet) ---
 set "IP="
 for /f "usebackq delims=" %%i in (`%PS% "(Get-NetIPConfiguration | Where-Object { $_.IPv4DefaultGateway } | Select-Object -First 1).IPv4Address | Select-Object -First 1 -ExpandProperty IPAddress"`) do set "IP=%%i"
 if "%IP%"=="" set "IP=localhost"
@@ -83,6 +90,59 @@ echo.
 echo   Luego cada uno: Personaje, Menu y "Jugar en linea".
 echo  ======================================================================
 echo.
+pause
+exit /b
+
+:internet
+rem --- 2. por internet: la web es la publica (GitHub Pages) y el servidor del juego de este PC sale a internet por
+rem     un tunel gratuito de Cloudflare (sin cuenta ni abrir puertos del router). Solo sale el puerto del juego (8080),
+rem     no el resto del PC. La direccion es aleatoria y cambia cada vez. El servidor aun no tiene contrasenas.
+echo.
+echo  AVISO: quien tenga el enlace podra entrar a tu servidor del juego y
+echo  construir en el (solo el juego, no el resto del PC). Mandalo solo a
+echo  quien quieras que juegue y no lo publiques.
+choice /c SN /n /m "Seguir? (S/N): "
+if errorlevel 2 exit /b
+if exist "%BASE%\cloudflared.exe" goto tunel
+echo.
+echo Descargando el tunel de Cloudflare (unos 60 MB, solo la primera vez)...
+%PS% "$ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -UseBasicParsing -Uri 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe' -OutFile '%BASE%\cloudflared.exe'"
+if not exist "%BASE%\cloudflared.exe" goto fallo_tunel
+:tunel
+start "Kinhold - servidor (NO CERRAR)" /d "%JUEGO%" cmd /k node servidor\servidor.mjs 8080 "%BASE%\mundo.jsonl"
+if exist "%BASE%\tunel.log" del "%BASE%\tunel.log"
+start "Kinhold - tunel a internet (NO CERRAR)" /min cmd /k ""%BASE%\cloudflared.exe" tunnel --no-autoupdate --url http://localhost:8080 2> "%BASE%\tunel.log""
+echo.
+echo Abriendo el tunel a internet (hasta 1 minuto)...
+set "TUNEL="
+for /f "usebackq delims=" %%i in (`%PS% "for ($i=0; $i -lt 60; $i++) { Start-Sleep 1; if (Test-Path '%BASE%\tunel.log') { $m=Select-String -Path '%BASE%\tunel.log' -Pattern 'https://[a-z0-9-]+\.trycloudflare\.com' | Select-Object -First 1; if ($m) { $m.Matches[0].Value; break } } }"`) do set "TUNEL=%%i"
+if "%TUNEL%"=="" goto fallo_tunel
+set "SRV=%TUNEL:https://=wss://%"
+set "URL=https://valravnxx.github.io/Kinhold/jugar/demo/index.html?servidor=%SRV%"
+timeout /t 5 /nobreak >nul
+start "" "%URL%"
+echo %URL%| clip
+echo.
+echo  ======================================================================
+echo   LISTO. Se han abierto dos ventanas (servidor y tunel): NO las
+echo   cierres mientras jugais.
+echo.
+echo   El juego ya se ha abierto en este PC. Mandale a la otra persona
+echo   esta direccion (ya esta copiada: pegala en WhatsApp o Telegram):
+echo.
+echo   %URL%
+echo.
+echo   Luego cada uno: Personaje, Menu y "Jugar en linea".
+echo   La direccion cambia cada vez que abres este archivo.
+echo  ======================================================================
+echo.
+pause
+exit /b
+
+:fallo_tunel
+echo.
+echo No se ha podido abrir el tunel a internet. Mandale una foto de esta
+echo ventana y de la ventana "Kinhold - tunel" al dev.
 pause
 exit /b
 
