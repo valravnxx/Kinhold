@@ -587,11 +587,12 @@
    "num": "2",
    "nombre": "Equipo y carga por huecos",
    "jugable": "Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T09:50:06+00:00"
     },
     {
      "nombre": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",

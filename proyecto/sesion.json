@@ -3,7 +3,13 @@
   "inicio": "2026-10-27T08:38:20+00:00",
   "tarea": "Jugadores que se ven: cada cliente manda su posición, giro y animación unas 10 veces por segundo; el servidor las reparte y los demás clientes las suavizan (interpolación). Prueba con lag simulado",
   "hito": "prueba-online",
-  "rama": "trabajo/20261027-0838"
+  "rama": "trabajo/20261027-0838",
+  "ultimo": "2026-10-27T08:44:56.000Z"
  },
- "B": null
+ "B": {
+  "inicio": "2026-10-27T09:50:06+00:00",
+  "tarea": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+  "hito": "equipo",
+  "rama": "trabajo/20261027-0950"
+ }
 }
