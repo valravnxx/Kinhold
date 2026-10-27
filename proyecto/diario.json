@@ -1138,5 +1138,18 @@
   "pruebas": "Todas las pruebas de herramientas/probar_todo.sh correctas (modelos 104/104, construcción, combate, estilo, personaje, demo, idiomas y web en el navegador); capturas revisadas en PC y móvil",
   "capturas": "capturas/combate-v11",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T02:20:34+00:00",
+  "fin": "2026-10-27T03:36:06+00:00",
+  "titulo": "Comprobación de la versión de armas y pieza al construir",
+  "hito": "estilo",
+  "hecho": [
+   "La sesión de las 00:20 parecía cortada (más de 70 minutos), así que esta retomó su rama; en realidad seguía trabajando y publicó ella misma la construcción v19, el combate v11 y la demo v14.",
+   "Esta sesión pasó todas las pruebas sobre el mismo código y miró las capturas de cerca de las armas, el hacha, la pieza al construir y lo marcado al desmontar: todo correcto. No se publica nada repetido."
+  ],
+  "pruebas": "Todas las de herramientas/probar_todo.sh correctas: lógica 86/86, modelos 104/104, combate 69/69, acciones 25/25; navegador de construcción, combate, estilo, personaje, demo, idioma y web correctos en PC y móvil",
+  "capturas": "capturas/combate-v11",
+  "estado": "ok"
  }
 ]
