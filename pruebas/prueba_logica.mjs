@@ -1,6 +1,6 @@
 // Pruebas de la lógica de construcción de Kinhold. Ejecutar: node pruebas/prueba_logica.mjs
 // Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR.
-import { Mundo, SUBIR_PLANTA, clave, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, progresoEscalera, salidaEscalera } from '../src/logica/construccion.js';
+import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, progresoEscalera, salidaEscalera } from '../src/logica/construccion.js';
 import { PIEZAS, CLASE_PESO, MATERIALES } from '../src/logica/piezas.js';
 import { ejecutar, RegistroAcciones, seAbre, acabarObra } from '../src/logica/acciones.js';
 
@@ -9,6 +9,8 @@ if (process.env.MUTAR === '1') {
   PIEZAS.viga.cap = 5000;         // una viga que nunca se sobrecarga
   PIEZAS.cim_tronco.cap = 5000;   // un cimiento de troncos que aguanta tres plantas
   CLASE_PESO.tronco = 'ligero';   // troncos que se suben a mano por la escalera
+  PIEZAS.andamio.cap = 0;         // un andamio que no aguanta el de encima
+  PIEZAS.polea.hueco = 'b';       // una polea que no cuelga de su viga
 }
 
 let ok = 0, mal = 0;
@@ -21,7 +23,7 @@ function comprobar(nombre, cond, detalle = '') {
 function enRejilla(m, c, tipo, i, j, k, d = 0, dir = 0) {
   const def = PIEZAS[tipo];
   const p = { tipo, hueco: def.hueco, i, j, k, dir, abierta: false };
-  if (['e', 'b', 'g', 'p'].includes(def.hueco)) p.d = d;
+  if (['e', 'b', 'g', 'p', 'q'].includes(def.hueco)) p.d = d;
   return { construccion: c, nueva: false, pieza: p };
 }
 function nuevaConstruccion(m) {
@@ -450,6 +452,88 @@ console.log('15. Obras en alto: clase de peso y subir el material');
   const l2 = A(yo, { tipo: 'entregar', clave: kte, material: 'paja', cantidad: 4, desde: 1 });
   comprobar('subido a mano por la escalera, sí se entrega', l2.ok && c.piezas.get(kte).obra.entregado.paja === 4);
   comprobar('acabarObra termina una obra en alto con todo por acciones', acabarObra(m, R, yo, c.id, kte).terminada && !c.piezas.get(kte).obra);
+}
+
+console.log('16. Obras: andamio pegado al muro y polea en una viga');
+{
+  const m = new Mundo(); m.colocarMojon(0, 0);
+  const c = nuevaConstruccion(m);
+  const R = new RegistroAcciones();
+  const yo = 'jugador:uno';
+  const A = (a) => ejecutar(m, R, { autor: yo, construccion: c.id, ...a });
+  const pon = (tipo, i, j, k, d = 0) => m.colocar(enRejilla(m, c, tipo, i, j, k, d));
+  // casa de 2×1: cimientos de piedra, muros en la planta baja y la 1, y suelo de la planta 1
+  for (const i of [0, 1]) pon('cim_piedra', i, 0, 0);
+  for (const k of [0, 1]) {
+    for (const i of [0, 1]) { pon('muro_tronco', i, 0, k, 0); pon('muro_tronco', i, 1, k, 0); }
+    pon('muro_tronco', 0, 0, k, 1); pon('muro_tronco', 2, 0, k, 1);
+  }
+  for (const i of [0, 1]) pon('suelo_tronco', i, 0, 1);
+  // andamio
+  comprobar('el andamio cuesta varas y cuerda y va en la categoría de acceso', PIEZAS.andamio.coste.vara > 0 && PIEZAS.andamio.coste.cuerda > 0 && PIEZAS.andamio.cat === 'acceso');
+  const lejos = m.validar(enRejilla(m, c, 'andamio', 4, 4, 0));
+  comprobar('lejos de un muro no se pone', !lejos.ok && /muro/.test(lejos.motivo), lejos.motivo);
+  const a0 = pon('andamio', 0, -1, 0);
+  comprobar('pegado al muro, a ras de suelo, se pone', a0.ok, a0.motivo || '');
+  comprobar('un andamio terminado cuenta como andamio', !!andamioEn(c, 0, -1, 0));
+  const lado = pon('andamio', 2, 0, 0);
+  comprobar('mira solo hacia su muro (la barandilla y la escalerilla quedan por fuera)', c.piezas.get(a0.clave).dir === 0 && lado.ok && c.piezas.get(lado.clave).dir === 1, `${c.piezas.get(a0.clave).dir} y ${lado.ok && c.piezas.get(lado.clave).dir}`);
+  const dentro = m.validar(enRejilla(m, c, 'andamio', 0, 0, 0));
+  comprobar('donde arriba hay suelo no cabe su plataforma', !dentro.ok, dentro.motivo);
+  const flota = m.validar(enRejilla(m, c, 'andamio', 1, -1, 1));
+  comprobar('en alto, sin andamio debajo, no se sostiene', !flota.ok, flota.motivo);
+  const a1 = pon('andamio', 0, -1, 1);
+  comprobar('encima de otro andamio, sí', a1.ok, a1.motivo || '');
+  comprobar('en la última planta no cabe (su plataforma iría por encima)', !m.validar(enRejilla(m, c, 'andamio', 0, -1, 3)).ok);
+  const sobre = m.validar(enRejilla(m, c, 'suelo_tablas' in PIEZAS ? 'suelo_tablas' : 'suelo_tabla', 0, -1, 1));
+  comprobar('no se pone un suelo donde está la plataforma del andamio', !sobre.ok);
+  comprobar('aguanta otro andamio encima (sin sobrecarga)', !m.sobrecarga(c));
+  // el marco de un muro de la planta 2, y el tercer andamio pegado a él
+  const mz = m.colocar(enRejilla(m, c, 'muro_zarzo', 0, 0, 2, 0), true);
+  const a2 = pon('andamio', 0, -1, 2);
+  comprobar('se apilan tres andamios hasta la planta 3, pegados a la obra de arriba', a2.ok, a2.motivo || '');
+  const e1 = A({ tipo: 'entregar', clave: mz.clave, material: 'vara', cantidad: 4, desde: 1 });
+  comprobar('lo ligero no llega a la planta 2 desde la 1', mz.ok && !e1.ok && e1.escalera, e1.motivo || mz.motivo);
+  const e2 = A({ tipo: 'entregar', clave: mz.clave, material: 'vara', cantidad: 4, desde: 2 });
+  comprobar('subido al andamio (en la planta 2), se entrega y se trabaja', e2.ok && acabarObra(m, R, yo, c.id, mz.clave).terminada);
+  const pre = m.previsualizarDesmontaje(c, clave('l', 0, -1, 0));
+  comprobar('al quitar el andamio de abajo caen los de encima', pre.ok && pre.caen.length === 2, JSON.stringify(pre.caen));
+  // polea
+  comprobar('la polea va en la categoría de acceso y cuelga de una viga', PIEZAS.polea.cat === 'acceso' && PIEZAS.polea.hueco === 'q');
+  const sinViga = m.validar(enRejilla(m, c, 'polea', 0, 1, 1, 0));
+  comprobar('sin viga no se cuelga', !sinViga.ok, sinViga.motivo);
+  const vigaObra = m.colocar(enRejilla(m, c, 'viga', 0, 1, 1, 0), true);
+  comprobar('de una viga en obras tampoco', !m.validar(enRejilla(m, c, 'polea', 0, 1, 1, 0)).ok);
+  acabarObra(m, R, yo, c.id, vigaObra.clave);
+  const po = pon('polea', 0, 1, 1, 0);
+  comprobar('de una viga terminada, sí', po.ok, po.motivo || '');
+  // una obra pesada en la planta 2 (muro de troncos sobre el de la planta 1)
+  const mt = m.colocar(enRejilla(m, c, 'muro_tronco', 1, 1, 2, 0), true);
+  const pmt = c.piezas.get(mt.clave);
+  comprobar('la polea de lo alto de la planta 1 sirve para la planta 2', poleaPara(c, pmt) === c.piezas.get(po.clave));
+  let n = 0, r;
+  do { r = A({ tipo: 'subir', clave: mt.clave, material: 'tronco', segundos: 1, metodo: 'polea' }); n++; } while (r.ok && !r.subido && n < 100);
+  comprobar('una persona sola sube un tronco con la polea', r.ok && r.subido && pmt.obra.entregado.tronco === 1, r.motivo || '');
+  comprobar('con polea, una sola hace lo de dos a pulso: la mitad que con varas', n === 2 * 2 * SUBIR_PLANTA, `${n} s a la planta 2 (con varas, ${4 * 2 * SUBIR_PLANTA} s)`);
+  const ap = pmt.obra.aportes.at(-1);
+  comprobar('queda anotado que se subió con polea y quién', ap?.metodo === 'polea' && ap.autores[yo] === n);
+  // una polea más baja no sirve para más arriba; sin polea, el método «polea» no vale
+  const c2 = nuevaConstruccion(m);
+  const pon2 = (tipo, i, j, k, d = 0, marco = false) => m.colocar(enRejilla(m, c2, tipo, i, j, k, d), marco);
+  pon2('cim_piedra', 5, 3, 0); pon2('muro_tronco', 5, 3, 0, 0); pon2('muro_tronco', 5, 3, 1, 0);
+  const sola = pon2('muro_tronco', 5, 3, 2, 0, true);
+  const sinPolea = ejecutar(m, R, { autor: yo, tipo: 'subir', construccion: c2.id, clave: sola.clave, material: 'tronco', segundos: 1, metodo: 'polea' });
+  comprobar('sin polea en la construcción, no se sube con polea', !sinPolea.ok, sinPolea.motivo);
+  pon2('viga', 5, 3, 0, 0); const po2 = pon2('polea', 5, 3, 0, 0);
+  comprobar('una polea en lo alto de la planta baja no llega a la planta 2', sola.ok && po2.ok && !poleaPara(c2, c2.piezas.get(sola.clave)), sola.motivo || po2.motivo || '');
+  comprobar('pero sí a la planta 1', !!poleaPara(c2, { k: 1, hueco: 'e', i: 5, j: 3, d: 0 }));
+  // guardar y cargar
+  const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  const c3 = m2.construcciones.find(x => x.id === c.id);
+  comprobar('el andamio y la polea se guardan y se cargan', !!andamioEn(c3, 0, -1, 2) && c3.piezas.has(clave('q', 0, 1, 1, 0)));
+  // al quitar la viga, la polea cae
+  const pv = m.previsualizarDesmontaje(c, vigaObra.clave);
+  comprobar('al quitar la viga, cae la polea', pv.ok && pv.caen.includes(po.clave), JSON.stringify(pv));
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
