@@ -1300,7 +1300,7 @@
  },
  {
   "inicio": "2026-10-27T09:50:06+00:00",
-  "fin": "2026-10-27T09:52:30+00:00",
+  "fin": "2026-10-27T11:21:44+00:00",
   "titulo": "Hito 2: plan de Equipo y carga por huecos",
   "hito": "equipo",
   "hecho": [
@@ -1308,7 +1308,7 @@
    "Hito desglosado en 13 tareas de una sesión: lógica del inventario por huecos, equipo de carga, ralentización, datos de las prendas, panel de inventario, animaciones para cargar, equipo que se ve puesto, objetos en el suelo, tala, tronzar y partir, rastra, carretilla y obras con lo que llevas; la última, la revisión completa y publicación.",
    "Decisión provisional: hasta que haya fabricación (hito 3), los cinturones, las mochilas y las hachas se cogen de un arcón de pruebas en la demo; sus recetas llegan con el hito 3."
   ],
-  "pruebas": "Sin código ni versión nueva: solo el plan. Web de progreso generada y comprobada.",
+  "pruebas": "Todas las pruebas correctas (bash herramientas/probar_todo.sh); capturas de la web miradas (hoja de ruta y diario). Sin código ni versión nueva: solo el plan. Web de progreso generada y comprobada.",
   "estado": "ok"
  }
 ]
