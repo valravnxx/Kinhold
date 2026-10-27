@@ -1182,5 +1182,21 @@
   "pruebas": "Web y textos traducidos correctos. Sin cambios de código.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T05:49:03+00:00",
+  "fin": "2026-10-27T05:51:24+00:00",
+  "titulo": "Hito 1f: plan de la prueba online mínima",
+  "hito": "prueba-online",
+  "hecho": [
+   "Leído lo que el GDD dice del online: un único mundo, servidor autoritativo por websockets, toda acción con autor validada por la lógica pura, pruebas con varios clientes y bots con lag simulado.",
+   "El hito queda en diez tareas de una sesión: servidor mínimo con la construcción, jugadores que se ven, demo en línea, combate en el servidor, combate en línea en la demo, cortes de conexión y protección básica, bots, medición con 100 jugadores, poner el servidor en internet y revisión final.",
+   "Decisión provisional: el servidor de prueba es Node con el paquete ws, y el autor de cada acción lo pone el servidor según la conexión, nunca el cliente.",
+   "Comprobado en Chromium sin pantalla que una página https no puede conectarse a un servidor sin cifrar (lo bloquea como contenido mixto): el servidor de prueba necesita conexión cifrada.",
+   "Pregunta nueva para valravnx: dónde se pone el servidor de prueba (alojamiento con cuenta suya, o su PC con un túnel https). Esa tarea espera su respuesta; las demás no."
+  ],
+  "pruebas": "Web y textos traducidos correctos. Sin cambios de código.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
