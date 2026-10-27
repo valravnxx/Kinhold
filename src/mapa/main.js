@@ -1,8 +1,9 @@
 // Kinhold — visor de los bocetos del mapa del mundo (canvas 2D, sin three.js).
 // El mapa lo genera la lógica pura (src/logica/mapa.js) por pasos, enseñando el progreso; aquí solo se dibuja.
-import { generar, clasificarBioma, SEMILLA_MUNDO, LADO_MUNDO, BIOMAS, ROCAS, VETAS, LADO_KM, anchoRio, claseRio, fbm, resumen } from '../logica/mapa.js';
+import { generar, riosDelMapa, clasificarBioma, SEMILLA_MUNDO, LADO_MUNDO, BIOMAS, ROCAS, VETAS, LADO_KM, anchoRio, claseRio, fbm, resumen } from '../logica/mapa.js';
 import { VERSION_MAPA, REGISTRO_MAPA } from './registro.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
+import { abrirCerca } from './cerca.js';
 
 const $ = (id) => document.getElementById(id);
 const lienzo = $('lienzo'), ctx = lienzo.getContext('2d');
@@ -138,40 +139,7 @@ function distMar(px, py, tierraPx) {
 }
 
 // ---------- ríos: polilíneas suavizadas en km ----------
-function prepararRios() {
-  const { tierra, rec, A } = mapa, NN = N * N, km = LADO() / N, MIN = 40e6;
-  const centro = (i) => { const x = i % N, y = (i / N) | 0; return [(x + 0.5 + mapa.jx[i]) * km, (y + 0.5 + mapa.jy[i]) * km]; };
-  const tieneArriba = new Uint8Array(NN);
-  for (let i = 0; i < NN; i++) if (tierra[i] && A[i] >= MIN && tierra[rec[i]]) tieneArriba[rec[i]] = 1;
-  const visto = new Uint8Array(NN); rios = [];
-  for (let i = 0; i < NN; i++) {
-    if (!tierra[i] || A[i] < MIN || tieneArriba[i]) continue;
-    let c = i; const pts = [];
-    for (;;) {
-      pts.push({ p: centro(c), a: A[c] });
-      if (visto[c] || !tierra[c]) break;
-      visto[c] = 1; c = rec[c];
-    }
-    // entra en otro río o en el mar: el último punto es la unión
-    rios.push(chaikin(pts));
-  }
-  // los que nacen en un río ya trazado (afluentes que llegan a la vez) también se dibujan por tramos
-  for (let i = 0; i < NN; i++) if (tierra[i] && A[i] >= MIN && !visto[i]) { visto[i] = 1; rios.push(chaikin([{ p: centro(i), a: A[i] }, { p: centro(rec[i]), a: A[rec[i]] }])); }
-}
-function chaikin(pts) {
-  let r = pts;
-  for (let k = 0; k < 2; k++) {
-    if (r.length < 3) break;
-    const n = [r[0]];
-    for (let i = 0; i < r.length - 1; i++) {
-      const a = r[i], b = r[i + 1];
-      n.push({ p: [a.p[0] * 0.75 + b.p[0] * 0.25, a.p[1] * 0.75 + b.p[1] * 0.25], a: a.a });
-      n.push({ p: [a.p[0] * 0.25 + b.p[0] * 0.75, a.p[1] * 0.25 + b.p[1] * 0.75], a: b.a });
-    }
-    n.push(r[r.length - 1]); r = n;
-  }
-  return r;
-}
+function prepararRios() { rios = riosDelMapa(mapa); }
 const GROSOR = { arroyo: 0.7, rio: 1.5, grande: 2.8 };
 
 // ---------- dibujar ----------
@@ -287,7 +255,8 @@ function info(cx, cy) {
   const k = LADO() / N, cerca = (tipos) => Math.min(...mapa.vetas.filter(v => tipos.includes(v.tipo)).map(v => Math.hypot(v.x + 0.5 - gx, v.y + 0.5 - gy) * k));
   const aHierro = Math.round(cerca(['hierroVeta', 'granHierro', 'hierroPantano'])), aCarbon = Math.round(cerca(['carbon', 'granCarbon']));
   partes.push(tr('hierro a {h} km, carbón a {c} km', { h: aHierro, c: aCarbon }));
-  $('datos').innerHTML = `<b>${partes.join(' · ')}</b> · ${kmx}, ${kmy} km`;
+  $('datos').innerHTML = `<b>${partes.join(' · ')}</b> · ${kmx}, ${kmy} km<button id="btnCerca">${tr('Ver de cerca')}</button>`;
+  $('btnCerca').onclick = (e) => { e.stopPropagation(); abrirCerca(mapa, gx * LADO() / N, gy * LADO() / N, () => pintar()); };
   window.__mapa.ultimaInfo = $('datos').textContent;
 }
 
@@ -325,5 +294,6 @@ window.__mapa = {
   capa: (k, v) => { if (capas[k] !== v) document.querySelector(`[data-capa="${k}"]`).click(); },
   ampliar: (z, kmx, kmy) => { const s0 = escalaBase * z, k = R / LADO(); vista.z = z; vista.x = innerWidth / 2 - kmx * k * s0; vista.y = innerHeight / 2 - kmy * k * s0; pintar(); },
   get mapa() { return mapa; },
+  cerca: (kmx, kmy) => abrirCerca(mapa, kmx, kmy, () => pintar()),
 };
 crear(semillaInicial());

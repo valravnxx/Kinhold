@@ -82,21 +82,34 @@ export function suelo({ llano = 12, cerca = 15, lejos = 90, anillos = 30, lados 
 // opc: n (intentos), desde/hasta (anillo en metros), reparto (exponente: <1 más cerca del borde de dentro),
 // libre(x, z, d) para dejar huecos, llano (altura del terreno), sombra (si los árboles echan sombra).
 // Devuelve los troncos como obstáculos [{x, z, r}] para chocar con ellos.
+// Modelo instanciable hecho con un Lote: { geo (con grupos por textura), mats }
+export function modeloLote(fn) {
+  const L = new Lote({ rangoSuelo: 2.5 }); fn(L);
+  const grupos = L.cerrar(null, true), tipos = Object.keys(grupos);
+  const geo = mergeGeometries(tipos.map(t => mergeGeometries(grupos[t])), true);
+  return { geo, mats: tipos.map(t => materialTex(t)) };
+}
+// Los dos árboles del estilo v5 (pino y árbol de copa). sencillo: menos caras, para bosques de miles de árboles.
+const cacheArboles = {};
+export function modelosArbol({ sencillo = false } = {}) {
+  const k = sencillo ? 's' : 'n';
+  if (cacheArboles[k]) return cacheArboles[k];
+  const lados = sencillo ? 6 : 8, det = sencillo ? 0 : 1;
+  const pino = modeloLote((L) => {
+    L.add(cil(0.12, 0.24, 2.2, sencillo ? 5 : 6), 'corteza', 0, 1.1, 0);
+    [[1.7, 2.1, 1.8], [1.35, 1.9, 2.9], [0.95, 1.7, 3.9], [0.55, 1.4, 4.8]].filter((_, i) => !sencillo || i !== 1)
+      .forEach(([rad, h, y], i) => L.add(pisoPino(rad, h, lados, i), i % 2 ? 'pinoOsc' : 'pino', 0, y, 0, { y: i }, { copa: 0 }));
+  });
+  const frond = modeloLote((L) => {
+    L.add(cil(0.16, 0.26, 2.6, sencillo ? 5 : 6), 'corteza', 0, 1.3, 0);
+    [[0, 3.4, 0, 1.4], [0.9, 2.9, 0.3, 1.0], [-0.9, 3.0, -0.2, 1.05], [0.1, 2.9, -0.9, 0.95]].filter((_, i) => !sencillo || i < 3)
+      .forEach(([x, y, z, s], i) => L.add(copa(s, det, i), ['hoja', 'hojaOsc', 'hojaClara'][i % 3], x, y, z, { x: i, y: i * 2 }, { copa: 2 }));
+  });
+  return (cacheArboles[k] = { pino, frond });
+}
+
 export function bosque(raiz, r, { n = 36, desde = 15, hasta = 60, reparto = 0.8, libre = null, llano = 12, sombra = false, frondosos = 1 / 3 } = {}) {
-  const hacer = (fn) => {
-    const L = new Lote({ rangoSuelo: 2.5 }); fn(L);
-    const grupos = L.cerrar(null, true), tipos = Object.keys(grupos);
-    const geo = mergeGeometries(tipos.map(t => mergeGeometries(grupos[t])), true);
-    return { geo, mats: tipos.map(t => materialTex(t)) };
-  };
-  const pino = hacer((L) => {
-    L.add(cil(0.12, 0.24, 2.2, 6), 'corteza', 0, 1.1, 0);
-    [[1.7, 2.1, 1.8], [1.35, 1.9, 2.9], [0.95, 1.7, 3.9], [0.55, 1.4, 4.8]].forEach(([rad, h, y], i) => L.add(pisoPino(rad, h, 8, i), i % 2 ? 'pinoOsc' : 'pino', 0, y, 0, { y: i }, { copa: 0 }));
-  });
-  const frond = hacer((L) => {
-    L.add(cil(0.16, 0.26, 2.6, 6), 'corteza', 0, 1.3, 0);
-    [[0, 3.4, 0, 1.4], [0.9, 2.9, 0.3, 1.0], [-0.9, 3.0, -0.2, 1.05], [0.1, 2.9, -0.9, 0.95]].forEach(([x, y, z, s], i) => L.add(copa(s, 1, i), ['hoja', 'hojaOsc', 'hojaClara'][i % 3], x, y, z, { x: i, y: i * 2 }, { copa: 2 }));
-  });
+  const { pino, frond } = modelosArbol();
   const altura = alturaTerreno(llano);
   const sitios = { p: [], f: [] }, obstaculos = [];
   for (let i = 0; i < n; i++) {

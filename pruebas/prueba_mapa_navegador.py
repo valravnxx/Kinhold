@@ -16,7 +16,7 @@ TIERRA = """(() => { const c = document.getElementById('lienzo'), g = c.getConte
   let t = 0, n = 0; for (let i = 0; i < d.length; i += 4 * 37) { n++; if (d[i + 1] >= d[i + 2] + 4) t++; } return t / n; })()"""
 MEDIDAS = {}
 with sync_playwright() as p:
-    nav = p.chromium.launch()
+    nav = p.chromium.launch(args=["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"])
     for nombre, opc in [('pc', dict(viewport={'width': 1280, 'height': 800})), ('movil', dict(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True))]:
         ctx = nav.new_context(locale='es-ES', **opc); pg = ctx.new_page(); err = []
         pg.on('pageerror', lambda e: err.append(str(e))); pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
@@ -60,6 +60,19 @@ with sync_playwright() as p:
         cerca = pg.evaluate("(() => { const t = document.getElementById('datos').textContent; const m = t.match(/hierro a (\\d+) km, carbón a (\\d+) km/); return m ? [+m[1], +m[2]] : null; })()")
         comprobar(f'{nombre}: hierro y carbón a menos de 25 km del sitio tocado', cerca and max(cerca) < 25, str(cerca))
         pg.screenshot(path=f'{SALIDA}/{nombre}_4_ampliado.png')
+        # de cerca: el botón que sale al tocar abre el paisaje en 3D del sitio tocado
+        comprobar(f'{nombre}: al tocar sale «Ver de cerca»', pg.is_visible('#btnCerca'))
+        pg.evaluate("document.getElementById('btnCerca').click()")
+        pg.wait_for_function('window.__cerca && window.__cerca.listo', timeout=240000)
+        med = pg.evaluate('window.__cerca.medidas')
+        comprobar(f'{nombre}: de cerca se dibuja el terreno y el bosque', med and med['triangulos'] > 50000 and med['arboles'] > 500, json.dumps(med))
+        pg.wait_for_timeout(1500); pg.screenshot(path=f'{SALIDA}/{nombre}_6_cerca_alto.png', timeout=240000)
+        pg.evaluate('window.__cerca.vista("pie")'); pg.wait_for_timeout(1500)
+        pie = pg.evaluate("(() => { const c = document.querySelector('#lienzoCerca'); return [c.width, c.height]; })()")
+        pg.screenshot(path=f'{SALIDA}/{nombre}_7_cerca_pie.png', timeout=240000)
+        comprobar(f'{nombre}: la vista a pie se pone', pg.evaluate('window.__cerca.vistaActual') == 'pie', str(pie))
+        pg.evaluate("document.getElementById('btnVolverMapa').click()"); pg.wait_for_timeout(500)
+        comprobar(f'{nombre}: «Volver al mapa» vuelve', not pg.is_visible('#cerca'))
         pg.click('#btnNotas'); pg.wait_for_timeout(200)
         comprobar(f'{nombre}: las notas se abren', pg.is_visible('#notas'))
         pg.screenshot(path=f'{SALIDA}/{nombre}_5_notas.png'); pg.click('#btnNotas')
