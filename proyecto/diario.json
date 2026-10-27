@@ -1297,5 +1297,20 @@
   "pruebas": "Prueba de la web correcta en PC y móvil, en español, inglés y ruso; capturas miradas de todas las pestañas.",
   "capturas": "capturas/web-v3",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T10:14:47+01:00",
+  "fin": "2026-10-27T11:26:07+01:00",
+  "titulo": "Hito 1c: arreglo de la decoración en el piso de arriba y suelos de troncos sin huecos",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Arreglo pedido por valravnx con una captura del móvil: estando debajo de un piso, la decoración se ponía en el suelo de arriba. El clic de la decoración solo busca ahora los suelos y cimientos de la planta en la que estás (ni el piso de arriba, oculto o no, ni las obras a medias); arriba, fuera de tus suelos, no se pone.",
+   "Comprobado con el código de antes: el mismo clic daba en el altillo (2,62 m de alto) y ahora en el cimiento de abajo (0,07 m).",
+   "Los cimientos y los suelos de troncos llevan debajo un relleno oscuro: por las juntas entre tronco y tronco ya no se ve el suelo verde.",
+   "Construcción v22 y demo única v17."
+  ],
+  "pruebas": "Lógica 86/86, acciones 40/40, modelos 104/104, combate 69/69, servidor 15/15; navegador de construcción (2 comprobaciones nuevas: la decoración bajo el altillo va al suelo de abajo y, arriba, al del altillo), combate, estilo, personaje, demo, idiomas y web correctos. Capturas miradas en PC y móvil.",
+  "capturas": "capturas/construccion-v22",
+  "estado": "ok"
  }
 ]
