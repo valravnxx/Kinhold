@@ -240,8 +240,8 @@ const MAT_ATADURA = new THREE.MeshLambertMaterial({ color: 0xb8a27a });
 const matsObra = new Map();
 function matObra(base, nivel) {
   const b = Array.isArray(base) ? base[0] : base, k = nivel + ':' + (b?.map?.uuid || 'liso') + (b?.vertexColors ? 'v' : '');
-  if (!matsObra.has(k)) matsObra.set(k, new THREE.MeshLambertMaterial({ color: 0xe8dcc4, emissive: 0x2a2116, vertexColors: !!b?.vertexColors,
-    map: b?.map || null, transparent: true, opacity: 0.18 + 0.12 * nivel, depthWrite: false }));
+  if (!matsObra.has(k)) matsObra.set(k, new THREE.MeshLambertMaterial({ color: 0xd8ccb4, emissive: 0x1a140c, vertexColors: !!b?.vertexColors,
+    map: b?.map || null, transparent: true, opacity: 0.42 + 0.12 * nivel, depthWrite: false }));
   return matsObra.get(k);
 }
 function vara(a, b, r) {
@@ -268,7 +268,7 @@ function vestirObra(obj, p) {
   for (const [x, z] of esq) g.add(vara(V(x, y0, z), V(x, y1 + 0.12, z), r));
   for (let i = 0; i < 4; i++) {
     const [xa, za] = esq[i], [xb, zb] = esq[(i + 1) % 4];
-    if (Math.hypot(xb - xa, zb - za) < 0.3) continue; // la cara estrecha de un muro: basta con los pies
+    if (Math.hypot(xb - xa, zb - za) < 0.5) continue; // la cara estrecha de un muro: basta con los pies
     for (const y of [y0 + 0.1, y1]) g.add(vara(V(xa, y, za), V(xb, y, zb), r * 0.85));
     g.add(vara(V(xa, y0 + 0.1, za), V(xb, y1, zb), r * 0.7)); // riostra
     for (const [x, z] of [[xa, za], [xb, zb]]) for (const y of [y0 + 0.1, y1]) {
