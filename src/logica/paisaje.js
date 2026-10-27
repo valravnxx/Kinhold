@@ -70,10 +70,10 @@ export function crearPaisaje(mapa) {
   // las capas de detalle (m): ruido con sus derivadas, y cada capa se apaga donde la pendiente acumulada ya es grande
   // (el «fbm con derivadas» de Íñigo Quílez): las laderas quedan lisas y las crestas y vaguadas, marcadas, como si la
   // erosión hubiera trabajado. Cada capa va girada respecto a la anterior para que nada se alinee en cuadrícula.
-  function detalle(xm, ym, r) {
+  function detalle(xm, ym, r, fino = false) {
     const wx = xm + (fbm(xm / 1500, ym / 1500, S + 81, 3) - 0.5) * 500, wy = ym + (fbm(xm / 1500 + 9, ym / 1500, S + 82, 3) - 0.5) * 500;
     let px = wx / DETALLE.mayor, py = wy / DETALLE.mayor, a = 0, b = 1, dx = 0, dy = 0;
-    for (let o = 0; o < DETALLE.octavas; o++) {
+    for (let o = 0, n = DETALLE.octavas + (fino ? 3 : 0); o < n; o++) {   // fino: tres capas más, hasta unos 2 m (el suelo de cerca)
       ruidoD(px, py, S + 90 + o);
       dx += _d[1]; dy += _d[2];
       a += b * _d[0] / (1 + dx * dx + dy * dy);
@@ -84,10 +84,11 @@ export function crearPaisaje(mapa) {
   }
 
   // altura del terreno (m) en un punto (en metros del mundo); tramos: los de riosEn() de esa zona
-  function altura(xm, ym, tramos = null) {
+  // fino: con el detalle de hasta 2 m, para lo que rodea al jugador
+  function altura(xm, ym, tramos = null, fino = false) {
     const { f, hm, r } = grande(xm, ym);
     if (f < 0) return Math.max(-60, -1.5 + f * 0.8);       // mar: el fondo baja al alejarse de la costa
-    let z = hm + detalle(xm, ym, r) * suave(0, 3, f);
+    let z = hm + detalle(xm, ym, r, fino) * suave(0, 3, f);
     if (hm < 8) z = lerp(0.6, z, suave(0, 2.5, f));        // costa baja: playa o marisma, sin escalón
     z = Math.max(0.4, z);
     if (tramos) {

@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (21:22) — por el chat: el paisaje de cerca, como se ve en el juego
+
+«Se ve bien, pero claro, es a 0 detalle; está muy bien como "lo que se ve de lejos" pero no como se ve el juego de cerca.» → Tarea nueva en el hito 10: vista «Como en el juego» en el boceto de cerca, con el personaje, la cámara del juego y un trozo de terreno alrededor con todo el detalle (rejilla de 1 m, hierba, flores, matorrales, piedras, árboles completos y sombras).
+
 ### 27 oct 2026 — por el chat: probar en línea en casa, más fácil
 
 «¿Qué pongo para probar con otra persona?» (resumido) y «me lo ponías con textos en alguna terminal y lo hacía más rápido, ¿no?» → Archivos de doble clic en la raíz: `jugar_en_casa.bat` (Windows) y `jugar_en_casa.command` (Mac). Encienden el servidor y la web en su ordenador y dicen la dirección que hay que abrir en los dos aparatos (con el servidor ya puesto: no hace falta tocar Opciones). No comprobado en Windows ni en Mac de verdad; el paso de la dirección por la página, sí.
