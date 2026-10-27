@@ -512,7 +512,8 @@
     },
     {
      "nombre": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T16:52:02+00:00"
     },
     {
      "nombre": "Obras: polipasto con torno para vigas grandes y sillares (uno tira y otro guía)",
