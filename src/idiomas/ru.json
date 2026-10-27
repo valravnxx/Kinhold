@@ -699,5 +699,15 @@
  "La polea se cuelga de una viga terminada.": "Блок подвешивается к готовой балке.",
  "Subes con la polea:": "Поднимаете блоком:",
  "Subes al andamio, a la altura de la planta": "Вы поднимаетесь на леса, на высоту этажа",
- "Hito 1 · v27": "Этап 1 · v27"
+ "Hito 1 · v27": "Этап 1 · v27",
+ "Polipasto con torno": "Полиспаст с воротом",
+ "Lo muy pesado solo se sube con un polipasto con torno, entre dos.": "Очень тяжёлое поднимают только полиспастом с воротом, вдвоём.",
+ "Para subirlo con polipasto hace falta un polipasto en una viga de esta construcción, a la altura de la obra o más arriba.": "Чтобы поднять полиспастом, нужен полиспаст на балке этой постройки, на высоте стройки или выше.",
+ "Subes con el polipasto, dando vueltas al torno:": "Поднимаете полиспастом, вращая ворот:",
+ "Hace falta otra persona que guíe la carga.": "Нужен ещё кто-то, чтобы направлять груз.",
+ "El polipasto se cuelga de una viga terminada.": "Полиспаст подвешивается к готовой балке.",
+ "Hito 1 · v28": "Этап 1 · v28",
+ "Demo única · v24 (polipasto con torno)": "Единое демо · v24 (полиспаст с воротом)",
+ "v28: polipasto con torno (1 tronco, 2 tablas, 4 cuerdas y 3 hierros, en «Acceso»; provisional, el GDD lo pone con la mampostería, que aún no tiene recetas): se cuelga de una viga terminada, en el mismo sitio que una polea (o una, o el otro). Tiene un motón de tres roldanas arriba y otro de dos abajo, con el gancho. Al subir algo, se pone un torno en el suelo delante de ti, el motón de abajo baja hasta la carga y sube con ella mientras gira el tambor. Lo pesado (un tronco) lo sube una persona sola como con polea (5 s por tronco y planta); si hay polea, se usa la polea. Lo muy pesado (los sillares, que llegan con los muros de piedra) solo se sube con polipasto y entre dos, uno en el torno y otro que guía: una persona sola no pasa de la mitad, y entre los dos cuesta 10 s de trabajo por sillar y planta (provisional, el GDD no da cifras).": "v28: полиспаст с воротом (1 бревно, 2 доски, 4 верёвки и 3 железа, в «Доступе»; временно: в GDD он относится к каменной кладке, у которой ещё нет рецептов): подвешивается к готовой балке, на то же место, что и блок (либо одно, либо другое). Вверху у него обойма с тремя шкивами, внизу — с двумя и с крюком. При подъёме перед вами на земле ставится ворот, нижняя обойма опускается к грузу и поднимается вместе с ним, пока вращается барабан. Тяжёлое (бревно) один человек поднимает сам, как блоком (5 с на бревно и этаж); если есть блок, используется блок. Очень тяжёлое (тёсаный камень, который появится с каменными стенами) поднимают только полиспастом и вдвоём: один у ворота, другой направляет груз; один человек не продвинется дальше половины, а вдвоём нужно 10 с работы на камень и этаж (временно: в GDD нет цифр).",
+ "v24: en «Construir», polipasto con torno colgado de una viga (en «Acceso»): sube los troncos con un torno en el suelo, y lo muy pesado, cuando lo haya (sillares), solo entre dos, uno en el torno y otro que guía. Es la construcción v28.": "v24: в «Строительстве» — полиспаст с воротом, подвешенный к балке (в «Доступе»): поднимает брёвна воротом на земле, а очень тяжёлое, когда оно появится (тёсаный камень), — только вдвоём: один у ворота, другой направляет груз. Это строительство v28."
 }

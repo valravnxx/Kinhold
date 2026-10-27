@@ -16,7 +16,7 @@ export const MAX_PLANTA = 3;  // plantas 0..3
 //  g = hastial (triángulo) sobre arista   clave i,j,k,d
 //  p = hueco de puerta en un muro         clave i,j,k,d
 //  l = escalera (de mano o de tablas) o andamio en casilla  clave i,j,k
-//  q = polea colgada de una viga          clave i,j,k,d  (la de la viga b:i,j,k,d)
+//  q = polea o polipasto colgado de una viga  clave i,j,k,d  (la de la viga b:i,j,k,d)
 
 export const MATERIALES = {
   piedra: 'Piedra', tronco: 'Tronco', vara: 'Vara', barro: 'Barro', paja: 'Paja',
@@ -26,7 +26,8 @@ export const MATERIALES = {
 // Clase de peso de cada material (GDD, «Obras»): decide cómo se sube hasta la altura de la obra.
 //  ligero     → a mano, por escalera o andamio
 //  pesado     → entre dos personas, una sola con polea, o una sola rodándolo por dos varas con una cuerda (más despacio)
-//  muy pesado → polipasto con torno o grúa de rueda (piedra tallada: aún no hay ningún material de esta clase)
+//  muy pesado → polipasto con torno (entre dos: uno tira y otro guía) o grúa de rueda. Piedra tallada (sillares):
+//               aún no hay ningún material de esta clase; llega con los muros de piedra.
 // La piedra (sin tallar) va como pesada: el GDD sube «piedras pequeñas» con polea (provisional).
 export const CLASES_PESO = { ligero: 'Ligero', pesado: 'Pesado', muy_pesado: 'Muy pesado' };
 export const CLASE_PESO = {
@@ -70,6 +71,10 @@ export const PIEZAS = {
   // Polea simple colgada de una viga (GDD): una persona sola sube con ella lo pesado (un tronco, piedras) a las obras
   // en alto de su construcción.
   polea:              { nombre: 'Polea', hueco: 'q', nivel: 1, peso: 10, cap: 0, coste: { tabla: 1, cuerda: 2, hierro: 1 }, cat: 'acceso' },
+  // Polipasto de varias poleas con torno (GDD, «Obras»): para lo muy pesado (vigas grandes, sillares) hacen falta dos,
+  // uno en el torno y otro que guía la carga. Lo pesado (un tronco) lo sube también una persona sola, como con polea.
+  // Nivel y coste provisionales (el GDD lo pone con la mampostería, que aún no tiene recetas).
+  polipasto:          { nombre: 'Polipasto con torno', hueco: 'q', nivel: 2, peso: 40, cap: 0, coste: { tronco: 1, tabla: 2, cuerda: 4, hierro: 3 }, polipasto: true, cat: 'acceso' },
   puerta_varas:       { nombre: 'Puerta de varas', hueco: 'p', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, cat: 'acceso' },
   puerta_tabla:       { nombre: 'Puerta de tablas', hueco: 'p', nivel: 2, peso: 40, cap: 0, coste: { tabla: 4, clavo: 4, hierro: 1 }, cat: 'acceso' },
 

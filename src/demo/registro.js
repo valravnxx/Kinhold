@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v23 (andamio y polea)';
+export const VERSION_DEMO = 'Demo única · v24 (polipasto con torno)';
 export const REGISTRO_DEMO = [
+  'v24: en «Construir», polipasto con torno colgado de una viga (en «Acceso»): sube los troncos con un torno en el suelo, y lo muy pesado, cuando lo haya (sillares), solo entre dos, uno en el torno y otro que guía. Es la construcción v28.',
   'v23: en «Construir», andamio pegado al muro (se sube con Usar y desde su plataforma se lleva lo ligero y se trabaja en las obras de esa planta) y polea colgada de una viga (una persona sola sube los troncos con la mitad de trabajo que rodándolos por varas). Es la construcción v27.',
   'v22: en «Construir» (también en línea), los fotogramas ya no caen mientras alguien construye una obra: al avanzar se redibuja solo esa pieza. Es la construcción v26.',
   'v21: «Jugar en línea» en el menú: entras en la construcción con el mundo del servidor (sin guardar nada en el navegador) y ves a los demás con el personaje que eligieron. Lo que construyes se ve al momento y lo confirma el servidor; si otro puso lo mismo antes, el servidor manda y te avisa. La dirección del servidor se pone en Opciones (por defecto, ws://localhost:8080: un servidor en tu propio aparato, hasta que el de prueba esté en internet).',

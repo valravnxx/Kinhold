@@ -1,7 +1,7 @@
 // Mide los modelos de muro: todos deben llegar exactamente a la altura de planta,
 // y los huecos de puerta y ventana deben quedar limpios.
 import * as THREE from 'three';
-import { modeloPieza, rellenoTejado, mojon, decoracion, P } from '../src/juego/modelos.js';
+import { modeloPieza, rellenoTejado, mojon, decoracion, P, colgarPolipasto, tornoSuelto, POLIPASTO } from '../src/juego/modelos.js';
 import { PIEZAS, DECORACION, ALTURA, MODULO } from '../src/logica/piezas.js';
 
 let ok = 0, mal = 0;
@@ -66,9 +66,22 @@ for (const [tipo, sup] of Object.entries(esperado)) {
   const sale = Math.max(-b.min.x, b.max.x, -b.min.z, b.max.z) - 1;
   comprobar(`${PIEZAS[tipo].nombre}: no sale de la casilla`, sale < 0.05, `sale ${r3(sale)} m`);
 }
-for (const tipo of [...Object.keys(esperado), 'escalera_mano', 'escalera_tabla', 'andamio', 'polea']) {
+for (const tipo of [...Object.keys(esperado), 'escalera_mano', 'escalera_tabla', 'andamio', 'polea', 'polipasto']) {
   const nombres = []; modeloPieza(tipo).traverse(o => { if (o.isMesh) nombres.push(o.name); });
   comprobar(`${PIEZAS[tipo].nombre}: hecha con el estilo v5 (mallas por textura)`, nombres.length > 0 && nombres.every(n => n.startsWith('estilo_')), nombres.join(' '));
+}
+
+// el polipasto: el motón de abajo baja con colgarPolipasto() hasta la carga (y los ramales se estiran con él); el
+// torno está hecho con el estilo v5 y su tambor gira aparte
+{
+  const g = modeloPieza('polipasto');
+  const bajo = g.getObjectByName('moton_bajo'), ramales = g.getObjectByName('ramales');
+  const y0 = bajo.position.y, l0 = ramales.scale.y;
+  colgarPolipasto(g, -3, 0.2);
+  comprobar('polipasto: el motón de abajo baja hasta la carga y los ramales se alargan con él', bajo.position.y === -3 && ramales.scale.y > l0 + 2.5, `de ${r3(y0)} a ${r3(bajo.position.y)}; ramales ${r3(l0)} → ${r3(ramales.scale.y)}`);
+  comprobar('polipasto: recogido, cuelga bajo la viga sin llegar al suelo de su planta', y0 > 1 && y0 < POLIPASTO.yEje, `${r3(y0)} m`);
+  const t = tornoSuelto(); const nt = []; t.traverse(o => { if (o.isMesh) nt.push(o.name); });
+  comprobar('torno: hecho con el estilo v5 y con su tambor aparte', nt.length > 0 && nt.every(n => n.startsWith('estilo_')) && !!t.getObjectByName('tambor'), nt.join(' '));
 }
 
 // el andamio: su plataforma se pisa a la altura del suelo de la planta de encima (donde la lógica pone al jugador);
