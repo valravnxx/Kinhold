@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (13:51) — por el chat: dos fallos en construir
+
+«Se ven los muebles del piso de arriba aunque estés en el de abajo, no debe ocurrir con el siguiente piso tapado; y parece que el control con WASD está fallando según mi chica, que está testeando» → Tarea de arreglo en el hito 1c, en curso en la sesión de chat.
+
 ### 27 oct 2026 (12:36) — por el chat: decisiones de cavar y diseño del mundo
 
 «Sí, aprueba lo del vano por material» (sin derrumbes: sin apoyo no se avanza). Escombro: «sacarlo con carretilla, sí, porque es importante que sea un material que se pueda utilizar». Hierro: «poco y malo en superficie, y lo bueno en la mina, sí». «Prohibimos cavar dentro del radio de mojón ajeno, y no solo eso, sino de su radio de influencia» (en el GDD, el radio de exclusión). → GDD apartado 8 (Cavar y minar) y tareas nuevas en el hito 1g.

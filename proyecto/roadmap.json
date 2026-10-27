@@ -260,12 +260,14 @@
     },
     {
      "nombre": "Jugadores que se ven: cada cliente manda su posición, giro y animación unas 10 veces por segundo; el servidor las reparte y los demás clientes las suavizan (interpolación). Prueba con lag simulado",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T08:38:20+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T08:38:20+00:00",
+     "fin": "2026-10-27T13:17:42+00:00"
     },
     {
      "nombre": "Demo en línea: «Jugar en línea» en la demo única, que se conecta al servidor (dirección en Opciones); construir sobre el mundo del servidor y ver al otro jugador con el personaje del taller. Prueba de navegador con dos páginas y un servidor local, capturas en PC y móvil",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T13:24:50+00:00"
     },
     {
      "nombre": "Combate en el servidor: un luchador por jugador en la lógica pura; los clientes mandan intenciones (atacar en una línea, guardia, bloquear, tensar y soltar) y el servidor lleva los tiempos y resuelve golpes y heridas con su autor. Prueba en node con dos clientes y lag simulado",
@@ -449,6 +451,11 @@
    "estado": "en_curso",
    "tareas": [
     {
+     "nombre": "Arreglo (pedido de valravnx, 27 oct): en construir se veían los muebles del piso de arriba estando abajo con el techo puesto, y WASD fallaba (con la distribución de teclado rusa, o si la ventana perdía el foco con una tecla pulsada): las teclas se leen por su posición física y se sueltan todas al perder el foco",
+     "estado": "en_curso",
+     "inicio": "2026-10-27T13:53:25+01:00"
+    },
+    {
      "nombre": "Arreglo (pedido de valravnx): en PC no se pueden quitar muebles ni piezas, porque al mover el ratón hacia «Confirmar» se pierde lo elegido. Lo elegido con clic se queda fijo hasta confirmar o cancelar",
      "estado": "hecho",
      "inicio": "2026-10-25T17:52:07+00:00",
@@ -498,7 +505,8 @@
     },
     {
      "nombre": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T11:50:57+00:00"
     },
     {
      "nombre": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",
@@ -720,9 +728,9 @@
     },
     {
      "nombre": "Cámara táctil con un dedo durante el combate",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-27T08:50:44+00:00",
-     "rama": "trabajo/20261027-0850"
+     "fin": "2026-10-27T13:40:27+00:00"
     },
     {
      "nombre": "Curación de heridas",
@@ -1252,6 +1260,13 @@
      "archivo": "jugar/combate/v11.html",
      "capturas": "capturas/combate-v11",
      "notas": "Espadas, palo, arco, escudo, flecha, poste de práctica y diana con el estilo v5; cintas de paño teñido más apagadas"
+    },
+    {
+     "v": "v12",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/combate/v12.html",
+     "capturas": "capturas/combate-v12",
+     "notas": "v12: cámara táctil con un dedo. En el móvil, arrastrar un dedo por una zona libre gira la cámara (antes hacían falta dos); un toque sin arrastrar no la mueve, y tocar la rosa sigue golpeando al instante. El dedo del joystick ya no cuenta como segundo dedo. Con arco o piedras, si al apuntar llevas el dedo cerca de un borde, la cámara gira hacia ese lado."
     }
    ]
   },

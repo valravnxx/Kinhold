@@ -13,6 +13,7 @@ import { REGISTRO_COMBATE, VERSION_COMBATE } from './registro.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { personajeElegido, capasDuelo } from '../demo/eleccion.js';
 import { CAPAS_ARMADURA } from './taller.js';
+import { tipoToque, arrastrarLibre, seguirApuntado, GIRO_POR_PX } from './tactil.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -286,40 +287,60 @@ lienzo.addEventListener('pointerup', (e) => {
 });
 lienzo.addEventListener('wheel', (e) => { e.preventDefault(); cam.dist = THREE.MathUtils.clamp(cam.dist * (1 + Math.sign(e.deltaY) * 0.1), 5, 22); }, { passive: false });
 
-// Táctil: tocar la rosa golpea esa zona; con arco, mantener tensa y soltar dispara; dos dedos giran la cámara
+// Táctil (GDD): tocar la rosa golpea esa zona; arrastrar un dedo por zona libre gira la cámara (un toque sin
+// arrastrar no la mueve); con arco, mantener tensa, arrastrar apunta y soltar dispara, y la cámara sigue hacia
+// donde apuntas si llevas el dedo cerca del borde. Dos dedos también giran la cámara.
+// Se usan los dedos que tocan el lienzo (targetTouches): el del joystick no cuenta.
 const toques = new Map();
+let dedoArco = null;   // { x, y } del dedo que tensa el arco, para que la cámara le siga
 lienzo.addEventListener('touchstart', (e) => {
   e.preventDefault();
   sonido.activarSonido();
   for (const t of e.changedTouches) {
-    toques.set(t.identifier, { x: t.clientX, y: t.clientY });
+    const q = { x: t.clientX, y: t.clientY, x0: t.clientX, y0: t.clientY, arrastre: false, tipo: 'otro' };
+    toques.set(t.identifier, q);
     if (toques.size > 1) continue;
-    if (jugador.def.tipo === 'distancia') { jugador.empezarTensar(); apuntado = puntoApuntado(t.clientX, t.clientY); moverReticula(t.clientX, t.clientY); }
-    else if (rosa.visible && Math.hypot(t.clientX - rosa.x, t.clientY - rosa.y) < rosa.r * 1.5) {
-      lineaSel = lineaDesdePantalla(t.clientX, t.clientY); atacar(lineaSel);
-    }
+    q.tipo = tipoToque({ distancia: jugador.def.tipo === 'distancia', rosaVisible: rosa.visible, x: t.clientX, y: t.clientY, rosa });
+    if (q.tipo === 'arco') { jugador.empezarTensar(); dedoArco = q; apuntado = puntoApuntado(t.clientX, t.clientY); moverReticula(t.clientX, t.clientY); }
+    else if (q.tipo === 'rosa') { lineaSel = lineaDesdePantalla(t.clientX, t.clientY); atacar(lineaSel); }
   }
 }, { passive: false });
 lienzo.addEventListener('touchmove', (e) => {
   e.preventDefault();
-  if (e.touches.length >= 2) {
+  const propios = e.targetTouches;
+  if (propios.length >= 2) {
     let dx = 0, n = 0;
-    for (const t of e.touches) { const q = toques.get(t.identifier); if (q) { dx += t.clientX - q.x; n++; } }
-    if (n) { cam.yaw -= dx / n * 0.006; cam.manual = reloj; }
+    for (const t of propios) { const q = toques.get(t.identifier); if (q) { dx += t.clientX - q.x; n++; } }
+    if (n) { cam.yaw -= dx / n * GIRO_POR_PX; cam.manual = reloj; }
+    for (const t of propios) { const q = toques.get(t.identifier); if (q) { q.x = t.clientX; q.y = t.clientY; q.arrastre = true; } }
+    return;
   }
-  for (const t of e.touches) {
+  for (const t of propios) {
     const q = toques.get(t.identifier); if (!q) continue;
+    if (q.tipo === 'libre') {
+      const giro = arrastrarLibre(q, t.clientX, t.clientY);
+      if (giro) { cam.yaw += giro; cam.manual = reloj; }
+      continue;
+    }
     q.x = t.clientX; q.y = t.clientY;
-    if (jugador.def.tipo === 'distancia' && e.touches.length === 1) { apuntado = puntoApuntado(t.clientX, t.clientY); moverReticula(t.clientX, t.clientY); }
+    if (q.tipo === 'arco') { apuntado = puntoApuntado(t.clientX, t.clientY); moverReticula(t.clientX, t.clientY); }
   }
 }, { passive: false });
 const finToque = (e) => {
   e.preventDefault();
-  for (const t of e.changedTouches) toques.delete(t.identifier);
+  for (const t of e.changedTouches) { if (toques.get(t.identifier) === dedoArco) dedoArco = null; toques.delete(t.identifier); }
   if (jugador.def.tipo === 'distancia' && toques.size === 0) disparar();
 };
 lienzo.addEventListener('touchend', finToque, { passive: false });
 lienzo.addEventListener('touchcancel', finToque, { passive: false });
+// con el arco tenso, la cámara sigue al dedo que apunta cerca del borde (se llama en cada paso)
+function seguirDedoArco(dt) {
+  if (!dedoArco || jugador.def.tipo !== 'distancia' || jugador.accion !== 'tensando') return;
+  const giro = seguirApuntado(dedoArco.x, innerWidth, dt);
+  if (!giro) return;
+  cam.yaw += giro; cam.manual = reloj;
+  apuntado = puntoApuntado(dedoArco.x, dedoArco.y);
+}
 
 // Joystick (táctil)
 const joy = { vx: 0, vy: 0, id: null };
@@ -466,6 +487,7 @@ function tick(dtReal) {
   if (rival) colocar(mRival, rival, vR, dt, jugador);
   rastroJ.actualizar(mJugador, enVuelo(jugador));
   if (rival) rastroR.actualizar(mRival, enVuelo(rival)); else rastroR.actualizar(mJugador, false);
+  seguirDedoArco(dtReal);
   actualizarCamara(dtReal);
   actualizarRosa();
   actualizarReticula();
@@ -658,7 +680,7 @@ window.__duelo = {
   get pausa() { return pausa; }, get pausas() { return pausas; },
   get mJugador() { return mJugador; }, get mRival() { return mRival; },
   get ctx() { return ctxCombate; }, registroAcciones, escena, renderer, camara, render() { renderer.render(escena, camara); },
-  nuevaPartida, atacar, disparar, lanzar, tick, registrar, parar, lineaDesdePantalla,
+  get dedoArco() { return dedoArco; }, nuevaPartida, atacar, disparar, lanzar, tick, registrar, parar, lineaDesdePantalla,
   configurar(o) { Object.assign(opc, o); nuevaPartida(); },
   apuntar(x, y, z) { apuntado = { x, y, z }; },
 };

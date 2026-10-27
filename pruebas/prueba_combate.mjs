@@ -1,4 +1,5 @@
 // Pruebas de la lógica de combate de Kinhold. Con MUTAR=1 se rompen reglas a propósito: deben fallar.
+import * as tactil from '../src/combate/tactil.js';
 import { Luchador, resolverGolpe, crearProyectil, moverProyectil, elevacionPara, IA, azar, T, GUARDIAS, LINEAS, ARMADURAS, ARMAS } from '../src/combate/logica.js';
 
 if (process.env.MUTAR === '1') {
@@ -6,6 +7,7 @@ if (process.env.MUTAR === '1') {
   T.tensionMinima = 0; ARMAS.arco.recarga = 0.1; Luchador.prototype.cancelarTensado = function () {}; // arco roto como antes
   Object.defineProperty(Luchador.prototype, 'corriendo', { get() { return false; }, set() {} });
   Luchador.prototype.paraConEscudo = function () { return false; }; T.factorEscudo = 1; // escudo que no sirve
+  globalThis.__mutarTactil = true; // la cámara táctil se trata como antes: cualquier temblor gira y el arco no la mueve
 }
 
 let ok = 0, mal = 0;
@@ -408,6 +410,29 @@ for (const modo of ['capas', 'guardias']) {
   }
   tiempos.sort((x, y) => x - y);
   comprobar(`modo ${modo}: los combates terminan`, fin >= 18, `${fin}/20 · mediana ${r2(tiempos[Math.floor(tiempos.length / 2)])} s · rango ${r2(tiempos[0])}–${r2(tiempos[tiempos.length - 1])} s`);
+}
+
+console.log('10. Cámara táctil (un dedo)');
+{
+  const mut = !!globalThis.__mutarTactil;
+  const arrastrar = (q, x, y) => mut ? -(x - q.x) * tactil.GIRO_POR_PX + (q.x = x, q.y = y, 0) : tactil.arrastrarLibre(q, x, y);
+  const seguir = (x, w, dt) => mut ? 0 : tactil.seguirApuntado(x, w, dt);
+  const rosa = { x: 200, y: 300, r: 80 };
+  comprobar('un dedo sobre la rosa golpea', tactil.tipoToque({ distancia: false, rosaVisible: true, x: 210, y: 290, rosa }) === 'rosa');
+  comprobar('un dedo lejos de la rosa es zona libre', tactil.tipoToque({ distancia: false, rosaVisible: true, x: 200, y: 700, rosa }) === 'libre');
+  comprobar('sin rosa, todo es zona libre', tactil.tipoToque({ distancia: false, rosaVisible: false, x: 210, y: 290, rosa }) === 'libre');
+  comprobar('con arco, el dedo tensa y apunta', tactil.tipoToque({ distancia: true, rosaVisible: false, x: 10, y: 10, rosa }) === 'arco');
+  const q = { x: 100, y: 500, x0: 100, y0: 500, arrastre: false };
+  const g1 = arrastrar(q, 104, 503);
+  comprobar('un toque con temblor (5 px) no gira la cámara', g1 === 0, `giro ${g1}`);
+  const g2 = arrastrar(q, 160, 503);
+  comprobar('arrastrar 60 px a la derecha gira lo arrastrado desde el inicio', Math.abs(g2 + 60 * tactil.GIRO_POR_PX) < 1e-9 && q.arrastre === true, `giro ${r2(g2)}`);
+  const g3 = arrastrar(q, 140, 503);
+  comprobar('volver 20 px a la izquierda gira al otro lado', Math.abs(g3 - 20 * tactil.GIRO_POR_PX) < 1e-9);
+  comprobar('arco con el dedo en el centro: la cámara no se mueve', seguir(195, 390, 0.1) === 0);
+  comprobar('arco con el dedo junto al borde derecho: gira a la derecha (yaw menor)', seguir(385, 390, 0.1) < 0);
+  comprobar('arco con el dedo junto al borde izquierdo: gira a la izquierda', seguir(5, 390, 0.1) > 0);
+  comprobar('arco: más cerca del borde gira más deprisa, con tope', seguir(390, 390, 1) <= -tactil.GIRO_ARCO_MAX + 1e-9 && Math.abs(seguir(330, 390, 1)) < Math.abs(seguir(380, 390, 1)));
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
