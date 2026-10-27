@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (06:43) — por el chat: heridas, para más adelante
+
+«También el tema de heridas, ahora son cuadrados sobre el personaje, en un futuro ya haremos que se vean mejor, pero para más adelante, quiero algo jugable antes» → La tarea de heridas visibles pasa del hito de arte (1b) al hito 10b, que ahora se llama «Pulido de manos, animaciones y heridas».
+
 ### 27 oct 2026 (06:39) — por el chat: manos y animaciones, para más adelante
 
 «Para un momento más futuro, quiero que hagamos una faena de nivelar las manos de los personajes con las herramientas que estén tomando para que las agarren bien… y que las animaciones no clipen con los mismos personajes. Más adelante: ahora lo importante es la funcionalidad, pero tiene que estar en el roadmap segurísimo.» → Hito nuevo 10b «Pulido de manos y animaciones», después del Mundo (pendiente, no se empieza antes), y su fila en el GDD.
