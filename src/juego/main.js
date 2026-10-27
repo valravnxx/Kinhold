@@ -1,7 +1,7 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, progresoEscalera } from '../logica/construccion.js';
-import { RegistroAcciones, ejecutar, seAbre, AUTOR_LOCAL } from '../logica/acciones.js';
+import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, progresoEscalera, centroMundo, tiempoObra, MAX_RATO } from '../logica/construccion.js';
+import { RegistroAcciones, ejecutar, seAbre, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado } from './modelos.js';
 import { crearJugador } from './personaje.js';
@@ -198,6 +198,7 @@ function reconstruir() {
         obj.position.y += tj.arranque * P.subidaTejado;
         for (const rel of tj.rellenos) obj.add(rellenoTejado(rel, tj.arranque));
       }
+      if (p.obra) vestirObra(obj, p);
       obj.userData = { c, key, k: p.k };
       obj.traverse(o => { if (o.isMesh) o.userData.ref = obj; });
       g.add(obj);
@@ -228,6 +229,53 @@ function reconstruir() {
     escena.add(anillo);
   }
   actualizarUI();
+}
+
+// ---------------- Obras ----------------
+// Una obra a medias (GDD, «Obras»): se ve la pieza muy tenue, como un trazado, dentro de un armazón de varas
+// atadas que la envuelve (cuatro pies derechos, largueros arriba y abajo y una riostra en cruz por cara).
+// Cuanto más trabajo lleva, menos tenue se ve la pieza.
+const MAT_ARMAZON = new THREE.MeshLambertMaterial({ color: 0x8a6a48 });
+const MAT_ATADURA = new THREE.MeshLambertMaterial({ color: 0xb8a27a });
+const matsObra = new Map();
+function matObra(base, nivel) {
+  const b = Array.isArray(base) ? base[0] : base, k = nivel + ':' + (b?.map?.uuid || 'liso') + (b?.vertexColors ? 'v' : '');
+  if (!matsObra.has(k)) matsObra.set(k, new THREE.MeshLambertMaterial({ color: 0xd8ccb4, emissive: 0x1a140c, vertexColors: !!b?.vertexColors,
+    map: b?.map || null, transparent: true, opacity: 0.42 + 0.12 * nivel, depthWrite: false }));
+  return matsObra.get(k);
+}
+function vara(a, b, r) {
+  const d = new THREE.Vector3().subVectors(b, a), largo = d.length();
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.1, largo, 6), MAT_ARMAZON);
+  m.position.copy(a).addScaledVector(d, 0.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
+  m.castShadow = true;
+  return m;
+}
+function vestirObra(obj, p) {
+  const total = tiempoObra(p.tipo), nivel = Math.min(4, Math.floor(4 * p.obra.trabajo / total)); // 0..4
+  obj.traverse(o => { if (o.isMesh) { o.material = matObra(o.material, nivel); o.castShadow = false; o.renderOrder = 1; } });
+  // caja de la pieza en sus propios ejes, un poco más holgada
+  obj.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(obj.matrixWorld).invert(), caja = new THREE.Box3();
+  obj.traverse(o => { if (o.isMesh) { o.geometry.computeBoundingBox(); caja.union(o.geometry.boundingBox.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld))); } });
+  if (caja.isEmpty()) return;
+  const h = 0.06, x0 = caja.min.x - h, x1 = caja.max.x + h, z0 = caja.min.z - h, z1 = caja.max.z + h;
+  const y0 = Math.max(0, caja.min.y), y1 = Math.max(caja.max.y + 0.08, y0 + 0.5), r = 0.035;
+  const g = new THREE.Group(); g.name = 'armazon';
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  const esq = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]];
+  for (const [x, z] of esq) g.add(vara(V(x, y0, z), V(x, y1 + 0.12, z), r));
+  for (let i = 0; i < 4; i++) {
+    const [xa, za] = esq[i], [xb, zb] = esq[(i + 1) % 4];
+    if (Math.hypot(xb - xa, zb - za) < 0.5) continue; // la cara estrecha de un muro: basta con los pies
+    for (const y of [y0 + 0.1, y1]) g.add(vara(V(xa, y, za), V(xb, y, zb), r * 0.85));
+    g.add(vara(V(xa, y0 + 0.1, za), V(xb, y1, zb), r * 0.7)); // riostra
+    for (const [x, z] of [[xa, za], [xb, zb]]) for (const y of [y0 + 0.1, y1]) {
+      const at = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.6, r * 1.6, 0.07, 6), MAT_ATADURA); at.position.set(x, y, z); g.add(at);
+    }
+  }
+  obj.add(g);
 }
 
 // ---------------- Resaltados ----------------
@@ -312,7 +360,7 @@ function evaluarColocacion() {
   }
   const datos = { pieza: sel.tipo, x, z, k: estado.planta, rot: estado.rotLibre, dir: estado.dir };
   const cand = mundo.candidata(datos.pieza, x, z, datos.k, datos.rot, datos.dir);
-  const v = mundo.validar(cand);
+  const v = mundo.validar(cand, true); // se pone el marco de la obra: el material se lleva después
   // colocar el fantasma en la rejilla de su construcción
   const c = cand.construccion;
   const tmp = new THREE.Group();
@@ -351,6 +399,7 @@ function colocar() {
   if (r.ok) {
     if (ca.tipo === 'mojon') { estado.sel = { clase: 'pieza', tipo: 'cim_piedra' }; marcarSeleccion(); }
     guardar(); reconstruir(); evaluarColocacion();
+    if (r.obra) mostrarAviso(t('marcoPuesto'));
   } else mostrarAviso(tr(r.motivo), true);
 }
 
@@ -577,6 +626,7 @@ function interactivoCercano() {
   let mejor = null, md = 1.8;
   for (const c of mundo.construcciones) {
     for (const [key, p] of c.piezas) {
+      if (p.obra) continue;
       const puerta = seAbre(p);
       const esc = p.hueco === 'l' && !PIEZAS[p.tipo].andando; // la de tablas se sube andando
       if (!puerta && !esc) continue;
@@ -599,7 +649,61 @@ function arbolCercano() {
   }
   return mejor;
 }
+// obra a medias al alcance: en tu planta o la de encima (un muro o un tejado que se apoya en lo que pisas)
+function obraCercana() {
+  let mejor = null, md = 2.3;
+  for (const c of mundo.construcciones) for (const [key, p] of c.piezas) {
+    if (!p.obra || p.k < pj.k || p.k > pj.k + 1) continue;
+    const m = centroMundo(c, p), d = Math.hypot(m.x - pj.x, m.z - pj.z);
+    if (d < md) { md = d; mejor = { c, key, p }; }
+  }
+  return mejor;
+}
+// Usar junto a una obra: le llevas lo que le falta y, si ya lo tiene todo, te pones a construir (moverse lo para).
+function usarObra(o) {
+  const { c, key, p } = o;
+  const faltan = mundo.faltaEntregar(p);
+  for (const f of faltan) {
+    const r = accion({ tipo: 'entregar', construccion: c.id, clave: key, material: f.m, cantidad: f.n });
+    if (!r.ok) {
+      const que = mundo.faltaEntregar(p).map(x => `${x.n} ${tr(MATERIALES[x.m]).toLowerCase()}`).join(', ');
+      guardar(); actualizarUI();
+      mostrarAviso(`${t('faltanMateriales')} ${t('leFalta')}: ${que}`, true);
+      return;
+    }
+  }
+  if (faltan.length) { guardar(); actualizarUI(); }
+  estado.obrando = { c, key };
+  estado.talando = null;
+  const m = centroMundo(c, p); pj.rot = Math.atan2(m.x - pj.x, m.z - pj.z);
+  mostrarAviso(`${faltan.length ? t('materialEntregado') + ' ' : ''}${t('construyendo')} ${Math.round(100 * p.obra.trabajo / tiempoObra(p.tipo))} %`);
+}
+// cada medio segundo construyendo se manda un rato de trabajo. Cuenta el tiempo de reloj de verdad, no el del
+// fotograma (que se recorta a 0,05 s): con pocos fotogramas por segundo la obra no debe ir más lenta.
+function pasoObra() {
+  const o = estado.obrando;
+  if (!o) return;
+  const ahora = performance.now();
+  if (o.desde === undefined) o.desde = ahora;
+  const seg = (ahora - o.desde) / 1000;
+  if (seg < 0.5) return;
+  const r = accion({ tipo: 'trabajar', construccion: o.c.id, clave: o.key, segundos: Math.min(seg, MAX_RATO) });
+  o.desde = ahora;
+  if (!r.ok) { estado.obrando = null; mostrarAviso(tr(r.motivo), true); return; }
+  guardar();
+  if (r.terminada) {
+    estado.obrando = null; reconstruir();
+    mostrarAviso(`${tr(PIEZAS[o.c.piezas.get(o.key).tipo].nombre)}: ${t('obraTerminada')}`);
+    return;
+  }
+  // la pieza se va viendo menos tenue a cada cuarto de la obra
+  const cuarto = Math.floor(4 * r.progreso);
+  if (cuarto !== o.cuarto) { o.cuarto = cuarto; reconstruir(); }
+  mostrarAviso(`${t('construyendo')} ${Math.round(100 * r.progreso)} %`);
+}
 function usar() {
+  const ob = obraCercana();
+  if (ob) { usarObra(ob); return; }
   const it = interactivoCercano();
   if (!it) {
     // junto a un árbol, se tala (por ahora solo el gesto: la madera llega con la recolección)
@@ -644,7 +748,7 @@ function segmentosBloqueo(k) {
   const circulos = obstaculos.filter(o => !o.oculto); // las matas escondidas bajo lo construido no chocan
   for (const c of mundo.construcciones) {
     for (const [key, p] of c.piezas) {
-      if (p.k !== k) continue;
+      if (p.k !== k || p.obra) continue; // una obra es solo un armazón: no corta el paso
       if (p.hueco === 'v') {
         const m = localAMundo(c, p.i * MODULO, p.j * MODULO);
         circulos.push({ x: m.x, z: m.z, r: 0.16 });
@@ -718,7 +822,7 @@ function alturaSuelo() {
       const l = mundoALocal(c, pj.x, pj.z);
       const i = Math.floor(l.lx / MODULO), j = Math.floor(l.lz / MODULO);
       const f = c.piezas.get(clave('f', i, j, k));
-      if (f) { pj.k = k; return k * ALTURA + (k === 0 ? P.superficieCimiento : P.superficieSuelo); }
+      if (f && !f.obra) { pj.k = k; return k * ALTURA + (k === 0 ? P.superficieCimiento : P.superficieSuelo); }
     }
     if (k === 0) { pj.k = 0; return 0; }
   }
@@ -742,6 +846,7 @@ function paso() {
   const vel = (correr ? 6 : 3.6) * mag;
   if (mag > 0.05) {
     estado.talando = null; // moverse deja de talar
+    if (estado.obrando) { estado.obrando = null; mostrarAviso(t('dejasObra')); } // y de construir
     const s = Math.sin(cam.yaw), co = Math.cos(cam.yaw);
     const dx = (ax * co + az * s) / Math.hypot(ax, az);
     const dz = (-ax * s + az * co) / Math.hypot(ax, az);
@@ -764,7 +869,8 @@ function paso() {
   pj.y += (yObjetivo - pj.y) * Math.min(1, dt * 14);
   jugador.raiz.position.set(pj.x, pj.y, pj.z);
   jugador.raiz.rotation.y = pj.rot;
-  jugador.animar(mag > 0.05 ? vel : 0, dt, !!estado.talando);
+  pasoObra();
+  jugador.animar(mag > 0.05 ? vel : 0, dt, !!estado.talando || !!estado.obrando);
 
   // interiores: ocultar plantas superiores y tejados si estás bajo techo
   for (const g of raizConstr.children) {
@@ -776,7 +882,7 @@ function paso() {
     for (const obj of g.children) obj.visible = !techo || obj.userData.k <= pj.k;
   }
   const it = interactivoCercano();
-  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano());
+  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana());
 
   moverGente(dt);
   actualizarCamara();
@@ -893,6 +999,13 @@ window.__kinhold = {
   apuntar(x, z, y = 0) { estado.puntero = { x, z, ySuperficie: y }; evaluarColocacion(); },
   apuntarPieza(cx, cy) { evaluarDesmontaje(piezaBajo(cx, cy)); },
   proyectar(x, y, z) { const v = new THREE.Vector3(x, y, z).project(camara); return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight }; },
+  // atajo de prueba: lleva el material y termina todas las obras a medias, siempre con acciones
+  terminarObras() {
+    for (const c of mundo.construcciones) for (const [key, p] of [...c.piezas]) if (p.obra) acabarObra(mundo, registroAcciones, AUTOR_LOCAL, c.id, key);
+    guardar(); reconstruir();
+  },
+  obraCercana() { const o = obraCercana(); return o && { c: o.c.id, key: o.key }; },
+  get obrando() { return estado.obrando; },
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); reconstruir(); },
   get registroAcciones() { return registroAcciones; },
   reconstruir() { reconstruir(); },

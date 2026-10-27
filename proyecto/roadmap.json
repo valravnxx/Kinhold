@@ -479,8 +479,9 @@
     },
     {
      "nombre": "Obras (decidido por valravnx el 26 oct): poner el marco de la pieza, que se ve como un armazón; llevarle los materiales y construirla con un tiempo según la pieza; si te ayudan, tarda menos. Todo en la lógica pura, con el autor de cada entrega y de cada rato de trabajo",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T06:02:45+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T07:02:45+01:00",
+     "fin": "2026-10-27T09:55:53+01:00"
     },
     {
      "nombre": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
@@ -914,6 +915,13 @@
      "archivo": "jugar/demo/v15.html",
      "capturas": "capturas/demo-v15",
      "notas": "Construcción v20: enlosado de losas desiguales en el cimiento de piedra y mojón con piedras redondeadas, como la prueba de estilo v5"
+    },
+    {
+     "v": "v16",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v16.html",
+     "capturas": "capturas/demo-v16",
+     "notas": "En «Construir», se construye por obras: marco, material y tiempo (es la construcción v21)."
     }
    ]
   },
@@ -1047,6 +1055,13 @@
      "archivo": "jugar/construccion/v20.html",
      "capturas": "capturas/construccion-v20",
      "notas": "Revisión del estilo v5: el cimiento de piedra lleva un enlosado de losas desiguales y de dos tonos (antes parecía baldosa moderna) y el mojón tiene piedras redondeadas como las rocas de la prueba"
+    },
+    {
+     "v": "v21",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v21.html",
+     "capturas": "capturas/construccion-v21",
+     "notas": "Se construye por obras: colocar pone el marco de la pieza, que se ve tenue dentro de un armazón de varas; Usar (F) junto a la obra le lleva el material y te pone a construir; cada pieza tarda según su peso y, si te ayudan, menos."
     }
    ]
   },

@@ -2,7 +2,7 @@
 // Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR.
 import { Mundo, clave, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, progresoEscalera, salidaEscalera } from '../src/logica/construccion.js';
 import { PIEZAS } from '../src/logica/piezas.js';
-import { ejecutar, RegistroAcciones, seAbre } from '../src/logica/acciones.js';
+import { ejecutar, RegistroAcciones, seAbre, acabarObra } from '../src/logica/acciones.js';
 
 if (process.env.MUTAR === '1') {
   PIEZAS.muro_zarzo.cap = 1000;   // un muro de zarzo que aguanta cualquier cosa
@@ -371,8 +371,10 @@ console.log('Barandillas y portillo');
   const antes = { ...m.materiales };
   const p1 = A({ tipo: 'colocar', pieza: 'cerca_portillo', x: 9, z: 9, k: 0, rot: 0, dir: 0 });
   comprobar('el portillo se pone en el suelo, como la cerca', p1.ok, p1.motivo || '');
+  acabarObra(m, R, 'jugador:prueba', p1.construccion.id, p1.clave);
   comprobar('cuesta 4 varas y 1 cuerda', antes.vara - m.materiales.vara === 4 && antes.cuerda - m.materiales.cuerda === 1);
-  A({ tipo: 'colocar', pieza: 'cerca', x: 11, z: 9, k: 0, rot: 0, dir: 0 });
+  const p2 = A({ tipo: 'colocar', pieza: 'cerca', x: 11, z: 9, k: 0, rot: 0, dir: 0 });
+  acabarObra(m, R, 'jugador:prueba', p2.construccion.id, p2.clave);
   const cc = p1.construccion;
   const kp = p1.clave, kc = [...cc.piezas.entries()].find(([, p]) => p.tipo === 'cerca')[0];
   comprobar('portillo y cerca en la misma rejilla', cc.piezas.size === 2);

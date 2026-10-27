@@ -25,6 +25,12 @@ const ES = {
   catTierra: 'Tierra', catBase: 'Base', catEstructura: 'Estructura', catMuros: 'Muros',
   catTejados: 'Tejados', catAcceso: 'Acceso', catExterior: 'Exterior', catDeco: 'Decoración',
   consejoMojon: 'Pulsa Construir → Tierra → Mojón para reclamar tu tierra.',
+  marcoPuesto: 'Marco puesto. Acércate y pulsa Usar (F) para llevarle el material y construirla.',
+  leFalta: 'Le falta',
+  materialEntregado: 'Material entregado.',
+  construyendo: 'Construyendo:',
+  obraTerminada: 'terminada.',
+  dejasObra: 'Dejas la obra (vuelve con Usar).',
   confirmaReinicio: '¿Seguro? Pulsa otra vez para borrar todo.',
 };
 export function t(k) { return tr(ES[k] || k); }
