@@ -1547,5 +1547,22 @@
   "capturas": "capturas/construccion-v26",
   "estado": "ok",
   "notas": "no comprobado: los fotogramas en un móvil de verdad (el navegador de pruebas dibuja sin tarjeta gráfica; lo medido es el tiempo de cálculo de cada fotograma)"
+ },
+ {
+  "inicio": "2026-10-27T20:35:05+00:00",
+  "fin": "2026-10-27T22:11:48+00:00",
+  "titulo": "Hito 2: equipo de carga en la lógica pura",
+  "hito": "equipo",
+  "hecho": [
+   "Los cinco cinturones del GDD con sus huecos: cordel de fibra (1 pequeño), cuerda trenzada (2 pequeños), cinto de cuero (3, uno mediano), cinto con anillas (4, dos medianos) y cinto de armas (vaina para la espada y 2 pequeños)",
+   "Las diez mochilas y bastidores de espalda, cada uno con lo que admite: leñero (leña y troncos cortos), cesta de recolección, fardo atado, zurrón de piel y mochila de bastidor (mixtos), porta-piedras, caja de herramientas, carcaj, cesto de pescador y correa del escudo",
+   "Al hombro: saco (grano, harina, arena), bandolera (mixta) y odre (agua)",
+   "capacidad() dice lo que admite cada contenedor y cuánto: por ejemplo, el leñero lleva 2 troncos cortos o 18 de leña",
+   "Recursos y objetos nuevos en el catálogo para lo que admiten: piel, tela, paja, pescado, grano, harina, agua, flechas, virotes, anzuelo y sedal, espada y escudo",
+   "Decisión provisional (el GDD solo dice «mucho» o «poco»): cuántos huecos lleva cada mochila y cada cosa de hombro; anotada en src/logica/inventario.js para ajustarla al probar"
+  ],
+  "pruebas": "Inventario 107/107 (con MUTAR=2, un leñero que admite piedras y un cinto de cuero sin hueco mediano, falla), batería completa correcta (bash herramientas/probar_todo.sh); tras unir main, pruebas de node correctas",
+  "estado": "ok",
+  "notas": "sin capturas nuevas: no cambia nada que se vea (miradas las de la demo en PC y móvil, siguen bien). Sin versión nueva publicada: el cambio no es jugable todavía (el panel de inventario es otra tarea del hito). Los añadidos al cinturón (bolsas, vainas, ganchos) llegan con la fabricación"
  }
 ]
