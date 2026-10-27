@@ -179,6 +179,13 @@ function despejarDecorado() {
   if (mundo.mojon) circ.push([mundo.mojon.x, mundo.mojon.z, 0.9]);
   estado.plantasOcultas = decorado.despejar((x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r));
 }
+// suelos y cimientos de troncos: qué casillas de al lado tienen el mismo suelo terminado, para juntarse con ellas
+const TIPOS_QUE_SE_JUNTAN = new Set(['suelo_tronco', 'cim_tronco']);
+function contextoSuelo(c, p) {
+  if (p.hueco !== 'f' || !TIPOS_QUE_SE_JUNTAN.has(p.tipo) || p.obra) return undefined;
+  const igual = (di, dj) => { const q = c.piezas.get(clave('f', p.i + di, p.j + dj, p.k)); return !!q && q.tipo === p.tipo && !q.obra; };
+  return { vecinos: { xn: igual(-1, 0), xp: igual(1, 0), zn: igual(0, -1), zp: igual(0, 1) } };
+}
 function reconstruir() {
   for (const r of [raizConstr, raizDeco]) for (const h of r.children) liberar(h);
   raizConstr.clear(); raizDeco.clear();
@@ -191,7 +198,7 @@ function reconstruir() {
     const tejados = geometriaTejados(c);
     for (const [key, p] of c.piezas) {
       const tj = tejados.get(key);
-      const obj = modeloPieza(p.tipo, tj);
+      const obj = modeloPieza(p.tipo, tj || contextoSuelo(c, p));
       transformarPieza(obj, p);
       aplicarAperturas(obj, p);
       if (tj) {

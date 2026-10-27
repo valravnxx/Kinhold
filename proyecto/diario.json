@@ -1463,5 +1463,20 @@
   "capturas": "capturas/mapa-v2",
   "estado": "ok",
   "notas": "no comprobado: cuánto tarda en generar en un móvil de verdad"
+ },
+ {
+  "inicio": "2026-10-27T18:24:55+01:00",
+  "fin": "2026-10-27T19:16:59+01:00",
+  "titulo": "Arreglo: los suelos y cimientos de troncos seguidos se juntan de una",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Entre casillas seguidas del mismo suelo o cimiento de troncos, los troncos siguen de largo de una a otra: ya no hay rendija verde ni testas (el corte del tronco) en cada junta; solo se ven en el borde de fuera.",
+   "La capa de debajo (el relleno oscuro y, en el suelo, los durmientes) llega hasta el borde cuando hay vecino, para que no se vea nada por la junta.",
+   "Prueba nueva en modelos: con vecinos alrededor no queda ningún hueco en los bordes ni testas por dentro, y una casilla sola sigue cerrada por fuera. Con la versión anterior fallan 6 comprobaciones, como deben.",
+   "Publicadas construcción v25 y la alpha (demo única) v20."
+  ],
+  "pruebas": "Lógica 106/106, acciones 41/41, modelos 114/114 (6 fallan con la versión anterior), combate 80/80; navegador: construcción y demo única correctos en PC y móvil. El duelo no cambia (su compilado sale idéntico byte a byte al de main), así que no se ha vuelto a pasar su prueba de navegador.",
+  "capturas": "capturas/construccion-v25",
+  "estado": "ok"
  }
 ]

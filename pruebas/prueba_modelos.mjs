@@ -188,5 +188,44 @@ console.log('Armas, herramientas y objetos del duelo con el estilo v5');
   comprobar('Hacha de talar: unos 75 cm de largo, con la cabeza arriba y el filo hacia +z', bh.max.y - bh.min.y > 0.7 && bh.max.y - bh.min.y < 0.85 && bh.max.z > 0.14, `${r3(bh.max.y - bh.min.y)} m, filo a ${r3(bh.max.z)} m`);
 }
 
+console.log('Suelos y cimientos de troncos seguidos (se juntan de una)');
+{
+  // triángulos de testa (la textura de anillos) cerca de un borde de la casilla
+  const testas = (g, cond) => {
+    g.updateMatrixWorld(true); let n = 0; const v = new THREE.Vector3();
+    g.traverse(o => {
+      if (!o.isMesh || o.name !== 'estilo_anillos') return;
+      const p = o.geometry.attributes.position, idx = o.geometry.index, cnt = idx ? idx.count : p.count;
+      for (let t = 0; t < cnt; t += 3) {
+        const b = new THREE.Box3();
+        for (let k = 0; k < 3; k++) b.expandByPoint(v.fromBufferAttribute(p, idx ? idx.getX(t + k) : t + k).applyMatrix4(o.matrixWorld));
+        if (cond(b)) n++;
+      }
+    });
+    return n;
+  };
+  // rayos de arriba abajo a 5 mm del borde, a lo largo de los cuatro lados: ¿cuántos no chocan con nada (rendija)?
+  const rendijas = (g) => {
+    g.updateMatrixWorld(true);
+    const ray = new THREE.Raycaster(), abajo = new THREE.Vector3(0, -1, 0), m = MODULO / 2 - 0.005; let n = 0;
+    for (let t = -0.95; t <= 0.95; t += 0.05) for (const [x, z] of [[m, t], [-m, t], [t, m], [t, -m]]) {
+      ray.set(new THREE.Vector3(x, 5, z), abajo);
+      if (!ray.intersectObject(g, true).length) n++;
+    }
+    return n;
+  };
+  const todos = { xn: true, xp: true, zn: true, zp: true };
+  const bordeX = (b) => b.max.x > MODULO / 2 - 0.04 || b.min.x < -MODULO / 2 + 0.04;
+  for (const [tipo, nombre] of [['suelo_tronco', 'Suelo de troncos'], ['cim_tronco', 'Cimiento de troncos']]) {
+    const solo = modeloPieza(tipo), junto = modeloPieza(tipo, { vecinos: todos });
+    comprobar(`${nombre} solo: testas en los bordes`, testas(solo, bordeX) > 0);
+    comprobar(`${nombre} entre vecinos iguales: sin testas en las juntas`, testas(junto, bordeX) === 0, `${testas(junto, bordeX)} triángulos de testa`);
+    comprobar(`${nombre} entre vecinos: ninguna rendija en el borde (se ve madera, no hierba)`, rendijas(junto) === 0, `${rendijas(junto)} rayos sin madera`);
+    comprobar(`${nombre} solo: hacia fuera conserva su margen (control de la prueba de rendijas)`, rendijas(solo) > 0, `${rendijas(solo)} rayos sin madera`);
+    const unLado = modeloPieza(tipo, { vecinos: { xn: false, xp: true, zn: false, zp: false } });
+    comprobar(`${nombre} con vecino a un lado: testas solo hacia fuera`, testas(unLado, b => b.max.x > MODULO / 2 - 0.04) === 0 && testas(unLado, b => b.min.x < -MODULO / 2 + 0.04) > 0);
+  }
+}
+
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
 process.exit(mal ? 1 : 0);
