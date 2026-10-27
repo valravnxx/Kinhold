@@ -1,7 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v22 (andamio y polea)';
+export const VERSION_DEMO = 'Demo única · v23 (andamio y polea)';
 export const REGISTRO_DEMO = [
-  'v22: en «Construir», andamio pegado al muro (se sube con Usar y desde su plataforma se lleva lo ligero y se trabaja en las obras de esa planta) y polea colgada de una viga (una persona sola sube los troncos con la mitad de trabajo que rodándolos por varas). Es la construcción v26.',
+  'v23: en «Construir», andamio pegado al muro (se sube con Usar y desde su plataforma se lleva lo ligero y se trabaja en las obras de esa planta) y polea colgada de una viga (una persona sola sube los troncos con la mitad de trabajo que rodándolos por varas). Es la construcción v27.',
+  'v22: en «Construir» (también en línea), los fotogramas ya no caen mientras alguien construye una obra: al avanzar se redibuja solo esa pieza. Es la construcción v26.',
   'v21: «Jugar en línea» en el menú: entras en la construcción con el mundo del servidor (sin guardar nada en el navegador) y ves a los demás con el personaje que eligieron. Lo que construyes se ve al momento y lo confirma el servidor; si otro puso lo mismo antes, el servidor manda y te avisa. La dirección del servidor se pone en Opciones (por defecto, ws://localhost:8080: un servidor en tu propio aparato, hasta que el de prueba esté en internet).',
   'v21, provisional: en línea no está «Reiniciar» (el mundo del servidor no se borra desde una página) y los materiales son los del mundo, compartidos por todos. Si se corta la conexión, se avisa y no se puede construir; volver a conectar sin recargar llega con la tarea de conexiones que se cortan.',
   'v18: en «Construir», una obra en alto pide subir el material: lo ligero a mano por la escalera y los troncos rodándolos por dos varas con una cuerda (o entre dos). Es la construcción v23.',

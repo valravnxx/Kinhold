@@ -153,6 +153,8 @@ escena.add(raizConstr);
 const raizDeco = new THREE.Group();
 escena.add(raizDeco);
 let mallaMojon = null, anilloTierra = null;
+// el material del anillo de la tierra es siempre el mismo: si se tirara al rehacer, se volvería a compilar su sombreador
+const MAT_ANILLO = new THREE.MeshBasicMaterial({ color: 0xf2e3b5, transparent: true, opacity: 0.55, depthWrite: false });
 const registroMallas = []; // {obj, c, key, deco}
 
 function transformarPieza(obj, p) {
@@ -194,7 +196,37 @@ function contextoSuelo(c, p) {
   const igual = (di, dj) => { const q = c.piezas.get(clave('f', p.i + di, p.j + dj, p.k)); return !!q && q.tipo === p.tipo && !q.obra; };
   return { vecinos: { xn: igual(-1, 0), xp: igual(1, 0), zn: igual(0, -1), zp: igual(0, 1) } };
 }
+// el objeto 3D de una pieza (tj: su tejado, de geometriaTejados)
+function objPieza(c, key, p, tj) {
+  const obj = modeloPieza(p.tipo, tj || contextoSuelo(c, p));
+  transformarPieza(obj, p);
+  aplicarAperturas(obj, p);
+  if (tj) {
+    obj.position.y += tj.arranque * P.subidaTejado;
+    for (const rel of tj.rellenos) obj.add(rellenoTejado(rel, tj.arranque));
+  }
+  if (p.obra) vestirObra(obj, p);
+  obj.userData = { c, key, k: p.k };
+  obj.traverse(o => { if (o.isMesh) o.userData.ref = obj; });
+  return obj;
+}
+// Rehace solo una pieza (una obra que avanza un cuarto). Rehacer todo lo construido cada vez que avanzaba una obra
+// tiraba los fotogramas mientras se construía (lo vio valravnx jugando en línea el 27 oct): con una cabaña, cada
+// vez son cientos de milisegundos, y más en el móvil.
+function rehacerPieza(idC, key) {
+  const i = registroMallas.findIndex(m => m.c && m.c.id === idC && m.key === key);
+  const c = mundo.construcciones.find(x => x.id === idC), p = c && c.piezas.get(key);
+  if (window.__rehacerTodo || i < 0 || !p || !registroMallas[i].obj.parent) { reconstruir(); return; } // __rehacerTodo: solo para que falle su prueba
+  const viejo = registroMallas[i].obj, g = viejo.parent;
+  window.__rehechos.pieza++;
+  const obj = objPieza(c, key, p, geometriaTejados(c).get(key));
+  obj.visible = viejo.visible;
+  g.remove(viejo); liberar(viejo); g.add(obj);
+  registroMallas[i] = { obj, c, key };
+}
+window.__rehechos = { todo: 0, pieza: 0 }; // cuántas veces se rehace todo o una pieza (para la prueba)
 function reconstruir() {
+  window.__rehechos.todo++;
   for (const r of [raizConstr, raizDeco]) for (const h of r.children) liberar(h);
   raizConstr.clear(); raizDeco.clear();
   registroMallas.length = 0;
@@ -205,17 +237,7 @@ function reconstruir() {
     g.userData.c = c;
     const tejados = geometriaTejados(c);
     for (const [key, p] of c.piezas) {
-      const tj = tejados.get(key);
-      const obj = modeloPieza(p.tipo, tj || contextoSuelo(c, p));
-      transformarPieza(obj, p);
-      aplicarAperturas(obj, p);
-      if (tj) {
-        obj.position.y += tj.arranque * P.subidaTejado;
-        for (const rel of tj.rellenos) obj.add(rellenoTejado(rel, tj.arranque));
-      }
-      if (p.obra) vestirObra(obj, p);
-      obj.userData = { c, key, k: p.k };
-      obj.traverse(o => { if (o.isMesh) o.userData.ref = obj; });
+      const obj = objPieza(c, key, p, tejados.get(key));
       g.add(obj);
       registroMallas.push({ obj, c, key });
     }
@@ -232,12 +254,12 @@ function reconstruir() {
   }
   despejarDecorado();
   if (mallaMojon) { escena.remove(mallaMojon); liberar(mallaMojon); mallaMojon = null; }
-  if (anilloTierra) { escena.remove(anilloTierra); liberar(anilloTierra); anilloTierra.material.dispose(); anilloTierra = null; }
+  if (anilloTierra) { escena.remove(anilloTierra); liberar(anilloTierra); anilloTierra = null; }
   if (mundo.mojon) {
     mallaMojon = modeloMojon();
     mallaMojon.position.set(mundo.mojon.x, 0, mundo.mojon.z);
     escena.add(mallaMojon);
-    const anillo = new THREE.Mesh(new THREE.RingGeometry(RADIO_MOJON - 0.15, RADIO_MOJON, 96), new THREE.MeshBasicMaterial({ color: 0xf2e3b5, transparent: true, opacity: 0.55, depthWrite: false }));
+    const anillo = new THREE.Mesh(new THREE.RingGeometry(RADIO_MOJON - 0.15, RADIO_MOJON, 96), MAT_ANILLO);
     anillo.rotation.x = -Math.PI / 2;
     anillo.position.set(mundo.mojon.x, 0.03, mundo.mojon.z);
     anilloTierra = anillo;
@@ -855,7 +877,7 @@ function pasoObra() {
   }
   // la pieza se va viendo menos tenue a cada cuarto de la obra
   const cuarto = Math.floor(4 * r.progreso);
-  if (cuarto !== o.cuarto) { o.cuarto = cuarto; reconstruir(); }
+  if (cuarto !== o.cuarto) { o.cuarto = cuarto; rehacerPieza(o.c.id, o.key); }
   mostrarAviso(`${t('construyendo')} ${Math.round(100 * r.progreso)} %`);
 }
 function usar() {
@@ -1206,7 +1228,12 @@ function iniciarEnLinea() {
       if (e && (e.tipo === 'trabajar' || e.tipo === 'entregar' || e.tipo === 'subir' || e.tipo === 'rellenar')) {
         // el mundo puede ser el mismo objeto antes y después: se compara con el cuarto que se vio la última vez
         redibujar = false;
-        if (e.tipo === 'trabajar') { const k = e.datos.construccion + '|' + e.datos.clave, n = cuarto(mundo, e); redibujar = vistos.get(k) !== n; vistos.set(k, n); }
+        if (e.tipo === 'trabajar') {
+          const k = e.datos.construccion + '|' + e.datos.clave, n = cuarto(mundo, e), cambia = vistos.get(k) !== n;
+          vistos.set(k, n);
+          // la obra propia ya la ha redibujado pasoObra; la de otro: solo esa pieza, o todo al terminarse (se junta con las de al lado)
+          if (cambia && e.autor !== enLinea.red.yo) { if (n >= 4 || n < 0) redibujar = true; else rehacerPieza(e.datos.construccion, e.datos.clave); }
+        }
       }
       if (msg.tipo === 'bienvenida' || info.rechazo) redibujar = true;
       if (redibujar) { reconstruir(); if (estado.modo === 'construir') evaluarColocacion(); }
