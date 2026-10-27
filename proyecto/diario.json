@@ -1413,5 +1413,22 @@
   "pruebas": "Todas las pruebas correctas (bash herramientas/probar_todo.sh), también tras unir main: lógica 106/106 (20 nuevas, fallan con MUTAR=1), acciones 41/41, navegador de construcción con la subida por las varas (comprobado que falla si no se sube). Capturas miradas en PC y móvil. No comprobado: subir entre dos en el juego (aún se juega solo; probado solo en la lógica).",
   "capturas": "capturas/construccion-v23",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T15:23:40+00:00",
+  "fin": "2026-10-27T16:20:09+00:00",
+  "titulo": "Hito 2: lógica pura del inventario por huecos (carril B)",
+  "hito": "equipo",
+  "hecho": [
+   "Nuevo src/logica/inventario.js, lógica pura: cada jugador lleva cosas en las manos, la espalda, la cintura, el hombro y la ropa por capas; los contenedores tienen huecos interiores con su tamaño y lo que admite cada uno, y pueden ir uno dentro de otro (una bolsa en el cinturón).",
+   "Tamaños P, M, G y E: lo pequeño y lo mediano van en una mano, lo grande ocupa las dos, lo enorme no se lleva encima. Sin cinturón no hay huecos de cintura; el cordel de fibra se ata como cinturón de un hueco pequeño.",
+   "Acciones coger, soltar, mover, ponerse y quitarse, con autor y por jugador, anotadas en el registro de acciones. Al quitarse o soltar un contenedor, lo de dentro va con él.",
+   "Guardado versionado con migración paso a paso y para el navegador (sin almacenamiento no se rompe). Si el catálogo cambia, lo que ya no cabe se aparta «a tus pies» en vez de perderse.",
+   "Decisiones provisionales (el GDD no las da): pilas por tamaño (P 10, M 3, G y E 1) y las herramientas, la ropa y los contenedores no se apilan; un hueco admite lo de su tamaño o menor; la mano es un hueco mediano; la capa interior son dos lugares (camisa y pantalón). Se pasarán al registro de la demo con el panel de inventario.",
+   "Aún no se ve en el juego: los cinturones y mochilas del GDD, el panel y el guardado en la demo son las tareas siguientes. Sin versión nueva publicada."
+  ],
+  "pruebas": "Todas las pruebas correctas (bash herramientas/probar_todo.sh); inventario 69/69 nuevas, 4 fallan con MUTAR=1 como deben. Capturas de la demo miradas en PC y móvil (sin cambios a la vista).",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

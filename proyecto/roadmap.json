@@ -628,8 +628,9 @@
     },
     {
      "nombre": "Lógica pura del inventario por huecos: cada objeto con su tamaño (P pequeño, M mediano, G grande, E enorme) y cada recurso con cuántas unidades caben en un hueco (pilas); huecos del cuerpo (mano derecha e izquierda, lo grande ocupa las dos; espalda, cintura según el cinturón, hombro); contenedores con sus huecos interiores y lo que admite cada uno. Acciones coger, soltar, mover y ponerse o quitarse, con autor y por jugador. Guardado en el navegador con migración. Pruebas de lógica",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T15:23:40+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T15:23:40+00:00",
+     "fin": "2026-10-27T16:20:09+00:00"
     },
     {
      "nombre": "Equipo de carga en la lógica pura, con las listas aprobadas del GDD: los cinco cinturones (cordel de fibra, cuerda trenzada, cinto de cuero, cinto con anillas, cinto de armas) con sus huecos; las mochilas y bastidores de función única (leñero, cesta de recolección, fardo atado, zurrón de piel, mochila de bastidor, porta-piedras, caja de herramientas, carcaj, cesto de pescador, escudo a la espalda) y lo de hombro (saco, bandolera, odre), cada uno con lo que admite y cuánto",
