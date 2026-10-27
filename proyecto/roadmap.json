@@ -528,12 +528,14 @@
     },
     {
      "nombre": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T16:52:02+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T16:52:02+00:00",
+     "fin": "2026-10-27T22:42:46+00:00"
     },
     {
      "nombre": "Obras: polipasto con torno para vigas grandes y sillares (uno tira y otro guía)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T22:50:32+00:00"
     },
     {
      "nombre": "Contraventana y trampilla (N2: 2 tablas y clavos): la contraventana cierra la ventana de un muro y la trampilla tapa el hueco de una escalera; las dos se abren y cierran con Usar. Añadir también el muro de tablas con ventana, que falta",
@@ -1146,6 +1148,13 @@
      "archivo": "jugar/demo/v22.html",
      "capturas": "capturas/demo-v22",
      "notas": "Los fotogramas ya no caen mientras alguien construye una obra (también en línea); es la construcción v26"
+    },
+    {
+     "v": "v23",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v23.html",
+     "capturas": "capturas/demo-v23",
+     "notas": "Construcción v27: andamio pegado al muro y polea en una viga"
     }
    ]
   },
@@ -1321,6 +1330,13 @@
      "archivo": "jugar/construccion/v26.html",
      "capturas": "capturas/construccion-v26",
      "notas": "Al construir una obra, solo se redibuja esa pieza al avanzar: los fotogramas ya no caen mientras se construye"
+    },
+    {
+     "v": "v27",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v27.html",
+     "capturas": "capturas/construccion-v27",
+     "notas": "Andamio pegado al muro (se sube con Usar; desde su plataforma se lleva lo ligero y se trabaja en las obras de esa planta) y polea colgada de una viga (una persona sola sube los troncos con la mitad de trabajo que rodándolos por varas)"
     }
    ]
   },

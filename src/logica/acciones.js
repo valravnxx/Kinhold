@@ -4,7 +4,7 @@
 // nunca objetos de la escena. Se comprueba, se aplica y se anota en un registro, salga bien o no.
 // Con el registro de la construcción se puede rehacer el mundo desde cero (reproducir): así el
 // servidor podrá validar y auditar lo que pasa, y las pruebas ven si algo cambia el mundo sin pasar por aquí.
-import { Mundo, MAX_RATO, plantaObra, clasePeso } from './construccion.js';
+import { Mundo, MAX_RATO, plantaObra, clasePeso, poleaPara } from './construccion.js';
 import { PIEZAS } from './piezas.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
 
@@ -109,7 +109,7 @@ export function ejecutar(mundo, registro, accion) {
 
 // Lleva todo el material que le falta a una obra y trabaja en ella hasta terminarla, siempre con acciones (una
 // entrega por material y ratos de MAX_RATO s). Si está en alto, lo ligero se lleva desde su planta y lo pesado se
-// sube rodándolo por dos varas (una persona sola). Para las pruebas y los atajos de prueba del prototipo.
+// sube con la polea si la hay, o si no rodándolo por dos varas (una persona sola). Para las pruebas y los atajos de prueba del prototipo.
 export function acabarObra(mundo, registro, autor, construccion, claveObra) {
   const c = mundo.construcciones.find(x => x.id === construccion);
   const p = c && c.piezas.get(claveObra);
@@ -118,7 +118,8 @@ export function acabarObra(mundo, registro, autor, construccion, claveObra) {
   for (const f of mundo.faltaEntregar(p)) {
     if (planta > 0 && clasePeso(f.m) !== 'ligero') {
       for (let i = 0; i < 10000 && mundo.faltaEntregar(p).some(x => x.m === f.m); i++) {
-        const r = ejecutar(mundo, registro, { autor, tipo: 'subir', construccion, clave: claveObra, material: f.m, segundos: MAX_RATO, metodo: 'varas' });
+        const metodo = poleaPara(c, p) ? 'polea' : 'varas';
+        const r = ejecutar(mundo, registro, { autor, tipo: 'subir', construccion, clave: claveObra, material: f.m, segundos: MAX_RATO, metodo });
         if (!r.ok) return r;
       }
       continue;

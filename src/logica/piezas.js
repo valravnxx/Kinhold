@@ -15,7 +15,8 @@ export const MAX_PLANTA = 3;  // plantas 0..3
 //  r = tejado sobre casilla               clave i,j,k
 //  g = hastial (triángulo) sobre arista   clave i,j,k,d
 //  p = hueco de puerta en un muro         clave i,j,k,d
-//  l = escalera (de mano o de tablas) en casilla  clave i,j,k
+//  l = escalera (de mano o de tablas) o andamio en casilla  clave i,j,k
+//  q = polea colgada de una viga          clave i,j,k,d  (la de la viga b:i,j,k,d)
 
 export const MATERIALES = {
   piedra: 'Piedra', tronco: 'Tronco', vara: 'Vara', barro: 'Barro', paja: 'Paja',
@@ -23,8 +24,8 @@ export const MATERIALES = {
 };
 
 // Clase de peso de cada material (GDD, «Obras»): decide cómo se sube hasta la altura de la obra.
-//  ligero     → a mano, por escalera (o andamio, más adelante)
-//  pesado     → entre dos personas, o una sola rodándolo por dos varas con una cuerda (más despacio); polea, más adelante
+//  ligero     → a mano, por escalera o andamio
+//  pesado     → entre dos personas, una sola con polea, o una sola rodándolo por dos varas con una cuerda (más despacio)
 //  muy pesado → polipasto con torno o grúa de rueda (piedra tallada: aún no hay ningún material de esta clase)
 // La piedra (sin tallar) va como pesada: el GDD sube «piedras pequeñas» con polea (provisional).
 export const CLASES_PESO = { ligero: 'Ligero', pesado: 'Pesado', muy_pesado: 'Muy pesado' };
@@ -62,6 +63,13 @@ export const PIEZAS = {
   escalera_mano:      { nombre: 'Escalera de mano', hueco: 'l', nivel: 1, peso: 15, cap: 0, coste: { vara: 2, cuerda: 1 }, cat: 'acceso' },
   // andando: se sube andando (sin botón); deja abierto el hueco del suelo de encima
   escalera_tabla:     { nombre: 'Escalera de tablas', hueco: 'l', nivel: 2, peso: 100, cap: 0, coste: { tabla: 6, clavo: 6 }, andando: true, cat: 'acceso' },
+  // Obras (GDD): andamio pegado al muro, para trabajar y dejar material por encima de la planta baja. Varas atadas con
+  // cuerda y una plataforma de zarzo arriba, a la altura del suelo de la planta de encima; se sube con Usar por su
+  // escalerilla y se apilan uno sobre otro. Sostiene a quien trabaja encima y al andamio de arriba, nada más.
+  andamio:            { nombre: 'Andamio', hueco: 'l', nivel: 1, peso: 40, cap: 200, coste: { vara: 8, cuerda: 2 }, andamio: true, cat: 'acceso' },
+  // Polea simple colgada de una viga (GDD): una persona sola sube con ella lo pesado (un tronco, piedras) a las obras
+  // en alto de su construcción.
+  polea:              { nombre: 'Polea', hueco: 'q', nivel: 1, peso: 10, cap: 0, coste: { tabla: 1, cuerda: 2, hierro: 1 }, cat: 'acceso' },
   puerta_varas:       { nombre: 'Puerta de varas', hueco: 'p', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, cat: 'acceso' },
   puerta_tabla:       { nombre: 'Puerta de tablas', hueco: 'p', nivel: 2, peso: 40, cap: 0, coste: { tabla: 4, clavo: 4, hierro: 1 }, cat: 'acceso' },
 

@@ -1564,5 +1564,21 @@
   "pruebas": "Inventario 107/107 (con MUTAR=2, un leñero que admite piedras y un cinto de cuero sin hueco mediano, falla), batería completa correcta (bash herramientas/probar_todo.sh); tras unir main, pruebas de node correctas",
   "estado": "ok",
   "notas": "sin capturas nuevas: no cambia nada que se vea (miradas las de la demo en PC y móvil, siguen bien). Sin versión nueva publicada: el cambio no es jugable todavía (el panel de inventario es otra tarea del hito). Los añadidos al cinturón (bolsas, vainas, ganchos) llegan con la fabricación"
+ },
+ {
+  "inicio": "2026-10-27T16:52:02+00:00",
+  "fin": "2026-10-27T22:42:46+00:00",
+  "titulo": "Hito 1c: andamio pegado al muro y polea en una viga (carril B)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Andamio (8 varas y 2 cuerdas): va pegado a un muro, o a la obra de un muro, de su casilla, y se gira solo hacia él. Plataforma de varas a la altura del suelo de la planta de encima, barandilla, tornapuntas y escalerilla. Se apilan hasta la planta 3; encima no se puede poner suelo.",
+   "En el juego, Usar al pie sube a la plataforma; con otro andamio encima, sube a ese; en lo alto, baja hasta el pie. Desde la plataforma se lleva lo ligero y se trabaja en las obras de esa planta sin suelo por dentro.",
+   "Polea (1 tabla, 2 cuerdas y 1 hierro): se cuelga de una viga terminada y sirve a las obras de su construcción a la altura de la viga o más abajo. Una persona sola sube lo pesado con el trabajo de dos a pulso: 5 s por tronco y planta, la mitad que con varas (provisional). Al quitar la viga, cae.",
+   "En el juego, si la obra tiene polea, Usar se pone a tirar de ella: el tronco sube colgado de la cuerda y el otro cabo va a las manos. Cada rato queda en el registro con su autor y el método «polea».",
+   "Al unir main otras dos sesiones habían publicado la construcción v25 y v26 y la demo v20 a v22: esto sale como construcción v27 y demo v23."
+  ],
+  "pruebas": "Todas correctas (bash herramientas/probar_todo.sh; tras las últimas uniones con main, otra vez las de node y las de navegador de construcción, demo y jugar en línea): lógica 134/134 (27 nuevas, fallan con MUTAR=1), modelos 117/117 (la plataforma a la altura del suelo falla con MUTAR_SUELO=1), navegador de construcción con andamio y polea; las comprobaciones nuevas de navegador fallaron mientras Usar no subía al andamio. Capturas de cerca miradas en PC y móvil. Una vez falló 1 de 37 en prueba_combate_servidor (del carril A) y pasó las 6 siguientes. No comprobado: el personaje usa el gesto de construir (con el hacha) al tirar de la polea, como ya pasaba con las varas.",
+  "capturas": "capturas/construccion-v27",
+  "estado": "ok"
  }
 ]

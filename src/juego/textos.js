@@ -32,6 +32,8 @@ const ES = {
   obraTerminada: 'terminada.',
   dejasObra: 'Dejas la obra (vuelve con Usar).',
   subiendoRodando: 'Subes rodándolo por dos varas con una cuerda:',
+  subiendoPolea: 'Subes con la polea:',
+  subesAndamio: 'Subes al andamio, a la altura de la planta',
   quedan: 'quedan',
   confirmaReinicio: '¿Seguro? Pulsa otra vez para borrar todo.',
 };
