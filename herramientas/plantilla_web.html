@@ -8,80 +8,177 @@
 <link rel="icon" type="image/png" sizes="192x192" href="recursos/marca/v1/icono_k_192.png">
 <link rel="apple-touch-icon" href="recursos/marca/v1/icono_k_180.png">
 <link rel="stylesheet" href="recursos/fuentes/v1/fuentes.css">
+<script>
+// Texturas de madera hechas por código (ruido SVG): vetas estiradas en horizontal, onduladas con un mapa de
+// desplazamiento solo en vertical (así el mosaico casa por los lados) y fibras finas encima. El navegador las pinta
+// una vez por baldosa y las repite. Van en variables CSS para usarlas en el fondo, el cartel, la viga y los marcos.
+(function () {
+  const svg = (w, h, b) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'>${b}</svg>`)}")`;
+  const madera = (semilla, base, oscuro, fx, fy, onda) => `<filter id='w' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>
+    <feTurbulence type='fractalNoise' baseFrequency='${fx} ${fy}' numOctaves='3' seed='${semilla}' stitchTiles='stitch' result='n'/>
+    <feTurbulence type='fractalNoise' baseFrequency='0.008 0.02' numOctaves='2' seed='${semilla + 5}' stitchTiles='stitch' result='o'/>
+    <feColorMatrix in='o' values='0 0 0 0 .5  0 1 0 0 0  0 0 0 0 0  0 0 0 0 1' result='o2'/>
+    <feDisplacementMap in='n' in2='o2' scale='${onda}' xChannelSelector='R' yChannelSelector='G' result='d'/>
+    <feColorMatrix in='d' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -0.9' result='a'/>
+    <feFlood flood-color='${oscuro}'/><feComposite in2='a' operator='in' result='v'/>
+    <feTurbulence type='fractalNoise' baseFrequency='0.7 0.025' numOctaves='2' seed='${semilla + 2}' stitchTiles='stitch' result='f'/>
+    <feColorMatrix in='f' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.5 0 0 0 -0.6' result='fa'/>
+    <feFlood flood-color='${oscuro}' flood-opacity='.55'/><feComposite in2='fa' operator='in' result='fib'/>
+    <feFlood flood-color='${base}' result='b'/>
+    <feMerge><feMergeNode in='b'/><feMergeNode in='v'/><feMergeNode in='fib'/></feMerge>
+  </filter><rect width='100%' height='100%' filter='url(#w)'/>`;
+  const r = document.documentElement.style;
+  r.setProperty('--madera', svg(640, 640, madera(3, '#4b2e18', '#1f1008', 0.004, 0.085, 22)));        // tablones del fondo
+  r.setProperty('--madera-clara', svg(640, 320, madera(9, '#8b5d35', '#45260f', 0.005, 0.12, 16)));  // cartel, viga, marcos
+  r.setProperty('--madera-media', svg(640, 320, madera(21, '#6a4224', '#2c170a', 0.005, 0.1, 18)));  // franja de las pestañas
+})();
+</script>
 <style>
-/* ===== Estilo: hoja de pergamino sobre una mesa oscura =====
-   Pergamino: textura de grano y manchas hecha con ruido SVG (feTurbulence) en imágenes de fondo que el navegador
-   pinta una vez y repite; bordes tostados con sombras interiores. Tinta parda, rúbrica roja y oro para los adornos.
-   Fuentes libres servidas desde la web (recursos/fuentes/v1): Cinzel Decorative para el nombre, Alegreya SC para
-   títulos y etiquetas (versalitas reales, así el texto no cambia), EB Garamond para leer. */
+/* ===== Kinhold · feria medieval =====
+   Fondo de tablones de madera, guirnalda de banderines arriba, cartel de madera colgado entre dos estandartes,
+   pestañas como estandartes que cuelgan de una viga y cada bloque de texto en un pergamino con rodillos.
+   Fuentes libres servidas desde la web (recursos/fuentes/v1): Cinzel Decorative (el nombre), Alegreya SC (títulos y
+   etiquetas, versalitas reales: el texto no cambia) y EB Garamond (para leer). */
 :root{
-  --mesa:#160f09; --perg:#efe0bd; --perg-claro:#f6ead0; --perg-oscuro:#dcc495;
+  --perg:#efe0bd; --perg-claro:#f6ead0;
   --tinta:#2b1c0f; --tinta2:#5b4429; --tenue:#8a7154; --linea:rgba(91,68,41,.28);
-  --rubrica:#8e1f17; --rubrica-osc:#5e130d; --oro:#b08427; --oro-claro:#e6c46e;
+  --rubrica:#8e1f17; --rubrica-osc:#5e130d; --oro:#b08427; --oro-claro:#e6c46e; --crema:#f3e3bd;
   --verde:#3e6a2c; --azul:#2c4f7a; --naranja:#a35a14;
+  --pano-rojo:#8e1f17; --pano-verde:#2f4e26; --pano-azul:#26405e; --pano-ocre:#9a6b1f; --pano-crema:#d9c8a0;
   --titulos:"Alegreya SC",Georgia,serif; --texto:"EB Garamond",Georgia,"Times New Roman",serif;
   --grano:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .2 0 0 0 0 .07 0 0 0 .9 -.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.32'/%3E%3C/svg%3E");
   --manchas:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006' numOctaves='4' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .3 0 0 0 0 .1 1.9 0 0 0 -.92'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)' opacity='.16'/%3E%3C/svg%3E");
   --fibras:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .35' numOctaves='2' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .22 0 0 0 0 .08 2.2 0 0 0 -1.18'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='.13'/%3E%3C/svg%3E");
+  --tela:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9 .06' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23t)' opacity='.35'/%3E%3C/svg%3E");
+  --cruz:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M20 20L13 3h14z M20 20l-7 17h14z M20 20L3 13v14z M20 20l17-7v14z' fill='%23e6c46e'/%3E%3Ccircle cx='20' cy='20' r='3.2' fill='%23e6c46e'/%3E%3C/svg%3E");
   --orla:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 24'%3E%3Cdefs%3E%3ClinearGradient id='a'%3E%3Cstop offset='0' stop-color='%23b08427' stop-opacity='0'/%3E%3Cstop offset='1' stop-color='%23b08427'/%3E%3C/linearGradient%3E%3ClinearGradient id='b'%3E%3Cstop offset='0' stop-color='%23b08427'/%3E%3Cstop offset='1' stop-color='%23b08427' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M8 12H138' stroke='url(%23a)' stroke-width='1.6'/%3E%3Cpath d='M182 12H312' stroke='url(%23b)' stroke-width='1.6'/%3E%3Cpath d='M8 15.5H138' stroke='url(%23a)' stroke-width='.7'/%3E%3Cpath d='M182 15.5H312' stroke='url(%23b)' stroke-width='.7'/%3E%3Cpath d='M141 12l4-4 4 4-4 4z M171 12l4-4 4 4-4 4z' fill='%23b08427'/%3E%3Cpath d='M160 12L155.5 2.5h9z M160 12l-4.5 9.5h9z M160 12l-9.5-4.5v9z M160 12l9.5-4.5v9z' fill='%238e1f17'/%3E%3C/svg%3E");
+  --clavo:radial-gradient(circle at 40% 35%, #b9b2a6 0 1.5px, #6a6359 2.5px, #2a2622 4px, transparent 4.6px);
   color-scheme: light;
 }
 *{box-sizing:border-box}
-html{background:var(--mesa)}
+html{background:#2e1b0e}
 body{margin:0;min-height:100vh;color:var(--tinta);font:18px/1.5 var(--texto);
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(120,72,28,.35), transparent 60%),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.012) 0 2px, transparent 2px 9px),
-    var(--grano), var(--mesa);}
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,186,100,.16), transparent 70%),
+    radial-gradient(ellipse 120% 80% at 50% 110%, rgba(0,0,0,.55), transparent 70%),
+    repeating-linear-gradient(180deg, rgba(0,0,0,.6) 0 2px, rgba(255,214,160,.09) 2px 3px, transparent 3px 64px),
+    repeating-linear-gradient(180deg, transparent 0 64px, rgba(0,0,0,.14) 64px 128px, rgba(255,190,120,.04) 128px 192px, transparent 192px 320px),
+    var(--madera), #3c2414;}
 a{color:var(--rubrica)}
 h1,h2,h3{margin:0;font-weight:700}
 [hidden]{display:none!important}
+.feria{max-width:1100px;margin:0 auto;padding:0 28px 30px}
 
-/* ---- la hoja ---- */
-.hoja{position:relative;max-width:1040px;margin:22px auto 40px;padding:26px 44px 40px;border-radius:4px;
+/* ---- guirnalda de banderines ---- */
+#guirnalda{position:relative;height:92px;margin:0 -28px;overflow:hidden;pointer-events:none}
+#guirnalda svg{position:absolute;inset:0;width:100%;height:100%}
+.banderin{position:absolute;width:clamp(30px,4.2vw,50px);height:clamp(38px,5.2vw,62px);transform-origin:50% 0;filter:drop-shadow(0 3px 2px rgba(0,0,0,.4))}
+.banderin i{position:absolute;inset:0;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;animation:mecer 3.6s ease-in-out infinite alternate;
+  background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 30%,rgba(255,255,255,.1) 55%,rgba(0,0,0,.15)), var(--tela), var(--c);
+  box-shadow:inset 0 5px 0 rgba(0,0,0,.28)}
+.banderin:nth-child(3n) i{animation-duration:4.4s;animation-delay:-1.3s} .banderin:nth-child(3n+1) i{animation-duration:3.1s;animation-delay:-2.2s}
+@keyframes mecer{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.banderin i{animation:none}}
+.banderin.cruz i::after{content:"";position:absolute;left:50%;top:22%;width:40%;aspect-ratio:1;transform:translateX(-50%);background:var(--cruz) center/contain no-repeat;opacity:.9}
+
+/* ---- cabecera: cartel colgado entre dos estandartes ---- */
+.cabecera{display:grid;grid-template-columns:120px 1fr 120px;gap:24px;align-items:start;margin-top:-26px}
+.estandarte{position:relative;padding-top:6px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.5))}
+.estandarte .asta{height:12px;margin:0 -12px;border-radius:6px;position:relative;z-index:1;
+  background:linear-gradient(180deg,#3a2210,#a77a42 35%,#e0b678 50%,#7a4f22 75%,#2a1608)}
+.estandarte .asta::before,.estandarte .asta::after{content:"";position:absolute;top:-4px;width:20px;height:20px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#f3d58c,#b08427 50%,#5a3d0c)}
+.estandarte .asta::before{left:-12px} .estandarte .asta::after{right:-12px}
+.estandarte .pano{height:270px;margin-top:-4px;position:relative;
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 84%,0 100%);
   background:
-    radial-gradient(ellipse at 50% 50%, transparent 62%, rgba(128,76,24,.16) 100%),
-    var(--fibras), var(--manchas), var(--grano),
-    linear-gradient(170deg,#f3e6c8,#ecdcb6 45%,#e8d4a8);
-  box-shadow: inset 0 0 70px rgba(122,70,20,.38), inset 0 0 12px rgba(90,48,12,.5), inset 0 0 2px rgba(60,30,8,.6),
-    0 2px 0 #0004, 0 26px 60px rgba(0,0,0,.65);}
-.hoja::before,.hoja::after{content:"";position:absolute;left:18px;right:18px;height:0;border-top:1px solid rgba(91,68,41,.35);border-bottom:1px solid rgba(91,68,41,.35);padding-top:3px;pointer-events:none}
-.hoja::before{top:12px} .hoja::after{bottom:12px}
+    var(--emblema, none) 50% 34% / 58% auto no-repeat,
+    repeating-linear-gradient(90deg,rgba(0,0,0,.16) 0,rgba(255,255,255,.07) 14px,rgba(0,0,0,.16) 28px),
+    var(--tela), var(--c);
+  box-shadow:inset 0 0 0 5px rgba(230,196,110,.0)}
+.estandarte .pano::before{content:"";position:absolute;inset:7px 7px 0;clip-path:polygon(0 0,100% 0,100% 100%,50% 84%,0 100%);
+  border:2px solid rgba(230,196,110,.75);border-bottom:0}
+.estandarte .pano::after{content:"";position:absolute;left:0;right:0;bottom:0;height:16%;
+  background:repeating-linear-gradient(90deg,#e6c46e 0 3px,transparent 3px 7px);clip-path:polygon(0 0,100% 0,100% 100%,50% 0,0 100%);opacity:.0}
+.estandarte.rojo{--c:var(--pano-rojo);--emblema:var(--cruz)}
+.estandarte.verde{--c:var(--pano-verde);--emblema:var(--cruz)}
 
-/* ---- cabecera ---- */
-header{text-align:center;position:relative;padding-top:6px}
-header .sello{width:104px;height:104px;display:block;margin:0 auto 4px;filter:drop-shadow(0 3px 3px rgba(60,20,5,.45))}
-header h1{font:900 64px/1 "Cinzel Decorative",var(--titulos);letter-spacing:.04em;color:var(--rubrica);
-  text-shadow:0 1px 0 rgba(255,245,220,.65), 0 -1px 0 rgba(70,15,8,.25)}
-header .lema{margin:6px 0 0;font-style:italic;color:var(--tinta2);font-size:20px}
-.orla{height:24px;max-width:420px;margin:14px auto;background:var(--orla) center/contain no-repeat}
-.esquina{position:absolute;top:0;right:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-#idiomas{display:flex;gap:4px}
-#idiomas button{font:700 14px var(--titulos);color:var(--tinta2);background:rgba(255,248,230,.5);border:1px solid var(--linea);border-radius:3px;padding:2px 9px 3px;cursor:pointer}
-#idiomas button.sel{background:var(--rubrica);color:var(--oro-claro);border-color:var(--rubrica-osc)}
-#actualizado{color:var(--tenue);font-size:14px;font-style:italic}
+.cartel{position:relative;padding-top:58px}
+.cartel::before,.cartel::after{content:"";position:absolute;top:0;height:64px;width:3px;
+  background:repeating-linear-gradient(170deg,#c9a46a 0 3px,#7b5a2c 3px 6px);box-shadow:1px 0 1px rgba(0,0,0,.4)}
+.cartel::before{left:18%;transform:rotate(-8deg);transform-origin:top} .cartel::after{right:18%;transform:rotate(8deg);transform-origin:top}
+.tabla{position:relative;text-align:center;padding:20px 28px 22px;border-radius:8px;
+  background:
+    var(--clavo) 12px 12px/12px 12px no-repeat, var(--clavo) calc(100% - 12px) 12px/12px 12px no-repeat,
+    var(--clavo) 12px calc(100% - 12px)/12px 12px no-repeat, var(--clavo) calc(100% - 12px) calc(100% - 12px)/12px 12px no-repeat,
+    linear-gradient(180deg,rgba(255,220,170,.12),transparent 30%,rgba(0,0,0,.18)), var(--madera-clara);
+  box-shadow:inset 0 0 0 2px rgba(40,20,6,.55), inset 0 3px 0 rgba(255,225,180,.22), inset 0 -8px 16px rgba(0,0,0,.35), 0 16px 26px rgba(0,0,0,.55)}
+.tabla .sello{width:92px;height:92px;display:block;margin:-62px auto 4px;filter:drop-shadow(0 4px 4px rgba(30,10,2,.6))}
+.tabla h1{font:900 66px/1 "Cinzel Decorative",var(--titulos);letter-spacing:.04em;color:var(--oro-claro);
+  text-shadow:0 2px 0 #3a1d08, 0 -1px 0 rgba(255,240,200,.35), 0 0 12px rgba(0,0,0,.35)}
+.tabla .lema{margin:6px 0 0;font-style:italic;color:var(--crema);font-size:20px;text-shadow:0 1px 1px rgba(0,0,0,.6)}
+.barra-sup{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:14px 2px 0}
+#idiomas{display:flex;gap:6px}
+#idiomas button{font:700 14px var(--titulos);color:var(--crema);cursor:pointer;width:38px;height:38px;border-radius:50%;border:0;
+  background:radial-gradient(circle at 35% 30%,#a7774a,#6a4224 60%,#3a2210);box-shadow:inset 0 0 0 2px rgba(255,220,170,.25), 0 2px 4px rgba(0,0,0,.5);text-shadow:0 1px 0 #000}
+#idiomas button.sel{background:radial-gradient(circle at 35% 30%,#c0392b,#7c1a12 60%,#4a0d08);color:var(--oro-claro)}
+#actualizado{color:var(--crema);opacity:.8;font-size:15px;font-style:italic;text-shadow:0 1px 1px #000}
 
-/* ---- resumen ---- */
-#resumen{display:grid;grid-template-columns:repeat(4,1fr);margin:6px 0 18px;border-top:3px double var(--tinta2);border-bottom:3px double var(--tinta2)}
-.dato{padding:10px 12px;text-align:center;border-left:1px solid var(--linea)}
-.dato:first-child{border-left:0}
+/* ---- tablón de anuncios: el resumen ---- */
+#resumen{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:22px 0 26px}
+.dato{position:relative;text-align:center;padding:18px 12px 12px;border-radius:2px;
+  background:var(--fibras), var(--grano), linear-gradient(170deg,#f3e6c8,#e7d2a6);
+  box-shadow:inset 0 0 18px rgba(122,70,20,.35), 0 6px 10px rgba(0,0,0,.45);transform:rotate(-1.2deg)}
+.dato:nth-child(2){transform:rotate(1deg)} .dato:nth-child(3){transform:rotate(-.6deg)} .dato:nth-child(4){transform:rotate(1.4deg)}
+.dato::before{content:"";position:absolute;top:5px;left:50%;width:12px;height:12px;margin-left:-6px;background:var(--clavo)}
 .dato b{display:block;font:800 30px/1.15 var(--titulos);color:var(--rubrica);font-variant-numeric:lining-nums tabular-nums}
-.dato.texto b{font-size:20px;line-height:1.25;padding-top:4px;color:var(--tinta)}
+.dato.texto b{font-size:19px;line-height:1.25;padding-top:4px;color:var(--tinta)}
 .dato span{color:var(--tinta2);font-size:15.5px;font-style:italic;line-height:1.3;display:block}
 
-/* ---- pestañas como cintas ---- */
-nav{position:sticky;top:0;z-index:5;display:flex;gap:2px;justify-content:center;padding:8px 0 0;margin:0 -12px;overflow-x:auto;scrollbar-width:none;
-  background:linear-gradient(#ecdcb5f2,#ecdcb5f2), var(--grano);border-bottom:2px solid var(--tinta2);box-shadow:0 6px 10px -8px rgba(60,30,8,.5)}
-nav::-webkit-scrollbar{display:none}
-nav button{font:700 18px var(--titulos);color:var(--tinta2);background:none;border:0;padding:6px 14px 13px;cursor:pointer;white-space:nowrap;position:relative}
-nav button:hover{color:var(--rubrica)}
-nav button.sel{color:var(--oro-claro);background:linear-gradient(var(--rubrica),var(--rubrica-osc));
-  clip-path:polygon(0 0,100% 0,100% 100%,50% 80%,0 100%);text-shadow:0 1px 0 #0006}
+/* ---- pestañas: estandartes que cuelgan de una viga ---- */
+nav{position:sticky;top:0;z-index:5;margin:0 -28px;padding:0 28px;
+  background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.05) 60%,transparent), var(--madera-media);
+  box-shadow:0 8px 14px -6px rgba(0,0,0,.7)}
+nav .viga{height:16px;margin:0 -28px;background:linear-gradient(180deg,rgba(255,225,180,.18),transparent 40%,rgba(0,0,0,.45)), var(--madera-clara);box-shadow:0 3px 4px rgba(0,0,0,.5)}
+nav .cintas{display:flex;gap:10px;justify-content:center;overflow-x:auto;scrollbar-width:none;padding:0 4px}
+nav .cintas::-webkit-scrollbar{display:none}
+nav button{--c:var(--pano-crema);font:700 18px var(--titulos);color:var(--tinta);border:0;cursor:pointer;white-space:nowrap;position:relative;
+  padding:8px 16px 18px;margin-bottom:6px;
+  background:linear-gradient(90deg,rgba(0,0,0,.16),transparent 25%,rgba(255,255,255,.12) 50%,transparent 75%,rgba(0,0,0,.16)), var(--tela), var(--c);
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);transition:padding .15s}
+nav button:nth-child(2){--c:#cdb98b} nav button:nth-child(3){--c:#d7c393} nav button:nth-child(4){--c:#cdb98b} nav button:nth-child(5){--c:#d7c393} nav button:nth-child(6){--c:#cdb98b}
+nav button:hover{padding-bottom:22px}
+nav button.sel{--c:var(--pano-rojo);color:var(--oro-claro);padding-bottom:26px;text-shadow:0 1px 0 #0008;margin-bottom:0}
 nav button .n{display:inline-block;min-width:21px;margin-left:5px;padding:0 6px;border-radius:999px;font:800 13px/19px var(--titulos);
   background:radial-gradient(circle at 35% 30%,#c0392b,#7c1a12);color:#f7e2a8;box-shadow:0 1px 1px #0005;vertical-align:2px}
 nav button.sel .n{background:var(--oro-claro);color:var(--rubrica-osc)}
-section{display:none;padding-top:22px} section.sel{display:block}
-h2.seccion{font:700 24px var(--titulos);color:var(--rubrica);text-align:center;margin:4px 0 2px}
+section{display:none;padding-top:28px} section.sel{display:block}
+
+/* ---- pergamino con rodillos ---- */
+.pergamino{position:relative;margin:0 26px 10px}
+.rollo{position:relative;height:34px;margin:0 -10px;border-radius:17px;z-index:1;
+  background:linear-gradient(180deg,#b89462 0%,#f6e8c8 28%,#efdcb3 50%,#c9a874 78%,#7d5a32 100%);
+  box-shadow:0 6px 10px rgba(0,0,0,.45), inset 0 0 0 1px rgba(90,55,20,.35)}
+.rollo::before,.rollo::after{content:"";position:absolute;top:0;width:16px;height:34px;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 50%,#6b4a24 0 2px,#e6d1a5 3px 4px,#b28e5c 5px 6px,#ead7ae 7px 8px,#a17e4f 9px);box-shadow:inset 0 0 0 1px rgba(70,40,12,.5)}
+.rollo::before{left:-4px} .rollo::after{right:-4px}
+.pomo{position:absolute;top:8px;width:30px;height:18px;
+  background:linear-gradient(180deg,#2f1a09,#9c6c39 35%,#d8a96b 50%,#6e4520 75%,#24130a)}
+.pomo::after{content:"";position:absolute;top:-4px;width:22px;height:26px;border-radius:50%;
+  background:radial-gradient(circle at 40% 32%,#e3b778,#8a5a2b 55%,#3a2210)}
+.pomo.izq{left:-30px} .pomo.izq::after{left:-14px}
+.pomo.der{right:-30px} .pomo.der::after{right:-14px}
+.papel{position:relative;margin:-14px 0;padding:40px 44px 40px;
+  background:
+    linear-gradient(180deg,rgba(90,52,16,.32),transparent 46px,transparent calc(100% - 46px),rgba(90,52,16,.32)),
+    radial-gradient(ellipse at 50% 50%, transparent 65%, rgba(128,76,24,.14) 100%),
+    var(--fibras), var(--manchas), var(--grano),
+    linear-gradient(170deg,#f3e6c8,#ecdcb6 45%,#e8d4a8);
+  box-shadow:inset 6px 0 10px -6px rgba(110,62,18,.45), inset -6px 0 10px -6px rgba(110,62,18,.45), 0 10px 22px rgba(0,0,0,.45)}
+.cinta{display:block;width:max-content;max-width:100%;margin:-8px auto 18px;padding:5px 34px 7px;font:800 19px var(--titulos);color:var(--oro-claro);letter-spacing:.03em;
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.18)), var(--tela), var(--rubrica);
+  clip-path:polygon(0 0,100% 0,96% 50%,100% 100%,0 100%,4% 50%);text-shadow:0 1px 0 #0007}
+.orla{height:24px;max-width:420px;margin:14px auto;background:var(--orla) center/contain no-repeat}
 
 /* ---- botones, selects, chips ---- */
 .boton{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;cursor:pointer;
@@ -95,28 +192,26 @@ select{font:16px var(--texto);color:var(--tinta);background:var(--perg-claro);bo
 .chip.hecho{color:var(--verde)} .chip.en_curso{color:var(--azul)} .chip.revision{color:var(--rubrica);background:rgba(142,31,23,.08)}
 .chip.espera_decision{color:var(--naranja)} .chip.fallo{color:var(--rubrica)}
 .chip.version{transform:none;color:var(--rubrica);font-size:15px}
-.nota{font-style:italic;color:var(--tinta2);border-left:4px double var(--rubrica);padding:6px 0 6px 14px;margin:18px 0}
+.nota{font-style:italic;color:var(--tinta2);border-left:4px double var(--rubrica);padding:6px 0 6px 14px;margin:18px 0 0}
 .fila{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 
 /* ---- jugar: la alpha ---- */
-.alpha{position:relative;margin:4px 0 8px}
-.alpha .cinta{display:block;width:max-content;max-width:100%;margin:0 auto 14px;padding:5px 30px 7px;font:800 17px var(--titulos);color:var(--oro-claro);letter-spacing:.03em;
-  background:linear-gradient(var(--rubrica),var(--rubrica-osc));clip-path:polygon(0 0,100% 0,96% 50%,100% 100%,0 100%,4% 50%);text-shadow:0 1px 0 #0006}
-.galeria{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:12px;margin-bottom:18px}
-.galeria a{display:block;overflow:hidden;background:#2a1e12;
-  box-shadow:0 0 0 2px #5b3d14, 0 0 0 5px #c9a14a, 0 0 0 6px #5b3d14, 0 6px 14px rgba(40,20,5,.45)}
+.galeria{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:14px;margin-bottom:20px}
+.galeria a{display:block;padding:7px;border-radius:3px;
+  background:linear-gradient(135deg,rgba(255,225,180,.2),transparent 40%,rgba(0,0,0,.3)), var(--madera-clara);
+  box-shadow:inset 0 0 0 1px rgba(40,20,6,.6), inset 0 0 0 4px rgba(176,132,39,.35), 0 6px 12px rgba(40,20,5,.5)}
 .galeria a:first-child{grid-row:1 / span 2}
-.galeria img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:16/10}
-.alpha .cuerpo{text-align:center;max-width:720px;margin:0 auto}
+.galeria img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:16/10;box-shadow:inset 0 0 6px #000}
+.alpha .cuerpo{text-align:center;max-width:740px;margin:0 auto}
 .alpha h2{font:800 34px/1.1 var(--titulos);color:var(--tinta)}
 .alpha h2 .chip{vertical-align:6px;margin-left:6px}
 .alpha .desc{font-size:20px;margin:8px 0 4px}
-.alpha .novedades{color:var(--tinta2);margin:0 0 14px}
+.alpha .novedades{color:var(--tinta2);margin:0 0 16px}
 .alpha .novedades b{font:700 17px var(--titulos);color:var(--rubrica)}
 .alpha .fila{justify-content:center}
 
 /* ---- pruebas sueltas ---- */
-details.otras{margin-top:26px;border:1px solid var(--linea);border-radius:4px;background:rgba(255,248,228,.32)}
+details.otras{margin-top:28px;border:1px solid var(--linea);border-radius:4px;background:rgba(255,248,228,.35)}
 details.otras > summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;align-items:center;gap:12px}
 details.otras > summary::-webkit-details-marker{display:none}
 details.otras > summary b{font:700 19px var(--titulos);color:var(--tinta)}
@@ -124,7 +219,7 @@ details.otras > summary span{color:var(--tenue);font-style:italic;font-size:16px
 .flecha{flex:none;width:12px;height:12px;border-right:2px solid var(--rubrica);border-bottom:2px solid var(--rubrica);transform:rotate(-45deg);transition:transform .2s;margin:0 4px}
 details[open] > summary .flecha{transform:rotate(45deg)}
 .tarjetas{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;padding:4px 16px 18px}
-.tarjetas .tarjeta{display:flex;flex-direction:column;background:rgba(255,250,236,.45);border:1px solid var(--linea);border-radius:3px;overflow:hidden}
+.tarjetas .tarjeta{display:flex;flex-direction:column;background:rgba(255,250,236,.5);border:1px solid var(--linea);border-radius:3px;overflow:hidden}
 .tarjetas .tarjeta img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;border-bottom:3px double var(--tinta2);filter:sepia(.15)}
 .tarjetas .cuerpo{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
 .tarjetas h3{font:700 20px var(--titulos)}
@@ -135,20 +230,19 @@ details[open] > summary .flecha{transform:rotate(45deg)}
 .tarjetas select{flex:1;min-width:0;font-size:15px}
 
 /* ---- roadmap: un camino de sellos ---- */
-.leyenda{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:center;margin:0 0 16px;font-size:15.5px;color:var(--tinta2)}
-.leyenda span{display:inline-flex;align-items:center;gap:6px}
+.leyenda{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:center;margin:0 0 18px;font-size:15.5px;color:var(--tinta2)}
 #listaHitos{position:relative}
 #listaHitos::before{content:"";position:absolute;left:27px;top:22px;bottom:22px;border-left:2px dashed rgba(91,68,41,.45)}
 .hito{position:relative;margin-bottom:10px}
 .hito > summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:center;padding:6px 0}
+.hito > summary::-webkit-details-marker{display:none}
 .hito .cab{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .hito .cab .chip{flex:none;margin-top:2px}
-.hito > summary::-webkit-details-marker{display:none}
 .sello-hito{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;position:relative;z-index:1;
-  font:800 18px var(--titulos);color:var(--tinta2);background:var(--perg-claro);border:2px solid var(--tinta2);box-shadow:0 0 0 4px var(--perg)}
+  font:800 18px var(--titulos);color:var(--tinta2);background:var(--perg-claro);border:2px solid var(--tinta2);box-shadow:0 0 0 4px #efdfbb}
 .hito.hecho .sello-hito{background:radial-gradient(circle at 35% 30%,#5b8a45,#2f5222);color:#eef3d8;border-color:#24401a}
 .hito.en_curso .sello-hito,.hito.revision .sello-hito{background:radial-gradient(circle at 35% 30%,#bf3b2e,#7c1a12 60%,#55100b);color:var(--oro-claro);border-color:#4a0d08;
-  box-shadow:0 0 0 4px var(--perg), 0 3px 6px rgba(70,15,5,.4)}
+  box-shadow:0 0 0 4px #efdfbb, 0 3px 6px rgba(70,15,5,.4)}
 .hito.espera_decision .sello-hito{border-color:var(--naranja);color:var(--naranja)}
 .hito .titulo{min-width:0;background:rgba(255,250,236,.4);border:1px solid var(--linea);border-radius:3px;padding:8px 12px 10px}
 .hito.activo .titulo{border-color:rgba(142,31,23,.55);box-shadow:inset 3px 0 0 var(--rubrica)}
@@ -175,7 +269,7 @@ details[open] > summary .flecha{transform:rotate(45deg)}
 
 /* ---- diario ---- */
 .entrada{display:grid;grid-template-columns:132px 1fr;gap:18px;padding:16px 0;border-top:1px solid var(--linea)}
-.entrada:first-child{border-top:0}
+.entrada:first-child{border-top:0;padding-top:0}
 .entrada > div{min-width:0}
 .entrada .fecha{text-align:right;font:700 16px/1.25 var(--titulos);color:var(--rubrica)}
 .entrada .fecha small{display:block;font:italic 14px var(--texto);color:var(--tenue);margin-top:3px}
@@ -219,27 +313,48 @@ td .numh{font-family:var(--titulos);font-weight:700;color:var(--rubrica);margin-
 .docs a b::first-letter{color:var(--rubrica);font-size:1.5em}
 .docs a span{display:block;color:var(--tinta2);font-style:italic;margin:4px 0 0 8px;font-size:17px}
 
-footer{text-align:center;color:var(--tenue);font-style:italic;font-size:15px;margin-top:30px}
+/* ---- pie: una tabla clavada ---- */
+footer{max-width:640px;margin:34px auto 0;text-align:center;padding:12px 30px 14px;border-radius:5px;color:var(--crema);font-style:italic;font-size:16px;
+  background:var(--clavo) 10px 50%/12px 12px no-repeat, var(--clavo) calc(100% - 10px) 50%/12px 12px no-repeat,
+    linear-gradient(180deg,rgba(255,225,180,.2),transparent 40%,rgba(0,0,0,.2)), var(--madera-clara);
+  box-shadow:inset 0 0 0 2px rgba(40,20,6,.5), 0 8px 14px rgba(0,0,0,.5);text-shadow:0 1px 2px #000}
 #visor{position:fixed;inset:0;background:rgba(10,6,3,.9);display:grid;place-items:center;padding:12px;z-index:20;cursor:zoom-out}
 #visor img{max-width:100%;max-height:100%;box-shadow:0 0 0 4px #fbf4e2, 0 10px 30px #000}
 
+@media (max-width:860px){
+  .cabecera{grid-template-columns:1fr}
+  .estandarte{display:none}
+}
 @media (max-width:760px){
   body{font-size:17px}
-  .hoja{margin:8px 6px 24px;padding:18px 16px 30px}
-  .hoja::before,.hoja::after{left:8px;right:8px}
-  .esquina{position:static;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:6px}
-  header .sello{width:76px;height:76px}
-  header h1{font-size:44px}
-  header .lema{font-size:17px}
-  #resumen{grid-template-columns:repeat(2,1fr)}
-  .dato:nth-child(3){border-left:0}
-  .dato:nth-child(n+3){border-top:1px solid var(--linea)}
+  .feria{padding:0 14px 24px}
+  #guirnalda{margin:0 -14px;height:76px}
+  .banderin:nth-child(odd){display:none}
+  .cabecera{margin-top:-30px}
+  .cartel{padding-top:50px}
+  .tabla{padding:16px 16px 18px}
+  .tabla .sello{width:74px;height:74px;margin-top:-50px}
+  .tabla h1{font-size:44px}
+  .tabla .lema{font-size:17px}
+  #resumen{grid-template-columns:repeat(2,1fr);gap:14px}
   .dato b{font-size:25px}
   .dato.texto b{font-size:17px}
-  .docs{grid-template-columns:1fr}
-  nav{justify-content:flex-start;margin:0 -16px;padding-left:8px;padding-right:8px}
-  nav button{font-size:16.5px;padding:6px 10px 12px}
+  nav{margin:0 -14px;padding:0 6px}
+  nav .viga{margin:0 -6px}
+  nav .cintas{justify-content:flex-start;gap:6px}
+  nav button{font-size:16.5px;padding:7px 11px 16px}
+  nav button.sel{padding-bottom:22px}
+  .pergamino{margin:0 26px 8px}
+  .rollo{height:28px;margin:0 -8px}
+  .rollo::before,.rollo::after{height:28px;width:13px}
+  .pomo{top:6px;width:20px;height:16px}
+  .pomo::after{width:18px;height:22px;top:-3px}
+  .pomo.izq{left:-20px} .pomo.izq::after{left:-10px}
+  .pomo.der{right:-20px} .pomo.der::after{right:-10px}
+  .papel{margin:-12px -4px;padding:30px 16px 30px}
+  .cinta{font-size:17px;padding:5px 26px 7px}
   .galeria{grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:9px}
+  .galeria a{padding:5px}
   .galeria a:first-child{grid-row:auto;grid-column:1 / span 2}
   .alpha h2{font-size:28px}
   .alpha .desc{font-size:18px}
@@ -258,41 +373,65 @@ footer{text-align:center;color:var(--tenue);font-style:italic;font-size:15px;mar
   .entrada .fecha{text-align:left}
   .entrada .fecha small{display:inline;margin-left:8px}
   .decision{padding-left:56px}
+  .docs{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
-<div class="hoja">
-  <header>
-    <div class="esquina"><div id="idiomas"></div><div id="actualizado"></div></div>
-    <img class="sello" src="recursos/marca/v1/sello_kinhold_128.png" srcset="recursos/marca/v1/sello_kinhold_256.png 2x" alt="">
-    <h1>Kinhold</h1>
-    <p class="lema" data-t="lema"></p>
+<div class="feria">
+  <div id="guirnalda" aria-hidden="true"></div>
+  <header class="cabecera">
+    <div class="estandarte rojo" aria-hidden="true"><div class="asta"></div><div class="pano"></div></div>
+    <div class="cartel">
+      <div class="tabla">
+        <img class="sello" src="recursos/marca/v1/sello_kinhold_128.png" srcset="recursos/marca/v1/sello_kinhold_256.png 2x" alt="">
+        <h1>Kinhold</h1>
+        <p class="lema" data-t="lema"></p>
+      </div>
+      <div class="barra-sup"><div id="idiomas"></div><div id="actualizado"></div></div>
+    </div>
+    <div class="estandarte verde" aria-hidden="true"><div class="asta"></div><div class="pano"></div></div>
   </header>
-  <div class="orla"></div>
   <div id="resumen"></div>
-  <nav id="pestanas">
+  <nav id="pestanas"><div class="viga"></div><div class="cintas">
     <button data-s="jugar" class="sel" data-t="t_jugar"></button>
     <button data-s="roadmap" data-t="t_roadmap"></button>
     <button data-s="diario" data-t="t_diario"></button>
     <button data-s="tiempos" data-t="t_tiempos"></button>
     <button data-s="decisiones"><span data-t="t_espera"></span></button>
     <button data-s="documentos" data-t="t_diseno"></button>
-  </nav>
-  <section id="jugar" class="sel"><div id="listaJuegos"></div>
-    <p class="nota" data-t="nota_jugar"></p></section>
-  <section id="roadmap"><div class="leyenda" id="leyenda"></div><div id="listaHitos"></div></section>
-  <section id="diario"><div id="listaDiario"></div></section>
-  <section id="tiempos"><div id="tablaTiempos"></div></section>
-  <section id="decisiones"><div id="listaDecisiones"></div>
-    <p class="nota" data-t="nota_revision" data-html></p></section>
-  <section id="documentos"><div class="docs">
-    <a href="diseno/gdd.html" data-doc="gdd"><b>GDD</b><span data-t="doc_gdd"></span></a>
-    <a href="diseno/sistemas.html" data-doc="sistemas"><b data-t="doc_sis_t"></b><span data-t="doc_sis"></span></a>
-    <a href="diseno/analisis.html" data-doc="analisis"><b data-t="doc_ana_t"></b><span data-t="doc_ana"></span></a>
-    <a href="https://github.com/valravnxx/kinhold"><b data-t="doc_cod_t"></b><span data-t="doc_cod"></span></a>
-  </div></section>
-  <div class="orla" style="margin-top:34px"></div>
+  </div></nav>
+  <section id="jugar" class="sel"><div class="pergamino"><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div><div class="papel">
+    <span class="cinta" data-t="alpha_cinta"></span>
+    <div id="listaJuegos"></div>
+    <p class="nota" data-t="nota_jugar"></p>
+  </div><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div></div></section>
+  <section id="roadmap"><div class="pergamino"><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div><div class="papel">
+    <span class="cinta" data-t="t_roadmap"></span>
+    <div class="leyenda" id="leyenda"></div><div id="listaHitos"></div>
+  </div><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div></div></section>
+  <section id="diario"><div class="pergamino"><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div><div class="papel">
+    <span class="cinta" data-t="t_diario"></span>
+    <div id="listaDiario"></div>
+  </div><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div></div></section>
+  <section id="tiempos"><div class="pergamino"><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div><div class="papel">
+    <span class="cinta" data-t="t_tiempos"></span>
+    <div id="tablaTiempos"></div>
+  </div><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div></div></section>
+  <section id="decisiones"><div class="pergamino"><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div><div class="papel">
+    <span class="cinta" data-t="t_espera"></span>
+    <div id="listaDecisiones"></div>
+    <p class="nota" data-t="nota_revision" data-html></p>
+  </div><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div></div></section>
+  <section id="documentos"><div class="pergamino"><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div><div class="papel">
+    <span class="cinta" data-t="t_diseno"></span>
+    <div class="docs">
+      <a href="diseno/gdd.html" data-doc="gdd"><b>GDD</b><span data-t="doc_gdd"></span></a>
+      <a href="diseno/sistemas.html" data-doc="sistemas"><b data-t="doc_sis_t"></b><span data-t="doc_sis"></span></a>
+      <a href="diseno/analisis.html" data-doc="analisis"><b data-t="doc_ana_t"></b><span data-t="doc_ana"></span></a>
+      <a href="https://github.com/valravnxx/kinhold"><b data-t="doc_cod_t"></b><span data-t="doc_cod"></span></a>
+    </div>
+  </div><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div></div></section>
   <footer data-t="pie"></footer>
 </div>
 <div id="visor" hidden><img alt=""></div>
@@ -447,7 +586,6 @@ function pintar() {
     const vs = [...principal.versiones].reverse(), ul = vs[0];
     const fotos = portadas(ul.capturas, 3);
     $('#listaJuegos').innerHTML = `<article class="tarjeta alpha">
-      <span class="cinta">${u('alpha_cinta')}</span>
       ${fotos.length ? `<div class="galeria">${fotos.map(f => `<a href="${esc(ul.capturas + '/' + f)}"><img src="${esc(ul.capturas + '/' + f)}" alt=""></a>`).join('')}</div>` : ''}
       <div class="cuerpo">
         <h2>${u('alpha_t')} <span class="chip version">${esc(ul.v)}</span></h2>
@@ -547,6 +685,30 @@ document.addEventListener('click', (e) => {
   e.preventDefault(); $('#visor img').src = a.href; $('#visor').hidden = false;
 });
 $('#visor').onclick = () => { $('#visor').hidden = true; };
+
+// ---------- Guirnalda de banderines ----------
+// La cuerda es una curva (Bézier cuadrática) que cuelga entre los dos lados; cada banderín se pone sobre ella,
+// girado según la pendiente de la cuerda en ese punto. Se rehace si cambia el ancho.
+const COLORES_BANDERIN = ['var(--pano-rojo)', 'var(--pano-ocre)', 'var(--pano-verde)', 'var(--pano-crema)', 'var(--pano-azul)'];
+let anchoGuirnalda = 0;
+function guirnalda() {
+  const g = $('#guirnalda'), W = g.clientWidth || 1000, H = g.clientHeight || 92;
+  if (W === anchoGuirnalda) return;
+  anchoGuirnalda = W;
+  const y0 = 6, abajo = H - 34, c = 2 * abajo - y0;          // punto de control para que el centro quede en «abajo»
+  const y = (t) => y0 * (1 - t) ** 2 + 2 * t * (1 - t) * c + y0 * t * t;
+  const n = Math.max(8, Math.round(W / 64));
+  let html = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><path d="M-4 ${y0} Q ${W / 2} ${c} ${W + 4} ${y0}" fill="none" stroke="#2a1708" stroke-width="5"/>` +
+    `<path d="M-4 ${y0} Q ${W / 2} ${c} ${W + 4} ${y0}" fill="none" stroke="#d9b77c" stroke-width="2.2" stroke-dasharray="5 3"/></svg>`;
+  for (let i = 0; i < n; i++) {
+    const t = (i + .5) / n, ang = Math.atan(2 * (c - y0) * (1 - 2 * t) / W) * 180 / Math.PI;
+    const col = COLORES_BANDERIN[i % COLORES_BANDERIN.length];
+    html += `<span class="banderin${i % 5 === 0 || i % 5 === 2 ? ' cruz' : ''}" style="--c:${col};left:${(t * 100).toFixed(3)}%;top:${(y(t) - 3).toFixed(1)}px;transform:translateX(-50%) rotate(${ang.toFixed(2)}deg)"><i></i></span>`;
+  }
+  g.innerHTML = html;
+}
+addEventListener('resize', guirnalda);
+guirnalda();
 pintar();
 </script>
 </body>
