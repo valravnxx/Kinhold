@@ -46,7 +46,7 @@ echo.
 echo Descargando Node.js (portable, unos 30 MB)...
 set "ARQ=x64"
 if /i "%PROCESSOR_ARCHITECTURE%"=="ARM64" set "ARQ=arm64"
-%PS% "$ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; $v=(Invoke-RestMethod 'https://nodejs.org/dist/index.json' | Where-Object { $_.lts } | Select-Object -First 1).version; $n='node-'+$v+'-win-%ARQ%'; Invoke-WebRequest -UseBasicParsing -Uri ('https://nodejs.org/dist/'+$v+'/'+$n+'.zip') -OutFile '%BASE%\node.zip'; Expand-Archive -Force -Path '%BASE%\node.zip' -DestinationPath '%BASE%\node_tmp'; if (Test-Path '%NODEDIR%') { Remove-Item -Recurse -Force '%NODEDIR%' }; Move-Item ('%BASE%\node_tmp\'+$n) '%NODEDIR%'; Remove-Item -Recurse -Force '%BASE%\node_tmp'; Remove-Item -Force '%BASE%\node.zip'"
+%PS% "$ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; $ErrorActionPreference='Stop'; $v='v22.12.0'; try { $l=Invoke-RestMethod 'https://nodejs.org/dist/index.json'; $u=@($l | ForEach-Object { $_ } | Where-Object { $_.lts }); if ($u.Count -gt 0 -and $u[0].version -match '^v\d+\.\d+\.\d+$') { $v=$u[0].version } } catch { }; Write-Host ('Node.js '+$v); $n='node-'+$v+'-win-%ARQ%'; Invoke-WebRequest -UseBasicParsing -Uri ('https://nodejs.org/dist/'+$v+'/'+$n+'.zip') -OutFile '%BASE%\node.zip'; Expand-Archive -Force -Path '%BASE%\node.zip' -DestinationPath '%BASE%\node_tmp'; if (Test-Path '%NODEDIR%') { Remove-Item -Recurse -Force '%NODEDIR%' }; Move-Item ('%BASE%\node_tmp\'+$n) '%NODEDIR%'; Remove-Item -Recurse -Force '%BASE%\node_tmp'; Remove-Item -Force '%BASE%\node.zip'"
 if not exist "%NODEDIR%\node.exe" goto fallo_node
 :poner_node
 set "PATH=%NODEDIR%;%PATH%"
