@@ -178,7 +178,7 @@
    "id": "estilo",
    "num": "1e",
    "nombre": "El estilo de la prueba v5 en todo",
-   "estado": "en_curso",
+   "estado": "revision",
    "jugable": "Todo lo que se ve (suelo, árboles, piezas de construcción, muebles y objetos) con el aspecto de la prueba de estilo v5 que aprobó valravnx, en la construcción, el duelo y la demo única.",
    "nota": "Pedido de valravnx el 26 oct: solo se habían pasado al estilo los muros de troncos. Va antes que el resto del arte y que las piezas nuevas; reúne las tareas de estilo que estaban en el hito 1c.",
    "tareas": [
@@ -220,7 +220,9 @@
     },
     {
      "nombre": "Revisión completa y publicación: cada vista de cada prototipo y de la demo única, en PC y en móvil, comparada en capturas lado a lado con la prueba de estilo v5; lo que no se vea igual se arregla antes de cerrar el hito",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-27T04:03:18+00:00",
+     "fin": "2026-10-27T05:40:48+00:00"
     }
    ]
   },
@@ -812,6 +814,13 @@
      "archivo": "jugar/demo/v14.html",
      "capturas": "capturas/demo-v14",
      "notas": "Construcción v19 y combate v11: pieza fantasma con su textura, hacha al talar y armas, escudo, poste y diana con el estilo v5"
+    },
+    {
+     "v": "v15",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v15.html",
+     "capturas": "capturas/demo-v15",
+     "notas": "Construcción v20: enlosado de losas desiguales en el cimiento de piedra y mojón con piedras redondeadas, como la prueba de estilo v5"
     }
    ]
   },
@@ -938,6 +947,13 @@
      "archivo": "jugar/construccion/v19.html",
      "capturas": "capturas/construccion-v19",
      "notas": "Pieza fantasma y resaltados con la textura de la pieza (velo verde, rojo o naranja) y hacha en la mano al talar, con el estilo v5"
+    },
+    {
+     "v": "v20",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v20.html",
+     "capturas": "capturas/construccion-v20",
+     "notas": "Revisión del estilo v5: el cimiento de piedra lleva un enlosado de losas desiguales y de dos tonos (antes parecía baldosa moderna) y el mojón tiene piedras redondeadas como las rocas de la prueba"
     }
    ]
   },
@@ -1201,5 +1217,11 @@
    ]
   }
  ],
- "decisiones_pendientes": []
+ "decisiones_pendientes": [
+  {
+   "pregunta": "En la prueba de estilo v5 las capturas llevan el «desenfoque de maqueta» (bandas borrosas arriba y abajo) y en el juego no. ¿Lo quieres también en la construcción, el duelo y la demo? Sería un interruptor en Opciones; en el móvil puede costar fotogramas, así que se mediría antes de dejarlo puesto.",
+   "desde": "2026-10-27",
+   "hito": "estilo"
+  }
+ ]
 }
