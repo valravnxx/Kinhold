@@ -1,6 +1,6 @@
 // Kinhold — modelos y animación del campo de pruebas de combate (low-poly por código)
 import * as THREE from 'three';
-import { mat, deLote, cajaR } from '../juego/modelos.js';
+import { mat, deLote, deMano, cajaR } from '../juego/modelos.js';
 import { Lote } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { vestirConTaller, pintarHeridaTaller, animarTaller } from './taller.js';
@@ -20,19 +20,16 @@ function marcador(g, nombre, y) { const o = new THREE.Object3D(); o.name = nombr
 // ---------- Armas, escudo, proyectiles, poste y diana con el estilo v5 ----------
 // Como las piezas de la construcción: formas redondeadas, madera con veta, cortes claros, hierro oscuro, tela tejida,
 // todo junto en una malla por textura (deLote). Lo que se lleva en la mano no se oscurece «al pie» (no toca el suelo).
-const ACERO = 0xc6c9c8, ACERO_OSC = 0x8a8c8c, CUERO = 0x4a3526, CUERO_CLARO = 0x6b4e36, PLUMA = 0xd5ccb8, PLUMA_OSC = 0x5b5149;
+const ACERO = 0xc6c9c8, ACERO_OSC = 0x8a8c8c, HIERRO = 0x6a6b6e, CUERO = 0x4a3526, CUERO_CLARO = 0x6b4e36, PLUMA = 0xd5ccb8, PLUMA_OSC = 0x5b5149;
 const loteMano = () => new Lote({ variacion: 0.04, rangoSuelo: 0.001, suelo: -100 });
-// lo que se lleva en la mano es tan fino (una hoja de 9 mm) que el mapa de sombras lo sombrea entero sobre sí mismo:
-// echa sombra pero no la recibe, como antes
-function deMano(L) { const g = deLote(L); g.traverse(o => { if (o.isMesh) o.receiveShadow = false; }); return g; }
 // hoja de sección de rombo (con su arista en medio), de ancho a0 abajo a a1 arriba, a lo largo de +Y
 function hoja(L, a0, a1, largo, grueso, y0) {
   // el cilindro de 4 lados ya tiene sus aristas en los ejes: se aplasta en z hasta el grueso
   const plana = new THREE.Vector3(1, 1, grueso / a0);
-  L.add(new THREE.CylinderGeometry(a1 / 2, a0 / 2, largo, 4, 1), ACERO, 0, y0 + largo / 2, 0, null, { escala: plana, plano: true, brillo: 1.2 });
-  L.add(new THREE.ConeGeometry(a1 / 2, a1 * 1.6, 4, 1), ACERO, 0, y0 + largo + a1 * 0.8, 0, null, { escala: plana, plano: true, brillo: 1.2 });
+  L.add(new THREE.CylinderGeometry(a1 / 2, a0 / 2, largo, 4, 1), ACERO, 0, y0 + largo / 2, 0, null, { escala: plana, plano: true, brillo: 1.2, tex: 'acero' });
+  L.add(new THREE.ConeGeometry(a1 / 2, a1 * 1.6, 4, 1), ACERO, 0, y0 + largo + a1 * 0.8, 0, null, { escala: plana, plano: true, brillo: 1.2, tex: 'acero' });
   // vaceo (la acanaladura del centro), algo más oscuro, en las dos caras
-  for (const s of [-1, 1]) L.add(cajaR(a0 * 0.22, largo * 0.62, 0.004, 0.002), ACERO_OSC, 0, y0 + largo * 0.34, s * grueso * 0.32);
+  for (const s of [-1, 1]) L.add(cajaR(a0 * 0.22, largo * 0.62, 0.004, 0.002), ACERO_OSC, 0, y0 + largo * 0.34, s * grueso * 0.32, null, { tex: 'acero' });
 }
 // puño forrado de cuero con su atadura en espiral (anillos algo más claros)
 function puno(L, r, largo, y0) {
@@ -43,12 +40,12 @@ function espada({ largoHoja, anchoBase, anchoPunta, largoPuno, anchoCruz }) {
   const L = loteMano();
   puno(L, 0.016, largoPuno, -largoPuno / 2);
   // pomo de rueda: disco de hierro con su botón
-  L.add(cil(0.034, 0.034, 0.022, 12), 'hierro', 0, -largoPuno / 2 - 0.028, 0, { x: Math.PI / 2 });
-  L.add(new THREE.SphereGeometry(0.012, 6, 4), 'hierro', 0, -largoPuno / 2 - 0.058, 0);
+  L.add(cil(0.034, 0.034, 0.022, 12), HIERRO, 0, -largoPuno / 2 - 0.028, 0, { x: Math.PI / 2 });
+  L.add(new THREE.SphereGeometry(0.012, 6, 4), HIERRO, 0, -largoPuno / 2 - 0.058, 0);
   // cruz: barra de hierro redondeada, un poco más fina en los extremos, con los remates
   const yc = largoPuno / 2 + 0.012;
-  L.add(cil(0.011, 0.011, anchoCruz, 6), 'hierro', 0, yc, 0, { z: Math.PI / 2 }, { escala: new THREE.Vector3(1, 1, 1.25) });
-  for (const s of [-1, 1]) L.add(new THREE.SphereGeometry(0.015, 6, 4), 'hierro', s * anchoCruz / 2, yc, 0);
+  L.add(cil(0.011, 0.011, anchoCruz, 6), HIERRO, 0, yc, 0, { z: Math.PI / 2 }, { escala: new THREE.Vector3(1, 1, 1.25) });
+  for (const s of [-1, 1]) L.add(new THREE.SphereGeometry(0.015, 6, 4), HIERRO, s * anchoCruz / 2, yc, 0);
   hoja(L, anchoBase, anchoPunta, largoHoja, 0.009, yc + 0.012);
   return deMano(L);
 }

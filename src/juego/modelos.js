@@ -59,6 +59,24 @@ export function deLote(L) {
   }
   return g;
 }
+// lo que se lleva en la mano es tan fino (una hoja de 9 mm) que el mapa de sombras lo sombrea entero sobre sí mismo:
+// echa sombra pero no la recibe, como antes
+// Y con sombreado plano calculado al dibujar (como las armas de antes): en la mano del personaje la cara que se ve
+// siempre recibe la luz que le toca, sin depender de las normales de vértice.
+const matsMano = new Map();
+function matMano(m) { if (!matsMano.has(m)) { const c = m.clone(); c.flatShading = true; matsMano.set(m, c); } return matsMano.get(m); }
+// El acero pulido (opc.tex 'acero') refleja el cielo: aunque su cara quede a contraluz no se ve negro.
+let matAcero = null;
+export function deMano(L) {
+  const g = deLote(L);
+  g.traverse(o => {
+    if (!o.isMesh) return;
+    o.receiveShadow = false;
+    if (o.name === 'estilo_acero' && hayDocumento) o.material = matAcero ??= new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, emissive: 0x3b3f43 });
+    else o.material = matMano(o.material);
+  });
+  return g;
+}
 const loteMuro = () => new Lote({ variacion: 0.06, rangoSuelo: 0.5 });
 // Tronco tumbado a lo largo de X, de x0 a x1, con las testas (cortes claros) a la vista. Un poco más grueso por un
 // extremo, como los de verdad: así, donde dos muros seguidos se solapan, las superficies no coinciden (no parpadean).

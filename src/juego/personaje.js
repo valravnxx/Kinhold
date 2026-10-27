@@ -3,7 +3,7 @@
 // momento: el cuerpo del taller no tiene pies debajo (se quitan al vestir), y descalzo se vería sin pies.
 // Mientras se carga (o si no se puede cargar, p. ej. abriendo el html suelto sin servidor) se ve el muñeco inicial.
 import * as THREE from 'three';
-import { mat, deLote, cajaR } from './modelos.js';
+import { mat, cajaR, deMano } from './modelos.js';
 import { Lote } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
@@ -83,8 +83,7 @@ export function modeloHacha() {
   L.add(cil(0.004, 0.004, 0.13, 4), 0x9a9b9a, 0, y - 0.008, 0.141, { x: 0.04 }, { escala: new THREE.Vector3(2.2, 1, 1), plano: true, brillo: 1.15 }); // filo afilado, más claro
   L.add(cajaR(0.03, 0.04, 0.03, 0.008), 'hierro', 0, y, -0.035);                                          // cotillo
   L.add(new THREE.CircleGeometry(0.014, 6), 'corte', 0, y + 0.0385, 0.016, { x: -Math.PI / 2 });          // cuña
-  const g = deLote(L); g.name = 'hacha';
-  g.traverse(o => { if (o.isMesh) o.receiveShadow = false; }); // fina: que no se sombree entera a sí misma
+  const g = deMano(L); g.name = 'hacha'; // como las armas: echa sombra sin recibirla y con sombreado plano
   return g;
 }
 // Pone el hacha en la mano derecha: el mango atravesado a los dedos (del meñique al índice, la cabeza por el lado
