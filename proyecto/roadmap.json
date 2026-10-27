@@ -491,9 +491,10 @@
      "fin": "2026-10-27T09:55:53+01:00"
     },
     {
-     "nombre": "Arreglo (pedido de valravnx, 27 oct): con un piso encima, la decoración se ponía en el suelo de arriba y no en el de la planta en la que estás; el clic tiene que dar en el suelo de tu planta cuando el techo está oculto por estar dentro",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T10:14:47+01:00"
+     "nombre": "Arreglo (pedido de valravnx, 27 oct): con un piso encima, la decoración se ponía en el suelo de arriba y no en el de la planta en la que estás; el clic tiene que dar en el suelo de tu planta cuando el techo está oculto por estar dentro. Y los suelos de troncos, sin huequecitos entre tronco y tronco: que tapen del todo",
+     "estado": "hecho",
+     "inicio": "2026-10-27T10:14:47+01:00",
+     "fin": "2026-10-27T11:26:07+01:00"
     },
     {
      "nombre": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
@@ -935,6 +936,13 @@
      "archivo": "jugar/demo/v16.html",
      "capturas": "capturas/demo-v16",
      "notas": "En «Construir», se construye por obras: marco, material y tiempo (es la construcción v21)."
+    },
+    {
+     "v": "v17",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v17.html",
+     "capturas": "capturas/demo-v17",
+     "notas": "En «Construir», la decoración va al suelo de tu planta y los suelos de troncos tapan del todo (es la construcción v22)."
     }
    ]
   },
@@ -1075,6 +1083,13 @@
      "archivo": "jugar/construccion/v21.html",
      "capturas": "capturas/construccion-v21",
      "notas": "Se construye por obras: colocar pone el marco de la pieza, que se ve tenue dentro de un armazón de varas; Usar (F) junto a la obra le lleva el material y te pone a construir; cada pieza tarda según su peso y, si te ayudan, menos."
+    },
+    {
+     "v": "v22",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v22.html",
+     "capturas": "capturas/construccion-v22",
+     "notas": "Arreglo: la decoración va al suelo de la planta en la que estás, no al piso de arriba. Los cimientos y suelos de troncos ya no dejan ver el suelo por las juntas."
     }
    ]
   },

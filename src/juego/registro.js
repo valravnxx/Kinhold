@@ -1,6 +1,8 @@
 // Decisiones que he tomado yo en el hito 1, para que las revises.
-export const VERSION = 'Hito 1 · v21';
+export const VERSION = 'Hito 1 · v22';
 export const REGISTRO = [
+  'v22, arreglo (valravnx: la cama se iba al altillo estando debajo): la decoración solo se apunta a los suelos y cimientos de la planta en la que estás, aunque el piso de arriba se vea en la pantalla por delante; arriba, fuera de los suelos de tu planta, no se pone.',
+  'v22: los cimientos y los suelos de troncos ya no dejan ver el suelo de debajo por las juntas entre tronco y tronco: llevan debajo un relleno oscuro que tapa del todo.',
   'v21: se construye por obras (decidido por valravnx el 26 oct). Colocar pone solo el marco de la pieza, que se ve tenue dentro de un armazón de varas atadas y aún no cuesta nada. Junto a la obra, Usar (F) le lleva el material que le falta y te pones a construir; moverse lo para y se retoma con Usar. Cada pieza tarda 4 s más 1 s por cada 20 kg (el GDD no da cifras: provisional); por ejemplo, un poste 7 s, un muro de troncos 19 s y un cimiento de piedra 24 s. Si te ayudan, se suman los segundos de todos y se acaba antes. La obra a medias guarda lo entregado y el trabajo, con quién llevó cada cosa y quién trabajó cuánto.',
   'v21: una obra a medias no sostiene nada (no se pone nada encima hasta terminarla), no corta el paso ni se puede pisar, y su peso ya cuenta al poner el marco, así que al terminarla aguanta seguro. Una puerta en obras no se abre. Al desmontar una obra a medias se recupera entero lo que se le había llevado.',
   'v21: el material sale aún de la reserva común, como antes; llevarlo a mano hasta la altura de la obra, el andamio y las poleas llegan en las tareas siguientes. Los muebles y el mojón se siguen poniendo al momento.',
