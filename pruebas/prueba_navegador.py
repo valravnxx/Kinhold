@@ -539,6 +539,9 @@ with sync_playwright() as p:
     print('Móvil')
     ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True, locale='es-ES')
     mv = ctx.new_page()
+    # al doble de resolución y sin tarjeta gráfica, cada fotograma puede tardar segundos con la casa entera a la vista,
+    # y un clic espera al siguiente: 30 s no siempre llegan en una máquina de 2 núcleos
+    mv.set_default_timeout(120000)
     err2 = []
     mv.on('pageerror', lambda e: err2.append(str(e)))
     mv.goto(URL)
@@ -554,7 +557,7 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=10.2; {K}.pj.z=-15; {K}.pj.k=0; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.5; {K}.cam.dist=11")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06b_movil_escalera.png')
-    mv.click('#modos button[data-modo=construir]')
+    mv.click('#modos button[data-modo=construir]', no_wait_after=True)  # el clic no navega; con la máquina cargada, esperar «navegaciones» agotaba los 30 s
     mv.evaluate(f"{K}.seleccionar('pieza','cim_tronco'); {K}.apuntar(-2, 2)")
     mv.wait_for_timeout(700)
     comprobar('botón Colocar visible al construir en táctil', mv.is_visible('#btnColocar'))
@@ -564,12 +567,12 @@ with sync_playwright() as p:
         pass
     comprobar('carga el personaje del taller en el móvil', mv.evaluate(f"!!{K}.jugador.mh"))
     mv.screenshot(path=f'{SALIDA}/07_movil_construir.png')
-    mv.click('#btnColocar')
+    mv.click('#btnColocar', no_wait_after=True)
     mv.evaluate(f"{K}.cambiarModo('mover'); {K}.pj.x=-1; {K}.pj.z=4.2; {K}.pj.k=0; {K}.pj.rot=Math.PI*0.9; {K}.cam.yaw=Math.PI*0.1; {K}.cam.pitch=0.55; {K}.cam.dist=7")
     mv.wait_for_timeout(900)
     comprobar('móvil: Colocar pone el marco de la obra', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].some(p => p.tipo === 'cim_tronco' && p.obra)"))
     mv.screenshot(path=f'{SALIDA}/07d_movil_obra.png')
-    mv.click('#modos button[data-modo=mover]')
+    mv.click('#modos button[data-modo=mover]', no_wait_after=True)
     mv.evaluate(f"{K}.pj.x=2; {K}.pj.z=-2.5; {K}.pj.k=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI*0.95; {K}.cam.pitch=0.3; {K}.cam.dist=4.5")
     mv.wait_for_timeout(1200)
     mv.screenshot(path=f'{SALIDA}/07b_movil_personaje_de_cerca.png')

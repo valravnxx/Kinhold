@@ -6,6 +6,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (12:50 y 13:06) — por el chat: el mapa, con formas naturales a la europea
+
+«En vez de ser un país circular, me gustaría que fuera algo con más relieves. Piensa en estilo Europa, un país mínimo me gustaría que fuera insular, bastante apartado del continente para forzar el uso de barcos… zonas geográficamente muy separadas… para que no sea una gran masa de tierra circular en medio del mar.» Y después: «Este no deja de ser una especie de trapezoide con dos pequeños salientes y una isla circular… mira cómo es el mapa de Europa, mira cómo son mapas de fantasía diseñados en otros lados. Haz un research… No quiero formas predefinidas, quiero que tenga curvas, penínsulas, ínsulas, un poco de todo» → Investigado (generadores de mapas de fantasía por plantillas de colinas, sierras, fosas y hoyas; dominio deformado; costas fractales) y rehecho el generador sin figuras fijas, con una isla-país siempre apartada por mar. Publicado «Mapa del mundo» v1. Queda por decidir el tamaño del mundo (188 o 256 km).
+
+### 27 oct 2026 (13:51) — por el chat: dos fallos en construir
+
+«Se ven los muebles del piso de arriba aunque estés en el de abajo, no debe ocurrir con el siguiente piso tapado; y parece que el control con WASD está fallando según mi chica, que está testeando» → Tarea de arreglo en el hito 1c, en curso en la sesión de chat.
+
 ### 27 oct 2026 (12:36) — por el chat: decisiones de cavar y diseño del mundo
 
 «Sí, aprueba lo del vano por material» (sin derrumbes: sin apoyo no se avanza). Escombro: «sacarlo con carretilla, sí, porque es importante que sea un material que se pueda utilizar». Hierro: «poco y malo en superficie, y lo bueno en la mina, sí». «Prohibimos cavar dentro del radio de mojón ajeno, y no solo eso, sino de su radio de influencia» (en el GDD, el radio de exclusión). → GDD apartado 8 (Cavar y minar) y tareas nuevas en el hito 1g.
