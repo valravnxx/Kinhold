@@ -607,7 +607,7 @@
    "nombre": "Pulido de manos, animaciones y heridas",
    "estado": "pendiente",
    "jugable": "Las manos agarran bien cada herramienta y arma que llevan, las animaciones no atraviesan el propio cuerpo, la ropa por capas ni a otros personajes, y las heridas se ven bien donde entran.",
-   "nota": "Pedido por Pedro el 27 oct: importante, pero para más adelante; ahora va primero algo jugable.",
+   "nota": "Pedido por valravnx el 27 oct: importante, pero para más adelante; ahora va primero algo jugable.",
    "tareas": [
     {
      "nombre": "Planificar el hito: ver qué herramientas y armas hay ya, qué animaciones atraviesan algo y cómo lo resuelven otros (puntos de agarre por objeto, cinemática inversa de las manos, colisiones aproximadas del cuerpo), y desglosarlo en tareas de una sesión",
@@ -626,7 +626,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Heridas que se vean bien (Pedro, 27 oct: «ahora son cuadrados sobre el personaje»; para más adelante): corte, golpe y estocada se pintan donde entran (también rompen y manchan la ropa), el sangrado se extiende con el tiempo y el vendaje se ve puesto",
+     "nombre": "Heridas que se vean bien (valravnx, 27 oct: «ahora son cuadrados sobre el personaje»; para más adelante): corte, golpe y estocada se pintan donde entran (también rompen y manchan la ropa), el sangrado se extiende con el tiempo y el vendaje se ve puesto",
      "estado": "pendiente"
     },
     {
