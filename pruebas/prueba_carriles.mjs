@@ -13,7 +13,7 @@ const base = () => ({ hitos: [
   { id: 'h5', estado: 'pendiente', tareas: [] },
 ] });
 const ahora = Date.parse('2026-10-27T10:00:00Z'), hace = (m) => new Date(ahora - m * 60000).toISOString();
-const el = (r, s, c) => process.env.MUTAR ? elegir(r, {}, c, ahora) : elegir(r, s, c, ahora);
+const el = (r, s, c) => process.env.MUTAR ? elegir(JSON.parse(JSON.stringify(r).replaceAll('"lleva":"chat"', '"x":1')), {}, c, ahora) : elegir(r, s, c, ahora);
 
 let r = base(), s = {};
 const a = el(r, s, 'A');
@@ -46,6 +46,10 @@ const b4 = el(r3, s4, 'B');
 comprobar('un avance reciente mantiene vivo el carril', b4 && b4.hito !== 'h2', JSON.stringify(b4));
 // formato antiguo de sesion.json = carril A
 comprobar('el sesion.json antiguo se lee como el carril A', leerCarriles({ inicio: hace(1), tarea: 'x', rama: 'r' }).A.rama === 'r');
+// un hito que lleva a mano la sesión de chat no lo coge ningún carril, aunque no tenga nada en curso
+const r5 = base(); r5.hitos[1].lleva = 'chat'; r5.hitos[2].lleva = 'chat';
+const a5 = el(r5, {}, 'A');
+comprobar('ningún carril coge un hito que lleva la sesión de chat', a5 && a5.hito !== 'h2' && a5.hito !== 'h3', JSON.stringify(a5));
 // choques de archivos
 const cs = choques(['src/juego/modelos.js', 'proyecto/diario.json', 'docs/index.html'], { 'trabajo/b': ['src/juego/modelos.js', 'proyecto/diario.json'], 'trabajo/c': ['src/combate/main.js'] });
 comprobar('choque: solo los archivos de verdad, no los que se unen solos', cs.length === 1 && cs[0].archivo === 'src/juego/modelos.js' && cs[0].rama === 'trabajo/b', JSON.stringify(cs));

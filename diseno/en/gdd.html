@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="1fe345d410500ead855b911948d64ae07e4b2a5e">
+<meta name="kinhold-origen" content="563a17a514781e408760c94c2ec910d7257e3c05">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.9</title>
 <style>
@@ -305,6 +305,16 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span>Trees fall, are transported and are cut; they grow back in real weeks and can be planted.</p>
 <p><span class="tag ok">DECIDED</span>Ore veins <b>do not regenerate</b>, but the world has plenty of material: it is not a scarce resource.</p>
 <p class="note">Proposed gatherables: section 3 of the analysis document.</p>
+<h3>Digging and mining</h3>
+<p><span class="tag ok">DECIDED</span>You can <b>dig the ground and open mines</b>. Outside: trenches, moats and levelling for foundations with a <b>round brush</b> that lowers or smooths with soft edges. Inside the rock, each pick stroke removes a rounded handful of rock in the direction you face: tunnels go straight, uphill or curving.</p>
+<p><span class="tag ok">DECIDED</span><b>No grid look:</b> inside, the rock is split into small cubes of about 50 cm, but the wall is drawn as a smooth surface wrapping them, with the rock's roughness taken from a fixed seed by position: everyone sees the same irregular cave.</p>
+<p><span class="tag ok">DECIDED</span>When you enter a mine, <b>what is above is hidden</b> (like the roof of houses) and <b>what the character cannot see fades to black</b>. Long galleries need <b>timbering</b> (posts and beams) using the building load calculation.</p>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li>«Smooth voxels»: the server only stores which small cubes were removed in each 8 × 8 × 8 m chunk of the world (a few hundred bytes per dug chunk; nothing where nobody has dug), each stroke with its author. Each client only rebuilds the mesh of the touched chunk.</li>
+  <li>What is seen inside the mine: from the character's cell the open space and what its torch lights are traversed; the rest stays black. The server only sends the hollows the player has seen or has in front, so nobody sees other people's mines and veins through the rock.</li>
+  <li>Before building it, a performance test on mobile: a chunk of rock to dig in, measuring frames and how long the mesh takes to rebuild.</li>
+</ul></div>
 </section>
 
 <section id="progresion">
@@ -507,6 +517,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>1b</td><td>Art direction and characters</td><td>World style, workshop character with layered clothing, customization, visible wounds, levels of detail.</td></tr>
 <tr><td>1c</td><td>More building pieces</td><td>Pieces and furniture in the chosen style; building works with frame, materials and time, scaffold, pulley and block and tackle; stone walls with a treadwheel crane; stairs, railings, shutters, tiles, ridges, chimney, wall-walk, decoration.</td></tr>
 <tr><td>1d</td><td>A single demo</td><td>Building, combat and character on the same page, with the same scene and the same character.</td></tr>
+<tr><td>1g</td><td>Digging and mining</td><td>Trenches and levelling with a round brush; mines with irregular rock and no grid look, what is above hidden and black what cannot be seen, timbering.</td></tr>
 <tr><td>2</td><td>Equipment and slot-based carrying</td><td>Inventory panel, belts, firewood frame and other backpacks; felling, transport and slowdown from carrying.</td></tr>
 <tr><td>3</td><td>Stations and crafting</td><td>First stations, recipes, unlocking through practice, durability and repair.</td></tr>
 <tr><td>4</td><td>Survival</td><td>Needs with warnings, clothing against the cold, bound bed and death with partial looting.</td></tr>

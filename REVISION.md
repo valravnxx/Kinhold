@@ -8,7 +8,7 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ### 27 oct 2026 (08:23) — por el chat: cavar y minar (en conversación)
 
-valravnx pregunta cuánta carga de servidor supondría modificar el terreno cavando o minando, con la idea de que al entrar en una mina desaparezca lo que hay encima (como el tejado de las casas) y lo que el personaje no ve funda a negro. → Respuesta en el chat (viable si las minas van por casillas como la construcción y el terreno de fuera solo se rebaja o se nivela); pendiente de que lo confirme antes de pasarlo al GDD.
+valravnx pregunta cuánta carga de servidor supondría modificar el terreno cavando o minando, con la idea de que al entrar en una mina desaparezca lo que hay encima (como el tejado de las casas) y lo que el personaje no ve funda a negro. → Respuesta en el chat. valravnx no quiere casillas («look terriblemente cuadriculado»); se queda el híbrido que propone: cubitos pequeños (unos 50 cm) y la roca dibujada lisa e irregular alrededor con semilla fija (09:04). A las 09:09: «vamos a trabajarlo en paralelo, tercero» → GDD (sección 8, tres idiomas) y hito nuevo 1g «Cavar y minar», que lleva a mano esta sesión de chat; los carriles A y B no lo tocan («lleva»: «chat» en el roadmap).
 
 ### 27 oct 2026 (06:51–06:54) — por el chat: dos sesiones en paralelo
 

@@ -523,6 +523,46 @@
    "nota": "La primera tarea (madera más resistente) se adelantó el 24 oct porque la casa de dos plantas de valravnx y su pareja no admitía el tejado en las esquinas. Planificado el 25 oct a petición de valravnx por el chat, en paralelo a la sesión de la ropa. Los puentes de troncos no entran: necesitan agua en el mapa y llegan con el hito Mundo."
   },
   {
+   "id": "excavacion",
+   "num": "1g",
+   "nombre": "Cavar y minar",
+   "estado": "en_curso",
+   "lleva": "chat",
+   "jugable": "Cavar zanjas y nivelar con una brocha redonda, y abrir minas con roca irregular sin cuadros; dentro, lo de encima oculto y negro lo que no se ve, con entibado.",
+   "nota": "Lo lleva a mano la sesión de chat con valravnx (27 oct), en paralelo a los carriles A y B, que no lo tocan.",
+   "tareas": [
+    {
+     "nombre": "Prueba de rendimiento de cavar (vóxeles suavizados): un trozo de roca de 8 m con cubitos de 50 cm, golpes de pico que quitan un puñado redondeado, pared lisa con rugosidad por semilla fija; medir fotogramas y lo que tarda en rehacerse la malla en PC y móvil",
+     "estado": "en_curso",
+     "inicio": "2026-10-27T09:09:00+01:00"
+    },
+    {
+     "nombre": "Lógica pura de la excavación: cubitos quitados por trozo del mundo, cada golpe con su autor, guardar solo lo tocado y rehacerlo al cargar",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Mina jugable: cavar con el pico en una ladera de la construcción, entrar y salir; al entrar se oculta lo de encima y lo que no se ve funde a negro (lo abierto que alcanza la vista y lo que alumbra la antorcha)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Fuera de la mina: zanjas, fosos y nivelar para cimientos con una brocha redonda sobre la altura del terreno",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Entibado: postes y vigas en las galerías con el cálculo de cargas de la construcción; derrumbe si una galería larga se queda sin apoyo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El servidor solo manda los huecos que el jugador ha visto o tiene delante (nadie ve minas ni vetas ajenas a través de la roca)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
    "id": "equipo",
    "num": "2",
    "nombre": "Equipo y carga por huecos",
