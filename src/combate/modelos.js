@@ -1,6 +1,8 @@
 // Kinhold — modelos y animación del campo de pruebas de combate (low-poly por código)
 import * as THREE from 'three';
-import { mat, COLORES } from '../juego/modelos.js';
+import { mat, deLote, cajaR } from '../juego/modelos.js';
+import { Lote } from '../mundo/estilos.js';
+import { cil } from '../mundo/decorado.js';
 import { vestirConTaller, pintarHeridaTaller, animarTaller } from './taller.js';
 
 const PIEL = 0xd6a77a, LINO = 0xd9cfb8, LINO_OSC = 0xbfb498, PELO = 0x4a3324, CORDEL = 0x8a7a55;
@@ -14,103 +16,158 @@ function pieza(geo, color, x = 0, y = 0, z = 0) {
   return m;
 }
 
-// ---------- Armas ----------
 function marcador(g, nombre, y) { const o = new THREE.Object3D(); o.name = nombre; o.position.y = y; g.add(o); }
+// ---------- Armas, escudo, proyectiles, poste y diana con el estilo v5 ----------
+// Como las piezas de la construcción: formas redondeadas, madera con veta, cortes claros, hierro oscuro, tela tejida,
+// todo junto en una malla por textura (deLote). Lo que se lleva en la mano no se oscurece «al pie» (no toca el suelo).
+const ACERO = 0xc6c9c8, ACERO_OSC = 0x8a8c8c, CUERO = 0x4a3526, CUERO_CLARO = 0x6b4e36, PLUMA = 0xd5ccb8, PLUMA_OSC = 0x5b5149;
+const loteMano = () => new Lote({ variacion: 0.04, rangoSuelo: 0.001, suelo: -100 });
+// hoja de sección de rombo (con su arista en medio), de ancho a0 abajo a a1 arriba, a lo largo de +Y
+function hoja(L, a0, a1, largo, grueso, y0) {
+  // el cilindro de 4 lados ya tiene sus aristas en los ejes: se aplasta en z hasta el grueso
+  const plana = new THREE.Vector3(1, 1, grueso / a0);
+  L.add(new THREE.CylinderGeometry(a1 / 2, a0 / 2, largo, 4, 1), ACERO, 0, y0 + largo / 2, 0, null, { escala: plana, plano: true, brillo: 1.2 });
+  L.add(new THREE.ConeGeometry(a1 / 2, a1 * 1.6, 4, 1), ACERO, 0, y0 + largo + a1 * 0.8, 0, null, { escala: plana, plano: true, brillo: 1.2 });
+  // vaceo (la acanaladura del centro), algo más oscuro, en las dos caras
+  for (const s of [-1, 1]) L.add(cajaR(a0 * 0.22, largo * 0.62, 0.004, 0.002), ACERO_OSC, 0, y0 + largo * 0.34, s * grueso * 0.32);
+}
+// puño forrado de cuero con su atadura en espiral (anillos algo más claros)
+function puno(L, r, largo, y0) {
+  L.add(cil(r, r * 1.08, largo, 8), CUERO, 0, y0 + largo / 2, 0, null, { tex: 'tejido' });
+  for (let k = 1; k < 5; k++) L.add(new THREE.TorusGeometry(r * 1.06, 0.0035, 3, 10), CUERO_CLARO, 0, y0 + largo * k / 5, 0, { x: Math.PI / 2 + 0.25 });
+}
+function espada({ largoHoja, anchoBase, anchoPunta, largoPuno, anchoCruz }) {
+  const L = loteMano();
+  puno(L, 0.016, largoPuno, -largoPuno / 2);
+  // pomo de rueda: disco de hierro con su botón
+  L.add(cil(0.034, 0.034, 0.022, 12), 'hierro', 0, -largoPuno / 2 - 0.028, 0, { x: Math.PI / 2 });
+  L.add(new THREE.SphereGeometry(0.012, 6, 4), 'hierro', 0, -largoPuno / 2 - 0.058, 0);
+  // cruz: barra de hierro redondeada, un poco más fina en los extremos, con los remates
+  const yc = largoPuno / 2 + 0.012;
+  L.add(cil(0.011, 0.011, anchoCruz, 6), 'hierro', 0, yc, 0, { z: Math.PI / 2 }, { escala: new THREE.Vector3(1, 1, 1.25) });
+  for (const s of [-1, 1]) L.add(new THREE.SphereGeometry(0.015, 6, 4), 'hierro', s * anchoCruz / 2, yc, 0);
+  hoja(L, anchoBase, anchoPunta, largoHoja, 0.009, yc + 0.012);
+  return deLote(L);
+}
 export function modeloArma(tipo) {
-  const g = new THREE.Group();
+  let g = new THREE.Group();
   if (tipo === 'espada_larga') {
-    // empuñadura en el origen; la hoja sale hacia +Y
-    g.add(pieza(new THREE.CylinderGeometry(0.018, 0.02, 0.3, 6), 0x3a2618, 0, 0.0, 0));       // puño
-    g.add(pieza(new THREE.IcosahedronGeometry(0.035, 0), 0x6f6f72, 0, -0.17, 0));             // pomo
-    g.add(pieza(new THREE.BoxGeometry(0.26, 0.025, 0.03), 0x6f6f72, 0, 0.16, 0));             // cruz
-    const hoja = new THREE.BoxGeometry(0.045, 0.95, 0.008);
-    hoja.translate(0, 0.65, 0);
-    g.add(pieza(hoja, 0xc9ccd0));
-    const punta = new THREE.ConeGeometry(0.026, 0.1, 4);
-    punta.translate(0, 1.17, 0);
-    const mp = pieza(punta, 0xc9ccd0); mp.scale.z = 0.25; g.add(mp);
+    // espada de mano y media: empuñadura en el origen; la hoja sale hacia +Y (hasta 1,2 m)
+    g = espada({ largoHoja: 0.98, anchoBase: 0.048, anchoPunta: 0.018, largoPuno: 0.3, anchoCruz: 0.26 });
     marcador(g, 'punta', 1.2); marcador(g, 'medio', 0.55);
   } else if (tipo === 'espada_escudo') {
     // espada de una mano: más corta y con el puño para una sola mano
-    g.add(pieza(new THREE.CylinderGeometry(0.017, 0.019, 0.13, 6), 0x3a2618, 0, 0.0, 0));      // puño
-    g.add(pieza(new THREE.IcosahedronGeometry(0.03, 0), 0x6f6f72, 0, -0.085, 0));             // pomo
-    g.add(pieza(new THREE.BoxGeometry(0.2, 0.022, 0.028), 0x6f6f72, 0, 0.075, 0));            // cruz
-    const hoja = new THREE.BoxGeometry(0.042, 0.72, 0.008);
-    hoja.translate(0, 0.45, 0);
-    g.add(pieza(hoja, 0xc9ccd0));
-    const punta = new THREE.ConeGeometry(0.024, 0.09, 4);
-    punta.translate(0, 0.855, 0);
-    const mp = pieza(punta, 0xc9ccd0); mp.scale.z = 0.25; g.add(mp);
+    g = espada({ largoHoja: 0.74, anchoBase: 0.046, anchoPunta: 0.018, largoPuno: 0.11, anchoCruz: 0.2 });
     marcador(g, 'punta', 0.88); marcador(g, 'medio', 0.4);
   } else if (tipo === 'palo') {
-    g.add(pieza(new THREE.CylinderGeometry(0.03, 0.045, 1.4, 6), COLORES.vara, 0, 0.45, 0));
+    // vara de fresno descortezada, algo más gruesa abajo, con un par de nudos y los cortes a la vista
+    const L = loteMano();
+    L.add(cil(0.028, 0.04, 1.4, 8), 'madera', 0, 0.45, 0, { z: 0.012 });
+    for (const [y, a] of [[0.25, 0.4], [0.82, 2.6]]) L.add(new THREE.SphereGeometry(0.014, 5, 3), 'maderaOsc', Math.cos(a) * 0.032, y, Math.sin(a) * 0.032, null, { escala: new THREE.Vector3(1, 1.6, 1) });
+    L.add(new THREE.CircleGeometry(0.027, 8), 'corte', 0.0115, 1.151, 0, { x: -Math.PI / 2 });
+    L.add(new THREE.CircleGeometry(0.039, 8), 'corte', -0.0028, -0.251, 0, { x: Math.PI / 2 });
+    g = deLote(L);
     marcador(g, 'punta', 1.15); marcador(g, 'medio', 0.5);
   } else if (tipo === 'arco') {
+    // arco largo de una pieza de tejo: madera con veta, más gruesa en el centro, puño de cuero y los extremos con la muesca
+    const L = loteMano();
     const curva = new THREE.QuadraticBezierCurve3(new THREE.Vector3(0, -0.75, 0), new THREE.Vector3(0, 0, 0.32), new THREE.Vector3(0, 0.75, 0));
-    g.add(pieza(new THREE.TubeGeometry(curva, 12, 0.02, 5), 0x6b4a2a));
+    const tubo = new THREE.TubeGeometry(curva, 18, 0.019, 6), p = tubo.attributes.position, c = new THREE.Vector3();
+    for (let i = 0; i < p.count; i++) { // adelgaza hacia las puntas
+      const y = p.getY(i), t = Math.abs(y) / 0.75, k = 1 - 0.5 * t * t;
+      curva.getPoint(0.5 + y / 1.5 * 0.999, c);
+      p.setXYZ(i, c.x + (p.getX(i) - c.x) * k, y, c.z + (p.getZ(i) - c.z) * k);
+    }
+    tubo.computeVertexNormals();
+    L.add(tubo, 'madera', 0, 0, 0, null, { tex: 'veta' });
+    L.add(cil(0.023, 0.023, 0.13, 8), CUERO, 0, 0, 0.24, null, { tex: 'tejido' });
+    for (const s of [-1, 1]) L.add(cil(0.012, 0.006, 0.05, 6), 'maderaOsc', 0, s * 0.74, 0.003, s < 0 ? { x: Math.PI } : null);
+    g = deLote(L);
+    // la cuerda, una línea fina de lino (se tensa al tirar)
     const cuerda = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -0.75, 0), new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0.75, 0)]);
-    const linea = new THREE.Line(cuerda, new THREE.LineBasicMaterial({ color: 0xe8e0c8 }));
+    const linea = new THREE.Line(cuerda, new THREE.LineBasicMaterial({ color: 0xcbbf9f }));
     linea.name = 'cuerda';
     g.add(linea);
   } else if (tipo === 'piedras') {
-    const p = pieza(new THREE.DodecahedronGeometry(0.06, 0), COLORES.piedra);
-    g.add(p);
+    g = modeloPiedra();
   }
   g.userData.tipo = tipo;
   return g;
 }
-// Escudo redondo de tablas con borde de cuero y umbo de hierro. Mira hacia +z; el asa queda en el origen.
+// Tablas que forman el escudo: el trozo del círculo entre x0 y x1 (forma para extruir)
+function tablaRedonda(radio, x0, x1) {
+  const s = new THREE.Shape(), n = 10;
+  const a0 = Math.acos(Math.max(-1, Math.min(1, x0 / radio))), a1 = Math.acos(Math.max(-1, Math.min(1, x1 / radio))); // ángulos de los cantos en el borde
+  s.moveTo(x0, -Math.sin(a0) * radio);
+  for (let i = 0; i <= n; i++) { const a = a0 + (a1 - a0) * i / n; s.lineTo(Math.cos(-a) * radio, Math.sin(-a) * radio); } // borde de abajo
+  for (let i = 0; i <= n; i++) { const a = a1 + (a0 - a1) * i / n; s.lineTo(Math.cos(a) * radio, Math.sin(a) * radio); }   // borde de arriba
+  s.closePath();
+  return s;
+}
+// Escudo redondo de tablas con el canto forrado de cuero cosido, umbo de hierro con clavos. Mira hacia +z; el asa queda en el origen.
 export function modeloEscudo(radio = 0.32) {
-  const g = new THREE.Group();
-  const disco = new THREE.CylinderGeometry(radio, radio, 0.025, 16); disco.rotateX(Math.PI / 2);
-  g.add(pieza(disco, 0x7d5f3e, 0, 0, 0.05));
-  // juntas entre tablas (líneas verticales algo más oscuras en la cara)
-  for (const x of [-0.17, -0.06, 0.06, 0.17]) {
-    const alto = 2 * Math.sqrt(radio * radio - x * x) - 0.02;
-    g.add(pieza(new THREE.BoxGeometry(0.008, alto, 0.004), 0x5c452c, x, 0, 0.064));
+  const L = loteMano(), nT = 6, R = radio - 0.004, w = 2 * R / nT;
+  for (let i = 0; i < nT; i++) { // juntas de 4 mm entre tablas; las de los lados llegan al borde
+    const x0 = -R + i * w + (i ? 0.002 : 0), x1 = -R + (i + 1) * w - (i < nT - 1 ? 0.002 : 0);
+    const g = new THREE.ExtrudeGeometry(tablaRedonda(R, x0, x1), { depth: 0.022, bevelEnabled: true, bevelThickness: 0.002, bevelSize: 0.002, bevelSegments: 1, curveSegments: 4 });
+    L.add(g, i % 2 ? 'tabla' : 'madera', 0, 0, 0.039); // la veta va a lo largo de cada tabla (vertical)
   }
-  const borde = new THREE.TorusGeometry(radio, 0.014, 4, 18);
-  g.add(pieza(borde, 0x4a3424, 0, 0, 0.05));
-  const umbo = new THREE.SphereGeometry(0.075, 8, 4, 0, Math.PI * 2, 0, Math.PI / 2); umbo.rotateX(Math.PI / 2);
-  g.add(pieza(umbo, 0x66676a, 0, 0, 0.062));
-  g.name = 'escudo';
+  L.add(new THREE.TorusGeometry(radio, 0.014, 5, 32), CUERO, 0, 0, 0.05, null, { tex: 'tejido' });
+  // puntadas del forro, cada poco
+  for (let k = 0; k < 24; k++) { const a = k / 24 * Math.PI * 2; L.add(new THREE.BoxGeometry(0.004, 0.012, 0.006), CUERO_CLARO, Math.cos(a) * (radio - 0.012), Math.sin(a) * (radio - 0.012), 0.065, { z: a }); }
+  const umbo = new THREE.SphereGeometry(0.075, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2); umbo.rotateX(Math.PI / 2);
+  L.add(umbo, 'hierro', 0, 0, 0.062);
+  L.add(new THREE.TorusGeometry(0.082, 0.008, 4, 16), 'hierro', 0, 0, 0.063);
+  for (let k = 0; k < 4; k++) { const a = k / 4 * Math.PI * 2 + 0.4; L.add(new THREE.SphereGeometry(0.008, 5, 3), 'hierro', Math.cos(a) * 0.088, Math.sin(a) * 0.088, 0.064); }
+  const g = deLote(L); g.name = 'escudo';
   return g;
 }
 export function modeloFlecha() {
-  const g = new THREE.Group();
-  const asta = new THREE.CylinderGeometry(0.008, 0.008, 0.75, 5); asta.rotateX(Math.PI / 2);
-  g.add(pieza(asta, 0x9b7a50));
-  const punta = new THREE.ConeGeometry(0.018, 0.06, 4); punta.rotateX(Math.PI / 2); punta.translate(0, 0, 0.4);
-  g.add(pieza(punta, 0x5a5a5e));
-  for (const a of [0, 2.1, 4.2]) {
-    const pl = pieza(new THREE.BoxGeometry(0.003, 0.04, 0.1), 0xe8e0c8, Math.cos(a) * 0.012, Math.sin(a) * 0.012, -0.32);
-    pl.rotation.z = a; g.add(pl);
+  const L = loteMano();
+  L.add(cil(0.0045, 0.0045, 0.74, 6), 'tabla', 0, 0, 0, { x: Math.PI / 2 });
+  // punta de hierro forjada (punzón) con su cubo
+  const punta = new THREE.ConeGeometry(0.009, 0.06, 4); punta.rotateX(Math.PI / 2);
+  L.add(punta, 'hierro', 0, 0, 0.4, null, { plano: true });
+  L.add(cil(0.006, 0.007, 0.03, 6), 'hierro', 0, 0, 0.36, { x: Math.PI / 2 });
+  // tres plumas recortadas (una de otro color, la «guía») y la atadura
+  for (const [a, c] of [[0, PLUMA_OSC], [2.1, PLUMA], [4.2, PLUMA]]) {
+    const pl = new THREE.BoxGeometry(0.0015, 0.016, 0.09); pl.translate(0, 0.012, 0);
+    L.add(pl, c, 0, 0, -0.3, { z: a }, { tex: 'tejido' });
   }
-  return g;
+  for (const z of [-0.348, -0.252]) L.add(cil(0.0055, 0.0055, 0.008, 6), 0x6b5a45, 0, 0, z, { x: Math.PI / 2 });
+  return deLote(L);
 }
-export function modeloPiedra() { return pieza(new THREE.DodecahedronGeometry(0.06, 0), COLORES.piedra); }
+export function modeloPiedra() {
+  const L = loteMano();
+  L.add(new THREE.IcosahedronGeometry(0.06, 1), 'piedra', 0, 0, 0, { y: 0.7, x: 0.3 }, { escala: new THREE.Vector3(1.15, 0.8, 1), plano: true });
+  return deLote(L);
+}
 
 // ---------- Poste de práctica y diana ----------
+// Poste de práctica: tronco descortezado clavado en la tierra, con dos haces de paja atados con cuerda donde se golpea
 export function modeloPoste() {
-  const g = new THREE.Group();
-  g.add(pieza(new THREE.CylinderGeometry(0.14, 0.17, 1.9, 7), COLORES.tronco, 0, 0.95, 0));
-  g.add(pieza(new THREE.CylinderGeometry(0.18, 0.18, 0.5, 7), 0xb79a62, 0, 1.45, 0));
-  g.add(pieza(new THREE.CylinderGeometry(0.18, 0.18, 0.35, 7), 0xb79a62, 0, 0.7, 0));
-  return g;
+  const L = new Lote({ variacion: 0.05, rangoSuelo: 0.5 });
+  L.add(cil(0.14, 0.17, 1.9, 9), 'madera', 0, 0.95, 0);
+  L.add(new THREE.CircleGeometry(0.14, 9), 'corte', 0, 1.901, 0, { x: -Math.PI / 2 }, { sinSuelo: true });
+  for (const [y, alto] of [[1.45, 0.5], [0.7, 0.35]]) {
+    L.add(cil(0.19, 0.2, alto, 12), 'paja', 0, y, 0);
+    for (const s of [-0.36, 0, 0.36]) L.add(new THREE.TorusGeometry(0.2, 0.011, 4, 14), 0x8a7a55, 0, y + s * alto, 0, { x: Math.PI / 2 });
+  }
+  // tierra removida y unas piedras calzando el pie
+  L.add(cil(0.3, 0.38, 0.08, 10), 'tierra', 0, 0.02, 0, null, { tex: 'piedra' });
+  for (let k = 0; k < 5; k++) { const a = k * 1.3; L.add(new THREE.IcosahedronGeometry(0.07 + (k % 2) * 0.03, 0), k % 2 ? 'piedra' : 'piedraOsc', Math.cos(a) * 0.27, 0.05, Math.sin(a) * 0.27, { y: a }, { escala: new THREE.Vector3(1.2, 0.7, 1), plano: true }); }
+  return deLote(L);
 }
+// Diana: un haz grueso de paja atado, con un paño de lino delante pintado con tierras (ocre, almagre y carbón),
+// sobre dos patas de madera. Mira hacia +z; el centro, en el origen.
 export function modeloDiana(radio = 0.6) {
-  const g = new THREE.Group();
-  const colores = [0xe8dcc0, 0x2a2a2a, 0x3b6db0, 0xc0392b, 0xe0b23a];
-  for (let n = 0; n < 5; n++) {
-    const r = radio * (1 - n * 0.2);
-    const disco = new THREE.CylinderGeometry(r, r, 0.12 + n * 0.005, 20); disco.rotateX(Math.PI / 2);
-    g.add(pieza(disco, colores[n], 0, 0, n * 0.004));
-  }
-  for (const x of [-0.35, 0.35]) {
-    const pata = pieza(new THREE.BoxGeometry(0.06, 1.6, 0.06), COLORES.troncoOscuro, x, -0.55, -0.15);
-    pata.rotation.x = -0.15; g.add(pata);
-  }
-  return g;
+  const L = loteMano();
+  L.add(cil(radio, radio, 0.24, 20), 'paja', 0, 0, -0.06, { x: Math.PI / 2 });
+  for (const s of [-1, 1]) L.add(new THREE.TorusGeometry(radio + 0.004, 0.012, 4, 24), 0x8a7a55, 0, 0, -0.06 + s * 0.08);
+  const anillos = [[1, 'lino'], [0.78, 0xa88a52], [0.56, 'pano'], [0.34, 0xc8bb98], [0.14, 0x3a332c]];
+  anillos.forEach(([f, c], n) => L.add(new THREE.CircleGeometry(radio * f * 0.92, 28), c, 0, 0, 0.061 + n * 0.0015, null, { tex: 'tejido' }));
+  for (const x of [-0.35, 0.35]) L.add(cajaR(0.07, 1.6, 0.07, 0.015), 'maderaOsc', x, -0.55, -0.15, { x: -0.15 });
+  return deLote(L);
 }
 
 // ---------- Poses (manos y dirección del arma en el marco del personaje: mira hacia +z, su izquierda es +x) ----------

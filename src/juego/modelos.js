@@ -2,7 +2,7 @@
 // Todos los modelos se definen con parámetros (P) para poder ajustarlos sin rehacerlos.
 // Las piezas ya pasadas al estilo elegido (v5, «realismo en miniatura») se hacen como la cabaña de la prueba de estilo:
 // formas redondeadas, color con oclusión horneado en los vértices y texturas por código (src/mundo/estilos.js),
-// todo junto en una malla por textura. Las que aún no se han pasado siguen con colores planos.
+// todo junto en una malla por textura (todas las piezas y los muebles ya lo están).
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -42,37 +42,14 @@ export function mat(color, opciones = {}) {
   return cacheMat.get(k);
 }
 
-function malla(geo, color, x = 0, y = 0, z = 0) {
-  const m = new THREE.Mesh(geo, mat(color));
-  m.position.set(x, y, z);
-  m.castShadow = true; m.receiveShadow = true;
-  return m;
-}
-function caja(w, h, d, color, x, y, z) { return malla(new THREE.BoxGeometry(w, h, d), color, x, y, z); }
-function cilindroX(r, largo, color, x, y, z, lados = P.ladosTronco) {
-  const g = new THREE.CylinderGeometry(r, r, largo, lados);
-  g.rotateZ(Math.PI / 2);
-  return malla(g, color, x, y, z);
-}
-function cilindroY(r, alto, color, x, y, z, lados = P.ladosTronco, rArriba = r) {
-  const g = new THREE.CylinderGeometry(rArriba, r, alto, lados);
-  return malla(g, color, x, y + alto / 2, z);
-}
-function piedra(r, color, x, y, z, semilla) {
-  const g = new THREE.DodecahedronGeometry(r, 0);
-  const m = malla(g, color, x, y, z);
-  m.rotation.set(semilla * 1.3, semilla * 2.1, semilla * 0.7);
-  m.scale.set(1, 0.7, 1);
-  return m;
-}
 // pseudoaleatorio estable
 function ruido(n) { const s = Math.sin(n * 12.9898) * 43758.5453; return s - Math.floor(s); }
 
 // ---------- Estilo v5: piezas hechas con un Lote (src/mundo/estilos.js) ----------
 const hayDocumento = typeof document !== 'undefined'; // las pruebas de lógica cargan los modelos en node, sin texturas
-const cajaR = (w, h, d, radio = 0.02) => new RoundedBoxGeometry(w, h, d, 1, Math.min(radio, w / 2.05, h / 2.05, d / 2.05));
+export const cajaR = (w, h, d, radio = 0.02) => new RoundedBoxGeometry(w, h, d, 1, Math.min(radio, w / 2.05, h / 2.05, d / 2.05));
 // junta lo del lote en una malla por textura (madera, corte, piedra…), como la escena de la prueba de estilo
-function deLote(L) {
+export function deLote(L) {
   const g = new THREE.Group();
   if (L.hiladas) g.userData.hiladas = [...L.hiladas];
   for (const [tipo, geos] of Object.entries(L.cerrar(null, true))) {
@@ -792,24 +769,7 @@ export function modeloPieza(tipo, ctx) {
   return new THREE.Group();
 }
 
-// ---------- Entorno ----------
-export function arbol(semilla) {
-  const g = new THREE.Group();
-  const alto = 2.5 + ruido(semilla) * 2;
-  g.add(cilindroY(0.18, alto * 0.45, COLORES.troncoOscuro, 0, 0, 0, 6, 0.12));
-  const verde = ruido(semilla + 4) > 0.5 ? 0x4f6e3a : 0x5d7d3f;
-  for (let n = 0; n < 3; n++) {
-    const r = (1.3 - n * 0.32) * (0.9 + ruido(semilla + n) * 0.3);
-    const cono = new THREE.ConeGeometry(r, alto * 0.38, 7);
-    g.add(malla(cono, verde, 0, alto * 0.42 + n * alto * 0.2, 0));
-  }
-  return g;
-}
-export function roca(semilla) {
-  const g = new THREE.Group();
-  g.add(piedra(0.4 + ruido(semilla) * 0.5, COLORES.piedraOscura, 0, 0.15, 0, semilla));
-  return g;
-}
+// (Los árboles y las rocas del entorno están en src/mundo/decorado.js, con el estilo v5.)
 
 // ---------- Rellenos de muro bajo el tejado, con el estilo v5 ----------
 // En el marco local del tramo de tejado (sube hacia +z; lados en x = ±1; borde alto en z = +1).
