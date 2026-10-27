@@ -162,5 +162,31 @@ console.log('Muebles con el estilo v5');
   comprobar('Antorcha de pie: la llama brilla y no da sombra', ll.length > 0 && ll.every(m => m.material.emissiveIntensity > 0 && !m.castShadow));
 }
 
+console.log('Armas, herramientas y objetos del duelo con el estilo v5');
+{
+  const { modeloArma, modeloEscudo, modeloFlecha, modeloPiedra, modeloPoste, modeloDiana } = await import('../src/combate/modelos.js');
+  const { modeloHacha } = await import('../src/juego/personaje.js');
+  const lista = [['Espada larga', modeloArma('espada_larga')], ['Espada de una mano', modeloArma('espada_escudo')], ['Palo', modeloArma('palo')],
+    ['Arco', modeloArma('arco')], ['Piedra en la mano', modeloArma('piedras')], ['Escudo', modeloEscudo()], ['Flecha', modeloFlecha()],
+    ['Piedra lanzada', modeloPiedra()], ['Poste de práctica', modeloPoste()], ['Diana', modeloDiana()], ['Hacha de talar', modeloHacha()]];
+  // MUTAR_ARMA=1 le añade a la espada larga una caja de color plano (el aspecto inicial): la prueba tiene que fallar
+  if (process.env.MUTAR_ARMA) lista[0][1].add(new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.9, 0.01)));
+  for (const [nombre, o] of lista) {
+    const n = []; o.traverse(m => { if (m.isMesh) n.push(m.name); else if (m.isLine) n.push('linea:' + m.name); });
+    comprobar(`${nombre}: hecho con el estilo v5 (mallas por textura)`, n.some(x => x.startsWith('estilo_')) && n.every(x => x.startsWith('estilo_') || x === 'linea:cuerda'), n.join(' '));
+  }
+  // la hoja llega a la punta que marca el arma (de ahí sale el rastro del golpe y el alcance que se ve)
+  for (const [nombre, tipo] of [['Espada larga', 'espada_larga'], ['Espada de una mano', 'espada_escudo'], ['Palo', 'palo']]) {
+    const o = modeloArma(tipo), b = caja(o), punta = o.getObjectByName('punta').position.y;
+    comprobar(`${nombre}: llega hasta su punta (${punta} m) y no más`, Math.abs(b.max.y - punta) < 0.04, `hasta ${r3(b.max.y)} m`);
+  }
+  // las tablas (la malla con veta) llenan el círculo de lado a lado, dentro del canto de cuero
+  const tablas = new THREE.Box3().setFromBufferAttribute(modeloEscudo().getObjectByName('estilo_veta').geometry.attributes.position);
+  const at = tablas.max.x - tablas.min.x, ht = tablas.max.y - tablas.min.y;
+  comprobar('Escudo: las tablas llenan el círculo de 0,64 m de lado a lado', Math.abs(at - 0.636) < 0.012 && Math.abs(ht - 0.636) < 0.012, `${r3(at)} × ${r3(ht)} m`);
+  const bh = caja(modeloHacha());
+  comprobar('Hacha de talar: unos 75 cm de largo, con la cabeza arriba y el filo hacia +z', bh.max.y - bh.min.y > 0.7 && bh.max.y - bh.min.y < 0.85 && bh.max.z > 0.14, `${r3(bh.max.y - bh.min.y)} m, filo a ${r3(bh.max.z)} m`);
+}
+
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
 process.exit(mal ? 1 : 0);
