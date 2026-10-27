@@ -791,6 +791,11 @@
      "fin": "2026-10-27T14:49:45+01:00"
     },
     {
+     "nombre": "Recursos repartidos: vetas pequeñas de hierro y carbón cerca de cualquier sitio de tierra (nadie tiene que ir lejos para lo normal) y unas pocas grandes vetas marcadas en el mapa para explotar a fondo; mundo de 256 km con la semilla 66172",
+     "estado": "en_curso",
+     "inicio": "2026-10-27T16:57:00+01:00"
+    },
+    {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
      "estado": "pendiente"
     }
@@ -1498,12 +1503,5 @@
    ]
   }
  ],
- "decisiones_pendientes": [
-  {
-   "id": "tamano-mundo",
-   "pregunta": "Tamaño del mundo: 188 × 188 km (el del GDD; países de unos 55 × 55 km y la isla-país de unos 900 km²) o 256 × 256 km (países de unos 75 × 75 km y la isla de unos 2.000 km²). El boceto del mapa permite comparar los dos.",
-   "desde": "2026-10-27",
-   "hito": "mundo"
-  }
- ]
+ "decisiones_pendientes": []
 }
