@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Kinhold Mapa</title>
+<style>
+:root{ --panel: rgba(36,30,24,.88); --panel2: rgba(58,48,38,.94); --ink:#f1e8d8; --muted:#bfb19a; --acento:#d9a441; --linea: rgba(241,232,216,.15); color-scheme: dark; }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#405a6c;font:14px/1.35 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none}
+canvas{display:block;position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+button,input,select{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:6px 10px;cursor:pointer}
+input{width:96px;cursor:text}
+button.on{background:#6b5534;border-color:var(--acento)}
+[hidden]{display:none!important}
+#superior{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:calc(10px + env(safe-area-inset-left,0px));right:calc(10px + env(safe-area-inset-right,0px));display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;pointer-events:none}
+#superior > *{pointer-events:auto}
+.grupo{display:flex;gap:4px;flex-wrap:wrap;background:var(--panel);border-radius:12px;padding:4px}
+.grupo button{padding:5px 9px}
+#datos{position:fixed;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--panel);border-radius:10px;padding:7px 11px;font-size:12.5px;max-width:min(560px,calc(100vw - 20px))}
+#datos b{color:var(--acento);font-weight:600}
+#btnLeyenda{display:none}
+#leyenda{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--panel);border-radius:10px;padding:7px 10px;font-size:12px;max-width:220px}
+#leyenda div{display:flex;align-items:center;gap:6px;margin:2px 0}
+#leyenda i{display:inline-block;width:12px;height:12px;border-radius:3px;flex:none}
+#cargando{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(30,26,22,.55);font-size:15px}
+#cargando div{background:var(--panel);padding:12px 18px;border-radius:12px;min-width:240px;text-align:center}
+#barra{height:6px;background:#4a3f33;border-radius:3px;margin-top:8px;overflow:hidden}#barra span{display:block;height:100%;width:0;background:var(--acento)}
+#notas{position:fixed;inset:auto 10px calc(70px + env(safe-area-inset-bottom,0px)) 10px;max-width:600px;margin:0 auto;max-height:60vh;overflow:auto;background:var(--panel);border-radius:12px;padding:10px 14px;font-size:13px;z-index:5}
+#notas ul{padding-left:18px;margin:6px 0 0} #notas li{margin:0 0 6px}
+@media (max-width:640px){
+  #superior{gap:5px} .grupo button,button,input{padding:5px 7px;font-size:12px} input{width:74px}
+  #btnLeyenda{display:inline-block}
+  #leyenda{display:none;bottom:auto;top:calc(130px + env(safe-area-inset-top,0px));font-size:11px;max-width:170px;padding:5px 8px}
+  body.conLeyenda #leyenda{display:block}
+  #leyenda i{width:10px;height:10px}
+}
+</style>
+</head>
+<body>
+<canvas id="lienzo"></canvas>
+<div id="superior">
+  <div class="grupo" id="fondos"><button data-fondo="relieve" class="on">Relieve</button><button data-fondo="biomas">Biomas</button><button data-fondo="roca">Roca</button></div>
+  <div class="grupo" id="capas"><button data-capa="rios" class="on">Ríos</button><button data-capa="paises" class="on">Países</button><button data-capa="vetas">Vetas</button></div>
+  <div class="grupo"><select id="lado" aria-label="Tamaño del mundo"><option value="188">188 km</option><option value="256">256 km</option></select><input id="semilla" inputmode="numeric" aria-label="Semilla" title="Semilla"><button id="btnOtra">Otra semilla</button><button id="btnLeyenda">Leyenda</button><button id="btnNotas">Notas</button><span id="idiomas"></span></div>
+</div>
+<div id="leyenda"></div>
+<div id="datos">Toca el mapa para ver qué hay en cada sitio.</div>
+<div id="cargando"><div><span id="fase">Generando el mundo…</span><div id="barra"><span></span></div></div></div>
+<div id="notas" hidden></div>
+<script>/*APP*/</script>
+</body>
+</html>

@@ -1,9 +1,9 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, progresoEscalera, centroMundo, tiempoObra, MAX_RATO } from '../logica/construccion.js';
+import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
-import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado } from './modelos.js';
+import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto } from './modelos.js';
 import { crearJugador } from './personaje.js';
 import { personajeElegido } from '../demo/eleccion.js';
 import { REGISTRO, VERSION } from './registro.js';
@@ -683,23 +683,90 @@ function obraCercana() {
   return mejor;
 }
 // Usar junto a una obra: le llevas lo que le falta y, si ya lo tiene todo, te pones a construir (moverse lo para).
+// Si la obra está en alto (GDD, «Obras»): lo ligero se lleva a mano subiendo por la escalera (hay que estar en su
+// planta) y lo pesado se sube rodándolo por dos varas con una cuerda, de uno en uno (aquí juegas solo: entre dos,
+// cuando haya más gente).
+const hayQueSubir = (p, m) => plantaObra(p) > 0 && clasePeso(m) !== 'ligero';
 function usarObra(o) {
   const { c, key, p } = o;
   const faltan = mundo.faltaEntregar(p);
+  let entregado = false, escalera = null;
   for (const f of faltan) {
-    const r = accion({ tipo: 'entregar', construccion: c.id, clave: key, material: f.m, cantidad: f.n });
-    if (!r.ok) {
-      const que = mundo.faltaEntregar(p).map(x => `${x.n} ${tr(MATERIALES[x.m]).toLowerCase()}`).join(', ');
-      guardar(); actualizarUI();
-      mostrarAviso(`${t('faltanMateriales')} ${t('leFalta')}: ${que}`, true);
-      return;
-    }
+    if (hayQueSubir(p, f.m)) continue;
+    const r = accion({ tipo: 'entregar', construccion: c.id, clave: key, material: f.m, cantidad: f.n, desde: pj.k });
+    if (r.ok) { entregado = true; continue; }
+    if (r.escalera) { escalera = r; continue; }
+    const que = mundo.faltaEntregar(p).map(x => `${x.n} ${tr(MATERIALES[x.m]).toLowerCase()}`).join(', ');
+    guardar(); actualizarUI();
+    mostrarAviso(`${t('faltanMateriales')} ${t('leFalta')}: ${que}`, true);
+    return;
   }
-  if (faltan.length) { guardar(); actualizarUI(); }
-  estado.obrando = { c, key };
+  if (entregado) { guardar(); actualizarUI(); }
   estado.talando = null;
   const m = centroMundo(c, p); pj.rot = Math.atan2(m.x - pj.x, m.z - pj.z);
-  mostrarAviso(`${faltan.length ? t('materialEntregado') + ' ' : ''}${t('construyendo')} ${Math.round(100 * p.obra.trabajo / tiempoObra(p.tipo))} %`);
+  const pesado = mundo.faltaEntregar(p).find(f => hayQueSubir(p, f.m)) || (p.obra.subida && { m: p.obra.subida.material });
+  if (pesado) {
+    estado.obrando = { c, key, subir: pesado.m };
+    ponerRampa(c, p);
+    avisoSubida(p, pesado.m, 0, entregado);
+    return;
+  }
+  if (escalera) {
+    const que = mundo.faltaEntregar(p).map(x => `${x.n} ${tr(MATERIALES[x.m]).toLowerCase()}`).join(', ');
+    mostrarAviso(`${tr(escalera.motivo)} ${t('leFalta')}: ${que}`, true);
+    return;
+  }
+  estado.obrando = { c, key };
+  mostrarAviso(`${entregado ? t('materialEntregado') + ' ' : ''}${t('construyendo')} ${Math.round(100 * p.obra.trabajo / tiempoObra(p.tipo))} %`);
+}
+function avisoSubida(p, m, progreso, entregado = false) {
+  const quedan = (mundo.faltaEntregar(p).find(f => f.m === m) || { n: 0 }).n;
+  mostrarAviso(`${entregado ? t('materialEntregado') + ' ' : ''}${t('subiendoRodando')} ${tr(MATERIALES[m]).toLowerCase()} (${t('quedan')} ${quedan}): ${Math.round(100 * progreso)} %`);
+}
+// Las dos varas apoyadas en el borde de la planta de la obra, del lado en el que estás, y el tronco rodando por ellas
+// (dos cuerdas lo abrazan y van hasta arriba). Se quita al terminar de subir o al dejarlo.
+const MAT_CUERDA = new THREE.MeshLambertMaterial({ color: 0xb59a6a });
+let rampa = null;
+function quitarRampa() { if (rampa) { escena.remove(rampa.g); rampa = null; } }
+function ponerRampa(c, p) {
+  quitarRampa();
+  const m = centroMundo(c, p);
+  let nx = pj.x - m.x, nz = pj.z - m.z; const l = Math.hypot(nx, nz) || 1; nx /= l; nz /= l;
+  let ox = 0, oz = 0;
+  // en un muro, del lado de la cara (no por el canto), y un poco a un lado para que tú quedes junto a las varas
+  if (p.hueco === 'e') {
+    const a = c.rot + (p.d === 0 ? 0 : -Math.PI / 2); // a lo largo del muro
+    const ax = Math.cos(a), az = -Math.sin(a), lado = Math.sign(nx * -az + nz * ax) || 1;
+    nx = -az * lado; nz = ax * lado;
+    const lat = (pj.x - m.x) * ax + (pj.z - m.z) * az, s = lat > 0 ? -1 : 1;
+    ox = ax * s * 0.5; oz = az * s * 0.5;
+  }
+  const alto = plantaObra(p) * ALTURA + P.superficieSuelo, largo = alto * 0.85;
+  const g = new THREE.Group(); g.name = 'rampa';
+  g.position.set(m.x + ox + nx * (largo + 0.2), 0, m.z + oz + nz * (largo + 0.2));
+  g.rotation.y = Math.atan2(-nx, -nz);
+  g.add(rampaVaras(alto));
+  const tronco = troncoSuelto(); g.add(tronco);
+  const cuerdas = [-0.4, 0.4].map(x => { const cu = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 1, 5), MAT_CUERDA); cu.userData.x = x; g.add(cu); return cu; });
+  escena.add(g);
+  rampa = { g, tronco, cuerdas, alto, largo, t: 0, meta: 0 };
+  moverRampa(0);
+}
+// t: 0 al pie, 1 arriba. El tronco va subiendo poco a poco hacia lo que lleva la subida.
+function moverRampa(dt) {
+  if (!rampa) return;
+  rampa.t += Math.max(-1, Math.min(1, rampa.meta - rampa.t)) * Math.min(1, dt * 2.5);
+  const { tronco, cuerdas, alto, largo, t: k } = rampa, r = P.radioTronco + 0.05;
+  const ang = Math.atan2(alto, largo);
+  const y = k * alto + r * Math.cos(ang), z = k * largo - r * Math.sin(ang) * 0.2;
+  tronco.position.set(0, y, z);
+  tronco.rotation.x = -k * Math.hypot(alto, largo) / P.radioTronco; // rueda
+  for (const cu of cuerdas) {
+    const a = new THREE.Vector3(cu.userData.x, y + 0.05, z), b = new THREE.Vector3(cu.userData.x, alto + 0.05, largo + 0.3);
+    const d = new THREE.Vector3().subVectors(b, a);
+    cu.position.copy(a).addScaledVector(d, 0.5); cu.scale.set(1, Math.max(0.01, d.length()), 1);
+    cu.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
+  }
 }
 // cada medio segundo construyendo se manda un rato de trabajo. Cuenta el tiempo de reloj de verdad, no el del
 // fotograma (que se recorta a 0,05 s): con pocos fotogramas por segundo la obra no debe ir más lenta.
@@ -710,6 +777,20 @@ function pasoObra() {
   if (o.desde === undefined) o.desde = ahora;
   const seg = (ahora - o.desde) / 1000;
   if (seg < 0.5) return;
+  if (o.subir) { // subiendo un tronco por las varas
+    const r = accion({ tipo: 'subir', construccion: o.c.id, clave: o.key, material: o.subir, segundos: Math.min(seg, MAX_RATO), metodo: 'varas' });
+    o.desde = ahora;
+    if (!r.ok) { estado.obrando = null; quitarRampa(); mostrarAviso(tr(r.motivo), true); return; }
+    guardar(); actualizarUI();
+    const p = o.c.piezas.get(o.key);
+    if (rampa) rampa.meta = r.progreso;
+    if (r.subido) {
+      if (rampa) { rampa.t = 0; rampa.meta = 0; }
+      if (!mundo.faltaEntregar(p).some(f => f.m === o.subir)) { estado.obrando = null; quitarRampa(); usarObra({ c: o.c, key: o.key, p }); return; }
+    }
+    avisoSubida(p, o.subir, r.subido ? 0 : r.progreso);
+    return;
+  }
   const r = accion({ tipo: 'trabajar', construccion: o.c.id, clave: o.key, segundos: Math.min(seg, MAX_RATO) });
   o.desde = ahora;
   if (!r.ok) { estado.obrando = null; mostrarAviso(tr(r.motivo), true); return; }
@@ -896,6 +977,8 @@ function paso() {
   jugador.raiz.position.set(pj.x, pj.y, pj.z);
   jugador.raiz.rotation.y = pj.rot;
   pasoObra();
+  if (rampa && !(estado.obrando && estado.obrando.subir)) quitarRampa(); // se dejó de subir (moverse, reiniciar…)
+  moverRampa(dt);
   jugador.animar(mag > 0.05 ? vel : 0, dt, !!estado.talando || !!estado.obrando);
 
   // interiores: ocultar plantas superiores y tejados si estás bajo techo, y también los muebles de esas plantas
@@ -1037,6 +1120,7 @@ window.__kinhold = {
   },
   obraCercana() { const o = obraCercana(); return o && { c: o.c.id, key: o.key }; },
   get obrando() { return estado.obrando; },
+  get rampa() { return rampa && { t: rampa.t, meta: rampa.meta, visible: !!rampa.g.parent }; },
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); reconstruir(); },
   get registroAcciones() { return registroAcciones; },
   plantaDeco, get teclas() { return [...teclas]; },

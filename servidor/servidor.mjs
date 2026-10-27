@@ -13,6 +13,10 @@
 //                        { tipo: 'resultado', id, ok, motivo? }         respuesta al que la mandó
 //                        { tipo: 'accion', entrada }                    a todos, cuando una acción sale bien
 //                        { tipo: 'error', motivo }                      mensaje que no se entiende
+//   Presencia (src/logica/presencia.js): el cliente manda { tipo: 'estado', x, y, z, giro, anim } unas 10 veces
+//   por segundo; el servidor le pone el autor y su hora, y cada tic (100 ms) manda a cada uno los que han
+//   cambiado: { tipo: 'estados', t, jugadores }. Al irse alguien: { tipo: 'sale', autor }. La bienvenida
+//   lleva también t y presentes (dónde está cada uno).
 //
 // Uso: node servidor/servidor.mjs [puerto] [archivo]   (por defecto 8080 y servidor/mundo.jsonl)
 import { WebSocketServer } from 'ws';
@@ -20,7 +24,9 @@ import { readFileSync, appendFileSync, existsSync, mkdirSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { randomUUID } from 'crypto';
 import { fileURLToPath } from 'url';
+import { performance } from 'perf_hooks';
 import { RegistroAcciones, ejecutar, reproducir } from '../src/logica/acciones.js';
+import { PresenciaServidor, CADA } from '../src/logica/presencia.js';
 
 // Lee el archivo del mundo. Una línea cortada al final (el servidor se apagó a mitad) se descarta.
 export function leerArchivo(archivo) {
@@ -33,7 +39,7 @@ export function leerArchivo(archivo) {
   return entradas;
 }
 
-export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {} } = {}) {
+export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA } = {}) {
   archivo = resolve(archivo);
   mkdirSync(dirname(archivo), { recursive: true });
   const previas = leerArchivo(archivo);
@@ -48,16 +54,33 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const clientes = new Map();   // ws → autor
 
   const enviar = (ws, msg) => { if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(msg)); };
+  const reloj = () => Math.round(performance.now());   // hora del servidor (ms), la que llevan los estados
+
+  // presencia: cada tic, a cada uno los que han cambiado menos él mismo
+  const presencia = new PresenciaServidor();
+  const tic = setInterval(() => {
+    const lista = presencia.tic();
+    if (!lista.length) return;
+    const t = reloj();
+    for (const [ws, autor] of clientes) {
+      const jugadores = lista.filter(e => e.autor !== autor);
+      if (jugadores.length) enviar(ws, { tipo: 'estados', t, jugadores });
+    }
+  }, tico);
 
   wss.on('connection', (ws) => {
     const autor = 'jugador:' + randomUUID().slice(0, 8);
     clientes.set(ws, autor);
     registrar(`entra ${autor}`);
-    enviar(ws, { tipo: 'bienvenida', autor, entradas: hechas });
+    enviar(ws, { tipo: 'bienvenida', autor, entradas: hechas, t: reloj(), presentes: presencia.todos() });
 
     ws.on('message', (datos) => {
       let msg;
       try { msg = JSON.parse(datos.toString()); } catch (e) { return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' }); }
+      if (msg && msg.tipo === 'estado') {
+        if (!presencia.recibir(autor, msg, reloj())) enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
+        return;
+      }
       if (!msg || msg.tipo !== 'accion' || !msg.accion || typeof msg.accion !== 'object' || Array.isArray(msg.accion))
         return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
       // el autor lo pone el servidor; el que traiga el cliente se pisa
@@ -72,13 +95,16 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         for (const otro of clientes.keys()) enviar(otro, { tipo: 'accion', entrada });
       }
     });
-    ws.on('close', () => { clientes.delete(ws); registrar(`sale ${autor}`); });
+    ws.on('close', () => {
+      clientes.delete(ws); presencia.quitar(autor); registrar(`sale ${autor}`);
+      for (const otro of clientes.keys()) enviar(otro, { tipo: 'sale', autor });
+    });
   });
 
   return {
-    wss, mundo, archivo,
+    wss, mundo, archivo, presencia,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
-    cerrar: () => new Promise(r => { for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
+    cerrar: () => new Promise(r => { clearInterval(tic); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };
 }
 

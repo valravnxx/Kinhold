@@ -471,6 +471,28 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/29_obra_muro_de_cerca.png')
 
+    print('PC: obra en alto: subir los troncos rodándolos por dos varas con una cuerda')
+    ev(f"{K}.terminarObras()")
+    marco('muro_tronco', -15, -12, 1)
+    alta = ev(f"(() => {{ for (const c of {K}.mundo.construcciones) for (const [k, p] of c.piezas) if (p.obra && p.k === 1) return {{ c: c.id, key: k }}; return null; }})()")
+    comprobar('el marco de un muro en la planta 1 se pone', alta is not None)
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-15; {K}.pj.z=-13.4; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=2.2; {K}.cam.pitch=0.3; {K}.cam.dist=9")
+    t0 = ev(f"{K}.mundo.materiales.tronco")
+    ev(f"{K}.usar()")
+    comprobar('Usar desde el suelo se pone a subir los troncos (no se entregan a mano)', ev(f"{K}.obrando && {K}.obrando.subir") == 'tronco' and ev(f"{K}.rampa && {K}.rampa.visible"), json.dumps(ev(f"{K}.obrando && {K}.obrando.subir")))
+    entregado = f"{K}.mundo.construcciones.find(c => c.id === {alta['c']}).piezas.get('{alta['key']}').obra.entregado"
+    esperar(pg, 1200)
+    pg.screenshot(path=f'{SALIDA}/30_subiendo_tronco_varas.png')
+    # sin tarjeta gráfica cada rato puede llegar a 5 s: la subida avanza a saltos y puede que ya vaya por otro tronco
+    comprobar('el tronco va subiendo por las varas', ev(f"{K}.rampa ? {K}.rampa.meta : 1") > 0 or ev(f"{entregado}.tronco || 0") >= 1)
+    try: pg.wait_for_function(f"({entregado}.tronco || 0) >= 1", timeout=60000)
+    except Exception: pass
+    comprobar('sola, rodándolo, sube un tronco (10 s de trabajo) y queda entregado', ev(f"{entregado}.tronco || 0") >= 1 and t0 - ev(f"{K}.mundo.materiales.tronco") >= 1)
+    comprobar('cada rato subiendo queda en el registro con su autor y el método', ev(f"{K}.registroAcciones.entradas.filter(e => e.tipo === 'subir' && e.ok && e.autor === 'jugador:local' && e.datos.metodo === 'varas').length") >= 2)
+    pg.keyboard.down('s'); esperar(pg, 400); pg.keyboard.up('s')
+    esperar(pg, 200)
+    comprobar('moverse deja de subir y quita las varas', not ev(f"{K}.obrando") and not ev(f"{K}.rampa"))
+
     print('PC: todos los muebles en fila, de cerca (estilo v5)')
     nd = ev(f"{K}.mundo.decoracion.length")
     muebles = ev(f"Object.keys({K}.DECORACION || {{}})") or ['cama_paja', 'cama_madera', 'mesa', 'banco', 'taburete', 'arcon', 'barril', 'estanteria', 'candil', 'alfombra', 'estandarte']
@@ -560,6 +582,9 @@ with sync_playwright() as p:
     print('Móvil')
     ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True, locale='es-ES')
     mv = ctx.new_page()
+    # al doble de resolución y sin tarjeta gráfica, cada fotograma puede tardar segundos con la casa entera a la vista,
+    # y un clic espera al siguiente: 30 s no siempre llegan en una máquina de 2 núcleos
+    mv.set_default_timeout(120000)
     err2 = []
     mv.on('pageerror', lambda e: err2.append(str(e)))
     mv.goto(URL)
@@ -575,7 +600,7 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=10.2; {K}.pj.z=-15; {K}.pj.k=0; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.5; {K}.cam.dist=11")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06b_movil_escalera.png')
-    mv.click('#modos button[data-modo=construir]')
+    mv.click('#modos button[data-modo=construir]', no_wait_after=True)  # el clic no navega; con la máquina cargada, esperar «navegaciones» agotaba los 30 s
     mv.evaluate(f"{K}.seleccionar('pieza','cim_tronco'); {K}.apuntar(-2, 2)")
     mv.wait_for_timeout(700)
     comprobar('botón Colocar visible al construir en táctil', mv.is_visible('#btnColocar'))
@@ -585,12 +610,12 @@ with sync_playwright() as p:
         pass
     comprobar('carga el personaje del taller en el móvil', mv.evaluate(f"!!{K}.jugador.mh"))
     mv.screenshot(path=f'{SALIDA}/07_movil_construir.png')
-    mv.click('#btnColocar')
+    mv.click('#btnColocar', no_wait_after=True)
     mv.evaluate(f"{K}.cambiarModo('mover'); {K}.pj.x=-1; {K}.pj.z=4.2; {K}.pj.k=0; {K}.pj.rot=Math.PI*0.9; {K}.cam.yaw=Math.PI*0.1; {K}.cam.pitch=0.55; {K}.cam.dist=7")
     mv.wait_for_timeout(900)
     comprobar('móvil: Colocar pone el marco de la obra', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].some(p => p.tipo === 'cim_tronco' && p.obra)"))
     mv.screenshot(path=f'{SALIDA}/07d_movil_obra.png')
-    mv.click('#modos button[data-modo=mover]')
+    mv.click('#modos button[data-modo=mover]', no_wait_after=True)
     mv.evaluate(f"{K}.pj.x=2; {K}.pj.z=-2.5; {K}.pj.k=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI*0.95; {K}.cam.pitch=0.3; {K}.cam.dist=4.5")
     mv.wait_for_timeout(1200)
     mv.screenshot(path=f'{SALIDA}/07b_movil_personaje_de_cerca.png')

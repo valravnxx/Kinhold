@@ -31,6 +31,8 @@ const ES = {
   construyendo: 'Construyendo:',
   obraTerminada: 'terminada.',
   dejasObra: 'Dejas la obra (vuelve con Usar).',
+  subiendoRodando: 'Subes rodándolo por dos varas con una cuerda:',
+  quedan: 'quedan',
   confirmaReinicio: '¿Seguro? Pulsa otra vez para borrar todo.',
 };
 export function t(k) { return tr(ES[k] || k); }

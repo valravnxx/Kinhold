@@ -121,6 +121,13 @@ console.log('Obras: marco, materiales y tiempo, con el autor de cada entrega y d
   const pu = A(yo, { tipo: 'colocar', pieza: 'puerta_varas', x: 1, z: -0.95, k: 0, rot: 0, dir: 0 });
   const u = A(yo, { tipo: 'usar', construccion: c.id, clave: pu.clave });
   comprobar('una puerta en obras no se abre', pu.ok && !u.ok && u.motivo === 'Está en obras.', u.motivo || '');
+  // una obra en la planta 1: un tronco subido entre dos y otro a medio subir con varas
+  const alta = A(yo, { tipo: 'colocar', pieza: 'muro_tronco', x: 1, z: -0.95, k: 1, rot: 0, dir: 0 });
+  if (alta.ok) {
+    A(yo, { tipo: 'subir', construccion: c.id, clave: alta.clave, material: 'tronco', segundos: 3, metodo: 'entre_dos' });
+    A(otro, { tipo: 'subir', construccion: c.id, clave: alta.clave, material: 'tronco', segundos: 3, metodo: 'entre_dos' });
+  }
+  comprobar('subir un tronco a la planta 1 entre dos queda en el registro con los dos autores', alta.ok && reg.entradas.filter(e => e.tipo === 'subir' && e.ok).map(e => e.autor).join(' ') === `${yo} ${otro}`, alta.motivo || '');
   comprobar('con el registro se rehace el mismo mundo, obras a medias incluidas', foto(reproducir(reg.exportar())) === foto(m));
 }
 
