@@ -728,9 +728,9 @@
     },
     {
      "nombre": "Cámara táctil con un dedo durante el combate",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-27T08:50:44+00:00",
-     "rama": "trabajo/20261027-0850"
+     "fin": "2026-10-27T13:40:27+00:00"
     },
     {
      "nombre": "Curación de heridas",
@@ -1260,6 +1260,13 @@
      "archivo": "jugar/combate/v11.html",
      "capturas": "capturas/combate-v11",
      "notas": "Espadas, palo, arco, escudo, flecha, poste de práctica y diana con el estilo v5; cintas de paño teñido más apagadas"
+    },
+    {
+     "v": "v12",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/combate/v12.html",
+     "capturas": "capturas/combate-v12",
+     "notas": "v12: cámara táctil con un dedo. En el móvil, arrastrar un dedo por una zona libre gira la cámara (antes hacían falta dos); un toque sin arrastrar no la mueve, y tocar la rosa sigue golpeando al instante. El dedo del joystick ya no cuenta como segundo dedo. Con arco o piedras, si al apuntar llevas el dedo cerca de un borde, la cámara gira hacia ese lado."
     }
    ]
   },
