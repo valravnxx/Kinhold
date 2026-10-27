@@ -1,10 +1,12 @@
 // Pruebas del inventario por huecos (src/logica/inventario.js). Ejecutar: node pruebas/prueba_inventario.mjs
 // Con MUTAR=1 el tronco corto pasa a ser mediano (cabría en una mano y en un hueco mediano): las pruebas deben FALLAR.
+// Con MUTAR=2 el leñero admite piedras y el cinto de cuero pierde su hueco mediano: las del equipo de carga deben FALLAR.
 import { Inventario, Inventarios, CATALOGO, pila, ejecutarInventario, migrar, MIGRACIONES, VERSION_INVENTARIO,
-  guardarInventarios, cargarInventarios, CLAVE_INVENTARIO } from '../src/logica/inventario.js';
+  guardarInventarios, cargarInventarios, CLAVE_INVENTARIO, capacidad, EQUIPO_CARGA } from '../src/logica/inventario.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
 
 const MUTAR = process.env.MUTAR === '1';
+if (process.env.MUTAR === '2') { CATALOGO.lenero.admite.push('piedra'); CATALOGO.cinto_cuero.huecos[0].tam = 'P'; }
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -202,6 +204,78 @@ console.log('Guardado y migración');
   const viejo = Inventarios.importar({ version: 0, jugadores: { y: { der: { tipo: 'cuchillo', n: 1 }, izq: null } } }, CAT).de('y');
   delete MIGRACIONES[0];
   comprobar('un guardado antiguo se migra paso a paso', viejo.lugares['mano:der'] && viejo.lugares['mano:der'].tipo === 'cuchillo');
+}
+
+console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
+{
+  const ids = l => EQUIPO_CARGA(l).map(k => CATALOGO[k].nombre);
+  comprobar('los cinco cinturones', EQUIPO_CARGA('cintura').length === 5, ids('cintura').join(', '));
+  comprobar('las diez mochilas y bastidores de espalda', EQUIPO_CARGA('espalda').length === 10, ids('espalda').join(', '));
+  comprobar('saco, bandolera y odre al hombro', ['saco', 'bandolera', 'odre'].every(k => EQUIPO_CARGA('hombro').includes(k)) && EQUIPO_CARGA('hombro').length === 3);
+  // huecos de los cinturones, como el GDD
+  const hc = k => CATALOGO[k].huecos.map(h => h.tam).sort().join('');
+  comprobar('cordel de fibra: 1 pequeño', hc('cordel') === 'P');
+  comprobar('cuerda trenzada: 2 pequeños', hc('cuerda_trenzada') === 'PP');
+  comprobar('cinto de cuero: 3, uno mediano', hc('cinto_cuero') === 'MPP', hc('cinto_cuero'));
+  comprobar('cinto con anillas: 4, dos medianos', hc('cinto_anillas') === 'MMPP');
+  comprobar('cinto de armas: vaina para espada y 2 pequeños', hc('cinto_armas') === 'MPP' && CATALOGO.cinto_armas.huecos.filter(h => h.admite && h.admite.join() === 'espada').length === 1);
+  // cada cinturón da sus huecos de cintura al ponérselo
+  const inv = Inventario.inicial();
+  inv.coger('cinto_cuero', 1, 'mano:der'); inv.ponerse('mano:der');
+  comprobar('con el cinto de cuero hay 3 huecos de cintura', inv.huecosCintura().length === 3);
+  comprobar('el hacha de mano va en su hueco mediano', inv.coger('hacha_mano', 1, 'cintura/0').ok);
+  const r = inv.coger('hacha_mano', 1, 'cintura/1');
+  comprobar('y no en uno pequeño', !r.ok && r.motivo === 'No cabe en ese hueco.', r.motivo);
+  const inv2 = Inventario.inicial();
+  inv2.coger('cinto_armas', 1, 'mano:der'); inv2.ponerse('mano:der');
+  comprobar('la espada va en la vaina del cinto de armas', inv2.coger('espada', 1, 'cintura/0').ok);
+  inv2.soltar('cintura/0');
+  const r2 = inv2.coger('hacha_mano', 1, 'cintura/0');
+  comprobar('y en la vaina no va otra cosa', !r2.ok && r2.motivo === 'Eso no va en ese hueco.', r2.motivo);
+  // leñero: solo leña y troncos cortos, en gran cantidad
+  const inv3 = Inventario.inicial();
+  inv3.coger('lenero', 1, 'mano:der');
+  comprobar('el leñero es grande: en las manos ocupa las dos', !inv3.coger('cuchillo', 1, 'mano:izq').ok);
+  comprobar('el leñero se pone a la espalda', inv3.ponerse('mano:der').ok && inv3.lugares.espalda.tipo === 'lenero');
+  comprobar('el leñero lleva troncos cortos', inv3.coger('tronco_corto', 1, 'espalda/0').ok && inv3.coger('tronco_corto', 1, 'espalda/1').ok);
+  comprobar('y leña', [2, 3, 4].every(i => inv3.coger('lena', 3, 'espalda/' + i).ok) && inv3.cuantos('lena') === 9);
+  const r3 = inv3.coger('piedra', 1, 'mano:der'), r4 = inv3.mover('mano:der', 'espalda/5', 1);
+  comprobar('el leñero no lleva piedras', r3.ok && !r4.ok && r4.motivo === 'Eso no va en ese hueco.', r4.motivo);
+  const cl = capacidad('lenero');
+  comprobar('capacidad del leñero: 2 troncos cortos o 18 de leña, nada más', cl.porTipo.tronco_corto === 2 && cl.porTipo.lena === 18 && Object.keys(cl.porTipo).length === 2 && !cl.mixto, JSON.stringify(cl.porTipo));
+  // lo que admite cada uno
+  const adm = (k, si, no) => { const c = capacidad(k); return si.every(t => c.porTipo[t] > 0) && no.every(t => !c.porTipo[t]); };
+  comprobar('cesta de recolección: bayas, setas, hierbas, frutos y huevos; no piedras', adm('cesta_recoleccion', ['bayas', 'setas', 'hierbas', 'frutos_secos', 'huevo'], ['piedra', 'lena']));
+  comprobar('fardo atado: pieles, telas, fibras y paja', adm('fardo', ['piel', 'tela', 'fibra', 'paja'], ['bayas', 'piedra']));
+  comprobar('porta-piedras: piedras', adm('porta_piedras', ['piedra'], ['lena']) && capacidad('porta_piedras').porTipo.piedra === 12);
+  comprobar('caja de herramientas: herramientas de oficio', adm('caja_herramientas', ['cuchillo', 'hacha_mano'], ['piedra', 'espada']));
+  comprobar('carcaj: flechas o virotes', adm('carcaj', ['flecha', 'virote'], ['cuchillo']));
+  comprobar('cesto de pescador: pescado y aparejos', adm('cesto_pescador', ['pescado', 'anzuelo'], ['bayas']));
+  comprobar('escudo a la espalda: el escudo, nada más', adm('correa_escudo', ['escudo'], ['espada', 'piedra']) && capacidad('correa_escudo').porTipo.escudo === 1);
+  comprobar('saco: grano, harina y tierra', adm('saco', ['grano', 'harina', 'arena'], ['piedra']));
+  comprobar('odre: agua', adm('odre', ['agua'], ['bayas']));
+  comprobar('zurrón, mochila de bastidor y bandolera son mixtos', ['zurron', 'mochila_bastidor', 'bandolera'].every(k => capacidad(k).mixto));
+  comprobar('la mochila de bastidor lleva más que el zurrón', capacidad('mochila_bastidor').huecos.length > capacidad('zurron').huecos.length);
+  comprobar('el bloque de piedra en bruto no va en ninguna mochila (es enorme)', EQUIPO_CARGA('espalda').every(k => !capacidad(k).porTipo.bloque_piedra));
+  // lo de hombro y la espalda a la vez, y cada cosa en su lugar
+  const inv4 = Inventario.inicial();
+  inv4.coger('saco', 1, 'mano:izq');
+  const r5 = inv4.mover('mano:izq', 'espalda');
+  comprobar('el saco no se pone a la espalda', !r5.ok && r5.motivo === 'Eso no se lleva ahí.', r5.motivo);
+  comprobar('el saco va al hombro y lleva grano', inv4.ponerse('mano:izq').ok && inv4.coger('grano', 10, 'hombro/0').ok && inv4.coger('grano', 10, 'hombro/1').ok && inv4.cuantos('grano') === 20);
+  inv4.coger('cesta_recoleccion', 1, 'mano:der');
+  comprobar('con el saco al hombro se puede llevar una cesta a la espalda', inv4.ponerse('mano:der').ok && inv4.coger('setas', 4, 'espalda/0').ok);
+  // quitarse la mochila con lo que lleva dentro: nada se pierde
+  comprobar('al quitarse la cesta se lleva lo que tiene dentro', inv4.quitarse('espalda', 'mano:der').ok && inv4.cuantos('setas') === 4 && inv4.lugares['mano:der'].dentro[0].n === 4);
+  comprobar('y se puede volver a poner', inv4.ponerse('mano:der').ok && inv4.cuantos('setas') === 4 && inv4.lugares.espalda.tipo === 'cesta_recoleccion');
+  // por acciones con autor y guardado
+  const invs = new Inventarios(), reg = new RegistroAcciones();
+  const a1 = ejecutarInventario(invs, reg, { autor: 'jugador:ana', tipo: 'coger', objeto: 'odre', cantidad: 1, a: 'mano:der' });
+  const a2 = ejecutarInventario(invs, reg, { autor: 'jugador:ana', tipo: 'ponerse', de: 'mano:der' });
+  const a3 = ejecutarInventario(invs, reg, { autor: 'jugador:ana', tipo: 'coger', objeto: 'agua', cantidad: 10, a: 'hombro/0' });
+  comprobar('el odre se coge, se pone y se llena con acciones con autor', a1.ok && a2.ok && a3.ok && invs.de('jugador:ana').cuantos('agua') === 10);
+  const otra = Inventarios.importar(JSON.parse(JSON.stringify(invs.exportar())));
+  comprobar('el equipo de carga se guarda y se carga con lo que lleva', otra.de('jugador:ana').lugares.hombro.tipo === 'odre' && otra.de('jugador:ana').cuantos('agua') === 10);
 }
 
 console.log(`\n${ok} correctas, ${mal} fallos`);

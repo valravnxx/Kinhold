@@ -17,6 +17,21 @@
 //  - La capa interior del GDD («camisa y pantalón») son dos lugares: interior (camisa) y piernas (pantalón o calzas).
 //  - Lo que tenía guardado un jugador y ya no cabe al cargar (por ejemplo, si un cinturón pasa a tener menos huecos)
 //    no se pierde: queda «a tus pies» (lista apartado) hasta que haya objetos en el suelo.
+//
+// Equipo de carga (GDD, apartado 7: cinturones, mochilas y bastidores de función única, y lo de hombro). El GDD da
+// los huecos de los cinturones; de las mochilas dice qué llevan y si es «mucho» o «poco». Decisiones provisionales
+// para las mochilas y lo de hombro (anotadas en el diario; se ajustan al probar):
+//  - Leñero: 2 huecos grandes y 4 medianos, solo leña y troncos cortos (hasta 2 troncos cortos y 12 de leña, o 18 de leña).
+//  - Cesta de recolección: 6 huecos pequeños para bayas, setas, hierbas, frutos secos y huevos (60 unidades).
+//  - Fardo atado: 4 huecos medianos para pieles, telas, fibras y paja.
+//  - Zurrón de piel (mixto, poco): 2 medianos y 2 pequeños. Mochila de bastidor (mixto, más): 4 medianos y 4 pequeños.
+//  - Porta-piedras: 4 huecos medianos para piedras (12). El bloque de piedra en bruto es enorme: rastra o carro.
+//  - Caja de herramientas de espalda: 4 huecos medianos, solo herramientas. Carcaj: 2 huecos de flechas o virotes (20).
+//  - Cesto de pescador: 4 huecos medianos para pescado y aparejos (anzuelos). Correa del escudo: el escudo y nada más.
+//  - Hombro: saco con 2 huecos medianos (grano, harina, arena); bandolera con 3 pequeños (mixta); odre con 1 de agua.
+//  - Tamaño de lo que se lleva puesto: mochilas y bastidores G (en las manos ocupan las dos), cinturones M (el cordel P),
+//    saco y odre M, bandolera P. La espada y el escudo son M (se llevan en una mano).
+//  - Los añadidos al cinturón (bolsas, vainas, ganchos) llegan con la fabricación.
 
 export const TAMANOS = ['P', 'M', 'G', 'E'];
 const orden = t => TAMANOS.indexOf(t);
@@ -31,6 +46,7 @@ export const LUGARES = [...MANOS, 'espalda', 'cintura', 'hombro', ...CAPAS.map(c
 // huecos: los huecos interiores de un contenedor, cada uno con su tamaño y, si hace falta, lo que admite
 // (tipos de objeto). admite en el contenedor vale para todos sus huecos.
 const R = (nombre, tam) => ({ nombre, tam, recurso: true });
+const hs = (tam, n) => Array.from({ length: n }, () => ({ tam }));
 export const CATALOGO = {
   // del suelo y las plantas
   rama: R('Rama', 'M'), piedra: R('Piedra', 'M'), silex: R('Sílex', 'P'), fibra: R('Fibra cruda', 'P'),
@@ -43,13 +59,63 @@ export const CATALOGO = {
   lena: R('Leña', 'M'),
   // de la tierra
   bloque_piedra: R('Bloque de piedra en bruto', 'E'), mineral_hierro: R('Mineral de hierro', 'M'),
-  // hechos a mano
-  cordel: { nombre: 'Cordel de fibra', tam: 'P', lugar: 'cintura', huecos: [{ tam: 'P' }] }, // también es el cinturón de inicio
-  cuchillo: { nombre: 'Cuchillo', tam: 'P' },
-  hacha_mano: { nombre: 'Hacha de mano', tam: 'M' },
+  // de los animales, el campo y el agua
+  piel: R('Piel', 'M'), tela: R('Tela', 'M'), paja: R('Haz de paja', 'M'), pescado: R('Pescado', 'M'),
+  grano: R('Grano', 'P'), harina: R('Harina', 'P'), agua: R('Agua', 'P'),
+  flecha: R('Flecha', 'P'), virote: R('Virote', 'P'), anzuelo: R('Anzuelo y sedal', 'P'),
+  // herramientas y armas (herramienta: true → van en la caja de herramientas)
+  cuchillo: { nombre: 'Cuchillo', tam: 'P', herramienta: true },
+  hacha_mano: { nombre: 'Hacha de mano', tam: 'M', herramienta: true },
+  espada: { nombre: 'Espada', tam: 'M' },
+  escudo: { nombre: 'Escudo', tam: 'M' },
+  // cinturones (GDD: sus huecos). El cordel de fibra es el de inicio.
+  cordel: { nombre: 'Cordel de fibra', tam: 'P', lugar: 'cintura', huecos: [{ tam: 'P' }] },
+  cuerda_trenzada: { nombre: 'Cuerda trenzada', tam: 'M', lugar: 'cintura', huecos: [{ tam: 'P' }, { tam: 'P' }] },
+  cinto_cuero: { nombre: 'Cinto de cuero', tam: 'M', lugar: 'cintura', huecos: [{ tam: 'M' }, { tam: 'P' }, { tam: 'P' }] },
+  cinto_anillas: { nombre: 'Cinto con hebilla de hierro y anillas', tam: 'M', lugar: 'cintura', huecos: [{ tam: 'M' }, { tam: 'M' }, { tam: 'P' }, { tam: 'P' }] },
+  cinto_armas: { nombre: 'Cinto de armas', tam: 'M', lugar: 'cintura', huecos: [{ tam: 'M', admite: ['espada'] }, { tam: 'P' }, { tam: 'P' }] },
+  // mochilas y bastidores de función única (espalda)
+  lenero: { nombre: 'Leñero', tam: 'G', lugar: 'espalda', huecos: [...hs('G', 2), ...hs('M', 4)], admite: ['lena', 'tronco_corto'] },
+  cesta_recoleccion: { nombre: 'Cesta de recolección', tam: 'G', lugar: 'espalda', huecos: hs('P', 6), admite: ['bayas', 'setas', 'hierbas', 'frutos_secos', 'huevo'] },
+  fardo: { nombre: 'Fardo atado', tam: 'G', lugar: 'espalda', huecos: hs('M', 4), admite: ['piel', 'tela', 'fibra', 'paja'] },
+  zurron: { nombre: 'Zurrón de piel', tam: 'G', lugar: 'espalda', huecos: [...hs('M', 2), ...hs('P', 2)] },
+  mochila_bastidor: { nombre: 'Mochila de bastidor', tam: 'G', lugar: 'espalda', huecos: [...hs('M', 4), ...hs('P', 4)] },
+  porta_piedras: { nombre: 'Porta-piedras', tam: 'G', lugar: 'espalda', huecos: hs('M', 4), admite: ['piedra'] },
+  caja_herramientas: { nombre: 'Caja de herramientas de espalda', tam: 'G', lugar: 'espalda', huecos: hs('M', 4), admiteHerramientas: true },
+  carcaj: { nombre: 'Carcaj', tam: 'G', lugar: 'espalda', huecos: hs('P', 2), admite: ['flecha', 'virote'] },
+  cesto_pescador: { nombre: 'Cesto de pescador', tam: 'G', lugar: 'espalda', huecos: hs('M', 4), admite: ['pescado', 'anzuelo'] },
+  correa_escudo: { nombre: 'Escudo a la espalda (correa)', tam: 'G', lugar: 'espalda', huecos: hs('M', 1), admite: ['escudo'] },
+  // al hombro
+  saco: { nombre: 'Saco', tam: 'M', lugar: 'hombro', huecos: hs('M', 2), admite: ['grano', 'harina', 'arena'] },
+  bandolera: { nombre: 'Bandolera', tam: 'P', lugar: 'hombro', huecos: hs('P', 3) },
+  odre: { nombre: 'Odre', tam: 'M', lugar: 'hombro', huecos: hs('P', 1), admite: ['agua'] },
+  // ropa
   camisa_lino: { nombre: 'Camisa de lino', tam: 'M', capa: 'interior' },
   pantalon_lino: { nombre: 'Pantalón de lino', tam: 'M', capa: 'piernas' },
 };
+
+// La caja de herramientas admite todo lo que sea herramienta en el catálogo.
+for (const d of Object.values(CATALOGO)) if (d.admiteHerramientas) d.admite = Object.keys(CATALOGO).filter(k => CATALOGO[k].herramienta);
+
+// Equipo de carga por su lugar: los cinturones, lo de la espalda y lo del hombro del catálogo.
+export const EQUIPO_CARGA = lugar => Object.keys(CATALOGO).filter(k => CATALOGO[k].lugar === lugar && CATALOGO[k].huecos);
+
+// Lo que admite un contenedor y cuánto: por cada tipo que admite, cuántas unidades caben como mucho (llenando con
+// eso los huecos que lo admiten por nombre). mixto: hay algún hueco que admite cualquier cosa de su tamaño o menor.
+export function capacidad(tipo, cat = CATALOGO) {
+  const d = cat[tipo];
+  if (!d || !d.huecos) return null;
+  const r = { huecos: d.huecos.map(h => h.tam), mixto: d.huecos.some(h => !(h.admite || d.admite)), porTipo: {} };
+  for (const t of Object.keys(cat)) {
+    const n = d.huecos.reduce((s, h) => {
+      const adm = h.admite || d.admite;
+      if (!adm || !adm.includes(t)) return s;
+      return orden(cat[t].tam) <= orden(h.tam) ? s + pila(t, cat) : s;
+    }, 0);
+    if (n) r.porTipo[t] = n;
+  }
+  return r;
+}
 
 export function pila(tipo, cat = CATALOGO) {
   const d = cat[tipo];
