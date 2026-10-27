@@ -604,6 +604,36 @@
    "tareas": []
   },
   {
+   "id": "pulido-animaciones",
+   "num": "10b",
+   "nombre": "Pulido de manos y animaciones",
+   "estado": "pendiente",
+   "jugable": "Las manos agarran bien cada herramienta y arma que llevan, y las animaciones no atraviesan el propio cuerpo, la ropa por capas ni a otros personajes.",
+   "nota": "Pedido por Pedro el 27 oct: importante, pero para más adelante; ahora va primero la funcionalidad.",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: ver qué herramientas y armas hay ya, qué animaciones atraviesan algo y cómo lo resuelven otros (puntos de agarre por objeto, cinemática inversa de las manos, colisiones aproximadas del cuerpo), y desglosarlo en tareas de una sesión",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Manos que agarran bien: cada herramienta y arma con su punto de agarre, la mano colocada en el mango y los dedos cerrados alrededor, en todas las animaciones que la usan",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Animaciones que no atraviesan el propio cuerpo ni la ropa por capas (brazos contra el torso, armas contra las piernas, mangas y faldas)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Personajes que no se atraviesan entre sí (en el combate y al estar cerca)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
    "id": "servidor",
    "num": "11",
    "nombre": "Servidor y cuentas",

@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (06:39) — por el chat: manos y animaciones, para más adelante
+
+«Para un momento más futuro, quiero que hagamos una faena de nivelar las manos de los personajes con las herramientas que estén tomando para que las agarren bien… y que las animaciones no clipen con los mismos personajes. Más adelante: ahora lo importante es la funcionalidad, pero tiene que estar en el roadmap segurísimo.» → Hito nuevo 10b «Pulido de manos y animaciones», después del Mundo (pendiente, no se empieza antes), y su fila en el GDD.
+
 ### 26 oct 2026 (15:59) — por el chat: cómo será el premium
 
 valravnx: el premium desbloqueará recetas para fabricar versiones más bonitas de las cosas, «pero ya se hará» → GDD (apartados 2 y 20, en los tres idiomas): el premium son recetas que se desbloquean, se fabrican en el juego con sus materiales y solo cambian el aspecto. Se concreta más adelante.
