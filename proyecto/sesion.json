@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-27T20:35:05+00:00",
-  "tarea": "Equipo de carga en la lógica pura, con las listas aprobadas del GDD: los cinco cinturones (cordel de fibra, cuerda trenzada, cinto de cuero, cinto con anillas, cinto de armas) con sus huecos; las mochilas y bastidores de función única (leñero, cesta de recolección, fardo atado, zurrón de piel, mochila de bastidor, porta-piedras, caja de herramientas, carcaj, cesto de pescador, escudo a la espalda) y lo de hombro (saco, bandolera, odre), cada uno con lo que admite y cuánto",
-  "hito": "equipo",
-  "rama": "trabajo/20261027-2035"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-27T16:52:02+00:00",
   "tarea": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",
