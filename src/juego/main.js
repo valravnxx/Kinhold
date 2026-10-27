@@ -481,10 +481,23 @@ function piezaBajo(clientX, clientY) {
 }
 
 // ---------------- Entrada: teclado ----------------
+// Las teclas se leen por su posición física (e.code), no por la letra que escribe: con la distribución rusa
+// (o cualquier otra) W escribe «ц» y antes no movía (lo vio valravnx el 27 oct). Lo que no está en la tabla
+// (+, - y demás) sigue por la letra. Al perder el foco se sueltan todas, para que ninguna se quede pulsada.
+const TECLAS_FISICAS = {
+  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f',
+  ArrowUp: 'arrowup', ArrowDown: 'arrowdown', ArrowLeft: 'arrowleft', ArrowRight: 'arrowright',
+  ShiftLeft: 'shift', ShiftRight: 'shift', PageUp: 'pageup', PageDown: 'pagedown', Escape: 'escape',
+  NumpadAdd: '+', NumpadSubtract: '-',
+};
+const nombreTecla = (e) => TECLAS_FISICAS[e.code] || (e.key || '').toLowerCase();
 const teclas = new Set();
+addEventListener('blur', () => teclas.clear());
+document.addEventListener('visibilitychange', () => { if (document.hidden) teclas.clear(); });
 addEventListener('keydown', (e) => {
-  if (e.target.tagName === 'INPUT') return;
-  const k = e.key.toLowerCase();
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return; // atajos del navegador (Ctrl+W, etc.): no mueven
+  const k = nombreTecla(e);
   teclas.add(k);
   if (k === 'r') girar();
   if (k === 'b') cambiarModo(estado.modo === 'construir' ? 'mover' : 'construir');
@@ -494,7 +507,11 @@ addEventListener('keydown', (e) => {
   if (k === 'f') usar();
   if (k === 'escape') cambiarModo('mover');
 });
-addEventListener('keyup', (e) => teclas.delete(e.key.toLowerCase()));
+addEventListener('keyup', (e) => {
+  teclas.delete(nombreTecla(e));
+  teclas.delete((e.key || '').toLowerCase()); // por si se pulsó con otra distribución y se suelta con esta
+  if (e.key === 'Shift') teclas.delete('shift');
+});
 
 // ---------------- Entrada: ratón y táctil ----------------
 const punteros = new Map(); // pointerId -> {x,y,x0,y0,t0}
@@ -835,6 +852,9 @@ function alturaSuelo() {
   return 0;
 }
 
+// planta en la que está un mueble, por su altura (los del suelo de arriba están a una altura de planta o más)
+const plantaDeco = (d) => Math.max(0, Math.floor((d.y + 0.3) / ALTURA));
+
 const reloj = new THREE.Clock();
 function paso() {
   const dt = Math.min(reloj.getDelta(), 0.05);
@@ -878,15 +898,19 @@ function paso() {
   pasoObra();
   jugador.animar(mag > 0.05 ? vel : 0, dt, !!estado.talando || !!estado.obrando);
 
-  // interiores: ocultar plantas superiores y tejados si estás bajo techo
+  // interiores: ocultar plantas superiores y tejados si estás bajo techo, y también los muebles de esas plantas
+  // (antes se veían los del piso de arriba estando abajo; lo vio valravnx el 27 oct)
+  let bajoTecho = false;
   for (const g of raizConstr.children) {
     const c = g.userData.c;
     const l = mundoALocal(c, pj.x, pj.z);
     const i = Math.floor(l.lx / MODULO), j = Math.floor(l.lz / MODULO);
     let techo = false;
     for (let k = pj.k + 1; k <= 4 && !techo; k++) if (c.piezas.has(clave('f', i, j, k)) || c.piezas.has(clave('r', i, j, k))) techo = true;
+    if (techo) bajoTecho = true;
     for (const obj of g.children) obj.visible = !techo || obj.userData.k <= pj.k;
   }
+  for (const obj of raizDeco.children) obj.visible = !bajoTecho || plantaDeco(obj.userData.deco) <= pj.k;
   const it = interactivoCercano();
   $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana());
 
@@ -1015,6 +1039,7 @@ window.__kinhold = {
   get obrando() { return estado.obrando; },
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); reconstruir(); },
   get registroAcciones() { return registroAcciones; },
+  plantaDeco, get teclas() { return [...teclas]; },
   reconstruir() { reconstruir(); },
   render() { renderer.render(escena, camara); },
 };
