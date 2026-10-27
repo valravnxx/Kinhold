@@ -1,9 +1,15 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-27T13:24:50+00:00",
+  "tarea": "Demo en línea: «Jugar en línea» en la demo única, que se conecta al servidor (dirección en Opciones); construir sobre el mundo del servidor y ver al otro jugador con el personaje del taller. Prueba de navegador con dos páginas y un servidor local, capturas en PC y móvil",
+  "hito": "prueba-online",
+  "rama": "trabajo/20261027-1324"
+ },
  "B": {
   "inicio": "2026-10-27T11:50:57+00:00",
   "tarea": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
   "hito": "construccion-mas",
-  "rama": "trabajo/20261027-1150"
+  "rama": "trabajo/20261027-1150",
+  "ultimo": "2026-10-27T12:42:16.000Z"
  }
 }

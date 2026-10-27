@@ -266,7 +266,8 @@
     },
     {
      "nombre": "Demo en línea: «Jugar en línea» en la demo única, que se conecta al servidor (dirección en Opciones); construir sobre el mundo del servidor y ver al otro jugador con el personaje del taller. Prueba de navegador con dos páginas y un servidor local, capturas en PC y móvil",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T13:24:50+00:00"
     },
     {
      "nombre": "Combate en el servidor: un luchador por jugador en la lógica pura; los clientes mandan intenciones (atacar en una línea, guardia, bloquear, tensar y soltar) y el servidor lleva los tiempos y resuelve golpes y heridas con su autor. Prueba en node con dos clientes y lag simulado",
