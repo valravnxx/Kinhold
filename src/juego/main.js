@@ -715,15 +715,18 @@ function ponerRampa(c, p) {
   quitarRampa();
   const m = centroMundo(c, p);
   let nx = pj.x - m.x, nz = pj.z - m.z; const l = Math.hypot(nx, nz) || 1; nx /= l; nz /= l;
-  // en un muro, del lado de la cara (no por el canto)
+  let ox = 0, oz = 0;
+  // en un muro, del lado de la cara (no por el canto), y un poco a un lado para que tú quedes junto a las varas
   if (p.hueco === 'e') {
     const a = c.rot + (p.d === 0 ? 0 : -Math.PI / 2); // a lo largo del muro
     const ax = Math.cos(a), az = -Math.sin(a), lado = Math.sign(nx * -az + nz * ax) || 1;
     nx = -az * lado; nz = ax * lado;
+    const lat = (pj.x - m.x) * ax + (pj.z - m.z) * az, s = lat > 0 ? -1 : 1;
+    ox = ax * s * 0.5; oz = az * s * 0.5;
   }
   const alto = plantaObra(p) * ALTURA + P.superficieSuelo, largo = alto * 0.85;
   const g = new THREE.Group(); g.name = 'rampa';
-  g.position.set(m.x + nx * (largo + 0.2), 0, m.z + nz * (largo + 0.2));
+  g.position.set(m.x + ox + nx * (largo + 0.2), 0, m.z + oz + nz * (largo + 0.2));
   g.rotation.y = Math.atan2(-nx, -nz);
   g.add(rampaVaras(alto));
   const tronco = troncoSuelto(); g.add(tronco);
