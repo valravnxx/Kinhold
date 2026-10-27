@@ -1117,5 +1117,24 @@
   "pruebas": "Todas correctas con probar_todo.sh: lógica 86/86, modelos 88/88, combate 69/69, acciones 25/25, cinturones, taller, unión, idiomas; navegador de construcción, combate, estilo, personaje, demo, recursos, idioma y web, en PC y móvil.",
   "capturas": "capturas/construccion-v18",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T02:20:34+00:00",
+  "fin": "2026-10-27T03:34:24+00:00",
+  "titulo": "Hito 1e: armas, hacha y pieza al construir con el estilo v5",
+  "hito": "estilo",
+  "hecho": [
+   "Se retoma la rama de la sesión de las 00:20, que quedó cortada sin publicar: su trabajo estaba subido en trabajo/20261027-0020.",
+   "Construcción v19: la pieza que se ve al colocar es la propia pieza, con su textura, translúcida y con un velo verde si cabe o rojo si no; al desmontar, lo que se quita y lo que caería se marcan con velo naranja o rojo.",
+   "Hacha de talar en la mano mientras se tala: mango de fresno y cabeza de hierro.",
+   "Combate v11: espadas con hoja de rombo, puño de cuero, cruz y pomo de hierro; palo de vara con nudos; arco de una pieza; escudo de seis tablas con canto de cuero y umbo con clavos; flecha con punta y plumas; poste con haces de paja; diana de paja con paño pintado con tierras; cintas de paño teñido.",
+   "Demo única v14 con las dos cosas.",
+   "Prueba de modelos nueva de armas y hacha; con MUTAR_ARMA=1 falla, como debe.",
+   "En el juego no hay todavía recursos sueltos en el suelo (recolectar llega con el hito 2): lo que hay de decorado ya tenía el estilo v5.",
+   "Queda con el aspecto inicial solo el muñeco que se ve unos instantes mientras carga el personaje del taller; se mira en la revisión del hito."
+  ],
+  "pruebas": "Todas las de herramientas/probar_todo.sh correctas: lógica 86/86, modelos 104/104, combate 69/69, acciones 25/25; navegador de construcción, combate, estilo, personaje, demo, idioma y web correctos en PC y móvil",
+  "capturas": "capturas/construccion-v19",
+  "estado": "ok"
  }
 ]
