@@ -8,7 +8,7 @@
 // los mensajes lleguen a trompicones. Moverse no cambia el mundo, así que no va al registro de acciones.
 //
 // Mensajes (JSON):
-//   cliente → servidor   { tipo: 'estado', x, y, z, giro, anim }
+//   cliente → servidor   { tipo: 'estado', x, y, z, giro, anim, tc }      tc: su reloj (ms), solo para quitar el vaivén
 //   servidor → cliente   { tipo: 'bienvenida', autor, t, presentes: [...] }                        al conectar: quién está y dónde
 //   servidor → clientes  { tipo: 'estados', t, jugadores: [{ autor, t, x, y, z, giro, anim }] }   cada tic (100 ms)
 //                        { tipo: 'sale', autor }                                                  cuando alguien se va
@@ -26,7 +26,9 @@ export function validarEstado(m) {
   const { x, y, z, giro, anim } = m;
   if (![x, y, z, giro].every(numero)) return null;
   if (typeof anim !== 'string' || !/^[a-z_]{1,24}$/.test(anim)) return null;
-  return { x, y, z, giro: normalizarAngulo(giro), anim };
+  const e = { x, y, z, giro: normalizarAngulo(giro), anim };
+  if (m.tc !== undefined) { if (!(typeof m.tc === 'number' && Number.isFinite(m.tc))) return null; e.tc = m.tc; }
+  return e;
 }
 
 export function normalizarAngulo(a) {
@@ -43,18 +45,28 @@ export function mezclarAngulo(a, b, f) {
 
 // Lo que el servidor guarda de cada conexión y reparte en cada tic.
 export class PresenciaServidor {
-  constructor() { this.ultimo = new Map(); this.cambiados = new Set(); }
-  // estado de un cliente: el autor y la hora los pone el servidor, nunca el cliente
+  constructor() { this.ultimo = new Map(); this.cambiados = new Set(); this.desfases = new Map(); }
+  // Estado de un cliente: el autor y la hora los pone el servidor, nunca el cliente.
+  // La hora: con la del reloj del cliente (tc) pasada al del servidor, se quita el vaivén de la subida
+  // (si no, los estados llegan a trompicones y la velocidad que se ve cambia). El desfase entre los dos
+  // relojes es el del mensaje que llegó más deprisa. Nunca puede ser una hora futura ni de hace más de 1 s.
   recibir(autor, m, ahora) {
     const e = validarEstado(m);
     if (!e) return false;
+    let t = ahora;
+    if (e.tc !== undefined) {
+      const d = Math.min(this.desfases.get(autor) ?? Infinity, ahora - e.tc);
+      this.desfases.set(autor, d);
+      t = Math.min(ahora, Math.max(ahora - 1000, e.tc + d));
+      delete e.tc;
+    }
     const previo = this.ultimo.get(autor);
-    const t = previo ? Math.max(ahora, previo.t + 1) : ahora;   // la hora de cada jugador nunca va hacia atrás
+    if (previo) t = Math.max(t, previo.t + 1);   // la hora de cada jugador nunca va hacia atrás
     this.ultimo.set(autor, { autor, t, ...e });
     this.cambiados.add(autor);
     return true;
   }
-  quitar(autor) { this.ultimo.delete(autor); this.cambiados.delete(autor); }
+  quitar(autor) { this.ultimo.delete(autor); this.cambiados.delete(autor); this.desfases.delete(autor); }
   // los que han cambiado desde el tic anterior (cada uno una vez, el último estado que llegó)
   tic() {
     const lista = [...this.cambiados].map(a => this.ultimo.get(a)).filter(Boolean);
@@ -109,7 +121,7 @@ export class PresenciaCliente {
   actualizar(ahora, propio) {
     if (ahora - this.ultimoEnvio < this.cada) return false;
     this.ultimoEnvio = ahora;
-    this.enviar({ tipo: 'estado', x: propio.x, y: propio.y, z: propio.z, giro: propio.giro, anim: propio.anim });
+    this.enviar({ tipo: 'estado', x: propio.x, y: propio.y, z: propio.z, giro: propio.giro, anim: propio.anim, tc: Math.round(ahora) });
     return true;
   }
   recibir(msg, ahora) {

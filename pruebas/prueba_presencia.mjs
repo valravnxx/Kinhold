@@ -12,6 +12,7 @@ import { tmpdir } from 'os';
 import { performance } from 'perf_hooks';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { crearServidor } from '../servidor/servidor.mjs';
+import { PresenciaServidor } from '../src/logica/presencia.js';
 
 const MUTAR = process.env.MUTAR === '1';
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -71,6 +72,18 @@ it.meter({ t: 50, x: 9, y: 0, z: 0, giro: 0, anim: 'andar' });   // desordenado:
 const m50 = it.muestra(50), m1000 = it.muestra(1000);
 comprobar('a mitad de camino, a mitad de sitio; lo desordenado no cuenta', Math.abs(m50.x - 0.5) < 1e-9, `x=${m50.x}`);
 comprobar('sin estados nuevos sigue un poco y se para', Math.abs(m1000.x - 3.5) < 1e-9, `x=${m1000.x} a los 900 ms`);
+
+const ps = new PresenciaServidor();
+const est = (tc) => ({ x: 0, y: 0, z: 0, giro: 0, anim: 'andar', tc });
+ps.recibir('jugador:a', est(0), 1000);          // desfase de relojes: 1000
+ps.recibir('jugador:a', est(100), 1180);        // llegó 80 ms tarde: cuenta la hora en que salió (1100)
+const t1 = ps.ultimo.get('jugador:a').t;
+ps.recibir('jugador:a', est(999999), 1300);     // dice venir del futuro: no pasa de la hora del servidor
+const t2 = ps.ultimo.get('jugador:a').t;
+ps.recibir('jugador:a', est(-999999), 1400);    // dice venir de muy atrás: como mucho 1 s
+const t3 = ps.ultimo.get('jugador:a').t;
+comprobar('el servidor quita el vaivén de la subida y no se deja engañar con la hora', t1 === 1100 && t2 === 1300 && t3 === 1301 && !('tc' in ps.ultimo.get('jugador:a')),
+  `${t1}, ${t2}, ${t3}`);
 
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-presencia-'));
 try {
