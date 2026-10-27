@@ -66,9 +66,21 @@ for (const [tipo, sup] of Object.entries(esperado)) {
   const sale = Math.max(-b.min.x, b.max.x, -b.min.z, b.max.z) - 1;
   comprobar(`${PIEZAS[tipo].nombre}: no sale de la casilla`, sale < 0.05, `sale ${r3(sale)} m`);
 }
-for (const tipo of [...Object.keys(esperado), 'escalera_mano', 'escalera_tabla']) {
+for (const tipo of [...Object.keys(esperado), 'escalera_mano', 'escalera_tabla', 'andamio', 'polea']) {
   const nombres = []; modeloPieza(tipo).traverse(o => { if (o.isMesh) nombres.push(o.name); });
   comprobar(`${PIEZAS[tipo].nombre}: hecha con el estilo v5 (mallas por textura)`, nombres.length > 0 && nombres.every(n => n.startsWith('estilo_')), nombres.join(' '));
+}
+
+// el andamio: su plataforma se pisa a la altura del suelo de la planta de encima (donde la lógica pone al jugador);
+// por dentro (lejos de la barandilla y de los pies), lo más alto es la plataforma
+{
+  let arriba = -1;
+  modeloPieza('andamio').traverse(o => {
+    if (!o.isMesh) return; const pos = o.geometry.attributes.position;
+    for (let i = 0; i < pos.count; i++) if (Math.abs(pos.getZ(i)) < 0.6) arriba = Math.max(arriba, pos.getY(i));
+  });
+  const esperadoA = ALTURA + P.superficieSuelo + (process.env.MUTAR_SUELO ? -0.05 : 0);
+  comprobar('Andamio: la plataforma se pisa a la altura del suelo de la planta de encima', Math.abs(arriba - esperadoA) < 0.015, `arriba=${r3(arriba)} (suelo ${r3(esperadoA)})`);
 }
 
 console.log('Tejados y rellenos bajo el tejado con el estilo v5');

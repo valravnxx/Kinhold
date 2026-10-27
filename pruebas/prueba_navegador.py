@@ -541,13 +541,22 @@ with sync_playwright() as p:
     marco('muro_tronco', -13, -12, 1)
     alta3 = ev(f"(() => {{ for (const c of {K}.mundo.construcciones) for (const [k, p] of c.piezas) if (p.obra && p.k === 1 && p.tipo === 'muro_tronco') return {{ c: c.id, key: k }}; return null; }})()")
     comprobar('el marco de un muro de troncos en la planta 1, entre los postes', alta3 is not None)
-    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-12.8; {K}.pj.z=-13.4; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.22; {K}.cam.dist=8")
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-12.8; {K}.pj.z=-13.4; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.3; {K}.cam.dist=11")
     t0 = ev(f"{K}.mundo.materiales.tronco")
     ev(f"{K}.usar()")
     comprobar('con polea, Usar se pone a subir los troncos con ella (no con varas)', ev(f"{K}.obrando && {K}.obrando.metodo") == 'polea' and ev(f"{K}.rampa && {K}.rampa.tipo") == 'polea', json.dumps(ev(f"{K}.obrando && {K}.obrando.metodo")))
     entregado3 = f"{K}.mundo.construcciones.find(c => c.id === {alta3['c']}).piezas.get('{alta3['key']}').obra.entregado"
-    esperar(pg, 1800)
+    # para la captura se deja la subida quieta a media altura (sin tarjeta gráfica cada rato llega a 5 s y el tronco
+    # sube de golpe)
+    ev(f"{K}.fijarSubida(0.6)")
+    comprobar('el tronco sube en vertical colgado de la polea', (ev(f"{K}.rampa ? {K}.rampa.yTronco : 0") or 0) > 0.9, f"y={ev(f'{K}.rampa ? {K}.rampa.yTronco : 0')}")
     pg.screenshot(path=f'{SALIDA}/33_subiendo_tronco_polea.png')
+    # de cerca: la polea, el tronco colgando y el cabo de tirar (la polea cuelga a 4,4-5 m: el personaje se pone en la
+    # plataforma del andamio de al lado para que la cámara llegue; el cabo va hasta sus manos)
+    ev(f"{K}.pj.x=-14.35; {K}.pj.z=-12.6; {K}.pj.k=1; {K}.pj.y=2.62; {K}.pj.rot=1.0; {K}.cam.yaw=Math.PI-0.35; {K}.cam.pitch=0.1; {K}.cam.dist=4.5")
+    esperar(pg, 1500)
+    pg.screenshot(path=f'{SALIDA}/34_polea_de_cerca.png')
+    ev(f"{K}.pj.x=-12.8; {K}.pj.z=-13.4; {K}.pj.k=0; {K}.pj.y=0; {K}.seguirSubida()")
     try: pg.wait_for_function(f"({entregado3}.tronco || 0) >= 1", timeout=60000)
     except Exception: pass
     comprobar('sola, con la polea, sube un tronco (5 s de trabajo) y queda entregado', ev(f"{entregado3}.tronco || 0") >= 1 and t0 - ev(f"{K}.mundo.materiales.tronco") >= 1)
@@ -555,10 +564,6 @@ with sync_playwright() as p:
     pg.keyboard.down('s'); esperar(pg, 400); pg.keyboard.up('s')
     esperar(pg, 200)
     comprobar('moverse deja de subir y quita la cuerda', not ev(f"{K}.obrando") and not ev(f"{K}.rampa"))
-    # de cerca, desde lo alto de los andamios (la polea cuelga a 4,4-5 m)
-    ev(f"{K}.pj.x=-15; {K}.pj.z=-13; {K}.pj.k=2; {K}.pj.y=5.12; {K}.pj.rot=1.2; {K}.cam.yaw=Math.PI-0.7; {K}.cam.pitch=0.3; {K}.cam.dist=4.2")
-    esperar(pg, 1200)
-    pg.screenshot(path=f'{SALIDA}/34_polea_de_cerca.png')
     ev(f"{K}.terminarObras()")
 
     print('PC: todos los muebles en fila, de cerca (estilo v5)')
@@ -668,6 +673,10 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=10.2; {K}.pj.z=-15; {K}.pj.k=0; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.5; {K}.cam.dist=11")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06b_movil_escalera.png')
+    mv.evaluate(f"{K}.pj.x=-12.8; {K}.pj.z=-14.5; {K}.pj.k=0; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.3; {K}.cam.dist=10")
+    mv.wait_for_timeout(900)
+    comprobar('móvil: el andamio y la polea se cargan del guardado', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'andamio' || p.tipo === 'polea').length") >= 3)
+    mv.screenshot(path=f'{SALIDA}/06c_movil_andamio_y_polea.png')
     mv.click('#modos button[data-modo=construir]', no_wait_after=True)  # el clic no navega; con la máquina cargada, esperar «navegaciones» agotaba los 30 s
     mv.evaluate(f"{K}.seleccionar('pieza','cim_tronco'); {K}.apuntar(-2, 2)")
     mv.wait_for_timeout(700)

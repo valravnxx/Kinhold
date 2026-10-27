@@ -1182,6 +1182,9 @@ window.__kinhold = {
   obraCercana() { const o = obraCercana(); return o && { c: o.c.id, key: o.key }; },
   get obrando() { return estado.obrando; },
   get rampa() { return rampa && { t: rampa.t, meta: rampa.meta, visible: !!rampa.g.parent, tipo: rampa.tipo || 'varas', yTronco: rampa.tronco.position.y }; },
+  // atajo de prueba para las capturas: deja la subida quieta a medio camino (sin tarjeta gráfica, un rato llega a 5 s)
+  fijarSubida(t) { if (estado.obrando) estado.obrando.desde = performance.now() + 1e9; if (rampa) { rampa.t = rampa.meta = t; moverRampa(0); } },
+  seguirSubida() { if (estado.obrando) estado.obrando.desde = performance.now(); },
   interactivoCercano() { const o = interactivoCercano(); return o && { c: o.c.id, key: o.key, tipo: o.tipo }; },
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); reconstruir(); },
   get registroAcciones() { return registroAcciones; },

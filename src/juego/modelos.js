@@ -780,6 +780,9 @@ function andamio() {
     for (const x of [-A, A]) varaZ(L, 2 * A + 0.3, 0.032, 'madera', x + (x < 0 ? -0.05 : 0.05), y + 0.05, 0);
     for (const x of [-A, A]) for (const z of [-A, A]) lazada(L, x, y, z, 0.05);
   }
+  // tornapuntas en cruz por los lados, para que no se ladee
+  const dy = tope - 0.35, largoD = Math.hypot(2 * A, dy);
+  for (const x of [-A, A]) L.add(cil(0.028, 0.03, largoD, 6), 'madera', x + (x < 0 ? -0.09 : 0.09), 0.2 + dy / 2, 0, { x: (x < 0 ? 1 : -1) * Math.atan2(2 * A, dy) });
   // plataforma: varas juntas a lo largo de X sobre los largueros, con las puntas claras
   const n = 14, paso = (2 * A + 0.1) / n;
   for (let t = 0; t < n; t++) {
