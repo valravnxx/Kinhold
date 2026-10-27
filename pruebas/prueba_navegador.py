@@ -504,6 +504,9 @@ with sync_playwright() as p:
         mv.wait_for_timeout(800)
         despues = mv.evaluate(f"{K}.mundo.construcciones.reduce((n, c) => n + c.piezas.size, 0)")
         comprobar('después de recargar sigue lo construido', despues == piezas and piezas > 0, f'{piezas} → {despues}')
+        # «enseguida» = menos de 20 s desde la pérdida anterior; con el servidor cargado la recarga puede tardar más,
+        # así que se marca la pérdida anterior como de ahora mismo para probar la regla y no el reloj
+        mv.evaluate("sessionStorage.setItem('kinhold_contexto', String(Date.now()))")
         mv.evaluate("window.__marca = 1"); mv.evaluate(perder); mv.wait_for_timeout(2500)
         try: mv.wait_for_selector('#avisoContexto button', state='visible', timeout=15000)  # a pocos fps tarda más
         except Exception: pass
