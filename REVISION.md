@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (08:23) — por el chat: cavar y minar (en conversación)
+
+valravnx pregunta cuánta carga de servidor supondría modificar el terreno cavando o minando, con la idea de que al entrar en una mina desaparezca lo que hay encima (como el tejado de las casas) y lo que el personaje no ve funda a negro. → Respuesta en el chat (viable si las minas van por casillas como la construcción y el terreno de fuera solo se rebaja o se nivela); pendiente de que lo confirme antes de pasarlo al GDD.
+
 ### 27 oct 2026 (06:51–06:54) — por el chat: dos sesiones en paralelo
 
 «¿Hay manera de duplicar el trabajo en paralelo sin romper nada?» y «que mida que no se pisen ni se estropeen entre ellas, que sean cosas diferentes, cambia y aplica para que haya dos siempre en paralelo» → Carriles A (minuto 19) y B (minuto 49) con herramientas/carriles.mjs, reglas nuevas en CLAUDE.md y su prueba.
