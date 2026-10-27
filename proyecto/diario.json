@@ -1328,5 +1328,37 @@
   "capturas": "capturas/mina-v1",
   "estado": "ok",
   "notas": "no comprobado: rendimiento en un móvil de verdad (lo mide valravnx)"
+ },
+ {
+  "inicio": "2026-10-27T08:38:20+00:00",
+  "fin": "2026-10-27T13:17:42+00:00",
+  "titulo": "Hito 1f: jugadores que se ven",
+  "hito": "prueba-online",
+  "hecho": [
+   "Presencia de jugadores en la lógica pura (src/logica/presencia.js): cada cliente manda su posición, giro y animación 10 veces por segundo; el servidor le pone el autor de la conexión y su hora, y cada 100 ms reparte a cada uno los que han cambiado.",
+   "Los demás se dibujan 200 ms en el pasado, mezclando entre los dos estados que rodean ese momento; el giro va por el camino corto y, si no llega nada, se sigue la última dirección 250 ms como mucho y se para.",
+   "La hora de cada estado sale del reloj del cliente pasado al del servidor (con el mensaje que llegó más deprisa), nunca futura ni de hace más de 1 s: con la hora de llegada, el vaivén de la red daba saltos de hasta 12 veces lo que tocaba en la prueba.",
+   "Al conectar, la bienvenida dice quién está y dónde; al irse alguien, desaparece de los demás. Un estado roto (NaN, lejísimos, animación rara) recibe un error y no se reparte.",
+   "Prueba nueva con lag simulado de 60 a 140 ms en cada sentido: A corre en círculo a 3 m/s y B lo ve suave (en 6 pasadas medidas, el fotograma que más avanzó lo hizo entre 1,1 y 1,9 veces lo que toca), a menos de 3 cm del círculo y con unos 330 ms de retraso; tráfico de 1,3 KB/s por jugador a la vista. Rota a propósito (sin mezclar), falla.",
+   "La prueba de navegador de construcción fallaba siempre en esta máquina al pulsar Construir en el móvil: al doble de resolución y sin tarjeta gráfica cada fotograma tarda alrededor de 1 s y el clic pasaba de 30 s. Ahora espera hasta 2 minutos en la parte del móvil.",
+   "Decisión provisional (el GDD no lo dice): 200 ms de retraso al dibujar a los demás y 250 ms de predicción como mucho.",
+   "No comprobado: en el navegador todavía no se usa; llega con la tarea de la demo en línea."
+  ],
+  "pruebas": "Todas las pruebas correctas (probar_todo.sh), con la nueva de presencia 15/15 (con MUTAR=1 fallan 2, como debe) y la del servidor 15/15; capturas de construcción en móvil miradas. Tras unir el último main (solo web, roadmap y GDD) se repitieron las pruebas de node y la de la web. Sin versión jugable nueva: la demo aún no se conecta.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T09:50:06+00:00",
+  "fin": "2026-10-27T11:21:44+00:00",
+  "titulo": "Hito 2: plan de Equipo y carga por huecos",
+  "hito": "equipo",
+  "hecho": [
+   "Leído el GDD (apartados 7, 8 y 20) y el documento de sistemas (tamaños de los objetos, tala, recetas del leñero, la rastra, la carretilla, los cinturones y las mochilas).",
+   "Hito desglosado en 13 tareas de una sesión: lógica del inventario por huecos, equipo de carga, ralentización, datos de las prendas, panel de inventario, animaciones para cargar, equipo que se ve puesto, objetos en el suelo, tala, tronzar y partir, rastra, carretilla y obras con lo que llevas; la última, la revisión completa y publicación.",
+   "Decisión provisional: hasta que haya fabricación (hito 3), los cinturones, las mochilas y las hachas se cogen de un arcón de pruebas en la demo; sus recetas llegan con el hito 3."
+  ],
+  "pruebas": "Todas las pruebas correctas (bash herramientas/probar_todo.sh); capturas de la web miradas (hoja de ruta y diario). Sin código ni versión nueva: solo el plan. Web de progreso generada y comprobada.",
+  "estado": "ok"
  }
 ]

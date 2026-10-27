@@ -260,12 +260,14 @@
     },
     {
      "nombre": "Jugadores que se ven: cada cliente manda su posición, giro y animación unas 10 veces por segundo; el servidor las reparte y los demás clientes las suavizan (interpolación). Prueba con lag simulado",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T08:38:20+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T08:38:20+00:00",
+     "fin": "2026-10-27T13:17:42+00:00"
     },
     {
      "nombre": "Demo en línea: «Jugar en línea» en la demo única, que se conecta al servidor (dirección en Opciones); construir sobre el mundo del servidor y ver al otro jugador con el personaje del taller. Prueba de navegador con dos páginas y un servidor local, capturas en PC y móvil",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T13:24:50+00:00"
     },
     {
      "nombre": "Combate en el servidor: un luchador por jugador en la lógica pura; los clientes mandan intenciones (atacar en una línea, guardia, bloquear, tensar y soltar) y el servidor lleva los tiempos y resuelve golpes y heridas con su autor. Prueba en node con dos clientes y lag simulado",
@@ -449,6 +451,11 @@
    "estado": "en_curso",
    "tareas": [
     {
+     "nombre": "Arreglo (pedido de valravnx, 27 oct): en construir se veían los muebles del piso de arriba estando abajo con el techo puesto, y WASD fallaba (con la distribución de teclado rusa, o si la ventana perdía el foco con una tecla pulsada): las teclas se leen por su posición física y se sueltan todas al perder el foco",
+     "estado": "en_curso",
+     "inicio": "2026-10-27T13:53:25+01:00"
+    },
+    {
      "nombre": "Arreglo (pedido de valravnx): en PC no se pueden quitar muebles ni piezas, porque al mover el ratón hacia «Confirmar» se pierde lo elegido. Lo elegido con clic se queda fijo hasta confirmar o cancelar",
      "estado": "hecho",
      "inicio": "2026-10-25T17:52:07+00:00",
@@ -498,7 +505,8 @@
     },
     {
      "nombre": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-27T11:50:57+00:00"
     },
     {
      "nombre": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",
@@ -571,11 +579,31 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Entibado: postes y vigas en las galerías con el cálculo de cargas de la construcción; derrumbe si una galería larga se queda sin apoyo",
+     "nombre": "Sustentación: materiales por capas con su dureza y su vano (tierra 1 m, arcilla o grava 1,5 m, roca blanda 2,5 m, roca dura 4 m, menos cuanto más hondo); el golpe no se da si deja más techo suelto del que aguanta y avisa de entibar",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Entibado: postes y travesaño de troncos como obra (marco, material y tiempo); con entibos se puede seguir cavando. En tierra, pared vertical de 1,5 m como mucho y luego talud o entibar el pozo",
      "estado": "pendiente"
     },
     {
      "nombre": "El servidor solo manda los huecos que el jugador ha visto o tiene delante (nadie ve minas ni vetas ajenas a través de la roca)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Escombro: lo cavado se saca en cesto o carretilla y queda como material",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Vetas: hierro poco y malo en superficie con sus señales (agua rojiza, tierra encharcada), el bueno en vetas dentro de la roca; carbón en afloramientos de ladera",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Sin cavar en el territorio ni en el radio de exclusión de un mojón ajeno",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La malla de la roca se rehace en un hilo aparte, sin tirones al golpear",
      "estado": "pendiente"
     },
     {
@@ -593,11 +621,64 @@
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T09:50:06+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T09:50:06+00:00",
+     "fin": "2026-10-27T11:21:44+00:00"
+    },
+    {
+     "nombre": "Lógica pura del inventario por huecos: cada objeto con su tamaño (P pequeño, M mediano, G grande, E enorme) y cada recurso con cuántas unidades caben en un hueco (pilas); huecos del cuerpo (mano derecha e izquierda, lo grande ocupa las dos; espalda, cintura según el cinturón, hombro); contenedores con sus huecos interiores y lo que admite cada uno. Acciones coger, soltar, mover y ponerse o quitarse, con autor y por jugador. Guardado en el navegador con migración. Pruebas de lógica",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Equipo de carga en la lógica pura, con las listas aprobadas del GDD: los cinco cinturones (cordel de fibra, cuerda trenzada, cinto de cuero, cinto con anillas, cinto de armas) con sus huecos; las mochilas y bastidores de función única (leñero, cesta de recolección, fardo atado, zurrón de piel, mochila de bastidor, porta-piedras, caja de herramientas, carcaj, cesto de pescador, escudo a la espalda) y lo de hombro (saco, bandolera, odre), cada uno con lo que admite y cuánto",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Ralentización por carga en la lógica pura, como dice el GDD: con poca carga no se nota y, cargado al máximo en todos los huecos, la velocidad al caminar baja hasta el 80%. Aplicada al andar del personaje en la demo, con pruebas de lógica y de navegador",
+     "estado": "pendiente"
     },
     {
      "nombre": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Panel de inventario en la demo: silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro y capas del cuerpo); al tocar un cuadro con contenedor se abren sus huecos; sin cinturón no hay cuadros de cintura. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Mientras no haya fabricación (hito 3), el equipo se coge de un arcón de pruebas, como el botón de rellenar materiales. Capturas en PC y móvil",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Lo que llevas se ve puesto en el personaje del taller: el cinturón y lo que cuelga de él, el leñero o la mochila a la espalda, el saco al hombro y lo que tienes en las manos, con el estilo v5. Capturas de cerca para valravnx",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Objetos en el suelo: soltar y coger del suelo; lo que se suelta fuera de un contenedor desaparece pasada 1 hora real (contado por tiempo transcurrido), salvo dentro de tus tierras; los troncos y las piedras se quedan como pila. Lógica pura con autor, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Tala de verdad: el árbol joven se tala con hacha de piedra (da un tronco delgado y ramas) y el adulto con hacha de hierro (con piedra, muy lento; da un tronco largo y muchas ramas); el árbol cae, queda el tocón y vuelve a crecer en semanas reales, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Tronzar y partir: el tronco largo se tronza en 3–4 troncos cortos (con hacha, lento) y el tronco corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro y la leña en el leñero. Lógica pura con autor, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Rastra (N0: dos varas largas con travesaños): se arrastra a mano, despacio, con 2–3 troncos cortos o un montón de piedras, y se queda donde la dejas con lo que lleve. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Carretilla de rueda maciza (N1: la rueda es una rodaja de tronco): se empuja, se aparca y hace de contenedor; dentro de tus tierras está protegida y fuera cualquiera puede coger lo que lleva. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Obras con lo que llevas: el material que se entrega a una obra sale de lo que lleva el autor encima (o en su rastra o carretilla al lado), no de un montón común. El botón de rellenar del prototipo pasa a llenar el arcón de pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
     }
    ]
@@ -698,9 +779,20 @@
    "id": "mundo",
    "num": "10",
    "nombre": "Mundo",
-   "jugable": "Pseudo-Europa por semilla a escala real: cordilleras como los Pirineos, valles y collados, ríos de tres gruesos (arroyos que se vadean, ríos con pocos vados, grandes ríos con barca o puente), bosques frondosos, pendientes que frenan; agua y nado; 5 países con estilo propio, caminos por uso, puentes.",
-   "estado": "pendiente",
-   "tareas": []
+   "jugable": "Pseudo-Europa por semilla a escala real: cordilleras como los Pirineos, valles y collados, ríos de tres gruesos (arroyos que se vadean, ríos con pocos vados, grandes ríos con barca o puente), bosques frondosos, pendientes que frenan; agua y nado; 5 países con estilo propio, caminos por uso, puentes; todo el terreno se puede cavar (relieve y materiales por semilla, malla suavizada cerca y niveles de detalle lejos).",
+   "estado": "en_curso",
+   "tareas": [
+    {
+     "nombre": "Bocetos del mundo: mapa del continente por semilla (silueta, cordilleras, ríos de tres gruesos, biomas, cinco países, roca madre y dónde salen hierro y carbón) para revisarlo con valravnx",
+     "estado": "en_curso",
+     "inicio": "2026-10-27T12:36:00+01:00"
+    },
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "pendiente"
+    }
+   ],
+   "lleva": "chat"
   },
   {
    "id": "pulido-animaciones",

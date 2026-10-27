@@ -517,6 +517,9 @@ with sync_playwright() as p:
     print('Móvil')
     ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True, locale='es-ES')
     mv = ctx.new_page()
+    # al doble de resolución y sin tarjeta gráfica, cada fotograma puede tardar segundos con la casa entera a la vista,
+    # y un clic espera al siguiente: 30 s no siempre llegan en una máquina de 2 núcleos
+    mv.set_default_timeout(120000)
     err2 = []
     mv.on('pageerror', lambda e: err2.append(str(e)))
     mv.goto(URL)
