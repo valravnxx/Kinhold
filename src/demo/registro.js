@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v13 (muebles con el estilo v5 en «Construir»)';
+export const VERSION_DEMO = 'Demo única · v14 (armas, hacha y pieza al construir con el estilo v5)';
 export const REGISTRO_DEMO = [
+  'v14: lo que quedaba con el aspecto inicial, con el estilo v5: en «Construir», la pieza que se ve al colocar (la propia pieza, translúcida, con un velo verde o rojo), lo que se marca al desmontar y el hacha en la mano al talar; en «Duelo», las espadas, el palo, el arco, el escudo, la flecha, el poste de práctica y la diana. Es la construcción v19 y el combate v11.',
   'v13: en «Construir», los muebles con el estilo v5. Es la construcción v18.',
   'v12: en «Construir», las puertas, las cercas, el portillo, la empalizada y el mojón con el estilo v5. Es la construcción v17.',
   'v11: en «Construir», los tejados de paja y de tablillas, y lo que cierra bajo el tejado, con el estilo v5. Es la construcción v16.',

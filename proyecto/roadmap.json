@@ -214,7 +214,9 @@
     },
     {
      "nombre": "Estilo elegido en todo lo demás que se ve en la construcción, el duelo y el visor: recursos del suelo, la pieza fantasma al construir, herramientas y armas en la mano y cualquier pieza que siga con el aspecto inicial, como la prueba de estilo v5",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-27T00:20:20+00:00",
+     "fin": "2026-10-27T02:51:05+00:00"
     },
     {
      "nombre": "Revisión completa y publicación: cada vista de cada prototipo y de la demo única, en PC y en móvil, comparada en capturas lado a lado con la prueba de estilo v5; lo que no se vea igual se arregla antes de cerrar el hito",
@@ -773,6 +775,13 @@
      "archivo": "jugar/demo/v13.html",
      "capturas": "capturas/demo-v13",
      "notas": "Construcción v18: los muebles con el estilo v5"
+    },
+    {
+     "v": "v14",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v14.html",
+     "capturas": "capturas/demo-v14",
+     "notas": "Construcción v19 y combate v11: pieza fantasma con su textura, hacha al talar y armas, escudo, poste y diana con el estilo v5"
     }
    ]
   },
@@ -892,6 +901,13 @@
      "archivo": "jugar/construccion/v18.html",
      "capturas": "capturas/construccion-v18",
      "notas": "Los muebles con el estilo elegido (prueba de estilo v5): camas de paja y de madera, mesa de caballetes, banco, taburete, arcón, barril, estantería, antorcha de pie, alfombra de piel y estandarte"
+    },
+    {
+     "v": "v19",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v19.html",
+     "capturas": "capturas/construccion-v19",
+     "notas": "Pieza fantasma y resaltados con la textura de la pieza (velo verde, rojo o naranja) y hacha en la mano al talar, con el estilo v5"
     }
    ]
   },
@@ -962,6 +978,13 @@
      "archivo": "jugar/combate/v10.html",
      "capturas": "capturas/combate-v10",
      "notas": "Alrededor de la liza, la escena como la prueba de estilo v5: hierba densa con flores, matorrales, calvas de tierra, rocas y árboles de copa sueltos"
+    },
+    {
+     "v": "v11",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/combate/v11.html",
+     "capturas": "capturas/combate-v11",
+     "notas": "Espadas, palo, arco, escudo, flecha, poste de práctica y diana con el estilo v5; cintas de paño teñido más apagadas"
     }
    ]
   },

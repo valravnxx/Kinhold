@@ -95,7 +95,7 @@ function nuevaPartida() {
   if (mJugador) escena.remove(mJugador);
   // el jugador es el personaje elegido en el visor (cuerpo y ropa), con la armadura del duelo encima; el rival, el de siempre
   const elegido = personajeElegido();
-  mJugador = crearCombatiente({ armadura: opc.armadura, colorCinta: 0x2f6fb0, recursos: RECURSOS_MH,
+  mJugador = crearCombatiente({ armadura: opc.armadura, colorCinta: 0x46607e, recursos: RECURSOS_MH,
     ...(elegido ? { sexo: elegido.sexo, capas: capasDuelo(elegido.capas, opc.armadura, CAPAS_ARMADURA) } : {}) });
   ponerArma(mJugador, opc.arma);
   escena.add(mJugador);
@@ -108,7 +108,7 @@ function nuevaPartida() {
     ia = new IA(rival, opc.dificultad, azar((Date.now() >> 3) & 0xffff));
     ia.carga = opc.modo === 'carga';
     if (opc.modo === 'carga') ia.esperaAtaque = 0.5;
-    mRival = crearCombatiente({ armadura: opc.armaduraRival, colorCinta: 0xe2b93b, recursos: RECURSOS_MH });
+    mRival = crearCombatiente({ armadura: opc.armaduraRival, colorCinta: 0xb3923f, recursos: RECURSOS_MH });
     ponerArma(mRival, armaRival);
     escena.add(mRival);
   }

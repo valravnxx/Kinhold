@@ -231,16 +231,28 @@ function reconstruir() {
 }
 
 // ---------------- Resaltados ----------------
-const MAT_FANTASMA_OK = new THREE.MeshLambertMaterial({ color: 0x6fd27a, transparent: true, opacity: 0.55, depthWrite: false });
-const MAT_FANTASMA_MAL = new THREE.MeshLambertMaterial({ color: 0xe0574f, transparent: true, opacity: 0.55, depthWrite: false });
-const MAT_ROJO = new THREE.MeshLambertMaterial({ color: 0xd83a32, emissive: 0x5a0d0a });
-const MAT_NARANJA = new THREE.MeshLambertMaterial({ color: 0xf0a030, emissive: 0x4a2a00 });
+// Fantasma y resaltados con el estilo v5: la pieza conserva su textura y su color horneado (se ve qué es y cómo
+// quedará) con un velo apagado encima: verde si cabe, rojo si no; al desmontar, naranja lo que se quita y rojo lo que caería.
+const VELOS = {
+  ok: { color: 0xd4efc6, emissive: 0x2a4a28, veladura: true }, mal: { color: 0xffb4a6, emissive: 0x58180f, veladura: true },
+  rojo: { color: 0xf09a88, emissive: 0x52150e }, naranja: { color: 0xf3c486, emissive: 0x47290a },
+};
+const matsVelo = new Map();
+function matVelo(base, clase) {
+  const b = Array.isArray(base) ? base[0] : base, k = clase + ':' + (b?.map?.uuid || 'liso') + (b?.vertexColors ? 'v' : '');
+  if (!matsVelo.has(k)) {
+    const v = VELOS[clase];
+    matsVelo.set(k, new THREE.MeshLambertMaterial({ color: v.color, emissive: v.emissive, vertexColors: !!b?.vertexColors, map: b?.map || null,
+      transparent: !!v.veladura, opacity: v.veladura ? 0.62 : 1, depthWrite: !v.veladura }));
+  }
+  return matsVelo.get(k);
+}
 let resaltados = [];
-function resaltar(obj, material) {
+function resaltar(obj, clase) {
   obj.traverse(o => {
     if (o.isMesh) {
       if (!o.userData.matOriginal) o.userData.matOriginal = o.material;
-      o.material = material;
+      o.material = matVelo(o.userData.matOriginal, clase);
       resaltados.push(o);
     }
   });
@@ -262,13 +274,13 @@ function prepararFantasma() {
   if (estado.sel.clase === 'pieza') fantasma = modeloPieza(estado.sel.tipo);
   else if (estado.sel.clase === 'deco') fantasma = modeloDeco(estado.sel.tipo);
   else fantasma = modeloMojon();
-  fantasma.traverse(o => { if (o.isMesh) { o.material = MAT_FANTASMA_OK; o.castShadow = false; o.renderOrder = 2; } });
+  fantasma.traverse(o => { if (o.isMesh) { o.userData.matBase = o.material; o.material = matVelo(o.material, 'ok'); o.castShadow = false; o.renderOrder = 2; } });
   fantasma.visible = false;
   escena.add(fantasma);
 }
 function pintarFantasma(valido) {
   if (!fantasma) return;
-  fantasma.traverse(o => { if (o.isMesh) o.material = valido ? MAT_FANTASMA_OK : MAT_FANTASMA_MAL; });
+  fantasma.traverse(o => { if (o.isMesh) o.material = matVelo(o.userData.matBase, valido ? 'ok' : 'mal'); });
 }
 
 // Evalúa lo que pasaría al colocar en el puntero actual y lo muestra.
@@ -319,7 +331,7 @@ function evaluarColocacion() {
   pintarFantasma(v.ok);
   if (!v.ok && v.debil) {
     const o = objDe(c, v.debil);
-    if (o) resaltar(o, MAT_ROJO);
+    if (o) resaltar(o, 'rojo');
     const pd = c.piezas.get(v.debil) || cand.pieza;
     mostrarAviso(`${tr(v.motivo)} ${t('puntoDebil')}: ${tr(PIEZAS[pd.tipo].nombre)} (${Math.round(v.carga)} / ${v.cap} kg)`, true);
   } else {
@@ -350,17 +362,17 @@ function evaluarDesmontaje(hit) {
   const obj = hit.object.userData.ref;
   if (!obj) { mostrarAviso(''); return; }
   if (obj.userData.deco) {
-    resaltar(obj, MAT_NARANJA);
+    resaltar(obj, 'naranja');
     estado.pendienteDesmontar = { deco: obj.userData.deco };
     mostrarAviso(`${tr(DECORACION[obj.userData.deco.tipo].nombre)}: ${t('recuperas75')}`);
     return;
   }
   const { c, key } = obj.userData;
   const pre = mundo.previsualizarDesmontaje(c, key);
-  resaltar(obj, MAT_NARANJA);
-  for (const k2 of pre.caen || []) { const o = objDe(c, k2); if (o) resaltar(o, MAT_ROJO); }
+  resaltar(obj, 'naranja');
+  for (const k2 of pre.caen || []) { const o = objDe(c, k2); if (o) resaltar(o, 'rojo'); }
   if (!pre.ok) {
-    const o = objDe(c, pre.debil); if (o) resaltar(o, MAT_ROJO);
+    const o = objDe(c, pre.debil); if (o) resaltar(o, 'rojo');
     mostrarAviso(tr(pre.motivo), true);
     return;
   }
