@@ -1232,5 +1232,18 @@
   "pruebas": "Todas las pruebas correctas (probar_todo.sh), con la nueva del servidor 15/15; capturas de la web miradas en PC y móvil. Sin versión jugable nueva: el servidor aún no lo usa la demo.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T08:20:09+00:00",
+  "fin": "2026-10-27T08:20:09+00:00",
+  "titulo": "Hito 1f: valravnx elige dónde va el servidor de prueba",
+  "hito": "prueba-online",
+  "hecho": [
+   "valravnx responde a la pregunta del servidor de prueba: opción A, un alojamiento en la nube con una cuenta suya.",
+   "La tarea de poner el servidor en internet pasa de esperar su decisión a pendiente: se le prepararán el servidor y los pasos, y él creará la cuenta y, si es de pago, elegirá el plan."
+  ],
+  "pruebas": "Web y textos traducidos correctos. Sin cambios de código.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
