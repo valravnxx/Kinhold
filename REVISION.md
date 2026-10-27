@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (06:51–06:54) — por el chat: dos sesiones en paralelo
+
+«¿Hay manera de duplicar el trabajo en paralelo sin romper nada?» y «que mida que no se pisen ni se estropeen entre ellas, que sean cosas diferentes, cambia y aplica para que haya dos siempre en paralelo» → Carriles A (minuto 19) y B (minuto 49) con herramientas/carriles.mjs, reglas nuevas en CLAUDE.md y su prueba.
+
 ### 27 oct 2026 (06:46) — por el chat: hito 1e aprobado
 
 «Aprueba el 1e con pendiente a pulir todo lo que quede en el 10b» → Hito 1e aprobado y marcado como hecho. Pasan al hito 10b las losas del cimiento que repiten dibujo y la pregunta del desenfoque de maqueta (quitada de las preguntas pendientes).

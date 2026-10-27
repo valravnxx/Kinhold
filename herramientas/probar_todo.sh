@@ -17,6 +17,7 @@ paso "Acciones con autor" node pruebas/prueba_acciones.mjs
 paso "Taller: los cinturones ciñen su prenda" node pruebas/prueba_cinturones.mjs
 paso "Taller: versiones fijadas" python3 herramientas/taller/comprobar_taller.py --prueba
 paso "Unión del diario y las traducciones" node pruebas/prueba_unir_json.mjs
+paso "Dos carriles en paralelo sin pisarse" node pruebas/prueba_carriles.mjs
 paso "Textos traducidos" node pruebas/prueba_idiomas.mjs
 paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold_hito1.html "$C/construccion"
 paso "Navegador: combate" python3 pruebas/prueba_combate_navegador.py dist/kinhold_combate.html "$C/combate"

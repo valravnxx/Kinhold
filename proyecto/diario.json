@@ -1182,5 +1182,21 @@
   "pruebas": "Web y textos traducidos correctos. Sin cambios de código.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T06:54:00+01:00",
+  "fin": "2026-10-27T06:56:33+01:00",
+  "titulo": "Dos sesiones automáticas en paralelo (carriles A y B)",
+  "hito": "base",
+  "hecho": [
+   "valravnx pide que haya siempre dos sesiones automáticas trabajando a la vez, en cosas diferentes y sin pisarse.",
+   "Herramienta nueva herramientas/carriles.mjs: cada carril elige la primera tarea pendiente de un hito que no ocupe otra sesión (el otro carril o una sesión de chat), la reserva en sesion.json y en el roadmap antes de empezar, y antes de fusionar mira si otra rama activa cambia los mismos archivos de código.",
+   "Un carril sigue vivo mientras suba avances (último commit de su rama hace menos de 70 minutos); si se corta, la siguiente sesión de su carril retoma la tarea desde su rama.",
+   "Números de versión: se mira el siguiente libre justo antes de publicar (ayer chocaron dos sesiones con la demo v6).",
+   "CLAUDE.md al día y prueba nueva (prueba_carriles.mjs, en probar_todo.sh), que falla si los carriles no se tienen en cuenta entre sí (MUTAR=1). Segunda tarea programada en el minuto 49 (carril B); la de siempre pasa a ser el carril A."
+  ],
+  "pruebas": "Prueba de carriles 10/10 (con MUTAR=1 fallan 2, como debe); web y textos traducidos correctos.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
