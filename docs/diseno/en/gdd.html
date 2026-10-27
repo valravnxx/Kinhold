@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="381bed5b0cb7383e5d9d32d85b49504857c74de8">
+<meta name="kinhold-origen" content="ef6e3f341c0228ffb85283e266a894134ee01bde">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.9</title>
 <style>
@@ -308,12 +308,20 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h3>Digging and mining</h3>
 <p><span class="tag ok">DECIDED</span>You can <b>dig the ground and open mines</b>. Outside: trenches, moats and levelling for foundations with a <b>round brush</b> that lowers or smooths with soft edges. Inside the rock, each pick stroke removes a rounded handful of rock in the direction you face: tunnels go straight, uphill or curving.</p>
 <p><span class="tag ok">DECIDED</span><b>No grid look:</b> inside, the rock is split into small cubes of about 50 cm, but the wall is drawn as a smooth surface wrapping them, with the rock's roughness taken from a fixed seed by position: everyone sees the same irregular cave.</p>
-<p><span class="tag ok">DECIDED</span>When you enter a mine, <b>what is above is hidden</b> (like the roof of houses) and <b>what the character cannot see fades to black</b>. Long galleries need <b>timbering</b> (posts and beams) using the building load calculation.</p>
+<p><span class="tag ok">DECIDED</span>When you enter a mine, <b>what is above is hidden</b> (like the roof of houses) and <b>what the character cannot see fades to black</b>.</p>
+<p><span class="tag ok">DECIDED</span><b>Support: no support, no progress.</b> Each material holds a maximum <b>span</b> of hollow roof to the nearest support (undug rock or a timber prop): earth 1 m, clay or gravel 1.5 m, soft rock 2.5 m, hard rock 4 m (values to tune by playing). If a stroke would leave more loose roof than it holds, it does not happen and a warning to shore it up appears: there are no collapses. The deeper, the shorter the span: a deep mine needs props every little way.</p>
+<p><span class="tag ok">DECIDED</span><b>Downwards:</b> in earth, a vertical wall reaches 1.5 m at most; to go deeper the sides must be stepped (slope) or the shaft shored up. In rock you can go straight down, with the same span limit.</p>
+<p><span class="tag ok">DECIDED</span><b>Timber props</b> (posts and a log crossbeam) are placed like building works: frame, material and time, and several people finish sooner. Each material takes more or fewer strokes depending on its hardness and the tool. A decent mine costs time or people.</p>
+<p><span class="tag ok">DECIDED</span><b>Spoil is carried out</b> in a basket or wheelbarrow, and it is material that gets used. What each one is for (earth to fill and level, stone to build…) is decided with the recipes.</p>
+<p><span class="tag ok">DECIDED</span><b>Realistic layers and veins:</b> topsoil, clay or gravel beneath, and then each region's bedrock (limestone, sandstone, granite, slate). Surface iron is scarce and poor, and is found by signs (reddish water, waterlogged ground); the good iron is in veins inside the rock, which need a mine. Coal crops out on some slopes and is dug in shallow pits. Veins come from the world seed.</p>
+<p><span class="tag ok">DECIDED</span><b>No digging on other people's land:</b> neither inside another's boundary-stone territory nor within its exclusion radius.</p>
 <div class="box m"><span class="tag method">METHOD</span>
 <ul>
   <li>«Smooth voxels»: the server only stores which small cubes were removed in each 8 × 8 × 8 m chunk of the world (a few hundred bytes per dug chunk; nothing where nobody has dug), each stroke with its author. Each client only rebuilds the mesh of the touched chunk.</li>
   <li>What is seen inside the mine: from the character's cell the open space and what its torch lights are traversed; the rest stays black. The server only sends the hollows the player has seen or has in front, so nobody sees other people's mines and veins through the rock.</li>
-  <li>Before building it, a performance test on mobile: a chunk of rock to dig in, measuring frames and how long the mesh takes to rebuild.</li>
+  <li>The whole world can be dug: relief and materials come from the seed in the same small cubes, and only changes are stored. Near the player the smoothed mesh is drawn, and far away the normal relief with levels of detail (the radius is set by measuring on mobile). The mesh is rebuilt in a separate thread so strokes do not stutter.</li>
+  <li>The span is checked in the pure logic with every stroke: from the new hollow, the nearest roof support is searched for. The server does the same calculation.</li>
+  <li>Performance test done (digging v1): on valravnx's phone, 70 fps and 24 ms per stroke on average (52 ms worst).</li>
 </ul></div>
 </section>
 
@@ -517,7 +525,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>1b</td><td>Art direction and characters</td><td>World style, workshop character with layered clothing, customization, visible wounds, levels of detail.</td></tr>
 <tr><td>1c</td><td>More building pieces</td><td>Pieces and furniture in the chosen style; building works with frame, materials and time, scaffold, pulley and block and tackle; stone walls with a treadwheel crane; stairs, railings, shutters, tiles, ridges, chimney, wall-walk, decoration.</td></tr>
 <tr><td>1d</td><td>A single demo</td><td>Building, combat and character on the same page, with the same scene and the same character.</td></tr>
-<tr><td>1g</td><td>Digging and mining</td><td>Trenches and levelling with a round brush; mines with irregular rock and no grid look, what is above hidden and black what cannot be seen, timbering.</td></tr>
+<tr><td>1g</td><td>Digging and mining</td><td>Trenches and levelling with a round brush; mines with irregular rock and no grid look, what is above hidden and black what cannot be seen, support by material with timber props, spoil carried out, realistic layers and veins, no digging on other people's land.</td></tr>
 <tr><td>2</td><td>Equipment and slot-based carrying</td><td>Inventory panel, belts, firewood frame and other backpacks; felling, transport and slowdown from carrying.</td></tr>
 <tr><td>3</td><td>Stations and crafting</td><td>First stations, recipes, unlocking through practice, durability and repair.</td></tr>
 <tr><td>4</td><td>Survival</td><td>Needs with warnings, clothing against the cold, bound bed and death with partial looting.</td></tr>

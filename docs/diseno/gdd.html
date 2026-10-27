@@ -307,12 +307,20 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h3>Cavar y minar</h3>
 <p><span class="tag ok">DECIDIDO</span>Se puede <b>cavar el terreno y abrir minas</b>. Fuera, zanjas, fosos y nivelar para cimientos con una <b>brocha redonda</b> que rebaja o alisa con bordes suaves. Dentro de la roca, cada golpe de pico quita un puñado redondeado de roca hacia donde miras: los túneles van rectos, en cuesta o en curva.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Sin aspecto cuadriculado:</b> por dentro la roca se divide en cubitos de unos 50 cm, pero la pared se dibuja como una superficie lisa que los envuelve, con la rugosidad de la roca sacada de una semilla fija según la posición: todos ven la misma cueva irregular.</p>
-<p><span class="tag ok">DECIDIDO</span>Al entrar en una mina <b>se oculta lo que hay encima</b> (como el tejado de las casas) y <b>lo que el personaje no ve funde a negro</b>. Las galerías largas necesitan <b>entibado</b> (postes y vigas) con el cálculo de cargas de la construcción.</p>
+<p><span class="tag ok">DECIDIDO</span>Al entrar en una mina <b>se oculta lo que hay encima</b> (como el tejado de las casas) y <b>lo que el personaje no ve funde a negro</b>.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Sustentación: sin apoyo no se avanza.</b> Cada material aguanta un <b>vano</b> máximo de techo hueco hasta el apoyo más cercano (roca sin cavar o un entibo): tierra 1 m, arcilla o grava 1,5 m, roca blanda 2,5 m, roca dura 4 m (valores para ajustar jugando). Si un golpe dejaría más techo suelto del que aguanta, no se da y sale el aviso de entibar: no hay derrumbes. Cuanto más hondo, menos vano: una mina profunda pide entibos a cada poco.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Hacia abajo:</b> en tierra, la pared vertical llega a 1,5 m como mucho; para bajar más hay que escalonar los lados (talud) o entibar el pozo. En roca se puede bajar en vertical, con el mismo límite de vano.</p>
+<p><span class="tag ok">DECIDIDO</span>Los <b>entibos</b> (postes y travesaño de troncos) se ponen como las obras de construcción: marco, material y tiempo, y entre varios se acaba antes. Cada material pide más o menos golpes según su dureza y la herramienta. Una mina decente cuesta tiempo o gente.</p>
+<p><span class="tag ok">DECIDIDO</span><b>El escombro se saca</b> en cesto o carretilla, y es material que se usa. Para qué sirve cada uno (tierra para rellenar y nivelar, piedra para construir…) se decide con las recetas.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Capas y vetas realistas:</b> tierra vegetal, debajo arcilla o grava, y luego la roca madre de cada región (caliza, arenisca, granito, pizarra). El hierro de superficie es poco y malo, y se encuentra por señales (agua rojiza, tierra encharcada); el bueno está en vetas dentro de la roca, que piden mina. El carbón aflora en algunas laderas y se saca en pozos poco hondos. Las vetas salen de la semilla del mundo.</p>
+<p><span class="tag ok">DECIDIDO</span><b>No se cava en tierra ajena:</b> ni dentro del territorio de un mojón ajeno ni en su radio de exclusión.</p>
 <div class="box m"><span class="tag method">MÉTODO</span>
 <ul>
   <li>«Vóxeles suavizados»: el servidor guarda solo qué cubitos se han quitado en cada trozo del mundo de 8 × 8 × 8 m (unos cientos de bytes por trozo excavado; nada donde no ha cavado nadie), cada golpe con su autor. Cada cliente rehace solo la malla del trozo tocado.</li>
   <li>Lo que se ve dentro de la mina: desde la casilla del personaje se recorre lo abierto y lo que alumbra su antorcha; lo demás queda en negro. El servidor solo manda los huecos que el jugador ha visto o tiene delante, para que nadie vea las minas y vetas de otros a través de la roca.</li>
-  <li>Antes de construirlo, una prueba de rendimiento en el móvil: un trozo de roca donde se cava, midiendo fotogramas y lo que tarda en rehacerse la malla.</li>
+  <li>Todo el mundo se puede cavar: el relieve y los materiales salen de la semilla en los mismos cubitos, y solo se guarda lo cambiado. Cerca del jugador se dibuja la malla suavizada y lejos el relieve normal con niveles de detalle (el radio se fija midiendo en el móvil). La malla se rehace en un hilo aparte para que el golpe no dé tirones.</li>
+  <li>El vano se comprueba en la lógica pura con cada golpe: desde el hueco nuevo se busca el apoyo más cercano del techo. El servidor hace la misma cuenta.</li>
+  <li>Prueba de rendimiento hecha (cavar v1): en el móvil de valravnx, 70 fps y 24 ms por golpe de media (52 ms el peor).</li>
 </ul></div>
 </section>
 
@@ -516,7 +524,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>1b</td><td>Dirección de arte y personajes</td><td>Estilo del mundo, personaje del taller con ropa por capas, personalización, heridas visibles, niveles de detalle.</td></tr>
 <tr><td>1c</td><td>Más piezas de construcción</td><td>Piezas y muebles con el estilo elegido; obras con marco, materiales y tiempo, andamio, polea y polipasto; escaleras, barandillas, contraventanas, tejas, remates, chimenea, adarve, decoración; muros de piedra con grúa de rueda.</td></tr>
 <tr><td>1d</td><td>Una sola demo</td><td>Construcción, combate y personaje en la misma página, con la misma escena y el mismo personaje.</td></tr>
-<tr><td>1g</td><td>Cavar y minar</td><td>Zanjas y nivelado con brocha redonda; minas con roca irregular sin cuadros, lo de encima oculto y negro lo que no se ve, entibado.</td></tr>
+<tr><td>1g</td><td>Cavar y minar</td><td>Zanjas y nivelado con brocha redonda; minas con roca irregular sin cuadros, lo de encima oculto y negro lo que no se ve, sustentación por material con entibos, escombro que se saca, capas y vetas realistas, sin cavar en tierra ajena.</td></tr>
 <tr><td>2</td><td>Equipo y carga por huecos</td><td>Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.</td></tr>
 <tr><td>3</td><td>Estaciones y crafting</td><td>Primeras estaciones, recetas, desbloqueo por práctica, durabilidad y reparación.</td></tr>
 <tr><td>4</td><td>Supervivencia</td><td>Necesidades con avisos, ropa contra el frío, cama ligada y muerte con saqueo parcial.</td></tr>

@@ -168,7 +168,7 @@ section{display:none;padding-top:28px} section.sel{display:block}
   background:radial-gradient(circle at 40% 32%,#e3b778,#8a5a2b 55%,#3a2210)}
 .pomo.izq{left:-30px} .pomo.izq::after{left:-14px}
 .pomo.der{right:-30px} .pomo.der::after{right:-14px}
-.papel{position:relative;margin:-14px 0;padding:40px 44px 40px;
+.papel{position:relative;margin:-14px 0;padding:38px 36px 36px;
   background:
     linear-gradient(180deg,rgba(90,52,16,.32),transparent 46px,transparent calc(100% - 46px),rgba(90,52,16,.32)),
     radial-gradient(ellipse at 50% 50%, transparent 65%, rgba(128,76,24,.14) 100%),
@@ -295,6 +295,7 @@ thead th{font:700 16px var(--titulos);color:var(--tinta2);text-align:left;paddin
 td{padding:7px 6px;border-bottom:1px dotted rgba(91,68,41,.4);vertical-align:middle}
 tbody tr:nth-child(even){background:rgba(255,250,236,.3)}
 td.n,th.n{text-align:right}
+.tw{overflow-x:auto;max-width:100%}
 td .numh{font-family:var(--titulos);font-weight:700;color:var(--rubrica);margin-right:6px}
 
 /* ---- te espera ---- */
@@ -327,8 +328,8 @@ footer{max-width:640px;margin:34px auto 0;text-align:center;padding:12px 30px 14
 }
 @media (max-width:760px){
   body{font-size:17px}
-  .feria{padding:0 14px 24px}
-  #guirnalda{margin:0 -14px;height:76px}
+  .feria{padding:0 4px 20px}
+  #guirnalda{margin:0 -4px;height:76px}
   .banderin:nth-child(odd){display:none}
   .cabecera{margin-top:-30px}
   .cartel{padding-top:50px}
@@ -339,19 +340,34 @@ footer{max-width:640px;margin:34px auto 0;text-align:center;padding:12px 30px 14
   #resumen{grid-template-columns:repeat(2,1fr);gap:14px}
   .dato b{font-size:25px}
   .dato.texto b{font-size:17px}
-  nav{margin:0 -14px;padding:0 6px}
-  nav .viga{margin:0 -6px}
+  nav{margin:0 -4px;padding:0 4px}
+  nav .viga{margin:0 -4px}
   nav .cintas{justify-content:flex-start;gap:6px}
   nav button{font-size:16.5px;padding:7px 11px 16px}
   nav button.sel{padding-bottom:22px}
-  .pergamino{margin:0 26px 8px}
-  .rollo{height:28px;margin:0 -8px}
+  .pergamino{margin:0 8px 8px}
+  .rollo{height:28px;margin:0 -2px}
   .rollo::before,.rollo::after{height:28px;width:13px}
-  .pomo{top:6px;width:20px;height:16px}
-  .pomo::after{width:18px;height:22px;top:-3px}
-  .pomo.izq{left:-20px} .pomo.izq::after{left:-10px}
-  .pomo.der{right:-20px} .pomo.der::after{right:-10px}
-  .papel{margin:-12px -4px;padding:30px 16px 30px}
+  .pomo{top:9px;width:3px;height:10px}
+  .pomo::after{width:8px;height:16px;top:-3px}
+  .pomo.izq{left:-3px} .pomo.izq::after{left:-5px}
+  .pomo.der{right:-3px} .pomo.der::after{right:-5px}
+  .papel{margin:-12px 0;padding:28px 12px 28px}
+  .cinta{margin-bottom:14px}
+  table{font-size:15px}
+  thead th{font-size:14px;padding:5px 4px}
+  td{padding:6px 4px}
+  td .chip{white-space:normal;font-size:12.5px;padding:1px 5px 2px}
+  .tw table{table-layout:fixed}
+  .tw th:nth-child(2){width:29%} .tw th:nth-child(3){width:29%}
+  .tw td.n{white-space:nowrap;font-size:14px}
+  .tw td,.tw th{overflow-wrap:anywhere}
+  td .chip{max-width:100%;transform:none}
+  .hito .det{padding:10px 10px}
+  .tarjetas{padding:4px 8px 12px}
+  details.otras > summary{padding:10px 10px}
+  .decision{padding:12px 12px 12px 52px}
+  .decision::before{left:10px}
   .cinta{font-size:17px;padding:5px 26px 7px}
   .galeria{grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:9px}
   .galeria a{padding:5px}
@@ -362,7 +378,6 @@ footer{max-width:640px;margin:34px auto 0;text-align:center;padding:12px 30px 14
   details.otras > summary{flex-wrap:wrap;gap:4px 10px}
   details.otras > summary b{flex:1;min-width:0}
   details.otras > summary span{flex-basis:100%;padding-left:30px}
-  .tarjetas{padding:4px 10px 14px}
   #listaHitos::before{left:20px}
   .hito > summary{grid-template-columns:42px 1fr;gap:10px}
   .hito .cab{flex-direction:column;gap:4px}
@@ -372,7 +387,6 @@ footer{max-width:640px;margin:34px auto 0;text-align:center;padding:12px 30px 14
   .entrada{grid-template-columns:1fr;gap:4px}
   .entrada .fecha{text-align:left}
   .entrada .fecha small{display:inline;margin-left:8px}
-  .decision{padding-left:56px}
   .docs{grid-template-columns:1fr}
 }
 </style>
@@ -651,9 +665,9 @@ function pintar() {
     const pend = activo ? activo.tareas.filter(t => t.estado !== 'hecho' && t.estado !== 'espera_decision').length : 0;
     const est = medidas.length < 3 ? u('est_pocos')(medidas.length) : u('est')(durTexto(media), medidas.length, pend, durTexto(media * pend), pend);
     $('#tablaTiempos').innerHTML = `<p class="nota" style="margin-top:0">${est}</p>
-      <table><thead><tr><th>${u('th_hito')}</th><th>${u('th_estado')}</th><th class="n">${u('th_trabajo')}</th></tr></thead><tbody>
+      <div class="tw"><table><thead><tr><th>${u('th_hito')}</th><th>${u('th_estado')}</th><th class="n">${u('th_trabajo')}</th></tr></thead><tbody>
       ${porHito.map(({ h, m, aprox }) => `<tr><td><span class="numh">${esc(h.num)}</span>${esc(tr(h.nombre))}</td><td>${chip(h.estado)}</td><td class="n">${m == null ? '—' : (aprox ? '≈ ' : '') + durTexto(m)}</td></tr>`).join('')}
-      </tbody></table>
+      </tbody></table></div>
       <p style="color:var(--tenue);font-size:15px;font-style:italic">${u('aprox')}</p>`;
   }
 
