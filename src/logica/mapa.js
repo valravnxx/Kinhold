@@ -21,6 +21,8 @@ export const K = 5.61e-7, M = 0.5;      // constante de erosión (1/año) y expo
 export const DT = 2.5e5;                // paso de tiempo (años)
 export const U_MAX = 3.9e-4;            // levantamiento máximo (m/año); ajustado para cumbres de unos 3.000 m
 export const PASOS = 140;
+export const BLOQUE_KM = 14;             // cada cuánto hay una veta pequeña de hierro y otra de carbón
+export const SEMILLA_MUNDO = 66172, LADO_MUNDO = 256;   // el mundo elegido por valravnx el 27 oct
 
 export const BIOMAS = {
   nieve: { nombre: 'Roca y nieve', color: [214, 214, 208] },
@@ -42,8 +44,10 @@ export const ROCAS = {
 };
 export const VETAS = {
   hierroPantano: { nombre: 'Hierro de pantano (poco y malo)' },
-  hierroVeta: { nombre: 'Veta de hierro' },
-  carbon: { nombre: 'Carbón' },
+  hierroVeta: { nombre: 'Veta pequeña de hierro' },
+  carbon: { nombre: 'Veta pequeña de carbón' },
+  granHierro: { nombre: 'Gran veta de hierro' },
+  granCarbon: { nombre: 'Gran veta de carbón' },
 };
 
 // ---------- azar con semilla ----------
@@ -370,15 +374,20 @@ export function* generar(semilla, { lado = LADO_KM, N = 256, pasos = PASOS } = {
   const pais = new Int8Array(NN).fill(-1), coste = new Float64Array(NN), hecho = new Uint8Array(NN);
   const m2 = new Monticulo(NN * 8), ritmo = [1, 1, 1, 1, 1];
   let mejorPais = null, mejorDesvio = Infinity;
+  // los países pueden saltar estrechos de hasta unos 14 km de mar (islas cercanas), con más coste; la isla grande
+  // está a más de 20 km, así que sigue siendo un país aparte
+  const desdeTierra = chaflan((i) => tierra[i] === 1, () => true);
+  const paisable = (j) => tierra[j] || desdeTierra[j] < 7;
   for (let vuelta = 0; vuelta < 16; vuelta++) {
     pais.fill(-1); coste.fill(Infinity); hecho.fill(0); m2.n = 0;
     centros.forEach((c, k) => { pais[c] = k; coste[c] = 0; m2.meter(0, c); });
     while (m2.n) {
       const c = m2.sacar(); if (hecho[c]) continue; hecho[c] = 1; const x = c % N, y = (c / N) | 0;
-      for (const [ax, ay] of VEC) { const xx = x + ax, yy = y + ay; if (!dentro(xx, yy)) continue; const j = idx(xx, yy); if (!tierra[j] || hecho[j]) continue;
-        const paso = ritmo[pais[c]] * Math.hypot(ax, ay) * (1 + Math.abs(h[j] - h[c]) / 60 + h[j] / 900 + (anchoRio(A[j]) > 40 ? 6 : 0));
+      for (const [ax, ay] of VEC) { const xx = x + ax, yy = y + ay; if (!dentro(xx, yy)) continue; const j = idx(xx, yy); if (!paisable(j) || hecho[j]) continue;
+        const paso = ritmo[pais[c]] * Math.hypot(ax, ay) * (tierra[j] ? 1 + Math.abs(h[j] - h[c]) / 60 + h[j] / 900 + (anchoRio(A[j]) > 40 ? 6 : 0) : 4);
         if (coste[c] + paso < coste[j]) { coste[j] = coste[c] + paso; pais[j] = pais[c]; m2.meter(coste[j], j); } }
     }
+    for (let i = 0; i < NN; i++) if (!tierra[i]) pais[i] = -1;   // el mar no es de nadie
     const cuenta = [0, 0, 0, 0, 0]; let tot = 0;
     for (let i = 0; i < NN; i++) if (pais[i] >= 0) { cuenta[pais[i]]++; tot++; }
     // la isla no se equilibra (no puede crecer más allá de su costa); los otros cuatro se reparten el continente
@@ -390,6 +399,17 @@ export function* generar(semilla, { lado = LADO_KM, N = 256, pasos = PASOS } = {
   }
 
   if (mejorPais) pais.set(mejorPais);
+  // islas grandes sueltas (más de 300 km²): del país con la costa más cercana; los islotes quedan sin dueño
+  {
+    const tam = new Map(); for (let i = 0; i < NN; i++) if (tierra[i] && pais[i] < 0) tam.set(isl[i], (tam.get(isl[i]) || 0) + 1);
+    for (const [g, n] of tam) {
+      if (n * km * km < 300) continue;
+      let mejor = -1, dm = Infinity;
+      for (let i = 0; i < NN; i++) { if (isl[i] !== g || i % 3) continue;
+        for (let j = 0; j < NN; j += 2) if (pais[j] >= 0) { const d = (i % N - j % N) ** 2 + (((i / N) | 0) - ((j / N) | 0)) ** 2; if (d < dm) { dm = d; mejor = pais[j]; } } }
+      if (mejor >= 0) for (let i = 0; i < NN; i++) if (isl[i] === g) pais[i] = mejor;
+    }
+  }
 
   // ---------- 6. roca madre por provincias, y vetas ----------
   yield { fase: 'Roca y vetas', avance: 0.94 };
@@ -410,17 +430,46 @@ export function* generar(semilla, { lado = LADO_KM, N = 256, pasos = PASOS } = {
     return r < 0.55 ? 'arenisca' : 'caliza';
   });
   for (let i = 0; i < NN; i++) if (tierra[i]) roca[i] = rocaProv[prov[i]];
+  // Recursos (pedido de valravnx el 27 oct): lo normal, cerca de cualquiera; lo grande, poco y marcado.
+  //  - Vetas pequeñas de hierro y de carbón repartidas por bloques de BLOQUE_KM: en cada bloque con tierra, una de
+  //    cada, en el sitio que mejor le va a la geología (así nadie tiene que irse lejos para lo de diario).
+  //  - Grandes vetas, pocas y separadas, en los mejores sitios: hierro donde el granito o la pizarra tocan la caliza;
+  //    carbón en la arenisca al pie de las sierras. Se marcan en el mapa: son para explotar a fondo.
+  //  - Hierro de pantano (poco y malo) en las turberas, como antes.
   const vetas = [];
-  for (let y = 2; y < N - 2; y++) for (let x = 2; x < N - 2; x++) {
-    const i = idx(x, y); if (!tierra[i]) continue;
-    const r = hash2(x, y, S + 51);
-    if (bioma[i] === 'turbera' && r < 0.10) vetas.push({ tipo: 'hierroPantano', x, y });
-    if ((roca[i] === 'granito' || roca[i] === 'pizarra') && r < 0.05) {
-      let contacto = false;
-      for (let b = -2; b <= 2 && !contacto; b++) for (let a = -2; a <= 2; a++) if (roca[idx(x + a, y + b)] === 'caliza') { contacto = true; break; }
-      if (contacto && fbm(x / 10, y / 10, S + 53, 3) > 0.55) vetas.push({ tipo: 'hierroVeta', x, y });
+  const contactoCaliza = new Uint8Array(NN);
+  for (let y = 3; y < N - 3; y++) for (let x = 3; x < N - 3; x++) {
+    const i = idx(x, y); if (!tierra[i] || (roca[i] !== 'granito' && roca[i] !== 'pizarra')) continue;
+    for (let b = -3; b <= 3 && !contactoCaliza[i]; b++) for (let a = -3; a <= 3; a++) if (roca[idx(x + a, y + b)] === 'caliza') { contactoCaliza[i] = 1; break; }
+  }
+  const notaHierro = (i) => (roca[i] === 'granito' || roca[i] === 'pizarra' ? 1 : roca[i] === 'caliza' ? 0.45 : 0.25) + contactoCaliza[i] * 1.2 + U[i] * 0.6 + hash2(i, 61, S) * 0.5;
+  const notaCarbon = (i) => (roca[i] === 'arenisca' ? 1.2 : roca[i] === 'caliza' ? 0.4 : 0.15) + (U[i] > 0.08 && U[i] < 0.45 ? 0.6 : 0) + Math.min(pend[i], 0.08) * 4 + hash2(i, 67, S) * 0.5;
+  for (let i = 0; i < NN; i++) if (tierra[i] && bioma[i] === 'turbera' && hash2(i, 51, S) < 0.10) vetas.push({ tipo: 'hierroPantano', x: i % N, y: (i / N) | 0 });
+  // grandes vetas: unas 4 de hierro y 3 de carbón por cada 25.000 km² de tierra, a más de 45 km entre las del mismo tipo
+  let celdasTierra = 0; for (let i = 0; i < NN; i++) celdasTierra += tierra[i];
+  const kmTierra = celdasTierra * km * km;
+  const grandes = (tipo, nota, apta, n) => {
+    const cand = []; for (let i = 0; i < NN; i++) if (tierra[i] && costa[i] > 2 && apta(i)) cand.push(i);
+    cand.sort((a, b) => nota(b) - nota(a));
+    const puestas = [];
+    for (const i of cand) { if (puestas.length >= n) break;
+      if (puestas.every(j => Math.hypot(i % N - j % N, ((i / N) | 0) - ((j / N) | 0)) * km > 45)) puestas.push(i); }
+    for (const i of puestas) vetas.push({ tipo, x: i % N, y: (i / N) | 0 });
+  };
+  grandes('granHierro', notaHierro, (i) => contactoCaliza[i] === 1, Math.max(2, Math.round(4 * kmTierra / 25000)));
+  grandes('granCarbon', notaCarbon, (i) => roca[i] === 'arenisca' && U[i] > 0.08, Math.max(2, Math.round(3 * kmTierra / 25000)));
+  // vetas pequeñas por bloques
+  const BLOQUE = Math.max(4, Math.round(BLOQUE_KM / km));
+  for (let by = 0; by < N; by += BLOQUE) for (let bx = 0; bx < N; bx += BLOQUE) {
+    let mh = -1, mc = -1, nt = 0;
+    for (let y = by; y < Math.min(N, by + BLOQUE); y++) for (let x = bx; x < Math.min(N, bx + BLOQUE); x++) {
+      const i = idx(x, y); if (!tierra[i]) continue; nt++;
+      if (mh < 0 || notaHierro(i) > notaHierro(mh)) mh = i;
+      if (mc < 0 || notaCarbon(i) > notaCarbon(mc)) mc = i;
     }
-    if (roca[i] === 'arenisca' && U[i] > 0.14 && pend[i] > 0.03 && r > 0.975 && fbm(x / 14, y / 14, S + 57, 3) > 0.55) vetas.push({ tipo: 'carbon', x, y });
+    if (nt < BLOQUE * BLOQUE * 0.08) continue;   // islotes y puntas casi sin tierra: nada
+    vetas.push({ tipo: 'hierroVeta', x: mh % N, y: (mh / N) | 0 });
+    vetas.push({ tipo: 'carbon', x: mc % N, y: (mc / N) | 0 });
   }
 
   yield { fase: 'Listo', avance: 1 };

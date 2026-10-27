@@ -1446,5 +1446,22 @@
   "pruebas": "Lógica 106/106, acciones 41/41, modelos 104/104, combate 80/80; navegador: construcción, duelo y demo única correctos en PC y móvil. No comprobado: con un teclado ruso de verdad (se simula con la tecla física y la letra rusa).",
   "capturas": "capturas/construccion-v24",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T16:57:00+01:00",
+  "fin": "2026-10-27T18:36:13+01:00",
+  "titulo": "Hito 10: recursos repartidos y el mundo elegido",
+  "hito": "mundo",
+  "hecho": [
+   "Mundo elegido por valravnx: 256 × 256 km con la semilla 66172; apuntado en el GDD",
+   "Vetas pequeñas de hierro y de carbón en cada zona de unos 14 km: en el mundo elegido, desde cualquier sitio con país, la más lejana a unos 18 km y a unos 6 de media",
+   "Unas pocas grandes vetas (4 de hierro y 3 de carbón en el mundo elegido), separadas más de 45 km y marcadas en el mapa",
+   "Los países saltan estrechos de hasta unos 14 km: las islas cercanas ya tienen país",
+   "Al tocar el mapa, a cuántos km están el hierro y el carbón más cercanos"
+  ],
+  "pruebas": "Mapa 64/64, navegador del mapa PC y móvil correctos, batería completa correcta (la prueba de la web falló una vez por tiempo de carga con todo en marcha y pasó sola)",
+  "capturas": "capturas/mapa-v2",
+  "estado": "ok",
+  "notas": "no comprobado: cuánto tarda en generar en un móvil de verdad"
  }
 ]
