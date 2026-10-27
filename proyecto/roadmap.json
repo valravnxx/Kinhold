@@ -452,8 +452,9 @@
    "tareas": [
     {
      "nombre": "Arreglo (pedido de valravnx, 27 oct): varios suelos de troncos seguidos no acaban de cerrar (rendija verde y testas de los troncos en cada junta); entre casillas del mismo suelo o cimiento de troncos, los troncos siguen de largo y la capa de debajo llega al borde",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T18:24:55+01:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T18:24:55+01:00",
+     "fin": "2026-10-27T19:16:59+01:00"
     },
     {
      "nombre": "Arreglo (pedido de valravnx, 27 oct): en construir se veían los muebles del piso de arriba estando abajo con el techo puesto, y WASD fallaba (con la distribución de teclado rusa, o si la ventana perdía el foco con una tecla pulsada): las teclas se leen por su posición física y se sueltan todas al perder el foco",
@@ -1105,6 +1106,13 @@
      "archivo": "jugar/demo/v19.html",
      "capturas": "capturas/demo-v19",
      "notas": "Construcción v24 y combate v13: los muebles del piso de arriba ya no se ven desde abajo con el techo puesto, y WASD funciona con la distribución de teclado rusa y sin teclas pegadas"
+    },
+    {
+     "v": "v20",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v20.html",
+     "capturas": "capturas/demo-v20",
+     "notas": "Arreglo: varios suelos o cimientos de troncos seguidos se juntan de una, sin rendija ni testas en cada junta. Es la construcción v25."
     }
    ]
   },
@@ -1266,6 +1274,13 @@
      "archivo": "jugar/construccion/v24.html",
      "capturas": "capturas/construccion-v24",
      "notas": "Arreglos: los muebles del piso de arriba ya no se ven desde abajo con el techo puesto, y WASD funciona con la distribución de teclado rusa (las teclas se leen por su posición) y no se quedan pulsadas al cambiar de ventana"
+    },
+    {
+     "v": "v25",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v25.html",
+     "capturas": "capturas/construccion-v25",
+     "notas": "Arreglo: varios suelos o cimientos de troncos seguidos se juntan de una, sin rendija ni testas en cada junta."
     }
    ]
   },
