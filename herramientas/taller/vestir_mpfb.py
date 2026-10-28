@@ -120,7 +120,7 @@ def material(nombre, rugosidad=0.8, sss=0.0, imagen=None, alfa=False, brillo=0.0
     return m
 
 # ---------- trozos de la malla ----------
-def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None, metal=0.0):
+def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None, metal=0.0, tapar=None):
     """copia de `base` con solo los vértices para los que quedarse(i, co) es cierto; la empuja por la normal.
     color(P, A) da el color por vértice; textura=(res, fn(P, A) → rgba) pinta una textura en su mapa UV"""
     ob = base.copy(); ob.data = base.data.copy(); ob.name = nombre
@@ -130,6 +130,15 @@ def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosida
     for v in bm.verts: v[capa] = v.index
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if not quedarse(v.index, v.co)], context='VERTS')
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
+    if tapar:  # cierra los huecos que deja lo quitado en esa zona (la base de la oreja bajo la capucha o la toca)
+        borde = [e for e in bm.edges if e.is_boundary and all(tapar(v.co) for v in e.verts)]
+        caras = bmesh.ops.holes_fill(bm, edges=borde, sides=0)['faces']
+        uvc = bm.loops.layers.uv.active
+        for cara in caras:  # cada esquina toma la UV que ya tenía ese punto en una cara vecina
+            for l in cara.loops:
+                otra = next((x for x in l.vert.link_loops if x.face is not cara), None)
+                if otra is not None: l[uvc].uv = otra[uvc].uv.copy()
+        bmesh.ops.triangulate(bm, faces=caras, quad_method='BEAUTY', ngon_method='BEAUTY')
     if subdividir: bmesh.ops.subdivide_edges(bm, edges=bm.edges[:], cuts=subdividir, use_grid_fill=True, smooth=1.0)
     bm.normal_update()
     if empuje:
@@ -331,7 +340,7 @@ def personaje(nombre, macros, objetivos, ropa):
         return m
     PR = [principal(i) for i in range(len(co))]
     # atributos por vértice para pintar: labios, orejas, uñas
-    ATR = np.array([[W[i].get('lips', 0), W[i].get('ears', 0), max(W[i].get('fingernails', 0), W[i].get('toenails', 0))] for i in range(len(co))])
+    ATR = np.array([[W[i].get('lips', 0), W[i].get('ears', 0), max(W[i].get('fingernails', 0), W[i].get('toenails', 0)), co[i].x, co[i].y, co[i].z] for i in range(len(co))])
 
     # puntos de referencia de la cabeza
     puntos = lambda g: np.array([tuple(co[i]) for i in range(len(co)) if en(i, g)])
@@ -593,8 +602,12 @@ def personaje(nombre, macros, objetivos, ropa):
         return 1 - suave(-0.02, -0.045, y) * suave(0.15, 0.115, x) * suave(z_yugo + 0.01, z_yugo - 0.01, z)
     def pintar_manto(P, A, cuello=True):
         col = colm[None, None, :] * (0.86 + 0.18 * fbm(P, 22)[..., None]) * (0.95 + 0.05 * ruido(P, 800)[..., None])
+        O = A[..., 3:6]
         a = abertura(P, cuello_z - 0.055)
-        if cuello: a = a * suave(0.0015, -0.0015, P[..., 2] - (cuello_z + 0.012))
+        if cuello:
+            a = a * suave(0.0015, -0.0015, P[..., 2] - (cuello_z + 0.012))
+            hombro = suave(cuello_z - 0.17, cuello_z - 0.12, O[..., 2])  # sobre el hombro acaba en línea, no en los escalones de la malla
+            a = a * (1 - hombro * suave(0.198, 0.21, np.abs(O[..., 0])))
         return np.concatenate([col, a[..., None]], -1)
     sel_manto = lambda i, c: en(i, 'helper-tights') and cintura_z - 0.06 < c.z < cuello_z + 0.045 and abs(c.x) < 0.215 and not mano(i)
     piezas.append(trozo(base, f'{nombre}_capa_manto', sel_manto, empuje=0.056, textura=(1024, pintar_manto), rugosidad=0.95,
@@ -625,39 +638,34 @@ def personaje(nombre, macros, objetivos, ropa):
         # sin los puntos de dentro del hueco de la cara (labios, párpados): empujados hacia fuera salían como pinchos
         zc, hz = (arriba + abajo) / 2, (arriba - abajo) / 2
         cara_ = lambda c: c.y < -0.085 and (c.x / hx) ** 2 + ((c.z - zc) / hz) ** 2 < 0.45  # bien dentro del hueco: el borde lo hace la transparencia
-        return lambda i, c: en(i, 'body') and not mano(i) and not cara_(c) and (cabeza(i) or (c.z > z_bajo - 0.02 and abs(c.x) < 0.27))
+        return lambda i, c: en(i, 'body') and not mano(i) and not cara_(c) and not en(i, 'ears', 0.0) and (cabeza(i) or (c.z > z_bajo - 0.02 and abs(c.x) < 0.27))
     def separacion_tocado(cabeza_e, hombro_e, pico=0.0):
         def e(c, i):
             d = min(np.linalg.norm(np.array(c) - o) for o in oreja_c)
-            oreja = ATR[i, 1] > 0.0
-            if oreja:  # la oreja se lleva al cráneo y se empuja por la normal del cráneo (la suya va en todas direcciones: salía arrugada)
-                _, k, _ = kd_craneo.find(c); j = sin_oreja[k]; c[:] = co[j]; d = 1.0
             t = suave(cuello_z + 0.06, cuello_z - 0.005, c.z)  # del cuello para abajo, por encima de la ropa
             atras = pico * max(0.0, c.y) / 0.1 * max(0.0, c.z - ojo_arriba) / 0.06  # la capucha acaba en punta atrás
-            total = cabeza_e * (1 - t) + hombro_e * t + atras + 0.008 * float(suave(0.055, 0.025, d))  # algo de bulto sobre la oreja
-            if oreja:
-                c[:] = c + NORMAL[j] * total; return 0.0
-            return total
+            return cabeza_e * (1 - t) + hombro_e * t + atras + 0.008 * float(suave(0.055, 0.025, d))  # algo de bulto sobre la oreja
         return e
     def pintar_tocado(color, arriba, abajo, hx, z_bajo, lana=True):
         c0 = lin(color)
         def f(P, A):
             col = c0[None, None, :] * (0.86 + 0.18 * fbm(P, 40 if lana else 60)[..., None]) * (0.95 + 0.05 * ruido(P, 700)[..., None])
-            orilla = suave(z_bajo + 0.012, z_bajo + 0.004, P[..., 2])  # dobladillo un poco más oscuro
+            O = A[..., 3:6]  # el sitio de cada punto antes de empujar la tela: los bordes no se mueven con el empuje
+            orilla = suave(z_bajo + 0.012, z_bajo + 0.004, O[..., 2])  # dobladillo un poco más oscuro
             col = col * (1 - 0.15 * orilla[..., None])
-            a = hueco_cara(P, arriba, abajo, hx) * suave(-0.002, 0.002, P[..., 2] - z_bajo - 0.004 * (ruido(P, 40) - 0.5))
-            a = a * suave(0.255, 0.245, np.abs(P[..., 0]))  # sobre el brazo acaba en curva, no en los escalones de la malla
+            a = hueco_cara(O, arriba, abajo, hx) * suave(-0.002, 0.002, O[..., 2] - z_bajo - 0.004 * (ruido(O, 40) - 0.5))
+            a = a * suave(0.255, 0.245, np.abs(O[..., 0]))  # sobre el brazo acaba en curva, no en los escalones de la malla
             return np.concatenate([col, a[..., None]], -1)
         return f
     zc_bajo = cuello_z - 0.13
     piezas.append(trozo(base, nombre + '_capa_capucha', cubre(zc_bajo, ojo_arriba + 0.05, boca_z - 0.055, 0.074), empuje=separacion_tocado(0.026, 0.09, pico=0.05),
-                        alisar=(sobre_oreja, 40),
+                        alisar=(sobre_oreja, 12), tapar=lambda c: min(np.linalg.norm(np.array(c) - o) for o in oreja_c) < 0.065,
                         textura=(1024, pintar_tocado(ropa.get('capucha', (92, 76, 58)), ojo_arriba + 0.05, boca_z - 0.055, 0.074, zc_bajo)),
                         rugosidad=0.95, diezmar=DIEZMAR))
     if mujer:
         zt_bajo = cuello_z - 0.075
         piezas.append(trozo(base, nombre + '_capa_toca', cubre(zt_bajo, ojo_arriba + 0.028, boca_z - 0.028, 0.058), empuje=separacion_tocado(0.013, 0.08),
-                            alisar=(sobre_oreja, 40),
+                            alisar=(sobre_oreja, 12), tapar=lambda c: min(np.linalg.norm(np.array(c) - o) for o in oreja_c) < 0.065,
                             textura=(1024, pintar_tocado((226, 220, 204), ojo_arriba + 0.028, boca_z - 0.028, 0.058, zt_bajo, lana=False)),
                             rugosidad=0.9, diezmar=DIEZMAR))
     piezas.append(sombrero(f'{nombre}_capa_sombrero', co, cabeza, ojo_arriba, ropa.get('cofia') is not None))
