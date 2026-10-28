@@ -164,9 +164,23 @@ try:
         comprobar('con el rival en pie al lado no se puede volver a empezar sano', esperar(A, "document.getElementById('registro').textContent.includes('Hay alguien cerca')", 8000), A.inner_text('#registro').split('\n')[0])
         for nombre, (pg, _) in paginas.items(): captura(pg, f'{SALIDA}/{nombre}_5_otra.png')
 
+        print('Se corta la conexión del móvil y vuelve')
+        A.evaluate(f"{D}.jugador.cansancio = 0; {D}.atacar('bajo')")
+        esperar(B, f"{D}.jugador.heridas.length > 0 || {D}.jugador.fuera", 8000)
+        B.wait_for_timeout(600)
+        antes = B.evaluate(f"JSON.stringify({{ yo: {D}.red.yo, heridas: {D}.jugador.heridas.map(h => h.zona + ':' + h.gravedad), fuera: {D}.jugador.fuera }})")
+        B.evaluate(f"{D}.red.cortar()")
+        comprobar('PC lo ve irse', esperar(A, f"{D}.otros.size === 0", 5000))
+        comprobar('el móvil vuelve a conectar solo', esperar(B, f"{D}.red.estado === 'conectado'", 15000) and 'recuperada' in B.inner_text('#registro') + B.inner_text('body'))
+        comprobar('PC lo vuelve a ver', esperar(A, f"{D}.otros.size === 1", 8000))
+        esperar(B, f"{D}.jugador.heridas.length === {len(json.loads(antes)['heridas'])}", 5000)
+        despues = B.evaluate(f"JSON.stringify({{ yo: {D}.red.yo, heridas: {D}.jugador.heridas.map(h => h.zona + ':' + h.gravedad), fuera: {D}.jugador.fuera }})")
+        comprobar('y vuelve el mismo luchador, con sus heridas (no sano)', antes == despues and len(json.loads(antes)['heridas']) > 0, f'{antes} → {despues}')
+        for nombre, (pg, _) in paginas.items(): captura(pg, f'{SALIDA}/{nombre}_6_vuelve.png')
+
         print('El servidor se apaga')
         servidor.terminate(); servidor.wait(5)
-        comprobar('PC dice que se ha perdido la conexión y ya no ve al otro', esperar(A, "document.getElementById('estadoRed').textContent === 'Sin conexión'", 5000) and A.evaluate(f"{D}.otros.size") == 0)
+        comprobar('PC dice que se ha cortado (y que vuelve a conectar) y ya no ve al otro', esperar(A, "document.getElementById('estadoRed').textContent === 'Volviendo a conectar…'", 5000) and A.evaluate(f"{D}.otros.size") == 0)
         comprobar('sin conexión no se ataca', not A.evaluate(f"{D}.atacar('alto')"))
         for nombre, (pg, err) in paginas.items():
             malos = [e for e in err if 'WebSocket' not in e and 'ERR_CONNECTION_REFUSED' not in e]
