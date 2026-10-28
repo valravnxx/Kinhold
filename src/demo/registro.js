@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v25 (polipasto con torno)';
+export const VERSION_DEMO = 'Demo única · v26 (contraventana y trampilla)';
 export const REGISTRO_DEMO = [
+  'v26: en «Construir», contraventana para los muros con ventana y trampilla para el hueco de la escalera de tablas (se abren y se cierran con Usar; la trampilla cerrada se pisa y no deja subir), y el muro de tablas con ventana. Es la construcción v29.',
   'v25: en «Construir», polipasto con torno colgado de una viga (en «Acceso»): sube los troncos con un torno en el suelo, y lo muy pesado, cuando lo haya (sillares), solo entre dos, uno en el torno y otro que guía. Es la construcción v28.',
   'v24: «Duelo en línea» en el menú: luchas contra otro jugador conectado al mismo servidor. El servidor resuelve los golpes, las paradas y las heridas, y los dos ven lo mismo. La dirección del servidor, en Opciones, como en «Jugar en línea». Es el combate v14.',
   'v23: en «Construir», andamio pegado al muro (se sube con Usar y desde su plataforma se lleva lo ligero y se trabaja en las obras de esa planta) y polea colgada de una viga (una persona sola sube los troncos con la mitad de trabajo que rodándolos por varas). Es la construcción v27.',
