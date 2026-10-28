@@ -1878,5 +1878,37 @@
   ],
   "pruebas": "Todas las pruebas correctas (inventario 120/120, con 13 nuevas de la carga; navegador de la demo: 3,6 m/s sin carga y 2,88 m/s cargado al máximo, en PC y móvil). Rotas a propósito una vez (MUTAR_CARGA=1) y fallan. Tras unir main se repitieron las de lógica y la de la demo; no comprobado: el resto del navegador después de unir main",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T13:00:52+00:00",
+  "fin": "2026-10-28T18:06:31+00:00",
+  "titulo": "Hito 1c: tejado de teja (carril B)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Tejado de teja (10 tejas y 1 tronco, 200 kg, en «Tejados»): el documento de sistemas dice «10 tejas + vigas»; las vigas van como 1 tronco (provisional, anotado en el registro de decisiones).",
+   "Material nuevo «teja», ligero (se sube a mano por la escalera). Las partidas guardadas de antes se cargan con las 100 tejas de partida, sin perder nada.",
+   "Teja curva de barro cocido, de color apagado: canales boca arriba y, encima de cada junta, cobijas boca abajo, cada una montada sobre la de abajo y con su tono; tabla de remate en los lados que vuelan y caballete de cobijas grandes asentadas en barro en la cumbrera. Los tramos de al lado siguen el dibujo sin que dos tejas caigan en el mismo sitio. Comparada en captura con la cabaña de la prueba de estilo v5.",
+   "Para el móvil, los canales van de una pieza por columna (casi no se ven) y solo las cobijas van sueltas: un tramo suelto tiene unos 5.000 triángulos, unas 2,4 veces los de la paja (medido en la prueba de modelos).",
+   "Prueba de carga: una casa de 3×3 y 2 plantas de troncos con teja se hace entera (la pieza más cargada pasa del 70 % con paja al 76 %; los cimientos cargan 1080 kg más); 3 plantas sobre cimiento de piedra, al 99 %; con muros de zarzo, una casa de 3×3 deja los muros del medio al tope (250 kg) y rechaza un tramo más de teja apoyado en el de al lado (de paja sí cabe).",
+   "Que no se pudre ni arde fácil queda anotado en la pieza: aún no hay mantenimiento ni fuego. El muestrario de tejados tiene ahora dos casas con teja."
+  ],
+  "pruebas": "Todas con bash herramientas/probar_todo.sh, dos veces (antes y después de unir main): todo correcto salvo tres que fallaron solo dentro de la tanda y pasan repetidas solas: «Jugadores que se ven, con lag simulado» (15/15 sola), la web (lee en GitHub quién trabaja en ese momento: pasó sola) y la del servidor en internet del carril A, que necesita Caddy (instalado aquí con apt-get, 19/19). Tras la última unión con main, repetidas: lógica 189/189 (12 nuevas, 5 fallan con MUTAR=1), modelos 144/144 (4 nuevas; la de los triángulos falla con MUTAR_TEJA=1), combate, acciones, inventario, idiomas, servidor y en línea; navegador de construcción todo correcto (4 comprobaciones nuevas; la del cobro de tejas falla con una versión que cobra 9) y demo única todo correcto. Capturas miradas en PC y móvil, y el tejado junto a la cabaña de la prueba de estilo v5 (48_tejado_teja_junto_a_la_v5). No comprobado: el tejado de teja en línea con dos jugadores (va por las mismas acciones que los demás tejados). Mientras corrían las pruebas, otras sesiones del carril B ocuparon el carril para otras tareas: esta no lo suelta para no quitárselo.",
+  "capturas": "capturas/construccion-v30",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T15:12:01+01:00",
+  "fin": "2026-10-28T19:06:47+01:00",
+  "titulo": "Hito 10: el mundo de cerca siempre igual",
+  "hito": "mundo",
+  "hecho": [
+   "El terreno ya era fijo; lo que cambiaba al rehacer el trozo de cerca era el reparto de árboles, hierba, piedras y piezas de roca, que salía de un azar que empezaba en el centro del trozo",
+   "Ahora cada cosa sale de su celda en el mundo y de la semilla del mundo (un azar por celda), y si hay que recortar por el aparato se quitan las más lejanas del personaje, no al azar",
+   "Lo mismo con los árboles de lejos: ya no dependen de desde dónde se abre la zona",
+   "Prueba nueva en el navegador: se rehace el trozo de cerca 50 m más allá y la parte común sale idéntica (MUTAR_FIJO=1 vuelve al azar por el centro y falla)"
+  ],
+  "pruebas": "Batería completa correcta tras unir main (con el mapa v9 de los nombres del mundo, de otra sesión de chat; esta versión pasa a v10). No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v10",
+  "estado": "ok"
  }
 ]
