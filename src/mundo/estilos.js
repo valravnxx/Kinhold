@@ -134,6 +134,7 @@ export class Lote {
       if (p.opc.plano) g.computeVertexNormals();
       for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(k)) g.deleteAttribute(k);
       if (!g.attributes.uv) g.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
+      if (p.opc.recorte) { g = recortar(g, p.opc.recorte); if (!g) continue; }
       const pos = g.attributes.position, nor = g.attributes.normal, col = new Float32Array(pos.count * 3);
       const e = p.m.elements, tono = 1 + (ruido3(e[12], e[13], e[14]) - 0.5) * 2 * this.variacion;
       for (let i = 0; i < pos.count; i++) {
@@ -153,6 +154,39 @@ export class Lote {
     }
     return conTextura ? grupos : lista;
   }
+}
+
+// Recorta una geometría (sin índices, con posición, normal y UV) por un plano: se queda lo que cumple
+// n·p + c >= 0 (recorte = { n: Vector3, c }). Los triángulos cortados se rehacen con sus atributos interpolados;
+// el corte queda abierto (lo tapa la pieza de al otro lado). Devuelve null si no queda nada.
+export function recortar(g, { n, c = 0 }) {
+  const pos = g.attributes.position, nor = g.attributes.normal, uv = g.attributes.uv, sal = [];
+  const vert = i => [pos.getX(i), pos.getY(i), pos.getZ(i), nor.getX(i), nor.getY(i), nor.getZ(i), uv.getX(i), uv.getY(i)];
+  const dist = v => n.x * v[0] + n.y * v[1] + n.z * v[2] + c;
+  for (let t = 0; t + 2 < pos.count; t += 3) {
+    const vs = [vert(t), vert(t + 1), vert(t + 2)], ds = vs.map(dist);
+    if (ds.every(x => x >= 0)) { sal.push(...vs); continue; }
+    if (ds.every(x => x < 0)) continue;
+    const poli = [];
+    for (let k = 0; k < 3; k++) {
+      const a = vs[k], b = vs[(k + 1) % 3], da = ds[k], db = ds[(k + 1) % 3];
+      if (da >= 0) poli.push(a);
+      if ((da >= 0) !== (db >= 0)) { const s = da / (da - db); poli.push(a.map((x, q) => x + (b[q] - x) * s)); }
+    }
+    for (let k = 1; k + 1 < poli.length; k++) sal.push(poli[0], poli[k], poli[k + 1]);
+  }
+  if (!sal.length) return null;
+  const P = new Float32Array(sal.length * 3), N = new Float32Array(sal.length * 3), U = new Float32Array(sal.length * 2);
+  sal.forEach((v, i) => {
+    P.set(v.slice(0, 3), i * 3);
+    const l = Math.hypot(v[3], v[4], v[5]) || 1; N.set([v[3] / l, v[4] / l, v[5] / l], i * 3);
+    U.set(v.slice(6, 8), i * 2);
+  });
+  const r = new THREE.BufferGeometry();
+  r.setAttribute('position', new THREE.BufferAttribute(P, 3));
+  r.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+  r.setAttribute('uv', new THREE.BufferAttribute(U, 2));
+  return r;
 }
 
 // UV por proyección de caja en el espacio propio de la pieza, a escala real (DENSIDAD repeticiones por metro).

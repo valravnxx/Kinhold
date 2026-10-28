@@ -67,6 +67,14 @@ export const PIEZAS = {
   // (los pares que sostienen las tejas) van como 1 tronco (provisional). Lo de pudrirse y arder queda anotado para
   // cuando haya mantenimiento y fuego; hoy solo cambia el peso que cargan los muros.
   tejado_teja:        { nombre: 'Tejado de teja', hueco: 'r', nivel: 2, peso: 200, cap: 500, coste: { teja: 10, tronco: 1 }, noSePudre: true, ardePoco: true, cat: 'tejado' },
+  // Sistemas: «Remate de tejado — N1, materiales: igual, 40 kg; cumbrera y esquinas». La cumbrera ya la pone sola el
+  // tejado; el remate es la pieza de la esquina, donde se juntan dos caídas en ángulo recto (limatesa en la esquina de
+  // fuera, limahoya en el rincón de un tejado en L: la forma sale sola de los tramos de al lado). «Igual» se lee como
+  // del mismo material que el tejado que remata: uno por material, con la mitad del coste y del peso de su tramo
+  // (provisional; la paja, 40 kg como dice sistemas).
+  remate_paja:        { nombre: 'Remate de paja (esquina)', hueco: 'r', nivel: 1, peso: 40, cap: 400, coste: { vara: 1, paja: 2 }, esquina: true, cat: 'tejado' },
+  remate_tablilla:    { nombre: 'Remate de tablillas (esquina)', hueco: 'r', nivel: 2, peso: 50, cap: 500, coste: { tabla: 2, clavo: 2 }, esquina: true, cat: 'tejado' },
+  remate_teja:        { nombre: 'Remate de teja (esquina)', hueco: 'r', nivel: 2, peso: 100, cap: 500, coste: { teja: 5, tronco: 1 }, esquina: true, noSePudre: true, ardePoco: true, cat: 'tejado' },
   // El hastial ya se dibuja solo con el tejado; la pieza queda oculta para no romper partidas guardadas.
   hastial:            { nombre: 'Hastial (remate)', hueco: 'g', nivel: 1, peso: 100, cap: 0, coste: { tronco: 2 }, cat: 'oculto' },
 

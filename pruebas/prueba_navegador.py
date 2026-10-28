@@ -490,6 +490,40 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/47_tejado_teja_detras.png')
 
+    print('PC: remate de tejado (esquinas): casa en L con limatesa y limahoya')
+    # lejos de lo demás, dentro de la tierra (mojón en -3,-6, radio 20): ala de 3×2 y ala de 2×1 que sale de su punta
+    celdasL = [(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (1, 2), (2, 2)]
+    wx = lambda i: -7 + 2 * i
+    wz = lambda j: -24 + 2 * j
+    for i, j in celdasL:
+        poner('pieza', 'cim_piedra', wx(i), wz(j))
+    hayL = set(celdasL)
+    for i, j in celdasL:
+        for di, dj in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+            if (i + di, j + dj) not in hayL:
+                poner('pieza', 'muro_tabla', wx(i) + di, wz(j) + dj)
+    tejadoL = [('tejado_tablilla', 0, 0, 0), ('tejado_tablilla', 1, 0, 0), ('remate_tablilla', 2, 0, 1), ('tejado_tablilla', 0, 1, 2),
+               ('tejado_tablilla', 2, 1, 1), ('tejado_tablilla', 1, 2, 3), ('tejado_tablilla', 2, 2, 1)]
+    tablas0 = ev(f"{K}.mundo.materiales.tabla")
+    vs = [poner('pieza', t, wx(i), wz(j), planta=1, girar=d) for t, i, j, d in tejadoL]
+    # el rincón, el último: el fantasma ya se ve como limahoya antes de ponerlo
+    ev(f"{K}.cambiarModo('construir'); {K}.estado.planta=1; {K}.seleccionar('pieza','remate_tablilla'); {K}.girar(); {K}.girar(); {K}.girar(); {K}.apuntar({wx(1)},{wz(1)})")
+    comprobar('el fantasma del remate en el rincón tiene forma de limahoya', ev(f"{K}.fantasmaForma") == 'hoya', str(ev(f"{K}.fantasmaForma")))
+    vs.append(poner('pieza', 'remate_tablilla', wx(1), wz(1), planta=1, girar=3))
+    comprobar('casa en L: tramos y remates colocados desde el menú', all(v and v['ok'] for v in vs), json.dumps(vs, ensure_ascii=False)[:300])
+    rem = ev(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'remate_tablilla' && !p.obra).map(p => p.dir).sort().join()")
+    comprobar('los dos remates terminados, con su dirección', rem == '1,3', rem)
+    comprobar('cobradas las tablas de 6 tramos y 2 remates (18 + 4)', tablas0 - ev(f"{K}.mundo.materiales.tabla") == 22, f'{tablas0} → {ev(f"{K}.mundo.materiales.tabla")}')
+    ev(f"{K}.cambiarModo('mover'); {K}.estado.planta=0; {K}.pj.x=0.5; {K}.pj.z=-27; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=Math.PI; {K}.cam.yaw=Math.PI-0.75; {K}.cam.pitch=0.55; {K}.cam.dist=12")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/48_remate_esquina.png')
+    ev(f"{K}.pj.x=-3; {K}.pj.z=-23; {K}.cam.yaw=Math.PI-0.75; {K}.cam.pitch=0.95; {K}.cam.dist=6.5")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/49_remate_esquina_de_cerca.png')
+    ev(f"{K}.pj.x=-9.5; {K}.pj.z=-17; {K}.pj.rot=0; {K}.cam.yaw=-0.75; {K}.cam.pitch=0.6; {K}.cam.dist=10")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/50_remate_rincon.png')
+
     print('PC: los muebles del piso de arriba no se ven desde abajo con el techo puesto')
     # un taburete arriba, sobre el suelo de la planta 1 (casilla de z=-11), y otro abajo, debajo de ese suelo
     ev(f"{K}.cambiarModo('construir'); {K}.estado.planta=1; {K}.pj.k=1; {K}.seleccionar('deco','taburete'); {K}.apuntar(10.4, -10.6, 2.62); {K}.colocar()")
@@ -868,7 +902,11 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=3.5; {K}.pj.z=-20.8; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI-0.3; {K}.cam.pitch=0.7; {K}.cam.dist=11")
     mv.wait_for_timeout(900)
     comprobar('móvil: el tejado de teja se carga del guardado', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'tejado_teja').length") == 4)
+    comprobar('móvil: los remates de tejado se cargan del guardado', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'remate_tablilla').length") == 2)
     mv.screenshot(path=f'{SALIDA}/06f_movil_tejado_teja.png')
+    mv.evaluate(f"{K}.pj.x=0.5; {K}.pj.z=-27; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=Math.PI-0.75; {K}.cam.pitch=0.6; {K}.cam.dist=13")
+    mv.wait_for_timeout(900)
+    mv.screenshot(path=f'{SALIDA}/06g_movil_remate_esquina.png')
     mv.click('#modos button[data-modo=construir]', no_wait_after=True)  # el clic no navega; con la máquina cargada, esperar «navegaciones» agotaba los 30 s
     mv.evaluate(f"{K}.seleccionar('pieza','cim_tronco'); {K}.apuntar(-2, 2)")
     mv.wait_for_timeout(700)
