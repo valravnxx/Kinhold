@@ -251,4 +251,6 @@ function vista(cual) {
   window.__cerca.vistaActual = cual;
 }
 
-window.__cerca = { listo: false, ocultar: (n) => { const o = estado.raiz.getObjectByName(n); if (o) o.visible = false; }, abrir: abrirCerca, vista: (v) => vista(v), camara: (p, d, y) => estado.juego.camara(p, d, y), get medidas() { return this._m; }, set medidas(v) { this._m = v; } };
+window.__cerca = { listo: false, ocultar: (n) => { const o = estado.raiz.getObjectByName(n); if (o) o.visible = false; }, abrir: abrirCerca, vista: (v) => vista(v), camara: (p, d, y) => estado.juego.camara(p, d, y),
+  rioCercano: () => { const { cx, cy } = estado.centro; let mejor = null, bd = Infinity; for (const t of estado.tramos) for (let u = 0; u <= 1; u += 0.05) { const x = t.ax + (t.bx - t.ax) * u - cx, z = t.ay + (t.by - t.ay) * u - cy, d = Math.hypot(x, z); if (d < bd) { bd = d; mejor = { x, z, ancho: t.ancho, dir: Math.atan2(t.by - t.ay, t.bx - t.ax) }; } } return mejor; },
+  juegoEn: (x, z, dir = 0) => { if (window.__cerca.vistaActual === 'juego') estado.juego.salir(); estado.juego.entrar(x, z, dir); window.__cerca.vistaActual = 'juego'; }, get medidas() { return this._m; }, set medidas(v) { this._m = v; } };
