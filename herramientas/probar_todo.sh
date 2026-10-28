@@ -24,6 +24,7 @@ paso "Conexiones que se cortan y datos mal formados" node pruebas/prueba_conexio
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
 paso "Bots: jugadores simulados contra el servidor" node pruebas/prueba_bots.mjs
 paso "Taller: los cinturones ciñen su prenda" node pruebas/prueba_cinturones.mjs
+paso "Taller: capa, calzado y tocados" node pruebas/prueba_prendas.mjs
 paso "Taller: versiones fijadas" python3 herramientas/taller/comprobar_taller.py --prueba
 paso "Unión del diario y las traducciones" node pruebas/prueba_unir_json.mjs
 paso "Dos carriles en paralelo sin pisarse" node pruebas/prueba_carriles.mjs
