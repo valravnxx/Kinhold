@@ -176,6 +176,29 @@ function muroTablas(opc = {}) {
   L.add(cajaR(MODULO, 0.12, 0.14, 0.02), c, 0, ALTURA - 0.06, 0);
   return deLote(L);
 }
+// Muro de tablas con ventana: las tablas que pasan por el hueco se cortan por debajo y por encima de la ventana, con
+// su marco de madera oscura (jambas, alféizar y dintel) del grueso del muro
+function muroTablasVentana() {
+  const L = loteMuro();
+  const n = 8, w = MODULO / n, a = P.anchoVentana / 2, gr = P.grosorTabla;
+  const tabla = (x0, x1, y0, y1, color) => { if (x1 - x0 > 0.01 && y1 - y0 > 0.01) L.add(cajaR((x1 - x0) * 0.95, y1 - y0, gr, 0.012), color, (x0 + x1) / 2, (y0 + y1) / 2, 0); };
+  for (let t = 0; t < n; t++) {
+    const x0 = -MODULO / 2 + t * w, x1 = x0 + w;
+    const color = ruido(t * 3.7 + 1) > 0.5 ? 'tabla' : 'madera';
+    if (x1 <= -a || x0 >= a) { tabla(x0, x1, 0, ALTURA, color); continue; }
+    tabla(Math.max(x0, -a), Math.min(x1, a), 0, P.bajoVentana, color);
+    tabla(Math.max(x0, -a), Math.min(x1, a), P.altoVentana, ALTURA, color);
+    tabla(x0, -a, 0, ALTURA, color); // lo que queda de la tabla fuera del hueco
+    tabla(a, x1, 0, ALTURA, color);
+  }
+  const c = 'maderaOsc', alto = P.altoVentana - P.bajoVentana;
+  for (const s of [-1, 1]) L.add(cajaR(0.08, alto + 0.04, 0.14, 0.015), c, s * (a + 0.04), P.bajoVentana + alto / 2, 0); // jambas
+  L.add(cajaR(P.anchoVentana + 0.2, 0.07, 0.17, 0.015), c, 0, P.bajoVentana - 0.025, 0); // alféizar
+  L.add(cajaR(P.anchoVentana + 0.2, 0.07, 0.14, 0.015), c, 0, P.altoVentana + 0.035, 0); // dintel
+  L.add(cajaR(MODULO, 0.12, 0.14, 0.02), c, 0, 0.06, 0);           // durmiente
+  L.add(cajaR(MODULO, 0.12, 0.14, 0.02), c, 0, ALTURA - 0.06, 0);  // carrera
+  return deLote(L);
+}
 function medioMuro() {
   const L = loteMuro();
   troncosHorizontales(L, -MODULO / 2 - SALE, MODULO / 2 + SALE, 0, ALTURA / 2);
@@ -559,6 +582,53 @@ function puerta(tipo) {
     H.add(new THREE.TorusGeometry(0.055, 0.012, 5, 10), 'hierro', w - 0.13, 1.0, 0.05); // tirador de argolla
   }
   return conHoja(null, H, -P.anchoPuerta / 2 + 0.01);
+}
+
+// Contraventana: dos hojas de tablas por fuera de la ventana, con bisagras de hierro en los lados. Cerradas tapan
+// el hueco; abiertas quedan pegadas al muro. Cada hoja es un grupo «hoja» con su giro de abrir (userData.abre).
+// ctx.muro: el muro en el que va (el de tablas es más delgado que el de troncos: la contraventana va más pegada).
+function contraventana(ctx) {
+  const delgado = ctx && ctx.muro === 'muro_tabla_ventana';
+  const z = delgado ? 0.115 : 0.205;             // cara de fuera del marco + el grueso de la hoja
+  const ancho = P.anchoVentana / 2 + 0.07, y0 = P.bajoVentana + 0.035, alto = P.altoVentana - P.bajoVentana + 0.03;
+  const g = new THREE.Group();
+  for (const s of [-1, 1]) { // s = -1: hoja izquierda (bisagra en x < 0)
+    const H = loteMuro();
+    const nt = 3, tw = ancho / nt;
+    for (let t = 0; t < nt; t++) H.add(cajaR(tw * 0.96, alto, 0.035, 0.01), ruido(t * 1.9 + s * 3) > 0.5 ? 'tabla' : 'madera', -s * tw * (t + 0.5), alto / 2, -0.02);
+    for (const y of [0.16, alto - 0.16]) {
+      H.add(cajaR(ancho * 0.9, 0.07, 0.025, 0.01), 'maderaOsc', -s * ancho / 2, y, 0.008);       // peinazos
+      H.add(cajaR(ancho * 0.5, 0.035, 0.012, 0.005), 'hierro', -s * ancho * 0.25, y, 0.026);      // bisagra larga
+      H.add(cil(0.016, 0.016, 0.09, 6), 'hierro', 0, y, -0.01);                                     // pernio
+    }
+    H.add(new THREE.TorusGeometry(0.03, 0.008, 4, 8), 'hierro', -s * (ancho - 0.06), alto / 2, 0.03, null, { sinSuelo: true }); // tirador
+    const hoja = deLote(H);
+    hoja.name = 'hoja';
+    hoja.position.set(s * ancho, y0, z);
+    hoja.userData.abre = { eje: 'y', ang: s * Math.PI * 0.98 }; // abierta, de plano contra el muro
+    g.add(hoja);
+  }
+  return g;
+}
+// Trampilla: tablas clavadas a tres peinazos que tapan el hueco de la escalera de tablas, a ras del suelo. La bisagra va
+// en el borde del arranque de la escalera (-z local): abierta queda de pie a la espalda del que sube.
+function trampilla() {
+  const H = loteSuelo(), S = MODULO, n = 8, w = S / n, gr = 0.05;
+  for (let t = 0; t < n; t++) H.add(cajaR(w * 0.94, gr, S - 0.03, 0.01), ruido(t * 2.9 + 5) > 0.5 ? 'tabla' : 'madera', -S / 2 + w * (t + 0.5), gr / 2, S / 2);
+  for (const zz of [0.3, S / 2, S - 0.3]) H.add(cajaR(S - 0.3, 0.07, 0.13, 0.02), 'maderaOsc', 0, -0.035, zz); // peinazos por debajo
+  for (const x of [-0.6, 0.6]) {
+    H.add(cajaR(0.045, 0.012, 0.55, 0.005), 'hierro', x, gr + 0.004, 0.3);                // bisagra larga
+    H.add(cil(0.018, 0.018, 0.12, 6), 'hierro', x, gr / 2, 0.0, { z: Math.PI / 2 });        // pernio
+    for (const zz of [0.1, 0.3, 0.5]) H.add(new THREE.SphereGeometry(0.014, 6, 4), 'hierro', x, gr + 0.01, zz, null, { sinSuelo: true });
+  }
+  H.add(new THREE.TorusGeometry(0.06, 0.012, 5, 10), 'hierro', 0, gr + 0.008, S - 0.2, { x: Math.PI / 2 }, { sinSuelo: true }); // argolla
+  const hoja = deLote(H);
+  hoja.name = 'hoja';
+  hoja.position.set(0, P.superficieSuelo - gr, -S / 2);
+  hoja.userData.abre = { eje: 'x', ang: -Math.PI / 2 };
+  const g = new THREE.Group();
+  g.add(hoja);
+  return g;
 }
 
 // ---------- Mojón, con el estilo v5 ----------
@@ -966,6 +1036,7 @@ export function modeloPieza(tipo, ctx) {
     case 'muro_entramado': return muroEntramado();
     case 'muro_tabla': return muroTablas();
     case 'muro_tabla_puerta': return muroTablas({ puerta: true });
+    case 'muro_tabla_ventana': return muroTablasVentana();
     case 'medio_muro': return medioMuro();
     case 'tejado_paja': return tejadoPaja(ctx || CTX_TEJADO);
     case 'tejado_tablilla': return tejadoTablillas(ctx || CTX_TEJADO);
@@ -977,6 +1048,8 @@ export function modeloPieza(tipo, ctx) {
     case 'polipasto': return polipasto();
     case 'puerta_varas': return puerta('puerta_varas');
     case 'puerta_tabla': return puerta('puerta_tabla');
+    case 'contraventana': return contraventana(ctx);
+    case 'trampilla': return trampilla();
     case 'cerca': return cerca();
     case 'cerca_portillo': return portillo();
     case 'empalizada': return empalizada();

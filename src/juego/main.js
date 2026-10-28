@@ -1,6 +1,6 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara } from '../logica/construccion.js';
+import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto } from './modelos.js';
@@ -161,14 +161,20 @@ function transformarPieza(obj, p) {
   const l = centroLocal(p);
   obj.position.set(l.lx, p.k * ALTURA, l.lz);
   let ry = 0;
-  if (['e', 'b', 'p', 'g', 'q'].includes(p.hueco) && p.d === 1) ry = -Math.PI / 2;
+  if (['e', 'b', 'p', 'g', 'q', 'w'].includes(p.hueco) && p.d === 1) ry = -Math.PI / 2;
   if (p.hueco === 'g' && p.dir % 2 === 1) ry += Math.PI;
-  if (p.hueco === 'r' || p.hueco === 'l') ry = -(p.dir || 0) * Math.PI / 2;
+  if (p.hueco === 'r' || p.hueco === 'l' || p.hueco === 't') ry = -(p.dir || 0) * Math.PI / 2;
   obj.rotation.y = ry;
 }
+// las hojas que se abren (puertas, portones, contraventanas, trampillas) se llaman «hoja»; las que no giran como una
+// puerta llevan su giro en userData.abre ({ eje, ang })
 function aplicarAperturas(obj, p) {
-  const hoja = obj.getObjectByName('hoja');
-  if (hoja) hoja.rotation.y = p.abierta ? -Math.PI / 2 : 0;
+  obj.traverse(o => {
+    if (o.name !== 'hoja') return;
+    const a = o.userData.abre;
+    if (a) o.rotation[a.eje] = p.abierta ? a.ang : 0;
+    else o.rotation.y = p.abierta ? -Math.PI / 2 : 0;
+  });
 }
 
 // Libera en la tarjeta gráfica las mallas que se quitan. Sin esto, cada vez que se colocaba o se quitaba algo se
@@ -192,6 +198,7 @@ function despejarDecorado() {
 // suelos y cimientos de troncos: qué casillas de al lado tienen el mismo suelo terminado, para juntarse con ellas
 const TIPOS_QUE_SE_JUNTAN = new Set(['suelo_tronco', 'cim_tronco']);
 function contextoSuelo(c, p) {
+  if (p.hueco === 'w') { const m = c.piezas.get(clave('e', p.i, p.j, p.k, p.d)); return { muro: m && m.tipo }; } // contraventana
   if (p.hueco !== 'f' || !TIPOS_QUE_SE_JUNTAN.has(p.tipo) || p.obra) return undefined;
   const igual = (di, dj) => { const q = c.piezas.get(clave('f', p.i + di, p.j + dj, p.k)); return !!q && q.tipo === p.tipo && !q.obra; };
   return { vecinos: { xn: igual(-1, 0), xp: igual(1, 0), zn: igual(0, -1), zp: igual(0, 1) } };
@@ -692,7 +699,7 @@ function interactivoCercano() {
       if (!puerta && !esc) continue;
       const m = localAMundo(c, centroLocal(p).lx, centroLocal(p).lz);
       const d = Math.hypot(m.x - pj.x, m.z - pj.z);
-      let mismaPlanta = p.k === pj.k || (esc && p.k === pj.k - 1);
+      let mismaPlanta = p.k === pj.k || (esc && p.k === pj.k - 1) || (p.hueco === 't' && p.k === pj.k + 1); // la trampilla, también desde abajo
       // en una pila de andamios, estando en una plataforma con otro andamio encima, Usar sube (no baja)
       if (PIEZAS[p.tipo].andamio && p.k === pj.k - 1 && andamioEn(c, p.i, p.j, pj.k)) mismaPlanta = false;
       if (mismaPlanta && d < md) { md = d; mejor = { c, key, p, tipo: puerta ? 'puerta' : 'escalera' }; }
@@ -948,6 +955,7 @@ function usar() {
     mostrarAviso(t('nadaQueUsar')); return;
   }
   if (it.tipo === 'puerta') {
+    if (it.p.hueco === 't' && it.p.abierta && dentroDeCasilla(it.c, it.p)) { mostrarAviso(t('apartateTrampilla'), true); return; }
     const r = accion({ tipo: 'usar', construccion: it.c.id, clave: it.key });
     if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
     guardar(); reconstruir();
@@ -997,6 +1005,11 @@ function usarAndamio(c, p) {
   mostrarAviso(`${t('bajas')} ${pj.k}`);
 }
 
+// ¿Está el jugador en la casilla de esta pieza (la de una trampilla: encima de su escalera)?
+function dentroDeCasilla(c, p) {
+  const l = mundoALocal(c, pj.x, pj.z);
+  return Math.floor(l.lx / MODULO) === p.i && Math.floor(l.lz / MODULO) === p.j;
+}
 // ---------------- Movimiento y colisiones ----------------
 function segmentosBloqueo(k) {
   const segs = []; // [x1,z1,x2,z2]
@@ -1007,6 +1020,12 @@ function segmentosBloqueo(k) {
       if (p.hueco === 'v') {
         const m = localAMundo(c, p.i * MODULO, p.j * MODULO);
         circulos.push({ x: m.x, z: m.z, r: 0.16 });
+        continue;
+      }
+      if (p.hueco === 'l' && PIEZAS[p.tipo].andando && trampillaCerrada(c, p.i, p.j, p.k)) {
+        // escalera con la trampilla de arriba cerrada: no se puede subir, así que la casilla no se pisa
+        const esq = [[p.i, p.j], [p.i + 1, p.j], [p.i + 1, p.j + 1], [p.i, p.j + 1]].map(([a, b]) => localAMundo(c, a * MODULO, b * MODULO));
+        for (let n = 0; n < 4; n++) segs.push([esq[n].x, esq[n].z, esq[(n + 1) % 4].x, esq[(n + 1) % 4].z]);
         continue;
       }
       if (p.hueco !== 'e') continue;
@@ -1058,7 +1077,7 @@ function escaleraBajoJugador() {
     for (const k0 of [pj.k, pj.k - 1]) {
       if (k0 < 0) continue;
       const p = escaleraAndando(c, i, j, k0);
-      if (!p) continue;
+      if (!p || trampillaCerrada(c, i, j, k0)) continue; // con la trampilla cerrada, la escalera no sube
       const t = progresoEscalera(p, l.lx, l.lz);
       const base = c.piezas.has(clave('f', i, j, k0)) ? (k0 === 0 ? P.superficieCimiento : P.superficieSuelo) : 0;
       const y0 = k0 * ALTURA + base, y1 = (k0 + 1) * ALTURA + P.superficieSuelo;
@@ -1078,6 +1097,7 @@ function alturaSuelo() {
       const i = Math.floor(l.lx / MODULO), j = Math.floor(l.lz / MODULO);
       const f = c.piezas.get(clave('f', i, j, k));
       if (f && !f.obra) { pj.k = k; return k * ALTURA + (k === 0 ? P.superficieCimiento : P.superficieSuelo); }
+      if (k > 0 && trampillaCerrada(c, i, j, k - 1)) { pj.k = k; return k * ALTURA + P.superficieSuelo; } // la trampilla cerrada se pisa
       if (k > 0 && andamioEn(c, i, j, k - 1)) { pj.k = k; return k * ALTURA + P.superficieSuelo; } // plataforma del andamio
     }
     if (k === 0) { pj.k = 0; return 0; }

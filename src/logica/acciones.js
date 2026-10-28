@@ -44,8 +44,9 @@ function forma(accion, campos) {
 }
 
 // ---------------- Construcción ----------------
-// Piezas que se abren y cierran con Usar: las puertas de muro y los portones (el de la empalizada y el portillo de la cerca).
-export function seAbre(p) { return p.hueco === 'p' || !!(PIEZAS[p.tipo] && PIEZAS[p.tipo].portón); }
+// Piezas que se abren y cierran con Usar: las puertas de muro, los portones (el de la empalizada y el portillo de la
+// cerca), las contraventanas y las trampillas.
+export function seAbre(p) { return p.hueco === 'p' || p.hueco === 'w' || p.hueco === 't' || !!(PIEZAS[p.tipo] && PIEZAS[p.tipo].portón); }
 
 const CAMPOS_CONSTRUCCION = {
   mojon: { x: 'n', z: 'n' },

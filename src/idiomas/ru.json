@@ -730,5 +730,11 @@
  "v14, provisional: en línea el ritmo es «normal» para todos (la dificultad solo cambia las ayudas que ves en la rosa), y el rival es el jugador de la liza más cercano. Los que construyen en el mismo servidor no están en la liza: ni se les ve ni se les puede dar.": "v14, временно: по сети темп для всех «обычный» (сложность меняет только подсказки на розе), а противник — ближайший игрок на ристалище. Те, кто строит на том же сервере, не на ристалище: их не видно и по ним нельзя попасть.",
  "v14, provisional: en línea, «Otra vez» te devuelve sano donde estabas, pero solo si has caído o no hay nadie en pie a menos de 15 m (para que no sirva para curarse en mitad de una pelea). Si vences y tu rival vuelve a empezar, la pelea sigue sin que tú te cures.": "v14, временно: по сети «Ещё раз» возвращает тебя невредимым на то же место, но только если ты пал или в пределах 15 м никто не стоит на ногах (чтобы нельзя было лечиться посреди боя). Если ты победил, а противник начал заново, бой продолжается, и ты не исцеляешься.",
  "Demo única · v24 (duelo en línea)": "Единое демо · v24 (поединок по сети)",
- "v24: «Duelo en línea» en el menú: luchas contra otro jugador conectado al mismo servidor. El servidor resuelve los golpes, las paradas y las heridas, y los dos ven lo mismo. La dirección del servidor, en Opciones, como en «Jugar en línea». Es el combate v14.": "v24: «Поединок по сети» в меню: ты сражаешься с другим игроком, подключённым к тому же серверу. Удары, парирования и раны рассчитывает сервер, и оба видят одно и то же. Адрес сервера — в «Настройках», как и для «Играть по сети». Это бой v14."
+ "v24: «Duelo en línea» en el menú: luchas contra otro jugador conectado al mismo servidor. El servidor resuelve los golpes, las paradas y las heridas, y los dos ven lo mismo. La dirección del servidor, en Opciones, como en «Jugar en línea». Es el combate v14.": "v24: «Поединок по сети» в меню: ты сражаешься с другим игроком, подключённым к тому же серверу. Удары, парирования и раны рассчитывает сервер, и оба видят одно и то же. Адрес сервера — в «Настройках», как и для «Играть по сети». Это бой v14.",
+ "Muro de tablas con ventana": "Дощатая стена с окном",
+ "Contraventana": "Ставень",
+ "Trampilla": "Люк",
+ "La contraventana va en un muro con ventana.": "Ставень ставится на стену с окном.",
+ "La trampilla va en el hueco de arriba de una escalera de tablas, con suelo al lado.": "Люк ставится в проём над дощатой лестницей, рядом должен быть пол.",
+ "Sal de la escalera para cerrar la trampilla.": "Сойдите с лестницы, чтобы закрыть люк."
 }
