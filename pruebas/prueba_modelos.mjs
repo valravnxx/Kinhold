@@ -201,7 +201,9 @@ console.log('Contraventana y trampilla con el estilo v5');
         `x de ${r3(bh.min.x)} a ${r3(bh.max.x)}, z de ${r3(bh.min.z)} a ${r3(bh.max.z)} (muro hasta ${r3(caraH)})`);
     }
   }
-  const bf = caja(modeloPieza('contraventana', { muro: 'muro_tronco_ventana', fuera: -1 }));
+  const of = modeloPieza('contraventana', { muro: 'muro_tronco_ventana', fuera: -1 });
+  of.rotation.y = 0; // como hace la rejilla al ponerla en un muro a lo largo de x: el giro de dentro tiene que seguir
+  const bf = caja(of);
   comprobar('Contraventana: va por el lado de fuera del muro (el que no da al suelo de la casa)', bf.max.z < -0.15 && bf.min.z < -0.15, `z de ${r3(bf.min.z)} a ${r3(bf.max.z)}`);
   const t = modeloPieza('trampilla'), nt = nombresDe(t);
   comprobar('Trampilla: con el estilo v5 y una hoja que se abre', nt.length > 0 && nt.every(x => x.startsWith('estilo_')) && hojas(t).length === 1);

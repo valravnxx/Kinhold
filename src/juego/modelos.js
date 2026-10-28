@@ -609,8 +609,12 @@ function contraventana(ctx) {
     hoja.userData.abre = { eje: 'y', ang: s * Math.PI * 0.98 }; // abierta, de plano contra el muro
     g.add(hoja);
   }
-  if (ctx && ctx.fuera === -1) g.rotation.y = Math.PI; // el lado de fuera del muro es el -z
-  return g;
+  if (!ctx || ctx.fuera !== -1) return g;
+  // el lado de fuera del muro es el -z: se gira por dentro (el giro del objeto lo pone luego la rejilla)
+  const fuera = new THREE.Group();
+  g.rotation.y = Math.PI;
+  fuera.add(g);
+  return fuera;
 }
 // Trampilla: tablas clavadas a tres peinazos que tapan el hueco de la escalera de tablas, a ras del suelo. La bisagra va
 // en el borde del arranque de la escalera (-z local): abierta queda de pie a la espalda del que sube.
