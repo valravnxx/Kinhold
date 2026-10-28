@@ -1,6 +1,7 @@
 // Decisiones tomadas en el prototipo de combate, para revisar.
-export const VERSION_COMBATE = 'Combate · v14';
+export const VERSION_COMBATE = 'Combate · v15';
 export const REGISTRO_COMBATE = [
+  'v15: en línea, si se corta la conexión, vuelve a conectar sola y sigues con el mismo luchador, con sus heridas (el servidor lo guarda 2 minutos). Mientras no estás, nadie te puede dar y tu tiempo se para. Si entras desde otra pestaña con el mismo personaje, la vieja se cierra con un aviso.',
   'v14: duelo en línea (en la demo, «Duelo en línea»; aquí, con ?enlinea=1). El rival es otro jugador conectado al mismo servidor y los golpes, las paradas, las heridas y las flechas los resuelve el servidor: los dos ven lo mismo. Lo que haces se ve al momento en tu luchador y se manda al servidor; si no lo acepta, tu luchador vuelve a lo que dice él. Fuera de línea, el duelo es el de siempre.',
   'v14, provisional: en línea el ritmo es «normal» para todos (la dificultad solo cambia las ayudas que ves en la rosa), y el rival es el jugador de la liza más cercano. Los que construyen en el mismo servidor no están en la liza: ni se les ve ni se les puede dar.',
   'v14, provisional: en línea, «Otra vez» te devuelve sano donde estabas, pero solo si has caído o no hay nadie en pie a menos de 15 m (para que no sirva para curarse en mitad de una pelea). Si vences y tu rival vuelve a empezar, la pelea sigue sin que tú te cures.',

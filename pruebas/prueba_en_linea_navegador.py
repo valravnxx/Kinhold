@@ -2,6 +2,7 @@
 # una en PC y otra en móvil, que construyen en el mismo mundo y se ven la una a la otra con su personaje del taller.
 # Uso: python3 pruebas/prueba_en_linea_navegador.py <html de la demo> <carpeta_capturas>
 # MUTAR=1 tira los mensajes de posición que manda cada página (como si no se mandaran): la prueba tiene que fallar.
+# MUTAR_FICHA=1 no deja guardar la ficha del servidor (al volver a conectar se es otro): tiene que fallar.
 # MUTAR_OBRA=1 rehace todo lo construido cada vez que una obra avanza (como antes del arreglo de los fotogramas): tiene que fallar.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
 from playwright.sync_api import sync_playwright
@@ -12,6 +13,7 @@ SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_en_linea'
 os.makedirs(SALIDA, exist_ok=True)
 MUTAR = bool(os.environ.get('MUTAR'))
 MUTAR_OBRA = bool(os.environ.get('MUTAR_OBRA'))
+MUTAR_FICHA = bool(os.environ.get('MUTAR_FICHA'))   # la página no guarda su ficha: al volver sería otro jugador; tiene que fallar
 
 # la web, como en GitHub Pages: la demo en jugar/demo/ y los personajes en recursos/personajes/
 sitio = tempfile.mkdtemp()
@@ -64,6 +66,8 @@ try:
             if MUTAR:
                 ctx.add_init_script("""(() => { const s = WebSocket.prototype.send;
                   WebSocket.prototype.send = function (d) { if (String(d).includes('"estado"')) return; return s.call(this, d); }; })()""")
+            if MUTAR_FICHA:
+                ctx.add_init_script("(() => { const s = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (String(k).startsWith('kinhold_ficha')) return; return s.call(this, k, v); }; })()")
             pg = ctx.new_page()
             err = []
             pg.on('pageerror', lambda e, err=err: err.append(str(e)))
@@ -153,13 +157,39 @@ try:
         A.evaluate(f"{K}.estado.obrando = null")  # deja de construir (como al moverse)
         piezasAntes = piezas(A)
 
-        print('El servidor se apaga')
+        print('Salir al menú y volver: sigue siendo el mismo')
+        yoB = B.evaluate(f"{K}.enLinea.red.yo")
+        B.click('#btnDemoMenu'); B.wait_for_function('window.__demo && window.__demo.listo')
+        B.click('#demoEnLinea'); B.wait_for_load_state('load')
+        comprobar('el móvil vuelve a entrar en línea', esperar(B, 'window.__demo && window.__demo.listo', 60000) and esperar(B, f"{K}.enLinea && {K}.enLinea.estado === 'conectado'"))
+        comprobar('con el mismo personaje (mismo autor)', B.evaluate(f"{K}.enLinea.red.yo") == yoB, B.evaluate(f"{K}.enLinea.red.yo"))
+        B.evaluate(f"Object.assign({K}.pj, {{ x: -1.0, z: 5.0, rot: -Math.PI * 0.25 }})")
+        comprobar('PC sigue viendo a uno solo, no a uno más', esperar(A, f"{K}.enLinea.remotos.size === 1", 8000) and A.wait_for_timeout(1500) is None and A.evaluate(f"{K}.enLinea.remotos.size") == 1
+                   and '1 más' in A.inner_text('#estadoRed'), A.inner_text('#estadoRed'))
+
+        print('El servidor se apaga y vuelve')
         servidor.terminate(); servidor.wait(5)
-        comprobar('PC dice que se ha perdido la conexión', esperar(A, "document.getElementById('estadoRed').textContent === 'Sin conexión'", 5000) and 'perdido' in A.inner_text('#aviso'))
+        comprobar('PC dice que se ha cortado y que vuelve a conectar', esperar(A, "document.getElementById('estadoRed').textContent === 'Volviendo a conectar…'", 5000) and 'volviendo a conectar' in A.inner_text('#aviso'), A.inner_text('#aviso'))
         comprobar('y ya no ve al otro', A.evaluate(f"{K}.enLinea.remotos.size") == 0)
         A.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','cim_piedra'); {K}.apuntar(5,1); {K}.colocar()")
         comprobar('sin conexión no se construye', piezas(A) == piezasAntes and 'conexión' in A.inner_text('#aviso'), A.inner_text('#aviso'))
+        A.evaluate(f"{K}.cambiarModo('mover')")
         A.screenshot(path=f'{SALIDA}/pc_4_sin_conexion.png')
+        B.screenshot(path=f'{SALIDA}/movil_4_sin_conexion.png')
+        servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs'), str(PUERTO), ARCHIVO], cwd=RAIZ,
+                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        servidor.stdout.readline()
+        for nombre, pg, yo in [('PC', A, yoA), ('el móvil', B, yoB)]:
+            comprobar(f'{nombre} vuelve a conectar solo, sin recargar', esperar(pg, f"{K}.enLinea.estado === 'conectado'", 20000))
+            comprobar(f'{nombre} sigue con el mismo personaje (la ficha vale tras reiniciar el servidor)', pg.evaluate(f"{K}.enLinea.red.yo") == yo)
+        comprobar('PC avisa de que ha vuelto', 'recuperada' in A.inner_text('#aviso'), A.inner_text('#aviso'))
+        comprobar('el mundo es el de antes', piezas(A) == piezasAntes and foto(A) == foto(B))
+        comprobar('y se vuelven a ver', esperar(A, f"{K}.enLinea.remotos.size === 1", 8000) and esperar(B, f"{K}.enLinea.remotos.size === 1", 8000))
+        A.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','cim_piedra'); {K}.apuntar(5,1); {K}.colocar(); {K}.cambiarModo('mover')")
+        comprobar('y se puede construir otra vez', esperar(A, f"{K}.enLinea.red.pendientes.length === 0", 8000) and piezas(A) == piezasAntes + 1, f'{piezas(A)} piezas')
+        A.wait_for_timeout(800)
+        A.screenshot(path=f'{SALIDA}/pc_5_vuelve.png')
+        B.screenshot(path=f'{SALIDA}/movil_5_vuelve.png')
         for nombre, (pg, err) in paginas.items():
             malos = [e for e in err if 'WebSocket' not in e and 'ERR_CONNECTION_REFUSED' not in e]
             comprobar(f'{nombre}: sin errores en la consola', not malos, str(malos[:3]))

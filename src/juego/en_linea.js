@@ -6,6 +6,7 @@ import { PresenciaCliente } from '../logica/presencia.js';
 import { crearJugador } from './personaje.js';
 import { tr } from '../idioma.js';
 import { direccionServidor } from '../mundo/direccion_servidor.js';
+import { abrirConexion } from '../mundo/conexion.js';
 export { CLAVE_SERVIDOR, SERVIDOR_POR_DEFECTO, direccionServidor } from '../mundo/direccion_servidor.js';
 
 // escena: donde se ponen los demás; recursos: carpeta del taller; aspecto: { sexo, capas } propio;
@@ -13,8 +14,8 @@ export { CLAVE_SERVIDOR, SERVIDOR_POR_DEFECTO, direccionServidor } from '../mund
 // avisar(texto, error): un aviso para el jugador; alEstado(texto): la línea de estado de la conexión.
 export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, alEstado }) {
   const direccion = direccionServidor();
-  let ws = null, estado = 'conectando';
-  const enviar = (m) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(m)); };
+  let con = null, estado = 'conectando';
+  const enviar = (m) => { if (con) con.enviar(m); };
   const red = new MundoEnLinea(enviar);
   const presencia = new PresenciaCliente(enviar);
   const aspectos = new Map();   // autor → { sexo, capas }
@@ -24,18 +25,16 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   const ponerEstado = () => {
     const n = [...presencia.remotos.keys()].filter(a => !enLiza.has(a)).length;
     alEstado(estado === 'conectado' ? tr('En línea · {n} más', { n })
-      : estado === 'conectando' ? tr('Conectando con el servidor…') : tr('Sin conexión'));
+      : estado === 'conectando' ? tr('Conectando con el servidor…')
+      : estado === 'volviendo' ? tr('Volviendo a conectar…') : tr('Sin conexión'));
   };
   ponerEstado();
 
-  try { ws = new WebSocket(direccion); } catch (e) {
-    estado = 'cortado'; ponerEstado(); avisar(tr('No se puede conectar con el servidor: {d}', { d: direccion }), true);
-  }
-  if (ws) {
-    ws.onopen = () => { if (aspecto) enviar({ tipo: 'aspecto', sexo: aspecto.sexo, capas: aspecto.capas }); };
-    ws.onmessage = (ev) => {
-      let msg; try { msg = JSON.parse(ev.data); } catch (e) { return; }
+  con = abrirConexion(direccion, {
+    alAbrir: () => { if (aspecto) enviar({ tipo: 'aspecto', sexo: aspecto.sexo, capas: aspecto.capas }); },
+    alMensaje: (msg) => {
       const ahora = performance.now();
+      const volvia = estado === 'volviendo';
       presencia.recibir(msg, ahora);
       for (const l of msg.tipo === 'luchadores' ? msg.lista : msg.tipo === 'bienvenida' ? msg.luchadores || [] : [])
         if (l.liza) enLiza.add(l.autor); else enLiza.delete(l.autor);
@@ -47,18 +46,22 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       else if (msg.tipo === 'error') console.warn('Servidor:', msg.motivo);
       const info = red.recibir(msg);
       alCambiar(info, msg);
-      if (msg.tipo === 'bienvenida') avisar(tr('En línea: el mundo es el del servidor ({d}).', { d: direccion }));
+      if (msg.tipo === 'bienvenida') avisar(volvia ? tr('Conexión recuperada: sigues con el mismo personaje.') : tr('En línea: el mundo es el del servidor ({d}).', { d: direccion }));
       if (info.rechazo) avisar(tr('El servidor no lo ha aceptado: {m}', { m: tr(info.rechazo) }), true);
       ponerEstado();
-    };
-    ws.onclose = () => {
-      const antes = estado; estado = 'cortado'; red.yo = null;
+    },
+    alCortar: ({ motivo, vuelve }) => {
+      const antes = estado; estado = vuelve ? 'volviendo' : 'cortado'; red.yo = null;
       for (const a of [...remotos.keys()]) quitar(a);
       presencia.remotos.clear();
       ponerEstado();
-      avisar(antes === 'conectado' ? tr('Se ha perdido la conexión con el servidor.') : tr('No se puede conectar con el servidor: {d}', { d: direccion }), true);
-    };
-  }
+      if (antes === 'volviendo' && vuelve) return;   // sigue intentándolo: ya se ha avisado
+      avisar(motivo === 'otra' ? tr('Has entrado con este personaje desde otra pestaña o aparato.')
+        : motivo === 'inunda' ? tr('El servidor ha cerrado la conexión: demasiados mensajes.')
+        : vuelve ? tr('Se ha cortado la conexión con el servidor: volviendo a conectar…')
+        : antes === 'conectado' ? tr('Se ha perdido la conexión con el servidor.') : tr('No se puede conectar con el servidor: {d}', { d: direccion }), true);
+    },
+  });
 
   function quitar(autor) {
     const r = remotos.get(autor);
@@ -98,6 +101,6 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     red, direccion, paso,
     get estado() { return estado; },
     get remotos() { return remotos; },
-    cerrar() { if (ws) ws.close(); },
+    cerrar() { if (con) con.cerrar(); },
   };
 }
