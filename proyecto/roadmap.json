@@ -565,7 +565,9 @@
     },
     {
      "nombre": "Tejado de teja (N2: 10 tejas y vigas, pesa 200 kg, no se pudre ni arde fácil): material nuevo «teja» y su prueba de carga",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T13:00:52+00:00",
+     "rama": "trabajo/20261028-1301"
     },
     {
      "nombre": "Remate de tejado: cumbrera y esquinas, para que los tejados de dos tramos que se cruzan en una esquina queden cerrados",

@@ -5,7 +5,12 @@
   "hito": "prueba-online",
   "rama": "trabajo/20261028-1232"
  },
- "B": null,
+ "B": {
+  "inicio": "2026-10-28T13:00:52+00:00",
+  "tarea": "Tejado de teja (N2: 10 tejas y vigas, pesa 200 kg, no se pudre ni arde fácil): material nuevo «teja» y su prueba de carga",
+  "hito": "construccion-mas",
+  "rama": "trabajo/20261028-1301"
+ },
  "chat:trabajo/20261028-1240-rocas": {
   "inicio": "2026-10-28T12:35:33+01:00",
   "tarea": "Roca escarpada de cerca: las paredes de los cortados cubiertas de piezas de roca 3D (bloques con caras, aristas, salientes y grietas, hechos por código) y una textura de roca con sombra en grietas y rincones",
