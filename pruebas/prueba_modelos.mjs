@@ -103,7 +103,7 @@ console.log('Tejados y rellenos bajo el tejado con el estilo v5');
   // MUTAR_TEJADO=1 hace que los tramos de paja monten sobre el de al lado: vuelve el surco y la prueba tiene que fallar
   if (process.env.MUTAR_TEJADO) P.juntaPaja = 0.03;
   const S = MODULO, sub = P.subidaTejado;
-  for (const tipo of ['tejado_paja', 'tejado_tablilla']) {
+  for (const tipo of ['tejado_paja', 'tejado_tablilla', 'tejado_teja']) {
     const nombres = []; modeloPieza(tipo).traverse(o => { if (o.isMesh) nombres.push(o.name); });
     comprobar(`${PIEZAS[tipo].nombre}: hecho con el estilo v5 (mallas por textura)`, nombres.length > 0 && nombres.every(n => n.startsWith('estilo_')), nombres.join(' '));
     // el tejado se apoya en lo alto de los muros: por dentro de la casilla, nada queda por debajo del plano del tejado
@@ -123,6 +123,20 @@ console.log('Tejados y rellenos bajo el tejado con el estilo v5');
   const suelto = caja(modeloPieza('tejado_paja')), conCumbrera = caja(modeloPieza('tejado_paja', { extremos: [1, -1], cumbrera: true, par: 0 }));
   comprobar('Tejado de paja: vuela 20 cm por los lados sueltos', Math.abs(suelto.max.x - S / 2 - 0.2) < 0.005, `x hasta ${r3(suelto.max.x)}`);
   comprobar('Tejado de paja: la cumbrera redonda solo si se pide', conCumbrera.max.y > suelto.max.y + 0.1, `${r3(suelto.max.y)} → ${r3(conCumbrera.max.y)}`);
+  // teja: el dibujo de canales y cobijas sigue de un tramo al de al lado sin que dos tejas caigan en el mismo sitio
+  {
+    const tri = (o) => { let n = 0; o.traverse(m => { if (m.isMesh) n += m.geometry.attributes.position.count / 3; }); return n; };
+    const medioT = caja(modeloPieza('tejado_teja', { extremos: [], cumbrera: false, par: 0 }));
+    // sin lados sueltos pone la cobija de su lado izquierdo (la del derecho la pone el vecino): asoma por la izquierda
+    // lo que mide media cobija y por la derecha, nada fuera de la junta
+    comprobar('Tejado de teja: entre tramos vecinos, cada uno pone la cobija de su izquierda y no la de la derecha',
+      Math.abs(medioT.min.x + S / 2 + 0.07) < 0.01 && medioT.max.x <= S / 2 + 0.031, `x de ${r3(medioT.min.x)} a ${r3(medioT.max.x)}`);
+    const sueltoT = caja(modeloPieza('tejado_teja')), cumbT = caja(modeloPieza('tejado_teja', { extremos: [1, -1], cumbrera: true, par: 0 }));
+    comprobar('Tejado de teja: vuela por los lados sueltos, con tabla de remate', sueltoT.max.x > S / 2 + 0.2 && sueltoT.min.x < -S / 2 - 0.2, `x de ${r3(sueltoT.min.x)} a ${r3(sueltoT.max.x)}`);
+    comprobar('Tejado de teja: el caballete de la cumbrera solo si se pide', cumbT.max.y > sueltoT.max.y + 0.08, `${r3(sueltoT.max.y)} → ${r3(cumbT.max.y)}`);
+    const tp = tri(modeloPieza('tejado_paja')), tt = tri(modeloPieza('tejado_teja'));
+    comprobar('Tejado de teja: ligero para el móvil (como mucho 2,5 veces los triángulos de la paja)', tt <= tp * 2.5 * (process.env.MUTAR_TEJA ? 0.5 : 1), `${Math.round(tp)} → ${Math.round(tt)} triángulos`);
+  }
   // rellenos: cierran del muro al tejado y no lo atraviesan
   for (const muro of ['muro_tronco', 'muro_tabla', 'muro_zarzo', 'muro_entramado']) {
     const r = rellenoTejado({ tipo: 'lado', lado: 1, muro, hBajo: 0, hAlto: 1 }, 0);

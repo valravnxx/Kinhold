@@ -573,9 +573,9 @@
     },
     {
      "nombre": "Tejado de teja (N2: 10 tejas y vigas, pesa 200 kg, no se pudre ni arde fácil): material nuevo «teja» y su prueba de carga",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T13:00:52+00:00",
-     "rama": "trabajo/20261028-1301"
+     "fin": "2026-10-28T18:06:31+00:00"
     },
     {
      "nombre": "Remate de tejado: cumbrera y esquinas, para que los tejados de dos tramos que se cruzan en una esquina queden cerrados",
@@ -1255,6 +1255,13 @@
      "archivo": "jugar/demo/v27.html",
      "capturas": "capturas/demo-v27",
      "notas": "En «Construir», contraventana, trampilla y muro de tablas con ventana (construcción v29)."
+    },
+    {
+     "v": "v28",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v28.html",
+     "capturas": "capturas/demo-v28",
+     "notas": "En «Construir», tejado de teja (construcción v30)."
     }
    ]
   },
@@ -1451,6 +1458,13 @@
      "archivo": "jugar/construccion/v29.html",
      "capturas": "capturas/construccion-v29",
      "notas": "Contraventana para los muros con ventana y trampilla para el hueco de la escalera de tablas: se abren y se cierran con Usar; la trampilla cerrada se pisa y no deja subir. Muro de tablas con ventana."
+    },
+    {
+     "v": "v30",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/construccion/v30.html",
+     "capturas": "capturas/construccion-v30",
+     "notas": "Tejado de teja (10 tejas y 1 tronco, 200 kg): teja curva de barro cocido con canales, cobijas y caballete en la cumbrera. Pesa más del doble que la paja. Material nuevo: teja."
     }
    ]
   },

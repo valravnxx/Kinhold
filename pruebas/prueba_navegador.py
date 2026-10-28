@@ -449,6 +449,31 @@ with sync_playwright() as p:
     ev(f"{K}.usar()")
     comprobar('y se vuelve a cerrar', ev(f"{cvs}.filter(p => p.abierta).length") == 1)
 
+    print('PC: tejado de teja')
+    for x, z in [(1, -17), (3, -17), (1, -15), (3, -15)]:
+        poner('pieza', 'cim_piedra', x, z)
+    for x in [1, 3]:
+        poner('pieza', 'muro_tronco_puerta' if x == 1 else 'muro_tronco', x, -18)
+        poner('pieza', 'muro_tronco', x, -14)
+    for z in [-17, -15]:
+        poner('pieza', 'muro_tronco', 0, z)
+        poner('pieza', 'muro_tronco_ventana' if z == -15 else 'muro_tronco', 4, z)
+    tejas0 = ev(f"{K}.mundo.materiales.teja")
+    vs = [poner('pieza', 'tejado_teja', x, z, planta=1, girar=0 if z == -17 else 2) for x in [1, 3] for z in [-17, -15]]
+    comprobar('tejado de teja a dos aguas colocado desde el menú (4 tramos)', all(v and v['ok'] for v in vs), json.dumps(vs, ensure_ascii=False)[:300])
+    nte = ev(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'tejado_teja' && !p.obra).length")
+    comprobar('los 4 tramos terminados y cobradas 40 tejas', nte == 4 and tejas0 - ev(f"{K}.mundo.materiales.teja") == 40, f'tramos={nte} tejas {tejas0} → {ev(f"{K}.mundo.materiales.teja")}')
+    comprobar('la teja sale en la barra de materiales', 'teja' in ev("document.getElementById('materiales').textContent"))
+    ev(f"{K}.cambiarModo('mover'); {K}.estado.planta=0; {K}.pj.x=-0.6; {K}.pj.z=-19.8; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI-0.7; {K}.cam.pitch=0.45; {K}.cam.dist=12")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/45_tejado_teja.png')
+    ev(f"{K}.pj.x=2.0; {K}.pj.z=-18.8; {K}.pj.rot=Math.PI*0.75; {K}.cam.yaw=Math.PI-0.55; {K}.cam.pitch=0.85; {K}.cam.dist=6")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/46_tejado_teja_de_cerca.png')
+    ev(f"{K}.pj.x=5.5; {K}.pj.z=-12.5; {K}.cam.yaw=0.8; {K}.cam.pitch=0.4; {K}.cam.dist=11")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/47_tejado_teja_detras.png')
+
     print('PC: los muebles del piso de arriba no se ven desde abajo con el techo puesto')
     # un taburete arriba, sobre el suelo de la planta 1 (casilla de z=-11), y otro abajo, debajo de ese suelo
     ev(f"{K}.cambiarModo('construir'); {K}.estado.planta=1; {K}.pj.k=1; {K}.seleccionar('deco','taburete'); {K}.apuntar(10.4, -10.6, 2.62); {K}.colocar()")
@@ -824,6 +849,10 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=9.4; {K}.pj.z=-11.4; {K}.pj.k=1; {K}.pj.y=2.62; {K}.cam.yaw=0.5; {K}.cam.pitch=0.8; {K}.cam.dist=6")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06e_movil_trampilla.png')
+    mv.evaluate(f"{K}.pj.x=3.5; {K}.pj.z=-20.8; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI-0.3; {K}.cam.pitch=0.7; {K}.cam.dist=11")
+    mv.wait_for_timeout(900)
+    comprobar('móvil: el tejado de teja se carga del guardado', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'tejado_teja').length") == 4)
+    mv.screenshot(path=f'{SALIDA}/06f_movil_tejado_teja.png')
     mv.click('#modos button[data-modo=construir]', no_wait_after=True)  # el clic no navega; con la máquina cargada, esperar «navegaciones» agotaba los 30 s
     mv.evaluate(f"{K}.seleccionar('pieza','cim_tronco'); {K}.apuntar(-2, 2)")
     mv.wait_for_timeout(700)
