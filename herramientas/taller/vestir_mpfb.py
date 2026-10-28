@@ -658,9 +658,9 @@ def personaje(nombre, macros, objetivos, ropa):
             return np.concatenate([col, a[..., None]], -1)
         return f
     zc_bajo = cuello_z - 0.13
-    piezas.append(trozo(base, nombre + '_capa_capucha', cubre(zc_bajo, ojo_arriba + 0.05, boca_z - 0.055, 0.074), empuje=separacion_tocado(0.026, 0.09, pico=0.05),
+    piezas.append(trozo(base, nombre + '_capa_capucha', cubre(zc_bajo, ojo_arriba + 0.05, boca_z - 0.055, 0.063), empuje=separacion_tocado(0.026, 0.09, pico=0.05),
                         alisar=(sobre_oreja, 12), tapar=lambda c: min(np.linalg.norm(np.array(c) - o) for o in oreja_c) < 0.065,
-                        textura=(1024, pintar_tocado(ropa.get('capucha', (92, 76, 58)), ojo_arriba + 0.05, boca_z - 0.055, 0.074, zc_bajo)),
+                        textura=(1024, pintar_tocado(ropa.get("capucha", (92, 76, 58)), ojo_arriba + 0.05, boca_z - 0.055, 0.063, zc_bajo)),
                         rugosidad=0.95, diezmar=DIEZMAR))
     if mujer:
         zt_bajo = cuello_z - 0.075
