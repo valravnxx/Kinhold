@@ -134,6 +134,23 @@ h1,h2,h3{margin:0;font-weight:700}
 .dato b{display:block;font:800 30px/1.15 var(--titulos);color:var(--rubrica);font-variant-numeric:lining-nums tabular-nums}
 .dato.texto b{font-size:19px;line-height:1.25;padding-top:4px;color:var(--tinta)}
 .dato span{color:var(--tinta2);font-size:15.5px;font-style:italic;line-height:1.3;display:block}
+/* ---- ahora mismo: quién trabaja en qué (solo los agentes vivos) ---- */
+#ahora{position:relative;margin:-8px 0 26px;padding:16px 22px 12px;border-radius:2px;transform:rotate(-.3deg);
+  background:var(--fibras), var(--grano), linear-gradient(170deg,#f3e6c8,#e7d2a6);
+  box-shadow:inset 0 0 18px rgba(122,70,20,.35), 0 6px 10px rgba(0,0,0,.45)}
+#ahora::before,#ahora::after{content:"";position:absolute;top:6px;width:12px;height:12px;background:var(--clavo)}
+#ahora::before{left:8px} #ahora::after{right:8px}
+#ahora h2{margin:0 0 6px;font:800 19px var(--titulos);color:var(--rubrica);letter-spacing:.03em}
+#ahora ul{margin:0;padding:0;list-style:none}
+#ahora li{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline;padding:7px 0;border-top:1px dotted rgba(91,68,41,.4)}
+#ahora li:first-child{border-top:0}
+#ahora .quien{font:700 15px var(--titulos);color:var(--azul);white-space:nowrap}
+#ahora .quien::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:#4f8a3a;box-shadow:0 0 0 3px rgba(79,138,58,.22);animation:latido 1.8s ease-in-out infinite}
+@keyframes latido{50%{box-shadow:0 0 0 6px rgba(79,138,58,0)}}
+@media (prefers-reduced-motion:reduce){#ahora .quien::before{animation:none}}
+#ahora .que{font-size:16.5px;line-height:1.4;min-width:0}
+#ahora .que small{display:block;color:var(--tenue);font-style:italic;font-size:14.5px}
+#ahora .nadie{color:var(--tinta2);font-style:italic}
 
 /* ---- pestañas: estandartes que cuelgan de una viga ---- */
 nav{position:sticky;top:0;z-index:5;margin:0 -28px;padding:0 28px;
@@ -266,6 +283,9 @@ details[open] > summary .flecha{transform:rotate(45deg)}
 .hito li.hecho span{color:var(--tinta2)}
 .hito li em{font-style:italic;color:var(--tenue);font-size:14.5px;white-space:nowrap}
 .hito li.en_curso em{color:var(--azul);font-style:normal;font-family:var(--titulos);font-weight:700}
+.hito li.a_medias::before{background:linear-gradient(90deg,var(--tenue) 50%,transparent 50%);border-color:var(--tenue)}
+.hito li.a_medias em{color:var(--tinta2)}
+.chip.a_medias{color:var(--tenue)}
 
 /* ---- diario ---- */
 .entrada{display:grid;grid-template-columns:132px 1fr;gap:18px;padding:16px 0;border-top:1px solid var(--linea)}
@@ -340,6 +360,8 @@ footer{max-width:640px;margin:34px auto 0;text-align:center;padding:12px 30px 14
   #resumen{grid-template-columns:repeat(2,1fr);gap:14px}
   .dato b{font-size:25px}
   .dato.texto b{font-size:17px}
+  #ahora{padding:14px 12px 10px;margin-top:-4px}
+  #ahora li{grid-template-columns:1fr;gap:2px}
   nav{margin:0 -4px;padding:0 4px}
   nav .viga{margin:0 -4px}
   nav .cintas{justify-content:flex-start;gap:6px}
@@ -407,6 +429,7 @@ footer{max-width:640px;margin:34px auto 0;text-align:center;padding:12px 30px 14
     <div class="estandarte verde" aria-hidden="true"><div class="asta"></div><div class="pano"></div></div>
   </header>
   <div id="resumen"></div>
+  <div id="ahora"></div>
   <nav id="pestanas"><div class="viga"></div><div class="cintas">
     <button data-s="jugar" class="sel" data-t="t_jugar"></button>
     <button data-s="roadmap" data-t="t_roadmap"></button>
@@ -472,6 +495,9 @@ const UI = {
     r_hitos: 'hitos terminados', r_tareas: 'tareas hechas (de las ya desglosadas)', r_trabajo: 'de trabajo registrado',
     jugar: 'Jugar', version: 'Versión', sin_desglosar: 'Sin desglosar: se planifica al empezar el hito.', hecho: 'hecho',
     en_curso_d: 'en curso', pruebas: 'Pruebas', sin_entradas: 'Todavía no hay entradas.',
+    ah_t: 'Ahora mismo', ah_nadie: 'Ahora mismo no está trabajando ningún agente.', ah_desde: (h) => `desde las ${h}`,
+    ag: { A: 'Agente A', B: 'Agente B', chat: 'Chat con valravnx' }, en_proceso: 'En proceso', a_medias: 'A medias',
+    a_medias_d: 'Empezada, pero ahora no la lleva nadie',
     alpha_cinta: 'La versión jugable', alpha_t: 'Alpha', jugar_alpha: 'Jugar la alpha', novedades: 'Lo último:',
     otras: (n) => `Pruebas sueltas de cada parte (${n})`, otras_d: 'Para ver una parte por separado o comparar; todo lo nuevo llega a la alpha.',
     anteriores: (n) => `Entradas anteriores (${n})`, tareas_de: (k, n) => `${k} de ${n} tareas`,
@@ -494,6 +520,9 @@ const UI = {
     r_hitos: 'milestones finished', r_tareas: 'tasks done (of those broken down so far)', r_trabajo: 'of logged work',
     jugar: 'Play', version: 'Version', sin_desglosar: 'Not broken down yet: planned when the milestone starts.', hecho: 'done',
     en_curso_d: 'in progress', pruebas: 'Tests', sin_entradas: 'No entries yet.',
+    ah_t: 'Right now', ah_nadie: 'No agent is working right now.', ah_desde: (h) => `since ${h}`,
+    ag: { A: 'Agent A', B: 'Agent B', chat: 'Chat with valravnx' }, en_proceso: 'In progress', a_medias: 'Half done',
+    a_medias_d: 'Started, but nobody is on it right now',
     alpha_cinta: 'The playable version', alpha_t: 'Alpha', jugar_alpha: 'Play the alpha', novedades: 'Latest:',
     otras: (n) => `Separate tests of each part (${n})`, otras_d: 'To see one part on its own or compare; everything new reaches the alpha.',
     anteriores: (n) => `Earlier entries (${n})`, tareas_de: (k, n) => `${k} of ${n} tasks`,
@@ -516,6 +545,9 @@ const UI = {
     r_hitos: 'этапов завершено', r_tareas: 'задач выполнено (из уже расписанных)', r_trabajo: 'учтённой работы',
     jugar: 'Играть', version: 'Версия', sin_desglosar: 'Ещё не расписан: задачи появятся, когда этап начнётся.', hecho: 'готово',
     en_curso_d: 'в работе', pruebas: 'Тесты', sin_entradas: 'Записей пока нет.',
+    ah_t: 'Прямо сейчас', ah_nadie: 'Сейчас ни один агент не работает.', ah_desde: (h) => `с ${h}`,
+    ag: { A: 'Агент A', B: 'Агент B', chat: 'Чат с valravnx' }, en_proceso: 'В процессе', a_medias: 'Наполовину',
+    a_medias_d: 'Начата, но сейчас её никто не ведёт',
     alpha_cinta: 'Играбельная версия', alpha_t: 'Альфа', jugar_alpha: 'Играть в альфу', novedades: 'Последнее:',
     otras: (n) => `Отдельные пробы каждой части (${n})`, otras_d: 'Чтобы посмотреть часть отдельно или сравнить; всё новое попадает в альфу.',
     anteriores: (n) => `Более ранние записи (${n})`, tareas_de: (k, n) => `${k} из ${n} задач`,
@@ -544,6 +576,42 @@ const u = (k) => UI[idioma][k] ?? UI.es[k];
 const tr = (s) => (idioma === 'es' || !s) ? s : ((IDIOMAS[idioma] || {})[s] ?? s);
 
 const chip = (e) => `<span class="chip ${e}">${u('estado')[e] || e}</span>`;
+
+// ---------- Quién trabaja en qué ----------
+// Cada agente (carril A, carril B o una sesión de chat) anuncia su tarea en proyecto/sesion.json al empezar
+// (herramientas/carriles.mjs). Una tarea solo sale «en proceso» si la lleva un agente vivo: que empezó o subió un
+// avance a su rama hace menos de LIBRE_MIN minutos. Al abrir la página se mira el estado de ahora mismo en GitHub;
+// si no se puede, se usa el que había al generarla.
+const LIBRE_MIN = 70, REPO = 'valravnxx/Kinhold';
+const agentesDe = (s) => {
+  if (!s) return [];
+  if (s.inicio) s = { A: s };                       // formato antiguo: una sola sesión = carril A
+  return Object.entries(s).filter(([k, v]) => v && v.tarea && (k === 'A' || k === 'B' || k.startsWith('chat:')))
+    .map(([k, v]) => ({ ...v, quien: k.startsWith('chat:') ? 'chat' : k, clave: k }));
+};
+let AGENTES = DATOS.agentes || [];
+const vivo = (a) => Date.now() - Math.max(Date.parse(a.inicio) || 0, Date.parse(a.ultimo) || 0) < LIBRE_MIN * 60000;
+const vivos = () => AGENTES.filter(vivo);
+async function refrescarAgentes() {
+  try {
+    const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/proyecto/sesion.json?t=${Date.now()}`, { cache: 'no-store' });
+    if (!r.ok) return;
+    const lista = agentesDe(await r.json());
+    // latido: el último commit de la rama de cada agente; si GitHub no responde, el que había al generar la página
+    await Promise.all(lista.map(async (a) => {
+      const antes = AGENTES.find(x => x.rama === a.rama && x.ultimo);
+      if (antes) a.ultimo = antes.ultimo;
+      if (!a.rama) return;
+      try {
+        const q = await fetch(`https://api.github.com/repos/${REPO}/branches/${a.rama.split('/').map(encodeURIComponent).join('/')}`);
+        if (q.ok) { const d = (await q.json())?.commit?.commit?.committer?.date; if (d && (!a.ultimo || d > a.ultimo)) a.ultimo = d; }
+      } catch (e) { /* sin red: se queda el latido que hubiera */ }
+    }));
+    AGENTES = lista;
+    pintar();
+  } catch (e) { /* sin red o sin GitHub: se queda lo que traía la página */ }
+  document.documentElement.dataset.agentes = 'mirados';   // para las pruebas: ya se ha mirado GitHub
+}
 const fecha = (iso) => iso ? new Date(iso).toLocaleString(LOCALE[idioma], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
 const dia = (iso) => iso ? new Date(iso).toLocaleDateString(LOCALE[idioma], { day: 'numeric', month: 'short' }) : '';
 const hora = (iso) => iso ? new Date(iso).toLocaleTimeString(LOCALE[idioma], { hour: '2-digit', minute: '2-digit' }) : '';
@@ -592,6 +660,14 @@ function pintar() {
   ].map(([b, s, c]) => `<div class="dato ${c || ''}"><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join('');
   $('#actualizado').textContent = u('actualizado') + ': ' + fecha(DATOS.generado);
 
+  // ---------- Ahora mismo: solo los agentes vivos, cada uno con su tarea ----------
+  const ahora = vivos(), lleva = new Map(ahora.map(a => [a.tarea, a]));
+  const hitoDe = (a) => R.hitos.find(h => h.id === a.hito);
+  $('#ahora').innerHTML = `<h2>${u('ah_t')}</h2>` + (ahora.length ? `<ul>${ahora.map(a => {
+    const h = hitoDe(a);
+    return `<li data-quien="${esc(a.quien)}"><span class="quien">${esc(u('ag')[a.quien] || a.quien)}</span><span class="que">${esc(tr(a.tarea))}<small>${h ? `${esc(h.num)}. ${esc(tr(h.nombre))} · ` : ''}${esc(u('ah_desde')(hora(a.inicio)))}</small></span></li>`;
+  }).join('')}</ul>` : `<p class="nadie">${u('ah_nadie')}</p>`);
+
   // ---------- Jugar: la alpha arriba, las pruebas sueltas en un desplegable ----------
   const principal = R.prototipos.find(p => p.id === PRINCIPAL) || R.prototipos[0];
   const otros = R.prototipos.filter(p => p !== principal);
@@ -621,13 +697,19 @@ function pintar() {
 
   // ---------- Roadmap ----------
   $('#leyenda').innerHTML = ['hecho', 'en_curso', 'revision', 'espera_decision', 'pendiente']
-    .filter(e => e === 'hecho' || e === 'en_curso' || e === 'pendiente' || R.hitos.some(h => h.estado === e)).map(e => `<span>${chip(e)}</span>`).join('');
+    .filter(e => e === 'hecho' || e === 'en_curso' || e === 'pendiente' || R.hitos.some(h => h.estado === e)).map(e => `<span>${chip(e)}</span>`).join('')
+    + (tareas.some(t => t.estado === 'en_curso' && !lleva.has(t.nombre)) ? `<span><span class="chip a_medias">${u('a_medias')}</span></span>` : '');
   $('#listaHitos').innerHTML = R.hitos.map(h => {
     const n = h.tareas.length, k = h.tareas.filter(t => t.estado === 'hecho').length;
     const pct = h.estado === 'hecho' ? 100 : n ? Math.round(k / n * 100) : 0;
     const lista = h.tareas.map(t => {
       const m = minutos(t.inicio, t.fin);
-      return `<li class="${t.estado}"><span>${esc(tr(t.nombre))}</span><em>${t.estado === 'hecho' ? (m != null ? durTexto(m) : u('hecho')) : u('estado')[t.estado]}</em></li>`;
+      // «en proceso» solo si la lleva un agente vivo; si está empezada y no la lleva nadie, «a medias»
+      const a = t.estado === 'en_curso' ? lleva.get(t.nombre) : null;
+      const clase = t.estado === 'en_curso' && !a ? 'a_medias' : t.estado;
+      const etiqueta = t.estado === 'hecho' ? (m != null ? durTexto(m) : u('hecho'))
+        : a ? `${u('en_proceso')} · ${u('ag')[a.quien] || a.quien}` : clase === 'a_medias' ? u('a_medias') : u('estado')[t.estado];
+      return `<li class="${clase}"${clase === 'a_medias' ? ` title="${esc(u('a_medias_d'))}"` : ''}><span>${esc(tr(t.nombre))}</span><em>${etiqueta}</em></li>`;
     }).join('');
     return `<details class="hito ${h.estado} ${h === activo ? 'activo' : ''}" ${h === activo ? 'open' : ''}>
       <summary><div class="sello-hito">${esc(h.num)}</div><div class="titulo"><div class="cab"><h3>${esc(tr(h.nombre))}</h3>${chip(h.estado)}</div><div class="barra"><i style="width:${pct}%"></i></div>${n ? `<div class="barra-txt">${u('tareas_de')(k, n)}</div>` : ''}</div></summary>
@@ -724,6 +806,7 @@ function guirnalda() {
 addEventListener('resize', guirnalda);
 guirnalda();
 pintar();
+refrescarAgentes();
 </script>
 </body>
 </html>

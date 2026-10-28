@@ -130,8 +130,9 @@ export function ocupar(roadmap, sesion, carril, eleccion, rama, inicio) {
   return [roadmap, s];
 }
 // Una sesión de chat anuncia su tarea (la crea al final del hito si no existe). No puede quitársela a otro agente vivo.
-export function anunciarChat(roadmap, sesion, rama, hitoId, tarea, inicio, ahora = Date.now()) {
-  const otro = quienLleva(sesion, ahora).get(tarea);
+// «vivos»: la sesión con el latido de cada agente (conLatido), para saber quién sigue vivo; lo que se escribe es «sesion».
+export function anunciarChat(roadmap, sesion, rama, hitoId, tarea, inicio, ahora = Date.now(), vivos = sesion) {
+  const otro = quienLleva(vivos, ahora).get(tarea);
   if (otro && otro.clave !== CHAT + rama) throw new Error(`esa tarea ya la lleva ${otro.clave} (rama ${otro.rama})`);
   const s = marcar(roadmap, normalizar(sesion), CHAT + rama, hitoId, tarea, rama, inicio, (l, t) => l.push(t));
   return [roadmap, s];
@@ -216,9 +217,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   } else if (orden === 'chat') {
     if (!a1 || !a2 || !a3) { console.log('uso: chat <rama> <hito> "<tarea>" [inicio]'); process.exit(1); }
     try {
-      const [r2, s2] = anunciarChat(roadmap, vivos, a1, a2, a3, a4 || new Date().toISOString(), ahora);
-      // en sesion.json no se guarda el latido calculado
-      for (const v of Object.values(s2)) if (v) delete v.ultimo;
+      const [r2, s2] = anunciarChat(roadmap, sesion, a1, a2, a3, a4 || new Date().toISOString(), ahora, vivos);
       escribir('proyecto/roadmap.json', r2); escribir('proyecto/sesion.json', s2);
       console.log(`chat ${a1} anuncia: ${a2} · ${a3}`);
     } catch (err) { console.log(err.message); process.exit(1); }
