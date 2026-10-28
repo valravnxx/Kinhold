@@ -69,7 +69,14 @@ with sync_playwright() as p:
         _medias = [x[1] for x in _li if x[0] == 'a_medias']
         comprobar('roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias»',
                   sorted(_medias) == sorted(t['nombre'] for _, t in _ec if t['nombre'] not in VIVAS) and all(x[2] == 'A medias' for x in _li if x[0] == 'a_medias'), str([m[:40] for m in _medias]))
-        pg.screenshot(path=f'{SALIDA}/{nombre}_0_ahora_mismo.png', clip={'x': 0, 'y': 0, 'width': vista['width'], 'height': min(900, pg.evaluate("document.querySelector('#ahora').getBoundingClientRect().bottom + 20"))})
+        # el cartel va solo en la pestaña Roadmap, debajo de las pestañas y encima de la lista de hitos (valravnx, 28 oct)
+        comprobar('«ahora mismo» no sale arriba ni en Jugar', not pg.is_visible('#ahora'))
+        pg.click('nav button[data-s=roadmap]'); pg.wait_for_timeout(250)
+        _pos = pg.evaluate("[document.querySelector('nav').getBoundingClientRect().bottom, document.querySelector('#ahora').getBoundingClientRect().top, document.querySelector('#ahora').getBoundingClientRect().bottom, document.querySelector('#listaHitos').getBoundingClientRect().top]")
+        comprobar('«ahora mismo» sale en Roadmap, debajo de las pestañas y encima de los hitos', pg.is_visible('#ahora') and _pos[0] <= _pos[1] + 1 and _pos[2] < _pos[3], str(_pos))
+        _y0 = pg.evaluate("document.querySelector('nav').getBoundingClientRect().top + scrollY")
+        pg.screenshot(path=f'{SALIDA}/{nombre}_0_ahora_mismo.png', clip={'x': 0, 'y': _y0, 'width': vista['width'], 'height': min(900, pg.evaluate("document.querySelector('#listaHitos').getBoundingClientRect().top + scrollY") + 160 - _y0)}, full_page=True)
+        pg.click('nav button[data-s=jugar]'); pg.wait_for_timeout(200)
         comprobar('se ven los prototipos jugables', pg.locator('#listaJuegos .tarjeta').count() >= 2)
         # la alpha (la demo única, versión unificada) va arriba y sola; las pruebas sueltas, plegadas debajo
         import json as _json
@@ -216,7 +223,7 @@ with sync_playwright() as p:
         comprobar('sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso',
                   pg.locator('#ahora li').count() == 0 and pg.locator('#listaHitos li.en_curso').count() == 0 and pg.locator('#listaHitos li.a_medias').count() == len(_ec))
         pg.click('#idiomas button[data-l=ru]'); pg.wait_for_timeout(150)
-        comprobar('«ahora mismo» en ruso', pg.inner_text('#ahora h2') == 'Прямо сейчас')
+        comprobar('«ahora mismo» en ruso', pg.text_content('#ahora h2') == 'Прямо сейчас')
         pg.click('#idiomas button[data-l=es]'); pg.wait_for_timeout(150)
         comprobar(f'sin errores en consola ({nombre})', not err, '; '.join(err[:3]))
         ctx.close()
