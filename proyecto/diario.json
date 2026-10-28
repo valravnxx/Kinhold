@@ -1740,5 +1740,22 @@
   "pruebas": "Batería completa correcta (todas las pruebas de node y de navegador). Después de unir main (el taller del carril A), se volvieron a pasar todas las de node y salieron bien; las de navegador no se repitieron tras esa unión. No hay vistas tocadas: los bots no se ven en ningún prototipo",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T09:34:28+01:00",
+  "fin": "2026-10-28T12:02:17+01:00",
+  "titulo": "Hito 10: cortados de roca (acantilados de verdad)",
+  "hito": "mundo",
+  "hecho": [
+   "Medido en el sitio de la captura de valravnx: era una ladera de 20 a 37° pintada de roca y llena de piedrecitas, no un cortado",
+   "Donde la roca es dura (granito, caliza, pizarra) y la ladera empinada, el terreno se rompe en estratos: paredes de roca y repisas casi llanas, inclinados, ondulados y de distinta altura, por zonas (el método de terraceado de los generadores de terreno)",
+   "Las paredes son roca maciza: franjas de estratos, textura proyectada en triplanar (sin rayas estiradas) y caras planas con aristas; el pedregal va al pie; las repisas tienen hierba",
+   "Las paredes (más de 45°) no se suben ni se bajan andando: el personaje se para al pie o en el borde",
+   "Los acantilados de costa, en capas grandes casi verticales; la rejilla parte cada cuadro por la diagonal que mejor sigue el relieve; el suelo de lejos ya no asoma bajo el trozo de cerca",
+   "Pruebas nuevas: en la montaña de pizarra hay cortados (con todo arenisca no, y falla); en el navegador, el personaje se para al pie de un acantilado (MUTAR_PARED=1 quita el límite y falla)"
+  ],
+  "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa 68/68, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web). Construcción y en línea fallaron una vez por tiempo con las dos mitades a la vez; solas, correctas. Mapa otra vez tras unir main. No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v7",
+  "estado": "ok"
  }
 ]
