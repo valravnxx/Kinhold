@@ -315,7 +315,9 @@
     },
     {
      "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T12:32:34+00:00",
+     "rama": "trabajo/20261028-1232"
     },
     {
      "nombre": "Revisión completa y publicación",

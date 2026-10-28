@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-10-28T09:20:54+00:00",
-  "tarea": "Taller: personalización — altura, complexión y cara con los ajustes de MakeHuman, tono de piel, color de ojos, peinado y barba",
-  "hito": "arte",
-  "rama": "trabajo/20261028-0920"
+  "inicio": "2026-10-28T12:32:34+00:00",
+  "tarea": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
+  "hito": "prueba-online",
+  "rama": "trabajo/20261028-1232"
  },
  "B": null,
  "chat:trabajo/20261028-1240-rocas": {
