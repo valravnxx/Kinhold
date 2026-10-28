@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 28 oct 2026 (05:18) — por el chat: los ríos son agujeros enormes
+
+«La mayoría de ríos son agujeros en el terreno enormes, y creo que es porque aún no hemos programado el agua» (con captura del móvil: un tajo de roca gris con el río al fondo). → No es solo el agua: el valle del río se tallaba con un ancho fijo, así que donde el terreno queda muy por encima del río salía un tajo casi vertical. Se hace ya la tarea del hito 10 «Valles tallados por los ríos» (laderas con pendiente limitada, vegas anchas abajo, gargantas solo en la montaña).
+
 ### 27 oct 2026 (21:22) — por el chat: el paisaje de cerca, como se ve en el juego
 
 «Se ve bien, pero claro, es a 0 detalle; está muy bien como "lo que se ve de lejos" pero no como se ve el juego de cerca.» → Tarea nueva en el hito 10: vista «Como en el juego» en el boceto de cerca, con el personaje, la cámara del juego y un trozo de terreno alrededor con todo el detalle (rejilla de 1 m, hierba, flores, matorrales, piedras, árboles completos y sombras).
