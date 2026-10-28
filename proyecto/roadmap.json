@@ -315,9 +315,9 @@
     },
     {
      "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T12:32:34+00:00",
-     "rama": "trabajo/20261028-1232"
+     "fin": "2026-10-28T14:53:47+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -785,7 +785,9 @@
     },
     {
      "nombre": "Curación de heridas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T14:53:19+00:00",
+     "rama": "trabajo/20261028-1453"
     },
     {
      "nombre": "Prueba de golpes en las cinco direcciones de la rosa con el personaje del taller: el brazo va hacia el objetivo (cinemática inversa) sobre una animación base, porque el paquete solo trae unos pocos golpes; si no convence, buscar otra vía antes de seguir",
@@ -923,9 +925,10 @@
     },
     {
      "nombre": "Nombres del mundo (decididos por valravnx el 28 oct): el continente es Kinland y sus cinco regiones Whitholm (la isla), Eikwold (noroeste), Rudmere (suroeste), Highfell (el macizo central) y Storaa (sureste, el gran río). Son regiones, no países (los países, si llegan, los harán los jugadores): «país» pasa a «región» en el mapa, el GDD, sistemas y el análisis, en los tres idiomas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T15:45:46+01:00",
-     "rama": "trabajo/20261028-1546-nombres"
+     "rama": "trabajo/20261028-1546-nombres",
+     "fin": "2026-10-28T16:06:02+01:00"
     }
    ],
    "lleva": "chat"
@@ -1809,9 +1812,22 @@
      "archivo": "jugar/mapa/v8.html",
      "capturas": "capturas/mapa-v8",
      "notas": "Roca escarpada de cerca: las paredes de los cortados se cubren de losas de roca 3D hechas por código, encajadas en la pared, con caras, aristas, estratos y sombra entre ellas, y una textura de roca con vetas, grietas finas y liquen."
+    },
+    {
+     "v": "v9",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/mapa/v9.html",
+     "capturas": "capturas/mapa-v9",
+     "notas": "Nombres del mundo: el continente Kinland y sus regiones Whitholm, Eikwold, Rudmere, Highfell y Storaa; «país» pasa a «región»."
     }
    ]
   }
  ],
- "decisiones_pendientes": []
+ "decisiones_pendientes": [
+  {
+   "pregunta": "Crear la cuenta de Hetzner y el servidor de prueba siguiendo la guía del repositorio, servidor/nube/LEEME.md (plan CX23 con Ubuntu 24.04 y el cloud config pegado); luego abrir en los dos aparatos la dirección https:// con tu IP con guiones y .sslip.io y decir si funciona (o si prefieres otro alojamiento)",
+   "desde": "2026-10-28",
+   "hito": "prueba-online"
+  }
+ ]
 }
