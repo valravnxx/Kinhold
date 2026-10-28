@@ -94,7 +94,7 @@ if (vTipo > 0.5) {
 } else {
   espuma += (1.0 - smoothstep(1.0, 2.4, vOrilla)) * 0.5 * roto;
   float reguero = mix(ruidoA(q1 * 0.9), ruidoA(q0 * 0.9), w0);
-  espuma += smoothstep(0.66, 0.92, reguero) * smoothstep(1.2, 2.6, vel) * 0.6;
+  espuma += smoothstep(0.66, 0.92, reguero) * smoothstep(1.8, 2.8, vel) * 0.6;
   pend *= 0.7 + 0.5 * smoothstep(0.4, 2.5, vel);
 }
 espuma = clamp(espuma, 0.0, 1.0);

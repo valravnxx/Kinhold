@@ -141,7 +141,7 @@ export function crearPaisaje(mapa) {
     if (!t) return { dx: 0, dy: 0, vel: 0 };
     const vx = t.bx - t.ax, vy = t.by - t.ay, l = Math.hypot(vx, vy) || 1;
     const pend = Math.max(0, (t.ha - t.hb) / l);
-    return { dx: vx / l, dy: vy / l, vel: Math.min(3, Math.max(0.35, Math.sqrt(pend) * 30)) };
+    return { dx: vx / l, dy: vy / l, vel: Math.min(3, Math.max(0.3, Math.sqrt(pend) * 22)) };
   }
   // altura del agua del río en un punto cercano al cauce (m), o null si el punto no está junto a un río
   function agua(xm, ym, tramos) {
