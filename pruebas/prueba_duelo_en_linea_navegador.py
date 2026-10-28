@@ -165,8 +165,11 @@ try:
         for nombre, (pg, _) in paginas.items(): captura(pg, f'{SALIDA}/{nombre}_5_otra.png')
 
         print('Se corta la conexión del móvil y vuelve')
-        A.evaluate(f"{D}.jugador.cansancio = 0; {D}.atacar('bajo')")
-        esperar(B, f"{D}.jugador.heridas.length > 0 || {D}.jugador.fuera", 8000)
+        # que el móvil tenga alguna herida (el golpe puede fallar o pararse: se intenta unas cuantas veces)
+        for i in range(8):
+            if B.evaluate(f"{D}.jugador.heridas.length > 0"): break
+            A.evaluate(f"{D}.jugador.cansancio = 0; {D}.atacar(['bajo','alto','izquierda','derecha'][{i} % 4])")
+            esperar(B, f"{D}.jugador.heridas.length > 0", 1600)
         B.wait_for_timeout(600)
         antes = B.evaluate(f"JSON.stringify({{ yo: {D}.red.yo, heridas: {D}.jugador.heridas.map(h => h.zona + ':' + h.gravedad), fuera: {D}.jugador.fuera }})")
         B.evaluate(f"{D}.red.cortar()")
