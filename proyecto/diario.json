@@ -1979,6 +1979,23 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-28T16:51:15+00:00",
+  "fin": "2026-10-28T20:47:04+00:00",
+  "titulo": "Hito 2: datos de cada prenda (zonas, protección, abrigo y peso)",
+  "hito": "equipo",
+  "hecho": [
+   "Nuevo src/logica/prendas.js (lógica pura): quince prendas con su capa del inventario, su material, su peso y la pieza del taller que las dibuja (camisa, pantalón o calzas, túnica, vestido, gambesón, cota de malla, sobreveste, capa, capucha, sombrero de paja, toca, zapatos y botas)",
+   "Las zonas que cubre cada prenda salen de sus piezas en el taller (cuerpo → torso, mangas → brazos, falda → piernas); la prueba lo compara con los modelos publicados (taller-v9): la sobreveste no tiene mangas y por eso no protege los brazos",
+   "El orden de las capas que dibuja el taller (makehuman.js) y la ropa del catálogo del inventario salen ahora de esos mismos datos",
+   "Protección por tipo de golpe (corte, estocada, contundente) según el material, coherente con el duelo: camisa y gambesón dan su «gambesón» y con la cota, su «malla»",
+   "En el visor de personaje (v17), una tabla en Opciones dice lo que frena tu ropa en la cabeza, el torso, los brazos y las piernas, con el peso y el abrigo",
+   "Decisiones provisionales (en el registro del personaje): cifras de abrigo y peso, una prenda por capa en el inventario como en el GDD (túnica y gambesón comparten la de abrigo) y el peso de la ropa aún no ralentiza"
+  ],
+  "pruebas": "Prueba nueva prueba_ropa.mjs (80 comprobaciones; MUTAR=1 y MUTAR=2 la rompen y falla) y comprobación nueva de la tabla en el navegador del personaje. Batería completa: todo correcto salvo tres de navegador que fallaron por tiempo con la máquina cargada (construcción, cavar e idiomas; en idiomas faltaban seis traducciones de la tabla, ya puestas). Tras unir main, repetidas solas todas las de lógica y las de navegador del personaje, idiomas, cavar y demo: correctas. La de construcción falló una vez en «al perder el dibujo 3D recarga sola» (espera de 20 s con la máquina cargada); comprobado aparte que avisa y recarga en 5,7 s. No comprobado: el resto del navegador tras la última unión con main (aspecto en línea de otra sesión)",
+  "capturas": "capturas/personaje-v17",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-28T18:20:32+00:00",
   "fin": "2026-10-28T20:38:57+00:00",
   "titulo": "Hito 1c: remate de tejado, esquinas que cierran (carril A)",
@@ -1994,6 +2011,39 @@
   ],
   "pruebas": "Todas con bash herramientas/probar_todo.sh: todo correcto salvo la del servidor en internet, que necesita Caddy (no estaba; instalado con apt-get, 19/19 sola). Lógica 203/203 (17 nuevas; 3 fallan con MUTAR=1), modelos 159/159 (14 nuevas; sin el recorte fallan 4), navegador de construcción con 5 comprobaciones nuevas (casa en L desde el menú, fantasma de limahoya, cobro, móvil). Tras unir main, repetidas las de node, idiomas y la demo en navegador. No comprobado tras unir main: el navegador de construcción (main solo cambió el juego en línea). Capturas miradas en PC y móvil.",
   "capturas": "capturas/construccion-v31",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T19:29:42+01:00",
+  "fin": "2026-10-28T21:39:03+01:00",
+  "titulo": "Hito 10: laderas de montaña sin escalones",
+  "hito": "mundo",
+  "hecho": [
+   "Medido: en las laderas de montaña salía un escalón cada 25 m (casi 40 paredes por km) y un tercio del suelo era pared, porque los cortados se aplicaban a casi cualquier ladera de roca dura",
+   "Los cortados ahora solo salen en afloramientos de roca (manchas de unos cientos de metros, un 8 % del mundo) y donde ya es muy empinado, en pocos escalones grandes de 18 a 45 m; el resto de la ladera queda continua",
+   "En 20 sitios de montaña repartidos por el mundo, la mediana baja de 26 a 4 paredes por km; los acantilados de costa siguen igual",
+   "Prueba nueva: la mediana de paredes por km en montaña, por debajo de 8 (con afloramientos por todas partes, como antes, falla)"
+  ],
+  "pruebas": "Batería completa correcta (seguida); tras unir main, servidor, en línea, combate en el servidor, idiomas y navegador de en línea y duelo en línea otra vez. No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v11",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T14:53:19+00:00",
+  "fin": "2026-10-28T21:54:09+00:00",
+  "titulo": "Hito duelo: curación de heridas (combate v16)",
+  "hito": "duelo",
+  "hecho": [
+   "Curación en la lógica pura, como dice el GDD con la tabla del análisis: vendar, coser, cauterizar, entablillar y emplasto de hierbas, cada una para su tipo de herida, con su tiempo y su material",
+   "En pleno combate se puede, pero lento y quedando vendido: mientras curas no atacas ni paras y vas a un cuarto de la velocidad; si te hieren o echas a correr, la cura se pierde sin gastar material",
+   "Descanso: las heridas que ya no sangran bajan de grado con el tiempo (antes con emplasto) y la sangre se recupera despacio; valores provisionales en el registro de decisiones",
+   "Curarse es una acción con autor que queda en el registro, y en línea una intención más que resuelve el servidor (también dejar la cura a medias)",
+   "En el duelo: tocar el aviso de una herida enseña qué se le puede hacer y cuánto material queda; la tecla C y el botón Curar tratan la más urgente",
+   "Las heridas tratadas se ven en el personaje: venda de lino enrollada al grosor del cuerpo, tablillas, puntos más oscuros o quemadura",
+   "Arreglo: los avisos de la derecha se rehacían cada fotograma mientras sangrabas y costaba tocarlos"
+  ],
+  "pruebas": "Batería completa una vez (todo correcto salvo dos fallos sueltos que no tocan el combate: la ráfaga de prueba_conexiones, ya corregida en main, y una vez jugar en línea); tras unir main tres veces, otra vez las de node, combate, duelo en línea, jugar en línea y demo: correctas. Lógica de combate 105/105 con 25 nuevas (MUTAR=1 rompe la cura y 4 fallan); combate en el servidor 62/62 con 7 nuevas; navegador del combate con 12 comprobaciones nuevas en PC y móvil. Capturas de cerca de la venda y las tablillas miradas. Falla a veces: jugar en línea («el móvil ve el mojón de PC», espera de 5 s; pasa sola y en main), y duelo en línea si la herida al azar es muy grave en el torso (se desangra durante la reconexión). Hizo falta instalar caddy para prueba_nube. No comprobado: la venda del muslo asoma un poco por la falda de la túnica en guardia; el rival de la máquina no se cura.",
+  "capturas": "capturas/combate-v16",
   "estado": "ok"
  }
 ]

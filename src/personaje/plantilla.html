@@ -22,6 +22,12 @@ button.sel{background:var(--acento);color:#241b10;border-color:transparent;font-
 #notas{position:fixed;inset:auto 10px calc(64px + env(safe-area-inset-bottom,0px)) 10px;max-width:560px;margin:0 auto;max-height:60vh;overflow:auto;background:var(--panel);border-radius:12px;padding:10px 14px;font-size:13px}
 #opciones{position:fixed;left:calc(10px + env(safe-area-inset-left,0px));top:calc(58px + env(safe-area-inset-top,0px));width:min(330px,calc(100vw - 20px));max-height:calc(100vh - 140px);overflow:auto;background:var(--panel);border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:7px}
 #opciones .grupo{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+#ropa-datos table{border-collapse:collapse;font-size:12.5px;width:100%;max-width:340px}
+#ropa-datos th,#ropa-datos td{padding:2px 6px;text-align:right;font-weight:normal}
+#ropa-datos th:first-child{text-align:left;color:var(--muted)}
+#ropa-datos tr:first-child th{color:var(--muted)}
+#ropa-datos p{margin:2px 0;font-size:12.5px;width:100%}
+#ropa-datos .llevas{color:var(--muted)}
 #opciones .grupo span{width:100%;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 #opciones button{padding:5px 8px;font-size:12.5px;display:inline-flex;align-items:center;gap:5px}
 #opciones i{width:11px;height:11px;border-radius:50%;display:inline-block;border:1px solid #0006}

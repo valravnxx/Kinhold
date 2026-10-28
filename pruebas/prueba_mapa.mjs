@@ -91,6 +91,20 @@ for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
       if (a > 0) { puntos++; if (Math.abs(b - a) / 2 > PENDIENTE_ANDAR) pared++; }
     }
     comprobar(`${n}: en la montaña de pizarra hay cortados (paredes que no se suben andando) en un 5 a 35 % del suelo`, pared / puntos > 0.05 && pared / puntos < 0.35, `${(pared / puntos * 100).toFixed(1)} % de ${puntos} puntos`);
+    // las laderas de montaña son continuas (no en escalones): en 20 sitios de montaña alta repartidos por el mundo, cuántas
+    // veces por km se pasa de suelo a pared; la mediana tiene que ser baja (los afloramientos, con sus cortados, son pocos).
+    // MUTAR: afloramientos por todas partes (como estaba antes) y tiene que saltar
+    const paiL = MUTAR ? crearPaisaje(m, { afloramientos: 0 }) : pai, porSitio = [], altos = [];
+    for (let i = 0; i < NN; i++) if (m.tierra[i] && m.h[i] > 1500 && (m.roca[i] === 'granito' || m.roca[i] === 'pizarra' || m.roca[i] === 'caliza')) altos.push(i);
+    for (let k = 0; k < 20; k++) {
+      const i = altos[Math.floor((k + 0.5) / 20 * altos.length)], sx = (i % N + 0.5) * m.celda, sy = (Math.floor(i / N) + 0.5) * m.celda;
+      let b = 0; for (let a = 0; a < 6.28; a += 1.57) { let prev = paiL.altura(sx, sy, null, true), e = false;
+        for (let d = 2; d <= 600; d += 2) { const h = paiL.altura(sx + Math.cos(a) * d, sy + Math.sin(a) * d, null, true), p = Math.abs(h - prev) / 2 > PENDIENTE_ANDAR; if (p && !e) b++; e = p; prev = h; } }
+      porSitio.push(b / 2.4);
+    }
+    porSitio.sort((x, y) => x - y);
+    const mediana = porSitio[10];
+    comprobar(`${n}: las laderas de montaña no van en escalones (en 20 sitios de montaña, la mediana por debajo de 8 paredes por km)`, mediana < 8, `mediana ${mediana.toFixed(1)} por km · máx. ${porSitio[19].toFixed(1)} (un afloramiento)`);
     comprobar(`${n}: el agua del río cubre el lecho y queda bajo la orilla`, aguaBien / aguaN > 0.97, `${aguaBien} de ${aguaN}`);
   }
 }

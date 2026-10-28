@@ -42,7 +42,9 @@ function ruidoD(x, y, s) {
   _d[1] = dux * ((b - a) + k * uy) * 2; _d[2] = duy * ((c - a) + k * ux) * 2;
 }
 
-export function crearPaisaje(mapa) {
+// opciones.afloramientos: qué parte del mundo es afloramiento de roca, donde salen cortados (0,66 de umbral del ruido:
+// un 8 % del mundo); para las pruebas se puede bajar a 0 (todo afloramiento, como era antes de separar laderas y cortados)
+export function crearPaisaje(mapa, { afloramientos = 0.66 } = {}) {
   const { N, lado, h, forma, temp, lluvia, bioma, roca, pais } = mapa;
   const celda = lado * 1000 / N, S = mapa.semilla % 100000;
   // rugosidad del mapa: diferencia entre lo más alto y lo más bajo alrededor de cada celda (m)
@@ -103,7 +105,9 @@ export function crearPaisaje(mapa) {
     // roca dura donde ya es empinado: el terreno se rompe en estratos, paredes de roca con repisas (ver escarpe())
     const duro = DUREZA[rocaEn(xm, ym)] ?? 0.5;
     // por zonas: unas laderas se rompen en cortados y otras quedan de hierba (más cortados en la montaña)
-    const zona = duro > 0.5 && f > 3 && calma > 0.9 ? suave(0.5 - 0.12 * monte, 0.62 - 0.12 * monte, fbm(xm / 900, ym / 900, S + 125, 3)) : 0;
+    // los afloramientos: manchas sueltas de unos cientos de metros donde la roca sale a la luz (no toda la montaña); el
+    // resto de la ladera queda continua, con su hierba, su pedregal o su nieve
+    const zona = duro > 0.5 && f > 3 && calma > 0.9 ? suave(afloramientos - 0.03 * monte, afloramientos + 0.06 - 0.03 * monte, fbm(xm / 700, ym / 700, S + 125, 3)) : 0;
     if (zona > 0.001) z = escarpe(xm, ym, z, r, fino, duro * zona, calma);
     if (hm < 8) z = lerp(f * 0.5, z, suave(0, 2.5, f));    // costa baja: la playa baja suave hasta el agua
     z = Math.max(Math.min(0.4, f * 0.5), z);
@@ -149,11 +153,11 @@ export function crearPaisaje(mapa) {
   function escarpe(xm, ym, z, r, fino, fuerza, calma) {
     const h = 4, zx = grande(xm + h, ym).hm + detalle(xm + h, ym, r, fino) * calma, zy = grande(xm, ym + h).hm + detalle(xm, ym + h, r, fino) * calma;
     const pend = Math.hypot(zx - z, zy - z) / h;
-    const w = suave(0.22, 0.5, pend) * fuerza;
+    const w = suave(0.5, 0.85, pend) * fuerza;                                                // solo en lo que ya es muy empinado
     if (w <= 0.001) return z;
     const bx = (fbm(xm / 6000, ym / 6000, S + 121, 2) - 0.5) * 0.12, by = (fbm(xm / 6000 + 3, ym / 6000, S + 122, 2) - 0.5) * 0.12;
     const plano = xm * bx + ym * by + (fbm(xm / 260, ym / 260, S + 123, 3) - 0.5) * 14;      // buzamiento y ondulación
-    const e = estratos(xm, ym, z - plano, 0.16);
+    const e = estratos(xm, ym, z - plano, 0.45, 3);                                          // pocos escalones grandes (de 15 a 40 m), no peldaños
     return lerp(z, e.z + plano + rugosidad(xm, ym) * e.pared, w);
   }
   // escalona una altura en estratos de 6 a 15 m (por escala) (cada uno con su pared en otro sitio de su altura); ancho: cuánto de
