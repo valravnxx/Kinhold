@@ -1004,9 +1004,9 @@
     },
     {
      "nombre": "Laderas de montaña sin escalones: los cortados solo donde ya es muy empinado y aflora la roca, en pocos escalones grandes; el resto de la montaña, pendiente continua",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T19:29:42+01:00",
-     "rama": "trabajo/20261028-1930-laderas"
+     "fin": "2026-10-28T21:39:03+01:00"
     }
    ],
    "lleva": "chat"
@@ -1953,6 +1953,13 @@
      "archivo": "jugar/mapa/v10.html",
      "capturas": "capturas/mapa-v10",
      "notas": "El mundo de cerca es siempre igual: árboles, hierba, piedras y rocas salen de su sitio en el mundo y de la semilla, así que al andar y rehacer la zona de cerca lo que ya estaba no cambia."
+    },
+    {
+     "v": "v11",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/mapa/v11.html",
+     "capturas": "capturas/mapa-v11",
+     "notas": "Las laderas de montaña ya no van en escalones: son pendientes continuas, y los cortados salen solo en afloramientos de roca y donde ya es muy empinado, en pocos escalones grandes."
     }
    ]
   }
