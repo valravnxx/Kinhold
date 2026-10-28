@@ -1773,5 +1773,75 @@
   "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa 68/68, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web). Construcción y en línea fallaron una vez por tiempo con las dos mitades a la vez; solas, correctas. Mapa otra vez tras unir main. No comprobado: fotogramas en un móvil de verdad",
   "capturas": "capturas/mapa-v7",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T10:51:53+00:00",
+  "fin": "2026-10-28T12:11:38+00:00",
+  "titulo": "Hito 1f: medir el servidor con 100 bots",
+  "hito": "prueba-online",
+  "hecho": [
+   "Medición del servidor (servidor/medir.mjs): el servidor en su propio proceso y los bots en otro; cada segundo apunta la CPU, la memoria, el retraso del bucle, los bytes que salen y entran por los sockets y lo que ocupa el mundo en disco. Al final mide lo que pesa la bienvenida",
+   "Medido con 25, 50 y 100 bots que andan, construyen y pelean a la vez junto al mismo mojón (resultados en servidor/medidas/)",
+   "Con 100: el servidor usa un 15 % de un núcleo (máximo 25 %) y 113 MB; las acciones se responden en 4 ms (p95, 13 ms); 0 errores",
+   "Lo que manda es la red: cada jugador recibe lo de todos los demás, unos 1,9 KB/s por cada otro jugador. Con 100 salen 187 KB/s por jugador y 18 MB/s en total (154 Mbit/s); el reparto es luchadores 51 % y estados 44 %",
+   "La bienvenida lleva todo el historial de acciones y crece sin fin (1,5 MB tras 3 minutos con 100); el disco crece 31 MB por hora con 100 construyendo y peleando sin parar",
+   "Coste (precios de Hetzner Cloud vistos en cloudtally.eu, comprobados allí el 24 oct 2026, sin IVA): para la prueba de dos jugadores basta el plan más pequeño, CX23, 5,49 €/mes. Con 100 a la vez las 24 horas, el mismo plan por CPU y memoria (no medido en él) más unos 30 TB de tráfico de más: unos 35 €/mes",
+   "Para muchos jugadores habrá que mandar a cada uno solo lo que tiene cerca y una bienvenida con el estado del mundo en vez del historial; queda anotado en servidor/medidas/LEEME.md, sin tarea creada",
+   "Prueba nueva con seis bots (13 comprobaciones); MUTAR=1 mide sin contar la CPU y falla",
+   "No comprobado: el rendimiento en un servidor de alquiler y las cabeceras de TCP/IP (se midió lo que pasa por los sockets). Los bots y el servidor compartían los 2 núcleos de esta máquina"
+  ],
+  "pruebas": "Batería completa correcta (todas las pruebas de node y de navegador, con la nueva de la medición). Después de unir main se volvieron a pasar todas las de node; las de navegador no se repitieron tras esa unión. No hay vistas tocadas: no hay capturas nuevas",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T12:35:33+01:00",
+  "fin": "2026-10-28T14:51:26+01:00",
+  "titulo": "Hito 10: roca escarpada de cerca",
+  "hito": "mundo",
+  "hecho": [
+   "Un terreno de alturas no puede tener salientes ni grietas: como hacen los juegos, las paredes se cubren de piezas de roca 3D encajadas en ellas",
+   "Cinco piezas de roca hechas por código: losas con la cara de fuera casi plana, cortadas en caras y aristas y escalonadas en estratos, con la sombra horneada abajo y en las juntas",
+   "Textura de roca propia: vetas de estrato, grano, grietas finas con su labio claro y liquen; el tono es el de la roca del sitio, apagado como el del estilo v5",
+   "Se reparten por las paredes de más de unos 49°, de 2 a 8 m, mirando hacia fuera y medio metidas; entre pieza y pieza la pared queda en sombra",
+   "Prueba nueva en el navegador: el acantilado de costa lleva piezas de roca (MUTAR_ROCA=1 la rompe y falla)"
+  ],
+  "pruebas": "Batería completa correcta, esta vez seguida y no en dos mitades a la vez (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web). No comprobado: fotogramas en un móvil de verdad (el trozo de cerca del acantilado pasa de unos 500.000 triángulos)",
+  "capturas": "capturas/mapa-v8",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T12:32:34+00:00",
+  "fin": "2026-10-28T14:53:47+00:00",
+  "titulo": "Hito 1f: servidor de prueba en internet, listo para crearlo",
+  "hito": "prueba-online",
+  "hecho": [
+   "Todo preparado para que valravnx ponga el servidor del juego en Hetzner Cloud con su cuenta (servidor/nube/): al crear la máquina se pega cloud-config.yaml y se instala sola en unos minutos",
+   "instalar.sh pone Node.js 22, el juego en /opt/kinhold, el servicio kinhold (arranca solo, vuelve a arrancar si se cae, el mundo en /var/lib/kinhold) y el cortafuegos con solo SSH, HTTP y HTTPS; actualizar.sh trae lo último de main sin borrar el mundo",
+   "Caddy delante del servidor: pone el HTTPS solo (la web pública solo puede conectar con wss://), con una dirección sin comprar dominio (la IP con guiones en sslip.io), pasa el WebSocket al juego y manda a quien abre la dirección a la demo con el servidor ya puesto",
+   "Pasos para valravnx en servidor/nube/LEEME.md: crear la cuenta, la máquina CX23 con Ubuntu 24.04 e IPv4, pegar el cloud config y abrir el enlace en los dos aparatos; también qué hacer si algo no va",
+   "Prueba nueva (19 comprobaciones): los guiones, los archivos rellenos, caddy validate, systemd-analyze verify y un Caddy de verdad con HTTPS local delante del servidor del juego, con dos clientes que se ven por wss://; MUTAR=1 estropea la plantilla para que el WebSocket no llegue al juego y falla",
+   "Arreglo de una prueba que fallaba a veces (prueba_conexiones): en la ráfaga de 400 acciones el cubo del límite se rellena un poco mientras llegan, así que a veces se rechazan 99 y no 100; ahora admite hasta 10 de margen",
+   "No comprobado: la instalación entera en una máquina de Hetzner de verdad, las descargas de NodeSource y del repositorio de Caddy (desde aquí no se pueden abrir) y el certificado real con sslip.io (Let's Encrypt a veces lo limita; Caddy prueba entonces con ZeroSSL)"
+  ],
+  "pruebas": "Batería completa correcta (todas las pruebas de node y de navegador, con la nueva del servidor en internet). Después de unir main se volvieron a pasar todas las de node; las de navegador no se repitieron tras esa unión. No hay vistas tocadas: no hay capturas nuevas",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T15:45:46+01:00",
+  "fin": "2026-10-28T16:06:02+01:00",
+  "titulo": "Nombres del mundo: Kinland y sus cinco regiones",
+  "hito": "mundo",
+  "hecho": [
+   "valravnx elige los nombres: el continente es Kinland y sus regiones Whitholm (la isla del noreste), Eikwold (noroeste), Rudmere (suroeste), Highfell (el macizo central) y Storaa (sureste, el gran río).",
+   "Antes de ponerlos se buscó que no fueran de otro juego, novela o marca: se descartaron Hornfell (casi igual que una región de otro juego de supervivencia) y Highmark (una aseguradora conocida).",
+   "Son regiones, no países (los países, si llegan, los harán los jugadores): «país» pasa a «región» en el mapa, el GDD, sistemas y el análisis, en los tres idiomas. El GDD guarda los nombres como decisión.",
+   "En el mapa cada región sale con su nombre y «Kinland» va en el mar, bajo la costa sur; al tocar un sitio dice en qué región está. En ruso los nombres van en cirílico. En otra semilla se llaman «Región 1» a «Región 5».",
+   "Prueba nueva del mapa: cada nombre cae en su tierra (Whitholm es la isla, Highfell tiene la cumbre más alta, Storaa el gran río, Rudmere es la más cálida, Eikwold está al noroeste). Con los nombres al revés falla, como debe. Publicado el mapa del mundo v9."
+  ],
+  "pruebas": "Mapa 75/75 y su navegador en PC y móvil correctos; lógica 177/177, modelos 138/138, combate 80/80, acciones 41/41, idiomas, carriles 24/24 y web correctos. El mapa en ruso, mirado en captura.",
+  "capturas": "capturas/mapa-v9",
+  "estado": "ok"
  }
 ]

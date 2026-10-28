@@ -24,6 +24,9 @@ paso "Mundo en línea: dos clientes con el servidor" node pruebas/prueba_en_line
 paso "Conexiones que se cortan y datos mal formados" node pruebas/prueba_conexiones.mjs
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
 paso "Bots: jugadores simulados contra el servidor" node pruebas/prueba_bots.mjs
+paso "Medición del servidor (CPU, memoria, red y disco)" node pruebas/prueba_medir.mjs
+command -v caddy >/dev/null || apt-get install -y -q caddy >/dev/null 2>&1 || true
+paso "Servidor de prueba en internet (Caddy con HTTPS delante del juego)" node pruebas/prueba_nube.mjs
 paso "Taller: los cinturones ciñen su prenda" node pruebas/prueba_cinturones.mjs
 paso "Taller: capa, calzado y tocados" node pruebas/prueba_prendas.mjs
 paso "Taller: formas y colores para personalizar" node pruebas/prueba_aspecto_modelos.mjs

@@ -1,6 +1,6 @@
 // Pruebas del generador del mapa del mundo (lógica pura, src/logica/mapa.js).
 // Uso: node pruebas/prueba_mapa.mjs        MUTAR=1 estropea el resultado a propósito: tiene que fallar.
-import { generarMapa, resumen, anchoRio, claseRio, BIOMAS, ROCAS } from '../src/logica/mapa.js';
+import { generarMapa, resumen, anchoRio, claseRio, BIOMAS, ROCAS, REGIONES, CONTINENTE, nombreRegion, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearPaisaje, PENDIENTE_ANDAR } from '../src/logica/paisaje.js';
 
 let bien = 0, mal = 0;
@@ -21,7 +21,7 @@ for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
   // la isla es un país entero y solo ese
   const ci = m.centros[0]; let fuera = 0, dentro = 0;
   for (let i = 0; i < NN; i++) if (m.pais[i] === 0) dentro++;
-  comprobar(`${n}: la isla es un país (País 1)`, m.pais[ci] === 0 && dentro > 0, `${Math.round(dentro * (m.celda / 1000) ** 2)} km²`);
+  comprobar(`${n}: la isla es una región entera (la 1)`, m.pais[ci] === 0 && dentro > 0, `${Math.round(dentro * (m.celda / 1000) ** 2)} km²`);
   // todo el agua llega al mar: siguiendo la receptora desde cualquier celda de tierra se llega al mar sin dar vueltas
   let atascadas = 0;
   for (let i = 0; i < NN; i++) { if (!m.tierra[i]) continue; let c = i, k = 0; while (m.tierra[c] && k < NN) { const s = m.rec[c]; if (s < 0 || s === c) { k = NN; break; } c = s; k++; } if (k >= NN) atascadas++; }
@@ -99,5 +99,24 @@ comprobar('ancho de río: 10 km² → unos 2 m (arroyo)', Math.round(anchoRio(10
 comprobar('ancho de río: 1.000 km² → unos 20 m (río)', Math.round(anchoRio(1000e6)) === 20 && claseRio(anchoRio(1000e6)) === 'rio');
 comprobar('ancho de río: 10.000 km² → unos 63 m (gran río)', Math.round(anchoRio(10000e6)) === 63 && claseRio(anchoRio(10000e6)) === 'grande');
 
+// ---------- nombres del mundo elegido (valravnx, 28 oct): cada nombre cae en su tierra ----------
+{
+  const m = generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO }), N = m.N, NN = N * N;
+  // MUTAR: los nombres al revés, para comprobar que la prueba lo nota
+  const nombre = (k) => MUTAR ? REGIONES[REGIONES.length - 1 - k] : nombreRegion(m, k);
+  const st = REGIONES.map(() => ({ n: 0, x: 0, y: 0, t: 0, grande: 0, cumbre: 0 }));
+  for (let i = 0; i < NN; i++) { const k = m.pais[i]; if (k < 0) continue; const e = st[k]; e.n++; e.x += i % N; e.y += (i / N) | 0; e.t += m.temp[i];
+    if (claseRio(anchoRio(m.A[i])) === 'grande') e.grande++; if (m.h[i] > e.cumbre) e.cumbre = m.h[i]; }
+  const de = (nom) => { const k = REGIONES.findIndex((_, j) => nombre(j) === nom); return { k, ...st[k], cx: st[k].x / st[k].n / N, cy: st[k].y / st[k].n / N, tm: st[k].t / st[k].n }; };
+  const W = de('Whitholm'), E = de('Eikwold'), R = de('Rudmere'), H = de('Highfell'), S = de('Storaa');
+  comprobar('nombres: el continente es Kinland y hay cinco regiones con nombre', CONTINENTE === 'Kinland' && REGIONES.length === 5 && REGIONES.every((_, k) => nombre(k)));
+  comprobar('nombres: Whitholm es la isla', W.k === m.paisIsla, `región ${W.k + 1}`);
+  comprobar('nombres: Eikwold está al noroeste del continente', E.cx < 0.5 && E.cy < 0.5, `(${E.cx.toFixed(2)}, ${E.cy.toFixed(2)})`);
+  comprobar('nombres: Rudmere está al suroeste y es la más cálida del continente', R.cx < 0.5 && R.cy > 0.5 && [E, H, S].every(o => R.tm > o.tm), `(${R.cx.toFixed(2)}, ${R.cy.toFixed(2)}), ${R.tm.toFixed(1)} °C`);
+  comprobar('nombres: Highfell tiene la cumbre más alta del mundo', [W, E, R, S].every(o => H.cumbre > o.cumbre), `${Math.round(H.cumbre)} m`);
+  comprobar('nombres: Storaa está al sureste y por ella corre el gran río', S.cx > 0.5 && S.cy > 0.5 && [W, E, R, H].every(o => S.grande > o.grande), `${S.grande} celdas de gran río`);
+  const otro = generarMapa(7, { lado: 256 });
+  comprobar('nombres: en otra semilla no hay nombres (Región N)', nombreRegion(otro, 0) === null && nombreRegion(m, -1) === null);
+}
 console.log(`\nResultado: ${bien} correctas, ${mal} fallidas`);
 process.exit(mal ? 1 : 0);

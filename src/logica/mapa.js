@@ -11,7 +11,7 @@
 //      de cada celda (la de mayor pendiente), área drenada y actualizar alturas. Un límite de talud evita picos de
 //      aguja. Así los valles salen donde corre el agua y los collados donde dos valles se acercan por arriba.
 //   3. Clima (temperatura por latitud y altura; lluvia con el viento del oeste que descarga al subir), biomas, cinco
-//      países que crecen desde su centro y se frenan en las cumbres y los ríos grandes (fronteras naturales), roca
+//      regiones que crecen desde su centro y se frenan en las cumbres y los ríos grandes (fronteras naturales), roca
 //      madre por provincias y vetas (hierro de pantano en turberas, hierro de veta en el contacto del granito o la
 //      pizarra con la caliza, carbón en las cuencas de arenisca al pie de las sierras).
 // Todo sale de la semilla: mismo número, mismo mundo.
@@ -23,6 +23,13 @@ export const U_MAX = 3.9e-4;            // levantamiento máximo (m/año); ajust
 export const PASOS = 140;
 export const BLOQUE_KM = 14;             // cada cuánto hay una veta pequeña de hierro y otra de carbón
 export const SEMILLA_MUNDO = 66172, LADO_MUNDO = 256;   // el mundo elegido por valravnx el 27 oct
+// Nombres del mundo elegido (decididos por valravnx el 28 oct). Son regiones, no países: los países, si llegan, los
+// harán los jugadores. Van en el orden en que nacen las regiones de ese mundo (la 0 es siempre la isla); en otra
+// semilla o con otro tamaño no valen, y se llaman «Región N».
+export const CONTINENTE = 'Kinland';
+export const REGIONES = ['Whitholm', 'Rudmere', 'Storaa', 'Eikwold', 'Highfell'];
+export const esMundoElegido = (m) => m.semilla === SEMILLA_MUNDO && m.lado === LADO_MUNDO;
+export const nombreRegion = (m, k) => (k >= 0 && esMundoElegido(m) ? REGIONES[k] : null) || null;
 
 export const BIOMAS = {
   nieve: { nombre: 'Roca y nieve', color: [214, 214, 208] },
@@ -350,12 +357,12 @@ export function* generar(semilla, { lado = LADO_KM, N = 256, pasos = PASOS } = {
   const bioma = new Array(NN).fill(null);
   for (let i = 0; i < NN; i++) if (tierra[i]) bioma[i] = clasificarBioma(temp[i], lluvia[i], pend[i], h[i], A[i] / area);
 
-  // ---------- 5. países: crecen desde 5 centros; cumbres y ríos grandes frenan (fronteras naturales) ----------
-  yield { fase: 'Países', avance: 0.88 };
-  // centros: la isla es un país; cada península, otro; el resto, en el continente lo más lejos posible
+  // ---------- 5. regiones: crecen desde 5 centros; cumbres y ríos grandes frenan (fronteras naturales) ----------
+  yield { fase: 'Regiones', avance: 0.88 };
+  // centros: la isla es una región; cada península, otra; el resto, en el continente lo más lejos posible
   const centros = [];
   const llanos = []; for (let i = 0; i < NN; i++) if (tierra[i] && costa[i] > 4 && h[i] < 900) llanos.push(i);
-  // el continente: el trozo de tierra más grande que no es la isla (los países 2 a 5 nacen ahí, para que puedan crecer)
+  // el continente: el trozo de tierra más grande que no es la isla (las regiones 2 a 5 nacen ahí, para que puedan crecer)
   const tamGrupo = new Map(); for (let i = 0; i < NN; i++) if (tierra[i]) tamGrupo.set(isl[i], (tamGrupo.get(isl[i]) || 0) + 1);
   const grupoIsla = celdaIsla >= 0 ? isl[celdaIsla] : -2;
   let grupoCont = -1, tamCont = 0; for (const [g, n] of tamGrupo) if (g !== grupoIsla && n > tamCont) { tamCont = n; grupoCont = g; }
@@ -370,12 +377,12 @@ export function* generar(semilla, { lado = LADO_KM, N = 256, pasos = PASOS } = {
       d *= 0.85 + 0.3 * hash2(i, 0, S); if (d > dm) { dm = d; mejor = i; } }
     centros.push(mejor);
   }
-  // varias vueltas: el país que sale grande crece más despacio en la siguiente (GDD: países de unos 60 × 60 km)
+  // varias vueltas: la región que sale grande crece más despacio en la siguiente (GDD: regiones de unos 60 × 60 km)
   const pais = new Int8Array(NN).fill(-1), coste = new Float64Array(NN), hecho = new Uint8Array(NN);
   const m2 = new Monticulo(NN * 8), ritmo = [1, 1, 1, 1, 1];
   let mejorPais = null, mejorDesvio = Infinity;
-  // los países pueden saltar estrechos de hasta unos 14 km de mar (islas cercanas), con más coste; la isla grande
-  // está a más de 20 km, así que sigue siendo un país aparte
+  // las regiones pueden saltar estrechos de hasta unos 14 km de mar (islas cercanas), con más coste; la isla grande
+  // está a más de 20 km, así que sigue siendo una región aparte
   const desdeTierra = chaflan((i) => tierra[i] === 1, () => true);
   const paisable = (j) => tierra[j] || desdeTierra[j] < 7;
   for (let vuelta = 0; vuelta < 16; vuelta++) {
@@ -399,7 +406,7 @@ export function* generar(semilla, { lado = LADO_KM, N = 256, pasos = PASOS } = {
   }
 
   if (mejorPais) pais.set(mejorPais);
-  // islas grandes sueltas (más de 300 km²): del país con la costa más cercana; los islotes quedan sin dueño
+  // islas grandes sueltas (más de 300 km²): de la región con la costa más cercana; los islotes quedan sin dueño
   {
     const tam = new Map(); for (let i = 0; i < NN; i++) if (tierra[i] && pais[i] < 0) tam.set(isl[i], (tam.get(isl[i]) || 0) + 1);
     for (const [g, n] of tam) {
