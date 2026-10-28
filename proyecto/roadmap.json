@@ -858,7 +858,13 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Valles tallados por los ríos: gargantas en la montaña, vegas anchas abajo, saltos de agua donde el río cruza roca dura",
+     "nombre": "Valles tallados por los ríos: sin zanjas; lecho, orilla, vega ancha abajo y laderas con la pendiente limitada (en V cerrada en la montaña); el agua del río también de cerca",
+     "estado": "hecho",
+     "inicio": "2026-10-28T05:19:41+01:00",
+     "fin": "2026-10-28T06:54:01+01:00"
+    },
+    {
+     "nombre": "Saltos de agua donde el río cruza roca dura",
      "estado": "pendiente"
     },
     {
@@ -866,7 +872,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD)",
+     "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
      "estado": "pendiente"
     },
     {
@@ -1700,6 +1706,13 @@
      "archivo": "jugar/mapa/v4.html",
      "capturas": "capturas/mapa-v4",
      "notas": "De cerca, nueva vista «Como en el juego»: el personaje con la cámara del juego y, a su alrededor, un trozo de 240 m con todo el detalle (rejilla de 1 m, hierba, flores, matorrales, piedras, árboles completos y sombras). Se anda tocando el suelo."
+    },
+    {
+     "v": "v5",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/mapa/v5.html",
+     "capturas": "capturas/mapa-v5",
+     "notas": "Los ríos ya no son zanjas: el fondo del valle sigue al río, con lecho, orilla en rampa, vega llana a los lados y laderas con la pendiente limitada (suaves en el llano, en V en la montaña). El agua del río se ve también de cerca, con la orilla lisa."
     }
    ]
   }

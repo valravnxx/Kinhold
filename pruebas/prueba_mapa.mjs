@@ -1,6 +1,7 @@
 // Pruebas del generador del mapa del mundo (lógica pura, src/logica/mapa.js).
 // Uso: node pruebas/prueba_mapa.mjs        MUTAR=1 estropea el resultado a propósito: tiene que fallar.
 import { generarMapa, resumen, anchoRio, claseRio, BIOMAS, ROCAS } from '../src/logica/mapa.js';
+import { crearPaisaje } from '../src/logica/paisaje.js';
 
 let bien = 0, mal = 0;
 const comprobar = (n, c, d = '') => { console.log((c ? '  OK   ' : '  FALLA ') + n + (d ? ` — ${d}` : '')); c ? bien++ : mal++; };
@@ -52,6 +53,27 @@ for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
   }
   // ríos
   comprobar(`${n}: desembocan ríos (de más de 5 m)`, r.bocas.rio + r.bocas.grande >= 10, JSON.stringify(r.bocas));
+  if (semilla === 66172) {
+    // de cerca, los ríos van por valles y no por zanjas: perfiles de ±300 m a lo ancho de muchos puntos de río
+    const pai = crearPaisaje(m), pend = [];
+    let aguaBien = 0, aguaN = 0;
+    for (const rio of pai.rios) for (let k = 0; k < rio.length - 1; k += 21) {
+      const a = rio[k], b = rio[k + 1], px = a.p[0] * 1000, py = a.p[1] * 1000, L = Math.hypot(b.p[0] - a.p[0], b.p[1] - a.p[1]) * 1000 || 1;
+      const nx = -(b.p[1] - a.p[1]) * 1000 / L, ny = (b.p[0] - a.p[0]) * 1000 / L, tr = pai.riosEn(px - 400, py - 400, px + 400, py + 400);
+      const h = []; for (let d = -300; d <= 300; d += 10) h.push(pai.altura(px + nx * d, py + ny * d, tr));
+      if (MUTAR) h[30] -= 50;                               // una zanja como las de antes: tiene que saltar
+      let maxp = 0; for (let i = 1; i < h.length; i++) maxp = Math.max(maxp, Math.abs(h[i] - h[i - 1]) / 10);
+      pend.push(maxp);
+      // el agua cubre el lecho y queda por debajo de la orilla
+      const w = pai.agua(px, py, tr), ancho = Math.max(2, anchoRio(Math.max(a.a, b.a)));
+      if (w === null && pai.altura(px, py, tr) < 0.5) continue;   // en la desembocadura ya es el mar
+      aguaN++; if (w !== null && w > pai.altura(px, py, tr) && w < pai.altura(px + nx * (ancho / 2 + 3), py + ny * (ancho / 2 + 3), tr)) aguaBien++;
+    }
+    pend.sort((x, y) => x - y);
+    const p90 = pend[Math.floor(pend.length * 0.9)], p99 = pend[Math.floor(pend.length * 0.99)];
+    comprobar(`${n}: junto a los ríos no hay zanjas (pendiente más fuerte a ±300 m: el 90 % por debajo de 1, el 99 % por debajo de 2,5)`, p90 < 1 && p99 < 2.5, `${pend.length} perfiles · p90 ${p90.toFixed(2)} · p99 ${p99.toFixed(2)}`);
+    comprobar(`${n}: el agua del río cubre el lecho y queda bajo la orilla`, aguaBien / aguaN > 0.97, `${aguaBien} de ${aguaN}`);
+  }
 }
 // la regla del ancho de los ríos (los gruesos del GDD)
 comprobar('ancho de río: 10 km² → unos 2 m (arroyo)', Math.round(anchoRio(10e6)) === 2 && claseRio(anchoRio(10e6)) === 'arroyo');
