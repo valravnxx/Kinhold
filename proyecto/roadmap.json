@@ -757,8 +757,15 @@
    "num": "3",
    "nombre": "Estaciones y crafting",
    "jugable": "Primeras estaciones, recetas, desbloqueo por práctica, durabilidad y reparación.",
-   "estado": "pendiente",
-   "tareas": []
+   "estado": "en_curso",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito",
+     "estado": "en_curso",
+     "inicio": "2026-10-28T19:23:07+00:00",
+     "rama": "trabajo/20261028-1923"
+    }
+   ]
   },
   {
    "id": "supervivencia",
