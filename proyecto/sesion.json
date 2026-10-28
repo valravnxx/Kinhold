@@ -5,11 +5,5 @@
   "hito": "prueba-online",
   "rama": "trabajo/20261028-0120"
  },
- "B": {
-  "inicio": "2026-10-27T22:50:32+00:00",
-  "tarea": "Obras: polipasto con torno para vigas grandes y sillares (uno tira y otro guía)",
-  "hito": "construccion-mas",
-  "rama": "trabajo/20261027-2250",
-  "ultimo": "2026-10-28T00:53:47.000Z"
- }
+ "B": null
 }
