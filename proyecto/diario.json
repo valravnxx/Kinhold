@@ -1809,5 +1809,23 @@
   "pruebas": "Batería completa correcta, esta vez seguida y no en dos mitades a la vez (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web). No comprobado: fotogramas en un móvil de verdad (el trozo de cerca del acantilado pasa de unos 500.000 triángulos)",
   "capturas": "capturas/mapa-v8",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T12:32:34+00:00",
+  "fin": "2026-10-28T14:53:47+00:00",
+  "titulo": "Hito 1f: servidor de prueba en internet, listo para crearlo",
+  "hito": "prueba-online",
+  "hecho": [
+   "Todo preparado para que valravnx ponga el servidor del juego en Hetzner Cloud con su cuenta (servidor/nube/): al crear la máquina se pega cloud-config.yaml y se instala sola en unos minutos",
+   "instalar.sh pone Node.js 22, el juego en /opt/kinhold, el servicio kinhold (arranca solo, vuelve a arrancar si se cae, el mundo en /var/lib/kinhold) y el cortafuegos con solo SSH, HTTP y HTTPS; actualizar.sh trae lo último de main sin borrar el mundo",
+   "Caddy delante del servidor: pone el HTTPS solo (la web pública solo puede conectar con wss://), con una dirección sin comprar dominio (la IP con guiones en sslip.io), pasa el WebSocket al juego y manda a quien abre la dirección a la demo con el servidor ya puesto",
+   "Pasos para valravnx en servidor/nube/LEEME.md: crear la cuenta, la máquina CX23 con Ubuntu 24.04 e IPv4, pegar el cloud config y abrir el enlace en los dos aparatos; también qué hacer si algo no va",
+   "Prueba nueva (19 comprobaciones): los guiones, los archivos rellenos, caddy validate, systemd-analyze verify y un Caddy de verdad con HTTPS local delante del servidor del juego, con dos clientes que se ven por wss://; MUTAR=1 estropea la plantilla para que el WebSocket no llegue al juego y falla",
+   "Arreglo de una prueba que fallaba a veces (prueba_conexiones): en la ráfaga de 400 acciones el cubo del límite se rellena un poco mientras llegan, así que a veces se rechazan 99 y no 100; ahora admite hasta 10 de margen",
+   "No comprobado: la instalación entera en una máquina de Hetzner de verdad, las descargas de NodeSource y del repositorio de Caddy (desde aquí no se pueden abrir) y el certificado real con sslip.io (Let's Encrypt a veces lo limita; Caddy prueba entonces con ZeroSSL)"
+  ],
+  "pruebas": "Batería completa correcta (todas las pruebas de node y de navegador, con la nueva del servidor en internet). Después de unir main se volvieron a pasar todas las de node; las de navegador no se repitieron tras esa unión. No hay vistas tocadas: no hay capturas nuevas",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
