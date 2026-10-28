@@ -147,6 +147,10 @@ try:
         A.wait_for_timeout(600)
         for nombre, (pg, _) in paginas.items():
             pg.screenshot(path=f'{SALIDA}/{nombre}_3_de_cerca.png')
+        # el móvil, al lado de PC: así se ve su aspecto de cerca (morena, alta y de más peso)
+        B.evaluate(f"Object.assign({K}.pj, {{ x: 0.0, z: 5.9, rot: Math.atan2(1.2, 0.6) }}); {K}.cam.yaw = Math.atan2(-1.2, -0.6) + 0.45; {K}.cam.dist = 3.2; {K}.cam.pitch = 0.18")
+        esperar(A, vistoEn(A, 0.0, 5.9), 8000); B.wait_for_timeout(800)
+        B.screenshot(path=f'{SALIDA}/movil_3b_ve_a_pc.png')
 
         print('Construir una obra sin rehacer todo')
         # mientras alguien trabaja en una obra, solo se rehace esa pieza (en su página y en la del otro), no lo construido entero
