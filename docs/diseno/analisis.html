@@ -99,8 +99,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.78rem;text-tra
 <tr><th>Sistema</th><th>Por qué hace falta</th><th>Pregunta</th></tr>
 <tr><td><span class="tag gap">FALTA</span><b>Modo solitario</b></td><td>¿Es un mundo propio en el navegador (sin servidor) o el mismo mundo online donde juegas aislado? Cambia la arquitectura y si el progreso se comparte.</td><td>2</td></tr>
 <tr><td><span class="tag gap">FALTA</span><b>Progresión del personaje</b></td><td>No está definido si el personaje mejora (habilidades por uso, fuerza, oficios) ni cómo, ni si hay límite.</td><td>8–10</td></tr>
-<tr><td><span class="tag gap">FALTA</span><b>Economía y comercio</b></td><td>Los cultivos por clima empujan a comerciar entre países, pero no hay moneda, mercados ni sistema de intercambio.</td><td>27–29</td></tr>
-<tr><td><span class="tag gap">FALTA</span><b>Navegación por mar y ríos</b></td><td>El mar es coherente y separa países: ¿se puede navegar? Barcas, barcos, ferris, puertos.</td><td>23</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Economía y comercio</b></td><td>Los cultivos por clima empujan a comerciar entre regiones, pero no hay moneda, mercados ni sistema de intercambio.</td><td>27–29</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Navegación por mar y ríos</b></td><td>El mar es coherente y separa regiones: ¿se puede navegar? Barcas, barcos, ferris, puertos.</td><td>23</td></tr>
 <tr><td><span class="tag gap">FALTA</span><b>Infraestructura de viaje</b></td><td>Viajar es complicado: caminos, puentes, vados, postas. ¿Los construyen los jugadores?</td><td>22</td></tr>
 <tr><td><span class="tag gap">FALTA</span><b>Mapa y orientación</b></td><td>En un mundo enorme, ¿hay mapa? ¿Se dibuja explorando (cartografía) o es completo desde el inicio? ¿Brújula, sol, estrellas?</td><td>21</td></tr>
 <tr><td><span class="tag gap">FALTA</span><b>NPCs y fauna hostil</b></td><td>Aparte de los centinelas no hay NPCs. ¿Aldeas, comerciantes, bandidos? ¿Lobos, osos, jabalíes que atacan?</td><td>24–25</td></tr>
@@ -111,7 +111,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.78rem;text-tra
 <tr><td><span class="tag gap">FALTA</span><b>Fuego y luz</b></td><td>Noche, antorchas, hogares, incendios de estructuras de madera.</td><td>36</td></tr>
 <tr><td><span class="tag gap">FALTA</span><b>Comunicación</b></td><td>Chat global, de proximidad, voz, mensajeros/cartas (encaja con viajar lejos).</td><td>37</td></tr>
 <tr><td><span class="tag gap">FALTA</span><b>Heráldica y personalización de familia</b></td><td>Escudos de armas, estandartes, colores de familia: refuerza el lado de reinos.</td><td>38</td></tr>
-<tr><td><span class="tag gap">FALTA</span><b>Creación del personaje</b></td><td>Aspecto, sexo, edad, país de origen.</td><td>39</td></tr>
+<tr><td><span class="tag gap">FALTA</span><b>Creación del personaje</b></td><td>Aspecto, sexo, edad, región de origen.</td><td>39</td></tr>
 <tr><td><span class="tag gap">FALTA</span><b>Interfaz sin barras</b></td><td>Cómo se ve inventario, carga, hambre, heridas y crafting sin un HUD clásico.</td><td>40</td></tr>
 <tr><td><span class="tag gap">FALTA</span><b>Introducción para jugadores nuevos</b></td><td>Un survival realista sin guía espanta en los primeros minutos.</td><td>41</td></tr>
 <tr><td><span class="tag gap">FALTA</span><b>Monetización</b></td><td>Es un producto comercial con servidor de pago y no hay modelo de negocio definido.</td><td>42</td></tr>
@@ -270,7 +270,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.78rem;text-tra
 <h2>12. Animales <span class="tag prop">PROPUESTA</span></h2>
 <div class="tw"><table>
 <tr><th>Tipo</th><th>Animales</th><th>Para qué</th></tr>
-<tr><td>Montura y tiro</td><td>Caballo (varias razas por país/bioma), burro, mula, buey.</td><td>Monta, carga, arado, carros.</td></tr>
+<tr><td>Montura y tiro</td><td>Caballo (varias razas por región/bioma), burro, mula, buey.</td><td>Monta, carga, arado, carros.</td></tr>
 <tr><td>Granja</td><td>Gallina, oca, pato, cerdo, cabra, oveja, vaca.</td><td>Huevos, carne, leche, lana, cuero, plumas.</td></tr>
 <tr><td>Otros domésticos</td><td>Perro (guarda, caza, pastoreo), gato (plagas), abejas.</td><td>Ayuda, miel, cera.</td></tr>
 <tr><td>Caza menor</td><td>Liebre, conejo, perdiz, faisán, pato salvaje.</td><td>Carne, plumas, pieles.</td></tr>
@@ -378,7 +378,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.78rem;text-tra
 <ol class="q" start="27">
   <li>¿Hay moneda? ¿La acuñan los jugadores (con plata) o es trueque?</li>
   <li>¿Mercados o puestos de venta que funcionan sin el dueño conectado?</li>
-  <li>¿Cada país tiene recursos exclusivos para forzar el comercio?</li>
+  <li>¿Cada región tiene recursos exclusivos para forzar el comercio?</li>
 </ol>
 
 <h3>G. Social, tierras y PvP</h3>
@@ -396,7 +396,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.78rem;text-tra
 
 <h3>H. Producto</h3>
 <ol class="q" start="39">
-  <li>Creación de personaje: ¿qué se elige (aspecto, sexo, edad, país)?</li>
+  <li>Creación de personaje: ¿qué se elige (aspecto, sexo, edad, región)?</li>
   <li>Interfaz: ¿cómo se ve el inventario y el crafting sin HUD clásico?</li>
   <li>Jugadores nuevos: ¿tutorial, zona de inicio protegida, o nada?</li>
   <li>Monetización: ¿gratis con algo de pago (cosmético, suscripción), compra única, suscripción?</li>

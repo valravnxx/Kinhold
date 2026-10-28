@@ -1,15 +1,10 @@
 {
- "A": {
-  "inicio": "2026-10-28T12:32:34+00:00",
-  "tarea": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
-  "hito": "prueba-online",
-  "rama": "trabajo/20261028-1232"
- },
+ "A": null,
  "B": {
-  "inicio": "2026-10-28T13:59:19+00:00",
-  "tarea": "Ralentización por carga en la lógica pura, como dice el GDD: con poca carga no se nota y, cargado al máximo en todos los huecos, la velocidad al caminar baja hasta el 80%. Aplicada al andar del personaje en la demo, con pruebas de lógica y de navegador",
-  "hito": "equipo",
-  "rama": "trabajo/20261028-1359"
+  "inicio": "2026-10-28T14:53:19+00:00",
+  "tarea": "Curación de heridas",
+  "hito": "duelo",
+  "rama": "trabajo/20261028-1453"
  },
  "chat:trabajo/20261028-1515-fijo": {
   "inicio": "2026-10-28T15:12:01+01:00",

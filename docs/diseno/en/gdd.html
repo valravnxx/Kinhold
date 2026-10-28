@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="97e99e796aa81f1c5e33365aec77f10d162cf0f7">
+<meta name="kinhold-origen" content="eaa359a7a05604fc49d52ce9a473133e00df0e5c">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.9</title>
 <style>
@@ -146,18 +146,19 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 
 <section id="mundo">
 <h2>4. World and size</h2>
-<p><span class="tag ok">DECIDED</span>An invented pseudo-Europe, <b>5 countries with their own style</b> (architecture, clothing, names). Biomes larger than 100 km² in northern, temperate and southern bands. A coherent sea.</p>
+<p><span class="tag ok">DECIDED</span>An invented pseudo-Europe, <b>5 regions with their own style</b> (architecture, clothing, names). Biomes larger than 100 km² in northern, temperate and southern bands. A coherent sea.</p>
 <p><span class="tag ok">DECIDED</span>A 2 h day and a 1 h night. One season per real month.</p>
-<p><span class="tag ok">DECIDED</span>Each country has its own resources to trade, but none are essential.</p>
+<p><span class="tag ok">DECIDED</span>Each region has its own resources to trade, but none are essential.</p>
 <h3>Size calculation</h3>
 <p>Assumptions: walking at about 5 km/h, a horse at a sustained trot at about 12 km/h, and the sea adds around 40% to the side of the map. One day-night cycle is 3 real hours.</p>
 <div class="tw"><table>
-<tr><th>Option</th><th>Country</th><th>Biomes per country</th><th>Total world</th><th>Crossing a country</th><th>Crossing the world</th></tr>
+<tr><th>Option</th><th>Region</th><th>Biomes per region</th><th>Total world</th><th>Crossing a region</th><th>Crossing the world</th></tr>
 <tr><td><b>Compact</b></td><td>30 × 30 km</td><td>~9</td><td>~94 × 94 km</td><td>6 h on foot · 2.5 h on horseback</td><td>19 h on foot · 8 h on horseback</td></tr>
 <tr><td><b>Medium</b></td><td>60 × 60 km</td><td>~36</td><td>~188 × 188 km</td><td>12 h on foot · 5 h on horseback</td><td>38 h on foot · 16 h on horseback</td></tr>
 <tr><td><b>Large</b></td><td>100 × 100 km</td><td>~100</td><td>~313 × 313 km</td><td>20 h on foot · 8 h on horseback</td><td>63 h on foot · 26 h on horseback</td></tr>
 </table></div>
-<p><span class="tag ok">DECIDED</span><b>A world of 256 × 256 km including the sea</b> (chosen by valravnx on 27 Oct, with seed 66172, in the map sketches): mainland countries of about 75 × 75 km and an island country of about 2,000 km², separated by sea. Crossing a mainland country takes about 15 hours on foot or 6 on horseback.</p>
+<p><span class="tag ok">DECIDED</span><b>A world of 256 × 256 km including the sea</b> (chosen by valravnx on 27 Oct, with seed 66172, in the map sketches): mainland regions of about 75 × 75 km and an island region of about 2,000 km², separated by sea. Crossing a mainland region takes about 15 hours on foot or 6 on horseback.</p>
+<p><span class="tag ok">DECIDED</span><b>Names</b> (chosen by valravnx on 28 Oct): the continent is <b>Kinland</b>, and its five regions are <b>Whitholm</b> (the northeastern island: cold, rainy and limestone), <b>Eikwold</b> (northwest: forests, plains and coast), <b>Rudmere</b> (southwest: the warmest, holm oak woods on red sandstone, with the lake), <b>Highfell</b> (the central massif, with the highest peak) and <b>Storaa</b> (southeast: the driest, where the great river runs). They are <b>regions, not countries</b>: countries, if they ever come, will be made by the players.</p>
 <div class="box m"><span class="tag method">METHOD</span>
 <p>Since the world comes from a seed, it can be expanded at the edges later without touching what already exists. With few people at first, the medium world may feel empty: we will keep an eye on it once there are players.</p></div>
 <h3>Relief, rivers and forests at real scale</h3>
@@ -196,7 +197,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 
 <section id="personaje">
 <h2>6. Character, death and logging out</h2>
-<p><span class="tag ok">DECIDED</span><b>Creation:</b> a few appearance settings, man or woman, and starting country. You start at a <b>random accessible spot</b> in the chosen country (never in the sea or on a peak).</p>
+<p><span class="tag ok">DECIDED</span><b>Creation:</b> a few appearance settings, man or woman, and starting region. You start at a <b>random accessible spot</b> in the chosen region (never in the sea or on a peak).</p>
 <p><span class="tag ok">DECIDED</span>Needs: hunger, thirst, cold, heat and fatigue, with warnings in circles on the right; tapping them shows the effect and information.</p>
 <p><span class="tag ok">DECIDED</span><b>Later on</b> (an expansion after the first version of the survival milestone, not before): five more states, with their warning in the same circles. <b>Wet</b> (rain, swimming or crossing rivers; adds to cold), <b>infected wound</b> (if it isn't cleaned or stitched properly), <b>spoiled food</b> (raw or rotten meat; makes you ill), <b>pain</b> (after a fight or a fall, clumsier until healed) and <b>drunk</b> (beer and wine, with a downside in combat). Boredom, sadness or panic are not included: with the character asleep while offline they would penalise being away, and panic would go against skill-based combat.</p>
 <p><span class="tag ok">DECIDED</span>The character <b>does not improve through levels or stats</b>: everything depends on the player's knowledge, skill and equipment.</p>
@@ -535,7 +536,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>7</td><td>Wildlife and hunting</td><td>Realistic animals.</td></tr>
 <tr><td>8</td><td>Horses</td><td>Tame, ride, stable and pasture.</td></tr>
 <tr><td>9</td><td>Farming and seasons</td><td>Sowing by band, livestock.</td></tr>
-<tr><td>10</td><td>World</td><td>Seed-based pseudo-Europe at real scale: mountain ranges, valleys and passes, rivers of three sizes, dense forests; water and swimming; 5 countries with their own style, paths through use, bridges.</td></tr>
+<tr><td>10</td><td>World</td><td>Seed-based pseudo-Europe at real scale: mountain ranges, valleys and passes, rivers of three sizes, dense forests; water and swimming; 5 regions with their own style, paths through use, bridges.</td></tr>
 <tr><td>10b</td><td>Polishing hands, animations and wounds</td><td>Hands grip each tool and weapon properly, animations do not clip through the body itself, the clothing or other characters, and wounds look good where they land. For later: something playable first.</td></tr>
 <tr><td>11</td><td>Server and accounts</td><td>Registration, character creation, persistent world.</td></tr>
 <tr><td>11b</td><td>Administration, logs and security</td><td>Admin powers, logs of what happens, cheat detection and bans.</td></tr>
@@ -553,7 +554,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p class="note">Approved by valravnx on 26 Oct from the analysis of what was missing for a finished game. In brackets, the milestone where each item is planned.</p>
 <h3>World</h3>
 <p><span class="tag ok">DECIDED</span><b>No NPC cities</b> (decided on 27 Oct): they would break the survival feeling of a world to explore. Dealing with NPCs comes with the travelling merchants and mercenaries, who appear about 2 km from any player and walk to the settlements (section 16). (Milestone 14)</p>
-<p><span class="tag ok">DECIDED</span><b>Named districts:</b> each country is divided into districts that follow the terrain (a valley, a river plain, a range), named in the country's style. valravnx reviews and adjusts the world map and its names by hand. (Milestone 10)</p>
+<p><span class="tag ok">DECIDED</span><b>Named districts:</b> each region is divided into districts that follow the terrain (a valley, a river plain, a range), named in the region's style. valravnx reviews and adjusts the world map and its names by hand. (Milestone 10)</p>
 <p><span class="tag ok">DECIDED</span>The world is <b>never reset</b>. (Milestone 11)</p>
 <p><span class="tag ok">DECIDED</span><b>Weather:</b> clear, cloudy, rain, snow (north and winter) and fog, over large areas and by season. In the north, rivers freeze in winter and can be crossed on foot. (Milestone 4)</p>
 <p><span class="tag ok">DECIDED</span>Dark but playable <b>night</b>: the moon, torches, oil lamps and campfires give real light, and wolves are more active. Sleeping is not forced. (Milestone 4)</p>
@@ -583,7 +584,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h3>Later on (cosmetic and expansion)</h3>
 <p><span class="tag ok">DECIDED</span><b>Home:</b> tableware and pottery on the table, woven tapestries with designs (with the same editor as the coat of arms), curtains, cushions and furs, candles, oil lamps and candelabras, hunting and fishing trophies, flowerpots, strings of garlic and onions, weapon racks and a mannequin for armour.</p>
 <p><span class="tag ok">DECIDED</span><b>Social life:</b> board games playable between players (tables, alquerque, dice), simple instruments (flute, drum, hurdy-gurdy), emotes (sit, wave, bow, toast) and a cat as a pet.</p>
-<p><span class="tag ok">DECIDED</span><b>Gatherings:</b> fencing tournaments and seasonal fairs with merchants from other countries; where they are held is still to be decided, now that there are no NPC cities.</p>
+<p><span class="tag ok">DECIDED</span><b>Gatherings:</b> fencing tournaments and seasonal fairs with merchants from other regions; where they are held is still to be decided, now that there are no NPC cities.</p>
 <p><span class="tag ok">DECIDED</span><b>Siege and farm:</b> scaling ladders and mantlets, and fire spreading from one piece to another (milestone 6); water troughs, feeders, wells and irrigation ditches (milestone 9).</p>
 </section>
 

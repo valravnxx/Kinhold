@@ -102,11 +102,11 @@ escena.add(decorado.raiz);
 const obstaculos = decorado.obstaculos; // {x,z,r}
 
 // ---------------- Personaje y cámara ----------------
-// personaje del taller propio: la versión publicada vive en jugar/construccion/, los modelos en recursos/personajes/taller-v8/
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v8/';
+// personaje del taller propio: la versión publicada vive en jugar/construccion/, los modelos en recursos/personajes/taller-v9/
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v9/';
 // el personaje elegido en el visor (cuerpo y ropa); si no se ha elegido ninguno, camisa y calzas de lino (GDD)
 const elegido = personajeElegido();
-const jugador = elegido ? crearJugador(RECURSOS_MH, elegido.sexo, elegido.capas) : crearJugador(RECURSOS_MH);
+const jugador = elegido ? crearJugador(RECURSOS_MH, elegido.sexo, elegido.capas, elegido.aspecto) : crearJugador(RECURSOS_MH);
 escena.add(jugador.raiz);
 const pj = { x: 0, y: 0, z: 4, k: 0, rot: Math.PI, vel: 0 };
 const cam = { yaw: Math.PI * 0.25, pitch: 0.9, dist: 16 };

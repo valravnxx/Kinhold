@@ -315,13 +315,15 @@
     },
     {
      "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T12:32:34+00:00",
-     "rama": "trabajo/20261028-1232"
+     "fin": "2026-10-28T14:53:47+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T15:25:29+00:00",
+     "rama": "trabajo/20261028-1525"
     }
    ]
   },
@@ -429,9 +431,13 @@
     },
     {
      "nombre": "Taller: personalización — altura, complexión y cara con los ajustes de MakeHuman, tono de piel, color de ojos, peinado y barba",
-     "estado": "en_curso",
-     "inicio": "2026-10-28T09:20:54+00:00",
-     "rama": "trabajo/20261028-0920"
+     "estado": "hecho",
+     "inicio": "2026-10-28T09:20:34+00:00",
+     "fin": "2026-10-28T15:31:25+00:00"
+    },
+    {
+     "nombre": "Que los demás jugadores en línea te vean con tu aspecto (forma, colores, peinado y barba): mandarlo con el cuerpo y la ropa, y que el servidor lo compruebe con la misma lógica (src/logica/aspecto.js)",
+     "estado": "pendiente"
     },
     {
      "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
@@ -785,7 +791,9 @@
     },
     {
      "nombre": "Curación de heridas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T14:53:19+00:00",
+     "rama": "trabajo/20261028-1453"
     },
     {
      "nombre": "Prueba de golpes en las cinco direcciones de la rosa con el personaje del taller: el brazo va hacia el objetivo (cinemática inversa) sobre una animación base, porque el paquete solo trae unos pocos golpes; si no convence, buscar otra vía antes de seguir",
@@ -920,6 +928,13 @@
      "estado": "en_curso",
      "inicio": "2026-10-28T15:12:01+01:00",
      "rama": "trabajo/20261028-1515-fijo"
+    },
+    {
+     "nombre": "Nombres del mundo (decididos por valravnx el 28 oct): el continente es Kinland y sus cinco regiones Whitholm (la isla), Eikwold (noroeste), Rudmere (suroeste), Highfell (el macizo central) y Storaa (sureste, el gran río). Son regiones, no países (los países, si llegan, los harán los jugadores): «país» pasa a «región» en el mapa, el GDD, sistemas y el análisis, en los tres idiomas",
+     "estado": "hecho",
+     "inicio": "2026-10-28T15:45:46+01:00",
+     "rama": "trabajo/20261028-1546-nombres",
+     "fin": "2026-10-28T16:06:02+01:00"
     }
    ],
    "lleva": "chat"
@@ -1726,6 +1741,13 @@
      "archivo": "jugar/personaje/v15.html",
      "capturas": "capturas/personaje-v15",
      "notas": "Capa, botas y tocados: capucha, sombrero de paja y toca"
+    },
+    {
+     "v": "v16",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/personaje/v16.html",
+     "capturas": "capturas/personaje-v16",
+     "notas": "Personalización del taller propio: tono de piel, color de ojos y de pelo, peinado (corto o rapado), barba (corta, bigote o afeitado) y deslizadores de altura, peso, músculo, cara ancha, nariz ancha, nariz larga y mentón. Peso, músculo y la cara son las formas de MakeHuman; la ropa engorda o adelgaza con el cuerpo."
     }
    ]
   },
@@ -1803,9 +1825,22 @@
      "archivo": "jugar/mapa/v8.html",
      "capturas": "capturas/mapa-v8",
      "notas": "Roca escarpada de cerca: las paredes de los cortados se cubren de losas de roca 3D hechas por código, encajadas en la pared, con caras, aristas, estratos y sombra entre ellas, y una textura de roca con vetas, grietas finas y liquen."
+    },
+    {
+     "v": "v9",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/mapa/v9.html",
+     "capturas": "capturas/mapa-v9",
+     "notas": "Nombres del mundo: el continente Kinland y sus regiones Whitholm, Eikwold, Rudmere, Highfell y Storaa; «país» pasa a «región»."
     }
    ]
   }
  ],
- "decisiones_pendientes": []
+ "decisiones_pendientes": [
+  {
+   "pregunta": "Crear la cuenta de Hetzner y el servidor de prueba siguiendo la guía del repositorio, servidor/nube/LEEME.md (plan CX23 con Ubuntu 24.04 y el cloud config pegado); luego abrir en los dos aparatos la dirección https:// con tu IP con guiones y .sslip.io y decir si funciona (o si prefieres otro alojamiento)",
+   "desde": "2026-10-28",
+   "hito": "prueba-online"
+  }
+ ]
 }

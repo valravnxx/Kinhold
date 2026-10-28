@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 28 oct 2026 (15:46) — por el chat: nombres del mundo
+valravnx decide los nombres: continente **Kinland**; regiones **Whitholm** (la isla), **Eikwold** (noroeste), **Rudmere** (suroeste), **Highfell** (macizo central) y **Storaa** (sureste, el gran río). Descartados Hornfell (casi igual que una región de otro juego de supervivencia) y Highmark (marca de una aseguradora). «No son países como tal, son regiones; países los harán si eso los jugadores.» → Tarea en el hito del mundo, en curso en esta sesión de chat.
+
 ### 28 oct 2026 (15:11) — por el chat: que el mundo sea siempre igual
 
 «Cada vez que camino a un borde para reescribir la zona de alta calidad y avanzar a un acantilado, la zona que estaba cambia junto a lo nuevo; ¿cómo hacemos un seed de esto para que sea siempre el mundo igual?» → El terreno ya era fijo; lo que cambiaba era el reparto de árboles, hierba, piedras y rocas, que salía de un azar que empezaba en el centro del trozo de cerca. Tarea nueva en el hito 10, la lleva el chat: todo se coloca según su sitio en el mundo y la semilla.

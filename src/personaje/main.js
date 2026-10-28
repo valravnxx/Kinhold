@@ -9,6 +9,7 @@ import { crearPersonaje, OPCIONES } from '../personajes/cargar.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
 import { VERSION_PERSONAJE, REGISTRO_PERSONAJE } from './registro.js';
 import { BASES, CAPAS, ANIMS } from './textos.js';
+import { PALETAS, FORMAS, PEINADOS, BARBAS, normalizarAspecto } from '../logica/aspecto.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
@@ -31,10 +32,18 @@ const $ = (id) => document.getElementById(id);
 const CLAVE = 'kinhold_personaje_v2';
 // carpeta de los modelos: la versión publicada vive en jugar/personaje/, los modelos en recursos/personajes/v1/
 const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../recursos/personajes/v1/';
-// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v8/ (las anteriores publicadas no se tocan)
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v8/';
+// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v9/ (las anteriores publicadas no se tocan)
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v9/';
 // capas puestas en el taller propio, por sexo (por defecto: túnica en el hombre, vestido en la mujer)
 const capasMH = () => (estado.capas && estado.capas[estado.sexo]) || [estado.sexo === 'mujer' ? 'vestido' : 'tunica'];
+// aspecto del taller propio (forma, colores, peinado y barba), por sexo; se guarda con lo demás (src/logica/aspecto.js)
+const aspectoMH = () => normalizarAspecto(estado.aspecto && estado.aspecto[estado.sexo], estado.sexo);
+const cambiarAspecto = (cambio) => {
+  const a = aspectoMH();
+  estado.aspecto = { ...(estado.aspecto || {}), [estado.sexo]: normalizarAspecto({ ...a, ...cambio, formas: { ...a.formas, ...(cambio.formas || {}) } }, estado.sexo) };
+  if (pj?.ponerAspecto) { pj.ponerAspecto(aspectoMH()); medida.trianglesPersonaje = pj.triangulos; }
+  guardar(); dibujar();
+};
 
 const lienzo = $('lienzo');
 const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, alpha: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
@@ -80,7 +89,7 @@ async function rehacer() {
   const n = ++cargando;
   $('cargando').hidden = false;
   if (!OPCIONES.pelo[estado.sexo][estado.pelo]) estado.pelo = Object.keys(OPCIONES.pelo[estado.sexo])[0];
-  const nuevo = estado.base === 'makehuman' ? await crearPersonajeMH({ ...estado, capas: capasMH() }, RECURSOS_MH) : await crearPersonaje(estado, RECURSOS);
+  const nuevo = estado.base === 'makehuman' ? await crearPersonajeMH({ ...estado, capas: capasMH(), aspecto: aspectoMH() }, RECURSOS_MH) : await crearPersonaje(estado, RECURSOS);
   if (n !== cargando) return; // llegó otro cambio mientras cargaba
   if (pj) escena.remove(pj.raiz);
   pj = nuevo;
@@ -116,7 +125,7 @@ function pintarOpciones() {
   $('opciones').innerHTML = grupo('base', BASES, 'Base del personaje') + grupo('sexo', OPCIONES.sexo, 'Cuerpo') +
     (mh ? `<div class="grupo"><span>${tr(estado.sexo === 'hombre' ? 'Ropa por capas (debajo siempre camisa, calzas y zapatos)' : 'Ropa por capas (debajo siempre camisa y zapatos)')}</span>${(pj?.capasPosibles || []).map(c =>
         `<button data-capa="${c}" class="${capasMH().includes(c) ? 'sel' : ''}">${tr(CAPAS[c])}</button>`).join('')}</div>` +
-      `<div class="grupo"><span>${tr('Taller propio: pelo, piel y cara aún no se cambian.')}</span></div>`
+      pintarAspecto()
       : grupo('ropa', { campesino: OPCIONES.ropa.campesino }, 'Ropa') + grupo('pelo', OPCIONES.pelo[estado.sexo], 'Pelo') +
     grupo('colorPelo', OPCIONES.colorPelo, 'Color del pelo') + grupo('piel', OPCIONES.piel, 'Piel') + (estado.sexo === 'hombre' ? grupo('barba', OPCIONES.barba, 'Barba') : '')) +
     grupo('calidad', { alta: 'Alta', ligera: 'Ligera (móvil)' }, 'Calidad') +
@@ -132,7 +141,22 @@ function pintarOpciones() {
     if (pj?.ponerCapas) { pj.ponerCapas(capasMH()); medida.trianglesPersonaje = pj.triangulos; }
     pintarOpciones(); guardar(); dibujar();
   };
+  for (const b of $('opciones').querySelectorAll('[data-asp]')) b.onclick = () => { cambiarAspecto({ [b.dataset.asp]: b.dataset.v }); pintarOpciones(); };
+  for (const r of $('opciones').querySelectorAll('[data-forma]')) r.oninput = () => cambiarAspecto({ formas: { [r.dataset.forma]: Number(r.value) } });
   for (const b of $('opciones').querySelectorAll('[data-diag]')) b.onclick = () => { estado[b.dataset.diag] = !estado[b.dataset.diag]; aplicarDiag(); pintarOpciones(); guardar(); };
+}
+
+// personalización del taller propio: colores (muestras), peinado, barba y formas (deslizadores de -1 a 1)
+function pintarAspecto() {
+  const a = aspectoMH();
+  const muestras = (clave, titulo) => `<div class="grupo"><span>${titulo}</span>${Object.entries(PALETAS[clave]).map(([k, [n, c]]) =>
+    `<button data-asp="${clave}" data-v="${k}" class="${a[clave] === k ? 'sel' : ''}"><i style="background:rgb(${c.join(',')})"></i>${tr(n)}</button>`).join('')}</div>`;
+  const lista = (clave, valores, titulo) => Object.keys(valores).length < 2 ? '' : `<div class="grupo"><span>${titulo}</span>${Object.entries(valores).map(([k, n]) =>
+    `<button data-asp="${clave}" data-v="${k}" class="${a[clave] === k ? 'sel' : ''}">${tr(n)}</button>`).join('')}</div>`;
+  return muestras('piel', tr('Piel')) + muestras('ojos', tr('Ojos')) + muestras('pelo', tr('Color del pelo')) +
+    lista('peinado', PEINADOS[estado.sexo], tr('Peinado')) + lista('barba', BARBAS[estado.sexo], tr('Barba')) +
+    `<div class="grupo formas"><span>${tr('Cuerpo y cara')}</span>${Object.entries(FORMAS).map(([k, n]) =>
+      `<label>${tr(n)}<input type="range" min="-1" max="1" step="0.05" value="${a.formas[k]}" data-forma="${k}"></label>`).join('')}</div>`;
 }
 
 // interruptores para averiguar en el móvil qué pesa: sombras y escenario
