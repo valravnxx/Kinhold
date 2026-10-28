@@ -205,7 +205,10 @@ with sync_playwright() as p:
         # personalización del taller (aspecto): colores, peinado, barba y formas, con clics de verdad y sin recargar el modelo
         if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
         mat = lambda n: pg.evaluate(f"(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}') r = [o.material.color.r, o.material.color.g, o.material.color.b, o.visible]; }}); return r; }})()")
-        influ = lambda n, k: pg.evaluate(f"(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}' && o.morphTargetDictionary) r = o.morphTargetInfluences[o.morphTargetDictionary['{k}']]; }}); return r; }})()")
+        # las formas se ponen en la malla (no en la GPU): peso de cada una en userData.formas y lo que se ha movido la malla
+        influ = lambda n, k: pg.evaluate(f"(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}' && o.userData.formas && '{k}' in o.userData.formas.nombres) r = o.userData.formas.pesos['{k}']; }}); return r; }})()")
+        movida = lambda n: pg.evaluate(f"(() => {{ let r = 0; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}' && o.userData.formas) {{ const a = o.geometry.attributes.position, b = o.userData.formas.base;
+            for (let i = 0; i < a.count; i++) r = Math.max(r, Math.hypot(a.getX(i) - b.getX(i), a.getY(i) - b.getY(i), a.getZ(i) - b.getZ(i))); }} }}); return r; }})()")
         pj0 = pg.evaluate(f'{E}.diag().pj.modelo.uuid')
         pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)')
         cara0 = contenido(pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_0.png'))[0]
@@ -235,6 +238,9 @@ with sync_playwright() as p:
         cabeza1 = pg.evaluate(f"{E}.hueso('head')")[1]
         f = [influ('hombre_piel', 'peso_mas'), influ('hombre_capa_tunica', 'peso_mas'), influ('hombre_piel', 'cara_mas'), influ('hombre_piel', 'nariz_menos'), influ('hombre_piel', 'menton_mas'), influ('hombre_capa_tunica', 'cara_mas')]
         comprobar('formas: peso en la piel y en la túnica; cara, nariz y mentón en la piel (no en la túnica)', f[:5] == [1, 1, 1, 1, 1] and f[5] is None, str(f))
+        mv = [movida('hombre_piel'), movida('hombre_capa_tunica')]
+        sin_gpu = pg.evaluate(f"(() => {{ let r = 0; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.geometry.morphAttributes.position) r++; }}); return r; }})()")
+        comprobar('formas: la piel y la túnica se mueven de verdad (más de 5 mm) y ninguna pieza calcula formas en la GPU', mv[0] > 0.005 and mv[1] > 0.005 and sin_gpu == 0, f'{mv[0] * 1000:.0f} y {mv[1] * 1000:.0f} mm; {sin_gpu} con formas en la GPU')
         comprobar('formas: más alto (la cabeza sube un 6 % aprox.)', 1.04 < cabeza1 / cabeza0 < 1.08, f'{cabeza0:.3f} → {cabeza1:.3f} m')
         cara2 = contenido(pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_3.png'))[0]
         pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_cuerpo.png')

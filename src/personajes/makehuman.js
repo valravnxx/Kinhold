@@ -13,6 +13,36 @@ const cache = new Map();
 const cargar = (url) => { if (!cache.has(url)) cache.set(url, cargador.loadAsync(url)); return cache.get(url); };
 
 const CALCO = /_(vello|barba_[a-z]+)$/;
+// Formas del modelo (peso, músculo, cara…): se ponen en la malla una vez, al cambiar el aspecto, y no en cada fotograma.
+// Con las formas en la GPU, cada vértice de cada pieza las recorre todas en cada fotograma aunque estén a 0, y el aspecto
+// casi nunca cambia. Cada personaje lleva su propia copia de las posiciones; lo demás (normales, UV, pesos de los huesos
+// y las formas) se comparte entre personajes.
+function sacarFormas(n) {
+  const geo = n.geometry, formas = geo.morphAttributes.position;
+  if (!formas || !formas.length) return;
+  const nueva = new THREE.BufferGeometry();
+  for (const [k, a] of Object.entries(geo.attributes)) nueva.setAttribute(k, k === 'position' ? a.clone() : a);
+  nueva.setIndex(geo.index);
+  for (const gr of geo.groups) nueva.addGroup(gr.start, gr.count, gr.materialIndex);
+  n.userData.formas = { base: geo.attributes.position, deltas: formas, nombres: { ...n.morphTargetDictionary }, pesos: {} };
+  n.geometry = nueva;
+  n.morphTargetInfluences = undefined; n.morphTargetDictionary = undefined;
+}
+function ponerFormas(n, pesos) {
+  const f = n.userData.formas; if (!f) return;
+  const usar = Object.entries(f.nombres).filter(([k]) => pesos[k] > 0);
+  const igual = Object.keys(f.nombres).every(k => (pesos[k] || 0) === (f.pesos[k] || 0));
+  if (igual && n.geometry.userData.formasPuestas) return;
+  const pos = n.geometry.attributes.position, b = f.base, N = pos.count;
+  for (let i = 0; i < N; i++) {
+    let x = b.getX(i), y = b.getY(i), z = b.getZ(i);
+    for (const [k, t] of usar) { const d = f.deltas[t], w = pesos[k]; x += w * d.getX(i); y += w * d.getY(i); z += w * d.getZ(i); }
+    pos.setXYZ(i, x, y, z);
+  }
+  pos.needsUpdate = true;
+  n.geometry.userData.formasPuestas = true;
+  f.pesos = Object.fromEntries(Object.keys(f.nombres).map(k => [k, pesos[k] || 0]));
+}
 // color sRGB (0-255) a lineal, igual que en el taller (potencia 2,2)
 const lineal = (c) => c.map(x => (x / 255) ** 2.2);
 
@@ -35,6 +65,7 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     Object.assign(n.material, { transparent: false, depthWrite: true, alphaTest: recorte ? 0.5 : 0, side: THREE.DoubleSide });
     // calcos de pelo pintados sobre la piel (cejas, pelo rapado, barba): mezcla suave, encima de la piel y sin tapar nada
     if (CALCO.test(n.name)) Object.assign(n.material, { transparent: true, depthWrite: false, alphaTest: 0, side: THREE.FrontSide, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4 });
+    sacarFormas(n);
     triangulos += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3;
   });
   // ropa por capas, de dentro afuera. Lo que queda tapado del todo no se dibuja: el cuerpo de una capa se esconde si
@@ -125,7 +156,7 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
       if (!n.isMesh) return;
       const t = n.userData.tinte;
       if (t) { const c = lineal(colorDe(t, asp[t])), r = n.userData.ref || 1; n.material.color.setRGB(c[0] / r, c[1] / r, c[2] / r, THREE.LinearSRGBColorSpace); }
-      if (n.morphTargetDictionary) for (const [k, i] of Object.entries(n.morphTargetDictionary)) n.morphTargetInfluences[i] = pesos[k] || 0;
+      ponerFormas(n, pesos);
       if (n.name.endsWith('_pelo')) n.visible = asp.peinado === 'corto';
       const b = n.name.match(/_barba_([a-z]+)$/);
       if (b) n.visible = asp.barba === b[1];
