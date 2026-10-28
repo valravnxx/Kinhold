@@ -9,6 +9,7 @@ import { crearPaisaje, bosqueEn } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
 import { tr } from '../idioma.js';
 import { crearVistaJuego } from './juego.js';
+import { crearMaterialAgua, atributosAgua, tiempoAgua } from './agua.js';
 
 export const LADO_CERCA = 4000;                 // m
 const movil = Math.min(innerWidth, innerHeight) < 700;
@@ -40,9 +41,10 @@ export function colorDelSuelo(st, y, s, xm, ym) {
 }
 export const ROCAS_COLOR = ROCA;
 export const lin = (c) => Math.pow(Math.max(0, c), 2.2);
-// el agua de los ríos (la misma de lejos y de cerca, para que no se vea la costura): algo de brillo del cielo
-let matAgua = null;
-export function materialAgua() { return (matAgua ||= new THREE.MeshPhongMaterial({ color: 0x55707c, specular: 0x8899a0, shininess: 60, side: THREE.DoubleSide })); }
+// el agua (src/mapa/agua.js): la de lejos deja un hueco bajo el trozo de cerca, que lleva la suya con todo el detalle
+let matAguaLejos = null, matAguaCerca = null;
+export const aguaLejos = () => (matAguaLejos ||= crearMaterialAgua());
+export const aguaCerca = () => (matAguaCerca ||= crearMaterialAgua());
 const triangulos = (g) => (g.index ? g.index.count : g.attributes.position.count) / 3;
 export function abrirCerca(mapa, xkm, ykm, alCerrar) {
   if (!estado) estado = iniciar();
@@ -74,6 +76,7 @@ function iniciar() {
   const bucle = () => {
     requestAnimationFrame(bucle); const ahora = performance.now(), dt = Math.min(0.05, (ahora - antes) / 1000); antes = ahora;
     if (cont.hidden) return;
+    tiempoAgua.value = ahora / 1000;
     if (estado && estado.juego) estado.juego.actualizar(dt);
     control.update(); renderer.render(escena, camara);
   };
@@ -134,16 +137,26 @@ function construir(mapa, cx, cy) {
   if (!estado.matLejos) { estado.matLejos = materialTex('suelo').clone(); Object.assign(estado.matLejos, { polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 8 }); }
   const terreno = new THREE.Mesh(geo, estado.matLejos); terreno.name = 'terreno'; terreno.receiveShadow = true; estado.raiz.add(terreno);
   estado.terreno = terreno; estado.tramos = tramos; estado.L = L; estado.N = N;
-  // mar
+  // mar: una malla sobre la misma rejilla, solo donde hay mar, con la hondura en cada vértice (para el color y para
+  // las olas que rompen en la costa)
   if (H.some(v => v < 0)) {
-    const mar = new THREE.Mesh(new THREE.PlaneGeometry(L, L).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: 0x5b7584, transparent: true, opacity: 0.88 }));
-    mar.position.y = 0; mar.name = 'mar'; estado.raiz.add(mar);
+    const pm = [], hm = [], im = [], ver = new Int32Array(N * N).fill(-1);
+    const vert = (k) => { if (ver[k] < 0) { ver[k] = pm.length / 3; pm.push(-L / 2 + (k % N) * paso, 0, -L / 2 + Math.floor(k / N) * paso); hm.push(Math.max(0, -H[k])); } return ver[k]; };
+    for (let j = 0; j < N - 1; j++) for (let i = 0; i < N - 1; i++) {
+      const a = j * N + i, b = a + 1, c2 = a + N, d = c2 + 1;
+      if (Math.min(H[a], H[b], H[c2], H[d]) > 0.3) continue;
+      im.push(vert(a), vert(c2), vert(b), vert(b), vert(c2), vert(d));
+    }
+    const gm = new THREE.BufferGeometry(); gm.setAttribute('position', new THREE.Float32BufferAttribute(pm, 3)); gm.setIndex(im); gm.computeVertexNormals();
+    atributosAgua(gm, { hondo: Float32Array.from(hm), tipo: new Float32Array(pm.length / 3).fill(1) });
+    const mar = new THREE.Mesh(gm, aguaLejos()); mar.name = 'mar'; mar.receiveShadow = true; estado.raiz.add(mar);
   }
   // ríos: cinta de agua sobre el cauce
-  const agua = [], aguaIdx = [];
+  const agua = [], aguaIdx = [], flujo = [];
   for (const t of tramos) {
     const largo = Math.hypot(t.bx - t.ax, t.by - t.ay), n = Math.max(1, Math.ceil(largo / 20));
     const nx = -(t.by - t.ay) / (largo || 1), ny = (t.bx - t.ax) / (largo || 1), w = Math.max(3, t.ancho) / 2;
+    const co = pai.corriente((t.ax + t.bx) / 2, (t.ay + t.by) / 2, [t]);
     let previo = false;   // solo se une con el punto anterior del mismo tramo
     for (let s = 0; s <= n; s++) {
       const u = s / n, xm = t.ax + (t.bx - t.ax) * u, ym = t.ay + (t.by - t.ay) * u, x = xm - cx, z = ym - cy;
@@ -152,13 +165,15 @@ function construir(mapa, cx, cy) {
       const y = pai.altura(xm, ym, [t]) + 0.8, base = agua.length / 3;
       const salto = previo && Math.abs(y - agua[agua.length - 2]) > 6;   // un salto grande: se corta (los saltos de agua van luego)
       agua.push(x + nx * w, y, z + ny * w, x - nx * w, y, z - ny * w);
+      flujo.push(co.dx * co.vel, co.dy * co.vel, co.dx * co.vel, co.dy * co.vel);
       if (previo && !salto) aguaIdx.push(base - 2, base - 1, base, base - 1, base + 1, base);
       previo = true;
     }
   }
   if (agua.length) {
     const g2 = new THREE.BufferGeometry(); g2.setAttribute('position', new THREE.Float32BufferAttribute(agua, 3)); g2.setIndex(aguaIdx); g2.computeVertexNormals();
-    const rio = new THREE.Mesh(g2, materialAgua()); rio.name = 'rios'; estado.raiz.add(rio);
+    atributosAgua(g2, { flujo: Float32Array.from(flujo) });
+    const rio = new THREE.Mesh(g2, aguaLejos()); rio.name = 'rios'; rio.receiveShadow = true; estado.raiz.add(rio);
   }
   // bosque: candidatos en una rejilla desordenada de 13 m; cada uno se queda según el espesor del bosque en su sitio
   const r = azar((Math.round(cx) * 73856093) ^ (Math.round(cy) * 19349663));
@@ -256,4 +271,6 @@ function vista(cual) {
 
 window.__cerca = { listo: false, ocultar: (n) => { const o = estado.raiz.getObjectByName(n); if (o) o.visible = false; }, abrir: abrirCerca, vista: (v) => vista(v), camara: (p, d, y) => estado.juego.camara(p, d, y),
   rioCercano: () => { const { cx, cy } = estado.centro; let mejor = null, bd = Infinity; for (const t of estado.tramos) for (let u = 0; u <= 1; u += 0.05) { const x = t.ax + (t.bx - t.ax) * u - cx, z = t.ay + (t.by - t.ay) * u - cy, d = Math.hypot(x, z); if (d < bd) { bd = d; mejor = { x, z, ancho: t.ancho, dir: Math.atan2(t.by - t.ay, t.bx - t.ax) }; } } return mejor; },
+  // para las pruebas: un punto de tierra junto al mar (en la escena), cerca del centro de la zona
+  costaCercana: () => { const a = estado.alturaEn; for (let r = 0; r < 1900; r += 20) for (let g = 0; g < 6.28; g += 0.1) { const x = Math.cos(g) * r, z = Math.sin(g) * r, y = a(x, z); if (y > 0.6 && y < 4) for (let h = 0; h < 6.28; h += 0.5) if (a(x + Math.cos(h) * 25, z + Math.sin(h) * 25) < -0.5) return { x, z, dir: h }; } return null; },
   juegoEn: (x, z, dir = 0) => { if (window.__cerca.vistaActual === 'juego') estado.juego.salir(); estado.juego.entrar(x, z, dir); window.__cerca.vistaActual = 'juego'; }, get medidas() { return this._m; }, set medidas(v) { this._m = v; } };

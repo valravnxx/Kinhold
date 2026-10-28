@@ -115,14 +115,23 @@ export function crearPaisaje(mapa) {
 
   // el río más cercano a un punto: distancia (m), altura del río en ese tramo y ancho
   function rioCercano(xm, ym, tramos) {
-    let dm = Infinity, nivel = 0, ancho = 2;
+    let dm = Infinity, nivel = 0, ancho = 2, tramo = null;
     if (tramos) for (const t of tramos) {
       const vx = t.bx - t.ax, vy = t.by - t.ay, l2 = vx * vx + vy * vy || 1;
       const u = Math.max(0, Math.min(1, ((xm - t.ax) * vx + (ym - t.ay) * vy) / l2));
       const dd = Math.hypot(xm - t.ax - vx * u, ym - t.ay - vy * u);
-      if (dd < dm) { dm = dd; nivel = lerp(t.ha, t.hb, u); ancho = t.ancho; }
+      if (dd < dm) { dm = dd; nivel = lerp(t.ha, t.hb, u); ancho = t.ancho; tramo = t; }
     }
-    return { dm, nivel, ancho };
+    return { dm, nivel, ancho, tramo };
+  }
+  // la corriente del río en un punto: dirección (hacia donde baja: los tramos van de la fuente a la boca) y velocidad
+  // (m/s), que crece con la pendiente del cauce: unos 0,5 m/s en la vega y hasta 3 m/s en los torrentes de montaña
+  function corriente(xm, ym, tramos) {
+    const { tramo: t } = rioCercano(xm, ym, tramos);
+    if (!t) return { dx: 0, dy: 0, vel: 0 };
+    const vx = t.bx - t.ax, vy = t.by - t.ay, l = Math.hypot(vx, vy) || 1;
+    const pend = Math.max(0, (t.ha - t.hb) / l);
+    return { dx: vx / l, dy: vy / l, vel: Math.min(3, Math.max(0.35, Math.sqrt(pend) * 30)) };
   }
   // altura del agua del río en un punto cercano al cauce (m), o null si el punto no está junto a un río
   function agua(xm, ym, tramos) {
@@ -145,7 +154,7 @@ export function crearPaisaje(mapa) {
     return { roca: roca[ci] || 'caliza', bioma: bioma[ci] ? b : null, T, P, pais: pais[ci] };
   }
 
-  return { altura, agua, sitio, riosEn, rios, celda };
+  return { altura, agua, corriente, sitio, riosEn, rios, celda };
 }
 
 // Espesor del bosque (0–1) y qué árbol: según bioma, temperatura, pendiente (en tanto por uno) y un ruido de claros.
