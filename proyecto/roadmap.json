@@ -542,7 +542,8 @@
     },
     {
      "nombre": "Contraventana y trampilla (N2: 2 tablas y clavos): la contraventana cierra la ventana de un muro y la trampilla tapa el hueco de una escalera; las dos se abren y cierran con Usar. Añadir también el muro de tablas con ventana, que falta",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T02:50:19+00:00"
     },
     {
      "nombre": "Tejado de teja (N2: 10 tejas y vigas, pesa 200 kg, no se pudre ni arde fácil): material nuevo «teja» y su prueba de carga",

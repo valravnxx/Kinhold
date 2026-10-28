@@ -3,7 +3,13 @@
   "inicio": "2026-10-28T01:20:25+00:00",
   "tarea": "Conexiones que se cortan y protección básica: volver a conectar sin perder al personaje, quitar al que se va, límite de mensajes por segundo y de tamaño por conexión, y rechazo de datos mal formados (con una prueba que los manda)",
   "hito": "prueba-online",
-  "rama": "trabajo/20261028-0120"
+  "rama": "trabajo/20261028-0120",
+  "ultimo": "2026-10-28T01:43:37.000Z"
  },
- "B": null
+ "B": {
+  "inicio": "2026-10-28T02:50:19+00:00",
+  "tarea": "Contraventana y trampilla (N2: 2 tablas y clavos): la contraventana cierra la ventana de un muro y la trampilla tapa el hueco de una escalera; las dos se abren y cierran con Usar. Añadir también el muro de tablas con ventana, que falta",
+  "hito": "construccion-mas",
+  "rama": "trabajo/20261028-0250"
+ }
 }
