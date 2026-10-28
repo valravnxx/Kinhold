@@ -26,6 +26,10 @@ function cubica(arr, N, gx, gy) {
 }
 
 export const DETALLE = { mayor: 2000, octavas: 8 };
+// cuánto resiste cada roca a la erosión: las duras dan cortados y escarpes; la arenisca, lomas redondeadas
+export const DUREZA = { granito: 1, caliza: 0.9, pizarra: 0.8, arenisca: 0.25 };
+// lo más empinado que se puede subir andando (desnivel por metro: 1 = 45°); más, es pared
+export const PENDIENTE_ANDAR = 1;
 
 // ruido de valor (−1 a 1) con sus derivadas, en _d = [valor, d/dx, d/dy]
 const _d = new Float64Array(3);
@@ -96,6 +100,11 @@ export function crearPaisaje(mapa) {
     // no el ruido; si no, el ruido levanta el fondo decenas de metros y el río queda en una zanja
     const calma = dm === Infinity ? 1 : 0.12 + 0.88 * suave(ancho / 2, ancho / 2 + (180 + ancho * 12) * (1 - 0.45 * monte), dm);
     let z = hm + detalle(xm, ym, r, fino) * suave(0, 3, f) * calma;
+    // roca dura donde ya es empinado: el terreno se rompe en estratos, paredes de roca con repisas (ver escarpe())
+    const duro = DUREZA[rocaEn(xm, ym)] ?? 0.5;
+    // por zonas: unas laderas se rompen en cortados y otras quedan de hierba (más cortados en la montaña)
+    const zona = duro > 0.5 && f > 3 && calma > 0.9 ? suave(0.5 - 0.12 * monte, 0.62 - 0.12 * monte, fbm(xm / 900, ym / 900, S + 125, 3)) : 0;
+    if (zona > 0.001) z = escarpe(xm, ym, z, r, fino, duro * zona, calma);
     if (hm < 8) z = lerp(f * 0.5, z, suave(0, 2.5, f));    // costa baja: la playa baja suave hasta el agua
     z = Math.max(Math.min(0.4, f * 0.5), z);
     if (f < 10 && z > 2) {
@@ -121,6 +130,30 @@ export function crearPaisaje(mapa) {
       z = lerp(perfil, Math.min(z, perfil), suave(vega * 0.6, vega + 40, fuera));
     }
     return z;
+  }
+
+  // la roca madre de un punto (con el borde de la celda deformado como en sitio(), para que coincidan)
+  function rocaEn(xm, ym) {
+    const gx = g(xm), gy = g(ym);
+    const dx = (fbm(xm / 900, ym / 900, S + 101, 3) - 0.5) * 2.4, dy = (fbm(xm / 900 + 5, ym / 900, S + 102, 3) - 0.5) * 2.4;
+    return roca[Math.min(N - 1, Math.max(0, Math.round(gy + dy))) * N + Math.min(N - 1, Math.max(0, Math.round(gx + dx)))] || 'caliza';
+  }
+  // Escarpes y cortados: donde la roca es dura y la ladera ya es empinada, el terreno se escalona en estratos (el
+  // «terraceado» de los generadores de terreno): cada estrato es una repisa casi llana y una pared de roca. Para que no
+  // parezcan bancales, los estratos van inclinados (buzamiento) y ondulados, cada uno de altura distinta, y solo salen
+  // donde la pendiente ya es fuerte: en lo suave no hay pared. La pendiente se mide con dos puntos más (solo aquí).
+  function escarpe(xm, ym, z, r, fino, fuerza, calma) {
+    const h = 4, zx = grande(xm + h, ym).hm + detalle(xm + h, ym, r, fino) * calma, zy = grande(xm, ym + h).hm + detalle(xm, ym + h, r, fino) * calma;
+    const pend = Math.hypot(zx - z, zy - z) / h;
+    const w = suave(0.22, 0.5, pend) * fuerza;
+    if (w <= 0.001) return z;
+    const bx = (fbm(xm / 6000, ym / 6000, S + 121, 2) - 0.5) * 0.12, by = (fbm(xm / 6000 + 3, ym / 6000, S + 122, 2) - 0.5) * 0.12;
+    const plano = xm * bx + ym * by + (fbm(xm / 260, ym / 260, S + 123, 3) - 0.5) * 14;      // buzamiento y ondulación
+    const paso = 6 + 9 * fbm(xm / 2200, ym / 2200, S + 124, 2);                               // estratos de 6 a 15 m
+    const u = (z - plano) / paso, k = Math.floor(u), fr = u - k;
+    const salto = 0.5 + (hash2(k, 7, S) - 0.5) * 0.3;                                         // cada estrato, su pared en otro sitio
+    const escalon = (k + suave(salto - 0.16, salto + 0.16, fr)) * paso + plano;
+    return lerp(z, escalon, w);
   }
 
   // el río más cercano a un punto: distancia (m), altura del río en ese tramo y ancho
