@@ -309,9 +309,9 @@
     },
     {
      "nombre": "Medir el servidor con 100 jugadores simulados (bots que andan, construyen y pelean): CPU, memoria y tráfico por jugador, para saber qué servidor hace falta y cuánto cuesta al mes",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T10:51:53+00:00",
-     "rama": "trabajo/20261028-1051"
+     "fin": "2026-10-28T12:11:38+00:00"
     },
     {
      "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",

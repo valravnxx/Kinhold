@@ -1773,5 +1773,25 @@
   "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa 68/68, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web). Construcción y en línea fallaron una vez por tiempo con las dos mitades a la vez; solas, correctas. Mapa otra vez tras unir main. No comprobado: fotogramas en un móvil de verdad",
   "capturas": "capturas/mapa-v7",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T10:51:53+00:00",
+  "fin": "2026-10-28T12:11:38+00:00",
+  "titulo": "Hito 1f: medir el servidor con 100 bots",
+  "hito": "prueba-online",
+  "hecho": [
+   "Medición del servidor (servidor/medir.mjs): el servidor en su propio proceso y los bots en otro; cada segundo apunta la CPU, la memoria, el retraso del bucle, los bytes que salen y entran por los sockets y lo que ocupa el mundo en disco. Al final mide lo que pesa la bienvenida",
+   "Medido con 25, 50 y 100 bots que andan, construyen y pelean a la vez junto al mismo mojón (resultados en servidor/medidas/)",
+   "Con 100: el servidor usa un 15 % de un núcleo (máximo 25 %) y 113 MB; las acciones se responden en 4 ms (p95, 13 ms); 0 errores",
+   "Lo que manda es la red: cada jugador recibe lo de todos los demás, unos 1,9 KB/s por cada otro jugador. Con 100 salen 187 KB/s por jugador y 18 MB/s en total (154 Mbit/s); el reparto es luchadores 51 % y estados 44 %",
+   "La bienvenida lleva todo el historial de acciones y crece sin fin (1,5 MB tras 3 minutos con 100); el disco crece 31 MB por hora con 100 construyendo y peleando sin parar",
+   "Coste (precios de Hetzner Cloud vistos en cloudtally.eu, comprobados allí el 24 oct 2026, sin IVA): para la prueba de dos jugadores basta el plan más pequeño, CX23, 5,49 €/mes. Con 100 a la vez las 24 horas, el mismo plan por CPU y memoria (no medido en él) más unos 30 TB de tráfico de más: unos 35 €/mes",
+   "Para muchos jugadores habrá que mandar a cada uno solo lo que tiene cerca y una bienvenida con el estado del mundo en vez del historial; queda anotado en servidor/medidas/LEEME.md, sin tarea creada",
+   "Prueba nueva con seis bots (13 comprobaciones); MUTAR=1 mide sin contar la CPU y falla",
+   "No comprobado: el rendimiento en un servidor de alquiler y las cabeceras de TCP/IP (se midió lo que pasa por los sockets). Los bots y el servidor compartían los 2 núcleos de esta máquina"
+  ],
+  "pruebas": "Batería completa correcta (todas las pruebas de node y de navegador, con la nueva de la medición). Después de unir main se volvieron a pasar todas las de node; las de navegador no se repitieron tras esa unión. No hay vistas tocadas: no hay capturas nuevas",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
