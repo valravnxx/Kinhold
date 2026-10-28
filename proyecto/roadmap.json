@@ -444,9 +444,9 @@
     },
     {
      "nombre": "Que los demás jugadores en línea te vean con tu aspecto (forma, colores, peinado y barba): mandarlo con el cuerpo y la ropa, y que el servidor lo compruebe con la misma lógica (src/logica/aspecto.js)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T16:24:12+00:00",
-     "rama": "trabajo/20261028-1624"
+     "fin": "2026-10-28T19:46:27+00:00"
     },
     {
      "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
@@ -1331,6 +1331,13 @@
      "archivo": "jugar/demo/v29.html",
      "capturas": "capturas/demo-v29",
      "notas": "En línea: al pasar del duelo a construir ya os veis (el servidor os sacaba de la liza); y si el servidor es de una versión anterior, el juego lo avisa. Hace falta actualizar el servidor."
+    },
+    {
+     "v": "v30",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v30.html",
+     "capturas": "capturas/demo-v30",
+     "notas": "Los demás jugadores en línea te ven con tu aspecto: forma, colores de piel, ojos y pelo, peinado y barba, en la construcción y en el duelo. El servidor lo comprueba con la misma lógica que el visor de personaje. Un servidor de antes avisa de que hay que actualizarlo."
     }
    ]
   },
