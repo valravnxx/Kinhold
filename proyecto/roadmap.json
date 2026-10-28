@@ -303,13 +303,15 @@
     },
     {
      "nombre": "Bots: jugadores simulados en node que se conectan al servidor y andan, construyen y pelean, para la medición",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T08:51:14+00:00",
-     "rama": "trabajo/20261028-0851"
+     "fin": "2026-10-28T10:21:48+00:00"
     },
     {
      "nombre": "Medir el servidor con 100 jugadores simulados (bots que andan, construyen y pelean): CPU, memoria y tráfico por jugador, para saber qué servidor hace falta y cuánto cuesta al mes",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T10:51:53+00:00",
+     "rama": "trabajo/20261028-1051"
     },
     {
      "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
@@ -559,8 +561,9 @@
     },
     {
      "nombre": "Contraventana y trampilla (N2: 2 tablas y clavos): la contraventana cierra la ventana de un muro y la trampilla tapa el hueco de una escalera; las dos se abren y cierran con Usar. Añadir también el muro de tablas con ventana, que falta",
-     "estado": "en_curso",
-     "inicio": "2026-10-28T02:50:19+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-28T02:50:19+00:00",
+     "fin": "2026-10-28T10:53:43+00:00"
     },
     {
      "nombre": "Tejado de teja (N2: 10 tejas y vigas, pesa 200 kg, no se pudre ni arde fácil): material nuevo «teja» y su prueba de carga",
@@ -864,9 +867,9 @@
     },
     {
      "nombre": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T09:34:28+01:00",
-     "rama": "trabajo/20261028-0935-roca"
+     "fin": "2026-10-28T12:02:17+01:00"
     },
     {
      "nombre": "Valles tallados por los ríos: sin zanjas; lecho, orilla, vega ancha abajo y laderas con la pendiente limitada (en V cerrada en la montaña); el agua del río también de cerca",
@@ -903,6 +906,12 @@
      "estado": "hecho",
      "inicio": "2026-10-28T06:58:45+01:00",
      "fin": "2026-10-28T09:22:53+01:00"
+    },
+    {
+     "nombre": "Roca escarpada de cerca: las paredes de los cortados cubiertas de piezas de roca 3D (bloques con caras, aristas, salientes y grietas, hechos por código) y una textura de roca con sombra en grietas y rincones",
+     "estado": "en_curso",
+     "inicio": "2026-10-28T12:35:33+01:00",
+     "rama": "trabajo/20261028-1240-rocas"
     }
    ],
    "lleva": "chat"
@@ -1212,6 +1221,13 @@
      "archivo": "jugar/demo/v26.html",
      "capturas": "capturas/demo-v26",
      "notas": "En línea, si se corta la conexión, la página vuelve a conectar sola y sigues con el mismo personaje (y en el duelo, con el mismo luchador y sus heridas). El servidor quita enseguida al que se va (adiós al «uno más» al salir al menú), pone límites de mensajes por conexión y rechaza los datos mal formados. Es el combate v15."
+    },
+    {
+     "v": "v27",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v27.html",
+     "capturas": "capturas/demo-v27",
+     "notas": "En «Construir», contraventana, trampilla y muro de tablas con ventana (construcción v29)."
     }
    ]
   },
@@ -1401,6 +1417,13 @@
      "archivo": "jugar/construccion/v28.html",
      "capturas": "capturas/construccion-v28",
      "notas": "Polipasto con torno colgado de una viga: sube los troncos con un torno en el suelo (una persona sola, como con polea); lo muy pesado, cuando haya sillares, solo entre dos (uno en el torno y otro que guía)"
+    },
+    {
+     "v": "v29",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/construccion/v29.html",
+     "capturas": "capturas/construccion-v29",
+     "notas": "Contraventana para los muros con ventana y trampilla para el hueco de la escalera de tablas: se abren y se cierran con Usar; la trampilla cerrada se pisa y no deja subir. Muro de tablas con ventana."
     }
    ]
   },
@@ -1758,6 +1781,13 @@
      "archivo": "jugar/mapa/v6.html",
      "capturas": "capturas/mapa-v6",
      "notas": "El agua se mueve: el río corre en su dirección (lento en la vega, rápido y con espuma en los torrentes) y el mar tiene oleaje, con olas que rompen en la costa. Color según la hondura. La costa ya no es una pared: cortados empinados y playas que bajan al agua."
+    },
+    {
+     "v": "v7",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/mapa/v7.html",
+     "capturas": "capturas/mapa-v7",
+     "notas": "Cortados de roca: donde la roca es dura y empinada, el terreno se rompe en paredes de roca con repisas de hierba entre ellas; las paredes son roca maciza (sin piedrecitas, que van como pedregal al pie) y no se suben andando. Acantilados de costa en capas grandes, casi verticales."
     }
    ]
   }

@@ -1,6 +1,6 @@
 // Pruebas de la lógica de construcción de Kinhold. Ejecutar: node pruebas/prueba_logica.mjs
 // Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR.
-import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, polipastoPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, progresoEscalera, salidaEscalera } from '../src/logica/construccion.js';
+import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, polipastoPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, trampillaCerrada, progresoEscalera, salidaEscalera } from '../src/logica/construccion.js';
 import { PIEZAS, CLASE_PESO, MATERIALES } from '../src/logica/piezas.js';
 import { ejecutar, RegistroAcciones, seAbre, acabarObra } from '../src/logica/acciones.js';
 
@@ -12,6 +12,7 @@ if (process.env.MUTAR === '1') {
   PIEZAS.andamio.cap = 0;         // un andamio que no aguanta el de encima
   PIEZAS.polea.hueco = 'b';       // una polea que no cuelga de su viga
   PIEZAS.polipasto.polipasto = false; // un polipasto que es una polea más
+  PIEZAS.muro_tabla_ventana.conVentana = false; // un muro de tablas con ventana sin hueco para la contraventana
 }
 
 let ok = 0, mal = 0;
@@ -24,7 +25,7 @@ function comprobar(nombre, cond, detalle = '') {
 function enRejilla(m, c, tipo, i, j, k, d = 0, dir = 0) {
   const def = PIEZAS[tipo];
   const p = { tipo, hueco: def.hueco, i, j, k, dir, abierta: false };
-  if (['e', 'b', 'g', 'p', 'q'].includes(def.hueco)) p.d = d;
+  if (['e', 'b', 'g', 'p', 'q', 'w'].includes(def.hueco)) p.d = d;
   return { construccion: c, nueva: false, pieza: p };
 }
 function nuevaConstruccion(m) {
@@ -597,6 +598,76 @@ console.log('17. Obras: polipasto con torno (lo muy pesado, entre dos)');
   const c3 = m2.construcciones.find(x => x.id === c.id);
   comprobar('el polipasto se guarda y se carga', c3.piezas.get(clave('q', 0, 0, 1, 0))?.tipo === 'polipasto');
   delete PIEZAS.muro_prueba_sillar; delete CLASE_PESO.sillar_prueba;
+}
+
+console.log('18. Contraventana, trampilla y muro de tablas con ventana');
+{
+  const m = new Mundo(); m.colocarMojon(0, 0);
+  const R = new RegistroAcciones(), yo = 'jugador:prueba';
+  const c = nuevaConstruccion(m);
+  const pon = (tipo, i, j, k, d = 0, dir = 0) => m.colocar(enRejilla(m, c, tipo, i, j, k, d, dir));
+  // casa de 2×1: cimientos, muros (uno de tablas con ventana y otro de troncos con ventana), suelo arriba y escalera
+  for (const i of [0, 1]) pon('cim_tronco', i, 0, 0);
+  const mv = pon('muro_tabla_ventana', 1, 0, 0, 0);
+  comprobar('el muro de tablas con ventana se pone', mv.ok, mv.motivo || '');
+  comprobar('cuesta menos que el muro de tablas entero', PIEZAS.muro_tabla_ventana.coste.tabla < PIEZAS.muro_tabla.coste.tabla && PIEZAS.muro_tabla_ventana.conVentana === true);
+  for (const [i, j, d] of [[0, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, 1], [2, 0, 1]]) pon(i === 0 && j === 1 ? 'muro_tronco_ventana' : 'muro_tronco', i, j, 0, d);
+  pon('escalera_tabla', 0, 0, 0, 0, 3); // sube hacia +x: sale a la casilla (1,0)
+  pon('suelo_tronco', 1, 0, 1);
+  // contraventana: solo en un muro con ventana, por acciones con autor, y se abre y se cierra con Usar
+  const A = (a) => ejecutar(m, R, { autor: yo, ...a });
+  const enMuro = m.validar(enRejilla(m, c, 'contraventana', 0, 0, 0, 0));
+  comprobar('la contraventana no va en un muro sin ventana', !enMuro.ok && enMuro.motivo === 'La contraventana va en un muro con ventana.', enMuro.motivo || '');
+  comprobar('ni en el aire', !m.validar(enRejilla(m, c, 'contraventana', 4, 4, 0, 0)).ok);
+  const antes = { ...m.materiales };
+  const cv = A({ tipo: 'colocar', pieza: 'contraventana', x: 3, z: 0, k: 0, rot: 0, dir: 0 }); // arista (1,0,d=0): centro en (3, 0)
+  comprobar('la contraventana se pone en el muro de tablas con ventana', cv.ok && cv.clave === clave('w', 1, 0, 0, 0), `${cv.motivo || cv.clave}`);
+  const fin = acabarObra(m, R, yo, c.id, cv.clave);
+  comprobar('cuesta 2 tablas y 2 clavos', fin.ok && antes.tabla - m.materiales.tabla === 2 && antes.clavo - m.materiales.clavo === 2);
+  const cv2 = A({ tipo: 'colocar', pieza: 'contraventana', x: 1, z: 2, k: 0, rot: 0, dir: 0 });
+  comprobar('y en el de troncos con ventana', cv2.ok && cv2.clave === clave('w', 0, 1, 0, 0), cv2.motivo || cv2.clave);
+  comprobar('en obras no se abre', !A({ tipo: 'usar', construccion: c.id, clave: cv2.clave }).ok);
+  acabarObra(m, R, yo, c.id, cv2.clave);
+  const u1 = A({ tipo: 'usar', construccion: c.id, clave: cv.clave });
+  comprobar('se abre con Usar', u1.ok && c.piezas.get(cv.clave).abierta === true && seAbre(c.piezas.get(cv.clave)));
+  comprobar('y se cierra', A({ tipo: 'usar', construccion: c.id, clave: cv.clave }).ok && c.piezas.get(cv.clave).abierta === false);
+  comprobar('se apoya en su muro', !!c.piezas.get(cv.clave) && m.soportes(c, c.piezas.get(cv.clave)).lista[0] === clave('e', 1, 0, 0, 0));
+  const pm = m.previsualizarDesmontaje(c, clave('e', 1, 0, 0, 0));
+  comprobar('si se quita el muro, la contraventana cae con él', pm.ok && pm.caen.includes(cv.clave), (pm.caen || []).join(' ') + (pm.motivo || ''));
+  // trampilla: en el hueco de arriba de la escalera de tablas
+  const sinEsc = m.validar(enRejilla(m, c, 'trampilla', 1, 0, 1));
+  comprobar('la trampilla no va donde no hay escalera', !sinEsc.ok, sinEsc.motivo || '');
+  comprobar('ni en la planta de la escalera', !m.validar(enRejilla(m, c, 'trampilla', 0, 0, 0)).ok);
+  const tr = A({ tipo: 'colocar', pieza: 'trampilla', x: 1, z: 1, k: 1, rot: 0, dir: 0 });
+  comprobar('la trampilla se pone en el hueco de la escalera', tr.ok && tr.clave === clave('t', 0, 0, 1), tr.motivo || tr.clave);
+  const salida = [[0, 1], [-1, 0], [0, -1], [1, 0]][3], dt = c.piezas.get(tr.clave).dir, bis = [[0, 1], [-1, 0], [0, -1], [1, 0]][dt];
+  comprobar('la bisagra no va en el lado por el que se sale de la escalera (abierta taparía la salida)', !(-bis[0] === salida[0] && -bis[1] === salida[1]), `dir=${dt}`);
+  comprobar('sin suelo en los lados ni en el arranque, va en un lado', dt === 0, `dir=${dt}`);
+  comprobar('en obras no tapa el hueco', !trampillaCerrada(c, 0, 0, 0));
+  acabarObra(m, R, yo, c.id, tr.clave);
+  comprobar('terminada y cerrada tapa el hueco (se pisa y la escalera no sube)', trampillaCerrada(c, 0, 0, 0));
+  comprobar('descansa en el suelo de al lado', m.soportes(c, c.piezas.get(tr.clave)).lista.includes(clave('f', 1, 0, 1)));
+  const ut = A({ tipo: 'usar', construccion: c.id, clave: tr.clave });
+  comprobar('se abre con Usar y deja el hueco libre', ut.ok && ut.abierta === true && !trampillaCerrada(c, 0, 0, 0));
+  comprobar('el hueco sigue sin admitir un suelo', !m.validar(enRejilla(m, c, 'suelo_tronco', 0, 0, 1)).ok);
+  const pe = m.previsualizarDesmontaje(c, clave('l', 0, 0, 0));
+  comprobar('si se quita la escalera, la trampilla cae con ella', pe.ok && pe.caen.includes(tr.clave), (pe.caen || []).join(' '));
+  {
+    const c4 = nuevaConstruccion(m);
+    const p4 = (tipo, i, j, k, d = 0, dir = 0) => m.colocar(enRejilla(m, c4, tipo, i, j, k, d, dir));
+    for (const [i, j] of [[3, 3], [4, 3], [3, 4]]) p4('cim_piedra', i, j, 0);
+    for (const [i, j, d] of [[3, 3, 0], [4, 3, 0], [3, 5, 0], [3, 3, 1], [5, 3, 1], [3, 4, 1], [4, 4, 1]]) p4('muro_tronco', i, j, 0, d);
+    p4('escalera_tabla', 3, 3, 0, 0, 0); // sube hacia +z: sale a (3, 4)
+    p4('suelo_tronco', 3, 4, 1); p4('suelo_tronco', 4, 3, 1);
+    const t4 = p4('trampilla', 3, 3, 1);
+    const b4 = [[0, 1], [-1, 0], [0, -1], [1, 0]][c4.piezas.get(t4.clave)?.dir ?? 0];
+    comprobar('con suelo a un lado de la escalera, la bisagra va en ese lado', t4.ok && -b4[0] === 1 && -b4[1] === 0, `${t4.motivo || ''} dir=${c4.piezas.get(t4.clave)?.dir}`);
+  }
+  comprobar('cada Usar y cada obra quedan anotados con su autor', R.entradas.filter(e => e.tipo === 'usar' && e.ok).length === 3 && R.entradas.every(e => e.autor === yo));
+  // guardar y cargar, y rehacer desde el registro
+  const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  const c2 = m2.construcciones.find(x => x.id === c.id);
+  comprobar('se guardan y se cargan (abierta y cerrada)', c2.piezas.get(tr.clave)?.abierta === true && c2.piezas.get(cv.clave)?.abierta === false && c2.piezas.get(clave('e', 1, 0, 0, 0))?.tipo === 'muro_tabla_ventana');
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

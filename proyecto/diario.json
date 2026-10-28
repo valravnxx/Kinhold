@@ -1722,5 +1722,56 @@
   "pruebas": "Todas (probar_todo.sh) correctas tras unir main; capturas del visor en PC y móvil y fotos de cerca del taller revisadas. No hay prueba automática del hueco de la oreja (se intentó medir las caras vueltas hacia dentro y no distinguía bien): comprobado solo en las fotos.",
   "capturas": "capturas/personaje-v15",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T08:51:14+00:00",
+  "fin": "2026-10-28T10:21:48+00:00",
+  "titulo": "Hito 1f: bots que andan, construyen y pelean",
+  "hito": "prueba-online",
+  "hecho": [
+   "Bots en node (servidor/bots.mjs): jugadores simulados que se conectan al servidor con los mismos mensajes que la demo en línea; el autor lo pone el servidor y cada acción pasa por la lógica pura",
+   "Cada bot pasa por tres fases: andar por la tierra del mojón, construir (marco de un cimiento, le lleva el material y trabaja cada medio segundo, como la demo) y pelear con su pareja (golpes por líneas al azar, paradas y cambios de guardia)",
+   "Los bots de un mismo proceso comparten una sola copia del mundo, para no ensuciar la medición del servidor",
+   "Lo medido por cada bot: mensajes y bytes enviados y recibidos, acciones bien y mal, obras terminadas, golpes y tiempo de respuesta de las acciones. Uso: node servidor/bots.mjs <dirección> <cuántos> <segundos>",
+   "Decisiones provisionales: todos construyen alrededor del único mojón (el caso más cargado); si no queda sitio, desmontan un cimiento terminado; si faltan materiales, usan «rellenar»",
+   "Prueba nueva con seis bots y un servidor de verdad (16 comprobaciones); MUTAR=1 hace que manden el estado mal formado y falla",
+   "Prueba rápida de 30 s con 100 bots en este equipo: entran todos y el servidor no manda ningún error. La medición de verdad es la tarea siguiente"
+  ],
+  "pruebas": "Batería completa correcta (todas las pruebas de node y de navegador). Después de unir main (el taller del carril A), se volvieron a pasar todas las de node y salieron bien; las de navegador no se repitieron tras esa unión. No hay vistas tocadas: los bots no se ven en ningún prototipo",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T02:50:19+00:00",
+  "fin": "2026-10-28T10:53:43+00:00",
+  "titulo": "Hito 1c: contraventana y trampilla (carril B)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Contraventana (2 tablas y 2 clavos, 20 kg, en «Acceso», como dice el documento de sistemas): va en un muro con ventana, de troncos o de tablas; dos hojas de tablas con peinazos, bisagras de hierro y tirador. Se pone por el lado de fuera del muro (el que no da al suelo de la casa) y abierta queda de plano contra el muro.",
+   "Trampilla (2 tablas y 2 clavos, 20 kg): va en el hueco de arriba de una escalera de tablas y descansa en los suelos de al lado. Cerrada se pisa como el suelo y la escalera no se puede subir; abierta, se sube y se baja andando como siempre. Se abre desde arriba o desde abajo; estando encima de la escalera no se cierra.",
+   "La bisagra de la trampilla va en un lado de la escalera con suelo al lado, nunca en el de salida: abierta queda de pie en ese borde y no tapa el paso (al principio iba en el arranque y, sin suelo allí, quedaba de pie en el aire: se vio en las capturas y se cambió).",
+   "Muro de tablas con ventana (5 tablas y 5 clavos, 175 kg, aguanta 780 kg; provisional): las tablas se cortan por encima y por debajo de la ventana, con jambas, alféizar y dintel.",
+   "Todo pasa por la lógica pura con su autor (colocar el marco, llevar el material, trabajar y Usar), y se guarda y se carga abierto o cerrado. Al unir main, el carril A había publicado la demo v26: esta sale como demo v27 (construcción v29)."
+  ],
+  "pruebas": "bash herramientas/probar_todo.sh (tras unir main): todo correcto salvo dos pruebas en línea del carril A que fallan solo con la máquina cargada: «Conexiones que se cortan» (la ráfaga de 400 acciones daba 97–99 rechazos en vez de 100; falla igual en main con carga y pasa sola, 34/34) y la de jugar en línea en navegador (cada vez una comprobación distinta de tiempos: ver andar al otro, volver a entrar o volver a conectar; pasó entera sola una vez en esta rama y otra en main). Tras la última unión con main, repetidas solas: lógica 177/177 (26 nuevas, fallan con MUTAR=1), modelos 138/138 (12 nuevas, fallan con MUTAR_CONTRAVENTANA=1), acciones, idiomas, en línea, conexiones y bots; navegador de construcción todo correcto (21 comprobaciones nuevas; las de la trampilla fallan con MUTAR_TRAMPILLA=1) y demo única todo correcto. Capturas miradas en PC y móvil, y la contraventana junto a la cabaña de la prueba de estilo v5 (45_contraventana_junto_a_la_v5). No comprobado: la contraventana y la trampilla en línea con dos jugadores (pasan por la misma acción «usar» que las puertas). En esta sesión, otra sesión del carril B ocupó el carril a las 08:51 mientras esta seguía con las pruebas: esta no lo suelta para no quitárselo.",
+  "capturas": "capturas/construccion-v29",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T09:34:28+01:00",
+  "fin": "2026-10-28T12:02:17+01:00",
+  "titulo": "Hito 10: cortados de roca (acantilados de verdad)",
+  "hito": "mundo",
+  "hecho": [
+   "Medido en el sitio de la captura de valravnx: era una ladera de 20 a 37° pintada de roca y llena de piedrecitas, no un cortado",
+   "Donde la roca es dura (granito, caliza, pizarra) y la ladera empinada, el terreno se rompe en estratos: paredes de roca y repisas casi llanas, inclinados, ondulados y de distinta altura, por zonas (el método de terraceado de los generadores de terreno)",
+   "Las paredes son roca maciza: franjas de estratos, textura proyectada en triplanar (sin rayas estiradas) y caras planas con aristas; el pedregal va al pie; las repisas tienen hierba",
+   "Las paredes (más de 45°) no se suben ni se bajan andando: el personaje se para al pie o en el borde",
+   "Los acantilados de costa, en capas grandes casi verticales; la rejilla parte cada cuadro por la diagonal que mejor sigue el relieve; el suelo de lejos ya no asoma bajo el trozo de cerca",
+   "Pruebas nuevas: en la montaña de pizarra hay cortados (con todo arenisca no, y falla); en el navegador, el personaje se para al pie de un acantilado (MUTAR_PARED=1 quita el límite y falla)"
+  ],
+  "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa 68/68, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web). Construcción y en línea fallaron una vez por tiempo con las dos mitades a la vez; solas, correctas. Mapa otra vez tras unir main. No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v7",
+  "estado": "ok"
  }
 ]

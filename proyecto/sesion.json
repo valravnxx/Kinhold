@@ -6,15 +6,15 @@
   "rama": "trabajo/20261028-0920"
  },
  "B": {
-  "inicio": "2026-10-28T08:51:14+00:00",
-  "tarea": "Bots: jugadores simulados en node que se conectan al servidor y andan, construyen y pelean, para la medición",
+  "inicio": "2026-10-28T10:51:53+00:00",
+  "tarea": "Medir el servidor con 100 jugadores simulados (bots que andan, construyen y pelean): CPU, memoria y tráfico por jugador, para saber qué servidor hace falta y cuánto cuesta al mes",
   "hito": "prueba-online",
-  "rama": "trabajo/20261028-0851"
+  "rama": "trabajo/20261028-1051"
  },
- "chat:trabajo/20261028-0935-roca": {
-  "inicio": "2026-10-28T09:34:28+01:00",
-  "tarea": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",
+ "chat:trabajo/20261028-1240-rocas": {
+  "inicio": "2026-10-28T12:35:33+01:00",
+  "tarea": "Roca escarpada de cerca: las paredes de los cortados cubiertas de piezas de roca 3D (bloques con caras, aristas, salientes y grietas, hechos por código) y una textura de roca con sombra en grietas y rincones",
   "hito": "mundo",
-  "rama": "trabajo/20261028-0935-roca"
+  "rama": "trabajo/20261028-1240-rocas"
  }
 }
