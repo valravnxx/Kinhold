@@ -88,25 +88,31 @@ export function crearPaisaje(mapa) {
   function altura(xm, ym, tramos = null, fino = false) {
     const { f, hm, r } = grande(xm, ym);
     if (f < 0) return Math.max(-60, -1.5 + f * 0.8);       // mar: el fondo baja al alejarse de la costa
-    let z = hm + detalle(xm, ym, r, fino) * suave(0, 3, f);
+    // el río más cercano (si se dan los tramos de la zona)
+    let dm = Infinity, nivel = 0, ancho = 2;
+    if (tramos) for (const t of tramos) {
+      const vx = t.bx - t.ax, vy = t.by - t.ay, l2 = vx * vx + vy * vy || 1;
+      const u = Math.max(0, Math.min(1, ((xm - t.ax) * vx + (ym - t.ay) * vy) / l2));
+      const dd = Math.hypot(xm - t.ax - vx * u, ym - t.ay - vy * u);
+      if (dd < dm) { dm = dd; nivel = lerp(t.ha, t.hb, u); ancho = t.ancho; }
+    }
+    const monte = suave(120, 600, r);                      // 0 en el llano, 1 en la montaña
+    // junto al río, el detalle se apaga: el fondo del valle lo marca el río (que ya talló el valle grande del mapa),
+    // no el ruido; si no, el ruido levanta el fondo decenas de metros y el río queda en una zanja
+    const calma = dm === Infinity ? 1 : 0.12 + 0.88 * suave(ancho / 2, ancho / 2 + (180 + ancho * 12) * (1 - 0.45 * monte), dm);
+    let z = hm + detalle(xm, ym, r, fino) * suave(0, 3, f) * calma;
     if (hm < 8) z = lerp(0.6, z, suave(0, 2.5, f));        // costa baja: playa o marisma, sin escalón
     z = Math.max(0.4, z);
-    if (tramos) {
-      // el río talla su cauce y su valle (más cerrado donde el sitio es abrupto)
-      let dm = Infinity, nivel = 0, ancho = 2;
-      for (const t of tramos) {
-        const vx = t.bx - t.ax, vy = t.by - t.ay, l2 = vx * vx + vy * vy || 1;
-        const u = Math.max(0, Math.min(1, ((xm - t.ax) * vx + (ym - t.ay) * vy) / l2));
-        const dd = Math.hypot(xm - t.ax - vx * u, ym - t.ay - vy * u);
-        if (dd < dm) { dm = dd; nivel = lerp(t.ha, t.hb, u); ancho = t.ancho; }
-      }
-      if (dm < 1500) {
-        const valle = (70 + ancho * 4) * (1 - 0.55 * suave(150, 700, r)) + 30;
-        const cauce = Math.min(nivel, hm) - 1.2;
-        const orilla = cauce + 0.8 + Math.max(0, dm - ancho / 2) * 0.12;
-        // el río solo rebaja (nunca levanta muros): cauce, orilla y valle que se abre hasta el terreno
-        z = Math.min(z, dm < ancho / 2 ? cauce - 1 : lerp(orilla, z, suave(ancho / 2, ancho / 2 + valle, dm)));
-      }
+    if (dm < 2500) {
+      // el río talla su cauce, una vega llana a los lados y laderas con la pendiente limitada (suaves en el llano,
+      // más cerradas en la montaña, donde salen gargantas); nunca una zanja de paredes verticales
+      const cauce = Math.min(nivel, hm) - 1.2, orilla = cauce + 0.8;
+      const vega = (ancho * 2.5 + 25) * (1 - 0.8 * monte);
+      const ladera = lerp(0.14, 0.75, monte);              // desnivel por metro de distancia
+      const fuera = Math.max(0, dm - ancho / 2);
+      const valle = fuera < vega ? orilla + fuera * 0.015 : orilla + vega * 0.015 + (fuera - vega) * ladera;
+      // el río solo rebaja (nunca levanta muros)
+      z = Math.min(z, dm < ancho / 2 ? cauce - 1 : valle);
     }
     return z;
   }
