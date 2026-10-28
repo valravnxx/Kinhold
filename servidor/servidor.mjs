@@ -17,8 +17,9 @@
 //   por segundo; el servidor le pone el autor y su hora, y cada tic (100 ms) manda a cada uno los que han
 //   cambiado: { tipo: 'estados', t, jugadores }. Al irse alguien: { tipo: 'sale', autor }. La bienvenida
 //   lleva también t y presentes (dónde está cada uno).
-//   Aspecto (cuerpo y ropa del taller): el cliente lo manda al conectar, { tipo: 'aspecto', sexo, capas }; el
-//   servidor lo comprueba y lo reparte a los demás, { tipo: 'aspecto', autor, sexo, capas }. La bienvenida
+//   Aspecto (cuerpo y ropa del taller, y la personalización de src/logica/aspecto.js): el cliente lo manda al
+//   conectar, { tipo: 'aspecto', sexo, capas, aspecto }; el
+//   servidor lo comprueba (validarAspecto) y lo reparte a los demás, { tipo: 'aspecto', autor, sexo, capas, aspecto }. La bienvenida
 //   lleva los de los que ya están (aspectos).
 //   Combate (src/logica/combate_servidor.js): cada conexión tiene un luchador; el cliente manda intenciones
 //   { tipo: 'combate', que, … } y el servidor lleva los tiempos y resuelve golpes y flechas con el autor de la
@@ -51,6 +52,7 @@ import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
 import { RegistroAcciones, ejecutar, reproducir } from '../src/logica/acciones.js';
 import { PresenciaServidor, CADA, validarAspecto, validarEstado } from '../src/logica/presencia.js';
+import { PROTOCOLO } from '../src/logica/protocolo.js';
 import { CombateServidor } from '../src/logica/combate_servidor.js';
 import { Limitador, LIMITES } from '../src/logica/limites.js';
 
@@ -94,7 +96,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const clientes = new Map();   // ws → autor
   const conexionDe = new Map(); // autor → ws (la que vale)
   const apartados = new Map();  // autor → { L, hasta }: luchadores de los que se han cortado
-  const aspectos = new Map();   // autor → { sexo, capas }
+  const aspectos = new Map();   // autor → { sexo, capas, aspecto }
 
   const enviar = (ws, msg) => { if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(msg)); };
   const reloj = () => Math.round(performance.now());   // hora del servidor (ms), la que llevan los estados
@@ -166,7 +168,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       const ap = apartados.get(autor);
       if (ap) { apartados.delete(autor); combate.volver(autor, ap.L); } else combate.entrar(autor);
     }
-    enviar(ws, { tipo: 'bienvenida', autor, ficha, vuelve, entradas: hechas, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
+    enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, entradas: hechas, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
       aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true) });
 
     ws.on('message', (datos, binario) => {
