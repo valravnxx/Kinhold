@@ -1793,5 +1793,21 @@
   "pruebas": "Batería completa correcta (todas las pruebas de node y de navegador, con la nueva de la medición). Después de unir main se volvieron a pasar todas las de node; las de navegador no se repitieron tras esa unión. No hay vistas tocadas: no hay capturas nuevas",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T12:35:33+01:00",
+  "fin": "2026-10-28T14:51:26+01:00",
+  "titulo": "Hito 10: roca escarpada de cerca",
+  "hito": "mundo",
+  "hecho": [
+   "Un terreno de alturas no puede tener salientes ni grietas: como hacen los juegos, las paredes se cubren de piezas de roca 3D encajadas en ellas",
+   "Cinco piezas de roca hechas por código: losas con la cara de fuera casi plana, cortadas en caras y aristas y escalonadas en estratos, con la sombra horneada abajo y en las juntas",
+   "Textura de roca propia: vetas de estrato, grano, grietas finas con su labio claro y liquen; el tono es el de la roca del sitio, apagado como el del estilo v5",
+   "Se reparten por las paredes de más de unos 49°, de 2 a 8 m, mirando hacia fuera y medio metidas; entre pieza y pieza la pared queda en sombra",
+   "Prueba nueva en el navegador: el acantilado de costa lleva piezas de roca (MUTAR_ROCA=1 la rompe y falla)"
+  ],
+  "pruebas": "Batería completa correcta, esta vez seguida y no en dos mitades a la vez (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web). No comprobado: fotogramas en un móvil de verdad (el trozo de cerca del acantilado pasa de unos 500.000 triángulos)",
+  "capturas": "capturas/mapa-v8",
+  "estado": "ok"
  }
 ]
