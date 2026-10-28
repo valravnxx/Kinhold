@@ -25,8 +25,8 @@ botonesIdioma(document.getElementById('menu'));
 const $ = (id) => document.getElementById(id);
 const esTactil = matchMedia('(pointer: coarse)').matches;
 const CLAVE = 'kinhold_combate_v2';
-// personaje del taller propio: la versión publicada vive en jugar/combate/, los modelos en recursos/personajes/taller-v9/
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v9/';
+// personaje del taller propio: la versión publicada vive en jugar/combate/, los modelos en recursos/personajes/taller-v10/
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v10/';
 // «Duelo en línea» (?enlinea=1): el rival es otro jugador y los golpes los resuelve el servidor (src/combate/en_linea.js)
 const EN_LINEA = new URLSearchParams(location.search).get('enlinea') === '1';
 

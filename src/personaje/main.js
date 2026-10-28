@@ -33,8 +33,8 @@ const $ = (id) => document.getElementById(id);
 const CLAVE = 'kinhold_personaje_v2';
 // carpeta de los modelos: la versión publicada vive en jugar/personaje/, los modelos en recursos/personajes/v1/
 const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../recursos/personajes/v1/';
-// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v9/ (las anteriores publicadas no se tocan)
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v9/';
+// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v10/ (las anteriores publicadas no se tocan)
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v10/';
 // capas puestas en el taller propio, por sexo (por defecto: túnica en el hombre, vestido en la mujer)
 const capasMH = () => (estado.capas && estado.capas[estado.sexo]) || [estado.sexo === 'mujer' ? 'vestido' : 'tunica'];
 // aspecto del taller propio (forma, colores, peinado y barba), por sexo; se guarda con lo demás (src/logica/aspecto.js)
