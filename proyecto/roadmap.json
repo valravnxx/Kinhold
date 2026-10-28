@@ -315,9 +315,9 @@
     },
     {
      "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T12:32:34+00:00",
-     "rama": "trabajo/20261028-1232"
+     "fin": "2026-10-28T14:53:47+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -1807,5 +1807,11 @@
    ]
   }
  ],
- "decisiones_pendientes": []
+ "decisiones_pendientes": [
+  {
+   "pregunta": "Crear la cuenta de Hetzner y el servidor de prueba siguiendo la guía del repositorio, servidor/nube/LEEME.md (plan CX23 con Ubuntu 24.04 y el cloud config pegado); luego abrir en los dos aparatos la dirección https:// con tu IP con guiones y .sslip.io y decir si funciona (o si prefieres otro alojamiento)",
+   "desde": "2026-10-28",
+   "hito": "prueba-online"
+  }
+ ]
 }
