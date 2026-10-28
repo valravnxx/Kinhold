@@ -82,7 +82,7 @@ for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
     }
     saltos.sort((x, y) => x - y);
     const s90 = saltos[Math.floor(saltos.length * 0.9)], smax = saltos[saltos.length - 1];
-    comprobar(`${n}: la costa de cerca no es una pared (pendiente más fuerte a través de la costa: el 90 % por debajo de 6, ninguna por encima de 40)`, s90 < 6 && smax < 40, `${saltos.length} costas · p90 ${s90.toFixed(1)} · máx. ${smax.toFixed(1)}`);
+    comprobar(`${n}: la costa de cerca no sale en saltos verticales (pendiente más fuerte a través de la costa: el 90 % por debajo de 6, ninguna por encima de 40; un acantilado empinado sí)`, s90 < 6 && smax < 40, `${saltos.length} costas · p90 ${s90.toFixed(1)} · máx. ${smax.toFixed(1)}`);
     comprobar(`${n}: el agua del río cubre el lecho y queda bajo la orilla`, aguaBien / aguaN > 0.97, `${aguaBien} de ${aguaN}`);
   }
 }

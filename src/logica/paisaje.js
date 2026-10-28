@@ -112,7 +112,11 @@ export function crearPaisaje(mapa) {
       // sale en dientes de sierra. La distancia a la línea de costa sale de lo que cambia la forma alrededor
       const g1 = grande(xm + 4, ym).f, g2 = grande(xm, ym + 4).f, grad = Math.hypot(g1 - f, g2 - f) / 4 || 1e-3;
       // con las esquinas redondeadas arriba y abajo: un pliegue en diagonal a la rejilla se dibuja en zigzag
-      const d = Math.max(0, f / grad), cortado = 0.3 + 1.8 * (Math.sqrt(d * d + 9) - 3);
+      const d = Math.max(0, f / grad);
+      // el acantilado es roca: estratos casi verticales con repisas estrechas (cada capa a su altura) y la cara con
+      // bultos y entrantes, no un plano liso
+      let cortado = 0.3 + 2.4 * (Math.sqrt(d * d + 9) - 3);
+      if (cortado > 3) cortado = 3 + estratos(xm, ym, cortado - 3, 0.85).z + rugosidad(xm, ym) * suave(3, 8, cortado);
       z = sminimo(z, cortado, 4);
     }
     if (dm < 2500) {
@@ -149,12 +153,20 @@ export function crearPaisaje(mapa) {
     if (w <= 0.001) return z;
     const bx = (fbm(xm / 6000, ym / 6000, S + 121, 2) - 0.5) * 0.12, by = (fbm(xm / 6000 + 3, ym / 6000, S + 122, 2) - 0.5) * 0.12;
     const plano = xm * bx + ym * by + (fbm(xm / 260, ym / 260, S + 123, 3) - 0.5) * 14;      // buzamiento y ondulación
-    const paso = 6 + 9 * fbm(xm / 2200, ym / 2200, S + 124, 2);                               // estratos de 6 a 15 m
-    const u = (z - plano) / paso, k = Math.floor(u), fr = u - k;
-    const salto = 0.5 + (hash2(k, 7, S) - 0.5) * 0.3;                                         // cada estrato, su pared en otro sitio
-    const escalon = (k + suave(salto - 0.16, salto + 0.16, fr)) * paso + plano;
-    return lerp(z, escalon, w);
+    const e = estratos(xm, ym, z - plano, 0.16);
+    return lerp(z, e.z + plano + rugosidad(xm, ym) * e.pared, w);
   }
+  // escalona una altura en estratos de 6 a 15 m (cada uno con su pared en otro sitio de su altura); ancho: cuánto de
+  // cada estrato es pared (0,16: repisas anchas; 0,85: casi todo pared). pared: 0–1, si el punto cae en la pared
+  function estratos(xm, ym, z, ancho) {
+    const paso = 6 + 9 * fbm(xm / 2200, ym / 2200, S + 124, 2);
+    const u = z / paso, k = Math.floor(u), fr = u - k;
+    const salto = 0.5 + (hash2(k, 7, S) - 0.5) * (0.9 - ancho) * 0.6;
+    const a = Math.max(0.02, salto - ancho / 2), b = Math.min(0.98, salto + ancho / 2);
+    return { z: (k + suave(a, b, fr)) * paso, pared: suave(a - 0.05, a + 0.05, fr) * (1 - suave(b - 0.05, b + 0.05, fr)) };
+  }
+  // los bultos y entrantes de una cara de roca (m)
+  function rugosidad(xm, ym) { return (fbm(xm / 9, ym / 9, S + 126, 3) - 0.5) * 3 + (fbm(xm / 2.5, ym / 2.5, S + 127, 2) - 0.5) * 0.8; }
 
   // el río más cercano a un punto: distancia (m), altura del río en ese tramo y ancho
   function rioCercano(xm, ym, tramos) {

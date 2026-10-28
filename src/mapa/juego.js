@@ -316,7 +316,7 @@ export function crearVistaJuego(est) {
     let mejor = null;
     for (let j = 3; j < n - 3; j++) for (let i = 3; i < n - 3; i++) {
       const k = j * n + i, gx = (H[k + 1] - H[k - 1]) / (2 * P), gz = (H[k + n] - H[k - n]) / (2 * P), s = Math.hypot(gx, gz);
-      if (s < 1.8) continue;
+      if (s < 1.3) continue;
       const x = c.x0 + i * P, z = c.z0 + j * P, d = Math.hypot(x - c.px, z - c.pz);
       if (!mejor || d < mejor.d) mejor = { d, x: x - gx / s * 9, z: z - gz / s * 9, dir: Math.atan2(gz, gx) };
     }
