@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-28T05:20:35+00:00",
-  "tarea": "Taller: capa con capucha, calzado y tocados (capucha suelta, sombrero de paja, toca)",
-  "hito": "arte",
-  "rama": "trabajo/20261026-1338"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-28T08:51:14+00:00",
   "tarea": "Bots: jugadores simulados en node que se conectan al servidor y andan, construyen y pelean, para la medición",

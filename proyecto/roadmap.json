@@ -419,9 +419,9 @@
     },
     {
      "nombre": "Taller: capa con capucha, calzado y tocados (capucha suelta, sombrero de paja, toca)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-26T13:38:41+00:00",
-     "rama": "trabajo/20261026-1338"
+     "fin": "2026-10-28T09:11:30+00:00"
     },
     {
      "nombre": "Taller: personalización — altura, complexión y cara con los ajustes de MakeHuman, tono de piel, color de ojos, peinado y barba",
@@ -1682,6 +1682,13 @@
      "archivo": "jugar/personaje/v14.html",
      "capturas": "capturas/personaje-v14",
      "notas": "El cinturón de encima de la cota ya no sobresale hacia los brazos (personajes del taller-v7)."
+    },
+    {
+     "v": "v15",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/personaje/v15.html",
+     "capturas": "capturas/personaje-v15",
+     "notas": "Capa, botas y tocados: capucha, sombrero de paja y toca"
     }
    ]
   },
