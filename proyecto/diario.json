@@ -1722,5 +1722,23 @@
   "pruebas": "Todas (probar_todo.sh) correctas tras unir main; capturas del visor en PC y móvil y fotos de cerca del taller revisadas. No hay prueba automática del hueco de la oreja (se intentó medir las caras vueltas hacia dentro y no distinguía bien): comprobado solo en las fotos.",
   "capturas": "capturas/personaje-v15",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T08:51:14+00:00",
+  "fin": "2026-10-28T10:21:48+00:00",
+  "titulo": "Hito 1f: bots que andan, construyen y pelean",
+  "hito": "prueba-online",
+  "hecho": [
+   "Bots en node (servidor/bots.mjs): jugadores simulados que se conectan al servidor con los mismos mensajes que la demo en línea; el autor lo pone el servidor y cada acción pasa por la lógica pura",
+   "Cada bot pasa por tres fases: andar por la tierra del mojón, construir (marco de un cimiento, le lleva el material y trabaja cada medio segundo, como la demo) y pelear con su pareja (golpes por líneas al azar, paradas y cambios de guardia)",
+   "Los bots de un mismo proceso comparten una sola copia del mundo, para no ensuciar la medición del servidor",
+   "Lo medido por cada bot: mensajes y bytes enviados y recibidos, acciones bien y mal, obras terminadas, golpes y tiempo de respuesta de las acciones. Uso: node servidor/bots.mjs <dirección> <cuántos> <segundos>",
+   "Decisiones provisionales: todos construyen alrededor del único mojón (el caso más cargado); si no queda sitio, desmontan un cimiento terminado; si faltan materiales, usan «rellenar»",
+   "Prueba nueva con seis bots y un servidor de verdad (16 comprobaciones); MUTAR=1 hace que manden el estado mal formado y falla",
+   "Prueba rápida de 30 s con 100 bots en este equipo: entran todos y el servidor no manda ningún error. La medición de verdad es la tarea siguiente"
+  ],
+  "pruebas": "Batería completa correcta (todas las pruebas de node y de navegador). Después de unir main (el taller del carril A), se volvieron a pasar todas las de node y salieron bien; las de navegador no se repitieron tras esa unión. No hay vistas tocadas: los bots no se ven en ningún prototipo",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
