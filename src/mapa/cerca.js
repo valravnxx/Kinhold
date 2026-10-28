@@ -9,6 +9,7 @@ import { crearPaisaje, bosqueEn } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
 import { tr } from '../idioma.js';
 import { crearVistaJuego } from './juego.js';
+import { materialSuelo } from './suelo.js';
 import { crearMaterialAgua, atributosAgua, tiempoAgua, distanciaOrilla } from './agua.js';
 
 export const LADO_CERCA = 4000;                 // m
@@ -141,7 +142,7 @@ function construir(mapa, cx, cy) {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   geo.setIndex(new THREE.BufferAttribute(idx, 1)); geo.computeVertexNormals();
-  if (!estado.matLejos) { estado.matLejos = materialTex('suelo').clone(); Object.assign(estado.matLejos, { polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 8 }); }
+  if (!estado.matLejos) estado.matLejos = materialSuelo({ lejos: true });
   const terreno = new THREE.Mesh(geo, estado.matLejos); terreno.name = 'terreno'; terreno.receiveShadow = true; estado.raiz.add(terreno);
   estado.terreno = terreno; estado.tramos = tramos; estado.L = L; estado.N = N;
   // mar: una malla sobre la misma rejilla, solo donde hay mar, con la hondura en cada vértice (para el color y para

@@ -11,6 +11,7 @@ import { fbm } from '../logica/mapa.js';
 import { crearJugador } from '../juego/personaje.js';
 import { colorDelSuelo, lin, poblarArboles, ROCAS_COLOR, aguaLejos, aguaCerca } from './cerca.js';
 import { atributosAgua, distanciaOrilla } from './agua.js';
+import { materialSuelo } from './suelo.js';
 
 const movil = Math.min(innerWidth, innerHeight) < 700;
 export const CERCA = movil ? 170 : 240;           // lado del trozo con todo el detalle (m)
@@ -74,7 +75,9 @@ export function crearVistaJuego(est) {
       // pendiente con vecinos a 3 m (la de la forma del terreno, no la de cada piedrecita)
       const s = Math.hypot(alt(i + 3, j) - alt(i - 3, j), alt(i, j + 3) - alt(i, j - 3)) / (6 * PASO); pend[k] = s;
       const st = y > 0.05 ? pai.sitio(xm, ym, y) : null; sitios[k] = st;
-      let c = colorDelSuelo(st, y, s, xm, ym);
+      // el color con la pendiente de aquí mismo (1 m): una repisa entre dos paredes tiene su hierba
+      const s1 = Math.hypot(alt(i + 1, j) - alt(i - 1, j), alt(i, j + 1) - alt(i, j - 1)) / (2 * PASO);
+      let c = colorDelSuelo(st, y, Math.max(s1, s * 0.6), xm, ym);
       // calvas de tierra en el prado y en el bosque, y algo de variación de cerca
       if (st && st.bioma && st.bioma !== 'nieve' && s < 0.6) { const t = suave(0.62, 0.74, fbm(xm / 16, ym / 16, 41, 3)); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.7); }
       // bajo el bosque, el suelo es de hojarasca (más pardo y oscuro)
@@ -88,7 +91,7 @@ export function crearVistaJuego(est) {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
     geo.setIndex(new THREE.BufferAttribute(idx, 1)); geo.computeVertexNormals();
-    const terreno = new THREE.Mesh(geo, materialTex('suelo')); terreno.receiveShadow = true; terreno.name = 'terrenoCerca'; g.add(terreno);
+    const terreno = new THREE.Mesh(geo, materialSuelo()); terreno.receiveShadow = true; terreno.name = 'terrenoCerca'; g.add(terreno);
     vj.terreno = terreno;
     // el agua en el trozo de cerca (ríos y mar): una lámina a la altura del agua sobre la misma rejilla; donde corta el
     // terreno sale la orilla, lisa. Cada vértice lleva su hondura, la corriente del río y, en el mar, el oleaje (que se
