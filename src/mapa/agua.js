@@ -20,7 +20,7 @@ const LEJOS = new THREE.Vector4(1e9, 1e9, -1e9, -1e9);
 
 // hueco: un rectángulo (x0, z0, x1, z1) de la escena donde este agua no se dibuja (el de lejos, bajo el trozo de cerca)
 export function crearMaterialAgua() {
-  const m = new THREE.MeshPhongMaterial({ color: 0xffffff, specular: 0x9aa6aa, shininess: 70, transparent: true, side: THREE.DoubleSide, depthWrite: true });
+  const m = new THREE.MeshPhongMaterial({ color: 0xffffff, specular: 0x5c6668, shininess: 90, transparent: true, side: THREE.DoubleSide, depthWrite: true });
   const hueco = { value: LEJOS.clone() };
   m.userData.hueco = hueco;
   m.ponerHueco = (x0, z0, x1, z1) => hueco.value.set(x0, z0, x1, z1);
@@ -104,6 +104,7 @@ vec3 somero = vTipo > 0.5 ? vec3(0.30, 0.42, 0.40) : vec3(0.33, 0.40, 0.33);
 vec3 hondoC = vTipo > 0.5 ? vec3(0.06, 0.14, 0.18) : vec3(0.10, 0.17, 0.18);
 diffuseColor.rgb = mix(somero, hondoC, smoothstep(0.0, vTipo > 0.5 ? 6.0 : 2.0, hondo));
 diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.86, 0.88, 0.86), espuma);
+diffuseColor.rgb = pow(diffuseColor.rgb, vec3(2.2));   // los colores de arriba van en sRGB, como los de la paleta; aquí se trabaja en lineal
 diffuseColor.a = mix(mix(0.45, 0.93, smoothstep(0.0, 1.2, hondo)), 0.97, espuma);`)
       .replace('#include <normal_fragment_begin>', `#include <normal_fragment_begin>
 normal = normalize(normal + (viewMatrix * vec4(-pend.x, 0.0, -pend.y, 0.0)).xyz);`)
