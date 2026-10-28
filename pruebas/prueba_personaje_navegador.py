@@ -168,6 +168,15 @@ with sync_playwright() as p:
         if os.environ.get('MUTAR'): con = [x for x in con if 'mangas' not in x]
         comprobar('capas: con sobreveste se ven las mangas y el cuello de la cota', 'mujer_capa_sobreveste' in con and 'mujer_capa_cota_mangas' in con and 'mujer_capa_cota' in con,
                   ', '.join(sorted(x for x in con if 'capa' in x)))
+        # lo que frena la ropa sale de los datos de cada prenda: camisa + cota frena el 64 % del corte en el torso y en los
+        # brazos (la sobreveste no tiene mangas ni frena), la cabeza nada; pesa 0,3 + 1 + 10 + 0,6 + 0,6 kg (src/logica/prendas.js)
+        tabla = pg.evaluate("[...document.querySelectorAll('#ropa-datos tr')].map(f => [...f.children].map(c => c.textContent))")
+        datos = pg.text_content('#ropa-datos') or ''
+        if os.environ.get('MUTAR'): tabla = []
+        filas = {f[0]: f[1:] for f in tabla}
+        comprobar('ropa: la tabla dice lo que frena la cota (torso y brazos 64 % del corte; cabeza nada) y lo que pesa',
+                  filas.get('Torso', [''])[0] == '64 %' and filas.get('Brazos', [''])[0] == '64 %' and filas.get('Cabeza') == ['—', '—', '—'] and '12,5 kg' in datos,
+                  f'{tabla} · {datos[-120:]}')
         pg.evaluate(f"{E}.instante(1.0)"); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_sobreveste.png')
         for c in ['cota', 'sobreveste']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
         # hombre con cota: el cinturón ciñe la cota y no se estira hasta los brazos (hasta taller-v6 lo tenía; valravnx lo vio).

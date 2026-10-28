@@ -41,7 +41,9 @@
 //    cuenta como hueco lleno.
 //  - La reducción crece con el cuadrado de lo lleno que vas: 1 − 0,2·f². Con poco no se nota (las manos llenas,
 //    nada más: 1,25%) y todo lleno da el 80%. Se aplica al andar y al correr.
-//  - La ropa y la armadura aún no cuentan (llegan con los datos de cada prenda).
+//  - La ropa y la armadura no cuentan aquí (su peso está en src/logica/prendas.js; lo que ralentiza la armadura va
+//    con el combate con armadura).
+import { PRENDAS } from './prendas.js';
 
 export const TAMANOS = ['P', 'M', 'G', 'E'];
 const orden = t => TAMANOS.indexOf(t);
@@ -99,9 +101,8 @@ export const CATALOGO = {
   saco: { nombre: 'Saco', tam: 'M', lugar: 'hombro', huecos: hs('M', 2), admite: ['grano', 'harina', 'arena'] },
   bandolera: { nombre: 'Bandolera', tam: 'P', lugar: 'hombro', huecos: hs('P', 3) },
   odre: { nombre: 'Odre', tam: 'M', lugar: 'hombro', huecos: hs('P', 1), admite: ['agua'] },
-  // ropa
-  camisa_lino: { nombre: 'Camisa de lino', tam: 'M', capa: 'interior' },
-  pantalon_lino: { nombre: 'Pantalón de lino', tam: 'M', capa: 'piernas' },
+  // ropa: sale de los datos de cada prenda (src/logica/prendas.js), con su capa. Toda es mediana.
+  ...Object.fromEntries(Object.entries(PRENDAS).map(([k, p]) => [k, { nombre: p.nombre, tam: 'M', capa: p.capa }])),
 };
 
 // La caja de herramientas admite todo lo que sea herramienta en el catálogo.

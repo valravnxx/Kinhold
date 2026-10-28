@@ -9,8 +9,9 @@ import { crearPersonaje, OPCIONES } from '../personajes/cargar.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
 import { VERSION_PERSONAJE, REGISTRO_PERSONAJE } from './registro.js';
 import { BASES, CAPAS, ANIMS } from './textos.js';
+import { PRENDAS, prendasDeCapas, proteccion, abrigo, peso } from '../logica/prendas.js';
 import { PALETAS, FORMAS, PEINADOS, BARBAS, normalizarAspecto } from '../logica/aspecto.js';
-import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
+import { tr, traducirPagina, botonesIdioma, idioma } from '../idioma.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -125,7 +126,7 @@ function pintarOpciones() {
   $('opciones').innerHTML = grupo('base', BASES, 'Base del personaje') + grupo('sexo', OPCIONES.sexo, 'Cuerpo') +
     (mh ? `<div class="grupo"><span>${tr(estado.sexo === 'hombre' ? 'Ropa por capas (debajo siempre camisa, calzas y zapatos)' : 'Ropa por capas (debajo siempre camisa y zapatos)')}</span>${(pj?.capasPosibles || []).map(c =>
         `<button data-capa="${c}" class="${capasMH().includes(c) ? 'sel' : ''}">${tr(CAPAS[c])}</button>`).join('')}</div>` +
-      pintarAspecto()
+      pintarRopa() + pintarAspecto()
       : grupo('ropa', { campesino: OPCIONES.ropa.campesino }, 'Ropa') + grupo('pelo', OPCIONES.pelo[estado.sexo], 'Pelo') +
     grupo('colorPelo', OPCIONES.colorPelo, 'Color del pelo') + grupo('piel', OPCIONES.piel, 'Piel') + (estado.sexo === 'hombre' ? grupo('barba', OPCIONES.barba, 'Barba') : '')) +
     grupo('calidad', { alta: 'Alta', ligera: 'Ligera (móvil)' }, 'Calidad') +
@@ -144,6 +145,20 @@ function pintarOpciones() {
   for (const b of $('opciones').querySelectorAll('[data-asp]')) b.onclick = () => { cambiarAspecto({ [b.dataset.asp]: b.dataset.v }); pintarOpciones(); };
   for (const r of $('opciones').querySelectorAll('[data-forma]')) r.oninput = () => cambiarAspecto({ formas: { [r.dataset.forma]: Number(r.value) } });
   for (const b of $('opciones').querySelectorAll('[data-diag]')) b.onclick = () => { estado[b.dataset.diag] = !estado[b.dataset.diag]; aplicarDiag(); pintarOpciones(); guardar(); };
+}
+
+// lo que hace la ropa puesta: sale de los datos de cada prenda (src/logica/prendas.js), los mismos que deciden qué se dibuja
+function pintarRopa() {
+  const puestas = prendasDeCapas(capasMH(), estado.sexo);
+  const num = (n) => (Math.round(n * 10) / 10).toLocaleString(idioma);
+  const filas = [['Cabeza', 'cabeza'], ['Torso', 'torso'], ['Brazos', 'brazoD'], ['Piernas', 'piernaD']];
+  const golpes = [['Corte', 'corte'], ['Estocada', 'perforante'], ['Contundente', 'contundente']];
+  const celda = (z, g) => { const f = Math.round((1 - proteccion(puestas, z, g)) * 100); return `<td>${f ? f + ' %' : '—'}</td>`; };
+  return `<div class="grupo" id="ropa-datos"><span>${tr('Lo que frena tu ropa de cada golpe')}</span>` +
+    `<table><tr><th></th>${golpes.map(([t]) => `<th>${tr(t)}</th>`).join('')}</tr>` +
+    filas.map(([t, z]) => `<tr><th>${tr(t)}</th>${golpes.map(([, g]) => celda(z, g)).join('')}</tr>`).join('') + '</table>' +
+    `<p>${tr('Peso')}: ${num(peso(puestas))} kg · ${tr('Abrigo')}: ${num(abrigo(puestas))}</p>` +
+    `<p class="llevas">${tr('Llevas')}: ${puestas.map(t => tr(PRENDAS[t].nombre)).join(', ')}</p></div>`;
 }
 
 // personalización del taller propio: colores (muestras), peinado, barba y formas (deslizadores de -1 a 1)
