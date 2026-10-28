@@ -30,9 +30,9 @@ export function crearMaterialAgua() {
     sh.uniforms.uHueco = hueco;
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>
-attribute vec2 aFlujo; attribute float aHondo; attribute float aTipo; attribute float aOla; attribute float aOrilla;
+attribute vec2 aFlujo; attribute float aHondo; attribute float aTipo; attribute float aOla; attribute float aOrilla; attribute float aEspuma;
 uniform float uTiempo;
-varying vec2 vFlujo; varying float vHondo; varying float vTipo; varying float vOrilla; varying vec3 vMundo;
+varying vec2 vFlujo; varying float vHondo; varying float vTipo; varying float vOrilla; varying vec3 vMundo; varying vec3 vNorM; varying float vEspuma;
 // una ola de Gerstner: dirección, longitud (m), altura (m) y lo afilada que es la cresta
 void ola(vec2 p, vec2 d, float largo, float alto, float afilado, inout vec3 desp, inout vec3 nor) {
   float k = 6.2831853 / largo, c = sqrt(9.8 / k), f = k * (dot(d, p) - c * uTiempo);
@@ -54,12 +54,12 @@ if (aOla > 0.001) {
 }`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
 transformed += despOla;
-vFlujo = aFlujo; vHondo = aHondo; vTipo = aTipo; vOrilla = aOrilla;
+vFlujo = aFlujo; vHondo = aHondo; vTipo = aTipo; vOrilla = aOrilla; vEspuma = aEspuma; vNorM = normalize(mat3(modelMatrix) * objectNormal);
 vMundo = (modelMatrix * vec4(transformed, 1.0)).xyz;`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
 uniform float uTiempo; uniform vec4 uHueco;
-varying vec2 vFlujo; varying float vHondo; varying float vTipo; varying float vOrilla; varying vec3 vMundo;
+varying vec2 vFlujo; varying float vHondo; varying float vTipo; varying float vOrilla; varying vec3 vMundo; varying vec3 vNorM; varying float vEspuma;
 float hashA(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float ruidoA(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
   return mix(mix(hashA(i), hashA(i + vec2(1, 0)), u.x), mix(hashA(i + vec2(0, 1)), hashA(i + vec2(1, 1)), u.x), u.y); }
@@ -97,6 +97,17 @@ if (vTipo > 0.5) {
   espuma += smoothstep(0.66, 0.92, reguero) * smoothstep(1.8, 2.8, vel) * 0.6;
   pend *= 0.7 + 0.5 * smoothstep(0.4, 2.5, vel);
 }
+// saltos de agua: donde la lámina cae casi en vertical, el agua baja en chorros blancos que corren hacia abajo; al pie,
+// la poza de espuma (aEspuma, que se apaga aguas abajo)
+float caida = smoothstep(0.35, 0.8, 1.0 - abs(normalize(vNorM).y));
+if (caida > 0.0) {
+  vec2 dirF = normalize(vFlujo + vec2(1e-4, 0.0));
+  float tr = dot(vMundo.xz, vec2(-dirF.y, dirF.x));
+  float chorro = ruidoA(vec2(tr * 1.3, vMundo.y * 0.45 + uTiempo * 4.0)) * 0.6 + ruidoA(vec2(tr * 4.0, vMundo.y * 1.4 + uTiempo * 7.0)) * 0.4;
+  espuma = max(espuma, caida * (0.5 + 0.5 * chorro));
+  pend *= 1.0 - caida;
+}
+espuma = max(espuma, vEspuma * (0.45 + 0.55 * roto) * (0.75 + 0.25 * sin(uTiempo * 3.0 + roto * 6.0)));
 espuma = clamp(espuma, 0.0, 1.0);
 // de lejos los rizos se apagan (si no, salen dibujos en anillos: más finos que un píxel)
 float lejos = length(vMundo - cameraPosition);
@@ -118,18 +129,19 @@ normal = normalize(normal + (viewMatrix * vec4(-pend.x, 0.0, -pend.y, 0.0)).xyz)
 float fres = pow(1.0 - clamp(dot(normal, normalize(vViewPosition)), 0.0, 1.0), 4.0);
 outgoingLight = mix(outgoingLight, vec3(0.55, 0.63, 0.69), fres * 0.3 * (1.0 - espuma));`);
   };
-  m.customProgramCacheKey = () => 'aguaKinhold1';
+  m.customProgramCacheKey = () => 'aguaKinhold2';
   return m;
 }
 
 // pone los atributos del agua en una geometría (los que falten, con lo que da «río quieto y hondo»)
-export function atributosAgua(geo, { flujo = null, hondo = null, tipo = null, ola = null, orilla = null } = {}) {
+export function atributosAgua(geo, { flujo = null, hondo = null, tipo = null, ola = null, orilla = null, espuma = null } = {}) {
   const n = geo.attributes.position.count;
   geo.setAttribute('aFlujo', new THREE.BufferAttribute(flujo || new Float32Array(n * 2), 2));
   geo.setAttribute('aHondo', new THREE.BufferAttribute(hondo || new Float32Array(n).fill(1), 1));
   geo.setAttribute('aTipo', new THREE.BufferAttribute(tipo || new Float32Array(n), 1));
   geo.setAttribute('aOla', new THREE.BufferAttribute(ola || new Float32Array(n), 1));
   geo.setAttribute('aOrilla', new THREE.BufferAttribute(orilla || new Float32Array(n).fill(50), 1));
+  geo.setAttribute('aEspuma', new THREE.BufferAttribute(espuma || new Float32Array(n), 1));
   return geo;
 }
 

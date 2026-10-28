@@ -144,7 +144,19 @@ export function crearVistaJuego(est) {
           if (isNaN(sem[k]) || Math.abs(v) < Math.abs(sem[k])) sem[k] = v;
         }
       }
-      atributosAgua(ga, { flujo: fl, hondo: ho, tipo: ti, ola: ol, orilla: distanciaOrilla(seco, n, PASO, 60, sem) });
+      // la poza de espuma al pie de cada salto de agua: se apaga en unos 15 m aguas abajo y a los lados
+      const es = new Float32Array(n * n);
+      for (const sa of pai.saltosEn(tramos)) {
+        const bx = sa.x - cx + sa.dx * 2, bz = sa.y - cy + sa.dy * 2, R = 8 + sa.ancho;
+        const i0 = Math.max(0, Math.floor((bx - R * 2 - x0) / PASO)), i1 = Math.min(n - 1, Math.ceil((bx + R * 2 - x0) / PASO));
+        const j0 = Math.max(0, Math.floor((bz - R * 2 - z0) / PASO)), j1 = Math.min(n - 1, Math.ceil((bz + R * 2 - z0) / PASO));
+        for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
+          const ux = x0 + i * PASO - bx, uz = z0 + j * PASO - bz, a = ux * sa.dx + uz * sa.dy, l = -ux * sa.dy + uz * sa.dx;
+          if (a < -2) continue;
+          es[j * n + i] = Math.max(es[j * n + i], Math.max(0, 1 - Math.hypot(a / (R * 1.8), l / R)));
+        }
+      }
+      atributosAgua(ga, { flujo: fl, hondo: ho, tipo: ti, ola: ol, orilla: distanciaOrilla(seco, n, PASO, 60, sem), espuma: es });
       const lamina = new THREE.Mesh(ga, aguaCerca()); lamina.name = 'aguaCerca'; lamina.receiveShadow = true; g.add(lamina);
     }
     aguaLejos().ponerHueco(x0, z0, x0 + (n - 1) * PASO, z0 + (n - 1) * PASO);
@@ -207,7 +219,7 @@ export function crearVistaJuego(est) {
     recorrer(2.6, 4, 3, (x, z, r) => {
       const ax = x + (r() - 0.5) * 2, az = z + (r() - 0.5) * 2, gi = Math.round((ax - x0) / PASO), gj = Math.round((az - z0) / PASO);
       const gx = (alt(gi + 1, gj) - alt(gi - 1, gj)) / (2 * PASO), gz = (alt(gi, gj + 1) - alt(gi, gj - 1)) / (2 * PASO), s = Math.hypot(gx, gz);
-      if (s < 1.15 || r() > 0.4) return;
+      if (s < 1.15 || r() > 0.4 || !isNaN(W[gj * n + gi])) return;   // en el agua (el salto) no
       const y = vj.altura(ax, az); if (y < -0.5) return;
       const nx = -gx / s, nz = -gz / s, alto = 2 + r() * 2.5 + Math.min(3, s);
       PR.push([ax + nx * alto * 0.05, y - alto * 0.2, az + nz * alto * 0.05, alto, Math.atan2(nx, nz) + (r() - 0.5) * 0.5, Math.floor(r() * 5), (r() - 0.5) * 0.25, 0.85 + r() * 0.3, sitioEn(ax, az).st?.roca || sitios[gj * n + gi]?.roca]);
