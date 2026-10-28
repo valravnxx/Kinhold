@@ -166,7 +166,7 @@ export function crearPaisaje(mapa) {
     return { z: (k + suave(a, b, fr)) * paso, pared: suave(a - 0.05, a + 0.05, fr) * (1 - suave(b - 0.05, b + 0.05, fr)) };
   }
   // los bultos y entrantes de una cara de roca (m)
-  function rugosidad(xm, ym) { return (fbm(xm / 9, ym / 9, S + 126, 3) - 0.5) * 3 + (fbm(xm / 2.5, ym / 2.5, S + 127, 2) - 0.5) * 0.8; }
+  function rugosidad(xm, ym) { return (fbm(xm / 9, ym / 9, S + 126, 3) - 0.5) * 3 + (fbm(xm / 2.5, ym / 2.5, S + 127, 2) - 0.5) * 0.4; }
 
   // el río más cercano a un punto: distancia (m), altura del río en ese tramo y ancho
   function rioCercano(xm, ym, tramos) {

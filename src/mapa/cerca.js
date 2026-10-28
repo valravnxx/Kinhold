@@ -138,7 +138,13 @@ function construir(mapa, cx, cy) {
     col.set([lin(c[0]) * v, lin(c[1]) * v, lin(c[2]) * v], k * 3);
   }
   const idx = new Uint32Array((N - 1) * (N - 1) * 6); let p = 0;
-  for (let j = 0; j < N - 1; j++) for (let i = 0; i < N - 1; i++) { const a = j * N + i, b = a + 1, c2 = a + N, d = c2 + 1; idx.set([a, c2, b, b, c2, d], p); p += 6; }
+  // cada cuadro se parte por la diagonal que mejor sigue al terreno (la de menos desnivel): así una arista o el borde de
+  // un estrato en diagonal a la rejilla no sale en zigzag
+  for (let j = 0; j < N - 1; j++) for (let i = 0; i < N - 1; i++) {
+    const a = j * N + i, b = a + 1, c2 = a + N, d = c2 + 1;
+    if (Math.abs(H[a] - H[d]) < Math.abs(H[b] - H[c2])) idx.set([a, c2, d, a, d, b], p); else idx.set([a, c2, b, b, c2, d], p);
+    p += 6;
+  }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   geo.setIndex(new THREE.BufferAttribute(idx, 1)); geo.computeVertexNormals();
