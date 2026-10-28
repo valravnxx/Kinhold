@@ -6,6 +6,11 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 28 oct 2026 (09:33) — por el chat: acantilados de verdad
+
+«Los acantilados son también un suelo caminable con piedrecitas; ¿cómo podemos hacerlos como lo que son, imponentes acantilados? Actualmente puedes caminar sobre todo y, al considerarse roca, invoca piedras; habría que definir los acantilados como una roca enorme, todo, que dará belleza al lugar» (con captura del móvil de una ladera gris con cantos). → Se hace ya la tarea del hito 10 «Roca dura y blanda»: donde la roca es dura y empinada, paredes de roca con repisas (estratos) en vez de rampas; las paredes son roca maciza, sin hierba ni piedrecitas (el pedregal va al pie) y no se suben andando.
+Antes, a las 09:27: «¿Cómo podemos coger lo que tenemos y subirle el realismo y detalle? Que un arroyo parezca un arroyo, un río un río, un mar un mar, con su playa y todo, o rocas escarpadas dependiendo del lugar» → propuestas cuatro tareas (suelo por materiales, cauces según su tamaño, costas según la roca, vegetación de ribera y de costa y el mar de lejos); el orden queda por decidir.
+
 ### 28 oct 2026 (06:57) — por el chat: agua que se mueve
 
 «¿Cómo está la simulación del agua? ¿Queda realista? ¿Con su movimiento de olas en la dirección del río? ¿Diferente de río que de mar? ¿Mar rompiendo olas y río moviéndose lentamente en su dirección?» → Aún no había ninguna (láminas planas y quietas). «Ve haciéndolo tú en paralelo» → Tarea nueva en el hito 10, la lleva el chat: agua que se mueve (río en su dirección, mar con oleaje y olas que rompen, color según la hondura, espuma).
