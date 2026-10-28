@@ -8,7 +8,7 @@ import { crearEscena } from '../estilo/escena.js';
 import { crearPersonaje, OPCIONES } from '../personajes/cargar.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
 import { VERSION_PERSONAJE, REGISTRO_PERSONAJE } from './registro.js';
-import { BASES, CAPAS, ANIMS } from './textos.js';
+import { BASES, CAPAS, ANIMS, ZONAS_TABLA, GOLPES_TABLA } from './textos.js';
 import { PRENDAS, prendasDeCapas, proteccion, abrigo, peso } from '../logica/prendas.js';
 import { PALETAS, FORMAS, PEINADOS, BARBAS, normalizarAspecto } from '../logica/aspecto.js';
 import { tr, traducirPagina, botonesIdioma, idioma } from '../idioma.js';
@@ -151,8 +151,7 @@ function pintarOpciones() {
 function pintarRopa() {
   const puestas = prendasDeCapas(capasMH(), estado.sexo);
   const num = (n) => (Math.round(n * 10) / 10).toLocaleString(idioma);
-  const filas = [['Cabeza', 'cabeza'], ['Torso', 'torso'], ['Brazos', 'brazoD'], ['Piernas', 'piernaD']];
-  const golpes = [['Corte', 'corte'], ['Estocada', 'perforante'], ['Contundente', 'contundente']];
+  const filas = ZONAS_TABLA, golpes = GOLPES_TABLA;
   const celda = (z, g) => { const f = Math.round((1 - proteccion(puestas, z, g)) * 100); return `<td>${f ? f + ' %' : '—'}</td>`; };
   return `<div class="grupo" id="ropa-datos"><span>${tr('Lo que frena tu ropa de cada golpe')}</span>` +
     `<table><tr><th></th>${golpes.map(([t]) => `<th>${tr(t)}</th>`).join('')}</tr>` +
