@@ -51,6 +51,7 @@ import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
 import { RegistroAcciones, ejecutar, reproducir } from '../src/logica/acciones.js';
 import { PresenciaServidor, CADA, validarAspecto, validarEstado } from '../src/logica/presencia.js';
+import { PROTOCOLO } from '../src/logica/protocolo.js';
 import { CombateServidor } from '../src/logica/combate_servidor.js';
 import { Limitador, LIMITES } from '../src/logica/limites.js';
 
@@ -166,7 +167,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       const ap = apartados.get(autor);
       if (ap) { apartados.delete(autor); combate.volver(autor, ap.L); } else combate.entrar(autor);
     }
-    enviar(ws, { tipo: 'bienvenida', autor, ficha, vuelve, entradas: hechas, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
+    enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, entradas: hechas, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
       aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true) });
 
     ws.on('message', (datos, binario) => {

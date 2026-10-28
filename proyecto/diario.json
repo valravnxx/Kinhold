@@ -1931,5 +1931,20 @@
   "pruebas": "Todas correctas (bash herramientas/probar_todo.sh); la de jugar en línea y la del duelo en línea, al repetirlas solas; tras unir main, servidor en node y navegador en línea correctos. Capturas miradas en PC y móvil.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T19:58:44+01:00",
+  "fin": "2026-10-28T20:24:00+01:00",
+  "titulo": "Arreglos del juego en línea: verse al construir después del duelo, aviso de servidor antiguo y jugar_en_casa.bat al día",
+  "hito": "prueba-online",
+  "hecho": [
+   "valravnx y su pareja, en el duelo en línea, salían los dos «esperando rival»: el servidor de su PC era el que bajó jugar_en_casa.bat el 27 oct, de antes del duelo en línea (el .bat preguntaba si bajar la nueva y a los 10 s seguía con «no»). Tras actualizarlo, se vieron.",
+   "Después, al pasar del duelo a construir no se veían: la pestaña es el mismo jugador para el servidor y seguía en la liza, y la construcción no dibuja a los de la liza. Ahora, al entrar a construir, el juego le dice al servidor que sale de la liza (vale también si cayó en el duelo).",
+   "El servidor dice su versión al conectar y el juego avisa (línea de estado y aviso) si es más antigua de lo que necesita, con cómo actualizarlo. jugar_en_casa.bat mira en GitHub si hay versión nueva y la baja solo; si no puede mirarlo, pregunta como antes.",
+   "Pruebas nuevas: del duelo a construir en la misma pestaña los dos se ven (sin el arreglo, no se ven); salir de la liza en la lógica del combate; la versión del protocolo. Publicada la alpha (demo única) v29."
+  ],
+  "pruebas": "Duelo en línea y construir en línea en el navegador (PC y móvil, con servidor local) correctos; servidor 18/18, combate del servidor 57/57, conexiones 34/34, en línea 16/16, lógica 189/189, modelos 144/144, combate 80/80, idiomas correctos. El aviso de servidor antiguo, mirado en captura con un servidor falso como el viejo. jugar_en_casa.bat: la orden de PowerShell que mira la versión, probada con PowerShell 7 en Linux. No comprobado: el .bat entero en Windows.",
+  "capturas": "capturas/demo-v29",
+  "estado": "ok"
  }
 ]
