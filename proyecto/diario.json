@@ -1863,5 +1863,20 @@
   "pruebas": "Todas (probar_todo.sh) tras unir main: correctas salvo «jugar en línea» y la web, que fallaron una vez con el servidor cargado (un mensaje tardó más de 5 s; la página tardó en cargar) y pasaron al repetirlas solas. La del personaje, repetida sola tras su último cambio: correcta. Tras volver a unir main (mapa y servidor en internet), repetidas las de node (instalado Caddy, que pide la prueba nueva del servidor en internet) y la del mapa: correctas. Las dos pruebas nuevas y las comprobaciones nuevas del personaje fallan con MUTAR=1. Capturas del visor en PC y móvil revisadas, y la cara lado a lado con la v15. No comprobado: el rendimiento en un móvil de verdad.",
   "capturas": "capturas/personaje-v16",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T13:59:19+00:00",
+  "fin": "2026-10-28T16:38:52+00:00",
+  "titulo": "Hito 2: ralentización por carga",
+  "hito": "equipo",
+  "hecho": [
+   "Lógica pura: lo lleno que vas es la media de manos, espalda, cintura y hombro, cada uno de vacío a lleno según sus huecos; lo grande en las manos llena las dos",
+   "La velocidad se multiplica por 1 − 0,2 × lleno²: con poca carga no se nota, las manos llenas solas un 1,25% y todo lleno el 80% del GDD",
+   "Decisión provisional: vale al andar y al correr; una mochila vacía puesta no cuenta, y la ropa y la armadura aún no (llegan con los datos de cada prenda); anotada en el registro",
+   "En la demo, el jugador lleva su inventario (guardado en el navegador) y anda más despacio según lo que lleva; se cambia con acciones con autor",
+   "Sin versión nueva: hasta que esté el panel de inventario no se puede cargar nada desde el juego, así que el cambio aún no se nota jugando"
+  ],
+  "pruebas": "Todas las pruebas correctas (inventario 120/120, con 13 nuevas de la carga; navegador de la demo: 3,6 m/s sin carga y 2,88 m/s cargado al máximo, en PC y móvil). Rotas a propósito una vez (MUTAR_CARGA=1) y fallan. Tras unir main se repitieron las de lógica y la de la demo; no comprobado: el resto del navegador después de unir main",
+  "estado": "ok"
  }
 ]

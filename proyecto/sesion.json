@@ -5,12 +5,7 @@
   "hito": "arte",
   "rama": "trabajo/20261028-1624"
  },
- "B": {
-  "inicio": "2026-10-28T14:53:19+00:00",
-  "tarea": "Curación de heridas",
-  "hito": "duelo",
-  "rama": "trabajo/20261028-1453"
- },
+ "B": null,
  "chat:trabajo/20261028-1515-fijo": {
   "inicio": "2026-10-28T15:12:01+01:00",
   "tarea": "El mundo de cerca siempre igual: árboles, hierba, piedras y piezas de roca colocados según su sitio en el mundo y la semilla (no según dónde se rehace el trozo de cerca)",
