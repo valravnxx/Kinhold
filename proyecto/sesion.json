@@ -6,9 +6,9 @@
   "rama": "trabajo/20261028-1232"
  },
  "B": {
-  "inicio": "2026-10-28T13:00:52+00:00",
-  "tarea": "Tejado de teja (N2: 10 tejas y vigas, pesa 200 kg, no se pudre ni arde fácil): material nuevo «teja» y su prueba de carga",
-  "hito": "construccion-mas",
-  "rama": "trabajo/20261028-1301"
+  "inicio": "2026-10-28T13:59:19+00:00",
+  "tarea": "Ralentización por carga en la lógica pura, como dice el GDD: con poca carga no se nota y, cargado al máximo en todos los huecos, la velocidad al caminar baja hasta el 80%. Aplicada al andar del personaje en la demo, con pruebas de lógica y de navegador",
+  "hito": "equipo",
+  "rama": "trabajo/20261028-1359"
  }
 }
