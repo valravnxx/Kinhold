@@ -20,9 +20,27 @@ if exist "%~dp0servidor\servidor.mjs" (
   goto node
 )
 set "JUEGO=%BASE%\Kinhold-main"
+rem la ultima version publicada (el codigo del ultimo cambio en GitHub) y la que hay en este PC (Kinhold\version.txt):
+rem si hay una nueva, se baja sola (el servidor tiene que ser de la misma version que el juego de la web); si no se
+rem puede mirar (sin internet), se pregunta como antes
+set "NUEVA="
+for /f "usebackq delims=" %%i in (`%PS% "try { [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; $r=[string](Invoke-RestMethod -UseBasicParsing -Headers @{Accept='application/vnd.github.sha'} -Uri 'https://api.github.com/repos/valravnxx/Kinhold/commits/main'); $r=$r.Trim(); if ($r.Length -eq 40) { $r } } catch { }"`) do set "NUEVA=%%i"
+set "TENGO="
+if exist "%BASE%\version.txt" set /p TENGO=<"%BASE%\version.txt"
 if not exist "%JUEGO%\servidor\servidor.mjs" goto descargar_juego
+if "%NUEVA%"=="" goto preguntar
+if /i "%NUEVA%"=="%TENGO%" (
+  echo.
+  echo Tienes la ultima version del juego.
+  goto node
+)
 echo.
-choice /c SN /t 10 /d N /m "Quieres descargar la ultima version del juego (S/N, en 10 s sigue con N)"
+echo Hay una version nueva del juego: se descarga. El mundo construido no se pierde.
+goto descargar_juego
+
+:preguntar
+echo.
+choice /c SN /t 10 /d N /m "No se ha podido mirar si hay version nueva. Quieres descargar la ultima version del juego (S/N, en 10 s sigue con N)"
 if errorlevel 2 goto node
 
 :descargar_juego
@@ -36,6 +54,7 @@ tar -xf "%BASE%\juego.zip" -C "%BASE%" 2>nul
 if not exist "%JUEGO%\servidor\servidor.mjs" %PS% "Expand-Archive -Force -Path '%BASE%\juego.zip' -DestinationPath '%BASE%'"
 del "%BASE%\juego.zip" >nul 2>nul
 if not exist "%JUEGO%\servidor\servidor.mjs" goto fallo_juego
+if not "%NUEVA%"=="" >"%BASE%\version.txt" echo %NUEVA%
 
 :node
 rem --- Node.js: el que ya tengas instalado o uno portable en Kinhold\node ---

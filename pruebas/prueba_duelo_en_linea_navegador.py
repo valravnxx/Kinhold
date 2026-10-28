@@ -181,6 +181,24 @@ try:
         comprobar('y vuelve el mismo luchador, con sus heridas (no sano)', antes == despues and len(json.loads(antes)['heridas']) > 0, f'{antes} → {despues}')
         for nombre, (pg, _) in paginas.items(): captura(pg, f'{SALIDA}/{nombre}_6_vuelve.png')
 
+        print('Del duelo a construir, en la misma pestaña')
+        # valravnx, 28 oct: al pasar del duelo a construir, el servidor los seguía teniendo en la liza (la pestaña es el
+        # mismo jugador) y en la construcción no se veían el uno al otro; las obras sí
+        K = 'window.__kinhold'
+        for nombre, (pg, _) in paginas.items():
+            pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
+            pg.click('#demoEnLinea'); pg.wait_for_load_state('load')
+            comprobar(f'{nombre}: entra a construir en línea', esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado'", 90000))
+        comprobar('sigue siendo el mismo jugador que en el duelo', A.evaluate(f"{K}.enLinea.red.yo") == yoA and B.evaluate(f"{K}.enLinea.red.yo") == yoB)
+        comprobar('PC ve al móvil construyendo', esperar(A, f"{K}.enLinea.remotos.size === 1", 20000), str(A.evaluate(f"{K}.enLinea.remotos.size")))
+        comprobar('el móvil ve a PC construyendo', esperar(B, f"{K}.enLinea.remotos.size === 1", 30000), str(B.evaluate(f"{K}.enLinea.remotos.size")))
+        comprobar('y ninguno dice que el servidor sea antiguo', not A.evaluate(f"{K}.enLinea.antiguo") and not B.evaluate(f"{K}.enLinea.antiguo"))
+        for nombre, (pg, _) in paginas.items(): captura(pg, f'{SALIDA}/{nombre}_7_construir_tras_duelo.png')
+        # PC vuelve al duelo para lo que sigue
+        A.goto(URL); A.wait_for_function('window.__demo && window.__demo.listo')
+        A.click('#demoDueloEnLinea'); A.wait_for_load_state('load')
+        comprobar('PC vuelve al duelo', esperar(A, f"window.__demo && window.__demo.listo && {D}.red && {D}.red.estado === 'conectado'", 90000))
+
         print('El servidor se apaga')
         servidor.terminate(); servidor.wait(5)
         comprobar('PC dice que se ha cortado (y que vuelve a conectar) y ya no ve al otro', esperar(A, "document.getElementById('estadoRed').textContent === 'Volviendo a conectar…'", 5000) and A.evaluate(f"{D}.otros.size") == 0)

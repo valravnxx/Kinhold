@@ -5,7 +5,9 @@
 //
 // Se sube en uno cuando el juego necesite algo que un servidor anterior no tiene, y se apunta aquí qué:
 //   1 (28 oct): combate en el servidor y duelo en línea (la liza), conexiones que vuelven con su ficha.
-export const PROTOCOLO = 1;
+//   2 (28 oct): salir de la liza al volver a construir ({ tipo: 'combate', que: 'mundo' }); sin esto, quien venía
+//               del duelo no se veía en la construcción.
+export const PROTOCOLO = 2;
 
 // La versión del servidor por su bienvenida. Los servidores de antes de este número no la mandan: los que ya
 // llevaban el reloj del combate (tc) se cuentan como la 1, y los anteriores como la 0.

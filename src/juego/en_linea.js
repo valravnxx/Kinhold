@@ -32,7 +32,12 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   ponerEstado();
 
   con = abrirConexion(direccion, {
-    alAbrir: () => { if (aspecto) enviar({ tipo: 'aspecto', sexo: aspecto.sexo, capas: aspecto.capas }); },
+    alAbrir: () => {
+      if (aspecto) enviar({ tipo: 'aspecto', sexo: aspecto.sexo, capas: aspecto.capas });
+      // fuera de la liza: quien viene del duelo en línea en la misma pestaña es el mismo jugador para el servidor,
+      // y seguía en la liza, así que los demás no le dibujaban (valravnx, 28 oct)
+      enviar({ tipo: 'combate', que: 'mundo' });
+    },
     alMensaje: (msg) => {
       const ahora = performance.now();
       const volvia = estado === 'volviendo';

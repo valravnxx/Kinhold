@@ -69,8 +69,8 @@ try {
   // del duelo en línea dejaba a los dos «esperando rival» sin avisar)
   comprobar('la bienvenida dice la versión del protocolo del servidor', A.bienvenida.protocolo === PROTOCOLO && !servidorAntiguo(A.bienvenida), `protocolo ${A.bienvenida.protocolo}`);
   comprobar('un servidor de antes del combate (sin versión ni reloj del combate) es antiguo', servidorAntiguo({ tipo: 'bienvenida', autor: 'x', entradas: [] }) && protocoloDe({ tipo: 'bienvenida' }) === 0);
-  comprobar('uno con combate pero sin versión cuenta como la 1; uno con una versión menor es antiguo',
-    protocoloDe({ tipo: 'bienvenida', tc: 0 }) === 1 && !servidorAntiguo({ tipo: 'bienvenida', tc: 0 }) && servidorAntiguo({ tipo: 'bienvenida', protocolo: PROTOCOLO - 1, tc: 0 }));
+  comprobar('uno con combate pero sin versión cuenta como la 1 (y ya es antiguo: no saca de la liza al construir); uno con una versión menor es antiguo',
+    protocoloDe({ tipo: 'bienvenida', tc: 0 }) === 1 && servidorAntiguo({ tipo: 'bienvenida', tc: 0 }) && servidorAntiguo({ tipo: 'bienvenida', protocolo: PROTOCOLO - 1, tc: 0 }));
 
   // A coloca el mojón diciendo que es otro: el servidor lo pisa
   const r1 = await A.accion({ tipo: 'mojon', x: 0, z: 0, autor: 'jugador:falso' });
