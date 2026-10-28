@@ -89,6 +89,17 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/{nombre}_8_juego.png', timeout=240000)
         pg.evaluate('window.__cerca.camara(0.18, 30, 2.6)'); pg.wait_for_timeout(1500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_9_juego_bajo.png', timeout=240000)
+        # junto al río más cercano: el agua de cerca se dibuja y el personaje queda en la orilla, fuera del agua
+        r = pg.evaluate('window.__cerca.rioCercano()')
+        if r:
+            off = r['ancho'] / 2 + 7
+            pg.evaluate(f"window.__cerca.juegoEn({r['x']} + Math.cos({r['dir']} + 1.57) * {off}, {r['z']} + Math.sin({r['dir']} + 1.57) * {off}, {r['dir']})"); pg.wait_for_timeout(1500)
+            hay = pg.evaluate("!!(window.__cerca.vj.grupo && window.__cerca.vj.grupo.getObjectByName('aguaCerca'))")
+            if os.environ.get('MUTAR'): hay = False
+            comprobar(f'{nombre}: junto al río se dibuja su agua de cerca', hay, f"río de {r['ancho']:.0f} m a {abs(complex(r['x'], r['z'])):.0f} m del centro")
+            pg.evaluate(f"window.__cerca.camara(0.12, 70, {r['dir']})"); pg.wait_for_timeout(1500)
+            pg.screenshot(path=f'{SALIDA}/{nombre}_10_rio.png', timeout=240000)
+        else: comprobar(f'{nombre}: hay un río en la zona de cerca', False)
         pg.evaluate("document.getElementById('btnAlto').click()"); pg.wait_for_timeout(500)
         comprobar(f'{nombre}: al salir del juego se quita el trozo de cerca', pg.evaluate("!window.__cerca.vj.grupo && document.getElementById('juegoAyuda').hidden"))
         pg.evaluate("document.getElementById('btnVolverMapa').click()"); pg.wait_for_timeout(500)

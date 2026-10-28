@@ -1651,5 +1651,22 @@
   ],
   "pruebas": "Carriles 24/24, unión de JSON 19/19, idiomas correcta; web en PC y móvil correcta (también en ruso y sin nadie trabajando). No comprobado: la web publicada contra GitHub de verdad (en la prueba se simula); sin conexión, se queda con lo que traía la página.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T05:19:41+01:00",
+  "fin": "2026-10-28T06:54:01+01:00",
+  "titulo": "Hito 10: valles tallados por los ríos (sin zanjas)",
+  "hito": "mundo",
+  "hecho": [
+   "Medido en el sitio de la captura de valravnx: el ruido de detalle levantaba el fondo del valle unos 50 m sobre el río y el valle se tallaba con un ancho fijo, así que el río quedaba en una zanja de paredes casi verticales",
+   "Junto al río el detalle se apaga y el fondo del valle lo marca el río: lecho, orilla en rampa, vega llana a los lados (ancha en el llano) y laderas con la pendiente limitada (en V cerrada en la montaña)",
+   "En 2.322 puntos de río del mundo, la pendiente más fuerte a ±300 m baja de 1,39 a 0,76 en el 90 % de los casos",
+   "El agua del río se dibuja también en el trozo de cerca, con la orilla lisa, y con el mismo material de lejos y de cerca; en el agua no crece nada",
+   "Pruebas nuevas: sin zanjas junto a los ríos y el agua cubre el lecho bajo la orilla (rotas a propósito una vez); en el navegador, el agua de cerca junto al río",
+   "Los saltos de agua quedan en una tarea aparte; los meandros de cerca, con el agua"
+  ],
+  "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa 66/66, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web en PC y móvil). En línea y cavar fallaron una vez por tiempo con las dos mitades a la vez; solas, correctas",
+  "capturas": "capturas/mapa-v5",
+  "estado": "ok"
  }
 ]
