@@ -1,6 +1,6 @@
 // Kinhold — campo de pruebas de combate, v2
 import * as THREE from 'three';
-import { Luchador, IA, azar, angulo, T,
+import { Luchador, IA, azar, angulo, T, TRATAMIENTOS, motivoNoSirve,
   ARMAS, ARMADURAS, NOMBRE_LINEA, NOMBRE_ZONA, LINEAS, ESPEJO, RITMO } from './logica.js';
 import { crearCombatiente, ponerArma, animarCombatiente, pintarHeridas, sacudir, Rastro, Particulas,
   modeloFlecha, modeloPiedra, modeloPoste, modeloDiana } from './modelos.js';
@@ -246,7 +246,7 @@ function actualizarRosa() {
 const teclas = new Set();
 let apuntado = null;
 // teclas de mover por su posición física (e.code): con la distribución rusa W escribe «ц» y antes no movía
-const TECLAS_FISICAS = { KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', ShiftLeft: 'shift', ShiftRight: 'shift' };
+const TECLAS_FISICAS = { KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyC: 'c', ShiftLeft: 'shift', ShiftRight: 'shift' };
 const nombreTecla = (e) => TECLAS_FISICAS[e.code] || (e.key || '').toLowerCase();
 addEventListener('keydown', (e) => {
   if (e.target && e.target.tagName === 'SELECT') return;
@@ -255,6 +255,7 @@ addEventListener('keydown', (e) => {
   sonido.activarSonido();
   if (k === ' ') { e.preventDefault(); if (!e.repeat) parar(true); }
   if (k === 'enter' && terminado) otraPartida();
+  if (k === 'c' && !e.repeat) curarUrgente();
   const atajos = { '8': 'alto', '4': 'izquierda', '6': 'derecha', '2': 'bajo', '5': 'estocada' };
   if (atajos[k] && !e.repeat) { lineaSel = atajos[k]; atacar(atajos[k]); }
 });
@@ -426,6 +427,30 @@ function atacar(linea) {
   $('btnParar').classList.remove('activo');
   return true;
 }
+// Curarse (GDD 13): cada herida con lo suyo; mientras, ni atacas ni paras y apenas te mueves.
+function curarHerida(i, metodo) {
+  if (terminado && !EN_LINEA) return false;
+  if (EN_LINEA && (!red || red.estado !== 'conectado')) return false;
+  const motivo = jugador.motivoNoCurar(i, metodo);
+  if (motivo) { registrar(tr(motivo), 'aviso'); return false; }
+  const h = jugador.heridas[i];
+  if (EN_LINEA) { jugador.curar(i, metodo); red.intencion({ que: 'curar', herida: i, metodo }); predHasta = reloj + PREDICCION; }
+  else if (!ejecutarCombate(ctxCombate, registroAcciones, { autor: 'jugador', tipo: 'curar', herida: i, metodo }).ok) return false;
+  registrar(tr('{m}: {z}. Mientras, no atacas ni paras; si te hieren o corres, se pierde.', { m: tr(TRATAMIENTOS[metodo].nombre), z: tr(NOMBRE_ZONA[h.zona]) }), 'aviso');
+  $('btnParar').classList.remove('activo');
+  return true;
+}
+// La herida más urgente con lo mejor que se le puede hacer ahora (tecla C o botón Curar)
+function curarUrgente() {
+  const c = jugador.curaUrgente();
+  if (c) return curarHerida(...c);
+  if (jugador.accion === 'curando') return false;
+  registrar(tr(jugador.heridas.length ? 'Ahora no puedes tratar ninguna herida.' : 'No tienes heridas.'), 'aviso');
+  return false;
+}
+function decirCura(e) {
+  registrar(tr('Hecho: {m} en {z}', { m: tr(TRATAMIENTOS[e.metodo].nombre).toLowerCase(), z: tr(NOMBRE_ZONA[e.zona]) }), 'bien');
+}
 function disparar() {
   // en línea se manda siempre que se suelta (también flojo: así el servidor deja de tensar)
   if (EN_LINEA && jugador.accion === 'tensando' && red) {
@@ -499,6 +524,9 @@ function tick(dtReal) {
   if (EN_LINEA) { tickEnLinea(dt, dtReal); return; }
   const evJ = jugador.actualizar(dt, jugadorCorre);
   if (jugador.cancelado === 'correr') { registrar(tr('Al echar a correr aflojas el arco'), 'aviso'); jugador.cancelado = null; }
+  if (jugador.cancelado === 'herido') { registrar(tr('Te hieren mientras te curas: la cura se pierde.'), 'mal'); jugador.cancelado = null; }
+  if (jugador.cancelado === 'dejaCura') { registrar(tr('Al echar a correr dejas la cura a medias.'), 'aviso'); jugador.cancelado = null; }
+  for (const e of evJ) if (e.tipo === 'curado') decirCura(e);
   let vR = 0;
   if (rival) {
     const m = ia.pensar(dt, jugador);
@@ -753,6 +781,8 @@ function eventoRed(e) {
       particulas.emitir(e.x, e.y, e.z, 8, 0x9a7a52, 2, 9.8, 0.4);
       if (piedra) sonido.golpeSordo(); else sonido.clavar();
     } else if (e.resultado === 'suelo' && deMi && f) registrar(tr('Al suelo a {d} m', { d: Math.round(Math.hypot(e.x - f.x0, e.z - f.z0)) }), '');
+  } else if (e.tipo === 'curado') {
+    if (e.autor === yo) decirCura(e);
   } else if (e.tipo === 'reinicio') {
     if (e.autor === yo) {
       terminado = false; $('final').hidden = true; predHasta = -1;
@@ -784,6 +814,7 @@ function cambiarEquipo() {
   ajustarControles();
 }
 function tickEnLinea(dt, dtReal) {
+  if (jugador.accion === 'curando' && jugadorCorre && red) { red.intencion({ que: 'dejarCura' }); registrar(tr('Al echar a correr dejas la cura a medias.'), 'aviso'); }
   avanzarCopia(jugador, dt, jugadorCorre);
   jugador.cancelado = null;
   // el propio: el modelo con la armadura y el arma que lleva su copia (las confirma el servidor)
@@ -843,20 +874,28 @@ function tickEnLinea(dt, dtReal) {
 }
 
 // ---------------- Avisos a la derecha ----------------
+let avisosVistos = [];
 function actualizarPanel() {
   const av = [];
   const sangrado = jugador.heridas.reduce((a, h) => a + h.sangrado, 0);
   if (jugador.cansancio > 30) av.push({ c: jugador.cansancio >= T.guardiaRota ? 'rojo' : 'gris', t: tr('Cansancio'), d: tr('{c}%. Atacar, parar, fintar y fallar cansan; mantener la parada también. Por encima del 70% tus golpes son más lentos y al {r}% tu parada cede.', { c: Math.round(jugador.cansancio), r: T.guardiaRota }), n: jugador.cansancio / 100 });
   if (sangrado > 0.05) av.push({ c: 'rojo', t: tr('Sangrado'), d: tr('Pierdes sangre. Te queda {s}%.', { s: Math.round(jugador.sangre) }), n: 1 - jugador.sangre / 100 });
-  for (const h of jugador.heridas) av.push({ c: h.gravedad === 'leve' ? 'naranja' : 'rojo', t: tr('Herida {g}', { g: tr(h.gravedad) }), d: `${tr(NOMBRE_ZONA[h.zona])} (${tr(h.tipo)})${efectoHerida(h.zona)}`, n: h.gravedad === 'leve' ? 0.3 : h.gravedad === 'grave' ? 0.65 : 1 });
+  jugador.heridas.forEach((h, i) => av.push({ c: h.gravedad === 'leve' ? 'naranja' : 'rojo', t: tr('Herida {g}', { g: tr(h.gravedad) }), d: `${tr(NOMBRE_ZONA[h.zona])} (${tr(h.tipo)})${efectoHerida(h.zona)}${estadoHerida(h)}`, n: h.gravedad === 'leve' ? 0.3 : h.gravedad === 'grave' ? 0.65 : 1, herida: i }));
+  if (jugador.accion === 'curando') av.push({ c: 'verde', t: tr('Curando'), d: tr('No atacas ni paras y apenas te mueves. Si te hieren o echas a correr, la cura se pierde.'), n: jugador.tAccion / jugador.duracion });
   if (jugador.accion === 'aturdido') av.push({ c: 'naranja', t: tr('Descolocado'), d: tr('No puedes atacar ni parar un momento.'), n: 1 });
   const cont = $('avisos');
-  const html = av.map((a, i) => `<button class="aviso ${a.c}" data-i="${i}" style="--n:${Math.min(1, a.n).toFixed(2)}"><span></span><em>${a.t}</em></button>`).join('');
+  // los botones solo se rehacen si cambia qué avisos hay (antes se rehacían cada fotograma mientras sangrabas y
+  // costaba tocarlos); lo que se llena (--n) se pone aparte
+  avisosVistos = av;
+  const html = av.map((a, i) => `<button class="aviso ${a.c}" data-i="${i}"${a.herida !== undefined ? ` data-h="${a.herida}"` : ''}><span></span><em>${a.t}</em></button>`).join('');
   if (cont.dataset.html !== html) {
     cont.dataset.html = html; cont.innerHTML = html;
     bajoElMenu();
-    cont.querySelectorAll('.aviso').forEach(b => b.onclick = () => { const a = av[+b.dataset.i]; $('detalle').hidden = false; $('detalle').innerHTML = `<b>${a.t}</b><br>${a.d}`; });
+    cont.querySelectorAll('.aviso').forEach(b => b.onclick = () => { const a = avisosVistos[+b.dataset.i]; if (!a) return; $('detalle').hidden = false; $('detalle').innerHTML = `<b>${a.t}</b><br>${a.d}` + (a.herida !== undefined ? botonesCura(a.herida) : ''); });
   }
+  cont.querySelectorAll('.aviso').forEach((b, i) => { const n = Math.min(1, av[i].n).toFixed(2); if (b.style.getPropertyValue('--n') !== n) b.style.setProperty('--n', n); });
+  $('btnCurar').hidden = !jugador.heridas.length || jugador.fuera;
+  $('btnCurar').classList.toggle('activo', jugador.accion === 'curando');
   $('estado').textContent = tr(ARMAS[jugador.arma].nombre) + (jugador.bloqueando ? ' · ' + tr('parando') : '');
 }
 // los avisos van debajo de los botones de arriba (en el móvil, con «Menú», los fps y el estado de la red, ocupan
@@ -864,6 +903,23 @@ function actualizarPanel() {
 function bajoElMenu() {
   const m = $('menu'); if (!m) return;
   $('avisos').style.top = Math.max(64, Math.round(m.getBoundingClientRect().bottom + 10)) + 'px';
+}
+// lo que se le ha hecho a una herida
+function estadoHerida(h) {
+  const hecho = [['vendada', 'vendada'], ['cosida', 'cosida'], ['cauterizada', 'cauterizada (deja marca)'], ['entablillada', 'entablillada'], ['hierbas', 'con emplasto']].filter(([k]) => h[k]).map(([, t]) => tr(t));
+  return hecho.length ? '. ' + hecho.join(', ') + '.' : '';
+}
+// botones para tratar una herida (en el detalle del aviso), con lo que queda en el botiquín
+function botonesCura(i) {
+  const h = jugador.heridas[i];
+  const bs = Object.entries(TRATAMIENTOS).map(([m, t]) => {
+    const no = motivoNoSirve(h, m);
+    if (no) return '';
+    const motivo = jugador.motivoNoCurar(i, m);
+    const queda = t.material ? ` · ${jugador.botiquin[t.material] || 0}` : '';
+    return `<button class="cura" data-h="${i}" data-m="${m}"${motivo ? ` disabled title="${tr(motivo)}"` : ''}>${tr(t.nombre)} (${Math.round(t.duracion)} s${queda})</button>`;
+  }).join('');
+  return bs ? `<div class="curas">${bs}</div>` : `<div class="curas">${tr('No necesita nada más: sanará descansando.')}</div>`;
 }
 function efectoHerida(z) {
   if (z === 'brazoD') return ': ' + tr('golpes y tiros más lentos y flojos');
@@ -894,7 +950,12 @@ $('btnOpciones').onclick = () => { $('opciones').hidden = !$('opciones').hidden;
 $('btnAyuda').onclick = () => { $('panelAyuda').hidden = !$('panelAyuda').hidden; $('panelRegistro').hidden = true; };
 $('btnDecisiones').onclick = () => { $('panelRegistro').hidden = !$('panelRegistro').hidden; $('panelAyuda').hidden = true; };
 for (const b of document.querySelectorAll('.cerrar')) b.onclick = () => { b.closest('.panel').hidden = true; };
-$('detalle').onclick = () => { $('detalle').hidden = true; };
+$('detalle').onclick = (e) => {
+  const b = e.target.closest && e.target.closest('button.cura');
+  if (b) curarHerida(+b.dataset.h, b.dataset.m);
+  $('detalle').hidden = true;
+};
+$('btnCurar').onclick = () => { sonido.activarSonido(); curarUrgente(); };
 $('listaRegistro').innerHTML = REGISTRO_COMBATE.map(r => `<li>${tr(r)}</li>`).join('');
 $('version').textContent = tr(VERSION_COMBATE);
 function ajustarControles() {
@@ -921,7 +982,7 @@ window.__duelo = {
   get pausa() { return pausa; }, get pausas() { return pausas; },
   get mJugador() { return mJugador; }, get mRival() { return mRival; },
   get ctx() { return ctxCombate; }, registroAcciones, escena, renderer, camara, render() { renderer.render(escena, camara); },
-  get dedoArco() { return dedoArco; }, nuevaPartida, atacar, disparar, lanzar, tick, registrar, parar, lineaDesdePantalla,
+  get dedoArco() { return dedoArco; }, curarHerida, curarUrgente, nuevaPartida, atacar, disparar, lanzar, tick, registrar, parar, lineaDesdePantalla,
   configurar(o) { Object.assign(opc, o); nuevaPartida(); },
   apuntar(x, y, z) { apuntado = { x, y, z }; },
   get red() { return red; }, get otros() { return otros; }, eventosRed, otraPartida, EN_LINEA,

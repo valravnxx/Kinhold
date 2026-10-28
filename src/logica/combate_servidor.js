@@ -19,6 +19,8 @@
 //                        { tipo: 'combate', que: 'soltar', x, y, z }         punto al que apunta
 //                        { tipo: 'combate', que: 'equipar', arma, armadura } solo estando libre
 //                        { tipo: 'combate', que: 'liza' }                   entra en la liza (el «Duelo en línea»)
+//                        { tipo: 'combate', que: 'curar', herida, metodo }   herida: índice en sus heridas
+//                        { tipo: 'combate', que: 'dejarCura' }               deja la cura a medias (echa a correr)
 //                        { tipo: 'combate', que: 'reiniciar' }               vuelve a empezar sano: solo si está fuera
 //                                                                             de combate o no hay nadie en pie cerca
 //   Liza: los luchadores de la liza (duelo en línea) solo se dan entre ellos, y los de fuera (los que construyen)
@@ -26,7 +28,7 @@
 //   La posición y el giro del luchador salen de su estado de presencia ({ tipo: 'estado', … }).
 //   servidor → clientes  { tipo: 'combate', eventos: [...] }               golpes, flechas e impactos, en orden
 //                        { tipo: 'luchadores', t, lista: [...] }             cada tic, los que han cambiado
-import { Luchador, LINEAS, GUARDIAS, ARMAS, ARMADURAS, RITMO, azar, angulo, difAngulo } from '../combate/logica.js';
+import { Luchador, LINEAS, GUARDIAS, ARMAS, ARMADURAS, RITMO, TRATAMIENTOS, azar, angulo, difAngulo } from '../combate/logica.js';
 import { RegistroAcciones, ejecutarCombate, avanzarProyectil } from './acciones.js';
 
 export const PASO = 1 / 60;          // s: el combate se avanza en pasos de como mucho esto
@@ -45,6 +47,8 @@ export function validarIntencion(m) {
     case 'guardia': return Object.hasOwn(GUARDIAS, m.guardia) ? { que: 'guardia', guardia: m.guardia } : null;
     case 'tensar': return { que: 'tensar' };
     case 'liza': return { que: 'liza' };
+    case 'dejarCura': return { que: 'dejarCura' };
+    case 'curar': return Number.isInteger(m.herida) && m.herida >= 0 && Object.hasOwn(TRATAMIENTOS, m.metodo) ? { que: 'curar', herida: m.herida, metodo: m.metodo } : null;
     case 'reiniciar': return { que: 'reiniciar' };
     case 'soltar': return [m.x, m.y, m.z].every(numero) ? { que: 'soltar', x: m.x, y: m.y, z: m.z } : null;
     case 'equipar':
@@ -63,12 +67,16 @@ function foto(autor, L) {
     bloqueando: L.bloqueando, guardia: L.guardia, tension: Math.round(L.tension * 100) / 100,
     cansancio: Math.round(L.cansancio), sangre: Math.round(L.sangre), heridas: L.heridas.length,
     // cada herida: zona, gravedad y tipo (para dibujarla y decir qué hace); el sangrado lo lleva el servidor
-    lista: L.heridas.map(h => [h.zona, h.gravedad, h.tipo, Math.round(h.sangrado * 100) / 100]), liza: !!L.liza, contra: L.puedeContraatacar(),
+    // y lo que se le ha hecho (v: vendada, c: cosida, q: cauterizada, e: entablillada, h: emplasto)
+    lista: L.heridas.map(h => [h.zona, h.gravedad, h.tipo, Math.round(h.sangrado * 100) / 100, marcasCura(h)]),
+    botiquin: { ...L.botiquin }, liza: !!L.liza, contra: L.puedeContraatacar(),
     fuera: L.fuera, ...(L.fuera ? { motivoFuera: L.motivoFuera } : {}),
   };
 }
+export const MARCAS_CURA = { v: 'vendada', c: 'cosida', q: 'cauterizada', e: 'entablillada', h: 'hierbas' };
+const marcasCura = (h) => Object.entries(MARCAS_CURA).filter(([, k]) => h[k]).map(([m]) => m).join('');
 // lo que cambia sin parar (el avance de la acción) no cuenta para decidir si hay que mandarlo otra vez
-const clave = (f) => [f.arma, f.armadura, f.accion, f.linea, f.bloqueando, f.guardia, f.cansancio, f.sangre, f.heridas, f.fuera, f.liza, f.contra, Math.round(f.tension * 10)].join('|');
+const clave = (f) => [f.arma, f.armadura, f.accion, f.linea, f.bloqueando, f.guardia, f.cansancio, f.sangre, f.lista.map(h => h[1] + h[4]).join(','), Object.values(f.botiquin).join(','), f.fuera, f.liza, f.contra, Math.round(f.tension * 10)].join('|');
 
 export class CombateServidor {
   // ritmo: el de RITMO (decisión provisional: «normal» para todos en línea). semilla: azar de las heridas.
@@ -145,6 +153,12 @@ export class CombateServidor {
         if (!L.puedeActuar() || L.bloqueando) break;
         L.arma = i.arma; if (i.armadura) L.armadura = i.armadura; ok = true; break;
       case 'liza': L.liza = true; ok = true; break;
+      case 'dejarCura': ok = L.accion === 'curando'; L.cortarCura('dejaCura'); break;
+      case 'curar': {
+        const r = ejecutarCombate(this.ctx, this.registro, { autor, tipo: 'curar', herida: i.herida, metodo: i.metodo });
+        if (!r.ok) return { ok: false, motivo: r.motivo };
+        ok = true; break;
+      }
     }
     return ok ? { ok: true } : { ok: false, motivo: 'Ahora no se puede.' };
   }
@@ -176,7 +190,10 @@ export class CombateServidor {
       this.reloj += h;
       for (const [autor, L] of Object.entries(this.ctx.luchadores)) {
         const ev = L.actualizar(h);
-        for (const e of ev) if (e.tipo === 'impacto') this.impacto(autor, L, e.linea);
+        for (const e of ev) {
+          if (e.tipo === 'impacto') this.impacto(autor, L, e.linea);
+          else if (e.tipo === 'curado') this.pendientes.push({ tipo: 'curado', autor, metodo: e.metodo, zona: e.zona, gravedad: e.gravedad, t: this.ms() });
+        }
       }
       for (const p of this.proyectiles) {
         if (!p.activo) continue;

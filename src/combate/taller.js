@@ -124,13 +124,30 @@ export function pintarHeridaTaller(u, h, n) {
   const tam = (TAM[h.gravedad] || 0.07) * (h.zona === 'cabeza' ? 0.6 : 1); // en la cara, más pequeña
   const geo = h.tipo === 'perforante' ? new THREE.CircleGeometry(tam * 0.45, 8) : new THREE.PlaneGeometry(tam * (h.tipo === 'corte' ? 0.45 : 1), tam * 1.3);
   const m = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: h.tipo === 'contundente' ? MORADO : SANGRE, transparent: true, opacity: h.tipo === 'contundente' ? 0.7 : 0.92, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2 }));
-  m.name = 'herida';
+  m.name = 'herida'; m.userData.materialPropio = true;
   const desplaz = ((n * 37) % 7 - 3) * 0.02;
   const lado = h.zona === 'torso' ? desplaz * 2.2 : h.zona === 'cabeza' ? desplaz * 1.2 : 0;
   const alto = h.zona === 'cabeza' ? 0 : desplaz * 1.5;
+  // tratada: cosida, más oscura y cerrada; cauterizada, quemadura parda (deja marca)
+  if (h.cauterizada) m.material.color.setHex(QUEMADURA);
+  else if (h.cosida) { m.material.color.setHex(COSIDA); m.scale.x = 0.6; }
   pegar(u, m, z, lado, alto, 1);
   if (h.tipo === 'corte') m.rotateZ(((n * 53) % 5 - 2) * 0.35); // tajo en diagonal
+  // venda de lino por encima (y las tablillas, si está entablillada)
+  if (h.vendada || h.entablillada) {
+    const v = new THREE.Mesh(new THREE.PlaneGeometry(tam * 1.6, tam * 1.15), new THREE.MeshLambertMaterial({ color: VENDA, map: textura('tejido'), side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -4 }));
+    v.name = 'herida'; v.userData.materialPropio = true;
+    pegar(u, v, z, lado, alto, 1);
+    v.translateZ(0.003);
+  }
+  if (h.entablillada) for (const s of [-1, 1]) {
+    const tab = new THREE.Mesh(new THREE.BoxGeometry(0.018, tam * 2.4, 0.01), new THREE.MeshLambertMaterial({ color: TABLILLA }));
+    tab.name = 'herida'; tab.userData.materialPropio = true;
+    pegar(u, tab, z, lado + s * tam * 0.55, alto, 1);
+    tab.translateZ(0.008);
+  }
 }
+const VENDA = 0xcfc3a8, TABLILLA = 0x7a5a3a, QUEMADURA = 0x3b2418, COSIDA = 0x4e1a14;
 
 // Animación del luchador del taller: clip de piernas y cuerpo según lo que hace, y brazos a las manos del arma.
 // manos: { d, i } puntos de cada muñeca en el marco del cuerpo (o null para dejar el brazo como en el clip);

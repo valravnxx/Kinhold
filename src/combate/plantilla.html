@@ -58,6 +58,11 @@ button.sel{background:var(--acento);color:#241b10;border-color:transparent;font-
 #btnParar{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(120px + env(safe-area-inset-bottom,0px));width:90px;height:90px;border-radius:50%;font-weight:700;font-size:15px;touch-action:none}
 #btnParar.activo{background:var(--acento);color:#241b10}
 html[lang=ru] #btnParar{font-size:13px;padding:0 2px} /* «Парировать» es más largo que «Parar» */
+#btnCurar{position:fixed;right:calc(30px + env(safe-area-inset-right,0px));bottom:calc(224px + env(safe-area-inset-bottom,0px));min-width:66px;height:44px;border-radius:999px;font-weight:700;font-size:14px;padding:0 12px}
+#btnCurar.activo{background:var(--verde);color:#1b2414}
+#detalle .curas{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+#detalle .curas button{font-size:13px;padding:6px 10px}
+#detalle .curas button:disabled{opacity:.45}
 #joystick{position:fixed;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(30px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;background:rgba(36,30,24,.35);border:2px solid rgba(241,232,216,.3);touch-action:none}
 #pomo{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(241,232,216,.75)}
 
@@ -119,6 +124,7 @@ html[lang=ru] #btnParar{font-size:13px;padding:0 2px} /* «Парировать�
 </svg></div>
 <div id="reticula" hidden></div>
 <button id="btnParar" hidden>Parar</button>
+<button id="btnCurar" hidden>Curar</button>
 <div id="joystick" hidden><div id="pomo"></div></div>
 
 <div id="final" hidden><div>
@@ -145,6 +151,7 @@ html[lang=ru] #btnParar{font-size:13px;padding:0 2px} /* «Парировать�
     <p data-tr><b>Parar:</b> mantén el botón Parar.</p>
     <p data-tr><b>Arco y piedras:</b> mantén el dedo para tensar, arrastra para apuntar y suelta. Si llevas el dedo cerca del borde, la cámara gira hacia ese lado.</p>
   </div>
+  <p data-tr><b>Curarse:</b> toca el aviso de una herida y elige qué hacerle (vendar, coser, entablillar, emplasto de hierbas; cauterizar necesita un fuego), o pulsa <kbd>C</kbd> o el botón Curar para tratar la más urgente. Mientras curas no atacas ni paras y apenas te mueves; si te hieren o echas a correr, la cura se pierde. Las heridas que ya no sangran sanan solas con el tiempo.</p>
   <h3>Las tres capas de defensa</h3>
   <p data-tr><b>Parada:</b> mantener Parar detiene cualquier golpe, pero cansa. Agotado (95%), cede.</p>
   <p data-tr><b>Escudo</b> (arma «Espada y escudo»): al parar se levanta; para también flechas y piedras que te vengan de frente y cansa menos que parar con la espada. La espada de una mano llega algo menos que la larga.</p>
