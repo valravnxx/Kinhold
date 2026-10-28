@@ -5,7 +5,12 @@
   "hito": "arte",
   "rama": "trabajo/20261028-0920"
  },
- "B": null,
+ "B": {
+  "inicio": "2026-10-28T10:51:53+00:00",
+  "tarea": "Medir el servidor con 100 jugadores simulados (bots que andan, construyen y pelean): CPU, memoria y tráfico por jugador, para saber qué servidor hace falta y cuánto cuesta al mes",
+  "hito": "prueba-online",
+  "rama": "trabajo/20261028-1051"
+ },
  "chat:trabajo/20261028-0935-roca": {
   "inicio": "2026-10-28T09:34:28+01:00",
   "tarea": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",
