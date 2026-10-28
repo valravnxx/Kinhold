@@ -60,3 +60,21 @@ Nunca se publica nada hecho así.
 `python3 herramientas/taller/comprobar_taller.py --prueba` (va en `herramientas/probar_todo.sh`, no necesita Blender):
 comprueba el formato de `versiones.json`, que una versión distinta se detecta y que el montaje lee las versiones de
 `versiones.json` en vez de copiarlas. Con `MUTAR=1` se rompe a propósito y falla.
+
+## Personalización (desde taller-v9)
+
+`vestir_mpfb.py` deja en cada personaje lo que el juego necesita para cambiar el aspecto sin rehacer nada
+(la lógica, los valores y las paletas están en `src/logica/aspecto.js`; el cargador, en `src/personajes/makehuman.js`):
+
+- **Formas del modelo** (morph targets) `peso`, `musculo`, `cara`, `nariz`, `nariz_larga` y `menton`, cada una con su
+  `_mas` y su `_menos`. Se calculan creando el mismo humano de MakeHuman con ese ajuste (o ese objetivo) puesto del todo
+  y restando la base; cada vértice de cada pieza se mueve lo mismo que el punto del cuerpo del que sale (`MAPA`, que se
+  guarda también después de diezmar). Una pieza solo lleva las formas que la mueven más de medio milímetro.
+- **Colores aparte:** la piel y el pelo se pintan en un gris de referencia (`REF_PIEL`, `REF_PELO`) y su color va en el
+  material (`baseColorFactor`, con un nodo «Mezclar» en multiplicar). Cada pieza que cambia de color lleva en sus extras
+  `tinte` (piel, pelo u ojos) y `ref`; el juego pone color lineal / ref. El iris va en su propia pieza.
+- **Calcos de pelo** (`_vello`: cejas y pelo pintado; `_barba_corta`, `_barba_bigote`): la malla de la piel donde pintan,
+  despegada 1 mm, con transparencia; el juego los dibuja con mezcla y `polygonOffset`. La cara de la piel no se diezma
+  para que no los atraviese.
+
+Prueba: `node pruebas/prueba_aspecto_modelos.mjs` (con `MUTAR=1` mira la taller-v8, que no los tiene, y falla).
