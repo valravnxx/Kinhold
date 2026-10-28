@@ -3,6 +3,7 @@
 // La dirección del servidor se pone en las Opciones del menú de la demo (se guarda en el navegador) o con ?servidor=.
 import { MundoEnLinea } from '../logica/en_linea.js';
 import { PresenciaCliente } from '../logica/presencia.js';
+import { normalizarAspecto } from '../logica/aspecto.js';
 import { crearJugador } from './personaje.js';
 import { tr } from '../idioma.js';
 import { direccionServidor } from '../mundo/direccion_servidor.js';
@@ -78,7 +79,8 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       if (enLiza.has(e.autor)) continue;
       siguen.add(e.autor);
       const asp = aspectos.get(e.autor) || { sexo: 'hombre', capas: [] };
-      const clave = asp.sexo + ':' + asp.capas.join(',') + ':' + JSON.stringify(asp.aspecto || null);
+      // sin personalización, la de por defecto (como la pone el servidor): así no se viste dos veces al llegar
+      const clave = asp.sexo + ':' + asp.capas.join(',') + ':' + JSON.stringify(normalizarAspecto(asp.aspecto, asp.sexo));
       let r = remotos.get(e.autor);
       if (r && r.clave !== clave) { quitar(e.autor); r = null; }   // ha llegado su aspecto: se viste de nuevo
       if (!r) {

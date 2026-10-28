@@ -12,6 +12,7 @@ import { RegistroAcciones, ejecutarCombate, avanzarProyectil } from '../logica/a
 import { REGISTRO_COMBATE, VERSION_COMBATE } from './registro.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { personajeElegido, capasDuelo } from '../demo/eleccion.js';
+import { normalizarAspecto } from '../logica/aspecto.js';
 import { CAPAS_ARMADURA } from './taller.js';
 import { tipoToque, arrastrarLibre, seguirApuntado, GIRO_POR_PX } from './tactil.js';
 import { conectarDuelo } from './en_linea.js';
@@ -683,7 +684,7 @@ function quitarOtro(autor) {
 // el modelo de otro jugador, con el cuerpo y la ropa que mandó y la armadura que lleva
 function vestirOtro(autor, o) {
   const a = red.aspectos.get(autor) || { sexo: 'hombre', capas: [] };
-  const clave = `${a.sexo}:${a.capas.join(',')}:${o.L.armadura}:${JSON.stringify(a.aspecto || null)}`;
+  const clave = `${a.sexo}:${a.capas.join(',')}:${o.L.armadura}:${JSON.stringify(normalizarAspecto(a.aspecto, a.sexo))}`;
   if (o.m && o.clave === clave) return;
   if (o.m) escena.remove(o.m);
   o.m = crearCombatiente({ armadura: o.L.armadura, colorCinta: 0xb3923f, recursos: RECURSOS_MH, sexo: a.sexo, capas: a.capas, aspecto: a.aspecto });
