@@ -9,6 +9,7 @@ import { join, dirname } from 'path';
 import { tmpdir } from 'os';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { reproducir } from '../src/logica/acciones.js';
+import { PROTOCOLO, protocoloDe, servidorAntiguo } from '../src/logica/protocolo.js';
 
 const MUTAR = process.env.MUTAR === '1';
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -64,6 +65,12 @@ try {
   comprobar('cada conexión recibe un autor del servidor, distinto', /^jugador:/.test(A.bienvenida.autor) && A.bienvenida.autor !== B.bienvenida.autor,
     `${A.bienvenida.autor} y ${B.bienvenida.autor}`);
   comprobar('un mundo nuevo empieza vacío', A.bienvenida.entradas.length === 0);
+  // versión del protocolo: el servidor la dice y el juego sabe si es antiguo (valravnx, 28 oct: un servidor de antes
+  // del duelo en línea dejaba a los dos «esperando rival» sin avisar)
+  comprobar('la bienvenida dice la versión del protocolo del servidor', A.bienvenida.protocolo === PROTOCOLO && !servidorAntiguo(A.bienvenida), `protocolo ${A.bienvenida.protocolo}`);
+  comprobar('un servidor de antes del combate (sin versión ni reloj del combate) es antiguo', servidorAntiguo({ tipo: 'bienvenida', autor: 'x', entradas: [] }) && protocoloDe({ tipo: 'bienvenida' }) === 0);
+  comprobar('uno con combate pero sin versión cuenta como la 1; uno con una versión menor es antiguo',
+    protocoloDe({ tipo: 'bienvenida', tc: 0 }) === 1 && !servidorAntiguo({ tipo: 'bienvenida', tc: 0 }) && servidorAntiguo({ tipo: 'bienvenida', protocolo: PROTOCOLO - 1, tc: 0 }));
 
   // A coloca el mojón diciendo que es otro: el servidor lo pisa
   const r1 = await A.accion({ tipo: 'mojon', x: 0, z: 0, autor: 'jugador:falso' });
