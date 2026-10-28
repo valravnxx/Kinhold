@@ -309,13 +309,15 @@
     },
     {
      "nombre": "Medir el servidor con 100 jugadores simulados (bots que andan, construyen y pelean): CPU, memoria y tráfico por jugador, para saber qué servidor hace falta y cuánto cuesta al mes",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T10:51:53+00:00",
-     "rama": "trabajo/20261028-1051"
+     "fin": "2026-10-28T12:11:38+00:00"
     },
     {
      "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T12:32:34+00:00",
+     "rama": "trabajo/20261028-1232"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -563,7 +565,9 @@
     },
     {
      "nombre": "Tejado de teja (N2: 10 tejas y vigas, pesa 200 kg, no se pudre ni arde fácil): material nuevo «teja» y su prueba de carga",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T13:00:52+00:00",
+     "rama": "trabajo/20261028-1301"
     },
     {
      "nombre": "Remate de tejado: cumbrera y esquinas, para que los tejados de dos tramos que se cruzan en una esquina queden cerrados",
