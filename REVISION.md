@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 28 oct 2026 (21:53) — por el chat: seguir con el hito del mapa, juntos
+
+«Ahora quiero que sigas con los pasos de la sección mapa; como es algo así creativo, lo llevaremos juntos» → El chat sigue el hito 10 en orden, enseñando capturas a valravnx en cada paso antes de darlo por terminado. Empieza por los saltos de agua. Se propone cerrar «Relieve de detalle por escalas» (ya cubierto por las capas de detalle de las v3 y v4, los valles y los cortados): queda pendiente de que valravnx diga que sí.
+
 ### 28 oct 2026 (20:58) — por el chat: tirones en línea
 valravnx: «le da lagazos horribles (y a mí en el server) cuando abres o cierras puertas o cuando acabas de construir algo». → Arreglo en curso en esta sesión de chat.
 

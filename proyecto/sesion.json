@@ -11,5 +11,11 @@
   "tarea": "Arreglo (valravnx, 28 oct): en línea, abrir o cerrar una puerta o terminar una obra da tirones horribles a los dos jugadores; que esas acciones no rehagan más de lo que cambia",
   "hito": "prueba-online",
   "rama": "trabajo/20261028-2100-tirones"
+ },
+ "chat:trabajo/20261028-2155-saltos": {
+  "inicio": "2026-10-28T21:54:37+01:00",
+  "tarea": "Saltos de agua donde el río cruza roca dura",
+  "hito": "mundo",
+  "rama": "trabajo/20261028-2155-saltos"
  }
 }
