@@ -76,7 +76,7 @@ function iniciar() {
   const bucle = () => {
     requestAnimationFrame(bucle); const ahora = performance.now(), dt = Math.min(0.05, (ahora - antes) / 1000); antes = ahora;
     if (cont.hidden) return;
-    tiempoAgua.value = ahora / 1000;
+    if (!window.__cerca.pararAgua) tiempoAgua.value = ahora / 1000;   // pararAgua: solo para romper la prueba a propósito
     if (estado && estado.juego) estado.juego.actualizar(dt);
     control.update(); renderer.render(escena, camara);
   };
@@ -274,5 +274,5 @@ function vista(cual) {
 window.__cerca = { listo: false, ocultar: (n) => { const o = estado.raiz.getObjectByName(n); if (o) o.visible = false; }, abrir: abrirCerca, vista: (v) => vista(v), camara: (p, d, y) => estado.juego.camara(p, d, y),
   rioCercano: () => { const { cx, cy } = estado.centro; let mejor = null, bd = Infinity; for (const t of estado.tramos) for (let u = 0; u <= 1; u += 0.05) { const x = t.ax + (t.bx - t.ax) * u - cx, z = t.ay + (t.by - t.ay) * u - cy, d = Math.hypot(x, z); if (d < bd) { bd = d; mejor = { x, z, ancho: t.ancho, dir: Math.atan2(t.by - t.ay, t.bx - t.ax) }; } } return mejor; },
   // para las pruebas: un punto de tierra junto al mar (en la escena), cerca del centro de la zona
-  costaCercana: (yMin = 0.6, yMax = 6) => { const a = estado.alturaEn; for (let r = 0; r < 1900; r += 20) for (let g = 0; g < 6.28; g += 0.1) { const x = Math.cos(g) * r, z = Math.sin(g) * r, y = a(x, z); if (y > yMin && y < yMax) for (let h = 0; h < 6.28; h += 0.5) if (a(x + Math.cos(h) * 80, z + Math.sin(h) * 80) < -1) return { x, z, dir: h }; } return null; },
+  costaCercana: (yMin = 0.3, yMax = 12) => { const a = estado.alturaEn; for (let r = 0; r < 1900; r += 20) for (let g = 0; g < 6.28; g += 0.1) { const x = Math.cos(g) * r, z = Math.sin(g) * r, y = a(x, z); if (y > yMin && y < yMax) for (let h = 0; h < 6.28; h += 0.5) if (a(x + Math.cos(h) * 80, z + Math.sin(h) * 80) < -1) return { x, z, dir: h }; } return null; },
   juegoEn: (x, z, dir = 0) => { if (window.__cerca.vistaActual === 'juego') estado.juego.salir(); estado.juego.entrar(x, z, dir); window.__cerca.vistaActual = 'juego'; }, get medidas() { return this._m; }, set medidas(v) { this._m = v; } };
