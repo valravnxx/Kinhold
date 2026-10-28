@@ -552,11 +552,12 @@ def personaje(nombre, macros, objetivos, ropa):
         return np.concatenate([colpelo * (0.9 + 0.2 * ruido(P, (90, 90, 1400))[..., None]), a[..., None]], -1)
     def pintar_barba(solo_bigote):
         return lambda P, A: np.concatenate([pelillos(P), (0.92 * zona_barba(P, A, solo_bigote))[..., None]], -1)
-    def donde(fn, margen=0.008):
-        """vértices de la piel donde el calco pinta algo (mirando también un poco alrededor, para no cortar el borde)"""
+    def donde(fn, margen=0.015):
+        """vértices de la piel donde el calco pinta algo, mirando también alrededor (las cejas son más finas que los cuadros
+        de la malla: con poco margen quedaban cuadros sin calco y la ceja salía a trozos)"""
         P = np.array([tuple(c) for c in co]); A = ATR
         m = np.zeros(len(P))
-        for d in [(0, 0, 0)] + [(sx * margen, 0, sz * margen) for sx in (-1, 1) for sz in (-1, 1)] + [(0, -margen, 0), (0, margen, 0)]:
+        for d in [(x, y, z) for x in (-margen, 0, margen) for y in (-margen, 0, margen) for z in (-margen, 0, margen)]:
             m = np.maximum(m, fn(P + np.array(d), A)[..., 3])
         return m > 0.01
 
