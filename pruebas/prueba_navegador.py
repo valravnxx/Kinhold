@@ -817,7 +817,7 @@ with sync_playwright() as p:
     mv.wait_for_timeout(900)
     comprobar('móvil: el andamio y la polea se cargan del guardado', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'andamio' || p.tipo === 'polea').length") >= 3)
     mv.screenshot(path=f'{SALIDA}/06c_movil_andamio_y_polea.png')
-    mv.evaluate(f"{K}.pj.x=16.3; {K}.pj.z=-15.8; {K}.pj.k=0; {K}.pj.rot=Math.PI; {K}.cam.yaw=Math.PI+0.5; {K}.cam.pitch=0.35; {K}.cam.dist=6")
+    mv.evaluate(f"{K}.pj.x=14.0; {K}.pj.z=-16.4; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI-0.3; {K}.cam.pitch=0.3; {K}.cam.dist=5.5")
     mv.wait_for_timeout(900)
     comprobar('móvil: la contraventana y la trampilla se cargan del guardado', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.hueco === 'w' || p.hueco === 't').length") >= 3)
     mv.screenshot(path=f'{SALIDA}/06d_movil_contraventana.png')
