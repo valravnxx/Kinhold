@@ -70,6 +70,8 @@ comprueba el formato de `versiones.json`, que una versión distinta se detecta y
   `_mas` y su `_menos`. Se calculan creando el mismo humano de MakeHuman con ese ajuste (o ese objetivo) puesto del todo
   y restando la base; cada vértice de cada pieza se mueve lo mismo que el punto del cuerpo del que sale (`MAPA`, que se
   guarda también después de diezmar). Una pieza solo lleva las formas que la mueven más de medio milímetro.
+  El juego no las deja en la GPU: al cambiar el aspecto las suma en las posiciones de la malla (`ponerFormas` en
+  `src/personajes/makehuman.js`), así no cuestan nada en cada fotograma.
 - **Colores aparte:** la piel y el pelo se pintan en un gris de referencia (`REF_PIEL`, `REF_PELO`) y su color va en el
   material (`baseColorFactor`, con un nodo «Mezclar» en multiplicar). Cada pieza que cambia de color lleva en sus extras
   `tinte` (piel, pelo u ojos) y `ref`; el juego pone color lineal / ref. El iris va en su propia pieza.
