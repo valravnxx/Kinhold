@@ -1,15 +1,15 @@
 {
  "A": {
-  "inicio": "2026-10-28T15:25:29+00:00",
-  "tarea": "Revisión completa y publicación",
-  "hito": "prueba-online",
-  "rama": "trabajo/20261028-1525"
+  "inicio": "2026-10-28T16:24:12+00:00",
+  "tarea": "Que los demás jugadores en línea te vean con tu aspecto (forma, colores, peinado y barba): mandarlo con el cuerpo y la ropa, y que el servidor lo compruebe con la misma lógica (src/logica/aspecto.js)",
+  "hito": "arte",
+  "rama": "trabajo/20261028-1624"
  },
  "B": {
-  "inicio": "2026-10-28T14:53:19+00:00",
-  "tarea": "Curación de heridas",
-  "hito": "duelo",
-  "rama": "trabajo/20261028-1453"
+  "inicio": "2026-10-28T16:51:15+00:00",
+  "tarea": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
+  "hito": "equipo",
+  "rama": "trabajo/20261028-1651"
  },
  "chat:trabajo/20261028-1515-fijo": {
   "inicio": "2026-10-28T15:12:01+01:00",
