@@ -116,7 +116,7 @@ export function crearPaisaje(mapa) {
       // el acantilado es roca: estratos casi verticales con repisas estrechas (cada capa a su altura) y la cara con
       // bultos y entrantes, no un plano liso
       let cortado = 0.3 + 2.4 * (Math.sqrt(d * d + 9) - 3);
-      if (cortado > 3) cortado = 3 + estratos(xm, ym, cortado - 3, 0.85).z + rugosidad(xm, ym) * suave(3, 8, cortado);
+      if (cortado > 3) cortado = 3 + estratos(xm, ym, cortado - 3, 0.7, 2.2).z + rugosidad(xm, ym) * suave(3, 8, cortado);   // capas grandes: la rejilla de 1 m las dibuja sin dientes
       z = sminimo(z, cortado, 4);
     }
     if (dm < 2500) {
@@ -156,10 +156,10 @@ export function crearPaisaje(mapa) {
     const e = estratos(xm, ym, z - plano, 0.16);
     return lerp(z, e.z + plano + rugosidad(xm, ym) * e.pared, w);
   }
-  // escalona una altura en estratos de 6 a 15 m (cada uno con su pared en otro sitio de su altura); ancho: cuánto de
+  // escalona una altura en estratos de 6 a 15 m (por escala) (cada uno con su pared en otro sitio de su altura); ancho: cuánto de
   // cada estrato es pared (0,16: repisas anchas; 0,85: casi todo pared). pared: 0–1, si el punto cae en la pared
-  function estratos(xm, ym, z, ancho) {
-    const paso = 6 + 9 * fbm(xm / 2200, ym / 2200, S + 124, 2);
+  function estratos(xm, ym, z, ancho, escala = 1) {
+    const paso = (6 + 9 * fbm(xm / 2200, ym / 2200, S + 124, 2)) * escala;
     const u = z / paso, k = Math.floor(u), fr = u - k;
     const salto = 0.5 + (hash2(k, 7, S) - 0.5) * (0.9 - ancho) * 0.6;
     const a = Math.max(0.02, salto - ancho / 2), b = Math.min(0.98, salto + ancho / 2);
