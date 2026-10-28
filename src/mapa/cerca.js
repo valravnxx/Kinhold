@@ -40,7 +40,7 @@ export function colorDelSuelo(st, y, s, xm, ym) {
   if (r > 0) {
     // en la pared, los estratos: franjas por la altura (como capas de roca), onduladas, y vetas más oscuras
     const capa = Math.sin(y * 1.7 + fbm(xm / 60, ym / 60, 11, 2) * 7) * 0.5 + 0.5, veta = fbm(xm / 7, ym / 7 + y / 3, 13, 2);
-    const k = 1 - r * (0.16 * capa + 0.14 * Math.max(0, veta - 0.55) * 4);
+    const k = (1 - r * (0.16 * capa + 0.14 * Math.max(0, veta - 0.55) * 4)) * (1 - 0.28 * r);   // más oscura: lo que asoma entre las piezas de roca se lee como sombra
     c = c.map(v => v * k);
   }
   if (y < 2.6 && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25) c = c.map((v, n) => v + (ARENA[n] - v) * (1 - y / 2.6)); // playa

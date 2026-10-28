@@ -12,12 +12,13 @@ import { crearJugador } from '../juego/personaje.js';
 import { colorDelSuelo, lin, poblarArboles, ROCAS_COLOR, aguaLejos, aguaCerca } from './cerca.js';
 import { atributosAgua, distanciaOrilla } from './agua.js';
 import { materialSuelo } from './suelo.js';
+import { modelosRocaPared, materialRoca } from '../mundo/rocas.js';
 
 const movil = Math.min(innerWidth, innerHeight) < 700;
 export const CERCA = movil ? 170 : 240;           // lado del trozo con todo el detalle (m)
 const PASO = movil ? 1.25 : 1;                     // rejilla (m)
 const R_HIERBA = movil ? 48 : 80;                  // radio con hierba (m)
-const MAX = movil ? { hierba: 9000, flores: 900, matas: 400, rocas: 250, arboles: 1500 } : { hierba: 30000, flores: 2600, matas: 1200, rocas: 600, arboles: 4000 };
+const MAX = movil ? { hierba: 9000, flores: 900, matas: 400, rocas: 250, arboles: 1500, paredes: 700 } : { hierba: 30000, flores: 2600, matas: 1200, rocas: 600, arboles: 4000, paredes: 2400 };
 const ANCHO = 0.8;                                 // los árboles, algo más altos que anchos
 const TIERRA = [0.5, 0.42, 0.31], HOJARASCA = [0.4, 0.36, 0.24];
 const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v7/';
@@ -190,6 +191,18 @@ export function crearVistaJuego(est) {
       if (r() > (pie ? 0.45 : 0.006)) continue;
       L.rocas.push([ax, y - 0.2, az, pie ? 0.5 + r() * 1.5 : 0.3 + r() * 0.6, r() * 6.3, st.roca]);
     }
+    // la roca de los cortados: piezas de roca 3D encajadas en las paredes, de 2 a 8 m, mirando hacia fuera de la pared
+    // y medio metidas en ella; en las paredes más altas, más grandes
+    const PR = [];
+    for (let z = z0 + 3; z < z0 + CERCA - 3; z += 2.6) for (let x = x0 + 3; x < x0 + CERCA - 3; x += 2.6) {
+      const ax = x + (r() - 0.5) * 2, az = z + (r() - 0.5) * 2, gi = Math.round((ax - x0) / PASO), gj = Math.round((az - z0) / PASO);
+      const gx = (alt(gi + 1, gj) - alt(gi - 1, gj)) / (2 * PASO), gz = (alt(gi, gj + 1) - alt(gi, gj - 1)) / (2 * PASO), s = Math.hypot(gx, gz);
+      if (s < 1.05 || r() > 0.62) continue;
+      const y = vj.altura(ax, az); if (y < -0.5) continue;
+      const nx = -gx / s, nz = -gz / s, alto = 2 + r() * 3 + Math.min(4, s);
+      PR.push([ax + nx * alto * 0.12, y - alto * 0.15, az + nz * alto * 0.12, alto, Math.atan2(nx, nz) + (r() - 0.5) * 0.5, Math.floor(r() * 5), (r() - 0.5) * 0.25, 0.85 + r() * 0.3, sitioEn(ax, az).st?.roca || sitios[gj * n + gi]?.roca]);
+    }
+    L.paredes = PR;
     // recorte a lo que aguanta el aparato
     for (const [k, m] of [['hierba', MAX.hierba], ['flores', MAX.flores], ['matas', MAX.matas], ['rocas', MAX.rocas]]) if (L[k].length > m) { const q = m / L[k].length; L[k] = L[k].filter(() => r() < q); }
     const totalArb = L.pino.length + L.frond.length;
@@ -210,6 +223,17 @@ export function crearVistaJuego(est) {
     const FLORES = [0xe8e2d0, 0xd9c27a, 0xa98aa6];
     poner(L.flores, pl.flor, materialFlor(), 'flores', { color: (e) => c.set(FLORES[e[5]]) });
     poner(L.matas, pl.matorral.geo, pl.matorral.mats, 'matorralesCerca', { sombra: true });
+    if (L.paredes.length > MAX.paredes) { const q = MAX.paredes / L.paredes.length; L.paredes = L.paredes.filter(() => r() < q); }
+    const piezas = modelosRocaPared(), mr = materialRoca();
+    piezas.forEach((geo, v) => {
+      const lista = L.paredes.filter(e => e[5] === v); if (!lista.length) return;
+      const im = new THREE.InstancedMesh(geo, mr, lista.length);
+      lista.forEach((e, k) => {
+        o.position.set(e[0], e[1], e[2]); o.rotation.set(e[6], e[4], (e[7] - 1) * 0.4, 'YXZ'); o.scale.set(e[3] * (0.9 + e[7] * 0.4), e[3], e[3] * 0.9); o.updateMatrix(); im.setMatrixAt(k, o.matrix);
+        const kc = ROCAS_COLOR[e[8]] || ROCAS_COLOR.caliza; im.setColorAt(k, c.setRGB(lin(kc[0]) / 0.35 * e[7], lin(kc[1]) / 0.35 * e[7], lin(kc[2]) / 0.35 * e[7]));
+      });
+      im.castShadow = true; im.receiveShadow = true; im.name = 'rocaPared'; g.add(im);
+    });
     poner(L.rocas, pl.roca.geo, pl.roca.mats, 'rocasCerca', { sombra: true, color: (e) => { const k = ROCAS_COLOR[e[5]] || ROCAS_COLOR.caliza; return c.setRGB(lin(k[0]) / 0.4, lin(k[1]) / 0.4, lin(k[2]) / 0.4); } });
 
     est.raiz.add(g); vj.grupo = g;
@@ -219,7 +243,7 @@ export function crearVistaJuego(est) {
     const tris = (gg) => (gg.index ? gg.index.count : gg.attributes.position.count) / 3;
     vj.medidas = {
       ms: Math.round(performance.now() - t0), rejilla: n, pasoM: PASO,
-      arboles: L.pino.length + L.frond.length, hierba: L.hierba.length, flores: L.flores.length, matas: L.matas.length, rocas: L.rocas.length,
+      arboles: L.pino.length + L.frond.length, hierba: L.hierba.length, flores: L.flores.length, matas: L.matas.length, rocas: L.rocas.length, paredes: L.paredes.length,
       triangulos: Math.round(idx.length / 3 + L.pino.length * tris(arb.pino.geo) + L.frond.length * tris(arb.frond.geo) + L.hierba.length * tris(pl.mata) + L.matas.length * tris(pl.matorral.geo)),
     };
     window.__cerca.juego = vj.medidas; window.__cerca.vj = vj;
