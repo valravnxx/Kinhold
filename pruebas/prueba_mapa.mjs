@@ -105,6 +105,20 @@ for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
     porSitio.sort((x, y) => x - y);
     const mediana = porSitio[10];
     comprobar(`${n}: las laderas de montaña no van en escalones (en 20 sitios de montaña, la mediana por debajo de 8 paredes por km)`, mediana < 8, `mediana ${mediana.toFixed(1)} por km · máx. ${porSitio[19].toFixed(1)} (un afloramiento)`);
+    // saltos de agua: unos cientos en el mundo, solo en roca dura, de 4 a 35 m, y en el cauce el escalón se ve de verdad
+    // (en 10 m de río baja al menos la mitad del salto). MUTAR: sin escalón en el cauce
+    const cascadas = pai.saltosEn(pai.riosEn(0, 0, m.lado * 1000, m.lado * 1000, 0));
+    const malRoca = cascadas.filter(sa => !['granito', 'caliza', 'pizarra'].includes(pai.sitio(sa.x, sa.y, sa.arriba).roca)).length;
+    const altosS = cascadas.map(sa => sa.arriba - sa.abajo);
+    comprobar(`${n}: hay saltos de agua (de 200 a 2.000), en roca dura y de 4 a 35 m`, cascadas.length >= 200 && cascadas.length <= 2000 && malRoca <= cascadas.length * 0.05 && Math.min(...altosS) >= 3.5 && Math.max(...altosS) <= 35.5, `${cascadas.length} saltos · ${malRoca} fuera de roca dura · de ${Math.min(...altosS).toFixed(1)} a ${Math.max(...altosS).toFixed(1)} m`);
+    let escalonBien = 0;
+    const muestra = cascadas.filter((_, i) => i % 25 === 0);
+    for (const sa of muestra) {
+      const tr = pai.riosEn(sa.x - 300, sa.y - 300, sa.x + 300, sa.y + 300);
+      const h1 = pai.altura(sa.x - sa.dx * 5, sa.y - sa.dy * 5, tr, true), h2 = pai.altura(sa.x + sa.dx * 5, sa.y + sa.dy * 5, tr, true) + (MUTAR ? sa.arriba - sa.abajo : 0);
+      if (h1 - h2 > (sa.arriba - sa.abajo) * 0.5) escalonBien++;
+    }
+    comprobar(`${n}: en el cauce, cada salto baja de golpe (en 10 m, más de la mitad de su alto)`, escalonBien >= muestra.length * 0.9, `${escalonBien} de ${muestra.length}`);
     comprobar(`${n}: el agua del río cubre el lecho y queda bajo la orilla`, aguaBien / aguaN > 0.97, `${aguaBien} de ${aguaN}`);
   }
 }
