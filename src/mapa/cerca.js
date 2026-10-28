@@ -40,6 +40,9 @@ export function colorDelSuelo(st, y, s, xm, ym) {
 }
 export const ROCAS_COLOR = ROCA;
 export const lin = (c) => Math.pow(Math.max(0, c), 2.2);
+// el agua de los ríos (la misma de lejos y de cerca, para que no se vea la costura): algo de brillo del cielo
+let matAgua = null;
+export function materialAgua() { return (matAgua ||= new THREE.MeshPhongMaterial({ color: 0x55707c, specular: 0x8899a0, shininess: 60, side: THREE.DoubleSide })); }
 const triangulos = (g) => (g.index ? g.index.count : g.attributes.position.count) / 3;
 export function abrirCerca(mapa, xkm, ykm, alCerrar) {
   if (!estado) estado = iniciar();
@@ -155,7 +158,7 @@ function construir(mapa, cx, cy) {
   }
   if (agua.length) {
     const g2 = new THREE.BufferGeometry(); g2.setAttribute('position', new THREE.Float32BufferAttribute(agua, 3)); g2.setIndex(aguaIdx); g2.computeVertexNormals();
-    const rio = new THREE.Mesh(g2, new THREE.MeshLambertMaterial({ color: 0x5f7f8c, side: THREE.DoubleSide })); rio.name = 'rios'; estado.raiz.add(rio);
+    const rio = new THREE.Mesh(g2, materialAgua()); rio.name = 'rios'; estado.raiz.add(rio);
   }
   // bosque: candidatos en una rejilla desordenada de 13 m; cada uno se queda según el espesor del bosque en su sitio
   const r = azar((Math.round(cx) * 73856093) ^ (Math.round(cy) * 19349663));

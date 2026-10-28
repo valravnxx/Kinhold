@@ -9,7 +9,7 @@ import { materialTex } from '../mundo/estilos.js';
 import { bosqueEn } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
 import { crearJugador } from '../juego/personaje.js';
-import { colorDelSuelo, lin, poblarArboles, ROCAS_COLOR } from './cerca.js';
+import { colorDelSuelo, lin, poblarArboles, ROCAS_COLOR, materialAgua } from './cerca.js';
 
 const movil = Math.min(innerWidth, innerHeight) < 700;
 export const CERCA = movil ? 170 : 240;           // lado del trozo con todo el detalle (m)
@@ -277,6 +277,3 @@ export function crearVistaJuego(est) {
 let matHierba = null, matFlor = null;
 function materialHierba() { return (matHierba ||= new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide })); }
 function materialFlor() { return (matFlor ||= new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true })); }
-// el agua de cerca: algo de brillo del cielo y un poco transparente en la orilla
-let matAgua = null;
-function materialAgua() { return (matAgua ||= new THREE.MeshPhongMaterial({ color: 0x55707c, specular: 0x8899a0, shininess: 60, transparent: true, opacity: 0.86 })); }
