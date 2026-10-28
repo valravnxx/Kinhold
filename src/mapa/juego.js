@@ -197,9 +197,9 @@ export function crearVistaJuego(est) {
     for (let z = z0 + 3; z < z0 + CERCA - 3; z += 2.6) for (let x = x0 + 3; x < x0 + CERCA - 3; x += 2.6) {
       const ax = x + (r() - 0.5) * 2, az = z + (r() - 0.5) * 2, gi = Math.round((ax - x0) / PASO), gj = Math.round((az - z0) / PASO);
       const gx = (alt(gi + 1, gj) - alt(gi - 1, gj)) / (2 * PASO), gz = (alt(gi, gj + 1) - alt(gi, gj - 1)) / (2 * PASO), s = Math.hypot(gx, gz);
-      if (s < 1.05 || r() > 0.62) continue;
+      if (s < 1.15 || r() > 0.4) continue;
       const y = vj.altura(ax, az); if (y < -0.5) continue;
-      const nx = -gx / s, nz = -gz / s, alto = 2 + r() * 3 + Math.min(4, s);
+      const nx = -gx / s, nz = -gz / s, alto = 2 + r() * 2.5 + Math.min(3, s);
       PR.push([ax + nx * alto * 0.12, y - alto * 0.15, az + nz * alto * 0.12, alto, Math.atan2(nx, nz) + (r() - 0.5) * 0.5, Math.floor(r() * 5), (r() - 0.5) * 0.25, 0.85 + r() * 0.3, sitioEn(ax, az).st?.roca || sitios[gj * n + gi]?.roca]);
     }
     L.paredes = PR;
@@ -230,7 +230,7 @@ export function crearVistaJuego(est) {
       const im = new THREE.InstancedMesh(geo, mr, lista.length);
       lista.forEach((e, k) => {
         o.position.set(e[0], e[1], e[2]); o.rotation.set(e[6], e[4], (e[7] - 1) * 0.4, 'YXZ'); o.scale.set(e[3] * (0.9 + e[7] * 0.4), e[3], e[3] * 0.9); o.updateMatrix(); im.setMatrixAt(k, o.matrix);
-        const kc = ROCAS_COLOR[e[8]] || ROCAS_COLOR.caliza; im.setColorAt(k, c.setRGB(lin(kc[0]) / 0.35 * e[7], lin(kc[1]) / 0.35 * e[7], lin(kc[2]) / 0.35 * e[7]));
+        const kc = ROCAS_COLOR[e[8]] || ROCAS_COLOR.caliza; im.setColorAt(k, c.setRGB(lin(kc[0]) / 0.62 * e[7], lin(kc[1]) / 0.62 * e[7], lin(kc[2]) / 0.62 * e[7]));   // el tono de su roca, apagado como el del estilo v5
       });
       im.castShadow = true; im.receiveShadow = true; im.name = 'rocaPared'; g.add(im);
     });

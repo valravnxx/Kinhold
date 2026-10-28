@@ -19,18 +19,18 @@ export function texturaRoca() {
   // manchas grandes de tono (la roca no es de un color)
   for (let n = 0; n < 60; n++) { const x = r() * N, y = r() * N, rr = 30 + r() * 80, v = 165 + r() * 70; envolver(() => { const gr = g.createRadialGradient(x, y, 0, x, y, rr); gr.addColorStop(0, gris(v, 0.35)); gr.addColorStop(1, gris(v, 0)); g.fillStyle = gr; g.fillRect(x - rr, y - rr, rr * 2, rr * 2); }); }
   // vetas de estrato: franjas horizontales onduladas, más claras y más oscuras
-  for (let n = 0; n < 26; n++) { const y0 = r() * N, v = r() < 0.5 ? 140 + r() * 30 : 215 + r() * 30, w = 2 + r() * 9, f = r() * 6;
-    envolver(() => { g.strokeStyle = gris(v, 0.45); g.lineWidth = w; g.beginPath(); for (let x = -10; x <= N + 10; x += 10) g.lineTo(x, y0 + Math.sin(x * 0.02 + f) * 6 + Math.sin(x * 0.07 + f) * 2); g.stroke(); }); }
+  for (let n = 0; n < 26; n++) { const y0 = r() * N, v = r() < 0.5 ? 155 + r() * 25 : 210 + r() * 25, w = 2 + r() * 9, f = r() * 6;
+    envolver(() => { g.strokeStyle = gris(v, 0.3); g.lineWidth = w; g.beginPath(); for (let x = -10; x <= N + 10; x += 10) g.lineTo(x, y0 + Math.sin(x * 0.02 + f) * 6 + Math.sin(x * 0.07 + f) * 2); g.stroke(); }); }
   // grano fino
   for (let n = 0; n < 9000; n++) { const x = r() * N, y = r() * N, v = 110 + r() * 140; g.fillStyle = gris(v, 0.35); g.fillRect(x, y, 1 + r() * 1.5, 1 + r() * 1.5); }
   // grietas: oscuras con un labio claro a un lado (así parecen hundidas)
-  for (let n = 0; n < 22; n++) {
+  for (let n = 0; n < 14; n++) {
     let x = r() * N, y = r() * N; const pts = [[x, y]]; const ang = (r() < 0.6 ? 1.57 : 0) + (r() - 0.5) * 0.9;
     for (let k = 0; k < 7; k++) { x += Math.cos(ang + (r() - 0.5) * 1.2) * (10 + r() * 22); y += Math.sin(ang + (r() - 0.5) * 1.2) * (10 + r() * 22); pts.push([x, y]); }
-    const w = 1 + r() * 2.5;
+    const w = 0.7 + r() * 1.3;
     envolver(() => {
-      g.strokeStyle = gris(232, 0.5); g.lineWidth = w; g.beginPath(); pts.forEach(([a, b], i) => i ? g.lineTo(a + 1.5, b + 1.5) : g.moveTo(a + 1.5, b + 1.5)); g.stroke();
-      g.strokeStyle = gris(55, 0.85); g.lineWidth = w; g.beginPath(); pts.forEach(([a, b], i) => i ? g.lineTo(a, b) : g.moveTo(a, b)); g.stroke();
+      g.strokeStyle = gris(225, 0.3); g.lineWidth = w * 1.4; g.beginPath(); pts.forEach(([a, b], i) => i ? g.lineTo(a + 1.2, b + 1.2) : g.moveTo(a + 1.2, b + 1.2)); g.stroke();
+      g.strokeStyle = gris(95, 0.55); g.lineWidth = w; g.beginPath(); pts.forEach(([a, b], i) => i ? g.lineTo(a, b) : g.moveTo(a, b)); g.stroke();
     });
   }
   // liquen: motas pequeñas, algo más claras
@@ -42,7 +42,7 @@ export function texturaRoca() {
 
 let mat = null;
 export function materialRoca() {
-  return (mat ||= new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true, map: texturaRoca(), bumpMap: texturaRoca(), bumpScale: 2.2 }));
+  return (mat ||= new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true, map: texturaRoca(), bumpMap: texturaRoca(), bumpScale: 1.6 }));
 }
 
 // una pieza de roca de pared: ancha, poco honda, en estratos y cortada en caras planas. Medidas: 1 de alto, ~1,6 de
