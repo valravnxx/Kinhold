@@ -192,10 +192,10 @@ try:
             ra, rb = A.evaluate("window.__rehechos"), B.evaluate("window.__rehechos")
             comprobar('al abrirlo, PC rehace solo el portillo (nada entero)', ra['todo'] == 0 and ra['pieza'] == 1, str(ra))
             comprobar('y el móvil, también solo el portillo', rb['todo'] == 0 and rb['pieza'] == 1, str(rb))
-            hoja = f"(() => {{ let r = null; {K}.escena.traverse(o => {{ if (o.name !== 'hoja') return; let q = o.parent; while (q && !(q.userData && q.userData.key)) q = q.parent;
-                if (q && q.userData.c && q.userData.c.piezas.get(q.userData.key)?.tipo === 'cerca_portillo') r = Math.abs(o.rotation.y) + Math.abs(o.rotation.x) + Math.abs(o.rotation.z); }}); return r; }})()"
+            hoja = f"(() => {{ let r = null; {K}.escena.traverse(o => {{ if (o.name !== 'hoja') return; let q = o.parent; while (q && !(q.userData && q.userData.key)) q = q.parent; if (q && q.userData.c && q.userData.c.piezas.get(q.userData.key)?.tipo === 'cerca_portillo') r = Math.abs(o.rotation.y) + Math.abs(o.rotation.x) + Math.abs(o.rotation.z); }}); return r; }})()"
             comprobar('y en el móvil el portillo se ve abierto (la hoja girada)', (B.evaluate(hoja) or 0) > 0.5, str(B.evaluate(hoja)))
             for pg in (A, B): pg.evaluate('window.__rehacerTodo = false')
+        piezasAntes = piezas(A)   # con el portillo
 
         print('Salir al menú y volver: sigue siendo el mismo')
         yoB = B.evaluate(f"{K}.enLinea.red.yo")
