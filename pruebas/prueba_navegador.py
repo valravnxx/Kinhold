@@ -949,11 +949,11 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=0.5; {K}.pj.z=-27; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=Math.PI-0.75; {K}.cam.pitch=0.6; {K}.cam.dist=13")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06g_movil_remate_esquina.png')
-    mv.evaluate(f"{K}.pj.x=6.5; {K}.pj.z=0.6; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=0.5; {K}.cam.yaw=Math.PI-0.45; {K}.cam.pitch=0.22; {K}.cam.dist=4.2")
+    mv.evaluate(f"{K}.pj.x=7.7; {K}.pj.z=0.2; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=-0.3; {K}.cam.yaw=Math.PI+0.15; {K}.cam.pitch=0.2; {K}.cam.dist=4.5")
     mv.wait_for_timeout(1200)
     comprobar('móvil: la chimenea se carga del guardado, encendida', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'hogar' && !p.apagado).length") == 1 and mv.evaluate("window.__fuegos().encendidas") == 1)
     mv.screenshot(path=f'{SALIDA}/06h_movil_chimenea.png')
-    mv.evaluate(f"{K}.pj.x=8.2; {K}.pj.z=-1.5; {K}.cam.yaw=Math.PI+0.45; {K}.cam.pitch=0.15; {K}.cam.dist=13")
+    mv.evaluate(f"{K}.pj.x=8.2; {K}.pj.z=-1.5; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.2; {K}.cam.dist=13")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06i_movil_chimenea_por_fuera.png')
     mv.click('#modos button[data-modo=construir]', no_wait_after=True)  # el clic no navega; con la máquina cargada, esperar «navegaciones» agotaba los 30 s
