@@ -849,7 +849,7 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=9.4; {K}.pj.z=-11.4; {K}.pj.k=1; {K}.pj.y=2.62; {K}.cam.yaw=0.5; {K}.cam.pitch=0.8; {K}.cam.dist=6")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06e_movil_trampilla.png')
-    mv.evaluate(f"{K}.pj.x=-0.4; {K}.pj.z=-19.8; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI-0.7; {K}.cam.pitch=0.45; {K}.cam.dist=10")
+    mv.evaluate(f"{K}.pj.x=3.5; {K}.pj.z=-20.8; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI-0.3; {K}.cam.pitch=0.7; {K}.cam.dist=11")
     mv.wait_for_timeout(900)
     comprobar('móvil: el tejado de teja se carga del guardado', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'tejado_teja').length") == 4)
     mv.screenshot(path=f'{SALIDA}/06f_movil_tejado_teja.png')
