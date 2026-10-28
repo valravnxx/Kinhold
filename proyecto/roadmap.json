@@ -303,7 +303,9 @@
     },
     {
      "nombre": "Bots: jugadores simulados en node que se conectan al servidor y andan, construyen y pelean, para la medición",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-28T08:51:14+00:00",
+     "fin": "2026-10-28T10:21:48+00:00"
     },
     {
      "nombre": "Medir el servidor con 100 jugadores simulados (bots que andan, construyen y pelean): CPU, memoria y tráfico por jugador, para saber qué servidor hace falta y cuánto cuesta al mes",
@@ -417,13 +419,15 @@
     },
     {
      "nombre": "Taller: capa con capucha, calzado y tocados (capucha suelta, sombrero de paja, toca)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-26T13:38:41+00:00",
-     "rama": "trabajo/20261026-1338"
+     "fin": "2026-10-28T09:11:30+00:00"
     },
     {
      "nombre": "Taller: personalización — altura, complexión y cara con los ajustes de MakeHuman, tono de piel, color de ojos, peinado y barba",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T09:20:54+00:00",
+     "rama": "trabajo/20261028-0920"
     },
     {
      "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
@@ -1680,6 +1684,13 @@
      "archivo": "jugar/personaje/v14.html",
      "capturas": "capturas/personaje-v14",
      "notas": "El cinturón de encima de la cota ya no sobresale hacia los brazos (personajes del taller-v7)."
+    },
+    {
+     "v": "v15",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/personaje/v15.html",
+     "capturas": "capturas/personaje-v15",
+     "notas": "Capa, botas y tocados: capucha, sombrero de paja y toca"
     }
    ]
   },

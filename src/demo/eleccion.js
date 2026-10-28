@@ -21,5 +21,7 @@ export function personajeElegido() {
 export function capasDuelo(elegidas, armadura, CAPAS_ARMADURA) {
   const armas = ['gambeson', 'cota'];
   if (armadura === 'lino' || !CAPAS_ARMADURA[armadura]) return elegidas.filter(c => !armas.includes(c));
-  return [...CAPAS_ARMADURA[armadura], ...(elegidas.includes('sobreveste') ? ['sobreveste'] : [])];
+  // lo que no es armadura (sobreveste, capa, tocado, botas) se queda como se eligió
+  const encima = ['sobreveste', 'manto', 'capucha', 'sombrero', 'toca', 'botas'];
+  return [...CAPAS_ARMADURA[armadura], ...elegidas.filter(c => encima.includes(c))];
 }

@@ -1,17 +1,11 @@
 {
  "A": {
-  "inicio": "2026-10-28T05:20:35+00:00",
-  "tarea": "Taller: capa con capucha, calzado y tocados (capucha suelta, sombrero de paja, toca)",
+  "inicio": "2026-10-28T09:20:54+00:00",
+  "tarea": "Taller: personalización — altura, complexión y cara con los ajustes de MakeHuman, tono de piel, color de ojos, peinado y barba",
   "hito": "arte",
-  "rama": "trabajo/20261026-1338"
+  "rama": "trabajo/20261028-0920"
  },
- "B": {
-  "inicio": "2026-10-28T02:50:19+00:00",
-  "tarea": "Contraventana y trampilla (N2: 2 tablas y clavos): la contraventana cierra la ventana de un muro y la trampilla tapa el hueco de una escalera; las dos se abren y cierran con Usar. Añadir también el muro de tablas con ventana, que falta",
-  "hito": "construccion-mas",
-  "rama": "trabajo/20261028-0250",
-  "ultimo": "2026-10-28T04:32:50.000Z"
- },
+ "B": null,
  "chat:trabajo/20261028-0935-roca": {
   "inicio": "2026-10-28T09:34:28+01:00",
   "tarea": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",

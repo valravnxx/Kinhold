@@ -31,8 +31,8 @@ const $ = (id) => document.getElementById(id);
 const CLAVE = 'kinhold_personaje_v2';
 // carpeta de los modelos: la versión publicada vive en jugar/personaje/, los modelos en recursos/personajes/v1/
 const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../recursos/personajes/v1/';
-// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v7/ (las anteriores publicadas no se tocan)
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v7/';
+// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v8/ (las anteriores publicadas no se tocan)
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v8/';
 // capas puestas en el taller propio, por sexo (por defecto: túnica en el hombre, vestido en la mujer)
 const capasMH = () => (estado.capas && estado.capas[estado.sexo]) || [estado.sexo === 'mujer' ? 'vestido' : 'tunica'];
 
@@ -126,7 +126,9 @@ function pintarOpciones() {
   for (const b of $('opciones').querySelectorAll('[data-modo]')) b.onclick = () => ponerModo(b.dataset.modo);
   for (const b of $('opciones').querySelectorAll('[data-capa]')) b.onclick = () => {
     const l = capasMH(), c = b.dataset.capa;
-    estado.capas = { ...(estado.capas || {}), [estado.sexo]: l.includes(c) ? l.filter(x => x !== c) : [...l, c] };
+    // los tocados van de uno en uno: poner uno quita el que hubiera
+    const tocados = pj?.tocados || [], sin = tocados.includes(c) ? l.filter(x => !tocados.includes(x)) : l;
+    estado.capas = { ...(estado.capas || {}), [estado.sexo]: l.includes(c) ? l.filter(x => x !== c) : [...sin, c] };
     if (pj?.ponerCapas) { pj.ponerCapas(capasMH()); medida.trianglesPersonaje = pj.triangulos; }
     pintarOpciones(); guardar(); dibujar();
   };
