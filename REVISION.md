@@ -6,6 +6,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 28 oct 2026 (06:57) — por el chat: agua que se mueve
+
+«¿Cómo está la simulación del agua? ¿Queda realista? ¿Con su movimiento de olas en la dirección del río? ¿Diferente de río que de mar? ¿Mar rompiendo olas y río moviéndose lentamente en su dirección?» → Aún no había ninguna (láminas planas y quietas). «Ve haciéndolo tú en paralelo» → Tarea nueva en el hito 10, la lleva el chat: agua que se mueve (río en su dirección, mar con oleaje y olas que rompen, color según la hondura, espuma).
+
+### 28 oct 2026 (05:18) — por el chat: los ríos son agujeros enormes
+
+«La mayoría de ríos son agujeros en el terreno enormes, y creo que es porque aún no hemos programado el agua» (con captura del móvil: un tajo de roca gris con el río al fondo). → No es solo el agua: el valle del río se tallaba con un ancho fijo, así que donde el terreno queda muy por encima del río salía un tajo casi vertical. Se hace ya la tarea del hito 10 «Valles tallados por los ríos» (laderas con pendiente limitada, vegas anchas abajo, gargantas solo en la montaña).
+
 ### 28 oct 2026 (05:38) — por el chat: ver quién trabaja en qué
 valravnx: «cuando comiencen una tarea, dirán cuál es y entonces en la web saldrá como que esa está en proceso, y que solo salgan en proceso aquellas en las que de verdad se esté trabajando por algún agente en concreto, para saber bien en qué se trabaja en cada momento». → Tarea en el hito de infraestructura, en curso en esta sesión de chat.
 

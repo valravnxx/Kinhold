@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-10-28T04:20:30+00:00",
-  "tarea": "Conexiones que se cortan y protección básica: volver a conectar sin perder al personaje, quitar al que se va, límite de mensajes por segundo y de tamaño por conexión, y rechazo de datos mal formados (con una prueba que los manda)",
-  "hito": "prueba-online",
-  "rama": "trabajo/20261028-0120"
+  "inicio": "2026-10-28T05:20:35+00:00",
+  "tarea": "Taller: capa con capucha, calzado y tocados (capucha suelta, sombrero de paja, toca)",
+  "hito": "arte",
+  "rama": "trabajo/20261026-1338"
  },
  "B": {
   "inicio": "2026-10-28T02:50:19+00:00",
@@ -11,5 +11,11 @@
   "hito": "construccion-mas",
   "rama": "trabajo/20261028-0250",
   "ultimo": "2026-10-28T04:32:50.000Z"
+ },
+ "chat:trabajo/20261028-0700-agua": {
+  "inicio": "2026-10-28T06:58:45+01:00",
+  "tarea": "Agua que se mueve: el río corre en su dirección (lento en la vega, rápido en la montaña) y el mar con oleaje y olas que rompen en la costa; color según la hondura y espuma en orillas y rompientes",
+  "hito": "mundo",
+  "rama": "trabajo/20261028-0700-agua"
  }
 }

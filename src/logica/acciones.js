@@ -27,13 +27,15 @@ export class RegistroAcciones {
 }
 
 const numero = v => typeof v === 'number' && Number.isFinite(v);
-const texto = v => typeof v === 'string' && v.length > 0;
+// un texto de datos: no vacío, corto y que no sea el nombre de algo que tienen todos los objetos («constructor»,
+// «__proto__», «toString»…), que si no se colaría al buscarlo en las tablas de piezas o materiales
+const texto = v => typeof v === 'string' && v.length > 0 && v.length <= 64 && !(v in Object.prototype);
 
 // Comprueba la forma del mensaje: autor, tipo conocido y datos del tipo correcto.
 function forma(accion, campos) {
   if (!accion || typeof accion !== 'object') return 'Acción no válida.';
   if (!texto(accion.autor)) return 'Acción sin autor.';
-  const c = campos[accion.tipo];
+  const c = Object.hasOwn(campos, accion.tipo) ? campos[accion.tipo] : null;   // «constructor», «__proto__»… no son tipos
   if (!c) return 'Acción desconocida.';
   for (const [nombre, tipo] of Object.entries(c)) {
     const v = accion[nombre];
