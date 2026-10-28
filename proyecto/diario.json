@@ -1634,5 +1634,22 @@
   "pruebas": "bash herramientas/probar_todo.sh: todas correctas salvo, una vez, 1 comprobación de la prueba en línea de navegador (no se vio cuál: la salida se recorta) que pasó al repetirla y en la pasada anterior. Lógica 151/151 (17 nuevas, fallan con MUTAR=1), modelos 121/121 (3 nuevas), navegador de construcción con 7 comprobaciones nuevas del polipasto (fallaron mientras no se colgaba de la viga y mientras Usar elegía la polea más lejana). Tras la última unión con main (mapa v4: decorado.js sin cambios de comportamiento) repetidas las de node, no las de navegador. Capturas de cerca miradas en PC, junto a la prueba de estilo v5 (39_polipasto_junto_a_la_v5). No comprobado: el polipasto de cerca en móvil (las vistas de móvil de siempre, sí); el personaje usa el gesto de construir (con el hacha) al dar vueltas al torno; el subir entre dos con dos jugadores de verdad (solo en la prueba de lógica).",
   "capturas": "capturas/construccion-v28",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T05:40:45+01:00",
+  "fin": "2026-10-28T05:56:43+01:00",
+  "titulo": "Quién trabaja en qué, a la vista: solo sale «en proceso» lo que lleva un agente",
+  "hito": "infra",
+  "hecho": [
+   "Cada agente anuncia su tarea al empezar en proyecto/sesion.json: los carriles A y B con «ocupar», como antes, y ahora también las sesiones de chat, con «carriles.mjs chat». Al terminar la sueltan.",
+   "En la web, arriba del todo, un cartel «Ahora mismo» con cada agente que está trabajando (agente A, agente B o chat con valravnx), su tarea, su hito y desde qué hora. Si no trabaja nadie, lo dice.",
+   "En el roadmap, una tarea solo sale «En proceso» (con quién la lleva) si la lleva un agente vivo: que empezó o subió un avance a su rama hace menos de 70 minutos. Las empezadas que no lleva nadie salen «A medias».",
+   "La web lo mira en GitHub al abrirse (el sesion.json de main y el último commit de la rama de cada agente), así que está al día aunque la página se generara antes.",
+   "Lo que está a medias ya no bloquea su hito: un carril lo retoma desde su rama antes de empezar nada nuevo. La tarea de capa, calzado y tocados llevaba a medias desde el 26 oct; queda apuntada su rama para retomarla.",
+   "sesion.json se une solo al fusionar ramas, como el diario y las traducciones: cada agente va en su propia clave.",
+   "Pruebas nuevas de carriles (anunciar del chat, a medias, latido por la rama, retomar, unir sesion.json) y de la web (cartel y roadmap con un estado de GitHub simulado: un agente vivo, un chat vivo por su último avance y un agente cortado). Rotas a propósito, fallan como deben."
+  ],
+  "pruebas": "Carriles 24/24, unión de JSON 19/19, idiomas correcta; web en PC y móvil correcta (también en ruso y sin nadie trabajando). No comprobado: la web publicada contra GitHub de verdad (en la prueba se simula); sin conexión, se queda con lo que traía la página.",
+  "estado": "ok"
  }
 ]
