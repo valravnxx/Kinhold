@@ -5,7 +5,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { materialTex } from '../mundo/estilos.js';
 import { modelosArbol, azar } from '../mundo/decorado.js';
-import { crearPaisaje, bosqueEn } from '../logica/paisaje.js';
+import { crearPaisaje, bosqueEn, azarCelda } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
 import { tr } from '../idioma.js';
 import { crearVistaJuego } from './juego.js';
@@ -192,9 +192,14 @@ function construir(mapa, cx, cy) {
     const rio = new THREE.Mesh(g2, aguaLejos()); rio.name = 'rios'; rio.receiveShadow = true; estado.raiz.add(rio);
   }
   // bosque: candidatos en una rejilla desordenada de 13 m; cada uno se queda según el espesor del bosque en su sitio
-  const r = azar((Math.round(cx) * 73856093) ^ (Math.round(cy) * 19349663));
-  const lista = { pino: [], frond: [] }, ESP = 13;
-  for (let z = -L / 2 + ESP / 2; z < L / 2; z += ESP) for (let x = -L / 2 + ESP / 2; x < L / 2; x += ESP) {
+  // cada candidato sale de su celda del MUNDO y de la semilla (no del centro de la zona): el mismo sitio tiene los mismos
+  // árboles se abra la zona desde donde se abra
+  const lista = { pino: [], frond: [] }, ESP = 13, SEM = mapa.semilla || 0;
+  const ci0 = Math.ceil((cx - L / 2 + ESP / 2) / ESP), ci1 = Math.floor((cx + L / 2 - ESP / 2) / ESP), cj0 = Math.ceil((cy - L / 2 + ESP / 2) / ESP), cj1 = Math.floor((cy + L / 2 - ESP / 2) / ESP);
+  let r = null;
+  for (let cj = cj0; cj <= cj1; cj++) for (let ci = ci0; ci <= ci1; ci++) {
+    r = azarCelda(ci, cj, 9, SEM);
+    const x = ci * ESP - cx, z = cj * ESP - cy;
     const px = x + (r() - 0.5) * ESP * 0.9, pz = z + (r() - 0.5) * ESP * 0.9;
     const gi = Math.round((px + L / 2) / paso), gj = Math.round((pz + L / 2) / paso), k = Math.min(N - 1, gj) * N + Math.min(N - 1, gi);
     const st = sitios[k]; if (!st || !st.bioma || H[k] < 1.5) continue;
@@ -207,7 +212,7 @@ function construir(mapa, cx, cy) {
     (pino ? lista.pino : lista.frond).push([px, y, pz, (pino ? 3.2 : 2.9) * (0.8 + r() * 0.45), r() * 6.3, 0.82 + r() * 0.3]);
   }
   let total = lista.pino.length + lista.frond.length;
-  if (total > MAX_ARBOLES) { const q = MAX_ARBOLES / total; for (const k of ['pino', 'frond']) lista[k] = lista[k].filter(() => r() < q); total = lista.pino.length + lista.frond.length; }
+  if (total > MAX_ARBOLES) { const q = MAX_ARBOLES / total; for (const k of ['pino', 'frond']) lista[k] = lista[k].filter(a => azarCelda(Math.round(cx + a[0]), Math.round(cy + a[2]), 10, SEM)() < q); total = lista.pino.length + lista.frond.length; }   // cada árbol, por su sitio (siempre el mismo)
   estado.arboles = lista;
   poblarArboles(null);
   estado.centro = { cx, cy, H, paso };

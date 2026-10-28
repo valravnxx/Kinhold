@@ -1895,5 +1895,20 @@
   "pruebas": "Todas con bash herramientas/probar_todo.sh, dos veces (antes y después de unir main): todo correcto salvo tres que fallaron solo dentro de la tanda y pasan repetidas solas: «Jugadores que se ven, con lag simulado» (15/15 sola), la web (lee en GitHub quién trabaja en ese momento: pasó sola) y la del servidor en internet del carril A, que necesita Caddy (instalado aquí con apt-get, 19/19). Tras la última unión con main, repetidas: lógica 189/189 (12 nuevas, 5 fallan con MUTAR=1), modelos 144/144 (4 nuevas; la de los triángulos falla con MUTAR_TEJA=1), combate, acciones, inventario, idiomas, servidor y en línea; navegador de construcción todo correcto (4 comprobaciones nuevas; la del cobro de tejas falla con una versión que cobra 9) y demo única todo correcto. Capturas miradas en PC y móvil, y el tejado junto a la cabaña de la prueba de estilo v5 (48_tejado_teja_junto_a_la_v5). No comprobado: el tejado de teja en línea con dos jugadores (va por las mismas acciones que los demás tejados). Mientras corrían las pruebas, otras sesiones del carril B ocuparon el carril para otras tareas: esta no lo suelta para no quitárselo.",
   "capturas": "capturas/construccion-v30",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T15:12:01+01:00",
+  "fin": "2026-10-28T19:06:47+01:00",
+  "titulo": "Hito 10: el mundo de cerca siempre igual",
+  "hito": "mundo",
+  "hecho": [
+   "El terreno ya era fijo; lo que cambiaba al rehacer el trozo de cerca era el reparto de árboles, hierba, piedras y piezas de roca, que salía de un azar que empezaba en el centro del trozo",
+   "Ahora cada cosa sale de su celda en el mundo y de la semilla del mundo (un azar por celda), y si hay que recortar por el aparato se quitan las más lejanas del personaje, no al azar",
+   "Lo mismo con los árboles de lejos: ya no dependen de desde dónde se abre la zona",
+   "Prueba nueva en el navegador: se rehace el trozo de cerca 50 m más allá y la parte común sale idéntica (MUTAR_FIJO=1 vuelve al azar por el centro y falla)"
+  ],
+  "pruebas": "Batería completa correcta tras unir main (con el mapa v9 de los nombres del mundo, de otra sesión de chat; esta versión pasa a v10). No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v10",
+  "estado": "ok"
  }
 ]
