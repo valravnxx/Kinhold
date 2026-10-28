@@ -1,0 +1,1617 @@
+{
+ "fecha": "2026-10-28T10:55:02.230Z",
+ "maquina": {
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.30GHz",
+  "nucleos": 2,
+  "memoriaGB": 7.8,
+  "node": "v22.23.4"
+ },
+ "bots": 25,
+ "segundos": 90,
+ "resumen": {
+  "bots": 25,
+  "segundosMedidos": 80,
+  "cpuNucleoPct": {
+   "media": 2.6,
+   "p95": 3.6,
+   "max": 6
+  },
+  "memoriaMB": {
+   "rssMax": 79.6,
+   "heapMax": 11.9
+  },
+  "bucleMs": {
+   "p99Medio": 5.7,
+   "p99Max": 6.5,
+   "max": 10.7
+  },
+  "red": {
+   "salidaKBs": 1213.5,
+   "entradaKBs": 24,
+   "salidaPorJugadorKBs": 48.5,
+   "entradaPorJugadorKBs": 1,
+   "salidaPorJugadorHoraMB": 170.6,
+   "salidaMbps": 9.94
+  },
+  "disco": {
+   "crecimientoMBHora": 8.1,
+   "alFinalMB": 0.2
+  },
+  "conectadosMin": 25,
+  "construccionesAlFinal": 7
+ },
+ "bienvenidaBytes": 201618,
+ "deLosBots": {
+  "conectados": 25,
+  "accionesOk": 1459,
+  "accionesMal": 1,
+  "obrasTerminadas": 30,
+  "golpesDados": 137,
+  "intenciones": 548,
+  "rechazos": 117,
+  "errores": 0,
+  "latenciaAccionMs": {
+   "p50": 0.5,
+   "p95": 1.5,
+   "max": 8.5
+  },
+  "porBotYSegundo": {
+   "mensajesEnviados": 10.9,
+   "bytesEnviados": 915,
+   "mensajesRecibidos": 48,
+   "bytesRecibidos": 48614
+  },
+  "motivos": {
+   "Faltan materiales.": 1
+  }
+ },
+ "muestras": [
+  {
+   "tipo": "muestra",
+   "cpu": 7.3,
+   "rss": 69.5,
+   "heap": 9.2,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 6.1,
+    "max": 8.7
+   },
+   "salida": 496339,
+   "entrada": 17448,
+   "conectados": 25,
+   "construcciones": 4,
+   "disco": 3222,
+   "t": 0.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 4.3,
+   "rss": 70.4,
+   "heap": 8.7,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 8.3
+   },
+   "salida": 1431061,
+   "entrada": 39806,
+   "conectados": 25,
+   "construcciones": 4,
+   "disco": 4204,
+   "t": 1.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 4.2,
+   "rss": 70.5,
+   "heap": 8.1,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 6.5,
+    "max": 7.4
+   },
+   "salida": 2472934,
+   "entrada": 63810,
+   "conectados": 25,
+   "construcciones": 4,
+   "disco": 6437,
+   "t": 2.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 4.7,
+   "rss": 71.1,
+   "heap": 9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 6.3,
+    "max": 9.5
+   },
+   "salida": 3430089,
+   "entrada": 87927,
+   "conectados": 25,
+   "construcciones": 4,
+   "disco": 8655,
+   "t": 3.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3.2,
+   "rss": 72.6,
+   "heap": 8.7,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.8
+   },
+   "salida": 4499306,
+   "entrada": 111848,
+   "conectados": 25,
+   "construcciones": 4,
+   "disco": 10435,
+   "t": 4.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3.5,
+   "rss": 74.8,
+   "heap": 10.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.8,
+    "max": 6.2
+   },
+   "salida": 5469418,
+   "entrada": 136113,
+   "conectados": 25,
+   "construcciones": 4,
+   "disco": 12866,
+   "t": 5.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3.4,
+   "rss": 74.8,
+   "heap": 9.8,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.9
+   },
+   "salida": 6453883,
+   "entrada": 160082,
+   "conectados": 25,
+   "construcciones": 5,
+   "disco": 14930,
+   "t": 6.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 4.6,
+   "rss": 75.6,
+   "heap": 8.5,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 6.1
+   },
+   "salida": 7538391,
+   "entrada": 184829,
+   "conectados": 25,
+   "construcciones": 5,
+   "disco": 17877,
+   "t": 7.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.4,
+   "rss": 75.8,
+   "heap": 10.4,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6
+   },
+   "salida": 8767402,
+   "entrada": 209683,
+   "conectados": 25,
+   "construcciones": 5,
+   "disco": 20978,
+   "t": 8.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.5,
+   "rss": 75.8,
+   "heap": 9.1,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 9945910,
+   "entrada": 234478,
+   "conectados": 25,
+   "construcciones": 5,
+   "disco": 23947,
+   "t": 9.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.8,
+   "rss": 75.8,
+   "heap": 10.8,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6.1
+   },
+   "salida": 10989364,
+   "entrada": 259101,
+   "conectados": 25,
+   "construcciones": 5,
+   "disco": 26557,
+   "t": 10.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 4.7,
+   "rss": 75.9,
+   "heap": 9.5,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 6,
+    "max": 8.7
+   },
+   "salida": 12227927,
+   "entrada": 283800,
+   "conectados": 25,
+   "construcciones": 5,
+   "disco": 29212,
+   "t": 11.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 6,
+   "rss": 76.2,
+   "heap": 11.3,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.9,
+    "max": 8.7
+   },
+   "salida": 13541854,
+   "entrada": 308226,
+   "conectados": 25,
+   "construcciones": 5,
+   "disco": 31610,
+   "t": 12.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3.2,
+   "rss": 76.2,
+   "heap": 10,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 6,
+    "max": 7.1
+   },
+   "salida": 14870104,
+   "entrada": 333472,
+   "conectados": 25,
+   "construcciones": 6,
+   "disco": 34479,
+   "t": 13.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.3,
+   "rss": 76.2,
+   "heap": 8.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.8
+   },
+   "salida": 16270737,
+   "entrada": 358296,
+   "conectados": 25,
+   "construcciones": 6,
+   "disco": 37725,
+   "t": 14.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.5,
+   "rss": 76.2,
+   "heap": 10.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.8
+   },
+   "salida": 17789594,
+   "entrada": 383382,
+   "conectados": 25,
+   "construcciones": 6,
+   "disco": 40522,
+   "t": 15.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3.6,
+   "rss": 76.2,
+   "heap": 9.6,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6
+   },
+   "salida": 19234939,
+   "entrada": 407852,
+   "conectados": 25,
+   "construcciones": 6,
+   "disco": 43191,
+   "t": 16.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.4,
+   "rss": 76.2,
+   "heap": 9.5,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 6
+   },
+   "salida": 20700092,
+   "entrada": 433322,
+   "conectados": 25,
+   "construcciones": 6,
+   "disco": 46604,
+   "t": 17.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.9,
+   "rss": 76.2,
+   "heap": 8.5,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 22157446,
+   "entrada": 458405,
+   "conectados": 25,
+   "construcciones": 6,
+   "disco": 49322,
+   "t": 18.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3,
+   "rss": 77.1,
+   "heap": 10.1,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.9
+   },
+   "salida": 23420040,
+   "entrada": 483076,
+   "conectados": 25,
+   "construcciones": 6,
+   "disco": 51291,
+   "t": 19.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.7,
+   "rss": 77.1,
+   "heap": 9.5,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6.6
+   },
+   "salida": 24767497,
+   "entrada": 508227,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 54041,
+   "t": 20.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.9,
+   "rss": 77.2,
+   "heap": 9.5,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.9
+   },
+   "salida": 26086248,
+   "entrada": 533522,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 57040,
+   "t": 21.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.5,
+   "rss": 77.2,
+   "heap": 9.4,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 27337507,
+   "entrada": 558306,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 59742,
+   "t": 22.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3.1,
+   "rss": 77.3,
+   "heap": 8.8,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.8
+   },
+   "salida": 28745452,
+   "entrada": 583667,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 62451,
+   "t": 23.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3.2,
+   "rss": 77.3,
+   "heap": 11.1,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.8,
+    "max": 6
+   },
+   "salida": 29959191,
+   "entrada": 609119,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 65865,
+   "t": 24.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 77.3,
+   "heap": 9.8,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 31248369,
+   "entrada": 634503,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 68790,
+   "t": 25.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.9,
+   "rss": 77.3,
+   "heap": 8.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 9.5
+   },
+   "salida": 32463264,
+   "entrada": 659449,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 71587,
+   "t": 26.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.8,
+   "rss": 77.3,
+   "heap": 11.1,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.8
+   },
+   "salida": 33674575,
+   "entrada": 683888,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 73640,
+   "t": 27.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3.2,
+   "rss": 77.3,
+   "heap": 9.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 6.1,
+    "max": 6.7
+   },
+   "salida": 35047929,
+   "entrada": 709122,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 76464,
+   "t": 28.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.7,
+   "rss": 77.3,
+   "heap": 8.6,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 6.1,
+    "max": 10.7
+   },
+   "salida": 36313182,
+   "entrada": 734264,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 79140,
+   "t": 29.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.7,
+   "rss": 77.3,
+   "heap": 10.3,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.8,
+    "max": 6.4
+   },
+   "salida": 37491254,
+   "entrada": 759229,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 81611,
+   "t": 30.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3.3,
+   "rss": 77.4,
+   "heap": 9.1,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.8
+   },
+   "salida": 38918365,
+   "entrada": 784447,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 84589,
+   "t": 31.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 4.1,
+   "rss": 78.9,
+   "heap": 10.8,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.8,
+    "max": 6
+   },
+   "salida": 40234599,
+   "entrada": 809159,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 87086,
+   "t": 32.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3.4,
+   "rss": 78.9,
+   "heap": 9.3,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.8,
+    "max": 5.9
+   },
+   "salida": 41503214,
+   "entrada": 834045,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 89415,
+   "t": 33.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.3,
+   "rss": 78.9,
+   "heap": 10.5,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6
+   },
+   "salida": 42754775,
+   "entrada": 855980,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 91232,
+   "t": 34.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.3,
+   "rss": 78.9,
+   "heap": 8.8,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 43997361,
+   "entrada": 880210,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 93167,
+   "t": 35.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.1,
+   "rss": 78.9,
+   "heap": 10.2,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 6.1
+   },
+   "salida": 45204047,
+   "entrada": 904349,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 94847,
+   "t": 36.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.4,
+   "rss": 78.9,
+   "heap": 11.4,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 6.5,
+    "max": 7
+   },
+   "salida": 46416757,
+   "entrada": 928392,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 96293,
+   "t": 37.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 78.9,
+   "heap": 9.6,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.8
+   },
+   "salida": 47459436,
+   "entrada": 953039,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 98407,
+   "t": 38.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 78.9,
+   "heap": 11,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 48546036,
+   "entrada": 977640,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 100660,
+   "t": 39.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2,
+   "rss": 78.9,
+   "heap": 9.1,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.5,
+    "max": 5.9
+   },
+   "salida": 49791723,
+   "entrada": 1001904,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 102602,
+   "t": 40.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 1.8,
+   "rss": 78.9,
+   "heap": 10.2,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 50913295,
+   "entrada": 1025186,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 103710,
+   "t": 41.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.4,
+   "rss": 78.9,
+   "heap": 11.4,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.8,
+    "max": 6
+   },
+   "salida": 52058906,
+   "entrada": 1048634,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 105073,
+   "t": 42.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.3,
+   "rss": 78.9,
+   "heap": 9.1,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 7.8
+   },
+   "salida": 53206651,
+   "entrada": 1072050,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 106135,
+   "t": 43.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2,
+   "rss": 78.9,
+   "heap": 10.4,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 54340396,
+   "entrada": 1096193,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 107816,
+   "t": 44.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.6,
+   "rss": 78.9,
+   "heap": 8.7,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.5,
+    "max": 5.7
+   },
+   "salida": 55554633,
+   "entrada": 1120493,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 109654,
+   "t": 45.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 78.9,
+   "heap": 10.2,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6
+   },
+   "salida": 56814743,
+   "entrada": 1144770,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 111708,
+   "t": 46.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 78.9,
+   "heap": 11.6,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 58032171,
+   "entrada": 1168926,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 113929,
+   "t": 47.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.3,
+   "rss": 78.9,
+   "heap": 9.6,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 59339557,
+   "entrada": 1192500,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 115345,
+   "t": 48.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.1,
+   "rss": 78.9,
+   "heap": 11,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 60753195,
+   "entrada": 1216491,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 116536,
+   "t": 49.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.3,
+   "rss": 78.9,
+   "heap": 9.2,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 6
+   },
+   "salida": 62113732,
+   "entrada": 1240584,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 118221,
+   "t": 50.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.7,
+   "rss": 78.9,
+   "heap": 10.7,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.9,
+    "max": 6
+   },
+   "salida": 63619046,
+   "entrada": 1264754,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 119935,
+   "t": 51.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.5,
+   "rss": 79.1,
+   "heap": 9.1,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.9,
+    "max": 7.2
+   },
+   "salida": 65159276,
+   "entrada": 1289421,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 122075,
+   "t": 52.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.3,
+   "rss": 79.1,
+   "heap": 11.1,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.9,
+    "max": 6.3
+   },
+   "salida": 66784465,
+   "entrada": 1313783,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 124559,
+   "t": 53.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 79.2,
+   "heap": 9.7,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.9,
+    "max": 6.3
+   },
+   "salida": 68418222,
+   "entrada": 1337970,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 126871,
+   "t": 54.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 79.2,
+   "heap": 11.5,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 6,
+    "max": 6
+   },
+   "salida": 69982946,
+   "entrada": 1362194,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 128690,
+   "t": 55.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.1,
+   "rss": 79.2,
+   "heap": 9.5,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.9,
+    "max": 8.5
+   },
+   "salida": 71343913,
+   "entrada": 1385760,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 129536,
+   "t": 56.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 79.2,
+   "heap": 10.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6.1
+   },
+   "salida": 72611033,
+   "entrada": 1409514,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 131191,
+   "t": 57.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.3,
+   "rss": 79.2,
+   "heap": 9.2,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6.3
+   },
+   "salida": 74015323,
+   "entrada": 1433339,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 132691,
+   "t": 58.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.6,
+   "rss": 79.2,
+   "heap": 11,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.9
+   },
+   "salida": 75469737,
+   "entrada": 1458118,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 134895,
+   "t": 59.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.6,
+   "rss": 79.2,
+   "heap": 9.8,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 76842301,
+   "entrada": 1482692,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 137519,
+   "t": 60.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.4,
+   "rss": 79.2,
+   "heap": 11.3,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6
+   },
+   "salida": 78109392,
+   "entrada": 1506988,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 139422,
+   "t": 61.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.4,
+   "rss": 79.2,
+   "heap": 9.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6
+   },
+   "salida": 79387860,
+   "entrada": 1531495,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 141865,
+   "t": 62.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.6,
+   "rss": 79.2,
+   "heap": 11.6,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.9
+   },
+   "salida": 80701505,
+   "entrada": 1555773,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 143907,
+   "t": 63.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.3,
+   "rss": 79.2,
+   "heap": 9.8,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 81909559,
+   "entrada": 1579720,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 145683,
+   "t": 64.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.5,
+   "rss": 79.2,
+   "heap": 11.2,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 82914418,
+   "entrada": 1603772,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 147473,
+   "t": 65.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.8,
+   "rss": 79.2,
+   "heap": 9.7,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 6
+   },
+   "salida": 84020354,
+   "entrada": 1628431,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 149805,
+   "t": 66.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.1,
+   "rss": 79.2,
+   "heap": 11.3,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 85104092,
+   "entrada": 1653218,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 152463,
+   "t": 67.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3,
+   "rss": 79.2,
+   "heap": 9.6,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.8,
+    "max": 5.8
+   },
+   "salida": 86143240,
+   "entrada": 1678182,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 155113,
+   "t": 68.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 79.2,
+   "heap": 11,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.7
+   },
+   "salida": 87154266,
+   "entrada": 1703074,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 157810,
+   "t": 69.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.3,
+   "rss": 79.2,
+   "heap": 8.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6
+   },
+   "salida": 88109246,
+   "entrada": 1727432,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 160036,
+   "t": 70.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 79.2,
+   "heap": 9.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 88936950,
+   "entrada": 1752051,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 162411,
+   "t": 71.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.1,
+   "rss": 79.2,
+   "heap": 10.8,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.6
+   },
+   "salida": 89741570,
+   "entrada": 1776213,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 164488,
+   "t": 72.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.4,
+   "rss": 79.2,
+   "heap": 11.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.8,
+    "max": 6.1
+   },
+   "salida": 90648562,
+   "entrada": 1800484,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 166683,
+   "t": 73.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.6,
+   "rss": 79.2,
+   "heap": 10.1,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.9
+   },
+   "salida": 91655467,
+   "entrada": 1825953,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 169947,
+   "t": 74.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 79.2,
+   "heap": 11.5,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6
+   },
+   "salida": 92584735,
+   "entrada": 1850986,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 173263,
+   "t": 75.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 79.2,
+   "heap": 9.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.6
+   },
+   "salida": 93659888,
+   "entrada": 1876349,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 176345,
+   "t": 76.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 79.2,
+   "heap": 11.5,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.9
+   },
+   "salida": 94726816,
+   "entrada": 1901685,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 179934,
+   "t": 77.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2,
+   "rss": 79.2,
+   "heap": 9.5,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 95860321,
+   "entrada": 1926554,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 182506,
+   "t": 78.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2,
+   "rss": 79.2,
+   "heap": 10.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.9
+   },
+   "salida": 96938792,
+   "entrada": 1951039,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 184918,
+   "t": 79.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.5,
+   "rss": 79.2,
+   "heap": 9.3,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.9
+   },
+   "salida": 98084697,
+   "entrada": 1975647,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 187394,
+   "t": 80.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.3,
+   "rss": 79.2,
+   "heap": 11,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.5,
+    "max": 5.7
+   },
+   "salida": 99293859,
+   "entrada": 2000708,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 190174,
+   "t": 81.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.4,
+   "rss": 79.2,
+   "heap": 9.7,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.8,
+    "max": 6
+   },
+   "salida": 100555105,
+   "entrada": 2026040,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 193384,
+   "t": 82.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.5,
+   "rss": 79.2,
+   "heap": 11.2,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.7
+   },
+   "salida": 101844684,
+   "entrada": 2050745,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 195882,
+   "t": 83.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.6,
+   "rss": 79.2,
+   "heap": 9.6,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.8
+   },
+   "salida": 103161395,
+   "entrada": 2075689,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 198763,
+   "t": 84.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 3.6,
+   "rss": 79.4,
+   "heap": 11.3,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 104416996,
+   "entrada": 2100947,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 201825,
+   "t": 85.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.5,
+   "rss": 79.6,
+   "heap": 9.6,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.8,
+    "max": 5.9
+   },
+   "salida": 105633601,
+   "entrada": 2126013,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 204829,
+   "t": 86.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.8,
+   "rss": 79.6,
+   "heap": 11,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 106807249,
+   "entrada": 2150576,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 207053,
+   "t": 87.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.1,
+   "rss": 79.6,
+   "heap": 8.9,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 5.8
+   },
+   "salida": 107857314,
+   "entrada": 2175154,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 209109,
+   "t": 88.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 79.6,
+   "heap": 10.6,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.7,
+    "max": 6.1
+   },
+   "salida": 109039712,
+   "entrada": 2200454,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 212168,
+   "t": 89.5
+  },
+  {
+   "tipo": "muestra",
+   "cpu": 2.2,
+   "rss": 79.6,
+   "heap": 9.2,
+   "bucle": {
+    "p50": 5.1,
+    "p99": 5.6,
+    "max": 5.7
+   },
+   "salida": 110397509,
+   "entrada": 2225427,
+   "conectados": 25,
+   "construcciones": 7,
+   "disco": 214530,
+   "t": 90.5
+  }
+ ]
+}
