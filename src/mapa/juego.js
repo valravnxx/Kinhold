@@ -222,7 +222,15 @@ export function crearVistaJuego(est) {
       if (s < 1.15 || r() > 0.4 || !isNaN(W[gj * n + gi])) return;   // en el agua (el salto) no
       const y = vj.altura(ax, az); if (y < -0.5) return;
       const nx = -gx / s, nz = -gz / s, alto = 2 + r() * 2.5 + Math.min(3, s);
-      PR.push([ax + nx * alto * 0.05, y - alto * 0.2, az + nz * alto * 0.05, alto, Math.atan2(nx, nz) + (r() - 0.5) * 0.5, Math.floor(r() * 5), (r() - 0.5) * 0.25, 0.85 + r() * 0.3, sitioEn(ax, az).st?.roca || sitios[gj * n + gi]?.roca]);
+      const roca = sitioEn(ax, az).st?.roca || sitios[gj * n + gi]?.roca;
+      PR.push([ax + nx * alto * 0.05, y - alto * 0.2, az + nz * alto * 0.05, alto, Math.atan2(nx, nz) + (r() - 0.5) * 0.5, Math.floor(r() * 5), (r() - 0.5) * 0.25, 0.85 + r() * 0.3, roca]);
+      // en una pared alta (más de 8 m de la base al borde), más piezas apiladas hasta arriba, cada 4 a 5 m
+      const arriba = vj.altura(ax - nx * 4, az - nz * 4), abajo = vj.altura(ax + nx * 4, az + nz * 4);
+      for (let h = abajo + 3; h < arriba - 2; h += 4 + r()) {
+        if (Math.abs(h - y) < 3) continue;
+        const a2 = 2.2 + r() * 2.5;
+        PR.push([ax + nx * a2 * 0.05 + (r() - 0.5) * 1.5, h - a2 * 0.3, az + nz * a2 * 0.05 + (r() - 0.5) * 1.5, a2, Math.atan2(nx, nz) + (r() - 0.5) * 0.6, Math.floor(r() * 5), (r() - 0.5) * 0.25, 0.8 + r() * 0.35, roca]);
+      }
     });
     L.paredes = PR;
     // recorte a lo que aguanta el aparato
@@ -325,6 +333,9 @@ export function crearVistaJuego(est) {
     vj.jugador.animar(vel, dt);
     destapar();
     est.amb.seguir(vj.pos.x, vj.pos.z, vj.pos.y);
+    // la cámara nunca por debajo del suelo (al girarla mucho se metía en la ladera y se veía el cielo por debajo)
+    const cam = est.camara.position, suelo = vj.altura(cam.x, cam.z) + 1.5;
+    if (cam.y < suelo) cam.y = suelo;
     const c = vj.centro;
     if (c && Math.hypot(vj.pos.x - c.px, vj.pos.z - c.pz) > CERCA / 2 - 50 && !vj.destino) construir(vj.pos.x, vj.pos.z);
   };
