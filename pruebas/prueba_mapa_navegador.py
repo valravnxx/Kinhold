@@ -29,6 +29,8 @@ with sync_playwright() as p:
         pg.wait_for_function('window.__mapa && window.__mapa.listo', timeout=240000)
         r = pg.evaluate('window.__mapa.resumen'); ms = pg.evaluate('window.__mapa.msGenerar')
         comprobar(f'{nombre}: abre el mundo elegido (semilla 66172, 256 km)', pg.evaluate('window.__mapa.mapa.semilla === 66172 && window.__mapa.mapa.lado === 256'))
+        _datos = pg.inner_text('#datos')
+        comprobar(f'{nombre}: el mundo elegido se llama Kinland y su nombre va en el mar bajo la costa sur', _datos.startswith('Kinland') and pg.evaluate('(() => { const c = window.__mapa.mapa.continente, m = window.__mapa.mapa; return !!c && !m.tierra[Math.min(m.N - 1, Math.floor(c.y)) * m.N + Math.floor(c.x)]; })()'), _datos[:60])
         comprobar(f'{nombre}: hay grandes vetas marcadas', r['vetas'].get('granHierro', 0) >= 2 and r['vetas'].get('granCarbon', 0) >= 2, json.dumps(r['vetas']))
         MEDIDAS[nombre] = {'ms_generar': ms, **r}
         comprobar(f'{nombre}: se genera el mundo', r and r['tierraKm2'] > 5000, f"{ms} ms · {r['tierraKm2']} km² de tierra")
@@ -52,7 +54,7 @@ with sync_playwright() as p:
         comprobar(f'{nombre}: la leyenda no tapa los botones de arriba', not tapa)
         if nombre == 'movil': pg.click('#btnLeyenda')
         comprobar(f'{nombre}: la leyenda enseña rocas y vetas', 'Caliza' in leyenda and 'Veta pequeña de carbón' in leyenda and 'Gran veta de hierro' in leyenda)
-        # ampliar sobre el centro del país 2 y tocarlo
+        # ampliar sobre el centro de la región 2 (Rudmere) y tocarlo
         m = pg.evaluate('(() => { const m = window.__mapa.mapa, c = m.centros[1], k = m.lado / m.N; return [(c % m.N + 0.5) * k, (Math.floor(c / m.N) + 0.5) * k]; })()')
         pg.evaluate('window.__mapa.fondo("relieve"); window.__mapa.capa("vetas", false)')
         pg.evaluate(f'window.__mapa.ampliar(4, {m[0]}, {m[1]})'); pg.wait_for_timeout(200)
@@ -61,7 +63,7 @@ with sync_playwright() as p:
         else: pg.touchscreen.tap(W / 2, H / 2)
         pg.wait_for_timeout(200)
         info = pg.inner_text('#datos')
-        comprobar(f'{nombre}: tocar un sitio dice qué hay (y a cuánto está el hierro y el carbón)', 'm de altura' in info and 'País' in info and 'hierro a' in info, info[:160])
+        comprobar(f'{nombre}: tocar un sitio dice qué hay, con el nombre de la región (y a cuánto está el hierro y el carbón)', 'm de altura' in info and 'Rudmere' in info and 'País' not in info and 'hierro a' in info, info[:160])
         cerca = pg.evaluate("(() => { const t = document.getElementById('datos').textContent; const m = t.match(/hierro a (\\d+) km, carbón a (\\d+) km/); return m ? [+m[1], +m[2]] : null; })()")
         comprobar(f'{nombre}: hierro y carbón a menos de 25 km del sitio tocado', cerca and max(cerca) < 25, str(cerca))
         pg.screenshot(path=f'{SALIDA}/{nombre}_4_ampliado.png')

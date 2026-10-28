@@ -1827,5 +1827,21 @@
   "pruebas": "Batería completa correcta (todas las pruebas de node y de navegador, con la nueva del servidor en internet). Después de unir main se volvieron a pasar todas las de node; las de navegador no se repitieron tras esa unión. No hay vistas tocadas: no hay capturas nuevas",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T15:45:46+01:00",
+  "fin": "2026-10-28T16:06:02+01:00",
+  "titulo": "Nombres del mundo: Kinland y sus cinco regiones",
+  "hito": "mundo",
+  "hecho": [
+   "valravnx elige los nombres: el continente es Kinland y sus regiones Whitholm (la isla del noreste), Eikwold (noroeste), Rudmere (suroeste), Highfell (el macizo central) y Storaa (sureste, el gran río).",
+   "Antes de ponerlos se buscó que no fueran de otro juego, novela o marca: se descartaron Hornfell (casi igual que una región de otro juego de supervivencia) y Highmark (una aseguradora conocida).",
+   "Son regiones, no países (los países, si llegan, los harán los jugadores): «país» pasa a «región» en el mapa, el GDD, sistemas y el análisis, en los tres idiomas. El GDD guarda los nombres como decisión.",
+   "En el mapa cada región sale con su nombre y «Kinland» va en el mar, bajo la costa sur; al tocar un sitio dice en qué región está. En ruso los nombres van en cirílico. En otra semilla se llaman «Región 1» a «Región 5».",
+   "Prueba nueva del mapa: cada nombre cae en su tierra (Whitholm es la isla, Highfell tiene la cumbre más alta, Storaa el gran río, Rudmere es la más cálida, Eikwold está al noroeste). Con los nombres al revés falla, como debe. Publicado el mapa del mundo v9."
+  ],
+  "pruebas": "Mapa 75/75 y su navegador en PC y móvil correctos; lógica 177/177, modelos 138/138, combate 80/80, acciones 41/41, idiomas, carriles 24/24 y web correctos. El mapa en ruso, mirado en captura.",
+  "capturas": "capturas/mapa-v9",
+  "estado": "ok"
  }
 ]
