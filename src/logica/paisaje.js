@@ -105,8 +105,10 @@ export function crearPaisaje(mapa) {
       const fuera = Math.max(0, dm - borde);
       const valle = fuera < vega ? orilla + fuera * 0.015 : orilla + vega * 0.015 + (fuera - vega) * ladera;
       // el lecho baja hasta un metro bajo el cauce y sube a la orilla en rampa (sin escalón: el borde del agua
-      // sale liso y no en dientes de sierra); el río solo rebaja, nunca levanta muros
-      z = Math.min(z, dm < borde ? lerp(cauce - 1, orilla, Math.pow(dm / borde, 1.5)) : valle);
+      // sale liso y no en dientes de sierra). Hasta el final de la vega el suelo es el del río (rebaja o rellena:
+      // si no, donde el terreno queda más bajo el agua se saldría); más allá, el río solo rebaja (nunca levanta muros)
+      const perfil = dm < borde ? lerp(cauce - 1, orilla, Math.pow(dm / borde, 1.5)) : valle;
+      z = lerp(perfil, Math.min(z, perfil), suave(vega * 0.6, vega + 40, fuera));
     }
     return z;
   }
@@ -126,7 +128,9 @@ export function crearPaisaje(mapa) {
   function agua(xm, ym, tramos) {
     const { dm, nivel, ancho } = rioCercano(xm, ym, tramos);
     if (dm > ancho / 2 + 4) return null;
-    return Math.min(nivel, grande(xm, ym).hm) - 1.2 + 0.2;   // un poco por encima del cauce: el agua cubre el lecho
+    const { f, hm } = grande(xm, ym);
+    if (f < 0) return null;                                  // en la desembocadura ya es el mar
+    return Math.min(nivel, hm) - 1.2 + 0.2;   // un poco por encima del cauce: el agua cubre el lecho
   }
 
   // qué hay en un punto: celda del mapa (con el borde deformado, sin escalones), bioma con la temperatura de su altura
