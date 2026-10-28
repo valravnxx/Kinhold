@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-28T15:25:29+00:00",
+  "tarea": "Revisión completa y publicación",
+  "hito": "prueba-online",
+  "rama": "trabajo/20261028-1525"
+ },
  "B": {
   "inicio": "2026-10-28T14:53:19+00:00",
   "tarea": "Curación de heridas",
