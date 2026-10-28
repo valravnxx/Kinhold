@@ -592,9 +592,9 @@
     },
     {
      "nombre": "Remate de tejado: cumbrera y esquinas, para que los tejados de dos tramos que se cruzan en una esquina queden cerrados",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T18:21:02+00:00",
-     "rama": "trabajo/20261028-1821"
+     "fin": "2026-10-28T20:38:57+00:00"
     },
     {
      "nombre": "Chimenea u hogar interior (N2: piedras y barro, 600 kg): solo sobre cimiento de piedra, con fuego, luz y humo que sale por el tejado",
@@ -1344,6 +1344,13 @@
      "archivo": "jugar/demo/v30.html",
      "capturas": "capturas/demo-v30",
      "notas": "Los demás jugadores en línea te ven con tu aspecto: forma, colores de piel, ojos y pelo, peinado y barba, en la construcción y en el duelo. El servidor lo comprueba con la misma lógica que el visor de personaje. Un servidor de antes avisa de que hay que actualizarlo."
+    },
+    {
+     "v": "v31",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v31.html",
+     "capturas": "capturas/demo-v31",
+     "notas": "En «Construir», remate de tejado (esquina) de paja, de tablillas y de teja: limatesa en la esquina de fuera y limahoya en el rincón de un tejado en L, según los tramos de al lado."
     }
    ]
   },
@@ -1547,6 +1554,13 @@
      "archivo": "jugar/construccion/v30.html",
      "capturas": "capturas/construccion-v30",
      "notas": "Tejado de teja (10 tejas y 1 tronco, 200 kg): teja curva de barro cocido con canales, cobijas y caballete en la cumbrera. Pesa más del doble que la paja. Material nuevo: teja."
+    },
+    {
+     "v": "v31",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/construccion/v31.html",
+     "capturas": "capturas/construccion-v31",
+     "notas": "Remate de tejado (esquina) de paja, de tablillas y de teja: donde se juntan dos caídas en ángulo recto se hace solo limatesa (esquina de fuera) o limahoya (el rincón de un tejado en L). Con cuatro remates, un tejado a cuatro aguas sin hastiales; en una casa en L, las dos alas quedan cerradas y las cumbreras se encuentran."
     }
    ]
   },

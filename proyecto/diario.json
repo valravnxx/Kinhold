@@ -1977,5 +1977,23 @@
   "pruebas": "Todas (probar_todo.sh): correctas salvo dos. El duelo en línea falló porque su prueba esperaba la clave antigua del modelo; corregida y pasada sola. La del servidor en internet no se pudo pasar: aquí no se pudo instalar Caddy (no comprobado). Tras unir main: las de node correctas y las dos de navegador en línea correctas. «Jugar en línea» falló una vez por tiempo, con la máquina cargada, y pasó al repetirla. Las pruebas nuevas fallan si el servidor no limpia la personalización o si el juego no se la pone al otro. Capturas de cerca en PC y móvil revisadas.",
   "capturas": "capturas/demo-v30",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T18:20:32+00:00",
+  "fin": "2026-10-28T20:38:57+00:00",
+  "titulo": "Hito 1c: remate de tejado, esquinas que cierran (carril A)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Remate de tejado (esquina), en «Tejados», uno por material: paja (1 vara y 2 de paja, 40 kg, como dice el documento de sistemas), tablillas (2 tablas y 2 clavos, 50 kg) y teja (5 tejas y 1 tronco, 100 kg). «Materiales: igual» se lee como del mismo material que el tejado, a mitad de coste y peso que su tramo (provisional, anotado en el registro de decisiones).",
+   "La forma sale sola de los tramos de al lado (lógica pura, geometriaTejados): limatesa en la esquina de fuera de un tejado a cuatro aguas; limahoya en el rincón de un tejado en L. Se gira como un tramo y el fantasma ya muestra la forma que tendrá.",
+   "Los tramos se juntan con lo que tienen al lado comparando la altura de los vértices que comparten: junto a un remate no vuelan ni piden hastial, y contra una limahoya el tramo pone la cumbrera, así que las dos cumbreras de una L se encuentran.",
+   "Dibujo: dos mitades del tramo de su material cortadas por la diagonal (recorte de triángulos por un plano en el Lote, src/mundo/estilos.js); la limatesa se cubre como la cumbrera de su material (rollo de paja, caballete de tablas o cobijas en barro) y la limahoya lleva tabla o canales en el fondo.",
+   "Muestrario de tejados con casas a cuatro aguas, en L y en pirámide; capturas de cerca y junto a la cabaña de la prueba de estilo v5.",
+   "Los remates van solo en la primera fila del tejado (no se apilan en pendientes de más de un tramo).",
+   "Publicadas construcción v31 y demo única v31."
+  ],
+  "pruebas": "Todas con bash herramientas/probar_todo.sh: todo correcto salvo la del servidor en internet, que necesita Caddy (no estaba; instalado con apt-get, 19/19 sola). Lógica 203/203 (17 nuevas; 3 fallan con MUTAR=1), modelos 159/159 (14 nuevas; sin el recorte fallan 4), navegador de construcción con 5 comprobaciones nuevas (casa en L desde el menú, fantasma de limahoya, cobro, móvil). Tras unir main, repetidas las de node, idiomas y la demo en navegador. No comprobado tras unir main: el navegador de construcción (main solo cambió el juego en línea). Capturas miradas en PC y móvil.",
+  "capturas": "capturas/construccion-v31",
+  "estado": "ok"
  }
 ]
