@@ -5,7 +5,12 @@
   "hito": "arte",
   "rama": "trabajo/20261028-1624"
  },
- "B": null,
+ "B": {
+  "inicio": "2026-10-28T16:51:15+00:00",
+  "tarea": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
+  "hito": "equipo",
+  "rama": "trabajo/20261028-1651"
+ },
  "chat:trabajo/20261028-1515-fijo": {
   "inicio": "2026-10-28T15:12:01+01:00",
   "tarea": "El mundo de cerca siempre igual: árboles, hierba, piedras y piezas de roca colocados según su sitio en el mundo y la semilla (no según dónde se rehace el trozo de cerca)",

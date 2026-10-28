@@ -698,7 +698,9 @@
     },
     {
      "nombre": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T16:51:15+00:00",
+     "rama": "trabajo/20261028-1651"
     },
     {
      "nombre": "Panel de inventario en la demo: silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro y capas del cuerpo); al tocar un cuadro con contenedor se abren sus huecos; sin cinturón no hay cuadros de cintura. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Mientras no haya fabricación (hito 3), el equipo se coge de un arcón de pruebas, como el botón de rellenar materiales. Capturas en PC y móvil",
