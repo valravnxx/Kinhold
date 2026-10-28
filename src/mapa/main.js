@@ -1,6 +1,6 @@
 // Kinhold — visor de los bocetos del mapa del mundo (canvas 2D, sin three.js).
 // El mapa lo genera la lógica pura (src/logica/mapa.js) por pasos, enseñando el progreso; aquí solo se dibuja.
-import { generar, riosDelMapa, clasificarBioma, SEMILLA_MUNDO, LADO_MUNDO, BIOMAS, ROCAS, VETAS, LADO_KM, anchoRio, claseRio, fbm, resumen } from '../logica/mapa.js';
+import { generar, riosDelMapa, clasificarBioma, SEMILLA_MUNDO, LADO_MUNDO, BIOMAS, ROCAS, VETAS, LADO_KM, anchoRio, claseRio, fbm, resumen, CONTINENTE, nombreRegion, esMundoElegido } from '../logica/mapa.js';
 import { VERSION_MAPA, REGISTRO_MAPA } from './registro.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { abrirCerca } from './cerca.js';
@@ -36,6 +36,7 @@ function crear(semilla) {
     const r = g.next();
     if (r.done) {
       mapa = r.value; N = mapa.N; window.__mapa.msGenerar = Math.round(performance.now() - t0);
+      mapa.continente = sitioContinente(mapa);
       for (const k in imagenes) delete imagenes[k];
       prepararRios(); encuadrar(); datosGenerales(); pintar();
       $('cargando').hidden = true; window.__mapa.listo = true;
@@ -56,7 +57,7 @@ function bilineal(arr, gx, gy) {
   const x = Math.floor(gx), y = Math.floor(gy), fx = gx - x, fy = gy - y, i = y * N + x;
   return arr[i] * (1 - fx) * (1 - fy) + arr[i + 1] * fx * (1 - fy) + arr[i + N] * (1 - fx) * fy + arr[i + N + 1] * fx * fy;
 }
-// celda vecina con el borde deformado por ruido, para que biomas, rocas y países no salgan en escalones
+// celda vecina con el borde deformado por ruido, para que biomas, rocas y regiones no salgan en escalones
 function celdaDeformada(gx, gy) {
   const dx = (fbm(gx * 0.35, gy * 0.35, 901, 3) - 0.5) * 2.2, dy = (fbm(gx * 0.35 + 50, gy * 0.35, 902, 3) - 0.5) * 2.2;
   const x = clamp(Math.round(gx + dx - 0.5), 0, N - 1), y = clamp(Math.round(gy + dy - 0.5), 0, N - 1);
@@ -111,11 +112,11 @@ function pintarFondo(cual) {
       const luz = (nx * -0.55 + ny * -0.55 + 0.63) / nl;
       const s = clamp(0.62 + 0.62 * (luz - 0.45), 0.35, 1.25);
       col = [col[0] * s, col[1] * s, col[2] * s];
-      // fronteras: los países se tiñen poco y la raya es oscura
+      // fronteras: las regiones se tiñen poco y la raya es oscura
       if (capas.paises) {
         const p = mapa.pais[ci];
         if (p >= 0) col = mezclar(col, TINTE_PAIS[p], 0.12);
-        const vecino = (j) => { const v = mapa.pais[celdas[j]]; return v < 0 ? p : v; };   // sin país (mar, islas sueltas): sin raya
+        const vecino = (j) => { const v = mapa.pais[celdas[j]]; return v < 0 ? p : v; };   // sin región (mar, islas sueltas): sin raya
         if (p >= 0 && ((px + 1 < R && tierraPx[i + 1] && vecino(i + 1) !== p) || (py + 1 < R && tierraPx[i + R] && vecino(i + R) !== p))) col = [70, 44, 38];
       }
     }
@@ -197,12 +198,20 @@ function pintar() {
       ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(40,30,24,.8)'; ctx.strokeText(txt, x, y + t * 1.15 + 12); ctx.fillStyle = '#f0d9a8'; ctx.fillText(txt, x, y + t * 1.15 + 12);
     }
   }
+  if (capas.paises && esMundoElegido(mapa) && mapa.continente) {
+    // el continente: su nombre grande y espaciado, en el mar justo debajo de su costa sur
+    const km = LADO() / N, c = mapa.continente, [x, y] = aPant([c.x * km, c.y * km]);
+    ctx.save(); ctx.font = `italic 600 ${movil ? 15 : 20}px Georgia, serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    const t = tr(CONTINENTE).toUpperCase().split('').join('\u2009');
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(20,32,44,.7)'; ctx.strokeText(t, x, y + 8); ctx.fillStyle = 'rgba(232,224,204,.92)'; ctx.fillText(t, x, y + 8);
+    ctx.restore();
+  }
   if (capas.paises) {
     ctx.font = `600 ${movil ? 11 : 13}px system-ui, sans-serif`; ctx.textAlign = 'center';
     const km = LADO() / N;
     mapa.centros.forEach((c, k) => {
       const [x, y] = aPant([(c % N + 0.5) * km, (((c / N) | 0) + 0.5) * km]);
-      const t = tr('País {n}', { n: k + 1 });
+      const t = textoRegion(k);
       ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(40,30,24,.75)'; ctx.strokeText(t, x, y); ctx.fillStyle = '#f4ead8'; ctx.fillText(t, x, y);
     });
   }
@@ -234,9 +243,19 @@ function leyenda() {
   // en el móvil la leyenda va justo debajo de los botones de arriba (que ocupan más o menos filas según el idioma)
   if (innerWidth <= 640) $('leyenda').style.top = `${Math.round($('superior').getBoundingClientRect().bottom + 8)}px`;
 }
+// dónde va el nombre del continente: centrado en el ancho de su tierra (sin la isla) y bajo su costa más al sur
+function sitioContinente(m) {
+  let x0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (let i = 0; i < m.N * m.N; i++) if (m.tierra[i] && m.pais[i] >= 0 && m.pais[i] !== m.paisIsla) {
+    const x = i % m.N, y = (i / m.N) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y > y1) y1 = y;
+  }
+  return x1 < 0 ? null : { x: (x0 + x1 + 1) / 2, y: y1 + 1 };
+}
+// nombre de una región: el suyo en el mundo elegido (Kinland), «Región N» en cualquier otra semilla
+const textoRegion = (k) => { const n = nombreRegion(mapa, k); return n ? tr(n) : tr('Región {n}', { n: k + 1 }); };
 function datosGenerales() {
   const r = resumen(mapa); window.__mapa.resumen = r;
-  $('datos').innerHTML = tr('Semilla {s} · mundo de {l} × {l} km · tierra {t} km² · cumbre más alta {c} m · la isla está a {i} km de la costa más cercana · desembocan {g} grandes ríos y {r} ríos. Toca el mapa para ver qué hay en cada sitio.',
+  $('datos').innerHTML = (esMundoElegido(mapa) ? `<b>${tr(CONTINENTE)}</b> · ` : '') + tr('Semilla {s} · mundo de {l} × {l} km · tierra {t} km² · cumbre más alta {c} m · la isla está a {i} km de la costa más cercana · desembocan {g} grandes ríos y {r} ríos. Toca el mapa para ver qué hay en cada sitio.',
     { s: mapa.semilla, l: mapa.lado, t: r.tierraKm2.toLocaleString('es'), c: r.cumbre.toLocaleString('es'), g: r.bocas.grande, r: r.bocas.rio, i: r.separacionIsla });
 }
 
@@ -248,7 +267,7 @@ function info(cx, cy) {
   const kmx = (gx * LADO() / N).toFixed(1), kmy = (gy * LADO() / N).toFixed(1);
   if (!mapa.tierra[i]) { $('datos').innerHTML = tr('Mar · {x}, {y} km', { x: kmx, y: kmy }); return; }
   const h = Math.round(bilineal(mapa.h, gx - 0.5, gy - 0.5)), ancho = anchoRio(mapa.A[i]);
-  const partes = [tr('{h} m de altura', { h: h.toLocaleString('es') }), tr(BIOMAS[mapa.bioma[i]].nombre), tr(ROCAS[mapa.roca[i]].nombre), mapa.pais[i] >= 0 ? tr('País {n}', { n: mapa.pais[i] + 1 }) : tr('isla sin país')];
+  const partes = [tr('{h} m de altura', { h: h.toLocaleString('es') }), tr(BIOMAS[mapa.bioma[i]].nombre), tr(ROCAS[mapa.roca[i]].nombre), mapa.pais[i] >= 0 ? textoRegion(mapa.pais[i]) : tr('isla sin región')];
   if (mapa.A[i] >= 40e6) partes.push(tr({ arroyo: 'arroyo de {a} m', rio: 'río de {a} m', grande: 'gran río de {a} m' }[claseRio(ancho)], { a: Math.round(ancho) }));
   partes.push(tr('{t} °C de media', { t: Math.round(mapa.temp[i]) }));
   // lo más cerca de hierro y de carbón (vetas pequeñas o grandes)

@@ -32,6 +32,16 @@
 //  - Tamaño de lo que se lleva puesto: mochilas y bastidores G (en las manos ocupan las dos), cinturones M (el cordel P),
 //    saco y odre M, bandolera P. La espada y el escudo son M (se llevan en una mano).
 //  - Los añadidos al cinturón (bolsas, vainas, ganchos) llegan con la fabricación.
+//
+// Ralentización por carga (GDD, apartado 7: «solo si vas cargado al máximo en todo, la velocidad al caminar baja
+// hasta el 80%; con poca carga no se nota»). Decisiones provisionales (anotadas en el diario y en el registro):
+//  - Lo lleno que vas es la media de los cuatro lugares de carga: manos, espalda, cintura y hombro. Cada uno cuenta
+//    de 0 (vacío o sin nada puesto) a 1 (todos sus huecos llenos). Lo grande en las manos las llena las dos.
+//  - Cada hueco cuenta lo que tiene entre lo que cabe (5 piedras de 10 → medio). Un contenedor dentro de otro
+//    cuenta como hueco lleno.
+//  - La reducción crece con el cuadrado de lo lleno que vas: 1 − 0,2·f². Con poco no se nota (las manos llenas,
+//    nada más: 1,25%) y todo lleno da el 80%. Se aplica al andar y al correr.
+//  - La ropa y la armadura aún no cuentan (llegan con los datos de cada prenda).
 
 export const TAMANOS = ['P', 'M', 'G', 'E'];
 const orden = t => TAMANOS.indexOf(t);
@@ -120,6 +130,13 @@ export function capacidad(tipo, cat = CATALOGO) {
 export function pila(tipo, cat = CATALOGO) {
   const d = cat[tipo];
   return d && d.recurso ? (d.pila || PILA_POR_TAMANO[d.tam]) : 1;
+}
+
+export const LUGARES_CARGA = ['espalda', 'cintura', 'hombro']; // y las manos
+export const RALENTIZACION_MAXIMA = 0.2; // al máximo en todo, el 80% de la velocidad (GDD)
+export function factorVelocidad(fraccion) {
+  const f = Math.min(1, Math.max(0, Number.isFinite(fraccion) ? fraccion : 0));
+  return 1 - RALENTIZACION_MAXIMA * f * f;
 }
 
 const cosa = (tipo, n = 1) => ({ tipo, n });
@@ -289,6 +306,22 @@ export class Inventario {
     const d = this.def(this.lugares.cintura);
     return d && d.huecos ? d.huecos.map((h, i) => ({ ruta: 'cintura/' + i, tam: h.tam })) : [];
   }
+
+  // Lo lleno que vas, de 0 a 1, y cuánto en cada lugar de carga (ver arriba).
+  lleno() {
+    const hueco = (c, h) => !c ? 0 : (this.def(c).huecos ? 1 : Math.min(1, c.n / pila(c.tipo, this.cat)));
+    const enManos = MANOS.reduce((s, m) => { const c = this.lugares[m]; return s + (!c ? 0 : this.def(c).tam === 'G' ? 2 : hueco(c)); }, 0);
+    const lugares = { manos: Math.min(1, enManos / 2) };
+    for (const l of LUGARES_CARGA) {
+      const c = this.lugares[l], d = this.def(c);
+      lugares[l] = d && d.huecos && d.huecos.length ? d.huecos.reduce((s, h, i) => s + hueco(c.dentro && c.dentro[i]), 0) / d.huecos.length : 0;
+    }
+    const v = Object.values(lugares);
+    return { fraccion: v.reduce((a, b) => a + b, 0) / v.length, lugares };
+  }
+
+  // Lo que se multiplica la velocidad al moverse por lo que llevas (1 sin carga, 0,8 al máximo en todo).
+  velocidad() { return factorVelocidad(this.lleno().fraccion); }
 
   exportarJugador() {
     return { lugares: Object.fromEntries(Object.entries(this.lugares).map(([k, v]) => [k, copiar(v)])), apartado: this.apartado.map(copiar) };

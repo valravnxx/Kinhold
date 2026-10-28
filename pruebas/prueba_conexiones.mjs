@@ -155,7 +155,8 @@ try {
   await R.esperar(m => m.tipo === 'resultado' && m.id === ids[ids.length - 1], 4000).catch(() => null);
   const res = R.recibidos.filter(m => m.tipo === 'resultado');
   const demas = res.filter(m => m.motivo === 'Demasiados mensajes.').length;
-  comprobar('en una ráfaga de 400 acciones, todas reciben respuesta (las de más, «Demasiados mensajes»)', res.length === 400 && demas === 400 - LIMITES.rafagaMensajes, `${res.length} respuestas, ${demas} por el límite`);
+  // mientras llegan las 400, el cubo se rellena un poco (60 por segundo): pueden pasar unas pocas más que la ráfaga
+  comprobar('en una ráfaga de 400 acciones, todas reciben respuesta (las de más, «Demasiados mensajes»)', res.length === 400 && demas <= 400 - LIMITES.rafagaMensajes && demas >= 400 - LIMITES.rafagaMensajes - 10, `${res.length} respuestas, ${demas} por el límite`);
   comprobar('y se avisa con un error (una vez, no 100)', R.recibidos.filter(m => m.tipo === 'error' && m.motivo === 'Demasiados mensajes.').length === 1);
   comprobar('una ráfaga suelta no echa a nadie', R.ws.readyState === 1);
   const I = await cliente(puerto);

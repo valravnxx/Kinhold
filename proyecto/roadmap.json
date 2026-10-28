@@ -315,13 +315,15 @@
     },
     {
      "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T12:32:34+00:00",
-     "rama": "trabajo/20261028-1232"
+     "fin": "2026-10-28T14:53:47+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T15:25:29+00:00",
+     "rama": "trabajo/20261028-1525"
     }
    ]
   },
@@ -429,9 +431,15 @@
     },
     {
      "nombre": "Taller: personalización — altura, complexión y cara con los ajustes de MakeHuman, tono de piel, color de ojos, peinado y barba",
+     "estado": "hecho",
+     "inicio": "2026-10-28T09:20:34+00:00",
+     "fin": "2026-10-28T15:31:25+00:00"
+    },
+    {
+     "nombre": "Que los demás jugadores en línea te vean con tu aspecto (forma, colores, peinado y barba): mandarlo con el cuerpo y la ropa, y que el servidor lo compruebe con la misma lógica (src/logica/aspecto.js)",
      "estado": "en_curso",
-     "inicio": "2026-10-28T09:20:54+00:00",
-     "rama": "trabajo/20261028-0920"
+     "inicio": "2026-10-28T16:24:12+00:00",
+     "rama": "trabajo/20261028-1624"
     },
     {
      "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
@@ -565,9 +573,9 @@
     },
     {
      "nombre": "Tejado de teja (N2: 10 tejas y vigas, pesa 200 kg, no se pudre ni arde fácil): material nuevo «teja» y su prueba de carga",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T13:00:52+00:00",
-     "rama": "trabajo/20261028-1301"
+     "fin": "2026-10-28T18:06:31+00:00"
     },
     {
      "nombre": "Remate de tejado: cumbrera y esquinas, para que los tejados de dos tramos que se cruzan en una esquina queden cerrados",
@@ -684,13 +692,15 @@
     },
     {
      "nombre": "Ralentización por carga en la lógica pura, como dice el GDD: con poca carga no se nota y, cargado al máximo en todos los huecos, la velocidad al caminar baja hasta el 80%. Aplicada al andar del personaje en la demo, con pruebas de lógica y de navegador",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T13:59:19+00:00",
-     "rama": "trabajo/20261028-1359"
+     "fin": "2026-10-28T16:38:52+00:00"
     },
     {
      "nombre": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T16:51:15+00:00",
+     "rama": "trabajo/20261028-1651"
     },
     {
      "nombre": "Panel de inventario en la demo: silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro y capas del cuerpo); al tocar un cuadro con contenedor se abren sus huecos; sin cinturón no hay cuadros de cintura. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Mientras no haya fabricación (hito 3), el equipo se coge de un arcón de pruebas, como el botón de rellenar materiales. Capturas en PC y móvil",
@@ -925,9 +935,10 @@
     },
     {
      "nombre": "Nombres del mundo (decididos por valravnx el 28 oct): el continente es Kinland y sus cinco regiones Whitholm (la isla), Eikwold (noroeste), Rudmere (suroeste), Highfell (el macizo central) y Storaa (sureste, el gran río). Son regiones, no países (los países, si llegan, los harán los jugadores): «país» pasa a «región» en el mapa, el GDD, sistemas y el análisis, en los tres idiomas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T15:45:46+01:00",
-     "rama": "trabajo/20261028-1546-nombres"
+     "rama": "trabajo/20261028-1546-nombres",
+     "fin": "2026-10-28T16:06:02+01:00"
     }
    ],
    "lleva": "chat"
@@ -1244,6 +1255,13 @@
      "archivo": "jugar/demo/v27.html",
      "capturas": "capturas/demo-v27",
      "notas": "En «Construir», contraventana, trampilla y muro de tablas con ventana (construcción v29)."
+    },
+    {
+     "v": "v28",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v28.html",
+     "capturas": "capturas/demo-v28",
+     "notas": "En «Construir», tejado de teja (construcción v30)."
     }
    ]
   },
@@ -1440,6 +1458,13 @@
      "archivo": "jugar/construccion/v29.html",
      "capturas": "capturas/construccion-v29",
      "notas": "Contraventana para los muros con ventana y trampilla para el hueco de la escalera de tablas: se abren y se cierran con Usar; la trampilla cerrada se pisa y no deja subir. Muro de tablas con ventana."
+    },
+    {
+     "v": "v30",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/construccion/v30.html",
+     "capturas": "capturas/construccion-v30",
+     "notas": "Tejado de teja (10 tejas y 1 tronco, 200 kg): teja curva de barro cocido con canales, cobijas y caballete en la cumbrera. Pesa más del doble que la paja. Material nuevo: teja."
     }
    ]
   },
@@ -1734,6 +1759,13 @@
      "archivo": "jugar/personaje/v15.html",
      "capturas": "capturas/personaje-v15",
      "notas": "Capa, botas y tocados: capucha, sombrero de paja y toca"
+    },
+    {
+     "v": "v16",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/personaje/v16.html",
+     "capturas": "capturas/personaje-v16",
+     "notas": "Personalización del taller propio: tono de piel, color de ojos y de pelo, peinado (corto o rapado), barba (corta, bigote o afeitado) y deslizadores de altura, peso, músculo, cara ancha, nariz ancha, nariz larga y mentón. Peso, músculo y la cara son las formas de MakeHuman; la ropa engorda o adelgaza con el cuerpo."
     }
    ]
   },
@@ -1811,9 +1843,22 @@
      "archivo": "jugar/mapa/v8.html",
      "capturas": "capturas/mapa-v8",
      "notas": "Roca escarpada de cerca: las paredes de los cortados se cubren de losas de roca 3D hechas por código, encajadas en la pared, con caras, aristas, estratos y sombra entre ellas, y una textura de roca con vetas, grietas finas y liquen."
+    },
+    {
+     "v": "v9",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/mapa/v9.html",
+     "capturas": "capturas/mapa-v9",
+     "notas": "Nombres del mundo: el continente Kinland y sus regiones Whitholm, Eikwold, Rudmere, Highfell y Storaa; «país» pasa a «región»."
     }
    ]
   }
  ],
- "decisiones_pendientes": []
+ "decisiones_pendientes": [
+  {
+   "pregunta": "Crear la cuenta de Hetzner y el servidor de prueba siguiendo la guía del repositorio, servidor/nube/LEEME.md (plan CX23 con Ubuntu 24.04 y el cloud config pegado); luego abrir en los dos aparatos la dirección https:// con tu IP con guiones y .sslip.io y decir si funciona (o si prefieres otro alojamiento)",
+   "desde": "2026-10-28",
+   "hito": "prueba-online"
+  }
+ ]
 }

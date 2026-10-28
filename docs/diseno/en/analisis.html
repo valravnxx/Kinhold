@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="2202d3b2196ed59a80ecd891b8fa59936e8fb98a">
+<meta name="kinhold-origen" content="9be2e9df6e5b61d791690c325c33016f77ffcfe5">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Medieval GDD Analysis</title>
 <style>
@@ -100,8 +100,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.78rem;text-tra
 <tr><th>System</th><th>Why it is needed</th><th>Question</th></tr>
 <tr><td><span class="tag gap">MISSING</span><b>Solo mode</b></td><td>Is it a world of its own in the browser (no server) or the same online world where you play isolated? It changes the architecture and whether progress is shared.</td><td>2</td></tr>
 <tr><td><span class="tag gap">MISSING</span><b>Character progression</b></td><td>It is not defined whether the character improves (skills through use, strength, trades) or how, or whether there is a cap.</td><td>8–10</td></tr>
-<tr><td><span class="tag gap">MISSING</span><b>Economy and trade</b></td><td>Crops by climate push trade between countries, but there is no currency, no markets and no exchange system.</td><td>27–29</td></tr>
-<tr><td><span class="tag gap">MISSING</span><b>Sea and river travel</b></td><td>The sea is consistent and separates countries: can you sail it? Boats, ships, ferries, ports.</td><td>23</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Economy and trade</b></td><td>Crops by climate push trade between regions, but there is no currency, no markets and no exchange system.</td><td>27–29</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Sea and river travel</b></td><td>The sea is consistent and separates regions: can you sail it? Boats, ships, ferries, ports.</td><td>23</td></tr>
 <tr><td><span class="tag gap">MISSING</span><b>Travel infrastructure</b></td><td>Travelling is hard: roads, bridges, fords, post stations. Do players build them?</td><td>22</td></tr>
 <tr><td><span class="tag gap">MISSING</span><b>Map and orientation</b></td><td>In a huge world, is there a map? Is it drawn by exploring (cartography) or complete from the start? Compass, sun, stars?</td><td>21</td></tr>
 <tr><td><span class="tag gap">MISSING</span><b>NPCs and hostile wildlife</b></td><td>Apart from the sentries there are no NPCs. Villages, traders, bandits? Wolves, bears, boars that attack?</td><td>24–25</td></tr>
@@ -112,7 +112,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.78rem;text-tra
 <tr><td><span class="tag gap">MISSING</span><b>Fire and light</b></td><td>Night, torches, hearths, fires in wooden structures.</td><td>36</td></tr>
 <tr><td><span class="tag gap">MISSING</span><b>Communication</b></td><td>Global chat, proximity chat, voice, messengers/letters (fits with travelling far).</td><td>37</td></tr>
 <tr><td><span class="tag gap">MISSING</span><b>Heraldry and family customisation</b></td><td>Coats of arms, banners, family colours: reinforces the kingdoms side.</td><td>38</td></tr>
-<tr><td><span class="tag gap">MISSING</span><b>Character creation</b></td><td>Appearance, sex, age, country of origin.</td><td>39</td></tr>
+<tr><td><span class="tag gap">MISSING</span><b>Character creation</b></td><td>Appearance, sex, age, region of origin.</td><td>39</td></tr>
 <tr><td><span class="tag gap">MISSING</span><b>Interface without bars</b></td><td>How inventory, load, hunger, wounds and crafting are shown without a classic HUD.</td><td>40</td></tr>
 <tr><td><span class="tag gap">MISSING</span><b>Introduction for new players</b></td><td>A realistic survival game with no guidance drives people away in the first minutes.</td><td>41</td></tr>
 <tr><td><span class="tag gap">MISSING</span><b>Monetisation</b></td><td>It is a commercial product with a paid server and there is no business model defined.</td><td>42</td></tr>
@@ -271,7 +271,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.78rem;text-tra
 <h2>12. Animals <span class="tag prop">PROPOSAL</span></h2>
 <div class="tw"><table>
 <tr><th>Type</th><th>Animals</th><th>What for</th></tr>
-<tr><td>Riding and draught</td><td>Horse (several breeds by country/biome), donkey, mule, ox.</td><td>Riding, carrying, ploughing, carts.</td></tr>
+<tr><td>Riding and draught</td><td>Horse (several breeds by region/biome), donkey, mule, ox.</td><td>Riding, carrying, ploughing, carts.</td></tr>
 <tr><td>Farm</td><td>Hen, goose, duck, pig, goat, sheep, cow.</td><td>Eggs, meat, milk, wool, leather, feathers.</td></tr>
 <tr><td>Other domestic</td><td>Dog (guarding, hunting, herding), cat (pests), bees.</td><td>Help, honey, wax.</td></tr>
 <tr><td>Small game</td><td>Hare, rabbit, partridge, pheasant, wild duck.</td><td>Meat, feathers, pelts.</td></tr>
@@ -379,7 +379,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.78rem;text-tra
 <ol class="q" start="27">
   <li>Is there currency? Do players mint it (with silver) or is it barter?</li>
   <li>Markets or stalls that work without the owner online?</li>
-  <li>Does each country have exclusive resources to force trade?</li>
+  <li>Does each region have exclusive resources to force trade?</li>
 </ol>
 
 <h3>G. Social, lands and PvP</h3>
@@ -397,7 +397,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.78rem;text-tra
 
 <h3>H. Product</h3>
 <ol class="q" start="39">
-  <li>Character creation: what is chosen (appearance, sex, age, country)?</li>
+  <li>Character creation: what is chosen (appearance, sex, age, region)?</li>
   <li>Interface: how do inventory and crafting look without a classic HUD?</li>
   <li>New players: tutorial, protected starting zone, or nothing?</li>
   <li>Monetisation: free with something paid (cosmetic, subscription), one-off purchase, subscription?</li>
