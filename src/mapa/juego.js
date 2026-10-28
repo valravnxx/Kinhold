@@ -244,7 +244,7 @@ export function crearVistaJuego(est) {
     vj.medidas = {
       ms: Math.round(performance.now() - t0), rejilla: n, pasoM: PASO,
       arboles: L.pino.length + L.frond.length, hierba: L.hierba.length, flores: L.flores.length, matas: L.matas.length, rocas: L.rocas.length, paredes: L.paredes.length,
-      triangulos: Math.round(idx.length / 3 + L.pino.length * tris(arb.pino.geo) + L.frond.length * tris(arb.frond.geo) + L.hierba.length * tris(pl.mata) + L.matas.length * tris(pl.matorral.geo)),
+      triangulos: Math.round(idx.length / 3 + L.paredes.length * tris(modelosRocaPared()[0]) + L.pino.length * tris(arb.pino.geo) + L.frond.length * tris(arb.frond.geo) + L.hierba.length * tris(pl.mata) + L.matas.length * tris(pl.matorral.geo)),
     };
     window.__cerca.juego = vj.medidas; window.__cerca.vj = vj;
   }

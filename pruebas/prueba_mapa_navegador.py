@@ -130,6 +130,9 @@ with sync_playwright() as p:
             pg.evaluate('window.__cerca.vista("juego")'); pg.wait_for_timeout(1500)
             r = pg.evaluate('window.__cerca.paredCercana()')
             comprobar('pc: junto al acantilado de costa hay paredes de roca', bool(r), str(r))
+            jm2 = pg.evaluate('window.__cerca.juego')
+            if os.environ.get('MUTAR_ROCA'): jm2['paredes'] = 0
+            comprobar('pc: las paredes del acantilado llevan piezas de roca 3D', jm2 and jm2.get('paredes', 0) > 100 and pg.evaluate("!!window.__cerca.vj.grupo.getObjectByName('rocaPared')"), f"{jm2.get('paredes')} piezas · {jm2.get('triangulos')} triángulos")
             if r:
                 pg.evaluate(f"window.__cerca.juegoEn({r['x']}, {r['z']}, {r['dir']})"); pg.wait_for_timeout(1500)
                 if os.environ.get('MUTAR_PARED'): pg.evaluate('window.__cerca.vj.sinLimite = true')
