@@ -52,14 +52,16 @@ function pieza(semilla) {
   const g = mergeVertices(new THREE.IcosahedronGeometry(1, 2).deleteAttribute('normal').deleteAttribute('uv'));
   const p = g.attributes.position, v = new THREE.Vector3();
   const planos = [];
-  for (let k = 0; k < 7; k++) {
-    const d = new THREE.Vector3(r() - 0.5, (r() - 0.5) * 0.7, r() - 0.5 + (k < 3 ? 0.5 : 0)).normalize();
-    planos.push([d, 0.55 + r() * 0.3]);
+  // la cara de fuera, casi plana (algo inclinada), y cortes al azar por los lados, arriba y abajo
+  planos.push([new THREE.Vector3((r() - 0.5) * 0.3, (r() - 0.5) * 0.3, 1).normalize(), 0.42 + r() * 0.1]);
+  for (let k = 0; k < 10; k++) {
+    const d = new THREE.Vector3(r() - 0.5, (r() - 0.5) * 1.2, (r() - 0.3) * 0.8).normalize();
+    planos.push([d, 0.5 + r() * 0.35]);
   }
-  const estrato = 0.22 + r() * 0.12, fase = r();
+  const estrato = 0.18 + r() * 0.1, fase = r();
   for (let i = 0; i < p.count; i++) {
     v.fromBufferAttribute(p, i);
-    v.multiply(new THREE.Vector3(1.6, 1, 0.9));
+    v.multiply(new THREE.Vector3(1.5, 1.05, 0.75));
     // bultos
     const b = Math.sin(v.x * 3.1 + semilla) * Math.sin(v.y * 2.7 + semilla * 2) * Math.sin(v.z * 3.3) * 0.12;
     v.multiplyScalar(1 + b);

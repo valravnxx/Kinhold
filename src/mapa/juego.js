@@ -200,7 +200,7 @@ export function crearVistaJuego(est) {
       if (s < 1.15 || r() > 0.4) continue;
       const y = vj.altura(ax, az); if (y < -0.5) continue;
       const nx = -gx / s, nz = -gz / s, alto = 2 + r() * 2.5 + Math.min(3, s);
-      PR.push([ax + nx * alto * 0.12, y - alto * 0.15, az + nz * alto * 0.12, alto, Math.atan2(nx, nz) + (r() - 0.5) * 0.5, Math.floor(r() * 5), (r() - 0.5) * 0.25, 0.85 + r() * 0.3, sitioEn(ax, az).st?.roca || sitios[gj * n + gi]?.roca]);
+      PR.push([ax + nx * alto * 0.05, y - alto * 0.2, az + nz * alto * 0.05, alto, Math.atan2(nx, nz) + (r() - 0.5) * 0.5, Math.floor(r() * 5), (r() - 0.5) * 0.25, 0.85 + r() * 0.3, sitioEn(ax, az).st?.roca || sitios[gj * n + gi]?.roca]);
     }
     L.paredes = PR;
     // recorte a lo que aguanta el aparato
