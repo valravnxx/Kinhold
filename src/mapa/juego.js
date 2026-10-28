@@ -119,8 +119,21 @@ export function crearVistaJuego(est) {
         ia.push(a, c2, b, b, c2, d);
       }
       const ga = new THREE.BufferGeometry(); ga.setAttribute('position', new THREE.BufferAttribute(pa, 3)); ga.setIndex(ia); ga.computeVertexNormals();
-      const seco = new Uint8Array(n * n); for (let k = 0; k < n * n; k++) seco[k] = isNaN(W[k]) || W[k] < H[k] ? 1 : 0;
-      atributosAgua(ga, { flujo: fl, hondo: ho, tipo: ti, ola: ol, orilla: distanciaOrilla(seco, n, PASO) });
+      // la orilla exacta: hondura con signo (negativa en seco, con el agua de al lado) y, en cada lado de la rejilla que
+      // cruza la orilla, dónde corta el agua; la distancia sale de ahí (no de los puntos), y la línea queda lisa
+      const seco = new Uint8Array(n * n), hs = new Float32Array(n * n), sem = new Float32Array(n * n).fill(NaN);
+      for (let k = 0; k < n * n; k++) { hs[k] = pa[k * 3 + 1] - H[k]; seco[k] = hs[k] <= 0 ? 1 : 0; }
+      for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+        const k = j * n + i;
+        for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const ii = i + a, jj = j + b; if (ii < 0 || jj < 0 || ii >= n || jj >= n) continue;
+          const q = jj * n + ii; if (seco[k] === seco[q]) continue;
+          const t = hs[k] / (hs[k] - hs[q]);                   // de k (0) a q (1), dónde la hondura pasa por 0
+          const v = seco[k] ? -t * PASO : t * PASO;
+          if (isNaN(sem[k]) || Math.abs(v) < Math.abs(sem[k])) sem[k] = v;
+        }
+      }
+      atributosAgua(ga, { flujo: fl, hondo: ho, tipo: ti, ola: ol, orilla: distanciaOrilla(seco, n, PASO, 60, sem) });
       const lamina = new THREE.Mesh(ga, aguaCerca()); lamina.name = 'aguaCerca'; lamina.receiveShadow = true; g.add(lamina);
     }
     aguaLejos().ponerHueco(x0, z0, x0 + (n - 1) * PASO, z0 + (n - 1) * PASO);

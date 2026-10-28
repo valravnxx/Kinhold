@@ -134,13 +134,15 @@ export function atributosAgua(geo, { flujo = null, hondo = null, tipo = null, ol
 }
 
 // distancia (m) de cada punto de una rejilla n × n (paso en m) al punto seco más cercano: dos pasadas de chaflán
-export function distanciaOrilla(seco, n, paso, tope = 60) {
-  const d = new Float32Array(n * n), D = Math.SQRT2;
-  for (let k = 0; k < n * n; k++) d[k] = seco[k] ? 0 : tope;
-  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const k = j * n + i; if (!d[k]) continue; let v = d[k];
+// semilla (opcional): para los puntos junto a la orilla, la distancia exacta hasta donde el agua corta el terreno entre
+// dos puntos de la rejilla (negativa en los secos): así la línea de la orilla no sale escalonada
+export function distanciaOrilla(seco, n, paso, tope = 60, semilla = null) {
+  const d = new Float32Array(n * n), D = Math.SQRT2, fijo = new Uint8Array(n * n);
+  for (let k = 0; k < n * n; k++) { d[k] = seco[k] ? 0 : tope; if (semilla && !isNaN(semilla[k])) { d[k] = semilla[k] / paso; fijo[k] = 1; } }
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const k = j * n + i; if (seco[k] || fijo[k]) continue; let v = d[k];
     if (i > 0) v = Math.min(v, d[k - 1] + 1); if (j > 0) { v = Math.min(v, d[k - n] + 1); if (i > 0) v = Math.min(v, d[k - n - 1] + D); if (i < n - 1) v = Math.min(v, d[k - n + 1] + D); } d[k] = v; }
-  for (let j = n - 1; j >= 0; j--) for (let i = n - 1; i >= 0; i--) { const k = j * n + i; if (!d[k]) continue; let v = d[k];
+  for (let j = n - 1; j >= 0; j--) for (let i = n - 1; i >= 0; i--) { const k = j * n + i; if (seco[k] || fijo[k]) continue; let v = d[k];
     if (i < n - 1) v = Math.min(v, d[k + 1] + 1); if (j < n - 1) { v = Math.min(v, d[k + n] + 1); if (i < n - 1) v = Math.min(v, d[k + n + 1] + D); if (i > 0) v = Math.min(v, d[k + n - 1] + D); } d[k] = v; }
-  for (let k = 0; k < n * n; k++) d[k] = Math.min(tope, d[k] * paso);
+  for (let k = 0; k < n * n; k++) d[k] = Math.min(tope, Math.max(d[k], seco[k] && !fijo[k] ? 0 : -tope) * paso);
   return d;
 }
