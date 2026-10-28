@@ -324,6 +324,12 @@
      "estado": "en_curso",
      "inicio": "2026-10-28T15:25:29+00:00",
      "rama": "trabajo/20261028-1525"
+    },
+    {
+     "nombre": "Arreglo (valravnx, 28 oct: en el duelo en línea los dos salían «esperando rival»): su servidor de casa era de antes del duelo en línea, porque jugar_en_casa.bat no baja la versión nueva si no se le dice. El juego avisa cuando el servidor es de una versión anterior, y jugar_en_casa.bat baja la última versión él solo cuando la hay",
+     "estado": "en_curso",
+     "inicio": "2026-10-28T19:58:44+01:00",
+     "rama": "trabajo/20261028-2000-servidor-viejo"
     }
    ]
   },
