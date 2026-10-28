@@ -213,7 +213,8 @@ export function crearVistaJuego(est) {
     poner(L.rocas, pl.roca.geo, pl.roca.mats, 'rocasCerca', { sombra: true, color: (e) => { const k = ROCAS_COLOR[e[5]] || ROCAS_COLOR.caliza; return c.setRGB(lin(k[0]) / 0.4, lin(k[1]) / 0.4, lin(k[2]) / 0.4); } });
 
     est.raiz.add(g); vj.grupo = g;
-    hundirLejos(px, pz);
+    // el suelo de lejos no se dibuja bajo el trozo de cerca (salvo un borde de 3 m, que queda debajo y tapa la junta)
+    materialSuelo({ lejos: true }).ponerHueco(x0 + 3, z0 + 3, x0 + (n - 1) * PASO - 3, z0 + (n - 1) * PASO - 3);
     poblarArboles(null, (x, z) => Math.abs(x - px) < CERCA / 2 && Math.abs(z - pz) < CERCA / 2);
     const tris = (gg) => (gg.index ? gg.index.count : gg.attributes.position.count) / 3;
     vj.medidas = {
@@ -242,7 +243,7 @@ export function crearVistaJuego(est) {
   vj.salir = () => {
     if (!vj.activo) return;
     vj.activo = false; ayuda().hidden = true;
-    quitarGrupo(); devolverLejos(); vj.centro = null; aguaLejos().quitarHueco();
+    quitarGrupo(); devolverLejos(); vj.centro = null; aguaLejos().quitarHueco(); materialSuelo({ lejos: true }).quitarHueco();
     if (vj.jugador) est.escena.remove(vj.jugador.raiz);
     est.amb.sol.castShadow = false;
     poblarArboles(null);
@@ -259,7 +260,8 @@ export function crearVistaJuego(est) {
         const antes = vj.pos.clone();
         // una pared de roca no se sube ni se baja andando: se mira la pendiente medio metro por delante
         const nx = vj.pos.x + dx / d * 0.5, nz = vj.pos.z + dz / d * 0.5;
-        if (Math.abs(vj.altura(nx, nz) - vj.pos.y) / 0.5 > PENDIENTE_ANDAR) { vj.destino = null; vj.parado = 'pared'; }
+        // (sinLimite: solo para romper la prueba a propósito)
+        if (!vj.sinLimite && Math.abs(vj.altura(nx, nz) - vj.pos.y) / 0.5 > PENDIENTE_ANDAR) { vj.destino = null; vj.parado = 'pared'; }
         else {
           vj.parado = null;
           vj.pos.x += dx / d * paso; vj.pos.z += dz / d * paso; vj.pos.y = vj.altura(vj.pos.x, vj.pos.z);
