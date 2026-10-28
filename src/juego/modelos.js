@@ -587,6 +587,7 @@ function puerta(tipo) {
 // Contraventana: dos hojas de tablas por fuera de la ventana, con bisagras de hierro en los lados. Cerradas tapan
 // el hueco; abiertas quedan pegadas al muro. Cada hoja es un grupo «hoja» con su giro de abrir (userData.abre).
 // ctx.muro: el muro en el que va (el de tablas es más delgado que el de troncos: la contraventana va más pegada).
+// ctx.fuera: 1 si el lado de fuera del muro es el +z local, -1 si es el -z (el de dentro es el que da al suelo).
 function contraventana(ctx) {
   const delgado = ctx && ctx.muro === 'muro_tabla_ventana';
   const z = delgado ? 0.115 : 0.205;             // cara de fuera del marco + el grueso de la hoja
@@ -608,6 +609,7 @@ function contraventana(ctx) {
     hoja.userData.abre = { eje: 'y', ang: s * Math.PI * 0.98 }; // abierta, de plano contra el muro
     g.add(hoja);
   }
+  if (ctx && ctx.fuera === -1) g.rotation.y = Math.PI; // el lado de fuera del muro es el -z
   return g;
 }
 // Trampilla: tablas clavadas a tres peinazos que tapan el hueco de la escalera de tablas, a ras del suelo. La bisagra va

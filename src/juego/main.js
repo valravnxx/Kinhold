@@ -198,7 +198,12 @@ function despejarDecorado() {
 // suelos y cimientos de troncos: qué casillas de al lado tienen el mismo suelo terminado, para juntarse con ellas
 const TIPOS_QUE_SE_JUNTAN = new Set(['suelo_tronco', 'cim_tronco']);
 function contextoSuelo(c, p) {
-  if (p.hueco === 'w') { const m = c.piezas.get(clave('e', p.i, p.j, p.k, p.d)); return { muro: m && m.tipo }; } // contraventana
+  if (p.hueco === 'w') { // contraventana: en qué muro va y cuál es su lado de fuera (el que no da a un suelo de la casa)
+    const m = c.piezas.get(clave('e', p.i, p.j, p.k, p.d));
+    const delante = p.d === 0 ? [p.i, p.j] : [p.i - 1, p.j], detras = p.d === 0 ? [p.i, p.j - 1] : [p.i, p.j]; // +z y -z locales
+    const suelo = ([i, j]) => c.piezas.has(clave('f', i, j, p.k));
+    return { muro: m && m.tipo, fuera: suelo(delante) && !suelo(detras) ? -1 : 1 };
+  }
   if (p.hueco !== 'f' || !TIPOS_QUE_SE_JUNTAN.has(p.tipo) || p.obra) return undefined;
   const igual = (di, dj) => { const q = c.piezas.get(clave('f', p.i + di, p.j + dj, p.k)); return !!q && q.tipo === p.tipo && !q.obra; };
   return { vecinos: { xn: igual(-1, 0), xp: igual(1, 0), zn: igual(0, -1), zp: igual(0, 1) } };
