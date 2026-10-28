@@ -11,11 +11,5 @@
   "hito": "construccion-mas",
   "rama": "trabajo/20261028-0250",
   "ultimo": "2026-10-28T04:32:50.000Z"
- },
- "chat:trabajo/20261028-0540-agentes": {
-  "inicio": "2026-10-28T05:40:45+01:00",
-  "tarea": "Quién trabaja en qué, a la vista (pedido de valravnx, 28 oct): al empezar, cada agente (carril A, carril B o una sesión de chat) anuncia su tarea en proyecto/sesion.json, y la web solo marca «en proceso» las tareas en las que trabaja de verdad un agente vivo; las empezadas que nadie lleva salen «a medias» y un carril las puede retomar",
-  "hito": "infra",
-  "rama": "trabajo/20261028-0540-agentes"
  }
 }

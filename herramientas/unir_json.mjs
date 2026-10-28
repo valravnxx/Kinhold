@@ -1,4 +1,4 @@
-// Une proyecto/diario.json y proyecto/idiomas/*.json al fusionar ramas de varias sesiones, sin choques.
+// Une proyecto/diario.json, proyecto/idiomas/*.json y proyecto/sesion.json al fusionar ramas de varias sesiones, sin choques.
 // Dos sesiones que añaden cada una su entrada al final del diario (o sus textos al final de en.json)
 // chocan en git aunque no se pisen; esta herramienta une las dos listas a la manera de tres vías:
 //   - lo que solo añade una rama, entra; lo que añaden las dos igual, entra una vez;
@@ -94,7 +94,8 @@ export function unirTextos(tBase, tNuestro, tSuyo) {
 }
 
 const NOMBRE = 'kinhold-json';
-const ATRIBUTOS = ['proyecto/diario.json merge=kinhold-json', 'proyecto/idiomas/*.json merge=kinhold-json'];
+// sesion.json: cada agente (A, B, «chat:<rama>») en su clave, así que se une igual que las traducciones
+const ATRIBUTOS = ['proyecto/diario.json merge=kinhold-json', 'proyecto/idiomas/*.json merge=kinhold-json', 'proyecto/sesion.json merge=kinhold-json'];
 
 function instalar(raiz) {
   const g = (...a) => execFileSync('git', ['-C', raiz, ...a], { encoding: 'utf8' });
