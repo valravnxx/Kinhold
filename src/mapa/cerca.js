@@ -8,6 +8,7 @@ import { modelosArbol, azar } from '../mundo/decorado.js';
 import { crearPaisaje, bosqueEn } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
 import { tr } from '../idioma.js';
+import { crearVistaJuego } from './juego.js';
 
 export const LADO_CERCA = 4000;                 // m
 const movil = Math.min(innerWidth, innerHeight) < 700;
@@ -24,7 +25,21 @@ const ROCA = { granito: [0.6, 0.56, 0.53], caliza: [0.74, 0.71, 0.63], pizarra: 
 const ARENA = [0.76, 0.71, 0.58];
 
 let estado = null;
-const lin = (c) => Math.pow(Math.max(0, c), 2.2);
+// color del suelo (sRGB, 0–1) en un punto: bioma, más verde donde llueve, roca desnuda en lo empinado, playa y nieve
+export function colorDelSuelo(st, y, s, xm, ym) {
+  if (!st || !st.bioma) return [0.42, 0.46, 0.44];                                  // fondo del mar / cauce
+  let c = SUELO[st.bioma] || SUELO.pradera;
+  const verde = Math.max(-0.5, Math.min(0.5, st.P - 0.6)) + (fbm(xm / 420, ym / 420, 9, 3) - 0.5) * 0.6;
+  if (st.bioma !== 'nieve') c = [c[0] * (1 - 0.12 * verde), c[1] * (1 + 0.1 * verde), c[2] * (1 - 0.1 * verde)];
+  const roca = ROCA[st.roca] || ROCA.caliza;
+  const r = Math.min(1, Math.max(0, (s - 0.62) / 0.3) + (st.bioma === 'alpino' ? 0.25 : 0));
+  c = c.map((v, n) => v + (roca[n] - v) * r);                                       // lo empinado, roca desnuda
+  if (y < 2.6 && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25) c = c.map((v, n) => v + (ARENA[n] - v) * (1 - y / 2.6)); // playa
+  if (st.T < -1.5 && s < 0.9) c = SUELO.nieve;
+  return c;
+}
+export const ROCAS_COLOR = ROCA;
+export const lin = (c) => Math.pow(Math.max(0, c), 2.2);
 const triangulos = (g) => (g.index ? g.index.count : g.attributes.position.count) / 3;
 export function abrirCerca(mapa, xkm, ykm, alCerrar) {
   if (!estado) estado = iniciar();
@@ -41,9 +56,9 @@ function iniciar() {
   const lienzo = document.getElementById('lienzoCerca');
   const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, movil ? 1.5 : 2));
-  prepararRenderer(renderer); renderer.shadowMap.enabled = false;
+  prepararRenderer(renderer);
   const escena = new THREE.Scene();
-  const amb = crearAmbiente(escena, { luz: 'manana', niebla: [1400, 5200] });
+  const amb = crearAmbiente(escena, { luz: 'manana', niebla: [1400, 5200], alcance: 45, mapa: movil ? 1024 : 2048 });
   amb.sol.castShadow = false;
   const camara = new THREE.PerspectiveCamera(50, 1, 1.5, 14000);
   const control = new OrbitControls(camara, lienzo);
@@ -52,17 +67,27 @@ function iniciar() {
   const tam = () => { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camara.aspect = w / h; camara.updateProjectionMatrix(); };
   addEventListener('resize', tam); tam();
   let activo = true;
-  const bucle = () => { requestAnimationFrame(bucle); if (cont.hidden) return; control.update(); renderer.render(escena, camara); };
+  let antes = performance.now();
+  const bucle = () => {
+    requestAnimationFrame(bucle); const ahora = performance.now(), dt = Math.min(0.05, (ahora - antes) / 1000); antes = ahora;
+    if (cont.hidden) return;
+    if (estado && estado.juego) estado.juego.actualizar(dt);
+    control.update(); renderer.render(escena, camara);
+  };
   bucle();
   document.getElementById('btnVolverMapa').onclick = () => { cont.hidden = true; vaciar(); estado.alCerrar && estado.alCerrar(); };
   document.getElementById('btnAlto').onclick = () => vista('alto');
   document.getElementById('btnPie').onclick = () => vista('pie');
+  document.getElementById('btnJuego').onclick = () => vista('juego');
   void activo;
-  return { renderer, escena, camara, control, raiz, amb, alturaEn: null };
+  const est = { renderer, escena, camara, control, raiz, amb, alturaEn: null };
+  est.juego = crearVistaJuego(est);
+  return est;
 }
 
 function vaciar() {
   const { raiz } = estado;
+  if (estado.juego) estado.juego.salir();
   for (const o of [...raiz.children]) { raiz.remove(o); if (o.name === 'bosque') o.dispose(); else o.traverse(m => { if (m.isMesh) m.geometry.dispose(); }); }   // los árboles comparten la malla: solo se sueltan sus instancias
 }
 
@@ -91,19 +116,7 @@ function construir(mapa, cx, cy) {
     pend[k] = s;
     const xm = x0 + i * paso, ym = y0 + j * paso;
     const st = y > 0.05 ? pai.sitio(xm, ym, y) : null; sitios[k] = st;
-    let c;
-    if (!st || !st.bioma) c = [0.42, 0.46, 0.44];                                   // fondo del mar / cauce
-    else {
-      c = SUELO[st.bioma] || SUELO.pradera;
-      // más verde donde llueve más, más pajizo donde menos, y manchas grandes de prado
-      const verde = Math.max(-0.5, Math.min(0.5, st.P - 0.6)) + (fbm(xm / 420, ym / 420, 9, 3) - 0.5) * 0.6;
-      if (st.bioma !== 'nieve') c = [c[0] * (1 - 0.12 * verde), c[1] * (1 + 0.1 * verde), c[2] * (1 - 0.1 * verde)];
-      const roca = ROCA[st.roca] || ROCA.caliza;
-      const r = Math.min(1, Math.max(0, (s - 0.62) / 0.3) + (st.bioma === 'alpino' ? 0.25 : 0));
-      c = c.map((v, n) => v + (roca[n] - v) * r);                                     // lo empinado, roca desnuda
-      if (y < 2.6 && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25) c = c.map((v, n) => v + (ARENA[n] - v) * (1 - y / 2.6)); // playa
-      if (st.T < -1.5 && s < 0.9) c = SUELO.nieve;
-    }
+    const c = colorDelSuelo(st, y, s, xm, ym);
     // concavidad: más oscuro en las vaguadas, más claro en lomas; y una variación suave
     const lap = (alt(i + 1, j) + alt(i - 1, j) + alt(i, j + 1) + alt(i, j - 1) - 4 * y) / (paso * paso);
     const v = 1 - Math.max(-0.12, Math.min(0.18, lap * 6)) + (fbm(xm / 60, ym / 60, 5, 3) - 0.5) * 0.14;
@@ -115,7 +128,9 @@ function construir(mapa, cx, cy) {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   geo.setIndex(new THREE.BufferAttribute(idx, 1)); geo.computeVertexNormals();
-  const terreno = new THREE.Mesh(geo, materialTex('suelo')); terreno.name = 'terreno'; estado.raiz.add(terreno);
+  if (!estado.matLejos) { estado.matLejos = materialTex('suelo').clone(); Object.assign(estado.matLejos, { polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 8 }); }
+  const terreno = new THREE.Mesh(geo, estado.matLejos); terreno.name = 'terreno'; terreno.receiveShadow = true; estado.raiz.add(terreno);
+  estado.terreno = terreno; estado.tramos = tramos; estado.L = L; estado.N = N;
   // mar
   if (H.some(v => v < 0)) {
     const mar = new THREE.Mesh(new THREE.PlaneGeometry(L, L).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: 0x5b7584, transparent: true, opacity: 0.88 }));
@@ -171,13 +186,13 @@ function construir(mapa, cx, cy) {
 // árboles instanciados: los que quedan a menos de CERCA_ARBOL m del ojo con el modelo completo, el resto sencillos.
 // Escala más alta que ancha: un pino de verdad mide 15–20 m con un tronco de medio metro.
 const CERCA_ARBOL = 260;
-function poblarArboles(ojo) {
+export function poblarArboles(ojo, fuera = null) {
   const { raiz, arboles } = estado;
   for (const o of raiz.children.filter(o => o.name === 'bosque')) { raiz.remove(o); o.dispose(); }
   const completo = modelosArbol(), sencillo = modelosArbol({ sencillo: true });
   for (const k of ['pino', 'frond']) {
     const cerca = [], lejos = [];
-    for (const a of arboles[k]) (ojo && Math.hypot(a[0] - ojo.x, a[2] - ojo.z) < CERCA_ARBOL ? cerca : lejos).push(a);
+    for (const a of arboles[k]) { if (fuera && fuera(a[0], a[2])) continue; (ojo && Math.hypot(a[0] - ojo.x, a[2] - ojo.z) < CERCA_ARBOL ? cerca : lejos).push(a); }
     for (const [lista, m] of [[cerca, completo[k]], [lejos, sencillo[k]]]) {
       if (!lista.length) continue;
       const im = new THREE.InstancedMesh(m.geo, m.mats, lista.length), o = new THREE.Object3D(), c = new THREE.Color();
@@ -187,27 +202,40 @@ function poblarArboles(ojo) {
   }
 }
 
-// vistas: desde lo alto (como un pájaro) y a pie (a 1,7 m del suelo, mirando hacia donde más relieve hay)
+// el mirador: un alto cerca del centro (desde donde se ve algo) y la dirección en la que la vista está más abierta
+function mirador() {
+  const alt = estado.alturaEn;
+  let px = 0, pz = 0, mejorSitio = -Infinity;
+  for (let rr = 0; rr <= 900; rr += 90) for (let a = 0; a < 6.28; a += rr ? 0.35 : 7) {
+    const x = Math.cos(a) * rr, z = Math.sin(a) * rr, y = alt(x, z);
+    if (y < 2 || Math.abs(alt(x + 6, z) - alt(x - 6, z)) > 5 || Math.abs(alt(x, z + 6) - alt(x, z - 6)) > 5) continue;
+    let media = 0; for (let b = 0; b < 6.28; b += 0.8) media += alt(x + Math.cos(b) * 250, z + Math.sin(b) * 250) / 8;
+    const nota = y - media - rr * 0.02;
+    if (nota > mejorSitio) { mejorSitio = nota; px = x; pz = z; }
+  }
+  const ojo = alt(px, pz) + 1.7;
+  let dir = 0, mejor = -Infinity;
+  for (let a = 0; a < 6.28; a += 0.1) {
+    let tapa = -Infinity; for (let d = 15; d < 400; d += 15) tapa = Math.max(tapa, (alt(px + Math.cos(a) * d, pz + Math.sin(a) * d) - ojo) / d);
+    let lejos = -Infinity; for (let d = 600; d < 1950; d += 150) lejos = Math.max(lejos, alt(px + Math.cos(a) * d, pz + Math.sin(a) * d));
+    const nota = -tapa * 4 + lejos / 2000;
+    if (nota > mejor) { mejor = nota; dir = a; }
+  }
+  return { px, pz, dir };
+}
+
+// vistas: desde lo alto (como un pájaro), a pie (a 1,7 m del suelo) y como en el juego (cámara detrás del personaje)
 function vista(cual) {
   const { camara, control } = estado, alt = estado.alturaEn;
+  if (window.__cerca.vistaActual === 'juego' && cual !== 'juego') estado.juego.salir();
+  if (cual === 'juego') {
+    const m = mirador();
+    estado.juego.entrar(m.px, m.pz, m.dir);
+    window.__cerca.vistaActual = cual;
+    return;
+  }
   if (cual === 'pie') {
-    // a pie: un alto cerca del centro (desde donde se ve algo) y mirando hacia donde la vista está más abierta
-    let px = 0, pz = 0, mejorSitio = -Infinity;
-    for (let rr = 0; rr <= 900; rr += 90) for (let a = 0; a < 6.28; a += rr ? 0.35 : 7) {
-      const x = Math.cos(a) * rr, z = Math.sin(a) * rr, y = alt(x, z);
-      if (y < 2 || Math.abs(alt(x + 6, z) - alt(x - 6, z)) > 5 || Math.abs(alt(x, z + 6) - alt(x, z - 6)) > 5) continue;
-      let media = 0; for (let b = 0; b < 6.28; b += 0.8) media += alt(x + Math.cos(b) * 250, z + Math.sin(b) * 250) / 8;
-      const nota = y - media - rr * 0.02;
-      if (nota > mejorSitio) { mejorSitio = nota; px = x; pz = z; }
-    }
-    const ojo = alt(px, pz) + 1.7;
-    let dir = 0, mejor = -Infinity;
-    for (let a = 0; a < 6.28; a += 0.1) {
-      let tapa = -Infinity; for (let d = 15; d < 400; d += 15) tapa = Math.max(tapa, (alt(px + Math.cos(a) * d, pz + Math.sin(a) * d) - ojo) / d);
-      let lejos = -Infinity; for (let d = 600; d < 1950; d += 150) lejos = Math.max(lejos, alt(px + Math.cos(a) * d, pz + Math.sin(a) * d));
-      const nota = -tapa * 4 + lejos / 2000;
-      if (nota > mejor) { mejor = nota; dir = a; }
-    }
+    const { px, pz, dir } = mirador(), ojo = alt(px, pz) + 1.7;
     camara.position.set(px, ojo, pz);
     control.target.set(px + Math.cos(dir) * 40, ojo - 2, pz + Math.sin(dir) * 40);
     control.minDistance = 0.1; control.maxDistance = 60;
@@ -223,4 +251,4 @@ function vista(cual) {
   window.__cerca.vistaActual = cual;
 }
 
-window.__cerca = { listo: false, ocultar: (n) => { const o = estado.raiz.getObjectByName(n); if (o) o.visible = false; }, abrir: abrirCerca, vista: (v) => vista(v), get medidas() { return this._m; }, set medidas(v) { this._m = v; } };
+window.__cerca = { listo: false, ocultar: (n) => { const o = estado.raiz.getObjectByName(n); if (o) o.visible = false; }, abrir: abrirCerca, vista: (v) => vista(v), camara: (p, d, y) => estado.juego.camara(p, d, y), get medidas() { return this._m; }, set medidas(v) { this._m = v; } };

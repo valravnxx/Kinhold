@@ -1582,6 +1582,24 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-27T21:25:00+01:00",
+  "fin": "2026-10-28T00:18:08+01:00",
+  "titulo": "Hito 10: el paisaje de cerca, como se ve en el juego",
+  "hito": "mundo",
+  "hecho": [
+   "Vista nueva «Como en el juego» en el boceto de cerca: el personaje del taller con la cámara del juego (detrás y por encima, 16 m)",
+   "Alrededor del personaje, un trozo de 240 × 240 m (170 en el móvil) con rejilla de 1 m (1,25 en el móvil) y tres capas más de relieve, hasta unos 2 m",
+   "Hierba, flores, matorrales, piedras (más en lo empinado) y árboles completos del estilo v5, repartidos con las mismas reglas que el bosque de lejos; sombras del sol que siguen al personaje (también donde el terreno está alto)",
+   "Bajo el bosque, suelo de hojarasca y más matorral; en los prados, calvas de tierra",
+   "Se anda tocando el suelo; si te alejas, el trozo de cerca se rehace donde estás. El terreno de lejos se hunde bajo el trozo de cerca para no asomar",
+   "Los árboles entre la cámara y el personaje no se dibujan, para que una copa no tape la pantalla",
+   "Prueba del navegador del mapa ampliada (trozo de cerca, andar pegado al suelo, salir); ahora se sirve por http para que cargue el personaje"
+  ],
+  "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, idiomas, mapa; navegador de construcción, combate, estilo, personaje, demo, en línea, recursos, inglés, cavar y mapa en PC y móvil). Tras unir main: lógica, modelos, idiomas, construcción, demo y mapa otra vez",
+  "capturas": "capturas/mapa-v4",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-27T22:20:15+00:00",
   "fin": "2026-10-28T00:46:19+00:00",
   "titulo": "Hito 1f: combate en línea en la demo",

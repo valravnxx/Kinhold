@@ -33,6 +33,7 @@ button.on{background:#6b5534;border-color:var(--acento)}
 #cercaBarra{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:calc(10px + env(safe-area-inset-left,0px))}
 #cercaDatos{position:absolute;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--panel);border-radius:10px;padding:6px 10px;font-size:12px;max-width:calc(100vw - 20px)}
 #cercaAyuda{position:absolute;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--panel);border-radius:10px;padding:6px 10px;font-size:12px;color:var(--muted)}
+#juegoAyuda{position:absolute;left:50%;transform:translateX(-50%);top:calc(64px + env(safe-area-inset-top,0px));background:var(--panel);border-radius:10px;padding:6px 12px;font-size:12.5px}
 #cercaCargando{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(30,26,22,.55)}
 #cercaCargando div{background:var(--panel);padding:12px 18px;border-radius:12px}
 #datos button{margin-left:8px;padding:3px 9px;font-size:12px}
@@ -59,9 +60,10 @@ button.on{background:#6b5534;border-color:var(--acento)}
 <div id="notas" hidden></div>
 <div id="cerca" hidden>
   <canvas id="lienzoCerca"></canvas>
-  <div id="cercaBarra" class="grupo"><button id="btnVolverMapa">Volver al mapa</button><button id="btnAlto">Desde lo alto</button><button id="btnPie">A pie</button></div>
+  <div id="cercaBarra" class="grupo"><button id="btnVolverMapa">Volver al mapa</button><button id="btnAlto">Desde lo alto</button><button id="btnPie">A pie</button><button id="btnJuego">Como en el juego</button></div>
   <div id="cercaDatos"></div>
   <div id="cercaAyuda">Arrastra para girar, rueda o dos dedos para acercarte.</div>
+  <div id="juegoAyuda" hidden>Toca el suelo para andar hasta allí.</div>
   <div id="cercaCargando" hidden><div>Preparando el paisaje…</div></div>
 </div>
 <script>/*APP*/</script>

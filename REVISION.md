@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 27 oct 2026 (21:22) — por el chat: el paisaje de cerca, como se ve en el juego
+
+«Se ve bien, pero claro, es a 0 detalle; está muy bien como "lo que se ve de lejos" pero no como se ve el juego de cerca.» → Tarea nueva en el hito 10: vista «Como en el juego» en el boceto de cerca, con el personaje, la cámara del juego y un trozo de terreno alrededor con todo el detalle (rejilla de 1 m, hierba, flores, matorrales, piedras, árboles completos y sombras).
+
 ### 27 oct 2026 — por el chat: fotogramas bajos al construir (jugando en línea)
 
 «Cuando estamos haciendo cualquiera de los dos una construcción (la carga de construir con el hacha) nos bajan los fps mucho… luego vuelve a normal» y «tiene los fps mucho más bajos durante todo el proceso, no a tirones» → Arreglado (construcción v26, demo v22): al avanzar una obra se rehace solo esa pieza y no todo lo construido.

@@ -2,7 +2,7 @@
 # tierra, cambia de capa, amplía, toca un sitio, abre las notas y saca capturas de todas las vistas en PC y móvil.
 # MUTAR=1 borra la tierra antes de pintar una capa: tiene que fallar.
 # Uso: python3 pruebas/prueba_mapa_navegador.py <html> <carpeta_capturas>
-import sys, os, json
+import sys, os, json, subprocess, time, socket
 from playwright.sync_api import sync_playwright
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_mapa.html')
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_mapa'
@@ -15,12 +15,17 @@ def comprobar(n, c, d=''):
 TIERRA = """(() => { const c = document.getElementById('lienzo'), g = c.getContext('2d'), d = g.getImageData(0, 0, c.width, c.height).data;
   let t = 0, n = 0; for (let i = 0; i < d.length; i += 4 * 37) { n++; if (d[i + 1] >= d[i + 2] + 4) t++; } return t / n; })()"""
 MEDIDAS = {}
+# se sirve por http desde la raíz del repositorio (con file:// el navegador no deja cargar el personaje)
+RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+_s = socket.socket(); _s.bind(('', 0)); PUERTO = _s.getsockname()[1]; _s.close()
+SERVIDOR = subprocess.Popen([sys.executable, '-m', 'http.server', str(PUERTO)], cwd=RAIZ, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(1)
+URL = f'http://localhost:{PUERTO}/' + os.path.relpath(RUTA, RAIZ).replace(os.sep, '/') + '?recursosMH=/docs/recursos/personajes/taller-v7/'
 with sync_playwright() as p:
     nav = p.chromium.launch(args=["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"])
     for nombre, opc in [('pc', dict(viewport={'width': 1280, 'height': 800})), ('movil', dict(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True))]:
         ctx = nav.new_context(locale='es-ES', **opc); pg = ctx.new_page(); err = []
         pg.on('pageerror', lambda e: err.append(str(e))); pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
-        pg.goto('file://' + RUTA)
+        pg.goto(URL)
         pg.wait_for_function('window.__mapa && window.__mapa.listo', timeout=240000)
         r = pg.evaluate('window.__mapa.resumen'); ms = pg.evaluate('window.__mapa.msGenerar')
         comprobar(f'{nombre}: abre el mundo elegido (semilla 66172, 256 km)', pg.evaluate('window.__mapa.mapa.semilla === 66172 && window.__mapa.mapa.lado === 256'))
@@ -71,6 +76,21 @@ with sync_playwright() as p:
         pie = pg.evaluate("(() => { const c = document.querySelector('#lienzoCerca'); return [c.width, c.height]; })()")
         pg.screenshot(path=f'{SALIDA}/{nombre}_7_cerca_pie.png', timeout=240000)
         comprobar(f'{nombre}: la vista a pie se pone', pg.evaluate('window.__cerca.vistaActual') == 'pie', str(pie))
+        # como en el juego: el trozo de cerca con todo el detalle, el personaje y andar tocando el suelo
+        pg.evaluate("document.getElementById('btnJuego').click()"); pg.wait_for_timeout(1500)
+        jm = pg.evaluate('window.__cerca.juego')
+        if os.environ.get('MUTAR'): jm['hierba'] = 0
+        comprobar(f'{nombre}: como en el juego, el trozo de cerca tiene rejilla de 1–1,25 m, hierba, piedras y árboles', jm and jm['pasoM'] <= 1.25 and jm['hierba'] > 1000 and jm['rocas'] > 0 and jm['triangulos'] > 100000, json.dumps(jm))
+        comprobar(f'{nombre}: sale la ayuda de andar', pg.is_visible('#juegoAyuda'))
+        a = pg.evaluate('[window.__cerca.vj.pos.x, window.__cerca.vj.pos.z]')
+        pg.evaluate('(() => { const v = window.__cerca.vj; v.andarA(v.pos.x + 8, v.pos.z + 3); })()'); pg.wait_for_timeout(2500)
+        b = pg.evaluate('[window.__cerca.vj.pos.x, window.__cerca.vj.pos.z, window.__cerca.vj.pos.y, window.__cerca.vj.altura(window.__cerca.vj.pos.x, window.__cerca.vj.pos.z)]')
+        comprobar(f'{nombre}: el personaje anda y va pegado al suelo', b[0] > a[0] and abs(b[2] - b[3]) < 0.05, str(b))
+        pg.screenshot(path=f'{SALIDA}/{nombre}_8_juego.png', timeout=240000)
+        pg.evaluate('window.__cerca.camara(0.18, 30, 2.6)'); pg.wait_for_timeout(1500)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_9_juego_bajo.png', timeout=240000)
+        pg.evaluate("document.getElementById('btnAlto').click()"); pg.wait_for_timeout(500)
+        comprobar(f'{nombre}: al salir del juego se quita el trozo de cerca', pg.evaluate("!window.__cerca.vj.grupo && document.getElementById('juegoAyuda').hidden"))
         pg.evaluate("document.getElementById('btnVolverMapa').click()"); pg.wait_for_timeout(500)
         comprobar(f'{nombre}: «Volver al mapa» vuelve', not pg.is_visible('#cerca'))
         pg.click('#btnNotas'); pg.wait_for_timeout(200)
@@ -89,7 +109,7 @@ with sync_playwright() as p:
             comprobar('pc: también se genera el mundo de 188 km', r2['tierraKm2'] > 3000, f"{r2['tierraKm2']} km²")
             pg.screenshot(path=f'{SALIDA}/pc_6_188km.png')
             # en inglés no falta ningún texto
-            pg.goto('file://' + RUTA + '?lang=en'); pg.wait_for_function('window.__mapa && window.__mapa.listo', timeout=240000)
+            pg.goto(URL + '&lang=en'); pg.wait_for_function('window.__mapa && window.__mapa.listo', timeout=240000)
             pg.click('#btnNotas'); pg.evaluate('window.__mapa.fondo("biomas"); window.__mapa.capa("vetas", true)')
             faltan = pg.evaluate('[...window.__idioma.faltan]')
             comprobar('pc: en inglés no falta ningún texto', not faltan, '; '.join(faltan[:4]))
@@ -97,6 +117,7 @@ with sync_playwright() as p:
         comprobar(f'{nombre}: sin errores en consola', not err, '; '.join(err[:3]))
         ctx.close()
     nav.close()
+SERVIDOR.kill()
 json.dump(MEDIDAS, open(f'{SALIDA}/medidas.json', 'w'), indent=1)
 print('\nResultado:', 'TODO CORRECTO' if not fallos else f'{len(fallos)} fallos: ' + ', '.join(fallos))
 sys.exit(1 if fallos else 0)
