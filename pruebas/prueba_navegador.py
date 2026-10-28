@@ -768,9 +768,10 @@ with sync_playwright() as p:
     print('PC: chimenea (hogar interior) sobre cimiento de piedra, con fuego, luz y humo por el tejado')
     # MUTAR_CHIMENEA=1: el hogar no se choca (se entra en el fuego): la prueba tiene que fallar
     if os.environ.get('MUTAR_CHIMENEA'): ev('window.__sinChoqueHogar = true')
-    # casita de 2×1 en la rejilla de la cabaña (casillas x = 7 y 9, z = 3): la de x = 7 de piedra y la de x = 9 de troncos
+    # casita de 2×1 en la rejilla de la cabaña (casillas x = 7 y 9, z = 3): la de x = 7 de piedra y la de x = 9 de troncos;
+    # delante de la chimenea, sin muro, para verla desde fuera
     poner('pieza', 'cim_piedra', 7, 3); poner('pieza', 'cim_tronco', 9, 3)
-    for x, z in [(7, 2), (7, 4), (9, 4), (6, 3), (10, 3)]:
+    for x, z in [(7, 4), (9, 4), (6, 3), (10, 3)]:
         poner('pieza', 'muro_tronco', x, z)
     poner('pieza', 'muro_tronco_puerta', 9, 2); poner('pieza', 'puerta_varas', 9, 2)
     ev(f"{K}.cambiarModo('construir'); {K}.estado.planta=0; {K}.seleccionar('pieza','hogar'); {K}.apuntar(9,3)")
@@ -790,7 +791,7 @@ with sync_playwright() as p:
     alto = ev(f"(() => {{ const o = {K}.escena.getObjectsByProperty('name', 'humo'); let y = 1e9; for (const m of o) y = Math.min(y, m.getWorldPosition(m.position.clone()).y); return [o.length, y]; }})()")
     comprobar('el humo sale por encima del tejado (cumbrera a 3,7 m)', alto[0] >= 5 and alto[1] > 3.9, json.dumps(alto))
     # por fuera, el cañón sale por el tejado con el humo
-    ev(f"{K}.pj.x=8.2; {K}.pj.z=-1.2; {K}.pj.rot=Math.PI; {K}.cam.yaw=Math.PI+0.5; {K}.cam.pitch=0.3; {K}.cam.dist=10")
+    ev(f"{K}.pj.x=8.2; {K}.pj.z=-1.5; {K}.pj.rot=Math.PI; {K}.cam.yaw=Math.PI+0.45; {K}.cam.pitch=0.12; {K}.cam.dist=9")
     esperar(pg, 1200)
     pg.screenshot(path=f'{SALIDA}/48_chimenea_por_fuera.png')
     # dentro, delante del fuego: no se puede entrar en el hogar
@@ -800,7 +801,7 @@ with sync_playwright() as p:
     esperar(pg, 200)
     zc = ev(f"{K}.pj.z")
     comprobar('no se entra en el fuego (el hogar se choca)', zc < 3.0, f'z={zc:.2f}')
-    ev(f"{K}.pj.x=8.3; {K}.pj.z=2.4; {K}.pj.rot=0.3; {K}.cam.yaw=Math.PI-0.35; {K}.cam.pitch=0.22; {K}.cam.dist=3.2")
+    ev(f"{K}.pj.x=6.5; {K}.pj.z=0.9; {K}.pj.rot=0.5; {K}.cam.yaw=Math.PI-0.5; {K}.cam.pitch=0.18; {K}.cam.dist=3.2")
     esperar(pg, 1200)
     pg.screenshot(path=f'{SALIDA}/49_chimenea_encendida_de_cerca.png')
     # Usar la apaga (solo se rehace ella, no todo lo construido) y la vuelve a encender
@@ -813,7 +814,7 @@ with sync_playwright() as p:
     f = ev("window.__fuegos()")
     comprobar('Usar apaga el fuego: sin llamas, sin humo y sin luz', ev(f"{chim}.apagado") is True and f['chimeneas'] == 0 and f['encendidas'] == 0 and ev(f"{K}.escena.getObjectsByProperty('name', 'humo').length") == 0, json.dumps(f))
     comprobar('apagar no rehace todo lo construido', ev("window.__rehechos.todo") == todo0)
-    ev(f"{K}.pj.x=8.3; {K}.pj.z=2.4; {K}.pj.rot=0.3")
+    ev(f"{K}.pj.x=6.5; {K}.pj.z=0.9; {K}.pj.rot=0.5")
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/50_chimenea_apagada_de_cerca.png')
     ev(f"{K}.pj.x=7.2; {K}.pj.z=2.4")
@@ -948,11 +949,11 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=0.5; {K}.pj.z=-27; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=Math.PI-0.75; {K}.cam.pitch=0.6; {K}.cam.dist=13")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06g_movil_remate_esquina.png')
-    mv.evaluate(f"{K}.pj.x=8.3; {K}.pj.z=2.3; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=0.3; {K}.cam.yaw=Math.PI-0.35; {K}.cam.pitch=0.3; {K}.cam.dist=3.6")
+    mv.evaluate(f"{K}.pj.x=6.5; {K}.pj.z=0.6; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=0.5; {K}.cam.yaw=Math.PI-0.45; {K}.cam.pitch=0.22; {K}.cam.dist=4.2")
     mv.wait_for_timeout(1200)
     comprobar('móvil: la chimenea se carga del guardado, encendida', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'hogar' && !p.apagado).length") == 1 and mv.evaluate("window.__fuegos().encendidas") == 1)
     mv.screenshot(path=f'{SALIDA}/06h_movil_chimenea.png')
-    mv.evaluate(f"{K}.pj.x=8.2; {K}.pj.z=-1.5; {K}.cam.yaw=Math.PI+0.5; {K}.cam.pitch=0.3; {K}.cam.dist=11")
+    mv.evaluate(f"{K}.pj.x=8.2; {K}.pj.z=-1.5; {K}.cam.yaw=Math.PI+0.45; {K}.cam.pitch=0.15; {K}.cam.dist=13")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06i_movil_chimenea_por_fuera.png')
     mv.click('#modos button[data-modo=construir]', no_wait_after=True)  # el clic no navega; con la máquina cargada, esperar «navegaciones» agotaba los 30 s

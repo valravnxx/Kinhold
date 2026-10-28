@@ -1194,12 +1194,17 @@ function chimenea(ctx = {}) {
   }
   // dintel: una piedra larga sobre las jambas
   piedraTosca(L, 2 * a + 0.04, yCampana - yDintel - 0.01, 0.3, 0, (yDintel + yCampana) / 2, 0.3, s += 9, 'piedra');
-  // campana enlucida de barro: tres hiladas que se estrechan y retroceden hasta el cañón, con hollín por dentro
-  const nC = 3, hC = (yCanon - yCampana) / nC;
-  for (let n = 0; n < nC; n++) {
-    const t = (n + 0.5) / nC, w = 2 * a + 0.02 - t * (2 * a - 2 * ac), z0 = 0.17 + t * (zc - 0.17);
-    L.add(cajaR(w, hC + 0.02, zb - z0, 0.05), ENLUCIDO, 0, yCampana + hC * (n + 0.5), (z0 + zb) / 2, null, { tex: 'piedra', brillo: 0.92 - n * 0.03 });
-  }
+  // campana enlucida de barro: un tronco de pirámide que se estrecha y retrocede hasta el cañón, plano por detrás (contra
+  // el muro), con una moldura abajo
+  const campana = new THREE.BoxGeometry(1, 1, 1);
+  { const p = campana.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      const arriba = p.getY(i) > 0, w = arriba ? 2 * ac : 2 * a - 0.02, z0 = arriba ? zc : 0.17;
+      p.setXYZ(i, p.getX(i) * w, yCampana + (arriba ? yCanon - yCampana + 0.02 : 0), z0 + (p.getZ(i) + 0.5) * (zb - z0));
+    }
+    campana.computeVertexNormals(); }
+  L.add(campana, ENLUCIDO, 0, 0, 0, null, { tex: 'piedra', plano: true, brillo: 0.92 });
+  L.add(cajaR(2 * a + 0.04, 0.07, zb - 0.15, 0.02), ENLUCIDO, 0, yCampana + 0.02, (0.15 + zb) / 2, null, { tex: 'piedra', brillo: 0.85 });
   L.add(cajaR(2 * a - 0.34, 0.04, zb - 0.32, 0.01), HOLLIN, 0, yCampana - 0.03, (0.3 + zb) / 2 + 0.03, null, { sinSuelo: true }); // la boca de la campana, por debajo
   // cañón de mampostería: núcleo de mortero y, por hiladas, piedras en las caras y en las esquinas (trabadas)
   const hH = 0.3;
@@ -1251,9 +1256,9 @@ function chimenea(ctx = {}) {
       g.add(m);
     });
     // humo: unas bocanadas que suben y se deshacen (se mueven en el juego; aquí, repartidas a lo alto)
-    const N = 7;
+    const N = 9;
     for (let i = 0; i < N; i++) {
-      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.22, 0), new THREE.MeshLambertMaterial({ color: 0xb9b4ad, transparent: true, opacity: 0.4, depthWrite: false, flatShading: true }));
+      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.22, 0), new THREE.MeshLambertMaterial({ color: 0x8e8983, transparent: true, opacity: 0.5, depthWrite: false, flatShading: true }));
       m.name = 'humo'; m.castShadow = false; m.userData.fase = i / N;
       g.add(m);
     }
@@ -1269,7 +1274,7 @@ export function moverHumo(g, t) {
       const u = (m.userData.fase + t * 0.16) % 1;
       m.position.set(h.x + Math.sin(u * 5 + m.userData.fase * 9) * 0.12 + u * 0.35, h.y + 0.15 + u * 2.5, h.z + Math.cos(u * 4 + m.userData.fase * 7) * 0.1);
       m.scale.setScalar(0.5 + u * 1.6);
-      m.material.opacity = 0.42 * Math.min(1, u * 6) * (1 - u);
+      m.material.opacity = 0.55 * Math.min(1, u * 6) * (1 - u);
     } else if (m.name === 'llama' && m.userData.fase !== undefined) {
       const f = m.userData.fase;
       m.scale.set(1, 0.75 + 0.3 * Math.abs(Math.sin(t * 7.3 + f) + 0.5 * Math.sin(t * 13.1 + f * 2)), 1);
