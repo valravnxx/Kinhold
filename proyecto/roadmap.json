@@ -425,7 +425,9 @@
     },
     {
      "nombre": "Taller: personalización — altura, complexión y cara con los ajustes de MakeHuman, tono de piel, color de ojos, peinado y barba",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T09:20:54+00:00",
+     "rama": "trabajo/20261028-0920"
     },
     {
      "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
