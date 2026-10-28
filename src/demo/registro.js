@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v28 (tejado de teja)';
+export const VERSION_DEMO = 'Demo única · v29 (remate de tejado)';
 export const REGISTRO_DEMO = [
+  'v29: en «Construir», remate de tejado (esquina) de paja, de tablillas y de teja: donde se juntan dos caídas en ángulo recto se hace solo limatesa (esquina de fuera, la de un tejado a cuatro aguas) o limahoya (el rincón de un tejado en L), según los tramos de al lado. Con cuatro remates, un tejado a cuatro aguas sin hastiales.',
   'v28: en «Construir», tejado de teja (10 tejas y 1 tronco, 200 kg): teja curva de barro cocido, con canales y cobijas, y caballete en la cumbrera. Pesa más del doble que la paja: los muros flojos (zarzo) llegan antes a su tope. Es la construcción v30.',
   'v27: en «Construir», contraventana para los muros con ventana y trampilla para el hueco de la escalera de tablas (se abren y se cierran con Usar; la trampilla cerrada se pisa y no deja subir), y el muro de tablas con ventana. Es la construcción v29.',
   'v26: en línea, si se corta la conexión, la página vuelve a conectar sola (a los 1, 2, 4 y 8 s, y luego cada 10 s) y sigues con el mismo personaje: el servidor te da una ficha secreta al entrar y con ella te reconoce al volver, también al salir al menú y volver a entrar, al recargar la página o si el servidor se ha reiniciado. En «Duelo en línea» vuelves con el mismo luchador, con sus heridas. Es el combate v15.',
