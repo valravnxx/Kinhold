@@ -5,11 +5,16 @@
   "hito": "prueba-online",
   "rama": "trabajo/20261028-1232"
  },
- "B": null,
- "chat:trabajo/20261028-1240-rocas": {
-  "inicio": "2026-10-28T12:35:33+01:00",
-  "tarea": "Roca escarpada de cerca: las paredes de los cortados cubiertas de piezas de roca 3D (bloques con caras, aristas, salientes y grietas, hechos por código) y una textura de roca con sombra en grietas y rincones",
+ "B": {
+  "inicio": "2026-10-28T13:59:19+00:00",
+  "tarea": "Ralentización por carga en la lógica pura, como dice el GDD: con poca carga no se nota y, cargado al máximo en todos los huecos, la velocidad al caminar baja hasta el 80%. Aplicada al andar del personaje en la demo, con pruebas de lógica y de navegador",
+  "hito": "equipo",
+  "rama": "trabajo/20261028-1359"
+ },
+ "chat:trabajo/20261028-1515-fijo": {
+  "inicio": "2026-10-28T15:12:01+01:00",
+  "tarea": "El mundo de cerca siempre igual: árboles, hierba, piedras y piezas de roca colocados según su sitio en el mundo y la semilla (no según dónde se rehace el trozo de cerca)",
   "hito": "mundo",
-  "rama": "trabajo/20261028-1240-rocas"
+  "rama": "trabajo/20261028-1515-fijo"
  }
 }
