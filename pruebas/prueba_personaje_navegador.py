@@ -207,8 +207,8 @@ with sync_playwright() as p:
         mat = lambda n: pg.evaluate(f"(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}') r = [o.material.color.r, o.material.color.g, o.material.color.b, o.visible]; }}); return r; }})()")
         # las formas se ponen en la malla (no en la GPU): peso de cada una en userData.formas y lo que se ha movido la malla
         influ = lambda n, k: pg.evaluate(f"(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}' && o.userData.formas && '{k}' in o.userData.formas.nombres) r = o.userData.formas.pesos['{k}']; }}); return r; }})()")
-        movida = lambda n: pg.evaluate(f"(() => {{ let r = 0; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}' && o.userData.formas) {{ const a = o.geometry.attributes.position, b = o.userData.formas.base;
-            for (let i = 0; i < a.count; i++) r = Math.max(r, Math.hypot(a.getX(i) - b.getX(i), a.getY(i) - b.getY(i), a.getZ(i) - b.getZ(i))); }} }}); return r; }})()")
+        movida = lambda n: pg.evaluate(f"""(() => {{ let r = 0; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}' && o.userData.formas) {{ const a = o.geometry.attributes.position, b = o.userData.formas.base;
+            for (let i = 0; i < a.count; i++) r = Math.max(r, Math.hypot(a.getX(i) - b.getX(i), a.getY(i) - b.getY(i), a.getZ(i) - b.getZ(i))); }} }}); return r; }})()""")
         pj0 = pg.evaluate(f'{E}.diag().pj.modelo.uuid')
         pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)')
         cara0 = contenido(pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_0.png'))[0]
