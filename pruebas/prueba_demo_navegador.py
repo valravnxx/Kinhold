@@ -75,7 +75,7 @@ with sync_playwright() as p:
         pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
         pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
         # 1. menú
-        comprobar('menú: tres partes y jugar en línea', pg.locator('a.parte').count() == 4)
+        comprobar('menú: tres partes, jugar en línea y duelo en línea', pg.locator('a.parte').count() == 5)
         comprobar('menú: sin personaje elegido lo dice', 'Aún no has elegido' in pg.inner_text('#demoPersonaje'))
         for s in ['[data-ir=construir]', '[data-ir=duelo]', '[data-ir=personaje]']:
             t = tapado(pg, s); comprobar(f'menú: {s} se ve y no está tapado', t == '', t)
@@ -148,7 +148,7 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/{nombre}_duelo_rendimiento.png')
         pg.click('#btnDemoFps')
         ir(pg, '#btnDemoMenu')
-        comprobar('vuelve al menú', pg.locator('a.parte').count() == 4)
+        comprobar('vuelve al menú', pg.locator('a.parte').count() == 5)
         errores = [e for e in err if 'favicon' not in e]
         comprobar('sin errores en la consola', not errores, '; '.join(errores[:3]))
         ctx.close()

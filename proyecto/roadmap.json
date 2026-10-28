@@ -284,8 +284,9 @@
     },
     {
      "nombre": "Combate en línea en la demo: dos jugadores pelean entre sí y los dos ven los mismos golpes y heridas. Prueba de navegador con dos páginas",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T22:20:15+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T22:20:15+00:00",
+     "fin": "2026-10-28T00:46:19+00:00"
     },
     {
      "nombre": "Conexiones que se cortan y protección básica: volver a conectar sin perder al personaje, quitar al que se va, límite de mensajes por segundo y de tamaño por conexión, y rechazo de datos mal formados (con una prueba que los manda)",
@@ -1156,6 +1157,13 @@
      "archivo": "jugar/demo/v23.html",
      "capturas": "capturas/demo-v23",
      "notas": "Construcción v27: andamio pegado al muro y polea en una viga"
+    },
+    {
+     "v": "v24",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v24.html",
+     "capturas": "capturas/demo-v24",
+     "notas": "Duelo en línea: dos jugadores pelean entre sí en la liza; el servidor resuelve los golpes, las paradas y las heridas, y los dos ven lo mismo. Es el combate v14."
     }
    ]
   },
@@ -1429,6 +1437,13 @@
      "archivo": "jugar/combate/v13.html",
      "capturas": "capturas/combate-v13",
      "notas": "Arreglo: mover con WASD funciona con la distribución de teclado rusa (las teclas se leen por su posición) y no se quedan pulsadas al cambiar de ventana"
+    },
+    {
+     "v": "v14",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/combate/v14.html",
+     "capturas": "capturas/combate-v14",
+     "notas": "Duelo en línea con ?enlinea=1 (el rival es otro jugador y el servidor resuelve los golpes); fuera de línea, el duelo de siempre."
     }
    ]
   },

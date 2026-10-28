@@ -7,7 +7,7 @@
 import PLANTILLAS from 'plantillas-demo';
 import { tr, traducirPagina, botonesIdioma, idioma } from '../idioma.js';
 import { personajeElegido } from './eleccion.js';
-import { direccionServidor, CLAVE_SERVIDOR } from '../juego/en_linea.js';
+import { direccionServidor, CLAVE_SERVIDOR } from '../mundo/direccion_servidor.js';
 import { VERSION_DEMO, REGISTRO_DEMO } from './registro.js';
 import { CAPAS } from '../personaje/textos.js';
 import { ponerRendimiento } from './rendimiento.js';
@@ -63,6 +63,7 @@ if (MODOS[modo]) {
   botonesIdioma($('demoIdioma'));
   for (const a of document.querySelectorAll('[data-ir]')) a.href = enlace(a.dataset.ir);
   $('demoEnLinea').href = enlace('construir', true);
+  $('demoDueloEnLinea').href = enlace('duelo', true);
   // Opciones: la dirección del servidor para «Jugar en línea» (se guarda en el navegador)
   $('demoServidor').value = direccionServidor();
   $('btnDemoOpciones').onclick = () => { $('demoOpciones').hidden = !$('demoOpciones').hidden; $('demoNotas').hidden = true; };

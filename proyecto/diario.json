@@ -1598,5 +1598,24 @@
   "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, idiomas, mapa; navegador de construcción, combate, estilo, personaje, demo, en línea, recursos, inglés, cavar y mapa en PC y móvil). Tras unir main: lógica, modelos, idiomas, construcción, demo y mapa otra vez",
   "capturas": "capturas/mapa-v4",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T22:20:15+00:00",
+  "fin": "2026-10-28T00:46:19+00:00",
+  "titulo": "Hito 1f: combate en línea en la demo",
+  "hito": "prueba-online",
+  "hecho": [
+   "«Duelo en línea» en el menú de la demo: dos jugadores pelean entre sí en la liza; los golpes, las paradas, las heridas y las flechas los resuelve el servidor y los dos ven lo mismo",
+   "Lo que hace el jugador se ve al momento en su luchador y se manda al servidor como intención; si el servidor no lo acepta, su luchador vuelve a lo que dice el servidor",
+   "El servidor reparte cada herida (zona, gravedad y tipo) y quién está en la liza; los que construyen en el mismo servidor no están en la liza: no se les puede dar y no se ven en el duelo, ni los del duelo en la construcción",
+   "«Otra vez» en línea: vuelves sano donde estabas, solo si has caído o no hay nadie en pie a menos de 15 m; si tu rival vuelve a empezar, la pelea sigue sin que tú te cures",
+   "En el duelo, los avisos de heridas van debajo de los botones de arriba (en el móvil los tapaban)",
+   "Decisiones provisionales: en línea, ritmo «normal» para todos, el rival es el más cercano de la liza y lo de volver a empezar",
+   "Publicados la demo v24 y el combate v14"
+  ],
+  "pruebas": "Batería completa correcta (bash herramientas/probar_todo.sh, terminada a mano tras cortarse la máquina a mitad); combate en el servidor 55/55 (con MUTAR_LIZA=1 falla); prueba de navegador nueva del duelo en línea con dos páginas (PC y móvil) y un servidor local, correcta (con MUTAR=1 falla). La del combate falló una vez (el rival de la máquina tumbó al jugador antes de comprobar la victoria) y sola pasó entera; la de la demo, actualizada para contar el «Duelo en línea» del menú",
+  "capturas": "capturas/demo-v24",
+  "estado": "ok",
+  "notas": "no comprobado: pelear desde dos aparatos de verdad por internet (el lag se probó en node) ni las flechas en línea en el navegador (solo en la prueba de node). En el móvil, con varias heridas, sus avisos quedan encima de las líneas del registro (pasaba ya fuera de línea)"
  }
 ]

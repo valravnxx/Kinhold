@@ -18,6 +18,11 @@
 //                        { tipo: 'combate', que: 'tensar' }
 //                        { tipo: 'combate', que: 'soltar', x, y, z }         punto al que apunta
 //                        { tipo: 'combate', que: 'equipar', arma, armadura } solo estando libre
+//                        { tipo: 'combate', que: 'liza' }                   entra en la liza (el «Duelo en línea»)
+//                        { tipo: 'combate', que: 'reiniciar' }               vuelve a empezar sano: solo si está fuera
+//                                                                             de combate o no hay nadie en pie cerca
+//   Liza: los luchadores de la liza (duelo en línea) solo se dan entre ellos, y los de fuera (los que construyen)
+//   tampoco les dan ni les ven las flechas; así un duelo y una obra pueden ir a la vez en el mismo servidor.
 //   La posición y el giro del luchador salen de su estado de presencia ({ tipo: 'estado', … }).
 //   servidor → clientes  { tipo: 'combate', eventos: [...] }               golpes, flechas e impactos, en orden
 //                        { tipo: 'luchadores', t, lista: [...] }             cada tic, los que han cambiado
@@ -26,6 +31,7 @@ import { RegistroAcciones, ejecutarCombate, avanzarProyectil } from './acciones.
 
 export const PASO = 1 / 60;          // s: el combate se avanza en pasos de como mucho esto
 export const DURA_PROYECTIL = 8;     // s: una flecha que no ha caído en este tiempo se quita
+export const CERCA_REINICIAR = 15;   // m: no se vuelve a empezar sano con alguien en pie más cerca que esto
 const LIMITE = 100000;
 
 const numero = (v) => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) <= LIMITE;
@@ -38,6 +44,8 @@ export function validarIntencion(m) {
     case 'parar': return typeof m.activo === 'boolean' ? { que: 'parar', activo: m.activo } : null;
     case 'guardia': return Object.hasOwn(GUARDIAS, m.guardia) ? { que: 'guardia', guardia: m.guardia } : null;
     case 'tensar': return { que: 'tensar' };
+    case 'liza': return { que: 'liza' };
+    case 'reiniciar': return { que: 'reiniciar' };
     case 'soltar': return [m.x, m.y, m.z].every(numero) ? { que: 'soltar', x: m.x, y: m.y, z: m.z } : null;
     case 'equipar':
       if (!Object.hasOwn(ARMAS, m.arma)) return null;
@@ -54,11 +62,13 @@ function foto(autor, L) {
     duracion: Math.round(L.duracion * 1000), tAccion: Math.round(L.tAccion * 1000),
     bloqueando: L.bloqueando, guardia: L.guardia, tension: Math.round(L.tension * 100) / 100,
     cansancio: Math.round(L.cansancio), sangre: Math.round(L.sangre), heridas: L.heridas.length,
+    // cada herida: zona, gravedad y tipo (para dibujarla y decir qué hace); el sangrado lo lleva el servidor
+    lista: L.heridas.map(h => [h.zona, h.gravedad, h.tipo, Math.round(h.sangrado * 100) / 100]), liza: !!L.liza, contra: L.puedeContraatacar(),
     fuera: L.fuera, ...(L.fuera ? { motivoFuera: L.motivoFuera } : {}),
   };
 }
 // lo que cambia sin parar (el avance de la acción) no cuenta para decidir si hay que mandarlo otra vez
-const clave = (f) => [f.arma, f.armadura, f.accion, f.linea, f.bloqueando, f.guardia, f.cansancio, f.sangre, f.heridas, f.fuera, Math.round(f.tension * 10)].join('|');
+const clave = (f) => [f.arma, f.armadura, f.accion, f.linea, f.bloqueando, f.guardia, f.cansancio, f.sangre, f.heridas, f.fuera, f.liza, f.contra, Math.round(f.tension * 10)].join('|');
 
 export class CombateServidor {
   // ritmo: el de RITMO (decisión provisional: «normal» para todos en línea). semilla: azar de las heridas.
@@ -96,6 +106,7 @@ export class CombateServidor {
     if (!L) return { ok: false, motivo: 'No estás en el combate.' };
     const i = validarIntencion(m);
     if (!i) return { ok: false, motivo: 'Intención no válida.' };
+    if (i.que === 'reiniciar') return this.reiniciar(autor);
     if (L.fuera) return { ok: false, motivo: 'Estás fuera de combate.' };
     let ok = false;
     switch (i.que) {
@@ -119,8 +130,27 @@ export class CombateServidor {
       case 'equipar':
         if (!L.puedeActuar() || L.bloqueando) break;
         L.arma = i.arma; if (i.armadura) L.armadura = i.armadura; ok = true; break;
+      case 'liza': L.liza = true; ok = true; break;
     }
     return ok ? { ok: true } : { ok: false, motivo: 'Ahora no se puede.' };
+  }
+
+  // Volver a empezar sano (otra partida en la liza), con la misma arma, armadura y sitio. Para que no sirva para
+  // curarse a mitad de una pelea: solo fuera de combate o sin nadie en pie a menos de CERCA_REINICIAR.
+  reiniciar(autor) {
+    const L = this.ctx.luchadores[autor];
+    const cerca = this.rivales(autor).some(o => !o.fuera && Math.hypot(o.x - L.x, o.z - L.z) < CERCA_REINICIAR);
+    if (!L.fuera && cerca) return { ok: false, motivo: 'Hay alguien cerca: no se puede volver a empezar en mitad de una pelea.' };
+    const N = this.entrar(autor, { arma: L.arma, armadura: L.armadura, x: L.x, z: L.z, rot: L.rot });
+    N.liza = L.liza;
+    this.pendientes.push({ tipo: 'reinicio', autor, t: this.ms() });
+    return { ok: true };
+  }
+
+  // A quién puede dar el luchador de autor: los demás de su mismo lado de la liza
+  rivales(autor) {
+    const L = this.ctx.luchadores[autor];
+    return Object.entries(this.ctx.luchadores).filter(([id, o]) => id !== autor && !!o.liza === !!(L && L.liza)).map(([, o]) => o);
   }
 
   ms() { return Math.round(this.reloj * 1000); }
@@ -137,7 +167,10 @@ export class CombateServidor {
       for (const p of this.proyectiles) {
         if (!p.activo) continue;
         const antes = this.registro.total;
-        const res = avanzarProyectil(this.ctx, this.registro, p, h);
+        const tirador = this.ctx.luchadores[p.autor];
+        const lado = tirador ? !!tirador.liza : !!p.liza;
+        p.liza = lado;
+        const res = avanzarProyectil(this.ctx, this.registro, p, h, Object.values(this.ctx.luchadores).filter(o => !!o.liza === lado));
         if (res) {
           const e = { tipo: 'flecha', autor: p.autor, arma: p.arma, t: this.ms(), x: p.x, y: p.y, z: p.z, resultado: res.tipo };
           if (this.registro.total > antes) {
@@ -161,7 +194,7 @@ export class CombateServidor {
     const alcance = linea === 'estocada' ? L.def.alcanceEstocada : L.def.alcance;
     let objetivo = null, mejor = Infinity;
     for (const [id, o] of Object.entries(this.ctx.luchadores)) {
-      if (id === autor || o.fuera) continue;
+      if (id === autor || o.fuera || !!o.liza !== !!L.liza) continue;
       const d = Math.hypot(o.x - L.x, o.z - L.z);
       const delante = difAngulo(L.rot, angulo(L, o)) <= Math.PI / 3;
       if (d <= alcance + 0.5 && delante && d < mejor) { mejor = d; objetivo = id; }
@@ -173,7 +206,7 @@ export class CombateServidor {
     }
     const r = ejecutarCombate(this.ctx, this.registro, { autor, tipo: 'golpe', objetivo, linea });
     const e = { tipo: 'golpe', n: this.registro.total, autor, objetivo, linea, resultado: r.resultado, t: this.ms() };
-    if (r.zona) { e.zona = r.zona; e.gravedad = r.gravedad; }
+    if (r.zona) { e.zona = r.zona; e.gravedad = r.gravedad; e.danio = r.tipo; }
     if (r.nota) e.nota = r.nota;
     this.pendientes.push(e);
   }

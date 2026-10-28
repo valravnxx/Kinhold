@@ -5,15 +5,8 @@ import { MundoEnLinea } from '../logica/en_linea.js';
 import { PresenciaCliente } from '../logica/presencia.js';
 import { crearJugador } from './personaje.js';
 import { tr } from '../idioma.js';
-
-export const CLAVE_SERVIDOR = 'kinhold_servidor';
-export const SERVIDOR_POR_DEFECTO = 'ws://localhost:8080';
-
-export function direccionServidor() {
-  const p = new URLSearchParams(location.search).get('servidor');
-  if (p) return p;
-  try { return localStorage.getItem(CLAVE_SERVIDOR) || SERVIDOR_POR_DEFECTO; } catch (e) { return SERVIDOR_POR_DEFECTO; }
-}
+import { direccionServidor } from '../mundo/direccion_servidor.js';
+export { CLAVE_SERVIDOR, SERVIDOR_POR_DEFECTO, direccionServidor } from '../mundo/direccion_servidor.js';
 
 // escena: donde se ponen los demás; recursos: carpeta del taller; aspecto: { sexo, capas } propio;
 // alCambiar(info): el mundo o lo que pasa ha cambiado (info = lo que devuelve MundoEnLinea.recibir);
@@ -26,9 +19,10 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   const presencia = new PresenciaCliente(enviar);
   const aspectos = new Map();   // autor → { sexo, capas }
   const remotos = new Map();    // autor → { j, clave, x, z, vel }
+  const enLiza = new Set();     // los que están en el «Duelo en línea»: no están en este mundo y no se dibujan
 
   const ponerEstado = () => {
-    const n = presencia.remotos.size;
+    const n = [...presencia.remotos.keys()].filter(a => !enLiza.has(a)).length;
     alEstado(estado === 'conectado' ? tr('En línea · {n} más', { n })
       : estado === 'conectando' ? tr('Conectando con el servidor…') : tr('Sin conexión'));
   };
@@ -43,11 +37,13 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       let msg; try { msg = JSON.parse(ev.data); } catch (e) { return; }
       const ahora = performance.now();
       presencia.recibir(msg, ahora);
+      for (const l of msg.tipo === 'luchadores' ? msg.lista : msg.tipo === 'bienvenida' ? msg.luchadores || [] : [])
+        if (l.liza) enLiza.add(l.autor); else enLiza.delete(l.autor);
       if (msg.tipo === 'bienvenida') {
         estado = 'conectado';
         for (const a of msg.aspectos || []) aspectos.set(a.autor, { sexo: a.sexo, capas: a.capas });
       } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, { sexo: msg.sexo, capas: msg.capas });
-      else if (msg.tipo === 'sale') { quitar(msg.autor); aspectos.delete(msg.autor); }
+      else if (msg.tipo === 'sale') { quitar(msg.autor); aspectos.delete(msg.autor); enLiza.delete(msg.autor); }
       else if (msg.tipo === 'error') console.warn('Servidor:', msg.motivo);
       const info = red.recibir(msg);
       alCambiar(info, msg);
@@ -76,6 +72,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     const vistos = presencia.ver(ahora);
     const siguen = new Set();
     for (const e of vistos) {
+      if (enLiza.has(e.autor)) continue;
       siguen.add(e.autor);
       const asp = aspectos.get(e.autor) || { sexo: 'hombre', capas: [] };
       const clave = asp.sexo + ':' + asp.capas.join(',');
