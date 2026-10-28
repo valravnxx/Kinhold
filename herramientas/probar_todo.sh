@@ -20,6 +20,7 @@ paso "Inventario por huecos" node pruebas/prueba_inventario.mjs
 paso "Servidor mínimo con dos clientes" node pruebas/prueba_servidor.mjs
 paso "Jugadores que se ven, con lag simulado" node pruebas/prueba_presencia.mjs
 paso "Mundo en línea: dos clientes con el servidor" node pruebas/prueba_en_linea.mjs
+paso "Conexiones que se cortan y datos mal formados" node pruebas/prueba_conexiones.mjs
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
 paso "Taller: los cinturones ciñen su prenda" node pruebas/prueba_cinturones.mjs
 paso "Taller: versiones fijadas" python3 herramientas/taller/comprobar_taller.py --prueba

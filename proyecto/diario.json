@@ -1668,5 +1668,24 @@
   "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa 66/66, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web en PC y móvil). En línea y cavar fallaron una vez por tiempo con las dos mitades a la vez; solas, correctas",
   "capturas": "capturas/mapa-v5",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T04:20:30+00:00",
+  "fin": "2026-10-28T06:07:22+00:00",
+  "titulo": "Hito 1f: conexiones que se cortan y protección básica (carril A)",
+  "hito": "prueba-online",
+  "hecho": [
+   "Al entrar, el servidor da a cada jugador una ficha secreta (en el navegador, una por pestaña). Con ella, al volver a conectar se es el mismo jugador: mismo autor y, en el duelo en línea, el mismo luchador con sus heridas, si no han pasado 2 minutos. Las fichas se guardan resumidas (sha256), así que valen también tras reiniciar el servidor.",
+   "La página vuelve a conectar sola si se corta (a los 1, 2, 4 y 8 s, y luego cada 10 s) y lo dice en pantalla.",
+   "El servidor quita enseguida al que se va: al que cierra, al momento; al que no contesta al latido, a los 10 a 20 s. Si alguien entra con su ficha mientras una conexión vieja suya sigue abierta (el «uno más» al salir al menú y volver por el túnel), manda la nueva y la vieja se cierra con un aviso.",
+   "Límites por conexión (provisionales, en el registro): cada mensaje, 16 KiB como mucho; 60 mensajes por segundo con ráfagas de 300 y 64 KiB por segundo con ráfagas de 256 KiB. Lo que pasa del límite no se atiende y a quien sigue inundando se le echa. Lógica pura en src/logica/limites.js.",
+   "Datos mal formados (no JSON, binario, tipos raros, nombres como «constructor» o «__proto__»): error y nada más; el servidor no se cae y el mundo no cambia.",
+   "La tarea la empezaron dos sesiones del carril A que se cortaron (01:20 y 03:19); esta la retomó desde su rama, unió main dos veces (mapa v5 incluido) y la terminó. Mientras tanto otra sesión del carril A cogió el taller (capa, calzado y tocados); por eso esta no suelta el carril A al terminar.",
+   "Publicadas la demo v26 y el combate v15."
+  ],
+  "pruebas": "Batería completa (bash herramientas/probar_todo.sh) correcta: la tanda se cortó a mitad de las de navegador y las que faltaban (demo, en línea, duelo en línea, recursos, idiomas, cavar, mapa) se pasaron a mano, todas correctas. Prueba nueva de conexiones 34/34 (con MUTAR=1, un servidor que no hace caso de la ficha, 7 fallos, como debe). Tras unir main otra vez (solo mapa y web) repetidas las de node, no las de navegador. Capturas de en línea y duelo en línea miradas en PC y móvil.",
+  "capturas": "capturas/demo-v26",
+  "estado": "ok",
+  "notas": "no comprobado: cortes de verdad entre dos aparatos por internet (solo con servidor local y páginas sin pantalla). En el móvil, en el duelo, los avisos de conexión quedan encima de los de heridas (como ya pasaba con varias heridas)."
  }
 ]

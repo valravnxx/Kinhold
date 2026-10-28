@@ -297,8 +297,9 @@
     },
     {
      "nombre": "Conexiones que se cortan y protección básica: volver a conectar sin perder al personaje, quitar al que se va, límite de mensajes por segundo y de tamaño por conexión, y rechazo de datos mal formados (con una prueba que los manda)",
-     "estado": "en_curso",
-     "inicio": "2026-10-28T01:20:25+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-28T01:20:25+00:00",
+     "fin": "2026-10-28T06:07:22+00:00"
     },
     {
      "nombre": "Bots: jugadores simulados en node que se conectan al servidor y andan, construyen y pelean, para la medición",
@@ -1194,6 +1195,13 @@
      "archivo": "jugar/demo/v25.html",
      "capturas": "capturas/demo-v25",
      "notas": "Construcción v28: polipasto con torno en una viga"
+    },
+    {
+     "v": "v26",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v26.html",
+     "capturas": "capturas/demo-v26",
+     "notas": "En línea, si se corta la conexión, la página vuelve a conectar sola y sigues con el mismo personaje (y en el duelo, con el mismo luchador y sus heridas). El servidor quita enseguida al que se va (adiós al «uno más» al salir al menú), pone límites de mensajes por conexión y rechaza los datos mal formados. Es el combate v15."
     }
    ]
   },
@@ -1481,6 +1489,13 @@
      "archivo": "jugar/combate/v14.html",
      "capturas": "capturas/combate-v14",
      "notas": "Duelo en línea con ?enlinea=1 (el rival es otro jugador y el servidor resuelve los golpes); fuera de línea, el duelo de siempre."
+    },
+    {
+     "v": "v15",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/combate/v15.html",
+     "capturas": "capturas/combate-v15",
+     "notas": "En línea, si se corta la conexión, vuelve a conectar sola y sigues con el mismo luchador, con sus heridas (el servidor lo guarda 2 minutos). Si entras desde otra pestaña con el mismo personaje, la vieja se cierra con un aviso."
     }
    ]
   },

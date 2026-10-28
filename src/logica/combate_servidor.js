@@ -92,6 +92,20 @@ export class CombateServidor {
     delete this.ctx.luchadores[autor]; this.mandado.delete(autor);
     for (const p of this.proyectiles) if (p.autor === autor) p.tirador = { x: p.x, z: p.z }; // su flecha sigue volando
   }
+  // Se ha cortado su conexión: se saca del combate (nadie puede darle mientras no está) pero se devuelve su
+  // luchador tal cual (heridas, sangre, cansancio, arma) para que vuelva igual si se conecta otra vez.
+  apartar(autor) {
+    const L = this.ctx.luchadores[autor];
+    this.quitar(autor);
+    return L || null;
+  }
+  // Vuelve el luchador apartado; su reloj se pone al del combate (no le pasa el tiempo que ha estado fuera).
+  volver(autor, L) {
+    L.reloj = this.reloj;
+    this.ctx.luchadores[autor] = L;
+    this.mandado.delete(autor);   // se reparte otra vez a todos en el próximo tic
+    return L;
+  }
   // posición y giro (de la presencia)
   colocar(autor, x, z, giro) {
     const L = this.ctx.luchadores[autor];
