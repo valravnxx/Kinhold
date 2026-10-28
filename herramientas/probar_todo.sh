@@ -17,6 +17,7 @@ paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs
 paso "Inventario por huecos" node pruebas/prueba_inventario.mjs
+paso "Aspecto del personaje (personalización)" node pruebas/prueba_aspecto.mjs
 paso "Servidor mínimo con dos clientes" node pruebas/prueba_servidor.mjs
 paso "Jugadores que se ven, con lag simulado" node pruebas/prueba_presencia.mjs
 paso "Mundo en línea: dos clientes con el servidor" node pruebas/prueba_en_linea.mjs
