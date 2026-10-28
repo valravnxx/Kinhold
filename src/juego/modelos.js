@@ -1236,8 +1236,8 @@ function chimenea(ctx = {}) {
     L.add(cil(r, r * 1.05, lg, 8), 'corteza', x, y, z, { y: gy, z: Math.PI / 2 }, { sinSuelo: true });
     for (const sx of [-1, 1]) L.add(new THREE.CircleGeometry(r * 0.98, 8), encendido && sx < 0 ? 0x2a1d14 : 'corte', x + sx * Math.cos(gy) * lg / 2 * 1.002, y, z - sx * Math.sin(gy) * lg / 2 * 1.002, { y: gy + sx * Math.PI / 2 }, { sinSuelo: true, tex: 'anillos' });
   }
-  for (let k = 0; k < 6; k++) L.add(new THREE.CylinderGeometry(0.008, 0.008, 0.04, 4), 'hierro', 0.12, yCampana - 0.06 - k * 0.045, zF + 0.05, { x: k % 2 ? Math.PI / 2 : 0 }, { sinSuelo: true }); // cadena (llares)
-  L.add(new THREE.SphereGeometry(0.15, 12, 6, 0, Math.PI * 2, Math.PI * 0.3, Math.PI * 0.7), 'hierro', 0.12, yF + 0.62, zF + 0.05, null, { sinSuelo: true, brillo: 0.7 });
+  for (let k = 0, nk = Math.ceil((yCampana - 0.06 - yF - 0.72) / 0.045); k < nk; k++) L.add(new THREE.CylinderGeometry(0.008, 0.008, 0.04, 4), 'hierro', 0.12, yCampana - 0.06 - k * 0.045, zF + 0.05, { x: k % 2 ? Math.PI / 2 : 0 }, { sinSuelo: true }); // cadena (llares)
+  L.add(new THREE.SphereGeometry(0.15, 12, 8), 'hierro', 0.12, yF + 0.6, zF + 0.05, null, { sinSuelo: true, brillo: 0.7, escala: new THREE.Vector3(1, 0.8, 1) }); // caldero
   L.add(new THREE.TorusGeometry(0.11, 0.012, 4, 14), 'hierro', 0.12, yF + 0.72, zF + 0.05, { x: Math.PI / 2 }, { sinSuelo: true });
   const g = deLote(L);
   g.userData.fuego = { x: 0, y: yF + 0.45, z: zF - 0.15 };
@@ -1247,9 +1247,9 @@ function chimenea(ctx = {}) {
   brasa.position.set(0, yF + 0.03, zF); brasa.name = encendido ? 'llama' : 'ceniza'; brasa.castShadow = false;
   g.add(brasa);
   if (encendido) {
-    const llamas = [[-0.13, 0.03, 0.34, 0.09], [0.08, -0.02, 0.42, 0.1], [0.2, 0.05, 0.26, 0.07], [-0.02, 0.1, 0.3, 0.08], [0.0, 0.0, 0.2, 0.05]];
+    const llamas = [[-0.13, 0.03, 0.26, 0.09], [0.08, -0.02, 0.32, 0.1], [0.2, 0.05, 0.2, 0.07], [-0.02, 0.1, 0.24, 0.08], [0.0, 0.0, 0.16, 0.05]];
     llamas.forEach(([x, z, h, r], i) => {
-      const nucleo = i === llamas.length - 1, c = nucleo ? 0xffe2a0 : COLORES.llama;
+      const nucleo = i === llamas.length - 1, c = nucleo ? 0xffc870 : COLORES.llama;
       const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6), mat(c, { emissive: c, emissiveIntensity: 1 }));
       m.geometry.translate(0, h / 2, 0);
       m.position.set(x, yF + 0.12, zF + z); m.name = 'llama'; m.castShadow = false; m.userData.fase = i * 1.7;
@@ -1258,7 +1258,7 @@ function chimenea(ctx = {}) {
     // humo: unas bocanadas que suben y se deshacen (se mueven en el juego; aquí, repartidas a lo alto)
     const N = 9;
     for (let i = 0; i < N; i++) {
-      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.22, 0), new THREE.MeshLambertMaterial({ color: 0x8e8983, transparent: true, opacity: 0.5, depthWrite: false, flatShading: true }));
+      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.24, 1), new THREE.MeshLambertMaterial({ color: 0xa29d96, transparent: true, opacity: 0.4, depthWrite: false }));
       m.name = 'humo'; m.castShadow = false; m.userData.fase = i / N;
       g.add(m);
     }
@@ -1274,7 +1274,7 @@ export function moverHumo(g, t) {
       const u = (m.userData.fase + t * 0.16) % 1;
       m.position.set(h.x + Math.sin(u * 5 + m.userData.fase * 9) * 0.12 + u * 0.35, h.y + 0.15 + u * 2.5, h.z + Math.cos(u * 4 + m.userData.fase * 7) * 0.1);
       m.scale.setScalar(0.5 + u * 1.6);
-      m.material.opacity = 0.55 * Math.min(1, u * 6) * (1 - u);
+      m.material.opacity = 0.42 * Math.min(1, u * 6) * (1 - u);
     } else if (m.name === 'llama' && m.userData.fase !== undefined) {
       const f = m.userData.fase;
       m.scale.set(1, 0.75 + 0.3 * Math.abs(Math.sin(t * 7.3 + f) + 0.5 * Math.sin(t * 13.1 + f * 2)), 1);
