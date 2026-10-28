@@ -10,5 +10,11 @@
   "tarea": "Medir el servidor con 100 jugadores simulados (bots que andan, construyen y pelean): CPU, memoria y tráfico por jugador, para saber qué servidor hace falta y cuánto cuesta al mes",
   "hito": "prueba-online",
   "rama": "trabajo/20261028-1051"
+ },
+ "chat:trabajo/20261028-1240-rocas": {
+  "inicio": "2026-10-28T12:35:33+01:00",
+  "tarea": "Roca escarpada de cerca: las paredes de los cortados cubiertas de piezas de roca 3D (bloques con caras, aristas, salientes y grietas, hechos por código) y una textura de roca con sombra en grietas y rincones",
+  "hito": "mundo",
+  "rama": "trabajo/20261028-1240-rocas"
  }
 }

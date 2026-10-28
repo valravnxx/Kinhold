@@ -902,6 +902,12 @@
      "estado": "hecho",
      "inicio": "2026-10-28T06:58:45+01:00",
      "fin": "2026-10-28T09:22:53+01:00"
+    },
+    {
+     "nombre": "Roca escarpada de cerca: las paredes de los cortados cubiertas de piezas de roca 3D (bloques con caras, aristas, salientes y grietas, hechos por código) y una textura de roca con sombra en grietas y rincones",
+     "estado": "en_curso",
+     "inicio": "2026-10-28T12:35:33+01:00",
+     "rama": "trabajo/20261028-1240-rocas"
     }
    ],
    "lleva": "chat"
