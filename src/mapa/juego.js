@@ -103,7 +103,11 @@ export function crearVistaJuego(est) {
       const pa = new Float32Array(n * n * 3), ia = [], fl = new Float32Array(n * n * 2), ho = new Float32Array(n * n), ti = new Float32Array(n * n), ol = new Float32Array(n * n);
       for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
         const k = j * n + i, x = x0 + i * PASO, z = z0 + j * PASO;
-        pa.set([x, isNaN(W[k]) ? H[k] - 0.5 : W[k], z], k * 3);
+        // un vértice seco junto al agua se queda a la altura del agua de al lado: la lámina sigue plana bajo la orilla
+        // (si bajara al terreno, en un cortado subiría como una cortina)
+        let yv = W[k];
+        if (isNaN(yv)) { let sm = 0, c = 0; for (let b = -1; b <= 1; b++) for (let a = -1; a <= 1; a++) { const ii = i + a, jj = j + b; if (ii >= 0 && jj >= 0 && ii < n && jj < n && !isNaN(W[jj * n + ii])) { sm += W[jj * n + ii]; c++; } } yv = c ? sm / c - 0.05 : H[k] - 0.5; }
+        pa.set([x, yv, z], k * 3);
         if (isNaN(W[k])) continue;
         ho[k] = Math.max(0, W[k] - H[k]); ti[k] = T[k];
         if (T[k]) { const borde = Math.min(i, j, n - 1 - i, n - 1 - j) * PASO; ol[k] = suave(0.4, 4, ho[k]) * suave(4, 30, borde); }

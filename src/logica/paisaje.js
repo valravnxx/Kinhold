@@ -96,6 +96,12 @@ export function crearPaisaje(mapa) {
     let z = hm + detalle(xm, ym, r, fino) * suave(0, 3, f) * calma;
     if (hm < 8) z = lerp(f * 0.5, z, suave(0, 2.5, f));    // costa baja: la playa baja suave hasta el agua
     z = Math.max(Math.min(0.4, f * 0.5), z);
+    if (f < 10 && z > 2) {
+      // junto al mar, la tierra alta baja en un cortado empinado (unos 60°) y no en una pared: la pared, en la rejilla,
+      // sale en dientes de sierra. La distancia a la línea de costa sale de lo que cambia la forma alrededor
+      const g1 = grande(xm + 4, ym).f, g2 = grande(xm, ym + 4).f, grad = Math.hypot(g1 - f, g2 - f) / 4 || 1e-3;
+      z = Math.min(z, 0.3 + (f / grad) * 1.8);
+    }
     if (dm < 2500) {
       // el río talla su cauce, una vega llana a los lados y laderas con la pendiente limitada (suaves en el llano,
       // más cerradas en la montaña, donde salen gargantas); nunca una zanja de paredes verticales
