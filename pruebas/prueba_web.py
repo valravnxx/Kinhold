@@ -18,6 +18,30 @@ srv = socketserver.TCPServer(('127.0.0.1', 0), Manejador)
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 URL = f'http://127.0.0.1:{srv.server_address[1]}/'
 
+# Quién trabaja en qué: la página mira proyecto/sesion.json y el último commit de cada rama en GitHub. En la prueba se
+# le sirve un estado fijo: el agente A empezó hace 10 min, el chat empezó hace 3 h pero subió un avance hace 5 min
+# (vivo por su latido) y el agente B empezó hace 3 h y no ha subido nada (cortado). Las tareas que llevan A y el chat
+# salen «en proceso»; las demás en_curso, también la de B, «a medias».
+import json as _json, datetime as _dt
+_rm0 = _json.load(open(os.path.join(RAIZ, '..', 'proyecto', 'roadmap.json'), encoding='utf-8'))
+_ec = [(h, t) for h in _rm0['hitos'] for t in h['tareas'] if t['estado'] == 'en_curso']
+_hace = lambda m: (_dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(minutes=m)).isoformat()
+_roles = [('A', 10, None), ('chat:trabajo/prueba-chat', 180, 5), ('B', 180, 200)]
+SESION = {'A': None, 'B': None}
+RAMAS = {}
+for (h, t), (clave, empezo, avance) in zip(_ec, _roles):
+    rama = 'trabajo/prueba-' + clave.replace(':', '-').replace('/', '-')
+    SESION[clave] = {'inicio': _hace(empezo), 'tarea': t['nombre'], 'hito': h['id'], 'rama': rama}
+    if avance: RAMAS[rama] = _hace(avance)
+VIVAS = [SESION[c]['tarea'] for c, _, _ in _roles[:2] if SESION.get(c)]
+def servir_github(ctx, sesion):
+    ctx.route('https://raw.githubusercontent.com/**', lambda r: r.fulfill(status=200, content_type='application/json', body=_json.dumps(sesion)))
+    def rama(r):
+        nombre = r.request.url.split('/branches/', 1)[1]
+        # una rama sin avances: su último commit es de antes de empezar
+        r.fulfill(status=200, content_type='application/json', body=_json.dumps({'commit': {'commit': {'committer': {'date': RAMAS.get(nombre, _hace(400))}}}}))
+    ctx.route('https://api.github.com/**', rama)
+
 with sync_playwright() as p:
     nav = p.chromium.launch(args=["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"])
     for nombre, vista, movil in [('pc', {'width': 1280, 'height': 860}, False), ('movil', {'width': 390, 'height': 844}, True)]:
@@ -29,8 +53,30 @@ with sync_playwright() as p:
         pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
         malos = []
         pg.on('response', lambda r: malos.append(r.url) if r.status >= 400 else None)
+        servir_github(ctx, SESION)
         pg.goto(URL)
         pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
+        # quién trabaja en qué: «ahora mismo» y el roadmap con lo que llevan los agentes vivos (y nada más)
+        pg.click('#idiomas button[data-l=es]')
+        pg.wait_for_selector('html[data-agentes=mirados]', state='attached', timeout=15000)
+        _ahora = pg.evaluate("[...document.querySelectorAll('#ahora li')].map(li => li.dataset.quien + '|' + li.querySelector('.que').firstChild.textContent)")
+        comprobar('«ahora mismo» lista solo los agentes vivos, cada uno con su tarea (el chat, vivo por su último avance)',
+                  sorted(x.split('|', 1)[1] for x in _ahora) == sorted(VIVAS) and all(x.split('|')[0] in ('A', 'chat') for x in _ahora), '; '.join(x[:50] for x in _ahora))
+        _li = pg.evaluate("[...document.querySelectorAll('#listaHitos li')].map(li => [li.className, li.querySelector('span').textContent, li.querySelector('em').textContent])")
+        _proceso = [x for x in _li if x[0] == 'en_curso']
+        comprobar('roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva',
+                  sorted(x[1] for x in _proceso) == sorted(VIVAS) and all('En proceso' in x[2] and ('Agente A' in x[2] or 'Chat' in x[2]) for x in _proceso), str([x[1][:40] + ' · ' + x[2] for x in _proceso]))
+        _medias = [x[1] for x in _li if x[0] == 'a_medias']
+        comprobar('roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias»',
+                  sorted(_medias) == sorted(t['nombre'] for _, t in _ec if t['nombre'] not in VIVAS) and all(x[2] == 'A medias' for x in _li if x[0] == 'a_medias'), str([m[:40] for m in _medias]))
+        # el cartel va solo en la pestaña Roadmap, debajo de las pestañas y encima de la lista de hitos (valravnx, 28 oct)
+        comprobar('«ahora mismo» no sale arriba ni en Jugar', not pg.is_visible('#ahora'))
+        pg.click('nav button[data-s=roadmap]'); pg.wait_for_timeout(250)
+        _pos = pg.evaluate("[document.querySelector('nav').getBoundingClientRect().bottom, document.querySelector('#ahora').getBoundingClientRect().top, document.querySelector('#ahora').getBoundingClientRect().bottom, document.querySelector('#listaHitos').getBoundingClientRect().top]")
+        comprobar('«ahora mismo» sale en Roadmap, debajo de las pestañas y encima de los hitos', pg.is_visible('#ahora') and _pos[0] <= _pos[1] + 1 and _pos[2] < _pos[3], str(_pos))
+        _y0 = pg.evaluate("document.querySelector('nav').getBoundingClientRect().top + scrollY")
+        pg.screenshot(path=f'{SALIDA}/{nombre}_0_ahora_mismo.png', clip={'x': 0, 'y': _y0, 'width': vista['width'], 'height': min(900, pg.evaluate("document.querySelector('#listaHitos').getBoundingClientRect().top + scrollY") + 160 - _y0)}, full_page=True)
+        pg.click('nav button[data-s=jugar]'); pg.wait_for_timeout(200)
         comprobar('se ven los prototipos jugables', pg.locator('#listaJuegos .tarjeta').count() >= 2)
         # la alpha (la demo única, versión unificada) va arriba y sola; las pruebas sueltas, plegadas debajo
         import json as _json
@@ -169,6 +215,16 @@ with sync_playwright() as p:
             # la primera tarjeta es la demo única, que abre su menú (sin lienzo hasta elegir una parte)
             comprobar('el botón Jugar abre el juego', 'jugar/' in pg.url and (pg.locator('canvas').count() >= 1 or pg.locator('#demoMenu a.parte').count() >= 3), pg.url)
             pg.screenshot(path=f'{SALIDA}/{nombre}_7_juego_abierto.png')
+        # sin nadie trabajando: «ahora mismo» lo dice, y ninguna tarea sale en proceso
+        ctx.unroute('https://raw.githubusercontent.com/**')
+        servir_github(ctx, {'A': None, 'B': None})
+        pg.goto(URL + '?lang=es'); pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
+        pg.wait_for_selector('html[data-agentes=mirados]', state='attached', timeout=15000)
+        comprobar('sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso',
+                  pg.locator('#ahora li').count() == 0 and pg.locator('#listaHitos li.en_curso').count() == 0 and pg.locator('#listaHitos li.a_medias').count() == len(_ec))
+        pg.click('#idiomas button[data-l=ru]'); pg.wait_for_timeout(150)
+        comprobar('«ahora mismo» en ruso', pg.text_content('#ahora h2') == 'Прямо сейчас')
+        pg.click('#idiomas button[data-l=es]'); pg.wait_for_timeout(150)
         comprobar(f'sin errores en consola ({nombre})', not err, '; '.join(err[:3]))
         ctx.close()
     nav.close()

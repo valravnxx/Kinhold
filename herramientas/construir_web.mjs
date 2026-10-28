@@ -5,6 +5,7 @@ import { join, dirname } from 'path';
 import { execFileSync } from 'child_process';
 import { createHash } from 'crypto';
 import { fileURLToPath } from 'url';
+import { leerAgentes, conLatido, fechasRamas } from './carriles.mjs';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const leer = (p) => JSON.parse(readFileSync(join(raiz, p), 'utf8'));
@@ -80,7 +81,13 @@ if (!idiomas.en) errores.push('falta proyecto/idiomas/en.json');
 if (!idiomas.ru) errores.push('falta proyecto/idiomas/ru.json');
 if (errores.length) { console.error('ERRORES:\n - ' + errores.join('\n - ')); process.exit(1); }
 
-const datos = { roadmap, diario, capturas, idiomas, generado: new Date().toISOString() };
+// quién trabaja en qué: los agentes anunciados en proyecto/sesion.json, con el último commit de su rama (latido).
+// La página vuelve a mirarlo en GitHub al abrirse; esto es lo que se ve si no puede.
+let sesion = {};
+try { sesion = leer('proyecto/sesion.json'); } catch (e) { /* sin sesiones */ }
+const agentes = leerAgentes(conLatido(sesion, fechasRamas())).filter(a => a.tarea)
+  .map(({ quien, clave, inicio, tarea, hito, rama, ultimo }) => ({ quien, clave, inicio, tarea, hito, rama, ultimo }));
+const datos = { roadmap, diario, capturas, idiomas, agentes, generado: new Date().toISOString() };
 const json = JSON.stringify(datos).replace(/</g, '\\u003c');
 const html = readFileSync(join(raiz, 'herramientas/plantilla_web.html'), 'utf8').replace('/*DATOS*/null', () => json);
 writeFileSync(join(docs, 'index.html'), html);
