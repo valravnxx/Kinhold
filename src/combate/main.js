@@ -683,10 +683,10 @@ function quitarOtro(autor) {
 // el modelo de otro jugador, con el cuerpo y la ropa que mandó y la armadura que lleva
 function vestirOtro(autor, o) {
   const a = red.aspectos.get(autor) || { sexo: 'hombre', capas: [] };
-  const clave = `${a.sexo}:${a.capas.join(',')}:${o.L.armadura}`;
+  const clave = `${a.sexo}:${a.capas.join(',')}:${o.L.armadura}:${JSON.stringify(a.aspecto || null)}`;
   if (o.m && o.clave === clave) return;
   if (o.m) escena.remove(o.m);
-  o.m = crearCombatiente({ armadura: o.L.armadura, colorCinta: 0xb3923f, recursos: RECURSOS_MH, sexo: a.sexo, capas: a.capas });
+  o.m = crearCombatiente({ armadura: o.L.armadura, colorCinta: 0xb3923f, recursos: RECURSOS_MH, sexo: a.sexo, capas: a.capas, aspecto: a.aspecto });
   o.m.userData.autor = autor; o.m.userData.tipoArma = null;
   o.clave = clave; escena.add(o.m);
 }

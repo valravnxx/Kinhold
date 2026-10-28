@@ -9,7 +9,7 @@ import { direccionServidor } from '../mundo/direccion_servidor.js';
 import { abrirConexion } from '../mundo/conexion.js';
 export { CLAVE_SERVIDOR, SERVIDOR_POR_DEFECTO, direccionServidor } from '../mundo/direccion_servidor.js';
 
-// escena: donde se ponen los demás; recursos: carpeta del taller; aspecto: { sexo, capas } propio;
+// escena: donde se ponen los demás; recursos: carpeta del taller; aspecto: { sexo, capas, aspecto } propio;
 // alCambiar(info): el mundo o lo que pasa ha cambiado (info = lo que devuelve MundoEnLinea.recibir);
 // avisar(texto, error): un aviso para el jugador; alEstado(texto): la línea de estado de la conexión.
 export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, alEstado }) {
@@ -18,7 +18,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   const enviar = (m) => { if (con) con.enviar(m); };
   const red = new MundoEnLinea(enviar);
   const presencia = new PresenciaCliente(enviar);
-  const aspectos = new Map();   // autor → { sexo, capas }
+  const aspectos = new Map();   // autor → { sexo, capas, aspecto }
   const remotos = new Map();    // autor → { j, clave, x, z, vel }
   const enLiza = new Set();     // los que están en el «Duelo en línea»: no están en este mundo y no se dibujan
 
@@ -31,7 +31,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   ponerEstado();
 
   con = abrirConexion(direccion, {
-    alAbrir: () => { if (aspecto) enviar({ tipo: 'aspecto', sexo: aspecto.sexo, capas: aspecto.capas }); },
+    alAbrir: () => { if (aspecto) enviar({ tipo: 'aspecto', sexo: aspecto.sexo, capas: aspecto.capas, aspecto: aspecto.aspecto }); },
     alMensaje: (msg) => {
       const ahora = performance.now();
       const volvia = estado === 'volviendo';
@@ -40,8 +40,8 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
         if (l.liza) enLiza.add(l.autor); else enLiza.delete(l.autor);
       if (msg.tipo === 'bienvenida') {
         estado = 'conectado';
-        for (const a of msg.aspectos || []) aspectos.set(a.autor, { sexo: a.sexo, capas: a.capas });
-      } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, { sexo: msg.sexo, capas: msg.capas });
+        for (const a of msg.aspectos || []) aspectos.set(a.autor, { sexo: a.sexo, capas: a.capas, aspecto: a.aspecto });
+      } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, { sexo: msg.sexo, capas: msg.capas, aspecto: msg.aspecto });
       else if (msg.tipo === 'sale') { quitar(msg.autor); aspectos.delete(msg.autor); enLiza.delete(msg.autor); }
       else if (msg.tipo === 'error') console.warn('Servidor:', msg.motivo);
       const info = red.recibir(msg);
@@ -78,11 +78,11 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       if (enLiza.has(e.autor)) continue;
       siguen.add(e.autor);
       const asp = aspectos.get(e.autor) || { sexo: 'hombre', capas: [] };
-      const clave = asp.sexo + ':' + asp.capas.join(',');
+      const clave = asp.sexo + ':' + asp.capas.join(',') + ':' + JSON.stringify(asp.aspecto || null);
       let r = remotos.get(e.autor);
       if (r && r.clave !== clave) { quitar(e.autor); r = null; }   // ha llegado su aspecto: se viste de nuevo
       if (!r) {
-        r = { j: crearJugador(recursos, asp.sexo, asp.capas), clave, x: e.x, z: e.z, vel: 0 };
+        r = { j: crearJugador(recursos, asp.sexo, asp.capas, asp.aspecto), clave, x: e.x, z: e.z, vel: 0 };
         r.j.raiz.userData.autor = e.autor;
         escena.add(r.j.raiz); remotos.set(e.autor, r);
       }

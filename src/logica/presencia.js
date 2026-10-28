@@ -13,6 +13,8 @@
 //   servidor → clientes  { tipo: 'estados', t, jugadores: [{ autor, t, x, y, z, giro, anim }] }   cada tic (100 ms)
 //                        { tipo: 'sale', autor }                                                  cuando alguien se va
 
+import { normalizarAspecto } from './aspecto.js';
+
 export const CADA = 100;        // ms entre estados que manda cada cliente (10 por segundo)
 export const RETRASO = 200;     // ms en el pasado a los que se dibuja a los demás: un tic del servidor y el vaivén de la red
 export const PREDICCION = 250;  // ms que se sigue la última dirección si no llega nada; luego se queda quieto
@@ -31,14 +33,18 @@ export function validarEstado(m) {
   return e;
 }
 
-// Aspecto de un jugador (cuerpo y ropa del taller), para que los demás lo vean como se eligió. Se manda una vez
-// al conectar: { tipo: 'aspecto', sexo, capas }. Devuelve el aspecto limpio o null.
+// Aspecto de un jugador (cuerpo y ropa del taller, y su personalización: forma, colores, peinado y barba), para
+// que los demás lo vean como se eligió. Se manda una vez al conectar: { tipo: 'aspecto', sexo, capas, aspecto }.
+// La personalización (`aspecto`) se comprueba con la misma lógica que el visor (src/logica/aspecto.js): lo que no
+// exista se pone por defecto y los números se recortan. Si no viene, sale la de por defecto (clientes de antes).
+// Devuelve el aspecto limpio o null.
 export function validarAspecto(m) {
   if (!m || typeof m !== 'object') return null;
   if (m.sexo !== 'hombre' && m.sexo !== 'mujer') return null;
   if (!Array.isArray(m.capas) || m.capas.length > 12) return null;
   if (!m.capas.every(c => typeof c === 'string' && /^[a-z_0-9]{1,24}$/.test(c))) return null;
-  return { sexo: m.sexo, capas: [...m.capas] };
+  if (m.aspecto !== undefined && m.aspecto !== null && (typeof m.aspecto !== 'object' || Array.isArray(m.aspecto))) return null;
+  return { sexo: m.sexo, capas: [...m.capas], aspecto: normalizarAspecto(m.aspecto, m.sexo) };
 }
 
 export function normalizarAngulo(a) {
