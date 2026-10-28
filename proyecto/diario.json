@@ -1756,5 +1756,22 @@
   "pruebas": "bash herramientas/probar_todo.sh (tras unir main): todo correcto salvo dos pruebas en línea del carril A que fallan solo con la máquina cargada: «Conexiones que se cortan» (la ráfaga de 400 acciones daba 97–99 rechazos en vez de 100; falla igual en main con carga y pasa sola, 34/34) y la de jugar en línea en navegador (cada vez una comprobación distinta de tiempos: ver andar al otro, volver a entrar o volver a conectar; pasó entera sola una vez en esta rama y otra en main). Tras la última unión con main, repetidas solas: lógica 177/177 (26 nuevas, fallan con MUTAR=1), modelos 138/138 (12 nuevas, fallan con MUTAR_CONTRAVENTANA=1), acciones, idiomas, en línea, conexiones y bots; navegador de construcción todo correcto (21 comprobaciones nuevas; las de la trampilla fallan con MUTAR_TRAMPILLA=1) y demo única todo correcto. Capturas miradas en PC y móvil, y la contraventana junto a la cabaña de la prueba de estilo v5 (45_contraventana_junto_a_la_v5). No comprobado: la contraventana y la trampilla en línea con dos jugadores (pasan por la misma acción «usar» que las puertas). En esta sesión, otra sesión del carril B ocupó el carril a las 08:51 mientras esta seguía con las pruebas: esta no lo suelta para no quitárselo.",
   "capturas": "capturas/construccion-v29",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T09:34:28+01:00",
+  "fin": "2026-10-28T12:02:17+01:00",
+  "titulo": "Hito 10: cortados de roca (acantilados de verdad)",
+  "hito": "mundo",
+  "hecho": [
+   "Medido en el sitio de la captura de valravnx: era una ladera de 20 a 37° pintada de roca y llena de piedrecitas, no un cortado",
+   "Donde la roca es dura (granito, caliza, pizarra) y la ladera empinada, el terreno se rompe en estratos: paredes de roca y repisas casi llanas, inclinados, ondulados y de distinta altura, por zonas (el método de terraceado de los generadores de terreno)",
+   "Las paredes son roca maciza: franjas de estratos, textura proyectada en triplanar (sin rayas estiradas) y caras planas con aristas; el pedregal va al pie; las repisas tienen hierba",
+   "Las paredes (más de 45°) no se suben ni se bajan andando: el personaje se para al pie o en el borde",
+   "Los acantilados de costa, en capas grandes casi verticales; la rejilla parte cada cuadro por la diagonal que mejor sigue el relieve; el suelo de lejos ya no asoma bajo el trozo de cerca",
+   "Pruebas nuevas: en la montaña de pizarra hay cortados (con todo arenisca no, y falla); en el navegador, el personaje se para al pie de un acantilado (MUTAR_PARED=1 quita el límite y falla)"
+  ],
+  "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa 68/68, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web). Construcción y en línea fallaron una vez por tiempo con las dos mitades a la vez; solas, correctas. Mapa otra vez tras unir main. No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v7",
+  "estado": "ok"
  }
 ]

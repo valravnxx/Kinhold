@@ -6,11 +6,12 @@
 import * as THREE from 'three';
 import { modelosArbol, modelosPlantas, azar } from '../mundo/decorado.js';
 import { materialTex } from '../mundo/estilos.js';
-import { bosqueEn } from '../logica/paisaje.js';
+import { bosqueEn, PENDIENTE_ANDAR } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
 import { crearJugador } from '../juego/personaje.js';
 import { colorDelSuelo, lin, poblarArboles, ROCAS_COLOR, aguaLejos, aguaCerca } from './cerca.js';
 import { atributosAgua, distanciaOrilla } from './agua.js';
+import { materialSuelo } from './suelo.js';
 
 const movil = Math.min(innerWidth, innerHeight) < 700;
 export const CERCA = movil ? 170 : 240;           // lado del trozo con todo el detalle (m)
@@ -74,7 +75,9 @@ export function crearVistaJuego(est) {
       // pendiente con vecinos a 3 m (la de la forma del terreno, no la de cada piedrecita)
       const s = Math.hypot(alt(i + 3, j) - alt(i - 3, j), alt(i, j + 3) - alt(i, j - 3)) / (6 * PASO); pend[k] = s;
       const st = y > 0.05 ? pai.sitio(xm, ym, y) : null; sitios[k] = st;
-      let c = colorDelSuelo(st, y, s, xm, ym);
+      // el color con la pendiente de aquí mismo (1 m): una repisa entre dos paredes tiene su hierba
+      const s1 = Math.hypot(alt(i + 1, j) - alt(i - 1, j), alt(i, j + 1) - alt(i, j - 1)) / (2 * PASO);
+      let c = colorDelSuelo(st, y, Math.max(s1, s * 0.6), xm, ym);
       // calvas de tierra en el prado y en el bosque, y algo de variación de cerca
       if (st && st.bioma && st.bioma !== 'nieve' && s < 0.6) { const t = suave(0.62, 0.74, fbm(xm / 16, ym / 16, 41, 3)); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.7); }
       // bajo el bosque, el suelo es de hojarasca (más pardo y oscuro)
@@ -84,11 +87,17 @@ export function crearVistaJuego(est) {
       col.set([lin(c[0]) * v, lin(c[1]) * v, lin(c[2]) * v], k * 3);
     }
     const idx = new Uint32Array((n - 1) * (n - 1) * 6); let p = 0;
-    for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++) { const a = j * n + i, b = a + 1, c2 = a + n, d = c2 + 1; idx.set([a, c2, b, b, c2, d], p); p += 6; }
+    // cada cuadro se parte por la diagonal que mejor sigue al terreno (la de menos desnivel): así una arista o el borde de
+  // un estrato en diagonal a la rejilla no sale en zigzag
+  for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++) {
+    const a = j * n + i, b = a + 1, c2 = a + n, d = c2 + 1;
+    if (Math.abs(H[a] - H[d]) < Math.abs(H[b] - H[c2])) idx.set([a, c2, d, a, d, b], p); else idx.set([a, c2, b, b, c2, d], p);
+    p += 6;
+  }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
     geo.setIndex(new THREE.BufferAttribute(idx, 1)); geo.computeVertexNormals();
-    const terreno = new THREE.Mesh(geo, materialTex('suelo')); terreno.receiveShadow = true; terreno.name = 'terrenoCerca'; g.add(terreno);
+    const terreno = new THREE.Mesh(geo, materialSuelo()); terreno.receiveShadow = true; terreno.name = 'terrenoCerca'; g.add(terreno);
     vj.terreno = terreno;
     // el agua en el trozo de cerca (ríos y mar): una lámina a la altura del agua sobre la misma rejilla; donde corta el
     // terreno sale la orilla, lisa. Cada vértice lleva su hondura, la corriente del río y, en el mar, el oleaje (que se
@@ -171,12 +180,15 @@ export function crearVistaJuego(est) {
       else if (t < pHierba + 0.035 * prado * (1 - d)) L.flores.push([hx, y, hz, 0.8 + r() * 0.5, r() * 6.3, Math.floor(r() * 3)]);
       else if (t < pHierba + 0.035 * prado * (1 - d) + 0.007 * (0.4 + d * (1 - d) * 3) + 0.02 * d) L.matas.push([hx, y - 0.05, hz, 0.5 + r() * 0.6, r() * 6.3, 0.85 + r() * 0.3]);
     }
-    // piedras: sueltas, y más en lo empinado (donde asoma la roca)
-    for (let z = z0 + 2; z < z0 + CERCA - 2; z += 3.5) for (let x = x0 + 2; x < x0 + CERCA - 2; x += 3.5) {
-      const ax = x + (r() - 0.5) * 3, az = z + (r() - 0.5) * 3, { st, s, y } = sitioEn(ax, az);
-      if (!st || !st.bioma || y < 0.5) continue;
-      if (r() > 0.012 + 0.35 * suave(0.45, 0.95, s)) continue;
-      L.rocas.push([ax, y - 0.15, az, 0.35 + r() * (s > 0.5 ? 1.6 : 0.7), r() * 6.3, st.roca]);
+    // piedras: pocas y sueltas por el campo; en las paredes ninguna (son roca maciza) y al pie de las paredes, el
+    // pedregal de lo que se desprende (bloques más grandes y juntos)
+    const paredCerca = (x, z) => { let m = 0; for (let a = 0; a < 6.28; a += 0.785) m = Math.max(m, sitioEn(x + Math.cos(a) * 5, z + Math.sin(a) * 5).s); return m; };
+    for (let z = z0 + 2; z < z0 + CERCA - 2; z += 2.5) for (let x = x0 + 2; x < x0 + CERCA - 2; x += 2.5) {
+      const ax = x + (r() - 0.5) * 2.2, az = z + (r() - 0.5) * 2.2, { st, s, y } = sitioEn(ax, az);
+      if (!st || !st.bioma || y < 0.5 || s > 0.8) continue;
+      const pie = s < 0.7 && paredCerca(ax, az) > 1.1;
+      if (r() > (pie ? 0.45 : 0.006)) continue;
+      L.rocas.push([ax, y - 0.2, az, pie ? 0.5 + r() * 1.5 : 0.3 + r() * 0.6, r() * 6.3, st.roca]);
     }
     // recorte a lo que aguanta el aparato
     for (const [k, m] of [['hierba', MAX.hierba], ['flores', MAX.flores], ['matas', MAX.matas], ['rocas', MAX.rocas]]) if (L[k].length > m) { const q = m / L[k].length; L[k] = L[k].filter(() => r() < q); }
@@ -201,7 +213,8 @@ export function crearVistaJuego(est) {
     poner(L.rocas, pl.roca.geo, pl.roca.mats, 'rocasCerca', { sombra: true, color: (e) => { const k = ROCAS_COLOR[e[5]] || ROCAS_COLOR.caliza; return c.setRGB(lin(k[0]) / 0.4, lin(k[1]) / 0.4, lin(k[2]) / 0.4); } });
 
     est.raiz.add(g); vj.grupo = g;
-    hundirLejos(px, pz);
+    // el suelo de lejos no se dibuja bajo el trozo de cerca (salvo un borde de 3 m, que queda debajo y tapa la junta)
+    materialSuelo({ lejos: true }).ponerHueco(x0 + 3, z0 + 3, x0 + (n - 1) * PASO - 3, z0 + (n - 1) * PASO - 3);
     poblarArboles(null, (x, z) => Math.abs(x - px) < CERCA / 2 && Math.abs(z - pz) < CERCA / 2);
     const tris = (gg) => (gg.index ? gg.index.count : gg.attributes.position.count) / 3;
     vj.medidas = {
@@ -230,7 +243,7 @@ export function crearVistaJuego(est) {
   vj.salir = () => {
     if (!vj.activo) return;
     vj.activo = false; ayuda().hidden = true;
-    quitarGrupo(); devolverLejos(); vj.centro = null; aguaLejos().quitarHueco();
+    quitarGrupo(); devolverLejos(); vj.centro = null; aguaLejos().quitarHueco(); materialSuelo({ lejos: true }).quitarHueco();
     if (vj.jugador) est.escena.remove(vj.jugador.raiz);
     est.amb.sol.castShadow = false;
     poblarArboles(null);
@@ -245,10 +258,17 @@ export function crearVistaJuego(est) {
       else {
         vel = d > 6 ? 3.2 : 1.4; const paso = Math.min(d, vel * dt);
         const antes = vj.pos.clone();
-        vj.pos.x += dx / d * paso; vj.pos.z += dz / d * paso; vj.pos.y = vj.altura(vj.pos.x, vj.pos.z);
-        vj.jugador.raiz.rotation.y = Math.atan2(dx, dz);
-        const mov = vj.pos.clone().sub(antes);
-        est.camara.position.add(mov); est.control.target.add(mov);
+        // una pared de roca no se sube ni se baja andando: se mira la pendiente medio metro por delante
+        const nx = vj.pos.x + dx / d * 0.5, nz = vj.pos.z + dz / d * 0.5;
+        // (sinLimite: solo para romper la prueba a propósito)
+        if (!vj.sinLimite && Math.abs(vj.altura(nx, nz) - vj.pos.y) / 0.5 > PENDIENTE_ANDAR) { vj.destino = null; vj.parado = 'pared'; }
+        else {
+          vj.parado = null;
+          vj.pos.x += dx / d * paso; vj.pos.z += dz / d * paso; vj.pos.y = vj.altura(vj.pos.x, vj.pos.z);
+          vj.jugador.raiz.rotation.y = Math.atan2(dx, dz);
+          const mov = vj.pos.clone().sub(antes);
+          est.camara.position.add(mov); est.control.target.add(mov);
+        }
       }
     }
     vj.jugador.raiz.position.copy(vj.pos);
@@ -300,6 +320,18 @@ export function crearVistaJuego(est) {
     const t = est.control.target.set(vj.pos.x, vj.pos.y + 1.2, vj.pos.z);
     est.camara.position.set(t.x + Math.cos(yaw) * Math.cos(pitch) * dist, t.y + Math.sin(pitch) * dist, t.z + Math.sin(yaw) * Math.cos(pitch) * dist);
     est.control.update();
+  };
+  // para las pruebas: un punto al pie de una pared de roca cerca del centro del trozo, y hacia dónde queda la pared
+  vj.paredCercana = () => {
+    const c = vj.centro; if (!c) return null; const { n, H } = c, P = PASO;
+    let mejor = null;
+    for (let j = 3; j < n - 3; j++) for (let i = 3; i < n - 3; i++) {
+      const k = j * n + i, gx = (H[k + 1] - H[k - 1]) / (2 * P), gz = (H[k + n] - H[k - n]) / (2 * P), s = Math.hypot(gx, gz);
+      if (s < 1.3) continue;
+      const x = c.x0 + i * P, z = c.z0 + j * P, d = Math.hypot(x - c.px, z - c.pz);
+      if (!mejor || d < mejor.d) mejor = { d, x: x - gx / s * 9, z: z - gz / s * 9, dir: Math.atan2(gz, gx) };
+    }
+    return mejor;
   };
   vj.andarA = (x, z) => { vj.destino = new THREE.Vector3(x, 0, z); };
   return vj;

@@ -9,6 +9,7 @@ import { crearPaisaje, bosqueEn } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
 import { tr } from '../idioma.js';
 import { crearVistaJuego } from './juego.js';
+import { materialSuelo } from './suelo.js';
 import { crearMaterialAgua, atributosAgua, tiempoAgua, distanciaOrilla } from './agua.js';
 
 export const LADO_CERCA = 4000;                 // m
@@ -33,8 +34,15 @@ export function colorDelSuelo(st, y, s, xm, ym) {
   const verde = Math.max(-0.5, Math.min(0.5, st.P - 0.6)) + (fbm(xm / 420, ym / 420, 9, 3) - 0.5) * 0.6;
   if (st.bioma !== 'nieve') c = [c[0] * (1 - 0.12 * verde), c[1] * (1 + 0.1 * verde), c[2] * (1 - 0.1 * verde)];
   const roca = ROCA[st.roca] || ROCA.caliza;
-  const r = Math.min(1, Math.max(0, (s - 0.62) / 0.3) + (st.bioma === 'alpino' ? 0.25 : 0));
-  c = c.map((v, n) => v + (roca[n] - v) * r);                                       // lo empinado, roca desnuda
+  // roca desnuda solo en las paredes de verdad (más de unos 45°); las cuestas, por empinadas que sean, con hierba
+  const r = Math.min(1, Math.max(0, (s - 0.85) / 0.4) + (st.bioma === 'alpino' ? 0.25 : 0));
+  c = c.map((v, n) => v + (roca[n] - v) * r);
+  if (r > 0) {
+    // en la pared, los estratos: franjas por la altura (como capas de roca), onduladas, y vetas más oscuras
+    const capa = Math.sin(y * 1.7 + fbm(xm / 60, ym / 60, 11, 2) * 7) * 0.5 + 0.5, veta = fbm(xm / 7, ym / 7 + y / 3, 13, 2);
+    const k = 1 - r * (0.16 * capa + 0.14 * Math.max(0, veta - 0.55) * 4);
+    c = c.map(v => v * k);
+  }
   if (y < 2.6 && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25) c = c.map((v, n) => v + (ARENA[n] - v) * (1 - y / 2.6)); // playa
   if (st.T < -1.5 && s < 0.9) c = SUELO.nieve;
   return c;
@@ -130,11 +138,17 @@ function construir(mapa, cx, cy) {
     col.set([lin(c[0]) * v, lin(c[1]) * v, lin(c[2]) * v], k * 3);
   }
   const idx = new Uint32Array((N - 1) * (N - 1) * 6); let p = 0;
-  for (let j = 0; j < N - 1; j++) for (let i = 0; i < N - 1; i++) { const a = j * N + i, b = a + 1, c2 = a + N, d = c2 + 1; idx.set([a, c2, b, b, c2, d], p); p += 6; }
+  // cada cuadro se parte por la diagonal que mejor sigue al terreno (la de menos desnivel): así una arista o el borde de
+  // un estrato en diagonal a la rejilla no sale en zigzag
+  for (let j = 0; j < N - 1; j++) for (let i = 0; i < N - 1; i++) {
+    const a = j * N + i, b = a + 1, c2 = a + N, d = c2 + 1;
+    if (Math.abs(H[a] - H[d]) < Math.abs(H[b] - H[c2])) idx.set([a, c2, d, a, d, b], p); else idx.set([a, c2, b, b, c2, d], p);
+    p += 6;
+  }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   geo.setIndex(new THREE.BufferAttribute(idx, 1)); geo.computeVertexNormals();
-  if (!estado.matLejos) { estado.matLejos = materialTex('suelo').clone(); Object.assign(estado.matLejos, { polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 8 }); }
+  if (!estado.matLejos) estado.matLejos = materialSuelo({ lejos: true });
   const terreno = new THREE.Mesh(geo, estado.matLejos); terreno.name = 'terreno'; terreno.receiveShadow = true; estado.raiz.add(terreno);
   estado.terreno = terreno; estado.tramos = tramos; estado.L = L; estado.N = N;
   // mar: una malla sobre la misma rejilla, solo donde hay mar, con la hondura en cada vértice (para el color y para
@@ -275,4 +289,5 @@ window.__cerca = { listo: false, ocultar: (n) => { const o = estado.raiz.getObje
   rioCercano: () => { const { cx, cy } = estado.centro; let mejor = null, bd = Infinity; for (const t of estado.tramos) for (let u = 0; u <= 1; u += 0.05) { const x = t.ax + (t.bx - t.ax) * u - cx, z = t.ay + (t.by - t.ay) * u - cy, d = Math.hypot(x, z); if (d < bd) { bd = d; mejor = { x, z, ancho: t.ancho, dir: Math.atan2(t.by - t.ay, t.bx - t.ax) }; } } return mejor; },
   // para las pruebas: un punto de tierra junto al mar (en la escena), cerca del centro de la zona
   costaCercana: (yMin = 0.3, yMax = 12) => { const a = estado.alturaEn; for (let r = 0; r < 1900; r += 20) for (let g = 0; g < 6.28; g += 0.1) { const x = Math.cos(g) * r, z = Math.sin(g) * r, y = a(x, z); if (y > yMin && y < yMax) for (let h = 0; h < 6.28; h += 0.5) if (a(x + Math.cos(h) * 80, z + Math.sin(h) * 80) < -1) return { x, z, dir: h }; } return null; },
+  paredCercana: () => estado.juego.paredCercana(),
   juegoEn: (x, z, dir = 0) => { if (window.__cerca.vistaActual === 'juego') estado.juego.salir(); estado.juego.entrar(x, z, dir); window.__cerca.vistaActual = 'juego'; }, get medidas() { return this._m; }, set medidas(v) { this._m = v; } };
