@@ -437,7 +437,9 @@
     },
     {
      "nombre": "Que los demás jugadores en línea te vean con tu aspecto (forma, colores, peinado y barba): mandarlo con el cuerpo y la ropa, y que el servidor lo compruebe con la misma lógica (src/logica/aspecto.js)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T16:24:12+00:00",
+     "rama": "trabajo/20261028-1624"
     },
     {
      "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",

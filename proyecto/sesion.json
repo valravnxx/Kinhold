@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-28T16:24:12+00:00",
+  "tarea": "Que los demás jugadores en línea te vean con tu aspecto (forma, colores, peinado y barba): mandarlo con el cuerpo y la ropa, y que el servidor lo compruebe con la misma lógica (src/logica/aspecto.js)",
+  "hito": "arte",
+  "rama": "trabajo/20261028-1624"
+ },
  "B": {
   "inicio": "2026-10-28T14:53:19+00:00",
   "tarea": "Curación de heridas",
