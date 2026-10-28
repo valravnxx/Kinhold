@@ -1910,5 +1910,26 @@
   "pruebas": "Batería completa correcta tras unir main (con el mapa v9 de los nombres del mundo, de otra sesión de chat; esta versión pasa a v10). No comprobado: fotogramas en un móvil de verdad",
   "capturas": "capturas/mapa-v10",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T15:25:29+00:00",
+  "fin": "2026-10-28T19:04:21+00:00",
+  "titulo": "Hito 1f: revisión completa de la prueba online",
+  "hito": "prueba-online",
+  "hecho": [
+   "Pasadas todas las pruebas del proyecto con probar_todo.sh (servidor, presencia, mundo en línea, conexiones, combate en el servidor, bots, medición, servidor en internet y todo lo demás, en node y en el navegador).",
+   "La prueba de jugar en línea falló a veces al salir al menú y volver a entrar desde el móvil: la página se carga entera otra vez y, sin tarjeta gráfica, conectar tardó hasta 27 s (medido) y la prueba esperaba 20 s. Ahora espera hasta 60 s, como ya esperaba a que cargara la página; después pasó bien.",
+   "La prueba del duelo en línea falló una vez dentro de la tanda completa y pasó entera al repetirla sola; no se ha encontrado la causa.",
+   "probar_todo.sh instala Caddy aunque la máquina no tenga la lista de paquetes al día (antes la prueba del servidor en internet fallaba en una máquina nueva).",
+   "Tras unir main (tejado de teja, personalización del taller, ralentización por carga) se repitieron las pruebas del servidor en node y las dos de navegador en línea: correctas.",
+   "Revisadas las capturas de jugar en línea y del duelo en línea en PC y móvil: los dos jugadores se ven con el personaje del taller, las obras se ven en los dos, el aviso de conexión cortada y recuperada, y el final del duelo en los dos.",
+   "Sin versión jugable nueva: desde la demo v28 no ha cambiado nada que se juegue.",
+   "Queda por hacer por valravnx: crear la máquina en Hetzner con la guía de servidor/nube/LEEME.md y probar desde dos aparatos (decisión pendiente).",
+   "No se ha soltado el carril A al final: lo ocupa ya otra sesión del carril A (remate de tejado).",
+   "El hito 1f queda en revisión, esperando a valravnx."
+  ],
+  "pruebas": "Todas correctas (bash herramientas/probar_todo.sh); la de jugar en línea y la del duelo en línea, al repetirlas solas; tras unir main, servidor en node y navegador en línea correctos. Capturas miradas en PC y móvil.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

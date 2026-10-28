@@ -249,7 +249,7 @@
    "id": "prueba-online",
    "num": "1f",
    "nombre": "Prueba online mínima",
-   "estado": "en_curso",
+   "estado": "revision",
    "jugable": "Dos jugadores en el mismo mundo desde dos dispositivos, construyendo y peleando, con el mundo guardado en un servidor sencillo; sin cuentas completas ni administración todavía.",
    "nota": "Pedido de valravnx el 26 oct: lo multijugador es el mayor riesgo del proyecto y se comprueba pronto, justo después del estilo v5, antes de seguir ampliando piezas, ropa y sistemas.",
    "tareas": [
@@ -321,9 +321,9 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T15:25:29+00:00",
-     "rama": "trabajo/20261028-1525"
+     "fin": "2026-10-28T19:04:21+00:00"
     }
    ]
   },
