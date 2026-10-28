@@ -542,21 +542,57 @@ function aristaHacia(i, j, di, dj) {
   if (dj === 1) return [i, j + 1, 0];
   return [i, j, 0];
 }
-// Para cada tramo de tejado: altura de arranque (en tramos) y rellenos de muro necesarios
+// Remates de tejado (esquinas): una casilla donde se juntan dos caídas que van en ángulo recto. Con «dir» como un
+// tramo: sube hacia SUBE[dir] y también hacia X_LOCAL[dir]. La forma sale sola de los vecinos:
+//   limatesa (esquina de fuera, la de un tejado a cuatro aguas): sus dos lados bajos son alero; alto = el menor de los dos
+//   limahoya (rincón, la de un tejado en L): tiene tejado en algún lado bajo; alto = el mayor de los dos
+export const esEsquina = (p) => !!p && !!PIEZAS[p.tipo] && !!PIEZAS[p.tipo].esquina;
+// alto (en tramos) de una pieza de tejado en el vértice (a, b) de su casilla (a, b = 0 o 1, hacia +i y +j)
+function altoEnVertice(p, forma, off, a, b) {
+  const d = p.dir || 0, w = [2 * a - 1, 2 * b - 1];
+  const z = (w[0] * SUBE[d][0] + w[1] * SUBE[d][1] + 1) / 2, x = (w[0] * X_LOCAL[d][0] + w[1] * X_LOCAL[d][1] + 1) / 2;
+  if (forma === 'tesa') return Math.min(z, x);
+  if (forma === 'hoya') return Math.max(z, x);
+  return off + z;
+}
+// los dos vértices del lado de la casilla que mira hacia (di, dj), en el orden en que los ve el vecino de ese lado
+function verticesDeLado(di, dj) {
+  if (di) { const a = di > 0 ? 1 : 0; return [[a, 0], [a, 1]]; }
+  const b = dj > 0 ? 1 : 0; return [[0, b], [1, b]];
+}
+// Para cada pieza de tejado: altura de arranque (en tramos) y rellenos de muro necesarios
 // para que los muros de debajo cierren hasta el tejado.
 //   lado: triángulo o trapecio en un extremo (x local = ±1), de hBajo a hAlto
 //   alto: rectángulo bajo el borde alto (z local = +1), de 0 a h
+// En los remates (esquinas), además, forma: 'tesa' o 'hoya'.
 export function geometriaTejados(c) {
   const tejado = (i, j, k) => c.piezas.get(clave('r', i, j, k));
+  const tramo = (i, j, k) => { const p = tejado(i, j, k); return p && !esEsquina(p) ? p : null; };
   const memo = new Map();
   const arranque = (p, prof = 0) => {
+    if (esEsquina(p)) return 0; // los remates van siempre en la primera fila (no se apilan)
     const key = clave('r', p.i, p.j, p.k);
     if (memo.has(key)) return memo.get(key);
     const d = p.dir || 0, [ui, uj] = SUBE[d];
-    const bajo = tejado(p.i - ui, p.j - uj, p.k);
+    const bajo = tramo(p.i - ui, p.j - uj, p.k);
     const v = bajo && (bajo.dir || 0) === d && prof < 16 ? arranque(bajo, prof + 1) + 1 : 0;
     memo.set(key, v);
     return v;
+  };
+  // forma de un remate: rincón si hay tejado detrás de alguno de sus lados bajos
+  const forma = (p) => {
+    if (!esEsquina(p)) return null;
+    const d = p.dir || 0, [ui, uj] = SUBE[d], [xi, xj] = X_LOCAL[d];
+    return tejado(p.i - ui, p.j - uj, p.k) || tejado(p.i - xi, p.j - xj, p.k) ? 'hoya' : 'tesa';
+  };
+  // altos de la pieza en los dos vértices del lado que mira hacia (di, dj)
+  const altosLado = (p, di, dj) => verticesDeLado(di, dj).map(([a, b]) => altoEnVertice(p, forma(p), arranque(p), a, b));
+  // el tejado sigue sin escalón por ese lado: el vecino tiene los mismos altos en los dos vértices que comparten
+  const seJunta = (p, di, dj) => {
+    const n = tejado(p.i + di, p.j + dj, p.k);
+    if (!n) return false;
+    const [a1, a2] = altosLado(p, di, dj), [b1, b2] = altosLado(n, -di, -dj);
+    return Math.abs(a1 - b1) < 1e-6 && Math.abs(a2 - b2) < 1e-6;
   };
   const muroBajo = (p, a) => {
     if (p.k < 1) return null;
@@ -568,30 +604,37 @@ export function geometriaTejados(c) {
   const res = new Map();
   for (const [key, p] of c.piezas) {
     if (p.hueco !== 'r') continue;
-    const d = p.dir || 0, off = arranque(p);
+    const d = p.dir || 0, off = arranque(p), fo = forma(p);
     const [ui, uj] = SUBE[d], [xi, xj] = X_LOCAL[d];
     const rellenos = [];
+    const par = ((p.i + p.j) % 2 + 2) % 2;
+    if (fo) {
+      // remate: los lados altos de un rincón se cierran como el borde alto de un tramo si no tienen tejado al lado
+      if (fo === 'hoya') {
+        if (!seJunta(p, ui, uj)) { const m = muroBajo(p, aristaHacia(p.i, p.j, ui, uj)); if (m) rellenos.push({ tipo: 'alto', muro: m.tipo, h: 1 }); }
+        if (!seJunta(p, xi, xj)) { const m = muroBajo(p, aristaHacia(p.i, p.j, xi, xj)); if (m) rellenos.push({ tipo: 'lado', lado: 1, muro: m.tipo, hBajo: 1, hAlto: 1 }); }
+      }
+      res.set(key, { arranque: 0, rellenos, extremos: [], cumbrera: false, par, forma: fo });
+      continue;
+    }
     for (const lado of [1, -1]) {
-      const n = tejado(p.i + lado * xi, p.j + lado * xj, p.k);
-      const continua = n && (n.dir || 0) === d && arranque(n) === off;
-      if (continua) continue;
+      if (seJunta(p, lado * xi, lado * xj)) continue;
       const m = muroBajo(p, aristaHacia(p.i, p.j, lado * xi, lado * xj));
       if (m) rellenos.push({ tipo: 'lado', lado, muro: m.tipo, hBajo: off, hAlto: off + 1 });
     }
     const n = tejado(p.i + ui, p.j + uj, p.k);
-    const sigue = n && (n.dir || 0) === d && arranque(n) === off + 1;
-    const cumbrera = n && (n.dir || 0) === (d + 2) % 4 && arranque(n) === off;
-    if (!sigue && !cumbrera) {
+    const sigue = n && !esEsquina(n) && (n.dir || 0) === d && arranque(n) === off + 1;
+    const cumbreraTramo = n && !esEsquina(n) && (n.dir || 0) === (d + 2) % 4 && arranque(n) === off;
+    // contra un rincón (limahoya), el borde alto del tramo es cumbrera y la pone el tramo (el remate no la lleva)
+    const contraRincon = n && forma(n) === 'hoya' && off === 0 && seJunta(p, ui, uj);
+    if (!sigue && !cumbreraTramo && !contraRincon) {
       const m = muroBajo(p, aristaHacia(p.i, p.j, ui, uj));
       if (m) rellenos.push({ tipo: 'alto', muro: m.tipo, h: off + 1 });
     }
     // para el dibujo: lados sin tramo que siga (ahí el tejado vuela y se remata), si cierra una cumbrera
     // (la pone uno solo de los dos tramos) y la paridad de la casilla (los tramos vecinos se montan sin coincidir)
-    const extremos = [1, -1].filter(lado => {
-      const v = tejado(p.i + lado * xi, p.j + lado * xj, p.k);
-      return !(v && (v.dir || 0) === d && arranque(v) === off);
-    });
-    res.set(key, { arranque: off, rellenos, extremos, cumbrera: !!cumbrera && d < 2, par: ((p.i + p.j) % 2 + 2) % 2 });
+    const extremos = [1, -1].filter(lado => !seJunta(p, lado * xi, lado * xj));
+    res.set(key, { arranque: off, rellenos, extremos, cumbrera: (!!cumbreraTramo && d < 2) || !!contraRincon, par });
   }
   return res;
 }

@@ -14,6 +14,7 @@ if (process.env.MUTAR === '1') {
   PIEZAS.polipasto.polipasto = false; // un polipasto que es una polea más
   PIEZAS.muro_tabla_ventana.conVentana = false; // un muro de tablas con ventana sin hueco para la contraventana
   PIEZAS.tejado_teja.peso = 80;   // un tejado de teja que pesa como uno de paja
+  PIEZAS.remate_paja.esquina = false; // un remate que se comporta como un tramo más
 }
 
 let ok = 0, mal = 0;
@@ -729,6 +730,82 @@ console.log('19. Tejado de teja (pesa 200 kg: el doble y más que la paja)');
   // partidas guardadas de antes de la teja: se cargan con las tejas de partida
   const viejo = m.exportar(); delete viejo.materiales.teja;
   comprobar('una partida guardada sin tejas se carga con las de partida', Mundo.importar(JSON.parse(JSON.stringify(viejo))).materiales.teja === 100);
+}
+
+console.log('20. Remate de tejado: esquinas que cierran (limatesa y limahoya)');
+{
+  // casa con la planta que se le pase (lista de casillas): cimientos, muros por fuera y tejado
+  const casa = (celdas) => {
+    const m = new Mundo(); m.colocarMojon(0, 0);
+    for (const k in m.materiales) m.materiales[k] = 1e5;
+    const c = nuevaConstruccion(m), hay = new Set(celdas.map(x => x.join()));
+    for (const [i, j] of celdas) m.colocar(enRejilla(m, c, 'cim_piedra', i, j, 0));
+    for (const [i, j] of celdas) for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      if (hay.has([i + di, j + dj].join())) continue;
+      const a = di === 1 ? [i + 1, j, 1] : di === -1 ? [i, j, 1] : dj === 1 ? [i, j + 1, 0] : [i, j, 0];
+      m.colocar(enRejilla(m, c, 'muro_tronco', a[0], a[1], 0, a[2]));
+    }
+    return { m, c };
+  };
+  const tejar = (m, c, lista) => lista.map(([tipo, i, j, dir]) => {
+    const r = m.colocar(enRejilla(m, c, tipo, i, j, 1, 0, dir));
+    return r.ok ? '' : `${tipo} ${i},${j}: ${r.motivo}`;
+  }).filter(Boolean);
+  // a cuatro aguas, 2×3: cuatro esquinas (limatesa) y dos tramos en medio
+  {
+    const celdas = []; for (let i = 0; i < 2; i++) for (let j = 0; j < 3; j++) celdas.push([i, j]);
+    const { m, c } = casa(celdas);
+    const fallos = tejar(m, c, [['remate_paja', 0, 0, 0], ['remate_paja', 1, 0, 1], ['remate_paja', 0, 2, 3], ['remate_paja', 1, 2, 2],
+      ['tejado_paja', 0, 1, 3], ['tejado_paja', 1, 1, 1]]);
+    comprobar('a cuatro aguas: los remates y los tramos se ponen', fallos.length === 0, fallos.join(' | '));
+    const g = geometriaTejados(c), r = (i, j) => g.get(clave('r', i, j, 1));
+    const esq = [[0, 0], [1, 0], [0, 2], [1, 2]].map(([i, j]) => r(i, j));
+    comprobar('a cuatro aguas: las cuatro esquinas son limatesa', esq.every(x => x && x.forma === 'tesa'), JSON.stringify(esq.map(x => x && x.forma)));
+    comprobar('a cuatro aguas: nada que cerrar bajo el tejado (sin hastiales)', [...g.values()].every(x => x.rellenos.length === 0),
+      JSON.stringify([...g.entries()].filter(([, x]) => x.rellenos.length).map(([k, x]) => k + ':' + x.rellenos.map(y => y.tipo))));
+    comprobar('a cuatro aguas: los tramos del medio siguen en las esquinas (no vuelan por los lados)', !r(0, 1).extremos.length && !r(1, 1).extremos.length,
+      JSON.stringify([r(0, 1).extremos, r(1, 1).extremos]));
+    comprobar('a cuatro aguas: una sola cumbrera en medio', [r(0, 1), r(1, 1)].filter(x => x.cumbrera).length === 1);
+    comprobar('los remates no se apilan: arranque 0', esq.every(x => x.arranque === 0));
+  }
+  // pirámide de 2×2: solo cuatro remates
+  {
+    const { m, c } = casa([[0, 0], [1, 0], [0, 1], [1, 1]]);
+    const fallos = tejar(m, c, [['remate_teja', 0, 0, 0], ['remate_teja', 1, 0, 1], ['remate_teja', 0, 1, 3], ['remate_teja', 1, 1, 2]]);
+    const g = geometriaTejados(c);
+    comprobar('pirámide de teja: cuatro limatesas y nada que cerrar', !fallos.length && [...g.values()].every(x => x.forma === 'tesa' && !x.rellenos.length), fallos.join(' | '));
+  }
+  // en L: ala A de 4×2 (cumbrera a lo largo de i) y ala B de 2×2 (cumbrera a lo largo de j) que sale de su punta
+  {
+    const celdas = [];
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 2; j++) celdas.push([i, j]);
+    for (let i = 2; i < 4; i++) for (let j = 2; j < 4; j++) celdas.push([i, j]);
+    const { m, c } = casa(celdas);
+    const fallos = tejar(m, c, [
+      ['tejado_tablilla', 0, 0, 0], ['tejado_tablilla', 1, 0, 0], ['tejado_tablilla', 2, 0, 0], ['tejado_tablilla', 0, 1, 2], ['tejado_tablilla', 1, 1, 2],
+      ['remate_tablilla', 3, 0, 1], ['tejado_tablilla', 3, 1, 1], ['remate_tablilla', 2, 1, 3],
+      ['tejado_tablilla', 2, 2, 3], ['tejado_tablilla', 2, 3, 3], ['tejado_tablilla', 3, 2, 1], ['tejado_tablilla', 3, 3, 1]]);
+    comprobar('en L: todo se pone (el rincón, sin muros debajo, se apoya en los tramos de al lado)', fallos.length === 0, fallos.join(' | '));
+    const g = geometriaTejados(c), r = (i, j) => g.get(clave('r', i, j, 1));
+    comprobar('en L: el rincón es limahoya y la esquina de fuera limatesa', r(2, 1).forma === 'hoya' && r(3, 0).forma === 'tesa', `${r(2, 1).forma} ${r(3, 0).forma}`);
+    comprobar('en L: los tramos junto a los remates no vuelan por ese lado',
+      [r(2, 0), r(3, 1), r(1, 1), r(2, 2)].every(x => !x.extremos.length) && r(0, 1).extremos.length === 1,
+      JSON.stringify([r(2, 0), r(3, 1), r(1, 1), r(2, 2), r(0, 1)].map(x => x.extremos)));
+    comprobar('en L: las dos cumbreras llegan al rincón (las ponen los tramos de al lado)', r(2, 0).cumbrera && r(3, 1).cumbrera && !r(2, 1).cumbrera);
+    // hastiales solo en las dos puntas (i = 0 y j = 4): cada una con sus dos tramos
+    const conRelleno = [...g.entries()].filter(([, x]) => x.rellenos.length).map(([k]) => k).sort();
+    const esperado = [clave('r', 0, 0, 1), clave('r', 0, 1, 1), clave('r', 2, 3, 1), clave('r', 3, 3, 1)].sort();
+    comprobar('en L: solo se cierran con hastial las dos puntas', JSON.stringify(conRelleno) === JSON.stringify(esperado), conRelleno.join(' '));
+  }
+  // coste y peso (sistemas: «Remate de tejado — N1, igual, 40 kg»)
+  {
+    const { m, c } = casa([[0, 0]]);
+    const antes = { ...m.materiales };
+    const r = m.colocar(enRejilla(m, c, 'remate_paja', 0, 0, 1, 0, 0));
+    comprobar('remate de paja: 40 kg, cuesta 1 vara y 2 de paja', r.ok && PIEZAS.remate_paja.peso === 40 && antes.vara - m.materiales.vara === 1 && antes.paja - m.materiales.paja === 2, r.motivo || '');
+    const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+    comprobar('el remate se guarda y se carga', m2.construcciones[0].piezas.get(clave('r', 0, 0, 1))?.tipo === 'remate_paja');
+  }
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
