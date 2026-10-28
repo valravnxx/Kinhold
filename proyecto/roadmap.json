@@ -290,7 +290,8 @@
     },
     {
      "nombre": "Conexiones que se cortan y protección básica: volver a conectar sin perder al personaje, quitar al que se va, límite de mensajes por segundo y de tamaño por conexión, y rechazo de datos mal formados (con una prueba que los manda)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T01:20:25+00:00"
     },
     {
      "nombre": "Bots: jugadores simulados en node que se conectan al servidor y andan, construyen y pelean, para la medición",
