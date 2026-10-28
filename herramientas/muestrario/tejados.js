@@ -45,11 +45,14 @@ function dibujar(c) {
   return g;
 }
 const m = new Mundo(); m.colocarMojon(0, 0);
+for (const k in m.materiales) m.materiales[k] = 1e6; // el muestrario no se queda sin material
 const casas = [
   casa(m, 2, 2, 'muro_tronco', 'tejado_paja', 'dos'),
   casa(m, 2, 1, 'muro_tabla', 'tejado_tablilla', 'dos'),
   casa(m, 1, 2, 'muro_zarzo', 'tejado_paja', 'una'),
   casa(m, 1, 2, 'muro_entramado', 'tejado_tablilla', 'una'),
+  casa(m, 2, 2, 'muro_tronco', 'tejado_teja', 'dos'),
+  casa(m, 1, 2, 'muro_entramado', 'tejado_teja', 'una'),
 ];
 const SEP = 9, objetos = [];
 casas.forEach((c, n) => {

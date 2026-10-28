@@ -491,6 +491,64 @@ function tejadoTablillas(ctx = CTX_TEJADO) {
   if (ctx.cumbrera) L.add(cajaR(M.ancho + 0.04, 0.17, 0.17, 0.02), 'maderaOsc', M.cx, M.sub + 0.1 + M.alza, M.S / 2, { x: Math.PI / 4 }, { sinSuelo: true });
   return deLote(L);
 }
+// Teja curva (de canal y cobija), como en los tejados de barro cocido: columnas de canales (boca arriba, recogen el
+// agua) y encima, cubriendo la junta entre dos canales, columnas de cobijas (boca abajo), cada teja montada sobre la de
+// abajo y un poco más tendida que el tejado (se ve el canto de cada una). Cada teja con su tono, como las viejas.
+// Para que no pese en el móvil, los canales van de una pieza por columna (casi no se ven) y las cobijas, sueltas.
+// Las columnas van cada 25 cm desde el lado izquierdo de la casilla: los tramos de al lado siguen el dibujo sin solape
+// (la cobija del lado derecho la pone el tramo vecino; si ese lado vuela, la pone este y un canal más bajo el vuelo).
+const TEJA = { paso: 0.25, rCanal: 0.085, rCobija: 0.07, grosor: 0.016, largo: 0.42, solape: 0.12, inclina: 0.06 };
+function mediaCana(r, grosor, largo, abajo) {
+  // media caña de barro: abajo = canal (∪), si no cobija (∩); a lo largo de z, centrada
+  const f = new THREE.Shape(), ri = r - grosor, a0 = abajo ? Math.PI : 0, a1 = abajo ? 2 * Math.PI : Math.PI;
+  f.moveTo(r * Math.cos(a0), r * Math.sin(a0)); f.absarc(0, 0, r, a0, a1, false);
+  f.lineTo(ri * Math.cos(a1), ri * Math.sin(a1)); f.absarc(0, 0, ri, a1, a0, true); f.closePath();
+  const g = new THREE.ExtrudeGeometry(f, { depth: largo, bevelEnabled: false, curveSegments: 3 });
+  g.translate(0, 0, -largo / 2);
+  return g;
+}
+function tejadoTejas(ctx = CTX_TEJADO) {
+  const L = loteTejado(), M = marcoTejado(ctx), T = TEJA, S = M.S, ext = ctx.extremos || [];
+  // tablazón debajo (lo que se ve desde dentro)
+  const tz = M.punto(-M.V + (M.largo + M.V) / 2, 0.02 + M.alza);
+  L.add(cajaR(M.ancho, 0.04, M.largo + M.V, 0.01), 'maderaOsc', M.cx, tz.y, tz.z, M.giro, { sinSuelo: true, brillo: 0.6 });
+  const total = M.largo + M.V, base = 0.04 + M.alza;
+  const xsCanal = [], xsCobija = [];
+  for (let n = 0; n < Math.round(S / T.paso); n++) { xsCanal.push(-S / 2 + (n + 0.5) * T.paso); xsCobija.push(-S / 2 + n * T.paso); }
+  if (ext.includes(1)) { xsCobija.push(S / 2); xsCanal.push(S / 2 + T.paso / 2); }
+  if (ext.includes(-1)) xsCanal.push(-S / 2 - T.paso / 2);
+  // canales: una pieza por columna, del alero a lo alto
+  const canal = mediaCana(T.rCanal, T.grosor, total, true), cc = M.punto(-M.V + total / 2, base + T.rCanal);
+  for (const x of xsCanal) L.add(canal, 'tejaOsc', x, cc.y, cc.z, M.giro, { sinSuelo: true, brillo: 0.7 + ruido(x * 7.3) * 0.15 });
+  // cobijas: sueltas, de abajo arriba, cada una montada sobre la de abajo
+  const cobija = mediaCana(T.rCobija, T.grosor, T.largo, false), paso = T.largo - T.solape;
+  const filas = Math.ceil((total - T.largo) / paso) + 1;
+  const giroT = new THREE.Matrix4().makeRotationX(-(M.ang - T.inclina));
+  for (const x of xsCobija) for (let f = 0; f < filas; f++) {
+    const s0 = Math.min(-M.V + f * paso, M.largo + 0.01 - T.largo);
+    const c = M.punto(s0 + T.largo / 2, base + T.rCanal + T.largo / 2 * Math.sin(T.inclina) - 0.01);
+    const sd = x * 13.7 + f * 5.1;
+    L.add(cobija, ruido(sd) > 0.4 ? 'teja' : 'tejaOsc', x + (ruido(sd + 1) - 0.5) * 0.012, c.y, c.z, giroT,
+      { sinSuelo: true, brillo: 0.8 + ruido(sd + 3) * 0.32 });
+  }
+  // tabla de remate en los lados que vuelan
+  for (const l of [-1, 1]) if (ext.includes(l)) {
+    const c = M.punto(-M.V + total / 2, 0.06 + M.alza);
+    L.add(cajaR(0.04, 0.24, total, 0.01), 'maderaOsc', l < 0 ? M.x0 - 0.02 : M.x1 + 0.02, c.y, c.z, M.giro, { sinSuelo: true });
+  }
+  // cumbrera: cobijas grandes a lo largo, asentadas en barro
+  if (ctx.cumbrera) {
+    const yC = M.sub + base + T.rCanal + 0.02;
+    L.add(cajaR(M.ancho, 0.1, 0.22, 0.03), 'barro', M.cx, yC - 0.04, S / 2, null, { sinSuelo: true, brillo: 0.85 });
+    const rc = 0.12, lc = 0.42, pc = 0.36, caballete = mediaCana(rc, 0.02, lc, false);
+    caballete.rotateY(Math.PI / 2);
+    for (let x = M.x0 + lc / 2, k = 0; x - lc / 2 < M.x1 - 0.02; x += pc, k++) {
+      const xx = Math.min(x, M.x1 - lc / 2), sd = k * 3.3 + M.x0;
+      L.add(caballete, ruido(sd) > 0.4 ? 'teja' : 'tejaOsc', xx, yC + (k % 2) * 0.004, S / 2, null, { sinSuelo: true, brillo: 0.85 + ruido(sd + 2) * 0.25 });
+    }
+  }
+  return deLote(L);
+}
 // Tablas de pie que cierran un hueco bajo el tejado, en un plano vertical: u0..u1 a lo ancho, de yBajo hasta arriba(u)
 // (el corte de arriba sigue la pendiente). plano: 'x' (a lo largo de X, en z=pos) o 'z' (a lo largo de Z, en x=pos).
 function tablasDePie(L, u0, u1, yBajo, arriba, plano, pos, grosor = 0.07) {
@@ -1046,6 +1104,7 @@ export function modeloPieza(tipo, ctx) {
     case 'medio_muro': return medioMuro();
     case 'tejado_paja': return tejadoPaja(ctx || CTX_TEJADO);
     case 'tejado_tablilla': return tejadoTablillas(ctx || CTX_TEJADO);
+    case 'tejado_teja': return tejadoTejas(ctx || CTX_TEJADO);
     case 'hastial': return hastial();
     case 'escalera_mano': return escaleraMano();
     case 'escalera_tabla': return escaleraTablas();

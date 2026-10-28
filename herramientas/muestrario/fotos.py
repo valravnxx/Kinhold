@@ -13,7 +13,7 @@ class S(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(S, directory=d)); threading.Thread(target=srv.serve_forever, daemon=True).start()
 nombres = [('pieza', t) for t in arg.get('piezas', '').split(',') if t] + [('deco', t) for t in arg.get('deco', '').split(',') if t] + [('arma', t) for t in arg.get('armas', '').split(',') if t]
-if arg.get('casas'): nombres = [('casa', t) for t in ['paja_dos_aguas', 'tablillas_dos_aguas', 'paja_una_caida', 'tablillas_una_caida']]
+if arg.get('casas'): nombres = [('casa', t) for t in ['paja_dos_aguas', 'tablillas_dos_aguas', 'paja_una_caida', 'tablillas_una_caida', 'teja_dos_aguas', 'teja_una_caida']]
 vistas = arg.get('vistas', 'tres,frente,cerca').split(',')
 with sync_playwright() as p:
     b = p.chromium.launch(args=['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'])

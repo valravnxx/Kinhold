@@ -12,6 +12,7 @@ export const PALETA = {
   tierraCorte: 0x6a5440, tierraCorteOsc: 0x4f3f31, raiz: 0x5a4632,
   lino: 0xcbbf9f, lana: 0x8a7a63, lanaOsc: 0x6e5240, pano: 0x7d3c30, piel: 0x93734f, barro: 0x9a7356,
   hoja: 0x6f8a4a, hojaOsc: 0x587340, hojaClara: 0x8aa05a, pino: 0x52693f, pinoOsc: 0x445a35, corteza: 0x5e4a38,
+  teja: 0x91654f, tejaOsc: 0x745040, // barro cocido, apagado y algo terroso (no el rojo vivo de una teja nueva)
 };
 
 export const LUCES = {
@@ -80,6 +81,7 @@ export const TEX = {
   piedra: 'piedra', piedraOsc: 'piedra', mortero: 'piedra', corteza: 'corteza',
   hoja: 'hojas', hojaOsc: 'hojas', hojaClara: 'hojas', pino: 'hojas', pinoOsc: 'hojas',
   lino: 'tejido', lana: 'tejido', lanaOsc: 'tejido', pano: 'tejido', barro: 'piedra',
+  teja: 'piedra', tejaOsc: 'piedra', // el barro cocido, moteado como la piedra
 };
 export const DENSIDAD = { veta: 1.1, anillos: 1, paja: 0.9, piedra: 1.6, corteza: 1.4, hojas: 1.2, tejido: 2.2 };
 const RELIEVE = { veta: 1.2, anillos: 0.8, paja: 2.0, piedra: 1.6, corteza: 2.4, hojas: 0.5, suelo: 1.0, tejido: 0.7 };

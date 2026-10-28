@@ -159,6 +159,12 @@ function pareja(opc = {}) {
   comprobar('y se avisa a todos', c.sacarEventos().some(e => e.tipo === 'reinicio' && e.autor === 'jugador:b'));
   c.luchadores['jugador:b'].x = 40;
   comprobar('sin nadie cerca también se puede', c.intencion('jugador:a', { tipo: 'combate', que: 'reiniciar' }).ok);
+  // salir de la liza al volver a construir (valravnx, 28 oct: quien venía del duelo seguía en la liza y en la
+  // construcción no se le veía), también si cayó en el duelo
+  c.luchadores['jugador:b'].caer('Desangrado');
+  comprobar('salir de la liza vale aunque esté caído, y la foto lo dice', c.intencion('jugador:b', { tipo: 'combate', que: 'mundo' }).ok
+    && c.luchadores['jugador:b'].liza === false && c.cambiados(true).find(f => f.autor === 'jugador:b').liza === false);
+  comprobar('y se puede volver a entrar', c.intencion('jugador:b', { tipo: 'combate', que: 'liza' }).ok && c.luchadores['jugador:b'].liza === true);
 }
 {
   // la copia de un cliente: se pone como dice el servidor; lo propio no se pisa mientras se predice

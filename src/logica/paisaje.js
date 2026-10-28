@@ -223,3 +223,12 @@ export function bosqueEn(bioma, T, pendiente, claro, humedo = 0) {
   const pino = bioma === 'taiga' || bioma === 'alpino' || bioma === 'brezal' || (bioma === 'mixto' && claro > 0.5) || T < 5;
   return { d, pino };
 }
+
+// El azar de una celda del mundo (i, j enteros) para una capa de cosas (árboles, hierba…) y una semilla: un generador
+// que da siempre la misma serie para la misma celda. Así lo que se coloca depende solo de su sitio en el mundo.
+export function azarCelda(i, j, capa, semilla) {
+  let h = Math.imul(i, 374761393) ^ Math.imul(j, 668265263) ^ Math.imul(capa, 1274126177) ^ Math.imul(semilla | 0, 2246822519);
+  h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16;
+  let s = h >>> 0;
+  return () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296);
+}

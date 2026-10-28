@@ -5,6 +5,7 @@
 // trozo de cerca se rehace donde estás.
 import * as THREE from 'three';
 import { modelosArbol, modelosPlantas, azar } from '../mundo/decorado.js';
+import { azarCelda } from '../logica/paisaje.js';
 import { materialTex } from '../mundo/estilos.js';
 import { bosqueEn, PENDIENTE_ANDAR } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
@@ -149,7 +150,16 @@ export function crearVistaJuego(est) {
     aguaLejos().ponerHueco(x0, z0, x0 + (n - 1) * PASO, z0 + (n - 1) * PASO);
 
     // lo que crece y lo que hay en el suelo, con las reglas del bosque de lejos
-    const r = azar((Math.round(cx + px) * 73856093) ^ (Math.round(cy + pz) * 19349663) ^ 77);
+    // El azar de cada cosa sale de su celda en el MUNDO (no del trozo de cerca) y de la semilla del mundo: así, al
+    // rehacer el trozo en otro sitio, lo que ya estaba sale exactamente igual (cada árbol, mata y piedra en su sitio).
+    // recorrer(paso, …): las celdas del mundo de ese tamaño que caen dentro del trozo, cada una con su azar propio.
+    // (azarCentro: solo para romper la prueba a propósito, como era antes: el azar cambia con el centro del trozo)
+    const SEM = ((est.paisaje.mapa && est.paisaje.mapa.semilla) || 0) + (vj.azarCentro ? Math.round(px * 7 + pz * 13) : 0);
+    const recorrer = (paso, capa, margen, fn) => {
+      const i0 = Math.ceil((cx + x0 + margen) / paso), i1 = Math.floor((cx + x0 + CERCA - margen) / paso);
+      const j0 = Math.ceil((cy + z0 + margen) / paso), j1 = Math.floor((cy + z0 + CERCA - margen) / paso);
+      for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) fn(i * paso - cx, j * paso - cy, azarCelda(i, j, capa, SEM));
+    };
     const sitioEn = (x, z) => { const i = Math.round((x - x0) / PASO), j = Math.round((z - z0) / PASO); const k = Math.min(n - 1, Math.max(0, j)) * n + Math.min(n - 1, Math.max(0, i)); const y = vj.altura(x, z); return { st: W[k] > y - 0.3 ? null : sitios[k], s: pend[k], y }; };   // en el agua (o en su orilla) no crece nada
     const espesor = (x, z, st, s) => {
       const xm = cx + x, ym = cy + z;
@@ -159,19 +169,19 @@ export function crearVistaJuego(est) {
     const L = { pino: [], frond: [], hierba: [], flores: [], matas: [], rocas: [] };
     const dentro = (x, z, m = 2) => Math.abs(x - px) < CERCA / 2 - m && Math.abs(z - pz) < CERCA / 2 - m;
     // árboles: rejilla desordenada de 4,5 m
-    for (let z = z0 + 2; z < z0 + CERCA - 2; z += 4.5) for (let x = x0 + 2; x < x0 + CERCA - 2; x += 4.5) {
+    recorrer(4.5, 1, 2, (x, z, r) => {
       const ax = x + (r() - 0.5) * 4, az = z + (r() - 0.5) * 4, { st, s, y } = sitioEn(ax, az);
-      if (!st || !st.bioma || y < 1.5) continue;
+      if (!st || !st.bioma || y < 1.5) return;
       const { d, pino } = espesor(ax, az, st, s);
-      if (r() > d * 0.55) continue;                                        // 0,55: de cerca, la densidad de un bosque de verdad
+      if (r() > d * 0.55) return;                                          // 0,55: de cerca, la densidad de un bosque de verdad
       (pino ? L.pino : L.frond).push([ax, y - 0.2, az, (pino ? 1.75 : 1.55) * (0.75 + r() * 0.5), r() * 6.3, 0.8 + r() * 0.35]);   // del tamaño de los del juego (7–11 m)
-    }
+    });
     // hierba, flores y matorrales: más en los claros que bajo el bosque
-    for (let z = pz - R_HIERBA; z < pz + R_HIERBA; z += 0.85) for (let x = px - R_HIERBA; x < px + R_HIERBA; x += 0.85) {
+    recorrer(0.85, 2, CERCA / 2 - R_HIERBA - 1, (x, z, r) => {
       const hx = x + (r() - 0.5) * 0.8, hz = z + (r() - 0.5) * 0.8;
-      if (Math.hypot(hx - px, hz - pz) > R_HIERBA || !dentro(hx, hz)) continue;
+      if (Math.hypot(hx - px, hz - pz) > R_HIERBA || !dentro(hx, hz)) return;
       const { st, s, y } = sitioEn(hx, hz);
-      if (!st || !st.bioma || st.bioma === 'nieve' || y < 1 || s > 0.75) continue;
+      if (!st || !st.bioma || st.bioma === 'nieve' || y < 1 || s > 0.75) return;
       const { d } = espesor(hx, hz, st, s), xm = cx + hx, ym = cy + hz;
       const prado = { pradera: 1, mixto: 0.8, caducifolio: 0.7, encinar: 0.55, taiga: 0.5, brezal: 0.6, matorral: 0.45, turbera: 0.8, alpino: 0.6 }[st.bioma] ?? 0.5;
       const calva = suave(0.6, 0.72, fbm(xm / 16, ym / 16, 41, 3));
@@ -180,33 +190,36 @@ export function crearVistaJuego(est) {
       if (t < pHierba) L.hierba.push([hx, y, hz, 0.8 + r() * 0.9, r() * 6.3, 0.85 + r() * 0.3]);
       else if (t < pHierba + 0.035 * prado * (1 - d)) L.flores.push([hx, y, hz, 0.8 + r() * 0.5, r() * 6.3, Math.floor(r() * 3)]);
       else if (t < pHierba + 0.035 * prado * (1 - d) + 0.007 * (0.4 + d * (1 - d) * 3) + 0.02 * d) L.matas.push([hx, y - 0.05, hz, 0.5 + r() * 0.6, r() * 6.3, 0.85 + r() * 0.3]);
-    }
+    });
     // piedras: pocas y sueltas por el campo; en las paredes ninguna (son roca maciza) y al pie de las paredes, el
     // pedregal de lo que se desprende (bloques más grandes y juntos)
     const paredCerca = (x, z) => { let m = 0; for (let a = 0; a < 6.28; a += 0.785) m = Math.max(m, sitioEn(x + Math.cos(a) * 5, z + Math.sin(a) * 5).s); return m; };
-    for (let z = z0 + 2; z < z0 + CERCA - 2; z += 2.5) for (let x = x0 + 2; x < x0 + CERCA - 2; x += 2.5) {
+    recorrer(2.5, 3, 2, (x, z, r) => {
       const ax = x + (r() - 0.5) * 2.2, az = z + (r() - 0.5) * 2.2, { st, s, y } = sitioEn(ax, az);
-      if (!st || !st.bioma || y < 0.5 || s > 0.8) continue;
+      if (!st || !st.bioma || y < 0.5 || s > 0.8) return;
       const pie = s < 0.7 && paredCerca(ax, az) > 1.1;
-      if (r() > (pie ? 0.45 : 0.006)) continue;
+      if (r() > (pie ? 0.45 : 0.006)) return;
       L.rocas.push([ax, y - 0.2, az, pie ? 0.5 + r() * 1.5 : 0.3 + r() * 0.6, r() * 6.3, st.roca]);
-    }
+    });
     // la roca de los cortados: piezas de roca 3D encajadas en las paredes, de 2 a 8 m, mirando hacia fuera de la pared
     // y medio metidas en ella; en las paredes más altas, más grandes
     const PR = [];
-    for (let z = z0 + 3; z < z0 + CERCA - 3; z += 2.6) for (let x = x0 + 3; x < x0 + CERCA - 3; x += 2.6) {
+    recorrer(2.6, 4, 3, (x, z, r) => {
       const ax = x + (r() - 0.5) * 2, az = z + (r() - 0.5) * 2, gi = Math.round((ax - x0) / PASO), gj = Math.round((az - z0) / PASO);
       const gx = (alt(gi + 1, gj) - alt(gi - 1, gj)) / (2 * PASO), gz = (alt(gi, gj + 1) - alt(gi, gj - 1)) / (2 * PASO), s = Math.hypot(gx, gz);
-      if (s < 1.15 || r() > 0.4) continue;
-      const y = vj.altura(ax, az); if (y < -0.5) continue;
+      if (s < 1.15 || r() > 0.4) return;
+      const y = vj.altura(ax, az); if (y < -0.5) return;
       const nx = -gx / s, nz = -gz / s, alto = 2 + r() * 2.5 + Math.min(3, s);
       PR.push([ax + nx * alto * 0.05, y - alto * 0.2, az + nz * alto * 0.05, alto, Math.atan2(nx, nz) + (r() - 0.5) * 0.5, Math.floor(r() * 5), (r() - 0.5) * 0.25, 0.85 + r() * 0.3, sitioEn(ax, az).st?.roca || sitios[gj * n + gi]?.roca]);
-    }
+    });
     L.paredes = PR;
     // recorte a lo que aguanta el aparato
-    for (const [k, m] of [['hierba', MAX.hierba], ['flores', MAX.flores], ['matas', MAX.matas], ['rocas', MAX.rocas]]) if (L[k].length > m) { const q = m / L[k].length; L[k] = L[k].filter(() => r() < q); }
+    // (si hay más de lo que aguanta el aparato, se quitan los más lejanos del personaje: no al azar, para que lo que se
+    // ve de cerca no cambie)
+    const recortar = (lista, m) => lista.length <= m ? lista : lista.map(e => [e, (e[0] - px) ** 2 + (e[2] - pz) ** 2]).sort((a, b) => a[1] - b[1]).slice(0, m).map(a => a[0]);
+    for (const [k, m] of [['hierba', MAX.hierba], ['flores', MAX.flores], ['matas', MAX.matas], ['rocas', MAX.rocas]]) L[k] = recortar(L[k], m);
     const totalArb = L.pino.length + L.frond.length;
-    if (totalArb > MAX.arboles) { const q = MAX.arboles / totalArb; L.pino = L.pino.filter(() => r() < q); L.frond = L.frond.filter(() => r() < q); }
+    if (totalArb > MAX.arboles) { const q = MAX.arboles / totalArb; L.pino = recortar(L.pino, Math.round(L.pino.length * q)); L.frond = recortar(L.frond, Math.round(L.frond.length * q)); }
 
     const arb = modelosArbol(), pl = modelosPlantas(), o = new THREE.Object3D(), c = new THREE.Color();
     const poner = (lista, geo, mats, nombre, { ancho = 1, sombra = false, color = (e) => c.setScalar(e[5]) } = {}) => {
@@ -223,7 +236,8 @@ export function crearVistaJuego(est) {
     const FLORES = [0xe8e2d0, 0xd9c27a, 0xa98aa6];
     poner(L.flores, pl.flor, materialFlor(), 'flores', { color: (e) => c.set(FLORES[e[5]]) });
     poner(L.matas, pl.matorral.geo, pl.matorral.mats, 'matorralesCerca', { sombra: true });
-    if (L.paredes.length > MAX.paredes) { const q = MAX.paredes / L.paredes.length; L.paredes = L.paredes.filter(() => r() < q); }
+    L.paredes = recortar(L.paredes, MAX.paredes);
+    vj.L = L;
     const piezas = modelosRocaPared(), mr = materialRoca();
     piezas.forEach((geo, v) => {
       const lista = L.paredes.filter(e => e[5] === v); if (!lista.length) return;

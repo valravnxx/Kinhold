@@ -523,7 +523,7 @@
   "hecho": [
    "valravnx, por el chat: «puedes hacer, están haciendo los modelados de ropa; haz algo no relacionado». Elige planificar el hito de construcción, que no toca el personaje. Se hace aunque el hito de arte bloquee empezar hitos nuevos, porque lo pide él.",
    "Comparadas las piezas del documento de sistemas con las que ya hay en el juego. Faltan: escalera de tablas, contraventana, trampilla, tejado de teja, remate de tejado, chimenea, adarve, puente de troncos y parte de la decoración.",
-   "Hito desglosado en 9 tareas de una sesión: escalera de tablas, barandillas y vallas, contraventana y trampilla, tejado de teja, remate de tejado, chimenea, adarve, decoración que falta y revisión final.",
+   "Hito desglosado en 10 tareas de una sesión: escalera de tablas, barandillas y vallas, contraventana y trampilla, tejado de teja, remate de tejado, chimenea, adarve, decoración que falta y revisión final.",
    "Los puentes de troncos se dejan para el hito Mundo, porque necesitan agua en el mapa.",
    "Esta sesión no toca proyecto/sesion.json, que es de la sesión de la ropa."
   ],
@@ -1862,6 +1862,104 @@
   ],
   "pruebas": "Todas (probar_todo.sh) tras unir main: correctas salvo «jugar en línea» y la web, que fallaron una vez con el servidor cargado (un mensaje tardó más de 5 s; la página tardó en cargar) y pasaron al repetirlas solas. La del personaje, repetida sola tras su último cambio: correcta. Tras volver a unir main (mapa y servidor en internet), repetidas las de node (instalado Caddy, que pide la prueba nueva del servidor en internet) y la del mapa: correctas. Las dos pruebas nuevas y las comprobaciones nuevas del personaje fallan con MUTAR=1. Capturas del visor en PC y móvil revisadas, y la cara lado a lado con la v15. No comprobado: el rendimiento en un móvil de verdad.",
   "capturas": "capturas/personaje-v16",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T13:59:19+00:00",
+  "fin": "2026-10-28T16:38:52+00:00",
+  "titulo": "Hito 2: ralentización por carga",
+  "hito": "equipo",
+  "hecho": [
+   "Lógica pura: lo lleno que vas es la media de manos, espalda, cintura y hombro, cada uno de vacío a lleno según sus huecos; lo grande en las manos llena las dos",
+   "La velocidad se multiplica por 1 − 0,2 × lleno²: con poca carga no se nota, las manos llenas solas un 1,25% y todo lleno el 80% del GDD",
+   "Decisión provisional: vale al andar y al correr; una mochila vacía puesta no cuenta, y la ropa y la armadura aún no (llegan con los datos de cada prenda); anotada en el registro",
+   "En la demo, el jugador lleva su inventario (guardado en el navegador) y anda más despacio según lo que lleva; se cambia con acciones con autor",
+   "Sin versión nueva: hasta que esté el panel de inventario no se puede cargar nada desde el juego, así que el cambio aún no se nota jugando"
+  ],
+  "pruebas": "Todas las pruebas correctas (inventario 120/120, con 13 nuevas de la carga; navegador de la demo: 3,6 m/s sin carga y 2,88 m/s cargado al máximo, en PC y móvil). Rotas a propósito una vez (MUTAR_CARGA=1) y fallan. Tras unir main se repitieron las de lógica y la de la demo; no comprobado: el resto del navegador después de unir main",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T13:00:52+00:00",
+  "fin": "2026-10-28T18:06:31+00:00",
+  "titulo": "Hito 1c: tejado de teja (carril B)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Tejado de teja (10 tejas y 1 tronco, 200 kg, en «Tejados»): el documento de sistemas dice «10 tejas + vigas»; las vigas van como 1 tronco (provisional, anotado en el registro de decisiones).",
+   "Material nuevo «teja», ligero (se sube a mano por la escalera). Las partidas guardadas de antes se cargan con las 100 tejas de partida, sin perder nada.",
+   "Teja curva de barro cocido, de color apagado: canales boca arriba y, encima de cada junta, cobijas boca abajo, cada una montada sobre la de abajo y con su tono; tabla de remate en los lados que vuelan y caballete de cobijas grandes asentadas en barro en la cumbrera. Los tramos de al lado siguen el dibujo sin que dos tejas caigan en el mismo sitio. Comparada en captura con la cabaña de la prueba de estilo v5.",
+   "Para el móvil, los canales van de una pieza por columna (casi no se ven) y solo las cobijas van sueltas: un tramo suelto tiene unos 5.000 triángulos, unas 2,4 veces los de la paja (medido en la prueba de modelos).",
+   "Prueba de carga: una casa de 3×3 y 2 plantas de troncos con teja se hace entera (la pieza más cargada pasa del 70 % con paja al 76 %; los cimientos cargan 1080 kg más); 3 plantas sobre cimiento de piedra, al 99 %; con muros de zarzo, una casa de 3×3 deja los muros del medio al tope (250 kg) y rechaza un tramo más de teja apoyado en el de al lado (de paja sí cabe).",
+   "Que no se pudre ni arde fácil queda anotado en la pieza: aún no hay mantenimiento ni fuego. El muestrario de tejados tiene ahora dos casas con teja."
+  ],
+  "pruebas": "Todas con bash herramientas/probar_todo.sh, dos veces (antes y después de unir main): todo correcto salvo tres que fallaron solo dentro de la tanda y pasan repetidas solas: «Jugadores que se ven, con lag simulado» (15/15 sola), la web (lee en GitHub quién trabaja en ese momento: pasó sola) y la del servidor en internet del carril A, que necesita Caddy (instalado aquí con apt-get, 19/19). Tras la última unión con main, repetidas: lógica 189/189 (12 nuevas, 5 fallan con MUTAR=1), modelos 144/144 (4 nuevas; la de los triángulos falla con MUTAR_TEJA=1), combate, acciones, inventario, idiomas, servidor y en línea; navegador de construcción todo correcto (4 comprobaciones nuevas; la del cobro de tejas falla con una versión que cobra 9) y demo única todo correcto. Capturas miradas en PC y móvil, y el tejado junto a la cabaña de la prueba de estilo v5 (48_tejado_teja_junto_a_la_v5). No comprobado: el tejado de teja en línea con dos jugadores (va por las mismas acciones que los demás tejados). Mientras corrían las pruebas, otras sesiones del carril B ocuparon el carril para otras tareas: esta no lo suelta para no quitárselo.",
+  "capturas": "capturas/construccion-v30",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T15:12:01+01:00",
+  "fin": "2026-10-28T19:06:47+01:00",
+  "titulo": "Hito 10: el mundo de cerca siempre igual",
+  "hito": "mundo",
+  "hecho": [
+   "El terreno ya era fijo; lo que cambiaba al rehacer el trozo de cerca era el reparto de árboles, hierba, piedras y piezas de roca, que salía de un azar que empezaba en el centro del trozo",
+   "Ahora cada cosa sale de su celda en el mundo y de la semilla del mundo (un azar por celda), y si hay que recortar por el aparato se quitan las más lejanas del personaje, no al azar",
+   "Lo mismo con los árboles de lejos: ya no dependen de desde dónde se abre la zona",
+   "Prueba nueva en el navegador: se rehace el trozo de cerca 50 m más allá y la parte común sale idéntica (MUTAR_FIJO=1 vuelve al azar por el centro y falla)"
+  ],
+  "pruebas": "Batería completa correcta tras unir main (con el mapa v9 de los nombres del mundo, de otra sesión de chat; esta versión pasa a v10). No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v10",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T15:25:29+00:00",
+  "fin": "2026-10-28T19:04:21+00:00",
+  "titulo": "Hito 1f: revisión completa de la prueba online",
+  "hito": "prueba-online",
+  "hecho": [
+   "Pasadas todas las pruebas del proyecto con probar_todo.sh (servidor, presencia, mundo en línea, conexiones, combate en el servidor, bots, medición, servidor en internet y todo lo demás, en node y en el navegador).",
+   "La prueba de jugar en línea falló a veces al salir al menú y volver a entrar desde el móvil: la página se carga entera otra vez y, sin tarjeta gráfica, conectar tardó hasta 27 s (medido) y la prueba esperaba 20 s. Ahora espera hasta 60 s, como ya esperaba a que cargara la página; después pasó bien.",
+   "La prueba del duelo en línea falló una vez dentro de la tanda completa y pasó entera al repetirla sola; no se ha encontrado la causa.",
+   "probar_todo.sh instala Caddy aunque la máquina no tenga la lista de paquetes al día (antes la prueba del servidor en internet fallaba en una máquina nueva).",
+   "Tras unir main (tejado de teja, personalización del taller, ralentización por carga) se repitieron las pruebas del servidor en node y las dos de navegador en línea: correctas.",
+   "Revisadas las capturas de jugar en línea y del duelo en línea en PC y móvil: los dos jugadores se ven con el personaje del taller, las obras se ven en los dos, el aviso de conexión cortada y recuperada, y el final del duelo en los dos.",
+   "Sin versión jugable nueva: desde la demo v28 no ha cambiado nada que se juegue.",
+   "Queda por hacer por valravnx: crear la máquina en Hetzner con la guía de servidor/nube/LEEME.md y probar desde dos aparatos (decisión pendiente).",
+   "No se ha soltado el carril A al final: lo ocupa ya otra sesión del carril A (remate de tejado).",
+   "El hito 1f no pasa todavía a revisión: mientras tanto, una sesión de chat abrió en él un arreglo (el servidor de casa de una versión anterior); pasará a revisión cuando se termine."
+  ],
+  "pruebas": "Todas correctas (bash herramientas/probar_todo.sh); la de jugar en línea y la del duelo en línea, al repetirlas solas; tras unir main, servidor en node y navegador en línea correctos. Capturas miradas en PC y móvil.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T19:58:44+01:00",
+  "fin": "2026-10-28T20:24:00+01:00",
+  "titulo": "Arreglos del juego en línea: verse al construir después del duelo, aviso de servidor antiguo y jugar_en_casa.bat al día",
+  "hito": "prueba-online",
+  "hecho": [
+   "valravnx y su pareja, en el duelo en línea, salían los dos «esperando rival»: el servidor de su PC era el que bajó jugar_en_casa.bat el 27 oct, de antes del duelo en línea (el .bat preguntaba si bajar la nueva y a los 10 s seguía con «no»). Tras actualizarlo, se vieron.",
+   "Después, al pasar del duelo a construir no se veían: la pestaña es el mismo jugador para el servidor y seguía en la liza, y la construcción no dibuja a los de la liza. Ahora, al entrar a construir, el juego le dice al servidor que sale de la liza (vale también si cayó en el duelo).",
+   "El servidor dice su versión al conectar y el juego avisa (línea de estado y aviso) si es más antigua de lo que necesita, con cómo actualizarlo. jugar_en_casa.bat mira en GitHub si hay versión nueva y la baja solo; si no puede mirarlo, pregunta como antes.",
+   "Pruebas nuevas: del duelo a construir en la misma pestaña los dos se ven (sin el arreglo, no se ven); salir de la liza en la lógica del combate; la versión del protocolo. Publicada la alpha (demo única) v29."
+  ],
+  "pruebas": "Duelo en línea y construir en línea en el navegador (PC y móvil, con servidor local) correctos; servidor 18/18, combate del servidor 57/57, conexiones 34/34, en línea 16/16, lógica 189/189, modelos 144/144, combate 80/80, idiomas correctos. El aviso de servidor antiguo, mirado en captura con un servidor falso como el viejo. jugar_en_casa.bat: la orden de PowerShell que mira la versión, probada con PowerShell 7 en Linux. No comprobado: el .bat entero en Windows.",
+  "capturas": "capturas/demo-v29",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T19:23:07+00:00",
+  "fin": "2026-10-28T19:24:54+00:00",
+  "titulo": "Hito 3: planificación de estaciones y crafting",
+  "hito": "crafting",
+  "hecho": [
+   "carriles.mjs elige para el carril A empezar el hito 3, porque los hitos en curso con tareas pendientes los lleva otro agente vivo o una sesión de chat.",
+   "Leídos los apartados 9 y «Fabricar» del GDD y los apartados 2, 3, 7, 8, 10 y 11 del documento de sistemas. Las cifras de estaciones, recetas y durabilidad son propuestas del documento; se usan como valores iniciales para ajustar probando.",
+   "Hito desglosado en 10 tareas de una sesión: recoger lo de N0, estaciones y recetas en la lógica pura, desbloqueo por práctica, estaciones construidas y con el estilo v5, panel de la estación, objetos fabricados con el estilo v5, durabilidad, reparar, el primer día recorrido en la demo, y la revisión final.",
+   "Primeras estaciones: hoguera, piedra de tallar y banco de trabajo de tronco. Las demás de N1 (secadero, curtido, horno de barro, carbonera) piden pieles, carne o harina, que llegan con los hitos de supervivencia, fauna y granja; el tomo de recetas, con el escritorio de N2."
+  ],
+  "pruebas": "Sin cambios de código. Web reconstruida sin errores.",
+  "capturas": "",
   "estado": "ok"
  }
 ]

@@ -19,6 +19,9 @@
 //                        { tipo: 'combate', que: 'soltar', x, y, z }         punto al que apunta
 //                        { tipo: 'combate', que: 'equipar', arma, armadura } solo estando libre
 //                        { tipo: 'combate', que: 'liza' }                   entra en la liza (el «Duelo en línea»)
+//                        { tipo: 'combate', que: 'mundo' }                  sale de la liza: vuelve a construir (lo manda
+//                                                                             la construcción al conectar; si no, quien venía
+//                                                                             del duelo seguía en la liza y no se le veía)
 //                        { tipo: 'combate', que: 'reiniciar' }               vuelve a empezar sano: solo si está fuera
 //                                                                             de combate o no hay nadie en pie cerca
 //   Liza: los luchadores de la liza (duelo en línea) solo se dan entre ellos, y los de fuera (los que construyen)
@@ -45,6 +48,7 @@ export function validarIntencion(m) {
     case 'guardia': return Object.hasOwn(GUARDIAS, m.guardia) ? { que: 'guardia', guardia: m.guardia } : null;
     case 'tensar': return { que: 'tensar' };
     case 'liza': return { que: 'liza' };
+    case 'mundo': return { que: 'mundo' };
     case 'reiniciar': return { que: 'reiniciar' };
     case 'soltar': return [m.x, m.y, m.z].every(numero) ? { que: 'soltar', x: m.x, y: m.y, z: m.z } : null;
     case 'equipar':
@@ -121,6 +125,8 @@ export class CombateServidor {
     const i = validarIntencion(m);
     if (!i) return { ok: false, motivo: 'Intención no válida.' };
     if (i.que === 'reiniciar') return this.reiniciar(autor);
+    // entrar o salir de la liza vale también estando fuera de combate (quien cayó en el duelo puede irse a construir)
+    if (i.que === 'liza' || i.que === 'mundo') { L.liza = i.que === 'liza'; return { ok: true }; }
     if (L.fuera) return { ok: false, motivo: 'Estás fuera de combate.' };
     let ok = false;
     switch (i.que) {
@@ -144,7 +150,6 @@ export class CombateServidor {
       case 'equipar':
         if (!L.puedeActuar() || L.bloqueando) break;
         L.arma = i.arma; if (i.armadura) L.armadura = i.armadura; ok = true; break;
-      case 'liza': L.liza = true; ok = true; break;
     }
     return ok ? { ok: true } : { ok: false, motivo: 'Ahora no se puede.' };
   }
