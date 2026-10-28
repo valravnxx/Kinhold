@@ -87,15 +87,15 @@ export function crearPaisaje(mapa) {
   // fino: con el detalle de hasta 2 m, para lo que rodea al jugador
   function altura(xm, ym, tramos = null, fino = false) {
     const { f, hm, r } = grande(xm, ym);
-    if (f < 0) return Math.max(-60, -1.5 + f * 0.8);       // mar: el fondo baja al alejarse de la costa
+    if (f < 0) return Math.max(-60, f * 1.6);              // mar: el fondo baja desde la línea de costa (sin escalón)
     const { dm, nivel, ancho } = rioCercano(xm, ym, tramos);
     const monte = suave(120, 600, r);                      // 0 en el llano, 1 en la montaña
     // junto al río, el detalle se apaga: el fondo del valle lo marca el río (que ya talló el valle grande del mapa),
     // no el ruido; si no, el ruido levanta el fondo decenas de metros y el río queda en una zanja
     const calma = dm === Infinity ? 1 : 0.12 + 0.88 * suave(ancho / 2, ancho / 2 + (180 + ancho * 12) * (1 - 0.45 * monte), dm);
     let z = hm + detalle(xm, ym, r, fino) * suave(0, 3, f) * calma;
-    if (hm < 8) z = lerp(0.6, z, suave(0, 2.5, f));        // costa baja: playa o marisma, sin escalón
-    z = Math.max(0.4, z);
+    if (hm < 8) z = lerp(f * 0.5, z, suave(0, 2.5, f));    // costa baja: la playa baja suave hasta el agua
+    z = Math.max(Math.min(0.4, f * 0.5), z);
     if (dm < 2500) {
       // el río talla su cauce, una vega llana a los lados y laderas con la pendiente limitada (suaves en el llano,
       // más cerradas en la montaña, donde salen gargantas); nunca una zanja de paredes verticales
@@ -151,7 +151,7 @@ export function crearPaisaje(mapa) {
     const T = cubica(temp, N, gx, gy) - (z - hm) * 0.0065;
     const P = cubica(lluvia, N, gx, gy) * (0.85 + 0.3 * fbm(xm / 3000, ym / 3000, S + 83, 3));
     const b = clasificarBioma(T, P, mapa.pend[ci], z, mapa.A[ci] / (celda * celda));
-    return { roca: roca[ci] || 'caliza', bioma: bioma[ci] ? b : null, T, P, pais: pais[ci] };
+    return { roca: roca[ci] || 'caliza', bioma: bioma[ci] || z > 0.3 ? b : null, T, P, pais: pais[ci] };   // tierra aunque la celda del mapa sea de mar (la costa de cerca no coincide al metro)
   }
 
   return { altura, agua, corriente, sitio, riosEn, rios, celda };

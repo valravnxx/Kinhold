@@ -95,7 +95,10 @@ if (vTipo > 0.5) {
   espuma += smoothstep(0.62, 0.9, reguero) * smoothstep(1.2, 2.6, vel) * 0.7;
   pend *= 0.7 + 0.5 * smoothstep(0.4, 2.5, vel);
 }
-espuma = clamp(espuma, 0.0, 1.0);`)
+espuma = clamp(espuma, 0.0, 1.0);
+// de lejos los rizos se apagan (si no, salen dibujos en anillos: más finos que un píxel)
+float lejos = length(vMundo - cameraPosition);
+pend *= 1.0 - smoothstep(35.0, 220.0, lejos);`)
       .replace('#include <color_fragment>', `#include <color_fragment>
 vec3 somero = vTipo > 0.5 ? vec3(0.30, 0.42, 0.40) : vec3(0.33, 0.40, 0.33);
 vec3 hondoC = vTipo > 0.5 ? vec3(0.06, 0.14, 0.18) : vec3(0.10, 0.17, 0.18);
@@ -107,7 +110,7 @@ normal = normalize(normal + (viewMatrix * vec4(-pend.x, 0.0, -pend.y, 0.0)).xyz)
       .replace('#include <envmap_fragment>', `#include <envmap_fragment>
 // algo del cielo reflejado al mirar el agua de lado
 float fres = pow(1.0 - clamp(dot(normal, normalize(vViewPosition)), 0.0, 1.0), 4.0);
-outgoingLight = mix(outgoingLight, vec3(0.62, 0.70, 0.76), fres * 0.45 * (1.0 - espuma));`);
+outgoingLight = mix(outgoingLight, vec3(0.55, 0.63, 0.69), fres * 0.3 * (1.0 - espuma));`);
   };
   m.customProgramCacheKey = () => 'aguaKinhold1';
   return m;
