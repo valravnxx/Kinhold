@@ -331,6 +331,12 @@
      "inicio": "2026-10-28T19:58:44+01:00",
      "rama": "trabajo/20261028-2000-servidor-viejo",
      "fin": "2026-10-28T20:24:00+01:00"
+    },
+    {
+     "nombre": "Arreglo (valravnx, 28 oct): en línea, abrir o cerrar una puerta o terminar una obra da tirones horribles a los dos jugadores; que esas acciones no rehagan más de lo que cambia",
+     "estado": "en_curso",
+     "inicio": "2026-10-28T20:58:47+01:00",
+     "rama": "trabajo/20261028-2100-tirones"
     }
    ]
   },
@@ -444,9 +450,9 @@
     },
     {
      "nombre": "Que los demás jugadores en línea te vean con tu aspecto (forma, colores, peinado y barba): mandarlo con el cuerpo y la ropa, y que el servidor lo compruebe con la misma lógica (src/logica/aspecto.js)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T16:24:12+00:00",
-     "rama": "trabajo/20261028-1624"
+     "fin": "2026-10-28T19:46:27+00:00"
     },
     {
      "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
@@ -1331,6 +1337,13 @@
      "archivo": "jugar/demo/v29.html",
      "capturas": "capturas/demo-v29",
      "notas": "En línea: al pasar del duelo a construir ya os veis (el servidor os sacaba de la liza); y si el servidor es de una versión anterior, el juego lo avisa. Hace falta actualizar el servidor."
+    },
+    {
+     "v": "v30",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v30.html",
+     "capturas": "capturas/demo-v30",
+     "notas": "Los demás jugadores en línea te ven con tu aspecto: forma, colores de piel, ojos y pelo, peinado y barba, en la construcción y en el duelo. El servidor lo comprueba con la misma lógica que el visor de personaje. Un servidor de antes avisa de que hay que actualizarlo."
     }
    ]
   },

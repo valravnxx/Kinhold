@@ -98,12 +98,34 @@ try {
   const asp = B.msgs.find(m => m.tipo === 'aspecto');
   comprobar('B recibe el aspecto de A con su autor', asp && asp.autor === A.red.yo && asp.sexo === 'mujer' && asp.capas.join() === 'vestido,gambeson');
   comprobar('A no recibe su propio aspecto', !A.msgs.some(m => m.tipo === 'aspecto'));
+  comprobar('sin personalización (clientes de antes) llega la de por defecto', asp && asp.aspecto && asp.aspecto.peinado === 'cofia' && asp.aspecto.formas.peso === 0);
+
+  console.log('Aspecto: forma, colores, peinado y barba (comprobados con src/logica/aspecto.js)');
+  B.msgs.length = 0;
+  A.ws.send(JSON.stringify({ tipo: 'aspecto', sexo: 'hombre', capas: ['tunica'],
+    aspecto: { piel: 'morena', ojos: 'verdes', pelo: 'pelirrojo', peinado: 'rapado', barba: 'bigote', formas: { peso: 0.5, altura: -3, menton: 'x', cuernos: 1 } } }));
+  await pausa(80);
+  const asp2 = B.msgs.find(m => m.tipo === 'aspecto');
+  const p2 = asp2 && asp2.aspecto;
+  comprobar('B recibe la personalización de A', p2 && p2.piel === 'morena' && p2.ojos === 'verdes' && p2.pelo === 'pelirrojo' && p2.peinado === 'rapado' && p2.barba === 'bigote' && p2.formas.peso === 0.5, JSON.stringify(p2));
+  comprobar('el servidor la limpia: números recortados, lo que no existe fuera', p2 && p2.formas.altura === -1 && p2.formas.menton === 0 && !('cuernos' in p2.formas), JSON.stringify(p2 && p2.formas));
+  B.msgs.length = 0;
+  A.ws.send(JSON.stringify({ tipo: 'aspecto', sexo: 'mujer', capas: ['vestido'], aspecto: { piel: 'azul', peinado: 'rapado', barba: 'bigote' } }));
+  await pausa(80);
+  const p3 = (B.msgs.find(m => m.tipo === 'aspecto') || {}).aspecto;
+  comprobar('lo que no es de su cuerpo o de la paleta sale por defecto (mujer sin barba ni rapado)', p3 && p3.piel === 'clara' && p3.peinado === 'cofia' && p3.barba === 'ninguna', JSON.stringify(p3));
+  A.msgs.length = 0;
+  A.ws.send(JSON.stringify({ tipo: 'aspecto', sexo: 'hombre', capas: [], aspecto: 'rubio' }));
+  await pausa(80);
+  comprobar('una personalización que no es un objeto se rechaza', A.msgs.some(m => m.tipo === 'error' && /Aspecto/.test(m.motivo)));
+  A.ws.send(JSON.stringify({ tipo: 'aspecto', sexo: 'hombre', capas: ['tunica'], aspecto: { pelo: 'rubio', barba: 'corta' } }));
+  await pausa(80);
   A.ws.send(JSON.stringify({ tipo: 'aspecto', sexo: 'dragon', capas: ['<script>'] }));
   await pausa(80);
   comprobar('un aspecto mal formado se rechaza', A.msgs.some(m => m.tipo === 'error' && /Aspecto/.test(m.motivo)));
   const C = await cliente(puerto);
   const bv = C.msgs[0];
-  comprobar('el que llega después recibe el aspecto de los que ya están', (bv.aspectos || []).some(e => e.autor === A.red.yo && e.sexo === 'mujer'));
+  comprobar('el que llega después recibe el aspecto de los que ya están, con su personalización', (bv.aspectos || []).some(e => e.autor === A.red.yo && e.sexo === 'hombre' && e.aspecto && e.aspecto.pelo === 'rubio'));
   comprobar('y el mundo tal como está', foto(C.red.mundo) === foto(s.mundo));
   A.ws.close(); B.ws.close(); C.ws.close();
   await s.cerrar();

@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-28T18:21:02+00:00",
+  "tarea": "Remate de tejado: cumbrera y esquinas, para que los tejados de dos tramos que se cruzan en una esquina queden cerrados",
+  "hito": "construccion-mas",
+  "rama": "trabajo/20261028-1821"
+ },
  "B": {
   "inicio": "2026-10-28T16:51:15+00:00",
   "tarea": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
@@ -11,5 +16,11 @@
   "tarea": "Laderas de montaña sin escalones: los cortados solo donde ya es muy empinado y aflora la roca, en pocos escalones grandes; el resto de la montaña, pendiente continua",
   "hito": "mundo",
   "rama": "trabajo/20261028-1930-laderas"
+ },
+ "chat:trabajo/20261028-2100-tirones": {
+  "inicio": "2026-10-28T20:58:47+01:00",
+  "tarea": "Arreglo (valravnx, 28 oct): en línea, abrir o cerrar una puerta o terminar una obra da tirones horribles a los dos jugadores; que esas acciones no rehagan más de lo que cambia",
+  "hito": "prueba-online",
+  "rama": "trabajo/20261028-2100-tirones"
  }
 }

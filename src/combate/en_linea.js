@@ -8,14 +8,14 @@ import { tr } from '../idioma.js';
 import { abrirConexion } from '../mundo/conexion.js';
 import { servidorAntiguo } from '../logica/protocolo.js';
 
-// aspecto(): { sexo, capas } propio; equipo(): { arma, armadura } propio
+// aspecto(): { sexo, capas, aspecto } propio; equipo(): { arma, armadura } propio
 // alMensaje(msg, ahora): cada mensaje del servidor; alEstado(texto): línea de estado; avisar(texto, tipo)
 export function conectarDuelo({ aspecto, equipo, alMensaje, alEstado, avisar }) {
   const direccion = direccionServidor();
   let con = null, estado = 'conectando';
   const enviar = (m) => !!con && con.enviar(m);
   const presencia = new PresenciaCliente(enviar);
-  const aspectos = new Map();   // autor → { sexo, capas }
+  const aspectos = new Map();   // autor → { sexo, capas, aspecto }
   let yo = null, nRivales = 0, antiguo = false;   // antiguo: el servidor es de una versión anterior al juego
 
   const ponerEstado = () => alEstado(estado === 'conectado'
@@ -26,7 +26,7 @@ export function conectarDuelo({ aspecto, equipo, alMensaje, alEstado, avisar }) 
 
   con = abrirConexion(direccion, {
     alAbrir: () => {
-      const a = aspecto(); enviar({ tipo: 'aspecto', sexo: a.sexo, capas: a.capas });
+      const a = aspecto(); enviar({ tipo: 'aspecto', sexo: a.sexo, capas: a.capas, aspecto: a.aspecto });
       enviar({ tipo: 'combate', que: 'liza' });
       const e = equipo(); enviar({ tipo: 'combate', que: 'equipar', arma: e.arma, armadura: e.armadura });
     },
@@ -36,10 +36,10 @@ export function conectarDuelo({ aspecto, equipo, alMensaje, alEstado, avisar }) 
       presencia.recibir(msg, ahora);
       if (msg.tipo === 'bienvenida') {
         estado = 'conectado'; yo = msg.autor; antiguo = servidorAntiguo(msg);
-        for (const a of msg.aspectos || []) aspectos.set(a.autor, { sexo: a.sexo, capas: a.capas });
+        for (const a of msg.aspectos || []) aspectos.set(a.autor, { sexo: a.sexo, capas: a.capas, aspecto: a.aspecto });
         avisar(volvia ? tr('Conexión recuperada: sigues con el mismo personaje.') : tr('En línea: duelo en el servidor ({d}).', { d: direccion }), 'aviso');
         if (antiguo && !volvia) avisar(tr('El servidor es de una versión anterior al juego y no funciona del todo: quien lo tiene encendido tiene que actualizarlo (cerrar sus ventanas y volver a abrir jugar_en_casa.bat, que baja la última versión).'), 'mal');
-      } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, { sexo: msg.sexo, capas: msg.capas });
+      } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, { sexo: msg.sexo, capas: msg.capas, aspecto: msg.aspecto });
       else if (msg.tipo === 'sale') aspectos.delete(msg.autor);
       else if (msg.tipo === 'error') console.warn('Servidor:', msg.motivo);
       alMensaje(msg, ahora);
@@ -66,7 +66,7 @@ export function conectarDuelo({ aspecto, equipo, alMensaje, alEstado, avisar }) 
     set rivales(n) { if (n !== nRivales) { nRivales = n; ponerEstado(); } },
     // una intención de combate ({ que, … }); devuelve si se ha mandado
     intencion(m) { return estado === 'conectado' && enviar({ tipo: 'combate', ...m }); },
-    mandarAspecto() { const a = aspecto(); enviar({ tipo: 'aspecto', sexo: a.sexo, capas: a.capas }); },
+    mandarAspecto() { const a = aspecto(); enviar({ tipo: 'aspecto', sexo: a.sexo, capas: a.capas, aspecto: a.aspecto }); },
     mandarEquipo() { const e = equipo(); enviar({ tipo: 'combate', que: 'equipar', arma: e.arma, armadura: e.armadura }); },
     // cada fotograma: la posición propia (como mucho 10 veces por segundo)
     paso(propio) { if (estado === 'conectado') presencia.actualizar(performance.now(), propio); },

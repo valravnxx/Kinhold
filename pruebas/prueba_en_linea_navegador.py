@@ -48,6 +48,7 @@ def esperar(pg, cond, ms=20000):
     try: pg.wait_for_function(cond, timeout=ms); return True
     except Exception: return False
 K = 'window.__kinhold'
+ASPECTO_PC = "{ piel: 'morena', ojos: 'verdes', pelo: 'rubio', formas: { altura: 1, peso: 0.8, cara: 0.6 } }"
 def poner(pg, clase, tipo, x, z):
     pg.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('{clase}','{tipo}'); {K}.apuntar({x},{z})")
     ok = pg.evaluate(f"!!({K}.estado.candidato && {K}.estado.candidato.v.ok)")
@@ -72,10 +73,10 @@ try:
             err = []
             pg.on('pageerror', lambda e, err=err: err.append(str(e)))
             pg.on('console', lambda m, err=err: err.append(m.text) if m.type == 'error' else None)
-            # la de PC eligió una mujer con vestido y gambesón; la del móvil no eligió (hombre con camisa y calzas)
+            # la de PC eligió una mujer con vestido y gambesón, morena, alta y de más peso; la del móvil no eligió (hombre con camisa y calzas)
             if not movil:
                 pg.goto(URL)
-                pg.evaluate("localStorage.setItem('kinhold_personaje_v2', JSON.stringify({ sexo: 'mujer', capas: { mujer: ['vestido', 'gambeson'] } }))")
+                pg.evaluate("localStorage.setItem('kinhold_personaje_v2', JSON.stringify({ sexo: 'mujer', capas: { mujer: ['vestido', 'gambeson'] }, aspecto: { mujer: " + ASPECTO_PC + " } }))")
             pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
             comprobar(f'{nombre}: el menú tiene «Jugar en línea»', pg.locator('#demoEnLinea').count() == 1 and 'enlinea=1' in pg.get_attribute('#demoEnLinea', 'href'))
             # Opciones: la dirección del servidor
@@ -121,10 +122,18 @@ try:
         comprobar('el móvil ve a PC donde está', esperar(B, vistoEn(B, 1.2, 6.5), 8000))
         comprobar('PC ve al móvil donde está', esperar(A, vistoEn(A, -1.0, 5.0), 8000))
         comprobar('cada uno ve a uno solo (no a sí mismo)', A.evaluate(f"{K}.enLinea.remotos.size") == 1 and B.evaluate(f"{K}.enLinea.remotos.size") == 1)
-        comprobar('el móvil ve a PC con el cuerpo y la ropa que eligió', B.evaluate(f"[...{K}.enLinea.remotos.values()][0].clave") == 'mujer:vestido,gambeson',
+        comprobar('el móvil ve a PC con el cuerpo y la ropa que eligió', B.evaluate(f"[...{K}.enLinea.remotos.values()][0].clave").startswith('mujer:vestido,gambeson:'),
                    B.evaluate(f"[...{K}.enLinea.remotos.values()][0].clave"))
-        comprobar('PC ve al móvil como el de por defecto', A.evaluate(f"[...{K}.enLinea.remotos.values()][0].clave") == 'hombre:')
+        comprobar('PC ve al móvil como el de por defecto', A.evaluate(f"[...{K}.enLinea.remotos.values()][0].clave").startswith('hombre::'))
         comprobar('los dos son personajes del taller (no el muñeco)', esperar(A, f"[...{K}.enLinea.remotos.values()][0].j.mh !== null", 30000) and esperar(B, f"[...{K}.enLinea.remotos.values()][0].j.mh !== null", 30000))
+        # el aspecto (forma, colores, peinado y barba): el otro lo ve igual que uno mismo se ve
+        aspRemoto = lambda pg: pg.evaluate(f"JSON.stringify([...{K}.enLinea.remotos.values()][0].j.mh.aspecto)")
+        aspPropio = lambda pg: (esperar(pg, f"{K}.jugador.mh !== null", 30000), pg.evaluate(f"JSON.stringify({K}.jugador.mh.aspecto)"))[1]
+        comprobar('el móvil ve a PC con su aspecto (morena, ojos verdes, alta, de más peso)', aspRemoto(B) == aspPropio(A) and json.loads(aspRemoto(B))['piel'] == 'morena', aspRemoto(B))
+        comprobar('y a su altura (escala del modelo)', abs(B.evaluate(f"[...{K}.enLinea.remotos.values()][0].j.mh.modelo.scale.y") - A.evaluate(f"{K}.jugador.mh.modelo.scale.y")) < 1e-6 and A.evaluate(f"{K}.jugador.mh.modelo.scale.y") > 1.05)
+        colorPiel = f"(mh => {{ let c = null; mh.modelo.traverse(n => {{ if (!c && n.isMesh && n.userData.tinte === 'piel') c = n.material.color.getHexString(); }}); return c; }})"
+        comprobar('con el mismo color de piel en las dos pantallas', B.evaluate(f"{colorPiel}([...{K}.enLinea.remotos.values()][0].j.mh)") == A.evaluate(f"{colorPiel}({K}.jugador.mh)") is not None)
+        comprobar('PC ve al móvil con el aspecto por defecto, igual que el móvil se ve', aspRemoto(A) == aspPropio(B), aspRemoto(A))
         # andar: el otro lo ve moverse y con la animación de andar
         A.evaluate(f"{K}.pj.z = 6.5; window.__andar = setInterval(() => {{ {K}.pj.x += 0.05; }}, 33)")
         comprobar('cuando PC anda, el móvil lo ve andar', esperar(B, f"[...{K}.enLinea.remotos.values()][0].j.modo !== 'quieto'", 6000), B.evaluate(f"[...{K}.enLinea.remotos.values()][0].j.modo"))
@@ -138,6 +147,10 @@ try:
         A.wait_for_timeout(600)
         for nombre, (pg, _) in paginas.items():
             pg.screenshot(path=f'{SALIDA}/{nombre}_3_de_cerca.png')
+        # el móvil, al lado de PC: así se ve su aspecto de cerca (morena, alta y de más peso)
+        B.evaluate(f"Object.assign({K}.pj, {{ x: 0.0, z: 5.9, rot: Math.atan2(1.2, 0.6) }}); {K}.cam.yaw = Math.atan2(-1.2, -0.6) + 0.45; {K}.cam.dist = 3.2; {K}.cam.pitch = 0.18")
+        esperar(A, vistoEn(A, 0.0, 5.9), 8000); B.wait_for_timeout(800)
+        B.screenshot(path=f'{SALIDA}/movil_3b_ve_a_pc.png')
 
         print('Construir una obra sin rehacer todo')
         # mientras alguien trabaja en una obra, solo se rehace esa pieza (en su página y en la del otro), no lo construido entero

@@ -3,6 +3,7 @@
 // La dirección del servidor se pone en las Opciones del menú de la demo (se guarda en el navegador) o con ?servidor=.
 import { MundoEnLinea } from '../logica/en_linea.js';
 import { PresenciaCliente } from '../logica/presencia.js';
+import { normalizarAspecto } from '../logica/aspecto.js';
 import { crearJugador } from './personaje.js';
 import { tr } from '../idioma.js';
 import { direccionServidor } from '../mundo/direccion_servidor.js';
@@ -10,7 +11,7 @@ import { abrirConexion } from '../mundo/conexion.js';
 import { servidorAntiguo } from '../logica/protocolo.js';
 export { CLAVE_SERVIDOR, SERVIDOR_POR_DEFECTO, direccionServidor } from '../mundo/direccion_servidor.js';
 
-// escena: donde se ponen los demás; recursos: carpeta del taller; aspecto: { sexo, capas } propio;
+// escena: donde se ponen los demás; recursos: carpeta del taller; aspecto: { sexo, capas, aspecto } propio;
 // alCambiar(info): el mundo o lo que pasa ha cambiado (info = lo que devuelve MundoEnLinea.recibir);
 // avisar(texto, error): un aviso para el jugador; alEstado(texto): la línea de estado de la conexión.
 export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, alEstado }) {
@@ -19,7 +20,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   const enviar = (m) => { if (con) con.enviar(m); };
   const red = new MundoEnLinea(enviar);
   const presencia = new PresenciaCliente(enviar);
-  const aspectos = new Map();   // autor → { sexo, capas }
+  const aspectos = new Map();   // autor → { sexo, capas, aspecto }
   const remotos = new Map();    // autor → { j, clave, x, z, vel }
   const enLiza = new Set();     // los que están en el «Duelo en línea»: no están en este mundo y no se dibujan
 
@@ -33,7 +34,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
 
   con = abrirConexion(direccion, {
     alAbrir: () => {
-      if (aspecto) enviar({ tipo: 'aspecto', sexo: aspecto.sexo, capas: aspecto.capas });
+      if (aspecto) enviar({ tipo: 'aspecto', sexo: aspecto.sexo, capas: aspecto.capas, aspecto: aspecto.aspecto });
       // fuera de la liza: quien viene del duelo en línea en la misma pestaña es el mismo jugador para el servidor,
       // y seguía en la liza, así que los demás no le dibujaban (valravnx, 28 oct)
       enviar({ tipo: 'combate', que: 'mundo' });
@@ -46,8 +47,8 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
         if (l.liza) enLiza.add(l.autor); else enLiza.delete(l.autor);
       if (msg.tipo === 'bienvenida') {
         estado = 'conectado'; antiguo = servidorAntiguo(msg);
-        for (const a of msg.aspectos || []) aspectos.set(a.autor, { sexo: a.sexo, capas: a.capas });
-      } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, { sexo: msg.sexo, capas: msg.capas });
+        for (const a of msg.aspectos || []) aspectos.set(a.autor, { sexo: a.sexo, capas: a.capas, aspecto: a.aspecto });
+      } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, { sexo: msg.sexo, capas: msg.capas, aspecto: msg.aspecto });
       else if (msg.tipo === 'sale') { quitar(msg.autor); aspectos.delete(msg.autor); enLiza.delete(msg.autor); }
       else if (msg.tipo === 'error') console.warn('Servidor:', msg.motivo);
       const info = red.recibir(msg);
@@ -85,11 +86,12 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       if (enLiza.has(e.autor)) continue;
       siguen.add(e.autor);
       const asp = aspectos.get(e.autor) || { sexo: 'hombre', capas: [] };
-      const clave = asp.sexo + ':' + asp.capas.join(',');
+      // sin personalización, la de por defecto (como la pone el servidor): así no se viste dos veces al llegar
+      const clave = asp.sexo + ':' + asp.capas.join(',') + ':' + JSON.stringify(normalizarAspecto(asp.aspecto, asp.sexo));
       let r = remotos.get(e.autor);
       if (r && r.clave !== clave) { quitar(e.autor); r = null; }   // ha llegado su aspecto: se viste de nuevo
       if (!r) {
-        r = { j: crearJugador(recursos, asp.sexo, asp.capas), clave, x: e.x, z: e.z, vel: 0 };
+        r = { j: crearJugador(recursos, asp.sexo, asp.capas, asp.aspecto), clave, x: e.x, z: e.z, vel: 0 };
         r.j.raiz.userData.autor = e.autor;
         escena.add(r.j.raiz); remotos.set(e.autor, r);
       }
