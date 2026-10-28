@@ -49,7 +49,7 @@ export function mundoALocal(c, x, z) {
 export function centroLocal(p) {
   const S = MODULO;
   switch (p.hueco) {
-    case 'f': case 'r': case 'l': case 't': return { lx: (p.i + 0.5) * S, lz: (p.j + 0.5) * S };
+    case 'f': case 'r': case 'l': case 't': case 'h': return { lx: (p.i + 0.5) * S, lz: (p.j + 0.5) * S };
     case 'v': return { lx: p.i * S, lz: p.j * S };
     default: // aristas
       return p.d === 0 ? { lx: (p.i + 0.5) * S, lz: p.j * S } : { lx: p.i * S, lz: (p.j + 0.5) * S };
@@ -65,7 +65,7 @@ export function huecoDesdeLocal(hueco, lx, lz, k) {
   const u = lx / MODULO, v = lz / MODULO;
   if (hueco === 'v') return { hueco, i: Math.round(u), j: Math.round(v), k };
   const i = Math.floor(u), j = Math.floor(v);
-  if (hueco === 'f' || hueco === 'r' || hueco === 'l' || hueco === 't') return { hueco, i, j, k };
+  if (hueco === 'f' || hueco === 'r' || hueco === 'l' || hueco === 't' || hueco === 'h') return { hueco, i, j, k };
   const fu = u - i, fv = v - j;
   const opciones = [
     { dist: fv, i, j, d: 0 },
@@ -155,6 +155,7 @@ export class Mundo {
     const p = { tipo, ...h, dir, abierta: false };
     if (!HUECOS_ARISTA.has(p.hueco)) delete p.d;
     if (def.andamio) p.dir = dirAndamio(c, p.i, p.j, p.k);
+    if (def.hogar) p.dir = dirHogar(c, p.i, p.j);
     if (p.hueco === 't') { const e = escaleraAndando(c, p.i, p.j, p.k - 1); if (e) p.dir = dirTrampilla(c, p.i, p.j, p.k, e); }
     return { construccion: c, nueva, pieza: p };
   }
@@ -240,6 +241,10 @@ export class Mundo {
         if (def.andamio && k > 0 && andamioEn(c, i, j, k - 1)) return { suelo: false, lista: [clave('l', i, j, k - 1)] };
         return { suelo: k === 0, lista: [] };
       }
+      case 'h': { // la chimenea descansa en el cimiento de piedra de su casilla (terminado)
+        const f = c.piezas.get(clave('f', i, j, 0));
+        return { suelo: false, lista: k === 0 && f && !f.obra && f.tipo === 'cim_piedra' ? [clave('f', i, j, 0)] : [] };
+      }
       case 'q': { // la polea cuelga de su viga
         const b = clave('b', i, j, k, p.d);
         return { suelo: false, lista: tiene(b) ? [b] : [] };
@@ -324,6 +329,9 @@ export class Mundo {
     }
     if (p.hueco === 'f' && escaleraAndando(c, p.i, p.j, p.k - 1)) return { ok: false, motivo: 'Ahí está el hueco de una escalera.' };
     if (p.hueco === 'f' && c.piezas.has(clave('l', p.i, p.j, p.k - 1)) && PIEZAS[c.piezas.get(clave('l', p.i, p.j, p.k - 1)).tipo].andamio) return { ok: false, motivo: 'Ahí está la plataforma de un andamio.' };
+    // por la casilla de la chimenea sube su cañón hasta el tejado: ahí no caben escaleras ni andamios, en ninguna planta
+    if (p.hueco === 'l' && hogarEn(c, p.i, p.j)) return { ok: false, motivo: 'Por esa casilla sube el cañón de una chimenea.' };
+    if (def.hogar && [0, 1, 2, 3].some(kk => c.piezas.has(clave('l', p.i, p.j, kk)))) return { ok: false, motivo: 'La chimenea no cabe donde hay una escalera o un andamio.' };
     if (def.andamio) {
       if (p.k >= MAX_PLANTA) return { ok: false, motivo: 'El andamio llega a la planta de arriba: en la última no cabe.' };
       if (c.piezas.has(clave('f', p.i, p.j, p.k + 1))) return { ok: false, motivo: 'Encima del andamio va su plataforma: ahí ya hay un suelo.' };
@@ -352,6 +360,7 @@ export class Mundo {
     }
     p.id = this.siguienteId++;
     if (PIEZAS[p.tipo].andamio) p.dir = dirAndamio(c, p.i, p.j, p.k);
+    if (PIEZAS[p.tipo].hogar) p.dir = dirHogar(c, p.i, p.j);
     c.piezas.set(v.clave, p);
     if (marco) p.obra = { entregado: {}, trabajo: 0, aportes: [] };
     else this.pagar(PIEZAS[p.tipo].coste);
@@ -639,6 +648,46 @@ export function geometriaTejados(c) {
   return res;
 }
 
+// ---------- Chimenea (hogar interior) ----------
+// La chimenea (pieza hogar, hueco 'h') de la casilla (i, j), terminada o en obras, o null. Solo va en la planta baja.
+export function hogarEn(c, i, j) {
+  const p = c.piezas.get(clave('h', i, j, 0));
+  return p || null;
+}
+// Hacia dónde mira la chimenea (dir, como el andamio): se arrima al primer muro de su casilla en la planta baja (el
+// cañón va pegado a él, por dentro); sin muros, hacia +z local. Solo cambia dónde se dibuja y qué se choca.
+export function dirHogar(c, i, j) {
+  for (let dir = 0; dir < 4; dir++) {
+    const [ai, aj, d] = aristaHacia(i, j, ...SUBE[dir]);
+    if (c.piezas.has(clave('e', ai, aj, 0, d))) return dir;
+  }
+  return 0;
+}
+// Medidas de la chimenea en su marco (m; z hacia el lado arrimado, x a lo ancho; y desde el suelo de la planta baja).
+// El hogar: un banco de piedra bajo con el fuego; encima, la campana que recoge el humo y el cañón hasta arriba.
+export const HOGAR = { ancho: 1.5, fondo0: 0.05, fondo1: 0.92, canonAncho: 0.7, canon0: 0.42, canon1: 0.92, sobreTejado: 0.75 };
+// Esquinas (local de la construcción, m) de lo que ocupa la chimenea en el suelo (el hogar entero) o, por encima de la
+// planta baja, solo el cañón. Sirve para el choque: no se puede entrar en el fuego ni atravesar el cañón.
+export function huellaHogar(p, soloCanon = false) {
+  const H = HOGAR, a = (soloCanon ? H.canonAncho : H.ancho) / 2, z0 = soloCanon ? H.canon0 : H.fondo0, z1 = soloCanon ? H.canon1 : H.fondo1;
+  const [ui, uj] = SUBE[p.dir || 0], [xi, xj] = X_LOCAL[p.dir || 0], cl = centroLocal(p);
+  return [[-a, z0], [a, z0], [a, z1], [-a, z1]].map(([x, z]) => ({ lx: cl.lx + x * xi + z * ui, lz: cl.lz + x * xj + z * uj }));
+}
+// Altura (m, desde el suelo) a la que acaba el cañón: por encima de lo más alto que haya sobre su casilla (los suelos
+// y muros de las plantas de arriba y el tejado, terminados o en obras), para que el humo salga por encima del tejado.
+// Sin nada encima, sube una planta y un poco más. subidaTejado: lo que sube un tramo de tejado (del dibujo).
+export function altoCanon(c, p, subidaTejado = 1.2) {
+  let alto = 1 * ALTURA;
+  const tejados = geometriaTejados(c);
+  for (let k = 0; k <= MAX_PLANTA + 1; k++) {
+    if (k > 0 && c.piezas.has(clave('f', p.i, p.j, k))) alto = Math.max(alto, k * ALTURA);
+    if (k <= MAX_PLANTA && aristasDeCasilla(p.i, p.j, k).some(a => { const m = c.piezas.get(clave('e', ...a)); return m && !PIEZAS[m.tipo].suelo; })) alto = Math.max(alto, (k + 1) * ALTURA);
+    const key = clave('r', p.i, p.j, k), r = c.piezas.get(key);
+    if (r) alto = Math.max(alto, k * ALTURA + ((tejados.get(key)?.arranque || 0) + 1) * subidaTejado);
+  }
+  return alto + HOGAR.sobreTejado;
+}
+
 // ---------- Escalera de tablas ----------
 // Escalera que se sube andando en la casilla (i,j) de la planta k, o null.
 // Andamio terminado en la casilla (i, j) de la planta k (su plataforma está a la altura del suelo de la planta k + 1).
@@ -738,6 +787,7 @@ function motivoSinApoyo(p) {
     case 'w': return 'La contraventana va en un muro con ventana.';
     case 't': return 'La trampilla va en el hueco de arriba de una escalera de tablas, con suelo al lado.';
     case 'l': return 'La escalera necesita un suelo; el andamio, la tierra, un suelo u otro andamio debajo.';
+    case 'h': return 'La chimenea va en la planta baja, sobre un cimiento de piedra terminado.';
     case 'q': return PIEZAS[p.tipo]?.polipasto ? 'El polipasto se cuelga de una viga terminada.' : 'La polea se cuelga de una viga terminada.';
   }
   return 'Sin apoyo.';

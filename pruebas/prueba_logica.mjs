@@ -1,8 +1,8 @@
 // Pruebas de la lógica de construcción de Kinhold. Ejecutar: node pruebas/prueba_logica.mjs
 // Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR.
-import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, polipastoPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, trampillaCerrada, progresoEscalera, salidaEscalera } from '../src/logica/construccion.js';
+import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, polipastoPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, trampillaCerrada, progresoEscalera, salidaEscalera, hogarEn, huellaHogar, altoCanon, HOGAR } from '../src/logica/construccion.js';
 import { PIEZAS, CLASE_PESO, MATERIALES } from '../src/logica/piezas.js';
-import { ejecutar, RegistroAcciones, seAbre, acabarObra } from '../src/logica/acciones.js';
+import { ejecutar, RegistroAcciones, seAbre, seEnciende, acabarObra } from '../src/logica/acciones.js';
 
 if (process.env.MUTAR === '1') {
   PIEZAS.muro_zarzo.cap = 1000;   // un muro de zarzo que aguanta cualquier cosa
@@ -15,6 +15,7 @@ if (process.env.MUTAR === '1') {
   PIEZAS.muro_tabla_ventana.conVentana = false; // un muro de tablas con ventana sin hueco para la contraventana
   PIEZAS.tejado_teja.peso = 80;   // un tejado de teja que pesa como uno de paja
   PIEZAS.remate_paja.esquina = false; // un remate que se comporta como un tramo más
+  PIEZAS.hogar.soloPlanta0 = false; PIEZAS.hogar.peso = 60; // una chimenea que va en cualquier planta y no pesa
 }
 
 let ok = 0, mal = 0;
@@ -806,6 +807,69 @@ console.log('20. Remate de tejado: esquinas que cierran (limatesa y limahoya)');
     const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
     comprobar('el remate se guarda y se carga', m2.construcciones[0].piezas.get(clave('r', 0, 0, 1))?.tipo === 'remate_paja');
   }
+}
+
+console.log('21. Chimenea u hogar interior (piedras y barro, 600 kg, sobre cimiento de piedra)');
+{
+  const h = PIEZAS.hogar;
+  comprobar('N2, piedras y barro, 600 kg, en la planta baja', h.nivel === 2 && h.peso === 600 && h.coste.piedra > 0 && h.coste.barro > 0 && Object.keys(h.coste).length === 2 && h.soloPlanta0 === true && h.hueco === 'h');
+  const m = new Mundo(); m.colocarMojon(0, 0);
+  const R = new RegistroAcciones(), yo = 'jugador:prueba';
+  const A = (a) => ejecutar(m, R, { autor: yo, ...a });
+  const c = nuevaConstruccion(m);
+  const pon = (tipo, i, j, k, d = 0, dir = 0) => m.colocar(enRejilla(m, c, tipo, i, j, k, d, dir));
+  // casa de 2×1: cimiento de piedra en (0,0) y de troncos en (1,0), muros, y un muro en el lado -x de (0,0)
+  pon('cim_piedra', 0, 0, 0); pon('cim_tronco', 1, 0, 0);
+  for (const [i, j, d] of [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, 1], [2, 0, 1]]) pon('muro_tronco', i, j, 0, d);
+  const sinCim = m.validar(enRejilla(m, c, 'hogar', 1, 0, 0));
+  comprobar('no va sobre un cimiento de troncos', !sinCim.ok && /cimiento de piedra/.test(sinCim.motivo), sinCim.motivo || '');
+  comprobar('ni en la tierra sin cimiento', !m.validar(enRejilla(m, c, 'hogar', 5, 5, 0)).ok);
+  comprobar('ni en una planta de arriba', !m.validar(enRejilla(m, c, 'hogar', 0, 0, 1)).ok);
+  const antes = { ...m.materiales }, cargaAntes = m.cargas(c).get(clave('f', 0, 0, 0));
+  const r = A({ tipo: 'colocar', pieza: 'hogar', x: 1, z: 1, k: 0, rot: 0, dir: 0 });
+  comprobar('se pone sobre el cimiento de piedra, por acciones con autor', r.ok && r.clave === clave('h', 0, 0, 0), r.motivo || r.clave);
+  const p = c.piezas.get(clave('h', 0, 0, 0));
+  comprobar('se arrima al primer muro de su casilla (el de +z: dir 0)', p && p.dir === 0, `dir=${p && p.dir}`);
+  comprobar('en obras no se enciende', !A({ tipo: 'usar', construccion: c.id, clave: r.clave }).ok);
+  const fin = acabarObra(m, R, yo, c.id, r.clave);
+  comprobar('se termina y gasta sus piedras y su barro', fin.ok && fin.terminada && antes.piedra - m.materiales.piedra === h.coste.piedra && antes.barro - m.materiales.barro === h.coste.barro, fin.motivo || '');
+  const cargaCim = m.cargas(c).get(clave('f', 0, 0, 0)) - cargaAntes;
+  comprobar('carga sus 600 kg en el cimiento de piedra', Math.abs(cargaCim - 600) < 1e-6, String(cargaCim));
+  comprobar('terminada, está encendida', seEnciende(p) && !p.apagado && !seAbre(p));
+  const u = A({ tipo: 'usar', construccion: c.id, clave: r.clave });
+  comprobar('se apaga con Usar', u.ok && u.encendido === false && p.apagado === true);
+  comprobar('y se vuelve a encender', A({ tipo: 'usar', construccion: c.id, clave: r.clave }).encendido === true && !p.apagado);
+  comprobar('no caben dos en la misma casilla', !m.validar(enRejilla(m, c, 'hogar', 0, 0, 0)).ok);
+  // el cañón sube por la casilla: no caben escaleras ni andamios ahí, en ninguna planta
+  const esc = m.validar(enRejilla(m, c, 'escalera_mano', 0, 0, 0));
+  comprobar('no cabe una escalera en la casilla de la chimenea', !esc.ok && /chimenea/.test(esc.motivo), esc.motivo || '');
+  // huella: el hogar entero en el suelo, arrimado al muro de +z; el cañón, más estrecho y pegado al muro
+  const hu = huellaHogar(p), zs = hu.map(q => q.lz), xs = hu.map(q => q.lx);
+  comprobar('lo que ocupa está dentro de su casilla y pegado al lado del muro', Math.min(...zs) >= 1.0 && Math.max(...zs) <= 2.0 && Math.min(...xs) >= 0.2 && Math.max(...xs) <= 1.8, JSON.stringify(hu));
+  const hc = huellaHogar(p, true);
+  comprobar('el cañón ocupa menos que el hogar y va pegado al muro', Math.min(...hc.map(q => q.lz)) > Math.min(...zs) && Math.max(...hc.map(q => q.lz)) === Math.max(...zs) && Math.max(...hc.map(q => q.lx)) - Math.min(...hc.map(q => q.lx)) < Math.max(...xs) - Math.min(...xs));
+  // el cañón acaba por encima de lo más alto de su casilla, también del tejado
+  const sinTejado = altoCanon(c, p);
+  comprobar('sin nada encima, el cañón pasa de la planta baja', sinTejado > 2.5, sinTejado.toFixed(2));
+  pon('suelo_tronco', 0, 0, 1); pon('suelo_tronco', 1, 0, 1);
+  for (const [i, j, d] of [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, 1], [2, 0, 1]]) pon('muro_tronco', i, j, 1, d);
+  const t0 = pon('tejado_paja', 0, 0, 2, 0, 0), t1 = pon('tejado_paja', 1, 0, 2, 0, 0);
+  const conTejado = altoCanon(c, p, 1.2);
+  comprobar('con una planta encima y tejado, sale por encima del tejado', t0.ok && t1.ok && conTejado > 2 * 2.5 + 1.2 && conTejado < 2 * 2.5 + 1.2 + 1.5, conTejado.toFixed(2));
+  // quitar el cimiento: la chimenea cae con él (cimiento suelto, con su chimenea y nada más)
+  {
+    const c5 = nuevaConstruccion(m);
+    m.colocar(enRejilla(m, c5, 'cim_piedra', 5, -3, 0)); const r5 = m.colocar(enRejilla(m, c5, 'hogar', 5, -3, 0));
+    const pc = m.previsualizarDesmontaje(c5, clave('f', 5, -3, 0));
+    comprobar('si se quita el cimiento, la chimenea cae con él', r5.ok && pc.ok && pc.caen.includes(r5.clave), (pc.caen || []).join(' ') + (pc.motivo || ''));
+    comprobar('sin muros alrededor, mira hacia +z', c5.piezas.get(r5.clave)?.dir === 0);
+  }
+  comprobar('cada Usar queda anotado con su autor', R.entradas.filter(e => e.tipo === 'usar' && e.ok).length === 2 && R.entradas.every(e => e.autor === yo));
+  // guardar y cargar
+  A({ tipo: 'usar', construccion: c.id, clave: r.clave });
+  const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  const p2 = hogarEn(m2.construcciones[0], 0, 0);
+  comprobar('se guarda y se carga (apagada)', p2 && p2.tipo === 'hogar' && p2.apagado === true && p2.dir === 0);
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

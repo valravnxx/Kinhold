@@ -19,6 +19,7 @@ export const MAX_PLANTA = 3;  // plantas 0..3
 //  q = polea o polipasto colgado de una viga  clave i,j,k,d  (la de la viga b:i,j,k,d)
 //  w = contraventana en la ventana de un muro  clave i,j,k,d  (la del muro e:i,j,k,d)
 //  t = trampilla en el hueco de una escalera de tablas  clave i,j,k  (planta del hueco: la escalera está en k - 1)
+//  h = hogar (chimenea) en una casilla de la planta baja  clave i,j,k  (sobre el cimiento de piedra f:i,j,0)
 
 export const MATERIALES = {
   piedra: 'Piedra', tronco: 'Tronco', vara: 'Vara', barro: 'Barro', paja: 'Paja',
@@ -99,6 +100,12 @@ export const PIEZAS = {
   // (cerrada se pisa como el suelo y no deja subir ni bajar por la escalera).
   contraventana:      { nombre: 'Contraventana', hueco: 'w', nivel: 2, peso: 20, cap: 0, coste: { tabla: 2, clavo: 2 }, cat: 'acceso' },
   trampilla:          { nombre: 'Trampilla', hueco: 't', nivel: 2, peso: 20, cap: 0, coste: { tabla: 2, clavo: 2 }, cat: 'acceso' },
+  // Sistemas: «Chimenea / hogar interior — N2, piedras + barro, 600 kg; calor dentro sin que arda la casa». Va en la
+  // planta baja, sobre un cimiento de piedra terminado (le carga sus 600 kg), arrimada a un lado de la casilla: el
+  // hogar con su campana y el cañón de piedra que sube hasta salir por encima del tejado. El fuego se enciende y se
+  // apaga con Usar. Cantidades provisionales (sistemas no las da): 10 piedras y 4 de barro, en la proporción del
+  // cimiento de piedra (8 piedras, 400 kg). El calor (frío, abrigo) llega con la supervivencia: hoy solo se ve.
+  hogar:              { nombre: 'Chimenea', hueco: 'h', nivel: 2, peso: 600, cap: 0, coste: { piedra: 10, barro: 4 }, soloPlanta0: true, hogar: true, cat: 'estructura' },
 
   cerca:              { nombre: 'Cerca de varas', hueco: 'e', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, suelo: true, soloPlanta0: true, bajo: true, cat: 'exterior' },
   // portón: se abre y se cierra con Usar (abierto no corta el paso)
