@@ -2,7 +2,7 @@
 // Con MUTAR=1 el tronco corto pasa a ser mediano (cabría en una mano y en un hueco mediano): las pruebas deben FALLAR.
 // Con MUTAR=2 el leñero admite piedras y el cinto de cuero pierde su hueco mediano: las del equipo de carga deben FALLAR.
 import { Inventario, Inventarios, CATALOGO, pila, ejecutarInventario, migrar, MIGRACIONES, VERSION_INVENTARIO,
-  guardarInventarios, cargarInventarios, CLAVE_INVENTARIO, capacidad, EQUIPO_CARGA } from '../src/logica/inventario.js';
+  guardarInventarios, cargarInventarios, CLAVE_INVENTARIO, capacidad, EQUIPO_CARGA, factorVelocidad, RALENTIZACION_MAXIMA } from '../src/logica/inventario.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -276,6 +276,51 @@ console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
   comprobar('el odre se coge, se pone y se llena con acciones con autor', a1.ok && a2.ok && a3.ok && invs.de('jugador:ana').cuantos('agua') === 10);
   const otra = Inventarios.importar(JSON.parse(JSON.stringify(invs.exportar())));
   comprobar('el equipo de carga se guarda y se carga con lo que lleva', otra.de('jugador:ana').lugares.hombro.tipo === 'odre' && otra.de('jugador:ana').cuantos('agua') === 10);
+}
+
+// ---------------- Ralentización por carga (GDD: con poca carga no se nota; al máximo en todo, el 80%) ----------------
+{
+  const casi = (a, b) => Math.abs(a - b) < 1e-9;
+  const mutar = !!process.env.MUTAR_CARGA; // rompe la cuenta a propósito: estas pruebas tienen que fallar
+  const vel = inv => mutar ? 1 - RALENTIZACION_MAXIMA * inv.lleno().fraccion : inv.velocidad();
+  const inv = Inventario.inicial();
+  comprobar('sin carga se anda a la velocidad de siempre', vel(inv) === 1 && inv.lleno().fraccion === 0);
+  comprobar('la ropa puesta no ralentiza (aún)', inv.lugares['ropa:interior'] && vel(inv) === 1);
+  inv.coger('silex', 3, 'mano:der');
+  comprobar('con poca carga no se nota (menos del 0,5%)', vel(inv) < 1 && vel(inv) > 0.995, String(vel(inv)));
+  inv.soltar('mano:der');
+  inv.coger('tronco_corto', 1, 'mano:der');
+  comprobar('lo grande llena las dos manos', casi(inv.lleno().lugares.manos, 1));
+  comprobar('las manos llenas y nada más: poco (más del 98%)', vel(inv) > 0.98 && vel(inv) < 0.99, String(vel(inv)));
+  // todo lleno: leñero lleno a la espalda, cinto lleno, saco lleno al hombro y las manos llenas
+  const t = Inventario.inicial();
+  const ok = [
+    t.coger('lenero', 1, 'mano:der').ok, t.ponerse('mano:der').ok,
+    t.coger('tronco_corto', 1, 'espalda/0').ok, t.coger('tronco_corto', 1, 'espalda/1').ok,
+    ...[2, 3, 4, 5].map(i => t.coger('lena', 3, 'espalda/' + i).ok),
+    t.coger('cinto_anillas', 1, 'mano:der').ok, t.ponerse('mano:der').ok,
+    t.coger('piedra', 3, 'cintura/0').ok, t.coger('rama', 3, 'cintura/1').ok, t.coger('silex', 10, 'cintura/2').ok, t.coger('resina', 10, 'cintura/3').ok,
+    t.coger('saco', 1, 'mano:der').ok, t.ponerse('mano:der').ok, t.coger('grano', 10, 'hombro/0').ok, t.coger('harina', 10, 'hombro/1').ok,
+    t.coger('piedra', 3, 'mano:der').ok, t.coger('rama', 3, 'mano:izq').ok,
+  ];
+  comprobar('se puede llenar todo (leñero, cinto, saco y manos)', ok.every(x => x), ok.map(Number).join(''));
+  comprobar('cargado al máximo en todo: el 80%', casi(t.lleno().fraccion, 1) && casi(vel(t), 0.8), String(vel(t)));
+  // a medias: la mitad de lleno se nota poco (el 95%), no la mitad de la reducción
+  t.soltar('mano:der'); t.soltar('mano:izq'); t.soltar('hombro');
+  comprobar('mitad de lleno (espalda y cintura llenas): el 95%', casi(t.lleno().fraccion, 0.5) && casi(vel(t), 0.95), String(vel(t)));
+  // crece con lo que llevas: nunca va más rápido por llevar más
+  const c = Inventario.inicial(); c.coger('cinto_cuero', 1, 'mano:der'); c.ponerse('mano:der');
+  let antes = vel(c), crece = true;
+  for (let i = 1; i <= 10; i++) { c.coger('silex', 1, 'cintura/1'); const v = vel(c); if (!(v < antes)) crece = false; antes = v; }
+  comprobar('cada cosa más ralentiza un poco más', crece);
+  comprobar('un hueco a medias cuenta a medias', casi(c.lleno().lugares.cintura, 1 / 3));
+  // llevar puesto un contenedor vacío no cambia nada
+  const e = Inventario.inicial(); e.coger('mochila_bastidor', 1, 'mano:der'); e.ponerse('mano:der');
+  comprobar('una mochila vacía a la espalda no ralentiza', vel(e) === 1);
+  // la cuenta no se sale de 0,8–1 con datos raros, y se guarda y carga con lo que lleva
+  comprobar('el factor queda entre 0,8 y 1 con datos raros', factorVelocidad(5) === 0.8 && factorVelocidad(-1) === 1 && factorVelocidad(NaN) === 1);
+  const g = Inventarios.importar(JSON.parse(JSON.stringify((() => { const s = new Inventarios(); s.jugadores['jugador:ana'] = t; return s.exportar(); })())));
+  comprobar('lo cargado de un guardado ralentiza igual', casi(g.de('jugador:ana').velocidad(), t.velocidad()));
 }
 
 console.log(`\n${ok} correctas, ${mal} fallos`);

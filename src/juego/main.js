@@ -13,6 +13,7 @@ import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { vigilar, ofrecerGente } from '../mundo/rendimiento.js';
 import { conectarEnLinea } from './en_linea.js';
+import { cargarInventarios, guardarInventarios, ejecutarInventario } from '../logica/inventario.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -55,6 +56,16 @@ function accion(a) {
   if (enLinea) { const r = enLinea.red.accion(a); mundo = enLinea.red.mundo; return r; }
   return ejecutar(mundo, registroAcciones, { autor: AUTOR_LOCAL, ...a });
 }
+// Lo que lleva el jugador (inventario por huecos, src/logica/inventario.js): también por acciones con autor.
+// Por ahora solo cuenta para ir más despacio cargado; el panel para cogerlo y verlo llega en el hito 2.
+const almacen = (() => { try { return localStorage; } catch (e) { return null; } })();
+const inventarios = almacen ? cargarInventarios(almacen) : cargarInventarios({ getItem: () => null });
+function accionInventario(a) {
+  const r = ejecutarInventario(inventarios, registroAcciones, { autor: AUTOR_LOCAL, ...a });
+  if (r.ok && almacen) guardarInventarios(almacen, inventarios);
+  return r;
+}
+const inventario = () => inventarios.de(AUTOR_LOCAL);
 const estado = {
   modo: 'mover',            // mover | construir | desmontar
   sel: { clase: 'pieza', tipo: 'cim_piedra' },
@@ -1127,7 +1138,7 @@ function paso() {
   if (teclas.has('e')) cam.yaw -= dt * 1.6;
   const mag = Math.min(1, Math.hypot(ax, az));
   const correr = teclas.has('shift');
-  const vel = (correr ? 6 : 3.6) * mag;
+  const vel = (correr ? 6 : 3.6) * mag * inventario().velocidad(); // cargado al máximo en todo, al 80% (GDD)
   if (mag > 0.05) {
     estado.talando = null; // moverse deja de talar
     if (estado.obrando) { estado.obrando = null; mostrarAviso(t('dejasObra')); } // y de construir
@@ -1360,8 +1371,9 @@ window.__kinhold = {
   fijarSubida(t) { if (estado.obrando) estado.obrando.desde = performance.now() + 1e9; if (rampa) { rampa.t = rampa.meta = t; moverRampa(0); } },
   seguirSubida() { if (estado.obrando) estado.obrando.desde = performance.now(); },
   interactivoCercano() { const o = interactivoCercano(); return o && { c: o.c.id, key: o.key, tipo: o.tipo }; },
-  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); reconstruir(); },
+  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; reconstruir(); },
   get registroAcciones() { return registroAcciones; },
+  accionInventario, get inventario() { return inventario(); },
   get enLinea() { return enLinea; },
   reconstruir() { reconstruir(); },
   render() { renderer.render(escena, camara); },
