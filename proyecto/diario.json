@@ -1687,5 +1687,22 @@
   "capturas": "capturas/demo-v26",
   "estado": "ok",
   "notas": "no comprobado: cortes de verdad entre dos aparatos por internet (solo con servidor local y páginas sin pantalla). En el móvil, en el duelo, los avisos de conexión quedan encima de los de heridas (como ya pasaba con varias heridas)."
+ },
+ {
+  "inicio": "2026-10-28T06:58:45+01:00",
+  "fin": "2026-10-28T09:22:53+01:00",
+  "titulo": "Hito 10: agua que se mueve (río, mar, olas que rompen)",
+  "hito": "mundo",
+  "hecho": [
+   "Un solo material de agua para ríos y mar, de lejos y de cerca (Phong de three.js con su luz, sombras y niebla, más un sombreador propio)",
+   "El río corre en su dirección con el método del mapa de flujo de dos fases; la velocidad sale de la pendiente del cauce, y en los torrentes salen regueros de espuma",
+   "El mar tiene oleaje de verdad (tres olas de Gerstner a la velocidad de las olas reales, la grande del oeste) y, en la costa, franjas de espuma que avanzan hacia la orilla",
+   "Color según la hondura y transparencia en la orilla; la espuma y el desvanecido van por la distancia exacta a la orilla, calculada entre los puntos de la rejilla",
+   "La costa ya no es una pared vertical: cortados empinados con las esquinas redondeadas y playas que bajan al agua sin escalón; junto al mar la tierra tiene su bioma",
+   "Pruebas nuevas: la costa no es una pared (rota a propósito); en el navegador, el agua se mueve entre dos capturas (MUTAR_AGUA=1 la congela y la prueba falla)"
+  ],
+  "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa 67/67, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web en PC y móvil). En línea y cavar fallaron por tiempo con las dos mitades a la vez; solas, correctas. No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v6",
+  "estado": "ok"
  }
 ]
