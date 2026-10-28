@@ -856,7 +856,9 @@
     },
     {
      "nombre": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T09:34:28+01:00",
+     "rama": "trabajo/20261028-0935-roca"
     },
     {
      "nombre": "Valles tallados por los ríos: sin zanjas; lecho, orilla, vega ancha abajo y laderas con la pendiente limitada (en V cerrada en la montaña); el agua del río también de cerca",
