@@ -6,11 +6,10 @@
   "rama": "trabajo/20261026-1338"
  },
  "B": {
-  "inicio": "2026-10-28T02:50:19+00:00",
-  "tarea": "Contraventana y trampilla (N2: 2 tablas y clavos): la contraventana cierra la ventana de un muro y la trampilla tapa el hueco de una escalera; las dos se abren y cierran con Usar. Añadir también el muro de tablas con ventana, que falta",
-  "hito": "construccion-mas",
-  "rama": "trabajo/20261028-0250",
-  "ultimo": "2026-10-28T04:32:50.000Z"
+  "inicio": "2026-10-28T08:51:14+00:00",
+  "tarea": "Bots: jugadores simulados en node que se conectan al servidor y andan, construyen y pelean, para la medición",
+  "hito": "prueba-online",
+  "rama": "trabajo/20261028-0851"
  },
  "chat:trabajo/20261028-0935-roca": {
   "inicio": "2026-10-28T09:34:28+01:00",
