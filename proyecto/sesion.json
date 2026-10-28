@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-28T21:20:50+00:00",
+  "tarea": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
+  "hito": "arte",
+  "rama": "trabajo/20261028-2120"
+ },
  "B": null,
  "chat:trabajo/20261028-2100-tirones": {
   "inicio": "2026-10-28T20:58:47+01:00",

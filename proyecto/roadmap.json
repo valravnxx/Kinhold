@@ -456,7 +456,9 @@
     },
     {
      "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T21:20:50+00:00",
+     "rama": "trabajo/20261028-2120"
     },
     {
      "nombre": "Taller: pies descalzos. El cuerpo no tiene pies bajo los zapatos (se quitan al vestir) y el GDD dice que se empieza descalzo: hace falta el cuerpo con pies cuando no lleva zapatos",
