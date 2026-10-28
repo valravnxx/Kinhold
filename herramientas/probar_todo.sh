@@ -26,7 +26,7 @@ paso "Conexiones que se cortan y datos mal formados" node pruebas/prueba_conexio
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
 paso "Bots: jugadores simulados contra el servidor" node pruebas/prueba_bots.mjs
 paso "Medición del servidor (CPU, memoria, red y disco)" node pruebas/prueba_medir.mjs
-command -v caddy >/dev/null || apt-get install -y -q caddy >/dev/null 2>&1 || true
+command -v caddy >/dev/null || apt-get install -y -q caddy >/dev/null 2>&1 || { apt-get update -q >/dev/null 2>&1; apt-get install -y -q caddy >/dev/null 2>&1; } || true
 paso "Servidor de prueba en internet (Caddy con HTTPS delante del juego)" node pruebas/prueba_nube.mjs
 paso "Taller: los cinturones ciñen su prenda" node pruebas/prueba_cinturones.mjs
 paso "Taller: capa, calzado y tocados" node pruebas/prueba_prendas.mjs

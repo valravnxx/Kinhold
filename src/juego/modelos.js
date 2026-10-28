@@ -411,7 +411,7 @@ const CTX_TEJADO = { extremos: [1, -1], cumbrera: false, par: 0 };
 const loteTejado = () => new Lote({ variacion: 0.05, rangoSuelo: 0.35 });
 function marcoTejado(ctx, junta = 0.03) {
   const S = MODULO, sub = P.subidaTejado, ang = Math.atan2(sub, S), largo = Math.hypot(S, sub), V = P.voladizo;
-  const vuela = l => (ctx.extremos || []).includes(l) ? 0.2 : junta;
+  const vuela = l => (ctx.extremos || []).includes(l) ? (ctx.vuelo ?? 0.2) : junta;
   const x0 = -S / 2 - vuela(-1), x1 = S / 2 + vuela(1);
   const giro = new THREE.Matrix4().makeRotationX(-ang);
   // punto del plano del tejado a una distancia s del alero (por la pendiente) y t por encima (perpendicular)
@@ -432,8 +432,8 @@ function hiladaPaja(ancho, grueso, largo, r = 0.14) {
   g.translate(0, 0, -ancho / 2); g.rotateY(-Math.PI / 2);
   return g;
 }
-function tejadoPaja(ctx = CTX_TEJADO) {
-  const L = loteTejado(), M = marcoTejado(ctx, P.juntaPaja), GR = GRUESO_PAJA, FILAS = 2;
+function lotePaja(ctx = CTX_TEJADO, L = loteTejado()) {
+  const M = marcoTejado(ctx, P.juntaPaja), GR = GRUESO_PAJA, FILAS = 2;
   const total = M.largo + M.V, lf = total / FILAS;
   for (let f = 0; f < FILAS; f++) {
     const s0 = -M.V + f * lf, l = f === FILAS - 1 ? lf + 0.02 : lf * 1.3;
@@ -460,12 +460,13 @@ function tejadoPaja(ctx = CTX_TEJADO) {
     for (const l of [-1, 1]) if ((ctx.extremos || []).includes(l))
       L.add(new THREE.SphereGeometry(r, 14, 8), 'pajaOsc', l < 0 ? M.x0 : M.x1, yC, M.S / 2, null, { sinSuelo: true, escala: new THREE.Vector3(0.3, 1, 1) });
   }
-  return deLote(L);
+  return L;
 }
+const tejadoPaja = (ctx = CTX_TEJADO) => deLote(lotePaja(ctx));
 // Tablillas: tablazón debajo y filas de tablillas solapadas, cada fila desplazada media tablilla, con el pie un poco
 // levantado (se ve el canto de cada fila); tabla de remate en los lados que vuelan y caballete en la cumbrera
-function tejadoTablillas(ctx = CTX_TEJADO) {
-  const L = loteTejado(), M = marcoTejado(ctx);
+function loteTablillas(ctx = CTX_TEJADO, L = loteTejado()) {
+  const M = marcoTejado(ctx);
   const tz = M.punto(-M.V + (M.largo + M.V) / 2, 0.02 + M.alza);
   L.add(cajaR(M.ancho, 0.04, M.largo + M.V, 0.01), 'maderaOsc', M.cx, tz.y, tz.z, M.giro, { sinSuelo: true, brillo: 0.6 });
   const LARGO = 0.38, PASO = 0.19, GROSOR = 0.03, inclina = 0.11;
@@ -484,13 +485,14 @@ function tejadoTablillas(ctx = CTX_TEJADO) {
     }
   }
   // tablas de remate en los lados que vuelan
-  for (const l of [-1, 1]) if ((ctx.extremos || []).includes(l)) {
+  for (const l of [-1, 1]) if ((ctx.extremos || []).includes(l) && !ctx.mitad) {
     const c = M.punto(-M.V + (M.largo + M.V) / 2, 0.02 + M.alza);
     L.add(cajaR(0.04, 0.2, M.largo + M.V, 0.01), 'maderaOsc', l < 0 ? M.x0 - 0.02 : M.x1 + 0.02, c.y, c.z, M.giro, { sinSuelo: true });
   }
   if (ctx.cumbrera) L.add(cajaR(M.ancho + 0.04, 0.17, 0.17, 0.02), 'maderaOsc', M.cx, M.sub + 0.1 + M.alza, M.S / 2, { x: Math.PI / 4 }, { sinSuelo: true });
-  return deLote(L);
+  return L;
 }
+const tejadoTablillas = (ctx = CTX_TEJADO) => deLote(loteTablillas(ctx));
 // Teja curva (de canal y cobija), como en los tejados de barro cocido: columnas de canales (boca arriba, recogen el
 // agua) y encima, cubriendo la junta entre dos canales, columnas de cobijas (boca abajo), cada teja montada sobre la de
 // abajo y un poco más tendida que el tejado (se ve el canto de cada una). Cada teja con su tono, como las viejas.
@@ -507,8 +509,8 @@ function mediaCana(r, grosor, largo, abajo) {
   g.translate(0, 0, -largo / 2);
   return g;
 }
-function tejadoTejas(ctx = CTX_TEJADO) {
-  const L = loteTejado(), M = marcoTejado(ctx), T = TEJA, S = M.S, ext = ctx.extremos || [];
+function loteTejas(ctx = CTX_TEJADO, L = loteTejado()) {
+  const M = marcoTejado(ctx), T = TEJA, S = M.S, ext = ctx.extremos || [];
   // tablazón debajo (lo que se ve desde dentro)
   const tz = M.punto(-M.V + (M.largo + M.V) / 2, 0.02 + M.alza);
   L.add(cajaR(M.ancho, 0.04, M.largo + M.V, 0.01), 'maderaOsc', M.cx, tz.y, tz.z, M.giro, { sinSuelo: true, brillo: 0.6 });
@@ -532,7 +534,7 @@ function tejadoTejas(ctx = CTX_TEJADO) {
       { sinSuelo: true, brillo: 0.8 + ruido(sd + 3) * 0.32 });
   }
   // tabla de remate en los lados que vuelan
-  for (const l of [-1, 1]) if (ext.includes(l)) {
+  for (const l of [-1, 1]) if (ext.includes(l) && !ctx.mitad) {
     const c = M.punto(-M.V + total / 2, 0.06 + M.alza);
     L.add(cajaR(0.04, 0.24, total, 0.01), 'maderaOsc', l < 0 ? M.x0 - 0.02 : M.x1 + 0.02, c.y, c.z, M.giro, { sinSuelo: true });
   }
@@ -545,6 +547,82 @@ function tejadoTejas(ctx = CTX_TEJADO) {
     for (let x = M.x0 + lc / 2, k = 0; x - lc / 2 < M.x1 - 0.02; x += pc, k++) {
       const xx = Math.min(x, M.x1 - lc / 2), sd = k * 3.3 + M.x0;
       L.add(caballete, ruido(sd) > 0.4 ? 'teja' : 'tejaOsc', xx, yC + (k % 2) * 0.004, S / 2, null, { sinSuelo: true, brillo: 0.85 + ruido(sd + 2) * 0.25 });
+    }
+  }
+  return L;
+}
+const tejadoTejas = (ctx = CTX_TEJADO) => deLote(loteTejas(ctx));
+// ---------- Remate de tejado (esquina), con el estilo v5 ----------
+// Como en las esquinas de verdad: dos mitades de tramo del mismo material, una que sube hacia +z y otra girada que sube
+// hacia +x, cortadas por la diagonal de la casilla. ctx.forma (de geometriaTejados):
+//   'tesa' (esquina de fuera): alto = el menor de los dos; aleros en z = -1 y x = -1; la limatesa sube por la diagonal
+//          hasta la punta (x = z = +1) y se cubre como la cumbrera de su material
+//   'hoya' (rincón de un tejado en L): alto = el mayor de los dos; la limahoya baja por la diagonal hasta (-1, -1)
+// Sin ctx (fantasma, muestrario): limatesa.
+const LOTE_MITAD = { remate_paja: lotePaja, remate_tablilla: loteTablillas, remate_teja: loteTejas };
+// giro que lleva el eje x local a lo largo de p0 → p1, con el y local hacia arriba (lo más posible)
+function aLoLargo(p0, p1) {
+  const a = p1.clone().sub(p0).normalize(), lado = new THREE.Vector3().crossVectors(a, new THREE.Vector3(0, 1, 0)).normalize();
+  return new THREE.Matrix4().makeBasis(a, new THREE.Vector3().crossVectors(lado, a), lado);
+}
+function remateTejado(tipo, ctx = {}) {
+  const tesa = (ctx.forma || 'tesa') === 'tesa', L = loteTejado(), hacer = LOTE_MITAD[tipo];
+  const S = MODULO, sub = P.subidaTejado, ang = Math.atan2(sub, S), V = P.voladizo, alza = ctx.par ? 0.012 : 0;
+  // mitad A: sube hacia +z (sin girar); mitad B: girada un cuarto, sube hacia +x. Cada una se queda con su lado de la
+  // diagonal: en la limatesa, la parte más baja de las dos; en la limahoya, la más alta.
+  const mitades = [
+    { giro: 0, extremos: tesa ? [-1] : [], recorte: { n: new THREE.Vector3(tesa ? 1 : -1, 0, tesa ? -1 : 1), c: 0 } },
+    { giro: Math.PI / 2, extremos: tesa ? [1] : [], recorte: { n: new THREE.Vector3(tesa ? -1 : 1, 0, tesa ? 1 : -1), c: 0 } },
+  ];
+  for (const m of mitades) {
+    const H = hacer({ extremos: m.extremos, cumbrera: false, par: ctx.par || 0, vuelo: V, mitad: true });
+    const R = new THREE.Matrix4().makeRotationY(m.giro);
+    for (const pz of H.piezas) L.piezas.push({ ...pz, m: R.clone().multiply(pz.m), opc: { ...pz.opc, recorte: m.recorte } });
+  }
+  // la línea de la diagonal sobre el plano del tejado: del alero (o del pie del rincón) a la punta
+  const h0 = tesa ? -V * Math.cos(ang) : 0;
+  const p0 = new THREE.Vector3(-S / 2 + h0, h0 * sub / S, -S / 2 + h0), p1 = new THREE.Vector3(S / 2, sub, S / 2);
+  const giro = aLoLargo(p0, p1), largo = p0.distanceTo(p1);
+  const en = (t, alto) => p0.clone().lerp(p1, t).add(new THREE.Vector3(0, alto, 0));
+  if (tipo === 'remate_paja') {
+    // limatesa: un rollo de paja como la cumbrera; limahoya: la paja se junta sola, con un poco de sombra en la junta
+    if (tesa) {
+      const r = 0.22, rollo = cil(r, r, largo + 0.1, 14); rollo.rotateZ(Math.PI / 2);
+      const c = en(0.5, GRUESO_PAJA * 0.8);
+      L.add(rollo, 'pajaOsc', c.x, c.y, c.z, giro, { sinSuelo: true, rayas: RAYAS_PAJA });
+    } else {
+      const surco = cil(0.1, 0.1, largo, 8); surco.rotateZ(Math.PI / 2);
+      const c = en(0.5, GRUESO_PAJA * 0.62);
+      L.add(surco, 'pajaOsc', c.x, c.y, c.z, giro, { sinSuelo: true, brillo: 0.7, rayas: RAYAS_PAJA });
+    }
+  } else if (tipo === 'remate_tablilla') {
+    if (tesa) {
+      const c = en(0.5, 0.1 + alza), caballete = cajaR(largo + 0.06, 0.17, 0.17, 0.02); caballete.rotateX(Math.PI / 4);
+      L.add(caballete, 'maderaOsc', c.x, c.y, c.z, giro, { sinSuelo: true });
+    } else {
+      // limahoya: tabla ancha en el fondo del rincón, por donde corre el agua
+      const c = en(0.5, 0.045 + alza), tabla = cajaR(largo, 0.03, 0.34, 0.01);
+      L.add(tabla, 'maderaOsc', c.x, c.y, c.z, giro, { sinSuelo: true, brillo: 0.65 });
+    }
+  } else {
+    const T = TEJA, base = 0.04 + alza;
+    if (tesa) {
+      // limatesa: cobijas grandes asentadas en barro, montadas de abajo arriba, como el caballete de la cumbrera
+      // las tejas del tejado, medidas en vertical sobre la diagonal (más tendida que el tejado), llegan a esta altura
+      const yC = (base + T.rCanal + T.rCobija + 0.01) / Math.cos(ang);
+      const cb = en(0.5, yC - 0.06), cama = cajaR(largo, 0.1, 0.22, 0.03);
+      L.add(cama, 'barro', cb.x, cb.y, cb.z, giro, { sinSuelo: true, brillo: 0.85 });
+      const rc = 0.12, lc = 0.42, pc = 0.36, caballete = mediaCana(rc, 0.02, lc, false); caballete.rotateY(Math.PI / 2);
+      const n = Math.max(1, Math.ceil((largo - lc) / pc) + 1);
+      for (let k = 0; k < n; k++) {
+        const t = Math.min((lc / 2 + k * pc) / largo, 1 - lc / 2 / largo), c = en(t, yC + (k % 2) * 0.004), sd = k * 3.3 + 7;
+        L.add(caballete, ruido(sd) > 0.4 ? 'teja' : 'tejaOsc', c.x, c.y, c.z, giro, { sinSuelo: true, brillo: 0.85 + ruido(sd + 2) * 0.25 });
+      }
+    } else {
+      // limahoya: una fila de canales en el fondo del rincón, que recogen el agua de las dos caídas
+      const canal = mediaCana(0.13, T.grosor, largo, true); canal.rotateY(Math.PI / 2);
+      const c = en(0.5, base + 0.05);
+      L.add(canal, 'tejaOsc', c.x, c.y, c.z, giro, { sinSuelo: true, brillo: 0.7 });
     }
   }
   return deLote(L);
@@ -1105,6 +1183,7 @@ export function modeloPieza(tipo, ctx) {
     case 'tejado_paja': return tejadoPaja(ctx || CTX_TEJADO);
     case 'tejado_tablilla': return tejadoTablillas(ctx || CTX_TEJADO);
     case 'tejado_teja': return tejadoTejas(ctx || CTX_TEJADO);
+    case 'remate_paja': case 'remate_tablilla': case 'remate_teja': return remateTejado(tipo, ctx || {});
     case 'hastial': return hastial();
     case 'escalera_mano': return escaleraMano();
     case 'escalera_tabla': return escaleraTablas();

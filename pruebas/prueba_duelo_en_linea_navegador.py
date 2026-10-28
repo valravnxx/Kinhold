@@ -70,7 +70,7 @@ try:
             pg.goto(URL)
             # la de PC eligió una mujer con vestido y lucha con gambesón; la del móvil, el de por defecto y sin armadura
             if not movil:
-                pg.evaluate("localStorage.setItem('kinhold_personaje_v2', JSON.stringify({ sexo: 'mujer', capas: { mujer: ['vestido'] } }))")
+                pg.evaluate("localStorage.setItem('kinhold_personaje_v2', JSON.stringify({ sexo: 'mujer', capas: { mujer: ['vestido'] }, aspecto: { mujer: { piel: 'oscura', ojos: 'azules', formas: { altura: -1, musculo: 0.7 } } } }))")
                 pg.evaluate("localStorage.setItem('kinhold_combate_v2', JSON.stringify({ armadura: 'gambeson' }))")
             pg.evaluate(f"localStorage.setItem('kinhold_servidor', '{DIRECCION}')")
             pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
@@ -88,8 +88,14 @@ try:
         print('Verse en la liza')
         comprobar('PC ve al móvil en la liza', esperar(A, f"{D}.otros.size === 1 && {otro(A)}.visto && {otro(A)}.m", 15000))
         comprobar('el móvil ve a PC en la liza', esperar(B, f"{D}.otros.size === 1 && {otro(B)}.visto && {otro(B)}.m", 30000))
-        comprobar('el móvil ve a PC con el cuerpo y la ropa que eligió y su armadura', B.evaluate(f"{otro(B)}.clave") == 'mujer:gambeson:gambeson', B.evaluate(f"{otro(B)}.clave"))
-        comprobar('PC ve al móvil como el de por defecto, sin armadura', A.evaluate(f"{otro(A)}.clave") == 'hombre::lino', A.evaluate(f"{otro(A)}.clave"))
+        comprobar('el móvil ve a PC con el cuerpo y la ropa que eligió y su armadura', B.evaluate(f"{otro(B)}.clave").startswith('mujer:gambeson:gambeson:'), B.evaluate(f"{otro(B)}.clave"))
+        comprobar('PC ve al móvil como el de por defecto, sin armadura', A.evaluate(f"{otro(A)}.clave").startswith('hombre::lino:'), A.evaluate(f"{otro(A)}.clave"))
+        # el aspecto (forma, colores, peinado y barba): el otro lo ve igual que uno mismo se ve
+        listo = lambda m: f"({m}.userData.taller && {m}.userData.taller.estado === 'listo')"
+        asp = lambda pg, m: (esperar(pg, listo(m), 30000), pg.evaluate(f"JSON.stringify({m}.userData.taller.mh.aspecto)"))[1]
+        aB, aA = asp(B, f"{otro(B)}.m"), asp(A, f"{D}.mJugador")
+        comprobar('el móvil ve a PC con su aspecto (piel oscura, ojos azules, baja y musculosa)', aB == aA and json.loads(aB)['piel'] == 'oscura' and json.loads(aB)['formas']['musculo'] == 0.7, aB)
+        comprobar('PC ve al móvil con el aspecto por defecto, igual que el móvil se ve', asp(A, f"{otro(A)}.m") == asp(B, f"{D}.mJugador"))
         comprobar('cada uno dice que tiene un rival en la liza', 'en la liza' in A.inner_text('#estadoRed') and 'en la liza' in B.inner_text('#estadoRed'), A.inner_text('#estadoRed'))
         # frente a frente, a 1,5 m
         A.evaluate(f"Object.assign({D}.jugador, {{ x: 0, z: -0.75, rot: 0 }})")
@@ -180,6 +186,24 @@ try:
         despues = B.evaluate(f"JSON.stringify({{ yo: {D}.red.yo, heridas: {D}.jugador.heridas.map(h => h.zona + ':' + h.gravedad), fuera: {D}.jugador.fuera }})")
         comprobar('y vuelve el mismo luchador, con sus heridas (no sano)', antes == despues and len(json.loads(antes)['heridas']) > 0, f'{antes} → {despues}')
         for nombre, (pg, _) in paginas.items(): captura(pg, f'{SALIDA}/{nombre}_6_vuelve.png')
+
+        print('Del duelo a construir, en la misma pestaña')
+        # valravnx, 28 oct: al pasar del duelo a construir, el servidor los seguía teniendo en la liza (la pestaña es el
+        # mismo jugador) y en la construcción no se veían el uno al otro; las obras sí
+        K = 'window.__kinhold'
+        for nombre, (pg, _) in paginas.items():
+            pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
+            pg.click('#demoEnLinea'); pg.wait_for_load_state('load')
+            comprobar(f'{nombre}: entra a construir en línea', esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado'", 90000))
+        comprobar('sigue siendo el mismo jugador que en el duelo', A.evaluate(f"{K}.enLinea.red.yo") == yoA and B.evaluate(f"{K}.enLinea.red.yo") == yoB)
+        comprobar('PC ve al móvil construyendo', esperar(A, f"{K}.enLinea.remotos.size === 1", 20000), str(A.evaluate(f"{K}.enLinea.remotos.size")))
+        comprobar('el móvil ve a PC construyendo', esperar(B, f"{K}.enLinea.remotos.size === 1", 30000), str(B.evaluate(f"{K}.enLinea.remotos.size")))
+        comprobar('y ninguno dice que el servidor sea antiguo', not A.evaluate(f"{K}.enLinea.antiguo") and not B.evaluate(f"{K}.enLinea.antiguo"))
+        for nombre, (pg, _) in paginas.items(): captura(pg, f'{SALIDA}/{nombre}_7_construir_tras_duelo.png')
+        # PC vuelve al duelo para lo que sigue
+        A.goto(URL); A.wait_for_function('window.__demo && window.__demo.listo')
+        A.click('#demoDueloEnLinea'); A.wait_for_load_state('load')
+        comprobar('PC vuelve al duelo', esperar(A, f"window.__demo && window.__demo.listo && {D}.red && {D}.red.estado === 'conectado'", 90000))
 
         print('El servidor se apaga')
         servidor.terminate(); servidor.wait(5)

@@ -372,17 +372,32 @@ function limpiarResaltado() {
 function objDe(c, key) { const r = registroMallas.find(m => m.c === c && m.key === key); return r && r.obj; }
 
 // ---------------- Fantasma de colocación ----------------
-let fantasma = null, fantasmaTipo = null;
+let fantasma = null, fantasmaTipo = null, fantasmaForma = null;
+function velarFantasma() {
+  fantasma.traverse(o => { if (o.isMesh) { o.userData.matBase = o.material; o.material = matVelo(o.material, 'ok'); o.castShadow = false; o.renderOrder = 2; } });
+}
+// el remate de tejado cambia de forma según los tramos de al lado (limatesa o limahoya): el fantasma también
+function formaFantasma(forma) {
+  if (!fantasma || forma === fantasmaForma) return;
+  const viejo = fantasma;
+  fantasma = modeloPieza(estado.sel.tipo, { forma });
+  fantasma.position.copy(viejo.position); fantasma.quaternion.copy(viejo.quaternion); fantasma.scale.copy(viejo.scale);
+  fantasma.visible = viejo.visible;
+  escena.remove(viejo); liberar(viejo);
+  velarFantasma(); escena.add(fantasma);
+  fantasmaForma = forma;
+}
 function prepararFantasma() {
   const tipo = estado.modo === 'construir' ? estado.sel.clase + ':' + estado.sel.tipo : null;
   if (tipo === fantasmaTipo) return;
   if (fantasma) { escena.remove(fantasma); liberar(fantasma); fantasma = null; }
-  fantasmaTipo = tipo;
+  fantasmaTipo = tipo; fantasmaForma = null;
   if (!tipo) return;
   if (estado.sel.clase === 'pieza') fantasma = modeloPieza(estado.sel.tipo);
   else if (estado.sel.clase === 'deco') fantasma = modeloDeco(estado.sel.tipo);
   else fantasma = modeloMojon();
-  fantasma.traverse(o => { if (o.isMesh) { o.userData.matBase = o.material; o.material = matVelo(o.material, 'ok'); o.castShadow = false; o.renderOrder = 2; } });
+  if (estado.sel.clase === 'pieza' && PIEZAS[estado.sel.tipo].esquina) fantasmaForma = 'tesa';
+  velarFantasma();
   fantasma.visible = false;
   escena.add(fantasma);
 }
@@ -435,6 +450,7 @@ function evaluarColocacion() {
     const tj = geometriaTejados(c).get(v.clave);
     c.piezas.delete(v.clave);
     if (tj) fantasma.position.y += tj.arranque * P.subidaTejado;
+    if (tj && tj.forma) formaFantasma(tj.forma);
   }
   pintarFantasma(v.ok);
   if (!v.ok && v.debil) {
@@ -1337,7 +1353,7 @@ function iniciarEnLinea() {
 window.__kinhold = {
   get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos,
   cambiarModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
-  plantaDeco, get teclas() { return [...teclas]; },
+  plantaDeco, get teclas() { return [...teclas]; }, get fantasmaForma() { return fantasmaForma; },
   seleccionar(clase, tipo) { estado.sel = { clase, tipo }; estado.dir = 0; marcarSeleccion(); evaluarColocacion(); },
   apuntar(x, z, y = 0) { estado.puntero = { x, z, ySuperficie: y }; evaluarColocacion(); },
   apuntarPantalla(cx, cy) { estado.puntero = punteroDesde(cx, cy); evaluarColocacion(); return estado.puntero; },

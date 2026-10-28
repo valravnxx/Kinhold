@@ -30,6 +30,27 @@ function casa(m, nI, nJ, muro, tejado, forma) {
   for (let i = 0; i < nI; i++) for (let j = 0; j < nJ; j++) pon(tejado, i, j, 1, 0, forma === 'dos' ? (i < nI / 2 ? 3 : 1) : 0);
   return c;
 }
+// casa con la planta que se le pase (casillas) y el tejado pieza a pieza: [tipo, i, j, dir]
+function casaPlanta(m, celdas, muro, tejado) {
+  const c = { id: m.siguienteId++, ox: 0, oz: 0, rot: 0, piezas: new Map() };
+  m.construcciones.push(c);
+  const pon = (...a) => { const r = m.colocar(pieza(c, ...a)); if (!r.ok) console.error('no entra', a.join(' '), r.motivo); };
+  const hay = new Set(celdas.map(x => x.join()));
+  for (const [i, j] of celdas) pon('cim_piedra', i, j, 0);
+  for (const [i, j] of celdas) for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+    if (hay.has([i + di, j + dj].join())) continue;
+    const a = di === 1 ? [i + 1, j, 1] : di === -1 ? [i, j, 1] : dj === 1 ? [i, j + 1, 0] : [i, j, 0];
+    pon(muro, a[0], a[1], 0, a[2]);
+  }
+  for (const [tipo, i, j, dir] of tejado) pon(tipo, i, j, 1, 0, dir);
+  return c;
+}
+// a cuatro aguas (2×3): remates en las cuatro esquinas; en L: ala de 4×2 y ala de 2×2, con limatesa y limahoya
+const CUATRO = (t, r) => [[r, 0, 0, 0], [r, 1, 0, 1], [r, 0, 2, 3], [r, 1, 2, 2], [t, 0, 1, 3], [t, 1, 1, 1]];
+const PLANTA_2x3 = [[0, 0], [1, 0], [0, 1], [1, 1], [0, 2], [1, 2]];
+const EN_L = (t, r) => [[t, 0, 0, 0], [t, 1, 0, 0], [t, 2, 0, 0], [t, 0, 1, 2], [t, 1, 1, 2], [r, 3, 0, 1], [t, 3, 1, 1], [r, 2, 1, 3],
+  [t, 2, 2, 3], [t, 2, 3, 3], [t, 3, 2, 1], [t, 3, 3, 1]];
+const PLANTA_L = [[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1], [2, 1], [3, 1], [2, 2], [3, 2], [2, 3], [3, 3]];
 function dibujar(c) {
   const g = new THREE.Group(), tj = geometriaTejados(c);
   for (const [key, p] of c.piezas) {
@@ -53,6 +74,12 @@ const casas = [
   casa(m, 1, 2, 'muro_entramado', 'tejado_tablilla', 'una'),
   casa(m, 2, 2, 'muro_tronco', 'tejado_teja', 'dos'),
   casa(m, 1, 2, 'muro_entramado', 'tejado_teja', 'una'),
+  casaPlanta(m, PLANTA_2x3, 'muro_tronco', CUATRO('tejado_paja', 'remate_paja')),
+  casaPlanta(m, PLANTA_L, 'muro_tabla', EN_L('tejado_tablilla', 'remate_tablilla')),
+  casaPlanta(m, PLANTA_L, 'muro_entramado', EN_L('tejado_teja', 'remate_teja')),
+  casaPlanta(m, PLANTA_L, 'muro_zarzo', EN_L('tejado_paja', 'remate_paja')),
+  casaPlanta(m, PLANTA_2x3, 'muro_tabla', CUATRO('tejado_tablilla', 'remate_tablilla')),
+  casaPlanta(m, [[0, 0], [1, 0], [0, 1], [1, 1]], 'muro_entramado', [['remate_teja', 0, 0, 0], ['remate_teja', 1, 0, 1], ['remate_teja', 0, 1, 3], ['remate_teja', 1, 1, 2]]),
 ];
 const SEP = 9, objetos = [];
 casas.forEach((c, n) => {
@@ -66,7 +93,7 @@ function foto(i, vista, ancho, alto) {
   const caja = new THREE.Box3(); if (i < 0) objetos.forEach(o => caja.expandByObject(o)); else caja.setFromObject(objetos[i]);
   const tam = caja.getSize(new THREE.Vector3()), centro = caja.getCenter(new THREE.Vector3());
   const d = Math.max(tam.x, tam.z, tam.y * 1.3) * (vista === 'cerca' ? 0.75 : i < 0 ? 0.9 : 1.5) + 1;
-  const dir = { frente: [0, 0.35, -1], tres: [0.75, 0.6, -0.9], detras: [-0.6, 0.5, 1], cerca: [0.9, 0.25, -0.6] }[vista] || [0, 0.35, -1];
+  const dir = { arriba: [0.05, 1, 0.05], izq: [-0.9, 0.6, -0.75], frente: [0, 0.35, -1], tres: [0.75, 0.6, -0.9], detras: [-0.6, 0.5, 1], cerca: [0.9, 0.25, -0.6] }[vista] || [0, 0.35, -1];
   camara.position.copy(centro).add(new THREE.Vector3(...dir).normalize().multiplyScalar(d));
   camara.lookAt(centro);
   amb.seguir(centro.x, centro.z);
