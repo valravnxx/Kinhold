@@ -7,6 +7,7 @@
 import PLANTILLAS from 'plantillas-demo';
 import { tr, traducirPagina, botonesIdioma, idioma } from '../idioma.js';
 import { personajeElegido } from './eleccion.js';
+import { direccionServidor, CLAVE_SERVIDOR } from '../mundo/direccion_servidor.js';
 import { VERSION_DEMO, REGISTRO_DEMO } from './registro.js';
 import { CAPAS } from '../personaje/textos.js';
 import { ponerRendimiento } from './rendimiento.js';
@@ -22,9 +23,10 @@ const params = new URLSearchParams(location.search);
 const modo = params.get('modo');
 
 // enlace a otra parte de la demo, conservando el resto de parámetros (idioma, carpetas de recursos)
-function enlace(m) {
+function enlace(m, enLinea = false) {
   const p = new URLSearchParams(location.search);
   if (m) p.set('modo', m); else p.delete('modo');
+  if (enLinea) p.set('enlinea', '1'); else p.delete('enlinea');
   const q = p.toString();
   return location.pathname + (q ? '?' + q : '');
 }
@@ -60,8 +62,19 @@ if (MODOS[modo]) {
   traducirPagina();
   botonesIdioma($('demoIdioma'));
   for (const a of document.querySelectorAll('[data-ir]')) a.href = enlace(a.dataset.ir);
+  $('demoEnLinea').href = enlace('construir', true);
+  $('demoDueloEnLinea').href = enlace('duelo', true);
+  // Opciones: la dirección del servidor para «Jugar en línea» (se guarda en el navegador)
+  $('demoServidor').value = direccionServidor();
+  $('btnDemoOpciones').onclick = () => { $('demoOpciones').hidden = !$('demoOpciones').hidden; $('demoNotas').hidden = true; };
+  $('btnDemoGuardar').onclick = () => {
+    const v = $('demoServidor').value.trim();
+    if (!/^wss?:\/\/[^\s]+$/.test(v)) { $('demoServidorNota').textContent = tr('Tiene que empezar por ws:// o wss://'); return; }
+    try { localStorage.setItem(CLAVE_SERVIDOR, v); $('demoServidorNota').textContent = tr('Guardada.'); }
+    catch (e) { $('demoServidorNota').textContent = tr('Este navegador no deja guardarla.'); }
+  };
   $('demoPersonaje').textContent = resumenPersonaje();
   $('demoNotas').innerHTML = `<b>${tr(VERSION_DEMO)}</b><ul>${REGISTRO_DEMO.map(t => `<li>${tr(t)}</li>`).join('')}</ul>`;
-  $('btnDemoNotas').onclick = () => { $('demoNotas').hidden = !$('demoNotas').hidden; };
+  $('btnDemoNotas').onclick = () => { $('demoNotas').hidden = !$('demoNotas').hidden; $('demoOpciones').hidden = true; };
   window.__demo = { modo: null, listo: true };
 }

@@ -13,6 +13,9 @@ import { REGISTRO_COMBATE, VERSION_COMBATE } from './registro.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { personajeElegido, capasDuelo } from '../demo/eleccion.js';
 import { CAPAS_ARMADURA } from './taller.js';
+import { tipoToque, arrastrarLibre, seguirApuntado, GIRO_POR_PX } from './tactil.js';
+import { conectarDuelo } from './en_linea.js';
+import { aplicarFoto, avanzarCopia, resultadoDeEvento, rivalCercano, PREDICCION } from '../logica/combate_cliente.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -23,6 +26,8 @@ const esTactil = matchMedia('(pointer: coarse)').matches;
 const CLAVE = 'kinhold_combate_v2';
 // personaje del taller propio: la versión publicada vive en jugar/combate/, los modelos en recursos/personajes/taller-v8/
 const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v8/';
+// «Duelo en línea» (?enlinea=1): el rival es otro jugador y los golpes los resuelve el servidor (src/combate/en_linea.js)
+const EN_LINEA = new URLSearchParams(location.search).get('enlinea') === '1';
 
 // ---------------- Opciones ----------------
 // Armas que puede llevar el rival (solo cuerpo a cuerpo)
@@ -61,9 +66,11 @@ const escena = new THREE.Scene();
 const camara = new THREE.PerspectiveCamera(45, 1, 0.1, 400);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
 const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 25, mapa: 2048, niebla: [60, 170] });
-// decorado común (src/mundo/decorado.js): liza de tierra pisada en el centro, hierba alrededor y bosque
+// decorado común (src/mundo/decorado.js): liza de tierra pisada en el centro y, alrededor, como la prueba de
+// estilo v5: hierba densa con flores, matorrales, calvas de tierra, rocas, árboles sueltos y el bosque
 escena.add(crearDecorado({ semilla: 11, llano: 45, lejos: 200, arboles: 160, bosqueDesde: 30, bosqueHasta: 140,
-  hierba: 1100, flores: 300, hierbaDesde: 9, hierbaHasta: 34, tierra: 8, rocas: 24 }).raiz);
+  hierba: 2400, flores: 650, hierbaDesde: 9, hierbaHasta: 36, tierra: 8, rocas: 30, rocasDesde: 12, matas: 36, matasDesde: 12,
+  sueltos: 10, sueltosDesde: 17, calvas: 8 }).raiz);
 const particulas = new Particulas(escena);
 const rastroJ = new Rastro(escena), rastroR = new Rastro(escena);
 
@@ -88,25 +95,32 @@ function nuevaPartida() {
   terminado = false; pausa = 0; temblor = 0;
   $('final').hidden = true;
   stats = { golpes: 0, heridasDadas: 0, paradas: 0, perfectas: 0, maestros: 0, recibidas: 0, flechas: 0, aciertos: 0, puntos: 0 };
-  const ritmo = RITMO[opc.dificultad] || 1;
-  jugador = new Luchador({ nombre: 'Tú', arma: opc.arma, armadura: opc.armadura, ritmo, x: 0, z: -2, rot: 0 });
+  // en línea, el ritmo es el del servidor («normal» para todos, decisión provisional del combate en el servidor)
+  const ritmo = EN_LINEA ? RITMO.normal : RITMO[opc.dificultad] || 1;
+  // en línea, cada uno sale en un punto al azar del corro de la liza, mirando al centro
+  const sitio = EN_LINEA ? (() => { const a = rnd() * Math.PI * 2; return { x: Math.sin(a) * 1.75, z: Math.cos(a) * 1.75, rot: a + Math.PI }; })() : { x: 0, z: -2, rot: 0 };
+  if (EN_LINEA && jugador) Object.assign(sitio, { x: jugador.x, z: jugador.z, rot: jugador.rot }); // otra partida: donde estaba
+  jugador = new Luchador({ nombre: 'Tú', arma: opc.arma, armadura: opc.armadura, ritmo, ...sitio });
+  if (EN_LINEA) jugador.liza = true;
   if (mJugador) escena.remove(mJugador);
   // el jugador es el personaje elegido en el visor (cuerpo y ropa), con la armadura del duelo encima; el rival, el de siempre
-  const elegido = personajeElegido();
-  mJugador = crearCombatiente({ armadura: opc.armadura, colorCinta: 0x2f6fb0, recursos: RECURSOS_MH,
-    ...(elegido ? { sexo: elegido.sexo, capas: capasDuelo(elegido.capas, opc.armadura, CAPAS_ARMADURA) } : {}) });
+  mJugador = crearCombatiente({ armadura: opc.armadura, colorCinta: 0x46607e, recursos: RECURSOS_MH, ...aspectoPropio() });
   ponerArma(mJugador, opc.arma);
   escena.add(mJugador);
   rival = null; ia = null;
-  if (mRival) { escena.remove(mRival); mRival = null; }
-  if (opc.modo === 'duelo' || opc.modo === 'carga') {
+  if (mRival && !EN_LINEA) { escena.remove(mRival); }
+  mRival = null;
+  if (EN_LINEA) {
+    // el rival es otro jugador (red.otros); al cambiar de arma o armadura, el servidor y los demás lo saben
+    if (red) { red.mandarEquipo(); red.mandarAspecto(); }
+  } else if (opc.modo === 'duelo' || opc.modo === 'carga') {
     const armaRival = armaDelRival();
     const dist = opc.modo === 'carga' ? 40 : 3.5;
     rival = new Luchador({ nombre: 'Rival', arma: armaRival, armadura: opc.armaduraRival, ritmo, x: 0, z: -2 + dist, rot: Math.PI });
     ia = new IA(rival, opc.dificultad, azar((Date.now() >> 3) & 0xffff));
     ia.carga = opc.modo === 'carga';
     if (opc.modo === 'carga') ia.esperaAtaque = 0.5;
-    mRival = crearCombatiente({ armadura: opc.armaduraRival, colorCinta: 0xe2b93b, recursos: RECURSOS_MH });
+    mRival = crearCombatiente({ armadura: opc.armaduraRival, colorCinta: 0xb3923f, recursos: RECURSOS_MH });
     ponerArma(mRival, armaRival);
     escena.add(mRival);
   }
@@ -122,6 +136,7 @@ function nuevaPartida() {
     jugador.z = -3.6; jugador.x = 0;
   }
   ctxCombate = { luchadores: { jugador }, r: rnd };
+  if (EN_LINEA) predHasta = -1;
   if (rival) ctxCombate.luchadores.rival = rival;
   if (postes[0]) ctxCombate.luchadores.poste = postes[0];
   cam.yaw = Math.PI + LADO_CAMARA; cam.manual = -99;
@@ -130,7 +145,13 @@ function nuevaPartida() {
   ajustarControles();
   actualizarPanel();
 }
+// cuerpo y ropa propios (los del visor de personaje) con la armadura del duelo encima
+function aspectoPropio() {
+  const elegido = personajeElegido();
+  return elegido ? { sexo: elegido.sexo, capas: capasDuelo(elegido.capas, opc.armadura, CAPAS_ARMADURA) } : {};
+}
 function textoInicio() {
+  if (EN_LINEA) return tr('Duelo en línea: tu rival es otro jugador y los golpes los resuelve el servidor.');
   if (opc.modo === 'practicas') return tr('Prácticas: poste a la izquierda, dianas a 10, 20 y 35 m.');
   if (opc.modo === 'carga') return tr('Carga: el rival corre hacia ti desde 40 m. Dispara antes de que llegue.');
   if (ARMAS[opc.arma].tipo !== 'cuerpo') return tr('Duelo a distancia: mantén pulsado para tensar y suelta.');
@@ -224,16 +245,21 @@ function actualizarRosa() {
 // ---------------- Entrada ----------------
 const teclas = new Set();
 let apuntado = null;
+// teclas de mover por su posición física (e.code): con la distribución rusa W escribe «ц» y antes no movía
+const TECLAS_FISICAS = { KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', ShiftLeft: 'shift', ShiftRight: 'shift' };
+const nombreTecla = (e) => TECLAS_FISICAS[e.code] || (e.key || '').toLowerCase();
 addEventListener('keydown', (e) => {
   if (e.target && e.target.tagName === 'SELECT') return;
-  const k = e.key.toLowerCase(); teclas.add(k);
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = nombreTecla(e); teclas.add(k);
   sonido.activarSonido();
   if (k === ' ') { e.preventDefault(); if (!e.repeat) parar(true); }
-  if (k === 'enter' && terminado) nuevaPartida();
+  if (k === 'enter' && terminado) otraPartida();
   const atajos = { '8': 'alto', '4': 'izquierda', '6': 'derecha', '2': 'bajo', '5': 'estocada' };
   if (atajos[k] && !e.repeat) { lineaSel = atajos[k]; atacar(atajos[k]); }
 });
-addEventListener('keyup', (e) => { const k = e.key.toLowerCase(); teclas.delete(k); if (k === ' ') parar(false); });
+addEventListener('keyup', (e) => { const k = nombreTecla(e); teclas.delete(k); teclas.delete((e.key || '').toLowerCase()); if (k === ' ') parar(false); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { teclas.clear(); parar(false); } });
 addEventListener('blur', () => { teclas.clear(); parar(false); });
 
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
@@ -251,7 +277,9 @@ function puntoApuntado(cx, cy) {
 }
 function parar(activo) {
   if (!jugador || jugador.def.tipo !== 'cuerpo') return;
+  const antes = jugador.bloqueando;
   jugador.bloquear(activo);
+  if (EN_LINEA && (activo || antes) && red) { red.intencion({ que: 'parar', activo: !!activo }); if (activo) predHasta = reloj + PREDICCION; }
   $('btnParar').classList.toggle('activo', !!jugador.bloqueando);
 }
 
@@ -264,7 +292,7 @@ lienzo.addEventListener('pointerdown', (e) => {
   try { lienzo.setPointerCapture(e.pointerId); } catch (err) { /* nada */ }
   botonPulsado = e.button; ultimoX = e.clientX;
   if (e.button === 0) {
-    if (jugador.def.tipo === 'distancia') { jugador.empezarTensar(); apuntado = puntoApuntado(e.clientX, e.clientY); }
+    if (jugador.def.tipo === 'distancia') { tensar(); apuntado = puntoApuntado(e.clientX, e.clientY); }
     else if (rosa.visible) { lineaSel = lineaDesdePantalla(e.clientX, e.clientY); atacar(lineaSel); }
   } else if (e.button === 2) parar(true);
 });
@@ -284,40 +312,60 @@ lienzo.addEventListener('pointerup', (e) => {
 });
 lienzo.addEventListener('wheel', (e) => { e.preventDefault(); cam.dist = THREE.MathUtils.clamp(cam.dist * (1 + Math.sign(e.deltaY) * 0.1), 5, 22); }, { passive: false });
 
-// Táctil: tocar la rosa golpea esa zona; con arco, mantener tensa y soltar dispara; dos dedos giran la cámara
+// Táctil (GDD): tocar la rosa golpea esa zona; arrastrar un dedo por zona libre gira la cámara (un toque sin
+// arrastrar no la mueve); con arco, mantener tensa, arrastrar apunta y soltar dispara, y la cámara sigue hacia
+// donde apuntas si llevas el dedo cerca del borde. Dos dedos también giran la cámara.
+// Se usan los dedos que tocan el lienzo (targetTouches): el del joystick no cuenta.
 const toques = new Map();
+let dedoArco = null;   // { x, y } del dedo que tensa el arco, para que la cámara le siga
 lienzo.addEventListener('touchstart', (e) => {
   e.preventDefault();
   sonido.activarSonido();
   for (const t of e.changedTouches) {
-    toques.set(t.identifier, { x: t.clientX, y: t.clientY });
+    const q = { x: t.clientX, y: t.clientY, x0: t.clientX, y0: t.clientY, arrastre: false, tipo: 'otro' };
+    toques.set(t.identifier, q);
     if (toques.size > 1) continue;
-    if (jugador.def.tipo === 'distancia') { jugador.empezarTensar(); apuntado = puntoApuntado(t.clientX, t.clientY); moverReticula(t.clientX, t.clientY); }
-    else if (rosa.visible && Math.hypot(t.clientX - rosa.x, t.clientY - rosa.y) < rosa.r * 1.5) {
-      lineaSel = lineaDesdePantalla(t.clientX, t.clientY); atacar(lineaSel);
-    }
+    q.tipo = tipoToque({ distancia: jugador.def.tipo === 'distancia', rosaVisible: rosa.visible, x: t.clientX, y: t.clientY, rosa });
+    if (q.tipo === 'arco') { tensar(); dedoArco = q; apuntado = puntoApuntado(t.clientX, t.clientY); moverReticula(t.clientX, t.clientY); }
+    else if (q.tipo === 'rosa') { lineaSel = lineaDesdePantalla(t.clientX, t.clientY); atacar(lineaSel); }
   }
 }, { passive: false });
 lienzo.addEventListener('touchmove', (e) => {
   e.preventDefault();
-  if (e.touches.length >= 2) {
+  const propios = e.targetTouches;
+  if (propios.length >= 2) {
     let dx = 0, n = 0;
-    for (const t of e.touches) { const q = toques.get(t.identifier); if (q) { dx += t.clientX - q.x; n++; } }
-    if (n) { cam.yaw -= dx / n * 0.006; cam.manual = reloj; }
+    for (const t of propios) { const q = toques.get(t.identifier); if (q) { dx += t.clientX - q.x; n++; } }
+    if (n) { cam.yaw -= dx / n * GIRO_POR_PX; cam.manual = reloj; }
+    for (const t of propios) { const q = toques.get(t.identifier); if (q) { q.x = t.clientX; q.y = t.clientY; q.arrastre = true; } }
+    return;
   }
-  for (const t of e.touches) {
+  for (const t of propios) {
     const q = toques.get(t.identifier); if (!q) continue;
+    if (q.tipo === 'libre') {
+      const giro = arrastrarLibre(q, t.clientX, t.clientY);
+      if (giro) { cam.yaw += giro; cam.manual = reloj; }
+      continue;
+    }
     q.x = t.clientX; q.y = t.clientY;
-    if (jugador.def.tipo === 'distancia' && e.touches.length === 1) { apuntado = puntoApuntado(t.clientX, t.clientY); moverReticula(t.clientX, t.clientY); }
+    if (q.tipo === 'arco') { apuntado = puntoApuntado(t.clientX, t.clientY); moverReticula(t.clientX, t.clientY); }
   }
 }, { passive: false });
 const finToque = (e) => {
   e.preventDefault();
-  for (const t of e.changedTouches) toques.delete(t.identifier);
+  for (const t of e.changedTouches) { if (toques.get(t.identifier) === dedoArco) dedoArco = null; toques.delete(t.identifier); }
   if (jugador.def.tipo === 'distancia' && toques.size === 0) disparar();
 };
 lienzo.addEventListener('touchend', finToque, { passive: false });
 lienzo.addEventListener('touchcancel', finToque, { passive: false });
+// con el arco tenso, la cámara sigue al dedo que apunta cerca del borde (se llama en cada paso)
+function seguirDedoArco(dt) {
+  if (!dedoArco || jugador.def.tipo !== 'distancia' || jugador.accion !== 'tensando') return;
+  const giro = seguirApuntado(dedoArco.x, innerWidth, dt);
+  if (!giro) return;
+  cam.yaw += giro; cam.manual = reloj;
+  apuntado = puntoApuntado(dedoArco.x, dedoArco.y);
+}
 
 // Joystick (táctil)
 const joy = { vx: 0, vy: 0, id: null };
@@ -360,23 +408,37 @@ function actualizarReticula() {
 }
 
 // ---------------- Acciones ----------------
+// En línea, lo que hace el jugador se ve enseguida en su copia y se manda al servidor como intención.
+function tensar() {
+  if (!jugador.empezarTensar()) return false;
+  if (EN_LINEA && red) { red.intencion({ que: 'tensar' }); predHasta = reloj + PREDICCION; }
+  return true;
+}
 function atacar(linea) {
   if (terminado || jugador.def.tipo !== 'cuerpo') return false;
+  if (EN_LINEA && (!red || red.estado !== 'conectado')) return false;
   const preparaba = jugador.accion === 'preparando';
   const contra = jugador.puedeContraatacar();
   if (!jugador.atacar(linea)) return false;
+  if (EN_LINEA) { red.intencion({ que: 'atacar', linea }); predHasta = reloj + PREDICCION; }
   if (preparaba) registrar(tr('Finta: cambias a {l}', { l: tr(NOMBRE_LINEA[linea]).toLowerCase() }), 'aviso');
   else { stats.golpes++; if (contra) registrar(tr('Contraataque: solo se para con una parada perfecta'), 'aviso'); }
   $('btnParar').classList.remove('activo');
   return true;
 }
 function disparar() {
+  // en línea se manda siempre que se suelta (también flojo: así el servidor deja de tensar)
+  if (EN_LINEA && jugador.accion === 'tensando' && red) {
+    const obj = apuntado || { x: jugador.x + Math.sin(jugador.rot) * 20, y: 0, z: jugador.z + Math.cos(jugador.rot) * 20 };
+    red.intencion({ que: 'soltar', x: obj.x, y: obj.y || 0, z: obj.z }); predHasta = reloj + PREDICCION;
+  }
   const tiro = jugador.soltar();
   if (!tiro) {
     if (jugador.cancelado === 'flojo') { registrar(tr('Demasiado flojo: el tiro se cancela (hace falta tensar al menos la mitad)'), 'aviso'); jugador.cancelado = null; }
     return;
   }
   const obj = apuntado || { x: jugador.x + Math.sin(jugador.rot) * 20, y: 0, z: jugador.z + Math.cos(jugador.rot) * 20 };
+  if (EN_LINEA) { stats.flechas++; sonido.cuerda(); return; } // la flecha la tira el servidor (llega como «disparo»)
   lanzar('jugador', obj, tiro);
   stats.flechas++;
   sonido.cuerda();
@@ -434,6 +496,7 @@ function tick(dtReal) {
   if (pausa > 0) { pausa -= dtReal; dt = 0; }
   reloj += dt;
   moverJugador(dt);
+  if (EN_LINEA) { tickEnLinea(dt, dtReal); return; }
   const evJ = jugador.actualizar(dt, jugadorCorre);
   if (jugador.cancelado === 'correr') { registrar(tr('Al echar a correr aflojas el arco'), 'aviso'); jugador.cancelado = null; }
   let vR = 0;
@@ -464,6 +527,7 @@ function tick(dtReal) {
   if (rival) colocar(mRival, rival, vR, dt, jugador);
   rastroJ.actualizar(mJugador, enVuelo(jugador));
   if (rival) rastroR.actualizar(mRival, enVuelo(rival)); else rastroR.actualizar(mJugador, false);
+  seguirDedoArco(dtReal);
   actualizarCamara(dtReal);
   actualizarRosa();
   actualizarReticula();
@@ -572,10 +636,12 @@ function colocar(m, L, v, dt, otro) {
 }
 function comprobarFinal() {
   if (terminado || !rival) return;
-  if (jugador.fuera || rival.fuera) {
+  // en línea, un rival que ya estaba caído cuando volviste a empezar no cuenta otra vez como victoria
+  const rivalCae = rival.fuera && !yaVencidos.has(rival);
+  if (jugador.fuera || rivalCae) {
     terminado = true;
     parar(false);
-    const gana = rival.fuera && !jugador.fuera;
+    const gana = rivalCae && !jugador.fuera;
     $('tituloFinal').textContent = tr(gana ? 'Has vencido' : 'Has caído');
     $('motivoFinal').textContent = gana ? tr('El rival: {m}.', { m: tr(rival.motivoFuera).toLowerCase() }) : `${tr(jugador.motivoFuera)}.`;
     $('statsFinal').innerHTML = [
@@ -585,6 +651,195 @@ function comprobarFinal() {
     ].map(([k, v]) => `<div><span>${tr(k)}</span><b>${v}</b></div>`).join('');
     $('final').hidden = false;
   }
+}
+
+// ---------------- Duelo en línea ----------------
+// El rival es otro jugador. Lo que se ve de cada luchador es una copia que se pone al día con el servidor
+// (src/logica/combate_cliente.js); los golpes, las heridas y las flechas solo llegan como eventos del servidor.
+let red = null;
+let predHasta = -1;                   // hasta cuándo (reloj) se respeta la acción propia antes de seguir al servidor
+let ultimaFotoPropia = null;          // para volver a lo del servidor si rechaza lo que se hizo aquí
+const otros = new Map();              // autor → { L, m, clave, vel, visto }
+const flechasRed = [];                // flechas que ha tirado el servidor, solo para verlas volar
+let yaVencidos = new Set();           // copias de rivales que ya estaban caídos al volver a empezar
+function conectar() {
+  const marca = document.createElement('span');
+  marca.id = 'estadoRed';
+  marca.style.cssText = 'pointer-events:auto;align-self:center;background:rgba(20,18,14,.72);color:#e8d9b0;border-radius:9px;padding:6px 9px;font-size:12px';
+  $('menu').prepend(marca);
+  red = conectarDuelo({
+    aspecto: () => ({ sexo: 'hombre', capas: [], ...aspectoPropio() }),
+    equipo: () => ({ arma: opc.arma, armadura: opc.armadura }),
+    alEstado: (t) => { marca.textContent = t; },
+    avisar: (t, tipo) => registrar(t, tipo),
+    alMensaje: recibirRed,
+  });
+}
+const luchadorDe = (autor) => autor === (red && red.yo) ? { L: jugador, m: mJugador } : otros.get(autor);
+function quitarOtro(autor) {
+  const o = otros.get(autor); if (!o) return;
+  escena.remove(o.m); otros.delete(autor);
+}
+// el modelo de otro jugador, con el cuerpo y la ropa que mandó y la armadura que lleva
+function vestirOtro(autor, o) {
+  const a = red.aspectos.get(autor) || { sexo: 'hombre', capas: [] };
+  const clave = `${a.sexo}:${a.capas.join(',')}:${o.L.armadura}`;
+  if (o.m && o.clave === clave) return;
+  if (o.m) escena.remove(o.m);
+  o.m = crearCombatiente({ armadura: o.L.armadura, colorCinta: 0xb3923f, recursos: RECURSOS_MH, sexo: a.sexo, capas: a.capas });
+  o.m.userData.autor = autor; o.m.userData.tipoArma = null;
+  o.clave = clave; escena.add(o.m);
+}
+function fotoDe(f) {
+  if (f.autor === red.yo) {
+    ultimaFotoPropia = f;
+    aplicarFoto(jugador, f, { propio: true, prediciendo: reloj < predHasta });
+    return;
+  }
+  if (!f.liza) { quitarOtro(f.autor); return; }   // los que construyen no están en la liza
+  let o = otros.get(f.autor);
+  if (!o) {
+    o = { L: new Luchador({ nombre: f.autor, arma: f.arma, armadura: f.armadura, ritmo: RITMO.normal }), m: null, clave: null, vel: 0, visto: false };
+    otros.set(f.autor, o);
+  }
+  aplicarFoto(o.L, f);
+  vestirOtro(f.autor, o);
+}
+function recibirRed(msg) {
+  if (msg.tipo === 'bienvenida') { for (const f of msg.luchadores || []) fotoDe(f); }
+  else if (msg.tipo === 'luchadores') { for (const f of msg.lista) fotoDe(f); }
+  else if (msg.tipo === 'aspecto') { const o = otros.get(msg.autor); if (o) vestirOtro(msg.autor, o); }
+  else if (msg.tipo === 'combate') { for (const e of msg.eventos) eventoRed(e); }
+  else if (msg.tipo === 'combate_rechazo') {
+    // lo hecho aquí no ha valido: la copia vuelve a lo que dice el servidor
+    predHasta = -1;
+    if (ultimaFotoPropia) aplicarFoto(jugador, ultimaFotoPropia, { propio: true, prediciendo: false });
+    if (msg.que === 'reiniciar' || msg.que === 'equipar') registrar(tr(msg.motivo), 'mal');
+  } else if (msg.tipo === 'sale') { quitarOtro(msg.autor); }
+  else if (msg.tipo === 'cortado') { for (const a of [...otros.keys()]) quitarOtro(a); }
+}
+const eventosRed = [];                // los últimos eventos del servidor (para las pruebas)
+function eventoRed(e) {
+  const yo = red.yo;
+  eventosRed.push(e); if (eventosRed.length > 200) eventosRed.shift();
+  if (e.tipo === 'golpe') {
+    const at = luchadorDe(e.autor), de = e.objetivo ? luchadorDe(e.objetivo) : null;
+    const res = resultadoDeEvento(e);
+    if (e.autor === yo) contarYDecir(res, true, e.linea);
+    else if (e.objetivo === yo) contarYDecir(res, false, e.linea);
+    if (at && (de || res.resultado === 'fallo') && (e.autor === yo || e.objetivo === yo || res.resultado !== 'fallo'))
+      efectos(res, at.L, de ? de.L : at.L, at.m, de ? de.m : null);
+    if (de && de.L === jugador && !jugador.bloqueando) $('btnParar').classList.remove('activo');
+  } else if (e.tipo === 'disparo') {
+    const tirador = luchadorDe(e.autor);
+    const malla = e.arma === 'arco' ? modeloFlecha() : modeloPiedra();
+    malla.position.set(e.x, e.y, e.z); escena.add(malla);
+    flechasRed.push({ autor: e.autor, malla, x0: e.x, z0: e.z, v: new THREE.Vector3(e.vx, e.vy, e.vz), activo: true, vida: 12 });
+    if (e.autor !== yo && tirador) sonido.cuerda();
+  } else if (e.tipo === 'flecha') {
+    const f = flechasRed.find(x => x.activo && x.autor === e.autor);
+    if (f) { f.activo = false; f.malla.position.set(e.x, e.y, e.z); }
+    const deMi = e.autor === yo, aMi = e.objetivo === yo;
+    const piedra = e.arma !== 'arco';
+    if (e.resultado === 'blanco') {
+      if (deMi) stats.aciertos++; if (aMi) stats.recibidas++;
+      if (deMi || aMi) registrar(tr(deMi ? 'Aciertas: herida {g} en {z}' : 'Te alcanza: herida {g} en {z}', { g: tr(e.gravedad), z: tr(NOMBRE_ZONA[e.zona]) }), deMi ? 'bien' : 'mal');
+      particulas.emitir(e.x, e.y, e.z, 12, 0x8a1410, 2, 9.8, 0.5);
+      const herido = luchadorDe(e.objetivo); if (herido && herido.m) sacudir(herido.m, 0.8);
+      sonido.corte(); pausa = 0.05;
+    } else if (e.resultado === 'escudo') {
+      if (aMi) { stats.paradas++; registrar(tr(piedra ? 'Tu escudo para la piedra' : 'Tu escudo para la flecha'), 'bien'); }
+      else if (deMi) registrar(tr(piedra ? 'El rival para tu piedra con el escudo' : 'El rival para tu flecha con el escudo'), '');
+      particulas.emitir(e.x, e.y, e.z, 8, 0x9a7a52, 2, 9.8, 0.4);
+      if (piedra) sonido.golpeSordo(); else sonido.clavar();
+    } else if (e.resultado === 'suelo' && deMi && f) registrar(tr('Al suelo a {d} m', { d: Math.round(Math.hypot(e.x - f.x0, e.z - f.z0)) }), '');
+  } else if (e.tipo === 'reinicio') {
+    if (e.autor === yo) {
+      terminado = false; $('final').hidden = true; predHasta = -1;
+      // la copia propia, sana ya (el servidor manda su foto en el siguiente tic)
+      Object.assign(jugador, { fuera: false, motivoFuera: '', accion: 'libre', tAccion: 0, heridas: [], sangre: 100, cansancio: 0, bloqueando: false, contraHasta: -1 });
+      yaVencidos = new Set([...otros.values()].filter(o => o.L.fuera).map(o => o.L));
+      stats = { golpes: 0, heridasDadas: 0, paradas: 0, perfectas: 0, maestros: 0, recibidas: 0, flechas: 0, aciertos: 0, puntos: 0 };
+      registrar(tr('Vuelves a empezar, sano.'), 'aviso');
+    } else if (otros.has(e.autor)) {
+      const L = otros.get(e.autor).L;
+      yaVencidos.delete(L);
+      // su copia, sana ya (su foto llega en el siguiente tic; si no, este fotograma aún lo vería caído)
+      Object.assign(L, { fuera: false, motivoFuera: '', accion: 'libre', tAccion: 0, heridas: [], sangre: 100, cansancio: 0, bloqueando: false });
+      registrar(tr('Tu rival vuelve a empezar, sano.'), '');
+      // si le habías vencido tú, la pelea sigue (con tus heridas): se quita la pantalla final
+      if (terminado && !jugador.fuera && L === rival) { terminado = false; $('final').hidden = true; }
+    }
+  }
+}
+// Otra partida: en línea lo pide al servidor (solo si estás fuera de combate o no hay nadie en pie cerca)
+function otraPartida() {
+  if (!EN_LINEA) return nuevaPartida();
+  if (red && red.estado === 'conectado') red.intencion({ que: 'reiniciar' });
+}
+// En línea, cambiar de arma o de armadura no empieza otra partida: se pide al servidor (solo estando libre)
+function cambiarEquipo() {
+  if (jugador.puedeActuar() && !jugador.bloqueando) { jugador.arma = opc.arma; jugador.armadura = opc.armadura; predHasta = reloj + PREDICCION; }
+  if (red) { red.mandarEquipo(); red.mandarAspecto(); }
+  ajustarControles();
+}
+function tickEnLinea(dt, dtReal) {
+  avanzarCopia(jugador, dt, jugadorCorre);
+  jugador.cancelado = null;
+  // el propio: el modelo con la armadura y el arma que lleva su copia (las confirma el servidor)
+  if (mJugador.userData.armaduraPuesta !== undefined && mJugador.userData.armaduraPuesta !== jugador.armadura) {
+    escena.remove(mJugador);
+    mJugador = crearCombatiente({ armadura: jugador.armadura, colorCinta: 0x46607e, recursos: RECURSOS_MH, ...aspectoPropio() });
+    escena.add(mJugador);
+  }
+  mJugador.userData.armaduraPuesta = jugador.armadura;
+  if (mJugador.userData.tipoArma !== jugador.arma) { ponerArma(mJugador, jugador.arma); mJugador.userData.tipoArma = jugador.arma; }
+  // los demás: dónde están (la presencia, suavizada) y qué hacen (su copia)
+  for (const o of otros.values()) o.visto = false;
+  for (const e of red.ver()) {
+    const o = otros.get(e.autor); if (!o) continue;
+    const v = dt > 0 ? Math.hypot(e.x - o.L.x, e.z - o.L.z) / dt : 0;
+    o.vel += (Math.min(v, 8) - o.vel) * Math.min(1, dt * 8);
+    o.L.x = e.x; o.L.z = e.z;
+    if (!o.L.fuera && o.L.accion !== 'aturdido') o.L.rot = e.giro;
+    o.visto = true;
+  }
+  const lista = [...otros.values()].filter(o => o.visto && o.m);
+  for (const o of otros.values()) {
+    avanzarCopia(o.L, dt);
+    if (o.m) o.m.visible = o.visto;
+    if (o.m && o.m.userData.tipoArma !== o.L.arma) { ponerArma(o.m, o.L.arma); o.m.userData.tipoArma = o.L.arma; }
+  }
+  red.rivales = lista.filter(o => !o.L.fuera).length;
+  const cerca = rivalCercano(jugador, lista);
+  rival = cerca ? cerca.L : null; mRival = cerca ? cerca.m : null;
+  if (rival) { // no meterse dentro del otro (solo se aparta el propio: al otro lo mueve su jugador)
+    const dx = rival.x - jugador.x, dz = rival.z - jugador.z, d = Math.hypot(dx, dz);
+    if (d < 0.75 && d > 1e-6) { jugador.x -= dx / d * (0.75 - d); jugador.z -= dz / d * (0.75 - d); }
+  }
+  const mag = jugador.velocidadActual || 0;
+  red.paso({ x: jugador.x, y: 0, z: jugador.z, giro: jugador.rot, anim: mag > 0.05 ? (jugadorCorre ? 'correr' : 'andar') : 'quieto' });
+  // las flechas del servidor, solo para verlas volar (dónde caen lo dice el servidor)
+  for (const f of flechasRed) {
+    if (f.activo) {
+      f.v.y -= 9.8 * dt;
+      f.malla.position.addScaledVector(f.v, dt);
+      if (f.v.lengthSq() > 1e-6) f.malla.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), f.v.clone().normalize());
+      if (f.malla.position.y < 0) { f.malla.position.y = 0; f.v.set(0, 0, 0); }
+    } else f.vida -= dt;
+  }
+  for (let i = flechasRed.length - 1; i >= 0; i--) if (flechasRed[i].vida <= 0) { escena.remove(flechasRed[i].malla); liberar(flechasRed[i].malla); flechasRed.splice(i, 1); }
+  particulas.actualizar(dtReal);
+  colocar(mJugador, jugador, mag, dt, rival);
+  for (const o of lista) colocar(o.m, o.L, o.vel, dt, jugador);
+  rastroJ.actualizar(mJugador, enVuelo(jugador));
+  rastroR.actualizar(mRival || mJugador, rival ? enVuelo(rival) : false);
+  seguirDedoArco(dtReal);
+  actualizarCamara(dtReal);
+  actualizarRosa();
+  actualizarReticula();
+  actualizarPanel();
+  comprobarFinal();
 }
 
 // ---------------- Avisos a la derecha ----------------
@@ -599,9 +854,16 @@ function actualizarPanel() {
   const html = av.map((a, i) => `<button class="aviso ${a.c}" data-i="${i}" style="--n:${Math.min(1, a.n).toFixed(2)}"><span></span><em>${a.t}</em></button>`).join('');
   if (cont.dataset.html !== html) {
     cont.dataset.html = html; cont.innerHTML = html;
+    bajoElMenu();
     cont.querySelectorAll('.aviso').forEach(b => b.onclick = () => { const a = av[+b.dataset.i]; $('detalle').hidden = false; $('detalle').innerHTML = `<b>${a.t}</b><br>${a.d}`; });
   }
   $('estado').textContent = tr(ARMAS[jugador.arma].nombre) + (jugador.bloqueando ? ' · ' + tr('parando') : '');
+}
+// los avisos van debajo de los botones de arriba (en el móvil, con «Menú», los fps y el estado de la red, ocupan
+// varias filas y los avisos quedaban encima de ellos)
+function bajoElMenu() {
+  const m = $('menu'); if (!m) return;
+  $('avisos').style.top = Math.max(64, Math.round(m.getBoundingClientRect().bottom + 10)) + 'px';
 }
 function efectoHerida(z) {
   if (z === 'brazoD') return ': ' + tr('golpes y tiros más lentos y flojos');
@@ -616,7 +878,7 @@ function selector(id, valores, clave) {
   const el = $(id);
   el.innerHTML = Object.entries(valores).map(([k, v]) => `<option value="${k}">${tr(v.nombre)}</option>`).join('');
   el.value = opc[clave];
-  el.onchange = () => { opc[clave] = el.value; guardarOpciones(); nuevaPartida(); el.blur(); };
+  el.onchange = () => { opc[clave] = el.value; guardarOpciones(); if (EN_LINEA) cambiarEquipo(); else nuevaPartida(); el.blur(); };
 }
 selector('selModo', { duelo: { nombre: 'Duelo' }, carga: { nombre: 'Carga desde 40 m' }, practicas: { nombre: 'Prácticas (poste y dianas)' } }, 'modo');
 selector('selArma', ARMAS, 'arma');
@@ -626,8 +888,8 @@ selector('selArmaRival', ARMAS_RIVAL, 'armaRival');
 selector('selDificultad', { aprendiz: { nombre: 'Aprendiz (lento, con avisos)' }, normal: { nombre: 'Normal (solo ves el lado)' }, realista: { nombre: 'Realista (sin avisos)' } }, 'dificultad');
 $('chkSonido').checked = opc.sonido;
 $('chkSonido').onchange = (e) => { opc.sonido = e.target.checked; guardarOpciones(); sonido.silenciar(!opc.sonido); };
-$('btnOtra').onclick = nuevaPartida;
-$('btnReiniciar').onclick = nuevaPartida;
+$('btnOtra').onclick = () => otraPartida();
+$('btnReiniciar').onclick = () => otraPartida();
 $('btnOpciones').onclick = () => { $('opciones').hidden = !$('opciones').hidden; };
 $('btnAyuda').onclick = () => { $('panelAyuda').hidden = !$('panelAyuda').hidden; $('panelRegistro').hidden = true; };
 $('btnDecisiones').onclick = () => { $('panelRegistro').hidden = !$('panelRegistro').hidden; $('panelAyuda').hidden = true; };
@@ -641,9 +903,12 @@ function ajustarControles() {
   $('joystick').hidden = !esTactil;
   $('ayudaPC').hidden = esTactil; $('ayudaTactil').hidden = !esTactil;
 }
-function redimensionar() { renderer.setSize(innerWidth, innerHeight, false); camara.aspect = innerWidth / innerHeight; camara.updateProjectionMatrix(); }
+// en línea, lo del rival lo pone el otro jugador: fuera de las opciones (también el modo: siempre duelo)
+if (EN_LINEA) for (const id of ['selModo', 'selArmaduraRival', 'selArmaRival']) { $(id).hidden = true; const l = document.querySelector(`label[for="${id}"]`); if (l) l.hidden = true; }
+function redimensionar() { bajoElMenu(); renderer.setSize(innerWidth, innerHeight, false); camara.aspect = innerWidth / innerHeight; camara.updateProjectionMatrix(); }
 addEventListener('resize', redimensionar);
 redimensionar();
+if (EN_LINEA) conectar();
 nuevaPartida();
 actualizarCamara(0);
 sonido.silenciar(!opc.sonido);
@@ -656,7 +921,8 @@ window.__duelo = {
   get pausa() { return pausa; }, get pausas() { return pausas; },
   get mJugador() { return mJugador; }, get mRival() { return mRival; },
   get ctx() { return ctxCombate; }, registroAcciones, escena, renderer, camara, render() { renderer.render(escena, camara); },
-  nuevaPartida, atacar, disparar, lanzar, tick, registrar, parar, lineaDesdePantalla,
+  get dedoArco() { return dedoArco; }, nuevaPartida, atacar, disparar, lanzar, tick, registrar, parar, lineaDesdePantalla,
   configurar(o) { Object.assign(opc, o); nuevaPartida(); },
   apuntar(x, y, z) { apuntado = { x, y, z }; },
+  get red() { return red; }, get otros() { return otros; }, eventosRed, otraPartida, EN_LINEA,
 };

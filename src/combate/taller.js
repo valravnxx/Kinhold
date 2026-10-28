@@ -6,6 +6,7 @@
 // del cuerpo o de la ropa, donde entra el golpe, y siguen al hueso.
 import * as THREE from 'three';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
+import { textura } from '../mundo/estilos.js';
 
 export const CAPAS_ARMADURA = { lino: [], gambeson: ['gambeson'], malla: ['gambeson', 'cota'] };
 
@@ -75,8 +76,8 @@ export function vestirConTaller(raiz, { armadura = 'lino', colorCinta = 0xc0392b
     for (const f of ['index', 'middle', 'ring', 'pinky']) for (const k of ['01', '02', '03']) if (h[`${f}_${k}_l`] && h[`${f}_${k}_r`]) dedos.push([h[`${f}_${k}_l`], h[`${f}_${k}_r`]]);
     u.taller = { estado: 'listo', mh, brazos: { i: brazo('l'), d: brazo('r') }, zonas, modo: '', capas: mh.capas, dedos };
     u.heridasPintadas = 0; // las que ya tuviera el muñeco se vuelven a pintar sobre el personaje
-    // distintivo (cinta azul o amarilla) en el pecho, por encima de la ropa
-    const cinta = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.22, 0.012), new THREE.MeshLambertMaterial({ color: colorCinta }));
+    // distintivo (cinta de paño teñido, azul de glasto o amarillo de gualda) en el pecho, por encima de la ropa
+    const cinta = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.22, 0.012), new THREE.MeshLambertMaterial({ color: colorCinta, map: textura('tejido') }));
     cinta.name = 'cinta';
     pegar(u, cinta, { hueso: h.spine_03, de: h.spine_03, a: h.spine_03, alto: 0.07, par: hombros }, 0.07, 0.02, 1);
   }).catch(e => { u.taller = { estado: 'error', error: e.message || String(e) }; console.warn('Luchador del taller no cargado, sigue el muñeco:', e); });

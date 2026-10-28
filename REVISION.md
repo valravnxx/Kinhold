@@ -6,6 +6,122 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 28 oct 2026 (05:38) — por el chat: ver quién trabaja en qué
+valravnx: «cuando comiencen una tarea, dirán cuál es y entonces en la web saldrá como que esa está en proceso, y que solo salgan en proceso aquellas en las que de verdad se esté trabajando por algún agente en concreto, para saber bien en qué se trabaja en cada momento». → Tarea en el hito de infraestructura, en curso en esta sesión de chat.
+
+### 27 oct 2026 (21:22) — por el chat: el paisaje de cerca, como se ve en el juego
+
+«Se ve bien, pero claro, es a 0 detalle; está muy bien como "lo que se ve de lejos" pero no como se ve el juego de cerca.» → Tarea nueva en el hito 10: vista «Como en el juego» en el boceto de cerca, con el personaje, la cámara del juego y un trozo de terreno alrededor con todo el detalle (rejilla de 1 m, hierba, flores, matorrales, piedras, árboles completos y sombras).
+
+### 27 oct 2026 — por el chat: fotogramas bajos al construir (jugando en línea)
+
+«Cuando estamos haciendo cualquiera de los dos una construcción (la carga de construir con el hacha) nos bajan los fps mucho… luego vuelve a normal» y «tiene los fps mucho más bajos durante todo el proceso, no a tirones» → Arreglado (construcción v26, demo v22): al avanzar una obra se rehace solo esa pieza y no todo lo construido.
+«Cada vez que salgo al menú y vuelvo dice que soy uno más… not big deal» (los que se van tardan en desaparecer a través del túnel) → va con la tarea pendiente de conexiones que se cortan del hito 1f.
+
+### 27 oct 2026 — por el chat: probar en línea en casa, más fácil
+
+«¿Qué pongo para probar con otra persona?» (resumido) y «me lo ponías con textos en alguna terminal y lo hacía más rápido, ¿no?» → Archivos de doble clic en la raíz: `jugar_en_casa.bat` (Windows) y `jugar_en_casa.command` (Mac). Encienden el servidor y la web en su ordenador y dicen la dirección que hay que abrir en los dos aparatos (con el servidor ya puesto: no hace falta tocar Opciones). No comprobado en Windows ni en Mac de verdad; el paso de la dirección por la página, sí.
+«¿Me puedes hacer un bat que me lo haga todo, incluido descargar e instalar Node?» → `jugar_en_casa.bat` lo hace todo: si faltan, descarga Node.js portable (sin instalar nada en Windows) y el juego en la carpeta Kinhold del usuario; enciende el servidor (el mundo se guarda aparte, en Kinhold\mundo.jsonl, y no se pierde al actualizar) y la web (`herramientas/servir_web.mjs`, sin descargar nada más), y abre el juego. Se puede bajar suelto. La web local y la conexión, comprobadas aquí; el .bat, no comprobado en un Windows de verdad.
+La otra persona juega desde otro país; «en bat todo, en uno» → `jugar_en_casa.bat` pregunta si la otra persona está en la misma casa (1) o lejos (2). Con 2 (tras avisar de que quien tenga el enlace puede entrar al servidor del juego, que aún no tiene contraseñas): descarga el túnel gratuito de Cloudflare, saca el servidor del juego a internet sin abrir puertos y da el enlace a la web pública con el servidor ya puesto (copiado al portapapeles). Probado por valravnx el 27 oct con dos aparatos en países distintos: funciona (construyen juntos y se ven con su personaje, 60 fps en su PC).
+
+### 27 oct 2026 (18:54) — por el chat: un paisaje bonito de cerca
+
+«Sobre todo topología final, frondosidad de bosques, que no parezcan llanos de 20 kilómetros hasta una colina que crezca otros 10 km hasta estar a los 6000 metros; que sean acantilados, lugares bellos, hacerlo de manera que el landscape sea bonito, ¿cómo lo hacemos?» → Planificado el hito 10 con tareas para el relieve de detalle por escalas, cortados y acantilados según la roca, valles tallados por los ríos, bosques densos con claros y lindes, y un boceto 3D de cerca para juzgar el paisaje antes de meterlo en el juego.
+
+### 27 oct 2026 (18:23) — por el chat: el suelo de troncos no cierra
+
+«El suelo de troncos no acaba de cerrar cuando hay varios, debería juntarse todo de una» (con captura: rendijas verdes y las testas de los troncos en cada junta) → Tarea de arreglo en el hito 1c, en curso en la sesión de chat.
+
+### 27 oct 2026 (16:57) — por el chat: semilla del mundo y recursos
+
+«66172 de seed en 256 me gusta. Lo que tienes que poner los recursos para que los jugadores normales puedan tener sin moverse 100 km; lo que sí puedes poner marcadas así las superbetas para explotar a muerte, eso sí» → Decidido el mundo de 256 × 256 km con la semilla 66172 (decisión «tamaño del mundo» resuelta). Tarea nueva en el hito 10, en curso en la sesión de chat: recursos comunes cerca de cualquier sitio y grandes vetas marcadas en el mapa.
+
+### 27 oct 2026 (12:50 y 13:06) — por el chat: el mapa, con formas naturales a la europea
+
+«En vez de ser un país circular, me gustaría que fuera algo con más relieves. Piensa en estilo Europa, un país mínimo me gustaría que fuera insular, bastante apartado del continente para forzar el uso de barcos… zonas geográficamente muy separadas… para que no sea una gran masa de tierra circular en medio del mar.» Y después: «Este no deja de ser una especie de trapezoide con dos pequeños salientes y una isla circular… mira cómo es el mapa de Europa, mira cómo son mapas de fantasía diseñados en otros lados. Haz un research… No quiero formas predefinidas, quiero que tenga curvas, penínsulas, ínsulas, un poco de todo» → Investigado (generadores de mapas de fantasía por plantillas de colinas, sierras, fosas y hoyas; dominio deformado; costas fractales) y rehecho el generador sin figuras fijas, con una isla-país siempre apartada por mar. Publicado «Mapa del mundo» v1. Queda por decidir el tamaño del mundo (188 o 256 km).
+
+### 27 oct 2026 (13:51) — por el chat: dos fallos en construir
+
+«Se ven los muebles del piso de arriba aunque estés en el de abajo, no debe ocurrir con el siguiente piso tapado; y parece que el control con WASD está fallando según mi chica, que está testeando» → Tarea de arreglo en el hito 1c, en curso en la sesión de chat.
+
+### 27 oct 2026 (12:36) — por el chat: decisiones de cavar y diseño del mundo
+
+«Sí, aprueba lo del vano por material» (sin derrumbes: sin apoyo no se avanza). Escombro: «sacarlo con carretilla, sí, porque es importante que sea un material que se pueda utilizar». Hierro: «poco y malo en superficie, y lo bueno en la mina, sí». «Prohibimos cavar dentro del radio de mojón ajeno, y no solo eso, sino de su radio de influencia» (en el GDD, el radio de exclusión). → GDD apartado 8 (Cavar y minar) y tareas nuevas en el hito 1g.
+«Tendríamos que empezar a trabajar en el diseño de mundo… es un buen punto para empezar a hacer unos primeros bocetos» → Hito 10 (Mundo) lo lleva la sesión de chat; primera tarea: bocetos del mundo.
+
+### 27 oct 2026 (12:27) — por el chat: cavar en todo el mundo, sin agujeros a lo loco
+
+Medida en su móvil (cavar v1): 70 fps, 13,0 mil triángulos, malla por golpe 23,7 ms de media y 52,3 ms el peor (98 golpes). «Funciona perfecto».
+«¿Cómo hacemos para que todo el mundo pueda ser editado de esta manera? Hay que hacerlo de una manera que esté bien. No podemos permitir que se hagan agujeros así a lo loco, y menos hacia abajo… más que se colapse, que no te permita avanzar si no tienes suficiente sustentación… si quieres hacer una mina profunda, tengas que poner sustentación en todas partes, ir poniendo los pilarcitos… los minerales y materiales como roca tengan diferentes tipos de sustentación, y que el hierro no se encuentre al aire libre excepto en ocasiones súper especiales, el carbón, tal… todo de manera realista… que no se abuse del cavar, que sea complejo y una labor que se tenga que hacer entre varios o que tome su tiempo hacer una mina decente» → En conversación: propuesta de diseño (mundo entero editable, sustentación por material, geología) pendiente de su visto bueno antes de pasarla al GDD y al hito 1g.
+
+### 27 oct 2026 (10:13) — por el chat: la decoración se pone en el piso de arriba
+
+«Al construir con un piso encima decoraciones, estas se ponen en el piso de arriba y no en el que estás, eso no debería ocurrir jamás; hay que mirar que el clic sea en el suelo del piso en el que estés si es que tienes el techo quitado por estar ahí» (con captura en el móvil: cama de madera sobre el altillo) → Tarea de arreglo en el hito 1c, en curso por la sesión de chat.
+
+### 27 oct 2026 (10:15) — por el chat: suelos de troncos sin huecos
+
+«Y de paso modifica los suelos de troncos para que no dejen huequecitos en el suelo, que tapen del todo» → Va en la misma tarea de arreglo.
+
+### 27 oct 2026 (10:10) — por el chat: la web, de pergamino a feria medieval
+
+«Al ser todo papel, aunque se vea bien, se siente como una web en modo claro más que algo medieval… que el tema no sea solo papiro, sino feria medieval: los cuadros de texto sí van en papiro con dibujo de papiro envuelto arriba y abajo o a los lados, y el resto es madera y estandartes varios… investiga antes de hacer una nueva versión» → Tarea nueva en el hito 0, en curso en la sesión de chat.
+
+### 27 oct 2026 (08:50 UTC) — en la sesión del carril B: más de dos sesiones a la vez
+
+El carril B estaba aún ocupado por la sesión de las obras (viva). valravnx: «hazla si no entorpece a los demás aunque sean varias a la vez» → Esta sesión hace la tarea «Cámara táctil con un dedo durante el combate» como una sesión de chat (tarea en curso en el roadmap y rama propia, sin tocar la reserva del carril en sesion.json), porque no comparte archivos con las demás ramas activas.
+
+### 27 oct 2026 (09:41) — por el chat: web de progreso con estilo medieval
+
+«Tu trabajo ahora va a ser embellecer la página de Kinhold del desarrollo, volverla estilo medieval estilizada lo más bonita posible con estilos de pergamino… la prueba integral unificada es la de jugar alpha más actualizada y el resto deben estar escondidas debajo en desplegables… todo lo demás estilízalo para que sea más fácil de visualizar y a la vez bonito» → Tarea nueva en el hito 0 (infraestructura), en curso en la sesión de chat.
+
+### 27 oct 2026 (09:28) — por el chat: sin ciudades NPC
+
+«Meter ciudades rompe el rollo de mundo a explorar que tenía la idea de survival, así que los quitaremos; los mercaderes aparecerán a cosa de 2 km de donde haya nadie cuando se dirijan a un asentamiento y solo se quedarán si se crea el sistema para ello, como el de reclutar soldados; y haremos lo del carro simple» → GDD (apartados 16 y 20) y documento de sistemas, en los tres idiomas: fuera las ciudades NPC; los mercaderes y mercenarios ambulantes aparecen a unos 2 km de cualquier jugador y llegan andando al asentamiento; un mercader solo se queda fijo si se crea un sistema para ello; los mensajeros van a asentamientos; la carretilla de rueda maciza se fabrica (ya no la regalan); dónde se celebran torneos y ferias queda por decidir.
+
+### 27 oct 2026 (08:20 UTC) — por el chat: dónde va el servidor de prueba
+
+«Para la pregunta del hito, opción A» → Servidor de la prueba online (hito 1f) en un alojamiento en la nube con una cuenta de valravnx: se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan. Pregunta quitada de las pendientes; la tarea de poner el servidor en internet pasa a pendiente.
+
+### 27 oct 2026 (08:23) — por el chat: cavar y minar (en conversación)
+
+valravnx pregunta cuánta carga de servidor supondría modificar el terreno cavando o minando, con la idea de que al entrar en una mina desaparezca lo que hay encima (como el tejado de las casas) y lo que el personaje no ve funda a negro. → Respuesta en el chat. valravnx no quiere casillas («look terriblemente cuadriculado»); se queda el híbrido que propone: cubitos pequeños (unos 50 cm) y la roca dibujada lisa e irregular alrededor con semilla fija (09:04). A las 09:09: «vamos a trabajarlo en paralelo, tercero» → GDD (sección 8, tres idiomas) y hito nuevo 1g «Cavar y minar», que lleva a mano esta sesión de chat; los carriles A y B no lo tocan («lleva»: «chat» en el roadmap).
+
+### 27 oct 2026 (06:51–06:54) — por el chat: dos sesiones en paralelo
+
+«¿Hay manera de duplicar el trabajo en paralelo sin romper nada?» y «que mida que no se pisen ni se estropeen entre ellas, que sean cosas diferentes, cambia y aplica para que haya dos siempre en paralelo» → Carriles A (minuto 19) y B (minuto 49) con herramientas/carriles.mjs, reglas nuevas en CLAUDE.md y su prueba.
+
+### 27 oct 2026 (06:46) — por el chat: hito 1e aprobado
+
+«Aprueba el 1e con pendiente a pulir todo lo que quede en el 10b» → Hito 1e aprobado y marcado como hecho. Pasan al hito 10b las losas del cimiento que repiten dibujo y la pregunta del desenfoque de maqueta (quitada de las preguntas pendientes).
+
+### 27 oct 2026 (06:43) — por el chat: heridas, para más adelante
+
+«También el tema de heridas, ahora son cuadrados sobre el personaje, en un futuro ya haremos que se vean mejor, pero para más adelante, quiero algo jugable antes» → La tarea de heridas visibles pasa del hito de arte (1b) al hito 10b, que ahora se llama «Pulido de manos, animaciones y heridas».
+
+### 27 oct 2026 (06:39) — por el chat: manos y animaciones, para más adelante
+
+«Para un momento más futuro, quiero que hagamos una faena de nivelar las manos de los personajes con las herramientas que estén tomando para que las agarren bien… y que las animaciones no clipen con los mismos personajes. Más adelante: ahora lo importante es la funcionalidad, pero tiene que estar en el roadmap segurísimo.» → Hito nuevo 10b «Pulido de manos y animaciones», después del Mundo (pendiente, no se empieza antes), y su fila en el GDD.
+
+### 26 oct 2026 (15:59) — por el chat: cómo será el premium
+
+valravnx: el premium desbloqueará recetas para fabricar versiones más bonitas de las cosas, «pero ya se hará» → GDD (apartados 2 y 20, en los tres idiomas): el premium son recetas que se desbloquean, se fabrican en el juego con sus materiales y solo cambian el aspecto. Se concreta más adelante.
+
+### 26 oct 2026 (15:35) — por el chat: análisis de lo que falta para un juego acabado
+
+valravnx pidió analizar todos los sistemas y lo que faltaría (ropa tejida cosmética en vez de calidades, hogar, objetos, peces, una carreta de inicio, barcos por los que se pueda andar y comarcas con nombre que se dominan). Sus respuestas al análisis: el mapa del mundo lo revisará mucho a mano, así que los nombres se irán poniendo y ajustando; las ciudades NPC le parecen bien aunque la gente se arremoline cerca («un mal necesario»: crea rutas entre reinos, sitios de paso, y lejos queda sitio para bandidos y solitarios); la carretilla te la dan los NPCs además de enseñarte a hacerla; nada de calidades de objetos; el resto, como se propuso. → GDD v0.9, apartado 20 «Ampliación para un juego acabado» (también en inglés y ruso), con el hito donde se planifica cada cosa; documento de sistemas v1.2 (rastra en N0, carretilla de rueda maciza en N1); tarea de la ropa crafteable del hito 1b sin calidades.
+
+### 26 oct 2026 (15:20) — por el chat: estados de simulación más variados
+
+valravnx propone estados más variados de simulación; acepta los cinco que encajan, «pero para más adelante» → GDD (sección 6, también en inglés y ruso): mojado, herida infectada, comida en mal estado, dolor y borracho, como ampliación posterior a la primera versión del hito de supervivencia. Aburrimiento, tristeza y pánico quedan fuera.
+
+### 26 oct 2026 (15:15) — por el chat: prueba online pronto
+
+valravnx está de acuerdo en que lo multijugador es el mayor riesgo y le preocupa el coste del servidor para unas 100 personas → Hito nuevo 1f, «Prueba online mínima», en curso justo después del 1e (estilo v5): dos jugadores en el mismo mundo desde dos dispositivos, y una medición con 100 jugadores simulados para saber qué servidor hace falta y cuánto cuesta al mes.
+
+### 26 oct 2026 (15:10) — por el chat: el estilo v5 solo está en los muros
+
+«Revisa que la mejora gráfica de la construcción se aplique bien, he visto que has mejorado las paredes de troncos pero nada más… quiero que sea visualmente como aprobé en la prueba que hicimos, y eso aplica a todo» → Comprobado en las capturas de construcción v13 y demo v8: solo los muros de troncos tienen el estilo; tejados, cimientos, suelos, puertas, empalizada, muebles y el suelo de la escena siguen con el aspecto inicial. Hito nuevo 1e, «El estilo de la prueba v5 en todo», en curso y por delante del resto: reúne las cuatro tareas de estilo del 1c y añade la escena común (hierba, flores, matorrales, piedras, árboles de la v5), todo lo demás que se ve, y una revisión final comparando cada vista con la v5. Regla nueva en CLAUDE.md: la v5 vale para todo y nada se publica con el aspecto inicial.
+
 ### 26 oct 2026 (12:06) — por el chat: mundo a escala real, nado y obras con materiales (en conversación)
 
 valravnx quiere: mundo a escala real en todo (planicies, pero también valles, pasos y montañas tipo Pirineos, bosques frondosos, ríos de varios gruesos; un mundo aún inexplorado que no se sienta un llano gigante y que favorezca establecerse en sitios concretos, como junto a los ríos); saber si el nado está en el GDD (no lo está); y que construir sea poner el marco de la obra, llevarle los materiales y construir con un tiempo según la pieza, con andamios, poleas y poleas mayores para subir materiales y piedras a lo alto (complicado pero posible en grupo, y no demasiado para una casita de madera solo o en pareja). → Propuesta enviada en el chat. valravnx (12:11): «sí, todo» → GDD v0.8 (mundo a escala real, agua y nado, obras), tareas nuevas en el hito 1c y el hito 10 puesto al día.

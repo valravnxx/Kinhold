@@ -1,0 +1,123 @@
+# Prueba en navegador del visor del mapa del mundo (hito 10, bocetos): genera el mundo, comprueba que se dibuja la
+# tierra, cambia de capa, amplía, toca un sitio, abre las notas y saca capturas de todas las vistas en PC y móvil.
+# MUTAR=1 borra la tierra antes de pintar una capa: tiene que fallar.
+# Uso: python3 pruebas/prueba_mapa_navegador.py <html> <carpeta_capturas>
+import sys, os, json, subprocess, time, socket
+from playwright.sync_api import sync_playwright
+RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_mapa.html')
+SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_mapa'
+os.makedirs(SALIDA, exist_ok=True)
+fallos = []
+def comprobar(n, c, d=''):
+    print(('  OK   ' if c else '  FALLA ') + n + (f' — {d}' if d else ''))
+    if not c: fallos.append(n)
+# parte del lienzo con color de tierra (verde o pardo: el mar es azulado)
+TIERRA = """(() => { const c = document.getElementById('lienzo'), g = c.getContext('2d'), d = g.getImageData(0, 0, c.width, c.height).data;
+  let t = 0, n = 0; for (let i = 0; i < d.length; i += 4 * 37) { n++; if (d[i + 1] >= d[i + 2] + 4) t++; } return t / n; })()"""
+MEDIDAS = {}
+# se sirve por http desde la raíz del repositorio (con file:// el navegador no deja cargar el personaje)
+RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+_s = socket.socket(); _s.bind(('', 0)); PUERTO = _s.getsockname()[1]; _s.close()
+SERVIDOR = subprocess.Popen([sys.executable, '-m', 'http.server', str(PUERTO)], cwd=RAIZ, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(1)
+URL = f'http://localhost:{PUERTO}/' + os.path.relpath(RUTA, RAIZ).replace(os.sep, '/') + '?recursosMH=/docs/recursos/personajes/taller-v7/'
+with sync_playwright() as p:
+    nav = p.chromium.launch(args=["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"])
+    for nombre, opc in [('pc', dict(viewport={'width': 1280, 'height': 800})), ('movil', dict(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True))]:
+        ctx = nav.new_context(locale='es-ES', **opc); pg = ctx.new_page(); err = []
+        pg.on('pageerror', lambda e: err.append(str(e))); pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
+        pg.goto(URL)
+        pg.wait_for_function('window.__mapa && window.__mapa.listo', timeout=240000)
+        r = pg.evaluate('window.__mapa.resumen'); ms = pg.evaluate('window.__mapa.msGenerar')
+        comprobar(f'{nombre}: abre el mundo elegido (semilla 66172, 256 km)', pg.evaluate('window.__mapa.mapa.semilla === 66172 && window.__mapa.mapa.lado === 256'))
+        comprobar(f'{nombre}: hay grandes vetas marcadas', r['vetas'].get('granHierro', 0) >= 2 and r['vetas'].get('granCarbon', 0) >= 2, json.dumps(r['vetas']))
+        MEDIDAS[nombre] = {'ms_generar': ms, **r}
+        comprobar(f'{nombre}: se genera el mundo', r and r['tierraKm2'] > 5000, f"{ms} ms · {r['tierraKm2']} km² de tierra")
+        comprobar(f'{nombre}: la isla grande está apartada (más de 20 km de mar)', r['separacionIsla'] and r['separacionIsla'] >= 20, f"{r['separacionIsla']} km")
+        t = pg.evaluate(TIERRA)
+        comprobar(f'{nombre}: se dibuja la tierra (relieve)', t > 0.1, f'{t * 100:.0f} % del lienzo')
+        pg.screenshot(path=f'{SALIDA}/{nombre}_1_relieve.png')
+        if os.environ.get('MUTAR'): pg.evaluate('window.__mapa.mapa.forma.fill(-50)')
+        pg.evaluate('window.__mapa.fondo("biomas")'); pg.wait_for_timeout(200)
+        t = pg.evaluate(TIERRA)
+        comprobar(f'{nombre}: se dibuja la tierra (biomas)', t > 0.1, f'{t * 100:.0f} % del lienzo')
+        pg.screenshot(path=f'{SALIDA}/{nombre}_2_biomas.png')
+        pg.evaluate('window.__mapa.fondo("roca"); window.__mapa.capa("vetas", true)'); pg.wait_for_timeout(200)
+        if nombre == 'movil':
+            comprobar('móvil: la leyenda empieza escondida (no tapa el mapa)', not pg.is_visible('#leyenda'))
+            pg.screenshot(path=f'{SALIDA}/movil_3a_roca_vetas_sin_leyenda.png')
+            pg.click('#btnLeyenda'); pg.wait_for_timeout(150)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_3_roca_vetas.png')
+        leyenda = pg.inner_text('#leyenda')
+        tapa = pg.evaluate("(() => { const a = document.getElementById('leyenda').getBoundingClientRect(), b = document.getElementById('superior').getBoundingClientRect(); return a.height > 0 && a.top < b.bottom; })()")
+        comprobar(f'{nombre}: la leyenda no tapa los botones de arriba', not tapa)
+        if nombre == 'movil': pg.click('#btnLeyenda')
+        comprobar(f'{nombre}: la leyenda enseña rocas y vetas', 'Caliza' in leyenda and 'Veta pequeña de carbón' in leyenda and 'Gran veta de hierro' in leyenda)
+        # ampliar sobre el centro del país 2 y tocarlo
+        m = pg.evaluate('(() => { const m = window.__mapa.mapa, c = m.centros[1], k = m.lado / m.N; return [(c % m.N + 0.5) * k, (Math.floor(c / m.N) + 0.5) * k]; })()')
+        pg.evaluate('window.__mapa.fondo("relieve"); window.__mapa.capa("vetas", false)')
+        pg.evaluate(f'window.__mapa.ampliar(4, {m[0]}, {m[1]})'); pg.wait_for_timeout(200)
+        W, H = opc['viewport']['width'], opc['viewport']['height']
+        if nombre == 'pc': pg.mouse.click(W / 2, H / 2)
+        else: pg.touchscreen.tap(W / 2, H / 2)
+        pg.wait_for_timeout(200)
+        info = pg.inner_text('#datos')
+        comprobar(f'{nombre}: tocar un sitio dice qué hay (y a cuánto está el hierro y el carbón)', 'm de altura' in info and 'País' in info and 'hierro a' in info, info[:160])
+        cerca = pg.evaluate("(() => { const t = document.getElementById('datos').textContent; const m = t.match(/hierro a (\\d+) km, carbón a (\\d+) km/); return m ? [+m[1], +m[2]] : null; })()")
+        comprobar(f'{nombre}: hierro y carbón a menos de 25 km del sitio tocado', cerca and max(cerca) < 25, str(cerca))
+        pg.screenshot(path=f'{SALIDA}/{nombre}_4_ampliado.png')
+        # de cerca: el botón que sale al tocar abre el paisaje en 3D del sitio tocado
+        comprobar(f'{nombre}: al tocar sale «Ver de cerca»', pg.is_visible('#btnCerca'))
+        pg.evaluate("document.getElementById('btnCerca').click()")
+        pg.wait_for_function('window.__cerca && window.__cerca.listo', timeout=240000)
+        med = pg.evaluate('window.__cerca.medidas')
+        comprobar(f'{nombre}: de cerca se dibuja el terreno y el bosque', med and med['triangulos'] > 50000 and med['arboles'] > 500, json.dumps(med))
+        pg.wait_for_timeout(1500); pg.screenshot(path=f'{SALIDA}/{nombre}_6_cerca_alto.png', timeout=240000)
+        pg.evaluate('window.__cerca.vista("pie")'); pg.wait_for_timeout(1500)
+        pie = pg.evaluate("(() => { const c = document.querySelector('#lienzoCerca'); return [c.width, c.height]; })()")
+        pg.screenshot(path=f'{SALIDA}/{nombre}_7_cerca_pie.png', timeout=240000)
+        comprobar(f'{nombre}: la vista a pie se pone', pg.evaluate('window.__cerca.vistaActual') == 'pie', str(pie))
+        # como en el juego: el trozo de cerca con todo el detalle, el personaje y andar tocando el suelo
+        pg.evaluate("document.getElementById('btnJuego').click()"); pg.wait_for_timeout(1500)
+        jm = pg.evaluate('window.__cerca.juego')
+        if os.environ.get('MUTAR'): jm['hierba'] = 0
+        comprobar(f'{nombre}: como en el juego, el trozo de cerca tiene rejilla de 1–1,25 m, hierba, piedras y árboles', jm and jm['pasoM'] <= 1.25 and jm['hierba'] > 1000 and jm['rocas'] > 0 and jm['triangulos'] > 100000, json.dumps(jm))
+        comprobar(f'{nombre}: sale la ayuda de andar', pg.is_visible('#juegoAyuda'))
+        a = pg.evaluate('[window.__cerca.vj.pos.x, window.__cerca.vj.pos.z]')
+        pg.evaluate('(() => { const v = window.__cerca.vj; v.andarA(v.pos.x + 8, v.pos.z + 3); })()'); pg.wait_for_timeout(2500)
+        b = pg.evaluate('[window.__cerca.vj.pos.x, window.__cerca.vj.pos.z, window.__cerca.vj.pos.y, window.__cerca.vj.altura(window.__cerca.vj.pos.x, window.__cerca.vj.pos.z)]')
+        comprobar(f'{nombre}: el personaje anda y va pegado al suelo', b[0] > a[0] and abs(b[2] - b[3]) < 0.05, str(b))
+        pg.screenshot(path=f'{SALIDA}/{nombre}_8_juego.png', timeout=240000)
+        pg.evaluate('window.__cerca.camara(0.18, 30, 2.6)'); pg.wait_for_timeout(1500)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_9_juego_bajo.png', timeout=240000)
+        pg.evaluate("document.getElementById('btnAlto').click()"); pg.wait_for_timeout(500)
+        comprobar(f'{nombre}: al salir del juego se quita el trozo de cerca', pg.evaluate("!window.__cerca.vj.grupo && document.getElementById('juegoAyuda').hidden"))
+        pg.evaluate("document.getElementById('btnVolverMapa').click()"); pg.wait_for_timeout(500)
+        comprobar(f'{nombre}: «Volver al mapa» vuelve', not pg.is_visible('#cerca'))
+        pg.click('#btnNotas'); pg.wait_for_timeout(200)
+        comprobar(f'{nombre}: las notas se abren', pg.is_visible('#notas'))
+        pg.screenshot(path=f'{SALIDA}/{nombre}_5_notas.png'); pg.click('#btnNotas')
+        ancho = pg.evaluate('document.documentElement.scrollWidth')
+        comprobar(f'{nombre}: nada se sale de la pantalla', ancho <= W, f'{ancho}px')
+        fuera = pg.evaluate("[...document.querySelectorAll('#superior button, #superior select, #superior input, #leyenda, #datos')].filter(e => { const r = e.getBoundingClientRect(); return r.width && (r.right > innerWidth + 1 || r.bottom > innerHeight + 1 || r.left < -1); }).map(e => e.id || e.textContent).slice(0, 5)")
+        comprobar(f'{nombre}: botones, leyenda y datos dentro de la pantalla', not fuera, ', '.join(fuera))
+        solape = pg.evaluate("(() => { const a = document.getElementById('leyenda').getBoundingClientRect(), b = document.getElementById('datos').getBoundingClientRect(); return !(a.right < b.left || b.right < a.left || a.bottom < b.top || b.bottom < a.top); })()")
+        comprobar(f'{nombre}: la leyenda no tapa los datos', not solape)
+        if nombre == 'pc':
+            # el mundo de 188 km del GDD, para comparar
+            pg.select_option('#lado', '188'); pg.wait_for_function('window.__mapa.listo && window.__mapa.mapa.lado === 188', timeout=240000)
+            r2 = pg.evaluate('window.__mapa.resumen'); MEDIDAS['pc_188'] = r2
+            comprobar('pc: también se genera el mundo de 188 km', r2['tierraKm2'] > 3000, f"{r2['tierraKm2']} km²")
+            pg.screenshot(path=f'{SALIDA}/pc_6_188km.png')
+            # en inglés no falta ningún texto
+            pg.goto(URL + '&lang=en'); pg.wait_for_function('window.__mapa && window.__mapa.listo', timeout=240000)
+            pg.click('#btnNotas'); pg.evaluate('window.__mapa.fondo("biomas"); window.__mapa.capa("vetas", true)')
+            faltan = pg.evaluate('[...window.__idioma.faltan]')
+            comprobar('pc: en inglés no falta ningún texto', not faltan, '; '.join(faltan[:4]))
+            pg.screenshot(path=f'{SALIDA}/pc_7_ingles.png')
+        comprobar(f'{nombre}: sin errores en consola', not err, '; '.join(err[:3]))
+        ctx.close()
+    nav.close()
+SERVIDOR.kill()
+json.dump(MEDIDAS, open(f'{SALIDA}/medidas.json', 'w'), indent=1)
+print('\nResultado:', 'TODO CORRECTO' if not fallos else f'{len(fallos)} fallos: ' + ', '.join(fallos))
+sys.exit(1 if fallos else 0)

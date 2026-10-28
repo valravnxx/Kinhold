@@ -1,2 +1,3 @@
 proyecto/diario.json merge=kinhold-json
 proyecto/idiomas/*.json merge=kinhold-json
+proyecto/sesion.json merge=kinhold-json

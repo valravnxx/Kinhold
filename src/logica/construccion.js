@@ -1,10 +1,34 @@
 // Kinhold — lógica de construcción (sin gráficos, comprobable en Node)
-import { PIEZAS, DECORACION, MODULO, ALTURA, RECUPERACION, MAX_PLANTA, MATERIALES_INICIALES } from './piezas.js';
+import { PIEZAS, DECORACION, MODULO, ALTURA, RECUPERACION, MAX_PLANTA, MATERIALES_INICIALES, CLASE_PESO } from './piezas.js';
 
 export const RADIO_MOJON = 20;        // radio de tierra del mojón de nivel 1 (m)
 export const DIST_ENGANCHE = 3 * MODULO; // a esta distancia de una construcción, se encaja en su rejilla
+export const MAX_RATO = 5;            // segundos de trabajo como mucho en una sola acción «trabajar»
 
-const HUECOS_ARISTA = new Set(['e', 'b', 'g', 'p']);
+// Segundos de trabajo de una persona para terminar una obra con todo su material (provisional: el GDD dice «un
+// tiempo según la pieza» sin cifras; aquí, 4 s más 1 s por cada 20 kg de la pieza).
+export function tiempoObra(tipo) { return Math.round(4 + PIEZAS[tipo].peso / 20); }
+
+// Subir lo pesado (GDD, «Obras»): segundos de trabajo, sumando los de todos, para subir UNA unidad (un tronco, una
+// piedra) una planta. Entre dos (o más): 2 × SUBIR_PLANTA por planta, o sea SUBIR_PLANTA de reloj si tiran a la vez.
+// Una persona sola rodándolo por dos varas con una cuerda: el doble de trabajo (y, sola, cuatro veces más de reloj).
+// Con una polea en una viga, una persona sola hace lo mismo que dos a pulso: 2 × SUBIR_PLANTA por planta.
+// Con un polipasto con torno, lo pesado igual que con polea; lo muy pesado (sillares) solo así y entre dos (uno en el
+// torno y otro que guía): 4 × SUBIR_PLANTA por planta, sumando los dos.
+// Provisional: el GDD no da cifras.
+export const SUBIR_PLANTA = 2.5;
+export const VARAS_PARA_RODAR = { vara: 2, cuerda: 1 }; // no se gastan: se vuelven a usar
+// Planta a la que hay que llevar el material de una obra: la de la pieza (lo que se apoya en lo alto de la planta
+// baja, como las vigas o el tejado de una cabaña, se alcanza desde el suelo; provisional).
+export function plantaObra(p) { return p.k; }
+export function clasePeso(material) { return CLASE_PESO[material] || 'ligero'; }
+export function trabajoSubida(planta, personas, conVaras, conPolea = false, clase = 'pesado') {
+  if (clase === 'muy_pesado') return personas >= 2 ? 4 * SUBIR_PLANTA * planta : Infinity; // con polipasto
+  if (personas >= 2 || conPolea) return 2 * SUBIR_PLANTA * planta;
+  return conVaras ? 4 * SUBIR_PLANTA * planta : Infinity;
+}
+
+const HUECOS_ARISTA = new Set(['e', 'b', 'g', 'p', 'q']);
 
 export function clave(hueco, i, j, k, d) {
   return HUECOS_ARISTA.has(hueco) ? `${hueco}:${i},${j},${k},${d}` : `${hueco}:${i},${j},${k}`;
@@ -62,6 +86,7 @@ export class Mundo {
     this.mojon = null; // { x, z }
     this.materiales = { ...MATERIALES_INICIALES };
     this.siguienteId = 1;
+    this.obrasTerminadas = []; // quién llevó qué y quién trabajó en cada obra terminada (para el servidor; no se guarda)
   }
 
   // --- materiales ---
@@ -129,6 +154,7 @@ export class Mundo {
     const h = huecoDesdeLocal(def.hueco, l.lx, l.lz, k);
     const p = { tipo, ...h, dir, abierta: false };
     if (!HUECOS_ARISTA.has(p.hueco)) delete p.d;
+    if (def.andamio) p.dir = dirAndamio(c, p.i, p.j, p.k);
     return { construccion: c, nueva, pieza: p };
   }
 
@@ -140,14 +166,15 @@ export class Mundo {
     // solo cuentan como apoyo las piezas que pueden sostener peso (cercas, empalizadas y
     // medio muro tienen capacidad 0 y nunca sostienen nada; los tejados solo sostienen
     // el tramo de tejado de al lado, nunca muros ni suelos)
-    const tiene = (key) => { const q = c.piezas.get(key); return !!q && PIEZAS[q.tipo].cap > 0; };
+    // una obra a medias (solo el marco) tampoco sostiene nada hasta que se termina
+    const tiene = (key) => { const q = c.piezas.get(key); return !!q && !q.obra && PIEZAS[q.tipo].cap > 0; };
     const filtra = (keys) => keys.filter(tiene);
     // piezas iguales (suelo o tejado) en las casillas de al lado que descansan directamente en muros o vigas
     const vecinasApoyadas = (hueco, i, j, k) => [[1, 0], [-1, 0], [0, 1], [0, -1]]
       .map(([di, dj]) => clave(hueco, i + di, j + dj, k))
       .filter(key => {
         const q = c.piezas.get(key);
-        if (!q) return false;
+        if (!q || q.obra) return false;
         return aristasDeCasilla(q.i, q.j, k - 1).some(a => tiene(clave('e', ...a)) || tiene(clave('b', ...a)));
       });
 
@@ -194,13 +221,18 @@ export class Mundo {
       }
       case 'p': {
         const muro = c.piezas.get(clave('e', i, j, k, p.d));
-        if (muro && PIEZAS[muro.tipo].conPuerta) return { suelo: false, lista: [clave('e', i, j, k, p.d)] };
+        if (muro && !muro.obra && PIEZAS[muro.tipo].conPuerta) return { suelo: false, lista: [clave('e', i, j, k, p.d)] };
         return { suelo: false, lista: [] };
       }
       case 'l': {
         const f = clave('f', i, j, k);
         if (tiene(f)) return { suelo: false, lista: [f] };
+        if (def.andamio && k > 0 && andamioEn(c, i, j, k - 1)) return { suelo: false, lista: [clave('l', i, j, k - 1)] };
         return { suelo: k === 0, lista: [] };
+      }
+      case 'q': { // la polea cuelga de su viga
+        const b = clave('b', i, j, k, p.d);
+        return { suelo: false, lista: tiene(b) ? [b] : [] };
       }
     }
     return { suelo: false, lista: [] };
@@ -260,7 +292,8 @@ export class Mundo {
   }
 
   // ---------- Validar y colocar ----------
-  validar(cand) {
+  // marco: se pone solo el marco de la obra (los materiales se entregan después), así que no se miran los materiales
+  validar(cand, marco = false) {
     if (!cand) return { ok: false, motivo: 'Pieza no válida.' };
     const { construccion: c, pieza: p } = cand;
     const def = PIEZAS[p.tipo];
@@ -275,7 +308,13 @@ export class Mundo {
     if (def.andando && p.k >= MAX_PLANTA) return { ok: false, motivo: 'La escalera de tablas sube a la planta de arriba: en la última no cabe.' };
     if (def.andando && c.piezas.has(clave('f', p.i, p.j, p.k + 1))) return { ok: false, motivo: 'Encima de la escalera tiene que quedar el hueco abierto: quita ese suelo.' };
     if (p.hueco === 'f' && escaleraAndando(c, p.i, p.j, p.k - 1)) return { ok: false, motivo: 'Ahí está el hueco de una escalera.' };
-    if (!this.puedePagar(def.coste)) return { ok: false, motivo: 'Faltan materiales.', faltan: this.faltan(def.coste) };
+    if (p.hueco === 'f' && c.piezas.has(clave('l', p.i, p.j, p.k - 1)) && PIEZAS[c.piezas.get(clave('l', p.i, p.j, p.k - 1)).tipo].andamio) return { ok: false, motivo: 'Ahí está la plataforma de un andamio.' };
+    if (def.andamio) {
+      if (p.k >= MAX_PLANTA) return { ok: false, motivo: 'El andamio llega a la planta de arriba: en la última no cabe.' };
+      if (c.piezas.has(clave('f', p.i, p.j, p.k + 1))) return { ok: false, motivo: 'Encima del andamio va su plataforma: ahí ya hay un suelo.' };
+      if (!pegadoAlMuro(c, p.i, p.j, p.k)) return { ok: false, motivo: 'El andamio va pegado a un muro (o a la obra de un muro), en esta planta o en la de arriba.' };
+    }
+    if (!marco && !this.puedePagar(def.coste)) return { ok: false, motivo: 'Faltan materiales.', faltan: this.faltan(def.coste) };
     if (!this.apoyada(c, p)) return { ok: false, motivo: motivoSinApoyo(p) };
     // prueba de carga con la pieza puesta
     c.piezas.set(key, p);
@@ -285,8 +324,11 @@ export class Mundo {
     return { ok: true, clave: key };
   }
 
-  colocar(cand) {
-    const v = this.validar(cand);
+  // Coloca una pieza. Con marco = true (como se construye en el juego: «Obras», GDD) solo pone el marco de la obra:
+  // no paga nada, se ve como un armazón, no sostiene nada y su peso ya cuenta (así, al terminarla, aguanta seguro).
+  // Sin marco, la pieza sale terminada y pagada de golpe (lo usan las pruebas de la estructura).
+  colocar(cand, marco = false) {
+    const v = this.validar(cand, marco);
     if (!v.ok) return v;
     let { construccion: c, pieza: p, nueva } = cand;
     if (nueva) {
@@ -294,9 +336,104 @@ export class Mundo {
       this.construcciones.push(c);
     }
     p.id = this.siguienteId++;
+    if (PIEZAS[p.tipo].andamio) p.dir = dirAndamio(c, p.i, p.j, p.k);
     c.piezas.set(v.clave, p);
-    this.pagar(PIEZAS[p.tipo].coste);
-    return { ok: true, clave: v.clave, construccion: c };
+    if (marco) p.obra = { entregado: {}, trabajo: 0, aportes: [] };
+    else this.pagar(PIEZAS[p.tipo].coste);
+    return { ok: true, clave: v.clave, construccion: c, obra: !!marco };
+  }
+
+  // ---------- Obras: marco, materiales y tiempo ----------
+  // Lo que le falta a una obra por entregar: [{ m, n }]
+  faltaEntregar(p) {
+    if (!p.obra) return [];
+    return Object.entries(PIEZAS[p.tipo].coste).map(([m, n]) => ({ m, n: n - (p.obra.entregado[m] || 0) })).filter(x => x.n > 0);
+  }
+  // Lleva material a una obra. Se entrega como mucho lo que le falta; queda anotado quién lo entrega.
+  // desde: planta en la que está quien lo lleva. Si la obra está en alto, lo ligero se sube a mano por la escalera
+  // (hay que estar en su planta) y lo pesado no se entrega así: se sube con subir().
+  entregar(c, key, material, cantidad, autor, desde = 0) {
+    const p = c.piezas.get(key);
+    if (!p) return { ok: false, motivo: 'No existe.' };
+    if (!p.obra) return { ok: false, motivo: 'Esa pieza ya está terminada.' };
+    const falta = this.faltaEntregar(p).find(x => x.m === material);
+    if (!falta) return { ok: false, motivo: 'A esa obra no le falta ese material.' };
+    if (!Number.isInteger(cantidad) || cantidad <= 0) return { ok: false, motivo: 'Cantidad no válida.' };
+    const planta = plantaObra(p);
+    if (planta > 0 && clasePeso(material) === 'muy_pesado') return { ok: false, motivo: 'Lo muy pesado solo se sube con un polipasto con torno, entre dos.', subir: true };
+    if (planta > 0 && clasePeso(material) !== 'ligero') return { ok: false, motivo: 'Lo pesado no se sube a mano: entre dos, con una polea, o rodándolo por dos varas con una cuerda.', subir: true };
+    if (planta > 0 && !(desde >= planta)) return { ok: false, motivo: 'Súbelo a mano por la escalera o el andamio hasta la planta de la obra.', escalera: true };
+    const n = Math.min(cantidad, falta.n);
+    if ((this.materiales[material] || 0) < n) return { ok: false, motivo: 'Faltan materiales.', faltan: [{ m: material, n, hay: this.materiales[material] || 0 }] };
+    this.materiales[material] -= n;
+    p.obra.entregado[material] = (p.obra.entregado[material] || 0) + n;
+    p.obra.aportes.push({ autor, entrega: material, n });
+    return { ok: true, entregado: n, falta: this.faltaEntregar(p) };
+  }
+  // Un rato subiendo una unidad de material pesado hasta una obra en alto. metodo: 'entre_dos' (cada uno coge de un
+  // lado: hasta que no ayuda otro, no sube) o 'varas' (rodándolo por dos varas con una cuerda: puede una sola persona,
+  // más despacio). Los segundos de todos se suman; al llegar al trabajo de la subida, la unidad queda entregada.
+  subir(c, key, material, segundos, autor, metodo) {
+    const p = c.piezas.get(key);
+    if (!p) return { ok: false, motivo: 'No existe.' };
+    if (!p.obra) return { ok: false, motivo: 'Esa pieza ya está terminada.' };
+    if (!(segundos > 0 && segundos <= MAX_RATO)) return { ok: false, motivo: 'Rato de trabajo no válido.' };
+    if (!['entre_dos', 'varas', 'polea', 'polipasto'].includes(metodo)) return { ok: false, motivo: 'Datos no válidos.' };
+    const planta = plantaObra(p);
+    if (planta === 0) return { ok: false, motivo: 'Esa obra está a ras de suelo: no hace falta subir nada.' };
+    const clase = clasePeso(material);
+    if (clase === 'ligero') return { ok: false, motivo: 'Eso no hace falta subirlo así.' };
+    if (clase === 'muy_pesado' && metodo !== 'polipasto') return { ok: false, motivo: 'Lo muy pesado solo se sube con un polipasto con torno, entre dos.' };
+    const s = p.obra.subida;
+    if (s && s.material !== material) return { ok: false, motivo: 'Ya se está subiendo otro material a esta obra.' };
+    if (!s && !this.faltaEntregar(p).some(x => x.m === material)) return { ok: false, motivo: 'A esa obra no le falta ese material.' };
+    if (metodo === 'varas' && !this.puedePagar(VARAS_PARA_RODAR)) return { ok: false, motivo: 'Para rodarlo hacen falta dos varas y una cuerda.' };
+    if (metodo === 'polea' && !poleaPara(c, p)) return { ok: false, motivo: 'Para subirlo con polea hace falta una polea en una viga de esta construcción, a la altura de la obra o más arriba.' };
+    if (metodo === 'polipasto' && !polipastoPara(c, p)) return { ok: false, motivo: 'Para subirlo con polipasto hace falta un polipasto en una viga de esta construcción, a la altura de la obra o más arriba.' };
+    if (!s) { // la unidad sale de la reserva al empezar a subirla
+      if ((this.materiales[material] || 0) < 1) return { ok: false, motivo: 'Faltan materiales.', faltan: [{ m: material, n: 1, hay: this.materiales[material] || 0 }] };
+      this.materiales[material] -= 1;
+      p.obra.subida = { material, varas: false, polea: false, seg: {} };
+    }
+    const sub = p.obra.subida;
+    if (metodo === 'varas') sub.varas = true;
+    if (metodo === 'polea') sub.polea = true;
+    if (metodo === 'polipasto') sub.polipasto = true;
+    sub.seg[autor] = +((sub.seg[autor] || 0) + segundos).toFixed(3);
+    const personas = Object.keys(sub.seg).length;
+    const hecho = Object.values(sub.seg).reduce((a, b) => a + b, 0);
+    const necesario = trabajoSubida(planta, personas, sub.varas, sub.polea || !!sub.polipasto, clase);
+    if (hecho >= necesario - 1e-9) {
+      p.obra.entregado[material] = (p.obra.entregado[material] || 0) + 1;
+      p.obra.aportes.push({ sube: material, n: 1, planta, metodo: sub.polipasto ? 'polipasto' : sub.polea ? 'polea' : personas >= 2 ? 'entre_dos' : 'varas', autores: { ...sub.seg } });
+      delete p.obra.subida;
+      return { ok: true, subido: true, progreso: 1, falta: this.faltaEntregar(p) };
+    }
+    // sin varas y sin nadie más (o algo muy pesado con una sola persona en el polipasto), se espera a que ayude otro
+    // (lo que se lleva hecho no pasa de la mitad)
+    const esperaAyuda = !Number.isFinite(necesario);
+    const progreso = esperaAyuda ? Math.min(0.5, hecho / trabajoSubida(planta, 2, false, false, clase)) : hecho / necesario;
+    return { ok: true, subido: false, progreso, esperaAyuda };
+  }
+  // Un rato de trabajo en una obra con todo el material. Los segundos de todos los que trabajan se suman: si te
+  // ayudan, se termina antes. Al llegar al tiempo de la pieza, queda terminada.
+  trabajar(c, key, segundos, autor) {
+    const p = c.piezas.get(key);
+    if (!p) return { ok: false, motivo: 'No existe.' };
+    if (!p.obra) return { ok: false, motivo: 'Esa pieza ya está terminada.' };
+    if (!(segundos > 0 && segundos <= MAX_RATO)) return { ok: false, motivo: 'Rato de trabajo no válido.' };
+    if (this.faltaEntregar(p).length) return { ok: false, motivo: 'Primero hay que llevarle todo el material.' };
+    const total = tiempoObra(p.tipo);
+    p.obra.trabajo = Math.min(total, p.obra.trabajo + segundos);
+    const suyo = p.obra.aportes.find(x => x.autor === autor && x.trabajo !== undefined);
+    if (suyo) suyo.trabajo = +(suyo.trabajo + segundos).toFixed(3);
+    else p.obra.aportes.push({ autor, trabajo: +segundos.toFixed(3) });
+    if (p.obra.trabajo >= total - 1e-9) {
+      this.obrasTerminadas.push({ construccion: c.id, clave: key, tipo: p.tipo, aportes: p.obra.aportes });
+      delete p.obra;
+      return { ok: true, terminada: true, progreso: 1 };
+    }
+    return { ok: true, terminada: false, progreso: p.obra.trabajo / total };
   }
 
   // ---------- Desmontar ----------
@@ -325,7 +462,10 @@ export class Mundo {
     const p = c.piezas.get(key);
     c.piezas.delete(key);
     for (const k2 of pre.caen) c.piezas.delete(k2);
-    const devuelto = this.devolver(PIEZAS[p.tipo].coste, RECUPERACION);
+    // una obra a medias devuelve entero lo que se le había llevado (aún no se había gastado en nada)
+    const obra = p.obra && { ...p.obra.entregado };
+    if (p.obra && p.obra.subida) obra[p.obra.subida.material] = (obra[p.obra.subida.material] || 0) + 1; // la que iba subiendo
+    const devuelto = p.obra ? this.devolver(obra, 1) : this.devolver(PIEZAS[p.tipo].coste, RECUPERACION);
     if (c.piezas.size === 0) this.construcciones = this.construcciones.filter(x => x !== c);
     return { ok: true, caen: pre.caen, devuelto };
   }
@@ -430,16 +570,56 @@ export function geometriaTejados(c) {
       const m = muroBajo(p, aristaHacia(p.i, p.j, ui, uj));
       if (m) rellenos.push({ tipo: 'alto', muro: m.tipo, h: off + 1 });
     }
-    res.set(key, { arranque: off, rellenos });
+    // para el dibujo: lados sin tramo que siga (ahí el tejado vuela y se remata), si cierra una cumbrera
+    // (la pone uno solo de los dos tramos) y la paridad de la casilla (los tramos vecinos se montan sin coincidir)
+    const extremos = [1, -1].filter(lado => {
+      const v = tejado(p.i + lado * xi, p.j + lado * xj, p.k);
+      return !(v && (v.dir || 0) === d && arranque(v) === off);
+    });
+    res.set(key, { arranque: off, rellenos, extremos, cumbrera: !!cumbrera && d < 2, par: ((p.i + p.j) % 2 + 2) % 2 });
   }
   return res;
 }
 
 // ---------- Escalera de tablas ----------
 // Escalera que se sube andando en la casilla (i,j) de la planta k, o null.
+// Andamio terminado en la casilla (i, j) de la planta k (su plataforma está a la altura del suelo de la planta k + 1).
+export function andamioEn(c, i, j, k) {
+  const p = c.piezas.get(clave('l', i, j, k));
+  return p && !p.obra && PIEZAS[p.tipo].andamio ? p : null;
+}
+// El andamio va pegado a un muro (terminado o en obras) de su casilla, en su planta o en la de encima.
+function pegadoAlMuro(c, i, j, k) {
+  return [k, k + 1].some(kk => aristasDeCasilla(i, j, kk).some(a => c.piezas.has(clave('e', ...a))));
+}
+// Hacia dónde mira el andamio (dir, como las escaleras): hacia el primer muro de su casilla, en su planta o en la de
+// encima. Solo cambia cómo se ve (la barandilla y la escalerilla quedan por fuera).
+export function dirAndamio(c, i, j, k) {
+  for (const kk of [k, k + 1]) for (let dir = 0; dir < 4; dir++) {
+    const [ai, aj, d] = aristaHacia(i, j, ...SUBE[dir]);
+    if (c.piezas.has(clave('e', ai, aj, kk, d))) return dir;
+  }
+  return 0;
+}
+// Polea terminada de esta construcción con la que se puede subir algo a la obra p: cuelga de una viga a la altura de
+// su planta o más arriba (la viga de lo alto de la planta k está a la altura del suelo de la planta k + 1).
+// poleaPara: la polea simple; polipastoPara: el polipasto con torno (los dos van en el mismo hueco de la viga).
+export function poleaPara(c, p) { return aparejoPara(c, p, false); }
+export function polipastoPara(c, p) { return aparejoPara(c, p, true); }
+function aparejoPara(c, p, polipasto) {
+  const planta = plantaObra(p);
+  let mejor = null;
+  for (const q of c.piezas.values()) {
+    if (q.hueco !== 'q' || q.obra || q.k + 1 < planta || !!PIEZAS[q.tipo].polipasto !== polipasto) continue;
+    const a = centroLocal(q), b = centroLocal(p);
+    const d = Math.hypot(a.lx - b.lx, a.lz - b.lz);
+    if (!mejor || d < mejor.d) mejor = { q, d };
+  }
+  return mejor ? mejor.q : null;
+}
 export function escaleraAndando(c, i, j, k) {
   const p = c.piezas.get(clave('l', i, j, k));
-  return p && PIEZAS[p.tipo].andando ? p : null;
+  return p && !p.obra && PIEZAS[p.tipo].andando ? p : null;
 }
 // Cuánto has subido (0 abajo, 1 arriba) en un punto local (m) de la casilla de la escalera.
 // Sube en la dirección dir (mismo convenio que los tejados): arriba se sale a la casilla de al lado.
@@ -480,7 +660,8 @@ function motivoSinApoyo(p) {
     case 'r': return 'El tejado necesita muros o vigas debajo, o un tramo de tejado al lado que los tenga.';
     case 'g': return 'El hastial va encima de un muro o una viga.';
     case 'p': return 'La puerta va en un muro con hueco de puerta.';
-    case 'l': return 'La escalera necesita un suelo.';
+    case 'l': return 'La escalera necesita un suelo; el andamio, la tierra, un suelo u otro andamio debajo.';
+    case 'q': return PIEZAS[p.tipo]?.polipasto ? 'El polipasto se cuelga de una viga terminada.' : 'La polea se cuelga de una viga terminada.';
   }
   return 'Sin apoyo.';
 }

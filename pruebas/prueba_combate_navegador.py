@@ -178,8 +178,8 @@ with sync_playwright() as p:
     ev(f"{D}.atacar('alto')")
     comprobar('el contraataque es imparable', ev(f"{D}.jugador.imparable"))
     ev(f"{D}.rival.bloquear(true); {D}.rival.tBloqueo = 1")  # para "normal": no basta
-    hasta(f"{D}.jugador.accion !== 'preparando'", 5000)
-    espera(200)
+    hasta(f"{D}.jugador.accion !== 'preparando'", 15000)  # márgenes amplios: a 2-4 fps el juego va más lento
+    hasta(f"{D}.rival.heridas.length >= 1", 8000)
     comprobar('una parada normal no detiene el contraataque', ev(f"{D}.rival.heridas.length") >= 1)
 
     # captura del aviso verde (sin parar)
@@ -199,8 +199,8 @@ with sync_playwright() as p:
     dorado = ev("document.querySelector('#rosa [data-l=izquierda]').classList.contains('maestro')")
     ev(f"{D}.atacar('izquierda')")
     comprobar('el borde dorado marca que cabe el golpe maestro', dorado)
-    hasta(f"{D}.rival.accion !== 'preparando'", 4000)
-    hasta(f"{D}.rival.heridas.length >= 1", 4000)
+    hasta(f"{D}.rival.accion !== 'preparando'", 15000)  # márgenes amplios: a 2-4 fps el juego va más lento
+    hasta(f"{D}.rival.heridas.length >= 1", 15000)
     st = ev(f"{D}.stats")
     comprobar('golpear por el lado espejo a tiempo es golpe maestro y hiere', st['maestros'] == 1 and ev(f"{D}.rival.heridas.length") >= 1 and ev(f"{D}.jugador.heridas.length") == 0, json.dumps(st))
 
@@ -210,7 +210,8 @@ with sync_playwright() as p:
     ev(f"{D}.jugador.z = {D}.rival.z - 2.5")
     espera(200)
     r0 = ev(f"Math.hypot({D}.jugador.x-{D}.rival.x, {D}.jugador.z-{D}.rival.z)")
-    pg.keyboard.down('d'); espera(1500); pg.keyboard.up('d')
+    # se mantiene la tecla hasta que se ha movido de lado (no un tiempo fijo: a 2-4 fps el juego va más lento)
+    pg.keyboard.down('d'); espera(1500); hasta(f"Math.abs({D}.jugador.x) > 0.7", 15000); pg.keyboard.up('d')
     r1 = ev(f"Math.hypot({D}.jugador.x-{D}.rival.x, {D}.jugador.z-{D}.rival.z)")
     x1 = ev(f"{D}.jugador.x")
     comprobar('el lateral rodea al rival sin alejarse mucho', abs(x1) > 0.5 and abs(r1 - r0) < 0.6, f'distancia {r0:.2f} -> {r1:.2f}, x={x1:.2f}')
@@ -218,6 +219,15 @@ with sync_playwright() as p:
     comprobar('y sigue de cara al rival', mira < 0.25, f'{mira:.2f} rad')
     espera(600)
     pg.screenshot(path=f'{SALIDA}/07_rodeando.png')
+    # con la distribución rusa, D escribe «в»: el duelo tiene que leer la tecla física (KeyD)
+    ev(QUIETO)
+    ev(f"{D}.jugador.x = 0; {D}.jugador.z = {D}.rival.z - 2.5")
+    espera(200)
+    ev("window.dispatchEvent(new KeyboardEvent('keydown', { key: 'в', code: 'KeyD' }))")
+    espera(1500); hasta(f"Math.abs({D}.jugador.x) > 0.7", 15000)
+    ev("window.dispatchEvent(new KeyboardEvent('keyup', { key: 'в', code: 'KeyD' }))")
+    x2 = ev(f"{D}.jugador.x")
+    comprobar('con la distribución rusa, D (que escribe «в») mueve de lado', abs(x2) > 0.5, f'x={x2:.2f}')
 
     print('Combate libre contra la máquina (normal)')
     ev(f"{D}.configurar({{modo:'duelo', dificultad:'normal'}})")
@@ -390,6 +400,50 @@ with sync_playwright() as p:
     comprobar('tocar la zona izquierda de la rosa golpea por la izquierda', mv.evaluate(f"{D}.jugador.linea") == 'izquierda' and mv.evaluate(f"{D}.jugador.accion") in ('preparando', 'golpeando', 'recuperando'))
     mv.wait_for_timeout(200)
     mv.screenshot(path=f'{SALIDA}/16_movil_golpe.png')
+
+    # Cámara táctil con un dedo (GDD): arrastrar por zona libre gira; tocar sin arrastrar no la mueve; el dedo del
+    # joystick no cuenta; con el arco tenso y el dedo junto al borde, la cámara sigue hacia ese lado.
+    cdp = ctx.new_cdp_session(mv)
+    def toque(tipo, puntos):
+        cdp.send('Input.dispatchTouchEvent', {'type': tipo, 'touchPoints': [{'x': x, 'y': y, 'id': i} for i, x, y in puntos]})
+    def arrastre(i, x0, y0, x1, y1, pasos=8, otros=()):
+        for k in range(1, pasos + 1):
+            toque('touchMove', list(otros) + [(i, x0 + (x1 - x0) * k / pasos, y0 + (y1 - y0) * k / pasos)])
+            mv.wait_for_timeout(30)
+    mv.evaluate(f"{D}.configurar({{modo:'duelo', arma:'espada_larga', dificultad:'aprendiz'}}); {QUIETO}; {D}.jugador.z={D}.rival.z-1.7; {D}.rival.actualizar = () => []")
+    mv.wait_for_timeout(600)
+    r = mv.evaluate(f"({{x:{D}.rosa.x, y:{D}.rosa.y, r:{D}.rosa.r}})")
+    lx, ly = 120, r['y'] + r['r'] * 1.5 + 30   # zona libre bajo la rosa, encima de los botones
+    comprobar('el punto de prueba es zona libre del lienzo', mv.evaluate(f"document.elementFromPoint({lx},{ly}).id") == 'lienzo')
+    y0 = mv.evaluate(f"{D}.cam.yaw"); acc0 = mv.evaluate(f"{D}.jugador.accion")
+    toque('touchStart', [(1, lx, ly)]); mv.wait_for_timeout(60); toque('touchMove', [(1, lx + 4, ly + 3)]); toque('touchEnd', [])
+    mv.wait_for_timeout(100)
+    y1 = mv.evaluate(f"{D}.cam.yaw")
+    comprobar('móvil: tocar zona libre sin arrastrar no gira la cámara ni golpea', abs(y1 - y0) < 0.01 and mv.evaluate(f"{D}.jugador.accion") == acc0, f"giro {y1 - y0:.3f}")
+    toque('touchStart', [(1, lx, ly)]); arrastre(1, lx, ly, lx + 100, ly); toque('touchEnd', [])
+    y2 = mv.evaluate(f"{D}.cam.yaw")
+    comprobar('móvil: arrastrar un dedo 100 px a la derecha gira la cámara', y2 - y1 < -0.45, f"giro {y2 - y1:.2f} rad")
+    mv.wait_for_timeout(300)
+    mv.screenshot(path=f'{SALIDA}/16c_movil_camara_un_dedo.png')
+    j = mv.evaluate("(() => { const b = document.getElementById('joystick').getBoundingClientRect(); return [b.left + b.width/2, b.top + b.height/2]; })()")
+    toque('touchStart', [(5, j[0], j[1])]); mv.wait_for_timeout(60)
+    toque('touchStart', [(5, j[0], j[1]), (1, lx, ly)])
+    arrastre(1, lx, ly, lx - 80, ly, otros=[(5, j[0], j[1])])
+    toque('touchEnd', [(5, j[0], j[1])]); toque('touchEnd', [])
+    y3 = mv.evaluate(f"{D}.cam.yaw")
+    comprobar('móvil: con un dedo en el joystick, el otro gira la cámara entero', y3 - y2 > 0.38, f"giro {y3 - y2:.2f} rad (80 px = 0,48)")
+    mv.evaluate(f"{D}.configurar({{modo:'duelo', arma:'arco', dificultad:'aprendiz'}}); {QUIETO}; {D}.rival.actualizar = () => []; {D}.jugador.z = {D}.rival.z - 8")
+    mv.wait_for_timeout(600)
+    cx, cy = 195, 420
+    y4 = mv.evaluate(f"{D}.cam.yaw")
+    toque('touchStart', [(1, cx, cy)]); arrastre(1, cx, cy, 384, cy, pasos=5)
+    mv.wait_for_timeout(1200)
+    y5 = mv.evaluate(f"{D}.cam.yaw"); tensa = mv.evaluate(f"{D}.jugador.accion")
+    mv.screenshot(path=f'{SALIDA}/16d_movil_arco_borde.png')
+    comprobar('móvil: con el arco tenso y el dedo junto al borde derecho, la cámara gira hacia allí', y5 - y4 < -0.05 and tensa == 'tensando', f"giro {y5 - y4:.2f} rad, {tensa}")
+    toque('touchEnd', [])
+    mv.wait_for_timeout(300)
+    comprobar('móvil: al soltar el arco deja de seguir y dispara', mv.evaluate(f"{D}.dedoArco") is None and mv.evaluate(f"{D}.jugador.accion") != 'tensando')
     mv.evaluate(f"{D}.configurar({{modo:'duelo', arma:'espada_escudo', armaRival:'espada_escudo', dificultad:'aprendiz'}}); {QUIETO}; {D}.jugador.z={D}.rival.z-1.6")
     mv.wait_for_timeout(600)
     b = mv.evaluate("(() => { const r = document.getElementById('btnParar').getBoundingClientRect(); return [r.left + r.width/2, r.top + r.height/2]; })()")

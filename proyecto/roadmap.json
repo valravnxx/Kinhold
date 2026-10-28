@@ -48,6 +48,25 @@
      "estado": "hecho",
      "inicio": "2026-10-25T12:20:58+00:00",
      "fin": "2026-10-25T12:55:37+00:00"
+    },
+    {
+     "nombre": "Web de progreso con estilo medieval de pergamino (pedido de valravnx, 27 oct): la alpha unificada, la más actualizada, como protagonista arriba; las pruebas sueltas en un desplegable debajo; el resto (roadmap, diario, tiempos, lo que espera y diseño) más fácil de leer y bonito. Fuentes libres (OFL) servidas desde la propia web, con cirílico",
+     "estado": "hecho",
+     "inicio": "2026-10-27T09:43:31+01:00",
+     "fin": "2026-10-27T10:03:53+01:00"
+    },
+    {
+     "nombre": "Web de progreso como una feria medieval (pedido de valravnx, 27 oct: el pergamino solo «parece una web en modo claro»): fondo de tablones de madera, guirnalda de banderines, cartel de madera colgado entre estandartes, pestañas como estandartes que cuelgan de una viga y cada bloque de texto en un pergamino con rodillos",
+     "estado": "hecho",
+     "inicio": "2026-10-27T10:12:22+01:00",
+     "fin": "2026-10-27T10:28:16+01:00"
+    },
+    {
+     "nombre": "Quién trabaja en qué, a la vista (pedido de valravnx, 28 oct): al empezar, cada agente (carril A, carril B o una sesión de chat) anuncia su tarea en proyecto/sesion.json, y la web solo marca «en proceso» las tareas en las que trabaja de verdad un agente vivo; las empezadas que nadie lleva salen «a medias» y un carril las puede retomar",
+     "estado": "hecho",
+     "inicio": "2026-10-28T05:40:45+01:00",
+     "rama": "trabajo/20261028-0540-agentes",
+     "fin": "2026-10-28T05:56:43+01:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -175,6 +194,131 @@
    "nota": "Hecho el 24 oct entre las 15:55 y las 16:40 aprox. (sacado de las fechas de los archivos; los tiempos exactos de esta parte no se registraron)."
   },
   {
+   "id": "estilo",
+   "num": "1e",
+   "nombre": "El estilo de la prueba v5 en todo",
+   "estado": "hecho",
+   "jugable": "Todo lo que se ve (suelo, árboles, piezas de construcción, muebles y objetos) con el aspecto de la prueba de estilo v5 que aprobó valravnx, en la construcción, el duelo y la demo única.",
+   "nota": "Pedido de valravnx el 26 oct: solo se habían pasado al estilo los muros de troncos. Va antes que el resto del arte y que las piezas nuevas; reúne las tareas de estilo que estaban en el hito 1c.",
+   "tareas": [
+    {
+     "nombre": "Escena común igual que la prueba de estilo v5: suelo con hierba densa, flores, matorrales, piedras y tierra pisada, y los árboles de la v5 (hoy el suelo de la construcción y del duelo es un llano verde con matas sueltas)",
+     "estado": "hecho",
+     "inicio": "2026-10-26T14:34:09+00:00",
+     "fin": "2026-10-26T17:08:57+00:00"
+    },
+    {
+     "nombre": "Estilo elegido en las piezas: cimientos de piedra y de troncos, suelos de troncos y de tablas, y escaleras de mano y de tablas, como la prueba de estilo v5",
+     "estado": "hecho",
+     "inicio": "2026-10-26T17:20:52+00:00",
+     "fin": "2026-10-26T18:16:06+00:00"
+    },
+    {
+     "nombre": "Estilo elegido en las piezas: tejados de paja (con mechones) y de tablillas, y hastiales, como la prueba de estilo v5",
+     "estado": "hecho",
+     "inicio": "2026-10-26T18:20:41+00:00",
+     "fin": "2026-10-26T19:33:32+00:00"
+    },
+    {
+     "nombre": "Estilo elegido en las piezas: puertas de varas y de tablas, cerca de varas, empalizada y su puerta, mojón, y las barandillas y el portillo nuevos, como la prueba de estilo v5",
+     "estado": "hecho",
+     "inicio": "2026-10-26T20:20:25+00:00",
+     "fin": "2026-10-26T21:47:46+00:00"
+    },
+    {
+     "nombre": "Estilo elegido en los muebles: camas de paja y de madera, mesa, banco, taburete, arcón, barril, estantería, antorcha de pie, alfombra de piel y estandarte, como los enseres de la prueba de estilo v5",
+     "estado": "hecho",
+     "inicio": "2026-10-26T22:19:48+00:00",
+     "fin": "2026-10-26T23:42:06+00:00"
+    },
+    {
+     "nombre": "Estilo elegido en todo lo demás que se ve en la construcción, el duelo y el visor: recursos del suelo, la pieza fantasma al construir, herramientas y armas en la mano y cualquier pieza que siga con el aspecto inicial, como la prueba de estilo v5",
+     "estado": "hecho",
+     "inicio": "2026-10-27T00:20:20+00:00",
+     "fin": "2026-10-27T02:51:05+00:00"
+    },
+    {
+     "nombre": "Revisión completa y publicación: cada vista de cada prototipo y de la demo única, en PC y en móvil, comparada en capturas lado a lado con la prueba de estilo v5; lo que no se vea igual se arregla antes de cerrar el hito",
+     "estado": "hecho",
+     "inicio": "2026-10-27T04:03:18+00:00",
+     "fin": "2026-10-27T05:40:48+00:00"
+    }
+   ]
+  },
+  {
+   "id": "prueba-online",
+   "num": "1f",
+   "nombre": "Prueba online mínima",
+   "estado": "en_curso",
+   "jugable": "Dos jugadores en el mismo mundo desde dos dispositivos, construyendo y peleando, con el mundo guardado en un servidor sencillo; sin cuentas completas ni administración todavía.",
+   "nota": "Pedido de valravnx el 26 oct: lo multijugador es el mayor riesgo del proyecto y se comprueba pronto, justo después del estilo v5, antes de seguir ampliando piezas, ropa y sistemas.",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: leer lo que el GDD dice de servidor, cuentas y PvP, y desglosar la prueba online en tareas de una sesión",
+     "estado": "hecho",
+     "inicio": "2026-10-27T05:49:03+00:00",
+     "fin": "2026-10-27T06:54:09+00:00"
+    },
+    {
+     "nombre": "Servidor mínimo en Node (carpeta servidor/, paquete ws): cada conexión recibe un autor que pone el servidor, nunca el que diga el cliente; las acciones de construcción pasan por la lógica pura (ejecutar), se reparten a todos y se guardan en un archivo, y al arrancar el mundo se rehace con reproducir. Prueba en node con dos clientes",
+     "estado": "hecho",
+     "inicio": "2026-10-27T07:25:06+00:00",
+     "fin": "2026-10-27T08:32:19+00:00"
+    },
+    {
+     "nombre": "Jugadores que se ven: cada cliente manda su posición, giro y animación unas 10 veces por segundo; el servidor las reparte y los demás clientes las suavizan (interpolación). Prueba con lag simulado",
+     "estado": "hecho",
+     "inicio": "2026-10-27T08:38:20+00:00",
+     "fin": "2026-10-27T13:17:42+00:00"
+    },
+    {
+     "nombre": "Demo en línea: «Jugar en línea» en la demo única, que se conecta al servidor (dirección en Opciones); construir sobre el mundo del servidor y ver al otro jugador con el personaje del taller. Prueba de navegador con dos páginas y un servidor local, capturas en PC y móvil",
+     "estado": "hecho",
+     "inicio": "2026-10-27T13:24:50+00:00",
+     "fin": "2026-10-27T19:00:50+00:00"
+    },
+    {
+     "nombre": "Arreglo (pedido de valravnx, 27 oct, jugando en línea): los fotogramas caen mucho todo el rato mientras alguien construye una obra, también en el aparato del otro jugador",
+     "estado": "hecho",
+     "inicio": "2026-10-27T20:07:34+00:00",
+     "fin": "2026-10-27T21:41:25+00:00"
+    },
+    {
+     "nombre": "Combate en el servidor: un luchador por jugador en la lógica pura; los clientes mandan intenciones (atacar en una línea, guardia, bloquear, tensar y soltar) y el servidor lleva los tiempos y resuelve golpes y heridas con su autor. Prueba en node con dos clientes y lag simulado",
+     "estado": "hecho",
+     "inicio": "2026-10-27T19:20:13+00:00",
+     "fin": "2026-10-27T20:27:15+00:00"
+    },
+    {
+     "nombre": "Combate en línea en la demo: dos jugadores pelean entre sí y los dos ven los mismos golpes y heridas. Prueba de navegador con dos páginas",
+     "estado": "hecho",
+     "inicio": "2026-10-27T22:20:15+00:00",
+     "fin": "2026-10-28T00:46:19+00:00"
+    },
+    {
+     "nombre": "Conexiones que se cortan y protección básica: volver a conectar sin perder al personaje, quitar al que se va, límite de mensajes por segundo y de tamaño por conexión, y rechazo de datos mal formados (con una prueba que los manda)",
+     "estado": "en_curso",
+     "inicio": "2026-10-28T01:20:25+00:00"
+    },
+    {
+     "nombre": "Bots: jugadores simulados en node que se conectan al servidor y andan, construyen y pelean, para la medición",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Medir el servidor con 100 jugadores simulados (bots que andan, construyen y pelean): CPU, memoria y tráfico por jugador, para saber qué servidor hace falta y cuánto cuesta al mes",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
    "id": "arte",
    "num": "1b",
    "nombre": "Dirección de arte y personajes",
@@ -272,7 +416,9 @@
     },
     {
      "nombre": "Taller: capa con capucha, calzado y tocados (capucha suelta, sombrero de paja, toca)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-26T13:38:41+00:00",
+     "rama": "trabajo/20261026-1338"
     },
     {
      "nombre": "Taller: personalización — altura, complexión y cara con los ajustes de MakeHuman, tono de piel, color de ojos, peinado y barba",
@@ -295,11 +441,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, tinte y calidad, sobre el mismo esqueleto",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Heridas y sangrado visibles en el personaje: corte, golpe y estocada se pintan donde entran (también rompen y manchan la ropa), el sangrado se extiende con el tiempo y el vendaje se ve puesto",
+     "nombre": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, corte, tejido y tinte (sin calidades), sobre el mismo esqueleto",
      "estado": "pendiente"
     },
     {
@@ -328,6 +470,18 @@
    "jugable": "Piezas y muebles con el estilo elegido; obras con marco, materiales y tiempo, andamio, polea y polipasto; escaleras, barandillas, contraventanas, tejas, remates, chimenea, adarve y decoración; muros de piedra con grúa de rueda.",
    "estado": "en_curso",
    "tareas": [
+    {
+     "nombre": "Arreglo (pedido de valravnx, 27 oct): varios suelos de troncos seguidos no acaban de cerrar (rendija verde y testas de los troncos en cada junta); entre casillas del mismo suelo o cimiento de troncos, los troncos siguen de largo y la capa de debajo llega al borde",
+     "estado": "hecho",
+     "inicio": "2026-10-27T18:24:55+01:00",
+     "fin": "2026-10-27T19:16:59+01:00"
+    },
+    {
+     "nombre": "Arreglo (pedido de valravnx, 27 oct): en construir se veían los muebles del piso de arriba estando abajo con el techo puesto, y WASD fallaba (con la distribución de teclado rusa, o si la ventana perdía el foco con una tecla pulsada): las teclas se leen por su posición física y se sueltan todas al perder el foco",
+     "estado": "hecho",
+     "inicio": "2026-10-27T13:53:25+01:00",
+     "fin": "2026-10-27T17:29:45+01:00"
+    },
     {
      "nombre": "Arreglo (pedido de valravnx): en PC no se pueden quitar muebles ni piezas, porque al mover el ratón hacia «Confirmar» se pierde lo elegido. Lo elegido con clic se queda fijo hasta confirmar o cancelar",
      "estado": "hecho",
@@ -365,40 +519,39 @@
      "fin": "2026-10-26T11:58:37+01:00"
     },
     {
-     "nombre": "Estilo elegido en las piezas: cimientos de piedra y de troncos, suelos de troncos y de tablas, y escaleras de mano y de tablas, como la prueba de estilo v5",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Estilo elegido en las piezas: tejados de paja (con mechones) y de tablillas, y hastiales, como la prueba de estilo v5",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Estilo elegido en las piezas: puertas de varas y de tablas, cerca de varas, empalizada y su puerta, mojón, y las barandillas y el portillo nuevos, como la prueba de estilo v5",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Estilo elegido en los muebles: camas de paja y de madera, mesa, banco, taburete, arcón, barril, estantería, antorcha de pie, alfombra de piel y estandarte, como los enseres de la prueba de estilo v5",
-     "estado": "pendiente"
-    },
-    {
      "nombre": "Obras (decidido por valravnx el 26 oct): poner el marco de la pieza, que se ve como un armazón; llevarle los materiales y construirla con un tiempo según la pieza; si te ayudan, tarda menos. Todo en la lógica pura, con el autor de cada entrega y de cada rato de trabajo",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-27T07:02:45+01:00",
+     "fin": "2026-10-27T09:55:53+01:00"
+    },
+    {
+     "nombre": "Arreglo (pedido de valravnx, 27 oct): con un piso encima, la decoración se ponía en el suelo de arriba y no en el de la planta en la que estás; el clic tiene que dar en el suelo de tu planta cuando el techo está oculto por estar dentro. Y los suelos de troncos, sin huequecitos entre tronco y tronco: que tapen del todo",
+     "estado": "hecho",
+     "inicio": "2026-10-27T10:14:47+01:00",
+     "fin": "2026-10-27T11:26:07+01:00"
     },
     {
      "nombre": "Obras: clase de peso de cada material (ligero, pesado, muy pesado) y llevar el material hasta la altura de la obra: lo ligero a mano por escalera; los troncos de muro entre dos, o uno solo rodándolos por dos varas con una cuerda (más despacio)",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-27T11:50:57+00:00",
+     "fin": "2026-10-27T15:14:32+00:00"
     },
     {
      "nombre": "Obras: andamio pegado al muro (trabajar y dejar material por encima de la primera planta) y polea simple en una viga (pesos medios, una persona)",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-27T16:52:02+00:00",
+     "fin": "2026-10-27T22:42:46+00:00"
     },
     {
      "nombre": "Obras: polipasto con torno para vigas grandes y sillares (uno tira y otro guía)",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-27T22:50:32+00:00",
+     "fin": "2026-10-28T02:11:11+00:00"
     },
     {
      "nombre": "Contraventana y trampilla (N2: 2 tablas y clavos): la contraventana cierra la ventana de un muro y la trampilla tapa el hueco de una escalera; las dos se abren y cierran con Usar. Añadir también el muro de tablas con ventana, que falta",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T02:50:19+00:00"
     },
     {
      "nombre": "Tejado de teja (N2: 10 tejas y vigas, pesa 200 kg, no se pudre ni arde fácil): material nuevo «teja» y su prueba de carga",
@@ -432,18 +585,137 @@
    "nota": "La primera tarea (madera más resistente) se adelantó el 24 oct porque la casa de dos plantas de valravnx y su pareja no admitía el tejado en las esquinas. Planificado el 25 oct a petición de valravnx por el chat, en paralelo a la sesión de la ropa. Los puentes de troncos no entran: necesitan agua en el mapa y llegan con el hito Mundo."
   },
   {
+   "id": "excavacion",
+   "num": "1g",
+   "nombre": "Cavar y minar",
+   "estado": "en_curso",
+   "lleva": "chat",
+   "jugable": "Cavar zanjas y nivelar con una brocha redonda, y abrir minas con roca irregular sin cuadros; dentro, lo de encima oculto y negro lo que no se ve, con entibado.",
+   "nota": "Lo lleva a mano la sesión de chat con valravnx (27 oct), en paralelo a los carriles A y B, que no lo tocan.",
+   "tareas": [
+    {
+     "nombre": "Prueba de rendimiento de cavar (vóxeles suavizados): un trozo de roca de 8 m con cubitos de 50 cm, golpes de pico que quitan un puñado redondeado, pared lisa con rugosidad por semilla fija; medir fotogramas y lo que tarda en rehacerse la malla en PC y móvil",
+     "estado": "hecho",
+     "inicio": "2026-10-27T09:09:00+01:00",
+     "fin": "2026-10-27T11:33:52+01:00"
+    },
+    {
+     "nombre": "Lógica pura de la excavación: cubitos quitados por trozo del mundo, cada golpe con su autor, guardar solo lo tocado y rehacerlo al cargar",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Mina jugable: cavar con el pico en una ladera de la construcción, entrar y salir; al entrar se oculta lo de encima y lo que no se ve funde a negro (lo abierto que alcanza la vista y lo que alumbra la antorcha)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Fuera de la mina: zanjas, fosos y nivelar para cimientos con una brocha redonda sobre la altura del terreno",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Sustentación: materiales por capas con su dureza y su vano (tierra 1 m, arcilla o grava 1,5 m, roca blanda 2,5 m, roca dura 4 m, menos cuanto más hondo); el golpe no se da si deja más techo suelto del que aguanta y avisa de entibar",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Entibado: postes y travesaño de troncos como obra (marco, material y tiempo); con entibos se puede seguir cavando. En tierra, pared vertical de 1,5 m como mucho y luego talud o entibar el pozo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El servidor solo manda los huecos que el jugador ha visto o tiene delante (nadie ve minas ni vetas ajenas a través de la roca)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Escombro: lo cavado se saca en cesto o carretilla y queda como material",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Vetas: hierro poco y malo en superficie con sus señales (agua rojiza, tierra encharcada), el bueno en vetas dentro de la roca; carbón en afloramientos de ladera",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Sin cavar en el territorio ni en el radio de exclusión de un mojón ajeno",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La malla de la roca se rehace en un hilo aparte, sin tirones al golpear",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
    "id": "equipo",
    "num": "2",
    "nombre": "Equipo y carga por huecos",
    "jugable": "Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "hecho",
+     "inicio": "2026-10-27T09:50:06+00:00",
+     "fin": "2026-10-27T11:21:44+00:00"
+    },
+    {
+     "nombre": "Lógica pura del inventario por huecos: cada objeto con su tamaño (P pequeño, M mediano, G grande, E enorme) y cada recurso con cuántas unidades caben en un hueco (pilas); huecos del cuerpo (mano derecha e izquierda, lo grande ocupa las dos; espalda, cintura según el cinturón, hombro); contenedores con sus huecos interiores y lo que admite cada uno. Acciones coger, soltar, mover y ponerse o quitarse, con autor y por jugador. Guardado en el navegador con migración. Pruebas de lógica",
+     "estado": "hecho",
+     "inicio": "2026-10-27T15:23:40+00:00",
+     "fin": "2026-10-27T16:20:09+00:00"
+    },
+    {
+     "nombre": "Equipo de carga en la lógica pura, con las listas aprobadas del GDD: los cinco cinturones (cordel de fibra, cuerda trenzada, cinto de cuero, cinto con anillas, cinto de armas) con sus huecos; las mochilas y bastidores de función única (leñero, cesta de recolección, fardo atado, zurrón de piel, mochila de bastidor, porta-piedras, caja de herramientas, carcaj, cesto de pescador, escudo a la espalda) y lo de hombro (saco, bandolera, odre), cada uno con lo que admite y cuánto",
+     "estado": "hecho",
+     "inicio": "2026-10-27T20:35:05+00:00",
+     "fin": "2026-10-27T22:11:48+00:00"
+    },
+    {
+     "nombre": "Ralentización por carga en la lógica pura, como dice el GDD: con poca carga no se nota y, cargado al máximo en todos los huecos, la velocidad al caminar baja hasta el 80%. Aplicada al andar del personaje en la demo, con pruebas de lógica y de navegador",
      "estado": "pendiente"
     },
     {
      "nombre": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Panel de inventario en la demo: silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro y capas del cuerpo); al tocar un cuadro con contenedor se abren sus huecos; sin cinturón no hay cuadros de cintura. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Mientras no haya fabricación (hito 3), el equipo se coge de un arcón de pruebas, como el botón de rellenar materiales. Capturas en PC y móvil",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Lo que llevas se ve puesto en el personaje del taller: el cinturón y lo que cuelga de él, el leñero o la mochila a la espalda, el saco al hombro y lo que tienes en las manos, con el estilo v5. Capturas de cerca para valravnx",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Objetos en el suelo: soltar y coger del suelo; lo que se suelta fuera de un contenedor desaparece pasada 1 hora real (contado por tiempo transcurrido), salvo dentro de tus tierras; los troncos y las piedras se quedan como pila. Lógica pura con autor, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Tala de verdad: el árbol joven se tala con hacha de piedra (da un tronco delgado y ramas) y el adulto con hacha de hierro (con piedra, muy lento; da un tronco largo y muchas ramas); el árbol cae, queda el tocón y vuelve a crecer en semanas reales, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Tronzar y partir: el tronco largo se tronza en 3–4 troncos cortos (con hacha, lento) y el tronco corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro y la leña en el leñero. Lógica pura con autor, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Rastra (N0: dos varas largas con travesaños): se arrastra a mano, despacio, con 2–3 troncos cortos o un montón de piedras, y se queda donde la dejas con lo que lleve. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Carretilla de rueda maciza (N1: la rueda es una rodaja de tronco): se empuja, se aparca y hace de contenedor; dentro de tus tierras está protegida y fuera cualquiera puede coger lo que lleva. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Obras con lo que llevas: el material que se entrega a una obra sale de lo que lleva el autor encima (o en su rastra o carretilla al lado), no de un montón común. El botón de rellenar del prototipo pasa a llenar el arcón de pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
     }
    ]
@@ -493,7 +765,9 @@
     },
     {
      "nombre": "Cámara táctil con un dedo durante el combate",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-10-27T08:50:44+00:00",
+     "fin": "2026-10-27T13:40:27+00:00"
     },
     {
      "nombre": "Curación de heridas",
@@ -542,9 +816,115 @@
    "id": "mundo",
    "num": "10",
    "nombre": "Mundo",
-   "jugable": "Pseudo-Europa por semilla a escala real: cordilleras como los Pirineos, valles y collados, ríos de tres gruesos (arroyos que se vadean, ríos con pocos vados, grandes ríos con barca o puente), bosques frondosos, pendientes que frenan; agua y nado; 5 países con estilo propio, caminos por uso, puentes.",
+   "jugable": "Pseudo-Europa por semilla a escala real: cordilleras como los Pirineos, valles y collados, ríos de tres gruesos (arroyos que se vadean, ríos con pocos vados, grandes ríos con barca o puente), bosques frondosos, pendientes que frenan; agua y nado; 5 países con estilo propio, caminos por uso, puentes; todo el terreno se puede cavar (relieve y materiales por semilla, malla suavizada cerca y niveles de detalle lejos).",
+   "estado": "en_curso",
+   "tareas": [
+    {
+     "nombre": "Bocetos del mundo: mapa del continente por semilla (silueta, cordilleras, ríos de tres gruesos, biomas, cinco países, roca madre y dónde salen hierro y carbón) para revisarlo con valravnx",
+     "estado": "hecho",
+     "inicio": "2026-10-27T12:36:00+01:00",
+     "fin": "2026-10-27T14:49:45+01:00"
+    },
+    {
+     "nombre": "Recursos repartidos: vetas pequeñas de hierro y carbón cerca de cualquier sitio de tierra (nadie tiene que ir lejos para lo normal) y unas pocas grandes vetas marcadas en el mapa para explotar a fondo; mundo de 256 km con la semilla 66172",
+     "estado": "hecho",
+     "inicio": "2026-10-27T16:57:00+01:00",
+     "fin": "2026-10-27T18:36:13+01:00"
+    },
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "hecho",
+     "inicio": "2026-10-27T18:54:00+01:00",
+     "fin": "2026-10-27T19:05:00+01:00"
+    },
+    {
+     "nombre": "Boceto de paisaje de cerca: tocar un sitio del mapa y verlo en 3D (unos 4 × 4 km) para juzgar si es bonito antes de meterlo en el juego",
+     "estado": "hecho",
+     "inicio": "2026-10-27T18:57:00+01:00",
+     "fin": "2026-10-27T21:07:38+01:00"
+    },
+    {
+     "nombre": "Paisaje de cerca como en el juego: el personaje con la cámara del juego y, a su alrededor, un trozo con todo el detalle (rejilla de 1 m, hierba, flores, matorrales, piedras, árboles completos y sombras); se anda tocando el suelo",
+     "estado": "hecho",
+     "inicio": "2026-10-27T21:25:00+01:00",
+     "fin": "2026-10-28T00:18:08+01:00"
+    },
+    {
+     "nombre": "Relieve de detalle por escalas: el mapa da la forma grande y encima van colinas, lomas y quebradas con pendientes de todos los tamaños (como en el terreno de verdad), sin llanos enormes ni cuestas eternas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Valles tallados por los ríos: gargantas en la montaña, vegas anchas abajo, saltos de agua donde el río cruza roca dura",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Que aguante en el móvil: el terreno por trozos alrededor del jugador, niveles de detalle, árboles repetidos de una sola malla y versiones sencillas de lejos (medir fotogramas)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Andar por el mundo de verdad en la demo: el personaje en el mundo elegido, con construir y cavar encima",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "lleva": "chat"
+  },
+  {
+   "id": "pulido-animaciones",
+   "num": "10b",
+   "nombre": "Pulido de manos, animaciones y heridas",
    "estado": "pendiente",
-   "tareas": []
+   "jugable": "Las manos agarran bien cada herramienta y arma que llevan, las animaciones no atraviesan el propio cuerpo, la ropa por capas ni a otros personajes, y las heridas se ven bien donde entran.",
+   "nota": "Pedido por valravnx el 27 oct: importante, pero para más adelante; ahora va primero algo jugable.",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: ver qué herramientas y armas hay ya, qué animaciones atraviesan algo y cómo lo resuelven otros (puntos de agarre por objeto, cinemática inversa de las manos, colisiones aproximadas del cuerpo), y desglosarlo en tareas de una sesión",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Manos que agarran bien: cada herramienta y arma con su punto de agarre, la mano colocada en el mango y los dedos cerrados alrededor, en todas las animaciones que la usan",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Animaciones que no atraviesan el propio cuerpo ni la ropa por capas (brazos contra el torso, armas contra las piernas, mangas y faldas)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Personajes que no se atraviesan entre sí (en el combate y al estar cerca)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Heridas que se vean bien (valravnx, 27 oct: «ahora son cuadrados sobre el personaje»; para más adelante): corte, golpe y estocada se pintan donde entran (también rompen y manchan la ropa), el sangrado se extiende con el tiempo y el vendaje se ve puesto",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Losas del cimiento de piedra que no repitan el mismo dibujo en cada casilla (quedó del hito 1e)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Desenfoque de maqueta de la prueba de estilo v5 (quedó del hito 1e): preguntar a valravnx si lo quiere en la construcción, el duelo y la demo y, si es que sí, ponerlo como interruptor en Opciones, midiendo antes los fotogramas en el móvil",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
   },
   {
    "id": "servidor",
@@ -683,6 +1063,125 @@
      "archivo": "jugar/demo/v8.html",
      "capturas": "capturas/demo-v8",
      "notas": "Barandillas y portillo en «Construir» (construcción v13)."
+    },
+    {
+     "v": "v9",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v9.html",
+     "capturas": "capturas/demo-v9",
+     "notas": "Escena con el estilo v5 en «Construir» y «Duelo» (construcción v14, combate v10)"
+    },
+    {
+     "v": "v10",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v10.html",
+     "capturas": "capturas/demo-v10",
+     "notas": "Cimientos, suelos y escaleras con el estilo de la prueba v5, como en la construcción v15."
+    },
+    {
+     "v": "v11",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v11.html",
+     "capturas": "capturas/demo-v11",
+     "notas": "Construcción v16: tejados de paja y de tablillas, y lo que cierra bajo el tejado, con el estilo v5"
+    },
+    {
+     "v": "v12",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v12.html",
+     "capturas": "capturas/demo-v12",
+     "notas": "Construcción v17: puertas, cercas, portillo, empalizada y mojón con el estilo v5"
+    },
+    {
+     "v": "v13",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/demo/v13.html",
+     "capturas": "capturas/demo-v13",
+     "notas": "Construcción v18: los muebles con el estilo v5"
+    },
+    {
+     "v": "v14",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v14.html",
+     "capturas": "capturas/demo-v14",
+     "notas": "Construcción v19 y combate v11: pieza fantasma con su textura, hacha al talar y armas, escudo, poste y diana con el estilo v5"
+    },
+    {
+     "v": "v15",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v15.html",
+     "capturas": "capturas/demo-v15",
+     "notas": "Construcción v20: enlosado de losas desiguales en el cimiento de piedra y mojón con piedras redondeadas, como la prueba de estilo v5"
+    },
+    {
+     "v": "v16",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v16.html",
+     "capturas": "capturas/demo-v16",
+     "notas": "En «Construir», se construye por obras: marco, material y tiempo (es la construcción v21)."
+    },
+    {
+     "v": "v17",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v17.html",
+     "capturas": "capturas/demo-v17",
+     "notas": "En «Construir», la decoración va al suelo de tu planta y los suelos de troncos tapan del todo (es la construcción v22)."
+    },
+    {
+     "v": "v18",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v18.html",
+     "capturas": "capturas/demo-v18",
+     "notas": "En «Construir», las obras en alto piden subir el material: lo ligero por la escalera y los troncos rodándolos por dos varas con una cuerda"
+    },
+    {
+     "v": "v19",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v19.html",
+     "capturas": "capturas/demo-v19",
+     "notas": "Construcción v24 y combate v13: los muebles del piso de arriba ya no se ven desde abajo con el techo puesto, y WASD funciona con la distribución de teclado rusa y sin teclas pegadas"
+    },
+    {
+     "v": "v20",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v20.html",
+     "capturas": "capturas/demo-v20",
+     "notas": "Arreglo: varios suelos o cimientos de troncos seguidos se juntan de una, sin rendija ni testas en cada junta. Es la construcción v25."
+    },
+    {
+     "v": "v21",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v21.html",
+     "capturas": "capturas/demo-v21",
+     "notas": "Jugar en línea: construir en el mundo del servidor y ver a los demás con su personaje del taller; la dirección del servidor, en Opciones"
+    },
+    {
+     "v": "v22",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v22.html",
+     "capturas": "capturas/demo-v22",
+     "notas": "Los fotogramas ya no caen mientras alguien construye una obra (también en línea); es la construcción v26"
+    },
+    {
+     "v": "v23",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/demo/v23.html",
+     "capturas": "capturas/demo-v23",
+     "notas": "Construcción v27: andamio pegado al muro y polea en una viga"
+    },
+    {
+     "v": "v24",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v24.html",
+     "capturas": "capturas/demo-v24",
+     "notas": "Duelo en línea: dos jugadores pelean entre sí en la liza; el servidor resuelve los golpes, las paradas y las heridas, y los dos ven lo mismo. Es el combate v14."
+    },
+    {
+     "v": "v25",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v25.html",
+     "capturas": "capturas/demo-v25",
+     "notas": "Construcción v28: polipasto con torno en una viga"
     }
    ]
   },
@@ -767,6 +1266,111 @@
      "archivo": "jugar/construccion/v13.html",
      "capturas": "capturas/construccion-v13",
      "notas": "Barandillas y portillo: el medio muro hace de barandilla en el borde de un suelo en alto y alrededor del hueco de la escalera (por ahí ya no se cae), y portillo de varas para la cerca, que se abre y se cierra con Usar."
+    },
+    {
+     "v": "v14",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/construccion/v14.html",
+     "capturas": "capturas/construccion-v14",
+     "notas": "Escena como la prueba de estilo v5: hierba densa con flores también en el centro, matorrales, calvas de tierra pisada, rocas y árboles de copa sueltos; la hierba se esconde bajo lo construido y vuelve al quitarlo"
+    },
+    {
+     "v": "v15",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/construccion/v15.html",
+     "capturas": "capturas/construccion-v15",
+     "notas": "Cimientos de piedra y de troncos, suelos de troncos y de tablas y escaleras de mano y de tablas con el estilo de la prueba v5: losas sobre mortero con piedras en los costados, troncos con las testas claras, tablas con veta y rastreles, y varas descortezadas."
+    },
+    {
+     "v": "v16",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/construccion/v16.html",
+     "capturas": "capturas/construccion-v16",
+     "notas": "Tejados de paja (dos hiladas, mechones en el alero y cumbrera redonda) y de tablillas (filas solapadas, tabla de remate y caballete) con el estilo v5; bajo el tejado se cierra con tablas de pie, barro y estacas o encalado y postes"
+    },
+    {
+     "v": "v17",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/construccion/v17.html",
+     "capturas": "capturas/construccion-v17",
+     "notas": "Puertas de varas y de tablas, cerca, portillo, empalizada y su puerta, y mojón con el estilo v5: tablas con peinazos y bisagras de hierro, varas atadas con cuerda, postes con el corte claro, troncos descortezados con la punta tallada y piedras apiladas"
+    },
+    {
+     "v": "v18",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/construccion/v18.html",
+     "capturas": "capturas/construccion-v18",
+     "notas": "Los muebles con el estilo elegido (prueba de estilo v5): camas de paja y de madera, mesa de caballetes, banco, taburete, arcón, barril, estantería, antorcha de pie, alfombra de piel y estandarte"
+    },
+    {
+     "v": "v19",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v19.html",
+     "capturas": "capturas/construccion-v19",
+     "notas": "Pieza fantasma y resaltados con la textura de la pieza (velo verde, rojo o naranja) y hacha en la mano al talar, con el estilo v5"
+    },
+    {
+     "v": "v20",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v20.html",
+     "capturas": "capturas/construccion-v20",
+     "notas": "Revisión del estilo v5: el cimiento de piedra lleva un enlosado de losas desiguales y de dos tonos (antes parecía baldosa moderna) y el mojón tiene piedras redondeadas como las rocas de la prueba"
+    },
+    {
+     "v": "v21",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v21.html",
+     "capturas": "capturas/construccion-v21",
+     "notas": "Se construye por obras: colocar pone el marco de la pieza, que se ve tenue dentro de un armazón de varas; Usar (F) junto a la obra le lleva el material y te pone a construir; cada pieza tarda según su peso y, si te ayudan, menos."
+    },
+    {
+     "v": "v22",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v22.html",
+     "capturas": "capturas/construccion-v22",
+     "notas": "Arreglo: la decoración va al suelo de la planta en la que estás, no al piso de arriba. Los cimientos y suelos de troncos ya no dejan ver el suelo por las juntas."
+    },
+    {
+     "v": "v23",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v23.html",
+     "capturas": "capturas/construccion-v23",
+     "notas": "Obras en alto: cada material tiene su clase de peso; lo ligero se sube a mano por la escalera y los troncos se ruedan por dos varas con una cuerda (o entre dos)"
+    },
+    {
+     "v": "v24",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v24.html",
+     "capturas": "capturas/construccion-v24",
+     "notas": "Arreglos: los muebles del piso de arriba ya no se ven desde abajo con el techo puesto, y WASD funciona con la distribución de teclado rusa (las teclas se leen por su posición) y no se quedan pulsadas al cambiar de ventana"
+    },
+    {
+     "v": "v25",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v25.html",
+     "capturas": "capturas/construccion-v25",
+     "notas": "Arreglo: varios suelos o cimientos de troncos seguidos se juntan de una, sin rendija ni testas en cada junta."
+    },
+    {
+     "v": "v26",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v26.html",
+     "capturas": "capturas/construccion-v26",
+     "notas": "Al construir una obra, solo se redibuja esa pieza al avanzar: los fotogramas ya no caen mientras se construye"
+    },
+    {
+     "v": "v27",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/construccion/v27.html",
+     "capturas": "capturas/construccion-v27",
+     "notas": "Andamio pegado al muro (se sube con Usar; desde su plataforma se lleva lo ligero y se trabaja en las obras de esa planta) y polea colgada de una viga (una persona sola sube los troncos con la mitad de trabajo que rodándolos por varas)"
+    },
+    {
+     "v": "v28",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/construccion/v28.html",
+     "capturas": "capturas/construccion-v28",
+     "notas": "Polipasto con torno colgado de una viga: sube los troncos con un torno en el suelo (una persona sola, como con polea); lo muy pesado, cuando haya sillares, solo entre dos (uno en el torno y otro que guía)"
     }
    ]
   },
@@ -830,6 +1434,41 @@
      "archivo": "jugar/combate/v9.html",
      "capturas": "capturas/combate-v9",
      "notas": "Las flechas, dianas y postes ya no dejan memoria gráfica ocupada; aviso y recarga si se pierde el dibujo 3D."
+    },
+    {
+     "v": "v10",
+     "fecha": "2026-10-26",
+     "archivo": "jugar/combate/v10.html",
+     "capturas": "capturas/combate-v10",
+     "notas": "Alrededor de la liza, la escena como la prueba de estilo v5: hierba densa con flores, matorrales, calvas de tierra, rocas y árboles de copa sueltos"
+    },
+    {
+     "v": "v11",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/combate/v11.html",
+     "capturas": "capturas/combate-v11",
+     "notas": "Espadas, palo, arco, escudo, flecha, poste de práctica y diana con el estilo v5; cintas de paño teñido más apagadas"
+    },
+    {
+     "v": "v12",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/combate/v12.html",
+     "capturas": "capturas/combate-v12",
+     "notas": "v12: cámara táctil con un dedo. En el móvil, arrastrar un dedo por una zona libre gira la cámara (antes hacían falta dos); un toque sin arrastrar no la mueve, y tocar la rosa sigue golpeando al instante. El dedo del joystick ya no cuenta como segundo dedo. Con arco o piedras, si al apuntar llevas el dedo cerca de un borde, la cámara gira hacia ese lado."
+    },
+    {
+     "v": "v13",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/combate/v13.html",
+     "capturas": "capturas/combate-v13",
+     "notas": "Arreglo: mover con WASD funciona con la distribución de teclado rusa (las teclas se leen por su posición) y no se quedan pulsadas al cambiar de ventana"
+    },
+    {
+     "v": "v14",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/combate/v14.html",
+     "capturas": "capturas/combate-v14",
+     "notas": "Duelo en línea con ?enlinea=1 (el rival es otro jugador y el servidor resuelve los golpes); fuera de línea, el duelo de siempre."
     }
    ]
   },
@@ -1012,6 +1651,55 @@
      "archivo": "jugar/personaje/v14.html",
      "capturas": "capturas/personaje-v14",
      "notas": "El cinturón de encima de la cota ya no sobresale hacia los brazos (personajes del taller-v7)."
+    }
+   ]
+  },
+  {
+   "id": "mina",
+   "nombre": "Cavar y minar",
+   "descripcion": "Pruebas de cavar zanjas y minas en la roca, sin casillas a la vista.",
+   "versiones": [
+    {
+     "v": "v1",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/mina/v1.html",
+     "capturas": "capturas/mina-v1",
+     "notas": "Prueba de rendimiento de cavar: una loma de roca que se excava a golpes de pico, sin casillas a la vista (vóxeles suavizados con la roca irregular de semilla fija). Arriba a la derecha, los fps y los ms por golpe."
+    }
+   ]
+  },
+  {
+   "id": "mapa",
+   "nombre": "Mapa del mundo",
+   "descripcion": "Bocetos del mundo generado por semilla: tierras, relieve, ríos, biomas, países, roca y vetas.",
+   "versiones": [
+    {
+     "v": "v1",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/mapa/v1.html",
+     "capturas": "capturas/mapa-v1",
+     "notas": "Primer boceto del mundo por semilla: continente con golfos, penínsulas, mares interiores e islas, sin figuras fijas; una isla grande que es un país entero, apartada por mar; relieve con sierras y ríos, biomas, cinco países, roca madre y vetas. Se puede elegir 188 o 256 km."
+    },
+    {
+     "v": "v2",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/mapa/v2.html",
+     "capturas": "capturas/mapa-v2",
+     "notas": "Tu mundo (256 km, semilla 66172) se abre al entrar. Vetas pequeñas de hierro y carbón repartidas cerca de cualquier sitio y unas pocas grandes vetas marcadas en el mapa; al tocar, a cuántos km está el hierro y el carbón más cercanos. Las islas cercanas ya tienen país."
+    },
+    {
+     "v": "v3",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/mapa/v3.html",
+     "capturas": "capturas/mapa-v3",
+     "notas": "Ver de cerca: al tocar un sitio de tierra, sus 4 × 4 km en 3D con el estilo v5, desde lo alto o a pie. Relieve con detalle por escalas (laderas lisas, crestas y vaguadas marcadas), cortado donde la tierra alta llega al mar y playa donde es baja, bosque con claros y bosquetes."
+    },
+    {
+     "v": "v4",
+     "fecha": "2026-10-27",
+     "archivo": "jugar/mapa/v4.html",
+     "capturas": "capturas/mapa-v4",
+     "notas": "De cerca, nueva vista «Como en el juego»: el personaje con la cámara del juego y, a su alrededor, un trozo de 240 m con todo el detalle (rejilla de 1 m, hierba, flores, matorrales, piedras, árboles completos y sombras). Se anda tocando el suelo."
     }
    ]
   }

@@ -3,3 +3,6 @@ dist/
 /capturas*/
 __pycache__/
 node_modules
+servidor/mundo.jsonl
+servidor/combate.jsonl
+servidor/.servidor_mutado*.mjs

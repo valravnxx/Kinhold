@@ -10,6 +10,7 @@ export const PALETA = {
   paja: 0xb59d6c, pajaOsc: 0x9a8457, piedra: 0x9c978d, piedraOsc: 0x7d7970, mortero: 0x8a8274,
   hierro: 0x55555a, hierba: 0x7d9455, hierbaClara: 0x98a866, tierra: 0x7f6a4f, camino: 0x9a8566,
   tierraCorte: 0x6a5440, tierraCorteOsc: 0x4f3f31, raiz: 0x5a4632,
+  lino: 0xcbbf9f, lana: 0x8a7a63, lanaOsc: 0x6e5240, pano: 0x7d3c30, piel: 0x93734f, barro: 0x9a7356,
   hoja: 0x6f8a4a, hojaOsc: 0x587340, hojaClara: 0x8aa05a, pino: 0x52693f, pinoOsc: 0x445a35, corteza: 0x5e4a38,
 };
 
@@ -57,6 +58,14 @@ export function textura(tipo) {
       const x = r() * N, y = r() * N, rr = 3 + r() * 9, v = 150 + r() * 105;
       envolver(() => { const gr = g.createRadialGradient(x, y, 0, x, y, rr); gr.addColorStop(0, gris(v, 0.75)); gr.addColorStop(1, gris(v, 0)); g.fillStyle = gr; g.beginPath(); g.arc(x, y, rr, 0, 7); g.fill(); });
     }
+  } else if (tipo === 'tejido') {
+    // paño tejido (lino, lana): trama y urdimbre finas, con alguna hebra más gruesa
+    for (let k = 0; k < N; k += 4) {
+      const v1 = 175 + r() * 50, v2 = 175 + r() * 50;
+      g.fillStyle = gris(v1, 0.5); g.fillRect(0, k, N, 1.6);
+      g.fillStyle = gris(v2, 0.45); g.fillRect(k + 2, 0, 1.6, N);
+    }
+    for (let n = 0; n < 40; n++) { const y = r() * N; g.fillStyle = gris(150 + r() * 40, 0.5); g.fillRect(0, y, N, 1 + r() * 1.5); }
   } else if (tipo === 'suelo') {
     for (let n = 0; n < 5000; n++) { const x = r() * N, y = r() * N, v = 140 + r() * 115; envolver(() => { g.fillStyle = gris(v, 0.55); g.fillRect(x, y, 1 + r() * 1.5, 2 + r() * 5); }); }
     for (let n = 0; n < 60; n++) { const x = r() * N, y = r() * N, v = 150 + r() * 60; envolver(() => { g.fillStyle = gris(v, 0.5); g.beginPath(); g.arc(x, y, 1.5 + r() * 3, 0, 7); g.fill(); }); }
@@ -70,9 +79,10 @@ export const TEX = {
   madera: 'veta', maderaOsc: 'veta', tabla: 'veta', corte: 'anillos', paja: 'paja', pajaOsc: 'paja',
   piedra: 'piedra', piedraOsc: 'piedra', mortero: 'piedra', corteza: 'corteza',
   hoja: 'hojas', hojaOsc: 'hojas', hojaClara: 'hojas', pino: 'hojas', pinoOsc: 'hojas',
+  lino: 'tejido', lana: 'tejido', lanaOsc: 'tejido', pano: 'tejido', barro: 'piedra',
 };
-export const DENSIDAD = { veta: 1.1, anillos: 1, paja: 0.9, piedra: 1.6, corteza: 1.4, hojas: 1.2 };
-const RELIEVE = { veta: 1.2, anillos: 0.8, paja: 2.0, piedra: 1.6, corteza: 2.4, hojas: 0.5, suelo: 1.0 };
+export const DENSIDAD = { veta: 1.1, anillos: 1, paja: 0.9, piedra: 1.6, corteza: 1.4, hojas: 1.2, tejido: 2.2 };
+const RELIEVE = { veta: 1.2, anillos: 0.8, paja: 2.0, piedra: 1.6, corteza: 2.4, hojas: 0.5, suelo: 1.0, tejido: 0.7 };
 // relieve: false quita el bumpMap y el filtrado anisótropo (el suelo de las partes jugables: casi no se nota a la distancia de juego y es lo que más cuesta dibujar)
 export function materialTex(tipo, { relieve = true } = {}) {
   const k = 'tex_' + tipo + (relieve ? '' : '_liso');

@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="4cd4add0c9e41b330e40ba720bf6392ad96fa7a9">
+<meta name="kinhold-origen" content="97e99e796aa81f1c5e33365aec77f10d162cf0f7">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kinhold GDD v0.8</title>
+<title>Kinhold GDD v0.9</title>
 <style>
 :root{
   --bg:#f6f2ea; --card:#fffdf8; --ink:#2b2520; --muted:#6f655b; --line:#e2d8c8;
@@ -61,7 +61,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Version 0.8 · 26 Oct 2026 · Real-scale world, water and swimming, and building works with materials · The content catalogue remains in the analysis document</div>
+  <div class="sub">Version 0.9 · 26 Oct 2026 · Expansion for a finished game: no NPC cities, districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDED</span> you said so
     <span class="tag method">METHOD</span> how to do it technically
@@ -90,6 +90,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li><a href="#social">Families, alliances and vassalages</a></li>
   <li><a href="#tecnica">Technical architecture</a></li>
   <li><a href="#hitos">Milestones</a></li>
+  <li><a href="#ampliacion">Expansion for a finished game</a></li>
   <li><a href="#preguntas">Open questions</a></li>
 </ol></nav>
 
@@ -114,7 +115,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span>Own website with accounts. Paid server if needed. PC, mobile and tablet.</p>
 <p><span class="tag ok">DECIDED</span>Semi-isometric third person with <b>free rotation</b>.</p>
 <p><span class="tag ok">DECIDED</span>Languages: <b>English, Spanish and Russian.</b></p>
-<p><span class="tag ok">DECIDED</span><b>Free</b> with cosmetic-only premium content: unique skins and furniture.</p>
+<p><span class="tag ok">DECIDED</span><b>Free</b> with cosmetic-only premium content: recipes you unlock to craft nicer-looking versions of things (see section 20).</p>
 <p><span class="tag ok">DECIDED</span><b>Optional tutorial</b> always available in the pause menu: you can read about every system in the game.</p>
 <p><span class="tag ok">DECIDED</span><b>Cheaters: immediate ban</b>, also by IP.</p>
 <p><span class="tag ok">DECIDED</span>Minimum requirements: to be decided midway through development.</p>
@@ -156,7 +157,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td><b>Medium</b></td><td>60 × 60 km</td><td>~36</td><td>~188 × 188 km</td><td>12 h on foot · 5 h on horseback</td><td>38 h on foot · 16 h on horseback</td></tr>
 <tr><td><b>Large</b></td><td>100 × 100 km</td><td>~100</td><td>~313 × 313 km</td><td>20 h on foot · 8 h on horseback</td><td>63 h on foot · 26 h on horseback</td></tr>
 </table></div>
-<p><span class="tag ok">DECIDED</span><b>We start with the medium size:</b> countries of about 60 × 60 km, a world of about 188 × 188 km including the sea. Crossing a country takes about 12 hours on foot or 5 on horseback.</p>
+<p><span class="tag ok">DECIDED</span><b>A world of 256 × 256 km including the sea</b> (chosen by valravnx on 27 Oct, with seed 66172, in the map sketches): mainland countries of about 75 × 75 km and an island country of about 2,000 km², separated by sea. Crossing a mainland country takes about 15 hours on foot or 6 on horseback.</p>
 <div class="box m"><span class="tag method">METHOD</span>
 <p>Since the world comes from a seed, it can be expanded at the edges later without touching what already exists. With few people at first, the medium world may feel empty: we will keep an eye on it once there are players.</p></div>
 <h3>Relief, rivers and forests at real scale</h3>
@@ -197,6 +198,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h2>6. Character, death and logging out</h2>
 <p><span class="tag ok">DECIDED</span><b>Creation:</b> a few appearance settings, man or woman, and starting country. You start at a <b>random accessible spot</b> in the chosen country (never in the sea or on a peak).</p>
 <p><span class="tag ok">DECIDED</span>Needs: hunger, thirst, cold, heat and fatigue, with warnings in circles on the right; tapping them shows the effect and information.</p>
+<p><span class="tag ok">DECIDED</span><b>Later on</b> (an expansion after the first version of the survival milestone, not before): five more states, with their warning in the same circles. <b>Wet</b> (rain, swimming or crossing rivers; adds to cold), <b>infected wound</b> (if it isn't cleaned or stitched properly), <b>spoiled food</b> (raw or rotten meat; makes you ill), <b>pain</b> (after a fight or a fall, clumsier until healed) and <b>drunk</b> (beer and wine, with a downside in combat). Boredom, sadness or panic are not included: with the character asleep while offline they would penalise being away, and panic would go against skill-based combat.</p>
 <p><span class="tag ok">DECIDED</span>The character <b>does not improve through levels or stats</b>: everything depends on the player's knowledge, skill and equipment.</p>
 <p><span class="tag ok">DECIDED</span><b>Death:</b> you respawn in your bound bed; without a bed, where you started the game. On death, <b>roughly half of what you carry can be looted and the other half breaks.</b> Permadeath is left for a future version.</p>
 <p><span class="tag ok">DECIDED</span><b>Logging out:</b> the character falls asleep in the world, goes to their bed automatically if not already in it, and shows a disconnected symbol above them.</p>
@@ -302,7 +304,26 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h2>8. Gathering and resources</h2>
 <p><span class="tag ok">DECIDED</span>Trees fall, are transported and are cut; they grow back in real weeks and can be planted.</p>
 <p><span class="tag ok">DECIDED</span>Ore veins <b>do not regenerate</b>, but the world has plenty of material: it is not a scarce resource.</p>
+<p><span class="tag ok">DECIDED</span><b>The ordinary near everyone; the great, few and marked:</b> there are small iron and coal veins all over the world (one of each in every area of about 14 km), so nobody has to travel far for everyday needs. There are also a few great veins, marked on the map, to exploit to the full.</p>
 <p class="note">Proposed gatherables: section 3 of the analysis document.</p>
+<h3>Digging and mining</h3>
+<p><span class="tag ok">DECIDED</span>You can <b>dig the ground and open mines</b>. Outside: trenches, moats and levelling for foundations with a <b>round brush</b> that lowers or smooths with soft edges. Inside the rock, each pick stroke removes a rounded handful of rock in the direction you face: tunnels go straight, uphill or curving.</p>
+<p><span class="tag ok">DECIDED</span><b>No grid look:</b> inside, the rock is split into small cubes of about 50 cm, but the wall is drawn as a smooth surface wrapping them, with the rock's roughness taken from a fixed seed by position: everyone sees the same irregular cave.</p>
+<p><span class="tag ok">DECIDED</span>When you enter a mine, <b>what is above is hidden</b> (like the roof of houses) and <b>what the character cannot see fades to black</b>.</p>
+<p><span class="tag ok">DECIDED</span><b>Support: no support, no progress.</b> Each material holds a maximum <b>span</b> of hollow roof to the nearest support (undug rock or a timber prop): earth 1 m, clay or gravel 1.5 m, soft rock 2.5 m, hard rock 4 m (values to tune by playing). If a stroke would leave more loose roof than it holds, it does not happen and a warning to shore it up appears: there are no collapses. The deeper, the shorter the span: a deep mine needs props every little way.</p>
+<p><span class="tag ok">DECIDED</span><b>Downwards:</b> in earth, a vertical wall reaches 1.5 m at most; to go deeper the sides must be stepped (slope) or the shaft shored up. In rock you can go straight down, with the same span limit.</p>
+<p><span class="tag ok">DECIDED</span><b>Timber props</b> (posts and a log crossbeam) are placed like building works: frame, material and time, and several people finish sooner. Each material takes more or fewer strokes depending on its hardness and the tool. A decent mine costs time or people.</p>
+<p><span class="tag ok">DECIDED</span><b>Spoil is carried out</b> in a basket or wheelbarrow, and it is material that gets used. What each one is for (earth to fill and level, stone to build…) is decided with the recipes.</p>
+<p><span class="tag ok">DECIDED</span><b>Realistic layers and veins:</b> topsoil, clay or gravel beneath, and then each region's bedrock (limestone, sandstone, granite, slate). Surface iron is scarce and poor, and is found by signs (reddish water, waterlogged ground); the good iron is in veins inside the rock, which need a mine. Coal crops out on some slopes and is dug in shallow pits. Veins come from the world seed.</p>
+<p><span class="tag ok">DECIDED</span><b>No digging on other people's land:</b> neither inside another's boundary-stone territory nor within its exclusion radius.</p>
+<div class="box m"><span class="tag method">METHOD</span>
+<ul>
+  <li>«Smooth voxels»: the server only stores which small cubes were removed in each 8 × 8 × 8 m chunk of the world (a few hundred bytes per dug chunk; nothing where nobody has dug), each stroke with its author. Each client only rebuilds the mesh of the touched chunk.</li>
+  <li>What is seen inside the mine: from the character's cell the open space and what its torch lights are traversed; the rest stays black. The server only sends the hollows the player has seen or has in front, so nobody sees other people's mines and veins through the rock.</li>
+  <li>The whole world can be dug: relief and materials come from the seed in the same small cubes, and only changes are stored. Near the player the smoothed mesh is drawn, and far away the normal relief with levels of detail (the radius is set by measuring on mobile). The mesh is rebuilt in a separate thread so strokes do not stutter.</li>
+  <li>The span is checked in the pure logic with every stroke: from the new hollow, the nearest roof support is searched for. The server does the same calculation.</li>
+  <li>Performance test done (digging v1): on valravnx's phone, 70 fps and 24 ms per stroke on average (52 ms worst).</li>
+</ul></div>
 </section>
 
 <section id="progresion">
@@ -315,7 +336,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Whoever knows a recipe can write it into a <b>tome</b> to teach it to others.</li>
 </ol>
 <p><span class="tag ok">DECIDED</span>No forced specialisations; the limit is play time.</p>
-<p><span class="tag ok">DECIDED</span>Durability on tools, weapons and armour. They are <b>repaired at the station that made them, with material of the same type.</b> No quality tiers for now.</p>
+<p><span class="tag ok">DECIDED</span>Durability on tools, weapons and armour. They are <b>repaired at the station that made them, with material of the same type.</b> No item quality tiers.</p>
 </section>
 
 <section id="construccion">
@@ -439,15 +460,15 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="box p"><span class="tag prop">PROPOSAL</span>
 <ul>
   <li>Between players: barter or coin, as they wish.</li>
-  <li>NPC traders are in few places in each country; their orders rotate and ask for things from the area or from other bands, to give reasons to travel.</li>
+  <li>The travelling merchants' orders rotate and ask for things from the area or from other bands, to give reasons to travel.</li>
   <li>A hired NPC eats and is paid at regular intervals.</li>
 </ul></div>
 <p><span class="tag ok">DECIDED</span>If not paid, <b>the NPC leaves and takes the gear.</b></p>
-<p><span class="tag ok">DECIDED</span>The NPCs for hire are <b>travelling merchants and mercenaries who arrive at your town or settlement.</b></p>
+<p><span class="tag ok">DECIDED</span>The NPCs for hire are <b>travelling merchants and mercenaries who arrive at your settlement.</b></p>
 <div class="box p"><span class="tag ok">APPROVED</span> How they arrive and what types there are:
 <ul>
   <li><b>Arrival:</b> every so often a traveller passes through your settlement (you need a boundary stone for them to come). They stay for a while; if you do not hire them, they move on. With a higher boundary stone level they come more often and in more types.</li>
-  <li><b>Also in NPC towns:</b> there is always someone available there, in exchange for travelling to get them.</li>
+  <li><b>Where they come from:</b> they appear out of sight, about 2 km from any player, and walk to the settlement. There are no NPC cities. A merchant only stays permanently in a settlement if a system for it is created, like the one for hiring mercenaries; otherwise they trade and move on.</li>
   <li><b>Types:</b>
     <ul>
       <li><b>Mercenary / sentry:</b> guards and defends your lands.</li>
@@ -469,7 +490,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span><b>Proximity-only communication.</b></p>
 <p><span class="tag ok">DECIDED</span><b>Coat of arms editor</b> of its own for each family.</p>
 <p><span class="tag ok">DECIDED</span>Vassalage is paid <b>in coin</b>.</p>
-<p><span class="tag ok">DECIDED</span><b>Letters by NPC messenger:</b> you send a messenger to a town or settlement you know; they travel there and deliver the letter to a member of your family who is at that place.</p>
+<p><span class="tag ok">DECIDED</span><b>Letters by NPC messenger:</b> you send a messenger to a settlement you know; they travel there and deliver the letter to a member of your family who is at that place.</p>
 <div class="box m"><span class="tag method">METHOD</span>
 <ul>
   <li>You write the letter (with parchment and ink, or on simple paper at first) and give it to the messenger with their pay.</li>
@@ -505,6 +526,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>1b</td><td>Art direction and characters</td><td>World style, workshop character with layered clothing, customization, visible wounds, levels of detail.</td></tr>
 <tr><td>1c</td><td>More building pieces</td><td>Pieces and furniture in the chosen style; building works with frame, materials and time, scaffold, pulley and block and tackle; stone walls with a treadwheel crane; stairs, railings, shutters, tiles, ridges, chimney, wall-walk, decoration.</td></tr>
 <tr><td>1d</td><td>A single demo</td><td>Building, combat and character on the same page, with the same scene and the same character.</td></tr>
+<tr><td>1g</td><td>Digging and mining</td><td>Trenches and levelling with a round brush; mines with irregular rock and no grid look, what is above hidden and black what cannot be seen, support by material with timber props, spoil carried out, realistic layers and veins, no digging on other people's land.</td></tr>
 <tr><td>2</td><td>Equipment and slot-based carrying</td><td>Inventory panel, belts, firewood frame and other backpacks; felling, transport and slowdown from carrying.</td></tr>
 <tr><td>3</td><td>Stations and crafting</td><td>First stations, recipes, unlocking through practice, durability and repair.</td></tr>
 <tr><td>4</td><td>Survival</td><td>Needs with warnings, clothing against the cold, bound bed and death with partial looting.</td></tr>
@@ -514,6 +536,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>8</td><td>Horses</td><td>Tame, ride, stable and pasture.</td></tr>
 <tr><td>9</td><td>Farming and seasons</td><td>Sowing by band, livestock.</td></tr>
 <tr><td>10</td><td>World</td><td>Seed-based pseudo-Europe at real scale: mountain ranges, valleys and passes, rivers of three sizes, dense forests; water and swimming; 5 countries with their own style, paths through use, bridges.</td></tr>
+<tr><td>10b</td><td>Polishing hands, animations and wounds</td><td>Hands grip each tool and weapon properly, animations do not clip through the body itself, the clothing or other characters, and wounds look good where they land. For later: something playable first.</td></tr>
 <tr><td>11</td><td>Server and accounts</td><td>Registration, character creation, persistent world.</td></tr>
 <tr><td>11b</td><td>Administration, logs and security</td><td>Admin powers, logs of what happens, cheat detection and bans.</td></tr>
 <tr><td>12</td><td>Online PvP and offline protection</td><td>Combat and sieges between players; war rules.</td></tr>
@@ -525,9 +548,48 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 </table></div>
 </section>
 
+<section id="ampliacion">
+<h2>20. Expansion for a finished game</h2>
+<p class="note">Approved by valravnx on 26 Oct from the analysis of what was missing for a finished game. In brackets, the milestone where each item is planned.</p>
+<h3>World</h3>
+<p><span class="tag ok">DECIDED</span><b>No NPC cities</b> (decided on 27 Oct): they would break the survival feeling of a world to explore. Dealing with NPCs comes with the travelling merchants and mercenaries, who appear about 2 km from any player and walk to the settlements (section 16). (Milestone 14)</p>
+<p><span class="tag ok">DECIDED</span><b>Named districts:</b> each country is divided into districts that follow the terrain (a valley, a river plain, a range), named in the country's style. valravnx reviews and adjusts the world map and its names by hand. (Milestone 10)</p>
+<p><span class="tag ok">DECIDED</span>The world is <b>never reset</b>. (Milestone 11)</p>
+<p><span class="tag ok">DECIDED</span><b>Weather:</b> clear, cloudy, rain, snow (north and winter) and fog, over large areas and by season. In the north, rivers freeze in winter and can be crossed on foot. (Milestone 4)</p>
+<p><span class="tag ok">DECIDED</span>Dark but playable <b>night</b>: the moon, torches, oil lamps and campfires give real light, and wolves are more active. Sleeping is not forced. (Milestone 4)</p>
+<h3>Objects, transport and clothing</h3>
+<p><span class="tag ok">DECIDED</span><b>Objects on the ground:</b> whatever is dropped outside a container disappears after a while (for example, 1 real hour), except inside your lands. Logs and stones stay as a pile. <b>Stacks:</b> each resource has how many units fit in one slot. (Milestone 2)</p>
+<p><span class="tag ok">DECIDED</span><b>Transport from the start:</b> the <b>drag sled</b> (N0: two long poles with crossbars, dragged by hand) and the <b>solid-wheel barrow</b> (N1: the wheel is a slice of a log). The barrow can be parked and works as a container: inside your lands it is protected; outside, anyone can take what it carries. Later, the two-wheeled cart (N2) and the four-wheeled wagon (N3), with draught animals. (Milestone 2)</p>
+<p><span class="tag ok">DECIDED</span><b>No item quality tiers.</b> What a garment does comes only from its layer and material (linen, wool, fur, gambeson, hardened leather, mail, plate). What it looks like is chosen when weaving and sewing: <b>cut</b> (short or long tunic, smock, dress, skirt, cloak with or without hood, hose, hat or coif), <b>weave</b> (plain, twill, herringbone, check, stripes), <b>dye</b> from each region's plants (madder for red, weld for yellow, woad for blue, walnut husk for brown, oak galls with iron for black) and, later, embroidered borders. Since the dyes are spread across climate bands, they give reasons to trade. (Milestones 1b and 3)</p>
+<p><span class="tag ok">DECIDED</span><b>Premium:</b> unlocks recipes to craft nicer-looking versions of things (garment cuts, tapestries, furniture with its own shape). They are still crafted in the game with their materials and do nothing better: they only look different. To be detailed later.</p>
+<h3>Crafting, eating and fishing</h3>
+<p><span class="tag ok">DECIDED</span><b>Crafting:</b> at the station, taking a time set by the recipe, with a small queue per station; it uses what you carry and what is in chests a few steps away. (Milestone 3)</p>
+<p><span class="tag ok">DECIDED</span><b>Cooking:</b> recipes with utensils (spit, clay pot, cauldron, pan); cooked food fills you more and lasts longer. River water can be drunk safely. (Milestone 4)</p>
+<p><span class="tag ok">DECIDED</span><b>Fish</b> by water, climate band, time of day and season, in varying sizes. Rivers: trout, salmon (north, runs upriver in autumn), grayling, barbel, eel, tench, nase. Lakes: pike, perch, carp. Sea: herring and cod (north), sea bass, mackerel, sardine, gilt-head bream, red sea bream. Shore: mussel, oyster, crab, limpet. Rod fishing is skill-based (reeling in without snapping the line). Butchering: cleaned fish, bones and scales; preserved dried, smoked or salted. (Milestone 7)</p>
+<h3>Living together online and dominion</h3>
+<p><span class="tag ok">DECIDED</span><b>Newcomer protection:</b> nobody can hurt them, nor can they hurt anyone, during their first hours of play or until they place their boundary stone, whichever comes first. (Milestone 12)</p>
+<p><span class="tag ok">DECIDED</span><b>Against harassment:</b> anything built outside claimed land decays very quickly, and nobody can build within a certain distance of someone else's boundary stone. (Milestone 13)</p>
+<p><span class="tag ok">DECIDED</span><b>Trade window:</b> each side puts in their goods and both confirm; nothing changes hands until both accept. (Milestone 14)</p>
+<p><span class="tag ok">DECIDED</span><b>Ruling a district:</b> the family with the highest-level boundary stone in a district rules it; its coat of arms appears over it on maps and it can rename it. It loses it if another family overtakes it or knocks down its stone. <b>Titles</b> by what is ruled: lord, baron, count, king of a country. (Milestone 13)</p>
+<p><span class="tag ok">DECIDED</span><b>Named settlements:</b> when placing a boundary stone the settlement is given a name; it is the one shown on the map and the one messengers are sent to. (Milestone 13)</p>
+<p><span class="tag ok">DECIDED</span><b>The map as a game board</b>, keeping that it is discovered by exploring: on explored ground and on cartographer's maps you see the families' coats of arms over their lands and districts, in green, blue or red (yours, ally, enemy), with alerts for fighting on your lands and for boundary stones whose upkeep is about to run out. No fast travel. (Milestones 13 and 17)</p>
+<h3>Technical and production</h3>
+<p><span class="tag method">METHOD</span>Every process (tanning, crops, charcoal kiln, drying rack, decay, trees) is calculated from elapsed time, so the server doesn't simulate every minute. (Milestone 11)</p>
+<p><span class="tag method">METHOD</span>A shared pathfinding system for animals, livestock and NPCs (navigation meshes by chunks), in the pure logic; first with wildlife. (Milestone 7)</p>
+<p><span class="tag method">METHOD</span>Animations: before each milestone, free animations are sought for what is missing (swimming, riding, pushing or pulling a cart, digging, carrying between two, climbing a ladder, forging, sawing, butchering, rowing, steering, spinning, weaving) and retargeted to the skeleton with the workshop.</p>
+<p><span class="tag method">METHOD</span>Sound in every milestone: footsteps by ground type, tools, ambience, rain, fire and combat; soft music.</p>
+<p><span class="tag ok">DECIDED</span><b>Options menu:</b> low, medium or high graphics quality, volume, controls and language. (Milestone 11)</p>
+<p><span class="tag method">METHOD</span><b>Ships:</b> on board, the character's position is stored relative to the ship, so you can walk on deck while it moves; when you get off it is counted relative to the world again. A ship is a construction anchored to something that moves. The camera is smoothed on mobile to avoid seasickness. (Milestone 16)</p>
+<h3>Later on (cosmetic and expansion)</h3>
+<p><span class="tag ok">DECIDED</span><b>Home:</b> tableware and pottery on the table, woven tapestries with designs (with the same editor as the coat of arms), curtains, cushions and furs, candles, oil lamps and candelabras, hunting and fishing trophies, flowerpots, strings of garlic and onions, weapon racks and a mannequin for armour.</p>
+<p><span class="tag ok">DECIDED</span><b>Social life:</b> board games playable between players (tables, alquerque, dice), simple instruments (flute, drum, hurdy-gurdy), emotes (sit, wave, bow, toast) and a cat as a pet.</p>
+<p><span class="tag ok">DECIDED</span><b>Gatherings:</b> fencing tournaments and seasonal fairs with merchants from other countries; where they are held is still to be decided, now that there are no NPC cities.</p>
+<p><span class="tag ok">DECIDED</span><b>Siege and farm:</b> scaling ladders and mantlets, and fire spreading from one piece to another (milestone 6); water troughs, feeders, wells and irrigation ditches (milestone 9).</p>
+</section>
+
 <section id="preguntas">
-<h2>20. Open questions</h2>
-<p>None blocking the work. For later: the server hosting and its cost (when we reach milestone 11), and the fps on your phone with the single demo (milestone 1d).</p>
+<h2>21. Open questions</h2>
+<p>None blocking the work. The server cost will be measured with 100 simulated players in milestone 1f.</p>
 </section>
 </div>
 </body>

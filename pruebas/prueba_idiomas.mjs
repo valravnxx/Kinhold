@@ -10,6 +10,9 @@ import { ARMAS, ARMADURAS, NOMBRE_LINEA, NOMBRE_ZONA } from '../src/combate/logi
 import { REGISTRO, VERSION } from '../src/juego/registro.js';
 import { REGISTRO_COMBATE, VERSION_COMBATE } from '../src/combate/registro.js';
 import { REGISTRO_ESTILO, VERSION_ESTILO } from '../src/estilo/registro.js';
+import { REGISTRO_MINA, VERSION_MINA } from '../src/mina/registro.js';
+import { REGISTRO_MAPA, VERSION_MAPA } from '../src/mapa/registro.js';
+import { BIOMAS, ROCAS, VETAS } from '../src/logica/mapa.js';
 import { REGISTRO_PERSONAJE, VERSION_PERSONAJE } from '../src/personaje/registro.js';
 import { BASES, CAPAS, ANIMS } from '../src/personaje/textos.js';
 import { REGISTRO_DEMO, VERSION_DEMO } from '../src/demo/registro.js';
@@ -24,7 +27,13 @@ const meter = (s) => { if (s && /[A-Za-zÁÉÍÓÚáéíóúñÑ]/.test(s)) text
 for (const d of [...Object.values(PIEZAS), ...Object.values(DECORACION), ...Object.values(ARMAS), ...Object.values(ARMADURAS)]) meter(d.nombre);
 for (const t of [...Object.values(MATERIALES), ...Object.values(NOMBRE_LINEA), ...Object.values(NOMBRE_ZONA)]) meter(t);
 for (const t of ['leve', 'grave', 'muy grave', 'corte', 'perforante', 'contundente']) meter(t); // gravedad y tipo de herida
-for (const t of [...REGISTRO, ...REGISTRO_COMBATE, VERSION, VERSION_COMBATE, ...REGISTRO_ESTILO, VERSION_ESTILO, ...REGISTRO_PERSONAJE, VERSION_PERSONAJE, ...REGISTRO_DEMO, VERSION_DEMO]) meter(t);
+for (const t of [...REGISTRO, ...REGISTRO_COMBATE, VERSION, VERSION_COMBATE, ...REGISTRO_ESTILO, VERSION_ESTILO, ...REGISTRO_PERSONAJE, VERSION_PERSONAJE, ...REGISTRO_DEMO, VERSION_DEMO, ...REGISTRO_MINA, VERSION_MINA, ...REGISTRO_MAPA, VERSION_MAPA]) meter(t);
+// nombres del mapa del mundo y fases de su generación
+for (const d of [...Object.values(BIOMAS), ...Object.values(ROCAS), ...Object.values(VETAS)]) meter(d.nombre);
+for (const m of readFileSync('src/logica/mapa.js', 'utf8').matchAll(/fase: '([^']+)'/g)) meter(m[1]);
+{ const src = readFileSync('src/mapa/main.js', 'utf8');
+  for (const m of src.matchAll(/'((?:gran )?(?:arroyo|río) de \{a\} m)'/g)) meter(m[1]);
+  for (const m of src.matchAll(/\['\w+', '([A-ZÁÉÍÓÚ][^']+)'\]/g)) meter(m[1]); }
 // opciones del visor de personaje (las de cargar.js se leen del código: el cargador necesita el navegador)
 for (const t of [...Object.values(BASES), ...Object.values(CAPAS), ...Object.values(ANIMS)]) meter(t);
 const cargarJs = leer('src/personajes/cargar.js');
@@ -35,6 +44,7 @@ for (const m of opciones.matchAll(/:\s*\[?'([^']+)'/g)) meter(m[1]);
 const constr = leer('src/logica/construccion.js');
 for (const m of constr.matchAll(/motivo: '([^']+)'/g)) meter(m[1]);
 for (const m of leer('src/logica/acciones.js').matchAll(/motivo: '([^']+)'|return '([^']+)'/g)) meter(m[1] || m[2]);
+for (const m of leer('src/logica/en_linea.js').matchAll(/motivo: '([^']+)'|\|\| '([^']+)'/g)) meter(m[1] || m[2]); // jugar en línea
 for (const m of constr.slice(constr.indexOf('function motivoSinApoyo')).matchAll(/return '([^']+)'/g)) meter(m[1]);
 for (const linea of leer('src/combate/logica.js').split('\n')) if (/(this|\w+)\.caer\(/.test(linea)) for (const m of linea.matchAll(/'([A-ZÁÉÍÓÚ][^']+)'/g)) meter(m[1]);
 
@@ -62,7 +72,7 @@ function literalesEnTr(src) {
     i = j;
   }
 }
-for (const f of ['src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js']) {
+for (const f of ['src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js', 'src/mina/main.js', 'src/mapa/main.js', 'src/mapa/cerca.js', 'src/juego/en_linea.js']) {
   const src = leer(f);
   literalesEnTr(src);
   // títulos y opciones de los grupos del panel del personaje: grupo('clave', valores, 'Título')

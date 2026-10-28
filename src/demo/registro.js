@@ -1,9 +1,24 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v8 (barandillas y portillo en «Construir»)';
+export const VERSION_DEMO = 'Demo única · v25 (polipasto con torno)';
 export const REGISTRO_DEMO = [
+  'v25: en «Construir», polipasto con torno colgado de una viga (en «Acceso»): sube los troncos con un torno en el suelo, y lo muy pesado, cuando lo haya (sillares), solo entre dos, uno en el torno y otro que guía. Es la construcción v28.',
+  'v24: «Duelo en línea» en el menú: luchas contra otro jugador conectado al mismo servidor. El servidor resuelve los golpes, las paradas y las heridas, y los dos ven lo mismo. La dirección del servidor, en Opciones, como en «Jugar en línea». Es el combate v14.',
+  'v23: en «Construir», andamio pegado al muro (se sube con Usar y desde su plataforma se lleva lo ligero y se trabaja en las obras de esa planta) y polea colgada de una viga (una persona sola sube los troncos con la mitad de trabajo que rodándolos por varas). Es la construcción v27.',
+  'v22: en «Construir» (también en línea), los fotogramas ya no caen mientras alguien construye una obra: al avanzar se redibuja solo esa pieza. Es la construcción v26.',
+  'v21: «Jugar en línea» en el menú: entras en la construcción con el mundo del servidor (sin guardar nada en el navegador) y ves a los demás con el personaje que eligieron. Lo que construyes se ve al momento y lo confirma el servidor; si otro puso lo mismo antes, el servidor manda y te avisa. La dirección del servidor se pone en Opciones (por defecto, ws://localhost:8080: un servidor en tu propio aparato, hasta que el de prueba esté en internet).',
+  'v21, provisional: en línea no está «Reiniciar» (el mundo del servidor no se borra desde una página) y los materiales son los del mundo, compartidos por todos. Si se corta la conexión, se avisa y no se puede construir; volver a conectar sin recargar llega con la tarea de conexiones que se cortan.',
+  'v18: en «Construir», una obra en alto pide subir el material: lo ligero a mano por la escalera y los troncos rodándolos por dos varas con una cuerda (o entre dos). Es la construcción v23.',
+  'v17: en «Construir», la decoración va al suelo de la planta en la que estás (ya no al piso de arriba) y los cimientos y suelos de troncos tapan del todo. Es la construcción v22.',
+  'v16: en «Construir», se construye por obras: colocar pone el marco, Usar (F) junto a la obra le lleva el material y te pone a construir, y cada pieza tarda un tiempo según su peso. Es la construcción v21.',
+  'v14: lo que quedaba con el aspecto inicial, con el estilo v5: en «Construir», la pieza que se ve al colocar (la propia pieza, translúcida, con un velo verde o rojo), lo que se marca al desmontar y el hacha en la mano al talar; en «Duelo», las espadas, el palo, el arco, el escudo, la flecha, el poste de práctica y la diana. Es la construcción v19 y el combate v11.',
+  'v13: en «Construir», los muebles con el estilo v5. Es la construcción v18.',
+  'v12: en «Construir», las puertas, las cercas, el portillo, la empalizada y el mojón con el estilo v5. Es la construcción v17.',
+  'v11: en «Construir», los tejados de paja y de tablillas, y lo que cierra bajo el tejado, con el estilo v5. Es la construcción v16.',
+  'v10: en «Construir», los cimientos, los suelos y las escaleras con el estilo v5. Es la construcción v15.',
+  'v9: en «Construir» y en «Duelo», la escena como la prueba de estilo v5: hierba densa con flores, matorrales, calvas de tierra, rocas y árboles sueltos; la hierba ya no asoma por lo construido. Es la construcción v14 y el combate v10.',
   'v8: en «Construir», el medio muro hace de barandilla en el borde de un suelo en alto (por ahí ya no se cae) y hay portillo de varas para la cerca, que se abre con Usar. Es la construcción v13.',
   'v7: arreglo de la pantalla en blanco en el móvil (la construcción dejaba la memoria gráfica llena al rehacer las piezas) y aviso con recarga si se pierde el dibujo 3D. Los muros, postes y vigas con el estilo elegido. Es la construcción v12, el combate v9 y el personaje v14.',
-  'v6: el cinturón de encima de la cota ya no sobresale hacia los brazos, en las tres partes. Es el personaje v14 (personajes del taller-v8), con la construcción v11 y el combate v8.',
+  'v6: el cinturón de encima de la cota ya no sobresale hacia los brazos, en las tres partes. Es el personaje v14 (personajes del taller-v7), con la construcción v11 y el combate v8.',
   'v5: los brazos al correr, más naturales (valravnx los vio torcidos hacia delante): oscilan junto al cuerpo, con la mano de canto y la muñeca recta. Es el personaje v13, con la construcción v11 y el combate v8.',
   'v4: correr más natural, en las tres partes. La carrera va suavizada por código (menos zancada, braceo, bote e inclinación, y los brazos más pegados) y a su velocidad de verdad: antes los pies resbalaban y se veía a cámara lenta. Personajes del taller-v5; es la construcción v11, el combate v8 y el personaje v12. Corriendo deprisa (6 m/s, con la tecla Mayús) los pies aún resbalan algo.',
   'v3: en el móvil, el aviso de «Construir» ya no tapa los botones del menú de arriba (tampoco en inglés y en ruso, ni con «Menú» y los fps). Es la construcción v11.',
