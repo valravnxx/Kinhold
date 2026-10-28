@@ -43,8 +43,10 @@ for (const t of ['muro_tronco_puerta', 'muro_tabla_puerta']) {
   comprobar(`${PIEZAS[t].nombre}: hueco de puerta libre hasta ${P.altoPuerta} m`, d.length === 0, d.join(' '));
 }
 const v = P.anchoVentana / 2;
-const dv = hueco('muro_tronco_ventana', -v, v, P.bajoVentana + 0.05, P.altoVentana);
-comprobar(`Muro con ventana: hueco libre de ${P.bajoVentana} a ${P.altoVentana} m`, dv.length === 0, dv.join(' '));
+for (const t of ['muro_tronco_ventana', 'muro_tabla_ventana']) {
+  const dv = hueco(t, -v, v, P.bajoVentana + 0.05, P.altoVentana);
+  comprobar(`${PIEZAS[t].nombre}: hueco libre de ${P.bajoVentana} a ${P.altoVentana} m`, dv.length === 0, dv.join(' '));
+}
 
 console.log('Hiladas alineadas entre muros de troncos');
 function alturasTroncos(tipo) { return new Set(modeloPieza(tipo).userData.hiladas || []); }
@@ -163,6 +165,53 @@ console.log('Puertas, cercas, portillo, empalizada y mojón con el estilo v5');
   comprobar('Cerca de varas: las varas llegan al borde de la casilla', bc.min.x > -MODULO / 2 - 0.05 && bc.min.x < -MODULO / 2 + 0.01 && bc.max.x < MODULO / 2 + 0.05, `x de ${r3(bc.min.x)} a ${r3(bc.max.x)}`);
   const be = caja(modeloPieza('empalizada'));
   comprobar(`Empalizada: unos ${P.altoEmpalizada} m de alto con las puntas`, be.max.y > P.altoEmpalizada && be.max.y < P.altoEmpalizada + 0.6 && Math.abs(be.min.y) < 0.02, `y de ${r3(be.min.y)} a ${r3(be.max.y)}`);
+}
+
+console.log('Contraventana y trampilla con el estilo v5');
+{
+  // MUTAR_CONTRAVENTANA=1 mete las hojas de la contraventana en el muro: la prueba tiene que fallar
+  const nombresDe = (o) => { const n = []; o.traverse(m => { if (m.isMesh) n.push(m.name); }); return n; };
+  const hojas = (o) => { const h = []; o.traverse(m => { if (m.name === 'hoja') h.push(m); }); return h; };
+  const abrir = (o, si) => { for (const h of hojas(o)) h.rotation[h.userData.abre.eje] = si ? h.userData.abre.ang : 0; };
+  // lo más salido del muro (z) entre y0 e y1 y entre x0 y x1, triángulo a triángulo
+  const caraMuro = (tipo, x0, x1, y0, y1) => {
+    const g = modeloPieza(tipo); g.updateMatrixWorld(true);
+    let max = -Infinity; const w = new THREE.Vector3();
+    g.traverse(o => {
+      if (!o.isMesh) return;
+      const p = o.geometry.attributes.position;
+      for (let n = 0; n < p.count; n++) { w.fromBufferAttribute(p, n).applyMatrix4(o.matrixWorld); if (w.x > x0 && w.x < x1 && w.y > y0 && w.y < y1) max = Math.max(max, w.z); }
+    });
+    return max;
+  };
+  for (const muro of ['muro_tronco_ventana', 'muro_tabla_ventana']) {
+    const o = modeloPieza('contraventana', { muro }), n = nombresDe(o);
+    if (process.env.MUTAR_CONTRAVENTANA) for (const h of hojas(o)) h.position.z = 0;
+    comprobar(`Contraventana (${PIEZAS[muro].nombre}): con el estilo v5 y dos hojas que se abren`, n.length > 0 && n.every(x => x.startsWith('estilo_')) && hojas(o).length === 2 && hojas(o).every(h => h.userData.abre));
+    const b = caja(o), a = P.anchoVentana / 2;
+    comprobar(`Contraventana (${PIEZAS[muro].nombre}): cerrada tapa la ventana`, b.min.x <= -a && b.max.x >= a && b.min.y <= P.bajoVentana + 0.05 && b.max.y >= P.altoVentana, `x de ${r3(b.min.x)} a ${r3(b.max.x)}, y de ${r3(b.min.y)} a ${r3(b.max.y)}`);
+    const cara = caraMuro(muro, b.min.x, b.max.x, b.min.y, b.max.y);
+    comprobar(`Contraventana (${PIEZAS[muro].nombre}): cerrada queda por fuera del muro, sin meterse en él`, b.min.z >= cara - 0.005, `hoja desde z=${r3(b.min.z)}, muro hasta z=${r3(cara)}`);
+    abrir(o, true);
+    for (const h of hojas(o)) {
+      const bh = new THREE.Box3().setFromObject(h);
+      const caraH = caraMuro(muro, bh.min.x, bh.max.x, bh.min.y, bh.max.y);
+      comprobar(`Contraventana (${PIEZAS[muro].nombre}): abierta, cada hoja deja libre la ventana y queda pegada al muro, por fuera`,
+        (bh.max.x <= -a + 0.01 || bh.min.x >= a - 0.01) && bh.min.x > -MODULO / 2 - 0.15 && bh.max.x < MODULO / 2 + 0.15 && bh.min.z >= caraH - 0.005 && bh.max.z < caraH + 0.12,
+        `x de ${r3(bh.min.x)} a ${r3(bh.max.x)}, z de ${r3(bh.min.z)} a ${r3(bh.max.z)} (muro hasta ${r3(caraH)})`);
+    }
+  }
+  const of = modeloPieza('contraventana', { muro: 'muro_tronco_ventana', fuera: -1 });
+  of.rotation.y = 0; // como hace la rejilla al ponerla en un muro a lo largo de x: el giro de dentro tiene que seguir
+  const bf = caja(of);
+  comprobar('Contraventana: va por el lado de fuera del muro (el que no da al suelo de la casa)', bf.max.z < -0.15 && bf.min.z < -0.15, `z de ${r3(bf.min.z)} a ${r3(bf.max.z)}`);
+  const t = modeloPieza('trampilla'), nt = nombresDe(t);
+  comprobar('Trampilla: con el estilo v5 y una hoja que se abre', nt.length > 0 && nt.every(x => x.startsWith('estilo_')) && hojas(t).length === 1);
+  const bt = caja(t);
+  comprobar('Trampilla: cerrada, a ras del suelo y tapando el hueco de la casilla', Math.abs(bt.max.y - P.superficieSuelo) < 0.03 && bt.min.x <= -MODULO / 2 + 0.05 && bt.max.x >= MODULO / 2 - 0.05 && bt.min.z <= -MODULO / 2 + 0.05 && bt.max.z >= MODULO / 2 - 0.05 && bt.max.x <= MODULO / 2 + 0.02, `y hasta ${r3(bt.max.y)}, x de ${r3(bt.min.x)} a ${r3(bt.max.x)}, z de ${r3(bt.min.z)} a ${r3(bt.max.z)}`);
+  abrir(t, true);
+  const ba = caja(t);
+  comprobar('Trampilla: abierta, de pie en el borde del arranque de la escalera (deja libre el hueco)', ba.max.y > 1.8 && ba.min.z > -MODULO / 2 - 0.1 && ba.max.z < -MODULO / 2 + 0.2, `y hasta ${r3(ba.max.y)}, z de ${r3(ba.min.z)} a ${r3(ba.max.z)}`);
 }
 
 console.log('Muebles con el estilo v5');

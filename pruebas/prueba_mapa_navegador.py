@@ -125,6 +125,21 @@ with sync_playwright() as p:
         solape = pg.evaluate("(() => { const a = document.getElementById('leyenda').getBoundingClientRect(), b = document.getElementById('datos').getBoundingClientRect(); return !(a.right < b.left || b.right < a.left || a.bottom < b.top || b.bottom < a.top); })()")
         comprobar(f'{nombre}: la leyenda no tapa los datos', not solape)
         if nombre == 'pc':
+            # un acantilado de costa: el personaje no sube la pared andando (se para al pie). MUTAR_PARED=1 quita el límite
+            pg.evaluate('window.__mapa.cerca(73.5, 70.5)'); pg.wait_for_function('window.__cerca && window.__cerca.listo', timeout=240000)
+            pg.evaluate('window.__cerca.vista("juego")'); pg.wait_for_timeout(1500)
+            r = pg.evaluate('window.__cerca.paredCercana()')
+            comprobar('pc: junto al acantilado de costa hay paredes de roca', bool(r), str(r))
+            if r:
+                pg.evaluate(f"window.__cerca.juegoEn({r['x']}, {r['z']}, {r['dir']})"); pg.wait_for_timeout(1500)
+                if os.environ.get('MUTAR_PARED'): pg.evaluate('window.__cerca.vj.sinLimite = true')
+                y0 = pg.evaluate('window.__cerca.vj.pos.y')
+                pg.evaluate(f"(() => {{ const v = window.__cerca.vj; v.andarA(v.pos.x + Math.cos({r['dir']}) * 40, v.pos.z + Math.sin({r['dir']}) * 40); }})()"); pg.wait_for_timeout(9000)
+                fin = pg.evaluate('[window.__cerca.vj.parado, window.__cerca.vj.pos.y]')
+                comprobar('pc: el personaje se para al pie de la pared y no la sube', fin[0] == 'pared' and fin[1] - y0 < 3, f'{fin[0]}, subió {fin[1] - y0:.1f} m')
+                pg.evaluate(f"window.__cerca.camara(0.25, 30, {r['dir']} + 3.14)"); pg.wait_for_timeout(1500)
+                pg.screenshot(path=f'{SALIDA}/pc_11_acantilado.png', timeout=240000)
+            pg.evaluate("document.getElementById('btnVolverMapa').click()"); pg.wait_for_timeout(500)
             # el mundo de 188 km del GDD, para comparar
             pg.select_option('#lado', '188'); pg.wait_for_function('window.__mapa.listo && window.__mapa.mapa.lado === 188', timeout=240000)
             r2 = pg.evaluate('window.__mapa.resumen'); MEDIDAS['pc_188'] = r2

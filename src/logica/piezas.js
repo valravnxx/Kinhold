@@ -17,6 +17,8 @@ export const MAX_PLANTA = 3;  // plantas 0..3
 //  p = hueco de puerta en un muro         clave i,j,k,d
 //  l = escalera (de mano o de tablas) o andamio en casilla  clave i,j,k
 //  q = polea o polipasto colgado de una viga  clave i,j,k,d  (la de la viga b:i,j,k,d)
+//  w = contraventana en la ventana de un muro  clave i,j,k,d  (la del muro e:i,j,k,d)
+//  t = trampilla en el hueco de una escalera de tablas  clave i,j,k  (planta del hueco: la escalera está en k - 1)
 
 export const MATERIALES = {
   piedra: 'Piedra', tronco: 'Tronco', vara: 'Vara', barro: 'Barro', paja: 'Paja',
@@ -54,6 +56,8 @@ export const PIEZAS = {
   muro_entramado:     { nombre: 'Muro de entramado', hueco: 'e', nivel: 2, peso: 250, cap: 1400, coste: { tronco: 2, vara: 2, barro: 3 }, cat: 'muro' },
   muro_tabla:         { nombre: 'Muro de tablas', hueco: 'e', nivel: 2, peso: 200, cap: 900, coste: { tabla: 6, clavo: 6 }, cat: 'muro' },
   muro_tabla_puerta:  { nombre: 'Muro de tablas con puerta', hueco: 'e', nivel: 2, peso: 150, cap: 600, coste: { tabla: 4, clavo: 4 }, conPuerta: true, cat: 'muro' },
+  // Peso, carga y coste provisionales (sistemas no lo trae): en la proporción del muro de troncos con ventana.
+  muro_tabla_ventana: { nombre: 'Muro de tablas con ventana', hueco: 'e', nivel: 2, peso: 175, cap: 780, coste: { tabla: 5, clavo: 5 }, conVentana: true, cat: 'muro' },
   medio_muro:         { nombre: 'Medio muro', hueco: 'e', nivel: 1, peso: 80, cap: 0, coste: { tronco: 1, vara: 2 }, medio: true, cat: 'muro' },
 
   tejado_paja:        { nombre: 'Tejado de paja', hueco: 'r', nivel: 1, peso: 80, cap: 400, coste: { vara: 2, paja: 4 }, cat: 'tejado' },
@@ -77,6 +81,11 @@ export const PIEZAS = {
   polipasto:          { nombre: 'Polipasto con torno', hueco: 'q', nivel: 2, peso: 40, cap: 0, coste: { tronco: 1, tabla: 2, cuerda: 4, hierro: 3 }, polipasto: true, cat: 'acceso' },
   puerta_varas:       { nombre: 'Puerta de varas', hueco: 'p', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, cat: 'acceso' },
   puerta_tabla:       { nombre: 'Puerta de tablas', hueco: 'p', nivel: 2, peso: 40, cap: 0, coste: { tabla: 4, clavo: 4, hierro: 1 }, cat: 'acceso' },
+  // Sistemas: «Contraventana, trampilla — N2, 2 tablas + clavos, 20 kg». Se abren y se cierran con Usar.
+  // La contraventana va en un muro con ventana; la trampilla, en el hueco que deja arriba una escalera de tablas
+  // (cerrada se pisa como el suelo y no deja subir ni bajar por la escalera).
+  contraventana:      { nombre: 'Contraventana', hueco: 'w', nivel: 2, peso: 20, cap: 0, coste: { tabla: 2, clavo: 2 }, cat: 'acceso' },
+  trampilla:          { nombre: 'Trampilla', hueco: 't', nivel: 2, peso: 20, cap: 0, coste: { tabla: 2, clavo: 2 }, cat: 'acceso' },
 
   cerca:              { nombre: 'Cerca de varas', hueco: 'e', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, suelo: true, soloPlanta0: true, bajo: true, cat: 'exterior' },
   // portón: se abre y se cierra con Usar (abierto no corta el paso)

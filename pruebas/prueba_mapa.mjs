@@ -1,7 +1,7 @@
 // Pruebas del generador del mapa del mundo (lógica pura, src/logica/mapa.js).
 // Uso: node pruebas/prueba_mapa.mjs        MUTAR=1 estropea el resultado a propósito: tiene que fallar.
 import { generarMapa, resumen, anchoRio, claseRio, BIOMAS, ROCAS } from '../src/logica/mapa.js';
-import { crearPaisaje } from '../src/logica/paisaje.js';
+import { crearPaisaje, PENDIENTE_ANDAR } from '../src/logica/paisaje.js';
 
 let bien = 0, mal = 0;
 const comprobar = (n, c, d = '') => { console.log((c ? '  OK   ' : '  FALLA ') + n + (d ? ` — ${d}` : '')); c ? bien++ : mal++; };
@@ -82,7 +82,15 @@ for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
     }
     saltos.sort((x, y) => x - y);
     const s90 = saltos[Math.floor(saltos.length * 0.9)], smax = saltos[saltos.length - 1];
-    comprobar(`${n}: la costa de cerca no es una pared (pendiente más fuerte a través de la costa: el 90 % por debajo de 6, ninguna por encima de 40)`, s90 < 6 && smax < 40, `${saltos.length} costas · p90 ${s90.toFixed(1)} · máx. ${smax.toFixed(1)}`);
+    comprobar(`${n}: la costa de cerca no sale en saltos verticales (pendiente más fuerte a través de la costa: el 90 % por debajo de 6, ninguna por encima de 40; un acantilado empinado sí)`, s90 < 6 && smax < 40, `${saltos.length} costas · p90 ${s90.toFixed(1)} · máx. ${smax.toFixed(1)}`);
+    // la roca dura y empinada se rompe en paredes (cortados y escarpes); la blanda, no. MUTAR: todo arenisca, sin paredes
+    const paiR = MUTAR ? crearPaisaje({ ...m, roca: m.roca.map(() => 'arenisca') }) : pai;
+    let pared = 0, puntos = 0;
+    for (let y = -1500; y < 1500; y += 15) for (let x = -1500; x < 1500; x += 15) {
+      const a = paiR.altura(120600 + x, 151900 + y, null, true), b = paiR.altura(120602 + x, 151900 + y, null, true);
+      if (a > 0) { puntos++; if (Math.abs(b - a) / 2 > PENDIENTE_ANDAR) pared++; }
+    }
+    comprobar(`${n}: en la montaña de pizarra hay cortados (paredes que no se suben andando) en un 5 a 35 % del suelo`, pared / puntos > 0.05 && pared / puntos < 0.35, `${(pared / puntos * 100).toFixed(1)} % de ${puntos} puntos`);
     comprobar(`${n}: el agua del río cubre el lecho y queda bajo la orilla`, aguaBien / aguaN > 0.97, `${aguaBien} de ${aguaN}`);
   }
 }
