@@ -1977,5 +1977,20 @@
   "pruebas": "Todas (probar_todo.sh): correctas salvo dos. El duelo en línea falló porque su prueba esperaba la clave antigua del modelo; corregida y pasada sola. La del servidor en internet no se pudo pasar: aquí no se pudo instalar Caddy (no comprobado). Tras unir main: las de node correctas y las dos de navegador en línea correctas. «Jugar en línea» falló una vez por tiempo, con la máquina cargada, y pasó al repetirla. Las pruebas nuevas fallan si el servidor no limpia la personalización o si el juego no se la pone al otro. Capturas de cerca en PC y móvil revisadas.",
   "capturas": "capturas/demo-v30",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T19:29:42+01:00",
+  "fin": "2026-10-28T21:39:03+01:00",
+  "titulo": "Hito 10: laderas de montaña sin escalones",
+  "hito": "mundo",
+  "hecho": [
+   "Medido: en las laderas de montaña salía un escalón cada 25 m (casi 40 paredes por km) y un tercio del suelo era pared, porque los cortados se aplicaban a casi cualquier ladera de roca dura",
+   "Los cortados ahora solo salen en afloramientos de roca (manchas de unos cientos de metros, un 8 % del mundo) y donde ya es muy empinado, en pocos escalones grandes de 18 a 45 m; el resto de la ladera queda continua",
+   "En 20 sitios de montaña repartidos por el mundo, la mediana baja de 26 a 4 paredes por km; los acantilados de costa siguen igual",
+   "Prueba nueva: la mediana de paredes por km en montaña, por debajo de 8 (con afloramientos por todas partes, como antes, falla)"
+  ],
+  "pruebas": "Batería completa correcta (seguida); tras unir main, servidor, en línea, combate en el servidor, idiomas y navegador de en línea y duelo en línea otra vez. No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v11",
+  "estado": "ok"
  }
 ]
