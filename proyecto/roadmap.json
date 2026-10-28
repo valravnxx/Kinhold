@@ -850,9 +850,13 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Valles tallados por los ríos: gargantas en la montaña, vegas anchas abajo, saltos de agua donde el río cruza roca dura",
+     "nombre": "Valles tallados por los ríos: sin zanjas; lecho, orilla, vega ancha abajo y laderas con la pendiente limitada (en V cerrada en la montaña); el agua del río también de cerca",
      "estado": "en_curso",
      "inicio": "2026-10-28T05:19:41+01:00"
+    },
+    {
+     "nombre": "Saltos de agua donde el río cruza roca dura",
+     "estado": "pendiente"
     },
     {
      "nombre": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
