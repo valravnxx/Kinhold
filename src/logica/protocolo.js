@@ -9,7 +9,9 @@
 //               del duelo no se veía en la construcción.
 //   3 (28 oct): la personalización (forma, colores, peinado y barba) va con el aspecto; un servidor anterior la quita
 //               y los demás te veían con el aspecto por defecto.
-export const PROTOCOLO = 3;
+//   4 (28 oct): curarse en el duelo ({ tipo: 'combate', que: 'curar', herida, metodo } y 'dejarCura'); la foto de
+//               cada luchador lleva lo que se le ha hecho a cada herida y su botiquín.
+export const PROTOCOLO = 4;
 
 // La versión del servidor por su bienvenida. Los servidores de antes de este número no la mandan: los que ya
 // llevaban el reloj del combate (tc) se cuentan como la 1, y los anteriores como la 0.

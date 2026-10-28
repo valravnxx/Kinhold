@@ -124,13 +124,60 @@ export function pintarHeridaTaller(u, h, n) {
   const tam = (TAM[h.gravedad] || 0.07) * (h.zona === 'cabeza' ? 0.6 : 1); // en la cara, más pequeña
   const geo = h.tipo === 'perforante' ? new THREE.CircleGeometry(tam * 0.45, 8) : new THREE.PlaneGeometry(tam * (h.tipo === 'corte' ? 0.45 : 1), tam * 1.3);
   const m = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: h.tipo === 'contundente' ? MORADO : SANGRE, transparent: true, opacity: h.tipo === 'contundente' ? 0.7 : 0.92, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2 }));
-  m.name = 'herida';
+  m.name = 'herida'; m.userData.materialPropio = true;
   const desplaz = ((n * 37) % 7 - 3) * 0.02;
   const lado = h.zona === 'torso' ? desplaz * 2.2 : h.zona === 'cabeza' ? desplaz * 1.2 : 0;
   const alto = h.zona === 'cabeza' ? 0 : desplaz * 1.5;
+  // tratada: cosida, más oscura y cerrada; cauterizada, quemadura parda (deja marca)
+  if (h.cauterizada) m.material.color.setHex(QUEMADURA);
+  else if (h.cosida) { m.material.color.setHex(COSIDA); m.scale.x = 0.6; }
+  // vendada o entablillada: la venda la tapa (solo se ve la venda)
+  if (h.vendada || h.entablillada) { m.geometry.dispose(); m.material.dispose(); vendaje(u, h.zona, z, alto, tam, h.entablillada); return; }
   pegar(u, m, z, lado, alto, 1);
   if (h.tipo === 'corte') m.rotateZ(((n * 53) % 5 - 2) * 0.35); // tajo en diagonal
 }
+// grosor máximo de cada zona (m): lo que esté más lejos del eje es de otra parte del cuerpo
+const GROSOR_MAX = { cabeza: 0.15, torso: 0.28, brazoI: 0.075, brazoD: 0.075, piernaI: 0.105, piernaD: 0.105 }; // (sin el vuelo de la túnica)
+// Venda enrollada: un tubo de lino alrededor del tramo de la zona, del grosor que tiene allí el personaje (con su
+// ropa), medido con rayos desde fuera hacia el eje en cuatro lados. Se cuelga del hueso como las manchas.
+function vendaje(u, zona, z, alto, tam, tablillas) {
+  const t = u.taller;
+  u.cuerpo.updateMatrixWorld(true);
+  const p0 = z.de.getWorldPosition(V(0, 0, 0)), p1 = z.a.getWorldPosition(V(0, 0, 0));
+  let eje = p1.clone().sub(p0);
+  if (eje.lengthSq() < 1e-6) eje = V(0, 1, 0).transformDirection(u.cuerpo.matrixWorld); // la cabeza: un solo hueso
+  eje.normalize();
+  const centro = p0.lerp(p1, 0.5 + alto);
+  if (z.alto) centro.y += z.alto;
+  const izq0 = z.par ? z.par[0].getWorldPosition(V(0, 0, 0)).sub(z.par[1].getWorldPosition(_e)) : V(1, 0, 0).transformDirection(u.cuerpo.matrixWorld);
+  const X = izq0.addScaledVector(eje, -izq0.dot(eje)).normalize(), Z = X.clone().cross(eje).normalize();
+  // las faldas y el manto cuelgan sueltos: la venda va debajo, ceñida al cuerpo y a lo que va pegado a él
+  const mallas = [];
+  t.mh.modelo.traverse(n => { if (n.isMesh && n.visible && !/ojo|pelo|falda|manto/.test(n.name)) mallas.push(n); });
+  const max = GROSOR_MAX[zona] || 0.15;
+  const radio = (d) => {   // lo más lejos del eje que es aún de esta zona, en la dirección d
+    _ray.set(centro.clone().addScaledVector(d, 0.6), d.clone().negate()); _ray.far = 0.6;
+    let r = 0;
+    for (const i of _ray.intersectObjects(mallas, false)) { const x = 0.6 - i.distance; if (x <= max && x > r) r = x; }
+    return r || max * 0.6;
+  };
+  const rx = Math.max(radio(X), radio(X.clone().negate())) + 0.006, rz = Math.max(radio(Z), radio(Z.clone().negate())) + 0.006;
+  const largo = zona === 'cabeza' ? 0.045 : Math.min(0.2, tam * 1.5);
+  const base = new THREE.Matrix4().makeBasis(X, eje, Z);
+  const tubo = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, largo, 14, 1, true), new THREE.MeshLambertMaterial({ color: VENDA, map: textura('tejido'), side: THREE.DoubleSide }));
+  tubo.name = 'herida'; tubo.userData.materialPropio = true; tubo.userData.superficie = true;
+  tubo.position.copy(centro); tubo.quaternion.setFromRotationMatrix(base); tubo.scale.set(rx, 1, rz);
+  tubo.castShadow = true;
+  z.hueso.updateWorldMatrix(true, false); z.hueso.attach(tubo);   // sin padre: su posición es la del mundo
+  if (!tablillas) return;
+  for (const s of [-1, 1]) {   // dos tablillas por los lados, más largas que la venda
+    const tab = new THREE.Mesh(new THREE.BoxGeometry(0.014, Math.min(0.32, largo * 2.2), 0.024), new THREE.MeshLambertMaterial({ color: TABLILLA }));
+    tab.name = 'herida'; tab.userData.materialPropio = true; tab.userData.superficie = true;
+    tab.position.copy(centro).addScaledVector(X, s * (rx + 0.008)); tab.quaternion.setFromRotationMatrix(base);
+    z.hueso.attach(tab);
+  }
+}
+const VENDA = 0xcfc3a8, TABLILLA = 0x7a5a3a, QUEMADURA = 0x3b2418, COSIDA = 0x4e1a14;
 
 // Animación del luchador del taller: clip de piernas y cuerpo según lo que hace, y brazos a las manos del arma.
 // manos: { d, i } puntos de cada muñeca en el marco del cuerpo (o null para dejar el brazo como en el clip);
