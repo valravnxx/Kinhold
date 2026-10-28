@@ -761,10 +761,50 @@
    "estado": "en_curso",
    "tareas": [
     {
-     "nombre": "Planificar el hito",
-     "estado": "en_curso",
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "hecho",
      "inicio": "2026-10-28T19:23:07+00:00",
-     "rama": "trabajo/20261028-1923"
+     "fin": "2026-10-28T19:24:54+00:00"
+    },
+    {
+     "nombre": "Recoger del suelo y de las plantas lo que pide el nivel N0 (documento de sistemas, apartado 3): ramas caídas, piedra suelta y sílex con las manos, y fibra arrancada de ortigas y hierba larga; cada cosa sale donde dice el documento, da lo que dice, va al inventario por huecos y vuelve a salir pasado su tiempo, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Estaciones y recetas en la lógica pura, con los datos del documento de sistemas (apartados 7 y 8) de las primeras estaciones: hoguera y piedra de tallar (N0) y banco de trabajo de tronco (entrada a N1); cada receta con lo que gasta, lo que da, dónde se hace y su tiempo. Fabricar con autor, gastando lo que llevas encima y lo de los arcones a pocos pasos, con una cola pequeña por estación y el tiempo contado por tiempo transcurrido. Pruebas de lógica",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recetas que conoce cada personaje y desbloqueo por práctica (GDD, apartado 9): construir la estación da sus recetas básicas y fabricar en ella abre las siguientes. Lo que el GDD no fija (qué recetas son básicas y cuánta práctica abre las demás) se decide de forma provisional y sencilla y se anota en el registro de decisiones y en el diario. Guardado en el navegador con migración. Pruebas de lógica",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Las estaciones se construyen en la demo como obras (marco, materiales y tiempo) y se ven con el estilo v5: hoguera con su fuego y su luz de noche, piedra de tallar y banco de trabajo de tronco. Capturas de cerca comparadas con la v5 para valravnx",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Panel de la estación en la demo: al acercarte a una estación, sus recetas (las que conoces, y las que aún no, sin desvelar cuáles son), lo que falta para cada una, la cola y el tiempo que queda. En PC y en el móvil, con capturas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Lo que se fabrica en N0 y N1 se ve con el estilo v5, en la mano, en el cinturón o a la espalda: lasca de sílex, hacha de piedra, lanza endurecida, palo cavador, antorcha (que alumbra y se apaga pasado un rato), cordel, leñero, pala de madera y cubo. Capturas de cerca para valravnx",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Durabilidad en la lógica pura (GDD, apartado 9; valores iniciales del documento de sistemas, apartado 10): herramientas y armas se gastan al usarlas (talar, cavar, golpes en el duelo) y la ropa y la armadura al recibir golpes; al llegar a cero no sirven hasta repararlas. Se ve en el panel del inventario. Pruebas de lógica y de navegador",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Reparar en la estación que fabricó el objeto, con material del mismo tipo (GDD, apartado 9): lógica pura con autor, en el panel de la estación y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El primer día de un jugador (documento de sistemas, apartado 11) se puede recorrer en la demo: fibra y cordel, cordel de cinturón, piedra de tallar con lasca y hacha de piedra, leñero, hoguera, y el banco de tronco que abre N1. Prueba de navegador que lo recorre entero",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
     }
    ]
   },

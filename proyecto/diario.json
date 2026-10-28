@@ -1946,5 +1946,20 @@
   "pruebas": "Duelo en línea y construir en línea en el navegador (PC y móvil, con servidor local) correctos; servidor 18/18, combate del servidor 57/57, conexiones 34/34, en línea 16/16, lógica 189/189, modelos 144/144, combate 80/80, idiomas correctos. El aviso de servidor antiguo, mirado en captura con un servidor falso como el viejo. jugar_en_casa.bat: la orden de PowerShell que mira la versión, probada con PowerShell 7 en Linux. No comprobado: el .bat entero en Windows.",
   "capturas": "capturas/demo-v29",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T19:23:07+00:00",
+  "fin": "2026-10-28T19:24:54+00:00",
+  "titulo": "Hito 3: planificación de estaciones y crafting",
+  "hito": "crafting",
+  "hecho": [
+   "carriles.mjs elige para el carril A empezar el hito 3, porque los hitos en curso con tareas pendientes los lleva otro agente vivo o una sesión de chat.",
+   "Leídos los apartados 9 y «Fabricar» del GDD y los apartados 2, 3, 7, 8, 10 y 11 del documento de sistemas. Las cifras de estaciones, recetas y durabilidad son propuestas del documento; se usan como valores iniciales para ajustar probando.",
+   "Hito desglosado en 9 tareas de una sesión: recoger lo de N0, estaciones y recetas en la lógica pura, desbloqueo por práctica, estaciones construidas y con el estilo v5, panel de la estación, objetos fabricados con el estilo v5, durabilidad, reparar, el primer día recorrido en la demo, y la revisión final.",
+   "Primeras estaciones: hoguera, piedra de tallar y banco de trabajo de tronco. Las demás de N1 (secadero, curtido, horno de barro, carbonera) piden pieles, carne o harina, que llegan con los hitos de supervivencia, fauna y granja; el tomo de recetas, con el escritorio de N2."
+  ],
+  "pruebas": "Sin cambios de código. Web reconstruida sin errores.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
