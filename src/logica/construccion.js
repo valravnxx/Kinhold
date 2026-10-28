@@ -28,7 +28,7 @@ export function trabajoSubida(planta, personas, conVaras, conPolea = false, clas
   return conVaras ? 4 * SUBIR_PLANTA * planta : Infinity;
 }
 
-const HUECOS_ARISTA = new Set(['e', 'b', 'g', 'p', 'q']);
+const HUECOS_ARISTA = new Set(['e', 'b', 'g', 'p', 'q', 'w']);
 
 export function clave(hueco, i, j, k, d) {
   return HUECOS_ARISTA.has(hueco) ? `${hueco}:${i},${j},${k},${d}` : `${hueco}:${i},${j},${k}`;
@@ -49,7 +49,7 @@ export function mundoALocal(c, x, z) {
 export function centroLocal(p) {
   const S = MODULO;
   switch (p.hueco) {
-    case 'f': case 'r': case 'l': return { lx: (p.i + 0.5) * S, lz: (p.j + 0.5) * S };
+    case 'f': case 'r': case 'l': case 't': return { lx: (p.i + 0.5) * S, lz: (p.j + 0.5) * S };
     case 'v': return { lx: p.i * S, lz: p.j * S };
     default: // aristas
       return p.d === 0 ? { lx: (p.i + 0.5) * S, lz: p.j * S } : { lx: p.i * S, lz: (p.j + 0.5) * S };
@@ -65,7 +65,7 @@ export function huecoDesdeLocal(hueco, lx, lz, k) {
   const u = lx / MODULO, v = lz / MODULO;
   if (hueco === 'v') return { hueco, i: Math.round(u), j: Math.round(v), k };
   const i = Math.floor(u), j = Math.floor(v);
-  if (hueco === 'f' || hueco === 'r' || hueco === 'l') return { hueco, i, j, k };
+  if (hueco === 'f' || hueco === 'r' || hueco === 'l' || hueco === 't') return { hueco, i, j, k };
   const fu = u - i, fv = v - j;
   const opciones = [
     { dist: fv, i, j, d: 0 },
@@ -155,6 +155,7 @@ export class Mundo {
     const p = { tipo, ...h, dir, abierta: false };
     if (!HUECOS_ARISTA.has(p.hueco)) delete p.d;
     if (def.andamio) p.dir = dirAndamio(c, p.i, p.j, p.k);
+    if (p.hueco === 't') { const e = escaleraAndando(c, p.i, p.j, p.k - 1); if (e) p.dir = dirTrampilla(c, p.i, p.j, p.k, e); }
     return { construccion: c, nueva, pieza: p };
   }
 
@@ -223,6 +224,15 @@ export class Mundo {
         const muro = c.piezas.get(clave('e', i, j, k, p.d));
         if (muro && !muro.obra && PIEZAS[muro.tipo].conPuerta) return { suelo: false, lista: [clave('e', i, j, k, p.d)] };
         return { suelo: false, lista: [] };
+      }
+      case 'w': { // la contraventana cuelga del marco de la ventana de su muro
+        const muro = c.piezas.get(clave('e', i, j, k, p.d));
+        if (muro && !muro.obra && PIEZAS[muro.tipo].conVentana) return { suelo: false, lista: [clave('e', i, j, k, p.d)] };
+        return { suelo: false, lista: [] };
+      }
+      case 't': { // la trampilla tapa el hueco de una escalera de tablas y descansa en los suelos de alrededor
+        if (k < 1 || !escaleraAndando(c, i, j, k - 1)) return { suelo: false, lista: [] };
+        return { suelo: false, lista: filtra([[1, 0], [-1, 0], [0, 1], [0, -1]].map(([di, dj]) => clave('f', i + di, j + dj, k))) };
       }
       case 'l': {
         const f = clave('f', i, j, k);
@@ -307,6 +317,11 @@ export class Mundo {
     if (c.piezas.has(key)) return { ok: false, motivo: 'Ese hueco ya está ocupado.' };
     if (def.andando && p.k >= MAX_PLANTA) return { ok: false, motivo: 'La escalera de tablas sube a la planta de arriba: en la última no cabe.' };
     if (def.andando && c.piezas.has(clave('f', p.i, p.j, p.k + 1))) return { ok: false, motivo: 'Encima de la escalera tiene que quedar el hueco abierto: quita ese suelo.' };
+    if (p.hueco === 't') {
+      const e = escaleraAndando(c, p.i, p.j, p.k - 1);
+      if (!e) return { ok: false, motivo: motivoSinApoyo(p) };
+      p.dir = dirTrampilla(c, p.i, p.j, p.k, e);
+    }
     if (p.hueco === 'f' && escaleraAndando(c, p.i, p.j, p.k - 1)) return { ok: false, motivo: 'Ahí está el hueco de una escalera.' };
     if (p.hueco === 'f' && c.piezas.has(clave('l', p.i, p.j, p.k - 1)) && PIEZAS[c.piezas.get(clave('l', p.i, p.j, p.k - 1)).tipo].andamio) return { ok: false, motivo: 'Ahí está la plataforma de un andamio.' };
     if (def.andamio) {
@@ -617,6 +632,23 @@ function aparejoPara(c, p, polipasto) {
   }
   return mejor ? mejor.q : null;
 }
+// Trampilla terminada y cerrada en el hueco de la escalera de la casilla (i, j) de la planta k (la trampilla está en k + 1).
+// Cerrada se pisa como un suelo y no deja pasar por la escalera.
+export function trampillaCerrada(c, i, j, k) {
+  const t = c.piezas.get(clave('t', i, j, k + 1));
+  return !!t && !t.obra && !t.abierta;
+}
+// Hacia dónde mira la trampilla (dir, como las escaleras): su bisagra va en el borde -SUBE[dir] de la casilla. Se
+// cuelga de un lado de la escalera que tenga suelo al lado; si no, del lado del arranque con suelo; si no hay suelo
+// en ninguno de esos, de un lado. Nunca del lado por el que se sale arriba: abierta, de pie, taparía la salida.
+export function dirTrampilla(c, i, j, k, escalera) {
+  const e = escalera.dir || 0;
+  const bisagra = (dir) => { const [ui, uj] = SUBE[dir]; return c.piezas.has(clave('f', i - ui, j - uj, k)); };
+  const lados = [(e + 1) % 4, (e + 3) % 4]; // la bisagra en el borde -SUBE[dir]: para dir = e + 1 y e + 3, un lado
+  for (const d of lados) if (bisagra(d)) return d;
+  if (bisagra(e)) return e; // con dir = e, la bisagra queda en el borde del arranque
+  return lados[0];
+}
 export function escaleraAndando(c, i, j, k) {
   const p = c.piezas.get(clave('l', i, j, k));
   return p && !p.obra && PIEZAS[p.tipo].andando ? p : null;
@@ -660,6 +692,8 @@ function motivoSinApoyo(p) {
     case 'r': return 'El tejado necesita muros o vigas debajo, o un tramo de tejado al lado que los tenga.';
     case 'g': return 'El hastial va encima de un muro o una viga.';
     case 'p': return 'La puerta va en un muro con hueco de puerta.';
+    case 'w': return 'La contraventana va en un muro con ventana.';
+    case 't': return 'La trampilla va en el hueco de arriba de una escalera de tablas, con suelo al lado.';
     case 'l': return 'La escalera necesita un suelo; el andamio, la tierra, un suelo u otro andamio debajo.';
     case 'q': return PIEZAS[p.tipo]?.polipasto ? 'El polipasto se cuelga de una viga terminada.' : 'La polea se cuelga de una viga terminada.';
   }

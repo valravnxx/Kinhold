@@ -557,8 +557,9 @@
     },
     {
      "nombre": "Contraventana y trampilla (N2: 2 tablas y clavos): la contraventana cierra la ventana de un muro y la trampilla tapa el hueco de una escalera; las dos se abren y cierran con Usar. Añadir también el muro de tablas con ventana, que falta",
-     "estado": "en_curso",
-     "inicio": "2026-10-28T02:50:19+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-28T02:50:19+00:00",
+     "fin": "2026-10-28T10:53:43+00:00"
     },
     {
      "nombre": "Tejado de teja (N2: 10 tejas y vigas, pesa 200 kg, no se pudre ni arde fácil): material nuevo «teja» y su prueba de carga",
@@ -1210,6 +1211,13 @@
      "archivo": "jugar/demo/v26.html",
      "capturas": "capturas/demo-v26",
      "notas": "En línea, si se corta la conexión, la página vuelve a conectar sola y sigues con el mismo personaje (y en el duelo, con el mismo luchador y sus heridas). El servidor quita enseguida al que se va (adiós al «uno más» al salir al menú), pone límites de mensajes por conexión y rechaza los datos mal formados. Es el combate v15."
+    },
+    {
+     "v": "v27",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v27.html",
+     "capturas": "capturas/demo-v27",
+     "notas": "En «Construir», contraventana, trampilla y muro de tablas con ventana (construcción v29)."
     }
    ]
   },
@@ -1399,6 +1407,13 @@
      "archivo": "jugar/construccion/v28.html",
      "capturas": "capturas/construccion-v28",
      "notas": "Polipasto con torno colgado de una viga: sube los troncos con un torno en el suelo (una persona sola, como con polea); lo muy pesado, cuando haya sillares, solo entre dos (uno en el torno y otro que guía)"
+    },
+    {
+     "v": "v29",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/construccion/v29.html",
+     "capturas": "capturas/construccion-v29",
+     "notas": "Contraventana para los muros con ventana y trampilla para el hueco de la escalera de tablas: se abren y se cierran con Usar; la trampilla cerrada se pisa y no deja subir. Muro de tablas con ventana."
     }
    ]
   },

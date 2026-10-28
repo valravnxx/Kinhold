@@ -1740,5 +1740,21 @@
   "pruebas": "Batería completa correcta (todas las pruebas de node y de navegador). Después de unir main (el taller del carril A), se volvieron a pasar todas las de node y salieron bien; las de navegador no se repitieron tras esa unión. No hay vistas tocadas: los bots no se ven en ningún prototipo",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T02:50:19+00:00",
+  "fin": "2026-10-28T10:53:43+00:00",
+  "titulo": "Hito 1c: contraventana y trampilla (carril B)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Contraventana (2 tablas y 2 clavos, 20 kg, en «Acceso», como dice el documento de sistemas): va en un muro con ventana, de troncos o de tablas; dos hojas de tablas con peinazos, bisagras de hierro y tirador. Se pone por el lado de fuera del muro (el que no da al suelo de la casa) y abierta queda de plano contra el muro.",
+   "Trampilla (2 tablas y 2 clavos, 20 kg): va en el hueco de arriba de una escalera de tablas y descansa en los suelos de al lado. Cerrada se pisa como el suelo y la escalera no se puede subir; abierta, se sube y se baja andando como siempre. Se abre desde arriba o desde abajo; estando encima de la escalera no se cierra.",
+   "La bisagra de la trampilla va en un lado de la escalera con suelo al lado, nunca en el de salida: abierta queda de pie en ese borde y no tapa el paso (al principio iba en el arranque y, sin suelo allí, quedaba de pie en el aire: se vio en las capturas y se cambió).",
+   "Muro de tablas con ventana (5 tablas y 5 clavos, 175 kg, aguanta 780 kg; provisional): las tablas se cortan por encima y por debajo de la ventana, con jambas, alféizar y dintel.",
+   "Todo pasa por la lógica pura con su autor (colocar el marco, llevar el material, trabajar y Usar), y se guarda y se carga abierto o cerrado. Al unir main, el carril A había publicado la demo v26: esta sale como demo v27 (construcción v29)."
+  ],
+  "pruebas": "bash herramientas/probar_todo.sh (tras unir main): todo correcto salvo dos pruebas en línea del carril A que fallan solo con la máquina cargada: «Conexiones que se cortan» (la ráfaga de 400 acciones daba 97–99 rechazos en vez de 100; falla igual en main con carga y pasa sola, 34/34) y la de jugar en línea en navegador (cada vez una comprobación distinta de tiempos: ver andar al otro, volver a entrar o volver a conectar; pasó entera sola una vez en esta rama y otra en main). Tras la última unión con main, repetidas solas: lógica 177/177 (26 nuevas, fallan con MUTAR=1), modelos 138/138 (12 nuevas, fallan con MUTAR_CONTRAVENTANA=1), acciones, idiomas, en línea, conexiones y bots; navegador de construcción todo correcto (21 comprobaciones nuevas; las de la trampilla fallan con MUTAR_TRAMPILLA=1) y demo única todo correcto. Capturas miradas en PC y móvil, y la contraventana junto a la cabaña de la prueba de estilo v5 (45_contraventana_junto_a_la_v5). No comprobado: la contraventana y la trampilla en línea con dos jugadores (pasan por la misma acción «usar» que las puertas). En esta sesión, otra sesión del carril B ocupó el carril a las 08:51 mientras esta seguía con las pruebas: esta no lo suelta para no quitárselo.",
+  "capturas": "capturas/construccion-v29",
+  "estado": "ok"
  }
 ]
