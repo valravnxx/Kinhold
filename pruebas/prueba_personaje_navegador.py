@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v8'), f'{sitio}/recursos/personajes/taller-v8')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v9'), f'{sitio}/recursos/personajes/taller-v9')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -201,10 +201,53 @@ with sync_playwright() as p:
                   and 'hombre_capa_tunica' in con and 'hombre_cinturon_tunica' in con, ', '.join(sorted(x for x in con if 'capa' in x or 'cinturon' in x)))
         pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_capa_botas.png')
         for c in ['botas', 'manto']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
+        # personalización del taller (aspecto): colores, peinado, barba y formas, con clics de verdad y sin recargar el modelo
+        if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
+        mat = lambda n: pg.evaluate(f"(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}') r = [o.material.color.r, o.material.color.g, o.material.color.b, o.visible]; }}); return r; }})()")
+        influ = lambda n, k: pg.evaluate(f"(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}' && o.morphTargetDictionary) r = o.morphTargetInfluences[o.morphTargetDictionary['{k}']]; }}); return r; }})()")
+        pj0 = pg.evaluate(f'{E}.diag().pj.modelo.uuid')
+        pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)')
+        cara0 = contenido(pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_0.png'))[0]
+        piel0, iris0, pelo0 = mat('hombre_piel'), mat('hombre_iris_l'), mat('hombre_pelo')
+        for clave, v in [('piel', 'morena'), ('ojos', 'azules'), ('pelo', 'rubio'), ('barba', 'bigote')]:
+            pg.click(f'[data-asp="{clave}"][data-v="{v}"]'); pg.wait_for_timeout(100)
+        if os.environ.get('MUTAR'): pg.evaluate(f"{E}.diag().pj.ponerAspecto({{}})")
+        piel1, iris1, pelo1 = mat('hombre_piel'), mat('hombre_iris_l'), mat('hombre_pelo')
+        cambia = lambda x, y: x and y and sum(abs(x[i] - y[i]) for i in range(3)) > 0.05
+        comprobar('aspecto: cambian la piel, los ojos y el pelo (también las cejas y la barba, del mismo color)',
+                  cambia(piel0, piel1) and cambia(iris0, iris1) and cambia(pelo0, pelo1) and mat('hombre_vello')[:3] == pelo1[:3] and mat('hombre_barba_bigote')[:3] == pelo1[:3],
+                  f'piel {piel0[:3]} → {piel1[:3]}')
+        comprobar('aspecto: el pelo rubio es más claro que el castaño oscuro', sum(pelo1[:3]) > sum(pelo0[:3]) * 2)
+        comprobar('aspecto: con «Bigote» se ve el bigote y no la barba corta', mat('hombre_barba_bigote')[3] and not mat('hombre_barba_corta')[3])
+        pg.evaluate(f'{E}.instante(1.0)'); cara1 = contenido(pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_1.png'))[0]
+        dif = sum(ImageStat.Stat(ImageChops.difference(cara0, cara1)).mean) / 3
+        comprobar('aspecto: la cara se ve distinta', dif > 2, f'diferencia {dif:.1f}')
+        pg.click('[data-asp="barba"][data-v="ninguna"]'); pg.click('[data-asp="peinado"][data-v="rapado"]'); pg.wait_for_timeout(100)
+        comprobar('aspecto: afeitado y rapado (sin barba ni pelo; las cejas y el pelo pintado se quedan)',
+                  not mat('hombre_barba_corta')[3] and not mat('hombre_barba_bigote')[3] and not mat('hombre_pelo')[3] and mat('hombre_vello')[3])
+        pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_2.png')
+        # formas: los deslizadores mueven las formas de MakeHuman (en la piel y en la ropa) y la altura escala el personaje
+        cabeza0 = pg.evaluate(f"{E}.hueso('head')")[1]
+        for k, v in [('peso', 1), ('cara', 1), ('nariz', -1), ('menton', 1), ('altura', 1)]:
+            pg.evaluate(f"(() => {{ const r = document.querySelector('[data-forma=\"{k}\"]'); r.value = {v}; r.dispatchEvent(new Event('input')); }})()")
+        pg.evaluate(f'{E}.instante(1.0)')
+        cabeza1 = pg.evaluate(f"{E}.hueso('head')")[1]
+        f = [influ('hombre_piel', 'peso_mas'), influ('hombre_capa_tunica', 'peso_mas'), influ('hombre_piel', 'cara_mas'), influ('hombre_piel', 'nariz_menos'), influ('hombre_piel', 'menton_mas'), influ('hombre_capa_tunica', 'cara_mas')]
+        comprobar('formas: peso en la piel y en la túnica; cara, nariz y mentón en la piel (no en la túnica)', f[:5] == [1, 1, 1, 1, 1] and f[5] is None, str(f))
+        comprobar('formas: más alto (la cabeza sube un 6 % aprox.)', 1.04 < cabeza1 / cabeza0 < 1.08, f'{cabeza0:.3f} → {cabeza1:.3f} m')
+        cara2 = contenido(pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_3.png'))[0]
+        pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_cuerpo.png')
+        comprobar('aspecto: sin volver a cargar el modelo', pg.evaluate(f'{E}.diag().pj.modelo.uuid') == pj0)
+        pg.reload(); listo(pg)
+        asp = pg.evaluate(f'{E}.diag().pj.aspecto')
+        comprobar('aspecto: se recuerda al recargar', asp['piel'] == 'morena' and asp['pelo'] == 'rubio' and asp['formas']['peso'] == 1 and asp['peinado'] == 'rapado', str(asp))
+        pg.evaluate(f"{E}.cambiar({{aspecto: {{}}}})"); listo(pg)
         pg.evaluate(f"{E}.cambiar({{sexo: 'mujer'}})"); listo(pg)
         # en calidad alta, toda la ropa y el pelo escriben profundidad (si no, la piel se pinta encima: v5)
         pg.evaluate(f"{E}.cambiar({{calidad: 'alta'}})"); listo(pg)
-        malos = pg.evaluate(f"(() => {{ const m = []; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && (!o.material.depthWrite || o.material.transparent)) m.push(o.name); }}); return m; }})()")
+        # (menos los calcos de pelo pintados sobre la piel, que van con mezcla suave y despegados con polygonOffset)
+        malos = pg.evaluate(f"""(() => {{ const m = []; {E}.diag().pj.modelo.traverse(o => {{ const calco = /_(vello|barba_[a-z]+)$/.test(o.name);
+            if (o.isMesh && (calco ? !(o.material.transparent && o.material.polygonOffset) : (!o.material.depthWrite || o.material.transparent))) m.push(o.name); }}); return m; }})()""")
         if os.environ.get('MUTAR'): malos = ['mutado']
         comprobar('taller propio en calidad alta: todo escribe profundidad', not malos, ', '.join(malos))
         pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_alta_cara.png')

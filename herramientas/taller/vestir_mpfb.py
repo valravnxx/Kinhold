@@ -137,7 +137,7 @@ def mapear(ob, pos, orig):
     kd.balance()
     MAPA[ob.name] = np.array([orig[kd.find(v.co)[1]] for v in ob.data.vertices], dtype=np.int64)
 
-def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None, metal=0.0, tapar=None, factor=None, tinte=None):
+def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None, metal=0.0, tapar=None, factor=None, tinte=None, entero=None):
     """copia de `base` con solo los vértices para los que quedarse(i, co) es cierto; la empuja por la normal.
     color(P, A) da el color por vértice; textura=(res, fn(P, A) → rgba) pinta una textura en su mapa UV"""
     ob = base.copy(); ob.data = base.data.copy(); ob.name = nombre
@@ -221,8 +221,12 @@ def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosida
         ob['tinte'], ob['ref'] = tinte
     if diezmar < 1.0:
         d = ob.modifiers.new('Diezmar', 'DECIMATE'); d.ratio = diezmar
+        if entero:  # lo que no se diezma (la cara de la piel: los calcos de pelo van encima, a 1 mm, y si no la piel los atravesaba)
+            g = ob.vertex_groups.new(name='diezmar'); g.add([k for k in range(nv) if not entero(orig[k])], 1.0, 'REPLACE')
+            d.vertex_group = 'diezmar'
         with bpy.context.temp_override(object=ob, active_object=ob):
             bpy.ops.object.modifier_apply(modifier='Diezmar')
+        if 'diezmar' in ob.vertex_groups: ob.vertex_groups.remove(ob.vertex_groups['diezmar'])
     mapear(ob, pos, orig)
     mod = ob.modifiers.new('Armature', 'ARMATURE'); mod.object = RIG
     ob.parent = RIG
@@ -559,7 +563,8 @@ def personaje(nombre, macros, objetivos, ropa):
     # --- piel: solo lo que se ve (cabeza, cuello, manos y un poco de muñeca) ---
     visible = lambda i, c: en(i, 'body') and not (ropa.get('cofia') and en(i, 'ears', 0.3)) and (PR[i] in ('head', 'neck_01') or mano(i) or cerca_muneca(c, 0.07) or c.z > cuello_z - (0.05 if c.y < -0.03 else 0.02))  # el escote baja por delante
     sin_orejas = lambda i, c: visible(i, c) and not en(i, 'ears', 0.3)
-    piezas = [trozo(base, nombre + '_piel', sin_orejas, textura=(2048, pintar_piel), rugosidad=0.62, sss=0.2, diezmar=DIEZMAR, **f_piel)]
+    piezas = [trozo(base, nombre + '_piel', sin_orejas, textura=(2048, pintar_piel), rugosidad=0.62, sss=0.2, diezmar=DIEZMAR,
+                    entero=lambda i: cabeza(i) and co[i].z > cuello_z - 0.02, **f_piel)]
     if not ropa.get('cofia'):  # las orejas van aparte: en el juego se esconden bajo la capucha o la toca (si no, asoman)
         piezas.append(trozo(base, nombre + '_orejas', lambda i, c: en(i, 'body') and en(i, 'ears', 0.1), textura=(512, pintar_piel),
                             rugosidad=0.62, sss=0.2, ajustar_uv=True, **f_piel))

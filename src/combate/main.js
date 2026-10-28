@@ -24,8 +24,8 @@ botonesIdioma(document.getElementById('menu'));
 const $ = (id) => document.getElementById(id);
 const esTactil = matchMedia('(pointer: coarse)').matches;
 const CLAVE = 'kinhold_combate_v2';
-// personaje del taller propio: la versión publicada vive en jugar/combate/, los modelos en recursos/personajes/taller-v8/
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v8/';
+// personaje del taller propio: la versión publicada vive en jugar/combate/, los modelos en recursos/personajes/taller-v9/
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v9/';
 // «Duelo en línea» (?enlinea=1): el rival es otro jugador y los golpes los resuelve el servidor (src/combate/en_linea.js)
 const EN_LINEA = new URLSearchParams(location.search).get('enlinea') === '1';
 
@@ -148,7 +148,7 @@ function nuevaPartida() {
 // cuerpo y ropa propios (los del visor de personaje) con la armadura del duelo encima
 function aspectoPropio() {
   const elegido = personajeElegido();
-  return elegido ? { sexo: elegido.sexo, capas: capasDuelo(elegido.capas, opc.armadura, CAPAS_ARMADURA) } : {};
+  return elegido ? { sexo: elegido.sexo, capas: capasDuelo(elegido.capas, opc.armadura, CAPAS_ARMADURA), aspecto: elegido.aspecto } : {};
 }
 function textoInicio() {
   if (EN_LINEA) return tr('Duelo en línea: tu rival es otro jugador y los golpes los resuelve el servidor.');

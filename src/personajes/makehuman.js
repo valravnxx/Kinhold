@@ -6,10 +6,15 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { CLIPS } from './cargar.js';
+import { normalizarAspecto, colorDe, pesosFormas, escalaAltura } from '../logica/aspecto.js';
 
 const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 const cache = new Map();
 const cargar = (url) => { if (!cache.has(url)) cache.set(url, cargador.loadAsync(url)); return cache.get(url); };
+
+const CALCO = /_(vello|barba_[a-z]+)$/;
+// color sRGB (0-255) a lineal, igual que en el taller (potencia 2,2)
+const lineal = (c) => c.map(x => (x / 255) ** 2.2);
 
 export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/taller-v1/') {
   const o = { sexo: 'hombre', calidad: 'alta', ...op };
@@ -28,6 +33,8 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     // depthWrite: el cargador lo apaga en los materiales con transparencia, y entonces la piel se pinta encima del pelo
     // y la ropa se ve del revés (fallo de la v5, lo vio valravnx). DoubleSide: por dentro del escote y las mangas
     Object.assign(n.material, { transparent: false, depthWrite: true, alphaTest: recorte ? 0.5 : 0, side: THREE.DoubleSide });
+    // calcos de pelo pintados sobre la piel (cejas, pelo rapado, barba): mezcla suave, encima de la piel y sin tapar nada
+    if (CALCO.test(n.name)) Object.assign(n.material, { transparent: true, depthWrite: false, alphaTest: 0, side: THREE.FrontSide, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4 });
     triangulos += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3;
   });
   // ropa por capas, de dentro afuera. Lo que queda tapado del todo no se dibuja: el cuerpo de una capa se esconde si
@@ -108,8 +115,28 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     actual = a;
   };
   poner('quieto', 0);
-  const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, velocidad, opciones: o, hueso, clips: g.animations.map(c => c.name), ponerCapas,
+  // ---- aspecto (personalización): forma, colores, peinado y barba, sin volver a cargar el modelo ----
+  // Las piezas que cambian de color llevan en sus «extras» qué color (tinte: piel, pelo u ojos) y el color de referencia
+  // en el que se pintó su textura; el color nuevo va en el material (color lineal / referencia).
+  const ponerAspecto = (a) => {
+    const asp = normalizarAspecto(a, o.sexo), pesos = pesosFormas(asp);
+    modelo.scale.setScalar(escalaAltura(asp));
+    modelo.traverse(n => {
+      if (!n.isMesh) return;
+      const t = n.userData.tinte;
+      if (t) { const c = lineal(colorDe(t, asp[t])), r = n.userData.ref || 1; n.material.color.setRGB(c[0] / r, c[1] / r, c[2] / r, THREE.LinearSRGBColorSpace); }
+      if (n.morphTargetDictionary) for (const [k, i] of Object.entries(n.morphTargetDictionary)) n.morphTargetInfluences[i] = pesos[k] || 0;
+      if (n.name.endsWith('_pelo')) n.visible = asp.peinado === 'corto';
+      const b = n.name.match(/_barba_([a-z]+)$/);
+      if (b) n.visible = asp.barba === b[1];
+    });
+    resultado.aspecto = asp;
+    resultado.triangulos = 0;
+    modelo.traverse(n => { if (n.isMesh && n.visible) resultado.triangulos += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3; });
+  };
+  const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, velocidad, opciones: o, hueso, clips: g.animations.map(c => c.name), ponerCapas, ponerAspecto,
     capasPosibles: [...ORDEN, ...SUELTAS].filter(c => c !== 'camisa' && modelo.getObjectByName(`${o.sexo}_capa_${c}`)), tocados: TOCADOS };
   ponerCapas(o.capas || [o.sexo === 'mujer' ? 'vestido' : 'tunica']);
+  ponerAspecto(o.aspecto);
   return resultado;
 }
