@@ -2,16 +2,27 @@
 // de verdad con dos clientes por websocket y lag simulado (ida y vuelta, con vaivén).
 // Ejecutar: node pruebas/prueba_combate_servidor.mjs
 // Con MUTAR=1 se prueba un servidor que se fía del autor que manda el cliente en sus intenciones: debe FALLAR.
+// Con MUTAR_LIZA=1, un combate en el que los de la liza dan también a los que construyen: debe FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, readFileSync, writeFileSync, rmSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { tmpdir } from 'os';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { CombateServidor, validarIntencion } from '../src/logica/combate_servidor.js';
-import { T, RITMO, ARMAS } from '../src/combate/logica.js';
+import { T, RITMO, ARMAS, Luchador } from '../src/combate/logica.js';
+import { aplicarFoto, avanzarCopia, resultadoDeEvento, rivalCercano } from '../src/logica/combate_cliente.js';
 
 const MUTAR = process.env.MUTAR === '1';
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
+let rutaCombate = join(raiz, 'src/logica/combate_servidor.js'), copiaCombate = null;
+if (process.env.MUTAR_LIZA === '1') {
+  const fuente = readFileSync(rutaCombate, 'utf8');
+  const mutada = fuente.split('!!o.liza !== !!L.liza').join('false');
+  if (mutada === fuente) { console.log('No se pudo mutar el combate'); process.exit(1); }
+  copiaCombate = join(raiz, 'src/logica/.combate_servidor_mutado.js');
+  writeFileSync(copiaCombate, mutada); rutaCombate = copiaCombate;
+}
+const { CombateServidor, validarIntencion } = await import(pathToFileURL(rutaCombate).href);
+if (copiaCombate) rmSync(copiaCombate);
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -118,6 +129,68 @@ function pareja(opc = {}) {
   c.intencion('jugador:a', { tipo: 'combate', que: 'atacar', linea: 'alto' });
   const l = c.cambiados();
   comprobar('al atacar se manda solo el que ataca, preparando y por qué línea', l.length === 1 && l[0].autor === 'jugador:a' && l[0].accion === 'preparando' && l[0].linea === 'alto');
+}
+
+{
+  // la liza (el «Duelo en línea»): sus luchadores solo se dan entre ellos
+  const c = new CombateServidor({ semilla: 5 });
+  c.entrar('jugador:a', { z: 0, rot: 0 });
+  c.entrar('jugador:obra', { z: 1.5, rot: Math.PI });   // uno que construye, delante de A
+  comprobar('entrar en la liza es una intención válida', c.intencion('jugador:a', { tipo: 'combate', que: 'liza' }).ok && c.luchadores['jugador:a'].liza === true);
+  c.intencion('jugador:a', { tipo: 'combate', que: 'atacar', linea: 'alto' });
+  c.avanzar(1.5);
+  const g = c.sacarEventos().find(e => e.tipo === 'golpe');
+  comprobar('el de la liza no da al que construye (aunque esté delante)', g && g.resultado === 'al aire' && c.luchadores['jugador:obra'].heridas.length === 0, g && g.resultado);
+  c.entrar('jugador:b', { z: 1.5, x: 0.01, rot: Math.PI }); c.intencion('jugador:b', { tipo: 'combate', que: 'liza' });
+  delete c.luchadores['jugador:obra'];
+  c.avanzar(1.5); c.sacarEventos();
+  c.intencion('jugador:a', { tipo: 'combate', que: 'atacar', linea: 'alto' });
+  c.avanzar(1.5);
+  const g2 = c.sacarEventos().find(e => e.tipo === 'golpe');
+  comprobar('a otro de la liza sí le da', g2 && g2.objetivo === 'jugador:b' && g2.resultado === 'herida', g2 && g2.resultado);
+  comprobar('el golpe dice el tipo de herida (para el sonido y la sangre)', g2 && g2.danio === 'corte', g2 && g2.danio);
+  const f = c.cambiados(true).find(l => l.autor === 'jugador:b');
+  comprobar('la foto lleva cada herida (zona, gravedad, tipo) y si está en la liza', f.liza === true && f.lista.length === 1 && f.lista[0][0] === g2.zona && f.lista[0][1] === g2.gravedad && f.lista[0][2] === 'corte');
+  // volver a empezar sano: no a mitad de una pelea
+  comprobar('no se vuelve a empezar sano con el rival en pie al lado', !c.intencion('jugador:b', { tipo: 'combate', que: 'reiniciar' }).ok && c.luchadores['jugador:b'].heridas.length === 1);
+  c.luchadores['jugador:b'].caer('Desangrado');
+  comprobar('caído, sí: sale sano, en la liza y con la misma arma', c.intencion('jugador:b', { tipo: 'combate', que: 'reiniciar' }).ok
+    && c.luchadores['jugador:b'].heridas.length === 0 && !c.luchadores['jugador:b'].fuera && c.luchadores['jugador:b'].liza && c.luchadores['jugador:b'].arma === 'espada_larga');
+  comprobar('y se avisa a todos', c.sacarEventos().some(e => e.tipo === 'reinicio' && e.autor === 'jugador:b'));
+  c.luchadores['jugador:b'].x = 40;
+  comprobar('sin nadie cerca también se puede', c.intencion('jugador:a', { tipo: 'combate', que: 'reiniciar' }).ok);
+}
+{
+  // la copia de un cliente: se pone como dice el servidor; lo propio no se pisa mientras se predice
+  const c = new CombateServidor({ semilla: 3 });
+  c.entrar('jugador:a', { z: 0, rot: 0 }); c.entrar('jugador:b', { z: 1.5, rot: Math.PI });
+  for (const x of ['jugador:a', 'jugador:b']) c.intencion(x, { tipo: 'combate', que: 'liza' });
+  c.intencion('jugador:a', { tipo: 'combate', que: 'atacar', linea: 'derecha' });
+  c.avanzar(0.2);
+  const fa = c.cambiados(true).find(l => l.autor === 'jugador:a');
+  const otro = new Luchador({ ritmo: RITMO.normal });
+  aplicarFoto(otro, fa);
+  comprobar('la copia de otro hace lo que dice el servidor (preparando, por la derecha, a su punto)', otro.accion === 'preparando' && otro.linea === 'derecha' && Math.abs(otro.tAccion - 0.2) < 0.02 && otro.liza);
+  avanzarCopia(otro, 5);
+  comprobar('la copia avanza sola entre fotos, pero sus golpes no cuentan', otro.accion !== 'preparando' && c.luchadores['jugador:b'].heridas.length === 0);
+  const propio = new Luchador({ ritmo: RITMO.normal });
+  propio.bloquear(true);
+  const libre = { ...fa, accion: 'libre', linea: null, bloqueando: false, tAccion: 0, duracion: 0 };
+  aplicarFoto(propio, libre, { propio: true, prediciendo: true });
+  comprobar('lo propio no se pisa mientras se predice', propio.bloqueando === true);
+  aplicarFoto(propio, { ...libre, accion: 'aturdido', duracion: 700 }, { propio: true, prediciendo: true });
+  comprobar('salvo lo que solo sabe el servidor (quedar descolocado)', propio.accion === 'aturdido');
+  aplicarFoto(propio, { ...libre, lista: [['torso', 'grave', 'corte', 1.2]], sangre: 80, cansancio: 40 }, { propio: true, prediciendo: true });
+  comprobar('las heridas, la sangre y el cansancio, siempre los del servidor', propio.heridas.length === 1 && propio.heridas[0].zona === 'torso' && propio.sangre === 80 && propio.cansancio === 40);
+  propio.sangre = 1; avanzarCopia(propio, 10);
+  comprobar('la copia no cae por su cuenta (desangrarse lo decide el servidor)', !propio.fuera);
+  aplicarFoto(propio, { ...libre, fuera: true, accion: 'caido', motivoFuera: 'Desangrado' }, { propio: true, prediciendo: true });
+  comprobar('cae cuando lo dice el servidor', propio.fuera && propio.motivoFuera === 'Desangrado');
+  const r = resultadoDeEvento({ tipo: 'golpe', resultado: 'al aire', linea: 'alto' });
+  comprobar('un golpe al aire del servidor se cuenta como fallo', r.resultado === 'fallo');
+  const yo = { x: 0, z: 0 };
+  const lista = [{ autor: 'x', L: Object.assign(new Luchador(), { x: 1, z: 0, liza: true, fuera: true }) }, { autor: 'y', L: Object.assign(new Luchador(), { x: 3, z: 0, liza: true }) }, { autor: 'z', L: Object.assign(new Luchador(), { x: 0.5, z: 0 }) }];
+  comprobar('el rival es el más cercano en pie de la liza', rivalCercano(yo, lista).autor === 'y');
 }
 
 // ---------------- 2. El servidor, con dos clientes y lag ----------------
