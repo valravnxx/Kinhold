@@ -89,10 +89,10 @@ if (vTipo > 0.5) {
   // y la línea de espuma donde muere el agua, que sube y baja
   float banda = sin(vOrilla * 0.52 + uTiempo * 1.4 + roto * 2.0);
   espuma += smoothstep(0.78, 0.98, banda) * (1.0 - smoothstep(8.0, 40.0, vOrilla)) * smoothstep(0.5, 3.0, vOrilla) * (0.45 + 0.55 * roto);
-  espuma += (1.0 - smoothstep(0.4 + 0.6 * sin(uTiempo * 0.9 + roto * 3.0), 2.2, vOrilla)) * 0.85;
+  espuma += (1.0 - smoothstep(1.4 + 0.8 * sin(uTiempo * 0.9 + roto * 3.0), 3.4, vOrilla)) * 0.85;
   pend *= 1.6;
 } else {
-  espuma += (1.0 - smoothstep(0.2, 1.3, vOrilla)) * 0.5 * roto;
+  espuma += (1.0 - smoothstep(1.0, 2.4, vOrilla)) * 0.5 * roto;
   float reguero = mix(ruidoA(q1 * 0.9), ruidoA(q0 * 0.9), w0);
   espuma += smoothstep(0.66, 0.92, reguero) * smoothstep(1.2, 2.6, vel) * 0.6;
   pend *= 0.7 + 0.5 * smoothstep(0.4, 2.5, vel);
@@ -107,7 +107,10 @@ vec3 hondoC = vTipo > 0.5 ? vec3(0.06, 0.14, 0.18) : vec3(0.10, 0.17, 0.18);
 diffuseColor.rgb = mix(somero, hondoC, smoothstep(0.0, vTipo > 0.5 ? 6.0 : 2.0, hondo));
 diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.86, 0.88, 0.86), espuma);
 diffuseColor.rgb = pow(diffuseColor.rgb, vec3(2.2));   // los colores de arriba van en sRGB, como los de la paleta; aquí se trabaja en lineal
-diffuseColor.a = mix(mix(0.45, 0.93, smoothstep(0.0, 1.2, hondo)), 0.97, espuma);`)
+diffuseColor.a = mix(mix(0.45, 0.93, smoothstep(0.0, 1.2, hondo)), 0.97, espuma);
+// en el último metro y medio antes de la orilla el agua se desvanece: así el corte con el terreno (que en una rejilla
+// de 1 m sale escalonado si la orilla es empinada) no se ve
+diffuseColor.a *= smoothstep(0.15, 1.6, vOrilla);`)
       .replace('#include <normal_fragment_begin>', `#include <normal_fragment_begin>
 normal = normalize(normal + (viewMatrix * vec4(-pend.x, 0.0, -pend.y, 0.0)).xyz);`)
       .replace('#include <envmap_fragment>', `#include <envmap_fragment>
