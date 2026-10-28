@@ -13,6 +13,8 @@ import { fbm, clasificarBioma, riosDelMapa, anchoRio } from './mapa.js';
 
 const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const lerp = (a, b, t) => a + (b - a) * t;
+// mínimo suave (sin esquina): k es el ancho del redondeo, en las mismas unidades
+const sminimo = (a, b, k) => { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k / 4; };
 
 // Catmull-Rom en una rejilla N × N (sin escalones ni pliegues entre celdas, a diferencia de la bilineal)
 function cubica(arr, N, gx, gy) {
@@ -100,7 +102,9 @@ export function crearPaisaje(mapa) {
       // junto al mar, la tierra alta baja en un cortado empinado (unos 60°) y no en una pared: la pared, en la rejilla,
       // sale en dientes de sierra. La distancia a la línea de costa sale de lo que cambia la forma alrededor
       const g1 = grande(xm + 4, ym).f, g2 = grande(xm, ym + 4).f, grad = Math.hypot(g1 - f, g2 - f) / 4 || 1e-3;
-      z = Math.min(z, 0.3 + (f / grad) * 1.8);
+      // con las esquinas redondeadas arriba y abajo: un pliegue en diagonal a la rejilla se dibuja en zigzag
+      const d = Math.max(0, f / grad), cortado = 0.3 + 1.8 * (Math.sqrt(d * d + 9) - 3);
+      z = sminimo(z, cortado, 4);
     }
     if (dm < 2500) {
       // el río talla su cauce, una vega llana a los lados y laderas con la pendiente limitada (suaves en el llano,

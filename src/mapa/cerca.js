@@ -9,7 +9,7 @@ import { crearPaisaje, bosqueEn } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
 import { tr } from '../idioma.js';
 import { crearVistaJuego } from './juego.js';
-import { crearMaterialAgua, atributosAgua, tiempoAgua } from './agua.js';
+import { crearMaterialAgua, atributosAgua, tiempoAgua, distanciaOrilla } from './agua.js';
 
 export const LADO_CERCA = 4000;                 // m
 const movil = Math.min(innerWidth, innerHeight) < 700;
@@ -141,14 +141,16 @@ function construir(mapa, cx, cy) {
   // las olas que rompen en la costa)
   if (H.some(v => v < 0)) {
     const pm = [], hm = [], im = [], ver = new Int32Array(N * N).fill(-1);
-    const vert = (k) => { if (ver[k] < 0) { ver[k] = pm.length / 3; pm.push(-L / 2 + (k % N) * paso, 0, -L / 2 + Math.floor(k / N) * paso); hm.push(Math.max(0, -H[k])); } return ver[k]; };
+    const seco = new Uint8Array(N * N); for (let k = 0; k < N * N; k++) seco[k] = H[k] > 0 ? 1 : 0;
+    const orilla = distanciaOrilla(seco, N, paso, 80), om = [];
+    const vert = (k) => { if (ver[k] < 0) { ver[k] = pm.length / 3; pm.push(-L / 2 + (k % N) * paso, 0, -L / 2 + Math.floor(k / N) * paso); hm.push(Math.max(0, -H[k])); om.push(orilla[k]); } return ver[k]; };
     for (let j = 0; j < N - 1; j++) for (let i = 0; i < N - 1; i++) {
       const a = j * N + i, b = a + 1, c2 = a + N, d = c2 + 1;
       if (Math.min(H[a], H[b], H[c2], H[d]) > 0.3) continue;
       im.push(vert(a), vert(c2), vert(b), vert(b), vert(c2), vert(d));
     }
     const gm = new THREE.BufferGeometry(); gm.setAttribute('position', new THREE.Float32BufferAttribute(pm, 3)); gm.setIndex(im); gm.computeVertexNormals();
-    atributosAgua(gm, { hondo: Float32Array.from(hm), tipo: new Float32Array(pm.length / 3).fill(1) });
+    atributosAgua(gm, { hondo: Float32Array.from(hm), tipo: new Float32Array(pm.length / 3).fill(1), orilla: Float32Array.from(om) });
     const mar = new THREE.Mesh(gm, aguaLejos()); mar.name = 'mar'; mar.receiveShadow = true; estado.raiz.add(mar);
   }
   // ríos: cinta de agua sobre el cauce

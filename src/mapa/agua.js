@@ -30,9 +30,9 @@ export function crearMaterialAgua() {
     sh.uniforms.uHueco = hueco;
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>
-attribute vec2 aFlujo; attribute float aHondo; attribute float aTipo; attribute float aOla;
+attribute vec2 aFlujo; attribute float aHondo; attribute float aTipo; attribute float aOla; attribute float aOrilla;
 uniform float uTiempo;
-varying vec2 vFlujo; varying float vHondo; varying float vTipo; varying vec3 vMundo;
+varying vec2 vFlujo; varying float vHondo; varying float vTipo; varying float vOrilla; varying vec3 vMundo;
 // una ola de Gerstner: dirección, longitud (m), altura (m) y lo afilada que es la cresta
 void ola(vec2 p, vec2 d, float largo, float alto, float afilado, inout vec3 desp, inout vec3 nor) {
   float k = 6.2831853 / largo, c = sqrt(9.8 / k), f = k * (dot(d, p) - c * uTiempo);
@@ -54,12 +54,12 @@ if (aOla > 0.001) {
 }`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
 transformed += despOla;
-vFlujo = aFlujo; vHondo = aHondo; vTipo = aTipo;
+vFlujo = aFlujo; vHondo = aHondo; vTipo = aTipo; vOrilla = aOrilla;
 vMundo = (modelMatrix * vec4(transformed, 1.0)).xyz;`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
 uniform float uTiempo; uniform vec4 uHueco;
-varying vec2 vFlujo; varying float vHondo; varying float vTipo; varying vec3 vMundo;
+varying vec2 vFlujo; varying float vHondo; varying float vTipo; varying float vOrilla; varying vec3 vMundo;
 float hashA(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float ruidoA(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
   return mix(mix(hashA(i), hashA(i + vec2(1, 0)), u.x), mix(hashA(i + vec2(0, 1)), hashA(i + vec2(1, 1)), u.x), u.y); }
@@ -85,14 +85,16 @@ float vel = length(vFlujo);
 float espuma = 0.0;
 float roto = ruidoA(vMundo.xz * 0.35 + uTiempo * 0.05) * 0.6 + ruidoA(vMundo.xz * 1.7) * 0.4;
 if (vTipo > 0.5) {
-  float banda = sin(hondo * 11.0 - uTiempo * 1.7 + roto * 2.0);
-  espuma += smoothstep(0.72, 0.97, banda) * (1.0 - smoothstep(0.25, 2.2, hondo)) * (0.55 + 0.45 * roto);
-  espuma += (1.0 - smoothstep(0.02, 0.22, hondo)) * (0.6 + 0.4 * sin(uTiempo * 1.7 + roto * 4.0));
+  // olas que rompen: franjas que avanzan hacia la orilla (unos 12 m entre una y otra) y se deshacen al llegar,
+  // y la línea de espuma donde muere el agua, que sube y baja
+  float banda = sin(vOrilla * 0.52 + uTiempo * 1.4 + roto * 2.0);
+  espuma += smoothstep(0.78, 0.98, banda) * (1.0 - smoothstep(8.0, 40.0, vOrilla)) * smoothstep(0.5, 3.0, vOrilla) * (0.45 + 0.55 * roto);
+  espuma += (1.0 - smoothstep(0.4 + 0.6 * sin(uTiempo * 0.9 + roto * 3.0), 2.2, vOrilla)) * 0.85;
   pend *= 1.6;
 } else {
-  espuma += (1.0 - smoothstep(0.03, 0.3, hondo)) * 0.55 * roto;
-  float reguero = mix(ruidoA(q1 * vec2(0.6, 0.6)), ruidoA(q0 * vec2(0.6, 0.6)), w0);
-  espuma += smoothstep(0.62, 0.9, reguero) * smoothstep(1.2, 2.6, vel) * 0.7;
+  espuma += (1.0 - smoothstep(0.2, 1.3, vOrilla)) * 0.5 * roto;
+  float reguero = mix(ruidoA(q1 * 0.9), ruidoA(q0 * 0.9), w0);
+  espuma += smoothstep(0.66, 0.92, reguero) * smoothstep(1.2, 2.6, vel) * 0.6;
   pend *= 0.7 + 0.5 * smoothstep(0.4, 2.5, vel);
 }
 espuma = clamp(espuma, 0.0, 1.0);
@@ -118,11 +120,24 @@ outgoingLight = mix(outgoingLight, vec3(0.55, 0.63, 0.69), fres * 0.3 * (1.0 - e
 }
 
 // pone los atributos del agua en una geometría (los que falten, con lo que da «río quieto y hondo»)
-export function atributosAgua(geo, { flujo = null, hondo = null, tipo = null, ola = null } = {}) {
+export function atributosAgua(geo, { flujo = null, hondo = null, tipo = null, ola = null, orilla = null } = {}) {
   const n = geo.attributes.position.count;
   geo.setAttribute('aFlujo', new THREE.BufferAttribute(flujo || new Float32Array(n * 2), 2));
   geo.setAttribute('aHondo', new THREE.BufferAttribute(hondo || new Float32Array(n).fill(1), 1));
   geo.setAttribute('aTipo', new THREE.BufferAttribute(tipo || new Float32Array(n), 1));
   geo.setAttribute('aOla', new THREE.BufferAttribute(ola || new Float32Array(n), 1));
+  geo.setAttribute('aOrilla', new THREE.BufferAttribute(orilla || new Float32Array(n).fill(50), 1));
   return geo;
+}
+
+// distancia (m) de cada punto de una rejilla n × n (paso en m) al punto seco más cercano: dos pasadas de chaflán
+export function distanciaOrilla(seco, n, paso, tope = 60) {
+  const d = new Float32Array(n * n), D = Math.SQRT2;
+  for (let k = 0; k < n * n; k++) d[k] = seco[k] ? 0 : tope;
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const k = j * n + i; if (!d[k]) continue; let v = d[k];
+    if (i > 0) v = Math.min(v, d[k - 1] + 1); if (j > 0) { v = Math.min(v, d[k - n] + 1); if (i > 0) v = Math.min(v, d[k - n - 1] + D); if (i < n - 1) v = Math.min(v, d[k - n + 1] + D); } d[k] = v; }
+  for (let j = n - 1; j >= 0; j--) for (let i = n - 1; i >= 0; i--) { const k = j * n + i; if (!d[k]) continue; let v = d[k];
+    if (i < n - 1) v = Math.min(v, d[k + 1] + 1); if (j < n - 1) { v = Math.min(v, d[k + n] + 1); if (i < n - 1) v = Math.min(v, d[k + n + 1] + D); if (i > 0) v = Math.min(v, d[k + n - 1] + D); } d[k] = v; }
+  for (let k = 0; k < n * n; k++) d[k] = Math.min(tope, d[k] * paso);
+  return d;
 }
