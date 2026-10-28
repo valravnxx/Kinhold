@@ -64,7 +64,8 @@
     {
      "nombre": "Quién trabaja en qué, a la vista (pedido de valravnx, 28 oct): al empezar, cada agente (carril A, carril B o una sesión de chat) anuncia su tarea en proyecto/sesion.json, y la web solo marca «en proceso» las tareas en las que trabaja de verdad un agente vivo; las empezadas que nadie lleva salen «a medias» y un carril las puede retomar",
      "estado": "en_curso",
-     "inicio": "2026-10-28T05:40:45+01:00"
+     "inicio": "2026-10-28T05:40:45+01:00",
+     "rama": "trabajo/20261028-0540-agentes"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
