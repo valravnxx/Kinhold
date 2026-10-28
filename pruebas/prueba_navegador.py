@@ -1,6 +1,6 @@
 # Prueba en navegador real (Chromium sin pantalla) del hito 1 de Kinhold.
 # Construye una cabaña usando el propio juego, comprueba el estado y saca capturas.
-# Se sirve por HTTP con la misma estructura que la web (jugar/construccion/ y recursos/personajes/taller-v8/), porque el
+# Se sirve por HTTP con la misma estructura que la web (jugar/construccion/ y recursos/personajes/taller-v9/), porque el
 # personaje del taller se carga de un .glb aparte. MUTAR=1 apunta a una carpeta de modelos que no existe: tiene que fallar.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
@@ -12,7 +12,7 @@ RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/construccion'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v8'), f'{sitio}/recursos/personajes/taller-v8')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v9'), f'{sitio}/recursos/personajes/taller-v9')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))

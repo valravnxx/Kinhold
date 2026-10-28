@@ -100,18 +100,25 @@ def dilatar(rgba, hay, pasos=6):
     return rgba
 
 # ---------- materiales ----------
-def material(nombre, rugosidad=0.8, sss=0.0, imagen=None, alfa=False, brillo=0.0, metal=0.0):
+def material(nombre, rugosidad=0.8, sss=0.0, imagen=None, alfa=False, brillo=0.0, metal=0.0, factor=None):
+    """factor: color (lineal) que multiplica la textura o el color por vértice. Sale en el .glb como baseColorFactor:
+    así el juego cambia el tono de la piel, el pelo o los ojos sin rehacer la textura (personalización)"""
     m = bpy.data.materials.new(nombre)
     nt = m.node_tree; p = nt.nodes['Principled BSDF']
     p.inputs['Roughness'].default_value = rugosidad
     p.inputs['Metallic'].default_value = metal
     if imagen is not None:
         tx = nt.nodes.new('ShaderNodeTexImage'); tx.image = imagen
-        nt.links.new(tx.outputs['Color'], p.inputs['Base Color'])
+        fuente = tx.outputs['Color']
         if alfa: nt.links.new(tx.outputs['Alpha'], p.inputs['Alpha'])
     else:
         col = nt.nodes.new('ShaderNodeVertexColor'); col.layer_name = 'Col'
-        nt.links.new(col.outputs['Color'], p.inputs['Base Color'])
+        fuente = col.outputs['Color']
+    if factor is not None:  # nodo «Mezclar» en multiplicar: el exportador de glTF lo pasa a baseColorFactor
+        mx = nt.nodes.new('ShaderNodeMix'); mx.data_type = 'RGBA'; mx.blend_type = 'MULTIPLY'; mx.inputs['Factor'].default_value = 1
+        mx.inputs[7].default_value = (*[float(x) for x in factor], 1)
+        nt.links.new(fuente, mx.inputs[6]); fuente = mx.outputs[2]
+    nt.links.new(fuente, p.inputs['Base Color'])
     if sss:
         p.inputs['Subsurface Weight'].default_value = sss
         p.inputs['Subsurface Radius'].default_value = (1.0, 0.35, 0.2)
@@ -120,7 +127,17 @@ def material(nombre, rugosidad=0.8, sss=0.0, imagen=None, alfa=False, brillo=0.0
     return m
 
 # ---------- trozos de la malla ----------
-def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None, metal=0.0, tapar=None):
+# de qué punto del cuerpo sale cada vértice de cada pieza (para pasarle las formas de MakeHuman: peso, músculo, cara…)
+MAPA = {}
+def mapear(ob, pos, orig):
+    """para cada vértice de ob, el punto del cuerpo del vértice más cercano de (pos, orig): sirve después de diezmar"""
+    from mathutils.kdtree import KDTree
+    kd = KDTree(len(pos))
+    for k, p in enumerate(pos): kd.insert(p, k)
+    kd.balance()
+    MAPA[ob.name] = np.array([orig[kd.find(v.co)[1]] for v in ob.data.vertices], dtype=np.int64)
+
+def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None, metal=0.0, tapar=None, factor=None, tinte=None, entero=None):
     """copia de `base` con solo los vértices para los que quedarse(i, co) es cierto; la empuja por la normal.
     color(P, A) da el color por vértice; textura=(res, fn(P, A) → rgba) pinta una textura en su mapa UV"""
     ob = base.copy(); ob.data = base.data.copy(); ob.name = nombre
@@ -193,17 +210,24 @@ def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosida
         rgba = np.clip(rgba, 0, 1); rgba[..., :3] = rgba[..., :3] ** (1 / 2.2)  # la imagen se guarda en sRGB
         im.pixels.foreach_set(rgba.astype(np.float32).ravel())
         im.filepath_raw = os.path.join(SALIDA, nombre + '.png'); im.file_format = 'PNG'; im.save()
-        me.materials.append(material(nombre, rugosidad, sss, im, alfa=rgba[..., 3].min() < 0.99, brillo=brillo, metal=metal))
+        me.materials.append(material(nombre, rugosidad, sss, im, alfa=rgba[..., 3].min() < 0.99, brillo=brillo, metal=metal, factor=factor))
     else:
         c = color(pos, ATR[orig])
         capa = me.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
         capa.data.foreach_set('color', np.concatenate([c, np.ones((nv, 1))], 1).astype(np.float32).ravel())
-        me.materials.append(material(nombre, rugosidad, sss, brillo=brillo))
+        me.materials.append(material(nombre, rugosidad, sss, brillo=brillo, factor=factor))
     me.attributes.remove(me.attributes['orig'])
+    if tinte:  # el juego cambia el color de esta pieza (va en los «extras» del .glb): qué color y el de referencia
+        ob['tinte'], ob['ref'] = tinte
     if diezmar < 1.0:
         d = ob.modifiers.new('Diezmar', 'DECIMATE'); d.ratio = diezmar
+        if entero:  # lo que no se diezma (la cara de la piel: los calcos de pelo van encima, a 1 mm, y si no la piel los atravesaba)
+            g = ob.vertex_groups.new(name='diezmar'); g.add([k for k in range(nv) if not entero(orig[k])], 1.0, 'REPLACE')
+            d.vertex_group = 'diezmar'
         with bpy.context.temp_override(object=ob, active_object=ob):
             bpy.ops.object.modifier_apply(modifier='Diezmar')
+        if 'diezmar' in ob.vertex_groups: ob.vertex_groups.remove(ob.vertex_groups['diezmar'])
+    mapear(ob, pos, orig)
     mod = ob.modifiers.new('Armature', 'ARMATURE'); mod.object = RIG
     ob.parent = RIG
     return ob
@@ -242,9 +266,12 @@ def cinturon(nombre, telas, z, color, alto=0.034, grueso=0.005, n=64):
     for v in fuente.data.vertices: kd.insert(v.co, v.index)
     kd.balance()
     for g in fuente.vertex_groups: ob.vertex_groups.new(name=g.name)
+    mapa = []
     for v in me.vertices:
         _, i, _ = kd.find(v.co)
         for g in fuente.data.vertices[i].groups: ob.vertex_groups[g.group].add([v.index], g.weight, 'REPLACE')
+        mapa.append(MAPA[fuente.name][i])
+    MAPA[nombre] = np.array(mapa, dtype=np.int64)
     capa = me.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
     for v in me.vertices: capa.data[v.index].color = (*(color * (0.9 + 0.2 * (v.index % 3 == 0))), 1)
     me.materials.append(material(nombre, 0.5))
@@ -297,6 +324,8 @@ def sombrero(nombre, co, cabeza, ojo_arriba, con_cofia, n=48):
     me = bpy.data.meshes.new(nombre); me.from_pydata(vs, [], caras); me.update()
     ob = bpy.data.objects.new(nombre, me); bpy.context.scene.collection.objects.link(ob)
     g = ob.vertex_groups.new(name='head'); g.add(list(range(len(vs))), 1.0, 'REPLACE')
+    alto = [i for i in range(len(co)) if cabeza(i) and co[i].z > ojo_arriba]
+    mapear(ob, [co[i] for i in alto], alto)
     capa = me.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
     for i, c in enumerate(cols):
         v = np.array(vs[i]); capa.data[i].color = (*(np.asarray(c) * (0.92 + 0.16 * float(ruido(v[None, :], 160)[0]))), 1)
@@ -305,9 +334,77 @@ def sombrero(nombre, co, cabeza, ojo_arriba, con_cofia, n=48):
     ob.modifiers.new('Armature', 'ARMATURE').object = RIG; ob.parent = RIG
     return ob
 
+# ---------- formas para personalizar (morph targets) ----------
+# Cada forma va de -1 a 1 en el juego (src/logica/aspecto.js): con 1 se pone la forma «_mas» entera, con -1 la «_menos».
+# Peso y músculo son los ajustes generales de MakeHuman (cambian todo el cuerpo, también la cara); las de la cara son
+# objetivos de MakeHuman. La altura no va aquí: el juego escala el personaje entero (decisión provisional).
+FORMAS_CUERPO = {'peso': ('weight', 0.9, 0.15), 'musculo': ('muscle', 1.0, 0.2)}  # ajuste, valor con +1, valor con -1
+FORMAS_CARA = {'cara': 'head/head-fat', 'nariz': 'nose/nose-scale-horiz', 'nariz_larga': 'nose/nose-scale-vert', 'menton': 'chin/chin-prominent'}
+def malla_de(macros, objetivos):
+    """puntos del cuerpo de MakeHuman (con las mallas auxiliares) con esos ajustes y objetivos"""
+    h = HS.create_human()
+    for k, v in macros.items(): HOP.set_value(k, v, entity_reference=h)
+    TS.reapply_macro_details(h)
+    for ruta, w in objetivos: TS.load_target(h, os.path.join(TROOT, ruta), weight=w)
+    for m in h.modifiers:
+        if m.name in ('Hide helpers', 'Armature'): m.show_viewport = False
+    dg = bpy.context.evaluated_depsgraph_get(); ev = h.evaluated_get(dg); me = ev.to_mesh()
+    P = np.zeros(len(me.vertices) * 3); me.vertices.foreach_get('co', P); ev.to_mesh_clear()
+    datos = h.data; bpy.data.objects.remove(h); bpy.data.meshes.remove(datos)
+    return P.reshape(-1, 3)
+def variantes(macros, objetivos):
+    """puntos del cuerpo con cada forma puesta del todo («peso_mas», «nariz_menos»…)"""
+    V = {}
+    for k, (ajuste, mas, menos) in FORMAS_CUERPO.items():
+        V[k + '_mas'] = malla_de({**macros, ajuste: mas}, objetivos)
+        V[k + '_menos'] = malla_de({**macros, ajuste: menos}, objetivos)
+    for k, ruta in FORMAS_CARA.items():
+        V[k + '_mas'] = malla_de(macros, objetivos + [(ruta + '-incr.target.gz', 1.0)])
+        V[k + '_menos'] = malla_de(macros, objetivos + [(ruta + '-decr.target.gz', 1.0)])
+    return V
+def poner_formas(piezas, co, V):
+    """una clave de forma por forma en cada pieza que se mueve con ella (más de medio milímetro): cada vértice se mueve
+    lo mismo que el punto del cuerpo del que sale (MAPA). La ropa, empujada sobre la piel, se mueve con ella"""
+    base = np.array([tuple(c) for c in co])
+    for ob in piezas:
+        idx = MAPA.get(ob.name)
+        if idx is None: continue
+        nv = len(ob.data.vertices); P = np.zeros(nv * 3); ob.data.vertices.foreach_get('co', P); P = P.reshape(-1, 3)
+        claves = [(k, (V[k] - base)[idx]) for k in V]
+        claves = [(k, d) for k, d in claves if np.abs(d).max() > 0.0005]
+        if not claves: continue
+        ob.shape_key_add(name='Basis', from_mix=False)
+        for k, d in claves:
+            sk = ob.shape_key_add(name=k, from_mix=False); sk.data.foreach_set('co', (P + d).astype(np.float32).ravel())
+
+REF_PIEL, REF_PELO = 0.85, 0.6  # colores de referencia (lineales) en los que se pintan la piel y el pelo
+
+def separar_iris(ojo, c0, nombre, iris):
+    """saca el iris (y la pupila) del ojo a una pieza aparte, en gris, con su color en el material: el juego cambia el
+    color de los ojos sin tocar el blanco. Las caras se reparten por el ángulo de su centro con la mirada (hacia -y)"""
+    ang = lambda p: np.degrees(np.arccos(np.clip(-((np.asarray(p) - c0) / np.linalg.norm(np.asarray(p) - c0))[1], -1, 1)))
+    pos_ojo = [v.co.copy() for v in ojo.data.vertices]; mapa_ojo = MAPA[ojo.name]
+    ir = ojo.copy(); ir.data = ojo.data.copy(); ir.name = nombre; bpy.context.scene.collection.objects.link(ir)
+    for ob, quitar in ((ojo, lambda a: a < 24), (ir, lambda a: a >= 24)):
+        bm = bmesh.new(); bm.from_mesh(ob.data)
+        bmesh.ops.delete(bm, geom=[f for f in bm.faces if quitar(ang(f.calc_center_median()))], context='FACES')
+        bm.to_mesh(ob.data); bm.free()
+        mapear(ob, pos_ojo, mapa_ojo)
+    for ob, color in ((ojo, lambda a: (0.035, 0.03, 0.025) if a < 27 else (0.70, 0.66, 0.62)),  # el blanco, con el borde oscuro del iris
+                      (ir, lambda a: (0.12,) * 3 if a < 11 else (0.4,) * 3)):  # pupila y anillo; entre medias, el dibujo del iris (abajo)
+        capa = ob.data.color_attributes['Col']
+        for v in ob.data.vertices:
+            a = ang(v.co)
+            if ob is ir and 11 <= a < 22: capa.data[v.index].color = (*[0.75 + 0.25 * float(ruido(np.array(tuple(v.co))[None, :], 900)[0])] * 3, 1)
+            else: capa.data[v.index].color = (*color(a), 1)
+    ir.data.materials.clear(); ir.data.materials.append(material(nombre, 0.1, brillo=0.6, factor=iris))
+    ir['tinte'], ir['ref'] = 'ojos', 1.0
+    return ir
+
 # ---------- un personaje ----------
 def personaje(nombre, macros, objetivos, ropa):
     global RIG, ATR
+    V = variantes(macros, objetivos)
     h = HS.create_human()
     for k, v in macros.items(): HOP.set_value(k, v, entity_reference=h)
     TS.reapply_macro_details(h)
@@ -332,6 +429,9 @@ def personaje(nombre, macros, objetivos, ropa):
     nombres = {g.index: g.name for g in base.vertex_groups}
     W = [{nombres[g.group]: g.weight for g in v.groups} for v in base.data.vertices]
     co = [v.co.copy() for v in base.data.vertices]
+    igual = np.abs(malla_de(macros, objetivos) - np.array([tuple(c) for c in co])).max()
+    print(f'{nombre}: la base de las formas se aparta {igual * 1000:.3f} mm de la del personaje')
+    assert igual < 1e-4, 'las formas no salen de la misma base que el personaje'
     en = lambda i, g, u=0.5: W[i].get(g, 0) > u
     def principal(i):
         m, pm = None, 0
@@ -389,7 +489,7 @@ def personaje(nombre, macros, objetivos, ropa):
         zl = zf * (1 - t) + (boca_z - 0.012) * t
         borde = 0.004 * (fbm(P, 120) - 0.5)
         return suave(-0.003, 0.003, z - zl + borde)
-    def zona_barba(P, A):
+    def zona_barba(P, A, solo_bigote=False):
         """barba corta pintada: bordes difusos y con pelillos; el bigote baja por las comisuras y se une a la barba"""
         x, y, z = np.abs(P[..., 0]), P[..., 1], P[..., 2]
         t = suave(-0.14, -0.06, y)
@@ -403,7 +503,7 @@ def personaje(nombre, macros, objetivos, ropa):
         frente = suave(-0.11, -0.125, y)
         bigote = suave(0.034, 0.026, x) * suave(-0.003, 0.002, z - (boca_z + 0.004)) * suave(0.003, -0.002, z - (boca_z + 0.016 - 0.1 * x * x * 10)) * frente
         comisura = suave(0.019, 0.025, x) * suave(0.038, 0.031, x) * suave(-0.004, 0.002, z - (boca_z - 0.014)) * suave(0.004, -0.002, z - (boca_z + 0.012)) * suave(-0.10, -0.115, y)
-        m = np.maximum(m, 0.85 * np.maximum(bigote, comisura))
+        m = 0.85 * np.maximum(bigote, comisura) if solo_bigote else np.maximum(m, 0.85 * np.maximum(bigote, comisura))
         m *= suave(-0.01, -0.03, y) * (1 - suave(0.1, 0.35, A[..., 1])) * (1 - suave(0.3, 0.6, A[..., 0]))
         return m
     def zona_cofia(P):
@@ -417,7 +517,11 @@ def personaje(nombre, macros, objetivos, ropa):
         n = 0.5 * ruido(P, (420, 60, 420)) + 0.5 * ruido(P, (420, 420, 70))
         return color[None, None, :] * (0.7 + 0.55 * n[..., None]) * (0.9 + 0.2 * fbm(P, 30)[..., None])
 
-    tono, colpelo, iris = lin(ropa['piel']), lin(ropa['pelo']), lin(ropa['ojos'])
+    # piel y pelo se pintan en un color de referencia (gris claro) y su color va aparte, en el material (factor): así el
+    # juego los cambia sin rehacer la textura. Las cejas, la barba y el pelo pintado van en calcos encima de la piel
+    tono, colpelo = np.full(3, REF_PIEL), np.full(3, REF_PELO)
+    tono_real, colpelo_real, iris = lin(ropa['piel']), lin(ropa['pelo']), lin(ropa['ojos'])
+    f_piel, f_pelo = dict(factor=tono_real / REF_PIEL, tinte=('piel', REF_PIEL)), dict(factor=colpelo_real / REF_PELO, tinte=('pelo', REF_PELO))
     def gauss(P, c, r): return np.exp(-np.sum((P - np.asarray(c)) ** 2, -1) / (r * r))
     def pintar_piel(P, A):
         col = tono[None, None, :] * (0.93 + 0.12 * fbm(P, 45)[..., None])
@@ -437,24 +541,39 @@ def personaje(nombre, macros, objetivos, ropa):
         for s in 'lr':  # línea de las pestañas en el borde de los párpados
             d = np.linalg.norm((P - ojo_c[s]) * np.array([1, 1, 1.6]), axis=-1)
             col *= (1 - 0.55 * (suave(0.0125, 0.0145, d) * suave(0.0175, 0.0150, d) * (P[..., 1] < ojo_c[s][1] - 0.004))[..., None])
-        ceja = zona_cejas(P)[..., None]
-        col = col * (1 - 0.85 * ceja) + colpelo * 0.85 * ceja
-        if ropa.get('barba'):  # barba pintada en la piel (valravnx: la cáscara dejaba mal la barbilla), con pelillos
-            b = zona_barba(P, A)[..., None]
-            pelillos = 0.7 + 0.45 * ruido(P, (900, 900, 500))[..., None]
-            col = col * (1 - 0.92 * b) + colpelo * pelillos * 0.92 * b
-        if not ropa.get('cofia'):
-            p = zona_pelo(P)[..., None] * (1 - suave(0.1, 0.35, A[..., 1]))[..., None]
-            col = col * (1 - 0.7 * p) + colpelo * 0.7 * p
         return np.concatenate([col, np.ones(P.shape[:2] + (1,))], -1)
+    # calcos de pelo sobre la piel (cejas y pelo pintado; barba corta o bigote): la misma malla de la piel, sin diezmar,
+    # despegada 1 mm y con la transparencia de la textura (el juego los dibuja encima de la piel). Barba pintada y no
+    # cáscara: valravnx vio que la cáscara dejaba mal la barbilla
+    pelillos = lambda P: colpelo * (0.7 + 0.45 * ruido(P, (900, 900, 500))[..., None])
+    def pintar_vello(P, A):
+        a = 0.85 * zona_cejas(P)
+        if not ropa.get('cofia'): a = np.maximum(a, 0.7 * zona_pelo(P) * (1 - suave(0.1, 0.35, A[..., 1])))
+        return np.concatenate([colpelo * (0.9 + 0.2 * ruido(P, (90, 90, 1400))[..., None]), a[..., None]], -1)
+    def pintar_barba(solo_bigote):
+        return lambda P, A: np.concatenate([pelillos(P), (0.92 * zona_barba(P, A, solo_bigote))[..., None]], -1)
+    def donde(fn, margen=0.015):
+        """vértices de la piel donde el calco pinta algo, mirando también alrededor (las cejas son más finas que los cuadros
+        de la malla: con poco margen quedaban cuadros sin calco y la ceja salía a trozos)"""
+        P = np.array([tuple(c) for c in co]); A = ATR
+        m = np.zeros(len(P))
+        for d in [(x, y, z) for x in (-margen, 0, margen) for y in (-margen, 0, margen) for z in (-margen, 0, margen)]:
+            m = np.maximum(m, fn(P + np.array(d), A)[..., 3])
+        return m > 0.01
 
     # --- piel: solo lo que se ve (cabeza, cuello, manos y un poco de muñeca) ---
     visible = lambda i, c: en(i, 'body') and not (ropa.get('cofia') and en(i, 'ears', 0.3)) and (PR[i] in ('head', 'neck_01') or mano(i) or cerca_muneca(c, 0.07) or c.z > cuello_z - (0.05 if c.y < -0.03 else 0.02))  # el escote baja por delante
     sin_orejas = lambda i, c: visible(i, c) and not en(i, 'ears', 0.3)
-    piezas = [trozo(base, nombre + '_piel', sin_orejas, textura=(2048, pintar_piel), rugosidad=0.62, sss=0.2, diezmar=DIEZMAR)]
+    piezas = [trozo(base, nombre + '_piel', sin_orejas, textura=(2048, pintar_piel), rugosidad=0.62, sss=0.2, diezmar=DIEZMAR,
+                    entero=lambda i: cabeza(i) and co[i].z > cuello_z - 0.02, **f_piel)]
     if not ropa.get('cofia'):  # las orejas van aparte: en el juego se esconden bajo la capucha o la toca (si no, asoman)
         piezas.append(trozo(base, nombre + '_orejas', lambda i, c: en(i, 'body') and en(i, 'ears', 0.1), textura=(512, pintar_piel),
-                            rugosidad=0.62, sss=0.2, ajustar_uv=True))
+                            rugosidad=0.62, sss=0.2, ajustar_uv=True, **f_piel))
+    calcos = [('vello', pintar_vello)] + ([('barba_corta', pintar_barba(False)), ('barba_bigote', pintar_barba(True))] if ropa.get('barba') else [])
+    for n_, fn in calcos:
+        sel = donde(fn)
+        piezas.append(trozo(base, f'{nombre}_{n_}', lambda i, c, sel=sel: sel[i] and sin_orejas(i, c), empuje=0.001, textura=(1024, fn),
+                            rugosidad=0.7, ajustar_uv=True, **f_pelo))
 
     # --- ojos y pestañas (color por vértice: el ojo tiene muy poco sitio en el mapa UV) ---
     for s in 'lr':
@@ -465,7 +584,8 @@ def personaje(nombre, macros, objetivos, ropa):
             col = np.where((a < 25)[:, None], iris[None, :] * n[:, None], np.array([0.70, 0.66, 0.62]))
             col = np.where((a < 11)[:, None], 0.02, col)
             return np.where(((a >= 22) & (a < 27))[:, None], iris * 0.4, col)
-        piezas.append(trozo(base, f'{nombre}_ojo_{s}', lambda i, c, s=s: en(i, f'helper-{s}-eye'), color=color_ojo, rugosidad=0.1, subdividir=2, brillo=0.6))
+        ojo = trozo(base, f'{nombre}_ojo_{s}', lambda i, c, s=s: en(i, f'helper-{s}-eye'), color=color_ojo, rugosidad=0.1, subdividir=2, brillo=0.6)
+        piezas += [ojo, separar_iris(ojo, c0, f'{nombre}_iris_{s}', iris)]
 
     # --- pelo corto o cofia; barba ---
     if ropa.get('cofia'):
@@ -487,7 +607,7 @@ def personaje(nombre, macros, objetivos, ropa):
             return np.concatenate([mechones(P, colpelo), a[..., None]], -1)
         cab = lambda i, c: cabeza(i) and not en(i, 'ears', 0.3) and not (c.y < -0.09 and c.z < ojo_arriba + 0.035) and c.z > boca_z - 0.03
         empuje = lambda c, i: 0.003 + 0.007 * min(1.0, max(0.0, c.z - ojo_arriba) / 0.1)
-        piezas.append(trozo(base, nombre + '_pelo', cab, empuje=empuje, textura=(1024, pintar_pelo), rugosidad=0.55, diezmar=DIEZMAR))
+        piezas.append(trozo(base, nombre + '_pelo', cab, empuje=empuje, textura=(1024, pintar_pelo), rugosidad=0.55, diezmar=DIEZMAR, **f_pelo))
 
     # --- ropa por capas (color o textura por código). Cada prenda se llama <nombre>_capa_<capa>[_falda]: en el juego
     # se enseñan las capas puestas. Las de base (camisa, calzas, zapatos) van siempre; encima, túnica o vestido, gambesón…
@@ -671,6 +791,7 @@ def personaje(nombre, macros, objetivos, ropa):
     piezas.append(sombrero(f'{nombre}_capa_sombrero', co, cabeza, ojo_arriba, ropa.get('cofia') is not None))
 
     bpy.data.objects.remove(base)
+    poner_formas(piezas, co, V)
     tri = 0
     for ob in piezas:
         n = sum(len(p.vertices) - 2 for p in ob.data.polygons); tri += n
@@ -697,7 +818,8 @@ for rig, piezas, pos in gente:
     for ob in piezas: ob.select_set(True)
     bpy.context.view_layer.objects.active = rig
     bpy.ops.export_scene.gltf(filepath=os.path.join(SALIDA, rig.name + '.glb'), export_format='GLB', use_selection=True,
-                              export_skins=True, export_animations=False, export_vertex_color='ACTIVE', export_image_format='AUTO')
+                              export_skins=True, export_animations=False, export_vertex_color='ACTIVE', export_image_format='AUTO',
+                              export_morph=True, export_morph_normal=False, export_extras=True)
 gente[0][0].location.x, gente[1][0].location.x = -0.55, 0.55
 
 # ---------- fotos (Cycles en CPU) ----------

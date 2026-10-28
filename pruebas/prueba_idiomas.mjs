@@ -15,6 +15,7 @@ import { REGISTRO_MAPA, VERSION_MAPA } from '../src/mapa/registro.js';
 import { BIOMAS, ROCAS, VETAS } from '../src/logica/mapa.js';
 import { REGISTRO_PERSONAJE, VERSION_PERSONAJE } from '../src/personaje/registro.js';
 import { BASES, CAPAS, ANIMS } from '../src/personaje/textos.js';
+import { PALETAS, FORMAS, PEINADOS, BARBAS } from '../src/logica/aspecto.js';
 import { REGISTRO_DEMO, VERSION_DEMO } from '../src/demo/registro.js';
 
 const DICC = { en: JSON.parse(readFileSync('src/idiomas/en.json', 'utf8')), ru: JSON.parse(readFileSync('src/idiomas/ru.json', 'utf8')) };
@@ -36,6 +37,9 @@ for (const m of readFileSync('src/logica/mapa.js', 'utf8').matchAll(/fase: '([^'
   for (const m of src.matchAll(/\['\w+', '([A-ZÁÉÍÓÚ][^']+)'\]/g)) meter(m[1]); }
 // opciones del visor de personaje (las de cargar.js se leen del código: el cargador necesita el navegador)
 for (const t of [...Object.values(BASES), ...Object.values(CAPAS), ...Object.values(ANIMS)]) meter(t);
+// personalización del taller (aspecto): nombres de los colores, formas, peinados y barbas
+for (const p of Object.values(PALETAS)) for (const [n] of Object.values(p)) meter(n);
+for (const t of [...Object.values(FORMAS), ...Object.values(PEINADOS.hombre), ...Object.values(PEINADOS.mujer), ...Object.values(BARBAS.hombre), ...Object.values(BARBAS.mujer)]) meter(t);
 const cargarJs = leer('src/personajes/cargar.js');
 const opciones = cargarJs.slice(cargarJs.indexOf('export const OPCIONES'), cargarJs.indexOf('export const CLIPS'));
 for (const m of opciones.matchAll(/:\s*\[?'([^']+)'/g)) meter(m[1]);
