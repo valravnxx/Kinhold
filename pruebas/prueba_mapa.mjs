@@ -72,6 +72,17 @@ for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
     pend.sort((x, y) => x - y);
     const p90 = pend[Math.floor(pend.length * 0.9)], p99 = pend[Math.floor(pend.length * 0.99)];
     comprobar(`${n}: junto a los ríos no hay zanjas (pendiente más fuerte a ±300 m: el 90 % por debajo de 1, el 99 % por debajo de 2,5)`, p90 < 1 && p99 < 2.5, `${pend.length} perfiles · p90 ${p90.toFixed(2)} · p99 ${p99.toFixed(2)}`);
+    // la costa de cerca no es una pared: perfiles de ±600 m cada 2 m a través de la línea de costa
+    const saltos = [];
+    for (let y = 20; y < N - 20; y += 4) for (let x = 20; x < N - 20; x += 4) {
+      const i = y * N + x; if (!m.tierra[i] || (m.tierra[i + 1] && m.tierra[i - 1] && m.tierra[i + N] && m.tierra[i - N])) continue;
+      const cx0 = (x + 0.5) * m.celda, cy0 = (y + 0.5) * m.celda; let peor = 0;
+      for (let a = 0; a < 6.28; a += 1.57) { let prev = null; for (let d = -600; d <= 600; d += 2) { const hh = pai.altura(cx0 + Math.cos(a) * d, cy0 + Math.sin(a) * d) + (MUTAR && d === 0 ? 80 : 0); if (prev !== null) peor = Math.max(peor, Math.abs(hh - prev) / 2); prev = hh; } }
+      saltos.push(peor);
+    }
+    saltos.sort((x, y) => x - y);
+    const s90 = saltos[Math.floor(saltos.length * 0.9)], smax = saltos[saltos.length - 1];
+    comprobar(`${n}: la costa de cerca no es una pared (pendiente más fuerte a través de la costa: el 90 % por debajo de 6, ninguna por encima de 40)`, s90 < 6 && smax < 40, `${saltos.length} costas · p90 ${s90.toFixed(1)} · máx. ${smax.toFixed(1)}`);
     comprobar(`${n}: el agua del río cubre el lecho y queda bajo la orilla`, aguaBien / aguaN > 0.97, `${aguaBien} de ${aguaN}`);
   }
 }

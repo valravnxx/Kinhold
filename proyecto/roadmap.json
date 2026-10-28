@@ -303,7 +303,9 @@
     },
     {
      "nombre": "Bots: jugadores simulados en node que se conectan al servidor y andan, construyen y pelean, para la medición",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T08:51:14+00:00",
+     "rama": "trabajo/20261028-0851"
     },
     {
      "nombre": "Medir el servidor con 100 jugadores simulados (bots que andan, construyen y pelean): CPU, memoria y tráfico por jugador, para saber qué servidor hace falta y cuánto cuesta al mes",
@@ -417,13 +419,15 @@
     },
     {
      "nombre": "Taller: capa con capucha, calzado y tocados (capucha suelta, sombrero de paja, toca)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-26T13:38:41+00:00",
-     "rama": "trabajo/20261026-1338"
+     "fin": "2026-10-28T09:11:30+00:00"
     },
     {
      "nombre": "Taller: personalización — altura, complexión y cara con los ajustes de MakeHuman, tono de piel, color de ojos, peinado y barba",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T09:20:54+00:00",
+     "rama": "trabajo/20261028-0920"
     },
     {
      "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
@@ -856,7 +860,9 @@
     },
     {
      "nombre": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T09:34:28+01:00",
+     "rama": "trabajo/20261028-0935-roca"
     },
     {
      "nombre": "Valles tallados por los ríos: sin zanjas; lecho, orilla, vega ancha abajo y laderas con la pendiente limitada (en V cerrada en la montaña); el agua del río también de cerca",
@@ -890,9 +896,9 @@
     },
     {
      "nombre": "Agua que se mueve: el río corre en su dirección (lento en la vega, rápido en la montaña) y el mar con oleaje y olas que rompen en la costa; color según la hondura y espuma en orillas y rompientes",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T06:58:45+01:00",
-     "rama": "trabajo/20261028-0700-agua"
+     "fin": "2026-10-28T09:22:53+01:00"
     }
    ],
    "lleva": "chat"
@@ -1678,6 +1684,13 @@
      "archivo": "jugar/personaje/v14.html",
      "capturas": "capturas/personaje-v14",
      "notas": "El cinturón de encima de la cota ya no sobresale hacia los brazos (personajes del taller-v7)."
+    },
+    {
+     "v": "v15",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/personaje/v15.html",
+     "capturas": "capturas/personaje-v15",
+     "notas": "Capa, botas y tocados: capucha, sombrero de paja y toca"
     }
    ]
   },
@@ -1734,6 +1747,13 @@
      "archivo": "jugar/mapa/v5.html",
      "capturas": "capturas/mapa-v5",
      "notas": "Los ríos ya no son zanjas: el fondo del valle sigue al río, con lecho, orilla en rampa, vega llana a los lados y laderas con la pendiente limitada (suaves en el llano, en V en la montaña). El agua del río se ve también de cerca, con la orilla lisa."
+    },
+    {
+     "v": "v6",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/mapa/v6.html",
+     "capturas": "capturas/mapa-v6",
+     "notas": "El agua se mueve: el río corre en su dirección (lento en la vega, rápido y con espuma en los torrentes) y el mar tiene oleaje, con olas que rompen en la costa. Color según la hondura. La costa ya no es una pared: cortados empinados y playas que bajan al agua."
     }
    ]
   }

@@ -13,6 +13,8 @@ import { fbm, clasificarBioma, riosDelMapa, anchoRio } from './mapa.js';
 
 const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const lerp = (a, b, t) => a + (b - a) * t;
+// mínimo suave (sin esquina): k es el ancho del redondeo, en las mismas unidades
+const sminimo = (a, b, k) => { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k / 4; };
 
 // Catmull-Rom en una rejilla N × N (sin escalones ni pliegues entre celdas, a diferencia de la bilineal)
 function cubica(arr, N, gx, gy) {
@@ -87,15 +89,23 @@ export function crearPaisaje(mapa) {
   // fino: con el detalle de hasta 2 m, para lo que rodea al jugador
   function altura(xm, ym, tramos = null, fino = false) {
     const { f, hm, r } = grande(xm, ym);
-    if (f < 0) return Math.max(-60, -1.5 + f * 0.8);       // mar: el fondo baja al alejarse de la costa
+    if (f < 0) return Math.max(-60, f * 1.6);              // mar: el fondo baja desde la línea de costa (sin escalón)
     const { dm, nivel, ancho } = rioCercano(xm, ym, tramos);
     const monte = suave(120, 600, r);                      // 0 en el llano, 1 en la montaña
     // junto al río, el detalle se apaga: el fondo del valle lo marca el río (que ya talló el valle grande del mapa),
     // no el ruido; si no, el ruido levanta el fondo decenas de metros y el río queda en una zanja
     const calma = dm === Infinity ? 1 : 0.12 + 0.88 * suave(ancho / 2, ancho / 2 + (180 + ancho * 12) * (1 - 0.45 * monte), dm);
     let z = hm + detalle(xm, ym, r, fino) * suave(0, 3, f) * calma;
-    if (hm < 8) z = lerp(0.6, z, suave(0, 2.5, f));        // costa baja: playa o marisma, sin escalón
-    z = Math.max(0.4, z);
+    if (hm < 8) z = lerp(f * 0.5, z, suave(0, 2.5, f));    // costa baja: la playa baja suave hasta el agua
+    z = Math.max(Math.min(0.4, f * 0.5), z);
+    if (f < 10 && z > 2) {
+      // junto al mar, la tierra alta baja en un cortado empinado (unos 60°) y no en una pared: la pared, en la rejilla,
+      // sale en dientes de sierra. La distancia a la línea de costa sale de lo que cambia la forma alrededor
+      const g1 = grande(xm + 4, ym).f, g2 = grande(xm, ym + 4).f, grad = Math.hypot(g1 - f, g2 - f) / 4 || 1e-3;
+      // con las esquinas redondeadas arriba y abajo: un pliegue en diagonal a la rejilla se dibuja en zigzag
+      const d = Math.max(0, f / grad), cortado = 0.3 + 1.8 * (Math.sqrt(d * d + 9) - 3);
+      z = sminimo(z, cortado, 4);
+    }
     if (dm < 2500) {
       // el río talla su cauce, una vega llana a los lados y laderas con la pendiente limitada (suaves en el llano,
       // más cerradas en la montaña, donde salen gargantas); nunca una zanja de paredes verticales
@@ -115,14 +125,23 @@ export function crearPaisaje(mapa) {
 
   // el río más cercano a un punto: distancia (m), altura del río en ese tramo y ancho
   function rioCercano(xm, ym, tramos) {
-    let dm = Infinity, nivel = 0, ancho = 2;
+    let dm = Infinity, nivel = 0, ancho = 2, tramo = null;
     if (tramos) for (const t of tramos) {
       const vx = t.bx - t.ax, vy = t.by - t.ay, l2 = vx * vx + vy * vy || 1;
       const u = Math.max(0, Math.min(1, ((xm - t.ax) * vx + (ym - t.ay) * vy) / l2));
       const dd = Math.hypot(xm - t.ax - vx * u, ym - t.ay - vy * u);
-      if (dd < dm) { dm = dd; nivel = lerp(t.ha, t.hb, u); ancho = t.ancho; }
+      if (dd < dm) { dm = dd; nivel = lerp(t.ha, t.hb, u); ancho = t.ancho; tramo = t; }
     }
-    return { dm, nivel, ancho };
+    return { dm, nivel, ancho, tramo };
+  }
+  // la corriente del río en un punto: dirección (hacia donde baja: los tramos van de la fuente a la boca) y velocidad
+  // (m/s), que crece con la pendiente del cauce: unos 0,5 m/s en la vega y hasta 3 m/s en los torrentes de montaña
+  function corriente(xm, ym, tramos) {
+    const { tramo: t } = rioCercano(xm, ym, tramos);
+    if (!t) return { dx: 0, dy: 0, vel: 0 };
+    const vx = t.bx - t.ax, vy = t.by - t.ay, l = Math.hypot(vx, vy) || 1;
+    const pend = Math.max(0, (t.ha - t.hb) / l);
+    return { dx: vx / l, dy: vy / l, vel: Math.min(3, Math.max(0.3, Math.sqrt(pend) * 22)) };
   }
   // altura del agua del río en un punto cercano al cauce (m), o null si el punto no está junto a un río
   function agua(xm, ym, tramos) {
@@ -142,10 +161,10 @@ export function crearPaisaje(mapa) {
     const T = cubica(temp, N, gx, gy) - (z - hm) * 0.0065;
     const P = cubica(lluvia, N, gx, gy) * (0.85 + 0.3 * fbm(xm / 3000, ym / 3000, S + 83, 3));
     const b = clasificarBioma(T, P, mapa.pend[ci], z, mapa.A[ci] / (celda * celda));
-    return { roca: roca[ci] || 'caliza', bioma: bioma[ci] ? b : null, T, P, pais: pais[ci] };
+    return { roca: roca[ci] || 'caliza', bioma: bioma[ci] || z > 0.3 ? b : null, T, P, pais: pais[ci] };   // tierra aunque la celda del mapa sea de mar (la costa de cerca no coincide al metro)
   }
 
-  return { altura, agua, sitio, riosEn, rios, celda };
+  return { altura, agua, corriente, sitio, riosEn, rios, celda };
 }
 
 // Espesor del bosque (0–1) y qué árbol: según bioma, temperatura, pendiente (en tanto por uno) y un ruido de claros.

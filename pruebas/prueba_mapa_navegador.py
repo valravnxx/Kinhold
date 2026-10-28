@@ -97,6 +97,17 @@ with sync_playwright() as p:
             hay = pg.evaluate("!!(window.__cerca.vj.grupo && window.__cerca.vj.grupo.getObjectByName('aguaCerca'))")
             if os.environ.get('MUTAR'): hay = False
             comprobar(f'{nombre}: junto al río se dibuja su agua de cerca', hay, f"río de {r['ancho']:.0f} m a {abs(complex(r['x'], r['z'])):.0f} m del centro")
+            # el agua se mueve: dos capturas seguidas mirando al río, con la cámara quieta, tienen que diferir
+            if os.environ.get('MUTAR') or os.environ.get('MUTAR_AGUA'): pg.evaluate('window.__cerca.pararAgua = true')   # MUTAR_AGUA=1: solo para el agua
+            pg.evaluate(f"window.__cerca.camara(0.6, 14, {r['dir']} + 1.57)"); pg.wait_for_timeout(1500)
+            pg.screenshot(path=f'{SALIDA}/{nombre}_10a_rio_de_cerca.png', timeout=240000); pg.wait_for_timeout(1200)
+            pg.screenshot(path=f'{SALIDA}/{nombre}_10b_rio_de_cerca.png', timeout=240000)
+            from PIL import Image, ImageChops
+            a = Image.open(f'{SALIDA}/{nombre}_10a_rio_de_cerca.png').convert('L'); b = Image.open(f'{SALIDA}/{nombre}_10b_rio_de_cerca.png').convert('L')
+            dif = ImageChops.difference(a, b).point(lambda v: 255 if v > 8 else 0)
+            parte = dif.histogram()[255] / (a.size[0] * a.size[1])
+            comprobar(f'{nombre}: el agua del río se mueve (cambia entre dos capturas con la cámara quieta)', parte > 0.01, f'{parte * 100:.1f} % de la imagen')
+            pg.evaluate('window.__cerca.pararAgua = false')
             pg.evaluate(f"window.__cerca.camara(0.12, 70, {r['dir']})"); pg.wait_for_timeout(1500)
             pg.screenshot(path=f'{SALIDA}/{nombre}_10_rio.png', timeout=240000)
         else: comprobar(f'{nombre}: hay un río en la zona de cerca', False)
