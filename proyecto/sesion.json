@@ -6,10 +6,10 @@
   "rama": "trabajo/20261028-1232"
  },
  "B": {
-  "inicio": "2026-10-28T13:59:19+00:00",
-  "tarea": "Ralentización por carga en la lógica pura, como dice el GDD: con poca carga no se nota y, cargado al máximo en todos los huecos, la velocidad al caminar baja hasta el 80%. Aplicada al andar del personaje en la demo, con pruebas de lógica y de navegador",
-  "hito": "equipo",
-  "rama": "trabajo/20261028-1359"
+  "inicio": "2026-10-28T14:53:19+00:00",
+  "tarea": "Curación de heridas",
+  "hito": "duelo",
+  "rama": "trabajo/20261028-1453"
  },
  "chat:trabajo/20261028-1515-fijo": {
   "inicio": "2026-10-28T15:12:01+01:00",

@@ -785,7 +785,9 @@
     },
     {
      "nombre": "Curación de heridas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T14:53:19+00:00",
+     "rama": "trabajo/20261028-1453"
     },
     {
      "nombre": "Prueba de golpes en las cinco direcciones de la rosa con el personaje del taller: el brazo va hacia el objetivo (cinemática inversa) sobre una animación base, porque el paquete solo trae unos pocos golpes; si no convence, buscar otra vía antes de seguir",
