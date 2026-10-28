@@ -1878,5 +1878,20 @@
   ],
   "pruebas": "Todas las pruebas correctas (inventario 120/120, con 13 nuevas de la carga; navegador de la demo: 3,6 m/s sin carga y 2,88 m/s cargado al máximo, en PC y móvil). Rotas a propósito una vez (MUTAR_CARGA=1) y fallan. Tras unir main se repitieron las de lógica y la de la demo; no comprobado: el resto del navegador después de unir main",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T15:12:01+01:00",
+  "fin": "2026-10-28T19:06:47+01:00",
+  "titulo": "Hito 10: el mundo de cerca siempre igual",
+  "hito": "mundo",
+  "hecho": [
+   "El terreno ya era fijo; lo que cambiaba al rehacer el trozo de cerca era el reparto de árboles, hierba, piedras y piezas de roca, que salía de un azar que empezaba en el centro del trozo",
+   "Ahora cada cosa sale de su celda en el mundo y de la semilla del mundo (un azar por celda), y si hay que recortar por el aparato se quitan las más lejanas del personaje, no al azar",
+   "Lo mismo con los árboles de lejos: ya no dependen de desde dónde se abre la zona",
+   "Prueba nueva en el navegador: se rehace el trozo de cerca 50 m más allá y la parte común sale idéntica (MUTAR_FIJO=1 vuelve al azar por el centro y falla)"
+  ],
+  "pruebas": "Batería completa correcta tras unir main (con el mapa v9 de los nombres del mundo, de otra sesión de chat; esta versión pasa a v10). No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v10",
+  "estado": "ok"
  }
 ]
