@@ -358,6 +358,7 @@ with sync_playwright() as p:
 
     print('PC: trampilla en el hueco de la escalera de tablas')
     # MUTAR_TRAMPILLA=1: la trampilla cerrada no tapa nada (como antes de esta pieza): la prueba tiene que fallar
+    poner('pieza', 'suelo_tronco', 11, -13, planta=1)  # suelo a un lado de la escalera: la bisagra va ahí
     v = poner('pieza', 'trampilla', 9, -13, planta=1)
     comprobar('trampilla colocada desde el menú en el hueco de la escalera', bool(v) and v['ok'], json.dumps(v, ensure_ascii=False))
     ev(f"{K}.cambiarModo('construir'); {K}.estado.planta=1; {K}.seleccionar('pieza','trampilla'); {K}.apuntar(11,-11)")
@@ -367,6 +368,7 @@ with sync_playwright() as p:
     if os.environ.get('MUTAR_TRAMPILLA'):
         ev(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.hueco === 't').forEach(p => p.abierta = true); {K}.reconstruir()")
     trampilla = f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].find(p => p.hueco === 't')"
+    comprobar('la bisagra va en el lado con suelo (+x)', ev(f"{trampilla}.dir") == 1, str(ev(f"{trampilla}.dir")))
     comprobar('sale cerrada', ev(f"{trampilla}.abierta") is False or os.environ.get('MUTAR_TRAMPILLA') is not None)
     # cerrada: desde abajo no se sube por la escalera
     ev(f"{K}.pj.x=9; {K}.pj.z=-14.6; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=Math.PI; {K}.cam.pitch=0.45; {K}.cam.dist=9")
@@ -419,14 +421,14 @@ with sync_playwright() as p:
     comprobar('y su contraventana', bool(v) and v['ok'], json.dumps(v, ensure_ascii=False))
     ev(f"{K}.cambiarModo('mover'); {K}.estado.planta=0")
     cvs = f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.hueco === 'w')"
-    ev(f"{K}.pj.x=16.3; {K}.pj.z=-15.6; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=Math.PI; {K}.cam.yaw=Math.PI+0.5; {K}.cam.pitch=0.25; {K}.cam.dist=4.5")
+    ev(f"{K}.pj.x=15.6; {K}.pj.z=-15.1; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=Math.PI; {K}.cam.yaw=Math.PI+0.6; {K}.cam.pitch=0.25; {K}.cam.dist=4.5")
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/24_contraventana_tablas_cerrada.png')
     ev(f"{K}.usar()")
     comprobar('la contraventana se abre con Usar', ev(f"{cvs}.find(p => p.k === 0 && p.tipo === 'contraventana' && p.abierta) !== undefined"))
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/25_contraventana_tablas_abierta.png')
-    ev(f"{K}.pj.x=4.2; {K}.pj.z=7.3; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=0; {K}.cam.yaw=0.5; {K}.cam.pitch=0.25; {K}.cam.dist=4.5")
+    ev(f"{K}.pj.x=3.7; {K}.pj.z=7.0; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=0; {K}.cam.yaw=0.6; {K}.cam.pitch=0.25; {K}.cam.dist=4.5")
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/26_contraventana_troncos_cerrada.png')
     ev(f"{K}.usar()")

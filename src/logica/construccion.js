@@ -155,7 +155,7 @@ export class Mundo {
     const p = { tipo, ...h, dir, abierta: false };
     if (!HUECOS_ARISTA.has(p.hueco)) delete p.d;
     if (def.andamio) p.dir = dirAndamio(c, p.i, p.j, p.k);
-    if (p.hueco === 't') { const e = escaleraAndando(c, p.i, p.j, p.k - 1); if (e) p.dir = e.dir || 0; } // mira como su escalera
+    if (p.hueco === 't') { const e = escaleraAndando(c, p.i, p.j, p.k - 1); if (e) p.dir = dirTrampilla(c, p.i, p.j, p.k, e); }
     return { construccion: c, nueva, pieza: p };
   }
 
@@ -320,7 +320,7 @@ export class Mundo {
     if (p.hueco === 't') {
       const e = escaleraAndando(c, p.i, p.j, p.k - 1);
       if (!e) return { ok: false, motivo: motivoSinApoyo(p) };
-      p.dir = e.dir || 0;
+      p.dir = dirTrampilla(c, p.i, p.j, p.k, e);
     }
     if (p.hueco === 'f' && escaleraAndando(c, p.i, p.j, p.k - 1)) return { ok: false, motivo: 'Ahí está el hueco de una escalera.' };
     if (p.hueco === 'f' && c.piezas.has(clave('l', p.i, p.j, p.k - 1)) && PIEZAS[c.piezas.get(clave('l', p.i, p.j, p.k - 1)).tipo].andamio) return { ok: false, motivo: 'Ahí está la plataforma de un andamio.' };
@@ -637,6 +637,17 @@ function aparejoPara(c, p, polipasto) {
 export function trampillaCerrada(c, i, j, k) {
   const t = c.piezas.get(clave('t', i, j, k + 1));
   return !!t && !t.obra && !t.abierta;
+}
+// Hacia dónde mira la trampilla (dir, como las escaleras): su bisagra va en el borde -SUBE[dir] de la casilla. Se
+// cuelga de un lado de la escalera que tenga suelo al lado; si no, del lado del arranque con suelo; si no hay suelo
+// en ninguno de esos, de un lado. Nunca del lado por el que se sale arriba: abierta, de pie, taparía la salida.
+export function dirTrampilla(c, i, j, k, escalera) {
+  const e = escalera.dir || 0;
+  const bisagra = (dir) => { const [ui, uj] = SUBE[dir]; return c.piezas.has(clave('f', i - ui, j - uj, k)); };
+  const lados = [(e + 1) % 4, (e + 3) % 4]; // la bisagra en el borde -SUBE[dir]: para dir = e + 1 y e + 3, un lado
+  for (const d of lados) if (bisagra(d)) return d;
+  if (bisagra(e)) return e; // con dir = e, la bisagra queda en el borde del arranque
+  return lados[0];
 }
 export function escaleraAndando(c, i, j, k) {
   const p = c.piezas.get(clave('l', i, j, k));

@@ -640,7 +640,9 @@ console.log('18. Contraventana, trampilla y muro de tablas con ventana');
   comprobar('ni en la planta de la escalera', !m.validar(enRejilla(m, c, 'trampilla', 0, 0, 0)).ok);
   const tr = A({ tipo: 'colocar', pieza: 'trampilla', x: 1, z: 1, k: 1, rot: 0, dir: 0 });
   comprobar('la trampilla se pone en el hueco de la escalera', tr.ok && tr.clave === clave('t', 0, 0, 1), tr.motivo || tr.clave);
-  comprobar('mira como su escalera', c.piezas.get(tr.clave).dir === 3);
+  const salida = [[0, 1], [-1, 0], [0, -1], [1, 0]][3], dt = c.piezas.get(tr.clave).dir, bis = [[0, 1], [-1, 0], [0, -1], [1, 0]][dt];
+  comprobar('la bisagra no va en el lado por el que se sale de la escalera (abierta taparía la salida)', !(-bis[0] === salida[0] && -bis[1] === salida[1]), `dir=${dt}`);
+  comprobar('sin suelo en los lados ni en el arranque, va en un lado', dt === 0, `dir=${dt}`);
   comprobar('en obras no tapa el hueco', !trampillaCerrada(c, 0, 0, 0));
   acabarObra(m, R, yo, c.id, tr.clave);
   comprobar('terminada y cerrada tapa el hueco (se pisa y la escalera no sube)', trampillaCerrada(c, 0, 0, 0));
@@ -650,6 +652,17 @@ console.log('18. Contraventana, trampilla y muro de tablas con ventana');
   comprobar('el hueco sigue sin admitir un suelo', !m.validar(enRejilla(m, c, 'suelo_tronco', 0, 0, 1)).ok);
   const pe = m.previsualizarDesmontaje(c, clave('l', 0, 0, 0));
   comprobar('si se quita la escalera, la trampilla cae con ella', pe.ok && pe.caen.includes(tr.clave), (pe.caen || []).join(' '));
+  {
+    const c4 = nuevaConstruccion(m);
+    const p4 = (tipo, i, j, k, d = 0, dir = 0) => m.colocar(enRejilla(m, c4, tipo, i, j, k, d, dir));
+    for (const [i, j] of [[3, 3], [4, 3], [3, 4]]) p4('cim_piedra', i, j, 0);
+    for (const [i, j, d] of [[3, 3, 0], [4, 3, 0], [3, 5, 0], [3, 3, 1], [5, 3, 1], [3, 4, 1], [4, 4, 1]]) p4('muro_tronco', i, j, 0, d);
+    p4('escalera_tabla', 3, 3, 0, 0, 0); // sube hacia +z: sale a (3, 4)
+    p4('suelo_tronco', 3, 4, 1); p4('suelo_tronco', 4, 3, 1);
+    const t4 = p4('trampilla', 3, 3, 1);
+    const b4 = [[0, 1], [-1, 0], [0, -1], [1, 0]][c4.piezas.get(t4.clave)?.dir ?? 0];
+    comprobar('con suelo a un lado de la escalera, la bisagra va en ese lado', t4.ok && -b4[0] === 1 && -b4[1] === 0, `${t4.motivo || ''} dir=${c4.piezas.get(t4.clave)?.dir}`);
+  }
   comprobar('cada Usar y cada obra quedan anotados con su autor', R.entradas.filter(e => e.tipo === 'usar' && e.ok).length === 3 && R.entradas.every(e => e.autor === yo));
   // guardar y cargar, y rehacer desde el registro
   const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
