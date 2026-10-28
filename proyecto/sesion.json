@@ -1,14 +1,20 @@
 {
  "A": {
-  "inicio": "2026-10-28T12:32:34+00:00",
-  "tarea": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
-  "hito": "prueba-online",
-  "rama": "trabajo/20261028-1232"
+  "inicio": "2026-10-28T16:24:12+00:00",
+  "tarea": "Que los demás jugadores en línea te vean con tu aspecto (forma, colores, peinado y barba): mandarlo con el cuerpo y la ropa, y que el servidor lo compruebe con la misma lógica (src/logica/aspecto.js)",
+  "hito": "arte",
+  "rama": "trabajo/20261028-1624"
  },
  "B": {
-  "inicio": "2026-10-28T13:59:19+00:00",
-  "tarea": "Ralentización por carga en la lógica pura, como dice el GDD: con poca carga no se nota y, cargado al máximo en todos los huecos, la velocidad al caminar baja hasta el 80%. Aplicada al andar del personaje en la demo, con pruebas de lógica y de navegador",
-  "hito": "equipo",
-  "rama": "trabajo/20261028-1359"
+  "inicio": "2026-10-28T14:53:19+00:00",
+  "tarea": "Curación de heridas",
+  "hito": "duelo",
+  "rama": "trabajo/20261028-1453"
+ },
+ "chat:trabajo/20261028-1515-fijo": {
+  "inicio": "2026-10-28T15:12:01+01:00",
+  "tarea": "El mundo de cerca siempre igual: árboles, hierba, piedras y piezas de roca colocados según su sitio en el mundo y la semilla (no según dónde se rehace el trozo de cerca)",
+  "hito": "mundo",
+  "rama": "trabajo/20261028-1515-fijo"
  }
 }

@@ -1809,5 +1809,59 @@
   "pruebas": "Batería completa correcta, esta vez seguida y no en dos mitades a la vez (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web). No comprobado: fotogramas en un móvil de verdad (el trozo de cerca del acantilado pasa de unos 500.000 triángulos)",
   "capturas": "capturas/mapa-v8",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T12:32:34+00:00",
+  "fin": "2026-10-28T14:53:47+00:00",
+  "titulo": "Hito 1f: servidor de prueba en internet, listo para crearlo",
+  "hito": "prueba-online",
+  "hecho": [
+   "Todo preparado para que valravnx ponga el servidor del juego en Hetzner Cloud con su cuenta (servidor/nube/): al crear la máquina se pega cloud-config.yaml y se instala sola en unos minutos",
+   "instalar.sh pone Node.js 22, el juego en /opt/kinhold, el servicio kinhold (arranca solo, vuelve a arrancar si se cae, el mundo en /var/lib/kinhold) y el cortafuegos con solo SSH, HTTP y HTTPS; actualizar.sh trae lo último de main sin borrar el mundo",
+   "Caddy delante del servidor: pone el HTTPS solo (la web pública solo puede conectar con wss://), con una dirección sin comprar dominio (la IP con guiones en sslip.io), pasa el WebSocket al juego y manda a quien abre la dirección a la demo con el servidor ya puesto",
+   "Pasos para valravnx en servidor/nube/LEEME.md: crear la cuenta, la máquina CX23 con Ubuntu 24.04 e IPv4, pegar el cloud config y abrir el enlace en los dos aparatos; también qué hacer si algo no va",
+   "Prueba nueva (19 comprobaciones): los guiones, los archivos rellenos, caddy validate, systemd-analyze verify y un Caddy de verdad con HTTPS local delante del servidor del juego, con dos clientes que se ven por wss://; MUTAR=1 estropea la plantilla para que el WebSocket no llegue al juego y falla",
+   "Arreglo de una prueba que fallaba a veces (prueba_conexiones): en la ráfaga de 400 acciones el cubo del límite se rellena un poco mientras llegan, así que a veces se rechazan 99 y no 100; ahora admite hasta 10 de margen",
+   "No comprobado: la instalación entera en una máquina de Hetzner de verdad, las descargas de NodeSource y del repositorio de Caddy (desde aquí no se pueden abrir) y el certificado real con sslip.io (Let's Encrypt a veces lo limita; Caddy prueba entonces con ZeroSSL)"
+  ],
+  "pruebas": "Batería completa correcta (todas las pruebas de node y de navegador, con la nueva del servidor en internet). Después de unir main se volvieron a pasar todas las de node; las de navegador no se repitieron tras esa unión. No hay vistas tocadas: no hay capturas nuevas",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T15:45:46+01:00",
+  "fin": "2026-10-28T16:06:02+01:00",
+  "titulo": "Nombres del mundo: Kinland y sus cinco regiones",
+  "hito": "mundo",
+  "hecho": [
+   "valravnx elige los nombres: el continente es Kinland y sus regiones Whitholm (la isla del noreste), Eikwold (noroeste), Rudmere (suroeste), Highfell (el macizo central) y Storaa (sureste, el gran río).",
+   "Antes de ponerlos se buscó que no fueran de otro juego, novela o marca: se descartaron Hornfell (casi igual que una región de otro juego de supervivencia) y Highmark (una aseguradora conocida).",
+   "Son regiones, no países (los países, si llegan, los harán los jugadores): «país» pasa a «región» en el mapa, el GDD, sistemas y el análisis, en los tres idiomas. El GDD guarda los nombres como decisión.",
+   "En el mapa cada región sale con su nombre y «Kinland» va en el mar, bajo la costa sur; al tocar un sitio dice en qué región está. En ruso los nombres van en cirílico. En otra semilla se llaman «Región 1» a «Región 5».",
+   "Prueba nueva del mapa: cada nombre cae en su tierra (Whitholm es la isla, Highfell tiene la cumbre más alta, Storaa el gran río, Rudmere es la más cálida, Eikwold está al noroeste). Con los nombres al revés falla, como debe. Publicado el mapa del mundo v9."
+  ],
+  "pruebas": "Mapa 75/75 y su navegador en PC y móvil correctos; lógica 177/177, modelos 138/138, combate 80/80, acciones 41/41, idiomas, carriles 24/24 y web correctos. El mapa en ruso, mirado en captura.",
+  "capturas": "capturas/mapa-v9",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T09:20:34+00:00",
+  "fin": "2026-10-28T15:31:25+00:00",
+  "titulo": "Arte: personalización del taller (personaje v16)",
+  "hito": "arte",
+  "hecho": [
+   "Formas de MakeHuman como formas del modelo en cada pieza: peso y músculo (también en la ropa, que engorda o adelgaza con el cuerpo), cara ancha, nariz ancha, nariz larga y mentón, cada una con su «_mas» y su «_menos».",
+   "Se hacen con los mismos ajustes y objetivos de MakeHuman: cada vértice de cada pieza se mueve lo mismo que el punto del cuerpo del que sale, también después de simplificar la malla.",
+   "La piel y el pelo se pintan en gris claro y su color va en el material; el iris va aparte del blanco del ojo. Así el juego cambia piel, ojos y pelo sin rehacer texturas.",
+   "Cejas, pelo pintado y barba (corta o bigote) son calcos sobre la piel, del color del pelo. La cara de la piel ya no se simplifica: si no, la piel los atravesaba en la barbilla.",
+   "En el visor: tono de piel, color de ojos y de pelo (seis de cada), peinado (corto o rapado), barba (corta, bigote o afeitado) y deslizadores de altura, peso, músculo, cara, nariz y mentón, sin volver a cargar el modelo. Se guarda en el navegador.",
+   "Lógica pura del aspecto en src/logica/aspecto.js (valores por defecto, recortes y validación), para que el servidor la use luego.",
+   "La construcción, la demo y el duelo ya pasan el aspecto al jugador en el código; no se han publicado versiones nuevas de esos prototipos.",
+   "Personajes nuevos en recursos/personajes/taller-v9/ (unos 2,6 MB el hombre y 2,7 MB la mujer, antes 1,7 y 1,8: las formas van sin cuantizar).",
+   "Provisional: la altura escala el personaje entero (±6 %); los colores y el alcance de los deslizadores también son provisionales. Tarea nueva: que los demás jugadores en línea vean tu aspecto."
+  ],
+  "pruebas": "Todas (probar_todo.sh) tras unir main: correctas salvo «jugar en línea» y la web, que fallaron una vez con el servidor cargado (un mensaje tardó más de 5 s; la página tardó en cargar) y pasaron al repetirlas solas. La del personaje, repetida sola tras su último cambio: correcta. Tras volver a unir main (mapa y servidor en internet), repetidas las de node (instalado Caddy, que pide la prueba nueva del servidor en internet) y la del mapa: correctas. Las dos pruebas nuevas y las comprobaciones nuevas del personaje fallan con MUTAR=1. Capturas del visor en PC y móvil revisadas, y la cara lado a lado con la v15. No comprobado: el rendimiento en un móvil de verdad.",
+  "capturas": "capturas/personaje-v16",
+  "estado": "ok"
  }
 ]
