@@ -19,4 +19,5 @@ un poco hacia arriba y hacia dentro, la mano de canto y la muñeca recta. Lo dem
 v7, el cinturón de encima de la cota ya no se estira hacia los brazos (el contorno se medía también contra las
 mangas, y las de la cota bajan hasta la mano). Lo demás, igual que la v6.
 v8, capa abierta por delante, botas y tocados (capucha con esclavina, sombrero de paja y, en la mujer, toca), todo
-hecho por código como la ropa; el sombrero es una malla propia pegada al hueso de la cabeza. Lo demás, igual que la v7.
+hecho por código como la ropa; el sombrero es una malla propia pegada al hueso de la cabeza. Lo demás, igual que la v7 La capucha y la toca tapan el hueco de la oreja (la oreja va aparte y se esconde debajo), y sus bordes se miden
+sin el empuje de la tela para que salgan limpios.
