@@ -175,7 +175,7 @@ with sync_playwright() as p:
         pg.evaluate(f"{E}.cambiar({{sexo: 'hombre'}})"); listo(pg)
         pg.click('[data-capa="cota"]'); pg.wait_for_timeout(200)
         cint = pg.evaluate(f"""(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === 'hombre_cinturon_cota') {{
-            const b = new {E}.diag().THREE.Box3().setFromBufferAttribute(o.geometry.attributes.position); r = [o.visible, Math.max(-b.min.x, b.max.x)]; }} }}); return r; }})()""")
+            const b = new ({E}.diag().THREE.Box3)().setFromBufferAttribute(o.geometry.attributes.position); r = [o.visible, Math.max(-b.min.x, b.max.x)]; }} }}); return r; }})()""")
         if os.environ.get('MUTAR'): cint = [True, 0.317]
         comprobar('hombre con cota: se ve su cinturón y ciñe la cintura (no llega a los brazos)', bool(cint) and cint[0] and cint[1] < 0.22,
                   f'medio ancho {cint[1]:.3f} m' if cint else 'sin cinturón')
@@ -243,6 +243,7 @@ with sync_playwright() as p:
         asp = pg.evaluate(f'{E}.diag().pj.aspecto')
         comprobar('aspecto: se recuerda al recargar', asp['piel'] == 'morena' and asp['pelo'] == 'rubio' and asp['formas']['peso'] == 1 and asp['peinado'] == 'rapado', str(asp))
         pg.evaluate(f"{E}.cambiar({{aspecto: {{}}}})"); listo(pg)
+        if not pg.is_visible('#opciones'): pg.click('#btnOpciones')  # en el móvil, al recargar empieza cerrado
         pg.evaluate(f"{E}.cambiar({{sexo: 'mujer'}})"); listo(pg)
         # en calidad alta, toda la ropa y el pelo escriben profundidad (si no, la piel se pinta encima: v5)
         pg.evaluate(f"{E}.cambiar({{calidad: 'alta'}})"); listo(pg)

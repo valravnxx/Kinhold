@@ -1128,5 +1128,6 @@
  "El hueco de la cara de la capucha, más estrecho, para que no se vea el interior por los lados.": "Вырез для лица у капюшона уже, чтобы сбоку не было видно изнанки.",
  "Rehechos los personajes de taller-v8 (sin publicar hasta ahora) y publicado el personaje v15 con capa, botas y tocados (capucha, sombrero de paja y toca).": "Персонажи taller-v8 (до сих пор не опубликованные) пересобраны, опубликован персонаж v15 с плащом, сапогами и головными уборами (капюшон, соломенная шляпа и апостольник).",
  "Las pruebas en línea sirven ya los personajes de taller-v8, los que usa la demo.": "Сетевые тесты теперь отдают персонажей taller-v8, которых использует демо.",
- "Provisional: la capa deja los brazos fuera, como un sobretodo abierto; que caiga por encima de los brazos queda para más adelante.": "Временно: плащ оставляет руки снаружи, как распахнутое пальто; чтобы он ниспадал поверх рук — оставлено на потом."
+ "Provisional: la capa deja los brazos fuera, como un sobretodo abierto; que caiga por encima de los brazos queda para más adelante.": "Временно: плащ оставляет руки снаружи, как распахнутое пальто; чтобы он ниспадал поверх рук — оставлено на потом.",
+ "Que los demás jugadores en línea te vean con tu aspecto (forma, colores, peinado y barba): mandarlo con el cuerpo y la ropa, y que el servidor lo compruebe con la misma lógica (src/logica/aspecto.js)": "Чтобы другие игроки в сети видели твою внешность (форму, цвета, причёску и бороду): передавать её вместе с телом и одеждой, а сервер пусть проверяет её той же логикой (src/logica/aspecto.js)"
 }
