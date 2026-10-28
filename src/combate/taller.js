@@ -131,20 +131,50 @@ export function pintarHeridaTaller(u, h, n) {
   // tratada: cosida, más oscura y cerrada; cauterizada, quemadura parda (deja marca)
   if (h.cauterizada) m.material.color.setHex(QUEMADURA);
   else if (h.cosida) { m.material.color.setHex(COSIDA); m.scale.x = 0.6; }
+  // vendada o entablillada: la venda la tapa (solo se ve la venda)
+  if (h.vendada || h.entablillada) { m.geometry.dispose(); m.material.dispose(); vendaje(u, h.zona, z, alto, tam, h.entablillada); return; }
   pegar(u, m, z, lado, alto, 1);
   if (h.tipo === 'corte') m.rotateZ(((n * 53) % 5 - 2) * 0.35); // tajo en diagonal
-  // venda de lino por encima (y las tablillas, si está entablillada)
-  if (h.vendada || h.entablillada) {
-    const v = new THREE.Mesh(new THREE.PlaneGeometry(tam * 1.6, tam * 1.15), new THREE.MeshLambertMaterial({ color: VENDA, map: textura('tejido'), side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -4 }));
-    v.name = 'herida'; v.userData.materialPropio = true;
-    pegar(u, v, z, lado, alto, 1);
-    v.translateZ(0.003);
-  }
-  if (h.entablillada) for (const s of [-1, 1]) {
-    const tab = new THREE.Mesh(new THREE.BoxGeometry(0.018, tam * 2.4, 0.01), new THREE.MeshLambertMaterial({ color: TABLILLA }));
-    tab.name = 'herida'; tab.userData.materialPropio = true;
-    pegar(u, tab, z, lado + s * tam * 0.55, alto, 1);
-    tab.translateZ(0.008);
+}
+// grosor máximo de cada zona (m): lo que esté más lejos del eje es de otra parte del cuerpo
+const GROSOR_MAX = { cabeza: 0.15, torso: 0.28, brazoI: 0.075, brazoD: 0.075, piernaI: 0.105, piernaD: 0.105 }; // (sin el vuelo de la túnica)
+// Venda enrollada: un tubo de lino alrededor del tramo de la zona, del grosor que tiene allí el personaje (con su
+// ropa), medido con rayos desde fuera hacia el eje en cuatro lados. Se cuelga del hueso como las manchas.
+function vendaje(u, zona, z, alto, tam, tablillas) {
+  const t = u.taller;
+  u.cuerpo.updateMatrixWorld(true);
+  const p0 = z.de.getWorldPosition(V(0, 0, 0)), p1 = z.a.getWorldPosition(V(0, 0, 0));
+  let eje = p1.clone().sub(p0);
+  if (eje.lengthSq() < 1e-6) eje = V(0, 1, 0).transformDirection(u.cuerpo.matrixWorld); // la cabeza: un solo hueso
+  eje.normalize();
+  const centro = p0.lerp(p1, 0.5 + alto);
+  if (z.alto) centro.y += z.alto;
+  const izq0 = z.par ? z.par[0].getWorldPosition(V(0, 0, 0)).sub(z.par[1].getWorldPosition(_e)) : V(1, 0, 0).transformDirection(u.cuerpo.matrixWorld);
+  const X = izq0.addScaledVector(eje, -izq0.dot(eje)).normalize(), Z = X.clone().cross(eje).normalize();
+  // las faldas y el manto cuelgan sueltos: la venda va debajo, ceñida al cuerpo y a lo que va pegado a él
+  const mallas = [];
+  t.mh.modelo.traverse(n => { if (n.isMesh && n.visible && !/ojo|pelo|falda|manto/.test(n.name)) mallas.push(n); });
+  const max = GROSOR_MAX[zona] || 0.15;
+  const radio = (d) => {   // lo más lejos del eje que es aún de esta zona, en la dirección d
+    _ray.set(centro.clone().addScaledVector(d, 0.6), d.clone().negate()); _ray.far = 0.6;
+    let r = 0;
+    for (const i of _ray.intersectObjects(mallas, false)) { const x = 0.6 - i.distance; if (x <= max && x > r) r = x; }
+    return r || max * 0.6;
+  };
+  const rx = Math.max(radio(X), radio(X.clone().negate())) + 0.006, rz = Math.max(radio(Z), radio(Z.clone().negate())) + 0.006;
+  const largo = zona === 'cabeza' ? 0.045 : Math.min(0.2, tam * 1.5);
+  const base = new THREE.Matrix4().makeBasis(X, eje, Z);
+  const tubo = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, largo, 14, 1, true), new THREE.MeshLambertMaterial({ color: VENDA, map: textura('tejido'), side: THREE.DoubleSide }));
+  tubo.name = 'herida'; tubo.userData.materialPropio = true; tubo.userData.superficie = true;
+  tubo.position.copy(centro); tubo.quaternion.setFromRotationMatrix(base); tubo.scale.set(rx, 1, rz);
+  tubo.castShadow = true;
+  z.hueso.updateWorldMatrix(true, false); z.hueso.attach(tubo);   // sin padre: su posición es la del mundo
+  if (!tablillas) return;
+  for (const s of [-1, 1]) {   // dos tablillas por los lados, más largas que la venda
+    const tab = new THREE.Mesh(new THREE.BoxGeometry(0.014, Math.min(0.32, largo * 2.2), 0.024), new THREE.MeshLambertMaterial({ color: TABLILLA }));
+    tab.name = 'herida'; tab.userData.materialPropio = true; tab.userData.superficie = true;
+    tab.position.copy(centro).addScaledVector(X, s * (rx + 0.008)); tab.quaternion.setFromRotationMatrix(base);
+    z.hueso.attach(tab);
   }
 }
 const VENDA = 0xcfc3a8, TABLILLA = 0x7a5a3a, QUEMADURA = 0x3b2418, COSIDA = 0x4e1a14;

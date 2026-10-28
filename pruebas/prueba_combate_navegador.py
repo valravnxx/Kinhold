@@ -129,7 +129,9 @@ with sync_playwright() as p:
     ev(f"(()=>{{const j={D}.jugador; j.accion='libre'; j.curar(3,'coser'); j.duracion=0.3;}})()")
     hasta(f"{D}.jugador.heridas[3].cosida", 15000); espera(400)
     vend = ev(f"(()=>{{let n=0; {D}.mJugador.traverse(o=>{{if(o.name==='herida'&&o.material&&o.material.color.getHex()===0xcfc3a8) n++}}); return n}})()")
-    comprobar('las heridas vendadas llevan su venda de lino pintada en el cuerpo', vend == 2, f'{vend} vendas')
+    comprobar('las heridas vendadas llevan su venda de lino enrollada', vend == 2, f'{vend} vendas')
+    ev(f"(()=>{{const j={D}.jugador; j.recibirHerida('piernaI',0.6,'contundente'); j.accion='libre'; j.curar(j.heridas.length-1,'entablillar'); j.duracion=0.3;}})()")
+    comprobar('entablillar una pierna rota: venda y dos tablillas', hasta(f"{D}.jugador.heridas.some(h => h.entablillada)", 15000) and (espera(400) or True) and ev(f"(()=>{{let n=0; {D}.mJugador.traverse(o=>{{if(o.name==='herida'&&o.material&&o.material.color.getHex()===0x7a5a3a) n++}}); return n}})()") == 2)
     foto(f'{SALIDA}/00k_taller_vendado.png', ang=0.2)
     foto(f'{SALIDA}/00l_taller_vendado_pierna.png', ang=0.3, dist=1.2, alto=0.8, mira=0.6)
     for arma in ['espada_escudo', 'palo', 'arco']:
