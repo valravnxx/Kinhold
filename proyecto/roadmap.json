@@ -600,7 +600,9 @@
     },
     {
      "nombre": "Chimenea u hogar interior (N2: piedras y barro, 600 kg): solo sobre cimiento de piedra, con fuego, luz y humo que sale por el tejado",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T21:51:52+00:00",
+     "rama": "trabajo/20261028-2151"
     },
     {
      "nombre": "Adarve (pasarela por detrás de la empalizada: tablas y postes, sostiene 300 kg), al que se sube por escalera de mano o de tablas",
