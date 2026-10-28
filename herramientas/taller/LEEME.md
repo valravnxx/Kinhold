@@ -80,3 +80,18 @@ comprueba el formato de `versiones.json`, que una versión distinta se detecta y
   para que no los atraviese.
 
 Prueba: `node pruebas/prueba_aspecto_modelos.mjs` (con `MUTAR=1` mira la taller-v8, que no los tiene, y falla).
+
+## Peinados y barbas (desde taller-v10)
+
+- **Pelo corto** (`_pelo`, cáscara sobre el cráneo): lo llevan los dos cuerpos; es la base de los peinados largos.
+- **Melena, coleta y trenzas** (`_pelo_melena`, `_pelo_coleta`, `_pelo_trenzas`; `pelo_largo()` en `vestir_mpfb.py`):
+  mallas propias, no trozos de la piel. La melena es una cortina que cae del cráneo (radio medido con rayos desde fuera
+  contra la piel, que nunca se mete hacia dentro al bajar) y se apoya en el cuello y los hombros; la coleta y las trenzas
+  son tubos que bajan por la espalda a unos centímetros de la piel. Su mapa UV va a lo largo y la textura (mechones,
+  puntas desiguales en la transparencia) se pinta directamente en él. Pesos: `head` arriba, `neck_01` en medio y
+  `spine_03` abajo.
+- **Barba larga** (`_barba_larga`): la piel de la barba despegada y, bajo el mentón, estirada hacia delante y hacia
+  abajo; va con la corta pintada debajo. **Perilla** (`_barba_perilla`): calco como la corta y el bigote.
+- La mujer lleva también orejas aparte y pelo corto para cuando no lleva la cofia.
+- Qué se ve con cada peinado, barba y tocado: `piezasCabeza()` en `src/logica/aspecto.js` (el juego y las fotos del
+  taller hacen lo mismo). Fotos de cerca de cada uno: `FOTOS=peinados python3 herramientas/taller/vestir_mpfb.py <carpeta>`.
