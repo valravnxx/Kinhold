@@ -10,5 +10,11 @@
   "tarea": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
   "hito": "equipo",
   "rama": "trabajo/20261028-1651"
+ },
+ "chat:trabajo/20261028-1930-laderas": {
+  "inicio": "2026-10-28T19:29:42+01:00",
+  "tarea": "Laderas de montaña sin escalones: los cortados solo donde ya es muy empinado y aflora la roca, en pocos escalones grandes; el resto de la montaña, pendiente continua",
+  "hito": "mundo",
+  "rama": "trabajo/20261028-1930-laderas"
  }
 }

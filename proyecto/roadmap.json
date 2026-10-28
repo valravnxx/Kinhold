@@ -941,6 +941,12 @@
      "inicio": "2026-10-28T15:45:46+01:00",
      "rama": "trabajo/20261028-1546-nombres",
      "fin": "2026-10-28T16:06:02+01:00"
+    },
+    {
+     "nombre": "Laderas de montaña sin escalones: los cortados solo donde ya es muy empinado y aflora la roca, en pocos escalones grandes; el resto de la montaña, pendiente continua",
+     "estado": "en_curso",
+     "inicio": "2026-10-28T19:29:42+01:00",
+     "rama": "trabajo/20261028-1930-laderas"
     }
    ],
    "lleva": "chat"
