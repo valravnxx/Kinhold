@@ -13,6 +13,7 @@ if (process.env.MUTAR === '1') {
   PIEZAS.polea.hueco = 'b';       // una polea que no cuelga de su viga
   PIEZAS.polipasto.polipasto = false; // un polipasto que es una polea más
   PIEZAS.muro_tabla_ventana.conVentana = false; // un muro de tablas con ventana sin hueco para la contraventana
+  PIEZAS.tejado_teja.peso = 80;   // un tejado de teja que pesa como uno de paja
 }
 
 let ok = 0, mal = 0;
@@ -668,6 +669,66 @@ console.log('18. Contraventana, trampilla y muro de tablas con ventana');
   const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
   const c2 = m2.construcciones.find(x => x.id === c.id);
   comprobar('se guardan y se cargan (abierta y cerrada)', c2.piezas.get(tr.clave)?.abierta === true && c2.piezas.get(cv.clave)?.abierta === false && c2.piezas.get(clave('e', 1, 0, 0, 0))?.tipo === 'muro_tabla_ventana');
+}
+
+console.log('19. Tejado de teja (pesa 200 kg: el doble y más que la paja)');
+{
+  const t = PIEZAS.tejado_teja;
+  comprobar('material nuevo «teja», ligero (se sube a mano)', MATERIALES.teja === 'Teja' && CLASE_PESO.teja === 'ligero');
+  comprobar('N2, 10 tejas y las vigas (1 tronco), y no se pudre ni arde fácil', t.nivel === 2 && t.coste.teja === 10 && t.coste.tronco === 1 && t.noSePudre && t.ardePoco && t.hueco === 'r');
+  // casa de N×M casillas con muros por fuera en cada planta y tejado del tipo pedido
+  function casaCon(N, M, plantas, tejado, cim = 'cim_tronco', muro = 'muro_tronco') {
+    const m = new Mundo(); m.colocarMojon(0, 0);
+    for (const k in m.materiales) m.materiales[k] = 1e6;
+    const c = nuevaConstruccion(m), fallos = [];
+    const pon = (q, tipo, i, j, k, d) => { const r = m.colocar(enRejilla(m, c, tipo, i, j, k, d)); if (!r.ok) fallos.push(`${q}: ${r.motivo}`); };
+    const celdas = [];
+    for (let i = 0; i < N; i++) for (let j = 0; j < M; j++) celdas.push([i, j]);
+    const borde = ([i, j]) => Math.min(i, N - 1 - i, j, M - 1 - j);
+    celdas.sort((a, b) => borde(a) - borde(b));
+    for (const [i, j] of celdas) pon(`cimiento ${i},${j}`, cim, i, j, 0);
+    for (let k = 0; k < plantas; k++) {
+      if (k > 0) for (const [i, j] of celdas) pon(`suelo k${k}`, 'suelo_tronco', i, j, k);
+      for (const [i, j] of celdas) for (const [ai, aj, , ad] of aristasDeCasilla(i, j, k)) {
+        if (c.piezas.has(clave('e', ai, aj, k, ad))) continue;
+        const dentro = casillasDeArista(ai, aj, ad).filter(([x, y]) => x >= 0 && y >= 0 && x < N && y < M);
+        if (dentro.length === 1) pon(`muro k${k}`, muro, ai, aj, k, ad);
+      }
+    }
+    for (const [i, j] of celdas) pon(`tejado ${i},${j}`, tejado, i, j, plantas);
+    const cs = m.cargas(c);
+    let peor = 0; for (const [k, carga] of cs) { const cap = PIEZAS[c.piezas.get(k).tipo].cap; if (cap) peor = Math.max(peor, carga / cap); }
+    let alSuelo = 0; for (const [k, p] of c.piezas) if (p.hueco === 'f' && p.k === 0) alSuelo += cs.get(k) + PIEZAS[p.tipo].peso;
+    return { m, c, fallos, peor, alSuelo };
+  }
+  const paja = casaCon(3, 3, 2, 'tejado_paja'), teja = casaCon(3, 3, 2, 'tejado_teja');
+  comprobar('casa de 3×3 y 2 plantas de troncos con tejado de teja: se puede hacer entera', teja.fallos.length === 0, teja.fallos.slice(0, 2).join(' | '));
+  comprobar('y los cimientos cargan 120 kg más por cada tramo (9 tramos: 1080 kg)', Math.abs(teja.alSuelo - paja.alSuelo - 9 * 120) < 1e-6, `${paja.alSuelo} → ${teja.alSuelo} kg`);
+  comprobar('la pieza más cargada sube (paja 70 % → teja 76 %), con margen', teja.peor > paja.peor && teja.peor <= 0.8, `${Math.round(paja.peor * 100)} % → ${Math.round(teja.peor * 100)} %`);
+  const piedra3 = casaCon(4, 3, 3, 'tejado_teja', 'cim_piedra');
+  comprobar('3 plantas sobre cimiento de piedra con teja: aún se puede, pero al límite (≥ 95 %)', piedra3.fallos.length === 0 && piedra3.peor >= 0.95 && piedra3.peor <= 1, `peor ${Math.round(piedra3.peor * 100)} % ${piedra3.fallos[0] || ''}`);
+  const zp = casaCon(3, 3, 1, 'tejado_paja', 'cim_tronco', 'muro_zarzo'), zt = casaCon(3, 3, 1, 'tejado_teja', 'cim_tronco', 'muro_zarzo');
+  comprobar('zarzo de 3×3: con paja va holgado; con teja, los muros del medio llegan al tope (250 kg)', zp.peor < 0.5 && zt.fallos.length === 0 && zt.peor > 0.99, `paja ${Math.round(zp.peor * 100)} % · teja ${Math.round(zt.peor * 100)} %`);
+  // ahí ya no cabe nada más: un tramo de tejado de teja que vuela fuera, apoyado en el de al lado, se rechaza por peso
+  const v = zt.m.validar(enRejilla(zt.m, zt.c, 'tejado_teja', 3, 1, 1));
+  comprobar('y un tramo de teja más, volando y apoyado en el de al lado, se rechaza por el peso', !v.ok && /peso/.test(v.motivo || ''), v.motivo || 'admitido');
+  const vp = zp.m.validar(enRejilla(zp.m, zp.c, 'tejado_paja', 3, 1, 1));
+  comprobar('(con paja ese mismo tramo sí cabe)', vp.ok, vp.motivo || '');
+  // como obra: se ponen el marco, las tejas (a mano) y el tronco (con la polea o rodándolo) y se cobra lo suyo
+  const m = new Mundo(); m.colocarMojon(0, 0);
+  const R = new RegistroAcciones(), yo = 'jugador:prueba';
+  const c = nuevaConstruccion(m);
+  m.colocar(enRejilla(m, c, 'cim_tronco', 0, 0, 0));
+  for (const [i, j, d] of [[0, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1]]) m.colocar(enRejilla(m, c, 'muro_tronco', i, j, 0, d));
+  const antes = { ...m.materiales };
+  const r = ejecutar(m, R, { autor: yo, tipo: 'colocar', pieza: 'tejado_teja', x: 1, z: 1, k: 1, rot: 0, dir: 0 });
+  const fin = r.ok ? acabarObra(m, R, yo, c.id, r.clave) : r;
+  comprobar('como obra, con su autor: cuesta 10 tejas y 1 tronco', r.ok && fin.ok && antes.teja - m.materiales.teja === 10 && antes.tronco - m.materiales.tronco === 1, `${r.motivo || ''} ${fin.motivo || ''}`);
+  const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  comprobar('se guarda y se carga', m2.construcciones[0].piezas.get(clave('r', 0, 0, 1))?.tipo === 'tejado_teja');
+  // partidas guardadas de antes de la teja: se cargan con las tejas de partida
+  const viejo = m.exportar(); delete viejo.materiales.teja;
+  comprobar('una partida guardada sin tejas se carga con las de partida', Mundo.importar(JSON.parse(JSON.stringify(viejo))).materiales.teja === 100);
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
