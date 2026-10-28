@@ -13,7 +13,9 @@ class S(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(S, directory=d)); threading.Thread(target=srv.serve_forever, daemon=True).start()
 nombres = [('pieza', t) for t in arg.get('piezas', '').split(',') if t] + [('deco', t) for t in arg.get('deco', '').split(',') if t] + [('arma', t) for t in arg.get('armas', '').split(',') if t]
-if arg.get('casas'): nombres = [('casa', t) for t in ['paja_dos_aguas', 'tablillas_dos_aguas', 'paja_una_caida', 'tablillas_una_caida', 'teja_dos_aguas', 'teja_una_caida']]
+if arg.get('casas'): nombres = [('casa', t) for t in ['paja_dos_aguas', 'tablillas_dos_aguas', 'paja_una_caida', 'tablillas_una_caida', 'teja_dos_aguas', 'teja_una_caida', 'paja_cuatro_aguas', 'tablillas_en_L', 'teja_en_L', 'paja_en_L', 'tablillas_cuatro_aguas', 'teja_piramide']]
+if arg.get('solo'): nombres = [(i, n) for i, n in enumerate(nombres) if n[1] in arg['solo'].split(',')]
+else: nombres = list(enumerate(nombres))
 vistas = arg.get('vistas', 'tres,frente,cerca').split(',')
 with sync_playwright() as p:
     b = p.chromium.launch(args=['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'])
@@ -23,7 +25,7 @@ with sync_playwright() as p:
     pg.wait_for_function('window.__muestrario && window.__muestrario.listo', timeout=60000)
     pg.wait_for_timeout(500)
     pg.evaluate("window.__muestrario.foto(-1, 'tres', 1400, 700)"); pg.screenshot(path=f'{sal}/00_todas.png', clip={'x': 0, 'y': 0, 'width': 900, 'height': 700})
-    for i, (c, t) in enumerate(nombres):
+    for n, (i, (c, t)) in enumerate(nombres):
         for v in vistas:
             pg.evaluate(f"window.__muestrario.foto({i}, '{v}', 900, 700)"); pg.screenshot(path=f'{sal}/{i + 1:02d}_{t}_{v}.png')
     print('fotos', len(nombres) * len(vistas) + 1, '· errores', err[:3]); b.close()

@@ -456,7 +456,9 @@
     },
     {
      "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T21:20:50+00:00",
+     "rama": "trabajo/20261028-2120"
     },
     {
      "nombre": "Taller: pies descalzos. El cuerpo no tiene pies bajo los zapatos (se quitan al vestir) y el GDD dice que se empieza descalzo: hace falta el cuerpo con pies cuando no lleva zapatos",
@@ -592,9 +594,9 @@
     },
     {
      "nombre": "Remate de tejado: cumbrera y esquinas, para que los tejados de dos tramos que se cruzan en una esquina queden cerrados",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T18:21:02+00:00",
-     "rama": "trabajo/20261028-1821"
+     "fin": "2026-10-28T20:38:57+00:00"
     },
     {
      "nombre": "Chimenea u hogar interior (N2: piedras y barro, 600 kg): solo sobre cimiento de piedra, con fuego, luz y humo que sale por el tejado",
@@ -713,9 +715,9 @@
     },
     {
      "nombre": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T16:51:15+00:00",
-     "rama": "trabajo/20261028-1651"
+     "fin": "2026-10-28T20:47:04+00:00"
     },
     {
      "nombre": "Panel de inventario en la demo: silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro y capas del cuerpo); al tocar un cuadro con contenedor se abren sus huecos; sin cinturón no hay cuadros de cintura. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Mientras no haya fabricación (hito 3), el equipo se coge de un arcón de pruebas, como el botón de rellenar materiales. Capturas en PC y móvil",
@@ -955,7 +957,9 @@
     },
     {
      "nombre": "Saltos de agua donde el río cruza roca dura",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T21:54:37+01:00",
+     "rama": "trabajo/20261028-2155-saltos"
     },
     {
      "nombre": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
@@ -1004,9 +1008,9 @@
     },
     {
      "nombre": "Laderas de montaña sin escalones: los cortados solo donde ya es muy empinado y aflora la roca, en pocos escalones grandes; el resto de la montaña, pendiente continua",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T19:29:42+01:00",
-     "rama": "trabajo/20261028-1930-laderas"
+     "fin": "2026-10-28T21:39:03+01:00"
     }
    ],
    "lleva": "chat"
@@ -1344,6 +1348,13 @@
      "archivo": "jugar/demo/v30.html",
      "capturas": "capturas/demo-v30",
      "notas": "Los demás jugadores en línea te ven con tu aspecto: forma, colores de piel, ojos y pelo, peinado y barba, en la construcción y en el duelo. El servidor lo comprueba con la misma lógica que el visor de personaje. Un servidor de antes avisa de que hay que actualizarlo."
+    },
+    {
+     "v": "v31",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v31.html",
+     "capturas": "capturas/demo-v31",
+     "notas": "En «Construir», remate de tejado (esquina) de paja, de tablillas y de teja: limatesa en la esquina de fuera y limahoya en el rincón de un tejado en L, según los tramos de al lado."
     }
    ]
   },
@@ -1547,6 +1558,13 @@
      "archivo": "jugar/construccion/v30.html",
      "capturas": "capturas/construccion-v30",
      "notas": "Tejado de teja (10 tejas y 1 tronco, 200 kg): teja curva de barro cocido con canales, cobijas y caballete en la cumbrera. Pesa más del doble que la paja. Material nuevo: teja."
+    },
+    {
+     "v": "v31",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/construccion/v31.html",
+     "capturas": "capturas/construccion-v31",
+     "notas": "Remate de tejado (esquina) de paja, de tablillas y de teja: donde se juntan dos caídas en ángulo recto se hace solo limatesa (esquina de fuera) o limahoya (el rincón de un tejado en L). Con cuatro remates, un tejado a cuatro aguas sin hastiales; en una casa en L, las dos alas quedan cerradas y las cumbreras se encuentran."
     }
    ]
   },
@@ -1848,6 +1866,13 @@
      "archivo": "jugar/personaje/v16.html",
      "capturas": "capturas/personaje-v16",
      "notas": "Personalización del taller propio: tono de piel, color de ojos y de pelo, peinado (corto o rapado), barba (corta, bigote o afeitado) y deslizadores de altura, peso, músculo, cara ancha, nariz ancha, nariz larga y mentón. Peso, músculo y la cara son las formas de MakeHuman; la ropa engorda o adelgaza con el cuerpo."
+    },
+    {
+     "v": "v17",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/personaje/v17.html",
+     "capturas": "capturas/personaje-v17",
+     "notas": "Datos de cada prenda en la lógica pura: lo que frena de cada golpe, lo que abriga y lo que pesa la ropa que ves puesta, en una tabla de Opciones"
     }
    ]
   },
@@ -1939,6 +1964,13 @@
      "archivo": "jugar/mapa/v10.html",
      "capturas": "capturas/mapa-v10",
      "notas": "El mundo de cerca es siempre igual: árboles, hierba, piedras y rocas salen de su sitio en el mundo y de la semilla, así que al andar y rehacer la zona de cerca lo que ya estaba no cambia."
+    },
+    {
+     "v": "v11",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/mapa/v11.html",
+     "capturas": "capturas/mapa-v11",
+     "notas": "Las laderas de montaña ya no van en escalones: son pendientes continuas, y los cortados salen solo en afloramientos de roca y donde ya es muy empinado, en pocos escalones grandes."
     }
    ]
   }

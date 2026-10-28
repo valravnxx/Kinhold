@@ -137,6 +137,32 @@ console.log('Tejados y rellenos bajo el tejado con el estilo v5');
     const tp = tri(modeloPieza('tejado_paja')), tt = tri(modeloPieza('tejado_teja'));
     comprobar('Tejado de teja: ligero para el móvil (como mucho 2,5 veces los triángulos de la paja)', tt <= tp * 2.5 * (process.env.MUTAR_TEJA ? 0.5 : 1), `${Math.round(tp)} → ${Math.round(tt)} triángulos`);
   }
+  // remates (esquinas): las dos mitades cortadas por la diagonal siguen la forma que les toca (limatesa: el menor de los
+  // dos planos; limahoya: el mayor), nada asoma por debajo y no pesan más que un tramo en el móvil
+  {
+    const tri = (o) => { let n = 0; o.traverse(m => { if (m.isMesh) n += m.geometry.attributes.position.count / 3; }); return n; };
+    for (const [tipo, tramo] of [['remate_paja', 'tejado_paja'], ['remate_tablilla', 'tejado_tablilla'], ['remate_teja', 'tejado_teja']]) {
+      for (const forma of ['tesa', 'hoya']) {
+        const g = modeloPieza(tipo, { forma, par: 0 });
+        const plano = (x, z) => { const a = (z + S / 2) / S * sub, b = (x + S / 2) / S * sub; return forma === 'tesa' ? Math.min(a, b) : Math.max(a, b); };
+        let bajo = 0, sobra = 0;
+        g.traverse(o => {
+          if (!o.isMesh) return; const pos = o.geometry.attributes.position;
+          for (let i = 0; i < pos.count; i++) {
+            const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+            if (Math.abs(x) > S / 2 - 0.05 || Math.abs(z) > S / 2 - 0.05) continue;
+            bajo = Math.max(bajo, plano(x, z) - y);
+            // lejos de la diagonal (donde va la limatesa o la limahoya), el tejado no se aparta de su plano más que su grueso
+            if (Math.abs(x - z) > 0.6) sobra = Math.max(sobra, y - plano(x, z));
+          }
+        });
+        comprobar(`${PIEZAS[tipo].nombre} (${forma}): nada asoma por debajo de su forma`, bajo < 0.01, `asoma ${r3(bajo)} m`);
+        comprobar(`${PIEZAS[tipo].nombre} (${forma}): cada mitad se queda en su lado de la diagonal`, sobra < 0.5, `sobresale ${r3(sobra)} m`);
+      }
+      const tr = tri(modeloPieza(tipo, { forma: 'tesa', par: 0 })), tt = tri(modeloPieza(tramo));
+      comprobar(`${PIEZAS[tipo].nombre}: ligero para el móvil (como mucho el doble que su tramo: tiene dos aleros)`, tr <= tt * 2, `${Math.round(tt)} → ${Math.round(tr)} triángulos`);
+    }
+  }
   // rellenos: cierran del muro al tejado y no lo atraviesan
   for (const muro of ['muro_tronco', 'muro_tabla', 'muro_zarzo', 'muro_entramado']) {
     const r = rellenoTejado({ tipo: 'lado', lado: 1, muro, hBajo: 0, hAlto: 1 }, 0);

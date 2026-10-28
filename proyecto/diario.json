@@ -1977,5 +1977,55 @@
   "pruebas": "Todas (probar_todo.sh): correctas salvo dos. El duelo en línea falló porque su prueba esperaba la clave antigua del modelo; corregida y pasada sola. La del servidor en internet no se pudo pasar: aquí no se pudo instalar Caddy (no comprobado). Tras unir main: las de node correctas y las dos de navegador en línea correctas. «Jugar en línea» falló una vez por tiempo, con la máquina cargada, y pasó al repetirla. Las pruebas nuevas fallan si el servidor no limpia la personalización o si el juego no se la pone al otro. Capturas de cerca en PC y móvil revisadas.",
   "capturas": "capturas/demo-v30",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T16:51:15+00:00",
+  "fin": "2026-10-28T20:47:04+00:00",
+  "titulo": "Hito 2: datos de cada prenda (zonas, protección, abrigo y peso)",
+  "hito": "equipo",
+  "hecho": [
+   "Nuevo src/logica/prendas.js (lógica pura): quince prendas con su capa del inventario, su material, su peso y la pieza del taller que las dibuja (camisa, pantalón o calzas, túnica, vestido, gambesón, cota de malla, sobreveste, capa, capucha, sombrero de paja, toca, zapatos y botas)",
+   "Las zonas que cubre cada prenda salen de sus piezas en el taller (cuerpo → torso, mangas → brazos, falda → piernas); la prueba lo compara con los modelos publicados (taller-v9): la sobreveste no tiene mangas y por eso no protege los brazos",
+   "El orden de las capas que dibuja el taller (makehuman.js) y la ropa del catálogo del inventario salen ahora de esos mismos datos",
+   "Protección por tipo de golpe (corte, estocada, contundente) según el material, coherente con el duelo: camisa y gambesón dan su «gambesón» y con la cota, su «malla»",
+   "En el visor de personaje (v17), una tabla en Opciones dice lo que frena tu ropa en la cabeza, el torso, los brazos y las piernas, con el peso y el abrigo",
+   "Decisiones provisionales (en el registro del personaje): cifras de abrigo y peso, una prenda por capa en el inventario como en el GDD (túnica y gambesón comparten la de abrigo) y el peso de la ropa aún no ralentiza"
+  ],
+  "pruebas": "Prueba nueva prueba_ropa.mjs (80 comprobaciones; MUTAR=1 y MUTAR=2 la rompen y falla) y comprobación nueva de la tabla en el navegador del personaje. Batería completa: todo correcto salvo tres de navegador que fallaron por tiempo con la máquina cargada (construcción, cavar e idiomas; en idiomas faltaban seis traducciones de la tabla, ya puestas). Tras unir main, repetidas solas todas las de lógica y las de navegador del personaje, idiomas, cavar y demo: correctas. La de construcción falló una vez en «al perder el dibujo 3D recarga sola» (espera de 20 s con la máquina cargada); comprobado aparte que avisa y recarga en 5,7 s. No comprobado: el resto del navegador tras la última unión con main (aspecto en línea de otra sesión)",
+  "capturas": "capturas/personaje-v17",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T18:20:32+00:00",
+  "fin": "2026-10-28T20:38:57+00:00",
+  "titulo": "Hito 1c: remate de tejado, esquinas que cierran (carril A)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Remate de tejado (esquina), en «Tejados», uno por material: paja (1 vara y 2 de paja, 40 kg, como dice el documento de sistemas), tablillas (2 tablas y 2 clavos, 50 kg) y teja (5 tejas y 1 tronco, 100 kg). «Materiales: igual» se lee como del mismo material que el tejado, a mitad de coste y peso que su tramo (provisional, anotado en el registro de decisiones).",
+   "La forma sale sola de los tramos de al lado (lógica pura, geometriaTejados): limatesa en la esquina de fuera de un tejado a cuatro aguas; limahoya en el rincón de un tejado en L. Se gira como un tramo y el fantasma ya muestra la forma que tendrá.",
+   "Los tramos se juntan con lo que tienen al lado comparando la altura de los vértices que comparten: junto a un remate no vuelan ni piden hastial, y contra una limahoya el tramo pone la cumbrera, así que las dos cumbreras de una L se encuentran.",
+   "Dibujo: dos mitades del tramo de su material cortadas por la diagonal (recorte de triángulos por un plano en el Lote, src/mundo/estilos.js); la limatesa se cubre como la cumbrera de su material (rollo de paja, caballete de tablas o cobijas en barro) y la limahoya lleva tabla o canales en el fondo.",
+   "Muestrario de tejados con casas a cuatro aguas, en L y en pirámide; capturas de cerca y junto a la cabaña de la prueba de estilo v5.",
+   "Los remates van solo en la primera fila del tejado (no se apilan en pendientes de más de un tramo).",
+   "Publicadas construcción v31 y demo única v31."
+  ],
+  "pruebas": "Todas con bash herramientas/probar_todo.sh: todo correcto salvo la del servidor en internet, que necesita Caddy (no estaba; instalado con apt-get, 19/19 sola). Lógica 203/203 (17 nuevas; 3 fallan con MUTAR=1), modelos 159/159 (14 nuevas; sin el recorte fallan 4), navegador de construcción con 5 comprobaciones nuevas (casa en L desde el menú, fantasma de limahoya, cobro, móvil). Tras unir main, repetidas las de node, idiomas y la demo en navegador. No comprobado tras unir main: el navegador de construcción (main solo cambió el juego en línea). Capturas miradas en PC y móvil.",
+  "capturas": "capturas/construccion-v31",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T19:29:42+01:00",
+  "fin": "2026-10-28T21:39:03+01:00",
+  "titulo": "Hito 10: laderas de montaña sin escalones",
+  "hito": "mundo",
+  "hecho": [
+   "Medido: en las laderas de montaña salía un escalón cada 25 m (casi 40 paredes por km) y un tercio del suelo era pared, porque los cortados se aplicaban a casi cualquier ladera de roca dura",
+   "Los cortados ahora solo salen en afloramientos de roca (manchas de unos cientos de metros, un 8 % del mundo) y donde ya es muy empinado, en pocos escalones grandes de 18 a 45 m; el resto de la ladera queda continua",
+   "En 20 sitios de montaña repartidos por el mundo, la mediana baja de 26 a 4 paredes por km; los acantilados de costa siguen igual",
+   "Prueba nueva: la mediana de paredes por km en montaña, por debajo de 8 (con afloramientos por todas partes, como antes, falla)"
+  ],
+  "pruebas": "Batería completa correcta (seguida); tras unir main, servidor, en línea, combate en el servidor, idiomas y navegador de en línea y duelo en línea otra vez. No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v11",
+  "estado": "ok"
  }
 ]
