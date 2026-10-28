@@ -523,7 +523,7 @@
   "hecho": [
    "valravnx, por el chat: «puedes hacer, están haciendo los modelados de ropa; haz algo no relacionado». Elige planificar el hito de construcción, que no toca el personaje. Se hace aunque el hito de arte bloquee empezar hitos nuevos, porque lo pide él.",
    "Comparadas las piezas del documento de sistemas con las que ya hay en el juego. Faltan: escalera de tablas, contraventana, trampilla, tejado de teja, remate de tejado, chimenea, adarve, puente de troncos y parte de la decoración.",
-   "Hito desglosado en 9 tareas de una sesión: escalera de tablas, barandillas y vallas, contraventana y trampilla, tejado de teja, remate de tejado, chimenea, adarve, decoración que falta y revisión final.",
+   "Hito desglosado en 10 tareas de una sesión: escalera de tablas, barandillas y vallas, contraventana y trampilla, tejado de teja, remate de tejado, chimenea, adarve, decoración que falta y revisión final.",
    "Los puentes de troncos se dejan para el hito Mundo, porque necesitan agua en el mapa.",
    "Esta sesión no toca proyecto/sesion.json, que es de la sesión de la ropa."
   ],
@@ -1955,7 +1955,7 @@
   "hecho": [
    "carriles.mjs elige para el carril A empezar el hito 3, porque los hitos en curso con tareas pendientes los lleva otro agente vivo o una sesión de chat.",
    "Leídos los apartados 9 y «Fabricar» del GDD y los apartados 2, 3, 7, 8, 10 y 11 del documento de sistemas. Las cifras de estaciones, recetas y durabilidad son propuestas del documento; se usan como valores iniciales para ajustar probando.",
-   "Hito desglosado en 9 tareas de una sesión: recoger lo de N0, estaciones y recetas en la lógica pura, desbloqueo por práctica, estaciones construidas y con el estilo v5, panel de la estación, objetos fabricados con el estilo v5, durabilidad, reparar, el primer día recorrido en la demo, y la revisión final.",
+   "Hito desglosado en 10 tareas de una sesión: recoger lo de N0, estaciones y recetas en la lógica pura, desbloqueo por práctica, estaciones construidas y con el estilo v5, panel de la estación, objetos fabricados con el estilo v5, durabilidad, reparar, el primer día recorrido en la demo, y la revisión final.",
    "Primeras estaciones: hoguera, piedra de tallar y banco de trabajo de tronco. Las demás de N1 (secadero, curtido, horno de barro, carbonera) piden pieles, carne o harina, que llegan con los hitos de supervivencia, fauna y granja; el tomo de recetas, con el escritorio de N2."
   ],
   "pruebas": "Sin cambios de código. Web reconstruida sin errores.",
