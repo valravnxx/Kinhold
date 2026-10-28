@@ -1,9 +1,9 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara } from '../logica/construccion.js';
+import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
-import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA } from './modelos.js';
+import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto } from './modelos.js';
 import { crearJugador } from './personaje.js';
 import { personajeElegido } from '../demo/eleccion.js';
 import { REGISTRO, VERSION } from './registro.js';
@@ -745,11 +745,15 @@ function usarObra(o) {
   const m = centroMundo(c, p); pj.rot = Math.atan2(m.x - pj.x, m.z - pj.z);
   const pesado = mundo.faltaEntregar(p).find(f => hayQueSubir(p, f.m)) || (p.obra.subida && { m: p.obra.subida.material });
   if (pesado) {
-    // con una polea colgada de una viga de esta construcción (a la altura de la obra o más arriba), se tira de ella;
-    // si no, se rueda por dos varas
-    const q = poleaPara(c, p);
-    estado.obrando = { c, key, subir: pesado.m, metodo: q ? 'polea' : 'varas' };
-    if (q) ponerPolea(c, q, p); else ponerRampa(c, p);
+    // con una polea o un polipasto colgado de una viga de esta construcción (a la altura de la obra o más arriba), se
+    // usa el que esté más cerca de la obra: de la polea se tira; con el polipasto se da vueltas al torno. Si no hay
+    // ninguno, se rueda por dos varas. Lo muy pesado, solo con el polipasto (y hasta que otra persona guía la carga,
+    // no pasa de la mitad).
+    const dist = (a) => { const u = centroLocal(a), v = centroLocal(p); return Math.hypot(u.lx - v.lx, u.lz - v.lz); };
+    let q = clasePeso(pesado.m) === 'muy_pesado' ? null : poleaPara(c, p), qp = polipastoPara(c, p);
+    if (q && qp) { if (dist(qp) < dist(q)) q = null; else qp = null; }
+    estado.obrando = { c, key, subir: pesado.m, metodo: q ? 'polea' : qp || clasePeso(pesado.m) === 'muy_pesado' ? 'polipasto' : 'varas' };
+    if (q) ponerPolea(c, q, p); else if (qp) ponerPolipasto(c, qp, p); else ponerRampa(c, p);
     avisoSubida(p, pesado.m, 0, entregado);
     return;
   }
@@ -761,16 +765,23 @@ function usarObra(o) {
   estado.obrando = { c, key };
   mostrarAviso(`${entregado ? t('materialEntregado') + ' ' : ''}${t('construyendo')} ${Math.round(100 * p.obra.trabajo / tiempoObra(p.tipo))} %`);
 }
-function avisoSubida(p, m, progreso, entregado = false) {
+function avisoSubida(p, m, progreso, entregado = false, esperaAyuda = false) {
   const quedan = (mundo.faltaEntregar(p).find(f => f.m === m) || { n: 0 }).n;
-  const como = estado.obrando && estado.obrando.metodo === 'polea' ? t('subiendoPolea') : t('subiendoRodando');
-  mostrarAviso(`${entregado ? t('materialEntregado') + ' ' : ''}${como} ${tr(MATERIALES[m]).toLowerCase()} (${t('quedan')} ${quedan}): ${Math.round(100 * progreso)} %`);
+  const metodo = estado.obrando && estado.obrando.metodo;
+  const como = metodo === 'polea' ? t('subiendoPolea') : metodo === 'polipasto' ? t('subiendoPolipasto') : t('subiendoRodando');
+  mostrarAviso(`${entregado ? t('materialEntregado') + ' ' : ''}${como} ${tr(MATERIALES[m] || m).toLowerCase()} (${t('quedan')} ${quedan}): ${Math.round(100 * progreso)} %${esperaAyuda ? ' ' + t('esperaGuia') : ''}`);
 }
 // Las dos varas apoyadas en el borde de la planta de la obra, del lado en el que estás, y el tronco rodando por ellas
 // (dos cuerdas lo abrazan y van hasta arriba). Se quita al terminar de subir o al dejarlo.
 const MAT_CUERDA = new THREE.MeshLambertMaterial({ color: 0xb59a6a });
 let rampa = null;
-function quitarRampa() { if (rampa) { escena.remove(rampa.g); rampa = null; } }
+function quitarRampa() {
+  if (!rampa) return;
+  escena.remove(rampa.g);
+  if (rampa.tipo === 'polipasto') { const o = mallaDe(rampa.c, rampa.qkey); if (o) colgarPolipasto(o, POLIPASTO.yEje - POLIPASTO.bajada, 0.25); }
+  rampa = null;
+}
+const mallaDe = (c, key) => (registroMallas.find(m => m.c === c && m.key === key) || {}).obj;
 function ponerRampa(c, p) {
   quitarRampa();
   const m = centroMundo(c, p);
@@ -817,10 +828,54 @@ function ponerPolea(c, q, p) {
   rampa = { tipo: 'polea', g, tronco, cuerdas, lado, yEje, bajo: 0.35, alto: plantaObra(p) * ALTURA + P.superficieSuelo + 0.3, t: 0, meta: 0 };
   moverRampa(0);
 }
+// Subir con el polipasto: el torno se pone en el suelo delante de ti, a lo ancho; el tronco (o el sillar) cuelga del
+// gancho del motón de abajo, que baja hasta él y sube con él; el cabo de tirar va del motón de arriba al tambor, que
+// gira mientras sube. El polipasto es la pieza misma (su motón de abajo se mueve con colgarPolipasto).
+function ponerPolipasto(c, q, p) {
+  quitarRampa();
+  const m = centroMundo(c, q), qkey = clave('q', q.i, q.j, q.k, q.d);
+  const g = new THREE.Group(); g.name = 'polipasto_subiendo';
+  // el torno, a 0,95 m delante de ti, mirando al polipasto
+  const dx = m.x - pj.x, dz = m.z - pj.z, l = Math.hypot(dx, dz) || 1;
+  const torno = tornoSuelto();
+  torno.position.set(pj.x + dx / l * 0.95, pj.y, pj.z + dz / l * 0.95); torno.rotation.y = Math.atan2(dx, dz);
+  g.add(torno);
+  // la carga: cuelga bajo la viga, del lado en el que estás
+  const rot = c.rot + (q.d === 1 ? -Math.PI / 2 : 0);
+  const lz = (pj.x - m.x) * Math.sin(rot) + (pj.z - m.z) * Math.cos(rot), lado = Math.sign(lz) || 1;
+  const carga = new THREE.Group(); carga.position.set(m.x, 0, m.z); carga.rotation.y = rot;
+  const tronco = troncoSuelto(); carga.add(tronco);
+  const eslinga = [0, 1].map(() => { const cu = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 1, 5), MAT_CUERDA); carga.add(cu); return cu; });
+  g.add(carga);
+  escena.add(g);
+  const base = q.k * ALTURA;
+  rampa = { tipo: 'polipasto', g, c, qkey, torno, carga, tronco, eslinga, lado, base, bajo: 0.35, alto: plantaObra(p) * ALTURA + P.superficieSuelo + 0.3, t: 0, meta: 0, giro: 0 };
+  moverRampa(0);
+}
 // t: 0 al pie, 1 arriba. El tronco va subiendo poco a poco hacia lo que lleva la subida.
 function moverRampa(dt) {
   if (!rampa) return;
   rampa.t += Math.max(-1, Math.min(1, rampa.meta - rampa.t)) * Math.min(1, dt * 2.5);
+  if (rampa.tipo === 'polipasto') {
+    const { tronco, eslinga, base, bajo, alto, t: k, torno, c, qkey } = rampa;
+    const fuera = 0.6 * rampa.lado;
+    const tope = base + POLIPASTO.yEje - 1.2; // lo más alto que llega la carga, con el motón de abajo junto al de arriba
+    const y = bajo + k * (Math.min(alto, tope) - bajo);
+    tronco.position.set(0, y, fuera); tronco.rotation.set(0, 0, 0);
+    // eslinga: del gancho a los dos lados del tronco
+    const gancho = new THREE.Vector3(0, y + 0.5, fuera);
+    eslinga.forEach((cu, n) => cuerdaEntre(cu, gancho, new THREE.Vector3((n ? 0.3 : -0.3), y + P.radioTronco, fuera)));
+    // el tambor gira con lo que sube
+    const tambor = torno.getObjectByName('tambor');
+    if (tambor) tambor.rotation.x = -k * 9;
+    const o = mallaDe(c, qkey);
+    if (o) {
+      o.updateWorldMatrix(true, false);
+      const ojo = new THREE.Vector3(); tambor.getWorldPosition(ojo); ojo.y += 0.11;
+      colgarPolipasto(o, y - base + 0.5 + 0.33, 0, o.worldToLocal(ojo), fuera);
+    }
+    return;
+  }
   if (rampa.tipo === 'polea') {
     const { tronco, cuerdas, lado, yEje, bajo, alto, t: k, g } = rampa, fuera = 0.55 * lado;
     const y = bajo + k * (Math.min(alto, yEje - 0.45) - bajo);
@@ -863,7 +918,7 @@ function pasoObra() {
       if (rampa) { rampa.t = 0; rampa.meta = 0; }
       if (!mundo.faltaEntregar(p).some(f => f.m === o.subir)) { estado.obrando = null; quitarRampa(); usarObra({ c: o.c, key: o.key, p }); return; }
     }
-    avisoSubida(p, o.subir, r.subido ? 0 : r.progreso);
+    avisoSubida(p, o.subir, r.subido ? 0 : r.progreso, false, !!r.esperaAyuda);
     return;
   }
   const r = accion({ tipo: 'trabajar', construccion: o.c.id, clave: o.key, segundos: Math.min(seg, MAX_RATO) });
@@ -1275,7 +1330,7 @@ window.__kinhold = {
   },
   obraCercana() { const o = obraCercana(); return o && { c: o.c.id, key: o.key }; },
   get obrando() { return estado.obrando; },
-  get rampa() { return rampa && { t: rampa.t, meta: rampa.meta, visible: !!rampa.g.parent, tipo: rampa.tipo || 'varas', yTronco: rampa.tronco.position.y }; },
+  get rampa() { return rampa && { t: rampa.t, meta: rampa.meta, visible: !!rampa.g.parent, tipo: rampa.tipo || 'varas', yTronco: rampa.tronco.position.y, yMoton: rampa.tipo === 'polipasto' ? mallaDe(rampa.c, rampa.qkey)?.getObjectByName('moton_bajo')?.position.y : undefined, torno: !!(rampa.torno && rampa.torno.parent) }; },
   // atajo de prueba para las capturas: deja la subida quieta a medio camino (sin tarjeta gráfica, un rato llega a 5 s)
   fijarSubida(t) { if (estado.obrando) estado.obrando.desde = performance.now() + 1e9; if (rampa) { rampa.t = rampa.meta = t; moverRampa(0); } },
   seguirSubida() { if (estado.obrando) estado.obrando.desde = performance.now(); },

@@ -566,6 +566,53 @@ with sync_playwright() as p:
     comprobar('moverse deja de subir y quita la cuerda', not ev(f"{K}.obrando") and not ev(f"{K}.rampa"))
     ev(f"{K}.terminarObras()")
 
+    print('PC: polipasto con torno en una viga (sola, un tronco; lo muy pesado, entre dos)')
+    for planta in (0, 1):
+        poner('pieza', 'poste', -18, -12, planta)
+        poner('pieza', 'poste', -16, -12, planta)
+    poner('pieza', 'viga', -17, -12, 1)
+    poner('pieza', 'polipasto', -17, -12, 1)
+    npp = ev(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'polipasto' && !p.obra).length")
+    comprobar('el polipasto se cuelga de la viga', npp == 1)
+    marco('muro_tronco', -17, -12, 1)
+    alta4 = ev(f"(() => {{ for (const c of {K}.mundo.construcciones) for (const [k, p] of c.piezas) if (p.obra && p.k === 1 && p.tipo === 'muro_tronco') return {{ c: c.id, key: k }}; return null; }})()")
+    comprobar('el marco de un muro de troncos en la planta 1, bajo el polipasto', alta4 is not None)
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-16.8; {K}.pj.z=-13.6; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.3; {K}.cam.dist=11")
+    t0 = ev(f"{K}.mundo.materiales.tronco")
+    ev(f"{K}.usar()")
+    comprobar('con el polipasto más cerca de la obra que la polea, Usar sube los troncos con él y pone el torno', ev(f"{K}.obrando && {K}.obrando.metodo") == 'polipasto' and ev(f"{K}.rampa && {K}.rampa.tipo") == 'polipasto' and ev(f"{K}.rampa.torno"), json.dumps(ev(f"{K}.rampa")))
+    entregado4 = f"{K}.mundo.construcciones.find(c => c.id === {alta4['c']}).piezas.get('{alta4['key']}').obra.entregado"
+    ev(f"{K}.fijarSubida(0)"); esperar(pg, 300)
+    y_abajo = ev(f"{K}.rampa.yMoton")
+    ev(f"{K}.fijarSubida(0.7)"); esperar(pg, 300)
+    y_arriba = ev(f"{K}.rampa.yMoton")
+    comprobar('el motón de abajo baja hasta la carga y sube con ella', y_abajo is not None and y_arriba is not None and y_arriba > y_abajo + 0.3, f"{y_abajo} → {y_arriba}")
+    esperar(pg, 1200)
+    pg.screenshot(path=f'{SALIDA}/35_subiendo_tronco_polipasto.png')
+    # de cerca: el torno, la carga y el polipasto
+    ev(f"{K}.cam.yaw=Math.PI+0.9; {K}.cam.pitch=0.12; {K}.cam.dist=4.2")
+    esperar(pg, 1500)
+    pg.screenshot(path=f'{SALIDA}/36_polipasto_y_torno_de_cerca.png')
+    ev(f"{K}.seguirSubida()")
+    try: pg.wait_for_function(f"({entregado4}.tronco || 0) >= 1", timeout=60000)
+    except Exception: pass
+    comprobar('sola, con el polipasto, sube un tronco como con polea y queda entregado', ev(f"{entregado4}.tronco || 0") >= 1 and t0 - ev(f"{K}.mundo.materiales.tronco") >= 1)
+    comprobar('cada rato con el polipasto queda en el registro con su autor y el método', ev(f"{K}.registroAcciones.entradas.filter(e => e.tipo === 'subir' && e.ok && e.autor === 'jugador:local' && e.datos.metodo === 'polipasto').length") >= 2)
+    pg.keyboard.down('s'); esperar(pg, 400); pg.keyboard.up('s')
+    esperar(pg, 200)
+    comprobar('moverse deja de subir, quita el torno y el motón vuelve arriba', not ev(f"{K}.obrando") and not ev(f"{K}.rampa") and ev(f"[...{K}.escena.getObjectsByProperty ? {K}.escena.getObjectsByProperty('name', 'moton_bajo') : []].every(o => o.position.y > 1)"))
+    ev(f"{K}.terminarObras()")
+    # de cerca, recogido (apartado del muro hacia fuera): el personaje sube a un andamio pegado al muro para que la
+    # cámara llegue a la altura de la viga
+    poner('pieza', 'andamio', -17, -13, 0)
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-17.6; {K}.pj.z=-13.2; {K}.pj.k=1; {K}.pj.y=2.62; {K}.pj.rot=1.0; {K}.cam.yaw=0.35; {K}.cam.pitch=0.12; {K}.cam.dist=4.8")
+    esperar(pg, 1500)
+    pg.screenshot(path=f'{SALIDA}/37_polipasto_recogido_de_cerca.png')
+    ev(f"{K}.cam.yaw=-0.45; {K}.cam.pitch=0.02; {K}.cam.dist=3.6")
+    esperar(pg, 1200)
+    pg.screenshot(path=f'{SALIDA}/38_polipasto_motones_de_cerca.png')
+    ev(f"{K}.pj.k=0; {K}.pj.y=0; {K}.pj.x=-17; {K}.pj.z=-15")
+
     print('PC: todos los muebles en fila, de cerca (estilo v5)')
     nd = ev(f"{K}.mundo.decoracion.length")
     muebles = ev(f"Object.keys({K}.DECORACION || {{}})") or ['cama_paja', 'cama_madera', 'mesa', 'banco', 'taburete', 'arcon', 'barril', 'estanteria', 'candil', 'alfombra', 'estandarte']

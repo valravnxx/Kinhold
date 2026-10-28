@@ -1,6 +1,6 @@
 // Pruebas de la lógica de construcción de Kinhold. Ejecutar: node pruebas/prueba_logica.mjs
 // Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR.
-import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, progresoEscalera, salidaEscalera } from '../src/logica/construccion.js';
+import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, polipastoPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, progresoEscalera, salidaEscalera } from '../src/logica/construccion.js';
 import { PIEZAS, CLASE_PESO, MATERIALES } from '../src/logica/piezas.js';
 import { ejecutar, RegistroAcciones, seAbre, acabarObra } from '../src/logica/acciones.js';
 
@@ -11,6 +11,7 @@ if (process.env.MUTAR === '1') {
   CLASE_PESO.tronco = 'ligero';   // troncos que se suben a mano por la escalera
   PIEZAS.andamio.cap = 0;         // un andamio que no aguanta el de encima
   PIEZAS.polea.hueco = 'b';       // una polea que no cuelga de su viga
+  PIEZAS.polipasto.polipasto = false; // un polipasto que es una polea más
 }
 
 let ok = 0, mal = 0;
@@ -534,6 +535,68 @@ console.log('16. Obras: andamio pegado al muro y polea en una viga');
   // al quitar la viga, la polea cae
   const pv = m.previsualizarDesmontaje(c, vigaObra.clave);
   comprobar('al quitar la viga, cae la polea', pv.ok && pv.caen.includes(po.clave), JSON.stringify(pv));
+}
+
+console.log('17. Obras: polipasto con torno (lo muy pesado, entre dos)');
+{
+  // aún no hay sillares en el juego: un material «muy pesado» y un muro que lo pide, solo para esta prueba
+  CLASE_PESO.sillar_prueba = 'muy_pesado';
+  PIEZAS.muro_prueba_sillar = { nombre: 'Muro de prueba', hueco: 'e', nivel: 1, peso: 300, cap: 1200, coste: { sillar_prueba: 2 }, cat: 'oculto' };
+  const m = new Mundo(); m.colocarMojon(0, 0); m.materiales.sillar_prueba = 10;
+  const c = nuevaConstruccion(m);
+  const R = new RegistroAcciones();
+  const yo = 'jugador:uno', otro = 'jugador:dos';
+  const A = (autor, a) => ejecutar(m, R, { autor, construccion: c.id, ...a });
+  const pon = (tipo, i, j, k, d = 0, marco = false) => m.colocar(enRejilla(m, c, tipo, i, j, k, d), marco);
+  pon('cim_piedra', 0, 0, 0); pon('muro_tronco', 0, 0, 0, 0); pon('muro_tronco', 0, 0, 1, 0);
+  comprobar('el polipasto va en acceso, cuelga de una viga y lleva cuerda, hierro y madera', PIEZAS.polipasto.cat === 'acceso' && PIEZAS.polipasto.hueco === 'q' && PIEZAS.polipasto.coste.cuerda > 0 && PIEZAS.polipasto.coste.hierro > 0);
+  const sinViga = m.validar(enRejilla(m, c, 'polipasto', 0, 0, 1, 0));
+  comprobar('sin viga no se cuelga (y lo dice del polipasto)', !sinViga.ok && /polipasto/.test(sinViga.motivo), sinViga.motivo);
+  pon('viga', 0, 0, 1, 0);
+  const pp = pon('polipasto', 0, 0, 1, 0);
+  comprobar('de una viga terminada, sí', pp.ok, pp.motivo || '');
+  comprobar('en la misma viga no cabe además una polea', !m.validar(enRejilla(m, c, 'polea', 0, 0, 1, 0)).ok);
+  const ms = pon('muro_prueba_sillar', 0, 0, 2, 0, true);
+  const pms = c.piezas.get(ms.clave);
+  comprobar('el polipasto de lo alto de la planta 1 sirve para la planta 2; no cuenta como polea', ms.ok && polipastoPara(c, pms) === c.piezas.get(pp.clave) && !poleaPara(c, pms));
+  // lo muy pesado no se sube de otra forma
+  const aMano = A(yo, { tipo: 'entregar', clave: ms.clave, material: 'sillar_prueba', cantidad: 2, desde: 2 });
+  comprobar('lo muy pesado no se lleva a mano', !aMano.ok && aMano.subir, aMano.motivo);
+  for (const metodo of ['varas', 'polea', 'entre_dos']) {
+    const r = A(yo, { tipo: 'subir', clave: ms.clave, material: 'sillar_prueba', segundos: 1, metodo });
+    comprobar(`lo muy pesado no se sube con «${metodo}»`, !r.ok, r.motivo);
+  }
+  // una persona sola en el torno: no pasa de la mitad, espera a quien guíe
+  let r, n = 0;
+  do { r = A(yo, { tipo: 'subir', clave: ms.clave, material: 'sillar_prueba', segundos: 1, metodo: 'polipasto' }); n++; } while (r.ok && !r.subido && n < 60);
+  comprobar('una persona sola no sube un sillar con el polipasto: espera a otra que guíe', r.ok && !r.subido && r.esperaAyuda && r.progreso <= 0.5, `${r.motivo || ''} progreso ${r.progreso}`);
+  const r2 = A(otro, { tipo: 'subir', clave: ms.clave, material: 'sillar_prueba', segundos: 1, metodo: 'polipasto' });
+  comprobar('en cuanto otro ayuda (guía), el sillar llega arriba', r2.ok && r2.subido && pms.obra.entregado.sillar_prueba === 1, JSON.stringify(r2));
+  const ap = pms.obra.aportes.at(-1);
+  comprobar('queda anotado con polipasto y los dos autores', ap?.metodo === 'polipasto' && ap.autores[yo] > 0 && ap.autores[otro] === 1);
+  // el segundo sillar, a medias los dos: 4 × SUBIR_PLANTA por planta entre los dos
+  let s = 0;
+  do { r = A(s % 2 ? otro : yo, { tipo: 'subir', clave: ms.clave, material: 'sillar_prueba', segundos: 1, metodo: 'polipasto' }); s++; } while (r.ok && !r.subido && s < 200);
+  comprobar('entre dos, un sillar a la planta 2 cuesta 4 × SUBIR_PLANTA × 2 s de trabajo', r.subido && s === 4 * SUBIR_PLANTA * 2, `${s} s`);
+  comprobar('con los sillares arriba, la obra se termina', acabarObra(m, R, yo, c.id, ms.clave).terminada);
+  // lo pesado, una persona sola con el polipasto, como con polea
+  pon('cim_piedra', 1, 0, 0); pon('muro_tronco', 1, 0, 0, 0); pon('muro_tronco', 1, 0, 1, 0);
+  const mt = pon('muro_tronco', 1, 0, 2, 0, true);
+  let t = 0;
+  do { r = A(yo, { tipo: 'subir', clave: mt.clave, material: 'tronco', segundos: 1, metodo: 'polipasto' }); t++; } while (r.ok && !r.subido && t < 100);
+  comprobar('un tronco lo sube una persona sola con el polipasto, como con polea', r.ok && r.subido && t === 2 * 2 * SUBIR_PLANTA, `${t} s ${r.motivo || ''}`);
+  // sin polipasto, el método no vale
+  const c2 = nuevaConstruccion(m);
+  const pon2 = (tipo, i, j, k, d = 0, marco = false) => m.colocar(enRejilla(m, c2, tipo, i, j, k, d), marco);
+  pon2('cim_piedra', 5, 3, 0); pon2('muro_tronco', 5, 3, 0, 0); pon2('viga', 5, 3, 0, 0); pon2('polea', 5, 3, 0, 0);
+  const ob = pon2('muro_tronco', 5, 3, 1, 0, true);
+  const sinP = ejecutar(m, R, { autor: yo, tipo: 'subir', construccion: c2.id, clave: ob.clave, material: 'tronco', segundos: 1, metodo: 'polipasto' });
+  comprobar('con solo una polea no se sube «con polipasto»', !sinP.ok, sinP.motivo);
+  // guardar y cargar
+  const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  const c3 = m2.construcciones.find(x => x.id === c.id);
+  comprobar('el polipasto se guarda y se carga', c3.piezas.get(clave('q', 0, 0, 1, 0))?.tipo === 'polipasto');
+  delete PIEZAS.muro_prueba_sillar; delete CLASE_PESO.sillar_prueba;
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

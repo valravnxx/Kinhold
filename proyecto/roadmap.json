@@ -536,8 +536,9 @@
     },
     {
      "nombre": "Obras: polipasto con torno para vigas grandes y sillares (uno tira y otro guía)",
-     "estado": "en_curso",
-     "inicio": "2026-10-27T22:50:32+00:00"
+     "estado": "hecho",
+     "inicio": "2026-10-27T22:50:32+00:00",
+     "fin": "2026-10-28T02:11:11+00:00"
     },
     {
      "nombre": "Contraventana y trampilla (N2: 2 tablas y clavos): la contraventana cierra la ventana de un muro y la trampilla tapa el hueco de una escalera; las dos se abren y cierran con Usar. Añadir también el muro de tablas con ventana, que falta",
@@ -1165,6 +1166,13 @@
      "archivo": "jugar/demo/v24.html",
      "capturas": "capturas/demo-v24",
      "notas": "Duelo en línea: dos jugadores pelean entre sí en la liza; el servidor resuelve los golpes, las paradas y las heridas, y los dos ven lo mismo. Es el combate v14."
+    },
+    {
+     "v": "v25",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/demo/v25.html",
+     "capturas": "capturas/demo-v25",
+     "notas": "Construcción v28: polipasto con torno en una viga"
     }
    ]
   },
@@ -1347,6 +1355,13 @@
      "archivo": "jugar/construccion/v27.html",
      "capturas": "capturas/construccion-v27",
      "notas": "Andamio pegado al muro (se sube con Usar; desde su plataforma se lleva lo ligero y se trabaja en las obras de esa planta) y polea colgada de una viga (una persona sola sube los troncos con la mitad de trabajo que rodándolos por varas)"
+    },
+    {
+     "v": "v28",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/construccion/v28.html",
+     "capturas": "capturas/construccion-v28",
+     "notas": "Polipasto con torno colgado de una viga: sube los troncos con un torno en el suelo (una persona sola, como con polea); lo muy pesado, cuando haya sillares, solo entre dos (uno en el torno y otro que guía)"
     }
    ]
   },

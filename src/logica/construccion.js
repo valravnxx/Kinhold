@@ -13,6 +13,8 @@ export function tiempoObra(tipo) { return Math.round(4 + PIEZAS[tipo].peso / 20)
 // piedra) una planta. Entre dos (o más): 2 × SUBIR_PLANTA por planta, o sea SUBIR_PLANTA de reloj si tiran a la vez.
 // Una persona sola rodándolo por dos varas con una cuerda: el doble de trabajo (y, sola, cuatro veces más de reloj).
 // Con una polea en una viga, una persona sola hace lo mismo que dos a pulso: 2 × SUBIR_PLANTA por planta.
+// Con un polipasto con torno, lo pesado igual que con polea; lo muy pesado (sillares) solo así y entre dos (uno en el
+// torno y otro que guía): 4 × SUBIR_PLANTA por planta, sumando los dos.
 // Provisional: el GDD no da cifras.
 export const SUBIR_PLANTA = 2.5;
 export const VARAS_PARA_RODAR = { vara: 2, cuerda: 1 }; // no se gastan: se vuelven a usar
@@ -20,7 +22,8 @@ export const VARAS_PARA_RODAR = { vara: 2, cuerda: 1 }; // no se gastan: se vuel
 // baja, como las vigas o el tejado de una cabaña, se alcanza desde el suelo; provisional).
 export function plantaObra(p) { return p.k; }
 export function clasePeso(material) { return CLASE_PESO[material] || 'ligero'; }
-export function trabajoSubida(planta, personas, conVaras, conPolea = false) {
+export function trabajoSubida(planta, personas, conVaras, conPolea = false, clase = 'pesado') {
+  if (clase === 'muy_pesado') return personas >= 2 ? 4 * SUBIR_PLANTA * planta : Infinity; // con polipasto
   if (personas >= 2 || conPolea) return 2 * SUBIR_PLANTA * planta;
   return conVaras ? 4 * SUBIR_PLANTA * planta : Infinity;
 }
@@ -357,6 +360,7 @@ export class Mundo {
     if (!falta) return { ok: false, motivo: 'A esa obra no le falta ese material.' };
     if (!Number.isInteger(cantidad) || cantidad <= 0) return { ok: false, motivo: 'Cantidad no válida.' };
     const planta = plantaObra(p);
+    if (planta > 0 && clasePeso(material) === 'muy_pesado') return { ok: false, motivo: 'Lo muy pesado solo se sube con un polipasto con torno, entre dos.', subir: true };
     if (planta > 0 && clasePeso(material) !== 'ligero') return { ok: false, motivo: 'Lo pesado no se sube a mano: entre dos, con una polea, o rodándolo por dos varas con una cuerda.', subir: true };
     if (planta > 0 && !(desde >= planta)) return { ok: false, motivo: 'Súbelo a mano por la escalera o el andamio hasta la planta de la obra.', escalera: true };
     const n = Math.min(cantidad, falta.n);
@@ -374,15 +378,18 @@ export class Mundo {
     if (!p) return { ok: false, motivo: 'No existe.' };
     if (!p.obra) return { ok: false, motivo: 'Esa pieza ya está terminada.' };
     if (!(segundos > 0 && segundos <= MAX_RATO)) return { ok: false, motivo: 'Rato de trabajo no válido.' };
-    if (metodo !== 'entre_dos' && metodo !== 'varas' && metodo !== 'polea') return { ok: false, motivo: 'Datos no válidos.' };
+    if (!['entre_dos', 'varas', 'polea', 'polipasto'].includes(metodo)) return { ok: false, motivo: 'Datos no válidos.' };
     const planta = plantaObra(p);
     if (planta === 0) return { ok: false, motivo: 'Esa obra está a ras de suelo: no hace falta subir nada.' };
-    if (clasePeso(material) !== 'pesado') return { ok: false, motivo: 'Eso no hace falta subirlo así.' };
+    const clase = clasePeso(material);
+    if (clase === 'ligero') return { ok: false, motivo: 'Eso no hace falta subirlo así.' };
+    if (clase === 'muy_pesado' && metodo !== 'polipasto') return { ok: false, motivo: 'Lo muy pesado solo se sube con un polipasto con torno, entre dos.' };
     const s = p.obra.subida;
     if (s && s.material !== material) return { ok: false, motivo: 'Ya se está subiendo otro material a esta obra.' };
     if (!s && !this.faltaEntregar(p).some(x => x.m === material)) return { ok: false, motivo: 'A esa obra no le falta ese material.' };
     if (metodo === 'varas' && !this.puedePagar(VARAS_PARA_RODAR)) return { ok: false, motivo: 'Para rodarlo hacen falta dos varas y una cuerda.' };
     if (metodo === 'polea' && !poleaPara(c, p)) return { ok: false, motivo: 'Para subirlo con polea hace falta una polea en una viga de esta construcción, a la altura de la obra o más arriba.' };
+    if (metodo === 'polipasto' && !polipastoPara(c, p)) return { ok: false, motivo: 'Para subirlo con polipasto hace falta un polipasto en una viga de esta construcción, a la altura de la obra o más arriba.' };
     if (!s) { // la unidad sale de la reserva al empezar a subirla
       if ((this.materiales[material] || 0) < 1) return { ok: false, motivo: 'Faltan materiales.', faltan: [{ m: material, n: 1, hay: this.materiales[material] || 0 }] };
       this.materiales[material] -= 1;
@@ -391,19 +398,21 @@ export class Mundo {
     const sub = p.obra.subida;
     if (metodo === 'varas') sub.varas = true;
     if (metodo === 'polea') sub.polea = true;
+    if (metodo === 'polipasto') sub.polipasto = true;
     sub.seg[autor] = +((sub.seg[autor] || 0) + segundos).toFixed(3);
     const personas = Object.keys(sub.seg).length;
     const hecho = Object.values(sub.seg).reduce((a, b) => a + b, 0);
-    const necesario = trabajoSubida(planta, personas, sub.varas, sub.polea);
+    const necesario = trabajoSubida(planta, personas, sub.varas, sub.polea || !!sub.polipasto, clase);
     if (hecho >= necesario - 1e-9) {
       p.obra.entregado[material] = (p.obra.entregado[material] || 0) + 1;
-      p.obra.aportes.push({ sube: material, n: 1, planta, metodo: sub.polea ? 'polea' : personas >= 2 ? 'entre_dos' : 'varas', autores: { ...sub.seg } });
+      p.obra.aportes.push({ sube: material, n: 1, planta, metodo: sub.polipasto ? 'polipasto' : sub.polea ? 'polea' : personas >= 2 ? 'entre_dos' : 'varas', autores: { ...sub.seg } });
       delete p.obra.subida;
       return { ok: true, subido: true, progreso: 1, falta: this.faltaEntregar(p) };
     }
-    // sin varas y sin nadie más, se espera a que ayude otro (lo que se lleva hecho no pasa de la mitad)
+    // sin varas y sin nadie más (o algo muy pesado con una sola persona en el polipasto), se espera a que ayude otro
+    // (lo que se lleva hecho no pasa de la mitad)
     const esperaAyuda = !Number.isFinite(necesario);
-    const progreso = esperaAyuda ? Math.min(0.5, hecho / trabajoSubida(planta, 2, false)) : hecho / necesario;
+    const progreso = esperaAyuda ? Math.min(0.5, hecho / trabajoSubida(planta, 2, false, false, clase)) : hecho / necesario;
     return { ok: true, subido: false, progreso, esperaAyuda };
   }
   // Un rato de trabajo en una obra con todo el material. Los segundos de todos los que trabajan se suman: si te
@@ -594,11 +603,14 @@ export function dirAndamio(c, i, j, k) {
 }
 // Polea terminada de esta construcción con la que se puede subir algo a la obra p: cuelga de una viga a la altura de
 // su planta o más arriba (la viga de lo alto de la planta k está a la altura del suelo de la planta k + 1).
-export function poleaPara(c, p) {
+// poleaPara: la polea simple; polipastoPara: el polipasto con torno (los dos van en el mismo hueco de la viga).
+export function poleaPara(c, p) { return aparejoPara(c, p, false); }
+export function polipastoPara(c, p) { return aparejoPara(c, p, true); }
+function aparejoPara(c, p, polipasto) {
   const planta = plantaObra(p);
   let mejor = null;
   for (const q of c.piezas.values()) {
-    if (q.hueco !== 'q' || q.obra || q.k + 1 < planta) continue;
+    if (q.hueco !== 'q' || q.obra || q.k + 1 < planta || !!PIEZAS[q.tipo].polipasto !== polipasto) continue;
     const a = centroLocal(q), b = centroLocal(p);
     const d = Math.hypot(a.lx - b.lx, a.lz - b.lz);
     if (!mejor || d < mejor.d) mejor = { q, d };
@@ -649,7 +661,7 @@ function motivoSinApoyo(p) {
     case 'g': return 'El hastial va encima de un muro o una viga.';
     case 'p': return 'La puerta va en un muro con hueco de puerta.';
     case 'l': return 'La escalera necesita un suelo; el andamio, la tierra, un suelo u otro andamio debajo.';
-    case 'q': return 'La polea se cuelga de una viga terminada.';
+    case 'q': return PIEZAS[p.tipo]?.polipasto ? 'El polipasto se cuelga de una viga terminada.' : 'La polea se cuelga de una viga terminada.';
   }
   return 'Sin apoyo.';
 }
