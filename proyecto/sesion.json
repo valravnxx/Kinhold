@@ -1,15 +1,15 @@
 {
  "A": {
-  "inicio": "2026-10-28T01:20:25+00:00",
+  "inicio": "2026-10-28T03:19:57+00:00",
   "tarea": "Conexiones que se cortan y protección básica: volver a conectar sin perder al personaje, quitar al que se va, límite de mensajes por segundo y de tamaño por conexión, y rechazo de datos mal formados (con una prueba que los manda)",
   "hito": "prueba-online",
   "rama": "trabajo/20261028-0120"
  },
  "B": {
-  "inicio": "2026-10-27T22:50:32+00:00",
-  "tarea": "Obras: polipasto con torno para vigas grandes y sillares (uno tira y otro guía)",
+  "inicio": "2026-10-28T02:50:19+00:00",
+  "tarea": "Contraventana y trampilla (N2: 2 tablas y clavos): la contraventana cierra la ventana de un muro y la trampilla tapa el hueco de una escalera; las dos se abren y cierran con Usar. Añadir también el muro de tablas con ventana, que falta",
   "hito": "construccion-mas",
-  "rama": "trabajo/20261027-2250",
-  "ultimo": "2026-10-28T00:53:47.000Z"
+  "rama": "trabajo/20261028-0250",
+  "ultimo": "2026-10-28T03:12:07.000Z"
  }
 }

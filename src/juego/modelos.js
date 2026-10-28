@@ -847,6 +847,103 @@ function polea() {
   return deLote(L);
 }
 
+// Polipasto con torno colgado de una viga (a lo largo de X, como la polea): un motón de arriba con tres roldanas
+// abrazado a la viga por una gaza doble y con zunchos de hierro, y un motón de abajo con dos roldanas y el gancho. Entre
+// los dos, los ramales de la cuerda (cuantos más, menos fuerza hace falta); el cabo de tirar baja hasta el torno.
+// El motón de abajo y los ramales van aparte, en el grupo «aparejo»: al subir una carga, colgarPolipasto() lo baja
+// hasta ella. El torno (tornoSuelto) se pone en el suelo mientras se sube algo.
+export const POLIPASTO = { yEje: ALTURA - 0.62, r: 0.1, bajada: 0.62, fuera: 0.42 };
+const XS_ARRIBA = [-0.075, 0, 0.075], XS_ABAJO = [-0.04, 0.04];
+function moton(L, xs, r, y, alto) {
+  const w = 0.045, ancho = xs.length * w + 0.03;
+  // quijadas a los lados y entre roldanas
+  const bordes = [xs[0] - w / 2 - 0.008, ...xs.slice(1).map((x, n) => (x + xs[n]) / 2), xs.at(-1) + w / 2 + 0.008];
+  bordes.forEach((x, n) => L.add(cajaR(n === 0 || n === bordes.length - 1 ? 0.022 : 0.012, alto, 2 * r + 0.1, 0.01), 'maderaOsc', x, y, 0));
+  for (const x of xs) L.add(cil(r, r, 0.036, 12), 'madera', x, y, 0, { z: Math.PI / 2 });
+  L.add(cil(0.016, 0.016, ancho + 0.05, 6), 'hierro', 0, y, 0, { z: Math.PI / 2 }); // eje
+  // zuncho de hierro por arriba y por abajo
+  for (const s of [-1, 1]) L.add(cajaR(ancho + 0.02, 0.02, 0.05, 0.006), 'hierro', 0, y + s * (alto / 2 - 0.01), 0);
+  return ancho;
+}
+function polipasto() {
+  const L = loteSuelo();
+  const { yEje, r } = POLIPASTO, yViga = POLEA.yViga, altoA = 2 * r + 0.16;
+  for (const x of [-0.06, 0.06]) L.add(new THREE.TorusGeometry(0.16, 0.017, 5, 12), CUERDA, x, yViga, 0, { y: Math.PI / 2 }, { sinSuelo: true }); // gaza doble
+  const g = deLote(L);
+  // estrobo: de la gaza a la argolla del motón de arriba (cilindros de 1 m hacia -y, que se orientan y estiran)
+  const E = loteSuelo();
+  for (const x of [-0.06, 0.06]) E.add(cil(0.014, 0.014, 1, 5), CUERDA, x, -0.5, 0, null, { sinSuelo: true });
+  const estrobo = deLote(E); estrobo.name = 'estrobo'; estrobo.position.set(0, yViga - 0.16, 0);
+  g.add(estrobo);
+  // todo lo que cuelga va en «aparejo», que se aparta del muro hacia un lado (fuera)
+  const A = loteSuelo();
+  moton(A, XS_ARRIBA, r, yEje, altoA);
+  A.add(new THREE.TorusGeometry(0.045, 0.013, 5, 8), 'hierro', 0, yEje + altoA / 2 + 0.05, 0, { y: Math.PI / 2 }, { sinSuelo: true }); // argolla
+  const alto = deLote(A); alto.name = 'moton_alto';
+  // motón de abajo (con su gancho) y ramales, que se mueven
+  const B = loteSuelo(), altoB = 2 * 0.085 + 0.14;
+  moton(B, XS_ABAJO, 0.085, 0, altoB);
+  B.add(cil(0.013, 0.013, 0.12, 5), 'hierro', 0, -altoB / 2 - 0.06, 0);
+  B.add(new THREE.TorusGeometry(0.05, 0.013, 5, 8, Math.PI * 1.3), 'hierro', 0, -altoB / 2 - 0.16, 0.03, { y: Math.PI / 2, z: Math.PI * 0.85 }, { sinSuelo: true });
+  const bajo = deLote(B); bajo.name = 'moton_bajo';
+  // ramales: cilindros de 1 m que bajan desde y = 0 (se estiran con scale.y); el cabo de tirar, aparte
+  const R = loteSuelo();
+  for (const x of XS_ARRIBA) for (const z of [-1, 1]) {
+    if (x === XS_ARRIBA[2] && z === -1) continue; // este es el cabo de tirar
+    R.add(cil(0.012, 0.012, 1, 5), CUERDA, x, -0.5, z * (r + 0.01) * 0.8, null, { sinSuelo: true });
+  }
+  const ramales = deLote(R); ramales.name = 'ramales'; ramales.position.y = yEje - r * 0.3;
+  const cabo = deLote((() => { const C = loteSuelo(); C.add(cil(0.013, 0.013, 1, 5), CUERDA, 0, -0.5, 0, null, { sinSuelo: true }); return C; })());
+  cabo.name = 'cabo'; cabo.position.set(XS_ARRIBA[2], yEje, -(r + 0.01));
+  const ap = new THREE.Group(); ap.name = 'aparejo'; ap.add(alto, bajo, ramales, cabo);
+  g.add(ap);
+  colgarPolipasto(g, yEje - POLIPASTO.bajada, 0.25);
+  return g;
+}
+// Pone el aparejo apartado del muro «fuera» m (en z de la pieza; sin carga, hacia +z), el motón de abajo a la altura y
+// (en el marco de la pieza) y el cabo de tirar hasta yCabo, o con haciaLocal hasta ese punto del marco de la pieza (el
+// tambor del torno).
+export function colgarPolipasto(obj, y, yCabo, haciaLocal = null, fuera = POLIPASTO.fuera) {
+  const ap = obj.getObjectByName('aparejo');
+  if (!ap) return;
+  const { yEje, r } = POLIPASTO, altoA = 2 * r + 0.16, altoB = 2 * 0.085 + 0.14;
+  const bajo = ap.getObjectByName('moton_bajo'), ramales = ap.getObjectByName('ramales'), cabo = ap.getObjectByName('cabo');
+  ap.position.set(0, 0, fuera);
+  // estrobo: de la gaza (en la viga) a la argolla, inclinado hacia fuera
+  const est = obj.getObjectByName('estrobo');
+  const de = new THREE.Vector3(0, yEje + altoA / 2 + 0.09, fuera).sub(est.position);
+  est.scale.y = Math.max(0.05, de.length());
+  est.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), de.normalize());
+  bajo.position.set(0, y, 0);
+  ramales.scale.y = Math.max(0.05, ramales.position.y - (y + altoB / 2 - 0.04));
+  const a = cabo.position;
+  const b = haciaLocal ? haciaLocal.clone().sub(ap.position) : new THREE.Vector3(a.x, yCabo, a.z);
+  const d = new THREE.Vector3().subVectors(a, b);
+  cabo.scale.set(1, Math.max(0.05, d.length()), 1);
+  cabo.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
+}
+// Torno: un tambor de tronco sobre dos caballetes, con la cuerda enrollada y cuatro palancas cruzadas en cada
+// extremo para hacerlo girar. A lo largo de X, en el suelo. El tambor (con la cuerda y las palancas) gira: 'tambor'.
+export const TORNO = { yTambor: 0.62, rTambor: 0.11, largo: 0.95 };
+export function tornoSuelto() {
+  const L = loteSuelo();
+  const { yTambor: y, rTambor: rt, largo } = TORNO;
+  for (const x of [-largo / 2 - 0.06, largo / 2 + 0.06]) {
+    // caballete: dos pies inclinados en A y un pie de apoyo a lo largo de z
+    for (const s of [-1, 1]) L.add(cajaR(0.08, y + 0.14, 0.08, 0.015), s < 0 ? 'madera' : 'maderaOsc', x, (y + 0.1) / 2, s * 0.17, { x: s * 0.42 });
+    L.add(cajaR(0.1, 0.09, 0.85, 0.015), 'maderaOsc', x, 0.045, 0);
+    L.add(cajaR(0.09, 0.07, 0.42, 0.012), 'madera', x, 0.3, 0); // travesaño
+  }
+  const g = deLote(L);
+  const T = loteSuelo();
+  T.add(cil(rt, rt, largo + 0.24, 10), 'madera', 0, 0, 0, { z: Math.PI / 2 });
+  for (let n = 0; n < 7; n++) T.add(new THREE.TorusGeometry(rt + 0.012, 0.014, 4, 12), CUERDA, -0.18 + n * 0.03, 0, 0, { y: Math.PI / 2 }, { sinSuelo: true });
+  for (const x of [-largo / 2 - 0.1, largo / 2 + 0.1]) for (const a of [0, Math.PI / 2]) T.add(cil(0.022, 0.026, 1.1, 6), 'madera', x, 0, 0, { x: a });
+  const tambor = deLote(T); tambor.name = 'tambor'; tambor.position.y = y;
+  g.add(tambor);
+  return g;
+}
+
 export function decoracion(tipo) {
   const g = MUEBLES[tipo] ? MUEBLES[tipo]() : new THREE.Group();
   g.traverse(o => { if (o.isMesh && o.name !== 'llama') { o.castShadow = true; o.receiveShadow = true; } });
@@ -877,6 +974,7 @@ export function modeloPieza(tipo, ctx) {
     case 'escalera_tabla': return escaleraTablas();
     case 'andamio': return andamio();
     case 'polea': return polea();
+    case 'polipasto': return polipasto();
     case 'puerta_varas': return puerta('puerta_varas');
     case 'puerta_tabla': return puerta('puerta_tabla');
     case 'cerca': return cerca();

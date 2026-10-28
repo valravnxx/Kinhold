@@ -33,6 +33,8 @@ const ES = {
   dejasObra: 'Dejas la obra (vuelve con Usar).',
   subiendoRodando: 'Subes rodándolo por dos varas con una cuerda:',
   subiendoPolea: 'Subes con la polea:',
+  subiendoPolipasto: 'Subes con el polipasto, dando vueltas al torno:',
+  esperaGuia: 'Hace falta otra persona que guíe la carga.',
   subesAndamio: 'Subes al andamio, a la altura de la planta',
   quedan: 'quedan',
   confirmaReinicio: '¿Seguro? Pulsa otra vez para borrar todo.',
