@@ -156,9 +156,15 @@ with sync_playwright() as p:
     print('PC: puerta y escalera')
     ev(f"{K}.pj.x=1; {K}.pj.z=-0.8; {K}.pj.k=0")
     esperar(pg, 300)
+    if os.environ.get('MUTAR_TIRONES'): ev('window.__rehacerTodo = true')
+    ev("window.__rehechos.todo = 0; window.__rehechos.pieza = 0")
     ev(f"{K}.usar()")
     abierta = ev(f"[...{K}.mundo.construcciones[0].piezas.values()].find(p=>p.hueco==='p').abierta")
     comprobar('la puerta se abre con Usar', abierta is True)
+    # valravnx, 28 oct: abrir o cerrar puertas daba tirones (se rehacía todo lo construido): solo se rehace esa pieza
+    rh = ev("window.__rehechos")
+    comprobar('al abrir la puerta solo se rehace esa pieza (nada entero)', rh['todo'] == 0 and rh['pieza'] == 1, json.dumps(rh))
+    ev("window.__rehacerTodo = false")
     ev(f"{K}.pj.x=1; {K}.pj.z=3.4")
     esperar(pg, 300)
     ev(f"{K}.usar()")
@@ -267,6 +273,16 @@ with sync_playwright() as p:
       return { fallos, n: c.piezas.size };
     })()""")
     comprobar('casa de 4×4, dos plantas y tejado de troncos: entra entera (también las esquinas del tejado)', not res['fallos'], json.dumps(res, ensure_ascii=False)[:300])
+    # rehacer lo construido copia los modelos ya hechos en vez de hacerlos otra vez (valravnx, 28 oct: tirones en línea
+    # al terminar obras y al abrir puertas): la segunda vez no se hace ningún modelo nuevo, y tarda mucho menos
+    if os.environ.get('MUTAR_TIRONES'): ev('window.__sinCopiarModelos = true')
+    t_rehacer = ev(f"""(() => {{ const K = {K}; K.reconstruir(); const h0 = window.__modelos.hechos, c0 = window.__modelos.copiados;
+      const t = (f, k) => {{ const t0 = performance.now(); for (let i = 0; i < k; i++) f(); return (performance.now() - t0) / k; }};
+      const con = t(() => K.reconstruir(), 3); const sinCopias = !!window.__sinCopiarModelos; window.__sinCopiarModelos = true; const sin = t(() => K.reconstruir(), 3); window.__sinCopiarModelos = sinCopias;
+      return {{ nuevos: window.__modelos.hechos - h0, copiados: window.__modelos.copiados - c0, con: Math.round(con), sin: Math.round(sin) }}; }})()""")
+    comprobar('rehacerlo todo otra vez no hace modelos nuevos: los copia', t_rehacer['nuevos'] == 0 and t_rehacer['copiados'] > 50, json.dumps(t_rehacer))
+    comprobar('y tarda menos de la mitad que haciéndolos de cero', t_rehacer['con'] * 2 < t_rehacer['sin'], f"{t_rehacer['con']} ms frente a {t_rehacer['sin']} ms")
+    ev('window.__sinCopiarModelos = false')
     ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-11; {K}.pj.z=-5; {K}.cam.yaw=Math.PI+0.7; {K}.cam.pitch=0.5; {K}.cam.dist=24")
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/12_casa_dos_plantas.png')
