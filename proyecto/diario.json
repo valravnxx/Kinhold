@@ -1843,5 +1843,72 @@
   "pruebas": "Mapa 75/75 y su navegador en PC y móvil correctos; lógica 177/177, modelos 138/138, combate 80/80, acciones 41/41, idiomas, carriles 24/24 y web correctos. El mapa en ruso, mirado en captura.",
   "capturas": "capturas/mapa-v9",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T09:20:34+00:00",
+  "fin": "2026-10-28T15:31:25+00:00",
+  "titulo": "Arte: personalización del taller (personaje v16)",
+  "hito": "arte",
+  "hecho": [
+   "Formas de MakeHuman como formas del modelo en cada pieza: peso y músculo (también en la ropa, que engorda o adelgaza con el cuerpo), cara ancha, nariz ancha, nariz larga y mentón, cada una con su «_mas» y su «_menos».",
+   "Se hacen con los mismos ajustes y objetivos de MakeHuman: cada vértice de cada pieza se mueve lo mismo que el punto del cuerpo del que sale, también después de simplificar la malla.",
+   "La piel y el pelo se pintan en gris claro y su color va en el material; el iris va aparte del blanco del ojo. Así el juego cambia piel, ojos y pelo sin rehacer texturas.",
+   "Cejas, pelo pintado y barba (corta o bigote) son calcos sobre la piel, del color del pelo. La cara de la piel ya no se simplifica: si no, la piel los atravesaba en la barbilla.",
+   "En el visor: tono de piel, color de ojos y de pelo (seis de cada), peinado (corto o rapado), barba (corta, bigote o afeitado) y deslizadores de altura, peso, músculo, cara, nariz y mentón, sin volver a cargar el modelo. Se guarda en el navegador.",
+   "Lógica pura del aspecto en src/logica/aspecto.js (valores por defecto, recortes y validación), para que el servidor la use luego.",
+   "La construcción, la demo y el duelo ya pasan el aspecto al jugador en el código; no se han publicado versiones nuevas de esos prototipos.",
+   "Personajes nuevos en recursos/personajes/taller-v9/ (unos 2,6 MB el hombre y 2,7 MB la mujer, antes 1,7 y 1,8: las formas van sin cuantizar).",
+   "Provisional: la altura escala el personaje entero (±6 %); los colores y el alcance de los deslizadores también son provisionales. Tarea nueva: que los demás jugadores en línea vean tu aspecto."
+  ],
+  "pruebas": "Todas (probar_todo.sh) tras unir main: correctas salvo «jugar en línea» y la web, que fallaron una vez con el servidor cargado (un mensaje tardó más de 5 s; la página tardó en cargar) y pasaron al repetirlas solas. La del personaje, repetida sola tras su último cambio: correcta. Tras volver a unir main (mapa y servidor en internet), repetidas las de node (instalado Caddy, que pide la prueba nueva del servidor en internet) y la del mapa: correctas. Las dos pruebas nuevas y las comprobaciones nuevas del personaje fallan con MUTAR=1. Capturas del visor en PC y móvil revisadas, y la cara lado a lado con la v15. No comprobado: el rendimiento en un móvil de verdad.",
+  "capturas": "capturas/personaje-v16",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T13:59:19+00:00",
+  "fin": "2026-10-28T16:38:52+00:00",
+  "titulo": "Hito 2: ralentización por carga",
+  "hito": "equipo",
+  "hecho": [
+   "Lógica pura: lo lleno que vas es la media de manos, espalda, cintura y hombro, cada uno de vacío a lleno según sus huecos; lo grande en las manos llena las dos",
+   "La velocidad se multiplica por 1 − 0,2 × lleno²: con poca carga no se nota, las manos llenas solas un 1,25% y todo lleno el 80% del GDD",
+   "Decisión provisional: vale al andar y al correr; una mochila vacía puesta no cuenta, y la ropa y la armadura aún no (llegan con los datos de cada prenda); anotada en el registro",
+   "En la demo, el jugador lleva su inventario (guardado en el navegador) y anda más despacio según lo que lleva; se cambia con acciones con autor",
+   "Sin versión nueva: hasta que esté el panel de inventario no se puede cargar nada desde el juego, así que el cambio aún no se nota jugando"
+  ],
+  "pruebas": "Todas las pruebas correctas (inventario 120/120, con 13 nuevas de la carga; navegador de la demo: 3,6 m/s sin carga y 2,88 m/s cargado al máximo, en PC y móvil). Rotas a propósito una vez (MUTAR_CARGA=1) y fallan. Tras unir main se repitieron las de lógica y la de la demo; no comprobado: el resto del navegador después de unir main",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T13:00:52+00:00",
+  "fin": "2026-10-28T18:06:31+00:00",
+  "titulo": "Hito 1c: tejado de teja (carril B)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Tejado de teja (10 tejas y 1 tronco, 200 kg, en «Tejados»): el documento de sistemas dice «10 tejas + vigas»; las vigas van como 1 tronco (provisional, anotado en el registro de decisiones).",
+   "Material nuevo «teja», ligero (se sube a mano por la escalera). Las partidas guardadas de antes se cargan con las 100 tejas de partida, sin perder nada.",
+   "Teja curva de barro cocido, de color apagado: canales boca arriba y, encima de cada junta, cobijas boca abajo, cada una montada sobre la de abajo y con su tono; tabla de remate en los lados que vuelan y caballete de cobijas grandes asentadas en barro en la cumbrera. Los tramos de al lado siguen el dibujo sin que dos tejas caigan en el mismo sitio. Comparada en captura con la cabaña de la prueba de estilo v5.",
+   "Para el móvil, los canales van de una pieza por columna (casi no se ven) y solo las cobijas van sueltas: un tramo suelto tiene unos 5.000 triángulos, unas 2,4 veces los de la paja (medido en la prueba de modelos).",
+   "Prueba de carga: una casa de 3×3 y 2 plantas de troncos con teja se hace entera (la pieza más cargada pasa del 70 % con paja al 76 %; los cimientos cargan 1080 kg más); 3 plantas sobre cimiento de piedra, al 99 %; con muros de zarzo, una casa de 3×3 deja los muros del medio al tope (250 kg) y rechaza un tramo más de teja apoyado en el de al lado (de paja sí cabe).",
+   "Que no se pudre ni arde fácil queda anotado en la pieza: aún no hay mantenimiento ni fuego. El muestrario de tejados tiene ahora dos casas con teja."
+  ],
+  "pruebas": "Todas con bash herramientas/probar_todo.sh, dos veces (antes y después de unir main): todo correcto salvo tres que fallaron solo dentro de la tanda y pasan repetidas solas: «Jugadores que se ven, con lag simulado» (15/15 sola), la web (lee en GitHub quién trabaja en ese momento: pasó sola) y la del servidor en internet del carril A, que necesita Caddy (instalado aquí con apt-get, 19/19). Tras la última unión con main, repetidas: lógica 189/189 (12 nuevas, 5 fallan con MUTAR=1), modelos 144/144 (4 nuevas; la de los triángulos falla con MUTAR_TEJA=1), combate, acciones, inventario, idiomas, servidor y en línea; navegador de construcción todo correcto (4 comprobaciones nuevas; la del cobro de tejas falla con una versión que cobra 9) y demo única todo correcto. Capturas miradas en PC y móvil, y el tejado junto a la cabaña de la prueba de estilo v5 (48_tejado_teja_junto_a_la_v5). No comprobado: el tejado de teja en línea con dos jugadores (va por las mismas acciones que los demás tejados). Mientras corrían las pruebas, otras sesiones del carril B ocuparon el carril para otras tareas: esta no lo suelta para no quitárselo.",
+  "capturas": "capturas/construccion-v30",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T15:12:01+01:00",
+  "fin": "2026-10-28T19:06:47+01:00",
+  "titulo": "Hito 10: el mundo de cerca siempre igual",
+  "hito": "mundo",
+  "hecho": [
+   "El terreno ya era fijo; lo que cambiaba al rehacer el trozo de cerca era el reparto de árboles, hierba, piedras y piezas de roca, que salía de un azar que empezaba en el centro del trozo",
+   "Ahora cada cosa sale de su celda en el mundo y de la semilla del mundo (un azar por celda), y si hay que recortar por el aparato se quitan las más lejanas del personaje, no al azar",
+   "Lo mismo con los árboles de lejos: ya no dependen de desde dónde se abre la zona",
+   "Prueba nueva en el navegador: se rehace el trozo de cerca 50 m más allá y la parte común sale idéntica (MUTAR_FIJO=1 vuelve al azar por el centro y falla)"
+  ],
+  "pruebas": "Batería completa correcta tras unir main (con el mapa v9 de los nombres del mundo, de otra sesión de chat; esta versión pasa a v10). No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v10",
+  "estado": "ok"
  }
 ]

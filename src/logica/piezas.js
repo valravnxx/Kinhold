@@ -22,7 +22,7 @@ export const MAX_PLANTA = 3;  // plantas 0..3
 
 export const MATERIALES = {
   piedra: 'Piedra', tronco: 'Tronco', vara: 'Vara', barro: 'Barro', paja: 'Paja',
-  cuerda: 'Cuerda', tabla: 'Tabla', clavo: 'Clavo', hierro: 'Hierro',
+  cuerda: 'Cuerda', tabla: 'Tabla', clavo: 'Clavo', hierro: 'Hierro', teja: 'Teja',
 };
 
 // Clase de peso de cada material (GDD, «Obras»): decide cómo se sube hasta la altura de la obra.
@@ -34,6 +34,7 @@ export const MATERIALES = {
 export const CLASES_PESO = { ligero: 'Ligero', pesado: 'Pesado', muy_pesado: 'Muy pesado' };
 export const CLASE_PESO = {
   tabla: 'ligero', vara: 'ligero', paja: 'ligero', clavo: 'ligero', cuerda: 'ligero', barro: 'ligero', hierro: 'ligero',
+  teja: 'ligero', // las tejas se suben de pocas en pocas, a mano
   tronco: 'pesado', piedra: 'pesado',
 };
 
@@ -62,6 +63,10 @@ export const PIEZAS = {
 
   tejado_paja:        { nombre: 'Tejado de paja', hueco: 'r', nivel: 1, peso: 80, cap: 400, coste: { vara: 2, paja: 4 }, cat: 'tejado' },
   tejado_tablilla:    { nombre: 'Tejado de tablillas', hueco: 'r', nivel: 2, peso: 100, cap: 500, coste: { tabla: 3, clavo: 4 }, cat: 'tejado' },
+  // Sistemas: «Tejado de teja — N2, 10 tejas + vigas, 200 kg; no se pudre ni arde fácil; pesa». Las vigas de debajo
+  // (los pares que sostienen las tejas) van como 1 tronco (provisional). Lo de pudrirse y arder queda anotado para
+  // cuando haya mantenimiento y fuego; hoy solo cambia el peso que cargan los muros.
+  tejado_teja:        { nombre: 'Tejado de teja', hueco: 'r', nivel: 2, peso: 200, cap: 500, coste: { teja: 10, tronco: 1 }, noSePudre: true, ardePoco: true, cat: 'tejado' },
   // El hastial ya se dibuja solo con el tejado; la pieza queda oculta para no romper partidas guardadas.
   hastial:            { nombre: 'Hastial (remate)', hueco: 'g', nivel: 1, peso: 100, cap: 0, coste: { tronco: 2 }, cat: 'oculto' },
 
@@ -110,5 +115,5 @@ export const DECORACION = {
 };
 
 export const MATERIALES_INICIALES = {
-  piedra: 120, tronco: 120, vara: 120, barro: 80, paja: 80, cuerda: 40, tabla: 80, clavo: 120, hierro: 20,
+  piedra: 120, tronco: 120, vara: 120, barro: 80, paja: 80, cuerda: 40, tabla: 80, clavo: 120, hierro: 20, teja: 100,
 };

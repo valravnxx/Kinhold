@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 28 oct 2026 (19:28) — por el chat: montañas en escalones
+
+«Por lo de los acantilados, las montañas se ven así ahora, como escaloncitos; ¿cómo podemos diferenciar las dos cosas?» (captura de una ladera nevada en peldaños pequeños con bordes en zigzag) → Los escalones de los cortados se aplicaban a casi cualquier ladera de roca dura con algo de pendiente. Tarea nueva en el hito 10, la lleva el chat: ladera de montaña continua; cortados solo donde ya es muy empinado y aflora la roca, en pocos escalones grandes.
+
 ### 28 oct 2026 (15:46) — por el chat: nombres del mundo
 valravnx decide los nombres: continente **Kinland**; regiones **Whitholm** (la isla), **Eikwold** (noroeste), **Rudmere** (suroeste), **Highfell** (macizo central) y **Storaa** (sureste, el gran río). Descartados Hornfell (casi igual que una región de otro juego de supervivencia) y Highmark (marca de una aseguradora). «No son países como tal, son regiones; países los harán si eso los jugadores.» → Tarea en el hito del mundo, en curso en esta sesión de chat.
 

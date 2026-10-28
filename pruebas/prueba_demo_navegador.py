@@ -2,6 +2,7 @@
 # Uso: python3 pruebas/prueba_demo_navegador.py <html> <carpeta_capturas>
 # Sirve el html en jugar/demo/ y los recursos de personaje en recursos/personajes/ (como la web).
 # MUTAR=1 borra lo guardado al cambiar de parte (como si no se pasara el personaje): la prueba tiene que fallar.
+# MUTAR_CARGA=1 hace que la carga no ralentice: la parte de la carga tiene que fallar.
 # MUTAR_REND=1 hace que el botón de personajes de prueba no haga nada: la parte de rendimiento tiene que fallar.
 # Deja las medidas de rendimiento (con el dibujo por software del navegador sin pantalla: los fps no valen) en rendimiento.json.
 import sys, os, io, json, shutil, tempfile, threading, http.server, functools, socketserver
@@ -15,7 +16,7 @@ os.makedirs(SALIDA, exist_ok=True)
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-for c in ['v1', 'taller-v8']:
+for c in ['v1', 'taller-v9']:
     shutil.copytree(os.path.join(RAIZ, f'docs/recursos/personajes/{c}'), f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -24,6 +25,7 @@ threading.Thread(target=srv.serve_forever, daemon=True).start()
 URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html'
 MUTAR = bool(os.environ.get('MUTAR'))
 MUTAR_REND = bool(os.environ.get('MUTAR_REND'))
+MUTAR_CARGA = bool(os.environ.get('MUTAR_CARGA'))  # la carga no ralentiza: la parte de la carga tiene que fallar
 MEDIDAS = {}
 PG = [None]
 
@@ -110,6 +112,34 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/{nombre}_construir_correr.png'); pg.keyboard.up('w'); pg.wait_for_timeout(300)
         if MUTAR: c['n'] = 5.8
         comprobar('construir: corre con la carrera nueva a su ritmo natural', c['m'] == 'correr' and 2.4 < c['n'] < 4.5 and 0.7 < c['r'] < 1.6, str(c))
+        # ralentización por carga (GDD): sin carga a 3,6 m/s; cargado al máximo en todo, al 80% (2,88 m/s)
+        def recorrido(ms=1500):
+            pg.evaluate('(() => { const k = window.__kinhold; k.pj.x = 0; k.pj.z = 0; k.cam.yaw = 0; window.__x0 = [k.pj.x, k.pj.z]; })()')
+            pg.keyboard.down('w'); pg.wait_for_timeout(ms)
+            r = pg.evaluate('(() => { const k = window.__kinhold; return { vel: k.pj.vel, d: Math.hypot(k.pj.x - window.__x0[0], k.pj.z - window.__x0[1]) }; })()')
+            pg.keyboard.up('w'); pg.wait_for_timeout(200)
+            return r
+        sin = recorrido()
+        llenar = '''(() => { const k = window.__kinhold, a = x => k.accionInventario(x).ok;
+          const r = [a({tipo:'coger', objeto:'lenero', cantidad:1, a:'mano:der'}), a({tipo:'ponerse', de:'mano:der'}),
+            a({tipo:'coger', objeto:'tronco_corto', cantidad:1, a:'espalda/0'}), a({tipo:'coger', objeto:'tronco_corto', cantidad:1, a:'espalda/1'}),
+            ...[2,3,4,5].map(i => a({tipo:'coger', objeto:'lena', cantidad:3, a:'espalda/' + i})),
+            a({tipo:'coger', objeto:'cinto_cuero', cantidad:1, a:'mano:der'}), a({tipo:'ponerse', de:'mano:der'}),
+            a({tipo:'coger', objeto:'piedra', cantidad:3, a:'cintura/0'}), a({tipo:'coger', objeto:'silex', cantidad:10, a:'cintura/1'}), a({tipo:'coger', objeto:'resina', cantidad:10, a:'cintura/2'}),
+            a({tipo:'coger', objeto:'odre', cantidad:1, a:'mano:der'}), a({tipo:'ponerse', de:'mano:der'}), a({tipo:'coger', objeto:'agua', cantidad:10, a:'hombro/0'}),
+            a({tipo:'coger', objeto:'tronco_corto', cantidad:1, a:'mano:der'})];
+          return { ok: r.every(x => x), f: k.inventario.lleno().fraccion, autor: k.registroAcciones.entradas ? k.registroAcciones.entradas.slice(-1)[0].autor : '' }; })()'''
+        ll = pg.evaluate(llenar)
+        comprobar('construir: se llena todo con acciones con autor', ll['ok'] and ll['autor'] == 'jugador:local' and abs(ll['f'] - 1) < 1e-9, str(ll))
+        if MUTAR_CARGA: pg.evaluate("window.__kinhold.inventario.velocidad = () => 1")
+        con = recorrido()
+        comprobar('construir: sin carga anda a 3,6 m/s', abs(sin['vel'] - 3.6) < 1e-6, str(sin))
+        comprobar('construir: cargado al máximo en todo, al 80% (2,88 m/s)', abs(con['vel'] - 2.88) < 1e-6, str(con))
+        # (lo recorrido no se compara: en el navegador sin pantalla va a 1–2 fotogramas por segundo y cada paso se corta a 0,05 s)
+        comprobar('construir: cargado también avanza', con['d'] > 0.1, f"{con['d']:.2f} m")
+        comprobar('construir: lo que llevas queda guardado', 'lenero' in (pg.evaluate("localStorage.getItem('kinhold.inventario')") or ''))
+        for l in ['mano:der', 'espalda', 'cintura', 'hombro']: pg.evaluate(f"window.__kinhold.accionInventario({{tipo:'soltar', de:'{l}'}})")
+        comprobar('construir: al soltarlo todo vuelve a la velocidad de siempre', pg.evaluate('window.__kinhold.inventario.velocidad()') == 1)
         for sel in ['#menu button', '#modos button']:
             for i in range(pg.locator(sel).count()):
                 b = f'{sel} >> nth={i}'
