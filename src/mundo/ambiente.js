@@ -53,7 +53,7 @@ function texturaCielo(arriba, abajo) {
 // crearAmbiente(escena, opc) — opc:
 //   luz: 'manana' | 'tarde'; alcance: medio lado de la zona con sombra (m); mapa: resolución de la sombra;
 //   niebla: [cerca, lejos]; fondoPagina: true si el cielo lo pinta la página (lienzo transparente).
-// Devuelve { sol, hemi, ponerLuz(id), seguir(x, z) } — seguir() mueve la sombra con el jugador.
+// Devuelve { sol, hemi, ponerLuz(id), seguir(x, z, y) } — seguir() mueve la sombra con el jugador.
 export function crearAmbiente(escena, { luz = 'manana', alcance = 12.5, mapa = 1024, niebla = [45, 130], fondoPagina = false, normalBias = 0.04 } = {}) {
   const hemi = new THREE.HemisphereLight(), sol = new THREE.DirectionalLight();
   sol.castShadow = true; sol.shadow.mapSize.set(mapa, mapa); sol.shadow.radius = 4;
@@ -63,8 +63,8 @@ export function crearAmbiente(escena, { luz = 'manana', alcance = 12.5, mapa = 1
   const centro = new THREE.Vector3(), dir = new THREE.Vector3();
   let distancia = 1.6;
   const amb = { sol, hemi, luz };
-  amb.seguir = (x, z) => {
-    centro.set(x, 0, z);
+  amb.seguir = (x, z, y = 0) => {      // y: la altura del suelo, donde el terreno no está a nivel del mar
+    centro.set(x, y, z);
     sol.target.position.copy(centro);
     sol.position.copy(dir).multiplyScalar(distancia).add(centro);
   };

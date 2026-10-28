@@ -83,8 +83,8 @@ export function suelo({ llano = 12, cerca = 15, lejos = 90, anillos = 30, lados 
 // libre(x, z, d) para dejar huecos, llano (altura del terreno), sombra (si los árboles echan sombra).
 // Devuelve los troncos como obstáculos [{x, z, r}] para chocar con ellos.
 // Modelo instanciable hecho con un Lote: { geo (con grupos por textura), mats }
-export function modeloLote(fn) {
-  const L = new Lote({ rangoSuelo: 2.5 }); fn(L);
+export function modeloLote(fn, { rangoSuelo = 2.5 } = {}) {
+  const L = new Lote({ rangoSuelo }); fn(L);
   const grupos = L.cerrar(null, true), tipos = Object.keys(grupos);
   const geo = mergeGeometries(tipos.map(t => mergeGeometries(grupos[t])), true);
   return { geo, mats: tipos.map(t => materialTex(t)) };
@@ -132,6 +132,22 @@ export function bosque(raiz, r, { n = 36, desde = 15, hasta = 60, reparto = 0.8,
   return obstaculos;
 }
 
+// Modelos de las plantas y piedras del estilo v5 (hechos una vez y compartidos):
+// mata de hierba, flor, matorral (tres bultos de hojas) y roca (de caras planas).
+let cachePlantas = null;
+export function modelosPlantas() {
+  if (cachePlantas) return cachePlantas;
+  const mata = (() => { const L = new Lote({ rangoSuelo: 0.3, variacion: 0 }); for (let k = 0; k < 3; k++) { const g = new THREE.ConeGeometry(0.03, 0.26, 3); g.translate(0, 0.13, 0); L.add(g, k % 2 ? 'hierbaClara' : 'hierba', 0, 0, 0, { y: k * 2.1, z: (k - 1) * 0.3 }, { brillo: 1.1 }); } return mergeGeometries(L.cerrar()); })();
+  const flor = (() => { const L = new Lote({ variacion: 0, rangoSuelo: 0.01 }); L.add(cil(0.006, 0.006, 0.2, 3), 'hierba', 0, 0.1, 0, null, { sinSuelo: true }); L.add(new THREE.IcosahedronGeometry(0.035, 0), 0xffffff, 0, 0.21, 0, null, { sinSuelo: true }); return mergeGeometries(L.cerrar()); })();
+  const matorral = modeloLote((L) => {
+    L.add(copa(0.55, 1, 1), 'hojaOsc', 0, 0.33, 0, null, { escala: new THREE.Vector3(1.2, 0.8, 1), copa: 0 });
+    L.add(copa(0.4, 1, 2), 'hoja', 0.3, 0.3, 0.12, null, { copa: 0 });
+    L.add(copa(0.32, 1, 3), 'hojaClara', -0.28, 0.24, -0.18, null, { copa: 0 });
+  }, { rangoSuelo: 0.5 });
+  const roca = modeloLote((L) => L.add(new THREE.IcosahedronGeometry(1, 1), 'piedra', 0, 0.22, 0, null, { escala: new THREE.Vector3(1.3, 0.65, 1), plano: true }), { rangoSuelo: 0.6 });
+  return (cachePlantas = { mata, flor, matorral, roca });
+}
+
 // ---------- Hierba y flores instanciadas ----------
 // opc: hierba y flores (cuántas), radio (hasta dónde), desde (radio libre en el centro), libre(x, z).
 export function plantas(raiz, r, { hierba = 170, flores = 70, radio = 11.5, desde = 0, libre = null } = {}) {
@@ -144,8 +160,7 @@ export function plantas(raiz, r, { hierba = 170, flores = 70, radio = 11.5, desd
     }
     return lista;
   };
-  const mata = (() => { const L = new Lote({ rangoSuelo: 0.3, variacion: 0 }); for (let k = 0; k < 3; k++) { const g = new THREE.ConeGeometry(0.03, 0.26, 3); g.translate(0, 0.13, 0); L.add(g, k % 2 ? 'hierbaClara' : 'hierba', 0, 0, 0, { y: k * 2.1, z: (k - 1) * 0.3 }, { brillo: 1.1 }); } return mergeGeometries(L.cerrar()); })();
-  const flor = (() => { const L = new Lote({ variacion: 0, rangoSuelo: 0.01 }); L.add(cil(0.006, 0.006, 0.2, 3), 'hierba', 0, 0.1, 0, null, { sinSuelo: true }); L.add(new THREE.IcosahedronGeometry(0.035, 0), 0xffffff, 0, 0.21, 0, null, { sinSuelo: true }); return mergeGeometries(L.cerrar()); })();
+  const { mata, flor } = modelosPlantas();
   const mallas = [];
   const poner = (geo, lista, color, mat, nombre) => {
     if (!lista.length) return;
@@ -188,12 +203,7 @@ export function despejarMallas(mallas, ocupado) {
 // ---------- Matorrales: dos o tres bultos de hojas juntos, como los de la prueba de estilo v5 ----------
 // Instanciados (una sola llamada de dibujo). Devuelve sus sitios como obstáculos bajos [{x, z, r}].
 export function matorrales(raiz, r, { n = 30, desde = 4, hasta = 40, libre = null, llano = 12 } = {}) {
-  const L = new Lote({ rangoSuelo: 0.5 });
-  L.add(copa(0.55, 1, 1), 'hojaOsc', 0, 0.33, 0, null, { escala: new THREE.Vector3(1.2, 0.8, 1), copa: 0 });
-  L.add(copa(0.4, 1, 2), 'hoja', 0.3, 0.3, 0.12, null, { copa: 0 });
-  L.add(copa(0.32, 1, 3), 'hojaClara', -0.28, 0.24, -0.18, null, { copa: 0 });
-  const grupos = L.cerrar(null, true), tipos = Object.keys(grupos);
-  const geo = mergeGeometries(tipos.map(t => mergeGeometries(grupos[t])), true), mats = tipos.map(t => materialTex(t));
+  const { geo, mats } = modelosPlantas().matorral;
   const altura = alturaTerreno(llano), lista = [], obstaculos = [];
   for (let i = 0, t = 0; lista.length < n && t < n * 10; t++) {
     const a = r() * Math.PI * 2, d = desde + Math.sqrt(r()) * (hasta - desde), x = Math.cos(a) * d, z = Math.sin(a) * d;
