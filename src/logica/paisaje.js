@@ -88,14 +88,7 @@ export function crearPaisaje(mapa) {
   function altura(xm, ym, tramos = null, fino = false) {
     const { f, hm, r } = grande(xm, ym);
     if (f < 0) return Math.max(-60, -1.5 + f * 0.8);       // mar: el fondo baja al alejarse de la costa
-    // el río más cercano (si se dan los tramos de la zona)
-    let dm = Infinity, nivel = 0, ancho = 2;
-    if (tramos) for (const t of tramos) {
-      const vx = t.bx - t.ax, vy = t.by - t.ay, l2 = vx * vx + vy * vy || 1;
-      const u = Math.max(0, Math.min(1, ((xm - t.ax) * vx + (ym - t.ay) * vy) / l2));
-      const dd = Math.hypot(xm - t.ax - vx * u, ym - t.ay - vy * u);
-      if (dd < dm) { dm = dd; nivel = lerp(t.ha, t.hb, u); ancho = t.ancho; }
-    }
+    const { dm, nivel, ancho } = rioCercano(xm, ym, tramos);
     const monte = suave(120, 600, r);                      // 0 en el llano, 1 en la montaña
     // junto al río, el detalle se apaga: el fondo del valle lo marca el río (que ya talló el valle grande del mapa),
     // no el ruido; si no, el ruido levanta el fondo decenas de metros y el río queda en una zanja
@@ -106,15 +99,34 @@ export function crearPaisaje(mapa) {
     if (dm < 2500) {
       // el río talla su cauce, una vega llana a los lados y laderas con la pendiente limitada (suaves en el llano,
       // más cerradas en la montaña, donde salen gargantas); nunca una zanja de paredes verticales
-      const cauce = Math.min(nivel, hm) - 1.2, orilla = cauce + 0.8;
+      const cauce = Math.min(nivel, hm) - 1.2, orilla = cauce + 0.8, borde = ancho / 2 + 1.5;
       const vega = (ancho * 2.5 + 25) * (1 - 0.8 * monte);
       const ladera = lerp(0.14, 0.75, monte);              // desnivel por metro de distancia
-      const fuera = Math.max(0, dm - ancho / 2);
+      const fuera = Math.max(0, dm - borde);
       const valle = fuera < vega ? orilla + fuera * 0.015 : orilla + vega * 0.015 + (fuera - vega) * ladera;
-      // el río solo rebaja (nunca levanta muros)
-      z = Math.min(z, dm < ancho / 2 ? cauce - 1 : valle);
+      // el lecho baja hasta un metro bajo el cauce y sube a la orilla en rampa (sin escalón: el borde del agua
+      // sale liso y no en dientes de sierra); el río solo rebaja, nunca levanta muros
+      z = Math.min(z, dm < borde ? lerp(cauce - 1, orilla, Math.pow(dm / borde, 1.5)) : valle);
     }
     return z;
+  }
+
+  // el río más cercano a un punto: distancia (m), altura del río en ese tramo y ancho
+  function rioCercano(xm, ym, tramos) {
+    let dm = Infinity, nivel = 0, ancho = 2;
+    if (tramos) for (const t of tramos) {
+      const vx = t.bx - t.ax, vy = t.by - t.ay, l2 = vx * vx + vy * vy || 1;
+      const u = Math.max(0, Math.min(1, ((xm - t.ax) * vx + (ym - t.ay) * vy) / l2));
+      const dd = Math.hypot(xm - t.ax - vx * u, ym - t.ay - vy * u);
+      if (dd < dm) { dm = dd; nivel = lerp(t.ha, t.hb, u); ancho = t.ancho; }
+    }
+    return { dm, nivel, ancho };
+  }
+  // altura del agua del río en un punto cercano al cauce (m), o null si el punto no está junto a un río
+  function agua(xm, ym, tramos) {
+    const { dm, nivel, ancho } = rioCercano(xm, ym, tramos);
+    if (dm > ancho / 2 + 4) return null;
+    return Math.min(nivel, grande(xm, ym).hm) - 1.2 + 0.2;   // un poco por encima del cauce: el agua cubre el lecho
   }
 
   // qué hay en un punto: celda del mapa (con el borde deformado, sin escalones), bioma con la temperatura de su altura
@@ -129,7 +141,7 @@ export function crearPaisaje(mapa) {
     return { roca: roca[ci] || 'caliza', bioma: bioma[ci] ? b : null, T, P, pais: pais[ci] };
   }
 
-  return { altura, sitio, riosEn, rios, celda };
+  return { altura, agua, sitio, riosEn, rios, celda };
 }
 
 // Espesor del bosque (0–1) y qué árbol: según bioma, temperatura, pendiente (en tanto por uno) y un ruido de claros.

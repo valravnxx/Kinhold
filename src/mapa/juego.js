@@ -89,10 +89,26 @@ export function crearVistaJuego(est) {
     geo.setIndex(new THREE.BufferAttribute(idx, 1)); geo.computeVertexNormals();
     const terreno = new THREE.Mesh(geo, materialTex('suelo')); terreno.receiveShadow = true; terreno.name = 'terrenoCerca'; g.add(terreno);
     vj.terreno = terreno;
+    // el agua de los ríos en el trozo de cerca: una lámina a la altura del agua sobre la misma rejilla; donde corta
+    // el terreno sale la orilla, lisa (la cinta del paisaje de lejos queda por debajo)
+    const W = new Float32Array(n * n).fill(NaN);
+    let hayAgua = false;
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const w = pai.agua(cx + x0 + i * PASO, cy + z0 + j * PASO, tramos); if (w !== null) { W[j * n + i] = w; hayAgua = true; } }
+    if (hayAgua) {
+      const pa = new Float32Array(n * n * 3), ia = [];
+      for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const k = j * n + i; pa.set([x0 + i * PASO, isNaN(W[k]) ? H[k] - 0.5 : W[k], z0 + j * PASO], k * 3); }
+      for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++) {
+        const a = j * n + i, b = a + 1, c2 = a + n, d = c2 + 1;
+        if (isNaN(W[a]) && isNaN(W[b]) && isNaN(W[c2]) && isNaN(W[d])) continue;
+        ia.push(a, c2, b, b, c2, d);
+      }
+      const ga = new THREE.BufferGeometry(); ga.setAttribute('position', new THREE.BufferAttribute(pa, 3)); ga.setIndex(ia); ga.computeVertexNormals();
+      const lamina = new THREE.Mesh(ga, materialAgua()); lamina.name = 'aguaCerca'; lamina.receiveShadow = true; g.add(lamina);
+    }
 
     // lo que crece y lo que hay en el suelo, con las reglas del bosque de lejos
     const r = azar((Math.round(cx + px) * 73856093) ^ (Math.round(cy + pz) * 19349663) ^ 77);
-    const sitioEn = (x, z) => { const i = Math.round((x - x0) / PASO), j = Math.round((z - z0) / PASO); const k = Math.min(n - 1, Math.max(0, j)) * n + Math.min(n - 1, Math.max(0, i)); return { st: sitios[k], s: pend[k], y: vj.altura(x, z) }; };
+    const sitioEn = (x, z) => { const i = Math.round((x - x0) / PASO), j = Math.round((z - z0) / PASO); const k = Math.min(n - 1, Math.max(0, j)) * n + Math.min(n - 1, Math.max(0, i)); const y = vj.altura(x, z); return { st: W[k] > y - 0.3 ? null : sitios[k], s: pend[k], y }; };   // en el agua (o en su orilla) no crece nada
     const espesor = (x, z, st, s) => {
       const xm = cx + x, ym = cy + z;
       const claro = fbm(xm / 380, ym / 380, 31, 4) * 0.7 + fbm(xm / 90, ym / 90, 33, 3) * 0.3;
@@ -261,3 +277,6 @@ export function crearVistaJuego(est) {
 let matHierba = null, matFlor = null;
 function materialHierba() { return (matHierba ||= new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide })); }
 function materialFlor() { return (matFlor ||= new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true })); }
+// el agua de cerca: algo de brillo del cielo y un poco transparente en la orilla
+let matAgua = null;
+function materialAgua() { return (matAgua ||= new THREE.MeshPhongMaterial({ color: 0x55707c, specular: 0x8899a0, shininess: 60, transparent: true, opacity: 0.86 })); }
