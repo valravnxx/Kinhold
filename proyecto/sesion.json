@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-28T19:23:07+00:00",
-  "tarea": "Planificar el hito",
-  "hito": "crafting",
-  "rama": "trabajo/20261028-1923"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-28T16:51:15+00:00",
   "tarea": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
