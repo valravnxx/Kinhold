@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 28 oct 2026 (20:58) — por el chat: tirones en línea
+valravnx: «le da lagazos horribles (y a mí en el server) cuando abres o cierras puertas o cuando acabas de construir algo». → Arreglo en curso en esta sesión de chat.
+
 ### 28 oct 2026 (19:37) — por el chat: duelo en línea, los dos «esperando rival»
 valravnx y su pareja, conectados al mismo servidor (el de su PC, por el túnel), salían los dos «conectados y esperando rival». Causa: el servidor de casa era el que bajó jugar_en_casa.bat el 27 oct, de antes del duelo en línea (el .bat pregunta si bajar la versión nueva y a los 10 s sigue con «no»). Actualizado a mano, ya funciona. → Arreglo: el juego avisa si el servidor es antiguo, y el .bat baja la versión nueva él solo cuando la hay.
 

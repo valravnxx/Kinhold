@@ -331,6 +331,12 @@
      "inicio": "2026-10-28T19:58:44+01:00",
      "rama": "trabajo/20261028-2000-servidor-viejo",
      "fin": "2026-10-28T20:24:00+01:00"
+    },
+    {
+     "nombre": "Arreglo (valravnx, 28 oct): en línea, abrir o cerrar una puerta o terminar una obra da tirones horribles a los dos jugadores; que esas acciones no rehagan más de lo que cambia",
+     "estado": "en_curso",
+     "inicio": "2026-10-28T20:58:47+01:00",
+     "rama": "trabajo/20261028-2100-tirones"
     }
    ]
   },
