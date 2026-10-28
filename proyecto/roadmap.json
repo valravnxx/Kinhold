@@ -914,6 +914,12 @@
      "estado": "hecho",
      "inicio": "2026-10-28T12:35:33+01:00",
      "fin": "2026-10-28T14:51:26+01:00"
+    },
+    {
+     "nombre": "El mundo de cerca siempre igual: árboles, hierba, piedras y piezas de roca colocados según su sitio en el mundo y la semilla (no según dónde se rehace el trozo de cerca)",
+     "estado": "en_curso",
+     "inicio": "2026-10-28T15:12:01+01:00",
+     "rama": "trabajo/20261028-1515-fijo"
     }
    ],
    "lleva": "chat"

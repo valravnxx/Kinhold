@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 28 oct 2026 (15:11) — por el chat: que el mundo sea siempre igual
+
+«Cada vez que camino a un borde para reescribir la zona de alta calidad y avanzar a un acantilado, la zona que estaba cambia junto a lo nuevo; ¿cómo hacemos un seed de esto para que sea siempre el mundo igual?» → El terreno ya era fijo; lo que cambiaba era el reparto de árboles, hierba, piedras y rocas, que salía de un azar que empezaba en el centro del trozo de cerca. Tarea nueva en el hito 10, la lleva el chat: todo se coloca según su sitio en el mundo y la semilla.
+
 ### 28 oct 2026 (12:35) — por el chat: roca de verdad en los cortados
 
 «Me gusta la dirección, pero aunque ahora queda mucho más vertical, aún se ve como una textura gris que baja en plano. ¿Hay alguna forma de hacerle formas como si fuera de rocas, un escarpado de roca, para que quede mejor? Y con unas texturas con más sombra, más como roca real» → Tarea nueva en el hito 10, la lleva el chat: las paredes de los cortados cubiertas de piezas de roca 3D hechas por código (bloques con caras, aristas, salientes y grietas, encajados en la pared) y una textura de roca con sombra en grietas y rincones.
