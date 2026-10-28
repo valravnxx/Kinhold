@@ -321,9 +321,9 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T15:25:29+00:00",
-     "rama": "trabajo/20261028-1525"
+     "fin": "2026-10-28T19:04:21+00:00"
     },
     {
      "nombre": "Arreglo (valravnx, 28 oct: en el duelo en línea los dos salían «esperando rival»): su servidor de casa era de antes del duelo en línea, porque jugar_en_casa.bat no baja la versión nueva si no se le dice. El juego avisa cuando el servidor es de una versión anterior, y jugar_en_casa.bat baja la última versión él solo cuando la hay",
@@ -757,8 +757,15 @@
    "num": "3",
    "nombre": "Estaciones y crafting",
    "jugable": "Primeras estaciones, recetas, desbloqueo por práctica, durabilidad y reparación.",
-   "estado": "pendiente",
-   "tareas": []
+   "estado": "en_curso",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito",
+     "estado": "en_curso",
+     "inicio": "2026-10-28T19:23:07+00:00",
+     "rama": "trabajo/20261028-1923"
+    }
+   ]
   },
   {
    "id": "supervivencia",
