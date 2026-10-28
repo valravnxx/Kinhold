@@ -10,6 +10,7 @@
 // y se manda. Durante PREDICCION segundos su acción no se pisa con lo del servidor (que aún no la sabe), salvo
 // lo que solo decide el servidor: quedar descolocado o caer. Las heridas, la sangre y el cansancio, siempre.
 
+import { MARCAS_CURA } from './combate_servidor.js';
 export const PREDICCION = 0.5;   // s: lo que se respeta la acción propia antes de seguir al servidor
 
 // Pone al luchador L como dice la foto f del servidor. propio: es el del jugador; prediciendo: hace menos de
@@ -22,8 +23,14 @@ export function aplicarFoto(L, f, { propio = false, prediciendo = false } = {}) 
   L.sangre = f.sangre;
   L.liza = !!f.liza;
   if (Array.isArray(f.lista)) {
-    L.heridas = f.lista.map(([zona, gravedad, tipo, sangrado]) => ({ zona, gravedad, tipo, sangrado: +sangrado || 0 }));
+    L.heridas = f.lista.map(([zona, gravedad, tipo, sangrado, marcas = '']) => {
+      const h = { zona, gravedad, tipo, sangrado: +sangrado || 0 };
+      for (const m of String(marcas)) if (MARCAS_CURA[m]) h[MARCAS_CURA[m]] = true;
+      if (h.cauterizada) h.secuela = true;
+      return h;
+    });
   }
+  if (f.botiquin && typeof f.botiquin === 'object') L.botiquin = { ...f.botiquin };
   // el contraataque: lo abre el servidor (tras una parada perfecta); aquí se lleva con el reloj de la copia
   if (f.contra) { if (!L.puedeContraatacar()) L.contraHasta = L.reloj + 0.8; } else L.contraHasta = -1;
   const manda = !propio || !prediciendo || f.fuera || f.accion === 'aturdido' || f.accion === 'caido' || (L.fuera && !f.fuera);

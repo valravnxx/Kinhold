@@ -2027,5 +2027,23 @@
   "pruebas": "Batería completa correcta (seguida); tras unir main, servidor, en línea, combate en el servidor, idiomas y navegador de en línea y duelo en línea otra vez. No comprobado: fotogramas en un móvil de verdad",
   "capturas": "capturas/mapa-v11",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T14:53:19+00:00",
+  "fin": "2026-10-28T21:54:09+00:00",
+  "titulo": "Hito duelo: curación de heridas (combate v16)",
+  "hito": "duelo",
+  "hecho": [
+   "Curación en la lógica pura, como dice el GDD con la tabla del análisis: vendar, coser, cauterizar, entablillar y emplasto de hierbas, cada una para su tipo de herida, con su tiempo y su material",
+   "En pleno combate se puede, pero lento y quedando vendido: mientras curas no atacas ni paras y vas a un cuarto de la velocidad; si te hieren o echas a correr, la cura se pierde sin gastar material",
+   "Descanso: las heridas que ya no sangran bajan de grado con el tiempo (antes con emplasto) y la sangre se recupera despacio; valores provisionales en el registro de decisiones",
+   "Curarse es una acción con autor que queda en el registro, y en línea una intención más que resuelve el servidor (también dejar la cura a medias)",
+   "En el duelo: tocar el aviso de una herida enseña qué se le puede hacer y cuánto material queda; la tecla C y el botón Curar tratan la más urgente",
+   "Las heridas tratadas se ven en el personaje: venda de lino enrollada al grosor del cuerpo, tablillas, puntos más oscuros o quemadura",
+   "Arreglo: los avisos de la derecha se rehacían cada fotograma mientras sangrabas y costaba tocarlos"
+  ],
+  "pruebas": "Batería completa una vez (todo correcto salvo dos fallos sueltos que no tocan el combate: la ráfaga de prueba_conexiones, ya corregida en main, y una vez jugar en línea); tras unir main tres veces, otra vez las de node, combate, duelo en línea, jugar en línea y demo: correctas. Lógica de combate 105/105 con 25 nuevas (MUTAR=1 rompe la cura y 4 fallan); combate en el servidor 62/62 con 7 nuevas; navegador del combate con 12 comprobaciones nuevas en PC y móvil. Capturas de cerca de la venda y las tablillas miradas. Falla a veces: jugar en línea («el móvil ve el mojón de PC», espera de 5 s; pasa sola y en main), y duelo en línea si la herida al azar es muy grave en el torso (se desangra durante la reconexión). Hizo falta instalar caddy para prueba_nube. No comprobado: la venda del muslo asoma un poco por la falda de la túnica en guardia; el rival de la máquina no se cura.",
+  "capturas": "capturas/combate-v16",
+  "estado": "ok"
  }
 ]

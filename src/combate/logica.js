@@ -47,6 +47,49 @@ export const GUARDIAS = {
   alber:   { nombre: 'Necio',      cubre: ['bajo', 'derecha'],   rapidas: ['bajo', 'alto'] },
 };
 
+// ---------- Curación (GDD 13: tabla del análisis, apartado 15) ----------
+// Cada herida se trata con lo suyo. En pleno combate se puede, pero lento y quedando vendido: mientras curas no
+// atacas ni paras, apenas te mueves, y si te hieren o echas a correr la cura se pierde (sin gastar material).
+// Valores iniciales (se ajustan probando). duracion: s con el brazo sano. material: lo que gasta del botiquín.
+export const TRATAMIENTOS = {
+  vendar:      { nombre: 'Vendar',       duracion: 4,  material: 'vendas' },
+  coser:       { nombre: 'Coser',        duracion: 12, material: 'hilo' },
+  cauterizar:  { nombre: 'Cauterizar',   duracion: 3,  fuego: true },
+  entablillar: { nombre: 'Entablillar',  duracion: 8,  material: 'tablillas' },
+  hierbas:     { nombre: 'Emplasto de hierbas', duracion: 5, material: 'hierbas' },
+};
+// Lo que lleva cada luchador del duelo (provisional, hasta que el duelo use el inventario de la demo)
+export const BOTIQUIN = { vendas: 3, hilo: 2, tablillas: 1, hierbas: 2 };
+const SANGRA = 0.05;     // por debajo, la herida ya no sangra
+// Descanso: lo que tarda una herida que ya no sangra en bajar un grado (s; con emplasto, ×1/1,5)
+export const SANAR = { leve: 120, grave: 600, 'muy grave': 1800 };
+export const RECUPERAR_SANGRE = 1 / 30; // % de sangre por segundo cuando nada sangra
+const MAS_LEVE = { 'muy grave': 'grave', grave: 'leve' };
+
+// ¿Sirve ese tratamiento para esa herida? Devuelve null si sirve o el motivo (para enseñarlo) si no.
+export function motivoNoSirve(h, metodo) {
+  if (!h || !Object.hasOwn(TRATAMIENTOS, metodo)) return 'No hay nada que tratar.';
+  const sangra = h.sangrado > SANGRA;
+  switch (metodo) {
+    case 'vendar': return h.vendada ? 'Ya está vendada.' : !sangra ? 'No sangra.' : null;
+    case 'coser': return h.cosida ? 'Ya está cosida.' : h.tipo !== 'corte' || h.gravedad === 'leve' ? 'Solo para cortes profundos.' : null;
+    case 'cauterizar': return h.cauterizada ? 'Ya está cauterizada.' : !sangra || h.gravedad === 'leve' ? 'Solo para sangrados graves.' : null;
+    case 'entablillar': return h.entablillada ? 'Ya está entablillada.' : h.tipo !== 'contundente' || h.gravedad === 'leve' || !/^(brazo|pierna)/.test(h.zona) ? 'Solo para huesos rotos de brazos y piernas.' : null;
+    case 'hierbas': return h.hierbas ? 'Ya lleva emplasto.' : null;
+  }
+  return null;
+}
+// Lo que hace cada tratamiento al terminar
+function aplicarTratamiento(h, metodo) {
+  switch (metodo) {
+    case 'vendar': h.vendada = true; h.sangrado *= { leve: 0, grave: 0.35, 'muy grave': 0.6 }[h.gravedad]; break;
+    case 'coser': h.cosida = true; h.sangrado = 0; break;
+    case 'cauterizar': h.cauterizada = true; h.secuela = true; h.sangrado = 0; break;   // para el sangrado, deja secuela
+    case 'entablillar': h.entablillada = true; break;    // el miembro estorba un grado menos
+    case 'hierbas': h.hierbas = true; break;             // sana antes
+  }
+}
+
 // Ritmo: multiplica la preparación de los golpes de los dos combatientes
 export const RITMO = { aprendiz: 1.6, normal: 1.25, realista: 1.0 };
 
@@ -103,6 +146,7 @@ export class Luchador {
     this.tension = 0; this.tTenso = 0; this.corriendo = false; this.cancelado = null;
     this.fuera = false; this.motivoFuera = '';
     this.reloj = 0;
+    this.botiquin = { ...BOTIQUIN }; this.cercaFuego = false; this.cura = null;
   }
   get def() { return ARMAS[this.arma]; }
 
@@ -110,7 +154,7 @@ export class Luchador {
   peorHerida(zonas) {
     const orden = { leve: 1, grave: 2, 'muy grave': 3 };
     let peor = 0;
-    for (const h of this.heridas) if (zonas.includes(h.zona)) peor = Math.max(peor, orden[h.gravedad]);
+    for (const h of this.heridas) if (zonas.includes(h.zona)) peor = Math.max(peor, orden[h.gravedad] - (h.entablillada ? 1 : 0));
     return peor;
   }
   factorBrazo() { return [1, 0.85, 0.7, 0.5][this.peorHerida(['brazoD'])] * [1, 0.95, 0.85, 0.75][this.peorHerida(['brazoI'])]; }
@@ -122,6 +166,7 @@ export class Luchador {
     if (this.accion === 'tensando') v *= 0.5;
     if (this.bloqueando) v *= 0.6;
     if (this.accion === 'aturdido') v *= 0.2;
+    if (this.accion === 'curando') v *= 0.25;
     return v;
   }
   puedeActuar() { return !this.fuera && this.accion === 'libre'; }
@@ -212,9 +257,44 @@ export class Luchador {
     this.accion = 'libre'; this.tAccion = 0; this.tension = 0; this.tTenso = 0; this.cancelado = motivo;
   }
 
+  // ---------- Curación ----------
+  // Por qué no se puede tratar ahora la herida i con ese método (null: se puede)
+  motivoNoCurar(i, metodo) {
+    const t = Object.hasOwn(TRATAMIENTOS, metodo) ? TRATAMIENTOS[metodo] : null, h = Number.isInteger(i) ? this.heridas[i] : null;
+    if (!t || !h) return 'No hay nada que tratar.';
+    if (this.fuera) return 'Estás fuera de combate.';
+    const m = motivoNoSirve(h, metodo);
+    if (m) return m;
+    if (t.fuego && !this.cercaFuego) return 'Hace falta un fuego cerca para calentar el hierro.';
+    if (t.material && !(this.botiquin[t.material] > 0)) return 'No te quedan.';
+    if (this.accion !== 'libre' || this.bloqueando) return 'Ahora no: estás ocupado.';
+    if (this.corriendo) return 'No se puede corriendo.';
+    return null;
+  }
+  // Empezar a tratar la herida i. Tarda más con los brazos heridos.
+  curar(i, metodo) {
+    if (this.motivoNoCurar(i, metodo)) return false;
+    this.accion = 'curando'; this.tAccion = 0;
+    this.duracion = TRATAMIENTOS[metodo].duracion / this.factorBrazo();
+    this.cura = { herida: this.heridas[i], metodo };
+    return true;
+  }
+  // La herida más urgente y lo mejor que se le puede hacer ahora: [i, método] o null
+  curaUrgente() {
+    const orden = ['cauterizar', 'coser', 'vendar', 'entablillar', 'hierbas'];
+    const idx = this.heridas.map((h, i) => i).sort((a, b) => this.heridas[b].sangrado - this.heridas[a].sangrado);
+    for (const i of idx) for (const m of orden) if (!this.motivoNoCurar(i, m)) return [i, m];
+    return null;
+  }
+  cortarCura(motivo) {
+    if (this.accion !== 'curando') return;
+    this.accion = 'libre'; this.tAccion = 0; this.cancelado = motivo; this.cura = null;
+  }
+
   // ---------- Daño ----------
   aturdir(s) {
     if (this.fuera) return;
+    if (this.accion === 'curando') this.cancelado = 'herido';
     this.accion = 'aturdido'; this.tAccion = 0; this.duracion = s; this.bloqueando = false; this.imparable = false;
   }
   recibirHerida(zona, sev, tipo) {
@@ -223,6 +303,7 @@ export class Luchador {
     if (tipo === 'contundente') sangrado *= 0.3;
     const h = { zona, gravedad, sangrado, tipo };
     this.heridas.push(h);
+    if (this.accion === 'curando') this.cortarCura('herido');   // te hieren mientras curas: la cura se pierde
     if (zona === 'cabeza' && gravedad === 'muy grave') this.caer(tipo === 'contundente' ? 'Inconsciente por un golpe en la cabeza' : 'Herida mortal en la cabeza');
     else if (tipo === 'contundente' && gravedad !== 'leve') this.aturdir(zona === 'cabeza' ? 1.5 : 0.6);
     else if (gravedad !== 'leve' && (this.accion === 'preparando' || this.accion === 'tensando')) this.aturdir(0.4);
@@ -235,12 +316,14 @@ export class Luchador {
     this.reloj += dt;
     this.corriendo = corriendo;
     if (corriendo && this.accion === 'tensando') this.cancelarTensado('correr'); // no se tensa corriendo
+    if (corriendo && this.accion === 'curando') this.cortarCura('dejaCura');
     const ev = [];
     let s = 0;
     for (const h of this.heridas) { s += h.sangrado; if (h.gravedad === 'leve') h.sangrado *= Math.exp(-dt / 20); }
     if (!this.fuera) {
       this.sangre -= s * dt;
       if (this.sangre <= 0) { this.sangre = 0; this.caer('Desangrado'); }
+      else this.sanar(dt, s);
     }
     if (this.accion === 'libre' && !this.bloqueando && !corriendo) this.cansancio = Math.max(0, this.cansancio - 12 * dt);
     else if (this.bloqueando) this.cansancio = Math.min(100, this.cansancio + 2 * dt); // mantener la parada cansa
@@ -260,11 +343,33 @@ export class Luchador {
         if (this.tension >= 1) this.tTenso += dt;
         this.cansancio = Math.min(100, this.cansancio + (this.tTenso > 0 ? 6 : 2) * dt);
         break;
+      case 'curando':
+        if (this.tAccion >= this.duracion) {
+          const { herida, metodo } = this.cura || {}, t = TRATAMIENTOS[metodo];
+          this.accion = 'libre'; this.tAccion = 0; this.cura = null;
+          if (t && this.heridas.includes(herida)) {   // (una copia en línea no sabe qué cura: lo dice el servidor)
+            aplicarTratamiento(herida, metodo);
+            if (t.material) this.botiquin[t.material]--;
+            ev.push({ tipo: 'curado', metodo, zona: herida.zona, gravedad: herida.gravedad });
+          }
+        }
+        break;
       case 'recuperando': case 'aturdido': case 'cambioGuardia':
         if (this.tAccion >= this.duracion) { this.accion = 'libre'; this.tAccion = 0; }
         break;
     }
     return ev;
+  }
+  // Descanso: las heridas que ya no sangran bajan de grado con el tiempo (antes con emplasto) y, si nada sangra,
+  // la sangre se recupera despacio. Una herida cauterizada sana pero deja secuela (se queda en leve).
+  sanar(dt, sangrando) {
+    for (const h of this.heridas) {
+      if (h.sangrado > SANGRA || (h.secuela && h.gravedad === 'leve')) continue;
+      h.sana = (h.sana || 0) + dt * (h.hierbas ? 1.5 : 1) / SANAR[h.gravedad];
+      if (h.sana >= 1) { h.sana = 0; h.gravedad = MAS_LEVE[h.gravedad] || null; }
+    }
+    this.heridas = this.heridas.filter(h => h.gravedad);
+    if (sangrando <= SANGRA) this.sangre = Math.min(100, this.sangre + RECUPERAR_SANGRE * dt);
   }
   // Fracción de la preparación en curso (0..1), o null si no está preparando
   progreso() { return this.accion === 'preparando' ? this.tAccion / this.duracion : null; }

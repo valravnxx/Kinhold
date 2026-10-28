@@ -600,7 +600,9 @@
     },
     {
      "nombre": "Chimenea u hogar interior (N2: piedras y barro, 600 kg): solo sobre cimiento de piedra, con fuego, luz y humo que sale por el tejado",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-28T21:51:52+00:00",
+     "rama": "trabajo/20261028-2151"
     },
     {
      "nombre": "Adarve (pasarela por detrás de la empalizada: tablas y postes, sostiene 300 kg), al que se sube por escalera de mano o de tablas",
@@ -859,9 +861,9 @@
     },
     {
      "nombre": "Curación de heridas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T14:53:19+00:00",
-     "rama": "trabajo/20261028-1453"
+     "fin": "2026-10-28T21:54:09+00:00"
     },
     {
      "nombre": "Prueba de golpes en las cinco direcciones de la rosa con el personaje del taller: el brazo va hacia el objetivo (cinemática inversa) sobre una animación base, porque el paquete solo trae unos pocos golpes; si no convence, buscar otra vía antes de seguir",
@@ -1670,6 +1672,13 @@
      "archivo": "jugar/combate/v15.html",
      "capturas": "capturas/combate-v15",
      "notas": "En línea, si se corta la conexión, vuelve a conectar sola y sigues con el mismo luchador, con sus heridas (el servidor lo guarda 2 minutos). Si entras desde otra pestaña con el mismo personaje, la vieja se cierra con un aviso."
+    },
+    {
+     "v": "v16",
+     "fecha": "2026-10-28",
+     "archivo": "jugar/combate/v16.html",
+     "capturas": "capturas/combate-v16",
+     "notas": "Curación de heridas: vendar, coser, cauterizar (con fuego), entablillar y emplasto de hierbas, cada una para su herida; en pleno combate se puede pero quedas vendido; las heridas tratadas se ven en el personaje y las que ya no sangran sanan con el tiempo"
     }
    ]
   },
