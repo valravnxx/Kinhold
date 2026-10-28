@@ -1895,5 +1895,71 @@
   "pruebas": "Todas con bash herramientas/probar_todo.sh, dos veces (antes y después de unir main): todo correcto salvo tres que fallaron solo dentro de la tanda y pasan repetidas solas: «Jugadores que se ven, con lag simulado» (15/15 sola), la web (lee en GitHub quién trabaja en ese momento: pasó sola) y la del servidor en internet del carril A, que necesita Caddy (instalado aquí con apt-get, 19/19). Tras la última unión con main, repetidas: lógica 189/189 (12 nuevas, 5 fallan con MUTAR=1), modelos 144/144 (4 nuevas; la de los triángulos falla con MUTAR_TEJA=1), combate, acciones, inventario, idiomas, servidor y en línea; navegador de construcción todo correcto (4 comprobaciones nuevas; la del cobro de tejas falla con una versión que cobra 9) y demo única todo correcto. Capturas miradas en PC y móvil, y el tejado junto a la cabaña de la prueba de estilo v5 (48_tejado_teja_junto_a_la_v5). No comprobado: el tejado de teja en línea con dos jugadores (va por las mismas acciones que los demás tejados). Mientras corrían las pruebas, otras sesiones del carril B ocuparon el carril para otras tareas: esta no lo suelta para no quitárselo.",
   "capturas": "capturas/construccion-v30",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T15:12:01+01:00",
+  "fin": "2026-10-28T19:06:47+01:00",
+  "titulo": "Hito 10: el mundo de cerca siempre igual",
+  "hito": "mundo",
+  "hecho": [
+   "El terreno ya era fijo; lo que cambiaba al rehacer el trozo de cerca era el reparto de árboles, hierba, piedras y piezas de roca, que salía de un azar que empezaba en el centro del trozo",
+   "Ahora cada cosa sale de su celda en el mundo y de la semilla del mundo (un azar por celda), y si hay que recortar por el aparato se quitan las más lejanas del personaje, no al azar",
+   "Lo mismo con los árboles de lejos: ya no dependen de desde dónde se abre la zona",
+   "Prueba nueva en el navegador: se rehace el trozo de cerca 50 m más allá y la parte común sale idéntica (MUTAR_FIJO=1 vuelve al azar por el centro y falla)"
+  ],
+  "pruebas": "Batería completa correcta tras unir main (con el mapa v9 de los nombres del mundo, de otra sesión de chat; esta versión pasa a v10). No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v10",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T15:25:29+00:00",
+  "fin": "2026-10-28T19:04:21+00:00",
+  "titulo": "Hito 1f: revisión completa de la prueba online",
+  "hito": "prueba-online",
+  "hecho": [
+   "Pasadas todas las pruebas del proyecto con probar_todo.sh (servidor, presencia, mundo en línea, conexiones, combate en el servidor, bots, medición, servidor en internet y todo lo demás, en node y en el navegador).",
+   "La prueba de jugar en línea falló a veces al salir al menú y volver a entrar desde el móvil: la página se carga entera otra vez y, sin tarjeta gráfica, conectar tardó hasta 27 s (medido) y la prueba esperaba 20 s. Ahora espera hasta 60 s, como ya esperaba a que cargara la página; después pasó bien.",
+   "La prueba del duelo en línea falló una vez dentro de la tanda completa y pasó entera al repetirla sola; no se ha encontrado la causa.",
+   "probar_todo.sh instala Caddy aunque la máquina no tenga la lista de paquetes al día (antes la prueba del servidor en internet fallaba en una máquina nueva).",
+   "Tras unir main (tejado de teja, personalización del taller, ralentización por carga) se repitieron las pruebas del servidor en node y las dos de navegador en línea: correctas.",
+   "Revisadas las capturas de jugar en línea y del duelo en línea en PC y móvil: los dos jugadores se ven con el personaje del taller, las obras se ven en los dos, el aviso de conexión cortada y recuperada, y el final del duelo en los dos.",
+   "Sin versión jugable nueva: desde la demo v28 no ha cambiado nada que se juegue.",
+   "Queda por hacer por valravnx: crear la máquina en Hetzner con la guía de servidor/nube/LEEME.md y probar desde dos aparatos (decisión pendiente).",
+   "No se ha soltado el carril A al final: lo ocupa ya otra sesión del carril A (remate de tejado).",
+   "El hito 1f no pasa todavía a revisión: mientras tanto, una sesión de chat abrió en él un arreglo (el servidor de casa de una versión anterior); pasará a revisión cuando se termine."
+  ],
+  "pruebas": "Todas correctas (bash herramientas/probar_todo.sh); la de jugar en línea y la del duelo en línea, al repetirlas solas; tras unir main, servidor en node y navegador en línea correctos. Capturas miradas en PC y móvil.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T19:58:44+01:00",
+  "fin": "2026-10-28T20:24:00+01:00",
+  "titulo": "Arreglos del juego en línea: verse al construir después del duelo, aviso de servidor antiguo y jugar_en_casa.bat al día",
+  "hito": "prueba-online",
+  "hecho": [
+   "valravnx y su pareja, en el duelo en línea, salían los dos «esperando rival»: el servidor de su PC era el que bajó jugar_en_casa.bat el 27 oct, de antes del duelo en línea (el .bat preguntaba si bajar la nueva y a los 10 s seguía con «no»). Tras actualizarlo, se vieron.",
+   "Después, al pasar del duelo a construir no se veían: la pestaña es el mismo jugador para el servidor y seguía en la liza, y la construcción no dibuja a los de la liza. Ahora, al entrar a construir, el juego le dice al servidor que sale de la liza (vale también si cayó en el duelo).",
+   "El servidor dice su versión al conectar y el juego avisa (línea de estado y aviso) si es más antigua de lo que necesita, con cómo actualizarlo. jugar_en_casa.bat mira en GitHub si hay versión nueva y la baja solo; si no puede mirarlo, pregunta como antes.",
+   "Pruebas nuevas: del duelo a construir en la misma pestaña los dos se ven (sin el arreglo, no se ven); salir de la liza en la lógica del combate; la versión del protocolo. Publicada la alpha (demo única) v29."
+  ],
+  "pruebas": "Duelo en línea y construir en línea en el navegador (PC y móvil, con servidor local) correctos; servidor 18/18, combate del servidor 57/57, conexiones 34/34, en línea 16/16, lógica 189/189, modelos 144/144, combate 80/80, idiomas correctos. El aviso de servidor antiguo, mirado en captura con un servidor falso como el viejo. jugar_en_casa.bat: la orden de PowerShell que mira la versión, probada con PowerShell 7 en Linux. No comprobado: el .bat entero en Windows.",
+  "capturas": "capturas/demo-v29",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T19:23:07+00:00",
+  "fin": "2026-10-28T19:24:54+00:00",
+  "titulo": "Hito 3: planificación de estaciones y crafting",
+  "hito": "crafting",
+  "hecho": [
+   "carriles.mjs elige para el carril A empezar el hito 3, porque los hitos en curso con tareas pendientes los lleva otro agente vivo o una sesión de chat.",
+   "Leídos los apartados 9 y «Fabricar» del GDD y los apartados 2, 3, 7, 8, 10 y 11 del documento de sistemas. Las cifras de estaciones, recetas y durabilidad son propuestas del documento; se usan como valores iniciales para ajustar probando.",
+   "Hito desglosado en 10 tareas de una sesión: recoger lo de N0, estaciones y recetas en la lógica pura, desbloqueo por práctica, estaciones construidas y con el estilo v5, panel de la estación, objetos fabricados con el estilo v5, durabilidad, reparar, el primer día recorrido en la demo, y la revisión final.",
+   "Primeras estaciones: hoguera, piedra de tallar y banco de trabajo de tronco. Las demás de N1 (secadero, curtido, horno de barro, carbonera) piden pieles, carne o harina, que llegan con los hitos de supervivencia, fauna y granja; el tomo de recetas, con el escritorio de N2."
+  ],
+  "pruebas": "Sin cambios de código. Web reconstruida sin errores.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

@@ -7,6 +7,7 @@ import { crearJugador } from './personaje.js';
 import { tr } from '../idioma.js';
 import { direccionServidor } from '../mundo/direccion_servidor.js';
 import { abrirConexion } from '../mundo/conexion.js';
+import { servidorAntiguo } from '../logica/protocolo.js';
 export { CLAVE_SERVIDOR, SERVIDOR_POR_DEFECTO, direccionServidor } from '../mundo/direccion_servidor.js';
 
 // escena: donde se ponen los demás; recursos: carpeta del taller; aspecto: { sexo, capas } propio;
@@ -14,7 +15,7 @@ export { CLAVE_SERVIDOR, SERVIDOR_POR_DEFECTO, direccionServidor } from '../mund
 // avisar(texto, error): un aviso para el jugador; alEstado(texto): la línea de estado de la conexión.
 export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, alEstado }) {
   const direccion = direccionServidor();
-  let con = null, estado = 'conectando';
+  let con = null, estado = 'conectando', antiguo = false;   // antiguo: el servidor es de una versión anterior al juego
   const enviar = (m) => { if (con) con.enviar(m); };
   const red = new MundoEnLinea(enviar);
   const presencia = new PresenciaCliente(enviar);
@@ -24,14 +25,19 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
 
   const ponerEstado = () => {
     const n = [...presencia.remotos.keys()].filter(a => !enLiza.has(a)).length;
-    alEstado(estado === 'conectado' ? tr('En línea · {n} más', { n })
+    alEstado(estado === 'conectado' ? (antiguo ? tr('En línea · el servidor es antiguo: hay que actualizarlo') : tr('En línea · {n} más', { n }))
       : estado === 'conectando' ? tr('Conectando con el servidor…')
       : estado === 'volviendo' ? tr('Volviendo a conectar…') : tr('Sin conexión'));
   };
   ponerEstado();
 
   con = abrirConexion(direccion, {
-    alAbrir: () => { if (aspecto) enviar({ tipo: 'aspecto', sexo: aspecto.sexo, capas: aspecto.capas }); },
+    alAbrir: () => {
+      if (aspecto) enviar({ tipo: 'aspecto', sexo: aspecto.sexo, capas: aspecto.capas });
+      // fuera de la liza: quien viene del duelo en línea en la misma pestaña es el mismo jugador para el servidor,
+      // y seguía en la liza, así que los demás no le dibujaban (valravnx, 28 oct)
+      enviar({ tipo: 'combate', que: 'mundo' });
+    },
     alMensaje: (msg) => {
       const ahora = performance.now();
       const volvia = estado === 'volviendo';
@@ -39,7 +45,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       for (const l of msg.tipo === 'luchadores' ? msg.lista : msg.tipo === 'bienvenida' ? msg.luchadores || [] : [])
         if (l.liza) enLiza.add(l.autor); else enLiza.delete(l.autor);
       if (msg.tipo === 'bienvenida') {
-        estado = 'conectado';
+        estado = 'conectado'; antiguo = servidorAntiguo(msg);
         for (const a of msg.aspectos || []) aspectos.set(a.autor, { sexo: a.sexo, capas: a.capas });
       } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, { sexo: msg.sexo, capas: msg.capas });
       else if (msg.tipo === 'sale') { quitar(msg.autor); aspectos.delete(msg.autor); enLiza.delete(msg.autor); }
@@ -47,6 +53,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       const info = red.recibir(msg);
       alCambiar(info, msg);
       if (msg.tipo === 'bienvenida') avisar(volvia ? tr('Conexión recuperada: sigues con el mismo personaje.') : tr('En línea: el mundo es el del servidor ({d}).', { d: direccion }));
+      if (msg.tipo === 'bienvenida' && antiguo && !volvia) avisar(tr('El servidor es de una versión anterior al juego y no funciona del todo: quien lo tiene encendido tiene que actualizarlo (cerrar sus ventanas y volver a abrir jugar_en_casa.bat, que baja la última versión).'), true);
       if (info.rechazo) avisar(tr('El servidor no lo ha aceptado: {m}', { m: tr(info.rechazo) }), true);
       ponerEstado();
     },
@@ -100,6 +107,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   return {
     red, direccion, paso,
     get estado() { return estado; },
+    get antiguo() { return antiguo; },
     get remotos() { return remotos; },
     cerrar() { if (con) con.cerrar(); },
   };
