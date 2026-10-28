@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v31 (remate de tejado)';
+export const VERSION_DEMO = 'Demo única · v32 (chimenea)';
 export const REGISTRO_DEMO = [
+  'v32: en «Construir», chimenea u hogar interior (10 piedras y 4 de barro, 600 kg): va en la planta baja sobre un cimiento de piedra, arrimada a un muro, con el fuego encendido (llamas, luz y humo que sale por encima del tejado). Usar (F) la apaga y la enciende.',
   'v31: en «Construir», remate de tejado (esquina) de paja, de tablillas y de teja: donde se juntan dos caídas en ángulo recto se hace solo limatesa (esquina de fuera, la de un tejado a cuatro aguas) o limahoya (el rincón de un tejado en L), según los tramos de al lado. Con cuatro remates, un tejado a cuatro aguas sin hastiales.',
   'v29, arreglo (valravnx, 28 oct: después del duelo en línea, al construir no se veían el uno al otro): al entrar a construir en línea, el juego le dice al servidor que sales de la liza; antes, quien venía del duelo en la misma pestaña seguía en ella y la construcción no le dibujaba. Hace falta el servidor nuevo.',
   'v29: si el servidor es de una versión anterior al juego, el juego lo dice (en la línea de estado y en un aviso) en vez de quedarse conectado sin funcionar, y explica cómo actualizarlo. El servidor dice su versión al conectar.',

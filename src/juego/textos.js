@@ -23,6 +23,8 @@ const ES = {
   bajas: 'Bajas a la planta',
   sinSueloArriba: 'No hay suelo arriba al que subir.',
   apartateTrampilla: 'Sal de la escalera para cerrar la trampilla.',
+  fuegoEncendido: 'Enciendes el fuego.',
+  fuegoApagado: 'Apagas el fuego.',
   catTierra: 'Tierra', catBase: 'Base', catEstructura: 'Estructura', catMuros: 'Muros',
   catTejados: 'Tejados', catAcceso: 'Acceso', catExterior: 'Exterior', catDeco: 'Decoración',
   consejoMojon: 'Pulsa Construir → Tierra → Mojón para reclamar tu tierra.',

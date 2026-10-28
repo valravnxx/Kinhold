@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { MODULO, ALTURA } from '../logica/piezas.js';
+import { HOGAR } from '../logica/construccion.js';
 import { Lote, materialTex, material as materialEstilo } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 
@@ -1156,6 +1157,127 @@ export function tornoSuelto() {
   return g;
 }
 
+// ---------- Chimenea u hogar interior (sistemas: piedras y barro), con el estilo v5 ----------
+// Hogar de pared como los de las casas de piedra de la Plena Edad Media: un banco de losas a ras de rodilla con el
+// fuego encima, dos jambas de piedra, un dintel de piedra, la campana enlucida de barro que recoge el humo y el cañón
+// de mampostería que sube pegado al muro hasta salir por encima del tejado, rematado con una losa. En el fuego,
+// troncos sobre dos morillos de hierro, brasas y llamas; de una cadena cuelga un caldero. El muro queda hacia +z
+// (la lógica la gira sola hacia el muro). ctx.alto: dónde acaba el cañón (altoCanon); ctx.encendido: con fuego.
+// Las llamas van en mallas «llama» y el humo en mallas «humo» (se animan en el juego); g.userData.fuego dice dónde
+// poner la luz del fuego y g.userData.humo, de dónde sale el humo.
+const HOLLIN = 0x4a443e, BRASA = 0xc2541c, ENLUCIDO = 0xb3a58c;
+// piedra de mampostería algo irregular; recta: caja sin redondear (las de relleno de las caras, que casi no asoman)
+function piedraTosca(L, w, h, d, x, y, z, s, color, recta = false) {
+  const geo = recta ? new THREE.BoxGeometry(w - ruido(s) * 0.03, h - ruido(s + 1) * 0.025, d) : cajaR(w - ruido(s) * 0.03, h - ruido(s + 1) * 0.025, d - ruido(s + 2) * 0.03, 0.035);
+  L.add(geo, color || (ruido(s + 3) > 0.6 ? 'piedraOsc' : 'piedra'),
+    x + (ruido(s + 4) - 0.5) * 0.015, y, z + (ruido(s + 5) - 0.5) * 0.012, { y: (ruido(s + 6) - 0.5) * 0.05 }, { plano: true, brillo: 0.78 + ruido(s + 7) * 0.2 });
+}
+function chimenea(ctx = {}) {
+  const H = HOGAR, L = loteMuro(), y0 = P.superficieCimiento, a = H.ancho / 2;
+  const alto = Math.max(ctx.alto || ALTURA + H.sobreTejado, 2.9), encendido = !!ctx.encendido;
+  const zf = H.fondo0, zb = H.fondo1, ac = H.canonAncho / 2, zc = H.canon0;
+  const yBanco = y0 + 0.2, yDintel = 1.42, yCampana = 1.64, yCanon = 2.45;
+  // banco del hogar: macizo de mortero con losas encima y piedras en el borde de delante
+  L.add(cajaR(2 * a, yBanco - y0 + 0.02, zb - zf, 0.03), 'mortero', 0, (y0 + yBanco) / 2 - 0.01, (zf + zb) / 2);
+  let s = 40;
+  for (const [x0, x1, z0, z1] of [[-a, -0.1, zf, 0.5], [-0.1, a, zf, 0.45], [-a, 0.25, 0.5, zb], [0.25, a, 0.45, zb]]) {
+    s += 3; L.add(cajaR(x1 - x0 - 0.04, 0.06, z1 - z0 - 0.04, 0.025), ruido(s) > 0.5 ? 'piedra' : 'piedraOsc', (x0 + x1) / 2, yBanco + 0.01, (z0 + z1) / 2, { y: (ruido(s + 1) - 0.5) * 0.04 }, { sinSuelo: true, plano: true, brillo: 0.8 + ruido(s + 2) * 0.15 });
+  }
+  for (let x = -a + 0.13; x < a - 0.05; x += 0.25) piedraTosca(L, 0.24, 0.17, 0.12, x, y0 + 0.08, zf + 0.04, s += 9);
+  // trasfuego (la pared de atrás), negro de hollín, y las dos jambas de piedras apiladas
+  L.add(cajaR(2 * a - 0.3, yCampana - yBanco, 0.12, 0.02), HOLLIN, 0, (yBanco + yCampana) / 2, zb - 0.08, null, { sinSuelo: true, tex: 'piedra' });
+  const nJ = 4, hJ = (yDintel - yBanco) / nJ;
+  for (const lado of [-1, 1]) for (let n = 0; n < nJ; n++) {
+    const larga = (n + (lado > 0 ? 1 : 0)) % 2 === 0; // a soga y a tizón, como en una jamba de verdad
+    const d = larga ? 0.62 : 0.44;
+    piedraTosca(L, 0.2, hJ - 0.012, d, lado * (a - 0.1), yBanco + hJ * (n + 0.5), zb - d / 2, s += 9);
+  }
+  // dintel: una piedra larga sobre las jambas
+  piedraTosca(L, 2 * a + 0.04, yCampana - yDintel - 0.01, 0.3, 0, (yDintel + yCampana) / 2, 0.3, s += 9, 'piedra');
+  // campana enlucida de barro: tres hiladas que se estrechan y retroceden hasta el cañón, con hollín por dentro
+  const nC = 3, hC = (yCanon - yCampana) / nC;
+  for (let n = 0; n < nC; n++) {
+    const t = (n + 0.5) / nC, w = 2 * a + 0.02 - t * (2 * a - 2 * ac), z0 = 0.17 + t * (zc - 0.17);
+    L.add(cajaR(w, hC + 0.02, zb - z0, 0.05), ENLUCIDO, 0, yCampana + hC * (n + 0.5), (z0 + zb) / 2, null, { tex: 'piedra', brillo: 0.92 - n * 0.03 });
+  }
+  L.add(cajaR(2 * a - 0.34, 0.04, zb - 0.32, 0.01), HOLLIN, 0, yCampana - 0.03, (0.3 + zb) / 2 + 0.03, null, { sinSuelo: true }); // la boca de la campana, por debajo
+  // cañón de mampostería: núcleo de mortero y, por hiladas, piedras en las caras y en las esquinas (trabadas)
+  const hH = 0.3;
+  L.add(cajaR(2 * ac - 0.04, alto - yCanon, zb - zc - 0.04, 0.02), 'mortero', 0, (yCanon + alto) / 2, (zc + zb) / 2);
+  let n = 0;
+  for (let y = yCanon; y < alto - 0.12; y += hH, n++) {
+    const h = Math.min(hH, alto - 0.12 - y), yc = y + h / 2, par = n % 2;
+    // esquinas de delante: una piedra larga por un lado y corta por el otro, alternando
+    for (const lado of [-1, 1]) {
+      const largoX = (par + (lado > 0 ? 1 : 0)) % 2 === 0;
+      piedraTosca(L, largoX ? 0.36 : 0.2, h - 0.02, largoX ? 0.2 : 0.3, lado * (ac - (largoX ? 0.18 : 0.1)), yc, zc + (largoX ? 0.1 : 0.15), s += 9);
+    }
+    // el resto de cada cara, un poco hundido (deja ver la junta)
+    piedraTosca(L, 2 * ac - 0.5, h - 0.03, 0.06, (ruido(n) - 0.5) * 0.06, yc, zc + 0.02, s += 9, null, true);
+    for (const lado of [-1, 1]) piedraTosca(L, 0.06, h - 0.03, zb - zc - (par ? 0.34 : 0.24), lado * (ac - 0.02), yc, (zb + zc + (par ? 0.34 : 0.24)) / 2, s += 9, null, true);
+  }
+  // remate: una losa que vuela un poco y la boca del cañón, negra
+  L.add(cajaR(2 * ac + 0.14, 0.09, zb - zc + 0.14, 0.025), 'piedra', 0, alto - 0.07, (zc + zb) / 2, null, { sinSuelo: true, plano: true, brillo: 0.85 });
+  L.add(cajaR(2 * ac - 0.22, 0.02, zb - zc - 0.22, 0.005), 0x1c1916, 0, alto - 0.015, (zc + zb) / 2, null, { sinSuelo: true });
+  // el fuego: ceniza, morillos de hierro, troncos y brasas; cadena con su caldero
+  const zF = 0.5, yF = yBanco + 0.04;
+  L.add(cajaR(0.95, 0.025, 0.5, 0.01), 0x6e6862, 0, yF - 0.02, zF, null, { sinSuelo: true });
+  for (const x of [-0.26, 0.26]) {
+    L.add(cajaR(0.035, 0.035, 0.5, 0.005), 'hierro', x, yF + 0.1, zF, null, { sinSuelo: true });
+    L.add(cajaR(0.035, 0.16, 0.035, 0.005), 'hierro', x, yF + 0.05, zF - 0.24, null, { sinSuelo: true });
+    L.add(cajaR(0.03, 0.08, 0.03, 0.005), 'hierro', x, yF + 0.2, zF - 0.24, null, { sinSuelo: true });
+  }
+  for (const [x, y, z, gy, r, lg] of [[-0.05, yF + 0.17, zF, 0.15, 0.06, 0.78], [0.04, yF + 0.27, zF + 0.04, -0.2, 0.05, 0.7], [0.0, yF + 0.07, zF + 0.18, 0.05, 0.055, 0.72]]) {
+    L.add(cil(r, r * 1.05, lg, 8), 'corteza', x, y, z, { y: gy, z: Math.PI / 2 }, { sinSuelo: true });
+    for (const sx of [-1, 1]) L.add(new THREE.CircleGeometry(r * 0.98, 8), encendido && sx < 0 ? 0x2a1d14 : 'corte', x + sx * Math.cos(gy) * lg / 2 * 1.002, y, z - sx * Math.sin(gy) * lg / 2 * 1.002, { y: gy + sx * Math.PI / 2 }, { sinSuelo: true, tex: 'anillos' });
+  }
+  for (let k = 0; k < 6; k++) L.add(new THREE.CylinderGeometry(0.008, 0.008, 0.04, 4), 'hierro', 0.12, yCampana - 0.06 - k * 0.045, zF + 0.05, { x: k % 2 ? Math.PI / 2 : 0 }, { sinSuelo: true }); // cadena (llares)
+  L.add(new THREE.SphereGeometry(0.15, 12, 6, 0, Math.PI * 2, Math.PI * 0.3, Math.PI * 0.7), 'hierro', 0.12, yF + 0.62, zF + 0.05, null, { sinSuelo: true, brillo: 0.7 });
+  L.add(new THREE.TorusGeometry(0.11, 0.012, 4, 14), 'hierro', 0.12, yF + 0.72, zF + 0.05, { x: Math.PI / 2 }, { sinSuelo: true });
+  const g = deLote(L);
+  g.userData.fuego = { x: 0, y: yF + 0.45, z: zF - 0.15 };
+  g.userData.humo = { x: 0, y: alto, z: (zc + zb) / 2 };
+  // brasas (siempre: apagada quedan como ceniza oscura) y llamas
+  const brasa = new THREE.Mesh(cajaR(0.6, 0.05, 0.36, 0.02), encendido ? mat(BRASA, { emissive: BRASA, emissiveIntensity: 0.9 }) : mat(0x3a3530));
+  brasa.position.set(0, yF + 0.03, zF); brasa.name = encendido ? 'llama' : 'ceniza'; brasa.castShadow = false;
+  g.add(brasa);
+  if (encendido) {
+    const llamas = [[-0.13, 0.03, 0.34, 0.09], [0.08, -0.02, 0.42, 0.1], [0.2, 0.05, 0.26, 0.07], [-0.02, 0.1, 0.3, 0.08], [0.0, 0.0, 0.2, 0.05]];
+    llamas.forEach(([x, z, h, r], i) => {
+      const nucleo = i === llamas.length - 1, c = nucleo ? 0xffe2a0 : COLORES.llama;
+      const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6), mat(c, { emissive: c, emissiveIntensity: 1 }));
+      m.geometry.translate(0, h / 2, 0);
+      m.position.set(x, yF + 0.12, zF + z); m.name = 'llama'; m.castShadow = false; m.userData.fase = i * 1.7;
+      g.add(m);
+    });
+    // humo: unas bocanadas que suben y se deshacen (se mueven en el juego; aquí, repartidas a lo alto)
+    const N = 7;
+    for (let i = 0; i < N; i++) {
+      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.22, 0), new THREE.MeshLambertMaterial({ color: 0xb9b4ad, transparent: true, opacity: 0.4, depthWrite: false, flatShading: true }));
+      m.name = 'humo'; m.castShadow = false; m.userData.fase = i / N;
+      g.add(m);
+    }
+    moverHumo(g, 0);
+  }
+  return g;
+}
+// Mueve el humo y las llamas de una chimenea encendida (t: segundos). El humo sube 2,5 m mientras crece y se aclara.
+export function moverHumo(g, t) {
+  const h = g.userData.humo;
+  for (const m of g.children) {
+    if (m.name === 'humo') {
+      const u = (m.userData.fase + t * 0.16) % 1;
+      m.position.set(h.x + Math.sin(u * 5 + m.userData.fase * 9) * 0.12 + u * 0.35, h.y + 0.15 + u * 2.5, h.z + Math.cos(u * 4 + m.userData.fase * 7) * 0.1);
+      m.scale.setScalar(0.5 + u * 1.6);
+      m.material.opacity = 0.42 * Math.min(1, u * 6) * (1 - u);
+    } else if (m.name === 'llama' && m.userData.fase !== undefined) {
+      const f = m.userData.fase;
+      m.scale.set(1, 0.75 + 0.3 * Math.abs(Math.sin(t * 7.3 + f) + 0.5 * Math.sin(t * 13.1 + f * 2)), 1);
+      m.rotation.y = t * 0.6 + f;
+    }
+  }
+}
+
 export function decoracion(tipo) {
   const g = MUEBLES[tipo] ? MUEBLES[tipo]() : new THREE.Group();
   g.traverse(o => { if (o.isMesh && o.name !== 'llama') { o.castShadow = true; o.receiveShadow = true; } });
@@ -1190,6 +1312,7 @@ export function modeloPieza(tipo, ctx) {
     case 'andamio': return andamio();
     case 'polea': return polea();
     case 'polipasto': return polipasto();
+    case 'hogar': return chimenea(ctx);
     case 'puerta_varas': return puerta('puerta_varas');
     case 'puerta_tabla': return puerta('puerta_tabla');
     case 'contraventana': return contraventana(ctx);
