@@ -1979,6 +1979,23 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-28T16:51:15+00:00",
+  "fin": "2026-10-28T20:47:04+00:00",
+  "titulo": "Hito 2: datos de cada prenda (zonas, protección, abrigo y peso)",
+  "hito": "equipo",
+  "hecho": [
+   "Nuevo src/logica/prendas.js (lógica pura): quince prendas con su capa del inventario, su material, su peso y la pieza del taller que las dibuja (camisa, pantalón o calzas, túnica, vestido, gambesón, cota de malla, sobreveste, capa, capucha, sombrero de paja, toca, zapatos y botas)",
+   "Las zonas que cubre cada prenda salen de sus piezas en el taller (cuerpo → torso, mangas → brazos, falda → piernas); la prueba lo compara con los modelos publicados (taller-v9): la sobreveste no tiene mangas y por eso no protege los brazos",
+   "El orden de las capas que dibuja el taller (makehuman.js) y la ropa del catálogo del inventario salen ahora de esos mismos datos",
+   "Protección por tipo de golpe (corte, estocada, contundente) según el material, coherente con el duelo: camisa y gambesón dan su «gambesón» y con la cota, su «malla»",
+   "En el visor de personaje (v17), una tabla en Opciones dice lo que frena tu ropa en la cabeza, el torso, los brazos y las piernas, con el peso y el abrigo",
+   "Decisiones provisionales (en el registro del personaje): cifras de abrigo y peso, una prenda por capa en el inventario como en el GDD (túnica y gambesón comparten la de abrigo) y el peso de la ropa aún no ralentiza"
+  ],
+  "pruebas": "Prueba nueva prueba_ropa.mjs (80 comprobaciones; MUTAR=1 y MUTAR=2 la rompen y falla) y comprobación nueva de la tabla en el navegador del personaje. Batería completa: todo correcto salvo tres de navegador que fallaron por tiempo con la máquina cargada (construcción, cavar e idiomas; en idiomas faltaban seis traducciones de la tabla, ya puestas). Tras unir main, repetidas solas todas las de lógica y las de navegador del personaje, idiomas, cavar y demo: correctas. La de construcción falló una vez en «al perder el dibujo 3D recarga sola» (espera de 20 s con la máquina cargada); comprobado aparte que avisa y recarga en 5,7 s. No comprobado: el resto del navegador tras la última unión con main (aspecto en línea de otra sesión)",
+  "capturas": "capturas/personaje-v17",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-28T18:20:32+00:00",
   "fin": "2026-10-28T20:38:57+00:00",
   "titulo": "Hito 1c: remate de tejado, esquinas que cierran (carril A)",

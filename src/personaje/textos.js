@@ -4,3 +4,6 @@ export const BASES = { quaternius: 'Paquete Quaternius', makehuman: 'Taller prop
 export const CAPAS = { tunica: 'Túnica', vestido: 'Vestido', gambeson: 'Gambesón', cota: 'Cota de malla', sobreveste: 'Sobreveste', manto: 'Capa',
   capucha: 'Capucha', sombrero: 'Sombrero de paja', toca: 'Toca', botas: 'Botas' };
 export const ANIMS = { quieto: 'Quieto', andar: 'Andar', correr: 'Correr', talar: 'Talar', guardia: 'En guardia', golpe: 'Golpe', cargar: 'Cargar' };
+// tabla de lo que frena la ropa (filas: zona que se mira; columnas: tipo de golpe de src/logica/prendas.js)
+export const ZONAS_TABLA = [['Cabeza', 'cabeza'], ['Torso', 'torso'], ['Brazos', 'brazoD'], ['Piernas', 'piernaD']];
+export const GOLPES_TABLA = [['Corte', 'corte'], ['Estocada', 'perforante'], ['Contundente', 'contundente']];

@@ -1,11 +1,6 @@
 {
  "A": null,
- "B": {
-  "inicio": "2026-10-28T16:51:15+00:00",
-  "tarea": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
-  "hito": "equipo",
-  "rama": "trabajo/20261028-1651"
- },
+ "B": null,
  "chat:trabajo/20261028-2100-tirones": {
   "inicio": "2026-10-28T20:58:47+01:00",
   "tarea": "Arreglo (valravnx, 28 oct): en línea, abrir o cerrar una puerta o terminar una obra da tirones horribles a los dos jugadores; que esas acciones no rehagan más de lo que cambia",

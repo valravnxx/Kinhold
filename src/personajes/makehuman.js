@@ -7,6 +7,7 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { CLIPS } from './cargar.js';
 import { normalizarAspecto, colorDe, pesosFormas, escalaAltura } from '../logica/aspecto.js';
+import { TALLER } from '../logica/prendas.js';
 
 const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 const cache = new Map();
@@ -70,12 +71,13 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   });
   // ropa por capas, de dentro afuera. Lo que queda tapado del todo no se dibuja: el cuerpo de una capa se esconde si
   // lleva otra encima, y su falda solo asoma si es más larga que las de encima (así no se atraviesan al moverse).
-  const ORDEN = ['camisa', 'tunica', 'vestido', 'gambeson', 'cota', 'sobreveste', 'manto'];
-  const SIEMPRE = ['calzas', 'zapatos'];
+  // El orden y cómo se tapan salen de los datos de cada prenda (src/logica/prendas.js): lo que se ve y lo que protege.
+  const ORDEN = TALLER.orden;
+  const SIEMPRE = TALLER.siempre;
   // abiertas: dejan ver lo de debajo (la sobreveste no tiene mangas; el manto va abierto por delante)
-  const ABIERTAS = ['sobreveste', 'manto'];
+  const ABIERTAS = TALLER.abiertas;
   // aparte de las capas: tocados (uno cada vez) y calzado. Las botas van en lugar de los zapatos
-  const TOCADOS = ['capucha', 'sombrero', 'toca'], CALZADO = ['botas'], SUELTAS = [...TOCADOS, ...CALZADO];
+  const TOCADOS = TALLER.tocados, CALZADO = TALLER.calzado, SUELTAS = [...TOCADOS, ...CALZADO];
   const capaDe = (n) => { const m = n.name.match(/_(capa|cinturon)_([a-z]+)(_falda|_mangas)?/); return m && { tipo: m[1], capa: m[2], falda: m[3] === '_falda', mangas: m[3] === '_mangas' }; };
   // dónde acaba cada manga (distancia a la muñeca, en m): una manga de debajo asoma si las de encima son más cortas
   const MANGA = { camisa: 0.041, tunica: 0.043, vestido: 0.043, gambeson: 0.04, cota: 0.09 };
