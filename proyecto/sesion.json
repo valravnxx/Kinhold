@@ -1,20 +1,20 @@
 {
  "A": {
-  "inicio": "2026-10-28T12:32:34+00:00",
-  "tarea": "Poner el servidor de prueba en internet para que valravnx juegue desde dos dispositivos. Decidido por valravnx el 27 oct: en un alojamiento en la nube con una cuenta suya; se le preparan el servidor y los pasos, y él crea la cuenta y, si es de pago, elige el plan",
+  "inicio": "2026-10-28T15:25:29+00:00",
+  "tarea": "Revisión completa y publicación",
   "hito": "prueba-online",
-  "rama": "trabajo/20261028-1232"
+  "rama": "trabajo/20261028-1525"
  },
  "B": {
-  "inicio": "2026-10-28T13:00:52+00:00",
-  "tarea": "Tejado de teja (N2: 10 tejas y vigas, pesa 200 kg, no se pudre ni arde fácil): material nuevo «teja» y su prueba de carga",
-  "hito": "construccion-mas",
-  "rama": "trabajo/20261028-1301"
+  "inicio": "2026-10-28T14:53:19+00:00",
+  "tarea": "Curación de heridas",
+  "hito": "duelo",
+  "rama": "trabajo/20261028-1453"
  },
- "chat:trabajo/20261028-1240-rocas": {
-  "inicio": "2026-10-28T12:35:33+01:00",
-  "tarea": "Roca escarpada de cerca: las paredes de los cortados cubiertas de piezas de roca 3D (bloques con caras, aristas, salientes y grietas, hechos por código) y una textura de roca con sombra en grietas y rincones",
+ "chat:trabajo/20261028-1515-fijo": {
+  "inicio": "2026-10-28T15:12:01+01:00",
+  "tarea": "El mundo de cerca siempre igual: árboles, hierba, piedras y piezas de roca colocados según su sitio en el mundo y la semilla (no según dónde se rehace el trozo de cerca)",
   "hito": "mundo",
-  "rama": "trabajo/20261028-1240-rocas"
+  "rama": "trabajo/20261028-1515-fijo"
  }
 }

@@ -1,0 +1,8 @@
+#cloud-config
+# Se pega entero en «Cloud config» al crear el servidor (Ubuntu 24.04). Instala el servidor de Kinhold solo,
+# en unos minutos. Lo que hace queda en /var/log/kinhold-instalar.log.
+package_update: true
+packages:
+  - git
+runcmd:
+  - [bash, -c, "git clone --depth 1 https://github.com/valravnxx/Kinhold.git /opt/kinhold && bash /opt/kinhold/servidor/nube/instalar.sh > /var/log/kinhold-instalar.log 2>&1"]
