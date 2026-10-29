@@ -1472,5 +1472,6 @@
  "Los hitos pueden llevar «carril»: el arte lo lleva el carril B, que lo mira antes que lo demás, y el carril A no lo coge; con su prueba": "У этапов может быть «дорожка»: арт ведёт дорожка B, она смотрит его раньше остального, а дорожка A его не берёт; с тестом",
  "Regla de revisión visual en CLAUDE.md: antes de enseñar algo, capturas de cerca al lado de la referencia y la lista de lo que aún está mal": "Правило визуальной проверки в CLAUDE.md: прежде чем показывать, крупные снимки рядом с образцом и список того, что ещё не так",
  "Comprobado: desde las sesiones no se pueden crear releases de GitHub (lo hará una acción de GitHub)": "Проверено: из сессий нельзя создавать релизы GitHub (это сделает действие GitHub)",
- "En la nube: lógica (con la prueba nueva de los carriles, que falla a propósito con MUTAR_CARRIL) y la web (con el documento nuevo en los tres idiomas) correctas": "В облаке: логика (с новым тестом дорожек, который нарочно падает с MUTAR_CARRIL) и сайт (с новым документом на трёх языках) пройдены"
+ "En la nube: lógica (con la prueba nueva de los carriles, que falla a propósito con MUTAR_CARRIL) y la web (con el documento nuevo en los tres idiomas) correctas": "В облаке: логика (с новым тестом дорожек, который нарочно падает с MUTAR_CARRIL) и сайт (с новым документом на трёх языках) пройдены",
+ "Whitholm, mundo de los playtests (valravnx, 29 oct): el juego solo en la isla, dividida en comarcas": "Уитхолм — мир плейтестов (valravnx, 29 окт.): игра только на острове, разделённом на округа"
 }

@@ -921,6 +921,12 @@
      "estado": "hecho",
      "inicio": "2026-10-28T19:29:42+01:00",
      "fin": "2026-10-28T21:39:03+01:00"
+    },
+    {
+     "nombre": "Whitholm, mundo de los playtests (valravnx, 29 oct): el juego solo en la isla, dividida en comarcas",
+     "estado": "en_curso",
+     "inicio": "2026-10-29T15:24:53+01:00",
+     "rama": "trabajo/20261029-1525-isla"
     }
    ],
    "lleva": "chat",
