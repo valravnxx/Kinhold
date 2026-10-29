@@ -2311,5 +2311,21 @@
   "pruebas": "En la nube: 15 grupos bien (52,5 min en total), con la prueba nueva de las versiones archivadas (falla a propósito con MUTAR=1)",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T17:24:24+00:00",
+  "fin": "2026-10-29T17:33:00+00:00",
+  "titulo": "Hito «El juego en el mundo de verdad» planificado: el terreno por trozos",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Cómo lo hacen otros: el terreno se parte en trozos iguales y cada uno se dibuja con más o menos detalle según lo lejos que está del jugador (anillos o árbol de cuatro ramas, como el método CDLOD de Strugar o los «clipmaps»); entre trozos de distinto detalle se ponen faldones (una tira que baja por el borde) para tapar las rendijas, y los trozos se calculan en un hilo aparte para que el juego no se pare",
+   "Medido el visor del mapa v13 (vista «Como en el juego», en Rudmere) con herramientas/medir_mapa_cerca.py: rehacer el trozo de cerca al cruzar su borde deja el juego parado de 236 a 271 ms en el móvil emulado y de 649 a 935 ms en PC; el trozo de cerca tiene 220.618 triángulos en el móvil (544.616 en PC) y el paisaje de lejos otros 883.506 (3.018.082 en PC); 67 llamadas de dibujo por fotograma; 40 a 56 MB de memoria de JavaScript en el móvil",
+   "Medido en node: cada altura del terreno de cerca cuesta unos 2,5 a 3,7 µs; un trozo de 64 m con rejilla de 1 m (4.225 alturas) unos 12 a 50 ms, así que se puede hacer en un hilo aparte sin que se note",
+   "No comprobado: los fotogramas por segundo en un móvil de verdad; aquí y en GitHub Actions se dibuja sin tarjeta gráfica y los tiempos son del procesador de esta máquina",
+   "La tarea «Terreno por trozos» se parte en tres de una sesión: la lógica de los trozos y sus anillos (con prueba en node), hacerlos en un hilo aparte, y la vista «Como en el juego» del mapa con trozos y medida en PC y móvil"
+  ],
+  "pruebas": "Sin cambios en el juego: solo medidas (herramienta nueva de medir, no es una prueba)",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
