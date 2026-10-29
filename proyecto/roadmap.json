@@ -400,7 +400,9 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T21:23:04+00:00",
+     "rama": "trabajo/20261029-2123"
     }
    ]
   },
