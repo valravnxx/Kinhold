@@ -1,9 +1,11 @@
 // Prepara para la web los personajes del taller (MakeHuman vestido por código + animaciones pasadas de Quaternius):
 // texturas a WebP, animaciones sin fotogramas sobrantes y todo comprimido con meshopt (como los recursos v2).
 // Uso: node herramientas/taller/preparar_mh.mjs <carpeta con hombre_anim.glb y mujer_anim.glb> [destino]
+//   EXTRA=1: prepara en su lugar las animaciones sueltas (hombre_extra.glb y mujer_extra.glb, hechas con
+//   SOLO_ANIM=1 pasar_animaciones.mjs) → mh_<sexo>_extra.glb, sin fotogramas sobrantes y comprimidas con meshopt.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, EXTTextureWebP, EXTMeshoptCompression } from '@gltf-transform/extensions';
-import { reorder, quantize, resample, prune, dedup } from '@gltf-transform/functions';
+import { reorder, quantize, resample, prune, dedup, meshopt } from '@gltf-transform/functions';
 import { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 import { execFileSync } from 'child_process';
 import { mkdirSync, writeFileSync, statSync } from 'fs';
@@ -28,6 +30,19 @@ sys.stdout.buffer.write(out.getvalue())`;
   return execFileSync('python3', ['-c', py], { input: Buffer.from(bytes), maxBuffer: 1 << 28 });
 }
 const resumen = {};
+if (process.env.EXTRA) {
+  for (const sexo of ['hombre', 'mujer']) {
+    const de = join(origen, `${sexo}_extra.glb`), doc = await io.read(de);
+    await doc.transform(resample({ tolerance: 1e-4 }), prune({ keepLeaves: true }), dedup(), meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
+    const glb = await io.writeBinary(doc), f = join(destino, `mh_${sexo}_extra.glb`);
+    writeFileSync(f, glb);
+    resumen[`mh_${sexo}_extra`] = { kb: Math.round(glb.length / 1024), kb_antes: Math.round(statSync(de).size / 1024),
+      sha256: createHash('sha256').update(glb).digest('hex'), clips: doc.getRoot().listAnimations().map(a => a.getName()) };
+    console.log(`mh_${sexo}_extra`, resumen[`mh_${sexo}_extra`].kb_antes, '→', resumen[`mh_${sexo}_extra`].kb, 'KB');
+  }
+  writeFileSync(join(destino, 'manifiesto.json'), JSON.stringify(resumen, null, 1));
+  process.exit(0);
+}
 for (const sexo of ['hombre', 'mujer']) {
   const doc = await io.read(join(origen, `${sexo}_anim.glb`));
   for (const t of doc.getRoot().listTextures()) t.setImage(aWebp(t.getImage())).setMimeType('image/webp');
