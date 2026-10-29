@@ -17,6 +17,7 @@ paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs
 paso "Inventario por huecos" node pruebas/prueba_inventario.mjs
+paso "Recoger del suelo y de las plantas" node pruebas/prueba_recoleccion.mjs
 paso "Datos de cada prenda (zonas, protección, abrigo y peso)" node pruebas/prueba_ropa.mjs
 paso "Aspecto del personaje (personalización)" node pruebas/prueba_aspecto.mjs
 paso "Servidor mínimo con dos clientes" node pruebas/prueba_servidor.mjs
