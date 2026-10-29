@@ -20,6 +20,7 @@ const movil = Math.min(innerWidth, innerHeight) < 700;
 export const CERCA = movil ? 170 : 240;           // lado del trozo con todo el detalle (m)
 const PASO = movil ? 1.25 : 1;                     // rejilla (m)
 const R_HIERBA = movil ? 48 : 80;                  // radio con hierba (m)
+const R_ARBOL = movil ? 60 : 80;                   // radio con los árboles enteros; más allá, con la forma sencilla (m)
 const MAX = movil ? { hierba: 9000, flores: 900, matas: 400, rocas: 250, arboles: 1500, paredes: 700 } : { hierba: 30000, flores: 2600, matas: 1200, rocas: 600, arboles: 4000, paredes: 2400 };
 // radio de la copa y alto (m) de cada especie a escala 1, para no dibujar los que tapan al personaje
 const TAMANO = { abeto: [2.1, 10.5], pino: [2.3, 9.5], abedul: [1.6, 9], roble: [3.2, 7.5], haya: [2.3, 10.8], fresno: [2.6, 9.2], encina: [2.6, 5.5] };
@@ -241,15 +242,22 @@ export function crearVistaJuego(est) {
     const totalArb = ESPECIES.reduce((n, e) => n + L.arboles[e].length, 0);
     if (totalArb > MAX.arboles) { const q = MAX.arboles / totalArb; for (const e of ESPECIES) L.arboles[e] = recortar(L.arboles[e], Math.round(L.arboles[e].length * q)); }
 
-    const arb = modelosEspecies(), pl = modelosPlantas(), o = new THREE.Object3D(), c = new THREE.Color();
+    const arb = modelosEspecies(), arbS = modelosEspecies({ sencillo: true }), pl = modelosPlantas(), o = new THREE.Object3D(), c = new THREE.Color();
     const poner = (lista, geo, mats, nombre, { ancho = 1, sombra = false, color = (e) => c.setScalar(e[5]) } = {}) => {
       if (!lista.length) return;
       const im = new THREE.InstancedMesh(geo, mats, lista.length);
       lista.forEach((e, k) => { o.position.set(e[0], e[1], e[2]); o.rotation.set(0, e[4], 0); o.scale.set(e[3] * ancho, e[3], e[3] * ancho); o.updateMatrix(); im.setMatrixAt(k, o.matrix); im.setColorAt(k, color(e)); });
       im.castShadow = sombra; im.receiveShadow = true; im.name = nombre; g.add(im);
     };
-    for (const e of ESPECIES) poner(L.arboles[e], arb[e].geo, arb[e].mats, 'arbolesCerca_' + e, { sombra: true });
-    vj.arboles = ESPECIES.map(e => [L.arboles[e], g.getObjectByName('arbolesCerca_' + e), e]).filter(a => a[1]);
+    // los árboles a más de R_ARBOL m del personaje, con la forma sencilla (menos caras; de ahí en adelante no se nota)
+    vj.arboles = [];
+    for (const e of ESPECIES) {
+      const cerca = L.arboles[e].filter(a => Math.hypot(a[0] - px, a[2] - pz) < R_ARBOL), lejos = L.arboles[e].filter(a => Math.hypot(a[0] - px, a[2] - pz) >= R_ARBOL);
+      poner(cerca, arb[e].geo, arb[e].mats, 'arbolesCerca_' + e, { sombra: true });
+      poner(lejos, arbS[e].geo, arbS[e].mats, 'arbolesMedios_' + e, { sombra: true });
+      vj.arboles.push([cerca, g.getObjectByName('arbolesCerca_' + e), e], [lejos, g.getObjectByName('arbolesMedios_' + e), e]);
+    }
+    vj.arboles = vj.arboles.filter(a => a[1]);
     vj.tapan = new Set();
     poner(L.hierba, pl.mata, materialHierba(), 'hierba');
     const FLORES = [0xe8e2d0, 0xd9c27a, 0xa98aa6];
@@ -277,7 +285,7 @@ export function crearVistaJuego(est) {
     vj.medidas = {
       ms: Math.round(performance.now() - t0), rejilla: n, pasoM: PASO,
       arboles: totalArbCerca(L), especies: Object.fromEntries(ESPECIES.map(e => [e, L.arboles[e].length])), hierba: L.hierba.length, flores: L.flores.length, matas: L.matas.length, rocas: L.rocas.length, paredes: L.paredes.length,
-      triangulos: Math.round(idx.length / 3 + L.paredes.length * tris(modelosRocaPared()[0]) + ESPECIES.reduce((n, e) => n + L.arboles[e].length * tris(arb[e].geo), 0) + L.hierba.length * tris(pl.mata) + L.matas.length * tris(pl.matorral.geo)),
+      triangulos: Math.round(idx.length / 3 + L.paredes.length * tris(modelosRocaPared()[0]) + vj.arboles.reduce((n, [l, im]) => n + l.length * tris(im.geometry), 0) + L.hierba.length * tris(pl.mata) + L.matas.length * tris(pl.matorral.geo)),
     };
     window.__cerca.juego = vj.medidas; window.__cerca.vj = vj;
   }
