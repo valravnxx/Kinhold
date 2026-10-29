@@ -403,7 +403,7 @@
      "estado": "hecho",
      "inicio": "2026-10-29T21:23:04+00:00",
      "rama": "trabajo/20261029-2123",
-     "fin": "2026-10-29T22:23:12+00:00",
+     "fin": "2026-10-29T22:32:46+00:00",
      "notas": "Las 15 pruebas en la nube correctas. 7 versiones más a sus releases (demo v35 a v37, mapa v9, personaje v16 a v18) y 137 capturas viejas encogidas: la web pasa de 379 a 363 MB."
     }
    ]
