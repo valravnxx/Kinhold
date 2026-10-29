@@ -2361,5 +2361,23 @@
   "pruebas": "En la nube: los 15 grupos bien; la web falló una vez por el arreglo de arriba y, arreglada, pasa",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T18:54:47+00:00",
+  "fin": "2026-10-29T20:20:29+00:00",
+  "titulo": "Tintes de la ropa y blasón de la sobreveste (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Personajes del taller en recursos/personajes/taller-v13/: la tela y el cuero de cada prenda (camisa, calzas, túnica o vestido, gambesón, sobreveste, manto, capucha, toca, zapatos y botas) van pintados en gris y su color va aparte, en el material, como la piel y el pelo. Con los tintes por defecto el color es exactamente el de antes (medido: diferencia 0).",
+   "Tintes de la época, apagados: sin teñir, rojo de rubia, azul de glasto (y claro), amarillo de gualda, verde, pardo de nogal, morado, negro y blanqueado; el cuero, sin teñir, oscuro, negro, rojizo o claro (src/logica/tintes.js, lógica pura para el servidor).",
+   "Blasón de la sobreveste: partido, cortado, cuartelado, palo, faja, banda, cruz, sotuer y cheurón, delante y detrás, con el color de la figura. Lo dibuja un sombreado por la posición en el cuerpo, sin textura nueva; la tela se sigue viendo bajo la figura.",
+   "Visor de personaje: en Opciones, «Tinte de la ropa» (una fila de muestras por prenda puesta, de dentro afuera) y «Blasón de la sobreveste». Se cambia al momento, sin recargar el modelo, y se recuerda. Qué capas lleva ya se elegía. Publicado como personaje v22 y demo v41.",
+   "Decisión provisional (en el registro del visor): la cota de malla, el sombrero de paja y los cinturones no se tiñen.",
+   "Pruebas nuevas: la de los tintes y los modelos (con MUTAR=1 mira la taller-v12 y falla) y, en el visor, cambiar tintes y blasones con clics y comprobar color, imagen y que se recuerdan.",
+   "Aún mal o sin hacer: los tintes y el blasón no salen todavía en la construcción ni en el duelo (siguen con la taller-v12 y los colores de siempre); llegarán con la ropa fabricada. En el cheurón visto de espaldas la figura queda algo alta. El negro se ve muy plano con poca luz."
+  ],
+  "pruebas": "Batería entera en la nube: 15 grupos correctos. Tras compactar las muestras del panel, repetidos personaje, demo única y juego en inglés: correctos.",
+  "capturas": "capturas/personaje-v22",
+  "estado": "ok"
  }
 ]
