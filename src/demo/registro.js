@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v40 (las 39 animaciones extra en el taller)';
+export const VERSION_DEMO = 'Demo única · v41 (tintes de la ropa y blasón)';
 export const REGISTRO_DEMO = [
+  'v41: en «Personaje», «Tinte de la ropa»: cada prenda puesta se tiñe con los tintes de la época (rubia, glasto, gualda, nogal, negro, blanqueado…) y, con la sobreveste, su blasón (partido, cuartelado, banda, cruz, sotuer, cheurón…) con el color de la figura. Personajes en recursos/personajes/taller-v13/; con los tintes de siempre se ven igual. Aún no salen en «Construir» ni en «Duelo».',
   'v40: en «Personaje», «Más animaciones»: las 39 animaciones extra (vendarse, arco, picar, sembrar, regar, pescar, golpes ligeros y pesados, escudo, pasos, trepar, tumbarse, comer…) pasadas al esqueleto del taller propio. Se bajan aparte, en recursos/personajes/taller-anim-v1/.',
   'v39: pies descalzos. En «Construir», sin calzado en el inventario vas descalzo, como empieza el GDD; en «Personaje», el botón «Descalzo» quita los zapatos y la vista «Pies» los enseña de cerca. Personajes en recursos/personajes/taller-v12/.',
   'v38: en «Construir», el adarve (4 tablas, 4 clavos y 2 troncos): la pasarela de tablas a 1,8 m por detrás de la empalizada, para asomarse entre las puntas. Se sube por una escalera de mano o de tablas puesta delante y girada hacia él, que salen más cortas.',

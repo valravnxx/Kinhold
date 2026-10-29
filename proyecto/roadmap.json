@@ -798,9 +798,9 @@
     },
     {
      "nombre": "Personalización en el juego de toda la ropa y la armadura (pedido de valravnx): color o tinte de cada prenda, blasón o dibujo en la sobreveste, y qué capas lleva. Para eso las texturas de la ropa pasan a ir en gris con el color aparte, que se cambia sin rehacer el modelo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T18:54:47+00:00",
-     "rama": "trabajo/20261029-1854"
+     "fin": "2026-10-29T20:20:29+00:00"
     },
     {
      "nombre": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, corte, tejido y tinte (sin calidades), sobre el mismo esqueleto",
@@ -1612,6 +1612,13 @@
      "archivo": "jugar/demo/v40.html",
      "capturas": "capturas/personaje-v21",
      "notas": "En «Personaje», «Más animaciones»: las 39 animaciones extra en el personaje del taller"
+    },
+    {
+     "v": "v41",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v41.html",
+     "capturas": null,
+     "notas": "En «Personaje», tintes de la ropa y blasón de la sobreveste (personajes en taller-v13)."
     }
    ]
   },
@@ -2221,6 +2228,13 @@
      "archivo": "jugar/personaje/v21.html",
      "capturas": "capturas/personaje-v21",
      "notas": "Las 39 animaciones extra (arco, picar, sembrar, regar, pescar, golpes ligeros y pesados, escudo, pasos, trepar, tumbarse…) pasadas al esqueleto del taller propio: en Opciones, «Más animaciones»"
+    },
+    {
+     "v": "v22",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/personaje/v22.html",
+     "capturas": "capturas/personaje-v22",
+     "notas": "Tintes de la ropa y blasón de la sobreveste: cada prenda puesta se tiñe con los tintes de la época y la sobreveste lleva partido, cortado, cuartelado, palo, faja, banda, cruz, sotuer o cheurón. Personajes en taller-v13 (tela y cuero en gris con el color aparte)."
     }
    ]
   },
