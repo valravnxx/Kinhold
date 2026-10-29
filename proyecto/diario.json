@@ -2429,5 +2429,23 @@
   "pruebas": "En la nube: 15 de 15 grupos correctos; el grupo web otra vez después de regenerar la web",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T22:24:30+00:00",
+  "fin": "2026-10-29T23:26:03+00:00",
+  "titulo": "Hito «El juego en el mundo de verdad»: el terreno por trozos, la lógica (carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Nuevo módulo src/logica/trozos.js, lógica pura sin three.js: el mundo en trozos de 64 m y un gestor que, con la posición del jugador, dice qué trozos cargar, cuáles cambian de detalle y cuáles soltar, de cerca a lejos.",
+   "Anillos de detalle (decisión provisional: la tarea daba las rejillas pero no las distancias): rejilla de 1 m hasta 64 m del jugador, de 2 m hasta 192, de 4 m hasta 448 y de 8 m hasta 768, con un margen de 16 m para no cargar y soltar el mismo trozo al ir y venir por una frontera.",
+   "Faldones en los cuatro bordes de cada trozo: cuelgan lo que de verdad hace falta (lo más que se aparta el terreno de 1 m de la línea del borde basto, más 25 cm), así tapan la rendija con cualquier vecino más fino.",
+   "Cada trozo coge los tramos de río que pasan a menos de 2.600 m (los ríos tallan el terreno hasta 2.500 m de su cauce), para que dos vecinos den exactamente la misma altura en su borde común.",
+   "Prueba nueva en node (pruebas/prueba_trozos.mjs): un paseo de 1.500 pasos sin huecos ni trozos de más y sin dos vecinos a más de un nivel; ir y venir sobre una frontera sin volver a cargar nada; y 232 mallas junto a un río con la misma altura en sus 430 bordes compartidos y la rendija mayor (1,25 m) tapada por el faldón (1,80 m). Rota a propósito dos veces (sin faldón y sin margen): falla.",
+   "Medido en este procesador: un trozo de rejilla de 1 m tarda unos 10 ms; de 2 m, unos 4 ms; de 4 y 8 m, de 1,5 a 2 ms. Con el último anillo a 768 m hay hasta 518 trozos cargados a la vez: para el móvil habrá que juntar los lejanos en pocas llamadas de dibujo al hacer la vista.",
+   "No comprobado: en el navegador todavía no se usa; llega con las tareas del hilo aparte y de la vista «Como en el juego»."
+  ],
+  "pruebas": "En la nube: los 15 grupos bien (53 min); la prueba nueva de trozos, en el grupo de lógica, 21 de 21; rota a propósito con MUTAR=1 y MUTAR=2, falla",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
