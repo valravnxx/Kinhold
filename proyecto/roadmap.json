@@ -506,6 +506,14 @@
      "estado": "pendiente"
     },
     {
+     "nombre": "Arreglo (valravnx, 29 oct: «las barbas, horribles»): rehacer las barbas del taller hasta que se vean como barbas de verdad, revisadas en capturas de cerca antes de enseñarlas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Arreglo (valravnx, 29 oct: «la capa que no es capa»): rehacer la capa del taller para que caiga de los hombros como una capa de verdad, revisada en capturas de cerca antes de enseñarla",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
     },
@@ -787,6 +795,12 @@
     {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Arreglo (valravnx, 29 oct): el panel de inventario es el equipo; lo que se lleva en las manos o al hombro no sale en el panel, se coge y se ve en el personaje; fuera el dibujo retorcido de la silueta",
+     "estado": "en_curso",
+     "inicio": "2026-10-29T13:08:10+01:00",
+     "rama": "trabajo/20261029-1310-inventario"
     }
    ]
   },
