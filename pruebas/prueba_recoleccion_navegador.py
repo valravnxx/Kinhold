@@ -112,7 +112,7 @@ with sync_playwright() as p:
     print('Móvil: recoger con el botón Usar')
     pg, errores = abrir(nav, 390, 844, movil=True)
     for tipo in ['ortiga', 'ramas']:
-        ir(pg, tipo, dist_cam=3.4, n=2)
+        ir(pg, tipo, dist_cam=5, n=2)
         pg.wait_for_timeout(400)
         antes = pg.evaluate(f"{K}.inventario.cuantos('{DA[tipo]}')")
         pg.evaluate(f"{K}.render()")
