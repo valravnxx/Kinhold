@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-29T19:25:07+00:00",
-  "tarea": "Orden en el código antes de unir las partes, sin cambiar nada de lo que se ve: un solo módulo de azar y ruido, la biblioteca de modelos (src/juego/modelos.js) y la elección de personaje (src/demo/eleccion.js) a la escena común, un solo cliente en línea para la construcción y el duelo, y el visor del mapa con los personajes del taller de ahora",
-  "hito": "despejar",
-  "rama": "trabajo/20261029-1925"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-29T18:54:47+00:00",
   "tarea": "Personalización en el juego de toda la ropa y la armadura (pedido de valravnx): color o tinte de cada prenda, blasón o dibujo en la sobreveste, y qué capas lleva. Para eso las texturas de la ropa pasan a ir en gris con el color aparte, que se cambia sin rehacer el modelo",
