@@ -1,0 +1,17 @@
+Personalización en docs/recursos/personajes/taller-v11
+  OK   mh_hombre.glb: la piel tiene todas las formas — peso_mas, peso_menos, musculo_mas, musculo_menos, cara_mas, cara_menos, nariz_mas, nariz_menos, nariz_larga_mas, nariz_larga_menos, menton_mas, menton_menos
+  OK   mh_hombre.glb: cada forma mueve algún punto más de 3 mm — peso_mas 19, peso_menos 14, musculo_mas 27, musculo_menos 27, cara_mas 14, cara_menos 7, nariz_mas 3, nariz_menos 5, nariz_larga_mas 5, nariz_larga_menos 8, menton_mas 12, menton_menos 9 mm
+  OK   mh_hombre.glb: la ropa engorda y adelgaza con el cuerpo, pero no lleva las formas de la cara — peso_mas, peso_menos, musculo_mas, musculo_menos
+  OK   mh_hombre.glb: piel, pelo, cejas, barba e iris llevan su tinte y su color de referencia
+  OK   mh_hombre.glb: el blanco del ojo no cambia de color (sin tinte)
+  OK   mh_hombre.glb: cada peinado y cada barba tienen sus piezas — corto, rapado, melena, coleta, trenzas · corta, larga, perilla, bigote, ninguna
+  OK   mh_hombre.glb: el pelo largo y las barbas llevan el color del pelo
+  OK   mh_mujer.glb: la piel tiene todas las formas — peso_mas, peso_menos, musculo_mas, musculo_menos, cara_mas, cara_menos, nariz_mas, nariz_menos, nariz_larga_mas, nariz_larga_menos, menton_mas, menton_menos
+  OK   mh_mujer.glb: cada forma mueve algún punto más de 3 mm — peso_mas 19, peso_menos 13, musculo_mas 17, musculo_menos 11, cara_mas 14, cara_menos 7, nariz_mas 3, nariz_menos 5, nariz_larga_mas 5, nariz_larga_menos 8, menton_mas 12, menton_menos 9 mm
+  OK   mh_mujer.glb: la ropa engorda y adelgaza con el cuerpo, pero no lleva las formas de la cara — peso_mas, peso_menos, musculo_mas, musculo_menos
+  OK   mh_mujer.glb: piel, pelo, cejas, barba e iris llevan su tinte y su color de referencia
+  OK   mh_mujer.glb: el blanco del ojo no cambia de color (sin tinte)
+  OK   mh_mujer.glb: cada peinado y cada barba tienen sus piezas — cofia, melena, coleta, trenzas · ninguna
+  OK   mh_mujer.glb: el pelo largo y las barbas llevan el color del pelo
+
+14 correctas, 0 fallos
