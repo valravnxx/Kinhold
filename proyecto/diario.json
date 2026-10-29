@@ -2277,5 +2277,23 @@
   "pruebas": "La web en la nube (con el GDD cambiado en los tres idiomas)",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T09:51:51+00:00",
+  "fin": "2026-10-29T16:13:00+00:00",
+  "titulo": "Taller: pies descalzos",
+  "hito": "arte",
+  "hecho": [
+   "Personajes del taller en recursos/personajes/taller-v12/ con pies: la piel de los pies (dedos, uñas y la planta algo más oscura) como pieza aparte, del color de piel que se elija. Hasta ahora el cuerpo no tenía pies bajo los zapatos.",
+   "Lo puesto sin calzado se dibuja descalzo (lógica de prendas, para el servidor también): en la construcción, con lo que se empieza (camisa y pantalón de lino), se va descalzo como dice el GDD. Con zapatos o botas, se ven puestos.",
+   "Visor de personaje: botón «Descalzo» en la ropa y vista nueva «Pies», de cerca.",
+   "El bajo de las calzas va recto: antes salía en dientes de sierra y lo tapaban los zapatos.",
+   "Prueba nueva de los pies en los modelos (con MUTAR=1 mira la taller-v11, sin pies, y falla), y comprobaciones nuevas en las pruebas de ropa, del visor y de la construcción.",
+   "Publicado como personaje v20, construcción v38 y demo v39 (el inventario y el adarve usaron las versiones de en medio). El combate no cambia a la vista: no se publica.",
+   "Aún mal (mirado de cerca): por detrás, el bajo de las calzas tiene todavía un pequeño escalón; los pies no se reducen de triángulos (unos 4.400 por cuerpo, solo cuando se ven)."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main: 15 grupos correctos (lógica, taller y navegador, PC y móvil). Antes, aquí, la de la construcción fallaba solo por la comprobación vieja de los zapatos, ya cambiada.",
+  "capturas": "capturas/personaje-v20",
+  "estado": "ok"
  }
 ]
