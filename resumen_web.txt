@@ -1,0 +1,35 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 1703 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1613 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1379 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 1680 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2007 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1374 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 1619 KB
+
+== Web de progreso
+docs/index.html listo · 29 hitos · 137 entradas de diario · en 1474 textos, ru 1474 textos
+
+== Navegador: web
+  OK   «ahora mismo» en ruso
+  OK   sin errores en consola (movil)
+
+Resultado: 1 fallos: ninguna pestaña se sale por los lados, en ningún idioma
+!! FALLA: python3 pruebas/prueba_web.py /tmp/kinhold_capturas/web
+
+HAY FALLOS
+tardó 151 s
