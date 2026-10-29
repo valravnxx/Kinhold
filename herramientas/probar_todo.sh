@@ -17,6 +17,7 @@ paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs
 paso "Inventario por huecos" node pruebas/prueba_inventario.mjs
+paso "Recoger del suelo y de las plantas" node pruebas/prueba_recoleccion.mjs
 paso "Datos de cada prenda (zonas, protección, abrigo y peso)" node pruebas/prueba_ropa.mjs
 paso "Aspecto del personaje (personalización)" node pruebas/prueba_aspecto.mjs
 paso "Servidor mínimo con dos clientes" node pruebas/prueba_servidor.mjs
@@ -31,6 +32,7 @@ paso "Servidor de prueba en internet (Caddy con HTTPS delante del juego)" node p
 paso "Taller: los cinturones ciñen su prenda" node pruebas/prueba_cinturones.mjs
 paso "Taller: capa, calzado y tocados" node pruebas/prueba_prendas.mjs
 paso "Taller: formas y colores para personalizar" node pruebas/prueba_aspecto_modelos.mjs
+paso "Taller: manos enteras y botas de la mujer bajo la falda" node pruebas/prueba_manos.mjs
 paso "Taller: versiones fijadas" python3 herramientas/taller/comprobar_taller.py --prueba
 paso "Unión del diario y las traducciones" node pruebas/prueba_unir_json.mjs
 paso "Dos carriles en paralelo sin pisarse" node pruebas/prueba_carriles.mjs
@@ -38,6 +40,7 @@ paso "Excavación y malla de la roca" node pruebas/prueba_excavacion.mjs
 paso "Generador del mapa del mundo" node pruebas/prueba_mapa.mjs
 paso "Textos traducidos" node pruebas/prueba_idiomas.mjs
 paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold_hito1.html "$C/construccion"
+paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_hito1.html "$C/recoleccion"
 paso "Navegador: panel de inventario" python3 pruebas/prueba_inventario_navegador.py dist/kinhold_hito1.html "$C/inventario"
 paso "Navegador: combate" python3 pruebas/prueba_combate_navegador.py dist/kinhold_combate.html "$C/combate"
 paso "Navegador: pruebas de estilo" python3 pruebas/prueba_estilo_navegador.py dist/kinhold_estilo.html "$C/estilo"

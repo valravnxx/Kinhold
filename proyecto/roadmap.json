@@ -67,6 +67,12 @@
      "inicio": "2026-10-28T05:40:45+01:00",
      "rama": "trabajo/20261028-0540-agentes",
      "fin": "2026-10-28T05:56:43+01:00"
+    },
+    {
+     "nombre": "Pruebas en la nube (GitHub Actions, gratis en repositorio público): las pruebas de navegador en paralelo en máquinas de 4 núcleos, con las capturas de vuelta, para que las sesiones no pasen horas esperando a que dibuje esta máquina sin gráfica (lo pidió valravnx el 29 oct)",
+     "estado": "en_curso",
+     "inicio": "2026-10-29T11:03:35+01:00",
+     "rama": "trabajo/20261029-1005-nube"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -463,7 +469,9 @@
     },
     {
      "nombre": "Taller: pies descalzos. El cuerpo no tiene pies bajo los zapatos (se quitan al vestir) y el GDD dice que se empieza descalzo: hace falta el cuerpo con pies cuando no lleva zapatos",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T09:52:21+00:00",
+     "rama": "trabajo/20261029-0952"
     },
     {
      "nombre": "Taller: pasar también las 39 animaciones extra (trabajos, arco, espada, bloqueo, vendarse, pasos) al esqueleto de MakeHuman",
@@ -495,9 +503,9 @@
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «han roto las manos de todos los personajes» y prendas rotas): desde taller-v9 la piel se diezma con la cara protegida pero con la proporción de toda la piel, así que las manos se quedaban en una tira; diezmar solo lo que se puede diezmar, rehacer los personajes y repasar todas las prendas de cerca",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T05:46:31+01:00",
-     "rama": "trabajo/20261029-0545-manos"
+     "fin": "2026-10-29T09:36:02+00:00"
     }
    ],
    "bloquea": true
@@ -789,9 +797,9 @@
     },
     {
      "nombre": "Recoger del suelo y de las plantas lo que pide el nivel N0 (documento de sistemas, apartado 3): ramas caídas, piedra suelta y sílex con las manos, y fibra arrancada de ortigas y hierba larga; cada cosa sale donde dice el documento, da lo que dice, va al inventario por huecos y vuelve a salir pasado su tiempo, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T01:21:05+00:00",
-     "rama": "trabajo/20261029-0120"
+     "fin": "2026-10-29T10:11:30+00:00"
     },
     {
      "nombre": "Estaciones y recetas en la lógica pura, con los datos del documento de sistemas (apartados 7 y 8) de las primeras estaciones: hoguera y piedra de tallar (N0) y banco de trabajo de tronco (entrada a N1); cada receta con lo que gasta, lo que da, dónde se hace y su tiempo. Fabricar con autor, gastando lo que llevas encima y lo de los arcones a pocos pasos, con una cola pequeña por estación y el tiempo contado por tiempo transcurrido. Pruebas de lógica",
@@ -1394,6 +1402,20 @@
      "archivo": "jugar/demo/v34.html",
      "capturas": "capturas/demo-v34",
      "notas": "En «Construir», el panel de inventario (botón «Inventario» o tecla I) con un arcón de pruebas para coger equipo. Es la construcción v33."
+    },
+    {
+     "v": "v35",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v35.html",
+     "capturas": "capturas/demo-v35",
+     "notas": "v35: los personajes vuelven a tener las manos enteras (desde la taller-v9 salían como una tira, también las de los demás jugadores) y la mujer lleva botas bajas, que ya no atraviesan la falda larga. Personajes en recursos/personajes/taller-v11/."
+    },
+    {
+     "v": "v36",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v36.html",
+     "capturas": "capturas/construccion-v35",
+     "notas": "En «Construir», recoger ramas, piedra, sílex y fibra (construcción v35)"
     }
    ]
   },
@@ -1618,6 +1640,20 @@
      "archivo": "jugar/construccion/v33.html",
      "capturas": "capturas/construccion-v33",
      "notas": "Panel de inventario (hito 2): silueta con un cuadro por cada lugar del cuerpo, los huecos de lo que llevas y un arcón de pruebas para coger equipo. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa."
+    },
+    {
+     "v": "v34",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/construccion/v34.html",
+     "capturas": "capturas/construccion-v34",
+     "notas": "v34: el personaje vuelve a tener las manos enteras (desde la taller-v9 salían como una tira) y la mujer lleva botas bajas, que ya no atraviesan la falda larga. Personajes en recursos/personajes/taller-v11/."
+    },
+    {
+     "v": "v35",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/construccion/v35.html",
+     "capturas": "capturas/construccion-v35",
+     "notas": "Recoger del suelo y de las plantas (N0): ramas en el bosque, piedra suelta en la ladera, sílex en un afloramiento de caliza y fibra de ortigas y hierba larga en el claro, con Usar; va al inventario por huecos y vuelve a salir pasado su tiempo"
     }
    ]
   },
@@ -1730,6 +1766,13 @@
      "archivo": "jugar/combate/v16.html",
      "capturas": "capturas/combate-v16",
      "notas": "Curación de heridas: vendar, coser, cauterizar (con fuego), entablillar y emplasto de hierbas, cada una para su herida; en pleno combate se puede pero quedas vendido; las heridas tratadas se ven en el personaje y las que ya no sangran sanan con el tiempo"
+    },
+    {
+     "v": "v17",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/combate/v17.html",
+     "capturas": "capturas/combate-v17",
+     "notas": "v17: los luchadores vuelven a tener las manos enteras alrededor de la empuñadura (desde la taller-v9 salían como una tira). Personajes en recursos/personajes/taller-v11/."
     }
    ]
   },
@@ -1940,6 +1983,13 @@
      "archivo": "jugar/personaje/v18.html",
      "capturas": "capturas/personaje-v18",
      "notas": "Más peinados y barbas en el taller propio: melena, coleta y trenzas (también la mujer, sin la cofia), barba larga y perilla; la barba ya no se aclara bajo la barbilla. Personajes en recursos/personajes/taller-v10/."
+    },
+    {
+     "v": "v19",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/personaje/v19.html",
+     "capturas": "capturas/personaje-v19",
+     "notas": "v19: arreglo de las manos y de las botas de la mujer (lo vio valravnx). Desde la v16 (taller-v9) las manos salían rotas, como una tira: al reducir triángulos protegiendo la cara, la reducción entera caía sobre las manos y el cuello. Ahora vuelven a estar enteras, con sus dedos, en los dos cuerpos y con todas las prendas. Las botas de la mujer son bajas, hasta un poco por encima del tobillo, para que la caña no atraviese por detrás la falda larga al andar; las del hombre siguen altas. Personajes en recursos/personajes/taller-v11/."
     }
    ]
   },
