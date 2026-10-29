@@ -2045,5 +2045,20 @@
   "pruebas": "Batería completa una vez (todo correcto salvo dos fallos sueltos que no tocan el combate: la ráfaga de prueba_conexiones, ya corregida en main, y una vez jugar en línea); tras unir main tres veces, otra vez las de node, combate, duelo en línea, jugar en línea y demo: correctas. Lógica de combate 105/105 con 25 nuevas (MUTAR=1 rompe la cura y 4 fallan); combate en el servidor 62/62 con 7 nuevas; navegador del combate con 12 comprobaciones nuevas en PC y móvil. Capturas de cerca de la venda y las tablillas miradas. Falla a veces: jugar en línea («el móvil ve el mojón de PC», espera de 5 s; pasa sola y en main), y duelo en línea si la herida al azar es muy grave en el torso (se desangra durante la reconexión). Hizo falta instalar caddy para prueba_nube. No comprobado: la venda del muslo asoma un poco por la falda de la túnica en guardia; el rival de la máquina no se cura.",
   "capturas": "capturas/combate-v16",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T20:58:47+01:00",
+  "fin": "2026-10-29T01:17:37+01:00",
+  "titulo": "En línea sin tirones al abrir puertas y terminar obras",
+  "hito": "prueba-online",
+  "hecho": [
+   "La causa: con cada puerta que se abría o cerraba y con cada obra terminada, el juego de los dos rehacía todo lo construido desde cero. Medido con una casa de dos plantas: unos 200 ms cada vez (en el móvil, más). El servidor apenas hace nada por acción.",
+   "Al abrir o cerrar una puerta, un portón, una contraventana o una trampilla se rehace solo esa pieza, en quien la usa y en los demás.",
+   "Cada pieza se hace una vez y luego se copia compartiendo geometría (la misma pieza en el mismo sitio sale siempre igual): rehacer lo construido pasa de unos 200-400 ms a unos 25-40 ms en las pruebas.",
+   "Pruebas nuevas: abrir una puerta rehace solo esa pieza; en línea, un portillo que abre uno se rehace solo esa pieza en los dos y se ve abierto en el otro; rehacerlo todo no hace modelos nuevos y tarda menos de la mitad. Rotas a propósito, fallan. Publicada la alpha (demo única) v32, que trae también la curación de heridas del combate v16."
+  ],
+  "pruebas": "Construcción en el navegador (PC y móvil) 136 correctas; construir en línea, duelo en línea y la alpha en el navegador correctos; lógica 203/203, modelos 159/159, combate 105/105, servidor 18/18, combate del servidor 64/64, en línea 21/21, conexiones 34/34, inventario 120/120, mapa 76/76. Los milisegundos son de esta máquina de pruebas (sin tarjeta gráfica); en un PC o un móvil de verdad no están medidos.",
+  "capturas": "capturas/demo-v32",
+  "estado": "ok"
  }
 ]
