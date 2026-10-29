@@ -1,6 +1,7 @@
 // Decisiones que he tomado yo en el hito 1, para que las revises.
-export const VERSION = 'Hito 1 · v34';
+export const VERSION = 'Hito 1 · v35';
 export const REGISTRO = [
+  'v35: si no has elegido personaje, sales descalzo, con camisa y calzas de lino, como empieza el GDD (hasta ahora llevaba zapatos porque el cuerpo del taller no tenía pies). Si lo has elegido, con lo que elegiste (en el visor, botón «Descalzo»). Personajes en recursos/personajes/taller-v12/.',
   'v34: el personaje vuelve a tener las manos enteras (desde la taller-v9 salían como una tira) y la mujer lleva botas bajas, que ya no atraviesan la falda larga. Personajes en recursos/personajes/taller-v11/.',
   'v33 (hito 2): panel de inventario (botón «Inventario» o tecla I). Una silueta con un cuadro por cada lugar del cuerpo: las dos manos, la espalda, la cintura, el hombro y las ocho capas de ropa; bajo la cintura salen los huecos del cinturón que lleves (sin cinturón, ninguno). Al tocar un contenedor (cinturón, mochila, saco) se ven sus huecos, con lo que admite. En PC se arrastra; en el móvil se toca lo que quieres y luego dónde, y el panel va a pantalla completa. Abajo se ven la carga y la velocidad al andar.',
   'v33, provisional: mientras no haya fabricación (hito 3), el equipo y los recursos se cogen de un «arcón de pruebas» que lo tiene todo, como el botón «+ Materiales»; lo que se suelta en el arcón vuelve a él. Del arcón se coge la pila entera que cabe en el hueco (10 de lo pequeño, 3 de lo mediano). Lo que llevas aún no se ve puesto en el personaje (es la tarea siguiente) y los recursos que llevas encima no son los de las obras (llega con «Obras con lo que llevas»). En línea, lo que llevas se guarda solo en tu navegador hasta que el servidor guarde los inventarios.',

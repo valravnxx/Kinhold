@@ -3,6 +3,7 @@
 // Uso: node pruebas/prueba_ropa.mjs
 //      MUTAR=1 → la cota de malla pierde las mangas en los datos (el taller sí las tiene): tiene que fallar.
 //      MUTAR=2 → el gambesón frena el doble de corte que en el combate: tiene que fallar.
+//      MUTAR=3 → sin calzado no se dibuja descalzo (como antes de la taller-v12): tiene que fallar.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { MeshoptDecoder } from 'meshoptimizer';
@@ -13,6 +14,7 @@ import { Inventario, CATALOGO, CAPAS } from '../src/logica/inventario.js';
 import { ZONAS, ARMADURAS } from '../src/combate/logica.js';
 
 if (process.env.MUTAR === '1') PRENDAS.cota_malla.partes = ['cuerpo', 'falda'];
+if (process.env.MUTAR === '3') TALLER.descalzo = 'zapatos';
 if (process.env.MUTAR === '2') MATERIALES_ROPA.acolchado.proteccion = { ...MATERIALES_ROPA.acolchado.proteccion, corte: 0.275 };
 
 let ok = 0, mal = 0;

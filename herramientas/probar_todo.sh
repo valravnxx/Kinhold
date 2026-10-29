@@ -32,6 +32,7 @@ paso "Taller: los cinturones ciñen su prenda" node pruebas/prueba_cinturones.mj
 paso "Taller: capa, calzado y tocados" node pruebas/prueba_prendas.mjs
 paso "Taller: formas y colores para personalizar" node pruebas/prueba_aspecto_modelos.mjs
 paso "Taller: manos enteras y botas de la mujer bajo la falda" node pruebas/prueba_manos.mjs
+paso "Taller: pies descalzos" node pruebas/prueba_pies.mjs
 paso "Taller: versiones fijadas" python3 herramientas/taller/comprobar_taller.py --prueba
 paso "Unión del diario y las traducciones" node pruebas/prueba_unir_json.mjs
 paso "Dos carriles en paralelo sin pisarse" node pruebas/prueba_carriles.mjs

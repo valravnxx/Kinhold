@@ -81,6 +81,16 @@ comprueba el formato de `versiones.json`, que una versión distinta se detecta y
 
 Prueba: `node pruebas/prueba_aspecto_modelos.mjs` (con `MUTAR=1` mira la taller-v8, que no los tiene, y falla).
 
+## Pies descalzos (desde taller-v12)
+
+La piel del cuerpo solo tiene cabeza, cuello y manos; lo demás lo tapa la ropa. Para ir descalzo (el GDD empieza así)
+está la pieza `<sexo>_pies`: la piel de los pies hasta un poco por encima del tobillo (en la mujer, hasta donde las botas
+bajas), con su tinte de piel, uñas y la planta algo más oscura. El juego la enseña con la capa `descalzo` (sin zapatos;
+con botas se ven las botas): `TALLER.descalzo` en `src/logica/prendas.js` y `ponerCapas` en `src/personajes/makehuman.js`.
+Lo puesto sin calzado se dibuja descalzo (`capasDibujo`). El bajo de las calzas se deja recto (`bajo_recto`), porque
+descalzo se ve. Fotos de cerca: `FOTOS=pies python3 herramientas/taller/vestir_mpfb.py <carpeta>`.
+Prueba: `node pruebas/prueba_pies.mjs` (con `MUTAR=1` mira la taller-v11, que no tiene pies, y falla).
+
 ## Peinados y barbas (desde taller-v10)
 
 - **Pelo corto** (`_pelo`, cáscara sobre el cráneo): lo llevan los dos cuerpos; es la base de los peinados largos.
