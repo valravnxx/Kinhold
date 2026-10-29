@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-10-29T01:21:05+00:00",
-  "tarea": "Recoger del suelo y de las plantas lo que pide el nivel N0 (documento de sistemas, apartado 3): ramas caídas, piedra suelta y sílex con las manos, y fibra arrancada de ortigas y hierba larga; cada cosa sale donde dice el documento, da lo que dice, va al inventario por huecos y vuelve a salir pasado su tiempo, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
-  "hito": "crafting",
-  "rama": "trabajo/20261029-0120"
+  "inicio": "2026-10-29T09:21:31+00:00",
+  "tarea": "Adarve (pasarela por detrás de la empalizada: tablas y postes, sostiene 300 kg), al que se sube por escalera de mano o de tablas",
+  "hito": "construccion-mas",
+  "rama": "trabajo/20261029-0921"
  },
  "B": null,
  "chat:trabajo/20261029-0505-bosques": {
@@ -11,11 +11,5 @@
   "tarea": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
   "hito": "mundo",
   "rama": "trabajo/20261029-0505-bosques"
- },
- "chat:trabajo/20261029-0545-manos": {
-  "inicio": "2026-10-29T05:46:31+01:00",
-  "tarea": "Arreglo (valravnx, 29 oct: «han roto las manos de todos los personajes» y prendas rotas): desde taller-v9 la piel se diezma con la cara protegida pero con la proporción de toda la piel, así que las manos se quedaban en una tira; diezmar solo lo que se puede diezmar, rehacer los personajes y repasar todas las prendas de cerca",
-  "hito": "arte",
-  "rama": "trabajo/20261029-0545-manos"
  }
 }
