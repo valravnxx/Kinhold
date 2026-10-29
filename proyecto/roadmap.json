@@ -948,7 +948,8 @@
     },
     {
      "nombre": "Relieve de detalle por escalas: el mapa da la forma grande y encima van colinas, lomas y quebradas con pendientes de todos los tamaños (como en el terreno de verdad), sin llanos enormes ni cuestas eternas",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "fin": "2026-10-29T05:02:00+01:00"
     },
     {
      "nombre": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",
@@ -970,7 +971,9 @@
     },
     {
      "nombre": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T05:03:54+01:00",
+     "rama": "trabajo/20261029-0505-bosques"
     },
     {
      "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
