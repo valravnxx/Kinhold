@@ -1,0 +1,67 @@
+Página pc
+  OK   pc: el menú tiene «Duelo en línea»
+  OK   pc: «Duelo en línea» se ve entero
+  OK   pc: el duelo carga — []
+  OK   pc: se conecta al servidor
+  OK   pc: en línea no están las opciones del rival
+Página movil
+  OK   movil: el menú tiene «Duelo en línea»
+  OK   movil: «Duelo en línea» se ve entero
+  OK   movil: el duelo carga — []
+  OK   movil: se conecta al servidor
+  OK   movil: en línea no están las opciones del rival
+Verse en la liza
+  OK   PC ve al móvil en la liza
+  OK   el móvil ve a PC en la liza
+  OK   el móvil ve a PC con el cuerpo y la ropa que eligió y su armadura — mujer:gambeson:gambeson:{"piel":"oscura","ojos":"azules","pelo":"castano_oscuro","peinado":"cofia","barba":"ninguna","formas":{"altura":-1,"peso":0,"musculo":0.7,"cara":0,"nariz":0,"nariz_larga":0,"menton":0}}
+  OK   PC ve al móvil como el de por defecto, sin armadura — hombre::lino:{"piel":"clara_rosada","ojos":"castanos","pelo":"castano_oscuro","peinado":"corto","barba":"corta","formas":{"altura":0,"peso":0,"musculo":0,"cara":0,"nariz":0,"nariz_larga":0,"menton":0}}
+  OK   el móvil ve a PC con su aspecto (piel oscura, ojos azules, baja y musculosa) — {"piel":"oscura","ojos":"azules","pelo":"castano_oscuro","peinado":"cofia","barba":"ninguna","formas":{"altura":-1,"peso":0,"musculo":0.7,"cara":0,"nariz":0,"nariz_larga":0,"menton":0}}
+  OK   PC ve al móvil con el aspecto por defecto, igual que el móvil se ve
+  OK   cada uno dice que tiene un rival en la liza — En línea · 1 en la liza
+  OK   PC ve al móvil donde está
+  OK   el móvil ve a PC donde está
+  OK   la rosa de golpes sale sobre el rival
+Un golpe que hiere
+  OK   PC prepara el golpe al momento (sin esperar a la red)
+  OK   el móvil ve a PC preparando el golpe
+  OK   el golpe llega a las dos páginas
+  OK   lo resuelve el servidor, con el autor de PC y el móvil de objetivo — {"tipo": "golpe", "n": 1, "autor": "jugador:2d1ec826", "objetivo": "jugador:85df0d52", "linea": "alto", "resultado": "herida", "t": 48974, "zona": "brazoI", "gravedad": "muy grave", "danio": "corte"}
+  OK   las dos ven el mismo golpe — herida en brazoI (muy grave)
+  OK   el móvil tiene la herida y PC se la ve igual — móvil: brazoI:muy grave · PC ve: brazoI:muy grave
+  OK   cada una lo cuenta a su manera (hieres / te hieren) — Hieres al rival: muy grave en brazo izquierdo | Te hieren: muy grave en brazo izquierdo
+  OK   el móvil ve el aviso de su herida
+Una parada
+  OK   la parada llega a las dos
+  OK   el móvil para el golpe de PC (lo dice el servidor) — parada
+  OK   y las dos lo ven igual
+Hasta que uno cae
+  OK   el móvil cae (lo decide el servidor)
+  OK   PC ve la victoria y el móvil la derrota
+  OK   las dos han visto los mismos golpes, en el mismo orden — 2 golpes
+  OK   el servidor guarda cada herida con su autor — 1 heridas
+Volver a empezar
+  OK   el móvil vuelve a empezar, sano
+  OK   PC lo ve sano
+  OK   y para PC la pelea sigue: se quita su pantalla final
+  OK   y no vuelve a salir
+  OK   con el rival en pie al lado no se puede volver a empezar sano — Hay alguien cerca: no se puede volver a empezar en mitad de una pelea.
+Se corta la conexión del móvil y vuelve
+  OK   PC lo ve irse
+  OK   el móvil vuelve a conectar solo
+  OK   PC lo vuelve a ver
+  OK   y vuelve el mismo luchador, con sus heridas (no sano) — {"yo":"jugador:85df0d52","heridas":["torso:muy grave"],"fuera":false} → {"yo":"jugador:85df0d52","heridas":["torso:muy grave"],"fuera":false}
+Del duelo a construir, en la misma pestaña
+  OK   pc: entra a construir en línea
+  OK   movil: entra a construir en línea
+  OK   sigue siendo el mismo jugador que en el duelo
+  OK   PC ve al móvil construyendo — 1
+  OK   el móvil ve a PC construyendo — 1
+  OK   y ninguno dice que el servidor sea antiguo
+  OK   PC vuelve al duelo
+El servidor se apaga
+  OK   PC dice que se ha cortado (y que vuelve a conectar) y ya no ve al otro — estado: Volviendo a conectar… · otros: 0
+  OK   sin conexión no se ataca
+  OK   pc: sin errores en la consola — []
+  OK   movil: sin errores en la consola — []
+
+TODO CORRECTO
