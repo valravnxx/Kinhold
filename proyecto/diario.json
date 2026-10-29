@@ -2130,5 +2130,21 @@
   "pruebas": "Todas correctas antes y después de unir main (con la chimenea): lógica 203/203, modelos 159/159, combate 105/105, inventario 120/120, textos traducidos, navegador de construcción, panel de inventario 28/28, combate, estilo, personaje, demo, en línea, duelo en línea, inglés, cavar, mapa y web.",
   "capturas": "capturas/construccion-v33",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T06:52:42+00:00",
+  "fin": "2026-10-29T09:36:02+00:00",
+  "titulo": "Arreglo: manos enteras otra vez y botas bajas en la mujer",
+  "hito": "arte",
+  "hecho": [
+   "Personajes del taller rehechos en recursos/personajes/taller-v11/: desde la taller-v9 la reducción de triángulos protegía la cara pero caía entera sobre las manos y el cuello, y las manos salían como una tira. Ahora solo se reduce lo que se puede reducir y las manos vuelven a estar enteras, con sus dedos, en los dos cuerpos y con todas las prendas.",
+   "Las botas de la mujer son bajas (caña de 16 cm) para que no atraviesen la falda larga al andar; las del hombre siguen altas.",
+   "Prueba nueva de las manos y de las botas bajo la falda (con MUTAR=1 mira la taller-v10, que tiene los dos fallos, y falla).",
+   "Retomado por el carril B desde la rama de la sesión de chat cortada: unido main (que ya había usado construcción v33 y demo v34 para el inventario), así que el arreglo sale como personaje v19, construcción v34, demo v35 y combate v17.",
+   "Mirado de cerca en capturas: manos enteras en el personaje (PC), en la guardia del combate alrededor de la empuñadura y en la demo en el móvil."
+  ],
+  "pruebas": "probar_todo.sh completo: todas las pruebas de lógica, taller y navegador correctas (46 pasos), PC y móvil",
+  "capturas": "capturas/personaje-v19",
+  "estado": "ok"
  }
 ]
