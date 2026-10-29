@@ -9,14 +9,14 @@ import { tr } from '../idioma.js';
 // Los cuadros de la silueta: lugar, nombre y posición (en % de la caja de la silueta, el centro del cuadro).
 // La mano derecha sale a la izquierda de la pantalla: el personaje te mira.
 const CUADROS = [
-  ['ropa:cabeza', 'Cabeza', 50, 6],
-  ['hombro', 'Hombro', 17, 19], ['espalda', 'Espalda', 83, 19],
-  ['ropa:sobre', 'Sobre', 35, 31], ['ropa:exterior', 'Exterior', 65, 31],
-  ['ropa:abrigo', 'Abrigo', 35, 44], ['ropa:interior', 'Camisa', 65, 44],
-  ['mano:der', 'Mano derecha', 9, 55], ['mano:izq', 'Mano izquierda', 91, 55],
-  ['cintura', 'Cintura', 50, 57],
-  ['ropa:guantes', 'Guantes', 14, 74], ['ropa:piernas', 'Piernas', 50, 76],
-  ['ropa:pies', 'Pies', 50, 93],
+  ['ropa:cabeza', 'Cabeza', 50, 5],
+  ['hombro', 'Hombro', 16, 16], ['espalda', 'Espalda', 84, 16],
+  ['ropa:sobre', 'Sobre', 34, 28], ['ropa:exterior', 'Exterior', 66, 28],
+  ['ropa:abrigo', 'Abrigo', 34, 41], ['ropa:interior', 'Camisa', 66, 41],
+  ['mano:der', 'Mano derecha', 10, 50], ['mano:izq', 'Mano izquierda', 90, 50],
+  ['cintura', 'Cintura', 50, 55],
+  ['ropa:guantes', 'Guantes', 12, 70], ['ropa:piernas', 'Piernas', 50, 78],
+  ['ropa:pies', 'Pies', 50, 92],
 ];
 
 // Grupos del arcón de pruebas, sacados del catálogo.
@@ -49,8 +49,8 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
         <div class="inv-aviso"></div>
         <div class="inv-carga"></div>
       </div>
-    </div>
-    <div class="inv-arcon"><h3>${tr('Arcón de pruebas')}</h3><p class="inv-nota">${tr('Mientras no haya fabricación, el equipo se coge de aquí. Toca algo y luego dónde lo quieres; suéltalo aquí para devolverlo.')}</p><div class="inv-grupos"></div></div>`;
+    <div class="inv-arcon"><h3>${tr('Arcón de pruebas')}</h3><p class="inv-nota">${tr('Mientras no haya fabricación, el equipo se coge de aquí. Toca algo y luego dónde lo quieres; suéltalo aquí para devolverlo.')}</p><div class="inv-grupos"></div></div>
+    </div>`;
   const q = s => panel.querySelector(s);
   const inv = () => inventario();
   const def = c => c && CATALOGO[c.tipo];
@@ -132,7 +132,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     let h = CUADROS.map(([ruta, et, x, y]) => `<div class="inv-sitio" style="left:${x}%;top:${y}%">${cuadro(ruta, tr(et))}<small>${tr(et)}</small></div>`).join('');
     // los huecos del cinturón, en fila bajo la cintura (sin cinturón, ninguno)
     const hc = inv().huecosCintura();
-    if (hc.length) h += `<div class="inv-cinto" style="top:66%">${hc.map(x => cuadro(x.ruta, x.tam, 'mini')).join('')}</div>`;
+    if (hc.length) h += `<div class="inv-cinto" style="top:64%">${hc.map(x => cuadro(x.ruta, x.tam, 'mini')).join('')}</div>`;
     q('.inv-cuadros').innerHTML = h;
   }
 
