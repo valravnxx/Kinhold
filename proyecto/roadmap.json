@@ -375,9 +375,15 @@
    "tareas": [
     {
      "nombre": "Web por debajo de 1 GB (decidido por valravnx el 29 oct): las versiones jugables antiguas pasan a las «releases» de GitHub, descargables, sin borrar ninguna; en la web quedan las recientes con enlace a las antiguas, y las capturas viejas se rehacen más pequeñas. Medir el tamaño antes y después. Las releases las crea una acción de GitHub (desde las sesiones no se puede: comprobado el 29 oct), como las pruebas en la nube",
-     "estado": "en_curso",
-     "inicio": "2026-10-29T15:39:05+00:00",
-     "rama": "trabajo/20261029-1540"
+     "estado": "hecho",
+     "inicio": "2026-10-29T15:38:32+00:00",
+     "rama": "trabajo/20261029-1540",
+     "fin": "2026-10-29T16:38:07+00:00",
+     "notas": "Capturas viejas encogidas: la web pasa de 706 a 461 MB. Las versiones antiguas (101, 113 MB) quedan listas para las releases: falta que valravnx lance la acción «releases» en GitHub."
+    },
+    {
+     "nombre": "Quitar de la web las versiones antiguas cuando ya estén en sus releases: node herramientas/archivar_versiones.mjs quitar, y medir el tamaño de la web después",
+     "estado": "espera_decision"
     },
     {
      "nombre": "Orden en el código antes de unir las partes, sin cambiar nada de lo que se ve: un solo módulo de azar y ruido, la biblioteca de modelos (src/juego/modelos.js) y la elección de personaje (src/demo/eleccion.js) a la escena común, un solo cliente en línea para la construcción y el duelo, y el visor del mapa con los personajes del taller de ahora",
@@ -2287,6 +2293,11 @@
    "pregunta": "Recursos de Whitholm para los playtests: la isla tiene caliza y arenisca, bosques, ríos medianos y arroyos y vetas pequeñas de hierro y carbón, pero ni grandes vetas, ni gran río, ni granito o pizarra, ni lo de las regiones del sur. Lo hablará valravnx con el chat (lo dijo el 29 oct).",
    "desde": "2026-10-29",
    "hito": "mundo"
+  },
+  {
+   "pregunta": "Para pasar las versiones antiguas a las releases (101 versiones, 113 MB): en GitHub, pestaña Actions → «releases» → «Run workflow» en la rama main. Desde las sesiones no se puede lanzar. Cuando acabe, una sesión las quita de la web.",
+   "desde": "2026-10-29",
+   "hito": "despejar"
   }
  ]
 }
