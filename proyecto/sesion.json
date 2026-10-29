@@ -5,16 +5,17 @@
   "hito": "crafting",
   "rama": "trabajo/20261029-0120"
  },
- "B": {
-  "inicio": "2026-10-29T00:51:30+00:00",
-  "tarea": "Panel de inventario en la demo: silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro y capas del cuerpo); al tocar un cuadro con contenedor se abren sus huecos; sin cinturón no hay cuadros de cintura. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Mientras no haya fabricación (hito 3), el equipo se coge de un arcón de pruebas, como el botón de rellenar materiales. Capturas en PC y móvil",
-  "hito": "equipo",
-  "rama": "trabajo/20261029-0051"
- },
+ "B": null,
  "chat:trabajo/20261029-0505-bosques": {
   "inicio": "2026-10-29T05:03:54+01:00",
   "tarea": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
   "hito": "mundo",
   "rama": "trabajo/20261029-0505-bosques"
+ },
+ "chat:trabajo/20261029-0545-manos": {
+  "inicio": "2026-10-29T05:46:31+01:00",
+  "tarea": "Arreglo (valravnx, 29 oct: «han roto las manos de todos los personajes» y prendas rotas): desde taller-v9 la piel se diezma con la cara protegida pero con la proporción de toda la piel, así que las manos se quedaban en una tira; diezmar solo lo que se puede diezmar, rehacer los personajes y repasar todas las prendas de cerca",
+  "hito": "arte",
+  "rama": "trabajo/20261029-0545-manos"
  }
 }
