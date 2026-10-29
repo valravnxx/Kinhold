@@ -134,7 +134,7 @@ function construir(mapa, cx, cy) {
     let c = colorDelSuelo(st, y, s, xm, ym);
     // donde hay bosque, el suelo de lejos toma el verde oscuro de las copas: así, desde lo alto, las masas de bosque se
     // leen como masas y no como árboles sueltos sobre la hierba (los árboles van encima)
-    if (st && st.bioma) { const d = bosqueEn(st, s, xm, ym).d; if (d > 0) c = c.map((v, q) => v + (DOSEL[q] - v) * Math.min(1, d * 0.75)); }
+    if (st && st.bioma) { const d = bosqueEn(st, s, xm, ym).d; if (d > 0) c = c.map((v, q) => v + (DOSEL[q] - v) * Math.min(0.85, d * 1.1)); }
     // concavidad: más oscuro en las vaguadas, más claro en lomas; y una variación suave
     const lap = (alt(i + 1, j) + alt(i - 1, j) + alt(i, j + 1) + alt(i, j - 1) - 4 * y) / (paso * paso);
     const v = 1 - Math.max(-0.12, Math.min(0.18, lap * 6)) + (fbm(xm / 60, ym / 60, 5, 3) - 0.5) * 0.14;
@@ -233,7 +233,7 @@ function construir(mapa, cx, cy) {
 const CERCA_ARBOL = 260;
 // de lejos, algo más grandes que de cerca (así se leen las masas de bosque desde lo alto), más altos que anchos
 const LEJOS_ALTO = 1.7, LEJOS_ANCHO = 1.35;
-const DOSEL = [0.3, 0.37, 0.23];   // el verde de las copas visto desde arriba (sRGB)
+const DOSEL = [0.22, 0.29, 0.17];   // el verde de las copas visto desde arriba (sRGB)
 export function poblarArboles(ojo, fuera = null) {
   const { raiz, arboles } = estado;
   for (const o of raiz.children.filter(o => o.name === 'bosque')) { raiz.remove(o); o.dispose(); }
