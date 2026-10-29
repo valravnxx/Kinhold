@@ -212,6 +212,7 @@ console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
   comprobar('los cinco cinturones', EQUIPO_CARGA('cintura').length === 5, ids('cintura').join(', '));
   comprobar('las diez mochilas y bastidores de espalda', EQUIPO_CARGA('espalda').length === 10, ids('espalda').join(', '));
   comprobar('saco, bandolera y odre al hombro', ['saco', 'bandolera', 'odre'].every(k => EQUIPO_CARGA('hombro').includes(k)) && EQUIPO_CARGA('hombro').length === 3);
+  comprobar('lo del hombro no tiene huecos (valravnx: se lleva y se ve, no se abre)', ['saco', 'bandolera', 'odre'].every(k => !(process.env.MUTAR_HOMBRO ? [{ tam: 'M' }] : CATALOGO[k].huecos)));   // MUTAR_HOMBRO: como antes, con huecos
   // huecos de los cinturones, como el GDD
   const hc = k => CATALOGO[k].huecos.map(h => h.tam).sort().join('');
   comprobar('cordel de fibra: 1 pequeño', hc('cordel') === 'P');
@@ -252,9 +253,7 @@ console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
   comprobar('carcaj: flechas o virotes', adm('carcaj', ['flecha', 'virote'], ['cuchillo']));
   comprobar('cesto de pescador: pescado y aparejos', adm('cesto_pescador', ['pescado', 'anzuelo'], ['bayas']));
   comprobar('escudo a la espalda: el escudo, nada más', adm('correa_escudo', ['escudo'], ['espada', 'piedra']) && capacidad('correa_escudo').porTipo.escudo === 1);
-  comprobar('saco: grano, harina y tierra', adm('saco', ['grano', 'harina', 'arena'], ['piedra']));
-  comprobar('odre: agua', adm('odre', ['agua'], ['bayas']));
-  comprobar('zurrón, mochila de bastidor y bandolera son mixtos', ['zurron', 'mochila_bastidor', 'bandolera'].every(k => capacidad(k).mixto));
+  comprobar('zurrón y mochila de bastidor son mixtos', ['zurron', 'mochila_bastidor'].every(k => capacidad(k).mixto));
   comprobar('la mochila de bastidor lleva más que el zurrón', capacidad('mochila_bastidor').huecos.length > capacidad('zurron').huecos.length);
   comprobar('el bloque de piedra en bruto no va en ninguna mochila (es enorme)', EQUIPO_CARGA('espalda').every(k => !capacidad(k).porTipo.bloque_piedra));
   // lo de hombro y la espalda a la vez, y cada cosa en su lugar
@@ -262,7 +261,9 @@ console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
   inv4.coger('saco', 1, 'mano:izq');
   const r5 = inv4.mover('mano:izq', 'espalda');
   comprobar('el saco no se pone a la espalda', !r5.ok && r5.motivo === 'Eso no se lleva ahí.', r5.motivo);
-  comprobar('el saco va al hombro y lleva grano', inv4.ponerse('mano:izq').ok && inv4.coger('grano', 10, 'hombro/0').ok && inv4.coger('grano', 10, 'hombro/1').ok && inv4.cuantos('grano') === 20);
+  comprobar('el saco va al hombro', inv4.ponerse('mano:izq').ok && inv4.lugares.hombro.tipo === 'saco');
+  const r6 = inv4.coger('grano', 10, 'hombro/0');
+  comprobar('y no se abre: no tiene huecos', !r6.ok, r6.motivo);
   inv4.coger('cesta_recoleccion', 1, 'mano:der');
   comprobar('con el saco al hombro se puede llevar una cesta a la espalda', inv4.ponerse('mano:der').ok && inv4.coger('setas', 4, 'espalda/0').ok);
   // quitarse la mochila con lo que lleva dentro: nada se pierde
@@ -272,10 +273,12 @@ console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
   const invs = new Inventarios(), reg = new RegistroAcciones();
   const a1 = ejecutarInventario(invs, reg, { autor: 'jugador:ana', tipo: 'coger', objeto: 'odre', cantidad: 1, a: 'mano:der' });
   const a2 = ejecutarInventario(invs, reg, { autor: 'jugador:ana', tipo: 'ponerse', de: 'mano:der' });
-  const a3 = ejecutarInventario(invs, reg, { autor: 'jugador:ana', tipo: 'coger', objeto: 'agua', cantidad: 10, a: 'hombro/0' });
-  comprobar('el odre se coge, se pone y se llena con acciones con autor', a1.ok && a2.ok && a3.ok && invs.de('jugador:ana').cuantos('agua') === 10);
+  comprobar('el odre se coge y se lleva al hombro con acciones con autor', a1.ok && a2.ok && invs.de('jugador:ana').lugares.hombro.tipo === 'odre');
   const otra = Inventarios.importar(JSON.parse(JSON.stringify(invs.exportar())));
-  comprobar('el equipo de carga se guarda y se carga con lo que lleva', otra.de('jugador:ana').lugares.hombro.tipo === 'odre' && otra.de('jugador:ana').cuantos('agua') === 10);
+  comprobar('lo del hombro se guarda y se carga', otra.de('jugador:ana').lugares.hombro.tipo === 'odre');
+  // un guardado de antes con agua en el odre: el agua no se pierde (queda a tus pies)
+  const viejoOdre = Inventarios.importar({ version: 1, jugadores: { b: { lugares: { hombro: { tipo: 'odre', n: 1, dentro: [{ tipo: 'agua', n: 10 }] } }, apartado: [] } } }).de('b');
+  comprobar('un odre guardado con agua: el odre al hombro y el agua a tus pies', viejoOdre.lugares.hombro.tipo === 'odre' && viejoOdre.apartado.some(c => c.tipo === 'agua' && c.n === 10));
 }
 
 // ---------------- Ralentización por carga (GDD: con poca carga no se nota; al máximo en todo, el 80%) ----------------
@@ -300,10 +303,10 @@ console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
     ...[2, 3, 4, 5].map(i => t.coger('lena', 3, 'espalda/' + i).ok),
     t.coger('cinto_anillas', 1, 'mano:der').ok, t.ponerse('mano:der').ok,
     t.coger('piedra', 3, 'cintura/0').ok, t.coger('rama', 3, 'cintura/1').ok, t.coger('silex', 10, 'cintura/2').ok, t.coger('resina', 10, 'cintura/3').ok,
-    t.coger('saco', 1, 'mano:der').ok, t.ponerse('mano:der').ok, t.coger('grano', 10, 'hombro/0').ok, t.coger('harina', 10, 'hombro/1').ok,
+    t.coger('saco', 1, 'mano:der').ok, t.ponerse('mano:der').ok,
     t.coger('piedra', 3, 'mano:der').ok, t.coger('rama', 3, 'mano:izq').ok,
   ];
-  comprobar('se puede llenar todo (leñero, cinto, saco y manos)', ok.every(x => x), ok.map(Number).join(''));
+  comprobar('se puede llenar todo (leñero, cinto, saco al hombro y manos)', ok.every(x => x), ok.map(Number).join(''));
   comprobar('cargado al máximo en todo: el 80%', casi(t.lleno().fraccion, 1) && casi(vel(t), 0.8), String(vel(t)));
   // a medias: la mitad de lleno se nota poco (el 95%), no la mitad de la reducción
   t.soltar('mano:der'); t.soltar('mano:izq'); t.soltar('hombro');

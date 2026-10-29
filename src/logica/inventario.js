@@ -4,7 +4,8 @@
 //   mano:der, mano:izq   — lo pequeño (P) y lo mediano (M) en una mano; lo grande (G) ocupa las dos.
 //   espalda              — vacía o con una mochila o bastidor, que tiene sus huecos interiores.
 //   cintura              — el cinturón; sin cinturón no hay huecos de cintura (los define el que lleves).
-//   hombro               — un saco, una bandolera o un odre.
+//   hombro               — un saco, una bandolera o un odre: se llevan al hombro y se ven, sin huecos que se abran
+//                          (valravnx, 29 oct: lo de las manos y lo del hombro no es equipo del panel).
 //   ropa:<capa>          — la ropa por capas (interior, piernas, abrigo, exterior, sobre, cabeza, guantes, pies).
 // Dentro de un contenedor puesto, cada hueco se nombra con su número: 'cintura/0', 'espalda/3'. Si en ese hueco
 // hay otro contenedor, se sigue: 'cintura/0/1'.
@@ -28,7 +29,8 @@
 //  - Porta-piedras: 4 huecos medianos para piedras (12). El bloque de piedra en bruto es enorme: rastra o carro.
 //  - Caja de herramientas de espalda: 4 huecos medianos, solo herramientas. Carcaj: 2 huecos de flechas o virotes (20).
 //  - Cesto de pescador: 4 huecos medianos para pescado y aparejos (anzuelos). Correa del escudo: el escudo y nada más.
-//  - Hombro: saco con 2 huecos medianos (grano, harina, arena); bandolera con 3 pequeños (mixta); odre con 1 de agua.
+//  - Hombro: el saco, la bandolera y el odre no tienen huecos (valravnx, 29 oct): se llevan al hombro como lo de las
+//    manos, y cuentan como carga entera del hombro.
 //  - Tamaño de lo que se lleva puesto: mochilas y bastidores G (en las manos ocupan las dos), cinturones M (el cordel P),
 //    saco y odre M, bandolera P. La espada y el escudo son M (se llevan en una mano).
 //  - Los añadidos al cinturón (bolsas, vainas, ganchos) llegan con la fabricación.
@@ -98,9 +100,9 @@ export const CATALOGO = {
   cesto_pescador: { nombre: 'Cesto de pescador', tam: 'G', lugar: 'espalda', huecos: hs('M', 4), admite: ['pescado', 'anzuelo'] },
   correa_escudo: { nombre: 'Escudo a la espalda (correa)', tam: 'G', lugar: 'espalda', huecos: hs('M', 1), admite: ['escudo'] },
   // al hombro
-  saco: { nombre: 'Saco', tam: 'M', lugar: 'hombro', huecos: hs('M', 2), admite: ['grano', 'harina', 'arena'] },
-  bandolera: { nombre: 'Bandolera', tam: 'P', lugar: 'hombro', huecos: hs('P', 3) },
-  odre: { nombre: 'Odre', tam: 'M', lugar: 'hombro', huecos: hs('P', 1), admite: ['agua'] },
+  saco: { nombre: 'Saco', tam: 'M', lugar: 'hombro' },
+  bandolera: { nombre: 'Bandolera', tam: 'P', lugar: 'hombro' },
+  odre: { nombre: 'Odre', tam: 'M', lugar: 'hombro' },
   // ropa: sale de los datos de cada prenda (src/logica/prendas.js), con su capa. Toda es mediana.
   ...Object.fromEntries(Object.entries(PRENDAS).map(([k, p]) => [k, { nombre: p.nombre, tam: 'M', capa: p.capa }])),
 };
@@ -109,7 +111,7 @@ export const CATALOGO = {
 for (const d of Object.values(CATALOGO)) if (d.admiteHerramientas) d.admite = Object.keys(CATALOGO).filter(k => CATALOGO[k].herramienta);
 
 // Equipo de carga por su lugar: los cinturones, lo de la espalda y lo del hombro del catálogo.
-export const EQUIPO_CARGA = lugar => Object.keys(CATALOGO).filter(k => CATALOGO[k].lugar === lugar && CATALOGO[k].huecos);
+export const EQUIPO_CARGA = lugar => Object.keys(CATALOGO).filter(k => CATALOGO[k].lugar === lugar && (CATALOGO[k].huecos || lugar === 'hombro'));
 
 // Lo que admite un contenedor y cuánto: por cada tipo que admite, cuántas unidades caben como mucho (llenando con
 // eso los huecos que lo admiten por nombre). mixto: hay algún hueco que admite cualquier cosa de su tamaño o menor.
@@ -352,7 +354,8 @@ export class Inventario {
     const lugares = { manos: Math.min(1, enManos / 2) };
     for (const l of LUGARES_CARGA) {
       const c = this.lugares[l], d = this.def(c);
-      lugares[l] = d && d.huecos && d.huecos.length ? d.huecos.reduce((s, h, i) => s + hueco(c.dentro && c.dentro[i]), 0) / d.huecos.length : 0;
+      lugares[l] = d && d.huecos && d.huecos.length ? d.huecos.reduce((s, h, i) => s + hueco(c.dentro && c.dentro[i]), 0) / d.huecos.length
+        : d && l === 'hombro' ? 1 : 0;   // lo del hombro no tiene huecos: llevarlo es llevar el hombro lleno
     }
     const v = Object.values(lugares);
     return { fraccion: v.reduce((a, b) => a + b, 0) / v.length, lugares };

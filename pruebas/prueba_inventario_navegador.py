@@ -1,8 +1,11 @@
 # Prueba en navegador real (Chromium sin pantalla) del panel de inventario (hito 2) en la construcción.
-# En PC se arrastra del arcón de pruebas a la silueta y a los huecos; en el móvil se toca y el panel va a pantalla
-# completa. Comprueba lo que queda en la lógica (inventario con autor) y saca capturas.
+# El inventario es el equipo (valravnx, 29 oct): tu personaje de verdad en el centro y los cuadros del equipo a los
+# lados, sin manos ni hombro; lo de las manos y el hombro se coge del arcón (que hace de mundo), se ve abajo con
+# «Soltar» y el personaje lleva puesto lo que dice el inventario. En PC se arrastra; en el móvil se toca y el panel va
+# a pantalla completa. Comprueba lo que queda en la lógica (inventario con autor) y saca capturas.
 # Uso: python3 pruebas/prueba_inventario_navegador.py dist/kinhold_hito1.html <carpeta>
-# MUTAR=1 quita a propósito los huecos del cinturón en la página: tiene que fallar.
+# MUTAR=1 quita a propósito los huecos del cinturón en la página: tiene que fallar. MUTAR_RETRATO=1 impide dibujar el
+# retrato (tiene que fallar la del retrato).
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
@@ -36,6 +39,7 @@ def abrir_pagina(nav, **ctx):
     pg.wait_for_function('window.__kinhold !== undefined', timeout=60000)
     pg.evaluate(f'localStorage.clear(); {K}.reiniciar()')
     if os.environ.get('MUTAR'): pg.evaluate(f'{K}.inventario.huecosCintura = () => []')
+    if os.environ.get('MUTAR_RETRATO'): pg.evaluate(f'{K}.renderer.getPixelRatio = () => 100')
     pg.wait_for_timeout(500)
     return pg, errores
 
@@ -51,10 +55,16 @@ with sync_playwright() as p:
     # ---------- PC: se arrastra ----------
     print('PC: arrastrar del arcón a la silueta y a los huecos')
     pg, errores = abrir_pagina(nav, viewport={'width': 1280, 'height': 800})
+    pg.wait_for_function(f'{K}.jugador.mh', timeout=120000)
     pg.click('#btnInventario')
     comprobar('el botón abre el panel', pg.is_visible('#panelInventario'))
     n = pg.locator('#panelInventario .inv-sitio').count()
-    comprobar('13 cuadros en la silueta (manos, espalda, cintura, hombro y 8 capas)', n == 13, str(n))
+    comprobar('10 cuadros de equipo (espalda, cintura y 8 capas de ropa)', n == 10, str(n))
+    comprobar('ni manos ni hombro en el panel (se cogen del mundo y se ven en el personaje)', pg.locator(R('mano:der')).count() + pg.locator(R('mano:izq')).count() + pg.locator(R('hombro')).count() == 0)
+    pg.wait_for_timeout(1500)
+    pix = pg.evaluate('''(() => { const c = document.querySelector('#panelInventario .inv-retrato'); if (!c.width) return 0;
+      const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 200) n++; return n / (c.width * c.height); })()''')
+    comprobar('el retrato es tu personaje dibujado (un 10–60 % del cuadro)', 0.1 < pix < 0.6, f'{pix:.2f}')
     comprobar('empieza con camisa y pantalón de lino', lugar(pg, 'ropa:interior') == 'camisa_lino:1' and lugar(pg, 'ropa:piernas') == 'pantalon_lino:1')
     comprobar('sin cinturón no hay cuadros de cintura', pg.locator('#panelInventario .inv-cinto [data-ruta]').count() == 0)
     pg.screenshot(path=f'{SALIDA}/01_pc_inventario_inicial.png')
@@ -77,13 +87,16 @@ with sync_playwright() as p:
     pg.drag_and_drop(O('piedra'), R('espalda/3'))
     comprobar('la piedra no entra en el leñero', lugar(pg, 'espalda/3') is None)
     pg.drag_and_drop(O('tunica_lana'), R('ropa:abrigo'))
-    pg.drag_and_drop(O('espada'), R('mano:der'))
-    pg.drag_and_drop(O('saco'), R('hombro'))
-    comprobar('túnica, espada en la mano y saco al hombro', lugar(pg, 'ropa:abrigo') == 'tunica_lana:1' and lugar(pg, 'mano:der') == 'espada:1' and lugar(pg, 'hombro') == 'saco:1')
-    pg.drag_and_drop(R('cintura/1'), R('mano:izq'))
-    comprobar('arrastrar del cinto a la mano mueve el cuchillo', lugar(pg, 'mano:izq') == 'cuchillo:1' and lugar(pg, 'cintura/1') is None)
-    pg.drag_and_drop(R('mano:izq'), '#panelInventario .inv-arcon h3')
-    comprobar('arrastrarlo al arcón lo devuelve', lugar(pg, 'mano:izq') is None)
+    capas = pg.evaluate(f'{K}.jugador.mh.capas')
+    comprobar('el personaje se pone la túnica que dice el inventario', 'tunica' in (capas or []), str(capas))
+    pg.click(O('hacha_mano')); pg.click('#panelInventario .inv-manos')
+    pg.click(O('saco')); pg.click('#panelInventario .inv-ponerse')
+    comprobar('del arcón: el hacha con las manos y el saco al hombro', lugar(pg, 'mano:der') == 'hacha_mano:1' and lugar(pg, 'hombro') == 'saco:1', f"{lugar(pg, 'mano:der')} · {lugar(pg, 'hombro')}")
+    comprobar('el hacha se ve en la mano del personaje', pg.evaluate(f'!!({K}.jugador.hacha && {K}.jugador.hachaEnMano)'))
+    llevas = pg.inner_text('#llevas')
+    comprobar('abajo se ve lo que llevas en la mano y al hombro', pg.is_visible('#llevas') and 'Hacha de mano' in llevas and 'Saco' in llevas, llevas)
+    pg.drag_and_drop(R('cintura/1'), '#panelInventario .inv-arcon h3')
+    comprobar('arrastrar el cuchillo del cinto al arcón lo deja', lugar(pg, 'cintura/1') is None)
     carga = pg.inner_text('#panelInventario .inv-carga')
     comprobar('se ve la carga y la velocidad', 'Carga:' in carga and 'velocidad' in carga, carga)
     reg = pg.evaluate(f"{K}.registroAcciones.entradas.filter(e => ['coger','mover','soltar','ponerse'].includes(e.tipo)).length")
@@ -91,11 +104,18 @@ with sync_playwright() as p:
     pg.click(R('espalda'))
     pg.screenshot(path=f'{SALIDA}/02_pc_inventario_lleno.png')
     pg.click('#panelInventario .inv-dejar')
+    pg.keyboard.press('i')
+    pg.click('#llevas [data-soltar="mano:der"]')
+    comprobar('«Soltar» deja lo de la mano (y el hacha ya no se ve)', lugar(pg, 'mano:der') is None and not pg.evaluate(f'{K}.jugador.hachaEnMano'))
+    pg.click('#llevas [data-soltar="hombro"]')
+    comprobar('y lo del hombro; sin nada, la línea se esconde', lugar(pg, 'hombro') is None and not pg.is_visible('#llevas'))
     # se guarda: al recargar sigue lo mismo
     pg.reload(); pg.wait_for_function('window.__kinhold !== undefined', timeout=60000)
     comprobar('lo que llevas se guarda al recargar', lugar(pg, 'cintura') == 'cinto_cuero:1' and lugar(pg, 'espalda/2') == 'lena:3')
     pg.keyboard.press('i')
     comprobar('la tecla I abre el panel', pg.is_visible('#panelInventario'))
+    capas = pg.evaluate(f'{K}.jugador.mh && {K}.jugador.mh.capas')
+    comprobar('al recargar, el personaje lleva otra vez la túnica', 'tunica' in (capas or []), str(capas))
     pg.keyboard.press('i')
     comprobar('y lo cierra', not pg.is_visible('#panelInventario'))
     pg.screenshot(path=f'{SALIDA}/03_pc_juego_con_boton.png')
@@ -113,8 +133,8 @@ with sync_playwright() as p:
     comprobar('la cuerda trenzada da 2 cuadros de cintura', nc == 2, str(nc))
     mv.tap(O('bayas')); mv.tap(R('cintura/0'))
     comprobar('bayas en el primer hueco de la cuerda (pila de 10)', lugar(mv, 'cintura/0') == 'bayas:10', str(lugar(mv, 'cintura/0')))
-    mv.tap(O('tronco_corto')); mv.tap(R('mano:der'))
-    comprobar('el tronco corto (grande) va a las dos manos', lugar(mv, 'mano:der') == 'tronco_corto:1' and mv.locator(R('mano:izq') + '.bloqueada').count() == 1)
+    mv.tap(O('tronco_corto')); mv.locator('#panelInventario .inv-manos').scroll_into_view_if_needed(); mv.tap('#panelInventario .inv-manos')
+    comprobar('el tronco corto (grande) se coge con las dos manos', lugar(mv, 'mano:der') == 'tronco_corto:1' and mv.evaluate(f"{K}.inventario.manoBloqueada('mano:izq')"))
     mv.tap(O('zurron')); mv.locator('#panelInventario .inv-ponerse').scroll_into_view_if_needed(); mv.tap('#panelInventario .inv-ponerse')
     comprobar('«Ponérselo» pone el zurrón a la espalda', lugar(mv, 'espalda') == 'zurron:1')
     mv.evaluate("document.querySelector('#panelInventario').scrollTop = 0")
@@ -128,6 +148,9 @@ with sync_playwright() as p:
     mv.evaluate("document.querySelector('#panelInventario').scrollTop = 0")
     mv.tap('#panelInventario .inv-cerrar')
     comprobar('el ✕ cierra el panel', not mv.is_visible('#panelInventario'))
+    caja = mv.locator('#llevas').bounding_box()
+    comprobar('en el móvil, lo que llevas se ve abajo sin salirse de la pantalla', caja and caja['x'] >= 0 and caja['x'] + caja['width'] <= 390 and 'Tronco corto' in mv.inner_text('#llevas'), str(caja))
+    mv.screenshot(path=f'{SALIDA}/06_movil_juego_llevas.png')
     comprobar('sin errores en la página (móvil)', not errores, '; '.join(errores[:3]))
     nav.close()
 
