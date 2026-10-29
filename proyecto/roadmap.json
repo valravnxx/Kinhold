@@ -798,9 +798,9 @@
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct): el panel de inventario es el equipo; lo que se lleva en las manos o al hombro no sale en el panel, se coge y se ve en el personaje; fuera el dibujo retorcido de la silueta",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T13:08:10+01:00",
-     "rama": "trabajo/20261029-1310-inventario"
+     "fin": "2026-10-29T14:40:08+01:00"
     }
    ]
   },
@@ -1438,6 +1438,13 @@
      "archivo": "jugar/demo/v36.html",
      "capturas": "capturas/construccion-v35",
      "notas": "En «Construir», recoger ramas, piedra, sílex y fibra (construcción v35)"
+    },
+    {
+     "v": "v37",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v37.html",
+     "capturas": "capturas/demo-v37",
+     "notas": "El panel de inventario es el equipo (valravnx, 29 oct): tu personaje de verdad, vestido con lo que llevas, y a los lados la ropa, la cintura y la espalda; sin cuadros de manos ni de hombro ni el dibujo retorcido. Lo de las manos y el hombro se coge del mundo (el arcón de pruebas) y abajo sale lo que llevas, con «Soltar»; el hacha de mano se ve en la mano."
     }
    ]
   },
@@ -1676,6 +1683,13 @@
      "archivo": "jugar/construccion/v35.html",
      "capturas": "capturas/construccion-v35",
      "notas": "Recoger del suelo y de las plantas (N0): ramas en el bosque, piedra suelta en la ladera, sílex en un afloramiento de caliza y fibra de ortigas y hierba larga en el claro, con Usar; va al inventario por huecos y vuelve a salir pasado su tiempo"
+    },
+    {
+     "v": "v36",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/construccion/v36.html",
+     "capturas": "capturas/construccion-v36",
+     "notas": "El panel de inventario es el equipo (valravnx, 29 oct): tu personaje de verdad, vestido con lo que llevas, y a los lados la ropa, la cintura y la espalda; sin cuadros de manos ni de hombro ni el dibujo retorcido. Lo de las manos y el hombro se coge del mundo (el arcón de pruebas) y abajo sale lo que llevas, con «Soltar»; el hacha de mano se ve en la mano."
     }
    ]
   },
