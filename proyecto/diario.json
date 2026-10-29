@@ -2246,5 +2246,19 @@
   "pruebas": "En la nube: lógica (con la prueba nueva de los carriles, que falla a propósito con MUTAR_CARRIL) y la web (con el documento nuevo en los tres idiomas) correctas",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T15:24:53+01:00",
+  "fin": "2026-10-29T15:26:03+01:00",
+  "titulo": "Whitholm, mundo de los playtests",
+  "hito": "mundo",
+  "hecho": [
+   "Decidido por valravnx: mientras se prueba con otra gente, se juega solo en Whitholm; el resto del mundo existe tras un mar que no se cruza a nado, y se abrirá si hay jugadores o cuando lleguen los barcos",
+   "Medido en el mapa: Whitholm tiene unos 2.070 km² (58 × 60 km), 7,7 °C de media, caducifolio 38 %, prado 32 %, taiga 16 % y mixto 10 %, caliza 84 % y arenisca 16 %, ríos medianos y arroyos, y 16 vetas pequeñas de hierro y 16 de carbón, sin grandes vetas",
+   "En el GDD (apartado 4, en los tres idiomas) y en el roadmap: la demo aparece en Whitholm con todos en la misma comarca, las comarcas de la isla van primero, y los recursos de la isla quedan para hablarlos con valravnx"
+  ],
+  "pruebas": "La web en la nube (con el GDD cambiado en los tres idiomas)",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
