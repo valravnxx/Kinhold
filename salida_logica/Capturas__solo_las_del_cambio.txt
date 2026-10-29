@@ -1,0 +1,6 @@
+  OK   sin decir cuáles, no publica nada — 0 copiadas
+  OK   más de 12, no publica nada — 0 copiadas
+  OK   con nombres y patrones, solo esas (en JPG) — 03_vista.jpg 10_vista.jpg 11_vista.jpg 12_vista.jpg 13_vista.jpg 14_vista.jpg 15_vista.jpg 16_vista.jpg 17_vista.jpg 18_vista.jpg 19_vista.jpg
+  OK   un nombre que no está, falla
+
+4 correctas, 0 fallos
