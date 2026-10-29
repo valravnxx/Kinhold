@@ -1124,7 +1124,7 @@ function segmentosBloqueo(k) {
       }
       if (p.k !== k && !(p.hueco === 'a' && k === 1)) continue;
       if (p.obra) continue; // una obra es solo un armazón: no corta el paso
-      if (p.hueco === 'a') {
+      if (p.hueco === 'a' && !window.__sinChoqueAdarve) {
         // adarve: por debajo de su piso no se pasa (está a 1,5 m); encima, la empalizada no se salta (los otros
         // lados están abiertos: si sales por ellos, caes)
         const esq = [[p.i, p.j], [p.i + 1, p.j], [p.i + 1, p.j + 1], [p.i, p.j + 1]].map(([a, b]) => localAMundo(c, a * MODULO, b * MODULO));

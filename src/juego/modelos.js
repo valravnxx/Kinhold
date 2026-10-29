@@ -308,7 +308,7 @@ function adarve() {
   for (let t = 0; t < n; t++) {
     const z = z0 + w * (t + 0.5), y = top - 0.025 - ruido(t * 2.1 + 3) * 0.006;
     tablaX(L, S - 0.01, 0.05, w * 0.92, ruido(t * 3.7 + 5) > 0.5 ? 'tabla' : 'madera', 0, y, z, { sinSuelo: true });
-    for (const x of [-0.8, 0, 0.8]) for (const dz of [-0.07, 0.07]) L.add(new THREE.SphereGeometry(0.012, 5, 3), 'hierro', x, top + 0.001, z + dz * w / 0.26, null, { sinSuelo: true });
+    for (const x of [-0.8, 0, 0.8]) for (const dz of [-0.07, 0.07]) L.add(new THREE.SphereGeometry(0.012, 5, 3), 'hierro', x, top - 0.007, z + dz * w / 0.26, null, { sinSuelo: true });
   }
   // tornapuntas: del poste de dentro, a media altura, al larguero de dentro hacia el centro
   for (const sx of [-1, 1]) {

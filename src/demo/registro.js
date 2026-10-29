@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v34 (panel de inventario)';
+export const VERSION_DEMO = 'Demo única · v35 (adarve)';
 export const REGISTRO_DEMO = [
+  'v35: en «Construir», el adarve (4 tablas, 4 clavos y 2 troncos): la pasarela de tablas a 1,5 m por detrás de la empalizada, para asomarse por encima de las puntas. Se sube por una escalera de mano o de tablas puesta delante y girada hacia él, que salen más cortas.',
   'v34: en «Construir», el panel de inventario (botón «Inventario» o tecla I): una silueta con un cuadro por cada lugar del cuerpo y los huecos de lo que llevas, y un arcón de pruebas para coger equipo mientras no haya fabricación. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Es la construcción v33.',
   'v33: en «Construir», chimenea u hogar interior (10 piedras y 4 de barro, 600 kg): va en la planta baja sobre un cimiento de piedra, arrimada a un muro, con el fuego encendido (llamas, luz y humo que sale por encima del tejado). Usar (F) la apaga y la enciende.',
   'v32, arreglo (valravnx, 28 oct: en línea, abrir o cerrar puertas o terminar una obra daba tirones horribles a los dos): al abrir o cerrar una puerta, un portón o una trampilla solo se rehace esa pieza, en la página de quien la usa y en la de los demás; y cada pieza se hace una vez y luego se copia, así que rehacer lo construido (al terminar una obra) baja de unos 200 a unos 40 ms con una casa de dos plantas. Solo cambia el juego: el servidor no.',

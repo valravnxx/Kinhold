@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { modeloPieza, rellenoTejado, mojon, decoracion, P, colgarPolipasto, tornoSuelto, POLIPASTO } from '../src/juego/modelos.js';
 import { PIEZAS, DECORACION, ALTURA, MODULO } from '../src/logica/piezas.js';
-import { HOGAR } from '../src/logica/construccion.js';
+import { HOGAR, ALTO_ADARVE } from '../src/logica/construccion.js';
 
 let ok = 0, mal = 0;
 // MUTAR=1 mete un tablón en el hueco de la puerta: la prueba de huecos tiene que fallar
@@ -281,6 +281,24 @@ console.log('Chimenea con el estilo v5');
   comprobar('Chimenea encendida: dice dónde alumbra el fuego (en el hogar) y de dónde sale el humo (la boca del cañón)', o.userData.fuego && o.userData.fuego.y < 1.2 && o.userData.humo && Math.abs(o.userData.humo.y - 6) < 0.01);
   let tri = 0; o.traverse(m => { if (m.isMesh) tri += (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count) / 3; });
   comprobar('Chimenea: menos de 10 000 triángulos con un cañón de 6 m (tiene que aguantar en el móvil)', tri < 10000, `${Math.round(tri)} triángulos`);
+}
+
+console.log('Adarve y sus escaleras con el estilo v5');
+{
+  // MUTAR_ADARVE=1 sube el piso del adarve 10 cm sobre lo que pisa el jugador: la prueba tiene que fallar
+  const o = modeloPieza('adarve'), b = caja(o);
+  const nombres = []; o.traverse(m => { if (m.isMesh) nombres.push(m.name); });
+  const alto = b.max.y + (process.env.MUTAR_ADARVE ? 0.1 : 0);
+  comprobar('Adarve: con el estilo v5', nombres.length > 0 && nombres.every(x => x.startsWith('estilo_')), nombres.join(' '));
+  comprobar('Adarve: el piso está donde pisa el jugador (ALTO_ADARVE)', Math.abs(alto - ALTO_ADARVE) < 0.01, `arriba=${r3(alto)}`);
+  comprobar('Adarve: los postes llegan a la tierra y todo queda en su casilla, sin tocar la empalizada (+z)', Math.abs(b.min.y) < 0.02 && b.min.x >= -MODULO / 2 - 0.02 && b.max.x <= MODULO / 2 + 0.02 && b.min.z >= -MODULO / 2 - 0.05 && b.max.z <= MODULO / 2 - 0.17, `x de ${r3(b.min.x)} a ${r3(b.max.x)}, z de ${r3(b.min.z)} a ${r3(b.max.z)}, y desde ${r3(b.min.y)}`);
+  let tri = 0; o.traverse(m => { if (m.isMesh) tri += (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count) / 3; });
+  comprobar('Adarve: menos de 6000 triángulos (tiene que aguantar en el móvil)', tri < 6000, `${Math.round(tri)} triángulos`);
+  // las escaleras que suben hacia un adarve son más cortas y llegan a su piso, en el borde de su casilla (+z)
+  const em = caja(modeloPieza('escalera_mano', { forma: 'adarve' })), eml = caja(modeloPieza('escalera_mano'));
+  comprobar('Escalera de mano hacia el adarve: más corta, sobresale de su piso para agarrarse y no se mete en su casilla', em.max.y > ALTO_ADARVE + 0.3 && em.max.y < eml.max.y - 0.5 && em.max.z <= MODULO / 2 + 0.25 && em.min.z > -MODULO / 2, `arriba=${r3(em.max.y)} (larga ${r3(eml.max.y)}), z de ${r3(em.min.z)} a ${r3(em.max.z)}`);
+  const et = caja(modeloPieza('escalera_tabla', { forma: 'adarve' }));
+  comprobar('Escalera de tablas hacia el adarve: llega a su piso, en el borde de su casilla', Math.abs(et.max.y - ALTO_ADARVE) < 0.1 && et.max.z <= MODULO / 2 + 0.15, `arriba=${r3(et.max.y)}, z hasta ${r3(et.max.z)}`);
 }
 
 console.log('Muebles con el estilo v5');
