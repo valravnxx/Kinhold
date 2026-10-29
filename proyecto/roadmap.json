@@ -383,9 +383,10 @@
     },
     {
      "nombre": "Quitar de la web las versiones antiguas cuando ya estén en sus releases: node herramientas/archivar_versiones.mjs quitar, y medir el tamaño de la web después",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T17:02:34+00:00",
-     "rama": "trabajo/20261029-1702-releases"
+     "rama": "trabajo/20261029-1702-releases",
+     "fin": "2026-10-29T18:03:50+00:00"
     },
     {
      "nombre": "Orden en el código antes de unir las partes, sin cambiar nada de lo que se ve: un solo módulo de azar y ruido, la biblioteca de modelos (src/juego/modelos.js) y la elección de personaje (src/demo/eleccion.js) a la escena común, un solo cliente en línea para la construcción y el duelo, y el visor del mapa con los personajes del taller de ahora",

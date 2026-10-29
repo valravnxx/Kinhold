@@ -5,11 +5,5 @@
   "tarea": "Taller: pasar también las 39 animaciones extra (trabajos, arco, espada, bloqueo, vendarse, pasos) al esqueleto de MakeHuman",
   "hito": "arte",
   "rama": "trabajo/20261029-1653"
- },
- "chat:trabajo/20261029-1702-releases": {
-  "inicio": "2026-10-29T17:02:34+00:00",
-  "tarea": "Quitar de la web las versiones antiguas cuando ya estén en sus releases: node herramientas/archivar_versiones.mjs quitar, y medir el tamaño de la web después",
-  "hito": "despejar",
-  "rama": "trabajo/20261029-1702-releases"
  }
 }
