@@ -1,0 +1,53 @@
+Lo que dice el documento de sistemas (apartado 3, N0)
+  OK   ramas caídas: en el bosque, con las manos, 1–3 ramas medianas — bosque
+  OK   piedra suelta: ríos y laderas, 1 piedra mediana
+  OK   sílex: zonas calizas y ríos, 1 nódulo pequeño
+  OK   fibra: ortiga y hierba larga en claros y riberas, se arranca, 2–4 de fibra cruda pequeña
+  OK   vuelven: ramas en días, piedra y sílex en semanas, fibra en una estación (un mes real) — 3 días
+  OK   todo lo que se recoge existe en el catálogo del inventario
+Cada cosa sale donde dice el documento
+  OK   ramas: salen 12 puntos, todos en sus zonas — 12
+  OK   piedra: salen 8 puntos, todos en sus zonas — 8
+  OK   silex: salen 5 puntos, todos en sus zonas — 5
+  OK   ortiga: salen 6 puntos, todos en sus zonas — 6
+  OK   hierba_larga: salen 6 puntos, todos en sus zonas — 6
+  OK   no hay ramas en el claro
+  OK   con la misma semilla, los mismos puntos (para todos igual)
+  OK   con otra semilla, otros sitios
+  OK   no se ponen donde no hay sitio (un tronco, una roca)
+  OK   cada punto tiene su id
+Recoger con autor: va al inventario por huecos
+  OK   se recogen las ramas y van a la mano — [["mano:der",2]]
+  OK   van al inventario del autor y no al de otro
+  OK   queda en el registro con su autor, lo que dio y la hora
+  OK   ya recogido, nadie más lo puede coger — Ya lo han recogido: aún no ha vuelto a salir.
+  OK   el fallo también queda en el registro
+  OK   desde lejos no se recoge — Está demasiado lejos.
+  OK   sin autor, no
+  OK   con datos que no son números, no
+  OK   un punto que no existe, no
+  OK   la fibra de dos plantas se junta en el mismo hueco — 6
+Si no cabe, no se recoge
+  OK   con algo grande en las manos no se puede recoger con las manos — Tienes las dos manos ocupadas.
+  OK   y el punto sigue ahí
+  OK   con las manos llenas y sin cinturón, no cabe — No te cabe: no tienes sitio libre.
+  OK   y nada ha cambiado en el inventario
+  OK   con un cordel de cinturón, el sílex va a su hueco — [["cintura/0",1]]
+  OK   lo que no cabe en un hueco se reparte en otro — [["mano:der",1],["mano:izq",2]]
+  OK   si se da una ruta preferida y cabe, va ahí
+Vuelve a salir pasado su tiempo (tiempo transcurrido)
+  OK   recién recogidas, las ramas no están
+  OK   a los 3 días han vuelto
+  OK   mientras tanto no salen entre los cercanos
+  OK   falta lo que falta
+  OK   la piedra tarda semanas: a los 20 días aún no
+  OK   las ortigas vuelven en una estación (un mes real)
+  OK   la segunda vez da lo suyo (azar fijo por vez)
+  OK   las ramas dan entre 1 y 3, y salen los tres valores — 1,2,3
+Se guarda en el navegador y no se pierde
+  OK   lo recogido sigue agotado al volver
+  OK   con versión
+  OK   lo guardado de un punto que ya no existe se descarta
+  OK   un guardado roto o sin versión se descarta sin romper
+
+45 correctas, 0 fallidas

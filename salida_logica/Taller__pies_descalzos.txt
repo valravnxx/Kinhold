@@ -1,0 +1,21 @@
+Pies descalzos de docs/recursos/personajes/taller-v12
+  OK   mh_hombre.glb: tiene pies (pieza hombre_pies)
+  OK   mh_hombre.glb: los pies se mueven con el esqueleto
+  OK   mh_hombre.glb: los pies son del color de la piel (tinte «piel») — {"tinte":"piel","ref":0.85}
+  OK   mh_hombre.glb: llegan al suelo — abajo a -0.1 cm
+  OK   mh_hombre.glb: suben por encima del tobillo sin pasar de media pierna — 13 cm de alto
+  OK   mh_hombre.glb: los dos pies (a los dos lados) — x de -0.25 a 0.25
+  OK   mh_hombre.glb: van con los huesos del pie y de los dedos — 2430 de 2556 vértices (foot, ball)
+  OK   mh_hombre.glb: tienen detalle (dedos) — 4412 triángulos
+  OK   mh_hombre.glb: los zapatos tapan los pies — pies -0.250,-0.001,-0.049…0.250,0.129,0.209, zapatos -0.259,-0.012,-0.057…0.259,0.115,0.219
+  OK   mh_mujer.glb: tiene pies (pieza mujer_pies)
+  OK   mh_mujer.glb: los pies se mueven con el esqueleto
+  OK   mh_mujer.glb: los pies son del color de la piel (tinte «piel») — {"tinte":"piel","ref":0.85}
+  OK   mh_mujer.glb: llegan al suelo — abajo a -0.1 cm
+  OK   mh_mujer.glb: suben por encima del tobillo sin pasar de media pierna — 16 cm de alto
+  OK   mh_mujer.glb: los dos pies (a los dos lados) — x de -0.21 a 0.21
+  OK   mh_mujer.glb: van con los huesos del pie y de los dedos — 2430 de 2598 vértices (foot, ball)
+  OK   mh_mujer.glb: tienen detalle (dedos) — 4488 triángulos
+  OK   mh_mujer.glb: los zapatos tapan los pies — pies -0.207,-0.001,-0.013…0.207,0.163,0.186, zapatos -0.216,-0.012,-0.025…0.216,0.114,0.197
+
+18 correctas, 0 fallos
