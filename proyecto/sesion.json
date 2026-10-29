@@ -1,16 +1,15 @@
 {
  "A": {
-  "inicio": "2026-10-28T21:20:50+00:00",
-  "tarea": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
-  "hito": "arte",
-  "rama": "trabajo/20261028-2120"
+  "inicio": "2026-10-29T01:21:05+00:00",
+  "tarea": "Recoger del suelo y de las plantas lo que pide el nivel N0 (documento de sistemas, apartado 3): ramas caídas, piedra suelta y sílex con las manos, y fibra arrancada de ortigas y hierba larga; cada cosa sale donde dice el documento, da lo que dice, va al inventario por huecos y vuelve a salir pasado su tiempo, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
+  "hito": "crafting",
+  "rama": "trabajo/20261029-0120"
  },
- "B": null,
- "chat:trabajo/20261028-2100-tirones": {
-  "inicio": "2026-10-28T20:58:47+01:00",
-  "tarea": "Arreglo (valravnx, 28 oct): en línea, abrir o cerrar una puerta o terminar una obra da tirones horribles a los dos jugadores; que esas acciones no rehagan más de lo que cambia",
-  "hito": "prueba-online",
-  "rama": "trabajo/20261028-2100-tirones"
+ "B": {
+  "inicio": "2026-10-29T00:51:30+00:00",
+  "tarea": "Panel de inventario en la demo: silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro y capas del cuerpo); al tocar un cuadro con contenedor se abren sus huecos; sin cinturón no hay cuadros de cintura. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Mientras no haya fabricación (hito 3), el equipo se coge de un arcón de pruebas, como el botón de rellenar materiales. Capturas en PC y móvil",
+  "hito": "equipo",
+  "rama": "trabajo/20261029-0051"
  },
  "chat:trabajo/20261028-2155-saltos": {
   "inicio": "2026-10-28T21:54:37+01:00",

@@ -199,6 +199,26 @@ function pareja(opc = {}) {
   comprobar('el rival es el más cercano en pie de la liza', rivalCercano(yo, lista).autor === 'y');
 }
 
+// Curarse en línea: intención con el autor de la conexión, la cura la lleva el servidor y la copia la recibe
+{
+  const c = pareja();
+  const La = c.luchadores['jugador:a'];
+  La.recibirHerida('torso', 0.5, 'corte');
+  comprobar('intención de curar mal formada: no vale', !validarIntencion({ tipo: 'combate', que: 'curar', herida: 0, metodo: 'constructor' }) && !validarIntencion({ tipo: 'combate', que: 'curar', herida: -1, metodo: 'vendar' }) && !validarIntencion({ tipo: 'combate', que: 'curar', herida: '0', metodo: 'vendar' }));
+  comprobar('no se cura una herida que no existe', !c.intencion('jugador:b', { tipo: 'combate', que: 'curar', herida: 0, metodo: 'vendar' }).ok);
+  comprobar('el jugador empieza a vendarse', c.intencion('jugador:a', { tipo: 'combate', que: 'curar', herida: 0, metodo: 'vendar' }).ok && La.accion === 'curando');
+  c.cambiados();
+  c.avanzar(4.2);
+  const ev = c.sacarEventos(), fs = c.cambiados(), fa = fs.find(f => f.autor === 'jugador:a');
+  comprobar('el servidor reparte la cura terminada', ev.some(e => e.tipo === 'curado' && e.autor === 'jugador:a' && e.metodo === 'vendar'));
+  comprobar('la foto lleva la herida vendada y el botiquín', fa && fa.lista[0][4] === 'v' && fa.botiquin.vendas === 2, fa ? JSON.stringify(fa.lista) : 'sin foto');
+  const copia = new Luchador();
+  aplicarFoto(copia, fa, { propio: true });
+  comprobar('la copia del cliente ve la venda', copia.heridas[0].vendada && copia.botiquin.vendas === 2);
+  c.intencion('jugador:a', { tipo: 'combate', que: 'curar', herida: 0, metodo: 'coser' });
+  comprobar('dejar la cura a medias', c.intencion('jugador:a', { tipo: 'combate', que: 'dejarCura' }).ok && La.accion === 'libre' && !La.heridas[0].cosida);
+}
+
 // ---------------- 2. El servidor, con dos clientes y lag ----------------
 let ruta = join(raiz, 'servidor/servidor.mjs'), copia = null;
 if (MUTAR) {

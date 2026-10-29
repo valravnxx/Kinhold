@@ -2027,5 +2027,57 @@
   "pruebas": "Batería completa correcta (seguida); tras unir main, servidor, en línea, combate en el servidor, idiomas y navegador de en línea y duelo en línea otra vez. No comprobado: fotogramas en un móvil de verdad",
   "capturas": "capturas/mapa-v11",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T14:53:19+00:00",
+  "fin": "2026-10-28T21:54:09+00:00",
+  "titulo": "Hito duelo: curación de heridas (combate v16)",
+  "hito": "duelo",
+  "hecho": [
+   "Curación en la lógica pura, como dice el GDD con la tabla del análisis: vendar, coser, cauterizar, entablillar y emplasto de hierbas, cada una para su tipo de herida, con su tiempo y su material",
+   "En pleno combate se puede, pero lento y quedando vendido: mientras curas no atacas ni paras y vas a un cuarto de la velocidad; si te hieren o echas a correr, la cura se pierde sin gastar material",
+   "Descanso: las heridas que ya no sangran bajan de grado con el tiempo (antes con emplasto) y la sangre se recupera despacio; valores provisionales en el registro de decisiones",
+   "Curarse es una acción con autor que queda en el registro, y en línea una intención más que resuelve el servidor (también dejar la cura a medias)",
+   "En el duelo: tocar el aviso de una herida enseña qué se le puede hacer y cuánto material queda; la tecla C y el botón Curar tratan la más urgente",
+   "Las heridas tratadas se ven en el personaje: venda de lino enrollada al grosor del cuerpo, tablillas, puntos más oscuros o quemadura",
+   "Arreglo: los avisos de la derecha se rehacían cada fotograma mientras sangrabas y costaba tocarlos"
+  ],
+  "pruebas": "Batería completa una vez (todo correcto salvo dos fallos sueltos que no tocan el combate: la ráfaga de prueba_conexiones, ya corregida en main, y una vez jugar en línea); tras unir main tres veces, otra vez las de node, combate, duelo en línea, jugar en línea y demo: correctas. Lógica de combate 105/105 con 25 nuevas (MUTAR=1 rompe la cura y 4 fallan); combate en el servidor 62/62 con 7 nuevas; navegador del combate con 12 comprobaciones nuevas en PC y móvil. Capturas de cerca de la venda y las tablillas miradas. Falla a veces: jugar en línea («el móvil ve el mojón de PC», espera de 5 s; pasa sola y en main), y duelo en línea si la herida al azar es muy grave en el torso (se desangra durante la reconexión). Hizo falta instalar caddy para prueba_nube. No comprobado: la venda del muslo asoma un poco por la falda de la túnica en guardia; el rival de la máquina no se cura.",
+  "capturas": "capturas/combate-v16",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T20:58:47+01:00",
+  "fin": "2026-10-29T01:17:37+01:00",
+  "titulo": "En línea sin tirones al abrir puertas y terminar obras",
+  "hito": "prueba-online",
+  "hecho": [
+   "La causa: con cada puerta que se abría o cerraba y con cada obra terminada, el juego de los dos rehacía todo lo construido desde cero. Medido con una casa de dos plantas: unos 200 ms cada vez (en el móvil, más). El servidor apenas hace nada por acción.",
+   "Al abrir o cerrar una puerta, un portón, una contraventana o una trampilla se rehace solo esa pieza, en quien la usa y en los demás.",
+   "Cada pieza se hace una vez y luego se copia compartiendo geometría (la misma pieza en el mismo sitio sale siempre igual): rehacer lo construido pasa de unos 200-400 ms a unos 25-40 ms en las pruebas.",
+   "Pruebas nuevas: abrir una puerta rehace solo esa pieza; en línea, un portillo que abre uno se rehace solo esa pieza en los dos y se ve abierto en el otro; rehacerlo todo no hace modelos nuevos y tarda menos de la mitad. Rotas a propósito, fallan. Publicada la alpha (demo única) v32, que trae también la curación de heridas del combate v16."
+  ],
+  "pruebas": "Construcción en el navegador (PC y móvil) 136 correctas; construir en línea, duelo en línea y la alpha en el navegador correctos; lógica 203/203, modelos 159/159, combate 105/105, servidor 18/18, combate del servidor 64/64, en línea 21/21, conexiones 34/34, inventario 120/120, mapa 76/76. Los milisegundos son de esta máquina de pruebas (sin tarjeta gráfica); en un PC o un móvil de verdad no están medidos.",
+  "capturas": "capturas/demo-v32",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T21:20:50+00:00",
+  "fin": "2026-10-29T01:28:55+00:00",
+  "titulo": "Arte: más peinados y barbas en el taller (personaje v18, carril A)",
+  "hito": "arte",
+  "hecho": [
+   "Peinados nuevos: melena hasta los hombros, coleta atada en la nuca y dos trenzas, para los dos cuerpos. La mujer puede quitarse la cofia: lleva también el pelo corto y las orejas aparte.",
+   "La melena es una cortina de pelo que cae del cráneo por fuera del pelo corto y se apoya en el cuello y los hombros (nunca se mete hacia dentro al bajar); la coleta y las trenzas son tubos que bajan por la espalda sin tocarla. Textura de mechones con puntas desiguales, en gris con el color del pelo aparte; pesos de la cabeza arriba, del cuello en medio y de la espalda abajo.",
+   "Barbas nuevas del hombre: barba larga (la piel de la barba despegada y estirada bajo el mentón, con la corta pintada debajo) y perilla pintada.",
+   "Arreglada la claridad de la barbilla que vio valravnx: la barba pintada ya no se aclara bajo el mentón, baja algo más por delante del cuello.",
+   "Lo que se ve con cada peinado, barba y tocado sale de una función de la lógica pura (piezasCabeza en src/logica/aspecto.js); el servidor valida los peinados nuevos con la misma lista.",
+   "Personajes nuevos en recursos/personajes/taller-v10/ (unos 2,9 MB el hombre y 3,1 MB la mujer, antes 2,6 y 2,7); la construcción, el duelo y la demo ya apuntan a ellos y los recogerán en su próxima versión.",
+   "Fotos de cerca de cada peinado y barba en el taller (FOTOS=peinados) y personaje v18 publicado.",
+   "Provisional: bajo la capucha o la toca no se ve el pelo largo; con la cota, la sobreveste o la capa, las puntas del pelo largo pueden meterse en la tela de los hombros (en la túnica se ve bien). Las cejas de la mujer salen a trozos (ya pasaba antes)."
+  ],
+  "pruebas": "Todas (probar_todo.sh) correctas salvo el duelo en línea, que falló una vez por tiempos (la parada) con la máquina cargada y pasó al repetirlo solo. La primera tanda se cortó al reiniciarse la máquina y se repitieron las de navegador. Tras unir main otra vez: las de node, los modelos y jugar en línea, correctas. Pruebas nuevas: piezas de cada peinado y barba en los modelos (falla con la taller-v8 y la v9), lógica de qué se ve (falla con MUTAR=2) y clics en el visor (melena, barba larga, trenzas, perilla y capucha). Capturas en PC y móvil y fotos del taller revisadas. No comprobado: cómo se mueve el pelo largo en todas las animaciones ni en un móvil de verdad.",
+  "capturas": "capturas/personaje-v18",
+  "estado": "ok"
  }
 ]

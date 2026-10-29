@@ -1,12 +1,14 @@
 // Pruebas de la lógica de combate de Kinhold. Con MUTAR=1 se rompen reglas a propósito: deben fallar.
 import * as tactil from '../src/combate/tactil.js';
-import { Luchador, resolverGolpe, crearProyectil, moverProyectil, elevacionPara, IA, azar, T, GUARDIAS, LINEAS, ARMADURAS, ARMAS } from '../src/combate/logica.js';
+import { Luchador, resolverGolpe, crearProyectil, moverProyectil, elevacionPara, IA, azar, T, GUARDIAS, LINEAS, ARMADURAS, ARMAS, TRATAMIENTOS, SANAR } from '../src/combate/logica.js';
+import { RegistroAcciones, ejecutarCombate } from '../src/logica/acciones.js';
 
 if (process.env.MUTAR === '1') {
   T.ventanaPerfecta = 99; T.ventanaMaestro = 0; ARMADURAS.malla.corte = 1.0;
   T.tensionMinima = 0; ARMAS.arco.recarga = 0.1; Luchador.prototype.cancelarTensado = function () {}; // arco roto como antes
   Object.defineProperty(Luchador.prototype, 'corriendo', { get() { return false; }, set() {} });
   Luchador.prototype.paraConEscudo = function () { return false; }; T.factorEscudo = 1; // escudo que no sirve
+  TRATAMIENTOS.vendar.duracion = 0.1; Luchador.prototype.cortarCura = function () {}; // curar al instante y sin riesgo
   globalThis.__mutarTactil = true; // la cámara táctil se trata como antes: cualquier temblor gira y el arco no la mueve
 }
 
@@ -433,6 +435,71 @@ console.log('10. Cámara táctil (un dedo)');
   comprobar('arco con el dedo junto al borde derecho: gira a la derecha (yaw menor)', seguir(385, 390, 0.1) < 0);
   comprobar('arco con el dedo junto al borde izquierdo: gira a la izquierda', seguir(5, 390, 0.1) > 0);
   comprobar('arco: más cerca del borde gira más deprisa, con tope', seguir(390, 390, 1) <= -tactil.GIRO_ARCO_MAX + 1e-9 && Math.abs(seguir(330, 390, 1)) < Math.abs(seguir(380, 390, 1)));
+}
+
+console.log('11. Curación de heridas');
+{
+  const avanzar = (L, s, corre = false) => { const ev = []; for (let t = 0; t < s; t += 0.05) ev.push(...L.actualizar(0.05, corre)); return ev; };
+  // vendar un corte grave: tarda, gasta una venda y baja el sangrado
+  let L = new Luchador();
+  L.recibirHerida('torso', 0.5, 'corte');
+  const antes = L.heridas[0].sangrado, vendas = L.botiquin.vendas;
+  comprobar('vendar empieza la cura', L.curar(0, 'vendar') && L.accion === 'curando');
+  comprobar('mientras curas no atacas ni paras', !L.atacar('alto') && (L.bloquear(true), !L.bloqueando));
+  comprobar('mientras curas apenas te mueves (vendido)', L.velocidad() < 1.2, `v=${r2(L.velocidad())}`);
+  avanzar(L, 2);
+  comprobar('vendar no es instantáneo (a los 2 s aún curando)', L.accion === 'curando' && L.heridas[0].sangrado === antes);
+  const ev = avanzar(L, 2.5);
+  comprobar('a los 4 s la herida está vendada y sangra menos', L.heridas[0].vendada && L.heridas[0].sangrado < antes * 0.5 && ev.some(e => e.tipo === 'curado' && e.metodo === 'vendar'), `${r2(antes)}→${r2(L.heridas[0].sangrado)}`);
+  comprobar('gasta una venda', L.botiquin.vendas === vendas - 1);
+  comprobar('no se venda dos veces', !L.curar(0, 'vendar'));
+  // coser un corte profundo: deja de sangrar
+  comprobar('coser un corte grave', L.curar(0, 'coser'));
+  avanzar(L, 13);
+  comprobar('cosida: ya no sangra', L.heridas[0].cosida && L.heridas[0].sangrado === 0);
+  // te hieren mientras curas: la cura se pierde y no gasta
+  L = new Luchador(); L.recibirHerida('brazoI', 0.5, 'corte');
+  L.curar(0, 'vendar'); avanzar(L, 1); L.recibirHerida('piernaD', 0.2, 'corte');
+  comprobar('si te hieren mientras curas, la cura se pierde sin gastar', L.accion !== 'curando' && !L.heridas[0].vendada && L.botiquin.vendas === 3 && L.cancelado === 'herido');
+  L.cancelado = null; L.curar(0, 'vendar'); avanzar(L, 0.5, true);
+  comprobar('echar a correr corta la cura', L.accion === 'libre' && L.cancelado === 'dejaCura');
+  // cada herida con lo suyo
+  L = new Luchador(); L.recibirHerida('piernaI', 0.6, 'contundente'); L.recibirHerida('cabeza', 0.2, 'corte');
+  comprobar('no se cose un golpe contundente', !L.curar(0, 'coser') && L.motivoNoCurar(0, 'coser') === 'Solo para cortes profundos.');
+  comprobar('no se entablilla un corte', !!L.motivoNoCurar(1, 'entablillar'));
+  const lento = L.factorPiernas();
+  avanzar(L, 1);   // el golpe contundente descoloca un momento
+  comprobar('entablillar empieza', L.curar(0, 'entablillar')); avanzar(L, 8.5);
+  comprobar('entablillar una pierna rota: te mueves mejor', L.heridas[0].entablillada && L.factorPiernas() > lento, `${lento}→${L.factorPiernas()}`);
+  comprobar('cauterizar necesita un fuego cerca', !!L.motivoNoCurar(0, 'cauterizar') && (L.recibirHerida('torso', 0.9, 'corte'), L.motivoNoCurar(2, 'cauterizar') === 'Hace falta un fuego cerca para calentar el hierro.'));
+  L.cercaFuego = true; L.curar(2, 'cauterizar'); avanzar(L, 3.5);
+  comprobar('cauterizar para el sangrado y deja secuela', L.heridas[2].sangrado === 0 && L.heridas[2].secuela);
+  // sin material no hay cura
+  L = new Luchador(); L.recibirHerida('torso', 0.5, 'corte'); L.botiquin.vendas = 0;
+  comprobar('sin vendas no se venda', L.motivoNoCurar(0, 'vendar') === 'No te quedan.');
+  comprobar('método o herida que no existen: no', !L.curar(5, 'vendar') && !L.curar(0, 'constructor') && !L.curar('0', 'coser'));
+  // con el brazo de la espada herido se cura más despacio
+  const sano = new Luchador(), manco = new Luchador();
+  sano.recibirHerida('torso', 0.5, 'corte'); manco.recibirHerida('torso', 0.5, 'corte'); manco.recibirHerida('brazoD', 0.8, 'contundente'); manco.accion = 'libre';
+  sano.curar(0, 'vendar'); manco.curar(0, 'vendar');
+  comprobar('con el brazo herido se tarda más', manco.duracion > sano.duracion * 1.5, `${r2(sano.duracion)} s y ${r2(manco.duracion)} s`);
+  // descanso: una herida que no sangra baja de grado con el tiempo; con emplasto, antes
+  const a = new Luchador(), b = new Luchador();
+  for (const x of [a, b]) { x.recibirHerida('torso', 0.5, 'corte'); x.heridas[0].sangrado = 0; x.sangre = 80; }
+  b.curar(0, 'hierbas'); avanzar(b, 5.5); avanzar(a, 5.5);
+  avanzar(a, SANAR.grave * 0.7); avanzar(b, SANAR.grave * 0.7);
+  comprobar('descansando, con emplasto la herida grave pasa antes a leve', a.heridas[0].gravedad === 'grave' && b.heridas[0].gravedad === 'leve');
+  comprobar('si nada sangra, la sangre se recupera despacio', a.sangre > 80 && a.sangre <= 100, `${r2(a.sangre)}%`);
+  avanzar(b, SANAR.leve / 1.5 + 2);
+  comprobar('la herida leve acaba curándose del todo', b.heridas.length === 0);
+  const c = new Luchador(); c.recibirHerida('torso', 0.8, 'corte'); const s0 = c.heridas[0].gravedad; avanzar(c, 60);
+  comprobar('una herida que sangra no sana sola', c.heridas[0].gravedad === s0 && c.sangre < 100);
+  // pasa por las acciones con autor y queda en el registro
+  const reg = new RegistroAcciones(), ctx = { luchadores: { yo: new Luchador() }, r: azar(3) };
+  ctx.luchadores.yo.recibirHerida('brazoI', 0.5, 'corte');
+  const r1 = ejecutarCombate(ctx, reg, { autor: 'yo', tipo: 'curar', herida: 0, metodo: 'vendar' });
+  const r3 = ejecutarCombate(ctx, reg, { autor: 'nadie', tipo: 'curar', herida: 0, metodo: 'vendar' });
+  comprobar('curarse es una acción con autor y queda en el registro', r1.ok && !r3.ok && reg.entradas.some(e => e.tipo === 'curar' && e.autor === 'yo' && e.ok));
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

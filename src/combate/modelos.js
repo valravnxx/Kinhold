@@ -269,12 +269,24 @@ const COLOR_GRAVEDAD = { leve: [0.07, 0.6], grave: [0.11, 0.85], 'muy grave': [0
 export function pintarHeridas(raiz, heridas) {
   const u = raiz.userData;
   const taller = u.taller && u.taller.estado === 'listo';
+  // si una herida ya pintada ha cambiado (tratada, sanada o curada del todo), se quitan todas y se pintan otra vez
+  const firma = (h) => [h.zona, h.gravedad, h.tipo, h.vendada, h.cosida, h.cauterizada, h.entablillada].join(',');
+  const firmas = heridas.map(firma);
+  const antes = u.firmasHeridas || [];
+  if (u.heridasPintadas > heridas.length || antes.slice(0, u.heridasPintadas).some((f, i) => f !== firmas[i])) {
+    const quitar = [];
+    raiz.traverse(o => { if (o.name === 'herida') quitar.push(o); });
+    for (const o of quitar) { o.parent.remove(o); o.geometry.dispose(); if (o.userData.materialPropio) o.material.dispose(); } // los del muñeco son de la caché
+    u.heridasPintadas = 0;
+  }
+  u.firmasHeridas = firmas;
   for (let n = u.heridasPintadas; n < heridas.length; n++) {
     const h = heridas[n];
     if (taller) { pintarHeridaTaller(u, h, n); continue; }
     const [tam] = COLOR_GRAVEDAD[h.gravedad];
     const zona = u.zonas[h.zona];
-    const m = pieza(new THREE.BoxGeometry(tam, tam * 1.3, 0.02), h.tipo === 'contundente' ? 0x5b3a5e : SANGRE);
+    const m = pieza(new THREE.BoxGeometry(tam, tam * 1.3, 0.02), h.vendada || h.entablillada ? 0xcfc3a8 : h.cauterizada ? 0x3b2418 : h.tipo === 'contundente' ? 0x5b3a5e : SANGRE);
+    m.name = 'herida';
     const desplaz = ((n * 37) % 7 - 3) * 0.02;
     if (h.zona === 'cabeza') m.position.set(desplaz, 0.22, 0.15);
     else if (h.zona === 'torso') m.position.set(desplaz * 2, 1.2 + desplaz, 0.14);

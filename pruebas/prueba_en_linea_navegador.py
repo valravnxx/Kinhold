@@ -19,7 +19,7 @@ MUTAR_FICHA = bool(os.environ.get('MUTAR_FICHA'))   # la página no guarda su fi
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-for c in ['v1', 'taller-v9']:
+for c in ['v1', 'taller-v10']:
     shutil.copytree(os.path.join(RAIZ, f'docs/recursos/personajes/{c}'), f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -169,6 +169,33 @@ try:
         comprobar('y el otro tampoco rehace todo al verla avanzar', rb['todo'] == 0 and rb['pieza'] >= 1, str(rb))
         A.evaluate(f"{K}.estado.obrando = null")  # deja de construir (como al moverse)
         piezasAntes = piezas(A)
+
+        print('Abrir un portillo en línea sin rehacer todo')
+        # valravnx, 28 oct: abrir o cerrar puertas daba tirones horribles a los dos (se rehacía todo lo construido)
+        A.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','cerca_portillo'); {K}.apuntar(-2,3); {K}.colocar(); {K}.cambiarModo('mover')")
+        donde = f"""(() => {{ for (const c of {K}.mundo.construcciones) for (const p of c.piezas.values()) if (p.tipo === 'cerca_portillo') {{
+            const lx = p.d === 0 ? (p.i + 0.5) * 2 : p.i * 2, lz = p.d === 0 ? p.j * 2 : (p.j + 0.5) * 2, co = Math.cos(c.rot), si = Math.sin(c.rot);
+            return {{ x: c.ox + lx * co + lz * si, z: c.oz - lx * si + lz * co, obra: !!p.obra, abierta: !!p.abierta }}; }} return null; }})()"""
+        g = A.evaluate(donde)
+        comprobar('PC pone el marco de un portillo', g is not None, str(g))
+        if g:
+            A.evaluate(f"Object.assign({K}.pj, {{ x: {g['x']} + 0.3, z: {g['z']} + 1.1, rot: Math.PI }})"); A.wait_for_timeout(300)
+            A.evaluate(f"{K}.usar()")
+            comprobar('PC termina el portillo', esperar(A, f"!({donde}).obra && {K}.enLinea.red.pendientes.length === 0", 30000) and esperar(B, f"({donde}) && !({donde}).obra", 10000))
+            A.evaluate(f"{K}.estado.obrando = null"); A.wait_for_timeout(500)
+            if MUTAR_OBRA:
+                for pg in (A, B): pg.evaluate('window.__rehacerTodo = true')
+            for pg in (A, B): pg.evaluate("window.__rehechos.todo = 0; window.__rehechos.pieza = 0")
+            A.evaluate(f"{K}.usar()")
+            comprobar('el móvil lo ve abrirse', esperar(B, f"({donde}).abierta", 8000))
+            B.wait_for_timeout(500)
+            ra, rb = A.evaluate("window.__rehechos"), B.evaluate("window.__rehechos")
+            comprobar('al abrirlo, PC rehace solo el portillo (nada entero)', ra['todo'] == 0 and ra['pieza'] == 1, str(ra))
+            comprobar('y el móvil, también solo el portillo', rb['todo'] == 0 and rb['pieza'] == 1, str(rb))
+            hoja = f"(() => {{ let r = null; {K}.escena.traverse(o => {{ if (o.name !== 'hoja') return; let q = o.parent; while (q && !(q.userData && q.userData.key)) q = q.parent; if (q && q.userData.c && q.userData.c.piezas.get(q.userData.key)?.tipo === 'cerca_portillo') r = Math.abs(o.rotation.y) + Math.abs(o.rotation.x) + Math.abs(o.rotation.z); }}); return r; }})()"
+            comprobar('y en el móvil el portillo se ve abierto (la hoja girada)', (B.evaluate(hoja) or 0) > 0.5, str(B.evaluate(hoja)))
+            for pg in (A, B): pg.evaluate('window.__rehacerTodo = false')
+        piezasAntes = piezas(A)   # con el portillo
 
         print('Salir al menú y volver: sigue siendo el mismo')
         yoB = B.evaluate(f"{K}.enLinea.red.yo")

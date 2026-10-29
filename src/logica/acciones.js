@@ -150,6 +150,7 @@ export function reproducir(entradas) {
 const CAMPOS_COMBATE = {
   golpe: { objetivo: 't', linea: 't' },
   disparo: { x: 'n', y: 'n', z: 'n', tension: 'n', tTenso: 'n' },
+  curar: { herida: 'n', metodo: 't' },
 };
 
 function luchadorAutor(ctx, a) {
@@ -161,6 +162,7 @@ function luchadorAutor(ctx, a) {
 
 // Golpe cuerpo a cuerpo en el instante del impacto: { autor, tipo: 'golpe', objetivo, linea }
 // Disparo: { autor, tipo: 'disparo', x, y, z, tension, tTenso } → devuelve { ok, proyectil }
+// Curarse: { autor, tipo: 'curar', herida (índice en sus heridas), metodo (de TRATAMIENTOS) } → empieza la cura
 export function ejecutarCombate(ctx, registro, accion) {
   let r;
   const fallo = forma(accion, CAMPOS_COMBATE);
@@ -172,6 +174,9 @@ export function ejecutarCombate(ctx, registro, accion) {
       const de = ctx.luchadores[accion.objetivo];
       if (!de) r = { ok: false, motivo: 'El objetivo no está en el combate.' };
       else r = { ok: true, ...resolverGolpe(L, de, accion.linea, ctx.r) };
+    } else if (accion.tipo === 'curar') {
+      const motivo = L.motivoNoCurar(accion.herida, accion.metodo);
+      r = motivo ? { ok: false, motivo } : (L.curar(accion.herida, accion.metodo), { ok: true });
     } else {
       const p = crearProyectil(L, { x: accion.x, y: accion.y, z: accion.z }, { tension: accion.tension, tTenso: accion.tTenso }, ctx.r);
       p.autor = accion.autor;
