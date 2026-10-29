@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 29 oct 2026 (05:40) — por el chat: manos y prendas rotas
+valravnx: «cuando han hecho el cambio de ropas han roto las manos de todos los personajes y a su vez algunas de las prendas están rotas y bug, compruébalo bien». → Encontrado: desde taller-v9 las manos salen destrozadas al diezmar la piel. Arreglo en curso en esta sesión de chat, con repaso de todas las prendas.
+
 ### 29 oct 2026 (05:02) — por el chat: saltos de agua y relieve por escalas
 valravnx, a las capturas del mapa v12 y a si se cierra «Relieve de detalle por escalas»: «si» → Los saltos de agua quedan aprobados tal cual y «Relieve de detalle por escalas» se da por hecho. El chat sigue con «Bosques frondosos».
 

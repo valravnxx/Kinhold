@@ -492,6 +492,12 @@
     {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Arreglo (valravnx, 29 oct: «han roto las manos de todos los personajes» y prendas rotas): desde taller-v9 la piel se diezma con la cara protegida pero con la proporción de toda la piel, así que las manos se quedaban en una tira; diezmar solo lo que se puede diezmar, rehacer los personajes y repasar todas las prendas de cerca",
+     "estado": "en_curso",
+     "inicio": "2026-10-29T05:46:31+01:00",
+     "rama": "trabajo/20261029-0545-manos"
     }
    ],
    "bloquea": true
