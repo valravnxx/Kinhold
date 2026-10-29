@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 29 oct 2026 (14:44) — por el chat: revisión completa y replanificación
+valravnx: «Me gusta [el inventario], pero ahora mismo tenemos que hacer un análisis de todo lo que tenemos, cómo conecta todo con todo, porque hemos estado haciendo por nuestra cuenta en chats privados muchas cosas, sobre todo con el tema mundo. Hay que cohesionar un poquito todo lo que tenemos para acabar de dirigir ahora y planificar de nuevo muchos de los hitos para cuadrarlo bien. Haz una revisión completa de lo que tenemos, lo que falta, lo que está apuntado que falta y lo que de verdad hace falta, y reestructura todo para planificar así los futuros hitos.» → La lleva el chat: documento de revisión y propuesta de hitos nuevos, para que valravnx la apruebe antes de cambiar el roadmap.
+
 ### 29 oct 2026 (13:05) — por el chat: el panel de inventario y revisar lo visual
 valravnx: «arreglemos el menú de inventario: primero, si algo se lleva en las dos manos o en el hombro, no debe aparecer eso en inventario, debe cogerlo y verse como lo lleva, no que haya huecos de hombro izquierdo/derecho, etc. El inventario es el equipo, y llevas algo en cada mano o una cosa más grande en las dos. Luego, el dibujo del avatar del equipo está retorcido y horripilante, eso hay que cambiarlo. Revisa lo que haces, sobre todo lo visual: últimamente me das el visto bueno a cosas horribles, como las barbas, la capa que no es capa y demás cosas que voy a tener que gastar el doble de tiempo en corregir luego.» → Tarea nueva en el hito de equipo, la lleva el chat. Las barbas y la capa quedan anotadas como tareas pendientes del hito de arte. Antes de enseñar o publicar nada visual, revisarlo en capturas de cerca con ojo crítico y decir lo que aún está mal.
 
