@@ -114,6 +114,7 @@ with sync_playwright() as p:
     comprobar('lo que llevas se guarda al recargar', lugar(pg, 'cintura') == 'cinto_cuero:1' and lugar(pg, 'espalda/2') == 'lena:3')
     pg.keyboard.press('i')
     comprobar('la tecla I abre el panel', pg.is_visible('#panelInventario'))
+    pg.wait_for_function(f'{K}.jugador.mh', timeout=120000)   # el personaje se carga después de la página
     capas = pg.evaluate(f'{K}.jugador.mh && {K}.jugador.mh.capas')
     comprobar('al recargar, el personaje lleva otra vez la túnica', 'tunica' in (capas or []), str(capas))
     pg.keyboard.press('i')
