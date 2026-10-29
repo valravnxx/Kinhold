@@ -634,7 +634,7 @@ function portadas(carpeta, cuantas) {
   for (const f of fotos) if (elegidas.length < cuantas && !elegidas.includes(f)) elegidas.push(f);
   return elegidas.slice(0, cuantas);
 }
-const selectorVersiones = (vs) => vs.length > 1 ? `<select aria-label="${u('version')}">${vs.map(v => `<option value="${esc(v.archivo)}">${esc(v.v)} · ${esc(v.fecha)}</option>`).join('')}</select>` : '';
+const selectorVersiones = (vs) => vs.length > 1 ? `<select aria-label="${u('version')}">${vs.map(v => `<option value="${esc(v.archivo)}">${esc(v.v)} · ${esc(v.fecha)}${/^https?:/.test(v.archivo) ? ' ⬇' : ''}</option>`).join('')}</select>` : '';
 
 function pintar() {
   document.documentElement.lang = idioma;

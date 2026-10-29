@@ -58,7 +58,7 @@ for (const c of Object.keys(capturas)) {
 }
 // versiones jugables
 for (const p of roadmap.prototipos) for (const v of p.versiones)
-  if (!existsSync(join(docs, v.archivo))) errores.push(`falta la versión ${p.id} ${v.v}: ${v.archivo}`);
+  if (!/^https?:/.test(v.archivo) && !existsSync(join(docs, v.archivo))) errores.push(`falta la versión ${p.id} ${v.v}: ${v.archivo}`);
 // estados válidos
 const ESTADOS = ['hecho', 'en_curso', 'revision', 'espera_decision', 'pendiente', 'fallo'];
 for (const h of roadmap.hitos) {
@@ -66,7 +66,7 @@ for (const h of roadmap.hitos) {
   for (const t of h.tareas) if (!ESTADOS.includes(t.estado)) errores.push(`estado raro en la tarea "${t.nombre}": ${t.estado}`);
 }
 // nada de lo que enlaza la web puede estar excluido de git (si no, en GitHub Pages sale roto)
-const enlazado = [...Object.keys(capturas).map(c => join('docs', c, capturas[c][0] || '')), ...roadmap.prototipos.flatMap(p => p.versiones.map(v => join('docs', v.archivo)))];
+const enlazado = [...Object.keys(capturas).map(c => join('docs', c, capturas[c][0] || '')), ...roadmap.prototipos.flatMap(p => p.versiones.filter(v => !/^https?:/.test(v.archivo)).map(v => join('docs', v.archivo)))];
 for (const f of enlazado) {
   try { execFileSync('git', ['check-ignore', '-q', '--no-index', f], { cwd: raiz }); errores.push(`git ignora ${f}: no llegaría a la web`); } catch (e) { /* no ignorado: bien */ }
 }
