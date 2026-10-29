@@ -1,6 +1,7 @@
 // Decisiones tomadas en el prototipo de combate, para revisar.
-export const VERSION_COMBATE = 'Combate · v16';
+export const VERSION_COMBATE = 'Combate · v17';
 export const REGISTRO_COMBATE = [
+  'v17: los luchadores vuelven a tener las manos enteras alrededor de la empuñadura (desde la taller-v9 salían como una tira). Personajes en recursos/personajes/taller-v11/.',
   'v16: curación de heridas, como dice el GDD (la tabla del análisis): vendar (tela, 4 s: para el sangrado de las leves y lo baja en las graves), coser (aguja e hilo, 12 s: cortes profundos, dejan de sangrar), cauterizar (hierro al fuego, 3 s: para el sangrado grave y deja marca; en la liza no hay fuego, así que aún no se puede), entablillar (tablillas, 8 s: huesos rotos de brazos y piernas, que estorban un grado menos) y emplasto de hierbas (5 s: sana antes). Con el brazo de la espada herido se tarda más. Se elige tocando el aviso de la herida, o con la tecla C o el botón Curar, que tratan la más urgente.',
   'v16: en pleno combate se puede curar, pero quedas vendido: mientras curas no atacas ni paras y vas a un cuarto de la velocidad; si te hieren o echas a correr, la cura se pierde sin gastar material. Las heridas tratadas se ven en el personaje: venda de lino, tablillas, puntos más oscuros o quemadura.',
   'v16, provisional: descanso. Una herida que ya no sangra baja un grado con el tiempo (leve 2 min, grave 10 min, muy grave 30 min; con emplasto, una vez y media más deprisa) y la leve acaba desapareciendo; una cauterizada se queda en leve (secuela). Si nada sangra, la sangre se recupera a un 1% cada 30 s. Aún no hay infección ni fiebre: llegarán con el estado «herida infectada» del GDD.',

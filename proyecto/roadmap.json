@@ -495,9 +495,9 @@
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «han roto las manos de todos los personajes» y prendas rotas): desde taller-v9 la piel se diezma con la cara protegida pero con la proporción de toda la piel, así que las manos se quedaban en una tira; diezmar solo lo que se puede diezmar, rehacer los personajes y repasar todas las prendas de cerca",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T05:46:31+01:00",
-     "rama": "trabajo/20261029-0545-manos"
+     "fin": "2026-10-29T09:36:02+00:00"
     }
    ],
    "bloquea": true
@@ -1394,6 +1394,13 @@
      "archivo": "jugar/demo/v34.html",
      "capturas": "capturas/demo-v34",
      "notas": "En «Construir», el panel de inventario (botón «Inventario» o tecla I) con un arcón de pruebas para coger equipo. Es la construcción v33."
+    },
+    {
+     "v": "v35",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v35.html",
+     "capturas": "capturas/demo-v35",
+     "notas": "v35: los personajes vuelven a tener las manos enteras (desde la taller-v9 salían como una tira, también las de los demás jugadores) y la mujer lleva botas bajas, que ya no atraviesan la falda larga. Personajes en recursos/personajes/taller-v11/."
     }
    ]
   },
@@ -1618,6 +1625,13 @@
      "archivo": "jugar/construccion/v33.html",
      "capturas": "capturas/construccion-v33",
      "notas": "Panel de inventario (hito 2): silueta con un cuadro por cada lugar del cuerpo, los huecos de lo que llevas y un arcón de pruebas para coger equipo. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa."
+    },
+    {
+     "v": "v34",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/construccion/v34.html",
+     "capturas": "capturas/construccion-v34",
+     "notas": "v34: el personaje vuelve a tener las manos enteras (desde la taller-v9 salían como una tira) y la mujer lleva botas bajas, que ya no atraviesan la falda larga. Personajes en recursos/personajes/taller-v11/."
     }
    ]
   },
@@ -1730,6 +1744,13 @@
      "archivo": "jugar/combate/v16.html",
      "capturas": "capturas/combate-v16",
      "notas": "Curación de heridas: vendar, coser, cauterizar (con fuego), entablillar y emplasto de hierbas, cada una para su herida; en pleno combate se puede pero quedas vendido; las heridas tratadas se ven en el personaje y las que ya no sangran sanan con el tiempo"
+    },
+    {
+     "v": "v17",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/combate/v17.html",
+     "capturas": "capturas/combate-v17",
+     "notas": "v17: los luchadores vuelven a tener las manos enteras alrededor de la empuñadura (desde la taller-v9 salían como una tira). Personajes en recursos/personajes/taller-v11/."
     }
    ]
   },
@@ -1940,6 +1961,13 @@
      "archivo": "jugar/personaje/v18.html",
      "capturas": "capturas/personaje-v18",
      "notas": "Más peinados y barbas en el taller propio: melena, coleta y trenzas (también la mujer, sin la cofia), barba larga y perilla; la barba ya no se aclara bajo la barbilla. Personajes en recursos/personajes/taller-v10/."
+    },
+    {
+     "v": "v19",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/personaje/v19.html",
+     "capturas": "capturas/personaje-v19",
+     "notas": "v19: arreglo de las manos y de las botas de la mujer (lo vio valravnx). Desde la v16 (taller-v9) las manos salían rotas, como una tira: al reducir triángulos protegiendo la cara, la reducción entera caía sobre las manos y el cuello. Ahora vuelven a estar enteras, con sus dedos, en los dos cuerpos y con todas las prendas. Las botas de la mujer son bajas, hasta un poco por encima del tobillo, para que la caña no atraviese por detrás la falda larga al andar; las del hombre siguen altas. Personajes en recursos/personajes/taller-v11/."
     }
    ]
   },
