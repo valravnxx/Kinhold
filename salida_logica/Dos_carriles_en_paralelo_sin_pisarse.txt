@@ -1,0 +1,40 @@
+  OK   A coge la primera tarea pendiente del primer hito en curso — {"hito":"h2","tarea":"h2-2"}
+  OK   B coge otro hito, nunca el de A — {"hito":"h3","tarea":"h3-1"}
+  OK   al ocupar, la tarea queda en_curso en el roadmap
+  OK   A no coge nada del hito de una sesión de chat — {"hito":"h2","tarea":"h2-3"}
+  OK   con un hito en revisión, B no abre un hito nuevo — [{"hito":"h3","tarea":"h3-1"},null]
+  OK   un carril cortado deja su tarea a medias: el otro carril la retoma desde su rama — {"hito":"h2","tarea":"h2-2","retoma":true,"rama":"trabajo/a"}
+  OK   el carril cortado retoma su tarea a medias — {"hito":"h2","tarea":"h2-2","retoma":true,"rama":"trabajo/a"}
+  OK   un avance reciente mantiene vivo el carril — {"hito":"h3","tarea":"h3-1"}
+  OK   el sesion.json antiguo se lee como el carril A
+  OK   ningún carril coge un hito que lleva la sesión de chat — {"hito":"h4","tarea":"Planificar el hito","hitoNuevo":true}
+  OK   choque: solo los archivos de verdad, no los que se unen solos — [{"rama":"trabajo/b","archivo":"src/juego/modelos.js"}]
+  OK   el chat anuncia su tarea: la crea en su hito, en_curso con su rama — {"A":null,"B":null,"chat:trabajo/chat1":{"inicio":"2026-10-27T09:58:00.000Z","tarea":"web: quién trabaja","hito":"h3","rama":"trabajo/chat1"}}
+  OK   la tarea anunciada la lleva el chat
+  OK   con el chat en h3 y A en h2, B no coge ninguno de los dos — [{"hito":"h2","tarea":"h2-2"},{"hito":"h4","tarea":"Planificar el hito","hitoNuevo":true}]
+  OK   ocupar no borra el anuncio del chat
+  OK   un chat no puede quitarle la tarea a un carril vivo — esa tarea ya la lleva A (rama trabajo/a)
+  OK   soltar el chat quita su anuncio y nada más
+  OK   recién soltada, no está a medias (margen)
+  OK   pasado el margen, la que no lleva nadie está a medias (con su rama) — [{"hito":"h3","tarea":"web: quién trabaja","rama":"trabajo/chat1"}]
+  OK   lo que está a medias va primero y no bloquea su hito — {"hito":"h3","tarea":"web: quién trabaja","retoma":true,"rama":"trabajo/chat1"}
+  OK   un avance reciente en su rama la mantiene llevada
+  OK   el chat con avances recientes sigue vivo
+  OK   al retomar, se quitan los anuncios viejos de esa tarea — {"A":{"inicio":"2026-10-27T10:00:00.000Z","tarea":"web: quién trabaja","hito":"h3","rama":"trabajo/chat1"},"B":null}
+  OK   sesion.json: dos anuncios a la vez se unen solos — {
+ "A": {
+  "inicio": "2026-10-27T09:59:00.000Z",
+  "tarea": "x",
+  "hito": "h2",
+  "rama": "trabajo/a"
+ },
+ "B": null,
+ "chat:trabajo/c": {
+  "inicio": "2026-10-27T09:59:00.000Z",
+  "tarea": "y",
+  "hito": "h3",
+  "rama": "trabajo/c"
+ }
+}
+
+Resultado: 24 correctas, 0 fallidas
