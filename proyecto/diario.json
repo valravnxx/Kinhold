@@ -2133,7 +2133,7 @@
  },
  {
   "inicio": "2026-10-29T01:20:12+00:00",
-  "fin": "",
+  "fin": "2026-10-29T10:11:30+00:00",
   "titulo": "Hito 3: recoger del suelo y de las plantas (N0) (carril A)",
   "hito": "crafting",
   "hecho": [
@@ -2144,7 +2144,7 @@
    "Arreglo de paso: pasado el llano, el personaje cruzaba las lomas por dentro (siempre a altura 0); ahora camina por encima del terreno.",
    "En línea, lo recogido aún es de cada navegador (el servidor no lo lleva todavía)."
   ],
-  "pruebas": "En curso: tercera batería por el mapa; luego se repiten las dos de en línea.",
+  "pruebas": "Batería completa (probar_todo.sh) tres veces, por unir main dos veces a medias (chimenea y taller-v10; luego el panel de inventario): todo correcto salvo jugadores que se ven con lag simulado, que falló una vez en la segunda y pasó al repetirla tres veces, y, en la tercera, jugar en línea y duelo en línea en el navegador, que agotaron un tiempo de espera con la máquina cargada; repetidos solos, jugar en línea pasó y el duelo falló otra vez en la misma espera (al apagar el servidor) y pasó a la tercera. Tras unir el arreglo de las manos: todas las de node, recoger, panel de inventario y demo en el navegador, correctas. Pruebas nuevas: prueba_recoleccion.mjs (45; MUTAR=1 la rompe con 8 fallos) y prueba_recoleccion_navegador.py (recoger cada cosa en PC, con el botón en el móvil, guardado al recargar; MUTAR=1 la rompe). Capturas de cerca miradas en PC y móvil. No comprobado: fotogramas en un móvil de verdad. Nota: otra sesión del carril A ocupó el carril mientras esta seguía con las pruebas, así que esta no suelta el carril A (es de la otra).",
   "capturas": "capturas/construccion-v35",
   "estado": "ok"
  },
