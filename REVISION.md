@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 29 oct 2026 (13:05) — por el chat: el panel de inventario y revisar lo visual
+valravnx: «arreglemos el menú de inventario: primero, si algo se lleva en las dos manos o en el hombro, no debe aparecer eso en inventario, debe cogerlo y verse como lo lleva, no que haya huecos de hombro izquierdo/derecho, etc. El inventario es el equipo, y llevas algo en cada mano o una cosa más grande en las dos. Luego, el dibujo del avatar del equipo está retorcido y horripilante, eso hay que cambiarlo. Revisa lo que haces, sobre todo lo visual: últimamente me das el visto bueno a cosas horribles, como las barbas, la capa que no es capa y demás cosas que voy a tener que gastar el doble de tiempo en corregir luego.» → Tarea nueva en el hito de equipo, la lleva el chat. Las barbas y la capa quedan anotadas como tareas pendientes del hito de arte. Antes de enseñar o publicar nada visual, revisarlo en capturas de cerca con ojo crítico y decir lo que aún está mal.
+
 ### 29 oct 2026 (13:02) — por el chat: capturas de cada noticia
 valravnx: «cuando pasas una noticia sobre un tema concreto, pasas las capturas de TODO lo anterior relacionado, a veces más de 20 capturas siendo las 2 últimas las relacionadas, arregla eso». → Se publican solo las capturas del cambio (capturas.py pide cuáles) y en la web las entradas con muchas enseñan unas pocas y el resto plegado.
 

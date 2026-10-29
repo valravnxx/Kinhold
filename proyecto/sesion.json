@@ -16,5 +16,11 @@
   "tarea": "Publicar solo las capturas de cada cambio (no la batería entera de la prueba) y, en la web, no llenar cada entrada del diario con todas (lo pidió valravnx el 29 oct)",
   "hito": "infra",
   "rama": "trabajo/20261029-1305-capturas"
+ },
+ "chat:trabajo/20261029-1310-inventario": {
+  "inicio": "2026-10-29T13:08:10+01:00",
+  "tarea": "Arreglo (valravnx, 29 oct): el panel de inventario es el equipo; lo que se lleva en las manos o al hombro no sale en el panel, se coge y se ve en el personaje; fuera el dibujo retorcido de la silueta",
+  "hito": "equipo",
+  "rama": "trabajo/20261029-1310-inventario"
  }
 }
