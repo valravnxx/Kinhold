@@ -1,0 +1,28 @@
+# Prueba piloto: ¿cuánto tarda la prueba de navegador de la construcción en una máquina de GitHub (4 núcleos)?
+name: piloto
+on:
+  workflow_dispatch:
+  push:
+    branches: ['trabajo/20261029-1005-nube']
+jobs:
+  construccion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22', cache: 'npm' }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - run: npm ci
+      - run: pip install playwright==1.63.0 && python -m playwright install --with-deps chromium
+      - run: nproc && free -g
+      - run: node construir.mjs
+      - name: Navegador construcción
+        run: |
+          inicio=$(date +%s)
+          python pruebas/prueba_navegador.py dist/kinhold_hito1.html capturas_nube/construccion
+          echo "tardó $(( $(date +%s) - inicio )) s"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: capturas-construccion, path: capturas_nube, retention-days: 3 }
