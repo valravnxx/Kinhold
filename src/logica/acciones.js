@@ -48,6 +48,8 @@ function forma(accion, campos) {
 // ---------------- Construcción ----------------
 // Piezas que se abren y cierran con Usar: las puertas de muro, los portones (el de la empalizada y el portillo de la
 // cerca), las contraventanas y las trampillas.
+// La chimenea se enciende y se apaga con Usar (al terminarla queda encendida; p.apagado la apaga).
+export function seEnciende(p) { return !!(PIEZAS[p.tipo] && PIEZAS[p.tipo].hogar); }
 export function seAbre(p) { return p.hueco === 'p' || p.hueco === 'w' || p.hueco === 't' || !!(PIEZAS[p.tipo] && PIEZAS[p.tipo].portón); }
 
 const CAMPOS_CONSTRUCCION = {
@@ -59,7 +61,7 @@ const CAMPOS_CONSTRUCCION = {
   entregar: { construccion: 'n', clave: 't', material: 't', cantidad: 'n' }, // llevar material a una obra (desde: planta en la que estás)
   subir: { construccion: 'n', clave: 't', material: 't', segundos: 'n', metodo: 't' }, // subir lo pesado a una obra en alto
   trabajar: { construccion: 'n', clave: 't', segundos: 'n' },                 // un rato de trabajo en una obra
-  usar: { construccion: 'n', clave: 't' },           // abrir o cerrar una puerta o un portón
+  usar: { construccion: 'n', clave: 't' },           // abrir o cerrar una puerta o un portón, o encender o apagar una chimenea
   rellenar: { cantidad: 'n' },                        // botón de pruebas del prototipo
 };
 
@@ -90,6 +92,7 @@ function aplicarConstruccion(m, a) {
       const p = c && c.piezas.get(a.clave);
       if (!p) return { ok: false, motivo: 'No existe.' };
       if (p.obra) return { ok: false, motivo: 'Está en obras.' };
+      if (seEnciende(p)) { p.apagado = !p.apagado; return { ok: true, encendido: !p.apagado }; }
       if (!seAbre(p)) return { ok: false, motivo: 'Eso no se abre.' };
       p.abierta = !p.abierta;
       return { ok: true, abierta: p.abierta };

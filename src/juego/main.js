@@ -1,9 +1,9 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara } from '../logica/construccion.js';
-import { RegistroAcciones, ejecutar, seAbre, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
+import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar } from '../logica/construccion.js';
+import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
-import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto } from './modelos.js';
+import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto, moverHumo } from './modelos.js';
 import { crearJugador } from './personaje.js';
 import { personajeElegido } from '../demo/eleccion.js';
 import { REGISTRO, VERSION } from './registro.js';
@@ -174,7 +174,7 @@ function transformarPieza(obj, p) {
   let ry = 0;
   if (['e', 'b', 'p', 'g', 'q', 'w'].includes(p.hueco) && p.d === 1) ry = -Math.PI / 2;
   if (p.hueco === 'g' && p.dir % 2 === 1) ry += Math.PI;
-  if (p.hueco === 'r' || p.hueco === 'l' || p.hueco === 't') ry = -(p.dir || 0) * Math.PI / 2;
+  if (p.hueco === 'r' || p.hueco === 'l' || p.hueco === 't' || p.hueco === 'h') ry = -(p.dir || 0) * Math.PI / 2;
   obj.rotation.y = ry;
 }
 // las hojas que se abren (puertas, portones, contraventanas, trampillas) se llaman «hoja»; las que no giran como una
@@ -206,9 +206,13 @@ function despejarDecorado() {
   if (mundo.mojon) circ.push([mundo.mojon.x, mundo.mojon.z, 0.9]);
   estado.plantasOcultas = decorado.despejar((x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r));
 }
+let chimeneasSucias = true, chimeneas = []; // chimeneas con fuego (se buscan de nuevo al rehacer piezas)
+const altosCanon = new WeakMap(); // chimenea → hasta dónde sube su cañón (se calcula al dibujarla; lo usa el choque)
 // suelos y cimientos de troncos: qué casillas de al lado tienen el mismo suelo terminado, para juntarse con ellas
 const TIPOS_QUE_SE_JUNTAN = new Set(['suelo_tronco', 'cim_tronco']);
 function contextoSuelo(c, p) {
+  // chimenea: hasta dónde sube el cañón (por encima del tejado de su casilla) y si tiene el fuego encendido
+  if (p.hueco === 'h') { const alto = altoCanon(c, p, P.subidaTejado); altosCanon.set(p, alto); return { alto, encendido: !p.obra && !p.apagado }; }
   if (p.hueco === 'w') { // contraventana: en qué muro va y cuál es su lado de fuera (el que no da a un suelo de la casa)
     const m = c.piezas.get(clave('e', p.i, p.j, p.k, p.d));
     const delante = p.d === 0 ? [p.i, p.j] : [p.i - 1, p.j], detras = p.d === 0 ? [p.i, p.j - 1] : [p.i, p.j]; // +z y -z locales
@@ -261,8 +265,9 @@ function objPieza(c, key, p, tj) {
     for (const rel of tj.rellenos) obj.add(rellenoDe(rel, tj.arranque));
   }
   if (p.obra) vestirObra(obj, p);
-  obj.userData = { c, key, k: p.k };
+  Object.assign(obj.userData, { c, key, k: p.k }); // sin borrar lo que trae el modelo (de dónde salen el fuego y el humo)
   obj.traverse(o => { if (o.isMesh) o.userData.ref = obj; });
+  chimeneasSucias = true;
   return obj;
 }
 // Rehace solo una pieza (una obra que avanza un cuarto). Rehacer todo lo construido cada vez que avanzaba una obra
@@ -767,15 +772,15 @@ function interactivoCercano() {
   for (const c of mundo.construcciones) {
     for (const [key, p] of c.piezas) {
       if (p.obra) continue;
-      const puerta = seAbre(p);
+      const puerta = seAbre(p), fuego = seEnciende(p);
       const esc = p.hueco === 'l' && !PIEZAS[p.tipo].andando; // la de tablas se sube andando
-      if (!puerta && !esc) continue;
+      if (!puerta && !esc && !fuego) continue;
       const m = localAMundo(c, centroLocal(p).lx, centroLocal(p).lz);
       const d = Math.hypot(m.x - pj.x, m.z - pj.z);
       let mismaPlanta = p.k === pj.k || (esc && p.k === pj.k - 1) || (p.hueco === 't' && p.k === pj.k + 1); // la trampilla, también desde abajo
       // en una pila de andamios, estando en una plataforma con otro andamio encima, Usar sube (no baja)
       if (PIEZAS[p.tipo].andamio && p.k === pj.k - 1 && andamioEn(c, p.i, p.j, pj.k)) mismaPlanta = false;
-      if (mismaPlanta && d < md) { md = d; mejor = { c, key, p, tipo: puerta ? 'puerta' : 'escalera' }; }
+      if (mismaPlanta && d < md) { md = d; mejor = { c, key, p, tipo: puerta ? 'puerta' : fuego ? 'fuego' : 'escalera' }; }
     }
   }
   return mejor;
@@ -1027,6 +1032,13 @@ function usar() {
     if (a) { estado.talando = a; pj.rot = Math.atan2(a.x - pj.x, a.z - pj.z); mostrarAviso(t('talando')); return; }
     mostrarAviso(t('nadaQueUsar')); return;
   }
+  if (it.tipo === 'fuego') { // chimenea: encender o apagar el fuego (solo se rehace ella)
+    const r = accion({ tipo: 'usar', construccion: it.c.id, clave: it.key });
+    if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+    guardar(); rehacerPieza(it.c.id, it.key);
+    mostrarAviso(r.encendido ? t('fuegoEncendido') : t('fuegoApagado'));
+    return;
+  }
   if (it.tipo === 'puerta') {
     if (it.p.hueco === 't' && it.p.abierta && dentroDeCasilla(it.c, it.p)) { mostrarAviso(t('apartateTrampilla'), true); return; }
     const r = accion({ tipo: 'usar', construccion: it.c.id, clave: it.key });
@@ -1090,6 +1102,12 @@ function segmentosBloqueo(k) {
   const circulos = obstaculos.filter(o => !o.oculto); // las matas escondidas bajo lo construido no chocan
   for (const c of mundo.construcciones) {
     for (const [key, p] of c.piezas) {
+      // chimenea: en la planta baja no se entra en el hogar; más arriba, su cañón no se atraviesa
+      if (p.hueco === 'h' && !p.obra && !window.__sinChoqueHogar && (k === 0 || k * ALTURA < (altosCanon.get(p) ?? altoCanon(c, p, P.subidaTejado)))) {
+        const esq = huellaHogar(p, k > 0).map(q => localAMundo(c, q.lx, q.lz));
+        for (let n = 0; n < 4; n++) segs.push([esq[n].x, esq[n].z, esq[(n + 1) % 4].x, esq[(n + 1) % 4].z]);
+        continue;
+      }
       if (p.k !== k || p.obra) continue; // una obra es solo un armazón: no corta el paso
       if (p.hueco === 'v') {
         const m = localAMundo(c, p.i * MODULO, p.j * MODULO);
@@ -1182,6 +1200,34 @@ function alturaSuelo() {
 // planta en la que está un mueble, por su altura (los del suelo de arriba están a una altura de planta o más)
 const plantaDeco = (d) => Math.max(0, Math.floor((d.y + 0.3) / ALTURA));
 
+// ---------------- Fuego de las chimeneas ----------------
+// Las llamas se mueven, el humo sube y el fuego alumbra. Luces: solo dos (las de las chimeneas encendidas más cerca
+// del jugador) y siempre las mismas: cambiar cuántas luces hay obliga a rehacer todos los sombreadores (un tirón).
+// Se crean al encender la primera chimenea.
+const lucesFuego = [], vFuego = new THREE.Vector3();
+function moverFuegos() {
+  if (chimeneasSucias) { chimeneas = registroMallas.filter(r => r.obj.userData.humo && r.obj.getObjectByName('humo')).map(r => r.obj); chimeneasSucias = false; }
+  if (chimeneas.length && !lucesFuego.length) for (let i = 0; i < 2; i++) {
+    const l = new THREE.PointLight(0xff9a50, 0, 9, 2); l.castShadow = false; escena.add(l); lucesFuego.push(l);
+  }
+  const t = performance.now() / 1000;
+  const cerca = [];
+  for (const g of chimeneas) {
+    if (!g.parent) continue;
+    moverHumo(g, t);
+    const f = g.userData.fuego; vFuego.set(f.x, f.y, f.z); g.localToWorld(vFuego);
+    cerca.push({ d: Math.hypot(vFuego.x - pj.x, vFuego.z - pj.z), p: vFuego.clone() });
+  }
+  cerca.sort((a, b) => a.d - b.d);
+  lucesFuego.forEach((l, i) => {
+    const c = cerca[i];
+    if (!c || c.d > 25) { l.intensity = 0; return; }
+    l.position.copy(c.p);
+    l.intensity = 7 * (0.86 + 0.08 * Math.sin(t * 9.1 + i) + 0.06 * Math.sin(t * 23.7 + i * 2));
+  });
+}
+window.__fuegos = () => ({ chimeneas: chimeneas.length, luces: lucesFuego.length, encendidas: lucesFuego.filter(l => l.intensity > 0).length });
+
 const reloj = new THREE.Clock();
 function paso() {
   const dt = Math.min(reloj.getDelta(), 0.05);
@@ -1244,6 +1290,7 @@ function paso() {
   $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana());
 
   moverGente(dt);
+  moverFuegos();
   if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
   actualizarCamara();
   renderer.render(escena, camara);

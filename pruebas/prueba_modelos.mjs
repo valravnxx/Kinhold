@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { modeloPieza, rellenoTejado, mojon, decoracion, P, colgarPolipasto, tornoSuelto, POLIPASTO } from '../src/juego/modelos.js';
 import { PIEZAS, DECORACION, ALTURA, MODULO } from '../src/logica/piezas.js';
+import { HOGAR } from '../src/logica/construccion.js';
 
 let ok = 0, mal = 0;
 // MUTAR=1 mete un tablón en el hueco de la puerta: la prueba de huecos tiene que fallar
@@ -252,6 +253,34 @@ console.log('Contraventana y trampilla con el estilo v5');
   abrir(t, true);
   const ba = caja(t);
   comprobar('Trampilla: abierta, de pie en el borde del arranque de la escalera (deja libre el hueco)', ba.max.y > 1.8 && ba.min.z > -MODULO / 2 - 0.1 && ba.max.z < -MODULO / 2 + 0.2, `y hasta ${r3(ba.max.y)}, z de ${r3(ba.min.z)} a ${r3(ba.max.z)}`);
+}
+
+console.log('Chimenea con el estilo v5');
+{
+  // MUTAR_CHIMENEA=1 deja el cañón a la altura de siempre (sin mirar el tejado): la prueba tiene que fallar
+  const nombres = (o) => { const n = []; o.traverse(m => { if (m.isMesh) n.push(m.name); }); return n; };
+  const H = HOGAR;
+  for (const alto of [3.25, 6.15]) {
+    const o = modeloPieza('hogar', { alto: process.env.MUTAR_CHIMENEA ? 3.25 : alto, encendido: false }), b = caja(o), n = nombres(o);
+    comprobar(`Chimenea (cañón hasta ${alto} m): con el estilo v5, apagada, sin llamas ni humo`, n.length > 0 && n.every(x => x.startsWith('estilo_') || x === 'ceniza'), n.join(' '));
+    comprobar(`Chimenea (cañón hasta ${alto} m): el cañón acaba donde dice la lógica`, Math.abs(b.max.y - alto) < 0.03, `arriba=${r3(b.max.y)}`);
+    comprobar(`Chimenea (cañón hasta ${alto} m): dentro de lo que ocupa (pegada al muro de +z, dentro de su casilla)`, b.min.x >= -H.ancho / 2 - 0.05 && b.max.x <= H.ancho / 2 + 0.05 && b.min.z >= H.fondo0 - 0.05 && b.max.z <= H.fondo1 + 0.08 && b.min.y > -0.05,
+      `x de ${r3(b.min.x)} a ${r3(b.max.x)}, z de ${r3(b.min.z)} a ${r3(b.max.z)}, y desde ${r3(b.min.y)}`);
+  }
+  // por encima de la campana, solo el cañón (más estrecho, pegado al muro)
+  const o = modeloPieza('hogar', { alto: 6, encendido: true }); o.updateMatrixWorld(true);
+  let fuera = 0; const w = new THREE.Vector3();
+  o.traverse(m => {
+    if (!m.isMesh || !m.name.startsWith('estilo_')) return;
+    const p = m.geometry.attributes.position;
+    for (let i = 0; i < p.count; i++) { w.fromBufferAttribute(p, i).applyMatrix4(m.matrixWorld); if (w.y > 2.5 && (Math.abs(w.x) > H.canonAncho / 2 + 0.1 || w.z < H.canon0 - 0.1)) fuera++; }
+  });
+  comprobar('Chimenea: por encima de la campana solo sube el cañón', fuera === 0, `${fuera} vértices fuera`);
+  const n = nombres(o), llamas = n.filter(x => x === 'llama').length, humo = n.filter(x => x === 'humo').length;
+  comprobar('Chimenea encendida: llamas, brasas y humo', llamas >= 4 && humo >= 5, `llamas=${llamas} humo=${humo}`);
+  comprobar('Chimenea encendida: dice dónde alumbra el fuego (en el hogar) y de dónde sale el humo (la boca del cañón)', o.userData.fuego && o.userData.fuego.y < 1.2 && o.userData.humo && Math.abs(o.userData.humo.y - 6) < 0.01);
+  let tri = 0; o.traverse(m => { if (m.isMesh) tri += (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count) / 3; });
+  comprobar('Chimenea: menos de 10 000 triángulos con un cañón de 6 m (tiene que aguantar en el móvil)', tri < 10000, `${Math.round(tri)} triángulos`);
 }
 
 console.log('Muebles con el estilo v5');
