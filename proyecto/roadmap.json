@@ -81,6 +81,12 @@
      "inicio": "2026-10-29T13:03:35+01:00",
      "rama": "trabajo/20261029-1305-capturas",
      "fin": "2026-10-29T13:17:37+01:00"
+    },
+    {
+     "nombre": "Revisión completa del proyecto (valravnx, 29 oct): qué hay, cómo encaja todo, qué falta de verdad, y propuesta de hitos replanificados",
+     "estado": "en_curso",
+     "inicio": "2026-10-29T14:44:49+01:00",
+     "rama": "trabajo/20261029-1445-revision"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -637,9 +643,9 @@
     },
     {
      "nombre": "Adarve (pasarela por detrás de la empalizada: tablas y postes, sostiene 300 kg), al que se sube por escalera de mano o de tablas",
-     "estado": "hecho",
+     "estado": "en_curso",
      "inicio": "2026-10-29T09:21:31+00:00",
-     "fin": "2026-10-29T13:40:38+00:00"
+     "rama": "trabajo/20261029-0921"
     },
     {
      "nombre": "Decoración que falta del documento de sistemas: tinaja, antorcha de pared, tapiz y ganchos para herramientas",
@@ -798,9 +804,9 @@
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct): el panel de inventario es el equipo; lo que se lleva en las manos o al hombro no sale en el panel, se coge y se ve en el personaje; fuera el dibujo retorcido de la silueta",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T13:08:10+01:00",
-     "rama": "trabajo/20261029-1310-inventario"
+     "fin": "2026-10-29T14:40:08+01:00"
     }
    ]
   },
@@ -1443,8 +1449,8 @@
      "v": "v37",
      "fecha": "2026-10-29",
      "archivo": "jugar/demo/v37.html",
-     "capturas": "capturas/construccion-v36",
-     "notas": "En «Construir», el adarve detrás de la empalizada (construcción v36)"
+     "capturas": "capturas/demo-v37",
+     "notas": "El panel de inventario es el equipo (valravnx, 29 oct): tu personaje de verdad, vestido con lo que llevas, y a los lados la ropa, la cintura y la espalda; sin cuadros de manos ni de hombro ni el dibujo retorcido. Lo de las manos y el hombro se coge del mundo (el arcón de pruebas) y abajo sale lo que llevas, con «Soltar»; el hacha de mano se ve en la mano."
     }
    ]
   },
@@ -1689,7 +1695,7 @@
      "fecha": "2026-10-29",
      "archivo": "jugar/construccion/v36.html",
      "capturas": "capturas/construccion-v36",
-     "notas": "Adarve: pasarela de tablas a 1,8 m por detrás de la empalizada, para asomarse entre las puntas; se sube por una escalera de mano o de tablas puesta delante, que salen más cortas"
+     "notas": "El panel de inventario es el equipo (valravnx, 29 oct): tu personaje de verdad, vestido con lo que llevas, y a los lados la ropa, la cintura y la espalda; sin cuadros de manos ni de hombro ni el dibujo retorcido. Lo de las manos y el hombro se coge del mundo (el arcón de pruebas) y abajo sale lo que llevas, con «Soltar»; el hacha de mano se ve en la mano."
     }
    ]
   },

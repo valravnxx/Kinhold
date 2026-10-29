@@ -11,10 +11,10 @@
   "hito": "arte",
   "rama": "trabajo/20261029-0952"
  },
- "chat:trabajo/20261029-1310-inventario": {
-  "inicio": "2026-10-29T13:08:10+01:00",
-  "tarea": "Arreglo (valravnx, 29 oct): el panel de inventario es el equipo; lo que se lleva en las manos o al hombro no sale en el panel, se coge y se ve en el personaje; fuera el dibujo retorcido de la silueta",
-  "hito": "equipo",
-  "rama": "trabajo/20261029-1310-inventario"
+ "chat:trabajo/20261029-1445-revision": {
+  "inicio": "2026-10-29T14:44:49+01:00",
+  "tarea": "Revisión completa del proyecto (valravnx, 29 oct): qué hay, cómo encaja todo, qué falta de verdad, y propuesta de hitos replanificados",
+  "hito": "infra",
+  "rama": "trabajo/20261029-1445-revision"
  }
 }

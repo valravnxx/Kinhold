@@ -2223,9 +2223,25 @@
    "Se sube por una escalera de mano (Usar sube y baja) o de tablas (andando) puesta en la casilla de delante y girada hacia él: las dos salen más cortas, hasta su piso, y el fantasma ya lo enseña. Por debajo del piso no se pasa; arriba, la empalizada no se salta y por los otros lados se cae.",
    "Provisional (en el registro de decisiones): piso a 1,8 m, para que con la empalizada de 3 m asomen la cabeza y los hombros entre las puntas (a 1,5 m, la primera prueba, no se veía nada por encima); ocupa toda la casilla; cuesta 4 tablas, 4 clavos y 2 troncos; el peso de la gente encima aún no se cuenta.",
    "Arreglos de paso: lo del suelo (rocas, árboles, matas) ya no choca desde un adarve o una planta de arriba (una roca bajo el adarve paraba al que andaba por él), y bajo las escaleras y el adarve se despeja la hierba de toda la casilla.",
-   "Construcción v36 y demo v37."
+   "Construcción v37 y demo v38."
   ],
   "pruebas": "En la nube (GitHub Actions): los 15 grupos de probar_todo.sh correctos; tras el último arreglo, construcción otra vez sola y los otros 14 aparte, todo correcto. Pruebas nuevas: lógica del adarve (22 comprobaciones; MUTAR=1 la rompe), modelos (adarve y escaleras cortas; MUTAR_ADARVE=1 la rompe) y navegador (subir y bajar por las dos escaleras, no pasar por debajo, no saltar la empalizada, andar por dos tramos, guardado en el móvil; MUTAR_ADARVE=1 la rompe con 3 fallos). Capturas miradas en PC y móvil. Primera tanda en la nube: 4 fallos de la prueba nueva por colocarla con medidas fijas (la empalizada queda en otra rejilla que en la prueba suelta) y por una roca que paraba al jugador en el adarve; arreglados. No comprobado: fotogramas en un móvil de verdad. Las rocas del decorado no se esconden bajo lo construido (pasa con todas las piezas; en la captura de cerca se ve una bajo el adarve).",
+  "capturas": "capturas/construccion-v37",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T13:08:10+01:00",
+  "fin": "2026-10-29T14:40:08+01:00",
+  "titulo": "Hito 2: el inventario es el equipo",
+  "hito": "equipo",
+  "hecho": [
+   "El panel de inventario ya no tiene cuadros de manos ni de hombro ni el dibujo retorcido de la silueta: en el centro está tu personaje de verdad, vestido con lo que llevas, y a los lados la ropa por capas, la cintura con los huecos del cinturón y la espalda",
+   "Lo de las manos y el hombro se coge del mundo: mientras no haya objetos en el suelo, el arcón de pruebas hace de mundo («Cogerlo con las manos», «Al hombro»), y abajo sale lo que llevas, cada cosa con «Soltar»",
+   "El saco, la bandolera y el odre ya no tienen huecos: se llevan al hombro (decisión de valravnx); un guardado con algo dentro lo deja a tus pies",
+   "El personaje lleva puesto lo que dice el inventario, y el hacha de mano se ve en la mano; la ropa elegida en el visor entra en el inventario una vez",
+   "Pruebas nuevas: sin manos ni hombro en el panel, el retrato dibujado, la ropa del personaje según el inventario, coger con las manos y al hombro y soltar; lo del hombro sin huecos en la lógica"
+  ],
+  "pruebas": "Batería entera en la nube correcta (la demo y el panel, otra vez tras ajustar sus pruebas al cambio); la prueba del retrato y la de lo del hombro fallan a propósito con MUTAR_RETRATO y MUTAR_HOMBRO. No comprobado: el retrato en un móvil de verdad. Aún no se ven en el personaje la mochila, lo del hombro ni lo de las manos salvo el hacha, y con solo la camisa el cinturón no se dibuja",
   "capturas": "capturas/construccion-v36",
   "estado": "ok"
  }
