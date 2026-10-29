@@ -70,7 +70,7 @@ h1,h2,h3{margin:0;font-weight:700}
 .feria{max-width:1100px;margin:0 auto;padding:0 28px 30px}
 
 /* ---- guirnalda de banderines ---- */
-#guirnalda{position:relative;height:92px;margin:0 -28px;overflow:hidden;pointer-events:none}
+#guirnalda{position:relative;z-index:2;height:92px;margin:0 -28px;overflow:hidden;pointer-events:none}
 #guirnalda svg{position:absolute;inset:0;width:100%;height:100%}
 .banderin{position:absolute;width:clamp(30px,4.2vw,50px);height:clamp(38px,5.2vw,62px);transform-origin:50% 0;filter:drop-shadow(0 3px 2px rgba(0,0,0,.4))}
 .banderin i{position:absolute;inset:0;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;animation:mecer 3.6s ease-in-out infinite alternate;
@@ -104,9 +104,11 @@ h1,h2,h3{margin:0;font-weight:700}
 .estandarte.verde{--c:var(--pano-verde);--emblema:var(--cruz)}
 
 .cartel{position:relative;padding-top:58px}
-.cartel::before,.cartel::after{content:"";position:absolute;top:0;height:64px;width:3px;
+.cartel{--sube:66px}
+.cartel::before,.cartel::after{content:"";position:absolute;top:calc(-1 * var(--sube));height:calc(var(--sube) + 64px);width:3px;
   background:repeating-linear-gradient(170deg,#c9a46a 0 3px,#7b5a2c 3px 6px);box-shadow:1px 0 1px rgba(0,0,0,.4)}
-.cartel::before{left:18%;transform:rotate(-8deg);transform-origin:top} .cartel::after{right:18%;transform:rotate(8deg);transform-origin:top}
+/* cuelgan de arriba del todo (de la viga, fuera de la vista) y bajan hasta la tabla: el giro va desde abajo, donde se atan */
+.cartel::before{left:18%;transform:rotate(4deg);transform-origin:bottom} .cartel::after{right:18%;transform:rotate(-4deg);transform-origin:bottom}
 .tabla{position:relative;text-align:center;padding:20px 28px 22px;border-radius:8px;
   background:
     var(--clavo) 12px 12px/12px 12px no-repeat, var(--clavo) calc(100% - 12px) 12px/12px 12px no-repeat,
@@ -351,9 +353,8 @@ footer{max-width:640px;margin:34px auto 0;text-align:center;padding:12px 30px 14
   body{font-size:17px}
   .feria{padding:0 4px 20px}
   #guirnalda{margin:0 -4px;height:76px}
-  .banderin:nth-child(odd){display:none}
   .cabecera{margin-top:-30px}
-  .cartel{padding-top:50px}
+  .cartel{padding-top:50px;--sube:46px}
   .tabla{padding:16px 16px 18px}
   .tabla .sello{width:74px;height:74px;margin-top:-50px}
   .tabla h1{font-size:44px}
@@ -802,7 +803,7 @@ function guirnalda() {
   anchoGuirnalda = W;
   const y0 = 6, abajo = H - 34, c = 2 * abajo - y0;          // punto de control para que el centro quede en «abajo»
   const y = (t) => y0 * (1 - t) ** 2 + 2 * t * (1 - t) * c + y0 * t * t;
-  const n = Math.max(8, Math.round(W / 64));
+  const n = Math.max(5, Math.round(W / 64));      // en el móvil salen menos, repartidos igual
   let html = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><path d="M-4 ${y0} Q ${W / 2} ${c} ${W + 4} ${y0}" fill="none" stroke="#2a1708" stroke-width="5"/>` +
     `<path d="M-4 ${y0} Q ${W / 2} ${c} ${W + 4} ${y0}" fill="none" stroke="#d9b77c" stroke-width="2.2" stroke-dasharray="5 3"/></svg>`;
   for (let i = 0; i < n; i++) {
