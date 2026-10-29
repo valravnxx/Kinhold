@@ -2132,6 +2132,23 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-29T01:20:12+00:00",
+  "fin": "2026-10-29T10:11:30+00:00",
+  "titulo": "Hito 3: recoger del suelo y de las plantas (N0) (carril A)",
+  "hito": "crafting",
+  "hecho": [
+   "Lógica pura nueva (src/logica/recoleccion.js): lo que pide el nivel N0 del documento de sistemas (apartado 3): ramas caídas en el bosque (1–3), piedra suelta en ríos y laderas (1), sílex en zonas calizas y ríos (1 nódulo) y fibra cruda arrancando ortigas y hierba larga en claros y riberas (2–4). Con las manos.",
+   "Los sitios de recogida salen de una semilla y de las zonas del terreno, iguales para todos. Recoger es una acción con autor (punto, dónde está el autor), que se anota con la hora del que la valida; lo recogido va al inventario del autor por huecos: a la mano o a los huecos donde quepa, junto a lo mismo primero y repartido si hace falta (Inventario.meterDonde). Si no cabe entero, no se recoge.",
+   "Vuelve a salir por tiempo transcurrido (se guarda la hora de vuelta). Provisional: «unos días» = 3 días reales; «lento, semanas» = 3 semanas (piedra y sílex); «una estación» = un mes real (un año de juego son 4 meses reales, apartado 5). Lo que da cada vez sale de un azar fijo por punto y por vez. Se recoge a 2 m como mucho y no con algo grande en las manos. Anotado en el registro de decisiones de la construcción.",
+   "En la demo de construir (construcción v35, demo v36): ramas en el bosque, ortigas y hierba larga en el claro, piedra suelta en la ladera de las lomas y un afloramiento de caliza con peñas claras en la ladera del nordeste, con el sílex. Modelos con el estilo v5 (corteza, piedra, nódulo de corteza blanquecina con cara oscura, ortigas de hojas dentadas, hierba larga con espigas). Se recoge con Usar (F o el botón); el aviso dice cuánto y sale en el panel de inventario. Lo que queda bajo lo construido no se ve ni se recoge. Guardado en el navegador con versión y migración.",
+   "Arreglo de paso: pasado el llano, el personaje cruzaba las lomas por dentro (siempre a altura 0); ahora camina por encima del terreno.",
+   "En línea, lo recogido aún es de cada navegador (el servidor no lo lleva todavía)."
+  ],
+  "pruebas": "Batería completa (probar_todo.sh) tres veces, por unir main dos veces a medias (chimenea y taller-v10; luego el panel de inventario): todo correcto salvo jugadores que se ven con lag simulado, que falló una vez en la segunda y pasó al repetirla tres veces, y, en la tercera, jugar en línea y duelo en línea en el navegador, que agotaron un tiempo de espera con la máquina cargada; repetidos solos, jugar en línea pasó y el duelo falló otra vez en la misma espera (al apagar el servidor) y pasó a la tercera. Tras unir el arreglo de las manos: todas las de node, recoger, panel de inventario y demo en el navegador, correctas. Pruebas nuevas: prueba_recoleccion.mjs (45; MUTAR=1 la rompe con 8 fallos) y prueba_recoleccion_navegador.py (recoger cada cosa en PC, con el botón en el móvil, guardado al recargar; MUTAR=1 la rompe). Capturas de cerca miradas en PC y móvil. No comprobado: fotogramas en un móvil de verdad. Nota: otra sesión del carril A ocupó el carril mientras esta seguía con las pruebas, así que esta no suelta el carril A (es de la otra).",
+  "capturas": "capturas/construccion-v35",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-29T06:52:42+00:00",
   "fin": "2026-10-29T09:36:02+00:00",
   "titulo": "Arreglo: manos enteras otra vez y botas bajas en la mujer",

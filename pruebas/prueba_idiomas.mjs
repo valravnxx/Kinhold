@@ -19,6 +19,8 @@ import { PRENDAS } from '../src/logica/prendas.js';
 import { CATALOGO } from '../src/logica/inventario.js';
 import { PALETAS, FORMAS, PEINADOS, BARBAS } from '../src/logica/aspecto.js';
 import { REGISTRO_DEMO, VERSION_DEMO } from '../src/demo/registro.js';
+import { RECOLECTABLES } from '../src/logica/recoleccion.js';
+import { CATALOGO as CATALOGO_REC } from '../src/logica/inventario.js';
 
 const DICC = { en: JSON.parse(readFileSync('src/idiomas/en.json', 'utf8')), ru: JSON.parse(readFileSync('src/idiomas/ru.json', 'utf8')) };
 if (process.env.MUTAR) delete DICC[process.env.MUTAR === 'ru' ? 'ru' : 'en']['Espada larga'];
@@ -56,6 +58,10 @@ for (const m of leer('src/logica/acciones.js').matchAll(/motivo: '([^']+)'|retur
 for (const m of leer('src/logica/inventario.js').matchAll(/motivo: '([^']+)'|return '([^']+)'/g)) meter(m[1] || m[2]); // inventario
 for (const m of leer('src/logica/en_linea.js').matchAll(/motivo: '([^']+)'|\|\| '([^']+)'/g)) meter(m[1] || m[2]); // jugar en línea
 for (const m of constr.slice(constr.indexOf('function motivoSinApoyo')).matchAll(/return '([^']+)'/g)) meter(m[1]);
+// recoger del suelo y de las plantas: sus motivos, lo que se recoge (avisos) y el motivo de no caber en el inventario
+for (const m of leer('src/logica/recoleccion.js').matchAll(/motivo: '([^']+)'/g)) meter(m[1]);
+for (const d of Object.values(RECOLECTABLES)) meter(CATALOGO_REC[d.da].nombre);
+for (const m of leer('src/logica/inventario.js').matchAll(/motivo: '(No te cabe[^']+)'/g)) meter(m[1]);
 for (const linea of leer('src/combate/logica.js').split('\n')) if (/(this|\w+)\.caer\(/.test(linea)) for (const m of linea.matchAll(/'([A-ZÁÉÍÓÚ][^']+)'/g)) meter(m[1]);
 
 // 3. textos.js de la construcción
