@@ -1,6 +1,6 @@
 // Pruebas de la lógica de construcción de Kinhold. Ejecutar: node pruebas/prueba_logica.mjs
 // Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR.
-import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, polipastoPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, trampillaCerrada, progresoEscalera, salidaEscalera, hogarEn, huellaHogar, altoCanon, HOGAR } from '../src/logica/construccion.js';
+import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, polipastoPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, trampillaCerrada, progresoEscalera, salidaEscalera, hogarEn, huellaHogar, altoCanon, HOGAR, adarveEn, adarveDeEscalera, empalizadasDe, ALTO_ADARVE } from '../src/logica/construccion.js';
 import { PIEZAS, CLASE_PESO, MATERIALES } from '../src/logica/piezas.js';
 import { ejecutar, RegistroAcciones, seAbre, seEnciende, acabarObra } from '../src/logica/acciones.js';
 
@@ -16,6 +16,7 @@ if (process.env.MUTAR === '1') {
   PIEZAS.tejado_teja.peso = 80;   // un tejado de teja que pesa como uno de paja
   PIEZAS.remate_paja.esquina = false; // un remate que se comporta como un tramo más
   PIEZAS.hogar.soloPlanta0 = false; PIEZAS.hogar.peso = 60; // una chimenea que va en cualquier planta y no pesa
+  PIEZAS.adarve.adarve = false; PIEZAS.adarve.cap = 0;          // un adarve que va donde sea y no sostiene a nadie
 }
 
 let ok = 0, mal = 0;
@@ -870,6 +871,58 @@ console.log('21. Chimenea u hogar interior (piedras y barro, 600 kg, sobre cimie
   const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
   const p2 = hogarEn(m2.construcciones[0], 0, 0);
   comprobar('se guarda y se carga (apagada)', p2 && p2.tipo === 'hogar' && p2.apagado === true && p2.dir === 0);
+}
+
+console.log('22. Adarve (pasarela por detrás de la empalizada: tablas y postes, 100 kg, sostiene 300)');
+{
+  const a = PIEZAS.adarve;
+  comprobar('N2, tablas y postes (troncos), 100 kg, sostiene 300, en la planta baja', a.nivel === 2 && a.peso === 100 && a.cap === 300 && a.coste.tabla > 0 && a.coste.tronco > 0 && a.soloPlanta0 && a.hueco === 'a' && a.adarve === true);
+  comprobar('su piso está entre 1,2 y 1,8 m: con la empalizada de 3 m queda parapeto para asomarse', ALTO_ADARVE >= 1.2 && ALTO_ADARVE <= 1.8, String(ALTO_ADARVE));
+  const m = new Mundo(); m.colocarMojon(0, 0);
+  const R = new RegistroAcciones(), yo = 'jugador:prueba';
+  const A = (x) => ejecutar(m, R, { autor: yo, ...x });
+  const c = nuevaConstruccion(m);
+  const pon = (tipo, i, j, k, d = 0, dir = 0) => m.colocar(enRejilla(m, c, tipo, i, j, k, d, dir));
+  // empalizada a lo largo de z = 2 (borde +z de las casillas (0,0) y (1,0)); una cerca en el borde +z de (2,0)
+  pon('empalizada', 0, 1, 0, 0); pon('empalizada', 1, 1, 0, 0); pon('cerca', 2, 1, 0, 0);
+  const sinEmp = m.validar(enRejilla(m, c, 'adarve', 3, 3, 0));
+  comprobar('no va donde no hay empalizada', !sinEmp.ok && /empalizada/.test(sinEmp.motivo), sinEmp.motivo || '');
+  comprobar('ni junto a una cerca', !m.validar(enRejilla(m, c, 'adarve', 2, 0, 0)).ok);
+  comprobar('ni en una planta de arriba', !m.validar(enRejilla(m, c, 'adarve', 0, 0, 1)).ok);
+  const antes = { ...m.materiales };
+  const r = A({ tipo: 'colocar', pieza: 'adarve', x: 1, z: 1, k: 0, rot: 0, dir: 2 });
+  comprobar('se pone detrás de la empalizada, por acciones con autor', r.ok && r.clave === clave('a', 0, 0, 0), r.motivo || r.clave);
+  const p = c.piezas.get(r.clave);
+  comprobar('se arrima solo a su empalizada (la de +z: dir 0), gire como gire', p && p.dir === 0, `dir=${p && p.dir}`);
+  comprobar('en obras no se pisa', !adarveEn(c, 0, 0) && !!adarveEn(c, 0, 0, true));
+  const fin = acabarObra(m, R, yo, c.id, r.clave);
+  comprobar('se termina y gasta sus tablas, clavos y troncos', fin.ok && fin.terminada && Object.entries(a.coste).every(([k, n]) => antes[k] - m.materiales[k] === n), fin.motivo || '');
+  comprobar('terminado, se pisa', adarveEn(c, 0, 0) === p);
+  comprobar('su peso va a sus postes (la tierra): la empalizada no carga nada', (m.cargas(c).get(clave('e', 0, 1, 0, 0)) || 0) === 0 && m.soportes(c, p).suelo === true);
+  comprobar('otro tramo al lado, seguido', pon('adarve', 1, 0, 0).ok && c.piezas.get(clave('a', 1, 0, 0)).dir === 0);
+  comprobar('no caben dos en la misma casilla', !m.validar(enRejilla(m, c, 'adarve', 0, 0, 0)).ok);
+  // en su casilla no caben escaleras, andamios, chimenea ni un suelo encima
+  const esc = m.validar(enRejilla(m, c, 'escalera_mano', 0, 0, 0));
+  comprobar('no cabe una escalera en su casilla', !esc.ok && /adarve/.test(esc.motivo), esc.motivo || '');
+  comprobar('ni un suelo encima', !m.validar(enRejilla(m, c, 'suelo_tabla', 0, 0, 1)).ok);
+  // escaleras en la casilla de delante (0,-1), subiendo hacia +z: llevan al adarve
+  const em = pon('escalera_mano', 0, -1, 0, 0, 0);
+  const pm = c.piezas.get(clave('l', 0, -1, 0));
+  comprobar('la escalera de mano de delante, subiendo hacia él, lleva al adarve', em.ok && adarveDeEscalera(c, pm) === p);
+  pm.dir = 1;
+  comprobar('girada hacia otro lado, no', adarveDeEscalera(c, pm) === null);
+  pm.dir = 0;
+  const et = pon('escalera_tabla', 1, -1, 0, 0, 0);
+  const pt = c.piezas.get(clave('l', 1, -1, 0));
+  comprobar('la escalera de tablas de delante, también', et.ok && pt && adarveDeEscalera(c, pt) === c.piezas.get(clave('a', 1, 0, 0)), et.motivo || '');
+  // quitar la empalizada: el adarve cae con ella
+  const pc = m.previsualizarDesmontaje(c, clave('e', 0, 1, 0, 0));
+  comprobar('si se quita su empalizada, el adarve cae con ella', pc.ok && pc.caen.includes(r.clave) && !pc.caen.includes(clave('a', 1, 0, 0)), (pc.caen || []).join(' ') + (pc.motivo || ''));
+  comprobar('en una esquina ve las dos empalizadas', (() => { pon('empalizada', 2, 0, 0, 1); return empalizadasDe(c, 1, 0).map(e => e.dir).sort().join() === '0,3'; })());
+  comprobar('cada colocación queda anotada con su autor', R.entradas.filter(e => e.ok).length >= 2 && R.entradas.every(e => e.autor === yo));
+  const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  const p2 = adarveEn(m2.construcciones[0], 0, 0);
+  comprobar('se guarda y se carga', p2 && p2.tipo === 'adarve' && p2.dir === 0);
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

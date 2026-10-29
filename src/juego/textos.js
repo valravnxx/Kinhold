@@ -38,6 +38,7 @@ const ES = {
   subiendoPolea: 'Subes con la polea:',
   subiendoPolipasto: 'Subes con el polipasto, dando vueltas al torno:',
   esperaGuia: 'Hace falta otra persona que guíe la carga.',
+  subesAdarve: 'Subes al adarve.',
   subesAndamio: 'Subes al andamio, a la altura de la planta',
   quedan: 'quedan',
   confirmaReinicio: '¿Seguro? Pulsa otra vez para borrar todo.',

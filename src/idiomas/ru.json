@@ -1042,5 +1042,11 @@
  "v33, provisional: mientras no haya fabricación (hito 3), el equipo y los recursos se cogen de un «arcón de pruebas» que lo tiene todo, como el botón «+ Materiales»; lo que se suelta en el arcón vuelve a él. Del arcón se coge la pila entera que cabe en el hueco (10 de lo pequeño, 3 de lo mediano). Lo que llevas aún no se ve puesto en el personaje (es la tarea siguiente) y los recursos que llevas encima no son los de las obras (llega con «Obras con lo que llevas»). En línea, lo que llevas se guarda solo en tu navegador hasta que el servidor guarde los inventarios.": "v33, временно: пока нет ремёсел (этап 3), снаряжение и ресурсы берутся из «пробного сундука», где есть всё, как кнопка «+ Материалы»; то, что кладёшь в сундук, возвращается в него. Из сундука берётся целая стопка, которая влезает в ячейку (10 мелких вещей, 3 средних). Того, что несёшь, на персонаже пока не видно (это следующая задача), а ресурсы при себе — не те, что идут на стройку (это придёт с задачей «Стройка из того, что несёшь»). В онлайне то, что несёшь, хранится только в твоём браузере, пока сервер не начнёт хранить снаряжение.",
  "v34: en «Construir», el panel de inventario (botón «Inventario» o tecla I): una silueta con un cuadro por cada lugar del cuerpo y los huecos de lo que llevas, y un arcón de pruebas para coger equipo mientras no haya fabricación. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Es la construcción v33.": "v34: в «Строить» — панель снаряжения (кнопка «Снаряжение» или клавиша I): силуэт с ячейкой для каждого места на теле и ячейки того, что несёшь, и пробный сундук, откуда берётся снаряжение, пока нет ремёсел. На ПК предметы перетаскивают; на телефоне нажимают, и панель открывается на весь экран. Это стройка (Строить) v33.",
  "Demo única · v34 (panel de inventario)": "Единое демо · v34 (панель снаряжения)",
- "Hito 1 · v33": "Этап 1 · v33"
+ "Hito 1 · v33": "Этап 1 · v33",
+ "Adarve": "Боевой ход",
+ "El adarve no cabe donde hay una escalera, un andamio o una chimenea.": "Боевой ход не помещается там, где стоит лестница, леса или очаг.",
+ "Encima del adarve no puede haber un suelo.": "Над боевым ходом не может быть пола.",
+ "Ahí está el adarve: eso va en la casilla de al lado.": "Там боевой ход: это ставится в соседнюю клетку.",
+ "El adarve va en la planta baja, en una casilla junto a una empalizada terminada.": "Боевой ход ставится на нижнем этаже, в клетке рядом с готовым частоколом.",
+ "Subes al adarve.": "Ты поднимаешься на боевой ход."
 }
