@@ -1,0 +1,31 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 1712 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1622 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1388 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 1689 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2016 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1383 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 1628 KB
+
+== Navegador: pruebas de estilo
+  OK   un guardado de la v8 se adapta — {'luz': 'tarde', 'vista': 'maqueta', 'desenfoque': False}
+  OK   sin errores en consola (movil)
+
+Resultado: TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 87 s
