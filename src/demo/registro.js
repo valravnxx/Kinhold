@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v32 (en línea: sin tirones al abrir puertas y terminar obras)';
+export const VERSION_DEMO = 'Demo única · v33 (panel de inventario)';
 export const REGISTRO_DEMO = [
+  'v33: en «Construir», el panel de inventario (botón «Inventario» o tecla I): una silueta con un cuadro por cada lugar del cuerpo y los huecos de lo que llevas, y un arcón de pruebas para coger equipo mientras no haya fabricación. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Es la construcción v32.',
   'v32, arreglo (valravnx, 28 oct: en línea, abrir o cerrar puertas o terminar una obra daba tirones horribles a los dos): al abrir o cerrar una puerta, un portón o una trampilla solo se rehace esa pieza, en la página de quien la usa y en la de los demás; y cada pieza se hace una vez y luego se copia, así que rehacer lo construido (al terminar una obra) baja de unos 200 a unos 40 ms con una casa de dos plantas. Solo cambia el juego: el servidor no.',
   'v32: en «Duelo», la curación de heridas (vendar, coser, cauterizar, entablillar y emplasto). Es el combate v16. En línea hace falta el servidor nuevo: jugar_en_casa.bat lo baja solo.',
   'v31: en «Construir», remate de tejado (esquina) de paja, de tablillas y de teja: donde se juntan dos caídas en ángulo recto se hace solo limatesa (esquina de fuera, la de un tejado a cuatro aguas) o limahoya (el rincón de un tejado en L), según los tramos de al lado. Con cuatro remates, un tejado a cuatro aguas sin hastiales.',
