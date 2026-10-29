@@ -2062,6 +2062,23 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-28T21:54:37+01:00",
+  "fin": "2026-10-29T03:22:21+01:00",
+  "titulo": "Hito 10: saltos de agua",
+  "hito": "mundo",
+  "hecho": [
+   "Donde el río baja mucho en un tramo de roca dura (granito, caliza o pizarra), uno de cada siete tramos concentra casi todo el desnivel en un salto de 4 a 35 m; salen unos 750 en el mundo",
+   "Aguas abajo del salto el río va más hondo y talla su garganta",
+   "El agua cae en una lámina con chorros blancos y hace una poza de espuma al pie; las paredes de alrededor se cubren de piezas de roca, apiladas hasta arriba en las paredes altas",
+   "De lejos, la cinta del río baja por el salto como una franja blanca",
+   "La cámara ya no se puede meter por debajo del suelo",
+   "Pruebas nuevas: número, roca y altura de los saltos y que el desnivel se vea de verdad; en el navegador, la lámina empinada con espuma en un salto de 35 m"
+  ],
+  "pruebas": "Batería completa correcta (el combate en el navegador falló una vez por lentitud del contenedor y pasó al repetirlo); tras unir main, idiomas, generador del mapa y navegador del mapa otra vez. No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v12",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-28T21:20:50+00:00",
   "fin": "2026-10-29T01:28:55+00:00",
   "titulo": "Arte: más peinados y barbas en el taller (personaje v18, carril A)",

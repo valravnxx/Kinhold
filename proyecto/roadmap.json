@@ -964,9 +964,9 @@
     },
     {
      "nombre": "Saltos de agua donde el río cruza roca dura",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T21:54:37+01:00",
-     "rama": "trabajo/20261028-2155-saltos"
+     "fin": "2026-10-29T03:22:21+01:00"
     },
     {
      "nombre": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
@@ -1999,6 +1999,13 @@
      "archivo": "jugar/mapa/v11.html",
      "capturas": "capturas/mapa-v11",
      "notas": "Las laderas de montaña ya no van en escalones: son pendientes continuas, y los cortados salen solo en afloramientos de roca y donde ya es muy empinado, en pocos escalones grandes."
+    },
+    {
+     "v": "v12",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/mapa/v12.html",
+     "capturas": "capturas/mapa-v12",
+     "notas": "Saltos de agua: donde el río baja mucho por roca dura, casi todo el desnivel se concentra en un salto de 4 a 35 m, con lámina de agua, chorros blancos, poza de espuma y paredes de roca alrededor. La cámara ya no se mete bajo el suelo."
     }
    ]
   }

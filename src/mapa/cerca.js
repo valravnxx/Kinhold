@@ -179,7 +179,7 @@ function construir(mapa, cx, cy) {
       if (Math.abs(x) > L / 2 || Math.abs(z) > L / 2) { previo = false; continue; }
       // la altura del agua con su propio tramo (si no, donde se juntan dos ríos saldría una pared de agua)
       const y = pai.altura(xm, ym, [t]) + 0.8, base = agua.length / 3;
-      const salto = previo && Math.abs(y - agua[agua.length - 2]) > 6;   // un salto grande: se corta (los saltos de agua van luego)
+      const salto = false;   // los saltos de agua se dibujan: la cinta baja por ellos (de lejos, como una franja blanca y empinada)
       agua.push(x + nx * w, y, z + ny * w, x - nx * w, y, z - ny * w);
       flujo.push(co.dx * co.vel, co.dy * co.vel, co.dx * co.vel, co.dy * co.vel);
       if (previo && !salto) aguaIdx.push(base - 2, base - 1, base, base - 1, base + 1, base);
@@ -295,4 +295,6 @@ window.__cerca = { listo: false, ocultar: (n) => { const o = estado.raiz.getObje
   // para las pruebas: un punto de tierra junto al mar (en la escena), cerca del centro de la zona
   costaCercana: (yMin = 0.3, yMax = 12) => { const a = estado.alturaEn; for (let r = 0; r < 1900; r += 20) for (let g = 0; g < 6.28; g += 0.1) { const x = Math.cos(g) * r, z = Math.sin(g) * r, y = a(x, z); if (y > yMin && y < yMax) for (let h = 0; h < 6.28; h += 0.5) if (a(x + Math.cos(h) * 80, z + Math.sin(h) * 80) < -1) return { x, z, dir: h }; } return null; },
   paredCercana: () => estado.juego.paredCercana(),
+  // para las pruebas: el salto de agua más cercano al centro de la zona (en la escena), con su alto y su dirección
+  saltoCercano: () => { const { cx, cy } = estado.centro; let m = null, bd = Infinity; for (const sa of estado.paisaje.saltosEn(estado.tramos)) { const d = Math.hypot(sa.x - cx, sa.y - cy); if (d < bd) { bd = d; m = { x: sa.x - cx, z: sa.y - cy, alto: sa.arriba - sa.abajo, dir: Math.atan2(sa.dy, sa.dx), ancho: sa.ancho }; } } return m; },
   juegoEn: (x, z, dir = 0) => { if (window.__cerca.vistaActual === 'juego') estado.juego.salir(); estado.juego.entrar(x, z, dir); window.__cerca.vistaActual = 'juego'; }, get medidas() { return this._m; }, set medidas(v) { this._m = v; } };
