@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-10-29T00:20:30+00:00",
-  "tarea": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
-  "hito": "arte",
-  "rama": "trabajo/20261028-2120"
+  "inicio": "2026-10-29T01:21:05+00:00",
+  "tarea": "Recoger del suelo y de las plantas lo que pide el nivel N0 (documento de sistemas, apartado 3): ramas caídas, piedra suelta y sílex con las manos, y fibra arrancada de ortigas y hierba larga; cada cosa sale donde dice el documento, da lo que dice, va al inventario por huecos y vuelve a salir pasado su tiempo, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
+  "hito": "crafting",
+  "rama": "trabajo/20261029-0120"
  },
  "B": {
   "inicio": "2026-10-29T00:51:30+00:00",

@@ -781,7 +781,9 @@
     },
     {
      "nombre": "Recoger del suelo y de las plantas lo que pide el nivel N0 (documento de sistemas, apartado 3): ramas caídas, piedra suelta y sílex con las manos, y fibra arrancada de ortigas y hierba larga; cada cosa sale donde dice el documento, da lo que dice, va al inventario por huecos y vuelve a salir pasado su tiempo, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T01:21:05+00:00",
+     "rama": "trabajo/20261029-0120"
     },
     {
      "nombre": "Estaciones y recetas en la lógica pura, con los datos del documento de sistemas (apartados 7 y 8) de las primeras estaciones: hoguera y piedra de tallar (N0) y banco de trabajo de tronco (entrada a N1); cada receta con lo que gasta, lo que da, dónde se hace y su tiempo. Fabricar con autor, gastando lo que llevas encima y lo de los arcones a pocos pasos, con una cola pequeña por estación y el tiempo contado por tiempo transcurrido. Pruebas de lógica",
