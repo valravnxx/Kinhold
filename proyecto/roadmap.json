@@ -1161,9 +1161,9 @@
     },
     {
      "nombre": "Adarve (pasarela por detrás de la empalizada: tablas y postes, sostiene 300 kg), al que se sube por escalera de mano o de tablas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T09:21:31+00:00",
-     "rama": "trabajo/20261029-0921"
+     "fin": "2026-10-29T14:50:50+00:00"
     },
     {
      "nombre": "Decoración que falta del documento de sistemas: tinaja, antorcha de pared, tapiz y ganchos para herramientas",
@@ -1564,6 +1564,13 @@
      "archivo": "jugar/demo/v37.html",
      "capturas": "capturas/demo-v37",
      "notas": "El panel de inventario es el equipo (valravnx, 29 oct): tu personaje de verdad, vestido con lo que llevas, y a los lados la ropa, la cintura y la espalda; sin cuadros de manos ni de hombro ni el dibujo retorcido. Lo de las manos y el hombro se coge del mundo (el arcón de pruebas) y abajo sale lo que llevas, con «Soltar»; el hacha de mano se ve en la mano."
+    },
+    {
+     "v": "v38",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v38.html",
+     "capturas": "capturas/construccion-v37",
+     "notas": "En «Construir», el adarve detrás de la empalizada (construcción v37)"
     }
    ]
   },
@@ -1809,6 +1816,13 @@
      "archivo": "jugar/construccion/v36.html",
      "capturas": "capturas/construccion-v36",
      "notas": "El panel de inventario es el equipo (valravnx, 29 oct): tu personaje de verdad, vestido con lo que llevas, y a los lados la ropa, la cintura y la espalda; sin cuadros de manos ni de hombro ni el dibujo retorcido. Lo de las manos y el hombro se coge del mundo (el arcón de pruebas) y abajo sale lo que llevas, con «Soltar»; el hacha de mano se ve en la mano."
+    },
+    {
+     "v": "v37",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/construccion/v37.html",
+     "capturas": "capturas/construccion-v37",
+     "notas": "Adarve: pasarela de tablas a 1,8 m por detrás de la empalizada, para asomarse entre las puntas; se sube por una escalera de mano o de tablas puesta delante, que salen más cortas"
     }
    ]
   },

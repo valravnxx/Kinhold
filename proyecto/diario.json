@@ -2214,6 +2214,23 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-29T09:20:40+00:00",
+  "fin": "2026-10-29T14:50:50+00:00",
+  "titulo": "Hito 1c: adarve detrás de la empalizada (carril A)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Pieza nueva, el adarve (sistemas: tablas + postes, N2, 100 kg, sostiene 300): un piso de tablas a 1,8 m sobre cuatro postes, dos largueros, tres viguetas, clavos y dos tornapuntas, con el estilo v5. Va en una casilla de la planta baja junto a una empalizada terminada y se arrima sola a ella; los tramos seguidos hacen una sola pasarela. Lógica pura con autor; si se quita su empalizada, cae con ella.",
+   "Se sube por una escalera de mano (Usar sube y baja) o de tablas (andando) puesta en la casilla de delante y girada hacia él: las dos salen más cortas, hasta su piso, y el fantasma ya lo enseña. Por debajo del piso no se pasa; arriba, la empalizada no se salta y por los otros lados se cae.",
+   "Provisional (en el registro de decisiones): piso a 1,8 m, para que con la empalizada de 3 m asomen la cabeza y los hombros entre las puntas (a 1,5 m, la primera prueba, no se veía nada por encima); ocupa toda la casilla; cuesta 4 tablas, 4 clavos y 2 troncos; el peso de la gente encima aún no se cuenta.",
+   "Arreglos de paso: lo del suelo (rocas, árboles, matas) ya no choca desde un adarve o una planta de arriba (una roca bajo el adarve paraba al que andaba por él), y bajo las escaleras y el adarve se despeja la hierba de toda la casilla.",
+   "Construcción v37 y demo v38.",
+   "Lo que aún está mal (revisión visual, al lado de la prueba de estilo v5): las rocas del decorado no se esconden bajo lo construido y se ve una bajo el adarve (pasa con todas las piezas); el adarve ocupa la casilla entera (2 m), más ancho que uno de verdad; en una esquina con dos empalizadas no se adapta (mira solo a una); la captura de cerca de la estructura salió tapada por la cabaña en la batería y no se publica (cámara cambiada en la prueba para la próxima, sin comprobar)."
+  ],
+  "pruebas": "En la nube (GitHub Actions): los 15 grupos de probar_todo.sh correctos tres veces (la última tras unir main con el inventario nuevo, que publicó antes la construcción v36 y la demo v37: el adarve pasó a v37 y v38). Pruebas nuevas: lógica del adarve (22 comprobaciones; MUTAR=1 la rompe), modelos (adarve y escaleras cortas; MUTAR_ADARVE=1 la rompe) y navegador (subir y bajar por las dos escaleras, no pasar por debajo, no saltar la empalizada, andar por dos tramos, guardado en el móvil; MUTAR_ADARVE=1 la rompe con 3 fallos). Capturas miradas en PC y móvil. Primera tanda en la nube: 4 fallos de la prueba nueva por colocarla con medidas fijas (la empalizada queda en otra rejilla que en la prueba suelta) y por una roca que paraba al jugador en el adarve; arreglados. No comprobado: fotogramas en un móvil de verdad. Las rocas del decorado no se esconden bajo lo construido (pasa con todas las piezas; en la captura de cerca se ve una bajo el adarve). Tras el último commit, lógica y web otra vez en la nube: lógica falló una vez sin que se pudiera leer su salida (la descarga del registro dio «Forbidden») y pasó al repetirla, también aquí.",
+  "capturas": "capturas/construccion-v37",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-29T13:08:10+01:00",
   "fin": "2026-10-29T14:40:08+01:00",
   "titulo": "Hito 2: el inventario es el equipo",
