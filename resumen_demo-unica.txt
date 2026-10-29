@@ -1,0 +1,32 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 1703 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1613 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1379 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 1680 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2007 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1374 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 1619 KB
+
+== Navegador: demo única
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 180000ms exceeded.
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 188 s
