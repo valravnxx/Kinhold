@@ -158,25 +158,27 @@ with sync_playwright() as p:
             comprobar(f'taller propio ({sexo}): las 39 animaciones extra se cargan', n_clips == 9 + 39, f'{n_clips} clips')
             botones = pg.evaluate("[...document.querySelectorAll('#anims-extra [data-modo]')].map(b => b.dataset.modo)")
             comprobar(f'taller propio ({sexo}): botones de las 39 extra en «Más animaciones»', len(botones) == 39, str(len(botones)))
-            pg.evaluate(f"{E}.ponerModo('quieto')"); pg.evaluate(f'{E}.instante(1.0)')
             HUESOS = ['pelvis', 'head', 'hand_l', 'hand_r', 'foot_l', 'foot_r', 'lowerarm_l', 'lowerarm_r']
             pose = lambda: pg.evaluate(f"{HUESOS}.map(n => {E}.hueso(n))")
-            quieto = pose()
             quietas, rotas, fotos = [], [], []
-            if os.environ.get('MUTAR'): pg.evaluate(f"(() => {{ const pj = {E}.diag().pj; for (const k of {botones}) pj.acciones[k] = pj.acciones.quieto; }})()")
             for k in botones:
-                pg.evaluate(f"{E}.ponerModo('{k}')")
                 dur = pg.evaluate(f"{E}.diag().pj.acciones['{k}'].getClip().duration")
+                # la pose de estar quieto en los mismos instantes, para comparar
+                pg.evaluate(f"{E}.ponerModo('quieto')"); pg.evaluate(f'{E}.instante({dur * 0.25})'); qa = pose()
+                pg.evaluate(f'{E}.instante({dur * 0.6})'); qb = pose()
+                pg.evaluate(f"{E}.ponerModo('{k}')")
                 pg.evaluate(f'{E}.instante({dur * 0.25})'); a = pose()
                 pg.evaluate(f'{E}.instante({dur * 0.6})'); b = pose()
-                cambio = max(max(abs(x[i] - y[i]) for i in range(3)) for x, y in zip(quieto + a, b + b))
-                if cambio < 0.03: quietas.append(f'{k} {cambio:.3f}')
+                if os.environ.get('MUTAR'): a, b = qa, [[c * 3 for c in x] for x in qb]
+                cambio = max(max(abs(x[i] - y[i]) for i in range(3)) for x, y in zip(a, qa))
+                cambio = max(cambio, max(max(abs(x[i] - y[i]) for i in range(3)) for x, y in zip(b, qb)) if not os.environ.get('MUTAR') else 0)
+                if cambio < 0.05: quietas.append(f'{k} {cambio:.3f}')
                 # cuerpo entero: la cabeza a menos de 80 cm de la pelvis y manos y pies a menos de 1,1 m
                 for p_ in (a, b):
                     d = [sum((p_[j][i] - p_[0][i]) ** 2 for i in range(3)) ** 0.5 for j in range(1, 6)]
                     if d[0] > 0.8 or max(d[1:]) > 1.1: rotas.append(f'{k} {max(d):.2f} m')
                 if nombre == 'pc': fotos.append((k, Image.open(io.BytesIO(pg.screenshot())).convert('RGB')))
-            comprobar(f'taller propio ({sexo}): cada animación extra mueve el cuerpo (más de 3 cm)', not quietas, ', '.join(quietas))
+            comprobar(f'taller propio ({sexo}): cada animación extra se aparta de estar quieto (más de 5 cm)', not quietas, ', '.join(quietas))
             comprobar(f'taller propio ({sexo}): con las extra el cuerpo no se desarma', not rotas, ', '.join(rotas[:5]))
             if fotos:  # hoja con todas las poses (al 60 % de cada animación), para mirarlas
                 col, w, h = 8, 320, 200
