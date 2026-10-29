@@ -408,7 +408,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "La demo en el mundo: apareces en un sitio accesible de la región que eliges (nunca en el mar ni en un pico) y andas por Kinland con la cámara del juego; fuera el llano",
+     "nombre": "La demo en el mundo: apareces en Whitholm, la isla de los playtests (valravnx, 29 oct), en un sitio accesible (nunca en el mar ni en un pico) y todos en la misma comarca, y andas por la isla con la cámara del juego; fuera el llano. El servidor y el terreno solo cubren la isla",
      "estado": "pendiente"
     },
     {
@@ -872,15 +872,15 @@
      "fin": "2026-10-29T11:26:34+01:00"
     },
     {
+     "nombre": "Comarcas de Whitholm primero (valravnx, 29 oct): la isla de los playtests dividida en comarcas que siguen el relieve (un valle, una vega, una sierra), con nombres al estilo de la región revisados por valravnx, y la comarca donde aparecen todos al principio; luego las del resto del mundo",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
      "estado": "pendiente"
     },
     {
      "nombre": "Riberas y costas (valravnx, 28 oct): el suelo según su material, los cauces según su tamaño, las costas según la roca (playa, acantilado, marisma) y la vegetación de ribera y de costa",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Comarcas con nombre (GDD): cada región dividida en comarcas que siguen el relieve, con nombres al estilo de la región, revisados por valravnx",
      "estado": "pendiente"
     },
     {
@@ -921,6 +921,12 @@
      "estado": "hecho",
      "inicio": "2026-10-28T19:29:42+01:00",
      "fin": "2026-10-28T21:39:03+01:00"
+    },
+    {
+     "nombre": "Whitholm, mundo de los playtests (valravnx, 29 oct): el juego solo en la isla, dividida en comarcas",
+     "estado": "hecho",
+     "inicio": "2026-10-29T15:24:53+01:00",
+     "fin": "2026-10-29T15:26:03+01:00"
     }
    ],
    "lleva": "chat",
@@ -1155,9 +1161,9 @@
     },
     {
      "nombre": "Adarve (pasarela por detrás de la empalizada: tablas y postes, sostiene 300 kg), al que se sube por escalera de mano o de tablas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T09:21:31+00:00",
-     "rama": "trabajo/20261029-0921"
+     "fin": "2026-10-29T14:50:50+00:00"
     },
     {
      "nombre": "Decoración que falta del documento de sistemas: tinaja, antorcha de pared, tapiz y ganchos para herramientas",
@@ -1558,6 +1564,13 @@
      "archivo": "jugar/demo/v37.html",
      "capturas": "capturas/demo-v37",
      "notas": "El panel de inventario es el equipo (valravnx, 29 oct): tu personaje de verdad, vestido con lo que llevas, y a los lados la ropa, la cintura y la espalda; sin cuadros de manos ni de hombro ni el dibujo retorcido. Lo de las manos y el hombro se coge del mundo (el arcón de pruebas) y abajo sale lo que llevas, con «Soltar»; el hacha de mano se ve en la mano."
+    },
+    {
+     "v": "v38",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v38.html",
+     "capturas": "capturas/construccion-v37",
+     "notas": "En «Construir», el adarve detrás de la empalizada (construcción v37)"
     }
    ]
   },
@@ -1803,6 +1816,13 @@
      "archivo": "jugar/construccion/v36.html",
      "capturas": "capturas/construccion-v36",
      "notas": "El panel de inventario es el equipo (valravnx, 29 oct): tu personaje de verdad, vestido con lo que llevas, y a los lados la ropa, la cintura y la espalda; sin cuadros de manos ni de hombro ni el dibujo retorcido. Lo de las manos y el hombro se coge del mundo (el arcón de pruebas) y abajo sale lo que llevas, con «Soltar»; el hacha de mano se ve en la mano."
+    },
+    {
+     "v": "v37",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/construccion/v37.html",
+     "capturas": "capturas/construccion-v37",
+     "notas": "Adarve: pasarela de tablas a 1,8 m por detrás de la empalizada, para asomarse entre las puntas; se sube por una escalera de mano o de tablas puesta delante, que salen más cortas"
     }
    ]
   },
@@ -2260,6 +2280,11 @@
    "pregunta": "Crear la cuenta de Hetzner y el servidor de prueba siguiendo la guía del repositorio, servidor/nube/LEEME.md (plan CX23 con Ubuntu 24.04 y el cloud config pegado); luego abrir en los dos aparatos la dirección https:// con tu IP con guiones y .sslip.io y decir si funciona. Decidido por valravnx el 29 oct: se hace ya.",
    "desde": "2026-10-28",
    "hito": "prueba-online"
+  },
+  {
+   "pregunta": "Recursos de Whitholm para los playtests: la isla tiene caliza y arenisca, bosques, ríos medianos y arroyos y vetas pequeñas de hierro y carbón, pero ni grandes vetas, ni gran río, ni granito o pizarra, ni lo de las regiones del sur. Lo hablará valravnx con el chat (lo dijo el 29 oct).",
+   "desde": "2026-10-29",
+   "hito": "mundo"
   }
  ]
 }

@@ -1,6 +1,6 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar } from '../logica/construccion.js';
+import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, empalizadasDe, ALTO_ADARVE } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto, moverHumo } from './modelos.js';
@@ -181,7 +181,7 @@ function transformarPieza(obj, p) {
   let ry = 0;
   if (['e', 'b', 'p', 'g', 'q', 'w'].includes(p.hueco) && p.d === 1) ry = -Math.PI / 2;
   if (p.hueco === 'g' && p.dir % 2 === 1) ry += Math.PI;
-  if (p.hueco === 'r' || p.hueco === 'l' || p.hueco === 't' || p.hueco === 'h') ry = -(p.dir || 0) * Math.PI / 2;
+  if (p.hueco === 'r' || p.hueco === 'l' || p.hueco === 't' || p.hueco === 'h' || p.hueco === 'a') ry = -(p.dir || 0) * Math.PI / 2;
   obj.rotation.y = ry;
 }
 // las hojas que se abren (puertas, portones, contraventanas, trampillas) se llaman «hoja»; las que no giran como una
@@ -207,7 +207,7 @@ function despejarDecorado() {
   for (const c of mundo.construcciones) for (const p of c.piezas.values()) {
     if (p.k !== 0) continue;
     const l = centroLocal(p), m = localAMundo(c, l.lx, l.lz);
-    circ.push([m.x, m.z, p.hueco === 'f' ? MODULO * 0.78 : MODULO * 0.45]);
+    circ.push([m.x, m.z, p.hueco === 'f' || p.hueco === 'a' || p.hueco === 'l' ? MODULO * 0.78 : MODULO * 0.45]); // casillas enteras (también adarve y escaleras)
   }
   for (const d of mundo.decoracion) if (d.y < 0.3) circ.push([d.x, d.z, 0.8]);
   if (mundo.mojon) circ.push([mundo.mojon.x, mundo.mojon.z, 0.9]);
@@ -222,6 +222,8 @@ const TIPOS_QUE_SE_JUNTAN = new Set(['suelo_tronco', 'cim_tronco']);
 function contextoSuelo(c, p) {
   // chimenea: hasta dónde sube el cañón (por encima del tejado de su casilla) y si tiene el fuego encendido
   if (p.hueco === 'h') { const alto = altoCanon(c, p, P.subidaTejado); altosCanon.set(p, alto); return { alto, encendido: !p.obra && !p.apagado }; }
+  // escalera de mano o de tablas que sube hacia un adarve: más corta (llega a su piso, a 1,5 m)
+  if (p.hueco === 'l' && adarveDeEscalera(c, p)) return { forma: 'adarve' };
   if (p.hueco === 'w') { // contraventana: en qué muro va y cuál es su lado de fuera (el que no da a un suelo de la casa)
     const m = c.piezas.get(clave('e', p.i, p.j, p.k, p.d));
     const delante = p.d === 0 ? [p.i, p.j] : [p.i - 1, p.j], detras = p.d === 0 ? [p.i, p.j - 1] : [p.i, p.j]; // +z y -z locales
@@ -507,6 +509,8 @@ function evaluarColocacion() {
     if (tj) fantasma.position.y += tj.arranque * P.subidaTejado;
     if (tj && tj.forma) formaFantasma(tj.forma);
   }
+  // escalera que sube hacia un adarve: el fantasma ya sale corta
+  if (cand.pieza.hueco === 'l' && !PIEZAS[sel.tipo].andamio) formaFantasma(!cand.nueva && adarveDeEscalera(c, cand.pieza) ? 'adarve' : null);
   pintarFantasma(v.ok);
   if (!v.ok && v.debil) {
     const o = objDe(c, v.debil);
@@ -1066,6 +1070,14 @@ function usar() {
   // escalera: subir si estás en su planta, bajar si estás encima
   const { c, p } = it;
   if (PIEZAS[p.tipo].andamio) { usarAndamio(c, p); return; }
+  const adv = adarveDeEscalera(c, p, false);
+  if (adv && pj.k === 0) { // escalera de mano apoyada en un adarve: subes a su piso, junto a la escalera
+    const le = centroLocal(p), la = centroLocal(adv);
+    const m = localAMundo(c, la.lx + (le.lx - la.lx) * 0.3, la.lz + (le.lz - la.lz) * 0.3);
+    pj.x = m.x; pj.z = m.z; pj.k = 1;
+    mostrarAviso(t('subesAdarve'));
+    return;
+  }
   if (pj.k === p.k) {
     const destinos = [[p.i, p.j], [p.i + 1, p.j], [p.i - 1, p.j], [p.i, p.j + 1], [p.i, p.j - 1]];
     for (const [i, j] of destinos) {
@@ -1123,7 +1135,9 @@ function dentroDeCasilla(c, p) {
 // ---------------- Movimiento y colisiones ----------------
 function segmentosBloqueo(k) {
   const segs = []; // [x1,z1,x2,z2]
-  const circulos = obstaculos.filter(o => !o.oculto); // las matas escondidas bajo lo construido no chocan
+  // las matas escondidas bajo lo construido no chocan; y lo del suelo (árboles, rocas, matas) solo choca a ras de
+  // suelo: desde un adarve o una planta de arriba se pasa por encima (una roca bajo el adarve paraba al que andaba por él)
+  const circulos = k === 0 ? obstaculos.filter(o => !o.oculto) : [];
   for (const c of mundo.construcciones) {
     for (const [key, p] of c.piezas) {
       // chimenea: en la planta baja no se entra en el hogar; más arriba, su cañón no se atraviesa
@@ -1132,7 +1146,18 @@ function segmentosBloqueo(k) {
         for (let n = 0; n < 4; n++) segs.push([esq[n].x, esq[n].z, esq[(n + 1) % 4].x, esq[(n + 1) % 4].z]);
         continue;
       }
-      if (p.k !== k || p.obra) continue; // una obra es solo un armazón: no corta el paso
+      if (p.k !== k && !(p.hueco === 'a' && k === 1)) continue;
+      if (p.obra) continue; // una obra es solo un armazón: no corta el paso
+      if (p.hueco === 'a' && !window.__sinChoqueAdarve) {
+        // adarve: por debajo de su piso no se pasa (está a 1,5 m); encima, la empalizada no se salta (los otros
+        // lados están abiertos: si sales por ellos, caes)
+        const esq = [[p.i, p.j], [p.i + 1, p.j], [p.i + 1, p.j + 1], [p.i, p.j + 1]].map(([a, b]) => localAMundo(c, a * MODULO, b * MODULO));
+        if (k === 0) { for (let n = 0; n < 4; n++) segs.push([esq[n].x, esq[n].z, esq[(n + 1) % 4].x, esq[(n + 1) % 4].z]); continue; }
+        // los lados de la casilla, por dir (SUBE): 0 → +z (esq 2-3), 1 → -x (3-0), 2 → -z (0-1), 3 → +x (1-2)
+        const LADO = [[2, 3], [3, 0], [0, 1], [1, 2]];
+        for (const { dir } of empalizadasDe(c, p.i, p.j)) { const [a, b] = LADO[dir]; segs.push([esq[a].x, esq[a].z, esq[b].x, esq[b].z]); }
+        continue;
+      }
       if (p.hueco === 'v') {
         const m = localAMundo(c, p.i * MODULO, p.j * MODULO);
         circulos.push({ x: m.x, z: m.z, r: 0.16 });
@@ -1196,7 +1221,7 @@ function escaleraBajoJugador() {
       if (!p || trampillaCerrada(c, i, j, k0)) continue; // con la trampilla cerrada, la escalera no sube
       const t = progresoEscalera(p, l.lx, l.lz);
       const base = c.piezas.has(clave('f', i, j, k0)) ? (k0 === 0 ? P.superficieCimiento : P.superficieSuelo) : 0;
-      const y0 = k0 * ALTURA + base, y1 = (k0 + 1) * ALTURA + P.superficieSuelo;
+      const y0 = k0 * ALTURA + base, y1 = adarveDeEscalera(c, p, false) ? ALTO_ADARVE : (k0 + 1) * ALTURA + P.superficieSuelo;
       const y = y0 + t * (y1 - y0);
       if (pj.k === k0 && y - pj.y > 0.8) continue; // estás debajo de la escalera, no encima
       return { k: t > 0.5 ? k0 + 1 : k0, y };
@@ -1213,6 +1238,7 @@ function alturaSuelo() {
       const i = Math.floor(l.lx / MODULO), j = Math.floor(l.lz / MODULO);
       const f = c.piezas.get(clave('f', i, j, k));
       if (f && !f.obra) { pj.k = k; return k * ALTURA + (k === 0 ? P.superficieCimiento : P.superficieSuelo); }
+      if (k === 1 && adarveEn(c, i, j)) { pj.k = 1; return ALTO_ADARVE; } // en el piso del adarve
       if (k > 0 && trampillaCerrada(c, i, j, k - 1)) { pj.k = k; return k * ALTURA + P.superficieSuelo; } // la trampilla cerrada se pisa
       if (k > 0 && andamioEn(c, i, j, k - 1)) { pj.k = k; return k * ALTURA + P.superficieSuelo; } // plataforma del andamio
     }

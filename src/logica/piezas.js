@@ -19,6 +19,7 @@ export const MAX_PLANTA = 3;  // plantas 0..3
 //  q = polea o polipasto colgado de una viga  clave i,j,k,d  (la de la viga b:i,j,k,d)
 //  w = contraventana en la ventana de un muro  clave i,j,k,d  (la del muro e:i,j,k,d)
 //  t = trampilla en el hueco de una escalera de tablas  clave i,j,k  (planta del hueco: la escalera está en k - 1)
+//  a = adarve (pasarela) en una casilla de la planta baja junto a una empalizada  clave i,j,k (k = 0)
 //  h = hogar (chimenea) en una casilla de la planta baja  clave i,j,k  (sobre el cimiento de piedra f:i,j,0)
 
 export const MATERIALES = {
@@ -111,6 +112,11 @@ export const PIEZAS = {
   // portón: se abre y se cierra con Usar (abierto no corta el paso)
   cerca_portillo:     { nombre: 'Portillo de varas', hueco: 'e', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, suelo: true, soloPlanta0: true, bajo: true, portón: true, cat: 'exterior' },
   empalizada:         { nombre: 'Empalizada', hueco: 'e', nivel: 2, peso: 500, cap: 0, coste: { tronco: 6 }, suelo: true, soloPlanta0: true, alto: true, cat: 'exterior' },
+  // Sistemas: «Adarve (pasarela) — N2, tablas + postes, 100 kg, sostiene 300; por detrás de la empalizada». Un piso de
+  // tablas a 1,8 m sobre cuatro postes, en la casilla de detrás de una empalizada terminada (se arrima sola a ella).
+  // Coste provisional (sistemas no da cantidades): el del suelo de tablas (4 tablas y 4 clavos, también 100 kg) y dos
+  // troncos para los postes. Sostiene 300 kg: a quien está encima (el peso de la gente aún no se cuenta).
+  adarve:             { nombre: 'Adarve', hueco: 'a', nivel: 2, peso: 100, cap: 300, coste: { tabla: 4, clavo: 4, tronco: 2 }, soloPlanta0: true, adarve: true, cat: 'exterior' },
   empalizada_puerta:  { nombre: 'Puerta de empalizada', hueco: 'e', nivel: 2, peso: 400, cap: 0, coste: { tronco: 4, hierro: 2 }, suelo: true, soloPlanta0: true, alto: true, portón: true, cat: 'exterior' },
 };
 

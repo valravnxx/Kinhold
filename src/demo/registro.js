@@ -1,7 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v38 (pies descalzos)';
+export const VERSION_DEMO = 'Demo única · v39 (pies descalzos)';
 export const REGISTRO_DEMO = [
-  'v38: pies descalzos. En «Construir», sin calzado en el inventario vas descalzo, como empieza el GDD; en «Personaje», el botón «Descalzo» quita los zapatos y la vista «Pies» los enseña de cerca. Personajes en recursos/personajes/taller-v12/.',
+  'v39: pies descalzos. En «Construir», sin calzado en el inventario vas descalzo, como empieza el GDD; en «Personaje», el botón «Descalzo» quita los zapatos y la vista «Pies» los enseña de cerca. Personajes en recursos/personajes/taller-v12/.',
+  'v38: en «Construir», el adarve (4 tablas, 4 clavos y 2 troncos): la pasarela de tablas a 1,8 m por detrás de la empalizada, para asomarse entre las puntas. Se sube por una escalera de mano o de tablas puesta delante y girada hacia él, que salen más cortas.',
   "v37, arreglo (valravnx, 29 oct): en «Construir», el panel de inventario es el equipo: tu personaje de verdad, vestido con lo que llevas, y a los lados los cuadros de la ropa, la cintura y la espalda; sin cuadros de manos ni de hombro ni el dibujo retorcido. Lo de las manos y el hombro se coge del mundo (el arcón de pruebas, mientras no haya objetos en el suelo) y abajo sale lo que llevas, con «Soltar»; el hacha de mano se ve en la mano.",
   'v36: en «Construir», se recoge del suelo y de las plantas con Usar: ramas caídas en el bosque, piedra suelta en la ladera, sílex en un afloramiento de caliza y fibra de ortigas y hierba larga en el claro. Va al inventario por huecos y vuelve a salir pasado su tiempo (días las ramas, semanas la piedra y el sílex, un mes la fibra). Es la construcción v35. En línea, de momento lo recogido es de cada navegador.',
   'v35: los personajes vuelven a tener las manos enteras (desde la taller-v9 salían como una tira, también las de los demás jugadores) y la mujer lleva botas bajas, que ya no atraviesan la falda larga. Personajes en recursos/personajes/taller-v11/.',
