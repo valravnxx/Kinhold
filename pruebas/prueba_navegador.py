@@ -929,7 +929,7 @@ with sync_playwright() as p:
     ev(f"{K}.pj.x=11.2; {K}.pj.z={A + 4.6}; {K}.pj.rot=-2.5; {K}.cam.yaw=0.75; {K}.cam.pitch=0.22; {K}.cam.dist=8")
     esperar(pg, 1200)
     pg.screenshot(path=f'{SALIDA}/53_adarve_y_escaleras.png')
-    ev(f"{K}.pj.x=5.4; {K}.pj.z={A + 2.4}; {K}.pj.rot=2.5; {K}.cam.yaw=-0.9; {K}.cam.pitch=0.12; {K}.cam.dist=3.6")
+    ev(f"{K}.pj.x=10.9; {K}.pj.z={A + 2.3}; {K}.pj.rot=-2.4; {K}.cam.yaw=0.8; {K}.cam.pitch=0.35; {K}.cam.dist=4.5")
     esperar(pg, 1200)
     pg.screenshot(path=f'{SALIDA}/54_adarve_de_cerca.png')
     ev(f"{K}.pj.x=8.3; {K}.pj.z={A - 0.4}; {K}.pj.k=1; {K}.pj.y=1.8; {K}.pj.rot=Math.PI; {K}.cam.yaw=Math.PI+0.35; {K}.cam.pitch=0.2; {K}.cam.dist=6")
