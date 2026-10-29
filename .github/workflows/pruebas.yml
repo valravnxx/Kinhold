@@ -24,15 +24,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Borrar ramas de pruebas viejas (más de 3 horas)
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set +e
           limite=$(( $(date +%s) - 3 * 3600 ))
           for prefijo in nube nube-pedido; do
             gh api "repos/${{ github.repository }}/git/matching-refs/heads/$prefijo/" --jq '.[] | "\(.ref) \(.object.sha)"' | while read -r ref sha; do
               [ "$ref" = "refs/heads/${{ github.ref_name }}" ] && continue
               fecha=$(gh api "repos/${{ github.repository }}/commits/$sha" --jq .commit.committer.date) || continue
-              [ "$(date -d "$fecha" +%s)" -lt "$limite" ] && gh api -X DELETE "repos/${{ github.repository }}/git/${ref#refs/}" && echo "borrada $ref"
+              if [ "$(date -d "$fecha" +%s)" -lt "$limite" ]; then gh api -X DELETE "repos/${{ github.repository }}/git/${ref#refs/}" && echo "borrada $ref"; fi
             done
           done
           true
