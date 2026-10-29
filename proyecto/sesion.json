@@ -5,5 +5,10 @@
   "hito": "despejar",
   "rama": "trabajo/20261029-1925"
  },
- "B": null
+ "B": {
+  "inicio": "2026-10-29T20:53:23+00:00",
+  "tarea": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, corte, tejido y tinte (sin calidades), sobre el mismo esqueleto",
+  "hito": "arte",
+  "rama": "trabajo/20261029-2053"
+ }
 }
