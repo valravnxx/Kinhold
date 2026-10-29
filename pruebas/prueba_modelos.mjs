@@ -1,7 +1,7 @@
 // Mide los modelos de muro: todos deben llegar exactamente a la altura de planta,
 // y los huecos de puerta y ventana deben quedar limpios.
 import * as THREE from 'three';
-import { modeloPieza, rellenoTejado, mojon, decoracion, P, colgarPolipasto, tornoSuelto, POLIPASTO } from '../src/juego/modelos.js';
+import { modeloPieza, rellenoTejado, mojon, decoracion, P, colgarPolipasto, tornoSuelto, POLIPASTO } from '../src/mundo/modelos.js';
 import { PIEZAS, DECORACION, ALTURA, MODULO } from '../src/logica/piezas.js';
 import { HOGAR, ALTO_ADARVE } from '../src/logica/construccion.js';
 

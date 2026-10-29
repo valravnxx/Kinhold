@@ -15,6 +15,7 @@
 //      madre por provincias y vetas (hierro de pantano en turberas, hierro de veta en el contacto del granito o la
 //      pizarra con la caliza, carbón en las cuencas de arenisca al pie de las sierras).
 // Todo sale de la semilla: mismo número, mismo mundo.
+import { azar, hash2, ruido, fbm } from './azar.js';
 
 export const LADO_KM = 188;             // GDD: mundo de unos 188 × 188 km con el mar
 export const K = 5.61e-7, M = 0.5;      // constante de erosión (1/año) y exponente del área (Cordonnier y otros)
@@ -57,27 +58,8 @@ export const VETAS = {
   granCarbon: { nombre: 'Gran veta de carbón' },
 };
 
-// ---------- azar con semilla ----------
-export function azar(semilla) {
-  let a = semilla >>> 0;
-  return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-}
-function hash2(x, y, s) {
-  let h = (x * 374761393 + y * 668265263 + s * 1274126177) | 0;
-  h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16;
-  return (h >>> 0) / 4294967296;
-}
-const suave = (t) => t * t * (3 - 2 * t);
-export function ruido(x, y, s) {
-  const xi = Math.floor(x), yi = Math.floor(y), fx = suave(x - xi), fy = suave(y - yi);
-  const a = hash2(xi, yi, s), b = hash2(xi + 1, yi, s), c = hash2(xi, yi + 1, s), d = hash2(xi + 1, yi + 1, s);
-  return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy;
-}
-export function fbm(x, y, s, oct = 5) {
-  let r = 0, amp = 0.5, f = 1, tot = 0;
-  for (let o = 0; o < oct; o++) { r += ruido(x * f, y * f, s + o * 31) * amp; tot += amp; amp *= 0.5; f *= 2.03; }
-  return r / tot;
-}
+// ---------- azar con semilla (vive en src/logica/azar.js; se siguen ofreciendo desde aquí) ----------
+export { azar, ruido, fbm };
 const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
 // montículo binario (prioridad = altura) para la inundación por prioridad

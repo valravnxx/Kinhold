@@ -3,6 +3,7 @@
 // oclusión de contacto horneada en los vértices y fondo desenfocado (como una foto de maqueta).
 // Ligero igual que la v2: todo lo fijo en una malla, lo repetido instanciado, una sola sombra.
 import * as THREE from 'three';
+import { azarLineal as azar, pseudo3 as ruido3 } from '../logica/azar.js';
 
 // Paleta: apagada y natural, un punto más cálida y limpia que la v2
 export const PALETA = {
@@ -26,7 +27,6 @@ export const LUCES = {
 // ---------- Texturas por código (v4, «realismo en miniatura») ----------
 // En gris claro (media ≈ 0,85): el color lo ponen los vértices; la textura da el detalle y el relieve (bumpMap).
 // Todas las vetas van a lo largo del eje v; el Lote proyecta las UV para que v siga el eje largo de cada pieza.
-function azar(semilla) { let s = semilla >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
 const cacheTex = {};
 export function textura(tipo) {
   if (cacheTex[tipo]) return cacheTex[tipo];
@@ -116,7 +116,6 @@ export function material(tipo = 'fijo') {
 // add(geo, color, x, y, z, giro, opc) — giro: {x, y, z} en radianes o una Matrix4.
 // opc: escala (Vector3), plano (caras planas), brillo, rayas(v), sinSuelo (sin oscurecer al pie).
 // Al cerrar: color × variación suave × oclusión de contacto (más oscuro al pie y en lo que mira abajo)
-function ruido3(x, y, z) { const s = Math.sin(x * 12.99 + y * 78.23 + z * 37.71) * 43758.55; return s - Math.floor(s); }
 export class Lote {
   constructor({ variacion = 0.05, rangoSuelo = 0.6, suelo = 0 } = {}) { this.piezas = []; this.variacion = variacion; this.rangoSuelo = rangoSuelo; this.suelo = suelo; }
   add(geo, color, x = 0, y = 0, z = 0, giro = null, opc = {}) {

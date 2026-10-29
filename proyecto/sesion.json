@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-10-29T19:25:07+00:00",
-  "tarea": "Orden en el código antes de unir las partes, sin cambiar nada de lo que se ve: un solo módulo de azar y ruido, la biblioteca de modelos (src/juego/modelos.js) y la elección de personaje (src/demo/eleccion.js) a la escena común, un solo cliente en línea para la construcción y el duelo, y el visor del mapa con los personajes del taller de ahora",
+  "inicio": "2026-10-29T21:23:04+00:00",
+  "tarea": "Revisión completa y publicación",
   "hito": "despejar",
-  "rama": "trabajo/20261029-1925"
+  "rama": "trabajo/20261029-2123"
  },
  "B": {
   "inicio": "2026-10-29T20:53:23+00:00",

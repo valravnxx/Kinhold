@@ -1,6 +1,6 @@
 // Kinhold — modelos y animación del campo de pruebas de combate (low-poly por código)
 import * as THREE from 'three';
-import { mat, deLote, deMano, cajaR } from '../juego/modelos.js';
+import { mat, deLote, deMano, cajaR } from '../mundo/modelos.js';
 import { Lote } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { vestirConTaller, pintarHeridaTaller, animarTaller } from './taller.js';

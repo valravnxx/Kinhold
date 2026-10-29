@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { prepararRenderer, crearAmbiente } from '../../src/mundo/ambiente.js';
 import { suelo } from '../../src/mundo/decorado.js';
-import { modeloPieza, rellenoTejado, P } from '../../src/juego/modelos.js';
+import { modeloPieza, rellenoTejado, P } from '../../src/mundo/modelos.js';
 import { Mundo, centroLocal, geometriaTejados } from '../../src/logica/construccion.js';
 import { PIEZAS, ALTURA } from '../../src/logica/piezas.js';
 

@@ -5,7 +5,8 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { PALETA, Lote, materialTex } from '../mundo/estilos.js';
-import { azar, cil, copa, pisoPino, suelo as sueloComun, bosque as bosqueComun, plantas as plantasComun } from '../mundo/decorado.js';
+import { azarLineal as azar } from '../logica/azar.js';
+import { cil, copa, pisoPino, suelo as sueloComun, bosque as bosqueComun, plantas as plantasComun } from '../mundo/decorado.js';
 
 const caja = (w, h, d, radio = 0.025) => new RoundedBoxGeometry(w, h, d, 1, Math.min(radio, w / 2.05, h / 2.05, d / 2.05));
 

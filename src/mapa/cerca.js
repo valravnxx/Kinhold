@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { materialTex } from '../mundo/estilos.js';
-import { azar } from '../mundo/decorado.js';
+import { azarLineal as azar } from '../logica/azar.js';
 import { modelosEspecies, ESPECIES } from '../mundo/especies.js';
 import { crearPaisaje, bosqueEn, azarCelda } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';

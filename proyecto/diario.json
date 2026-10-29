@@ -2379,5 +2379,22 @@
   "pruebas": "Batería entera en la nube: 15 grupos correctos. Tras compactar las muestras del panel, repetidos personaje, demo única y juego en inglés: correctos.",
   "capturas": "capturas/personaje-v22",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T19:25:02+00:00",
+  "fin": "2026-10-29T20:35:41+00:00",
+  "titulo": "Despejar: orden en el código (azar, modelos, elección, cliente en línea) y el mapa con el taller de ahora",
+  "hito": "despejar",
+  "hecho": [
+   "Un solo módulo de azar y ruido (src/logica/azar.js, lógica pura): el generador del mapa y del combate, el lineal del decorado, las rocas y las texturas, el azar por celda del mundo, el ruido de valor 2D y 3D, el fbm, el ruido con derivadas del paisaje y el pseudoazar de los modelos. Antes había ocho copias sueltas",
+   "Cada uno da exactamente los mismos números que antes: prueba nueva (pruebas/prueba_azar.mjs) con huellas sacadas del código de antes de juntarlos, también del mapa generado y de las alturas del paisaje; con MUTAR=1 cambia una cifra y falla",
+   "La biblioteca de modelos pasa a src/mundo/modelos.js y la elección de personaje a src/mundo/eleccion.js, con la carpeta del taller que usan la construcción, el duelo y el visor del mapa en un solo sitio (taller-v12)",
+   "Un solo cliente en línea (src/mundo/cliente.js): conexión, estado, presencia, aspectos, servidor antiguo y avisos; la construcción y el duelo solo añaden lo suyo",
+   "El visor del mapa (v14): en la vista de juego anda el personaje elegido en el visor de personaje con el taller de ahora, en vez del hombre de la taller-v7",
+   "No comprobado: el visor del mapa con un personaje elegido en el visor (la prueba entra sin elegir; la misma función la usa la construcción, que sí se prueba)"
+  ],
+  "pruebas": "En la nube: los 15 grupos bien; la prueba de recoger falló una vez porque buscaba la carpeta del taller en src/juego/main.js y, arreglada, pasa",
+  "capturas": "capturas/mapa-v14",
+  "estado": "ok"
  }
 ]

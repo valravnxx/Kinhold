@@ -390,9 +390,9 @@
     },
     {
      "nombre": "Orden en el código antes de unir las partes, sin cambiar nada de lo que se ve: un solo módulo de azar y ruido, la biblioteca de modelos (src/juego/modelos.js) y la elección de personaje (src/demo/eleccion.js) a la escena común, un solo cliente en línea para la construcción y el duelo, y el visor del mapa con los personajes del taller de ahora",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T19:25:07+00:00",
-     "rama": "trabajo/20261029-1925"
+     "fin": "2026-10-29T20:35:41+00:00"
     },
     {
      "nombre": "Regla de revisión visual (valravnx, 29 oct): antes de enseñar o publicar algo que se ve, capturas de cerca al lado de la referencia y la lista de lo que aún está mal; si se ve peor que la prueba de estilo v5, no se enseña",
@@ -400,7 +400,9 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T21:23:04+00:00",
+     "rama": "trabajo/20261029-2123"
     }
    ]
   },
@@ -2353,6 +2355,13 @@
      "archivo": "jugar/mapa/v13.html",
      "capturas": "capturas/mapa-v13",
      "notas": "Bosques frondosos: siete especies de árbol (abeto, pino, abedul, roble, haya, fresno y encina), 2 o 3 por bioma en rodales; masas de bosque y claros con lindes graduales, corros en campo abierto y límite del bosque en la montaña. Desde lo alto, las masas se leen como masas."
+    },
+    {
+     "v": "v14",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/mapa/v14.html",
+     "capturas": "capturas/mapa-v14",
+     "notas": "En la vista de juego anda el personaje elegido en el visor, con el taller de ahora (taller-v12). Por dentro, el código queda ordenado sin cambiar el mundo."
     }
    ]
   }

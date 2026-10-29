@@ -3,9 +3,9 @@ import * as THREE from 'three';
 import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, empalizadasDe, ALTO_ADARVE } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
-import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto, moverHumo } from './modelos.js';
+import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto, moverHumo } from '../mundo/modelos.js';
 import { crearJugador } from './personaje.js';
-import { personajeElegido } from '../demo/eleccion.js';
+import { personajeElegido, recursosTaller } from '../mundo/eleccion.js';
 import { REGISTRO, VERSION } from './registro.js';
 import { t } from './textos.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
@@ -120,8 +120,8 @@ const obstaculos = decorado.obstaculos; // {x,z,r}
 const recoleccion = crearRecoleccion({ raiz: escena, altura: decorado.altura, obstaculos, almacen });
 
 // ---------------- Personaje y cámara ----------------
-// personaje del taller propio: la versión publicada vive en jugar/construccion/, los modelos en recursos/personajes/taller-v12/
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v12/';
+// personaje del taller propio (la carpeta, en src/mundo/eleccion.js)
+const RECURSOS_MH = recursosTaller();
 // el personaje elegido en el visor (cuerpo y ropa); si no se ha elegido ninguno, camisa y calzas de lino (GDD)
 const elegido = personajeElegido();
 const jugador = elegido ? crearJugador(RECURSOS_MH, elegido.sexo, elegido.capas, elegido.aspecto) : crearJugador(RECURSOS_MH);
