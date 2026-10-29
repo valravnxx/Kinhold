@@ -1,0 +1,174 @@
+Vista pc
+  OK   «ahora mismo» lista solo los agentes vivos, cada uno con su tarea (el chat, vivo por su último avance) — A|Taller: pasar también las 39 animaciones extra (
+  OK   roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva — ['Taller: pasar también las 39 animaciones · En proceso · Agente A']
+  OK   roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias» — []
+  OK   «ahora mismo» no sale arriba ni en Jugar
+  OK   «ahora mismo» sale en Roadmap, debajo de las pestañas y encima de los hitos — [577.640625, 606.9815673828125, 729.6903076171875, 898.828125]
+  OK   se ven los prototipos jugables
+  OK   la alpha va arriba y abre la última versión de la demo única — jugar/demo/v39.html
+  OK   las pruebas sueltas están en un desplegable cerrado, con todas las demás
+  OK   al abrir el desplegable se ven las pruebas sueltas
+  OK   feria: guirnalda de banderines, cartel de madera y cada pestaña en un pergamino con dos rodillos
+  OK   las fuentes medievales se cargan — Alegreya SC, Cinzel Decorative, EB Garamond
+  OK   sin desplazamiento horizontal — 1280px
+  OK   pestaña roadmap visible y con contenido
+  OK   pestaña diario visible y con contenido
+  OK   diario: las 12 últimas a la vista y las demás en un desplegable
+  OK   pestaña tiempos visible y con contenido
+  OK   pestaña decisiones visible y con contenido
+  OK   pestaña documentos visible y con contenido
+  OK   el botón EN pasa la web a inglés
+  OK   el idioma elegido se recuerda al recargar
+  OK   y ES la devuelve al español
+  OK   ?lang=en abre la web en inglés
+  OK   en inglés, los documentos de diseño enlazan a la versión inglesa — diseno/en/gdd.html, diseno/en/sistemas.html, diseno/en/revision.html, diseno/en/analisis.html
+  OK   gdd: el selector EN abre la traducción
+  OK   gdd: en inglés hay texto propio, sin restos típicos del español
+  OK   gdd (inglés): sin desplazamiento horizontal — 1280px
+  OK   gdd: el selector ES vuelve al español
+  OK   gdd: mismas secciones en los dos idiomas
+  OK   sistemas: el selector EN abre la traducción
+  OK   sistemas: en inglés hay texto propio, sin restos típicos del español
+  OK   sistemas (inglés): sin desplazamiento horizontal — 1280px
+  OK   sistemas: el selector ES vuelve al español
+  OK   sistemas: mismas secciones en los dos idiomas
+  OK   analisis: el selector EN abre la traducción
+  OK   analisis: en inglés hay texto propio, sin restos típicos del español
+  OK   analisis (inglés): sin desplazamiento horizontal — 1280px
+  OK   analisis: el selector ES vuelve al español
+  OK   analisis: mismas secciones en los dos idiomas
+  OK   revision: el selector EN abre la traducción
+  OK   revision: en inglés hay texto propio, sin restos típicos del español
+  OK   revision (inglés): sin desplazamiento horizontal — 1280px
+  OK   revision: el selector ES vuelve al español
+  OK   revision: mismas secciones en los dos idiomas
+  OK   en español, los documentos enlazan al original
+  OK   botón RU: la web en ruso
+  OK   en ruso, el roadmap está en cirílico — Прямо сейчас
+Агент A
+Мастерская: перенести на скелет MakeHuman и 39 дополнительных анимаций (работы, лук, меч, блок, пер
+  OK   en ruso, el diario está en cirílico — Дневник
+29 окт.
+15:38 – 16:38 · 60 мин
+Сайт легче: старые скриншоты уменьшены, старые версии готовы к релизам
+Измерено: 
+  OK   en ruso, los documentos de diseño enlazan a la versión rusa — diseno/ru/gdd.html, diseno/ru/sistemas.html, diseno/ru/revision.html, diseno/ru/analisis.html
+  OK   en ruso, las tarjetas de documentos ya no dicen «пока на английском»
+  OK   gdd: el selector RU abre la traducción rusa
+  OK   gdd: en ruso hay texto en cirílico, sin restos típicos del español
+  OK   gdd: mismas secciones en español y en ruso
+  OK   gdd (ruso): sin desplazamiento horizontal — 1280px
+  OK   gdd: desde el ruso, EN abre el inglés
+  OK   gdd: desde el ruso, ES vuelve al español
+  OK   sistemas: el selector RU abre la traducción rusa
+  OK   sistemas: en ruso hay texto en cirílico, sin restos típicos del español
+  OK   sistemas: mismas secciones en español y en ruso
+  OK   sistemas (ruso): sin desplazamiento horizontal — 1280px
+  OK   sistemas: desde el ruso, EN abre el inglés
+  OK   sistemas: desde el ruso, ES vuelve al español
+  OK   analisis: el selector RU abre la traducción rusa
+  OK   analisis: en ruso hay texto en cirílico, sin restos típicos del español
+  OK   analisis: mismas secciones en español y en ruso
+  OK   analisis (ruso): sin desplazamiento horizontal — 1280px
+  OK   analisis: desde el ruso, EN abre el inglés
+  OK   analisis: desde el ruso, ES vuelve al español
+  OK   revision: el selector RU abre la traducción rusa
+  OK   revision: en ruso hay texto en cirílico, sin restos típicos del español
+  OK   revision: mismas secciones en español y en ruso
+  OK   revision (ruso): sin desplazamiento horizontal — 1280px
+  OK   revision: desde el ruso, EN abre el inglés
+  OK   revision: desde el ruso, ES vuelve al español
+  OK   en ruso, nada se sale por los lados
+  OK   ninguna pestaña se sale por los lados, en ningún idioma
+  OK   todos los enlaces internos responden
+  OK   el botón Jugar abre el juego — http://127.0.0.1:43263/jugar/demo/v39.html
+  OK   sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso
+  OK   «ahora mismo» en ruso
+  OK   sin errores en consola (pc)
+Vista movil
+  OK   «ahora mismo» lista solo los agentes vivos, cada uno con su tarea (el chat, vivo por su último avance) — A|Taller: pasar también las 39 animaciones extra (
+  OK   roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva — ['Taller: pasar también las 39 animaciones · En proceso · Agente A']
+  OK   roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias» — []
+  OK   «ahora mismo» no sale arriba ni en Jugar
+  OK   «ahora mismo» sale en Roadmap, debajo de las pestañas y encima de los hitos — [657.921875, 686.9649658203125, 870.4569091796875, 1014.296875]
+  OK   se ven los prototipos jugables
+  OK   la alpha va arriba y abre la última versión de la demo única — jugar/demo/v39.html
+  OK   las pruebas sueltas están en un desplegable cerrado, con todas las demás
+  OK   al abrir el desplegable se ven las pruebas sueltas
+  OK   feria: guirnalda de banderines, cartel de madera y cada pestaña en un pergamino con dos rodillos
+  OK   las fuentes medievales se cargan — Alegreya SC, Cinzel Decorative, EB Garamond
+  OK   sin desplazamiento horizontal — 390px
+  OK   pestaña roadmap visible y con contenido
+  OK   pestaña diario visible y con contenido
+  OK   diario: las 12 últimas a la vista y las demás en un desplegable
+  OK   pestaña tiempos visible y con contenido
+  OK   pestaña decisiones visible y con contenido
+  OK   pestaña documentos visible y con contenido
+  OK   el botón EN pasa la web a inglés
+  OK   el idioma elegido se recuerda al recargar
+  OK   y ES la devuelve al español
+  OK   ?lang=en abre la web en inglés
+  OK   en inglés, los documentos de diseño enlazan a la versión inglesa — diseno/en/gdd.html, diseno/en/sistemas.html, diseno/en/revision.html, diseno/en/analisis.html
+  OK   gdd: el selector EN abre la traducción
+  OK   gdd: en inglés hay texto propio, sin restos típicos del español
+  OK   gdd (inglés): sin desplazamiento horizontal — 390px
+  OK   gdd: el selector ES vuelve al español
+  OK   gdd: mismas secciones en los dos idiomas
+  OK   sistemas: el selector EN abre la traducción
+  OK   sistemas: en inglés hay texto propio, sin restos típicos del español
+  OK   sistemas (inglés): sin desplazamiento horizontal — 390px
+  OK   sistemas: el selector ES vuelve al español
+  OK   sistemas: mismas secciones en los dos idiomas
+  OK   analisis: el selector EN abre la traducción
+  OK   analisis: en inglés hay texto propio, sin restos típicos del español
+  OK   analisis (inglés): sin desplazamiento horizontal — 390px
+  OK   analisis: el selector ES vuelve al español
+  OK   analisis: mismas secciones en los dos idiomas
+  OK   revision: el selector EN abre la traducción
+  OK   revision: en inglés hay texto propio, sin restos típicos del español
+  OK   revision (inglés): sin desplazamiento horizontal — 390px
+  OK   revision: el selector ES vuelve al español
+  OK   revision: mismas secciones en los dos idiomas
+  OK   en español, los documentos enlazan al original
+  OK   botón RU: la web en ruso
+  OK   en ruso, el roadmap está en cirílico — Прямо сейчас
+Агент A
+Мастерская: перенести на скелет MakeHuman и 39 дополнительных анимаций (работы, лук, меч, блок, пер
+  OK   en ruso, el diario está en cirílico — Дневник
+29 окт.15:38 – 16:38 · 60 мин
+Сайт легче: старые скриншоты уменьшены, старые версии готовы к релизам
+Измерено: с
+  OK   en ruso, los documentos de diseño enlazan a la versión rusa — diseno/ru/gdd.html, diseno/ru/sistemas.html, diseno/ru/revision.html, diseno/ru/analisis.html
+  OK   en ruso, las tarjetas de documentos ya no dicen «пока на английском»
+  OK   gdd: el selector RU abre la traducción rusa
+  OK   gdd: en ruso hay texto en cirílico, sin restos típicos del español
+  OK   gdd: mismas secciones en español y en ruso
+  OK   gdd (ruso): sin desplazamiento horizontal — 390px
+  OK   gdd: desde el ruso, EN abre el inglés
+  OK   gdd: desde el ruso, ES vuelve al español
+  OK   sistemas: el selector RU abre la traducción rusa
+  OK   sistemas: en ruso hay texto en cirílico, sin restos típicos del español
+  OK   sistemas: mismas secciones en español y en ruso
+  OK   sistemas (ruso): sin desplazamiento horizontal — 390px
+  OK   sistemas: desde el ruso, EN abre el inglés
+  OK   sistemas: desde el ruso, ES vuelve al español
+  OK   analisis: el selector RU abre la traducción rusa
+  OK   analisis: en ruso hay texto en cirílico, sin restos típicos del español
+  OK   analisis: mismas secciones en español y en ruso
+  OK   analisis (ruso): sin desplazamiento horizontal — 390px
+  OK   analisis: desde el ruso, EN abre el inglés
+  OK   analisis: desde el ruso, ES vuelve al español
+  OK   revision: el selector RU abre la traducción rusa
+  OK   revision: en ruso hay texto en cirílico, sin restos típicos del español
+  OK   revision: mismas secciones en español y en ruso
+  OK   revision (ruso): sin desplazamiento horizontal — 390px
+  OK   revision: desde el ruso, EN abre el inglés
+  OK   revision: desde el ruso, ES vuelve al español
+  OK   en ruso, nada se sale por los lados
+  OK   ninguna pestaña se sale por los lados, en ningún idioma
+  OK   todos los enlaces internos responden
+  OK   sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso
+  OK   «ahora mismo» en ruso
+  OK   sin errores en consola (movil)
+
+Resultado: TODO CORRECTO
