@@ -613,7 +613,9 @@
     },
     {
      "nombre": "Adarve (pasarela por detrás de la empalizada: tablas y postes, sostiene 300 kg), al que se sube por escalera de mano o de tablas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T09:21:31+00:00",
+     "rama": "trabajo/20261029-0921"
     },
     {
      "nombre": "Decoración que falta del documento de sistemas: tinaja, antorcha de pared, tapiz y ganchos para herramientas",
