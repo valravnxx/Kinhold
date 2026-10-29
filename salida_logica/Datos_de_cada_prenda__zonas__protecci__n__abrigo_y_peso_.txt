@@ -1,0 +1,91 @@
+Datos de cada prenda
+  OK   camisa_lino: capa, material, partes, peso y pieza del taller — torso brazoI brazoD piernaI piernaD
+  OK   camisa_lana: capa, material, partes, peso y pieza del taller — torso brazoI brazoD piernaI piernaD
+  OK   pantalon_lino: capa, material, partes, peso y pieza del taller — piernaI piernaD
+  OK   calzas_lana: capa, material, partes, peso y pieza del taller — piernaI piernaD
+  OK   tunica_lana: capa, material, partes, peso y pieza del taller — torso brazoI brazoD piernaI piernaD
+  OK   vestido_lana: capa, material, partes, peso y pieza del taller — torso brazoI brazoD piernaI piernaD
+  OK   gambeson: capa, material, partes, peso y pieza del taller — torso brazoI brazoD piernaI piernaD
+  OK   cota_malla: capa, material, partes, peso y pieza del taller — torso brazoI brazoD piernaI piernaD
+  OK   sobreveste_lino: capa, material, partes, peso y pieza del taller — torso piernaI piernaD
+  OK   manto_lana: capa, material, partes, peso y pieza del taller — torso piernaI piernaD
+  OK   capucha_lana: capa, material, partes, peso y pieza del taller — cabeza
+  OK   sombrero_paja: capa, material, partes, peso y pieza del taller — cabeza
+  OK   toca_lino: capa, material, partes, peso y pieza del taller — cabeza
+  OK   zapatos_cuero: capa, material, partes, peso y pieza del taller — pies
+  OK   botas_cuero: capa, material, partes, peso y pieza del taller — pies
+  OK   las zonas del cuerpo incluyen todas las del combate
+  OK   cada pieza del taller tiene su prenda
+Lo que se ve y lo que protege: las piezas del taller
+  OK   hombre (taller-v12): todas sus capas tienen prenda y están en el orden del taller — botas calzas camisa capucha cota gambeson manto sobreveste sombrero tunica zapatos
+  OK   hombre: camisa_lino cubre lo que se ve (camisa: mangas, falda) — torso brazoI brazoD piernaI piernaD
+  OK   hombre: camisa_lana cubre lo que se ve (camisa: mangas, falda) — torso brazoI brazoD piernaI piernaD
+  OK   hombre: pantalon_lino cubre lo que se ve (calzas: una pieza) — piernaI piernaD
+  OK   hombre: calzas_lana cubre lo que se ve (calzas: una pieza) — piernaI piernaD
+  OK   hombre: tunica_lana cubre lo que se ve (tunica: mangas, falda) — torso brazoI brazoD piernaI piernaD
+  OK   hombre: vestido_lana cubre lo que se ve (tunica: mangas, falda) — torso brazoI brazoD piernaI piernaD
+  OK   hombre: gambeson cubre lo que se ve (gambeson: mangas, falda) — torso brazoI brazoD piernaI piernaD
+  OK   hombre: cota_malla cubre lo que se ve (cota: mangas, falda) — torso brazoI brazoD piernaI piernaD
+  OK   hombre: sobreveste_lino cubre lo que se ve (sobreveste: falda) — torso piernaI piernaD
+  OK   hombre: manto_lana cubre lo que se ve (manto: falda) — torso piernaI piernaD
+  OK   hombre: capucha_lana cubre lo que se ve (capucha: una pieza) — cabeza
+  OK   hombre: sombrero_paja cubre lo que se ve (sombrero: una pieza) — cabeza
+  OK   hombre: toca_lino no se dibuja y el modelo no tiene esa pieza
+  OK   hombre: zapatos_cuero cubre lo que se ve (zapatos: una pieza) — pies
+  OK   hombre: botas_cuero cubre lo que se ve (botas: una pieza) — pies
+  OK   mujer (taller-v12): todas sus capas tienen prenda y están en el orden del taller — botas camisa capucha cota gambeson manto sobreveste sombrero toca vestido zapatos
+  OK   mujer: camisa_lino cubre lo que se ve (camisa: mangas, falda) — torso brazoI brazoD piernaI piernaD
+  OK   mujer: camisa_lana cubre lo que se ve (camisa: mangas, falda) — torso brazoI brazoD piernaI piernaD
+  OK   mujer: pantalon_lino no se dibuja y el modelo no tiene esa pieza
+  OK   mujer: calzas_lana no se dibuja y el modelo no tiene esa pieza
+  OK   mujer: tunica_lana cubre lo que se ve (vestido: mangas, falda) — torso brazoI brazoD piernaI piernaD
+  OK   mujer: vestido_lana cubre lo que se ve (vestido: mangas, falda) — torso brazoI brazoD piernaI piernaD
+  OK   mujer: gambeson cubre lo que se ve (gambeson: mangas, falda) — torso brazoI brazoD piernaI piernaD
+  OK   mujer: cota_malla cubre lo que se ve (cota: mangas, falda) — torso brazoI brazoD piernaI piernaD
+  OK   mujer: sobreveste_lino cubre lo que se ve (sobreveste: falda) — torso piernaI piernaD
+  OK   mujer: manto_lana cubre lo que se ve (manto: falda) — torso piernaI piernaD
+  OK   mujer: capucha_lana cubre lo que se ve (capucha: una pieza) — cabeza
+  OK   mujer: sombrero_paja cubre lo que se ve (sombrero: una pieza) — cabeza
+  OK   mujer: toca_lino cubre lo que se ve (toca: una pieza) — cabeza
+  OK   mujer: zapatos_cuero cubre lo que se ve (zapatos: una pieza) — pies
+  OK   mujer: botas_cuero cubre lo que se ve (botas: una pieza) — pies
+  OK   el cargador del taller toma el orden de las capas de los datos de las prendas
+Protección por tipo de golpe
+  OK   torso, corte: camisa = «lino» del combate
+  OK   torso, corte: camisa y gambesón = «gambesón» del combate — 0.550
+  OK   torso, corte: y con cota = «malla» del combate — 0.198
+  OK   torso, perforante: camisa = «lino» del combate
+  OK   torso, perforante: camisa y gambesón = «gambesón» del combate — 0.800
+  OK   torso, perforante: y con cota = «malla» del combate — 0.552
+  OK   torso, contundente: camisa = «lino» del combate
+  OK   torso, contundente: camisa y gambesón = «gambesón» del combate — 0.800
+  OK   torso, contundente: y con cota = «malla» del combate — 0.700
+  OK   la cota protege los brazos
+  OK   la cabeza queda sin proteger (aún no hay yelmo)
+  OK   la sobreveste no tiene mangas: no cubre los brazos
+  OK   la malla frena más el corte que el golpe contundente
+  OK   lo desconocido no protege ni pesa
+Abrigo y peso
+  OK   la camisa de lana abriga más que la de lino
+  OK   el manto abriga — 7 → 13
+  OK   la cota no abriga
+  OK   peso de camisa, pantalón, gambesón y cota — 14.1 kg
+Del inventario al dibujo y vuelta
+  OK   con lo puesto al empezar: camisa y pantalón de lino
+  OK   toda la ropa está en el catálogo, en su capa
+  OK   ponerse el gambesón (capa de abrigo)
+  OK   y ahora protege el torso
+  OK   la túnica va en la misma capa: no se pone encima del gambesón — Ya llevas algo ahí: quítatelo antes.
+  OK   hombre: lo puesto se dibuja con sus piezas
+  OK   mujer: la túnica se dibuja como vestido y el pantalón no
+  OK   hombre: la toca no se dibuja
+  OK   sin zapatos ni botas va descalzo (como empieza el GDD)
+  OK   del visor: descalzo → sin zapatos
+  OK   del visor: túnica y capucha → camisa, pantalón, zapatos, túnica y capucha
+  OK   del visor: mujer con botas → sin pantalón ni zapatos
+  OK   hombre: descalzo, del visor a las prendas y vuelta da lo mismo
+  OK   hombre: del visor a las prendas y vuelta da lo mismo
+  OK   mujer: descalzo, del visor a las prendas y vuelta da lo mismo
+  OK   mujer: del visor a las prendas y vuelta da lo mismo
+
+84 correctas, 0 fallos
