@@ -1,25 +1,18 @@
 # Todas las pruebas de Kinhold en la nube, cada grupo en su máquina a la vez (lo pidió valravnx el 29 oct: aquí no hay
 # tarjeta gráfica y la batería entera pasaba de hora y media). Gratis en un repositorio público: 4 núcleos y 16 GB por
 # máquina, hasta 20 a la vez.
-# No se lanza sola con cada subida (los avances cada 15 minutos la lanzarían sin parar): la lanza
+# No se lanza con cada subida (los avances cada 15 minutos la lanzarían sin parar): la lanza
 #   node herramientas/pruebas_nube.mjs
-# que espera, trae las capturas y la salida de cada grupo y dice qué ha fallado. Los grupos salen de
+# subiendo lo que se quiere probar a una rama nube-pedido/<id>/<grupos o «todos»>, que borra al acabar. Espera, trae
+# las capturas y la salida de cada grupo y dice qué ha fallado. Los grupos salen de
 # herramientas/probar_todo.sh --grupos, así que una prueba nueva añadida allí entra sola.
 # Las capturas y la salida vuelven por una rama nube/<ejecución>-<grupo> (desde aquí no se pueden bajar los
 # «artifacts»: están en un almacén al que no se llega); el script la borra después de traerla.
 name: pruebas
-run-name: pruebas ${{ github.ref_name }} ${{ inputs.id }}
+run-name: ${{ github.ref_name }}
 on:
-  workflow_dispatch:
-    inputs:
-      id:
-        description: quién lo pide (para encontrar la ejecución)
-        required: false
-        default: ''
-      grupos:
-        description: 'solo estos grupos, en JSON (["cavar","web"]); vacío = todos'
-        required: false
-        default: ''
+  push:
+    branches: ['nube-pedido/**']
 permissions:
   contents: write
 jobs:
@@ -31,10 +24,11 @@ jobs:
       - uses: actions/checkout@v4
       - id: g
         env:
-          PEDIDOS: ${{ inputs.grupos }}
+          RAMA: ${{ github.ref_name }}
         run: |
-          if [ -n "$PEDIDOS" ]; then echo "grupos=$PEDIDOS" >> "$GITHUB_OUTPUT"
-          else echo "grupos=$(bash herramientas/probar_todo.sh --grupos)" >> "$GITHUB_OUTPUT"; fi
+          pedidos="${RAMA#nube-pedido/*/}"
+          if [ "$pedidos" = todos ]; then echo "grupos=$(bash herramientas/probar_todo.sh --grupos)" >> "$GITHUB_OUTPUT"
+          else echo "grupos=[\"${pedidos//+/\",\"}\"]" >> "$GITHUB_OUTPUT"; fi
   grupo:
     needs: lista
     strategy:

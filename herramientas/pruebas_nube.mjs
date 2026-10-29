@@ -4,7 +4,7 @@
 // Uso: node herramientas/pruebas_nube.mjs                       todos los grupos
 //      node herramientas/pruebas_nube.mjs cavar web             solo esos grupos (bash herramientas/probar_todo.sh --grupos)
 //      SIN_TRAER=1 node herramientas/pruebas_nube.mjs           sin traer capturas
-// Hace falta gh con permiso sobre el repositorio (lo tienen las sesiones).
+// Lo lanza la subida de una rama nube-pedido/<id>/<grupos>, que se borra al acabar. Hace falta gh con permiso sobre el repositorio (lo tienen las sesiones).
 import { execFileSync } from 'child_process';
 import { mkdirSync, rmSync, readdirSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
@@ -21,18 +21,18 @@ if (rama === 'HEAD') { console.error('No estás en ninguna rama.'); process.exit
 if (sh('git', ['status', '--porcelain', '--untracked-files=no'])) console.log('Aviso: hay cambios sin commit; en la nube se prueba lo subido.');
 sh('git', ['push', '-q', 'origin', `HEAD:refs/heads/${rama}`]);
 const sha = sh('git', ['rev-parse', 'HEAD']);
+if (!sh('git', ['ls-tree', 'HEAD', '.github/workflows/pruebas.yml'])) { console.error('Esta rama no tiene .github/workflows/pruebas.yml: une main primero.'); process.exit(2); }
 const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 const grupos = process.argv.slice(2);
-const campos = ['-f', `ref=${rama}`, '-f', `inputs[id]=${id}`];
-if (grupos.length) campos.push('-f', `inputs[grupos]=${JSON.stringify(grupos)}`);
-sh('gh', ['api', '-X', 'POST', `repos/${REPO}/actions/workflows/pruebas.yml/dispatches`, ...campos]);
+const pedido = `nube-pedido/${id}/${grupos.length ? grupos.join('+') : 'todos'}`;
+sh('git', ['push', '-q', 'origin', `HEAD:refs/heads/${pedido}`]);
 console.log(`Pruebas en la nube de ${rama} (${sha.slice(0, 7)})${grupos.length ? ': ' + grupos.join(', ') : ''}`);
 
 let run = null;
 for (let i = 0; i < 40 && !run; i++) {
   await dormir(6);
-  const r = gh(`repos/${REPO}/actions/workflows/pruebas.yml/runs?branch=${encodeURIComponent(rama)}&event=workflow_dispatch&per_page=20`);
-  run = r.workflow_runs.find(w => w.display_title.endsWith(` ${id}`));
+  const r = gh(`repos/${REPO}/actions/runs?branch=${encodeURIComponent(pedido)}&per_page=5`);
+  run = r.workflow_runs.find(w => w.head_branch === pedido);
 }
 if (!run) { console.error('No aparece la ejecución en GitHub.'); process.exit(2); }
 console.log(`Ejecución ${run.id}: ${run.html_url}`);
@@ -52,6 +52,7 @@ for (;;) {
   if (run.status === 'completed') break;
 }
 const jobs = gh(`repos/${REPO}/actions/runs/${run.id}/jobs?per_page=100`).jobs.filter(j => j.name !== 'lista');
+try { sh('git', ['push', '-q', 'origin', '--delete', pedido]); } catch {}
 const malos = jobs.filter(j => j.conclusion !== 'success');
 if (!jobs.length) console.log('Ningún grupo ha llegado a arrancar (¿falló la lista?).');
 
