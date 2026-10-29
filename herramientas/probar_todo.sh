@@ -56,6 +56,7 @@ paso "Taller: manos enteras y botas de la mujer bajo la falda" node pruebas/prue
 paso "Taller: pies descalzos" node pruebas/prueba_pies.mjs
 paso "Taller: tintes de la ropa y blasón" node pruebas/prueba_tintes.mjs
 paso "Hechura de la ropa (material, corte y tejido)" node pruebas/prueba_hechura.mjs
+paso "Niveles de detalle de los personajes" node pruebas/prueba_detalle.mjs
 paso "Taller: versiones fijadas" python3 herramientas/taller/comprobar_taller.py --prueba
 paso "Capturas: solo las del cambio" node pruebas/prueba_capturas.mjs
 paso "Unión del diario y las traducciones" node pruebas/prueba_unir_json.mjs
@@ -77,6 +78,7 @@ paso "Navegador: duelo en línea (dos páginas y un servidor)" python3 pruebas/p
 paso "Navegador: recursos de personaje v2" python3 pruebas/prueba_recursos_personaje.py "$C/recursos"
 paso "Navegador: juego en inglés (también estilo y personaje)" python3 pruebas/prueba_idioma_navegador.py dist/kinhold_hito1.html dist/kinhold_combate.html dist/kinhold_estilo.html dist/kinhold_personaje.html "$C/idioma"
 paso "Navegador: cavar" python3 pruebas/prueba_mina_navegador.py dist/kinhold_mina.html "$C/mina"
+paso "Navegador: niveles de detalle del personaje" python3 pruebas/prueba_detalle_navegador.py dist/kinhold_personaje.html dist/kinhold_demo.html "$C/detalle"
 paso "Navegador: mapa del mundo" python3 pruebas/prueba_mapa_navegador.py dist/kinhold_mapa.html "$C/mapa"
 paso "Web de progreso" node herramientas/construir_web.mjs
 paso "Navegador: web" python3 pruebas/prueba_web.py "$C/web"
