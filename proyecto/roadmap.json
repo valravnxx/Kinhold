@@ -368,7 +368,7 @@
   {
    "id": "despejar",
    "num": "1h",
-   "estado": "en_curso",
+   "estado": "revision",
    "nombre": "Despejar: web, código y revisión visual",
    "jugable": "Nada nuevo a la vista: la web cabe en el límite de GitHub sin perder ninguna versión, el código queda ordenado para unir las partes y hay una regla de revisión visual.",
    "nota": "Fase 0 de la revisión del 29 oct (aprobada por valravnx): va antes que todo lo demás. La web pesaba 701 MB de un máximo de 1 GB.",
@@ -400,9 +400,11 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T21:23:04+00:00",
-     "rama": "trabajo/20261029-2123"
+     "rama": "trabajo/20261029-2123",
+     "fin": "2026-10-29T22:23:12+00:00",
+     "notas": "Las 15 pruebas en la nube correctas. 7 versiones más a sus releases (demo v35 a v37, mapa v9, personaje v16 a v18) y 137 capturas viejas encogidas: la web pasa de 379 a 363 MB."
     }
    ]
   },
@@ -1598,7 +1600,7 @@
     {
      "v": "v37",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v37.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v37.html",
      "capturas": "capturas/demo-v37",
      "notas": "El panel de inventario es el equipo (valravnx, 29 oct): tu personaje de verdad, vestido con lo que llevas, y a los lados la ropa, la cintura y la espalda; sin cuadros de manos ni de hombro ni el dibujo retorcido. Lo de las manos y el hombro se coge del mundo (el arcón de pruebas) y abajo sale lo que llevas, con «Soltar»; el hacha de mano se ve en la mano."
     },
@@ -2221,7 +2223,7 @@
     {
      "v": "v18",
      "fecha": "2026-10-29",
-     "archivo": "jugar/personaje/v18.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v18.html",
      "capturas": "capturas/personaje-v18",
      "notas": "Más peinados y barbas en el taller propio: melena, coleta y trenzas (también la mujer, sin la cofia), barba larga y perilla; la barba ya no se aclara bajo la barbilla. Personajes en recursos/personajes/taller-v10/."
     },

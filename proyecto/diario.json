@@ -2412,5 +2412,22 @@
   "pruebas": "En la nube, 15 grupos: 14 bien a la primera; «logica» falló en «Jugadores que se ven, con lag simulado» (paso mayor 2,58× con límite 2,5; no toca nada de este cambio) y pasó entera al repetirla. Nueva: Hechura 21/21 (MUTAR=1 falla). Personaje en navegador con la hechura, PC y móvil, correcto. Tras unir main (orden del código del carril A) no se repitió la batería entera: aquí, idiomas, hechura, tintes y prendas correctas y los dos prototipos se construyen.",
   "capturas": "capturas/personaje-v23",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T21:23:04+00:00",
+  "fin": "2026-10-29T22:23:12+00:00",
+  "titulo": "Hito Despejar: revisión completa y publicación",
+  "hito": "despejar",
+  "hecho": [
+   "Las 15 pruebas en la nube correctas (la batería entera, 54 min con construcción como la más larga, 51 min)",
+   "La acción «releases» de GitHub se puede lanzar desde las sesiones (comprobado): lanzada, la lancé dos veces (la segunda tras unir lo que publicó el carril B): subió 7 versiones más, quitadas de la web: demo v35 a v37, mapa v9, personaje v16 a v18",
+   "137 capturas viejas encogidas: las capturas pasan de 224 a 214 MB",
+   "La web pasa de 379 a 363 MB, con lo que ha publicado el carril B mientras tanto (el límite es 1 GB); en la web quedan las 5 últimas versiones de cada prototipo y la prueba de estilo v5",
+   "Capturas de la demo y del personaje revisadas en PC y móvil: nada cambia a la vista, como pedía el hito",
+   "El hito queda en revisión, esperando a valravnx"
+  ],
+  "pruebas": "En la nube: 15 de 15 grupos correctos; el grupo web otra vez después de regenerar la web",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
