@@ -1,0 +1,31 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 1904 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1812 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1420 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 1885 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2214 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1414 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 1819 KB
+
+== Navegador: personaje
+  OK   recuerda vista y personaje al recargar — {'luz': 'manana', 'vista': 'perfil', 'modo': 'quieto', 'sexo': 'hombre', 'ropa': 'campesino', 'pelo': 'largo', 'colorPelo': 'rubio', 'piel': 'clara', 'barba': 'si', 'calidad': 'alta', 'sombras': True, 'escena': True, 'base': 'quaternius', 'capas': {'mujer': ['vestido'], 'hombre': ['tunica']}, 'tintes': {'hombre': {'prendas': {'camisa': 'natural', 'calzas': 'natural', 'tunica': 'pardo', 'vestido': 'natural', 'gambeson': 'natural', 'sobreveste': 'rubia', 'manto': 'natural', 'capucha': 'natural', 'toca': 'natural', 'zapatos': 'natural', 'botas': 'natural'}, 'blason': {'dibujo': 'liso', 'color': 'negro'}}}, 'hechuras': {'hombre': {'camisa': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'calzas': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'tunica': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'vestido': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'gambeson': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'sobreveste': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'manto': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'capucha': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'toca': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}}}, 'aspecto': {}}
+  OK   sin errores en consola (movil)
+
+Resultado: TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 1753 s
