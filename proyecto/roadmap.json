@@ -67,6 +67,12 @@
      "inicio": "2026-10-28T05:40:45+01:00",
      "rama": "trabajo/20261028-0540-agentes",
      "fin": "2026-10-28T05:56:43+01:00"
+    },
+    {
+     "nombre": "Pruebas en la nube (GitHub Actions, gratis en repositorio público): las pruebas de navegador en paralelo en máquinas de 4 núcleos, con las capturas de vuelta, para que las sesiones no pasen horas esperando a que dibuje esta máquina sin gráfica (lo pidió valravnx el 29 oct)",
+     "estado": "en_curso",
+     "inicio": "2026-10-29T11:03:35+01:00",
+     "rama": "trabajo/20261029-1005-nube"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
