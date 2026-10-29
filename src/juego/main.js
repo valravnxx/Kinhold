@@ -192,7 +192,7 @@ function aplicarAperturas(obj, p) {
 // rehacían todas las piezas y las viejas se quedaban ocupando memoria gráfica: tras un rato construyendo, el móvil
 // se quedaba sin ella y la pantalla en blanco aunque fuera a más de 80 fps (lo vio valravnx). Los materiales son
 // compartidos (salen de una caché) y no se liberan.
-function liberar(obj) { if (window.__sinLiberar) return; obj.traverse(o => { if (o.isMesh) o.geometry.dispose(); }); } // __sinLiberar: solo para comprobar que la prueba de la fuga falla
+function liberar(obj) { if (window.__sinLiberar) return; obj.traverse(o => { if (o.isMesh && !o.geometry.userData.compartida) o.geometry.dispose(); }); } // __sinLiberar: solo para comprobar que la prueba de la fuga falla
 // Esconde la hierba, las flores y las matas bajo lo construido en la planta baja y bajo los muebles del suelo.
 function despejarDecorado() {
   if (window.__sinDespejar) return; // solo para comprobar que la prueba de la hierba bajo lo construido falla
@@ -220,13 +220,45 @@ function contextoSuelo(c, p) {
   return { vecinos: { xn: igual(-1, 0), xp: igual(1, 0), zn: igual(0, -1), zp: igual(0, 1) } };
 }
 // el objeto 3D de una pieza (tj: su tejado, de geometriaTejados)
+// Modelos ya hechos, por tipo y contexto (vecinos, tejado): la misma pieza en el mismo sitio sale siempre igual, así
+// que se hace una vez y luego se copia compartiendo geometría y materiales. Rehacer todo lo construido costaba unos
+// 200 ms con una casa de dos plantas, casi todo en hacer la geometría otra vez, y en línea se rehacía con cada puerta
+// y cada obra terminada, en los dos jugadores (los tirones que vio valravnx el 28 oct). Las geometrías compartidas no
+// se liberan al quitar una pieza (liberar las salta); nada las cambia después: a las piezas solo se les cambia el
+// material entero (obras, velos), nunca el que comparten.
+const modelosHechos = new Map();
+window.__modelos = { hechos: 0, copiados: 0 };   // para la prueba
+function modeloDe(tipo, ctx) {
+  if (window.__sinCopiarModelos) return modeloPieza(tipo, ctx);   // solo para comprobar que la prueba de tiempos falla
+  const clave = tipo + '|' + (ctx ? JSON.stringify(ctx) : '');
+  let plantilla = modelosHechos.get(clave);
+  if (!plantilla) {
+    plantilla = modeloPieza(tipo, ctx);
+    plantilla.traverse(o => { if (o.isMesh) o.geometry.userData.compartida = true; });
+    modelosHechos.set(clave, plantilla);
+    window.__modelos.hechos++;
+  } else window.__modelos.copiados++;
+  return plantilla.clone(true);
+}
+// lo que cierra bajo el tejado, igual: se hace una vez por forma y se copia
+function rellenoDe(rel, arranque) {
+  if (window.__sinCopiarModelos) return rellenoTejado(rel, arranque);
+  const clave = 'relleno|' + arranque + '|' + JSON.stringify(rel);
+  let plantilla = modelosHechos.get(clave);
+  if (!plantilla) {
+    plantilla = rellenoTejado(rel, arranque);
+    plantilla.traverse(o => { if (o.isMesh) o.geometry.userData.compartida = true; });
+    modelosHechos.set(clave, plantilla);
+  }
+  return plantilla.clone(true);
+}
 function objPieza(c, key, p, tj) {
-  const obj = modeloPieza(p.tipo, tj || contextoSuelo(c, p));
+  const obj = modeloDe(p.tipo, tj || contextoSuelo(c, p));
   transformarPieza(obj, p);
   aplicarAperturas(obj, p);
   if (tj) {
     obj.position.y += tj.arranque * P.subidaTejado;
-    for (const rel of tj.rellenos) obj.add(rellenoTejado(rel, tj.arranque));
+    for (const rel of tj.rellenos) obj.add(rellenoDe(rel, tj.arranque));
   }
   if (p.obra) vestirObra(obj, p);
   obj.userData = { c, key, k: p.k };
@@ -236,7 +268,16 @@ function objPieza(c, key, p, tj) {
 // Rehace solo una pieza (una obra que avanza un cuarto). Rehacer todo lo construido cada vez que avanzaba una obra
 // tiraba los fotogramas mientras se construía (lo vio valravnx jugando en línea el 27 oct): con una cabaña, cada
 // vez son cientos de milisegundos, y más en el móvil.
+// Las mallas guardan a qué construcción pertenecen. En línea, el mundo puede pasar a ser otra copia con las mismas
+// construcciones (al hacer algo propio, o al confirmarlo el servidor) sin que cambie lo que se ve: entonces no se
+// rehace nada, solo se apuntan las mallas a las construcciones del mundo de ahora (por su id).
+function reapuntar() {
+  const porId = new Map(mundo.construcciones.map(c => [c.id, c]));
+  for (const g of raizConstr.children) if (g.userData.c && porId.has(g.userData.c.id)) g.userData.c = porId.get(g.userData.c.id);
+  for (const r of registroMallas) if (r.c && porId.has(r.c.id)) { r.c = porId.get(r.c.id); r.obj.userData.c = r.c; }
+}
 function rehacerPieza(idC, key) {
+  reapuntar();
   const i = registroMallas.findIndex(m => m.c && m.c.id === idC && m.key === key);
   const c = mundo.construcciones.find(x => x.id === idC), p = c && c.piezas.get(key);
   if (window.__rehacerTodo || i < 0 || !p || !registroMallas[i].obj.parent) { reconstruir(); return; } // __rehacerTodo: solo para que falle su prueba
@@ -990,7 +1031,8 @@ function usar() {
     if (it.p.hueco === 't' && it.p.abierta && dentroDeCasilla(it.c, it.p)) { mostrarAviso(t('apartateTrampilla'), true); return; }
     const r = accion({ tipo: 'usar', construccion: it.c.id, clave: it.key });
     if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
-    guardar(); reconstruir();
+    // solo cambia esa hoja: se rehace esa pieza y nada más (rehacerlo todo daba tirones; valravnx, 28 oct)
+    guardar(); rehacerPieza(it.c.id, it.key);
     mostrarAviso(it.p.abierta ? t('abierta') : t('cerrada'));
     return;
   }
@@ -1342,8 +1384,14 @@ function iniciarEnLinea() {
           if (cambia && e.autor !== enLinea.red.yo) { if (n >= 4 || n < 0) redibujar = true; else rehacerPieza(e.datos.construccion, e.datos.clave); }
         }
       }
+      if (e && e.tipo === 'usar') {
+        // abrir o cerrar una puerta: solo esa pieza (la propia ya se rehízo al usarla)
+        redibujar = false;
+        if (e.autor !== enLinea.red.yo) rehacerPieza(e.datos.construccion, e.datos.clave);
+      }
       if (msg.tipo === 'bienvenida' || info.rechazo) redibujar = true;
       if (redibujar) { reconstruir(); if (estado.modo === 'construir') evaluarColocacion(); }
+      else if (antes !== mundo) reapuntar();
       if (info.cambio || e) actualizarUI();
     },
   });
