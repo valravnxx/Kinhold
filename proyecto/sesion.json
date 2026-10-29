@@ -5,10 +5,5 @@
   "hito": "mundo-juego",
   "rama": "trabajo/20261029-1724"
  },
- "B": {
-  "inicio": "2026-10-29T16:53:32+00:00",
-  "tarea": "Taller: pasar también las 39 animaciones extra (trabajos, arco, espada, bloqueo, vendarse, pasos) al esqueleto de MakeHuman",
-  "hito": "arte",
-  "rama": "trabajo/20261029-1653"
- }
+ "B": null
 }

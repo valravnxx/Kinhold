@@ -5,16 +5,25 @@
 //   2. En cada fotograma, el giro de cada hueso respecto a su reposo (en el mundo) se copia del origen al destino.
 //   3. La pelvis copia también su desplazamiento, escalado por la diferencia de altura.
 // Los huesos se emparejan por nombre (sin distinguir mayúsculas: «Head» = «head», «root» = «Root»).
-// Uso: node herramientas/taller/pasar_animaciones.mjs <animaciones.glb> <personaje.glb> <salida.glb> [clip,clip…]
+// Uso: node herramientas/taller/pasar_animaciones.mjs <animaciones.glb>[+<otras.glb>…] <personaje.glb> <salida.glb> [clip,clip…]
+//   Con varios orígenes unidos por «+» (mismo esqueleto y mismo reposo, se comprueba): las medidas de la postura salen
+//   del Idle_Loop del primero y cada clip se coge del último que lo tenga (así las 39 extra usan las mismas correcciones).
+//   SOLO_ANIM=1: la salida lleva solo el esqueleto y las animaciones (sin mallas ni texturas), para cargarla aparte.
+//   Los .glb pueden ir comprimidos con meshopt (como los publicados).
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
+import { prune } from '@gltf-transform/functions';
+import { MeshoptDecoder } from 'meshoptimizer';
 import * as THREE from 'three';
 
 const [origen, destino, salida, lista] = process.argv.slice(2);
 const CLIPS = lista ? lista.split(',') : ['Idle_Loop', 'Walk_Loop', 'Jog_Fwd_Loop', 'TreeChopping_Loop', 'Sword_Idle', 'Sword_Regular_A', 'Sword_Block', 'Walk_Carry_Loop', 'Farm_Harvest'];
 const FPS = 30;
-const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
-const S = await io.read(origen), T = await io.read(destino);
+await MeshoptDecoder.ready;
+const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
+const origenes = await Promise.all(origen.split('+').map(f => io.read(f)));
+const S = origenes[0], T = await io.read(destino);
+for (const d of T.getRoot().listExtensionsUsed()) if (d.extensionName === 'EXT_meshopt_compression') d.dispose(); // se escribe sin comprimir
 
 // hacia qué hijo apunta cada hueso (para igualar las direcciones del reposo)
 const HIJO = { pelvis: 'spine_01', spine_01: 'spine_02', spine_02: 'spine_03', spine_03: 'neck_01', neck_01: 'head',
@@ -93,7 +102,7 @@ for (const anim of T.getRoot().listAnimations()) anim.dispose();
 function canalesDe(an) {
   const canales = new Map(); let dur = 0;
   for (const c of an.listChannels()) {
-    const n = c.getTargetNode(); if (!n) continue;
+    const n = c.getTargetNode() && A.porNombre.get(c.getTargetNode().getName().toLowerCase()); if (!n) continue;
     if (!canales.has(n)) canales.set(n, {});
     canales.get(n)[c.getTargetPath()] = muestreador(c.getSampler());
     dur = Math.max(dur, c.getSampler().getInput().getMax([])[0]);
@@ -196,9 +205,17 @@ function brazoMedio(giros, lado) {
   const s = new THREE.Vector3(); for (const g of giros) s.add(brazoDe(g, lado));
   return s.normalize();
 }
+// los demás orígenes tienen que tener el mismo esqueleto en el mismo reposo (si no, los giros no valen)
+for (const otro of origenes.slice(1)) for (const n of A.nodos) {
+  const o = otro.getRoot().listNodes().find(x => x.getName() === n.getName());
+  if (!o) throw new Error('el otro origen no tiene el hueso ' + n.getName());
+  const d = Math.max(...n.getTranslation().map((x, i) => Math.abs(x - o.getTranslation()[i])), ...n.getRotation().map((x, i) => Math.abs(x - o.getRotation()[i])));
+  if (d > 1e-5) throw new Error('reposo distinto en ' + n.getName() + ': ' + d);
+}
+const buscarClip = (clip) => { for (const d of [...origenes].reverse()) { const a = d.getRoot().listAnimations().find(x => x.getName() === clip); if (a) return a; } return null; };
 const hechos = [];
 for (const clip of CLIPS) {
-  const an = S.getRoot().listAnimations().find(a => a.getName() === clip);
+  const an = buscarClip(clip);
   if (!an) { console.log('no está:', clip); continue; }
   const { canales, dur } = canalesDe(an);
   const nf = Math.max(2, Math.round(dur * FPS) + 1), tiempos = new Float32Array(nf);
@@ -310,6 +327,11 @@ for (const clip of CLIPS) {
   for (const [b, datos] of salidaRot) canal(b, 'rotation', datos, 'VEC4');
   canal(pelvisB, 'translation', salidaPel, 'VEC3');
   hechos.push(`${clip} (${nf} fotogramas)`);
+}
+if (process.env.SOLO_ANIM) {
+  for (const n of T.getRoot().listNodes()) { n.setMesh(null); n.setSkin(null); }
+  for (const x of [...T.getRoot().listMeshes(), ...T.getRoot().listSkins(), ...T.getRoot().listMaterials(), ...T.getRoot().listTextures()]) x.dispose();
+  await T.transform(prune({ keepLeaves: true }));
 }
 await io.write(salida, T);
 console.log('huesos emparejados', pares.length, '· clips', hechos.join(', '));

@@ -2313,6 +2313,24 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-29T16:53:32+00:00",
+  "fin": "2026-10-29T18:04:30+00:00",
+  "titulo": "Taller: las 39 animaciones extra en el esqueleto de MakeHuman (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Las 39 animaciones extra del paquete (vendarse, arco, picar, coger fruta, sembrar, plantar, regar, pescar, golpes ligeros y pesados, escudo, pasos en cuatro direcciones, media vuelta, trepar, comer, abrir un arcón, tumbarse y levantarse, brazos cruzados, empujado y lanzar) pasadas al esqueleto del taller, con las mismas correcciones de postura que las básicas.",
+   "pasar_animaciones.mjs acepta varios orígenes con el mismo esqueleto (comprueba que el reposo es idéntico) y saca solo el esqueleto y las animaciones. Comprobado el método: rehecho sobre la taller-v12, da las 9 básicas publicadas con una diferencia máxima de 0,06°.",
+   "Van aparte, en recursos/personajes/taller-anim-v1/ (una por cuerpo, unos 1.030 KB cada una con meshopt; error de la compresión, 0,16° como mucho). Se cargan solo si se piden: crearPersonajeMH({ extra: true }).",
+   "Visor de personaje: en Opciones, «Más animaciones», con las 39 (en español, inglés y ruso). Publicado como personaje v21 y demo v40.",
+   "Prueba nueva en el visor (hombre y mujer, PC y móvil): se cargan las 39, cada una se aparta de estar quieto más de 5 cm y el cuerpo no se desarma; con MUTAR=1 falla.",
+   "Web: las tareas del roadmap con rutas largas ensanchaban la página en el móvil (la columna del texto ya no crece con ellas).",
+   "Aún mal (mirado de cerca): las que piden un objeto (arco, pico, caña, escudo, regadera) se ven sin él y con las manos vacías; al picar, las manos van separadas como en el paquete; en los golpes pesados el cuerpo se agacha mucho y, con el vestido, la falda casi toca el suelo. No se han retocado una a una."
+  ],
+  "pruebas": "Batería entera en la nube: 15 grupos correctos. La de lógica falló una vez por la suavidad del movimiento con lag simulado (paso mayor 2,73× de lo que toca, límite 2,5×), que no toca este cambio; repetida, correcta.",
+  "capturas": "capturas/personaje-v21",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-29T17:02:34+00:00",
   "fin": "2026-10-29T18:03:50+00:00",
   "titulo": "Versiones antiguas en las releases: la web baja a 358 MB",

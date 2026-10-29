@@ -782,9 +782,9 @@
     },
     {
      "nombre": "Taller: pasar también las 39 animaciones extra (trabajos, arco, espada, bloqueo, vendarse, pasos) al esqueleto de MakeHuman",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T16:53:32+00:00",
-     "rama": "trabajo/20261029-1653"
+     "fin": "2026-10-29T18:04:30+00:00"
     },
     {
      "nombre": "Personalización en el juego de toda la ropa y la armadura (pedido de valravnx): color o tinte de cada prenda, blasón o dibujo en la sobreveste, y qué capas lleva. Para eso las texturas de la ropa pasan a ir en gris con el color aparte, que se cambia sin rehacer el modelo",
@@ -1593,6 +1593,13 @@
      "archivo": "jugar/demo/v39.html",
      "capturas": "capturas/demo-v39",
      "notas": "Pies descalzos: en «Construir», sin calzado vas descalzo; en «Personaje», botón «Descalzo» y vista «Pies»."
+    },
+    {
+     "v": "v40",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v40.html",
+     "capturas": "capturas/personaje-v21",
+     "notas": "En «Personaje», «Más animaciones»: las 39 animaciones extra en el personaje del taller"
     }
    ]
   },
@@ -2195,6 +2202,13 @@
      "archivo": "jugar/personaje/v20.html",
      "capturas": "capturas/personaje-v20",
      "notas": "Pies descalzos: botón «Descalzo» en la ropa y vista «Pies» de cerca. El bajo de las calzas, recto."
+    },
+    {
+     "v": "v21",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/personaje/v21.html",
+     "capturas": "capturas/personaje-v21",
+     "notas": "Las 39 animaciones extra (arco, picar, sembrar, regar, pescar, golpes ligeros y pesados, escudo, pasos, trepar, tumbarse…) pasadas al esqueleto del taller propio: en Opciones, «Más animaciones»"
     }
    ]
   },
