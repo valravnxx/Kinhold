@@ -68,6 +68,12 @@ jobs:
         run: |
           pip install playwright==1.63.0 pillow numpy
           python -m playwright install --with-deps chromium
+      - name: Letra Inter por defecto (como en las sesiones, para que las capturas salgan iguales)
+        run: |
+          sudo apt-get install -y -q fonts-inter
+          mkdir -p ~/.config/fontconfig
+          printf '<?xml version="1.0"?>\n<!DOCTYPE fontconfig SYSTEM "fonts.dtd">\n<fontconfig>\n%s</fontconfig>\n' "$(for f in sans-serif system-ui serif; do printf '<alias><family>%s</family><prefer><family>Inter</family></prefer></alias>\n' $f; done)" > ~/.config/fontconfig/fonts.conf
+          fc-cache -f >/dev/null; fc-match sans-serif; fc-match system-ui
       - name: Caddy (solo lógica)
         if: matrix.grupo == 'logica'
         run: sudo apt-get install -y -q caddy
