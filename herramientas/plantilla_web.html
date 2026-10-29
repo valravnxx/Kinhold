@@ -283,6 +283,8 @@ details[open] > summary .flecha{transform:rotate(45deg)}
 .hito li.espera_decision::before{background:var(--naranja);border-color:var(--naranja)}
 .hito li.fallo::before{background:var(--rubrica);border-color:var(--rubrica)}
 .hito li.hecho span{color:var(--tinta2)}
+.hito li span{overflow-wrap:anywhere}
+@media (max-width:760px){.hito li em{grid-column:2;white-space:normal}}
 .hito li em{font-style:italic;color:var(--tenue);font-size:14.5px;white-space:nowrap}
 .hito li.en_curso em{color:var(--azul);font-style:normal;font-family:var(--titulos);font-weight:700}
 .hito li.a_medias::before{background:linear-gradient(90deg,var(--tenue) 50%,transparent 50%);border-color:var(--tenue)}

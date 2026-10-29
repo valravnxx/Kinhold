@@ -390,7 +390,9 @@
     },
     {
      "nombre": "Orden en el código antes de unir las partes, sin cambiar nada de lo que se ve: un solo módulo de azar y ruido, la biblioteca de modelos (src/juego/modelos.js) y la elección de personaje (src/demo/eleccion.js) a la escena común, un solo cliente en línea para la construcción y el duelo, y el visor del mapa con los personajes del taller de ahora",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T19:25:07+00:00",
+     "rama": "trabajo/20261029-1925"
     },
     {
      "nombre": "Regla de revisión visual (valravnx, 29 oct): antes de enseñar o publicar algo que se ve, capturas de cerca al lado de la referencia y la lista de lo que aún está mal; si se ve peor que la prueba de estilo v5, no se enseña",
@@ -412,12 +414,20 @@
    "tareas": [
     {
      "nombre": "Planificar el hito: cómo cargan otros juegos el terreno por trozos con niveles de detalle (y en un hilo aparte), medir el visor del mapa v13 en el móvil y desglosar las tareas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T17:24:24+00:00",
-     "rama": "trabajo/20261029-1724"
+     "fin": "2026-10-29T18:51:47+00:00"
     },
     {
-     "nombre": "Terreno por trozos alrededor del jugador, con niveles de detalle, cargados y soltados al andar; medido en el móvil (fotogramas y memoria)",
+     "nombre": "Terreno por trozos, la lógica: el mundo en trozos de 64 m; alrededor del jugador, anillos con su detalle (rejilla de 1 m en los cercanos y de 2, 4 y 8 m más lejos) y un margen para no cargar y soltar el mismo trozo al ir y venir; faldones en los bordes para que no se vean rendijas entre trozos de distinto detalle. En src/logica, sin three.js, con prueba en node (sin huecos ni solapes, la misma altura en los bordes compartidos)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Los trozos se hacen en un hilo aparte (Web Worker): alturas, colores y sombreado del suelo fuera del hilo de dibujo, unos pocos trozos por fotograma, y al andar el juego no se para. Medir el fotograma más largo al cruzar bordes, en PC y móvil",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La vista «Como en el juego» del mapa con trozos: fuera el trozo único de 240 m que se rehacía entero (de 236 a 935 ms parado, medido el 29 oct) y el truco de hundir el suelo de lejos; menos triángulos lejos en el móvil. Medido en PC y móvil (fotogramas, memoria, triángulos, llamadas de dibujo)",
      "estado": "pendiente"
     },
     {
