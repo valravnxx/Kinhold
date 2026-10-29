@@ -812,7 +812,9 @@
     },
     {
      "nombre": "Niveles de detalle del personaje del taller: versiones reducidas para verlo de lejos, cambio automático por distancia y texturas juntas; medido con 20 personajes en pantalla, y el rendimiento en el móvil medido y ajustado",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T21:59:27+00:00",
+     "rama": "trabajo/20261029-2159"
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «las barbas, horribles»): rehacer las barbas del taller hasta que se vean como barbas de verdad, revisadas en capturas de cerca antes de enseñarlas",
