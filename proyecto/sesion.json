@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-29T15:39:05+00:00",
+  "tarea": "Web por debajo de 1 GB (decidido por valravnx el 29 oct): las versiones jugables antiguas pasan a las «releases» de GitHub, descargables, sin borrar ninguna; en la web quedan las recientes con enlace a las antiguas, y las capturas viejas se rehacen más pequeñas. Medir el tamaño antes y después. Las releases las crea una acción de GitHub (desde las sesiones no se puede: comprobado el 29 oct), como las pruebas en la nube",
+  "hito": "despejar",
+  "rama": "trabajo/20261029-1540"
+ },
  "B": {
   "inicio": "2026-10-29T09:52:21+00:00",
   "tarea": "Taller: pies descalzos. El cuerpo no tiene pies bajo los zapatos (se quitan al vestir) y el GDD dice que se empieza descalzo: hace falta el cuerpo con pies cuando no lleva zapatos",
