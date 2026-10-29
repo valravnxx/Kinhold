@@ -1,0 +1,11 @@
+Manos y botas de docs/recursos/personajes/taller-v12
+  OK   mh_hombre.glb: tiene la piel
+  OK   mh_hombre.glb: las manos están enteras — 3070 triángulos en las manos (la v8 tenía unos 3100)
+  OK   mh_hombre.glb: tiene botas
+  OK   mh_hombre.glb: las botas del hombre siguen siendo altas — caña de 46 cm
+  OK   mh_mujer.glb: tiene la piel
+  OK   mh_mujer.glb: las manos están enteras — 3044 triángulos en las manos (la v8 tenía unos 3100)
+  OK   mh_mujer.glb: tiene botas
+  OK   mh_mujer.glb: las botas de la mujer son bajas (no atraviesan la falda larga) — caña de 16 cm
+
+8 correctas, 0 fallos
