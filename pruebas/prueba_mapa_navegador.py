@@ -160,6 +160,19 @@ with sync_playwright() as p:
                 pg.evaluate(f"window.__cerca.camara(0.25, 30, {r['dir']} + 3.14)"); pg.wait_for_timeout(1500)
                 pg.screenshot(path=f'{SALIDA}/pc_11_acantilado.png', timeout=240000)
             pg.evaluate("document.getElementById('btnVolverMapa').click()"); pg.wait_for_timeout(500)
+            # un salto de agua de 35 m: el agua de cerca cae en una lámina casi vertical y al pie lleva su poza de espuma.
+            # MUTAR_SALTO=1 da por buena una lámina sin caída: tiene que fallar
+            pg.evaluate('window.__mapa.cerca(84.92, 74.79)'); pg.wait_for_function('window.__cerca && window.__cerca.listo', timeout=240000)
+            sa = pg.evaluate('window.__cerca.saltoCercano()')
+            pg.evaluate(f"window.__cerca.juegoEn({sa['x']} + Math.cos({sa['dir']}) * 22 + Math.cos({sa['dir']} + 1.57) * {sa['ancho'] / 2 + 10}, {sa['z']} + Math.sin({sa['dir']}) * 22 + Math.sin({sa['dir']} + 1.57) * {sa['ancho'] / 2 + 10}, {sa['dir']} + 3.14)"); pg.wait_for_timeout(1500)
+            caida = pg.evaluate('''(() => { const a = window.__cerca.vj.grupo.getObjectByName('aguaCerca'); if (!a) return [0, 0];
+              const n = a.geometry.attributes.normal, e = a.geometry.attributes.aEspuma, ix = a.geometry.index; let v = 0, m = 0;
+              const usados = new Set(ix.array); for (const k of usados) { if (Math.abs(n.getY(k)) < 0.5) v++; m = Math.max(m, e.getX(k)); } return [v, m]; })()''')
+            if os.environ.get('MUTAR_SALTO'): caida = [0, 0]
+            comprobar(f"pc: el salto de agua de {sa['alto']:.0f} m cae en una lámina casi vertical, con su poza de espuma", caida[0] > 10 and caida[1] > 0.8, f'{caida[0]} puntos de agua cayendo · espuma al pie {caida[1]:.2f}')
+            pg.evaluate(f"window.__cerca.camara(0.25, 40, {sa['dir']})"); pg.wait_for_timeout(1500)
+            pg.screenshot(path=f'{SALIDA}/pc_12_salto_de_agua.png', timeout=240000)
+            pg.evaluate("document.getElementById('btnVolverMapa').click()"); pg.wait_for_timeout(500)
             # el mundo de 188 km del GDD, para comparar
             pg.select_option('#lado', '188'); pg.wait_for_function('window.__mapa.listo && window.__mapa.mapa.lado === 188', timeout=240000)
             r2 = pg.evaluate('window.__mapa.resumen'); MEDIDAS['pc_188'] = r2

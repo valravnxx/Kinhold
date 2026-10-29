@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { CLIPS } from './cargar.js';
-import { normalizarAspecto, colorDe, pesosFormas, escalaAltura } from '../logica/aspecto.js';
+import { normalizarAspecto, colorDe, pesosFormas, escalaAltura, piezasCabeza } from '../logica/aspecto.js';
 import { TALLER } from '../logica/prendas.js';
 
 const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
@@ -88,11 +88,10 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     const ceñidas = puestas.filter(c => c !== 'manto');
     const fuera = ceñidas[ceñidas.length - 1]; // el cinturón va sobre la última prenda ceñida, bajo el manto
     const tocado = TOCADOS.find(t => lista.includes(t));
-    let tri = 0;
     modelo.traverse(n => {
       if (!n.isMesh) return;
       const c = capaDe(n);
-      if (n.name.endsWith('_orejas')) n.visible = tocado !== 'capucha' && tocado !== 'toca'; // bajo la tela no asoman
+      if (cabezaDe(n)) return; // pelo, barba, orejas y cofia: los pone ponerCabeza
       else if (c && c.tipo === 'cinturon') n.visible = c.capa === fuera && c.capa !== 'camisa';
       else if (c && c.capa === 'zapatos') n.visible = !lista.includes('botas');
       else if (c && SIEMPRE.includes(c.capa)) n.visible = true;
@@ -105,9 +104,23 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
         else if (c.mangas) n.visible = encima.every(e => !(e in MANGA) || MANGA[e] > MANGA[c.capa] + 0.005);
         else n.visible = encima.every(e => ABIERTAS.includes(e)); // la sobreveste deja ver el cuello y los hombros de lo de debajo
       }
+    });
+    resultado.capas = [...lista]; resultado.tocado = tocado;
+    ponerCabeza();
+  };
+  // pelo, barba, orejas y cofia según el peinado, la barba y el tocado (src/logica/aspecto.js: piezasCabeza)
+  const cabezaDe = (n) => { const m = n.isMesh && n.name.match(/(_pelo(_[a-z]+)?|_barba_[a-z]+|_orejas|_cofia)$/); return m && m[1]; };
+  const ponerCabeza = () => {
+    if (!resultado.aspecto) return;
+    const ver = piezasCabeza(resultado.aspecto, resultado.tocado);
+    let tri = 0;
+    modelo.traverse(n => {
+      if (!n.isMesh) return;
+      const k = cabezaDe(n);
+      if (k) n.visible = !!ver[k];
       if (n.visible) tri += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3;
     });
-    resultado.triangulos = tri; resultado.capas = [...lista];
+    resultado.triangulos = tri;
   };
   const hueso = {};
   modelo.traverse(n => { if (n.isBone || n.type === 'Object3D') hueso[n.name] = n; });
@@ -159,13 +172,9 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
       const t = n.userData.tinte;
       if (t) { const c = lineal(colorDe(t, asp[t])), r = n.userData.ref || 1; n.material.color.setRGB(c[0] / r, c[1] / r, c[2] / r, THREE.LinearSRGBColorSpace); }
       ponerFormas(n, pesos);
-      if (n.name.endsWith('_pelo')) n.visible = asp.peinado === 'corto';
-      const b = n.name.match(/_barba_([a-z]+)$/);
-      if (b) n.visible = asp.barba === b[1];
     });
     resultado.aspecto = asp;
-    resultado.triangulos = 0;
-    modelo.traverse(n => { if (n.isMesh && n.visible) resultado.triangulos += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3; });
+    ponerCabeza();
   };
   const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, velocidad, opciones: o, hueso, clips: g.animations.map(c => c.name), ponerCapas, ponerAspecto,
     capasPosibles: [...ORDEN, ...SUELTAS].filter(c => c !== 'camisa' && modelo.getObjectByName(`${o.sexo}_capa_${c}`)), tocados: TOCADOS };

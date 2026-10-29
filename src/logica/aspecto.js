@@ -45,8 +45,34 @@ export const FORMAS = {
 };
 export const ESCALA_ALTURA = 0.06; // ±6 % de la altura del personaje del taller
 
-export const PEINADOS = { hombre: { corto: 'Corto', rapado: 'Rapado' }, mujer: { cofia: 'Recogido bajo la cofia' } };
-export const BARBAS = { hombre: { corta: 'Barba corta', bigote: 'Bigote', ninguna: 'Afeitado' }, mujer: { ninguna: 'Sin barba' } };
+// melena, coleta y trenzas: mallas propias del taller sobre el pelo corto (taller-v10). La barba larga lleva debajo la corta
+export const PEINADOS = {
+  hombre: { corto: 'Corto', rapado: 'Rapado', melena: 'Melena', coleta: 'Coleta', trenzas: 'Trenzas' },
+  mujer: { cofia: 'Recogido bajo la cofia', melena: 'Melena', coleta: 'Coleta', trenzas: 'Trenzas' },
+};
+export const BARBAS = {
+  hombre: { corta: 'Barba corta', larga: 'Barba larga', perilla: 'Perilla', bigote: 'Bigote', ninguna: 'Afeitado' },
+  mujer: { ninguna: 'Sin barba' },
+};
+export const PELO_LARGO = ['melena', 'coleta', 'trenzas'];
+
+// qué piezas del pelo y de la barba se ven (por el final de su nombre en el modelo) con un aspecto y un tocado.
+// Bajo la capucha o la toca no se ve el pelo largo (provisional: no hay una versión aplastada por la tela)
+export function piezasCabeza(aspecto, tocado = null) {
+  const p = aspecto.peinado, b = aspecto.barba, tapada = tocado === 'capucha' || tocado === 'toca';
+  return {
+    _pelo: p !== 'rapado' && p !== 'cofia',
+    _pelo_melena: p === 'melena' && !tapada,
+    _pelo_coleta: p === 'coleta' && !tapada,
+    _pelo_trenzas: p === 'trenzas' && !tapada,
+    _cofia: p === 'cofia',
+    _orejas: p !== 'cofia' && !tapada,
+    _barba_corta: b === 'corta' || b === 'larga',
+    _barba_larga: b === 'larga',
+    _barba_perilla: b === 'perilla',
+    _barba_bigote: b === 'bigote',
+  };
+}
 
 export const ASPECTO_INICIAL = {
   hombre: { piel: 'clara_rosada', ojos: 'castanos', pelo: 'castano_oscuro', peinado: 'corto', barba: 'corta' },

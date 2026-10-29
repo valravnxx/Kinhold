@@ -457,9 +457,9 @@
     },
     {
      "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T21:20:50+00:00",
-     "rama": "trabajo/20261028-2120"
+     "fin": "2026-10-29T01:28:55+00:00"
     },
     {
      "nombre": "Taller: pies descalzos. El cuerpo no tiene pies bajo los zapatos (se quitan al vestir) y el GDD dice que se empieza descalzo: hace falta el cuerpo con pies cuando no lleva zapatos",
@@ -601,9 +601,9 @@
     },
     {
      "nombre": "Chimenea u hogar interior (N2: piedras y barro, 600 kg): solo sobre cimiento de piedra, con fuego, luz y humo que sale por el tejado",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T21:51:52+00:00",
-     "rama": "trabajo/20261028-2151"
+     "fin": "2026-10-29T03:39:49+00:00"
     },
     {
      "nombre": "Adarve (pasarela por detrás de la empalizada: tablas y postes, sostiene 300 kg), al que se sube por escalera de mano o de tablas",
@@ -948,7 +948,8 @@
     },
     {
      "nombre": "Relieve de detalle por escalas: el mapa da la forma grande y encima van colinas, lomas y quebradas con pendientes de todos los tamaños (como en el terreno de verdad), sin llanos enormes ni cuestas eternas",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "fin": "2026-10-29T05:02:00+01:00"
     },
     {
      "nombre": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",
@@ -964,13 +965,15 @@
     },
     {
      "nombre": "Saltos de agua donde el río cruza roca dura",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T21:54:37+01:00",
-     "rama": "trabajo/20261028-2155-saltos"
+     "fin": "2026-10-29T03:22:21+01:00"
     },
     {
      "nombre": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T05:03:54+01:00",
+     "rama": "trabajo/20261029-0505-bosques"
     },
     {
      "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
@@ -1369,6 +1372,13 @@
      "archivo": "jugar/demo/v32.html",
      "capturas": "capturas/demo-v32",
      "notas": "En línea, sin tirones: al abrir o cerrar puertas solo se rehace esa puerta, y lo construido se rehace unas cinco veces más deprisa al terminar una obra. Y en «Duelo», la curación de heridas."
+    },
+    {
+     "v": "v33",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v33.html",
+     "capturas": "capturas/demo-v33",
+     "notas": "En «Construir», chimenea u hogar interior sobre cimiento de piedra, con fuego, luz y humo por encima del tejado (Usar la apaga y la enciende)."
     }
    ]
   },
@@ -1579,6 +1589,13 @@
      "archivo": "jugar/construccion/v31.html",
      "capturas": "capturas/construccion-v31",
      "notas": "Remate de tejado (esquina) de paja, de tablillas y de teja: donde se juntan dos caídas en ángulo recto se hace solo limatesa (esquina de fuera) o limahoya (el rincón de un tejado en L). Con cuatro remates, un tejado a cuatro aguas sin hastiales; en una casa en L, las dos alas quedan cerradas y las cumbreras se encuentran."
+    },
+    {
+     "v": "v32",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/construccion/v32.html",
+     "capturas": "capturas/construccion-v32",
+     "notas": "Chimenea u hogar interior (10 piedras y 4 de barro, 600 kg): solo en la planta baja, sobre un cimiento de piedra, arrimada a un muro; fuego con llamas, luz y humo que sale por encima del tejado; Usar la apaga y la enciende."
     }
    ]
   },
@@ -1894,6 +1911,13 @@
      "archivo": "jugar/personaje/v17.html",
      "capturas": "capturas/personaje-v17",
      "notas": "Datos de cada prenda en la lógica pura: lo que frena de cada golpe, lo que abriga y lo que pesa la ropa que ves puesta, en una tabla de Opciones"
+    },
+    {
+     "v": "v18",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/personaje/v18.html",
+     "capturas": "capturas/personaje-v18",
+     "notas": "Más peinados y barbas en el taller propio: melena, coleta y trenzas (también la mujer, sin la cofia), barba larga y perilla; la barba ya no se aclara bajo la barbilla. Personajes en recursos/personajes/taller-v10/."
     }
    ]
   },
@@ -1992,6 +2016,13 @@
      "archivo": "jugar/mapa/v11.html",
      "capturas": "capturas/mapa-v11",
      "notas": "Las laderas de montaña ya no van en escalones: son pendientes continuas, y los cortados salen solo en afloramientos de roca y donde ya es muy empinado, en pocos escalones grandes."
+    },
+    {
+     "v": "v12",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/mapa/v12.html",
+     "capturas": "capturas/mapa-v12",
+     "notas": "Saltos de agua: donde el río baja mucho por roca dura, casi todo el desnivel se concentra en un salto de 4 a 35 m, con lámina de agua, chorros blancos, poza de espuma y paredes de roca alrededor. La cámara ya no se mete bajo el suelo."
     }
    ]
   }
