@@ -1,0 +1,130 @@
+Tamaños y pilas
+  OK   cada cosa del catálogo tiene un tamaño P, M, G o E
+  OK   los recursos se apilan según su tamaño (fibra 10, piedra 3, tronco corto 1) — 10, 3, 1
+  OK   las herramientas y la ropa no se apilan
+Empiezas con lo puesto
+  OK   camisa y pantalón de lino puestos
+  OK   manos, espalda, cintura y hombro vacíos
+  OK   sin cinturón no hay huecos de cintura
+  OK   sin cinturón no se puede guardar nada en la cintura — Ahí no hay huecos.
+Manos
+  OK   lo pequeño va en una mano
+  OK   lo mediano va en la otra
+  OK   en una mano con piedras se juntan más piedras hasta la pila
+  OK   pasada la pila ya no cabe — Ese hueco está lleno.
+  OK   no se mezclan dos cosas en el mismo hueco — Ese sitio está ocupado.
+  OK   lo grande necesita las dos manos libres — Eso es grande: necesitas las dos manos libres.
+  OK   con las dos libres, lo grande se coge
+  OK   con algo grande, la otra mano queda ocupada — Tienes las dos manos ocupadas.
+  OK   lo enorme no se lleva encima — Eso es enorme: se arrastra, va en carro o entre varios.
+  OK   lo grande se pasa de una mano a la otra
+Cinturón y contenedores
+  OK   el cordel de fibra se ata como cinturón
+  OK   el cordel da un hueco pequeño de cintura
+  OK   el cuchillo cabe en ese hueco
+  OK   el hacha de mano (mediana) no cabe en un hueco pequeño — No cabe en ese hueco.
+  OK   un hueco que el cinturón no tiene no existe — Ese hueco no existe.
+  OK   un cinto con hueco mediano lleva el hacha de mano
+  OK   la vaina solo admite la espada — Eso no va en ese hueco.
+  OK   la espada va en su vaina
+  OK   una bolsa pequeña colgada del cinto
+  OK   dentro de la bolsa, sílex
+  OK   una bolsa no se mete dentro de sí misma — Ahí no hay huecos.
+  OK   lo mediano no cabe en la bolsa pequeña — No cabe en ese hueco.
+  OK   una cesta de espalda no va en un hueco ocupado — No cabe en ese hueco.
+  OK   la cesta se lleva a la espalda
+  OK   la cesta admite bayas
+  OK   la cesta no admite piedras — Eso no va en ese hueco.
+  OK   la espalda ya está ocupada — Eso no se lleva ahí.
+  OK   al hombro solo va lo que se lleva al hombro — Eso no se lleva ahí.
+  OK   un saco al hombro con piedras
+  OK   el leñero lleva troncos cortos
+  OK   el leñero no lleva bayas — Eso no va en ese hueco.
+  OK   un tronco corto (grande) no cabe en un hueco mediano — No cabe en ese hueco.
+Mover, soltar, ponerse y quitarse
+  OK   mover parte de una pila
+  OK   no se mueve más de lo que hay — Cantidad no válida.
+  OK   soltar parte devuelve lo soltado
+  OK   un movimiento que no cabe deja todo como estaba — Eso no se pone ahí.
+  OK   al quitarse el saco, sus piedras van con él
+  OK   quitarse a una mano ocupada no se hace — Ese sitio está ocupado.
+  OK   quitarse la camisa a la mano
+  OK   y volver a ponérsela
+  OK   una piedra no se pone — Eso no se pone.
+  OK   no se pone una segunda camisa en la misma capa — Ya llevas algo ahí: quítatelo antes.
+  OK   soltar un contenedor lo suelta con lo de dentro
+Acciones con autor, por jugador
+  OK   sin autor se rechaza
+  OK   con datos raros se rechaza
+  OK   una acción desconocida se rechaza
+  OK   cada acción va al inventario de su autor
+  OK   nadie toca lo de otro: bea no tiene el cuchillo de ana — Ahí no hay huecos.
+  OK   todo queda anotado con su autor
+  OK   lo soltado queda en el registro
+  OK   lo rechazado queda anotado con su motivo
+  OK   quitarse el cinturón con el cuchillo dentro
+Guardado y migración
+  OK   el guardado lleva su versión
+  OK   se carga igual que se guardó
+  OK   se guarda en el navegador
+  OK   y se vuelve a cargar
+  OK   un guardado roto empieza con lo puesto
+  OK   sin almacenamiento no se rompe
+  OK   lo que ya no cabe se aparta sin perderse — [{"tipo":"silex","n":2},{"tipo":"bolsa_prueba","n":1,"dentro":[{"tipo":"silex","n":3},null]}]
+  OK   lo desconocido se descarta y lo demás se queda
+  OK   un guardado de una versión futura no se entiende
+  OK   un guardado antiguo se migra paso a paso
+Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)
+  OK   los cinco cinturones — Cordel de fibra, Cuerda trenzada, Cinto de cuero, Cinto con hebilla de hierro y anillas, Cinto de armas
+  OK   las diez mochilas y bastidores de espalda — Leñero, Cesta de recolección, Fardo atado, Zurrón de piel, Mochila de bastidor, Porta-piedras, Caja de herramientas de espalda, Carcaj, Cesto de pescador, Escudo a la espalda (correa)
+  OK   saco, bandolera y odre al hombro
+  OK   cordel de fibra: 1 pequeño
+  OK   cuerda trenzada: 2 pequeños
+  OK   cinto de cuero: 3, uno mediano — MPP
+  OK   cinto con anillas: 4, dos medianos
+  OK   cinto de armas: vaina para espada y 2 pequeños
+  OK   con el cinto de cuero hay 3 huecos de cintura
+  OK   el hacha de mano va en su hueco mediano
+  OK   y no en uno pequeño — No cabe en ese hueco.
+  OK   la espada va en la vaina del cinto de armas
+  OK   y en la vaina no va otra cosa — Eso no va en ese hueco.
+  OK   el leñero es grande: en las manos ocupa las dos
+  OK   el leñero se pone a la espalda
+  OK   el leñero lleva troncos cortos
+  OK   y leña
+  OK   el leñero no lleva piedras — Eso no va en ese hueco.
+  OK   capacidad del leñero: 2 troncos cortos o 18 de leña, nada más — {"tronco_corto":2,"lena":18}
+  OK   cesta de recolección: bayas, setas, hierbas, frutos y huevos; no piedras
+  OK   fardo atado: pieles, telas, fibras y paja
+  OK   porta-piedras: piedras
+  OK   caja de herramientas: herramientas de oficio
+  OK   carcaj: flechas o virotes
+  OK   cesto de pescador: pescado y aparejos
+  OK   escudo a la espalda: el escudo, nada más
+  OK   saco: grano, harina y tierra
+  OK   odre: agua
+  OK   zurrón, mochila de bastidor y bandolera son mixtos
+  OK   la mochila de bastidor lleva más que el zurrón
+  OK   el bloque de piedra en bruto no va en ninguna mochila (es enorme)
+  OK   el saco no se pone a la espalda — Eso no se lleva ahí.
+  OK   el saco va al hombro y lleva grano
+  OK   con el saco al hombro se puede llevar una cesta a la espalda
+  OK   al quitarse la cesta se lleva lo que tiene dentro
+  OK   y se puede volver a poner
+  OK   el odre se coge, se pone y se llena con acciones con autor
+  OK   el equipo de carga se guarda y se carga con lo que lleva
+  OK   sin carga se anda a la velocidad de siempre
+  OK   la ropa puesta no ralentiza (aún)
+  OK   con poca carga no se nota (menos del 0,5%) — 0.99971875
+  OK   lo grande llena las dos manos
+  OK   las manos llenas y nada más: poco (más del 98%) — 0.9875
+  OK   se puede llenar todo (leñero, cinto, saco y manos) — 11111111111111111111
+  OK   cargado al máximo en todo: el 80% — 0.8
+  OK   mitad de lleno (espalda y cintura llenas): el 95% — 0.95
+  OK   cada cosa más ralentiza un poco más
+  OK   un hueco a medias cuenta a medias
+  OK   una mochila vacía a la espalda no ralentiza
+  OK   el factor queda entre 0,8 y 1 con datos raros
+  OK   lo cargado de un guardado ralentiza igual
+
+120 correctas, 0 fallos
