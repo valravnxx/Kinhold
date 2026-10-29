@@ -105,3 +105,13 @@ Prueba: `node pruebas/prueba_pies.mjs` (con `MUTAR=1` mira la taller-v11, que no
 - La mujer lleva también orejas aparte y pelo corto para cuando no lleva la cofia.
 - Qué se ve con cada peinado, barba y tocado: `piezasCabeza()` en `src/logica/aspecto.js` (el juego y las fotos del
   taller hacen lo mismo). Fotos de cerca de cada uno: `FOTOS=peinados python3 herramientas/taller/vestir_mpfb.py <carpeta>`.
+
+## Ropa teñible y blasón (desde taller-v13)
+
+La tela y el cuero de las prendas (camisa, calzas, túnica o vestido, gambesón, sobreveste, manto, capucha, toca, zapatos
+y botas) se pintan en el gris `REF_ROPA` y su color va en el material, como la piel y el pelo. Cada pieza lleva en sus
+extras `tinte: "ropa"`, `ref` y `prenda` (qué prenda es). El juego le pone el color del tinte elegido (paletas, colores
+sin teñir y tintes por defecto en `src/logica/tintes.js`; `ponerTintes` en `src/personajes/makehuman.js`). Con los
+tintes por defecto el color es el mismo que llevaba pintado antes. La cota de malla, el sombrero y los cinturones no se
+tiñen. El blasón de la sobreveste no va en la textura: lo dibuja un sombreado por la posición de cada punto en reposo.
+Prueba: `node pruebas/prueba_tintes.mjs` (con `MUTAR=1` mira la taller-v12, sin tintes, y falla).

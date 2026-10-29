@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v12'), f'{sitio}/recursos/personajes/taller-v12')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v13'), f'{sitio}/recursos/personajes/taller-v13')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-anim-v1'), f'{sitio}/recursos/personajes/taller-anim-v1')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -273,6 +273,45 @@ with sync_playwright() as p:
         con = vis()
         comprobar('descalzo y con botas: se ven las botas, no los pies', 'hombre_capa_botas' in con and 'hombre_pies' not in con)
         for c in ['botas', 'descalzo']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
+        # tintes de la ropa y blasón de la sobreveste (taller-v13): con clics de verdad, sin recargar el modelo
+        if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
+        colm = lambda n: pg.evaluate(f"(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}') r = [o.material.color.r, o.material.color.g, o.material.color.b]; }}); return r; }})()")
+        pj0 = pg.evaluate(f'{E}.diag().pj.modelo.uuid')
+        for c in ['cota', 'sobreveste']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
+        pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)')
+        liso = contenido(pg.screenshot(path=f'{SALIDA}/{nombre}_tintes_0.png'))[0]
+        sv0, cam0 = colm('hombre_capa_sobreveste'), colm('hombre_capa_camisa')
+        comprobar('tintes: por defecto, sobreveste roja (rubia)', sv0 and sv0[0] > 4 * sv0[2], str(sv0))
+        pg.click('[data-tinte="sobreveste"][data-v="glasto"]'); pg.click('[data-tinte="tunica"][data-v="verde"]'); pg.click('[data-tinte="botas"][data-v="negro"]') if pg.query_selector('[data-tinte="botas"]') else None
+        pg.click('[data-tinte="camisa"][data-v="blanco"]'); pg.wait_for_timeout(100)
+        if os.environ.get('MUTAR'): pg.evaluate(f"{E}.diag().pj.ponerTintes({{}})")
+        sv1, svf, svm, tu1 = colm('hombre_capa_sobreveste'), colm('hombre_capa_sobreveste_falda'), colm('hombre_capa_tunica_mangas'), colm('hombre_capa_tunica')
+        comprobar('tintes: la sobreveste pasa a azul (glasto), con su falda del mismo color', sv1 and sv1[2] > sv1[0] and svf == sv1, f'{sv0} → {sv1}')
+        comprobar('tintes: la túnica pasa a verde, mangas incluidas', tu1 and tu1[1] > tu1[0] and tu1[1] > tu1[2] and svm == tu1, str(tu1))
+        comprobar('tintes: la camisa blanqueada es más clara que la cruda', colm('hombre_capa_camisa')[2] > cam0[2], f'{cam0} → {colm("hombre_capa_camisa")}')
+        pg.evaluate(f'{E}.instante(1.0)'); azul = contenido(pg.screenshot(path=f'{SALIDA}/{nombre}_tintes_1.png'))[0]
+        dif = sum(ImageStat.Stat(ImageChops.difference(liso, azul)).mean) / 3
+        comprobar('tintes: el personaje se ve de otro color', dif > 1.5, f'diferencia {dif:.1f}')
+        for dib, col in [('cruz', 'gualda'), ('cuartelado', 'blanco'), ('banda', 'negro')]:
+            pg.click(f'[data-blason="dibujo"][data-v="{dib}"]'); pg.wait_for_timeout(100)
+            pg.click(f'[data-blason="color"][data-v="{col}"]'); pg.wait_for_timeout(100)
+            if os.environ.get('MUTAR'): pg.evaluate(f"{E}.diag().pj.ponerTintes({{prendas: {{sobreveste: 'glasto', tunica: 'verde', camisa: 'blanco'}}}})")
+            pg.evaluate(f'{E}.instante(1.0)')
+            con = contenido(pg.screenshot(path=f'{SALIDA}/{nombre}_blason_{dib}.png'))[0]
+            dif = sum(ImageStat.Stat(ImageChops.difference(azul, con)).mean) / 3
+            comprobar(f'blasón: «{dib}» de {col} se ve sobre la sobreveste', dif > 0.4 and pg.evaluate(f'{E}.tintes().blason.dibujo') == dib, f'diferencia {dif:.2f}')
+            if dib == 'cruz':
+                pg.click('[data-vista="espalda"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_blason_cruz_espalda.png')
+                pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_blason_cruz_cerca.png')
+                pg.click('[data-vista="cuerpo"]')
+        comprobar('tintes: sin volver a cargar el modelo', pg.evaluate(f'{E}.diag().pj.modelo.uuid') == pj0)
+        pg.reload(); listo(pg)
+        t = pg.evaluate(f'{E}.tintes()')
+        comprobar('tintes: se recuerdan al recargar', t['prendas']['sobreveste'] == 'glasto' and t['blason'] == {'dibujo': 'banda', 'color': 'negro'}, str(t))
+        if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
+        pg.evaluate(f"{E}.tintes({{prendas: {{sobreveste: 'rubia', tunica: 'pardo', camisa: 'natural', botas: 'natural'}}, blason: {{dibujo: 'liso'}}}})")
+        comprobar('tintes: vuelven a los de antes', colm('hombre_capa_sobreveste') == sv0)
+        for c in ['cota', 'sobreveste']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
         # personalización del taller (aspecto): colores, peinado, barba y formas, con clics de verdad y sin recargar el modelo
         if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
         mat = lambda n: pg.evaluate(f"(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}') r = [o.material.color.r, o.material.color.g, o.material.color.b, o.visible]; }}); return r; }})()")

@@ -11,6 +11,7 @@ import { VERSION_PERSONAJE, REGISTRO_PERSONAJE } from './registro.js';
 import { BASES, CAPAS, ANIMS, ANIMS_EXTRA, ZONAS_TABLA, GOLPES_TABLA } from './textos.js';
 import { PRENDAS, prendasDeCapas, proteccion, abrigo, peso } from '../logica/prendas.js';
 import { PALETAS, FORMAS, PEINADOS, BARBAS, normalizarAspecto } from '../logica/aspecto.js';
+import { TINTES, BLASONES, PRENDAS_TENIBLES, paletaDe, normalizarTintes, colorPrenda } from '../logica/tintes.js';
 import { tr, traducirPagina, botonesIdioma, idioma } from '../idioma.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
@@ -33,8 +34,8 @@ const $ = (id) => document.getElementById(id);
 const CLAVE = 'kinhold_personaje_v2';
 // carpeta de los modelos: la versión publicada vive en jugar/personaje/, los modelos en recursos/personajes/v1/
 const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../recursos/personajes/v1/';
-// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v12/ (las anteriores publicadas no se tocan)
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v12/';
+// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v13/ (las anteriores publicadas no se tocan)
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v13/';
 // las 39 animaciones extra del taller propio, pasadas a su esqueleto (aparte: taller-anim-v1/)
 const RECURSOS_ANIM_MH = new URLSearchParams(location.search).get('animMH') || '../../recursos/personajes/taller-anim-v1/';
 // capas puestas en el taller propio, por sexo (por defecto: túnica en el hombre, vestido en la mujer)
@@ -46,6 +47,15 @@ const cambiarAspecto = (cambio) => {
   estado.aspecto = { ...(estado.aspecto || {}), [estado.sexo]: normalizarAspecto({ ...a, ...cambio, formas: { ...a.formas, ...(cambio.formas || {}) } }, estado.sexo) };
   if (pj?.ponerAspecto) { pj.ponerAspecto(aspectoMH()); medida.trianglesPersonaje = pj.triangulos; }
   guardar(); dibujar();
+};
+
+// tintes de la ropa y blasón de la sobreveste, por sexo; se guardan con lo demás (src/logica/tintes.js)
+const tintesMH = () => normalizarTintes(estado.tintes && estado.tintes[estado.sexo], estado.sexo);
+const cambiarTintes = (cambio) => {
+  const t = tintesMH();
+  estado.tintes = { ...(estado.tintes || {}), [estado.sexo]: normalizarTintes({ prendas: { ...t.prendas, ...(cambio.prendas || {}) }, blason: { ...t.blason, ...(cambio.blason || {}) } }, estado.sexo) };
+  if (pj?.ponerTintes) pj.ponerTintes(tintesMH());
+  pintarOpciones(); guardar(); dibujar();
 };
 
 const lienzo = $('lienzo');
@@ -93,7 +103,7 @@ async function rehacer() {
   const n = ++cargando;
   $('cargando').hidden = false;
   if (!OPCIONES.pelo[estado.sexo][estado.pelo]) estado.pelo = Object.keys(OPCIONES.pelo[estado.sexo])[0];
-  const nuevo = estado.base === 'makehuman' ? await crearPersonajeMH({ ...estado, capas: capasMH(), aspecto: aspectoMH(), extra: RECURSOS_ANIM_MH }, RECURSOS_MH) : await crearPersonaje(estado, RECURSOS);
+  const nuevo = estado.base === 'makehuman' ? await crearPersonajeMH({ ...estado, capas: capasMH(), aspecto: aspectoMH(), tintes: tintesMH(), extra: RECURSOS_ANIM_MH }, RECURSOS_MH) : await crearPersonaje(estado, RECURSOS);
   if (n !== cargando) return; // llegó otro cambio mientras cargaba
   if (pj) escena.remove(pj.raiz);
   pj = nuevo;
@@ -129,7 +139,7 @@ function pintarOpciones() {
   $('opciones').innerHTML = grupo('base', BASES, 'Base del personaje') + grupo('sexo', OPCIONES.sexo, 'Cuerpo') +
     (mh ? `<div class="grupo"><span>${tr(estado.sexo === 'hombre' ? 'Ropa por capas (debajo siempre camisa y calzas, y zapatos si no vas descalzo)' : 'Ropa por capas (debajo siempre camisa, y zapatos si no vas descalza)')}</span>${(pj?.capasPosibles || []).map(c =>
         `<button data-capa="${c}" class="${capasMH().includes(c) ? 'sel' : ''}">${tr(CAPAS[c])}</button>`).join('')}</div>` +
-      pintarRopa() + pintarAspecto()
+      pintarTintes() + pintarRopa() + pintarAspecto()
       : grupo('ropa', { campesino: OPCIONES.ropa.campesino }, 'Ropa') + grupo('pelo', OPCIONES.pelo[estado.sexo], 'Pelo') +
     grupo('colorPelo', OPCIONES.colorPelo, 'Color del pelo') + grupo('piel', OPCIONES.piel, 'Piel') + (estado.sexo === 'hombre' ? grupo('barba', OPCIONES.barba, 'Barba') : '')) +
     grupo('calidad', { alta: 'Alta', ligera: 'Ligera (móvil)' }, 'Calidad') +
@@ -147,8 +157,29 @@ function pintarOpciones() {
     pintarOpciones(); guardar(); dibujar();
   };
   for (const b of $('opciones').querySelectorAll('[data-asp]')) b.onclick = () => { cambiarAspecto({ [b.dataset.asp]: b.dataset.v }); pintarOpciones(); };
+  for (const b of $('opciones').querySelectorAll('[data-tinte]')) b.onclick = () => cambiarTintes({ prendas: { [b.dataset.tinte]: b.dataset.v } });
+  for (const b of $('opciones').querySelectorAll('[data-blason]')) b.onclick = () => cambiarTintes({ blason: { [b.dataset.blason]: b.dataset.v } });
   for (const r of $('opciones').querySelectorAll('[data-forma]')) r.oninput = () => cambiarAspecto({ formas: { [r.dataset.forma]: Number(r.value) } });
   for (const b of $('opciones').querySelectorAll('[data-diag]')) b.onclick = () => { estado[b.dataset.diag] = !estado[b.dataset.diag]; aplicarDiag(); pintarOpciones(); guardar(); };
+}
+
+// tinte de cada prenda que se ve puesta (muestras de color) y, con la sobreveste, su blasón (dibujo y color de la figura)
+function pintarTintes() {
+  const t = tintesMH(), capas = capasMH(), tenibles = pj?.tenibles || [];
+  if (!tenibles.length) return '';
+  const calzado = capas.includes('botas') ? 'botas' : capas.includes('descalzo') ? null : 'zapatos';
+  const puestas = tenibles.filter(p => p === 'camisa' || p === 'calzas' || p === calzado || capas.includes(p));
+  const rgb = (c) => `rgb(${c.join(',')})`;
+  const muestra = (attr, clave, k, nombre, c, sel) => `<button data-${attr}="${clave}" data-v="${k}" title="${tr(nombre)}" aria-label="${tr(nombre)}" class="muestra ${sel ? 'sel' : ''}"><i style="background:${rgb(c)}"></i></button>`;
+  let h = `<div class="grupo tintes"><span>${tr('Tinte de la ropa')}</span>` + puestas.map(p => `<div class="fila"><b>${tr(PRENDAS_TENIBLES[p].nombre)}</b>` +
+    Object.entries(paletaDe(p)).map(([k, [n]]) => muestra('tinte', p, k, n, colorPrenda(p, k), t.prendas[p] === k)).join('') + '</div>').join('') + '</div>';
+  if (capas.includes('sobreveste') && tenibles.includes('sobreveste')) {
+    h += `<div class="grupo" id="blason"><span>${tr('Blasón de la sobreveste')}</span>` + Object.entries(BLASONES).map(([k, n]) =>
+      `<button data-blason="dibujo" data-v="${k}" class="${t.blason.dibujo === k ? 'sel' : ''}">${tr(n)}</button>`).join('') +
+      (t.blason.dibujo === 'liso' ? '' : `<div class="fila"><b>${tr('Figura')}</b>` + Object.entries(TINTES).filter(([k]) => k !== 'natural').map(([k, [n, c]]) =>
+        muestra('blason', 'color', k, n, c, t.blason.color === k)).join('') + '</div>') + '</div>';
+  }
+  return h;
 }
 
 // lo que hace la ropa puesta: sale de los datos de cada prenda (src/logica/prendas.js), los mismos que deciden qué se dibuja
@@ -247,6 +278,7 @@ window.__personaje = {
   },
   medida: () => { dibujar(); return { ...medida, triangulos: renderer.info.render.triangles, dibujados: renderer.info.render.calls }; },
   estado: () => ({ ...estado }),
+  tintes: (t) => { if (t) cambiarTintes(t); return pj?.tintes; },
   // milisegundos por fotograma dibujando n veces (para comparar calidades en las pruebas)
   tiempo: (n = 10) => { const gl = renderer.getContext(), px = new Uint8Array(4), sync = () => gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); dibujar(); sync(); const t = performance.now(); for (let i = 0; i < n; i++) { dibujar(); sync(); } return (performance.now() - t) / n; },
   diag: () => ({ escena, renderer, pj, sol, THREE }),

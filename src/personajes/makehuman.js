@@ -11,6 +11,7 @@ import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { CLIPS, CLIPS_EXTRA } from './cargar.js';
 import { normalizarAspecto, colorDe, pesosFormas, escalaAltura, piezasCabeza } from '../logica/aspecto.js';
 import { TALLER } from '../logica/prendas.js';
+import { normalizarTintes, colorPrenda, colorFigura, NUM_BLASON } from '../logica/tintes.js';
 
 const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 const cache = new Map();
@@ -49,6 +50,39 @@ function ponerFormas(n, pesos) {
 }
 // color sRGB (0-255) a lineal, igual que en el taller (potencia 2,2)
 const lineal = (c) => c.map(x => (x / 255) ** 2.2);
+
+// Blasón de la sobreveste (taller-v13): el dibujo sale de la posición de cada punto en el cuerpo en reposo (x: de un
+// lado a otro, la derecha del que la lleva en x < 0; y: altura sobre el pecho), así vale para el cuerpo y la falda de la
+// prenda sin textura nueva ni rehacer el modelo. Dentro de la figura, el color de la tela se cambia por el de la figura
+// (manteniendo el dibujo de la tela). Bordes suavizados con fwidth. Va delante y detrás, como en las sobrevestes de verdad.
+const ANCHO_PIEZA = 0.06; // media anchura de palo, faja, banda, cruz, sotuer y cheurón (m)
+function ponerSombreadoBlason(material, u) {
+  material.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, u);
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vReposo;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvReposo = position;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', `#include <common>
+varying vec3 vReposo;
+uniform int uBlason; uniform vec3 uFigura; uniform float uPecho;`)
+      .replace('#include <map_fragment>', `#include <map_fragment>
+if (uBlason > 0) {
+  float x = vReposo.x, y = vReposo.y - uPecho, w = ${ANCHO_PIEZA.toFixed(3)}, d = 0.0;
+  if (uBlason == 1) d = -x;                                         // partido: la mitad diestra
+  else if (uBlason == 2) d = y;                                     // cortado: la mitad de arriba
+  else if (uBlason == 3) d = min(abs(x), abs(y)) * sign(-x * y);    // cuartelado: cuarteles 1 y 4
+  else if (uBlason == 4) d = w - abs(x);                            // palo
+  else if (uBlason == 5) d = w - abs(y);                            // faja
+  else if (uBlason == 6) d = w - abs(x + y) * 0.7071;               // banda: de arriba a la diestra hacia abajo
+  else if (uBlason == 7) d = w - min(abs(x), abs(y));               // cruz
+  else if (uBlason == 8) d = w - min(abs(x + y), abs(x - y)) * 0.7071; // sotuer
+  else if (uBlason == 9) d = w - abs(y - 0.06 + abs(x) * 0.9) * 0.74;  // cheurón, con la punta arriba
+  float fw = fwidth(d) * 0.8 + 1e-4;
+  float m = smoothstep(-fw, fw, d);
+  diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb / max(diffuse, vec3(1e-4)) * uFigura, m);
+}`);
+  };
+  material.customProgramCacheKey = () => 'blason';
+}
 
 export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/taller-v1/') {
   const o = { sexo: 'hombre', calidad: 'alta', extra: false, ...op };
@@ -186,15 +220,44 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     modelo.traverse(n => {
       if (!n.isMesh) return;
       const t = n.userData.tinte;
-      if (t) { const c = lineal(colorDe(t, asp[t])), r = n.userData.ref || 1; n.material.color.setRGB(c[0] / r, c[1] / r, c[2] / r, THREE.LinearSRGBColorSpace); }
+      if (t && t !== 'ropa') { const c = lineal(colorDe(t, asp[t])), r = n.userData.ref || 1; n.material.color.setRGB(c[0] / r, c[1] / r, c[2] / r, THREE.LinearSRGBColorSpace); }
       ponerFormas(n, pesos);
     });
     resultado.aspecto = asp;
     ponerCabeza();
   };
-  const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, velocidad, opciones: o, hueso, clips: [...g.animations.map(c => c.name), ...Object.values(extra)], ponerCapas, ponerAspecto,
+  // ---- tintes de la ropa y blasón de la sobreveste (src/logica/tintes.js), sin volver a cargar el modelo ----
+  // Las prendas teñibles (taller-v13) llevan en sus extras tinte «ropa», la prenda y el gris de referencia de su textura.
+  const blason = { uBlason: { value: 0 }, uFigura: { value: new THREE.Color(1, 1, 1) }, uPecho: { value: 1.3 } };
+  {
+    let alto = -Infinity;
+    modelo.traverse(n => {
+      if (!n.isMesh || n.userData.prenda !== 'sobreveste') return;
+      ponerSombreadoBlason(n.material, blason);
+      if (!/_falda$/.test(n.name)) { n.geometry.computeBoundingBox(); alto = Math.max(alto, n.geometry.boundingBox.max.y); }
+    });
+    if (alto > 0) blason.uPecho.value = alto - 0.2; // el cruce de la cruz, unos 20 cm por debajo del cuello
+  }
+  const ponerTintes = (t) => {
+    const tin = normalizarTintes(t, o.sexo);
+    let ref = 1;
+    modelo.traverse(n => {
+      if (!n.isMesh || n.userData.tinte !== 'ropa') return;
+      const c = lineal(colorPrenda(n.userData.prenda, tin.prendas[n.userData.prenda]) || [255, 255, 255]);
+      ref = n.userData.ref || 1;
+      n.material.color.setRGB(c[0] / ref, c[1] / ref, c[2] / ref, THREE.LinearSRGBColorSpace);
+    });
+    const f = lineal(colorFigura(tin.blason.color));
+    blason.uFigura.value.setRGB(f[0] / ref, f[1] / ref, f[2] / ref, THREE.LinearSRGBColorSpace);
+    blason.uBlason.value = NUM_BLASON[tin.blason.dibujo] || 0;
+    resultado.tintes = tin;
+  };
+  const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, velocidad, opciones: o, hueso, clips: [...g.animations.map(c => c.name), ...Object.values(extra)], ponerCapas, ponerAspecto, ponerTintes,
+    // las prendas que se pueden teñir en este modelo (las de antes de la taller-v13 no se tiñen)
+    tenibles: (() => { const s = new Set(); modelo.traverse(n => { if (n.isMesh && n.userData.tinte === 'ropa') s.add(n.userData.prenda); }); return [...s]; })(),
     capasPosibles: [...[...ORDEN, ...SUELTAS].filter(c => c !== 'camisa' && modelo.getObjectByName(`${o.sexo}_capa_${c}`)), ...(hayPies ? [TALLER.descalzo] : [])], tocados: TOCADOS };
   ponerCapas(o.capas || [o.sexo === 'mujer' ? 'vestido' : 'tunica']);
   ponerAspecto(o.aspecto);
+  ponerTintes(o.tintes);
   return resultado;
 }

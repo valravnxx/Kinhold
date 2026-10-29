@@ -137,7 +137,7 @@ def mapear(ob, pos, orig):
     kd.balance()
     MAPA[ob.name] = np.array([orig[kd.find(v.co)[1]] for v in ob.data.vertices], dtype=np.int64)
 
-def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None, metal=0.0, tapar=None, factor=None, tinte=None, entero=None):
+def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None, metal=0.0, tapar=None, factor=None, tinte=None, entero=None, prenda=None):
     """copia de `base` con solo los vértices para los que quedarse(i, co) es cierto; la empuja por la normal.
     color(P, A) da el color por vértice; textura=(res, fn(P, A) → rgba) pinta una textura en su mapa UV"""
     ob = base.copy(); ob.data = base.data.copy(); ob.name = nombre
@@ -219,6 +219,8 @@ def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosida
     me.attributes.remove(me.attributes['orig'])
     if tinte:  # el juego cambia el color de esta pieza (va en los «extras» del .glb): qué color y el de referencia
         ob['tinte'], ob['ref'] = tinte
+    if prenda:  # qué prenda es (tinte «ropa»: el juego le pone el color de esa prenda)
+        ob['prenda'] = prenda
     if diezmar < 1.0:
         d = ob.modifiers.new('Diezmar', 'DECIMATE'); d.ratio = diezmar
         if entero:  # lo que no se diezma (la cara de la piel: los calcos de pelo van encima, a 1 mm, y si no la piel los atravesaba)
@@ -568,6 +570,13 @@ def poner_formas(piezas, co, V):
             sk = ob.shape_key_add(name=k, from_mix=False); sk.data.foreach_set('co', (P + d).astype(np.float32).ravel())
 
 REF_PIEL, REF_PELO = 0.85, 0.6  # colores de referencia (lineales) en los que se pintan la piel y el pelo
+# Ropa teñible (desde taller-v13): la tela y el cuero se pintan en este gris (lineal) y el color de cada prenda va en el
+# material (factor = color / REF_ROPA), así el juego la tiñe sin rehacer el modelo. Con el color por defecto se ve igual
+# que antes. La cota de malla, el sombrero de paja y los cinturones no se tiñen.
+REF_ROPA = 0.8
+def tenida(capa, color):
+    return dict(factor=lin(color) / REF_ROPA, tinte=('ropa', REF_ROPA), prenda=capa)
+GRIS_ROPA = np.full(3, REF_ROPA)
 
 def separar_iris(ojo, c0, nombre, iris):
     """saca el iris (y la pupila) del ojo a una pieza aparte, en gris, con su color en el material: el juego cambia el
@@ -847,6 +856,7 @@ def personaje(nombre, macros, objetivos, ropa):
     # Cada capa va más separada de la piel que la de debajo, así no se atraviesan.
     def tela(c):
         c = lin(c); return lambda P, A: c[None, :] * (0.88 + 0.16 * fbm(P, 25)[:, None])
+    tela_gris = lambda P, A: GRIS_ROPA[None, :] * (0.88 + 0.16 * fbm(P, 25)[:, None])
     def corte_cuello_mangas(P, alto_cuello, hueco_muneca, escote):
         """transparencia del borde: escote (más bajo por delante) y final de las mangas, sin escalones"""
         x, y, z = np.abs(P[..., 0]), P[..., 1], P[..., 2]
@@ -867,11 +877,12 @@ def personaje(nombre, macros, objetivos, ropa):
     arriba = lambda alto: (lambda i, c: en(i, 'helper-tights') and cintura_z - 0.06 < c.z < cuello_z + alto and not cerca_muneca(c, 0.015) and not mano(i))
     tronco = lambda c, i: abs(c.x) < 0.15 and cintura_z - 0.05 < c.z < cuello_z - 0.05
     def prenda(capa, color, empuje_tronco, empuje_manga, largo, alto_cuello=-0.004, escote=0.02, muneca_hueco=0.043,
-               alisado=None, colgar_pecho=False, dibujo=None, rugosidad=0.95, metal=0.0, sin_mangas=False, manga_hasta=None, res=1024):
+               alisado=None, colgar_pecho=False, dibujo=None, rugosidad=0.95, metal=0.0, sin_mangas=False, manga_hasta=None, res=1024, tenir=True):
         """una prenda: cuerpo (malla ceñida de la base) + falda (malla de falda de la base). Bordes por transparencia.
         dibujo(P) multiplica el color (acolchado, anillas…); sin_mangas recorta la sisa; manga_hasta: distancia de la muñeca
         a la que acaba la manga (más corta que la camisa)"""
-        colp = lin(color)
+        colp = GRIS_ROPA if tenir else lin(color)  # teñible: en gris, con su color en el material
+        tn = tenida(capa, color) if tenir else {}
         hueco = manga_hasta or muneca_hueco
         def separacion(c):  # de la piel: más en el tronco que en las mangas, con paso suave en el hombro (un escalón se veía como mancha oscura)
             t = min(1.0, max(0.0, (abs(c.x) - 0.15) / 0.05)); t = t * t * (3 - 2 * t)
@@ -894,15 +905,15 @@ def personaje(nombre, macros, objetivos, ropa):
         cuerpo_sel = (lambda i, c: arriba(alto_cuello + 0.03)(i, c) and abs(c.x) < (0.19 if sin_mangas else HOMBRO + 0.035))
         cuerpo_ = trozo(base, f'{nombre}_capa_{capa}', cuerpo_sel, empuje=lambda c, i: separacion(c),
                         textura=(res, pintar), rugosidad=rugosidad, ajustar_uv=True, metal=metal,
-                        colgar=(cintura_z, cuello_z - 0.03, 0.16) if colgar_pecho else None, alisar=alisado)
+                        colgar=(cintura_z, cuello_z - 0.03, 0.16) if colgar_pecho else None, alisar=alisado, **tn)
         piezas_ = [cuerpo_]
         if not sin_mangas:  # las mangas montan sobre el cuerpo para que no quede raja
             piezas_.append(trozo(base, f'{nombre}_capa_{capa}_mangas', lambda i, c: arriba(alto_cuello + 0.03)(i, c) and abs(c.x) > HOMBRO - 0.035,  # solape ancho: los cuadros del hombro miden unos 3 cm y, si no, quedaba alguno sin nadie (agujero)
                                 
                                  empuje=lambda c, i: separacion(c) + 0.002,  # +2 mm: donde montan, sin parpadeo
-                                 textura=(res // 2, pintar), rugosidad=rugosidad, ajustar_uv=True, metal=metal))
+                                 textura=(res // 2, pintar), rugosidad=rugosidad, ajustar_uv=True, metal=metal, **tn))
         falda_ = trozo(base, f'{nombre}_capa_{capa}_falda', lambda i, c: en(i, 'helper-skirt') and largo < c.z < cintura_z + 0.012,  # el empalme queda bajo el cinturón
-                       empuje=empuje_tronco, textura=(res // 2, pintar_falda), ajustar_uv=True, rugosidad=rugosidad, metal=metal)
+                       empuje=empuje_tronco, textura=(res // 2, pintar_falda), ajustar_uv=True, rugosidad=rugosidad, metal=metal, **tn)
         return piezas_ + [falda_]
     def anillas(P):
         """cota de malla: filas de anillas cruzadas (dibujo por la tela, en UV), con brillo arriba y hueco oscuro"""
@@ -933,7 +944,7 @@ def personaje(nombre, macros, objetivos, ropa):
     # cota de malla sobre el gambesón: hasta la rodilla, mangas hasta media mano del antebrazo; metal gris
     # (metal a medias: sin reflejos del entorno en el juego, el metal puro sale negro)
     cota = prenda('cota', (176, 176, 170), 0.034, 0.023, rodilla_z + 0.02, alto_cuello=0.026, escote=0.0, manga_hasta=0.09,
-                  alisado=(tronco, 25, 0.032), colgar_pecho=True, dibujo=anillas, rugosidad=0.5, metal=0.45)
+                  alisado=(tronco, 25, 0.032), colgar_pecho=True, dibujo=anillas, rugosidad=0.5, metal=0.45, tenir=False)
     piezas += cota
     piezas.append(cinturon(f'{nombre}_cinturon_cota', cota, cintura_z, lin((40, 26, 17))))
     # sobreveste encima de todo: sin mangas, hasta media pierna, de lana teñida
@@ -944,10 +955,10 @@ def personaje(nombre, macros, objetivos, ropa):
     if not mujer:
         piezas.append(trozo(base, nombre + '_capa_calzas', lambda i, c: en(i, 'helper-tights') and tobillo_z + 0.03 < c.z < largo_camisa + 0.10,  # bajo la camisa no hacen falta (se atravesaban)
                            
-                            empuje=0.003, color=tela(ropa['calzas']), rugosidad=0.95))
+                            empuje=0.003, color=tela_gris, rugosidad=0.95, **tenida('calzas', ropa['calzas'])))
         bajo_recto(piezas[-1], tobillo_z + 0.08)  # descalzo se ve el bajo: recto, no en dientes de sierra
     piezas.append(trozo(base, nombre + '_capa_zapatos', lambda i, c: en(i, 'helper-tights') and c.z < tobillo_z + 0.05,
-                        empuje=0.006, color=tela((52, 34, 22)), rugosidad=0.55))
+                        empuje=0.006, color=tela_gris, rugosidad=0.55, **tenida('zapatos', (52, 34, 22))))
     # ---- pies descalzos: la piel de los pies, para cuando no lleva zapatos ni botas (el GDD empieza descalzo) ----
     # La piel del cuerpo solo tiene cabeza, cuello y manos; sin esto, al quitar los zapatos no había pies. Sube un poco
     # por encima de donde empiezan las calzas (tobillo + 3 cm), que la tapan, para que no quede hueco entre las dos.
@@ -962,7 +973,7 @@ def personaje(nombre, macros, objetivos, ropa):
                         rugosidad=0.62, sss=0.2, ajustar_uv=True, **f_piel))
     # ---- capa (manto) abierta por delante, encima de todo, hasta debajo de la rodilla ----
     # Se llama «manto» en el modelo (<nombre>_capa_manto) para no chocar con la palabra «capa» de las capas de ropa.
-    colm = lin(ropa.get('manto', (78, 70, 58)))
+    colm = GRIS_ROPA; tn_manto = tenida('manto', ropa.get('manto', (78, 70, 58)))
     def abertura(P, z_yugo):  # por delante queda abierta salvo un poco bajo el cuello, donde se cierra con un broche
         x, y, z = np.abs(P[..., 0]), P[..., 1], P[..., 2]
         return 1 - suave(-0.02, -0.045, y) * suave(0.15, 0.115, x) * suave(z_yugo + 0.01, z_yugo - 0.01, z)
@@ -977,9 +988,9 @@ def personaje(nombre, macros, objetivos, ropa):
         return np.concatenate([col, a[..., None]], -1)
     sel_manto = lambda i, c: en(i, 'helper-tights') and cintura_z - 0.06 < c.z < cuello_z + 0.045 and abs(c.x) < 0.215 and not mano(i)
     piezas.append(trozo(base, f'{nombre}_capa_manto', sel_manto, empuje=0.056, textura=(1024, pintar_manto), rugosidad=0.95,
-                        ajustar_uv=True, alisar=(tronco, 25, 0.054)))
+                        ajustar_uv=True, alisar=(tronco, 25, 0.054), **tn_manto))
     piezas.append(trozo(base, f'{nombre}_capa_manto_falda', lambda i, c: en(i, 'helper-skirt') and rodilla_z - 0.12 < c.z < cintura_z + 0.03,
-                        empuje=0.062, textura=(512, lambda P, A: pintar_manto(P, A, cuello=False)), rugosidad=0.95, ajustar_uv=True))
+                        empuje=0.062, textura=(512, lambda P, A: pintar_manto(P, A, cuello=False)), rugosidad=0.95, ajustar_uv=True, **tn_manto))
 
     # ---- calzado: botas de cuero (en vez de los zapatos) ----
     # El hombre, hasta debajo de la rodilla. La mujer lleva siempre falda hasta el tobillo (camisa, vestido), que sale de
@@ -987,7 +998,7 @@ def personaje(nombre, macros, objetivos, ropa):
     # salía por detrás de la falda (lo vio valravnx el 29 oct). Sus botas suben solo un poco por encima del bajo de la
     # falda: nunca se ven por encima y no llegan a la pantorrilla.
     alto_bota = tobillo_z + 0.10 if mujer else rodilla_z - 0.06
-    cuero = lin((60, 42, 28))
+    cuero = GRIS_ROPA  # teñible, como la tela: el color del cuero va en el material
     def color_botas(P, A):
         z = P[:, 2]
         c = cuero[None, :] * (0.85 + 0.2 * fbm(P, 30)[:, None])
@@ -995,7 +1006,7 @@ def personaje(nombre, macros, objetivos, ropa):
         suela = suave(0.025, 0.015, z)[:, None]
         return c * (1 + 0.25 * vuelta) * (1 - 0.5 * suela)
     piezas.append(trozo(base, nombre + '_capa_botas', lambda i, c: en(i, 'helper-tights') and c.z < alto_bota,
-                        empuje=lambda c, i: 0.009 + (0.004 if c.z > alto_bota - 0.05 else 0.0), color=color_botas, rugosidad=0.6))
+                        empuje=lambda c, i: 0.009 + (0.004 if c.z > alto_bota - 0.05 else 0.0), color=color_botas, rugosidad=0.6, **tenida('botas', (60, 42, 28))))
 
     # ---- tocados (uno cada vez): capucha suelta con esclavina, sombrero de paja y, en la mujer, toca ----
     oreja_c = [orejas[orejas[:, 0] * sg > 0].mean(0) for sg in (1, -1)]
@@ -1018,7 +1029,7 @@ def personaje(nombre, macros, objetivos, ropa):
             return cabeza_e * (1 - t) + hombro_e * t + atras + 0.008 * float(suave(0.055, 0.025, d))  # algo de bulto sobre la oreja
         return e
     def pintar_tocado(color, arriba, abajo, hx, z_bajo, lana=True):
-        c0 = lin(color)
+        c0 = GRIS_ROPA  # teñible: el color (color) va en el material
         def f(P, A):
             col = c0[None, None, :] * (0.86 + 0.18 * fbm(P, 40 if lana else 60)[..., None]) * (0.95 + 0.05 * ruido(P, 700)[..., None])
             O = A[..., 3:6]  # el sitio de cada punto antes de empujar la tela: los bordes no se mueven con el empuje
@@ -1032,13 +1043,13 @@ def personaje(nombre, macros, objetivos, ropa):
     piezas.append(trozo(base, nombre + '_capa_capucha', cubre(zc_bajo, ojo_arriba + 0.05, boca_z - 0.055, 0.063), empuje=separacion_tocado(0.026, 0.09, pico=0.05),
                         alisar=(sobre_oreja, 12), tapar=lambda c: min(np.linalg.norm(np.array(c) - o) for o in oreja_c) < 0.065,
                         textura=(1024, pintar_tocado(ropa.get("capucha", (92, 76, 58)), ojo_arriba + 0.05, boca_z - 0.055, 0.063, zc_bajo)),
-                        rugosidad=0.95, diezmar=DIEZMAR))
+                        rugosidad=0.95, diezmar=DIEZMAR, **tenida('capucha', ropa.get("capucha", (92, 76, 58)))))
     if mujer:
         zt_bajo = cuello_z - 0.075
         piezas.append(trozo(base, nombre + '_capa_toca', cubre(zt_bajo, ojo_arriba + 0.028, boca_z - 0.028, 0.058), empuje=separacion_tocado(0.013, 0.08),
                             alisar=(sobre_oreja, 12), tapar=lambda c: min(np.linalg.norm(np.array(c) - o) for o in oreja_c) < 0.065,
                             textura=(1024, pintar_tocado((226, 220, 204), ojo_arriba + 0.028, boca_z - 0.028, 0.058, zt_bajo, lana=False)),
-                            rugosidad=0.9, diezmar=DIEZMAR))
+                            rugosidad=0.9, diezmar=DIEZMAR, **tenida('toca', (226, 220, 204))))
     piezas.append(sombrero(f'{nombre}_capa_sombrero', co, cabeza, ojo_arriba, ropa.get('cofia') is not None))
 
     bpy.data.objects.remove(base)
