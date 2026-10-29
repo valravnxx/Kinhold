@@ -2311,5 +2311,20 @@
   "pruebas": "En la nube: 15 grupos bien (52,5 min en total), con la prueba nueva de las versiones archivadas (falla a propósito con MUTAR=1)",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T17:02:34+00:00",
+  "fin": "2026-10-29T18:03:50+00:00",
+  "titulo": "Versiones antiguas en las releases: la web baja a 358 MB",
+  "hito": "despejar",
+  "hecho": [
+   "valravnx lanzó la acción «releases» y salió bien: 6 releases «jugar-<prototipo>» con 103 versiones antiguas (comprobado en GitHub)",
+   "Descargada demo-v1.html de su release: pesa lo mismo que la original más las rutas cambiadas, y no le queda ninguna ruta relativa",
+   "Quitadas de docs/ las 103 versiones que ya están en su release; el selector de versiones de la web las descarga (marcadas con ⬇). Medido: la web pasa de 475 a 358 MB y las versiones jugables de la web, a 55 MB",
+   "No comprobado: jugar una versión descargada en un navegador de verdad abierta desde el disco"
+  ],
+  "pruebas": "En la nube: 15 grupos bien; la web falló una vez (la etiqueta «En proceso · Chat con valravnx» se salía por el lado en el móvil), arreglada y repetida bien",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
