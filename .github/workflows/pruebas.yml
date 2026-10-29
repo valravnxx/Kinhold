@@ -1,0 +1,98 @@
+# Todas las pruebas de Kinhold en la nube, cada grupo en su máquina a la vez (lo pidió valravnx el 29 oct: aquí no hay
+# tarjeta gráfica y la batería entera pasaba de hora y media). Gratis en un repositorio público: 4 núcleos y 16 GB por
+# máquina, hasta 20 a la vez.
+# No se lanza sola con cada subida (los avances cada 15 minutos la lanzarían sin parar): la lanza
+#   node herramientas/pruebas_nube.mjs
+# que espera, trae las capturas y la salida de cada grupo y dice qué ha fallado. Los grupos salen de
+# herramientas/probar_todo.sh --grupos, así que una prueba nueva añadida allí entra sola.
+# Las capturas y la salida vuelven por una rama nube/<ejecución>-<grupo> (desde aquí no se pueden bajar los
+# «artifacts»: están en un almacén al que no se llega); el script la borra después de traerla.
+name: pruebas
+run-name: pruebas ${{ github.ref_name }} ${{ inputs.id }}
+on:
+  workflow_dispatch:
+    inputs:
+      id:
+        description: quién lo pide (para encontrar la ejecución)
+        required: false
+        default: ''
+      grupos:
+        description: 'solo estos grupos, en JSON (["cavar","web"]); vacío = todos'
+        required: false
+        default: ''
+permissions:
+  contents: write
+jobs:
+  lista:
+    runs-on: ubuntu-latest
+    outputs:
+      grupos: ${{ steps.g.outputs.grupos }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: g
+        env:
+          PEDIDOS: ${{ inputs.grupos }}
+        run: |
+          if [ -n "$PEDIDOS" ]; then echo "grupos=$PEDIDOS" >> "$GITHUB_OUTPUT"
+          else echo "grupos=$(bash herramientas/probar_todo.sh --grupos)" >> "$GITHUB_OUTPUT"; fi
+  grupo:
+    needs: lista
+    strategy:
+      fail-fast: false
+      matrix:
+        grupo: ${{ fromJSON(needs.lista.outputs.grupos) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    name: ${{ matrix.grupo }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: npm ci
+      - name: Navegador y Python
+        run: |
+          pip install playwright==1.63.0 pillow numpy
+          python -m playwright install --with-deps chromium
+      - name: Caddy (solo lógica)
+        if: matrix.grupo == 'logica'
+        run: sudo apt-get install -y -q caddy
+      - name: Pruebas del grupo
+        id: pruebas
+        run: |
+          set +e
+          inicio=$(date +%s)
+          bash herramientas/probar_todo.sh --grupo "${{ matrix.grupo }}" 2>&1 | tee /tmp/resumen.txt
+          r=${PIPESTATUS[0]}
+          echo "tardó $(( $(date +%s) - inicio )) s" | tee -a /tmp/resumen.txt
+          echo "r=$r" >> "$GITHUB_OUTPUT"
+      - name: Devolver capturas y salida por una rama
+        if: always()
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          mv /tmp/kinhold_capturas/salida /tmp/kinhold_capturas/salida_${{ matrix.grupo }} 2>/dev/null || true
+          mkdir -p /tmp/vuelta && cp /tmp/resumen.txt /tmp/vuelta/resumen_${{ matrix.grupo }}.txt || true
+          python - <<'EOF'
+          import os
+          from PIL import Image
+          o, d = '/tmp/kinhold_capturas', '/tmp/vuelta'
+          for raiz, _, fs in os.walk(o):
+              for f in fs:
+                  a = os.path.join(raiz, f); b = os.path.join(d, os.path.relpath(a, o)); os.makedirs(os.path.dirname(b), exist_ok=True)
+                  if f.lower().endswith('.png'):
+                      im = Image.open(a).convert('RGB')
+                      if im.width > 1280: im = im.resize((1280, round(im.height * 1280 / im.width)), Image.LANCZOS)
+                      im.save(b[:-4] + '.jpg', quality=88)
+                  elif os.path.getsize(a) < 5_000_000:
+                      with open(a, 'rb') as x, open(b, 'wb') as y: y.write(x.read())
+          EOF
+          cd /tmp/vuelta && git init -q && git checkout -q --orphan vuelta && git add -A
+          git -c user.name=kinhold-nube -c user.email=nube@kinhold.invalid commit -qm "Pruebas en la nube: ${{ matrix.grupo }} (${{ github.sha }})"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}" HEAD:refs/heads/nube/${{ github.run_id }}-${{ matrix.grupo }}
+      - name: Resultado
+        run: exit ${{ steps.pruebas.outputs.r }}
