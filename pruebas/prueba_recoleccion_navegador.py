@@ -14,9 +14,9 @@ RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/construccion'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
-# la carpeta del taller que carga el juego (la dice src/juego/main.js), para no quedarse atrás cuando cambia
+# la carpeta del taller que carga el juego (la dice src/mundo/eleccion.js), para no quedarse atrás cuando cambia
 import re
-TALLER = re.search(r"recursos/personajes/(taller-v\d+)/'", open(os.path.join(RAIZ, 'src/juego/main.js'), encoding='utf8').read()).group(1)
+TALLER = re.search(r"TALLER = '(taller-v\d+)'", open(os.path.join(RAIZ, 'src/mundo/eleccion.js'), encoding='utf8').read()).group(1)
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes', TALLER), f'{sitio}/recursos/personajes/{TALLER}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
