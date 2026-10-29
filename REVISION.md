@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 29 oct 2026 (17:02 UTC) — por el chat: acción «releases» lanzada
+
+«verde» → valravnx lanzó la acción «releases» y salió bien: 6 releases con 103 versiones antiguas (comprobado en GitHub). La tarea de quitarlas de la web pasa a pendiente y la hace esta sesión de chat.
+
 ### 29 oct 2026 (15:21–15:24) — por el chat: Whitholm, mundo de los playtests
 valravnx: «he pensado en hacer del juego solo en la isla norte (con el resto ahí) como si fuera el mundo de los playtests, que abrir en caso de que haya playerbase o dejar que ellos mismos descubran el mundo si llegan a hacer barcos en un futuro», y después: «sí, y habrá que subdividir la isla en comarcas, y luego discutiremos sobre los recursos». → Anotado en el GDD (apartado 4) como decidido; en el roadmap, la demo aparece en Whitholm con todos en la misma comarca, las comarcas de Whitholm van primero en el hito Mundo, y los recursos de la isla quedan como decisión pendiente para hablarlo con el chat.
 
