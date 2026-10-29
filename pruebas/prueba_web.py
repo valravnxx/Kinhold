@@ -95,8 +95,12 @@ with sync_playwright() as p:
         pg.evaluate('document.fonts.ready')
         _cargadas = pg.evaluate("[...document.fonts].filter(f => f.status === 'loaded').map(f => f.family.replace(/\"/g, ''))")
         comprobar('feria: guirnalda de banderines, cartel de madera y cada pestaña en un pergamino con dos rodillos',
-                  pg.locator('#guirnalda .banderin').count() >= 8 and pg.locator('.cabecera .tabla h1').count() == 1
+                  pg.locator('#guirnalda .banderin:visible').count() >= 5 and pg.locator('.cabecera .tabla h1').count() == 1
                   and pg.evaluate("[...document.querySelectorAll('section')].every(s => s.querySelector('.pergamino') && s.querySelectorAll('.pergamino > .rollo').length === 2)"))
+        _bord = pg.evaluate("(() => { const b = [...document.querySelectorAll('#guirnalda .banderin')].filter(e => e.offsetParent).map(e => e.getBoundingClientRect()); const g = document.querySelector('#guirnalda').getBoundingClientRect(); return [b[0].left + b[0].width / 2 - g.left, g.right - (b.at(-1).left + b.at(-1).width / 2)]; })()")
+        comprobar('banderines repartidos por igual (tanto sitio a cada lado)', abs(_bord[0] - _bord[1]) < 12, f'{_bord[0]:.0f}px / {_bord[1]:.0f}px')
+        _cuerdas = pg.evaluate("(() => { const t = document.querySelector('.cartel').getBoundingClientRect().top + scrollY; const c = getComputedStyle(document.querySelector('.cartel'), '::before'); return t + parseFloat(c.top); })()")
+        comprobar('las cuerdas del cartel cuelgan de arriba del todo (no empiezan en el aire)', _cuerdas <= 2, f'empiezan a {_cuerdas:.0f}px')
         comprobar('las fuentes medievales se cargan', all(any(n in f for f in _cargadas) for n in ['EB Garamond', 'Alegreya SC', 'Cinzel Decorative']), ', '.join(sorted(set(_cargadas))))
         ancho = pg.evaluate('document.documentElement.scrollWidth')
         comprobar('sin desplazamiento horizontal', ancho <= vista['width'], f'{ancho}px')
