@@ -806,9 +806,9 @@
     },
     {
      "nombre": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, corte, tejido y tinte (sin calidades), sobre el mismo esqueleto",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T20:53:23+00:00",
-     "rama": "trabajo/20261029-2053"
+     "fin": "2026-10-29T21:56:37+00:00"
     },
     {
      "nombre": "Niveles de detalle del personaje del taller: versiones reducidas para verlo de lejos, cambio automático por distancia y texturas juntas; medido con 20 personajes en pantalla, y el rendimiento en el móvil medido y ajustado",
@@ -1627,6 +1627,13 @@
      "archivo": "jugar/demo/v41.html",
      "capturas": null,
      "notas": "En «Personaje», tintes de la ropa y blasón de la sobreveste (personajes en taller-v13)."
+    },
+    {
+     "v": "v42",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v42.html",
+     "capturas": "capturas/personaje-v23",
+     "notas": "En «Personaje», «Hechura de la ropa»: material (lino o lana), corte y tejido (liso, sarga, espiguilla, cuadros o rayas) de cada prenda de tela puesta, sobre el mismo modelo."
     }
    ]
   },
@@ -2243,6 +2250,13 @@
      "archivo": "jugar/personaje/v22.html",
      "capturas": "capturas/personaje-v22",
      "notas": "Tintes de la ropa y blasón de la sobreveste: cada prenda puesta se tiñe con los tintes de la época y la sobreveste lleva partido, cortado, cuartelado, palo, faja, banda, cruz, sotuer o cheurón. Personajes en taller-v13 (tela y cuero en gris con el color aparte)."
+    },
+    {
+     "v": "v23",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/personaje/v23.html",
+     "capturas": "capturas/personaje-v23",
+     "notas": "Hechura de la ropa: en Opciones, para cada prenda de tela puesta, el material (lino o lana), el corte (largo, a media pierna o corto) y el tejido (liso, sarga, espiguilla, cuadros o rayas), sobre el mismo modelo y sin recargarlo. Con una prenda más corta encima asoma la de debajo."
     }
    ]
   },

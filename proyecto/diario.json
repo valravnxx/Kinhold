@@ -2396,5 +2396,21 @@
   "pruebas": "En la nube: los 15 grupos bien; la prueba de recoger falló una vez porque buscaba la carpeta del taller en src/juego/main.js y, arreglada, pasa",
   "capturas": "capturas/mapa-v14",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T20:53:23+00:00",
+  "fin": "2026-10-29T21:56:37+00:00",
+  "titulo": "Hechura de la ropa: material, corte y tejido (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Lógica pura nueva (src/logica/hechura.js): cada prenda de tela lleva su hechura, material (lino o lana), corte (largo, a media pierna o corto) y tejido (liso, sarga, espiguilla, cuadros o rayas); lo que no vale vuelve al de siempre. Coser una prenda pide las telas del material y del tejido elegidos, hilo y, el gambesón, relleno (sistemas.html), y sale con su hechura, su tinte y su autor.",
+   "En el taller (src/personajes/makehuman.js), un sombreado de tela para cada prenda: el tejido y el grano del material salen de la posición en reposo y se apagan cuando son más finos que un píxel; el corte acorta la falda a una altura, con su dobladillo más oscuro y la sombra cortada igual. Con una prenda más corta encima asoma la de debajo (la camisa bajo la túnica corta). Sin teñir, el lino es crudo y claro y la lana parda.",
+   "Visor de personaje: en Opciones, «Hechura de la ropa», una fila por prenda de tela puesta. Se cambia sin recargar el modelo y se recuerda. Publicado como personaje v23 y demo v42.",
+   "Decisiones provisionales (en el registro del personaje): el tejido va en el tono de la propia tela, sin segundo color; el corte solo acorta; el manto y la capucha solo de lana y la toca solo de lino; la cota de malla aún no tiene corte. Tarea nueva en el hito: que la ropa cosida lleve su hechura en el inventario y se vea así en el juego y en línea.",
+   "Lo que aún está mal: la sarga y la espiguilla apenas se ven salvo muy de cerca; el bajo cortado sigue la altura en reposo y en movimiento puede quedar algo inclinado; en el panel, material, corte y tejido van seguidos en la misma fila, sin separación."
+  ],
+  "pruebas": "En la nube, 15 grupos: 14 bien a la primera; «logica» falló en «Jugadores que se ven, con lag simulado» (paso mayor 2,58× con límite 2,5; no toca nada de este cambio) y pasó entera al repetirla. Nueva: Hechura 21/21 (MUTAR=1 falla). Personaje en navegador con la hechura, PC y móvil, correcto. Tras unir main (orden del código del carril A) no se repitió la batería entera: aquí, idiomas, hechura, tintes y prendas correctas y los dos prototipos se construyen.",
+  "capturas": "capturas/personaje-v23",
+  "estado": "ok"
  }
 ]
