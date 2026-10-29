@@ -69,7 +69,7 @@ const VISTAS = {
   cara:    () => { const y = alturaCara(); return [rel(0.22, y + 0.03, 0.78), rel(0, y - 0.02, 0)]; },
   perfil:  () => { const y = alturaCara(); return [rel(0.78, y + 0.02, 0.12), rel(0, y - 0.02, 0.02)]; },
   espalda: () => [rel(-1.9, 1.4, -1.6), rel(0, 1.0, 0)],
-  pies:    () => [rel(0.45, 0.42, 1.0), rel(0, 0.1, 0)], // de cerca: zapatos, botas o descalzo
+  pies:    () => [rel(0.55, 0.5, 1.35), rel(0, 0.14, 0)], // de cerca: zapatos, botas o descalzo
 };
 
 // calidad alta en todos lados (en el móvil de valravnx va perfecto); la ligera queda como opción
@@ -125,7 +125,7 @@ function pintarOpciones() {
     `<button data-op="${clave}" data-v="${k}" class="${estado[clave] === k ? 'sel' : ''}">${Array.isArray(v) ? `<i style="background:#${new THREE.Color(v[1]).getHexString()}"></i>${tr(v[0])}` : tr(v)}</button>`).join('')}</div>`;
   const mh = estado.base === 'makehuman';
   $('opciones').innerHTML = grupo('base', BASES, 'Base del personaje') + grupo('sexo', OPCIONES.sexo, 'Cuerpo') +
-    (mh ? `<div class="grupo"><span>${tr(estado.sexo === 'hombre' ? 'Ropa por capas (debajo siempre camisa, calzas y zapatos)' : 'Ropa por capas (debajo siempre camisa y zapatos)')}</span>${(pj?.capasPosibles || []).map(c =>
+    (mh ? `<div class="grupo"><span>${tr(estado.sexo === 'hombre' ? 'Ropa por capas (debajo siempre camisa y calzas, y zapatos si no vas descalzo)' : 'Ropa por capas (debajo siempre camisa, y zapatos si no vas descalza)')}</span>${(pj?.capasPosibles || []).map(c =>
         `<button data-capa="${c}" class="${capasMH().includes(c) ? 'sel' : ''}">${tr(CAPAS[c])}</button>`).join('')}</div>` +
       pintarRopa() + pintarAspecto()
       : grupo('ropa', { campesino: OPCIONES.ropa.campesino }, 'Ropa') + grupo('pelo', OPCIONES.pelo[estado.sexo], 'Pelo') +
