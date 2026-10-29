@@ -358,8 +358,288 @@
      "inicio": "2026-10-28T20:58:47+01:00",
      "rama": "trabajo/20261028-2100-tirones",
      "fin": "2026-10-29T01:17:37+01:00"
+    },
+    {
+     "nombre": "Servidor de prueba en la nube (valravnx, 29 oct: «ya»): valravnx crea la cuenta de Hetzner y el servidor con la guía servidor/nube/LEEME.md, y el chat lo comprueba con él desde los dos aparatos",
+     "estado": "espera_decision"
     }
    ]
+  },
+  {
+   "id": "despejar",
+   "num": "1h",
+   "estado": "en_curso",
+   "nombre": "Despejar: web, código y revisión visual",
+   "jugable": "Nada nuevo a la vista: la web cabe en el límite de GitHub sin perder ninguna versión, el código queda ordenado para unir las partes y hay una regla de revisión visual.",
+   "nota": "Fase 0 de la revisión del 29 oct (aprobada por valravnx): va antes que todo lo demás. La web pesaba 701 MB de un máximo de 1 GB.",
+   "tareas": [
+    {
+     "nombre": "Web por debajo de 1 GB (decidido por valravnx el 29 oct): las versiones jugables antiguas pasan a las «releases» de GitHub, descargables, sin borrar ninguna; en la web quedan las recientes con enlace a las antiguas, y las capturas viejas se rehacen más pequeñas. Medir el tamaño antes y después. Las releases las crea una acción de GitHub (desde las sesiones no se puede: comprobado el 29 oct), como las pruebas en la nube",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Orden en el código antes de unir las partes, sin cambiar nada de lo que se ve: un solo módulo de azar y ruido, la biblioteca de modelos (src/juego/modelos.js) y la elección de personaje (src/demo/eleccion.js) a la escena común, un solo cliente en línea para la construcción y el duelo, y el visor del mapa con los personajes del taller de ahora",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Regla de revisión visual (valravnx, 29 oct): antes de enseñar o publicar algo que se ve, capturas de cerca al lado de la referencia y la lista de lo que aún está mal; si se ve peor que la prueba de estilo v5, no se enseña",
+     "estado": "hecho"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "mundo-juego",
+   "num": "1i",
+   "estado": "en_curso",
+   "nombre": "El juego en el mundo de verdad",
+   "jugable": "El personaje aparece en su región de Kinland y anda por el mundo de verdad, cargado por trozos y fluido en el móvil; ahí construye (nivelando en ladera), recoge lo que da cada sitio y pelea, con el servidor sabiendo del mundo.",
+   "nota": "Fase 1 de la revisión del 29 oct (aprobada por valravnx): une el mapa con la demo. Reúne «Andar por el mundo de verdad» y «Que aguante en el móvil» (del hito Mundo), el terreno por trozos (del hito de arte) y nivelar para cimientos (del hito de cavar). Lo llevan los carriles.",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: cómo cargan otros juegos el terreno por trozos con niveles de detalle (y en un hilo aparte), medir el visor del mapa v13 en el móvil y desglosar las tareas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Terreno por trozos alrededor del jugador, con niveles de detalle, cargados y soltados al andar; medido en el móvil (fotogramas y memoria)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La demo en el mundo: apareces en un sitio accesible de la región que eliges (nunca en el mar ni en un pico) y andas por Kinland con la cámara del juego; fuera el llano",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Los árboles (las siete especies), la hierba y las rocas del mundo en el juego, con el estilo v5 y siempre en el mismo sitio",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Construir en el mundo: la rejilla anclada sobre el terreno de verdad, y nivelar con la brocha redonda para poner cimientos en ladera (GDD)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Lo que se recoge sale del sitio: ramas en el bosque, sílex en la caliza, piedra en las laderas y los ríos, fibra en los claros y las riberas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El servidor conoce el mundo: la misma semilla, comprueba posiciones y obras contra el terreno y guarda solo lo cambiado por trozo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El duelo en el mundo: pelear en cualquier sitio, sin escena aparte",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "equipo",
+   "num": "2",
+   "nombre": "Equipo y carga por huecos",
+   "jugable": "Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.",
+   "estado": "en_curso",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "hecho",
+     "inicio": "2026-10-27T09:50:06+00:00",
+     "fin": "2026-10-27T11:21:44+00:00"
+    },
+    {
+     "nombre": "Lógica pura del inventario por huecos: cada objeto con su tamaño (P pequeño, M mediano, G grande, E enorme) y cada recurso con cuántas unidades caben en un hueco (pilas); huecos del cuerpo (mano derecha e izquierda, lo grande ocupa las dos; espalda, cintura según el cinturón, hombro); contenedores con sus huecos interiores y lo que admite cada uno. Acciones coger, soltar, mover y ponerse o quitarse, con autor y por jugador. Guardado en el navegador con migración. Pruebas de lógica",
+     "estado": "hecho",
+     "inicio": "2026-10-27T15:23:40+00:00",
+     "fin": "2026-10-27T16:20:09+00:00"
+    },
+    {
+     "nombre": "Equipo de carga en la lógica pura, con las listas aprobadas del GDD: los cinco cinturones (cordel de fibra, cuerda trenzada, cinto de cuero, cinto con anillas, cinto de armas) con sus huecos; las mochilas y bastidores de función única (leñero, cesta de recolección, fardo atado, zurrón de piel, mochila de bastidor, porta-piedras, caja de herramientas, carcaj, cesto de pescador, escudo a la espalda) y lo de hombro (saco, bandolera, odre), cada uno con lo que admite y cuánto",
+     "estado": "hecho",
+     "inicio": "2026-10-27T20:35:05+00:00",
+     "fin": "2026-10-27T22:11:48+00:00"
+    },
+    {
+     "nombre": "Ralentización por carga en la lógica pura, como dice el GDD: con poca carga no se nota y, cargado al máximo en todos los huecos, la velocidad al caminar baja hasta el 80%. Aplicada al andar del personaje en la demo, con pruebas de lógica y de navegador",
+     "estado": "hecho",
+     "inicio": "2026-10-28T13:59:19+00:00",
+     "fin": "2026-10-28T16:38:52+00:00"
+    },
+    {
+     "nombre": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
+     "estado": "hecho",
+     "inicio": "2026-10-28T16:51:15+00:00",
+     "fin": "2026-10-28T20:47:04+00:00"
+    },
+    {
+     "nombre": "Panel de inventario en la demo: silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro y capas del cuerpo); al tocar un cuadro con contenedor se abren sus huecos; sin cinturón no hay cuadros de cintura. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Mientras no haya fabricación (hito 3), el equipo se coge de un arcón de pruebas, como el botón de rellenar materiales. Capturas en PC y móvil",
+     "estado": "hecho",
+     "inicio": "2026-10-29T00:51:30+00:00",
+     "fin": "2026-10-29T06:21:31+00:00"
+    },
+    {
+     "nombre": "Arreglo (valravnx, 29 oct): el panel de inventario es el equipo; lo que se lleva en las manos o al hombro no sale en el panel, se coge y se ve en el personaje; fuera el dibujo retorcido de la silueta",
+     "estado": "hecho",
+     "inicio": "2026-10-29T13:08:10+01:00",
+     "fin": "2026-10-29T14:40:08+01:00"
+    },
+    {
+     "nombre": "Objetos en el suelo: soltar y coger del suelo; lo que se suelta fuera de un contenedor desaparece pasada 1 hora real (contado por tiempo transcurrido), salvo dentro de tus tierras; los troncos y las piedras se quedan como pila. Lógica pura con autor, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Tala de verdad sobre los árboles del mundo: el árbol joven se tala con hacha de piedra (da un tronco delgado y ramas) y el adulto con hacha de hierro (con piedra, muy lento; da un tronco largo y muchas ramas); el árbol cae, queda el tocón y vuelve a crecer en semanas reales, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Tronzar y partir: el tronco largo se tronza en 3–4 troncos cortos (con hacha, lento) y el tronco corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro y la leña en el leñero. Lógica pura con autor, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Obras con lo que llevas: el material que se entrega a una obra sale de lo que lleva el autor encima (o en su rastra o carretilla al lado), no de un montón común. El botón de rellenar del prototipo pasa a llenar el arcón de pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Inventario y recogida por el servidor: en línea, lo que llevas y lo que recoges lo guarda y lo valida el servidor (hoy solo está en el navegador de cada uno)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Lo que llevas se ve puesto en el personaje del taller: el cinturón y lo que cuelga de él, el leñero o la mochila a la espalda, el saco al hombro y lo que tienes en las manos, con el estilo v5. Capturas de cerca para valravnx",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Rastra (N0: dos varas largas con travesaños): se arrastra a mano, despacio, con 2–3 troncos cortos o un montón de piedras, y se queda donde la dejas con lo que lleve. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Carretilla de rueda maciza (N1: la rueda es una rodaja de tronco): se empuja, se aparca y hace de contenedor; dentro de tus tierras está protegida y fuera cualquiera puede coger lo que lleva. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "Revisión del 29 oct: va justo después de «El juego en el mundo de verdad»; primero lo que hace que lo recogido sirva (objetos en el suelo, tala, obras con lo que llevas, por el servidor)."
+  },
+  {
+   "id": "crafting",
+   "num": "3",
+   "nombre": "Estaciones y crafting",
+   "jugable": "Primeras estaciones, recetas, desbloqueo por práctica, durabilidad y reparación.",
+   "estado": "en_curso",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "hecho",
+     "inicio": "2026-10-28T19:23:07+00:00",
+     "fin": "2026-10-28T19:24:54+00:00"
+    },
+    {
+     "nombre": "Recoger del suelo y de las plantas lo que pide el nivel N0 (documento de sistemas, apartado 3): ramas caídas, piedra suelta y sílex con las manos, y fibra arrancada de ortigas y hierba larga; cada cosa sale donde dice el documento, da lo que dice, va al inventario por huecos y vuelve a salir pasado su tiempo, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
+     "estado": "hecho",
+     "inicio": "2026-10-29T01:21:05+00:00",
+     "fin": "2026-10-29T10:11:30+00:00"
+    },
+    {
+     "nombre": "Estaciones y recetas en la lógica pura, con los datos del documento de sistemas (apartados 7 y 8) de las primeras estaciones: hoguera y piedra de tallar (N0) y banco de trabajo de tronco (entrada a N1); cada receta con lo que gasta, lo que da, dónde se hace y su tiempo. Fabricar con autor, gastando lo que llevas encima y lo de los arcones a pocos pasos, con una cola pequeña por estación y el tiempo contado por tiempo transcurrido. Pruebas de lógica",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recetas que conoce cada personaje y desbloqueo por práctica (GDD, apartado 9): construir la estación da sus recetas básicas y fabricar en ella abre las siguientes. Lo que el GDD no fija (qué recetas son básicas y cuánta práctica abre las demás) se decide de forma provisional y sencilla y se anota en el registro de decisiones y en el diario. Guardado en el navegador con migración. Pruebas de lógica",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Las estaciones se construyen en la demo como obras (marco, materiales y tiempo) y se ven con el estilo v5: hoguera con su fuego y su luz de noche, piedra de tallar y banco de trabajo de tronco. Capturas de cerca comparadas con la v5 para valravnx",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Panel de la estación en la demo: al acercarte a una estación, sus recetas (las que conoces, y las que aún no, sin desvelar cuáles son), lo que falta para cada una, la cola y el tiempo que queda. En PC y en el móvil, con capturas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Lo que se fabrica en N0 y N1 se ve con el estilo v5, en la mano, en el cinturón o a la espalda: lasca de sílex, hacha de piedra, lanza endurecida, palo cavador, antorcha (que alumbra y se apaga pasado un rato), cordel, leñero, pala de madera y cubo. Capturas de cerca para valravnx",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Durabilidad en la lógica pura (GDD, apartado 9; valores iniciales del documento de sistemas, apartado 10): herramientas y armas se gastan al usarlas (talar, cavar, golpes en el duelo) y la ropa y la armadura al recibir golpes; al llegar a cero no sirven hasta repararlas. Se ve en el panel del inventario. Pruebas de lógica y de navegador",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Reparar en la estación que fabricó el objeto, con material del mismo tipo (GDD, apartado 9): lógica pura con autor, en el panel de la estación y con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El primer día de un jugador (documento de sistemas, apartado 11) se puede recorrer en la demo: fibra y cordel, cordel de cinturón, piedra de tallar con lasca y hacha de piedra, leñero, hoguera, y el banco de tronco que abre N1. Prueba de navegador que lo recorre entero",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "Revisión del 29 oct: después del equipo; las estaciones y lo fabricado, en el mundo de verdad y por el servidor."
+  },
+  {
+   "id": "supervivencia",
+   "num": "4",
+   "nombre": "Supervivencia",
+   "jugable": "Necesidades con avisos, ropa contra el frío, cama ligada y muerte con saqueo parcial.",
+   "estado": "pendiente",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito con el GDD (apartados 4, 6 y 20) y el documento de sistemas (apartados 10 y 11): sed (beber del río), hambre, frío y cansancio con sus avisos; hoguera; refugio de ramas y cama ligada; muerte con la mitad saqueable; día de 2 h y noche de 1 h; y lo mínimo de caza que pide el primer día (liebres que huyen, despiece y asar)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El primer día de un jugador, entero, en el mundo de verdad y en línea entre dos (PC y móvil), como lo cuenta el documento de sistemas: prueba de navegador que lo recorre y capturas para valravnx",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "Meta de la fase 1 de la revisión del 29 oct: jugar el primer día entero en Kinland, en línea y entre dos."
+  },
+  {
+   "id": "servidor",
+   "num": "11",
+   "nombre": "Servidor y cuentas",
+   "jugable": "Registro e inicio de sesión seguros, recuperación de cuenta, creación de personaje, mundo persistente con servidor autoritativo.",
+   "estado": "pendiente",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "Prioridad alta. Contraseñas con hash, conexión cifrada, límite de intentos, copias de seguridad. Fase 2 de la revisión del 29 oct: justo después del primer día jugable. Alojamiento elegido por valravnx: Hetzner."
+  },
+  {
+   "id": "admin",
+   "num": "11b",
+   "nombre": "Administración, registros y seguridad",
+   "estado": "pendiente",
+   "jugable": "Roles (jugador, moderador, administrador) para la cuenta de valravnx y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
+   "nota": "Prioridad alta: es un juego online persistente. Desde ya, toda acción que cambia el mundo pasa por la lógica con autor, para poder registrarla después.",
+   "tareas": []
+  },
+  {
+   "id": "tierras",
+   "num": "13",
+   "nombre": "Tierras y familias",
+   "jugable": "Mojones, radio de exclusión, peajes, conquista, familias, vasallajes, alianzas, escudos de armas.",
+   "estado": "pendiente",
+   "tareas": [],
+   "nota": "Revisión del 29 oct: lo primero (reclamar con el mojón, radio de exclusión, mantenimiento y deterioro) va en la fase 2, con el servidor y las cuentas: es lo que protege lo construido cuando estás fuera."
   },
   {
    "id": "arte",
@@ -367,7 +647,7 @@
    "nombre": "Dirección de arte y personajes",
    "estado": "en_curso",
    "jugable": "Personaje con proporciones y detalle realistas, personalización (cuerpo, cara, pelo, piel) y ropa y armaduras que se ven puestas; luz, materiales y paleta sobrios; terreno y piezas de construcción con más detalle. Low-poly por código, pero que se vea bien y aguante en móvil.",
-   "nota": "Prioridad alta: antes de añadir más piezas o sistemas, para no rehacerlos luego con el estilo nuevo.",
+   "nota": "Prioridad alta: antes de añadir más piezas o sistemas, para no rehacerlos luego con el estilo nuevo. Desde el 29 oct lo lleva el carril B, en paralelo a lo demás (revisión del proyecto, aprobada por valravnx).",
    "tareas": [
     {
      "nombre": "Correr más natural (valravnx: «la animación de correr me parece fea y exagerada»): primero suavizar por código la del paquete (menos braceo, rebote e inclinación); después probar carreras de captura de movimiento libres para uso comercial (Rokoko o CMU) si valravnx las baja",
@@ -500,15 +780,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Terreno, hierba, árboles y luz con el estilo elegido, ya por trozos que se cargan y se descargan alrededor del jugador (para el mundo grande)",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Niveles de detalle del personaje del taller: versiones reducidas para verlo de lejos, cambio automático por distancia y texturas juntas; medido con 20 personajes en pantalla",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Rendimiento en móvil: medir y ajustar el nivel de detalle",
+     "nombre": "Niveles de detalle del personaje del taller: versiones reducidas para verlo de lejos, cambio automático por distancia y texturas juntas; medido con 20 personajes en pantalla, y el rendimiento en el móvil medido y ajustado",
      "estado": "pendiente"
     },
     {
@@ -530,7 +802,247 @@
      "fin": "2026-10-29T09:36:02+00:00"
     }
    ],
-   "bloquea": true
+   "bloquea": true,
+   "carril": "B"
+  },
+  {
+   "id": "mundo",
+   "num": "10",
+   "nombre": "Mundo",
+   "jugable": "Pseudo-Europa por semilla a escala real: cordilleras como los Pirineos, valles y collados, ríos de tres gruesos (arroyos que se vadean, ríos con pocos vados, grandes ríos con barca o puente), bosques frondosos, pendientes que frenan; agua y nado; 5 países con estilo propio, caminos por uso, puentes; todo el terreno se puede cavar (relieve y materiales por semilla, malla suavizada cerca y niveles de detalle lejos).",
+   "estado": "en_curso",
+   "tareas": [
+    {
+     "nombre": "Bocetos del mundo: mapa del continente por semilla (silueta, cordilleras, ríos de tres gruesos, biomas, cinco países, roca madre y dónde salen hierro y carbón) para revisarlo con valravnx",
+     "estado": "hecho",
+     "inicio": "2026-10-27T12:36:00+01:00",
+     "fin": "2026-10-27T14:49:45+01:00"
+    },
+    {
+     "nombre": "Recursos repartidos: vetas pequeñas de hierro y carbón cerca de cualquier sitio de tierra (nadie tiene que ir lejos para lo normal) y unas pocas grandes vetas marcadas en el mapa para explotar a fondo; mundo de 256 km con la semilla 66172",
+     "estado": "hecho",
+     "inicio": "2026-10-27T16:57:00+01:00",
+     "fin": "2026-10-27T18:36:13+01:00"
+    },
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "hecho",
+     "inicio": "2026-10-27T18:54:00+01:00",
+     "fin": "2026-10-27T19:05:00+01:00"
+    },
+    {
+     "nombre": "Boceto de paisaje de cerca: tocar un sitio del mapa y verlo en 3D (unos 4 × 4 km) para juzgar si es bonito antes de meterlo en el juego",
+     "estado": "hecho",
+     "inicio": "2026-10-27T18:57:00+01:00",
+     "fin": "2026-10-27T21:07:38+01:00"
+    },
+    {
+     "nombre": "Paisaje de cerca como en el juego: el personaje con la cámara del juego y, a su alrededor, un trozo con todo el detalle (rejilla de 1 m, hierba, flores, matorrales, piedras, árboles completos y sombras); se anda tocando el suelo",
+     "estado": "hecho",
+     "inicio": "2026-10-27T21:25:00+01:00",
+     "fin": "2026-10-28T00:18:08+01:00"
+    },
+    {
+     "nombre": "Relieve de detalle por escalas: el mapa da la forma grande y encima van colinas, lomas y quebradas con pendientes de todos los tamaños (como en el terreno de verdad), sin llanos enormes ni cuestas eternas",
+     "estado": "hecho",
+     "fin": "2026-10-29T05:02:00+01:00"
+    },
+    {
+     "nombre": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",
+     "estado": "hecho",
+     "inicio": "2026-10-28T09:34:28+01:00",
+     "fin": "2026-10-28T12:02:17+01:00"
+    },
+    {
+     "nombre": "Valles tallados por los ríos: sin zanjas; lecho, orilla, vega ancha abajo y laderas con la pendiente limitada (en V cerrada en la montaña); el agua del río también de cerca",
+     "estado": "hecho",
+     "inicio": "2026-10-28T05:19:41+01:00",
+     "fin": "2026-10-28T06:54:01+01:00"
+    },
+    {
+     "nombre": "Saltos de agua donde el río cruza roca dura",
+     "estado": "hecho",
+     "inicio": "2026-10-28T21:54:37+01:00",
+     "fin": "2026-10-29T03:22:21+01:00"
+    },
+    {
+     "nombre": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
+     "estado": "hecho",
+     "inicio": "2026-10-29T05:03:54+01:00",
+     "fin": "2026-10-29T11:26:34+01:00"
+    },
+    {
+     "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Riberas y costas (valravnx, 28 oct): el suelo según su material, los cauces según su tamaño, las costas según la roca (playa, acantilado, marisma) y la vegetación de ribera y de costa",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Comarcas con nombre (GDD): cada región dividida en comarcas que siguen el relieve, con nombres al estilo de la región, revisados por valravnx",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Caminos que se forman con el uso (GDD): cada casilla guarda cuánto se pisa; senda, luego camino, y sin uso vuelve la hierba",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Agua que se mueve: el río corre en su dirección (lento en la vega, rápido en la montaña) y el mar con oleaje y olas que rompen en la costa; color según la hondura y espuma en orillas y rompientes",
+     "estado": "hecho",
+     "inicio": "2026-10-28T06:58:45+01:00",
+     "fin": "2026-10-28T09:22:53+01:00"
+    },
+    {
+     "nombre": "Roca escarpada de cerca: las paredes de los cortados cubiertas de piezas de roca 3D (bloques con caras, aristas, salientes y grietas, hechos por código) y una textura de roca con sombra en grietas y rincones",
+     "estado": "hecho",
+     "inicio": "2026-10-28T12:35:33+01:00",
+     "fin": "2026-10-28T14:51:26+01:00"
+    },
+    {
+     "nombre": "El mundo de cerca siempre igual: árboles, hierba, piedras y piezas de roca colocados según su sitio en el mundo y la semilla (no según dónde se rehace el trozo de cerca)",
+     "estado": "hecho",
+     "inicio": "2026-10-28T15:12:01+01:00",
+     "fin": "2026-10-28T19:06:47+01:00"
+    },
+    {
+     "nombre": "Nombres del mundo (decididos por valravnx el 28 oct): el continente es Kinland y sus cinco regiones Whitholm (la isla), Eikwold (noroeste), Rudmere (suroeste), Highfell (el macizo central) y Storaa (sureste, el gran río). Son regiones, no países (los países, si llegan, los harán los jugadores): «país» pasa a «región» en el mapa, el GDD, sistemas y el análisis, en los tres idiomas",
+     "estado": "hecho",
+     "inicio": "2026-10-28T15:45:46+01:00",
+     "rama": "trabajo/20261028-1546-nombres",
+     "fin": "2026-10-28T16:06:02+01:00"
+    },
+    {
+     "nombre": "Laderas de montaña sin escalones: los cortados solo donde ya es muy empinado y aflora la roca, en pocos escalones grandes; el resto de la montaña, pendiente continua",
+     "estado": "hecho",
+     "inicio": "2026-10-28T19:29:42+01:00",
+     "fin": "2026-10-28T21:39:03+01:00"
+    }
+   ],
+   "lleva": "chat",
+   "nota": "Lo lleva el chat con valravnx: lo visual y creativo del mundo. Desde el 29 oct, unir el mapa con el juego (terreno por trozos, aparecer y andar por el mundo) está en el hito «El juego en el mundo de verdad», que llevan los carriles."
+  },
+  {
+   "id": "excavacion",
+   "num": "1g",
+   "nombre": "Cavar y minar",
+   "estado": "en_curso",
+   "jugable": "Cavar zanjas y nivelar con una brocha redonda, y abrir minas con roca irregular sin cuadros; dentro, lo de encima oculto y negro lo que no se ve, con entibado.",
+   "nota": "Desde el 29 oct (revisión del proyecto, aprobada por valravnx) lo técnico lo llevan los carriles, después del servidor y las cuentas; cava en el mundo de verdad, con su roca y sus vetas.",
+   "tareas": [
+    {
+     "nombre": "Prueba de rendimiento de cavar (vóxeles suavizados): un trozo de roca de 8 m con cubitos de 50 cm, golpes de pico que quitan un puñado redondeado, pared lisa con rugosidad por semilla fija; medir fotogramas y lo que tarda en rehacerse la malla en PC y móvil",
+     "estado": "hecho",
+     "inicio": "2026-10-27T09:09:00+01:00",
+     "fin": "2026-10-27T11:33:52+01:00"
+    },
+    {
+     "nombre": "Lógica pura de la excavación: cubitos quitados por trozo del mundo, cada golpe con su autor, guardar solo lo tocado y rehacerlo al cargar",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Mina jugable: cavar con el pico en una ladera del mundo de verdad, entrar y salir; al entrar se oculta lo de encima y lo que no se ve funde a negro (lo abierto que alcanza la vista y lo que alumbra la antorcha)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Sustentación: materiales por capas con su dureza y su vano (tierra 1 m, arcilla o grava 1,5 m, roca blanda 2,5 m, roca dura 4 m, menos cuanto más hondo); el golpe no se da si deja más techo suelto del que aguanta y avisa de entibar",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Entibado: postes y travesaño de troncos como obra (marco, material y tiempo); con entibos se puede seguir cavando. En tierra, pared vertical de 1,5 m como mucho y luego talud o entibar el pozo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El servidor solo manda los huecos que el jugador ha visto o tiene delante (nadie ve minas ni vetas ajenas a través de la roca)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Escombro: lo cavado se saca en cesto o carretilla y queda como material",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Vetas: hierro poco y malo en superficie con sus señales (agua rojiza, tierra encharcada), el bueno en vetas dentro de la roca; carbón en afloramientos de ladera; las capas, la roca madre y las vetas salen del mapa del mundo (su semilla)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Sin cavar en el territorio ni en el radio de exclusión de un mojón ajeno",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La malla de la roca se rehace en un hilo aparte, sin tirones al golpear",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Fuera de la mina: zanjas y fosos con la brocha redonda (nivelar ya llega con el hito «El juego en el mundo de verdad»)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "duelo",
+   "num": "5",
+   "nombre": "Duelo",
+   "jugable": "Esgrima contra un bot con heridas.",
+   "estado": "en_curso",
+   "tareas": [
+    {
+     "nombre": "Combate v1: líneas de golpe, guardias, heridas, arco",
+     "estado": "hecho"
+    },
+    {
+     "nombre": "Combate v2: rosa de golpes, parada perfecta, golpe maestro, fintas, peso de los golpes",
+     "estado": "hecho"
+    },
+    {
+     "nombre": "Arreglo del arco: no soltar antes del 50% de tensión, correr cancela el tensado, 0,8 s para encajar otra flecha (piedras 0,5 s), con pruebas",
+     "estado": "hecho",
+     "inicio": "2026-10-24T19:13:50+02:00",
+     "fin": "2026-10-24T19:23:09+02:00"
+    },
+    {
+     "nombre": "Escudo provisional: opción «Espada y escudo» (espada de una mano), para flechas y piedras de frente, parada más barata, se ve en el brazo izquierdo y se levanta al parar; también para el rival",
+     "estado": "hecho",
+     "inicio": "2026-10-24T20:20:27+02:00",
+     "fin": "2026-10-24T20:36:27+02:00"
+    },
+    {
+     "nombre": "Cámara táctil con un dedo durante el combate",
+     "estado": "hecho",
+     "inicio": "2026-10-27T08:50:44+00:00",
+     "fin": "2026-10-27T13:40:27+00:00"
+    },
+    {
+     "nombre": "Curación de heridas",
+     "estado": "hecho",
+     "inicio": "2026-10-28T14:53:19+00:00",
+     "fin": "2026-10-28T21:54:09+00:00"
+    },
+    {
+     "nombre": "Prueba de golpes en las cinco direcciones de la rosa con el personaje del taller: el brazo va hacia el objetivo (cinemática inversa) sobre una animación base, porque el paquete solo trae unos pocos golpes; si no convence, buscar otra vía antes de seguir",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Una sola tabla de armadura: el duelo usa la protección de las prendas (src/logica/prendas.js) en vez de la suya, y las mismas zonas del cuerpo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El duelo con lo que llevas: la ropa y la armadura puestas y el arma de la mano salen del inventario",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
   },
   {
    "id": "construccion-mas",
@@ -652,7 +1164,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Muros de piedra (mampostería) y grúa de rueda para subir la piedra en grupo: una o dos personas andando en la rueda y alguien guiando; la grúa se sube de planta según crece la obra",
+     "nombre": "Puentes construibles sobre los ríos del mundo (GDD: de varios materiales y formas; los carros solo cruzan por vados y puentes), empezando por el de troncos",
      "estado": "pendiente"
     },
     {
@@ -660,414 +1172,7 @@
      "estado": "pendiente"
     }
    ],
-   "nota": "La primera tarea (madera más resistente) se adelantó el 24 oct porque la casa de dos plantas de valravnx y su pareja no admitía el tejado en las esquinas. Planificado el 25 oct a petición de valravnx por el chat, en paralelo a la sesión de la ropa. Los puentes de troncos no entran: necesitan agua en el mapa y llegan con el hito Mundo."
-  },
-  {
-   "id": "excavacion",
-   "num": "1g",
-   "nombre": "Cavar y minar",
-   "estado": "en_curso",
-   "lleva": "chat",
-   "jugable": "Cavar zanjas y nivelar con una brocha redonda, y abrir minas con roca irregular sin cuadros; dentro, lo de encima oculto y negro lo que no se ve, con entibado.",
-   "nota": "Lo lleva a mano la sesión de chat con valravnx (27 oct), en paralelo a los carriles A y B, que no lo tocan.",
-   "tareas": [
-    {
-     "nombre": "Prueba de rendimiento de cavar (vóxeles suavizados): un trozo de roca de 8 m con cubitos de 50 cm, golpes de pico que quitan un puñado redondeado, pared lisa con rugosidad por semilla fija; medir fotogramas y lo que tarda en rehacerse la malla en PC y móvil",
-     "estado": "hecho",
-     "inicio": "2026-10-27T09:09:00+01:00",
-     "fin": "2026-10-27T11:33:52+01:00"
-    },
-    {
-     "nombre": "Lógica pura de la excavación: cubitos quitados por trozo del mundo, cada golpe con su autor, guardar solo lo tocado y rehacerlo al cargar",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Mina jugable: cavar con el pico en una ladera de la construcción, entrar y salir; al entrar se oculta lo de encima y lo que no se ve funde a negro (lo abierto que alcanza la vista y lo que alumbra la antorcha)",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Fuera de la mina: zanjas, fosos y nivelar para cimientos con una brocha redonda sobre la altura del terreno",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Sustentación: materiales por capas con su dureza y su vano (tierra 1 m, arcilla o grava 1,5 m, roca blanda 2,5 m, roca dura 4 m, menos cuanto más hondo); el golpe no se da si deja más techo suelto del que aguanta y avisa de entibar",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Entibado: postes y travesaño de troncos como obra (marco, material y tiempo); con entibos se puede seguir cavando. En tierra, pared vertical de 1,5 m como mucho y luego talud o entibar el pozo",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "El servidor solo manda los huecos que el jugador ha visto o tiene delante (nadie ve minas ni vetas ajenas a través de la roca)",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Escombro: lo cavado se saca en cesto o carretilla y queda como material",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Vetas: hierro poco y malo en superficie con sus señales (agua rojiza, tierra encharcada), el bueno en vetas dentro de la roca; carbón en afloramientos de ladera",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Sin cavar en el territorio ni en el radio de exclusión de un mojón ajeno",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "La malla de la roca se rehace en un hilo aparte, sin tirones al golpear",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
-    }
-   ]
-  },
-  {
-   "id": "equipo",
-   "num": "2",
-   "nombre": "Equipo y carga por huecos",
-   "jugable": "Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.",
-   "estado": "en_curso",
-   "tareas": [
-    {
-     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
-     "estado": "hecho",
-     "inicio": "2026-10-27T09:50:06+00:00",
-     "fin": "2026-10-27T11:21:44+00:00"
-    },
-    {
-     "nombre": "Lógica pura del inventario por huecos: cada objeto con su tamaño (P pequeño, M mediano, G grande, E enorme) y cada recurso con cuántas unidades caben en un hueco (pilas); huecos del cuerpo (mano derecha e izquierda, lo grande ocupa las dos; espalda, cintura según el cinturón, hombro); contenedores con sus huecos interiores y lo que admite cada uno. Acciones coger, soltar, mover y ponerse o quitarse, con autor y por jugador. Guardado en el navegador con migración. Pruebas de lógica",
-     "estado": "hecho",
-     "inicio": "2026-10-27T15:23:40+00:00",
-     "fin": "2026-10-27T16:20:09+00:00"
-    },
-    {
-     "nombre": "Equipo de carga en la lógica pura, con las listas aprobadas del GDD: los cinco cinturones (cordel de fibra, cuerda trenzada, cinto de cuero, cinto con anillas, cinto de armas) con sus huecos; las mochilas y bastidores de función única (leñero, cesta de recolección, fardo atado, zurrón de piel, mochila de bastidor, porta-piedras, caja de herramientas, carcaj, cesto de pescador, escudo a la espalda) y lo de hombro (saco, bandolera, odre), cada uno con lo que admite y cuánto",
-     "estado": "hecho",
-     "inicio": "2026-10-27T20:35:05+00:00",
-     "fin": "2026-10-27T22:11:48+00:00"
-    },
-    {
-     "nombre": "Ralentización por carga en la lógica pura, como dice el GDD: con poca carga no se nota y, cargado al máximo en todos los huecos, la velocidad al caminar baja hasta el 80%. Aplicada al andar del personaje en la demo, con pruebas de lógica y de navegador",
-     "estado": "hecho",
-     "inicio": "2026-10-28T13:59:19+00:00",
-     "fin": "2026-10-28T16:38:52+00:00"
-    },
-    {
-     "nombre": "Datos de cada prenda en la lógica pura (zonas que cubre, protección por tipo de golpe, abrigo, peso), unidos a la ropa por capas del taller: lo que se ve y lo que protege salen de lo mismo",
-     "estado": "hecho",
-     "inicio": "2026-10-28T16:51:15+00:00",
-     "fin": "2026-10-28T20:47:04+00:00"
-    },
-    {
-     "nombre": "Panel de inventario en la demo: silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro y capas del cuerpo); al tocar un cuadro con contenedor se abren sus huecos; sin cinturón no hay cuadros de cintura. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Mientras no haya fabricación (hito 3), el equipo se coge de un arcón de pruebas, como el botón de rellenar materiales. Capturas en PC y móvil",
-     "estado": "hecho",
-     "inicio": "2026-10-29T00:51:30+00:00",
-     "fin": "2026-10-29T06:21:31+00:00"
-    },
-    {
-     "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Lo que llevas se ve puesto en el personaje del taller: el cinturón y lo que cuelga de él, el leñero o la mochila a la espalda, el saco al hombro y lo que tienes en las manos, con el estilo v5. Capturas de cerca para valravnx",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Objetos en el suelo: soltar y coger del suelo; lo que se suelta fuera de un contenedor desaparece pasada 1 hora real (contado por tiempo transcurrido), salvo dentro de tus tierras; los troncos y las piedras se quedan como pila. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Tala de verdad: el árbol joven se tala con hacha de piedra (da un tronco delgado y ramas) y el adulto con hacha de hierro (con piedra, muy lento; da un tronco largo y muchas ramas); el árbol cae, queda el tocón y vuelve a crecer en semanas reales, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Tronzar y partir: el tronco largo se tronza en 3–4 troncos cortos (con hacha, lento) y el tronco corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro y la leña en el leñero. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Rastra (N0: dos varas largas con travesaños): se arrastra a mano, despacio, con 2–3 troncos cortos o un montón de piedras, y se queda donde la dejas con lo que lleve. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Carretilla de rueda maciza (N1: la rueda es una rodaja de tronco): se empuja, se aparca y hace de contenedor; dentro de tus tierras está protegida y fuera cualquiera puede coger lo que lleva. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Obras con lo que llevas: el material que se entrega a una obra sale de lo que lleva el autor encima (o en su rastra o carretilla al lado), no de un montón común. El botón de rellenar del prototipo pasa a llenar el arcón de pruebas",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Arreglo (valravnx, 29 oct): el panel de inventario es el equipo; lo que se lleva en las manos o al hombro no sale en el panel, se coge y se ve en el personaje; fuera el dibujo retorcido de la silueta",
-     "estado": "hecho",
-     "inicio": "2026-10-29T13:08:10+01:00",
-     "fin": "2026-10-29T14:40:08+01:00"
-    }
-   ]
-  },
-  {
-   "id": "crafting",
-   "num": "3",
-   "nombre": "Estaciones y crafting",
-   "jugable": "Primeras estaciones, recetas, desbloqueo por práctica, durabilidad y reparación.",
-   "estado": "en_curso",
-   "tareas": [
-    {
-     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
-     "estado": "hecho",
-     "inicio": "2026-10-28T19:23:07+00:00",
-     "fin": "2026-10-28T19:24:54+00:00"
-    },
-    {
-     "nombre": "Recoger del suelo y de las plantas lo que pide el nivel N0 (documento de sistemas, apartado 3): ramas caídas, piedra suelta y sílex con las manos, y fibra arrancada de ortigas y hierba larga; cada cosa sale donde dice el documento, da lo que dice, va al inventario por huecos y vuelve a salir pasado su tiempo, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "hecho",
-     "inicio": "2026-10-29T01:21:05+00:00",
-     "fin": "2026-10-29T10:11:30+00:00"
-    },
-    {
-     "nombre": "Estaciones y recetas en la lógica pura, con los datos del documento de sistemas (apartados 7 y 8) de las primeras estaciones: hoguera y piedra de tallar (N0) y banco de trabajo de tronco (entrada a N1); cada receta con lo que gasta, lo que da, dónde se hace y su tiempo. Fabricar con autor, gastando lo que llevas encima y lo de los arcones a pocos pasos, con una cola pequeña por estación y el tiempo contado por tiempo transcurrido. Pruebas de lógica",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Recetas que conoce cada personaje y desbloqueo por práctica (GDD, apartado 9): construir la estación da sus recetas básicas y fabricar en ella abre las siguientes. Lo que el GDD no fija (qué recetas son básicas y cuánta práctica abre las demás) se decide de forma provisional y sencilla y se anota en el registro de decisiones y en el diario. Guardado en el navegador con migración. Pruebas de lógica",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Las estaciones se construyen en la demo como obras (marco, materiales y tiempo) y se ven con el estilo v5: hoguera con su fuego y su luz de noche, piedra de tallar y banco de trabajo de tronco. Capturas de cerca comparadas con la v5 para valravnx",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Panel de la estación en la demo: al acercarte a una estación, sus recetas (las que conoces, y las que aún no, sin desvelar cuáles son), lo que falta para cada una, la cola y el tiempo que queda. En PC y en el móvil, con capturas",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Lo que se fabrica en N0 y N1 se ve con el estilo v5, en la mano, en el cinturón o a la espalda: lasca de sílex, hacha de piedra, lanza endurecida, palo cavador, antorcha (que alumbra y se apaga pasado un rato), cordel, leñero, pala de madera y cubo. Capturas de cerca para valravnx",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Durabilidad en la lógica pura (GDD, apartado 9; valores iniciales del documento de sistemas, apartado 10): herramientas y armas se gastan al usarlas (talar, cavar, golpes en el duelo) y la ropa y la armadura al recibir golpes; al llegar a cero no sirven hasta repararlas. Se ve en el panel del inventario. Pruebas de lógica y de navegador",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Reparar en la estación que fabricó el objeto, con material del mismo tipo (GDD, apartado 9): lógica pura con autor, en el panel de la estación y con pruebas",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "El primer día de un jugador (documento de sistemas, apartado 11) se puede recorrer en la demo: fibra y cordel, cordel de cinturón, piedra de tallar con lasca y hacha de piedra, leñero, hoguera, y el banco de tronco que abre N1. Prueba de navegador que lo recorre entero",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
-    }
-   ]
-  },
-  {
-   "id": "supervivencia",
-   "num": "4",
-   "nombre": "Supervivencia",
-   "jugable": "Necesidades con avisos, ropa contra el frío, cama ligada y muerte con saqueo parcial.",
-   "estado": "pendiente",
-   "tareas": []
-  },
-  {
-   "id": "duelo",
-   "num": "5",
-   "nombre": "Duelo",
-   "jugable": "Esgrima contra un bot con heridas.",
-   "estado": "en_curso",
-   "tareas": [
-    {
-     "nombre": "Combate v1: líneas de golpe, guardias, heridas, arco",
-     "estado": "hecho"
-    },
-    {
-     "nombre": "Combate v2: rosa de golpes, parada perfecta, golpe maestro, fintas, peso de los golpes",
-     "estado": "hecho"
-    },
-    {
-     "nombre": "Arreglo del arco: no soltar antes del 50% de tensión, correr cancela el tensado, 0,8 s para encajar otra flecha (piedras 0,5 s), con pruebas",
-     "estado": "hecho",
-     "inicio": "2026-10-24T19:13:50+02:00",
-     "fin": "2026-10-24T19:23:09+02:00"
-    },
-    {
-     "nombre": "Escudo provisional: opción «Espada y escudo» (espada de una mano), para flechas y piedras de frente, parada más barata, se ve en el brazo izquierdo y se levanta al parar; también para el rival",
-     "estado": "hecho",
-     "inicio": "2026-10-24T20:20:27+02:00",
-     "fin": "2026-10-24T20:36:27+02:00"
-    },
-    {
-     "nombre": "Cámara táctil con un dedo durante el combate",
-     "estado": "hecho",
-     "inicio": "2026-10-27T08:50:44+00:00",
-     "fin": "2026-10-27T13:40:27+00:00"
-    },
-    {
-     "nombre": "Curación de heridas",
-     "estado": "hecho",
-     "inicio": "2026-10-28T14:53:19+00:00",
-     "fin": "2026-10-28T21:54:09+00:00"
-    },
-    {
-     "nombre": "Prueba de golpes en las cinco direcciones de la rosa con el personaje del taller: el brazo va hacia el objetivo (cinemática inversa) sobre una animación base, porque el paquete solo trae unos pocos golpes; si no convence, buscar otra vía antes de seguir",
-     "estado": "pendiente"
-    }
-   ],
-   "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
-  },
-  {
-   "id": "asedio",
-   "num": "6",
-   "nombre": "Asedio, fuego y mantenimiento",
-   "jugable": "Ariete, daño por fuego, mojón con materiales.",
-   "estado": "pendiente",
-   "tareas": []
-  },
-  {
-   "id": "fauna",
-   "num": "7",
-   "nombre": "Fauna y caza",
-   "jugable": "Animales realistas.",
-   "estado": "pendiente",
-   "tareas": []
-  },
-  {
-   "id": "caballos",
-   "num": "8",
-   "nombre": "Caballos",
-   "jugable": "Domar, montar, cuadra y pasto.",
-   "estado": "pendiente",
-   "tareas": []
-  },
-  {
-   "id": "granja",
-   "num": "9",
-   "nombre": "Granja y estaciones del año",
-   "jugable": "Siembras por franja, ganado.",
-   "estado": "pendiente",
-   "tareas": []
-  },
-  {
-   "id": "mundo",
-   "num": "10",
-   "nombre": "Mundo",
-   "jugable": "Pseudo-Europa por semilla a escala real: cordilleras como los Pirineos, valles y collados, ríos de tres gruesos (arroyos que se vadean, ríos con pocos vados, grandes ríos con barca o puente), bosques frondosos, pendientes que frenan; agua y nado; 5 países con estilo propio, caminos por uso, puentes; todo el terreno se puede cavar (relieve y materiales por semilla, malla suavizada cerca y niveles de detalle lejos).",
-   "estado": "en_curso",
-   "tareas": [
-    {
-     "nombre": "Bocetos del mundo: mapa del continente por semilla (silueta, cordilleras, ríos de tres gruesos, biomas, cinco países, roca madre y dónde salen hierro y carbón) para revisarlo con valravnx",
-     "estado": "hecho",
-     "inicio": "2026-10-27T12:36:00+01:00",
-     "fin": "2026-10-27T14:49:45+01:00"
-    },
-    {
-     "nombre": "Recursos repartidos: vetas pequeñas de hierro y carbón cerca de cualquier sitio de tierra (nadie tiene que ir lejos para lo normal) y unas pocas grandes vetas marcadas en el mapa para explotar a fondo; mundo de 256 km con la semilla 66172",
-     "estado": "hecho",
-     "inicio": "2026-10-27T16:57:00+01:00",
-     "fin": "2026-10-27T18:36:13+01:00"
-    },
-    {
-     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
-     "estado": "hecho",
-     "inicio": "2026-10-27T18:54:00+01:00",
-     "fin": "2026-10-27T19:05:00+01:00"
-    },
-    {
-     "nombre": "Boceto de paisaje de cerca: tocar un sitio del mapa y verlo en 3D (unos 4 × 4 km) para juzgar si es bonito antes de meterlo en el juego",
-     "estado": "hecho",
-     "inicio": "2026-10-27T18:57:00+01:00",
-     "fin": "2026-10-27T21:07:38+01:00"
-    },
-    {
-     "nombre": "Paisaje de cerca como en el juego: el personaje con la cámara del juego y, a su alrededor, un trozo con todo el detalle (rejilla de 1 m, hierba, flores, matorrales, piedras, árboles completos y sombras); se anda tocando el suelo",
-     "estado": "hecho",
-     "inicio": "2026-10-27T21:25:00+01:00",
-     "fin": "2026-10-28T00:18:08+01:00"
-    },
-    {
-     "nombre": "Relieve de detalle por escalas: el mapa da la forma grande y encima van colinas, lomas y quebradas con pendientes de todos los tamaños (como en el terreno de verdad), sin llanos enormes ni cuestas eternas",
-     "estado": "hecho",
-     "fin": "2026-10-29T05:02:00+01:00"
-    },
-    {
-     "nombre": "Roca dura y blanda: cortados, escarpes y escalones donde la roca es dura y empinada; lomas redondeadas en la blanda; acantilados en las costas altas y playas en las bajas",
-     "estado": "hecho",
-     "inicio": "2026-10-28T09:34:28+01:00",
-     "fin": "2026-10-28T12:02:17+01:00"
-    },
-    {
-     "nombre": "Valles tallados por los ríos: sin zanjas; lecho, orilla, vega ancha abajo y laderas con la pendiente limitada (en V cerrada en la montaña); el agua del río también de cerca",
-     "estado": "hecho",
-     "inicio": "2026-10-28T05:19:41+01:00",
-     "fin": "2026-10-28T06:54:01+01:00"
-    },
-    {
-     "nombre": "Saltos de agua donde el río cruza roca dura",
-     "estado": "hecho",
-     "inicio": "2026-10-28T21:54:37+01:00",
-     "fin": "2026-10-29T03:22:21+01:00"
-    },
-    {
-     "nombre": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
-     "estado": "hecho",
-     "inicio": "2026-10-29T05:03:54+01:00",
-     "fin": "2026-10-29T11:26:34+01:00"
-    },
-    {
-     "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Que aguante en el móvil: el terreno por trozos alrededor del jugador, niveles de detalle, árboles repetidos de una sola malla y versiones sencillas de lejos (medir fotogramas)",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Andar por el mundo de verdad en la demo: el personaje en el mundo elegido, con construir y cavar encima",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Agua que se mueve: el río corre en su dirección (lento en la vega, rápido en la montaña) y el mar con oleaje y olas que rompen en la costa; color según la hondura y espuma en orillas y rompientes",
-     "estado": "hecho",
-     "inicio": "2026-10-28T06:58:45+01:00",
-     "fin": "2026-10-28T09:22:53+01:00"
-    },
-    {
-     "nombre": "Roca escarpada de cerca: las paredes de los cortados cubiertas de piezas de roca 3D (bloques con caras, aristas, salientes y grietas, hechos por código) y una textura de roca con sombra en grietas y rincones",
-     "estado": "hecho",
-     "inicio": "2026-10-28T12:35:33+01:00",
-     "fin": "2026-10-28T14:51:26+01:00"
-    },
-    {
-     "nombre": "El mundo de cerca siempre igual: árboles, hierba, piedras y piezas de roca colocados según su sitio en el mundo y la semilla (no según dónde se rehace el trozo de cerca)",
-     "estado": "hecho",
-     "inicio": "2026-10-28T15:12:01+01:00",
-     "fin": "2026-10-28T19:06:47+01:00"
-    },
-    {
-     "nombre": "Nombres del mundo (decididos por valravnx el 28 oct): el continente es Kinland y sus cinco regiones Whitholm (la isla), Eikwold (noroeste), Rudmere (suroeste), Highfell (el macizo central) y Storaa (sureste, el gran río). Son regiones, no países (los países, si llegan, los harán los jugadores): «país» pasa a «región» en el mapa, el GDD, sistemas y el análisis, en los tres idiomas",
-     "estado": "hecho",
-     "inicio": "2026-10-28T15:45:46+01:00",
-     "rama": "trabajo/20261028-1546-nombres",
-     "fin": "2026-10-28T16:06:02+01:00"
-    },
-    {
-     "nombre": "Laderas de montaña sin escalones: los cortados solo donde ya es muy empinado y aflora la roca, en pocos escalones grandes; el resto de la montaña, pendiente continua",
-     "estado": "hecho",
-     "inicio": "2026-10-28T19:29:42+01:00",
-     "fin": "2026-10-28T21:39:03+01:00"
-    }
-   ],
-   "lleva": "chat"
+   "nota": "La primera tarea (madera más resistente) se adelantó el 24 oct porque la casa de dos plantas de valravnx y su pareja no admitía el tejado en las esquinas. Planificado el 25 oct a petición de valravnx por el chat, en paralelo a la sesión de la ropa. Los puentes de troncos no entran: necesitan agua en el mapa y llegan con el hito Mundo. Revisión del 29 oct: los muros de piedra con grúa pasan al hito de asedio (son de N3), los puentes vuelven aquí y lo que queda va después de la fase 1."
   },
   {
    "id": "pulido-animaciones",
@@ -1112,31 +1217,33 @@
    ]
   },
   {
-   "id": "servidor",
-   "num": "11",
-   "nombre": "Servidor y cuentas",
-   "jugable": "Registro e inicio de sesión seguros, recuperación de cuenta, creación de personaje, mundo persistente con servidor autoritativo.",
+   "id": "fauna",
+   "num": "7",
+   "nombre": "Fauna y caza",
+   "jugable": "Animales realistas.",
+   "estado": "pendiente",
+   "tareas": []
+  },
+  {
+   "id": "granja",
+   "num": "9",
+   "nombre": "Granja y estaciones del año",
+   "jugable": "Siembras por franja, ganado.",
+   "estado": "pendiente",
+   "tareas": []
+  },
+  {
+   "id": "asedio",
+   "num": "6",
+   "nombre": "Asedio, fuego y mantenimiento",
+   "jugable": "Ariete, daño por fuego, mojón con materiales.",
    "estado": "pendiente",
    "tareas": [
     {
-     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Comparar alojamientos y costes para el servidor y la base de datos, y llevar las opciones a valravnx (la elección es suya)",
+     "nombre": "Muros de piedra (mampostería) y grúa de rueda para subir la piedra en grupo: una o dos personas andando en la rueda y alguien guiando; la grúa se sube de planta según crece la obra",
      "estado": "pendiente"
     }
-   ],
-   "nota": "Prioridad alta. Contraseñas con hash, conexión cifrada, límite de intentos, copias de seguridad."
-  },
-  {
-   "id": "admin",
-   "num": "11b",
-   "nombre": "Administración, registros y seguridad",
-   "estado": "pendiente",
-   "jugable": "Roles (jugador, moderador, administrador) para la cuenta de valravnx y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
-   "nota": "Prioridad alta: es un juego online persistente. Desde ya, toda acción que cambia el mundo pasa por la lógica con autor, para poder registrarla después.",
-   "tareas": []
+   ]
   },
   {
    "id": "pvp",
@@ -1147,18 +1254,18 @@
    "tareas": []
   },
   {
-   "id": "tierras",
-   "num": "13",
-   "nombre": "Tierras y familias",
-   "jugable": "Mojones, radio de exclusión, peajes, conquista, familias, vasallajes, alianzas, escudos de armas.",
-   "estado": "pendiente",
-   "tareas": []
-  },
-  {
    "id": "economia",
    "num": "14",
    "nombre": "Economía y NPCs",
    "jugable": "Encargos y moneda, puestos sin conexión, tomos, NPCs ambulantes a sueldo, centinelas y mensajeros.",
+   "estado": "pendiente",
+   "tareas": []
+  },
+  {
+   "id": "caballos",
+   "num": "8",
+   "nombre": "Caballos",
+   "jugable": "Domar, montar, cuadra y pasto.",
    "estado": "pendiente",
    "tareas": []
   },
@@ -2150,7 +2257,7 @@
  ],
  "decisiones_pendientes": [
   {
-   "pregunta": "Crear la cuenta de Hetzner y el servidor de prueba siguiendo la guía del repositorio, servidor/nube/LEEME.md (plan CX23 con Ubuntu 24.04 y el cloud config pegado); luego abrir en los dos aparatos la dirección https:// con tu IP con guiones y .sslip.io y decir si funciona (o si prefieres otro alojamiento)",
+   "pregunta": "Crear la cuenta de Hetzner y el servidor de prueba siguiendo la guía del repositorio, servidor/nube/LEEME.md (plan CX23 con Ubuntu 24.04 y el cloud config pegado); luego abrir en los dos aparatos la dirección https:// con tu IP con guiones y .sslip.io y decir si funciona. Decidido por valravnx el 29 oct: se hace ya.",
    "desde": "2026-10-28",
    "hito": "prueba-online"
   }
