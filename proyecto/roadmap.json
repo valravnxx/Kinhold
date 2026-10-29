@@ -777,7 +777,9 @@
     },
     {
      "nombre": "Taller: pasar también las 39 animaciones extra (trabajos, arco, espada, bloqueo, vendarse, pasos) al esqueleto de MakeHuman",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T16:53:32+00:00",
+     "rama": "trabajo/20261029-1653"
     },
     {
      "nombre": "Personalización en el juego de toda la ropa y la armadura (pedido de valravnx): color o tinte de cada prenda, blasón o dibujo en la sobreveste, y qué capas lleva. Para eso las texturas de la ropa pasan a ir en gris con el color aparte, que se cambia sin rehacer el modelo",
