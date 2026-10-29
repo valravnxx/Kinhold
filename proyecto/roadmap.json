@@ -601,9 +601,9 @@
     },
     {
      "nombre": "Chimenea u hogar interior (N2: piedras y barro, 600 kg): solo sobre cimiento de piedra, con fuego, luz y humo que sale por el tejado",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T21:51:52+00:00",
-     "rama": "trabajo/20261028-2151"
+     "fin": "2026-10-29T03:39:49+00:00"
     },
     {
      "nombre": "Adarve (pasarela por detrás de la empalizada: tablas y postes, sostiene 300 kg), al que se sube por escalera de mano o de tablas",
@@ -1369,6 +1369,13 @@
      "archivo": "jugar/demo/v32.html",
      "capturas": "capturas/demo-v32",
      "notas": "En línea, sin tirones: al abrir o cerrar puertas solo se rehace esa puerta, y lo construido se rehace unas cinco veces más deprisa al terminar una obra. Y en «Duelo», la curación de heridas."
+    },
+    {
+     "v": "v33",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v33.html",
+     "capturas": "capturas/demo-v33",
+     "notas": "En «Construir», chimenea u hogar interior sobre cimiento de piedra, con fuego, luz y humo por encima del tejado (Usar la apaga y la enciende)."
     }
    ]
   },
@@ -1579,6 +1586,13 @@
      "archivo": "jugar/construccion/v31.html",
      "capturas": "capturas/construccion-v31",
      "notas": "Remate de tejado (esquina) de paja, de tablillas y de teja: donde se juntan dos caídas en ángulo recto se hace solo limatesa (esquina de fuera) o limahoya (el rincón de un tejado en L). Con cuatro remates, un tejado a cuatro aguas sin hastiales; en una casa en L, las dos alas quedan cerradas y las cumbreras se encuentran."
+    },
+    {
+     "v": "v32",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/construccion/v32.html",
+     "capturas": "capturas/construccion-v32",
+     "notas": "Chimenea u hogar interior (10 piedras y 4 de barro, 600 kg): solo en la planta baja, sobre un cimiento de piedra, arrimada a un muro; fuego con llamas, luz y humo que sale por encima del tejado; Usar la apaga y la enciende."
     }
    ]
   },

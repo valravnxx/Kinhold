@@ -2096,5 +2096,23 @@
   "pruebas": "Todas (probar_todo.sh) correctas salvo el duelo en línea, que falló una vez por tiempos (la parada) con la máquina cargada y pasó al repetirlo solo. La primera tanda se cortó al reiniciarse la máquina y se repitieron las de navegador. Tras unir main otra vez: las de node, los modelos y jugar en línea, correctas. Pruebas nuevas: piezas de cada peinado y barba en los modelos (falla con la taller-v8 y la v9), lógica de qué se ve (falla con MUTAR=2) y clics en el visor (melena, barba larga, trenzas, perilla y capucha). Capturas en PC y móvil y fotos del taller revisadas. No comprobado: cómo se mueve el pelo largo en todas las animaciones ni en un móvil de verdad.",
   "capturas": "capturas/personaje-v18",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T21:51:06+00:00",
+  "fin": "2026-10-29T03:39:49+00:00",
+  "titulo": "Hito 1c: chimenea u hogar interior (carril B)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Pieza nueva «Chimenea» (en «Estructura»): solo en la planta baja, sobre un cimiento de piedra terminado, al que carga sus 600 kg; hueco nuevo de la rejilla (h) en la lógica pura, con autor como todo.",
+   "Se arrima sola al primer muro de su casilla: hogar de piedra con banco, jambas, dintel, campana enlucida de barro y cañón de mampostería que sube hasta 75 cm por encima de lo más alto de su casilla (el tejado).",
+   "Al terminarla queda encendida: llamas, brasas, caldero, luz del fuego (solo dos luces, las de las chimeneas más cerca, siempre las mismas para no rehacer sombreadores) y humo que sube por el cañón. Usar la apaga y la enciende, y solo se rehace ella.",
+   "No se puede entrar en el fuego ni atravesar el cañón en las plantas de arriba; por su casilla no caben escaleras ni andamios.",
+   "Decisiones provisionales en el registro: 10 piedras y 4 de barro (sistemas no da cantidades); el calor llegará con la supervivencia.",
+   "Pruebas nuevas: lógica (21 comprobaciones, MUTAR=1 las rompe), modelos (con MUTAR_CHIMENEA=1 falla) y navegador en PC y móvil (MUTAR_CHIMENEA=1 quita el choque del hogar). Capturas de cerca y junto a la v5.",
+   "Publicadas construcción v32 y demo v33 (la v32 de la demo ya la había usado el arreglo de los tirones)."
+  ],
+  "pruebas": "Todas las de herramientas/probar_todo.sh, pasadas una a una porque la máquina se reinició dos veces a media batería: todo correcto, también tras unir main dos veces (curación de heridas, tirones, peinados y saltos de agua). Lógica 225/225, modelos 169/169; navegador de construcción, demo, en línea, duelo, idiomas, mapa y web correctos. No comprobado: que MUTAR_CHIMENEA=1 rompa la prueba de navegador (la de construcción tarda unos 45 minutos aquí), ni los fotogramas en un móvil de verdad con la chimenea encendida.",
+  "capturas": "capturas/construccion-v32",
+  "estado": "ok"
  }
 ]
