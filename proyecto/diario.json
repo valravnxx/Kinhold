@@ -2228,5 +2228,23 @@
   "pruebas": "Batería entera en la nube correcta (la demo y el panel, otra vez tras ajustar sus pruebas al cambio); la prueba del retrato y la de lo del hombro fallan a propósito con MUTAR_RETRATO y MUTAR_HOMBRO. No comprobado: el retrato en un móvil de verdad. Aún no se ven en el personaje la mochila, lo del hombro ni lo de las manos salvo el hacha, y con solo la camisa el cinturón no se dibuja",
   "capturas": "capturas/construccion-v36",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T14:44:49+01:00",
+  "fin": "2026-10-29T15:15:59+01:00",
+  "titulo": "Revisión completa del proyecto y replanificación",
+  "hito": "infra",
+  "hecho": [
+   "Revisión completa del proyecto en un documento nuevo de diseño (diseno/revision.html, en español, inglés y ruso): qué hay, cómo encaja, qué falta y el plan por fases",
+   "Hallazgos: el mundo del mapa no lo usa ninguna parte jugable (tres terrenos distintos), lo recogido no sirve para construir (las obras se pagan de una reserva aparte), el servidor no sabe del mundo ni del inventario, y la web pesaba 701 MB de un máximo de 1 GB",
+   "valravnx aprobó el plan: fase 0 (despejar), fase 1 (el primer día en el mundo de verdad y en línea entre dos), fase 2 (servidor y cuentas) y luego el resto; la web por debajo de 1 GB con las versiones antiguas en las releases de GitHub; el servidor en la nube ya; lo técnico de cavar y del mundo para los carriles",
+   "Roadmap reordenado: hitos nuevos «Despejar» y «El juego en el mundo de verdad», tareas movidas y nuevas (servidor con inventario, puentes, riberas y costas, comarcas, caminos, una sola tabla de armadura) y los muros de piedra al asedio",
+   "Los hitos pueden llevar «carril»: el arte lo lleva el carril B, que lo mira antes que lo demás, y el carril A no lo coge; con su prueba",
+   "Regla de revisión visual en CLAUDE.md: antes de enseñar algo, capturas de cerca al lado de la referencia y la lista de lo que aún está mal",
+   "Comprobado: desde las sesiones no se pueden crear releases de GitHub (lo hará una acción de GitHub)"
+  ],
+  "pruebas": "En la nube: lógica (con la prueba nueva de los carriles, que falla a propósito con MUTAR_CARRIL) y la web (con el documento nuevo en los tres idiomas) correctas",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

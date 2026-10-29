@@ -84,9 +84,9 @@
     },
     {
      "nombre": "Revisión completa del proyecto (valravnx, 29 oct): qué hay, cómo encaja todo, qué falta de verdad, y propuesta de hitos replanificados",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T14:44:49+01:00",
-     "rama": "trabajo/20261029-1445-revision"
+     "fin": "2026-10-29T15:15:59+01:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
