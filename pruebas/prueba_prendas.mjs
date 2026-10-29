@@ -2,7 +2,8 @@
 //  - están todas (capa y su falda, botas, capucha y sombrero; la toca, en la mujer);
 //  - el sombrero va entero en el hueso de la cabeza (no se deforma con el cuello);
 //  - la capucha y el sombrero quedan por encima del pelo (o de la cofia) y la capucha baja hasta los hombros;
-//  - las botas llegan al suelo como los zapatos y suben más que ellos.
+//  - las botas llegan al suelo como los zapatos y suben más que ellos (en la mujer son bajas desde la taller-v11, para
+//    que no atraviesen la falda larga: suben menos, pero siguen por encima del zapato).
 // Uso: node pruebas/prueba_prendas.mjs [carpeta de recursos]   (por defecto, la última taller-vN publicada)
 //      MUTAR=1 → mira la taller-v7, que no las tiene: tiene que fallar.
 import { NodeIO } from '@gltf-transform/core';
@@ -49,8 +50,8 @@ for (const f of readdirSync(carpeta).filter(f => f.endsWith('.glb'))) {
   comprobar(`${f}: el sombrero queda por encima del pelo y con ala ancha`, sb.hi[1] > cabeza.hi[1] + 0.02 && sb.hi[0] - sb.lo[0] > 0.35,
     `copa ${(sb.hi[1] - cabeza.hi[1]) * 100 | 0} cm por encima, ala ${(sb.hi[0] - sb.lo[0]) * 100 | 0} cm`);
   const za = caja(nodo('capa_zapatos').getMesh()), bo = caja(nodo('capa_botas').getMesh());
-  comprobar(`${f}: las botas llegan al suelo y suben más que los zapatos`, Math.abs(bo.lo[1] - za.lo[1]) < 0.02 && bo.hi[1] > za.hi[1] + 0.2,
-    `suela ${bo.lo[1].toFixed(3)} / ${za.lo[1].toFixed(3)} m, caña hasta ${bo.hi[1].toFixed(2)} m`);
+  comprobar(`${f}: las botas llegan al suelo y suben más que los zapatos`, Math.abs(bo.lo[1] - za.lo[1]) < 0.02 && bo.hi[1] > za.hi[1] + (sexo === 'mujer' ? 0.03 : 0.2),
+    `suela ${bo.lo[1].toFixed(3)} / ${za.lo[1].toFixed(3)} m, caña hasta ${bo.hi[1].toFixed(2)} m (zapato ${za.hi[1].toFixed(2)} m)`);
 }
 console.log(`\n${ok} correctas, ${mal} fallos`);
 process.exit(mal ? 1 : 0);

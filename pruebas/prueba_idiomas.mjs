@@ -16,8 +16,11 @@ import { BIOMAS, ROCAS, VETAS } from '../src/logica/mapa.js';
 import { REGISTRO_PERSONAJE, VERSION_PERSONAJE } from '../src/personaje/registro.js';
 import { BASES, CAPAS, ANIMS, ZONAS_TABLA, GOLPES_TABLA } from '../src/personaje/textos.js';
 import { PRENDAS } from '../src/logica/prendas.js';
+import { CATALOGO } from '../src/logica/inventario.js';
 import { PALETAS, FORMAS, PEINADOS, BARBAS } from '../src/logica/aspecto.js';
 import { REGISTRO_DEMO, VERSION_DEMO } from '../src/demo/registro.js';
+import { RECOLECTABLES } from '../src/logica/recoleccion.js';
+import { CATALOGO as CATALOGO_REC } from '../src/logica/inventario.js';
 
 const DICC = { en: JSON.parse(readFileSync('src/idiomas/en.json', 'utf8')), ru: JSON.parse(readFileSync('src/idiomas/ru.json', 'utf8')) };
 if (process.env.MUTAR) delete DICC[process.env.MUTAR === 'ru' ? 'ru' : 'en']['Espada larga'];
@@ -39,6 +42,7 @@ for (const m of readFileSync('src/logica/mapa.js', 'utf8').matchAll(/fase: '([^'
 // opciones del visor de personaje (las de cargar.js se leen del código: el cargador necesita el navegador)
 for (const t of [...Object.values(BASES), ...Object.values(CAPAS), ...Object.values(ANIMS)]) meter(t);
 for (const p of Object.values(PRENDAS)) meter(p.nombre);
+for (const d of Object.values(CATALOGO)) meter(d.nombre); // lo que se lleva (panel de inventario)
 for (const [t] of [...ZONAS_TABLA, ...GOLPES_TABLA]) meter(t); // datos de cada prenda (lo que llevas, en el visor)
 // personalización del taller (aspecto): nombres de los colores, formas, peinados y barbas
 for (const p of Object.values(PALETAS)) for (const [n] of Object.values(p)) meter(n);
@@ -51,8 +55,13 @@ for (const m of opciones.matchAll(/:\s*\[?'([^']+)'/g)) meter(m[1]);
 const constr = leer('src/logica/construccion.js');
 for (const m of constr.matchAll(/motivo: '([^']+)'/g)) meter(m[1]);
 for (const m of leer('src/logica/acciones.js').matchAll(/motivo: '([^']+)'|return '([^']+)'/g)) meter(m[1] || m[2]);
+for (const m of leer('src/logica/inventario.js').matchAll(/motivo: '([^']+)'|return '([^']+)'/g)) meter(m[1] || m[2]); // inventario
 for (const m of leer('src/logica/en_linea.js').matchAll(/motivo: '([^']+)'|\|\| '([^']+)'/g)) meter(m[1] || m[2]); // jugar en línea
 for (const m of constr.slice(constr.indexOf('function motivoSinApoyo')).matchAll(/return '([^']+)'/g)) meter(m[1]);
+// recoger del suelo y de las plantas: sus motivos, lo que se recoge (avisos) y el motivo de no caber en el inventario
+for (const m of leer('src/logica/recoleccion.js').matchAll(/motivo: '([^']+)'/g)) meter(m[1]);
+for (const d of Object.values(RECOLECTABLES)) meter(CATALOGO_REC[d.da].nombre);
+for (const m of leer('src/logica/inventario.js').matchAll(/motivo: '(No te cabe[^']+)'/g)) meter(m[1]);
 for (const linea of leer('src/combate/logica.js').split('\n')) if (/(this|\w+)\.caer\(/.test(linea)) for (const m of linea.matchAll(/'([A-ZÁÉÍÓÚ][^']+)'/g)) meter(m[1]);
 
 // 3. textos.js de la construcción
@@ -79,12 +88,13 @@ function literalesEnTr(src) {
     i = j;
   }
 }
-for (const f of ['src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js', 'src/mina/main.js', 'src/mapa/main.js', 'src/mapa/cerca.js', 'src/juego/en_linea.js']) {
+for (const f of ['src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js', 'src/mina/main.js', 'src/mapa/main.js', 'src/mapa/cerca.js', 'src/juego/en_linea.js', 'src/juego/panel_inventario.js']) {
   const src = leer(f);
   literalesEnTr(src);
   // títulos y opciones de los grupos del panel del personaje: grupo('clave', valores, 'Título')
   for (const m of src.matchAll(/grupo\('\w+', ([^;]*?), '([^']+)'\)/g)) { meter(m[2]); for (const v of m[1].matchAll(/: '([^']+)'/g)) meter(v[1]); }
   for (const m of src.matchAll(/nombre: '([^']+)'/g)) meter(m[1]);
+  for (const m of src.matchAll(/\['[\w:]+', '([^']+)', \d+, \d+\]|^  \['([^']+)', d =>/gm)) meter(m[1] || m[2]); // panel de inventario
   for (const m of src.matchAll(/\['([^']+)', stats\./g)) meter(m[1]); // filas de la pantalla final
 }
 

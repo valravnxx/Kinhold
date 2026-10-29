@@ -222,8 +222,17 @@ def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosida
     if diezmar < 1.0:
         d = ob.modifiers.new('Diezmar', 'DECIMATE'); d.ratio = diezmar
         if entero:  # lo que no se diezma (la cara de la piel: los calcos de pelo van encima, a 1 mm, y si no la piel los atravesaba)
-            g = ob.vertex_groups.new(name='diezmar'); g.add([k for k in range(nv) if not entero(orig[k])], 1.0, 'REPLACE')
+            libres = [k for k in range(nv) if not entero(orig[k])]
+            g = ob.vertex_groups.new(name='diezmar'); g.add(libres, 1.0, 'REPLACE')
             d.vertex_group = 'diezmar'
+            # La proporción del modificador es de toda la malla. Con la cara protegida, para llegar a ella el resto (las
+            # manos y el cuello) se quedaba casi sin triángulos y las manos salían como una tira (taller-v9 y v10; lo vio
+            # valravnx el 29 oct). Se calcula para que lo que sí se diezma quede en `diezmar` de lo suyo, como antes de
+            # proteger la cara: triángulos protegidos + diezmar × triángulos libres, sobre el total.
+            me.calc_loop_triangles(); libre = np.zeros(nv, bool); libre[libres] = True
+            tris = np.zeros(len(me.loop_triangles) * 3, dtype=np.int64); me.loop_triangles.foreach_get('vertices', tris)
+            sueltos = libre[tris.reshape(-1, 3)].all(1).sum(); total = len(me.loop_triangles)
+            d.ratio = (total - sueltos + diezmar * sueltos) / total
         with bpy.context.temp_override(object=ob, active_object=ob):
             bpy.ops.object.modifier_apply(modifier='Diezmar')
         if 'diezmar' in ob.vertex_groups: ob.vertex_groups.remove(ob.vertex_groups['diezmar'])
@@ -949,16 +958,21 @@ def personaje(nombre, macros, objetivos, ropa):
     piezas.append(trozo(base, f'{nombre}_capa_manto_falda', lambda i, c: en(i, 'helper-skirt') and rodilla_z - 0.12 < c.z < cintura_z + 0.03,
                         empuje=0.062, textura=(512, lambda P, A: pintar_manto(P, A, cuello=False)), rugosidad=0.95, ajustar_uv=True))
 
-    # ---- calzado: botas de cuero hasta debajo de la rodilla (en vez de los zapatos) ----
+    # ---- calzado: botas de cuero (en vez de los zapatos) ----
+    # El hombre, hasta debajo de la rodilla. La mujer lleva siempre falda hasta el tobillo (camisa, vestido), que sale de
+    # la malla de ayuda de la falda y sigue a los muslos; la caña alta seguía a la pantorrilla y, al doblar la rodilla, se
+    # salía por detrás de la falda (lo vio valravnx el 29 oct). Sus botas suben solo un poco por encima del bajo de la
+    # falda: nunca se ven por encima y no llegan a la pantorrilla.
+    alto_bota = tobillo_z + 0.10 if mujer else rodilla_z - 0.06
     cuero = lin((60, 42, 28))
     def color_botas(P, A):
         z = P[:, 2]
         c = cuero[None, :] * (0.85 + 0.2 * fbm(P, 30)[:, None])
-        vuelta = suave(rodilla_z - 0.11, rodilla_z - 0.10, z)[:, None]  # caña vuelta arriba, algo más clara
+        vuelta = suave(alto_bota - 0.05, alto_bota - 0.04, z)[:, None]  # caña vuelta arriba, algo más clara
         suela = suave(0.025, 0.015, z)[:, None]
         return c * (1 + 0.25 * vuelta) * (1 - 0.5 * suela)
-    piezas.append(trozo(base, nombre + '_capa_botas', lambda i, c: en(i, 'helper-tights') and c.z < rodilla_z - 0.06,
-                        empuje=lambda c, i: 0.009 + (0.004 if c.z > rodilla_z - 0.11 else 0.0), color=color_botas, rugosidad=0.6))
+    piezas.append(trozo(base, nombre + '_capa_botas', lambda i, c: en(i, 'helper-tights') and c.z < alto_bota,
+                        empuje=lambda c, i: 0.009 + (0.004 if c.z > alto_bota - 0.05 else 0.0), color=color_botas, rugosidad=0.6))
 
     # ---- tocados (uno cada vez): capucha suelta con esclavina, sombrero de paja y, en la mujer, toca ----
     oreja_c = [orejas[orejas[:, 0] * sg > 0].mean(0) for sg in (1, -1)]
