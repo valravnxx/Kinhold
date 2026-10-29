@@ -2149,6 +2149,24 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-29T05:03:54+01:00",
+  "fin": "2026-10-29T11:26:34+01:00",
+  "titulo": "Hito 10: bosques frondosos",
+  "hito": "mundo",
+  "hecho": [
+   "Siete especies de árbol del documento de sistemas, cada una con su silueta en el estilo v5: abeto, pino, abedul, roble, haya, fresno y encina, con su forma sencilla para lejos",
+   "Cada bioma tiene 2 o 3 especies en rodales de unos 120 m que se mezclan en sus bordes",
+   "El espesor sale del bioma, la lluvia, la pendiente y lo hondo del sitio; masas de bosque y claros con lindes graduales, de árboles más bajos y más matorral",
+   "En campo abierto los árboles van en corros y bosquetes; en la montaña, con el frío, el bosque se aclara hasta el límite del bosque y solo quedan coníferas bajas",
+   "Desde lo alto, el suelo bajo el bosque toma el verde de las copas; de cerca, el suelo del bosque es de hojarasca",
+   "Junto al personaje, árboles enteros; a más de 80 m (60 en el móvil), la forma sencilla: el trozo de cerca baja de unos 950.000 a 660.000 triángulos en un bosque espeso",
+   "Pruebas nuevas: especies de su bioma, rodales, claros con lindes graduales, corros en campo abierto y límite del bosque"
+  ],
+  "pruebas": "Batería completa correcta (la de construcción, aparte, porque tardó más que el límite de tiempo puesto); las cinco pruebas nuevas del bosque fallan a propósito con MUTAR. No comprobado: fotogramas en un móvil de verdad; la prueba del mundo fijo, adaptada a las especies, no se ha vuelto a romper a propósito",
+  "capturas": "capturas/mapa-v13",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-29T06:52:42+00:00",
   "fin": "2026-10-29T09:36:02+00:00",
   "titulo": "Arreglo: manos enteras otra vez y botas bajas en la mujer",
