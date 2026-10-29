@@ -100,7 +100,9 @@ with sync_playwright() as p:
         ir(pg, '[data-ir=construir]')
         pg.wait_for_function('window.__kinhold && window.__kinhold.jugador.mh', timeout=180000)
         mh = pg.evaluate('({s: window.__kinhold.jugador.mh.opciones.sexo, c: window.__kinhold.jugador.mh.capas})')
-        comprobar('construir: el personaje elegido', mh['s'] == 'mujer' and mh['c'] == ['vestido', 'gambeson'], str(mh))
+        # el personaje lleva lo que dice el inventario (valravnx, 29 oct): la ropa del visor entra en él, y el vestido y
+        # el gambesón son la misma capa (abrigo), así que queda el de fuera
+        comprobar('construir: el personaje elegido, con la ropa del visor pasada al inventario', mh['s'] == 'mujer' and mh['c'] == ['gambeson'], str(mh))
         t = tapado(pg, '#btnDemoMenu'); comprobar('construir: botón Menú libre', t == '', t)
         pg.wait_for_timeout(1500)
         png = pg.screenshot(path=f'{SALIDA}/{nombre}_construir.png')
@@ -126,7 +128,7 @@ with sync_playwright() as p:
             ...[2,3,4,5].map(i => a({tipo:'coger', objeto:'lena', cantidad:3, a:'espalda/' + i})),
             a({tipo:'coger', objeto:'cinto_cuero', cantidad:1, a:'mano:der'}), a({tipo:'ponerse', de:'mano:der'}),
             a({tipo:'coger', objeto:'piedra', cantidad:3, a:'cintura/0'}), a({tipo:'coger', objeto:'silex', cantidad:10, a:'cintura/1'}), a({tipo:'coger', objeto:'resina', cantidad:10, a:'cintura/2'}),
-            a({tipo:'coger', objeto:'odre', cantidad:1, a:'mano:der'}), a({tipo:'ponerse', de:'mano:der'}), a({tipo:'coger', objeto:'agua', cantidad:10, a:'hombro/0'}),
+            a({tipo:'coger', objeto:'odre', cantidad:1, a:'mano:der'}), a({tipo:'ponerse', de:'mano:der'}),
             a({tipo:'coger', objeto:'tronco_corto', cantidad:1, a:'mano:der'})];
           return { ok: r.every(x => x), f: k.inventario.lleno().fraccion, autor: k.registroAcciones.entradas ? k.registroAcciones.entradas.slice(-1)[0].autor : '' }; })()'''
         ll = pg.evaluate(llenar)
