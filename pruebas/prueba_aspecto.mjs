@@ -1,6 +1,6 @@
 // Pruebas del aspecto del personaje (personalización). Ejecutar: node pruebas/prueba_aspecto.mjs
 // Con MUTAR=1 se rompe a propósito (la normalización deja pasar números fuera de rango): debe FALLAR.
-import { normalizarAspecto, pesosFormas, escalaAltura, colorDe, PALETAS, FORMAS, ASPECTO_INICIAL, PEINADOS, BARBAS, ESCALA_ALTURA } from '../src/logica/aspecto.js';
+import { normalizarAspecto, pesosFormas, escalaAltura, colorDe, PALETAS, FORMAS, ASPECTO_INICIAL, PEINADOS, BARBAS, ESCALA_ALTURA, piezasCabeza } from '../src/logica/aspecto.js';
 
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
@@ -35,6 +35,20 @@ comprobar('altura −1 → escala 1 − ESCALA_ALTURA', Math.abs(escalaAltura(no
 // paletas bien formadas
 comprobar('todas las paletas tienen nombre y color sRGB', Object.values(PALETAS).every(pl => Object.values(pl).every(([n, c]) => typeof n === 'string' && c.length === 3 && c.every(x => Number.isInteger(x) && x >= 0 && x <= 255))));
 comprobar('los valores por defecto existen en sus listas', ['hombre', 'mujer'].every(s => Object.hasOwn(PEINADOS[s], ASPECTO_INICIAL[s].peinado) && Object.hasOwn(BARBAS[s], ASPECTO_INICIAL[s].barba)));
+// qué piezas de la cabeza se ven: la barba larga lleva la corta debajo; el pelo largo, el corto encima del cráneo; bajo la
+// capucha o la toca no asoma el pelo largo ni las orejas; con la cofia no se ven ni el pelo ni las orejas
+{
+  const pc = process.env.MUTAR === '2' ? (a, t) => ({ ...piezasCabeza(a, t), _barba_corta: false }) : piezasCabeza;
+  const v = pc({ peinado: 'melena', barba: 'larga' });
+  comprobar('melena con barba larga: pelo corto, melena, barba larga y corta', v._pelo && v._pelo_melena && v._barba_larga && v._barba_corta && !v._pelo_coleta && !v._cofia);
+  const c = pc({ peinado: 'trenzas', barba: 'ninguna' }, 'capucha');
+  comprobar('bajo la capucha no asoman las trenzas ni las orejas', !c._pelo_trenzas && !c._orejas && c._pelo);
+  const f = pc({ peinado: 'cofia', barba: 'ninguna' });
+  comprobar('con la cofia, ni pelo ni orejas', f._cofia && !f._pelo && !f._orejas);
+  const r = pc({ peinado: 'rapado', barba: 'perilla' });
+  comprobar('rapado con perilla', !r._pelo && r._orejas && r._barba_perilla && !r._barba_corta);
+  comprobar('los peinados nuevos se pueden elegir y se guardan', normalizarAspecto({ peinado: 'trenzas', barba: 'perilla' }, 'hombre').peinado === 'trenzas' && normalizarAspecto({ peinado: 'coleta' }, 'mujer').peinado === 'coleta' && normalizarAspecto({ barba: 'larga' }, 'mujer').barba === 'ninguna');
+}
 // se puede mandar tal cual (JSON) y vuelve igual
 comprobar('el aspecto pasa por JSON sin cambiar', JSON.stringify(norm(JSON.parse(JSON.stringify(raro)), 'hombre')) === JSON.stringify(raro));
 
