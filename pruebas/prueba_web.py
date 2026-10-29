@@ -127,8 +127,8 @@ with sync_playwright() as p:
         comprobar('?lang=en abre la web en inglés', pg.inner_text('nav button[data-s=jugar]') == 'Play')
         # documentos de diseño en inglés: la web en inglés enlaza a diseno/en/ y cada documento tiene selector ES · EN
         docs_en = pg.evaluate("[...document.querySelectorAll('a[data-doc]')].map(a => a.getAttribute('href'))")
-        comprobar('en inglés, los documentos de diseño enlazan a la versión inglesa', len(docs_en) == 3 and all(h.startswith('diseno/en/') for h in docs_en), ', '.join(docs_en))
-        for d in ['gdd', 'sistemas', 'analisis']:
+        comprobar('en inglés, los documentos de diseño enlazan a la versión inglesa', len(docs_en) == 4 and all(h.startswith('diseno/en/') for h in docs_en), ', '.join(docs_en))
+        for d in ['gdd', 'sistemas', 'analisis', 'revision']:
             pg.goto(URL + f'diseno/{d}.html'); pg.wait_for_timeout(150)
             es_txt = pg.inner_text('body')
             if d == 'gdd': pg.screenshot(path=f'{SALIDA}/{nombre}_10_doc_{d}_es.png')
@@ -149,7 +149,7 @@ with sync_playwright() as p:
         pg.goto(URL); pg.wait_for_selector('#listaJuegos .tarjeta', state='attached')
         pg.click('#idiomas button[data-l=es]'); pg.wait_for_timeout(200)
         docs_es = pg.evaluate("[...document.querySelectorAll('a[data-doc]')].map(a => a.getAttribute('href'))")
-        comprobar('en español, los documentos enlazan al original', all(not h.startswith('diseno/en/') for h in docs_es) and len(docs_es) == 3)
+        comprobar('en español, los documentos enlazan al original', all(not h.startswith('diseno/en/') for h in docs_es) and len(docs_es) == 4)
         # ruso: botón RU, textos del roadmap y del diario en cirílico, documentos de diseño en ruso
         pg.click('#idiomas button[data-l=ru]'); pg.wait_for_timeout(200)
         comprobar('botón RU: la web en ruso', pg.inner_text('nav button[data-s=jugar]') == 'Играть' and pg.evaluate('document.documentElement.lang') == 'ru')
@@ -164,10 +164,10 @@ with sync_playwright() as p:
         pg.click('nav button[data-s=jugar]'); pg.wait_for_timeout(200)
         pg.screenshot(path=f'{SALIDA}/{nombre}_14_jugar_ru.png')
         docs_ru = pg.evaluate("[...document.querySelectorAll('a[data-doc]')].map(a => a.getAttribute('href'))")
-        comprobar('en ruso, los documentos de diseño enlazan a la versión rusa', len(docs_ru) == 3 and all(h.startswith('diseno/ru/') for h in docs_ru), ', '.join(docs_ru))
+        comprobar('en ruso, los documentos de diseño enlazan a la versión rusa', len(docs_ru) == 4 and all(h.startswith('diseno/ru/') for h in docs_ru), ', '.join(docs_ru))
         comprobar('en ruso, las tarjetas de documentos ya no dicen «пока на английском»', 'на английском' not in pg.inner_text('body'))
         # documentos de diseño en ruso: selector ES · EN · RU, misma estructura, texto en cirílico sin restos del español
-        for d in ['gdd', 'sistemas', 'analisis']:
+        for d in ['gdd', 'sistemas', 'analisis', 'revision']:
             pg.goto(URL + f'diseno/{d}.html'); pg.wait_for_timeout(150)
             n_es = pg.evaluate("[...document.querySelectorAll('section[id],h2,h3,li,tr,td,p')].length")
             with pg.expect_navigation():

@@ -98,5 +98,20 @@ comprobar('choque: solo los archivos de verdad, no los que se unen solos', cs.le
   const u = unirTextos(b, n, o), j = JSON.parse(u.texto);
   comprobar('sesion.json: dos anuncios a la vez se unen solos', !u.choques.length && j.A.tarea === 'x' && j['chat:trabajo/c'].tarea === 'y', u.texto);
 }
+// hitos con carril (el B lleva el arte en paralelo): el B mira primero los suyos y el A no los coge nunca.
+// MUTAR_CARRIL=1 quita el campo carril: tiene que fallar
+{
+  const rc = { hitos: [
+    { id: 'sis', estado: 'en_curso', tareas: [T('s1'), T('s2')] },
+    { id: 'arte', estado: 'en_curso', carril: 'B', tareas: [T('a1')] },
+  ] };
+  const sinCarril = (x) => process.env.MUTAR_CARRIL ? JSON.parse(JSON.stringify(x).replaceAll('"carril":"B"', '"z":1')) : x;
+  const eb = elegir(sinCarril(rc), {}, 'B', ahora), ea = elegir(sinCarril(rc), {}, 'A', ahora);
+  comprobar('el carril B coge primero su hito de arte, aunque vaya después en el roadmap', eb && eb.hito === 'arte', JSON.stringify(eb));
+  comprobar('el carril A no coge el hito del carril B', ea && ea.hito === 'sis', JSON.stringify(ea));
+  rc.hitos[0].tareas = [T('s1', 'hecho')];
+  const ea2 = elegir(sinCarril(rc), {}, 'A', ahora);
+  comprobar('sin nada suyo que hacer, el A no se mete en el arte del B', !ea2 || ea2.hito !== 'arte', JSON.stringify(ea2));
+}
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
 process.exit(mal ? 1 : 0);

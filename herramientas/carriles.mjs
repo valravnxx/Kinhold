@@ -96,7 +96,10 @@ export function elegir(roadmap, sesion, carril, ahora = Date.now(), ramas = {}) 
   }
   const hayRevision = roadmap.hitos.some(h => h.estado === 'revision');
   const bloqueado = roadmap.hitos.some(h => h.bloquea && (h.tareas || []).some(t => t.estado === 'espera_decision'));
-  for (const h of roadmap.hitos) {
+  // hitos con «carril» (valravnx, 29 oct: el carril B lleva el arte en paralelo): solo los coge ese carril, y los mira
+  // antes que los demás; los hitos sin carril los coge cualquiera, en el orden del roadmap
+  const orden = [...roadmap.hitos.filter(h => h.carril === carril), ...roadmap.hitos.filter(h => !h.carril)];
+  for (const h of orden) {
     if (h.estado !== 'en_curso' || ocupados.has(h.id)) continue;
     const m = (h.tareas || []).find(x => huerfana.has(x.nombre));
     if (m) return { hito: h.id, tarea: m.nombre, retoma: true, rama: m.rama || null };
@@ -104,7 +107,7 @@ export function elegir(roadmap, sesion, carril, ahora = Date.now(), ramas = {}) 
     if (t) return { hito: h.id, tarea: t.nombre };
   }
   if (hayRevision || bloqueado) return null; // no se empieza ningún hito nuevo
-  for (const h of roadmap.hitos) {
+  for (const h of orden) {
     if (h.estado !== 'pendiente' || ocupados.has(h.id)) continue;
     const t = (h.tareas || []).find(x => x.estado === 'pendiente') || { nombre: 'Planificar el hito' };
     return { hito: h.id, tarea: t.nombre, hitoNuevo: true };
