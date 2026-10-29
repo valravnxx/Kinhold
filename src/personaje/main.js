@@ -168,7 +168,7 @@ function pintarTintes() {
   const t = tintesMH(), capas = capasMH(), tenibles = pj?.tenibles || [];
   if (!tenibles.length) return '';
   const calzado = capas.includes('botas') ? 'botas' : capas.includes('descalzo') ? null : 'zapatos';
-  const puestas = tenibles.filter(p => p === 'camisa' || p === 'calzas' || p === calzado || capas.includes(p));
+  const puestas = Object.keys(PRENDAS_TENIBLES).filter(p => tenibles.includes(p) && (p === 'camisa' || p === 'calzas' || p === calzado || capas.includes(p))); // de dentro afuera
   const rgb = (c) => `rgb(${c.join(',')})`;
   const muestra = (attr, clave, k, nombre, c, sel) => `<button data-${attr}="${clave}" data-v="${k}" title="${tr(nombre)}" aria-label="${tr(nombre)}" class="muestra ${sel ? 'sel' : ''}"><i style="background:${rgb(c)}"></i></button>`;
   let h = `<div class="grupo tintes"><span>${tr('Tinte de la ropa')}</span>` + puestas.map(p => `<div class="fila"><b>${tr(PRENDAS_TENIBLES[p].nombre)}</b>` +
