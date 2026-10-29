@@ -1,0 +1,123 @@
+# Todas las pruebas de Kinhold en la nube, cada grupo en su máquina a la vez (lo pidió valravnx el 29 oct: aquí no hay
+# tarjeta gráfica y la batería entera pasaba de hora y media). Gratis en un repositorio público: 4 núcleos y 16 GB por
+# máquina, hasta 20 a la vez.
+# No se lanza con cada subida (los avances cada 15 minutos la lanzarían sin parar): la lanza
+#   node herramientas/pruebas_nube.mjs
+# subiendo lo que se quiere probar a una rama nube-pedido/<id>/<grupos o «todos»>, que borra al acabar. Espera, trae
+# las capturas y la salida de cada grupo y dice qué ha fallado. Los grupos salen de
+# herramientas/probar_todo.sh --grupos, así que una prueba nueva añadida allí entra sola.
+# Las capturas y la salida vuelven por una rama nube/<ejecución>-<grupo> (desde aquí no se pueden bajar los
+# «artifacts»: están en un almacén al que no se llega). Desde las sesiones no se pueden borrar ramas, así que limpia la
+# nube: cada ejecución borra su rama nube-pedido al acabar y, al empezar, las nube/ y nube-pedido/ de más de 3 horas.
+name: pruebas
+run-name: ${{ github.ref_name }}
+on:
+  push:
+    branches: ['nube-pedido/**']
+permissions:
+  contents: write
+jobs:
+  lista:
+    runs-on: ubuntu-latest
+    outputs:
+      grupos: ${{ steps.g.outputs.grupos }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Borrar ramas de pruebas viejas (más de 3 horas)
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          limite=$(( $(date +%s) - 3 * 3600 ))
+          for prefijo in nube nube-pedido; do
+            gh api "repos/${{ github.repository }}/git/matching-refs/heads/$prefijo/" --jq '.[] | "\(.ref) \(.object.sha)"' | while read -r ref sha; do
+              [ "$ref" = "refs/heads/${{ github.ref_name }}" ] && continue
+              fecha=$(gh api "repos/${{ github.repository }}/commits/$sha" --jq .commit.committer.date) || continue
+              if [ "$(date -d "$fecha" +%s)" -lt "$limite" ]; then gh api -X DELETE "repos/${{ github.repository }}/git/${ref#refs/}" && echo "borrada $ref"; fi
+            done
+          done
+          true
+      - id: g
+        env:
+          RAMA: ${{ github.ref_name }}
+        run: |
+          pedidos="${RAMA#nube-pedido/*/}"
+          if [ "$pedidos" = todos ]; then echo "grupos=$(bash herramientas/probar_todo.sh --grupos)" >> "$GITHUB_OUTPUT"
+          else echo "grupos=[\"${pedidos//+/\",\"}\"]" >> "$GITHUB_OUTPUT"; fi
+  grupo:
+    needs: lista
+    strategy:
+      fail-fast: false
+      matrix:
+        grupo: ${{ fromJSON(needs.lista.outputs.grupos) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    name: ${{ matrix.grupo }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: npm ci
+      - name: Navegador y Python
+        run: |
+          pip install playwright==1.63.0 pillow numpy
+          python -m playwright install --with-deps chromium
+      - name: Letra Inter por defecto (como en las sesiones, para que las capturas salgan iguales)
+        run: |
+          sudo apt-get install -y -q fonts-inter
+          mkdir -p ~/.config/fontconfig
+          printf '<?xml version="1.0"?>\n<!DOCTYPE fontconfig SYSTEM "fonts.dtd">\n<fontconfig>\n%s</fontconfig>\n' "$(for f in sans-serif system-ui serif; do printf '<alias><family>%s</family><prefer><family>Inter</family></prefer></alias>\n' $f; done)" > ~/.config/fontconfig/fonts.conf
+          fc-cache -f >/dev/null; fc-match sans-serif; fc-match system-ui
+      - name: Caddy (solo lógica)
+        if: matrix.grupo == 'logica'
+        run: sudo apt-get install -y -q caddy
+      - name: Pruebas del grupo
+        id: pruebas
+        run: |
+          set +e
+          inicio=$(date +%s)
+          bash herramientas/probar_todo.sh --grupo "${{ matrix.grupo }}" 2>&1 | tee /tmp/resumen.txt
+          r=${PIPESTATUS[0]}
+          echo "tardó $(( $(date +%s) - inicio )) s" | tee -a /tmp/resumen.txt
+          echo "r=$r" >> "$GITHUB_OUTPUT"
+      - name: Devolver capturas y salida por una rama
+        if: always()
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          mv /tmp/kinhold_capturas/salida /tmp/kinhold_capturas/salida_${{ matrix.grupo }} 2>/dev/null || true
+          mkdir -p /tmp/vuelta && cp /tmp/resumen.txt /tmp/vuelta/resumen_${{ matrix.grupo }}.txt || true
+          python - <<'EOF'
+          import os
+          from PIL import Image
+          o, d = '/tmp/kinhold_capturas', '/tmp/vuelta'
+          for raiz, _, fs in os.walk(o):
+              for f in fs:
+                  a = os.path.join(raiz, f); b = os.path.join(d, os.path.relpath(a, o)); os.makedirs(os.path.dirname(b), exist_ok=True)
+                  if f.lower().endswith('.png'):
+                      im = Image.open(a).convert('RGB')
+                      if im.width > 1280: im = im.resize((1280, round(im.height * 1280 / im.width)), Image.LANCZOS)
+                      im.save(b[:-4] + '.jpg', quality=88)
+                  elif os.path.getsize(a) < 5_000_000:
+                      with open(a, 'rb') as x, open(b, 'wb') as y: y.write(x.read())
+          EOF
+          cd /tmp/vuelta && git init -q && git checkout -q --orphan vuelta && git add -A
+          git -c user.name=kinhold-nube -c user.email=nube@kinhold.invalid commit -qm "Pruebas en la nube: ${{ matrix.grupo }} (${{ github.sha }})"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}" HEAD:refs/heads/nube/${{ github.run_id }}-${{ matrix.grupo }}
+      - name: Resultado
+        run: exit ${{ steps.pruebas.outputs.r }}
+  limpiar:
+    needs: grupo
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Borrar la rama del pedido
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/${{ github.ref_name }}" || true

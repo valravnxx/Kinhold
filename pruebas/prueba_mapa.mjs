@@ -1,7 +1,7 @@
 // Pruebas del generador del mapa del mundo (lógica pura, src/logica/mapa.js).
 // Uso: node pruebas/prueba_mapa.mjs        MUTAR=1 estropea el resultado a propósito: tiene que fallar.
 import { generarMapa, resumen, anchoRio, claseRio, BIOMAS, ROCAS, REGIONES, CONTINENTE, nombreRegion, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
-import { crearPaisaje, PENDIENTE_ANDAR } from '../src/logica/paisaje.js';
+import { crearPaisaje, PENDIENTE_ANDAR, bosqueEn, MEZCLA_BOSQUE } from '../src/logica/paisaje.js';
 
 let bien = 0, mal = 0;
 const comprobar = (n, c, d = '') => { console.log((c ? '  OK   ' : '  FALLA ') + n + (d ? ` — ${d}` : '')); c ? bien++ : mal++; };
@@ -145,6 +145,52 @@ comprobar('ancho de río: 10.000 km² → unos 63 m (gran río)', Math.round(anc
   comprobar('nombres: Storaa está al sureste y por ella corre el gran río', S.cx > 0.5 && S.cy > 0.5 && [W, E, R, H].every(o => S.grande > o.grande), `${S.grande} celdas de gran río`);
   const otro = generarMapa(7, { lado: 256 });
   comprobar('nombres: en otra semilla no hay nombres (Región N)', nombreRegion(otro, 0) === null && nombreRegion(m, -1) === null);
+}
+
+// bosques: especies por bioma (2 o 3), en rodales; claros con lindes graduales; árboles en corros fuera del bosque;
+// límite del bosque en la montaña. MUTAR: especie al azar, espesor a saltos, sin corros y árboles altos en el límite
+{
+  const m = generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO }), pai = crearPaisaje(m), L = m.lado * 1000;
+  const ESP = ['abeto', 'pino', 'abedul', 'roble', 'haya', 'fresno', 'encina'];
+  let sem = 12345; const r = () => ((sem = (Math.imul(sem, 1664525) + 1013904223) >>> 0) / 4294967296);
+  const bosque = (st, s, x, y, u = 0.5) => {
+    const b = bosqueEn(st, s, x, y, { semilla: m.semilla, u });
+    if (!MUTAR) return b;
+    return { ...b, especie: b.especie && ESP[Math.floor(r() * 7)], linde: b.linde > 0.5 ? 1 : 0, tam: 1 };
+  };
+  const tierra = () => { for (;;) { const x = r() * L, y = r() * L, z = pai.altura(x, y); if (z < 3) continue; const st = pai.sitio(x, y, z); if (st && st.bioma) return { x, y, st }; } };
+  // 1. especies de su bioma, y la primera de la lista es la que más hay
+  const porBioma = {}; let fuera = 0, n1 = 0;
+  for (let k = 0; k < 6000; k++) { const { x, y, st } = tierra(), b = bosque(st, 0.1, x, y, r()); if (b.d < 0.2) continue; n1++;
+    if (!MEZCLA_BOSQUE[st.bioma].some(([e]) => e === b.especie)) fuera++; (porBioma[st.bioma] ||= {})[b.especie] = (porBioma[st.bioma]?.[b.especie] || 0) + 1; }
+  const malDominante = Object.entries(porBioma).filter(([bi, c]) => Object.values(c).reduce((a, v) => a + v, 0) > 100 && Object.entries(c).sort((a, b) => b[1] - a[1])[0][0] !== MEZCLA_BOSQUE[bi][0][0]).map(([bi]) => bi);
+  comprobar('bosques: cada árbol es de una de las 2 o 3 especies de su bioma, y la principal es la que más abunda', fuera === 0 && !malDominante.length && n1 > 1000, `${fuera} de ${n1} fuera de su bioma; principal equivocada en: ${malDominante.join(', ') || 'ninguno'}`);
+  // 2. rodales: dos árboles a 6 m casi siempre son de la misma especie; a 600 m, a menudo no
+  let igualCerca = 0, distLejos = 0, nc = 0, nl = 0;
+  for (let k = 0; k < 3000; k++) { const { x, y, st } = tierra(); if (MEZCLA_BOSQUE[st.bioma]?.length < 2 || bosque(st, 0.1, x, y).d === 0) continue;
+    const a = bosque(st, 0.1, x, y, r()).especie, ang = r() * 6.28;
+    const b = bosque(st, 0.1, x + Math.cos(ang) * 6, y + Math.sin(ang) * 6, r()).especie, c = bosque(st, 0.1, x + Math.cos(ang) * 600, y + Math.sin(ang) * 600, r()).especie;
+    nc++; if (a === b) igualCerca++; nl++; if (a !== c) distLejos++; }
+  comprobar('bosques: en rodales (a 6 m, la misma especie casi siempre; a 600 m, a menudo otra)', igualCerca / nc > 0.8 && distLejos / nl > 0.25, `a 6 m iguales ${(igualCerca / nc * 100).toFixed(0)} %, a 600 m distintas ${(distLejos / nl * 100).toFixed(0)} %`);
+  // 3. claros y lindes graduales, en los biomas de bosque (en llano): hay claros, pero domina el bosque, y el espesor
+  //    de la linde (de dentro de la masa de bosque a campo abierto) va poco a poco: cada 5 m, menos de 0,1
+  let claros = 0, nb = 0, salto = 0;
+  for (let k = 0; k < 400; k++) { const { x, y, st } = tierra(); if (!['caducifolio', 'mixto', 'taiga'].includes(st.bioma) || st.T < 5) continue;
+    const ang = r() * 6.28; let prev = null;
+    for (let d = 0; d <= 400; d += 5) { const b = bosque(st, 0.1, x + Math.cos(ang) * d, y + Math.sin(ang) * d); nb++; if (b.d < 0.12) claros++; if (prev !== null) salto = Math.max(salto, Math.abs(b.linde - prev)); prev = b.linde; } }
+  comprobar('bosques: hay claros pero domina el bosque, y las lindes son graduales', claros / nb > 0.08 && claros / nb < 0.5 && salto < 0.1, `${(claros / nb * 100).toFixed(0)} % de claro; el mayor salto de la linde en 5 m, ${salto.toFixed(3)}`);
+  // 4. corros: en campo abierto (pradera, brezal, matorral) los árboles se juntan: el 30 % de los sitios con más
+  //    espesor tiene más del 75 % del total
+  const ds = [];
+  for (let k = 0; k < 20000 && ds.length < 3000; k++) { const { x, y, st } = tierra(); if (!['pradera', 'matorral', 'brezal'].includes(st.bioma)) continue; ds.push(bosque(st, 0.1, x, y).d); }
+  if (MUTAR) { const med = ds.reduce((a, v) => a + v, 0) / ds.length; ds.fill(med); }
+  ds.sort((a, b) => b - a); const tot = ds.reduce((a, v) => a + v, 0), top = ds.slice(0, Math.round(ds.length * 0.3)).reduce((a, v) => a + v, 0);
+  comprobar('bosques: en campo abierto los árboles van en corros, no sueltos al azar', tot > 0 && top / tot > 0.75, `el 30 % más espeso tiene el ${(top / tot * 100).toFixed(0)} % de los árboles (${ds.length} sitios)`);
+  // 5. límite del bosque: por debajo de 0,8 °C de media no hay árboles; entre 0,8 y 2 °C, solo coníferas y bajas
+  let arriba = 0, malLimite = 0, nlim = 0;
+  for (let k = 0; k < 400000 && nlim < 300; k++) { const { x, y, st } = tierra(); if (st.T >= 2) continue; const b = bosque(st, 0.1, x, y, r());
+    if (st.T < 0.8) { if (b.d > 0) arriba++; continue; } if (b.d === 0) continue; nlim++; if (!['abeto', 'pino'].includes(b.especie) || b.tam > 0.75) malLimite++; }
+  comprobar('bosques: límite del bosque en la montaña (por encima, nada; junto a él, solo coníferas bajas)', arriba === 0 && malLimite === 0 && nlim > 50, `${arriba} árboles por encima; ${malLimite} de ${nlim} junto al límite mal`);
 }
 console.log(`\nResultado: ${bien} correctas, ${mal} fallidas`);
 process.exit(mal ? 1 : 0);

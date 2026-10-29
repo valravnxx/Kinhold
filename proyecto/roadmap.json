@@ -70,9 +70,10 @@
     },
     {
      "nombre": "Pruebas en la nube (GitHub Actions, gratis en repositorio público): las pruebas de navegador en paralelo en máquinas de 4 núcleos, con las capturas de vuelta, para que las sesiones no pasen horas esperando a que dibuje esta máquina sin gráfica (lo pidió valravnx el 29 oct)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T11:03:35+01:00",
-     "rama": "trabajo/20261029-1005-nube"
+     "rama": "trabajo/20261029-1005-nube",
+     "fin": "2026-10-29T12:41:45+01:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -987,9 +988,9 @@
     },
     {
      "nombre": "Bosques frondosos de verdad: espesor según bioma, humedad, pendiente y altura; claros, lindes graduales, árboles en grupos y 2 o 3 especies por bioma; límite del bosque en la montaña",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T05:03:54+01:00",
-     "rama": "trabajo/20261029-0505-bosques"
+     "fin": "2026-10-29T11:26:34+01:00"
     },
     {
      "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
@@ -2095,6 +2096,13 @@
      "archivo": "jugar/mapa/v12.html",
      "capturas": "capturas/mapa-v12",
      "notas": "Saltos de agua: donde el río baja mucho por roca dura, casi todo el desnivel se concentra en un salto de 4 a 35 m, con lámina de agua, chorros blancos, poza de espuma y paredes de roca alrededor. La cámara ya no se mete bajo el suelo."
+    },
+    {
+     "v": "v13",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/mapa/v13.html",
+     "capturas": "capturas/mapa-v13",
+     "notas": "Bosques frondosos: siete especies de árbol (abeto, pino, abedul, roble, haya, fresno y encina), 2 o 3 por bioma en rodales; masas de bosque y claros con lindes graduales, corros en campo abierto y límite del bosque en la montaña. Desde lo alto, las masas se leen como masas."
     }
    ]
   }

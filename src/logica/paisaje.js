@@ -247,16 +247,65 @@ export function crearPaisaje(mapa, { afloramientos = 0.66 } = {}) {
   return { altura, agua, corriente, saltosEn, sitio, riosEn, rios, celda };
 }
 
-// Espesor del bosque (0–1) y qué árbol: según bioma, temperatura, pendiente (en tanto por uno) y un ruido de claros.
-// Más denso en el fondo de los valles y junto al agua, menos en lomas y cumbres, nada en los cortados ni por encima
-// del límite del bosque.
-export function bosqueEn(bioma, T, pendiente, claro, humedo = 0) {
-  const base = { taiga: 0.85, caducifolio: 0.9, mixto: 0.7, encinar: 0.6, brezal: 0.12, pradera: 0.1, matorral: 0.08, turbera: 0.05, alpino: 0.06, nieve: 0 }[bioma] ?? 0;
-  let d = base * (1 - suave(0.55, 0.95, pendiente)) * suave(0.5, 3.5, T);
-  d *= 0.08 + 0.92 * suave(0.44, 0.58, claro);            // bosquetes y claros bien marcados (no un reparto uniforme)
-  d = Math.min(1, d * (1 + humedo * 0.4));
-  const pino = bioma === 'taiga' || bioma === 'alpino' || bioma === 'brezal' || (bioma === 'mixto' && claro > 0.5) || T < 5;
-  return { d, pino };
+// El bosque en un punto del mundo (xm, ym en metros): cuánto de espeso (d, 0–1), qué especie, de qué tamaño (tam,
+// 1 = adulto normal) y si es linde (0 dentro del bosque, 1 en campo abierto).
+//   - Espesor según el bioma, la lluvia (más ralo donde llueve poco), la pendiente (nada en los cortados) y lo hondo
+//     del sitio (más en el fondo de los valles y junto al agua: «humedo», 0–1).
+//   - Masas de bosque y claros de cientos de metros, con lindes graduales (unos 60–100 m en los que se aclara y los
+//     árboles son más bajos), y fuera del bosque cerrado, árboles en corros, no sueltos al azar.
+//   - Especies: 2 o 3 por bioma, en rodales (cada rodal, de unos 120 m, tiene la suya, y en sus bordes se mezclan);
+//     las del documento de sistemas: abeto y abedul al norte, roble, haya y fresno en lo templado, pino y encina al sur.
+//   - Límite del bosque en la montaña: con el frío se aclara, los árboles se quedan bajos y solo quedan coníferas.
+// u: un número al azar (0–1) del árbol, para mezclar las especies en el borde de los rodales.
+const BASE_BOSQUE = { taiga: 0.85, caducifolio: 0.9, mixto: 0.75, encinar: 0.6, brezal: 0.35, pradera: 0.35, matorral: 0.3, turbera: 0.25, alpino: 0.3, nieve: 0 };
+const ABIERTO = { brezal: 1, pradera: 1, matorral: 1, turbera: 1, alpino: 1 };   // campo abierto: árboles solo en corros y bosquetes
+export const MEZCLA_BOSQUE = {
+  taiga: [['abeto', 0.6], ['pino', 0.25], ['abedul', 0.15]],
+  mixto: [['haya', 0.4], ['abeto', 0.35], ['abedul', 0.25]],
+  caducifolio: [['roble', 0.45], ['haya', 0.35], ['fresno', 0.2]],
+  encinar: [['encina', 0.65], ['pino', 0.25], ['roble', 0.1]],
+  brezal: [['abedul', 0.55], ['pino', 0.45]],
+  pradera: [['roble', 0.6], ['fresno', 0.4]],
+  matorral: [['encina', 0.7], ['pino', 0.3]],
+  turbera: [['abedul', 0.7], ['pino', 0.3]],
+  alpino: [['abeto', 0.6], ['pino', 0.4]],
+};
+const CONIFERA = { abeto: 1, pino: 1 };
+const RODAL = 120;
+export function bosqueEn(st, pendiente, xm, ym, { humedo = 0, semilla = 0, u = 0.5 } = {}) {
+  const nada = { d: 0, especie: null, tam: 1, linde: 1 };
+  const base = st && BASE_BOSQUE[st.bioma];
+  if (!base) return nada;
+  const frio = suave(0.8, 4, st.T);                                    // límite del bosque
+  if (frio <= 0) return nada;
+  const lluvia = st.P ?? 0.5, seco = 0.45 + 0.55 * suave(0.18, 0.65, lluvia);
+  const pend = 1 - suave(0.55, 0.95, pendiente);
+  // masas y claros (ruido grande) con lindes anchas; fuera de la masa, corros (ruido de unos 30 m)
+  const masa = fbm(xm / 380, ym / 380, 31, 3) * 0.75 + fbm(xm / 150, ym / 150, 33, 2) * 0.25;
+  const dentro = suave(0.35, 0.65, masa);
+  const corro = suave(0.55, 0.72, fbm(xm / 30, ym / 30, 37, 2));
+  const grupo = ABIERTO[st.bioma] ? corro * (0.3 + 0.7 * dentro) : dentro + (1 - dentro) * corro * 0.7;
+  const d = Math.min(1, base * frio * seco * pend * (0.04 + 0.96 * grupo) * (1 + humedo * 0.4));
+  // tamaño: más bajos en la linde y junto al límite del bosque
+  const tam = (0.72 + 0.28 * dentro) * (0.45 + 0.55 * frio);
+  // especie: la del rodal más cercano (centros al azar en celdas de RODAL m; el azar u desplaza un poco la distancia
+  // para que en los bordes se mezclen)
+  const mezcla = MEZCLA_BOSQUE[st.bioma];
+  let mejor = Infinity, cual = mezcla[0][0];
+  const ci = Math.floor(xm / RODAL), cj = Math.floor(ym / RODAL);
+  for (let j = cj - 1; j <= cj + 1; j++) for (let i = ci - 1; i <= ci + 1; i++) {
+    const r = azarCelda(i, j, 21, semilla);
+    const cx = (i + r()) * RODAL, cy = (j + r()) * RODAL;
+    const dist = Math.hypot(xm - cx, ym - cy) + (r() * 2 - 1) * (u - 0.5) * 60;
+    if (dist < mejor) {
+      mejor = dist;
+      let q = r(); cual = mezcla[mezcla.length - 1][0];
+      for (const [e, w] of mezcla) { if (q < w) { cual = e; break; } q -= w; }
+    }
+  }
+  // cerca del límite del bosque solo aguantan las coníferas
+  if (frio < 0.6 && !CONIFERA[cual]) cual = mezcla.find(([e]) => CONIFERA[e])?.[0] ?? (u < 0.6 ? 'abeto' : 'pino');
+  return { d, especie: cual, tam, linde: 1 - dentro };
 }
 
 // El azar de una celda del mundo (i, j enteros) para una capa de cosas (árboles, hierba…) y una semilla: un generador
