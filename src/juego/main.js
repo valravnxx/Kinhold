@@ -15,6 +15,8 @@ import { vigilar, ofrecerGente } from '../mundo/rendimiento.js';
 import { conectarEnLinea } from './en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
+import { crearRecoleccion } from './recoleccion.js';
+import { nombreDe } from '../logica/recoleccion.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -112,6 +114,8 @@ const decorado = crearDecorado({ semilla: 7, llano: 60, lejos: 230, arboles: 220
   sueltos: 10, sueltosDesde: 22, calvas: 14, claro: (x, z) => Math.hypot(x, z - 4) > 1.5 }); // sin nada en el sitio de salida
 escena.add(decorado.raiz);
 const obstaculos = decorado.obstaculos; // {x,z,r}
+// lo que se recoge del suelo y de las plantas (N0): ramas, piedra, sílex y fibra (src/juego/recoleccion.js)
+const recoleccion = crearRecoleccion({ raiz: escena, altura: decorado.altura, obstaculos, almacen });
 
 // ---------------- Personaje y cámara ----------------
 // personaje del taller propio: la versión publicada vive en jugar/construccion/, los modelos en recursos/personajes/taller-v11/
@@ -205,7 +209,9 @@ function despejarDecorado() {
   }
   for (const d of mundo.decoracion) if (d.y < 0.3) circ.push([d.x, d.z, 0.8]);
   if (mundo.mojon) circ.push([mundo.mojon.x, mundo.mojon.z, 0.9]);
-  estado.plantasOcultas = decorado.despejar((x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r));
+  const ocupado = (x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r);
+  estado.plantasOcultas = decorado.despejar(ocupado);
+  recoleccion.despejar(ocupado); // lo que queda debajo de lo construido no se ve ni se recoge
 }
 let chimeneasSucias = true, chimeneas = []; // chimeneas con fuego (se buscan de nuevo al rehacer piezas)
 const altosCanon = new WeakMap(); // chimenea → hasta dónde sube su cañón (se calcula al dibujarla; lo usa el choque)
@@ -1028,6 +1034,11 @@ function usar() {
   // al pie de un andamio, con la obra más arriba que tú, Usar sube al andamio (desde allí se le lleva el material)
   const subirAndamio = it && PIEZAS[it.p.tipo].andamio && it.p.k === pj.k && ob && ob.p.k > pj.k;
   if (ob && !subirAndamio) { usarObra(ob); return; }
+  if (!it && pj.k === 0) {
+    // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
+    const rc = recoleccion.cercano(pj.x, pj.z);
+    if (rc) { recoger(rc); return; }
+  }
   if (!it) {
     // junto a un árbol, se tala (por ahora solo el gesto: la madera llega con la recolección)
     const a = arbolCercano();
@@ -1073,6 +1084,15 @@ function usar() {
     pj.x = m.x; pj.z = m.z; pj.k = p.k;
     mostrarAviso(`${t('bajas')} ${pj.k}`);
   }
+}
+
+function recoger(punto) {
+  const r = recoleccion.recoger(inventarios, registroAcciones, AUTOR_LOCAL, punto.id, pj.x, pj.z);
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  if (almacen) guardarInventarios(almacen, inventarios);
+  panelInventario.pintar(); // lo recogido ya sale en el panel de inventario
+  pj.rot = Math.atan2(punto.x - pj.x, punto.z - pj.z);
+  mostrarAviso(tr('Recoges: {n} × {c}.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) }));
 }
 
 // Andamio (GDD, «Obras»): Usar al pie sube por su escalerilla a la plataforma, que está a la altura del suelo de la
@@ -1194,7 +1214,9 @@ function alturaSuelo() {
       if (k > 0 && trampillaCerrada(c, i, j, k - 1)) { pj.k = k; return k * ALTURA + P.superficieSuelo; } // la trampilla cerrada se pisa
       if (k > 0 && andamioEn(c, i, j, k - 1)) { pj.k = k; return k * ALTURA + P.superficieSuelo; } // plataforma del andamio
     }
-    if (k === 0) { pj.k = 0; return 0; }
+    // sin suelo construido debajo, el terreno: llano en la zona de construir, y las lomas de más allá (donde está la
+    // ladera con la piedra suelta y el sílex), que antes se cruzaban por dentro
+    if (k === 0) { pj.k = 0; return decorado.altura(pj.x, pj.z); }
   }
   return 0;
 }
@@ -1289,7 +1311,8 @@ function paso() {
   }
   for (const obj of raizDeco.children) obj.visible = !bajoTecho || plantaDeco(obj.userData.deco) <= pj.k;
   const it = interactivoCercano();
-  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana());
+  recoleccion.paso(); // vuelve a salir lo que toca
+  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana() || (pj.k === 0 && !!recoleccion.cercano(pj.x, pj.z)));
 
   moverGente(dt);
   moverFuegos();
@@ -1489,6 +1512,7 @@ window.__kinhold = {
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; reconstruir(); panelInventario.pintar(); },
   get registroAcciones() { return registroAcciones; },
   accionInventario, get inventario() { return inventario(); }, panelInventario,
+  recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   get enLinea() { return enLinea; },
   reconstruir() { reconstruir(); },
   render() { renderer.render(escena, camara); },
