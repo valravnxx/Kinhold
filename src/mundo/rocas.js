@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-function azar(semilla) { let s = semilla >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+import { azarLineal as azar } from '../logica/azar.js';
 
 let tex = null;
 export function texturaRoca() {

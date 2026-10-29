@@ -10,6 +10,7 @@
 //   - los ríos tallan su cauce y el valle a su alrededor (más cerrado en la montaña).
 // Todo depende solo de la posición y de la semilla del mundo: todos ven el mismo paisaje.
 import { fbm, clasificarBioma, riosDelMapa, anchoRio } from './mapa.js';
+import { hash2, ruidoD as ruidoDerivadas, azarCelda } from './azar.js';
 
 const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -33,14 +34,7 @@ export const PENDIENTE_ANDAR = 1;
 
 // ruido de valor (−1 a 1) con sus derivadas, en _d = [valor, d/dx, d/dy]
 const _d = new Float64Array(3);
-function hash2(x, y, s) { let h = (x * 374761393 + y * 668265263 + s * 1274126177) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296; }
-function ruidoD(x, y, s) {
-  const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi;
-  const ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy), dux = 6 * fx * (1 - fx), duy = 6 * fy * (1 - fy);
-  const a = hash2(xi, yi, s), b = hash2(xi + 1, yi, s), c = hash2(xi, yi + 1, s), d = hash2(xi + 1, yi + 1, s), k = a - b - c + d;
-  _d[0] = (a + (b - a) * ux + (c - a) * uy + k * ux * uy) * 2 - 1;
-  _d[1] = dux * ((b - a) + k * uy) * 2; _d[2] = duy * ((c - a) + k * ux) * 2;
-}
+const ruidoD = (x, y, s) => ruidoDerivadas(x, y, s, _d);
 
 // opciones.afloramientos: qué parte del mundo es afloramiento de roca, donde salen cortados (0,66 de umbral del ruido:
 // un 8 % del mundo); para las pruebas se puede bajar a 0 (todo afloramiento, como era antes de separar laderas y cortados)
@@ -308,11 +302,5 @@ export function bosqueEn(st, pendiente, xm, ym, { humedo = 0, semilla = 0, u = 0
   return { d, especie: cual, tam, linde: 1 - dentro };
 }
 
-// El azar de una celda del mundo (i, j enteros) para una capa de cosas (árboles, hierba…) y una semilla: un generador
-// que da siempre la misma serie para la misma celda. Así lo que se coloca depende solo de su sitio en el mundo.
-export function azarCelda(i, j, capa, semilla) {
-  let h = Math.imul(i, 374761393) ^ Math.imul(j, 668265263) ^ Math.imul(capa, 1274126177) ^ Math.imul(semilla | 0, 2246822519);
-  h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16;
-  let s = h >>> 0;
-  return () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296);
-}
+// azarCelda (el azar de una celda del mundo para una capa de cosas) está en src/logica/azar.js
+export { azarCelda };

@@ -4,13 +4,15 @@
 // lejos (4 × 4 km), que se hunde bajo el trozo de cerca para no asomar. Se anda tocando el suelo; si te alejas, el
 // trozo de cerca se rehace donde estás.
 import * as THREE from 'three';
-import { modelosPlantas, azar } from '../mundo/decorado.js';
+import { modelosPlantas } from '../mundo/decorado.js';
+import { azarLineal as azar } from '../logica/azar.js';
 import { modelosEspecies, ESPECIES } from '../mundo/especies.js';
 import { azarCelda } from '../logica/paisaje.js';
 import { materialTex } from '../mundo/estilos.js';
 import { bosqueEn, PENDIENTE_ANDAR } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
 import { crearJugador } from '../juego/personaje.js';
+import { personajeElegido, recursosTaller } from '../mundo/eleccion.js';
 import { colorDelSuelo, lin, poblarArboles, ROCAS_COLOR, aguaLejos, aguaCerca } from './cerca.js';
 import { atributosAgua, distanciaOrilla } from './agua.js';
 import { materialSuelo } from './suelo.js';
@@ -26,7 +28,6 @@ const MAX = movil ? { hierba: 9000, flores: 900, matas: 400, rocas: 250, arboles
 const TAMANO = { abeto: [2.1, 10.5], pino: [2.3, 9.5], abedul: [1.6, 9], roble: [3.2, 7.5], haya: [2.3, 10.8], fresno: [2.6, 9.2], encina: [2.6, 5.5] };
 const totalArbCerca = (L) => ESPECIES.reduce((n, e) => n + L.arboles[e].length, 0);
 const TIERRA = [0.5, 0.42, 0.31], HOJARASCA = [0.4, 0.36, 0.24];
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v7/';
 const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
 export function crearVistaJuego(est) {
@@ -294,7 +295,9 @@ export function crearVistaJuego(est) {
     vj.activo = true; ayuda().hidden = false;
     construir(px, pz);
     est.amb.sol.castShadow = true;
-    if (!vj.jugador) { vj.jugador = crearJugador(RECURSOS_MH); vj.jugador.raiz.traverse(m => { if (m.isMesh) m.castShadow = true; }); }
+    if (!vj.jugador) {   // el personaje elegido en el visor, con el taller de ahora (como la construcción y el duelo)
+      const el = personajeElegido();
+      vj.jugador = el ? crearJugador(recursosTaller(), el.sexo, el.capas, el.aspecto) : crearJugador(recursosTaller()); vj.jugador.raiz.traverse(m => { if (m.isMesh) m.castShadow = true; }); }
     est.escena.add(vj.jugador.raiz);
     vj.pos = new THREE.Vector3(px, vj.altura(px, pz), pz); vj.destino = null;
     vj.jugador.raiz.position.copy(vj.pos); vj.jugador.raiz.rotation.y = Math.PI / 2 - dir;

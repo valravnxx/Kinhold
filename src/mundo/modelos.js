@@ -8,8 +8,9 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { MODULO, ALTURA } from '../logica/piezas.js';
 import { HOGAR, ALTO_ADARVE } from '../logica/construccion.js';
-import { Lote, materialTex, material as materialEstilo } from '../mundo/estilos.js';
-import { cil } from '../mundo/decorado.js';
+import { Lote, materialTex, material as materialEstilo } from './estilos.js';
+import { cil } from './decorado.js';
+import { pseudo as ruido } from '../logica/azar.js';
 
 export const P = {
   radioTronco: 0.14,      // grosor de los troncos de muro (de canto)
@@ -44,7 +45,6 @@ export function mat(color, opciones = {}) {
 }
 
 // pseudoaleatorio estable
-function ruido(n) { const s = Math.sin(n * 12.9898) * 43758.5453; return s - Math.floor(s); }
 
 // ---------- Estilo v5: piezas hechas con un Lote (src/mundo/estilos.js) ----------
 const hayDocumento = typeof document !== 'undefined'; // las pruebas de lógica cargan los modelos en node, sin texturas

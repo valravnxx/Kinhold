@@ -3,10 +3,10 @@
 // parte empiece limpia (sin dos escenas ni dos WebGL a la vez). three.js va una sola vez en el archivo: las
 // partes se cargan con import() y solo se ejecuta la elegida.
 // El personaje que se elige en «Personaje» (cuerpo y ropa) es el que sale en la construcción y en el duelo
-// (src/demo/eleccion.js). Junto a «Menú», los fotogramas por segundo y el detalle del rendimiento.
+// (src/mundo/eleccion.js). Junto a «Menú», los fotogramas por segundo y el detalle del rendimiento.
 import PLANTILLAS from 'plantillas-demo';
 import { tr, traducirPagina, botonesIdioma, idioma } from '../idioma.js';
-import { personajeElegido } from './eleccion.js';
+import { personajeElegido } from '../mundo/eleccion.js';
 import { direccionServidor, CLAVE_SERVIDOR } from '../mundo/direccion_servidor.js';
 import { VERSION_DEMO, REGISTRO_DEMO } from './registro.js';
 import { CAPAS } from '../personaje/textos.js';

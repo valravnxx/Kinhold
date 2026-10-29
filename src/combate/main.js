@@ -11,7 +11,7 @@ import * as sonido from './sonido.js';
 import { RegistroAcciones, ejecutarCombate, avanzarProyectil } from '../logica/acciones.js';
 import { REGISTRO_COMBATE, VERSION_COMBATE } from './registro.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
-import { personajeElegido, capasDuelo } from '../demo/eleccion.js';
+import { personajeElegido, capasDuelo, recursosTaller } from '../mundo/eleccion.js';
 import { normalizarAspecto } from '../logica/aspecto.js';
 import { CAPAS_ARMADURA } from './taller.js';
 import { tipoToque, arrastrarLibre, seguirApuntado, GIRO_POR_PX } from './tactil.js';
@@ -25,8 +25,8 @@ botonesIdioma(document.getElementById('menu'));
 const $ = (id) => document.getElementById(id);
 const esTactil = matchMedia('(pointer: coarse)').matches;
 const CLAVE = 'kinhold_combate_v2';
-// personaje del taller propio: la versión publicada vive en jugar/combate/, los modelos en recursos/personajes/taller-v12/
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v12/';
+// personaje del taller propio (la carpeta, en src/mundo/eleccion.js)
+const RECURSOS_MH = recursosTaller();
 // «Duelo en línea» (?enlinea=1): el rival es otro jugador y los golpes los resuelve el servidor (src/combate/en_linea.js)
 const EN_LINEA = new URLSearchParams(location.search).get('enlinea') === '1';
 

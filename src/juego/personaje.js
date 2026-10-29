@@ -3,7 +3,7 @@
 // están desde la taller-v12).
 // Mientras se carga (o si no se puede cargar, p. ej. abriendo el html suelto sin servidor) se ve el muñeco inicial.
 import * as THREE from 'three';
-import { mat, cajaR, deMano } from './modelos.js';
+import { mat, cajaR, deMano } from '../mundo/modelos.js';
 import { Lote } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';

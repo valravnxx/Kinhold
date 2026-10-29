@@ -7,6 +7,7 @@
 //      y abre un contraataque que solo se para con otra parada perfecta.
 //   3. Golpe maestro: atacar por el mismo lado del golpe que viene, al principio de su preparación.
 //      Desvía su golpe y el tuyo entra sin que pueda pararse.
+import { azar } from '../logica/azar.js';
 
 export const LINEAS = ['alto', 'izquierda', 'derecha', 'bajo', 'estocada'];
 export const NOMBRE_LINEA = { alto: 'Alto', izquierda: 'Izquierda', derecha: 'Derecha', bajo: 'Bajo', estocada: 'Estocada' };
@@ -116,16 +117,9 @@ export const T = {
   temblorElevacion: 0.15,
 };
 
-// ---------- Azar con semilla ----------
-export function azar(semilla = 1) {
-  let a = semilla >>> 0;
-  return () => {
-    a |= 0; a = a + 0x6D2B79F5 | 0;
-    let t = Math.imul(a ^ a >>> 15, 1 | a);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
+// ---------- Azar con semilla (vive en src/logica/azar.js; se sigue ofreciendo desde aquí) ----------
+export { azar };
+
 function elegir(pares, r) {
   let x = r(), acc = 0;
   for (const [v, p] of pares) { acc += p; if (x <= acc) return v; }

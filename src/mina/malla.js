@@ -8,22 +8,10 @@
 // - Cada trozo hace su malla solo con sus aristas; los vértices del borde salen iguales en los dos trozos vecinos
 //   porque se calculan del mismo campo, así que no quedan rendijas.
 import { TAM, LADO } from '../logica/excavacion.js';
+import { ruido3 } from '../logica/azar.js';
 
-// ruido de valor 3D suave (semilla fija): mismo resultado en cualquier aparato
-function hash(x, y, z, s) {
-  let h = (x * 374761393 + y * 668265263 + z * 2147483647 + s * 1274126177) | 0;
-  h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16;
-  return (h >>> 0) / 4294967296;
-}
-const suave = (t) => t * t * (3 - 2 * t);
-export function ruido3(x, y, z, semilla = 7) {
-  const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
-  const fx = suave(x - xi), fy = suave(y - yi), fz = suave(z - zi);
-  let r = 0;
-  for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) for (let dz = 0; dz < 2; dz++)
-    r += hash(xi + dx, yi + dy, zi + dz, semilla) * (dx ? fx : 1 - fx) * (dy ? fy : 1 - fy) * (dz ? fz : 1 - fz);
-  return r;
-}
+// ruido de valor 3D suave (semilla fija; vive en src/logica/azar.js): mismo resultado en cualquier aparato
+export { ruido3 };
 export const RUGOSIDAD = 0.11;
 // rugosidad de la roca: tres escalas (bultos de más de un metro, de unos 40 cm y grano de unos 15 cm)
 export const rugosidad = (x, y, z) => (ruido3(x * 0.7, y * 0.7, z * 0.7, 3) - 0.5) * 2 * RUGOSIDAD * 1.2 + (ruido3(x * 2.3, y * 2.3, z * 2.3, 11) - 0.5) * 2 * RUGOSIDAD + (ruido3(x * 6.7, y * 6.7, z * 6.7, 23) - 0.5) * RUGOSIDAD * 0.7;

@@ -4,8 +4,8 @@
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { PALETA, Lote, material, materialTex } from './estilos.js';
+import { azarLineal as azar } from '../logica/azar.js';
 
-export function azar(semilla) { let s = semilla >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
 export const cil = (r1, r2, h, lados, abierto = false) => new THREE.CylinderGeometry(r1, r2, h, lados, 1, abierto);
 
 // Copa de árbol: esfera con bultos (racimos), mismo desplazamiento en vértices repetidos para no abrir grietas

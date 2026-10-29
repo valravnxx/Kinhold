@@ -1,10 +1,10 @@
-// Muestrario de piezas: pone en fila los modelos de la construcción (src/juego/modelos.js) con la luz y el suelo del
+// Muestrario de piezas: pone en fila los modelos de la construcción (src/mundo/modelos.js) con la luz y el suelo del
 // juego, para sacar fotos de cerca de cada pieza al pasarla al estilo elegido. Se empaqueta con esbuild y se abre con
 // ?piezas=muro_tronco,muro_zarzo… (o ?deco=mesa,banco…). Expone window.__muestrario.foto(i, vista, ancho, alto).
 import * as THREE from 'three';
 import { prepararRenderer, crearAmbiente } from '../../src/mundo/ambiente.js';
 import { suelo } from '../../src/mundo/decorado.js';
-import { modeloPieza, decoracion, mojon } from '../../src/juego/modelos.js';
+import { modeloPieza, decoracion, mojon } from '../../src/mundo/modelos.js';
 import { modeloArma, modeloEscudo, modeloFlecha, modeloPoste, modeloDiana } from '../../src/combate/modelos.js';
 import { modeloHacha } from '../../src/juego/personaje.js';
 // ?armas=espada_larga,espada_escudo,palo,arco,escudo,flecha,poste,diana,hacha: lo que se lleva en la mano, de pie sobre el suelo
