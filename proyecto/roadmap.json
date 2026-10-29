@@ -383,9 +383,10 @@
     },
     {
      "nombre": "Quitar de la web las versiones antiguas cuando ya estén en sus releases: node herramientas/archivar_versiones.mjs quitar, y medir el tamaño de la web después",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T17:02:34+00:00",
-     "rama": "trabajo/20261029-1702-releases"
+     "rama": "trabajo/20261029-1702-releases",
+     "fin": "2026-10-29T18:03:50+00:00"
     },
     {
      "nombre": "Orden en el código antes de unir las partes, sin cambiar nada de lo que se ve: un solo módulo de azar y ruido, la biblioteca de modelos (src/juego/modelos.js) y la elección de personaje (src/demo/eleccion.js) a la escena común, un solo cliente en línea para la construcción y el duelo, y el visor del mapa con los personajes del taller de ahora",
@@ -789,9 +790,9 @@
     },
     {
      "nombre": "Taller: pasar también las 39 animaciones extra (trabajos, arco, espada, bloqueo, vendarse, pasos) al esqueleto de MakeHuman",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T16:53:32+00:00",
-     "rama": "trabajo/20261029-1653"
+     "fin": "2026-10-29T18:04:30+00:00"
     },
     {
      "nombre": "Personalización en el juego de toda la ropa y la armadura (pedido de valravnx): color o tinte de cada prenda, blasón o dibujo en la sobreveste, y qué capas lleva. Para eso las texturas de la ropa pasan a ir en gris con el color aparte, que se cambia sin rehacer el modelo",
@@ -1331,238 +1332,238 @@
     {
      "v": "v1",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v1.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v1.html",
      "capturas": "capturas/demo-v1",
      "notas": "Primera demo única: menú con Construir, Duelo y Personaje; el personaje que eliges (cuerpo y ropa) es el que construye y el que lucha"
     },
     {
      "v": "v2",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v2.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v2.html",
      "capturas": "capturas/demo-v2",
      "notas": "Los fps de tu aparato junto a «Menú» y, al pulsarlos, el detalle (tiempo de cada fotograma, triángulos, memoria y personajes en escena); en «Construir», personajes de prueba para medir con gente"
     },
     {
      "v": "v3",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v3.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v3.html",
      "capturas": "capturas/demo-v3",
      "notas": "En el móvil, el aviso de «Construir» ya no tapa los botones del menú de arriba (tampoco en inglés y en ruso, ni con «Menú» y los fps). Lleva la construcción v11."
     },
     {
      "v": "v4",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v4.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v4.html",
      "capturas": "capturas/demo-v4",
      "notas": "Correr más natural en las tres partes: la carrera suavizada (menos zancada, braceo, bote e inclinación) y a su velocidad de verdad, sin resbalar ni cámara lenta. Es la construcción v11, el combate v8 y el personaje v12."
     },
     {
      "v": "v5",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v5.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v5.html",
      "capturas": "capturas/demo-v5",
      "notas": "Brazos naturales al correr en las tres partes (personaje v13)."
     },
     {
      "v": "v6",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v6.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v6.html",
      "capturas": "capturas/demo-v6",
      "notas": "El cinturón de la cota ceñido, en las tres partes (personaje v14, taller-v7)."
     },
     {
      "v": "v7",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v7.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v7.html",
      "capturas": "capturas/demo-v7",
      "notas": "Sin pantalla en blanco en el móvil (fuga de memoria gráfica arreglada), aviso si se pierde el dibujo 3D y muros con el estilo elegido."
     },
     {
      "v": "v8",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v8.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v8.html",
      "capturas": "capturas/demo-v8",
      "notas": "Barandillas y portillo en «Construir» (construcción v13)."
     },
     {
      "v": "v9",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v9.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v9.html",
      "capturas": "capturas/demo-v9",
      "notas": "Escena con el estilo v5 en «Construir» y «Duelo» (construcción v14, combate v10)"
     },
     {
      "v": "v10",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v10.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v10.html",
      "capturas": "capturas/demo-v10",
      "notas": "Cimientos, suelos y escaleras con el estilo de la prueba v5, como en la construcción v15."
     },
     {
      "v": "v11",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v11.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v11.html",
      "capturas": "capturas/demo-v11",
      "notas": "Construcción v16: tejados de paja y de tablillas, y lo que cierra bajo el tejado, con el estilo v5"
     },
     {
      "v": "v12",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v12.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v12.html",
      "capturas": "capturas/demo-v12",
      "notas": "Construcción v17: puertas, cercas, portillo, empalizada y mojón con el estilo v5"
     },
     {
      "v": "v13",
      "fecha": "2026-10-26",
-     "archivo": "jugar/demo/v13.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v13.html",
      "capturas": "capturas/demo-v13",
      "notas": "Construcción v18: los muebles con el estilo v5"
     },
     {
      "v": "v14",
      "fecha": "2026-10-27",
-     "archivo": "jugar/demo/v14.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v14.html",
      "capturas": "capturas/demo-v14",
      "notas": "Construcción v19 y combate v11: pieza fantasma con su textura, hacha al talar y armas, escudo, poste y diana con el estilo v5"
     },
     {
      "v": "v15",
      "fecha": "2026-10-27",
-     "archivo": "jugar/demo/v15.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v15.html",
      "capturas": "capturas/demo-v15",
      "notas": "Construcción v20: enlosado de losas desiguales en el cimiento de piedra y mojón con piedras redondeadas, como la prueba de estilo v5"
     },
     {
      "v": "v16",
      "fecha": "2026-10-27",
-     "archivo": "jugar/demo/v16.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v16.html",
      "capturas": "capturas/demo-v16",
      "notas": "En «Construir», se construye por obras: marco, material y tiempo (es la construcción v21)."
     },
     {
      "v": "v17",
      "fecha": "2026-10-27",
-     "archivo": "jugar/demo/v17.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v17.html",
      "capturas": "capturas/demo-v17",
      "notas": "En «Construir», la decoración va al suelo de tu planta y los suelos de troncos tapan del todo (es la construcción v22)."
     },
     {
      "v": "v18",
      "fecha": "2026-10-27",
-     "archivo": "jugar/demo/v18.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v18.html",
      "capturas": "capturas/demo-v18",
      "notas": "En «Construir», las obras en alto piden subir el material: lo ligero por la escalera y los troncos rodándolos por dos varas con una cuerda"
     },
     {
      "v": "v19",
      "fecha": "2026-10-27",
-     "archivo": "jugar/demo/v19.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v19.html",
      "capturas": "capturas/demo-v19",
      "notas": "Construcción v24 y combate v13: los muebles del piso de arriba ya no se ven desde abajo con el techo puesto, y WASD funciona con la distribución de teclado rusa y sin teclas pegadas"
     },
     {
      "v": "v20",
      "fecha": "2026-10-27",
-     "archivo": "jugar/demo/v20.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v20.html",
      "capturas": "capturas/demo-v20",
      "notas": "Arreglo: varios suelos o cimientos de troncos seguidos se juntan de una, sin rendija ni testas en cada junta. Es la construcción v25."
     },
     {
      "v": "v21",
      "fecha": "2026-10-27",
-     "archivo": "jugar/demo/v21.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v21.html",
      "capturas": "capturas/demo-v21",
      "notas": "Jugar en línea: construir en el mundo del servidor y ver a los demás con su personaje del taller; la dirección del servidor, en Opciones"
     },
     {
      "v": "v22",
      "fecha": "2026-10-27",
-     "archivo": "jugar/demo/v22.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v22.html",
      "capturas": "capturas/demo-v22",
      "notas": "Los fotogramas ya no caen mientras alguien construye una obra (también en línea); es la construcción v26"
     },
     {
      "v": "v23",
      "fecha": "2026-10-27",
-     "archivo": "jugar/demo/v23.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v23.html",
      "capturas": "capturas/demo-v23",
      "notas": "Construcción v27: andamio pegado al muro y polea en una viga"
     },
     {
      "v": "v24",
      "fecha": "2026-10-28",
-     "archivo": "jugar/demo/v24.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v24.html",
      "capturas": "capturas/demo-v24",
      "notas": "Duelo en línea: dos jugadores pelean entre sí en la liza; el servidor resuelve los golpes, las paradas y las heridas, y los dos ven lo mismo. Es el combate v14."
     },
     {
      "v": "v25",
      "fecha": "2026-10-28",
-     "archivo": "jugar/demo/v25.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v25.html",
      "capturas": "capturas/demo-v25",
      "notas": "Construcción v28: polipasto con torno en una viga"
     },
     {
      "v": "v26",
      "fecha": "2026-10-28",
-     "archivo": "jugar/demo/v26.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v26.html",
      "capturas": "capturas/demo-v26",
      "notas": "En línea, si se corta la conexión, la página vuelve a conectar sola y sigues con el mismo personaje (y en el duelo, con el mismo luchador y sus heridas). El servidor quita enseguida al que se va (adiós al «uno más» al salir al menú), pone límites de mensajes por conexión y rechaza los datos mal formados. Es el combate v15."
     },
     {
      "v": "v27",
      "fecha": "2026-10-28",
-     "archivo": "jugar/demo/v27.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v27.html",
      "capturas": "capturas/demo-v27",
      "notas": "En «Construir», contraventana, trampilla y muro de tablas con ventana (construcción v29)."
     },
     {
      "v": "v28",
      "fecha": "2026-10-28",
-     "archivo": "jugar/demo/v28.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v28.html",
      "capturas": "capturas/demo-v28",
      "notas": "En «Construir», tejado de teja (construcción v30)."
     },
     {
      "v": "v29",
      "fecha": "2026-10-28",
-     "archivo": "jugar/demo/v29.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v29.html",
      "capturas": "capturas/demo-v29",
      "notas": "En línea: al pasar del duelo a construir ya os veis (el servidor os sacaba de la liza); y si el servidor es de una versión anterior, el juego lo avisa. Hace falta actualizar el servidor."
     },
     {
      "v": "v30",
      "fecha": "2026-10-28",
-     "archivo": "jugar/demo/v30.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v30.html",
      "capturas": "capturas/demo-v30",
      "notas": "Los demás jugadores en línea te ven con tu aspecto: forma, colores de piel, ojos y pelo, peinado y barba, en la construcción y en el duelo. El servidor lo comprueba con la misma lógica que el visor de personaje. Un servidor de antes avisa de que hay que actualizarlo."
     },
     {
      "v": "v31",
      "fecha": "2026-10-28",
-     "archivo": "jugar/demo/v31.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v31.html",
      "capturas": "capturas/demo-v31",
      "notas": "En «Construir», remate de tejado (esquina) de paja, de tablillas y de teja: limatesa en la esquina de fuera y limahoya en el rincón de un tejado en L, según los tramos de al lado."
     },
     {
      "v": "v32",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v32.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v32.html",
      "capturas": "capturas/demo-v32",
      "notas": "En línea, sin tirones: al abrir o cerrar puertas solo se rehace esa puerta, y lo construido se rehace unas cinco veces más deprisa al terminar una obra. Y en «Duelo», la curación de heridas."
     },
     {
      "v": "v33",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v33.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v33.html",
      "capturas": "capturas/demo-v33",
      "notas": "En «Construir», chimenea u hogar interior sobre cimiento de piedra, con fuego, luz y humo por encima del tejado (Usar la apaga y la enciende)."
     },
     {
      "v": "v34",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v34.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v34.html",
      "capturas": "capturas/demo-v34",
      "notas": "En «Construir», el panel de inventario (botón «Inventario» o tecla I) con un arcón de pruebas para coger equipo. Es la construcción v33."
     },
@@ -1600,6 +1601,13 @@
      "archivo": "jugar/demo/v39.html",
      "capturas": "capturas/demo-v39",
      "notas": "Pies descalzos: en «Construir», sin calzado vas descalzo; en «Personaje», botón «Descalzo» y vista «Pies»."
+    },
+    {
+     "v": "v40",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v40.html",
+     "capturas": "capturas/personaje-v21",
+     "notas": "En «Personaje», «Más animaciones»: las 39 animaciones extra en el personaje del taller"
     }
    ]
   },
@@ -1611,217 +1619,217 @@
     {
      "v": "v3",
      "fecha": "2026-10-24",
-     "archivo": "jugar/construccion/v3.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v3.html",
      "capturas": "capturas/construccion-v3",
      "notas": "Muros exactos a 2,5 m por hiladas."
     },
     {
      "v": "v4",
      "fecha": "2026-10-24",
-     "archivo": "jugar/construccion/v4.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v4.html",
      "capturas": "capturas/construccion-v4",
      "notas": "Madera más resistente: casa de 2 plantas con tejado de troncos; vano de una casilla en suelos y tejados."
     },
     {
      "v": "v5",
      "fecha": "2026-10-25",
-     "archivo": "jugar/construccion/v5.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v5.html",
      "capturas": "capturas/construccion-v5",
      "notas": "Juego en inglés: botón ES/EN arriba a la derecha (recuerda el idioma elegido, también el de la web) y todos los textos traducidos; la partida no se pierde al cambiar."
     },
     {
      "v": "v6",
      "fecha": "2026-10-25",
-     "archivo": "jugar/construccion/v6.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v6.html",
      "capturas": "capturas/construccion-v6",
      "notas": "Escalera de tablas: ocupa una casilla y se sube andando, sin botón; encima deja el hueco abierto."
     },
     {
      "v": "v7",
      "fecha": "2026-10-25",
-     "archivo": "jugar/construccion/v7.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v7.html",
      "capturas": "capturas/construccion-v7",
      "notas": "v7: también en ruso (botón RU arriba; en el móvil, el idioma se elige en un desplegable y los botones de modo se colocan debajo del menú)."
     },
     {
      "v": "v8",
      "fecha": "2026-10-25",
-     "archivo": "jugar/construccion/v8.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v8.html",
      "capturas": "capturas/construccion-v8",
      "notas": "Quitar muebles y piezas con el ratón: lo que eliges con clic se queda elegido hasta confirmar o cancelar, aunque muevas el ratón hasta el botón"
     },
     {
      "v": "v9",
      "fecha": "2026-10-25",
-     "archivo": "jugar/construccion/v9.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v9.html",
      "capturas": "capturas/construccion-v9",
      "notas": "Escena común del estilo elegido: cielo, luz, sombras blandas, suelo con textura, bosque, hierba, flores y rocas"
     },
     {
      "v": "v10",
      "fecha": "2026-10-25",
-     "archivo": "jugar/construccion/v10.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v10.html",
      "capturas": "capturas/construccion-v10",
      "notas": "El jugador es el personaje del taller propio (camisa y calzas de lino): anda, corre y tala con sus animaciones"
     },
     {
      "v": "v11",
      "fecha": "2026-10-26",
-     "archivo": "jugar/construccion/v11.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v11.html",
      "capturas": "capturas/construccion-v11",
      "notas": "En el móvil, el aviso de abajo del menú ya no tapa «Reiniciar» ni otros botones (tampoco en inglés y en ruso): se coloca según lo que mide el menú de arriba y a la izquierda de los botones de modo."
     },
     {
      "v": "v12",
      "fecha": "2026-10-26",
-     "archivo": "jugar/construccion/v12.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v12.html",
      "capturas": "capturas/construccion-v12",
      "notas": "Arreglo de la pantalla en blanco en el móvil: al colocar o quitar piezas ya no se llena la memoria gráfica. Aviso y recarga si se pierde el dibujo 3D. Muros, postes y vigas con el estilo elegido."
     },
     {
      "v": "v13",
      "fecha": "2026-10-26",
-     "archivo": "jugar/construccion/v13.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v13.html",
      "capturas": "capturas/construccion-v13",
      "notas": "Barandillas y portillo: el medio muro hace de barandilla en el borde de un suelo en alto y alrededor del hueco de la escalera (por ahí ya no se cae), y portillo de varas para la cerca, que se abre y se cierra con Usar."
     },
     {
      "v": "v14",
      "fecha": "2026-10-26",
-     "archivo": "jugar/construccion/v14.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v14.html",
      "capturas": "capturas/construccion-v14",
      "notas": "Escena como la prueba de estilo v5: hierba densa con flores también en el centro, matorrales, calvas de tierra pisada, rocas y árboles de copa sueltos; la hierba se esconde bajo lo construido y vuelve al quitarlo"
     },
     {
      "v": "v15",
      "fecha": "2026-10-26",
-     "archivo": "jugar/construccion/v15.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v15.html",
      "capturas": "capturas/construccion-v15",
      "notas": "Cimientos de piedra y de troncos, suelos de troncos y de tablas y escaleras de mano y de tablas con el estilo de la prueba v5: losas sobre mortero con piedras en los costados, troncos con las testas claras, tablas con veta y rastreles, y varas descortezadas."
     },
     {
      "v": "v16",
      "fecha": "2026-10-26",
-     "archivo": "jugar/construccion/v16.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v16.html",
      "capturas": "capturas/construccion-v16",
      "notas": "Tejados de paja (dos hiladas, mechones en el alero y cumbrera redonda) y de tablillas (filas solapadas, tabla de remate y caballete) con el estilo v5; bajo el tejado se cierra con tablas de pie, barro y estacas o encalado y postes"
     },
     {
      "v": "v17",
      "fecha": "2026-10-26",
-     "archivo": "jugar/construccion/v17.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v17.html",
      "capturas": "capturas/construccion-v17",
      "notas": "Puertas de varas y de tablas, cerca, portillo, empalizada y su puerta, y mojón con el estilo v5: tablas con peinazos y bisagras de hierro, varas atadas con cuerda, postes con el corte claro, troncos descortezados con la punta tallada y piedras apiladas"
     },
     {
      "v": "v18",
      "fecha": "2026-10-26",
-     "archivo": "jugar/construccion/v18.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v18.html",
      "capturas": "capturas/construccion-v18",
      "notas": "Los muebles con el estilo elegido (prueba de estilo v5): camas de paja y de madera, mesa de caballetes, banco, taburete, arcón, barril, estantería, antorcha de pie, alfombra de piel y estandarte"
     },
     {
      "v": "v19",
      "fecha": "2026-10-27",
-     "archivo": "jugar/construccion/v19.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v19.html",
      "capturas": "capturas/construccion-v19",
      "notas": "Pieza fantasma y resaltados con la textura de la pieza (velo verde, rojo o naranja) y hacha en la mano al talar, con el estilo v5"
     },
     {
      "v": "v20",
      "fecha": "2026-10-27",
-     "archivo": "jugar/construccion/v20.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v20.html",
      "capturas": "capturas/construccion-v20",
      "notas": "Revisión del estilo v5: el cimiento de piedra lleva un enlosado de losas desiguales y de dos tonos (antes parecía baldosa moderna) y el mojón tiene piedras redondeadas como las rocas de la prueba"
     },
     {
      "v": "v21",
      "fecha": "2026-10-27",
-     "archivo": "jugar/construccion/v21.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v21.html",
      "capturas": "capturas/construccion-v21",
      "notas": "Se construye por obras: colocar pone el marco de la pieza, que se ve tenue dentro de un armazón de varas; Usar (F) junto a la obra le lleva el material y te pone a construir; cada pieza tarda según su peso y, si te ayudan, menos."
     },
     {
      "v": "v22",
      "fecha": "2026-10-27",
-     "archivo": "jugar/construccion/v22.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v22.html",
      "capturas": "capturas/construccion-v22",
      "notas": "Arreglo: la decoración va al suelo de la planta en la que estás, no al piso de arriba. Los cimientos y suelos de troncos ya no dejan ver el suelo por las juntas."
     },
     {
      "v": "v23",
      "fecha": "2026-10-27",
-     "archivo": "jugar/construccion/v23.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v23.html",
      "capturas": "capturas/construccion-v23",
      "notas": "Obras en alto: cada material tiene su clase de peso; lo ligero se sube a mano por la escalera y los troncos se ruedan por dos varas con una cuerda (o entre dos)"
     },
     {
      "v": "v24",
      "fecha": "2026-10-27",
-     "archivo": "jugar/construccion/v24.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v24.html",
      "capturas": "capturas/construccion-v24",
      "notas": "Arreglos: los muebles del piso de arriba ya no se ven desde abajo con el techo puesto, y WASD funciona con la distribución de teclado rusa (las teclas se leen por su posición) y no se quedan pulsadas al cambiar de ventana"
     },
     {
      "v": "v25",
      "fecha": "2026-10-27",
-     "archivo": "jugar/construccion/v25.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v25.html",
      "capturas": "capturas/construccion-v25",
      "notas": "Arreglo: varios suelos o cimientos de troncos seguidos se juntan de una, sin rendija ni testas en cada junta."
     },
     {
      "v": "v26",
      "fecha": "2026-10-27",
-     "archivo": "jugar/construccion/v26.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v26.html",
      "capturas": "capturas/construccion-v26",
      "notas": "Al construir una obra, solo se redibuja esa pieza al avanzar: los fotogramas ya no caen mientras se construye"
     },
     {
      "v": "v27",
      "fecha": "2026-10-27",
-     "archivo": "jugar/construccion/v27.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v27.html",
      "capturas": "capturas/construccion-v27",
      "notas": "Andamio pegado al muro (se sube con Usar; desde su plataforma se lleva lo ligero y se trabaja en las obras de esa planta) y polea colgada de una viga (una persona sola sube los troncos con la mitad de trabajo que rodándolos por varas)"
     },
     {
      "v": "v28",
      "fecha": "2026-10-28",
-     "archivo": "jugar/construccion/v28.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v28.html",
      "capturas": "capturas/construccion-v28",
      "notas": "Polipasto con torno colgado de una viga: sube los troncos con un torno en el suelo (una persona sola, como con polea); lo muy pesado, cuando haya sillares, solo entre dos (uno en el torno y otro que guía)"
     },
     {
      "v": "v29",
      "fecha": "2026-10-28",
-     "archivo": "jugar/construccion/v29.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v29.html",
      "capturas": "capturas/construccion-v29",
      "notas": "Contraventana para los muros con ventana y trampilla para el hueco de la escalera de tablas: se abren y se cierran con Usar; la trampilla cerrada se pisa y no deja subir. Muro de tablas con ventana."
     },
     {
      "v": "v30",
      "fecha": "2026-10-28",
-     "archivo": "jugar/construccion/v30.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v30.html",
      "capturas": "capturas/construccion-v30",
      "notas": "Tejado de teja (10 tejas y 1 tronco, 200 kg): teja curva de barro cocido con canales, cobijas y caballete en la cumbrera. Pesa más del doble que la paja. Material nuevo: teja."
     },
     {
      "v": "v31",
      "fecha": "2026-10-28",
-     "archivo": "jugar/construccion/v31.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v31.html",
      "capturas": "capturas/construccion-v31",
      "notas": "Remate de tejado (esquina) de paja, de tablillas y de teja: donde se juntan dos caídas en ángulo recto se hace solo limatesa (esquina de fuera) o limahoya (el rincón de un tejado en L). Con cuatro remates, un tejado a cuatro aguas sin hastiales; en una casa en L, las dos alas quedan cerradas y las cumbreras se encuentran."
     },
     {
      "v": "v32",
      "fecha": "2026-10-29",
-     "archivo": "jugar/construccion/v32.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v32.html",
      "capturas": "capturas/construccion-v32",
      "notas": "Chimenea u hogar interior (10 piedras y 4 de barro, 600 kg): solo en la planta baja, sobre un cimiento de piedra, arrimada a un muro; fuego con llamas, luz y humo que sale por encima del tejado; Usar la apaga y la enciende."
     },
     {
      "v": "v33",
      "fecha": "2026-10-29",
-     "archivo": "jugar/construccion/v33.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v33.html",
      "capturas": "capturas/construccion-v33",
      "notas": "Panel de inventario (hito 2): silueta con un cuadro por cada lugar del cuerpo, los huecos de lo que llevas y un arcón de pruebas para coger equipo. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa."
     },
@@ -1870,77 +1878,77 @@
     {
      "v": "v2",
      "fecha": "2026-10-24",
-     "archivo": "jugar/combate/v2.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-combate/combate-v2.html",
      "capturas": "capturas/combate-v2",
      "notas": "Rosa de golpes y defensa en tres capas."
     },
     {
      "v": "v3",
      "fecha": "2026-10-24",
-     "archivo": "jugar/combate/v3.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-combate/combate-v3.html",
      "capturas": "capturas/combate-v3",
      "notas": "Arco arreglado: tensión mínima, sin tensar corriendo y 0,8 s para encajar flecha."
     },
     {
      "v": "v4",
      "fecha": "2026-10-24",
-     "archivo": "jugar/combate/v4.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-combate/combate-v4.html",
      "capturas": "capturas/combate-v4",
      "notas": "Escudo provisional: nueva arma «Espada y escudo» (espada de una mano, 1,7 m de alcance). Al parar se levanta el escudo, que detiene también flechas y piedras de frente y cansa menos que parar con la espada. Nueva opción «Arma del rival»: el rival con escudo lo levanta cuando le apuntas."
     },
     {
      "v": "v5",
      "fecha": "2026-10-25",
-     "archivo": "jugar/combate/v5.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-combate/combate-v5.html",
      "capturas": "capturas/combate-v5",
      "notas": "Combate en inglés: botón ES/EN arriba a la derecha y todos los textos traducidos (ayuda, avisos, registro, menús y decisiones). En el móvil, el panel de opciones ya no tapa el menú."
     },
     {
      "v": "v6",
      "fecha": "2026-10-25",
-     "archivo": "jugar/combate/v6.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-combate/combate-v6.html",
      "capturas": "capturas/combate-v6",
      "notas": "v6: también en ruso, con el mismo selector de idioma."
     },
     {
      "v": "v7",
      "fecha": "2026-10-25",
-     "archivo": "jugar/combate/v7.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-combate/combate-v7.html",
      "capturas": "capturas/combate-v7",
      "notas": "Escena común del estilo elegido: cielo, luz, sombras blandas, suelo con textura, bosque, hierba, flores y rocas, con la liza de tierra en el centro"
     },
     {
      "v": "v8",
      "fecha": "2026-10-25",
-     "archivo": "jugar/combate/v8.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-combate/combate-v8.html",
      "capturas": "capturas/combate-v8",
      "notas": "Los dos luchadores son el personaje del taller: la armadura es su ropa por capas (lino, gambesón, cota sobre gambesón), los brazos agarran el arma con cinemática inversa y las heridas se pegan al cuerpo donde entra el golpe"
     },
     {
      "v": "v9",
      "fecha": "2026-10-26",
-     "archivo": "jugar/combate/v9.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-combate/combate-v9.html",
      "capturas": "capturas/combate-v9",
      "notas": "Las flechas, dianas y postes ya no dejan memoria gráfica ocupada; aviso y recarga si se pierde el dibujo 3D."
     },
     {
      "v": "v10",
      "fecha": "2026-10-26",
-     "archivo": "jugar/combate/v10.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-combate/combate-v10.html",
      "capturas": "capturas/combate-v10",
      "notas": "Alrededor de la liza, la escena como la prueba de estilo v5: hierba densa con flores, matorrales, calvas de tierra, rocas y árboles de copa sueltos"
     },
     {
      "v": "v11",
      "fecha": "2026-10-27",
-     "archivo": "jugar/combate/v11.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-combate/combate-v11.html",
      "capturas": "capturas/combate-v11",
      "notas": "Espadas, palo, arco, escudo, flecha, poste de práctica y diana con el estilo v5; cintas de paño teñido más apagadas"
     },
     {
      "v": "v12",
      "fecha": "2026-10-27",
-     "archivo": "jugar/combate/v12.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-combate/combate-v12.html",
      "capturas": "capturas/combate-v12",
      "notas": "v12: cámara táctil con un dedo. En el móvil, arrastrar un dedo por una zona libre gira la cámara (antes hacían falta dos); un toque sin arrastrar no la mueve, y tocar la rosa sigue golpeando al instante. El dedo del joystick ya no cuenta como segundo dedo. Con arco o piedras, si al apuntar llevas el dedo cerca de un borde, la cámara gira hacia ese lado."
     },
@@ -1989,28 +1997,28 @@
     {
      "v": "v1",
      "fecha": "2026-10-24",
-     "archivo": "jugar/estilo/v1.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-estilo/estilo-v1.html",
      "capturas": "capturas/estilo-v1",
      "notas": "Tres estilos (A plano, B suave, C texturas) con cabaña y personaje: elige uno."
     },
     {
      "v": "v2",
      "fecha": "2026-10-24",
-     "archivo": "jugar/estilo/v2.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-estilo/estilo-v2.html",
      "capturas": "capturas/estilo-v2",
      "notas": "Un solo estilo estilizado y ligero: 30 mil triángulos y 12 dibujados, sin personaje (espera tu decisión)."
     },
     {
      "v": "v3",
      "fecha": "2026-10-24",
-     "archivo": "jugar/estilo/v3.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-estilo/estilo-v3.html",
      "capturas": "capturas/estilo-v3",
      "notas": "Maqueta en miniatura: formas redondeadas, luz suave, sombras de contacto y desenfoque; zócalo de piedra continuo."
     },
     {
      "v": "v4",
      "fecha": "2026-10-24",
-     "archivo": "jugar/estilo/v4.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-estilo/estilo-v4.html",
      "capturas": "capturas/estilo-v4",
      "notas": "Realismo en miniatura: la maqueta con texturas por código y el mundo sin recortar."
     },
@@ -2066,105 +2074,105 @@
     {
      "v": "v1",
      "fecha": "2026-10-24",
-     "archivo": "jugar/personaje/v1.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v1.html",
      "capturas": "capturas/personaje-v1",
      "notas": "Personaje esculpido por código: cara, manos, ropa por capas, esqueleto y andar."
     },
     {
      "v": "v2",
      "fecha": "2026-10-24",
-     "archivo": "jugar/personaje/v2.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v2.html",
      "capturas": "capturas/personaje-v2",
      "notas": "Personaje con bases libres (CC0) ya hechas y personalización: hombre o mujer, ropa, peinado, color de pelo, piel y barba."
     },
     {
      "v": "v3",
      "fecha": "2026-10-24",
-     "archivo": "jugar/personaje/v3.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v3.html",
      "capturas": "capturas/personaje-v3",
      "notas": "Más ligero en el móvil (calidad ligera, un solo esqueleto, menos resolución) con interruptores para medir; sin el traje de explorador."
     },
     {
      "v": "v4",
      "fecha": "2026-10-24",
-     "archivo": "jugar/personaje/v4.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v4.html",
      "capturas": "capturas/personaje-v4",
      "notas": "Vuelve la calidad alta por defecto en el móvil (iba perfecto); la ligera sigue como opción."
     },
     {
      "v": "v5",
      "fecha": "2026-10-25",
-     "archivo": "jugar/personaje/v5.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v5.html",
      "capturas": "capturas/personaje-v5",
      "notas": "Nueva opción «Base del personaje»: el taller propio (cuerpo de MakeHuman con ropa, pelo y barba hechos por código) ya anda, tala y lucha con las animaciones de Quaternius pasadas a su esqueleto."
     },
     {
      "v": "v6",
      "fecha": "2026-10-25",
-     "archivo": "jugar/personaje/v6.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v6.html",
      "capturas": "capturas/personaje-v6",
      "notas": "Arreglo: en calidad alta la ropa, el pelo y la cofia del taller propio se veían del revés (la piel se pintaba encima). Prueba nueva que lo vigila."
     },
     {
      "v": "v7",
      "fecha": "2026-10-25",
-     "archivo": "jugar/personaje/v7.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v7.html",
      "capturas": "capturas/personaje-v7",
      "notas": "Taller propio: postura arreglada (tronco recto, hombros en su sitio, brazos colgando rectos) y túnica del hombre que ya no marca pecho."
     },
     {
      "v": "v8",
      "fecha": "2026-10-25",
-     "archivo": "jugar/personaje/v8.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v8.html",
      "capturas": "capturas/personaje-v8",
      "notas": "El taller propio pasa a ser la base (elegido por valravnx) y sale por defecto. Ropa por capas: camisa de lino, calzas y zapatos siempre; encima túnica o vestido y gambesón acolchado, que se ponen y se quitan con botones."
     },
     {
      "v": "v9",
      "fecha": "2026-10-25",
-     "archivo": "jugar/personaje/v9.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v9.html",
      "capturas": "capturas/personaje-v9",
      "notas": "Cota de malla y sobreveste como capas del taller propio, sobre la camisa, la túnica o el vestido y el gambesón."
     },
     {
      "v": "v10",
      "fecha": "2026-10-25",
-     "archivo": "jugar/personaje/v10.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v10.html",
      "capturas": "capturas/personaje-v10",
      "notas": "Visor de personaje en inglés: botón ES/EN arriba (recuerda el idioma elegido, también el de la web); el personaje no cambia."
     },
     {
      "v": "v11",
      "fecha": "2026-10-25",
-     "archivo": "jugar/personaje/v11.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v11.html",
      "capturas": "capturas/personaje-v11",
      "notas": "v11: también en ruso; en el móvil, el panel de opciones se coloca encima de la barra de vistas aunque esta ocupe dos filas."
     },
     {
      "v": "v12",
      "fecha": "2026-10-26",
-     "archivo": "jugar/personaje/v12.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v12.html",
      "capturas": "capturas/personaje-v12",
      "notas": "Correr más natural: la carrera del paquete, suavizada por código (menos zancada, braceo, bote e inclinación, y los brazos más pegados), y a su velocidad de verdad: antes los pies resbalaban y se veía a cámara lenta. Botón «Correr» en Animación."
     },
     {
      "v": "v13",
      "fecha": "2026-10-26",
-     "archivo": "jugar/personaje/v13.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v13.html",
      "capturas": "capturas/personaje-v13",
      "notas": "Brazos naturales al correr: oscilan junto al cuerpo, con la mano de canto y la muñeca recta, en vez de ir torcidos hacia delante."
     },
     {
      "v": "v14",
      "fecha": "2026-10-26",
-     "archivo": "jugar/personaje/v14.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v14.html",
      "capturas": "capturas/personaje-v14",
      "notas": "El cinturón de encima de la cota ya no sobresale hacia los brazos (personajes del taller-v7)."
     },
     {
      "v": "v15",
      "fecha": "2026-10-28",
-     "archivo": "jugar/personaje/v15.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v15.html",
      "capturas": "capturas/personaje-v15",
      "notas": "Capa, botas y tocados: capucha, sombrero de paja y toca"
     },
@@ -2202,6 +2210,13 @@
      "archivo": "jugar/personaje/v20.html",
      "capturas": "capturas/personaje-v20",
      "notas": "Pies descalzos: botón «Descalzo» en la ropa y vista «Pies» de cerca. El bajo de las calzas, recto."
+    },
+    {
+     "v": "v21",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/personaje/v21.html",
+     "capturas": "capturas/personaje-v21",
+     "notas": "Las 39 animaciones extra (arco, picar, sembrar, regar, pescar, golpes ligeros y pesados, escudo, pasos, trepar, tumbarse…) pasadas al esqueleto del taller propio: en Opciones, «Más animaciones»"
     }
    ]
   },
@@ -2227,56 +2242,56 @@
     {
      "v": "v1",
      "fecha": "2026-10-27",
-     "archivo": "jugar/mapa/v1.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v1.html",
      "capturas": "capturas/mapa-v1",
      "notas": "Primer boceto del mundo por semilla: continente con golfos, penínsulas, mares interiores e islas, sin figuras fijas; una isla grande que es un país entero, apartada por mar; relieve con sierras y ríos, biomas, cinco países, roca madre y vetas. Se puede elegir 188 o 256 km."
     },
     {
      "v": "v2",
      "fecha": "2026-10-27",
-     "archivo": "jugar/mapa/v2.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v2.html",
      "capturas": "capturas/mapa-v2",
      "notas": "Tu mundo (256 km, semilla 66172) se abre al entrar. Vetas pequeñas de hierro y carbón repartidas cerca de cualquier sitio y unas pocas grandes vetas marcadas en el mapa; al tocar, a cuántos km está el hierro y el carbón más cercanos. Las islas cercanas ya tienen país."
     },
     {
      "v": "v3",
      "fecha": "2026-10-27",
-     "archivo": "jugar/mapa/v3.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v3.html",
      "capturas": "capturas/mapa-v3",
      "notas": "Ver de cerca: al tocar un sitio de tierra, sus 4 × 4 km en 3D con el estilo v5, desde lo alto o a pie. Relieve con detalle por escalas (laderas lisas, crestas y vaguadas marcadas), cortado donde la tierra alta llega al mar y playa donde es baja, bosque con claros y bosquetes."
     },
     {
      "v": "v4",
      "fecha": "2026-10-27",
-     "archivo": "jugar/mapa/v4.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v4.html",
      "capturas": "capturas/mapa-v4",
      "notas": "De cerca, nueva vista «Como en el juego»: el personaje con la cámara del juego y, a su alrededor, un trozo de 240 m con todo el detalle (rejilla de 1 m, hierba, flores, matorrales, piedras, árboles completos y sombras). Se anda tocando el suelo."
     },
     {
      "v": "v5",
      "fecha": "2026-10-28",
-     "archivo": "jugar/mapa/v5.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v5.html",
      "capturas": "capturas/mapa-v5",
      "notas": "Los ríos ya no son zanjas: el fondo del valle sigue al río, con lecho, orilla en rampa, vega llana a los lados y laderas con la pendiente limitada (suaves en el llano, en V en la montaña). El agua del río se ve también de cerca, con la orilla lisa."
     },
     {
      "v": "v6",
      "fecha": "2026-10-28",
-     "archivo": "jugar/mapa/v6.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v6.html",
      "capturas": "capturas/mapa-v6",
      "notas": "El agua se mueve: el río corre en su dirección (lento en la vega, rápido y con espuma en los torrentes) y el mar tiene oleaje, con olas que rompen en la costa. Color según la hondura. La costa ya no es una pared: cortados empinados y playas que bajan al agua."
     },
     {
      "v": "v7",
      "fecha": "2026-10-28",
-     "archivo": "jugar/mapa/v7.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v7.html",
      "capturas": "capturas/mapa-v7",
      "notas": "Cortados de roca: donde la roca es dura y empinada, el terreno se rompe en paredes de roca con repisas de hierba entre ellas; las paredes son roca maciza (sin piedrecitas, que van como pedregal al pie) y no se suben andando. Acantilados de costa en capas grandes, casi verticales."
     },
     {
      "v": "v8",
      "fecha": "2026-10-28",
-     "archivo": "jugar/mapa/v8.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v8.html",
      "capturas": "capturas/mapa-v8",
      "notas": "Roca escarpada de cerca: las paredes de los cortados se cubren de losas de roca 3D hechas por código, encajadas en la pared, con caras, aristas, estratos y sombra entre ellas, y una textura de roca con vetas, grietas finas y liquen."
     },

@@ -1,11 +1,14 @@
 // Personajes del taller propio: cuerpo de MakeHuman vestido por código, con las animaciones de Quaternius pasadas
 // a su esqueleto (herramientas/taller/). Un solo .glb por personaje, con ropa, pelo, ojos y animaciones.
 // Devuelve lo mismo que crearPersonaje() de cargar.js, para que el visor y el juego los usen igual.
+// Las 39 animaciones extra (trabajos, arco, espada ligera y pesada, escudo, pasos…), pasadas al mismo esqueleto, van
+// aparte (op.extra: true, ~1 MB más por personaje): recursos/personajes/taller-anim-v1/mh_<sexo>_extra.glb. Con
+// op.extra = 'carpeta/' se cogen de otra carpeta.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { CLIPS } from './cargar.js';
+import { CLIPS, CLIPS_EXTRA } from './cargar.js';
 import { normalizarAspecto, colorDe, pesosFormas, escalaAltura, piezasCabeza } from '../logica/aspecto.js';
 import { TALLER } from '../logica/prendas.js';
 
@@ -48,8 +51,9 @@ function ponerFormas(n, pesos) {
 const lineal = (c) => c.map(x => (x / 255) ** 2.2);
 
 export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/taller-v1/') {
-  const o = { sexo: 'hombre', calidad: 'alta', ...op };
-  const g = await cargar(`${base}mh_${o.sexo}.glb`);
+  const o = { sexo: 'hombre', calidad: 'alta', extra: false, ...op };
+  const carpetaExtra = typeof o.extra === 'string' ? o.extra : `${base}../taller-anim-v1/`;
+  const [g, gExtra] = await Promise.all([cargar(`${base}mh_${o.sexo}.glb`), o.extra ? cargar(`${carpetaExtra}mh_${o.sexo}_extra.glb`) : null]);
   const raiz = new THREE.Group();
   const modelo = clone(g.scene);
   raiz.add(modelo);
@@ -134,6 +138,13 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   const acciones = {};
   for (const clip of g.animations) acciones[clip.name] = mezclador.clipAction(clip);
   for (const [id, nombre] of Object.entries(CLIPS)) if (acciones[nombre]) acciones[id] = acciones[nombre];
+  // extra: las que se llaman igual que una básica (otra versión) van como «nombre_2», como en cargar.js
+  const extra = {};
+  for (const clip of gExtra ? gExtra.animations : []) {
+    extra[clip.name] = acciones[clip.name] ? clip.name + '_2' : clip.name;
+    acciones[extra[clip.name]] = mezclador.clipAction(clip);
+  }
+  for (const [id, nombre] of Object.entries(CLIPS_EXTRA)) if (extra[nombre]) acciones[id] = acciones[extra[nombre]];
   // velocidad natural de andar y correr (m/s): lo que retrocede el pie apoyado respecto al cuerpo, medido en el propio
   // clip al cargar. El juego acelera la animación con velocidad / natural para que los pies no resbalen. (Antes era un
   // número fijo para correr, 2,59, que no salía de medir bien: la carrera del paquete iba a 5,8 m/s y se veía a cámara
@@ -181,7 +192,7 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     resultado.aspecto = asp;
     ponerCabeza();
   };
-  const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, velocidad, opciones: o, hueso, clips: g.animations.map(c => c.name), ponerCapas, ponerAspecto,
+  const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, velocidad, opciones: o, hueso, clips: [...g.animations.map(c => c.name), ...Object.values(extra)], ponerCapas, ponerAspecto,
     capasPosibles: [...[...ORDEN, ...SUELTAS].filter(c => c !== 'camisa' && modelo.getObjectByName(`${o.sexo}_capa_${c}`)), ...(hayPies ? [TALLER.descalzo] : [])], tocados: TOCADOS };
   ponerCapas(o.capas || [o.sexo === 'mujer' ? 'vestido' : 'tunica']);
   ponerAspecto(o.aspecto);

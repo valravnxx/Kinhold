@@ -4,7 +4,7 @@
 # MUTAR=1 oculta el dibujo y congela la animación: la prueba tiene que fallar.
 import sys, os, io, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
-from PIL import Image, ImageStat, ImageChops
+from PIL import Image, ImageStat, ImageChops, ImageDraw
 
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_personaje.html'))
@@ -15,6 +15,7 @@ os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personaj
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v12'), f'{sitio}/recursos/personajes/taller-v12')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-anim-v1'), f'{sitio}/recursos/personajes/taller-anim-v1')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -149,6 +150,51 @@ with sync_playwright() as p:
                       f"correr {vel.get('correr', 0):.2f} m/s, andar {vel.get('andar', 0):.2f} m/s, bote {bote * 100:.0f} cm")
             pg.click('[data-vista="cuerpo"]')
             pg.evaluate(f'{E}.instante(0.3)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_correr.png')
+            # las 39 animaciones extra pasadas al esqueleto de MakeHuman (taller-anim-v1): se cargan, cada una mueve el cuerpo
+            # y el cuerpo no se desarma (las manos y los pies siguen a una distancia de la pelvis de cuerpo humano)
+            ids = pg.evaluate(f"(() => {{ const pj = {E}.diag().pj; return [pj.clips.length, Object.keys(pj.acciones).filter(k => pj.acciones[k] && k !== pj.acciones[k].getClip().name)]; }})()")
+            n_clips = ids[0]
+            if os.environ.get('MUTAR'): n_clips = 9
+            comprobar(f'taller propio ({sexo}): las 39 animaciones extra se cargan', n_clips == 9 + 39, f'{n_clips} clips')
+            botones = pg.evaluate("[...document.querySelectorAll('#anims-extra [data-modo]')].map(b => b.dataset.modo)")
+            comprobar(f'taller propio ({sexo}): botones de las 39 extra en «Más animaciones»', len(botones) == 39, str(len(botones)))
+            HUESOS = ['pelvis', 'head', 'hand_l', 'hand_r', 'foot_l', 'foot_r', 'lowerarm_l', 'lowerarm_r']
+            pose = lambda: pg.evaluate(f"{HUESOS}.map(n => {E}.hueso(n))")
+            quietas, rotas, fotos = [], [], []
+            for k in botones:
+                dur = pg.evaluate(f"{E}.diag().pj.acciones['{k}'].getClip().duration")
+                # la pose de estar quieto en los mismos instantes, para comparar
+                pg.evaluate(f"{E}.ponerModo('quieto')"); pg.evaluate(f'{E}.instante({dur * 0.25})'); qa = pose()
+                pg.evaluate(f'{E}.instante({dur * 0.6})'); qb = pose()
+                pg.evaluate(f"{E}.ponerModo('{k}')")
+                pg.evaluate(f'{E}.instante({dur * 0.25})'); a = pose()
+                pg.evaluate(f'{E}.instante({dur * 0.6})'); b = pose()
+                if os.environ.get('MUTAR'): a, b = qa, [[c * 3 for c in x] for x in qb]
+                cambio = max(max(abs(x[i] - y[i]) for i in range(3)) for x, y in zip(a, qa))
+                cambio = max(cambio, max(max(abs(x[i] - y[i]) for i in range(3)) for x, y in zip(b, qb)) if not os.environ.get('MUTAR') else 0)
+                if cambio < 0.05: quietas.append(f'{k} {cambio:.3f}')
+                # cuerpo entero: la cabeza a menos de 80 cm de la pelvis y manos y pies a menos de 1,1 m
+                for p_ in (a, b):
+                    d = [sum((p_[j][i] - p_[0][i]) ** 2 for i in range(3)) ** 0.5 for j in range(1, 6)]
+                    if d[0] > 0.8 or max(d[1:]) > 1.1: rotas.append(f'{k} {max(d):.2f} m')
+                if nombre == 'pc': fotos.append((k, Image.open(io.BytesIO(pg.screenshot())).convert('RGB')))
+            comprobar(f'taller propio ({sexo}): cada animación extra se aparta de estar quieto (más de 5 cm)', not quietas, ', '.join(quietas))
+            comprobar(f'taller propio ({sexo}): con las extra el cuerpo no se desarma', not rotas, ', '.join(rotas[:5]))
+            if fotos:  # hoja con todas las poses (al 60 % de cada animación), para mirarlas
+                col, w, h = 8, 320, 200
+                hoja = Image.new('RGB', (col * w, -(-len(fotos) // col) * h), (40, 40, 40))
+                for i, (k, f) in enumerate(fotos):
+                    x, y = (i % col) * w, (i // col) * h
+                    hoja.paste(f.resize((w, h)), (x, y)); ImageDraw.Draw(hoja).text((x + 6, y + 4), k, fill=(255, 255, 255))
+                hoja.save(f'{SALIDA}/{nombre}_taller_{sexo}_extra_hoja.png')
+            # unas cuantas de cerca, con un clic de verdad en su botón (en el móvil el panel se cierra para la foto)
+            for k, t in [('apuntar', 0.6), ('minar', 0.3), ('guardiaEscudo', 1.0), ('golpePesado1', 0.35)]:
+                if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
+                pg.click(f'#anims-extra [data-modo="{k}"]'); pg.wait_for_timeout(100)
+                if nombre == 'movil': pg.click('#btnOpciones')
+                pg.evaluate(f'{E}.instante({t})'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_extra_{k}.png')
+            comprobar(f'taller propio ({sexo}): el botón pone la animación extra', pg.evaluate(f'{E}.estado().modo') == 'golpePesado1')
+            pg.evaluate(f"{E}.ponerModo('quieto')")
         # ropa por capas: el botón Gambesón lo pone encima (y esconde el cuerpo del vestido, que queda tapado)
         vis = lambda: pg.evaluate(f"(() => {{ const v = []; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.visible) v.push(o.name); }}); return v; }})()")
         if not pg.is_visible('#opciones'): pg.click('#btnOpciones')

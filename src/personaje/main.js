@@ -8,7 +8,7 @@ import { crearEscena } from '../estilo/escena.js';
 import { crearPersonaje, OPCIONES } from '../personajes/cargar.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
 import { VERSION_PERSONAJE, REGISTRO_PERSONAJE } from './registro.js';
-import { BASES, CAPAS, ANIMS, ZONAS_TABLA, GOLPES_TABLA } from './textos.js';
+import { BASES, CAPAS, ANIMS, ANIMS_EXTRA, ZONAS_TABLA, GOLPES_TABLA } from './textos.js';
 import { PRENDAS, prendasDeCapas, proteccion, abrigo, peso } from '../logica/prendas.js';
 import { PALETAS, FORMAS, PEINADOS, BARBAS, normalizarAspecto } from '../logica/aspecto.js';
 import { tr, traducirPagina, botonesIdioma, idioma } from '../idioma.js';
@@ -35,6 +35,8 @@ const CLAVE = 'kinhold_personaje_v2';
 const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../recursos/personajes/v1/';
 // personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v12/ (las anteriores publicadas no se tocan)
 const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v12/';
+// las 39 animaciones extra del taller propio, pasadas a su esqueleto (aparte: taller-anim-v1/)
+const RECURSOS_ANIM_MH = new URLSearchParams(location.search).get('animMH') || '../../recursos/personajes/taller-anim-v1/';
 // capas puestas en el taller propio, por sexo (por defecto: túnica en el hombre, vestido en la mujer)
 const capasMH = () => (estado.capas && estado.capas[estado.sexo]) || [estado.sexo === 'mujer' ? 'vestido' : 'tunica'];
 // aspecto del taller propio (forma, colores, peinado y barba), por sexo; se guarda con lo demás (src/logica/aspecto.js)
@@ -78,7 +80,7 @@ let estado = { luz: 'manana', vista: 'cuerpo', modo: 'quieto', sexo: 'hombre', r
 try { estado = { ...estado, ...JSON.parse(localStorage.getItem(CLAVE) || '{}') }; } catch (e) { /* sin almacenamiento */ }
 if (!LUCES[estado.luz]) estado.luz = 'manana';
 if (!VISTAS[estado.vista]) estado.vista = 'cuerpo';
-if (!ANIMS[estado.modo]) estado.modo = 'quieto';
+if (!ANIMS[estado.modo] && !ANIMS_EXTRA[estado.modo]) estado.modo = 'quieto';
 if (estado.ropa !== 'campesino') estado.ropa = 'campesino'; // el explorador era demasiado de fantasía (valravnx)
 estado.sombras ??= true; estado.escena ??= true;
 if (!BASES[estado.base]) estado.base = 'makehuman'; // valravnx eligió el taller propio como base (25 oct)
@@ -91,7 +93,7 @@ async function rehacer() {
   const n = ++cargando;
   $('cargando').hidden = false;
   if (!OPCIONES.pelo[estado.sexo][estado.pelo]) estado.pelo = Object.keys(OPCIONES.pelo[estado.sexo])[0];
-  const nuevo = estado.base === 'makehuman' ? await crearPersonajeMH({ ...estado, capas: capasMH(), aspecto: aspectoMH() }, RECURSOS_MH) : await crearPersonaje(estado, RECURSOS);
+  const nuevo = estado.base === 'makehuman' ? await crearPersonajeMH({ ...estado, capas: capasMH(), aspecto: aspectoMH(), extra: RECURSOS_ANIM_MH }, RECURSOS_MH) : await crearPersonaje(estado, RECURSOS);
   if (n !== cargando) return; // llegó otro cambio mientras cargaba
   if (pj) escena.remove(pj.raiz);
   pj = nuevo;
@@ -132,7 +134,8 @@ function pintarOpciones() {
     grupo('colorPelo', OPCIONES.colorPelo, 'Color del pelo') + grupo('piel', OPCIONES.piel, 'Piel') + (estado.sexo === 'hombre' ? grupo('barba', OPCIONES.barba, 'Barba') : '')) +
     grupo('calidad', { alta: 'Alta', ligera: 'Ligera (móvil)' }, 'Calidad') +
     `<div class="grupo"><span>${tr('Prueba de rendimiento (mira los fps arriba)')}</span><button data-diag="sombras" class="${estado.sombras ? 'sel' : ''}">${tr('Sombras')}</button><button data-diag="escena" class="${estado.escena ? 'sel' : ''}">${tr('Cabaña y suelo')}</button></div>` +
-    `<div class="grupo"><span>${tr('Animación')}</span>${Object.entries(ANIMS).map(([k, v]) => `<button data-modo="${k}" class="${estado.modo === k ? 'sel' : ''}">${tr(v)}</button>`).join('')}</div>`;
+    `<div class="grupo"><span>${tr('Animación')}</span>${Object.entries(ANIMS).map(([k, v]) => `<button data-modo="${k}" class="${estado.modo === k ? 'sel' : ''}">${tr(v)}</button>`).join('')}</div>` +
+    (mh ? `<div class="grupo" id="anims-extra"><span>${tr('Más animaciones')}</span>${Object.entries(ANIMS_EXTRA).filter(([k]) => pj?.acciones[k]).map(([k, v]) => `<button data-modo="${k}" class="${estado.modo === k ? 'sel' : ''}">${tr(v)}</button>`).join('')}</div>` : '');
   for (const b of $('opciones').querySelectorAll('[data-op]')) b.onclick = () => { estado[b.dataset.op] = b.dataset.v; if (b.dataset.op === 'calidad') estado.calidadElegida = true; rehacer(); };
   for (const b of $('opciones').querySelectorAll('[data-modo]')) b.onclick = () => ponerModo(b.dataset.modo);
   for (const b of $('opciones').querySelectorAll('[data-capa]')) b.onclick = () => {
