@@ -1578,14 +1578,14 @@
     {
      "v": "v35",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v35.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v35.html",
      "capturas": "capturas/demo-v35",
      "notas": "v35: los personajes vuelven a tener las manos enteras (desde la taller-v9 salían como una tira, también las de los demás jugadores) y la mujer lleva botas bajas, que ya no atraviesan la falda larga. Personajes en recursos/personajes/taller-v11/."
     },
     {
      "v": "v36",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v36.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v36.html",
      "capturas": "capturas/construccion-v35",
      "notas": "En «Construir», recoger ramas, piedra, sílex y fibra (construcción v35)"
     },
@@ -2194,14 +2194,14 @@
     {
      "v": "v16",
      "fecha": "2026-10-28",
-     "archivo": "jugar/personaje/v16.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v16.html",
      "capturas": "capturas/personaje-v16",
      "notas": "Personalización del taller propio: tono de piel, color de ojos y de pelo, peinado (corto o rapado), barba (corta, bigote o afeitado) y deslizadores de altura, peso, músculo, cara ancha, nariz ancha, nariz larga y mentón. Peso, músculo y la cara son las formas de MakeHuman; la ropa engorda o adelgaza con el cuerpo."
     },
     {
      "v": "v17",
      "fecha": "2026-10-28",
-     "archivo": "jugar/personaje/v17.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v17.html",
      "capturas": "capturas/personaje-v17",
      "notas": "Datos de cada prenda en la lógica pura: lo que frena de cada golpe, lo que abriga y lo que pesa la ropa que ves puesta, en una tabla de Opciones"
     },
@@ -2320,7 +2320,7 @@
     {
      "v": "v9",
      "fecha": "2026-10-28",
-     "archivo": "jugar/mapa/v9.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v9.html",
      "capturas": "capturas/mapa-v9",
      "notas": "Nombres del mundo: el continente Kinland y sus regiones Whitholm, Eikwold, Rudmere, Highfell y Storaa; «país» pasa a «región»."
     },
