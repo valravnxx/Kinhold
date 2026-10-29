@@ -2197,5 +2197,20 @@
   "pruebas": "En la nube: 14 grupos bien (43 min en total); la prueba piloto de la construcción, 34 min frente a 55 aquí",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T13:03:35+01:00",
+  "fin": "2026-10-29T13:17:37+01:00",
+  "titulo": "Infraestructura: cada noticia, con sus capturas y no con toda la batería",
+  "hito": "infra",
+  "hecho": [
+   "Cada versión publicaba la carpeta entera de capturas de la prueba (construcción v35: 87; personaje v19: 74) y las del cambio salían al final; además, las capturas ya ocupan 468 MB de la web.",
+   "capturas.py ya solo copia las capturas que se nombran (nombres o patrones, como mucho 12): sin decir cuáles no publica nada. CLAUDE.md lo manda: se publican las nuevas y las de las vistas que ha tocado el cambio.",
+   "En la web, cada entrada del diario enseña 6 capturas y el resto va plegado en «Ver todas las capturas»; en las carpetas de antes van delante las que no estaban en la versión anterior del mismo prototipo.",
+   "Prueba nueva (prueba_capturas.mjs, en «logica»): sin lista no copia nada, con más de 12 tampoco y con nombres solo esos; con la copia rota a propósito (MUTAR=1) fallan 3 de 4."
+  ],
+  "pruebas": "En la nube: lógica y web bien; la web mirada en PC y móvil (6 capturas a la vista y el resto plegado)",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
