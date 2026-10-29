@@ -10,11 +10,5 @@
   "tarea": "Panel de inventario en la demo: silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro y capas del cuerpo); al tocar un cuadro con contenedor se abren sus huecos; sin cinturón no hay cuadros de cintura. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Mientras no haya fabricación (hito 3), el equipo se coge de un arcón de pruebas, como el botón de rellenar materiales. Capturas en PC y móvil",
   "hito": "equipo",
   "rama": "trabajo/20261029-0051"
- },
- "chat:trabajo/20261028-2155-saltos": {
-  "inicio": "2026-10-28T21:54:37+01:00",
-  "tarea": "Saltos de agua donde el río cruza roca dura",
-  "hito": "mundo",
-  "rama": "trabajo/20261028-2155-saltos"
  }
 }
