@@ -10,6 +10,19 @@
 import * as THREE from 'three';
 import { MeshoptSimplifier } from 'meshoptimizer';
 import { NIVELES, OCULTO } from '../logica/detalle.js';
+import { TALLER } from '../logica/prendas.js';
+
+// De lejos, con menos triángulos, una capa de debajo puede asomar por la de encima (la cota por la sobreveste, la
+// manga de la camisa por la de la cota). En la malla de lejos, cada capa se mete hacia dentro un poco por cada capa
+// que tiene encima (la de fuera nada); la piel, poco, porque la cara y las manos se ven.
+const HUNDIR = 0.004; // m por capa
+function capaDe(n) {
+  const m = n.name.match(/_(capa|cinturon)_([a-z]+)/);
+  if (!m) return /_(piel|pies)$/.test(n.name) ? 0 : null; // pelo, barba, orejas: no se mueven
+  const k = TALLER.orden.indexOf(m[2]);
+  if (k < 0) return 1; // calzas, zapatos, botas, tocados: justo sobre la piel
+  return 2 + k + (m[1] === 'cinturon' ? 0.5 : 0);
+}
 
 const listo = MeshoptSimplifier.ready;
 const reducidas = new WeakMap(); // índice original → [índice de cada nivel]
@@ -94,16 +107,21 @@ function juntar(mh, nivel) {
   };
   const pos = [], nor = [], uv = [], col = [], si = [], sw = [], ind = [];
   const cortes = mh.corteDe || (() => -100);
+  const rangos = piezas.map(capaDe);
+  const orden = [...new Set(rangos.filter(r => r !== null))].sort((a, b) => a - b);
   piezas.forEach((n, p) => {
     const g = n.userData.geoBase || n.geometry, A = g.attributes, I = indiceDe(n, nivel);
     const cx = (p % LADO) / LADO, cy = Math.floor(p / LADO) / LADO;
     const c = n.material.color, corte = cortes(n), vc = n.material.vertexColors && A.color;
     const nuevo = new Map(), b = pos.length / 3;
+    // la piel, solo un poco (la cara no puede quedar por detrás del pelo y las orejas)
+    const hundir = rangos[p] === null ? 0 : rangos[p] === 0 ? Math.min(1.5, orden.length - 1) * HUNDIR : (orden.length - 1 - orden.indexOf(rangos[p])) * HUNDIR;
     const tomar = (v) => {
       if (nuevo.has(v)) return nuevo.get(v);
       const k = b + nuevo.size; nuevo.set(v, k);
-      pos.push(A.position.getX(v), A.position.getY(v), A.position.getZ(v));
-      if (A.normal) nor.push(A.normal.getX(v), A.normal.getY(v), A.normal.getZ(v)); else nor.push(0, 1, 0);
+      const nx = A.normal ? A.normal.getX(v) : 0, ny = A.normal ? A.normal.getY(v) : 1, nz = A.normal ? A.normal.getZ(v) : 0;
+      pos.push(A.position.getX(v) - nx * hundir, A.position.getY(v) - ny * hundir, A.position.getZ(v) - nz * hundir);
+      nor.push(nx, ny, nz);
       const u = A.uv ? THREE.MathUtils.clamp(A.uv.getX(v), 0, 1) : 0.5, w = A.uv ? THREE.MathUtils.clamp(A.uv.getY(v), 0, 1) : 0.5;
       // píxel y medio hacia dentro de la celda, para que no se cuele la de al lado
       const m = 1.5 / CELDA;
