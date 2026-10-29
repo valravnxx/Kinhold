@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-10-29T17:24:24+00:00",
-  "tarea": "Planificar el hito: cómo cargan otros juegos el terreno por trozos con niveles de detalle (y en un hilo aparte), medir el visor del mapa v13 en el móvil y desglosar las tareas",
-  "hito": "mundo-juego",
-  "rama": "trabajo/20261029-1724"
- },
+ "A": null,
  "B": null
 }
