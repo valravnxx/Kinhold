@@ -2144,7 +2144,7 @@
    "Arreglo de paso: pasado el llano, el personaje cruzaba las lomas por dentro (siempre a altura 0); ahora camina por encima del terreno.",
    "En línea, lo recogido aún es de cada navegador (el servidor no lo lleva todavía)."
   ],
-  "pruebas": "En curso: tercera batería completa; correctas hasta el combate en el navegador.",
+  "pruebas": "En curso: tercera batería; jugar en línea en el navegador dio un tiempo agotado, se repite al final.",
   "capturas": "capturas/construccion-v34",
   "estado": "ok"
  }
