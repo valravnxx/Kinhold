@@ -796,7 +796,9 @@
     },
     {
      "nombre": "Personalización en el juego de toda la ropa y la armadura (pedido de valravnx): color o tinte de cada prenda, blasón o dibujo en la sobreveste, y qué capas lleva. Para eso las texturas de la ropa pasan a ir en gris con el color aparte, que se cambia sin rehacer el modelo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T18:54:47+00:00",
+     "rama": "trabajo/20261029-1854"
     },
     {
      "nombre": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, corte, tejido y tinte (sin calidades), sobre el mismo esqueleto",
