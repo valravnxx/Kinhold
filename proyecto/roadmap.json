@@ -77,9 +77,10 @@
     },
     {
      "nombre": "Publicar solo las capturas de cada cambio (no la batería entera de la prueba) y, en la web, no llenar cada entrada del diario con todas (lo pidió valravnx el 29 oct)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T13:03:35+01:00",
-     "rama": "trabajo/20261029-1305-capturas"
+     "rama": "trabajo/20261029-1305-capturas",
+     "fin": "2026-10-29T13:17:37+01:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
