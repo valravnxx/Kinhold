@@ -1,0 +1,20 @@
+Ángulos y estados
+  OK   el giro de 170° a -170° pasa por 180° (camino corto) — 180.0°
+  OK   un estado roto no vale (NaN, lejísimos, animación rara)
+  OK   a mitad de camino, a mitad de sitio; lo desordenado no cuenta — x=0.5
+  OK   sin estados nuevos sigue un poco y se para — x=3.5 a los 900 ms
+  OK   el servidor quita el vaivén de la subida y no se deja engañar con la hora — 1100, 1300, 1301
+Dos clientes con lag de 60–140 ms en cada sentido
+  OK   B ve a A con el autor que puso el servidor, y no se ve a sí mismo — 248 fotogramas con A; autores vistos: jugador:22b89e9a
+  OK   A ve a B quieto donde está
+  OK   A sigue el círculo en la pantalla de B (menos de 10 cm fuera) — 2.8 cm como mucho
+  OK   el movimiento es suave: ningún salto de más de 2,5 veces lo que toca y casi ningún fotograma parado — paso mayor 1.36×, 0 de 247 parados
+  OK   el giro cambia poco a poco, también al pasar por 180° — giro mayor por fotograma 0.086 rad
+  OK   llega la animación
+  OK   B ve a A con menos de medio segundo de retraso — medio 328 ms, máximo 341 ms
+  (tráfico que recibe B con un jugador a la vista: 1.55 KB/s)
+  OK   un estado roto recibe un error y no se reparte
+  OK   el que llega después ve dónde están los demás — jugador:22b89e9a, jugador:d279b5d6
+  OK   cuando A se va, desaparece de B y de C
+
+15 correctas, 0 fallos
