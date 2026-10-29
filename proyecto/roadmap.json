@@ -816,9 +816,9 @@
     },
     {
      "nombre": "Niveles de detalle del personaje del taller: versiones reducidas para verlo de lejos, cambio automático por distancia y texturas juntas; medido con 20 personajes en pantalla, y el rendimiento en el móvil medido y ajustado",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T21:59:27+00:00",
-     "rama": "trabajo/20261029-2159"
+     "fin": "2026-10-29T23:27:46+00:00"
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «las barbas, horribles»): rehacer las barbas del taller hasta que se vean como barbas de verdad, revisadas en capturas de cerca antes de enseñarlas",
@@ -1640,6 +1640,13 @@
      "archivo": "jugar/demo/v42.html",
      "capturas": "capturas/personaje-v23",
      "notas": "En «Personaje», «Hechura de la ropa»: material (lino o lana), corte y tejido (liso, sarga, espiguilla, cuadros o rayas) de cada prenda de tela puesta, sobre el mismo modelo."
+    },
+    {
+     "v": "v43",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v43.html",
+     "capturas": "capturas/demo-v43",
+     "notas": "Niveles de detalle de los personajes. En «Construir», el botón de los fps dice cuántos hay en cada nivel, deja apagarlos para comparar y tiene 20 personajes de prueba, los últimos delante de la cámara hasta 65 m."
     }
    ]
   },
@@ -2263,6 +2270,13 @@
      "archivo": "jugar/personaje/v23.html",
      "capturas": "capturas/personaje-v23",
      "notas": "Hechura de la ropa: en Opciones, para cada prenda de tela puesta, el material (lino o lana), el corte (largo, a media pierna o corto) y el tejido (liso, sarga, espiguilla, cuadros o rayas), sobre el mismo modelo y sin recargarlo. Con una prenda más corta encima asoma la de debajo."
+    },
+    {
+     "v": "v24",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/personaje/v24.html",
+     "capturas": "capturas/personaje-v24",
+     "notas": "Niveles de detalle del personaje del taller: de lejos lleva menos triángulos y, más lejos, una sola pieza con las texturas juntas; fuera de la cámara no se dibuja. Para verlos de cerca, ?detalle=1 o ?detalle=2 en la dirección."
     }
    ]
   },
