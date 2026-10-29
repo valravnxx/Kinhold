@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 29 oct 2026 (13:02) — por el chat: capturas de cada noticia
+valravnx: «cuando pasas una noticia sobre un tema concreto, pasas las capturas de TODO lo anterior relacionado, a veces más de 20 capturas siendo las 2 últimas las relacionadas, arregla eso». → Se publican solo las capturas del cambio (capturas.py pide cuáles) y en la web las entradas con muchas enseñan unas pocas y el resto plegado.
+
 ### 29 oct 2026 (11:02) — por el chat: pruebas en la nube
 valravnx, tras medir que las pruebas de navegador tardan horas porque esta máquina no tiene gráfica (construcción sola, 55 min; el juego se dibuja a menos de 3 fotogramas por segundo): «toma la 1, hazlo, mira a ver cómo va, si va todo bien, si lo puedes hacer totalmente por tu cuenta sin necesitarme a mí, y si lo puedes hacer, pasa todos los procesos ahí». → Tarea en el hito «Infraestructura»: las pruebas en GitHub Actions (gratis en repositorio público, 4 núcleos, hasta 20 trabajos a la vez), con una prueba piloto antes de pasarlo todo.
 
