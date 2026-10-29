@@ -637,9 +637,9 @@
     },
     {
      "nombre": "Adarve (pasarela por detrás de la empalizada: tablas y postes, sostiene 300 kg), al que se sube por escalera de mano o de tablas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T09:21:31+00:00",
-     "rama": "trabajo/20261029-0921"
+     "fin": "2026-10-29T13:40:38+00:00"
     },
     {
      "nombre": "Decoración que falta del documento de sistemas: tinaja, antorcha de pared, tapiz y ganchos para herramientas",
@@ -1438,6 +1438,13 @@
      "archivo": "jugar/demo/v36.html",
      "capturas": "capturas/construccion-v35",
      "notas": "En «Construir», recoger ramas, piedra, sílex y fibra (construcción v35)"
+    },
+    {
+     "v": "v37",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v37.html",
+     "capturas": "capturas/construccion-v36",
+     "notas": "En «Construir», el adarve detrás de la empalizada (construcción v36)"
     }
    ]
   },
@@ -1676,6 +1683,13 @@
      "archivo": "jugar/construccion/v35.html",
      "capturas": "capturas/construccion-v35",
      "notas": "Recoger del suelo y de las plantas (N0): ramas en el bosque, piedra suelta en la ladera, sílex en un afloramiento de caliza y fibra de ortigas y hierba larga en el claro, con Usar; va al inventario por huecos y vuelve a salir pasado su tiempo"
+    },
+    {
+     "v": "v36",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/construccion/v36.html",
+     "capturas": "capturas/construccion-v36",
+     "notas": "Adarve: pasarela de tablas a 1,8 m por detrás de la empalizada, para asomarse entre las puntas; se sube por una escalera de mano o de tablas puesta delante, que salen más cortas"
     }
    ]
   },
