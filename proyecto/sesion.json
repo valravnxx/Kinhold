@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-10-29T15:39:05+00:00",
-  "tarea": "Web por debajo de 1 GB (decidido por valravnx el 29 oct): las versiones jugables antiguas pasan a las «releases» de GitHub, descargables, sin borrar ninguna; en la web quedan las recientes con enlace a las antiguas, y las capturas viejas se rehacen más pequeñas. Medir el tamaño antes y después. Las releases las crea una acción de GitHub (desde las sesiones no se puede: comprobado el 29 oct), como las pruebas en la nube",
-  "hito": "despejar",
-  "rama": "trabajo/20261029-1540"
- },
+ "A": null,
  "B": null
 }

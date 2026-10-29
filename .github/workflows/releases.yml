@@ -1,0 +1,23 @@
+# Versiones jugables antiguas a las «releases» de GitHub (lo decidió valravnx el 29 oct: la web por debajo de 1 GB,
+# sin borrar ninguna versión). Desde las sesiones no se pueden crear releases, así que lo hace esta acción.
+# Se lanza a mano: pestaña Actions → «releases» → «Run workflow» (rama main). Crea la release «jugar-<prototipo>» si
+# falta y le sube cada versión antigua como <prototipo>-vN.html, sin sobrescribir nada ya subido. Repetirla no hace daño.
+# Después, una sesión quita de docs/ lo que ya está en su release:
+#   node herramientas/archivar_versiones.mjs quitar && node herramientas/construir_web.mjs
+name: releases
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  archivar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Subir las versiones antiguas a sus releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node herramientas/archivar_versiones.mjs subir

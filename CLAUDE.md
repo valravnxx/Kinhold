@@ -16,7 +16,7 @@ Kinhold es el juego de valravnx: supervivencia medieval "tipo MMO" en el navegad
 - `herramientas/taller/` — taller de personajes (Blender + MPFB2 sin pantalla): `vestir_mpfb.py` (cuerpo y ropa por capas), `pasar_animaciones.mjs`, `preparar_mh.mjs`. Recursos publicados en `docs/recursos/personajes/taller-vN/` (no se tocan; los nuevos van en otra carpeta).
 - `src/` — código. `src/logica/` y `src/combate/logica.js` son lógica pura (sin three.js) para que el servidor la pueda ejecutar luego sin rehacerla. Mantenerlo así.
 - `pruebas/` — pruebas de lógica (node) y de navegador (Python Playwright con Chromium sin pantalla).
-- `docs/` — la web pública (GitHub Pages, rama main, carpeta /docs). Se genera con `node herramientas/construir_web.mjs`. Las versiones jugables están en `docs/jugar/<prototipo>/<vN>.html` y **nunca se borran ni se sobrescriben**.
+- `docs/` — la web pública (GitHub Pages, rama main, carpeta /docs). Se genera con `node herramientas/construir_web.mjs`. Las versiones jugables están en `docs/jugar/<prototipo>/<vN>.html` y **nunca se borran ni se sobrescriben**; para que la web quepa en 1 GB (valravnx, 29 oct), las antiguas pasan a las releases de GitHub con `herramientas/archivar_versiones.mjs` (en la web quedan las 5 últimas de cada prototipo) y solo se quitan de `docs/` cuando ya están en su release. Las capturas viejas se encogen con `python3 herramientas/encoger_capturas.py`.
 - Web: https://valravnxx.github.io/Kinhold/ (con K mayúscula: el repositorio se llama Kinhold y la dirección distingue mayúsculas)
 
 ## Una sesión de trabajo (tarea programada cada hora)
