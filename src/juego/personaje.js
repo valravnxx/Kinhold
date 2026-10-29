@@ -7,6 +7,29 @@ import { mat, cajaR, deMano } from '../mundo/modelos.js';
 import { Lote } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
+import { NIVELES, OCULTO, RADIO_VISTA, nivelDetalle, pixelesEnPantalla } from '../logica/detalle.js';
+
+// Niveles de detalle (src/logica/detalle.js): cada personaje mira lo alto que sale en pantalla desde la cámara que se
+// le da aquí y pone el suyo. Sin cámara, todos enteros. `forzar`: un nivel fijo para todos (pruebas y capturas).
+const vista = { camara: null, forzar: null };
+export function camaraDetalle(camara, forzar = null) { vista.camara = camara; vista.forzar = forzar; }
+// para medir: con false, todos enteros y dibujados (como antes de los niveles); niveles(): cuántos personajes hay en cada nivel
+export function usarDetalle(si) { vista.apagado = !si; }
+export const detalleEncendido = () => !vista.apagado;
+const cuenta = new Set();
+export function nivelesEnUso() { const r = [0, 0, 0, 0]; for (const j of cuenta) if (j.mh && j.raiz.parent) r[j.mh.nivel]++; return r; }
+const _p = new THREE.Vector3(), _m = new THREE.Matrix4(), _f = new THREE.Frustum(), _e = new THREE.Sphere();
+function nivelPara(j) {
+  if (vista.apagado) return 0;
+  if (vista.forzar !== null) return vista.forzar;
+  const c = vista.camara; if (!c) return 0;
+  j.raiz.getWorldPosition(_p); _p.y += 0.9;
+  // fuera de la vista de la cámara: no se dibuja
+  _f.setFromProjectionMatrix(_m.multiplyMatrices(c.projectionMatrix, c.matrixWorldInverse));
+  if (!_f.intersectsSphere(_e.set(_p, RADIO_VISTA))) return OCULTO;
+  const px = pixelesEnPantalla(_p.distanceTo(c.position), innerHeight, c.fov);
+  return nivelDetalle(px, j.mh.nivel);
+}
 
 const PIEL = 0xd6a77a, LINO = 0xd9cfb8, LINO_OSC = 0xbfb498, PELO = 0x4a3324, CORDEL = 0x8a7a55;
 
@@ -118,6 +141,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     raiz.add(mh.raiz);
     j.mh = mh;
     j.hacha = empunarHacha(mh);
+    cuenta.add(j);
   }).catch(e => { j.error = e.message || String(e); console.warn('Personaje del taller no cargado, sigue el muñeco:', e); });
   j.animar = (velocidad, dt, talando = false) => {
     if (!j.mh) { animarMuneco(muneco, velocidad, dt); return; }
@@ -131,7 +155,14 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     if (m !== j.modo) { j.mh.poner(m, 0.2); j.modo = m; }
     if (j.hacha) j.hacha.visible = m === 'talar' || !!j.hachaEnMano;   // también si la llevas en la mano (inventario)
     j.mh.acciones[m].timeScale = ritmo;
-    j.mh.mezclador.update(dt);
+    // el nivel de detalle; lejos, los huesos se mueven cada pocos fotogramas (con el tiempo de todos), y si no se ve, no
+    const n = nivelPara(j);
+    if (n !== j.mh.nivel) j.mh.ponerNivel(n);
+    const cada = n < NIVELES.length ? NIVELES[n].cada : 0;
+    j.dtPendiente = (j.dtPendiente || 0) + dt;
+    j.cuadro = (j.cuadro || 0) + 1;
+    if (cada && j.cuadro % cada === 0) { j.mh.mezclador.update(j.dtPendiente); j.dtPendiente = 0; }
+    else if (!cada) j.dtPendiente = Math.min(j.dtPendiente, 1);
   };
   return j;
 }

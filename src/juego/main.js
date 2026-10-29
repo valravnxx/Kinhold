@@ -4,7 +4,7 @@ import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geome
 import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto, moverHumo } from '../mundo/modelos.js';
-import { crearJugador } from './personaje.js';
+import { crearJugador, camaraDetalle, usarDetalle, detalleEncendido, nivelesEnUso } from './personaje.js';
 import { personajeElegido, recursosTaller } from '../mundo/eleccion.js';
 import { REGISTRO, VERSION } from './registro.js';
 import { t } from './textos.js';
@@ -128,6 +128,8 @@ const jugador = elegido ? crearJugador(RECURSOS_MH, elegido.sexo, elegido.capas,
 escena.add(jugador.raiz);
 const pj = { x: 0, y: 0, z: 4, k: 0, rot: Math.PI, vel: 0 };
 const cam = { yaw: Math.PI * 0.25, pitch: 0.9, dist: 16 };
+// niveles de detalle de los personajes según lo que miden en pantalla desde esta cámara; ?detalle=0|1|2 lo fija (pruebas)
+{ const f = new URLSearchParams(location.search).get('detalle'); camaraDetalle(camara, f === null || f === '' ? null : +f); }
 
 // Gente de prueba, solo para medir el rendimiento con varios personajes (botón de la demo): personajes del taller
 // que pasean en corro alrededor de donde estás. No son jugadores ni cambian el mundo: solo se dibujan.
@@ -135,13 +137,21 @@ const ROPA_PRUEBA = { hombre: [['tunica'], ['gambeson'], ['gambeson', 'cota', 's
 const gente = [];
 ofrecerGente({
   cuantos: () => gente.length,
+  // niveles de detalle: cuántos hay en cada uno, y apagarlos para comparar
+  niveles: nivelesEnUso, detalle: (si) => { if (si !== undefined) usarDetalle(si); return detalleEncendido(); },
   poner(n) {
     while (gente.length > n) escena.remove(gente.pop().j.raiz);
     while (gente.length < n) {
       const i = gente.length, sexo = i % 2 ? 'mujer' : 'hombre', ropas = ROPA_PRUEBA[sexo];
       const j = crearJugador(RECURSOS_MH, sexo, ropas[Math.floor(i / 2) % ropas.length]);
       escena.add(j.raiz);
-      gente.push({ j, cx: pj.x, cz: pj.z, radio: 3 + (i % 4) * 1.2, ang: i * 2.4, sentido: i % 3 ? 1 : -1 });
+      // los 8 primeros, en corro a tu alrededor; los demás, en corros pequeños delante de la cámara, cada vez más lejos
+      // (de 10 a 65 m), para medir con los niveles de detalle (src/logica/detalle.js) con todos en pantalla
+      if (i < 8) gente.push({ j, cx: pj.x, cz: pj.z, radio: 3 + (i % 4) * 1.2, ang: i * 2.4, sentido: i % 3 ? 1 : -1 });
+      else {
+        const d = 10 + (i - 8) * 5, a = cam.yaw + Math.PI + (i % 2 ? 0.3 : -0.3) * (1 - (i - 8) / 16);
+        gente.push({ j, cx: pj.x + Math.sin(a) * d, cz: pj.z + Math.cos(a) * d, radio: 1.5, ang: i * 2.4, sentido: i % 3 ? 1 : -1 });
+      }
     }
   },
 });

@@ -1200,5 +1200,10 @@
  "v23, decisiones provisionales: el tejido va en el tono de la propia tela (más claro y más oscuro), sin segundo color; el corte solo acorta (el modelo no tiene tela de más) y deja un dobladillo algo más oscuro; el manto y la capucha son solo de lana y la toca, solo de lino. En la lógica (src/logica/hechura.js), coser una prenda pide las telas del material y del tejido elegidos, hilo y, el gambesón, relleno, y sale con su hechura, su tinte y su autor. Aún no se cose en el juego ni se lleva en el inventario: eso va con el banco y el telar.": "v23, временные решения: узор ткани — в тоне самой ткани (светлее и темнее), без второго цвета; длина только укорачивает (у модели нет лишней ткани) и оставляет чуть более тёмный подол; плащ и капюшон только из шерсти, а повойник только из льна. В логике (src/logica/hechura.js) шитьё вещи требует ткани выбранного материала и переплетения, нитку и, для стёганки, набивку, и вещь выходит со своим покроем, своим цветом и своим автором. В игре её пока не шьют и в инвентаре не носят: это придёт с верстаком и ткацким станком.",
  "Personaje · v23 (hechura de la ropa: material, corte y tejido)": "Персонаж · v23 (покрой одежды: материал, длина и переплетение)",
  "v42: en «Personaje», «Hechura de la ropa»: cada prenda de tela puesta con su material (lino o lana), su corte (largo, a media pierna o corto) y su tejido (liso, sarga, espiguilla, cuadros o rayas), sobre el mismo modelo. Aún no en «Construir» ni en «Duelo».": "v42: в «Персонаже», «Покрой одежды»: каждая надетая вещь из ткани со своим материалом (лён или шерсть), длиной (длинная, до середины голени или короткая) и переплетением (гладкое, саржа, ёлочка, клетка или полоски), на той же модели. Пока не в «Строительстве» и не в «Поединке».",
- "Demo única · v42 (hechura de la ropa)": "Единое демо · v42 (покрой одежды)"
+ "Demo única · v42 (hechura de la ropa)": "Единое демо · v42 (покрой одежды)",
+ "Niveles de detalle": "Уровни детализации",
+ "cerca {a}, medio {b}, lejos {c}, sin dibujar {d}": "близко {a}, средне {b}, далеко {c}, не рисуются {d}",
+ "Niveles de detalle:": "Уровни детализации:",
+ "sí": "да",
+ "no (todos enteros)": "нет (все полностью)"
 }

@@ -20,7 +20,7 @@ const CSS = `
 #demoRend p{margin:6px 0 0;color:#bfb19a}
 #demoRend[hidden]{display:none!important}
 `;
-const GENTE = [0, 4, 8, 16];
+const GENTE = [0, 4, 8, 16, 20];
 const miles = (n) => (n / 1000).toFixed(n < 10000 ? 1 : 0);
 
 // pone el botón detrás de `boton` (el de «Menú») y el panel; devuelve la función que refresca los números
@@ -57,10 +57,14 @@ export function ponerRendimiento(boton) {
       [tr('Memoria de JavaScript'), mem],
       [tr('Personajes en escena'), String(m.personajes)],
     ];
+    // niveles de detalle de los personajes (src/logica/detalle.js): cuántos hay en cada uno
+    if (g && g.niveles) { const n = g.niveles(); filas.push([tr('Niveles de detalle'), tr('cerca {a}, medio {b}, lejos {c}, sin dibujar {d}', { a: n[0], b: n[1], c: n[2], d: n[3] })]); }
     panel.innerHTML = `<b>${tr('Rendimiento en este aparato')}</b><table>${filas.map(f => `<tr><td>${f[0]}</td><td>${f[1]}</td></tr>`).join('')}</table>` +
       (g ? `<div class="gente">${tr('Personajes de prueba:')} ${GENTE.map(n => `<button data-gente="${n}" class="${g.cuantos() === n ? 'sel' : ''}">${n}</button>`).join('')}</div>` : '') +
+      (g && g.detalle ? `<div class="gente">${tr('Niveles de detalle:')} <button data-detalle="1" class="${g.detalle() ? 'sel' : ''}">${tr('sí')}</button><button data-detalle="0" class="${g.detalle() ? '' : 'sel'}">${tr('no (todos enteros)')}</button></div>` : '') +
       `<p>${tr('valravnx: dime los fps que ves en tu móvil (y qué móvil es), en «Construir» y en «Duelo». Con eso se decide cuánto detalle aguanta.')}</p>`;
     for (const x of panel.querySelectorAll('[data-gente]')) x.onclick = () => { g.poner(+x.dataset.gente); refrescar(); };
+    for (const x of panel.querySelectorAll('[data-detalle]')) x.onclick = () => { g.detalle(x.dataset.detalle === '1'); refrescar(); };
   }
   setInterval(refrescar, 1000);
   return refrescar;

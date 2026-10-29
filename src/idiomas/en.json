@@ -1200,5 +1200,10 @@
  "v23, decisiones provisionales: el tejido va en el tono de la propia tela (más claro y más oscuro), sin segundo color; el corte solo acorta (el modelo no tiene tela de más) y deja un dobladillo algo más oscuro; el manto y la capucha son solo de lana y la toca, solo de lino. En la lógica (src/logica/hechura.js), coser una prenda pide las telas del material y del tejido elegidos, hilo y, el gambesón, relleno, y sale con su hechura, su tinte y su autor. Aún no se cose en el juego ni se lleva en el inventario: eso va con el banco y el telar.": "v23, provisional decisions: the weave uses the cloth's own tone (lighter and darker), with no second colour; the cut only shortens (the model has no extra cloth) and leaves a slightly darker hem; the cloak and hood are wool only and the coif linen only. In the logic (src/logica/hechura.js), sewing a garment asks for cloth of the chosen material and weave, thread and, for the gambeson, padding, and it comes out with its make, its dye and its maker. It is not yet sewn in the game nor carried in the inventory: that comes with the workbench and the loom.",
  "Personaje · v23 (hechura de la ropa: material, corte y tejido)": "Character · v23 (clothing make: material, cut and weave)",
  "v42: en «Personaje», «Hechura de la ropa»: cada prenda de tela puesta con su material (lino o lana), su corte (largo, a media pierna o corto) y su tejido (liso, sarga, espiguilla, cuadros o rayas), sobre el mismo modelo. Aún no en «Construir» ni en «Duelo».": "v42: in «Character», «Clothing make»: every cloth garment worn with its material (linen or wool), its cut (long, mid-calf or short) and its weave (plain, twill, herringbone, checks or stripes), on the same model. Not yet in «Build» or «Duel».",
- "Demo única · v42 (hechura de la ropa)": "Single demo · v42 (clothing make)"
+ "Demo única · v42 (hechura de la ropa)": "Single demo · v42 (clothing make)",
+ "Niveles de detalle": "Levels of detail",
+ "cerca {a}, medio {b}, lejos {c}, sin dibujar {d}": "near {a}, mid {b}, far {c}, not drawn {d}",
+ "Niveles de detalle:": "Levels of detail:",
+ "sí": "yes",
+ "no (todos enteros)": "no (all at full detail)"
 }

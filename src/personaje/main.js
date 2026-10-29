@@ -38,6 +38,7 @@ const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../
 // personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v13/ (las anteriores publicadas no se tocan)
 const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v13/';
 // las 39 animaciones extra del taller propio, pasadas a su esqueleto (aparte: taller-anim-v1/)
+const DETALLE = +(new URLSearchParams(location.search).get('detalle') || 0);
 const RECURSOS_ANIM_MH = new URLSearchParams(location.search).get('animMH') || '../../recursos/personajes/taller-anim-v1/';
 // capas puestas en el taller propio, por sexo (por defecto: túnica en el hombre, vestido en la mujer)
 const capasMH = () => (estado.capas && estado.capas[estado.sexo]) || [estado.sexo === 'mujer' ? 'vestido' : 'tunica'];
@@ -120,6 +121,8 @@ async function rehacer() {
   pj.raiz.position.copy(POS); pj.raiz.rotation.y = GIRO;
   escena.add(pj.raiz);
   pj.poner(estado.modo, 0); pj.mezclador.update(0.5);
+  // ?detalle=1 o 2: el personaje con el nivel de detalle de media distancia o de lejos, visto de cerca (para revisarlos)
+  if (pj.ponerNivel && DETALLE) { await pj.ponerNivel(DETALLE); medida.nivel = pj.nivel; }
   pj.raiz.updateMatrixWorld(true);
   if (estado.vista === 'cara' || estado.vista === 'perfil') ponerVista(estado.vista);
   medida.trianglesPersonaje = pj.triangulos;
@@ -309,5 +312,12 @@ window.__personaje = {
   // milisegundos por fotograma dibujando n veces (para comparar calidades en las pruebas)
   tiempo: (n = 10) => { const gl = renderer.getContext(), px = new Uint8Array(4), sync = () => gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); dibujar(); sync(); const t = performance.now(); for (let i = 0; i < n; i++) { dibujar(); sync(); } return (performance.now() - t) / n; },
   diag: () => ({ escena, renderer, pj, sol, THREE }),
+  // nivel de detalle (src/logica/detalle.js) del personaje, visto donde esté: devuelve sus triángulos y piezas
+  nivel: async (n) => {
+    await pj.ponerNivel(n); dibujar();
+    let piezas = 0, triangulos = 0;
+    pj.modelo.traverse(o => { if (o.isMesh && o.visible) { piezas++; triangulos += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3; } });
+    return { nivel: pj.nivel, triangulos, piezas };
+  },
   hueso: (n) => { const v = new THREE.Vector3(); pj.hueso[n].getWorldPosition(v); return [v.x, v.y, v.z]; },
 };
