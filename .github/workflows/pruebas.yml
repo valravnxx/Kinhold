@@ -7,7 +7,8 @@
 # las capturas y la salida de cada grupo y dice qué ha fallado. Los grupos salen de
 # herramientas/probar_todo.sh --grupos, así que una prueba nueva añadida allí entra sola.
 # Las capturas y la salida vuelven por una rama nube/<ejecución>-<grupo> (desde aquí no se pueden bajar los
-# «artifacts»: están en un almacén al que no se llega); el script la borra después de traerla.
+# «artifacts»: están en un almacén al que no se llega). Desde las sesiones no se pueden borrar ramas, así que limpia la
+# nube: cada ejecución borra su rama nube-pedido al acabar y, al empezar, las nube/ y nube-pedido/ de más de 3 horas.
 name: pruebas
 run-name: ${{ github.ref_name }}
 on:
@@ -22,6 +23,19 @@ jobs:
       grupos: ${{ steps.g.outputs.grupos }}
     steps:
       - uses: actions/checkout@v4
+      - name: Borrar ramas de pruebas viejas (más de 3 horas)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          limite=$(( $(date +%s) - 3 * 3600 ))
+          for prefijo in nube nube-pedido; do
+            gh api "repos/${{ github.repository }}/git/matching-refs/heads/$prefijo/" --jq '.[] | "\(.ref) \(.object.sha)"' | while read -r ref sha; do
+              [ "$ref" = "refs/heads/${{ github.ref_name }}" ] && continue
+              fecha=$(gh api "repos/${{ github.repository }}/commits/$sha" --jq .commit.committer.date) || continue
+              [ "$(date -d "$fecha" +%s)" -lt "$limite" ] && gh api -X DELETE "repos/${{ github.repository }}/git/${ref#refs/}" && echo "borrada $ref"
+            done
+          done
+          true
       - id: g
         env:
           RAMA: ${{ github.ref_name }}
@@ -90,3 +104,12 @@ jobs:
           git push -q -f "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}" HEAD:refs/heads/nube/${{ github.run_id }}-${{ matrix.grupo }}
       - name: Resultado
         run: exit ${{ steps.pruebas.outputs.r }}
+  limpiar:
+    needs: grupo
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Borrar la rama del pedido
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/${{ github.ref_name }}" || true

@@ -4,7 +4,8 @@
 // Uso: node herramientas/pruebas_nube.mjs                       todos los grupos
 //      node herramientas/pruebas_nube.mjs cavar web             solo esos grupos (bash herramientas/probar_todo.sh --grupos)
 //      SIN_TRAER=1 node herramientas/pruebas_nube.mjs           sin traer capturas
-// Lo lanza la subida de una rama nube-pedido/<id>/<grupos>, que se borra al acabar. Hace falta gh con permiso sobre el repositorio (lo tienen las sesiones).
+// Lo lanza la subida de una rama nube-pedido/<id>/<grupos>; esa rama y las nube/ que devuelven los grupos las borra la
+// propia nube (desde las sesiones no se pueden borrar ramas). Hace falta gh con permiso sobre el repositorio (lo tienen las sesiones).
 import { execFileSync } from 'child_process';
 import { mkdirSync, rmSync, readdirSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
@@ -44,15 +45,14 @@ for (;;) {
   await dormir(30);
   let jobs;
   try { jobs = gh(`repos/${REPO}/actions/runs/${run.id}/jobs?per_page=100`).jobs; } catch { continue; }
-  for (const j of jobs) if (j.status === 'completed' && j.name !== 'lista' && !vistos.has(j.name)) {
+  for (const j of jobs) if (j.status === 'completed' && !['lista', 'limpiar'].includes(j.name) && !vistos.has(j.name)) {
     vistos.add(j.name);
     console.log(`  ${j.conclusion === 'success' ? 'bien ' : 'FALLA'} ${j.name} (${min(j.started_at, j.completed_at)} min)`);
   }
   run = gh(`repos/${REPO}/actions/runs/${run.id}`);
   if (run.status === 'completed') break;
 }
-const jobs = gh(`repos/${REPO}/actions/runs/${run.id}/jobs?per_page=100`).jobs.filter(j => j.name !== 'lista');
-try { sh('git', ['push', '-q', 'origin', '--delete', pedido]); } catch {}
+const jobs = gh(`repos/${REPO}/actions/runs/${run.id}/jobs?per_page=100`).jobs.filter(j => !['lista', 'limpiar'].includes(j.name));
 const malos = jobs.filter(j => j.conclusion !== 'success');
 if (!jobs.length) console.log('Ningún grupo ha llegado a arrancar (¿falló la lista?).');
 
@@ -67,7 +67,6 @@ if (!process.env.SIN_TRAER) {
       execFileSync('bash', ['-c', `git archive ${local} | tar -x -C ${C}`]);
       sh('git', ['update-ref', '-d', local]);
     }
-    sh('git', ['push', '-q', 'origin', '--delete', ...refs.map(r => r.slice(11))]);
   }
   console.log(`Capturas y salida en ${C}/ (${refs.length} grupos)`);
   for (const j of malos) {
