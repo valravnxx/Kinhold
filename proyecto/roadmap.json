@@ -334,9 +334,10 @@
     },
     {
      "nombre": "Arreglo (valravnx, 28 oct): en línea, abrir o cerrar una puerta o terminar una obra da tirones horribles a los dos jugadores; que esas acciones no rehagan más de lo que cambia",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T20:58:47+01:00",
-     "rama": "trabajo/20261028-2100-tirones"
+     "rama": "trabajo/20261028-2100-tirones",
+     "fin": "2026-10-29T01:17:37+01:00"
     }
    ]
   },
@@ -1357,6 +1358,13 @@
      "archivo": "jugar/demo/v31.html",
      "capturas": "capturas/demo-v31",
      "notas": "En «Construir», remate de tejado (esquina) de paja, de tablillas y de teja: limatesa en la esquina de fuera y limahoya en el rincón de un tejado en L, según los tramos de al lado."
+    },
+    {
+     "v": "v32",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v32.html",
+     "capturas": "capturas/demo-v32",
+     "notas": "En línea, sin tirones: al abrir o cerrar puertas solo se rehace esa puerta, y lo construido se rehace unas cinco veces más deprisa al terminar una obra. Y en «Duelo», la curación de heridas."
     }
    ]
   },
