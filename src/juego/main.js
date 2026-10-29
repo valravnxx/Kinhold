@@ -14,6 +14,7 @@ import { crearDecorado } from '../mundo/decorado.js';
 import { vigilar, ofrecerGente } from '../mundo/rendimiento.js';
 import { conectarEnLinea } from './en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario } from '../logica/inventario.js';
+import { montarPanelInventario } from './panel_inventario.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -57,7 +58,7 @@ function accion(a) {
   return ejecutar(mundo, registroAcciones, { autor: AUTOR_LOCAL, ...a });
 }
 // Lo que lleva el jugador (inventario por huecos, src/logica/inventario.js): también por acciones con autor.
-// Por ahora solo cuenta para ir más despacio cargado; el panel para cogerlo y verlo llega en el hito 2.
+// Cuenta para ir más despacio cargado; se ve y se cambia en el panel de inventario (src/juego/panel_inventario.js).
 const almacen = (() => { try { return localStorage; } catch (e) { return null; } })();
 const inventarios = almacen ? cargarInventarios(almacen) : cargarInventarios({ getItem: () => null });
 function accionInventario(a) {
@@ -602,7 +603,7 @@ function piezaBajo(clientX, clientY) {
 // (o cualquier otra) W escribe «ц» y antes no movía (lo vio valravnx el 27 oct). Lo que no está en la tabla
 // (+, - y demás) sigue por la letra. Al perder el foco se sueltan todas, para que ninguna se quede pulsada.
 const TECLAS_FISICAS = {
-  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f',
+  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f', KeyI: 'i',
   ArrowUp: 'arrowup', ArrowDown: 'arrowdown', ArrowLeft: 'arrowleft', ArrowRight: 'arrowright',
   ShiftLeft: 'shift', ShiftRight: 'shift', PageUp: 'pageup', PageDown: 'pagedown', Escape: 'escape',
   NumpadAdd: '+', NumpadSubtract: '-',
@@ -622,6 +623,7 @@ addEventListener('keydown', (e) => {
   if (k === 'pageup' || k === '+') cambiarPlanta(1);
   if (k === 'pagedown' || k === '-') cambiarPlanta(-1);
   if (k === 'f') usar();
+  if (k === 'i') panelInventario.alternar();
   if (k === 'escape') cambiarModo('mover');
 });
 addEventListener('keyup', (e) => {
@@ -1314,6 +1316,8 @@ $('btnBaja').onclick = () => cambiarPlanta(-1);
 $('btnUsar').onclick = usar;
 $('btnConfirmar').onclick = confirmarDesmontaje;
 $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltado(); estado.pendienteDesmontar = null; mostrarAviso(''); };
+// Panel de inventario (hito 2): lo que llevas encima y un arcón de pruebas para coger equipo.
+const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario });
 $('btnRellenar').onclick = () => { accion({ tipo: 'rellenar', cantidad: 50 }); guardar(); actualizarUI(); evaluarColocacion(); };
 {
   let armado = false, tmr = null;
@@ -1435,9 +1439,9 @@ window.__kinhold = {
   fijarSubida(t) { if (estado.obrando) estado.obrando.desde = performance.now() + 1e9; if (rampa) { rampa.t = rampa.meta = t; moverRampa(0); } },
   seguirSubida() { if (estado.obrando) estado.obrando.desde = performance.now(); },
   interactivoCercano() { const o = interactivoCercano(); return o && { c: o.c.id, key: o.key, tipo: o.tipo }; },
-  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; reconstruir(); },
+  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; reconstruir(); panelInventario.pintar(); },
   get registroAcciones() { return registroAcciones; },
-  accionInventario, get inventario() { return inventario(); },
+  accionInventario, get inventario() { return inventario(); }, panelInventario,
   get enLinea() { return enLinea; },
   reconstruir() { reconstruir(); },
   render() { renderer.render(escena, camara); },

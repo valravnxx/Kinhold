@@ -58,6 +58,42 @@ body.construyendo #pomo{left:25px;top:25px}
 .panel kbd{background:#4a3e30;border-radius:4px;padding:1px 6px;font-size:12px}
 #version{color:var(--muted);font-size:12px}
 
+/* panel de inventario (src/juego/panel_inventario.js) */
+#panelInventario{max-width:860px;max-height:86vh;inset:56px 12px auto 12px;z-index:20}
+#panelInventario h3{margin:0 0 6px;font-size:14px;color:var(--acento)}
+#panelInventario h4{margin:8px 0 4px;font-size:12px;color:var(--muted);font-weight:600}
+.inv-cuerpo{display:flex;gap:16px;align-items:flex-start}
+.inv-silueta{position:relative;flex:0 0 300px;height:390px}
+.inv-silueta svg{position:absolute;left:18%;top:0;width:64%;height:100%;fill:rgba(241,232,216,.10);stroke:rgba(241,232,216,.22);stroke-width:.6}
+.inv-sitio{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;width:66px}
+.inv-sitio small{font-size:10px;color:var(--muted);margin-top:1px;white-space:nowrap}
+.inv-c{width:54px;height:54px;padding:2px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;line-height:1.1;position:relative;overflow:hidden;background:rgba(58,48,38,.88)}
+.inv-c.vacio{background:rgba(30,25,20,.55);border-style:dashed}
+.inv-c.lleno{border-color:rgba(217,164,65,.45)}
+.inv-c.contenedor{box-shadow:inset 0 -3px 0 rgba(217,164,65,.55)}
+.inv-c.abierto{outline:2px solid rgba(217,164,65,.6)}
+.inv-c.sel{background:var(--acento);color:#241b10;border-color:transparent}
+.inv-c.bloqueada{opacity:.45}
+.inv-c.mini{width:40px;height:40px;font-size:9px}
+.inv-et{color:var(--muted);font-size:9.5px}
+.inv-nom{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-align:center;word-break:break-word}
+.inv-n{position:absolute;right:3px;bottom:1px;font-size:11px}
+.inv-cinto{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:4px}
+.inv-lado{flex:1;min-width:0}
+.inv-rejilla{display:flex;flex-wrap:wrap;gap:6px}
+.inv-nota{color:var(--muted);font-size:12px;margin:2px 0 6px}
+.inv-atras{padding:1px 8px;margin-right:6px}
+.inv-sel p{margin:6px 0 2px}
+.inv-botones{display:flex;gap:6px;flex-wrap:wrap}
+.inv-botones button{padding:5px 10px;font-size:12.5px}
+.inv-aviso{min-height:18px;margin:8px 0 4px;font-size:12.5px;color:var(--verde)}
+.inv-aviso.error{color:var(--rojo)}
+.inv-carga{font-size:12.5px;color:var(--ink);border-top:1px solid var(--linea);padding-top:6px}
+.inv-arcon{margin-top:10px;border-top:1px solid var(--linea);padding-top:8px}
+.inv-grupo>div{display:flex;flex-wrap:wrap;gap:4px}
+.inv-objeto{padding:4px 8px;font-size:11.5px;border-radius:7px}
+.inv-objeto.sel{background:var(--acento);color:#241b10}
+
 @media (max-width:640px){
   #materiales{font-size:11.5px;max-width:58vw}
   #menu button{padding:5px 8px;font-size:11.5px}
@@ -65,6 +101,11 @@ body.construyendo #pomo{left:25px;top:25px}
   #modos{top:auto;bottom:auto;top:120px;transform:none}
   #modos button,#acciones button{min-width:84px;padding:8px 10px}
   .pieza{min-width:128px}
+  /* en el móvil, el inventario va a pantalla completa */
+  #panelInventario{inset:0;max-width:none;max-height:none;height:100%;border-radius:0;padding:calc(10px + env(safe-area-inset-top,0px)) 10px calc(14px + env(safe-area-inset-bottom,0px))}
+  .inv-cuerpo{flex-direction:column;align-items:center;gap:6px}
+  .inv-silueta{flex:none;width:300px;height:370px}
+  .inv-lado{width:100%}
 }
 </style>
 </head>
@@ -74,6 +115,7 @@ body.construyendo #pomo{left:25px;top:25px}
 <div id="superior">
   <div id="materiales"></div>
   <div id="menu">
+    <button id="btnInventario">Inventario</button>
     <button id="btnRellenar">+ Materiales</button>
     <button id="btnRegistro">Decisiones</button>
     <button id="btnAyuda">Ayuda</button>
@@ -106,6 +148,7 @@ body.construyendo #pomo{left:25px;top:25px}
 
 <div id="joystick" hidden><div id="pomo"></div></div>
 
+<div id="panelInventario" class="panel" hidden></div>
 <div id="panelRegistro" class="panel" hidden>
   <button class="cerrar">✕</button>
   <h2>Decisiones tomadas en este hito</h2>
