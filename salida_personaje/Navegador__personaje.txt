@@ -1,0 +1,131 @@
+Vista pc
+  OK   por defecto sale el taller propio
+  OK   cuerpo: se ve el personaje — desviación 48
+  OK   cara: se ve el personaje — desviación 41
+  OK   perfil: se ve el personaje — desviación 55
+  OK   espalda: se ve el personaje — desviación 39
+  OK   las vistas son distintas
+  OK   personaje dentro de presupuesto (≤ 36 mil triángulos) — 19825
+  OK   al andar se mueven piernas y brazos — 0.250 m
+  OK   variante 1 cargada y distinta — diferencia 8.6
+  OK   variante 1: se ve la cara
+  OK   variante 2 cargada y distinta — diferencia 7.7
+  OK   variante 2: se ve la cara
+  OK   variante 3 cargada y distinta — diferencia 8.1
+  OK   variante 3: se ve la cara
+  OK   calidad alta por defecto
+  OK   calidad ligera: todo con material sencillo — [8, 0, 'ligera']
+  OK   ropa, pelo y barba comparten un solo esqueleto — 1 esqueletos
+  OK   el traje de explorador no se ofrece (demasiado de fantasía)
+  OK   los interruptores quitan sombras y escenario — [False, False]
+  OK   el botón Hombre cambia el personaje
+  OK   sin desplazamiento horizontal — 1280px
+  OK   #estilos dentro de la pantalla
+  OK   #inferior dentro de la pantalla
+  OK   #opciones dentro de la pantalla
+  OK   las notas se abren
+  OK   taller propio: carga el personaje de MakeHuman
+  OK   taller propio (hombre): se ve — 6.5
+  OK   taller propio (hombre): se ve la cara — 12.5
+  OK   taller propio (hombre): de pie recto (cabeza y hombros sobre la pelvis, brazos sin irse atrás) — 8.5 cm, 5.7 cm, 2.0 cm, 2.0 cm
+  OK   taller propio (hombre): al andar se mueven piernas y brazos — 0.222 m
+  OK   taller propio (hombre): al correr, zancada natural y poco bote — correr 3.53 m/s, andar 0.95 m/s, bote 10 cm
+  OK   taller propio (mujer): se ve — 5.7
+  OK   taller propio (mujer): se ve la cara — 16.6
+  OK   taller propio (mujer): de pie recto (cabeza y hombros sobre la pelvis, brazos sin irse atrás) — 5.5 cm, 3.5 cm, 0.7 cm, 1.7 cm
+  OK   taller propio (mujer): al andar se mueven piernas y brazos — 0.182 m
+  OK   taller propio (mujer): al correr, zancada natural y poco bote — correr 2.85 m/s, andar 0.77 m/s, bote 9 cm
+  OK   capas: el gambesón se pone encima y tapa el cuerpo de la prenda de debajo — mujer_capa_gambeson, mujer_capa_gambeson_falda, mujer_capa_gambeson_mangas, mujer_capa_vestido, mujer_capa_vestido_mangas, mujer_cinturon_gambeson, mujer_cinturon_vestido
+  OK   capas: al quitarlo vuelve como estaba
+  OK   capas: con sobreveste se ven las mangas y el cuello de la cota — mujer_capa_cota, mujer_capa_cota_mangas, mujer_capa_sobreveste, mujer_capa_sobreveste_falda, mujer_capa_vestido_falda, mujer_capa_vestido_mangas, mujer_capa_zapatos
+  OK   ropa: la tabla dice lo que frena la cota (torso y brazos 64 % del corte; cabeza nada) y lo que pesa — [['', 'Corte', 'Estocada', 'Contundente'], ['Cabeza', '—', '—', '—'], ['Torso', '64 %', '31 %', '13 %'], ['Brazos', '64 %', '31 %', '13 %'], ['Piernas', '64 %', '31 %', '13 %']] · Peso: 12,5 kg · Abrigo: 19,5Llevas: Camisa de lino, Zapatos de cuero, Vestido de lana, Cota de malla, Sobreveste de lino
+  OK   hombre con cota: se ve su cinturón y ciñe la cintura (no llega a los brazos) — medio ancho 0.186 m
+  OK   tocados: de uno en uno (poner el sombrero quita la capucha) y se quitan — hombre_capa_calzas, hombre_capa_sombrero, hombre_capa_tunica, hombre_capa_tunica_falda, hombre_capa_tunica_mangas, hombre_capa_zapatos
+  OK   tocados: bajo la capucha no asoman las orejas; con el sombrero, sí
+  OK   botas en lugar de zapatos; con la capa se siguen viendo la túnica y su cinturón — hombre_capa_botas, hombre_capa_calzas, hombre_capa_manto, hombre_capa_manto_falda, hombre_capa_tunica, hombre_capa_tunica_falda, hombre_capa_tunica_mangas, hombre_cinturon_tunica
+  OK   aspecto: cambian la piel, los ojos y el pelo (también las cejas y la barba, del mismo color) — piel [0.8845824477447658, 0.5467542764398701, 0.3769194691668358] → [0.42194577167788105, 0.1925184370415175, 0.0868561956797466]
+  OK   aspecto: el pelo rubio es más claro que el castaño oscuro
+  OK   aspecto: con «Bigote» se ve el bigote y no la barba corta
+  OK   aspecto: la cara se ve distinta — diferencia 14.5
+  OK   aspecto: afeitado y rapado (sin barba ni pelo; las cejas y el pelo pintado se quedan)
+  OK   aspecto: melena y barba larga (con el pelo corto y la barba corta debajo)
+  OK   aspecto: trenzas y perilla
+  OK   aspecto: bajo la capucha no asoman las trenzas ni las orejas
+  OK   aspecto: sin la capucha vuelven las trenzas y las orejas
+  OK   formas: peso en la piel y en la túnica; cara, nariz y mentón en la piel (no en la túnica) — [1, 1, 1, 1, 1, None]
+  OK   formas: la piel y la túnica se mueven de verdad (más de 5 mm) y ninguna pieza calcula formas en la GPU — 14 y 19 mm; 0 con formas en la GPU
+  OK   formas: más alto (la cabeza sube un 6 % aprox.) — 1.520 → 1.611 m
+  OK   aspecto: sin volver a cargar el modelo
+  OK   aspecto: se recuerda al recargar — {'piel': 'morena', 'ojos': 'azules', 'pelo': 'rubio', 'peinado': 'rapado', 'barba': 'ninguna', 'formas': {'altura': 1, 'peso': 1, 'musculo': 0, 'cara': 1, 'nariz': -1, 'nariz_larga': 0, 'menton': 1}}
+  OK   taller propio en calidad alta: todo escribe profundidad
+  OK   taller propio dentro de presupuesto (≤ 36 mil triángulos) — 24593
+  OK   vuelve a la base de Quaternius
+  OK   recuerda vista y personaje al recargar — {'luz': 'manana', 'vista': 'perfil', 'modo': 'quieto', 'sexo': 'hombre', 'ropa': 'campesino', 'pelo': 'largo', 'colorPelo': 'rubio', 'piel': 'clara', 'barba': 'si', 'calidad': 'alta', 'sombras': True, 'escena': True, 'base': 'quaternius', 'capas': {'mujer': ['vestido'], 'hombre': ['tunica']}, 'aspecto': {}}
+  OK   sin errores en consola (pc)
+Vista movil
+  OK   por defecto sale el taller propio
+  OK   cuerpo: se ve el personaje — desviación 42
+  OK   cara: se ve el personaje — desviación 42
+  OK   perfil: se ve el personaje — desviación 63
+  OK   espalda: se ve el personaje — desviación 46
+  OK   las vistas son distintas
+  OK   personaje dentro de presupuesto (≤ 36 mil triángulos) — 19825
+  OK   al andar se mueven piernas y brazos — 0.250 m
+  OK   variante 1 cargada y distinta — diferencia 5.4
+  OK   variante 1: se ve la cara
+  OK   variante 2 cargada y distinta — diferencia 4.2
+  OK   variante 2: se ve la cara
+  OK   variante 3 cargada y distinta — diferencia 4.4
+  OK   variante 3: se ve la cara
+  OK   en el móvil el panel empieza cerrado
+  OK   calidad alta por defecto
+  OK   calidad ligera: todo con material sencillo — [8, 0, 'ligera']
+  OK   ropa, pelo y barba comparten un solo esqueleto — 1 esqueletos
+  OK   el traje de explorador no se ofrece (demasiado de fantasía)
+  OK   los interruptores quitan sombras y escenario — [False, False]
+  OK   el botón Hombre cambia el personaje
+  OK   sin desplazamiento horizontal — 390px
+  OK   #estilos dentro de la pantalla
+  OK   #inferior dentro de la pantalla
+  OK   #opciones dentro de la pantalla
+  OK   las notas se abren
+  OK   taller propio: carga el personaje de MakeHuman
+  OK   taller propio (hombre): se ve — 2.6
+  OK   taller propio (hombre): se ve la cara — 8.2
+  OK   taller propio (hombre): de pie recto (cabeza y hombros sobre la pelvis, brazos sin irse atrás) — 8.5 cm, 5.7 cm, 2.0 cm, 2.0 cm
+  OK   taller propio (hombre): al andar se mueven piernas y brazos — 0.222 m
+  OK   taller propio (hombre): al correr, zancada natural y poco bote — correr 3.53 m/s, andar 0.95 m/s, bote 10 cm
+  OK   taller propio (mujer): se ve — 2.1
+  OK   taller propio (mujer): se ve la cara — 11.0
+  OK   taller propio (mujer): de pie recto (cabeza y hombros sobre la pelvis, brazos sin irse atrás) — 5.5 cm, 3.5 cm, 0.7 cm, 1.7 cm
+  OK   taller propio (mujer): al andar se mueven piernas y brazos — 0.182 m
+  OK   taller propio (mujer): al correr, zancada natural y poco bote — correr 2.85 m/s, andar 0.77 m/s, bote 9 cm
+  OK   capas: el gambesón se pone encima y tapa el cuerpo de la prenda de debajo — mujer_capa_gambeson, mujer_capa_gambeson_falda, mujer_capa_gambeson_mangas, mujer_capa_vestido, mujer_capa_vestido_mangas, mujer_cinturon_gambeson, mujer_cinturon_vestido
+  OK   capas: al quitarlo vuelve como estaba
+  OK   capas: con sobreveste se ven las mangas y el cuello de la cota — mujer_capa_cota, mujer_capa_cota_mangas, mujer_capa_sobreveste, mujer_capa_sobreveste_falda, mujer_capa_vestido_falda, mujer_capa_vestido_mangas, mujer_capa_zapatos
+  OK   ropa: la tabla dice lo que frena la cota (torso y brazos 64 % del corte; cabeza nada) y lo que pesa — [['', 'Corte', 'Estocada', 'Contundente'], ['Cabeza', '—', '—', '—'], ['Torso', '64 %', '31 %', '13 %'], ['Brazos', '64 %', '31 %', '13 %'], ['Piernas', '64 %', '31 %', '13 %']] · Peso: 12,5 kg · Abrigo: 19,5Llevas: Camisa de lino, Zapatos de cuero, Vestido de lana, Cota de malla, Sobreveste de lino
+  OK   hombre con cota: se ve su cinturón y ciñe la cintura (no llega a los brazos) — medio ancho 0.186 m
+  OK   tocados: de uno en uno (poner el sombrero quita la capucha) y se quitan — hombre_capa_calzas, hombre_capa_sombrero, hombre_capa_tunica, hombre_capa_tunica_falda, hombre_capa_tunica_mangas, hombre_capa_zapatos
+  OK   tocados: bajo la capucha no asoman las orejas; con el sombrero, sí
+  OK   botas en lugar de zapatos; con la capa se siguen viendo la túnica y su cinturón — hombre_capa_botas, hombre_capa_calzas, hombre_capa_manto, hombre_capa_manto_falda, hombre_capa_tunica, hombre_capa_tunica_falda, hombre_capa_tunica_mangas, hombre_cinturon_tunica
+  OK   aspecto: cambian la piel, los ojos y el pelo (también las cejas y la barba, del mismo color) — piel [0.8845824477447658, 0.5467542764398701, 0.3769194691668358] → [0.42194577167788105, 0.1925184370415175, 0.0868561956797466]
+  OK   aspecto: el pelo rubio es más claro que el castaño oscuro
+  OK   aspecto: con «Bigote» se ve el bigote y no la barba corta
+  OK   aspecto: la cara se ve distinta — diferencia 12.5
+  OK   aspecto: afeitado y rapado (sin barba ni pelo; las cejas y el pelo pintado se quedan)
+  OK   aspecto: melena y barba larga (con el pelo corto y la barba corta debajo)
+  OK   aspecto: trenzas y perilla
+  OK   aspecto: bajo la capucha no asoman las trenzas ni las orejas
+  OK   aspecto: sin la capucha vuelven las trenzas y las orejas
+  OK   formas: peso en la piel y en la túnica; cara, nariz y mentón en la piel (no en la túnica) — [1, 1, 1, 1, 1, None]
+  OK   formas: la piel y la túnica se mueven de verdad (más de 5 mm) y ninguna pieza calcula formas en la GPU — 14 y 19 mm; 0 con formas en la GPU
+  OK   formas: más alto (la cabeza sube un 6 % aprox.) — 1.520 → 1.611 m
+  OK   aspecto: sin volver a cargar el modelo
+  OK   aspecto: se recuerda al recargar — {'piel': 'morena', 'ojos': 'azules', 'pelo': 'rubio', 'peinado': 'rapado', 'barba': 'ninguna', 'formas': {'altura': 1, 'peso': 1, 'musculo': 0, 'cara': 1, 'nariz': -1, 'nariz_larga': 0, 'menton': 1}}
+  OK   taller propio en calidad alta: todo escribe profundidad
+  OK   taller propio dentro de presupuesto (≤ 36 mil triángulos) — 24593
+  OK   vuelve a la base de Quaternius
+  OK   recuerda vista y personaje al recargar — {'luz': 'manana', 'vista': 'perfil', 'modo': 'quieto', 'sexo': 'hombre', 'ropa': 'campesino', 'pelo': 'largo', 'colorPelo': 'rubio', 'piel': 'clara', 'barba': 'si', 'calidad': 'alta', 'sombras': True, 'escena': True, 'base': 'quaternius', 'capas': {'mujer': ['vestido'], 'hombre': ['tunica']}, 'aspecto': {}}
+  OK   sin errores en consola (movil)
+
+Resultado: TODO CORRECTO
