@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v33 (chimenea)';
+export const VERSION_DEMO = 'Demo única · v34 (manos de los personajes)';
 export const REGISTRO_DEMO = [
+  'v34: los personajes vuelven a tener las manos enteras (desde la taller-v9 salían como una tira, también las de los demás jugadores) y la mujer lleva botas bajas, que ya no atraviesan la falda larga. Personajes en recursos/personajes/taller-v11/.',
   'v33: en «Construir», chimenea u hogar interior (10 piedras y 4 de barro, 600 kg): va en la planta baja sobre un cimiento de piedra, arrimada a un muro, con el fuego encendido (llamas, luz y humo que sale por encima del tejado). Usar (F) la apaga y la enciende.',
   'v32, arreglo (valravnx, 28 oct: en línea, abrir o cerrar puertas o terminar una obra daba tirones horribles a los dos): al abrir o cerrar una puerta, un portón o una trampilla solo se rehace esa pieza, en la página de quien la usa y en la de los demás; y cada pieza se hace una vez y luego se copia, así que rehacer lo construido (al terminar una obra) baja de unos 200 a unos 40 ms con una casa de dos plantas. Solo cambia el juego: el servidor no.',
   'v32: en «Duelo», la curación de heridas (vendar, coser, cauterizar, entablillar y emplasto). Es el combate v16. En línea hace falta el servidor nuevo: jugar_en_casa.bat lo baja solo.',
