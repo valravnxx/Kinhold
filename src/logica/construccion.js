@@ -703,9 +703,9 @@ export function altoCanon(c, p, subidaTejado = 1.2) {
 // ---------- Adarve (pasarela por detrás de la empalizada) ----------
 // Sistemas: «Adarve (pasarela) — N2, tablas + postes, 100 kg, sostiene 300; por detrás de la empalizada». Ocupa una
 // casilla de la planta baja junto a una empalizada (pieza 'a'): un piso de tablas sobre largueros y cuatro postes, a
-// ALTO_ADARVE del suelo, para asomarse por encima de las puntas. Encima se está «en la planta 1» (a esa altura).
+// ALTO_ADARVE del suelo, para asomarse entre las puntas. Encima se está «en la planta 1» (a esa altura).
 // Se sube por una escalera de mano o de tablas puesta en la casilla de al lado, que sube hacia él.
-export const ALTO_ADARVE = 1.5; // m (cara de arriba de las tablas); con la empalizada de 3 m quedan 1,5 m de parapeto
+export const ALTO_ADARVE = 1.8; // m (cara de arriba de las tablas); con la empalizada de 3 m quedan 1,2 m de parapeto hasta las puntas: se asoma la cabeza
 // Empalizadas (terminadas, sin contar las puertas) en los bordes de la casilla (i, j): [{ dir, clave }]
 export function empalizadasDe(c, i, j) {
   const res = [];
@@ -726,12 +726,13 @@ export function adarveEn(c, i, j, obras = false) {
   const p = c.piezas.get(clave('a', i, j, 0));
   return p && (obras || !p.obra) ? p : null;
 }
-// Escalera (de mano o de tablas, en la planta baja) que sube hacia un adarve: el de la casilla hacia la que sube
-// (dir), terminado o en obras. Decide su largo (las dos son más cortas que las de una planta) y adónde se sube.
+// Escalera (de mano o de tablas, en la planta baja) que sube hacia un adarve: el de la casilla hacia la que sube la
+// de tablas (SUBE[dir]) o hacia la que se apoya la de mano (la contraria: su dibujo se apoya hacia -SUBE[dir]),
+// terminado o en obras. Decide su largo (las dos son más cortas que las de una planta) y adónde se sube.
 export function adarveDeEscalera(c, p, obras = true) {
   if (p.hueco !== 'l' || p.k !== 0 || PIEZAS[p.tipo].andamio) return null;
-  const [ui, uj] = SUBE[p.dir || 0];
-  return adarveEn(c, p.i + ui, p.j + uj, obras);
+  const [ui, uj] = SUBE[p.dir || 0], s = PIEZAS[p.tipo].andando ? 1 : -1;
+  return adarveEn(c, p.i + s * ui, p.j + s * uj, obras);
 }
 
 // ---------- Escalera de tablas ----------

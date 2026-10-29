@@ -877,7 +877,7 @@ console.log('22. Adarve (pasarela por detrás de la empalizada: tablas y postes,
 {
   const a = PIEZAS.adarve;
   comprobar('N2, tablas y postes (troncos), 100 kg, sostiene 300, en la planta baja', a.nivel === 2 && a.peso === 100 && a.cap === 300 && a.coste.tabla > 0 && a.coste.tronco > 0 && a.soloPlanta0 && a.hueco === 'a' && a.adarve === true);
-  comprobar('su piso está entre 1,2 y 1,8 m: con la empalizada de 3 m queda parapeto para asomarse', ALTO_ADARVE >= 1.2 && ALTO_ADARVE <= 1.8, String(ALTO_ADARVE));
+  comprobar('su piso está entre 1,5 y 2 m: con la empalizada de 3 m queda parapeto para asomarse', ALTO_ADARVE >= 1.5 && ALTO_ADARVE <= 2.0, String(ALTO_ADARVE));
   const m = new Mundo(); m.colocarMojon(0, 0);
   const R = new RegistroAcciones(), yo = 'jugador:prueba';
   const A = (x) => ejecutar(m, R, { autor: yo, ...x });
@@ -906,12 +906,14 @@ console.log('22. Adarve (pasarela por detrás de la empalizada: tablas y postes,
   comprobar('no cabe una escalera en su casilla', !esc.ok && /adarve/.test(esc.motivo), esc.motivo || '');
   comprobar('ni un suelo encima', !m.validar(enRejilla(m, c, 'suelo_tabla', 0, 0, 1)).ok);
   // escaleras en la casilla de delante (0,-1), subiendo hacia +z: llevan al adarve
-  const em = pon('escalera_mano', 0, -1, 0, 0, 0);
+  const em = pon('escalera_mano', 0, -1, 0, 0, 2); // la de mano se apoya hacia -SUBE[dir]: dir 2 se apoya hacia +z
   const pm = c.piezas.get(clave('l', 0, -1, 0));
-  comprobar('la escalera de mano de delante, subiendo hacia él, lleva al adarve', em.ok && adarveDeEscalera(c, pm) === p);
+  comprobar('la escalera de mano de delante, apoyada en él, lleva al adarve', em.ok && adarveDeEscalera(c, pm) === p);
   pm.dir = 1;
   comprobar('girada hacia otro lado, no', adarveDeEscalera(c, pm) === null);
   pm.dir = 0;
+  comprobar('ni apoyada hacia atrás', adarveDeEscalera(c, pm) === null);
+  pm.dir = 2;
   const et = pon('escalera_tabla', 1, -1, 0, 0, 0);
   const pt = c.piezas.get(clave('l', 1, -1, 0));
   comprobar('la escalera de tablas de delante, también', et.ok && pt && adarveDeEscalera(c, pt) === c.piezas.get(clave('a', 1, 0, 0)), et.motivo || '');

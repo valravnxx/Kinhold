@@ -704,13 +704,13 @@ function hastial() {
 // añade una pieza con una matriz completa (giro y sitio de la escalera entera × los de la pieza)
 function addM(L, geo, color, M, opc) { const e = M.elements; L.add(geo, color, e[12], e[13], e[14], M, opc); }
 const mParte = (base, x, y, z, eu) => base.clone().multiply(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(eu?.x || 0, eu?.y || 0, eu?.z || 0, 'YXZ')).setPosition(x, y, z));
-// Escalera de mano: dos varas descortezadas y travesaños, apoyada hacia +z
-// ctx.forma 'adarve': más corta, apoyada en el borde del piso del adarve de la casilla de delante (a 1,5 m),
+// Escalera de mano: dos varas descortezadas y travesaños, apoyada hacia -z (en el borde de su casilla)
+// ctx.forma 'adarve': más corta, apoyada en el borde del piso del adarve de la casilla de al lado (-z, a 1,8 m),
 // sobresaliendo por encima para agarrarse al subir
 function escaleraMano(ctx) {
   const L = loteSuelo(), adv = ctx && ctx.forma === 'adarve';
   const largo = adv ? ALTO_ADARVE + 0.75 : ALTURA + 0.6, ang = adv ? 0.3 : 0.32;
-  const z0 = adv ? MODULO / 2 - 0.06 - Math.tan(ang) * (ALTO_ADARVE - 0.12) : MODULO / 2 - 0.15 - Math.sin(ang) * largo;
+  const z0 = adv ? -MODULO / 2 + 0.06 + Math.tan(ang) * (ALTO_ADARVE - 0.12) : MODULO / 2 - 0.15 - Math.sin(ang) * largo;
   const base = new THREE.Matrix4().makeTranslation(0, 0, z0).multiply(new THREE.Matrix4().makeRotationX(-ang));
   for (const x of [-0.25, 0.25]) addM(L, cil(0.04, 0.047, largo, 7), x < 0 ? 'madera' : 'maderaOsc', mParte(base, x, largo / 2, 0));
   let k = 0;
@@ -718,14 +718,14 @@ function escaleraMano(ctx) {
   return deLote(L);
 }
 // Escalera de tablas: sube hacia +z local desde el borde -z de la casilla hasta el suelo de la planta de arriba.
-// ctx.forma 'adarve': sube solo hasta el piso del adarve de la casilla de delante (1,5 m), con menos peldaños
+// ctx.forma 'adarve': sube solo hasta el piso del adarve de la casilla de delante (1,8 m), con menos peldaños
 function escaleraTablas(ctx) {
   const L = loteSuelo(), adv = ctx && ctx.forma === 'adarve';
   const S = MODULO, y0 = P.superficieSuelo, y1 = adv ? ALTO_ADARVE : ALTURA + P.superficieSuelo;
   const ancho = 1.1, peldanos = adv ? 6 : 10, sube = (y1 - y0) / peldanos, huella = S / peldanos;
   const largo = Math.hypot(S, y1 - y0), ang = Math.atan2(y1 - y0, S);
   // zancas: dos tablones gruesos en diagonal a los lados (la caja va a lo largo de Y para que la veta siga el tablón)
-  for (const x of [-ancho / 2, ancho / 2]) L.add(cajaR(0.06, largo + 0.1, 0.26, 0.015), 'maderaOsc', x, (y0 + y1) / 2 - 0.08, 0, { x: Math.PI / 2 - ang });
+  for (const x of [-ancho / 2, ancho / 2]) L.add(cajaR(0.06, largo + (adv ? -0.1 : 0.1), 0.26, 0.015), 'maderaOsc', x, (y0 + y1) / 2 - 0.08, adv ? -0.04 : 0, { x: Math.PI / 2 - ang }); // hacia el adarve, sin asomar por su piso
   // peldaños de tabla, con la veta a lo ancho
   for (let n = 0; n < peldanos; n++) {
     const y = y0 + sube * (n + 1) - 0.03, zc = -S / 2 + huella * (n + 0.5);

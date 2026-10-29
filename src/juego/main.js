@@ -201,7 +201,7 @@ function despejarDecorado() {
   for (const c of mundo.construcciones) for (const p of c.piezas.values()) {
     if (p.k !== 0) continue;
     const l = centroLocal(p), m = localAMundo(c, l.lx, l.lz);
-    circ.push([m.x, m.z, p.hueco === 'f' ? MODULO * 0.78 : MODULO * 0.45]);
+    circ.push([m.x, m.z, p.hueco === 'f' || p.hueco === 'a' || p.hueco === 'l' ? MODULO * 0.78 : MODULO * 0.45]); // casillas enteras (también adarve y escaleras)
   }
   for (const d of mundo.decoracion) if (d.y < 0.3) circ.push([d.x, d.z, 0.8]);
   if (mundo.mojon) circ.push([mundo.mojon.x, mundo.mojon.z, 0.9]);

@@ -296,7 +296,7 @@ console.log('Adarve y sus escaleras con el estilo v5');
   comprobar('Adarve: menos de 6000 triángulos (tiene que aguantar en el móvil)', tri < 6000, `${Math.round(tri)} triángulos`);
   // las escaleras que suben hacia un adarve son más cortas y llegan a su piso, en el borde de su casilla (+z)
   const em = caja(modeloPieza('escalera_mano', { forma: 'adarve' })), eml = caja(modeloPieza('escalera_mano'));
-  comprobar('Escalera de mano hacia el adarve: más corta, sobresale de su piso para agarrarse y no se mete en su casilla', em.max.y > ALTO_ADARVE + 0.3 && em.max.y < eml.max.y - 0.5 && em.max.z <= MODULO / 2 + 0.25 && em.min.z > -MODULO / 2, `arriba=${r3(em.max.y)} (larga ${r3(eml.max.y)}), z de ${r3(em.min.z)} a ${r3(em.max.z)}`);
+  comprobar('Escalera de mano hacia el adarve: más corta, sobresale de su piso para agarrarse y se apoya en su borde (-z)', em.max.y > ALTO_ADARVE + 0.3 && em.max.y < eml.max.y - 0.3 && em.min.z >= -MODULO / 2 - 0.3 && em.min.z < -MODULO / 2 + 0.05 && em.max.z < MODULO / 2, `arriba=${r3(em.max.y)} (larga ${r3(eml.max.y)}), z de ${r3(em.min.z)} a ${r3(em.max.z)}`);
   const et = caja(modeloPieza('escalera_tabla', { forma: 'adarve' }));
   comprobar('Escalera de tablas hacia el adarve: llega a su piso, en el borde de su casilla', Math.abs(et.max.y - ALTO_ADARVE) < 0.1 && et.max.z <= MODULO / 2 + 0.15, `arriba=${r3(et.max.y)}, z hasta ${r3(et.max.z)}`);
 }
