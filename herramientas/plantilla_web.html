@@ -305,6 +305,7 @@ details[open] > summary .flecha{transform:rotate(45deg)}
 .miniaturas a:nth-child(even){transform:rotate(1.1deg)}
 .miniaturas a:hover{transform:none;z-index:1}
 .miniaturas img{height:80px;display:block}
+.mas-capturas>summary{cursor:pointer;font-size:.85em;opacity:.8;padding:2px 4px}
 details.anteriores{margin-top:8px;border-top:3px double var(--tinta2)}
 details.anteriores > summary{list-style:none;cursor:pointer;padding:12px 0;display:flex;align-items:center;gap:10px;justify-content:center;font:700 18px var(--titulos);color:var(--rubrica)}
 details.anteriores > summary::-webkit-details-marker{display:none}
@@ -464,6 +465,7 @@ footer{max-width:640px;margin:34px auto 0;text-align:center;padding:12px 30px 14
     <div class="docs">
       <a href="diseno/gdd.html" data-doc="gdd"><b>GDD</b><span data-t="doc_gdd"></span></a>
       <a href="diseno/sistemas.html" data-doc="sistemas"><b data-t="doc_sis_t"></b><span data-t="doc_sis"></span></a>
+      <a href="diseno/revision.html" data-doc="revision"><b data-t="doc_rev_t"></b><span data-t="doc_rev"></span></a>
       <a href="diseno/analisis.html" data-doc="analisis"><b data-t="doc_ana_t"></b><span data-t="doc_ana"></span></a>
       <a href="https://github.com/valravnxx/kinhold"><b data-t="doc_cod_t"></b><span data-t="doc_cod"></span></a>
     </div>
@@ -488,12 +490,13 @@ const UI = {
     nota_jugar: 'Cada versión se queda guardada: si una nueva no te convence, puedes abrir la anterior desde el desplegable. Lo que guarda el juego en tu navegador se conserva entre versiones.',
     nota_revision: 'Para responder o pedir cambios: dímelo en el chat, o edita el archivo <a href="https://github.com/valravnxx/kinhold/edit/main/REVISION.md">REVISION.md</a> en GitHub. El trabajo automático lo lee al empezar cada hora.',
     doc_gdd: 'Documento de diseño: visión, mundo, sistemas y orden de hitos.', doc_sis_t: 'Sistemas y contenido', doc_sis: 'Recursos, recetas, piezas, estaciones y valores.',
+    doc_rev_t: 'Revisión del 29 oct', doc_rev: 'Qué hay, cómo encaja, qué falta y el plan por fases que manda ahora.',
     doc_ana_t: 'Análisis del GDD', doc_ana: 'Lo que faltaba, propuestas y preguntas respondidas.', doc_cod_t: 'Código', doc_cod: 'Repositorio en GitHub.',
     pie: 'Esta página se genera sola con cada cambio del repositorio.',
     estado: { hecho: 'Hecho', en_curso: 'En curso', revision: 'Esperando tu revisión', espera_decision: 'Espera tu decisión', pendiente: 'Pendiente', fallo: 'Falló' },
     r_hitos: 'hitos terminados', r_tareas: 'tareas hechas (de las ya desglosadas)', r_trabajo: 'de trabajo registrado',
     jugar: 'Jugar', version: 'Versión', sin_desglosar: 'Sin desglosar: se planifica al empezar el hito.', hecho: 'hecho',
-    en_curso_d: 'en curso', pruebas: 'Pruebas', sin_entradas: 'Todavía no hay entradas.',
+    en_curso_d: 'en curso', pruebas: 'Pruebas', ver_todas: 'Ver todas las capturas ({n})', sin_entradas: 'Todavía no hay entradas.',
     ah_t: 'Ahora mismo', ah_nadie: 'Ahora mismo no está trabajando ningún agente.', ah_desde: (h) => `desde las ${h}`,
     ag: { A: 'Agente A', B: 'Agente B', chat: 'Chat con valravnx' }, en_proceso: 'En proceso', a_medias: 'A medias',
     a_medias_d: 'Empezada, pero ahora no la lleva nadie',
@@ -513,12 +516,13 @@ const UI = {
     nota_jugar: 'Every version is kept: if a new one doesn’t convince you, you can open the previous one from the drop-down. What the game saves in your browser carries over between versions.',
     nota_revision: 'To reply or ask for changes: tell me in the chat, or edit the <a href="https://github.com/valravnxx/kinhold/edit/main/REVISION.md">REVISION.md</a> file on GitHub. The automatic work reads it at the start of every hour.',
     doc_gdd: 'Design document: vision, world, systems and milestone order.', doc_sis_t: 'Systems and content', doc_sis: 'Resources, recipes, pieces, workstations and values.',
+    doc_rev_t: '29 Oct review', doc_rev: 'What there is, how it fits together, what is missing and the phased plan that now leads.',
     doc_ana_t: 'GDD analysis', doc_ana: 'What was missing, proposals and answered questions.', doc_cod_t: 'Code', doc_cod: 'Repository on GitHub.',
     pie: 'This page is generated automatically with every change to the repository.',
     estado: { hecho: 'Done', en_curso: 'In progress', revision: 'Awaiting your review', espera_decision: 'Awaiting your decision', pendiente: 'Pending', fallo: 'Failed' },
     r_hitos: 'milestones finished', r_tareas: 'tasks done (of those broken down so far)', r_trabajo: 'of logged work',
     jugar: 'Play', version: 'Version', sin_desglosar: 'Not broken down yet: planned when the milestone starts.', hecho: 'done',
-    en_curso_d: 'in progress', pruebas: 'Tests', sin_entradas: 'No entries yet.',
+    en_curso_d: 'in progress', pruebas: 'Tests', ver_todas: 'See all screenshots ({n})', sin_entradas: 'No entries yet.',
     ah_t: 'Right now', ah_nadie: 'No agent is working right now.', ah_desde: (h) => `since ${h}`,
     ag: { A: 'Agent A', B: 'Agent B', chat: 'Chat with valravnx' }, en_proceso: 'In progress', a_medias: 'Half done',
     a_medias_d: 'Started, but nobody is on it right now',
@@ -538,12 +542,13 @@ const UI = {
     nota_jugar: 'Каждая версия сохраняется: если новая не понравится, предыдущую можно открыть из выпадающего списка. То, что игра сохраняет в браузере, переходит из версии в версию.',
     nota_revision: 'Чтобы ответить или попросить изменения: напиши мне в чате или отредактируй файл <a href="https://github.com/valravnxx/kinhold/edit/main/REVISION.md">REVISION.md</a> на GitHub. Автоматическая работа читает его в начале каждого часа.',
     doc_gdd: 'Дизайн-документ: замысел, мир, системы и порядок этапов.', doc_sis_t: 'Системы и содержание', doc_sis: 'Ресурсы, рецепты, детали, станки и значения.',
+    doc_rev_t: 'Обзор от 29 окт.', doc_rev: 'Что есть, как всё связано, чего не хватает и план по фазам, который теперь главный.',
     doc_ana_t: 'Разбор GDD', doc_ana: 'Чего не хватало, предложения и вопросы с ответами.', doc_cod_t: 'Код', doc_cod: 'Репозиторий на GitHub.',
     pie: 'Эта страница создаётся автоматически при каждом изменении в репозитории.',
     estado: { hecho: 'Готово', en_curso: 'В работе', revision: 'Ждёт твоей проверки', espera_decision: 'Ждёт твоего решения', pendiente: 'Ожидает', fallo: 'Сбой' },
     r_hitos: 'этапов завершено', r_tareas: 'задач выполнено (из уже расписанных)', r_trabajo: 'учтённой работы',
     jugar: 'Играть', version: 'Версия', sin_desglosar: 'Ещё не расписан: задачи появятся, когда этап начнётся.', hecho: 'готово',
-    en_curso_d: 'в работе', pruebas: 'Тесты', sin_entradas: 'Записей пока нет.',
+    en_curso_d: 'в работе', pruebas: 'Тесты', ver_todas: 'Все снимки экрана ({n})', sin_entradas: 'Записей пока нет.',
     ah_t: 'Прямо сейчас', ah_nadie: 'Сейчас ни один агент не работает.', ah_desde: (h) => `с ${h}`,
     ag: { A: 'Агент A', B: 'Агент B', chat: 'Чат с valravnx' }, en_proceso: 'В процессе', a_medias: 'Наполовину',
     a_medias_d: 'Начата, но сейчас её никто не ведёт',
@@ -718,13 +723,18 @@ function pintar() {
 
   // ---------- Diario: lo último a la vista, lo anterior en un desplegable ----------
   {
+    // como mucho unas pocas a la vista (valravnx, 29 oct: la noticia salía con 20 o más y las del cambio al final); las
+    // del cambio van delante (construir_web.mjs) y el resto, plegado
+    const MAX_MINI = 6;
+    const mini = (e) => (c) => `<a href="${esc(e.capturas + '/' + c)}"><img src="${esc(e.capturas + '/' + c)}" alt="${esc(c)}" loading="lazy"></a>`;
     const entrada = (e) => {
       const caps = e.capturas ? (CAPT[e.capturas] || []) : [];
       return `<article class="entrada"><div class="fecha">${dia(e.inicio)}<small>${hora(e.inicio)}${e.fin ? ' – ' + hora(e.fin) : ''}${e.fin ? ' · ' + (e.aprox ? '≈ ' : '') + durTexto(minutos(e.inicio, e.fin)) : ' · ' + u('en_curso_d')}</small></div>
         <div><h3>${esc(tr(e.titulo))} ${e.estado && e.estado !== 'ok' ? chip(e.estado) : ''}</h3>
         <ul>${(e.hecho || []).map(x => `<li>${esc(tr(x))}</li>`).join('')}</ul>
         ${e.pruebas ? `<div class="meta">${u('pruebas')}: ${esc(tr(e.pruebas))}</div>` : ''}
-        ${caps.length ? `<div class="miniaturas">${caps.map(c => `<a href="${esc(e.capturas + '/' + c)}"><img src="${esc(e.capturas + '/' + c)}" alt="${esc(c)}" loading="lazy"></a>`).join('')}</div>` : ''}</div></article>`;
+        ${caps.length ? `<div class="miniaturas">${caps.slice(0, MAX_MINI).map(mini(e)).join('')}</div>` : ''}
+        ${caps.length > MAX_MINI ? `<details class="mas-capturas"><summary>${u('ver_todas').replace('{n}', caps.length)}</summary><div class="miniaturas">${caps.slice(MAX_MINI).map(mini(e)).join('')}</div></details>` : ''}</div></article>`;
     };
     const todas = [...D].reverse();
     const abierto = $('#listaDiario details.anteriores')?.open;

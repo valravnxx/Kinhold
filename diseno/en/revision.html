@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="kinhold-origen" content="ce0d3ef22c06af5ea94d2380ce4faeaa807de971">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kinhold · Project review (29 Oct)</title>
+<style>
+:root{--bg:#f6f2ea;--card:#fffdf8;--ink:#2b2520;--muted:#6f655b;--line:#e2d8c8;--accent:#8a3b1f;--ok:#2f6b3a;--okbg:#e6f1e4;--warn:#8a5a00;--warnbg:#fbf0d6;--bad:#9a2a1c;--badbg:#f8e1dc;--blue:#24507a;--bluebg:#e3ecf6}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1b1815;--card:#24201c;--ink:#ece4d8;--muted:#a59a8c;--line:#3a332c;--accent:#e08a5f;--ok:#8fd09a;--okbg:#1f3323;--warn:#f0c46a;--warnbg:#3a2f15;--bad:#f09a8a;--badbg:#3a1f1a;--blue:#8fb8e6;--bluebg:#1b2a3a}}
+:root[data-theme="dark"]{--bg:#1b1815;--card:#24201c;--ink:#ece4d8;--muted:#a59a8c;--line:#3a332c;--accent:#e08a5f;--ok:#8fd09a;--okbg:#1f3323;--warn:#f0c46a;--warnbg:#3a2f15;--bad:#f09a8a;--badbg:#3a1f1a;--blue:#8fb8e6;--bluebg:#1b2a3a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Georgia,"Times New Roman",serif}
+.wrap{max-width:920px;margin:0 auto;padding:24px 16px 64px}
+header{border-bottom:2px solid var(--accent);margin-bottom:22px;padding-bottom:10px}
+h1{font-size:1.7rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.95rem}
+nav{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 16px;margin-bottom:22px}
+nav ol{margin:0;padding-left:20px;columns:2;column-gap:24px}
+nav a{color:var(--accent);text-decoration:none}
+@media (max-width:600px){nav ol{columns:1}}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:18px}
+h2{font-size:1.25rem;margin:0 0 10px;color:var(--accent)}
+h3{font-size:1.04rem;margin:16px 0 6px}
+p{margin:6px 0}
+ul,ol{margin:6px 0;padding-left:22px}
+li{margin:3px 0}
+table{width:100%;border-collapse:collapse;font-size:.92rem;margin:8px 0}
+th,td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:top}
+th{font-family:system-ui,sans-serif;font-size:.8rem;color:var(--muted);font-weight:600}
+.tabla{overflow-x:auto}
+.tag{display:inline-block;font:600 .72rem/1.4 system-ui,sans-serif;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.ok{background:var(--okbg);color:var(--ok)} .warn{background:var(--warnbg);color:var(--warn)} .bad{background:var(--badbg);color:var(--bad)} .blue{background:var(--bluebg);color:var(--blue)}
+.caja{border-left:4px solid var(--accent);background:var(--bg);padding:10px 14px;border-radius:6px;margin:10px 0}
+.caja.roja{border-left-color:var(--bad)}
+.fase{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:12px 0;background:var(--bg)}
+.fase h3{margin-top:4px}
+.mini{font-size:.88rem;color:var(--muted)}
+svg text{font-family:system-ui,sans-serif}
+.dia{width:100%;min-width:620px;height:auto;max-width:860px;display:block;margin:8px auto}
+.dia .c{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+.dia .t{fill:var(--ink);font-size:13px}
+.dia .s{fill:var(--muted);font-size:10.5px}
+.dia .isla{fill:var(--badbg);stroke:var(--bad);stroke-width:1.5}
+.dia .une{stroke:var(--ok);stroke-width:2;fill:none}
+.dia .falta{stroke:var(--bad);stroke-width:2;fill:none;stroke-dasharray:6 5}
+</style>
+</head>
+<body><div class="wrap">
+<header>
+<h1>Kinhold — project review</h1>
+<div class="sub">29 October 2026 · what exists, how it fits together, what is really missing and the replanned milestones · <b>approved by valravnx on 29 Oct</b> and already moved into the roadmap</div>
+</header>
+
+<nav><ol>
+<li><a href="#resumen">Summary in one minute</a></li>
+<li><a href="#hay">What exists today</a></li>
+<li><a href="#encaja">How it fits together (and what doesn't)</a></li>
+<li><a href="#urgente">The urgent part: the website and the repository</a></li>
+<li><a href="#roadmap">The current roadmap: what is extra and what is missing</a></li>
+<li><a href="#falta">What is really needed</a></li>
+<li><a href="#plan">Proposal: replanned milestones</a></li>
+<li><a href="#forma">Way of working</a></li>
+<li><a href="#decidir">What valravnx decided</a></li>
+</ol></nav>
+
+<section id="resumen">
+<h2>1. Summary in one minute</h2>
+<p>A lot of good pieces have been made in six days, but <b>they are separate pieces: they don't form a game yet</b>. Building, the duel, the mine and the world each live in their own scene, with their own terrain, and almost nothing done in one part is of any use in another.</p>
+<div class="caja roja"><b>The three big problems</b>
+<ol>
+<li><b>The world is not the game's world.</b> The map of Kinland (256 × 256 km, rivers, cliffs, forests by species) only exists in its viewer. Building happens on a round flat area (60 m radius), the duel on another flat area, the mine on its own hill. The server knows nothing about the world either.</li>
+<li><b>What you gather is useless.</b> Branches, stone and flint go into the inventory, but works are paid for from a magic reserve of 120 logs and 120 stones. Felling is just the gesture. The inventory and gathered items don't go through the server: online, each player keeps them in their own browser.</li>
+<li><b>The website is going to burst.</b> GitHub doesn't publish sites over 1 GB, and ours already weighs 701 MB after six days (469 MB of it are screenshots). At the current pace, it stops within a few days.</li>
+</ol></div>
+<p><b>Proposal:</b> before adding more content, a <b>"single game"</b> phase: the character appears in the real world, loaded in chunks and on mobile; there they build, gather, fell and fight; what they gather is what they use; and everything goes through the server. The goal is that <b>a player's first day</b> (the one in the systems document) can be played in full, online and between two. After that, the server with accounts, and then the rest of the systems in the order of the GDD.</p>
+</section>
+
+<section id="hay">
+<h2>2. What exists today</h2>
+<div class="tabla"><table>
+<tr><th>Part</th><th>Status</th><th>What it has</th><th>Where it lives</th></tr>
+<tr><td>Building</td><td><span class="tag ok">advanced</span></td><td>Anchored grid, load and cascading dismantling, works with frame, materials and time, scaffolding, pulley, block and tackle, stairs, roofs, chimney, furniture in the v5 style. Wall walk in progress.</td><td>Building and demo, on a flat area</td></tr>
+<tr><td>Duel</td><td><span class="tag ok">advanced</span></td><td>Strike rose, parries, master strike, feints, bow, shield, wounds with bleeding and healing. Online between two.</td><td>Duel and demo, on another flat area</td></tr>
+<tr><td>Characters</td><td><span class="tag warn">half done</span></td><td>Own workshop with MakeHuman: layered clothing, face, body, hair, beard. Beards and cloak are wrong (you said so). Bare feet in progress. No levels of detail.</td><td>Every part except the mine</td></tr>
+<tr><td>Inventory and equipment</td><td><span class="tag warn">half done</span></td><td>Slots, belts, backpacks, slowdown, panel with your character. What you carry on your back, on your shoulder or in your hands isn't visible (except the axe).</td><td>Building and demo, only in the browser</td></tr>
+<tr><td>Gathering N0</td><td><span class="tag warn">half done</span></td><td>Branches, stone, flint and fibre that grow back over time.</td><td>Zones placed by hand on the demo's flat area</td></tr>
+<tr><td>Crafting</td><td><span class="tag bad">not started</span></td><td>Recipes and stations only in the systems document.</td><td>—</td></tr>
+<tr><td>World</td><td><span class="tag ok">advanced as a viewer</span></td><td>Seeded map with regions and names, valleys, cliffs with 3D rock, flowing water, waterfalls, forests by species, veins.</td><td>Only in its viewer, separately</td></tr>
+<tr><td>Digging and mining</td><td><span class="tag warn">technical test</span></td><td>The digging performance test (70 fps on your phone). No support, veins or saving.</td><td>Its prototype, on its hill, saving nothing</td></tr>
+<tr><td>Online</td><td><span class="tag warn">minimal test</span></td><td>Server with author set by the server, building and fighting between two, reconnection, limits, measured with 100 bots, tunnel from home.</td><td>Syncs building, presence and duel; not the inventory, gathered items or digging</td></tr>
+<tr><td>Survival, fauna, farming, land, economy…</td><td><span class="tag bad">not started</span></td><td>Only in the GDD and the systems document (with figures).</td><td>—</td></tr>
+<tr><td>Website and infrastructure</td><td><span class="tag ok">good</span> <span class="tag bad">with a limit</span></td><td>Website in three languages, lanes A and B, chat in parallel, cloud tests, journal and roadmap. See point 4.</td><td>GitHub Pages</td></tr>
+</table></div>
+</section>
+
+<section id="encaja">
+<h2>3. How it fits together (and what doesn't)</h2>
+<p>In green, what is really connected; in dashed red, what should be and isn't. The red boxes are parts that live separately.</p>
+<div class="tabla"><svg class="dia" viewBox="0 0 860 430" role="img" aria-label="Map of connections between the parts of the game">
+ <defs><marker id="fv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker><marker id="fr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--bad)"/></marker></defs>
+ <!-- demo -->
+ <rect x="250" y="20" width="360" height="60" rx="10" class="c"/>
+ <text x="430" y="45" text-anchor="middle" class="t">Single demo</text>
+ <text x="430" y="64" text-anchor="middle" class="s">menu with Build, Duel and Character</text>
+ <rect x="40" y="120" width="200" height="70" rx="10" class="c"/>
+ <text x="140" y="145" text-anchor="middle" class="t">Building</text>
+ <text x="140" y="163" text-anchor="middle" class="s">works · inventory · gathering</text>
+ <text x="140" y="178" text-anchor="middle" class="s">its own flat area</text>
+ <rect x="330" y="120" width="200" height="70" rx="10" class="c"/>
+ <text x="430" y="145" text-anchor="middle" class="t">Duel</text>
+ <text x="430" y="163" text-anchor="middle" class="s">fencing · bow · wounds</text>
+ <text x="430" y="178" text-anchor="middle" class="s">another flat · its armour table</text>
+ <rect x="620" y="120" width="200" height="70" rx="10" class="c"/>
+ <text x="720" y="145" text-anchor="middle" class="t">Character viewer</text>
+ <text x="720" y="163" text-anchor="middle" class="s">body · clothing · looks</text>
+ <!-- islas -->
+ <rect x="40" y="300" width="200" height="70" rx="10" class="isla"/>
+ <text x="140" y="325" text-anchor="middle" class="t">World (map)</text>
+ <text x="140" y="343" text-anchor="middle" class="s">Kinland · landscape · species</text>
+ <text x="140" y="358" text-anchor="middle" class="s">only in its viewer</text>
+ <rect x="330" y="300" width="200" height="70" rx="10" class="isla"/>
+ <text x="430" y="325" text-anchor="middle" class="t">Mine</text>
+ <text x="430" y="343" text-anchor="middle" class="s">smoothed voxels</text>
+ <text x="430" y="358" text-anchor="middle" class="s">its hill · doesn't save</text>
+ <rect x="620" y="300" width="200" height="70" rx="10" class="c"/>
+ <text x="720" y="325" text-anchor="middle" class="t">Server</text>
+ <text x="720" y="343" text-anchor="middle" class="s">works · presence · duel</text>
+ <text x="720" y="358" text-anchor="middle" class="s">no world or inventory</text>
+ <!-- unidas -->
+ <path d="M330,80 L170,120" class="une" marker-end="url(#fv)"/>
+ <path d="M430,80 L430,120" class="une" marker-end="url(#fv)"/>
+ <path d="M530,80 L690,120" class="une" marker-end="url(#fv)"/>
+ <path d="M620,155 L530,155" class="une" marker-end="url(#fv)"/>
+ <path d="M240,190 C420,240 600,260 680,300" class="une" marker-end="url(#fv)"/>
+ <path d="M500,190 L680,300" class="une" marker-end="url(#fv)"/>
+ <!-- faltan -->
+ <path d="M140,300 L140,190" class="falta" marker-end="url(#fr)"/>
+ <path d="M240,330 L330,330" class="falta" marker-end="url(#fr)"/>
+ <path d="M240,350 C420,410 600,400 620,355" class="falta" marker-end="url(#fr)"/>
+ <path d="M430,300 L230,190" class="falta" marker-end="url(#fr)"/>
+ <text x="148" y="250" class="s">the terrain, the trees</text>
+ <text x="148" y="264" class="s">and what is gathered</text>
+ <text x="246" y="320" class="s">rock and veins</text>
+ <text x="440" y="405" class="s">the server doesn't know the world</text>
+</svg></div>
+<h3>What isn't connected, one by one</h3>
+<ul>
+<li><b>Three different terrains</b>: the building flat area, the duel one and the mine's hill. No playable part uses the map's landscape.</li>
+<li><b>Two tree systems</b>: the two v5 trees in the demo and the seven species of the map.</li>
+<li><b>Two places for resources</b>: the building reserve (what pays for works) and the inventory (where what you gather goes). They don't pass anything to each other.</li>
+<li><b>Two armour tables</b>: the duel's and the garments' don't give the same result (mail stops a cut differently in each one).</li>
+<li><b>The mine</b> doesn't use the map's rock or veins and doesn't save what has been dug.</li>
+<li><b>The server</b> stores works and shares presence and the duel, but not the inventory, gathered items or digging, and it has no terrain.</li>
+<li><b>Details</b>: the map viewer still uses the taller-v7 characters; there are two online clients (building and duel) that do almost the same thing; three random generators; the model library lives inside the building folder.</li>
+</ul>
+<p class="mini">Why it happened: each part was tested in its own scene to move fast, which was fine for a start. But the GDD already says "a single scene and a single loader for everything" and "the world loads in chunks from the very first terrain". Now it is time to do that, before there are more pieces to move.</p>
+</section>
+
+<section id="urgente">
+<h2>4. The urgent part: the website and the repository</h2>
+<div class="caja roja">
+<p>GitHub Pages doesn't publish sites over <b>1 GB</b> and recommends that the repository stays under 1 GB (<a href="https://docs.github.com/pages/getting-started-with-github-pages/github-pages-limits">GitHub Pages limits</a>). Measured today:</p>
+<ul>
+<li>The website (<code>docs</code> folder): <b>701 MB</b>. Of that, screenshots 469 MB, playable versions 163 MB and character assets 62 MB.</li>
+<li>The repository with its history: <b>789 MB</b>, and every published version makes it grow forever.</li>
+<li>Every playable version carries all of three.js inside (1.3 to 2 MB each), and there are already 37 of the demo and 34 of building.</li>
+</ul>
+<p>Today's change (publishing only the screenshots of the change) slows the growth, but doesn't stop it: every new version keeps adding up. <b>We need to decide how to keep the old versions and old screenshots without losing them</b> (see point 9).</p>
+</div>
+</section>
+
+<section id="roadmap">
+<h2>5. The current roadmap: what is extra and what is missing</h2>
+<h3>What is extra or duplicated</h3>
+<ul>
+<li>"Terrain, grass, trees and light in chunks" (in Art) and "Holding up on mobile: terrain in chunks" (in World) are the same task. Same with "Mobile performance" and "Character levels of detail", in Art.</li>
+<li>"Walking the real world in the demo" is the last task of the world, when it is the one that ties everything else together.</li>
+<li>"Stone walls and treadwheel crane" (in More pieces) belong to N3 (stone): it makes no sense to make them before lime and masonry exist.</li>
+<li><b>Twelve empty milestones</b> (survival, siege, fauna, horses, farming, administration, PvP, land, economy, ranged, navigation, cartography), each with only its name.</li>
+</ul>
+<h3>What is in the wrong place</h3>
+<ul>
+<li><b>Levelling the terrain for foundations</b> is in Digging and mining, but it is needed to build in the real world (the GDD: "on a slope you have to level to lay foundations").</li>
+<li><b>Digging and mining</b> and <b>World</b> can only be handled by the chat. Because of that, Digging has had 1 task out of 12 since 27 Oct and the lanes can't touch it.</li>
+<li><b>Minimal online test</b> has everything done but is still "in progress": it is waiting for your decision on the cloud server (Hetzner account).</li>
+<li>The <b>wall walk</b> (lane A) will be published with a version number I already used today (building v36): it will have to take the next one.</li>
+</ul>
+<h3>What is missing (you asked for it or the GDD asks for it, and it has no task)</h3>
+<ul>
+<li><b>Detailed water and coasts</b> (28 Oct): ground by material, channels by size, coasts by rock and riverside vegetation. There is only a generic task, "Water up close".</li>
+<li><b>Bridges</b>: they were left out of More pieces "for the World milestone", but they aren't in it.</li>
+<li><b>Named districts</b> and <b>paths that form with use</b> (GDD, milestone 10).</li>
+<li><b>Appearing in the world</b>: choosing a region and spawning in an accessible spot in it (GDD, section 6).</li>
+<li><b>A single armour table</b> for the duel and clothing.</li>
+<li><b>Visual review of what is already approved</b> (beards and cloak are already tasks; the rest needs going over with the same eye).</li>
+</ul>
+</section>
+
+<section id="falta">
+<h2>6. What is really needed</h2>
+<p>The systems document already has the proof that everything fits together: <b>a player's first day</b>. Today not a single step of that day can be played in the place where it should happen:</p>
+<div class="tabla"><table>
+<tr><th>Step of the first day</th><th>What exists</th><th>What is missing</th></tr>
+<tr><td>Appear in a shirt, barefoot, in your region</td><td>Inventory clothing; bare feet in progress</td><td>Appearing in the real world, by region</td></tr>
+<tr><td>Thirst: find a river and drink</td><td>Rivers in the map viewer</td><td>The world in the game; thirst (survival)</td></tr>
+<tr><td>Fibre → cord → belt</td><td>Gathering fibre; belts in the inventory</td><td>Crafting (recipes)</td></tr>
+<tr><td>Flint and stone → knapping stone → flake and axe</td><td>Gathering flint and stone</td><td>Stations and recipes</td></tr>
+<tr><td>Branches → wood carrier, campfire</td><td>Gathering branches; wood carrier in the inventory</td><td>Crafting; campfire</td></tr>
+<tr><td>Boundary stone and branch shelter as a bed</td><td>Boundary stone; huts</td><td>Works paid for with what you carry; shelter and bound bed</td></tr>
+<tr><td>Hunt a hare and roast it</td><td>—</td><td>Fauna, butchering, cooking</td></tr>
+<tr><td>Fell a young tree → log bench → N1</td><td>Felling gesture</td><td>Real felling, logs, bench</td></tr>
+</table></div>
+<p>That is why the proposal orders the milestones to reach that day <b>in the real world, online and between two</b>, before anything else. It is what turns the pieces into a game that you and your partner can really test.</p>
+</section>
+
+<section id="plan">
+<h2>7. Proposal: replanned milestones</h2>
+<p>Nothing that has been made is thrown away. It is reordered and connected. Tasks marked "comes from" already exist in another milestone and are moved.</p>
+
+<div class="fase">
+<h3>Phase 0 — Clear the way (first of all)</h3>
+<ul>
+<li><b>The website stays under 1 GB</b>, according to what you decide (point 9). Without losing any version.</li>
+<li><b>Close what is open</b>: wall walk (A) with its free version number, bare feet (B), and the online test to review.</li>
+<li><b>Tidy the code before connecting</b>, in one session: a single random module, the model library moved to the common scene, a single online client, the map viewer with the current characters. Without changing anything that is visible.</li>
+<li><b>Visual review rule</b> in the working rules: before showing anything, close-up screenshots next to the reference and the list of what is still wrong. If it looks worse than v5, it isn't shown.</li>
+</ul>
+</div>
+
+<div class="fase">
+<h3>Phase 1 — A single game: the first day, in the world and between two</h3>
+<p><b>Milestone A · The game in the real world</b> <span class="tag blue">new</span></p>
+<ol>
+<li>Plan: how other games load terrain in chunks with levels of detail (and in a separate thread), and measure map viewer v13 on mobile.</li>
+<li>Terrain in chunks around the player, with levels of detail, measured on mobile. <span class="mini">(comes from World and Art)</span></li>
+<li>The demo in the world: you appear in an accessible spot of the region you choose and walk through Kinland with the game camera; the flat area goes.</li>
+<li>The world's trees, grass and rocks in the game (the seven species), in the v5 style.</li>
+<li>Building in the world: the grid on the real terrain, and levelling with the round brush for foundations. <span class="mini">(levelling comes from Digging)</span></li>
+<li>What is gathered comes from the place: branches in the forest, flint in limestone, stone on slopes and in rivers, fibre in clearings and riverbanks.</li>
+<li>The server knows the world: the same seed, it checks positions and works against the terrain and stores only what changed per chunk.</li>
+<li>The duel in the world: fight anywhere, without a separate scene.</li>
+<li>Full review and publication.</li>
+</ol>
+<p><b>Milestone B · Equipment and carrying</b> <span class="tag warn">reordered</span> — the existing one, with this first:</p>
+<ol>
+<li>Objects on the ground (already in the roadmap).</li>
+<li>Real felling on the world's trees (it falls, the stump stays, it grows back), cross-cutting and splitting.</li>
+<li>Works with what you carry: <b>the magic reserve goes</b>; "+ Materials" now fills the test chest.</li>
+<li><b>Inventory and gathering through the server</b> (new): online, what you carry is stored by the server.</li>
+<li>What you carry is visible on the character, plus the carrying animations.</li>
+<li>Drag sledge and wheelbarrow. Review.</li>
+</ol>
+<p><b>Milestone C · Stations and crafting</b> — the existing one, as it is (N0 and N1), and through the server.</p>
+<p><b>Milestone D · Survival</b> <span class="tag blue">to be planned</span> — thirst (drinking from the river), hunger, cold and tiredness with their warnings; campfire; shelter and bound bed; death with half lootable; 2 h day and 1 h night; hares to hunt and roast (the minimum of fauna the first day asks for).</p>
+<div class="caja"><b>Goal of phase 1:</b> the two of you play the whole first day in Kinland, online, from mobile and PC. That is the big review point.</div>
+</div>
+
+<div class="fase">
+<h3>Phase 2 — Make it last: server and accounts</h3>
+<ul>
+<li><b>Server and accounts</b>: sign-up, character creation (looks, sex and region), persistent world that doesn't reset, versioned saves, hosting chosen by you.</li>
+<li><b>Administration and security</b> (the basics to open it to more people): logs, admin powers, cheat detection, bans.</li>
+<li><b>Land and boundary stone</b> (the first part of the land milestone): claiming, exclusion radius, upkeep and decay. It is what protects what you've built while you're away.</li>
+</ul>
+</div>
+
+<div class="fase">
+<h3>Phase 3 — Fill the world (in the order of the GDD)</h3>
+<ul>
+<li><b>Digging and mining</b> in the world, with the map's layers and veins (what's left of the milestone, without levelling). Proposal: that the lanes can handle it too.</li>
+<li><b>World, part two</b>: water up close with meanders and fords, swimming, riverbanks and coasts by rock, bridges, named districts, paths by use, weather, and each region's own style.</li>
+<li><b>Duel, part two</b>: a single armour table, the duel with what you wear and hold, strikes in five directions.</li>
+<li>Fauna and hunting · Farming and seasons · Siege, fire and upkeep · PvP and offline protection · Families, vassalage and alliances · Economy and travelling NPCs · Horses · Mounted and ranged · Navigation · Cartography.</li>
+<li><b>More pieces</b>: what's left (decoration, and the stone walls with crane when N3 arrives).</li>
+</ul>
+</div>
+
+<div class="fase">
+<h3>In parallel the whole time: art</h3>
+<p>Beards and cloak redone, bare feet, clothing customisation (dyes, coat of arms), character levels of detail, the 39 extra animations, polish of hands and wounds. It is work that doesn't clash with the rest and a fixed lane can handle it.</p>
+</div>
+</section>
+
+<section id="forma">
+<h2>8. Way of working</h2>
+<ul>
+<li><b>Lanes</b>: lane A handles the current phase (systems) and lane B handles art in parallel. The chat with you, the creative side (the visual world and whatever you need to see) and the decisions.</li>
+<li><b>While phase 1 lasts, no separate new pieces or systems</b>: everything new is made directly in the real world.</li>
+<li><b>Demanding visual review</b> (point 0): close-up screenshots side by side with the reference and the list of defects, before showing it to you.</li>
+<li><b>Each milestone is planned when it starts</b>, with the GDD and the systems document, as now; empty milestones aren't filled in until their turn comes.</li>
+</ul>
+</section>
+
+<section id="decidir">
+<h2>9. What valravnx decided (29 Oct)</h2>
+<ol>
+<li><b>The new order, as it is</b>: phase 0, phase 1 (the first day in the real world and between two), phase 2 (server and accounts) and then the rest.</li>
+<li><b>The website under 1 GB</b>: the old playable versions move to GitHub «releases», downloadable, without deleting any; the recent ones stay on the website, and the old screenshots are redone smaller. The releases are created by a GitHub action, because it can't be done from the sessions.</li>
+<li><b>The cloud server, now</b>: valravnx creates the Hetzner account with the guide in the repository and the chat checks it with him.</li>
+<li><b>The technical side, to the lanes</b>: digging and terrain in chunks are handled by the lanes; the visual and creative side of the world stays in the chat. Art is handled by lane B, in parallel.</li>
+</ol>
+</section>
+
+</div></body></html>

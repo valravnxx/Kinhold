@@ -4,7 +4,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { materialTex } from '../mundo/estilos.js';
-import { modelosArbol, azar } from '../mundo/decorado.js';
+import { azar } from '../mundo/decorado.js';
+import { modelosEspecies, ESPECIES } from '../mundo/especies.js';
 import { crearPaisaje, bosqueEn, azarCelda } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
 import { tr } from '../idioma.js';
@@ -130,7 +131,10 @@ function construir(mapa, cx, cy) {
     pend[k] = s;
     const xm = x0 + i * paso, ym = y0 + j * paso;
     const st = y > 0.05 ? pai.sitio(xm, ym, y) : null; sitios[k] = st;
-    const c = colorDelSuelo(st, y, s, xm, ym);
+    let c = colorDelSuelo(st, y, s, xm, ym);
+    // donde hay bosque, el suelo de lejos toma el verde oscuro de las copas: así, desde lo alto, las masas de bosque se
+    // leen como masas y no como árboles sueltos sobre la hierba (los árboles van encima)
+    if (st && st.bioma) { const d = bosqueEn(st, s, xm, ym).d; if (d > 0) c = c.map((v, q) => v + (DOSEL[q] - v) * Math.min(0.85, d * 1.1)); }
     // concavidad: más oscuro en las vaguadas, más claro en lomas; y una variación suave
     const lap = (alt(i + 1, j) + alt(i - 1, j) + alt(i, j + 1) + alt(i, j - 1) - 4 * y) / (paso * paso);
     const v = 1 - Math.max(-0.12, Math.min(0.18, lap * 6)) + (fbm(xm / 60, ym / 60, 5, 3) - 0.5) * 0.14;
@@ -194,30 +198,32 @@ function construir(mapa, cx, cy) {
   // bosque: candidatos en una rejilla desordenada de 13 m; cada uno se queda según el espesor del bosque en su sitio
   // cada candidato sale de su celda del MUNDO y de la semilla (no del centro de la zona): el mismo sitio tiene los mismos
   // árboles se abra la zona desde donde se abra
-  const lista = { pino: [], frond: [] }, ESP = 13, SEM = mapa.semilla || 0;
+  const lista = Object.fromEntries(ESPECIES.map(e => [e, []])), ESP = 13, SEM = mapa.semilla || 0;
   const ci0 = Math.ceil((cx - L / 2 + ESP / 2) / ESP), ci1 = Math.floor((cx + L / 2 - ESP / 2) / ESP), cj0 = Math.ceil((cy - L / 2 + ESP / 2) / ESP), cj1 = Math.floor((cy + L / 2 - ESP / 2) / ESP);
   let r = null;
   for (let cj = cj0; cj <= cj1; cj++) for (let ci = ci0; ci <= ci1; ci++) {
     r = azarCelda(ci, cj, 9, SEM);
     const x = ci * ESP - cx, z = cj * ESP - cy;
-    const px = x + (r() - 0.5) * ESP * 0.9, pz = z + (r() - 0.5) * ESP * 0.9;
+    const px = x + (r() - 0.5) * ESP, pz = z + (r() - 0.5) * ESP;   // por toda la celda: sin filas
     const gi = Math.round((px + L / 2) / paso), gj = Math.round((pz + L / 2) / paso), k = Math.min(N - 1, gj) * N + Math.min(N - 1, gi);
     const st = sitios[k]; if (!st || !st.bioma || H[k] < 1.5) continue;
     const xm = cx + px, ym = cy + pz;
-    const claro = fbm(xm / 380, ym / 380, 31, 4) * 0.7 + fbm(xm / 90, ym / 90, 33, 3) * 0.3;
     const lap = (alt(gi + 3, gj) + alt(gi - 3, gj) + alt(gi, gj + 3) + alt(gi, gj - 3) - 4 * H[k]) / (9 * paso * paso);
-    const { d, pino } = bosqueEn(st.bioma, st.T, pend[k], claro, Math.max(0, Math.min(1, lap * 40)));
+    const { d, especie, tam } = bosqueEn(st, pend[k], xm, ym, { humedo: Math.max(0, Math.min(1, lap * 40)), semilla: SEM, u: r() });
     if (r() > d) continue;
     const y = estado.alturaEn(px, pz) - 0.3;
-    (pino ? lista.pino : lista.frond).push([px, y, pz, (pino ? 3.2 : 2.9) * (0.8 + r() * 0.45), r() * 6.3, 0.82 + r() * 0.3]);
+    lista[especie].push([px, y, pz, tam * (0.85 + r() * 0.3), r() * 6.3, 0.82 + r() * 0.3]);
   }
-  let total = lista.pino.length + lista.frond.length;
-  if (total > MAX_ARBOLES) { const q = MAX_ARBOLES / total; for (const k of ['pino', 'frond']) lista[k] = lista[k].filter(a => azarCelda(Math.round(cx + a[0]), Math.round(cy + a[2]), 10, SEM)() < q); total = lista.pino.length + lista.frond.length; }   // cada árbol, por su sitio (siempre el mismo)
+  const contar = () => ESPECIES.reduce((n, e) => n + lista[e].length, 0);
+  let total = contar();
+  estado.engorde = 1;
+  if (total > MAX_ARBOLES) { const q = MAX_ARBOLES / total; estado.engorde = Math.min(1.35, Math.pow(q, -0.25));   // si hay que quitar árboles, los que quedan, algo más grandes (el bosque no se ve ralo)
+ for (const k of ESPECIES) lista[k] = lista[k].filter(a => azarCelda(Math.round(cx + a[0]), Math.round(cy + a[2]), 10, SEM)() < q); total = contar(); }   // cada árbol, por su sitio (siempre el mismo)
   estado.arboles = lista;
   poblarArboles(null);
   estado.centro = { cx, cy, H, paso };
-  const mods = modelosArbol({ sencillo: true }), tri = idx.length / 3 + lista.pino.length * triangulos(mods.pino.geo) + lista.frond.length * triangulos(mods.frond.geo);
-  window.__cerca.medidas = { ms: Math.round(performance.now() - t0), triangulos: Math.round(tri), arboles: total, rejilla: N, pasoM: +paso.toFixed(1) };
+  const mods = modelosEspecies({ sencillo: true }), tri = idx.length / 3 + ESPECIES.reduce((n, e) => n + lista[e].length * triangulos(mods[e].geo), 0);
+  window.__cerca.medidas = { ms: Math.round(performance.now() - t0), triangulos: Math.round(tri), arboles: total, especies: Object.fromEntries(ESPECIES.map(e => [e, lista[e].length])), rejilla: N, pasoM: +paso.toFixed(1) };
   document.getElementById('cercaDatos').textContent = tr('Zona de {l} × {l} km en {x}, {y} km · {a} árboles · rejilla de {p} m', { l: L / 1000, x: (cx / 1000).toFixed(1), y: (cy / 1000).toFixed(1), a: total.toLocaleString('es'), p: paso.toFixed(0) });
   vista('alto');
 }
@@ -225,17 +231,20 @@ function construir(mapa, cx, cy) {
 // árboles instanciados: los que quedan a menos de CERCA_ARBOL m del ojo con el modelo completo, el resto sencillos.
 // Escala más alta que ancha: un pino de verdad mide 15–20 m con un tronco de medio metro.
 const CERCA_ARBOL = 260;
+// de lejos, algo más grandes que de cerca (así se leen las masas de bosque desde lo alto), más altos que anchos
+const LEJOS_ALTO = 1.7, LEJOS_ANCHO = 1.35;
+const DOSEL = [0.22, 0.29, 0.17];   // el verde de las copas visto desde arriba (sRGB)
 export function poblarArboles(ojo, fuera = null) {
   const { raiz, arboles } = estado;
   for (const o of raiz.children.filter(o => o.name === 'bosque')) { raiz.remove(o); o.dispose(); }
-  const completo = modelosArbol(), sencillo = modelosArbol({ sencillo: true });
-  for (const k of ['pino', 'frond']) {
+  const completo = modelosEspecies(), sencillo = modelosEspecies({ sencillo: true });
+  for (const k of ESPECIES) {
     const cerca = [], lejos = [];
     for (const a of arboles[k]) { if (fuera && fuera(a[0], a[2])) continue; (ojo && Math.hypot(a[0] - ojo.x, a[2] - ojo.z) < CERCA_ARBOL ? cerca : lejos).push(a); }
     for (const [lista, m] of [[cerca, completo[k]], [lejos, sencillo[k]]]) {
       if (!lista.length) continue;
       const im = new THREE.InstancedMesh(m.geo, m.mats, lista.length), o = new THREE.Object3D(), c = new THREE.Color();
-      lista.forEach(([x, y, z, s, gir, tono], n) => { o.position.set(x, y, z); o.rotation.set(0, gir, 0); o.scale.set(s * 0.62, s, s * 0.62); o.updateMatrix(); im.setMatrixAt(n, o.matrix); im.setColorAt(n, c.setScalar(tono)); });
+      lista.forEach(([x, y, z, s, gir, tono], n) => { o.position.set(x, y, z); o.rotation.set(0, gir, 0); const e = estado.engorde || 1; o.scale.set(s * LEJOS_ANCHO * e, s * LEJOS_ALTO * e, s * LEJOS_ANCHO * e); o.updateMatrix(); im.setMatrixAt(n, o.matrix); im.setColorAt(n, c.setScalar(tono)); });
       im.name = 'bosque'; raiz.add(im);
     }
   }

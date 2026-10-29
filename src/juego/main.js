@@ -13,8 +13,10 @@ import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { vigilar, ofrecerGente } from '../mundo/rendimiento.js';
 import { conectarEnLinea } from './en_linea.js';
-import { cargarInventarios, guardarInventarios, ejecutarInventario } from '../logica/inventario.js';
+import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
+import { dibujarRetrato } from './retrato.js';
+import { PRENDAS, capasDibujo, puestasDe, prendasDeCapas } from '../logica/prendas.js';
 import { crearRecoleccion } from './recoleccion.js';
 import { nombreDe } from '../logica/recoleccion.js';
 
@@ -1090,7 +1092,7 @@ function recoger(punto) {
   const r = recoleccion.recoger(inventarios, registroAcciones, AUTOR_LOCAL, punto.id, pj.x, pj.z);
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   if (almacen) guardarInventarios(almacen, inventarios);
-  panelInventario.pintar(); // lo recogido ya sale en el panel de inventario
+  panelInventario.pintar(); pintarLlevas(); vestir(); // lo recogido sale en el panel o en la línea de lo que llevas
   pj.rot = Math.atan2(punto.x - pj.x, punto.z - pj.z);
   mostrarAviso(tr('Recoges: {n} × {c}.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) }));
 }
@@ -1387,7 +1389,51 @@ $('btnUsar').onclick = usar;
 $('btnConfirmar').onclick = confirmarDesmontaje;
 $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltado(); estado.pendienteDesmontar = null; mostrarAviso(''); };
 // Panel de inventario (hito 2): lo que llevas encima y un arcón de pruebas para coger equipo.
-const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario });
+const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario,
+  alCambiar: () => { pintarLlevas(); vestir(); }, retrato: (lienzo) => dibujarRetrato(renderer, jugador.mh, lienzo) });
+// El personaje lleva puesto lo que dice el inventario (valravnx, 29 oct: el inventario es el equipo). La ropa elegida
+// en el visor de personaje entra en el inventario una vez por cada elección; después manda el inventario.
+const SEXO = elegido ? elegido.sexo : 'hombre';
+const CLAVE_ROPA_VISOR = 'kinhold_ropa_visor_v1';
+function ropaDelVisor() {
+  if (!elegido) return;
+  const huella = JSON.stringify([elegido.sexo, elegido.capas]);
+  let hecha = null; try { hecha = almacen && almacen.getItem(CLAVE_ROPA_VISOR); } catch (e) { /* sin almacenamiento */ }
+  if (hecha === huella) return;
+  for (const p of prendasDeCapas(elegido.capas, elegido.sexo)) {
+    const lugar = 'ropa:' + PRENDAS[p].capa, ya = inventario().lugares[lugar];
+    if (ya && ya.tipo === p) continue;
+    if (ya) accionInventario({ tipo: 'soltar', de: lugar });
+    accionInventario({ tipo: 'coger', objeto: p, cantidad: 1, a: lugar });
+  }
+  try { almacen && almacen.setItem(CLAVE_ROPA_VISOR, huella); } catch (e) { /* sin almacenamiento */ }
+}
+function vestir() {
+  if (jugador.mh) jugador.mh.ponerCapas(capasDibujo(puestasDe(inventario().lugares), SEXO));
+  // el hacha de mano se ve en la mano derecha si la llevas en una mano (lo demás de las manos, con su tarea del hito 2)
+  jugador.hachaEnMano = ['mano:der', 'mano:izq'].some(l => inventario().lugares[l]?.tipo === 'hacha_mano');
+}
+ropaDelVisor();
+jugador.listo.then(vestir);
+// Lo que llevas en las manos y al hombro no está en el panel (valravnx, 29 oct): se coge del mundo y se suelta al mundo.
+// Mientras no se vea en el personaje (tarea del hito 2), una línea abajo dice qué llevas, cada cosa con «Soltar» (al
+// arcón de pruebas, que hace de suelo hasta que haya objetos en el suelo).
+function pintarLlevas() {
+  const inv = inventario(), nom = c => tr(CATALOGO[c.tipo].nombre) + (c.n > 1 ? ' ×' + c.n : '');
+  const partes = [];
+  const manos = ['mano:der', 'mano:izq'].filter(l => inv.lugares[l]);
+  const grupo = (et, l) => `<span class="llevo"><span>${et}</span><b>${nom(inv.lugares[l])}</b><button data-soltar="${l}">${tr('Soltar')}</button></span>`;
+  for (const l of manos) partes.push(grupo(tr('En la mano:'), l));
+  if (inv.lugares.hombro) partes.push(grupo(tr('Al hombro:'), 'hombro'));
+  $('llevas').hidden = !partes.length;
+  $('llevas').innerHTML = partes.join('<i></i>');
+}
+$('llevas').onclick = (e) => {
+  const b = e.target.closest('[data-soltar]'); if (!b) return;
+  accionInventario({ tipo: 'soltar', de: b.dataset.soltar });
+  pintarLlevas(); vestir(); panelInventario.pintar();
+};
+pintarLlevas();
 $('btnRellenar').onclick = () => { accion({ tipo: 'rellenar', cantidad: 50 }); guardar(); actualizarUI(); evaluarColocacion(); };
 {
   let armado = false, tmr = null;
@@ -1509,7 +1555,7 @@ window.__kinhold = {
   fijarSubida(t) { if (estado.obrando) estado.obrando.desde = performance.now() + 1e9; if (rampa) { rampa.t = rampa.meta = t; moverRampa(0); } },
   seguirSubida() { if (estado.obrando) estado.obrando.desde = performance.now(); },
   interactivoCercano() { const o = interactivoCercano(); return o && { c: o.c.id, key: o.key, tipo: o.tipo }; },
-  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; reconstruir(); panelInventario.pintar(); },
+  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; reconstruir(); ropaDelVisor(); vestir(); pintarLlevas(); panelInventario.pintar(); },
   get registroAcciones() { return registroAcciones; },
   accionInventario, get inventario() { return inventario(); }, panelInventario,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)

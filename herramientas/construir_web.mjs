@@ -47,6 +47,15 @@ for (const c of carpetas) {
   if (!existsSync(ruta)) { errores.push(`falta la carpeta de capturas ${c}`); continue; }
   capturas[c] = readdirSync(ruta).filter(f => /\.(jpe?g|png|webp)$/i.test(f)).sort();
 }
+// las de cada cambio, primero (valravnx, 29 oct: las noticias salían con toda la batería de pruebas y las del cambio al
+// final). Desde el 29 oct se publican solo las del cambio (herramientas/capturas.py pide cuáles); en las carpetas de
+// antes, las que no estaban en la versión anterior del mismo prototipo van delante, y la web enseña unas pocas.
+for (const c of Object.keys(capturas)) {
+  const m = c.match(/^(.*)-v(\d+)$/); if (!m) continue;
+  let antes = null;
+  for (let n = +m[2] - 1; n > 0 && !antes; n--) if (capturas[`${m[1]}-v${n}`]) antes = new Set(capturas[`${m[1]}-v${n}`]);
+  if (antes) capturas[c] = [...capturas[c].filter(f => !antes.has(f)), ...capturas[c].filter(f => antes.has(f))];
+}
 // versiones jugables
 for (const p of roadmap.prototipos) for (const v of p.versiones)
   if (!existsSync(join(docs, v.archivo))) errores.push(`falta la versión ${p.id} ${v.v}: ${v.archivo}`);

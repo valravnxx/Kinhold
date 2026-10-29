@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kinhold · Revisión del proyecto (29 oct)</title>
+<style>
+:root{--bg:#f6f2ea;--card:#fffdf8;--ink:#2b2520;--muted:#6f655b;--line:#e2d8c8;--accent:#8a3b1f;--ok:#2f6b3a;--okbg:#e6f1e4;--warn:#8a5a00;--warnbg:#fbf0d6;--bad:#9a2a1c;--badbg:#f8e1dc;--blue:#24507a;--bluebg:#e3ecf6}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1b1815;--card:#24201c;--ink:#ece4d8;--muted:#a59a8c;--line:#3a332c;--accent:#e08a5f;--ok:#8fd09a;--okbg:#1f3323;--warn:#f0c46a;--warnbg:#3a2f15;--bad:#f09a8a;--badbg:#3a1f1a;--blue:#8fb8e6;--bluebg:#1b2a3a}}
+:root[data-theme="dark"]{--bg:#1b1815;--card:#24201c;--ink:#ece4d8;--muted:#a59a8c;--line:#3a332c;--accent:#e08a5f;--ok:#8fd09a;--okbg:#1f3323;--warn:#f0c46a;--warnbg:#3a2f15;--bad:#f09a8a;--badbg:#3a1f1a;--blue:#8fb8e6;--bluebg:#1b2a3a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Georgia,"Times New Roman",serif}
+.wrap{max-width:920px;margin:0 auto;padding:24px 16px 64px}
+header{border-bottom:2px solid var(--accent);margin-bottom:22px;padding-bottom:10px}
+h1{font-size:1.7rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.95rem}
+nav{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 16px;margin-bottom:22px}
+nav ol{margin:0;padding-left:20px;columns:2;column-gap:24px}
+nav a{color:var(--accent);text-decoration:none}
+@media (max-width:600px){nav ol{columns:1}}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:18px}
+h2{font-size:1.25rem;margin:0 0 10px;color:var(--accent)}
+h3{font-size:1.04rem;margin:16px 0 6px}
+p{margin:6px 0}
+ul,ol{margin:6px 0;padding-left:22px}
+li{margin:3px 0}
+table{width:100%;border-collapse:collapse;font-size:.92rem;margin:8px 0}
+th,td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:top}
+th{font-family:system-ui,sans-serif;font-size:.8rem;color:var(--muted);font-weight:600}
+.tabla{overflow-x:auto}
+.tag{display:inline-block;font:600 .72rem/1.4 system-ui,sans-serif;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.ok{background:var(--okbg);color:var(--ok)} .warn{background:var(--warnbg);color:var(--warn)} .bad{background:var(--badbg);color:var(--bad)} .blue{background:var(--bluebg);color:var(--blue)}
+.caja{border-left:4px solid var(--accent);background:var(--bg);padding:10px 14px;border-radius:6px;margin:10px 0}
+.caja.roja{border-left-color:var(--bad)}
+.fase{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:12px 0;background:var(--bg)}
+.fase h3{margin-top:4px}
+.mini{font-size:.88rem;color:var(--muted)}
+svg text{font-family:system-ui,sans-serif}
+.dia{width:100%;min-width:620px;height:auto;max-width:860px;display:block;margin:8px auto}
+.dia .c{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+.dia .t{fill:var(--ink);font-size:13px}
+.dia .s{fill:var(--muted);font-size:10.5px}
+.dia .isla{fill:var(--badbg);stroke:var(--bad);stroke-width:1.5}
+.dia .une{stroke:var(--ok);stroke-width:2;fill:none}
+.dia .falta{stroke:var(--bad);stroke-width:2;fill:none;stroke-dasharray:6 5}
+</style>
+</head>
+<body><div class="wrap">
+<header>
+<h1>Kinhold — revisión del proyecto</h1>
+<div class="sub">29 de octubre de 2026 · qué hay, cómo encaja, qué falta de verdad y los hitos replanificados · <b>aprobado por valravnx el 29 oct</b> y ya pasado al roadmap</div>
+</header>
+
+<nav><ol>
+<li><a href="#resumen">Resumen en un minuto</a></li>
+<li><a href="#hay">Qué hay hoy</a></li>
+<li><a href="#encaja">Cómo encaja (y qué no)</a></li>
+<li><a href="#urgente">Lo urgente: la web y el repositorio</a></li>
+<li><a href="#roadmap">El roadmap actual: qué sobra y qué falta</a></li>
+<li><a href="#falta">Lo que de verdad hace falta</a></li>
+<li><a href="#plan">Propuesta: hitos replanificados</a></li>
+<li><a href="#forma">Forma de trabajar</a></li>
+<li><a href="#decidir">Lo que decidió valravnx</a></li>
+</ol></nav>
+
+<section id="resumen">
+<h2>1. Resumen en un minuto</h2>
+<p>En seis días se han hecho muchas piezas buenas, pero <b>son piezas sueltas: todavía no forman un juego</b>. La construcción, el duelo, la mina y el mundo viven cada uno en su escena, con su propio terreno, y casi nada de lo que se hace en una parte sirve en otra.</p>
+<div class="caja roja"><b>Los tres problemas grandes</b>
+<ol>
+<li><b>El mundo no es el del juego.</b> El mapa de Kinland (256 × 256 km, ríos, cortados, bosques por especie) solo existe en su visor. Se construye sobre un llano redondo (60 m de radio), el duelo en otro llano, la mina en una loma propia. El servidor tampoco sabe nada del mundo.</li>
+<li><b>Lo que recoges no sirve para nada.</b> Las ramas, la piedra y el sílex van al inventario, pero las obras se pagan de una reserva mágica de 120 troncos y 120 piedras. Talar es solo el gesto. El inventario y lo recogido no pasan por el servidor: en línea, cada uno lo tiene en su navegador.</li>
+<li><b>La web va a reventar.</b> GitHub no publica webs de más de 1 GB, y la nuestra ya pesa 701 MB tras seis días (469 MB son capturas). Al ritmo de ahora, se para en pocos días.</li>
+</ol></div>
+<p><b>Propuesta:</b> antes de añadir más contenido, una fase de <b>«un solo juego»</b>: el personaje aparece en el mundo de verdad, por trozos y en el móvil; ahí construye, recoge, tala y pelea; lo que recoge es lo que usa; y todo pasa por el servidor. Su meta es que <b>el primer día de un jugador</b> (el del documento de sistemas) se pueda jugar entero, en línea y entre dos. Después, el servidor con cuentas, y luego el resto de sistemas en el orden del GDD.</p>
+</section>
+
+<section id="hay">
+<h2>2. Qué hay hoy</h2>
+<div class="tabla"><table>
+<tr><th>Parte</th><th>Estado</th><th>Qué tiene</th><th>Dónde vive</th></tr>
+<tr><td>Construcción</td><td><span class="tag ok">avanzada</span></td><td>Rejilla anclada, carga y desmontaje en cascada, obras con marco, materiales y tiempo, andamio, polea, polipasto, escaleras, tejados, chimenea, muebles con el estilo v5. Adarve en curso.</td><td>Construcción y demo, sobre un llano</td></tr>
+<tr><td>Duelo</td><td><span class="tag ok">avanzado</span></td><td>Rosa de golpes, paradas, golpe maestro, fintas, arco, escudo, heridas con sangrado y curación. En línea entre dos.</td><td>Duelo y demo, sobre otro llano</td></tr>
+<tr><td>Personajes</td><td><span class="tag warn">a medias</span></td><td>Taller propio con MakeHuman: ropa por capas, cara, cuerpo, pelo, barba. Barbas y capa mal (lo has dicho). Pies descalzos en curso. Sin niveles de detalle.</td><td>Todas las partes salvo la mina</td></tr>
+<tr><td>Inventario y equipo</td><td><span class="tag warn">a medias</span></td><td>Huecos, cinturones, mochilas, ralentización, panel con tu personaje. No se ve lo que llevas a la espalda, al hombro ni en las manos (salvo el hacha).</td><td>Construcción y demo, solo en el navegador</td></tr>
+<tr><td>Recolección N0</td><td><span class="tag warn">a medias</span></td><td>Ramas, piedra, sílex y fibra que vuelven a salir con el tiempo.</td><td>Zonas puestas a mano en el llano de la demo</td></tr>
+<tr><td>Fabricar</td><td><span class="tag bad">no empezado</span></td><td>Recetas y estaciones solo en el documento de sistemas.</td><td>—</td></tr>
+<tr><td>Mundo</td><td><span class="tag ok">avanzado como visor</span></td><td>Mapa por semilla con regiones y nombres, valles, cortados con roca 3D, agua que corre, saltos, bosques por especie, vetas.</td><td>Solo en su visor, aparte</td></tr>
+<tr><td>Cavar y minar</td><td><span class="tag warn">prueba técnica</span></td><td>La prueba de rendimiento de cavar (70 fps en tu móvil). Nada de sustentación, vetas ni guardado.</td><td>Su prototipo, en su loma, sin guardar nada</td></tr>
+<tr><td>En línea</td><td><span class="tag warn">prueba mínima</span></td><td>Servidor con autor puesto por el servidor, construir y pelear entre dos, reconexión, límites, medido con 100 bots, túnel desde casa.</td><td>Sincroniza construcción, presencia y duelo; no el inventario, lo recogido ni lo cavado</td></tr>
+<tr><td>Supervivencia, fauna, granja, tierras, economía…</td><td><span class="tag bad">no empezado</span></td><td>Solo en el GDD y el documento de sistemas (con cifras).</td><td>—</td></tr>
+<tr><td>Web e infraestructura</td><td><span class="tag ok">buena</span> <span class="tag bad">con un límite</span></td><td>Web en tres idiomas, carriles A y B, chat en paralelo, pruebas en la nube, diario y roadmap. Ver el punto 4.</td><td>GitHub Pages</td></tr>
+</table></div>
+</section>
+
+<section id="encaja">
+<h2>3. Cómo encaja (y qué no)</h2>
+<p>En verde, lo que está unido de verdad; en rojo discontinuo, lo que debería estarlo y no lo está. Las cajas rojas son partes que viven aparte.</p>
+<div class="tabla"><svg class="dia" viewBox="0 0 860 430" role="img" aria-label="Mapa de conexiones entre las partes del juego">
+ <defs><marker id="fv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker><marker id="fr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--bad)"/></marker></defs>
+ <!-- demo -->
+ <rect x="250" y="20" width="360" height="60" rx="10" class="c"/>
+ <text x="430" y="45" text-anchor="middle" class="t">Demo única</text>
+ <text x="430" y="64" text-anchor="middle" class="s">menú con Construir, Duelo y Personaje</text>
+ <rect x="40" y="120" width="200" height="70" rx="10" class="c"/>
+ <text x="140" y="145" text-anchor="middle" class="t">Construcción</text>
+ <text x="140" y="163" text-anchor="middle" class="s">obras · inventario · recogida</text>
+ <text x="140" y="178" text-anchor="middle" class="s">su llano propio</text>
+ <rect x="330" y="120" width="200" height="70" rx="10" class="c"/>
+ <text x="430" y="145" text-anchor="middle" class="t">Duelo</text>
+ <text x="430" y="163" text-anchor="middle" class="s">esgrima · arco · heridas</text>
+ <text x="430" y="178" text-anchor="middle" class="s">otro llano · su tabla de armadura</text>
+ <rect x="620" y="120" width="200" height="70" rx="10" class="c"/>
+ <text x="720" y="145" text-anchor="middle" class="t">Visor de personaje</text>
+ <text x="720" y="163" text-anchor="middle" class="s">cuerpo · ropa · aspecto</text>
+ <!-- islas -->
+ <rect x="40" y="300" width="200" height="70" rx="10" class="isla"/>
+ <text x="140" y="325" text-anchor="middle" class="t">Mundo (mapa)</text>
+ <text x="140" y="343" text-anchor="middle" class="s">Kinland · paisaje · especies</text>
+ <text x="140" y="358" text-anchor="middle" class="s">solo en su visor</text>
+ <rect x="330" y="300" width="200" height="70" rx="10" class="isla"/>
+ <text x="430" y="325" text-anchor="middle" class="t">Mina</text>
+ <text x="430" y="343" text-anchor="middle" class="s">vóxeles suavizados</text>
+ <text x="430" y="358" text-anchor="middle" class="s">su loma · no guarda</text>
+ <rect x="620" y="300" width="200" height="70" rx="10" class="c"/>
+ <text x="720" y="325" text-anchor="middle" class="t">Servidor</text>
+ <text x="720" y="343" text-anchor="middle" class="s">obras · presencia · duelo</text>
+ <text x="720" y="358" text-anchor="middle" class="s">sin mundo ni inventario</text>
+ <!-- unidas -->
+ <path d="M330,80 L170,120" class="une" marker-end="url(#fv)"/>
+ <path d="M430,80 L430,120" class="une" marker-end="url(#fv)"/>
+ <path d="M530,80 L690,120" class="une" marker-end="url(#fv)"/>
+ <path d="M620,155 L530,155" class="une" marker-end="url(#fv)"/>
+ <path d="M240,190 C420,240 600,260 680,300" class="une" marker-end="url(#fv)"/>
+ <path d="M500,190 L680,300" class="une" marker-end="url(#fv)"/>
+ <!-- faltan -->
+ <path d="M140,300 L140,190" class="falta" marker-end="url(#fr)"/>
+ <path d="M240,330 L330,330" class="falta" marker-end="url(#fr)"/>
+ <path d="M240,350 C420,410 600,400 620,355" class="falta" marker-end="url(#fr)"/>
+ <path d="M430,300 L230,190" class="falta" marker-end="url(#fr)"/>
+ <text x="148" y="250" class="s">el terreno, los árboles</text>
+ <text x="148" y="264" class="s">y lo que se recoge</text>
+ <text x="246" y="320" class="s">roca y vetas</text>
+ <text x="440" y="405" class="s">el servidor no conoce el mundo</text>
+</svg></div>
+<h3>Lo que no está unido, uno por uno</h3>
+<ul>
+<li><b>Tres terrenos distintos</b>: el llano de la construcción, el del duelo y la loma de la mina. El paisaje del mapa no lo usa ninguna parte jugable.</li>
+<li><b>Dos sistemas de árboles</b>: los dos de la v5 en la demo y las siete especies del mapa.</li>
+<li><b>Dos sitios para los recursos</b>: la reserva de la construcción (lo que paga las obras) y el inventario (donde va lo que recoges). No se pasan nada.</li>
+<li><b>Dos tablas de armadura</b>: la del duelo y la de las prendas no dan lo mismo (la malla frena el corte de forma distinta en cada una).</li>
+<li><b>La mina</b> no usa la roca ni las vetas del mapa y no guarda lo cavado.</li>
+<li><b>El servidor</b> guarda las obras y reparte la presencia y el duelo, pero no el inventario, lo recogido ni lo cavado, y no tiene terreno.</li>
+<li><b>Detalles</b>: el visor del mapa sigue con los personajes de la taller-v7; hay dos clientes en línea (construcción y duelo) que hacen casi lo mismo; tres generadores de azar; la biblioteca de modelos vive dentro de la carpeta de la construcción.</li>
+</ul>
+<p class="mini">Por qué ha pasado: cada parte se ha probado en su escena para avanzar rápido, que estaba bien para empezar. Pero el GDD ya dice «una sola escena y un solo cargador para todo» y «el mundo se carga por trozos desde el primer terreno». Ahora toca cumplirlo, antes de que haya más piezas que mover.</p>
+</section>
+
+<section id="urgente">
+<h2>4. Lo urgente: la web y el repositorio</h2>
+<div class="caja roja">
+<p>GitHub Pages no publica webs de más de <b>1 GB</b> y recomienda que el repositorio no pase de 1 GB (<a href="https://docs.github.com/pages/getting-started-with-github-pages/github-pages-limits">límites de GitHub Pages</a>). Medido hoy:</p>
+<ul>
+<li>La web (carpeta <code>docs</code>): <b>701 MB</b>. De ellos, capturas 469 MB, versiones jugables 163 MB y recursos de personajes 62 MB.</li>
+<li>El repositorio con su historia: <b>789 MB</b>, y cada versión publicada lo hace crecer para siempre.</li>
+<li>Cada versión jugable lleva three.js entero dentro (de 1,3 a 2 MB cada una), y ya hay 37 de la demo y 34 de la construcción.</li>
+</ul>
+<p>El cambio de hoy (publicar solo las capturas del cambio) frena el crecimiento, pero no lo para: cada versión nueva sigue sumando. <b>Hace falta decidir cómo guardar las versiones antiguas y las capturas viejas sin perderlas</b> (ver el punto 9).</p>
+</div>
+</section>
+
+<section id="roadmap">
+<h2>5. El roadmap actual: qué sobra y qué falta</h2>
+<h3>Lo que sobra o está repetido</h3>
+<ul>
+<li>«Terreno, hierba, árboles y luz por trozos» (en Arte) y «Que aguante en el móvil: el terreno por trozos» (en Mundo) son la misma tarea. Igual con «Rendimiento en móvil» y «Niveles de detalle del personaje», en Arte.</li>
+<li>«Andar por el mundo de verdad en la demo» está como última tarea del mundo, cuando es la que une todo lo demás.</li>
+<li>«Muros de piedra y grúa de rueda» (en Más piezas) son de N3 (piedra): no tiene sentido hacerlos antes de que exista la cal ni la mampostería.</li>
+<li><b>Doce hitos vacíos</b> (supervivencia, asedio, fauna, caballos, granja, administración, PvP, tierras, economía, a distancia, navegación, cartografía), cada uno con solo su nombre.</li>
+</ul>
+<h3>Lo que está mal colocado</h3>
+<ul>
+<li><b>Nivelar el terreno para cimientos</b> está en Cavar y minar, pero hace falta para construir en el mundo de verdad (el GDD: «en ladera hay que nivelar para poner cimientos»).</li>
+<li><b>Cavar y minar</b> y <b>Mundo</b> solo los puede llevar el chat. Con eso, Cavar lleva 1 tarea de 12 desde el 27 oct y los carriles no la pueden tocar.</li>
+<li><b>Prueba online mínima</b> tiene todo hecho pero sigue «en curso»: falta tu decisión del servidor en la nube (cuenta de Hetzner).</li>
+<li>El <b>adarve</b> (carril A) se publicará con un número de versión que ya he usado yo hoy (construcción v36): tendrá que coger el siguiente.</li>
+</ul>
+<h3>Lo que falta (lo has pedido o lo pide el GDD, y no tiene tarea)</h3>
+<ul>
+<li><b>Agua y costas con detalle</b> (28 oct): suelo según el material, cauces según su tamaño, costas según la roca y vegetación de ribera. Solo hay una tarea genérica, «Agua de cerca».</li>
+<li><b>Puentes</b>: se dejaron de Más piezas «para el hito Mundo», pero no están en él.</li>
+<li><b>Comarcas con nombre</b> y <b>caminos que se forman con el uso</b> (GDD, hito 10).</li>
+<li><b>Aparecer en el mundo</b>: elegir región y salir en un sitio accesible de ella (GDD, apartado 6).</li>
+<li><b>Una sola tabla de armadura</b> para el duelo y la ropa.</li>
+<li><b>Revisión visual de lo ya aprobado</b> (barbas y capa están ya como tareas; falta repasar lo demás con el mismo ojo).</li>
+</ul>
+</section>
+
+<section id="falta">
+<h2>6. Lo que de verdad hace falta</h2>
+<p>El documento de sistemas ya tiene la prueba de que todo encaja: <b>el primer día de un jugador</b>. Hoy no se puede jugar ni un solo paso de ese día en el sitio donde debería pasar:</p>
+<div class="tabla"><table>
+<tr><th>Paso del primer día</th><th>Qué hay</th><th>Qué falta</th></tr>
+<tr><td>Aparecer en camisa, descalzo, en tu región</td><td>Ropa del inventario; pies descalzos en curso</td><td>Aparecer en el mundo de verdad, por región</td></tr>
+<tr><td>Sed: buscar un río y beber</td><td>Ríos en el visor del mapa</td><td>El mundo en el juego; la sed (supervivencia)</td></tr>
+<tr><td>Fibra → cordel → cinturón</td><td>Recoger fibra; cinturones en el inventario</td><td>Fabricar (recetas)</td></tr>
+<tr><td>Sílex y piedra → piedra de tallar → lasca y hacha</td><td>Recoger sílex y piedra</td><td>Estaciones y recetas</td></tr>
+<tr><td>Ramas → leñero, hoguera</td><td>Recoger ramas; leñero en el inventario</td><td>Fabricar; hoguera</td></tr>
+<tr><td>Mojón y refugio de ramas como cama</td><td>Mojón; cabañas</td><td>Obras pagadas con lo que llevas; refugio y cama ligada</td></tr>
+<tr><td>Cazar una liebre y asarla</td><td>—</td><td>Fauna, despiece, cocina</td></tr>
+<tr><td>Talar un árbol joven → banco de tronco → N1</td><td>Gesto de talar</td><td>Tala de verdad, troncos, banco</td></tr>
+</table></div>
+<p>Por eso la propuesta ordena los hitos para llegar a ese día <b>en el mundo de verdad, en línea y entre dos</b>, antes que nada más. Es lo que convierte las piezas en un juego que tu chica y tú podéis probar de verdad.</p>
+</section>
+
+<section id="plan">
+<h2>7. Propuesta: hitos replanificados</h2>
+<p>Nada de lo hecho se tira. Se reordena y se une. Las tareas marcadas «viene de» ya existen en otro hito y se mueven.</p>
+
+<div class="fase">
+<h3>Fase 0 — Despejar (lo primero)</h3>
+<ul>
+<li><b>La web no pasa de 1 GB</b>, según lo que decidas (punto 9). Sin perder ninguna versión.</li>
+<li><b>Cerrar lo abierto</b>: adarve (A) con su número de versión libre, pies descalzos (B), y la prueba online a revisión.</li>
+<li><b>Orden en el código antes de unir</b>, en una sesión: un solo módulo de azar, la biblioteca de modelos a la escena común, un solo cliente en línea, el visor del mapa con los personajes de ahora. Sin cambiar nada de lo que se ve.</li>
+<li><b>Regla de revisión visual</b> en las reglas de trabajo: antes de enseñar algo, capturas de cerca al lado de la referencia y la lista de lo que aún está mal. Si se ve peor que la v5, no se enseña.</li>
+</ul>
+</div>
+
+<div class="fase">
+<h3>Fase 1 — Un solo juego: el primer día, en el mundo y entre dos</h3>
+<p><b>Hito A · El juego en el mundo de verdad</b> <span class="tag blue">nuevo</span></p>
+<ol>
+<li>Planificar: cómo cargan otros juegos el terreno por trozos con niveles de detalle (y en un hilo aparte), y medir el visor del mapa v13 en el móvil.</li>
+<li>Terreno por trozos alrededor del jugador, con niveles de detalle, medido en el móvil. <span class="mini">(viene de Mundo y de Arte)</span></li>
+<li>La demo en el mundo: apareces en un sitio accesible de la región que eliges y andas por Kinland con la cámara del juego; fuera el llano.</li>
+<li>Los árboles, la hierba y las rocas del mundo en el juego (las siete especies), con la v5.</li>
+<li>Construir en el mundo: la rejilla sobre el terreno de verdad, y nivelar con la brocha redonda para los cimientos. <span class="mini">(nivelar viene de Cavar)</span></li>
+<li>Lo que se recoge sale del sitio: ramas en el bosque, sílex en la caliza, piedra en laderas y ríos, fibra en claros y riberas.</li>
+<li>El servidor conoce el mundo: la misma semilla, comprueba posiciones y obras contra el terreno y guarda solo lo cambiado por trozo.</li>
+<li>El duelo en el mundo: pelear en cualquier sitio, sin escena aparte.</li>
+<li>Revisión completa y publicación.</li>
+</ol>
+<p><b>Hito B · Equipo y carga</b> <span class="tag warn">reordenado</span> — el que ya existe, con esto primero:</p>
+<ol>
+<li>Objetos en el suelo (ya en el roadmap).</li>
+<li>Tala de verdad sobre los árboles del mundo (cae, queda el tocón, vuelve a crecer), tronzar y partir.</li>
+<li>Obras con lo que llevas: <b>fuera la reserva mágica</b>; «+ Materiales» pasa a llenar el arcón de pruebas.</li>
+<li><b>Inventario y recogida por el servidor</b> (nuevo): en línea, lo que llevas lo guarda el servidor.</li>
+<li>Lo que llevas se ve en el personaje y las animaciones de cargar.</li>
+<li>Rastra y carretilla. Revisión.</li>
+</ol>
+<p><b>Hito C · Estaciones y fabricar</b> — el que ya existe, tal cual (N0 y N1), y por el servidor.</p>
+<p><b>Hito D · Supervivencia</b> <span class="tag blue">por planificar</span> — sed (beber del río), hambre, frío y cansancio con sus avisos; hoguera; refugio y cama ligada; muerte con la mitad saqueable; día de 2 h y noche de 1 h; liebres para cazar y asar (lo mínimo de fauna que pide el primer día).</p>
+<div class="caja"><b>Meta de la fase 1:</b> los dos jugáis el primer día entero en Kinland, en línea, desde el móvil y el PC. Ese es el punto de revisión grande.</div>
+</div>
+
+<div class="fase">
+<h3>Fase 2 — Que dure: servidor y cuentas</h3>
+<ul>
+<li><b>Servidor y cuentas</b>: registro, crear personaje (aspecto, sexo y región), mundo persistente que no se reinicia, guardados con versión, alojamiento elegido por ti.</li>
+<li><b>Administración y seguridad</b> (lo básico para abrirlo a más gente): registros, poderes de administración, detección de trampas, baneos.</li>
+<li><b>Tierras y mojón</b> (lo primero del hito de tierras): reclamar, radio de exclusión, mantenimiento y deterioro. Es lo que protege lo construido cuando estás fuera.</li>
+</ul>
+</div>
+
+<div class="fase">
+<h3>Fase 3 — Llenar el mundo (en el orden del GDD)</h3>
+<ul>
+<li><b>Cavar y minar</b> en el mundo, con las capas y vetas del mapa (lo que queda del hito, sin nivelar). Propuesta: que lo puedan llevar también los carriles.</li>
+<li><b>Mundo, segunda parte</b>: agua de cerca con meandros y vados, nadar, riberas y costas según la roca, puentes, comarcas con nombre, caminos por uso, clima, y el estilo propio de cada región.</li>
+<li><b>Duelo, segunda parte</b>: una sola tabla de armadura, el duelo con lo que llevas puesto y en la mano, golpes en cinco direcciones.</li>
+<li>Fauna y caza · Granja y estaciones del año · Asedio, fuego y mantenimiento · PvP y protección offline · Familias, vasallajes y alianzas · Economía y NPCs ambulantes · Caballos · A caballo y a distancia · Navegación · Cartografía.</li>
+<li><b>Más piezas</b>: lo que queda (decoración, y los muros de piedra con grúa cuando llegue N3).</li>
+</ul>
+</div>
+
+<div class="fase">
+<h3>En paralelo todo el tiempo: arte</h3>
+<p>Barbas y capa rehechas, pies descalzos, personalización de la ropa (tintes, blasón), niveles de detalle del personaje, las 39 animaciones extra, pulido de manos y heridas. Es trabajo que no choca con el resto y puede llevarlo un carril fijo.</p>
+</div>
+</section>
+
+<section id="forma">
+<h2>8. Forma de trabajar</h2>
+<ul>
+<li><b>Carriles</b>: el carril A lleva la fase en curso (sistemas) y el carril B lleva el arte en paralelo. El chat contigo, lo creativo (el mundo visual y lo que tengas que ver) y las decisiones.</li>
+<li><b>Mientras dure la fase 1, nada de piezas ni sistemas nuevos sueltos</b>: todo lo nuevo se hace ya en el mundo de verdad.</li>
+<li><b>Revisión visual exigente</b> (punto 0): capturas de cerca lado a lado con la referencia y la lista de defectos, antes de enseñártelo.</li>
+<li><b>Cada hito se planifica al empezarlo</b>, con el GDD y el documento de sistemas, como ahora; los hitos vacíos no se rellenan hasta que toquen.</li>
+</ul>
+</section>
+
+<section id="decidir">
+<h2>9. Lo que decidió valravnx (29 oct)</h2>
+<ol>
+<li><b>El orden nuevo, tal cual</b>: fase 0, fase 1 (el primer día en el mundo de verdad y entre dos), fase 2 (servidor y cuentas) y luego el resto.</li>
+<li><b>La web por debajo de 1 GB</b>: las versiones jugables antiguas pasan a las «releases» de GitHub, descargables, sin borrar ninguna; en la web quedan las recientes, y las capturas viejas se rehacen más pequeñas. Las releases las crea una acción de GitHub, porque desde las sesiones no se puede.</li>
+<li><b>El servidor en la nube, ya</b>: valravnx crea la cuenta de Hetzner con la guía del repositorio y el chat lo comprueba con él.</li>
+<li><b>Lo técnico, a los carriles</b>: cavar y el terreno por trozos los llevan los carriles; lo visual y creativo del mundo sigue en el chat. El arte lo lleva el carril B, en paralelo.</li>
+</ol>
+</section>
+
+</div></body></html>

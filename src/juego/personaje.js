@@ -128,7 +128,8 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       m = velocidad < 1.8 ? 'andar' : 'correr'; ritmo = velocidad / (j.mh.velocidad[m] || 1); // natural, medida al cargar
       ritmo = THREE.MathUtils.clamp(ritmo, 0.6, 1.6);
     } else if (talando) m = 'talar';
-    if (m !== j.modo) { j.mh.poner(m, 0.2); j.modo = m; if (j.hacha) j.hacha.visible = m === 'talar'; }
+    if (m !== j.modo) { j.mh.poner(m, 0.2); j.modo = m; }
+    if (j.hacha) j.hacha.visible = m === 'talar' || !!j.hachaEnMano;   // también si la llevas en la mano (inventario)
     j.mh.acciones[m].timeScale = ritmo;
     j.mh.mezclador.update(dt);
   };
