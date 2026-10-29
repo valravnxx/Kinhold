@@ -11,7 +11,8 @@ import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { CLIPS, CLIPS_EXTRA } from './cargar.js';
 import { normalizarAspecto, colorDe, pesosFormas, escalaAltura, piezasCabeza } from '../logica/aspecto.js';
 import { TALLER } from '../logica/prendas.js';
-import { normalizarTintes, colorPrenda, colorFigura, NUM_BLASON } from '../logica/tintes.js';
+import { normalizarTintes, colorFigura, NUM_BLASON, paletaDe, PRENDAS_TENIBLES } from '../logica/tintes.js';
+import { HECHURAS, normalizarHechuras, naturalDe, largoDe, granoDe, NUM_TEJIDO } from '../logica/hechura.js';
 
 const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 const cache = new Map();
@@ -56,15 +57,47 @@ const lineal = (c) => c.map(x => (x / 255) ** 2.2);
 // prenda sin textura nueva ni rehacer el modelo. Dentro de la figura, el color de la tela se cambia por el de la figura
 // (manteniendo el dibujo de la tela). Bordes suavizados con fwidth. Va delante y detrás, como en las sobrevestes de verdad.
 const ANCHO_PIEZA = 0.06; // media anchura de palo, faja, banda, cruz, sotuer y cheurón (m)
-function ponerSombreadoBlason(material, u) {
+// Hechura de la tela (src/logica/hechura.js), en el mismo sombreado: el tejido (sarga, espiguilla, cuadros, rayas), el
+// grano del material (la lana más irregular que el lino) y el corte (la falda se corta a una altura, con el dobladillo
+// algo más oscuro). Como el blasón, sale de la posición en reposo (en m): alrededor del cuerpo, s = ángulo × 0,16 m, y
+// la altura, y. Los dibujos se suavizan y se apagan cuando son más finos que un píxel (de lejos no hacen muaré).
+const TELA_GLSL = `
+float kh_hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float kh_ruido(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(kh_hash(i), kh_hash(i + vec2(1, 0)), f.x), mix(kh_hash(i + vec2(0, 1)), kh_hash(i + vec2(1, 1)), f.x), f.y); }
+// franja suavizada: 1 dentro de [0, ancho) de cada periodo; la media si es más fina que un píxel
+float kh_banda(float x, float ancho) { float w = fwidth(x) + 1e-5, f = fract(x);
+  float b = smoothstep(0.0, w, f) - smoothstep(ancho, ancho + w, f); return mix(b, ancho, smoothstep(0.3, 0.7, w)); }
+float kh_rayado(float x, float amp) { float w = fwidth(x); return sin(x * 6.2832) * amp * (1.0 - smoothstep(0.2, 0.5, w)); }
+`;
+function ponerSombreadoTela(material, u, conBlason) {
   material.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, u);
     sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vReposo;')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvReposo = position;');
     sh.fragmentShader = sh.fragmentShader.replace('#include <common>', `#include <common>
 varying vec3 vReposo;
-uniform int uBlason; uniform vec3 uFigura; uniform float uPecho;`)
+uniform int uBlason; uniform vec3 uFigura; uniform float uPecho;
+uniform int uTejido; uniform float uGrano; uniform float uCorte;
+${TELA_GLSL}`)
+      .replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
+if (vReposo.y < uCorte) discard; // corte: lo que queda por debajo del bajo no se dibuja`)
       .replace('#include <map_fragment>', `#include <map_fragment>
+{
+  vec3 p = vReposo; float s = atan(p.x, p.z) * 0.16, y = p.y, k = 1.0;
+  if (uTejido == 1) k += kh_rayado((s + y) / 0.005, 0.07);                       // sarga: costillas en diagonal
+  else if (uTejido == 2) { float c = floor(s / 0.012); float dir = mod(c, 2.0) * 2.0 - 1.0;
+    k += kh_rayado((y + dir * s) / 0.005, 0.08) - 0.05 * kh_banda(s / 0.012, 0.08); } // espiguilla: zigzag en columnas
+  else if (uTejido == 3) { float bx = kh_banda(s / 0.045 + 0.5, 0.3), by = kh_banda(y / 0.045, 0.3);
+    k *= (1.0 - 0.17 * bx) * (1.0 - 0.17 * by) * (1.0 + 0.08 * (1.0 - bx) * (1.0 - by)); } // cuadros
+  else if (uTejido == 4) k *= 1.0 - 0.22 * kh_banda(y / 0.032, 0.35);               // rayas
+  // grano: hilos de grosor desigual (lana más que lino), de unos 3 mm; se apaga de lejos
+  float gw = fwidth(y * 330.0);
+  k += uGrano * (kh_ruido(vec2(s, y) * vec2(120.0, 330.0)) - 0.5) * 2.0 * (1.0 - smoothstep(0.4, 0.9, gw));
+  if (uCorte > -50.0) k *= mix(0.8, 1.0, smoothstep(uCorte, uCorte + 0.014, y)); // dobladillo
+  diffuseColor.rgb *= k;
+}
+` + (conBlason ? `
 if (uBlason > 0) {
   float x = vReposo.x, y = vReposo.y - uPecho, w = ${ANCHO_PIEZA.toFixed(3)}, d = 0.0;
   if (uBlason == 1) d = -x;                                         // partido: la mitad diestra
@@ -79,9 +112,22 @@ if (uBlason > 0) {
   float fw = fwidth(d) * 0.8 + 1e-4;
   float m = smoothstep(-fw, fw, d);
   diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb / max(diffuse, vec3(1e-4)) * uFigura, m);
-}`);
+}` : ''));
   };
-  material.customProgramCacheKey = () => 'blason';
+  material.customProgramCacheKey = () => conBlason ? 'tela-blason' : 'tela';
+}
+// la sombra de una falda cortada: el mismo corte en el material de la sombra
+function sombraCortada(u) {
+  const m = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uCorte = u.uCorte;
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying float vAlto;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAlto = position.y;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vAlto; uniform float uCorte;')
+      .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\nif (vAlto < uCorte) discard;');
+  };
+  m.customProgramCacheKey = () => 'sombra-cortada';
+  return m;
 }
 
 export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/taller-v1/') {
@@ -120,7 +166,11 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   // dónde acaba cada manga (distancia a la muñeca, en m): una manga de debajo asoma si las de encima son más cortas
   const MANGA = { camisa: 0.041, tunica: 0.043, vestido: 0.043, gambeson: 0.04, cota: 0.09 };
   const bajo = new Map(); // altura del bajo de cada falda (en reposo)
-  modelo.traverse(n => { const c = n.isMesh && capaDe(n); if (c && c.falda) { n.geometry.computeBoundingBox(); bajo.set(c.capa, n.geometry.boundingBox.min.y); } });
+  const cintura = new Map(); // altura de arriba de cada falda (en reposo): el corte acorta desde ahí
+  modelo.traverse(n => { const c = n.isMesh && capaDe(n); if (c && c.falda) { n.geometry.computeBoundingBox(); bajo.set(c.capa, n.geometry.boundingBox.min.y); cintura.set(c.capa, n.geometry.boundingBox.max.y); } });
+  // el bajo con el corte de la hechura (src/logica/hechura.js): largo = 1, como en el taller
+  const alturaCorte = (capa, corte) => { const l = largoDe(corte); return l >= 1 ? -100 : cintura.get(capa) - l * (cintura.get(capa) - bajo.get(capa)); };
+  const bajoEf = (capa) => { const h = resultado.hechuras?.[capa]; const a = h && bajo.has(capa) ? alturaCorte(capa, h.corte) : -100; return Math.max(bajo.get(capa), a); };
   let hayPies = false;
   modelo.traverse(n => { if (n.isMesh && n.name.endsWith('_pies')) hayPies = true; });
   const ponerCapas = (lista) => {
@@ -143,7 +193,7 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
       else if (c) {
         const k = puestas.indexOf(c.capa), encima = puestas.slice(k + 1).filter(e => e !== 'manto');
         if (k < 0) n.visible = false;
-        else if (c.falda) n.visible = encima.every(e => !bajo.has(e) || bajo.get(c.capa) < bajo.get(e) - 0.01);
+        else if (c.falda) n.visible = encima.every(e => !bajo.has(e) || bajoEf(c.capa) < bajoEf(e) - 0.01);
         else if (c.mangas) n.visible = encima.every(e => !(e in MANGA) || MANGA[e] > MANGA[c.capa] + 0.005);
         else n.visible = encima.every(e => ABIERTAS.includes(e)); // la sobreveste deja ver el cuello y los hombros de lo de debajo
       }
@@ -229,21 +279,33 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   // ---- tintes de la ropa y blasón de la sobreveste (src/logica/tintes.js), sin volver a cargar el modelo ----
   // Las prendas teñibles (taller-v13) llevan en sus extras tinte «ropa», la prenda y el gris de referencia de su textura.
   const blason = { uBlason: { value: 0 }, uFigura: { value: new THREE.Color(1, 1, 1) }, uPecho: { value: 1.3 } };
+  // hechura de cada prenda de tela (src/logica/hechura.js): tejido, grano del material y corte, en el sombreado de la tela
+  const tela = new Map(); // malla → sus valores del sombreado
   {
     let alto = -Infinity;
     modelo.traverse(n => {
-      if (!n.isMesh || n.userData.prenda !== 'sobreveste') return;
-      ponerSombreadoBlason(n.material, blason);
-      if (!/_falda$/.test(n.name)) { n.geometry.computeBoundingBox(); alto = Math.max(alto, n.geometry.boundingBox.max.y); }
+      if (!n.isMesh || n.userData.tinte !== 'ropa' || !HECHURAS[n.userData.prenda]) return;
+      const u = { ...blason, uTejido: { value: 0 }, uGrano: { value: granoDe(HECHURAS[n.userData.prenda].materiales[0]) }, uCorte: { value: -100 } };
+      ponerSombreadoTela(n.material, u, n.userData.prenda === 'sobreveste');
+      const c = capaDe(n);
+      if (c && c.falda) n.customDepthMaterial = sombraCortada(u);
+      tela.set(n, { u, capa: c && c.capa, falda: !!(c && c.falda) });
+      if (n.userData.prenda === 'sobreveste' && !/_falda$/.test(n.name)) { n.geometry.computeBoundingBox(); alto = Math.max(alto, n.geometry.boundingBox.max.y); }
     });
     if (alto > 0) blason.uPecho.value = alto - 0.2; // el cruce de la cruz, unos 20 cm por debajo del cuello
   }
+  // color de una prenda: el del tinte o, sin teñir, el de su material (el lino crudo es más claro que la lana)
+  const colorDe_ = (prenda, tinte) => {
+    const p = PRENDAS_TENIBLES[prenda]; if (!p) return null;
+    const c = paletaDe(prenda)[tinte];
+    return (c && c[1]) || naturalDe(prenda, resultado.hechuras?.[prenda]?.material, p.natural);
+  };
   const ponerTintes = (t) => {
     const tin = normalizarTintes(t, o.sexo);
     let ref = 1;
     modelo.traverse(n => {
       if (!n.isMesh || n.userData.tinte !== 'ropa') return;
-      const c = lineal(colorPrenda(n.userData.prenda, tin.prendas[n.userData.prenda]) || [255, 255, 255]);
+      const c = lineal(colorDe_(n.userData.prenda, tin.prendas[n.userData.prenda]) || [255, 255, 255]);
       ref = n.userData.ref || 1;
       n.material.color.setRGB(c[0] / ref, c[1] / ref, c[2] / ref, THREE.LinearSRGBColorSpace);
     });
@@ -252,12 +314,26 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     blason.uBlason.value = NUM_BLASON[tin.blason.dibujo] || 0;
     resultado.tintes = tin;
   };
-  const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, velocidad, opciones: o, hueso, clips: [...g.animations.map(c => c.name), ...Object.values(extra)], ponerCapas, ponerAspecto, ponerTintes,
+  // hechuras: { prenda: { material, corte, tejido } }; lo que falte, la de siempre (se ve como el taller)
+  const ponerHechuras = (hs) => {
+    const h = normalizarHechuras(hs);
+    resultado.hechuras = h;
+    for (const [n, { u, capa, falda }] of tela) {
+      const p = h[n.userData.prenda];
+      u.uTejido.value = NUM_TEJIDO[p.tejido] || 0;
+      u.uGrano.value = granoDe(p.material);
+      u.uCorte.value = falda && bajo.has(capa) ? alturaCorte(capa, p.corte) : -100;
+    }
+    if (resultado.tintes) ponerTintes(resultado.tintes);
+    if (resultado.capas) ponerCapas(resultado.capas);
+  };
+  const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, velocidad, opciones: o, hueso, clips: [...g.animations.map(c => c.name), ...Object.values(extra)], ponerCapas, ponerAspecto, ponerTintes, ponerHechuras, hechuras: normalizarHechuras(o.hechuras),
     // las prendas que se pueden teñir en este modelo (las de antes de la taller-v13 no se tiñen)
     tenibles: (() => { const s = new Set(); modelo.traverse(n => { if (n.isMesh && n.userData.tinte === 'ropa') s.add(n.userData.prenda); }); return [...s]; })(),
     capasPosibles: [...[...ORDEN, ...SUELTAS].filter(c => c !== 'camisa' && modelo.getObjectByName(`${o.sexo}_capa_${c}`)), ...(hayPies ? [TALLER.descalzo] : [])], tocados: TOCADOS };
   ponerCapas(o.capas || [o.sexo === 'mujer' ? 'vestido' : 'tunica']);
   ponerAspecto(o.aspecto);
+  ponerHechuras(o.hechuras);
   ponerTintes(o.tintes);
   return resultado;
 }
