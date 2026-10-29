@@ -334,9 +334,10 @@
     },
     {
      "nombre": "Arreglo (valravnx, 28 oct): en línea, abrir o cerrar una puerta o terminar una obra da tirones horribles a los dos jugadores; que esas acciones no rehagan más de lo que cambia",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T20:58:47+01:00",
-     "rama": "trabajo/20261028-2100-tirones"
+     "rama": "trabajo/20261028-2100-tirones",
+     "fin": "2026-10-29T01:17:37+01:00"
     }
    ]
   },
@@ -456,9 +457,9 @@
     },
     {
      "nombre": "Taller: más peinados (melena, coleta, trenzas) y barbas (corta, larga, perilla), y arreglar la claridad de la barbilla",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-28T21:20:50+00:00",
-     "rama": "trabajo/20261028-2120"
+     "fin": "2026-10-29T01:28:55+00:00"
     },
     {
      "nombre": "Taller: pies descalzos. El cuerpo no tiene pies bajo los zapatos (se quitan al vestir) y el GDD dice que se empieza descalzo: hace falta el cuerpo con pies cuando no lleva zapatos",
@@ -723,7 +724,9 @@
     },
     {
      "nombre": "Panel de inventario en la demo: silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro y capas del cuerpo); al tocar un cuadro con contenedor se abren sus huecos; sin cinturón no hay cuadros de cintura. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Mientras no haya fabricación (hito 3), el equipo se coge de un arcón de pruebas, como el botón de rellenar materiales. Capturas en PC y móvil",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T00:51:30+00:00",
+     "rama": "trabajo/20261029-0051"
     },
     {
      "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
@@ -778,7 +781,9 @@
     },
     {
      "nombre": "Recoger del suelo y de las plantas lo que pide el nivel N0 (documento de sistemas, apartado 3): ramas caídas, piedra suelta y sílex con las manos, y fibra arrancada de ortigas y hierba larga; cada cosa sale donde dice el documento, da lo que dice, va al inventario por huecos y vuelve a salir pasado su tiempo, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T01:21:05+00:00",
+     "rama": "trabajo/20261029-0120"
     },
     {
      "nombre": "Estaciones y recetas en la lógica pura, con los datos del documento de sistemas (apartados 7 y 8) de las primeras estaciones: hoguera y piedra de tallar (N0) y banco de trabajo de tronco (entrada a N1); cada receta con lo que gasta, lo que da, dónde se hace y su tiempo. Fabricar con autor, gastando lo que llevas encima y lo de los arcones a pocos pasos, con una cola pequeña por estación y el tiempo contado por tiempo transcurrido. Pruebas de lógica",
@@ -1357,6 +1362,13 @@
      "archivo": "jugar/demo/v31.html",
      "capturas": "capturas/demo-v31",
      "notas": "En «Construir», remate de tejado (esquina) de paja, de tablillas y de teja: limatesa en la esquina de fuera y limahoya en el rincón de un tejado en L, según los tramos de al lado."
+    },
+    {
+     "v": "v32",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v32.html",
+     "capturas": "capturas/demo-v32",
+     "notas": "En línea, sin tirones: al abrir o cerrar puertas solo se rehace esa puerta, y lo construido se rehace unas cinco veces más deprisa al terminar una obra. Y en «Duelo», la curación de heridas."
     }
    ]
   },
@@ -1882,6 +1894,13 @@
      "archivo": "jugar/personaje/v17.html",
      "capturas": "capturas/personaje-v17",
      "notas": "Datos de cada prenda en la lógica pura: lo que frena de cada golpe, lo que abriga y lo que pesa la ropa que ves puesta, en una tabla de Opciones"
+    },
+    {
+     "v": "v18",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/personaje/v18.html",
+     "capturas": "capturas/personaje-v18",
+     "notas": "Más peinados y barbas en el taller propio: melena, coleta y trenzas (también la mujer, sin la cofia), barba larga y perilla; la barba ya no se aclara bajo la barbilla. Personajes en recursos/personajes/taller-v10/."
     }
    ]
   },

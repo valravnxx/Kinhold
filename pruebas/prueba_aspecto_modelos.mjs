@@ -2,14 +2,16 @@
 //  - las formas de MakeHuman como formas del modelo: peso y músculo en la piel y en la ropa; cara, nariz y mentón solo
 //    en la cabeza (no en la túnica); cada forma mueve de verdad (más de 3 mm en algún punto: la nariz es pequeña);
 //  - las piezas que cambian de color llevan su tinte (piel, pelo u ojos) y su color de referencia en los «extras»;
-//  - el iris va aparte del blanco del ojo, y están los calcos de pelo (cejas; en el hombre, barba corta y bigote).
+//  - el iris va aparte del blanco del ojo, y están los calcos de pelo (cejas; en el hombre, barba corta y bigote);
+//  - cada peinado y cada barba que se pueden elegir tienen sus piezas en el modelo (melena, coleta, trenzas, barba larga,
+//    perilla…), con el color del pelo.
 // Uso: node pruebas/prueba_aspecto_modelos.mjs [carpeta de recursos]   (por defecto, la última taller-vN publicada)
 //      MUTAR=1 → mira la taller-v8, que no los tiene: tiene que fallar.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { MeshoptDecoder } from 'meshoptimizer';
 import { readdirSync } from 'fs';
-import { FORMAS } from '../src/logica/aspecto.js';
+import { FORMAS, PEINADOS, BARBAS, piezasCabeza } from '../src/logica/aspecto.js';
 
 const base = 'docs/recursos/personajes';
 const ultima = readdirSync(base).filter(d => /^taller-v\d+$/.test(d)).sort((a, b) => +a.slice(8) - +b.slice(8)).at(-1);
@@ -52,6 +54,18 @@ for (const f of readdirSync(carpeta).filter(f => f.endsWith('.glb'))) {
   const mal_ = Object.entries(piezas).filter(([s, t]) => !(tinte(s) || '').startsWith(t + '/'));
   comprobar(`${f}: piel, pelo, cejas, barba e iris llevan su tinte y su color de referencia`, !mal_.length, mal_.map(([s]) => `${s}: ${tinte(s)}`).join(', '));
   comprobar(`${f}: el blanco del ojo no cambia de color (sin tinte)`, nodo('ojo_l') && !tinte('ojo_l'));
+  // cada peinado y cada barba que se pueden elegir: están todas las piezas que se enseñan, y las de pelo llevan su tinte
+  const faltanP = new Set(), sinTinte = new Set();
+  for (const peinado of Object.keys(PEINADOS[sexo])) for (const barba of Object.keys(BARBAS[sexo])) {
+    for (const [k, ver] of Object.entries(piezasCabeza({ peinado, barba }))) {
+      if (!ver) continue;
+      const s = k.slice(1);
+      if (!nodo(s)) faltanP.add(s);
+      else if (/^(pelo|barba)/.test(s) && !(tinte(s) || '').startsWith('pelo/')) sinTinte.add(s);
+    }
+  }
+  comprobar(`${f}: cada peinado y cada barba tienen sus piezas`, !faltanP.size, faltanP.size ? 'faltan ' + [...faltanP].join(', ') : Object.keys(PEINADOS[sexo]).join(', ') + ' · ' + Object.keys(BARBAS[sexo]).join(', '));
+  comprobar(`${f}: el pelo largo y las barbas llevan el color del pelo`, !sinTinte.size, [...sinTinte].join(', '));
 }
 console.log(`\n${ok} correctas, ${mal} fallos`);
 process.exit(mal ? 1 : 0);

@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v9'), f'{sitio}/recursos/personajes/taller-v9')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v10'), f'{sitio}/recursos/personajes/taller-v10')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -239,6 +239,26 @@ with sync_playwright() as p:
         comprobar('aspecto: afeitado y rapado (sin barba ni pelo; las cejas y el pelo pintado se quedan)',
                   not mat('hombre_barba_corta')[3] and not mat('hombre_barba_bigote')[3] and not mat('hombre_pelo')[3] and mat('hombre_vello')[3])
         pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_2.png')
+        # peinados y barbas nuevos (taller-v10): melena con barba larga (la corta va debajo), trenzas con perilla; bajo la
+        # capucha no asoman las trenzas ni las orejas
+        ver = lambda n: (mat(f'hombre_{n}') or [0, 0, 0, None])[3]
+        pg.click('[data-asp="peinado"][data-v="melena"]'); pg.click('[data-asp="barba"][data-v="larga"]'); pg.wait_for_timeout(100)
+        if os.environ.get('MUTAR'): pg.evaluate(f"{E}.diag().pj.ponerAspecto({{peinado: 'corto', barba: 'corta'}})")
+        comprobar('aspecto: melena y barba larga (con el pelo corto y la barba corta debajo)',
+                  all(ver(n) for n in ('pelo', 'pelo_melena', 'barba_larga', 'barba_corta')) and not ver('pelo_trenzas') and not ver('pelo_coleta'))
+        pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_melena_larga.png')
+        pg.click('[data-vista="espalda"]') if pg.query_selector('[data-vista="espalda"]') else None
+        pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_melena_espalda.png')
+        pg.click('[data-asp="peinado"][data-v="trenzas"]'); pg.click('[data-asp="barba"][data-v="perilla"]'); pg.wait_for_timeout(100)
+        comprobar('aspecto: trenzas y perilla', ver('pelo_trenzas') and ver('barba_perilla') and not ver('pelo_melena') and not ver('barba_larga') and not ver('barba_corta'))
+        pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_trenzas.png')
+        pg.click('[data-capa="capucha"]'); pg.wait_for_timeout(150)
+        comprobar('aspecto: bajo la capucha no asoman las trenzas ni las orejas', ver('capa_capucha') and not ver('pelo_trenzas') and not ver('orejas'))
+        pg.click('[data-capa="capucha"]'); pg.wait_for_timeout(150)
+        comprobar('aspecto: sin la capucha vuelven las trenzas y las orejas', ver('pelo_trenzas') and ver('orejas'))
+        pg.click('[data-asp="peinado"][data-v="coleta"]'); pg.wait_for_timeout(100)
+        pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_aspecto_coleta.png')
+        pg.click('[data-asp="barba"][data-v="ninguna"]'); pg.click('[data-asp="peinado"][data-v="rapado"]'); pg.wait_for_timeout(100)
         # formas: los deslizadores mueven las formas de MakeHuman (en la piel y en la ropa) y la altura escala el personaje
         cabeza0 = pg.evaluate(f"{E}.hueso('head')")[1]
         for k, v in [('peso', 1), ('cara', 1), ('nariz', -1), ('menton', 1), ('altura', 1)]:

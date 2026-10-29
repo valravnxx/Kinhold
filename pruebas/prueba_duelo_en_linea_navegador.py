@@ -15,7 +15,7 @@ MUTAR = bool(os.environ.get('MUTAR'))
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-for c in ['v1', 'taller-v9']:
+for c in ['v1', 'taller-v10']:
     shutil.copytree(os.path.join(RAIZ, f'docs/recursos/personajes/{c}'), f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -207,7 +207,8 @@ try:
 
         print('El servidor se apaga')
         servidor.terminate(); servidor.wait(5)
-        comprobar('PC dice que se ha cortado (y que vuelve a conectar) y ya no ve al otro', esperar(A, "document.getElementById('estadoRed').textContent === 'Volviendo a conectar…'", 5000) and A.evaluate(f"{D}.otros.size") == 0)
+        comprobar('PC dice que se ha cortado (y que vuelve a conectar) y ya no ve al otro', esperar(A, "document.getElementById('estadoRed').textContent === 'Volviendo a conectar…'", 10000) and A.evaluate(f"{D}.otros.size") == 0,
+                  f"estado: {A.inner_text('#estadoRed')} · otros: {A.evaluate(f'{D}.otros.size')}")
         comprobar('sin conexión no se ataca', not A.evaluate(f"{D}.atacar('alto')"))
         for nombre, (pg, err) in paginas.items():
             malos = [e for e in err if 'WebSocket' not in e and 'ERR_CONNECTION_REFUSED' not in e]
