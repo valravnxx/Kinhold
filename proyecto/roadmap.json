@@ -368,7 +368,7 @@
   {
    "id": "despejar",
    "num": "1h",
-   "estado": "en_curso",
+   "estado": "revision",
    "nombre": "Despejar: web, código y revisión visual",
    "jugable": "Nada nuevo a la vista: la web cabe en el límite de GitHub sin perder ninguna versión, el código queda ordenado para unir las partes y hay una regla de revisión visual.",
    "nota": "Fase 0 de la revisión del 29 oct (aprobada por valravnx): va antes que todo lo demás. La web pesaba 701 MB de un máximo de 1 GB.",
@@ -400,9 +400,11 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T21:23:04+00:00",
-     "rama": "trabajo/20261029-2123"
+     "rama": "trabajo/20261029-2123",
+     "fin": "2026-10-29T22:32:46+00:00",
+     "notas": "Las 15 pruebas en la nube correctas. 7 versiones más a sus releases (demo v35 a v37, mapa v9, personaje v16 a v18) y 137 capturas viejas encogidas: la web pasa de 379 a 363 MB."
     }
    ]
   },
@@ -422,7 +424,9 @@
     },
     {
      "nombre": "Terreno por trozos, la lógica: el mundo en trozos de 64 m; alrededor del jugador, anillos con su detalle (rejilla de 1 m en los cercanos y de 2, 4 y 8 m más lejos) y un margen para no cargar y soltar el mismo trozo al ir y venir; faldones en los bordes para que no se vean rendijas entre trozos de distinto detalle. En src/logica, sin three.js, con prueba en node (sin huecos ni solapes, la misma altura en los bordes compartidos)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-29T22:24:30+00:00",
+     "rama": "trabajo/20261029-2224"
     },
     {
      "nombre": "Los trozos se hacen en un hilo aparte (Web Worker): alturas, colores y sombreado del suelo fuera del hilo de dibujo, unos pocos trozos por fotograma, y al andar el juego no se para. Medir el fotograma más largo al cruzar bordes, en PC y móvil",
@@ -1584,21 +1588,21 @@
     {
      "v": "v35",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v35.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v35.html",
      "capturas": "capturas/demo-v35",
      "notas": "v35: los personajes vuelven a tener las manos enteras (desde la taller-v9 salían como una tira, también las de los demás jugadores) y la mujer lleva botas bajas, que ya no atraviesan la falda larga. Personajes en recursos/personajes/taller-v11/."
     },
     {
      "v": "v36",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v36.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v36.html",
      "capturas": "capturas/construccion-v35",
      "notas": "En «Construir», recoger ramas, piedra, sílex y fibra (construcción v35)"
     },
     {
      "v": "v37",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v37.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v37.html",
      "capturas": "capturas/demo-v37",
      "notas": "El panel de inventario es el equipo (valravnx, 29 oct): tu personaje de verdad, vestido con lo que llevas, y a los lados la ropa, la cintura y la espalda; sin cuadros de manos ni de hombro ni el dibujo retorcido. Lo de las manos y el hombro se coge del mundo (el arcón de pruebas) y abajo sale lo que llevas, con «Soltar»; el hacha de mano se ve en la mano."
     },
@@ -2207,21 +2211,21 @@
     {
      "v": "v16",
      "fecha": "2026-10-28",
-     "archivo": "jugar/personaje/v16.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v16.html",
      "capturas": "capturas/personaje-v16",
      "notas": "Personalización del taller propio: tono de piel, color de ojos y de pelo, peinado (corto o rapado), barba (corta, bigote o afeitado) y deslizadores de altura, peso, músculo, cara ancha, nariz ancha, nariz larga y mentón. Peso, músculo y la cara son las formas de MakeHuman; la ropa engorda o adelgaza con el cuerpo."
     },
     {
      "v": "v17",
      "fecha": "2026-10-28",
-     "archivo": "jugar/personaje/v17.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v17.html",
      "capturas": "capturas/personaje-v17",
      "notas": "Datos de cada prenda en la lógica pura: lo que frena de cada golpe, lo que abriga y lo que pesa la ropa que ves puesta, en una tabla de Opciones"
     },
     {
      "v": "v18",
      "fecha": "2026-10-29",
-     "archivo": "jugar/personaje/v18.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v18.html",
      "capturas": "capturas/personaje-v18",
      "notas": "Más peinados y barbas en el taller propio: melena, coleta y trenzas (también la mujer, sin la cofia), barba larga y perilla; la barba ya no se aclara bajo la barbilla. Personajes en recursos/personajes/taller-v10/."
     },
@@ -2340,7 +2344,7 @@
     {
      "v": "v9",
      "fecha": "2026-10-28",
-     "archivo": "jugar/mapa/v9.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v9.html",
      "capturas": "capturas/mapa-v9",
      "notas": "Nombres del mundo: el continente Kinland y sus regiones Whitholm, Eikwold, Rudmere, Highfell y Storaa; «país» pasa a «región»."
     },
