@@ -13,6 +13,7 @@ import { normalizarAspecto, colorDe, pesosFormas, escalaAltura, piezasCabeza } f
 import { TALLER } from '../logica/prendas.js';
 import { normalizarTintes, colorFigura, NUM_BLASON, paletaDe, PRENDAS_TENIBLES } from '../logica/tintes.js';
 import { HECHURAS, normalizarHechuras, naturalDe, largoDe, granoDe, NUM_TEJIDO } from '../logica/hechura.js';
+import { prepararDetalle } from './detalle.js';
 
 const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 const cache = new Map();
@@ -330,10 +331,14 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, velocidad, opciones: o, hueso, clips: [...g.animations.map(c => c.name), ...Object.values(extra)], ponerCapas, ponerAspecto, ponerTintes, ponerHechuras, hechuras: normalizarHechuras(o.hechuras),
     // las prendas que se pueden teñir en este modelo (las de antes de la taller-v13 no se tiñen)
     tenibles: (() => { const s = new Set(); modelo.traverse(n => { if (n.isMesh && n.userData.tinte === 'ropa') s.add(n.userData.prenda); }); return [...s]; })(),
+    // la altura del corte de una falda (hechura), para la malla de lejos (detalle.js)
+    corteDe: (n) => tela.has(n) ? tela.get(n).u.uCorte.value : -100,
     capasPosibles: [...[...ORDEN, ...SUELTAS].filter(c => c !== 'camisa' && modelo.getObjectByName(`${o.sexo}_capa_${c}`)), ...(hayPies ? [TALLER.descalzo] : [])], tocados: TOCADOS };
   ponerCapas(o.capas || [o.sexo === 'mujer' ? 'vestido' : 'tunica']);
   ponerAspecto(o.aspecto);
   ponerHechuras(o.hechuras);
   ponerTintes(o.tintes);
+  // niveles de detalle (detalle.js): ponerNivel(n) y, envueltas, las funciones de arriba para rehacer la malla de lejos
+  await prepararDetalle(resultado);
   return resultado;
 }

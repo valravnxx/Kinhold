@@ -2431,6 +2431,23 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-29T21:59:27+00:00",
+  "fin": "2026-10-29T23:27:46+00:00",
+  "titulo": "Hito 1b: niveles de detalle del personaje del taller",
+  "hito": "arte",
+  "hecho": [
+   "Niveles de detalle según lo alto que sale el personaje en pantalla, con margen para no ir y venir (lógica pura en src/logica/detalle.js): cerca, entero; a media distancia, el 40 % de los triángulos y sin ojos; lejos, el 15 % en una sola malla con las texturas juntas; muy pequeño o fuera de la cámara, no se dibuja",
+   "Cada pieza se simplifica con meshoptimizer sin mover sus bordes, una vez por pieza para todos los personajes; de lejos, las capas de dentro se hunden unos milímetros para que no asomen por las de encima, y los huesos se mueven uno de cada dos fotogramas",
+   "Medido en el navegador de pruebas: el hombre con gambesón, cota y sobreveste pasa de 27.700 triángulos y 17 piezas a 10.500 a media distancia y a 3.900 en una pieza de lejos; en la demo, con 20 personajes y la cámara baja, de 1,29 millones de triángulos y 606 llamadas de dibujo a 0,72-0,79 millones y 346-362",
+   "En la demo, el panel de rendimiento dice cuántos hay en cada nivel, deja apagarlos para comparar y tiene 20 personajes de prueba",
+   "No comprobado: los fps en un móvil de verdad (el navegador de pruebas dibuja sin tarjeta gráfica); queda pedido a valravnx en el registro de la demo",
+   "Aún mal: la versión de lejos vista de cerca no tiene ojos ni barba, las manos salen toscas y en la manga de la cota se cuela una raya clara; con el personaje de menos de 40 px no se aprecia"
+  ],
+  "pruebas": "En la nube: 16 de 16 grupos correctos, y otra vez personaje, demo, niveles de detalle, lógica e inglés tras los últimos retoques; la prueba nueva de navegador, rota a propósito (MUTAR=1), falla",
+  "capturas": "capturas/personaje-v24",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-29T22:24:30+00:00",
   "fin": "2026-10-29T23:26:03+00:00",
   "titulo": "Hito «El juego en el mundo de verdad»: el terreno por trozos, la lógica (carril A)",

@@ -53,7 +53,8 @@ if (MODOS[modo]) {
   b.onclick = () => { location.href = enlace(null); };
   if (caja) caja.prepend(b); else { b.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:9'; document.body.appendChild(b); }
   window.__demo = { modo, listo: false };
-  window.__rendimiento = { medida: medidaRendimiento, gente: (n) => genteDePrueba() && genteDePrueba().poner(n) };
+  window.__rendimiento = { medida: medidaRendimiento, gente: (n) => genteDePrueba() && genteDePrueba().poner(n),
+    detalle: (si) => genteDePrueba()?.detalle?.(si), niveles: () => genteDePrueba()?.niveles?.() };
   // los números de rendimiento junto a «Menú» (src/demo/rendimiento.js), cuando la parte ya ha puesto sus botones
   MODOS[modo].carga().then(() => { ponerRendimiento(b); window.__demo.listo = true; }).catch(e => { window.__demo.error = e.message; console.error(e); });
 } else {
