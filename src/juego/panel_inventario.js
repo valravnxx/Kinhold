@@ -14,9 +14,9 @@ const CUADROS = [
   ['ropa:sobre', 'Sobre', 34, 28], ['ropa:exterior', 'Exterior', 66, 28],
   ['ropa:abrigo', 'Abrigo', 34, 41], ['ropa:interior', 'Camisa', 66, 41],
   ['mano:der', 'Mano derecha', 10, 50], ['mano:izq', 'Mano izquierda', 90, 50],
-  ['cintura', 'Cintura', 50, 55],
-  ['ropa:guantes', 'Guantes', 12, 70], ['ropa:piernas', 'Piernas', 50, 78],
-  ['ropa:pies', 'Pies', 50, 92],
+  ['cintura', 'Cintura', 50, 54],
+  ['ropa:guantes', 'Guantes', 12, 70], ['ropa:piernas', 'Piernas', 50, 80],
+  ['ropa:pies', 'Pies', 50, 93],
 ];
 
 // Grupos del arcón de pruebas, sacados del catálogo.
@@ -132,7 +132,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     let h = CUADROS.map(([ruta, et, x, y]) => `<div class="inv-sitio" style="left:${x}%;top:${y}%">${cuadro(ruta, tr(et))}<small>${tr(et)}</small></div>`).join('');
     // los huecos del cinturón, en fila bajo la cintura (sin cinturón, ninguno)
     const hc = inv().huecosCintura();
-    if (hc.length) h += `<div class="inv-cinto" style="top:64%">${hc.map(x => cuadro(x.ruta, x.tam, 'mini')).join('')}</div>`;
+    if (hc.length) h += `<div class="inv-cinto" style="top:63%">${hc.map(x => cuadro(x.ruta, x.tam, 'mini')).join('')}</div>`;
     q('.inv-cuadros').innerHTML = h;
   }
 
