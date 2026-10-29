@@ -274,13 +274,15 @@ details[open] > summary .flecha{transform:rotate(45deg)}
 .hito .det .jug{font-size:18px}
 .hito .det .nota-h{margin-top:6px;color:var(--tenue);font-style:italic;font-size:16px}
 .hito ul{margin:10px 0 0;padding:0;list-style:none}
-.hito li{display:grid;grid-template-columns:14px 1fr auto;gap:10px;align-items:baseline;padding:6px 0;border-top:1px dotted rgba(91,68,41,.4);font-size:16.5px;line-height:1.4}
+.hito li{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:6px 0;border-top:1px dotted rgba(91,68,41,.4);font-size:16.5px;line-height:1.4}
 .hito li::before{content:"";width:8px;height:8px;transform:rotate(45deg) translateY(-2px);border:1.5px solid var(--tinta2);margin-left:2px}
 .hito li.hecho::before{background:var(--verde);border-color:var(--verde)}
 .hito li.en_curso::before{background:var(--azul);border-color:var(--azul)}
 .hito li.espera_decision::before{background:var(--naranja);border-color:var(--naranja)}
 .hito li.fallo::before{background:var(--rubrica);border-color:var(--rubrica)}
 .hito li.hecho span{color:var(--tinta2)}
+.hito li span{overflow-wrap:anywhere}
+@media (max-width:760px){.hito li em{grid-column:2;white-space:normal}}
 .hito li em{font-style:italic;color:var(--tenue);font-size:14.5px;white-space:nowrap}
 .hito li.en_curso em{color:var(--azul);font-style:normal;font-family:var(--titulos);font-weight:700}
 .hito li.a_medias::before{background:linear-gradient(90deg,var(--tenue) 50%,transparent 50%);border-color:var(--tenue)}
