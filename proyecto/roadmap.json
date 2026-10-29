@@ -730,9 +730,9 @@
     },
     {
      "nombre": "Panel de inventario en la demo: silueta del personaje con un cuadro por cada lugar (manos, espalda, cintura, hombro y capas del cuerpo); al tocar un cuadro con contenedor se abren sus huecos; sin cinturón no hay cuadros de cintura. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Mientras no haya fabricación (hito 3), el equipo se coge de un arcón de pruebas, como el botón de rellenar materiales. Capturas en PC y móvil",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T00:51:30+00:00",
-     "rama": "trabajo/20261029-0051"
+     "fin": "2026-10-29T06:21:31+00:00"
     },
     {
      "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
@@ -1385,6 +1385,13 @@
      "archivo": "jugar/demo/v33.html",
      "capturas": "capturas/demo-v33",
      "notas": "En «Construir», chimenea u hogar interior sobre cimiento de piedra, con fuego, luz y humo por encima del tejado (Usar la apaga y la enciende)."
+    },
+    {
+     "v": "v34",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/demo/v34.html",
+     "capturas": "capturas/demo-v34",
+     "notas": "En «Construir», el panel de inventario (botón «Inventario» o tecla I) con un arcón de pruebas para coger equipo. Es la construcción v33."
     }
    ]
   },
@@ -1602,6 +1609,13 @@
      "archivo": "jugar/construccion/v32.html",
      "capturas": "capturas/construccion-v32",
      "notas": "Chimenea u hogar interior (10 piedras y 4 de barro, 600 kg): solo en la planta baja, sobre un cimiento de piedra, arrimada a un muro; fuego con llamas, luz y humo que sale por encima del tejado; Usar la apaga y la enciende."
+    },
+    {
+     "v": "v33",
+     "fecha": "2026-10-29",
+     "archivo": "jugar/construccion/v33.html",
+     "capturas": "capturas/construccion-v33",
+     "notas": "Panel de inventario (hito 2): silueta con un cuadro por cada lugar del cuerpo, los huecos de lo que llevas y un arcón de pruebas para coger equipo. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa."
     }
    ]
   },
