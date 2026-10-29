@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v41 (tintes de la ropa y blasón)';
+export const VERSION_DEMO = 'Demo única · v42 (hechura de la ropa)';
 export const REGISTRO_DEMO = [
+  'v42: en «Personaje», «Hechura de la ropa»: cada prenda de tela puesta con su material (lino o lana), su corte (largo, a media pierna o corto) y su tejido (liso, sarga, espiguilla, cuadros o rayas), sobre el mismo modelo. Aún no en «Construir» ni en «Duelo».',
   'v41: en «Personaje», «Tinte de la ropa»: cada prenda puesta se tiñe con los tintes de la época (rubia, glasto, gualda, nogal, negro, blanqueado…) y, con la sobreveste, su blasón (partido, cuartelado, banda, cruz, sotuer, cheurón…) con el color de la figura. Personajes en recursos/personajes/taller-v13/; con los tintes de siempre se ven igual. Aún no salen en «Construir» ni en «Duelo».',
   'v40: en «Personaje», «Más animaciones»: las 39 animaciones extra (vendarse, arco, picar, sembrar, regar, pescar, golpes ligeros y pesados, escudo, pasos, trepar, tumbarse, comer…) pasadas al esqueleto del taller propio. Se bajan aparte, en recursos/personajes/taller-anim-v1/.',
   'v39: pies descalzos. En «Construir», sin calzado en el inventario vas descalzo, como empieza el GDD; en «Personaje», el botón «Descalzo» quita los zapatos y la vista «Pies» los enseña de cerca. Personajes en recursos/personajes/taller-v12/.',

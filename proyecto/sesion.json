@@ -6,9 +6,9 @@
   "rama": "trabajo/20261029-2123"
  },
  "B": {
-  "inicio": "2026-10-29T20:53:23+00:00",
-  "tarea": "Ropa y armadura crafteables por capas (camisa, gambesón, cota de malla, sobreveste): cada pieza fabricada cambia su aspecto según material, corte, tejido y tinte (sin calidades), sobre el mismo esqueleto",
+  "inicio": "2026-10-29T21:59:27+00:00",
+  "tarea": "Niveles de detalle del personaje del taller: versiones reducidas para verlo de lejos, cambio automático por distancia y texturas juntas; medido con 20 personajes en pantalla, y el rendimiento en el móvil medido y ajustado",
   "hito": "arte",
-  "rama": "trabajo/20261029-2053"
+  "rama": "trabajo/20261029-2159"
  }
 }

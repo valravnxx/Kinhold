@@ -20,6 +20,7 @@ import { CATALOGO } from '../src/logica/inventario.js';
 import { PALETAS, FORMAS, PEINADOS, BARBAS } from '../src/logica/aspecto.js';
 import { REGISTRO_DEMO, VERSION_DEMO } from '../src/demo/registro.js';
 import { RECOLECTABLES } from '../src/logica/recoleccion.js';
+import { HECHURAS, MATERIALES_TELA, CORTES, TEJIDOS } from '../src/logica/hechura.js';
 import { CATALOGO as CATALOGO_REC } from '../src/logica/inventario.js';
 
 const DICC = { en: JSON.parse(readFileSync('src/idiomas/en.json', 'utf8')), ru: JSON.parse(readFileSync('src/idiomas/ru.json', 'utf8')) };
@@ -42,6 +43,8 @@ for (const m of readFileSync('src/logica/mapa.js', 'utf8').matchAll(/fase: '([^'
 // opciones del visor de personaje (las de cargar.js se leen del código: el cargador necesita el navegador)
 for (const t of [...Object.values(BASES), ...Object.values(CAPAS), ...Object.values(ANIMS)]) meter(t);
 for (const p of Object.values(PRENDAS)) meter(p.nombre);
+// hechura de la ropa (material, corte y tejido)
+for (const t of [...Object.values(HECHURAS).map(d => d.nombre), ...Object.values(MATERIALES_TELA).map(d => d.nombre), ...Object.values(CORTES).map(d => d.nombre), ...Object.values(TEJIDOS), 'Hechura de la ropa (material, corte y tejido)']) meter(t);
 for (const d of Object.values(CATALOGO)) meter(d.nombre); // lo que se lleva (panel de inventario)
 for (const [t] of [...ZONAS_TABLA, ...GOLPES_TABLA]) meter(t); // datos de cada prenda (lo que llevas, en el visor)
 // personalización del taller (aspecto): nombres de los colores, formas, peinados y barbas

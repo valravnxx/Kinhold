@@ -12,6 +12,7 @@ import { BASES, CAPAS, ANIMS, ANIMS_EXTRA, ZONAS_TABLA, GOLPES_TABLA } from './t
 import { PRENDAS, prendasDeCapas, proteccion, abrigo, peso } from '../logica/prendas.js';
 import { PALETAS, FORMAS, PEINADOS, BARBAS, normalizarAspecto } from '../logica/aspecto.js';
 import { TINTES, BLASONES, PRENDAS_TENIBLES, paletaDe, normalizarTintes, colorPrenda } from '../logica/tintes.js';
+import { HECHURAS, MATERIALES_TELA, CORTES, TEJIDOS, normalizarHechuras } from '../logica/hechura.js';
 import { tr, traducirPagina, botonesIdioma, idioma } from '../idioma.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
@@ -55,6 +56,15 @@ const cambiarTintes = (cambio) => {
   const t = tintesMH();
   estado.tintes = { ...(estado.tintes || {}), [estado.sexo]: normalizarTintes({ prendas: { ...t.prendas, ...(cambio.prendas || {}) }, blason: { ...t.blason, ...(cambio.blason || {}) } }, estado.sexo) };
   if (pj?.ponerTintes) pj.ponerTintes(tintesMH());
+  pintarOpciones(); guardar(); dibujar();
+};
+
+// hechura de cada prenda de tela (material, corte y tejido), por sexo; se guarda con lo demás (src/logica/hechura.js)
+const hechurasMH = () => normalizarHechuras(estado.hechuras && estado.hechuras[estado.sexo]);
+const cambiarHechura = (prenda, cambio) => {
+  const h = hechurasMH();
+  estado.hechuras = { ...(estado.hechuras || {}), [estado.sexo]: normalizarHechuras({ ...h, [prenda]: { ...h[prenda], ...cambio } }) };
+  if (pj?.ponerHechuras) { pj.ponerHechuras(hechurasMH()); medida.trianglesPersonaje = pj.triangulos; }
   pintarOpciones(); guardar(); dibujar();
 };
 
@@ -103,7 +113,7 @@ async function rehacer() {
   const n = ++cargando;
   $('cargando').hidden = false;
   if (!OPCIONES.pelo[estado.sexo][estado.pelo]) estado.pelo = Object.keys(OPCIONES.pelo[estado.sexo])[0];
-  const nuevo = estado.base === 'makehuman' ? await crearPersonajeMH({ ...estado, capas: capasMH(), aspecto: aspectoMH(), tintes: tintesMH(), extra: RECURSOS_ANIM_MH }, RECURSOS_MH) : await crearPersonaje(estado, RECURSOS);
+  const nuevo = estado.base === 'makehuman' ? await crearPersonajeMH({ ...estado, capas: capasMH(), aspecto: aspectoMH(), tintes: tintesMH(), hechuras: hechurasMH(), extra: RECURSOS_ANIM_MH }, RECURSOS_MH) : await crearPersonaje(estado, RECURSOS);
   if (n !== cargando) return; // llegó otro cambio mientras cargaba
   if (pj) escena.remove(pj.raiz);
   pj = nuevo;
@@ -139,7 +149,7 @@ function pintarOpciones() {
   $('opciones').innerHTML = grupo('base', BASES, 'Base del personaje') + grupo('sexo', OPCIONES.sexo, 'Cuerpo') +
     (mh ? `<div class="grupo"><span>${tr(estado.sexo === 'hombre' ? 'Ropa por capas (debajo siempre camisa y calzas, y zapatos si no vas descalzo)' : 'Ropa por capas (debajo siempre camisa, y zapatos si no vas descalza)')}</span>${(pj?.capasPosibles || []).map(c =>
         `<button data-capa="${c}" class="${capasMH().includes(c) ? 'sel' : ''}">${tr(CAPAS[c])}</button>`).join('')}</div>` +
-      pintarTintes() + pintarRopa() + pintarAspecto()
+      pintarTintes() + pintarHechuras() + pintarRopa() + pintarAspecto()
       : grupo('ropa', { campesino: OPCIONES.ropa.campesino }, 'Ropa') + grupo('pelo', OPCIONES.pelo[estado.sexo], 'Pelo') +
     grupo('colorPelo', OPCIONES.colorPelo, 'Color del pelo') + grupo('piel', OPCIONES.piel, 'Piel') + (estado.sexo === 'hombre' ? grupo('barba', OPCIONES.barba, 'Barba') : '')) +
     grupo('calidad', { alta: 'Alta', ligera: 'Ligera (móvil)' }, 'Calidad') +
@@ -158,6 +168,7 @@ function pintarOpciones() {
   };
   for (const b of $('opciones').querySelectorAll('[data-asp]')) b.onclick = () => { cambiarAspecto({ [b.dataset.asp]: b.dataset.v }); pintarOpciones(); };
   for (const b of $('opciones').querySelectorAll('[data-tinte]')) b.onclick = () => cambiarTintes({ prendas: { [b.dataset.tinte]: b.dataset.v } });
+  for (const b of $('opciones').querySelectorAll('[data-hechura]')) b.onclick = () => cambiarHechura(b.dataset.hechura, { [b.dataset.que]: b.dataset.v });
   for (const b of $('opciones').querySelectorAll('[data-blason]')) b.onclick = () => cambiarTintes({ blason: { [b.dataset.blason]: b.dataset.v } });
   for (const r of $('opciones').querySelectorAll('[data-forma]')) r.oninput = () => cambiarAspecto({ formas: { [r.dataset.forma]: Number(r.value) } });
   for (const b of $('opciones').querySelectorAll('[data-diag]')) b.onclick = () => { estado[b.dataset.diag] = !estado[b.dataset.diag]; aplicarDiag(); pintarOpciones(); guardar(); };
@@ -180,6 +191,21 @@ function pintarTintes() {
         muestra('blason', 'color', k, n, c, t.blason.color === k)).join('') + '</div>') + '</div>';
   }
   return h;
+}
+
+// hechura de cada prenda de tela puesta (la que se fabrica: material, corte y tejido; el tinte va arriba)
+function pintarHechuras() {
+  if (!pj?.ponerHechuras || !(pj.tenibles || []).length) return '';
+  const h = hechurasMH(), capas = capasMH();
+  const puestas = Object.keys(HECHURAS).filter(p => pj.tenibles.includes(p) && (p === 'camisa' || p === 'calzas' || capas.includes(p)));
+  const boton = (p, que, k, n) => `<button data-hechura="${p}" data-que="${que}" data-v="${k}" class="${h[p][que] === k ? 'sel' : ''}">${tr(n)}</button>`;
+  return `<div class="grupo hechuras" id="hechuras"><span>${tr('Hechura de la ropa (material, corte y tejido)')}</span>` + puestas.map(p => {
+    const d = HECHURAS[p];
+    return `<div class="fila"><b>${tr(d.nombre)}</b>` +
+      (d.materiales.length > 1 ? d.materiales.map(k => boton(p, 'material', k, MATERIALES_TELA[k].nombre)).join('') : '') +
+      (d.cortes.length > 1 ? d.cortes.map(k => boton(p, 'corte', k, CORTES[k].nombre)).join('') : '') +
+      Object.entries(TEJIDOS).map(([k, n]) => boton(p, 'tejido', k, n)).join('') + '</div>';
+  }).join('') + '</div>';
 }
 
 // lo que hace la ropa puesta: sale de los datos de cada prenda (src/logica/prendas.js), los mismos que deciden qué se dibuja
@@ -279,6 +305,7 @@ window.__personaje = {
   medida: () => { dibujar(); return { ...medida, triangulos: renderer.info.render.triangles, dibujados: renderer.info.render.calls }; },
   estado: () => ({ ...estado }),
   tintes: (t) => { if (t) cambiarTintes(t); return pj?.tintes; },
+  hechuras: (p, c) => { if (p) cambiarHechura(p, c); return pj?.hechuras; },
   // milisegundos por fotograma dibujando n veces (para comparar calidades en las pruebas)
   tiempo: (n = 10) => { const gl = renderer.getContext(), px = new Uint8Array(4), sync = () => gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); dibujar(); sync(); const t = performance.now(); for (let i = 0; i < n; i++) { dibujar(); sync(); } return (performance.now() - t) / n; },
   diag: () => ({ escena, renderer, pj, sol, THREE }),

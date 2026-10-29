@@ -312,6 +312,37 @@ with sync_playwright() as p:
         pg.evaluate(f"{E}.tintes({{prendas: {{sobreveste: 'rubia', tunica: 'pardo', camisa: 'natural', botas: 'natural'}}, blason: {{dibujo: 'liso'}}}})")
         comprobar('tintes: vuelven a los de antes', colm('hombre_capa_sobreveste') == sv0)
         for c in ['cota', 'sobreveste']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
+        # hechura de la ropa fabricada (src/logica/hechura.js): material, corte y tejido, con clics de verdad y sin recargar
+        if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
+        pj0 = pg.evaluate(f'{E}.diag().pj.modelo.uuid')
+        if os.environ.get('MUTAR'): pg.evaluate(f"{E}.diag().pj.ponerHechuras = () => {{}}")
+        pg.evaluate(f"{E}.tintes({{prendas: {{tunica: 'natural'}}}})")
+        tu0 = colm('hombre_capa_tunica')
+        pg.click('[data-hechura="tunica"][data-que="material"][data-v="lino"]'); pg.wait_for_timeout(100)
+        tu1 = colm('hombre_capa_tunica')
+        comprobar('hechura: la túnica de lino sin teñir es más clara que la de lana', tu0 and tu1 and tu1[0] > tu0[0] * 1.3, f'{tu0} → {tu1}')
+        visible = lambda n: pg.evaluate(f"(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}') r = o.visible; }}); return r; }})()")
+        comprobar('hechura: con la túnica larga, la falda de la camisa no se ve', visible('hombre_capa_camisa_falda') is False)
+        pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)'); larga = contenido(pg.screenshot(path=f'{SALIDA}/{nombre}_hechura_0.png'))[0]
+        pg.click('[data-hechura="tunica"][data-que="corte"][data-v="corto"]'); pg.wait_for_timeout(100)
+        comprobar('hechura: con la túnica corta asoma la camisa, más larga', visible('hombre_capa_camisa_falda') is True)
+        pg.evaluate(f'{E}.instante(1.0)'); corta = contenido(pg.screenshot(path=f'{SALIDA}/{nombre}_hechura_corta.png'))[0]
+        dif = sum(ImageStat.Stat(ImageChops.difference(larga, corta)).mean) / 3
+        comprobar('hechura: la túnica corta se ve distinta', dif > 0.5, f'diferencia {dif:.2f}')
+        for tej in ['cuadros', 'rayas', 'sarga', 'espiguilla']:
+            pg.click(f'[data-hechura="tunica"][data-que="tejido"][data-v="{tej}"]'); pg.wait_for_timeout(100)
+            pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)')
+            con = contenido(pg.screenshot(path=f'{SALIDA}/{nombre}_hechura_{tej}.png'))[0]
+            dif = sum(ImageStat.Stat(ImageChops.difference(corta, con)).mean) / 3
+            if tej in ('cuadros', 'rayas'): comprobar(f'hechura: el tejido «{tej}» se ve en la túnica', dif > 0.3, f'diferencia {dif:.2f}')
+            pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_hechura_{tej}_cerca.png')
+        comprobar('hechura: sin volver a cargar el modelo', pg.evaluate(f'{E}.diag().pj.modelo.uuid') == pj0)
+        pg.reload(); listo(pg)
+        h = pg.evaluate(f'{E}.hechuras()')
+        comprobar('hechura: se recuerda al recargar', h['tunica'] == {'material': 'lino', 'corte': 'corto', 'tejido': 'espiguilla'}, str(h['tunica']))
+        if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
+        pg.evaluate(f"{E}.hechuras('tunica', {{material: 'lana', corte: 'largo', tejido: 'liso'}})"); pg.evaluate(f"{E}.tintes({{prendas: {{tunica: 'pardo'}}}})")
+        comprobar('hechura: vuelve a la de siempre', visible('hombre_capa_camisa_falda') is False and pg.evaluate(f'{E}.hechuras()')['tunica'] == {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'})
         # personalización del taller (aspecto): colores, peinado, barba y formas, con clics de verdad y sin recargar el modelo
         if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
         mat = lambda n: pg.evaluate(f"(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}') r = [o.material.color.r, o.material.color.g, o.material.color.b, o.visible]; }}); return r; }})()")
