@@ -1133,7 +1133,9 @@ function dentroDeCasilla(c, p) {
 // ---------------- Movimiento y colisiones ----------------
 function segmentosBloqueo(k) {
   const segs = []; // [x1,z1,x2,z2]
-  const circulos = obstaculos.filter(o => !o.oculto); // las matas escondidas bajo lo construido no chocan
+  // las matas escondidas bajo lo construido no chocan; y lo del suelo (árboles, rocas, matas) solo choca a ras de
+  // suelo: desde un adarve o una planta de arriba se pasa por encima (una roca bajo el adarve paraba al que andaba por él)
+  const circulos = k === 0 ? obstaculos.filter(o => !o.oculto) : [];
   for (const c of mundo.construcciones) {
     for (const [key, p] of c.piezas) {
       // chimenea: en la planta baja no se entra en el hogar; más arriba, su cañón no se atraviesa
