@@ -101,6 +101,20 @@ with sync_playwright() as p:
         comprobar('banderines repartidos por igual (tanto sitio a cada lado)', abs(_bord[0] - _bord[1]) < 12, f'{_bord[0]:.0f}px / {_bord[1]:.0f}px')
         _cuerdas = pg.evaluate("(() => { const t = document.querySelector('.cartel').getBoundingClientRect().top + scrollY; const c = getComputedStyle(document.querySelector('.cartel'), '::before'); return t + parseFloat(c.top); })()")
         comprobar('las cuerdas del cartel cuelgan de arriba del todo (no empiezan en el aire)', _cuerdas <= 2, f'empiezan a {_cuerdas:.0f}px')
+        # valravnx, 29 oct: «la mitad de banderas mal cortadas» (las del centro sin punta) y «una cuerda sobresale del cartel»
+        _g = pg.evaluate("""(() => {
+          const g = document.querySelector('#guirnalda').getBoundingClientRect();
+          const bs = [...document.querySelectorAll('#guirnalda .banderin')].filter(e => e.offsetParent).map(e => e.querySelector('i').getBoundingClientRect());
+          const se = document.querySelector('.tabla .sello').getBoundingClientRect(), ta = document.querySelector('.tabla').getBoundingClientRect();
+          const c = document.querySelector('.cartel'), cr = c.getBoundingClientRect();
+          return { cortados: bs.filter(b => b.bottom > g.bottom + 0.5).length,
+                   holgura: Math.min(99, ...bs.filter(b => b.right > se.left && b.left < se.right).map(b => se.top - b.bottom)),
+                   cuerdas: ['::before', '::after'].map(p => { const st = getComputedStyle(c, p); return cr.top + parseFloat(st.top) + parseFloat(st.height) - ta.top; }),
+                   tablaEncima: +getComputedStyle(document.querySelector('.tabla')).zIndex > 0 };
+        })()""")
+        comprobar('ningún banderín sale cortado (todos con su punta)', _g['cortados'] == 0, f"{_g['cortados']} cortados")
+        comprobar('los banderines no tocan el sello del cartel', _g['holgura'] >= 4, f"{_g['holgura']:.0f}px de hueco")
+        comprobar('las cuerdas acaban en el borde de arriba del cartel, por detrás', all(0 <= x <= 8 for x in _g['cuerdas']) and _g['tablaEncima'], f"{_g['cuerdas']}")
         comprobar('las fuentes medievales se cargan', all(any(n in f for f in _cargadas) for n in ['EB Garamond', 'Alegreya SC', 'Cinzel Decorative']), ', '.join(sorted(set(_cargadas))))
         ancho = pg.evaluate('document.documentElement.scrollWidth')
         comprobar('sin desplazamiento horizontal', ancho <= vista['width'], f'{ancho}px')
