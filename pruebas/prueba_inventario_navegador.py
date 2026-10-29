@@ -13,7 +13,7 @@ RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/construccion'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v11'), f'{sitio}/recursos/personajes/taller-v11')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v12'), f'{sitio}/recursos/personajes/taller-v12')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))

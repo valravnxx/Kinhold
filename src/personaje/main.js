@@ -33,8 +33,8 @@ const $ = (id) => document.getElementById(id);
 const CLAVE = 'kinhold_personaje_v2';
 // carpeta de los modelos: la versión publicada vive en jugar/personaje/, los modelos en recursos/personajes/v1/
 const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../recursos/personajes/v1/';
-// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v11/ (las anteriores publicadas no se tocan)
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v11/';
+// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v12/ (las anteriores publicadas no se tocan)
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v12/';
 // capas puestas en el taller propio, por sexo (por defecto: túnica en el hombre, vestido en la mujer)
 const capasMH = () => (estado.capas && estado.capas[estado.sexo]) || [estado.sexo === 'mujer' ? 'vestido' : 'tunica'];
 // aspecto del taller propio (forma, colores, peinado y barba), por sexo; se guarda con lo demás (src/logica/aspecto.js)
@@ -69,6 +69,7 @@ const VISTAS = {
   cara:    () => { const y = alturaCara(); return [rel(0.22, y + 0.03, 0.78), rel(0, y - 0.02, 0)]; },
   perfil:  () => { const y = alturaCara(); return [rel(0.78, y + 0.02, 0.12), rel(0, y - 0.02, 0.02)]; },
   espalda: () => [rel(-1.9, 1.4, -1.6), rel(0, 1.0, 0)],
+  pies:    () => [rel(0.45, 0.42, 1.0), rel(0, 0.1, 0)], // de cerca: zapatos, botas o descalzo
 };
 
 // calidad alta en todos lados (en el móvil de valravnx va perfecto); la ligera queda como opción

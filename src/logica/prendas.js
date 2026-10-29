@@ -66,13 +66,15 @@ export const PRENDAS = {
 // Cómo se ponen las capas en el taller (lo usa src/personajes/makehuman.js para dibujarlas).
 //  orden: de dentro afuera; lo tapado del todo no se dibuja. abiertas: dejan ver lo de debajo.
 //  siempre: el taller las lleva puestas (las calzas y los zapatos, bajo todo). tocados: uno cada vez.
-//  calzado: va en lugar de los zapatos.
+//  calzado: va en lugar de los zapatos. descalzo: sin zapatos ni botas se ven los pies (pieza <sexo>_pies, desde
+//  taller-v12); el GDD empieza descalzo, con camisa y pantalón.
 export const TALLER = {
   orden: ['camisa', 'tunica', 'vestido', 'gambeson', 'cota', 'sobreveste', 'manto'],
   siempre: ['calzas', 'zapatos'],
   abiertas: ['sobreveste', 'manto'],
   tocados: ['capucha', 'sombrero', 'toca'],
   calzado: ['botas'],
+  descalzo: 'descalzo',
 };
 // En el cuerpo que no tiene esa pieza, se dibuja esta otra (null: no se dibuja).
 export const DIBUJO_EN_OTRO_CUERPO = { hombre: { vestido: 'tunica', toca: null }, mujer: { tunica: 'vestido', calzas: null } };
@@ -126,13 +128,15 @@ export function capasDibujo(puestas, sexo = 'hombre') {
     if (d in cambia) d = cambia[d];
     if (d && !capas.includes(d) && d !== 'camisa' && !TALLER.siempre.includes(d)) capas.push(d);
   }
+  if (!validas(puestas).some(t => PRENDAS[t].capa === 'pies')) capas.push(TALLER.descalzo); // sin calzado: descalzo
   return capas;
 }
 
 // Al revés: la lista de capas del taller (la del visor) → las prendas que lleva puestas, con las de siempre
-// (camisa, pantalón si el cuerpo tiene calzas y zapatos si no lleva botas).
+// (camisa, pantalón si el cuerpo tiene calzas y zapatos si no lleva botas ni va descalzo).
 export function prendasDeCapas(capas, sexo = 'hombre') {
   const l = capas || [];
-  const piezas = ['camisa', ...(sexo === 'mujer' ? [] : ['calzas']), ...(l.includes('botas') ? [] : ['zapatos']), ...l];
+  const calzado = l.includes('botas') || l.includes(TALLER.descalzo) ? [] : ['zapatos'];
+  const piezas = ['camisa', ...(sexo === 'mujer' ? [] : ['calzas']), ...calzado, ...l];
   return [...new Set(piezas.map(d => PRENDA_DE_DIBUJO[d]).filter(Boolean))];
 }

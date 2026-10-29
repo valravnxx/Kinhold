@@ -241,6 +241,16 @@ def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosida
     ob.parent = RIG
     return ob
 
+def bajo_recto(ob, z_max):
+    """el bajo de una pieza en línea recta: los puntos del borde de abajo (por debajo de z_max) bajan a la altura del más
+    bajo de ellos. Sin esto el corte sigue los cuadros de la malla y sale en dientes de sierra (se ve al ir descalzo)"""
+    bm = bmesh.new(); bm.from_mesh(ob.data)
+    borde = {v for e in bm.edges if e.is_boundary for v in e.verts if v.co.z < z_max}
+    if borde:
+        z0 = min(v.co.z for v in borde)
+        for v in borde: v.co.z = z0
+    bm.to_mesh(ob.data); bm.free()
+
 def cinturon(nombre, telas, z, color, alto=0.034, grueso=0.005, n=64):
     """tira de cuero que rodea la cintura por encima de la ropa: se mide el contorno lanzando rayos desde dentro;
     cada vértice copia los pesos del punto de tela más cercano"""
@@ -935,8 +945,21 @@ def personaje(nombre, macros, objetivos, ropa):
         piezas.append(trozo(base, nombre + '_capa_calzas', lambda i, c: en(i, 'helper-tights') and tobillo_z + 0.03 < c.z < largo_camisa + 0.10,  # bajo la camisa no hacen falta (se atravesaban)
                            
                             empuje=0.003, color=tela(ropa['calzas']), rugosidad=0.95))
+        bajo_recto(piezas[-1], tobillo_z + 0.08)  # descalzo se ve el bajo: recto, no en dientes de sierra
     piezas.append(trozo(base, nombre + '_capa_zapatos', lambda i, c: en(i, 'helper-tights') and c.z < tobillo_z + 0.05,
                         empuje=0.006, color=tela((52, 34, 22)), rugosidad=0.55))
+    # ---- pies descalzos: la piel de los pies, para cuando no lleva zapatos ni botas (el GDD empieza descalzo) ----
+    # La piel del cuerpo solo tiene cabeza, cuello y manos; sin esto, al quitar los zapatos no había pies. Sube un poco
+    # por encima de donde empiezan las calzas (tobillo + 3 cm), que la tapan, para que no quede hueco entre las dos.
+    # En la mujer sube hasta donde las botas bajas (la falda larga se abre al andar y no debe verse hueco por debajo).
+    # Uñas como en las manos; la planta y el borde de abajo, algo más oscuros (polvo del suelo).
+    def pintar_pies(P, A):
+        c = pintar_piel(P, A)
+        polvo = suave(0.03, 0.004, P[..., 2])[..., None] * (0.75 + 0.25 * fbm(P, 60)[..., None])
+        c[..., :3] = c[..., :3] * (1 - 0.3 * polvo) + np.array([0.42, 0.34, 0.27]) * 0.3 * polvo
+        return c
+    piezas.append(trozo(base, nombre + '_pies', lambda i, c: en(i, 'body') and c.z < tobillo_z + (0.10 if mujer else 0.06), textura=(512, pintar_pies),
+                        rugosidad=0.62, sss=0.2, ajustar_uv=True, **f_piel))
     # ---- capa (manto) abierta por delante, encima de todo, hasta debajo de la rodilla ----
     # Se llama «manto» en el modelo (<nombre>_capa_manto) para no chocar con la palabra «capa» de las capas de ropa.
     colm = lin(ropa.get('manto', (78, 70, 58)))
@@ -1072,7 +1095,7 @@ def foto(posc, mira, lente, ruta, ancho=1000, alto=1000):
     cam.rotation_euler = (Vector(mira) - Vector(posc)).to_track_quat('-Z', 'Y').to_euler()
     esc.render.filepath = ruta; bpy.ops.render.render(write_still=True)
 todas = os.environ.get('FOTOS', 'todas') == 'todas'
-NUEVAS = ('_capa_manto', '_capa_botas', '_capa_capucha', '_capa_toca', '_capa_sombrero', '_pelo_', '_barba_larga', '_barba_perilla', '_barba_bigote')
+NUEVAS = ('_pies', '_capa_manto', '_capa_botas', '_capa_capucha', '_capa_toca', '_capa_sombrero', '_pelo_', '_barba_larga', '_barba_perilla', '_barba_bigote')
 def cabeza_como(rig, piezas, peinado, barba):
     """enseña el peinado y la barba como el juego (src/personajes/makehuman.js)"""
     for ob in piezas:
@@ -1100,6 +1123,21 @@ if os.environ.get('FOTOS') == 'peinados':  # de cerca, cada peinado y cada barba
             foto((x - 0.95, -0.75, cz + 0.02), (x, 0, cz - 0.06), 60, base_ + '_34.png', 640, 640)
             foto((x + 0.9, 0.85, cz + 0.06), (x, 0, cz - 0.08), 60, base_ + '_atras.png', 640, 640)
             foto((x + 1.3, -0.1, cz + 0.0), (x, 0, cz - 0.06), 60, base_ + '_perfil.png', 640, 640)
+    print('listo', SALIDA); sys.exit(0)
+if os.environ.get('FOTOS') == 'pies':  # de cerca, descalzo (sin zapatos ni botas) con la ropa de diario
+    esc.cycles.samples = 24
+    for rig, piezas, pos in gente:
+        for otro, op, _ in gente:
+            for ob in [otro] + op: ob.hide_render = otro is not rig
+        cabeza_como(rig, piezas, 'cofia' if rig.name == 'mujer' else 'corto', 'ninguna' if rig.name == 'mujer' else 'corta')
+        for ob in piezas:
+            if '_capa_' in ob.name and not any(k in ob.name for k in ('tunica', 'vestido', 'calzas', 'camisa')): ob.hide_render = True
+            if '_cinturon_' in ob.name and 'tunica' not in ob.name and 'vestido' not in ob.name: ob.hide_render = True
+            if ob.name.endswith('_pies'): ob.hide_render = False
+        x = rig.location.x
+        foto((x + 0.5, -1.2, 0.35), (x, 0, 0.12), 50, os.path.join(SALIDA, f'{rig.name}_pies_34.png'), 800, 800)
+        foto((x - 0.2, 1.1, 0.3), (x, 0, 0.1), 50, os.path.join(SALIDA, f'{rig.name}_pies_atras.png'), 800, 800)
+        foto((x + 0.9, -0.1, 0.12), (x, 0, 0.08), 50, os.path.join(SALIDA, f'{rig.name}_pies_lado.png'), 800, 800)
     print('listo', SALIDA); sys.exit(0)
 if os.environ.get('FOTOS') == 'prendas':  # de cerca, una pieza nueva cada vez (capa, botas y cada tocado)
     esc.cycles.samples = 24

@@ -90,13 +90,17 @@ inv.coger('tunica_lana', 1, 'mano:der');
 const r2 = inv.ponerse('mano:der');
 comprobar('la túnica va en la misma capa: no se pone encima del gambesón', !r2.ok, r2.motivo);
 comprobar('hombre: lo puesto se dibuja con sus piezas', capasDibujo([...malla, 'manto_lana', 'botas_cuero'], 'hombre').join() === 'gambeson,cota,manto,botas');
-comprobar('mujer: la túnica se dibuja como vestido y el pantalón no', capasDibujo(['camisa_lino', 'pantalon_lino', 'tunica_lana'], 'mujer').join() === 'vestido');
-comprobar('hombre: la toca no se dibuja', capasDibujo(['toca_lino'], 'hombre').length === 0);
+comprobar('mujer: la túnica se dibuja como vestido y el pantalón no', capasDibujo(['camisa_lino', 'pantalon_lino', 'tunica_lana', 'zapatos_cuero'], 'mujer').join() === 'vestido');
+comprobar('hombre: la toca no se dibuja', capasDibujo(['toca_lino', 'zapatos_cuero'], 'hombre').length === 0);
+comprobar('sin zapatos ni botas va descalzo (como empieza el GDD)', capasDibujo(puestasDe(Inventario.inicial().lugares), 'hombre').join() === 'descalzo');
+comprobar('del visor: descalzo → sin zapatos', prendasDeCapas(['tunica', 'descalzo'], 'hombre').join() === 'camisa_lino,pantalon_lino,tunica_lana');
 comprobar('del visor: túnica y capucha → camisa, pantalón, zapatos, túnica y capucha',
   prendasDeCapas(['tunica', 'capucha'], 'hombre').join() === 'camisa_lino,pantalon_lino,zapatos_cuero,tunica_lana,capucha_lana');
 comprobar('del visor: mujer con botas → sin pantalón ni zapatos', prendasDeCapas(['vestido', 'botas'], 'mujer').join() === 'camisa_lino,vestido_lana,botas_cuero');
 for (const sexo of ['hombre', 'mujer']) {
   const capas = sexo === 'hombre' ? ['tunica', 'gambeson', 'cota', 'sobreveste', 'capucha', 'botas'] : ['vestido', 'gambeson', 'manto', 'toca'];
+  const descalzo = sexo === 'hombre' ? ['tunica', 'capucha', 'descalzo'] : ['vestido', 'descalzo'];
+  comprobar(`${sexo}: descalzo, del visor a las prendas y vuelta da lo mismo`, capasDibujo(prendasDeCapas(descalzo, sexo), sexo).join() === descalzo.join());
   comprobar(`${sexo}: del visor a las prendas y vuelta da lo mismo`, capasDibujo(prendasDeCapas(capas, sexo), sexo).join() === capas.join());
 }
 

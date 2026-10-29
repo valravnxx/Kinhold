@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v11'), f'{sitio}/recursos/personajes/taller-v11')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v12'), f'{sitio}/recursos/personajes/taller-v12')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -211,6 +211,22 @@ with sync_playwright() as p:
                   and 'hombre_capa_tunica' in con and 'hombre_cinturon_tunica' in con, ', '.join(sorted(x for x in con if 'capa' in x or 'cinturon' in x)))
         pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_capa_botas.png')
         for c in ['botas', 'manto']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
+        # descalzo (el GDD empieza así): se ven los pies y no los zapatos; con botas, las botas
+        con0 = vis()
+        pg.click('[data-capa="descalzo"]'); pg.wait_for_timeout(200)
+        con = vis()
+        if os.environ.get('MUTAR'): con = [x for x in con if x != 'hombre_pies']
+        comprobar('descalzo: se ven los pies y no los zapatos (con zapatos, al revés)',
+                  'hombre_pies' in con and 'hombre_capa_zapatos' not in con and 'hombre_pies' not in con0 and 'hombre_capa_zapatos' in con0,
+                  ', '.join(sorted(x for x in con if 'pies' in x or 'zapatos' in x)))
+        pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_descalzo.png')
+        pg.click('[data-vista="pies"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_descalzo_pies.png')
+        pg.evaluate(f"{E}.ponerModo('andar')"); pg.evaluate(f'{E}.instante(0.4)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_descalzo_andando.png')
+        pg.evaluate(f"{E}.ponerModo('quieto')")
+        pg.click('[data-capa="botas"]'); pg.wait_for_timeout(200)
+        con = vis()
+        comprobar('descalzo y con botas: se ven las botas, no los pies', 'hombre_capa_botas' in con and 'hombre_pies' not in con)
+        for c in ['botas', 'descalzo']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
         # personalización del taller (aspecto): colores, peinado, barba y formas, con clics de verdad y sin recargar el modelo
         if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
         mat = lambda n: pg.evaluate(f"(() => {{ let r = null; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.name === '{n}') r = [o.material.color.r, o.material.color.g, o.material.color.b, o.visible]; }}); return r; }})()")

@@ -1,6 +1,6 @@
 // Kinhold — el jugador de la construcción: el personaje del taller propio (MakeHuman vestido por código, con las
-// animaciones de Quaternius) con camisa y calzas de lino, como empieza según el GDD. Los zapatos se quedan puestos de
-// momento: el cuerpo del taller no tiene pies debajo (se quitan al vestir), y descalzo se vería sin pies.
+// animaciones de Quaternius) con camisa y calzas de lino y descalzo, como empieza según el GDD (los pies descalzos
+// están desde la taller-v12).
 // Mientras se carga (o si no se puede cargar, p. ej. abriendo el html suelto sin servidor) se ve el muñeco inicial.
 import * as THREE from 'three';
 import { mat, cajaR, deMano } from './modelos.js';
@@ -107,8 +107,8 @@ function empunarHacha(mh) {
 }
 
 // Devuelve { raiz, animar(velocidad, dt, talando), cargado(), modo(), mh }. `recursos`: carpeta de los .glb del taller.
-// `sexo`, `capas` y `aspecto`: los del personaje elegido en el visor (por defecto, hombre con camisa y calzas).
-export function crearJugador(recursos, sexo = 'hombre', capas = [], aspecto = undefined) {
+// `sexo`, `capas` y `aspecto`: los del personaje elegido en el visor (por defecto, hombre con camisa y calzas, descalzo).
+export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], aspecto = undefined) {
   const raiz = new THREE.Group();
   const muneco = crearMuneco();
   raiz.add(muneco);

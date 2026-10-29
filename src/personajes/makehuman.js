@@ -83,17 +83,22 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   const MANGA = { camisa: 0.041, tunica: 0.043, vestido: 0.043, gambeson: 0.04, cota: 0.09 };
   const bajo = new Map(); // altura del bajo de cada falda (en reposo)
   modelo.traverse(n => { const c = n.isMesh && capaDe(n); if (c && c.falda) { n.geometry.computeBoundingBox(); bajo.set(c.capa, n.geometry.boundingBox.min.y); } });
+  let hayPies = false;
+  modelo.traverse(n => { if (n.isMesh && n.name.endsWith('_pies')) hayPies = true; });
   const ponerCapas = (lista) => {
     const puestas = ORDEN.filter(c => c === 'camisa' || lista.includes(c));
     const ceñidas = puestas.filter(c => c !== 'manto');
     const fuera = ceñidas[ceñidas.length - 1]; // el cinturón va sobre la última prenda ceñida, bajo el manto
     const tocado = TOCADOS.find(t => lista.includes(t));
+    // descalzo solo si el modelo tiene pies (taller-v12); en los anteriores se quedan los zapatos (si no, no habría pies)
+    const descalzo = lista.includes(TALLER.descalzo) && hayPies;
     modelo.traverse(n => {
       if (!n.isMesh) return;
       const c = capaDe(n);
       if (cabezaDe(n)) return; // pelo, barba, orejas y cofia: los pone ponerCabeza
       else if (c && c.tipo === 'cinturon') n.visible = c.capa === fuera && c.capa !== 'camisa';
-      else if (c && c.capa === 'zapatos') n.visible = !lista.includes('botas');
+      else if (c && c.capa === 'zapatos') n.visible = !lista.includes('botas') && !descalzo;
+      else if (n.name.endsWith('_pies')) n.visible = descalzo && !lista.includes('botas'); // la piel de los pies (taller-v12)
       else if (c && SIEMPRE.includes(c.capa)) n.visible = true;
       else if (c && TOCADOS.includes(c.capa)) n.visible = c.capa === tocado;
       else if (c && CALZADO.includes(c.capa)) n.visible = lista.includes(c.capa);
@@ -177,7 +182,7 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     ponerCabeza();
   };
   const resultado = { raiz, modelo, mezclador, acciones, poner, triangulos, velocidad, opciones: o, hueso, clips: g.animations.map(c => c.name), ponerCapas, ponerAspecto,
-    capasPosibles: [...ORDEN, ...SUELTAS].filter(c => c !== 'camisa' && modelo.getObjectByName(`${o.sexo}_capa_${c}`)), tocados: TOCADOS };
+    capasPosibles: [...[...ORDEN, ...SUELTAS].filter(c => c !== 'camisa' && modelo.getObjectByName(`${o.sexo}_capa_${c}`)), ...(hayPies ? [TALLER.descalzo] : [])], tocados: TOCADOS };
   ponerCapas(o.capas || [o.sexo === 'mujer' ? 'vestido' : 'tunica']);
   ponerAspecto(o.aspecto);
   return resultado;
