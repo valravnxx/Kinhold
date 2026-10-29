@@ -294,6 +294,43 @@ export class Inventario {
     return this.mover(lugar, a);
   }
 
+  // Todas las rutas donde se puede guardar algo, en orden: las manos y luego los huecos de lo que llevas en la
+  // cintura, al hombro y a la espalda (y los de los contenedores que haya dentro).
+  rutasGuardar() {
+    const rutas = [...MANOS];
+    const dentro = (c, base) => {
+      const d = this.def(c); if (!d || !d.huecos) return;
+      d.huecos.forEach((h, i) => { const r = base + '/' + i; rutas.push(r); dentro(c.dentro && c.dentro[i], r); });
+    };
+    for (const l of ['cintura', 'hombro', 'espalda']) dentro(this.lugares[l], l);
+    return rutas;
+  }
+
+  // Guarda n unidades de un tipo donde quepan, repartidas si hace falta (lo que se recoge «va al inventario por
+  // huecos»): primero en una ruta preferida si se da, luego junto a lo mismo que ya llevas, luego en huecos vacíos.
+  // Todo o nada: si no cabe entero, nada cambia. Devuelve { ok, donde: [[ruta, n]…] } o { ok: false, motivo }.
+  meterDonde(tipo, n, preferida) {
+    if (!this.cat[tipo]) return { ok: false, motivo: 'Objeto desconocido.' };
+    if (!Number.isInteger(n) || n < 1) return { ok: false, motivo: 'Cantidad no válida.' };
+    const antes = this.exportarJugador(), donde = [];
+    const rutas = this.rutasGuardar();
+    const conLoMismo = rutas.filter(r => { const b = this.buscar(r); return b.cosa && b.cosa.tipo === tipo; });
+    const vacias = rutas.filter(r => !this.buscar(r).cosa);
+    const orden = [...(preferida ? [preferida] : []), ...conLoMismo, ...vacias];
+    let queda = n;
+    for (const r of orden) {
+      if (!queda) break;
+      const b = this.buscar(r);
+      if (b.motivo || this.noCabe(b, cosa(tipo, 1))) continue;
+      if (b.cosa && b.cosa.tipo !== tipo) continue;
+      const sitio = pila(tipo, this.cat) - (b.cosa ? b.cosa.n : 0);
+      const m = Math.min(sitio, queda);
+      if (m > 0 && this.meter(r, cosa(tipo, m)).ok) { donde.push([r, m]); queda -= m; }
+    }
+    if (queda) { this.restaurar(antes); return { ok: false, motivo: 'No te cabe: no tienes sitio libre.' }; }
+    return { ok: true, donde };
+  }
+
   // Cuántas unidades de un tipo lleva encima (en todos los huecos, dentro de los contenedores también).
   cuantos(tipo) {
     let t = 0;

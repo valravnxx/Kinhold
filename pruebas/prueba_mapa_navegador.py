@@ -116,8 +116,8 @@ with sync_playwright() as p:
         # el mundo de cerca es siempre igual: se rehace el trozo 50 m más allá y lo que queda en la parte común (a menos de
         # 18 m de un punto que cubren los dos, dentro del radio de la hierba también en el móvil) tiene que estar en el mismo sitio. MUTAR_FIJO=1: el azar cambia con el centro
         if os.environ.get('MUTAR_FIJO'): pg.evaluate('window.__cerca.vj.azarCentro = true')
-        FOTO = '''(([qx, qz]) => { const L = window.__cerca.vj.L, f = (k) => L[k].filter(e => Math.hypot(e[0] - qx, e[2] - qz) < 18).map(e => e[0].toFixed(2) + ',' + e[2].toFixed(2) + ',' + e[3].toFixed(2)).sort();
-          return { arboles: [...f('pino'), ...f('frond')], hierba: f('hierba'), rocas: f('rocas') }; })'''
+        FOTO = '''(([qx, qz]) => { const L = window.__cerca.vj.L, f = (k, M = L) => M[k].filter(e => Math.hypot(e[0] - qx, e[2] - qz) < 18).map(e => e[0].toFixed(2) + ',' + e[2].toFixed(2) + ',' + e[3].toFixed(2)).sort();
+          return { arboles: Object.keys(L.arboles).flatMap(e => f(e, L.arboles).map(x => e + ':' + x)), hierba: f('hierba'), rocas: f('rocas') }; })'''
         p0 = pg.evaluate('[window.__cerca.vj.pos.x, window.__cerca.vj.pos.z]')
         q = [p0[0] + 25, p0[1]]
         pg.evaluate(f'window.__cerca.juegoEn({p0[0]}, {p0[1]}, 0)'); pg.wait_for_timeout(800)

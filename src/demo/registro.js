@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v35 (manos de los personajes)';
+export const VERSION_DEMO = 'Demo única · v36 (recoger ramas, piedra, sílex y fibra)';
 export const REGISTRO_DEMO = [
+  'v36: en «Construir», se recoge del suelo y de las plantas con Usar: ramas caídas en el bosque, piedra suelta en la ladera, sílex en un afloramiento de caliza y fibra de ortigas y hierba larga en el claro. Va al inventario por huecos y vuelve a salir pasado su tiempo (días las ramas, semanas la piedra y el sílex, un mes la fibra). Es la construcción v35. En línea, de momento lo recogido es de cada navegador.',
   'v35: los personajes vuelven a tener las manos enteras (desde la taller-v9 salían como una tira, también las de los demás jugadores) y la mujer lleva botas bajas, que ya no atraviesan la falda larga. Personajes en recursos/personajes/taller-v11/.',
   'v34: en «Construir», el panel de inventario (botón «Inventario» o tecla I): una silueta con un cuadro por cada lugar del cuerpo y los huecos de lo que llevas, y un arcón de pruebas para coger equipo mientras no haya fabricación. En PC se arrastra; en el móvil se toca y el panel va a pantalla completa. Es la construcción v33.',
   'v33: en «Construir», chimenea u hogar interior (10 piedras y 4 de barro, 600 kg): va en la planta baja sobre un cimiento de piedra, arrimada a un muro, con el fuego encendido (llamas, luz y humo que sale por encima del tejado). Usar (F) la apaga y la enciende.',
