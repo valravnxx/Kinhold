@@ -1,0 +1,33 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 1942 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1851 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1457 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 1927 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2257 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1452 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 1858 KB
+dist/kinhold_trozos.html 1448 KB
+hilo de los trozos 14 KB
+
+== Navegador: recursos de personaje v2
+  OK   las básicas no cambian al cargar las extra; las extra tienen su nombre en español — [True, True, 'Bandage_Loop', True]
+  OK   sin errores en consola (movil)
+
+Resultado: TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 118 s
