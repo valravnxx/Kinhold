@@ -601,6 +601,215 @@ def separar_iris(ojo, c0, nombre, iris):
     return ir
 
 # ---------- un personaje ----------
+# ---------- la capa (manto): malla propia que cae de los hombros ----------
+# Cómo se hace (lo habitual en juegos sin simulación de tela: la tela «envuelve» el cuerpo y cae por gravedad):
+# 1. Para cada dirección alrededor del cuerpo (θ = 0 atrás, +x a la derecha del modelo), el perfil del cuerpo en ese
+#    plano: lo más exterior a cada altura, contando una holgura (se dilata con un círculo, así la tela pasa por encima de
+#    los hombros y no solo por fuera). Sin los brazos (salvo el hombro): en reposo están abiertos en A y la capa no debe
+#    seguirlos.
+# 2. De arriba abajo, la tela nunca vuelve hacia dentro (cae desde lo más saliente: hombros y omóplatos) y se abre un
+#    poco al bajar. Se suaviza alrededor y a lo alto.
+# 3. Cada columna de la malla recorre ese perfil por su largo (así hay filas también sobre el hombro, que es casi plano).
+# 4. Pliegues: ondas alrededor que empiezan bajo los hombros y crecen hacia el bajo, como una tela recogida arriba.
+# Pesos: arriba los hombros (clavículas) y la espalda alta; al bajar, la columna y abajo la pelvis. Sin brazos ni
+# piernas: así no se retuerce al mover los brazos y al andar las piernas se mueven por dentro.
+def manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, color):
+    tn = tenida('manto', color)
+    hombro_z = (pos['upperarm_l'].z + pos['upperarm_r'].z) / 2
+    z_top, z_bajo = cuello_z + 0.004, rodilla_z - 0.17
+    BRAZO = ('upperarm', 'lowerarm', 'hand', 'index', 'middle', 'ring', 'pinky', 'thumb')
+    def vale(i):
+        if not en(i, 'body') or mano(i) or co[i].z < z_bajo - 0.05 or co[i].z > cuello_z + 0.05: return False
+        b = PR[i] or ''
+        if b.startswith(BRAZO):  # del brazo, solo lo alto del hombro (el deltoides): la capa se apoya ahí
+            return b.startswith('upperarm') and co[i].z > hombro_z - 0.005 and abs(co[i].x) < abs(pos['upperarm_l'].x) + 0.05
+        return True
+    idx = [i for i in range(len(co)) if vale(i)]
+    S = np.array([tuple(co[i]) for i in idx])
+    # la falda de las prendas de encima (sobreveste) va por la malla de ayuda de la falda, más abierta que las piernas
+    falda = np.array([tuple(co[i]) for i in range(len(co)) if en(i, 'helper-skirt') and z_bajo < co[i].z < cintura_z])
+    cx = 0.0
+    cy = float(np.mean([co[i].y for i in idx if abs(co[i].z - (cintura_z + 0.15)) < 0.03]))
+    NT, DZ = 180, 0.004
+    zs = np.arange(z_top, z_bajo - DZ, -DZ)
+    ths = np.linspace(-math.pi, math.pi, NT, endpoint=False)
+    def holgura(z):  # pegada al cuello arriba, holgada (por encima de la ropa de debajo) desde los hombros
+        return 0.034 + 0.032 * float(suave(z_top, z_top - 0.16, z))
+    G = np.array([holgura(z) for z in zs])
+    R = np.zeros((NT, len(zs)))
+    for k, th in enumerate(ths):
+        d = np.array([math.sin(th), math.cos(th)])
+        for pts, extra in ((S, 0.0), (falda, -0.012)):
+            if not len(pts): continue
+            q = pts[:, :2] - [cx, cy]
+            radial = q @ d; lado = np.abs(q @ [d[1], -d[0]])
+            m = (radial > 0) & (lado < 0.025)
+            if not m.any(): continue
+            rz, pz = radial[m], pts[m, 2]
+            dz = pz[None, :] - zs[:, None]
+            g = (G + extra)[:, None]
+            dentro = np.abs(dz) < g
+            v = np.where(dentro, rz[None, :] + np.sqrt(np.maximum(g * g - dz * dz, 0)), 0)
+            R[k] = np.maximum(R[k], v.max(1))
+    # sin datos (por encima del cuello en algunas direcciones): el vecino
+    for j in range(len(zs)):
+        if (R[:, j] > 0).all(): continue
+        bien = R[:, j] > 0
+        if bien.any(): R[~bien, j] = np.interp(np.flatnonzero(~bien), np.flatnonzero(bien), R[bien, j], period=NT)
+    # se suaviza alrededor (círculo) y a lo alto
+    for _ in range(4): R = (np.roll(R, 1, 0) + 2 * R + np.roll(R, -1, 0)) / 4
+    # cae: nunca vuelve hacia dentro; debajo de los hombros se abre un poco
+    R = np.maximum.accumulate(R, axis=1)
+    R = R + 0.07 * np.clip(hombro_z - 0.05 - zs, 0, None)[None, :]
+    # el hombro, redondeado (sin esquina entre lo alto y el costado): se alisa a lo alto y se le da 1 cm más
+    for _ in range(40): R[:, 1:-1] = (R[:, :-2] + 2 * R[:, 1:-1] + R[:, 2:]) / 4
+    R[:, 1:] += 0.01 * np.clip((z_top - zs[1:]) / 0.04, 0, 1)[None, :]
+    for _ in range(3): R = (np.roll(R, 1, 0) + 2 * R + np.roll(R, -1, 0)) / 4
+    # largo de cada perfil (r, z), para repartir las filas por la tela y no por la altura
+    s = np.concatenate([np.zeros((NT, 1)), np.cumsum(np.hypot(np.diff(R, axis=1), DZ), 1)], 1)
+    NU, NV = 72, 44
+    def theta_max(t):  # medio ángulo que cubre la capa: casi cerrada en el broche, abierta hacia abajo
+        return math.radians(94 + 78 * float(suave(0.32, 0.02, t)))
+    def perfil(th, t):
+        """(r, z) del perfil en el ángulo th, a la fracción t de su largo"""
+        f = ((th + math.pi) / (2 * math.pi) * NT) % NT; k0 = int(f) % NT; k1 = (k0 + 1) % NT; w = f - int(f)
+        out = []
+        for k in (k0, k1):
+            sk = t * s[k, -1]
+            out.append((np.interp(sk, s[k], R[k]), np.interp(sk, s[k], zs)))
+        return (1 - w) * out[0][0] + w * out[1][0], (1 - w) * out[0][1] + w * out[1][1]
+    rng = np.random.default_rng(7)
+    fase1, fase2 = rng.uniform(0, 2 * math.pi, 2)
+    def pliegue(th):  # forma de los pliegues alrededor: irregular (dos ondas), entre -1 y 1
+        return 0.65 * math.sin(16.5 * th + fase1) + 0.35 * math.sin(27.0 * th + fase2 + 0.6 * math.sin(5 * th))
+    def hondo(z):  # cuánto pliegue a esa altura: nada sobre los hombros, crece hacia el bajo
+        return 0.026 * float(suave(hombro_z - 0.06, hombro_z - 0.75, z))
+    vs, uv, ths_v, zs_v = [], [], [], []
+    for j in range(NV):
+        t = j / (NV - 1); TM = theta_max(t)
+        for i in range(NU):
+            u = i / (NU - 1); th = (2 * u - 1) * TM
+            r, z = perfil(th, t)
+            r += hondo(z) * (pliegue(th) + 0.4) * float(suave(0.0, 0.16, min(u, 1 - u)))  # los bordes de delante caen más lisos
+            vs.append((cx + r * math.sin(th), cy + r * math.cos(th), z)); ths_v.append(th); zs_v.append(z)
+            uv.append((0.02 + 0.96 * u, 0.98 - 0.94 * t))
+    caras = [(j * NU + i, j * NU + i + 1, (j + 1) * NU + i + 1, (j + 1) * NU + i) for j in range(NV - 1) for i in range(NU - 1)]
+    # dobladillo: el bajo y los bordes de delante, doblados hacia dentro 7 mm y unos 3 cm (se ve el grueso de la tela)
+    def adentro(p, th, cuanto):
+        return (p[0] - cuanto * math.sin(th), p[1] - cuanto * math.cos(th), p[2])
+    base_n = len(vs)
+    for i in range(NU):  # fila bajo el bajo, doblada hacia dentro y hacia arriba
+        k = (NV - 1) * NU + i; p = adentro(vs[k], ths_v[k], 0.007)
+        vs.append((p[0], p[1], p[2] + 0.03)); uv.append((uv[k][0], 0.0)); ths_v.append(ths_v[k]); zs_v.append(zs_v[k])
+        if i < NU - 1: caras.append((k + 1, k, base_n + i, base_n + i + 1))
+    for lado, i in ((-1, 0), (1, NU - 1)):  # columna de cada borde de delante, doblada hacia dentro y hacia atrás
+        ini = len(vs)
+        for j in range(NV):
+            k = j * NU + i; th = ths_v[k] - lado * 0.03 / max(0.1, math.hypot(vs[k][0] - cx, vs[k][1] - cy))
+            p = adentro(vs[k], ths_v[k], 0.007); r = math.hypot(p[0] - cx, p[1] - cy)
+            vs.append((cx + r * math.sin(th), cy + r * math.cos(th), p[2])); uv.append((0.0 if lado < 0 else 1.0, uv[k][1])); ths_v.append(th); zs_v.append(p[2])
+            if j < NV - 1:
+                a, b = k, (j + 1) * NU + i
+                caras.append((a, b, ini + j + 1, ini + j) if lado < 0 else (b, a, ini + j, ini + j + 1))
+    vs = np.array(vs)
+    # pesos: arriba, las clavículas en los lados (siguen al hombro) y la espalda alta; al bajar, columna y pelvis
+    BAJA = [('spine_03', pos['spine_03'].z), ('spine_02', pos['spine_02'].z), ('spine_01', pos['spine_01'].z), ('pelvis', pos['pelvis'].z)]
+    pesos = []
+    for v in vs:
+        x, z = v[0], v[2]
+        w = {}
+        if z >= BAJA[0][1]: w['spine_03'] = 1.0
+        elif z <= BAJA[-1][1]: w['pelvis'] = 1.0
+        else:
+            for (h0, z0), (h1, z1) in zip(BAJA, BAJA[1:]):
+                if z1 <= z <= z0:
+                    t = (z0 - z) / (z0 - z1); w[h0] = 1 - t; w[h1] = t
+        hom = float(suave(hombro_z - 0.12, hombro_z - 0.02, z)) * float(suave(0.07, 0.17, abs(x)))
+        if hom > 0:
+            w = {h: p * (1 - 0.7 * hom) for h, p in w.items()}
+            cl = 'clavicle_l' if x > 0 else 'clavicle_r'
+            w[cl] = w.get(cl, 0) + 0.7 * hom
+        pesos.append(w)
+    # textura: lana (grano y algo de sarga), costura del dobladillo y sombra en el fondo de los pliegues
+    ANCHO, ALTO = 1.9, 1.35  # medidas aproximadas de la tela extendida (m), para el tamaño del grano
+    def pintar(U, V):
+        P = np.stack([U * ANCHO, V * ALTO, np.zeros_like(U)], -1)
+        col = GRIS_ROPA[None, None, :] * (0.86 + 0.18 * fbm(P, 22)[..., None]) * (0.95 + 0.05 * ruido(P, 800)[..., None])
+        sarga = 0.97 + 0.03 * np.sin((P[..., 0] + P[..., 1]) * 2 * math.pi / 0.004)
+        col = col * sarga[..., None]
+        borde = np.minimum(np.minimum(U, 1 - U) * ANCHO, np.maximum(V - 0.04, 0) * ALTO)  # distancia al borde de delante o al bajo
+        costura = suave(0.0035, 0.0015, np.abs(borde - 0.022)) * (0.6 + 0.4 * (np.sin(P[..., 0] * 900 + P[..., 1] * 900) > 0))
+        col = col * (1 - 0.25 * costura[..., None]) * (1 - 0.06 * suave(0.03, 0.0, borde)[..., None])
+        # sombra de los pliegues (para el juego en calidad baja, sin sombras propias): en los valles, más hacia abajo
+        t = (0.98 - V) / 0.94; th = (2 * U - 1) * np.radians(94 + 78 * suave(0.32, 0.02, t))
+        pl = 0.65 * np.sin(16.5 * th + fase1) + 0.35 * np.sin(27.0 * th + fase2 + 0.6 * np.sin(5 * th))
+        col = col * (1 - 0.16 * suave(0.15, 0.6, t)[..., None] * suave(0.0, -0.9, pl)[..., None])
+        return np.concatenate([col, np.ones(U.shape + (1,))], -1)
+    res = 1024
+    U, V = np.meshgrid((np.arange(res) + 0.5) / res, (np.arange(res) + 0.5) / res)
+    rgba = np.clip(pintar(U, V), 0, 1); rgba[..., :3] = rgba[..., :3] ** (1 / 2.2)
+    im = bpy.data.images.new(nombre + '_capa_manto', res, res, alpha=False)
+    im.pixels.foreach_set(rgba.astype(np.float32).ravel())
+    im.filepath_raw = os.path.join(SALIDA, im.name + '.png'); im.file_format = 'PNG'; im.save()
+    # normales de la malla entera, para que no se note el corte entre las dos piezas
+    tmp = bpy.data.meshes.new('tmp'); tmp.from_pydata([tuple(map(float, v)) for v in vs], [], caras); tmp.update()
+    normales = [tuple(v.normal) for v in tmp.vertices]; bpy.data.meshes.remove(tmp)
+    cerca = [i for i in range(len(co)) if co[i].z > z_bajo - 0.1 and abs(co[i].x) < 0.35]
+    # dos piezas, como las demás prendas (src/logica/prendas.js: el manto tiene cuerpo y falda): arriba hasta la cintura
+    # y la falda, de la cintura abajo; comparten la fila del corte
+    piezas = []
+    for sufijo, cuales in (('', lambda zc: zc >= cintura_z), ('_falda', lambda zc: zc < cintura_z)):
+        sub = [f for f in caras if cuales(sum(vs[k][2] for k in f) / len(f))]
+        usados = sorted({k for f in sub for k in f}); nuevo_ = {k: n for n, k in enumerate(usados)}
+        me = bpy.data.meshes.new(nombre + '_capa_manto' + sufijo)
+        me.from_pydata([tuple(map(float, vs[k])) for k in usados], [], [tuple(nuevo_[k] for k in f) for f in sub]); me.update()
+        capa_uv = me.uv_layers.new(name='UVMap')
+        for l in me.loops: capa_uv.data[l.index].uv = tuple(map(float, uv[usados[l.vertex_index]]))
+        for p in me.polygons: p.use_smooth = True
+        me.normals_split_custom_set_from_vertices([normales[k] for k in usados])
+        ob = bpy.data.objects.new(me.name, me); bpy.context.scene.collection.objects.link(ob)
+        for n, k in enumerate(usados):
+            for h, w in pesos[k].items():
+                if w <= 1e-4: continue
+                g = ob.vertex_groups.get(h) or ob.vertex_groups.new(name=h)
+                g.add([n], float(w), 'REPLACE')
+        me.materials.append(material(me.name, 0.95, imagen=im, factor=tn['factor']))
+        ob['tinte'], ob['ref'] = tn['tinte']; ob['prenda'] = tn['prenda']
+        mapear(ob, [co[i] for i in cerca], cerca)  # para las formas (peso, músculo): como el punto del cuerpo más cercano
+        ob.modifiers.new('Armature', 'ARMATURE').object = RIG; ob.parent = RIG
+        piezas.append(ob)
+    # broche anular de bronce donde se cierra, bajo el cuello (sin teñir)
+    j = int(0.05 * (NV - 1))
+    izq, der = vs[j * NU], vs[j * NU + NU - 1]
+    c0 = (izq + der) / 2; c0[1] -= 0.008
+    bv, bc, n, m = [], [], 20, 6
+    for a in range(n):
+        A = 2 * math.pi * a / n
+        for b in range(m):
+            B = 2 * math.pi * b / m
+            rr = 0.016 + 0.0042 * math.cos(B)
+            bv.append((c0[0] + rr * math.cos(A), c0[1] - 0.0042 * math.sin(B) * 0.7, c0[2] + rr * math.sin(A)))
+    for a in range(n):
+        for b in range(m):
+            bc.append((a * m + b, ((a + 1) % n) * m + b, ((a + 1) % n) * m + (b + 1) % m, a * m + (b + 1) % m))
+    k0 = len(bv)  # el alfiler, cruzado
+    for dx, dz in ((-0.024, 0.006), (0.024, -0.006)):
+        for e in ((0, 0.0018), (0, -0.0018)):
+            bv.append((c0[0] + dx, c0[1] - 0.004 + e[1], c0[2] + dz))
+    bc.append((k0, k0 + 2, k0 + 3, k0 + 1))
+    mb = bpy.data.meshes.new(nombre + '_capa_manto_broche'); mb.from_pydata(bv, [], bc); mb.update()
+    ob2 = bpy.data.objects.new(mb.name, mb); bpy.context.scene.collection.objects.link(ob2)
+    g = ob2.vertex_groups.new(name='spine_03'); g.add(list(range(len(bv))), 1.0, 'REPLACE')
+    bronce = lin((150, 112, 62))
+    capa = mb.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
+    for v in mb.vertices: capa.data[v.index].color = (*(bronce * (0.85 + 0.3 * (v.co.y < c0[1] - 0.003))), 1)
+    mb.materials.append(material(mb.name, 0.35, metal=0.5))
+    for p in mb.polygons: p.use_smooth = True
+    mapear(ob2, [co[i] for i in cerca], cerca)
+    ob2.modifiers.new('Armature', 'ARMATURE').object = RIG; ob2.parent = RIG
+    piezas.append(ob2)
+    return piezas
+
 def personaje(nombre, macros, objetivos, ropa):
     global RIG, ATR
     V = variantes(macros, objetivos)
@@ -1037,26 +1246,10 @@ def personaje(nombre, macros, objetivos, ropa):
         return c
     piezas.append(trozo(base, nombre + '_pies', lambda i, c: en(i, 'body') and c.z < tobillo_z + (0.10 if mujer else 0.06), textura=(512, pintar_pies),
                         rugosidad=0.62, sss=0.2, ajustar_uv=True, **f_piel))
-    # ---- capa (manto) abierta por delante, encima de todo, hasta debajo de la rodilla ----
-    # Se llama «manto» en el modelo (<nombre>_capa_manto) para no chocar con la palabra «capa» de las capas de ropa.
-    colm = GRIS_ROPA; tn_manto = tenida('manto', ropa.get('manto', (78, 70, 58)))
-    def abertura(P, z_yugo):  # por delante queda abierta salvo un poco bajo el cuello, donde se cierra con un broche
-        x, y, z = np.abs(P[..., 0]), P[..., 1], P[..., 2]
-        return 1 - suave(-0.02, -0.045, y) * suave(0.15, 0.115, x) * suave(z_yugo + 0.01, z_yugo - 0.01, z)
-    def pintar_manto(P, A, cuello=True):
-        col = colm[None, None, :] * (0.86 + 0.18 * fbm(P, 22)[..., None]) * (0.95 + 0.05 * ruido(P, 800)[..., None])
-        O = A[..., 3:6]
-        a = abertura(P, cuello_z - 0.055)
-        if cuello:
-            a = a * suave(0.0015, -0.0015, P[..., 2] - (cuello_z + 0.012))
-            hombro = suave(cuello_z - 0.17, cuello_z - 0.12, O[..., 2])  # sobre el hombro acaba en línea, no en los escalones de la malla
-            a = a * (1 - hombro * suave(0.198, 0.21, np.abs(O[..., 0])))
-        return np.concatenate([col, a[..., None]], -1)
-    sel_manto = lambda i, c: en(i, 'helper-tights') and cintura_z - 0.06 < c.z < cuello_z + 0.045 and abs(c.x) < 0.215 and not mano(i)
-    piezas.append(trozo(base, f'{nombre}_capa_manto', sel_manto, empuje=0.056, textura=(1024, pintar_manto), rugosidad=0.95,
-                        ajustar_uv=True, alisar=(tronco, 25, 0.054), **tn_manto))
-    piezas.append(trozo(base, f'{nombre}_capa_manto_falda', lambda i, c: en(i, 'helper-skirt') and rodilla_z - 0.12 < c.z < cintura_z + 0.03,
-                        empuje=0.062, textura=(512, lambda P, A: pintar_manto(P, A, cuello=False)), rugosidad=0.95, ajustar_uv=True, **tn_manto))
+    # ---- capa (manto): cae de los hombros como una capa de verdad (taller-v15; la malla, en manto()) ----
+    # Antes era la malla del cuerpo empujada hacia fuera: seguía la cintura y los costados y parecía un chaleco sin
+    # mangas (valravnx, 29 oct: «la capa que no es capa»).
+    piezas += manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, ropa.get('manto', (78, 70, 58)))
 
     # ---- calzado: botas de cuero (en vez de los zapatos) ----
     # El hombre, hasta debajo de la rodilla. La mujer lleva siempre falda hasta el tobillo (camisa, vestido), que sale de
@@ -1174,6 +1367,7 @@ def foto(posc, mira, lente, ruta, ancho=1000, alto=1000):
     cam.rotation_euler = (Vector(mira) - Vector(posc)).to_track_quat('-Z', 'Y').to_euler()
     esc.render.filepath = ruta; bpy.ops.render.render(write_still=True)
 todas = os.environ.get('FOTOS', 'todas') == 'todas'
+BRAZOS = [float(a) for a in os.environ.get('BRAZOS', '0,0,0').split(',')]  # giro de los brazos para las fotos de la capa (grados)
 NUEVAS = ('_pies', '_capa_manto', '_capa_botas', '_capa_capucha', '_capa_toca', '_capa_sombrero', '_pelo_', '_barba_larga', '_barba_perilla', '_barba_bigote')
 def cabeza_como(rig, piezas, peinado, barba):
     """enseña el peinado y la barba como el juego (src/personajes/makehuman.js)"""
@@ -1234,6 +1428,28 @@ if os.environ.get('FOTOS') == 'pies':  # de cerca, descalzo (sin zapatos ni bota
         foto((x + 0.5, -1.2, 0.35), (x, 0, 0.12), 50, os.path.join(SALIDA, f'{rig.name}_pies_34.png'), 800, 800)
         foto((x - 0.2, 1.1, 0.3), (x, 0, 0.1), 50, os.path.join(SALIDA, f'{rig.name}_pies_atras.png'), 800, 800)
         foto((x + 0.9, -0.1, 0.12), (x, 0, 0.08), 50, os.path.join(SALIDA, f'{rig.name}_pies_lado.png'), 800, 800)
+    print('listo', SALIDA); sys.exit(0)
+if os.environ.get('FOTOS') == 'manto':  # la capa de cerca: con los brazos en A (reposo) y bajados (como al estar de pie)
+    esc.cycles.samples = int(os.environ.get('MUESTRAS', '24'))
+    for rig, piezas, pos in gente:
+        for otro, op, _ in gente:
+            for ob in [otro] + op: ob.hide_render = otro is not rig
+        cabeza_como(rig, piezas, 'cofia' if rig.name == 'mujer' else 'corto', 'ninguna' if rig.name == 'mujer' else 'corta')
+        for ob in piezas:  # ropa de diario (túnica o vestido) con la capa y las botas encima
+            if '_capa_' in ob.name: ob.hide_render = not any(k in ob.name for k in ('tunica', 'vestido', 'calzas', 'manto', 'botas'))
+            if '_cinturon_' in ob.name: ob.hide_render = 'tunica' not in ob.name and 'vestido' not in ob.name
+        x = rig.location.x
+        for postura in ('reposo', 'brazos'):
+            for lado, sg in (('l', 1), ('r', -1)):
+                pb = rig.pose.bones['upperarm_' + lado]; pb.rotation_mode = 'XYZ'
+                pb.rotation_euler = (0, 0, 0) if postura == 'reposo' else tuple(math.radians(a) * (sg if i == 2 else 1) for i, a in enumerate(BRAZOS))
+            bpy.context.view_layer.update()
+            b_ = os.path.join(SALIDA, f'{rig.name}_manto_{postura}')
+            foto((x + 1.9, -2.0, 1.1), (x, 0, 0.85), 50, b_ + '_34.png', 800, 1000)
+            foto((x - 1.2, 2.4, 1.1), (x, 0, 0.85), 50, b_ + '_espalda.png', 800, 1000)
+            foto((x + 2.7, 0.0, 1.0), (x, 0, 0.85), 50, b_ + '_perfil.png', 800, 1000)
+            foto((x, -2.7, 1.0), (x, 0, 0.85), 50, b_ + '_frente.png', 800, 1000)
+            foto((x + 0.75, -0.75, 1.55), (x, 0, 1.3), 60, b_ + '_hombro.png', 800, 800)
     print('listo', SALIDA); sys.exit(0)
 if os.environ.get('FOTOS') == 'prendas':  # de cerca, una pieza nueva cada vez (capa, botas y cada tocado)
     esc.cycles.samples = 24

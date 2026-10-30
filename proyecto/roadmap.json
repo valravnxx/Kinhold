@@ -834,9 +834,13 @@
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «la capa que no es capa»): rehacer la capa del taller para que caiga de los hombros como una capa de verdad, revisada en capturas de cerca antes de enseñarla",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T01:54:51+00:00",
-     "rama": "trabajo/20261030-0155"
+     "fin": "2026-10-30T04:17:11+00:00"
+    },
+    {
+     "nombre": "Pulir la capa (visto al rehacerla): que se mueva algo al andar (huesos propios o tela sencilla), que de espalda se distingan los pliegues y que las manos no asomen por los lados con los brazos algo abiertos",
+     "estado": "pendiente"
     },
     {
      "nombre": "Pulir la barba larga (visto al rehacerla): en el juego las ondas de los pelos salen demasiado regulares, el bigote sigue pintado y sin volumen, y a los lados de la barbilla asoma algo de cuello",
@@ -1675,6 +1679,13 @@
      "archivo": "jugar/demo/v45.html",
      "capturas": "capturas/construccion-v39",
      "notas": "Objetos en el suelo en «Construir» (construcción v39)"
+    },
+    {
+     "v": "v46",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v46.html",
+     "capturas": "capturas/personaje-v26",
+     "notas": "En «Personaje», la capa rehecha: cae de los hombros, más ancha abajo y con pliegues, abierta por delante y cerrada con un broche bajo el cuello (taller-v15)."
     }
    ]
   },
@@ -2319,6 +2330,13 @@
      "archivo": "jugar/personaje/v25.html",
      "capturas": "capturas/personaje-v25",
      "notas": "Barbas rehechas (valravnx: «horribles»): la larga es ahora una malla con volumen que cae recta bajo el mentón y de perfil forma una cuña, con la punta desigual; la corta, el bigote y la perilla, pelo a pelo y con el borde que se aclara poco a poco. Personajes en taller-v14."
+    },
+    {
+     "v": "v26",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/personaje/v26.html",
+     "capturas": "capturas/personaje-v26",
+     "notas": "Capa rehecha (valravnx: «la capa que no es capa»): ya no es el cuerpo empujado hacia fuera, que parecía un chaleco sin mangas metido en la cintura, sino una malla propia que se apoya en los hombros y cae recta, algo más ancha abajo y con pliegues, abierta por delante y cerrada con un broche de bronce bajo el cuello. Personajes en recursos/personajes/taller-v15/."
     }
    ]
   },

@@ -2519,5 +2519,23 @@
   "pruebas": "En la nube: los 17 grupos bien (34 min); después de unir main, otra vez lógica, objetos en el suelo, demo y panel de inventario, bien. Las pruebas nuevas, rotas a propósito con MUTAR=1, fallan",
   "capturas": "capturas/construccion-v39",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T01:54:51+00:00",
+  "fin": "2026-10-30T04:17:11+00:00",
+  "titulo": "Capa rehecha (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Capa nueva (valravnx: «la capa que no es capa»): antes era la piel empujada hacia fuera y seguía la cintura y los costados, como un chaleco sin mangas. Ahora es una malla propia hecha por código en el taller.",
+   "Cómo se hace: para cada dirección alrededor del cuerpo se mide el perfil del tronco y las piernas (sin los brazos, salvo lo alto del hombro) con la holgura de la ropa de debajo; de arriba abajo la tela no vuelve hacia dentro y se abre un poco; pliegues que crecen hacia el bajo; el bajo y los bordes de delante, doblados hacia dentro.",
+   "Abierta por delante, cerrada con un broche de bronce bajo el cuello. Arriba sigue a las clavículas y la espalda y abajo a la pelvis: los brazos y las piernas se mueven por dentro. En dos piezas (cuerpo y falda), como dicen las prendas de la lógica.",
+   "Personajes en recursos/personajes/taller-v15/ (lo demás, igual que la v14). Publicado como personaje v26 y demo v46 (la v45 de la demo es la de los objetos en el suelo del carril A).",
+   "Prueba nueva pruebas/prueba_manto.mjs: la capa cae (por detrás, en la cintura, no se mete más que en el pecho), abajo es al menos tan ancha como en los hombros, va abierta por delante, lleva broche y tinte. Con MUTAR=1 mira la taller-v14 y falla (5 fallos). Ajustadas prueba_prendas.mjs y la de personaje en el navegador.",
+   "Capturas de cerca en el taller (brazos en A y bajados, hombre y mujer, antes y después) y en el juego, quieto y andando, en PC y móvil.",
+   "Aún mal: en el taller, con los brazos bajados y algo abiertos, las manos asoman por los lados a la altura de la cadera (en el juego no se ha visto); la capa no ondea, va rígida con la pelvis; de espalda en el juego sale casi negra y no se ven los pliegues; por dentro, el mismo paño que por fuera. Queda como tarea pendiente del hito de arte."
+  ],
+  "pruebas": "Batería entera en la nube: 18 grupos correctos (54 min), tras unir main. Antes, aquí: las pruebas del taller (capa, prendas, ropa, barbas) correctas.",
+  "capturas": "capturas/personaje-v26",
+  "estado": "ok"
  }
 ]
