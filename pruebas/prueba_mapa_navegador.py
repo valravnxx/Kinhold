@@ -73,7 +73,7 @@ with sync_playwright() as p:
         if nombre == 'pc': pg.mouse.click(W / 2, H / 2)
         else: pg.touchscreen.tap(W / 2, H / 2)
         pg.wait_for_timeout(200); info = pg.inner_text('#datos')
-        comprobar(f'{nombre}: tocar en Whitholm dice su comarca y su zona', 'comarca ' in info and 'zona ' in info, info[:200])
+        comprobar(f'{nombre}: tocar en Whitholm dice su comarca (con su nombre) y su zona', 'comarca ' in info and 'zona ' in info and any(c in info for c in ['Breiddal', 'Motdale', 'Nordwold', 'Lindholt', 'Strandvang', 'Furulid', 'Sudholt', 'Ravnsnes']), info[:200])
         pg.screenshot(path=f'{SALIDA}/{nombre}_3d_zonas.png')
         pg.evaluate('window.__mapa.capa("comarcas", false)')
         # ampliar sobre el centro de la región 2 (Rudmere) y tocarlo

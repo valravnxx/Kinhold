@@ -36,6 +36,7 @@ const APROBADAS = { A: 435, B: 307, C: 333, D: 248, E: 245, F: 173, G: 156, H: 1
 const mal = Object.entries(APROBADAS).filter(([l, a]) => !(Math.abs((porComarca[l] || 0) - a) <= a * 0.15));
 comprobar('las 8 comarcas aprobadas (A a H), cada una con su tamaño (±15 %)', C.letras.join('') === 'ABCDEFGH' && mal.length === 0,
   Object.entries(porComarca).map(([l, a]) => `${l} ${Math.round(a)} km²`).join(', '));
+comprobar('las comarcas tienen los nombres que eligió valravnx (30 oct)', C.nombres.join(' ') === 'Breiddal Motdale Nordwold Lindholt Strandvang Furulid Sudholt Ravnsnes', C.nombres.join(', '));
 comprobar('toda la tierra de la isla tiene zona y comarca', sinComarca === 0, `${sinComarca} de ${total} puntos sin comarca`);
 const s = C.zonaEn(SALIDA.x, SALIDA.z);
 comprobar('la salida de los jugadores está en una zona con comarca', s && s.comarca >= 0, s ? `comarca ${C.letras[s.comarca]}, zona ${s.id}` : '');

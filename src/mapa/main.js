@@ -156,7 +156,6 @@ function capaComarcas(fino) {
   const t0 = performance.now(), { C, x0, y0, x1, y1 } = comarcas;
   const W = Math.ceil((x1 - x0) * k), H = Math.ceil((y1 - y0) * k), fN = N / LADO();
   const zona = new Int32Array(W * H).fill(-1), com = new Int8Array(W * H).fill(-1);
-  const suma = C.letras.map(() => [0, 0, 0]);
   for (let py = 0; py < H; py++) for (let px = 0; px < W; px++) {
     const xk = x0 + (px + 0.5) / k, yk = y0 + (py + 0.5) / k, gx = xk * fN - 0.5, gy = yk * fN - 0.5;
     // la misma costa que el fondo del mapa
@@ -164,9 +163,23 @@ function capaComarcas(fino) {
     if (t <= 0) continue;
     const z = C.zonaEn(xk * 1000, yk * 1000); if (z.comarca < 0) continue;
     const i = py * W + px; zona[i] = z.id; com[i] = z.comarca;
-    const sc = suma[z.comarca]; sc[0] += xk; sc[1] += yk; sc[2]++;
   }
-  if (!comarcas.centros) comarcas.centros = suma.map(([x, y, n]) => n ? [x / n, y / n] : null);
+  if (!comarcas.centros) {
+    // dónde va el nombre: el sitio de cada comarca más lejos de su borde (y de la costa), no su centro de masas, que
+    // en las comarcas alargadas o en media luna cae cerca de otra cosa
+    const dist = new Int32Array(W * H).fill(-1), cola = [];
+    for (let i = 0; i < W * H; i++) { if (com[i] < 0) continue; const x = i % W, y = (i / W) | 0;
+      if (x === 0 || y === 0 || x === W - 1 || y === H - 1 || com[i - 1] !== com[i] || com[i + 1] !== com[i] || com[i - W] !== com[i] || com[i + W] !== com[i]) { dist[i] = 0; cola.push(i); } }
+    for (let q = 0; q < cola.length; q++) { const i = cola[q];
+      for (const j of [i - 1, i + 1, i - W, i + W]) if (j >= 0 && j < W * H && com[j] === com[i] && dist[j] < 0) { dist[j] = dist[i] + 1; cola.push(j); } }
+    // y lejos de las grandes vetas, que llevan su propio nombre
+    const km = LADO() / N, vetas = mapa.vetas.filter(v => v.tipo.startsWith('gran')).map(v => [(v.x + 0.5) * km, (v.y + 0.5) * km]);
+    const nota = (i) => { const x = x0 + (i % W + 0.5) / k, y = y0 + (((i / W) | 0) + 0.5) / k;
+      let dv = Infinity; for (const [a, b] of vetas) dv = Math.min(dv, Math.hypot(a - x, b - y)); return Math.min(dist[i] / k, dv / 2); };
+    const mejor = C.letras.map(() => -1), notas = C.letras.map(() => -1);
+    for (let i = 0; i < W * H; i++) { const c = com[i]; if (c < 0 || dist[i] < notas[c] * k) continue; const n = nota(i); if (n > notas[c]) { notas[c] = n; mejor[c] = i; } }
+    comarcas.centros = mejor.map(i => i < 0 ? null : [x0 + (i % W + 0.5) / k, y0 + (((i / W) | 0) + 0.5) / k]);
+  }
   const c = document.createElement('canvas'); c.width = W; c.height = H;
   const g = c.getContext('2d'), img = g.createImageData(W, H), d = img.data;
   const grueso = fino ? 2 : 1;
@@ -190,12 +203,13 @@ function pintarComarcas(kmAPx, aPant) {
   const fino = kmAPx >= 12, c = capaComarcas(fino), { x0, y0, x1, y1 } = comarcas, [a, b] = aPant([x0, y0]);
   ctx.imageSmoothingEnabled = true;
   ctx.drawImage(c, a, b, (x1 - x0) * kmAPx, (y1 - y0) * kmAPx);
-  // los nombres: de muy lejos, ninguno (se pisarían); de lejos, la letra; más cerca, «Comarca A»
+  // los nombres: de muy lejos, ninguno (se pisarían); luego el de cada comarca (en otros mundos, la letra y, más
+  // cerca, «Comarca A»)
   if (kmAPx < 4) return;
-  ctx.font = `700 ${movil ? 12 : 14}px system-ui, sans-serif`; ctx.textAlign = 'center';
+  ctx.font = `700 ${kmAPx < 8 ? 10 : movil ? 12 : 14}px system-ui, sans-serif`; ctx.textAlign = 'center';
   comarcas.C.letras.forEach((l, k) => {
     const p = comarcas.centros[k]; if (!p) return;
-    const [x, y] = aPant(p), t = kmAPx < 8 ? l : tr('Comarca {l}', { l });
+    const n = comarcas.C.nombres[k], [x, y] = aPant(p), t = n === l ? (kmAPx < 8 ? l : tr('Comarca {l}', { l })) : tr(n);
     ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(40,30,24,.8)'; ctx.strokeText(t, x, y); ctx.fillStyle = '#f6e7c4'; ctx.fillText(t, x, y);
   });
 }
@@ -339,7 +353,7 @@ function info(cx, cy) {
   if (mapa.pais[i] === mapa.paisIsla) {   // en Whitholm: su comarca y su zona
     if (!comarcas) capaComarcas(false);
     const z = comarcas.C.zonaEn(gx * LADO() / N * 1000, gy * LADO() / N * 1000);
-    if (z.comarca >= 0) partes.push(tr('comarca {l}, zona {z}', { l: comarcas.C.letras[z.comarca], z: `${z.j}-${z.i}` }));
+    if (z.comarca >= 0) partes.push(tr('comarca {l}, zona {z}', { l: tr(comarcas.C.nombres[z.comarca]), z: `${z.j}-${z.i}` }));
   }
   // lo más cerca de hierro y de carbón (vetas pequeñas o grandes)
   const k = LADO() / N, cerca = (tipos) => Math.min(...mapa.vetas.filter(v => tipos.includes(v.tipo)).map(v => Math.hypot(v.x + 0.5 - gx, v.y + 0.5 - gy) * k));

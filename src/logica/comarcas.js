@@ -26,6 +26,18 @@ const APROBADO = {
   E: [[217, 53], [217, 30]], F: [[179, 42], [173, 48]], G: [[182, 80], [178, 77]],
 };
 const PENINSULA = { letra: 'H', x1: 168, y0: 50, y1: 70 };
+// Sus nombres, elegidos por valravnx el 30 oct, al estilo de las regiones (inglés y nórdico antiguos que dicen cómo es
+// el sitio). En los otros mundos, la letra.
+export const NOMBRES_COMARCAS = {
+  A: 'Breiddal',     // valle ancho: la gran vega que baja de la cumbre al mar
+  B: 'Motdale',      // valle del encuentro: donde se juntan los ríos del este
+  C: 'Nordwold',     // bosque del norte
+  D: 'Lindholt',     // soto de tilos: el noroeste, todo bosque caducifolio
+  E: 'Strandvang',   // campo de la orilla: la pradera de la costa este
+  F: 'Furulid',      // ladera de pinos: la cara oeste de la sierra
+  G: 'Sudholt',      // soto del sur
+  H: 'Ravnsnes',     // cabo de los cuervos: la península del oeste
+};
 // Y la comarca de cada zona tal como la aprobó valravnx (fila j, columna i de la rejilla de zonas, desde J0 e I0): los
 // bordes finos salieron de las divisorias de aguas calculadas con el relieve a 50 m, más finas que las celdas de 1 km
 // del mapa. «.» es zona sin comarca (mar). Si cambia la rejilla de zonas, la prueba lo detecta (la tabla deja de casar
@@ -181,5 +193,7 @@ export function crearComarcas(m) {
     return mejor;
   }
   const comarcaEn = (x, z) => { const zz = zonaEn(x, z); return zz.comarca >= 0 ? letras[zz.comarca] : null; };
-  return { letras, comarcaDeCelda: lab, zonaEn, comarcaEn };
+  const nombres = letras.map(l => (aprobado && NOMBRES_COMARCAS[l]) || l);
+  const nombreEn = (x, z) => { const zz = zonaEn(x, z); return zz.comarca >= 0 ? nombres[zz.comarca] : null; };
+  return { letras, nombres, comarcaDeCelda: lab, zonaEn, comarcaEn, nombreEn };
 }

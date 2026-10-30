@@ -949,7 +949,11 @@
      "rama": "trabajo/20261030-0910-comarcas"
     },
     {
-     "nombre": "Nombres de las comarcas de Whitholm (al estilo de la región, revisados por valravnx) y la comarca donde aparecen todos al principio",
+     "nombre": "Nombres de las comarcas de Whitholm (valravnx, 30 oct): Breiddal, Motdale, Nordwold, Lindholt, Strandvang, Furulid, Sudholt y Ravnsnes",
+     "estado": "hecho"
+    },
+    {
+     "nombre": "La comarca donde aparecen todos al principio, y el sitio de salida dentro de ella",
      "estado": "espera_decision"
     },
     {
@@ -2527,7 +2531,7 @@
    "hito": "prueba-online"
   },
   {
-   "pregunta": "Comarcas de Whitholm: sus nombres (al estilo de Whitholm, Eikwold, Rudmere…) y en cuál aparecen todos al principio. El chat propuso la B (el valle del este, abierto, con agua y bosque y lejos de la gran veta); la salida de ahora cae en la D. Lo hablará valravnx con el chat.",
+   "pregunta": "Comarca de inicio de Whitholm: en cuál aparecen todos al principio. El chat propuso Motdale (el valle del este: abierto, con agua y bosque y lejos de la gran veta); la salida de ahora cae en Lindholt. Lo hablará valravnx con el chat.",
    "desde": "2026-10-30",
    "hito": "mundo"
   }
