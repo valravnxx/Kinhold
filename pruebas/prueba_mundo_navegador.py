@@ -73,7 +73,7 @@ with sync_playwright() as p:
         pg.wait_for_timeout(1500)
         d = pg.evaluate(f"""(() => {{ const k = {K}, m = k.mundoJ;
           let lo = Infinity, hi = -Infinity;
-          for (let a = 0; a < 16; a++) for (const r of [50, 100, 200, 300]) {{ const y = m.sobreMar(Math.cos(a / 16 * 6.283) * r, Math.sin(a / 16 * 6.283) * r); lo = Math.min(lo, y); hi = Math.max(hi, y); }}
+          for (let a = 0; a < 16; a++) for (const r of [50, 100, 200, 300, 1000, 2000]) {{ const y = m.sobreMar(Math.cos(a / 16 * 6.283) * r, Math.sin(a / 16 * 6.283) * r); lo = Math.min(lo, y); hi = Math.max(hi, y); }}
           let llano = false; k.escena.traverse(o => {{ if (o.name === 'suelo') llano = true; }});
           return {{ pj: [k.pj.x, k.pj.y, k.pj.z], suelo: k.alturaSuelo(k.pj.x, k.pj.z), sobreMar: m.sobreMar(k.pj.x, k.pj.z), salida: m.salida, isla: m.isla,
             trozos: [...m.terreno.vivos.values()].filter(v => v.malla).length, tri: m.terreno.triangulos(), lo, hi, llano, hilos: m.terreno.hilos }}; }})()""")
@@ -84,7 +84,7 @@ with sync_playwright() as p:
         comprobar('la salida está en tierra, ni en el mar ni en un pico (entre 6 y 220 m)', 6 <= d['sobreMar'] <= 220, f"{d['sobreMar']:.1f} m")
         comprobar('el personaje pisa el suelo', abs(d['pj'][1] - d['suelo']) < 0.05, f"{d['pj'][1]:.3f} / {d['suelo']:.3f}")
         comprobar('sin el llano de antes, con el terreno por trozos (en un hilo aparte)', not d['llano'] and d['trozos'] >= 9 and d['hilos'] >= 1, f"{d['trozos']} trozos, {d['tri']} triángulos")
-        comprobar('el terreno tiene relieve (más de 5 m de desnivel en 300 m)', d['hi'] - d['lo'] > 5, f"{d['lo']:.1f}–{d['hi']:.1f} m")
+        comprobar('el terreno tiene relieve (más de 5 m de desnivel en 2 km; la salida al azar puede caer en una vega muy llana)', d['hi'] - d['lo'] > 5, f"{d['lo']:.1f}–{d['hi']:.1f} m")
         pg.screenshot(path=f'{SALIDA}/{nombre}_salida.png')
         pg.evaluate(f'(() => {{ const k = {K}; k.cam.pitch = 0.32; k.cam.dist = 24; }})()'); pg.wait_for_timeout(1500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_paisaje.png')
