@@ -142,20 +142,23 @@ with sync_playwright() as p:
         CRECE = f"""(() => {{ const k = {K}, d = k.decorado, P = k.pj, c = d.cuenta, veg = k.obstaculos.filter(o => o.veg);
           const cerca = (r) => veg.filter(o => Math.hypot(o.x - P.x, o.z - P.z) < r).length;
           return {{ centro: Math.hypot(d.centro.x - P.x, d.centro.z - P.z), lejosSalida: Math.hypot(P.x, P.z - 4), arboles: c.arboles, hierba: c.hierba,
-            piedras: c.piedras, matas: c.matas, cerca60: cerca(60), lejos: Math.max(0, ...veg.map(o => Math.max(Math.abs(o.x - P.x), Math.abs(o.z - P.z)))),
+            piedras: c.piedras, matas: c.matas, cerca60: cerca(60), lejos: Math.max(0, ...veg.map(o => Math.max(Math.abs(o.x - d.centro.x), Math.abs(o.z - d.centro.z)))),
             trozos: c.trozos, puestas: c.puestas, pendientes: d.pendientes, msMax: Math.round(d.msMax) }}; }})()"""
         g = pg.evaluate(CRECE)
         print('  lo que crece tras andar:', json.dumps(g))
         comprobar('lo que crece sigue al jugador: puesto alrededor de donde está, lejos de la salida', g['lejosSalida'] > 150 and g['centro'] < 12 and g['pendientes'] == 0, json.dumps(g))
         comprobar('y alrededor hay árboles o piedras, y hierba', (g['arboles'] + g['piedras']) > 10 and g['hierba'] + g['matas'] > 100, f"{g['arboles']} árboles, {g['piedras']} piedras, {g['hierba']} hierba")
-        comprobar('lo de lejos se suelta (nada a más del cuadro)', g['lejos'] <= (130 if movil else 200) + 1, f"{g['lejos']:.0f} m")
+        comprobar('lo de lejos se suelta (nada a más del cuadro de donde se puso)', g['lejos'] <= (130 if movil else 200) + 1, f"{g['lejos']:.0f} m")
         # lejos (a 700 m: lo de la salida se suelta) y de vuelta a la salida
         def ir(x, z):
             pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x; k.pj.z = z; }}', [x, z])
             pg.wait_for_timeout(500)
             try: pg.wait_for_function(f'{K}.mundoListo && {K}.decorado.pendientes === 0 && Math.hypot({K}.decorado.centro.x - {K}.pj.x, {K}.decorado.centro.z - {K}.pj.z) < 1', timeout=120000)
             except Exception: pass
+        pg.evaluate(f'{K}.decorado.msMax = 0')
         ir(700, 4)
+        md = pg.evaluate(f'{K}.decorado.msMax')
+        comprobar('al llegar de golpe a otro sitio, lo que crece se hace poco a poco (ningún fotograma de más de 60 ms)', md < 60, f'{md:.1f} ms')
         fuera = pg.evaluate(f"(id) => !{K}.talaV.porId.has(id) && !{K}.obstaculos.some(o => o.id === id)", talado)
         ir(0, 4)
         vuelta = pg.evaluate(f"""(id) => {{ const k = {K}, o = k.obstaculos.find(o => o.id === id);
