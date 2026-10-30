@@ -832,7 +832,9 @@
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «la capa que no es capa»): rehacer la capa del taller para que caiga de los hombros como una capa de verdad, revisada en capturas de cerca antes de enseñarla",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T01:54:51+00:00",
+     "rama": "trabajo/20261030-0155"
     },
     {
      "nombre": "Pulir la barba larga (visto al rehacerla): en el juego las ondas de los pelos salen demasiado regulares, el bigote sigue pintado y sin volumen, y a los lados de la barbilla asoma algo de cuello",
