@@ -13,9 +13,11 @@ import { bosqueEn, PENDIENTE_ANDAR } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
 import { crearJugador } from '../juego/personaje.js';
 import { personajeElegido, recursosTaller } from '../mundo/eleccion.js';
-import { colorDelSuelo, lin, poblarArboles, ROCAS_COLOR, aguaLejos, aguaCerca } from './cerca.js';
+import { lin, poblarArboles, ROCAS_COLOR, aguaLejos, aguaCerca } from './cerca.js';
 import { atributosAgua, distanciaOrilla } from './agua.js';
 import { materialSuelo } from './suelo.js';
+import { colorJuego } from '../mundo/color_suelo.js';
+const _c = [0, 0, 0];
 import { modelosRocaPared, materialRoca } from '../mundo/rocas.js';
 
 const movil = Math.min(innerWidth, innerHeight) < 700;
@@ -27,7 +29,6 @@ const MAX = movil ? { hierba: 9000, flores: 900, matas: 400, rocas: 250, arboles
 // radio de la copa y alto (m) de cada especie a escala 1, para no dibujar los que tapan al personaje
 const TAMANO = { abeto: [2.1, 10.5], pino: [2.3, 9.5], abedul: [1.6, 9], roble: [3.2, 7.5], haya: [2.3, 10.8], fresno: [2.6, 9.2], encina: [2.6, 5.5] };
 const totalArbCerca = (L) => ESPECIES.reduce((n, e) => n + L.arboles[e].length, 0);
-const TIERRA = [0.5, 0.42, 0.31], HOJARASCA = [0.4, 0.36, 0.24];
 const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
 export function crearVistaJuego(est) {
@@ -82,16 +83,9 @@ export function crearVistaJuego(est) {
       // pendiente con vecinos a 3 m (la de la forma del terreno, no la de cada piedrecita)
       const s = Math.hypot(alt(i + 3, j) - alt(i - 3, j), alt(i, j + 3) - alt(i, j - 3)) / (6 * PASO); pend[k] = s;
       const st = y > 0.05 ? pai.sitio(xm, ym, y) : null; sitios[k] = st;
-      // el color con la pendiente de aquí mismo (1 m): una repisa entre dos paredes tiene su hierba
       const s1 = Math.hypot(alt(i + 1, j) - alt(i - 1, j), alt(i, j + 1) - alt(i, j - 1)) / (2 * PASO);
-      let c = colorDelSuelo(st, y, Math.max(s1, s * 0.6), xm, ym);
-      // calvas de tierra en el prado y en el bosque, y algo de variación de cerca
-      if (st && st.bioma && st.bioma !== 'nieve' && s < 0.6) { const t = suave(0.62, 0.74, fbm(xm / 16, ym / 16, 41, 3)); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.7); }
-      // bajo el bosque, el suelo es de hojarasca (más pardo y oscuro)
-      if (st && st.bioma && st.bioma !== 'nieve') { const d = bosqueEn(st, s, xm, ym).d; c = c.map((v, q) => v + (HOJARASCA[q] - v) * Math.min(1, d * 0.75)); }
       const lap = (alt(i + 2, j) + alt(i - 2, j) + alt(i, j + 2) + alt(i, j - 2) - 4 * y) / (4 * PASO * PASO);
-      const v = 1 - Math.max(-0.1, Math.min(0.15, lap * 1.5)) + (fbm(xm / 5, ym / 5, 43, 3) - 0.5) * 0.16;
-      col.set([lin(c[0]) * v, lin(c[1]) * v, lin(c[2]) * v], k * 3);
+      col.set(colorJuego(st, y, s, s1, lap, xm, ym, _c), k * 3);
     }
     const idx = new Uint32Array((n - 1) * (n - 1) * 6); let p = 0;
     // cada cuadro se parte por la diagonal que mejor sigue al terreno (la de menos desnivel): así una arista o el borde de
