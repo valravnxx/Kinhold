@@ -14,7 +14,10 @@ const virtual = { name: 'plantillas-demo', setup(b) {
   b.onResolve({ filter: /^plantillas-demo$/ }, () => ({ path: 'plantillas-demo', namespace: 'pd' }));
   b.onLoad({ filter: /.*/, namespace: 'pd' }, () => ({ contents: JSON.stringify(PLANTILLAS), loader: 'json' }));
 } };
-const r = await build({ entryPoints: ['src/demo/main.js'], bundle: true, minify: true, format: 'iife', write: false, target: 'es2020', legalComments: 'none', plugins: [virtual] });
+// el código del hilo del terreno por trozos va dentro del mismo HTML (como en el mapa: construir_mapa.mjs)
+const hilo = (await build({ entryPoints: ['src/mundo/trozos_hilo.js'], bundle: true, minify: true, format: 'iife', write: false, target: 'es2020', legalComments: 'none' })).outputFiles[0].text;
+const r = await build({ entryPoints: ['src/demo/main.js'], bundle: true, minify: true, format: 'iife', write: false, target: 'es2020', legalComments: 'none', plugins: [virtual],
+  define: { __CODIGO_HILO_TROZOS__: JSON.stringify(hilo) } });
 const js = r.outputFiles[0].text.replace(/<\/script/gi, '<\\/script');
 const html = readFileSync('src/demo/plantilla.html', 'utf8').replace('/*APP*/', () => js);
 mkdirSync('dist', { recursive: true });

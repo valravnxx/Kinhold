@@ -19,6 +19,7 @@ import { dibujarRetrato } from './retrato.js';
 import { PRENDAS, capasDibujo, puestasDe, prendasDeCapas } from '../logica/prendas.js';
 import { crearRecoleccion } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
+import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { nombreDe } from '../logica/recoleccion.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
@@ -104,9 +105,13 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 prepararRenderer(renderer); // sombras blandas, sRGB y ACES: los de la escena común
 vigilar(renderer); // fotogramas, triángulos y memoria (src/mundo/rendimiento.js)
 const escena = new THREE.Scene();
-const camara = new THREE.PerspectiveCamera(45, 1, 0.1, 500);
+// En la demo, el mundo de verdad: Whitholm, la isla de los playtests (src/mundo/mundo_juego.js). El mapa lo genera antes el
+// menú de la demo (window.__mundoDemo). Sin él (el prototipo de construcción suelto, o la demo con ?llano=1), el llano.
+const MUNDO = window.__mundoDemo || null;
+const camara = new THREE.PerspectiveCamera(45, 1, 0.1, MUNDO ? 1600 : 500);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
-const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2048, niebla: [70, 200] });
+const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2048, niebla: MUNDO ? [110, 700] : [70, 200] });
+const mundoJ = MUNDO ? crearMundoJuego({ escena, mapa: MUNDO.mapa }) : null;
 
 // decorado común (src/mundo/decorado.js): llano para construir, bosque, hierba y rocas con colisión.
 // Como la prueba de estilo v5: hierba densa con flores desde el centro, matorrales, calvas de tierra pisada,
@@ -114,7 +119,9 @@ const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2
 // (decorado.despejar, en reconstruir) para que no asomen por los cimientos.
 const decorado = crearDecorado({ semilla: 7, llano: 60, lejos: 230, arboles: 220, bosqueDesde: 28, bosqueHasta: 175,
   hierba: 3200, flores: 900, hierbaDesde: 0, hierbaHasta: 46, rocas: 40, rocasDesde: 9, matas: 45, matasDesde: 7,
-  sueltos: 10, sueltosDesde: 22, calvas: 14, claro: (x, z) => Math.hypot(x, z - 4) > 1.5 }); // sin nada en el sitio de salida
+  sueltos: 10, sueltosDesde: 22, calvas: 14, claro: (x, z) => Math.hypot(x, z - 4) > 1.5, // sin nada en el sitio de salida
+  // en el mundo: sobre el terreno de verdad, sin el suelo del llano y nada en el agua
+  ...(mundoJ ? { altura: mundoJ.altura, apto: mundoJ.seco, sinSuelo: true } : {}) });
 escena.add(decorado.raiz);
 const obstaculos = decorado.obstaculos; // {x,z,r}
 // lo que se recoge del suelo y de las plantas (N0): ramas, piedra, sílex y fibra (src/juego/recoleccion.js)
@@ -161,7 +168,8 @@ ofrecerGente({
 function moverGente(dt) {
   for (const g of gente) {
     g.ang += g.sentido * 0.97 * dt / g.radio; // a paso de andar (0,97 m/s)
-    g.j.raiz.position.set(g.cx + Math.cos(g.ang) * g.radio, 0, g.cz + Math.sin(g.ang) * g.radio);
+    const gx = g.cx + Math.cos(g.ang) * g.radio, gz = g.cz + Math.sin(g.ang) * g.radio;
+    g.j.raiz.position.set(gx, mundoJ ? decorado.altura(gx, gz) : 0, gz);
     g.j.raiz.rotation.y = -g.ang + (g.sentido > 0 ? 0 : Math.PI); // mirando hacia donde anda
     g.j.animar(0.97, dt);
   }
@@ -170,10 +178,18 @@ function moverGente(dt) {
 function actualizarCamara() {
   const objetivo = new THREE.Vector3(pj.x, pj.y + 1.2, pj.z);
   const cp = Math.cos(cam.pitch);
+  let dist = cam.dist;
+  // en el mundo, el terreno no se mete entre la cámara y tú: si una loma o un cortado lo tapa, la cámara se acerca
+  // (se mira la línea de ti a la cámara en 12 puntos; cada uno, al menos 0,4 m por encima del suelo)
+  if (mundoJ) for (let i = 1; i <= 12; i++) {
+    const d = cam.dist * i / 12;
+    const x = objetivo.x + Math.sin(cam.yaw) * cp * d, y = objetivo.y + Math.sin(cam.pitch) * d, z = objetivo.z + Math.cos(cam.yaw) * cp * d;
+    if (y < decorado.altura(x, z) + 0.4) { dist = Math.max(1.5, cam.dist * (i - 1) / 12); break; }
+  }
   camara.position.set(
-    objetivo.x + Math.sin(cam.yaw) * cp * cam.dist,
-    objetivo.y + Math.sin(cam.pitch) * cam.dist,
-    objetivo.z + Math.cos(cam.yaw) * cp * cam.dist);
+    objetivo.x + Math.sin(cam.yaw) * cp * dist,
+    objetivo.y + Math.sin(cam.pitch) * dist,
+    objetivo.z + Math.cos(cam.yaw) * cp * dist);
   camara.lookAt(objetivo);
   ambiente.seguir(pj.x, pj.z);
 }
@@ -1314,9 +1330,29 @@ function moverFuegos() {
 }
 window.__fuegos = () => ({ chimeneas: chimeneas.length, luces: lucesFuego.length, encendidas: lucesFuego.filter(l => l.intensity > 0).length });
 
+// El terreno por trozos alrededor de donde estás (en el mundo). Al empezar, hasta que están los trozos de alrededor, el
+// aviso de «Preparando el paisaje…» (los primeros se hacen con prisa: no hay nada que dibujar mientras).
+const msMundo = { max: 0, total: 0, n: 0 };
+let mundoListo = false;
+function pasoMundo() {
+  const ms = mundoJ.paso(pj.x, pj.z, { prisa: !mundoListo });
+  if (mundoListo) { msMundo.n++; msMundo.total += ms; if (ms > msMundo.max) msMundo.max = ms; }
+  if (mundoJ.listo !== mundoListo) {
+    mundoListo = mundoJ.listo;
+    const av = $('avisoMundo'); if (av) av.hidden = mundoListo;
+  }
+}
+if (mundoJ) {
+  const av = document.createElement('div');
+  av.id = 'avisoMundo'; av.textContent = tr('Preparando el paisaje…');
+  av.style.cssText = 'position:fixed;left:50%;top:40%;transform:translateX(-50%);padding:10px 16px;border-radius:8px;background:rgba(30,26,20,.78);color:#f2e8d0;font:15px system-ui,sans-serif;z-index:20;pointer-events:none';
+  document.body.appendChild(av);
+}
+
 const reloj = new THREE.Clock();
 function paso() {
   const dt = Math.min(reloj.getDelta(), 0.05);
+  if (mundoJ) pasoMundo();
   // entrada de movimiento relativa a la cámara
   let ax = 0, az = 0;
   if (teclas.has('w') || teclas.has('arrowup')) az -= 1;
@@ -1337,7 +1373,12 @@ function paso() {
     const dz = (-ax * s + az * co) / Math.hypot(ax, az);
     let nx = pj.x + dx * vel * dt, nz = pj.z + dz * vel * dt;
     const r = resolverColision(nx, nz, pj.k);
-    pj.x = THREE.MathUtils.clamp(r.x, -190, 190); pj.z = THREE.MathUtils.clamp(r.z, -190, 190);
+    if (!mundoJ) { pj.x = THREE.MathUtils.clamp(r.x, -190, 190); pj.z = THREE.MathUtils.clamp(r.z, -190, 190); }
+    // en el mundo: dentro de la isla, sin meterse en el mar ni subir por las paredes de los cortados (si no se puede
+    // de frente, se prueba a deslizarse por cada eje)
+    else if (pj.k > 0 || mundoJ.andable(pj.x, pj.z, r.x, r.z)) { pj.x = r.x; pj.z = r.z; }
+    else if (mundoJ.andable(pj.x, pj.z, r.x, pj.z)) pj.x = r.x;
+    else if (mundoJ.andable(pj.x, pj.z, pj.x, r.z)) pj.z = r.z;
     const objetivoRot = Math.atan2(dx, dz);
     let dr = objetivoRot - pj.rot;
     while (dr > Math.PI) dr -= Math.PI * 2;
@@ -1582,6 +1623,9 @@ function iniciarEnLinea() {
 // acceso para pruebas automáticas
 window.__kinhold = {
   get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos,
+  // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
+  // tarda el terreno en cada fotograma (ms, desde que está listo)
+  mundoJ, get mundoListo() { return mundoListo; }, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   cambiarModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
   plantaDeco, get teclas() { return [...teclas]; }, get fantasmaForma() { return fantasmaForma; },
   seleccionar(clase, tipo) { estado.sel = { clase, tipo }; estado.dir = 0; marcarSeleccion(); evaluarColocacion(); },
