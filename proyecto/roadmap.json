@@ -826,12 +826,16 @@
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «las barbas, horribles»): rehacer las barbas del taller hasta que se vean como barbas de verdad, revisadas en capturas de cerca antes de enseñarlas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-29T23:52:51+00:00",
-     "rama": "trabajo/20261029-2352"
+     "fin": "2026-10-30T01:29:53+00:00"
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «la capa que no es capa»): rehacer la capa del taller para que caiga de los hombros como una capa de verdad, revisada en capturas de cerca antes de enseñarla",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Pulir la barba larga (visto al rehacerla): en el juego las ondas de los pelos salen demasiado regulares, el bigote sigue pintado y sin volumen, y a los lados de la barbilla asoma algo de cuello",
      "estado": "pendiente"
     },
     {
@@ -1653,6 +1657,13 @@
      "archivo": "jugar/demo/v43.html",
      "capturas": "capturas/demo-v43",
      "notas": "Niveles de detalle de los personajes. En «Construir», el botón de los fps dice cuántos hay en cada nivel, deja apagarlos para comparar y tiene 20 personajes de prueba, los últimos delante de la cámara hasta 65 m."
+    },
+    {
+     "v": "v44",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v44.html",
+     "capturas": "capturas/personaje-v25",
+     "notas": "En «Personaje», las barbas rehechas: la larga con volumen y la corta, el bigote y la perilla pelo a pelo."
     }
    ]
   },
@@ -2283,6 +2294,13 @@
      "archivo": "jugar/personaje/v24.html",
      "capturas": "capturas/personaje-v24",
      "notas": "Niveles de detalle del personaje del taller: de lejos lleva menos triángulos y, más lejos, una sola pieza con las texturas juntas; fuera de la cámara no se dibuja. Para verlos de cerca, ?detalle=1 o ?detalle=2 en la dirección."
+    },
+    {
+     "v": "v25",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/personaje/v25.html",
+     "capturas": "capturas/personaje-v25",
+     "notas": "Barbas rehechas (valravnx: «horribles»): la larga es ahora una malla con volumen que cae recta bajo el mentón y de perfil forma una cuña, con la punta desigual; la corta, el bigote y la perilla, pelo a pelo y con el borde que se aclara poco a poco. Personajes en taller-v14."
     }
    ]
   },
