@@ -2537,5 +2537,23 @@
   "pruebas": "Batería entera en la nube: 18 grupos correctos (54 min), tras unir main. Antes, aquí: las pruebas del taller (capa, prendas, ropa, barbas) correctas.",
   "capturas": "capturas/personaje-v26",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T03:22:03+00:00",
+  "fin": "2026-10-30T05:10:44+00:00",
+  "titulo": "Hito 1i: la vista «Como en el juego» del mapa con trozos (carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "La vista de juego del mapa (v15) dibuja el suelo con el terreno por trozos: trozos de 64 m hechos en un hilo aparte, rejilla de 1 m cerca y de 2, 4 y 8 m más lejos. Fuera el trozo único de 240 m que se rehacía entero y el truco de hundir el suelo de lejos: el suelo de lejos tiene un hueco justo en el cuadrado de trozos ya hechos, y fuera de él no se dibuja ningún trozo.",
+   "El decorado de cerca (hierba, flores, matorrales, piedras, roca de los cortados, agua y árboles) se rehace al acercarse a su borde, unos ms por fotograma (4 en el PC, 3 en el móvil), y se cambia cuando está entero. Sus alturas salen de la misma función que la de los trozos, en metros enteros del mundo.",
+   "Decisión provisional: en el móvil, anillos más cortos (1 m hasta 32 m, 2 m hasta 128, 4 m hasta 288, sin 8 m) y decorado de 150 m. Anotada en el registro del mapa.",
+   "Al entrar en una zona nueva sale «Preparando el paisaje…» hasta que los trozos cubren el decorado (la primera vez, la cascada se veía sin el río porque aún no habían llegado: arreglado y comprobado en captura).",
+   "Medido en la nube (sin tarjeta gráfica, SwiftShader), llevando al personaje 200 m a 1 m por fotograma: el fotograma más largo en suelo y decorado, 22 ms en el PC y 10 ms en el móvil (antes, de 236 a 935 ms parado al rehacer). Suelo: 264.576 triángulos en 289 trozos (cuadro de 1.088 m) en el PC y 95.232 en 49 trozos (448 m) en el móvil; decorado, unos 427.000 y 167.000.",
+   "Prueba nueva en la prueba del mapa (PC y móvil): suelo por trozos y andar 200 m sin fotogramas de más de 60 ms. Rota a propósito (decorado de golpe, como antes): 288 ms, falla. La herramienta medir_mapa_cerca.py mide ya lo mismo.",
+   "No comprobado: fotogramas por segundo y memoria en un móvil de verdad (aquí y en la nube no hay tarjeta gráfica); llamadas de dibujo no medidas esta vez (crecen con los trozos: uno por trozo visible). Los árboles de lejos siguen a la altura del suelo de lejos, que entre 120 y 500 m puede diferir algo del de los trozos."
+  ],
+  "pruebas": "En la nube: los 18 grupos bien (41 min); tras el arreglo del aviso y unir main, mapa del mundo, lógica y web otra vez bien. La prueba nueva, rota a propósito, falla",
+  "capturas": "capturas/mapa-v15",
+  "estado": "ok"
  }
 ]
