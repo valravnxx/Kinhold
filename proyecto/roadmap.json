@@ -468,9 +468,9 @@
     },
     {
      "nombre": "Siempre en línea (valravnx, 30 oct): la demo entra siempre al mundo del servidor de Hetzner (https://2-31-141-224.sslip.io), también desde la web de GitHub, y es el único modo de juego: fuera el modo en solitario y el botón «Jugar en línea». Sin servidor no se juega: sale un aviso de que no hay conexión. La dirección, en un solo sitio del código",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T20:40:33+00:00",
-     "rama": "trabajo/20261030-2040-enlinea"
+     "fin": "2026-10-30T21:56:36+00:00"
     },
     {
      "nombre": "Construir en el mundo, a la altura del suelo (valravnx, 30 oct: «relativamente prioritario»): lo que se coloca (piezas, muebles, objetos) se pone sobre el terreno de verdad, no en la altura 0, y los suelos de base alisan el terreno de debajo para construir encima; hoy quedan cosas flotando o hundidas. Es cambiar la malla del mundo, como al cavar: una acción con autor por la lógica pura, que el servidor guarda y reparte. Con la rejilla anclada al terreno y la brocha redonda para nivelar en ladera (GDD)",
@@ -1868,6 +1868,13 @@
      "archivo": "jugar/demo/v56.html",
      "capturas": "capturas/construccion-v44",
      "notas": "En «Construir», obras con lo que llevas: lo que se entrega a una obra sale de lo que llevas encima; el material se coge del arcón de pruebas del inventario («Materiales de obra»), que «+ Materiales» llena."
+    },
+    {
+     "v": "v57",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v57.html",
+     "capturas": "capturas/demo-v57",
+     "notas": "Siempre en línea: el juego entra siempre al mundo del servidor de prueba, también desde la web, y es el único modo; en el menú, Jugar, Duelo y Personaje. Sin servidor, un cartel lo dice, con un botón para volver a intentarlo."
     }
    ]
   },

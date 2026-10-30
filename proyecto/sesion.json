@@ -16,11 +16,5 @@
   "tarea": "Ríos que se adaptan al terreno (valravnx, 30 oct): desde los saltos de agua, muchos ríos quedan nivelados y, al cruzar un valle, van elevados como un puente por encima del terreno; el río tiene que seguir el terreno y no levantarlo",
   "hito": "mundo",
   "rama": "trabajo/20261030-1415-rios"
- },
- "chat:trabajo/20261030-2040-enlinea": {
-  "inicio": "2026-10-30T20:40:33+00:00",
-  "tarea": "Siempre en línea (valravnx, 30 oct): la demo entra siempre al mundo del servidor de Hetzner (https://2-31-141-224.sslip.io), también desde la web de GitHub, y es el único modo de juego: fuera el modo en solitario y el botón «Jugar en línea». Sin servidor no se juega: sale un aviso de que no hay conexión. La dirección, en un solo sitio del código",
-  "hito": "mundo-juego",
-  "rama": "trabajo/20261030-2040-enlinea"
  }
 }
