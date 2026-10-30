@@ -142,7 +142,7 @@ with sync_playwright() as p:
             except Exception: pass
             pg.keyboard.down('w'); pg.wait_for_timeout(3000); pg.keyboard.up('w'); pg.wait_for_timeout(500)
             e = pg.evaluate(f"(() => {{ const k = {K}, a = k.mundoJ.aguaEn(k.pj.x, k.pj.z); return {{ sobreMar: k.mundoJ.sobreMar(k.pj.x, k.pj.z), x: k.pj.x, z: k.pj.z, y: k.pj.y, modo: k.nado.modo, superficie: a && a.superficie, aguante: k.nado.e.aguante, anillo: !document.getElementById('aguante')?.hidden, lamina: !!k.mundoJ.agua.malla }}; }})()")
-            comprobar('mar adentro nada, con la cabeza fuera (los hombros a ras del agua)', e['modo'] == 'nadar' and e['superficie'] is not None and abs(e['y'] - (e['superficie'] - 1.35)) < 0.3, json.dumps(e))
+            comprobar('mar adentro nada, con la cabeza fuera (el pecho a ras del agua)', e['modo'] == 'nadar' and e['superficie'] is not None and abs(e['y'] - (e['superficie'] - 1.25)) < 0.3, json.dumps(e))
             comprobar('nadando, el aguante baja y se ve su anillo', e['aguante'] < 1 and e['anillo'], json.dumps(e))
             comprobar('el agua de cerca se dibuja (la lámina de ríos y mar)', e['lamina'])
             # la captura, con la cámara del lado del mar (por detrás, tierra adentro, la tapa la costa y se acerca mucho)

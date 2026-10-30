@@ -1399,7 +1399,7 @@ if (mundoJ) {
 const nado = { e: nuevoAguante(), modo: 'tierra', agua: null, muertes: 0 };
 let indAguante = null;
 function pintarAguante() {
-  // un círculo a la derecha (como los avisos del GDD): se ve al gastar aguante o en el agua honda; se vacía con el
+  // un anillo abajo, en el centro: se ve al gastar aguante o en el agua honda; se vacía con el
   // aguante y se pone rojo al ahogarse
   if (!indAguante) { indAguante = document.createElement('div'); indAguante.id = 'aguante'; indAguante.title = tr('Aguante'); document.body.appendChild(indAguante); }
   const e = nado.e, ver = e.aguante < 0.995 || nado.modo === 'nadar';
@@ -1472,8 +1472,8 @@ function paso() {
     }
   }
   pj.vel = vel;
-  // nadando, el cuerpo va en el agua con la cabeza fuera (los hombros a ras del agua) y se mece un poco
-  const yObjetivo = modo === 'nadar' ? ag.superficie - 1.35 + Math.sin(performance.now() / 600) * 0.04 : alturaSuelo();
+  // nadando, el cuerpo va en el agua con la cabeza fuera (el pecho a ras del agua: las olas del mar suben hasta medio metro) y se mece un poco
+  const yObjetivo = modo === 'nadar' ? ag.superficie - 1.25 + Math.sin(performance.now() / 600) * 0.04 : alturaSuelo();
   pj.y += (yObjetivo - pj.y) * Math.min(1, dt * 14);
   jugador.raiz.position.set(pj.x, pj.y, pj.z);
   jugador.raiz.rotation.y = pj.rot;
