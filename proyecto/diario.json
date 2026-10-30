@@ -2710,5 +2710,17 @@
   "pruebas": "En la nube, todos los grupos (20). La demo en el mundo falló dos veces por suposiciones de la prueba que no valían con la salida al azar (una costa de marisma y una vega muy llana): arreglada la prueba y comprobado en node para los 261 sitios; luego bien. El duelo en línea falló en las vueltas enteras («sigue siendo el mismo jugador que en el duelo», ya fallaba de vez en cuando en otras ramas) y pasó al repetirlo solo, dos veces. Prueba de Whitholm rota a propósito (MUTAR=2) y la del mundo con la demo cambiada para no guardar el sitio: fallan.",
   "capturas": "capturas/demo-v52",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T13:28:46+00:00",
+  "fin": "",
+  "titulo": "Hito de arte: revisión completa y publicación (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "En curso: batería entera en la nube; fallan el duelo en línea y el mapa del mundo"
+  ],
+  "pruebas": "",
+  "capturas": "",
+  "estado": "en_curso"
  }
 ]
