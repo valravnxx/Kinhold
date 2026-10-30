@@ -118,6 +118,20 @@ if (uBlason > 0) {
   };
   material.customProgramCacheKey = () => conBlason ? 'tela-blason' : 'tela';
 }
+// el corte sin el dibujo de la tela (la cota de malla, larga o corta): lo que queda por debajo del bajo no se dibuja
+function ponerSoloCorte(material, u) {
+  const antes = material.onBeforeCompile;
+  material.onBeforeCompile = (sh, r) => {
+    if (antes) antes(sh, r);
+    sh.uniforms.uCorte = u.uCorte;
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying float vAltoCorte;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAltoCorte = position.y;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vAltoCorte; uniform float uCorte;')
+      .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\nif (vAltoCorte < uCorte) discard;');
+  };
+  const clave = material.customProgramCacheKey ? material.customProgramCacheKey.bind(material) : () => '';
+  material.customProgramCacheKey = () => clave() + '-corte';
+}
 // la sombra de una falda cortada: el mismo corte en el material de la sombra
 function sombraCortada(u) {
   const m = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
@@ -333,6 +347,16 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
       if (n.userData.prenda === 'sobreveste' && !/_falda$/.test(n.name)) { n.geometry.computeBoundingBox(); alto = Math.max(alto, n.geometry.boundingBox.max.y); }
     });
     if (alto > 0) blason.uPecho.value = alto - 0.2; // el cruce de la cruz, unos 20 cm por debajo del cuello
+    // la falda de la cota de malla: sin tinte ni tejido, solo el corte (larga hasta la rodilla o corta)
+    modelo.traverse(n => {
+      const c = n.isMesh && capaDe(n);
+      if (!c || c.tipo !== 'capa' || !c.falda || !HECHURAS[c.capa] || tela.has(n)) return;
+      const u = { uCorte: { value: -100 } };
+      n.material = n.material.clone(); // por si lo comparte con las mangas o el cuerpo, que no se cortan
+      ponerSoloCorte(n.material, u);
+      n.customDepthMaterial = sombraCortada(u);
+      tela.set(n, { u, capa: c.capa, falda: true, soloCorte: true, prenda: c.capa });
+    });
   }
   // la capa que se mueve al andar (VUELO_GLSL): de dónde a dónde cae y por dónde pasa el cuerpo (en reposo)
   const vuelo = { uVuelo: { value: new THREE.Vector3() }, uOnda: { value: new THREE.Vector2() }, uCapaAlto: { value: new THREE.Vector3() } };
@@ -413,8 +437,9 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   const ponerHechuras = (hs) => {
     const h = normalizarHechuras(hs);
     resultado.hechuras = h;
-    for (const [n, { u, capa, falda }] of tela) {
-      const p = h[n.userData.prenda];
+    for (const [n, { u, capa, falda, soloCorte, prenda }] of tela) {
+      const p = h[prenda || n.userData.prenda];
+      if (soloCorte) { u.uCorte.value = bajo.has(capa) ? alturaCorte(capa, p.corte) : -100; continue; }
       u.uTejido.value = NUM_TEJIDO[p.tejido] || 0;
       u.uGrano.value = granoDe(p.material);
       u.uCorte.value = falda && bajo.has(capa) ? alturaCorte(capa, p.corte) : -100;

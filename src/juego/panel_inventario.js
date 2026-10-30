@@ -6,6 +6,7 @@
 // Todo lo que cambia pasa por accion(), que manda la acción con autor a la lógica pura (src/logica/inventario.js).
 // En PC se arrastra (o se toca lo que se quiere y luego dónde); en el móvil se toca y el panel va a pantalla completa.
 import { CATALOGO, pila } from '../logica/inventario.js';
+import { nombrePrenda, rasgosPrenda } from '../logica/hechura.js';
 import { tr } from '../idioma.js';
 
 // Los cuadros del equipo, a los dos lados del personaje, de arriba abajo más o menos a la altura de lo que visten.
@@ -22,6 +23,19 @@ const GRUPOS = [
   ['Herramientas y armas', d => !d.recurso && !d.lugar && !d.capa],
   ['Recursos', d => d.recurso && d.tam !== 'E'],
 ];
+
+// Ropa cosida de muestra en el arcón (mientras no se cosa en el banco): cada una con su hechura y su tinte, que van con
+// ella al inventario y se ven puestos. Dos prendas del mismo tipo con distinta hechura son cosas distintas.
+export const MUESTRAS = [
+  ['tunica_lana', { hechura: { corte: 'corto', tejido: 'sarga' }, tinte: 'glasto' }],
+  ['tunica_lana', { hechura: { tejido: 'cuadros' }, tinte: 'verde' }],
+  ['camisa_lino', { hechura: { corte: 'corto' }, tinte: 'blanco' }],
+  ['gambeson', { hechura: { material: 'lana', corte: 'corto' }, tinte: 'pardo' }],
+  ['cota_malla', { hechura: { corte: 'corto' } }],
+  ['sobreveste_lino', { hechura: { corte: 'medio', tejido: 'espiguilla' }, tinte: 'gualda' }],
+  ['manto_lana', { hechura: { tejido: 'rayas' }, tinte: 'morado' }],
+  ['zapatos_cuero', { tinte: 'rojizo' }],
+].map(([tipo, o]) => ({ tipo, rasgos: rasgosPrenda(tipo, o) }));
 
 const NOMBRE_TAM = { P: 'pequeño', M: 'mediano', G: 'grande', E: 'enorme' };
 
@@ -69,7 +83,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   // Lo que pasa al soltar lo elegido en la ruta (por clic o al arrastrar).
   function aRuta(ruta) {
     if (!sel) return;
-    if (sel.de === 'arcon') hacer({ tipo: 'coger', objeto: sel.tipo, cantidad: cantidadPara(sel.tipo, ruta), a: ruta });
+    if (sel.de === 'arcon') hacer({ tipo: 'coger', objeto: sel.tipo, cantidad: cantidadPara(sel.tipo, ruta), a: ruta, ...(sel.rasgos || {}) });
     else if (sel.ruta !== ruta) {
       const r = hacer({ tipo: 'mover', de: sel.ruta, a: ruta });
       if (r.ok && vista && (vista === sel.ruta || vista.startsWith(sel.ruta + '/'))) vista = ruta; // el contenedor se mudó
@@ -88,7 +102,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     const d = CATALOGO[sel.tipo];
     const lugar = d.capa ? 'ropa:' + d.capa : d.lugar;
     if (inv().lugares[lugar]) { avisar(tr(lugar === 'hombro' ? 'Ya llevas algo al hombro: suéltalo antes.' : 'Ya llevas algo ahí: quítatelo antes.'), true); return; }
-    const r = hacer({ tipo: 'coger', objeto: sel.tipo, cantidad: 1, a: lugar });
+    const r = hacer({ tipo: 'coger', objeto: sel.tipo, cantidad: 1, a: lugar, ...(sel.rasgos || {}) });
     if (r.ok && lugar === 'hombro') avisar(tr('Lo llevas al hombro.'));
     sel = null;
   }
@@ -115,16 +129,17 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   }
 
   // ---- dibujo ----
+  // el nombre de una cosa; la ropa, con su hechura y su tinte («Túnica de lana · Corto, Sarga · Azul de glasto»)
+  const nombreDe = (c) => def(c).capa ? nombrePrenda(c.tipo, c, tr) : tr(def(c).nombre);
   function textoCosa(c) {
-    const d = def(c);
-    return `<span class="inv-nom">${tr(d.nombre)}</span>${c.n > 1 ? `<b class="inv-n">${c.n}</b>` : ''}`;
+    return `<span class="inv-nom">${nombreDe(c)}</span>${c.n > 1 ? `<b class="inv-n">${c.n}</b>` : ''}`;
   }
   function cuadro(ruta, etiqueta, extra = '', estilo = '') {
     const b = inv().buscar(ruta), c = b.cosa;
     const elegido = sel && sel.de === 'inv' && sel.ruta === ruta;
     const clase = ['inv-c', c ? 'lleno' : 'vacio', elegido ? 'sel' : '', vista === ruta ? 'abierto' : '', c && def(c).huecos ? 'contenedor' : '', extra].join(' ');
     const dentro = c ? textoCosa(c) : `<span class="inv-et">${etiqueta}</span>`;
-    const tit = c ? `${tr(def(c).nombre)} (${tr(NOMBRE_TAM[def(c).tam])})` : etiqueta;
+    const tit = c ? `${nombreDe(c)} (${tr(NOMBRE_TAM[def(c).tam])})` : etiqueta;
     return `<button class="${clase}" data-ruta="${ruta}" draggable="${!!c}" title="${tit}" style="${estilo}">${dentro}</button>`;
   }
 
@@ -158,13 +173,13 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   function pintarSel() {
     const caja = q('.inv-sel');
     if (!sel) { caja.innerHTML = ''; return; }
-    const tipo = sel.de === 'arcon' ? sel.tipo : inv().buscar(sel.ruta).cosa.tipo;
-    const d = CATALOGO[tipo];
+    const c = sel.de === 'arcon' ? { tipo: sel.tipo, n: 1, ...(sel.rasgos || {}) } : inv().buscar(sel.ruta).cosa;
+    const d = CATALOGO[c.tipo];
     const puesto = sel.de === 'inv' && !sel.ruta.includes('/');
     const alHombro = d.lugar === 'hombro';
     const ponible = (d.capa || d.lugar) && !puesto && !alHombro;
     const manos = sel.de === 'arcon' && !d.capa && !d.lugar && d.tam !== 'E';
-    caja.innerHTML = `<p><b>${tr(d.nombre)}</b> · ${tr(NOMBRE_TAM[d.tam])}${d.huecos ? ' · ' + tr('{n} huecos', { n: d.huecos.length }) : ''}</p>
+    caja.innerHTML = `<p><b>${nombreDe(c)}</b> · ${tr(NOMBRE_TAM[d.tam])}${d.huecos ? ' · ' + tr('{n} huecos', { n: d.huecos.length }) : ''}</p>
       <p class="inv-nota">${tr(sel.de === 'arcon' && !ponible && !alHombro ? 'Cógelo con las manos o toca un hueco donde guardarlo.' : 'Ahora toca dónde lo quieres.')}</p>
       <div class="inv-botones">${ponible ? `<button class="inv-ponerse">${tr('Ponérselo')}</button>` : ''}${alHombro && sel.de === 'arcon' ? `<button class="inv-ponerse">${tr('Al hombro')}</button>` : ''}${manos ? `<button class="inv-manos">${tr('Cogerlo con las manos')}</button>` : ''}${sel.de === 'inv' ? `<button class="inv-devolver">${tr('Al arcón')}</button>` : ''}<button class="inv-dejar">${tr('Cancelar')}</button></div>`;
   }
@@ -178,12 +193,14 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
 
   function pintarArcon() {
     if (q('.inv-grupos').childElementCount) {
-      for (const b of panel.querySelectorAll('.inv-objeto')) b.classList.toggle('sel', !!sel && sel.de === 'arcon' && sel.tipo === b.dataset.tipo);
+      for (const b of panel.querySelectorAll('.inv-objeto')) b.classList.toggle('sel', !!sel && sel.de === 'arcon' && sel.tipo === b.dataset.tipo && String(sel.muestra ?? '') === (b.dataset.muestra ?? ''));
       return;
     }
     const ks = Object.keys(CATALOGO);
+    const cosidas = `<div class="inv-grupo"><h4>${tr('Ropa cosida (muestras)')}</h4><div>${MUESTRAS.map((m, i) =>
+      `<button class="inv-objeto" data-tipo="${m.tipo}" data-muestra="${i}" draggable="true" title="${tr(NOMBRE_TAM[CATALOGO[m.tipo].tam])}">${nombrePrenda(m.tipo, m.rasgos, tr)}</button>`).join('')}</div></div>`;
     q('.inv-grupos').innerHTML = GRUPOS.map(([t, f]) => `<div class="inv-grupo"><h4>${tr(t)}</h4><div>${ks.filter(k => f(CATALOGO[k])).map(k =>
-      `<button class="inv-objeto" data-tipo="${k}" draggable="true" title="${tr(NOMBRE_TAM[CATALOGO[k].tam])}">${nombre(k)}</button>`).join('')}</div></div>`).join('');
+      `<button class="inv-objeto" data-tipo="${k}" draggable="true" title="${tr(NOMBRE_TAM[CATALOGO[k].tam])}">${nombre(k)}</button>`).join('')}</div></div>`).join('') + cosidas;
   }
 
   function pintar() {
@@ -191,6 +208,9 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     pintarFigura(); pintarHuecos(); pintarSel(); pintarCarga(); pintarArcon(); pintarRetrato();
   }
 
+  // lo elegido en el arcón: el tipo y, si es una muestra de ropa cosida, su hechura y su tinte
+  const delArcon = (t) => { const m = t.dataset.muestra !== undefined ? MUESTRAS[+t.dataset.muestra] : null;
+    return { de: 'arcon', tipo: t.dataset.tipo, ...(m ? { muestra: +t.dataset.muestra, rasgos: m.rasgos } : {}) }; };
   // ---- eventos: clic, arrastrar y soltar ----
   panel.addEventListener('click', (e) => {
     const t = e.target.closest('button');
@@ -200,7 +220,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     if (t.dataset.vista !== undefined) { vista = t.dataset.vista; pintar(); return; }
     if (t.dataset.tipo) {
       if (sel && sel.de === 'inv') alArcon();
-      else sel = sel && sel.tipo === t.dataset.tipo ? null : { de: 'arcon', tipo: t.dataset.tipo };
+      else sel = sel && sel.de === 'arcon' && sel.tipo === t.dataset.tipo && String(sel.muestra ?? '') === (t.dataset.muestra ?? '') ? null : delArcon(t);
       avisar(''); pintar(); return;
     }
     if (t.classList.contains('inv-ponerse')) ponerse();
@@ -212,7 +232,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   panel.addEventListener('dragstart', (e) => {
     const t = e.target.closest('[data-ruta],[data-tipo]');
     if (!t) return;
-    sel = t.dataset.tipo ? { de: 'arcon', tipo: t.dataset.tipo } : { de: 'inv', ruta: t.dataset.ruta };
+    sel = t.dataset.tipo ? delArcon(t) : { de: 'inv', ruta: t.dataset.ruta };
     e.dataTransfer.setData('text/plain', t.dataset.tipo || t.dataset.ruta);
     e.dataTransfer.effectAllowed = 'move';
   });

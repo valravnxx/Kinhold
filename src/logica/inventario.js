@@ -46,6 +46,7 @@
 //  - La ropa y la armadura no cuentan aquí (su peso está en src/logica/prendas.js; lo que ralentiza la armadura va
 //    con el combate con armadura).
 import { PRENDAS } from './prendas.js';
+import { rasgosPrenda, mismosRasgos } from './hechura.js';
 
 export const TAMANOS = ['P', 'M', 'G', 'E'];
 const orden = t => TAMANOS.indexOf(t);
@@ -144,8 +145,11 @@ export function factorVelocidad(fraccion) {
   return 1 - RALENTIZACION_MAXIMA * f * f;
 }
 
-const cosa = (tipo, n = 1) => ({ tipo, n });
-const copiar = c => c && ({ tipo: c.tipo, n: c.n, ...(c.dentro ? { dentro: c.dentro.map(copiar) } : {}) });
+// Una cosa: { tipo, n } y, si es una prenda cosida, su hechura y su tinte (src/logica/hechura.js: rasgosPrenda). Cada
+// prenda lleva los suyos y dos distintas no se juntan nunca (la ropa no se apila, y aunque se apilara, no serían lo mismo).
+const cosa = (tipo, n = 1, rasgos = null) => ({ tipo, n, ...(rasgos ? rasgosPrenda(tipo, rasgos) : {}) });
+const copiarRasgos = c => (c.hechura || c.tinte ? rasgosPrenda(c.tipo, c) : {}); // copia limpia (lo que no vale, fuera)
+const copiar = c => c && ({ tipo: c.tipo, n: c.n, ...copiarRasgos(c), ...(c.dentro ? { dentro: c.dentro.map(copiar) } : {}) });
 
 // Inventario de un jugador. cat: catálogo (por defecto, el del juego; las pruebas pueden darle otro).
 export class Inventario {
@@ -228,7 +232,7 @@ export class Inventario {
     if (no) return { ok: false, motivo: no };
     const hay = b.cosa;
     if (hay) {
-      if (hay.tipo !== c.tipo || pila(c.tipo, this.cat) === 1) return { ok: false, motivo: 'Ese sitio está ocupado.' };
+      if (hay.tipo !== c.tipo || pila(c.tipo, this.cat) === 1 || !mismosRasgos(hay, c)) return { ok: false, motivo: 'Ese sitio está ocupado.' };
       const sitio = pila(c.tipo, this.cat) - hay.n;
       if (c.n > sitio) return { ok: false, motivo: sitio > 0 ? `No cabe tanto: caben ${sitio}.` : 'Ese hueco está lleno.' };
       hay.n += c.n;
@@ -249,14 +253,14 @@ export class Inventario {
     if (!Number.isInteger(n) || n < 1 || n > total) return { ok: false, motivo: 'Cantidad no válida.' };
     if (n === total) { this.poner(b, null); return { ok: true, cosa: b.cosa }; }
     b.cosa.n -= n;
-    return { ok: true, cosa: cosa(b.cosa.tipo, n) };
+    return { ok: true, cosa: { ...cosa(b.cosa.tipo, n), ...copiarRasgos(b.cosa) } };
   }
 
-  // Coger algo de fuera (del suelo, de un arcón) y llevarlo a la ruta.
-  coger(tipo, n, ruta) {
+  // Coger algo de fuera (del suelo, de un arcón) y llevarlo a la ruta. rasgos: { hechura, tinte } de una prenda cosida.
+  coger(tipo, n, ruta, rasgos = null) {
     if (!this.cat[tipo]) return { ok: false, motivo: 'Objeto desconocido.' };
     if (!Number.isInteger(n) || n < 1) return { ok: false, motivo: 'Cantidad no válida.' };
-    return this.meter(ruta, cosa(tipo, n));
+    return this.meter(ruta, cosa(tipo, n, rasgos));
   }
 
   // Soltar lo que hay en la ruta (todo o n unidades). Devuelve lo soltado, con lo que lleve dentro.
@@ -382,7 +386,7 @@ export class Inventario {
     const limpiar = (c) => { // cosa válida con su contenido ajustado al contenedor de ahora
       if (!c || typeof c !== 'object' || !cat[c.tipo]) return null;
       const n = Number.isInteger(c.n) && c.n > 0 ? c.n : 1;
-      const r = cosa(c.tipo, n), d = cat[c.tipo];
+      const r = cosa(c.tipo, n, c), d = cat[c.tipo];
       if (n > pila(c.tipo, cat)) { r.n = pila(c.tipo, cat); apartar(cosa(c.tipo, n - r.n)); }
       if (Array.isArray(c.dentro)) {
         if (d.huecos) r.dentro = d.huecos.map(() => null);
@@ -450,7 +454,8 @@ export function cargarInventarios(almacen, cat = CATALOGO, clave = CLAVE_INVENTA
 }
 
 // ---------------- Acciones con autor ----------------
-// { autor, tipo: 'coger', objeto, cantidad, a }     — de fuera (suelo, arcón) a la ruta a
+// { autor, tipo: 'coger', objeto, cantidad, a, hechura?, tinte? } — de fuera (suelo, arcón) a la ruta a; una prenda
+//                                                    cosida trae su hechura y su tinte (lo que no valga, el de siempre)
 // { autor, tipo: 'soltar', de, cantidad? }          — devuelve lo soltado en resultado.cosa
 // { autor, tipo: 'mover', de, a, cantidad? }
 // { autor, tipo: 'ponerse', de }                   — a su lugar (capa, cintura, espalda, hombro)
@@ -473,6 +478,8 @@ function formaInventario(a) {
     if (t === 't' && !(typeof a[k] === 'string' && a[k])) return 'Datos no válidos.';
   }
   if (a.cantidad !== undefined && !(typeof a.cantidad === 'number' && Number.isFinite(a.cantidad))) return 'Datos no válidos.';
+  if (a.hechura !== undefined && (a.hechura === null || typeof a.hechura !== 'object' || Array.isArray(a.hechura))) return 'Datos no válidos.';
+  if (a.tinte !== undefined && typeof a.tinte !== 'string') return 'Datos no válidos.';
   return null;
 }
 
@@ -484,7 +491,7 @@ export function ejecutarInventario(invs, registro, accion) {
   else {
     const inv = invs.de(accion.autor), a = accion;
     switch (a.tipo) {
-      case 'coger': r = inv.coger(a.objeto, a.cantidad, a.a); break;
+      case 'coger': r = inv.coger(a.objeto, a.cantidad, a.a, { hechura: a.hechura, tinte: a.tinte }); break;
       case 'soltar': r = inv.soltar(a.de, a.cantidad); break;
       case 'mover': r = inv.mover(a.de, a.a, a.cantidad); break;
       case 'ponerse': r = inv.ponerse(a.de); break;

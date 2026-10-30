@@ -16,7 +16,7 @@ RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/construccion'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v12'), f'{sitio}/recursos/personajes/taller-v12')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v17'), f'{sitio}/recursos/personajes/taller-v17')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -47,7 +47,8 @@ def lugar(pg, ruta):
     return pg.evaluate(f"(() => {{ const c = {K}.inventario.buscar('{ruta}').cosa; return c ? c.tipo + ':' + c.n : null; }})()")
 
 R = lambda ruta: f'#panelInventario [data-ruta="{ruta}"]'
-O = lambda tipo: f'#panelInventario .inv-objeto[data-tipo="{tipo}"]'
+O = lambda tipo: f'#panelInventario .inv-objeto[data-tipo="{tipo}"]:not([data-muestra])'
+M = lambda i: f'#panelInventario .inv-objeto[data-muestra="{i}"]'   # ropa cosida de muestra (con hechura y tinte)
 
 with sync_playwright() as p:
     nav = p.chromium.launch(args=ARGS)
@@ -117,6 +118,30 @@ with sync_playwright() as p:
     pg.wait_for_function(f'{K}.jugador.mh', timeout=120000)   # el personaje se carga después de la página
     capas = pg.evaluate(f'{K}.jugador.mh && {K}.jugador.mh.capas')
     comprobar('al recargar, el personaje lleva otra vez la túnica', 'tunica' in (capas or []), str(capas))
+    # ropa cosida: cada prenda con su hechura y su tinte, en el inventario y puesta
+    pg.drag_and_drop(R('ropa:abrigo'), '#panelInventario .inv-arcon h3')
+    pg.drag_and_drop(M(0), R('ropa:abrigo'))
+    pg.drag_and_drop(M(4), R('ropa:exterior'))
+    c = pg.evaluate(f"{K}.inventario.lugares['ropa:abrigo']")
+    comprobar('la túnica cosida entra con su hechura y su tinte', bool(c) and c.get('tinte') == 'glasto' and (c.get('hechura') or {}).get('corte') == 'corto', str(c))
+    txt = pg.inner_text(R('ropa:abrigo'))
+    comprobar('su cuadro dice la hechura y el tinte', 'Sarga' in txt and 'glasto' in txt, txt)
+    if os.environ.get('MUTAR_COSIDA'): pg.evaluate(f"{K}.jugador.mh.ponerTintes({{}}); {K}.jugador.mh.ponerHechuras({{}})")
+    puesto = pg.evaluate(f"""(() => {{ const m = {K}.jugador.mh; let cota = -100; m.modelo.traverse(n => {{ if (n.isMesh && /_capa_cota_falda$/.test(n.name)) cota = m.corteDe(n); }});
+      return {{ tinte: m.tintes.prendas.tunica, corte: m.hechuras.tunica.corte, tejido: m.hechuras.tunica.tejido, cota: m.hechuras.cota.corte, alturaCota: cota, capas: m.capas }}; }})()""")
+    comprobar('puesta: la túnica corta, de sarga y azul, y la cota corta', puesto['tinte'] == 'glasto' and puesto['corte'] == 'corto' and puesto['tejido'] == 'sarga' and puesto['cota'] == 'corto' and puesto['alturaCota'] > -50 and 'cota' in puesto['capas'], str(puesto))
+    pg.wait_for_timeout(600)
+    pg.screenshot(path=f'{SALIDA}/04_pc_ropa_cosida.png')
+    pg.keyboard.press('i')
+    pg.evaluate(f"Object.assign({K}.cam, {{ dist: 2.8, pitch: 0.3 }})")   # de cerca, para ver la ropa
+    pg.wait_for_timeout(1200)
+    pg.screenshot(path=f'{SALIDA}/05_pc_ropa_cosida_juego.png')
+    pg.evaluate(f"Object.assign({K}.cam, {{ dist: 16, pitch: 0.9 }})")
+    pg.keyboard.press('i')
+    pg.drag_and_drop(R('ropa:abrigo'), M(1))   # la devuelve al arcón: suelta sobre el arcón
+    pg.drag_and_drop(M(1), R('ropa:abrigo'))
+    c2 = pg.evaluate(f"{K}.inventario.lugares['ropa:abrigo']")
+    comprobar('otra túnica cosida, con lo suyo (cuadros y verde)', bool(c2) and c2.get('tinte') == 'verde' and (c2.get('hechura') or {}).get('tejido') == 'cuadros' and pg.evaluate(f"{K}.jugador.mh.tintes.prendas.tunica") == 'verde', str(c2))
     pg.keyboard.press('i')
     comprobar('y lo cierra', not pg.is_visible('#panelInventario'))
     pg.screenshot(path=f'{SALIDA}/03_pc_juego_con_boton.png')

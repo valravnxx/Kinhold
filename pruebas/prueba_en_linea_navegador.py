@@ -19,7 +19,7 @@ MUTAR_FICHA = bool(os.environ.get('MUTAR_FICHA'))   # la página no guarda su fi
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-for c in ['v1', 'taller-v12', 'taller-anim-v1']:
+for c in ['v1', 'taller-v12', 'taller-v17', 'taller-anim-v1']:
     shutil.copytree(os.path.join(RAIZ, f'docs/recursos/personajes/{c}'), f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -126,9 +126,13 @@ try:
         comprobar('el móvil ve a PC donde está', esperar(B, vistoEn(B, 1.2, 6.5), 8000))
         comprobar('PC ve al móvil donde está', esperar(A, vistoEn(A, -1.0, 5.0), 8000))
         comprobar('cada uno ve a uno solo (no a sí mismo)', A.evaluate(f"{K}.enLinea.remotos.size") == 1 and B.evaluate(f"{K}.enLinea.remotos.size") == 1)
-        comprobar('el móvil ve a PC con el cuerpo y la ropa que eligió', B.evaluate(f"[...{K}.enLinea.remotos.values()][0].clave").startswith('mujer:vestido,gambeson:'),
-                   B.evaluate(f"[...{K}.enLinea.remotos.values()][0].clave"))
-        comprobar('PC ve al móvil como el de por defecto', A.evaluate(f"[...{K}.enLinea.remotos.values()][0].clave").startswith('hombre::'))
+        # lo que lleva puesto en el inventario (la ropa del visor entra en él; el vestido y el gambesón son la misma capa,
+        # así que lleva el gambesón), igual que se ve ella misma
+        esperar(A, f"{K}.jugador.mh !== null", 30000)
+        capasA = ','.join(A.evaluate(f"{K}.jugador.mh.capas"))
+        comprobar('el móvil ve a PC con el cuerpo y la ropa que lleva puesta, como se ve ella', 'gambeson' in capasA and esperar(B, f"[...{K}.enLinea.remotos.values()][0].clave.startsWith('mujer:{capasA}:')", 15000),
+                   B.evaluate(f"[...{K}.enLinea.remotos.values()][0].clave") + ' / ' + capasA)
+        comprobar('PC ve al móvil como el de por defecto (camisa y calzas, descalzo)', A.evaluate(f"[...{K}.enLinea.remotos.values()][0].clave").startswith('hombre:descalzo:'))
         comprobar('los dos son personajes del taller (no el muñeco)', esperar(A, f"[...{K}.enLinea.remotos.values()][0].j.mh !== null", 30000) and esperar(B, f"[...{K}.enLinea.remotos.values()][0].j.mh !== null", 30000))
         # el aspecto (forma, colores, peinado y barba): el otro lo ve igual que uno mismo se ve
         aspRemoto = lambda pg: pg.evaluate(f"JSON.stringify([...{K}.enLinea.remotos.values()][0].j.mh.aspecto)")

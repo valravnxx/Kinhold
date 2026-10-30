@@ -5,12 +5,7 @@
   "hito": "mundo-juego",
   "rama": "trabajo/20261030-0927"
  },
- "B": {
-  "inicio": "2026-10-30T09:57:34+00:00",
-  "tarea": "Que la ropa cosida lleve su hechura y su tinte en el inventario (cada prenda la suya, sin apilarse si son distintas) y se vea así puesta en el juego, en la demo y en línea; la cota de malla, larga o corta",
-  "hito": "arte",
-  "rama": "trabajo/20261030-0957"
- },
+ "B": null,
  "chat:trabajo/20261030-0945-combate": {
   "inicio": "2026-10-30T09:39:49+01:00",
   "tarea": "Combate en el mundo (valravnx, 30 oct): en PC, ratón cogido y ataque cargado mientras se mantiene el clic, en la dirección del último movimiento (sin movimiento, estocada) y cambiable sin soltar; paradas con el botón derecho por dirección, también cambiables; fijar rival con la cámara del duelo; en el móvil, la rosa fija a un lado; cámara que se inclina más",
