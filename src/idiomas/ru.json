@@ -1331,5 +1331,7 @@
  "Partido: {n} de leña.": "Расколото: дров — {n}.",
  "A las manos": "В руки",
  "Lo llevas con las dos manos.": "Вы несёте это двумя руками.",
- "v43, arreglo: de una pila de dos o más troncos (delgados o cortos) no se podía coger ninguno («No te cabe»); ahora se coge uno, con las dos manos.": "v43, исправление: из кучи из двух и более брёвен (тонких или коротких) нельзя было взять ни одного («Не помещается»); теперь берётся одно, двумя руками."
+ "v43, arreglo: de una pila de dos o más troncos (delgados o cortos) no se podía coger ninguno («No te cabe»); ahora se coge uno, con las dos manos.": "v43, исправление: из кучи из двух и более брёвен (тонких или коротких) нельзя было взять ни одного («Не помещается»); теперь берётся одно, двумя руками.",
+ "Demo única · v54 (tronzar y partir)": "Единая демо · v54 (распиловка и колка)",
+ "v54: en «Construir», tronzar y partir: con un hacha en la mano, Usar (F) junto a un tronco largo tumbado lo tronza en 3 o 4 troncos cortos, y junto a un tronco corto lo parte en 6 de leña. El tronco corto se lleva con las dos manos o, con «Al hombro», al hombro; la leña va en el leñero.": "v54: в «Строительстве» — распиловка и колка: с топором в руке «Использовать» (F) рядом с лежащим длинным бревном разделывает его на 3 или 4 коротких бревна, а рядом с коротким — колет его на 6 дров. Короткое бревно несут двумя руками или, кнопкой «На плечо», на плече; дрова кладут в дровоноску."
 }

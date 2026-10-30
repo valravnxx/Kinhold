@@ -47,7 +47,7 @@ def abrir(nav, w, h, movil=False, limpiar=True, pg=None):
     return pg
 
 # un tronco en el suelo a 1,6 m del jugador (girado «giro»), con la cámara de lado; devuelve su id
-def tronco(pg, tipo, n=1, giro=0.3, dx=1.6):
+def tronco(pg, tipo, n=1, giro=1.57, dx=1.6):
     return pg.evaluate(f"""(() => {{ const k = {K}; k.pj.k = 0;
       const o = k.sueloObjetos.suelo.dejar({{ tipo: '{tipo}', n: {n} }}, k.pj.x + {dx}, k.pj.z, Date.now(), 'jugador:local', false, {giro});
       k.sueloObjetos.guardar(); k.sueloObjetos.refrescar(); return o.id; }})()""")
