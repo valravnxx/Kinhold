@@ -1,9 +1,9 @@
 {
- "A": null,
- "B": {
-  "inicio": "2026-10-29T23:52:51+00:00",
-  "tarea": "Arreglo (valravnx, 29 oct: «las barbas, horribles»): rehacer las barbas del taller hasta que se vean como barbas de verdad, revisadas en capturas de cerca antes de enseñarlas",
-  "hito": "arte",
-  "rama": "trabajo/20261029-2352"
- }
+ "A": {
+  "inicio": "2026-10-30T01:26:42+00:00",
+  "tarea": "Objetos en el suelo: soltar y coger del suelo; lo que se suelta fuera de un contenedor desaparece pasada 1 hora real (contado por tiempo transcurrido), salvo dentro de tus tierras; los troncos y las piedras se quedan como pila. Lógica pura con autor, en la demo y con pruebas",
+  "hito": "equipo",
+  "rama": "trabajo/20261030-0127"
+ },
+ "B": null
 }
