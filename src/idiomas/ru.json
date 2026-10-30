@@ -1333,5 +1333,16 @@
  "Lo llevas con las dos manos.": "Вы несёте это двумя руками.",
  "v43, arreglo: de una pila de dos o más troncos (delgados o cortos) no se podía coger ninguno («No te cabe»); ahora se coge uno, con las dos manos.": "v43, исправление: из кучи из двух и более брёвен (тонких или коротких) нельзя было взять ни одного («Не помещается»); теперь берётся одно, двумя руками.",
  "Demo única · v54 (tronzar y partir)": "Единая демо · v54 (распиловка и колка)",
- "v54: en «Construir», tronzar y partir: con un hacha en la mano, Usar (F) junto a un tronco largo tumbado lo tronza en 3 o 4 troncos cortos, y junto a un tronco corto lo parte en 6 de leña. El tronco corto se lleva con las dos manos o, con «Al hombro», al hombro; la leña va en el leñero.": "v54: в «Строительстве» — распиловка и колка: с топором в руке «Использовать» (F) рядом с лежащим длинным бревном разделывает его на 3 или 4 коротких бревна, а рядом с коротким — колет его на 6 дров. Короткое бревно несут двумя руками или, кнопкой «На плечо», на плече; дрова кладут в дровоноску."
+ "v54: en «Construir», tronzar y partir: con un hacha en la mano, Usar (F) junto a un tronco largo tumbado lo tronza en 3 o 4 troncos cortos, y junto a un tronco corto lo parte en 6 de leña. El tronco corto se lleva con las dos manos o, con «Al hombro», al hombro; la leña va en el leñero.": "v54: в «Строительстве» — распиловка и колка: с топором в руке «Использовать» (F) рядом с лежащим длинным бревном разделывает его на 3 или 4 коротких бревна, а рядом с коротким — колет его на 6 дров. Короткое бревно несут двумя руками или, кнопкой «На плечо», на плече; дрова кладут в дровоноску.",
+ "Barra de hierro": "Железный пруток",
+ "Aquí no hay arcón.": "Здесь нет сундука.",
+ "Eso no está en el arcón.": "Этого нет в сундуке.",
+ "En el arcón no hay tanto.": "В сундуке столько нет.",
+ "No llevas tanto.": "У тебя с собой столько нет.",
+ "No llevas ese material.": "У тебя с собой нет этого материала.",
+ "Eso no va en el arcón de materiales.": "Это не кладут в сундук с материалами.",
+ "En el arcón no queda: rellénalo.": "В сундуке не осталось: пополни его.",
+ "Llévalo encima: cógelo del arcón de pruebas (Inventario).": "Неси это с собой: возьми из тестового сундука (Инвентарь).",
+ "En el arcón:": "В сундуке:",
+ "Materiales de obra": "Строительные материалы"
 }
