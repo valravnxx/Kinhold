@@ -1126,6 +1126,12 @@
     {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Combate en el mundo (valravnx, 30 oct): en PC, ratón cogido y ataque cargado mientras se mantiene el clic, en la dirección del último movimiento (sin movimiento, estocada) y cambiable sin soltar; paradas con el botón derecho por dirección, también cambiables; fijar rival con la cámara del duelo; en el móvil, la rosa fija a un lado; cámara que se inclina más",
+     "estado": "en_curso",
+     "inicio": "2026-10-30T09:39:49+01:00",
+     "rama": "trabajo/20261030-0945-combate"
     }
    ],
    "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."

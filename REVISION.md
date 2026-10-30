@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 30 oct 2026 (09:37) — por el chat: combate en el mundo
+valravnx: el combate integrado en el mundo de construir. Cámara que también se incline arriba y abajo. En PC, como los juegos de combate con ratón: mueves el ratón en una dirección, clicas, y cuanto más mantienes el clic, más carga el golpe (si lo haces rápido, sale un poco más rápido); la dirección es la del movimiento justo antes del clic (arriba, abajo, izquierda, derecha; sin movimiento, estocada). Paradas igual: se mantiene el botón derecho y la dirección del ratón; tanto en el ataque como en la parada se puede cambiar de dirección a mitad del clic sin soltar. En el móvil, la rosa de ahora pero fija a un lado; cámara y movimiento libres, no alrededor de una sola persona; un modo para fijar a alguien que pone la cámara del duelo. → Tarea en el hito «Duelo» (chat).
+
 ### 30 oct 2026 (06:43–06:53) — por el chat: comarcas con bordes naturales y zonas de clan
 valravnx: «habría que redondear los bordes de las comarcas, que no sean cuadriculados, sino por frontera más natural. Y luego cada una habría que dividirla en subzonas, como en un juego que conozco, donde al asentarte en un lado esa zona pasaba a ser tuya; no pueden ser tan grandes, tiene que ser una comarquita pequeñita». Después: «separaremos el mojón de construir de lo que se ponga para reclamar, ¿de acuerdo? Lo de reclamar será más para tema de clanes y tener zonas», y «1 km² aprox no suena mal, al final es donde haces un castillo; depende de cómo se vea en el mapa luego, si no, ampliamos». → Anotado en el GDD (apartado 11): zonas de clan de aproximadamente 1 km², aparte del mojón. El chat rehace las comarcas de Whitholm con bordes naturales y las divide en zonas.
 
