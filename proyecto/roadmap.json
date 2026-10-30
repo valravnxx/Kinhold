@@ -442,9 +442,9 @@
     },
     {
      "nombre": "La demo en el mundo: apareces en Whitholm, la isla de los playtests (valravnx, 29 oct), en un sitio accesible (nunca en el mar ni en un pico) y todos en la misma comarca, y andas por la isla con la cámara del juego; fuera el llano. El servidor y el terreno solo cubren la isla",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T05:22:21+00:00",
-     "rama": "trabajo/20261030-0521"
+     "fin": "2026-10-30T07:15:06+00:00"
     },
     {
      "nombre": "Los árboles (las siete especies), la hierba y las rocas del mundo en el juego, con el estilo v5 y siempre en el mismo sitio",
@@ -1712,6 +1712,13 @@
      "archivo": "jugar/demo/v47.html",
      "capturas": "capturas/personaje-v27",
      "notas": "En «Personaje», la capa se mueve al andar (se queda atrás, ondea y vuelve al pararse), cae por encima de los brazos a los costados y de espalda se ven los pliegues. Personajes en recursos/personajes/taller-v16/."
+    },
+    {
+     "v": "v48",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v48.html",
+     "capturas": "capturas/demo-v48",
+     "notas": "«Construir» en el mundo de verdad: apareces en Whitholm, la isla de los playtests, en el mismo sitio para todos (tierra firme, llano y lejos de los ríos), y andas por la isla sobre el terreno por trozos del mapa, con la cámara del juego. Fuera el llano. No se puede salir de la isla ni entrar en el mar; el servidor solo admite posiciones en la isla."
     }
    ]
   },
