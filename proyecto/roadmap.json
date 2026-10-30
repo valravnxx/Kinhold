@@ -854,7 +854,9 @@
     },
     {
      "nombre": "Pulir la barba larga (visto al rehacerla): en el juego las ondas de los pelos salen demasiado regulares, el bigote sigue pintado y sin volumen, y a los lados de la barbilla asoma algo de cuello",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T06:53:58+00:00",
+     "rama": "trabajo/20261030-0653"
     },
     {
      "nombre": "Que la ropa cosida lleve su hechura y su tinte en el inventario (cada prenda la suya, sin apilarse si son distintas) y se vea así puesta en el juego, en la demo y en línea; la cota de malla, larga o corta",
