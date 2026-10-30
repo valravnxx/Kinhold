@@ -98,7 +98,7 @@ with sync_playwright() as p:
           let h = 0; for (const ch of firma) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
           return {{ cuenta: c, arboles: arb.length, especies: [...new Set(arb.map(o => o.especie))], buenas: arb.every(o => ESP.includes(o.especie)),
             agua, cerca: Math.min(...arb.map(o => Math.hypot(o.x, o.z - 2))), talables: arb.filter(o => o.id && k.talaV.porId.has(o.id)).length, firma: h,
-            mallas: ESP.filter(e => k.escena.getObjectByName('arboles_' + e) || k.escena.getObjectByName('arbolesLejos_' + e)) }}; }})()""")
+            mallas: ESP.filter(e => ['arboles_', 'arbolesMedios_', 'arbolesLejos_'].some(n => k.escena.getObjectByName(n + e))) }}; }})()""")
         print('  lo que crece:', json.dumps({x: v[x] for x in ['cuenta', 'especies', 'agua', 'cerca', 'talables', 'firma']}))
         c = v['cuenta']
         comprobar('hay árboles, de las especies del mundo, cada una con su malla', v['arboles'] > 20 and v['buenas'] and sorted(v['mallas']) == sorted(v['especies']), ', '.join(v['especies']))

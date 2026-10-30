@@ -14,11 +14,12 @@ import { vegetacionEn } from '../logica/vegetacion.js';
 import { alturaMundo } from '../logica/whitholm.js';
 
 // Medidas (decisión provisional del 30 oct): árboles y piedras en un cuadro de 400 m alrededor de la salida (260 m en
-// el móvil); hierba, flores y matas en un círculo de 60 m (40 m en el móvil); los árboles a más de 80 m (60 m), con la
-// forma sencilla; un claro de 8 m sin árboles en el sitio de salida (y de 3 m sin nada más) para no aparecer dentro de
-// un tronco ni con la cámara metida en una copa.
+// el móvil); hierba, flores y matas en un círculo de 45 m (32 m en el móvil); los árboles enteros hasta 60 m (45 m) y
+// más allá con la forma sencilla; solo echan sombra los de menos de 40 m (30 m); un claro de 8 m sin árboles en el sitio
+// de salida (y de 3 m sin nada más) para no aparecer dentro de un tronco ni con la cámara metida en una copa. Con dos
+// páginas a la vez en la máquina de pruebas (sin tarjeta gráfica), más que esto no daba abasto.
 const movil = typeof innerWidth !== 'undefined' && Math.min(innerWidth, innerHeight) < 700;
-export const MEDIDAS_VEGETACION = movil ? { cuadro: 130, hierba: 40, arbolEntero: 60, max: 1600 } : { cuadro: 200, hierba: 60, arbolEntero: 80, max: 4000 };
+export const MEDIDAS_VEGETACION = movil ? { cuadro: 130, hierba: 32, arbolEntero: 45, sombra: 30, max: 1200 } : { cuadro: 200, hierba: 45, arbolEntero: 60, sombra: 40, max: 3000 };
 const CLARO_ARBOLES = 8, CLARO = 3;
 export const TAM_ADULTO = 0.95;     // desde este tamaño (1 = adulto normal de su especie), el árbol es adulto al talarlo
 const FLORES = [0xe8e2d0, 0xd9c27a, 0xa98aa6];
@@ -41,11 +42,13 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
   let arboles = v.arboles.map(esc).filter(e => lejos(e, CLARO_ARBOLES));
   if (arboles.length > medidas.max) arboles = arboles.sort((a, b) => Math.hypot(a.x, a.z) - Math.hypot(b.x, b.z)).slice(0, medidas.max);
   const entero = modelosEspecies(), sencillo = modelosEspecies({ sencillo: true });
+  // tres bandas por especie: enteros con sombra, enteros sin sombra y sencillos (sin sombra)
+  const banda = (e) => { const d = Math.hypot(e.x, e.z); return d < medidas.sombra ? 0 : d < medidas.arbolEntero ? 1 : 2; };
   for (const especie of ESPECIES) {
-    for (const cerca of [true, false]) {
-      const lista = arboles.filter(e => e.especie === especie && (Math.hypot(e.x, e.z) < medidas.arbolEntero) === cerca);
+    for (const b of [0, 1, 2]) {
+      const lista = arboles.filter(e => e.especie === especie && banda(e) === b);
       if (!lista.length) continue;
-      const mod = cerca ? entero[especie] : sencillo[especie];
+      const mod = b < 2 ? entero[especie] : sencillo[especie];
       const im = new THREE.InstancedMesh(mod.geo, mod.mats, lista.length);
       lista.forEach((e, k) => {
         o.position.set(e.x, e.y - 0.2, e.z); o.rotation.set(0, e.giro, 0); o.scale.setScalar(e.tam); o.updateMatrix();
@@ -54,7 +57,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
         obstaculos.push({ x: e.x, z: e.z, y: e.y - 0.2, r: RADIO_TRONCO[especie] * e.tam + 0.1, arbol: true, especie, modelo: especie, escala: e.tam,
           edad: e.tam >= TAM_ADULTO ? 'adulto' : 'joven', instancia: k, malla: im, matriz: o.matrix.clone() });
       });
-      im.castShadow = cerca; im.receiveShadow = true; im.name = (cerca ? 'arboles_' : 'arbolesLejos_') + especie;
+      im.castShadow = b === 0; im.receiveShadow = b < 2; im.name = ['arboles_', 'arbolesMedios_', 'arbolesLejos_'][b] + especie;
       raiz.add(im);
     }
   }
