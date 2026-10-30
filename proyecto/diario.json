@@ -2660,5 +2660,20 @@
   "pruebas": "En la nube: 17 de 18 grupos bien a la primera; «juego en inglés» falló a los 7 s (contexto de la página destruido por una navegación) y pasó entero aquí y al repetirlo en la nube. Tras unir main, repetidos en la nube lógica, demo, demo en el mundo, en línea, duelo en línea, inglés, personaje y web: bien; duelo en línea, jugar en línea y lógica (prueba_combate_servidor.mjs) fallaron una vez cada uno y pasaron al repetirlos (aquí, la del servidor 64/64 dos veces). Tras la última unión con main (tala y comarcas), solo los textos traducidos aquí: bien.",
   "capturas": "capturas/personaje-v28",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T11:37:13+01:00",
+  "fin": "2026-10-30T11:39:15+01:00",
+  "titulo": "Clanes en las comarcas: al GDD y al plan",
+  "hito": "tierras",
+  "hecho": [
+   "Diseño de valravnx al GDD (apartado 11, «Comarcas, zonas y clanes»): el centro del castillo toma la zona y la comarca; vasallos; renta en moneda por el trabajo en la comarca sin quitar nada a quien trabaja; atacar a quien trabaja o a un vasallo corta su renta un tiempo; ventana de asedio.",
+   "Lo que falta por fijar, como propuesta: qué cuenta como trabajo, tope por jugador y día, duración del corte, la ventana, qué pasa al caer el centro, cuántas zonas por clan y el abandono.",
+   "Vasallaje del apartado 17 puesto al día; dos preguntas nuevas para valravnx (las causas de guerra y si las comarcas de inicio se pueden tomar).",
+   "Hitos Tierras, Asedio y Economía con lo nuevo, para cuando los planifiquen los carriles."
+  ],
+  "pruebas": "Web regenerada; prueba de la web en la nube",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
