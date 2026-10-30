@@ -565,23 +565,6 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-25T10:19:28+00:00",
-  "fin": "2026-10-25T11:09:16+00:00",
-  "titulo": "Prueba de estilo y visor de personaje en inglés",
-  "hito": "infra",
-  "hecho": [
-   "La prueba de estilo (v7) y el visor de personaje (v10) usan el mismo módulo de idioma que la construcción y el combate: botón ES/EN arriba, que recuerda el idioma elegido (también el de la web).",
-   "Traducidos al inglés todos sus textos: botones, vistas, opciones del personaje (base, cuerpo, capas de ropa, pelo, piel, barba, calidad, animación), la medida de fps y las notas de cada versión (99 textos nuevos).",
-   "Las opciones del visor de personaje pasan a src/personaje/textos.js para que la prueba de idiomas las lea sin navegador.",
-   "Prueba de idiomas ampliada a estilo y personaje; la de navegador del inglés recorre ahora también las vistas y las notas de los dos, en PC y móvil. Rota a propósito (quitando dos traducciones) falla donde debe.",
-   "Las pruebas de navegador de estilo y personaje se abren con el navegador en español, para que sus capturas sigan en español; el inglés lo prueba la de idiomas.",
-   "Capturas de la prueba de estilo en capturas/estilo-v7."
-  ],
-  "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, personaje horneado, textos traducidos 321/321, navegador de construcción, combate, estilo, personaje, recursos, inglés y web), PC y móvil",
-  "capturas": "capturas/personaje-v10",
-  "estado": "ok"
- },
- {
   "inicio": "2026-10-25T10:19:54+01:00",
   "fin": "2026-10-25T10:48:43+01:00",
   "titulo": "Hito 1c: escalera de tablas",
@@ -613,6 +596,23 @@
   ],
   "pruebas": "Web regenerada y comprobada (enlaces, inglés y documentos). Sin cambios de código del juego.",
   "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-25T10:19:28+00:00",
+  "fin": "2026-10-25T11:09:16+00:00",
+  "titulo": "Prueba de estilo y visor de personaje en inglés",
+  "hito": "infra",
+  "hecho": [
+   "La prueba de estilo (v7) y el visor de personaje (v10) usan el mismo módulo de idioma que la construcción y el combate: botón ES/EN arriba, que recuerda el idioma elegido (también el de la web).",
+   "Traducidos al inglés todos sus textos: botones, vistas, opciones del personaje (base, cuerpo, capas de ropa, pelo, piel, barba, calidad, animación), la medida de fps y las notas de cada versión (99 textos nuevos).",
+   "Las opciones del visor de personaje pasan a src/personaje/textos.js para que la prueba de idiomas las lea sin navegador.",
+   "Prueba de idiomas ampliada a estilo y personaje; la de navegador del inglés recorre ahora también las vistas y las notas de los dos, en PC y móvil. Rota a propósito (quitando dos traducciones) falla donde debe.",
+   "Las pruebas de navegador de estilo y personaje se abren con el navegador en español, para que sus capturas sigan en español; el inglés lo prueba la de idiomas.",
+   "Capturas de la prueba de estilo en capturas/estilo-v7."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh (lógica, modelos, combate, personaje horneado, textos traducidos 321/321, navegador de construcción, combate, estilo, personaje, recursos, inglés y web), PC y móvil",
+  "capturas": "capturas/personaje-v10",
   "estado": "ok"
  },
  {
@@ -862,22 +862,6 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-26T04:19:56+00:00",
-  "fin": "2026-10-26T05:14:30+00:00",
-  "titulo": "Hito 1d: revisión completa",
-  "hito": "unificacion",
-  "hecho": [
-   "Pasadas todas las pruebas del proyecto con probar_todo.sh: lógica, modelos, combate, acciones, taller, unión, textos y navegador de construcción, combate, estilo, personaje, demo única, recursos, idiomas y web.",
-   "Revisadas las capturas de la demo única en PC y móvil (menú en español, inglés y ruso, Construir, Duelo y Personaje), de la construcción, del combate y de la web: el mismo personaje del taller y la misma escena en todo, y ningún aviso tapa los menús.",
-   "Sin versión jugable nueva: desde la demo v3 no ha cambiado nada que se juegue.",
-   "Los fps de las capturas (1 a 4) son del navegador de pruebas sin tarjeta gráfica, no de un dispositivo de verdad; en su móvil valravnx dijo que van bien.",
-   "El hito 1d queda en revisión, esperando a valravnx."
-  ],
-  "pruebas": "Todas correctas (bash herramientas/probar_todo.sh), PC y móvil; capturas miradas.",
-  "capturas": "",
-  "estado": "ok"
- },
- {
   "inicio": "2026-10-26T05:09:48+01:00",
   "fin": "2026-10-26T06:36:44+01:00",
   "titulo": "Correr más natural (personaje v12)",
@@ -892,6 +876,22 @@
   ],
   "pruebas": "Lógica 63/63, modelos 21/21, combate 69/69, acciones 25/25, idiomas y unión correctos; navegador: construcción, combate, demo, estilo, personaje e idiomas correctos en PC y móvil. La prueba nueva falla con MUTAR=1. No comprobado: cómo se ve en un móvil de verdad.",
   "capturas": "capturas/personaje-v12",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T04:19:56+00:00",
+  "fin": "2026-10-26T05:14:30+00:00",
+  "titulo": "Hito 1d: revisión completa",
+  "hito": "unificacion",
+  "hecho": [
+   "Pasadas todas las pruebas del proyecto con probar_todo.sh: lógica, modelos, combate, acciones, taller, unión, textos y navegador de construcción, combate, estilo, personaje, demo única, recursos, idiomas y web.",
+   "Revisadas las capturas de la demo única en PC y móvil (menú en español, inglés y ruso, Construir, Duelo y Personaje), de la construcción, del combate y de la web: el mismo personaje del taller y la misma escena en todo, y ningún aviso tapa los menús.",
+   "Sin versión jugable nueva: desde la demo v3 no ha cambiado nada que se juegue.",
+   "Los fps de las capturas (1 a 4) son del navegador de pruebas sin tarjeta gráfica, no de un dispositivo de verdad; en su móvil valravnx dijo que van bien.",
+   "El hito 1d queda en revisión, esperando a valravnx."
+  ],
+  "pruebas": "Todas correctas (bash herramientas/probar_todo.sh), PC y móvil; capturas miradas.",
+  "capturas": "",
   "estado": "ok"
  },
  {
@@ -925,6 +925,21 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-26T07:51:47+01:00",
+  "fin": "2026-10-26T08:59:26+01:00",
+  "titulo": "Brazos naturales al correr (personaje v13, demo v5)",
+  "hito": "arte",
+  "hecho": [
+   "valravnx: los brazos de la carrera nueva van torcidos hacia delante, en pose nada natural; arreglado eso, la aprueba (pregunta de la carrera cerrada: no hacen falta las de Rokoko).",
+   "Los brazos se corrigen por código en la misma carrera: el brazo oscila alrededor de la vertical (de unos 25° atrás a unos 18° delante), el antebrazo va un poco hacia arriba y hacia dentro, la mano de canto con el pulgar arriba y la muñeca recta.",
+   "Personajes en recursos/personajes/taller-v6/ (las demás animaciones salen idénticas: diferencia máxima de 2·10⁻⁷).",
+   "Personaje v13 y demo única v5 publicados."
+  ],
+  "pruebas": "Todas correctas en PC y móvil. La prueba del combate falló una vez con el servidor cargado (tiempos del arco y la pausa de impacto, que se miden en tiempo real) y pasó entera al repetirla sola. No comprobado: cómo se ve en un móvil de verdad.",
+  "capturas": "capturas/personaje-v13",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-26T07:37:25+00:00",
   "fin": "2026-10-26T09:12:28+00:00",
   "titulo": "Cinturón de la cota ceñido (taller-v7)",
@@ -939,21 +954,6 @@
   ],
   "pruebas": "Todas correctas con probar_todo.sh salvo el combate, que pasó aparte con los márgenes portados. Fotos del taller antes y después, y visor y demo en PC y móvil mirados.",
   "capturas": "capturas/personaje-v14",
-  "estado": "ok"
- },
- {
-  "inicio": "2026-10-26T07:51:47+01:00",
-  "fin": "2026-10-26T08:59:26+01:00",
-  "titulo": "Brazos naturales al correr (personaje v13, demo v5)",
-  "hito": "arte",
-  "hecho": [
-   "valravnx: los brazos de la carrera nueva van torcidos hacia delante, en pose nada natural; arreglado eso, la aprueba (pregunta de la carrera cerrada: no hacen falta las de Rokoko).",
-   "Los brazos se corrigen por código en la misma carrera: el brazo oscila alrededor de la vertical (de unos 25° atrás a unos 18° delante), el antebrazo va un poco hacia arriba y hacia dentro, la mano de canto con el pulgar arriba y la muñeca recta.",
-   "Personajes en recursos/personajes/taller-v6/ (las demás animaciones salen idénticas: diferencia máxima de 2·10⁻⁷).",
-   "Personaje v13 y demo única v5 publicados."
-  ],
-  "pruebas": "Todas correctas en PC y móvil. La prueba del combate falló una vez con el servidor cargado (tiempos del arco y la pausa de impacto, que se miden en tiempo real) y pasó entera al repetirla sola. No comprobado: cómo se ve en un móvil de verdad.",
-  "capturas": "capturas/personaje-v13",
   "estado": "ok"
  },
  {
@@ -974,21 +974,6 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-26T08:25:29+01:00",
-  "fin": "2026-10-26T14:00:24+01:00",
-  "titulo": "Hito 1c: barandillas y portillo publicados (construcción v13, demo v8)",
-  "hito": "construccion-mas",
-  "hecho": [
-   "Arreglada la prueba del combate que impedía publicar: no era un fallo del juego sino de tiempos. Sin tarjeta gráfica el navegador de pruebas va a 2 fps y el juego limita cada paso a 0,05 s, así que el tiempo de juego corre hasta 10 veces más lento que el real; la prueba esperaba como mucho 3 a 6 s reales a que se encajara la flecha o se tensara el arco. Ahora espera a esas condiciones con margen amplio (30 s), sin tiempos fijos.",
-   "Unida la rama de la sesión anterior (barandillas y portillo) con main, tres veces, porque mientras pasaban las pruebas las sesiones de chat publicaron la carrera, los brazos, el cinturón, los muros con el estilo y el arreglo de la pantalla en blanco.",
-   "Publicadas la construcción v13 y la demo única v8: el medio muro hace de barandilla en el borde de un suelo en alto y junto al hueco de la escalera, y hay portillo de varas para la cerca que se abre con Usar.",
-   "Mirado en las capturas que el portillo y la barandilla quedan bien junto a los muros nuevos con el estilo, en PC y en móvil."
-  ],
-  "pruebas": "Todas correctas con probar_todo.sh sobre el código final: lógica 81/81, modelos, combate, acciones, taller, unión, textos y navegador de construcción, combate, estilo, personaje, demo, recursos, idiomas y web. Un intento de pasar las pruebas de navegador en paralelo falló por falta de máquina (2 núcleos) y se descartó. No comprobado: cómo se ve en un móvil de verdad.",
-  "capturas": "capturas/construccion-v13",
-  "estado": "ok"
- },
- {
   "inicio": "2026-10-26T12:06:00+01:00",
   "fin": "2026-10-26T12:13:41+01:00",
   "titulo": "Decisiones de valravnx: mundo a escala real, agua y nado, y obras con materiales (GDD v0.8)",
@@ -1002,6 +987,21 @@
   ],
   "pruebas": "Web y textos traducidos correctos. Sin cambios de código.",
   "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-26T08:25:29+01:00",
+  "fin": "2026-10-26T14:00:24+01:00",
+  "titulo": "Hito 1c: barandillas y portillo publicados (construcción v13, demo v8)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Arreglada la prueba del combate que impedía publicar: no era un fallo del juego sino de tiempos. Sin tarjeta gráfica el navegador de pruebas va a 2 fps y el juego limita cada paso a 0,05 s, así que el tiempo de juego corre hasta 10 veces más lento que el real; la prueba esperaba como mucho 3 a 6 s reales a que se encajara la flecha o se tensara el arco. Ahora espera a esas condiciones con margen amplio (30 s), sin tiempos fijos.",
+   "Unida la rama de la sesión anterior (barandillas y portillo) con main, tres veces, porque mientras pasaban las pruebas las sesiones de chat publicaron la carrera, los brazos, el cinturón, los muros con el estilo y el arreglo de la pantalla en blanco.",
+   "Publicadas la construcción v13 y la demo única v8: el medio muro hace de barandilla en el borde de un suelo en alto y junto al hueco de la escalera, y hay portillo de varas para la cerca que se abre con Usar.",
+   "Mirado en las capturas que el portillo y la barandilla quedan bien junto a los muros nuevos con el estilo, en PC y en móvil."
+  ],
+  "pruebas": "Todas correctas con probar_todo.sh sobre el código final: lógica 81/81, modelos, combate, acciones, taller, unión, textos y navegador de construcción, combate, estilo, personaje, demo, recursos, idiomas y web. Un intento de pasar las pruebas de navegador en paralelo falló por falta de máquina (2 núcleos) y se descartó. No comprobado: cómo se ve en un móvil de verdad.",
+  "capturas": "capturas/construccion-v13",
   "estado": "ok"
  },
  {
@@ -1171,6 +1171,19 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-27T06:46:00+01:00",
+  "fin": "2026-10-27T06:46:30+01:00",
+  "titulo": "Hito 1e aprobado por valravnx; lo que queda, al 10b",
+  "hito": "estilo",
+  "hecho": [
+   "valravnx aprueba el hito 1e (el estilo de la prueba v5 en todo) y deja lo que quede para pulir en el hito 10b.",
+   "Pasan al 10b: las losas del cimiento de piedra que repiten el mismo dibujo en cada casilla, y la pregunta del desenfoque de maqueta (que sale de las preguntas pendientes y se hará cuando llegue el 10b)."
+  ],
+  "pruebas": "Web y textos traducidos correctos. Sin cambios de código.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-27T05:49:03+00:00",
   "fin": "2026-10-27T06:54:09+00:00",
   "titulo": "Hito 1f: plan de la prueba online mínima",
@@ -1183,19 +1196,6 @@
    "Pregunta nueva para valravnx: dónde se pone el servidor de prueba (alojamiento con cuenta suya, o su PC con un túnel https). Esa tarea espera su respuesta; las demás no."
   ],
   "pruebas": "Todas las pruebas correctas (probar_todo.sh); capturas de la web miradas en PC y móvil. Sin cambios de código.",
-  "capturas": "",
-  "estado": "ok"
- },
- {
-  "inicio": "2026-10-27T06:46:00+01:00",
-  "fin": "2026-10-27T06:46:30+01:00",
-  "titulo": "Hito 1e aprobado por valravnx; lo que queda, al 10b",
-  "hito": "estilo",
-  "hecho": [
-   "valravnx aprueba el hito 1e (el estilo de la prueba v5 en todo) y deja lo que quede para pulir en el hito 10b.",
-   "Pasan al 10b: las losas del cimiento de piedra que repiten el mismo dibujo en cada casilla, y la pregunta del desenfoque de maqueta (que sale de las preguntas pendientes y se hará cuando llegue el 10b)."
-  ],
-  "pruebas": "Web y textos traducidos correctos. Sin cambios de código.",
   "capturas": "",
   "estado": "ok"
  },
@@ -1213,23 +1213,6 @@
   ],
   "pruebas": "Prueba de carriles 10/10 (con MUTAR=1 fallan 2, como debe); web y textos traducidos correctos.",
   "capturas": "",
-  "estado": "ok"
- },
- {
-  "inicio": "2026-10-27T07:02:45+01:00",
-  "fin": "2026-10-27T09:55:53+01:00",
-  "titulo": "Hito 1c: obras con marco, material y tiempo (carril B)",
-  "hito": "construccion-mas",
-  "hecho": [
-   "Colocar una pieza pone ahora solo su marco: no cuesta nada, se ve tenue dentro de un armazón de varas atadas, no sostiene nada, no corta el paso ni se pisa, y su peso ya cuenta, así que al terminarla aguanta seguro.",
-   "Junto a una obra, Usar (F) le lleva el material que le falta y el personaje se pone a construir; moverse lo para y Usar lo retoma. Cada pieza tarda 4 s más 1 s por cada 20 kg (provisional: el GDD no da cifras), por ejemplo un poste 7 s y un muro de troncos 19 s.",
-   "Todo en la lógica pura con acciones nuevas «entregar» y «trabajar», cada una con su autor: la obra guarda quién llevó cada material y quién trabajó cuánto; los segundos de todos se suman, así que con ayuda se acaba antes.",
-   "Desmontar una obra a medias devuelve entero lo entregado; una puerta en obras no se abre; la obra a medias se guarda y se carga.",
-   "El tiempo de obra cuenta con el reloj de verdad, no con el del fotograma: con pocos fotogramas por segundo no va más lenta.",
-   "Construcción v21 y demo única v16."
-  ],
-  "pruebas": "Lógica 86/86, acciones 40/40 (15 nuevas de obras, comprobado que fallan si una obra sostiene o si la puerta en obras se abre), modelos 104/104, combate 69/69; navegador de construcción (9 comprobaciones nuevas de obras, PC y móvil), combate, estilo, personaje, demo, idiomas y web correctos. Capturas de las obras miradas en PC y móvil.",
-  "capturas": "capturas/construccion-v21",
   "estado": "ok"
  },
  {
@@ -1264,57 +1247,21 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-27T08:38:20+00:00",
-  "fin": "2026-10-27T13:17:42+00:00",
-  "titulo": "Hito 1f: jugadores que se ven",
-  "hito": "prueba-online",
+  "inicio": "2026-10-27T07:02:45+01:00",
+  "fin": "2026-10-27T09:55:53+01:00",
+  "titulo": "Hito 1c: obras con marco, material y tiempo (carril B)",
+  "hito": "construccion-mas",
   "hecho": [
-   "Presencia de jugadores en la lógica pura (src/logica/presencia.js): cada cliente manda su posición, giro y animación 10 veces por segundo; el servidor le pone el autor de la conexión y su hora, y cada 100 ms reparte a cada uno los que han cambiado.",
-   "Los demás se dibujan 200 ms en el pasado, mezclando entre los dos estados que rodean ese momento; el giro va por el camino corto y, si no llega nada, se sigue la última dirección 250 ms como mucho y se para.",
-   "La hora de cada estado sale del reloj del cliente pasado al del servidor (con el mensaje que llegó más deprisa), nunca futura ni de hace más de 1 s: con la hora de llegada, el vaivén de la red daba saltos de hasta 12 veces lo que tocaba en la prueba.",
-   "Al conectar, la bienvenida dice quién está y dónde; al irse alguien, desaparece de los demás. Un estado roto (NaN, lejísimos, animación rara) recibe un error y no se reparte.",
-   "Prueba nueva con lag simulado de 60 a 140 ms en cada sentido: A corre en círculo a 3 m/s y B lo ve suave (en 6 pasadas medidas, el fotograma que más avanzó lo hizo entre 1,1 y 1,9 veces lo que toca), a menos de 3 cm del círculo y con unos 330 ms de retraso; tráfico de 1,3 KB/s por jugador a la vista. Rota a propósito (sin mezclar), falla.",
-   "La prueba de navegador de construcción fallaba siempre en esta máquina al pulsar Construir en el móvil: al doble de resolución y sin tarjeta gráfica cada fotograma tarda alrededor de 1 s y el clic pasaba de 30 s. Ahora espera hasta 2 minutos en la parte del móvil.",
-   "Decisión provisional (el GDD no lo dice): 200 ms de retraso al dibujar a los demás y 250 ms de predicción como mucho.",
-   "No comprobado: en el navegador todavía no se usa; llega con la tarea de la demo en línea."
+   "Colocar una pieza pone ahora solo su marco: no cuesta nada, se ve tenue dentro de un armazón de varas atadas, no sostiene nada, no corta el paso ni se pisa, y su peso ya cuenta, así que al terminarla aguanta seguro.",
+   "Junto a una obra, Usar (F) le lleva el material que le falta y el personaje se pone a construir; moverse lo para y Usar lo retoma. Cada pieza tarda 4 s más 1 s por cada 20 kg (provisional: el GDD no da cifras), por ejemplo un poste 7 s y un muro de troncos 19 s.",
+   "Todo en la lógica pura con acciones nuevas «entregar» y «trabajar», cada una con su autor: la obra guarda quién llevó cada material y quién trabajó cuánto; los segundos de todos se suman, así que con ayuda se acaba antes.",
+   "Desmontar una obra a medias devuelve entero lo entregado; una puerta en obras no se abre; la obra a medias se guarda y se carga.",
+   "El tiempo de obra cuenta con el reloj de verdad, no con el del fotograma: con pocos fotogramas por segundo no va más lenta.",
+   "Construcción v21 y demo única v16."
   ],
-  "pruebas": "Todas las pruebas correctas (probar_todo.sh), con la nueva de presencia 15/15 (con MUTAR=1 fallan 2, como debe) y la del servidor 15/15; capturas de construcción en móvil miradas. Tras unir el último main (solo web, roadmap y GDD) se repitieron las pruebas de node y la de la web. Sin versión jugable nueva: la demo aún no se conecta.",
-  "capturas": "",
+  "pruebas": "Lógica 86/86, acciones 40/40 (15 nuevas de obras, comprobado que fallan si una obra sostiene o si la puerta en obras se abre), modelos 104/104, combate 69/69; navegador de construcción (9 comprobaciones nuevas de obras, PC y móvil), combate, estilo, personaje, demo, idiomas y web correctos. Capturas de las obras miradas en PC y móvil.",
+  "capturas": "capturas/construccion-v21",
   "estado": "ok"
- },
- {
-  "inicio": "2026-10-27T08:50:44+00:00",
-  "fin": "2026-10-27T13:40:27+00:00",
-  "titulo": "Duelo: cámara táctil con un dedo (sesión extra del carril B)",
-  "hito": "duelo",
-  "hecho": [
-   "Arrastrar un dedo por una zona libre gira la cámara; un toque sin arrastrar no la mueve (cuenta como arrastre desde 10 px, decisión provisional) y tocar la rosa sigue golpeando al instante.",
-   "El dedo del joystick ya no cuenta como segundo dedo al girar o al apuntar.",
-   "Con arco o piedras, si al apuntar llevas el dedo más allá del 35% desde el centro hacia un borde, la cámara gira hacia ese lado (hasta 1,4 rad/s, valores provisionales).",
-   "La lógica de los toques va aparte, en src/combate/tactil.js, sin three.js, con sus pruebas en node.",
-   "La prueba de construcción en móvil ya no espera navegaciones tras cada clic: en esta máquina agotaba los 30 s.",
-   "Publicado el combate v12. La demo única ya lo lleva en el código; sale en su próxima versión, porque su registro lo estaba cambiando otra rama.",
-   "Hecha en paralelo con el carril B ocupado, porque valravnx lo pidió («hazla si no entorpece a los demás»): sin tocar sesion.json y en archivos que no tocaba ninguna otra rama."
-  ],
-  "pruebas": "Todas con probar_todo.sh: lógica 86/86, modelos 104/104, combate 80/80 (11 nuevas, comprobado que fallan con MUTAR=1), acciones 40/40, servidor 15/15, navegador de combate (5 comprobaciones táctiles nuevas; las dos principales fallan con la versión anterior), construcción, estilo, personaje, demo, idiomas, cavar y web correctos. Capturas miradas en PC y móvil.",
-  "capturas": "capturas/combate-v12",
-  "estado": "ok"
- },
- {
-  "inicio": "2026-10-27T09:09:00+01:00",
-  "fin": "2026-10-27T11:33:52+01:00",
-  "titulo": "Hito 1g: prueba de rendimiento de cavar",
-  "hito": "excavacion",
-  "hecho": [
-   "Lógica pura de excavación: cubitos de 0,5 m en trozos de 8 m, solo se guardan los quitados (un bit por cubito) y cada golpe lleva autor",
-   "Malla de la roca con vóxeles suavizados (surface nets) y rugosidad de semilla fija: no se ven casillas y todos ven la misma pared",
-   "Prototipo «Cavar y minar» v1: una loma que se excava a golpes, con fps y ms por golpe en pantalla",
-   "Lo guardado de una galería de 13 golpes ocupa unos 1,4 KB"
-  ],
-  "pruebas": "Excavación 13/13, lógica 86/86, carriles 11/11, idiomas correcto, navegador de cavar PC y móvil correctos; Chromium sin GPU: media 14,2 ms por golpe, peor 52,8 ms, unos 11.800 triángulos",
-  "capturas": "capturas/mina-v1",
-  "estado": "ok",
-  "notas": "no comprobado: rendimiento en un móvil de verdad (lo mide valravnx)"
  },
  {
   "inicio": "2026-10-27T09:43:31+01:00",
@@ -1332,19 +1279,6 @@
   ],
   "pruebas": "Prueba de la web correcta en PC y móvil, en español, inglés y ruso; capturas miradas de todas las pestañas.",
   "capturas": "capturas/web-v2",
-  "estado": "ok"
- },
- {
-  "inicio": "2026-10-27T09:50:06+00:00",
-  "fin": "2026-10-27T11:21:44+00:00",
-  "titulo": "Hito 2: plan de Equipo y carga por huecos",
-  "hito": "equipo",
-  "hecho": [
-   "Leído el GDD (apartados 7, 8 y 20) y el documento de sistemas (tamaños de los objetos, tala, recetas del leñero, la rastra, la carretilla, los cinturones y las mochilas).",
-   "Hito desglosado en 13 tareas de una sesión: lógica del inventario por huecos, equipo de carga, ralentización, datos de las prendas, panel de inventario, animaciones para cargar, equipo que se ve puesto, objetos en el suelo, tala, tronzar y partir, rastra, carretilla y obras con lo que llevas; la última, la revisión completa y publicación.",
-   "Decisión provisional: hasta que haya fabricación (hito 3), los cinturones, las mochilas y las hachas se cogen de un arcón de pruebas en la demo; sus recetas llegan con el hito 3."
-  ],
-  "pruebas": "Todas las pruebas correctas (bash herramientas/probar_todo.sh); capturas de la web miradas (hoja de ruta y diario). Sin código ni versión nueva: solo el plan. Web de progreso generada y comprobada.",
   "estado": "ok"
  },
  {
@@ -1380,20 +1314,69 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-27T11:50:57+00:00",
-  "fin": "2026-10-27T15:14:32+00:00",
-  "titulo": "Hito 1c: clase de peso de los materiales y subirlos a la obra (carril B)",
-  "hito": "construccion-mas",
+  "inicio": "2026-10-27T09:09:00+01:00",
+  "fin": "2026-10-27T11:33:52+01:00",
+  "titulo": "Hito 1g: prueba de rendimiento de cavar",
+  "hito": "excavacion",
   "hecho": [
-   "Cada material tiene clase de peso: ligeros las tablas, varas, paja, clavos, cuerda, barro y hierro; pesados los troncos y la piedra sin tallar (provisional). Muy pesada será la piedra tallada, que aún no existe.",
-   "Obra en la planta 1 o más: lo ligero solo se entrega estando en su planta (subido a mano por la escalera); lo pesado se sube de uno en uno con la acción nueva «subir», con autor.",
-   "Entre dos: 2 × 2,5 s de trabajo por planta y tronco, sumando a los dos; una persona sola rodándolo por dos varas con una cuerda: el doble de trabajo (10 s por tronco a la planta 1). Sin varas, sola no puede: espera ayuda. Cifras provisionales.",
-   "En el juego, Usar junto a una obra en alto apoya dos varas en el borde de su planta y se ve el tronco subiendo abrazado por la cuerda; después se entrega lo ligero y se construye.",
-   "Decisión provisional: lo que se apoya en lo alto de la planta baja (vigas, tejado de una cabaña) se alcanza desde el suelo.",
-   "Publicadas la construcción v23 y la demo única v18."
+   "Lógica pura de excavación: cubitos de 0,5 m en trozos de 8 m, solo se guardan los quitados (un bit por cubito) y cada golpe lleva autor",
+   "Malla de la roca con vóxeles suavizados (surface nets) y rugosidad de semilla fija: no se ven casillas y todos ven la misma pared",
+   "Prototipo «Cavar y minar» v1: una loma que se excava a golpes, con fps y ms por golpe en pantalla",
+   "Lo guardado de una galería de 13 golpes ocupa unos 1,4 KB"
   ],
-  "pruebas": "Todas las pruebas correctas (bash herramientas/probar_todo.sh), también tras unir main: lógica 106/106 (20 nuevas, fallan con MUTAR=1), acciones 41/41, navegador de construcción con la subida por las varas (comprobado que falla si no se sube). Capturas miradas en PC y móvil. No comprobado: subir entre dos en el juego (aún se juega solo; probado solo en la lógica).",
-  "capturas": "capturas/construccion-v23",
+  "pruebas": "Excavación 13/13, lógica 86/86, carriles 11/11, idiomas correcto, navegador de cavar PC y móvil correctos; Chromium sin GPU: media 14,2 ms por golpe, peor 52,8 ms, unos 11.800 triángulos",
+  "capturas": "capturas/mina-v1",
+  "estado": "ok",
+  "notas": "no comprobado: rendimiento en un móvil de verdad (lo mide valravnx)"
+ },
+ {
+  "inicio": "2026-10-27T08:38:20+00:00",
+  "fin": "2026-10-27T13:17:42+00:00",
+  "titulo": "Hito 1f: jugadores que se ven",
+  "hito": "prueba-online",
+  "hecho": [
+   "Presencia de jugadores en la lógica pura (src/logica/presencia.js): cada cliente manda su posición, giro y animación 10 veces por segundo; el servidor le pone el autor de la conexión y su hora, y cada 100 ms reparte a cada uno los que han cambiado.",
+   "Los demás se dibujan 200 ms en el pasado, mezclando entre los dos estados que rodean ese momento; el giro va por el camino corto y, si no llega nada, se sigue la última dirección 250 ms como mucho y se para.",
+   "La hora de cada estado sale del reloj del cliente pasado al del servidor (con el mensaje que llegó más deprisa), nunca futura ni de hace más de 1 s: con la hora de llegada, el vaivén de la red daba saltos de hasta 12 veces lo que tocaba en la prueba.",
+   "Al conectar, la bienvenida dice quién está y dónde; al irse alguien, desaparece de los demás. Un estado roto (NaN, lejísimos, animación rara) recibe un error y no se reparte.",
+   "Prueba nueva con lag simulado de 60 a 140 ms en cada sentido: A corre en círculo a 3 m/s y B lo ve suave (en 6 pasadas medidas, el fotograma que más avanzó lo hizo entre 1,1 y 1,9 veces lo que toca), a menos de 3 cm del círculo y con unos 330 ms de retraso; tráfico de 1,3 KB/s por jugador a la vista. Rota a propósito (sin mezclar), falla.",
+   "La prueba de navegador de construcción fallaba siempre en esta máquina al pulsar Construir en el móvil: al doble de resolución y sin tarjeta gráfica cada fotograma tarda alrededor de 1 s y el clic pasaba de 30 s. Ahora espera hasta 2 minutos en la parte del móvil.",
+   "Decisión provisional (el GDD no lo dice): 200 ms de retraso al dibujar a los demás y 250 ms de predicción como mucho.",
+   "No comprobado: en el navegador todavía no se usa; llega con la tarea de la demo en línea."
+  ],
+  "pruebas": "Todas las pruebas correctas (probar_todo.sh), con la nueva de presencia 15/15 (con MUTAR=1 fallan 2, como debe) y la del servidor 15/15; capturas de construcción en móvil miradas. Tras unir el último main (solo web, roadmap y GDD) se repitieron las pruebas de node y la de la web. Sin versión jugable nueva: la demo aún no se conecta.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T09:50:06+00:00",
+  "fin": "2026-10-27T11:21:44+00:00",
+  "titulo": "Hito 2: plan de Equipo y carga por huecos",
+  "hito": "equipo",
+  "hecho": [
+   "Leído el GDD (apartados 7, 8 y 20) y el documento de sistemas (tamaños de los objetos, tala, recetas del leñero, la rastra, la carretilla, los cinturones y las mochilas).",
+   "Hito desglosado en 13 tareas de una sesión: lógica del inventario por huecos, equipo de carga, ralentización, datos de las prendas, panel de inventario, animaciones para cargar, equipo que se ve puesto, objetos en el suelo, tala, tronzar y partir, rastra, carretilla y obras con lo que llevas; la última, la revisión completa y publicación.",
+   "Decisión provisional: hasta que haya fabricación (hito 3), los cinturones, las mochilas y las hachas se cogen de un arcón de pruebas en la demo; sus recetas llegan con el hito 3."
+  ],
+  "pruebas": "Todas las pruebas correctas (bash herramientas/probar_todo.sh); capturas de la web miradas (hoja de ruta y diario). Sin código ni versión nueva: solo el plan. Web de progreso generada y comprobada.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T08:50:44+00:00",
+  "fin": "2026-10-27T13:40:27+00:00",
+  "titulo": "Duelo: cámara táctil con un dedo (sesión extra del carril B)",
+  "hito": "duelo",
+  "hecho": [
+   "Arrastrar un dedo por una zona libre gira la cámara; un toque sin arrastrar no la mueve (cuenta como arrastre desde 10 px, decisión provisional) y tocar la rosa sigue golpeando al instante.",
+   "El dedo del joystick ya no cuenta como segundo dedo al girar o al apuntar.",
+   "Con arco o piedras, si al apuntar llevas el dedo más allá del 35% desde el centro hacia un borde, la cámara gira hacia ese lado (hasta 1,4 rad/s, valores provisionales).",
+   "La lógica de los toques va aparte, en src/combate/tactil.js, sin three.js, con sus pruebas en node.",
+   "La prueba de construcción en móvil ya no espera navegaciones tras cada clic: en esta máquina agotaba los 30 s.",
+   "Publicado el combate v12. La demo única ya lo lleva en el código; sale en su próxima versión, porque su registro lo estaba cambiando otra rama.",
+   "Hecha en paralelo con el carril B ocupado, porque valravnx lo pidió («hazla si no entorpece a los demás»): sin tocar sesion.json y en archivos que no tocaba ninguna otra rama."
+  ],
+  "pruebas": "Todas con probar_todo.sh: lógica 86/86, modelos 104/104, combate 80/80 (11 nuevas, comprobado que fallan con MUTAR=1), acciones 40/40, servidor 15/15, navegador de combate (5 comprobaciones táctiles nuevas; las dos principales fallan con la versión anterior), construcción, estilo, personaje, demo, idiomas, cavar y web correctos. Capturas miradas en PC y móvil.",
+  "capturas": "capturas/combate-v12",
   "estado": "ok"
  },
  {
@@ -1415,36 +1398,20 @@
   "notas": "no comprobado: cuánto tarda en generar en un móvil de verdad (en el navegador de pruebas, unos 4 a 5 segundos)"
  },
  {
-  "inicio": "2026-10-27T13:24:50+00:00",
-  "fin": "2026-10-27T19:00:50+00:00",
-  "titulo": "Hito 1f: jugar en línea en la demo única",
-  "hito": "prueba-online",
-  "hecho": [
-   "«Jugar en línea» en el menú de la demo y Opciones con la dirección del servidor (se guarda en el navegador; por defecto ws://localhost:8080)",
-   "En línea, la construcción usa el mundo del servidor: lo propio se ve al momento en una copia y el servidor lo confirma; si otro puso lo mismo antes, gana el servidor y se avisa",
-   "Los demás jugadores se ven con el personaje del taller que eligieron: el servidor reparte el aspecto (cuerpo y ropa), comprobado, y la posición suavizada",
-   "En línea no se guarda nada en el navegador y no está «Reiniciar»; si se corta la conexión, se avisa y no se construye",
-   "Prueba en node de dos clientes con el servidor (pedidos a la vez, red lenta, aspecto) y prueba de navegador con dos páginas (PC y móvil) y un servidor local"
-  ],
-  "pruebas": "Mundo en línea 16/16 (con MUTAR=1 falla), navegador de jugar en línea con dos páginas correcto (con MUTAR=1 falla), batería completa correcta antes de unir los últimos cambios de main; tras unirlos, lógica, modelos, combate, acciones, servidor, presencia, idiomas, demo y jugar en línea correctos",
-  "capturas": "capturas/demo-v21",
-  "estado": "ok",
-  "notas": "no comprobado: jugar desde dos aparatos de verdad (hace falta el servidor en internet, tarea pendiente del hito). En una pasada de la batería completa con la máquina cargada falló una vez la prueba de navegador del combate (pantalla de victoria); sola pasó entera. Tras unir los últimos cambios de main (suelos de troncos y mapa) no se repitió la batería entera, solo las pruebas listadas"
- },
- {
-  "inicio": "2026-10-27T13:53:25+01:00",
-  "fin": "2026-10-27T17:29:45+01:00",
-  "titulo": "Arreglos: muebles del piso de arriba vistos desde abajo y WASD con otras distribuciones de teclado",
+  "inicio": "2026-10-27T11:50:57+00:00",
+  "fin": "2026-10-27T15:14:32+00:00",
+  "titulo": "Hito 1c: clase de peso de los materiales y subirlos a la obra (carril B)",
   "hito": "construccion-mas",
   "hecho": [
-   "Los muebles de las plantas de arriba se ocultan cuando estás debajo con el techo puesto, igual que las piezas de esas plantas; al subir o al salir fuera se vuelven a ver.",
-   "WASD (y Q, E, R, B, X, F y Mayús) se leen por la posición física de la tecla: con la distribución rusa la W escribe «ц» y antes no movía. Arreglado también en el duelo.",
-   "Al perder el foco la ventana (otra pestaña, una notificación) se sueltan todas las teclas, para que el personaje no siga andando solo; Ctrl, Alt y Cmd con una letra ya no mueven.",
-   "Pruebas nuevas en construcción (muebles de arriba ocultos desde abajo, W con la distribución rusa, teclas sueltas al perder el foco) y en el duelo (D con la distribución rusa). Pasadas contra la versión anterior, fallan las tres, como deben.",
-   "Publicadas construcción v24, combate v13 y la alpha (demo única) v19."
+   "Cada material tiene clase de peso: ligeros las tablas, varas, paja, clavos, cuerda, barro y hierro; pesados los troncos y la piedra sin tallar (provisional). Muy pesada será la piedra tallada, que aún no existe.",
+   "Obra en la planta 1 o más: lo ligero solo se entrega estando en su planta (subido a mano por la escalera); lo pesado se sube de uno en uno con la acción nueva «subir», con autor.",
+   "Entre dos: 2 × 2,5 s de trabajo por planta y tronco, sumando a los dos; una persona sola rodándolo por dos varas con una cuerda: el doble de trabajo (10 s por tronco a la planta 1). Sin varas, sola no puede: espera ayuda. Cifras provisionales.",
+   "En el juego, Usar junto a una obra en alto apoya dos varas en el borde de su planta y se ve el tronco subiendo abrazado por la cuerda; después se entrega lo ligero y se construye.",
+   "Decisión provisional: lo que se apoya en lo alto de la planta baja (vigas, tejado de una cabaña) se alcanza desde el suelo.",
+   "Publicadas la construcción v23 y la demo única v18."
   ],
-  "pruebas": "Lógica 106/106, acciones 41/41, modelos 104/104, combate 80/80; navegador: construcción, duelo y demo única correctos en PC y móvil. No comprobado: con un teclado ruso de verdad (se simula con la tecla física y la letra rusa).",
-  "capturas": "capturas/construccion-v24",
+  "pruebas": "Todas las pruebas correctas (bash herramientas/probar_todo.sh), también tras unir main: lógica 106/106 (20 nuevas, fallan con MUTAR=1), acciones 41/41, navegador de construcción con la subida por las varas (comprobado que falla si no se sube). Capturas miradas en PC y móvil. No comprobado: subir entre dos en el juego (aún se juega solo; probado solo en la lógica).",
+  "capturas": "capturas/construccion-v23",
   "estado": "ok"
  },
  {
@@ -1465,19 +1432,19 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-27T16:52:02+00:00",
-  "fin": "2026-10-27T22:42:46+00:00",
-  "titulo": "Hito 1c: andamio pegado al muro y polea en una viga (carril B)",
+  "inicio": "2026-10-27T13:53:25+01:00",
+  "fin": "2026-10-27T17:29:45+01:00",
+  "titulo": "Arreglos: muebles del piso de arriba vistos desde abajo y WASD con otras distribuciones de teclado",
   "hito": "construccion-mas",
   "hecho": [
-   "Andamio (8 varas y 2 cuerdas): va pegado a un muro, o a la obra de un muro, de su casilla, y se gira solo hacia él. Plataforma de varas a la altura del suelo de la planta de encima, barandilla, tornapuntas y escalerilla. Se apilan hasta la planta 3; encima no se puede poner suelo.",
-   "En el juego, Usar al pie sube a la plataforma; con otro andamio encima, sube a ese; en lo alto, baja hasta el pie. Desde la plataforma se lleva lo ligero y se trabaja en las obras de esa planta sin suelo por dentro.",
-   "Polea (1 tabla, 2 cuerdas y 1 hierro): se cuelga de una viga terminada y sirve a las obras de su construcción a la altura de la viga o más abajo. Una persona sola sube lo pesado con el trabajo de dos a pulso: 5 s por tronco y planta, la mitad que con varas (provisional). Al quitar la viga, cae.",
-   "En el juego, si la obra tiene polea, Usar se pone a tirar de ella: el tronco sube colgado de la cuerda y el otro cabo va a las manos. Cada rato queda en el registro con su autor y el método «polea».",
-   "Al unir main otras dos sesiones habían publicado la construcción v25 y v26 y la demo v20 a v22: esto sale como construcción v27 y demo v23."
+   "Los muebles de las plantas de arriba se ocultan cuando estás debajo con el techo puesto, igual que las piezas de esas plantas; al subir o al salir fuera se vuelven a ver.",
+   "WASD (y Q, E, R, B, X, F y Mayús) se leen por la posición física de la tecla: con la distribución rusa la W escribe «ц» y antes no movía. Arreglado también en el duelo.",
+   "Al perder el foco la ventana (otra pestaña, una notificación) se sueltan todas las teclas, para que el personaje no siga andando solo; Ctrl, Alt y Cmd con una letra ya no mueven.",
+   "Pruebas nuevas en construcción (muebles de arriba ocultos desde abajo, W con la distribución rusa, teclas sueltas al perder el foco) y en el duelo (D con la distribución rusa). Pasadas contra la versión anterior, fallan las tres, como deben.",
+   "Publicadas construcción v24, combate v13 y la alpha (demo única) v19."
   ],
-  "pruebas": "Todas correctas (bash herramientas/probar_todo.sh; tras las últimas uniones con main, otra vez las de node y las de navegador de construcción, demo y jugar en línea): lógica 134/134 (27 nuevas, fallan con MUTAR=1), modelos 117/117 (la plataforma a la altura del suelo falla con MUTAR_SUELO=1), navegador de construcción con andamio y polea; las comprobaciones nuevas de navegador fallaron mientras Usar no subía al andamio. Capturas de cerca miradas en PC y móvil. Una vez falló 1 de 37 en prueba_combate_servidor (del carril A) y pasó las 6 siguientes. No comprobado: el personaje usa el gesto de construir (con el hacha) al tirar de la polea, como ya pasaba con las varas.",
-  "capturas": "capturas/construccion-v27",
+  "pruebas": "Lógica 106/106, acciones 41/41, modelos 104/104, combate 80/80; navegador: construcción, duelo y demo única correctos en PC y móvil. No comprobado: con un teclado ruso de verdad (se simula con la tecla física y la letra rusa).",
+  "capturas": "capturas/construccion-v24",
   "estado": "ok"
  },
  {
@@ -1511,6 +1478,23 @@
   "pruebas": "Lógica 106/106, acciones 41/41, modelos 114/114 (6 fallan con la versión anterior), combate 80/80; navegador: construcción y demo única correctos en PC y móvil. El duelo no cambia (su compilado sale idéntico byte a byte al de main), así que no se ha vuelto a pasar su prueba de navegador.",
   "capturas": "capturas/construccion-v25",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-27T13:24:50+00:00",
+  "fin": "2026-10-27T19:00:50+00:00",
+  "titulo": "Hito 1f: jugar en línea en la demo única",
+  "hito": "prueba-online",
+  "hecho": [
+   "«Jugar en línea» en el menú de la demo y Opciones con la dirección del servidor (se guarda en el navegador; por defecto ws://localhost:8080)",
+   "En línea, la construcción usa el mundo del servidor: lo propio se ve al momento en una copia y el servidor lo confirma; si otro puso lo mismo antes, gana el servidor y se avisa",
+   "Los demás jugadores se ven con el personaje del taller que eligieron: el servidor reparte el aspecto (cuerpo y ropa), comprobado, y la posición suavizada",
+   "En línea no se guarda nada en el navegador y no está «Reiniciar»; si se corta la conexión, se avisa y no se construye",
+   "Prueba en node de dos clientes con el servidor (pedidos a la vez, red lenta, aspecto) y prueba de navegador con dos páginas (PC y móvil) y un servidor local"
+  ],
+  "pruebas": "Mundo en línea 16/16 (con MUTAR=1 falla), navegador de jugar en línea con dos páginas correcto (con MUTAR=1 falla), batería completa correcta antes de unir los últimos cambios de main; tras unirlos, lógica, modelos, combate, acciones, servidor, presencia, idiomas, demo y jugar en línea correctos",
+  "capturas": "capturas/demo-v21",
+  "estado": "ok",
+  "notas": "no comprobado: jugar desde dos aparatos de verdad (hace falta el servidor en internet, tarea pendiente del hito). En una pasada de la batería completa con la máquina cargada falló una vez la prueba de navegador del combate (pantalla de victoria); sola pasó entera. Tras unir los últimos cambios de main (suelos de troncos y mapa) no se repitió la batería entera, solo las pruebas listadas"
  },
  {
   "inicio": "2026-10-27T18:57:00+01:00",
@@ -1582,6 +1566,22 @@
   "notas": "sin capturas nuevas: no cambia nada que se vea (miradas las de la demo en PC y móvil, siguen bien). Sin versión nueva publicada: el cambio no es jugable todavía (el panel de inventario es otra tarea del hito). Los añadidos al cinturón (bolsas, vainas, ganchos) llegan con la fabricación"
  },
  {
+  "inicio": "2026-10-27T16:52:02+00:00",
+  "fin": "2026-10-27T22:42:46+00:00",
+  "titulo": "Hito 1c: andamio pegado al muro y polea en una viga (carril B)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Andamio (8 varas y 2 cuerdas): va pegado a un muro, o a la obra de un muro, de su casilla, y se gira solo hacia él. Plataforma de varas a la altura del suelo de la planta de encima, barandilla, tornapuntas y escalerilla. Se apilan hasta la planta 3; encima no se puede poner suelo.",
+   "En el juego, Usar al pie sube a la plataforma; con otro andamio encima, sube a ese; en lo alto, baja hasta el pie. Desde la plataforma se lleva lo ligero y se trabaja en las obras de esa planta sin suelo por dentro.",
+   "Polea (1 tabla, 2 cuerdas y 1 hierro): se cuelga de una viga terminada y sirve a las obras de su construcción a la altura de la viga o más abajo. Una persona sola sube lo pesado con el trabajo de dos a pulso: 5 s por tronco y planta, la mitad que con varas (provisional). Al quitar la viga, cae.",
+   "En el juego, si la obra tiene polea, Usar se pone a tirar de ella: el tronco sube colgado de la cuerda y el otro cabo va a las manos. Cada rato queda en el registro con su autor y el método «polea».",
+   "Al unir main otras dos sesiones habían publicado la construcción v25 y v26 y la demo v20 a v22: esto sale como construcción v27 y demo v23."
+  ],
+  "pruebas": "Todas correctas (bash herramientas/probar_todo.sh; tras las últimas uniones con main, otra vez las de node y las de navegador de construcción, demo y jugar en línea): lógica 134/134 (27 nuevas, fallan con MUTAR=1), modelos 117/117 (la plataforma a la altura del suelo falla con MUTAR_SUELO=1), navegador de construcción con andamio y polea; las comprobaciones nuevas de navegador fallaron mientras Usar no subía al andamio. Capturas de cerca miradas en PC y móvil. Una vez falló 1 de 37 en prueba_combate_servidor (del carril A) y pasó las 6 siguientes. No comprobado: el personaje usa el gesto de construir (con el hacha) al tirar de la polea, como ya pasaba con las varas.",
+  "capturas": "capturas/construccion-v27",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-27T21:25:00+01:00",
   "fin": "2026-10-28T00:18:08+01:00",
   "titulo": "Hito 10: el paisaje de cerca, como se ve en el juego",
@@ -1636,19 +1636,37 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-28T02:50:19+00:00",
-  "fin": "2026-10-28T10:53:43+00:00",
-  "titulo": "Hito 1c: contraventana y trampilla (carril B)",
-  "hito": "construccion-mas",
+  "inicio": "2026-10-28T05:40:45+01:00",
+  "fin": "2026-10-28T05:56:43+01:00",
+  "titulo": "Quién trabaja en qué, a la vista: solo sale «en proceso» lo que lleva un agente",
+  "hito": "infra",
   "hecho": [
-   "Contraventana (2 tablas y 2 clavos, 20 kg, en «Acceso», como dice el documento de sistemas): va en un muro con ventana, de troncos o de tablas; dos hojas de tablas con peinazos, bisagras de hierro y tirador. Se pone por el lado de fuera del muro (el que no da al suelo de la casa) y abierta queda de plano contra el muro.",
-   "Trampilla (2 tablas y 2 clavos, 20 kg): va en el hueco de arriba de una escalera de tablas y descansa en los suelos de al lado. Cerrada se pisa como el suelo y la escalera no se puede subir; abierta, se sube y se baja andando como siempre. Se abre desde arriba o desde abajo; estando encima de la escalera no se cierra.",
-   "La bisagra de la trampilla va en un lado de la escalera con suelo al lado, nunca en el de salida: abierta queda de pie en ese borde y no tapa el paso (al principio iba en el arranque y, sin suelo allí, quedaba de pie en el aire: se vio en las capturas y se cambió).",
-   "Muro de tablas con ventana (5 tablas y 5 clavos, 175 kg, aguanta 780 kg; provisional): las tablas se cortan por encima y por debajo de la ventana, con jambas, alféizar y dintel.",
-   "Todo pasa por la lógica pura con su autor (colocar el marco, llevar el material, trabajar y Usar), y se guarda y se carga abierto o cerrado. Al unir main, el carril A había publicado la demo v26: esta sale como demo v27 (construcción v29)."
+   "Cada agente anuncia su tarea al empezar en proyecto/sesion.json: los carriles A y B con «ocupar», como antes, y ahora también las sesiones de chat, con «carriles.mjs chat». Al terminar la sueltan.",
+   "En la web, arriba del todo, un cartel «Ahora mismo» con cada agente que está trabajando (agente A, agente B o chat con valravnx), su tarea, su hito y desde qué hora. Si no trabaja nadie, lo dice.",
+   "En el roadmap, una tarea solo sale «En proceso» (con quién la lleva) si la lleva un agente vivo: que empezó o subió un avance a su rama hace menos de 70 minutos. Las empezadas que no lleva nadie salen «A medias».",
+   "La web lo mira en GitHub al abrirse (el sesion.json de main y el último commit de la rama de cada agente), así que está al día aunque la página se generara antes.",
+   "Lo que está a medias ya no bloquea su hito: un carril lo retoma desde su rama antes de empezar nada nuevo. La tarea de capa, calzado y tocados llevaba a medias desde el 26 oct; queda apuntada su rama para retomarla.",
+   "sesion.json se une solo al fusionar ramas, como el diario y las traducciones: cada agente va en su propia clave.",
+   "Pruebas nuevas de carriles (anunciar del chat, a medias, latido por la rama, retomar, unir sesion.json) y de la web (cartel y roadmap con un estado de GitHub simulado: un agente vivo, un chat vivo por su último avance y un agente cortado). Rotas a propósito, fallan como deben."
   ],
-  "pruebas": "bash herramientas/probar_todo.sh (tras unir main): todo correcto salvo dos pruebas en línea del carril A que fallan solo con la máquina cargada: «Conexiones que se cortan» (la ráfaga de 400 acciones daba 97–99 rechazos en vez de 100; falla igual en main con carga y pasa sola, 34/34) y la de jugar en línea en navegador (cada vez una comprobación distinta de tiempos: ver andar al otro, volver a entrar o volver a conectar; pasó entera sola una vez en esta rama y otra en main). Tras la última unión con main, repetidas solas: lógica 177/177 (26 nuevas, fallan con MUTAR=1), modelos 138/138 (12 nuevas, fallan con MUTAR_CONTRAVENTANA=1), acciones, idiomas, en línea, conexiones y bots; navegador de construcción todo correcto (21 comprobaciones nuevas; las de la trampilla fallan con MUTAR_TRAMPILLA=1) y demo única todo correcto. Capturas miradas en PC y móvil, y la contraventana junto a la cabaña de la prueba de estilo v5 (45_contraventana_junto_a_la_v5). No comprobado: la contraventana y la trampilla en línea con dos jugadores (pasan por la misma acción «usar» que las puertas). En esta sesión, otra sesión del carril B ocupó el carril a las 08:51 mientras esta seguía con las pruebas: esta no lo suelta para no quitárselo.",
-  "capturas": "capturas/construccion-v29",
+  "pruebas": "Carriles 24/24, unión de JSON 19/19, idiomas correcta; web en PC y móvil correcta (también en ruso y sin nadie trabajando). No comprobado: la web publicada contra GitHub de verdad (en la prueba se simula); sin conexión, se queda con lo que traía la página.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T05:19:41+01:00",
+  "fin": "2026-10-28T06:54:01+01:00",
+  "titulo": "Hito 10: valles tallados por los ríos (sin zanjas)",
+  "hito": "mundo",
+  "hecho": [
+   "Medido en el sitio de la captura de valravnx: el ruido de detalle levantaba el fondo del valle unos 50 m sobre el río y el valle se tallaba con un ancho fijo, así que el río quedaba en una zanja de paredes casi verticales",
+   "Junto al río el detalle se apaga y el fondo del valle lo marca el río: lecho, orilla en rampa, vega llana a los lados (ancha en el llano) y laderas con la pendiente limitada (en V cerrada en la montaña)",
+   "En 2.322 puntos de río del mundo, la pendiente más fuerte a ±300 m baja de 1,39 a 0,76 en el 90 % de los casos",
+   "El agua del río se dibuja también en el trozo de cerca, con la orilla lisa, y con el mismo material de lejos y de cerca; en el agua no crece nada",
+   "Pruebas nuevas: sin zanjas junto a los ríos y el agua cubre el lecho bajo la orilla (rotas a propósito una vez); en el navegador, el agua de cerca junto al río",
+   "Los saltos de agua quedan en una tarea aparte; los meandros de cerca, con el agua"
+  ],
+  "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa 66/66, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web en PC y móvil). En línea y cavar fallaron una vez por tiempo con las dos mitades a la vez; solas, correctas",
+  "capturas": "capturas/mapa-v5",
   "estado": "ok"
  },
  {
@@ -1671,20 +1689,20 @@
   "notas": "no comprobado: cortes de verdad entre dos aparatos por internet (solo con servidor local y páginas sin pantalla). En el móvil, en el duelo, los avisos de conexión quedan encima de los de heridas (como ya pasaba con varias heridas)."
  },
  {
-  "inicio": "2026-10-28T05:19:41+01:00",
-  "fin": "2026-10-28T06:54:01+01:00",
-  "titulo": "Hito 10: valles tallados por los ríos (sin zanjas)",
+  "inicio": "2026-10-28T06:58:45+01:00",
+  "fin": "2026-10-28T09:22:53+01:00",
+  "titulo": "Hito 10: agua que se mueve (río, mar, olas que rompen)",
   "hito": "mundo",
   "hecho": [
-   "Medido en el sitio de la captura de valravnx: el ruido de detalle levantaba el fondo del valle unos 50 m sobre el río y el valle se tallaba con un ancho fijo, así que el río quedaba en una zanja de paredes casi verticales",
-   "Junto al río el detalle se apaga y el fondo del valle lo marca el río: lecho, orilla en rampa, vega llana a los lados (ancha en el llano) y laderas con la pendiente limitada (en V cerrada en la montaña)",
-   "En 2.322 puntos de río del mundo, la pendiente más fuerte a ±300 m baja de 1,39 a 0,76 en el 90 % de los casos",
-   "El agua del río se dibuja también en el trozo de cerca, con la orilla lisa, y con el mismo material de lejos y de cerca; en el agua no crece nada",
-   "Pruebas nuevas: sin zanjas junto a los ríos y el agua cubre el lecho bajo la orilla (rotas a propósito una vez); en el navegador, el agua de cerca junto al río",
-   "Los saltos de agua quedan en una tarea aparte; los meandros de cerca, con el agua"
+   "Un solo material de agua para ríos y mar, de lejos y de cerca (Phong de three.js con su luz, sombras y niebla, más un sombreador propio)",
+   "El río corre en su dirección con el método del mapa de flujo de dos fases; la velocidad sale de la pendiente del cauce, y en los torrentes salen regueros de espuma",
+   "El mar tiene oleaje de verdad (tres olas de Gerstner a la velocidad de las olas reales, la grande del oeste) y, en la costa, franjas de espuma que avanzan hacia la orilla",
+   "Color según la hondura y transparencia en la orilla; la espuma y el desvanecido van por la distancia exacta a la orilla, calculada entre los puntos de la rejilla",
+   "La costa ya no es una pared vertical: cortados empinados con las esquinas redondeadas y playas que bajan al agua sin escalón; junto al mar la tierra tiene su bioma",
+   "Pruebas nuevas: la costa no es una pared (rota a propósito); en el navegador, el agua se mueve entre dos capturas (MUTAR_AGUA=1 la congela y la prueba falla)"
   ],
-  "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa 66/66, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web en PC y móvil). En línea y cavar fallaron una vez por tiempo con las dos mitades a la vez; solas, correctas",
-  "capturas": "capturas/mapa-v5",
+  "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa 67/67, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web en PC y móvil). En línea y cavar fallaron por tiempo con las dos mitades a la vez; solas, correctas. No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v6",
   "estado": "ok"
  },
  {
@@ -1706,40 +1724,6 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-28T05:40:45+01:00",
-  "fin": "2026-10-28T05:56:43+01:00",
-  "titulo": "Quién trabaja en qué, a la vista: solo sale «en proceso» lo que lleva un agente",
-  "hito": "infra",
-  "hecho": [
-   "Cada agente anuncia su tarea al empezar en proyecto/sesion.json: los carriles A y B con «ocupar», como antes, y ahora también las sesiones de chat, con «carriles.mjs chat». Al terminar la sueltan.",
-   "En la web, arriba del todo, un cartel «Ahora mismo» con cada agente que está trabajando (agente A, agente B o chat con valravnx), su tarea, su hito y desde qué hora. Si no trabaja nadie, lo dice.",
-   "En el roadmap, una tarea solo sale «En proceso» (con quién la lleva) si la lleva un agente vivo: que empezó o subió un avance a su rama hace menos de 70 minutos. Las empezadas que no lleva nadie salen «A medias».",
-   "La web lo mira en GitHub al abrirse (el sesion.json de main y el último commit de la rama de cada agente), así que está al día aunque la página se generara antes.",
-   "Lo que está a medias ya no bloquea su hito: un carril lo retoma desde su rama antes de empezar nada nuevo. La tarea de capa, calzado y tocados llevaba a medias desde el 26 oct; queda apuntada su rama para retomarla.",
-   "sesion.json se une solo al fusionar ramas, como el diario y las traducciones: cada agente va en su propia clave.",
-   "Pruebas nuevas de carriles (anunciar del chat, a medias, latido por la rama, retomar, unir sesion.json) y de la web (cartel y roadmap con un estado de GitHub simulado: un agente vivo, un chat vivo por su último avance y un agente cortado). Rotas a propósito, fallan como deben."
-  ],
-  "pruebas": "Carriles 24/24, unión de JSON 19/19, idiomas correcta; web en PC y móvil correcta (también en ruso y sin nadie trabajando). No comprobado: la web publicada contra GitHub de verdad (en la prueba se simula); sin conexión, se queda con lo que traía la página.",
-  "estado": "ok"
- },
- {
-  "inicio": "2026-10-28T06:58:45+01:00",
-  "fin": "2026-10-28T09:22:53+01:00",
-  "titulo": "Hito 10: agua que se mueve (río, mar, olas que rompen)",
-  "hito": "mundo",
-  "hecho": [
-   "Un solo material de agua para ríos y mar, de lejos y de cerca (Phong de three.js con su luz, sombras y niebla, más un sombreador propio)",
-   "El río corre en su dirección con el método del mapa de flujo de dos fases; la velocidad sale de la pendiente del cauce, y en los torrentes salen regueros de espuma",
-   "El mar tiene oleaje de verdad (tres olas de Gerstner a la velocidad de las olas reales, la grande del oeste) y, en la costa, franjas de espuma que avanzan hacia la orilla",
-   "Color según la hondura y transparencia en la orilla; la espuma y el desvanecido van por la distancia exacta a la orilla, calculada entre los puntos de la rejilla",
-   "La costa ya no es una pared vertical: cortados empinados con las esquinas redondeadas y playas que bajan al agua sin escalón; junto al mar la tierra tiene su bioma",
-   "Pruebas nuevas: la costa no es una pared (rota a propósito); en el navegador, el agua se mueve entre dos capturas (MUTAR_AGUA=1 la congela y la prueba falla)"
-  ],
-  "pruebas": "Batería completa correcta (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa 67/67, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web en PC y móvil). En línea y cavar fallaron por tiempo con las dos mitades a la vez; solas, correctas. No comprobado: fotogramas en un móvil de verdad",
-  "capturas": "capturas/mapa-v6",
-  "estado": "ok"
- },
- {
   "inicio": "2026-10-28T08:51:14+00:00",
   "fin": "2026-10-28T10:21:48+00:00",
   "titulo": "Hito 1f: bots que andan, construyen y pelean",
@@ -1758,23 +1742,19 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-28T09:20:34+00:00",
-  "fin": "2026-10-28T15:31:25+00:00",
-  "titulo": "Arte: personalización del taller (personaje v16)",
-  "hito": "arte",
+  "inicio": "2026-10-28T02:50:19+00:00",
+  "fin": "2026-10-28T10:53:43+00:00",
+  "titulo": "Hito 1c: contraventana y trampilla (carril B)",
+  "hito": "construccion-mas",
   "hecho": [
-   "Formas de MakeHuman como formas del modelo en cada pieza: peso y músculo (también en la ropa, que engorda o adelgaza con el cuerpo), cara ancha, nariz ancha, nariz larga y mentón, cada una con su «_mas» y su «_menos».",
-   "Se hacen con los mismos ajustes y objetivos de MakeHuman: cada vértice de cada pieza se mueve lo mismo que el punto del cuerpo del que sale, también después de simplificar la malla.",
-   "La piel y el pelo se pintan en gris claro y su color va en el material; el iris va aparte del blanco del ojo. Así el juego cambia piel, ojos y pelo sin rehacer texturas.",
-   "Cejas, pelo pintado y barba (corta o bigote) son calcos sobre la piel, del color del pelo. La cara de la piel ya no se simplifica: si no, la piel los atravesaba en la barbilla.",
-   "En el visor: tono de piel, color de ojos y de pelo (seis de cada), peinado (corto o rapado), barba (corta, bigote o afeitado) y deslizadores de altura, peso, músculo, cara, nariz y mentón, sin volver a cargar el modelo. Se guarda en el navegador.",
-   "Lógica pura del aspecto en src/logica/aspecto.js (valores por defecto, recortes y validación), para que el servidor la use luego.",
-   "La construcción, la demo y el duelo ya pasan el aspecto al jugador en el código; no se han publicado versiones nuevas de esos prototipos.",
-   "Personajes nuevos en recursos/personajes/taller-v9/ (unos 2,6 MB el hombre y 2,7 MB la mujer, antes 1,7 y 1,8: las formas van sin cuantizar).",
-   "Provisional: la altura escala el personaje entero (±6 %); los colores y el alcance de los deslizadores también son provisionales. Tarea nueva: que los demás jugadores en línea vean tu aspecto."
+   "Contraventana (2 tablas y 2 clavos, 20 kg, en «Acceso», como dice el documento de sistemas): va en un muro con ventana, de troncos o de tablas; dos hojas de tablas con peinazos, bisagras de hierro y tirador. Se pone por el lado de fuera del muro (el que no da al suelo de la casa) y abierta queda de plano contra el muro.",
+   "Trampilla (2 tablas y 2 clavos, 20 kg): va en el hueco de arriba de una escalera de tablas y descansa en los suelos de al lado. Cerrada se pisa como el suelo y la escalera no se puede subir; abierta, se sube y se baja andando como siempre. Se abre desde arriba o desde abajo; estando encima de la escalera no se cierra.",
+   "La bisagra de la trampilla va en un lado de la escalera con suelo al lado, nunca en el de salida: abierta queda de pie en ese borde y no tapa el paso (al principio iba en el arranque y, sin suelo allí, quedaba de pie en el aire: se vio en las capturas y se cambió).",
+   "Muro de tablas con ventana (5 tablas y 5 clavos, 175 kg, aguanta 780 kg; provisional): las tablas se cortan por encima y por debajo de la ventana, con jambas, alféizar y dintel.",
+   "Todo pasa por la lógica pura con su autor (colocar el marco, llevar el material, trabajar y Usar), y se guarda y se carga abierto o cerrado. Al unir main, el carril A había publicado la demo v26: esta sale como demo v27 (construcción v29)."
   ],
-  "pruebas": "Todas (probar_todo.sh) tras unir main: correctas salvo «jugar en línea» y la web, que fallaron una vez con el servidor cargado (un mensaje tardó más de 5 s; la página tardó en cargar) y pasaron al repetirlas solas. La del personaje, repetida sola tras su último cambio: correcta. Tras volver a unir main (mapa y servidor en internet), repetidas las de node (instalado Caddy, que pide la prueba nueva del servidor en internet) y la del mapa: correctas. Las dos pruebas nuevas y las comprobaciones nuevas del personaje fallan con MUTAR=1. Capturas del visor en PC y móvil revisadas, y la cara lado a lado con la v15. No comprobado: el rendimiento en un móvil de verdad.",
-  "capturas": "capturas/personaje-v16",
+  "pruebas": "bash herramientas/probar_todo.sh (tras unir main): todo correcto salvo dos pruebas en línea del carril A que fallan solo con la máquina cargada: «Conexiones que se cortan» (la ráfaga de 400 acciones daba 97–99 rechazos en vez de 100; falla igual en main con carga y pasa sola, 34/34) y la de jugar en línea en navegador (cada vez una comprobación distinta de tiempos: ver andar al otro, volver a entrar o volver a conectar; pasó entera sola una vez en esta rama y otra en main). Tras la última unión con main, repetidas solas: lógica 177/177 (26 nuevas, fallan con MUTAR=1), modelos 138/138 (12 nuevas, fallan con MUTAR_CONTRAVENTANA=1), acciones, idiomas, en línea, conexiones y bots; navegador de construcción todo correcto (21 comprobaciones nuevas; las de la trampilla fallan con MUTAR_TRAMPILLA=1) y demo única todo correcto. Capturas miradas en PC y móvil, y la contraventana junto a la cabaña de la prueba de estilo v5 (45_contraventana_junto_a_la_v5). No comprobado: la contraventana y la trampilla en línea con dos jugadores (pasan por la misma acción «usar» que las puertas). En esta sesión, otra sesión del carril B ocupó el carril a las 08:51 mientras esta seguía con las pruebas: esta no lo suelta para no quitárselo.",
+  "capturas": "capturas/construccion-v29",
   "estado": "ok"
  },
  {
@@ -1815,6 +1795,22 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-28T12:35:33+01:00",
+  "fin": "2026-10-28T14:51:26+01:00",
+  "titulo": "Hito 10: roca escarpada de cerca",
+  "hito": "mundo",
+  "hecho": [
+   "Un terreno de alturas no puede tener salientes ni grietas: como hacen los juegos, las paredes se cubren de piezas de roca 3D encajadas en ellas",
+   "Cinco piezas de roca hechas por código: losas con la cara de fuera casi plana, cortadas en caras y aristas y escalonadas en estratos, con la sombra horneada abajo y en las juntas",
+   "Textura de roca propia: vetas de estrato, grano, grietas finas con su labio claro y liquen; el tono es el de la roca del sitio, apagado como el del estilo v5",
+   "Se reparten por las paredes de más de unos 49°, de 2 a 8 m, mirando hacia fuera y medio metidas; entre pieza y pieza la pared queda en sombra",
+   "Prueba nueva en el navegador: el acantilado de costa lleva piezas de roca (MUTAR_ROCA=1 la rompe y falla)"
+  ],
+  "pruebas": "Batería completa correcta, esta vez seguida y no en dos mitades a la vez (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web). No comprobado: fotogramas en un móvil de verdad (el trozo de cerca del acantilado pasa de unos 500.000 triángulos)",
+  "capturas": "capturas/mapa-v8",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-28T12:32:34+00:00",
   "fin": "2026-10-28T14:53:47+00:00",
   "titulo": "Hito 1f: servidor de prueba en internet, listo para crearlo",
@@ -1833,36 +1829,39 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-28T12:35:33+01:00",
-  "fin": "2026-10-28T14:51:26+01:00",
-  "titulo": "Hito 10: roca escarpada de cerca",
+  "inicio": "2026-10-28T15:45:46+01:00",
+  "fin": "2026-10-28T16:06:02+01:00",
+  "titulo": "Nombres del mundo: Kinland y sus cinco regiones",
   "hito": "mundo",
   "hecho": [
-   "Un terreno de alturas no puede tener salientes ni grietas: como hacen los juegos, las paredes se cubren de piezas de roca 3D encajadas en ellas",
-   "Cinco piezas de roca hechas por código: losas con la cara de fuera casi plana, cortadas en caras y aristas y escalonadas en estratos, con la sombra horneada abajo y en las juntas",
-   "Textura de roca propia: vetas de estrato, grano, grietas finas con su labio claro y liquen; el tono es el de la roca del sitio, apagado como el del estilo v5",
-   "Se reparten por las paredes de más de unos 49°, de 2 a 8 m, mirando hacia fuera y medio metidas; entre pieza y pieza la pared queda en sombra",
-   "Prueba nueva en el navegador: el acantilado de costa lleva piezas de roca (MUTAR_ROCA=1 la rompe y falla)"
+   "valravnx elige los nombres: el continente es Kinland y sus regiones Whitholm (la isla del noreste), Eikwold (noroeste), Rudmere (suroeste), Highfell (el macizo central) y Storaa (sureste, el gran río).",
+   "Antes de ponerlos se buscó que no fueran de otro juego, novela o marca: se descartaron Hornfell (casi igual que una región de otro juego de supervivencia) y Highmark (una aseguradora conocida).",
+   "Son regiones, no países (los países, si llegan, los harán los jugadores): «país» pasa a «región» en el mapa, el GDD, sistemas y el análisis, en los tres idiomas. El GDD guarda los nombres como decisión.",
+   "En el mapa cada región sale con su nombre y «Kinland» va en el mar, bajo la costa sur; al tocar un sitio dice en qué región está. En ruso los nombres van en cirílico. En otra semilla se llaman «Región 1» a «Región 5».",
+   "Prueba nueva del mapa: cada nombre cae en su tierra (Whitholm es la isla, Highfell tiene la cumbre más alta, Storaa el gran río, Rudmere es la más cálida, Eikwold está al noroeste). Con los nombres al revés falla, como debe. Publicado el mapa del mundo v9."
   ],
-  "pruebas": "Batería completa correcta, esta vez seguida y no en dos mitades a la vez (lógica, modelos, combate, acciones, inventario, servidor, presencia, en línea, combate en el servidor, mapa, idiomas; navegador de construcción, combate, estilo, personaje, demo, en línea, duelo en línea, recursos, inglés, cavar, mapa y web). No comprobado: fotogramas en un móvil de verdad (el trozo de cerca del acantilado pasa de unos 500.000 triángulos)",
-  "capturas": "capturas/mapa-v8",
+  "pruebas": "Mapa 75/75 y su navegador en PC y móvil correctos; lógica 177/177, modelos 138/138, combate 80/80, acciones 41/41, idiomas, carriles 24/24 y web correctos. El mapa en ruso, mirado en captura.",
+  "capturas": "capturas/mapa-v9",
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-28T13:00:52+00:00",
-  "fin": "2026-10-28T18:06:31+00:00",
-  "titulo": "Hito 1c: tejado de teja (carril B)",
-  "hito": "construccion-mas",
+  "inicio": "2026-10-28T09:20:34+00:00",
+  "fin": "2026-10-28T15:31:25+00:00",
+  "titulo": "Arte: personalización del taller (personaje v16)",
+  "hito": "arte",
   "hecho": [
-   "Tejado de teja (10 tejas y 1 tronco, 200 kg, en «Tejados»): el documento de sistemas dice «10 tejas + vigas»; las vigas van como 1 tronco (provisional, anotado en el registro de decisiones).",
-   "Material nuevo «teja», ligero (se sube a mano por la escalera). Las partidas guardadas de antes se cargan con las 100 tejas de partida, sin perder nada.",
-   "Teja curva de barro cocido, de color apagado: canales boca arriba y, encima de cada junta, cobijas boca abajo, cada una montada sobre la de abajo y con su tono; tabla de remate en los lados que vuelan y caballete de cobijas grandes asentadas en barro en la cumbrera. Los tramos de al lado siguen el dibujo sin que dos tejas caigan en el mismo sitio. Comparada en captura con la cabaña de la prueba de estilo v5.",
-   "Para el móvil, los canales van de una pieza por columna (casi no se ven) y solo las cobijas van sueltas: un tramo suelto tiene unos 5.000 triángulos, unas 2,4 veces los de la paja (medido en la prueba de modelos).",
-   "Prueba de carga: una casa de 3×3 y 2 plantas de troncos con teja se hace entera (la pieza más cargada pasa del 70 % con paja al 76 %; los cimientos cargan 1080 kg más); 3 plantas sobre cimiento de piedra, al 99 %; con muros de zarzo, una casa de 3×3 deja los muros del medio al tope (250 kg) y rechaza un tramo más de teja apoyado en el de al lado (de paja sí cabe).",
-   "Que no se pudre ni arde fácil queda anotado en la pieza: aún no hay mantenimiento ni fuego. El muestrario de tejados tiene ahora dos casas con teja."
+   "Formas de MakeHuman como formas del modelo en cada pieza: peso y músculo (también en la ropa, que engorda o adelgaza con el cuerpo), cara ancha, nariz ancha, nariz larga y mentón, cada una con su «_mas» y su «_menos».",
+   "Se hacen con los mismos ajustes y objetivos de MakeHuman: cada vértice de cada pieza se mueve lo mismo que el punto del cuerpo del que sale, también después de simplificar la malla.",
+   "La piel y el pelo se pintan en gris claro y su color va en el material; el iris va aparte del blanco del ojo. Así el juego cambia piel, ojos y pelo sin rehacer texturas.",
+   "Cejas, pelo pintado y barba (corta o bigote) son calcos sobre la piel, del color del pelo. La cara de la piel ya no se simplifica: si no, la piel los atravesaba en la barbilla.",
+   "En el visor: tono de piel, color de ojos y de pelo (seis de cada), peinado (corto o rapado), barba (corta, bigote o afeitado) y deslizadores de altura, peso, músculo, cara, nariz y mentón, sin volver a cargar el modelo. Se guarda en el navegador.",
+   "Lógica pura del aspecto en src/logica/aspecto.js (valores por defecto, recortes y validación), para que el servidor la use luego.",
+   "La construcción, la demo y el duelo ya pasan el aspecto al jugador en el código; no se han publicado versiones nuevas de esos prototipos.",
+   "Personajes nuevos en recursos/personajes/taller-v9/ (unos 2,6 MB el hombre y 2,7 MB la mujer, antes 1,7 y 1,8: las formas van sin cuantizar).",
+   "Provisional: la altura escala el personaje entero (±6 %); los colores y el alcance de los deslizadores también son provisionales. Tarea nueva: que los demás jugadores en línea vean tu aspecto."
   ],
-  "pruebas": "Todas con bash herramientas/probar_todo.sh, dos veces (antes y después de unir main): todo correcto salvo tres que fallaron solo dentro de la tanda y pasan repetidas solas: «Jugadores que se ven, con lag simulado» (15/15 sola), la web (lee en GitHub quién trabaja en ese momento: pasó sola) y la del servidor en internet del carril A, que necesita Caddy (instalado aquí con apt-get, 19/19). Tras la última unión con main, repetidas: lógica 189/189 (12 nuevas, 5 fallan con MUTAR=1), modelos 144/144 (4 nuevas; la de los triángulos falla con MUTAR_TEJA=1), combate, acciones, inventario, idiomas, servidor y en línea; navegador de construcción todo correcto (4 comprobaciones nuevas; la del cobro de tejas falla con una versión que cobra 9) y demo única todo correcto. Capturas miradas en PC y móvil, y el tejado junto a la cabaña de la prueba de estilo v5 (48_tejado_teja_junto_a_la_v5). No comprobado: el tejado de teja en línea con dos jugadores (va por las mismas acciones que los demás tejados). Mientras corrían las pruebas, otras sesiones del carril B ocuparon el carril para otras tareas: esta no lo suelta para no quitárselo.",
-  "capturas": "capturas/construccion-v30",
+  "pruebas": "Todas (probar_todo.sh) tras unir main: correctas salvo «jugar en línea» y la web, que fallaron una vez con el servidor cargado (un mensaje tardó más de 5 s; la página tardó en cargar) y pasaron al repetirlas solas. La del personaje, repetida sola tras su último cambio: correcta. Tras volver a unir main (mapa y servidor en internet), repetidas las de node (instalado Caddy, que pide la prueba nueva del servidor en internet) y la del mapa: correctas. Las dos pruebas nuevas y las comprobaciones nuevas del personaje fallan con MUTAR=1. Capturas del visor en PC y móvil revisadas, y la cara lado a lado con la v15. No comprobado: el rendimiento en un móvil de verdad.",
+  "capturas": "capturas/personaje-v16",
   "estado": "ok"
  },
  {
@@ -1881,21 +1880,20 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-28T14:53:19+00:00",
-  "fin": "2026-10-28T21:54:09+00:00",
-  "titulo": "Hito duelo: curación de heridas (combate v16)",
-  "hito": "duelo",
+  "inicio": "2026-10-28T13:00:52+00:00",
+  "fin": "2026-10-28T18:06:31+00:00",
+  "titulo": "Hito 1c: tejado de teja (carril B)",
+  "hito": "construccion-mas",
   "hecho": [
-   "Curación en la lógica pura, como dice el GDD con la tabla del análisis: vendar, coser, cauterizar, entablillar y emplasto de hierbas, cada una para su tipo de herida, con su tiempo y su material",
-   "En pleno combate se puede, pero lento y quedando vendido: mientras curas no atacas ni paras y vas a un cuarto de la velocidad; si te hieren o echas a correr, la cura se pierde sin gastar material",
-   "Descanso: las heridas que ya no sangran bajan de grado con el tiempo (antes con emplasto) y la sangre se recupera despacio; valores provisionales en el registro de decisiones",
-   "Curarse es una acción con autor que queda en el registro, y en línea una intención más que resuelve el servidor (también dejar la cura a medias)",
-   "En el duelo: tocar el aviso de una herida enseña qué se le puede hacer y cuánto material queda; la tecla C y el botón Curar tratan la más urgente",
-   "Las heridas tratadas se ven en el personaje: venda de lino enrollada al grosor del cuerpo, tablillas, puntos más oscuros o quemadura",
-   "Arreglo: los avisos de la derecha se rehacían cada fotograma mientras sangrabas y costaba tocarlos"
+   "Tejado de teja (10 tejas y 1 tronco, 200 kg, en «Tejados»): el documento de sistemas dice «10 tejas + vigas»; las vigas van como 1 tronco (provisional, anotado en el registro de decisiones).",
+   "Material nuevo «teja», ligero (se sube a mano por la escalera). Las partidas guardadas de antes se cargan con las 100 tejas de partida, sin perder nada.",
+   "Teja curva de barro cocido, de color apagado: canales boca arriba y, encima de cada junta, cobijas boca abajo, cada una montada sobre la de abajo y con su tono; tabla de remate en los lados que vuelan y caballete de cobijas grandes asentadas en barro en la cumbrera. Los tramos de al lado siguen el dibujo sin que dos tejas caigan en el mismo sitio. Comparada en captura con la cabaña de la prueba de estilo v5.",
+   "Para el móvil, los canales van de una pieza por columna (casi no se ven) y solo las cobijas van sueltas: un tramo suelto tiene unos 5.000 triángulos, unas 2,4 veces los de la paja (medido en la prueba de modelos).",
+   "Prueba de carga: una casa de 3×3 y 2 plantas de troncos con teja se hace entera (la pieza más cargada pasa del 70 % con paja al 76 %; los cimientos cargan 1080 kg más); 3 plantas sobre cimiento de piedra, al 99 %; con muros de zarzo, una casa de 3×3 deja los muros del medio al tope (250 kg) y rechaza un tramo más de teja apoyado en el de al lado (de paja sí cabe).",
+   "Que no se pudre ni arde fácil queda anotado en la pieza: aún no hay mantenimiento ni fuego. El muestrario de tejados tiene ahora dos casas con teja."
   ],
-  "pruebas": "Batería completa una vez (todo correcto salvo dos fallos sueltos que no tocan el combate: la ráfaga de prueba_conexiones, ya corregida en main, y una vez jugar en línea); tras unir main tres veces, otra vez las de node, combate, duelo en línea, jugar en línea y demo: correctas. Lógica de combate 105/105 con 25 nuevas (MUTAR=1 rompe la cura y 4 fallan); combate en el servidor 62/62 con 7 nuevas; navegador del combate con 12 comprobaciones nuevas en PC y móvil. Capturas de cerca de la venda y las tablillas miradas. Falla a veces: jugar en línea («el móvil ve el mojón de PC», espera de 5 s; pasa sola y en main), y duelo en línea si la herida al azar es muy grave en el torso (se desangra durante la reconexión). Hizo falta instalar caddy para prueba_nube. No comprobado: la venda del muslo asoma un poco por la falda de la túnica en guardia; el rival de la máquina no se cura.",
-  "capturas": "capturas/combate-v16",
+  "pruebas": "Todas con bash herramientas/probar_todo.sh, dos veces (antes y después de unir main): todo correcto salvo tres que fallaron solo dentro de la tanda y pasan repetidas solas: «Jugadores que se ven, con lag simulado» (15/15 sola), la web (lee en GitHub quién trabaja en ese momento: pasó sola) y la del servidor en internet del carril A, que necesita Caddy (instalado aquí con apt-get, 19/19). Tras la última unión con main, repetidas: lógica 189/189 (12 nuevas, 5 fallan con MUTAR=1), modelos 144/144 (4 nuevas; la de los triángulos falla con MUTAR_TEJA=1), combate, acciones, inventario, idiomas, servidor y en línea; navegador de construcción todo correcto (4 comprobaciones nuevas; la del cobro de tejas falla con una versión que cobra 9) y demo única todo correcto. Capturas miradas en PC y móvil, y el tejado junto a la cabaña de la prueba de estilo v5 (48_tejado_teja_junto_a_la_v5). No comprobado: el tejado de teja en línea con dos jugadores (va por las mismas acciones que los demás tejados). Mientras corrían las pruebas, otras sesiones del carril B ocuparon el carril para otras tareas: esta no lo suelta para no quitárselo.",
+  "capturas": "capturas/construccion-v30",
   "estado": "ok"
  },
  {
@@ -1935,19 +1933,33 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-28T15:45:46+01:00",
-  "fin": "2026-10-28T16:06:02+01:00",
-  "titulo": "Nombres del mundo: Kinland y sus cinco regiones",
-  "hito": "mundo",
+  "inicio": "2026-10-28T19:58:44+01:00",
+  "fin": "2026-10-28T20:24:00+01:00",
+  "titulo": "Arreglos del juego en línea: verse al construir después del duelo, aviso de servidor antiguo y jugar_en_casa.bat al día",
+  "hito": "prueba-online",
   "hecho": [
-   "valravnx elige los nombres: el continente es Kinland y sus regiones Whitholm (la isla del noreste), Eikwold (noroeste), Rudmere (suroeste), Highfell (el macizo central) y Storaa (sureste, el gran río).",
-   "Antes de ponerlos se buscó que no fueran de otro juego, novela o marca: se descartaron Hornfell (casi igual que una región de otro juego de supervivencia) y Highmark (una aseguradora conocida).",
-   "Son regiones, no países (los países, si llegan, los harán los jugadores): «país» pasa a «región» en el mapa, el GDD, sistemas y el análisis, en los tres idiomas. El GDD guarda los nombres como decisión.",
-   "En el mapa cada región sale con su nombre y «Kinland» va en el mar, bajo la costa sur; al tocar un sitio dice en qué región está. En ruso los nombres van en cirílico. En otra semilla se llaman «Región 1» a «Región 5».",
-   "Prueba nueva del mapa: cada nombre cae en su tierra (Whitholm es la isla, Highfell tiene la cumbre más alta, Storaa el gran río, Rudmere es la más cálida, Eikwold está al noroeste). Con los nombres al revés falla, como debe. Publicado el mapa del mundo v9."
+   "valravnx y su pareja, en el duelo en línea, salían los dos «esperando rival»: el servidor de su PC era el que bajó jugar_en_casa.bat el 27 oct, de antes del duelo en línea (el .bat preguntaba si bajar la nueva y a los 10 s seguía con «no»). Tras actualizarlo, se vieron.",
+   "Después, al pasar del duelo a construir no se veían: la pestaña es el mismo jugador para el servidor y seguía en la liza, y la construcción no dibuja a los de la liza. Ahora, al entrar a construir, el juego le dice al servidor que sale de la liza (vale también si cayó en el duelo).",
+   "El servidor dice su versión al conectar y el juego avisa (línea de estado y aviso) si es más antigua de lo que necesita, con cómo actualizarlo. jugar_en_casa.bat mira en GitHub si hay versión nueva y la baja solo; si no puede mirarlo, pregunta como antes.",
+   "Pruebas nuevas: del duelo a construir en la misma pestaña los dos se ven (sin el arreglo, no se ven); salir de la liza en la lógica del combate; la versión del protocolo. Publicada la alpha (demo única) v29."
   ],
-  "pruebas": "Mapa 75/75 y su navegador en PC y móvil correctos; lógica 177/177, modelos 138/138, combate 80/80, acciones 41/41, idiomas, carriles 24/24 y web correctos. El mapa en ruso, mirado en captura.",
-  "capturas": "capturas/mapa-v9",
+  "pruebas": "Duelo en línea y construir en línea en el navegador (PC y móvil, con servidor local) correctos; servidor 18/18, combate del servidor 57/57, conexiones 34/34, en línea 16/16, lógica 189/189, modelos 144/144, combate 80/80, idiomas correctos. El aviso de servidor antiguo, mirado en captura con un servidor falso como el viejo. jugar_en_casa.bat: la orden de PowerShell que mira la versión, probada con PowerShell 7 en Linux. No comprobado: el .bat entero en Windows.",
+  "capturas": "capturas/demo-v29",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T19:23:07+00:00",
+  "fin": "2026-10-28T19:24:54+00:00",
+  "titulo": "Hito 3: planificación de estaciones y crafting",
+  "hito": "crafting",
+  "hecho": [
+   "carriles.mjs elige para el carril A empezar el hito 3, porque los hitos en curso con tareas pendientes los lleva otro agente vivo o una sesión de chat.",
+   "Leídos los apartados 9 y «Fabricar» del GDD y los apartados 2, 3, 7, 8, 10 y 11 del documento de sistemas. Las cifras de estaciones, recetas y durabilidad son propuestas del documento; se usan como valores iniciales para ajustar probando.",
+   "Hito desglosado en 10 tareas de una sesión: recoger lo de N0, estaciones y recetas en la lógica pura, desbloqueo por práctica, estaciones construidas y con el estilo v5, panel de la estación, objetos fabricados con el estilo v5, durabilidad, reparar, el primer día recorrido en la demo, y la revisión final.",
+   "Primeras estaciones: hoguera, piedra de tallar y banco de trabajo de tronco. Las demás de N1 (secadero, curtido, horno de barro, carbonera) piden pieles, carne o harina, que llegan con los hitos de supervivencia, fauna y granja; el tomo de recetas, con el escritorio de N2."
+  ],
+  "pruebas": "Sin cambios de código. Web reconstruida sin errores.",
+  "capturas": "",
   "estado": "ok"
  },
  {
@@ -2002,21 +2014,6 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-28T19:23:07+00:00",
-  "fin": "2026-10-28T19:24:54+00:00",
-  "titulo": "Hito 3: planificación de estaciones y crafting",
-  "hito": "crafting",
-  "hecho": [
-   "carriles.mjs elige para el carril A empezar el hito 3, porque los hitos en curso con tareas pendientes los lleva otro agente vivo o una sesión de chat.",
-   "Leídos los apartados 9 y «Fabricar» del GDD y los apartados 2, 3, 7, 8, 10 y 11 del documento de sistemas. Las cifras de estaciones, recetas y durabilidad son propuestas del documento; se usan como valores iniciales para ajustar probando.",
-   "Hito desglosado en 10 tareas de una sesión: recoger lo de N0, estaciones y recetas en la lógica pura, desbloqueo por práctica, estaciones construidas y con el estilo v5, panel de la estación, objetos fabricados con el estilo v5, durabilidad, reparar, el primer día recorrido en la demo, y la revisión final.",
-   "Primeras estaciones: hoguera, piedra de tallar y banco de trabajo de tronco. Las demás de N1 (secadero, curtido, horno de barro, carbonera) piden pieles, carne o harina, que llegan con los hitos de supervivencia, fauna y granja; el tomo de recetas, con el escritorio de N2."
-  ],
-  "pruebas": "Sin cambios de código. Web reconstruida sin errores.",
-  "capturas": "",
-  "estado": "ok"
- },
- {
   "inicio": "2026-10-28T19:29:42+01:00",
   "fin": "2026-10-28T21:39:03+01:00",
   "titulo": "Hito 10: laderas de montaña sin escalones",
@@ -2032,18 +2029,21 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-28T19:58:44+01:00",
-  "fin": "2026-10-28T20:24:00+01:00",
-  "titulo": "Arreglos del juego en línea: verse al construir después del duelo, aviso de servidor antiguo y jugar_en_casa.bat al día",
-  "hito": "prueba-online",
+  "inicio": "2026-10-28T14:53:19+00:00",
+  "fin": "2026-10-28T21:54:09+00:00",
+  "titulo": "Hito duelo: curación de heridas (combate v16)",
+  "hito": "duelo",
   "hecho": [
-   "valravnx y su pareja, en el duelo en línea, salían los dos «esperando rival»: el servidor de su PC era el que bajó jugar_en_casa.bat el 27 oct, de antes del duelo en línea (el .bat preguntaba si bajar la nueva y a los 10 s seguía con «no»). Tras actualizarlo, se vieron.",
-   "Después, al pasar del duelo a construir no se veían: la pestaña es el mismo jugador para el servidor y seguía en la liza, y la construcción no dibuja a los de la liza. Ahora, al entrar a construir, el juego le dice al servidor que sale de la liza (vale también si cayó en el duelo).",
-   "El servidor dice su versión al conectar y el juego avisa (línea de estado y aviso) si es más antigua de lo que necesita, con cómo actualizarlo. jugar_en_casa.bat mira en GitHub si hay versión nueva y la baja solo; si no puede mirarlo, pregunta como antes.",
-   "Pruebas nuevas: del duelo a construir en la misma pestaña los dos se ven (sin el arreglo, no se ven); salir de la liza en la lógica del combate; la versión del protocolo. Publicada la alpha (demo única) v29."
+   "Curación en la lógica pura, como dice el GDD con la tabla del análisis: vendar, coser, cauterizar, entablillar y emplasto de hierbas, cada una para su tipo de herida, con su tiempo y su material",
+   "En pleno combate se puede, pero lento y quedando vendido: mientras curas no atacas ni paras y vas a un cuarto de la velocidad; si te hieren o echas a correr, la cura se pierde sin gastar material",
+   "Descanso: las heridas que ya no sangran bajan de grado con el tiempo (antes con emplasto) y la sangre se recupera despacio; valores provisionales en el registro de decisiones",
+   "Curarse es una acción con autor que queda en el registro, y en línea una intención más que resuelve el servidor (también dejar la cura a medias)",
+   "En el duelo: tocar el aviso de una herida enseña qué se le puede hacer y cuánto material queda; la tecla C y el botón Curar tratan la más urgente",
+   "Las heridas tratadas se ven en el personaje: venda de lino enrollada al grosor del cuerpo, tablillas, puntos más oscuros o quemadura",
+   "Arreglo: los avisos de la derecha se rehacían cada fotograma mientras sangrabas y costaba tocarlos"
   ],
-  "pruebas": "Duelo en línea y construir en línea en el navegador (PC y móvil, con servidor local) correctos; servidor 18/18, combate del servidor 57/57, conexiones 34/34, en línea 16/16, lógica 189/189, modelos 144/144, combate 80/80, idiomas correctos. El aviso de servidor antiguo, mirado en captura con un servidor falso como el viejo. jugar_en_casa.bat: la orden de PowerShell que mira la versión, probada con PowerShell 7 en Linux. No comprobado: el .bat entero en Windows.",
-  "capturas": "capturas/demo-v29",
+  "pruebas": "Batería completa una vez (todo correcto salvo dos fallos sueltos que no tocan el combate: la ráfaga de prueba_conexiones, ya corregida en main, y una vez jugar en línea); tras unir main tres veces, otra vez las de node, combate, duelo en línea, jugar en línea y demo: correctas. Lógica de combate 105/105 con 25 nuevas (MUTAR=1 rompe la cura y 4 fallan); combate en el servidor 62/62 con 7 nuevas; navegador del combate con 12 comprobaciones nuevas en PC y móvil. Capturas de cerca de la venda y las tablillas miradas. Falla a veces: jugar en línea («el móvil ve el mojón de PC», espera de 5 s; pasa sola y en main), y duelo en línea si la herida al azar es muy grave en el torso (se desangra durante la reconexión). Hizo falta instalar caddy para prueba_nube. No comprobado: la venda del muslo asoma un poco por la falda de la túnica en guardia; el rival de la máquina no se cura.",
+  "capturas": "capturas/combate-v16",
   "estado": "ok"
  },
  {
@@ -2059,6 +2059,23 @@
   ],
   "pruebas": "Construcción en el navegador (PC y móvil) 136 correctas; construir en línea, duelo en línea y la alpha en el navegador correctos; lógica 203/203, modelos 159/159, combate 105/105, servidor 18/18, combate del servidor 64/64, en línea 21/21, conexiones 34/34, inventario 120/120, mapa 76/76. Los milisegundos son de esta máquina de pruebas (sin tarjeta gráfica); en un PC o un móvil de verdad no están medidos.",
   "capturas": "capturas/demo-v32",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-28T21:54:37+01:00",
+  "fin": "2026-10-29T03:22:21+01:00",
+  "titulo": "Hito 10: saltos de agua",
+  "hito": "mundo",
+  "hecho": [
+   "Donde el río baja mucho en un tramo de roca dura (granito, caliza o pizarra), uno de cada siete tramos concentra casi todo el desnivel en un salto de 4 a 35 m; salen unos 750 en el mundo",
+   "Aguas abajo del salto el río va más hondo y talla su garganta",
+   "El agua cae en una lámina con chorros blancos y hace una poza de espuma al pie; las paredes de alrededor se cubren de piezas de roca, apiladas hasta arriba en las paredes altas",
+   "De lejos, la cinta del río baja por el salto como una franja blanca",
+   "La cámara ya no se puede meter por debajo del suelo",
+   "Pruebas nuevas: número, roca y altura de los saltos y que el desnivel se vea de verdad; en el navegador, la lámina empinada con espuma en un salto de 35 m"
+  ],
+  "pruebas": "Batería completa correcta (el combate en el navegador falló una vez por lentitud del contenedor y pasó al repetirlo); tras unir main, idiomas, generador del mapa y navegador del mapa otra vez. No comprobado: fotogramas en un móvil de verdad",
+  "capturas": "capturas/mapa-v12",
   "estado": "ok"
  },
  {
@@ -2096,23 +2113,6 @@
   ],
   "pruebas": "Todas las de herramientas/probar_todo.sh, pasadas una a una porque la máquina se reinició dos veces a media batería: todo correcto, también tras unir main dos veces (curación de heridas, tirones, peinados y saltos de agua). Lógica 225/225, modelos 169/169; navegador de construcción, demo, en línea, duelo, idiomas, mapa y web correctos. No comprobado: que MUTAR_CHIMENEA=1 rompa la prueba de navegador (la de construcción tarda unos 45 minutos aquí), ni los fotogramas en un móvil de verdad con la chimenea encendida.",
   "capturas": "capturas/construccion-v32",
-  "estado": "ok"
- },
- {
-  "inicio": "2026-10-28T21:54:37+01:00",
-  "fin": "2026-10-29T03:22:21+01:00",
-  "titulo": "Hito 10: saltos de agua",
-  "hito": "mundo",
-  "hecho": [
-   "Donde el río baja mucho en un tramo de roca dura (granito, caliza o pizarra), uno de cada siete tramos concentra casi todo el desnivel en un salto de 4 a 35 m; salen unos 750 en el mundo",
-   "Aguas abajo del salto el río va más hondo y talla su garganta",
-   "El agua cae en una lámina con chorros blancos y hace una poza de espuma al pie; las paredes de alrededor se cubren de piezas de roca, apiladas hasta arriba en las paredes altas",
-   "De lejos, la cinta del río baja por el salto como una franja blanca",
-   "La cámara ya no se puede meter por debajo del suelo",
-   "Pruebas nuevas: número, roca y altura de los saltos y que el desnivel se vea de verdad; en el navegador, la lámina empinada con espuma en un salto de 35 m"
-  ],
-  "pruebas": "Batería completa correcta (el combate en el navegador falló una vez por lentitud del contenedor y pasó al repetirlo); tras unir main, idiomas, generador del mapa y navegador del mapa otra vez. No comprobado: fotogramas en un móvil de verdad",
-  "capturas": "capturas/mapa-v12",
   "estado": "ok"
  },
  {
@@ -2183,41 +2183,6 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-29T09:20:40+00:00",
-  "fin": "2026-10-29T14:50:50+00:00",
-  "titulo": "Hito 1c: adarve detrás de la empalizada (carril A)",
-  "hito": "construccion-mas",
-  "hecho": [
-   "Pieza nueva, el adarve (sistemas: tablas + postes, N2, 100 kg, sostiene 300): un piso de tablas a 1,8 m sobre cuatro postes, dos largueros, tres viguetas, clavos y dos tornapuntas, con el estilo v5. Va en una casilla de la planta baja junto a una empalizada terminada y se arrima sola a ella; los tramos seguidos hacen una sola pasarela. Lógica pura con autor; si se quita su empalizada, cae con ella.",
-   "Se sube por una escalera de mano (Usar sube y baja) o de tablas (andando) puesta en la casilla de delante y girada hacia él: las dos salen más cortas, hasta su piso, y el fantasma ya lo enseña. Por debajo del piso no se pasa; arriba, la empalizada no se salta y por los otros lados se cae.",
-   "Provisional (en el registro de decisiones): piso a 1,8 m, para que con la empalizada de 3 m asomen la cabeza y los hombros entre las puntas (a 1,5 m, la primera prueba, no se veía nada por encima); ocupa toda la casilla; cuesta 4 tablas, 4 clavos y 2 troncos; el peso de la gente encima aún no se cuenta.",
-   "Arreglos de paso: lo del suelo (rocas, árboles, matas) ya no choca desde un adarve o una planta de arriba (una roca bajo el adarve paraba al que andaba por él), y bajo las escaleras y el adarve se despeja la hierba de toda la casilla.",
-   "Construcción v37 y demo v38.",
-   "Lo que aún está mal (revisión visual, al lado de la prueba de estilo v5): las rocas del decorado no se esconden bajo lo construido y se ve una bajo el adarve (pasa con todas las piezas); el adarve ocupa la casilla entera (2 m), más ancho que uno de verdad; en una esquina con dos empalizadas no se adapta (mira solo a una); la captura de cerca de la estructura salió tapada por la cabaña en la batería y no se publica (cámara cambiada en la prueba para la próxima, sin comprobar)."
-  ],
-  "pruebas": "En la nube (GitHub Actions): los 15 grupos de probar_todo.sh correctos tres veces (la última tras unir main con el inventario nuevo, que publicó antes la construcción v36 y la demo v37: el adarve pasó a v37 y v38). Pruebas nuevas: lógica del adarve (22 comprobaciones; MUTAR=1 la rompe), modelos (adarve y escaleras cortas; MUTAR_ADARVE=1 la rompe) y navegador (subir y bajar por las dos escaleras, no pasar por debajo, no saltar la empalizada, andar por dos tramos, guardado en el móvil; MUTAR_ADARVE=1 la rompe con 3 fallos). Capturas miradas en PC y móvil. Primera tanda en la nube: 4 fallos de la prueba nueva por colocarla con medidas fijas (la empalizada queda en otra rejilla que en la prueba suelta) y por una roca que paraba al jugador en el adarve; arreglados. No comprobado: fotogramas en un móvil de verdad. Las rocas del decorado no se esconden bajo lo construido (pasa con todas las piezas; en la captura de cerca se ve una bajo el adarve). Tras el último commit, lógica y web otra vez en la nube: lógica falló una vez sin que se pudiera leer su salida (la descarga del registro dio «Forbidden») y pasó al repetirla, también aquí.",
-  "capturas": "capturas/construccion-v37",
-  "estado": "ok"
- },
- {
-  "inicio": "2026-10-29T09:51:51+00:00",
-  "fin": "2026-10-29T16:13:00+00:00",
-  "titulo": "Taller: pies descalzos",
-  "hito": "arte",
-  "hecho": [
-   "Personajes del taller en recursos/personajes/taller-v12/ con pies: la piel de los pies (dedos, uñas y la planta algo más oscura) como pieza aparte, del color de piel que se elija. Hasta ahora el cuerpo no tenía pies bajo los zapatos.",
-   "Lo puesto sin calzado se dibuja descalzo (lógica de prendas, para el servidor también): en la construcción, con lo que se empieza (camisa y pantalón de lino), se va descalzo como dice el GDD. Con zapatos o botas, se ven puestos.",
-   "Visor de personaje: botón «Descalzo» en la ropa y vista nueva «Pies», de cerca.",
-   "El bajo de las calzas va recto: antes salía en dientes de sierra y lo tapaban los zapatos.",
-   "Prueba nueva de los pies en los modelos (con MUTAR=1 mira la taller-v11, sin pies, y falla), y comprobaciones nuevas en las pruebas de ropa, del visor y de la construcción.",
-   "Publicado como personaje v20, construcción v38 y demo v39 (el inventario y el adarve usaron las versiones de en medio). El combate no cambia a la vista: no se publica.",
-   "Aún mal (mirado de cerca): por detrás, el bajo de las calzas tiene todavía un pequeño escalón; los pies no se reducen de triángulos (unos 4.400 por cuerpo, solo cuando se ven)."
-  ],
-  "pruebas": "Batería entera en la nube tras unir main: 15 grupos correctos (lógica, taller y navegador, PC y móvil). Antes, aquí, la de la construcción fallaba solo por la comprobación vieja de los zapatos, ya cambiada.",
-  "capturas": "capturas/personaje-v20",
-  "estado": "ok"
- },
- {
   "inicio": "2026-10-29T11:03:35+01:00",
   "fin": "2026-10-29T12:41:45+01:00",
   "titulo": "Infraestructura: las pruebas, en la nube",
@@ -2246,6 +2211,23 @@
   ],
   "pruebas": "En la nube: lógica y web bien; la web mirada en PC y móvil (6 capturas a la vista y el resto plegado)",
   "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T09:20:40+00:00",
+  "fin": "2026-10-29T14:50:50+00:00",
+  "titulo": "Hito 1c: adarve detrás de la empalizada (carril A)",
+  "hito": "construccion-mas",
+  "hecho": [
+   "Pieza nueva, el adarve (sistemas: tablas + postes, N2, 100 kg, sostiene 300): un piso de tablas a 1,8 m sobre cuatro postes, dos largueros, tres viguetas, clavos y dos tornapuntas, con el estilo v5. Va en una casilla de la planta baja junto a una empalizada terminada y se arrima sola a ella; los tramos seguidos hacen una sola pasarela. Lógica pura con autor; si se quita su empalizada, cae con ella.",
+   "Se sube por una escalera de mano (Usar sube y baja) o de tablas (andando) puesta en la casilla de delante y girada hacia él: las dos salen más cortas, hasta su piso, y el fantasma ya lo enseña. Por debajo del piso no se pasa; arriba, la empalizada no se salta y por los otros lados se cae.",
+   "Provisional (en el registro de decisiones): piso a 1,8 m, para que con la empalizada de 3 m asomen la cabeza y los hombros entre las puntas (a 1,5 m, la primera prueba, no se veía nada por encima); ocupa toda la casilla; cuesta 4 tablas, 4 clavos y 2 troncos; el peso de la gente encima aún no se cuenta.",
+   "Arreglos de paso: lo del suelo (rocas, árboles, matas) ya no choca desde un adarve o una planta de arriba (una roca bajo el adarve paraba al que andaba por él), y bajo las escaleras y el adarve se despeja la hierba de toda la casilla.",
+   "Construcción v37 y demo v38.",
+   "Lo que aún está mal (revisión visual, al lado de la prueba de estilo v5): las rocas del decorado no se esconden bajo lo construido y se ve una bajo el adarve (pasa con todas las piezas); el adarve ocupa la casilla entera (2 m), más ancho que uno de verdad; en una esquina con dos empalizadas no se adapta (mira solo a una); la captura de cerca de la estructura salió tapada por la cabaña en la batería y no se publica (cámara cambiada en la prueba para la próxima, sin comprobar)."
+  ],
+  "pruebas": "En la nube (GitHub Actions): los 15 grupos de probar_todo.sh correctos tres veces (la última tras unir main con el inventario nuevo, que publicó antes la construcción v36 y la demo v37: el adarve pasó a v37 y v38). Pruebas nuevas: lógica del adarve (22 comprobaciones; MUTAR=1 la rompe), modelos (adarve y escaleras cortas; MUTAR_ADARVE=1 la rompe) y navegador (subir y bajar por las dos escaleras, no pasar por debajo, no saltar la empalizada, andar por dos tramos, guardado en el móvil; MUTAR_ADARVE=1 la rompe con 3 fallos). Capturas miradas en PC y móvil. Primera tanda en la nube: 4 fallos de la prueba nueva por colocarla con medidas fijas (la empalizada queda en otra rejilla que en la prueba suelta) y por una roca que paraba al jugador en el adarve; arreglados. No comprobado: fotogramas en un móvil de verdad. Las rocas del decorado no se esconden bajo lo construido (pasa con todas las piezas; en la captura de cerca se ve una bajo el adarve). Tras el último commit, lógica y web otra vez en la nube: lógica falló una vez sin que se pudiera leer su salida (la descarga del registro dio «Forbidden») y pasó al repetirla, también aquí.",
+  "capturas": "capturas/construccion-v37",
   "estado": "ok"
  },
  {
@@ -2294,6 +2276,24 @@
   ],
   "pruebas": "La web en la nube (con el GDD cambiado en los tres idiomas)",
   "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T09:51:51+00:00",
+  "fin": "2026-10-29T16:13:00+00:00",
+  "titulo": "Taller: pies descalzos",
+  "hito": "arte",
+  "hecho": [
+   "Personajes del taller en recursos/personajes/taller-v12/ con pies: la piel de los pies (dedos, uñas y la planta algo más oscura) como pieza aparte, del color de piel que se elija. Hasta ahora el cuerpo no tenía pies bajo los zapatos.",
+   "Lo puesto sin calzado se dibuja descalzo (lógica de prendas, para el servidor también): en la construcción, con lo que se empieza (camisa y pantalón de lino), se va descalzo como dice el GDD. Con zapatos o botas, se ven puestos.",
+   "Visor de personaje: botón «Descalzo» en la ropa y vista nueva «Pies», de cerca.",
+   "El bajo de las calzas va recto: antes salía en dientes de sierra y lo tapaban los zapatos.",
+   "Prueba nueva de los pies en los modelos (con MUTAR=1 mira la taller-v11, sin pies, y falla), y comprobaciones nuevas en las pruebas de ropa, del visor y de la construcción.",
+   "Publicado como personaje v20, construcción v38 y demo v39 (el inventario y el adarve usaron las versiones de en medio). El combate no cambia a la vista: no se publica.",
+   "Aún mal (mirado de cerca): por detrás, el bajo de las calzas tiene todavía un pequeño escalón; los pies no se reducen de triángulos (unos 4.400 por cuerpo, solo cuando se ven)."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main: 15 grupos correctos (lógica, taller y navegador, PC y móvil). Antes, aquí, la de la construcción fallaba solo por la comprobación vieja de los zapatos, ya cambiada.",
+  "capturas": "capturas/personaje-v20",
   "estado": "ok"
  },
  {
@@ -2557,6 +2557,22 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-30T05:56:35+01:00",
+  "fin": "2026-10-30T07:10:35+01:00",
+  "titulo": "Hito 10: gran veta de hierro en la sierra de Whitholm (mapa v16)",
+  "hito": "mundo",
+  "hecho": [
+   "valravnx aprueba el hito Despejar y las barbas y la capa nuevas; el servidor de Hetzner lo crea él esta tarde.",
+   "Recursos de Whitholm decididos por valravnx: lo que ya tenía y una gran veta de hierro en las montañas.",
+   "El generador pone primero la gran veta de hierro de la isla, en lo más alto (por encima del 60 % de su cumbre); en el mundo elegido queda a 1.685 m, en la caliza, junto a la cumbre (1.795 m). Las del continente van después, a más de 45 km.",
+   "Prueba nueva: Whitholm tiene una gran veta de hierro en lo alto de la sierra, en las cuatro semillas; falla si se quita (MUTAR).",
+   "Zonas de clan de aproximadamente 1 km², aparte del mojón, anotadas en el GDD (valravnx). Borrador de comarcas con bordes naturales y zonas enseñado a valravnx, fuera del juego por ahora."
+  ],
+  "pruebas": "En la nube: lógica, mapa del mundo y web correctas (generador del mapa 87/87)",
+  "capturas": "capturas/mapa-v16",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-30T04:52:07+00:00",
   "fin": "2026-10-30T06:15:53+00:00",
   "titulo": "Capa pulida: se mueve al andar, cubre los brazos y se ven los pliegues (carril B)",
@@ -2595,22 +2611,6 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-30T05:56:35+01:00",
-  "fin": "2026-10-30T07:10:35+01:00",
-  "titulo": "Hito 10: gran veta de hierro en la sierra de Whitholm (mapa v16)",
-  "hito": "mundo",
-  "hecho": [
-   "valravnx aprueba el hito Despejar y las barbas y la capa nuevas; el servidor de Hetzner lo crea él esta tarde.",
-   "Recursos de Whitholm decididos por valravnx: lo que ya tenía y una gran veta de hierro en las montañas.",
-   "El generador pone primero la gran veta de hierro de la isla, en lo más alto (por encima del 60 % de su cumbre); en el mundo elegido queda a 1.685 m, en la caliza, junto a la cumbre (1.795 m). Las del continente van después, a más de 45 km.",
-   "Prueba nueva: Whitholm tiene una gran veta de hierro en lo alto de la sierra, en las cuatro semillas; falla si se quita (MUTAR).",
-   "Zonas de clan de aproximadamente 1 km², aparte del mojón, anotadas en el GDD (valravnx). Borrador de comarcas con bordes naturales y zonas enseñado a valravnx, fuera del juego por ahora."
-  ],
-  "pruebas": "En la nube: lógica, mapa del mundo y web correctas (generador del mapa 87/87)",
-  "capturas": "capturas/mapa-v16",
-  "estado": "ok"
- },
- {
   "inicio": "2026-10-30T06:23:57+00:00",
   "fin": "2026-10-30T09:06:38+00:00",
   "titulo": "Tala de verdad: el árbol cae, deja tocón, tronco y ramas, y vuelve a crecer (carril A)",
@@ -2625,23 +2625,6 @@
   ],
   "pruebas": "Lógica de la tala 43/43 y su prueba de navegador (PC y móvil) correctas, aquí y en la nube. En la nube, tras unir main (la demo en Whitholm), pasan 20 de 21 grupos; falla «duelo en línea» (dos veces, en comprobaciones distintas: al apagarse el servidor y al pasar del duelo a construir), que también falla sin la tala en una ejecución del carril B sobre main: no lo causa este cambio. Comprobado a mano además que la tala funciona en la demo de Whitholm.",
   "capturas": "capturas/construccion-v40",
-  "estado": "ok"
- },
- {
-  "inicio": "2026-10-30T06:53:58+00:00",
-  "fin": "2026-10-30T09:30:42+00:00",
-  "titulo": "Barba larga pulida y bigote con volumen (carril B)",
-  "hito": "arte",
-  "hecho": [
-   "Bigote con volumen (antes solo pintado y plano): una malla propia hecha por código en el taller, de comisura a comisura. Nace pegada a la piel bajo la nariz, se abomba unos 5 mm sobre el labio de arriba y cae hacia fuera y hacia abajo por las comisuras; la punta va desigual, pelo a pelo, en la transparencia. Va encima del bigote pintado con la barba corta, la larga, el bigote y la perilla (piezasCabeza en src/logica/aspecto.js).",
-   "Barba larga: cada mechón con su onda (fase, paso y amplitud propios); antes una sola onda para toda la barba, y en el juego salían todas iguales y en fila.",
-   "Barba larga: por los lados nace también detrás de la patilla, en el lado del cuello (las columnas llegan a 96°, antes 80°), y baja unos 4 cm bajo el mentón: de frente ya no asoma el cuello a los lados de la barbilla.",
-   "Personajes en recursos/personajes/taller-v17/ (la mujer sale idéntica byte a byte a la v16). Publicado como personaje v28 y demo v50 (la v48 y la v49 de la demo son del chat y del carril A).",
-   "Pruebas nuevas: en prueba_barbas.mjs, que hay bigote con volumen, con el tinte del pelo, abombado (7,7 mm en el centro), a la altura del pintado y cayendo más por los lados (1,7 cm); sobre la taller-v16 falla. En prueba_aspecto.mjs, con qué barbas va; en la del personaje en el navegador, que se ve con la barba larga y no afeitado.",
-   "Capturas de cerca en el taller y en el juego (three.js), antes y después lado a lado. Aún mal: el bigote tapa casi todo el labio de arriba y con la barba corta se ve muy poblado; la barba larga va con la cabeza y no se mueve sola; en las fotos de Blender (Cycles) sale una raya fina delante de la boca que no está en la malla (comprobado punto a punto: nada sale de la cara) ni en el juego: no comprobado de dónde sale."
-  ],
-  "pruebas": "En la nube: 17 de 18 grupos bien a la primera; «juego en inglés» falló a los 7 s (contexto de la página destruido por una navegación) y pasó entero aquí y al repetirlo en la nube. Tras unir main, repetidos en la nube lógica, demo, demo en el mundo, en línea, duelo en línea, inglés, personaje y web: bien; duelo en línea, jugar en línea y lógica (prueba_combate_servidor.mjs) fallaron una vez cada uno y pasaron al repetirlos (aquí, la del servidor 64/64 dos veces). Tras la última unión con main (tala y comarcas), solo los textos traducidos aquí: bien.",
-  "capturas": "capturas/personaje-v28",
   "estado": "ok"
  },
  {
@@ -2662,21 +2645,35 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-30T09:27:05+00:00",
-  "fin": "2026-10-30T12:18:45+00:00",
-  "titulo": "Salida al azar en las comarcas de inicio (demo v52)",
-  "hito": "mundo-juego",
+  "inicio": "2026-10-30T06:53:58+00:00",
+  "fin": "2026-10-30T09:30:42+00:00",
+  "titulo": "Barba larga pulida y bigote con volumen (carril B)",
+  "hito": "arte",
   "hecho": [
-   "Lógica (src/logica/whitholm.js): las comarcas de inicio (Motdale, Breiddal y Strandvang), los biomas fuera (pasto alpino y nieve) y la búsqueda de sitios cada 1 km con los requisitos de la salida de siempre (llano, lejos de los ríos, ni en la playa ni en lo alto).",
-   "Los 261 sitios, calculados una vez y apuntados en la lógica (126 en Breiddal, 84 en Motdale y 51 en Strandvang), para que el servidor no tenga que generar el mapa.",
-   "En la demo, el jugador nuevo sale en uno al azar y se guarda en el navegador: al volver, el mismo sitio. La escena tiene su 0 en el sitio de cada uno.",
-   "Decisión provisional: quien ya tenía algo guardado sigue en el sitio común de antes (en Lindholt), donde está lo que construyó; y en línea todos en el sitio común, porque las posiciones y el mundo del servidor van relativos a él. Anotado en el registro de la demo.",
-   "Prueba de Whitholm ampliada: los sitios apuntados son los que salen del mapa y todos valen (falla con MUTAR=2, que mete el sitio común de Lindholt). Prueba del mundo en el navegador: sale en un sitio de la lista, al recargar el mismo y con un guardado de antes en el común (comprobado que falla con la demo cambiada para no guardar el sitio).",
-   "Con la salida al azar, la prueba del mundo busca una costa que no sea llana y mira el relieve en 2 km (fallaba en una marisma y en una vega muy llana); comprobado en node para los 261 sitios.",
-   "Aún mal: el decorado de alrededor (árboles, hierba, rocas) es el mismo en todos los sitios, el del llano de antes; el de cada sitio llega con su tarea."
+   "Bigote con volumen (antes solo pintado y plano): una malla propia hecha por código en el taller, de comisura a comisura. Nace pegada a la piel bajo la nariz, se abomba unos 5 mm sobre el labio de arriba y cae hacia fuera y hacia abajo por las comisuras; la punta va desigual, pelo a pelo, en la transparencia. Va encima del bigote pintado con la barba corta, la larga, el bigote y la perilla (piezasCabeza en src/logica/aspecto.js).",
+   "Barba larga: cada mechón con su onda (fase, paso y amplitud propios); antes una sola onda para toda la barba, y en el juego salían todas iguales y en fila.",
+   "Barba larga: por los lados nace también detrás de la patilla, en el lado del cuello (las columnas llegan a 96°, antes 80°), y baja unos 4 cm bajo el mentón: de frente ya no asoma el cuello a los lados de la barbilla.",
+   "Personajes en recursos/personajes/taller-v17/ (la mujer sale idéntica byte a byte a la v16). Publicado como personaje v28 y demo v50 (la v48 y la v49 de la demo son del chat y del carril A).",
+   "Pruebas nuevas: en prueba_barbas.mjs, que hay bigote con volumen, con el tinte del pelo, abombado (7,7 mm en el centro), a la altura del pintado y cayendo más por los lados (1,7 cm); sobre la taller-v16 falla. En prueba_aspecto.mjs, con qué barbas va; en la del personaje en el navegador, que se ve con la barba larga y no afeitado.",
+   "Capturas de cerca en el taller y en el juego (three.js), antes y después lado a lado. Aún mal: el bigote tapa casi todo el labio de arriba y con la barba corta se ve muy poblado; la barba larga va con la cabeza y no se mueve sola; en las fotos de Blender (Cycles) sale una raya fina delante de la boca que no está en la malla (comprobado punto a punto: nada sale de la cara) ni en el juego: no comprobado de dónde sale."
   ],
-  "pruebas": "En la nube, todos los grupos (20). La demo en el mundo falló dos veces por suposiciones de la prueba que no valían con la salida al azar (una costa de marisma y una vega muy llana): arreglada la prueba y comprobado en node para los 261 sitios; luego bien. El duelo en línea falló en las vueltas enteras («sigue siendo el mismo jugador que en el duelo», ya fallaba de vez en cuando en otras ramas) y pasó al repetirlo solo, dos veces. Prueba de Whitholm rota a propósito (MUTAR=2) y la del mundo con la demo cambiada para no guardar el sitio: fallan.",
-  "capturas": "capturas/demo-v52",
+  "pruebas": "En la nube: 17 de 18 grupos bien a la primera; «juego en inglés» falló a los 7 s (contexto de la página destruido por una navegación) y pasó entero aquí y al repetirlo en la nube. Tras unir main, repetidos en la nube lógica, demo, demo en el mundo, en línea, duelo en línea, inglés, personaje y web: bien; duelo en línea, jugar en línea y lógica (prueba_combate_servidor.mjs) fallaron una vez cada uno y pasaron al repetirlos (aquí, la del servidor 64/64 dos veces). Tras la última unión con main (tala y comarcas), solo los textos traducidos aquí: bien.",
+  "capturas": "capturas/personaje-v28",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T11:37:13+01:00",
+  "fin": "2026-10-30T11:39:15+01:00",
+  "titulo": "Clanes en las comarcas: al GDD y al plan",
+  "hito": "tierras",
+  "hecho": [
+   "Diseño de valravnx al GDD (apartado 11, «Comarcas, zonas y clanes»): el centro del castillo toma la zona y la comarca; vasallos; renta en moneda por el trabajo en la comarca sin quitar nada a quien trabaja; atacar a quien trabaja o a un vasallo corta su renta un tiempo; ventana de asedio.",
+   "Lo que falta por fijar, como propuesta: qué cuenta como trabajo, tope por jugador y día, duración del corte, la ventana, qué pasa al caer el centro, cuántas zonas por clan y el abandono.",
+   "Vasallaje del apartado 17 puesto al día; dos preguntas nuevas para valravnx (las causas de guerra y si las comarcas de inicio se pueden tomar).",
+   "Hitos Tierras, Asedio y Economía con lo nuevo, para cuando los planifiquen los carriles."
+  ],
+  "pruebas": "Web regenerada; prueba de la web en la nube",
+  "capturas": "",
   "estado": "ok"
  },
  {
@@ -2697,18 +2694,21 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-30T11:37:13+01:00",
-  "fin": "2026-10-30T11:39:15+01:00",
-  "titulo": "Clanes en las comarcas: al GDD y al plan",
-  "hito": "tierras",
+  "inicio": "2026-10-30T09:27:05+00:00",
+  "fin": "2026-10-30T12:18:45+00:00",
+  "titulo": "Salida al azar en las comarcas de inicio (demo v52)",
+  "hito": "mundo-juego",
   "hecho": [
-   "Diseño de valravnx al GDD (apartado 11, «Comarcas, zonas y clanes»): el centro del castillo toma la zona y la comarca; vasallos; renta en moneda por el trabajo en la comarca sin quitar nada a quien trabaja; atacar a quien trabaja o a un vasallo corta su renta un tiempo; ventana de asedio.",
-   "Lo que falta por fijar, como propuesta: qué cuenta como trabajo, tope por jugador y día, duración del corte, la ventana, qué pasa al caer el centro, cuántas zonas por clan y el abandono.",
-   "Vasallaje del apartado 17 puesto al día; dos preguntas nuevas para valravnx (las causas de guerra y si las comarcas de inicio se pueden tomar).",
-   "Hitos Tierras, Asedio y Economía con lo nuevo, para cuando los planifiquen los carriles."
+   "Lógica (src/logica/whitholm.js): las comarcas de inicio (Motdale, Breiddal y Strandvang), los biomas fuera (pasto alpino y nieve) y la búsqueda de sitios cada 1 km con los requisitos de la salida de siempre (llano, lejos de los ríos, ni en la playa ni en lo alto).",
+   "Los 261 sitios, calculados una vez y apuntados en la lógica (126 en Breiddal, 84 en Motdale y 51 en Strandvang), para que el servidor no tenga que generar el mapa.",
+   "En la demo, el jugador nuevo sale en uno al azar y se guarda en el navegador: al volver, el mismo sitio. La escena tiene su 0 en el sitio de cada uno.",
+   "Decisión provisional: quien ya tenía algo guardado sigue en el sitio común de antes (en Lindholt), donde está lo que construyó; y en línea todos en el sitio común, porque las posiciones y el mundo del servidor van relativos a él. Anotado en el registro de la demo.",
+   "Prueba de Whitholm ampliada: los sitios apuntados son los que salen del mapa y todos valen (falla con MUTAR=2, que mete el sitio común de Lindholt). Prueba del mundo en el navegador: sale en un sitio de la lista, al recargar el mismo y con un guardado de antes en el común (comprobado que falla con la demo cambiada para no guardar el sitio).",
+   "Con la salida al azar, la prueba del mundo busca una costa que no sea llana y mira el relieve en 2 km (fallaba en una marisma y en una vega muy llana); comprobado en node para los 261 sitios.",
+   "Aún mal: el decorado de alrededor (árboles, hierba, rocas) es el mismo en todos los sitios, el del llano de antes; el de cada sitio llega con su tarea."
   ],
-  "pruebas": "Web regenerada; prueba de la web en la nube",
-  "capturas": "",
+  "pruebas": "En la nube, todos los grupos (20). La demo en el mundo falló dos veces por suposiciones de la prueba que no valían con la salida al azar (una costa de marisma y una vega muy llana): arreglada la prueba y comprobado en node para los 261 sitios; luego bien. El duelo en línea falló en las vueltas enteras («sigue siendo el mismo jugador que en el duelo», ya fallaba de vez en cuando en otras ramas) y pasó al repetirlo solo, dos veces. Prueba de Whitholm rota a propósito (MUTAR=2) y la del mundo con la demo cambiada para no guardar el sitio: fallan.",
+  "capturas": "capturas/demo-v52",
   "estado": "ok"
  }
 ]
