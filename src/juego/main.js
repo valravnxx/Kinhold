@@ -16,7 +16,7 @@ import { conectarEnLinea } from './en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
 import { dibujarRetrato } from './retrato.js';
-import { PRENDAS, prendasDeCapas } from '../logica/prendas.js';
+import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
 import { vestidoDe, rasgosPrenda } from '../logica/hechura.js';
 import { crearRecoleccion } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
@@ -1558,7 +1558,7 @@ jugador.listo.then(vestir);
 // El combate en el mundo (valravnx, 30 oct): arma sacada con C o «Arma», ratón cogido, golpes cargados y paradas por lado
 const combate = crearCombateMundo({
   escena, camara, lienzo, pj, cam, jugador, recursos: RECURSOS_MH, sexo: SEXO, aspecto: elegido ? elegido.aspecto : undefined,
-  capasActuales: () => capasDibujo(puestasDe(inventario().lugares), SEXO),
+  capasActuales: () => vestidoAhora().capas,
   // provisional, hasta la tabla única de armadura: la cota cuenta como malla y el gambesón como gambesón
   armaduraActual: () => { const p = puestasDe(inventario().lugares); return p.includes('cota_malla') ? 'malla' : p.includes('gambeson') ? 'gambeson' : 'lino'; },
   modo: () => estado.modo, alturaEn: (x, z) => decorado.altura(x, z),
