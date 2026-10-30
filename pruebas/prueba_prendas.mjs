@@ -1,5 +1,5 @@
 // Comprueba en los personajes del taller las piezas de la capa, el calzado y los tocados:
-//  - están todas (capa y su falda, botas, capucha y sombrero; la toca, en la mujer);
+//  - están todas (capa, con su falda hasta la taller-v14 y con su broche desde la v15, botas, capucha y sombrero; la toca, en la mujer);
 //  - el sombrero va entero en el hueso de la cabeza (no se deforma con el cuello);
 //  - la capucha y el sombrero quedan por encima del pelo (o de la cofia) y la capucha baja hasta los hombros;
 //  - las botas llegan al suelo como los zapatos y suben más que ellos (en la mujer son bajas desde la taller-v11, para
@@ -30,7 +30,9 @@ for (const f of readdirSync(carpeta).filter(f => f.endsWith('.glb'))) {
   const nodos = d.getRoot().listNodes();
   const sexo = f.includes('mujer') ? 'mujer' : 'hombre';
   const nodo = (s) => nodos.find(n => n.getName() === `${sexo}_${s}` && n.getMesh());
-  const hace = ['capa_manto', 'capa_manto_falda', 'capa_botas', 'capa_capucha', 'capa_sombrero', ...(sexo === 'mujer' ? ['capa_toca'] : [])];
+  // la capa: hasta la taller-v14, con su falda aparte; desde la v15 es una sola malla que cae de los hombros (prueba_manto.mjs)
+  const nuevaCapa = +(carpeta.match(/taller-v(\d+)/) || [0, 0])[1] >= 15;
+  const hace = ['capa_manto', ...(nuevaCapa ? ['capa_manto_broche'] : ['capa_manto_falda']), 'capa_botas', 'capa_capucha', 'capa_sombrero', ...(sexo === 'mujer' ? ['capa_toca'] : [])];
   const faltan = hace.filter(s => !nodo(s));
   comprobar(`${f}: están la capa, las botas y los tocados`, !faltan.length, faltan.length ? 'faltan ' + faltan.join(', ') : '');
   if (faltan.length) continue;

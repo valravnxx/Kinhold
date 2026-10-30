@@ -124,3 +124,9 @@ sin teñir y tintes por defecto en `src/logica/tintes.js`; `ponerTintes` en `src
 tintes por defecto el color es el mismo que llevaba pintado antes. La cota de malla, el sombrero y los cinturones no se
 tiñen. El blasón de la sobreveste no va en la textura: lo dibuja un sombreado por la posición de cada punto en reposo.
 Prueba: `node pruebas/prueba_tintes.mjs` (con `MUTAR=1` mira la taller-v12, sin tintes, y falla).
+- **Capa** (`_capa_manto` y `_capa_manto_broche`, rehecha en taller-v15): malla propia, no el cuerpo empujado. Para cada
+  dirección alrededor del cuerpo se mide el perfil del tronco y las piernas (sin los brazos, salvo lo alto del hombro)
+  dilatado con la holgura; de arriba abajo la tela no vuelve hacia dentro y se abre un poco al bajar. Cada columna recorre
+  ese perfil por su largo; pliegues que crecen hacia el bajo; bajo y bordes de delante doblados hacia dentro. Pesos:
+  clavículas y espalda arriba, columna y pelvis abajo. Fotos de cerca con los brazos en reposo y bajados:
+  `FOTOS=manto BRAZOS=0,0,-38 python3 herramientas/taller/vestir_mpfb.py /tmp/vestir`.

@@ -634,7 +634,7 @@ def manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, colo
     zs = np.arange(z_top, z_bajo - DZ, -DZ)
     ths = np.linspace(-math.pi, math.pi, NT, endpoint=False)
     def holgura(z):  # pegada al cuello arriba, holgada (por encima de la ropa de debajo) desde los hombros
-        return 0.026 + 0.04 * float(suave(z_top, z_top - 0.16, z))
+        return 0.034 + 0.032 * float(suave(z_top, z_top - 0.16, z))
     G = np.array([holgura(z) for z in zs])
     R = np.zeros((NT, len(zs)))
     for k, th in enumerate(ths):

@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v14'), f'{sitio}/recursos/personajes/taller-v14')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v15'), f'{sitio}/recursos/personajes/taller-v15')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-anim-v1'), f'{sitio}/recursos/personajes/taller-anim-v1')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -253,9 +253,16 @@ with sync_playwright() as p:
         con = vis()
         if os.environ.get('MUTAR'): con = [x for x in con if x != 'hombre_cinturon_tunica']
         comprobar('botas en lugar de zapatos; con la capa se siguen viendo la túnica y su cinturón',
-                  'hombre_capa_botas' in con and 'hombre_capa_zapatos' not in con and 'hombre_capa_manto' in con and 'hombre_capa_manto_falda' in con
+                  'hombre_capa_botas' in con and 'hombre_capa_zapatos' not in con and 'hombre_capa_manto' in con and 'hombre_capa_manto_broche' in con
                   and 'hombre_capa_tunica' in con and 'hombre_cinturon_tunica' in con, ', '.join(sorted(x for x in con if 'capa' in x or 'cinturon' in x)))
         pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_capa_botas.png')
+        # la capa (taller-v15) de espalda y de perfil, quieto y andando: tiene que caer de los hombros y no atravesar las piernas
+        for v in ['espalda', 'perfil']:
+            pg.click(f'[data-vista="{v}"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_capa_{v}.png')
+        pg.evaluate(f"{E}.ponerModo('andar')")
+        for v in ['perfil', 'espalda']:
+            pg.click(f'[data-vista="{v}"]'); pg.evaluate(f'{E}.instante(0.4)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_capa_andando_{v}.png')
+        pg.evaluate(f"{E}.ponerModo('quieto')"); pg.click('[data-vista="cuerpo"]')
         for c in ['botas', 'manto']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
         # descalzo (el GDD empieza así): se ven los pies y no los zapatos; con botas, las botas
         con0 = vis()
