@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-30T17:23:41+00:00",
+  "tarea": "Obras con lo que llevas: el material que se entrega a una obra sale de lo que lleva el autor encima (o en su rastra o carretilla al lado), no de un montón común. El botón de rellenar del prototipo pasa a llenar el arcón de pruebas",
+  "hito": "equipo",
+  "rama": "trabajo/20261030-1723"
+ },
  "B": {
   "inicio": "2026-10-30T15:43:32+00:00",
   "tarea": "Los árboles (las siete especies), la hierba y las rocas del mundo en el juego, con el estilo v5 y siempre en el mismo sitio",
