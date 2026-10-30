@@ -14,6 +14,7 @@
 //                        { tipo: 'sale', autor }                                                  cuando alguien se va
 
 import { normalizarAspecto } from './aspecto.js';
+import { SALIDA, dentroDeIsla } from './whitholm.js';
 
 export const CADA = 100;        // ms entre estados que manda cada cliente (10 por segundo)
 export const RETRASO = 200;     // ms en el pasado a los que se dibuja a los demás: un tic del servidor y el vaivén de la red
@@ -27,6 +28,9 @@ export function validarEstado(m) {
   if (!m || typeof m !== 'object') return null;
   const { x, y, z, giro, anim } = m;
   if (![x, y, z, giro].every(numero)) return null;
+  // el mundo, de momento, es solo Whitholm (valravnx, 29 oct): las posiciones van relativas al sitio de salida y nadie
+  // puede estar fuera del cuadro de la isla (src/logica/whitholm.js)
+  if (!dentroDeIsla(SALIDA.x + x, SALIDA.z + z)) return null;
   if (typeof anim !== 'string' || !/^[a-z_]{1,24}$/.test(anim)) return null;
   const e = { x, y, z, giro: normalizarAngulo(giro), anim };
   if (m.tc !== undefined) { if (!(typeof m.tc === 'number' && Number.isFinite(m.tc))) return null; e.tc = m.tc; }
