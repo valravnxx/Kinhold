@@ -11,12 +11,14 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
+import { RADIO_TRONCO } from '../mundo/especies.js';
 import { Tala, idArbol, edadDeEscala, ejecutarTala, cargarTala, guardarTala } from '../logica/tala.js';
 
 const CAE = 1.7, EN_EL_SUELO = 1.3; // s: lo que tarda en caer y lo que se queda tumbado antes de ser tronco y ramas
 
 function tocon(o) {
-  const s = o.escala, r = (o.modelo === 'frond' ? 0.25 : 0.23) * s, h = 0.32 + 0.12 * s;
+  // el tronco de su especie (los árboles del mundo, src/mundo/vegetacion_mundo.js) o el del llano (pino y árbol de copa)
+  const s = o.escala, r = (RADIO_TRONCO[o.especie] ? RADIO_TRONCO[o.especie] * 0.88 : o.modelo === 'frond' ? 0.25 : 0.23) * s, h = 0.32 + 0.12 * s;
   const L = new Lote({ rangoSuelo: 0.5, variacion: 0.06 });
   L.add(cil(r * 0.92, r * 1.08, h, 9), 'corteza', 0, h / 2 - 0.05, 0);
   // el corte, un poco inclinado (el último golpe nunca es del todo plano), con los anillos
@@ -40,7 +42,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
     const id = idArbol(o.x, o.z);
     if (porId.has(id)) continue;
     o.id = id; porId.set(id, o);
-    arboles.push({ id, x: o.x, z: o.z, edad: edadDeEscala(o.escala) });
+    arboles.push({ id, x: o.x, z: o.z, edad: o.edad || edadDeEscala(o.escala) });
   }
   const tala = new Tala(arboles);
   if (almacen) cargarTala(almacen, tala);
