@@ -687,7 +687,7 @@
    "num": "13",
    "nombre": "Tierras y familias",
    "jugable": "Mojones (tu casa: radio de exclusión, mantenimiento y deterioro) y, aparte, los clanes en las comarcas: el centro del castillo toma su zona y, el primero, la comarca entera; los clanes con zona en una comarca con señor son sus vasallos; renta en moneda por el trabajo en la comarca y su corte por atacar a quien trabaja o a un vasallo. Peajes, familias, alianzas y escudos de armas.",
-   "estado": "en_curso",
+   "estado": "pendiente",
    "tareas": [
     {
      "nombre": "Comarcas para los clanes (valravnx, 30 oct): el centro del castillo toma la zona y la comarca, vasallos, renta en moneda por el trabajo en la comarca, corte de renta por atacar y ventana de asedio; al GDD y al plan",
