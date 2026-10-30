@@ -135,7 +135,7 @@ with sync_playwright() as p:
 
     print('Móvil: soltar y coger con los botones')
     pg, errores = abrir(nav, 390, 844, movil=True)
-    ir(pg, 0, 8, dist=3.2)
+    ir(pg, 0, 8, dist=5, pitch=0.9)
     en_mano(pg, 'hacha_mano', 1)
     soltar_boton(pg, 'mano:der', movil=True)
     comprobar('móvil: «Soltar» deja el hacha en el suelo', pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.length") == 1)
