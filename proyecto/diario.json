@@ -2710,5 +2710,20 @@
   "pruebas": "En la nube, todos los grupos (20). La demo en el mundo falló dos veces por suposiciones de la prueba que no valían con la salida al azar (una costa de marisma y una vega muy llana): arreglada la prueba y comprobado en node para los 261 sitios; luego bien. El duelo en línea falló en las vueltas enteras («sigue siendo el mismo jugador que en el duelo», ya fallaba de vez en cuando en otras ramas) y pasó al repetirlo solo, dos veces. Prueba de Whitholm rota a propósito (MUTAR=2) y la del mundo con la demo cambiada para no guardar el sitio: fallan.",
   "capturas": "capturas/demo-v52",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T11:55:44+00:00",
+  "fin": "2026-10-30T13:30:55+00:00",
+  "titulo": "Hito 1b: revisión completa, sin publicar por las pruebas en línea (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Batería entera en la nube sobre main (55 min): 18 de 20 grupos correctos; fallan «jugar en línea» (PC no vuelve a conectar solo tras apagar el servidor) y «duelo en línea» (al pasar del duelo a construir no sigue siendo el mismo jugador).",
+   "Repetidos los dos grupos: vuelven a fallar, en comprobaciones distintas (el móvil no ve el mojón de PC; PC no dice que se ha cortado). Ya fallaban a ratos en sesiones anteriores y pasaban al repetirlos; esta vez no: hay que buscar la causa antes de dar el hito por terminado.",
+   "Capturas del personaje miradas en PC y móvil (cara, cota, capa de espalda, pies descalzos, 20 personajes en la demo). Aún mal: el borde de la toca y del cuello de la ropa sale dentado y deja ver piel en el cuello; las cejas salen finas y a trozos; la línea del pelo en la frente, dentada; la capa de espalda se ve como una pieza oscura casi lisa.",
+   "Sin versión nueva y el hito sigue en curso. Mientras tanto otra sesión del carril B retomó la misma tarea (rama trabajo/20261030-1329b): no se ha soltado el carril para no quitársela."
+  ],
+  "pruebas": "En la nube: 18 de 20 grupos correctos; jugar en línea y duelo en línea fallan dos veces seguidas",
+  "capturas": "",
+  "estado": "fallo"
  }
 ]
