@@ -1,0 +1,32 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 1943 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1842 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1449 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 1916 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2256 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1443 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 1849 KB
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v44 (objetos en el suelo)
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 292 s
