@@ -1,0 +1,25 @@
+Hechura de la ropa
+  OK   las prendas de tela del taller tienen hechura (y son teñibles)
+  OK   la cota, el sombrero y el calzado no tienen hechura de tela
+  OK   los tejidos del GDD
+  OK   por defecto, cada prenda como en el taller — {"material":"lana","corte":"largo","tejido":"liso"}
+  OK   lo que no vale vuelve al de siempre — {"material":"lana","corte":"largo","tejido":"liso"}
+  OK   cada prenda solo con sus cortes (las calzas no se acortan)
+  OK   cada prenda solo con sus materiales (el manto, de lana)
+  OK   una hechura válida se guarda y no cambia al normalizarla otra vez
+  OK   con su material de siempre, el color sin teñir del taller
+  OK   con otro material, el de ese material (túnica de lino: lino crudo, más claro)
+  OK   cortes: largo entero, más corto cuanto más corto
+  OK   la lana tiene más grano que el lino
+  OK   colores apagados (nada chillón)
+  OK   todos los cortes tienen nombre
+Recetas y coser
+  OK   gambesón: 4 telas, relleno e hilo en el banco (sistemas.html) — {"estacion":"banco","piden":{"tela_lana":4,"hilo":1,"relleno":1}}
+  OK   la tela pedida es la del tejido elegido
+  OK   sin bastante tela, dice lo que falta — {"falta":{"tela_lino_cuadros":1,"hilo":1}}
+  OK   con todo, sale la prenda con su hechura, su tinte y su autor — {"hecha":{"prenda":"tunica","hechura":{"material":"lino","corte":"corto","tejido":"cuadros"},"tinte":"glasto","autor":"ana"},"gasta":{"tela_lino_cuadros":2,"hilo":1}}
+  OK   un tinte que no es de esa prenda queda sin teñir
+  OK   sin autor no se cose
+  OK   la cota de malla no se cose en el banco
+
+Hechura: 21 bien, 0 mal
