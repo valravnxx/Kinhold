@@ -24,9 +24,12 @@ function sinConexion(texto) {
   c.innerHTML = '<div style="background:rgba(36,30,24,.95);border-radius:14px;padding:18px 20px;max-width:360px;text-align:center;box-shadow:0 10px 40px #0006">' +
     `<b style="display:block;font-size:17px;color:#d9a441;margin-bottom:6px">${tr('Sin conexión')}</b><div id="sinConexionTexto"></div>` +
     `<div style="font-size:13px;opacity:.75;margin:6px 0 12px">${tr('El juego es siempre en línea: sin servidor no se puede jugar.')}</div>` +
-    `<button id="btnReintentar" style="font:inherit;font-weight:600;color:#241b10;background:#d9a441;border:0;border-radius:9px;padding:8px 14px;cursor:pointer">${tr('Volver a intentarlo')}</button></div>`;
+    `<button id="btnReintentar" style="font:inherit;font-weight:600;color:#241b10;background:#d9a441;border:0;border-radius:9px;padding:8px 14px;cursor:pointer">${tr('Volver a intentarlo')}</button>` +
+    `<button id="btnSinConexionMenu" style="font:inherit;color:#f1e8d8;background:transparent;border:1px solid #f1e8d833;border-radius:9px;padding:8px 14px;margin-left:8px;cursor:pointer">${tr('Menú')}</button></div>`;
   c.querySelector('#sinConexionTexto').textContent = texto;
   c.querySelector('#btnReintentar').onclick = () => location.reload();
+  // al menú de la demo (para elegir personaje mientras tanto): la misma página sin la parte
+  c.querySelector('#btnSinConexionMenu').onclick = () => { const p = new URLSearchParams(location.search); p.delete('modo'); p.delete('enlinea'); const q = p.toString(); location.href = location.pathname + (q ? '?' + q : ''); };
   document.body.appendChild(c);
 }
 function quitarSinConexion() { const c = document.getElementById('sinConexion'); if (c) c.remove(); }
