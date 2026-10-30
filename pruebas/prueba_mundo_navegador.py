@@ -177,6 +177,13 @@ with sync_playwright() as p:
                   if (hondo(x, z) && hondo(x + ux * 15, z + uz * 15) && hondo(x + ux * 30, z + uz * 30)) {{ k.pj.x = x + ux * 15; k.pj.z = z + uz * 15; return [k.pj.x, k.pj.z, r]; }}
                 }}
               }}
+              // si esa «costa» era una ría o una laguna somera, el mar hondo más cercano, por anillos alrededor del jugador
+              const px = k.pj.x, pz = k.pj.z;
+              for (let R = 200; R < 40000; R += 200) {{ const n = Math.ceil(2 * Math.PI * R / 200);
+                for (let i = 0; i < n; i++) {{ const a = i / n * 2 * Math.PI, x = px + Math.cos(a) * R, z = pz + Math.sin(a) * R;
+                  if (hondo(x, z) && hondo(x + 15, z) && hondo(x - 15, z) && hondo(x, z + 15) && hondo(x, z - 15)) {{ k.pj.x = x; k.pj.z = z; return [x, z, 'anillo ' + R]; }}
+                }}
+              }}
               return null; }}""", c['tierra'] + c['mar'])
             print('  mar hondo:', hondo)
             try: pg.wait_for_function(f'{K}.mundoListo && {K}.mundoJ.agua.cerca({K}.pj.x, {K}.pj.z)', timeout=300000)
