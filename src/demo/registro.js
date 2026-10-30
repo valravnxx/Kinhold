@@ -1,7 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v45 (capa rehecha)';
+export const VERSION_DEMO = 'Demo única · v46 (capa rehecha)';
 export const REGISTRO_DEMO = [
-  'v45: en «Personaje», la capa rehecha: cae de los hombros, más ancha abajo y con pliegues, abierta por delante y cerrada con un broche bajo el cuello. Personajes en recursos/personajes/taller-v15/. En «Construir» y en «Duelo» siguen los de antes.',
+  'v46: en «Personaje», la capa rehecha: cae de los hombros, más ancha abajo y con pliegues, abierta por delante y cerrada con un broche bajo el cuello. Personajes en recursos/personajes/taller-v15/. En «Construir» y en «Duelo» siguen los de antes.',
+  "v45: en «Construir», objetos en el suelo: «Soltar» deja lo que llevas a tus pies y Usar lo coge; fuera de tus tierras desaparece pasada 1 hora real, dentro de ellas se queda, y los troncos, la leña y las piedras se quedan como pila. Es la construcción v39.",
   'v44: en «Personaje», las barbas rehechas: la larga con volumen (de perfil, una cuña bajo la barbilla, con la punta desigual) y la corta, el bigote y la perilla pelo a pelo, con el borde que se aclara poco a poco. Personajes en recursos/personajes/taller-v14/. En «Construir» y en «Duelo» siguen los de antes.',
   'v43: niveles de detalle de los personajes: cerca, enteros; a media distancia, con menos triángulos; lejos, en una sola malla con las texturas juntas; fuera de la cámara o muy lejos, no se dibujan. En «Construir», el botón de los fps dice cuántos hay en cada nivel, deja apagarlos para comparar («Niveles de detalle: no») y tiene 20 personajes de prueba: los 8 primeros a tu alrededor y los demás delante de la cámara, de 10 a 65 m (con la cámara baja se ven todos). Medido en el navegador de pruebas con 20 y la cámara baja: de 1,29 millones de triángulos y 606 llamadas de dibujo a unos 0,72-0,79 millones y 346-362 (los fps de ese navegador no valen).',
   'v43, falta: medirlo en un móvil de verdad. valravnx: en «Construir», con 20 personajes de prueba y la cámara baja, dime los fps con «Niveles de detalle: sí» y con «no».',

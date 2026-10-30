@@ -18,6 +18,7 @@ import { montarPanelInventario } from './panel_inventario.js';
 import { dibujarRetrato } from './retrato.js';
 import { PRENDAS, capasDibujo, puestasDe, prendasDeCapas } from '../logica/prendas.js';
 import { crearRecoleccion } from './recoleccion.js';
+import { crearSuelo } from './suelo.js';
 import { nombreDe } from '../logica/recoleccion.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
@@ -118,6 +119,8 @@ escena.add(decorado.raiz);
 const obstaculos = decorado.obstaculos; // {x,z,r}
 // lo que se recoge del suelo y de las plantas (N0): ramas, piedra, sílex y fibra (src/juego/recoleccion.js)
 const recoleccion = crearRecoleccion({ raiz: escena, altura: decorado.altura, obstaculos, almacen });
+// lo que se suelta cae al suelo, a tus pies; fuera de tus tierras desaparece pasada 1 hora real (src/juego/suelo.js)
+const sueloObjetos = crearSuelo({ raiz: escena, altura: decorado.altura, almacen, enTierras: (autor, x, z) => !!mundo.dentroDeTierra(x, z) });
 
 // ---------------- Personaje y cámara ----------------
 // personaje del taller propio (la carpeta, en src/mundo/eleccion.js)
@@ -1052,6 +1055,8 @@ function usar() {
   if (ob && !subirAndamio) { usarObra(ob); return; }
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
+    const so = sueloObjetos.cercano(pj.x, pj.z); // lo que hay en el suelo, antes que lo que se recoge
+    if (so) { cogerDelSuelo(so); return; }
     const rc = recoleccion.cercano(pj.x, pj.z);
     if (rc) { recoger(rc); return; }
   }
@@ -1117,6 +1122,25 @@ function recoger(punto) {
   panelInventario.pintar(); pintarLlevas(); vestir(); // lo recogido sale en el panel o en la línea de lo que llevas
   pj.rot = Math.atan2(punto.x - pj.x, punto.z - pj.z);
   mostrarAviso(tr('Recoges: {n} × {c}.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) }));
+}
+
+// Coger del suelo lo que se soltó (todo, o de una pila lo que quepa).
+function cogerDelSuelo(o) {
+  const r = sueloObjetos.coger(inventarios, registroAcciones, AUTOR_LOCAL, o.id, pj.x, pj.z);
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  if (almacen) guardarInventarios(almacen, inventarios);
+  panelInventario.pintar(); pintarLlevas(); vestir();
+  pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+  mostrarAviso(tr('Coges del suelo: {n} × {c}.', { n: r.cantidad, c: tr(CATALOGO[r.objeto].nombre) }) + (r.queda ? ' ' + tr('Quedan {n}.', { n: r.queda }) : ''));
+}
+// Soltar al suelo, a tus pies, lo que hay en un lugar del inventario.
+function soltarAlSuelo(de) {
+  const r = sueloObjetos.soltar(inventarios, registroAcciones, AUTOR_LOCAL, de, pj.x, pj.z);
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return r; }
+  if (almacen) guardarInventarios(almacen, inventarios);
+  pintarLlevas(); vestir(); panelInventario.pintar();
+  mostrarAviso(r.desaparece === null ? tr('Lo dejas en el suelo: aquí se queda.') : tr('Lo dejas en el suelo: fuera de tus tierras desaparece en una hora.'));
+  return r;
 }
 
 // Andamio (GDD, «Obras»): Usar al pie sube por su escalerilla a la plataforma, que está a la altura del suelo de la
@@ -1350,7 +1374,8 @@ function paso() {
   for (const obj of raizDeco.children) obj.visible = !bajoTecho || plantaDeco(obj.userData.deco) <= pj.k;
   const it = interactivoCercano();
   recoleccion.paso(); // vuelve a salir lo que toca
-  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana() || (pj.k === 0 && !!recoleccion.cercano(pj.x, pj.z)));
+  sueloObjetos.paso(); // desaparece lo soltado hace más de una hora fuera de tus tierras
+  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana() || (pj.k === 0 && (!!recoleccion.cercano(pj.x, pj.z) || !!sueloObjetos.cercano(pj.x, pj.z))));
 
   moverGente(dt);
   moverFuegos();
@@ -1453,7 +1478,7 @@ ropaDelVisor();
 jugador.listo.then(vestir);
 // Lo que llevas en las manos y al hombro no está en el panel (valravnx, 29 oct): se coge del mundo y se suelta al mundo.
 // Mientras no se vea en el personaje (tarea del hito 2), una línea abajo dice qué llevas, cada cosa con «Soltar» (al
-// arcón de pruebas, que hace de suelo hasta que haya objetos en el suelo).
+// suelo, a tus pies).
 function pintarLlevas() {
   const inv = inventario(), nom = c => tr(CATALOGO[c.tipo].nombre) + (c.n > 1 ? ' ×' + c.n : '');
   const partes = [];
@@ -1466,10 +1491,11 @@ function pintarLlevas() {
 }
 $('llevas').onclick = (e) => {
   const b = e.target.closest('[data-soltar]'); if (!b) return;
-  accionInventario({ tipo: 'soltar', de: b.dataset.soltar });
-  pintarLlevas(); vestir(); panelInventario.pintar();
+  soltarAlSuelo(b.dataset.soltar);
 };
 pintarLlevas();
+// lo que no cupo al cargar el inventario (por ejemplo, si un contenedor tiene ahora menos huecos) cae a tus pies
+if (sueloObjetos.dejarApartado(inventario(), AUTOR_LOCAL, pj.x, pj.z)) { if (almacen) guardarInventarios(almacen, inventarios); }
 $('btnRellenar').onclick = () => { accion({ tipo: 'rellenar', cantidad: 50 }); guardar(); actualizarUI(); evaluarColocacion(); };
 {
   let armado = false, tmr = null;
@@ -1591,10 +1617,11 @@ window.__kinhold = {
   fijarSubida(t) { if (estado.obrando) estado.obrando.desde = performance.now() + 1e9; if (rampa) { rampa.t = rampa.meta = t; moverRampa(0); } },
   seguirSubida() { if (estado.obrando) estado.obrando.desde = performance.now(); },
   interactivoCercano() { const o = interactivoCercano(); return o && { c: o.c.id, key: o.key, tipo: o.tipo }; },
-  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; reconstruir(); ropaDelVisor(); vestir(); pintarLlevas(); panelInventario.pintar(); },
+  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; sueloObjetos.suelo.objetos = []; sueloObjetos.refrescar(); reconstruir(); ropaDelVisor(); vestir(); pintarLlevas(); panelInventario.pintar(); },
   get registroAcciones() { return registroAcciones; },
   accionInventario, get inventario() { return inventario(); }, panelInventario,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
+  sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas, // lo soltado en el suelo (src/juego/suelo.js)
   get enLinea() { return enLinea; },
   reconstruir() { reconstruir(); },
   render() { renderer.render(escena, camara); },
