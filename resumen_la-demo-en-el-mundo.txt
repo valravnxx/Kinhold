@@ -1,0 +1,34 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 2132 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1971 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1574 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2049 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2484 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1568 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2022 KB
+dist/kinhold_trozos.html 1568 KB
+hilo de los trozos 16 KB
+
+== Navegador: la demo en el mundo (Whitholm)
+  FALLA sin aguante te ahogas y vuelves a tu sitio de salida — {"muertes": 0, "x": 12120.433900573598, "z": -2.6568747430324215e-17, "aviso": "Pulsa Construir \u2192 Tierra \u2192 Moj\u00f3n para reclamar tu tierra."}
+  OK   sin errores en la página
+
+4 fallos
+!! FALLA: python3 pruebas/prueba_mundo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/mundo
+
+HAY FALLOS
+tardó 906 s
