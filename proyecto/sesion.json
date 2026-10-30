@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-30T05:22:21+00:00",
+  "tarea": "La demo en el mundo: apareces en Whitholm, la isla de los playtests (valravnx, 29 oct), en un sitio accesible (nunca en el mar ni en un pico) y todos en la misma comarca, y andas por la isla con la cámara del juego; fuera el llano. El servidor y el terreno solo cubren la isla",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261030-0521"
+ },
  "B": {
   "inicio": "2026-10-30T04:52:07+00:00",
   "tarea": "Pulir la capa (visto al rehacerla): que se mueva algo al andar (huesos propios o tela sencilla), que de espalda se distingan los pliegues y que las manos no asomen por los lados con los brazos algo abiertos",
