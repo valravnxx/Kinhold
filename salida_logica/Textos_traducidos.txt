@@ -1,0 +1,6 @@
+Textos del juego: 865; sin traducir (en): 2; con variables distintas: 0
+  FALTA (en)  Hito 1 · v39
+  FALTA (en)  Demo única · v44 (objetos en el suelo)
+Textos del juego: 865; sin traducir (ru): 2; con variables distintas: 0; sin cirílico: 0
+  FALTA (ru)  Hito 1 · v39
+  FALTA (ru)  Demo única · v44 (objetos en el suelo)
