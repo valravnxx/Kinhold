@@ -256,7 +256,7 @@ with sync_playwright() as p:
                   'hombre_capa_botas' in con and 'hombre_capa_zapatos' not in con and 'hombre_capa_manto' in con and 'hombre_capa_manto_broche' in con
                   and 'hombre_capa_tunica' in con and 'hombre_cinturon_tunica' in con, ', '.join(sorted(x for x in con if 'capa' in x or 'cinturon' in x)))
         pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_capa_botas.png')
-        # la capa (taller-v15) de espalda y de perfil, quieto y andando: tiene que caer de los hombros y no atravesar las piernas
+        # la capa (taller-v16) de espalda y de perfil, quieto y andando: tiene que caer de los hombros y no atravesar las piernas
         for v in ['espalda', 'perfil']:
             pg.click(f'[data-vista="{v}"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_capa_{v}.png')
         # la capa se mueve al andar (makehuman.js, VUELO_GLSL): se queda atrás y ondea; al pararse vuelve. Se pasa el

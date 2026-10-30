@@ -130,3 +130,6 @@ Prueba: `node pruebas/prueba_tintes.mjs` (con `MUTAR=1` mira la taller-v12, sin 
   ese perfil por su largo; pliegues que crecen hacia el bajo; bajo y bordes de delante doblados hacia dentro. Pesos:
   clavículas y espalda arriba, columna y pelvis abajo. Fotos de cerca con los brazos en reposo y bajados:
   `FOTOS=manto BRAZOS=0,0,-38 python3 herramientas/taller/vestir_mpfb.py /tmp/vestir`.
+  Desde taller-v16, en el perfil se cuentan también los brazos girados hacia abajo (la capa cae por encima de ellos a los
+  costados) y los pliegues son más hondos por detrás. Que se mueva al andar no va en el modelo: lo hace el juego
+  (`VUELO_GLSL` en `src/personajes/makehuman.js`). Prueba: `node pruebas/prueba_manto.mjs` (con `MUTAR=1` mira la v15).

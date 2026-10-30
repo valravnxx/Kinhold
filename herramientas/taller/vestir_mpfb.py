@@ -1265,7 +1265,7 @@ def personaje(nombre, macros, objetivos, ropa):
         return c
     piezas.append(trozo(base, nombre + '_pies', lambda i, c: en(i, 'body') and c.z < tobillo_z + (0.10 if mujer else 0.06), textura=(512, pintar_pies),
                         rugosidad=0.62, sss=0.2, ajustar_uv=True, **f_piel))
-    # ---- capa (manto): cae de los hombros como una capa de verdad (taller-v15; la malla, en manto()) ----
+    # ---- capa (manto): cae de los hombros como una capa de verdad (taller-v15, pulida en la v16; la malla, en manto()) ----
     # Antes era la malla del cuerpo empujada hacia fuera: seguía la cintura y los costados y parecía un chaleco sin
     # mangas (valravnx, 29 oct: «la capa que no es capa»).
     piezas += manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, ropa.get('manto', (78, 70, 58)))

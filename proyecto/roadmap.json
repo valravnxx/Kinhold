@@ -842,9 +842,9 @@
     },
     {
      "nombre": "Pulir la capa (visto al rehacerla): que se mueva algo al andar (huesos propios o tela sencilla), que de espalda se distingan los pliegues y que las manos no asomen por los lados con los brazos algo abiertos",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T04:52:07+00:00",
-     "rama": "trabajo/20261030-0452"
+     "fin": "2026-10-30T06:15:53+00:00"
     },
     {
      "nombre": "Pulir la barba larga (visto al rehacerla): en el juego las ondas de los pelos salen demasiado regulares, el bigote sigue pintado y sin volumen, y a los lados de la barbilla asoma algo de cuello",
@@ -1697,6 +1697,13 @@
      "archivo": "jugar/demo/v46.html",
      "capturas": "capturas/personaje-v26",
      "notas": "En «Personaje», la capa rehecha: cae de los hombros, más ancha abajo y con pliegues, abierta por delante y cerrada con un broche bajo el cuello (taller-v15)."
+    },
+    {
+     "v": "v47",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v47.html",
+     "capturas": "capturas/personaje-v27",
+     "notas": "En «Personaje», la capa se mueve al andar (se queda atrás, ondea y vuelve al pararse), cae por encima de los brazos a los costados y de espalda se ven los pliegues. Personajes en recursos/personajes/taller-v16/."
     }
    ]
   },
@@ -2348,6 +2355,13 @@
      "archivo": "jugar/personaje/v26.html",
      "capturas": "capturas/personaje-v26",
      "notas": "Capa rehecha (valravnx: «la capa que no es capa»): ya no es el cuerpo empujado hacia fuera, que parecía un chaleco sin mangas metido en la cintura, sino una malla propia que se apoya en los hombros y cae recta, algo más ancha abajo y con pliegues, abierta por delante y cerrada con un broche de bronce bajo el cuello. Personajes en recursos/personajes/taller-v15/."
+    },
+    {
+     "v": "v27",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/personaje/v27.html",
+     "capturas": "capturas/personaje-v27",
+     "notas": "La capa se mueve al andar: se queda atrás, sube un poco, ondea al ritmo del paso y vuelve al pararse (sin simulación de tela: por la altura de cada punto, con un muelle). A los costados cae por encima de los brazos bajados y de espalda se ven más los pliegues. Personajes en recursos/personajes/taller-v16/."
     }
    ]
   },
