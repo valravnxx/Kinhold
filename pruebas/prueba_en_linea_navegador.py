@@ -88,7 +88,8 @@ try:
             j = pg.get_attribute('[data-ir=construir]', 'href') or ''
             comprobar(f'{nombre}: «Jugar» del menú va en línea, al servidor de la dirección', 'enlinea=1' in j and 'servidor=' in j, j)
             comprobar(f'{nombre}: el menú ya no tiene modo en solitario ni Opciones', pg.locator('a.parte').count() == 3 and pg.locator('#btnDemoOpciones').count() == 0 and pg.locator('#demoEnLinea').count() == 0)
-            pg.screenshot(path=f'{SALIDA}/{nombre}_1_menu.png')
+            try: pg.screenshot(path=f'{SALIDA}/{nombre}_1_menu.png')   # la captura a veces falla sin tarjeta gráfica (no es lo que se prueba)
+            except Exception as e: print('  (sin captura del menú:', str(e)[:80], ')')
             pg.click('[data-ir=construir]'); pg.wait_for_load_state('load')
             comprobar(f'{nombre}: la construcción carga', esperar(pg, 'window.__demo && window.__demo.listo', 60000), str(err[:2]))
             # en el mundo (Whitholm), hasta que están los trozos de alrededor
@@ -253,7 +254,8 @@ try:
         comprobar('sin servidor sale el cartel «Sin conexión», que tapa el juego', esperar(C, "!!document.getElementById('sinConexion')", 120000) and 'servidor' in C.inner_text('#sinConexion'))
         if not MUTAR_SIN:
             t = tapado(C, '#btnReintentar'); comprobar('con su botón para volver a intentarlo, que se ve entero', t == '', t)
-        C.screenshot(path=f'{SALIDA}/movil_8_sin_conexion.png')
+        try: C.screenshot(path=f'{SALIDA}/movil_8_sin_conexion.png')
+        except Exception as e: print('  (sin captura:', str(e)[:80], ')')
         ctx.close()
         for nombre, (pg, err) in paginas.items():
             malos = [e for e in err if 'WebSocket' not in e and 'ERR_CONNECTION_REFUSED' not in e]
