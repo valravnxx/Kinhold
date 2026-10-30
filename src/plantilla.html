@@ -124,6 +124,11 @@ body.construyendo #pomo{left:25px;top:25px}
   .inv-lado{width:100%;flex:none}
   .inv-arcon{width:100%;max-height:none;overflow:visible;border-left:0;padding-left:0;border-top:1px solid var(--linea);padding-top:8px;margin-top:6px}
 }
+/* el aguante (valravnx, 30 oct): un anillo a la derecha que se vacía al correr y al nadar; rojo al ahogarse */
+#aguante{position:fixed;right:16px;top:46%;width:34px;height:34px;border-radius:50%;z-index:15;pointer-events:none;
+  -webkit-mask:radial-gradient(circle,transparent 52%,#000 54%);mask:radial-gradient(circle,transparent 52%,#000 54%);box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+#aguante.ahogo{animation:latido .5s ease-in-out infinite alternate}
+@keyframes latido{from{transform:scale(1)}to{transform:scale(1.18)}}
 </style>
 </head>
 <body>

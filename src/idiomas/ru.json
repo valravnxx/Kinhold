@@ -1298,5 +1298,7 @@
  "Ropa cosida (muestras)": "Сшитая одежда (образцы)",
  "v52: en «Construir», cada jugador nuevo aparece en un sitio al azar de las tres comarcas de inicio (Motdale, Breiddal y Strandvang), nunca en la montaña, el pasto alpino ni la nieve, en llano y lejos de los ríos; y vuelve siempre a ese sitio. Son 261 sitios, calculados una vez y apuntados en la lógica (el servidor no genera el mapa).": "v52: в «Строительстве» каждый новый игрок появляется в случайном месте одного из трёх начальных краёв (Мотдейл, Брейддаль и Страндванг), никогда в горах, на альпийских лугах или в снегах, на ровном месте и вдали от рек; и всегда возвращается в это место. Таких мест 261, они рассчитаны один раз и записаны в логике (сервер не генерирует карту).",
  "v52, provisional: quien ya tenía algo construido en su navegador sigue en el sitio de antes (en Lindholt), que es donde está lo suyo; y en línea todos aparecen ahí, porque las posiciones y lo construido en el servidor van relativos a ese sitio. El sitio de cada uno en línea lo repartirá el servidor cuando haya cuentas.": "v52, временно: у кого в браузере уже было что-то построено, остаётся на прежнем месте (в Линдхольт), где находится его постройка; а в сети все появляются там же, потому что позиции и построенное на сервере отсчитываются от этого места. Своё место каждому в сети будет назначать сервер, когда появятся учётные записи.",
- "Demo única · v52 (salida al azar)": "Единая демо · v52 (случайное появление)"
+ "Demo única · v52 (salida al azar)": "Единая демо · v52 (случайное появление)",
+ "Aguante": "Выносливость",
+ "Te has ahogado. Vuelves a tu sitio de salida.": "Ты утонул. Ты возвращаешься на своё место появления."
 }

@@ -24,6 +24,7 @@ import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS } from '../logica/whitholm.js';
 import { nombreDe } from '../logica/recoleccion.js';
 import { crearTala } from './tala.js';
+import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } from '../logica/nado.js';
 import { hachaEnMano, HACHAS, nombreTronco } from '../logica/tala.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
@@ -1394,6 +1395,29 @@ if (mundoJ) {
   document.body.appendChild(av);
 }
 
+// ---------------- Aguante y nado ----------------
+const nado = { e: nuevoAguante(), modo: 'tierra', agua: null, muertes: 0 };
+let indAguante = null;
+function pintarAguante() {
+  // un círculo a la derecha (como los avisos del GDD): se ve al gastar aguante o en el agua honda; se vacía con el
+  // aguante y se pone rojo al ahogarse
+  if (!indAguante) { indAguante = document.createElement('div'); indAguante.id = 'aguante'; indAguante.title = tr('Aguante'); document.body.appendChild(indAguante); }
+  const e = nado.e, ver = e.aguante < 0.995 || nado.modo === 'nadar';
+  indAguante.hidden = !ver;
+  if (!ver) return;
+  const p = Math.round(e.aguante * 100), color = e.ahogo > 0 ? '#c0442c' : e.aguante < 0.25 ? '#d9a441' : '#e8dcc0';
+  indAguante.style.background = `conic-gradient(${color} ${p}%, rgba(30,26,20,.55) ${p}% 100%)`;
+  indAguante.classList.toggle('ahogo', e.ahogo > 0);
+}
+// te has ahogado: de momento, vuelves a tu sitio de salida con el aguante lleno (decisión provisional del 30 oct: lo
+// que pasa al morir —la mitad de lo que llevas, saqueable— llega con el hito de supervivencia)
+function ahogado() {
+  nado.muertes++;
+  nado.e = nuevoAguante();
+  pj.x = 0; pj.z = 4; pj.k = 0; pj.y = alturaSuelo();
+  mostrarAviso(tr('Te has ahogado. Vuelves a tu sitio de salida.'), true);
+}
+
 const reloj = new THREE.Clock();
 function paso() {
   const dt = Math.min(reloj.getDelta(), 0.05);
@@ -1408,8 +1432,20 @@ function paso() {
   if (teclas.has('q')) cam.yaw += dt * 1.6;
   if (teclas.has('e')) cam.yaw -= dt * 1.6;
   const mag = Math.min(1, Math.hypot(ax, az));
-  const correr = teclas.has('shift');
-  const vel = (correr ? 6 : 3.6) * mag * inventario().velocidad(); // cargado al máximo en todo, al 80% (GDD)
+  // el agua donde estás (valravnx, 30 oct; src/logica/nado.js): a pie, vadeando o nadando, con un solo aguante para
+  // correr y nadar; nadando baja más deprisa cuanto más pesa lo que llevas, y sin aguante te ahogas
+  const ag = mundoJ && pj.k === 0 ? mundoJ.aguaEn(pj.x, pj.z) : null;
+  const modo = modoAgua(ag ? ag.hondo : null);
+  nado.modo = modo; nado.agua = ag;
+  const rapido = teclas.has('shift');
+  const correr = rapido && modo !== 'nadar' && puedeCorrer(nado.e);
+  let vel = (correr ? 6 : 3.6) * mag * inventario().velocidad(); // cargado al máximo en todo, al 80% (GDD)
+  if (modo === 'vadear') vel *= factorVadeo(ag.hondo);
+  if (modo === 'nadar') vel = (rapido && nado.e.aguante > 0 ? NADO.velNadarRapido : NADO.velNadar) * mag;
+  nado.e = pasoAguante(nado.e, dt, { modo, moviendo: mag > 0.05, rapido, kg: inventario().kilos() });
+  if (modo === 'nadar' && ag) { pj.x += ag.dx * NADO.arrastre * dt; pj.z += ag.dz * NADO.arrastre * dt; }   // la corriente te lleva
+  if (nado.e.muerto) ahogado();
+  pintarAguante();
   if (mag > 0.05) {
     estado.talando = null; // moverse deja de talar
     if (estado.obrando) { estado.obrando = null; mostrarAviso(t('dejasObra')); } // y de construir
@@ -1421,7 +1457,7 @@ function paso() {
     if (!mundoJ) { pj.x = THREE.MathUtils.clamp(r.x, -190, 190); pj.z = THREE.MathUtils.clamp(r.z, -190, 190); }
     // en el mundo: dentro de la isla, sin meterse en el mar ni subir por las paredes de los cortados (si no se puede
     // de frente, se prueba a deslizarse por cada eje)
-    else if (pj.k > 0 || mundoJ.andable(pj.x, pj.z, r.x, r.z)) { pj.x = r.x; pj.z = r.z; }
+    else if (pj.k > 0 || mundoJ.andable(pj.x, pj.z, r.x, r.z) || (modo === 'nadar' && modoAgua(mundoJ.aguaEn(r.x, r.z)?.hondo) === 'nadar' && mundoJ.dentro(r.x, r.z))) { pj.x = r.x; pj.z = r.z; }   // nadando, el fondo no frena
     else if (mundoJ.andable(pj.x, pj.z, r.x, pj.z)) pj.x = r.x;
     else if (mundoJ.andable(pj.x, pj.z, pj.x, r.z)) pj.z = r.z;
     const objetivoRot = Math.atan2(dx, dz);
@@ -1436,7 +1472,8 @@ function paso() {
     }
   }
   pj.vel = vel;
-  const yObjetivo = alturaSuelo();
+  // nadando, el cuerpo va en el agua con la cabeza fuera (los hombros a ras del agua) y se mece un poco
+  const yObjetivo = modo === 'nadar' ? ag.superficie - 1.35 + Math.sin(performance.now() / 600) * 0.04 : alturaSuelo();
   pj.y += (yObjetivo - pj.y) * Math.min(1, dt * 14);
   jugador.raiz.position.set(pj.x, pj.y, pj.z);
   jugador.raiz.rotation.y = pj.rot;
@@ -1684,6 +1721,8 @@ window.__kinhold = {
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   mundoJ, get mundoListo() { return mundoListo; }, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
+  // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado
+  nado,
   // los sitios de salida (src/logica/whitholm.js): el común y si uno es de la lista de la salida al azar
   salidas: { comun: SALIDA, total: SALIDAS.length, deLista: (x, z) => SALIDAS.some(s => s[0] === x && s[1] === z) },
   cambiarModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
