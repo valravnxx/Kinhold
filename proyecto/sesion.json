@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-30T20:23:07+00:00",
+  "tarea": "Lo que crece sigue al jugador por la isla: los árboles, la hierba y las piedras se rehacen a su alrededor poco a poco al andar (como en la vista «Como en el juego» del mapa), sin perder lo talado",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261030-2023"
+ },
  "B": null,
  "chat:trabajo/20261030-1415-rios": {
   "inicio": "2026-10-30T14:15:36+01:00",
