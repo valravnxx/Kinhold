@@ -2643,5 +2643,22 @@
   "pruebas": "En la nube: lógica, mapa del mundo y web correctas",
   "capturas": "capturas/mapa-v17",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T06:53:58+00:00",
+  "fin": "2026-10-30T09:30:42+00:00",
+  "titulo": "Barba larga pulida y bigote con volumen (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Bigote con volumen (antes solo pintado y plano): una malla propia hecha por código en el taller, de comisura a comisura. Nace pegada a la piel bajo la nariz, se abomba unos 5 mm sobre el labio de arriba y cae hacia fuera y hacia abajo por las comisuras; la punta va desigual, pelo a pelo, en la transparencia. Va encima del bigote pintado con la barba corta, la larga, el bigote y la perilla (piezasCabeza en src/logica/aspecto.js).",
+   "Barba larga: cada mechón con su onda (fase, paso y amplitud propios); antes una sola onda para toda la barba, y en el juego salían todas iguales y en fila.",
+   "Barba larga: por los lados nace también detrás de la patilla, en el lado del cuello (las columnas llegan a 96°, antes 80°), y baja unos 4 cm bajo el mentón: de frente ya no asoma el cuello a los lados de la barbilla.",
+   "Personajes en recursos/personajes/taller-v17/ (la mujer sale idéntica byte a byte a la v16). Publicado como personaje v28 y demo v50 (la v48 y la v49 de la demo son del chat y del carril A).",
+   "Pruebas nuevas: en prueba_barbas.mjs, que hay bigote con volumen, con el tinte del pelo, abombado (7,7 mm en el centro), a la altura del pintado y cayendo más por los lados (1,7 cm); sobre la taller-v16 falla. En prueba_aspecto.mjs, con qué barbas va; en la del personaje en el navegador, que se ve con la barba larga y no afeitado.",
+   "Capturas de cerca en el taller y en el juego (three.js), antes y después lado a lado. Aún mal: el bigote tapa casi todo el labio de arriba y con la barba corta se ve muy poblado; la barba larga va con la cabeza y no se mueve sola; en las fotos de Blender (Cycles) sale una raya fina delante de la boca que no está en la malla (comprobado punto a punto: nada sale de la cara) ni en el juego: no comprobado de dónde sale."
+  ],
+  "pruebas": "En la nube: 17 de 18 grupos bien a la primera; «juego en inglés» falló a los 7 s (contexto de la página destruido por una navegación) y pasó entero aquí y al repetirlo en la nube. Tras unir main, repetidos en la nube lógica, demo, demo en el mundo, en línea, duelo en línea, inglés, personaje y web: bien; duelo en línea, jugar en línea y lógica (prueba_combate_servidor.mjs) fallaron una vez cada uno y pasaron al repetirlos (aquí, la del servidor 64/64 dos veces). Tras la última unión con main (tala y comarcas), solo los textos traducidos aquí: bien.",
+  "capturas": "capturas/personaje-v28",
+  "estado": "ok"
  }
 ]

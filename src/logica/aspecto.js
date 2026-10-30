@@ -71,6 +71,8 @@ export function piezasCabeza(aspecto, tocado = null) {
     _barba_larga: b === 'larga',
     _barba_perilla: b === 'perilla',
     _barba_bigote: b === 'bigote',
+    // bigote con volumen (malla propia desde taller-v17), encima del pintado, con todas las barbas que llevan bigote
+    _barba_mostacho: b === 'corta' || b === 'larga' || b === 'bigote' || b === 'perilla',
   };
 }
 
