@@ -20,6 +20,7 @@ import { PRENDAS, capasDibujo, puestasDe, prendasDeCapas } from '../logica/prend
 import { crearRecoleccion } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
+import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS } from '../logica/whitholm.js';
 import { nombreDe } from '../logica/recoleccion.js';
 import { crearTala } from './tala.js';
 import { hachaEnMano, HACHAS, nombreTronco } from '../logica/tala.js';
@@ -113,7 +114,26 @@ const MUNDO = window.__mundoDemo || null;
 const camara = new THREE.PerspectiveCamera(45, 1, 0.1, MUNDO ? 1600 : 500);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
 const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2048, niebla: MUNDO ? [110, 700] : [70, 200] });
-const mundoJ = MUNDO ? crearMundoJuego({ escena, mapa: MUNDO.mapa }) : null;
+// Dónde apareces (valravnx, 30 oct): un jugador nuevo, en un sitio al azar de las comarcas de inicio (src/logica/whitholm.js),
+// que se guarda en el navegador para que vuelvas siempre al mismo. Quien ya jugaba (hay algo guardado de antes) sigue en
+// el sitio común, que es donde está lo que construyó. En línea, todos en el sitio común (decisión provisional del 30 oct:
+// las posiciones y el mundo del servidor van relativos a él; el sitio de cada uno lo repartirá el servidor con las
+// cuentas). ?salida=N en la dirección fuerza el sitio N de la lista (para las pruebas).
+const CLAVE_SALIDA = 'kinhold_salida_v1';
+function sitioDeSalida() {
+  if (EN_LINEA) return { x: SALIDA.x, z: SALIDA.z };
+  const forzada = new URLSearchParams(location.search).get('salida');
+  if (forzada !== null && SALIDAS[Number(forzada)]) return { x: SALIDAS[Number(forzada)][0], z: SALIDAS[Number(forzada)][1] };
+  try {
+    const g = JSON.parse(localStorage.getItem(CLAVE_SALIDA) || 'null');
+    if (g && esSitioDeSalida(g.x, g.z)) return { x: g.x, z: g.z };
+  } catch (e) { /* guardado roto o sin almacenamiento: se elige otro */ }
+  let antes = false; try { antes = !!localStorage.getItem(CLAVE_GUARDADO); } catch (e) { /* sin almacenamiento */ }
+  const s = antes ? { x: SALIDA.x, z: SALIDA.z } : elegirSalida();
+  try { localStorage.setItem(CLAVE_SALIDA, JSON.stringify(s)); } catch (e) { /* sin almacenamiento: otro sitio la próxima vez */ }
+  return s;
+}
+const mundoJ = MUNDO ? crearMundoJuego({ escena, mapa: MUNDO.mapa, origen: sitioDeSalida() }) : null;
 
 // decorado común (src/mundo/decorado.js): llano para construir, bosque, hierba y rocas con colisión.
 // Como la prueba de estilo v5: hierba densa con flores desde el centro, matorrales, calvas de tierra pisada,
@@ -1652,6 +1672,8 @@ window.__kinhold = {
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   mundoJ, get mundoListo() { return mundoListo; }, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
+  // los sitios de salida (src/logica/whitholm.js): el común y si uno es de la lista de la salida al azar
+  salidas: { comun: SALIDA, total: SALIDAS.length, deLista: (x, z) => SALIDAS.some(s => s[0] === x && s[1] === z) },
   cambiarModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
   plantaDeco, get teclas() { return [...teclas]; }, get fantasmaForma() { return fantasmaForma; },
   seleccionar(clase, tipo) { estado.sel = { clase, tipo }; estado.dir = 0; marcarSeleccion(); evaluarColocacion(); },

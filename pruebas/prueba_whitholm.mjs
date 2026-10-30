@@ -5,10 +5,16 @@
 //     la cuarta parte de lo más alto de la isla), llano alrededor y lejos de los ríos; y se puede andar desde él (sin
 //     cortados en 30 m a la redonda)
 //   - el cuadro de la isla deja fuera las otras regiones y no le falta tierra de la isla
+//   - los sitios de la salida al azar (SALIDAS, valravnx 30 oct) son los que salen del mundo elegido y siguen valiendo:
+//     en las tres comarcas de inicio (hay en cada una), en biomas normales (ni pasto alpino ni nieve), llanos, lejos de
+//     los ríos y por debajo de la cuarta parte de lo más alto de la isla; y elegirSalida da siempre uno de ellos
 // Uso: node pruebas/prueba_whitholm.mjs   MUTAR=1 → la salida en el centro de la región sin buscar: tiene que fallar.
+//                                         MUTAR=2 → la salida común (en Lindholt) metida en SALIDAS: tiene que fallar.
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearPaisaje, PENDIENTE_ANDAR } from '../src/logica/paisaje.js';
-import { ISLA, SALIDA, SALIDA_REQ, limitesIsla, buscarSalida, alturaMundo, dentroDeIsla } from '../src/logica/whitholm.js';
+import { ISLA, SALIDA, SALIDA_REQ, limitesIsla, buscarSalida, alturaMundo, dentroDeIsla, SALIDAS as SALIDAS_APUNTADAS, buscarSalidas,
+  esSalida, elegirSalida, esSitioDeSalida, COMARCAS_INICIO, BIOMAS_FUERA } from '../src/logica/whitholm.js';
+import { crearComarcas } from '../src/logica/comarcas.js';
 
 const MUTAR = process.env.MUTAR || '';
 let fallos = 0;
@@ -21,7 +27,7 @@ const isla = limitesIsla(mapa);
 comprobar('el cuadro de la isla apuntado es el del mapa', JSON.stringify(isla) === JSON.stringify(ISLA), JSON.stringify(isla));
 
 let s = buscarSalida(mapa, pai);
-if (MUTAR) { const c = mapa.centros[mapa.paisIsla]; s = { x: (c % mapa.N + 0.5) * mapa.celda, z: (((c / mapa.N) | 0) + 0.5) * mapa.celda - 3000 }; s.y = alt(s.x, s.z); }
+if (MUTAR === '1') { const c = mapa.centros[mapa.paisIsla]; s = { x: (c % mapa.N + 0.5) * mapa.celda, z: (((c / mapa.N) | 0) + 0.5) * mapa.celda - 3000 }; s.y = alt(s.x, s.z); }
 comprobar('hay sitio de salida y es el apuntado', s && s.x === SALIDA.x && s.z === SALIDA.z, JSON.stringify(s));
 
 // lo más alto de la isla, en su rejilla de celdas
@@ -53,6 +59,33 @@ if (s) {
   comprobar('desde la salida se puede andar a todos lados (sin cuestas de más de lo que se anda)', pendMax < PENDIENTE_ANDAR * 0.5, `pendiente máxima ${pendMax.toFixed(2)}`);
   comprobar('sin agua en 30 m a la redonda', !agua);
 }
+
+// ---------------- Salida al azar ----------------
+const comarcas = crearComarcas(mapa);
+const SALIDAS = MUTAR === '2' ? [...SALIDAS_APUNTADAS, [SALIDA.x, SALIDA.z]] : SALIDAS_APUNTADAS;
+const halladas = buscarSalidas(mapa, pai, comarcas);
+comprobar('los sitios de la salida al azar apuntados son los que salen del mapa', JSON.stringify(halladas) === JSON.stringify(SALIDAS),
+  `${halladas.length} hallados, ${SALIDAS.length} apuntados`);
+comprobar('hay bastantes sitios para repartir (al menos 30)', SALIDAS.length >= 30, `${SALIDAS.length}`);
+const porComarca = {}, malos = [];
+for (const [x, z] of SALIDAS) {
+  const nom = comarcas.nombreEn(x, z), y = alt(x, z), b = pai.sitio(x, z, y).bioma;
+  porComarca[nom] = (porComarca[nom] || 0) + 1;
+  const ci = Math.floor(z / celda) * N + Math.floor(x / celda);
+  const fallo = !COMARCAS_INICIO.includes(nom) ? `comarca ${nom}` : !b || BIOMAS_FUERA.includes(b) ? `bioma ${b}` :
+    mapa.pais[ci] !== mapa.paisIsla || !dentroDeIsla(x, z) ? 'fuera de la isla' : y >= maxIsla / 4 ? `alto (${y.toFixed(0)} m)` :
+    !esSalida(mapa, pai, alt, x, z) ? 'no llano, en el agua o junto a un río' : null;
+  if (fallo) malos.push(`${x},${z}: ${fallo}`);
+}
+comprobar('todos los sitios valen (comarca de inicio, bioma normal, en la isla, no en lo alto, llanos y lejos de los ríos)', malos.length === 0, malos.slice(0, 4).join('; '));
+comprobar('hay sitios en las tres comarcas de inicio', COMARCAS_INICIO.every(c => porComarca[c] > 0), JSON.stringify(porComarca));
+comprobar('ningún sitio repetido', new Set(SALIDAS.map(p => p.join(','))).size === SALIDAS.length);
+const elegidas = new Set();
+let fuera = 0;
+for (let i = 0; i <= 1000; i++) { const e = elegirSalida(i / 1000); if (!esSitioDeSalida(e.x, e.z) || !SALIDAS_APUNTADAS.some(p => p[0] === e.x && p[1] === e.z)) fuera++; elegidas.add(e.x + ',' + e.z); }
+comprobar('elegirSalida da siempre un sitio de la lista (también con 0 y con 1)', fuera === 0, `${fuera} fuera`);
+comprobar('elegirSalida reparte por toda la lista', elegidas.size === SALIDAS_APUNTADAS.length, `${elegidas.size} de ${SALIDAS_APUNTADAS.length}`);
+comprobar('un sitio inventado no pasa por sitio de salida', !esSitioDeSalida(SALIDA.x + 1, SALIDA.z) && esSitioDeSalida(SALIDA.x, SALIDA.z));
 
 console.log(fallos ? `\n${fallos} fallos` : '\nTodo bien');
 process.exit(fallos ? 1 : 0);

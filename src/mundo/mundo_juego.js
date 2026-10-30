@@ -1,7 +1,8 @@
 // Kinhold — el mundo de verdad en el juego: Whitholm, la isla de los playtests (valravnx, 29 oct). El suelo es el del
 // mapa del mundo, por trozos de 64 m hechos en un hilo aparte (src/mundo/terreno_trozos.js), con rejilla de 1 m cerca y
-// más basta lejos; alrededor, el mar. La escena tiene su 0 en el sitio de salida (src/logica/whitholm.js): x y z, en
-// metros desde él, y la altura, desde el suelo de ese sitio (así lo que se construye junto a la salida queda a ras de
+// más basta lejos; alrededor, el mar. La escena tiene su 0 en el sitio de salida del jugador (`origen`: uno de los de
+// src/logica/whitholm.js; si no se da, el común, SALIDA): x y z, en metros desde él, y la altura, desde el suelo de ese
+// sitio (así lo que se construye junto a la salida queda a ras de
 // suelo, como en el llano de antes, hasta que llegue «Construir en el mundo»).
 //
 // El mapa se genera antes (lo hace el menú de la demo, con su barra de progreso: tarda unos segundos) y llega hecho.
@@ -18,16 +19,17 @@ const movil = typeof innerWidth !== 'undefined' && Math.min(innerWidth, innerHei
 export const ANILLOS_MUNDO = movil ? [{ paso: 1, hasta: 32 }, { paso: 2, hasta: 128 }, { paso: 4, hasta: 288 }] : ANILLOS;
 export const ORILLA = 0.15;  // m sobre el mar (la lámina del mar está a 0,05): más abajo ya es agua y no se anda
 
-export function crearMundoJuego({ escena, mapa }) {
+export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
+  const O = { x: origen.x, z: origen.z };
   const paisaje = crearPaisaje(mapa);
   const altW = alturaMundo(paisaje);
-  const y0 = altW(SALIDA.x, SALIDA.z);          // el suelo del sitio de salida es el 0 de la escena
+  const y0 = altW(O.x, O.z);          // el suelo del sitio de salida es el 0 de la escena
   const grupo = new THREE.Group(); grupo.name = 'trozos'; grupo.position.y = -y0;
   escena.add(grupo);
   const gestor = crearGestor({ anillos: ANILLOS_MUNDO, limites: ISLA });
   // ?hilos=N en la dirección: cuántos hilos para el terreno (las pruebas con dos páginas en una máquina sin tarjeta gráfica)
   const nh = typeof location !== 'undefined' ? Number(new URLSearchParams(location.search).get('hilos')) || null : null;
-  const terreno = crearTerrenoTrozos({ grupo, material: materialSuelo(), mapa, paisaje, origen: SALIDA, gestor, hilos: nh,
+  const terreno = crearTerrenoTrozos({ grupo, material: materialSuelo(), mapa, paisaje, origen: O, gestor, hilos: nh,
     verticesPorFotograma: movil ? 12000 : 20000, msPorFotograma: movil ? 2 : 3 });
 
   // el mar: una lámina a la altura 0 del mundo, del tamaño de la isla y algo más (de momento lisa; el agua de verdad,
@@ -36,13 +38,13 @@ export function crearMundoJuego({ escena, mapa }) {
   const mar = new THREE.Mesh(new THREE.PlaneGeometry(ancho, largo).rotateX(-Math.PI / 2),
     new THREE.MeshLambertMaterial({ color: 0x4a6470 }));
   mar.name = 'mar';
-  mar.position.set((ISLA.x0 + ISLA.x1) / 2 - SALIDA.x, -y0 + 0.05, (ISLA.z0 + ISLA.z1) / 2 - SALIDA.z);
+  mar.position.set((ISLA.x0 + ISLA.x1) / 2 - O.x, -y0 + 0.05, (ISLA.z0 + ISLA.z1) / 2 - O.z);
   mar.receiveShadow = true;
   escena.add(mar);
 
   // la altura del suelo en la escena: la de la malla del trozo que se ve; si aún no ha llegado, la exacta
   function altura(x, z) {
-    const xm = x + SALIDA.x, zm = z + SALIDA.z;
+    const xm = x + O.x, zm = z + O.z;
     const y = terreno.alturaEn(xm, zm);
     return (y === null ? altW(xm, zm) : y) - y0;
   }
@@ -51,13 +53,13 @@ export function crearMundoJuego({ escena, mapa }) {
 
   // ¿puede haber hierba, matas, piedras o árboles en (x, z)? En tierra (no en el mar ni en la orilla) y fuera de los
   // ríos. Los tramos de río, los de alrededor de la salida (el decorado de cerca no va más allá)
-  const tramos = paisaje.riosEn(SALIDA.x - 400, SALIDA.z - 400, SALIDA.x + 400, SALIDA.z + 400);
-  const seco = (x, z) => sobreMar(x, z) > 1 && paisaje.agua(x + SALIDA.x, z + SALIDA.z, tramos) === null;
+  const tramos = paisaje.riosEn(O.x - 400, O.z - 400, O.x + 400, O.z + 400);
+  const seco = (x, z) => sobreMar(x, z) > 1 && paisaje.agua(x + O.x, z + O.z, tramos) === null;
 
   // ¿se puede andar de (x0, z0) a (x1, z1)? Dentro de la isla, sin meterse en el mar y sin subir cuestas de más de
   // PENDIENTE_ANDAR (las paredes de los cortados). Bajar sí se puede (se resbala, como en el mapa).
   function andable(x0, z0, x1, z1) {
-    if (!dentroDeIsla(x1 + SALIDA.x, z1 + SALIDA.z)) return false;
+    if (!dentroDeIsla(x1 + O.x, z1 + O.z)) return false;
     if (sobreMar(x1, z1) < ORILLA) return false;
     const d = Math.hypot(x1 - x0, z1 - z0);
     if (d < 1e-6) return true;
@@ -68,9 +70,9 @@ export function crearMundoJuego({ escena, mapa }) {
   // los trozos que tocan donde estás; listo: los que hay alrededor (de cerca) ya tienen su malla
   let listo = false;
   function paso(x, z, opc) {
-    const ms = terreno.actualizar(x + SALIDA.x, z + SALIDA.z, opc);
+    const ms = terreno.actualizar(x + O.x, z + O.z, opc);
     // listo cuando los trozos de los 3 × 3 de alrededor tienen su malla
-    const i = Math.floor((x + SALIDA.x) / LADO_TROZO), j = Math.floor((z + SALIDA.z) / LADO_TROZO);
+    const i = Math.floor((x + O.x) / LADO_TROZO), j = Math.floor((z + O.z) / LADO_TROZO);
     let ok = true;
     for (let b = -1; b <= 1 && ok; b++) for (let a = -1; a <= 1 && ok; a++) { const v = terreno.vivos.get(claveTrozo(i + a, j + b)); ok = !!(v && v.malla); }
     listo = ok;
@@ -78,5 +80,5 @@ export function crearMundoJuego({ escena, mapa }) {
   }
 
   return { altura, sobreMar, seco, andable, paso, terreno, paisaje, grupo, mar, y0,
-    get listo() { return listo; }, salida: SALIDA, isla: ISLA };
+    get listo() { return listo; }, salida: O, isla: ISLA };
 }
