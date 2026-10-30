@@ -123,7 +123,7 @@ with sync_playwright() as p:
             pg.wait_for_timeout(300)
             e = pg.evaluate(f"(() => {{ const k = {K}; return {{ sobreMar: k.mundoJ.sobreMar(k.pj.x, k.pj.z), x: k.pj.x, z: k.pj.z }}; }})()")
             e['andado'] = ((e['x'] - a0[0]) ** 2 + (e['z'] - a0[1]) ** 2) ** 0.5
-            comprobar('andando hacia el mar, llega a la orilla y se queda en tierra', e['andado'] > 0.5 and e['sobreMar'] >= 0.1, json.dumps(e))
+            comprobar('andando hacia el mar, avanza y no se mete en el agua', e['andado'] > 0.5 and e['sobreMar'] >= 0.1, json.dumps(e))
             pg.evaluate(f'(() => {{ const k = {K}; k.cam.pitch = 0.45; k.cam.dist = 20; }})()'); pg.wait_for_timeout(1500)
             pg.screenshot(path=f'{SALIDA}/{nombre}_costa.png')
         malos = [x for x in err if 'favicon' not in x]

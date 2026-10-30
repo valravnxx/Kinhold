@@ -178,10 +178,18 @@ function moverGente(dt) {
 function actualizarCamara() {
   const objetivo = new THREE.Vector3(pj.x, pj.y + 1.2, pj.z);
   const cp = Math.cos(cam.pitch);
+  let dist = cam.dist;
+  // en el mundo, el terreno no se mete entre la cámara y tú: si una loma o un cortado lo tapa, la cámara se acerca
+  // (se mira la línea de ti a la cámara en 12 puntos; cada uno, al menos 0,4 m por encima del suelo)
+  if (mundoJ) for (let i = 1; i <= 12; i++) {
+    const d = cam.dist * i / 12;
+    const x = objetivo.x + Math.sin(cam.yaw) * cp * d, y = objetivo.y + Math.sin(cam.pitch) * d, z = objetivo.z + Math.cos(cam.yaw) * cp * d;
+    if (y < decorado.altura(x, z) + 0.4) { dist = Math.max(1.5, cam.dist * (i - 1) / 12); break; }
+  }
   camara.position.set(
-    objetivo.x + Math.sin(cam.yaw) * cp * cam.dist,
-    objetivo.y + Math.sin(cam.pitch) * cam.dist,
-    objetivo.z + Math.cos(cam.yaw) * cp * cam.dist);
+    objetivo.x + Math.sin(cam.yaw) * cp * dist,
+    objetivo.y + Math.sin(cam.pitch) * dist,
+    objetivo.z + Math.cos(cam.yaw) * cp * dist);
   camara.lookAt(objetivo);
   ambiente.seguir(pj.x, pj.z);
 }
