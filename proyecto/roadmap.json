@@ -867,7 +867,9 @@
     },
     {
      "nombre": "Que la ropa cosida lleve su hechura y su tinte en el inventario (cada prenda la suya, sin apilarse si son distintas) y se vea así puesta en el juego, en la demo y en línea; la cota de malla, larga o corta",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T09:57:34+00:00",
+     "rama": "trabajo/20261030-0957"
     },
     {
      "nombre": "Revisión completa y publicación",
