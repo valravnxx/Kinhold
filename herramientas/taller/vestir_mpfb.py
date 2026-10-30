@@ -697,11 +697,11 @@ def personaje(nombre, macros, objetivos, ropa):
         centro = suave(0.044, 0.026, x) * suave(-0.10, -0.12, y)  # bajo el labio
         zc = zc * (1 - centro) + (boca_z - 0.008 + 0.3 * x * x * 10) * centro
         borde = 0.009 * (fbm(P, 70) - 0.5) + 0.003 * (ruido(P, 400) - 0.5)
-        arriba = suave(-0.006, 0.006, zc - z + borde)
+        arriba = suave(-0.009, 0.005, zc - z + borde)  # en el borde los pelos se van espaciando (pelos_barba)
         # en el cuello se va aclarando, sin corte. Por delante, bajo la barbilla, baja más: antes se aclaraba ya en la
         # barbilla (lo vio valravnx: «una claridad en la barbilla»)
         z_cuello = cuello_z + 0.03 - 0.04 * suave(-0.02, -0.07, y)
-        abajo = suave(-0.016, 0.012, z - z_cuello + borde)
+        abajo = suave(-0.02, 0.012, z - z_cuello + borde)
         m = arriba * abajo * (0.9 + 0.1 * suave(boca_z, boca_z - 0.04, z))  # más poblada en la barbilla
         frente = suave(-0.11, -0.125, y)
         bigote = suave(0.034, 0.026, x) * suave(-0.003, 0.002, z - (boca_z + 0.004)) * suave(0.003, -0.002, z - (boca_z + 0.016 - 0.1 * x * x * 10)) * frente
@@ -758,8 +758,21 @@ def personaje(nombre, macros, objetivos, ropa):
         a = 0.85 * zona_cejas(P)
         a = np.maximum(a, 0.7 * zona_pelo(P) * (1 - suave(0.1, 0.35, A[..., 1])))  # pelo rapado (bajo la cofia no se ve)
         return np.concatenate([colpelo * (0.9 + 0.2 * ruido(P, (90, 90, 1400))[..., None]), a[..., None]], -1)
+    def pelos_barba(P, m):
+        """barba pintada (antes una mancha lisa con el borde duro: valravnx, «horribles»). Dentro, tupida y casi del
+        todo opaca, con un grano fino de pelos a lo largo de la caída (arriba-abajo) que solo cambia el tono; en el borde,
+        el grano fino deshace la línea en pelos sueltos en unos milímetros (no manchas grandes: con grano grueso parecía
+        suciedad). Devuelve color y transparencia"""
+        g = ruido(P, (2600, 2600, 420))  # grano de pelo, menos de medio milímetro
+        raya = 0.6 * ruido(P + 0.37, (1500, 1500, 140)) + 0.4 * ruido(P + 0.71, (800, 800, 70))  # pelos a lo largo
+        a = suave(0.0, 1.0, 1.25 * m + 0.7 * (g - 0.5) - 0.1)
+        claro = 0.62 + 0.42 * raya + 0.18 * (g - 0.5) + 0.1 * (fbm(P, 35) - 0.5)
+        return colpelo * claro[..., None], a
     def pintar_barba(tipo):
-        return lambda P, A: np.concatenate([pelillos(P), (0.92 * zona_barba(P, A, tipo))[..., None]], -1)
+        def f(P, A):
+            col, a = pelos_barba(P, zona_barba(P, A, tipo))
+            return np.concatenate([col, (0.95 * a)[..., None]], -1)
+        return f
     def donde(fn, margen=0.015):
         """vértices de la piel donde el calco pinta algo, mirando también alrededor (las cejas son más finas que los cuadros
         de la malla: con poco margen quedaban cuadros sin calco y la ceja salía a trozos)"""
@@ -783,35 +796,88 @@ def personaje(nombre, macros, objetivos, ropa):
         piezas.append(trozo(base, f'{nombre}_{n_}', lambda i, c, sel=sel: sel[i] and sin_orejas(i, c), empuje=0.001, textura=(1024, fn),
                             rugosidad=0.7, ajustar_uv=True, **f_pelo))
 
-    # --- barba larga: la piel de la barba despegada y, bajo el mentón, estirada hacia delante y hacia abajo: cuelga
-    # delante del cuello. El borde (y la punta, desigual) va en la transparencia, medido donde estaba la piel ---
+    # --- barba larga: una malla propia con volumen (antes era la piel estirada: de perfil salía como una lámina hueca, y
+    # valravnx la vio «horrible»). Como la melena: columnas alrededor de la cara, de la patilla a la otra patilla; cada
+    # una baja pegada a la cara (a 2-12 mm de la piel, medido con rayos desde fuera) y, bajo el mentón, cae recta en vez
+    # de meterse hacia el cuello; luego vuelve por dentro, pegada al cuello, hasta debajo de la mandíbula. Así de perfil
+    # es una cuña maciza bajo la barbilla, como una barba de verdad. Se recoge hacia la punta (más estrecha) y la punta y
+    # los bordes van desiguales, mechón a mechón, en la transparencia (el juego la recorta: alphaTest). Va con la corta
+    # pintada debajo ---
     if ropa.get('barba'):
         frente_cara = [c for c in cara if c.z < boca_z - 0.02]
-        menton = min(frente_cara, key=lambda c: c.y)  # lo más saliente del mentón
-        mz, my = menton.z, menton.y
-        z_punta = cuello_z - 0.015  # hasta dónde llega (medido en la piel, antes de estirarla)
-        def zona_larga(O):
-            x, y, z = np.abs(O[..., 0]), O[..., 1], O[..., 2]
-            ancho = 0.028 + 0.034 * suave(z_punta, mz - 0.005, z)  # se estrecha hacia la punta
-            punta = suave(-0.008, 0.006, z - z_punta + 0.03 * (fbm(O, (40, 40, 8)) - 0.5) + 0.012 * (ruido(O, (300, 300, 20)) - 0.5))
-            cuelga = suave(ancho + 0.006, ancho - 0.006, x) * suave(0.0, -0.03, y) * punta * suave(mz + 0.004, mz - 0.004, z)
-            return np.maximum(zona_barba(O, None, 'larga'), cuelga)
-        def pintar_larga(P, A):
-            O = A[..., 3:6]
-            n = 0.55 * ruido(O, (520, 520, 26)) + 0.45 * ruido(O, (260, 260, 14))  # mechones a lo largo
-            col = colpelo * (0.62 + 0.55 * n[..., None]) * (0.9 + 0.15 * fbm(O, 30)[..., None])
-            return np.concatenate([col, zona_larga(O)[..., None]], -1)
-        def colgar_barba(c, i):
-            if c.z < mz + 0.005 and c.y > my:  # bajo el mentón: hacia delante y hacia abajo
-                t = float(suave(0.0, -0.04, c.y)) * float(suave(mz + 0.005, mz - 0.01, c.z))
-                bajo = mz - c.z
-                c.y = c.y * (1 - t) + (my + 0.012 + 0.22 * bajo) * t
-                c.z = c.z * (1 - t) + (mz - 0.012 - 1.35 * bajo) * t
-            return 0.003 + 0.011 * float(suave(boca_z - 0.005, boca_z - 0.05, c.z))
-        sel_larga = lambda i, c: en(i, 'body') and (PR[i] in ('head', 'neck_01')) and not en(i, 'ears', 0.1) and c.y < 0.01 \
-            and z_punta - 0.03 < c.z < oreja_medio and not (c.z > boca_z - 0.012 and abs(c.x) < 0.03 and c.y < -0.08)
-        piezas.append(trozo(base, nombre + '_barba_larga', sel_larga, empuje=colgar_barba, textura=(1024, pintar_larga),
-                            rugosidad=0.6, ajustar_uv=True, **f_pelo))
+        mz = min(frente_cara, key=lambda c: c.y).z  # lo más saliente del mentón
+        cab = np.array([tuple(co[i]) for i in range(len(co)) if cabeza(i)])
+        banda = cab[np.abs(cab[:, 2] - (ojo_arriba + 0.03)) < 0.012]
+        ax, ay = float(banda[:, 0].mean()), float(banda[:, 1].mean())  # eje de la cabeza
+        def piel_r(th, z):  # th = 0: delante (-y); positivo hacia +x
+            s_ = fuera((ax, ay, z), (math.sin(th), -math.cos(th), 0.0))
+            return None if s_ is None else math.hypot(s_.x - ax, s_.y - ay)
+        TH, NC, NO, NI = math.radians(80), 48, 24, 10
+        LARGO = 0.10  # cuánto cuelga bajo el mentón, en el centro
+        def raiz(a):  # bajo el labio por delante; sube por la mejilla hasta la patilla
+            w = float(suave(math.radians(16), math.radians(70), a)); return (boca_z - 0.013) * (1 - w) + (oreja_medio - 0.004) * w
+        def punta(a):
+            w = float(suave(math.radians(78), math.radians(12), a)); return (mz - LARGO) * w + (boca_z - 0.05) * (1 - w)
+        vs, uv, caras = [], [], []
+        for k in range(NC + 1):
+            th = -TH + 2 * TH * k / NC; a = abs(th)
+            zr, zt = raiz(a), punta(a)
+            col_ = []
+            r = None; zprev = None; r_menton = None
+            lado_w = float(suave(math.radians(25), math.radians(60), a))  # a los lados sigue la mandíbula hacia dentro
+            for j in range(NO):
+                t = j / (NO - 1); z = zr + (zt - zr) * t
+                s_ = float(suave(mz, zt, z)) if zt < mz else 0.0  # 0 hasta el mentón, 1 en la punta
+                te = th * (1 - 0.35 * s_ ** 1.2)  # se recoge hacia la punta
+                rr = piel_r(te, z)
+                if rr is None: rr = r if r is not None else 0.08
+                rr += 0.002 + 0.011 * float(suave(0.0, 0.3, t))  # grosor sobre la cara
+                # bajo el mentón cae recta (no se mete hacia el cuello), salvo a los lados, que siguen la mandíbula
+                r = rr if r is None else min(max(rr, r - 1.6 * lado_w * (zprev - z)), r + 1.2 * (zprev - z))
+                if z <= mz and r_menton is None: r_menton = r
+                if r_menton is not None: r = min(r, r_menton)  # bajo el mentón, ni un milímetro hacia delante
+                zprev = z
+                rf = r - 0.014 * s_ ** 2  # la punta, algo vuelta hacia dentro
+                col_.append((te, rf, z, 0.7 * t))
+            te_t, r_t, z_t, _ = col_[-1]
+            z_alto = min(zr - 0.004, max(z_t + 0.02, mz - 0.022))  # hasta dónde sube por dentro
+            s_a = float(suave(mz, zt, z_alto)) if zt < mz else 0.0
+            r_alto = piel_r(th * (1 - 0.35 * s_a ** 1.2), z_alto); r_alto = (r_alto if r_alto is not None else r_t - 0.01) + 0.003
+            for i in range(1, NI + 1):  # por debajo: en línea recta de la punta a la garganta, sin meterse en la piel
+                u = i / NI; z = z_t + (z_alto - z_t) * u
+                s_ = float(suave(mz, zt, z)) if zt < mz else 0.0
+                te = th * (1 - 0.35 * s_ ** 1.2)
+                rin = piel_r(te, z); rin = (rin if rin is not None else r_alto - 0.003) + 0.003
+                col_.append((te, min(r_t, max(r_t + (r_alto - r_t) * u, rin)), z, 0.7 + 0.3 * u))
+            for te, rf, z, vv in col_:
+                vs.append((ax + rf * math.sin(te), ay - rf * math.cos(te), z)); uv.append((k / NC, 1 - vv))
+        NF = NO + NI
+        if os.environ.get('VOLCAR_BARBA'): np.save(os.environ['VOLCAR_BARBA'], np.array(vs)); np.save(os.environ['VOLCAR_BARBA'] + '_piel.npy', np.array([tuple(c) for c in co])); print('BARBA', mz, boca_z, cuello_z, oreja_medio, ax, ay)
+        if os.environ.get('VOLCAR_BARBA') and os.environ.get('SOLO_VOLCAR'): sys.exit(0)
+        caras = [(k * NF + j, (k + 1) * NF + j, (k + 1) * NF + j + 1, k * NF + j + 1) for k in range(NC) for j in range(NF - 1)]
+        V_PUNTA = 0.3  # v de la punta (el pliegue entre la cara de fuera y la de dentro)
+        def pintar_larga(U, V):
+            Q = np.stack([U * 0.26, (1 - V) * 0.16, np.zeros_like(U)], -1)  # en metros, más o menos: a lo ancho y a lo largo
+            ond = 0.0012 * np.sin((1 - V) * 60 + U * 9) + 0.002 * (fbm(Q, (30, 6, 1)) - 0.5)  # apenas ondulada
+            Qo = Q + np.stack([ond, 0 * ond, 0 * ond], -1)
+            n = 0.45 * ruido(Qo, (900, 14, 1)) + 0.35 * ruido(Qo, (380, 7, 1)) + 0.2 * ruido(Qo, (2200, 30, 1))
+            surco = suave(0.3, 0.08, ruido(Qo, (240, 5, 1)))  # surcos oscuros entre mechones
+            col = colpelo * (0.5 + 0.75 * n[..., None]) * (1 - 0.4 * surco[..., None]) * (0.88 + 0.2 * fbm(Q, (40, 8, 1))[..., None])
+            col = col * np.where(V < V_PUNTA, 0.55, 1.0)[..., None]  # la cara de dentro, en sombra
+            # punta desigual, mechón a mechón: cada mechón (a lo ancho) se corta a su altura
+            mech = 0.6 * ruido(Qo, (160, 0.5, 1)) + 0.4 * ruido(Qo, (520, 1, 1))
+            corte = 0.015 + 0.11 * mech ** 1.5
+            a = suave(corte, corte + 0.012, np.abs(V - V_PUNTA))
+            # arriba (en la cara) se funde con la corta pintada: pelos que se espacian
+            arriba = 0.975 - 0.05 * ruido(Qo, (700, 2, 1))
+            a = a * suave(arriba, arriba - 0.03, V)
+            lado = np.minimum(U, 1 - U)
+            a = a * suave(0.0, 0.05 + 0.04 * ruido(Qo, (300, 3, 1)), lado)
+            return np.concatenate([col, a[..., None]], -1)
+        cerca = [i for i in range(len(co)) if cabeza(i)]
+        ob_l = malla_pelo(nombre + '_barba_larga', np.array(vs), caras, np.array(uv), [{'head': 1.0}] * len(vs), pintar_larga,
+                          (1024, 512), ([co[i] for i in cerca], cerca), f_pelo['factor'], rugosidad=0.6)
+        piezas.append(ob_l)
 
     # --- ojos y pestañas (color por vértice: el ojo tiene muy poco sitio en el mapa UV) ---
     for s in 'lr':
@@ -1069,9 +1135,10 @@ LABIOS = [('mouth/mouth-lowerlip-volume-decr.target.gz', 1.0), ('mouth/mouth-upp
 gente = [
     personaje('hombre', {'gender': 1.0, 'age': 0.55, 'muscle': 0.6, 'weight': 0.5, 'height': 0.5}, [('nose/nose-hump-incr.target.gz', 0.4)] + LABIOS,
               {'piel': (224, 180, 152), 'ojos': (92, 70, 48), 'pelo': (62, 44, 30), 'barba': True, 'tunica': (96, 72, 52), 'calzas': (70, 62, 54)}),
+] + ([] if os.environ.get('SOLO') == 'hombre' else [  # SOLO=hombre: solo el hombre, para probar barbas más deprisa (nunca se publica así)
     personaje('mujer', {'gender': 0.0, 'age': 0.45, 'muscle': 0.45, 'weight': 0.45, 'height': 0.4}, LABIOS,
               {'piel': (230, 190, 165), 'ojos': (80, 96, 104), 'pelo': (60, 40, 28), 'cofia': (214, 204, 182), 'vestido': True, 'tunica': (70, 84, 98)}),
-]
+])
 
 # ---------- exportar un .glb por personaje ----------
 for rig, piezas, pos in gente:
@@ -1082,7 +1149,8 @@ for rig, piezas, pos in gente:
     bpy.ops.export_scene.gltf(filepath=os.path.join(SALIDA, rig.name + '.glb'), export_format='GLB', use_selection=True,
                               export_skins=True, export_animations=False, export_vertex_color='ACTIVE', export_image_format='AUTO',
                               export_morph=True, export_morph_normal=False, export_extras=True)
-gente[0][0].location.x, gente[1][0].location.x = -0.55, 0.55
+gente[0][0].location.x = -0.55
+if len(gente) > 1: gente[1][0].location.x = 0.55
 
 # ---------- fotos (Cycles en CPU) ----------
 if os.environ.get('FOTOS') == 'ninguna':
@@ -1134,6 +1202,23 @@ if os.environ.get('FOTOS') == 'peinados':  # de cerca, cada peinado y cada barba
             foto((x - 0.95, -0.75, cz + 0.02), (x, 0, cz - 0.06), 60, base_ + '_34.png', 640, 640)
             foto((x + 0.9, 0.85, cz + 0.06), (x, 0, cz - 0.08), 60, base_ + '_atras.png', 640, 640)
             foto((x + 1.3, -0.1, cz + 0.0), (x, 0, cz - 0.06), 60, base_ + '_perfil.png', 640, 640)
+    print('listo', SALIDA); sys.exit(0)
+if os.environ.get('FOTOS') == 'barbas':  # muy de cerca, cada barba: de frente, de tres cuartos, de perfil y desde abajo
+    esc.cycles.samples = 32
+    for rig, piezas, pos in gente:
+        if rig.name != 'hombre': continue
+        for otro, op, _ in gente:
+            for ob in [otro] + op: ob.hide_render = otro is not rig
+        x = rig.location.x; cz = pos['head'].z - 0.02
+        for barba in os.environ.get('BARBAS', 'corta,larga,perilla,bigote').split(','):
+            cabeza_como(rig, piezas, 'corto', barba)
+            for ob in piezas:
+                if '_capa_' in ob.name and not any(k in ob.name for k in ('tunica', 'calzas', 'zapatos')): ob.hide_render = True
+                if '_cinturon_' in ob.name and 'tunica' not in ob.name: ob.hide_render = True
+            b_ = os.path.join(SALIDA, f'barba_{barba}')
+            foto((x, -0.75, cz + 0.02), (x, 0, cz), 85, b_ + '_frente.png', 700, 700)
+            foto((x - 0.6, -0.48, cz + 0.02), (x, 0, cz), 85, b_ + '_34.png', 700, 700)
+            foto((x + 0.78, -0.02, cz + 0.0), (x, 0, cz), 85, b_ + '_perfil.png', 700, 700)
     print('listo', SALIDA); sys.exit(0)
 if os.environ.get('FOTOS') == 'pies':  # de cerca, descalzo (sin zapatos ni botas) con la ropa de diario
     esc.cycles.samples = 24

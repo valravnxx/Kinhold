@@ -415,7 +415,7 @@ with sync_playwright() as p:
         # en calidad alta, toda la ropa y el pelo escriben profundidad (si no, la piel se pinta encima: v5)
         pg.evaluate(f"{E}.cambiar({{calidad: 'alta'}})"); listo(pg)
         # (menos los calcos de pelo pintados sobre la piel, que van con mezcla suave y despegados con polygonOffset)
-        malos = pg.evaluate(f"""(() => {{ const m = []; {E}.diag().pj.modelo.traverse(o => {{ const calco = /_(vello|barba_[a-z]+)$/.test(o.name);
+        malos = pg.evaluate(f"""(() => {{ const m = []; {E}.diag().pj.modelo.traverse(o => {{ const calco = /_(vello|barba_(corta|bigote|perilla))$/.test(o.name);
             if (o.isMesh && (calco ? !(o.material.transparent && o.material.polygonOffset) : (!o.material.depthWrite || o.material.transparent))) m.push(o.name); }}); return m; }})()""")
         if os.environ.get('MUTAR'): malos = ['mutado']
         comprobar('taller propio en calidad alta: todo escribe profundidad', not malos, ', '.join(malos))

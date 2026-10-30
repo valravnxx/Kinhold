@@ -29,7 +29,7 @@ const reducidas = new WeakMap(); // índice original → [índice de cada nivel]
 const atlas = new Map(); // piezas (nombres) → textura con todas juntas
 const CELDA = 128, LADO = 4; // 4×4 piezas de 128 px: 512×512
 
-const esCalco = (n) => /_(vello|barba_[a-z]+)$/.test(n.name);
+const esCalco = (n) => /_(vello|barba_(corta|bigote|perilla))$/.test(n.name);
 const esOjo = (n) => /_(ojo|iris)_[lr]$/.test(n.name);
 
 // la lista de triángulos de la pieza para un nivel (la original en el nivel 0)
