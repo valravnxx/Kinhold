@@ -52,7 +52,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   #cmbRosa .centro{position:absolute;left:50%;top:50%;width:42%;height:42%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(241,232,216,.3);pointer-events:none}
   /* móvil: la rosa abajo a la derecha, sus botones encima de ella y el aliento encima del joystick */
   body.combate.tactil #cmbBotones{bottom:calc(316px + env(safe-area-inset-bottom,0px))}
-  body.combate.tactil #cmbEstado{left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(162px + env(safe-area-inset-bottom,0px));transform:none}
+  body.combate.tactil #cmbEstado{left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(162px + env(safe-area-inset-bottom,0px));transform:none;flex-wrap:wrap;max-width:150px;gap:4px 8px;font-size:12px}
   body.combate.tactil #btnUsar{display:none}
   `;
   document.head.appendChild(css);
