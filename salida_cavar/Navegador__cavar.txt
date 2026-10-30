@@ -1,0 +1,13 @@
+  OK   pc: se dibuja la loma de roca — 11654 triángulos, 89 ms toda la roca al empezar
+  OK   pc: el túnel de prueba se cava — 13 golpes con roca
+  OK   pc: rehacer la malla por golpe tarda poco (navegador sin tarjeta gráfica) — {"golpes": 13, "media_ms": 6.6, "peor_ms": 23.1, "triangulos": 11786}
+  OK   pc: lo guardado es pequeño (solo los trozos tocados) — 1391 bytes
+  OK   pc: nada se sale de la pantalla — 1280px
+  OK   pc: sin errores en consola
+  OK   movil: se dibuja la loma de roca — 11654 triángulos, 87 ms toda la roca al empezar
+  OK   móvil: tocar la roca cava — 2 golpes
+  OK   móvil: las notas se abren
+  OK   movil: nada se sale de la pantalla — 390px
+  OK   movil: sin errores en consola
+
+Resultado: TODO CORRECTO
