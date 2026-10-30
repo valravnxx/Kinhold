@@ -70,10 +70,13 @@ export class Suelo {
   cabe(inv, tipo) {
     const p = pila(tipo, this.cat);
     const rutas = inv.rutasGuardar();
-    let t = 0;
+    const grande = (this.cat[tipo] || {}).tam === 'G';
+    let t = 0, manoG = false;
     for (const r of rutas) {
       const b = inv.buscar(r);
       if (b.motivo || inv.noCabe(b, { tipo, n: 1 })) continue;
+      // lo grande en las manos las ocupa las dos: cabe uno, no uno en cada mano
+      if (grande && r.startsWith('mano:')) { if (manoG) continue; manoG = true; }
       if (b.cosa && b.cosa.tipo !== tipo) continue;
       t += Math.max(0, p - (b.cosa ? b.cosa.n : 0));
     }
@@ -89,8 +92,9 @@ export class Suelo {
     if (!d) return { ok: false, motivo: 'Objeto desconocido.' };
     if (d.tam === 'E') return { ok: false, motivo: 'Eso es enorme: se arrastra, va en carro o entre varios.' };
     let r, cant;
-    if (pila(c.tipo, this.cat) === 1 || c.dentro) {
+    if ((pila(c.tipo, this.cat) === 1 && !d.recurso) || c.dentro) {
       // una cosa sola (herramienta, prenda, contenedor con lo que lleve): entera, a la ruta o a la primera que valga
+      // (una pila de troncos, aunque cada uno llene un hueco, va por el otro camino: se coge lo que quepa)
       if (n !== undefined && n !== c.n) return { ok: false, motivo: 'Cantidad no válida.' };
       cant = c.n;
       const rutas = a ? [a] : inv.rutasGuardar();

@@ -1,5 +1,6 @@
 // Pruebas de la lógica de combate de Kinhold. Con MUTAR=1 se rompen reglas a propósito: deben fallar.
 import * as tactil from '../src/combate/tactil.js';
+import * as direccion from '../src/combate/direccion.js';
 import { Luchador, resolverGolpe, crearProyectil, moverProyectil, elevacionPara, IA, azar, T, GUARDIAS, LINEAS, ARMADURAS, ARMAS, TRATAMIENTOS, SANAR } from '../src/combate/logica.js';
 import { RegistroAcciones, ejecutarCombate } from '../src/logica/acciones.js';
 
@@ -9,7 +10,12 @@ if (process.env.MUTAR === '1') {
   Object.defineProperty(Luchador.prototype, 'corriendo', { get() { return false; }, set() {} });
   Luchador.prototype.paraConEscudo = function () { return false; }; T.factorEscudo = 1; // escudo que no sirve
   TRATAMIENTOS.vendar.duracion = 0.1; Luchador.prototype.cortarCura = function () {}; // curar al instante y sin riesgo
-  globalThis.__mutarTactil = true; // la cámara táctil se trata como antes: cualquier temblor gira y el arco no la mueve
+  globalThis.__mutarTactil = true;
+  // modo direccional roto: no se puede cambiar de lado sin soltar, cargar no da más fuerza y cualquier lado para
+  Luchador.prototype.cambiarLinea = function () { return false; }; T.fuerzaMinima = 1;
+  direccion.LectorDireccion.prototype.cambio = function () { return null; };   // el ratón no cambia de lado sin soltar
+  const cubre = Luchador.prototype.cubre;
+  Luchador.prototype.cubre = function (l) { return this.modo === 'direccional' ? this.bloqueando && this.accion === 'libre' : cubre.call(this, l); }; // la cámara táctil se trata como antes: cualquier temblor gira y el arco no la mueve
 }
 
 let ok = 0, mal = 0;
@@ -500,6 +506,128 @@ console.log('11. Curación de heridas');
   const r1 = ejecutarCombate(ctx, reg, { autor: 'yo', tipo: 'curar', herida: 0, metodo: 'vendar' });
   const r3 = ejecutarCombate(ctx, reg, { autor: 'nadie', tipo: 'curar', herida: 0, metodo: 'vendar' });
   comprobar('curarse es una acción con autor y queda en el registro', r1.ok && !r3.ok && reg.entradas.some(e => e.tipo === 'curar' && e.autor === 'yo' && e.ok));
+}
+
+console.log('12. Modo direccional: golpe cargado, cambio de lado sin soltar y paradas por lado');
+{
+  const D = { modo: 'direccional' };
+  const prep = ARMAS.espada_larga.prep;
+  // carga a mano: mantener el botón t segundos y soltar; devuelve [resultado, segundos desde que se empezó hasta el impacto]
+  function cargarYSoltar(a, b, linea, mantener, r, alSoltar = null) {
+    a.cargar(linea);
+    let t = 0, res = null, soltado = false;
+    while (!res && t < 5) {
+      if (!soltado && t >= mantener) { a.descargar(); soltado = true; if (alSoltar) alSoltar(); }
+      const ev = a.actualizar(0.005); b.actualizar(0.005); t += 0.005;
+      for (const e of ev) if (e.tipo === 'impacto') res = resolverGolpe(a, b, e.linea, r);
+    }
+    return [res, t];
+  }
+  {
+    const [a, b] = pareja(1.5, D, D);
+    const [res, t] = cargarYSoltar(a, b, 'alto', 0.02, azar(3));
+    comprobar('soltar enseguida: el golpe sale al llegar a la carga mínima, más rápido que cargado', Math.abs(t - (prep * T.cargaMinima + T.vuelo)) < 0.03 && res.resultado === 'herida', `${r2(t)} s`);
+    comprobar('soltar enseguida: con la fuerza mínima', Math.abs(a.calidad - T.fuerzaMinima) < 0.01, `fuerza ${r2(a.calidad)}`);
+  }
+  {
+    const [a, b] = pareja(1.5, D, D);
+    const [res, t] = cargarYSoltar(a, b, 'alto', prep + 0.1, azar(3));
+    comprobar('cargado del todo: el golpe sale al soltar, con toda la fuerza', Math.abs(t - (prep + 0.1 + T.vuelo)) < 0.03 && Math.abs(a.calidad - 1) < 0.01 && res.resultado === 'herida', `${r2(t)} s, fuerza ${r2(a.calidad)}`);
+  }
+  {
+    const [a, b] = pareja(1.5, D, D);
+    a.cargar('alto'); let impacto = false; const c0 = a.cansancio;
+    for (let i = 0; i < 300; i++) for (const e of a.actualizar(0.01)) if (e.tipo === 'impacto') impacto = true;
+    comprobar('mientras se mantiene el botón no sale el golpe, y mantenerlo cargado cansa', !impacto && a.accion === 'preparando' && a.cansancio > c0 + 5 && a.hastaImpacto() === Infinity, `cansancio ${r2(c0)} → ${r2(a.cansancio)}`);
+  }
+  {
+    // varios golpes con la misma semilla: cargado hiere más que rápido
+    let rapido = 0, cargado = 0;
+    for (let s = 0; s < 40; s++) {
+      let [a, b] = pareja(1.5, D, D); rapido += cargarYSoltar(a, b, 'estocada', 0, azar(100 + s))[0].sev || 0;
+      [a, b] = pareja(1.5, D, D); cargado += cargarYSoltar(a, b, 'estocada', prep + 0.05, azar(100 + s))[0].sev || 0;
+    }
+    comprobar('un golpe cargado hiere más que uno soltado enseguida', cargado > rapido * 1.15, `${r2(cargado / 40)} contra ${r2(rapido / 40)}`);
+  }
+  {
+    const [a, b] = pareja(1.5, D, D);
+    a.cargar('alto'); for (let i = 0; i < 30; i++) a.actualizar(0.01);
+    const c0 = a.cansancio, carga0 = a.carga();
+    const cambia = a.cambiarLinea('izquierda');
+    comprobar('a mitad de la carga se cambia de lado sin soltar (es una finta: cuesta aliento y la carga baja)', cambia && a.linea === 'izquierda' && a.finta && a.carga() <= 0.36 && a.cansancio > c0, `carga ${r2(carga0)} → ${r2(a.carga())}`);
+    a.descargar(); let linea = null;
+    for (let i = 0; i < 100 && !linea; i++) for (const e of a.actualizar(0.01)) if (e.tipo === 'impacto') linea = e.linea;
+    comprobar('el golpe sale por el lado nuevo', linea === 'izquierda');
+    const [c] = pareja(1.5, D, D); c.cargar('alto'); c.descargar(); for (let i = 0; i < 30; i++) c.actualizar(0.01);
+    comprobar('ya soltado, no se cambia de lado', !c.cambiarLinea('bajo') && c.linea === 'alto');
+  }
+  {
+    // paradas por lado: el lado por el que viene el golpe, visto por quien para (ESPEJO)
+    let [a, b] = pareja(1.5, D, D);
+    b.bloquear(true, 'derecha'); for (let i = 0; i < 60; i++) b.actualizar(0.01);   // lleva rato parando (no es perfecta)
+    let [res] = cargarYSoltar(a, b, 'izquierda', 0, azar(4));
+    comprobar('parar por el lado bueno detiene el golpe', res.resultado === 'parada', res.resultado);
+    [a, b] = pareja(1.5, D, D);
+    b.bloquear(true, 'alto'); for (let i = 0; i < 60; i++) b.actualizar(0.01);
+    [res] = cargarYSoltar(a, b, 'izquierda', 0, azar(4));
+    comprobar('parar por otro lado no sirve', res.resultado === 'herida', res.resultado);
+    [a, b] = pareja(1.5, D, D);
+    b.bloquear(true, 'estocada'); for (let i = 0; i < 60; i++) b.actualizar(0.01);
+    [res] = cargarYSoltar(a, b, 'estocada', 0, azar(4));
+    comprobar('la estocada se para sin lado (el centro)', res.resultado === 'parada', res.resultado);
+    // cambiar al lado bueno justo antes del impacto, sin soltar la parada: parada perfecta
+    [a, b] = pareja(1.5, D, D);
+    b.bloquear(true, 'alto'); for (let i = 0; i < 60; i++) b.actualizar(0.01);
+    [res] = cargarYSoltar(a, b, 'derecha', 0.3, azar(4), () => b.bloquear(true, 'izquierda'));
+    comprobar('pasar al lado bueno sin soltar justo antes del golpe es parada perfecta', res.resultado === 'parada perfecta' && b.bloqueando, res.resultado);
+  }
+  {
+    // la máquina en modo direccional para por el lado bueno según la dificultad, y hay combates que terminan
+    const leer = (dif) => {
+      let bien = 0;
+      for (let s = 0; s < 60; s++) {
+        const [a, b] = pareja(1.5, D, D); const ia = new IA(b, dif, azar(500 + s));
+        a.cargar(LINEAS[s % 5]);
+        for (let i = 0; i < 40; i++) { ia.pensar(0.01, a); b.actualizar(0.01); a.actualizar(0.01); }
+        if (b.bloqueando && b.cubre(a.linea)) bien++;
+      }
+      return bien;
+    };
+    const ap = leer('aprendiz'), re = leer('realista');
+    comprobar('la máquina para por el lado bueno más a menudo en realista que en aprendiz', re > ap + 8, `${re} contra ${ap} de 60`);
+    let acaban = 0;
+    for (let s = 0; s < 6; s++) {
+      const [a, b] = pareja(3, D, D); const ia1 = new IA(a, 'normal', azar(700 + s)), ia2 = new IA(b, 'normal', azar(900 + s)); const r = azar(40 + s);
+      for (let i = 0; i < 18000 && !a.fuera && !b.fuera; i++) {
+        for (const [L, ia, otro] of [[a, ia1, b], [b, ia2, a]]) {
+          const m = ia.pensar(0.01, otro); L.x += m.mx * L.velocidad() * 0.01; L.z += m.mz * L.velocidad() * 0.01;
+          for (const e of L.actualizar(0.01)) if (e.tipo === 'impacto') resolverGolpe(L, otro, e.linea, r);
+        }
+      }
+      if (a.fuera || b.fuera) acaban++;
+    }
+    comprobar('combates máquina contra máquina en modo direccional que terminan', acaban >= 5, `${acaban} de 6`);
+  }
+}
+
+console.log('13. Dirección con el ratón');
+{
+  const { LectorDireccion } = direccion;
+  const d = new LectorDireccion();
+  const mover = (dx, dy, t0, n = 5) => { for (let i = 0; i < n; i++) d.mover(dx / n, dy / n, t0 + i * 0.01); };
+  mover(-40, 3, 0); comprobar('ratón a la izquierda y clic: golpe por la izquierda', d.alPulsar(0.06) === 'izquierda');
+  mover(2, -30, 1); comprobar('ratón hacia arriba y clic: golpe alto', d.alPulsar(1.06) === 'alto');
+  mover(0, 25, 2); comprobar('ratón hacia abajo y clic: golpe bajo', d.alPulsar(2.06) === 'bajo');
+  mover(35, 0, 3); comprobar('ratón a la derecha y clic: golpe por la derecha', d.alPulsar(3.06) === 'derecha');
+  comprobar('sin mover el ratón: estocada', d.alPulsar(5) === 'estocada');
+  mover(-40, 0, 6); comprobar('un movimiento de hace rato no cuenta: estocada', d.alPulsar(6.6) === 'estocada');
+  mover(3, -2, 7); comprobar('un temblor tampoco cuenta: estocada', d.alPulsar(7.06) === 'estocada');
+  d.alPulsar(8); mover(4, 3, 8.1, 3);
+  comprobar('con el botón pulsado, un temblor no cambia de lado', d.cambio(8.13) === null);
+  mover(0, -45, 8.2);
+  comprobar('con el botón pulsado, un movimiento claro hacia arriba cambia a alto', d.cambio(8.25) === 'alto');
+  mover(50, 0, 8.4);
+  comprobar('y luego a la derecha, sin soltar', d.cambio(8.45) === 'derecha');
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

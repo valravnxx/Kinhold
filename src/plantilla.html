@@ -115,8 +115,8 @@ body.construyendo #pomo{left:25px;top:25px}
   #panelInventario{inset:0;max-width:none;max-height:none;height:100%;border-radius:0;padding:calc(10px + env(safe-area-inset-top,0px)) 10px calc(14px + env(safe-area-inset-bottom,0px))}
   .inv-cuerpo{flex-direction:column;align-items:center;gap:6px}
   #llevas{left:calc(152px + env(safe-area-inset-left,0px));right:calc(10px + env(safe-area-inset-right,0px));transform:none;bottom:calc(24px + env(safe-area-inset-bottom,0px));max-width:none;flex-direction:column;align-items:stretch;gap:5px;font-size:12px}
-  #llevas .llevo{gap:5px;min-width:0}
-  #llevas .llevo b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  #llevas .llevo{gap:5px;min-width:0;flex-wrap:wrap;white-space:normal}
+  #llevas .llevo b{flex:1 1 auto;min-width:6em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #llevas .llevo>span{font-size:11px}
   #llevas i{display:none}
   .inv-figura{flex:none;width:100%;max-width:380px}

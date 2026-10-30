@@ -2725,5 +2725,74 @@
   "pruebas": "En la nube: 18 de 20 grupos correctos; jugar en línea y duelo en línea fallan dos veces seguidas",
   "capturas": "",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-30T12:29:53+00:00",
+  "fin": "2026-10-30T14:42:33+00:00",
+  "titulo": "Lo que crece en el mundo: hecho en su rama, sin publicar por las pruebas en línea (carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Lógica nueva (src/logica/vegetacion.js, sin three.js): árboles de las siete especies, hierba, flores, matorrales y piedras con las reglas de la vista «Como en el juego» del mapa (bioma, lluvia, pendiente, masas y claros, rodales de especie). El azar de cada cosa sale de su celda del mundo y de la semilla del mapa: siempre en el mismo sitio, y el servidor podrá saber dónde está cada árbol.",
+   "En la demo, en el mundo (src/mundo/vegetacion_mundo.js), sustituye al decorado del llano: árboles en un cuadro de 400 m (260 m en el móvil), hierba en 45 m (32 m), enteros hasta 60 m y sencillos más allá, sombra solo de los de menos de 40 m; un claro de 8 m en la salida. Todas las especies se talan (con el tocón de su tronco y la edad por su tamaño).",
+   "Los árboles que se meten entre la cámara y el personaje no se dibujan, como en el mapa: en el bosque la copa ya no tapa media pantalla.",
+   "Las piedras, con el color de su roca a medias con el gris del estilo v5 (la arenisca sola salía anaranjada en las capturas).",
+   "Prueba nueva en node (prueba_vegetacion.mjs): dos cuadros que se solapan dan lo mismo en lo común, nada en el agua, cada árbol de una especie de su bioma, más hierba en los claros. Encontró un fallo de verdad (los árboles del borde del cuadro dependían del cuadro) y está arreglado; con MUTAR=1 falla. La prueba del mundo en el navegador mira lo que crece, que se pueda talar, que el árbol que tapa no se dibuje y que al recargar esté todo igual (con MUTAR=2, otra semilla en cada carga, falla).",
+   "Las pruebas en línea esperaban 5 s mirando en cada fotograma: con dos páginas del mundo en la máquina de pruebas un fotograma tarda segundos. Ahora miran cada 250 ms y esperan 20 s al mojón, a la obra terminada y al corte: con eso pasan las comprobaciones del mojón y de la obra.",
+   "Sin publicar: siguen fallando «jugar en línea» (PC no dice que se ha cortado a tiempo y no vuelve a conectar solo tras reiniciar el servidor) y «duelo en línea» (PC no dice a tiempo que se ha cortado). Fallan igual en main sin estos cambios (lo anotó el carril B a las 13:30). Todo está en la rama trabajo/20261030-1329, con la demo v53 preparada (notas y traducciones); la tarea queda a medias para publicarla cuando pasen.",
+   "Mientras tanto, otra sesión del carril A retomó esta misma rama (13:30, solo unió main): sus cambios están unidos.",
+   "Tarea nueva en el hito: que lo que crece siga al jugador por la isla (ahora, lejos de la salida, el suelo queda sin árboles ni hierba)."
+  ],
+  "pruebas": "En la nube, la batería entera: 18 de 20 grupos correctos (la demo en el mundo, la tala, la demo única y los demás); jugar en línea y duelo en línea fallan, como en main. Después, con lo que crece aligerado, repetidos la demo en el mundo (bien) y los dos en línea dos veces más (la última con las esperas nuevas): quedan los fallos de la reconexión. No comprobado: los demás grupos con la versión aligerada. Prueba nueva de lo que crece rota a propósito (MUTAR=1) y la del mundo con MUTAR=2 (en local): fallan. Capturas de PC y móvil miradas (salida, paisaje, bosque).",
+  "capturas": "",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-30T13:28:46+00:00",
+  "fin": "2026-10-30T14:47:33+00:00",
+  "titulo": "Hito de arte: revisión completa, sin terminar (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Batería entera en la nube (20 grupos, 61 min): 18 correctos; el mapa del mundo pasó entero pero no pudo devolver las capturas (error 500 de GitHub al subirlas); falla el duelo en línea.",
+   "El duelo en línea falla dos veces seguidas en lo mismo: al pasar del duelo a construir en la misma pestaña, no sigue siendo el mismo jugador. Ya fallaba de vez en cuando en otras ramas; no es de este hito ni se ha encontrado la causa. Sin arreglar, el hito no pasa a revisión.",
+   "Capturas del personaje miradas en PC y móvil (cuerpo, cara, capa de espalda, cota, animaciones extra y el juego). Aún mal: el nacimiento del pelo corta en seco, como un casquete; las cejas son trazos finos que flotan; la capa de espalda sale casi negra y sin pliegues a la vista; con la toca asoma una mancha de piel rota entre la toca y el cuello; al picar no lleva pico; en el móvil el panel tapa medio personaje.",
+   "La tarea sigue a medias: la retoma otra sesión desde la rama trabajo/20261030-1329b."
+  ],
+  "pruebas": "En la nube: 18 de 20 grupos correctos y el mapa del mundo correcto sin capturas; el duelo en línea falla (repetido, falla igual)",
+  "capturas": "",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-30T09:39:49+01:00",
+  "fin": "2026-10-30T15:54:31+01:00",
+  "titulo": "Duelo: el combate, dentro del mundo (construcción v42, demo v53)",
+  "hito": "duelo",
+  "hecho": [
+   "Lógica pura, modo direccional: el golpe se carga mientras se mantiene el botón (soltado enseguida sale al 60 % de la preparación con el 80 % de la fuerza; cargado del todo, con toda; mantenerlo cargado cansa), se cambia de lado sin soltar (finta: cuesta aliento y la carga baja) y las paradas son por lado, también cambiables sin soltar; la parada perfecta cuenta desde que se pone el lado bueno.",
+   "La máquina del duelo lo sigue: para por el lado que lee (o por otro si lo lee mal), vuelve a leer cada finta, finta hacia el lado que no paras y, mientras cargas, cubre el lado y vuelve a levantar la parada al soltar para hacerla perfecta. En realista para por el lado bueno 45 de 60 veces; en aprendiz, 19.",
+   "La dirección con el ratón (src/combate/direccion.js): la del movimiento de las últimas 0,15 s antes del clic, o estocada si no te has movido; con el botón pulsado, 28 px seguidos hacia otro lado cambian de dirección y un temblor no. Usa la hora de cada evento, para que con pocos fotogramas siga contando.",
+   "En el mundo (src/juego/combate_mundo.js, con pocos enganches en main.js): C o «Arma» saca la espada y cambia al luchador del duelo; en PC el ratón cogido gira la cámara y elige la dirección, el clic izquierdo carga y el derecho para; «Rival» trae un rival de práctica, Tab o «Fijar» lo fija con la cámara del duelo; en el móvil, la rosa fija abajo a la derecha con «Parar», «Fijar» y «Rival». La cámara del mundo se inclina ahora hasta casi a ras de suelo.",
+   "GDD, 13. Combate: el combate dentro del mundo, el golpe cargado y las paradas por lado (sustituyen a la parada sin lado), en español, inglés y ruso.",
+   "Provisional, anotado en el registro: la espada larga hasta que el arma salga del inventario; la armadura sale de la ropa puesta (cota, malla; gambesón, gambesón; si no, lino); si caes, a los 5 s te levantas curado; en línea, el combate aún no pasa al otro jugador."
+  ],
+  "pruebas": "Lógica de combate 129/129 (nuevas: modo direccional y dirección con el ratón; con MUTAR=1 fallan 38). Prueba de navegador nueva del combate en el mundo, PC y móvil, bien en la nube (con MUTAR=1 fallan 8). Batería entera en la nube: bien salvo «jugar en línea» y «duelo en línea», que fallan también en main y en las ramas de los carriles desde la salida al azar; valravnx: «aún no está el servidor, por eso falla», así que no paran la publicación. No comprobado: con ratón de verdad y bloqueo del puntero (en las pruebas se mueve por código), en un móvil de verdad, ni los fotogramas con varios rivales.",
+  "capturas": "capturas/construccion-v42",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T15:26:49+00:00",
+  "fin": "2026-10-30T16:52:08+00:00",
+  "titulo": "Tronzar y partir, y el tronco corto al hombro (construcción v43, demo v54; carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Lógica pura nueva (src/logica/troceo.js): con un hacha en la mano, cada golpe a un tronco del suelo es una acción con autor y va al registro. El tronco largo se tronza en 3 o 4 troncos cortos (fijo por tronco) y el corto se parte en 6 de leña; lo que da cae a 1,2 m, de lado, y se suma a la pila de lo mismo. Sin hacha, lejos o con golpes demasiado seguidos, no se trocea; entre dos va más rápido. Lo que va a medias se guarda en el navegador.",
+   "Provisional, anotado en el registro: mientras no haya sierra de tronzar ni cuñas y mazo, se hace con el hacha sola; tronzar, 18 golpes con hierro y 54 con piedra (más que talar un adulto: «lento»); partir, 3 y 6. El tronco delgado no se tronza.",
+   "El tronco corto se lleva con las dos manos o al hombro (src/logica/inventario.js): al hombro va solo y deja las manos libres. En la demo, abajo, «Al hombro» y «A las manos» lo pasan de un sitio al otro. La leña va en el leñero (18: tres troncos partidos).",
+   "En la demo: Usar (F) junto a un tronco largo o corto tumbado, con un hacha en la mano, da un golpe cada 0,9 s y el aviso dice cuántos faltan. En el móvil, la línea de lo que llevas deja que los botones bajen de línea para que se lea el nombre.",
+   "Arreglo: de una pila de dos o más troncos (delgados o cortos) no se podía coger ninguno («No te cabe»); ahora se coge uno, con las dos manos.",
+   "Lo que aún está mal (revisión visual): el tronco en las manos o al hombro no se ve en el personaje (es la tarea «Lo que llevas se ve puesto»); el gesto de tronzar es el mismo de talar, con el hacha por encima del hombro; la pila de leña se ve pequeña (6 de leña son 3 trozos)."
+  ],
+  "pruebas": "Lógica de tronzar y partir 42/42 (nueva; con MUTAR=1 fallan 4). Prueba de navegador nueva en PC y móvil, bien (con MUTAR=1 falla). Batería entera en la nube (22 grupos): bien salvo «duelo en línea», que falla también en main desde la salida al azar (valravnx: «aún no está el servidor, por eso falla»).",
+  "capturas": "capturas/construccion-v43",
+  "estado": "ok"
  }
 ]

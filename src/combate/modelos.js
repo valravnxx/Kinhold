@@ -327,8 +327,10 @@ export function animarCombatiente(raiz, L, dt, velocidad, cojea, lineaParada) {
   // paso al frente al golpear y retroceso al recibir
   const t = L.duracion > 0 ? Math.min(1, L.tAccion / L.duracion) : 1;
   let avance = 0, giro = 0, inclina = 0;
+  // modo direccional: al soltar, el golpe arranca («lanzando», hasta el 65 % del recorrido) y el impacto lo termina
+  const tg = L.modo === 'direccional' ? (L.accion === 'lanzando' ? 0.65 * suave(t) : 0.65 + 0.35 * suave(t)) : suave(t);
   if (L.accion === 'preparando' && L.linea) { giro = GIRO[L.linea][0] * suave(t); avance = -0.08 * suave(t); }
-  else if (L.accion === 'golpeando' && L.linea) { giro = GIRO[L.linea][0] + (GIRO[L.linea][1] - GIRO[L.linea][0]) * suave(t); avance = (L.linea === 'estocada' ? 0.45 : 0.28) * Math.sin(t * Math.PI / 2); inclina = 0.12; }
+  else if ((L.accion === 'golpeando' || L.accion === 'lanzando') && L.linea) { giro = GIRO[L.linea][0] + (GIRO[L.linea][1] - GIRO[L.linea][0]) * tg; avance = (L.linea === 'estocada' ? 0.45 : 0.28) * Math.sin(t * Math.PI / 2); inclina = 0.12; }
   else if (L.accion === 'recuperando' && L.linea) { giro = GIRO[L.linea][1] * (1 - suave(t)); avance = (L.linea === 'estocada' ? 0.45 : 0.28) * (1 - suave(t)); inclina = 0.12 * (1 - t); }
   u.retroceso = Math.max(0, (u.retroceso || 0) - dt);
   avance -= (u.retroceso || 0) * 1.2;
@@ -345,12 +347,13 @@ export function animarCombatiente(raiz, L, dt, velocidad, cojea, lineaParada) {
     const conEscudo = tipo === 'espada_escudo';
     const base = L.modo === 'guardias' ? GUARDIAS_POSE[L.guardia] : conEscudo ? POSE_ESCUDO : POSES.base;
     if (L.accion === 'preparando') obj = mezclar(base, POSES[L.linea].p, suave(t));
-    else if (L.accion === 'golpeando') obj = mezclar(POSES[L.linea].p, POSES[L.linea].f, suave(t));
+    else if (L.accion === 'golpeando' || L.accion === 'lanzando') obj = mezclar(POSES[L.linea].p, POSES[L.linea].f, tg);
     else if (L.accion === 'recuperando' && L.linea) obj = mezclar(POSES[L.linea].f, base, suave(t));
     else if (L.accion === 'aturdido') obj = { m: V(0.1, 1.55, -0.05), d: V(0.3, 0.9, -0.6) }; // arma desviada hacia atrás
-    else if (L.bloqueando) obj = conEscudo ? POSE_ESCUDO_PARANDO : PARADAS[lineaParada || 'estocada'];
+    // en el modo direccional la hoja va al lado que ha elegido quien para (el de la lógica), no al del golpe que viene
+    else if (L.bloqueando) obj = conEscudo ? POSE_ESCUDO_PARANDO : PARADAS[(L.modo === 'direccional' ? L.lineaBloqueo : lineaParada) || 'estocada'];
     else obj = base;
-    const kk = L.accion === 'golpeando' ? 1 : Math.min(1, dt * 16);
+    const kk = L.accion === 'golpeando' || L.accion === 'lanzando' ? 1 : Math.min(1, dt * 16);
     u.pose.m.lerp(obj.m, kk); u.pose.d.lerp(obj.d, kk).normalize();
     u.manos.position.copy(u.pose.m);
     u.manos.quaternion.setFromUnitVectors(V(0, 1, 0), u.pose.d);

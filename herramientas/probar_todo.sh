@@ -40,6 +40,7 @@ paso "Inventario por huecos" node pruebas/prueba_inventario.mjs
 paso "Recoger del suelo y de las plantas" node pruebas/prueba_recoleccion.mjs
 paso "Objetos en el suelo" node pruebas/prueba_suelo.mjs
 paso "Tala de los árboles" node pruebas/prueba_tala.mjs
+paso "Tronzar y partir" node pruebas/prueba_troceo.mjs
 paso "Datos de cada prenda (zonas, protección, abrigo y peso)" node pruebas/prueba_ropa.mjs
 paso "Aspecto del personaje (personalización)" node pruebas/prueba_aspecto.mjs
 paso "Servidor mínimo con dos clientes" node pruebas/prueba_servidor.mjs
@@ -77,9 +78,11 @@ paso "Textos traducidos" node pruebas/prueba_idiomas.mjs
 paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold_hito1.html "$C/construccion"
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_hito1.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_hito1.html "$C/tala"
+paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_hito1.html "$C/troceo"
 paso "Navegador: panel de inventario" python3 pruebas/prueba_inventario_navegador.py dist/kinhold_hito1.html "$C/inventario"
 paso "Navegador: objetos en el suelo" python3 pruebas/prueba_suelo_navegador.py dist/kinhold_hito1.html "$C/suelo"
 paso "Navegador: combate" python3 pruebas/prueba_combate_navegador.py dist/kinhold_combate.html "$C/combate"
+paso "Navegador: combate en el mundo" python3 pruebas/prueba_combate_mundo_navegador.py dist/kinhold_hito1.html "$C/combate_mundo"
 paso "Navegador: pruebas de estilo" python3 pruebas/prueba_estilo_navegador.py dist/kinhold_estilo.html "$C/estilo"
 paso "Navegador: personaje" python3 pruebas/prueba_personaje_navegador.py dist/kinhold_personaje.html "$C/personaje"
 paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html "$C/demo"

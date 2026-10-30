@@ -16,17 +16,19 @@ import { conectarEnLinea } from './en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
 import { dibujarRetrato } from './retrato.js';
-import { PRENDAS, prendasDeCapas } from '../logica/prendas.js';
+import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
 import { vestidoDe, rasgosPrenda } from '../logica/hechura.js';
 import { crearRecoleccion } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS } from '../logica/whitholm.js';
 import { nombreDe } from '../logica/recoleccion.js';
+import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
 import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } from '../logica/nado.js';
 import { hachaEnMano, HACHAS, nombreTronco } from '../logica/tala.js';
+import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_TROCEO } from '../logica/troceo.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -155,6 +157,9 @@ const recoleccion = crearRecoleccion({ raiz: escena, altura: decorado.altura, ob
 const sueloObjetos = crearSuelo({ raiz: escena, altura: decorado.altura, almacen, enTierras: (autor, x, z) => !!mundo.dentroDeTierra(x, z) });
 // los árboles se talan a golpes de hacha, caen, dejan tocón y vuelven a crecer (src/juego/tala.js)
 const talaV = crearTala({ raiz: escena, obstaculos, altura: decorado.altura, almacen, sueloObjetos });
+// los troncos del suelo se tronzan (el largo, en 3–4 cortos) y se parten (el corto, en leña) a golpes de hacha
+const troceo = new Troceo(sueloObjetos.suelo);
+if (almacen) cargarTroceo(almacen, troceo, Date.now());
 
 // ---------------- Personaje y cámara ----------------
 // personaje del taller propio (la carpeta, en src/mundo/eleccion.js)
@@ -739,7 +744,7 @@ lienzo.addEventListener('pointermove', (e) => {
   const rotarCamara = e.pointerType !== 'mouse' || p.boton === 2 || p.boton === 1 || (p.boton === 0 && estado.modo === 'mover');
   if (arrastrando && rotarCamara) {
     cam.yaw -= dx * 0.006;
-    cam.pitch = THREE.MathUtils.clamp(cam.pitch + dy * 0.004, 0.45, 1.35);
+    cam.pitch = THREE.MathUtils.clamp(cam.pitch + dy * 0.004, 0.06, 1.35); // hasta casi a ras de suelo (valravnx, 30 oct)
   }
   if (e.pointerType === 'mouse' && p.boton === 0 && estado.modo === 'construir') alPasar(e.clientX, e.clientY);
 });
@@ -1098,6 +1103,8 @@ function usar() {
   if (ob && !subirAndamio) { usarObra(ob); return; }
   // con un hacha en la mano, junto a un árbol, se tala antes que recoger lo que haya al lado
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { empezarTala(arbolCercano()); return; }
+  // con un hacha en la mano, junto a un tronco tumbado, se tronza (el largo) o se parte (el corto)
+  if (!it && hachaEnMano(inventario()) && troncoCercano()) { empezarTroceo(troncoCercano()); return; }
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
     const so = sueloObjetos.cercano(pj.x, pj.z); // lo que hay en el suelo, antes que lo que se recoge
@@ -1368,6 +1375,7 @@ function empezarTala(a) { estado.talando = a; estado.golpeEn = 0.45; pj.rot = Ma
 const RITMO_TALA = 0.9; // s entre golpe y golpe (el gesto de talar)
 function golpeTala() {
   const a = estado.talando;
+  if (a.troceo) { golpeTroceo(a.troceo); return; }
   estado.golpeEn = RITMO_TALA;
   const r = talaV.golpe(inventarios, registroAcciones, AUTOR_LOCAL, a, pj.x, pj.z);
   if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
@@ -1375,6 +1383,33 @@ function golpeTala() {
   estado.talando = null;
   const ramas = r.deja.find(d => d.tipo === 'rama');
   mostrarAviso(tr('¡El árbol cae! Deja {tronco} y {n} ramas.', { tronco: tr(nombreTronco(talaV.tala.porId.get(a.id).edad)).toLowerCase(), n: ramas ? ramas.n : 0 }));
+}
+
+// Tronzar y partir (src/logica/troceo.js): el tronco del suelo más cercano que se trocea, en la planta baja.
+function troncoCercano() {
+  if (pj.k !== 0) return null;
+  return sueloObjetos.suelo.cercanos(pj.x, pj.z, Date.now(), ALCANCE_TROCEO - 0.3).find(o => seTrocea(o.cosa.tipo)) || null;
+}
+function empezarTroceo(o) {
+  estado.talando = { troceo: o.id, x: o.x, z: o.z }; estado.golpeEn = 0.45; pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+  mostrarAviso(o.cosa.tipo === 'tronco_largo' ? tr('Tronzas el tronco largo.') : tr('Partes el tronco en leña.'));
+}
+function golpeTroceo(id) {
+  estado.golpeEn = RITMO_TALA;
+  const r = ejecutarTroceo(troceo, inventarios, registroAcciones, { autor: AUTOR_LOCAL, tipo: 'trocear', objeto: id, x: pj.x, z: pj.z }, Date.now(),
+    (autor, x, z) => !!mundo.dentroDeTierra(x, z));
+  if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return r; }
+  if (almacen) guardarTroceo(almacen, troceo);
+  const tronzar = r.accion === 'tronzar';
+  if (!r.termina) {
+    mostrarAviso(tronzar ? (r.faltan === 1 ? tr('Tronzas el tronco: falta 1 golpe.') : tr('Tronzas el tronco: faltan {n} golpes.', { n: r.faltan }))
+      : (r.faltan === 1 ? tr('Partes el tronco: falta 1 golpe.') : tr('Partes el tronco: faltan {n} golpes.', { n: r.faltan })));
+    return r;
+  }
+  estado.talando = null;
+  sueloObjetos.guardar(); sueloObjetos.refrescar();
+  mostrarAviso(tronzar ? tr('Tronzado: {n} troncos cortos.', { n: r.da.n }) : tr('Partido: {n} de leña.', { n: r.da.n }));
+  return r;
 }
 
 // El terreno por trozos alrededor de donde estás (en el mundo). Al empezar, hasta que están los trozos de alrededor, el
@@ -1440,7 +1475,7 @@ function paso() {
   nado.modo = modo; nado.agua = ag;
   const rapido = teclas.has('shift');
   const correr = rapido && modo !== 'nadar' && puedeCorrer(nado.e);
-  let vel = (correr ? 6 : 3.6) * mag * inventario().velocidad(); // cargado al máximo en todo, al 80% (GDD)
+  let vel = (correr ? 6 : 3.6) * mag * inventario().velocidad() * combate.factorVelocidad(correr); // cargado al máximo en todo, al 80% (GDD); con el arma sacada, lo que diga el combate
   if (modo === 'vadear') vel *= factorVadeo(ag.hondo);
   if (modo === 'nadar') vel = (rapido && nado.e.aguante > 0 ? NADO.velNadarRapido : NADO.velNadar) * mag;
   nado.e = pasoAguante(nado.e, dt, { modo, moviendo: mag > 0.05, rapido, kg: inventario().kilos() });
@@ -1483,6 +1518,7 @@ function paso() {
   if (rampa && !(estado.obrando && estado.obrando.subir)) quitarRampa(); // se dejó de subir (moverse, reiniciar…)
   moverRampa(dt);
   jugador.animar(mag > 0.05 ? vel : 0, dt, !!estado.talando || !!estado.obrando);
+  combate.paso(dt, { corriendo: correr && mag > 0.05, velocidad: mag > 0.05 ? vel : 0 });
 
   // interiores: ocultar plantas superiores y tejados si estás bajo techo, y también los muebles de esas plantas
   // (antes se veían los del piso de arriba estando abajo; lo vio valravnx el 27 oct)
@@ -1612,6 +1648,15 @@ function vestir() {
 }
 ropaDelVisor();
 jugador.listo.then(vestir);
+// El combate en el mundo (valravnx, 30 oct): arma sacada con C o «Arma», ratón cogido, golpes cargados y paradas por lado
+const combate = crearCombateMundo({
+  escena, camara, lienzo, pj, cam, jugador, recursos: RECURSOS_MH, sexo: SEXO, aspecto: elegido ? elegido.aspecto : undefined,
+  capasActuales: () => vestidoAhora().capas,
+  // provisional, hasta la tabla única de armadura: la cota cuenta como malla y el gambesón como gambesón
+  armaduraActual: () => { const p = puestasDe(inventario().lugares); return p.includes('cota_malla') ? 'malla' : p.includes('gambeson') ? 'gambeson' : 'lino'; },
+  modo: () => estado.modo, alturaEn: (x, z) => decorado.altura(x, z),
+  registro: { anotar: (a, r) => registroAcciones.anotar(a, r) }, esTactil: estado.esTactil,
+});
 // Lo que llevas en las manos y al hombro no está en el panel (valravnx, 29 oct): se coge del mundo y se suelta al mundo.
 // Mientras no se vea en el personaje (tarea del hito 2), una línea abajo dice qué llevas, cada cosa con «Soltar» (al
 // suelo, a tus pies).
@@ -1619,16 +1664,32 @@ function pintarLlevas() {
   const inv = inventario(), nom = c => tr(CATALOGO[c.tipo].nombre) + (c.n > 1 ? ' ×' + c.n : '');
   const partes = [];
   const manos = ['mano:der', 'mano:izq'].filter(l => inv.lugares[l]);
-  const grupo = (et, l) => `<span class="llevo"><span>${et}</span><b>${nom(inv.lugares[l])}</b><button data-soltar="${l}">${tr('Soltar')}</button></span>`;
+  // el tronco corto se lleva con las dos manos o al hombro: un botón lo pasa de un sitio al otro
+  const cambio = l => {
+    const c = inv.lugares[l]; if (!c || !CATALOGO[c.tipo].hombro || CATALOGO[c.tipo].lugar) return '';
+    return l === 'hombro' ? `<button data-amanos="1">${tr('A las manos')}</button>` : `<button data-alhombro="${l}">${tr('Al hombro')}</button>`;
+  };
+  const grupo = (et, l) => `<span class="llevo"><span>${et}</span><b>${nom(inv.lugares[l])}</b>${cambio(l)}<button data-soltar="${l}">${tr('Soltar')}</button></span>`;
   for (const l of manos) partes.push(grupo(tr('En la mano:'), l));
   if (inv.lugares.hombro) partes.push(grupo(tr('Al hombro:'), 'hombro'));
   $('llevas').hidden = !partes.length;
   $('llevas').innerHTML = partes.join('<i></i>');
 }
 $('llevas').onclick = (e) => {
+  const h = e.target.closest('[data-alhombro]'), m = e.target.closest('[data-amanos]');
+  if (h || m) { cambiarHombro(h ? h.dataset.alhombro : null); return; }
   const b = e.target.closest('[data-soltar]'); if (!b) return;
   soltarAlSuelo(b.dataset.soltar);
 };
+// Pasar el tronco corto de las manos al hombro (de: la mano donde está) o del hombro a las manos (de: null).
+function cambiarHombro(de) {
+  const r = de ? accionInventario({ tipo: 'ponerse', de }) : accionInventario({ tipo: 'quitarse', lugar: 'hombro', a: 'mano:der' });
+  if (!r.ok) { mostrarAviso(tr(r.motivo === 'Ya llevas algo ahí: quítatelo antes.' ? 'Ya llevas algo al hombro: suéltalo antes.' : r.motivo), true); return r; }
+  if (almacen) guardarInventarios(almacen, inventarios);
+  pintarLlevas(); vestir(); panelInventario.pintar();
+  mostrarAviso(de ? tr('Lo llevas al hombro.') : tr('Lo llevas con las dos manos.'));
+  return r;
+}
 pintarLlevas();
 // lo que no cupo al cargar el inventario (por ejemplo, si un contenedor tiene ahora menos huecos) cae a tus pies
 if (sueloObjetos.dejarApartado(inventario(), AUTOR_LOCAL, pj.x, pj.z)) { if (almacen) guardarInventarios(almacen, inventarios); }
@@ -1719,7 +1780,7 @@ function iniciarEnLinea() {
 
 // acceso para pruebas automáticas
 window.__kinhold = {
-  get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos, talaV,
+  get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos, talaV, combate,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   mundoJ, get mundoListo() { return mundoListo; }, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
@@ -1762,10 +1823,10 @@ window.__kinhold = {
   fijarSubida(t) { if (estado.obrando) estado.obrando.desde = performance.now() + 1e9; if (rampa) { rampa.t = rampa.meta = t; moverRampa(0); } },
   seguirSubida() { if (estado.obrando) estado.obrando.desde = performance.now(); },
   interactivoCercano() { const o = interactivoCercano(); return o && { c: o.c.id, key: o.key, tipo: o.tipo }; },
-  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; sueloObjetos.suelo.objetos = []; sueloObjetos.refrescar(); talaV.tala.estado = {}; talaV.refrescar(); reconstruir(); ropaDelVisor(); vestir(); pintarLlevas(); panelInventario.pintar(); },
+  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; sueloObjetos.suelo.objetos = []; sueloObjetos.refrescar(); talaV.tala.estado = {}; talaV.refrescar(); troceo.estado = {}; reconstruir(); ropaDelVisor(); vestir(); pintarLlevas(); panelInventario.pintar(); },
   get registroAcciones() { return registroAcciones; },
   accionInventario, get inventario() { return inventario(); }, panelInventario,
-  inventarios, golpeTala, arbolCercano, vestir,
+  inventarios, golpeTala, arbolCercano, vestir, troceo, troncoCercano, golpeTroceo, usar, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas, // lo soltado en el suelo (src/juego/suelo.js)
   get enLinea() { return enLinea; },
