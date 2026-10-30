@@ -1,0 +1,31 @@
+  OK   C saca el arma: el luchador sale, con la mira, y el personaje de andar se esconde — {'a': True, 'm': True, 'mira': True, 'arma': True, 'pj': False}
+  OK   la cámara se inclina hasta casi a ras de suelo — 0.06 rad
+  OK   ratón hacia izquierda y clic: carga el golpe izquierda — {'accion': 'preparando', 'linea': 'izquierda', 'finta': False, 'carga': 0.09523809523809523, 'bloq': False, 'lb': 'alto'}
+  OK   ratón hacia alto y clic: carga el golpe alto — {'accion': 'preparando', 'linea': 'alto', 'finta': False, 'carga': 0.09523809523809523, 'bloq': False, 'lb': 'alto'}
+  OK   ratón hacia derecha y clic: carga el golpe derecha — {'accion': 'preparando', 'linea': 'derecha', 'finta': False, 'carga': 0.09523809523809523, 'bloq': False, 'lb': 'alto'}
+  OK   ratón hacia bajo y clic: carga el golpe bajo — {'accion': 'preparando', 'linea': 'bajo', 'finta': False, 'carga': 0.09523809523809523, 'bloq': False, 'lb': 'alto'}
+  OK   sin mover el ratón: estocada — {'accion': 'preparando', 'linea': 'estocada', 'finta': False, 'carga': 0.125, 'bloq': False, 'lb': 'alto'}
+  OK   mantener el clic carga el golpe — {'accion': 'preparando', 'linea': 'alto', 'finta': False, 'carga': 0.6666666666666666, 'bloq': False, 'lb': 'alto'}
+  OK   a mitad del clic, el ratón a la derecha cambia el golpe sin soltar (finta) — {'accion': 'preparando', 'linea': 'derecha', 'finta': True, 'carga': 0.4261904761904762, 'bloq': False, 'lb': 'alto'}
+  OK   al soltar, el golpe sale — {'accion': 'lanzando', 'linea': 'derecha', 'finta': True, 'carga': 0, 'bloq': False, 'lb': 'alto'}
+  OK   botón derecho: para por el lado del ratón — {'accion': 'libre', 'linea': 'derecha', 'finta': True, 'carga': 0, 'bloq': True, 'lb': 'izquierda'}
+  OK   sin soltar, el ratón hacia arriba pasa a parar arriba — {'accion': 'libre', 'linea': 'derecha', 'finta': True, 'carga': 0, 'bloq': True, 'lb': 'alto'}
+  OK   soltar el botón derecho deja de parar — {'accion': 'libre', 'linea': 'derecha', 'finta': True, 'carga': 0, 'bloq': False, 'lb': 'alto'}
+  OK   el botón «Rival» trae un rival de práctica — 1
+  OK   Tab fija al rival
+  OK   el rival te ataca y sus golpes pasan por las acciones con autor — 1 golpes
+  OK   con el rival fijado, la cámara va detrás de ti mirándole — 0.45 rad
+  OK   tus golpes al rival pasan por las acciones con autor — 4 golpes
+  OK   C guarda el arma y vuelve el personaje de andar — {'a': False, 'pj': True}
+  OK   en «Construir» no sale el botón del arma
+  OK   sin errores en consola (PC) — []
+  OK   móvil: la rosa fija y los botones Parar, Fijar y Rival salen y caben — [['cmbRosa', True, 376, 694], ['cmbParar', True, 380, 438], ['cmbFijar', True, 380, 483], ['cmbRival', True, 380, 528]]
+  FALLA móvil: los botones no tapan la rosa, y el aliento no tapa el joystick — ['cmbEstado/cmbRosa']
+  OK   móvil: sin la mira del ratón
+  OK   móvil: tocar arriba en la rosa y mantener carga el golpe alto — {'accion': 'preparando', 'linea': 'alto', 'finta': False, 'carga': 0.28571428571428575, 'bloq': False, 'lb': 'alto'}
+  OK   móvil: deslizar el dedo a la izquierda cambia el golpe sin soltar — {'accion': 'preparando', 'linea': 'izquierda', 'finta': True, 'carga': 0.44523809523809527, 'bloq': False, 'lb': 'alto'}
+  OK   móvil: levantar el dedo lanza el golpe — {'accion': 'lanzando', 'linea': 'izquierda', 'finta': True, 'carga': 0, 'bloq': False, 'lb': 'alto'}
+  OK   móvil: con «Parar» pulsado, la rosa elige el lado de la parada — {'accion': 'libre', 'linea': 'izquierda', 'finta': True, 'carga': 0, 'bloq': True, 'lb': 'derecha'}
+  OK   sin errores en consola (móvil) — []
+
+Resultado: 1 fallos: móvil: los botones no tapan la rosa, y el aliento no tapa el joystick
