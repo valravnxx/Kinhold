@@ -284,11 +284,16 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   // ---------- Cada fotograma ----------
   function paso(dt, { corriendo = false, velocidad = 0 } = {}) {
     c.reloj += dt;
-    bArma.hidden = modo() !== 'mover';
     if (c.activo && modo() !== 'mover') guardar();
     const vis = c.activo;
-    mira.hidden = !vis || esTactil; carga.hidden = !vis || esTactil;
-    estadoEl.hidden = !vis; botones.hidden = !vis; rosa.hidden = !vis || !esTactil;
+    // solo se toca la página cuando cambia algo (sin tarjeta gráfica, cada cambio cuesta en cada fotograma)
+    const clave = modo() + vis;
+    if (clave !== c.vistaAntes) {
+      c.vistaAntes = clave;
+      bArma.hidden = modo() !== 'mover';
+      mira.hidden = !vis || esTactil; carga.hidden = !vis || esTactil;
+      estadoEl.hidden = !vis; botones.hidden = !vis; rosa.hidden = !vis || !esTactil;
+    }
     if (tMsg > 0) { tMsg -= dt; if (tMsg <= 0) msg.hidden = true; }
     if (!c.L) return;
     const L = c.L;
