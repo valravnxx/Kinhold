@@ -26,9 +26,11 @@ const ahora = () => performance.now();
 //   origen: { x, z } del mundo que cae en el 0 de la escena (las mallas van relativas a él, por precisión)
 //   limites: { x0, z0, x1, z1 } (m del mundo) fuera de los que no se carga nada
 //   hilos: cuántos hilos (por defecto, los núcleos menos uno, de 1 a 3); enHilo: false para hacerlo todo aquí
-//   porFotograma: trozos que se montan como mucho en cada fotograma; msPorFotograma: y sin pasar de estos ms
+//   verticesPorFotograma: lo que se monta como mucho en cada fotograma, contado en vértices (lo que cuesta subirlo a la
+//   tarjeta gráfica; un trozo de rejilla de 1 m tiene unos 4.500 y uno de 8 m, unos 120); msPorFotograma: y sin pasar
+//   de estos ms. Siempre se monta al menos uno. porFotograma: sin hilos, los trozos que se calculan aquí en cada uno.
 export function crearTerrenoTrozos({ grupo, material, mapa, paisaje = null, origen = { x: 0, z: 0 }, limites = null,
-  hilos = null, enHilo = true, porFotograma = 3, msPorFotograma = 3, gestor = null } = {}) {
+  hilos = null, enHilo = true, porFotograma = 2, verticesPorFotograma = 20000, msPorFotograma = 3, gestor = null } = {}) {
   const g = gestor || crearGestor({ limites });
   const vivos = new Map();          // clave → { i, j, nivel, malla, suelo, pedido }
   const pendientes = new Set();     // claves que esperan a pedirse
@@ -47,10 +49,12 @@ export function crearTerrenoTrozos({ grupo, material, mapa, paisaje = null, orig
       const hilo = { w, enVuelo: 0 };
       w.onmessage = (e) => {
         const m = e.data;
-        if (m.tipo === 'listo') { if (++listos === nh) listoHilos = true; return; }
+        if (m.tipo === 'listo') { if (++listos === nh) { listoHilos = true; if (ultimo) pedir(ultimo.x, ultimo.z, ahora(), false); } return; }
         hilo.enVuelo--;
         if (m.tipo === 'error') { med.errores.push(m.texto); return; }
         llegados.push(m);
+        // el hilo queda libre: se le da lo siguiente ya, sin esperar al próximo fotograma
+        if (ultimo) pedir(ultimo.x, ultimo.z, ahora(), false);
       };
       w.onerror = (e) => med.errores.push(String(e.message || e));
       w.postMessage({ tipo: 'mapa', mapa });
@@ -59,7 +63,7 @@ export function crearTerrenoTrozos({ grupo, material, mapa, paisaje = null, orig
   }
   const conHilo = lista.length > 0;
   if (!conHilo && !paisaje) throw new Error('sin hilos hace falta el paisaje en este hilo');
-  const EN_VUELO = 2;               // pedidos a la vez por hilo
+  const EN_VUELO = 6;               // pedidos a la vez por hilo (al volver uno, se manda otro enseguida)
 
   function pasoDe(nivel) { return g.anillos[nivel].paso; }
 
@@ -102,7 +106,7 @@ export function crearTerrenoTrozos({ grupo, material, mapa, paisaje = null, orig
   }
 
   // pide al hilo (o hace aquí) los pendientes, de cerca a lejos
-  function pedir(x, z, t0) {
+  function pedir(x, z, t0, prisa) {
     if (!pendientes.size) return;
     const orden = [...pendientes].map(k => vivos.get(k)).filter(Boolean)
       .map(v => ({ v, d: distanciaTrozo(x, z, v.i, v.j, g.lado) })).sort((a, b) => a.d - b.d);
@@ -120,7 +124,7 @@ export function crearTerrenoTrozos({ grupo, material, mapa, paisaje = null, orig
     } else {
       // sin hilos: aquí mismo, unos pocos por fotograma
       let hechos = 0;
-      while (q < orden.length && hechos < porFotograma && ahora() - t0 < msPorFotograma) {
+      while (q < orden.length && (prisa ? ahora() - t0 < 40 : hechos < porFotograma && (hechos === 0 || ahora() - t0 < msPorFotograma))) {
         const { v } = orden[q++], id = idSig++;
         v.pedido = id; pendientes.delete(claveTrozo(v.i, v.j));
         aplicar({ id, ...hacerSueloTrozo(paisaje, v.i, v.j, pasoDe(v.nivel), { lado: g.lado }) });
@@ -129,8 +133,9 @@ export function crearTerrenoTrozos({ grupo, material, mapa, paisaje = null, orig
     }
   }
 
-  // cada fotograma, con la posición del jugador en metros del mundo
-  function actualizar(x, z) {
+  // cada fotograma, con la posición del jugador en metros del mundo. prisa: al cargar (con la pantalla de espera), se
+  // monta todo lo que haya llegado, hasta 40 ms
+  function actualizar(x, z, { prisa = false } = {}) {
     const t0 = ahora();
     if (!ultimo || Math.hypot(x - ultimo.x, z - ultimo.z) > 1) {
       ultimo = { x, z };
@@ -142,10 +147,13 @@ export function crearTerrenoTrozos({ grupo, material, mapa, paisaje = null, orig
     // montar lo que ha llegado, de cerca a lejos y sin pasarse del presupuesto del fotograma
     if (llegados.length) {
       llegados.sort((a, b) => distanciaTrozo(x, z, a.i, a.j, g.lado) - distanciaTrozo(x, z, b.i, b.j, g.lado));
-      let hechos = 0;
-      while (llegados.length && hechos < porFotograma && (hechos === 0 || ahora() - t0 < msPorFotograma)) { if (aplicar(llegados.shift())) hechos++; }
+      let vertices = 0;
+      const tope = prisa ? Infinity : verticesPorFotograma, ms = prisa ? 40 : msPorFotograma;
+      while (llegados.length && (vertices === 0 || (vertices + llegados[0].posiciones.length / 3 <= tope && ahora() - t0 < ms))) {
+        const s = llegados.shift(); if (aplicar(s)) vertices += s.posiciones.length / 3;
+      }
     }
-    pedir(x, z, t0);
+    pedir(x, z, t0, prisa);
     const ms = ahora() - t0;
     med.fotogramas++; med.trabajoTotal += ms; if (ms > med.trabajoMax) med.trabajoMax = ms;
     return ms;

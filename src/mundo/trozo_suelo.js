@@ -14,8 +14,8 @@ const _c = [0, 0, 0];
 
 // paisaje: el de crearPaisaje(mapa); (i, j): el trozo; paso: su rejilla (m).
 // Devuelve lo de mallaTrozo (posiciones relativas a la esquina x0, z0) más normales, colores (lineales), uvs, y ms (lo
-// que ha tardado).
-export function hacerSueloTrozo(paisaje, i, j, paso, { lado = LADO } = {}) {
+// que ha tardado). recortar: solo para romper la prueba a propósito (los vecinos del borde, recortados al trozo).
+export function hacerSueloTrozo(paisaje, i, j, paso, { lado = LADO, recortar = false } = {}) {
   const t0 = typeof performance !== 'undefined' ? performance.now() : Date.now();
   const altura = alturaDeTrozo(paisaje, i, j, lado);
   const x0 = i * lado, z0 = j * lado, c = lado / paso, n = c + 1, m = n + 2 * BORDE;
@@ -23,7 +23,8 @@ export function hacerSueloTrozo(paisaje, i, j, paso, { lado = LADO } = {}) {
   // n - 1 + BORDE
   const E = new Float32Array(m * m);
   for (let b = 0; b < m; b++) for (let a = 0; a < m; a++) E[b * m + a] = altura(x0 + (a - BORDE) * paso, z0 + (b - BORDE) * paso);
-  const en = (a, b) => E[(b + BORDE) * m + a + BORDE];
+  const en = recortar ? (a, b) => E[(Math.min(n - 1, Math.max(0, b)) + BORDE) * m + Math.min(n - 1, Math.max(0, a)) + BORDE]
+    : (a, b) => E[(b + BORDE) * m + a + BORDE];
   // la malla reutiliza las alturas ya hechas; los puntos que no son de la rejilla (los del faldón, a 1 m) se calculan
   const alturaRejilla = (x, z) => {
     const ga = (x - x0) / paso, gb = (z - z0) / paso;

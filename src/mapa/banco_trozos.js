@@ -50,7 +50,7 @@ function arrancar(mapa) {
   mar.position.y = 0.02; escena.add(mar);
   const W = mapa.lado * 1000;
   const terreno = crearTerrenoTrozos({ grupo, material: materialSuelo(), mapa, paisaje: pai, origen, limites: { x0: 0, z0: 0, x1: W, z1: W },
-    enHilo: ENHILO, porFotograma: movil ? 2 : 3 });
+    enHilo: ENHILO, verticesPorFotograma: movil ? 12000 : 20000 });
   B.conHilo = terreno.conHilo; B.hilos = terreno.hilos;
 
   const rumbo = (Number(q.get('rumbo')) || 35) * Math.PI / 180;
@@ -70,7 +70,7 @@ function arrancar(mapa) {
     jug.x += jug.dx * paso; jug.z += jug.dz * paso;
     const tr = trozoDe(jug.x, jug.z), cruce = tr.i !== trozoAntes.i || tr.j !== trozoAntes.j;
     if (cruce) { trozoAntes = tr; ultimoCruce = t; }
-    const trabajo = terreno.actualizar(jug.x, jug.z);
+    const trabajo = terreno.actualizar(jug.x, jug.z, { prisa: !B.listo });
     // la cámara: detrás y por encima del jugador, mirando adelante (semiisométrica, como en el juego)
     const y = terreno.alturaEn(jug.x, jug.z) ?? pai.altura(jug.x, jug.z);
     const px = jug.x - origen.x, pz = jug.z - origen.z;

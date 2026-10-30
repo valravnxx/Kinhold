@@ -5,10 +5,12 @@
 //   - las mallas de trozos vecinos dan la misma altura en su borde común (con el paisaje de verdad, junto a un río), y
 //     entre trozos de distinto detalle el faldón cuelga lo bastante para tapar la rendija
 //   - las mallas están bien hechas: triángulos hacia arriba, faldones hacia fuera, índices dentro
-// Uso: node pruebas/prueba_trozos.mjs   MUTAR=1 → mallas sin faldón; MUTAR=2 → gestor sin margen: tiene que fallar.
+// Uso: node pruebas/prueba_trozos.mjs   MUTAR=1 → mallas sin faldón; MUTAR=2 → gestor sin margen; MUTAR=3 → suelo
+// con los vecinos del borde recortados al trozo: tiene que fallar.
 import * as T from '../src/logica/trozos.js';
 import { generarMapa } from '../src/logica/mapa.js';
 import { crearPaisaje } from '../src/logica/paisaje.js';
+import { hacerSueloTrozo } from '../src/mundo/trozo_suelo.js';
 
 const MUTAR = process.env.MUTAR || '';
 let fallos = 0;
@@ -164,7 +166,41 @@ const margen = MUTAR === '2' ? 0 : MARGEN;
   console.log(`         malla de 1 m: ${m0.superficie} vértices del suelo y ${m0.posiciones.length / 3 - m0.superficie} del faldón, ${m0.indices.length / 3} triángulos`);
 }
 
-// ── 4. Detalles ────────────────────────────────────────────────────────────────────────────────────────────────────
+// ── 4. El suelo listo para dibujar (el que hace el hilo aparte): luz y color que casan en el borde común ───────────
+{
+  const mapa = generarMapa(4242, { N: 96 }), pai = crearPaisaje(mapa);
+  const rio = pai.rios.slice().sort((a, b) => b.length - a.length)[0], p = rio[Math.floor(rio.length / 3)];
+  const { i, j } = T.trozoDe(p.p[0] * 1000, p.p[1] * 1000);
+  const recortar = MUTAR === '3';
+  let malBorde = 0, malNormal = 0, malColor = 0, malTam = 0, comparados = 0, tiempos = [];
+  for (const paso of [1, 2, 8]) {
+    const A = hacerSueloTrozo(pai, i, j, paso, { recortar }), E = hacerSueloTrozo(pai, i + 1, j, paso, { recortar }), S = hacerSueloTrozo(pai, i, j + 1, paso, { recortar });
+    tiempos.push(`${paso} m: ${A.ms.toFixed(1)} ms`);
+    for (const r of [A, E, S]) {
+      const v = r.posiciones.length / 3;
+      if (r.normales.length !== v * 3 || r.colores.length !== v * 3 || r.uvs.length !== v * 2) malTam++;
+      for (let k = 0; k < v; k++) {
+        const nx = r.normales[k * 3], ny = r.normales[k * 3 + 1], nz = r.normales[k * 3 + 2];
+        if (!(ny > 0) || Math.abs(Math.hypot(nx, ny, nz) - 1) > 1e-3) malNormal++;
+        for (let q = 0; q < 3; q++) { const c = r.colores[k * 3 + q]; if (!(c >= 0 && c < 1.5)) malColor++; }
+      }
+    }
+    const n = A.n, c = n - 1;
+    const igual = (r1, k1, r2, k2) => [0, 1, 2].every(q => Math.abs(r1.normales[k1 * 3 + q] - r2.normales[k2 * 3 + q]) < 1e-5 && Math.abs(r1.colores[k1 * 3 + q] - r2.colores[k2 * 3 + q]) < 1e-5);
+    for (let k = 0; k < n; k++) {
+      comparados += 2;
+      if (!igual(A, k * n + c, E, k * n)) malBorde++;          // borde este de A con el oeste de E
+      if (!igual(A, c * n + k, S, k)) malBorde++;              // borde sur de A con el norte de S
+    }
+  }
+  comprobar(`suelo de los trozos: normales y colores iguales a los dos lados del borde común (${comparados} puntos, rejillas de 1, 2 y 8 m)`, malBorde === 0, `${malBorde} distintos`);
+  comprobar('suelo de los trozos: un valor por vértice (normales, colores y textura)', malTam === 0, `${malTam}`);
+  comprobar('suelo de los trozos: normales unitarias hacia arriba', malNormal === 0, `${malNormal}`);
+  comprobar('suelo de los trozos: colores válidos', malColor === 0, `${malColor}`);
+  console.log('         suelo listo para dibujar, por trozo (este procesador): ' + tiempos.join(', '));
+}
+
+// ── 5. Detalles ────────────────────────────────────────────────────────────────────────────────────────────────────
 {
   const llano = (x, z) => 0.05 * x + 0.02 * z;      // en un plano, la recta del borde es exacta: el faldón, el mínimo
   const m = T.mallaTrozo(3, -2, 8, llano);

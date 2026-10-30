@@ -8,7 +8,7 @@
 #   - mide el fotograma más largo al cruzar los bordes, con y sin hilo (aquí se dibuja sin tarjeta gráfica: el tiempo de
 #     dibujo es el del procesador; lo que cuenta es la diferencia entre los dos)
 # Capturas: <carpeta>/<pc|movil>_1_salida.png y _2_andado.png (con el hilo).
-# MUTAR=1: las comprobaciones «con el hilo» se hacen sobre la página sin hilo: tiene que fallar.
+# MUTAR=1: las comprobaciones «con el hilo» se hacen sobre la página sin hilo: tiene que fallar. SOLO=pc o SOLO=movil.
 # Uso: python3 pruebas/prueba_trozos_navegador.py <html> <carpeta_capturas>
 import sys, os, json, subprocess, time, socket
 from playwright.sync_api import sync_playwright
@@ -31,7 +31,8 @@ MEDIDAS = {}
 try:
     with sync_playwright() as p:
         nav = p.chromium.launch(args=["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist", "--enable-precise-memory-info"])
-        for nombre, opc in [('pc', dict(viewport={'width': 1280, 'height': 800})), ('movil', dict(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True))]:
+        APARATOS = [('pc', dict(viewport={'width': 1280, 'height': 800})), ('movil', dict(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True))]
+        for nombre, opc in [a for a in APARATOS if not os.environ.get('SOLO') or a[0] == os.environ['SOLO']]:
             for hilo in ('1', '0'):
                 ctx = nav.new_context(locale='es-ES', **opc); pg = ctx.new_page(); err = []
                 pg.on('pageerror', lambda e: err.append(str(e))); pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
