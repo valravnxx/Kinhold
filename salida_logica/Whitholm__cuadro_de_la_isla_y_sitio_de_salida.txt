@@ -1,0 +1,20 @@
+  OK   el cuadro de la isla apuntado es el del mapa — {"x0":160000,"z0":21000,"x1":221000,"z1":84000}
+  OK   hay sitio de salida y es el apuntado — {"x":184596,"z":46280,"y":116.53870225500526}
+  OK   toda la tierra de la isla cae dentro de su cuadro — 0 celdas fuera
+  OK   en el cuadro de la isla no hay tierra de otras regiones — 0 celdas
+  OK   la salida está en Whitholm
+  OK   la salida no está en el mar ni en la playa — 116.5 m
+  OK   la salida no está en un pico (por debajo de la cuarta parte de lo más alto de la isla) — 117 m de 1795 m
+  OK   alrededor de la salida es llano (menos de 2,5 m de desnivel en 30 m) — 2.21 m
+  OK   desde la salida se puede andar a todos lados (sin cuestas de más de lo que se anda) — pendiente máxima 0.26
+  OK   sin agua en 30 m a la redonda
+  OK   los sitios de la salida al azar apuntados son los que salen del mapa — 261 hallados, 261 apuntados
+  OK   hay bastantes sitios para repartir (al menos 30) — 261
+  OK   todos los sitios valen (comarca de inicio, bioma normal, en la isla, no en lo alto, llanos y lejos de los ríos)
+  OK   hay sitios en las tres comarcas de inicio — {"Strandvang":51,"Motdale":84,"Breiddal":126}
+  OK   ningún sitio repetido
+  OK   elegirSalida da siempre un sitio de la lista (también con 0 y con 1) — 0 fuera
+  OK   elegirSalida reparte por toda la lista — 261 de 261
+  OK   un sitio inventado no pasa por sitio de salida
+
+Todo bien
