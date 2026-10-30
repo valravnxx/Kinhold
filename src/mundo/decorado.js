@@ -117,18 +117,21 @@ export function bosque(raiz, r, { n = 36, desde = 15, hasta = 60, reparto = 0.8,
     if (libre && !libre(x, z, d)) continue;
     if (apto && !apto(x, z)) { r(); r(); r(); continue; } // los mismos números de azar: no mueve los demás
     const s = 0.8 + r() * 0.7, f = frondosos === 1 / 3 ? i % 3 === 0 : r() < frondosos;
-    (f ? sitios.f : sitios.p).push([x, z, s, r() * 6, 0.85 + r() * 0.3]);
-    obstaculos.push({ x, z, r: (f ? 0.26 : 0.24) * s + 0.1, arbol: true });
+    const lista = f ? sitios.f : sitios.p; lista.push([x, z, s, r() * 6, 0.85 + r() * 0.3]);
+    // con su tamaño, su modelo y su número en la malla, para poder talarlo (src/juego/tala.js)
+    obstaculos.push({ x, z, r: (f ? 0.26 : 0.24) * s + 0.1, arbol: true, escala: s, modelo: f ? 'frond' : 'pino', instancia: lista.length - 1 });
   }
-  for (const [mod, lista] of [[pino, sitios.p], [frond, sitios.f]]) {
+  const mallas = {};
+  for (const [mod, lista, k] of [[pino, sitios.p, 'pino'], [frond, sitios.f, 'frond']]) {
     if (!lista.length) continue;
     const im = new THREE.InstancedMesh(mod.geo, mod.mats, lista.length), o = new THREE.Object3D(), c = new THREE.Color();
     lista.forEach(([x, z, s, g, t], i) => {
       o.position.set(x, altura(x, z) - 0.1, z); o.rotation.set(0, g, 0); o.scale.setScalar(s); o.updateMatrix();
       im.setMatrixAt(i, o.matrix); im.setColorAt(i, c.setScalar(t));
     });
-    im.receiveShadow = true; im.castShadow = sombra; im.name = 'bosque'; raiz.add(im);
+    im.receiveShadow = true; im.castShadow = sombra; im.name = 'bosque'; raiz.add(im); mallas[k] = im;
   }
+  for (const ob of obstaculos) ob.malla = mallas[ob.modelo];
   return obstaculos;
 }
 

@@ -80,6 +80,8 @@ export const CATALOGO = {
   // herramientas y armas (herramienta: true → van en la caja de herramientas)
   cuchillo: { nombre: 'Cuchillo', tam: 'P', herramienta: true },
   hacha_mano: { nombre: 'Hacha de mano', tam: 'M', herramienta: true },
+  hacha_piedra: { nombre: 'Hacha de piedra', tam: 'M', herramienta: true },
+  hacha_hierro: { nombre: 'Hacha de hierro', tam: 'M', herramienta: true },
   espada: { nombre: 'Espada', tam: 'M' },
   escudo: { nombre: 'Escudo', tam: 'M' },
   // cinturones (GDD: sus huecos). El cordel de fibra es el de inicio.

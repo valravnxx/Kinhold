@@ -973,8 +973,8 @@ with sync_playwright() as p:
         r36 = float(modos[1].split(':')[1])
         comprobar('la animación se acelera con la velocidad (a su medida natural, tope 1,6×)', nat > 0 and abs(r36 - 3.6 / nat) < 0.02 and 0.8 < r36 < 1.3 and modos[2].endswith('1.60'),
                   f"{', '.join(modos)} · natural {nat:.2f} m/s")
-        # junto a un árbol: Usar tala; moverse lo para
-        ev(f"""(() => {{ const K = {K}; K.cambiarModo('mover'); const a = K.obstaculos.filter(o => o.arbol).sort((p, q) => Math.hypot(p.x, p.z) - Math.hypot(q.x, q.z))[0];
+        # junto a un árbol, con un hacha en la mano: Usar tala; moverse lo para (la tala entera: prueba_tala_navegador.py)
+        ev(f"""(() => {{ const K = {K}; K.cambiarModo('mover'); K.accionInventario({{ tipo: 'coger', objeto: 'hacha_mano', cantidad: 1, a: 'mano:der' }}); const a = K.obstaculos.filter(o => o.arbol).sort((p, q) => Math.hypot(p.x, p.z) - Math.hypot(q.x, q.z))[0];
             const d = Math.hypot(a.x, a.z); K.pj.k = 0; K.pj.x = a.x - a.x / d * (a.r + 0.6); K.pj.z = a.z - a.z / d * (a.r + 0.6); K.pj.y = 0;
             K.cam.yaw = Math.atan2(-a.x, -a.z) + 0.9; K.cam.pitch = 0.3; K.cam.dist = 4.2; }})()""")
         esperar(pg, 300)
@@ -986,6 +986,7 @@ with sync_playwright() as p:
         pg.keyboard.down('w'); esperar(pg, 500)
         comprobar('moverse deja de talar', ev(f"!{K}.estado.talando && {K}.jugador.modo !== 'talar'"), ev(f"{K}.jugador.modo"))
         pg.keyboard.up('w')
+        ev(f"{K}.accionInventario({{ tipo: 'soltar', de: 'mano:der' }})")
         # de cerca, quieto y andando, junto a la cabaña
         ev(f"{K}.pj.x=2; {K}.pj.z=-2.5; {K}.pj.k=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI*0.95; {K}.cam.pitch=0.25; {K}.cam.dist=3.6")
         esperar(pg, 1500)

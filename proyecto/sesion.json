@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-30T06:23:57+00:00",
-  "tarea": "Tala de verdad sobre los árboles del mundo: el árbol joven se tala con hacha de piedra (da un tronco delgado y ramas) y el adulto con hacha de hierro (con piedra, muy lento; da un tronco largo y muchas ramas); el árbol cae, queda el tocón y vuelve a crecer en semanas reales, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
-  "hito": "equipo",
-  "rama": "trabajo/20261030-0623"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-30T06:53:58+00:00",
   "tarea": "Pulir la barba larga (visto al rehacerla): en el juego las ondas de los pelos salen demasiado regulares, el bigote sigue pintado y sin volumen, y a los lados de la barbilla asoma algo de cuello",
@@ -16,5 +11,11 @@
   "tarea": "Comarcas de Whitholm primero (valravnx, 29 oct): la isla de los playtests dividida en comarcas que siguen el relieve (un valle, una vega, una sierra), con nombres al estilo de la región revisados por valravnx, y la comarca donde aparecen todos al principio; luego las del resto del mundo",
   "hito": "mundo",
   "rama": "trabajo/20261030-0910-comarcas"
+ },
+ "chat:trabajo/20261030-0945-combate": {
+  "inicio": "2026-10-30T09:39:49+01:00",
+  "tarea": "Combate en el mundo (valravnx, 30 oct): en PC, ratón cogido y ataque cargado mientras se mantiene el clic, en la dirección del último movimiento (sin movimiento, estocada) y cambiable sin soltar; paradas con el botón derecho por dirección, también cambiables; fijar rival con la cámara del duelo; en el móvil, la rosa fija a un lado; cámara que se inclina más",
+  "hito": "duelo",
+  "rama": "trabajo/20261030-0945-combate"
  }
 }
