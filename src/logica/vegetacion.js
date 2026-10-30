@@ -24,7 +24,9 @@ const PASO_PEND = 3;                   // la pendiente, con vecinos a 3 m (la fo
 
 // paisaje: crearPaisaje(mapa). alt(x, z): la altura exacta del suelo (alturaMundo). semilla: la del mapa.
 // cuadro: { x0, z0, x1, z1 } (m del mundo) para árboles y piedras; hierba: { x, z, r } el círculo con hierba, flores y
-// matas (es lo que más cuesta: solo alrededor de donde se juega).
+// matas (es lo que más cuesta: solo alrededor de donde se juega), o un cuadro { x0, z0, x1, z1 } (sin el borde de la
+// derecha ni el de abajo: así los trozos del juego, uno al lado de otro, no repiten nada). Lo de hierba tiene que caer
+// dentro de `cuadro` (la pendiente sale de su rejilla).
 // Devuelve { arboles: [{ x, z, y, especie, tam, giro, tono }], hierba: [{ x, z, y, tam, giro, tono }],
 //            flores: [{ x, z, y, tam, giro, color }], matas: [ídem hierba], piedras: [{ x, z, y, tam, giro, roca }] }
 export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
@@ -68,10 +70,12 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
 
   // hierba, flores y matorrales: más en los claros que bajo el bosque; calvas de tierra
   if (hierba) {
-    const { x: hx, z: hz, r: hr } = hierba;
-    recorrer(CELDA.hierba, CAPA.hierba, hx - hr, hz - hr, hx + hr, hz + hr, (cx, cz, r) => {
+    const circulo = hierba.r != null, { x: hx, z: hz, r: hr } = hierba;
+    const [a0, b0, a1, b1] = circulo ? [hx - hr, hz - hr, hx + hr, hz + hr] : [hierba.x0, hierba.z0, hierba.x1, hierba.z1];
+    const dentro = circulo ? (x, z) => Math.hypot(x - hx, z - hz) <= hr : (x, z) => x >= a0 && x < a1 && z >= b0 && z < b1;
+    recorrer(CELDA.hierba, CAPA.hierba, a0, b0, a1, b1, (cx, cz, r) => {
       const x = cx + (r() - 0.5) * 0.8, z = cz + (r() - 0.5) * 0.8, t = r(), a = r(), b = r(), c = r();
-      if (Math.hypot(x - hx, z - hz) > hr) return;
+      if (!dentro(x, z)) return;
       const s = sitioEn(x, z);
       if (!s || s.st.bioma === 'nieve' || s.y < 1 || s.s > 0.75) return;
       const { d, linde } = bosqueEn(s.st, s.s, x, z, { semilla });
@@ -98,4 +102,16 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
     R.piedras.push({ x, z, y: s.y, tam: pie ? 0.5 + a * 1.5 : 0.3 + a * 0.6, giro, roca: s.st.roca });
   });
   return R;
+}
+
+// Lo que crece, por trozos de LADO_VEG m del mundo (el juego los va haciendo alrededor del jugador, unos pocos por
+// fotograma). Cada trozo tiene solo lo suyo (sin el borde de la derecha ni el de abajo): los trozos, uno al lado de
+// otro, dan exactamente lo mismo que un cuadro grande. conHierba: también la hierba, las flores y las matas.
+export const LADO_VEG = 32;
+export function vegetacionTrozo(paisaje, alt, semilla, i, j, conHierba = false) {
+  const c = { x0: i * LADO_VEG, z0: j * LADO_VEG, x1: (i + 1) * LADO_VEG, z1: (j + 1) * LADO_VEG };
+  const v = vegetacionEn(paisaje, alt, semilla, c, conHierba ? c : null);
+  const suyo = (e) => e.x >= c.x0 && e.x < c.x1 && e.z >= c.z0 && e.z < c.z1;
+  v.arboles = v.arboles.filter(suyo); v.piedras = v.piedras.filter(suyo);
+  return v;
 }
