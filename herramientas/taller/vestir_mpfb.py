@@ -179,16 +179,16 @@ def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosida
                     t = (v.co.z - abajo.co.z) / (apice.co.z - abajo.co.z)
                     v.co.y = min(v.co.y, abajo.co.y * (1 - t) + apice.co.y * t)
     if alisar:  # la tela pasa por encima como una membrana: se suavizan esos puntos con sus vecinos
-        cuales, veces = alisar[:2]
-        holgura = alisar[2] if len(alisar) > 2 else None  # distancia mínima a la piel (la tela no se mete dentro)
+      for pasada in (alisar if isinstance(alisar, list) else [alisar]):  # una o varias zonas, cada una con lo suyo
+        cuales, veces = pasada[:2]
+        holgura = pasada[2] if len(pasada) > 2 else None  # distancia mínima a la piel (la tela no se mete dentro)
         zona = [v for v in bm.verts if cuales(v.co, v[capa])]
         for _ in range(veces):
             nuevos = [sum((e.other_vert(v).co for e in v.link_edges), Vector()) / len(v.link_edges) for v in zona]
             for v, c in zip(zona, nuevos):
-                h = holgura(c) if callable(holgura) else holgura  # puede depender del sitio
-                if h:
+                if holgura:
                     sitio, normal, _, _ = CUERPO.find_nearest(c)
-                    if sitio is not None and (c - sitio).dot(normal) < h: c = sitio + normal * h
+                    if sitio is not None and (c - sitio).dot(normal) < holgura: c = sitio + normal * holgura
                 v.co = c
     bm.to_mesh(ob.data); bm.free()
     for p in ob.data.polygons: p.use_smooth = True
@@ -1381,11 +1381,11 @@ def personaje(nombre, macros, objetivos, ropa):
                         rugosidad=0.95, diezmar=DIEZMAR, **tenida('capucha', ropa.get("capucha", (92, 76, 58)))))
     if mujer:
         zt_bajo = cuello_z - 0.075
-        # bajo la barbilla, la toca cae lisa hasta el pecho como una membrana (a 3,5 cm de la piel como poco): empujada por
-        # las normales, ahí se doblaba sobre sí misma y dejaba huecos y bordes dentados entre la toca y el cuello
-        garganta = lambda c, i: (sobre_oreja(c, i) or (abs(co[i].x) < 0.115 and co[i].y < 0.02 and zt_bajo + 0.03 < co[i].z < boca_z - 0.042))
+        # bajo la barbilla, la toca cae recta de la barbilla al pecho, como una cortina (como la tela de las prendas sobre
+        # el pecho: colgar). Empujada por las normales, ahí se doblaba hacia dentro y dejaba ver lo de debajo entre la
+        # toca y el cuello, con huecos y bordes dentados
         piezas.append(trozo(base, nombre + '_capa_toca', cubre(zt_bajo, ojo_arriba + 0.028, boca_z - 0.028, 0.058), empuje=separacion_tocado(0.013, 0.08),
-                            alisar=(garganta, 40, lambda c: 0.035 if c.z < boca_z - 0.035 else 0.012), tapar=lambda c: min(np.linalg.norm(np.array(c) - o) for o in oreja_c) < 0.065,
+                            alisar=(sobre_oreja, 12), colgar=(zt_bajo + 0.01, boca_z - 0.02, 0.12), tapar=lambda c: min(np.linalg.norm(np.array(c) - o) for o in oreja_c) < 0.065,
                             textura=(1024, pintar_tocado((226, 220, 204), ojo_arriba + 0.028, boca_z - 0.028, 0.058, zt_bajo, lana=False)),
                             rugosidad=0.9, diezmar=DIEZMAR, **tenida('toca', (226, 220, 204))))
     piezas.append(sombrero(f'{nombre}_capa_sombrero', co, cabeza, ojo_arriba, ropa.get('cofia') is not None))
@@ -1404,10 +1404,10 @@ LABIOS = [('mouth/mouth-lowerlip-volume-decr.target.gz', 1.0), ('mouth/mouth-upp
           ('mouth/mouth-lowerlip-height-decr.target.gz', 1.5), ('mouth/mouth-upperlip-height-decr.target.gz', 1.3),
           ('mouth/mouth-scale-depth-decr.target.gz', 1.5), ('mouth/mouth-scale-horiz-decr.target.gz', 0.4),
           ('mouth/mouth-trans-backward.target.gz', 0.4)]
-gente = [
+gente = ([] if os.environ.get('SOLO') == 'mujer' else [  # SOLO=mujer: solo la mujer, para probar tocados más deprisa (nunca se publica así)
     personaje('hombre', {'gender': 1.0, 'age': 0.55, 'muscle': 0.6, 'weight': 0.5, 'height': 0.5}, [('nose/nose-hump-incr.target.gz', 0.4)] + LABIOS,
               {'piel': (224, 180, 152), 'ojos': (92, 70, 48), 'pelo': (62, 44, 30), 'barba': True, 'tunica': (96, 72, 52), 'calzas': (70, 62, 54)}),
-] + ([] if os.environ.get('SOLO') == 'hombre' else [  # SOLO=hombre: solo el hombre, para probar barbas más deprisa (nunca se publica así)
+]) + ([] if os.environ.get('SOLO') == 'hombre' else [  # SOLO=hombre: solo el hombre, para probar barbas más deprisa (nunca se publica así)
     personaje('mujer', {'gender': 0.0, 'age': 0.45, 'muscle': 0.45, 'weight': 0.45, 'height': 0.4}, LABIOS,
               {'piel': (230, 190, 165), 'ojos': (80, 96, 104), 'pelo': (60, 40, 28), 'cofia': (214, 204, 182), 'vestido': True, 'tunica': (70, 84, 98)}),
 ])
@@ -1541,6 +1541,7 @@ if os.environ.get('FOTOS') == 'prendas':  # de cerca, una pieza nueva cada vez (
         for puesta in ('_capa_capucha', '_capa_toca', '_capa_sombrero', ('_capa_manto', '_capa_botas')):
             pp = puesta if isinstance(puesta, tuple) else (puesta,)
             if not any(ob.name.startswith(rig.name + p) for ob in piezas for p in pp): continue
+            if os.environ.get('PRENDAS') and pp[0].replace('_capa_', '') not in os.environ['PRENDAS'].split(','): continue  # PRENDAS=toca,capucha: solo esas
             for ob in piezas:
                 nueva = any(k in ob.name for k in NUEVAS)
                 ob.hide_render = (nueva and not any(ob.name.startswith(rig.name + p) for p in pp)) or (('_capa_botas' in pp) and '_capa_zapatos' in ob.name) \
