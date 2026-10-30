@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-10-30T00:24:27+00:00",
-  "tarea": "Los trozos se hacen en un hilo aparte (Web Worker): alturas, colores y sombreado del suelo fuera del hilo de dibujo, unos pocos trozos por fotograma, y al andar el juego no se para. Medir el fotograma más largo al cruzar bordes, en PC y móvil",
-  "hito": "mundo-juego",
-  "rama": "trabajo/20261030-0024"
+  "inicio": "2026-10-30T01:26:42+00:00",
+  "tarea": "Objetos en el suelo: soltar y coger del suelo; lo que se suelta fuera de un contenedor desaparece pasada 1 hora real (contado por tiempo transcurrido), salvo dentro de tus tierras; los troncos y las piedras se quedan como pila. Lógica pura con autor, en la demo y con pruebas",
+  "hito": "equipo",
+  "rama": "trabajo/20261030-0127"
  },
  "B": {
   "inicio": "2026-10-29T23:52:51+00:00",
