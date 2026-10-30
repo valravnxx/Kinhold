@@ -1,0 +1,52 @@
+Vista pc
+  OK   la demo arranca sin error — None
+  OK   construir va en el mundo de verdad (no en el llano)
+  generar el mapa: 3475 ms
+  OK   los trozos de alrededor llegan
+   {"pj": [0, -0.009061447334101845, 4], "suelo": -0.009061615196060302, "sobreMar": 50.81439971923828, "salida": {"x": 208000, "z": 57000}, "isla": {"x0": 160000, "z0": 21000, "x1": 221000, "z1": 84000}, "trozos": 72, "tri": 147712, "lo": 1.1050454764125277, "hi": 77.18459978634445, "llano": false, "hilos": 3}
+  OK   un jugador nuevo sale en uno de los sitios de la salida al azar — {"x": 208000, "z": 57000}
+  OK   la salida está en la isla — {"x": 208000, "z": 57000}
+  OK   la salida está en tierra, ni en el mar ni en un pico (entre 6 y 220 m) — 50.8 m
+  OK   el personaje pisa el suelo — -0.009 / -0.009
+  OK   sin el llano de antes, con el terreno por trozos (en un hilo aparte) — 72 trozos, 147712 triángulos
+  OK   el terreno tiene relieve (más de 5 m de desnivel en 2 km; la salida al azar puede caer en una vega muy llana) — 1.1–77.2 m
+  andar 200 m: {"dif": 0.13571568059079353, "msMax": 5.2000000000116415, "x": 165.0671229819353, "z": 116.92849467900736}
+  OK   andando 200 m, el terreno trabaja poco en cada fotograma (menos de 60 ms) — 5.2 ms
+  OK   andando, el personaje sigue el suelo (a menos de 0,6 m) — 0.14 m
+  costa: {"tierra": [5358, 0], "mar": [5360, 0], "entra": true, "fuera": false}
+  OK   al mar se puede entrar (a nado) — {"tierra": [5358, 0], "mar": [5360, 0], "entra": true, "fuera": false}
+  OK   no se puede salir de la isla
+  OK   andando hacia el mar, avanza (ya no le para la orilla) — {"sobreMar": 0.31642374917732496, "x": 5358.1600000000035, "z": -1.3226185430791415e-16, "y": -50.4984744801662, "modo": "tierra", "superficie": null, "aguante": 1, "anillo": false, "lamina": false, "andado": 2.1600000000034925}
+  OK   mar adentro nada, con la cabeza fuera (el pecho a ras del agua, con las olas) — {"sobreMar": -4.046693429946892, "x": 6527.09, "z": -5.5109105961630896e-18, "y": -52.03019584427464, "modo": "nadar", "superficie": -50.82346133443434, "aguante": 0.9884623437500004, "anillo": true, "lamina": true}
+  OK   nadando, el aguante baja y se ve su anillo — {"sobreMar": -4.046693429946892, "x": 6527.09, "z": -5.5109105961630896e-18, "y": -52.03019584427464, "modo": "nadar", "superficie": -50.82346133443434, "aguante": 0.9884623437500004, "anillo": true, "lamina": true}
+  OK   el agua de cerca se dibuja (la lámina de ríos y mar)
+  OK   sin aguante te ahogas y vuelves a tu sitio de salida — {"muertes": 1, "x": 0, "z": 4, "aviso": "Te has ahogado. Vuelves a tu sitio de salida."}
+  OK   al recargar, sale en el mismo sitio — {"x": 208000, "z": 57000} → {"x": 208000, "z": 57000}
+  OK   quien ya jugaba antes (con algo guardado) sigue en el sitio común — {"x": 184596, "z": 46280}
+  OK   sin errores en la página
+Vista movil
+  OK   la demo arranca sin error — None
+  OK   construir va en el mundo de verdad (no en el llano)
+  generar el mapa: 3437 ms
+  OK   los trozos de alrededor llegan
+   {"pj": [0, 0.0013078266704738925, 4], "suelo": 0.0013078466224385465, "sobreMar": 44.525630950927734, "salida": {"x": 195000, "z": 79000}, "isla": {"x0": 160000, "z0": 21000, "x1": 221000, "z1": 84000}, "trozos": 68, "tri": 107392, "lo": -0.1628575832221557, "hi": 95.75515721655634, "llano": false, "hilos": 3}
+  OK   un jugador nuevo sale en uno de los sitios de la salida al azar — {"x": 195000, "z": 79000}
+  OK   la salida está en la isla — {"x": 195000, "z": 79000}
+  OK   la salida está en tierra, ni en el mar ni en un pico (entre 6 y 220 m) — 44.5 m
+  OK   el personaje pisa el suelo — 0.001 / 0.001
+  OK   sin el llano de antes, con el terreno por trozos (en un hilo aparte) — 68 trozos, 107392 triángulos
+  OK   el terreno tiene relieve (más de 5 m de desnivel en 2 km; la salida al azar puede caer en una vega muy llana) — -0.2–95.8 m
+  andar 200 m: {"dif": 0.09641976903675764, "msMax": 2.300000000046566, "x": 165.0671229819353, "z": 116.92849467900736}
+  OK   andando 200 m, el terreno trabaja poco en cada fotograma (menos de 60 ms) — 2.3 ms
+  OK   andando, el personaje sigue el suelo (a menos de 0,6 m) — 0.10 m
+  costa: {"tierra": [2248, 0], "mar": [2250, 0], "entra": true, "fuera": false}
+  OK   al mar se puede entrar (a nado) — {"tierra": [2248, 0], "mar": [2250, 0], "entra": true, "fuera": false}
+  OK   no se puede salir de la isla
+  OK   andando hacia el mar, avanza (ya no le para la orilla) — {"sobreMar": 0.9786687374115104, "x": 2209.239999999997, "z": -1.9839278146187122e-16, "y": -43.545637780319154, "modo": "tierra", "superficie": null, "aguante": 1, "anillo": false, "lamina": true, "andado": 3.2399999999970532}
+  OK   mar adentro nada, con la cabeza fuera (el pecho a ras del agua, con las olas) — {"sobreMar": -4.1268759655953176, "x": 4257.135, "z": -8.266365894244634e-18, "y": -45.685833995462055, "modo": "nadar", "superficie": -44.524323104305296, "aguante": 0.9919799218750002, "anillo": true, "lamina": true}
+  OK   nadando, el aguante baja y se ve su anillo — {"sobreMar": -4.1268759655953176, "x": 4257.135, "z": -8.266365894244634e-18, "y": -45.685833995462055, "modo": "nadar", "superficie": -44.524323104305296, "aguante": 0.9919799218750002, "anillo": true, "lamina": true}
+  OK   el agua de cerca se dibuja (la lámina de ríos y mar)
+  OK   sin aguante te ahogas y vuelves a tu sitio de salida — {"muertes": 1, "x": 0, "z": 4, "aviso": "Te has ahogado. Vuelves a tu sitio de salida."}
+  OK   sin errores en la página
+
+Todo bien
