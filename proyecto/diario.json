@@ -2808,5 +2808,20 @@
   "pruebas": "En la nube, la batería entera (21 grupos): todo bien salvo jugar en línea y duelo en línea (sin servidor, no paran la publicación) y la lógica, que falló una vez en «lo que no se puede se rechaza al que lo manda» del combate en el servidor (no tocado por esta rama; bien tres veces aquí y al repetirla en la nube). Tras unir el tronzar y partir de main, repetidos lógica, demo única, la demo en el mundo, tala, inglés, combate en el mundo, recoger, objetos en el suelo y construcción.",
   "capturas": "capturas/demo-v55",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T18:54:12+00:00",
+  "fin": "2026-10-30T20:15:51+00:00",
+  "titulo": "Hito de arte: revisión completa; quedan cuatro arreglos antes de darlo por terminado (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Batería entera en la nube sobre main (22 grupos): 21 correctos; falla «jugar en línea» (el móvil no ve a PC donde está), que no para la publicación mientras no esté el servidor. El duelo en línea, que fallaba en las dos revisiones anteriores, esta vez pasa.",
+   "Capturas miradas en PC y móvil (cara, espalda, taller de personajes, la demo y el mundo). Siguen mal las mismas cosas que en las revisiones anteriores: con la toca, borde dentado y una mancha de piel rota en el cuello; el pelo corta en seco en la frente y las cejas son trazos finos a trozos; la capa de espalda sale casi negra y lisa; al picar no lleva pico.",
+   "Como se ven peor que la prueba de estilo v5, el hito no pasa a revisión: esas cuatro cosas quedan como tareas del hito, antes de la revisión final, que vuelve a pendiente.",
+   "Sin versión nueva: no hay cambios jugables en esta sesión."
+  ],
+  "pruebas": "En la nube: 21 de 22 grupos correctos; jugar en línea falla (exento hasta la fase 2)",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

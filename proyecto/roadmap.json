@@ -887,10 +887,24 @@
      "fin": "2026-10-30T10:58:15+00:00"
     },
     {
+     "nombre": "Toca y cuello de la ropa (visto en la revisión del 30 oct): el borde sale dentado y entre la toca y el cuello asoma una mancha de piel rota",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Nacimiento del pelo y cejas (visto en la revisión del 30 oct): el pelo corta en seco en la frente, como un casquete, y las cejas son trazos finos y a trozos que flotan",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Capa de espalda (visto en la revisión del 30 oct): sale casi negra y lisa, sin pliegues a la vista",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Herramienta en la mano al trabajar (visto en la revisión del 30 oct): al picar el personaje no lleva pico",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
-     "inicio": "2026-10-30T11:56:33+00:00",
-     "rama": "trabajo/20261030-1853"
+     "estado": "pendiente"
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «han roto las manos de todos los personajes» y prendas rotas): desde taller-v9 la piel se diezma con la cara protegida pero con la proporción de toda la piel, así que las manos se quedaban en una tira; diezmar solo lo que se puede diezmar, rehacer los personajes y repasar todas las prendas de cerca",
