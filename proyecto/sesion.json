@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-30T12:29:53+00:00",
-  "tarea": "Los árboles (las siete especies), la hierba y las rocas del mundo en el juego, con el estilo v5 y siempre en el mismo sitio",
-  "hito": "mundo-juego",
-  "rama": "trabajo/20261030-1329"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-30T13:28:46+00:00",
   "tarea": "Revisión completa y publicación",
