@@ -1,0 +1,34 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 1967 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1865 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1469 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 1943 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2283 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1464 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 1873 KB
+dist/kinhold_trozos.html 1460 KB
+hilo de los trozos 14 KB
+
+== Navegador: juego en inglés (también estilo y personaje)
+  OK   ru personaje móvil, notas: nada se sale por los lados — 0px de más
+  OK   ruso: sin errores (móvil)
+
+FALLAN 16: personaje PC, makehuman: ningún texto sin traducir, personaje PC, quaternius: ningún texto sin traducir, personaje PC, notas: ningún texto sin traducir, personaje PC, notas: no se ve español, personaje móvil, makehuman: ningún texto sin traducir, personaje móvil, quaternius: ningún texto sin traducir, personaje móvil, notas: ningún texto sin traducir, personaje móvil, notas: no se ve español, ru personaje PC, opciones: ningún texto sin traducir, ru personaje PC: ningún texto sin traducir, ru personaje PC, notas: ningún texto sin traducir, ru personaje PC, notas: no se ve español ni inglés, ru personaje móvil, opciones: ningún texto sin traducir, ru personaje móvil: ningún texto sin traducir, ru personaje móvil, notas: ningún texto sin traducir, ru personaje móvil, notas: no se ve español ni inglés
+!! FALLA: python3 pruebas/prueba_idioma_navegador.py dist/kinhold_hito1.html dist/kinhold_combate.html dist/kinhold_estilo.html dist/kinhold_personaje.html /tmp/kinhold_capturas/idioma
+
+HAY FALLOS
+tardó 668 s
