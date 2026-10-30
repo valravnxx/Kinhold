@@ -109,7 +109,8 @@ with sync_playwright() as p:
         comprobar('no se puede salir de la isla', c is not None and c['fuera'] is False)
         if c:
             # llevar al personaje a la orilla y andar hacia el mar con la tecla: se queda en tierra
-            pg.evaluate(f"""([x, z]) => {{ const k = {K}; k.pj.x = x - Math.sign(x || 1) * 0; k.pj.z = z; }}""", c['tierra'])
+            # a 12 m de la orilla, tierra adentro
+            pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}, l = Math.hypot(mx - tx, mz - tz) || 1; k.pj.x = tx - (mx - tx) / l * 12; k.pj.z = tz - (mz - tz) / l * 12; }}""", c['tierra'] + c['mar'])
             try: pg.wait_for_function(f'{K}.mundoListo', timeout=120000)
             except Exception: pass
             pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}; k.cam.yaw = Math.atan2(-(mx - tx), -(mz - tz)); }}""", c['tierra'] + c['mar'])
