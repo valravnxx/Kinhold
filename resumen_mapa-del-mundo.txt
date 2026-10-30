@@ -1,0 +1,33 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 1975 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1874 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1481 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 1950 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2290 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1475 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 1907 KB
+dist/kinhold_trozos.html 1471 KB
+hilo de los trozos 14 KB
+
+== Navegador: mapa del mundo
+  OK   movil: la leyenda no tapa los datos
+  OK   movil: sin errores en consola
+
+Resultado: TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 2668 s
