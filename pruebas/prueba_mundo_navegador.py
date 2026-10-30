@@ -97,11 +97,17 @@ with sync_playwright() as p:
         except Exception: pass
         pg.wait_for_timeout(1500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_andando.png')
-        # el mar y el borde de la isla: buscar la costa en línea recta desde la salida y querer entrar en el agua
+        # el mar y el borde de la isla: buscar la costa en línea recta desde la salida (en varios rumbos, hasta una que no
+        # sea llana) y querer entrar en el agua
         c = pg.evaluate(f"""(() => {{ const m = {K}.mundoJ; let antes = null;
           for (const rumbo of [0, 1.57, 3.14, 4.71, 0.78, 2.36, 3.93, 5.5]) {{
             for (let r = 0; r < 40000; r += 2) {{ const x = Math.cos(rumbo) * r, z = Math.sin(rumbo) * r;
-              if (m.sobreMar(x, z) < 0) {{ if (antes) return {{ tierra: antes, mar: [x, z], entra: m.andable(antes[0], antes[1], x, z), fuera: m.andable(0, 4, -70000, 4) }}; break; }}
+              if (m.sobreMar(x, z) < 0) {{
+                // una costa donde la tierra sube a 1 m sobre el mar a menos de 400 m (no una marisma ni una ría llana):
+                // ahí se pone luego al personaje para que ande hacia el mar
+                let d = 2; while (d < 400 && m.sobreMar(x - Math.cos(rumbo) * d, z - Math.sin(rumbo) * d) < 1) d += 2;
+                if (antes && d < 400) return {{ tierra: antes, mar: [x, z], entra: m.andable(antes[0], antes[1], x, z), fuera: m.andable(0, 4, -70000, 4) }};
+                break; }}
               antes = [x, z]; }}
             antes = null; }}
           return null; }})()""")
