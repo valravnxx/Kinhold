@@ -54,6 +54,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   body.combate.tactil #cmbBotones{bottom:calc(316px + env(safe-area-inset-bottom,0px))}
   body.combate.tactil #cmbEstado{left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(162px + env(safe-area-inset-bottom,0px));transform:none;flex-wrap:wrap;max-width:150px;gap:4px 8px;font-size:12px}
   body.combate.tactil #btnUsar{display:none}
+  body.combate.tactil #cmbMsg{top:calc(50% - 150px);font-size:14px}
   `;
   document.head.appendChild(css);
   const div = (id, html = '') => { const d = document.createElement('div'); d.id = id; d.innerHTML = html; d.hidden = true; document.body.appendChild(d); return d; };
