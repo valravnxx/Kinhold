@@ -533,9 +533,10 @@
     },
     {
      "nombre": "Tala de verdad sobre los árboles del mundo: el árbol joven se tala con hacha de piedra (da un tronco delgado y ramas) y el adulto con hacha de hierro (con piedra, muy lento; da un tronco largo y muchas ramas); el árbol cae, queda el tocón y vuelve a crecer en semanas reales, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T06:23:57+00:00",
-     "rama": "trabajo/20261030-0623"
+     "rama": "trabajo/20261030-0623",
+     "fin": "2026-10-30T09:06:38+00:00"
     },
     {
      "nombre": "Tronzar y partir: el tronco largo se tronza en 3–4 troncos cortos (con hacha, lento) y el tronco corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro y la leña en el leñero. Lógica pura con autor, en la demo y con pruebas",
@@ -1727,6 +1728,13 @@
      "archivo": "jugar/demo/v48.html",
      "capturas": "capturas/demo-v48",
      "notas": "«Construir» en el mundo de verdad: apareces en Whitholm, la isla de los playtests, en el mismo sitio para todos (tierra firme, llano y lejos de los ríos), y andas por la isla sobre el terreno por trozos del mapa, con la cámara del juego. Fuera el llano. No se puede salir de la isla ni entrar en el mar; el servidor solo admite posiciones en la isla."
+    },
+    {
+     "v": "v49",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v49.html",
+     "capturas": "capturas/construccion-v40",
+     "notas": "En «Construir», tala de verdad: con un hacha en la mano, Usar junto a un árbol lo tala; cae, deja el tocón, un tronco y ramas, y vuelve a crecer pasadas unas semanas reales (construcción v40)."
     }
    ]
   },
@@ -1993,6 +2001,13 @@
      "archivo": "jugar/construccion/v39.html",
      "capturas": "capturas/construccion-v39",
      "notas": "Objetos en el suelo: «Soltar» deja lo que llevas a tus pies y Usar lo coge; fuera de tus tierras desaparece pasada 1 hora real; troncos, leña y piedras se quedan como pila"
+    },
+    {
+     "v": "v40",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/construccion/v40.html",
+     "capturas": "capturas/construccion-v40",
+     "notas": "Tala de verdad: con un hacha en la mano, Usar junto a un árbol lo tala a golpes; cae, deja el tocón, un tronco y ramas en el suelo, y vuelve a crecer pasadas unas semanas reales."
     }
    ]
   },
