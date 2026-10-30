@@ -5,7 +5,12 @@
   "hito": "equipo",
   "rama": "trabajo/20261030-1723"
  },
- "B": null,
+ "B": {
+  "inicio": "2026-10-30T18:54:12+00:00",
+  "tarea": "Revisión completa y publicación",
+  "hito": "arte",
+  "rama": "trabajo/20261030-1853"
+ },
  "chat:trabajo/20261030-1415-rios": {
   "inicio": "2026-10-30T14:15:36+01:00",
   "tarea": "Ríos que se adaptan al terreno (valravnx, 30 oct): desde los saltos de agua, muchos ríos quedan nivelados y, al cruzar un valle, van elevados como un puente por encima del terreno; el río tiene que seguir el terreno y no levantarlo",
