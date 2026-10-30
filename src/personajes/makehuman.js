@@ -132,6 +132,44 @@ function sombraCortada(u) {
   return m;
 }
 
+// ---- la capa se mueve al andar (tela sencilla, sin simulación) ----
+// Lo habitual en juegos sin simulación de tela: la capa va con la espalda y la pelvis (taller-v15) y, encima, el
+// sombreado la desplaza en cada vértice según su altura (nada en los hombros; más cuanto más abajo, al cuadrado, como un
+// péndulo): al andar se queda atrás y, al girar, hacia fuera; al pararse vuelve con un muelle amortiguado (se pasa un
+// poco y se asienta). Por detrás se mueve entera; hacia los bordes de delante, cada vez menos, para no meterse en las
+// piernas. Una onda pequeña sube por la tela al ritmo del paso. Al echarse atrás, sube un poco (la tela no se estira).
+// Va en el sombreado de la ropa y en el de su sombra; la malla de lejos (detalle.js) no la lleva: de lejos no se ve.
+const VUELO_GLSL = `
+uniform vec3 uVuelo; uniform vec2 uOnda; uniform vec3 uCapaAlto;
+vec3 kh_vuelo(vec3 p) {
+  float w = clamp((uCapaAlto.x - p.y) / (uCapaAlto.x - uCapaAlto.y), 0.0, 1.0); w *= w;
+  float atras = smoothstep(0.12, -0.04, p.z - uCapaAlto.z); // 1 por detrás del cuerpo, 0 en los bordes de delante
+  vec3 d = vec3(uVuelo.x, 0.0, uVuelo.z * mix(0.25, 1.0, atras)) * w;
+  d.x += uOnda.x * w * sin(uOnda.y - p.y * 6.0 + p.x * 5.0) * mix(0.4, 1.0, atras);
+  d.z += uOnda.x * 0.7 * w * atras * sin(uOnda.y * 1.1 - p.y * 5.0 + 1.3);
+  d.y += 0.5 * dot(d.xz, d.xz) / max(uCapaAlto.x - p.y, 0.25);
+  return d;
+}
+`;
+function ponerVuelo(material, v) {
+  const antes = material.onBeforeCompile, clave = material.customProgramCacheKey;
+  material.onBeforeCompile = (sh, r) => {
+    if (antes) antes(sh, r);
+    Object.assign(sh.uniforms, v);
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\n' + VUELO_GLSL)
+      .replace('#include <skinning_vertex>', '#include <skinning_vertex>\ntransformed += kh_vuelo(position);');
+  };
+  const k = clave ? clave.call(material) : '';
+  material.customProgramCacheKey = () => k + '-vuelo';
+}
+function sombraVuelo(v) {
+  const m = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+  ponerVuelo(m, v);
+  return m;
+}
+// muelle de la capa: lo que se queda atrás (m, en el bajo) por cada m/s, el máximo, y cuánto se abre al girar (por rad/s)
+const VUELO = { atras: 0.085, max: 0.26, giro: 0.06, maxGiro: 0.12, rigidez: 38, amortigua: 6.5 };
+
 export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/taller-v1/') {
   const o = { sexo: 'hombre', calidad: 'alta', extra: false, ...op };
   const carpetaExtra = typeof o.extra === 'string' ? o.extra : `${base}../taller-anim-v1/`;
@@ -296,6 +334,61 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     });
     if (alto > 0) blason.uPecho.value = alto - 0.2; // el cruce de la cruz, unos 20 cm por debajo del cuello
   }
+  // la capa que se mueve al andar (VUELO_GLSL): de dónde a dónde cae y por dónde pasa el cuerpo (en reposo)
+  const vuelo = { uVuelo: { value: new THREE.Vector3() }, uOnda: { value: new THREE.Vector2() }, uCapaAlto: { value: new THREE.Vector3() } };
+  const mantos = [];
+  // solo la capa que cae de los hombros (taller-v15 en adelante, la que lleva broche); la de antes era el cuerpo empujado
+  if (modelo.getObjectByName(`${o.sexo}_capa_manto_broche`)) modelo.traverse(n => { if (n.isMesh && /_capa_manto(_falda)?$/.test(n.name)) mantos.push(n); });
+  if (mantos.length) {
+    const caja = new THREE.Box3();
+    for (const n of mantos) { n.geometry.computeBoundingBox(); caja.union(n.geometry.boundingBox); }
+    // arriba, unos 12 cm bajo el cuello (los hombros no se mueven); el cuerpo pasa por el medio de delante a atrás
+    vuelo.uCapaAlto.value.set(caja.max.y - 0.12, caja.min.y, (caja.min.z + caja.max.z) / 2);
+    for (const n of mantos) { ponerVuelo(n.material, vuelo); n.customDepthMaterial = sombraVuelo(vuelo); }
+  }
+  // el muelle: con lo que se ha movido el personaje (en el mundo) desde la última vez y lo que anda la animación puesta
+  // (en el visor anda sin moverse); lo que más sea
+  const muelle = { x: new THREE.Vector2(), v: new THREE.Vector2(), fase: 0, pos: null, rumbo: 0 };
+  const _p = new THREE.Vector3(), _q = new THREE.Quaternion(), _f = new THREE.Vector3();
+  const moverCapa = (dt) => {
+    if (!mantos.length || !(dt > 0)) return;
+    dt = Math.min(dt, 0.1);
+    modelo.getWorldPosition(_p); modelo.getWorldQuaternion(_q);
+    _f.set(0, 0, 1).applyQuaternion(_q);
+    const rumbo = Math.atan2(_f.x, _f.z);
+    let adelante = 0, giro = 0;
+    if (muelle.pos) {
+      const d = _p.clone().sub(muelle.pos).setY(0);
+      if (d.length() / dt < 15) { // más rápido: se ha puesto en otro sitio, no ha andado
+        adelante = d.dot(_f.setY(0).normalize()) / dt;
+        let dr = rumbo - muelle.rumbo; dr = Math.atan2(Math.sin(dr), Math.cos(dr));
+        giro = dr / dt;
+      }
+    }
+    muelle.pos = (muelle.pos || new THREE.Vector3()).copy(_p); muelle.rumbo = rumbo;
+    for (const id of ['andar', 'correr']) {
+      const a = acciones[id];
+      if (a && a === actual && a.isRunning() && velocidad[id]) adelante = Math.max(adelante, velocidad[id] * a.getEffectiveTimeScale() * a.getEffectiveWeight());
+    }
+    const objetivo = new THREE.Vector2(
+      THREE.MathUtils.clamp(giro * VUELO.giro, -VUELO.maxGiro, VUELO.maxGiro),
+      -THREE.MathUtils.clamp(adelante * VUELO.atras, -VUELO.max / 2, VUELO.max));
+    // muelle amortiguado, en pasos cortos para que no se dispare con fotogramas largos
+    for (let t = 0; t < dt; t += 1 / 120) {
+      const h = Math.min(1 / 120, dt - t);
+      muelle.v.x += (VUELO.rigidez * (objetivo.x - muelle.x.x) - VUELO.amortigua * muelle.v.x) * h;
+      muelle.v.y += (VUELO.rigidez * (objetivo.y - muelle.x.y) - VUELO.amortigua * muelle.v.y) * h;
+      muelle.x.x += muelle.v.x * h; muelle.x.y += muelle.v.y * h;
+    }
+    const rapidez = Math.abs(adelante);
+    muelle.fase = (muelle.fase + dt * 2 * Math.PI * (0.8 + 0.45 * Math.min(rapidez, 4))) % (2 * Math.PI * 100);
+    vuelo.uVuelo.value.set(muelle.x.x, 0, muelle.x.y);
+    vuelo.uOnda.value.set(0.011 * Math.min(rapidez / 1.4, 2), muelle.fase);
+  };
+  {
+    const actualizar = mezclador.update.bind(mezclador);
+    mezclador.update = (dt) => { const r = actualizar(dt); moverCapa(dt); return r; };
+  }
   // color de una prenda: el del tinte o, sin teñir, el de su material (el lino crudo es más claro que la lana)
   const colorDe_ = (prenda, tinte) => {
     const p = PRENDAS_TENIBLES[prenda]; if (!p) return null;
@@ -334,6 +427,8 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     tenibles: (() => { const s = new Set(); modelo.traverse(n => { if (n.isMesh && n.userData.tinte === 'ropa') s.add(n.userData.prenda); }); return [...s]; })(),
     // la altura del corte de una falda (hechura), para la malla de lejos (detalle.js)
     corteDe: (n) => tela.has(n) ? tela.get(n).u.uCorte.value : -100,
+    // cuánto se ha movido el bajo de la capa (m, en los ejes del modelo: x a un lado, z adelante), para las pruebas
+    vueloCapa: () => ({ x: vuelo.uVuelo.value.x, z: vuelo.uVuelo.value.z, onda: vuelo.uOnda.value.x }),
     capasPosibles: [...[...ORDEN, ...SUELTAS].filter(c => c !== 'camisa' && modelo.getObjectByName(`${o.sexo}_capa_${c}`)), ...(hayPies ? [TALLER.descalzo] : [])], tocados: TOCADOS };
   ponerCapas(o.capas || [o.sexo === 'mujer' ? 'vestido' : 'tunica']);
   ponerAspecto(o.aspecto);

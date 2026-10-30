@@ -6,8 +6,10 @@
 //  - que cae: por detrás, a la altura de la cintura, queda igual o más atrás que a la altura del pecho (no se mete);
 //  - que cuelga ancha: abajo es al menos tan ancha como en los hombros, y el bajo pasa de la rodilla (más de 90 cm de largo);
 //  - que va abierta por delante: a media altura no hay tela delante del centro del pecho.
+//  - (desde taller-v16) que los pliegues de la espalda se ven: a 30 cm del bajo, por detrás, la tela entra y sale al
+//    menos 6,5 cm (en la v15, 5 cm: de espalda no se distinguían).
 // Uso: node pruebas/prueba_manto.mjs [carpeta de recursos]   (por defecto, la última taller-vN publicada)
-//      MUTAR=1 → mira la taller-v14, con la capa de antes: tiene que fallar.
+//      MUTAR=1 → mira la taller-v15, con los pliegues de antes: tiene que fallar (la v14, con la capa de antes, falla más).
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { MeshoptDecoder } from 'meshoptimizer';
@@ -15,7 +17,7 @@ import { readdirSync } from 'fs';
 
 const base = 'docs/recursos/personajes';
 const ultima = readdirSync(base).filter(d => /^taller-v\d+$/.test(d)).sort((a, b) => +a.slice(8) - +b.slice(8)).at(-1);
-const carpeta = process.env.MUTAR ? `${base}/taller-v14` : (process.argv[2] || `${base}/${ultima}`);
+const carpeta = process.env.MUTAR ? `${base}/taller-v15` : (process.argv[2] || `${base}/${ultima}`);
 await MeshoptDecoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
 let ok = 0, mal = 0;
@@ -50,6 +52,10 @@ for (const sexo of ['hombre', 'mujer']) {
   comprobar(`${sexo}: larga (más de 90 cm de alto)`, arriba - abajo > 0.9, cm(arriba - abajo));
   const delante = franja(arriba - 0.4).filter(p => Math.abs(p[0]) < 0.05 && p[2] > 0);
   comprobar(`${sexo}: abierta por delante (nada delante del pecho a media altura)`, delante.length === 0, `${delante.length} puntos`);
+  const medio = (Math.max(...P.map(p => p[2])) + Math.min(...P.map(p => p[2]))) / 2;
+  const tras = P.filter(p => Math.abs(p[1] - (abajo + 0.3)) < 0.01 && Math.abs(p[0]) < 0.15 && p[2] < medio).map(p => p[2]);
+  const hondo = tras.length ? Math.max(...tras) - Math.min(...tras) : 0;
+  comprobar(`${sexo}: pliegues hondos por detrás (al menos 6,5 cm a 30 cm del bajo)`, hondo >= 0.065, cm(hondo));
 }
 console.log(`Capa: ${ok} bien, ${mal} mal`);
 process.exit(mal ? 1 : 0);

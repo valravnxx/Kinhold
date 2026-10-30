@@ -35,8 +35,8 @@ const $ = (id) => document.getElementById(id);
 const CLAVE = 'kinhold_personaje_v2';
 // carpeta de los modelos: la versión publicada vive en jugar/personaje/, los modelos en recursos/personajes/v1/
 const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../recursos/personajes/v1/';
-// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v15/ (las anteriores publicadas no se tocan)
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v15/';
+// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v16/ (las anteriores publicadas no se tocan)
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v16/';
 // las 39 animaciones extra del taller propio, pasadas a su esqueleto (aparte: taller-anim-v1/)
 const DETALLE = +(new URLSearchParams(location.search).get('detalle') || 0);
 const RECURSOS_ANIM_MH = new URLSearchParams(location.search).get('animMH') || '../../recursos/personajes/taller-anim-v1/';

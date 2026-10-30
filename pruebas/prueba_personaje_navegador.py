@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v15'), f'{sitio}/recursos/personajes/taller-v15')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v16'), f'{sitio}/recursos/personajes/taller-v16')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-anim-v1'), f'{sitio}/recursos/personajes/taller-anim-v1')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -259,10 +259,20 @@ with sync_playwright() as p:
         # la capa (taller-v15) de espalda y de perfil, quieto y andando: tiene que caer de los hombros y no atravesar las piernas
         for v in ['espalda', 'perfil']:
             pg.click(f'[data-vista="{v}"]'); pg.evaluate(f'{E}.instante(1.0)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_capa_{v}.png')
+        # la capa se mueve al andar (makehuman.js, VUELO_GLSL): se queda atrás y ondea; al pararse vuelve. Se pasa el
+        # tiempo a mano (2 s en pasos de 1/30 s) para que no dependa de lo que tarde cada fotograma en la nube
+        pasos = 0 if os.environ.get('MUTAR') else 60
+        andar_capa = f"(() => {{ const pj = {E}.diag().pj; for (let i = 0; i < {pasos}; i++) pj.mezclador.update(1 / 30); {E}.pausar(true); {E}.dibujar(); return pj.vueloCapa(); }})()"
         pg.evaluate(f"{E}.ponerModo('andar')")
+        vu = pg.evaluate(andar_capa)
+        comprobar('la capa se queda atrás al andar (el bajo, al menos 6 cm) y ondea', vu['z'] < -0.06 and vu['onda'] > 0.003, str(vu))
         for v in ['perfil', 'espalda']:
-            pg.click(f'[data-vista="{v}"]'); pg.evaluate(f'{E}.instante(0.4)'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_capa_andando_{v}.png')
-        pg.evaluate(f"{E}.ponerModo('quieto')"); pg.click('[data-vista="cuerpo"]')
+            pg.click(f'[data-vista="{v}"]'); pg.evaluate(f'{E}.dibujar()'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_capa_andando_{v}.png')
+        pg.evaluate(f'{E}.pausar(false)')
+        pg.evaluate(f"{E}.ponerModo('quieto')")
+        vq = pg.evaluate(andar_capa.replace(str(pasos), str(3 * pasos)))
+        comprobar('al pararse, la capa vuelve a caer recta', abs(vq['z']) < 0.02 and abs(vq['x']) < 0.02 and vq['onda'] < 0.001 and pasos > 0, str(vq))
+        pg.evaluate(f'{E}.pausar(false)'); pg.click('[data-vista="cuerpo"]')
         for c in ['botas', 'manto']: pg.click(f'[data-capa="{c}"]'); pg.wait_for_timeout(200)
         # descalzo (el GDD empieza así): se ven los pies y no los zapatos; con botas, las botas
         con0 = vis()
