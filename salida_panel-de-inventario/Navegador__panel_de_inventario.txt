@@ -1,0 +1,52 @@
+PC: arrastrar del arcón a la silueta y a los huecos
+  OK   el botón abre el panel
+  OK   10 cuadros de equipo (espalda, cintura y 8 capas de ropa) — 10
+  OK   ni manos ni hombro en el panel (se cogen del mundo y se ven en el personaje)
+  OK   el retrato es tu personaje dibujado (un 10–60 % del cuadro) — 0.17
+  OK   empieza con camisa y pantalón de lino
+  OK   sin cinturón no hay cuadros de cintura
+  OK   arrastrar el cinto de cuero a la cintura se lo pone — cinto_cuero:1
+  OK   con el cinto, 3 cuadros de cintura bajo la silueta — 3
+  OK   el cuchillo, arrastrado a un hueco pequeño del cinto — cuchillo:1
+  OK   el hacha (mediana) no entra en un hueco pequeño, y se dice por qué — No cabe en ese hueco.
+  OK   tocar el leñero abre sus 6 huecos — lenero:1 ·  · espalda
+  OK   la leña entra en el leñero, una pila entera — lena:3
+  OK   la piedra no entra en el leñero
+  OK   el personaje se pone la túnica que dice el inventario — ['tunica', 'descalzo']
+  FALLA del arcón: el hacha con las manos y el saco al hombro — piedra:3 · saco:1
+  OK   el hacha se ve en la mano del personaje
+  OK   abajo se ve lo que llevas en la mano y al hombro — En la mano:
+Piedra ×3
+Soltar
+En la mano:
+Hacha de mano
+Soltar
+Al hombro:
+Saco
+Soltar
+  OK   arrastrar el cuchillo del cinto al arcón lo deja
+  OK   se ve la carga y la velocidad — Carga: 54% · velocidad al andar: 94%
+  OK   cada cambio queda en el registro de acciones con autor — 9
+  FALLA «Soltar» deja lo de la mano (y el hacha ya no se ve)
+  FALLA y lo del hombro; sin nada, la línea se esconde
+  OK   lo que llevas se guarda al recargar
+  OK   la tecla I abre el panel
+  OK   al recargar, el personaje lleva otra vez la túnica — ['tunica', 'descalzo']
+  OK   la túnica cosida entra con su hechura y su tinte — {'tipo': 'tunica_lana', 'n': 1, 'hechura': {'material': 'lana', 'corte': 'corto', 'tejido': 'sarga'}, 'tinte': 'glasto'}
+  OK   su cuadro dice la hechura y el tinte — Túnica de lana · Corto, Sarga · Azul de glasto
+  OK   puesta: la túnica corta, de sarga y azul, y la cota corta — {'tinte': 'glasto', 'corte': 'corto', 'tejido': 'sarga', 'cota': 'corto', 'alturaCota': 0.8149861425161362, 'capas': ['tunica', 'cota', 'descalzo']}
+  OK   otra túnica cosida, con lo suyo (cuadros y verde) — {'tipo': 'tunica_lana', 'n': 1, 'hechura': {'material': 'lana', 'corte': 'largo', 'tejido': 'cuadros'}, 'tinte': 'verde'}
+  OK   y lo cierra
+  OK   sin errores en la página (PC)
+Móvil: tocar y pantalla completa
+  OK   en el móvil el panel ocupa la pantalla — {'x': 0, 'y': 0, 'width': 390, 'height': 844}
+  OK   tocar la cuerda y luego la cintura se la pone
+  OK   la cuerda trenzada da 2 cuadros de cintura — 2
+  OK   bayas en el primer hueco de la cuerda (pila de 10) — bayas:10
+  OK   el tronco corto (grande) se coge con las dos manos
+  OK   «Ponérselo» pone el zurrón a la espalda
+  OK   el ✕ cierra el panel
+  OK   en el móvil, lo que llevas se ve abajo sin salirse de la pantalla — {'x': 152, 'y': 762.625, 'width': 228, 'height': 57.375}
+  OK   sin errores en la página (móvil)
+
+FALLAN 3: del arcón: el hacha con las manos y el saco al hombro, «Soltar» deja lo de la mano (y el hacha ya no se ve), y lo del hombro; sin nada, la línea se esconde
