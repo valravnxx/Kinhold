@@ -99,9 +99,14 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     const vx = C.x - P.x, vz = C.z - P.z, l2 = vx * vx + vz * vz || 1, l = Math.sqrt(l2), ahora = new Set(), cambio = new Set();
     for (const o of deArboles) {
       const u = ((o.x - P.x) * vx + (o.z - P.z) * vz) / l2;
-      if (u * l < -1 || u > 1.1) continue;          // también los que están pegados al personaje
-      const d = Math.hypot(o.x - P.x - vx * u, o.z - P.z - vz * u), [radio, alto] = TAMANO_ESPECIE[o.especie];
-      if (d < o.escala * radio + 1 && o.y + o.escala * alto > P.y + (C.y - P.y) * u - 1) ahora.add(o);
+      if (u * l < -1) continue;                     // también los que están pegados al personaje
+      // la distancia al tramo personaje–cámara (si la cámara se ha acercado por una loma, el árbol puede quedar justo
+      // detrás de ella con la copa encima); y la altura de la línea donde empieza la copa, no en el tronco: la copa
+      // se abre hacia el personaje, donde la línea va más baja (lo vio la prueba en el móvil: un roble de 5,7 m
+      // con la línea a 5,8 m en el tronco, y la copa tapando media pantalla)
+      const uc = Math.min(1, u), [radio, alto] = TAMANO_ESPECIE[o.especie], copa = o.escala * radio;
+      const d = Math.hypot(o.x - P.x - vx * uc, o.z - P.z - vz * uc), un = Math.max(0, Math.min(1, u - copa / l));
+      if (d < copa + 1 && o.y + o.escala * alto > P.y + (C.y - P.y) * un - 1) ahora.add(o);
     }
     for (const o of tapan) if (!ahora.has(o) && enPie(o)) { o.malla.setMatrixAt(o.instancia, o.matriz); cambio.add(o.malla); }
     for (const o of ahora) if (!tapan.has(o)) { o.malla.setMatrixAt(o.instancia, cero); cambio.add(o.malla); }
