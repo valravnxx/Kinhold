@@ -38,7 +38,7 @@ function crear(semilla) {
     const r = g.next();
     if (r.done) {
       mapa = r.value; N = mapa.N; window.__mapa.msGenerar = Math.round(performance.now() - t0);
-      mapa.continente = sitioContinente(mapa); comarcas = null;
+      mapa.continente = sitioContinente(mapa); mapa.isla = sitioIsla(mapa); comarcas = null;
       for (const k in imagenes) delete imagenes[k];
       prepararRios(); encuadrar(); datosGenerales(); pintar();
       $('cargando').hidden = true; window.__mapa.listo = true;
@@ -286,10 +286,23 @@ function pintar() {
     ctx.font = `600 ${movil ? 11 : 13}px system-ui, sans-serif`; ctx.textAlign = 'center';
     const km = LADO() / N;
     mapa.centros.forEach((c, k) => {
+      if (k === mapa.paisIsla && mapa.isla) return;   // la isla lleva su nombre aparte, grande y encima
       const [x, y] = aPant([(c % N + 0.5) * km, (((c / N) | 0) + 0.5) * km]);
       const t = textoRegion(k);
       ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(40,30,24,.75)'; ctx.strokeText(t, x, y); ctx.fillStyle = '#f4ead8'; ctx.fillText(t, x, y);
     });
+  }
+  if (capas.paises && mapa.isla) {
+    // la isla (Whitholm): su nombre grande y espaciado, en el mar justo encima de su costa norte, como el del continente
+    // (en medio de la isla quedaba pequeño y entre los nombres de sus comarcas)
+    // (si encima no cabe, porque lo taparían los botones de arriba, va debajo de su costa sur)
+    const km = LADO() / N, c = mapa.isla, tam = movil ? 14 : 18, [x, y] = aPant([c.x * km, c.y * km]);
+    const arriba = y - 6 - tam > $('superior').getBoundingClientRect().bottom + 4;
+    const yt = arriba ? y - 6 : aPant([0, c.abajo * km])[1] + 8;
+    ctx.save(); ctx.font = `italic 600 ${tam}px Georgia, serif`; ctx.textAlign = 'center'; ctx.textBaseline = arriba ? 'bottom' : 'top';
+    const t = textoRegion(mapa.paisIsla).toUpperCase().split('').join('\u2009');
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(20,32,44,.7)'; ctx.strokeText(t, x, yt); ctx.fillStyle = 'rgba(240,232,212,.95)'; ctx.fillText(t, x, yt);
+    ctx.restore();
   }
   // escala: 20 km
   const l = 20 * kmAPx, x0 = 16, y0 = $('datos').getBoundingClientRect().top - 12;
@@ -324,6 +337,15 @@ function leyenda() {
   if (innerWidth <= 640) $('leyenda').style.top = `${Math.round($('superior').getBoundingClientRect().bottom + 8)}px`;
 }
 // dónde va el nombre del continente: centrado en el ancho de su tierra (sin la isla) y bajo su costa más al sur
+// dónde va el nombre de la isla: centrado en su ancho y sobre su costa más al norte
+function sitioIsla(m) {
+  if (m.paisIsla < 0) return null;
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (let i = 0; i < m.N * m.N; i++) if (m.tierra[i] && m.pais[i] === m.paisIsla) {
+    const x = i % m.N, y = (i / m.N) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+  }
+  return x1 < 0 ? null : { x: (x0 + x1 + 1) / 2, y: y0, abajo: y1 + 1 };
+}
 function sitioContinente(m) {
   let x0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (let i = 0; i < m.N * m.N; i++) if (m.tierra[i] && m.pais[i] >= 0 && m.pais[i] !== m.paisIsla) {
