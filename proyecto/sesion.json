@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-30T03:22:50+00:00",
+  "tarea": "La vista «Como en el juego» del mapa con trozos: fuera el trozo único de 240 m que se rehacía entero (de 236 a 935 ms parado, medido el 29 oct) y el truco de hundir el suelo de lejos; menos triángulos lejos en el móvil. Medido en PC y móvil (fotogramas, memoria, triángulos, llamadas de dibujo)",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261030-0322"
+ },
  "B": {
   "inicio": "2026-10-30T01:54:51+00:00",
   "tarea": "Arreglo (valravnx, 29 oct: «la capa que no es capa»): rehacer la capa del taller para que caiga de los hombros como una capa de verdad, revisada en capturas de cerca antes de enseñarla",
