@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v56 (obras con lo que llevas)';
+export const VERSION_DEMO = 'Demo única · v57 (siempre en línea)';
 export const REGISTRO_DEMO = [
+  "v57: siempre en línea (valravnx, 30 oct): el juego entra siempre al mundo del servidor de prueba, también desde la web, y es el único modo. En el menú, «Jugar» (Whitholm con los demás), «Duelo» (contra otro jugador) y «Personaje»; fuera el modo en solitario y las Opciones con la dirección del servidor. Sin servidor no se juega: un cartel lo dice, con un botón para volver a intentarlo.",
+  "v57, provisional: quien tenía guardada en el navegador otra dirección del servidor (la de casa) entra ya al de todos; para probar con otro servidor, ?servidor= en la dirección. Las pruebas automáticas siguen entrando sin servidor con ?sinservidor=1, que no sale en ningún botón.",
   "v56: en «Construir», obras con lo que llevas: lo que se lleva a una obra sale de lo que llevas encima, no de un montón común. El montón común es ahora el arcón de pruebas del inventario («Materiales de obra», con lo que queda de cada uno), y «+ Materiales» lo llena.",
   'v55: en «Construir», lo que crece en Whitholm es el del mapa: árboles de las siete especies, cada una en sus biomas (en lo mirado de Whitholm salen abeto, abedul y haya en lo fresco y roble y fresno en la vega; el pino y la encina, donde toca), en masas de bosque, claros y corros, con la hierba, las flores, los matorrales y las piedras sueltas (del color de la roca de cada sitio). Siempre en el mismo sitio: cada cosa sale del azar de su celda del mundo, así que al volver o al recargar todo está donde estaba. Nada en el agua. Los árboles de todas las especies se talan.',
   'v55: los árboles que se meten entre la cámara y tu personaje no se dibujan, como en la vista «Como en el juego» del mapa: en el bosque, una copa ya no tapa media pantalla.',

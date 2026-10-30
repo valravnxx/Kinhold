@@ -1,4 +1,4 @@
-// Kinhold — demo única: una sola página con menú (Construir, Duelo, Personaje).
+// Kinhold — demo única: una sola página con menú (Jugar, Duelo, Personaje). Siempre en línea (valravnx, 30 oct).
 // Cada parte es el prototipo de siempre; se elige con ?modo= y la página se recarga al cambiar, para que cada
 // parte empiece limpia (sin dos escenas ni dos WebGL a la vez). three.js va una sola vez en el archivo: las
 // partes se cargan con import() y solo se ejecuta la elegida.
@@ -7,7 +7,6 @@
 import PLANTILLAS from 'plantillas-demo';
 import { tr, traducirPagina, botonesIdioma, idioma } from '../idioma.js';
 import { personajeElegido } from '../mundo/eleccion.js';
-import { direccionServidor, CLAVE_SERVIDOR } from '../mundo/direccion_servidor.js';
 import { VERSION_DEMO, REGISTRO_DEMO } from './registro.js';
 import { CAPAS } from '../personaje/textos.js';
 import { ponerRendimiento } from './rendimiento.js';
@@ -15,7 +14,7 @@ import { medidaRendimiento, genteDePrueba } from '../mundo/rendimiento.js';
 import { generar, SEMILLA_MUNDO, LADO_MUNDO } from '../logica/mapa.js';
 
 const MODOS = {
-  construir: { carga: () => import('../juego/main.js'), menu: '#menu', nombre: 'Construir' },
+  construir: { carga: () => import('../juego/main.js'), menu: '#menu', nombre: 'Jugar' },
   duelo: { carga: () => import('../combate/main.js'), menu: '#menu', nombre: 'Duelo' },
   personaje: { carga: () => import('../personaje/main.js'), menu: '#estilos', nombre: 'Personaje' },
 };
@@ -23,11 +22,19 @@ const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 const modo = params.get('modo');
 
+// Siempre en línea (valravnx, 30 oct): «Jugar» y «Duelo» van siempre al servidor (src/mundo/direccion_servidor.js); ya no
+// hay modo en solitario en el menú. Solo para las pruebas automáticas, ?sinservidor=1 deja entrar sin servidor (como antes
+// del 30 oct), para probar el juego sin levantar uno; no sale en ningún botón.
+const SIN_SERVIDOR = params.get('sinservidor') === '1';
+const VAN_EN_LINEA = new Set(['construir', 'duelo']);
+const redirige = VAN_EN_LINEA.has(modo) && !SIN_SERVIDOR && params.get('enlinea') !== '1';   // un enlace de antes, sin enlinea
+if (redirige) location.replace(enlace(modo));
+
 // enlace a otra parte de la demo, conservando el resto de parámetros (idioma, carpetas de recursos)
-function enlace(m, enLinea = false) {
+function enlace(m) {
   const p = new URLSearchParams(location.search);
   if (m) p.set('modo', m); else p.delete('modo');
-  if (enLinea) p.set('enlinea', '1'); else p.delete('enlinea');
+  if (m && VAN_EN_LINEA.has(m) && !SIN_SERVIDOR) p.set('enlinea', '1'); else p.delete('enlinea');
   const q = p.toString();
   return location.pathname + (q ? '?' + q : '');
 }
@@ -41,7 +48,9 @@ function resumenPersonaje() {
   return tr('Tu personaje: {s}, con {r}.', { s: tr(e.sexo === 'mujer' ? 'mujer' : 'hombre'), r: ropa.toLowerCase() });
 }
 
-if (MODOS[modo]) {
+if (redirige) {
+  // se va a la misma parte, en línea
+} else if (MODOS[modo]) {
   // una parte: su estilo y su página, un botón «Menú» con sus otros botones, y su código
   const pl = PLANTILLAS[modo];
   $('demoMenu').remove();
@@ -67,17 +76,6 @@ if (MODOS[modo]) {
   traducirPagina();
   botonesIdioma($('demoIdioma'));
   for (const a of document.querySelectorAll('[data-ir]')) a.href = enlace(a.dataset.ir);
-  $('demoEnLinea').href = enlace('construir', true);
-  $('demoDueloEnLinea').href = enlace('duelo', true);
-  // Opciones: la dirección del servidor para «Jugar en línea» (se guarda en el navegador)
-  $('demoServidor').value = direccionServidor();
-  $('btnDemoOpciones').onclick = () => { $('demoOpciones').hidden = !$('demoOpciones').hidden; $('demoNotas').hidden = true; };
-  $('btnDemoGuardar').onclick = () => {
-    const v = $('demoServidor').value.trim();
-    if (!/^wss?:\/\/[^\s]+$/.test(v)) { $('demoServidorNota').textContent = tr('Tiene que empezar por ws:// o wss://'); return; }
-    try { localStorage.setItem(CLAVE_SERVIDOR, v); $('demoServidorNota').textContent = tr('Guardada.'); }
-    catch (e) { $('demoServidorNota').textContent = tr('Este navegador no deja guardarla.'); }
-  };
   $('demoPersonaje').textContent = resumenPersonaje();
   $('demoNotas').innerHTML = `<b>${tr(VERSION_DEMO)}</b><ul>${REGISTRO_DEMO.map(t => `<li>${tr(t)}</li>`).join('')}</ul>`;
   $('btnDemoNotas').onclick = () => { $('demoNotas').hidden = !$('demoNotas').hidden; $('demoOpciones').hidden = true; };

@@ -14,6 +14,23 @@ import { tr } from '../idioma.js';
 // lo que se guarda del aspecto de otro: cuerpo, ropa, personalización y, si vienen, los tintes y la hechura de su ropa
 const deAspecto = (a) => ({ sexo: a.sexo, capas: a.capas, aspecto: a.aspecto, ...(a.tintes ? { tintes: a.tintes } : {}), ...(a.hechuras ? { hechuras: a.hechuras } : {}) });
 
+// Siempre en línea (valravnx, 30 oct): sin servidor no se juega. Si no se puede conectar, o se corta y no vuelve a
+// intentarlo, un cartel tapa el juego con el motivo y un botón para volver a intentarlo (recarga la página).
+function sinConexion(texto) {
+  quitarSinConexion();
+  const c = document.createElement('div');
+  c.id = 'sinConexion';
+  c.style.cssText = 'position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;background:#1a1612cc;font:15px/1.4 system-ui,sans-serif;color:#f1e8d8';
+  c.innerHTML = '<div style="background:rgba(36,30,24,.95);border-radius:14px;padding:18px 20px;max-width:360px;text-align:center;box-shadow:0 10px 40px #0006">' +
+    `<b style="display:block;font-size:17px;color:#d9a441;margin-bottom:6px">${tr('Sin conexión')}</b><div id="sinConexionTexto"></div>` +
+    `<div style="font-size:13px;opacity:.75;margin:6px 0 12px">${tr('El juego es siempre en línea: sin servidor no se puede jugar.')}</div>` +
+    `<button id="btnReintentar" style="font:inherit;font-weight:600;color:#241b10;background:#d9a441;border:0;border-radius:9px;padding:8px 14px;cursor:pointer">${tr('Volver a intentarlo')}</button></div>`;
+  c.querySelector('#sinConexionTexto').textContent = texto;
+  c.querySelector('#btnReintentar').onclick = () => location.reload();
+  document.body.appendChild(c);
+}
+function quitarSinConexion() { const c = document.getElementById('sinConexion'); if (c) c.remove(); }
+
 export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienvenida, avisar, alEstado }) {
   const direccion = direccionServidor();
   let con = null, estado = 'conectando', antiguo = false, yo = null;   // antiguo: el servidor es de una versión anterior al juego
@@ -33,6 +50,7 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
       const volvia = estado === 'volviendo';
       presencia.recibir(msg, ahora);
       if (msg.tipo === 'bienvenida') {
+        quitarSinConexion();
         estado = 'conectado'; yo = msg.autor; antiguo = servidorAntiguo(msg);
         for (const a of msg.aspectos || []) aspectos.set(a.autor, deAspecto(a));
       } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, deAspecto(msg));
@@ -41,7 +59,7 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
       alMensaje(msg, ahora);
       if (msg.tipo === 'bienvenida') {
         avisar(volvia ? tr('Conexión recuperada: sigues con el mismo personaje.') : bienvenida(direccion), false);
-        if (antiguo && !volvia) avisar(tr('El servidor es de una versión anterior al juego y no funciona del todo: quien lo tiene encendido tiene que actualizarlo (cerrar sus ventanas y volver a abrir jugar_en_casa.bat, que baja la última versión).'), true);
+        if (antiguo && !volvia) avisar(tr('El servidor es de una versión anterior al juego y no funciona del todo: quien lleva el servidor tiene que actualizarlo.'), true);
       }
       ponerEstado();
     },
@@ -50,6 +68,7 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
       presencia.remotos.clear();
       alCortar();
       ponerEstado();
+      if (!vuelve) sinConexion(motivo === 'otra' ? tr('Has entrado con este personaje desde otra pestaña o aparato.') : tr('No hay conexión con el servidor.'));
       if (antes === 'volviendo' && vuelve) return;   // sigue intentándolo: ya se ha avisado
       avisar(motivo === 'otra' ? tr('Has entrado con este personaje desde otra pestaña o aparato.')
         : motivo === 'inunda' ? tr('El servidor ha cerrado la conexión: demasiados mensajes.')
