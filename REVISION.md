@@ -6,6 +6,18 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 30 oct 2026 (20:40 UTC) — por el chat (carril B): ya está lo del online; construir a la altura del suelo
+valravnx: «avisa que ya está lo del online, haz lo que estabas haciendo de pasar todo al modo online, y que las ramas de trabajo se adapten a ello y muevan en su dirección». Y que «los objetos que se coloquen se coloquen a la altura del suelo, no de la línea de altura 0, y que los suelos de base que coloques alisen el suelo de abajo para construir; por ahora no lo hace y quedan cosas flotantes o hundidas en el suelo; debe ser relativamente prioritario, aunque es muy relacionado con el cavar, al modificar malla del mundo». → Aviso en CLAUDE.md (lo leen todas las sesiones al empezar). El chat hace ya «Siempre en línea» (rama trabajo/20261030-2040-enlinea). La tarea «Construir en el mundo» se reescribe con lo pedido y sube justo detrás, antes del panel de depuración.
+
+### 30 oct 2026 (20:45 UTC) — por el chat (carril B): wipes y el detalle que no sigue al jugador
+valravnx: «haré wipes a menudo». Y «me alejo de donde he spawneado y el detalle del mundo no se viene conmigo, de hecho he salido a donde solo se dibuja relieve». → Lo segundo es la tarea en curso del carril A en «El juego en el mundo de verdad» (lo que crece sigue al jugador, rama trabajo/20261030-2023), empezada a las 20:23: no se crea otra. Los wipes se hacen en la máquina con el mando de servidor/nube/LEEME.md.
+
+### 30 oct 2026 (20:36 UTC) — por el chat (carril B): el servidor funciona; siempre en línea y panel de depuración
+valravnx creó el servidor en Hetzner (CX23, Falkenstein, Ubuntu 24.04; https://2-31-141-224.sslip.io) y entró: «estoy dentro». Pidió que el modo de juego único sea este y «meter un cuadro de debug donde pueda tener el mapa, tpearme donde quiera, ver otros players». A las preguntas del chat: «Siempre en línea» (también desde la web de GitHub; sin servidor no se juega) y el panel «con clave de admin». → Decisión del servidor cerrada y hito «Prueba online mínima» hecho; dos tareas nuevas en «El juego en el mundo de verdad», antes de las demás pendientes.
+
+### 30 oct 2026 (20:30 UTC) — por el chat (carril B): el servidor en línea
+valravnx: «pásame todo para hacer lo de publicar en línea de nuevo». → Se le pasan por el chat los pasos de `servidor/nube/LEEME.md` y el cloud config para crear el servidor de prueba en Hetzner. La decisión pendiente del servidor sigue abierta hasta que diga si la dirección funciona en los dos aparatos.
+
 ### 30 oct 2026 — por el chat: las pruebas en línea
 valravnx, a si publicar con «jugar en línea» y «duelo en línea» fallando (fallan en main y en todas las ramas desde la salida al azar): «aún no está el servidor, por eso falla». → Mientras no esté el servidor de verdad (fase 2), esos dos grupos no paran la publicación; los demás, sí. Anotado en CLAUDE.md.
 

@@ -1,10 +1,26 @@
 {
- "A": null,
- "B": null,
+ "A": {
+  "inicio": "2026-10-30T20:23:07+00:00",
+  "tarea": "Lo que crece sigue al jugador por la isla: los árboles, la hierba y las piedras se rehacen a su alrededor poco a poco al andar (como en la vista «Como en el juego» del mapa), sin perder lo talado",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261030-2023"
+ },
+ "B": {
+  "inicio": "2026-10-30T20:52:51+00:00",
+  "tarea": "Toca y cuello de la ropa (visto en la revisión del 30 oct): el borde sale dentado y entre la toca y el cuello asoma una mancha de piel rota",
+  "hito": "arte",
+  "rama": "trabajo/20261030-2052"
+ },
  "chat:trabajo/20261030-1415-rios": {
   "inicio": "2026-10-30T14:15:36+01:00",
   "tarea": "Ríos que se adaptan al terreno (valravnx, 30 oct): desde los saltos de agua, muchos ríos quedan nivelados y, al cruzar un valle, van elevados como un puente por encima del terreno; el río tiene que seguir el terreno y no levantarlo",
   "hito": "mundo",
   "rama": "trabajo/20261030-1415-rios"
+ },
+ "chat:trabajo/20261030-2040-enlinea": {
+  "inicio": "2026-10-30T20:40:33+00:00",
+  "tarea": "Siempre en línea (valravnx, 30 oct): la demo entra siempre al mundo del servidor de Hetzner (https://2-31-141-224.sslip.io), también desde la web de GitHub, y es el único modo de juego: fuera el modo en solitario y el botón «Jugar en línea». Sin servidor no se juega: sale un aviso de que no hay conexión. La dirección, en un solo sitio del código",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261030-2040-enlinea"
  }
 }
