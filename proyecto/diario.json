@@ -2826,5 +2826,20 @@
   "pruebas": "Lógica de obras con lo que llevas 32/32 (nueva; con MUTAR=1 fallan 13), carriles 29/29 (prueba nueva del arreglo, falla con el código de antes). Navegador de construcción con pasos nuevos (sin llevar nada no se entrega; el arcón con los materiales; con el tronco en las manos sí), en PC y móvil. Batería entera en la nube (22 grupos), después de unir main: bien salvo «jugar en línea» (vuelve a conectar) y «duelo en línea», que fallan desde la salida al azar (valravnx: «aún no está el servidor, por eso falla»).",
   "capturas": "capturas/construccion-v44",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T18:54:12+00:00",
+  "fin": "2026-10-30T20:15:51+00:00",
+  "titulo": "Hito de arte: revisión completa; quedan cuatro arreglos antes de darlo por terminado (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Batería entera en la nube sobre main (22 grupos): 21 correctos; falla «jugar en línea» (el móvil no ve a PC donde está), que no para la publicación mientras no esté el servidor. El duelo en línea, que fallaba en las dos revisiones anteriores, esta vez pasa.",
+   "Capturas miradas en PC y móvil (cara, espalda, taller de personajes, la demo y el mundo). Siguen mal las mismas cosas que en las revisiones anteriores: con la toca, borde dentado y una mancha de piel rota en el cuello; el pelo corta en seco en la frente y las cejas son trazos finos a trozos; la capa de espalda sale casi negra y lisa; al picar no lleva pico.",
+   "Como se ven peor que la prueba de estilo v5, el hito no pasa a revisión: esas cuatro cosas quedan como tareas del hito, antes de la revisión final, que vuelve a pendiente.",
+   "Sin versión nueva: no hay cambios jugables en esta sesión."
+  ],
+  "pruebas": "En la nube: 21 de 22 grupos correctos; jugar en línea falla (exento hasta la fase 2)",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
