@@ -1,0 +1,33 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 2112 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1951 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1553 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2028 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2462 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1548 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2000 KB
+dist/kinhold_trozos.html 1548 KB
+hilo de los trozos 16 KB
+
+== Navegador: niveles de detalle del personaje
+  OK   demo: con niveles, menos triángulos (≤ 70 %) — 1330284 → 822232
+  OK   demo: con niveles, menos llamadas de dibujo — 640 → 388
+  OK   demo: sin errores en la consola
+Todo bien 
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 310 s
