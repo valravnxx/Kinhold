@@ -122,7 +122,8 @@ function aplicarConstruccion(m, a, invs) {
       if (!Number.isInteger(a.cantidad) || a.cantidad < 1) return { ok: false, motivo: 'Cantidad no válida.' };
       if (a.a !== undefined && !texto(a.a)) return { ok: false, motivo: 'Datos no válidos.' };
       if ((m.materiales[a.material] || 0) < a.cantidad) return { ok: false, motivo: 'En el arcón no hay tanto.' };
-      const r = invs.de(a.autor).meterDonde(tipo, a.cantidad, a.a);
+      // con ruta, justo ahí (como coger del suelo); sin ella, donde quepa
+      const inv = invs.de(a.autor), r = a.a !== undefined ? inv.coger(tipo, a.cantidad, a.a) : inv.meterDonde(tipo, a.cantidad);
       if (!r.ok) return r;
       m.materiales[a.material] -= a.cantidad;
       return { ok: true, donde: r.donde };

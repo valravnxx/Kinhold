@@ -1805,7 +1805,12 @@ window.__kinhold = {
       if (hayQueSubir(o.p, f.m)) {
         if (inv.cuantos(OBJETO_DE_MATERIAL[f.m]) < 1) cogido[f.m] = tomar(f.m, 1, f.m === 'tronco' ? 'hombro' : undefined);
         for (const [m, n] of Object.entries(VARAS_PARA_RODAR)) { const q = n - inv.cuantos(OBJETO_DE_MATERIAL[m]); if (q > 0) cogido[m] = (cogido[m] || 0) + tomar(m, q); }
-      } else cogido[f.m] = (cogido[f.m] || 0) + tomar(f.m, f.n, f.m === 'tronco' && !inv.lugares.hombro ? 'hombro' : undefined);
+      } else {
+        // lo que le falta entero, aunque ya lleves algo (lo que sobre se queda encima); un tronco, al hombro
+        let n = f.n, h = 0;
+        if (f.m === 'tronco' && !inv.lugares.hombro) h = tomar(f.m, 1, 'hombro');
+        cogido[f.m] = h + (n - h > 0 ? tomar(f.m, n - h) : 0);
+      }
     }
     guardar(); actualizarUI(); pintarLlevas(); panelInventario.pintar();
     return cogido;
