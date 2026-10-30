@@ -56,6 +56,26 @@ with sync_playwright() as p:
         comprobar(f'{nombre}: la leyenda no tapa los botones de arriba', not tapa)
         if nombre == 'movil': pg.click('#btnLeyenda')
         comprobar(f'{nombre}: la leyenda enseña rocas y vetas', 'Caliza' in leyenda and 'Veta pequeña de carbón' in leyenda and 'Gran veta de hierro' in leyenda)
+        # comarcas de Whitholm (valravnx, 30 oct): de lejos las fronteras de las 8 comarcas; ampliado, los lindes de las zonas
+        pg.evaluate('window.__mapa.capa("comarcas", true)'); pg.wait_for_timeout(300)
+        comprobar(f'{nombre}: las 8 comarcas de Whitholm (A a H)', pg.evaluate('window.__mapa.comarcas && window.__mapa.comarcas.letras.join("")') == 'ABCDEFGH')
+        ley = pg.inner_text('#leyenda') if nombre == 'pc' else (pg.click('#btnLeyenda'), pg.wait_for_timeout(150), pg.inner_text('#leyenda'), pg.click('#btnLeyenda'))[2]
+        comprobar(f'{nombre}: la leyenda explica las comarcas y las zonas', 'Frontera de comarca' in ley and 'Zona' in ley)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_3b_comarcas.png')
+        isla = pg.evaluate('(() => { const m = window.__mapa.mapa, c = m.centros[m.paisIsla], k = m.lado / m.N; return [(c % m.N + 0.5) * k, (Math.floor(c / m.N) + 0.5) * k]; })()')
+        pg.evaluate(f'window.__mapa.ampliar(3, {isla[0]}, {isla[1]})'); pg.wait_for_timeout(300)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_3c_comarcas_isla.png')
+        pg.evaluate(f'window.__mapa.ampliar(9, {isla[0] + 4}, {isla[1] + 6})'); pg.wait_for_timeout(300)
+        n = pg.evaluate('window.__mapa.pixelesComarcas()'); ms_c = pg.evaluate('window.__mapa.msComarcas')
+        comprobar(f'{nombre}: ampliado se pintan los lindes de las zonas', n > 20000, f'{n} píxeles · {ms_c} ms')
+        MEDIDAS[nombre]['ms_comarcas'] = ms_c
+        W, H = opc['viewport']['width'], opc['viewport']['height']
+        if nombre == 'pc': pg.mouse.click(W / 2, H / 2)
+        else: pg.touchscreen.tap(W / 2, H / 2)
+        pg.wait_for_timeout(200); info = pg.inner_text('#datos')
+        comprobar(f'{nombre}: tocar en Whitholm dice su comarca y su zona', 'comarca ' in info and 'zona ' in info, info[:200])
+        pg.screenshot(path=f'{SALIDA}/{nombre}_3d_zonas.png')
+        pg.evaluate('window.__mapa.capa("comarcas", false)')
         # ampliar sobre el centro de la región 2 (Rudmere) y tocarlo
         m = pg.evaluate('(() => { const m = window.__mapa.mapa, c = m.centros[1], k = m.lado / m.N; return [(c % m.N + 0.5) * k, (Math.floor(c / m.N) + 0.5) * k]; })()')
         pg.evaluate('window.__mapa.fondo("relieve"); window.__mapa.capa("vetas", false)')
