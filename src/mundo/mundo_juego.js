@@ -25,7 +25,9 @@ export function crearMundoJuego({ escena, mapa }) {
   const grupo = new THREE.Group(); grupo.name = 'trozos'; grupo.position.y = -y0;
   escena.add(grupo);
   const gestor = crearGestor({ anillos: ANILLOS_MUNDO, limites: ISLA });
-  const terreno = crearTerrenoTrozos({ grupo, material: materialSuelo(), mapa, paisaje, origen: SALIDA, gestor,
+  // ?hilos=N en la dirección: cuántos hilos para el terreno (las pruebas con dos páginas en una máquina sin tarjeta gráfica)
+  const nh = typeof location !== 'undefined' ? Number(new URLSearchParams(location.search).get('hilos')) || null : null;
+  const terreno = crearTerrenoTrozos({ grupo, material: materialSuelo(), mapa, paisaje, origen: SALIDA, gestor, hilos: nh,
     verticesPorFotograma: movil ? 12000 : 20000, msPorFotograma: movil ? 2 : 3 });
 
   // el mar: una lámina a la altura 0 del mundo, del tamaño de la isla y algo más (de momento lisa; el agua de verdad,

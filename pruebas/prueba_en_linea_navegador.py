@@ -25,7 +25,9 @@ class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 web = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=web.serve_forever, daemon=True).start()
-URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html'
+# hilos=1: un solo hilo para el terreno por trozos en cada página (sin tarjeta gráfica, dos páginas con tres hilos cada una
+# dejaban sin tiempo al dibujo y a la red)
+URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html?hilos=1'
 
 # el servidor del juego, en un puerto libre y con un mundo nuevo
 s = socket.socket(); s.bind(('127.0.0.1', 0)); PUERTO = s.getsockname()[1]; s.close()
@@ -90,6 +92,8 @@ try:
             pg.screenshot(path=f'{SALIDA}/{nombre}_1_menu_opciones.png')
             pg.click('#demoEnLinea'); pg.wait_for_load_state('load')
             comprobar(f'{nombre}: la construcción carga', esperar(pg, 'window.__demo && window.__demo.listo', 60000), str(err[:2]))
+            # en el mundo (Whitholm), hasta que están los trozos de alrededor
+            comprobar(f'{nombre}: el terreno de alrededor llega', esperar(pg, f'!{K}.mundoJ || {K}.mundoListo', 120000))
             comprobar(f'{nombre}: se conecta al servidor', esperar(pg, f"{K}.enLinea && {K}.enLinea.estado === 'conectado'"))
             comprobar(f'{nombre}: «Reiniciar» no está en línea', pg.is_hidden('#btnReiniciar'))
             comprobar(f'{nombre}: el estado de la conexión se ve arriba', 'En línea' in pg.inner_text('#estadoRed') and tapado(pg, '#estadoRed') == '', pg.inner_text('#estadoRed'))
@@ -203,6 +207,7 @@ try:
         B.click('#demoEnLinea'); B.wait_for_load_state('load')
         # La página se carga entera otra vez: sin tarjeta gráfica, conectar tardó a veces más de 20 s (medido el 28 oct: 27 s).
         comprobar('el móvil vuelve a entrar en línea', esperar(B, 'window.__demo && window.__demo.listo', 60000) and esperar(B, f"{K}.enLinea && {K}.enLinea.estado === 'conectado'", 60000))
+        esperar(B, f'!{K}.mundoJ || {K}.mundoListo', 120000)
         comprobar('con el mismo personaje (mismo autor)', B.evaluate(f"{K}.enLinea.red.yo") == yoB, B.evaluate(f"{K}.enLinea.red.yo"))
         B.evaluate(f"Object.assign({K}.pj, {{ x: -1.0, z: 5.0, rot: -Math.PI * 0.25 }})")
         comprobar('PC sigue viendo a uno solo, no a uno más', esperar(A, f"{K}.enLinea.remotos.size === 1", 8000) and A.wait_for_timeout(1500) is None and A.evaluate(f"{K}.enLinea.remotos.size") == 1
