@@ -1,0 +1,68 @@
+Combate en el servidor, sin red
+  OK   atacar es una intención válida
+  OK   el golpe no llega antes de su preparación — 525 ms
+  OK   al terminar la preparación el servidor resuelve el golpe, con su autor y su objetivo — herida en brazoI (grave) a los 528 ms
+  OK   la herida queda en el registro con autor
+  OK   el herido lo está en el servidor
+  OK   parar con tiempo es parada normal — parada
+  OK   parar justo antes del impacto (en el reloj del servidor) es parada perfecta — parada perfecta
+  OK   sin nadie a su alcance el golpe va al aire y no hiere
+  OK   de espaldas al rival tampoco le da
+  OK   las intenciones mal formadas se rechazan
+  OK   quien no está en el combate no puede nada
+  OK   no se cambia de arma a mitad de un golpe
+  OK   fuera de combate no se puede atacar
+  OK   coger el arco estando libre
+  OK   tensar
+  OK   soltar apuntando al rival
+  OK   el disparo y su impacto salen con el autor del tirador — blanco a jugador:b en torso
+  OK   la flecha hiere a B y queda en el registro
+  OK   las flechas acabadas se quitan
+  OK   soltar sin tensar no dispara
+  OK   la primera vez van todos los luchadores
+  OK   sin cambios no se manda nada
+  OK   al atacar se manda solo el que ataca, preparando y por qué línea
+  OK   entrar en la liza es una intención válida
+  OK   el de la liza no da al que construye (aunque esté delante) — al aire
+  OK   a otro de la liza sí le da — herida
+  OK   el golpe dice el tipo de herida (para el sonido y la sangre) — corte
+  OK   la foto lleva cada herida (zona, gravedad, tipo) y si está en la liza
+  OK   no se vuelve a empezar sano con el rival en pie al lado
+  OK   caído, sí: sale sano, en la liza y con la misma arma
+  OK   y se avisa a todos
+  OK   sin nadie cerca también se puede
+  OK   salir de la liza vale aunque esté caído, y la foto lo dice
+  OK   y se puede volver a entrar
+  OK   la copia de otro hace lo que dice el servidor (preparando, por la derecha, a su punto)
+  OK   la copia avanza sola entre fotos, pero sus golpes no cuentan
+  OK   lo propio no se pisa mientras se predice
+  OK   salvo lo que solo sabe el servidor (quedar descolocado)
+  OK   las heridas, la sangre y el cansancio, siempre los del servidor
+  OK   la copia no cae por su cuenta (desangrarse lo decide el servidor)
+  OK   cae cuando lo dice el servidor
+  OK   un golpe al aire del servidor se cuenta como fallo
+  OK   el rival es el más cercano en pie de la liza
+  OK   intención de curar mal formada: no vale
+  OK   no se cura una herida que no existe
+  OK   el jugador empieza a vendarse
+  OK   el servidor reparte la cura terminada
+  OK   la foto lleva la herida vendada y el botiquín — [["torso","grave","corte",0.7,"v"]]
+  OK   la copia del cliente ve la venda
+  OK   dejar la cura a medias
+Servidor con dos clientes y lag simulado (A: 80 ± 30 ms, B: 140 ± 50 ms, cada sentido)
+  OK   la bienvenida trae los luchadores (cada jugador tiene el suyo)
+  OK   la posición del luchador sale de la presencia
+  OK   el golpe lo resuelve el servidor con el autor de la conexión — herida en cabeza (grave)
+  OK   los tiempos los lleva el servidor: no llega antes de la preparación más el lag — 732 ms desde que se mandó (preparación 525 ms)
+  OK   los dos ven el mismo golpe
+  OK   los dos ven al herido con su herida
+  OK   el autor que diga el cliente no cuenta: el golpe es de quien lo manda — autor B
+  OK   una parada a tiempo para el golpe aunque haya lag
+  OK   la flecha sale y da con el autor del tirador — blanco en torso
+  OK   lo que no se puede se rechaza al que lo manda — Intención no válida.
+  OK   con lag distinto, los dos reciben exactamente los mismos eventos y en el mismo orden — 5 eventos
+  OK   el combate se guarda aparte del mundo, con autor y numerado — 5 líneas: golpe, golpe, golpe, disparo, impacto
+  OK   el archivo del mundo no se mezcla con el combate
+  OK   al irse un jugador, su luchador sale del combate
+
+64 correctas, 0 fallos
