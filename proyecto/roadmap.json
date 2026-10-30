@@ -448,7 +448,9 @@
     },
     {
      "nombre": "Salida al azar (valravnx, 30 oct): cada jugador nuevo aparece en un sitio al azar de las tres comarcas de inicio (Motdale, Breiddal y Strandvang), en biomas normales (nunca en la montaña, el pasto alpino ni la nieve), llano y lejos de los ríos como ahora. Los sitios posibles, calculados una vez y apuntados en la lógica (el servidor no genera el mapa), con una prueba que comprueba que siguen valiendo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T09:27:05+00:00",
+     "rama": "trabajo/20261030-0927"
     },
     {
      "nombre": "Los árboles (las siete especies), la hierba y las rocas del mundo en el juego, con el estilo v5 y siempre en el mismo sitio",
