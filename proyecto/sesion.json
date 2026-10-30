@@ -16,11 +16,5 @@
   "tarea": "Combate en el mundo (valravnx, 30 oct): en PC, ratón cogido y ataque cargado mientras se mantiene el clic, en la dirección del último movimiento (sin movimiento, estocada) y cambiable sin soltar; paradas con el botón derecho por dirección, también cambiables; fijar rival con la cámara del duelo; en el móvil, la rosa fija a un lado; cámara que se inclina más",
   "hito": "duelo",
   "rama": "trabajo/20261030-0945-combate"
- },
- "chat:trabajo/20261030-1135-clanes": {
-  "inicio": "2026-10-30T11:37:13+01:00",
-  "tarea": "Comarcas para los clanes (valravnx, 30 oct): el centro del castillo toma la zona y la comarca, vasallos, renta en moneda por el trabajo en la comarca, corte de renta por atacar y ventana de asedio; al GDD y al plan",
-  "hito": "tierras",
-  "rama": "trabajo/20261030-1135-clanes"
  }
 }
