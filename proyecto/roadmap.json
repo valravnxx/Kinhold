@@ -861,9 +861,9 @@
     },
     {
      "nombre": "Pulir la barba larga (visto al rehacerla): en el juego las ondas de los pelos salen demasiado regulares, el bigote sigue pintado y sin volumen, y a los lados de la barbilla asoma algo de cuello",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T06:53:58+00:00",
-     "rama": "trabajo/20261030-0653"
+     "fin": "2026-10-30T09:30:42+00:00"
     },
     {
      "nombre": "Que la ropa cosida lleve su hechura y su tinte en el inventario (cada prenda la suya, sin apilarse si son distintas) y se vea así puesta en el juego, en la demo y en línea; la cota de malla, larga o corta",
@@ -1754,6 +1754,13 @@
      "archivo": "jugar/demo/v49.html",
      "capturas": "capturas/construccion-v40",
      "notas": "En «Construir», tala de verdad: con un hacha en la mano, Usar junto a un árbol lo tala; cae, deja el tocón, un tronco y ramas, y vuelve a crecer pasadas unas semanas reales (construcción v40)."
+    },
+    {
+     "v": "v50",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v50.html",
+     "capturas": "capturas/personaje-v28",
+     "notas": "En «Personaje», bigote con volumen y barba larga pulida (ondas distintas en cada mechón y los lados del cuello tapados). Personajes en recursos/personajes/taller-v17/."
     }
    ]
   },
@@ -2419,6 +2426,13 @@
      "archivo": "jugar/personaje/v27.html",
      "capturas": "capturas/personaje-v27",
      "notas": "La capa se mueve al andar: se queda atrás, sube un poco, ondea al ritmo del paso y vuelve al pararse (sin simulación de tela: por la altura de cada punto, con un muelle). A los costados cae por encima de los brazos bajados y de espalda se ven más los pliegues. Personajes en recursos/personajes/taller-v16/."
+    },
+    {
+     "v": "v28",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/personaje/v28.html",
+     "capturas": "capturas/personaje-v28",
+     "notas": "Bigote con volumen (una malla propia sobre el labio de arriba, que cae por las comisuras) y barba larga pulida: ondas distintas en cada mechón y, por los lados, baja por el cuello. Personajes en recursos/personajes/taller-v17/."
     }
    ]
   },
