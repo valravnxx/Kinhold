@@ -1,0 +1,41 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 1969 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1867 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1474 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 1944 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2284 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1469 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 1875 KB
+dist/kinhold_trozos.html 1465 KB
+hilo de los trozos 14 KB
+
+== Web de progreso
+ - faltan 1 traducciones en proyecto/idiomas/en.json (añade la clave en español con su traducción):
+     · Recursos de Whitholm (valravnx, 30 oct): una gran veta de hierro en la sierra de la isla
+ - faltan 1 traducciones en proyecto/idiomas/ru.json (añade la clave en español con su traducción):
+     · Recursos de Whitholm (valravnx, 30 oct): una gran veta de hierro en la sierra de la isla
+!! FALLA: node herramientas/construir_web.mjs
+
+== Navegador: web
+  OK   «ahora mismo» en ruso
+  OK   sin errores en consola (movil)
+
+Resultado: 6 fallos: roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso, roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso
+!! FALLA: python3 pruebas/prueba_web.py /tmp/kinhold_capturas/web
+
+HAY FALLOS
+tardó 113 s

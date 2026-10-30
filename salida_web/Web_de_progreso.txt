@@ -1,0 +1,5 @@
+ERRORES:
+ - faltan 1 traducciones en proyecto/idiomas/en.json (añade la clave en español con su traducción):
+     · Recursos de Whitholm (valravnx, 30 oct): una gran veta de hierro en la sierra de la isla
+ - faltan 1 traducciones en proyecto/idiomas/ru.json (añade la clave en español con su traducción):
+     · Recursos de Whitholm (valravnx, 30 oct): una gran veta de hierro en la sierra de la isla
