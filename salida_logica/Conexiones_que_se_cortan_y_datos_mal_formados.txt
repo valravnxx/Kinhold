@@ -1,0 +1,44 @@
+Limitador
+  OK   una ráfaga deja pasar hasta su tamaño y no más — 300 pasan, 100 no
+  OK   al pasar un segundo vuelve a haber sitio para lo de un segundo
+  OK   quien manda sin parar mucho más de lo permitido acaba echado — tras 1000 mensajes en 1000 ms
+  OK   un jugador normal (20 mensajes por segundo, un minuto) siempre pasa
+  OK   un mensaje más grande del máximo no pasa
+Volver a conectar con la ficha
+  OK   la bienvenida trae una ficha secreta
+  OK   la ficha de uno no llega a los demás
+  OK   al irse, los demás lo saben enseguida («sale») — 2 ms
+  OK   mientras no está, su luchador no está en el combate (nadie le puede dar)
+  OK   al volver con su ficha es el mismo jugador — jugador:d63eb040
+  OK   y su luchador vuelve como estaba (heridas, sangre, arma) — 1 herida, sangre 100.00
+  OK   lo que hace después lleva el mismo autor
+  OK   sin ficha, o con una inventada o rota, es otro jugador
+Dos conexiones con la misma ficha
+  OK   si entra otra vez estando conectado, la conexión vieja se cierra (4001) — código 4001
+  OK   y los demás no lo ven irse: sigue siendo uno
+  OK   la conexión nueva sigue jugando
+Latido: quien deja de contestar se quita
+  OK   una conexión colgada (no contesta al ping) se quita en dos latidos — 229 ms con latido de 200 ms
+  OK   las que contestan siguen
+Pasada la gracia, el luchador se olvida
+  OK   tras la gracia ya no se guarda
+  OK   vuelve el mismo jugador, con un luchador nuevo (sano)
+Límites por conexión
+  OK   un mensaje de más de 16 KiB cierra esa conexión (1009) — código 1009
+  OK   en una ráfaga de 400 acciones, todas reciben respuesta (las de más, «Demasiados mensajes») — 400 respuestas, 100 por el límite
+  OK   y se avisa con un error (una vez, no 100)
+  OK   una ráfaga suelta no echa a nadie
+  OK   quien inunda (2000 mensajes de golpe) es echado (1008) — código 1008
+  OK   los demás siguen jugando
+Datos mal formados
+  OK   cada mensaje roto recibe un error y la conexión sigue — 22 errores
+  OK   ningún mensaje hace saltar una excepción en el servidor
+  OK   las 200 acciones al azar reciben respuesta
+  OK   lo roto no cambia el mundo (o lo que cambia, lo acepta la lógica pura y se reparte) — 0 aceptadas
+  OK   nadie se hace pasar por otro con __proto__
+  OK   después, el servidor sigue atendiendo a los demás
+El servidor se reinicia
+  OK   la ficha sigue valiendo tras reiniciar el servidor — jugador:d63eb040
+  OK   el archivo de fichas no guarda las fichas, solo su resumen
+
+34 correctas, 0 fallos
