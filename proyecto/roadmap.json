@@ -903,7 +903,9 @@
     },
     {
      "nombre": "Toca y cuello de la ropa (visto en la revisión del 30 oct): el borde sale dentado y entre la toca y el cuello asoma una mancha de piel rota",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T20:52:51+00:00",
+     "rama": "trabajo/20261030-2052"
     },
     {
      "nombre": "Nacimiento del pelo y cejas (visto en la revisión del 30 oct): el pelo corta en seco en la frente, como un casquete, y las cejas son trazos finos y a trozos que flotan",
