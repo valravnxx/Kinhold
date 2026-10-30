@@ -2,9 +2,11 @@
 # Uso: python3 pruebas/prueba_mundo_navegador.py <html de la demo> <carpeta_capturas>
 # Sirve el html en jugar/demo/ y los recursos de personaje en recursos/personajes/ (como la web).
 # Comprueba, en PC y móvil: que se genera el mundo y aparece el terreno por trozos (sin el llano), que se sale en el sitio
-# de salida (en la isla, en tierra y no en un pico; el mismo para todos), que el personaje pisa el suelo, que andando
+# de salida (en la isla, en tierra y no en un pico), que el personaje pisa el suelo, que andando
 # 200 m el terreno llega a tiempo (el trabajo del terreno en cada fotograma, medido) y el personaje sigue el suelo, y
-# que no se puede entrar en el mar ni salir de la isla.
+# que no se puede entrar en el mar ni salir de la isla. Y la salida al azar (valravnx, 30 oct): un jugador nuevo sale en
+# uno de los sitios de la lista (src/logica/whitholm.js), al recargar vuelve al mismo, y quien ya tenía algo guardado de
+# antes sigue en el sitio común (donde está lo que construyó).
 # MUTAR=1 abre la demo con ?llano=1 (el llano de antes): la prueba tiene que fallar.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
@@ -46,7 +48,6 @@ ANDAR = """([metros, rumbo]) => new Promise(bien => {
 
 with sync_playwright() as p:
     nav = p.chromium.launch(args=ARGS)
-    salidas = []
     for nombre, vista, movil in [('pc', {'width': 1280, 'height': 800}, False), ('movil', {'width': 390, 'height': 844}, True)]:
         print('Vista', nombre)
         ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
@@ -72,18 +73,18 @@ with sync_playwright() as p:
         pg.wait_for_timeout(1500)
         d = pg.evaluate(f"""(() => {{ const k = {K}, m = k.mundoJ;
           let lo = Infinity, hi = -Infinity;
-          for (let a = 0; a < 16; a++) for (const r of [50, 100, 200, 300]) {{ const y = m.sobreMar(Math.cos(a / 16 * 6.283) * r, Math.sin(a / 16 * 6.283) * r); lo = Math.min(lo, y); hi = Math.max(hi, y); }}
+          for (let a = 0; a < 16; a++) for (const r of [50, 100, 200, 300, 1000, 2000]) {{ const y = m.sobreMar(Math.cos(a / 16 * 6.283) * r, Math.sin(a / 16 * 6.283) * r); lo = Math.min(lo, y); hi = Math.max(hi, y); }}
           let llano = false; k.escena.traverse(o => {{ if (o.name === 'suelo') llano = true; }});
           return {{ pj: [k.pj.x, k.pj.y, k.pj.z], suelo: k.alturaSuelo(k.pj.x, k.pj.z), sobreMar: m.sobreMar(k.pj.x, k.pj.z), salida: m.salida, isla: m.isla,
             trozos: [...m.terreno.vivos.values()].filter(v => v.malla).length, tri: m.terreno.triangulos(), lo, hi, llano, hilos: m.terreno.hilos }}; }})()""")
         print('  ', json.dumps(d))
-        salidas.append((d['salida'], d['pj'][0], d['pj'][2]))
         s, isla = d['salida'], d['isla']
+        comprobar('un jugador nuevo sale en uno de los sitios de la salida al azar', pg.evaluate(f"{K}.salidas.deLista({s['x']}, {s['z']})"), json.dumps(s))
         comprobar('la salida está en la isla', isla['x0'] < s['x'] < isla['x1'] and isla['z0'] < s['z'] < isla['z1'], json.dumps(s))
         comprobar('la salida está en tierra, ni en el mar ni en un pico (entre 6 y 220 m)', 6 <= d['sobreMar'] <= 220, f"{d['sobreMar']:.1f} m")
         comprobar('el personaje pisa el suelo', abs(d['pj'][1] - d['suelo']) < 0.05, f"{d['pj'][1]:.3f} / {d['suelo']:.3f}")
         comprobar('sin el llano de antes, con el terreno por trozos (en un hilo aparte)', not d['llano'] and d['trozos'] >= 9 and d['hilos'] >= 1, f"{d['trozos']} trozos, {d['tri']} triángulos")
-        comprobar('el terreno tiene relieve (más de 5 m de desnivel en 300 m)', d['hi'] - d['lo'] > 5, f"{d['lo']:.1f}–{d['hi']:.1f} m")
+        comprobar('el terreno tiene relieve (más de 5 m de desnivel en 2 km; la salida al azar puede caer en una vega muy llana)', d['hi'] - d['lo'] > 5, f"{d['lo']:.1f}–{d['hi']:.1f} m")
         pg.screenshot(path=f'{SALIDA}/{nombre}_salida.png')
         pg.evaluate(f'(() => {{ const k = {K}; k.cam.pitch = 0.32; k.cam.dist = 24; }})()'); pg.wait_for_timeout(1500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_paisaje.png')
@@ -96,11 +97,17 @@ with sync_playwright() as p:
         except Exception: pass
         pg.wait_for_timeout(1500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_andando.png')
-        # el mar y el borde de la isla: buscar la costa en línea recta desde la salida y querer entrar en el agua
+        # el mar y el borde de la isla: buscar la costa en línea recta desde la salida (en varios rumbos, hasta una que no
+        # sea llana) y querer entrar en el agua
         c = pg.evaluate(f"""(() => {{ const m = {K}.mundoJ; let antes = null;
           for (const rumbo of [0, 1.57, 3.14, 4.71, 0.78, 2.36, 3.93, 5.5]) {{
             for (let r = 0; r < 40000; r += 2) {{ const x = Math.cos(rumbo) * r, z = Math.sin(rumbo) * r;
-              if (m.sobreMar(x, z) < 0) {{ if (antes) return {{ tierra: antes, mar: [x, z], entra: m.andable(antes[0], antes[1], x, z), fuera: m.andable(0, 4, -40000, 4) }}; break; }}
+              if (m.sobreMar(x, z) < 0) {{
+                // una costa donde la tierra sube a 1 m sobre el mar a menos de 400 m (no una marisma ni una ría llana):
+                // ahí se pone luego al personaje para que ande hacia el mar
+                let d = 2; while (d < 400 && m.sobreMar(x - Math.cos(rumbo) * d, z - Math.sin(rumbo) * d) < 1) d += 2;
+                if (antes && d < 400) return {{ tierra: antes, mar: [x, z], entra: m.andable(antes[0], antes[1], x, z), fuera: m.andable(0, 4, -70000, 4) }};
+                break; }}
               antes = [x, z]; }}
             antes = null; }}
           return null; }})()""")
@@ -128,11 +135,21 @@ with sync_playwright() as p:
             pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}; k.cam.yaw = Math.atan2(mx - tx, mz - tz) + 0.5; k.cam.pitch = 0.4; k.cam.dist = 16; }}""", c['tierra'] + c['mar'])
             pg.wait_for_timeout(1500)
             pg.screenshot(path=f'{SALIDA}/{nombre}_costa.png')
+        if not movil:
+            # al recargar, el mismo sitio; con algo guardado de antes de la salida al azar, el sitio común
+            def salida_tras_recargar():
+                pg.reload()
+                pg.wait_for_function('window.__demo && (window.__demo.listo || window.__demo.error)', timeout=240000)
+                return pg.evaluate(f'{K}.mundoJ && {K}.mundoJ.salida')
+            s2 = salida_tras_recargar()
+            comprobar('al recargar, sale en el mismo sitio', s2 == s, f'{json.dumps(s)} → {json.dumps(s2)}')
+            pg.evaluate(f"(() => {{ localStorage.removeItem('kinhold_salida_v1'); localStorage.setItem('kinhold_h1_v1', JSON.stringify({K}.mundo.exportar())); }})()")
+            s3 = salida_tras_recargar()
+            comun = pg.evaluate(f'{K}.salidas.comun')
+            comprobar('quien ya jugaba antes (con algo guardado) sigue en el sitio común', s3 and s3['x'] == comun['x'] and s3['z'] == comun['z'], json.dumps(s3))
         malos = [x for x in err if 'favicon' not in x]
         comprobar('sin errores en la página', not malos, '; '.join(malos[:3]))
         ctx.close()
-    if len(salidas) == 2:
-        comprobar('todos salen en el mismo sitio (en PC y en móvil, la misma salida y la misma posición)', salidas[0] == salidas[1], str(salidas))
     nav.close()
 
 print(f'\n{len(fallos)} fallos' if fallos else '\nTodo bien')

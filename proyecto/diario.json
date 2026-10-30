@@ -2692,5 +2692,23 @@
   "pruebas": "Todas en la nube (20 grupos). Primera vuelta: fallaron el panel de inventario (error de sintaxis de la prueba nueva, arreglado), jugar en línea, duelo en línea y niveles de detalle (la misma falla salió en otra rama sin estos cambios); repetidos los cuatro: todo correcto. Prueba nueva en prueba_hechura.mjs (43) rota a propósito (sin rasgos al copiar: falla) y en la del inventario en el navegador (MUTAR_COSIDA: falla). Capturas miradas en PC y móvil.",
   "capturas": "capturas/construccion-v41",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T09:27:05+00:00",
+  "fin": "2026-10-30T12:18:45+00:00",
+  "titulo": "Salida al azar en las comarcas de inicio (demo v52)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Lógica (src/logica/whitholm.js): las comarcas de inicio (Motdale, Breiddal y Strandvang), los biomas fuera (pasto alpino y nieve) y la búsqueda de sitios cada 1 km con los requisitos de la salida de siempre (llano, lejos de los ríos, ni en la playa ni en lo alto).",
+   "Los 261 sitios, calculados una vez y apuntados en la lógica (126 en Breiddal, 84 en Motdale y 51 en Strandvang), para que el servidor no tenga que generar el mapa.",
+   "En la demo, el jugador nuevo sale en uno al azar y se guarda en el navegador: al volver, el mismo sitio. La escena tiene su 0 en el sitio de cada uno.",
+   "Decisión provisional: quien ya tenía algo guardado sigue en el sitio común de antes (en Lindholt), donde está lo que construyó; y en línea todos en el sitio común, porque las posiciones y el mundo del servidor van relativos a él. Anotado en el registro de la demo.",
+   "Prueba de Whitholm ampliada: los sitios apuntados son los que salen del mapa y todos valen (falla con MUTAR=2, que mete el sitio común de Lindholt). Prueba del mundo en el navegador: sale en un sitio de la lista, al recargar el mismo y con un guardado de antes en el común (comprobado que falla con la demo cambiada para no guardar el sitio).",
+   "Con la salida al azar, la prueba del mundo busca una costa que no sea llana y mira el relieve en 2 km (fallaba en una marisma y en una vega muy llana); comprobado en node para los 261 sitios.",
+   "Aún mal: el decorado de alrededor (árboles, hierba, rocas) es el mismo en todos los sitios, el del llano de antes; el de cada sitio llega con su tarea."
+  ],
+  "pruebas": "En la nube, todos los grupos (20). La demo en el mundo falló dos veces por suposiciones de la prueba que no valían con la salida al azar (una costa de marisma y una vega muy llana): arreglada la prueba y comprobado en node para los 261 sitios; luego bien. El duelo en línea falló en las vueltas enteras («sigue siendo el mismo jugador que en el duelo», ya fallaba de vez en cuando en otras ramas) y pasó al repetirlo solo, dos veces. Prueba de Whitholm rota a propósito (MUTAR=2) y la del mundo con la demo cambiada para no guardar el sitio: fallan.",
+  "capturas": "capturas/demo-v52",
+  "estado": "ok"
  }
 ]

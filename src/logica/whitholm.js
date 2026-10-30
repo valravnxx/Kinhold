@@ -1,10 +1,16 @@
 // Kinhold — Whitholm, la isla de los playtests (valravnx, 29 oct): el juego, de momento, solo en la isla norte de
 // Kinland. Aquí, en lógica pura (sin three.js, para que la use también el servidor): hasta dónde llega la isla y el sitio
-// de salida, el mismo para todos (todos en la misma comarca).
+// de salida.
 //
-// Lo que se calcula con el mapa (limitesIsla, buscarSalida) es caro: generar el mundo tarda unos segundos. Por eso el
-// resultado para el mundo elegido va también apuntado en ISLA y SALIDA, que el servidor usa sin generar nada; la prueba
-// (pruebas/prueba_whitholm.mjs) genera el mapa y comprueba que siguen siendo los mismos.
+//  - SALIDA: el sitio común, el 0 de las posiciones en línea (presencia y mundo del servidor) y el de quien ya jugaba
+//    antes de la salida al azar (lo construido en su navegador está ahí).
+//  - SALIDAS: dónde aparece cada jugador nuevo (valravnx, 30 oct): un sitio al azar de las tres comarcas de inicio
+//    (Motdale, Breiddal y Strandvang), en biomas normales (nunca en la montaña, el pasto alpino ni la nieve), llano y lejos
+//    de los ríos.
+//
+// Lo que se calcula con el mapa (limitesIsla, buscarSalida, buscarSalidas) es caro: generar el mundo tarda unos segundos.
+// Por eso el resultado para el mundo elegido va también apuntado en ISLA, SALIDA y SALIDAS, que el servidor usa sin
+// generar nada; la prueba (pruebas/prueba_whitholm.mjs) genera el mapa y comprueba que siguen siendo los mismos.
 import { LADO as LADO_TROZO, alturaDeTrozo, claveTrozo } from './trozos.js';
 
 // el cuadro de la isla en metros del mundo (las celdas de tierra de la región de la isla, con una celda de margen de mar)
@@ -79,3 +85,72 @@ export function esSalida(mapa, paisaje, alt, x, z, req = SALIDA_REQ) {
   }
   return true;
 }
+
+// ---------------- Salida al azar (valravnx, 30 oct) ----------------
+// Las comarcas donde aparecen los jugadores nuevos (las de vega y pradera, elegidas por el chat el 30 oct) y los biomas
+// en los que no (la montaña: el pasto alpino y la roca con nieve).
+export const COMARCAS_INICIO = ['Motdale', 'Breiddal', 'Strandvang'];
+export const BIOMAS_FUERA = ['alpino', 'nieve'];
+export const PASO_SALIDAS = 1000;   // m entre los puntos que se prueban (una rejilla sobre el cuadro de la isla)
+
+// Busca los sitios de salida al azar: los puntos de la rejilla (cada PASO_SALIDAS m) que caen en una comarca de inicio,
+// fuera de los biomas de montaña y que valen como sitio de salida (esSalida). `comarcas`: la de src/logica/comarcas.js.
+// Devuelve [[x, z], …] (m del mundo, enteros), por filas de norte a sur.
+export function buscarSalidas(mapa, paisaje, comarcas, paso = PASO_SALIDAS) {
+  const alt = alturaMundo(paisaje), lista = [];
+  for (let z = ISLA.z0; z < ISLA.z1; z += paso) for (let x = ISLA.x0; x < ISLA.x1; x += paso) {
+    if (!COMARCAS_INICIO.includes(comarcas.nombreEn(x, z))) continue;
+    if (!esSalida(mapa, paisaje, alt, x, z)) continue;
+    const b = paisaje.sitio(x, z, alt(x, z)).bioma;
+    if (!b || BIOMAS_FUERA.includes(b)) continue;
+    lista.push([x, z]);
+  }
+  return lista;
+}
+
+// Los sitios de salida al azar del mundo elegido (los que da buscarSalidas; la prueba comprueba que siguen siendo esos)
+export const SALIDAS = [
+  [216000, 31000], [217000, 32000], [216000, 33000], [217000, 33000], [216000, 34000], [217000, 34000], [216000, 35000], [217000, 35000],
+  [218000, 35000], [215000, 36000], [218000, 36000], [217000, 37000], [218000, 37000], [219000, 37000], [216000, 38000], [218000, 38000],
+  [219000, 38000], [219000, 39000], [218000, 41000], [219000, 42000], [219000, 45000], [215000, 46000], [219000, 46000], [214000, 47000],
+  [215000, 47000], [217000, 47000], [209000, 48000], [212000, 48000], [214000, 48000], [215000, 48000], [219000, 48000], [210000, 49000],
+  [211000, 49000], [217000, 49000], [218000, 49000], [204000, 50000], [211000, 50000], [217000, 50000], [201000, 51000], [203000, 51000],
+  [210000, 51000], [212000, 51000], [213000, 51000], [214000, 51000], [217000, 51000], [207000, 52000], [210000, 52000], [215000, 52000],
+  [217000, 52000], [199000, 53000], [201000, 53000], [204000, 53000], [208000, 53000], [211000, 53000], [212000, 53000], [214000, 53000],
+  [215000, 53000], [197000, 54000], [199000, 54000], [201000, 54000], [203000, 54000], [207000, 54000], [209000, 54000], [214000, 54000],
+  [215000, 54000], [196000, 55000], [197000, 55000], [198000, 55000], [199000, 55000], [200000, 55000], [202000, 55000], [204000, 55000],
+  [205000, 55000], [206000, 55000], [207000, 55000], [208000, 55000], [209000, 55000], [210000, 55000], [211000, 55000], [212000, 55000],
+  [213000, 55000], [200000, 56000], [203000, 56000], [207000, 56000], [208000, 56000], [209000, 56000], [211000, 56000], [196000, 57000],
+  [197000, 57000], [198000, 57000], [200000, 57000], [201000, 57000], [203000, 57000], [204000, 57000], [205000, 57000], [207000, 57000],
+  [208000, 57000], [209000, 57000], [210000, 57000], [211000, 57000], [212000, 57000], [196000, 58000], [197000, 58000], [202000, 58000],
+  [205000, 58000], [207000, 58000], [209000, 58000], [210000, 58000], [193000, 59000], [194000, 59000], [196000, 59000], [198000, 59000],
+  [199000, 59000], [200000, 59000], [202000, 59000], [204000, 59000], [205000, 59000], [206000, 59000], [207000, 59000], [209000, 59000],
+  [210000, 59000], [192000, 60000], [193000, 60000], [194000, 60000], [196000, 60000], [198000, 60000], [199000, 60000], [201000, 60000],
+  [203000, 60000], [204000, 60000], [205000, 60000], [193000, 61000], [194000, 61000], [196000, 61000], [198000, 61000], [199000, 61000],
+  [200000, 61000], [201000, 61000], [205000, 61000], [206000, 61000], [189000, 62000], [193000, 62000], [194000, 62000], [195000, 62000],
+  [197000, 62000], [200000, 62000], [201000, 62000], [203000, 62000], [205000, 62000], [190000, 63000], [192000, 63000], [194000, 63000],
+  [195000, 63000], [196000, 63000], [198000, 63000], [199000, 63000], [200000, 63000], [202000, 63000], [203000, 63000], [204000, 63000],
+  [190000, 64000], [191000, 64000], [192000, 64000], [193000, 64000], [195000, 64000], [203000, 64000], [204000, 64000], [192000, 65000],
+  [193000, 65000], [196000, 65000], [201000, 65000], [202000, 65000], [203000, 65000], [204000, 65000], [190000, 66000], [191000, 66000],
+  [193000, 66000], [194000, 66000], [195000, 66000], [189000, 67000], [190000, 67000], [193000, 67000], [195000, 67000], [196000, 67000],
+  [201000, 67000], [202000, 67000], [203000, 67000], [189000, 68000], [191000, 68000], [192000, 68000], [201000, 68000], [202000, 68000],
+  [203000, 68000], [191000, 69000], [192000, 69000], [193000, 69000], [195000, 69000], [196000, 69000], [198000, 69000], [201000, 69000],
+  [187000, 70000], [191000, 70000], [194000, 70000], [196000, 70000], [197000, 70000], [200000, 70000], [189000, 71000], [190000, 71000],
+  [191000, 71000], [192000, 71000], [193000, 71000], [194000, 71000], [195000, 71000], [196000, 71000], [197000, 71000], [195000, 72000],
+  [197000, 72000], [200000, 72000], [188000, 73000], [190000, 73000], [191000, 73000], [192000, 73000], [195000, 73000], [189000, 74000],
+  [191000, 74000], [195000, 74000], [196000, 74000], [199000, 74000], [190000, 75000], [191000, 75000], [192000, 75000], [194000, 75000],
+  [195000, 75000], [196000, 75000], [197000, 75000], [198000, 75000], [199000, 75000], [193000, 76000], [195000, 76000], [196000, 76000],
+  [197000, 76000], [198000, 76000], [199000, 76000], [190000, 77000], [193000, 77000], [194000, 77000], [195000, 77000], [196000, 77000],
+  [198000, 77000], [191000, 79000], [192000, 79000], [193000, 79000], [194000, 79000], [195000, 79000], [196000, 79000], [191000, 80000],
+  [192000, 80000], [193000, 80000], [195000, 80000], [192000, 81000], [194000, 81000],
+];
+
+// Elige el sitio de un jugador nuevo: uno de SALIDAS al azar. `azar`: un número de 0 a 1 (Math.random, o uno fijo en
+// las pruebas). Devuelve { x, z }.
+export function elegirSalida(azar = Math.random()) {
+  const k = Math.min(SALIDAS.length - 1, Math.max(0, Math.floor(azar * SALIDAS.length)));
+  return { x: SALIDAS[k][0], z: SALIDAS[k][1] };
+}
+
+// ¿Es (x, z) uno de los sitios de salida conocidos (SALIDA o uno de SALIDAS)? Para no fiarse de lo guardado en el navegador.
+export const esSitioDeSalida = (x, z) => (x === SALIDA.x && z === SALIDA.z) || SALIDAS.some(s => s[0] === x && s[1] === z);
