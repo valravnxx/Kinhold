@@ -1220,5 +1220,7 @@
  "Quedan {n}.": "{n} left.",
  "Lo dejas en el suelo: aquí se queda.": "You leave it on the ground: here it stays.",
  "Lo dejas en el suelo: fuera de tus tierras desaparece en una hora.": "You leave it on the ground: outside your land it disappears in an hour.",
- "Ahí no hay nada que coger.": "There is nothing to pick up there."
+ "Ahí no hay nada que coger.": "There is nothing to pick up there.",
+ "Hito 1 · v39": "Milestone 1 · v39",
+ "Demo única · v44 (objetos en el suelo)": "Single demo · v44 (objects on the ground)"
 }
