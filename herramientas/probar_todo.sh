@@ -64,6 +64,7 @@ paso "Taller: manos enteras y botas de la mujer bajo la falda" node pruebas/prue
 paso "Taller: pies descalzos" node pruebas/prueba_pies.mjs
 paso "Taller: barba larga con volumen" node pruebas/prueba_barbas.mjs
 paso "Taller: capa que cae de los hombros" node pruebas/prueba_manto.mjs
+paso "Taller: la piel bajo el escote" node pruebas/prueba_toca.mjs
 paso "Taller: tintes de la ropa y blasón" node pruebas/prueba_tintes.mjs
 paso "Hechura de la ropa (material, corte y tejido)" node pruebas/prueba_hechura.mjs
 paso "Niveles de detalle de los personajes" node pruebas/prueba_detalle.mjs

@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v17'), f'{sitio}/recursos/personajes/taller-v17')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v18'), f'{sitio}/recursos/personajes/taller-v18')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-anim-v1'), f'{sitio}/recursos/personajes/taller-anim-v1')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass

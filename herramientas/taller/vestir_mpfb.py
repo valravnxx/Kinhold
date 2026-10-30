@@ -1381,9 +1381,10 @@ def personaje(nombre, macros, objetivos, ropa):
                         rugosidad=0.95, diezmar=DIEZMAR, **tenida('capucha', ropa.get("capucha", (92, 76, 58)))))
     if mujer:
         zt_bajo = cuello_z - 0.075
-        # bajo la barbilla, la toca cae recta de la barbilla al pecho, como una cortina (como la tela de las prendas sobre
-        # el pecho: colgar). Empujada por las normales, ahí se doblaba hacia dentro y dejaba ver lo de debajo entre la
-        # toca y el cuello, con huecos y bordes dentados
+        # colgar (como la tela de las prendas sobre el pecho): en las columnas donde lo más saliente es la barbilla, la toca
+        # cae recta hasta el bajo. Medido en la taller-v18: en el centro y a los lados de la garganta lo más saliente es el
+        # pecho y la toca apenas cambia; aún se mete hacia el cuello bajo la barbilla (hasta 5 cm). Probado buscar lo más
+        # saliente solo por encima del pecho: rompía la toca (agujero en la oreja y pliegues sueltos en la garganta)
         piezas.append(trozo(base, nombre + '_capa_toca', cubre(zt_bajo, ojo_arriba + 0.028, boca_z - 0.028, 0.058), empuje=separacion_tocado(0.013, 0.08),
                             alisar=(sobre_oreja, 12), colgar=(zt_bajo + 0.01, boca_z - 0.02, 0.12), tapar=lambda c: min(np.linalg.norm(np.array(c) - o) for o in oreja_c) < 0.065,
                             textura=(1024, pintar_tocado((226, 220, 204), ojo_arriba + 0.028, boca_z - 0.028, 0.058, zt_bajo, lana=False)),

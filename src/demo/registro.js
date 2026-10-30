@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v56 (obras con lo que llevas)';
+export const VERSION_DEMO = 'Demo única · v57 (toca y cuello de la ropa)';
 export const REGISTRO_DEMO = [
+  'v57: en «Personaje» y en el juego, entre el escote y el cuello ya no asoma una mancha de piel rota (la piel sigue bajo la ropa) y bajo la toca ya no va la cofia (asomaba bajo la barbilla con el borde dentado). Personajes en recursos/personajes/taller-v18/.',
   "v56: en «Construir», obras con lo que llevas: lo que se lleva a una obra sale de lo que llevas encima, no de un montón común. El montón común es ahora el arcón de pruebas del inventario («Materiales de obra», con lo que queda de cada uno), y «+ Materiales» lo llena.",
   'v55: en «Construir», lo que crece en Whitholm es el del mapa: árboles de las siete especies, cada una en sus biomas (en lo mirado de Whitholm salen abeto, abedul y haya en lo fresco y roble y fresno en la vega; el pino y la encina, donde toca), en masas de bosque, claros y corros, con la hierba, las flores, los matorrales y las piedras sueltas (del color de la roca de cada sitio). Siempre en el mismo sitio: cada cosa sale del azar de su celda del mundo, así que al volver o al recargar todo está donde estaba. Nada en el agua. Los árboles de todas las especies se talan.',
   'v55: los árboles que se meten entre la cámara y tu personaje no se dibujan, como en la vista «Como en el juego» del mapa: en el bosque, una copa ya no tapa media pantalla.',
