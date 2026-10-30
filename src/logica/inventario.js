@@ -34,6 +34,8 @@
 //  - Tamaño de lo que se lleva puesto: mochilas y bastidores G (en las manos ocupan las dos), cinturones M (el cordel P),
 //    saco y odre M, bandolera P. La espada y el escudo son M (se llevan en una mano).
 //  - Los añadidos al cinturón (bolsas, vainas, ganchos) llegan con la fabricación.
+//  - El tronco corto (grande) se lleva con las dos manos o al hombro (roadmap, «Tronzar y partir»): al hombro va solo,
+//    como el saco, y deja las manos libres. «Ponérselo» lo pasa de las manos al hombro.
 //
 // Ralentización por carga (GDD, apartado 7: «solo si vas cargado al máximo en todo, la velocidad al caminar baja
 // hasta el 80%; con poca carga no se nota»). Decisiones provisionales (anotadas en el diario y en el registro):
@@ -70,7 +72,7 @@ export const CATALOGO = {
   resina: R('Resina', 'P'), barro: R('Cesta de barro', 'M'), arcilla: R('Cesta de arcilla', 'M'), arena: R('Saco de arena', 'M'),
   turba: R('Bloque de turba', 'M'), panal: R('Panal', 'P'), huevo: R('Huevo', 'P'),
   // de los árboles
-  tronco_delgado: R('Tronco delgado', 'G'), tronco_largo: R('Tronco largo', 'E'), tronco_corto: R('Tronco corto', 'G'),
+  tronco_delgado: R('Tronco delgado', 'G'), tronco_largo: R('Tronco largo', 'E'), tronco_corto: { ...R('Tronco corto', 'G'), hombro: true },
   lena: R('Leña', 'M'),
   // de la tierra
   bloque_piedra: R('Bloque de piedra en bruto', 'E'), mineral_hierro: R('Mineral de hierro', 'M'),
@@ -214,7 +216,7 @@ export class Inventario {
       }
       if (l.startsWith('ropa:')) return d.capa === l.slice(5) ? null : 'Eso no se pone ahí.';
       if (l === 'cintura' && d.lugar !== 'cintura') return 'Eso no es un cinturón.';
-      if (l !== 'cintura' && d.lugar !== l) return 'Eso no se lleva ahí.';
+      if (l !== 'cintura' && d.lugar !== l && !(l === 'hombro' && d.hombro)) return 'Eso no se lleva ahí.';
       return null;
     }
     if (orden(d.tam) > orden(r.tam)) return 'No cabe en ese hueco.';
@@ -288,7 +290,7 @@ export class Inventario {
     if (b.motivo) return { ok: false, motivo: b.motivo };
     if (!b.cosa) return { ok: false, motivo: 'Ahí no hay nada.' };
     const d = this.def(b.cosa);
-    const lugar = d.capa ? 'ropa:' + d.capa : d.lugar;
+    const lugar = d.capa ? 'ropa:' + d.capa : d.lugar || (d.hombro ? 'hombro' : null);
     if (!lugar) return { ok: false, motivo: 'Eso no se pone.' };
     if (this.lugares[lugar]) return { ok: false, motivo: 'Ya llevas algo ahí: quítatelo antes.' };
     if (b.cosa.n !== 1) return { ok: false, motivo: 'Cantidad no válida.' };
