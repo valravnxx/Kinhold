@@ -1,0 +1,23 @@
+Dos clientes en el mismo mundo
+  OK   cada conexión recibe un autor del servidor, distinto — jugador:06b17f4a y jugador:b3f74761
+  OK   un mundo nuevo empieza vacío
+  OK   la bienvenida dice la versión del protocolo del servidor — protocolo 4
+  OK   un servidor de antes del combate (sin versión ni reloj del combate) es antiguo
+  OK   uno con combate pero sin versión cuenta como la 1 (y ya es antiguo: no saca de la liza al construir); uno con una versión menor es antiguo
+  OK   el mojón sale bien
+  OK   los dos clientes reciben la acción
+  OK   el autor es el que puso el servidor, no el que dijo el cliente — autor: jugador:06b17f4a
+  OK   los dos construyen en el mismo mundo — ok, ok
+  OK   la lógica pura sigue mandando: lo ocupado y lo desconocido se rechazan — Ese hueco ya está ocupado. · Acción desconocida.
+  OK   lo rechazado no se reparte a los demás
+  OK   un mensaje roto recibe un error y el servidor sigue
+  OK   lo recibido por un cliente rehace el mismo mundo que el del servidor — 2 piezas, 1 mueble
+  OK   el archivo guarda todas las acciones con su autor y numeradas — 6 líneas, 4 correctas
+El servidor se apaga y vuelve a arrancar
+Línea del mundo no válida, se descarta: {"n":7,"autor":"jugador:x","tip
+  OK   al arrancar, el mundo se rehace igual desde el archivo
+  OK   un cliente nuevo recibe lo hecho hasta ahora — 4 acciones
+  OK   y puede seguir construyendo
+  OK   la numeración sigue donde se quedó — n=7
+
+18 correctas, 0 fallos
