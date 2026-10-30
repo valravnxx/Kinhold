@@ -2609,5 +2609,56 @@
   "pruebas": "En la nube: la batería entera (19 grupos) bien salvo «jugar en línea» y «la demo en el mundo»; arreglados (la prueba en línea espera a los trozos y usa un hilo por página; la de la costa empieza tierra adentro), bien al repetirlos. Tras la cámara nueva y unir main: mundo, demo única, en línea, niveles de detalle, lógica, inglés y web, bien (la web, tras las traducciones). Las pruebas nuevas, rotas a propósito, fallan",
   "capturas": "capturas/demo-v48",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T06:23:57+00:00",
+  "fin": "2026-10-30T09:06:38+00:00",
+  "titulo": "Tala de verdad: el árbol cae, deja tocón, tronco y ramas, y vuelve a crecer (carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Lógica pura de la tala (src/logica/tala.js): cada golpe de hacha es una acción con autor y va al registro. El joven cae con 8 golpes de piedra o 5 de hierro; el adulto con 14 de hierro o 56 de piedra (provisional). Sin hacha en una mano, lejos o con golpes demasiado seguidos, no se tala.",
+   "Al caer, el árbol deja en el suelo, a lo largo de donde cae (hacia el lado contrario al del que tala), un tronco delgado y 2–4 ramas (joven) o un tronco largo y 6–9 ramas (adulto). Queda el tocón y vuelve a crecer a las 3 semanas (joven) o a las 6 (adulto), contado por la hora guardada; se guarda en el navegador con versión y migración.",
+   "En la demo: con un hacha en la mano, Usar junto a un árbol da un golpe cada 0,9 s y el aviso dice cuántos faltan; el árbol se parte encima del tocón y cae girando cada vez más deprisa; el tronco y las ramas aparecen cuando ya está en el suelo. Hachas de piedra y de hierro nuevas en el catálogo (salen en el arcón de pruebas).",
+   "Pruebas nuevas: lógica de la tala (43 comprobaciones; rota a propósito con MUTAR=1, falla) y de navegador en PC y móvil (rota a propósito, falla). La prueba antigua de talar ahora coge antes un hacha.",
+   "Lo que aún está mal (revisión visual): el hacha de piedra se dibuja con el modelo de la de hierro, en la mano y en el suelo; el tronco del suelo es más delgado que el árbol del que sale; al acabar de caer, el árbol desaparece de golpe y aparecen el tronco y las ramas.",
+   "Esta sesión coincidió con la del carril A de las 05:22, que seguía viva: «ocupar A» pisó su anuncio y ella se volvió a anunciar como agente aparte. No se tocaron los mismos cambios, pero las dos tocan src/juego/main.js y src/mundo/decorado.js."
+  ],
+  "pruebas": "Lógica de la tala 43/43 y su prueba de navegador (PC y móvil) correctas, aquí y en la nube. En la nube, tras unir main (la demo en Whitholm), pasan 20 de 21 grupos; falla «duelo en línea» (dos veces, en comprobaciones distintas: al apagarse el servidor y al pasar del duelo a construir), que también falla sin la tala en una ejecución del carril B sobre main: no lo causa este cambio. Comprobado a mano además que la tala funciona en la demo de Whitholm.",
+  "capturas": "capturas/construccion-v40",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T09:11:06+01:00",
+  "fin": "2026-10-30T10:20:44+01:00",
+  "titulo": "Hito 10: comarcas de Whitholm, sus nombres y sus zonas (mapa v17)",
+  "hito": "mundo",
+  "hecho": [
+   "Comarcas de Whitholm en la lógica (src/logica/comarcas.js), para el servidor igual que para el navegador: las 8 que aprobó valravnx, por cuencas de río enteras, con su reparto fino apuntado en una tabla.",
+   "Zonas de aproximadamente 1 km² (media 1,2) para los clanes, con lindes en curva; una zona nunca queda partida entre dos comarcas.",
+   "Nombres elegidos por valravnx: Breiddal, Motdale, Nordwold, Lindholt, Strandvang, Furulid, Sudholt y Ravnsnes; en ruso, en cirílico.",
+   "En el visor del mapa, botón «Comarcas»: fronteras, nombres y, al ampliar, los lindes de las zonas; al tocar, la comarca y la zona. El nombre de Whitholm va grande y encima de la isla.",
+   "Dónde se aparece (valravnx): al azar en Motdale, Breiddal y Strandvang, en biomas normales; al GDD y como tarea de los carriles.",
+   "Prueba nueva de comarcas y zonas (falla sin la tabla aprobada y si cambia la rejilla de zonas)."
+  ],
+  "pruebas": "En la nube: lógica, mapa del mundo y web correctas",
+  "capturas": "capturas/mapa-v17",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T06:53:58+00:00",
+  "fin": "2026-10-30T09:30:42+00:00",
+  "titulo": "Barba larga pulida y bigote con volumen (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Bigote con volumen (antes solo pintado y plano): una malla propia hecha por código en el taller, de comisura a comisura. Nace pegada a la piel bajo la nariz, se abomba unos 5 mm sobre el labio de arriba y cae hacia fuera y hacia abajo por las comisuras; la punta va desigual, pelo a pelo, en la transparencia. Va encima del bigote pintado con la barba corta, la larga, el bigote y la perilla (piezasCabeza en src/logica/aspecto.js).",
+   "Barba larga: cada mechón con su onda (fase, paso y amplitud propios); antes una sola onda para toda la barba, y en el juego salían todas iguales y en fila.",
+   "Barba larga: por los lados nace también detrás de la patilla, en el lado del cuello (las columnas llegan a 96°, antes 80°), y baja unos 4 cm bajo el mentón: de frente ya no asoma el cuello a los lados de la barbilla.",
+   "Personajes en recursos/personajes/taller-v17/ (la mujer sale idéntica byte a byte a la v16). Publicado como personaje v28 y demo v50 (la v48 y la v49 de la demo son del chat y del carril A).",
+   "Pruebas nuevas: en prueba_barbas.mjs, que hay bigote con volumen, con el tinte del pelo, abombado (7,7 mm en el centro), a la altura del pintado y cayendo más por los lados (1,7 cm); sobre la taller-v16 falla. En prueba_aspecto.mjs, con qué barbas va; en la del personaje en el navegador, que se ve con la barba larga y no afeitado.",
+   "Capturas de cerca en el taller y en el juego (three.js), antes y después lado a lado. Aún mal: el bigote tapa casi todo el labio de arriba y con la barba corta se ve muy poblado; la barba larga va con la cabeza y no se mueve sola; en las fotos de Blender (Cycles) sale una raya fina delante de la boca que no está en la malla (comprobado punto a punto: nada sale de la cara) ni en el juego: no comprobado de dónde sale."
+  ],
+  "pruebas": "En la nube: 17 de 18 grupos bien a la primera; «juego en inglés» falló a los 7 s (contexto de la página destruido por una navegación) y pasó entero aquí y al repetirlo en la nube. Tras unir main, repetidos en la nube lógica, demo, demo en el mundo, en línea, duelo en línea, inglés, personaje y web: bien; duelo en línea, jugar en línea y lógica (prueba_combate_servidor.mjs) fallaron una vez cada uno y pasaron al repetirlos (aquí, la del servidor 64/64 dos veces). Tras la última unión con main (tala y comarcas), solo los textos traducidos aquí: bien.",
+  "capturas": "capturas/personaje-v28",
+  "estado": "ok"
  }
 ]

@@ -1,21 +1,15 @@
 {
  "A": {
-  "inicio": "2026-10-30T06:23:57+00:00",
-  "tarea": "Tala de verdad sobre los árboles del mundo: el árbol joven se tala con hacha de piedra (da un tronco delgado y ramas) y el adulto con hacha de hierro (con piedra, muy lento; da un tronco largo y muchas ramas); el árbol cae, queda el tocón y vuelve a crecer en semanas reales, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
-  "hito": "equipo",
-  "rama": "trabajo/20261030-0623"
+  "inicio": "2026-10-30T09:27:05+00:00",
+  "tarea": "Salida al azar (valravnx, 30 oct): cada jugador nuevo aparece en un sitio al azar de las tres comarcas de inicio (Motdale, Breiddal y Strandvang), en biomas normales (nunca en la montaña, el pasto alpino ni la nieve), llano y lejos de los ríos como ahora. Los sitios posibles, calculados una vez y apuntados en la lógica (el servidor no genera el mapa), con una prueba que comprueba que siguen valiendo",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261030-0927"
  },
  "B": {
-  "inicio": "2026-10-30T06:53:58+00:00",
-  "tarea": "Pulir la barba larga (visto al rehacerla): en el juego las ondas de los pelos salen demasiado regulares, el bigote sigue pintado y sin volumen, y a los lados de la barbilla asoma algo de cuello",
+  "inicio": "2026-10-30T09:57:34+00:00",
+  "tarea": "Que la ropa cosida lleve su hechura y su tinte en el inventario (cada prenda la suya, sin apilarse si son distintas) y se vea así puesta en el juego, en la demo y en línea; la cota de malla, larga o corta",
   "hito": "arte",
-  "rama": "trabajo/20261030-0653"
- },
- "chat:trabajo/20261030-0910-comarcas": {
-  "inicio": "2026-10-30T09:11:06+01:00",
-  "tarea": "Comarcas de Whitholm primero (valravnx, 29 oct): la isla de los playtests dividida en comarcas que siguen el relieve (un valle, una vega, una sierra), con nombres al estilo de la región revisados por valravnx, y la comarca donde aparecen todos al principio; luego las del resto del mundo",
-  "hito": "mundo",
-  "rama": "trabajo/20261030-0910-comarcas"
+  "rama": "trabajo/20261030-0957"
  },
  "chat:trabajo/20261030-0945-combate": {
   "inicio": "2026-10-30T09:39:49+01:00",

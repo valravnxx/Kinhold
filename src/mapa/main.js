@@ -4,6 +4,8 @@ import { generar, riosDelMapa, clasificarBioma, SEMILLA_MUNDO, LADO_MUNDO, BIOMA
 import { VERSION_MAPA, REGISTRO_MAPA } from './registro.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { abrirCerca } from './cerca.js';
+import { crearComarcas } from '../logica/comarcas.js';
+import { limitesIsla } from '../logica/whitholm.js';
 
 const $ = (id) => document.getElementById(id);
 const lienzo = $('lienzo'), ctx = lienzo.getContext('2d');
@@ -12,7 +14,7 @@ const R = movil ? 1024 : 1536;                       // resolución de la imagen
 let N = 256;
 const LADO = () => (mapa ? mapa.lado : LADO_KM);
 let mapa = null, fondo = 'relieve';
-const capas = { rios: true, paises: true, vetas: false, grandes: true };
+const capas = { rios: true, paises: true, vetas: false, grandes: true, comarcas: false };
 const imagenes = {};                                 // fondo → canvas ya pintado
 let rios = [];                                       // polilíneas de ríos en km, con su clase
 const vista = { x: 0, y: 0, z: 1 };                  // desplazamiento (px de pantalla) y zoom
@@ -36,7 +38,7 @@ function crear(semilla) {
     const r = g.next();
     if (r.done) {
       mapa = r.value; N = mapa.N; window.__mapa.msGenerar = Math.round(performance.now() - t0);
-      mapa.continente = sitioContinente(mapa);
+      mapa.continente = sitioContinente(mapa); mapa.isla = sitioIsla(mapa); comarcas = null;
       for (const k in imagenes) delete imagenes[k];
       prepararRios(); encuadrar(); datosGenerales(); pintar();
       $('cargando').hidden = true; window.__mapa.listo = true;
@@ -139,6 +141,79 @@ function distMar(px, py, tierraPx) {
   return distCache.D[py * R + px] * (1024 / R);
 }
 
+// ---------- comarcas y zonas de Whitholm (src/logica/comarcas.js) ----------
+// Se pintan en dos capas sobre el cuadro de la isla: de lejos, solo las fronteras de las comarcas (12 px por km); de
+// cerca, también los lindes de las zonas de aproximadamente 1 km² (40 px por km en el PC, 24 en el móvil). Cada capa
+// se calcula una vez, la primera vez que hace falta.
+let comarcas = null;
+function capaComarcas(fino) {
+  if (!comarcas) {
+    const C = crearComarcas(mapa), b = limitesIsla(mapa, 1);
+    comarcas = { C, x0: b.x0 / 1000, y0: b.z0 / 1000, x1: b.x1 / 1000, y1: b.z1 / 1000, capas: {}, centros: null };
+  }
+  const k = fino ? (movil ? 24 : 40) : 12;
+  if (comarcas.capas[k]) return comarcas.capas[k];
+  const t0 = performance.now(), { C, x0, y0, x1, y1 } = comarcas;
+  const W = Math.ceil((x1 - x0) * k), H = Math.ceil((y1 - y0) * k), fN = N / LADO();
+  const zona = new Int32Array(W * H).fill(-1), com = new Int8Array(W * H).fill(-1);
+  for (let py = 0; py < H; py++) for (let px = 0; px < W; px++) {
+    const xk = x0 + (px + 0.5) / k, yk = y0 + (py + 0.5) / k, gx = xk * fN - 0.5, gy = yk * fN - 0.5;
+    // la misma costa que el fondo del mapa
+    const t = bilineal(mapa.forma, gx, gy) + (bilineal(mapa.tierra, gx, gy) - 0.5) * 10 + (fbm(xk / 2.5, yk / 2.5, 77, 3) - 0.5) * 4;
+    if (t <= 0) continue;
+    const z = C.zonaEn(xk * 1000, yk * 1000); if (z.comarca < 0) continue;
+    const i = py * W + px; zona[i] = z.id; com[i] = z.comarca;
+  }
+  if (!comarcas.centros) {
+    // dónde va el nombre: el sitio de cada comarca más lejos de su borde (y de la costa), no su centro de masas, que
+    // en las comarcas alargadas o en media luna cae cerca de otra cosa
+    const dist = new Int32Array(W * H).fill(-1), cola = [];
+    for (let i = 0; i < W * H; i++) { if (com[i] < 0) continue; const x = i % W, y = (i / W) | 0;
+      if (x === 0 || y === 0 || x === W - 1 || y === H - 1 || com[i - 1] !== com[i] || com[i + 1] !== com[i] || com[i - W] !== com[i] || com[i + W] !== com[i]) { dist[i] = 0; cola.push(i); } }
+    for (let q = 0; q < cola.length; q++) { const i = cola[q];
+      for (const j of [i - 1, i + 1, i - W, i + W]) if (j >= 0 && j < W * H && com[j] === com[i] && dist[j] < 0) { dist[j] = dist[i] + 1; cola.push(j); } }
+    // y lejos de las grandes vetas, que llevan su propio nombre
+    const km = LADO() / N, vetas = mapa.vetas.filter(v => v.tipo.startsWith('gran')).map(v => [(v.x + 0.5) * km, (v.y + 0.5) * km]);
+    const nota = (i) => { const x = x0 + (i % W + 0.5) / k, y = y0 + (((i / W) | 0) + 0.5) / k;
+      let dv = Infinity; for (const [a, b] of vetas) dv = Math.min(dv, Math.hypot(a - x, b - y)); return Math.min(dist[i] / k, dv / 2); };
+    const mejor = C.letras.map(() => -1), notas = C.letras.map(() => -1);
+    for (let i = 0; i < W * H; i++) { const c = com[i]; if (c < 0 || dist[i] < notas[c] * k) continue; const n = nota(i); if (n > notas[c]) { notas[c] = n; mejor[c] = i; } }
+    comarcas.centros = mejor.map(i => i < 0 ? null : [x0 + (i % W + 0.5) / k, y0 + (((i / W) | 0) + 0.5) / k]);
+  }
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d'), img = g.createImageData(W, H), d = img.data;
+  const grueso = fino ? 2 : 1;
+  for (let py = 0; py < H; py++) for (let px = 0; px < W; px++) {
+    const i = py * W + px; if (com[i] < 0) continue;
+    let fc = false, fz = false;
+    for (let a = -grueso; a <= grueso && !fc; a++) for (let b = -grueso; b <= grueso; b++) {
+      const xx = px + b, yy = py + a; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
+      const v = com[yy * W + xx]; if (v >= 0 && v !== com[i]) { fc = true; break; }
+    }
+    if (fino && !fc) { const r = px + 1 < W ? zona[i + 1] : -1, u = py + 1 < H ? zona[i + W] : -1; fz = (r >= 0 && r !== zona[i]) || (u >= 0 && u !== zona[i]); }
+    const o = i * 4;
+    if (fc) { d[o] = 40; d[o + 1] = 28; d[o + 2] = 20; d[o + 3] = 235; }
+    else if (fz) { d[o] = 250; d[o + 1] = 244; d[o + 2] = 228; d[o + 3] = 150; }
+  }
+  g.putImageData(img, 0, 0);
+  window.__mapa.msComarcas = { ...(window.__mapa.msComarcas || {}), [k]: Math.round(performance.now() - t0) };
+  return (comarcas.capas[k] = c);
+}
+function pintarComarcas(kmAPx, aPant) {
+  const fino = kmAPx >= 12, c = capaComarcas(fino), { x0, y0, x1, y1 } = comarcas, [a, b] = aPant([x0, y0]);
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(c, a, b, (x1 - x0) * kmAPx, (y1 - y0) * kmAPx);
+  // los nombres: de muy lejos, ninguno (se pisarían); luego el de cada comarca (en otros mundos, la letra y, más
+  // cerca, «Comarca A»)
+  if (kmAPx < 4) return;
+  ctx.font = `700 ${kmAPx < 8 ? 10 : movil ? 12 : 14}px system-ui, sans-serif`; ctx.textAlign = 'center';
+  comarcas.C.letras.forEach((l, k) => {
+    const p = comarcas.centros[k]; if (!p) return;
+    const n = comarcas.C.nombres[k], [x, y] = aPant(p), t = n === l ? (kmAPx < 8 ? l : tr('Comarca {l}', { l })) : tr(n);
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(40,30,24,.8)'; ctx.strokeText(t, x, y); ctx.fillStyle = '#f6e7c4'; ctx.fillText(t, x, y);
+  });
+}
+
 // ---------- ríos: polilíneas suavizadas en km ----------
 function prepararRios() { rios = riosDelMapa(mapa); }
 const GROSOR = { arroyo: 0.7, rio: 1.5, grande: 2.8 };
@@ -168,6 +243,7 @@ function pintar() {
       ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
     }
   }
+  if (capas.comarcas) pintarComarcas(kmAPx, aPant);
   if (capas.vetas) {
     const km = LADO() / N, t = 3.2 * Math.sqrt(vista.z);
     for (const v of mapa.vetas) {
@@ -210,10 +286,23 @@ function pintar() {
     ctx.font = `600 ${movil ? 11 : 13}px system-ui, sans-serif`; ctx.textAlign = 'center';
     const km = LADO() / N;
     mapa.centros.forEach((c, k) => {
+      if (k === mapa.paisIsla && mapa.isla) return;   // la isla lleva su nombre aparte, grande y encima
       const [x, y] = aPant([(c % N + 0.5) * km, (((c / N) | 0) + 0.5) * km]);
       const t = textoRegion(k);
       ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(40,30,24,.75)'; ctx.strokeText(t, x, y); ctx.fillStyle = '#f4ead8'; ctx.fillText(t, x, y);
     });
+  }
+  if (capas.paises && mapa.isla) {
+    // la isla (Whitholm): su nombre grande y espaciado, en el mar justo encima de su costa norte, como el del continente
+    // (en medio de la isla quedaba pequeño y entre los nombres de sus comarcas)
+    // (si encima no cabe, porque lo taparían los botones de arriba, va debajo de su costa sur)
+    const km = LADO() / N, c = mapa.isla, tam = movil ? 14 : 18, [x, y] = aPant([c.x * km, c.y * km]);
+    const arriba = y - 6 - tam > $('superior').getBoundingClientRect().bottom + 4;
+    const yt = arriba ? y - 6 : aPant([0, c.abajo * km])[1] + 8;
+    ctx.save(); ctx.font = `italic 600 ${tam}px Georgia, serif`; ctx.textAlign = 'center'; ctx.textBaseline = arriba ? 'bottom' : 'top';
+    const t = textoRegion(mapa.paisIsla).toUpperCase().split('').join('\u2009');
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(20,32,44,.7)'; ctx.strokeText(t, x, yt); ctx.fillStyle = 'rgba(240,232,212,.95)'; ctx.fillText(t, x, yt);
+    ctx.restore();
   }
   // escala: 20 km
   const l = 20 * kmAPx, x0 = 16, y0 = $('datos').getBoundingClientRect().top - 12;
@@ -235,6 +324,10 @@ function leyenda() {
     filas.push(`<div><i style="background:#8a2a1c;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>${tr(VETAS.hierroVeta.nombre)}</div>`);
     filas.push(`<div><i style="background:#1c1a18"></i>${tr(VETAS.carbon.nombre)}</div>`);
   }
+  if (capas.comarcas) {
+    filas.push(`<div><i style="background:rgb(40,28,20);height:3px"></i>${tr('Frontera de comarca')}</div>`);
+    filas.push(`<div><i style="background:rgb(250,244,228);height:1px;outline:1px solid rgba(0,0,0,.25)"></i>${tr('Zona (unos 1 km², para los clanes; se ve al ampliar)')}</div>`);
+  }
   if (capas.grandes) {
     filas.push(`<div><i style="background:#c0442c;border-radius:50%;box-shadow:0 0 0 2px #d9a441 inset"></i>${tr(VETAS.granHierro.nombre)}</div>`);
     filas.push(`<div><i style="background:#e8e0d0;border-radius:50%;box-shadow:0 0 0 2px #d9a441 inset"></i>${tr(VETAS.granCarbon.nombre)}</div>`);
@@ -244,6 +337,15 @@ function leyenda() {
   if (innerWidth <= 640) $('leyenda').style.top = `${Math.round($('superior').getBoundingClientRect().bottom + 8)}px`;
 }
 // dónde va el nombre del continente: centrado en el ancho de su tierra (sin la isla) y bajo su costa más al sur
+// dónde va el nombre de la isla: centrado en su ancho y sobre su costa más al norte
+function sitioIsla(m) {
+  if (m.paisIsla < 0) return null;
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (let i = 0; i < m.N * m.N; i++) if (m.tierra[i] && m.pais[i] === m.paisIsla) {
+    const x = i % m.N, y = (i / m.N) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+  }
+  return x1 < 0 ? null : { x: (x0 + x1 + 1) / 2, y: y0, abajo: y1 + 1 };
+}
 function sitioContinente(m) {
   let x0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (let i = 0; i < m.N * m.N; i++) if (m.tierra[i] && m.pais[i] >= 0 && m.pais[i] !== m.paisIsla) {
@@ -270,6 +372,11 @@ function info(cx, cy) {
   const partes = [tr('{h} m de altura', { h: h.toLocaleString('es') }), tr(BIOMAS[mapa.bioma[i]].nombre), tr(ROCAS[mapa.roca[i]].nombre), mapa.pais[i] >= 0 ? textoRegion(mapa.pais[i]) : tr('isla sin región')];
   if (mapa.A[i] >= 40e6) partes.push(tr({ arroyo: 'arroyo de {a} m', rio: 'río de {a} m', grande: 'gran río de {a} m' }[claseRio(ancho)], { a: Math.round(ancho) }));
   partes.push(tr('{t} °C de media', { t: Math.round(mapa.temp[i]) }));
+  if (mapa.pais[i] === mapa.paisIsla) {   // en Whitholm: su comarca y su zona
+    if (!comarcas) capaComarcas(false);
+    const z = comarcas.C.zonaEn(gx * LADO() / N * 1000, gy * LADO() / N * 1000);
+    if (z.comarca >= 0) partes.push(tr('comarca {l}, zona {z}', { l: tr(comarcas.C.nombres[z.comarca]), z: `${z.j}-${z.i}` }));
+  }
   // lo más cerca de hierro y de carbón (vetas pequeñas o grandes)
   const k = LADO() / N, cerca = (tipos) => Math.min(...mapa.vetas.filter(v => tipos.includes(v.tipo)).map(v => Math.hypot(v.x + 0.5 - gx, v.y + 0.5 - gy) * k));
   const aHierro = Math.round(cerca(['hierroVeta', 'granHierro', 'hierroPantano'])), aCarbon = Math.round(cerca(['carbon', 'granCarbon']));
@@ -313,6 +420,9 @@ window.__mapa = {
   capa: (k, v) => { if (capas[k] !== v) document.querySelector(`[data-capa="${k}"]`).click(); },
   ampliar: (z, kmx, kmy) => { const s0 = escalaBase * z, k = R / LADO(); vista.z = z; vista.x = innerWidth / 2 - kmx * k * s0; vista.y = innerHeight / 2 - kmy * k * s0; pintar(); },
   get mapa() { return mapa; },
+  get comarcas() { return comarcas && comarcas.C; },
+  // píxeles pintados (fronteras y lindes) en la capa fina de las comarcas, para las pruebas
+  pixelesComarcas: () => { const c = capaComarcas(true), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i]) n++; return n; },
   cerca: (kmx, kmy) => abrirCerca(mapa, kmx, kmy, () => pintar()),
 };
 crear(semillaInicial());

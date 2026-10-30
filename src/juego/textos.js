@@ -16,7 +16,7 @@ const ES = {
   destruidas: 'piezas destruidas',
   planta: 'Planta',
   nadaQueUsar: 'No hay nada que usar cerca.',
-  talando: 'Talas el árbol (de momento solo el gesto: la madera llega con la recolección).',
+  talando: 'Talas el árbol.',
   abierta: 'Abierta.',
   cerrada: 'Cerrada.',
   subes: 'Subes a la planta',

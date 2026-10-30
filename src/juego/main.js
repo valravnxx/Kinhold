@@ -22,6 +22,8 @@ import { crearSuelo } from './suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { nombreDe } from '../logica/recoleccion.js';
 import { crearCombateMundo } from './combate_mundo.js';
+import { crearTala } from './tala.js';
+import { hachaEnMano, HACHAS, nombreTronco } from '../logica/tala.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -129,6 +131,8 @@ const obstaculos = decorado.obstaculos; // {x,z,r}
 const recoleccion = crearRecoleccion({ raiz: escena, altura: decorado.altura, obstaculos, almacen });
 // lo que se suelta cae al suelo, a tus pies; fuera de tus tierras desaparece pasada 1 hora real (src/juego/suelo.js)
 const sueloObjetos = crearSuelo({ raiz: escena, altura: decorado.altura, almacen, enTierras: (autor, x, z) => !!mundo.dentroDeTierra(x, z) });
+// los árboles se talan a golpes de hacha, caen, dejan tocón y vuelven a crecer (src/juego/tala.js)
+const talaV = crearTala({ raiz: escena, obstaculos, altura: decorado.altura, almacen, sueloObjetos });
 
 // ---------------- Personaje y cámara ----------------
 // personaje del taller propio (la carpeta, en src/mundo/eleccion.js)
@@ -829,12 +833,12 @@ function interactivoCercano() {
   }
   return mejor;
 }
-// árbol al alcance del hacha (a menos de 1 m de su tronco), en la planta baja
+// árbol en pie al alcance del hacha (a menos de 1 m de su tronco), en la planta baja
 function arbolCercano() {
   if (pj.k !== 0) return null;
   let mejor = null, md = 1.0;
   for (const o of obstaculos) {
-    if (!o.arbol) continue;
+    if (!o.arbol || !talaV.enPie(o)) continue;
     const d = Math.hypot(o.x - pj.x, o.z - pj.z) - o.r;
     if (d < md) { md = d; mejor = o; }
   }
@@ -1070,6 +1074,8 @@ function usar() {
   // al pie de un andamio, con la obra más arriba que tú, Usar sube al andamio (desde allí se le lleva el material)
   const subirAndamio = it && PIEZAS[it.p.tipo].andamio && it.p.k === pj.k && ob && ob.p.k > pj.k;
   if (ob && !subirAndamio) { usarObra(ob); return; }
+  // con un hacha en la mano, junto a un árbol, se tala antes que recoger lo que haya al lado
+  if (!it && hachaEnMano(inventario()) && arbolCercano()) { empezarTala(arbolCercano()); return; }
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
     const so = sueloObjetos.cercano(pj.x, pj.z); // lo que hay en el suelo, antes que lo que se recoge
@@ -1078,9 +1084,12 @@ function usar() {
     if (rc) { recoger(rc); return; }
   }
   if (!it) {
-    // junto a un árbol, se tala (por ahora solo el gesto: la madera llega con la recolección)
+    // junto a un árbol, se tala con un hacha en la mano: un golpe cada poco (paso → golpeTala) hasta que cae
     const a = arbolCercano();
-    if (a) { estado.talando = a; pj.rot = Math.atan2(a.x - pj.x, a.z - pj.z); mostrarAviso(t('talando')); return; }
+    if (a) {
+      if (!hachaEnMano(inventario())) { mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true); return; }
+      empezarTala(a); return;
+    }
     mostrarAviso(t('nadaQueUsar')); return;
   }
   if (it.tipo === 'fuego') { // chimenea: encender o apagar el fuego (solo se rehace ella)
@@ -1331,6 +1340,21 @@ function moverFuegos() {
 }
 window.__fuegos = () => ({ chimeneas: chimeneas.length, luces: lucesFuego.length, encendidas: lucesFuego.filter(l => l.intensity > 0).length });
 
+// Un golpe de hacha al árbol que talas (con autor, en src/logica/tala.js). Al caer, deja el tronco y las ramas en
+// el suelo, donde cae, y el tocón.
+function empezarTala(a) { estado.talando = a; estado.golpeEn = 0.45; pj.rot = Math.atan2(a.x - pj.x, a.z - pj.z); mostrarAviso(t('talando')); }
+const RITMO_TALA = 0.9; // s entre golpe y golpe (el gesto de talar)
+function golpeTala() {
+  const a = estado.talando;
+  estado.golpeEn = RITMO_TALA;
+  const r = talaV.golpe(inventarios, registroAcciones, AUTOR_LOCAL, a, pj.x, pj.z);
+  if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+  if (!r.cae) { mostrarAviso(r.faltan === 1 ? tr('Talas el árbol: falta 1 golpe.') : tr('Talas el árbol: faltan {n} golpes.', { n: r.faltan })); return; }
+  estado.talando = null;
+  const ramas = r.deja.find(d => d.tipo === 'rama');
+  mostrarAviso(tr('¡El árbol cae! Deja {tronco} y {n} ramas.', { tronco: tr(nombreTronco(talaV.tala.porId.get(a.id).edad)).toLowerCase(), n: ramas ? ramas.n : 0 }));
+}
+
 // El terreno por trozos alrededor de donde estás (en el mundo). Al empezar, hasta que están los trozos de alrededor, el
 // aviso de «Preparando el paisaje…» (los primeros se hacen con prisa: no hay nada que dibujar mientras).
 const msMundo = { max: 0, total: 0, n: 0 };
@@ -1417,6 +1441,8 @@ function paso() {
   for (const obj of raizDeco.children) obj.visible = !bajoTecho || plantaDeco(obj.userData.deco) <= pj.k;
   const it = interactivoCercano();
   recoleccion.paso(); // vuelve a salir lo que toca
+  talaV.paso(dt); // el árbol que cae y los que vuelven a crecer
+  if (estado.talando && (estado.golpeEn -= dt) <= 0) golpeTala();
   sueloObjetos.paso(); // desaparece lo soltado hace más de una hora fuera de tus tierras
   $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana() || (pj.k === 0 && (!!recoleccion.cercano(pj.x, pj.z) || !!sueloObjetos.cercano(pj.x, pj.z))));
 
@@ -1515,7 +1541,7 @@ function ropaDelVisor() {
 function vestir() {
   if (jugador.mh) jugador.mh.ponerCapas(capasDibujo(puestasDe(inventario().lugares), SEXO));
   // el hacha de mano se ve en la mano derecha si la llevas en una mano (lo demás de las manos, con su tarea del hito 2)
-  jugador.hachaEnMano = ['mano:der', 'mano:izq'].some(l => inventario().lugares[l]?.tipo === 'hacha_mano');
+  jugador.hachaEnMano = ['mano:der', 'mano:izq'].some(l => HACHAS[inventario().lugares[l]?.tipo]);
 }
 ropaDelVisor();
 jugador.listo.then(vestir);
@@ -1633,7 +1659,7 @@ function iniciarEnLinea() {
 
 // acceso para pruebas automáticas
 window.__kinhold = {
-  get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos, combate,
+  get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos, talaV, combate,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   mundoJ, get mundoListo() { return mundoListo; }, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
@@ -1672,9 +1698,10 @@ window.__kinhold = {
   fijarSubida(t) { if (estado.obrando) estado.obrando.desde = performance.now() + 1e9; if (rampa) { rampa.t = rampa.meta = t; moverRampa(0); } },
   seguirSubida() { if (estado.obrando) estado.obrando.desde = performance.now(); },
   interactivoCercano() { const o = interactivoCercano(); return o && { c: o.c.id, key: o.key, tipo: o.tipo }; },
-  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; sueloObjetos.suelo.objetos = []; sueloObjetos.refrescar(); reconstruir(); ropaDelVisor(); vestir(); pintarLlevas(); panelInventario.pintar(); },
+  reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; sueloObjetos.suelo.objetos = []; sueloObjetos.refrescar(); talaV.tala.estado = {}; talaV.refrescar(); reconstruir(); ropaDelVisor(); vestir(); pintarLlevas(); panelInventario.pintar(); },
   get registroAcciones() { return registroAcciones; },
   accionInventario, get inventario() { return inventario(); }, panelInventario,
+  inventarios, golpeTala, arbolCercano, vestir,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas, // lo soltado en el suelo (src/juego/suelo.js)
   get enLinea() { return enLinea; },

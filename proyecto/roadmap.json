@@ -447,6 +447,12 @@
      "fin": "2026-10-30T07:15:06+00:00"
     },
     {
+     "nombre": "Salida al azar (valravnx, 30 oct): cada jugador nuevo aparece en un sitio al azar de las tres comarcas de inicio (Motdale, Breiddal y Strandvang), en biomas normales (nunca en la montaña, el pasto alpino ni la nieve), llano y lejos de los ríos como ahora. Los sitios posibles, calculados una vez y apuntados en la lógica (el servidor no genera el mapa), con una prueba que comprueba que siguen valiendo",
+     "estado": "en_curso",
+     "inicio": "2026-10-30T09:27:05+00:00",
+     "rama": "trabajo/20261030-0927"
+    },
+    {
      "nombre": "Los árboles (las siete especies), la hierba y las rocas del mundo en el juego, con el estilo v5 y siempre en el mismo sitio",
      "estado": "pendiente"
     },
@@ -533,9 +539,10 @@
     },
     {
      "nombre": "Tala de verdad sobre los árboles del mundo: el árbol joven se tala con hacha de piedra (da un tronco delgado y ramas) y el adulto con hacha de hierro (con piedra, muy lento; da un tronco largo y muchas ramas); el árbol cae, queda el tocón y vuelve a crecer en semanas reales, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T06:23:57+00:00",
-     "rama": "trabajo/20261030-0623"
+     "rama": "trabajo/20261030-0623",
+     "fin": "2026-10-30T09:06:38+00:00"
     },
     {
      "nombre": "Tronzar y partir: el tronco largo se tronza en 3–4 troncos cortos (con hacha, lento) y el tronco corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro y la leña en el leñero. Lógica pura con autor, en la demo y con pruebas",
@@ -854,13 +861,15 @@
     },
     {
      "nombre": "Pulir la barba larga (visto al rehacerla): en el juego las ondas de los pelos salen demasiado regulares, el bigote sigue pintado y sin volumen, y a los lados de la barbilla asoma algo de cuello",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T06:53:58+00:00",
-     "rama": "trabajo/20261030-0653"
+     "fin": "2026-10-30T09:30:42+00:00"
     },
     {
      "nombre": "Que la ropa cosida lleve su hechura y su tinte en el inventario (cada prenda la suya, sin apilarse si son distintas) y se vea así puesta en el juego, en la demo y en línea; la cota de malla, larga o corta",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T09:57:34+00:00",
+     "rama": "trabajo/20261030-0957"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -943,10 +952,23 @@
      "fin": "2026-10-29T11:26:34+01:00"
     },
     {
-     "nombre": "Comarcas de Whitholm primero (valravnx, 29 oct): la isla de los playtests dividida en comarcas que siguen el relieve (un valle, una vega, una sierra), con nombres al estilo de la región revisados por valravnx, y la comarca donde aparecen todos al principio; luego las del resto del mundo",
-     "estado": "en_curso",
+     "nombre": "Comarcas de Whitholm y sus zonas (valravnx, 29 y 30 oct): la isla dividida en 8 comarcas que siguen las cuencas de los ríos, con bordes naturales y en curva, y cada comarca en zonas de aproximadamente 1 km² para los clanes; en la lógica (para el servidor) y en el mapa",
+     "estado": "hecho",
      "inicio": "2026-10-30T09:11:06+01:00",
-     "rama": "trabajo/20261030-0910-comarcas"
+     "rama": "trabajo/20261030-0910-comarcas",
+     "fin": "2026-10-30T10:20:44+01:00"
+    },
+    {
+     "nombre": "Nombres de las comarcas de Whitholm (valravnx, 30 oct): Breiddal, Motdale, Nordwold, Lindholt, Strandvang, Furulid, Sudholt y Ravnsnes",
+     "estado": "hecho",
+     "inicio": "2026-10-30T09:11:06+01:00",
+     "fin": "2026-10-30T10:20:44+01:00"
+    },
+    {
+     "nombre": "Dónde se aparece (valravnx, 30 oct): en un sitio al azar de dos o tres comarcas de inicio, en biomas normales; elegidas Motdale, Breiddal y Strandvang. Hacerlo en el juego es tarea del hito «El juego en el mundo de verdad»",
+     "estado": "hecho",
+     "inicio": "2026-10-30T09:11:06+01:00",
+     "fin": "2026-10-30T10:20:44+01:00"
     },
     {
      "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
@@ -1727,6 +1749,20 @@
      "archivo": "jugar/demo/v48.html",
      "capturas": "capturas/demo-v48",
      "notas": "«Construir» en el mundo de verdad: apareces en Whitholm, la isla de los playtests, en el mismo sitio para todos (tierra firme, llano y lejos de los ríos), y andas por la isla sobre el terreno por trozos del mapa, con la cámara del juego. Fuera el llano. No se puede salir de la isla ni entrar en el mar; el servidor solo admite posiciones en la isla."
+    },
+    {
+     "v": "v49",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v49.html",
+     "capturas": "capturas/construccion-v40",
+     "notas": "En «Construir», tala de verdad: con un hacha en la mano, Usar junto a un árbol lo tala; cae, deja el tocón, un tronco y ramas, y vuelve a crecer pasadas unas semanas reales (construcción v40)."
+    },
+    {
+     "v": "v50",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v50.html",
+     "capturas": "capturas/personaje-v28",
+     "notas": "En «Personaje», bigote con volumen y barba larga pulida (ondas distintas en cada mechón y los lados del cuello tapados). Personajes en recursos/personajes/taller-v17/."
     }
    ]
   },
@@ -1993,6 +2029,13 @@
      "archivo": "jugar/construccion/v39.html",
      "capturas": "capturas/construccion-v39",
      "notas": "Objetos en el suelo: «Soltar» deja lo que llevas a tus pies y Usar lo coge; fuera de tus tierras desaparece pasada 1 hora real; troncos, leña y piedras se quedan como pila"
+    },
+    {
+     "v": "v40",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/construccion/v40.html",
+     "capturas": "capturas/construccion-v40",
+     "notas": "Tala de verdad: con un hacha en la mano, Usar junto a un árbol lo tala a golpes; cae, deja el tocón, un tronco y ramas en el suelo, y vuelve a crecer pasadas unas semanas reales."
     }
    ]
   },
@@ -2385,6 +2428,13 @@
      "archivo": "jugar/personaje/v27.html",
      "capturas": "capturas/personaje-v27",
      "notas": "La capa se mueve al andar: se queda atrás, sube un poco, ondea al ritmo del paso y vuelve al pararse (sin simulación de tela: por la altura de cada punto, con un muelle). A los costados cae por encima de los brazos bajados y de espalda se ven más los pliegues. Personajes en recursos/personajes/taller-v16/."
+    },
+    {
+     "v": "v28",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/personaje/v28.html",
+     "capturas": "capturas/personaje-v28",
+     "notas": "Bigote con volumen (una malla propia sobre el labio de arriba, que cae por las comisuras) y barba larga pulida: ondas distintas en cada mechón y, por los lados, baja por el cuello. Personajes en recursos/personajes/taller-v17/."
     }
    ]
   },
@@ -2518,6 +2568,13 @@
      "archivo": "jugar/mapa/v16.html",
      "capturas": "capturas/mapa-v16",
      "notas": "Gran veta de hierro en lo alto de la sierra de Whitholm (valravnx, 30 oct): a 1.685 m, junto a la cumbre de la isla, en la caliza."
+    },
+    {
+     "v": "v17",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/mapa/v17.html",
+     "capturas": "capturas/mapa-v17",
+     "notas": "Comarcas de Whitholm con sus nombres y sus zonas de aproximadamente 1 km² (botón «Comarcas»), y el nombre de la isla grande y encima."
     }
    ]
   }
