@@ -464,7 +464,7 @@
      "nombre": "Lo que crece sigue al jugador por la isla: los árboles, la hierba y las piedras se rehacen a su alrededor poco a poco al andar (como en la vista «Como en el juego» del mapa), sin perder lo talado",
      "estado": "hecho",
      "inicio": "2026-10-30T20:23:07+00:00",
-     "fin": "2026-10-30T22:21:29+00:00"
+     "fin": "2026-10-30T23:39:59+00:00"
     },
     {
      "nombre": "Siempre en línea (valravnx, 30 oct): la demo entra siempre al mundo del servidor de Hetzner (https://2-31-141-224.sslip.io), también desde la web de GitHub, y es el único modo de juego: fuera el modo en solitario y el botón «Jugar en línea». Sin servidor no se juega: sale un aviso de que no hay conexión. La dirección, en un solo sitio del código",

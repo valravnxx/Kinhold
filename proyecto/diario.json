@@ -2859,7 +2859,7 @@
  },
  {
   "inicio": "2026-10-30T20:23:07+00:00",
-  "fin": "2026-10-30T22:21:29+00:00",
+  "fin": "2026-10-30T23:39:59+00:00",
   "titulo": "Lo que crece sigue al jugador por la isla (demo v58) (carril A)",
   "hito": "mundo-juego",
   "hecho": [
@@ -2870,7 +2870,7 @@
    "Pruebas nuevas: en node, cuatro trozos juntos dan exactamente lo mismo que su cuadro (con MUTAR=2 falla) y la tala con árboles que llegan y se van (rota a propósito, falla); en el navegador, que tras andar 200 m lo que crece está alrededor del jugador, que lo de lejos se suelta, que al llegar de golpe a 700 m ningún fotograma pasa de 60 ms (con MUTAR=3, todo de golpe, 305 ms: falla) y que un árbol talado sigue talado y con su tocón al irse y volver.",
    "Aún mal (no es de esta tarea): el suelo amarillento y los robles y fresnos de copa plana, que parecen de sabana, como en la v55."
   ],
-  "pruebas": "En la nube, la batería entera: todo bien salvo jugar en línea y duelo en línea (no paran la publicación) y la demo en el mundo, que falló por la propia prueba nueva (medía el cuadro desde el personaje y no desde donde se puso) y por esperar poco en el PC (en la nube va a 1 fps); arreglada la prueba, la demo en el mundo y el juego en inglés bien en la nube. MUTAR=3 de la prueba del mundo pasado aquí: falla, como debe. Capturas de PC y móvil miradas (andando a 200 m de la salida, salida, bosque).",
+  "pruebas": "En la nube, la batería entera: todo bien salvo jugar en línea y duelo en línea (no paran la publicación) y la demo en el mundo, que falló por la propia prueba nueva (medía el cuadro desde el personaje y no desde donde se puso) y por esperar poco en el PC (en la nube va a 1 fps); arreglada la prueba, la demo en el mundo y el juego en inglés bien en la nube. MUTAR=3 de la prueba del mundo pasado aquí: falla, como debe. Capturas de PC y móvil miradas (andando a 200 m de la salida, salida, bosque). Al ir a unir en main, la otra sesión acababa de publicar la v57 (siempre en línea): unido main, lo que crece sale como demo v58 y se repitió la batería entera en la nube: todo bien salvo jugar en línea (no para la publicación), la web (faltaba la carpeta de capturas de la v58, aún sin publicar) y, en el móvil, «andando, el personaje sigue el suelo» (0,65 m de 0,6; el terreno, en esa salida al azar); repetidas la demo en el mundo y la web con la v58 publicada: bien.",
   "capturas": "capturas/demo-v58",
   "estado": "ok"
  },
