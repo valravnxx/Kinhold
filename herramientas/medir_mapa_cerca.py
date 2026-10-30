@@ -8,7 +8,7 @@
 import sys, os, json, subprocess, time, socket
 from playwright.sync_api import sync_playwright
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'docs/jugar/mapa/v13.html'))
+RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_mapa.html'))
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else None
 # cuenta las llamadas de dibujo de WebGL en cada fotograma (no depende de la tarjeta)
 CONTAR = """(() => { const c = { n: 0, ultimos: [] }; window.__dibujos = c;
@@ -19,7 +19,7 @@ LLAMADAS = 'Math.max(...window.__dibujos.ultimos.slice(-5))'
 MEM = 'performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : null'
 _s = socket.socket(); _s.bind(('', 0)); PUERTO = _s.getsockname()[1]; _s.close()
 SERVIDOR = subprocess.Popen([sys.executable, '-m', 'http.server', str(PUERTO)], cwd=RAIZ, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(1)
-URL = f'http://localhost:{PUERTO}/' + os.path.relpath(RUTA, RAIZ).replace(os.sep, '/') + '?recursosMH=/docs/recursos/personajes/taller-v7/'
+URL = f'http://localhost:{PUERTO}/' + os.path.relpath(RUTA, RAIZ).replace(os.sep, '/') + '?recursosMH=/docs/recursos/personajes/taller-v12/'
 res = {}
 try:
     with sync_playwright() as p:
@@ -41,12 +41,16 @@ try:
             m['lejos_4km'] = pg.evaluate('window.__cerca.medidas'); m['mem_lejos_MB'] = pg.evaluate(MEM)
             pg.evaluate("document.getElementById('btnJuego').click()"); pg.wait_for_timeout(4000)
             m['cerca'] = pg.evaluate('window.__cerca.juego'); m['llamadas_dibujo'] = pg.evaluate(LLAMADAS); m['mem_juego_MB'] = pg.evaluate(MEM)
-            # rehacer el trozo de cerca a 100 m: lo que el juego queda parado cada vez que se cruza el borde
-            rehacer = []
-            for k in range(3):
-                pg.evaluate(f'(() => {{ const v = window.__cerca.vj; window.__cerca.juegoEn(v.pos.x + 100, v.pos.z, 0); }})()'); pg.wait_for_timeout(2500)
-                rehacer.append(pg.evaluate('window.__cerca.juego.ms'))
-            m['ms_rehacer_cerca'] = rehacer; m['mem_tras_rehacer_MB'] = pg.evaluate(MEM)
+            m['trozos'] = pg.evaluate('window.__cerca.vj.trozos ? { hilos: window.__cerca.vj.trozos.hilos, vivos: window.__cerca.vj.trozos.vivos.size } : null')
+            # andar 200 m en línea recta: el decorado se rehace por el camino y los trozos cambian de detalle; lo más que
+            # tarda un fotograma en eso es lo que el juego podría quedarse parado (antes, de 236 a 935 ms de golpe)
+            pg.evaluate('(() => { const v = window.__cerca.vj; v.msMax = 0; v.fotogramas = 3; v.andarA(v.pos.x + 200, v.pos.z + 10); })()')
+            for k in range(60):
+                pg.wait_for_timeout(2000)
+                if not pg.evaluate('window.__cerca.vj.destino'): break
+            pg.wait_for_timeout(3000)
+            m['andar'] = pg.evaluate('(() => { const v = window.__cerca.vj, j = window.__cerca.juego; return { ms_fotograma_max: j.msFotogramaMax, decorados_rehechos: j.rehechos, parado: v.parado, trabajo_trozos_max_ms: Math.round(v.trozos.medidas.trabajoMax * 10) / 10, triangulos: j.triangulos, triangulos_suelo: j.triangulosSuelo, trozos: j.trozos }; })()')
+            m['mem_tras_andar_MB'] = pg.evaluate(MEM)
             res[nombre] = m; print(nombre, json.dumps(m, ensure_ascii=False))
             ctx.close()
         nav.close()
