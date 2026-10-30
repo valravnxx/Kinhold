@@ -269,7 +269,7 @@
    "id": "prueba-online",
    "num": "1f",
    "nombre": "Prueba online mínima",
-   "estado": "en_curso",
+   "estado": "hecho",
    "jugable": "Dos jugadores en el mismo mundo desde dos dispositivos, construyendo y peleando, con el mundo guardado en un servidor sencillo; sin cuentas completas ni administración todavía.",
    "nota": "Pedido de valravnx el 26 oct: lo multijugador es el mayor riesgo del proyecto y se comprueba pronto, justo después del estilo v5, antes de seguir ampliando piezas, ropa y sistemas.",
    "tareas": [
@@ -361,7 +361,9 @@
     },
     {
      "nombre": "Servidor de prueba en la nube (valravnx, 29 oct: «ya»): valravnx crea la cuenta de Hetzner y el servidor con la guía servidor/nube/LEEME.md, y el chat lo comprueba con él desde los dos aparatos",
-     "estado": "espera_decision"
+     "estado": "hecho",
+     "inicio": "2026-10-30T20:20:55+00:00",
+     "fin": "2026-10-30T20:36:43+00:00"
     }
    ]
   },
@@ -465,7 +467,17 @@
      "rama": "trabajo/20261030-2023"
     },
     {
-     "nombre": "Construir en el mundo: la rejilla anclada sobre el terreno de verdad, y nivelar con la brocha redonda para poner cimientos en ladera (GDD)",
+     "nombre": "Siempre en línea (valravnx, 30 oct): la demo entra siempre al mundo del servidor de Hetzner (https://2-31-141-224.sslip.io), también desde la web de GitHub, y es el único modo de juego: fuera el modo en solitario y el botón «Jugar en línea». Sin servidor no se juega: sale un aviso de que no hay conexión. La dirección, en un solo sitio del código",
+     "estado": "en_curso",
+     "inicio": "2026-10-30T20:40:33+00:00",
+     "rama": "trabajo/20261030-2040-enlinea"
+    },
+    {
+     "nombre": "Construir en el mundo, a la altura del suelo (valravnx, 30 oct: «relativamente prioritario»): lo que se coloca (piezas, muebles, objetos) se pone sobre el terreno de verdad, no en la altura 0, y los suelos de base alisan el terreno de debajo para construir encima; hoy quedan cosas flotando o hundidas. Es cambiar la malla del mundo, como al cavar: una acción con autor por la lógica pura, que el servidor guarda y reparte. Con la rejilla anclada al terreno y la brocha redonda para nivelar en ladera (GDD)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Panel de depuración con clave de admin (valravnx, 30 oct): se abre con una tecla; mapa de la isla con los jugadores conectados, lista de jugadores, y teletransportarse a un punto del mapa o junto a otro jugador. Ver a todos y teletransportarse pasan por el servidor con su autor, y solo los acepta con la clave de admin que valravnx pone en la máquina (en servidor/nube/LEEME.md, cómo)",
      "estado": "pendiente"
     },
     {
@@ -891,7 +903,9 @@
     },
     {
      "nombre": "Toca y cuello de la ropa (visto en la revisión del 30 oct): el borde sale dentado y entre la toca y el cuello asoma una mancha de piel rota",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T20:52:51+00:00",
+     "rama": "trabajo/20261030-2052"
     },
     {
      "nombre": "Nacimiento del pelo y cejas (visto en la revisión del 30 oct): el pelo corta en seco en la frente, como un casquete, y las cejas son trazos finos y a trozos que flotan",
@@ -2699,11 +2713,6 @@
   }
  ],
  "decisiones_pendientes": [
-  {
-   "pregunta": "Crear la cuenta de Hetzner y el servidor de prueba siguiendo la guía del repositorio, servidor/nube/LEEME.md (plan CX23 con Ubuntu 24.04 y el cloud config pegado); luego abrir en los dos aparatos la dirección https:// con tu IP con guiones y .sslip.io y decir si funciona. Decidido por valravnx el 29 oct: se hace ya.",
-   "desde": "2026-10-28",
-   "hito": "prueba-online"
-  },
   {
    "pregunta": "Clanes y guerra (del 30 oct): con el vasallaje de comarca ya no hay un pago que dejar de hacer, así que el impago deja de ser causa de guerra. ¿Qué causas quedan, y asediar el centro de una comarca en su ventana necesita guerra declarada?",
    "desde": "2026-10-30",
