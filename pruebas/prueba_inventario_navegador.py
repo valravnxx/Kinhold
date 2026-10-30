@@ -127,8 +127,8 @@ with sync_playwright() as p:
     txt = pg.inner_text(R('ropa:abrigo'))
     comprobar('su cuadro dice la hechura y el tinte', 'Sarga' in txt and 'glasto' in txt, txt)
     if os.environ.get('MUTAR_COSIDA'): pg.evaluate(f"{K}.jugador.mh.ponerTintes({{}}); {K}.jugador.mh.ponerHechuras({{}})")
-    puesto = pg.evaluate(f"(() => {{ const m = {K}.jugador.mh; let cota = -100; m.modelo.traverse(n => {{ if (n.isMesh && /_capa_cota_falda$/.test(n.name)) cota = m.corteDe(n); }});
-      return {{ tinte: m.tintes.prendas.tunica, corte: m.hechuras.tunica.corte, tejido: m.hechuras.tunica.tejido, cota: m.hechuras.cota.corte, alturaCota: cota, capas: m.capas }}; }})()")
+    puesto = pg.evaluate(f"""(() => {{ const m = {K}.jugador.mh; let cota = -100; m.modelo.traverse(n => {{ if (n.isMesh && /_capa_cota_falda$/.test(n.name)) cota = m.corteDe(n); }});
+      return {{ tinte: m.tintes.prendas.tunica, corte: m.hechuras.tunica.corte, tejido: m.hechuras.tunica.tejido, cota: m.hechuras.cota.corte, alturaCota: cota, capas: m.capas }}; }})()""")
     comprobar('puesta: la túnica corta, de sarga y azul, y la cota corta', puesto['tinte'] == 'glasto' and puesto['corte'] == 'corto' and puesto['tejido'] == 'sarga' and puesto['cota'] == 'corto' and puesto['alturaCota'] > -50 and 'cota' in puesto['capas'], str(puesto))
     pg.wait_for_timeout(600)
     pg.screenshot(path=f'{SALIDA}/04_pc_ropa_cosida.png')
