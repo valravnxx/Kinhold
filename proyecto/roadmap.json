@@ -576,7 +576,9 @@
     },
     {
      "nombre": "Inventario y recogida por el servidor: en línea, lo que llevas y lo que recoges lo guarda y lo valida el servidor (hoy solo está en el navegador de cada uno)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T22:37:50+00:00",
+     "rama": "trabajo/20261030-2237"
     },
     {
      "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
