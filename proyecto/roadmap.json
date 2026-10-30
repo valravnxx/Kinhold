@@ -993,9 +993,10 @@
     },
     {
      "nombre": "Recursos de Whitholm (valravnx, 30 oct): una gran veta de hierro en la sierra de la isla",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T05:56:35+01:00",
-     "rama": "trabajo/20261030-0556-veta"
+     "rama": "trabajo/20261030-0556-veta",
+     "fin": "2026-10-30T07:10:35+01:00"
     }
    ],
    "lleva": "chat",
@@ -2473,6 +2474,13 @@
      "archivo": "jugar/mapa/v15.html",
      "capturas": "capturas/mapa-v15",
      "notas": "Como en el juego, con el terreno por trozos: trozos de 64 m hechos en un hilo aparte (rejilla de 1 m cerca y más basta lejos) y el decorado de cerca rehecho poco a poco al andar; el juego ya no se para al cruzar el borde"
+    },
+    {
+     "v": "v16",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/mapa/v16.html",
+     "capturas": "capturas/mapa-v16",
+     "notas": "Gran veta de hierro en lo alto de la sierra de Whitholm (valravnx, 30 oct): a 1.685 m, junto a la cumbre de la isla, en la caliza."
     }
    ]
   }

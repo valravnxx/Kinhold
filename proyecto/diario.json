@@ -2555,5 +2555,21 @@
   "pruebas": "En la nube: los 18 grupos bien (41 min); tras el arreglo del aviso y unir main, mapa del mundo, lógica y web otra vez bien. La prueba nueva, rota a propósito, falla",
   "capturas": "capturas/mapa-v15",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T05:56:35+01:00",
+  "fin": "2026-10-30T07:10:35+01:00",
+  "titulo": "Hito 10: gran veta de hierro en la sierra de Whitholm (mapa v16)",
+  "hito": "mundo",
+  "hecho": [
+   "valravnx aprueba el hito Despejar y las barbas y la capa nuevas; el servidor de Hetzner lo crea él esta tarde.",
+   "Recursos de Whitholm decididos por valravnx: lo que ya tenía y una gran veta de hierro en las montañas.",
+   "El generador pone primero la gran veta de hierro de la isla, en lo más alto (por encima del 60 % de su cumbre); en el mundo elegido queda a 1.685 m, en la caliza, junto a la cumbre (1.795 m). Las del continente van después, a más de 45 km.",
+   "Prueba nueva: Whitholm tiene una gran veta de hierro en lo alto de la sierra, en las cuatro semillas; falla si se quita (MUTAR).",
+   "Zonas de clan de aproximadamente 1 km², aparte del mojón, anotadas en el GDD (valravnx). Borrador de comarcas con bordes naturales y zonas enseñado a valravnx, fuera del juego por ahora."
+  ],
+  "pruebas": "En la nube: lógica, mapa del mundo y web correctas (generador del mapa 87/87)",
+  "capturas": "capturas/mapa-v16",
+  "estado": "ok"
  }
 ]
