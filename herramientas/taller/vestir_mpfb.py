@@ -746,27 +746,38 @@ def manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, colo
         col = col * (1 - 0.16 * suave(0.15, 0.6, t)[..., None] * suave(0.0, -0.9, pl)[..., None])
         return np.concatenate([col, np.ones(U.shape + (1,))], -1)
     res = 1024
-    me = bpy.data.meshes.new(nombre + '_capa_manto'); me.from_pydata([tuple(map(float, v)) for v in vs], [], caras); me.update()
-    capa_uv = me.uv_layers.new(name='UVMap')
-    for l in me.loops: capa_uv.data[l.index].uv = tuple(map(float, uv[l.vertex_index]))
-    ob = bpy.data.objects.new(nombre + '_capa_manto', me); bpy.context.scene.collection.objects.link(ob)
-    for k, p in enumerate(pesos):
-        for h, w in p.items():
-            if w <= 1e-4: continue
-            g = ob.vertex_groups.get(h) or ob.vertex_groups.new(name=h)
-            g.add([k], float(w), 'REPLACE')
     U, V = np.meshgrid((np.arange(res) + 0.5) / res, (np.arange(res) + 0.5) / res)
     rgba = np.clip(pintar(U, V), 0, 1); rgba[..., :3] = rgba[..., :3] ** (1 / 2.2)
-    im = bpy.data.images.new(ob.name, res, res, alpha=False)
+    im = bpy.data.images.new(nombre + '_capa_manto', res, res, alpha=False)
     im.pixels.foreach_set(rgba.astype(np.float32).ravel())
-    im.filepath_raw = os.path.join(SALIDA, ob.name + '.png'); im.file_format = 'PNG'; im.save()
-    me.materials.append(material(ob.name, 0.95, imagen=im, factor=tn['factor']))
-    for p in me.polygons: p.use_smooth = True
-    ob['tinte'], ob['ref'] = tn['tinte']; ob['prenda'] = tn['prenda']
+    im.filepath_raw = os.path.join(SALIDA, im.name + '.png'); im.file_format = 'PNG'; im.save()
+    # normales de la malla entera, para que no se note el corte entre las dos piezas
+    tmp = bpy.data.meshes.new('tmp'); tmp.from_pydata([tuple(map(float, v)) for v in vs], [], caras); tmp.update()
+    normales = [tuple(v.normal) for v in tmp.vertices]; bpy.data.meshes.remove(tmp)
     cerca = [i for i in range(len(co)) if co[i].z > z_bajo - 0.1 and abs(co[i].x) < 0.35]
-    mapear(ob, [co[i] for i in cerca], cerca)  # para las formas (peso, músculo): como el punto del cuerpo más cercano
-    ob.modifiers.new('Armature', 'ARMATURE').object = RIG; ob.parent = RIG
-    piezas = [ob]
+    # dos piezas, como las demás prendas (src/logica/prendas.js: el manto tiene cuerpo y falda): arriba hasta la cintura
+    # y la falda, de la cintura abajo; comparten la fila del corte
+    piezas = []
+    for sufijo, cuales in (('', lambda zc: zc >= cintura_z), ('_falda', lambda zc: zc < cintura_z)):
+        sub = [f for f in caras if cuales(sum(vs[k][2] for k in f) / len(f))]
+        usados = sorted({k for f in sub for k in f}); nuevo_ = {k: n for n, k in enumerate(usados)}
+        me = bpy.data.meshes.new(nombre + '_capa_manto' + sufijo)
+        me.from_pydata([tuple(map(float, vs[k])) for k in usados], [], [tuple(nuevo_[k] for k in f) for f in sub]); me.update()
+        capa_uv = me.uv_layers.new(name='UVMap')
+        for l in me.loops: capa_uv.data[l.index].uv = tuple(map(float, uv[usados[l.vertex_index]]))
+        for p in me.polygons: p.use_smooth = True
+        me.normals_split_custom_set_from_vertices([normales[k] for k in usados])
+        ob = bpy.data.objects.new(me.name, me); bpy.context.scene.collection.objects.link(ob)
+        for n, k in enumerate(usados):
+            for h, w in pesos[k].items():
+                if w <= 1e-4: continue
+                g = ob.vertex_groups.get(h) or ob.vertex_groups.new(name=h)
+                g.add([n], float(w), 'REPLACE')
+        me.materials.append(material(me.name, 0.95, imagen=im, factor=tn['factor']))
+        ob['tinte'], ob['ref'] = tn['tinte']; ob['prenda'] = tn['prenda']
+        mapear(ob, [co[i] for i in cerca], cerca)  # para las formas (peso, músculo): como el punto del cuerpo más cercano
+        ob.modifiers.new('Armature', 'ARMATURE').object = RIG; ob.parent = RIG
+        piezas.append(ob)
     # broche anular de bronce donde se cierra, bajo el cuello (sin teñir)
     j = int(0.05 * (NV - 1))
     izq, der = vs[j * NU], vs[j * NU + NU - 1]

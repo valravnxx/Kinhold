@@ -1,7 +1,8 @@
 // Comprueba la capa (manto) del taller (desde taller-v15, rehecha porque valravnx la vio «la capa que no es capa»: era la
 // malla del cuerpo empujada hacia fuera y parecía un chaleco sin mangas que se metía en la cintura). Mira, en el hombre
 // y en la mujer:
-//  - que está, en una sola pieza (sin «_falda»), con el tinte de la ropa y la prenda «manto», y con su broche;
+//  - que está, en dos piezas como las demás prendas (cuerpo y falda, src/logica/prendas.js), con el tinte de la ropa y la
+//    prenda «manto», y con su broche;
 //  - que cae: por detrás, a la altura de la cintura, queda igual o más atrás que a la altura del pecho (no se mete);
 //  - que cuelga ancha: abajo es al menos tan ancha como en los hombros, y el bajo pasa de la rodilla (más de 90 cm de largo);
 //  - que va abierta por delante: a media altura no hay tela delante del centro del pecho.
@@ -34,10 +35,11 @@ for (const sexo of ['hombre', 'mujer']) {
   if (!m) continue;
   const ex = m.getExtras() || {};
   comprobar(`${sexo}: tinte de la ropa, prenda «manto»`, ex.tinte === 'ropa' && ex.prenda === 'manto', JSON.stringify(ex));
-  comprobar(`${sexo}: en una sola pieza (sin falda aparte)`, !nodo('capa_manto_falda'));
+  const falda = nodo('capa_manto_falda');
+  comprobar(`${sexo}: con su falda`, !!falda);
   comprobar(`${sexo}: con broche`, !!nodo('capa_manto_broche'));
   // glTF: y arriba, z delante, x a los lados
-  const P = puntos(m);
+  const P = [...puntos(m), ...(falda ? puntos(falda) : [])];
   const arriba = Math.max(...P.map(p => p[1])), abajo = Math.min(...P.map(p => p[1]));
   const franja = (y, ancho = 0.02) => P.filter(p => Math.abs(p[1] - y) < ancho);
   const atras = (y) => Math.min(...franja(y).filter(p => Math.abs(p[0]) < 0.06).map(p => p[2]));
