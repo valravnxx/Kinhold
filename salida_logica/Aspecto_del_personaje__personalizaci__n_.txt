@@ -1,0 +1,29 @@
+  OK   sin aspecto, el hombre lleva los colores del taller
+  OK   sin aspecto, la mujer lleva los colores del taller
+  OK   sin aspecto, todas las formas en 0
+  OK   el hombre empieza con pelo corto y barba corta; la mujer con cofia y sin barba
+  OK   un color que no existe vuelve al de por defecto
+  OK   un color que existe se queda
+  OK   un peinado que no existe vuelve al de por defecto; la barba elegida se queda
+  OK   las formas se recortan a [-1, 1] — {"altura":0,"peso":1,"musculo":-1,"cara":0,"nariz":0,"nariz_larga":0,"menton":0.33}
+  OK   una forma que no es número vale 0; se redondea a centésimas
+  OK   una forma inventada no entra
+  OK   la mujer no puede llevar barba
+  OK   un sexo raro cuenta como hombre
+  OK   peso 0,5 → forma «peso_mas» a 0,5 y «peso_menos» a 0
+  OK   músculo −0,25 → forma «musculo_menos» a 0,25
+  OK   la altura no es una forma del modelo
+  OK   altura 1 → escala 1 + ESCALA_ALTURA
+  OK   altura −1 → escala 1 − ESCALA_ALTURA
+  OK   todas las paletas tienen nombre y color sRGB
+  OK   los valores por defecto existen en sus listas
+  OK   melena con barba larga: pelo corto, melena, barba larga y corta
+  OK   bajo la capucha no asoman las trenzas ni las orejas
+  OK   con la cofia, ni pelo ni orejas
+  OK   con la cofia bajo la toca no se ve la cofia; bajo la capucha, sí
+  OK   el bigote con volumen va con corta, larga, bigote y perilla, y no sin barba
+  OK   rapado con perilla
+  OK   los peinados nuevos se pueden elegir y se guardan
+  OK   el aspecto pasa por JSON sin cambiar
+
+Resultado: 27 correctas, 0 fallidas
