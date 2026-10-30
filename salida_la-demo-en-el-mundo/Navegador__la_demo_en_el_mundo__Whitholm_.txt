@@ -1,0 +1,44 @@
+Vista pc
+  OK   la demo arranca sin error — None
+  OK   construir va en el mundo de verdad (no en el llano)
+  generar el mapa: 3529 ms
+  OK   los trozos de alrededor llegan
+   {"pj": [0, -0.11117416416199095, 4], "suelo": -0.11117635494198908, "sobreMar": 12.81004524230957, "salida": {"x": 201000, "z": 69000}, "isla": {"x0": 160000, "z0": 21000, "x1": 221000, "z1": 84000}, "trozos": 67, "tri": 163968, "lo": -1.7506816253332556, "hi": 41.255806934609666, "llano": false, "hilos": 3}
+  OK   un jugador nuevo sale en uno de los sitios de la salida al azar — {"x": 201000, "z": 69000}
+  OK   la salida está en la isla — {"x": 201000, "z": 69000}
+  OK   la salida está en tierra, ni en el mar ni en un pico (entre 6 y 220 m) — 12.8 m
+  OK   el personaje pisa el suelo — -0.111 / -0.111
+  OK   sin el llano de antes, con el terreno por trozos (en un hilo aparte) — 67 trozos, 163968 triángulos
+  OK   el terreno tiene relieve (más de 5 m de desnivel en 2 km; la salida al azar puede caer en una vega muy llana) — -1.8–41.3 m
+  andar 200 m: {"dif": 0.05336453179405831, "msMax": 7.399999999994179, "x": 165.0671229819353, "z": 116.92849467900736}
+  OK   andando 200 m, el terreno trabaja poco en cada fotograma (menos de 60 ms) — 7.4 ms
+  OK   andando, el personaje sigue el suelo (a menos de 0,6 m) — 0.05 m
+  costa: {"tierra": [1944, 0], "mar": [1946, 0], "entra": false, "fuera": false}
+  OK   no se puede entrar en el mar — {"tierra": [1944, 0], "mar": [1946, 0], "entra": false, "fuera": false}
+  OK   no se puede salir de la isla
+  OK   andando hacia el mar, avanza y no se mete en el agua — {"sobreMar": 0.9699568247794375, "x": 1622.1600000000008, "z": -1.3226185430791415e-16, "andado": 2.160000000000764}
+  OK   al recargar, sale en el mismo sitio — {"x": 201000, "z": 69000} → {"x": 201000, "z": 69000}
+  OK   quien ya jugaba antes (con algo guardado) sigue en el sitio común — {"x": 184596, "z": 46280}
+  OK   sin errores en la página
+Vista movil
+  OK   la demo arranca sin error — None
+  OK   construir va en el mundo de verdad (no en el llano)
+  generar el mapa: 3581 ms
+  OK   los trozos de alrededor llegan
+   {"pj": [0, -0.15168227713385285, 4], "suelo": -0.15168526079704492, "sobreMar": 56.166595458984375, "salida": {"x": 219000, "z": 45000}, "isla": {"x0": 160000, "z0": 21000, "x1": 221000, "z1": 84000}, "trozos": 69, "tri": 103040, "lo": -11.788792996975651, "hi": 228.75062122322439, "llano": false, "hilos": 3}
+  OK   un jugador nuevo sale en uno de los sitios de la salida al azar — {"x": 219000, "z": 45000}
+  OK   la salida está en la isla — {"x": 219000, "z": 45000}
+  OK   la salida está en tierra, ni en el mar ni en un pico (entre 6 y 220 m) — 56.2 m
+  OK   el personaje pisa el suelo — -0.152 / -0.152
+  OK   sin el llano de antes, con el terreno por trozos (en un hilo aparte) — 69 trozos, 103040 triángulos
+  OK   el terreno tiene relieve (más de 5 m de desnivel en 2 km; la salida al azar puede caer en una vega muy llana) — -11.8–228.8 m
+  andar 200 m: {"dif": 0.17013394526419368, "msMax": 3.5, "x": 165.0671229819353, "z": 116.92849467900736}
+  OK   andando 200 m, el terreno trabaja poco en cada fotograma (menos de 60 ms) — 3.5 ms
+  OK   andando, el personaje sigue el suelo (a menos de 0,6 m) — 0.17 m
+  costa: {"tierra": [1190, 0], "mar": [1192, 0], "entra": false, "fuera": false}
+  OK   no se puede entrar en el mar — {"tierra": [1190, 0], "mar": [1192, 0], "entra": false, "fuera": false}
+  OK   no se puede salir de la isla
+  OK   andando hacia el mar, avanza y no se mete en el agua — {"sobreMar": 0.9065860009196811, "x": 1099.2400000000011, "z": -1.9839278146187122e-16, "andado": 3.240000000001146}
+  OK   sin errores en la página
+
+Todo bien
