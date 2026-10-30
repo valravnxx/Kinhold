@@ -436,9 +436,9 @@
     },
     {
      "nombre": "La vista «Como en el juego» del mapa con trozos: fuera el trozo único de 240 m que se rehacía entero (de 236 a 935 ms parado, medido el 29 oct) y el truco de hundir el suelo de lejos; menos triángulos lejos en el móvil. Medido en PC y móvil (fotogramas, memoria, triángulos, llamadas de dibujo)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T03:22:50+00:00",
-     "rama": "trabajo/20261030-0322"
+     "fin": "2026-10-30T05:10:44+00:00"
     },
     {
      "nombre": "La demo en el mundo: apareces en Whitholm, la isla de los playtests (valravnx, 29 oct), en un sitio accesible (nunca en el mar ni en un pico) y todos en la misma comarca, y andas por la isla con la cámara del juego; fuera el llano. El servidor y el terreno solo cubren la isla",
@@ -2464,6 +2464,13 @@
      "archivo": "jugar/mapa/v14.html",
      "capturas": "capturas/mapa-v14",
      "notas": "En la vista de juego anda el personaje elegido en el visor, con el taller de ahora (taller-v12). Por dentro, el código queda ordenado sin cambiar el mundo."
+    },
+    {
+     "v": "v15",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/mapa/v15.html",
+     "capturas": "capturas/mapa-v15",
+     "notas": "Como en el juego, con el terreno por trozos: trozos de 64 m hechos en un hilo aparte (rejilla de 1 m cerca y más basta lejos) y el decorado de cerca rehecho poco a poco al andar; el juego ya no se para al cruzar el borde"
     }
    ]
   }
