@@ -133,11 +133,11 @@ with sync_playwright() as p:
             e = pg.evaluate(f"(() => {{ const k = {K}, a = k.mundoJ.aguaEn(k.pj.x, k.pj.z); return {{ sobreMar: k.mundoJ.sobreMar(k.pj.x, k.pj.z), x: k.pj.x, z: k.pj.z, y: k.pj.y, modo: k.nado.modo, superficie: a && a.superficie, aguante: k.nado.e.aguante, anillo: !document.getElementById('aguante')?.hidden, lamina: !!k.mundoJ.agua.malla }}; }})()")
             e['andado'] = ((e['x'] - a0[0]) ** 2 + (e['z'] - a0[1]) ** 2) ** 0.5
             comprobar('andando hacia el mar, avanza (ya no le para la orilla)', e['andado'] > 0.5, json.dumps(e))
-            # mar adentro (donde cubre más de 2 m): nada con la cabeza fuera, el aguante baja y se ve su anillo
+            # mar adentro (donde cubre más de 4 m): nada con la cabeza fuera, el aguante baja y se ve su anillo
             # (en esta máquina sin tarjeta gráfica el juego va a pocos fotogramas: andando no se llega; se le lleva)
             pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}, l = Math.hypot(mx - tx, mz - tz) || 1; let d = 0;
-              while (d < 3000 && !(k.mundoJ.sobreMar(mx + (mx - tx) / l * d, mz + (mz - tz) / l * d) < -2)) d += 4;
-              k.pj.x = mx + (mx - tx) / l * d; k.pj.z = mz + (mz - tz) / l * d; }}""", c['tierra'] + c['mar'])
+              while (d < 4000 && !(k.mundoJ.sobreMar(mx + (mx - tx) / l * d, mz + (mz - tz) / l * d) < -4 && k.mundoJ.sobreMar(mx + (mx - tx) / l * (d + 30), mz + (mz - tz) / l * (d + 30)) < -4)) d += 4;
+              d += 15; k.pj.x = mx + (mx - tx) / l * d; k.pj.z = mz + (mz - tz) / l * d; }}""", c['tierra'] + c['mar'])
             try: pg.wait_for_function(f'{K}.mundoListo && {K}.mundoJ.agua.malla', timeout=180000)
             except Exception: pass
             pg.keyboard.down('w'); pg.wait_for_timeout(3000); pg.keyboard.up('w'); pg.wait_for_timeout(500)
@@ -153,7 +153,8 @@ with sync_playwright() as p:
             pg.screenshot(path=f'{SALIDA}/{nombre}_nadando.png')
             # sin aguante, nadando, te ahogas: a los pocos segundos vuelves a tu sitio de salida
             if not os.environ.get('MUTAR_NADO'): pg.evaluate(f"{K}.nado.e.aguante = 0.01")
-            try: pg.wait_for_function(f'{K}.nado.muertes > 0', timeout=40000)
+            # (8 s de juego sin aguante; a los pocos fotogramas por segundo de esta máquina, bastante más de reloj)
+            try: pg.wait_for_function(f'{K}.nado.muertes > 0', timeout=300000)
             except Exception: pass
             ah = pg.evaluate(f"(() => {{ const k = {K}; return {{ muertes: k.nado.muertes, x: k.pj.x, z: k.pj.z, aviso: document.getElementById('aviso').textContent }}; }})()")
             comprobar('sin aguante te ahogas y vuelves a tu sitio de salida', ah['muertes'] >= 1 and abs(ah['x']) < 5 and abs(ah['z'] - 4) < 5, json.dumps(ah))
