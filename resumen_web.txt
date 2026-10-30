@@ -1,0 +1,41 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2248 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2035 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1627 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2103 KB
+
+== Construir demo única
+      1770 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2564 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1622 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2070 KB
+dist/kinhold_trozos.html 1618 KB
+hilo de los trozos 14 KB
+
+== Web de progreso
+docs/index.html listo · 29 hitos · 170 entradas de diario · en 1795 textos, ru 1795 textos
+
+== Navegador: web
+  OK   «ahora mismo» en ruso
+  OK   sin errores en consola (movil)
+
+Resultado: TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 151 s
