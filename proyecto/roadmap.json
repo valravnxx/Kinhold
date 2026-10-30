@@ -454,7 +454,9 @@
     },
     {
      "nombre": "Los árboles (las siete especies), la hierba y las rocas del mundo en el juego, con el estilo v5 y siempre en el mismo sitio",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T12:29:53+00:00",
+     "rama": "trabajo/20261030-1329"
     },
     {
      "nombre": "El agua del mundo en el juego: el mar con su oleaje y los ríos con su corriente y sus saltos, como en el mapa (en la demo v48 el mar es una lámina lisa y los cauces de los ríos salen secos)",
