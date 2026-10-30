@@ -100,8 +100,17 @@ Prueba: `node pruebas/prueba_pies.mjs` (con `MUTAR=1` mira la taller-v11, que no
   son tubos que bajan por la espalda a unos centímetros de la piel. Su mapa UV va a lo largo y la textura (mechones,
   puntas desiguales en la transparencia) se pinta directamente en él. Pesos: `head` arriba, `neck_01` en medio y
   `spine_03` abajo.
-- **Barba larga** (`_barba_larga`): la piel de la barba despegada y, bajo el mentón, estirada hacia delante y hacia
-  abajo; va con la corta pintada debajo. **Perilla** (`_barba_perilla`): calco como la corta y el bigote.
+- **Barba larga** (`_barba_larga`, rehecha en taller-v14): malla propia con volumen, como la melena. Columnas de patilla
+  a patilla; cada una baja a 2-12 mm de la piel (medida con rayos desde fuera), bajo el mentón cae recta (sin ir hacia
+  delante ni meterse hacia el cuello; a los lados sigue la mandíbula) y vuelve por detrás en línea recta hasta la
+  garganta: de perfil, una cuña maciza. Punta y bordes desiguales en la transparencia; el juego la recorta (alphaTest),
+  no es un calco. Va con la corta pintada debajo. Antes (hasta taller-v13) era la piel estirada: una lámina hueca.
+- **Corta, bigote y perilla** (calcos): tupidos por dentro con grano de pelo a lo largo de la caída (`pelos_barba`), y
+  en el borde el grano fino deshace la línea en pelos sueltos. Fuera de la zona de la barba no pintan nada.
+- Fotos muy de cerca de cada barba (frente, tres cuartos y perfil): `SOLO=hombre FOTOS=barbas BARBAS=larga,corta
+  python3 herramientas/taller/vestir_mpfb.py <carpeta>` (`SOLO=hombre` solo sirve para probar: nunca se publica así).
+  Para mirar la forma de la larga sin fotos: `VOLCAR_BARBA=<archivo.npy> SOLO_VOLCAR=1` (guarda los puntos y para).
+- Prueba: `node pruebas/prueba_barbas.mjs` (con `MUTAR=1` mira la taller-v13, con la lámina, y falla).
 - La mujer lleva también orejas aparte y pelo corto para cuando no lleva la cofia.
 - Qué se ve con cada peinado, barba y tocado: `piezasCabeza()` en `src/logica/aspecto.js` (el juego y las fotos del
   taller hacen lo mismo). Fotos de cerca de cada uno: `FOTOS=peinados python3 herramientas/taller/vestir_mpfb.py <carpeta>`.
