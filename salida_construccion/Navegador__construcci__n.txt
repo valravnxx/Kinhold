@@ -1,0 +1,196 @@
+PC: cabaña completa
+  OK   mojón colocado
+  OK   6 cimientos en una sola construcción
+  OK   muros y puerta colocados — piezas=17
+  OK   altillo y tejado — piezas=25
+  OK   el hastial manual ya no aparece en el menú
+  OK   decoración colocada
+  OK   girar tejados no tuerce construcciones nuevas — giros=[0, 0]
+  OK   cobertizo de tablas con dos tramos de tejado — piezas=10
+  OK   hierba densa y ninguna planta asomando por los cimientos — {"total": 4145, "visibles": 4111, "dentro": 0, "celdas": 8, "mallas": 3}
+PC: interior (tejado oculto)
+PC: decoración bajo el altillo (va al suelo de tu planta, no al de arriba)
+  OK   en la planta baja, bajo el altillo, la decoración apunta al suelo de abajo — {"x": 3.0818860126709557, "z": 4.671546200576545, "ySuperficie": 0.11028487235307516}
+  OK   y estando arriba, al suelo del altillo — {"x": 3.0785440659718786, "z": 4.668626244151152, "ySuperficie": 2.612704750192929}
+PC: puerta y escalera
+  OK   la puerta se abre con Usar
+  OK   al abrir la puerta solo se rehace esa pieza (nada entero) — {"todo": 0, "pieza": 1}
+  OK   la escalera sube a la planta 1 — planta=1
+  OK   y vuelve a bajar
+PC: rechazo por carga
+  OK   muro de troncos sobre zarzo rechazado con punto débil — {"ok": false, "motivo": "La estructura no soporta ese peso.", "debil": "e:0,0,0,0", "carga": 380, "cap": 250}
+PC: desmontar con cascada
+  OK   al desmontar el muro de zarzo cae el tejado de encima — {"caen": 1, "key": "e:0,0,0,0"}
+  OK   recupera 3 varas (75% de 4) — 91 → 94
+  OK   lo construido, abierto y desmontado queda en el registro de acciones con su autor — 274 acciones: colocar, decorar, desmontar, entregar, mojon, subir, trabajar, usar
+PC: quitar un mueble con el ratón (clic, mover el ratón hasta «Confirmar» y confirmar)
+  OK   el clic elige el barril y pide confirmar
+  OK   al mover el ratón hacia «Confirmar» el barril sigue elegido
+  OK   confirmando, el barril se quita
+  OK   sin nada elegido, el botón de confirmar no aparece al pasar el ratón
+PC: cobertizo de pendiente continua
+PC: primer plano de muros
+PC: guardado
+  OK   la partida se conserva al recargar — piezas=42
+PC: casa de dos plantas con tejado (madera más resistente)
+  OK   casa de 4×4, dos plantas y tejado de troncos: entra entera (también las esquinas del tejado) — {"fallos": [], "n": 80}
+  OK   rehacerlo todo otra vez no hace modelos nuevos: los copia — {"nuevos": 0, "copiados": 366, "con": 21, "sin": 334}
+  OK   y tarda menos de la mitad que haciéndolos de cero — 21 ms frente a 334 ms
+PC: escalera de tablas (se sube andando)
+  OK   escalera de tablas colocada desde el menú — {"ok": true, "clave": "l:0,0,0"}
+  OK   encima de la escalera no deja poner suelo (hueco abierto) — {"ok": false, "motivo": "Ahí está el hueco de una escalera."}
+  OK   a media escalera vas subiendo — y=1.59 planta=1
+  OK   andando se llega arriba: planta 1, sobre el suelo — planta=1 y=2.62
+  OK   y andando hacia atrás se vuelve a bajar a la planta 0 — planta=0 y=0.00
+  OK   por debajo del tramo alto se pasa sin subir — planta=0 y=0.12
+PC: barandilla (medio muro en el borde del suelo de arriba)
+  OK   medio muro colocado como barandilla en la planta 1 — {"ok": true, "clave": "e:1,1,1,0"}
+  OK   sin barandilla, por el borde se cae a la planta 0 — planta=0 x=12.46
+  OK   con la barandilla no se cae: sigue en la planta 1, antes del borde — planta=1 z=-11.54
+PC: trampilla en el hueco de la escalera de tablas
+  OK   trampilla colocada desde el menú en el hueco de la escalera — {"ok": true, "clave": "t:0,0,1"}
+  OK   donde no hay escalera no deja ponerla — {"ok": false, "motivo": "La trampilla va en el hueco de arriba de una escalera de tablas, con suelo al lado."}
+  OK   la bisagra va en el lado con suelo (+x) — 1
+  OK   sale cerrada
+  OK   con la trampilla cerrada no se sube por la escalera — planta=0 y=0.00 z=-14.46
+  OK   arriba, encima de la trampilla cerrada, se queda en la planta 1 — planta=1 y=2.62
+  OK   desde abajo, Usar abre la trampilla
+  OK   abierta, la escalera vuelve a subir a la planta 1 — planta=1 y=2.62
+  OK   estando en la escalera no se cierra
+  OK   desde arriba, fuera de la escalera, Usar la cierra
+PC: contraventanas en los muros con ventana
+  OK   contraventana colocada en el muro de troncos con ventana — {"ok": true, "clave": "w:1,3,0,0"}
+  OK   en un muro sin ventana no se pone — {"ok": false, "motivo": "La contraventana va en un muro con ventana."}
+  OK   muro de tablas con ventana colocado desde el menú — {"ok": true, "clave": "e:3,0,0,0"}
+  OK   y su contraventana — {"ok": true, "clave": "w:3,0,0,0"}
+  OK   la contraventana va por fuera del muro, no por el lado del cimiento — [-14.115, -14.115]
+  OK   la contraventana se abre con Usar
+  OK   las dos abiertas — [true, true]
+  OK   y se vuelve a cerrar
+PC: tejado de teja
+  OK   tejado de teja a dos aguas colocado desde el menú (4 tramos) — [{"ok": true, "clave": "r:0,0,1"}, {"ok": true, "clave": "r:0,1,1"}, {"ok": true, "clave": "r:1,0,1"}, {"ok": true, "clave": "r:1,1,1"}]
+  OK   los 4 tramos terminados y cobradas 40 tejas — tramos=4 tejas 600 → 560
+  OK   la teja sale en la barra de materiales
+PC: remate de tejado (esquinas): casa en L con limatesa y limahoya
+  OK   el fantasma del remate en el rincón tiene forma de limahoya — hoya
+  OK   casa en L: tramos y remates colocados desde el menú — [{"ok": true, "clave": "r:0,0,1"}, {"ok": true, "clave": "r:1,0,1"}, {"ok": true, "clave": "r:2,0,1"}, {"ok": true, "clave": "r:0,1,1"}, {"ok": true, "clave": "r:2,1,1"}, {"ok": true, "clave": "r:1,2,1"}, {"ok": true, "clave": "r:2,2,1"}, {"ok": true, "clave": "r:1,1,1"}]
+  OK   los dos remates terminados, con su dirección — 1,3
+  OK   cobradas las tablas de 6 tramos y 2 remates (18 + 4) — 436 → 414
+PC: los muebles del piso de arriba no se ven desde abajo con el techo puesto
+  OK   taburetes colocados arriba y abajo — {"arriba": 200, "abajo": 201}
+  OK   abajo, bajo el suelo de arriba: el mueble de arriba no se ve y el de abajo sí — arriba=False abajo=True
+  OK   arriba, el mueble de arriba se ve
+  OK   fuera, al aire libre, se ven los dos
+PC: WASD con la distribución de teclado rusa y sin teclas pegadas al perder el foco
+  OK   con la distribución rusa, W (que escribe «ц») mueve al personaje — z: -20.00 → -20.93
+  OK   y al soltarla no queda ninguna tecla pulsada — []
+  OK   al perder el foco se sueltan las teclas: no sigue andando — x: 16.23 → 16.23
+PC: portillo de la cerca (se abre con Usar)
+  OK   portillo colocado entre dos tramos de cerca — {"ok": true, "clave": "e:1,0,0,0"}
+  OK   portillo en la misma rejilla que la cerca, en línea con ella — {"x": -8, "z": 11, "d": 0, "cercas": 2}
+  OK   cerrado no deja pasar — z=11.46 portillo=11.00
+  OK   Usar abre el portillo
+  OK   y queda en el registro de acciones
+  OK   abierto se pasa al otro lado — z=9.84
+PC: obras (marco, material y tiempo)
+  OK   colocar pone solo el marco: queda como obra — ["muro_tronco", "muro_tronco_ventana", "poste"]
+  OK   el marco no cobra material (solo los dos cimientos terminados) — 315 → 311
+  OK   la obra se dibuja con su armazón
+  OK   Usar encuentra la obra más cercana (el poste) — {"c": 206, "key": "v:2,0,0"}
+  OK   Usar le lleva el material (1 tronco) y se pone a construir
+  OK   el trabajo avanza con el tiempo — ya terminada
+  OK   al acabar el tiempo de la pieza (7 s de trabajo), el poste queda terminado
+  OK   cada rato de trabajo queda en el registro con su autor
+  OK   moverse deja la obra
+PC: obra en alto: subir los troncos rodándolos por dos varas con una cuerda
+  OK   el marco de un muro en la planta 1 se pone
+  OK   Usar desde el suelo se pone a subir los troncos (no se entregan a mano) — "tronco"
+  OK   el tronco va subiendo por las varas
+  OK   sola, rodándolo, sube un tronco (10 s de trabajo) y queda entregado
+  OK   cada rato subiendo queda en el registro con su autor y el método
+  OK   moverse deja de subir y quita las varas
+PC: andamio pegado al muro (se sube con Usar y se trabaja desde su plataforma)
+  OK   dos andamios apilados, pegados al muro y mirando hacia él — [[0, 0], [1, 0]]
+  OK   el marco de un muro de zarzo en la planta 2
+  OK   al pie del andamio, Usar lo encuentra — {"c": 206, "key": "l:0,-1,0", "tipo": "escalera"}
+  OK   Usar sube a la plataforma del andamio (planta 1, a la altura de su suelo) — k=1 y=2.62
+  OK   arriba, con otro andamio encima, Usar sube a ese (planta 2) — k=2 y=5.12
+  OK   desde el andamio se lleva lo ligero a la obra de la planta 2 y se construye — 530 → 526
+  OK   el muro de la planta 2 queda terminado, trabajado desde el andamio
+  OK   en lo alto de la pila, Usar baja hasta el pie
+PC: polea en una viga (una persona sola sube los troncos)
+  OK   la polea se cuelga de la viga
+  OK   el marco de un muro de troncos en la planta 1, entre los postes
+  OK   con polea, Usar se pone a subir los troncos con ella (no con varas) — "polea"
+  OK   el tronco sube en vertical colgado de la polea — y=1.892
+  OK   sola, con la polea, sube un tronco (5 s de trabajo) y queda entregado
+  OK   cada rato con la polea queda en el registro con su autor y el método
+  OK   moverse deja de subir y quita la cuerda
+PC: polipasto con torno en una viga (sola, un tronco; lo muy pesado, entre dos)
+  OK   el polipasto se cuelga de la viga
+  OK   el marco de un muro de troncos en la planta 1, bajo el polipasto
+  OK   con el polipasto más cerca de la obra que la polea, Usar sube los troncos con él y pone el torno — {"t": 0.17994296875000002, "meta": 0.7836000000000001, "visible": true, "tipo": "polipasto", "yTronco": 0.8124534296875, "yMoton": -0.8575465703125, "torno": true}
+  OK   el motón de abajo baja hasta la carga y sube con ella — -1.3199999999999998 → 0.4789999999999996
+  OK   sola, con el polipasto, sube un tronco como con polea y queda entregado
+  OK   cada rato con el polipasto queda en el registro con su autor y el método
+  OK   moverse deja de subir, quita el torno y el motón vuelve arriba
+PC: chimenea (hogar interior) sobre cimiento de piedra, con fuego, luz y humo por el tejado
+  OK   sobre el cimiento de troncos no deja ponerla — {"ok": false, "motivo": "La chimenea va en la planta baja, sobre un cimiento de piedra terminado."}
+  OK   chimenea colocada desde el menú sobre el cimiento de piedra — {"ok": true, "clave": "h:3,1,0"}
+  OK   terminada, gasta sus piedras y queda encendida, arrimada al muro de atrás — dir=0
+  OK   el fuego alumbra (una luz encendida de las dos que hay) y su humo sube — {"chimeneas": 1, "luces": 2, "encendidas": 1}
+  OK   el humo sale por encima del tejado (cumbrera a 3,7 m) — [9, 4.858351111111211]
+  OK   no se entra en el fuego (el hogar se choca) — z=2.59
+  OK   junto al hogar, Usar ofrece el fuego
+  OK   Usar apaga el fuego: sin llamas, sin humo y sin luz — {"chimeneas": 0, "luces": 2, "encendidas": 0}
+  OK   apagar no rehace todo lo construido
+  OK   y la vuelve a encender
+PC: adarve detrás de la empalizada, con escalera de mano y de tablas
+  OK   lejos de una empalizada no deja ponerlo — {"ok": false, "motivo": "El adarve va en la planta baja, en una casilla junto a una empalizada terminada."}
+  OK   adarve colocado desde el menú detrás de la empalizada — {"ok": true, "clave": "a:3,-2,0"}
+  OK   dos tramos seguidos, terminados, arrimados solos a la empalizada (-z: dir 2), giren como giren — [{"ok": true, "clave": "a:4,-2,0"}, [[2, false], [2, false]]]
+  OK   el fantasma de la escalera de mano sale corta delante del adarve, y larga en otro sitio — adarve None
+  OK   escalera de mano y de tablas delante del adarve, subiendo hacia él — [{"ok": true, "clave": "l:3,-1,0"}, {"ok": true, "clave": "l:4,-1,0"}]
+  OK   por debajo del adarve no se pasa — z=-1.54
+  OK   junto a la escalera de mano, Usar ofrece subir
+  OK   Usar sube al piso del adarve (1,8 m) — y=1.80 planta=1
+  OK   arriba, la empalizada no se salta — z=-3.54 y=1.80
+  OK   se anda por los dos tramos seguidos sin bajar — x=9.52 y=1.80 planta=1
+  OK   se baja andando por la escalera de tablas — y=0.00 planta=0
+  OK   se sube andando por la escalera de tablas hasta el adarve — medio=1.11 y=1.80 planta=1
+  OK   Usar en el adarve, junto a la escalera de mano, baja al suelo
+  OK   el personaje sigue en el adarve
+PC: todos los muebles en fila, de cerca (estilo v5)
+  OK   los 11 muebles colocados en fila — 11 muebles
+PC: personaje del taller (camisa y calzas de lino; anda, corre y tala)
+  OK   carga el personaje del taller (no el muñeco)
+  OK   lleva camisa y calzas
+  OK   sin túnica ni armadura, y descalzo (como empieza el GDD: se ven los pies, no los zapatos) — hombre_barba_corta, hombre_capa_calzas, hombre_capa_camisa, hombre_capa_camisa_falda, hombre_capa_camisa_mangas, hombre_iris_l, hombre_iris_r, hombre_ojo_l, hombre_ojo_r, hombre_orejas, hombre_pelo, hombre_piel, hombre_pies, hombre_vello, estilo_veta, estilo_liso, estilo_anillos
+  OK   andar, correr, quieto y talar según la velocidad — andar:1.05, correr:1.02, correr:1.60, quieto:1.00, talar:1.00
+  OK   la animación se acelera con la velocidad (a su medida natural, tope 1,6×) — andar:1.05, correr:1.02, correr:1.60, quieto:1.00, talar:1.00 · natural 3.53 m/s
+  OK   Usar junto a un árbol: tala — talar
+  OK   el botón Usar se enciende junto al árbol
+  OK   moverse deja de talar — correr
+  OK   corre con Mayús — correr
+PC: barra de construcción
+  OK   rehacer las piezas no deja memoria gráfica ocupada — geometrías 329 → 326 tras 20 reconstrucciones
+  OK   sin errores en consola (PC)
+  OK   al quitarlo todo, la hierba y las matas vuelven — {"total": 4145, "visibles": 4145, "ocultas": 0, "matasOcultas": 0}
+Móvil
+  OK   joystick visible en táctil
+  OK   móvil: el andamio y la polea se cargan del guardado
+  OK   móvil: la contraventana y la trampilla se cargan del guardado
+  OK   móvil: el tejado de teja se carga del guardado
+  OK   móvil: los remates de tejado se cargan del guardado
+  OK   móvil: la chimenea se carga del guardado, encendida
+  OK   móvil: los adarves se cargan del guardado
+  OK   botón Colocar visible al construir en táctil
+  OK   carga el personaje del taller en el móvil
+  OK   móvil: Colocar pone el marco de la obra
+  OK   sin errores en consola (móvil)
+Móvil: se pierde el dibujo 3D
+  OK   al perder el dibujo 3D avisa y recarga sola
+  OK   después de recargar sigue lo construido — 226 → 226
+  OK   si vuelve a pasar enseguida no recarga en bucle: ofrece Recargar
+
+Resultado: TODO CORRECTO
