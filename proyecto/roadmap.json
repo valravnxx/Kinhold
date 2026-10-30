@@ -949,17 +949,22 @@
     },
     {
      "nombre": "Comarcas de Whitholm y sus zonas (valravnx, 29 y 30 oct): la isla dividida en 8 comarcas que siguen las cuencas de los ríos, con bordes naturales y en curva, y cada comarca en zonas de aproximadamente 1 km² para los clanes; en la lógica (para el servidor) y en el mapa",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T09:11:06+01:00",
-     "rama": "trabajo/20261030-0910-comarcas"
+     "rama": "trabajo/20261030-0910-comarcas",
+     "fin": "2026-10-30T10:20:44+01:00"
     },
     {
      "nombre": "Nombres de las comarcas de Whitholm (valravnx, 30 oct): Breiddal, Motdale, Nordwold, Lindholt, Strandvang, Furulid, Sudholt y Ravnsnes",
-     "estado": "hecho"
+     "estado": "hecho",
+     "inicio": "2026-10-30T09:11:06+01:00",
+     "fin": "2026-10-30T10:20:44+01:00"
     },
     {
      "nombre": "Dónde se aparece (valravnx, 30 oct): en un sitio al azar de dos o tres comarcas de inicio, en biomas normales; elegidas Motdale, Breiddal y Strandvang. Hacerlo en el juego es tarea del hito «El juego en el mundo de verdad»",
-     "estado": "hecho"
+     "estado": "hecho",
+     "inicio": "2026-10-30T09:11:06+01:00",
+     "fin": "2026-10-30T10:20:44+01:00"
     },
     {
      "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
@@ -2545,6 +2550,13 @@
      "archivo": "jugar/mapa/v16.html",
      "capturas": "capturas/mapa-v16",
      "notas": "Gran veta de hierro en lo alto de la sierra de Whitholm (valravnx, 30 oct): a 1.685 m, junto a la cumbre de la isla, en la caliza."
+    },
+    {
+     "v": "v17",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/mapa/v17.html",
+     "capturas": "capturas/mapa-v17",
+     "notas": "Comarcas de Whitholm con sus nombres y sus zonas de aproximadamente 1 km² (botón «Comarcas»), y el nombre de la isla grande y encima."
     }
    ]
   }

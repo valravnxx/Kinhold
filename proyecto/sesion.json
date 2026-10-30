@@ -6,12 +6,6 @@
   "hito": "arte",
   "rama": "trabajo/20261030-0653"
  },
- "chat:trabajo/20261030-0910-comarcas": {
-  "inicio": "2026-10-30T09:11:06+01:00",
-  "tarea": "Comarcas de Whitholm y sus zonas (valravnx, 29 y 30 oct): la isla dividida en 8 comarcas que siguen las cuencas de los ríos, con bordes naturales y en curva, y cada comarca en zonas de aproximadamente 1 km² para los clanes; en la lógica (para el servidor) y en el mapa",
-  "hito": "mundo",
-  "rama": "trabajo/20261030-0910-comarcas"
- },
  "chat:trabajo/20261030-0945-combate": {
   "inicio": "2026-10-30T09:39:49+01:00",
   "tarea": "Combate en el mundo (valravnx, 30 oct): en PC, ratón cogido y ataque cargado mientras se mantiene el clic, en la dirección del último movimiento (sin movimiento, estocada) y cambiable sin soltar; paradas con el botón derecho por dirección, también cambiables; fijar rival con la cámara del duelo; en el móvil, la rosa fija a un lado; cámara que se inclina más",
