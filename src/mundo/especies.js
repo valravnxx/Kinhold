@@ -9,6 +9,10 @@ import * as THREE from 'three';
 import { cil, copa, pisoPino, modeloLote } from './decorado.js';
 
 export const ESPECIES = ['abeto', 'pino', 'abedul', 'roble', 'haya', 'fresno', 'encina'];
+// el radio del pie del tronco de cada especie a escala 1 (m): para chocar con él y para su tocón al talarlo
+// radio de la copa y alto (m) de cada especie a escala 1: para no dibujar los que tapan al personaje
+export const TAMANO_ESPECIE = { abeto: [2.1, 10.5], pino: [2.3, 9.5], abedul: [1.6, 9], roble: [3.2, 7.5], haya: [2.3, 10.8], fresno: [2.6, 9.2], encina: [2.6, 5.5] };
+export const RADIO_TRONCO = { abeto: 0.3, pino: 0.27, abedul: 0.15, roble: 0.52, haya: 0.36, fresno: 0.27, encina: 0.34 };
 
 // copas: [x, y, z, radio, color, escala (x, y, z) opcional]; s = sencillo
 function copas(L, lista, s, det, desde = 0) {

@@ -39,8 +39,10 @@ def tapado(pg, sel):
     return pg.evaluate("""s => { const e = document.querySelector(s); if (!e) return 'no está'; const r = e.getBoundingClientRect();
       if (r.width === 0) return 'invisible'; const x = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
       return x === e || e.contains(x) ? '' : (x ? x.id || x.tagName : 'nada'); }""", sel)
+# mira la condición cada 250 ms (no en cada fotograma: con dos páginas del mundo en la máquina de pruebas, sin tarjeta
+# gráfica, un fotograma puede tardar segundos y las esperas cortas se agotaban sin que nada fallara de verdad)
 def esperar(pg, cond, ms=20000):
-    try: pg.wait_for_function(cond, timeout=ms); return True
+    try: pg.wait_for_function(cond, timeout=ms, polling=250); return True
     except Exception: return False
 def captura(pg, ruta):
     # con la otra página dibujando sin tarjeta gráfica, a veces la captura falla a la primera
@@ -207,7 +209,7 @@ try:
 
         print('El servidor se apaga')
         servidor.terminate(); servidor.wait(5)
-        comprobar('PC dice que se ha cortado (y que vuelve a conectar) y ya no ve al otro', esperar(A, "document.getElementById('estadoRed').textContent === 'Volviendo a conectar…'", 10000) and A.evaluate(f"{D}.otros.size") == 0,
+        comprobar('PC dice que se ha cortado (y que vuelve a conectar) y ya no ve al otro', esperar(A, "document.getElementById('estadoRed').textContent === 'Volviendo a conectar…'", 20000) and A.evaluate(f"{D}.otros.size") == 0,
                   f"estado: {A.inner_text('#estadoRed')} · otros: {A.evaluate(f'{D}.otros.size')}")
         comprobar('sin conexión no se ataca', not A.evaluate(f"{D}.atacar('alto')"))
         for nombre, (pg, err) in paginas.items():

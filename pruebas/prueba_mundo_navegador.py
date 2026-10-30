@@ -7,7 +7,11 @@
 # que no se puede entrar en el mar ni salir de la isla. Y la salida al azar (valravnx, 30 oct): un jugador nuevo sale en
 # uno de los sitios de la lista (src/logica/whitholm.js), al recargar vuelve al mismo, y quien ya tenía algo guardado de
 # antes sigue en el sitio común (donde está lo que construyó).
+# Y lo que crece (src/mundo/vegetacion_mundo.js): árboles de las especies de su sitio, hierba, flores, matas y piedras,
+# nada en el agua ni pegado a la salida, los árboles se pueden talar, los que tapan al personaje no se dibujan, y al
+# recargar está todo en el mismo sitio.
 # MUTAR=1 abre la demo con ?llano=1 (el llano de antes): la prueba tiene que fallar.
+# MUTAR=2: lo que crece, con otra semilla en cada carga: tiene que fallar (no sale en el mismo sitio al recargar).
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
@@ -25,8 +29,8 @@ class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-MUTAR = bool(os.environ.get('MUTAR'))
-URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir' + ('&llano=1' if MUTAR else '')
+MUTAR = os.environ.get('MUTAR', '')
+URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir' + ('&llano=1' if MUTAR == '1' else '')
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'
 fallos = []
@@ -51,6 +55,7 @@ with sync_playwright() as p:
     for nombre, vista, movil in [('pc', {'width': 1280, 'height': 800}, False), ('movil', {'width': 390, 'height': 844}, True)]:
         print('Vista', nombre)
         ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
+        if MUTAR == '2': ctx.add_init_script('window.__mutarVegetacion = true')
         pg = ctx.new_page()
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
@@ -85,6 +90,32 @@ with sync_playwright() as p:
         comprobar('el personaje pisa el suelo', abs(d['pj'][1] - d['suelo']) < 0.05, f"{d['pj'][1]:.3f} / {d['suelo']:.3f}")
         comprobar('sin el llano de antes, con el terreno por trozos (en un hilo aparte)', not d['llano'] and d['trozos'] >= 9 and d['hilos'] >= 1, f"{d['trozos']} trozos, {d['tri']} triángulos")
         comprobar('el terreno tiene relieve (más de 5 m de desnivel en 2 km; la salida al azar puede caer en una vega muy llana)', d['hi'] - d['lo'] > 5, f"{d['lo']:.1f}–{d['hi']:.1f} m")
+        # lo que crece
+        v = pg.evaluate(f"""(() => {{ const k = {K}, m = k.mundoJ, c = k.decorado.cuenta, arb = k.obstaculos.filter(o => o.arbol);
+          const ESP = ['abeto', 'pino', 'abedul', 'roble', 'haya', 'fresno', 'encina'];
+          let agua = 0; for (const o of k.obstaculos) if (!m.seco(o.x, o.z)) agua++;
+          const firma = arb.map(o => o.id + ':' + o.especie).sort().join('|');
+          let h = 0; for (const ch of firma) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+          return {{ cuenta: c, arboles: arb.length, especies: [...new Set(arb.map(o => o.especie))], buenas: arb.every(o => ESP.includes(o.especie)),
+            agua, cerca: Math.min(...arb.map(o => Math.hypot(o.x, o.z - 2))), talables: arb.filter(o => o.id && k.talaV.porId.has(o.id)).length, firma: h,
+            mallas: ESP.filter(e => ['arboles_', 'arbolesMedios_', 'arbolesLejos_'].some(n => k.escena.getObjectByName(n + e))) }}; }})()""")
+        print('  lo que crece:', json.dumps({x: v[x] for x in ['cuenta', 'especies', 'agua', 'cerca', 'talables', 'firma']}))
+        c = v['cuenta']
+        comprobar('hay árboles, de las especies del mundo, cada una con su malla', v['arboles'] > 20 and v['buenas'] and sorted(v['mallas']) == sorted(v['especies']), ', '.join(v['especies']))
+        comprobar('hay hierba, matas y piedras', c['hierba'] > 300 and c['matas'] > 5 and c['piedras'] > 10, f"{c['hierba']} hierba, {c['flores']} flores, {c['matas']} matas, {c['piedras']} piedras")
+        comprobar('nada en el agua', v['agua'] == 0, f"{v['agua']}")
+        comprobar('ningún árbol pegado a la salida (a menos de 8 m)', v['cerca'] >= 8, f"{v['cerca']:.1f} m")
+        comprobar('todos los árboles se pueden talar', v['talables'] == v['arboles'], f"{v['talables']} de {v['arboles']}")
+        comprobar('hacer lo que crece tarda poco al cargar (menos de 3 s)', c['ms'] < 3000, f"{c['ms']} ms")
+        # los árboles que tapan al personaje no se dibujan: poner uno detrás de él, entre la cámara y él
+        t = pg.evaluate(f"""(() => {{ const k = {K}, o = k.obstaculos.filter(o => o.arbol).sort((p, q) => Math.hypot(p.x, p.z) - Math.hypot(q.x, q.z))[0];
+          k.pj.x = o.x + Math.sin(k.cam.yaw) * -5; k.pj.z = o.z + Math.cos(k.cam.yaw) * -5; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z);
+          return new Promise(bien => setTimeout(() => {{ const m = new k.escena.matrixWorld.constructor(); o.malla.getMatrixAt(o.instancia, m);
+            bien({{ tapan: k.decorado.tapan, escondido: Math.abs(m.determinant()) < 1e-9 }}); }}, 1500)); }})()""")
+        comprobar('el árbol entre la cámara y el personaje no se dibuja', t['escondido'] and t['tapan'] >= 1, json.dumps(t))
+        pg.screenshot(path=f'{SALIDA}/{nombre}_bosque.png')
+        pg.evaluate(f'(() => {{ const k = {K}; k.pj.x = 0; k.pj.z = 4; k.pj.y = k.alturaSuelo(0, 4); }})()')
+        pg.wait_for_timeout(800)
         pg.screenshot(path=f'{SALIDA}/{nombre}_salida.png')
         pg.evaluate(f'(() => {{ const k = {K}; k.cam.pitch = 0.32; k.cam.dist = 24; }})()'); pg.wait_for_timeout(1500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_paisaje.png')
@@ -143,6 +174,9 @@ with sync_playwright() as p:
                 return pg.evaluate(f'{K}.mundoJ && {K}.mundoJ.salida')
             s2 = salida_tras_recargar()
             comprobar('al recargar, sale en el mismo sitio', s2 == s, f'{json.dumps(s)} → {json.dumps(s2)}')
+            f2 = pg.evaluate(f"""(() => {{ const firma = {K}.obstaculos.filter(o => o.arbol).map(o => o.id + ':' + o.especie).sort().join('|');
+              let h = 0; for (const ch of firma) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; }})()""")
+            comprobar('al recargar, cada árbol está en el mismo sitio y es de la misma especie', f2 == v['firma'], f"{v['firma']} → {f2}")
             pg.evaluate(f"(() => {{ localStorage.removeItem('kinhold_salida_v1'); localStorage.setItem('kinhold_h1_v1', JSON.stringify({K}.mundo.exportar())); }})()")
             s3 = salida_tras_recargar()
             comun = pg.evaluate(f'{K}.salidas.comun')

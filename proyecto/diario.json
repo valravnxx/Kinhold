@@ -2794,5 +2794,19 @@
   "pruebas": "Lógica de tronzar y partir 42/42 (nueva; con MUTAR=1 fallan 4). Prueba de navegador nueva en PC y móvil, bien (con MUTAR=1 falla). Batería entera en la nube (22 grupos): bien salvo «duelo en línea», que falla también en main desde la salida al azar (valravnx: «aún no está el servidor, por eso falla»).",
   "capturas": "capturas/construccion-v43",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T15:43:32+00:00",
+  "fin": "2026-10-30T18:03:57+00:00",
+  "titulo": "Lo que crece en el mundo, publicado (demo v55) (carril B)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Retomada la rama de lo que crece en el mundo (trabajo/20261030-1329), que el carril A dejó hecha y sin publicar solo por las pruebas en línea; valravnx dijo el 30 oct que esas dos no paran la publicación mientras no esté el servidor.",
+   "Unido main dos veces: la v53 de la demo pasó a ser el combate y la v54 el tronzar y partir, así que lo que crece sale como demo v55 (registro y traducciones renombrados).",
+   "Capturas de PC y móvil miradas al lado de la prueba de estilo v5. Aún mal, y peor que la v5: el suelo sale más amarillo y seco; los robles y fresnos de la vega, con el tronco que se abre y la copa ancha y plana sobre ese suelo, parecen de sabana; los matorrales, vistos desde arriba, son bolas verdes lisas; lejos de la salida no hay árboles ni hierba (tarea siguiente del hito)."
+  ],
+  "pruebas": "En la nube, la batería entera (21 grupos): todo bien salvo jugar en línea y duelo en línea (sin servidor, no paran la publicación) y la lógica, que falló una vez en «lo que no se puede se rechaza al que lo manda» del combate en el servidor (no tocado por esta rama; bien tres veces aquí y al repetirla en la nube). Tras unir el tronzar y partir de main, repetidos lógica, demo única, la demo en el mundo, tala, inglés, combate en el mundo, recoger, objetos en el suelo y construcción.",
+  "capturas": "capturas/demo-v55",
+  "estado": "ok"
  }
 ]

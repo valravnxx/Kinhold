@@ -11,6 +11,7 @@ import { t } from './textos.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearDecorado } from '../mundo/decorado.js';
+import { crearVegetacionMundo } from '../mundo/vegetacion_mundo.js';
 import { vigilar, ofrecerGente } from '../mundo/rendimiento.js';
 import { conectarEnLinea } from './en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
@@ -146,11 +147,13 @@ const mundoJ = MUNDO ? crearMundoJuego({ escena, mapa: MUNDO.mapa, origen: sitio
 // Como la prueba de estilo v5: hierba densa con flores desde el centro, matorrales, calvas de tierra pisada,
 // rocas y algunos árboles sueltos más cerca. Donde se construye, la hierba, las flores y las matas se esconden
 // (decorado.despejar, en reconstruir) para que no asomen por los cimientos.
-const decorado = crearDecorado({ semilla: 7, llano: 60, lejos: 230, arboles: 220, bosqueDesde: 28, bosqueHasta: 175,
-  hierba: 3200, flores: 900, hierbaDesde: 0, hierbaHasta: 46, rocas: 40, rocasDesde: 9, matas: 45, matasDesde: 7,
-  sueltos: 10, sueltosDesde: 22, calvas: 14, claro: (x, z) => Math.hypot(x, z - 4) > 1.5, // sin nada en el sitio de salida
-  // en el mundo: sobre el terreno de verdad, sin el suelo del llano y nada en el agua
-  ...(mundoJ ? { altura: mundoJ.altura, apto: mundoJ.seco, sinSuelo: true } : {}) });
+// En el mundo de verdad, lo que crece en cada sitio de Whitholm (src/mundo/vegetacion_mundo.js): las siete especies de
+// árbol, la hierba y las piedras, con las reglas del mapa y siempre en el mismo sitio.
+// (window.__mutarVegetacion: solo para romper la prueba a propósito, con otra semilla en cada carga)
+const decorado = mundoJ ? crearVegetacionMundo({ mundoJ, semilla: MUNDO.mapa.semilla + (window.__mutarVegetacion ? Math.floor(Math.random() * 1e6) : 0) })
+  : crearDecorado({ semilla: 7, llano: 60, lejos: 230, arboles: 220, bosqueDesde: 28, bosqueHasta: 175,
+    hierba: 3200, flores: 900, hierbaDesde: 0, hierbaHasta: 46, rocas: 40, rocasDesde: 9, matas: 45, matasDesde: 7,
+    sueltos: 10, sueltosDesde: 22, calvas: 14, claro: (x, z) => Math.hypot(x, z - 4) > 1.5 }); // sin nada en el sitio de salida
 escena.add(decorado.raiz);
 const obstaculos = decorado.obstaculos; // {x,z,r}
 // lo que se recoge del suelo y de las plantas (N0): ramas, piedra, sílex y fibra (src/juego/recoleccion.js)
@@ -226,6 +229,8 @@ function actualizarCamara() {
     objetivo.z + Math.cos(cam.yaw) * cp * dist);
   camara.lookAt(objetivo);
   ambiente.seguir(pj.x, pj.z);
+  // en el mundo, los árboles que se meten entre la cámara y tú no se dibujan (src/mundo/vegetacion_mundo.js)
+  if (decorado.destapar && !window.__sinDestapar) decorado.destapar(pj, camara.position, (o) => talaV.enPie(o));
 }
 
 // ---------------- Construcciones en pantalla ----------------
@@ -1756,7 +1761,7 @@ function iniciarEnLinea() {
 
 // acceso para pruebas automáticas
 window.__kinhold = {
-  get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos, talaV, combate,
+  get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos, talaV, decorado, combate,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   mundoJ, get mundoListo() { return mundoListo; }, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),

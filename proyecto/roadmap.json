@@ -454,9 +454,9 @@
     },
     {
      "nombre": "Los árboles (las siete especies), la hierba y las rocas del mundo en el juego, con el estilo v5 y siempre en el mismo sitio",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T12:29:53+00:00",
-     "rama": "trabajo/20261030-1329"
+     "fin": "2026-10-30T18:03:57+00:00"
     },
     {
      "nombre": "Lo que crece sigue al jugador por la isla: los árboles, la hierba y las piedras se rehacen a su alrededor poco a poco al andar (como en la vista «Como en el juego» del mapa), sin perder lo talado",
@@ -1823,6 +1823,13 @@
      "archivo": "jugar/demo/v54.html",
      "capturas": "capturas/construccion-v43",
      "notas": "En «Construir», tronzar y partir: el tronco largo se tronza con hacha en 3 o 4 troncos cortos y el corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro."
+    },
+    {
+     "v": "v55",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v55.html",
+     "capturas": "capturas/demo-v55",
+     "notas": "En «Construir», lo que crece en Whitholm es el del mapa: árboles de las siete especies en sus biomas, en masas de bosque, claros y corros, con hierba, flores, matorrales y piedras; siempre en el mismo sitio, nada en el agua, y todos se talan. Los árboles que tapan al personaje no se dibujan. Aún mal: lejos de la salida no hay árboles ni hierba."
     }
    ]
   },
