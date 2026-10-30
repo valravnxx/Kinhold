@@ -45,6 +45,7 @@ comprobar('los valores por defecto existen en sus listas', ['hombre', 'mujer'].e
   comprobar('bajo la capucha no asoman las trenzas ni las orejas', !c._pelo_trenzas && !c._orejas && c._pelo);
   const f = pc({ peinado: 'cofia', barba: 'ninguna' });
   comprobar('con la cofia, ni pelo ni orejas', f._cofia && !f._pelo && !f._orejas);
+  comprobar('el bigote con volumen va con corta, larga, bigote y perilla, y no sin barba', ['corta', 'larga', 'bigote', 'perilla'].every(b => pc({ peinado: 'corto', barba: b })._barba_mostacho) && !pc({ peinado: 'corto', barba: 'ninguna' })._barba_mostacho);
   const r = pc({ peinado: 'rapado', barba: 'perilla' });
   comprobar('rapado con perilla', !r._pelo && r._orejas && r._barba_perilla && !r._barba_corta);
   comprobar('los peinados nuevos se pueden elegir y se guardan', normalizarAspecto({ peinado: 'trenzas', barba: 'perilla' }, 'hombre').peinado === 'trenzas' && normalizarAspecto({ peinado: 'coleta' }, 'mujer').peinado === 'coleta' && normalizarAspecto({ barba: 'larga' }, 'mujer').barba === 'ninguna');

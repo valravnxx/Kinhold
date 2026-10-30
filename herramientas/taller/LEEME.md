@@ -105,6 +105,12 @@ Prueba: `node pruebas/prueba_pies.mjs` (con `MUTAR=1` mira la taller-v11, que no
   delante ni meterse hacia el cuello; a los lados sigue la mandíbula) y vuelve por detrás en línea recta hasta la
   garganta: de perfil, una cuña maciza. Punta y bordes desiguales en la transparencia; el juego la recorta (alphaTest),
   no es un calco. Va con la corta pintada debajo. Antes (hasta taller-v13) era la piel estirada: una lámina hueca.
+- **Desde taller-v17:** la larga tiene ondas distintas en cada mechón (antes una sola onda para toda la barba, en fila)
+  y por los lados nace también detrás de la patilla, en el lado del cuello, y baja unos 4 cm bajo el mentón (de frente
+  ya no asoma el cuello a los lados de la barbilla). **Bigote con volumen** (`_barba_mostacho`): malla propia de comisura
+  a comisura; nace en la piel bajo la nariz, se abomba unos 5 mm sobre el labio de arriba (nunca más fuera que el labio
+  más 3 mm, para que el rayo no dé en la nariz) y cae hacia fuera y abajo por las comisuras; punta desigual pelo a pelo.
+  Va encima del bigote pintado con la corta, la larga, el bigote y la perilla (`piezasCabeza`).
 - **Corta, bigote y perilla** (calcos): tupidos por dentro con grano de pelo a lo largo de la caída (`pelos_barba`), y
   en el borde el grano fino deshace la línea en pelos sueltos. Fuera de la zona de la barba no pintan nada.
 - Fotos muy de cerca de cada barba (frente, tres cuartos y perfil): `SOLO=hombre FOTOS=barbas BARBAS=larga,corta
