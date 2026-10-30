@@ -85,7 +85,11 @@ with sync_playwright() as p:
     mover(pg, 60, 0); e2 = estado(pg)
     comprobar('mantener el clic carga el golpe', e1['accion'] == 'preparando' and e1['carga'] > 0.5, str(e1))
     comprobar('a mitad del clic, el ratón a la derecha cambia el golpe sin soltar (finta)', e2['accion'] == 'preparando' and e2['linea'] == 'derecha' and e2['finta'], str(e2))
-    pg.evaluate(f'{C}.raton.soltar(0)'); pg.wait_for_timeout(120); e3 = estado(pg)
+    # al soltar sale; si la finta dejó la carga por debajo del mínimo, sale al llegar a él (sin volver a pulsar)
+    pg.evaluate(f'{C}.raton.soltar(0)')
+    try: pg.wait_for_function(f'{C}.L.accion !== "preparando"', timeout=60000)
+    except Exception: pass
+    e3 = estado(pg)
     comprobar('al soltar, el golpe sale', e3['accion'] in ('lanzando', 'golpeando', 'recuperando'), str(e3))
     # parar con el botón derecho, cambiando de lado sin soltar
     libre(pg); golpe(pg, -45, 0, 2); e = estado(pg)
@@ -137,6 +141,15 @@ with sync_playwright() as p:
     mv.tap('#btnArma'); mv.wait_for_timeout(400)
     vis = mv.evaluate("['cmbRosa', 'cmbParar', 'cmbFijar', 'cmbRival'].map(id => { const e = document.getElementById(id); const b = e.getBoundingClientRect(); return [id, !e.closest('[hidden]') && b.width > 0, Math.round(b.right), Math.round(b.bottom)]; })")
     comprobar('móvil: la rosa fija y los botones Parar, Fijar y Rival salen y caben', all(v[1] and v[2] <= 390 and v[3] <= 844 for v in vis), str(vis))
+    solapes = mv.evaluate("""(() => {
+      const caja = id => document.getElementById(id).getBoundingClientRect();
+      const choca = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+      const malos = [];
+      for (const a of ['cmbParar', 'cmbFijar', 'cmbRival', 'cmbEstado', 'joystick']) for (const b of ['cmbRosa', 'joystick', 'cmbEstado'])
+        if (a !== b && !document.getElementById(a).hidden && !document.getElementById(b).hidden && choca(caja(a), caja(b))) malos.push(a + '/' + b);
+      return [...new Set(malos)];
+    })()""")
+    comprobar('móvil: los botones no tapan la rosa, y el aliento no tapa el joystick', not solapes, str(solapes))
     mira = mv.evaluate("document.getElementById('cmbMira').hidden")
     comprobar('móvil: sin la mira del ratón', mira)
     caja = mv.evaluate("(() => { const b = document.getElementById('cmbRosa').getBoundingClientRect(); return [b.left, b.top, b.width]; })()")
