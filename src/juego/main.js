@@ -21,6 +21,7 @@ import { crearRecoleccion } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { nombreDe } from '../logica/recoleccion.js';
+import { crearCombateMundo } from './combate_mundo.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -712,7 +713,7 @@ lienzo.addEventListener('pointermove', (e) => {
   const rotarCamara = e.pointerType !== 'mouse' || p.boton === 2 || p.boton === 1 || (p.boton === 0 && estado.modo === 'mover');
   if (arrastrando && rotarCamara) {
     cam.yaw -= dx * 0.006;
-    cam.pitch = THREE.MathUtils.clamp(cam.pitch + dy * 0.004, 0.45, 1.35);
+    cam.pitch = THREE.MathUtils.clamp(cam.pitch + dy * 0.004, 0.06, 1.35); // hasta casi a ras de suelo (valravnx, 30 oct)
   }
   if (e.pointerType === 'mouse' && p.boton === 0 && estado.modo === 'construir') alPasar(e.clientX, e.clientY);
 });
@@ -1364,7 +1365,7 @@ function paso() {
   if (teclas.has('e')) cam.yaw -= dt * 1.6;
   const mag = Math.min(1, Math.hypot(ax, az));
   const correr = teclas.has('shift');
-  const vel = (correr ? 6 : 3.6) * mag * inventario().velocidad(); // cargado al máximo en todo, al 80% (GDD)
+  const vel = (correr ? 6 : 3.6) * mag * inventario().velocidad() * combate.factorVelocidad(correr); // cargado al máximo en todo, al 80% (GDD); con el arma sacada, lo que diga el combate
   if (mag > 0.05) {
     estado.talando = null; // moverse deja de talar
     if (estado.obrando) { estado.obrando = null; mostrarAviso(t('dejasObra')); } // y de construir
@@ -1399,6 +1400,7 @@ function paso() {
   if (rampa && !(estado.obrando && estado.obrando.subir)) quitarRampa(); // se dejó de subir (moverse, reiniciar…)
   moverRampa(dt);
   jugador.animar(mag > 0.05 ? vel : 0, dt, !!estado.talando || !!estado.obrando);
+  combate.paso(dt, { corriendo: correr && mag > 0.05, velocidad: mag > 0.05 ? vel : 0 });
 
   // interiores: ocultar plantas superiores y tejados si estás bajo techo, y también los muebles de esas plantas
   // (antes se veían los del piso de arriba estando abajo; lo vio valravnx el 27 oct)
@@ -1517,6 +1519,15 @@ function vestir() {
 }
 ropaDelVisor();
 jugador.listo.then(vestir);
+// El combate en el mundo (valravnx, 30 oct): arma sacada con C o «Arma», ratón cogido, golpes cargados y paradas por lado
+const combate = crearCombateMundo({
+  escena, camara, lienzo, pj, cam, jugador, recursos: RECURSOS_MH, sexo: SEXO, aspecto: elegido ? elegido.aspecto : undefined,
+  capasActuales: () => capasDibujo(puestasDe(inventario().lugares), SEXO),
+  // provisional, hasta la tabla única de armadura: la cota cuenta como malla y el gambesón como gambesón
+  armaduraActual: () => { const p = puestasDe(inventario().lugares); return p.includes('cota_malla') ? 'malla' : p.includes('gambeson') ? 'gambeson' : 'lino'; },
+  modo: () => estado.modo, alturaEn: (x, z) => decorado.altura(x, z),
+  registro: { anotar: (a, r) => registroAcciones.anotar(a, r) }, esTactil: estado.esTactil,
+});
 // Lo que llevas en las manos y al hombro no está en el panel (valravnx, 29 oct): se coge del mundo y se suelta al mundo.
 // Mientras no se vea en el personaje (tarea del hito 2), una línea abajo dice qué llevas, cada cosa con «Soltar» (al
 // suelo, a tus pies).
@@ -1622,7 +1633,7 @@ function iniciarEnLinea() {
 
 // acceso para pruebas automáticas
 window.__kinhold = {
-  get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos,
+  get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos, combate,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   mundoJ, get mundoListo() { return mundoListo; }, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
