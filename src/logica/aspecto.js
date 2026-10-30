@@ -65,7 +65,8 @@ export function piezasCabeza(aspecto, tocado = null) {
     _pelo_melena: p === 'melena' && !tapada,
     _pelo_coleta: p === 'coleta' && !tapada,
     _pelo_trenzas: p === 'trenzas' && !tapada,
-    _cofia: p === 'cofia',
+    // bajo la toca no va la cofia: la toca ya tapa la cabeza, y la cofia asomaba bajo la barbilla con el borde dentado
+    _cofia: p === 'cofia' && tocado !== 'toca',
     _orejas: p !== 'cofia' && !tapada,
     _barba_corta: b === 'corta' || b === 'larga',
     _barba_larga: b === 'larga',

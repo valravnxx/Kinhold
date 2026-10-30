@@ -185,9 +185,10 @@ def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosida
         for _ in range(veces):
             nuevos = [sum((e.other_vert(v).co for e in v.link_edges), Vector()) / len(v.link_edges) for v in zona]
             for v, c in zip(zona, nuevos):
-                if holgura:
+                h = holgura(c) if callable(holgura) else holgura  # puede depender del sitio
+                if h:
                     sitio, normal, _, _ = CUERPO.find_nearest(c)
-                    if sitio is not None and (c - sitio).dot(normal) < holgura: c = sitio + normal * holgura
+                    if sitio is not None and (c - sitio).dot(normal) < h: c = sitio + normal * h
                 v.co = c
     bm.to_mesh(ob.data); bm.free()
     for p in ob.data.polygons: p.use_smooth = True
@@ -1011,7 +1012,11 @@ def personaje(nombre, macros, objetivos, ropa):
         return m > 0.01
 
     # --- piel: solo lo que se ve (cabeza, cuello, manos y un poco de muñeca) ---
-    visible = lambda i, c: en(i, 'body') and not (ropa.get('cofia') and en(i, 'ears', 0.3)) and (PR[i] in ('head', 'neck_01') or mano(i) or cerca_muneca(c, 0.07) or c.z > cuello_z - (0.05 if c.y < -0.03 else 0.02))  # el escote baja por delante
+    # Bajo el cuello, la piel sigue hasta bien por debajo de cualquier escote (desde taller-v18): antes acababa justo en el
+    # escote y su borde, a trozos por el diezmado, se veía como una mancha de piel rota con agujeros negros a los lados
+    # del cuello (entre la tela, despegada de la piel, y nada). Así el borde queda siempre tapado por la ropa.
+    pecho = lambda c: abs(c.x) < 0.15 and c.z > cuello_z - (0.11 if c.y < -0.02 else 0.07)
+    visible = lambda i, c: en(i, 'body') and not (ropa.get('cofia') and en(i, 'ears', 0.3)) and (PR[i] in ('head', 'neck_01') or mano(i) or cerca_muneca(c, 0.07) or c.z > cuello_z - (0.05 if c.y < -0.03 else 0.02) or pecho(c))
     sin_orejas = lambda i, c: visible(i, c) and not en(i, 'ears', 0.3)
     piezas = [trozo(base, nombre + '_piel', sin_orejas, textura=(2048, pintar_piel), rugosidad=0.62, sss=0.2, diezmar=DIEZMAR,
                     entero=lambda i: cabeza(i) and co[i].z > cuello_z - 0.02, **f_piel)]
@@ -1376,8 +1381,11 @@ def personaje(nombre, macros, objetivos, ropa):
                         rugosidad=0.95, diezmar=DIEZMAR, **tenida('capucha', ropa.get("capucha", (92, 76, 58)))))
     if mujer:
         zt_bajo = cuello_z - 0.075
+        # bajo la barbilla, la toca cae lisa hasta el pecho como una membrana (a 3,5 cm de la piel como poco): empujada por
+        # las normales, ahí se doblaba sobre sí misma y dejaba huecos y bordes dentados entre la toca y el cuello
+        garganta = lambda c, i: (sobre_oreja(c, i) or (abs(co[i].x) < 0.115 and co[i].y < 0.02 and zt_bajo + 0.03 < co[i].z < boca_z - 0.042))
         piezas.append(trozo(base, nombre + '_capa_toca', cubre(zt_bajo, ojo_arriba + 0.028, boca_z - 0.028, 0.058), empuje=separacion_tocado(0.013, 0.08),
-                            alisar=(sobre_oreja, 12), tapar=lambda c: min(np.linalg.norm(np.array(c) - o) for o in oreja_c) < 0.065,
+                            alisar=(garganta, 40, lambda c: 0.035 if c.z < boca_z - 0.035 else 0.012), tapar=lambda c: min(np.linalg.norm(np.array(c) - o) for o in oreja_c) < 0.065,
                             textura=(1024, pintar_tocado((226, 220, 204), ojo_arriba + 0.028, boca_z - 0.028, 0.058, zt_bajo, lana=False)),
                             rugosidad=0.9, diezmar=DIEZMAR, **tenida('toca', (226, 220, 204))))
     piezas.append(sombrero(f'{nombre}_capa_sombrero', co, cabeza, ojo_arriba, ropa.get('cofia') is not None))
@@ -1536,7 +1544,8 @@ if os.environ.get('FOTOS') == 'prendas':  # de cerca, una pieza nueva cada vez (
             for ob in piezas:
                 nueva = any(k in ob.name for k in NUEVAS)
                 ob.hide_render = (nueva and not any(ob.name.startswith(rig.name + p) for p in pp)) or (('_capa_botas' in pp) and '_capa_zapatos' in ob.name) \
-                    or (ob.name.endswith('_orejas') and pp[0] in ('_capa_capucha', '_capa_toca'))  # como en el juego
+                    or (ob.name.endswith('_orejas') and pp[0] in ('_capa_capucha', '_capa_toca')) \
+                    or (ob.name.endswith('_cofia') and pp[0] == '_capa_toca')  # como en el juego (piezasCabeza)
             n = pp[0].replace('_capa_', '')
             if n == 'manto':
                 foto((x + 1.9, -2.0, 1.1), (x, 0, 0.85), 50, os.path.join(SALIDA, f'{rig.name}_{n}_34.png'), 800, 1000)
