@@ -1,0 +1,4 @@
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_inventario_navegador.py", line 130
+    puesto = pg.evaluate(f"(() => {{ const m = {K}.jugador.mh; let cota = -100; m.modelo.traverse(n => {{ if (n.isMesh && /_capa_cota_falda$/.test(n.name)) cota = m.corteDe(n); }});
+                         ^
+SyntaxError: unterminated f-string literal (detected at line 130)

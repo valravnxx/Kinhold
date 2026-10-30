@@ -1,0 +1,34 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 2083 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1945 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1547 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2022 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2433 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1542 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 1990 KB
+dist/kinhold_trozos.html 1538 KB
+hilo de los trozos 14 KB
+
+== Navegador: panel de inventario
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_inventario_navegador.py", line 130
+    puesto = pg.evaluate(f"(() => {{ const m = {K}.jugador.mh; let cota = -100; m.modelo.traverse(n => {{ if (n.isMesh && /_capa_cota_falda$/.test(n.name)) cota = m.corteDe(n); }});
+                         ^
+SyntaxError: unterminated f-string literal (detected at line 130)
+!! FALLA: python3 pruebas/prueba_inventario_navegador.py dist/kinhold_hito1.html /tmp/kinhold_capturas/inventario
+
+HAY FALLOS
+tardó 2 s
