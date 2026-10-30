@@ -22,7 +22,8 @@ class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html'
+# ?sinservidor=1: el juego sin servidor, solo para las pruebas (el de verdad es siempre en línea, valravnx, 30 oct)
+URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?sinservidor=1'
 MUTAR = bool(os.environ.get('MUTAR'))
 MUTAR_REND = bool(os.environ.get('MUTAR_REND'))
 MUTAR_CARGA = bool(os.environ.get('MUTAR_CARGA'))  # la carga no ralentiza: la parte de la carga tiene que fallar
@@ -77,7 +78,7 @@ with sync_playwright() as p:
         pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
         pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
         # 1. menú
-        comprobar('menú: tres partes, jugar en línea y duelo en línea', pg.locator('a.parte').count() == 5)
+        comprobar('menú: tres partes (Jugar, Duelo y Personaje)', pg.locator('a.parte').count() == 3)
         comprobar('menú: sin personaje elegido lo dice', 'Aún no has elegido' in pg.inner_text('#demoPersonaje'))
         for s in ['[data-ir=construir]', '[data-ir=duelo]', '[data-ir=personaje]']:
             t = tapado(pg, s); comprobar(f'menú: {s} se ve y no está tapado', t == '', t)
@@ -180,14 +181,14 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/{nombre}_duelo_rendimiento.png')
         pg.click('#btnDemoFps')
         ir(pg, '#btnDemoMenu')
-        comprobar('vuelve al menú', pg.locator('a.parte').count() == 5)
+        comprobar('vuelve al menú', pg.locator('a.parte').count() == 3)
         errores = [e for e in err if 'favicon' not in e]
         comprobar('sin errores en la consola', not errores, '; '.join(errores[:3]))
         ctx.close()
     # el menú en inglés y en ruso: sin textos sin traducir
     for l in ['en', 'ru']:
         ctx = nav.new_context(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
-        pg = ctx.new_page(); pg.goto(URL + '?lang=' + l); pg.wait_for_function('window.__demo && window.__demo.listo')
+        pg = ctx.new_page(); pg.goto(URL + '&lang=' + l); pg.wait_for_function('window.__demo && window.__demo.listo')
         f = pg.evaluate('[...window.__idioma.faltan]')
         comprobar(f'menú en {l}: todo traducido', not f, '; '.join(f[:3]))
         t = tapado(pg, '[data-ir=personaje]'); comprobar(f'menú en {l}: nada tapado', t == '', t)

@@ -36,6 +36,9 @@ servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs')
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()  # «Servidor de Kinhold en el puerto …»
 DIRECCION = f'ws://127.0.0.1:{PUERTO}'
+# siempre en línea (valravnx, 30 oct): la dirección es la de Hetzner; para la prueba, la del servidor de aquí con ?servidor=
+URL += f'&servidor={DIRECCION}'
+MUTAR_SIN = bool(os.environ.get('MUTAR_SIN'))   # sin el cartel de «Sin conexión»: tiene que fallar
 
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 fallos = []
@@ -82,17 +85,12 @@ try:
                 pg.goto(URL)
                 pg.evaluate("localStorage.setItem('kinhold_personaje_v2', JSON.stringify({ sexo: 'mujer', capas: { mujer: ['vestido', 'gambeson'] }, aspecto: { mujer: " + ASPECTO_PC + " } }))")
             pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
-            comprobar(f'{nombre}: el menú tiene «Jugar en línea»', pg.locator('#demoEnLinea').count() == 1 and 'enlinea=1' in pg.get_attribute('#demoEnLinea', 'href'))
-            # Opciones: la dirección del servidor
-            pg.click('#btnDemoOpciones')
-            comprobar(f'{nombre}: Opciones enseña la dirección (por defecto, la del propio aparato)', pg.input_value('#demoServidor') == 'ws://localhost:8080', pg.input_value('#demoServidor'))
-            pg.fill('#demoServidor', 'http://mal'); pg.click('#btnDemoGuardar')
-            comprobar(f'{nombre}: una dirección que no es ws:// no se guarda', 'ws://' in pg.inner_text('#demoServidorNota'))
-            pg.fill('#demoServidor', DIRECCION); pg.click('#btnDemoGuardar')
-            comprobar(f'{nombre}: la dirección se guarda', pg.evaluate("localStorage.getItem('kinhold_servidor')") == DIRECCION)
-            t = tapado(pg, '#btnDemoGuardar'); comprobar(f'{nombre}: el botón Guardar se ve entero', t == '', t)
-            pg.screenshot(path=f'{SALIDA}/{nombre}_1_menu_opciones.png')
-            pg.click('#demoEnLinea'); pg.wait_for_load_state('load')
+            j = pg.get_attribute('[data-ir=construir]', 'href') or ''
+            comprobar(f'{nombre}: «Jugar» del menú va en línea, al servidor de la dirección', 'enlinea=1' in j and 'servidor=' in j, j)
+            comprobar(f'{nombre}: el menú ya no tiene modo en solitario ni Opciones', pg.locator('a.parte').count() == 3 and pg.locator('#btnDemoOpciones').count() == 0 and pg.locator('#demoEnLinea').count() == 0)
+            try: pg.screenshot(path=f'{SALIDA}/{nombre}_1_menu.png')   # la captura a veces falla sin tarjeta gráfica (no es lo que se prueba)
+            except Exception as e: print('  (sin captura del menú:', str(e)[:80], ')')
+            pg.click('[data-ir=construir]'); pg.wait_for_load_state('load')
             comprobar(f'{nombre}: la construcción carga', esperar(pg, 'window.__demo && window.__demo.listo', 60000), str(err[:2]))
             # en el mundo (Whitholm), hasta que están los trozos de alrededor
             comprobar(f'{nombre}: el terreno de alrededor llega', esperar(pg, f'!{K}.mundoJ || {K}.mundoListo', 120000))
@@ -212,7 +210,7 @@ try:
         t0 = time.time()
         B.click('#btnDemoMenu', timeout=180000); B.wait_for_function('window.__demo && window.__demo.listo')
         print(f'  (volver al menú: {time.time() - t0:.1f} s)')
-        B.click('#demoEnLinea'); B.wait_for_load_state('load')
+        B.click('[data-ir=construir]'); B.wait_for_load_state('load')
         # La página se carga entera otra vez: sin tarjeta gráfica, conectar tardó a veces más de 20 s (medido el 28 oct: 27 s).
         comprobar('el móvil vuelve a entrar en línea', esperar(B, 'window.__demo && window.__demo.listo', 60000) and esperar(B, f"{K}.enLinea && {K}.enLinea.estado === 'conectado'", 60000))
         esperar(B, f'!{K}.mundoJ || {K}.mundoListo', 120000)
@@ -245,6 +243,20 @@ try:
         A.wait_for_timeout(800)
         A.screenshot(path=f'{SALIDA}/pc_5_vuelve.png')
         B.screenshot(path=f'{SALIDA}/movil_5_vuelve.png')
+        print('Sin servidor no se juega')
+        ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True, locale='es-ES')
+        if MUTAR_SIN: ctx.add_init_script("(() => { const a = Node.prototype.appendChild; Node.prototype.appendChild = function (n) { if (n && n.id === 'sinConexion') return n; return a.call(this, n); }; })()")
+        C = ctx.new_page()
+        base = URL.split('?')[0]
+        # un enlace de antes, sin enlinea=1, entra en línea igual
+        C.goto(base + '?modo=construir&servidor=ws://127.0.0.1:1'); C.wait_for_load_state('load')
+        comprobar('un enlace a «Construir» sin enlinea pasa a en línea', esperar(C, "location.search.includes('enlinea=1')", 20000), C.url)
+        comprobar('sin servidor sale el cartel «Sin conexión», que tapa el juego', esperar(C, "!!document.getElementById('sinConexion')", 120000) and 'servidor' in C.inner_text('#sinConexion'))
+        if not MUTAR_SIN:
+            t = tapado(C, '#btnReintentar'); comprobar('con su botón para volver a intentarlo, que se ve entero', t == '', t)
+        try: C.screenshot(path=f'{SALIDA}/movil_8_sin_conexion.png')
+        except Exception as e: print('  (sin captura:', str(e)[:80], ')')
+        ctx.close()
         for nombre, (pg, err) in paginas.items():
             malos = [e for e in err if 'WebSocket' not in e and 'ERR_CONNECTION_REFUSED' not in e]
             comprobar(f'{nombre}: sin errores en la consola', not malos, str(malos[:3]))

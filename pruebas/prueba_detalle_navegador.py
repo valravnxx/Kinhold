@@ -95,7 +95,7 @@ with sync_playwright() as p:
         comprobar('visor: sin errores en la consola', not err, '; '.join(err[:3]))
         # 2. la demo, «Construir», con 20 personajes de prueba
         err.clear()
-        pg.goto(f'{BASE}/demo/prueba.html'); pg.wait_for_function('window.__demo && window.__demo.listo')
+        pg.goto(f'{BASE}/demo/prueba.html?sinservidor=1'); pg.wait_for_function('window.__demo && window.__demo.listo')
         pg.click('[data-ir=construir]'); pg.wait_for_load_state('load'); pg.wait_for_function('window.__demo && window.__demo.listo', timeout=60000)
         pg.wait_for_function('window.__rendimiento.medida() && window.__rendimiento.medida().personajes >= 1', timeout=180000)
         # la cámara, lo más baja que deja el juego (mirando hacia el horizonte), para tener a los 20 en pantalla
