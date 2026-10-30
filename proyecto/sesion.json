@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-30T15:27:34+00:00",
+  "tarea": "Tronzar y partir: el tronco largo se tronza en 3–4 troncos cortos (con hacha, lento) y el tronco corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro y la leña en el leñero. Lógica pura con autor, en la demo y con pruebas",
+  "hito": "equipo",
+  "rama": "trabajo/20261030-1527"
+ },
  "B": null,
  "chat:trabajo/20261030-1415-rios": {
   "inicio": "2026-10-30T14:15:36+01:00",

@@ -548,7 +548,9 @@
     },
     {
      "nombre": "Tronzar y partir: el tronco largo se tronza en 3–4 troncos cortos (con hacha, lento) y el tronco corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro y la leña en el leñero. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T15:27:34+00:00",
+     "rama": "trabajo/20261030-1527"
     },
     {
      "nombre": "Obras con lo que llevas: el material que se entrega a una obra sale de lo que lleva el autor encima (o en su rastra o carretilla al lado), no de un montón común. El botón de rellenar del prototipo pasa a llenar el arcón de pruebas",
