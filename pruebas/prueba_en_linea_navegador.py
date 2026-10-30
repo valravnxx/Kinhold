@@ -46,8 +46,10 @@ def tapado(pg, sel):
     return pg.evaluate("""s => { const e = document.querySelector(s); if (!e) return 'no está'; const r = e.getBoundingClientRect();
       if (r.width === 0) return 'invisible'; const x = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
       return x === e || e.contains(x) ? '' : (x ? x.id || x.tagName : 'nada'); }""", sel)
+# mira la condición cada 250 ms (no en cada fotograma: con dos páginas del mundo en la máquina de pruebas, sin tarjeta
+# gráfica, un fotograma puede tardar segundos y las esperas cortas se agotaban sin que nada fallara de verdad)
 def esperar(pg, cond, ms=20000):
-    try: pg.wait_for_function(cond, timeout=ms); return True
+    try: pg.wait_for_function(cond, timeout=ms, polling=250); return True
     except Exception: return False
 K = 'window.__kinhold'
 ASPECTO_PC = "{ piel: 'morena', ojos: 'verdes', pelo: 'rubio', formas: { altura: 1, peso: 0.8, cara: 0.6 } }"
@@ -102,14 +104,14 @@ try:
 
         print('Construir en el mundo del servidor')
         comprobar('PC pone el mojón', poner(A, 'mojon', 'mojon', 0, 0))
-        comprobar('el móvil ve el mojón de PC', esperar(B, f"!!{K}.mundo.mojon", 5000))
+        comprobar('el móvil ve el mojón de PC', esperar(B, f"!!{K}.mundo.mojon", 20000))
         for x, z in [(1, 1), (3, 1)]: poner(A, 'pieza', 'cim_piedra', x, z)
         comprobar('PC pone dos cimientos y los termina (llevando material y trabajando, por el servidor)', piezas(A) == 2 and esperar(A, f"{K}.enLinea.red.pendientes.length === 0", 15000) and obras(A) == 0, f'{piezas(A)} piezas, {obras(A)} obras')
         poner(B, 'pieza', 'cim_piedra', 1, 3)
         comprobar('el móvil construye sobre la obra de PC', esperar(B, f"{K}.enLinea.red.pendientes.length === 0", 15000) and piezas(B) == 3 and obras(B) == 0)
         comprobar('PC ve el cimiento del móvil, terminado', esperar(A, f"{K}.mundo.construcciones.reduce((t, c) => t + c.piezas.size, 0) === 3", 5000) and obras(A) == 0)
         armazon = f"!{K}.escena.getObjectByName('armazon')"
-        comprobar('y las dos lo dibujan terminado (sin el armazón de obra)', esperar(A, armazon, 5000) and esperar(B, armazon, 5000))
+        comprobar('y las dos lo dibujan terminado (sin el armazón de obra)', esperar(A, armazon, 20000) and esperar(B, armazon, 20000))
         foto = lambda pg: pg.evaluate(f"JSON.stringify({K}.mundo.exportar())")
         comprobar('las dos páginas tienen el mismo mundo', esperar(A, 'true') and foto(A) == foto(B))
         comprobar('en línea no se guarda nada en el navegador', A.evaluate("localStorage.getItem('kinhold_h1_v1')") is None and B.evaluate("localStorage.getItem('kinhold_h1_v1')") is None)

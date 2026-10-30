@@ -113,5 +113,18 @@ comprobar('choque: solo los archivos de verdad, no los que se unen solos', cs.le
   const ea2 = elegir(sinCarril(rc), {}, 'A', ahora);
   comprobar('sin nada suyo que hacer, el A no se mete en el arte del B', !ea2 || ea2.hito !== 'arte', JSON.stringify(ea2));
 }
+{
+  // dos hitos con una tarea del mismo nombre: la a medias es la del hito del carril B; el A no la confunde con la
+  // terminada de su hito (30 oct: «elegir A» devolvía la revisión ya hecha de otro hito)
+  const r7 = { hitos: [
+    { id: 'p1', estado: 'en_curso', tareas: [T('Revisión completa y publicación', 'hecho'), T('espera', 'espera_decision')] },
+    { id: 'p2', estado: 'en_curso', tareas: [T('p2-1')] },
+    { id: 'arte', estado: 'en_curso', carril: 'B', tareas: [{ ...T('Revisión completa y publicación', 'en_curso'), rama: 'trabajo/arte', inicio: hace(300) }] },
+  ] };
+  const e7 = elegir(r7, {}, 'A', ahora);
+  comprobar('una tarea a medias de otro hito con el mismo nombre no se confunde con la terminada', e7 && e7.hito === 'p2' && e7.tarea === 'p2-1', JSON.stringify(e7));
+  const e8 = elegir(r7, {}, 'B', ahora);
+  comprobar('el carril B retoma la de su hito, desde su rama', e8 && e8.hito === 'arte' && e8.retoma && e8.rama === 'trabajo/arte', JSON.stringify(e8));
+}
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
 process.exit(mal ? 1 : 0);
