@@ -1,0 +1,38 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2231 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2018 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1612 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2087 KB
+
+== Construir demo única
+      1770 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2547 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1606 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2054 KB
+dist/kinhold_trozos.html 1602 KB
+hilo de los trozos 14 KB
+
+== Navegador: combate
+  OK   móvil: tocar Curar empieza a vendar
+  OK   sin errores en consola (móvil)
+
+Resultado: TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 351 s
