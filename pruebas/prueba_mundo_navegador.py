@@ -124,7 +124,9 @@ with sync_playwright() as p:
             e = pg.evaluate(f"(() => {{ const k = {K}; return {{ sobreMar: k.mundoJ.sobreMar(k.pj.x, k.pj.z), x: k.pj.x, z: k.pj.z }}; }})()")
             e['andado'] = ((e['x'] - a0[0]) ** 2 + (e['z'] - a0[1]) ** 2) ** 0.5
             comprobar('andando hacia el mar, avanza y no se mete en el agua', e['andado'] > 0.5 and e['sobreMar'] >= 0.1, json.dumps(e))
-            pg.evaluate(f'(() => {{ const k = {K}; k.cam.pitch = 0.45; k.cam.dist = 20; }})()'); pg.wait_for_timeout(1500)
+            # la captura, con la cámara del lado del mar (por detrás, tierra adentro, la tapa la costa y se acerca mucho)
+            pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}; k.cam.yaw = Math.atan2(mx - tx, mz - tz) + 0.5; k.cam.pitch = 0.4; k.cam.dist = 16; }}""", c['tierra'] + c['mar'])
+            pg.wait_for_timeout(1500)
             pg.screenshot(path=f'{SALIDA}/{nombre}_costa.png')
         malos = [x for x in err if 'favicon' not in x]
         comprobar('sin errores en la página', not malos, '; '.join(malos[:3]))
