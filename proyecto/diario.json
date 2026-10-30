@@ -2626,5 +2626,22 @@
   "pruebas": "Lógica de la tala 43/43 y su prueba de navegador (PC y móvil) correctas, aquí y en la nube. En la nube, tras unir main (la demo en Whitholm), pasan 20 de 21 grupos; falla «duelo en línea» (dos veces, en comprobaciones distintas: al apagarse el servidor y al pasar del duelo a construir), que también falla sin la tala en una ejecución del carril B sobre main: no lo causa este cambio. Comprobado a mano además que la tala funciona en la demo de Whitholm.",
   "capturas": "capturas/construccion-v40",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T09:11:06+01:00",
+  "fin": "2026-10-30T10:20:44+01:00",
+  "titulo": "Hito 10: comarcas de Whitholm, sus nombres y sus zonas (mapa v17)",
+  "hito": "mundo",
+  "hecho": [
+   "Comarcas de Whitholm en la lógica (src/logica/comarcas.js), para el servidor igual que para el navegador: las 8 que aprobó valravnx, por cuencas de río enteras, con su reparto fino apuntado en una tabla.",
+   "Zonas de aproximadamente 1 km² (media 1,2) para los clanes, con lindes en curva; una zona nunca queda partida entre dos comarcas.",
+   "Nombres elegidos por valravnx: Breiddal, Motdale, Nordwold, Lindholt, Strandvang, Furulid, Sudholt y Ravnsnes; en ruso, en cirílico.",
+   "En el visor del mapa, botón «Comarcas»: fronteras, nombres y, al ampliar, los lindes de las zonas; al tocar, la comarca y la zona. El nombre de Whitholm va grande y encima de la isla.",
+   "Dónde se aparece (valravnx): al azar en Motdale, Breiddal y Strandvang, en biomas normales; al GDD y como tarea de los carriles.",
+   "Prueba nueva de comarcas y zonas (falla sin la tabla aprobada y si cambia la rejilla de zonas)."
+  ],
+  "pruebas": "En la nube: lógica, mapa del mundo y web correctas",
+  "capturas": "capturas/mapa-v17",
+  "estado": "ok"
  }
 ]

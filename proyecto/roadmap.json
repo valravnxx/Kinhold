@@ -447,6 +447,12 @@
      "fin": "2026-10-30T07:15:06+00:00"
     },
     {
+     "nombre": "Salida al azar (valravnx, 30 oct): cada jugador nuevo aparece en un sitio al azar de las tres comarcas de inicio (Motdale, Breiddal y Strandvang), en biomas normales (nunca en la montaña, el pasto alpino ni la nieve), llano y lejos de los ríos como ahora. Los sitios posibles, calculados una vez y apuntados en la lógica (el servidor no genera el mapa), con una prueba que comprueba que siguen valiendo",
+     "estado": "en_curso",
+     "inicio": "2026-10-30T09:27:05+00:00",
+     "rama": "trabajo/20261030-0927"
+    },
+    {
      "nombre": "Los árboles (las siete especies), la hierba y las rocas del mundo en el juego, con el estilo v5 y siempre en el mismo sitio",
      "estado": "pendiente"
     },
@@ -944,10 +950,23 @@
      "fin": "2026-10-29T11:26:34+01:00"
     },
     {
-     "nombre": "Comarcas de Whitholm primero (valravnx, 29 oct): la isla de los playtests dividida en comarcas que siguen el relieve (un valle, una vega, una sierra), con nombres al estilo de la región revisados por valravnx, y la comarca donde aparecen todos al principio; luego las del resto del mundo",
-     "estado": "en_curso",
+     "nombre": "Comarcas de Whitholm y sus zonas (valravnx, 29 y 30 oct): la isla dividida en 8 comarcas que siguen las cuencas de los ríos, con bordes naturales y en curva, y cada comarca en zonas de aproximadamente 1 km² para los clanes; en la lógica (para el servidor) y en el mapa",
+     "estado": "hecho",
      "inicio": "2026-10-30T09:11:06+01:00",
-     "rama": "trabajo/20261030-0910-comarcas"
+     "rama": "trabajo/20261030-0910-comarcas",
+     "fin": "2026-10-30T10:20:44+01:00"
+    },
+    {
+     "nombre": "Nombres de las comarcas de Whitholm (valravnx, 30 oct): Breiddal, Motdale, Nordwold, Lindholt, Strandvang, Furulid, Sudholt y Ravnsnes",
+     "estado": "hecho",
+     "inicio": "2026-10-30T09:11:06+01:00",
+     "fin": "2026-10-30T10:20:44+01:00"
+    },
+    {
+     "nombre": "Dónde se aparece (valravnx, 30 oct): en un sitio al azar de dos o tres comarcas de inicio, en biomas normales; elegidas Motdale, Breiddal y Strandvang. Hacerlo en el juego es tarea del hito «El juego en el mundo de verdad»",
+     "estado": "hecho",
+     "inicio": "2026-10-30T09:11:06+01:00",
+     "fin": "2026-10-30T10:20:44+01:00"
     },
     {
      "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
@@ -2533,6 +2552,13 @@
      "archivo": "jugar/mapa/v16.html",
      "capturas": "capturas/mapa-v16",
      "notas": "Gran veta de hierro en lo alto de la sierra de Whitholm (valravnx, 30 oct): a 1.685 m, junto a la cumbre de la isla, en la caliza."
+    },
+    {
+     "v": "v17",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/mapa/v17.html",
+     "capturas": "capturas/mapa-v17",
+     "notas": "Comarcas de Whitholm con sus nombres y sus zonas de aproximadamente 1 km² (botón «Comarcas»), y el nombre de la isla grande y encima."
     }
    ]
   }
