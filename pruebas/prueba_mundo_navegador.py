@@ -9,9 +9,12 @@
 # antes sigue en el sitio común (donde está lo que construyó).
 # Y lo que crece (src/mundo/vegetacion_mundo.js): árboles de las especies de su sitio, hierba, flores, matas y piedras,
 # nada en el agua ni pegado a la salida, los árboles se pueden talar, los que tapan al personaje no se dibujan, y al
-# recargar está todo en el mismo sitio.
+# recargar está todo en el mismo sitio. Y que lo que crece sigue al jugador (30 oct): al andar 200 m hay árboles, hierba y
+# piedras alrededor de donde está (sin que un fotograma tarde más de 60 ms, con el suelo), lo de lejos se suelta, y un
+# árbol talado sigue talado (con su tocón) al irse lejos y volver.
 # MUTAR=1 abre la demo con ?llano=1 (el llano de antes): la prueba tiene que fallar.
 # MUTAR=2: lo que crece, con otra semilla en cada carga: tiene que fallar (no sale en el mismo sitio al recargar).
+# MUTAR=3: lo que crece se hace todo en un fotograma al andar (no poco a poco): tiene que fallar.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
@@ -56,6 +59,7 @@ with sync_playwright() as p:
         print('Vista', nombre)
         ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
         if MUTAR == '2': ctx.add_init_script('window.__mutarVegetacion = true')
+        if MUTAR == '3': ctx.add_init_script('window.__vegetacionDeGolpe = true')
         pg = ctx.new_page()
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
@@ -119,6 +123,10 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/{nombre}_salida.png')
         pg.evaluate(f'(() => {{ const k = {K}; k.cam.pitch = 0.32; k.cam.dist = 24; }})()'); pg.wait_for_timeout(1500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_paisaje.png')
+        # un árbol talado (a mano, en la tala): al irse lejos y volver, sigue talado y con su tocón
+        talado = pg.evaluate(f"""(() => {{ const k = {K}, o = k.obstaculos.filter(o => o.arbol && k.talaV.enPie(o)).sort((p, q) => Math.hypot(p.x, p.z) - Math.hypot(q.x, q.z))[3];
+          const ahora = Date.now(); k.talaV.tala.estado[o.id] = {{ golpes: 0, parte: 0, veces: 1, caido: ahora, vuelve: ahora + 3600e3, dir: 0.5 }};
+          k.talaV.guardar(); k.talaV.refrescar(); return o.id; }})()""")
         # andar 200 m: el terreno llega a tiempo y el personaje sigue el suelo
         r = pg.evaluate(ANDAR, [200, 0.6])
         print('  andar 200 m:', json.dumps(r))
@@ -126,8 +134,40 @@ with sync_playwright() as p:
         comprobar('andando, el personaje sigue el suelo (a menos de 0,6 m)', r['dif'] < 0.6, f"{r['dif']:.2f} m")
         try: pg.wait_for_function(f'{K}.mundoListo', timeout=120000)
         except Exception: pass
+        try: pg.wait_for_function(f'{K}.decorado.pendientes === 0', timeout=60000)
+        except Exception: pass
         pg.wait_for_timeout(1500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_andando.png')
+        # lo que crece sigue al jugador: puesto alrededor de donde está ahora, no de la salida
+        CRECE = f"""(() => {{ const k = {K}, d = k.decorado, P = k.pj, c = d.cuenta, veg = k.obstaculos.filter(o => o.veg);
+          const cerca = (r) => veg.filter(o => Math.hypot(o.x - P.x, o.z - P.z) < r).length;
+          return {{ centro: Math.hypot(d.centro.x - P.x, d.centro.z - P.z), lejosSalida: Math.hypot(P.x, P.z - 4), arboles: c.arboles, hierba: c.hierba,
+            piedras: c.piedras, matas: c.matas, cerca60: cerca(60), lejos: Math.max(0, ...veg.map(o => Math.max(Math.abs(o.x - d.centro.x), Math.abs(o.z - d.centro.z)))),
+            trozos: c.trozos, puestas: c.puestas, pendientes: d.pendientes, msMax: Math.round(d.msMax) }}; }})()"""
+        g = pg.evaluate(CRECE)
+        print('  lo que crece tras andar:', json.dumps(g))
+        comprobar('lo que crece sigue al jugador: puesto alrededor de donde está, lejos de la salida', g['lejosSalida'] > 150 and g['centro'] < 12 and g['pendientes'] == 0, json.dumps(g))
+        comprobar('y alrededor hay árboles o piedras, y hierba', (g['arboles'] + g['piedras']) > 10 and g['hierba'] + g['matas'] > 100, f"{g['arboles']} árboles, {g['piedras']} piedras, {g['hierba']} hierba")
+        comprobar('lo de lejos se suelta (nada a más del cuadro de donde se puso)', g['lejos'] <= (130 if movil else 200) + 1, f"{g['lejos']:.0f} m")
+        # lejos (a 700 m: lo de la salida se suelta) y de vuelta a la salida
+        def ir(x, z):
+            pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x; k.pj.z = z; }}', [x, z])
+            pg.wait_for_timeout(500)
+            try: pg.wait_for_function(f'{K}.mundoListo && {K}.decorado.pendientes === 0 && Math.hypot({K}.decorado.centro.x - {K}.pj.x, {K}.decorado.centro.z - {K}.pj.z) < 1', timeout=240000)
+            except Exception: print('  (no llegó a tiempo)')
+            print(f'  en ({x}, {z}):', json.dumps(pg.evaluate(f'(() => {{ const k = {K}, d = k.decorado; return {{ listo: k.mundoListo, pendientes: d.pendientes, centro: d.centro, pj: [k.pj.x, k.pj.z], trozos: d.cuenta.trozos, arboles: d.cuenta.arboles, puestas: d.cuenta.puestas }}; }})()')))
+        pg.evaluate(f'{K}.decorado.msMax = 0')
+        ir(700, 4)
+        md = pg.evaluate(f'{K}.decorado.msMax')
+        comprobar('al llegar de golpe a otro sitio, lo que crece se hace poco a poco (ningún fotograma de más de 60 ms)', md < 60, f'{md:.1f} ms')
+        fuera = pg.evaluate(f"(id) => !{K}.talaV.porId.has(id) && !{K}.obstaculos.some(o => o.id === id)", talado)
+        ir(0, 4)
+        vuelta = pg.evaluate(f"""(id) => {{ const k = {K}, o = k.obstaculos.find(o => o.id === id);
+          if (!o || !o.malla) return {{ hay: !!o, id, cargado: k.talaV.porId.has(id) }};
+          const m = new k.escena.matrixWorld.constructor(); o.malla.getMatrixAt(o.instancia, m);
+          return {{ hay: true, enPie: k.talaV.enPie(o), escondido: Math.abs(m.determinant()) < 1e-9, tocon: k.talaV.tala.tocones(Date.now()).some(t => t.arbol && t.arbol.id === id) }}; }}""", talado)
+        comprobar('al irse lejos, lo de la salida se suelta', fuera)
+        comprobar('al volver, el árbol talado sigue talado y con su tocón', vuelta.get('hay') and not vuelta.get('enPie') and vuelta.get('escondido') and vuelta.get('tocon'), json.dumps(vuelta))
         # el mar y el borde de la isla: buscar la costa en línea recta desde la salida (en varios rumbos, hasta una que no
         # sea llana) y querer entrar en el agua
         c = pg.evaluate(f"""(() => {{ const m = {K}.mundoJ; let antes = null;
