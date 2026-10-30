@@ -130,7 +130,7 @@ export function crearVistaJuego(est) {
       if (j % 6 === 5) yield;
     }
     // el agua en el trozo de cerca (ríos y mar): src/mundo/agua_lamina.js, la misma que en el juego
-    const lamina = yield* hacerLaminaAgua({ pai, tramos, cx, cz: cy, x0, z0, n, paso: PASO, H, material: aguaCerca() });
+    const { malla: lamina, W } = yield* hacerLaminaAgua({ pai, tramos, cx, cz: cy, x0, z0, n, paso: PASO, H, material: aguaCerca() });
     if (lamina) g.add(lamina);
 
     // lo que crece y lo que hay en el suelo, con las reglas del bosque de lejos

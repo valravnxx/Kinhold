@@ -1,7 +1,7 @@
 // Kinhold — la lámina de agua de cerca (ríos y mar) sobre una rejilla del terreno: la misma en la vista «como en el
 // juego» del mapa (src/mapa/juego.js) y en el juego (src/mundo/agua_mundo.js). Generador: cada `yield` deja seguir al
-// fotograma. Devuelve la malla (en coordenadas de la rejilla: x0 + i·paso, z0 + j·paso desde el centro cx, cz) o null
-// si no hay agua.
+// fotograma. Devuelve { malla, W }: la malla (en coordenadas de la rejilla: x0 + i·paso, z0 + j·paso desde el centro
+// cx, cz; null si no hay agua) y W, la altura del agua en cada punto de la rejilla (NaN donde no hay).
 //   pai: el paisaje; tramos: sus ríos de la zona; H: la altura del suelo en cada punto de la rejilla (n × n)
 import * as THREE from 'three';
 import { atributosAgua, distanciaOrilla } from '../mapa/agua.js';
@@ -73,7 +73,7 @@ export function* hacerLaminaAgua({ pai, tramos, cx, cz, x0, z0, n, paso, H, mate
       atributosAgua(ga, { flujo: fl, hondo: ho, tipo: ti, ola: ol, orilla: distanciaOrilla(seco, n, paso, 60, sem), espuma: es });
       yield;
       const lamina = new THREE.Mesh(ga, material); lamina.name = 'aguaCerca'; lamina.receiveShadow = true;
-      return lamina;
+      return { malla: lamina, W };
     }
-    return null;
+    return { malla: null, W };
 }
