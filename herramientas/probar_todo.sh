@@ -48,6 +48,7 @@ paso "Conexiones que se cortan y datos mal formados" node pruebas/prueba_conexio
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
 paso "Bots: jugadores simulados contra el servidor" node pruebas/prueba_bots.mjs
 paso "Terreno por trozos: anillos, bordes y faldones" node pruebas/prueba_trozos.mjs
+paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whitholm.mjs
 paso "Medición del servidor (CPU, memoria, red y disco)" node pruebas/prueba_medir.mjs
 [ -z "$LISTAR" ] && { [ -z "$GRUPO" ] || [ "$GRUPO" = logica ]; } && ! command -v caddy >/dev/null && {  apt-get install -y -q caddy >/dev/null 2>&1 || { apt-get update -q >/dev/null 2>&1; apt-get install -y -q caddy >/dev/null 2>&1; } || true; }
 paso "Servidor de prueba en internet (Caddy con HTTPS delante del juego)" node pruebas/prueba_nube.mjs
@@ -78,6 +79,7 @@ paso "Navegador: combate" python3 pruebas/prueba_combate_navegador.py dist/kinho
 paso "Navegador: pruebas de estilo" python3 pruebas/prueba_estilo_navegador.py dist/kinhold_estilo.html "$C/estilo"
 paso "Navegador: personaje" python3 pruebas/prueba_personaje_navegador.py dist/kinhold_personaje.html "$C/personaje"
 paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html "$C/demo"
+paso "Navegador: la demo en el mundo (Whitholm)" python3 pruebas/prueba_mundo_navegador.py dist/kinhold_demo.html "$C/mundo"
 paso "Navegador: jugar en línea (dos páginas y un servidor)" python3 pruebas/prueba_en_linea_navegador.py dist/kinhold_demo.html "$C/en_linea"
 paso "Navegador: duelo en línea (dos páginas y un servidor)" python3 pruebas/prueba_duelo_en_linea_navegador.py dist/kinhold_demo.html "$C/duelo_en_linea"
 paso "Navegador: recursos de personaje v2" python3 pruebas/prueba_recursos_personaje.py "$C/recursos"

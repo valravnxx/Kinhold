@@ -2587,5 +2587,27 @@
   "pruebas": "En la nube: 18 grupos; fallaron logica, demo única y juego en inglés por faltar traducciones de las notas nuevas (puestas), y objetos en el suelo (en PC, ajeno a este cambio). Después de traducir y unir main, esos 4 grupos otra vez: bien. prueba_combate_servidor.mjs, que falló una vez en la nube, aquí da 64/64.",
   "capturas": "capturas/personaje-v27",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T05:22:21+00:00",
+  "fin": "2026-10-30T07:15:06+00:00",
+  "titulo": "Hito 1i: la demo en el mundo, en Whitholm (carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "«Construir» de la demo (v48) va en el mundo de verdad: apareces en Whitholm y andas por la isla con la cámara del juego, sobre el terreno por trozos del mapa (hechos en un hilo aparte, rejilla de 1 m cerca y más basta lejos). Fuera el llano; con ?llano=1 en la dirección, el de antes.",
+   "Nuevo src/logica/whitholm.js (lógica pura): el cuadro de la isla y el sitio de salida, el mismo para todos: en espiral desde el centro de la región, el primero en tierra firme (entre 6 y 220 m sobre el mar), llano (menos de 2,5 m de desnivel en 30 m) y a más de 60 m de los ríos. Sale a 117 m sobre el mar, a unos 220 m del centro de la isla. Los dos van apuntados para que el servidor no tenga que generar el mapa; la prueba comprueba que siguen siendo los del mundo.",
+   "El servidor solo admite posiciones dentro del cuadro de la isla, y el terreno solo se carga dentro de él. No se puede entrar en el mar (la orilla, a 0,15 m sobre él) ni subir por las paredes de los cortados.",
+   "El menú de la demo genera el mapa del mundo antes de entrar, a pasos y con su barra («Preparando Whitholm…»): de 2,9 a 3,3 s en la nube y de 4,2 a 5,5 s aquí. Después, «Preparando el paisaje…» hasta que están los trozos de alrededor.",
+   "Decisión provisional, anotada en el registro de la demo: la altura 0 de la escena es la del suelo de la salida, así que lo que se construye junto a ella queda a ras de suelo, como en el llano.",
+   "La cámara se acerca si una loma o un cortado se mete entre ella y el personaje (se vio en la costa: el personaje quedaba tapado).",
+   "Medido en la nube andando 200 m a 1 m por fotograma: el terreno trabaja como mucho de 3 a 8 ms por fotograma en el PC y de 1 a 3 ms en el móvil, y el personaje va a menos de 0,32 m del suelo. Al llegar, unos 177.000 triángulos de suelo en 88 trozos en el PC y 115.000 en 83 en el móvil.",
+   "Pruebas nuevas: pruebas/prueba_whitholm.mjs (lógica), pruebas/prueba_mundo_navegador.py (PC y móvil) y una comprobación más en la de presencia. Rotas a propósito (la salida en otro sitio, la demo en el llano, el servidor sin el límite de la isla): fallan.",
+   "La prueba en línea (dos páginas en una máquina sin tarjeta gráfica) espera a los trozos y usa un hilo por página (?hilos=1). Volver al menú desde Construir tardó 22 s en la nube (la primera vez no llegó en 30). No comprobado: por qué tarda tanto ni si pasa con tarjeta gráfica.",
+   "Aún mal: el mar es una lámina lisa y los ríos salen secos (tarea nueva en el hito: el agua del mundo en el juego); los árboles, la hierba y las rocas son los del llano puestos sobre el terreno, solo alrededor de la salida (la tarea siguiente); lo construido lejos de la salida, en cuesta, no se asienta en el terreno; en la costa, el acantilado (un escalón de unos 8 m) sale como una pared lisa, sin roca.",
+   "La sesión del carril A de las 06:23 anunció su tarea y pisó el anuncio de esta, que seguía viva: esta se volvió a anunciar aparte (chat trabajo/20261030-0521) para que nadie la retomase."
+  ],
+  "pruebas": "En la nube: la batería entera (19 grupos) bien salvo «jugar en línea» y «la demo en el mundo»; arreglados (la prueba en línea espera a los trozos y usa un hilo por página; la de la costa empieza tierra adentro), bien al repetirlos. Tras la cámara nueva y unir main: mundo, demo única, en línea, niveles de detalle, lógica, inglés y web, bien (la web, tras las traducciones). Las pruebas nuevas, rotas a propósito, fallan",
+  "capturas": "capturas/demo-v48",
+  "estado": "ok"
  }
 ]

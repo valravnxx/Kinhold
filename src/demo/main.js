@@ -12,6 +12,7 @@ import { VERSION_DEMO, REGISTRO_DEMO } from './registro.js';
 import { CAPAS } from '../personaje/textos.js';
 import { ponerRendimiento } from './rendimiento.js';
 import { medidaRendimiento, genteDePrueba } from '../mundo/rendimiento.js';
+import { generar, SEMILLA_MUNDO, LADO_MUNDO } from '../logica/mapa.js';
 
 const MODOS = {
   construir: { carga: () => import('../juego/main.js'), menu: '#menu', nombre: 'Construir' },
@@ -55,8 +56,11 @@ if (MODOS[modo]) {
   window.__demo = { modo, listo: false };
   window.__rendimiento = { medida: medidaRendimiento, gente: (n) => genteDePrueba() && genteDePrueba().poner(n),
     detalle: (si) => genteDePrueba()?.detalle?.(si), niveles: () => genteDePrueba()?.niveles?.() };
-  // los números de rendimiento junto a «Menú» (src/demo/rendimiento.js), cuando la parte ya ha puesto sus botones
-  MODOS[modo].carga().then(() => { ponerRendimiento(b); window.__demo.listo = true; }).catch(e => { window.__demo.error = e.message; console.error(e); });
+  // los números de rendimiento junto a «Menú» (src/demo/rendimiento.js), cuando la parte ya ha puesto sus botones.
+  // Construir va en el mundo de verdad (Whitholm, la isla de los playtests): antes se genera el mapa del mundo, a pasos y
+  // con su barra (tarda unos segundos); con ?llano=1, el llano de antes.
+  const antes = modo === 'construir' && params.get('llano') !== '1' ? generarMundo() : Promise.resolve();
+  antes.then(() => MODOS[modo].carga()).then(() => { ponerRendimiento(b); window.__demo.listo = true; }).catch(e => { window.__demo.error = e.message; console.error(e); });
 } else {
   // el menú
   document.title = 'Kinhold';
@@ -78,4 +82,33 @@ if (MODOS[modo]) {
   $('demoNotas').innerHTML = `<b>${tr(VERSION_DEMO)}</b><ul>${REGISTRO_DEMO.map(t => `<li>${tr(t)}</li>`).join('')}</ul>`;
   $('btnDemoNotas').onclick = () => { $('demoNotas').hidden = !$('demoNotas').hidden; $('demoOpciones').hidden = true; };
   window.__demo = { modo: null, listo: true };
+}
+
+// Genera el mapa del mundo a pasos (el juego no se queda colgado y se ve cuánto falta) y lo deja en window.__mundoDemo.
+function generarMundo() {
+  const caja = document.createElement('div');
+  caja.id = 'demoGenerando';
+  caja.style.cssText = 'position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#2a2620;color:#f2e8d0;font:16px system-ui,sans-serif;z-index:50';
+  caja.innerHTML = `<div>${tr('Preparando Whitholm…')}</div><div id="demoGenerandoFase" style="font-size:13px;opacity:.75"></div>` +
+    '<div style="width:min(320px,80vw);height:6px;background:#4a4236;border-radius:3px"><div id="demoGenerandoBarra" style="height:100%;width:0;background:#c9a96a;border-radius:3px"></div></div>';
+  document.body.appendChild(caja);
+  const t0 = performance.now();
+  const g = generar(SEMILLA_MUNDO, { lado: LADO_MUNDO });
+  return new Promise((bien, mal) => {
+    const seguir = () => {
+      try {
+        const t = performance.now();
+        let r;
+        do r = g.next(); while (!r.done && performance.now() - t < 40);
+        if (r.done) {
+          window.__mundoDemo = { mapa: r.value, msGenerar: Math.round(performance.now() - t0) };
+          caja.remove(); bien(); return;
+        }
+        $('demoGenerandoFase').textContent = tr(r.value.fase);
+        $('demoGenerandoBarra').style.width = `${Math.round(r.value.avance * 100)}%`;
+        setTimeout(seguir, 0);
+      } catch (e) { mal(e); }
+    };
+    setTimeout(seguir, 30);
+  });
 }
