@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 30 oct 2026 (20:36 UTC) — por el chat (carril B): el servidor funciona; siempre en línea y panel de depuración
+valravnx creó el servidor en Hetzner (CX23, Falkenstein, Ubuntu 24.04; https://2-31-141-224.sslip.io) y entró: «estoy dentro». Pidió que el modo de juego único sea este y «meter un cuadro de debug donde pueda tener el mapa, tpearme donde quiera, ver otros players». A las preguntas del chat: «Siempre en línea» (también desde la web de GitHub; sin servidor no se juega) y el panel «con clave de admin». → Decisión del servidor cerrada y hito «Prueba online mínima» hecho; dos tareas nuevas en «El juego en el mundo de verdad», antes de las demás pendientes.
+
 ### 30 oct 2026 (20:30 UTC) — por el chat (carril B): el servidor en línea
 valravnx: «pásame todo para hacer lo de publicar en línea de nuevo». → Se le pasan por el chat los pasos de `servidor/nube/LEEME.md` y el cloud config para crear el servidor de prueba en Hetzner. La decisión pendiente del servidor sigue abierta hasta que diga si la dirección funciona en los dos aparatos.
 

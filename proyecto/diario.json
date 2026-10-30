@@ -2841,5 +2841,20 @@
   "pruebas": "En la nube: 21 de 22 grupos correctos; jugar en línea falla (exento hasta la fase 2)",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T20:20:55+00:00",
+  "fin": "2026-10-30T20:36:43+00:00",
+  "titulo": "El servidor de prueba, en internet (chat con valravnx, carril B)",
+  "hito": "prueba-online",
+  "hecho": [
+   "valravnx creó el servidor en Hetzner con la guía servidor/nube/LEEME.md: CX23 en Falkenstein, Ubuntu 24.04 (no la 26.04: el instalador no está comprobado en ella), 7,25 €/mes con IVA. La dirección es https://2-31-141-224.sslip.io.",
+   "valravnx entró desde el PC y el juego carga, en línea, a 60 fps. No comprobado desde aquí: esta máquina no puede abrir esa dirección.",
+   "Decisión cerrada y hito «Prueba online mínima» hecho.",
+   "Decidido por valravnx: el juego es siempre en línea, también desde la web de GitHub (sin servidor no se juega), y un panel de depuración (mapa, jugadores, teletransportarse) que solo funciona con una clave de admin del servidor. Dos tareas nuevas en «El juego en el mundo de verdad», antes de las demás pendientes."
+  ],
+  "pruebas": "Sin cambios de código",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
