@@ -36,10 +36,10 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   // ---------- Interfaz ----------
   const css = document.createElement('style');
   css.textContent = `
-  #cmbMira{position:fixed;left:50%;top:50%;width:0;height:0;pointer-events:none;z-index:6}
+  #cmbMira{position:fixed;left:50%;top:34%;width:0;height:0;pointer-events:none;z-index:6}
   #cmbMira b{position:absolute;transform:translate(-50%,-50%);font:700 15px system-ui,sans-serif;color:rgba(241,232,216,.55);text-shadow:0 1px 2px #000;transition:color .08s,font-size .08s}
   #cmbMira b.sel{color:#e8b64c;font-size:22px} #cmbMira b.para{color:#7fb2e6;font-size:22px} #cmbMira b.viene{color:#e05a4a;font-size:24px}
-  #cmbCarga{position:fixed;left:50%;top:calc(50% + 44px);width:70px;height:5px;transform:translateX(-50%);background:rgba(0,0,0,.4);border-radius:3px;pointer-events:none;z-index:6}
+  #cmbCarga{position:fixed;left:50%;top:calc(34% + 44px);width:70px;height:5px;transform:translateX(-50%);background:rgba(0,0,0,.4);border-radius:3px;pointer-events:none;z-index:6}
   #cmbCarga i{display:block;height:100%;width:0;background:#e8b64c;border-radius:3px}
   #cmbEstado{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:10px;align-items:center;padding:5px 10px;border-radius:8px;background:rgba(30,26,20,.72);color:#f2e8d0;font:13px system-ui,sans-serif;z-index:6;pointer-events:none}
   #cmbEstado .barra{width:70px;height:6px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden} #cmbEstado .barra i{display:block;height:100%;background:#d9b77c}
@@ -50,7 +50,9 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   #cmbRosa b{position:absolute;transform:translate(-50%,-50%);font:700 20px system-ui,sans-serif;color:rgba(241,232,216,.7);pointer-events:none}
   #cmbRosa b.sel{color:#e8b64c} #cmbRosa b.para{color:#7fb2e6} #cmbRosa b.viene{color:#e05a4a}
   #cmbRosa .centro{position:absolute;left:50%;top:50%;width:42%;height:42%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(241,232,216,.3);pointer-events:none}
-  body.combate.tactil #cmbBotones{bottom:auto;top:calc(50% + 70px)}
+  /* móvil: la rosa abajo a la derecha, sus botones encima de ella y el aliento encima del joystick */
+  body.combate.tactil #cmbBotones{bottom:calc(316px + env(safe-area-inset-bottom,0px))}
+  body.combate.tactil #cmbEstado{left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(162px + env(safe-area-inset-bottom,0px));transform:none}
   body.combate.tactil #btnUsar{display:none}
   `;
   document.head.appendChild(css);
@@ -89,8 +91,9 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     }
     c.modelo.visible = true; jugador.raiz.visible = false;
     c.ctx = { luchadores: { jugador: c.L }, r };
-    // la cámara se acerca para luchar
-    if (cam.dist > 9) cam.dist = 8;
+    // la cámara se acerca y baja para luchar (por detrás del hombro); al guardar el arma vuelve a como estaba
+    c.camAntes = { dist: cam.dist, pitch: cam.pitch };
+    cam.dist = 6; cam.pitch = 0.42;
     document.body.classList.add('combate'); document.body.classList.toggle('tactil', esTactil);
     bArma.classList.add('sel');
   }
@@ -101,6 +104,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (c.modelo) c.modelo.visible = false;
     jugador.raiz.visible = true;
     if (document.pointerLockElement === lienzo) document.exitPointerLock();
+    if (c.camAntes) { cam.dist = c.camAntes.dist; cam.pitch = c.camAntes.pitch; c.camAntes = null; }
     document.body.classList.remove('combate');
     bArma.classList.remove('sel');
   }
