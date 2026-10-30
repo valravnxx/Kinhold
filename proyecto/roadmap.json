@@ -555,9 +555,10 @@
     },
     {
      "nombre": "Obras con lo que llevas: el material que se entrega a una obra sale de lo que lleva el autor encima (o en su rastra o carretilla al lado), no de un montón común. El botón de rellenar del prototipo pasa a llenar el arcón de pruebas",
-     "estado": "en_curso",
-     "inicio": "2026-10-30T17:23:41+00:00",
-     "rama": "trabajo/20261030-1723"
+     "estado": "hecho",
+     "inicio": "2026-10-30T17:22:21+00:00",
+     "rama": "trabajo/20261030-1723",
+     "fin": "2026-10-30T19:45:50+00:00"
     },
     {
      "nombre": "Inventario y recogida por el servidor: en línea, lo que llevas y lo que recoges lo guarda y lo valida el servidor (hoy solo está en el navegador de cada uno)",
@@ -1830,6 +1831,13 @@
      "archivo": "jugar/demo/v55.html",
      "capturas": "capturas/demo-v55",
      "notas": "En «Construir», lo que crece en Whitholm es el del mapa: árboles de las siete especies en sus biomas, en masas de bosque, claros y corros, con hierba, flores, matorrales y piedras; siempre en el mismo sitio, nada en el agua, y todos se talan. Los árboles que tapan al personaje no se dibujan. Aún mal: lejos de la salida no hay árboles ni hierba."
+    },
+    {
+     "v": "v56",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v56.html",
+     "capturas": "capturas/construccion-v44",
+     "notas": "En «Construir», obras con lo que llevas: lo que se entrega a una obra sale de lo que llevas encima; el material se coge del arcón de pruebas del inventario («Materiales de obra»), que «+ Materiales» llena."
     }
    ]
   },
@@ -2124,6 +2132,13 @@
      "archivo": "jugar/construccion/v43.html",
      "capturas": "capturas/construccion-v43",
      "notas": "Tronzar y partir: con un hacha en la mano, Usar junto a un tronco largo tumbado lo tronza en 3 o 4 troncos cortos, y junto a un tronco corto lo parte en 6 de leña. El tronco corto se lleva con las dos manos o al hombro; la leña, en el leñero. Arreglo: de una pila de troncos ya se puede coger uno."
+    },
+    {
+     "v": "v44",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/construccion/v44.html",
+     "capturas": "capturas/construccion-v44",
+     "notas": "Obras con lo que llevas: lo que se lleva a una obra sale de lo que llevas encima (manos, hombro, cinturón y mochila), no de un montón común. El montón común es ahora el arcón de pruebas del inventario («Materiales de obra», con lo que queda de cada uno), y «+ Materiales» lo llena. Aún mal: lo que llevas en las manos o al hombro no se ve en el personaje."
     }
    ]
   },
