@@ -1,0 +1,34 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 2141 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1953 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1554 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2028 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2453 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1548 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 1995 KB
+dist/kinhold_trozos.html 1544 KB
+hilo de los trozos 14 KB
+
+== Navegador: duelo en línea (dos páginas y un servidor)
+  OK   pc: sin errores en la consola — []
+  OK   movil: sin errores en la consola — []
+
+1 FALLOS
+!! FALLA: python3 pruebas/prueba_duelo_en_linea_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/duelo_en_linea
+
+HAY FALLOS
+tardó 325 s
