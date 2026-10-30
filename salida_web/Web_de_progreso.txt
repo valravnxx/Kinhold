@@ -1,0 +1,2 @@
+ERRORES:
+ - falta la carpeta de capturas capturas/demo-v58

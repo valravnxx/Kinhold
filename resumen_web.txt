@@ -1,0 +1,44 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2249 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2033 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1625 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2100 KB
+
+== Construir demo única
+      1778 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2565 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1620 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2068 KB
+dist/kinhold_trozos.html 1616 KB
+hilo de los trozos 14 KB
+
+== Web de progreso
+ERRORES:
+ - falta la carpeta de capturas capturas/demo-v58
+!! FALLA: node herramientas/construir_web.mjs
+
+== Navegador: web
+  OK   «ahora mismo» en ruso
+  OK   sin errores en consola (movil)
+
+Resultado: 6 fallos: roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», diario: las 12 últimas a la vista y las demás en un desplegable, sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», diario: las 12 últimas a la vista y las demás en un desplegable, sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso
+!! FALLA: python3 pruebas/prueba_web.py /tmp/kinhold_capturas/web
+
+HAY FALLOS
+tardó 168 s
