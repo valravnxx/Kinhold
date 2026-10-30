@@ -31,8 +31,12 @@ cobrarse.
 
 El mundo se guarda en la máquina (`/var/lib/kinhold/`): sigue ahí aunque se reinicie o se actualice.
 
-**Ojo:** el servidor aún no tiene cuentas ni contraseñas (llegan en el hito 11). Quien tenga el enlace puede
-entrar y construir. Para la prueba basta con no publicarlo.
+**En marcha desde el 30 oct** (lo creó valravnx): CX23 en Falkenstein, Ubuntu 24.04, https://2-31-141-224.sslip.io.
+El juego es siempre en línea (valravnx, 30 oct): la demo de la web de GitHub entra también a este servidor (la
+dirección está en `src/mundo/direccion_servidor.js`; si cambia la IP, se cambia ahí).
+
+**Ojo:** el servidor aún no tiene cuentas ni contraseñas (llegan en el hito 11). Como la web es pública, cualquiera
+que abra la demo entra en este mundo y puede construir.
 
 ## Si algo no va
 

@@ -10,11 +10,5 @@
   "tarea": "Toca y cuello de la ropa (visto en la revisión del 30 oct): el borde sale dentado y entre la toca y el cuello asoma una mancha de piel rota",
   "hito": "arte",
   "rama": "trabajo/20261030-2052"
- },
- "chat:trabajo/20261030-2040-enlinea": {
-  "inicio": "2026-10-30T20:40:33+00:00",
-  "tarea": "Siempre en línea (valravnx, 30 oct): la demo entra siempre al mundo del servidor de Hetzner (https://2-31-141-224.sslip.io), también desde la web de GitHub, y es el único modo de juego: fuera el modo en solitario y el botón «Jugar en línea». Sin servidor no se juega: sale un aviso de que no hay conexión. La dirección, en un solo sitio del código",
-  "hito": "mundo-juego",
-  "rama": "trabajo/20261030-2040-enlinea"
  }
 }

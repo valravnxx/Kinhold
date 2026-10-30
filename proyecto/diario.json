@@ -2860,7 +2860,7 @@
  {
   "inicio": "2026-10-30T14:15:36+01:00",
   "fin": "2026-10-30T22:48:17+01:00",
-  "titulo": "Ríos que siguen el terreno, ríos de verdad y nadar (mapa v18, demo v57; chat con valravnx)",
+  "titulo": "Ríos que siguen el terreno, ríos de verdad y nadar (mapa v18, demo v58; chat con valravnx)",
   "hito": "mundo",
   "hecho": [
    "Arreglo (valravnx, 30 oct): muchos ríos iban elevados por los valles, como un puente. La altura del río salía del mapa de 1 km y el relieve de detalle hundía el suelo de alrededor; ahora cada punto del río toma el suelo más bajo de su tramo y nunca sube río abajo. En Whitholm, de unos 600 puntos con el agua por encima del suelo a ninguno; una prueba nueva lo vigila (menos del 1 %).",
@@ -2870,6 +2870,22 @@
    "Aún mal: no hay animación de nadar; en línea, los demás te ven andar en el agua; de lejos los ríos siguen a tramos rectos; los arroyos someros se ven blanquecinos; y en algunas costas bajas salen manchas de arena tierra adentro."
   ],
   "pruebas": "Batería entera en la nube: 20 de 22 grupos bien. Fallan «jugar en línea» y «duelo en línea» (excepción de CLAUDE.md, fallan también en main). Después, «la demo en el mundo» otra vez tras arreglar su prueba del mar: bien. Lógica: nado 17/17, mapa 88/88. Las mutaciones se rompieron a propósito (MUTAR en el terraplén de los ríos y en la de nado de lógica). No comprobado: MUTAR_NADO en la nube (la de navegador).",
+  "capturas": "capturas/demo-v58",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T20:40:33+00:00",
+  "fin": "2026-10-30T21:56:36+00:00",
+  "titulo": "Siempre en línea: el juego entra siempre al servidor (chat con valravnx)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "La dirección del servidor de Hetzner, en un solo sitio (src/mundo/direccion_servidor.js); con ?servidor= se usa otra. Ya no se lee la que se guardaba en el navegador desde las Opciones (si alguien tenía la de casa, se quedaría fuera del mundo de todos).",
+   "Menú de la demo: Jugar (Whitholm en línea), Duelo (en línea) y Personaje. Fuera Construir y Duelo en solitario, «Jugar en línea», «Duelo en línea» y las Opciones. Un enlace antiguo a Construir o Duelo sin enlinea pasa solo a en línea.",
+   "Sin servidor no se juega: si no se puede conectar, o se corta y no vuelve a intentarlo, un cartel tapa el juego con el motivo, «Volver a intentarlo» y «Menú» (src/mundo/cliente.js, común a jugar y al duelo).",
+   "Decisión provisional (registro de la demo): las pruebas automáticas siguen entrando sin servidor con ?sinservidor=1, que no sale en ningún botón; así no hay que levantar un servidor en cada prueba del juego.",
+   "Publicado como demo v57. Aviso en CLAUDE.md para todas las sesiones: el juego es siempre en línea y el trabajo en curso se adapta a ello."
+  ],
+  "pruebas": "En la nube: 20 de 22 grupos bien; fallan jugar en línea (el móvil tarda en conectar y una captura no sale a tiempo) y duelo en línea (el corte del servidor, como en otras ramas), exentos hasta la fase 2. Repetidos los dos: vuelven a fallar (el duelo, en lo mismo; jugar en línea, en otra captura y en lo que tarda el móvil en conectar). El cartel sin conexión no llegó a probarse en la nube (la prueba en línea se paró antes por la captura): comprobado aquí con su parte suelta, y roto a propósito (sin el cartel, falla).",
   "capturas": "capturas/demo-v57",
   "estado": "ok"
  }

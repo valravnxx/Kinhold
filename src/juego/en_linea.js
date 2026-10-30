@@ -1,12 +1,12 @@
 // Kinhold — «Jugar en línea» en la construcción (hito 1f): la conexión con el servidor, el mundo compartido
 // (src/logica/en_linea.js) y los demás jugadores, dibujados con su personaje del taller (cuerpo y ropa que eligieron).
-// La dirección del servidor se pone en las Opciones del menú de la demo (se guarda en el navegador) o con ?servidor=.
+// La dirección del servidor: src/mundo/direccion_servidor.js (la de Hetzner, o la de ?servidor=).
 import { MundoEnLinea } from '../logica/en_linea.js';
 import { normalizarAspecto } from '../logica/aspecto.js';
 import { crearJugador } from './personaje.js';
 import { tr } from '../idioma.js';
 import { abrirCliente } from '../mundo/cliente.js';
-export { CLAVE_SERVIDOR, SERVIDOR_POR_DEFECTO, direccionServidor } from '../mundo/direccion_servidor.js';
+export { SERVIDOR, direccionServidor } from '../mundo/direccion_servidor.js';
 
 // escena: donde se ponen los demás; recursos: carpeta del taller; aspecto: { sexo, capas, aspecto } propio;
 // alCambiar(info): el mundo o lo que pasa ha cambiado (info = lo que devuelve MundoEnLinea.recibir);
