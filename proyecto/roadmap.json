@@ -448,9 +448,9 @@
     },
     {
      "nombre": "Salida al azar (valravnx, 30 oct): cada jugador nuevo aparece en un sitio al azar de las tres comarcas de inicio (Motdale, Breiddal y Strandvang), en biomas normales (nunca en la montaña, el pasto alpino ni la nieve), llano y lejos de los ríos como ahora. Los sitios posibles, calculados una vez y apuntados en la lógica (el servidor no genera el mapa), con una prueba que comprueba que siguen valiendo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T09:27:05+00:00",
-     "rama": "trabajo/20261030-0927"
+     "fin": "2026-10-30T12:18:45+00:00"
     },
     {
      "nombre": "Los árboles (las siete especies), la hierba y las rocas del mundo en el juego, con el estilo v5 y siempre en el mismo sitio",
@@ -1780,6 +1780,13 @@
      "archivo": "jugar/demo/v51.html",
      "capturas": "capturas/demo-v51",
      "notas": "En «Construir», la ropa cosida lleva su hechura y su tinte en el inventario (cada prenda la suya) y se ve así puesta, también en línea; la cota de malla, larga o corta; personajes de la taller-v17"
+    },
+    {
+     "v": "v52",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v52.html",
+     "capturas": "capturas/demo-v52",
+     "notas": "En «Construir», cada jugador nuevo aparece en un sitio al azar de Motdale, Breiddal o Strandvang (261 sitios llanos, lejos de los ríos y fuera de la montaña) y vuelve siempre al suyo. Quien ya tenía algo construido sigue en el sitio de antes; en línea, todos en el sitio común de momento."
     }
    ]
   },
