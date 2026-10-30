@@ -2713,14 +2713,17 @@
  },
  {
   "inicio": "2026-10-30T13:28:46+00:00",
-  "fin": "",
-  "titulo": "Hito de arte: revisión completa y publicación (carril B)",
+  "fin": "2026-10-30T14:47:33+00:00",
+  "titulo": "Hito de arte: revisión completa, sin terminar (carril B)",
   "hito": "arte",
   "hecho": [
-   "En curso: batería entera en la nube; fallan el duelo en línea y el mapa del mundo"
+   "Batería entera en la nube (20 grupos, 61 min): 18 correctos; el mapa del mundo pasó entero pero no pudo devolver las capturas (error 500 de GitHub al subirlas); falla el duelo en línea.",
+   "El duelo en línea falla dos veces seguidas en lo mismo: al pasar del duelo a construir en la misma pestaña, no sigue siendo el mismo jugador. Ya fallaba de vez en cuando en otras ramas; no es de este hito ni se ha encontrado la causa. Sin arreglar, el hito no pasa a revisión.",
+   "Capturas del personaje miradas en PC y móvil (cuerpo, cara, capa de espalda, cota, animaciones extra y el juego). Aún mal: el nacimiento del pelo corta en seco, como un casquete; las cejas son trazos finos que flotan; la capa de espalda sale casi negra y sin pliegues a la vista; con la toca asoma una mancha de piel rota entre la toca y el cuello; al picar no lleva pico; en el móvil el panel tapa medio personaje.",
+   "La tarea sigue a medias: la retoma otra sesión desde la rama trabajo/20261030-1329b."
   ],
-  "pruebas": "",
+  "pruebas": "En la nube: 18 de 20 grupos correctos y el mapa del mundo correcto sin capturas; el duelo en línea falla (repetido, falla igual)",
   "capturas": "",
-  "estado": "en_curso"
+  "estado": "fallo"
  }
 ]
