@@ -1330,5 +1330,6 @@
  "Tronzado: {n} troncos cortos.": "Bucked: {n} short logs.",
  "Partido: {n} de leña.": "Split: {n} firewood.",
  "A las manos": "To the hands",
- "Lo llevas con las dos manos.": "You carry it with both hands."
+ "Lo llevas con las dos manos.": "You carry it with both hands.",
+ "v43, arreglo: de una pila de dos o más troncos (delgados o cortos) no se podía coger ninguno («No te cabe»); ahora se coge uno, con las dos manos.": "v43, fix: from a pile of two or more logs (thin or short) none could be picked up («You can't fit it»); now one is picked up, with both hands."
 }

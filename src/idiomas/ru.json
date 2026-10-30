@@ -1330,5 +1330,6 @@
  "Tronzado: {n} troncos cortos.": "Разделано: коротких брёвен — {n}.",
  "Partido: {n} de leña.": "Расколото: дров — {n}.",
  "A las manos": "В руки",
- "Lo llevas con las dos manos.": "Вы несёте это двумя руками."
+ "Lo llevas con las dos manos.": "Вы несёте это двумя руками.",
+ "v43, arreglo: de una pila de dos o más troncos (delgados o cortos) no se podía coger ninguno («No te cabe»); ahora se coge uno, con las dos manos.": "v43, исправление: из кучи из двух и более брёвен (тонких или коротких) нельзя было взять ни одного («Не помещается»); теперь берётся одно, двумя руками."
 }
