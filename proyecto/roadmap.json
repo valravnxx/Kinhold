@@ -944,7 +944,9 @@
     },
     {
      "nombre": "Comarcas de Whitholm primero (valravnx, 29 oct): la isla de los playtests dividida en comarcas que siguen el relieve (un valle, una vega, una sierra), con nombres al estilo de la región revisados por valravnx, y la comarca donde aparecen todos al principio; luego las del resto del mundo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T09:11:06+01:00",
+     "rama": "trabajo/20261030-0910-comarcas"
     },
     {
      "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
