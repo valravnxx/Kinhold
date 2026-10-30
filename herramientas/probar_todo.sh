@@ -41,6 +41,7 @@ paso "Recoger del suelo y de las plantas" node pruebas/prueba_recoleccion.mjs
 paso "Objetos en el suelo" node pruebas/prueba_suelo.mjs
 paso "Tala de los árboles" node pruebas/prueba_tala.mjs
 paso "Tronzar y partir" node pruebas/prueba_troceo.mjs
+paso "Obras con lo que llevas" node pruebas/prueba_obras_llevas.mjs
 paso "Datos de cada prenda (zonas, protección, abrigo y peso)" node pruebas/prueba_ropa.mjs
 paso "Aspecto del personaje (personalización)" node pruebas/prueba_aspecto.mjs
 paso "Servidor mínimo con dos clientes" node pruebas/prueba_servidor.mjs
