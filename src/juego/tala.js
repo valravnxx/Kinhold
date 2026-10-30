@@ -78,6 +78,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
     const p = new THREE.Vector3(), q = new THREE.Quaternion(), s = new THREE.Vector3();
     original(o).decompose(p, q, s);
     const pivote = new THREE.Group(); pivote.position.copy(p);
+    pivote.position.y += 0.27 + 0.12 * o.escala; // se parte encima del tocón: el árbol cae desde ahí, no desde el suelo
     const m = new THREE.Mesh(o.malla.geometry, o.malla.material); m.quaternion.copy(q); m.scale.copy(s);
     m.castShadow = true; m.receiveShadow = true; pivote.add(m); pivote.name = 'arbol_cayendo';
     grupo.add(pivote);

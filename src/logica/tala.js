@@ -100,7 +100,7 @@ export class Tala {
     // cae hacia el lado contrario al del que tala
     const dir = Math.atan2(a.x - x, a.z - z), d = DA[a.edad], ramas = ramasDe(a, e.veces || 0);
     const sx = Math.sin(dir), sz = Math.cos(dir), en = t => ({ x: redondo(a.x + sx * t), z: redondo(a.z + sz * t) });
-    const deja = [{ tipo: d.tronco, n: 1, ...en(d.largo * 0.5 + 0.3) }, { tipo: 'rama', n: ramas, ...en(d.largo + 0.8) }];
+    const deja = [{ tipo: d.tronco, n: 1, ...en(d.largo * 0.5 + 0.7) }, { tipo: 'rama', n: ramas, ...en(d.largo + 1.1) }];
     this.estado[id] = { golpes: 0, parte: 0, veces: (e.veces || 0) + 1, caido: ahora, vuelve: ahora + d.vuelve, dir: redondo(dir) };
     return { ok: true, cae: true, golpes: e.golpes, faltan: 0, hacha: h.tipo, dir: redondo(dir), deja, vuelve: ahora + d.vuelve };
   }

@@ -80,7 +80,7 @@ function modeloDe(o) {
   if (t === 'tronco_delgado') return troncosConCortes(n, 2.6, 0.09, o.id);
   if (t === 'tronco_largo') return troncosConCortes(n, 4.5, 0.18, o.id);
   if (t === 'lena') return troncosConCortes(Math.ceil(n / 2), 0.45, 0.06, o.id);
-  if (t === 'hacha_mano') { const h = modeloHacha(); h.rotation.set(Math.PI / 2, 0, az(o.id, 3) * 6); h.position.y = 0.03; const g = new THREE.Group(); g.add(h); return g; }
+  if (t === 'hacha_mano' || t === 'hacha_hierro' || t === 'hacha_piedra') { const h = modeloHacha(); h.rotation.set(Math.PI / 2, 0, az(o.id, 3) * 6); h.position.y = 0.03; const g = new THREE.Group(); g.add(h); return g; }
   const d = CATALOGO[t];
   return hatillo(d && (d.tam === 'G' || d.huecos), o.id);
 }
