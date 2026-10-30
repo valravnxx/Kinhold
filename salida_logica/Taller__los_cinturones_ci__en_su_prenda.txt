@@ -1,0 +1,10 @@
+Cinturones de docs/recursos/personajes/taller-v15
+  OK   mh_hombre.glb: hombre_cinturon_cota ciñe la prenda (medio ancho 0.186 m, prenda 0.183 m)
+  OK   mh_hombre.glb: hombre_cinturon_gambeson ciñe la prenda (medio ancho 0.178 m, prenda 0.175 m)
+  OK   mh_hombre.glb: hombre_cinturon_sobreveste ciñe la prenda (medio ancho 0.194 m, prenda 0.191 m)
+  OK   mh_hombre.glb: hombre_cinturon_tunica ciñe la prenda (medio ancho 0.164 m, prenda 0.161 m)
+  OK   mh_mujer.glb: mujer_cinturon_cota ciñe la prenda (medio ancho 0.185 m, prenda 0.182 m)
+  OK   mh_mujer.glb: mujer_cinturon_gambeson ciñe la prenda (medio ancho 0.177 m, prenda 0.175 m)
+  OK   mh_mujer.glb: mujer_cinturon_sobreveste ciñe la prenda (medio ancho 0.193 m, prenda 0.190 m)
+  OK   mh_mujer.glb: mujer_cinturon_vestido ciñe la prenda (medio ancho 0.162 m, prenda 0.161 m)
+Resultado: 8 correctas, 0 fallidas
