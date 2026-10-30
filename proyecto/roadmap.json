@@ -447,6 +447,10 @@
      "fin": "2026-10-30T07:15:06+00:00"
     },
     {
+     "nombre": "Salida al azar (valravnx, 30 oct): cada jugador nuevo aparece en un sitio al azar de las tres comarcas de inicio (Motdale, Breiddal y Strandvang), en biomas normales (nunca en la montaña, el pasto alpino ni la nieve), llano y lejos de los ríos como ahora. Los sitios posibles, calculados una vez y apuntados en la lógica (el servidor no genera el mapa), con una prueba que comprueba que siguen valiendo",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Los árboles (las siete especies), la hierba y las rocas del mundo en el juego, con el estilo v5 y siempre en el mismo sitio",
      "estado": "pendiente"
     },
@@ -953,8 +957,8 @@
      "estado": "hecho"
     },
     {
-     "nombre": "La comarca donde aparecen todos al principio, y el sitio de salida dentro de ella",
-     "estado": "espera_decision"
+     "nombre": "Dónde se aparece (valravnx, 30 oct): en un sitio al azar de dos o tres comarcas de inicio, en biomas normales; elegidas Motdale, Breiddal y Strandvang. Hacerlo en el juego es tarea del hito «El juego en el mundo de verdad»",
+     "estado": "hecho"
     },
     {
      "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
@@ -2529,11 +2533,6 @@
    "pregunta": "Crear la cuenta de Hetzner y el servidor de prueba siguiendo la guía del repositorio, servidor/nube/LEEME.md (plan CX23 con Ubuntu 24.04 y el cloud config pegado); luego abrir en los dos aparatos la dirección https:// con tu IP con guiones y .sslip.io y decir si funciona. Decidido por valravnx el 29 oct: se hace ya.",
    "desde": "2026-10-28",
    "hito": "prueba-online"
-  },
-  {
-   "pregunta": "Comarca de inicio de Whitholm: en cuál aparecen todos al principio. El chat propuso Motdale (el valle del este: abierto, con agua y bosque y lejos de la gran veta); la salida de ahora cae en Lindholt. Lo hablará valravnx con el chat.",
-   "desde": "2026-10-30",
-   "hito": "mundo"
   }
  ]
 }
