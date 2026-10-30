@@ -437,15 +437,24 @@ export function* generar(semilla, { lado = LADO_KM, N = 256, pasos = PASOS } = {
   // grandes vetas: unas 4 de hierro y 3 de carbón por cada 25.000 km² de tierra, a más de 45 km entre las del mismo tipo
   let celdasTierra = 0; for (let i = 0; i < NN; i++) celdasTierra += tierra[i];
   const kmTierra = celdasTierra * km * km;
-  const grandes = (tipo, nota, apta, n) => {
+  const grandes = (tipo, nota, apta, n, puestas = []) => {
     const cand = []; for (let i = 0; i < NN; i++) if (tierra[i] && costa[i] > 2 && apta(i)) cand.push(i);
     cand.sort((a, b) => nota(b) - nota(a));
-    const puestas = [];
-    for (const i of cand) { if (puestas.length >= n) break;
+    const antes = puestas.length;
+    for (const i of cand) { if (puestas.length - antes >= n) break;
       if (puestas.every(j => Math.hypot(i % N - j % N, ((i / N) | 0) - ((j / N) | 0)) * km > 45)) puestas.push(i); }
-    for (const i of puestas) vetas.push({ tipo, x: i % N, y: (i / N) | 0 });
+    for (const i of puestas.slice(antes)) vetas.push({ tipo, x: i % N, y: (i / N) | 0 });
+    return puestas;
   };
-  grandes('granHierro', notaHierro, (i) => contactoCaliza[i] === 1, Math.max(2, Math.round(4 * kmTierra / 25000)));
+  // la isla (Whitholm, el mundo de los playtests) lleva siempre una gran veta de hierro en lo alto de su sierra
+  // (valravnx, 30 oct): en lo más alto de la isla (por encima del 60 % de su cumbre), donde mejor le va a la roca:
+  // donde la pizarra o el granito tocan la caliza si los hay y, si no, en la caliza, en la que el hierro sustituye a
+  // la roca (así se forman de verdad muchas vetas de hierro). Las del continente van después, a más de 45 km de ella.
+  const enIsla = (i) => celdaIsla >= 0 && pais[i] === 0;
+  let cumbreIsla = 0; for (let i = 0; i < NN; i++) if (tierra[i] && enIsla(i)) cumbreIsla = Math.max(cumbreIsla, h[i]);
+  const hierroIsla = grandes('granHierro', (i) => notaHierro(i) + h[i] / 1000,
+    (i) => enIsla(i) && h[i] > cumbreIsla * 0.6, 1);
+  grandes('granHierro', notaHierro, (i) => !enIsla(i) && contactoCaliza[i] === 1, Math.max(2, Math.round(4 * kmTierra / 25000)), hierroIsla);
   grandes('granCarbon', notaCarbon, (i) => roca[i] === 'arenisca' && U[i] > 0.08, Math.max(2, Math.round(3 * kmTierra / 25000)));
   // vetas pequeñas por bloques
   const BLOQUE = Math.max(4, Math.round(BLOQUE_KM / km));

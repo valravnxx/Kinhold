@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 30 oct 2026 (05:55) — por el chat: Despejar, barbas y capa, servidor, recursos y comarcas
+valravnx, a lo que le esperaba: «1 hecho, 2 se ven muy bien las nuevas, 3 en ello, esta tarde lo hago, 4 añade en las montañas una gran veta de hierro, 5 podemos ponernos con ello». → (1) El hito Despejar queda aprobado: hecho. (2) Las barbas nuevas (taller-v14) y la capa nueva (taller-v15) le parecen bien; el pulido de la capa sigue en el carril B. (3) El servidor de Hetzner lo crea él esta tarde: la decisión sigue abierta hasta entonces. (4) Recursos de Whitholm decididos: lo que ya tiene y además una gran veta de hierro en lo alto de la sierra; la pone esta sesión de chat en el generador del mapa. (5) Las comarcas de Whitholm se diseñan ahora en el chat.
+
 ### 29 oct 2026 (17:02 UTC) — por el chat: acción «releases» lanzada
 
 «verde» → valravnx lanzó la acción «releases» y salió bien: 6 releases con 103 versiones antiguas (comprobado en GitHub). La tarea de quitarlas de la web pasa a pendiente y la hace esta sesión de chat.

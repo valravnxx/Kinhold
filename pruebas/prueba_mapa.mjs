@@ -12,7 +12,7 @@ const huella = (m) => { let h = 0; for (let i = 0; i < m.h.length; i += 7) h = (
 for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
   const t0 = Date.now(), m = generarMapa(semilla, { lado }), ms = Date.now() - t0;
   const N = m.N, NN = N * N, r = resumen(m), n = `semilla ${semilla}, ${lado} km`;
-  if (MUTAR) { m.separacionIsla = 4; m.vetas.push({ tipo: 'granCarbon', x: 0, y: 0 }); m.vetas = m.vetas.filter(v => v.tipo !== 'hierroVeta'); const i = m.tierra.indexOf(1); m.rec[i] = i; m.pais.fill(1, 0, NN / 2); }
+  if (MUTAR) { m.separacionIsla = 4; m.vetas.push({ tipo: 'granCarbon', x: 0, y: 0 }); m.vetas = m.vetas.filter(v => v.tipo !== 'hierroVeta' && !(v.tipo === 'granHierro' && m.pais[v.y * N + v.x] === 0)); const i = m.tierra.indexOf(1); m.rec[i] = i; m.pais.fill(1, 0, NN / 2); }
   console.log(`${n}: ${ms} ms · ${JSON.stringify(r)}`);
   if (semilla === 66172) comprobar(`${n}: la misma semilla da el mismo mundo`, huella(generarMapa(66172, { lado })) === huella(m));
   comprobar(`${n}: hay tierra y mar (entre el 30 y el 60 % de tierra)`, r.fraccionTierra > 0.3 && r.fraccionTierra < 0.6, `${(r.fraccionTierra * 100).toFixed(0)} %`);
@@ -37,9 +37,13 @@ for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
   comprobar(`${n}: cada sitio de tierra tiene bioma y roca`, malBioma === 0, `${malBioma} sin`);
   // vetas: las grandes donde tocan, separadas y pocas; las pequeñas, cerca de cualquier sitio con país
   const ok = { hierroPantano: (i) => m.bioma[i] === 'turbera', hierroVeta: (i) => m.tierra[i] === 1, carbon: (i) => m.tierra[i] === 1,
-    granHierro: (i) => m.roca[i] === 'granito' || m.roca[i] === 'pizarra', granCarbon: (i) => m.roca[i] === 'arenisca' };
+    granHierro: (i) => m.roca[i] === 'granito' || m.roca[i] === 'pizarra' || m.pais[i] === 0, granCarbon: (i) => m.roca[i] === 'arenisca' };
   const malas = m.vetas.filter(v => !ok[v.tipo](v.y * N + v.x));
-  comprobar(`${n}: cada veta en su sitio (grandes de hierro en granito o pizarra, de carbón en arenisca, pantano en turberas)`, malas.length === 0, `${m.vetas.length} vetas, ${malas.length} mal puestas`);
+  comprobar(`${n}: cada veta en su sitio (grandes de hierro en granito o pizarra, salvo la de la sierra de Whitholm, de carbón en arenisca, pantano en turberas)`, malas.length === 0, `${m.vetas.length} vetas, ${malas.length} mal puestas`);
+  // Whitholm (la isla, región 0) tiene su gran veta de hierro en lo alto de la sierra (valravnx, 30 oct)
+  { let hMax = 0; for (let i = 0; i < NN; i++) if (m.tierra[i] && m.pais[i] === 0) hMax = Math.max(hMax, m.h[i]);
+    const gi = m.vetas.filter(v => v.tipo === 'granHierro' && m.pais[v.y * N + v.x] === 0).map(v => m.h[v.y * N + v.x]);
+    comprobar(`${n}: Whitholm tiene una gran veta de hierro, en lo alto de la sierra (por encima del 60 % de su cumbre)`, gi.length === 1 && gi[0] > hMax * 0.6, `${gi.length} en la isla, a ${gi.map(Math.round)} m (cumbre ${Math.round(hMax)} m)`); }
   for (const [tipo, nombre] of [['granHierro', 'hierro'], ['granCarbon', 'carbón']]) {
     const g = m.vetas.filter(v => v.tipo === tipo); let minSep = Infinity;
     for (const a of g) for (const b of g) if (a !== b) minSep = Math.min(minSep, Math.hypot(a.x - b.x, a.y - b.y) * m.celda / 1000);

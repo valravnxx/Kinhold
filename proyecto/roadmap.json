@@ -368,7 +368,7 @@
   {
    "id": "despejar",
    "num": "1h",
-   "estado": "revision",
+   "estado": "hecho",
    "nombre": "Despejar: web, código y revisión visual",
    "jugable": "Nada nuevo a la vista: la web cabe en el límite de GitHub sin perder ninguna versión, el código queda ordenado para unir las partes y hay una regla de revisión visual.",
    "nota": "Fase 0 de la revisión del 29 oct (aprobada por valravnx): va antes que todo lo demás. La web pesaba 701 MB de un máximo de 1 GB.",
@@ -2473,11 +2473,6 @@
    "pregunta": "Crear la cuenta de Hetzner y el servidor de prueba siguiendo la guía del repositorio, servidor/nube/LEEME.md (plan CX23 con Ubuntu 24.04 y el cloud config pegado); luego abrir en los dos aparatos la dirección https:// con tu IP con guiones y .sslip.io y decir si funciona. Decidido por valravnx el 29 oct: se hace ya.",
    "desde": "2026-10-28",
    "hito": "prueba-online"
-  },
-  {
-   "pregunta": "Recursos de Whitholm para los playtests: la isla tiene caliza y arenisca, bosques, ríos medianos y arroyos y vetas pequeñas de hierro y carbón, pero ni grandes vetas, ni gran río, ni granito o pizarra, ni lo de las regiones del sur. Lo hablará valravnx con el chat (lo dijo el 29 oct).",
-   "desde": "2026-10-29",
-   "hito": "mundo"
   }
  ]
 }
