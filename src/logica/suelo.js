@@ -43,8 +43,9 @@ export class Suelo {
       .sort((a, b) => Math.hypot(a.x - x, a.z - z) - Math.hypot(b.x - x, b.z - z));
   }
 
-  // Deja una cosa en el suelo en (x, z). enTierras: si ese sitio es de las tierras del autor. Devuelve el objeto.
-  dejar(c, x, z, ahora, autor, enTierras) {
+  // Deja una cosa en el suelo en (x, z). enTierras: si ese sitio es de las tierras del autor. giro (opcional, en
+  // radianes): cómo queda tumbado (el tronco de un árbol talado, a lo largo de donde cayó). Devuelve el objeto.
+  dejar(c, x, z, ahora, autor, enTierras, giro) {
     if (esDePila(c.tipo)) {
       const p = this.visibles(ahora).filter(o => o.cosa.tipo === c.tipo && Math.hypot(o.x - x, o.z - z) <= RADIO_PILA)
         .sort((a, b) => Math.hypot(a.x - x, a.z - z) - Math.hypot(b.x - x, b.z - z))[0];
@@ -52,6 +53,7 @@ export class Suelo {
     }
     const o = { id: 's' + this.siguiente++, cosa: copiar(c), x: redondo(x), z: redondo(z), autor, soltado: ahora,
       desaparece: esDePila(c.tipo) || enTierras ? null : ahora + DURA_SUELO };
+    if (Number.isFinite(giro)) o.giro = redondo(giro);
     this.objetos.push(o);
     return o;
   }
@@ -129,7 +131,8 @@ export class Suelo {
       if (!o || !o.cosa || !this.cat[o.cosa.tipo] || !Number.isFinite(o.x) || !Number.isFinite(o.z)) continue;
       const n = Number.isInteger(o.cosa.n) && o.cosa.n > 0 ? o.cosa.n : 1;
       this.objetos.push({ id: String(o.id), cosa: { ...copiar(o.cosa), n }, x: o.x, z: o.z, autor: String(o.autor || ''),
-        soltado: Number.isFinite(o.soltado) ? o.soltado : 0, desaparece: Number.isFinite(o.desaparece) ? o.desaparece : null });
+        soltado: Number.isFinite(o.soltado) ? o.soltado : 0, desaparece: Number.isFinite(o.desaparece) ? o.desaparece : null,
+        ...(Number.isFinite(o.giro) ? { giro: o.giro } : {}) });
     }
     const max = Math.max(0, ...this.objetos.map(o => Number(String(o.id).slice(1)) || 0));
     this.siguiente = Math.max(Number.isInteger(d.siguiente) ? d.siguiente : 1, max + 1);

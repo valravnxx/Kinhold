@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 30 oct 2026 (09:37) — por el chat: combate en el mundo
+valravnx: el combate integrado en el mundo de construir. Cámara que también se incline arriba y abajo. En PC, como los juegos de combate con ratón: mueves el ratón en una dirección, clicas, y cuanto más mantienes el clic, más carga el golpe (si lo haces rápido, sale un poco más rápido); la dirección es la del movimiento justo antes del clic (arriba, abajo, izquierda, derecha; sin movimiento, estocada). Paradas igual: se mantiene el botón derecho y la dirección del ratón; tanto en el ataque como en la parada se puede cambiar de dirección a mitad del clic sin soltar. En el móvil, la rosa de ahora pero fija a un lado; cámara y movimiento libres, no alrededor de una sola persona; un modo para fijar a alguien que pone la cámara del duelo. → Tarea en el hito «Duelo» (chat).
+
 ### 30 oct 2026 (09:09–09:22) — por el chat: comarcas y sus nombres
 valravnx, a las comarcas y zonas con bordes en curva: «me vale». A los nombres propuestos: «me gusta, dale» → las comarcas de Whitholm son Breiddal (A), Motdale (B), Nordwold (C), Lindholt (D), Strandvang (E), Furulid (F), Sudholt (G) y Ravnsnes (H). Anotado en el GDD (apartado 4). La comarca de inicio sigue pendiente (el chat propuso Motdale).
 
