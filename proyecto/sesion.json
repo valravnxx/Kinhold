@@ -5,7 +5,12 @@
   "hito": "equipo",
   "rama": "trabajo/20261030-0623"
  },
- "B": null,
+ "B": {
+  "inicio": "2026-10-30T06:53:58+00:00",
+  "tarea": "Pulir la barba larga (visto al rehacerla): en el juego las ondas de los pelos salen demasiado regulares, el bigote sigue pintado y sin volumen, y a los lados de la barbilla asoma algo de cuello",
+  "hito": "arte",
+  "rama": "trabajo/20261030-0653"
+ },
  "chat:trabajo/20261030-0521": {
   "inicio": "2026-10-30T05:22:21+00:00",
   "tarea": "La demo en el mundo: apareces en Whitholm, la isla de los playtests (valravnx, 29 oct), en un sitio accesible (nunca en el mar ni en un pico) y todos en la misma comarca, y andas por la isla con la cámara del juego; fuera el llano. El servidor y el terreno solo cubren la isla",
