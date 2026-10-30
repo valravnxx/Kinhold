@@ -1,0 +1,77 @@
+Página pc
+  OK   pc: «Jugar» del menú va en línea, al servidor de la dirección — /jugar/demo/prueba.html?hilos=1&servidor=ws%3A%2F%2F127.0.0.1%3A53145&modo=construir&enlinea=1
+  OK   pc: el menú ya no tiene modo en solitario ni Opciones
+  OK   pc: la construcción carga — []
+  OK   pc: el terreno de alrededor llega
+  OK   pc: se conecta al servidor
+  OK   pc: «Reiniciar» no está en línea
+  OK   pc: el estado de la conexión se ve arriba — En línea · 0 más
+Página movil
+  OK   movil: «Jugar» del menú va en línea, al servidor de la dirección — /jugar/demo/prueba.html?hilos=1&servidor=ws%3A%2F%2F127.0.0.1%3A53145&modo=construir&enlinea=1
+  OK   movil: el menú ya no tiene modo en solitario ni Opciones
+  (sin captura del menú: Page.screenshot: Protocol error (Page.captureScreenshot): Unable to capture scre )
+  OK   movil: la construcción carga — []
+  OK   movil: el terreno de alrededor llega
+  OK   movil: se conecta al servidor
+  OK   movil: «Reiniciar» no está en línea
+  OK   movil: el estado de la conexión se ve arriba — En línea · 1 más
+Construir en el mundo del servidor
+  OK   PC pone el mojón
+  OK   el móvil ve el mojón de PC
+  OK   PC pone dos cimientos y los termina (llevando material y trabajando, por el servidor) — 2 piezas, 0 obras
+  OK   el móvil construye sobre la obra de PC
+  OK   PC ve el cimiento del móvil, terminado
+  OK   y las dos lo dibujan terminado (sin el armazón de obra)
+  OK   las dos páginas tienen el mismo mundo
+  OK   en línea no se guarda nada en el navegador
+  OK   el servidor guarda las acciones con el autor de cada página — 22 acciones de 2 autores
+Verse el uno al otro
+  FALLA el móvil ve a PC donde está
+  OK   PC ve al móvil donde está
+  OK   cada uno ve a uno solo (no a sí mismo)
+  OK   el móvil ve a PC con el cuerpo y la ropa que lleva puesta, como se ve ella — mujer:gambeson:{"piel":"morena","ojos":"verdes","pelo":"rubio","peinado":"cofia","barba":"ninguna","formas":{"altura":1,"peso":0.8,"musculo":0,"cara":0.6,"nariz":0,"nariz_larga":0,"menton":0}}:[{"prendas":{"camisa":"natural","calzas":"natural","tunica":"natural","vestido":"glasto_claro","gambeson":"natural","sobreveste":"rubia","manto":"natural","capucha":"natural","toca":"natural","zapatos":"natural","botas":"natural"},"blason":{"dibujo":"liso","color":"blanco"}},{"camisa":{"material":"lino","corte":"largo","tejido":"liso"},"calzas":{"material":"lino","corte":"largo","tejido":"liso"},"tunica":{"material":"lana","corte":"largo","tejido":"liso"},"vestido":{"material":"lana","corte":"largo","tejido":"liso"},"gambeson":{"material":"lino","corte":"largo","tejido":"liso"},"sobreveste":{"material":"lino","corte":"largo","tejido":"liso"},"manto":{"material":"lana","corte":"largo","tejido":"liso"},"capucha":{"material":"lana","corte":"largo","tejido":"liso"},"toca":{"material":"lino","corte":"largo","tejido":"liso"},"cota":{"material":"malla","corte":"largo","tejido":"liso"}}] / gambeson
+  OK   PC ve al móvil como el de por defecto (camisa y calzas, descalzo)
+  OK   los dos son personajes del taller (no el muñeco)
+  OK   el móvil ve a PC con su aspecto (morena, ojos verdes, alta, de más peso) — {"piel":"morena","ojos":"verdes","pelo":"rubio","peinado":"cofia","barba":"ninguna","formas":{"altura":1,"peso":0.8,"musculo":0,"cara":0.6,"nariz":0,"nariz_larga":0,"menton":0}}
+  OK   y a su altura (escala del modelo)
+  OK   con el mismo color de piel en las dos pantallas
+  OK   PC ve al móvil con el aspecto por defecto, igual que el móvil se ve — {"piel":"clara_rosada","ojos":"castanos","pelo":"castano_oscuro","peinado":"corto","barba":"corta","formas":{"altura":0,"peso":0,"musculo":0,"cara":0,"nariz":0,"nariz_larga":0,"menton":0}}
+  OK   cuando PC anda, el móvil lo ve andar — quieto
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_en_linea_navegador.py", line 157, in <module>
+    pg.screenshot(path=f'{SALIDA}/{nombre}_3_de_cerca.png')
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 10909, in screenshot
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.screenshot(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<13 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 830, in screenshot
+    encoded_binary = await self._channel.send(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+        "screenshot", self._timeout_settings.timeout, params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.screenshot: Timeout 30000ms exceeded.
+Call log:
+  - taking page screenshot
+  - waiting for fonts to load...
+  - fonts loaded
+
