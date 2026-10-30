@@ -1,0 +1,18 @@
+Golpes
+  OK   sin autor no se cava
+  OK   demasiado lejos del personaje no se cava
+  OK   en el aire no se cava
+  OK   un golpe quita un puñado redondeado de cubitos — 16.1 de media (esfera de 17.2)
+  OK   el golpe guarda quién lo dio
+  OK   lo quitado ya no es roca y lo de al lado sí
+  OK   dice qué trozos hay que rehacer (también el vecino si toca el borde) — 0,0,0
+Guardar solo lo tocado
+  OK   solo se guardan los trozos tocados — 1 trozo(s), 696 bytes
+  OK   al cargar lo guardado la roca queda igual
+Malla de la roca
+  OK   se hace la malla del trozo con el túnel — 952 triángulos, 13.9 ms en node
+  OK   las caras miran hacia fuera de la roca — 948/952
+  OK   la pared no se ve a cuadros (casi ninguna cara alineada con los ejes) — 0.0 % alineadas
+  OK   los trozos vecinos comparten los vértices del borde (sin rendijas) — 17 vértices comunes
+
+Resultado: 13 correctas, 0 fallidas
