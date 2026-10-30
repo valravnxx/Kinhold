@@ -840,7 +840,9 @@
     },
     {
      "nombre": "Pulir la capa (visto al rehacerla): que se mueva algo al andar (huesos propios o tela sencilla), que de espalda se distingan los pliegues y que las manos no asomen por los lados con los brazos algo abiertos",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T04:52:07+00:00",
+     "rama": "trabajo/20261030-0452"
     },
     {
      "nombre": "Pulir la barba larga (visto al rehacerla): en el juego las ondas de los pelos salen demasiado regulares, el bigote sigue pintado y sin volumen, y a los lados de la barbilla asoma algo de cuello",
@@ -986,6 +988,12 @@
      "estado": "hecho",
      "inicio": "2026-10-29T15:24:53+01:00",
      "fin": "2026-10-29T15:26:03+01:00"
+    },
+    {
+     "nombre": "Recursos de Whitholm (valravnx, 30 oct): una gran veta de hierro en la sierra de la isla",
+     "estado": "en_curso",
+     "inicio": "2026-10-30T05:56:35+01:00",
+     "rama": "trabajo/20261030-0556-veta"
     }
    ],
    "lleva": "chat",
