@@ -1,0 +1,61 @@
+Vista pc
+  OK   la demo arranca sin error — None
+  OK   construir va en el mundo de verdad (no en el llano)
+  generar el mapa: 3290 ms
+  OK   los trozos de alrededor llegan
+   {"pj": [0, 0.13617043442916243, 4], "suelo": 0.1361731062362992, "sobreMar": 133.93031311035156, "salida": {"x": 215000, "z": 46000}, "isla": {"x0": 160000, "z0": 21000, "x1": 221000, "z1": 84000}, "trozos": 72, "tri": 167168, "lo": 33.82196598551586, "hi": 362.0401530944135, "llano": false, "hilos": 3}
+  OK   un jugador nuevo sale en uno de los sitios de la salida al azar — {"x": 215000, "z": 46000}
+  OK   la salida está en la isla — {"x": 215000, "z": 46000}
+  OK   la salida está en tierra, ni en el mar ni en un pico (entre 6 y 220 m) — 133.9 m
+  OK   el personaje pisa el suelo — 0.136 / 0.136
+  OK   sin el llano de antes, con el terreno por trozos (en un hilo aparte) — 72 trozos, 167168 triángulos
+  OK   el terreno tiene relieve (más de 5 m de desnivel en 2 km; la salida al azar puede caer en una vega muy llana) — 33.8–362.0 m
+  lo que crece: {"cuenta": {"arboles": 937, "especies": {"abeto": 435, "pino": 0, "abedul": 253, "roble": 0, "haya": 249, "fresno": 0, "encina": 0}, "hierba": 4390, "flores": 219, "matas": 123, "piedras": 158, "ms": 276}, "especies": ["abeto", "abedul", "haya"], "agua": 0, "cerca": 8.893175994170411, "talables": 937, "firma": 2731312574}
+  OK   hay árboles, de las especies del mundo, cada una con su malla — abeto, abedul, haya
+  OK   hay hierba, matas y piedras — 4390 hierba, 219 flores, 123 matas, 158 piedras
+  OK   nada en el agua — 0
+  OK   ningún árbol pegado a la salida (a menos de 8 m) — 8.9 m
+  OK   todos los árboles se pueden talar — 937 de 937
+  OK   hacer lo que crece tarda poco al cargar (menos de 3 s) — 276 ms
+  OK   el árbol entre la cámara y el personaje no se dibuja — {"tapan": 1, "escondido": true}
+  andar 200 m: {"dif": 0.08323925055299108, "msMax": 8.199999999982538, "x": 165.0671229819353, "z": 116.92849467900736}
+  OK   andando 200 m, el terreno trabaja poco en cada fotograma (menos de 60 ms) — 8.2 ms
+  OK   andando, el personaje sigue el suelo (a menos de 0,6 m) — 0.08 m
+  costa: {"tierra": [5288, 0], "mar": [5290, 0], "entra": false, "fuera": false}
+  OK   no se puede entrar en el mar — {"tierra": [5288, 0], "mar": [5290, 0], "entra": false, "fuera": false}
+  OK   no se puede salir de la isla
+  OK   andando hacia el mar, avanza y no se mete en el agua — {"sobreMar": 0.9503293740749541, "x": 5165.060000000005, "z": -1.8737096026954504e-16, "andado": 3.0600000000049477}
+  OK   al recargar, sale en el mismo sitio — {"x": 215000, "z": 46000} → {"x": 215000, "z": 46000}
+  OK   al recargar, cada árbol está en el mismo sitio y es de la misma especie — 2731312574 → 2731312574
+  OK   quien ya jugaba antes (con algo guardado) sigue en el sitio común — {"x": 184596, "z": 46280}
+  OK   sin errores en la página
+Vista movil
+  OK   la demo arranca sin error — None
+  OK   construir va en el mundo de verdad (no en el llano)
+  generar el mapa: 3374 ms
+  OK   los trozos de alrededor llegan
+   {"pj": [0, 0.045049613713797836, 4], "suelo": 0.04505050616384665, "sobreMar": 65.19483947753906, "salida": {"x": 199000, "z": 59000}, "isla": {"x0": 160000, "z0": 21000, "x1": 221000, "z1": 84000}, "trozos": 69, "tri": 106368, "lo": 7.473962185568411, "hi": 104.69891224103338, "llano": false, "hilos": 3}
+  OK   un jugador nuevo sale en uno de los sitios de la salida al azar — {"x": 199000, "z": 59000}
+  OK   la salida está en la isla — {"x": 199000, "z": 59000}
+  OK   la salida está en tierra, ni en el mar ni en un pico (entre 6 y 220 m) — 65.2 m
+  OK   el personaje pisa el suelo — 0.045 / 0.045
+  OK   sin el llano de antes, con el terreno por trozos (en un hilo aparte) — 69 trozos, 106368 triángulos
+  OK   el terreno tiene relieve (más de 5 m de desnivel en 2 km; la salida al azar puede caer en una vega muy llana) — 7.5–104.7 m
+  lo que crece: {"cuenta": {"arboles": 45, "especies": {"abeto": 0, "pino": 0, "abedul": 0, "roble": 28, "haya": 0, "fresno": 17, "encina": 0}, "hierba": 2879, "flores": 181, "matas": 12, "piedras": 67, "ms": 186}, "especies": ["roble", "fresno"], "agua": 0, "cerca": 23.883833811571098, "talables": 45, "firma": 1263956432}
+  OK   hay árboles, de las especies del mundo, cada una con su malla — roble, fresno
+  OK   hay hierba, matas y piedras — 2879 hierba, 181 flores, 12 matas, 67 piedras
+  OK   nada en el agua — 0
+  OK   ningún árbol pegado a la salida (a menos de 8 m) — 23.9 m
+  OK   todos los árboles se pueden talar — 45 de 45
+  OK   hacer lo que crece tarda poco al cargar (menos de 3 s) — 186 ms
+  OK   el árbol entre la cámara y el personaje no se dibuja — {"tapan": 1, "escondido": true}
+  andar 200 m: {"dif": 0.04491279927060232, "msMax": 1.3000000000465661, "x": 165.0671229819353, "z": 116.92849467900736}
+  OK   andando 200 m, el terreno trabaja poco en cada fotograma (menos de 60 ms) — 1.3 ms
+  OK   andando, el personaje sigue el suelo (a menos de 0,6 m) — 0.04 m
+  costa: {"tierra": [-32223.959131188232, 51.321647580871556], "mar": [-32225.959128651688, 51.32483288670453], "entra": false, "fuera": false}
+  OK   no se puede entrar en el mar — {"tierra": [-32223.959131188232, 51.321647580871556], "mar": [-32225.959128651688, 51.32483288670453], "entra": false, "fuera": false}
+  OK   no se puede salir de la isla
+  OK   andando hacia el mar, avanza y no se mete en el agua — {"sobreMar": 0.19603328528424413, "x": -32225.019129843844, "z": 51.32362247048802, "andado": 3.060000469987612}
+  OK   sin errores en la página
+
+Todo bien
