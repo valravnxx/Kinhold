@@ -1,0 +1,94 @@
+Personaje del taller en el duelo
+  OK   lino: los dos luchadores son el personaje del taller — "listo"
+  OK   lino: lleva puestas las capas de lino (camisa y calzas) — ['camisa']
+  OK   lino: el muñeco de antes ya no se ve
+  OK   gambeson: los dos luchadores son el personaje del taller — "listo"
+  OK   gambeson: lleva puestas las capas ['gambeson'] — ['gambeson']
+  OK   gambeson: el muñeco de antes ya no se ve
+  OK   malla: los dos luchadores son el personaje del taller — "listo"
+  OK   malla: lleva puestas las capas ['gambeson', 'cota'] — ['cota']
+  OK   malla: el muñeco de antes ya no se ve
+  OK   en guardia, las dos manos agarran el puño de la espada — [0.028, 0.042] m
+  OK   en los golpes de las cinco líneas las manos siguen en el puño — peor 0.078 m
+  OK   cada herida se pinta pegada al cuerpo, en su hueso — [["upperarm_l", true], ["head", true], ["spine_02", true], ["thigh_r", true]]
+Curación de heridas
+  OK   con heridas aparece el botón Curar
+  OK   el aviso de una herida enseña cómo tratarla — Herida muy grave | pierna derecha (corte): te mueves más despacio | Vendar (4 s · 3) | Coser (12 s · 2) | Cauterizar (3 s) | Emplasto de hierbas (5 s · 2)
+  OK   elegir Vendar empieza la cura (curando, sin poder parar) — curando
+  OK   mientras, el aviso «Curando» y el botón Curar encendido
+  OK   al terminar, la herida queda vendada y gasta una venda
+  OK   la tecla C trata la herida más urgente — coser
+  OK   si te hieren mientras curas, la cura se pierde
+  OK   las heridas vendadas llevan su venda de lino enrollada — 2 vendas
+  OK   entablillar una pierna rota: venda y dos tablillas
+  OK   con escudo, la mano izquierda lo agarra por el asa al pararlo — 0.046 m
+Duelo: rosa y ataque con el ratón
+  OK   la rosa aparece sobre el rival
+  OK   la rosa está dentro de la pantalla — [636, 221, 170, 170]
+  OK   el cursor elige cada una de las cinco zonas
+  OK   la zona bajo el cursor se resalta
+  OK   el clic empieza el golpe por la zona elegida
+  OK   clic en otra zona mientras preparas = finta — progreso 0.6476190476190475
+  OK   el golpe sin parada hiere al rival — [{"zona": "brazoI", "gravedad": "muy grave", "sangrado": 3, "tipo": "corte"}]
+Parada del rival y pausa de impacto
+  OK   el rival para con la parada sin elegir lado
+  OK   el choque produce pausa de impacto
+Aprendiz: avisos en la rosa y parada perfecta
+  OK   la zona del golpe que viene se pone roja (lado espejo)
+  OK   se pone verde en la ventana de parada perfecta
+  OK   parar con Espacio en verde da parada perfecta — {"golpes": 0, "heridasDadas": 0, "paradas": 1, "perfectas": 1, "maestros": 0, "recibidas": 0, "flechas": 0, "aciertos": 0, "puntos": 0}
+  OK   y abre el contraataque
+  OK   el contraataque es imparable
+  OK   una parada normal no detiene el contraataque
+Golpe maestro
+  OK   el borde dorado marca que cabe el golpe maestro
+  OK   golpear por el lado espejo a tiempo es golpe maestro y hiere — {"golpes": 1, "heridasDadas": 1, "paradas": 0, "perfectas": 0, "maestros": 1, "recibidas": 0, "flechas": 0, "aciertos": 0, "puntos": 0}
+Movimiento encarado
+  OK   el lateral rodea al rival sin alejarse mucho — distancia 2.50 -> 2.55, x=-1.38
+  OK   y sigue de cara al rival — 0.00 rad
+  OK   con la distribución rusa, D (que escribe «в») mueve de lado — x=-1.38
+Combate libre contra la máquina (normal)
+  OK   el rival ataca y el jugador para sus golpes — {"golpes": 0, "heridasDadas": 0, "paradas": 3, "perfectas": 3, "maestros": 0, "recibidas": 0, "flechas": 0, "aciertos": 0, "puntos": 0}
+  OK   ningún golpe del rival va al aire
+  OK   al caer el rival aparece la pantalla de victoria
+Prácticas: arco, retícula y dianas
+  OK   la rosa no aparece con arco y sí la retícula
+  OK   a plena tensión se acierta la diana de 20 m — {"golpes": 0, "heridasDadas": 0, "paradas": 0, "perfectas": 0, "maestros": 0, "recibidas": 0, "flechas": 6, "aciertos": 5, "puntos": 44, "tensiones": [1, 1, 1, 1, 1, 1]}
+  OK   soltar flojo no dispara y avisa — Demasiado flojo: el tiro se cancela (hace falta tensar al menos la mitad)
+  OK   la retícula se cierra y se pone verde a plena tensión
+Prácticas: poste
+  OK   la rosa aparece sobre el poste
+  OK   el poste registra el golpe y su fuerza — Poste: izquierda a torso · golpe muy grave · fuerza 83%
+Carga desde 40 m
+  OK   el rival corre hacia ti — 6.0 m/s en tiempo de juego
+Escudo (v4)
+  OK   los dos llevan escudo a la vista
+  OK   al parar el escudo se levanta — 1.05 -> 1.28 m
+  OK   tu escudo levantado para una flecha de frente — Tu escudo para la flecha
+  OK   sin parar, la flecha te hiere — Te alcanza: herida muy grave en brazo derecho
+  OK   el disparo y su herida quedan en el registro de acciones con su autor — [{'n': 23, 'autor': 'tirador', 'tipo': 'disparo', 'datos': {'x': 0, 'y': 1.3, 'z': -3.6, 'tension': 1, 'tTenso': 0.2}, 'ok': True}, {'n': 24, 'autor': 'tirador', 'tipo': 'impacto', 'datos': {'objetivo': 'jugador', 'arma': 'arco'}, 'ok': True, 'resultado': 'herida', 'zona': 'brazoD', 'gravedad': 'muy grave'}]
+  OK   los golpes cuerpo a cuerpo de la partida quedan anotados con su autor — 11 golpes
+  OK   el rival levanta el escudo al verte tensar
+  OK   y para tu flecha con el escudo — El rival para tu flecha con el escudo
+  OK   opciones: arma del rival con espada y escudo — 4 opciones
+Paneles
+  OK   opciones sin selector de sistema, con sonido
+  OK   el panel de decisiones dice v2
+  (fotogramas por segundo en el navegador de pruebas, sin GPU: 3)
+  OK   sin errores en consola (PC)
+Móvil
+  OK   botón Parar, joystick y rosa visibles en táctil
+  OK   la rosa no tapa el botón Parar ni el joystick — rosa hasta y=416, parar y=634
+  OK   tocar la zona izquierda de la rosa golpea por la izquierda
+  OK   el punto de prueba es zona libre del lienzo
+  OK   móvil: tocar zona libre sin arrastrar no gira la cámara ni golpea — giro 0.000
+  OK   móvil: arrastrar un dedo 100 px a la derecha gira la cámara — giro -0.60 rad
+  OK   móvil: con un dedo en el joystick, el otro gira la cámara entero — giro 0.48 rad (80 px = 0,48)
+  OK   móvil: con el arco tenso y el dedo junto al borde derecho, la cámara gira hacia allí — giro -0.49 rad, tensando
+  OK   móvil: al soltar el arco deja de seguir y dispara
+  OK   móvil: con escudo, Parar lo levanta
+  OK   móvil: botón Curar visible, sin tapar Parar — [True, True, 66, 44]
+  OK   móvil: tocar Curar empieza a vendar
+  OK   sin errores en consola (móvil)
+
+Resultado: TODO CORRECTO
