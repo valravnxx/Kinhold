@@ -91,6 +91,22 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/{nombre}_8_juego.png', timeout=240000)
         pg.evaluate('window.__cerca.camara(0.18, 30, 2.6)'); pg.wait_for_timeout(1500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_9_juego_bajo.png', timeout=240000)
+        # el suelo va por trozos (sin el trozo único que se rehacía entero) y, al ir lejos, el decorado se rehace poco a poco:
+        # ningún fotograma se para. Se lleva al personaje 1 m por fotograma (más deprisa que corriendo) 200 m en línea
+        # recta. MUTAR_TROZOS=1 rehace el decorado de golpe, como antes: tiene que fallar
+        if os.environ.get('MUTAR_TROZOS'): pg.evaluate('window.__cerca.vj.deGolpe = true')
+        pg.evaluate("""new Promise(res => { const v = window.__cerca.vj; v.msMax = 0; v.fotogramas = 3; let k = 0;
+          const f = () => { if (k++ < 200) { v.pos.x += 1; requestAnimationFrame(f); } else if (v.haciendo) requestAnimationFrame(f); else res(); }; requestAnimationFrame(f); })""")
+        try: pg.wait_for_function('window.__cerca.vj.trozos.faltan() === 0', timeout=60000)
+        except Exception: pass
+        pg.wait_for_timeout(500)
+        tj = pg.evaluate('window.__cerca.juego')
+        pg.evaluate('window.__cerca.vj.deGolpe = false')
+        MEDIDAS[f'{nombre}_juego_andar'] = tj
+        comprobar(f'{nombre}: como en el juego, el suelo va por trozos con rejilla de 1 m cerca', tj['trozos'] >= 9 and tj['triangulosSuelo'] > 20000 and tj['ladoTrozosM'] >= 192, f"{tj['trozos']} trozos, {tj['triangulosSuelo']} triángulos de suelo, cuadro de {tj['ladoTrozosM']} m")
+        comprobar(f'{nombre}: al andar 200 m el decorado se rehace sin parar el juego (ningún fotograma pasa de 60 ms en suelo y decorado)', tj['rehechos'] >= 1 and tj['msFotogramaMax'] < 60, f"{tj['rehechos']} veces rehecho, fotograma más largo {tj['msFotogramaMax']} ms")
+        pg.evaluate('window.__cerca.camara(0.5, 40, 2.2)'); pg.wait_for_timeout(1500)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_9b_juego_trozos.png', timeout=240000)
         # junto al río más cercano: el agua de cerca se dibuja y el personaje queda en la orilla, fuera del agua
         r = pg.evaluate('window.__cerca.rioCercano()')
         if r:

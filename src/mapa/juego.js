@@ -410,7 +410,8 @@ export function crearVistaJuego(est) {
     if (!vj.haciendo && c && Math.hypot(vj.pos.x - c.px, vj.pos.z - c.pz) > CERCA / 2 - (movil ? 55 : 70)) vj.haciendo = hacerDecorado(vj.pos.x, vj.pos.z);
     if (vj.haciendo) {
       const t2 = performance.now(); let r;
-      do r = vj.haciendo.next(); while (!r.done && performance.now() - t2 < MS_FOTOGRAMA);
+      // (deGolpe: solo para romper la prueba a propósito: todo en un fotograma, como antes)
+      do r = vj.haciendo.next(); while (!r.done && (vj.deGolpe || performance.now() - t2 < MS_FOTOGRAMA));
       if (r.done) { vj.haciendo = null; vj.rehechos++; ponerDecorado(r.value); }
     }
     // lo que se ha tardado en este fotograma en el suelo y el decorado (sin el primero tras entrar, que es la carga)

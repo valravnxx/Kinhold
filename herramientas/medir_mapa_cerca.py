@@ -42,12 +42,10 @@ try:
             pg.evaluate("document.getElementById('btnJuego').click()"); pg.wait_for_timeout(4000)
             m['cerca'] = pg.evaluate('window.__cerca.juego'); m['llamadas_dibujo'] = pg.evaluate(LLAMADAS); m['mem_juego_MB'] = pg.evaluate(MEM)
             m['trozos'] = pg.evaluate('window.__cerca.vj.trozos ? { hilos: window.__cerca.vj.trozos.hilos, vivos: window.__cerca.vj.trozos.vivos.size } : null')
-            # andar 200 m en línea recta: el decorado se rehace por el camino y los trozos cambian de detalle; lo más que
+            # llevar al personaje 200 m en línea recta, 1 m por fotograma: el decorado se rehace por el camino y los trozos cambian de detalle; lo más que
             # tarda un fotograma en eso es lo que el juego podría quedarse parado (antes, de 236 a 935 ms de golpe)
-            pg.evaluate('(() => { const v = window.__cerca.vj; v.msMax = 0; v.fotogramas = 3; v.andarA(v.pos.x + 200, v.pos.z + 10); })()')
-            for k in range(60):
-                pg.wait_for_timeout(2000)
-                if not pg.evaluate('window.__cerca.vj.destino'): break
+            pg.evaluate("""new Promise(res => { const v = window.__cerca.vj; v.msMax = 0; v.fotogramas = 3; let k = 0;
+              const f = () => { if (k++ < 200) { v.pos.x += 1; requestAnimationFrame(f); } else if (v.haciendo) requestAnimationFrame(f); else res(); }; requestAnimationFrame(f); })""")
             pg.wait_for_timeout(3000)
             m['andar'] = pg.evaluate('(() => { const v = window.__cerca.vj, j = window.__cerca.juego; return { ms_fotograma_max: j.msFotogramaMax, decorados_rehechos: j.rehechos, parado: v.parado, trabajo_trozos_max_ms: Math.round(v.trozos.medidas.trabajoMax * 10) / 10, triangulos: j.triangulos, triangulos_suelo: j.triangulosSuelo, trozos: j.trozos }; })()')
             m['mem_tras_andar_MB'] = pg.evaluate(MEM)
