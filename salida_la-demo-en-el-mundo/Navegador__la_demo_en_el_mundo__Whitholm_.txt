@@ -1,0 +1,41 @@
+Vista pc
+  OK   la demo arranca sin error — None
+  OK   construir va en el mundo de verdad (no en el llano)
+  generar el mapa: 2880 ms
+  OK   los trozos de alrededor llegan
+   {"pj": [0, 0.13652124030647966, 4], "suelo": 0.13652204919395672, "sobreMar": 116.67522430419922, "salida": {"x": 184596, "z": 46280}, "isla": {"x0": 160000, "z0": 21000, "x1": 221000, "z1": 84000}, "trozos": 88, "tri": 177408, "lo": 103.71338544504786, "hi": 232.58001140925307, "llano": false, "hilos": 3}
+  OK   la salida está en la isla — {"x": 184596, "z": 46280}
+  OK   la salida está en tierra, ni en el mar ni en un pico (entre 6 y 220 m) — 116.7 m
+  OK   el personaje pisa el suelo — 0.137 / 0.137
+  OK   sin el llano de antes, con el terreno por trozos (en un hilo aparte) — 88 trozos, 177408 triángulos
+  OK   el terreno tiene relieve (más de 5 m de desnivel en 300 m) — 103.7–232.6 m
+  andar 200 m: {"dif": 0.32110588720928224, "msMax": 8.199999999953434, "x": 165.0671229819353, "z": 116.92849467900736}
+  OK   andando 200 m, el terreno trabaja poco en cada fotograma (menos de 60 ms) — 8.2 ms
+  OK   andando, el personaje sigue el suelo (a menos de 0,6 m) — 0.32 m
+  costa: {"tierra": [35654, 0], "mar": [35656, 0], "entra": false, "fuera": false}
+  OK   no se puede entrar en el mar — {"tierra": [35654, 0], "mar": [35656, 0], "entra": false, "fuera": false}
+  OK   no se puede salir de la isla
+  FALLA andando hacia el mar, se queda en tierra — {"sobreMar": 0.006279949098825455, "x": 35654, "z": 0}
+  OK   sin errores en la página
+Vista movil
+  OK   la demo arranca sin error — None
+  OK   construir va en el mundo de verdad (no en el llano)
+  generar el mapa: 3319 ms
+  OK   los trozos de alrededor llegan
+   {"pj": [0, 0.13652124030647966, 4], "suelo": 0.13652204919395672, "sobreMar": 116.67522430419922, "salida": {"x": 184596, "z": 46280}, "isla": {"x0": 160000, "z0": 21000, "x1": 221000, "z1": 84000}, "trozos": 83, "tri": 115328, "lo": 103.74137757925969, "hi": 232.58001140925307, "llano": false, "hilos": 3}
+  OK   la salida está en la isla — {"x": 184596, "z": 46280}
+  OK   la salida está en tierra, ni en el mar ni en un pico (entre 6 y 220 m) — 116.7 m
+  OK   el personaje pisa el suelo — 0.137 / 0.137
+  OK   sin el llano de antes, con el terreno por trozos (en un hilo aparte) — 83 trozos, 115328 triángulos
+  OK   el terreno tiene relieve (más de 5 m de desnivel en 300 m) — 103.7–232.6 m
+  andar 200 m: {"dif": 0.32110588720928224, "msMax": 2.7000000001862645, "x": 165.0671229819353, "z": 116.92849467900736}
+  OK   andando 200 m, el terreno trabaja poco en cada fotograma (menos de 60 ms) — 2.7 ms
+  OK   andando, el personaje sigue el suelo (a menos de 0,6 m) — 0.32 m
+  costa: {"tierra": [35654, 0], "mar": [35656, 0], "entra": false, "fuera": false}
+  OK   no se puede entrar en el mar — {"tierra": [35654, 0], "mar": [35656, 0], "entra": false, "fuera": false}
+  OK   no se puede salir de la isla
+  FALLA andando hacia el mar, se queda en tierra — {"sobreMar": 0.006279949098825455, "x": 35654, "z": 0}
+  OK   sin errores en la página
+  OK   todos salen en el mismo sitio (en PC y en móvil, la misma salida y la misma posición) — [({'x': 184596, 'z': 46280}, 0, 4), ({'x': 184596, 'z': 46280}, 0, 4)]
+
+2 fallos
