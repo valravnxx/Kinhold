@@ -459,6 +459,10 @@
      "rama": "trabajo/20261030-1329"
     },
     {
+     "nombre": "Lo que crece sigue al jugador por la isla: los árboles, la hierba y las piedras se rehacen a su alrededor poco a poco al andar (como en la vista «Como en el juego» del mapa), sin perder lo talado",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Construir en el mundo: la rejilla anclada sobre el terreno de verdad, y nivelar con la brocha redonda para poner cimientos en ladera (GDD)",
      "estado": "pendiente"
     },
@@ -544,7 +548,9 @@
     },
     {
      "nombre": "Tronzar y partir: el tronco largo se tronza en 3–4 troncos cortos (con hacha, lento) y el tronco corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro y la leña en el leñero. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T15:27:34+00:00",
+     "rama": "trabajo/20261030-1527"
     },
     {
      "nombre": "Obras con lo que llevas: el material que se entrega a una obra sale de lo que lleva el autor encima (o en su rastra o carretilla al lado), no de un montón común. El botón de rellenar del prototipo pasa a llenar el arcón de pruebas",
@@ -1173,9 +1179,10 @@
     },
     {
      "nombre": "Combate en el mundo (valravnx, 30 oct): en PC, ratón cogido y ataque cargado mientras se mantiene el clic, en la dirección del último movimiento (sin movimiento, estocada) y cambiable sin soltar; paradas con el botón derecho por dirección, también cambiables; fijar rival con la cámara del duelo; en el móvil, la rosa fija a un lado; cámara que se inclina más",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T09:39:49+01:00",
-     "rama": "trabajo/20261030-0945-combate"
+     "rama": "trabajo/20261030-0945-combate",
+     "fin": "2026-10-30T15:54:31+01:00"
     }
    ],
    "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
@@ -1799,6 +1806,13 @@
      "archivo": "jugar/demo/v52.html",
      "capturas": "capturas/demo-v52",
      "notas": "En «Construir», cada jugador nuevo aparece en un sitio al azar de Motdale, Breiddal o Strandvang (261 sitios llanos, lejos de los ríos y fuera de la montaña) y vuelve siempre al suyo. Quien ya tenía algo construido sigue en el sitio de antes; en línea, todos en el sitio común de momento."
+    },
+    {
+     "v": "v53",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v53.html",
+     "capturas": "capturas/construccion-v42",
+     "notas": "En «Construir», el combate en el mundo: golpe cargado en la dirección del ratón, cambio de lado sin soltar, paradas por lado, rival de práctica y Fijar; en el móvil, la rosa fija."
     }
    ]
   },
@@ -2079,6 +2093,13 @@
      "archivo": "jugar/construccion/v41.html",
      "capturas": "capturas/construccion-v41",
      "notas": "La ropa cosida lleva su hechura y su tinte en el inventario (cada prenda la suya) y se ve así puesta, también en línea; la cota de malla, larga o corta; personajes de la taller-v17"
+    },
+    {
+     "v": "v42",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/construccion/v42.html",
+     "capturas": "capturas/construccion-v42",
+     "notas": "Combate en el mundo: C o «Arma» saca la espada; en PC, golpe cargado con el clic izquierdo en la dirección del ratón y paradas por lado con el derecho, cambiables sin soltar; rival de práctica y Fijar; en el móvil, la rosa fija. La cámara se inclina hasta casi a ras de suelo."
     }
    ]
   },

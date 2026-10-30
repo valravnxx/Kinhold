@@ -1,21 +1,15 @@
 {
  "A": {
-  "inicio": "2026-10-30T12:29:53+00:00",
+  "inicio": "2026-10-30T15:27:34+00:00",
+  "tarea": "Tronzar y partir: el tronco largo se tronza en 3–4 troncos cortos (con hacha, lento) y el tronco corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro y la leña en el leñero. Lógica pura con autor, en la demo y con pruebas",
+  "hito": "equipo",
+  "rama": "trabajo/20261030-1527"
+ },
+ "B": {
+  "inicio": "2026-10-30T15:43:32+00:00",
   "tarea": "Los árboles (las siete especies), la hierba y las rocas del mundo en el juego, con el estilo v5 y siempre en el mismo sitio",
   "hito": "mundo-juego",
   "rama": "trabajo/20261030-1329"
- },
- "B": {
-  "inicio": "2026-10-30T13:28:46+00:00",
-  "tarea": "Revisión completa y publicación",
-  "hito": "arte",
-  "rama": "trabajo/20261030-1329b"
- },
- "chat:trabajo/20261030-0945-combate": {
-  "inicio": "2026-10-30T09:39:49+01:00",
-  "tarea": "Combate en el mundo (valravnx, 30 oct): en PC, ratón cogido y ataque cargado mientras se mantiene el clic, en la dirección del último movimiento (sin movimiento, estocada) y cambiable sin soltar; paradas con el botón derecho por dirección, también cambiables; fijar rival con la cámara del duelo; en el móvil, la rosa fija a un lado; cámara que se inclina más",
-  "hito": "duelo",
-  "rama": "trabajo/20261030-0945-combate"
  },
  "chat:trabajo/20261030-1415-rios": {
   "inicio": "2026-10-30T14:15:36+01:00",

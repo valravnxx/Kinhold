@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 30 oct 2026 — por el chat: las pruebas en línea
+valravnx, a si publicar con «jugar en línea» y «duelo en línea» fallando (fallan en main y en todas las ramas desde la salida al azar): «aún no está el servidor, por eso falla». → Mientras no esté el servidor de verdad (fase 2), esos dos grupos no paran la publicación; los demás, sí. Anotado en CLAUDE.md.
+
 ### 30 oct 2026 (14:12) — por el chat: ríos en terraplén, ríos de verdad y nadar
 valravnx: «al haber hecho lo de las cataratas, muchos ríos tienen que como nivelarse, y cuando están en un valle crean como un puente por el cual están elevados por toda la distancia y no se adaptan al terreno; tendría que adaptarse al terreno y no modificarlo». Y que el chat tome ya los ríos de verdad (vadeables, cruzables) y el nado: «un aguante, que será el mismo que el de correr con Mayúsculas, que te irá bajando y cuando te baje te empezarás a ahogar y te vas a morir; cuanto más ligero de ropa y de equipo vayas, menos rápido baja: con cota de malla y gambesón te ahogas enseguida, igual que cargando un tronco». → Tareas en el hito Mundo (las lleva el chat, en este orden): ríos que se adaptan al terreno, agua de cerca, el agua del mundo en el juego (pasada desde «El juego en el mundo de verdad») y nadar.
 
