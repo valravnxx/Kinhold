@@ -1,0 +1,53 @@
+Vista pc
+    nivel 0: {'nivel': 0, 'triangulos': 27717, 'piezas': 17, 'dibujados': 55}
+    nivel 1: {'nivel': 1, 'triangulos': 10535, 'piezas': 13, 'dibujados': 47}
+    nivel 2: {'nivel': 2, 'triangulos': 3857, 'piezas': 1, 'dibujados': 23}
+  OK   nivel medio: como mucho el 55 % de los triángulos — 27717 → 10535
+  OK   nivel lejos: como mucho el 25 % — 27717 → 3857
+  OK   nivel lejos: una sola pieza (texturas juntas) — 17 → 1
+  OK   nivel lejos: menos llamadas de dibujo — 55 → 23
+  OK   nivel 1: la misma silueta que de cerca — 0.99 de 3936 px
+  OK   nivel 2: la misma silueta que de cerca — 0.92 de 3997 px
+  OK   nivel lejos: el mismo color de media que de cerca — [93, 50, 39] → [94, 53, 40]
+  OK   más lejos: no se dibuja — {'nivel': 3, 'triangulos': 3857, 'piezas': 1}
+  OK   de vuelta a cerca: entero otra vez — {'nivel': 0, 'triangulos': 27717, 'piezas': 17}
+  OK   lejos: al cambiar de ropa se rehace la malla — 3857 → {'nivel': 2, 'triangulos': 3423, 'piezas': 1}
+  OK   visor: sin errores en la consola
+  OK   demo: el panel dice cuántos hay en cada nivel — alle:
+sí
+no (todos enteros)
+
+valravnx: dime los fps que ves en tu móvil (y qué móvil es), en «Construir» y en «Duelo». Con eso se decide cuánto detalle aguanta.
+    sin niveles: 1376488 triángulos, 705 dibujos, 0 fps; con: 809572, 452, 1 fps; niveles [6, 7, 8, 0]
+  OK   demo: sin niveles, todos enteros — [21, 0, 0, 0]
+  OK   demo: con niveles hay gente en medio y lejos — [6, 7, 8, 0]
+  OK   demo: con niveles, menos triángulos (≤ 70 %) — 1376488 → 809572
+  OK   demo: con niveles, menos llamadas de dibujo — 705 → 452
+  OK   demo: sin errores en la consola
+Vista movil
+    nivel 0: {'nivel': 0, 'triangulos': 27717, 'piezas': 17, 'dibujados': 55}
+    nivel 1: {'nivel': 1, 'triangulos': 10535, 'piezas': 13, 'dibujados': 47}
+    nivel 2: {'nivel': 2, 'triangulos': 3857, 'piezas': 1, 'dibujados': 23}
+  OK   nivel medio: como mucho el 55 % de los triángulos — 27717 → 10535
+  OK   nivel lejos: como mucho el 25 % — 27717 → 3857
+  OK   nivel lejos: una sola pieza (texturas juntas) — 17 → 1
+  OK   nivel lejos: menos llamadas de dibujo — 55 → 23
+  OK   nivel 1: la misma silueta que de cerca — 0.98 de 3711 px
+  OK   nivel 2: la misma silueta que de cerca — 0.91 de 3751 px
+  OK   nivel lejos: el mismo color de media que de cerca — [90, 52, 39] → [93, 56, 41]
+  OK   más lejos: no se dibuja — {'nivel': 3, 'triangulos': 3857, 'piezas': 1}
+  OK   de vuelta a cerca: entero otra vez — {'nivel': 0, 'triangulos': 27717, 'piezas': 17}
+  OK   lejos: al cambiar de ropa se rehace la malla — 3857 → {'nivel': 2, 'triangulos': 3423, 'piezas': 1}
+  OK   visor: sin errores en la consola
+  OK   demo: el panel dice cuántos hay en cada nivel — alle:
+sí
+no (todos enteros)
+
+valravnx: dime los fps que ves en tu móvil (y qué móvil es), en «Construir» y en «Duelo». Con eso se decide cuánto detalle aguanta.
+    sin niveles: 1333544 triángulos, 619 dibujos, 0 fps; con: 831108, 375, 1 fps; niveles [8, 5, 8, 0]
+  OK   demo: sin niveles, todos enteros — [21, 0, 0, 0]
+  OK   demo: con niveles hay gente en medio y lejos — [8, 5, 8, 0]
+  OK   demo: con niveles, menos triángulos (≤ 70 %) — 1333544 → 831108
+  OK   demo: con niveles, menos llamadas de dibujo — 619 → 375
+  OK   demo: sin errores en la consola
+Todo bien 
