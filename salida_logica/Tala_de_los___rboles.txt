@@ -1,0 +1,52 @@
+Lo que dice el documento de sistemas (apartado 3, «De los árboles»)
+  OK   joven o adulto sale del tamaño del árbol
+  OK   el joven se tala con piedra o con hierro
+  OK   el adulto con hierro; con piedra tarda mucho (cuatro veces más o más) — 56 y 14
+  OK   el joven da un tronco delgado (grande) y el adulto uno largo (enorme)
+  OK   el adulto da muchas más ramas que el joven
+  OK   vuelven a crecer en semanas reales — 3 y 6 semanas
+  OK   las hachas: de piedra, de hierro y la de mano (cabeza de hierro), en el catálogo
+Talar un árbol joven con hacha de piedra
+  OK   cae al dar los golpes que pide — 8 golpes
+  OK   cae hacia el lado contrario al del que tala — dir 0
+  OK   deja en el suelo un tronco delgado y sus ramas, a nombre del que tala
+  OK   el tronco se queda (no desaparece)
+  OK   queda el tocón: ya no está en pie
+  OK   el tocón no se vuelve a talar — Ese árbol ya está talado: solo queda el tocón.
+  OK   a las tres semanas sigue el tocón
+  OK   pasado su tiempo vuelve a crecer (por tiempo transcurrido)
+  OK   y se puede talar otra vez
+  OK   el registro lleva cada golpe con su autor
+Talar un árbol adulto: con hierro, y con piedra muy lento
+  OK   con hacha de hierro (en la mano izquierda) cae en sus golpes — 14
+  OK   deja un tronco largo y muchas ramas — 6
+  OK   cae hacia el oeste (el que tala está al este)
+  OK   con hacha de piedra también cae, pero con muchos más golpes — 56 golpes
+  OK   el hacha de mano tala como la de hierro
+Lo que no se puede
+  OK   sin hacha en la mano, no se tala
+  OK   lejos del árbol, no
+  OK   un árbol que no existe, no
+  OK   sin autor, no
+  OK   datos raros, no
+  OK   sin hora, no
+  OK   un golpe sí
+  OK   dos golpes demasiado seguidos, no
+  OK   el hacha de otro no te sirve
+  OK   lo fallido también queda en el registro
+Entre dos: los golpes de los dos cuentan en el mismo árbol
+  OK   cae con los golpes de los dos, en la mitad de tiempo — 5.614 s
+  OK   lo que deja va a nombre del que da el último golpe
+Ramas: un azar fijo por árbol y por vez
+  OK   siempre lo mismo
+  OK   dentro de lo que dice, y no siempre igual — 6,9,8,7
+  OK   el hacha en la mano se encuentra
+Guardar y cargar (los navegadores y el servidor: por tiempo transcurrido)
+  OK   se guarda
+  OK   el tocón sigue al cargar, con su hora de volver
+  OK   y la muesca del adulto también
+  OK   lo de árboles que ya no están se descarta
+  OK   un guardado roto o sin versión se descarta
+  OK   un guardado ilegible no rompe nada
+
+43 bien, 0 mal
