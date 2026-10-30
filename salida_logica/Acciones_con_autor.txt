@@ -1,0 +1,47 @@
+Construcción: cada acción con autor, validada y anotada
+  OK   una acción sin autor se rechaza
+  OK   una acción desconocida se rechaza
+  OK   una acción con datos raros se rechaza
+  OK   las reglas del mundo se siguen aplicando (sin mojón no se construye)
+  OK   lo rechazado no cambia el mundo
+  OK   lo rechazado queda anotado con su motivo
+  OK   la partida corta sale bien paso a paso — ok, ok, ok, ok, ok, ok, ok, ok
+  OK   abrir la puerta con Usar
+  OK   un muro no se abre
+  OK   quitar un mueble
+  OK   desmontar un cimiento
+  OK   desmontar algo que no existe se rechaza
+  OK   el botón de rellenar no admite cantidades absurdas
+  OK   cada acción queda anotada una vez, numerada y con su autor — 37 entradas
+  OK   el registro guarda datos sencillos (se puede enviar a un servidor)
+  OK   rehacer el mundo con el registro da el mismo mundo — 3 piezas, 1 mueble
+  OK   el guardado sigue siendo el de antes (versión 1)
+Obras: marco, materiales y tiempo, con el autor de cada entrega y de cada rato
+  OK   colocar pone solo el marco: es una obra y no cobra nada
+  OK   una obra a medias no sostiene nada (no se pone un muro sobre el marco de un cimiento) — El muro necesita un cimiento o suelo al lado, un muro debajo o postes en los dos extremos.
+  OK   sin el material no se puede trabajar
+  OK   no se entrega lo que la pieza no lleva
+  OK   se entrega como mucho lo que falta (5 + 3 de 8 piedras) y se cobra justo eso — 8 entregadas
+  OK   cada entrega queda con su autor
+  OK   un rato de trabajo absurdo se rechaza
+  OK   una obra a medias se guarda y se carga con su material y su trabajo
+  OK   entre dos se termina en la mitad de rondas (24 s de trabajo; quedaban 22) — 22 rondas
+  OK   terminada deja de ser obra y ya sostiene (ahora sí cabe el muro)
+  OK   queda anotado quién trabajó y cuánto — jugador:a:13s jugador:b:11s
+  OK   trabajar en una pieza terminada se rechaza
+  OK   desmontar una obra a medias devuelve todo lo entregado — 120 → 120
+  OK   una puerta en obras no se abre — Está en obras.
+  OK   subir un tronco a la planta 1 entre dos queda en el registro con los dos autores
+  OK   con el registro se rehace el mismo mundo, obras a medias incluidas
+Combate: golpes y disparos con autor
+  OK   un golpe sin defensa hiere y queda anotado con autor, objetivo y herida — herida en cabeza
+  OK   quien no está en el combate, sin autor o contra nadie no hiere
+  OK   quien está fuera de combate no golpea
+  OK   el disparo queda anotado y lleva su autor
+  OK   la herida de la flecha se anota como impacto del mismo autor — blanco en torso
+  OK   el registro del combate tiene tope y guarda las últimas
+Código del juego: nada cambia el mundo saltándose las acciones
+  OK   ningún archivo fuera de la lógica pura cambia el mundo directamente (56 revisados)
+  OK   la construcción y el combate usan las acciones
+
+Resultado: 41 correctas, 0 fallidas
