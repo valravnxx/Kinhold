@@ -1,0 +1,263 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 2113 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1961 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1564 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2039 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2465 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1558 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2006 KB
+dist/kinhold_trozos.html 1554 KB
+hilo de los trozos 14 KB
+
+== Lógica de construcción
+  OK   cada colocación queda anotada con su autor
+  OK   se guarda y se carga
+
+Resultado: 248 correctas, 0 fallidas
+
+== Modelos
+  OK   Cimiento de troncos solo: hacia fuera conserva su margen (control de la prueba de rendijas) — 106 rayos sin madera
+  OK   Cimiento de troncos con vecino a un lado: testas solo hacia fuera
+
+Resultado: 175 correctas, 0 fallidas
+
+== Lógica de combate
+  OK   una herida que sangra no sana sola
+  OK   curarse es una acción con autor y queda en el registro
+
+Resultado: 105 correctas, 0 fallidas
+
+== Acciones con autor
+  OK   ningún archivo fuera de la lógica pura cambia el mundo directamente (57 revisados)
+  OK   la construcción y el combate usan las acciones
+
+Resultado: 41 correctas, 0 fallidas
+
+== Inventario por huecos
+  OK   el factor queda entre 0,8 y 1 con datos raros
+  OK   lo cargado de un guardado ralentiza igual
+
+121 correctas, 0 fallos
+
+== Recoger del suelo y de las plantas
+  OK   lo guardado de un punto que ya no existe se descarta
+  OK   un guardado roto o sin versión se descarta sin romper
+
+45 correctas, 0 fallidas
+
+== Objetos en el suelo
+  OK   lo desconocido o sin sitio se descarta; lo bueno se queda con su hora
+  OK   un almacén roto no rompe nada
+
+40 bien, 0 mal
+
+== Tala de los árboles
+  OK   un guardado roto o sin versión se descarta
+  OK   un guardado ilegible no rompe nada
+
+43 bien, 0 mal
+
+== Datos de cada prenda (zonas, protección, abrigo y peso)
+  OK   mujer: descalzo, del visor a las prendas y vuelta da lo mismo
+  OK   mujer: del visor a las prendas y vuelta da lo mismo
+
+84 correctas, 0 fallos
+
+== Aspecto del personaje (personalización)
+  OK   los peinados nuevos se pueden elegir y se guardan
+  OK   el aspecto pasa por JSON sin cambiar
+
+Resultado: 26 correctas, 0 fallidas
+
+== Servidor mínimo con dos clientes
+  OK   y puede seguir construyendo
+  OK   la numeración sigue donde se quedó — n=7
+
+18 correctas, 0 fallos
+
+== Jugadores que se ven, con lag simulado
+  OK   el que llega después ve dónde están los demás — jugador:526b3d89, jugador:b671c2ac
+  OK   cuando A se va, desaparece de B y de C
+
+16 correctas, 0 fallos
+
+== Mundo en línea: dos clientes con el servidor
+  OK   el que llega después recibe el aspecto de los que ya están, con su personalización
+  OK   y el mundo tal como está
+
+21 correctas, 0 fallos
+
+== Conexiones que se cortan y datos mal formados
+  OK   la ficha sigue valiendo tras reiniciar el servidor — jugador:5b65e6f2
+  OK   el archivo de fichas no guarda las fichas, solo su resumen
+
+34 correctas, 0 fallos
+
+== Combate en el servidor, con lag simulado
+  OK   el archivo del mundo no se mezcla con el combate
+  OK   al irse un jugador, su luchador sale del combate
+
+64 correctas, 0 fallos
+
+== Bots: jugadores simulados contra el servidor
+  OK   lo medido cuenta lo que se manda y se recibe
+  OK   al pararlos se van todos del servidor — 0 conexiones
+
+16 correctas, 0 fallos
+
+== Terreno por trozos: anillos, bordes y faldones
+  OK   un paso que no cabe en el trozo se rechaza
+  OK   trozoDe con negativos
+
+Todo correcto
+
+== Whitholm: cuadro de la isla y sitio de salida
+  OK   elegirSalida reparte por toda la lista — 261 de 261
+  OK   un sitio inventado no pasa por sitio de salida
+
+Todo bien
+
+== Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma
+  OK   en la isla salen varias especies — roble, fresno, abedul, abeto, haya
+  OK   más hierba en los claros que bajo el bosque cerrado — 71.7 frente a 36.5 matas por 100 m²
+
+Todo bien
+
+== Comarcas y zonas de Whitholm
+  OK   la tabla de las comarcas aprobadas casa con las cuencas (más del 85 % de las zonas) — 1658 de 1717
+  OK   los lindes no son una rejilla: la separación entre lindes en una recta varía mucho — media 947 m, desviación 423 m
+
+TODO CORRECTO
+
+== Medición del servidor (CPU, memoria, red y disco)
+  OK   los bots no tienen errores
+  OK   se apunta la máquina
+
+Medición: 13 bien, 0 mal
+
+== Servidor de prueba en internet (Caddy con HTTPS delante del juego)
+  OK   dos clientes conectan por wss:// a través de Caddy y reciben la bienvenida — jugador:7d8a0f57 y jugador:41d05567
+  OK   lo que manda uno le llega al otro a través de Caddy
+
+19/19 comprobaciones correctas
+
+== Taller: los cinturones ciñen su prenda
+  OK   mh_mujer.glb: mujer_cinturon_gambeson ciñe la prenda (medio ancho 0.177 m, prenda 0.175 m)
+  OK   mh_mujer.glb: mujer_cinturon_sobreveste ciñe la prenda (medio ancho 0.193 m, prenda 0.190 m)
+  OK   mh_mujer.glb: mujer_cinturon_vestido ciñe la prenda (medio ancho 0.162 m, prenda 0.161 m)
+Resultado: 8 correctas, 0 fallidas
+
+== Taller: capa, calzado y tocados
+  OK   mh_mujer.glb: el sombrero queda por encima del pelo y con ala ancha — copa 3 cm por encima, ala 39 cm
+  OK   mh_mujer.glb: las botas llegan al suelo y suben más que los zapatos — suela -0.015 / -0.012 m, caña hasta 0.15 m (zapato 0.11 m)
+
+10 correctas, 0 fallos
+
+== Taller: formas y colores para personalizar
+  OK   mh_mujer.glb: cada peinado y cada barba tienen sus piezas — cofia, melena, coleta, trenzas · ninguna
+  OK   mh_mujer.glb: el pelo largo y las barbas llevan el color del pelo
+
+14 correctas, 0 fallos
+
+== Taller: manos enteras y botas de la mujer bajo la falda
+  OK   mh_mujer.glb: tiene botas
+  OK   mh_mujer.glb: las botas de la mujer son bajas (no atraviesan la falda larga) — caña de 16 cm
+
+8 correctas, 0 fallos
+
+== Taller: pies descalzos
+  OK   mh_mujer.glb: tienen detalle (dedos) — 4488 triángulos
+  OK   mh_mujer.glb: los zapatos tapan los pies — pies -0.207,-0.001,-0.013…0.207,0.163,0.186, zapatos -0.216,-0.012,-0.025…0.216,0.114,0.197
+
+18 correctas, 0 fallos
+
+== Taller: barba larga con volumen
+  OK   está donde el bigote pintado (a menos de 1,5 cm de altura) — -0.6 cm
+  OK   por los lados cae más que en el centro (por las comisuras) — 1.7 cm
+  OK   el cargador pinta corta, bigote y perilla como calcos, y la larga no — /_(vello|barba_(corta|bigote|perilla))$/ /_(vello|barba_(corta|bigote|perilla))$/
+Barbas: 10 bien, 0 mal
+
+== Taller: capa que cae de los hombros
+  OK   mujer: larga (más de 90 cm de alto) — 99.6 cm
+  OK   mujer: abierta por delante (nada delante del pecho a media altura) — 0 puntos
+  OK   mujer: pliegues hondos por detrás (al menos 6,5 cm a 30 cm del bajo) — 7.3 cm
+Capa: 18 bien, 0 mal
+
+== Taller: tintes de la ropa y blasón
+  OK   mh_mujer.glb: con los tintes por defecto, cada prenda tiene el color de antes — diferencia mayor 0.0000 (mujer_capa_camisa)
+  OK   mh_mujer.glb: la cota de malla no se tiñe
+
+27 correctas, 0 fallos
+
+== Hechura de la ropa (material, corte y tejido)
+  OK   en línea: el aspecto lleva los tintes y la hechura, comprobados
+  OK   en línea: lo que no vale, el de siempre; sin tintes, no se manda nada
+
+Hechura: 43 bien, 0 mal
+
+== Niveles de detalle de los personajes
+Niveles de detalle: 17/17
+
+== Taller: versiones fijadas
+Taller (versiones fijadas): correcto
+
+== Capturas: solo las del cambio
+  OK   con nombres y patrones, solo esas (en JPG) — 03_vista.jpg 10_vista.jpg 11_vista.jpg 12_vista.jpg 13_vista.jpg 14_vista.jpg 15_vista.jpg 16_vista.jpg 17_vista.jpg 18_vista.jpg 19_vista.jpg
+  OK   un nombre que no está, falla
+
+4 correctas, 0 fallos
+
+== Unión del diario y las traducciones
+  OK   en.json y ru.json llevan los textos de las dos
+  OK   si las dos cambian la misma traducción distinto, git lo deja en conflicto
+
+19 correctas, 0 fallidas
+
+== Dos carriles en paralelo sin pisarse
+  OK   el carril A no coge el hito del carril B — {"hito":"sis","tarea":"s1"}
+  OK   sin nada suyo que hacer, el A no se mete en el arte del B — null
+
+Resultado: 27 correctas, 0 fallidas
+
+== Excavación y malla de la roca
+  OK   la pared no se ve a cuadros (casi ninguna cara alineada con los ejes) — 0.0 % alineadas
+  OK   los trozos vecinos comparten los vértices del borde (sin rendijas) — 17 vértices comunes
+
+Resultado: 13 correctas, 0 fallidas
+
+== Versiones antiguas a las releases
+Archivar versiones: 12/12
+
+== Generador del mapa del mundo
+  OK   bosques: en campo abierto los árboles van en corros, no sueltos al azar — el 30 % más espeso tiene el 84 % de los árboles (3000 sitios)
+  OK   bosques: límite del bosque en la montaña (por encima, nada; junto a él, solo coníferas bajas) — 0 árboles por encima; 0 de 300 junto al límite mal
+
+Resultado: 87 correctas, 0 fallidas
+
+== Azar y ruido: un solo módulo, los mismos números
+  OK   combate/logica.js ofrece el mismo azar
+  OK   mina/malla.js ofrece el mismo ruido3
+
+Todo correcto
+
+== Textos traducidos
+Textos del juego: 916; sin traducir (en): 0; con variables distintas: 0
+Textos del juego: 916; sin traducir (ru): 0; con variables distintas: 0; sin cirílico: 0
+TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 131 s
