@@ -1,0 +1,52 @@
+  OK   pc: abre el mundo elegido (semilla 66172, 256 km)
+  OK   pc: el mundo elegido se llama Kinland y su nombre va en el mar bajo la costa sur — Kinland · Semilla 66172 · mundo de 256 × 256 km · tierra 25.
+  OK   pc: hay grandes vetas marcadas — {"hierroPantano": 4, "granHierro": 5, "granCarbon": 3, "hierroVeta": 160, "carbon": 160}
+  OK   pc: se genera el mundo — 2147 ms · 25117 km² de tierra
+  OK   pc: la isla grande está apartada (más de 20 km de mar) — 45 km
+  OK   pc: se dibuja la tierra (relieve) — 23 % del lienzo
+  OK   pc: se dibuja la tierra (biomas) — 23 % del lienzo
+  OK   pc: la leyenda no tapa los botones de arriba
+  OK   pc: la leyenda enseña rocas y vetas
+  OK   pc: las 8 comarcas de Whitholm (A a H)
+  OK   pc: la leyenda explica las comarcas y las zonas
+  OK   pc: ampliado se pintan los lindes de las zonas — 194846 píxeles · {'12': 119, '40': 981} ms
+  OK   pc: tocar en Whitholm dice su comarca (con su nombre) y su zona — 933 m de altura · Bosque de coníferas · Caliza · Whitholm · 4 °C de media · comarca Breiddal, zona 51-159 · hierro a 7 km, carbón a 7 km · 188.5, 52.5 kmVer de cerca
+  OK   pc: tocar un sitio dice qué hay, con el nombre de la región (y a cuánto está el hierro y el carbón) — 103 m de altura · Encinar · Arenisca · Rudmere · 14 °C de media · hierro a 4 km, carbón a 5 km · 41.5, 216.5 kmVer de cerca
+  OK   pc: hierro y carbón a menos de 25 km del sitio tocado — [4, 5]
+  OK   pc: al tocar sale «Ver de cerca»
+  OK   pc: de cerca se dibuja el terreno y el bosque — {"ms": 784, "triangulos": 3017842, "arboles": 32030, "especies": {"abeto": 0, "pino": 7821, "abedul": 0, "roble": 3260, "haya": 0, "fresno": 0, "encina": 20949}, "rejilla": 420, "pasoM": 9.5}
+  OK   pc: la vista a pie se pone — [1280, 800]
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_mapa_navegador.py", line 104, in <module>
+    pg.evaluate("document.getElementById('btnJuego').click()"); pg.wait_for_timeout(1500); esperar_juego(pg)
+                                                                                           ~~~~~~~~~~~~~^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_mapa_navegador.py", line 19, in esperar_juego
+    def esperar_juego(pg): pg.wait_for_function('window.__cerca.vj && window.__cerca.vj.listo', timeout=180000)
+                           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 12809, in wait_for_function
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.wait_for_function(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 1153, in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 941, in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 180000ms exceeded.
