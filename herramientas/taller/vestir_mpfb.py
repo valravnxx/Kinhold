@@ -765,8 +765,8 @@ def personaje(nombre, macros, objetivos, ropa):
         suciedad). Devuelve color y transparencia"""
         g = ruido(P, (2600, 2600, 420))  # grano de pelo, menos de medio milímetro
         raya = 0.6 * ruido(P + 0.37, (1500, 1500, 140)) + 0.4 * ruido(P + 0.71, (800, 800, 70))  # pelos a lo largo
-        a = suave(0.0, 1.0, 1.25 * m + 0.7 * (g - 0.5) - 0.1)
-        claro = 0.62 + 0.42 * raya + 0.18 * (g - 0.5) + 0.1 * (fbm(P, 35) - 0.5)
+        a = suave(0.0, 1.0, 1.25 * m + 0.7 * (g - 0.5) - 0.1) * suave(0.0, 0.1, m)  # fuera de la barba, nada
+        claro = 0.56 + 0.6 * raya + 0.2 * (g - 0.5) + 0.1 * (fbm(P, 35) - 0.5)
         return colpelo * claro[..., None], a
     def pintar_barba(tipo):
         def f(P, A):
@@ -862,7 +862,7 @@ def personaje(nombre, macros, objetivos, ropa):
             Qo = Q + np.stack([ond, 0 * ond, 0 * ond], -1)
             n = 0.45 * ruido(Qo, (900, 14, 1)) + 0.35 * ruido(Qo, (380, 7, 1)) + 0.2 * ruido(Qo, (2200, 30, 1))
             surco = suave(0.3, 0.08, ruido(Qo, (240, 5, 1)))  # surcos oscuros entre mechones
-            col = colpelo * (0.5 + 0.75 * n[..., None]) * (1 - 0.4 * surco[..., None]) * (0.88 + 0.2 * fbm(Q, (40, 8, 1))[..., None])
+            col = colpelo * (0.45 + 0.9 * n[..., None]) * (1 - 0.5 * surco[..., None]) * (0.88 + 0.2 * fbm(Q, (40, 8, 1))[..., None])
             col = col * np.where(V < V_PUNTA, 0.55, 1.0)[..., None]  # la cara de dentro, en sombra
             # punta desigual, mechón a mechón: cada mechón (a lo ancho) se corta a su altura
             mech = 0.6 * ruido(Qo, (160, 0.5, 1)) + 0.4 * ruido(Qo, (520, 1, 1))
