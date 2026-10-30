@@ -138,10 +138,10 @@ with sync_playwright() as p:
             pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}, l = Math.hypot(mx - tx, mz - tz) || 1; let d = 0;
               while (d < 4000 && !(k.mundoJ.sobreMar(mx + (mx - tx) / l * d, mz + (mz - tz) / l * d) < -4 && k.mundoJ.sobreMar(mx + (mx - tx) / l * (d + 30), mz + (mz - tz) / l * (d + 30)) < -4)) d += 4;
               d += 15; k.pj.x = mx + (mx - tx) / l * d; k.pj.z = mz + (mz - tz) / l * d; }}""", c['tierra'] + c['mar'])
-            try: pg.wait_for_function(f'{K}.mundoListo && {K}.mundoJ.agua.malla', timeout=180000)
+            try: pg.wait_for_function(f'{K}.mundoListo && {K}.mundoJ.agua.cerca({K}.pj.x, {K}.pj.z)', timeout=300000)
             except Exception: pass
             pg.keyboard.down('w'); pg.wait_for_timeout(3000); pg.keyboard.up('w'); pg.wait_for_timeout(500)
-            e = pg.evaluate(f"(() => {{ const k = {K}, a = k.mundoJ.aguaEn(k.pj.x, k.pj.z); return {{ sobreMar: k.mundoJ.sobreMar(k.pj.x, k.pj.z), x: k.pj.x, z: k.pj.z, y: k.pj.y, modo: k.nado.modo, superficie: a && a.superficie, aguante: k.nado.e.aguante, anillo: !document.getElementById('aguante')?.hidden, lamina: !!k.mundoJ.agua.malla }}; }})()")
+            e = pg.evaluate(f"(() => {{ const k = {K}, a = k.mundoJ.aguaEn(k.pj.x, k.pj.z); return {{ sobreMar: k.mundoJ.sobreMar(k.pj.x, k.pj.z), x: k.pj.x, z: k.pj.z, y: k.pj.y, modo: k.nado.modo, superficie: a && a.superficie, aguante: k.nado.e.aguante, anillo: !document.getElementById('aguante')?.hidden, lamina: k.mundoJ.agua.cerca(k.pj.x, k.pj.z) }}; }})()")
             comprobar('mar adentro nada, con la cabeza fuera (el pecho a ras del agua, con las olas)', e['modo'] == 'nadar' and e['superficie'] is not None and abs(e['y'] - (e['superficie'] - 1.25)) < 0.65, json.dumps(e))
             comprobar('nadando, el aguante baja y se ve su anillo', e['aguante'] < 1 and e['anillo'], json.dumps(e))
             comprobar('el agua de cerca se dibuja (la lámina de ríos y mar)', e['lamina'])

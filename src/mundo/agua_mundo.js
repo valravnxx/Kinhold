@@ -47,5 +47,7 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
   }
   // todo de golpe (para las pruebas y al aparecer)
   function rehacerYa(x, z) { centro = null; trabajo = null; paso(x, z, 1e9); }
-  return { paso, rehacerYa, get malla() { return malla; }, material };
+  // si la lámina que se ve ya está hecha alrededor de (x, z) (coordenadas de la escena)
+  const cerca = (x, z) => !!malla && !!centro && !trabajo && Math.hypot(x + origen.x - centro.cx, z + origen.z - centro.cz) <= REHACER;
+  return { paso, rehacerYa, cerca, get malla() { return malla; }, material };
 }
