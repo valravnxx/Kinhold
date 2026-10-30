@@ -2760,5 +2760,22 @@
   "pruebas": "En la nube: 18 de 20 grupos correctos y el mapa del mundo correcto sin capturas; el duelo en línea falla (repetido, falla igual)",
   "capturas": "",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-30T09:39:49+01:00",
+  "fin": "2026-10-30T15:54:31+01:00",
+  "titulo": "Duelo: el combate, dentro del mundo (construcción v42, demo v53)",
+  "hito": "duelo",
+  "hecho": [
+   "Lógica pura, modo direccional: el golpe se carga mientras se mantiene el botón (soltado enseguida sale al 60 % de la preparación con el 80 % de la fuerza; cargado del todo, con toda; mantenerlo cargado cansa), se cambia de lado sin soltar (finta: cuesta aliento y la carga baja) y las paradas son por lado, también cambiables sin soltar; la parada perfecta cuenta desde que se pone el lado bueno.",
+   "La máquina del duelo lo sigue: para por el lado que lee (o por otro si lo lee mal), vuelve a leer cada finta, finta hacia el lado que no paras y, mientras cargas, cubre el lado y vuelve a levantar la parada al soltar para hacerla perfecta. En realista para por el lado bueno 45 de 60 veces; en aprendiz, 19.",
+   "La dirección con el ratón (src/combate/direccion.js): la del movimiento de las últimas 0,15 s antes del clic, o estocada si no te has movido; con el botón pulsado, 28 px seguidos hacia otro lado cambian de dirección y un temblor no. Usa la hora de cada evento, para que con pocos fotogramas siga contando.",
+   "En el mundo (src/juego/combate_mundo.js, con pocos enganches en main.js): C o «Arma» saca la espada y cambia al luchador del duelo; en PC el ratón cogido gira la cámara y elige la dirección, el clic izquierdo carga y el derecho para; «Rival» trae un rival de práctica, Tab o «Fijar» lo fija con la cámara del duelo; en el móvil, la rosa fija abajo a la derecha con «Parar», «Fijar» y «Rival». La cámara del mundo se inclina ahora hasta casi a ras de suelo.",
+   "GDD, 13. Combate: el combate dentro del mundo, el golpe cargado y las paradas por lado (sustituyen a la parada sin lado), en español, inglés y ruso.",
+   "Provisional, anotado en el registro: la espada larga hasta que el arma salga del inventario; la armadura sale de la ropa puesta (cota, malla; gambesón, gambesón; si no, lino); si caes, a los 5 s te levantas curado; en línea, el combate aún no pasa al otro jugador."
+  ],
+  "pruebas": "Lógica de combate 129/129 (nuevas: modo direccional y dirección con el ratón; con MUTAR=1 fallan 38). Prueba de navegador nueva del combate en el mundo, PC y móvil, bien en la nube (con MUTAR=1 fallan 8). Batería entera en la nube: bien salvo «jugar en línea» y «duelo en línea», que fallan también en main y en las ramas de los carriles desde la salida al azar; valravnx: «aún no está el servidor, por eso falla», así que no paran la publicación. No comprobado: con ratón de verdad y bloqueo del puntero (en las pruebas se mueve por código), en un móvil de verdad, ni los fotogramas con varios rivales.",
+  "capturas": "capturas/construccion-v42",
+  "estado": "ok"
  }
 ]
