@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v50 (bigote con volumen)';
+export const VERSION_DEMO = 'Demo única · v51 (ropa cosida)';
 export const REGISTRO_DEMO = [
+  'v51: en «Construir», la ropa cosida lleva su hechura y su tinte en el inventario y se ve así puesta, también en línea; la cota de malla, larga o corta; personajes de la taller-v17. Es la construcción v41.',
   'v50: en «Personaje», el bigote tiene volumen (antes solo pintado), la barba larga tiene ondas distintas en cada mechón y por los lados baja por el cuello (de frente ya no asoma el cuello a los lados de la barbilla). Personajes en recursos/personajes/taller-v17/.',
   "v49: en «Construir», tala de verdad: con un hacha en la mano, Usar junto a un árbol lo tala a golpes; cae, deja el tocón y, en el suelo, un tronco y sus ramas, y vuelve a crecer pasadas unas semanas reales. El joven cae con el hacha de piedra; el adulto pide la de hierro (con la de piedra tarda mucho). Las hachas están en el arcón de pruebas. Es la construcción v40.",
   'v48: «Construir» va en el mundo de verdad: apareces en Whitholm, la isla de los playtests, y andas por ella con la cámara del juego. Fuera el llano: el suelo es el del mapa, por trozos hechos en un hilo aparte (rejilla de 1 m cerca y más basta lejos), y a lo lejos se ven las lomas y los montes de la isla. Antes de entrar se genera el mapa del mundo (unos segundos, con su barra); con ?llano=1 en la dirección, el llano de antes.',

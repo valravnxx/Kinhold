@@ -16,7 +16,8 @@ import { conectarEnLinea } from './en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
 import { dibujarRetrato } from './retrato.js';
-import { PRENDAS, capasDibujo, puestasDe, prendasDeCapas } from '../logica/prendas.js';
+import { PRENDAS, prendasDeCapas } from '../logica/prendas.js';
+import { vestidoDe, rasgosPrenda } from '../logica/hechura.js';
 import { crearRecoleccion } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
@@ -138,7 +139,7 @@ const talaV = crearTala({ raiz: escena, obstaculos, altura: decorado.altura, alm
 const RECURSOS_MH = recursosTaller();
 // el personaje elegido en el visor (cuerpo y ropa); si no se ha elegido ninguno, camisa y calzas de lino (GDD)
 const elegido = personajeElegido();
-const jugador = elegido ? crearJugador(RECURSOS_MH, elegido.sexo, elegido.capas, elegido.aspecto) : crearJugador(RECURSOS_MH);
+const jugador = elegido ? crearJugador(RECURSOS_MH, elegido.sexo, elegido.capas, elegido.aspecto, { tintes: elegido.tintes, hechuras: elegido.hechuras }) : crearJugador(RECURSOS_MH);
 escena.add(jugador.raiz);
 const pj = { x: 0, y: 0, z: 4, k: 0, rot: Math.PI, vel: 0 };
 const cam = { yaw: Math.PI * 0.25, pitch: 0.9, dist: 16 };
@@ -1523,21 +1524,30 @@ const panelInventario = montarPanelInventario({ panel: $('panelInventario'), bot
 // en el visor de personaje entra en el inventario una vez por cada elección; después manda el inventario.
 const SEXO = elegido ? elegido.sexo : 'hombre';
 const CLAVE_ROPA_VISOR = 'kinhold_ropa_visor_v1';
+// Cada prenda entra con el tinte y la hechura que se le dieron en el visor (src/logica/hechura.js: rasgosPrenda): desde
+// ahí son suyos y van con ella (al quitársela, al soltarla, al dejarla en el arcón no: el arcón la devuelve sin coser).
 function ropaDelVisor() {
   if (!elegido) return;
-  const huella = JSON.stringify([elegido.sexo, elegido.capas]);
+  const huella = JSON.stringify([elegido.sexo, elegido.capas, elegido.tintes || null, elegido.hechuras || null]);
   let hecha = null; try { hecha = almacen && almacen.getItem(CLAVE_ROPA_VISOR); } catch (e) { /* sin almacenamiento */ }
   if (hecha === huella) return;
   for (const p of prendasDeCapas(elegido.capas, elegido.sexo)) {
-    const lugar = 'ropa:' + PRENDAS[p].capa, ya = inventario().lugares[lugar];
-    if (ya && ya.tipo === p) continue;
+    const lugar = 'ropa:' + PRENDAS[p].capa, ya = inventario().lugares[lugar], d = PRENDAS[p].dibujo;
+    const rasgos = rasgosPrenda(p, { hechura: elegido.hechuras && elegido.hechuras[d], tinte: elegido.tintes && elegido.tintes.prendas && elegido.tintes.prendas[d] });
+    if (ya && ya.tipo === p && JSON.stringify(rasgosPrenda(p, ya)) === JSON.stringify(rasgos)) continue;
     if (ya) accionInventario({ tipo: 'soltar', de: lugar });
-    accionInventario({ tipo: 'coger', objeto: p, cantidad: 1, a: lugar });
+    accionInventario({ tipo: 'coger', objeto: p, cantidad: 1, a: lugar, ...rasgos });
   }
   try { almacen && almacen.setItem(CLAVE_ROPA_VISOR, huella); } catch (e) { /* sin almacenamiento */ }
 }
+// lo que se ve puesto: capas, tintes y hechura de cada prenda del inventario (el blasón, el del visor)
+const vestidoAhora = () => vestidoDe(inventario().lugares, SEXO, elegido && elegido.tintes && elegido.tintes.blason);
+let vestidoVisto = '';
 function vestir() {
-  if (jugador.mh) jugador.mh.ponerCapas(capasDibujo(puestasDe(inventario().lugares), SEXO));
+  const v = vestidoAhora(), huella = JSON.stringify(v);
+  if (jugador.mh) { jugador.mh.ponerHechuras(v.hechuras); jugador.mh.ponerTintes(v.tintes); jugador.mh.ponerCapas(v.capas); }
+  // en línea, los demás lo ven igual: se vuelve a mandar el aspecto si ha cambiado lo que se ve
+  if (huella !== vestidoVisto) { vestidoVisto = huella; if (enLinea && enLinea.mandarAspecto) enLinea.mandarAspecto(); }
   // el hacha de mano se ve en la mano derecha si la llevas en una mano (lo demás de las manos, con su tarea del hito 2)
   jugador.hachaEnMano = ['mano:der', 'mano:izq'].some(l => HACHAS[inventario().lugares[l]?.tipo]);
 }
@@ -1615,7 +1625,9 @@ function iniciarEnLinea() {
   };
   const vistos = new Map(); // obra → cuarto de trabajo con el que se dibujó
   enLinea = conectarEnLinea({
-    escena, recursos: RECURSOS_MH, aspecto: elegido || { sexo: 'hombre', capas: [] },
+    escena, recursos: RECURSOS_MH,
+    // lo que llevas puesto en el inventario, con sus tintes y su hechura (cambia al vestirse: vestir() lo vuelve a mandar)
+    aspecto: () => { const v = vestidoAhora(); return { sexo: SEXO, aspecto: elegido ? elegido.aspecto : undefined, capas: v.capas, tintes: v.tintes, hechuras: v.hechuras }; },
     avisar: mostrarAviso,
     alEstado: (txt) => { marca.textContent = txt; },
     alCambiar(info, msg) {
