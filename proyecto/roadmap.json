@@ -529,7 +529,9 @@
     },
     {
      "nombre": "Tala de verdad sobre los árboles del mundo: el árbol joven se tala con hacha de piedra (da un tronco delgado y ramas) y el adulto con hacha de hierro (con piedra, muy lento; da un tronco largo y muchas ramas); el árbol cae, queda el tocón y vuelve a crecer en semanas reales, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T06:23:57+00:00",
+     "rama": "trabajo/20261030-0623"
     },
     {
      "nombre": "Tronzar y partir: el tronco largo se tronza en 3–4 troncos cortos (con hacha, lento) y el tronco corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro y la leña en el leñero. Lógica pura con autor, en la demo y con pruebas",
