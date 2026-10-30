@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v54 (tronzar y partir)';
+export const VERSION_DEMO = 'Demo única · v55 (obras con lo que llevas)';
 export const REGISTRO_DEMO = [
+  "v55: en «Construir», obras con lo que llevas: lo que se lleva a una obra sale de lo que llevas encima, no de un montón común. El montón común es ahora el arcón de pruebas del inventario («Materiales de obra», con lo que queda de cada uno), y «+ Materiales» lo llena.",
   "v54: en «Construir», tronzar y partir: con un hacha en la mano, Usar (F) junto a un tronco largo tumbado lo tronza en 3 o 4 troncos cortos, y junto a un tronco corto lo parte en 6 de leña. El tronco corto se lleva con las dos manos o, con «Al hombro», al hombro; la leña va en el leñero.",
   "v53: en «Construir», el combate dentro del mundo: C o «Arma» saca la espada; en PC, el ratón cogido gira la cámara (también arriba y abajo), el clic izquierdo mantenido carga el golpe en la dirección del último movimiento (sin movimiento, estocada) y se cambia de dirección sin soltar; el derecho para por el lado del ratón, también cambiándolo sin soltar. «Rival» trae un rival de práctica y Tab o «Fijar» pone la cámara del duelo. En el móvil, la rosa fija abajo a la derecha. La cámara se inclina hasta casi a ras de suelo.",
   'v52: en «Construir», cada jugador nuevo aparece en un sitio al azar de las tres comarcas de inicio (Motdale, Breiddal y Strandvang), nunca en la montaña, el pasto alpino ni la nieve, en llano y lejos de los ríos; y vuelve siempre a ese sitio. Son 261 sitios, calculados una vez y apuntados en la lógica (el servidor no genera el mapa).',
