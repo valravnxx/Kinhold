@@ -1,0 +1,13 @@
+Capa, calzado y tocados de docs/recursos/personajes/taller-v15
+  OK   mh_hombre.glb: están la capa, las botas y los tocados
+  OK   mh_hombre.glb: el sombrero va entero en el hueso de la cabeza — 0 pesos en otros huesos
+  OK   mh_hombre.glb: la capucha cubre el pelo y baja hasta los hombros — arriba 1 cm por encima, abajo 19 cm por debajo
+  OK   mh_hombre.glb: el sombrero queda por encima del pelo y con ala ancha — copa 3 cm por encima, ala 40 cm
+  OK   mh_hombre.glb: las botas llegan al suelo y suben más que los zapatos — suela -0.015 / -0.012 m, caña hasta 0.44 m (zapato 0.11 m)
+  OK   mh_mujer.glb: están la capa, las botas y los tocados
+  OK   mh_mujer.glb: el sombrero va entero en el hueso de la cabeza — 0 pesos en otros huesos
+  OK   mh_mujer.glb: la capucha cubre el pelo y baja hasta los hombros — arriba 1 cm por encima, abajo 26 cm por debajo
+  OK   mh_mujer.glb: el sombrero queda por encima del pelo y con ala ancha — copa 3 cm por encima, ala 39 cm
+  OK   mh_mujer.glb: las botas llegan al suelo y suben más que los zapatos — suela -0.015 / -0.012 m, caña hasta 0.15 m (zapato 0.11 m)
+
+10 correctas, 0 fallos
