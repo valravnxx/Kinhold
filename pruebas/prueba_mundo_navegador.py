@@ -153,8 +153,9 @@ with sync_playwright() as p:
         def ir(x, z):
             pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x; k.pj.z = z; }}', [x, z])
             pg.wait_for_timeout(500)
-            try: pg.wait_for_function(f'{K}.mundoListo && {K}.decorado.pendientes === 0 && Math.hypot({K}.decorado.centro.x - {K}.pj.x, {K}.decorado.centro.z - {K}.pj.z) < 1', timeout=120000)
-            except Exception: pass
+            try: pg.wait_for_function(f'{K}.mundoListo && {K}.decorado.pendientes === 0 && Math.hypot({K}.decorado.centro.x - {K}.pj.x, {K}.decorado.centro.z - {K}.pj.z) < 1', timeout=240000)
+            except Exception: print('  (no llegó a tiempo)')
+            print(f'  en ({x}, {z}):', json.dumps(pg.evaluate(f'(() => {{ const k = {K}, d = k.decorado; return {{ listo: k.mundoListo, pendientes: d.pendientes, centro: d.centro, pj: [k.pj.x, k.pj.z], trozos: d.cuenta.trozos, arboles: d.cuenta.arboles, puestas: d.cuenta.puestas }}; }})()')))
         pg.evaluate(f'{K}.decorado.msMax = 0')
         ir(700, 4)
         md = pg.evaluate(f'{K}.decorado.msMax')
@@ -162,7 +163,7 @@ with sync_playwright() as p:
         fuera = pg.evaluate(f"(id) => !{K}.talaV.porId.has(id) && !{K}.obstaculos.some(o => o.id === id)", talado)
         ir(0, 4)
         vuelta = pg.evaluate(f"""(id) => {{ const k = {K}, o = k.obstaculos.find(o => o.id === id);
-          if (!o || !o.malla) return {{ hay: !!o }};
+          if (!o || !o.malla) return {{ hay: !!o, id, cargado: k.talaV.porId.has(id) }};
           const m = new k.escena.matrixWorld.constructor(); o.malla.getMatrixAt(o.instancia, m);
           return {{ hay: true, enPie: k.talaV.enPie(o), escondido: Math.abs(m.determinant()) < 1e-9, tocon: k.talaV.tala.tocones(Date.now()).some(t => t.arbol && t.arbol.id === id) }}; }}""", talado)
         comprobar('al irse lejos, lo de la salida se suelta', fuera)

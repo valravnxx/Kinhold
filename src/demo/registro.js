@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v56 (obras con lo que llevas)';
+export const VERSION_DEMO = 'Demo única · v57 (lo que crece sigue al jugador)';
 export const REGISTRO_DEMO = [
+  "v57: en «Construir», lo que crece sigue al jugador por la isla: los árboles, la hierba, las matas y las piedras se hacen por trozos de 32 m a su alrededor, los más cercanos primero y unos pocos milisegundos en cada fotograma, y lo de lejos se suelta. Siempre lo mismo en cada sitio, y lo talado sigue talado (con su tocón) aunque te vayas lejos y vuelvas.",
+  "v57, provisional: las mallas de lo que crece se vuelven a poner alrededor de ti cada 10 m andados (8 m en el móvil) o cuando llegan trozos nuevos; lo de más de 264 m (194 m en el móvil) se suelta, y la hierba de más de 109 m (96 m).",
   "v56: en «Construir», obras con lo que llevas: lo que se lleva a una obra sale de lo que llevas encima, no de un montón común. El montón común es ahora el arcón de pruebas del inventario («Materiales de obra», con lo que queda de cada uno), y «+ Materiales» lo llena.",
   'v55: en «Construir», lo que crece en Whitholm es el del mapa: árboles de las siete especies, cada una en sus biomas (en lo mirado de Whitholm salen abeto, abedul y haya en lo fresco y roble y fresno en la vega; el pino y la encina, donde toca), en masas de bosque, claros y corros, con la hierba, las flores, los matorrales y las piedras sueltas (del color de la roca de cada sitio). Siempre en el mismo sitio: cada cosa sale del azar de su celda del mundo, así que al volver o al recargar todo está donde estaba. Nada en el agua. Los árboles de todas las especies se talan.',
   'v55: los árboles que se meten entre la cámara y tu personaje no se dibujan, como en la vista «Como en el juego» del mapa: en el bosque, una copa ya no tapa media pantalla.',
