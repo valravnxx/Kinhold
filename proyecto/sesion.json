@@ -1,7 +1,7 @@
 {
  "A": {
   "inicio": "2026-10-30T22:37:50+00:00",
-  "tarea": "Inventario y recogida por el servidor: en línea, lo que llevas y lo que recoges lo guarda y lo valida el servidor (hoy solo está en el navegador de cada uno)",
+  "tarea": "Inventario y suelo en el servidor: lo que lleva cada jugador y lo que hay en el suelo los guarda el servidor, que valida cada acción con el autor de la conexión, su hora y el sitio donde lo tiene (soltar y coger del suelo, mover, ponerse y quitarse)",
   "hito": "equipo",
   "rama": "trabajo/20261030-2237"
  },
