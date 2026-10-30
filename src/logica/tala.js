@@ -158,7 +158,8 @@ export function ejecutarTala(tala, invs, suelo, registro, accion, ahora) {
   else if (!Number.isFinite(ahora)) r = { ok: false, motivo: 'Sin hora.' };
   else {
     r = tala.golpe(invs.de(a.autor), a.arbol, a.x, a.z, ahora, a.autor);
-    if (r.ok && r.cae) r.objetos = r.deja.map(o => suelo.dejar({ tipo: o.tipo, n: o.n }, o.x, o.z, ahora, a.autor, false).id);
+    // el tronco, tumbado a lo largo de donde cayó (los troncos del suelo se dibujan a lo largo de x)
+    if (r.ok && r.cae) r.objetos = r.deja.map(o => suelo.dejar({ tipo: o.tipo, n: o.n }, o.x, o.z, ahora, a.autor, false, o.tipo === 'rama' ? r.dir : r.dir - Math.PI / 2).id);
   }
   const e = registro.anotar(accion || {}, r);
   e.ahora = ahora;

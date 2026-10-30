@@ -91,14 +91,15 @@ export function crearSuelo({ raiz, altura, almacen, enTierras }) {
   if (almacen) cargarSuelo(almacen, suelo);
   const grupo = new THREE.Group(); grupo.name = 'suelo_objetos'; raiz.add(grupo);
   const vistos = new Map(); // id → { obj, firma }
+  const escondidos = new Set(); // ids que aún no se dibujan (lo que deja un árbol mientras cae)
   function refrescar(ahora = Date.now()) {
-    const hay = suelo.visibles(ahora), ids = new Set(hay.map(o => o.id));
+    const hay = suelo.visibles(ahora).filter(o => !escondidos.has(o.id)), ids = new Set(hay.map(o => o.id));
     for (const [id, v] of vistos) if (!ids.has(id)) { grupo.remove(v.obj); vistos.delete(id); }
     for (const o of hay) {
       const firma = o.cosa.tipo + ':' + o.cosa.n, v = vistos.get(o.id);
       if (v && v.firma === firma) continue;
       if (v) grupo.remove(v.obj);
-      const obj = modeloDe(o); obj.position.set(o.x, altura(o.x, o.z) - 0.01, o.z); obj.rotation.y += az(o.id, 9) * Math.PI * 2;
+      const obj = modeloDe(o); obj.position.set(o.x, altura(o.x, o.z) - 0.01, o.z); obj.rotation.y += Number.isFinite(o.giro) ? o.giro : az(o.id, 9) * Math.PI * 2;
       obj.name = 'suelo_' + o.cosa.tipo; obj.userData.id = o.id;
       grupo.add(obj); vistos.set(o.id, { obj, firma });
     }
@@ -129,6 +130,8 @@ export function crearSuelo({ raiz, altura, almacen, enTierras }) {
       guardarlo(); refrescar(ahora);
       return n;
     },
+    esconder(ids) { for (const id of ids) escondidos.add(id); refrescar(); },
+    mostrar(ids) { for (const id of ids) escondidos.delete(id); refrescar(); },
     refrescar, guardar: guardarlo,
   };
 }
