@@ -1,6 +1,9 @@
 // Decisiones tomadas en el personaje, para revisar.
-export const VERSION_PERSONAJE = 'Personaje · v27 (la capa se mueve al andar)';
+export const VERSION_PERSONAJE = 'Personaje · v28 (bigote con volumen)';
 export const REGISTRO_PERSONAJE = [
+  'v28: el bigote tiene volumen (antes solo pintado y plano): una malla propia que nace bajo la nariz, se abomba sobre el labio de arriba y cae por las comisuras, con la punta desigual pelo a pelo. Va con la barba corta, la larga, el bigote y la perilla, encima del bigote pintado.',
+  'v28: la barba larga tiene ondas distintas en cada mechón (antes salían todas iguales y en fila) y por los lados baja por el cuello: de frente ya no asoma el cuello a los lados de la barbilla. Personajes en recursos/personajes/taller-v17/.',
+  'v28, aún mal: la barba larga va con la cabeza y no se mueve sola; el bigote va fijo a la cabeza, como la barba.',
   'v27: la capa se mueve al andar. Sin simulación de tela, como se hace en muchos juegos: va con la espalda y la pelvis y, encima, cada punto se desplaza según su altura (nada en los hombros, más cuanto más abajo): al andar se queda atrás y sube un poco, al girar se abre hacia fuera y al pararse vuelve con un muelle (se pasa un poco y se asienta); una onda pequeña sube por la tela al ritmo del paso. Por detrás se mueve entera y hacia los bordes de delante cada vez menos, para no meterse en las piernas. La sombra se mueve con ella.',
   'v27: a los costados la capa cae por encima de los brazos bajados (en la v26 las manos asomaban por los lados a la altura de la cadera), y los pliegues de la espalda son más hondos y están más marcados en la tela (de espalda, a contraluz, no se distinguían). Personajes en recursos/personajes/taller-v16/.',
   'v27, aún mal: la capa se mueve entera como una pieza (no hace pliegues nuevos al moverse ni choca con las piernas: está calculado para que no llegue a ellas); por dentro lleva el mismo paño que por fuera; al correr deprisa se queda atrás como mucho 26 cm.',

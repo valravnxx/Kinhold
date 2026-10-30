@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v47 (la capa se mueve al andar)';
+export const VERSION_DEMO = 'Demo única · v48 (bigote con volumen)';
 export const REGISTRO_DEMO = [
+  'v48: en «Personaje», el bigote tiene volumen (antes solo pintado), la barba larga tiene ondas distintas en cada mechón y por los lados baja por el cuello (de frente ya no asoma el cuello a los lados de la barbilla). Personajes en recursos/personajes/taller-v17/.',
   'v47: en «Personaje», la capa se mueve al andar (se queda atrás, ondea al ritmo del paso y vuelve al pararse), cae por encima de los brazos a los costados y de espalda se ven los pliegues. Personajes en recursos/personajes/taller-v16/.',
   'v46: en «Personaje», la capa rehecha: cae de los hombros, más ancha abajo y con pliegues, abierta por delante y cerrada con un broche bajo el cuello. Personajes en recursos/personajes/taller-v15/. En «Construir» y en «Duelo» siguen los de antes.',
   "v45: en «Construir», objetos en el suelo: «Soltar» deja lo que llevas a tus pies y Usar lo coge; fuera de tus tierras desaparece pasada 1 hora real, dentro de ellas se queda, y los troncos, la leña y las piedras se quedan como pila. Es la construcción v39.",
