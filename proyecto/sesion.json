@@ -1,20 +1,15 @@
 {
  "A": {
+  "inicio": "2026-10-30T06:23:57+00:00",
+  "tarea": "Tala de verdad sobre los árboles del mundo: el árbol joven se tala con hacha de piedra (da un tronco delgado y ramas) y el adulto con hacha de hierro (con piedra, muy lento; da un tronco largo y muchas ramas); el árbol cae, queda el tocón y vuelve a crecer en semanas reales, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
+  "hito": "equipo",
+  "rama": "trabajo/20261030-0623"
+ },
+ "B": null,
+ "chat:trabajo/20261030-0521": {
   "inicio": "2026-10-30T05:22:21+00:00",
   "tarea": "La demo en el mundo: apareces en Whitholm, la isla de los playtests (valravnx, 29 oct), en un sitio accesible (nunca en el mar ni en un pico) y todos en la misma comarca, y andas por la isla con la cámara del juego; fuera el llano. El servidor y el terreno solo cubren la isla",
   "hito": "mundo-juego",
   "rama": "trabajo/20261030-0521"
- },
- "B": {
-  "inicio": "2026-10-30T04:52:07+00:00",
-  "tarea": "Pulir la capa (visto al rehacerla): que se mueva algo al andar (huesos propios o tela sencilla), que de espalda se distingan los pliegues y que las manos no asomen por los lados con los brazos algo abiertos",
-  "hito": "arte",
-  "rama": "trabajo/20261030-0452"
- },
- "chat:trabajo/20261030-0556-veta": {
-  "inicio": "2026-10-30T05:56:35+01:00",
-  "tarea": "Recursos de Whitholm (valravnx, 30 oct): una gran veta de hierro en la sierra de la isla",
-  "hito": "mundo",
-  "rama": "trabajo/20261030-0556-veta"
  }
 }

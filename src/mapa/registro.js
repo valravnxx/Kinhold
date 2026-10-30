@@ -1,6 +1,7 @@
 // Decisiones tomadas en los bocetos del mapa del mundo, para revisar.
-export const VERSION_MAPA = 'Mapa del mundo · boceto v15';
+export const VERSION_MAPA = 'Mapa del mundo · boceto v16';
 export const REGISTRO_MAPA = [
+  'v16: Whitholm, la isla de los playtests, tiene una gran veta de hierro en lo alto de su sierra (valravnx, 30 oct): en el mundo elegido, a 1.685 m, junto a la cumbre de la isla (1.795 m), en la caliza, donde el hierro sustituye a la roca (así se forman de verdad muchas vetas de hierro en caliza). Antes la isla solo tenía vetas pequeñas, porque las grandes de hierro solo salían donde el granito o la pizarra tocan la caliza y en la isla no hay ni granito ni pizarra. La de la isla se pone primero, en lo más alto (por encima del 60 % de su cumbre) y donde mejor le va a la roca; las del continente, después y a más de 45 km de ella.',
   'v15: la vista de juego va con el terreno por trozos del juego: trozos de 64 m hechos en un hilo aparte, con rejilla de 1 m cerca del personaje y de 2, 4 y 8 m más lejos. Fuera el trozo único de 240 m que se rehacía entero (dejaba el juego parado de 236 a 935 ms) y el truco de hundir el suelo de lejos: el suelo de lejos tiene un hueco justo donde ya hay trozos hechos.',
   'v15: el decorado de cerca (hierba, flores, matorrales, piedras, roca de los cortados, agua y árboles completos) se rehace al acercarse a su borde, unos pocos ms en cada fotograma (4 en el PC, 3 en el móvil), y se cambia cuando está entero: al andar, el juego no se para. Sus alturas son las mismas que las del suelo de los trozos.',
   'v15, provisional: en el móvil, menos detalle lejos: rejilla de 1 m hasta 32 m, de 2 m hasta 128 y de 4 m hasta 288 (sin la de 8 m), y el decorado de cerca de 150 m en vez de 170.',

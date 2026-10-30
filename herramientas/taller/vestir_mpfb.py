@@ -20,7 +20,7 @@ os.makedirs(SALIDA, exist_ok=True)
 comprobar_taller.comprobar(os.path.join(SALIDA, 'taller_versiones.json'))
 import bpy, bmesh, addon_utils, importlib, math
 import numpy as np
-from mathutils import Vector
+from mathutils import Vector, Matrix
 addon_utils.enable('bl_ext.user_default.mpfb', default_set=True)
 M = 'bl_ext.user_default.mpfb.'
 HS = importlib.import_module(M + 'services.humanservice').HumanService
@@ -628,6 +628,22 @@ def manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, colo
     S = np.array([tuple(co[i]) for i in idx])
     # la falda de las prendas de encima (sobreveste) va por la malla de ayuda de la falda, más abierta que las piernas
     falda = np.array([tuple(co[i]) for i in range(len(co)) if en(i, 'helper-skirt') and z_bajo < co[i].z < cintura_z])
+    # los brazos bajados (taller-v16): en reposo van en A, pero de pie cuelgan junto al cuerpo y, con la capa ceñida a
+    # los costados, las manos asomaban por los lados a la altura de la cadera. La capa cae por encima de ellos, como una
+    # de verdad: se cuentan los brazos girados hacia abajo (como en las fotos, BRAZOS=0,0,-38, y algo más abiertos) por
+    # debajo del hombro. Mismo giro que el hueso: en sus ejes, alrededor de su cabeza.
+    brazos = []
+    for lado, sg in (('l', 1), ('r', -1)):
+        hb = RIG.data.bones['upperarm_' + lado]
+        M = RIG.matrix_world.to_3x3() @ hb.matrix_local.to_3x3()
+        piv = np.array(tuple(pos['upperarm_' + lado]))
+        sel = [i for i in range(len(co)) if en(i, 'body') and (PR[i] or '').startswith(BRAZO) and (PR[i] or '').endswith('_' + lado)]
+        P = np.array([tuple(co[i]) for i in sel]) - piv
+        for grados in (-38, -30):
+            Rw = np.array(M @ Matrix.Rotation(math.radians(grados * sg), 3, 'Z') @ M.inverted())
+            Q = P @ Rw.T + piv
+            brazos.append(Q[Q[:, 2] < hombro_z - 0.10])
+    brazos = np.concatenate(brazos) if brazos else np.zeros((0, 3))
     cx = 0.0
     cy = float(np.mean([co[i].y for i in idx if abs(co[i].z - (cintura_z + 0.15)) < 0.03]))
     NT, DZ = 180, 0.004
@@ -639,7 +655,7 @@ def manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, colo
     R = np.zeros((NT, len(zs)))
     for k, th in enumerate(ths):
         d = np.array([math.sin(th), math.cos(th)])
-        for pts, extra in ((S, 0.0), (falda, -0.012)):
+        for pts, extra in ((S, 0.0), (falda, -0.012), (brazos, -0.03)):
             if not len(pts): continue
             q = pts[:, :2] - [cx, cy]
             radial = q @ d; lado = np.abs(q @ [d[1], -d[0]])
@@ -682,15 +698,16 @@ def manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, colo
     fase1, fase2 = rng.uniform(0, 2 * math.pi, 2)
     def pliegue(th):  # forma de los pliegues alrededor: irregular (dos ondas), entre -1 y 1
         return 0.65 * math.sin(16.5 * th + fase1) + 0.35 * math.sin(27.0 * th + fase2 + 0.6 * math.sin(5 * th))
-    def hondo(z):  # cuánto pliegue a esa altura: nada sobre los hombros, crece hacia el bajo
-        return 0.026 * float(suave(hombro_z - 0.06, hombro_z - 0.75, z))
+    def hondo(z, th=math.pi / 2):  # cuánto pliegue a esa altura: nada sobre los hombros, crece hacia el bajo; más hondo
+        # por detrás (taller-v16: de espalda no se distinguían), donde la tela cuelga libre y no la sujetan los brazos
+        return 0.032 * float(suave(hombro_z - 0.06, hombro_z - 0.75, z)) * (0.8 + 0.55 * math.cos(th) ** 2 * (math.cos(th) > 0))
     vs, uv, ths_v, zs_v = [], [], [], []
     for j in range(NV):
         t = j / (NV - 1); TM = theta_max(t)
         for i in range(NU):
             u = i / (NU - 1); th = (2 * u - 1) * TM
             r, z = perfil(th, t)
-            r += hondo(z) * (pliegue(th) + 0.4) * float(suave(0.0, 0.16, min(u, 1 - u)))  # los bordes de delante caen más lisos
+            r += hondo(z, th) * (pliegue(th) + 0.4) * float(suave(0.0, 0.16, min(u, 1 - u)))  # los bordes de delante caen más lisos
             vs.append((cx + r * math.sin(th), cy + r * math.cos(th), z)); ths_v.append(th); zs_v.append(z)
             uv.append((0.02 + 0.96 * u, 0.98 - 0.94 * t))
     caras = [(j * NU + i, j * NU + i + 1, (j + 1) * NU + i + 1, (j + 1) * NU + i) for j in range(NV - 1) for i in range(NU - 1)]
@@ -743,7 +760,9 @@ def manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, colo
         # sombra de los pliegues (para el juego en calidad baja, sin sombras propias): en los valles, más hacia abajo
         t = (0.98 - V) / 0.94; th = (2 * U - 1) * np.radians(94 + 78 * suave(0.32, 0.02, t))
         pl = 0.65 * np.sin(16.5 * th + fase1) + 0.35 * np.sin(27.0 * th + fase2 + 0.6 * np.sin(5 * th))
-        col = col * (1 - 0.16 * suave(0.15, 0.6, t)[..., None] * suave(0.0, -0.9, pl)[..., None])
+        # (taller-v16: más marcada, y luz en los lomos; de espalda, a contraluz, era lo único que dibujaba los pliegues)
+        crece = suave(0.12, 0.55, t)[..., None]
+        col = col * (1 - 0.30 * crece * suave(0.0, -0.9, pl)[..., None]) * (1 + 0.12 * crece * suave(0.2, 0.9, pl)[..., None])
         return np.concatenate([col, np.ones(U.shape + (1,))], -1)
     res = 1024
     U, V = np.meshgrid((np.arange(res) + 0.5) / res, (np.arange(res) + 0.5) / res)
@@ -1246,7 +1265,7 @@ def personaje(nombre, macros, objetivos, ropa):
         return c
     piezas.append(trozo(base, nombre + '_pies', lambda i, c: en(i, 'body') and c.z < tobillo_z + (0.10 if mujer else 0.06), textura=(512, pintar_pies),
                         rugosidad=0.62, sss=0.2, ajustar_uv=True, **f_piel))
-    # ---- capa (manto): cae de los hombros como una capa de verdad (taller-v15; la malla, en manto()) ----
+    # ---- capa (manto): cae de los hombros como una capa de verdad (taller-v15, pulida en la v16; la malla, en manto()) ----
     # Antes era la malla del cuerpo empujada hacia fuera: seguía la cintura y los costados y parecía un chaleco sin
     # mangas (valravnx, 29 oct: «la capa que no es capa»).
     piezas += manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, ropa.get('manto', (78, 70, 58)))

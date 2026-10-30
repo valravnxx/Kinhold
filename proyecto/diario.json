@@ -2555,5 +2555,37 @@
   "pruebas": "En la nube: los 18 grupos bien (41 min); tras el arreglo del aviso y unir main, mapa del mundo, lógica y web otra vez bien. La prueba nueva, rota a propósito, falla",
   "capturas": "capturas/mapa-v15",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T05:56:35+01:00",
+  "fin": "2026-10-30T07:10:35+01:00",
+  "titulo": "Hito 10: gran veta de hierro en la sierra de Whitholm (mapa v16)",
+  "hito": "mundo",
+  "hecho": [
+   "valravnx aprueba el hito Despejar y las barbas y la capa nuevas; el servidor de Hetzner lo crea él esta tarde.",
+   "Recursos de Whitholm decididos por valravnx: lo que ya tenía y una gran veta de hierro en las montañas.",
+   "El generador pone primero la gran veta de hierro de la isla, en lo más alto (por encima del 60 % de su cumbre); en el mundo elegido queda a 1.685 m, en la caliza, junto a la cumbre (1.795 m). Las del continente van después, a más de 45 km.",
+   "Prueba nueva: Whitholm tiene una gran veta de hierro en lo alto de la sierra, en las cuatro semillas; falla si se quita (MUTAR).",
+   "Zonas de clan de aproximadamente 1 km², aparte del mojón, anotadas en el GDD (valravnx). Borrador de comarcas con bordes naturales y zonas enseñado a valravnx, fuera del juego por ahora."
+  ],
+  "pruebas": "En la nube: lógica, mapa del mundo y web correctas (generador del mapa 87/87)",
+  "capturas": "capturas/mapa-v16",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T04:52:07+00:00",
+  "fin": "2026-10-30T06:15:53+00:00",
+  "titulo": "Capa pulida: se mueve al andar, cubre los brazos y se ven los pliegues (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "La capa se mueve al andar, sin simulación de tela (como en muchos juegos): va con la espalda y la pelvis y, encima, el sombreado desplaza cada punto según su altura (nada en los hombros, más cuanto más abajo, al cuadrado). Al andar se queda atrás y sube un poco, al girar se abre hacia fuera, al pararse vuelve con un muelle amortiguado; una onda pequeña sube por la tela al ritmo del paso. Por detrás se mueve entera y hacia los bordes de delante cada vez menos, para no meterse en las piernas. La sombra se mueve con ella (src/personajes/makehuman.js).",
+   "La velocidad sale de lo que se ha movido el personaje en el mundo o de lo que anda la animación puesta (en el visor anda sin moverse), lo que más sea. Andando, el bajo se queda unos 8 cm atrás (medido en el visor); como mucho 26 cm al correr. Solo en la capa de la taller-v15 en adelante (la de antes, en Construir y Duelo, no cambia).",
+   "Taller-v16: a los costados la capa cae por encima de los brazos bajados (en el perfil de la capa se cuentan también los brazos girados hacia abajo, como en las fotos con los brazos bajados): en las fotos del taller, hombre y mujer, ya no asoman las manos por los lados. Pliegues más hondos por detrás (hasta 4,4 cm, antes 2,6) y más marcados en la textura, con luz en los lomos.",
+   "Publicado como personaje v27 y demo v47. Prueba de la capa (prueba_manto.mjs) con una comprobación nueva: los pliegues de la espalda entran y salen al menos 6,5 cm a 30 cm del bajo (v16: 7,8 y 7,3 cm; v15: 5,0 y 4,9). Con MUTAR=1 mira la v15 y falla. En la prueba del personaje en el navegador: la capa se queda atrás al andar y ondea, y al pararse vuelve; con MUTAR=1 no se pasa el tiempo y falla.",
+   "Aún mal: de espalda, a contraluz, la capa sin teñir sigue saliendo muy oscura (los pliegues se distinguen algo más, pero poco); se mueve como una pieza, sin pliegues nuevos al moverse; por dentro lleva el mismo paño que por fuera. No comprobado: cómo se ve en movimiento en un aparato de verdad (aquí y en la nube, a 1-3 fotogramas por segundo)."
+  ],
+  "pruebas": "En la nube: 18 grupos; fallaron logica, demo única y juego en inglés por faltar traducciones de las notas nuevas (puestas), y objetos en el suelo (en PC, ajeno a este cambio). Después de traducir y unir main, esos 4 grupos otra vez: bien. prueba_combate_servidor.mjs, que falló una vez en la nube, aquí da 64/64.",
+  "capturas": "capturas/personaje-v27",
+  "estado": "ok"
  }
 ]
