@@ -167,8 +167,10 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
       try { const p = lienzo.requestPointerLock(); if (p && p.catch) p.catch(() => {}); } catch (err) { /* sin bloqueo */ }
       if (!c.raton) { c.raton = true; return; }
     }
-    if (e.button === 0) empezarGolpe(c.lector.alPulsar(ahora()));
-    else if (e.button === 2) parar(true, c.lector.alPulsar(ahora()));
+    // la hora de cada evento (no la de cuando se atiende): con pocos fotogramas, el movimiento de antes del clic sigue contando
+    const t = e.timeStamp / 1000;
+    if (e.button === 0) empezarGolpe(c.lector.alPulsar(t));
+    else if (e.button === 2) parar(true, c.lector.alPulsar(t));
   }, true);
   lienzo.addEventListener('pointermove', (e) => {
     if (!nuestro(e)) return;
@@ -176,7 +178,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     const bloqueado = document.pointerLockElement === lienzo;
     if (!bloqueado && !c.raton) return;
     const dx = e.movementX || 0, dy = e.movementY || 0;
-    moverRaton(dx, dy);
+    moverRaton(dx, dy, e.timeStamp / 1000);
   }, true);
   lienzo.addEventListener('pointerup', (e) => {
     if (!nuestro(e)) return;
@@ -184,15 +186,15 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (e.button === 0) soltarGolpe();
     else if (e.button === 2) parar(false);
   }, true);
-  function moverRaton(dx, dy) {
-    c.lector.mover(dx, dy, ahora());
+  function moverRaton(dx, dy, t = ahora()) {
+    c.lector.mover(dx, dy, t);
     // sin rival fijado, el ratón gira la cámara (izquierda-derecha y arriba-abajo)
     if (!c.fijado) {
       cam.yaw -= dx * 0.0035;
       cam.pitch = THREE.MathUtils.clamp(cam.pitch + dy * 0.0028, 0.06, 1.35);
     }
     if (c.atacando || c.parando) {
-      const l = c.lector.cambio(ahora());
+      const l = c.lector.cambio(t);
       if (l && c.atacando) cambiarGolpe(l);
       else if (l && c.parando) parar(true, l);
     }

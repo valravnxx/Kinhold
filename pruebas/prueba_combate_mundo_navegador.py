@@ -44,8 +44,14 @@ def listo(pg):
 def estado(pg):
     return pg.evaluate(f"(() => {{ const L = {C}.L; return L ? {{ accion: L.accion, linea: L.linea, finta: L.finta, carga: L.carga(), bloq: L.bloqueando, lb: L.lineaBloqueo }} : null; }})()")
 def mover(pg, dx, dy, pasos=5):
-    for _ in range(pasos):
-        pg.evaluate(f'{C}.raton.mover({dx / pasos}, {dy / pasos})'); pg.wait_for_timeout(8)
+    # en un solo paso de la página: sin tarjeta gráfica cada llamada puede tardar más que la ventana del ratón
+    pg.evaluate(f'(() => {{ for (let i = 0; i < {pasos}; i++) {C}.raton.mover({dx / pasos}, {dy / pasos}); }})()')
+def golpe(pg, dx, dy, boton=0):
+    # moverse y pulsar seguidos, como al jugar
+    pg.evaluate(f'(() => {{ for (let i = 0; i < 5; i++) {C}.raton.mover({dx / 5}, {dy / 5}); {C}.raton.pulsar({boton}); }})()')
+def libre(pg):
+    # sin tarjeta gráfica el juego va a cámara lenta (cada fotograma avanza como mucho 0,05 s): se espera al estado
+    pg.wait_for_function(f'{C}.L && {C}.L.accion === "libre" && !{C}.L.bloqueando', timeout=120000)
 
 with sync_playwright() as p:
     nav = p.chromium.launch(args=ARGS)
@@ -65,14 +71,15 @@ with sync_playwright() as p:
     pg.screenshot(path=f'{SALIDA}/pc_camara_baja.png')
     # golpes: dirección del último movimiento al pulsar
     for dx, dy, quiero in [(-45, 0, 'izquierda'), (0, -45, 'alto'), (45, 0, 'derecha'), (0, 45, 'bajo')]:
-        mover(pg, dx, dy); pg.evaluate(f'{C}.raton.pulsar(0)'); e = estado(pg)
+        libre(pg); golpe(pg, dx, dy); e = estado(pg)
         comprobar(f'ratón hacia {quiero} y clic: carga el golpe {quiero}', e['accion'] == 'preparando' and e['linea'] == quiero, str(e))
-        pg.evaluate(f'{C}.raton.soltar(0)'); pg.wait_for_timeout(1300)
-    pg.wait_for_timeout(400); pg.evaluate(f'{C}.raton.pulsar(0)'); e = estado(pg)
+        pg.evaluate(f'{C}.raton.soltar(0)')
+    libre(pg); pg.wait_for_timeout(400); pg.evaluate(f'{C}.raton.pulsar(0)'); e = estado(pg)
     comprobar('sin mover el ratón: estocada', e['linea'] == 'estocada', str(e))
-    pg.evaluate(f'{C}.raton.soltar(0)'); pg.wait_for_timeout(1300)
+    pg.evaluate(f'{C}.raton.soltar(0)')
     # mantener carga; un movimiento claro cambia de lado sin soltar
-    mover(pg, 0, -45); pg.evaluate(f'{C}.raton.pulsar(0)'); pg.wait_for_timeout(700)
+    libre(pg); golpe(pg, 0, -45)
+    pg.wait_for_function(f'{C}.L.carga() > 0.6', timeout=120000)
     e1 = estado(pg)
     pg.screenshot(path=f'{SALIDA}/pc_cargando_alto.png')
     mover(pg, 60, 0); e2 = estado(pg)
@@ -80,9 +87,8 @@ with sync_playwright() as p:
     comprobar('a mitad del clic, el ratón a la derecha cambia el golpe sin soltar (finta)', e2['accion'] == 'preparando' and e2['linea'] == 'derecha' and e2['finta'], str(e2))
     pg.evaluate(f'{C}.raton.soltar(0)'); pg.wait_for_timeout(120); e3 = estado(pg)
     comprobar('al soltar, el golpe sale', e3['accion'] in ('lanzando', 'golpeando', 'recuperando'), str(e3))
-    pg.wait_for_timeout(1300)
     # parar con el botón derecho, cambiando de lado sin soltar
-    mover(pg, -45, 0); pg.evaluate(f'{C}.raton.pulsar(2)'); e = estado(pg)
+    libre(pg); golpe(pg, -45, 0, 2); e = estado(pg)
     comprobar('botón derecho: para por el lado del ratón', e['bloq'] and e['lb'] == 'izquierda', str(e))
     pg.wait_for_timeout(300); pg.screenshot(path=f'{SALIDA}/pc_parando_izquierda.png')
     mover(pg, 0, -60); e = estado(pg)
@@ -108,7 +114,11 @@ with sync_playwright() as p:
     pg.screenshot(path=f'{SALIDA}/pc_rival_fijado.png')
     # atacar al rival fijado: el golpe del jugador también va con autor
     for _ in range(6):
-        pg.evaluate(f'{C}.raton.pulsar(0)'); pg.wait_for_timeout(250); pg.evaluate(f'{C}.raton.soltar(0)'); pg.wait_for_timeout(900)
+        try: pg.wait_for_function(f'{C}.L.accion === "libre"', timeout=60000)
+        except Exception: pass
+        pg.evaluate(f'{C}.raton.pulsar(0)'); pg.evaluate(f'{C}.raton.soltar(0)')
+        pg.wait_for_function(f'{C}.L.accion !== "preparando"', timeout=60000)
+    pg.wait_for_function(f"{K}.registroAcciones.entradas.some(e => e.tipo === 'golpe' && e.autor === 'jugador')", timeout=60000)
     mios = pg.evaluate(f"{K}.registroAcciones.entradas.filter(e => e.tipo === 'golpe' && e.autor === 'jugador').length")
     comprobar('tus golpes al rival pasan por las acciones con autor', mios > 0, f'{mios} golpes')
     pg.keyboard.press('c'); pg.wait_for_timeout(200)
@@ -134,14 +144,14 @@ with sync_playwright() as p:
     # tocar el sector de arriba y mantener: carga alto; deslizar a la izquierda: cambia
     mv.evaluate(f"""(() => {{ const r = document.getElementById('cmbRosa'); const ev = (t, x, y) => r.dispatchEvent(new PointerEvent(t, {{ pointerId: 7, pointerType: 'touch', clientX: x, clientY: y, bubbles: true }}));
       window.__rosa = ev; ev('pointerdown', {x0 + w / 2}, {y0 + w * 0.15}); }})()""")
-    mv.wait_for_timeout(500); e = estado(mv)
+    mv.wait_for_function(f'{C}.L.carga() > 0.05', timeout=60000); e = estado(mv)
     comprobar('móvil: tocar arriba en la rosa y mantener carga el golpe alto', e['accion'] == 'preparando' and e['linea'] == 'alto', str(e))
     mv.screenshot(path=f'{SALIDA}/movil_rosa_cargando.png')
     mv.evaluate(f"window.__rosa('pointermove', {x0 + w * 0.12}, {y0 + w / 2})"); e = estado(mv)
     comprobar('móvil: deslizar el dedo a la izquierda cambia el golpe sin soltar', e['linea'] == 'izquierda' and e['finta'], str(e))
     mv.evaluate(f"window.__rosa('pointerup', {x0 + w * 0.12}, {y0 + w / 2})"); mv.wait_for_timeout(120); e = estado(mv)
     comprobar('móvil: levantar el dedo lanza el golpe', e['accion'] in ('lanzando', 'golpeando', 'recuperando'), str(e))
-    mv.wait_for_timeout(1300)
+    libre(mv)
     mv.evaluate("document.getElementById('cmbParar').dispatchEvent(new PointerEvent('pointerdown', { pointerId: 8, pointerType: 'touch', bubbles: true }))")
     mv.evaluate(f"window.__rosa('pointerdown', {x0 + w * 0.88}, {y0 + w / 2})"); e = estado(mv)
     comprobar('móvil: con «Parar» pulsado, la rosa elige el lado de la parada', e['bloq'] and e['lb'] == 'derecha', str(e))
