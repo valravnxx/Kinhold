@@ -1,0 +1,7 @@
+Barbas en docs/recursos/personajes/taller-v16
+  OK   hay barba larga y bigote
+  OK   la barba larga lleva el tinte del pelo — {"tinte":"pelo","ref":0.6}
+  OK   cuelga: la punta, más de 8 cm por debajo del bigote — 9.5 cm
+  OK   tiene grosor (cara de delante y de detrás) 3 cm por encima de la punta — 2.2 cm con 52 puntos
+  OK   el cargador pinta corta, bigote y perilla como calcos, y la larga no — /_(vello|barba_(corta|bigote|perilla))$/ /_(vello|barba_(corta|bigote|perilla))$/
+Barbas: 5 bien, 0 mal
