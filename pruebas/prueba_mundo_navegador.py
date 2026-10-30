@@ -152,7 +152,9 @@ with sync_playwright() as p:
             pg.evaluate(f"(() => {{ const k = {K}; k.cam.pitch = 0.18; k.cam.dist = 7; }})()"); pg.wait_for_timeout(1200)
             pg.screenshot(path=f'{SALIDA}/{nombre}_nadando.png')
             # sin aguante, nadando, te ahogas: a los pocos segundos vuelves a tu sitio de salida
-            if not os.environ.get('MUTAR_NADO'): pg.evaluate(f"{K}.nado.e.aguante = 0.01")
+            # (se le deja casi ahogado: lo que se tarda en ahogarse ya lo mide la prueba de lógica, y aquí, a menos de 1
+            # fotograma por segundo, 8 s de juego son muchos minutos)
+            if not os.environ.get('MUTAR_NADO'): pg.evaluate(f"Object.assign({K}.nado.e, {{ aguante: 0, ahogo: 0.9 }})")
             # (8 s de juego sin aguante; a los pocos fotogramas por segundo de esta máquina, bastante más de reloj)
             try: pg.wait_for_function(f'{K}.nado.muertes > 0', timeout=300000)
             except Exception: pass
