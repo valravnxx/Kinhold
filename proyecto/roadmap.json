@@ -1875,6 +1875,13 @@
      "archivo": "jugar/demo/v57.html",
      "capturas": "capturas/demo-v57",
      "notas": "Siempre en línea: el juego entra siempre al mundo del servidor de prueba, también desde la web, y es el único modo; en el menú, Jugar, Duelo y Personaje. Sin servidor, un cartel lo dice, con un botón para volver a intentarlo."
+    },
+    {
+     "v": "v58",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v58.html",
+     "capturas": "capturas/demo-v58",
+     "notas": "Lo que crece sigue al jugador por la isla: árboles, hierba, matas y piedras se hacen a su alrededor por trozos de 32 m, poco a poco, y lo de lejos se suelta; lo talado sigue talado al irse y volver."
     }
    ]
   },
