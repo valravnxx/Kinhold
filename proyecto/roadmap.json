@@ -875,9 +875,9 @@
     },
     {
      "nombre": "Que la ropa cosida lleve su hechura y su tinte en el inventario (cada prenda la suya, sin apilarse si son distintas) y se vea así puesta en el juego, en la demo y en línea; la cota de malla, larga o corta",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T09:57:34+00:00",
-     "rama": "trabajo/20261030-0957"
+     "fin": "2026-10-30T10:58:15+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -1771,6 +1771,13 @@
      "archivo": "jugar/demo/v50.html",
      "capturas": "capturas/personaje-v28",
      "notas": "En «Personaje», bigote con volumen y barba larga pulida (ondas distintas en cada mechón y los lados del cuello tapados). Personajes en recursos/personajes/taller-v17/."
+    },
+    {
+     "v": "v51",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v51.html",
+     "capturas": "capturas/demo-v51",
+     "notas": "En «Construir», la ropa cosida lleva su hechura y su tinte en el inventario (cada prenda la suya) y se ve así puesta, también en línea; la cota de malla, larga o corta; personajes de la taller-v17"
     }
    ]
   },
@@ -2044,6 +2051,13 @@
      "archivo": "jugar/construccion/v40.html",
      "capturas": "capturas/construccion-v40",
      "notas": "Tala de verdad: con un hacha en la mano, Usar junto a un árbol lo tala a golpes; cae, deja el tocón, un tronco y ramas en el suelo, y vuelve a crecer pasadas unas semanas reales."
+    },
+    {
+     "v": "v41",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/construccion/v41.html",
+     "capturas": "capturas/construccion-v41",
+     "notas": "La ropa cosida lleva su hechura y su tinte en el inventario (cada prenda la suya) y se ve así puesta, también en línea; la cota de malla, larga o corta; personajes de la taller-v17"
     }
    ]
   },
