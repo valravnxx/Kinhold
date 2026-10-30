@@ -2808,5 +2808,38 @@
   "pruebas": "En la nube, la batería entera (21 grupos): todo bien salvo jugar en línea y duelo en línea (sin servidor, no paran la publicación) y la lógica, que falló una vez en «lo que no se puede se rechaza al que lo manda» del combate en el servidor (no tocado por esta rama; bien tres veces aquí y al repetirla en la nube). Tras unir el tronzar y partir de main, repetidos lógica, demo única, la demo en el mundo, tala, inglés, combate en el mundo, recoger, objetos en el suelo y construcción.",
   "capturas": "capturas/demo-v55",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T17:22:21+00:00",
+  "fin": "2026-10-30T19:45:50+00:00",
+  "titulo": "Obras con lo que llevas (construcción v44, demo v56; carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Lógica pura: con los inventarios, entregar a una obra y subir lo pesado a una obra en alto salen de lo que lleva el autor encima (manos, hombro, cinturón y mochila), no de un montón común. Se entrega lo que lleves de lo que le falta, aunque no sea todo; el otro jugador no entrega con lo tuyo. Para rodar lo pesado por dos varas hay que llevarlas, con una cuerda (no se gastan).",
+   "El montón común es ahora el arcón de pruebas: acciones nuevas con autor para coger material de él y dejarlo (sacar_arcon, dejar_arcon); «+ Materiales» lo llena. En el inventario, «Materiales de obra» dice cuánto queda de cada uno, y arriba la barra dice «En el arcón».",
+   "En la demo: Usar (F) junto a una obra le entrega lo que llevas; si no llevas nada, dice qué le falta y que se coge del arcón (en el inventario).",
+   "Provisional, anotado en el registro: cada material de obra es un objeto del inventario; el tronco de las obras es el tronco corto (sale de tronzar); son nuevos la vara (mediana), la cuerda (pequeña), la tabla (mediana), el clavo (pequeño), la barra de hierro (mediana) y la teja (pequeña). En línea, hasta que el servidor lleve los inventarios (la tarea siguiente), las obras siguen cobrando del montón común. El mojón y los muebles siguen cobrando del arcón.",
+   "Arreglo en herramientas/carriles.mjs: «elegir A» devolvía como «a medias» la «Revisión completa y publicación» ya hecha de la prueba online, porque buscaba la tarea a medias solo por su nombre (la de arte se llama igual). Ahora se busca por hito y nombre, con su prueba.",
+   "Al empezar, el main de este clon no estaba en GitHub (la historia se había rehecho); se guardó en la rama local respaldo-local-5ef6cf6 y se siguió desde el main de GitHub.",
+   "Lo que aún está mal (revisión visual): lo que llevas en las manos o al hombro no se ve en el personaje (es la tarea «Lo que llevas se ve puesto»); la barra de arriba con lo que hay en el arcón ocupa dos líneas en PC."
+  ],
+  "pruebas": "Lógica de obras con lo que llevas 32/32 (nueva; con MUTAR=1 fallan 13), carriles 29/29 (prueba nueva del arreglo, falla con el código de antes). Navegador de construcción con pasos nuevos (sin llevar nada no se entrega; el arcón con los materiales; con el tronco en las manos sí), en PC y móvil. Batería entera en la nube (22 grupos), después de unir main: bien salvo «jugar en línea» (vuelve a conectar) y «duelo en línea», que fallan desde la salida al azar (valravnx: «aún no está el servidor, por eso falla»).",
+  "capturas": "capturas/construccion-v44",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T18:54:12+00:00",
+  "fin": "2026-10-30T20:15:51+00:00",
+  "titulo": "Hito de arte: revisión completa; quedan cuatro arreglos antes de darlo por terminado (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Batería entera en la nube sobre main (22 grupos): 21 correctos; falla «jugar en línea» (el móvil no ve a PC donde está), que no para la publicación mientras no esté el servidor. El duelo en línea, que fallaba en las dos revisiones anteriores, esta vez pasa.",
+   "Capturas miradas en PC y móvil (cara, espalda, taller de personajes, la demo y el mundo). Siguen mal las mismas cosas que en las revisiones anteriores: con la toca, borde dentado y una mancha de piel rota en el cuello; el pelo corta en seco en la frente y las cejas son trazos finos a trozos; la capa de espalda sale casi negra y lisa; al picar no lleva pico.",
+   "Como se ven peor que la prueba de estilo v5, el hito no pasa a revisión: esas cuatro cosas quedan como tareas del hito, antes de la revisión final, que vuelve a pendiente.",
+   "Sin versión nueva: no hay cambios jugables en esta sesión."
+  ],
+  "pruebas": "En la nube: 21 de 22 grupos correctos; jugar en línea falla (exento hasta la fase 2)",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

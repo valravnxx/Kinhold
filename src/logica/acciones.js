@@ -6,6 +6,7 @@
 // servidor podrá validar y auditar lo que pasa, y las pruebas ven si algo cambia el mundo sin pasar por aquí.
 import { Mundo, MAX_RATO, plantaObra, clasePeso, poleaPara, polipastoPara } from './construccion.js';
 import { PIEZAS } from './piezas.js';
+import { OBJETO_DE_MATERIAL, MATERIAL_DE_OBJETO } from './inventario.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
 
 // Autor provisional mientras no haya cuentas (hito de servidor): el jugador de este navegador.
@@ -62,10 +63,21 @@ const CAMPOS_CONSTRUCCION = {
   subir: { construccion: 'n', clave: 't', material: 't', segundos: 'n', metodo: 't' }, // subir lo pesado a una obra en alto
   trabajar: { construccion: 'n', clave: 't', segundos: 'n' },                 // un rato de trabajo en una obra
   usar: { construccion: 'n', clave: 't' },           // abrir o cerrar una puerta o un portón, o encender o apagar una chimenea
-  rellenar: { cantidad: 'n' },                        // botón de pruebas del prototipo
+  rellenar: { cantidad: 'n' },                        // botón de pruebas del prototipo: llena el arcón de pruebas
+  sacar_arcon: { material: 't', cantidad: 'n' },      // coger material del arcón de pruebas (a: ruta preferida, opcional)
+  dejar_arcon: { de: 't', cantidad: 'n' },            // dejar en el arcón de pruebas el material de una ruta
 };
 
-function aplicarConstruccion(m, a) {
+// Obras con lo que llevas (roadmap, hito «Equipo y carga»): con los inventarios (invs), lo que se entrega a una obra
+// sale de lo que lleva el autor encima, no de un montón común. El montón común del mundo (mundo.materiales) pasa a
+// ser el arcón de pruebas del prototipo: de ahí se coge el material, y el botón de rellenar lo llena.
+// Sin inventarios (en línea, hasta que el servidor los lleve; y el atajo acabarObra) se sigue usando el montón común.
+export function reservaDe(inv) {
+  const tipo = m => OBJETO_DE_MATERIAL[m];
+  return { hay: m => (tipo(m) ? inv.cuantos(tipo(m)) : 0), gastar: (m, n) => { inv.gastar(tipo(m), n); }, parcial: true };
+}
+
+function aplicarConstruccion(m, a, invs) {
   switch (a.tipo) {
     case 'mojon': return m.colocarMojon(a.x, a.z);
     // se construye por obras (GDD): colocar pone el marco; luego se entregan los materiales y se trabaja
@@ -73,11 +85,12 @@ function aplicarConstruccion(m, a) {
     case 'entregar': case 'trabajar': case 'subir': {
       const c = m.construcciones.find(x => x.id === a.construccion);
       if (!c) return { ok: false, motivo: 'No existe.' };
+      const reserva = invs ? reservaDe(invs.de(a.autor)) : undefined;
       if (a.tipo === 'entregar') {
         if (a.desde !== undefined && !numero(a.desde)) return { ok: false, motivo: 'Datos no válidos.' };
-        return m.entregar(c, a.clave, a.material, a.cantidad, a.autor, a.desde === undefined ? 0 : a.desde);
+        return m.entregar(c, a.clave, a.material, a.cantidad, a.autor, a.desde === undefined ? 0 : a.desde, reserva);
       }
-      if (a.tipo === 'subir') return m.subir(c, a.clave, a.material, a.segundos, a.autor, a.metodo);
+      if (a.tipo === 'subir') return m.subir(c, a.clave, a.material, a.segundos, a.autor, a.metodo, reserva);
       return m.trabajar(c, a.clave, a.segundos, a.autor);
     }
     case 'decorar': return m.colocarDecoracion(a.pieza, a.x, a.y, a.z, a.rot);
@@ -102,13 +115,38 @@ function aplicarConstruccion(m, a) {
       for (const k of Object.keys(m.materiales)) m.materiales[k] += a.cantidad;
       return { ok: true };
     }
+    case 'sacar_arcon': {
+      if (!invs) return { ok: false, motivo: 'Aquí no hay arcón.' };
+      const tipo = Object.hasOwn(OBJETO_DE_MATERIAL, a.material) ? OBJETO_DE_MATERIAL[a.material] : null;
+      if (!tipo) return { ok: false, motivo: 'Eso no está en el arcón.' };
+      if (!Number.isInteger(a.cantidad) || a.cantidad < 1) return { ok: false, motivo: 'Cantidad no válida.' };
+      if (a.a !== undefined && !texto(a.a)) return { ok: false, motivo: 'Datos no válidos.' };
+      if ((m.materiales[a.material] || 0) < a.cantidad) return { ok: false, motivo: 'En el arcón no hay tanto.' };
+      // con ruta, justo ahí (como coger del suelo); sin ella, donde quepa
+      const inv = invs.de(a.autor), r = a.a !== undefined ? inv.coger(tipo, a.cantidad, a.a) : inv.meterDonde(tipo, a.cantidad);
+      if (!r.ok) return r;
+      m.materiales[a.material] -= a.cantidad;
+      return { ok: true, donde: r.donde };
+    }
+    case 'dejar_arcon': {
+      if (!invs) return { ok: false, motivo: 'Aquí no hay arcón.' };
+      const inv = invs.de(a.autor), b = inv.buscar(a.de);
+      if (b.motivo) return { ok: false, motivo: b.motivo };
+      const mat = b.cosa && Object.hasOwn(MATERIAL_DE_OBJETO, b.cosa.tipo) ? MATERIAL_DE_OBJETO[b.cosa.tipo] : null;
+      if (!mat) return { ok: false, motivo: b.cosa ? 'Eso no va en el arcón de materiales.' : 'Ahí no hay nada.' };
+      const r = inv.sacar(a.de, a.cantidad);
+      if (!r.ok) return r;
+      m.materiales[mat] = (m.materiales[mat] || 0) + r.cosa.n;
+      return { ok: true, material: mat, n: r.cosa.n };
+    }
   }
 }
 
 // Ejecuta una acción de construcción sobre el mundo y la anota. Devuelve lo mismo que el método del mundo.
-export function ejecutar(mundo, registro, accion) {
+// invs: los inventarios de los jugadores (Inventarios, inventario.js); sin ellos, las obras cobran del montón común.
+export function ejecutar(mundo, registro, accion, invs = null) {
   const fallo = forma(accion, CAMPOS_CONSTRUCCION);
-  const r = fallo ? { ok: false, motivo: fallo } : aplicarConstruccion(mundo, accion);
+  const r = fallo ? { ok: false, motivo: fallo } : aplicarConstruccion(mundo, accion, invs);
   registro.anotar(accion, r);
   return r;
 }

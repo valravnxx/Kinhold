@@ -5,7 +5,7 @@
 // de él se coge con las manos, al hombro o a un hueco, y en él se deja lo que sobra.
 // Todo lo que cambia pasa por accion(), que manda la acción con autor a la lógica pura (src/logica/inventario.js).
 // En PC se arrastra (o se toca lo que se quiere y luego dónde); en el móvil se toca y el panel va a pantalla completa.
-import { CATALOGO, pila } from '../logica/inventario.js';
+import { CATALOGO, pila, MATERIAL_DE_OBJETO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { nombrePrenda, rasgosPrenda } from '../logica/hechura.js';
 import { tr } from '../idioma.js';
 
@@ -14,14 +14,16 @@ const IZQUIERDA = [['ropa:cabeza', 'Cabeza'], ['ropa:sobre', 'Sobre todo'], ['ro
 const DERECHA = [['espalda', 'Espalda'], ['ropa:exterior', 'Exterior'], ['ropa:interior', 'Camisa'], ['cintura', 'Cintura'], ['ropa:pies', 'Pies']];
 export const CUADROS_EQUIPO = [...IZQUIERDA, ...DERECHA].map(([r]) => r);
 
-// Grupos del arcón de pruebas, sacados del catálogo.
+// Grupos del arcón de pruebas, sacados del catálogo. Los materiales de obra van aparte, contados: obras con lo que
+// llevas (roadmap, hito «Equipo y carga»): el arcón de pruebas tiene lo que antes era el montón común de la
+// construcción; de ahí se coge lo que se lleva a una obra, y el botón de rellenar lo llena.
 const GRUPOS = [
   ['Ropa', d => d.capa],
   ['Cinturones', d => d.lugar === 'cintura'],
   ['A la espalda', d => d.lugar === 'espalda'],
   ['Al hombro', d => d.lugar === 'hombro'],
   ['Herramientas y armas', d => !d.recurso && !d.lugar && !d.capa],
-  ['Recursos', d => d.recurso && d.tam !== 'E'],
+  ['Recursos', (d, k) => d.recurso && d.tam !== 'E' && !(k in MATERIAL_DE_OBJETO)],
 ];
 
 // Ropa cosida de muestra en el arcón (mientras no se cosa en el banco): cada una con su hechura y su tinte, que van con
@@ -39,7 +41,10 @@ export const MUESTRAS = [
 
 const NOMBRE_TAM = { P: 'pequeño', M: 'mediano', G: 'grande', E: 'enorme' };
 
-export function montarPanelInventario({ panel, boton, inventario, accion, alCambiar = () => {}, retrato = null }) {
+// accionArcon y materialesArcon (opcionales): la acción de construcción con autor (sacar_arcon, dejar_arcon) y lo que
+// hay en el arcón de materiales; sin ellos (en línea, hasta que el servidor lleve los inventarios), los materiales de
+// obra se cogen del arcón como los demás recursos.
+export function montarPanelInventario({ panel, boton, inventario, accion, alCambiar = () => {}, retrato = null, accionArcon = null, materialesArcon = null }) {
   let sel = null;          // { de: 'arcon', tipo } o { de: 'inv', ruta }
   let vista = null;        // ruta del contenedor cuyos huecos se ven
   let aviso = { txt: '', error: false };
@@ -53,7 +58,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
         <div class="inv-aviso"></div>
         <div class="inv-carga"></div>
       </div>
-    <div class="inv-arcon"><h3>${tr('Arcón de pruebas')}</h3><p class="inv-nota">${tr('Mientras no haya objetos en el suelo ni fabricación, el arcón hace de mundo: toca algo y luego dónde lo quieres, o cógelo con las manos; suéltalo aquí para dejarlo.')}</p><div class="inv-grupos"></div></div>
+    <div class="inv-arcon"><h3>${tr('Arcón de pruebas')}</h3><p class="inv-nota">${tr('Mientras no haya objetos en el suelo ni fabricación, el arcón hace de mundo: toca algo y luego dónde lo quieres, o cógelo con las manos; suéltalo aquí para dejarlo.')}</p><div class="inv-materiales"></div><div class="inv-grupos"></div></div>
     </div>`;
   const q = s => panel.querySelector(s);
   const inv = () => inventario();
@@ -67,8 +72,23 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   }
   function avisar(txt, error = false) { aviso = { txt, error }; }
 
+  // los materiales de obra, con su arcón: se cogen y se dejan con las acciones del arcón (cuentan lo que hay)
+  const conArcon = () => !!(accionArcon && materialesArcon && materialesArcon());
+  function deArcon(a) {
+    if (!conArcon()) return null;
+    if (a.tipo === 'coger' && a.objeto in MATERIAL_DE_OBJETO) {
+      const m = MATERIAL_DE_OBJETO[a.objeto], hay = materialesArcon()[m] || 0;
+      if (hay < 1) return { ok: false, motivo: 'En el arcón no queda: rellénalo.' };
+      return accionArcon({ tipo: 'sacar_arcon', material: m, cantidad: Math.min(a.cantidad, hay), a: a.a });
+    }
+    if (a.tipo === 'soltar') {
+      const c = inv().buscar(a.de).cosa;
+      if (c && c.tipo in MATERIAL_DE_OBJETO) return accionArcon({ tipo: 'dejar_arcon', de: a.de, cantidad: a.cantidad ?? c.n });
+    }
+    return null;
+  }
   function hacer(a) {
-    const r = accion(a);
+    const r = deArcon(a) || accion(a);
     if (r.ok) { avisar(''); alCambiar(); retratoHecho = false; } else avisar(motivo(r.motivo), true);   // con otra ropa, otro retrato
     return r;
   }
@@ -191,7 +211,15 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     a.textContent = aviso.txt; a.className = 'inv-aviso' + (aviso.error ? ' error' : '');
   }
 
+  function pintarMateriales() {
+    const caja = q('.inv-materiales');
+    if (!conArcon()) { caja.innerHTML = ''; return; }
+    const hay = materialesArcon();
+    caja.innerHTML = `<div class="inv-grupo"><h4>${tr('Materiales de obra')}</h4><div>${Object.entries(OBJETO_DE_MATERIAL).map(([m, k]) =>
+      `<button class="inv-objeto${sel && sel.de === 'arcon' && sel.tipo === k ? ' sel' : ''}" data-tipo="${k}" data-arcon="${m}" draggable="true" title="${tr(NOMBRE_TAM[CATALOGO[k].tam])}">${nombre(k)} <b>${hay[m] || 0}</b></button>`).join('')}</div></div>`;
+  }
   function pintarArcon() {
+    pintarMateriales();
     if (q('.inv-grupos').childElementCount) {
       for (const b of panel.querySelectorAll('.inv-objeto')) b.classList.toggle('sel', !!sel && sel.de === 'arcon' && sel.tipo === b.dataset.tipo && String(sel.muestra ?? '') === (b.dataset.muestra ?? ''));
       return;
@@ -199,7 +227,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     const ks = Object.keys(CATALOGO);
     const cosidas = `<div class="inv-grupo"><h4>${tr('Ropa cosida (muestras)')}</h4><div>${MUESTRAS.map((m, i) =>
       `<button class="inv-objeto" data-tipo="${m.tipo}" data-muestra="${i}" draggable="true" title="${tr(NOMBRE_TAM[CATALOGO[m.tipo].tam])}">${nombrePrenda(m.tipo, m.rasgos, tr)}</button>`).join('')}</div></div>`;
-    q('.inv-grupos').innerHTML = GRUPOS.map(([t, f]) => `<div class="inv-grupo"><h4>${tr(t)}</h4><div>${ks.filter(k => f(CATALOGO[k])).map(k =>
+    q('.inv-grupos').innerHTML = GRUPOS.map(([t, f]) => `<div class="inv-grupo"><h4>${tr(t)}</h4><div>${ks.filter(k => f(CATALOGO[k], k) || (t === 'Recursos' && !conArcon() && CATALOGO[k].tam !== 'E' && k in MATERIAL_DE_OBJETO)).map(k =>
       `<button class="inv-objeto" data-tipo="${k}" draggable="true" title="${tr(NOMBRE_TAM[CATALOGO[k].tam])}">${nombre(k)}</button>`).join('')}</div></div>`).join('') + cosidas;
   }
 

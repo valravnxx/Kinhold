@@ -1,6 +1,6 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, empalizadasDe, ALTO_ADARVE } from '../logica/construccion.js';
+import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto, moverHumo } from '../mundo/modelos.js';
@@ -14,7 +14,7 @@ import { crearDecorado } from '../mundo/decorado.js';
 import { crearVegetacionMundo } from '../mundo/vegetacion_mundo.js';
 import { vigilar, ofrecerGente } from '../mundo/rendimiento.js';
 import { conectarEnLinea } from './en_linea.js';
-import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO } from '../logica/inventario.js';
+import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
 import { dibujarRetrato } from './retrato.js';
 import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
@@ -70,8 +70,12 @@ let mundo = EN_LINEA ? new Mundo() : cargar();
 let registroAcciones = new RegistroAcciones();
 function accion(a) {
   if (enLinea) { const r = enLinea.red.accion(a); mundo = enLinea.red.mundo; return r; }
-  return ejecutar(mundo, registroAcciones, { autor: AUTOR_LOCAL, ...a });
+  // obras con lo que llevas: lo que se entrega sale del inventario del jugador, y el material se coge del arcón de pruebas
+  const r = ejecutar(mundo, registroAcciones, { autor: AUTOR_LOCAL, ...a }, inventarios);
+  if (r.ok && USA_INVENTARIO.has(a.tipo) && almacen) guardarInventarios(almacen, inventarios);
+  return r;
 }
+const USA_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon']);
 // Lo que lleva el jugador (inventario por huecos, src/logica/inventario.js): también por acciones con autor.
 // Cuenta para ir más despacio cargado; se ve y se cambia en el panel de inventario (src/juego/panel_inventario.js).
 const almacen = (() => { try { return localStorage; } catch (e) { return null; } })();
@@ -894,18 +898,26 @@ const hayQueSubir = (p, m) => plantaObra(p) > 0 && clasePeso(m) !== 'ligero';
 function usarObra(o) {
   const { c, key, p } = o;
   const faltan = mundo.faltaEntregar(p);
-  let entregado = false, escalera = null;
+  let entregado = false, escalera = null, noLlevas = false;
   for (const f of faltan) {
     if (hayQueSubir(p, f.m)) continue;
     const r = accion({ tipo: 'entregar', construccion: c.id, clave: key, material: f.m, cantidad: f.n, desde: pj.k });
     if (r.ok) { entregado = true; continue; }
     if (r.escalera) { escalera = r; continue; }
+    // obras con lo que llevas: lo que no llevas encima no se entrega (se coge del arcón de pruebas, en el inventario)
+    if (!enLinea && r.faltan) { noLlevas = true; continue; }
     const que = mundo.faltaEntregar(p).map(x => `${x.n} ${tr(MATERIALES[x.m]).toLowerCase()}`).join(', ');
     guardar(); actualizarUI();
     mostrarAviso(`${t('faltanMateriales')} ${t('leFalta')}: ${que}`, true);
     return;
   }
-  if (entregado) { guardar(); actualizarUI(); }
+  if (entregado) { guardar(); actualizarUI(); pintarLlevas(); panelInventario.pintar(); }
+  const faltaLigero = mundo.faltaEntregar(p).filter(f => !hayQueSubir(p, f.m));
+  if (noLlevas && faltaLigero.length) {
+    const que = faltaLigero.map(x => `${x.n} ${tr(MATERIALES[x.m]).toLowerCase()}`).join(', ');
+    mostrarAviso(`${entregado ? t('materialEntregado') + ' ' : ''}${t('leFalta')}: ${que}. ${t('llevaloEncima')}`, true);
+    return;
+  }
   estado.talando = null;
   const m = centroMundo(c, p); pj.rot = Math.atan2(m.x - pj.x, m.z - pj.z);
   const pesado = mundo.faltaEntregar(p).find(f => hayQueSubir(p, f.m)) || (p.obra.subida && { m: p.obra.subida.material });
@@ -1590,7 +1602,8 @@ function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : 
 
 function actualizarUI() {
   const m = $('materiales');
-  m.innerHTML = Object.entries(MATERIALES).map(([k, n]) => `<span><b>${mundo.materiales[k] ?? 0}</b> ${tr(n).toLowerCase()}</span>`).join('');
+  // lo que hay en el arcón de pruebas (en línea, el montón común del servidor, hasta que lleve los inventarios)
+  m.innerHTML = (enLinea ? '' : `<span>${tr('En el arcón:')}</span>`) + Object.entries(MATERIALES).map(([k, n]) => `<span><b>${mundo.materiales[k] ?? 0}</b> ${tr(n).toLowerCase()}</span>`).join('');
   for (const b of document.querySelectorAll('#modos button')) b.classList.toggle('sel', b.dataset.modo === estado.modo);
   $('barra').hidden = estado.modo !== 'construir';
   $('btnColocar').hidden = !(estado.modo === 'construir' && estado.esTactil);
@@ -1618,7 +1631,9 @@ $('btnUsar').onclick = usar;
 $('btnConfirmar').onclick = confirmarDesmontaje;
 $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltado(); estado.pendienteDesmontar = null; mostrarAviso(''); };
 // Panel de inventario (hito 2): lo que llevas encima y un arcón de pruebas para coger equipo.
+// El arcón de pruebas tiene también los materiales de obra (el montón común de antes): se cogen con acciones del mundo.
 const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario,
+  accionArcon: (a) => { const r = accion(a); if (r.ok) { guardar(); actualizarUI(); } return r; }, materialesArcon: () => enLinea ? null : mundo.materiales,
   alCambiar: () => { pintarLlevas(); vestir(); }, retrato: (lienzo) => dibujarRetrato(renderer, jugador.mh, lienzo) });
 // El personaje lleva puesto lo que dice el inventario (valravnx, 29 oct: el inventario es el equipo). La ropa elegida
 // en el visor de personaje entra en el inventario una vez por cada elección; después manda el inventario.
@@ -1698,7 +1713,7 @@ function cambiarHombro(de) {
 pintarLlevas();
 // lo que no cupo al cargar el inventario (por ejemplo, si un contenedor tiene ahora menos huecos) cae a tus pies
 if (sueloObjetos.dejarApartado(inventario(), AUTOR_LOCAL, pj.x, pj.z)) { if (almacen) guardarInventarios(almacen, inventarios); }
-$('btnRellenar').onclick = () => { accion({ tipo: 'rellenar', cantidad: 50 }); guardar(); actualizarUI(); evaluarColocacion(); };
+$('btnRellenar').onclick = () => { accion({ tipo: 'rellenar', cantidad: 50 }); guardar(); actualizarUI(); evaluarColocacion(); panelInventario.pintar(); }; // llena el arcón de pruebas
 {
   let armado = false, tmr = null;
   $('btnReiniciar').onclick = () => {
@@ -1822,6 +1837,30 @@ window.__kinhold = {
     guardar(); reconstruir();
   },
   obraCercana() { const o = obraCercana(); return o && { c: o.c.id, key: o.key }; },
+  // atajo de prueba (obras con lo que llevas): coge del arcón de pruebas, con acciones, lo que le falta a la obra
+  // cercana (lo pesado de una obra en alto, de uno en uno, y dos varas y una cuerda para rodarlo); si no llevas
+  // mochila ni cinturón, se pone una mochila de bastidor y un cinto con anillas del arcón. Sin obra cerca, nada.
+  llevar() {
+    const o = obraCercana(); if (!o || enLinea) return null;
+    const inv = inventario();
+    if (!inv.lugares.espalda) accionInventario({ tipo: 'coger', objeto: 'mochila_bastidor', cantidad: 1, a: 'espalda' });
+    if (!inv.lugares.cintura) accionInventario({ tipo: 'coger', objeto: 'cinto_anillas', cantidad: 1, a: 'cintura' });
+    const tomar = (m, n, a) => { for (let k = n; k >= 1; k--) if (accion({ tipo: 'sacar_arcon', material: m, cantidad: k, a }).ok) return k; return 0; };
+    const cogido = {};
+    for (const f of mundo.faltaEntregar(o.p)) {
+      if (hayQueSubir(o.p, f.m)) {
+        if (inv.cuantos(OBJETO_DE_MATERIAL[f.m]) < 1) cogido[f.m] = tomar(f.m, 1, f.m === 'tronco' ? 'hombro' : undefined);
+        for (const [m, n] of Object.entries(VARAS_PARA_RODAR)) { const q = n - inv.cuantos(OBJETO_DE_MATERIAL[m]); if (q > 0) cogido[m] = (cogido[m] || 0) + tomar(m, q); }
+      } else {
+        // lo que le falta entero, aunque ya lleves algo (lo que sobre se queda encima); un tronco, al hombro
+        let n = f.n, h = 0;
+        if (f.m === 'tronco' && !inv.lugares.hombro) h = tomar(f.m, 1, 'hombro');
+        cogido[f.m] = h + (n - h > 0 ? tomar(f.m, n - h) : 0);
+      }
+    }
+    guardar(); actualizarUI(); pintarLlevas(); panelInventario.pintar();
+    return cogido;
+  },
   get obrando() { return estado.obrando; },
   get rampa() { return rampa && { t: rampa.t, meta: rampa.meta, visible: !!rampa.g.parent, tipo: rampa.tipo || 'varas', yTronco: rampa.tronco.position.y, yMoton: rampa.tipo === 'polipasto' ? mallaDe(rampa.c, rampa.qkey)?.getObjectByName('moton_bajo')?.position.y : undefined, torno: !!(rampa.torno && rampa.torno.parent) }; },
   // atajo de prueba para las capturas: deja la subida quieta a medio camino (sin tarjeta gráfica, un rato llega a 5 s)

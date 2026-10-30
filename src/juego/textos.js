@@ -31,6 +31,7 @@ const ES = {
   marcoPuesto: 'Marco puesto. Acércate y pulsa Usar (F) para llevarle el material y construirla.',
   leFalta: 'Le falta',
   materialEntregado: 'Material entregado.',
+  llevaloEncima: 'Llévalo encima: cógelo del arcón de pruebas (Inventario).',
   construyendo: 'Construyendo:',
   obraTerminada: 'terminada.',
   dejasObra: 'Dejas la obra (vuelve con Usar).',

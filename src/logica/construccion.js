@@ -388,7 +388,13 @@ export class Mundo {
   // Lleva material a una obra. Se entrega como mucho lo que le falta; queda anotado quién lo entrega.
   // desde: planta en la que está quien lo lleva. Si la obra está en alto, lo ligero se sube a mano por la escalera
   // (hay que estar en su planta) y lo pesado no se entrega así: se sube con subir().
-  entregar(c, key, material, cantidad, autor, desde = 0) {
+  // reserva: de dónde sale el material. Por defecto, el montón común del mundo (el arcón de pruebas; en línea, hasta
+  // que el servidor lleve los inventarios); con una reserva de lo que lleva el autor (acciones.js), sale de lo que
+  // lleva encima y se entrega lo que lleve, aunque no sea todo lo que falta.
+  reservaComun() {
+    return { hay: m => this.materiales[m] || 0, gastar: (m, n) => { this.materiales[m] -= n; }, parcial: false };
+  }
+  entregar(c, key, material, cantidad, autor, desde = 0, reserva = this.reservaComun()) {
     const p = c.piezas.get(key);
     if (!p) return { ok: false, motivo: 'No existe.' };
     if (!p.obra) return { ok: false, motivo: 'Esa pieza ya está terminada.' };
@@ -399,9 +405,11 @@ export class Mundo {
     if (planta > 0 && clasePeso(material) === 'muy_pesado') return { ok: false, motivo: 'Lo muy pesado solo se sube con un polipasto con torno, entre dos.', subir: true };
     if (planta > 0 && clasePeso(material) !== 'ligero') return { ok: false, motivo: 'Lo pesado no se sube a mano: entre dos, con una polea, o rodándolo por dos varas con una cuerda.', subir: true };
     if (planta > 0 && !(desde >= planta)) return { ok: false, motivo: 'Súbelo a mano por la escalera o el andamio hasta la planta de la obra.', escalera: true };
-    const n = Math.min(cantidad, falta.n);
-    if ((this.materiales[material] || 0) < n) return { ok: false, motivo: 'Faltan materiales.', faltan: [{ m: material, n, hay: this.materiales[material] || 0 }] };
-    this.materiales[material] -= n;
+    let n = Math.min(cantidad, falta.n);
+    const hay = reserva.hay(material);
+    if (reserva.parcial && hay > 0) n = Math.min(n, hay);
+    if (hay < n) return { ok: false, motivo: reserva.parcial ? 'No llevas ese material.' : 'Faltan materiales.', faltan: [{ m: material, n, hay }] };
+    reserva.gastar(material, n);
     p.obra.entregado[material] = (p.obra.entregado[material] || 0) + n;
     p.obra.aportes.push({ autor, entrega: material, n });
     return { ok: true, entregado: n, falta: this.faltaEntregar(p) };
@@ -409,7 +417,7 @@ export class Mundo {
   // Un rato subiendo una unidad de material pesado hasta una obra en alto. metodo: 'entre_dos' (cada uno coge de un
   // lado: hasta que no ayuda otro, no sube) o 'varas' (rodándolo por dos varas con una cuerda: puede una sola persona,
   // más despacio). Los segundos de todos se suman; al llegar al trabajo de la subida, la unidad queda entregada.
-  subir(c, key, material, segundos, autor, metodo) {
+  subir(c, key, material, segundos, autor, metodo, reserva = this.reservaComun()) {
     const p = c.piezas.get(key);
     if (!p) return { ok: false, motivo: 'No existe.' };
     if (!p.obra) return { ok: false, motivo: 'Esa pieza ya está terminada.' };
@@ -423,12 +431,12 @@ export class Mundo {
     const s = p.obra.subida;
     if (s && s.material !== material) return { ok: false, motivo: 'Ya se está subiendo otro material a esta obra.' };
     if (!s && !this.faltaEntregar(p).some(x => x.m === material)) return { ok: false, motivo: 'A esa obra no le falta ese material.' };
-    if (metodo === 'varas' && !this.puedePagar(VARAS_PARA_RODAR)) return { ok: false, motivo: 'Para rodarlo hacen falta dos varas y una cuerda.' };
+    if (metodo === 'varas' && !Object.entries(VARAS_PARA_RODAR).every(([m, n]) => reserva.hay(m) >= n)) return { ok: false, motivo: 'Para rodarlo hacen falta dos varas y una cuerda.' };
     if (metodo === 'polea' && !poleaPara(c, p)) return { ok: false, motivo: 'Para subirlo con polea hace falta una polea en una viga de esta construcción, a la altura de la obra o más arriba.' };
     if (metodo === 'polipasto' && !polipastoPara(c, p)) return { ok: false, motivo: 'Para subirlo con polipasto hace falta un polipasto en una viga de esta construcción, a la altura de la obra o más arriba.' };
     if (!s) { // la unidad sale de la reserva al empezar a subirla
-      if ((this.materiales[material] || 0) < 1) return { ok: false, motivo: 'Faltan materiales.', faltan: [{ m: material, n: 1, hay: this.materiales[material] || 0 }] };
-      this.materiales[material] -= 1;
+      if (reserva.hay(material) < 1) return { ok: false, motivo: reserva.parcial ? 'No llevas ese material.' : 'Faltan materiales.', faltan: [{ m: material, n: 1, hay: reserva.hay(material) }] };
+      reserva.gastar(material, 1);
       p.obra.subida = { material, varas: false, polea: false, seg: {} };
     }
     const sub = p.obra.subida;

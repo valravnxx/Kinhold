@@ -81,6 +81,10 @@ export const CATALOGO = {
   lena: R('Leña', 'M'),
   // de la tierra
   bloque_piedra: R('Bloque de piedra en bruto', 'E'), mineral_hierro: R('Mineral de hierro', 'M'),
+  // materiales de construcción (los que piden las obras y no salen de arriba): las varas, la cuerda, las tablas, los
+  // clavos, las barras de hierro y las tejas. Tamaños provisionales (anotados en el diario y en el registro).
+  vara: R('Vara', 'M'), cuerda: R('Cuerda', 'P'), tabla: R('Tabla', 'M'), clavo: R('Clavo', 'P'),
+  barra_hierro: R('Barra de hierro', 'M'), teja: R('Teja', 'P'),
   // de los animales, el campo y el agua
   piel: R('Piel', 'M'), tela: R('Tela', 'M'), paja: R('Haz de paja', 'M'), pescado: R('Pescado', 'M'),
   grano: R('Grano', 'P'), harina: R('Harina', 'P'), agua: R('Agua', 'P'),
@@ -116,6 +120,14 @@ export const CATALOGO = {
   // ropa: sale de los datos de cada prenda (src/logica/prendas.js), con su capa. Toda es mediana.
   ...Object.fromEntries(Object.entries(PRENDAS).map(([k, p]) => [k, { nombre: p.nombre, tam: 'M', capa: p.capa }])),
 };
+
+// Obras con lo que llevas (roadmap, hito «Equipo y carga»): cada material de construcción (src/logica/piezas.js) es
+// un objeto del catálogo que se lleva encima. El tronco de las obras es el tronco corto (sale de tronzar).
+export const OBJETO_DE_MATERIAL = {
+  piedra: 'piedra', tronco: 'tronco_corto', vara: 'vara', barro: 'barro', paja: 'paja', cuerda: 'cuerda',
+  tabla: 'tabla', clavo: 'clavo', hierro: 'barra_hierro', teja: 'teja',
+};
+export const MATERIAL_DE_OBJETO = Object.fromEntries(Object.entries(OBJETO_DE_MATERIAL).map(([m, o]) => [o, m]));
 
 // La caja de herramientas admite todo lo que sea herramienta en el catálogo.
 for (const d of Object.values(CATALOGO)) if (d.admiteHerramientas) d.admite = Object.keys(CATALOGO).filter(k => CATALOGO[k].herramienta);
@@ -352,6 +364,31 @@ export class Inventario {
     const ver = c => { if (!c) return; if (c.tipo === tipo) t += c.n; if (c.dentro) c.dentro.forEach(ver); };
     Object.values(this.lugares).forEach(ver);
     return t;
+  }
+
+  // Las rutas donde hay algo de un tipo: las manos, lo del hombro y la espalda, y los huecos de los contenedores.
+  rutasCon(tipo) {
+    const res = [];
+    const ver = (c, r) => {
+      if (!c) return;
+      if (c.tipo === tipo) res.push(r);
+      if (c.dentro) c.dentro.forEach((x, i) => ver(x, r + '/' + i));
+    };
+    for (const l of [...MANOS, 'hombro', 'cintura', 'espalda']) ver(this.lugares[l], l);
+    return res;
+  }
+
+  // Gasta n unidades de un tipo de lo que llevas, de donde estén (primero las manos y el hombro). Todo o nada.
+  gastar(tipo, n) {
+    if (!Number.isInteger(n) || n < 1) return { ok: false, motivo: 'Cantidad no válida.' };
+    if (this.cuantos(tipo) < n) return { ok: false, motivo: 'No llevas tanto.' };
+    let queda = n;
+    for (const r of this.rutasCon(tipo)) {
+      if (!queda) break;
+      const m = Math.min(queda, this.buscar(r).cosa.n);
+      this.sacar(r, m); queda -= m;
+    }
+    return { ok: true };
   }
 
   // Los huecos de cintura que hay ahora (sin cinturón, ninguno).
