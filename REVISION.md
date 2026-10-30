@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 30 oct 2026 (20:30 UTC) — por el chat (carril B): el servidor en línea
+valravnx: «pásame todo para hacer lo de publicar en línea de nuevo». → Se le pasan por el chat los pasos de `servidor/nube/LEEME.md` y el cloud config para crear el servidor de prueba en Hetzner. La decisión pendiente del servidor sigue abierta hasta que diga si la dirección funciona en los dos aparatos.
+
 ### 30 oct 2026 — por el chat: las pruebas en línea
 valravnx, a si publicar con «jugar en línea» y «duelo en línea» fallando (fallan en main y en todas las ramas desde la salida al azar): «aún no está el servidor, por eso falla». → Mientras no esté el servidor de verdad (fase 2), esos dos grupos no paran la publicación; los demás, sí. Anotado en CLAUDE.md.
 
