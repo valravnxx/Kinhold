@@ -29,6 +29,7 @@ servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs')
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
 DIRECCION = f'ws://127.0.0.1:{PUERTO}'
+URL += f'?servidor={DIRECCION}'   # siempre en línea: la dirección, en la de la página
 
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 fallos = []
@@ -74,12 +75,11 @@ try:
             if not movil:
                 pg.evaluate("localStorage.setItem('kinhold_personaje_v2', JSON.stringify({ sexo: 'mujer', capas: { mujer: ['vestido'] }, aspecto: { mujer: { piel: 'oscura', ojos: 'azules', formas: { altura: -1, musculo: 0.7 } } } }))")
                 pg.evaluate("localStorage.setItem('kinhold_combate_v2', JSON.stringify({ armadura: 'gambeson' }))")
-            pg.evaluate(f"localStorage.setItem('kinhold_servidor', '{DIRECCION}')")
             pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
-            comprobar(f'{nombre}: el menú tiene «Duelo en línea»', 'modo=duelo' in (pg.get_attribute('#demoDueloEnLinea', 'href') or '') and 'enlinea=1' in pg.get_attribute('#demoDueloEnLinea', 'href'))
-            t = tapado(pg, '#demoDueloEnLinea'); comprobar(f'{nombre}: «Duelo en línea» se ve entero', t == '', t)
+            comprobar(f'{nombre}: «Duelo» del menú va en línea', 'modo=duelo' in (pg.get_attribute('[data-ir=duelo]', 'href') or '') and 'enlinea=1' in pg.get_attribute('[data-ir=duelo]', 'href'))
+            t = tapado(pg, '[data-ir=duelo]'); comprobar(f'{nombre}: «Duelo» se ve entero', t == '', t)
             captura(pg, f'{SALIDA}/{nombre}_1_menu.png')
-            pg.click('#demoDueloEnLinea'); pg.wait_for_load_state('load')
+            pg.click('[data-ir=duelo]'); pg.wait_for_load_state('load')
             comprobar(f'{nombre}: el duelo carga', esperar(pg, 'window.__demo && window.__demo.listo', 90000), str(err[:2]))
             comprobar(f'{nombre}: se conecta al servidor', esperar(pg, f"{D}.red && {D}.red.estado === 'conectado'"))
             comprobar(f'{nombre}: en línea no están las opciones del rival', pg.evaluate("['selModo','selArmaRival','selArmaduraRival'].every(i => document.getElementById(i).hidden)"))
@@ -195,7 +195,7 @@ try:
         K = 'window.__kinhold'
         for nombre, (pg, _) in paginas.items():
             pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
-            pg.click('#demoEnLinea'); pg.wait_for_load_state('load')
+            pg.click('[data-ir=construir]'); pg.wait_for_load_state('load')
             comprobar(f'{nombre}: entra a construir en línea', esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado'", 90000))
         comprobar('sigue siendo el mismo jugador que en el duelo', A.evaluate(f"{K}.enLinea.red.yo") == yoA and B.evaluate(f"{K}.enLinea.red.yo") == yoB)
         comprobar('PC ve al móvil construyendo', esperar(A, f"{K}.enLinea.remotos.size === 1", 20000), str(A.evaluate(f"{K}.enLinea.remotos.size")))
@@ -204,7 +204,7 @@ try:
         for nombre, (pg, _) in paginas.items(): captura(pg, f'{SALIDA}/{nombre}_7_construir_tras_duelo.png')
         # PC vuelve al duelo para lo que sigue
         A.goto(URL); A.wait_for_function('window.__demo && window.__demo.listo')
-        A.click('#demoDueloEnLinea'); A.wait_for_load_state('load')
+        A.click('[data-ir=duelo]'); A.wait_for_load_state('load')
         comprobar('PC vuelve al duelo', esperar(A, f"window.__demo && window.__demo.listo && {D}.red && {D}.red.estado === 'conectado'", 90000))
 
         print('El servidor se apaga')
