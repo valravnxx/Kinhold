@@ -166,9 +166,19 @@ with sync_playwright() as p:
             comprobar('andando hacia el mar, avanza (ya no le para la orilla)', e['andado'] > 0.5, json.dumps(e))
             # mar adentro (donde cubre más de 4 m): nada con la cabeza fuera, el aguante baja y se ve su anillo
             # (en esta máquina sin tarjeta gráfica el juego va a pocos fotogramas: andando no se llega; se le lleva)
-            pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}, l = Math.hypot(mx - tx, mz - tz) || 1; let d = 0;
-              while (d < 4000 && !(k.mundoJ.sobreMar(mx + (mx - tx) / l * d, mz + (mz - tz) / l * d) < -4 && k.mundoJ.sobreMar(mx + (mx - tx) / l * (d + 30), mz + (mz - tz) / l * (d + 30)) < -4)) d += 4;
-              d += 15; k.pj.x = mx + (mx - tx) / l * d; k.pj.z = mz + (mz - tz) / l * d; }}""", c['tierra'] + c['mar'])
+            # (primero mar adentro en línea recta; si por ahí es una ría o una bahía somera, en otros rumbos desde la orilla:
+            # la salida es al azar y la costa que se encuentra cambia de una vez a otra)
+            hondo = pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}, a0 = Math.atan2(mz - tz, mx - tx);
+              const hondo = (x, z) => k.mundoJ.dentro(x, z) && k.mundoJ.sobreMar(x, z) < -4;
+              for (let r = 0; r < 16; r++) {{ const a = a0 + (r % 2 ? 1 : -1) * Math.ceil(r / 2) * Math.PI / 8, ux = Math.cos(a), uz = Math.sin(a);
+                for (let d = 0; d < 4000; d += 4) {{
+                  const x = mx + ux * d, z = mz + uz * d;
+                  if (!k.mundoJ.dentro(x, z)) break;
+                  if (hondo(x, z) && hondo(x + ux * 15, z + uz * 15) && hondo(x + ux * 30, z + uz * 30)) {{ k.pj.x = x + ux * 15; k.pj.z = z + uz * 15; return [k.pj.x, k.pj.z, r]; }}
+                }}
+              }}
+              return null; }}""", c['tierra'] + c['mar'])
+            print('  mar hondo:', hondo)
             try: pg.wait_for_function(f'{K}.mundoListo && {K}.mundoJ.agua.cerca({K}.pj.x, {K}.pj.z)', timeout=300000)
             except Exception: pass
             pg.keyboard.down('w'); pg.wait_for_timeout(3000); pg.keyboard.up('w'); pg.wait_for_timeout(500)
