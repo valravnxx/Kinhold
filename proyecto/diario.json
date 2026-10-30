@@ -2745,5 +2745,20 @@
   "pruebas": "En la nube, la batería entera: 18 de 20 grupos correctos (la demo en el mundo, la tala, la demo única y los demás); jugar en línea y duelo en línea fallan, como en main. Después, con lo que crece aligerado, repetidos la demo en el mundo (bien) y los dos en línea dos veces más (la última con las esperas nuevas): quedan los fallos de la reconexión. No comprobado: los demás grupos con la versión aligerada. Prueba nueva de lo que crece rota a propósito (MUTAR=1) y la del mundo con MUTAR=2 (en local): fallan. Capturas de PC y móvil miradas (salida, paisaje, bosque).",
   "capturas": "",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-30T13:28:46+00:00",
+  "fin": "2026-10-30T14:47:33+00:00",
+  "titulo": "Hito de arte: revisión completa, sin terminar (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Batería entera en la nube (20 grupos, 61 min): 18 correctos; el mapa del mundo pasó entero pero no pudo devolver las capturas (error 500 de GitHub al subirlas); falla el duelo en línea.",
+   "El duelo en línea falla dos veces seguidas en lo mismo: al pasar del duelo a construir en la misma pestaña, no sigue siendo el mismo jugador. Ya fallaba de vez en cuando en otras ramas; no es de este hito ni se ha encontrado la causa. Sin arreglar, el hito no pasa a revisión.",
+   "Capturas del personaje miradas en PC y móvil (cuerpo, cara, capa de espalda, cota, animaciones extra y el juego). Aún mal: el nacimiento del pelo corta en seco, como un casquete; las cejas son trazos finos que flotan; la capa de espalda sale casi negra y sin pliegues a la vista; con la toca asoma una mancha de piel rota entre la toca y el cuello; al picar no lleva pico; en el móvil el panel tapa medio personaje.",
+   "La tarea sigue a medias: la retoma otra sesión desde la rama trabajo/20261030-1329b."
+  ],
+  "pruebas": "En la nube: 18 de 20 grupos correctos y el mapa del mundo correcto sin capturas; el duelo en línea falla (repetido, falla igual)",
+  "capturas": "",
+  "estado": "fallo"
  }
 ]
