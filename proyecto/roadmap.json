@@ -430,7 +430,9 @@
     },
     {
      "nombre": "Los trozos se hacen en un hilo aparte (Web Worker): alturas, colores y sombreado del suelo fuera del hilo de dibujo, unos pocos trozos por fotograma, y al andar el juego no se para. Medir el fotograma más largo al cruzar bordes, en PC y móvil",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-30T00:24:27+00:00",
+     "rama": "trabajo/20261030-0024"
     },
     {
      "nombre": "La vista «Como en el juego» del mapa con trozos: fuera el trozo único de 240 m que se rehacía entero (de 236 a 935 ms parado, medido el 29 oct) y el truco de hundir el suelo de lejos; menos triángulos lejos en el móvil. Medido en PC y móvil (fotogramas, memoria, triángulos, llamadas de dibujo)",
