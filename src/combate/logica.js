@@ -115,6 +115,10 @@ export const T = {
   temblorDesde: 2.5,
   temblorRumbo: 0.6,
   temblorElevacion: 0.15,
+  // Modo direccional (valravnx, 30 oct: el combate en el mundo): el golpe se carga mientras se mantiene el botón.
+  // Soltar pronto lo lanza al llegar a «cargaMinima» de la preparación (sale antes, más flojo); a la preparación
+  // entera, con toda su fuerza. Mantenerlo cargado del todo cansa. Desde que se suelta hasta el impacto, «vuelo».
+  cargaMinima: 0.6, fuerzaMinima: 0.8, vuelo: 0.15, cansancioCargado: 4,
 };
 
 // ---------- Azar con semilla (vive en src/logica/azar.js; se sigue ofreciendo desde aquí) ----------
@@ -134,6 +138,7 @@ export class Luchador {
     this.accion = 'libre'; this.tAccion = 0; this.duracion = 0;
     this.linea = null; this.calidad = 1;
     this.inicioAtaque = -1; this.prepTotal = 0; this.imparable = false; this.finta = false;
+    this.soltado = true; this.soltarEn = null;   // modo direccional: si ya se soltó el botón y a qué carga se suelta sola
     this.bloqueando = false; this.lineaBloqueo = 'alto'; this.tBloqueo = 0;
     this.guardia = 'vom_tag'; this.contraHasta = -1;
     this.heridas = []; this.sangre = 100; this.cansancio = 0;
@@ -156,7 +161,7 @@ export class Luchador {
   velocidad(corriendo = false) {
     if (this.fuera) return 0;
     let v = (corriendo && this.cansancio < 90 ? 6 : 3.6) * this.factorPiernas();
-    if (this.accion === 'preparando' || this.accion === 'golpeando') v *= 0.45;
+    if (this.accion === 'preparando' || this.accion === 'lanzando' || this.accion === 'golpeando') v *= 0.45;
     if (this.accion === 'tensando') v *= 0.5;
     if (this.bloqueando) v *= 0.6;
     if (this.accion === 'aturdido') v *= 0.2;
@@ -181,6 +186,7 @@ export class Luchador {
   // Atacar por una línea. Si ya estás preparando otro golpe, cambiar de línea es una finta.
   atacar(linea) {
     if (!LINEAS.includes(linea) || this.def.tipo !== 'cuerpo' || this.fuera) return false;
+    if (this.modo === 'direccional') return this.accion === 'preparando' && !this.soltado ? this.cambiarLinea(linea) : (this.cargar(linea) && this.descargar());
     if (this.accion === 'preparando' && this.modo !== 'guardias') {
       if (linea === this.linea || this.tAccion / this.duracion > T.limiteFinta || this.cansancio >= T.guardiaRota) return false;
       this.linea = linea;
@@ -203,12 +209,58 @@ export class Luchador {
     this.cansancio = Math.min(100, this.cansancio + this.def.cansancio);
     return true;
   }
-  // Parar: en la defensa por capas no hace falta elegir línea.
+  // ---- Modo direccional ----
+  // Empezar a cargar un golpe por una línea (se mantiene el botón). soltarEn: carga (0..1) a la que se suelta sola
+  // (para la máquina); sin ella, hasta que se llame a descargar().
+  cargar(linea, soltarEn = null) {
+    if (this.modo !== 'direccional' || !LINEAS.includes(linea) || this.def.tipo !== 'cuerpo') return false;
+    if (!this.puedeActuar() || this.cansancio >= 100) return false;
+    this.bloqueando = false;
+    this.imparable = this.puedeContraatacar();
+    this.linea = linea; this.finta = false; this.soltado = false; this.soltarEn = soltarEn; this.calidad = 1;
+    this.accion = 'preparando'; this.tAccion = 0;
+    this.duracion = this.duracionPreparacion(linea);
+    this.prepTotal = this.duracion;
+    this.inicioAtaque = this.reloj;
+    this.contraHasta = -1;
+    this.cansancio = Math.min(100, this.cansancio + this.def.cansancio);
+    return true;
+  }
+  // Cambiar de dirección sin soltar el botón: es una finta (cuesta aliento y la carga vuelve a empezar casi de cero).
+  cambiarLinea(linea) {
+    if (this.modo !== 'direccional' || this.accion !== 'preparando' || this.soltado || !LINEAS.includes(linea) || linea === this.linea) return false;
+    if (this.cansancio >= T.guardiaRota) return false;
+    this.linea = linea;
+    this.duracion = this.duracionPreparacion(linea);
+    this.prepTotal = this.duracion;
+    this.tAccion = Math.min(this.tAccion, this.duracion * 0.35);
+    this.finta = true;
+    this.cansancio = Math.min(100, this.cansancio + T.costeFinta);
+    return true;
+  }
+  // Fracción de la carga (0..1 al llegar a la preparación entera)
+  carga() { return this.accion === 'preparando' ? Math.min(1, this.tAccion / this.duracion) : 0; }
+  // Soltar el botón: el golpe sale ya (o al llegar a la carga mínima) con la fuerza de lo cargado.
+  descargar() {
+    if (this.modo !== 'direccional' || this.accion !== 'preparando' || this.soltado) return false;
+    this.soltado = true;
+    if (this.tAccion >= this.duracion * T.cargaMinima) this.lanzar();
+    return true;
+  }
+  lanzar() {
+    const c = Math.min(1, Math.max(T.cargaMinima, this.tAccion / this.duracion));
+    this.calidad = T.fuerzaMinima + (1 - T.fuerzaMinima) * (c - T.cargaMinima) / (1 - T.cargaMinima);
+    this.accion = 'lanzando'; this.tAccion = 0; this.duracion = T.vuelo;
+  }
+
+  // Parar. Por capas no hace falta elegir línea; en el modo direccional se para por un lado (el lado de la pantalla
+  // por el que viene el golpe), se puede cambiar de lado sin soltar y la ventana de parada perfecta empieza de nuevo.
   bloquear(activo, linea) {
     if (this.def.tipo !== 'cuerpo') { this.bloqueando = false; return; }
     if (this.modo === 'guardias') { this.bloqueando = false; return; }
     if (activo && (this.accion !== 'libre' || this.fuera)) return;
     if (activo && !this.bloqueando) this.tBloqueo = 0;
+    if (activo && this.modo === 'direccional' && this.bloqueando && linea && linea !== this.lineaBloqueo) this.tBloqueo = 0;
     this.bloqueando = activo;
     if (linea) this.lineaBloqueo = linea;
   }
@@ -222,6 +274,7 @@ export class Luchador {
   cubre(linea) {
     if (this.fuera) return false;
     if (this.modo === 'guardias') return this.accion !== 'cambioGuardia' && this.accion !== 'aturdido' && GUARDIAS[this.guardia].cubre.includes(linea);
+    if (this.modo === 'direccional') return this.bloqueando && this.accion === 'libre' && this.lineaBloqueo === ESPEJO[linea];
     return this.bloqueando && this.accion === 'libre';
   }
 
@@ -289,7 +342,7 @@ export class Luchador {
   aturdir(s) {
     if (this.fuera) return;
     if (this.accion === 'curando') this.cancelado = 'herido';
-    this.accion = 'aturdido'; this.tAccion = 0; this.duracion = s; this.bloqueando = false; this.imparable = false;
+    this.accion = 'aturdido'; this.tAccion = 0; this.duracion = s; this.bloqueando = false; this.imparable = false; this.soltado = true;
   }
   recibirHerida(zona, sev, tipo) {
     const gravedad = gravedadDe(sev);
@@ -300,7 +353,7 @@ export class Luchador {
     if (this.accion === 'curando') this.cortarCura('herido');   // te hieren mientras curas: la cura se pierde
     if (zona === 'cabeza' && gravedad === 'muy grave') this.caer(tipo === 'contundente' ? 'Inconsciente por un golpe en la cabeza' : 'Herida mortal en la cabeza');
     else if (tipo === 'contundente' && gravedad !== 'leve') this.aturdir(zona === 'cabeza' ? 1.5 : 0.6);
-    else if (gravedad !== 'leve' && (this.accion === 'preparando' || this.accion === 'tensando')) this.aturdir(0.4);
+    else if (gravedad !== 'leve' && (this.accion === 'preparando' || this.accion === 'lanzando' || this.accion === 'tensando')) this.aturdir(0.4);
     return h;
   }
   caer(motivo) { this.fuera = true; this.motivoFuera = motivo; this.accion = 'caido'; this.bloqueando = false; }
@@ -327,6 +380,15 @@ export class Luchador {
     this.tAccion += dt;
     switch (this.accion) {
       case 'preparando':
+        if (this.modo === 'direccional') {
+          if (this.soltarEn != null && !this.soltado && this.tAccion >= this.duracion * this.soltarEn) this.soltado = true;
+          if (this.soltado && this.tAccion >= this.duracion * T.cargaMinima) this.lanzar();
+          else if (this.tAccion >= this.duracion) this.cansancio = Math.min(100, this.cansancio + T.cansancioCargado * dt); // cargado del todo
+          break;
+        }
+        if (this.tAccion >= this.duracion) { this.accion = 'golpeando'; this.tAccion = 0; this.duracion = this.def.golpe; ev.push({ tipo: 'impacto', linea: this.linea }); }
+        break;
+      case 'lanzando':
         if (this.tAccion >= this.duracion) { this.accion = 'golpeando'; this.tAccion = 0; this.duracion = this.def.golpe; ev.push({ tipo: 'impacto', linea: this.linea }); }
         break;
       case 'golpeando':
@@ -366,9 +428,16 @@ export class Luchador {
     if (sangrando <= SANGRA) this.sangre = Math.min(100, this.sangre + RECUPERAR_SANGRE * dt);
   }
   // Fracción de la preparación en curso (0..1), o null si no está preparando
-  progreso() { return this.accion === 'preparando' ? this.tAccion / this.duracion : null; }
-  // Segundos hasta el impacto del golpe que prepara
-  hastaImpacto() { return this.accion === 'preparando' ? this.duracion - this.tAccion : Infinity; }
+  progreso() { return this.accion === 'preparando' ? Math.min(1, this.tAccion / this.duracion) : this.accion === 'lanzando' ? 1 : null; }
+  // Segundos hasta el impacto del golpe que prepara (en el modo direccional, mientras se mantiene cargado no se sabe)
+  hastaImpacto() {
+    if (this.accion === 'lanzando') return this.duracion - this.tAccion;
+    if (this.accion !== 'preparando') return Infinity;
+    if (this.modo !== 'direccional') return this.duracion - this.tAccion;
+    return this.soltado ? Math.max(0, this.duracion * T.cargaMinima - this.tAccion) + T.vuelo : Infinity;
+  }
+  // Ataca ahora (preparando, lanzando): para quien defiende
+  atacando() { return this.accion === 'preparando' || this.accion === 'lanzando'; }
 }
 
 // ---------- Geometría ----------
@@ -549,20 +618,32 @@ export class IA {
     const alcance = b.def.alcance;
 
     // ---- defensa ----
-    if (rival.accion === 'preparando') {
-      if (this.visto !== rival.inicioAtaque) { this.visto = rival.inicioAtaque; this.tVista = 0; this.plan = null; }
+    if (rival.atacando()) {
+      // cada golpe (y cada cambio de lado de una finta) se vuelve a leer
+      const clave = rival.inicioAtaque + ':' + rival.linea;
+      if (this.visto !== clave) { this.visto = clave; this.tVista = 0; this.plan = null; }
       this.tVista += dt;
       if (!this.plan && this.tVista >= d.reaccion) {
         const leeBien = r() < d.lectura;
+        // modo direccional: si lo lee bien, para por el lado por el que viene; si no, por otro
+        const otros = LINEAS.filter(l => l !== ESPEJO[rival.linea]);
+        this.lado = leeBien ? ESPEJO[rival.linea] : otros[Math.floor(r() * otros.length)];
         if (leeBien && b.puedeActuar() && r() < d.maestro && rival.progreso() < T.ventanaMaestro * 0.8 && dist <= alcance) {
-          b.atacar(ESPEJO[rival.linea]);        // golpe maestro por el mismo lado
+          if (b.modo === 'direccional') b.cargar(ESPEJO[rival.linea], T.cargaMinima); else b.atacar(ESPEJO[rival.linea]);        // golpe maestro por el mismo lado
           this.plan = 'maestro';
         } else if (leeBien) this.plan = r() < d.perfecta ? 'perfecta' : 'normal';
         else this.plan = r() < 0.4 ? 'normal' : 'nada';
-        if (this.plan === 'normal' && b.accion === 'libre') b.bloquear(true);
+        if (this.plan === 'normal' && b.accion === 'libre') b.bloquear(true, this.lado);
+        else if (this.plan === 'nada' && b.bloqueando) b.bloquear(false);
       }
-      // la parada perfecta se empieza justo antes del impacto
-      if (this.plan === 'perfecta' && b.accion === 'libre' && !b.bloqueando && rival.hastaImpacto() <= T.ventanaPerfecta * 0.6) b.bloquear(true);
+      // la parada perfecta se empieza (o se pone del lado bueno) justo antes del impacto
+      if (this.plan === 'perfecta' && b.accion === 'libre' && (!b.bloqueando || b.lineaBloqueo !== this.lado) && rival.hastaImpacto() <= T.ventanaPerfecta * 0.6) b.bloquear(true, this.lado);
+      // modo direccional: mientras el rival mantiene la carga no se sabe cuándo llega; se cubre ya ese lado y, al
+      // soltar, se vuelve a levantar la parada en el último momento para que sea perfecta
+      if (this.plan === 'perfecta' && b.modo === 'direccional' && b.accion === 'libre') {
+        if (rival.hastaImpacto() === Infinity && !b.bloqueando) b.bloquear(true, this.lado);
+        else if (rival.hastaImpacto() <= T.ventanaPerfecta * 0.6 && b.bloqueando && b.tBloqueo > T.ventanaPerfecta) { b.bloquear(false); b.bloquear(true, this.lado); }
+      }
     } else if (b.def.escudo && rival.def.tipo === 'distancia' && (rival.accion === 'tensando' || rival.accion === 'recuperando')) {
       // le apuntan con arco u honda: levanta el escudo en cuanto reacciona y lo mantiene mientras recarga
       this.tTiro += dt;
@@ -581,26 +662,29 @@ export class IA {
     if (this.retroceso > 0 || (agotado && dist < ideal + 1)) sentido = -1;
     else if (dist > ideal + 0.15) sentido = 1;
     else if (dist < ideal - 0.4) sentido = -1;
-    if (b.accion === 'preparando' || b.accion === 'golpeando') sentido = 0; // quieto mientras golpea
+    if (b.accion === 'preparando' || b.accion === 'lanzando' || b.accion === 'golpeando') sentido = 0; // quieto mientras golpea
     if (sentido) { out.mx = Math.sin(b.rot) * sentido; out.mz = Math.cos(b.rot) * sentido; }
     out.correr = this.carga && dist > 6;
 
     // ---- fintar si el rival para demasiado pronto ----
     if (b.accion === 'preparando' && !b.finta && rival.bloqueando && b.progreso() < T.limiteFinta && r() < d.finta * dt * 8) {
-      const otras = LINEAS.filter(l => l !== b.linea);
-      b.atacar(otras[Math.floor(r() * otras.length)]);
+      // en el modo direccional, a un lado que no esté parando
+      const otras = LINEAS.filter(l => l !== b.linea && !(b.modo === 'direccional' && rival.lineaBloqueo === ESPEJO[l]));
+      if (otras.length) b.atacar(otras[Math.floor(r() * otras.length)]);
     }
 
     // ---- atacar: contraataque en cuanto se pueda; si no, cuando toque ----
     this.esperaAtaque -= dt * d.agresividad;
     const contra = b.puedeContraatacar();
-    if (dist <= alcance && b.puedeActuar() && !b.bloqueando && !agotado && rival.accion !== 'preparando' && (contra || this.esperaAtaque <= 0)) {
+    if (dist <= alcance && b.puedeActuar() && !b.bloqueando && !agotado && !rival.atacando() && (contra || this.esperaAtaque <= 0)) {
       let linea;
       if (rival.modo === 'guardias') {
         const abiertas = LINEAS.filter(l => !rival.cubre(l));
         linea = (abiertas.length && r() < d.lectura + 0.2) ? abiertas[Math.floor(r() * abiertas.length)] : LINEAS[Math.floor(r() * LINEAS.length)];
       } else linea = LINEAS[Math.floor(r() * LINEAS.length)];
-      if (b.atacar(linea)) { this.esperaAtaque = 0.9 + r() * 1.4; this.retrocederTras = r() < 0.4; }
+      // en el modo direccional, unas veces suelta enseguida y otras carga del todo
+      const lanza = b.modo === 'direccional' ? b.cargar(linea, T.cargaMinima + r() * (1 - T.cargaMinima)) : b.atacar(linea);
+      if (lanza) { this.esperaAtaque = 0.9 + r() * 1.4; this.retrocederTras = r() < 0.4; }
     }
     return out;
   }
