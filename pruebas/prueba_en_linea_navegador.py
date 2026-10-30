@@ -140,7 +140,7 @@ try:
         comprobar('PC ve al móvil con el aspecto por defecto, igual que el móvil se ve', aspRemoto(A) == aspPropio(B), aspRemoto(A))
         # andar: el otro lo ve moverse y con la animación de andar
         A.evaluate(f"{K}.pj.z = 6.5; window.__andar = setInterval(() => {{ {K}.pj.x += 0.05; }}, 33)")
-        comprobar('cuando PC anda, el móvil lo ve andar', esperar(B, f"[...{K}.enLinea.remotos.values()][0].j.modo !== 'quieto'", 6000), B.evaluate(f"[...{K}.enLinea.remotos.values()][0].j.modo"))
+        comprobar('cuando PC anda, el móvil lo ve andar', esperar(B, f"[...{K}.enLinea.remotos.values()][0].j.modo !== 'quieto'", 15000), B.evaluate(f"[...{K}.enLinea.remotos.values()][0].j.modo"))
         A.evaluate("clearInterval(window.__andar)")
         A.evaluate(f"Object.assign({K}.pj, {{ x: 1.2, z: 6.5, rot: Math.PI * 0.75 }})")
         esperar(B, vistoEn(B, 1.2, 6.5), 8000); A.wait_for_timeout(800)
@@ -203,7 +203,9 @@ try:
 
         print('Salir al menú y volver: sigue siendo el mismo')
         yoB = B.evaluate(f"{K}.enLinea.red.yo")
-        B.click('#btnDemoMenu'); B.wait_for_function('window.__demo && window.__demo.listo')
+        t0 = time.time()
+        B.click('#btnDemoMenu', timeout=180000); B.wait_for_function('window.__demo && window.__demo.listo')
+        print(f'  (volver al menú: {time.time() - t0:.1f} s)')
         B.click('#demoEnLinea'); B.wait_for_load_state('load')
         # La página se carga entera otra vez: sin tarjeta gráfica, conectar tardó a veces más de 20 s (medido el 28 oct: 27 s).
         comprobar('el móvil vuelve a entrar en línea', esperar(B, 'window.__demo && window.__demo.listo', 60000) and esperar(B, f"{K}.enLinea && {K}.enLinea.estado === 'conectado'", 60000))

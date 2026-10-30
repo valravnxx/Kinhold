@@ -16,7 +16,7 @@ const movil = typeof innerWidth !== 'undefined' && Math.min(innerWidth, innerHei
 // los anillos de detalle: en el PC, los del juego (src/logica/trozos.js); en el móvil, los de la vista de juego del mapa
 // (rejilla de 1 m hasta 32 m, 2 m hasta 128 y 4 m hasta 288; decisión provisional del 30 oct)
 export const ANILLOS_MUNDO = movil ? [{ paso: 1, hasta: 32 }, { paso: 2, hasta: 128 }, { paso: 4, hasta: 288 }] : ANILLOS;
-export const ORILLA = 0.4;   // m sobre el mar: más abajo ya es agua y no se anda
+export const ORILLA = 0.15;  // m sobre el mar (la lámina del mar está a 0,05): más abajo ya es agua y no se anda
 
 export function crearMundoJuego({ escena, mapa }) {
   const paisaje = crearPaisaje(mapa);

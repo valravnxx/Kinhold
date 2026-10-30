@@ -109,14 +109,21 @@ with sync_playwright() as p:
         comprobar('no se puede salir de la isla', c is not None and c['fuera'] is False)
         if c:
             # llevar al personaje a la orilla y andar hacia el mar con la tecla: se queda en tierra
-            # a 12 m de la orilla, tierra adentro
-            pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}, l = Math.hypot(mx - tx, mz - tz) || 1; k.pj.x = tx - (mx - tx) / l * 12; k.pj.z = tz - (mz - tz) / l * 12; }}""", c['tierra'] + c['mar'])
+            # tierra adentro, donde el suelo ya está a 1 m sobre el mar
+            pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}, l = Math.hypot(mx - tx, mz - tz) || 1; let d = 2;
+              while (d < 400 && k.mundoJ.sobreMar(tx - (mx - tx) / l * d, tz - (mz - tz) / l * d) < 1) d += 2;
+              k.pj.x = tx - (mx - tx) / l * d; k.pj.z = tz - (mz - tz) / l * d; }}""", c['tierra'] + c['mar'])
             try: pg.wait_for_function(f'{K}.mundoListo', timeout=120000)
             except Exception: pass
             pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}; k.cam.yaw = Math.atan2(-(mx - tx), -(mz - tz)); }}""", c['tierra'] + c['mar'])
-            pg.keyboard.down('w'); pg.wait_for_timeout(2500); pg.keyboard.up('w'); pg.wait_for_timeout(300)
+            a0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+            # andar hacia el mar (más de lo que hace falta para llegar al agua)
+            for _ in range(6):
+                pg.keyboard.down('w'); pg.wait_for_timeout(2500); pg.keyboard.up('w')
+            pg.wait_for_timeout(300)
             e = pg.evaluate(f"(() => {{ const k = {K}; return {{ sobreMar: k.mundoJ.sobreMar(k.pj.x, k.pj.z), x: k.pj.x, z: k.pj.z }}; }})()")
-            comprobar('andando hacia el mar, se queda en tierra', e['sobreMar'] >= 0.3, json.dumps(e))
+            e['andado'] = ((e['x'] - a0[0]) ** 2 + (e['z'] - a0[1]) ** 2) ** 0.5
+            comprobar('andando hacia el mar, llega a la orilla y se queda en tierra', e['andado'] > 0.5 and e['sobreMar'] >= 0.1, json.dumps(e))
             pg.evaluate(f'(() => {{ const k = {K}; k.cam.pitch = 0.45; k.cam.dist = 20; }})()'); pg.wait_for_timeout(1500)
             pg.screenshot(path=f'{SALIDA}/{nombre}_costa.png')
         malos = [x for x in err if 'favicon' not in x]
