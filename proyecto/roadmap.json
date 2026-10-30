@@ -686,17 +686,18 @@
    "id": "tierras",
    "num": "13",
    "nombre": "Tierras y familias",
-   "jugable": "Mojones, radio de exclusión, peajes, conquista, familias, vasallajes, alianzas, escudos de armas.",
+   "jugable": "Mojones (tu casa: radio de exclusión, mantenimiento y deterioro) y, aparte, los clanes en las comarcas: el centro del castillo toma su zona y, el primero, la comarca entera; los clanes con zona en una comarca con señor son sus vasallos; renta en moneda por el trabajo en la comarca y su corte por atacar a quien trabaja o a un vasallo. Peajes, familias, alianzas y escudos de armas.",
    "estado": "en_curso",
    "tareas": [
     {
      "nombre": "Comarcas para los clanes (valravnx, 30 oct): el centro del castillo toma la zona y la comarca, vasallos, renta en moneda por el trabajo en la comarca, corte de renta por atacar y ventana de asedio; al GDD y al plan",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T11:37:13+01:00",
-     "rama": "trabajo/20261030-1135-clanes"
+     "rama": "trabajo/20261030-1135-clanes",
+     "fin": "2026-10-30T11:39:15+01:00"
     }
    ],
-   "nota": "Revisión del 29 oct: lo primero (reclamar con el mojón, radio de exclusión, mantenimiento y deterioro) va en la fase 2, con el servidor y las cuentas: es lo que protege lo construido cuando estás fuera."
+   "nota": "Revisión del 29 oct: lo primero (reclamar con el mojón, radio de exclusión, mantenimiento y deterioro) va en la fase 2, con el servidor y las cuentas: es lo que protege lo construido cuando estás fuera. Los clanes en las comarcas, después (diseño decidido por valravnx el 30 oct, GDD apartado 11, «Comarcas, zonas y clanes»; las comarcas y sus zonas ya están en la lógica, src/logica/comarcas.js). Al planificar el hito, cada paso con su prueba: el centro y su zona; el señor de la comarca y los vasallos; la renta (lógica pura con autor, en el servidor); el corte de renta; el mapa con los estandartes."
   },
   {
    "id": "arte",
@@ -1357,7 +1358,7 @@
    "id": "asedio",
    "num": "6",
    "nombre": "Asedio, fuego y mantenimiento",
-   "jugable": "Ariete, daño por fuego, mojón con materiales.",
+   "jugable": "Ariete, daño por fuego, mojón con materiales y la ventana de asedio del centro de los clanes (solo se le puede asediar en ella).",
    "estado": "pendiente",
    "tareas": [
     {
@@ -1378,7 +1379,7 @@
    "id": "economia",
    "num": "14",
    "nombre": "Economía y NPCs",
-   "jugable": "Encargos y moneda, puestos sin conexión, tomos, NPCs ambulantes a sueldo, centinelas y mensajeros.",
+   "jugable": "Encargos y moneda, puestos sin conexión, tomos, NPCs ambulantes a sueldo, centinelas y mensajeros; la renta de las comarcas llega en moneda y se gasta con los NPCs.",
    "estado": "pendiente",
    "tareas": []
   },
@@ -2591,6 +2592,16 @@
    "pregunta": "Crear la cuenta de Hetzner y el servidor de prueba siguiendo la guía del repositorio, servidor/nube/LEEME.md (plan CX23 con Ubuntu 24.04 y el cloud config pegado); luego abrir en los dos aparatos la dirección https:// con tu IP con guiones y .sslip.io y decir si funciona. Decidido por valravnx el 29 oct: se hace ya.",
    "desde": "2026-10-28",
    "hito": "prueba-online"
+  },
+  {
+   "pregunta": "Clanes y guerra (del 30 oct): con el vasallaje de comarca ya no hay un pago que dejar de hacer, así que el impago deja de ser causa de guerra. ¿Qué causas quedan, y asediar el centro de una comarca en su ventana necesita guerra declarada?",
+   "desde": "2026-10-30",
+   "hito": "tierras"
+  },
+  {
+   "pregunta": "Las comarcas de inicio (Motdale, Breiddal y Strandvang): ¿las puede tomar un clan? La propuesta de la v0.3 decía que no hubiera reclamaciones cerca de las zonas de inicio.",
+   "desde": "2026-10-30",
+   "hito": "tierras"
   }
  ]
 }

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="2ec78cca0fe8fc8e1077865d6882edf87ae47a7c">
+<meta name="kinhold-origen" content="90dd022d9e7de95048949570ac3755726b79c011">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.9</title>
 <style>
@@ -393,7 +393,24 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span><b>Conquest:</b> you conquer by destroying the enemy's boundary stones. If you have a high-level territory, its surroundings count as your land, so when the nearby enemy boundary stones are removed that land becomes yours.</p>
 <p><span class="tag ok">DECIDED</span><b>Boundary stone level:</b> it rises by depositing materials of the corresponding technology level. The higher the level, the larger the exclusion radius and the territory.</p>
 <p><span class="tag ok">DECIDED</span>Access to doors and chests through <b>family permissions</b>.</p>
-<p><span class="tag ok">DECIDED</span><b>Clan zones, separate from the boundary stone</b> (valravnx, 30 Oct): the boundary stone is still what covers your home and what you build (upkeep, protection, exclusion radius). On top of that, every district is divided into fixed <b>zones</b> of roughly 1 km² (room for a castle), with natural borders that follow the streams and the relief. A clan claims a zone with a piece of its own, different from the boundary stone, and the zone shows on the map with its banner and its name. If they look too small on the map, they are made bigger. The rest (the piece, how it is kept up and what can be done in the zone) is decided with the clans.</p>
+<h3>Districts, zones and clans</h3>
+<p><span class="tag ok">DECIDED</span><b>Separate from the boundary stone</b> (valravnx, 30 Oct): the boundary stone is still what covers your home and what you build (upkeep, protection, exclusion radius). Clan matters go separately, with the districts and their zones. Here “clan” means the family of section 17.</p>
+<p><span class="tag ok">DECIDED</span><b>Zones:</b> every district is divided into fixed zones of roughly 1 km² (room for a castle), with natural, curved borders. Any clan can take a zone by raising its castle and placing in it the <b>centre</b>, a piece of its own, different from the boundary stone. The zone shows on the map with its banner and its name. If they look too small on the map, they are made bigger.</p>
+<p><span class="tag ok">DECIDED</span><b>Taking a whole district:</b> the centre is also what gives the district. The clan that holds it is its lord, and the district shows on the map with its banner. The castle can go anywhere in the district.</p>
+<p><span class="tag ok">DECIDED</span><b>Vassals:</b> a clan that takes a zone in a district that already has a lord becomes a vassal of the main clan. It still rules its zone (its castle, its doors and its permissions).</p>
+<p><span class="tag ok">DECIDED</span><b>Rent:</b> the work done in the district gives the lord rent, without taking anything from whoever does it: whoever fells a hundred logs keeps their hundred, as anywhere else. The rent is not items (logs have to be processed and carried): it arrives as <b>coin</b> at the centre, and the clan spends it with NPCs (mercenaries, wandering traders, upkeep…). That way the lord is better off with many people working in the district, small groups included, instead of harassing them.</p>
+<p><span class="tag ok">DECIDED</span><b>Protecting pays off:</b> if the lord clan attacks or kills someone working in its district, that person's rent stops counting for a while. It can attack a vassal clan (for instance, to drive out one it believes is going to take the district), but then it loses the rent of that whole clan for a while.</p>
+<p><span class="tag ok">DECIDED</span><b>Siege window:</b> the centre can only be besieged in its window. Between one window and the next it keeps collecting rent.</p>
+<div class="box p"><span class="tag prop">PROPOSAL</span> Still to be set (from the chat, 30 Oct):
+<ul>
+  <li><b>What counts as work:</b> felling, digging, harvesting, hunting and building. What the lord clan itself does does not count.</li>
+  <li><b>A rent cap</b> per player per day, so nobody inflates it with extra accounts.</li>
+  <li><b>The rent cut</b> for attacking lasts one real week.</li>
+  <li><b>The window:</b> once a week, about 2 hours, at a time the clan chooses.</li>
+  <li><b>When the lord's centre falls,</b> the district passes to the clan that brought it down if it has its centre there (a rebelling vassal, for instance); if not, it becomes free and the first clan to place its own takes it. Vassals keep their zones and pass to the new lord.</li>
+  <li><b>How many zones:</b> a clan can only hold a few, more the higher the level of its centre.</li>
+  <li><b>Abandonment:</b> a centre without upkeep ends up freeing its zone and, if it is the lord's, the district.</li>
+</ul></div>
 <div class="box p"><span class="tag prop">PROPOSAL</span> Rules kept from v0.3:
 <ul>
   <li>Land grows with what is built on it, not with the number of accounts.</li>
@@ -488,11 +505,11 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <section id="social">
 <h2>17. Families, alliances and vassalages</h2>
 <p><span class="tag ok">DECIDED</span>Families, with PvP off inside them.</p>
-<p><span class="tag ok">DECIDED</span><b>Vassalage:</b> an alliance that requires a periodic payment. If it is not paid on time, the lord has the right to declare war.</p>
+<p><span class="tag ok">DECIDED</span><b>Vassalage</b> (updated on 30 Oct): it comes from the land. A clan with a zone in a district that has a lord is its vassal (section 11), and what it pays is the rent from the work done in the district. Before, it was an alliance with a periodic payment and, if not paid, the lord could declare war: how that fits with district vassalage is still open (section 21).</p>
 <p><span class="tag ok">DECIDED</span><b>Alliances:</b> PvP between allies is turned off only if both sides enable it.</p>
 <p><span class="tag ok">DECIDED</span><b>Proximity-only communication.</b></p>
 <p><span class="tag ok">DECIDED</span><b>Coat of arms editor</b> of its own for each family.</p>
-<p><span class="tag ok">DECIDED</span>Vassalage is paid <b>in coin</b>.</p>
+<p><span class="tag ok">DECIDED</span>Rent and payments between lords and vassals are <b>in coin</b>.</p>
 <p><span class="tag ok">DECIDED</span><b>Letters by NPC messenger:</b> you send a messenger to a settlement you know; they travel there and deliver the letter to a member of your family who is at that place.</p>
 <div class="box m"><span class="tag method">METHOD</span>
 <ul>
@@ -592,7 +609,11 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 
 <section id="preguntas">
 <h2>21. Open questions</h2>
-<p>None blocking the work. The server cost will be measured with 100 simulated players in milestone 1f.</p>
+<p>The server cost will be measured with 100 simulated players in milestone 1f. Open since 30 Oct, with the clan districts:</p>
+<ul>
+  <li><b>War between clans</b> required a cause: an unpaid vassalage. With district vassalage there is no payment to miss: what causes are left? Does besieging a centre in its window require a declared war?</li>
+  <li><b>The starting districts</b> (Motdale, Breiddal and Strandvang): can they be taken? The v0.3 proposal says no claims near the starting areas.</li>
+</ul>
 </section>
 </div>
 </body>
