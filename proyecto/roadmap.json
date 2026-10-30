@@ -943,10 +943,14 @@
      "fin": "2026-10-29T11:26:34+01:00"
     },
     {
-     "nombre": "Comarcas de Whitholm primero (valravnx, 29 oct): la isla de los playtests dividida en comarcas que siguen el relieve (un valle, una vega, una sierra), con nombres al estilo de la región revisados por valravnx, y la comarca donde aparecen todos al principio; luego las del resto del mundo",
+     "nombre": "Comarcas de Whitholm y sus zonas (valravnx, 29 y 30 oct): la isla dividida en 8 comarcas que siguen las cuencas de los ríos, con bordes naturales y en curva, y cada comarca en zonas de aproximadamente 1 km² para los clanes; en la lógica (para el servidor) y en el mapa",
      "estado": "en_curso",
      "inicio": "2026-10-30T09:11:06+01:00",
      "rama": "trabajo/20261030-0910-comarcas"
+    },
+    {
+     "nombre": "Nombres de las comarcas de Whitholm (al estilo de la región, revisados por valravnx) y la comarca donde aparecen todos al principio",
+     "estado": "espera_decision"
     },
     {
      "nombre": "Agua de cerca: ríos con su ancho de verdad, vados, orillas y mar con su costa; nadar donde es hondo (como dice el GDD); meandros (de cerca los ríos grandes aún salen a tramos rectos)",
@@ -2521,6 +2525,11 @@
    "pregunta": "Crear la cuenta de Hetzner y el servidor de prueba siguiendo la guía del repositorio, servidor/nube/LEEME.md (plan CX23 con Ubuntu 24.04 y el cloud config pegado); luego abrir en los dos aparatos la dirección https:// con tu IP con guiones y .sslip.io y decir si funciona. Decidido por valravnx el 29 oct: se hace ya.",
    "desde": "2026-10-28",
    "hito": "prueba-online"
+  },
+  {
+   "pregunta": "Comarcas de Whitholm: sus nombres (al estilo de Whitholm, Eikwold, Rudmere…) y en cuál aparecen todos al principio. El chat propuso la B (el valle del este, abierto, con agua y bosque y lejos de la gran veta); la salida de ahora cae en la D. Lo hablará valravnx con el chat.",
+   "desde": "2026-10-30",
+   "hito": "mundo"
   }
  ]
 }
