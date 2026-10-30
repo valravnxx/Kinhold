@@ -88,6 +88,10 @@ export function crearVistaJuego(est) {
     if (R < 0) lejos.quitarHueco();
     else lejos.ponerHueco((pi - R) * LADO_TROZO - t.origen.x + 2, (pj - R) * LADO_TROZO - t.origen.z + 2, (pi + R + 1) * LADO_TROZO - t.origen.x - 2, (pj + R + 1) * LADO_TROZO - t.origen.z - 2);
     vj.cuadro = { R, pi, pj, ladoM: (2 * R + 1) * LADO_TROZO };
+    // listo: los trozos hechos cubren el decorado de cerca y un trozo más alrededor. Hasta entonces (al entrar en una zona
+    // nueva, mientras el hilo hace los primeros), el aviso de «Preparando el paisaje…»
+    const listo = vj.cuadro.ladoM >= CERCA + 2 * LADO_TROZO;
+    if (listo !== vj.listo) { vj.listo = listo; document.getElementById('cercaCargando').hidden = listo; }
   }
 
   function quitarGrupo() {
@@ -340,7 +344,7 @@ export function crearVistaJuego(est) {
   }
 
   vj.entrar = (px, pz, dir = 0) => {
-    vj.activo = true; ayuda().hidden = false; vj.haciendo = null; vj.msMax = 0; vj.rehechos = 0; vj.fotogramas = 0;
+    vj.activo = true; ayuda().hidden = false; vj.listo = null; vj.haciendo = null; vj.msMax = 0; vj.rehechos = 0; vj.fotogramas = 0;
     prepararTrozos();
     if (!grupoTrozos.parent) est.escena.add(grupoTrozos);
     construir(px, pz);
@@ -361,7 +365,7 @@ export function crearVistaJuego(est) {
   };
   vj.salir = () => {
     if (!vj.activo) return;
-    vj.activo = false; ayuda().hidden = true;
+    vj.activo = false; ayuda().hidden = true; vj.listo = null; document.getElementById('cercaCargando').hidden = true;
     quitarGrupo(); vj.centro = null; vj.haciendo = null;
     est.escena.remove(grupoTrozos);
     // el terreno por trozos se queda (con sus hilos) por si se vuelve a entrar en la misma zona; si cambia, se suelta

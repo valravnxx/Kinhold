@@ -15,6 +15,8 @@ def comprobar(n, c, d=''):
 TIERRA = """(() => { const c = document.getElementById('lienzo'), g = c.getContext('2d'), d = g.getImageData(0, 0, c.width, c.height).data;
   let t = 0, n = 0; for (let i = 0; i < d.length; i += 4 * 37) { n++; if (d[i + 1] >= d[i + 2] + 4) t++; } return t / n; })()"""
 MEDIDAS = {}
+# la vista de juego está lista cuando los trozos del suelo cubren el decorado de cerca (los hace un hilo aparte)
+def esperar_juego(pg): pg.wait_for_function('window.__cerca.vj && window.__cerca.vj.listo', timeout=180000)
 # se sirve por http desde la raíz del repositorio (con file:// el navegador no deja cargar el personaje)
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 _s = socket.socket(); _s.bind(('', 0)); PUERTO = _s.getsockname()[1]; _s.close()
@@ -79,7 +81,7 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/{nombre}_7_cerca_pie.png', timeout=240000)
         comprobar(f'{nombre}: la vista a pie se pone', pg.evaluate('window.__cerca.vistaActual') == 'pie', str(pie))
         # como en el juego: el trozo de cerca con todo el detalle, el personaje y andar tocando el suelo
-        pg.evaluate("document.getElementById('btnJuego').click()"); pg.wait_for_timeout(1500)
+        pg.evaluate("document.getElementById('btnJuego').click()"); pg.wait_for_timeout(1500); esperar_juego(pg)
         jm = pg.evaluate('window.__cerca.juego')
         if os.environ.get('MUTAR'): jm['hierba'] = 0
         comprobar(f'{nombre}: como en el juego, el trozo de cerca tiene rejilla de 1–1,25 m, hierba, piedras y árboles', jm and jm['pasoM'] <= 1.25 and jm['hierba'] > 1000 and jm['rocas'] > 0 and jm['triangulos'] > 100000, json.dumps(jm))
@@ -111,7 +113,7 @@ with sync_playwright() as p:
         r = pg.evaluate('window.__cerca.rioCercano()')
         if r:
             off = r['ancho'] / 2 + 7
-            pg.evaluate(f"window.__cerca.juegoEn({r['x']} + Math.cos({r['dir']} + 1.57) * {off}, {r['z']} + Math.sin({r['dir']} + 1.57) * {off}, {r['dir']})"); pg.wait_for_timeout(1500)
+            pg.evaluate(f"window.__cerca.juegoEn({r['x']} + Math.cos({r['dir']} + 1.57) * {off}, {r['z']} + Math.sin({r['dir']} + 1.57) * {off}, {r['dir']})"); pg.wait_for_timeout(1500); esperar_juego(pg)
             hay = pg.evaluate("!!(window.__cerca.vj.grupo && window.__cerca.vj.grupo.getObjectByName('aguaCerca'))")
             if os.environ.get('MUTAR'): hay = False
             comprobar(f'{nombre}: junto al río se dibuja su agua de cerca', hay, f"río de {r['ancho']:.0f} m a {abs(complex(r['x'], r['z'])):.0f} m del centro")
@@ -160,14 +162,14 @@ with sync_playwright() as p:
         if nombre == 'pc':
             # un acantilado de costa: el personaje no sube la pared andando (se para al pie). MUTAR_PARED=1 quita el límite
             pg.evaluate('window.__mapa.cerca(73.5, 70.5)'); pg.wait_for_function('window.__cerca && window.__cerca.listo', timeout=240000)
-            pg.evaluate('window.__cerca.vista("juego")'); pg.wait_for_timeout(1500)
+            pg.evaluate('window.__cerca.vista("juego")'); pg.wait_for_timeout(1500); esperar_juego(pg)
             r = pg.evaluate('window.__cerca.paredCercana()')
             comprobar('pc: junto al acantilado de costa hay paredes de roca', bool(r), str(r))
             jm2 = pg.evaluate('window.__cerca.juego')
             if os.environ.get('MUTAR_ROCA'): jm2['paredes'] = 0
             comprobar('pc: las paredes del acantilado llevan piezas de roca 3D', jm2 and jm2.get('paredes', 0) > 100 and pg.evaluate("!!window.__cerca.vj.grupo.getObjectByName('rocaPared')"), f"{jm2.get('paredes')} piezas · {jm2.get('triangulos')} triángulos")
             if r:
-                pg.evaluate(f"window.__cerca.juegoEn({r['x']}, {r['z']}, {r['dir']})"); pg.wait_for_timeout(1500)
+                pg.evaluate(f"window.__cerca.juegoEn({r['x']}, {r['z']}, {r['dir']})"); pg.wait_for_timeout(1500); esperar_juego(pg)
                 if os.environ.get('MUTAR_PARED'): pg.evaluate('window.__cerca.vj.sinLimite = true')
                 y0 = pg.evaluate('window.__cerca.vj.pos.y')
                 pg.evaluate(f"(() => {{ const v = window.__cerca.vj; v.andarA(v.pos.x + Math.cos({r['dir']}) * 40, v.pos.z + Math.sin({r['dir']}) * 40); }})()"); pg.wait_for_timeout(9000)
@@ -180,7 +182,7 @@ with sync_playwright() as p:
             # MUTAR_SALTO=1 da por buena una lámina sin caída: tiene que fallar
             pg.evaluate('window.__mapa.cerca(84.92, 74.79)'); pg.wait_for_function('window.__cerca && window.__cerca.listo', timeout=240000)
             sa = pg.evaluate('window.__cerca.saltoCercano()')
-            pg.evaluate(f"window.__cerca.juegoEn({sa['x']} + Math.cos({sa['dir']}) * 22 + Math.cos({sa['dir']} + 1.57) * {sa['ancho'] / 2 + 10}, {sa['z']} + Math.sin({sa['dir']}) * 22 + Math.sin({sa['dir']} + 1.57) * {sa['ancho'] / 2 + 10}, {sa['dir']} + 3.14)"); pg.wait_for_timeout(1500)
+            pg.evaluate(f"window.__cerca.juegoEn({sa['x']} + Math.cos({sa['dir']}) * 22 + Math.cos({sa['dir']} + 1.57) * {sa['ancho'] / 2 + 10}, {sa['z']} + Math.sin({sa['dir']}) * 22 + Math.sin({sa['dir']} + 1.57) * {sa['ancho'] / 2 + 10}, {sa['dir']} + 3.14)"); pg.wait_for_timeout(1500); esperar_juego(pg)
             caida = pg.evaluate('''(() => { const a = window.__cerca.vj.grupo.getObjectByName('aguaCerca'); if (!a) return [0, 0];
               const n = a.geometry.attributes.normal, e = a.geometry.attributes.aEspuma, ix = a.geometry.index; let v = 0, m = 0;
               const usados = new Set(ix.array); for (const k of usados) { if (Math.abs(n.getY(k)) < 0.5) v++; m = Math.max(m, e.getX(k)); } return [v, m]; })()''')
