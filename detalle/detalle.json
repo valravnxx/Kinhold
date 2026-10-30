@@ -1,0 +1,126 @@
+{
+ "pc_visor": [
+  {
+   "nivel": 0,
+   "triangulos": 27717,
+   "piezas": 17,
+   "dibujados": 55
+  },
+  {
+   "nivel": 1,
+   "triangulos": 10535,
+   "piezas": 13,
+   "dibujados": 47
+  },
+  {
+   "nivel": 2,
+   "triangulos": 3857,
+   "piezas": 1,
+   "dibujados": 23
+  }
+ ],
+ "pc_demo_20": {
+  "sin_niveles": {
+   "fps": 0,
+   "ms": 2389.4,
+   "peor": 2389,
+   "triangulos": 1376680,
+   "dibujados": 706,
+   "geometrias": 563,
+   "texturas": 344,
+   "memoriaJS": 13,
+   "personajes": 21,
+   "resolucion": 1,
+   "ancho": 1280,
+   "alto": 800,
+   "niveles": [
+    21,
+    0,
+    0,
+    0
+   ]
+  },
+  "con_niveles": {
+   "fps": 1,
+   "ms": 1988,
+   "peor": 1988,
+   "triangulos": 809572,
+   "dibujados": 452,
+   "geometrias": 582,
+   "texturas": 344,
+   "memoriaJS": 13,
+   "personajes": 21,
+   "resolucion": 1,
+   "ancho": 1280,
+   "alto": 800,
+   "niveles": [
+    6,
+    7,
+    8,
+    0
+   ]
+  }
+ },
+ "movil_visor": [
+  {
+   "nivel": 0,
+   "triangulos": 27717,
+   "piezas": 17,
+   "dibujados": 55
+  },
+  {
+   "nivel": 1,
+   "triangulos": 10535,
+   "piezas": 13,
+   "dibujados": 47
+  },
+  {
+   "nivel": 2,
+   "triangulos": 3857,
+   "piezas": 1,
+   "dibujados": 23
+  }
+ ],
+ "movil_demo_20": {
+  "sin_niveles": {
+   "fps": 0,
+   "ms": 2242.4,
+   "peor": 2242,
+   "triangulos": 1333544,
+   "dibujados": 619,
+   "geometrias": 464,
+   "texturas": 344,
+   "memoriaJS": 14,
+   "personajes": 21,
+   "resolucion": 2,
+   "ancho": 780,
+   "alto": 1688,
+   "niveles": [
+    21,
+    0,
+    0,
+    0
+   ]
+  },
+  "con_niveles": {
+   "fps": 1,
+   "ms": 1933.3,
+   "peor": 1933,
+   "triangulos": 831108,
+   "dibujados": 375,
+   "geometrias": 464,
+   "texturas": 344,
+   "memoriaJS": 14,
+   "personajes": 21,
+   "resolucion": 2,
+   "ancho": 780,
+   "alto": 1688,
+   "niveles": [
+    8,
+    5,
+    8,
+    0
+   ]
+  }
+ }
+}
