@@ -24,6 +24,7 @@ import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS } from '../logica/whitholm.js';
 import { nombreDe } from '../logica/recoleccion.js';
 import { crearTala } from './tala.js';
+import { alturaOla } from '../mapa/agua.js';
 import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } from '../logica/nado.js';
 import { hachaEnMano, HACHAS, nombreTronco } from '../logica/tala.js';
 
@@ -1473,7 +1474,8 @@ function paso() {
   }
   pj.vel = vel;
   // nadando, el cuerpo va en el agua con la cabeza fuera (el pecho a ras del agua: las olas del mar suben hasta medio metro) y se mece un poco
-  const yObjetivo = modo === 'nadar' ? ag.superficie - 1.25 + Math.sin(performance.now() / 600) * 0.04 : alturaSuelo();
+  // (en el mar, subiendo y bajando con las olas)
+  const yObjetivo = modo === 'nadar' ? ag.superficie - 1.25 + (ag.mar ? alturaOla(pj.x, pj.z) : Math.sin(performance.now() / 600) * 0.04) : alturaSuelo();
   pj.y += (yObjetivo - pj.y) * Math.min(1, dt * 14);
   jugador.raiz.position.set(pj.x, pj.y, pj.z);
   jugador.raiz.rotation.y = pj.rot;

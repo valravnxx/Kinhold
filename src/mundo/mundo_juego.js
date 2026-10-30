@@ -39,7 +39,7 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
   const mar = new THREE.Mesh(new THREE.PlaneGeometry(ancho, largo).rotateX(-Math.PI / 2),
     new THREE.MeshLambertMaterial({ color: 0x4a6470 }));
   mar.name = 'mar';
-  mar.position.set((ISLA.x0 + ISLA.x1) / 2 - O.x, -y0 - 0.12, (ISLA.z0 + ISLA.z1) / 2 - O.z);
+  mar.position.set((ISLA.x0 + ISLA.x1) / 2 - O.x, -y0 - 0.8, (ISLA.z0 + ISLA.z1) / 2 - O.z);   // (por debajo de los senos de las olas de cerca, que bajan hasta medio metro)
   mar.receiveShadow = true;
   escena.add(mar);
 
@@ -71,7 +71,7 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
     const xm = x + O.x, zm = z + O.z, tr = riosCerca(x, z), suelo = altura(x, z) + y0;
     const w = paisaje.agua(xm, zm, tr);
     if (w !== null && w > suelo) { const c = paisaje.corriente(xm, zm, tr); return { hondo: w - suelo, superficie: w - y0, dx: c.dx * c.vel, dz: c.dy * c.vel }; }
-    if (suelo < 0) return { hondo: -suelo, superficie: -y0, dx: 0, dz: 0 };
+    if (suelo < 0) return { hondo: -suelo, superficie: -y0, dx: 0, dz: 0, mar: true };
     return null;
   }
 
