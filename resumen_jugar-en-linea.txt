@@ -1,0 +1,39 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2241 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2028 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1621 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2096 KB
+
+== Construir demo única
+      1770 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2556 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1615 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2063 KB
+dist/kinhold_trozos.html 1611 KB
+hilo de los trozos 14 KB
+
+== Navegador: jugar en línea (dos páginas y un servidor)
+  - taking page screenshot
+  - waiting for fonts to load...
+  - fonts loaded
+
+!! FALLA: python3 pruebas/prueba_en_linea_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/en_linea
+
+HAY FALLOS
+tardó 478 s
