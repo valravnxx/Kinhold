@@ -82,10 +82,11 @@ export function aMedias(roadmap, sesion, ahora = Date.now(), ramas = {}) {
 export function elegir(roadmap, sesion, carril, ahora = Date.now(), ramas = {}) {
   const c = leerCarriles(sesion);
   const lleva = quienLleva(sesion, ahora);
-  const medias = aMedias(roadmap, sesion, ahora, ramas), huerfana = new Map(medias.map(m => [m.tarea, m]));
+  const medias = aMedias(roadmap, sesion, ahora, ramas), huerfana = new Map(medias.map(m => [m.hito + '\n' + m.tarea, m]));
+  // la clave es hito + tarea: «Revisión completa y publicación» se llama igual en todos los hitos
   const ocupados = new Set();
   for (const a of leerAgentes(sesion)) if (a.clave !== carril && ocupado(a, ahora)) ocupados.add(a.hito || hitoDeTarea(roadmap, a.tarea));
-  for (const h of roadmap.hitos) if ((h.tareas || []).some(t => t.estado === 'en_curso' && !huerfana.has(t.nombre))) ocupados.add(h.id);
+  for (const h of roadmap.hitos) if ((h.tareas || []).some(t => t.estado === 'en_curso' && !huerfana.has(h.id + '\n' + t.nombre))) ocupados.add(h.id);
   // hitos que lleva a mano una sesión de chat con valravnx («lleva»: «chat»): los carriles no los tocan nunca
   for (const h of roadmap.hitos) if (h.lleva === 'chat') ocupados.add(h.id);
   // si este mismo carril tenía una tarea a medias (sesión cortada) y nadie la ha cogido, la retoma
@@ -101,7 +102,7 @@ export function elegir(roadmap, sesion, carril, ahora = Date.now(), ramas = {}) 
   const orden = [...roadmap.hitos.filter(h => h.carril === carril), ...roadmap.hitos.filter(h => !h.carril)];
   for (const h of orden) {
     if (h.estado !== 'en_curso' || ocupados.has(h.id)) continue;
-    const m = (h.tareas || []).find(x => huerfana.has(x.nombre));
+    const m = (h.tareas || []).find(x => x.estado === 'en_curso' && huerfana.has(h.id + '\n' + x.nombre));
     if (m) return { hito: h.id, tarea: m.nombre, retoma: true, rama: m.rama || null };
     const t = (h.tareas || []).find(x => x.estado === 'pendiente');
     if (t) return { hito: h.id, tarea: t.nombre };
@@ -200,9 +201,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const c = leerCarriles(vivos);
     for (const k of ['A', 'B']) console.log(`carril ${k}:`, c[k] ? `${ocupado(c[k], ahora) ? 'trabajando' : 'cortado o terminado'} · ${c[k].hito || hitoDeTarea(roadmap, c[k].tarea)} · ${c[k].tarea} · ${c[k].rama}` : 'libre');
     for (const a of leerAgentes(vivos).filter(a => a.quien === 'chat')) console.log(`${nombre(a)}: ${ocupado(a, ahora) ? 'trabajando' : 'cortado o terminado'} · ${a.hito} · ${a.tarea}`);
-    const lleva = quienLleva(vivos, ahora), medias = new Set(aMedias(roadmap, vivos, ahora, ramas).map(m => m.tarea));
+    const lleva = quienLleva(vivos, ahora), medias = new Set(aMedias(roadmap, vivos, ahora, ramas).map(m => m.hito + '\n' + m.tarea));
     for (const h of roadmap.hitos) for (const t of h.tareas || []) if (t.estado === 'en_curso') {
-      const que = lleva.has(t.nombre) ? `en proceso (${nombre(lleva.get(t.nombre))})` : medias.has(t.nombre) ? `a medias (no la lleva nadie${t.rama ? '; rama ' + t.rama : ''})` : 'en curso (marcada hace poco, sin anunciar)';
+      const que = lleva.has(t.nombre) ? `en proceso (${nombre(lleva.get(t.nombre))})` : medias.has(h.id + '\n' + t.nombre) ? `a medias (no la lleva nadie${t.rama ? '; rama ' + t.rama : ''})` : 'en curso (marcada hace poco, sin anunciar)';
       console.log(`${que}: ${h.id} · ${t.nombre.slice(0, 90)}`);
     }
     for (const [r, fs] of Object.entries(ramasActivas(null))) console.log(`rama activa ${r}: ${fs.length} archivos (${fs.slice(0, 6).join(', ')}${fs.length > 6 ? '…' : ''})`);
