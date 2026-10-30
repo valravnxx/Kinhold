@@ -1260,5 +1260,6 @@
  "El rival cae: {m}": "The opponent falls: {m}",
  "Caes: {m}": "You fall: {m}",
  "Te levantas (prueba: vuelves curado)": "You get up (test: you come back healed)",
- "Sangre {s} %": "Blood {s} %"
+ "Sangre {s} %": "Blood {s} %",
+ "Fijar": "Lock on"
 }
