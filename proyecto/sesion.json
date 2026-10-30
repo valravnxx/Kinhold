@@ -5,5 +5,10 @@
   "hito": "mundo-juego",
   "rama": "trabajo/20261030-0322"
  },
- "B": null
+ "B": {
+  "inicio": "2026-10-30T04:52:07+00:00",
+  "tarea": "Pulir la capa (visto al rehacerla): que se mueva algo al andar (huesos propios o tela sencilla), que de espalda se distingan los pliegues y que las manos no asomen por los lados con los brazos algo abiertos",
+  "hito": "arte",
+  "rama": "trabajo/20261030-0452"
+ }
 }
