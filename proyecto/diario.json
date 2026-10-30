@@ -2464,5 +2464,43 @@
   "pruebas": "En la nube: los 15 grupos bien (53 min); la prueba nueva de trozos, en el grupo de lógica, 21 de 21; rota a propósito con MUTAR=1 y MUTAR=2, falla",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-29T23:52:51+00:00",
+  "fin": "2026-10-30T01:29:53+00:00",
+  "titulo": "Barbas rehechas (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Barba larga nueva (valravnx: «horribles»): antes era la piel estirada, que de perfil salía como una lámina hueca. Ahora es una malla propia con volumen, como la melena: de patilla a patilla, baja a 2-12 mm de la cara (medido con rayos contra la piel), cae recta unos 10 cm bajo el mentón y vuelve por detrás en línea recta hasta la garganta; de perfil es una cuña maciza. Punta y bordes desiguales, mechón a mechón.",
+   "El juego la dibuja recortada (alphaTest) y por las dos caras, como el pelo largo; los calcos pintados son ya solo la corta, el bigote y la perilla.",
+   "Barba corta, bigote y perilla: tupidos por dentro con grano de pelo a lo largo de la caída y el borde que se aclara pelo a pelo, en vez de una mancha lisa con el borde duro. Arreglado de paso un fallo de la primera prueba: el grano pintaba puntos casi transparentes por toda la piel.",
+   "Personajes en recursos/personajes/taller-v14/ (la mujer sale idéntica a la v13, mismo tamaño). El visor de personaje y la demo los usan; publicado como personaje v25 y demo v44.",
+   "Prueba nueva: la barba larga cuelga más de 8 cm bajo el bigote, tiene cara de delante y de detrás separadas (2,2 cm 3 cm por encima de la punta) y el cargador no la trata como calco. Con MUTAR=1 mira la taller-v13 y falla.",
+   "Capturas de cerca hechas en el taller (frente, tres cuartos y perfil) y antes y después al lado. Aún mal: en el juego las ondas de los pelos de la larga salen demasiado regulares; el bigote sigue pintado y plano; a los lados de la barbilla asoma algo de cuello; la larga va con la cabeza y no se mueve sola. Queda como tarea pendiente del hito de arte. En «Construir» y «Duelo» siguen los personajes de la taller-v12.",
+   "No comprobado: las fotos de cerca de la larga son de antes de subir un poco el contraste de los mechones (la forma es la misma); en el juego sí se ve la versión publicada."
+  ],
+  "pruebas": "Batería entera en la nube: 16 grupos correctos (54 min). Antes, aquí: las pruebas del taller (barbas, formas, pies, manos, tintes, prendas, cinturones) correctas.",
+  "capturas": "capturas/personaje-v25",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T00:24:27+00:00",
+  "fin": "2026-10-30T01:49:27+00:00",
+  "titulo": "Hito «El juego en el mundo de verdad»: los trozos del terreno, en un hilo aparte (carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "El suelo de cada trozo (alturas, normales, color por vértice con la concavidad de las vaguadas, y textura) se calcula en un hilo aparte (Web Worker, src/mundo/trozos_hilo.js); el hilo de dibujo solo monta la malla que llega hecha, con los búferes movidos sin copiar.",
+   "Nuevo src/mundo/terreno_trozos.js: con la posición del jugador, el gestor de trozos dice qué cargar, cambiar y soltar; lo que se pide va de cerca a lejos, y cada fotograma monta como mucho unos 20.000 vértices en PC y 12.000 en el móvil (unos cuatro trozos de cerca, o muchos de lejos), sin pasar de 3 ms. Un trozo que cambia de detalle guarda su malla vieja hasta que llega la nueva: no queda ningún agujero.",
+   "El color del suelo de cerca pasa a src/mundo/color_suelo.js, sin three.js, para que lo use igual el hilo; la vista «Como en el juego» del mapa usa la misma función (se ve igual que antes).",
+   "Para que la luz y el color casen en el borde de dos trozos, se calculan con una rejilla ampliada tres puntos por cada lado, con las alturas de verdad del vecino.",
+   "El código del hilo va dentro del mismo HTML (construir_mapa.mjs lo empaqueta antes): las versiones siguen siendo un solo archivo.",
+   "Nuevo banco de pruebas dist/kinhold_trozos.html: anda en línea recta por Whitholm con el terreno por trozos y mide los fotogramas al cruzar bordes, con el hilo aparte y, para comparar, sin él. No es una versión jugable: la vista «Como en el juego» con trozos es la siguiente tarea.",
+   "Medido en la nube (sin tarjeta gráfica, 3 hilos), andando 256 m y cruzando bordes: con el hilo, el trabajo de los trozos en el hilo de dibujo no pasa de 3 ms en ningún fotograma (PC y móvil); sin el hilo, hasta 13,8 ms en PC y 13,4 en el móvil, aun haciendo un solo trozo por fotograma. El fotograma más largo al cruzar un borde: 1.009 ms en PC y 664 ms en el móvil con el hilo, 1.002 y 652 ms sin él: ahí casi todo es dibujar sin tarjeta gráfica (unos 288.000 triángulos), así que no dice nada del fotograma en un aparato de verdad.",
+   "Decisiones provisionales: hasta 3 hilos (los núcleos menos uno) y 6 pedidos a la vez en cada uno.",
+   "No comprobado: los fotogramas en un PC o un móvil de verdad, con tarjeta gráfica; y la carga inicial con el hilo fue más lenta en la nube (27 s en PC) que sin él (15 s), porque los hilos se reparten los 4 núcleos con el dibujo sin tarjeta gráfica."
+  ],
+  "pruebas": "En la nube: los 17 grupos bien; la prueba nueva de navegador del terreno por trozos, 30 de 30, rota a propósito con MUTAR=1 (falla); en la de trozos en node, cuatro comprobaciones nuevas del suelo, rota con MUTAR=3 (falla)",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

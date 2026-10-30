@@ -9,6 +9,7 @@ import { modelosEspecies, ESPECIES } from '../mundo/especies.js';
 import { crearPaisaje, bosqueEn, azarCelda } from '../logica/paisaje.js';
 import { fbm } from '../logica/mapa.js';
 import { tr } from '../idioma.js';
+import { colorDelSuelo, lin, ROCAS_COLOR } from '../mundo/color_suelo.js';
 import { crearVistaJuego } from './juego.js';
 import { materialSuelo } from './suelo.js';
 import { crearMaterialAgua, atributosAgua, tiempoAgua, distanciaOrilla } from './agua.js';
@@ -18,38 +19,9 @@ const movil = Math.min(innerWidth, innerHeight) < 700;
 const N = movil ? 260 : 420;                     // vértices por lado
 const MAX_ARBOLES = movil ? 9000 : 32000;
 
-// color del suelo (0–1) por bioma: el del suelo que se ve bajo los árboles o en el prado, no el del mapa
-const SUELO = {
-  taiga: [0.36, 0.42, 0.29], caducifolio: [0.42, 0.5, 0.3], mixto: [0.45, 0.52, 0.32], encinar: [0.5, 0.5, 0.33],
-  pradera: [0.55, 0.6, 0.36], brezal: [0.5, 0.46, 0.38], matorral: [0.63, 0.58, 0.42], turbera: [0.4, 0.43, 0.32],
-  alpino: [0.55, 0.56, 0.45], nieve: [0.9, 0.91, 0.92],
-};
-const ROCA = { granito: [0.6, 0.56, 0.53], caliza: [0.74, 0.71, 0.63], pizarra: [0.42, 0.43, 0.47], arenisca: [0.68, 0.55, 0.41] };
-const ARENA = [0.76, 0.71, 0.58];
-
 let estado = null;
-// color del suelo (sRGB, 0–1) en un punto: bioma, más verde donde llueve, roca desnuda en lo empinado, playa y nieve
-export function colorDelSuelo(st, y, s, xm, ym) {
-  if (!st || !st.bioma) return [0.42, 0.46, 0.44];                                  // fondo del mar / cauce
-  let c = SUELO[st.bioma] || SUELO.pradera;
-  const verde = Math.max(-0.5, Math.min(0.5, st.P - 0.6)) + (fbm(xm / 420, ym / 420, 9, 3) - 0.5) * 0.6;
-  if (st.bioma !== 'nieve') c = [c[0] * (1 - 0.12 * verde), c[1] * (1 + 0.1 * verde), c[2] * (1 - 0.1 * verde)];
-  const roca = ROCA[st.roca] || ROCA.caliza;
-  // roca desnuda solo en las paredes de verdad (más de unos 45°); las cuestas, por empinadas que sean, con hierba
-  const r = Math.min(1, Math.max(0, (s - 0.85) / 0.4) + (st.bioma === 'alpino' ? 0.25 : 0));
-  c = c.map((v, n) => v + (roca[n] - v) * r);
-  if (r > 0) {
-    // en la pared, los estratos: franjas por la altura (como capas de roca), onduladas, y vetas más oscuras
-    const capa = Math.sin(y * 1.7 + fbm(xm / 60, ym / 60, 11, 2) * 7) * 0.5 + 0.5, veta = fbm(xm / 7, ym / 7 + y / 3, 13, 2);
-    const k = (1 - r * (0.16 * capa + 0.14 * Math.max(0, veta - 0.55) * 4)) * (1 - 0.28 * r);   // más oscura: lo que asoma entre las piezas de roca se lee como sombra
-    c = c.map(v => v * k);
-  }
-  if (y < 2.6 && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25) c = c.map((v, n) => v + (ARENA[n] - v) * (1 - y / 2.6)); // playa
-  if (st.T < -1.5 && s < 0.9) c = SUELO.nieve;
-  return c;
-}
-export const ROCAS_COLOR = ROCA;
-export const lin = (c) => Math.pow(Math.max(0, c), 2.2);
+// el color del suelo es lógica sin three.js (src/mundo/color_suelo.js): lo usa también el hilo de los trozos
+export { colorDelSuelo, lin, ROCAS_COLOR };
 // el agua (src/mapa/agua.js): la de lejos deja un hueco bajo el trozo de cerca, que lleva la suya con todo el detalle
 let matAguaLejos = null, matAguaCerca = null;
 export const aguaLejos = () => (matAguaLejos ||= crearMaterialAgua());

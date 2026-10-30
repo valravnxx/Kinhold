@@ -19,7 +19,8 @@ const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 const cache = new Map();
 const cargar = (url) => { if (!cache.has(url)) cache.set(url, cargador.loadAsync(url)); return cache.get(url); };
 
-const CALCO = /_(vello|barba_[a-z]+)$/;
+// calcos pintados sobre la piel; la barba larga no (desde taller-v14 es una malla con volumen, que se recorta)
+const CALCO = /_(vello|barba_(corta|bigote|perilla))$/;
 // Formas del modelo (peso, músculo, cara…): se ponen en la malla una vez, al cambiar el aspecto, y no en cada fotograma.
 // Con las formas en la GPU, cada vértice de cada pieza las recorre todas en cada fotograma aunque estén a 0, y el aspecto
 // casi nunca cambia. Cada personaje lleva su propia copia de las posiciones; lo demás (normales, UV, pesos de los huesos
