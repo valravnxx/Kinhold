@@ -66,6 +66,9 @@ comprobar('el giro de 170° a -170° pasa por 180° (camino corto)', Math.abs(Ma
 comprobar('un estado roto no vale (NaN, lejísimos, animación rara)',
   !validarEstado({ x: NaN, y: 0, z: 0, giro: 0, anim: 'andar' }) && !validarEstado({ x: 1e9, y: 0, z: 0, giro: 0, anim: 'andar' }) &&
   !validarEstado({ x: 0, y: 0, z: 0, giro: 0, anim: '<script>' }) && !!validarEstado({ x: 1, y: 0, z: 2, giro: 7, anim: 'correr' }));
+comprobar('el servidor solo cubre Whitholm: un estado fuera del cuadro de la isla no se admite, dentro sí',
+  !validarEstado({ x: -30000, y: 0, z: 0, giro: 0, anim: 'andar' }) && !validarEstado({ x: 0, y: 0, z: 40000, giro: 0, anim: 'andar' }) &&
+  !!validarEstado({ x: 20000, y: 50, z: -20000, giro: 0, anim: 'andar' }));
 const it = new Interpolador();
 it.meter({ t: 0, x: 0, y: 0, z: 0, giro: 0, anim: 'andar' }); it.meter({ t: 100, x: 1, y: 0, z: 0, giro: 0, anim: 'andar' });
 it.meter({ t: 50, x: 9, y: 0, z: 0, giro: 0, anim: 'andar' });   // desordenado: se ignora
