@@ -1,0 +1,31 @@
+
+== Construir construcción
+dist/kinhold_hito1.html 1943 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 1842 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1449 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 1916 KB
+
+== Construir demo única
+dist/kinhold_demo.html 2256 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1443 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 1849 KB
+
+== Navegador: duelo en línea (dos páginas y un servidor)
+  OK   pc: sin errores en la consola — []
+  OK   movil: sin errores en la consola — []
+
+TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 228 s
