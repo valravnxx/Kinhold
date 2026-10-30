@@ -1,0 +1,11 @@
+  OK   repetir el mismo cuadro da lo mismo
+  OK   los árboles de la parte en común, iguales en los dos cuadros — 815 y 815
+  OK   las piedras de la parte en común, iguales — 44
+  OK   la hierba de donde se solapan, igual — 796
+  OK   la hierba, solo dentro de su círculo
+  OK   nada en el mar, en la orilla ni en los ríos — 0 cosas en el agua
+  OK   cada árbol es de una especie de su bioma (o una conífera en el límite del bosque) — 1633 árboles, 0 fuera de su bioma
+  OK   en la isla salen varias especies — roble, fresno, abedul, abeto, haya
+  OK   más hierba en los claros que bajo el bosque cerrado — 71.7 frente a 36.5 matas por 100 m²
+
+Todo bien
