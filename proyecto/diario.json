@@ -2502,5 +2502,22 @@
   "pruebas": "En la nube: los 17 grupos bien; la prueba nueva de navegador del terreno por trozos, 30 de 30, rota a propósito con MUTAR=1 (falla); en la de trozos en node, cuatro comprobaciones nuevas del suelo, rota con MUTAR=3 (falla)",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T01:26:42+00:00",
+  "fin": "2026-10-30T02:38:49+00:00",
+  "titulo": "Hito 2: objetos en el suelo (carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Nuevo módulo src/logica/suelo.js, lógica pura sin three.js: lo que se suelta queda en el suelo con quién lo soltó y la hora a la que desaparece; soltar y coger son acciones con autor que se anotan en el registro, salgan bien o no.",
+   "Como dice el GDD: fuera de tus tierras desaparece pasada 1 hora real, contada por tiempo transcurrido (se guarda la hora, no un contador); dentro de tus tierras se queda; los troncos, la leña y las piedras no desaparecen nunca y lo que cae a menos de 1 m de una pila de lo mismo se suma a ella.",
+   "En la construcción (v39) y la demo (v44): «Soltar» deja lo de la mano o el hombro a tus pies y se ve donde cae; Usar junto a ello lo coge (de una pila, lo que quepa); un contenedor se suelta y se coge con lo que lleve dentro; se guarda en el navegador y lo que no cupo al cargar cae a tus pies.",
+   "Cómo se ve: ramas, piedras y sílex con los modelos de la recolección (la piedra, en montón), troncos y leña apilados con su corteza y los anillos en las puntas, y el hacha tumbada; lo demás, de momento, como un hatillo de lino atado.",
+   "Pruebas nuevas: lógica (pruebas/prueba_suelo.mjs, 40 comprobaciones) y navegador (pruebas/prueba_suelo_navegador.py, PC y móvil). Rotas a propósito con MUTAR=1: fallan.",
+   "Aún mal: el hatillo de lino es provisional (cada objeto tendrá su modelo); en línea, lo del suelo es de cada navegador (llega con «Inventario y recogida por el servidor»)."
+  ],
+  "pruebas": "En la nube: los 17 grupos bien (34 min); después de unir main, otra vez lógica, objetos en el suelo, demo y panel de inventario, bien. Las pruebas nuevas, rotas a propósito con MUTAR=1, fallan",
+  "capturas": "capturas/construccion-v39",
+  "estado": "ok"
  }
 ]

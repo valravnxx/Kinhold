@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-30T01:26:42+00:00",
-  "tarea": "Objetos en el suelo: soltar y coger del suelo; lo que se suelta fuera de un contenedor desaparece pasada 1 hora real (contado por tiempo transcurrido), salvo dentro de tus tierras; los troncos y las piedras se quedan como pila. Lógica pura con autor, en la demo y con pruebas",
-  "hito": "equipo",
-  "rama": "trabajo/20261030-0127"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-30T01:54:51+00:00",
   "tarea": "Arreglo (valravnx, 29 oct: «la capa que no es capa»): rehacer la capa del taller para que caiga de los hombros como una capa de verdad, revisada en capturas de cerca antes de enseñarla",

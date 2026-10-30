@@ -519,9 +519,9 @@
     },
     {
      "nombre": "Objetos en el suelo: soltar y coger del suelo; lo que se suelta fuera de un contenedor desaparece pasada 1 hora real (contado por tiempo transcurrido), salvo dentro de tus tierras; los troncos y las piedras se quedan como pila. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T01:26:42+00:00",
-     "rama": "trabajo/20261030-0127"
+     "fin": "2026-10-30T02:38:49+00:00"
     },
     {
      "nombre": "Tala de verdad sobre los árboles del mundo: el árbol joven se tala con hacha de piedra (da un tronco delgado y ramas) y el adulto con hacha de hierro (con piedra, muy lento; da un tronco largo y muchas ramas); el árbol cae, queda el tocón y vuelve a crecer en semanas reales, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
@@ -1666,6 +1666,13 @@
      "archivo": "jugar/demo/v44.html",
      "capturas": "capturas/personaje-v25",
      "notas": "En «Personaje», las barbas rehechas: la larga con volumen y la corta, el bigote y la perilla pelo a pelo."
+    },
+    {
+     "v": "v45",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v45.html",
+     "capturas": "capturas/construccion-v39",
+     "notas": "Objetos en el suelo en «Construir» (construcción v39)"
     }
    ]
   },
@@ -1925,6 +1932,13 @@
      "archivo": "jugar/construccion/v38.html",
      "capturas": "capturas/construccion-v38",
      "notas": "Si no llevas calzado, vas descalzo, como empieza el GDD (antes llevaba zapatos porque el cuerpo no tenía pies)."
+    },
+    {
+     "v": "v39",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/construccion/v39.html",
+     "capturas": "capturas/construccion-v39",
+     "notas": "Objetos en el suelo: «Soltar» deja lo que llevas a tus pies y Usar lo coge; fuera de tus tierras desaparece pasada 1 hora real; troncos, leña y piedras se quedan como pila"
     }
    ]
   },
