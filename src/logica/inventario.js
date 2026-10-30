@@ -52,6 +52,11 @@ export const TAMANOS = ['P', 'M', 'G', 'E'];
 const orden = t => TAMANOS.indexOf(t);
 export const PILA_POR_TAMANO = { P: 10, M: 3, G: 1, E: 1 };
 
+// Peso aproximado (kg) de lo que no es ropa: lo que lo tiene propio; el resto, por su tamaño (ver kilos()).
+export const KILOS = { tronco_delgado: 15, tronco_corto: 25, tronco_largo: 60, bloque_piedra: 80, piedra: 3, lena: 2,
+  hacha_mano: 1.2, hacha_piedra: 1.5, hacha_hierro: 1.8, espada: 1.3, escudo: 4, cuchillo: 0.2, agua: 0.5,
+  saco: 0.5, bandolera: 0.3, odre: 0.4, cordel: 0.05 };
+export const KILOS_TAMANO = { P: 0.3, M: 2, G: 12, E: 50 };
 export const MANOS = ['mano:der', 'mano:izq'];
 export const CAPAS = ['interior', 'piernas', 'abrigo', 'exterior', 'sobre', 'cabeza', 'guantes', 'pies'];
 export const LUGARES = [...MANOS, 'espalda', 'cintura', 'hombro', ...CAPAS.map(c => 'ropa:' + c)];
@@ -369,6 +374,15 @@ export class Inventario {
 
   // Lo que se multiplica la velocidad al moverse por lo que llevas (1 sin carga, 0,8 al máximo en todo).
   velocidad() { return factorVelocidad(this.lleno().fraccion); }
+
+  // Lo que pesa todo lo que llevas encima (kg): la ropa y la armadura (con su peso de src/logica/prendas.js) y lo que
+  // cargas, con lo que hay dentro. Para el nado (src/logica/nado.js). Decisión provisional (30 oct): lo que no tiene
+  // peso propio en KILOS, por su tamaño (pequeño 0,3 kg, mediano 2, grande 12, enorme 50).
+  kilos() {
+    const de = (c) => !c ? 0 : (PRENDAS[c.tipo] ? PRENDAS[c.tipo].peso : KILOS[c.tipo] ?? KILOS_TAMANO[this.def(c).tam] ?? 1) * (c.n || 1)
+      + (c.dentro ? c.dentro.reduce((s, x) => s + de(x), 0) : 0);
+    return Math.round(LUGARES.reduce((s, l) => s + de(this.lugares[l]), 0) * 100) / 100;
+  }
 
   exportarJugador() {
     return { lugares: Object.fromEntries(Object.entries(this.lugares).map(([k, v]) => [k, copiar(v)])), apartado: this.apartado.map(copiar) };

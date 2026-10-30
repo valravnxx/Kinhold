@@ -15,7 +15,7 @@ import { fbm } from '../logica/mapa.js';
 import { crearJugador } from '../juego/personaje.js';
 import { personajeElegido, recursosTaller } from '../mundo/eleccion.js';
 import { lin, poblarArboles, ROCAS_COLOR, aguaLejos, aguaCerca } from './cerca.js';
-import { atributosAgua, distanciaOrilla } from './agua.js';
+import { hacerLaminaAgua } from '../mundo/agua_lamina.js';
 import { materialSuelo } from './suelo.js';
 import { modelosRocaPared, materialRoca } from '../mundo/rocas.js';
 import { crearTerrenoTrozos } from '../mundo/terreno_trozos.js';
@@ -129,71 +129,9 @@ export function crearVistaJuego(est) {
       }
       if (j % 6 === 5) yield;
     }
-    // el agua en el trozo de cerca (ríos y mar): una lámina a la altura del agua sobre la misma rejilla; donde corta el
-    // terreno sale la orilla, lisa. Cada vértice lleva su hondura, la corriente del río y, en el mar, el oleaje (que se
-    // apaga en lo somero y en el borde del trozo, donde sigue el mar de lejos, plano)
-    const W = new Float32Array(n * n).fill(NaN), T = new Uint8Array(n * n);
-    let hayAgua = false;
-    for (let j = 0; j < n; j++) {
-      for (let i = 0; i < n; i++) {
-        const k = j * n + i, w = pai.agua(cx + x0 + i * PASO, cy + z0 + j * PASO, tramos);
-        if (w !== null) { W[k] = w; hayAgua = true; } else if (H[k] < 0.3) { W[k] = 0; T[k] = 1; hayAgua = true; }
-      }
-      if (j % 8 === 7) yield;
-    }
-    if (hayAgua) {
-      const pa = new Float32Array(n * n * 3), ia = [], fl = new Float32Array(n * n * 2), ho = new Float32Array(n * n), ti = new Float32Array(n * n), ol = new Float32Array(n * n);
-      for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
-        const k = j * n + i, x = x0 + i * PASO, z = z0 + j * PASO;
-        // un vértice seco junto al agua se queda a la altura del agua de al lado: la lámina sigue plana bajo la orilla
-        // (si bajara al terreno, en un cortado subiría como una cortina)
-        let yv = W[k];
-        if (isNaN(yv)) { let sm = 0, c = 0; for (let b = -1; b <= 1; b++) for (let a = -1; a <= 1; a++) { const ii = i + a, jj = j + b; if (ii >= 0 && jj >= 0 && ii < n && jj < n && !isNaN(W[jj * n + ii])) { sm += W[jj * n + ii]; c++; } } yv = c ? sm / c - 0.05 : H[k] - 0.5; }
-        pa.set([x, yv, z], k * 3);
-        if (isNaN(W[k])) continue;
-        ho[k] = Math.max(0, W[k] - H[k]); ti[k] = T[k];
-        if (T[k]) { const borde = Math.min(i, j, n - 1 - i, n - 1 - j) * PASO; ol[k] = suave(0.4, 4, ho[k]) * suave(4, 30, borde); }
-        else { const co = pai.corriente(cx + x, cy + z, tramos); fl[k * 2] = co.dx * co.vel; fl[k * 2 + 1] = co.dy * co.vel; }
-        if (i === n - 1 && j % 16 === 15) yield;
-      }
-      for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++) {
-        const a = j * n + i, b = a + 1, c2 = a + n, d = c2 + 1;
-        if (isNaN(W[a]) && isNaN(W[b]) && isNaN(W[c2]) && isNaN(W[d])) continue;
-        ia.push(a, c2, b, b, c2, d);
-      }
-      yield;
-      const ga = new THREE.BufferGeometry(); ga.setAttribute('position', new THREE.BufferAttribute(pa, 3)); ga.setIndex(ia); ga.computeVertexNormals();
-      // la orilla exacta: hondura con signo (negativa en seco, con el agua de al lado) y, en cada lado de la rejilla que
-      // cruza la orilla, dónde corta el agua; la distancia sale de ahí (no de los puntos), y la línea queda lisa
-      const seco = new Uint8Array(n * n), hs = new Float32Array(n * n), sem = new Float32Array(n * n).fill(NaN);
-      for (let k = 0; k < n * n; k++) { hs[k] = pa[k * 3 + 1] - H[k]; seco[k] = hs[k] <= 0 ? 1 : 0; }
-      for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
-        const k = j * n + i;
-        for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-          const ii = i + a, jj = j + b; if (ii < 0 || jj < 0 || ii >= n || jj >= n) continue;
-          const q = jj * n + ii; if (seco[k] === seco[q]) continue;
-          const t = hs[k] / (hs[k] - hs[q]);                   // de k (0) a q (1), dónde la hondura pasa por 0
-          const v = seco[k] ? -t * PASO : t * PASO;
-          if (isNaN(sem[k]) || Math.abs(v) < Math.abs(sem[k])) sem[k] = v;
-        }
-      }
-      yield;
-      // la poza de espuma al pie de cada salto de agua: se apaga en unos 15 m aguas abajo y a los lados
-      const es = new Float32Array(n * n);
-      for (const sa of pai.saltosEn(tramos)) {
-        const bx = sa.x - cx + sa.dx * 2, bz = sa.y - cy + sa.dy * 2, R = 8 + sa.ancho;
-        const i0 = Math.max(0, Math.floor((bx - R * 2 - x0) / PASO)), i1 = Math.min(n - 1, Math.ceil((bx + R * 2 - x0) / PASO));
-        const j0 = Math.max(0, Math.floor((bz - R * 2 - z0) / PASO)), j1 = Math.min(n - 1, Math.ceil((bz + R * 2 - z0) / PASO));
-        for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
-          const ux = x0 + i * PASO - bx, uz = z0 + j * PASO - bz, a = ux * sa.dx + uz * sa.dy, l = -ux * sa.dy + uz * sa.dx;
-          if (a < -2) continue;
-          es[j * n + i] = Math.max(es[j * n + i], Math.max(0, 1 - Math.hypot(a / (R * 1.8), l / R)));
-        }
-      }
-      atributosAgua(ga, { flujo: fl, hondo: ho, tipo: ti, ola: ol, orilla: distanciaOrilla(seco, n, PASO, 60, sem), espuma: es });
-      yield;
-      const lamina = new THREE.Mesh(ga, aguaCerca()); lamina.name = 'aguaCerca'; lamina.receiveShadow = true; g.add(lamina);
-    }
+    // el agua en el trozo de cerca (ríos y mar): src/mundo/agua_lamina.js, la misma que en el juego
+    const lamina = yield* hacerLaminaAgua({ pai, tramos, cx, cz: cy, x0, z0, n, paso: PASO, H, material: aguaCerca() });
+    if (lamina) g.add(lamina);
 
     // lo que crece y lo que hay en el suelo, con las reglas del bosque de lejos
     // El azar de cada cosa sale de su celda en el MUNDO (no del trozo de cerca) y de la semilla del mundo: así, al
