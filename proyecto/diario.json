@@ -2777,5 +2777,22 @@
   "pruebas": "Lógica de combate 129/129 (nuevas: modo direccional y dirección con el ratón; con MUTAR=1 fallan 38). Prueba de navegador nueva del combate en el mundo, PC y móvil, bien en la nube (con MUTAR=1 fallan 8). Batería entera en la nube: bien salvo «jugar en línea» y «duelo en línea», que fallan también en main y en las ramas de los carriles desde la salida al azar; valravnx: «aún no está el servidor, por eso falla», así que no paran la publicación. No comprobado: con ratón de verdad y bloqueo del puntero (en las pruebas se mueve por código), en un móvil de verdad, ni los fotogramas con varios rivales.",
   "capturas": "capturas/construccion-v42",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T15:26:49+00:00",
+  "fin": "2026-10-30T16:52:08+00:00",
+  "titulo": "Tronzar y partir, y el tronco corto al hombro (construcción v43, demo v54; carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Lógica pura nueva (src/logica/troceo.js): con un hacha en la mano, cada golpe a un tronco del suelo es una acción con autor y va al registro. El tronco largo se tronza en 3 o 4 troncos cortos (fijo por tronco) y el corto se parte en 6 de leña; lo que da cae a 1,2 m, de lado, y se suma a la pila de lo mismo. Sin hacha, lejos o con golpes demasiado seguidos, no se trocea; entre dos va más rápido. Lo que va a medias se guarda en el navegador.",
+   "Provisional, anotado en el registro: mientras no haya sierra de tronzar ni cuñas y mazo, se hace con el hacha sola; tronzar, 18 golpes con hierro y 54 con piedra (más que talar un adulto: «lento»); partir, 3 y 6. El tronco delgado no se tronza.",
+   "El tronco corto se lleva con las dos manos o al hombro (src/logica/inventario.js): al hombro va solo y deja las manos libres. En la demo, abajo, «Al hombro» y «A las manos» lo pasan de un sitio al otro. La leña va en el leñero (18: tres troncos partidos).",
+   "En la demo: Usar (F) junto a un tronco largo o corto tumbado, con un hacha en la mano, da un golpe cada 0,9 s y el aviso dice cuántos faltan. En el móvil, la línea de lo que llevas deja que los botones bajen de línea para que se lea el nombre.",
+   "Arreglo: de una pila de dos o más troncos (delgados o cortos) no se podía coger ninguno («No te cabe»); ahora se coge uno, con las dos manos.",
+   "Lo que aún está mal (revisión visual): el tronco en las manos o al hombro no se ve en el personaje (es la tarea «Lo que llevas se ve puesto»); el gesto de tronzar es el mismo de talar, con el hacha por encima del hombro; la pila de leña se ve pequeña (6 de leña son 3 trozos)."
+  ],
+  "pruebas": "Lógica de tronzar y partir 42/42 (nueva; con MUTAR=1 fallan 4). Prueba de navegador nueva en PC y móvil, bien (con MUTAR=1 falla). Batería entera en la nube (22 grupos): bien salvo «duelo en línea», que falla también en main desde la salida al azar (valravnx: «aún no está el servidor, por eso falla»).",
+  "capturas": "capturas/construccion-v43",
+  "estado": "ok"
  }
 ]

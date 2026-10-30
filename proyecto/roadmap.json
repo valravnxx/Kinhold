@@ -548,9 +548,10 @@
     },
     {
      "nombre": "Tronzar y partir: el tronco largo se tronza en 3–4 troncos cortos (con hacha, lento) y el tronco corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro y la leña en el leñero. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T15:27:34+00:00",
-     "rama": "trabajo/20261030-1527"
+     "rama": "trabajo/20261030-1527",
+     "fin": "2026-10-30T16:52:08+00:00"
     },
     {
      "nombre": "Obras con lo que llevas: el material que se entrega a una obra sale de lo que lleva el autor encima (o en su rastra o carretilla al lado), no de un montón común. El botón de rellenar del prototipo pasa a llenar el arcón de pruebas",
@@ -1813,6 +1814,13 @@
      "archivo": "jugar/demo/v53.html",
      "capturas": "capturas/construccion-v42",
      "notas": "En «Construir», el combate en el mundo: golpe cargado en la dirección del ratón, cambio de lado sin soltar, paradas por lado, rival de práctica y Fijar; en el móvil, la rosa fija."
+    },
+    {
+     "v": "v54",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/demo/v54.html",
+     "capturas": "capturas/construccion-v43",
+     "notas": "En «Construir», tronzar y partir: el tronco largo se tronza con hacha en 3 o 4 troncos cortos y el corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro."
     }
    ]
   },
@@ -2100,6 +2108,13 @@
      "archivo": "jugar/construccion/v42.html",
      "capturas": "capturas/construccion-v42",
      "notas": "Combate en el mundo: C o «Arma» saca la espada; en PC, golpe cargado con el clic izquierdo en la dirección del ratón y paradas por lado con el derecho, cambiables sin soltar; rival de práctica y Fijar; en el móvil, la rosa fija. La cámara se inclina hasta casi a ras de suelo."
+    },
+    {
+     "v": "v43",
+     "fecha": "2026-10-30",
+     "archivo": "jugar/construccion/v43.html",
+     "capturas": "capturas/construccion-v43",
+     "notas": "Tronzar y partir: con un hacha en la mano, Usar junto a un tronco largo tumbado lo tronza en 3 o 4 troncos cortos, y junto a un tronco corto lo parte en 6 de leña. El tronco corto se lleva con las dos manos o al hombro; la leña, en el leñero. Arreglo: de una pila de troncos ya se puede coger uno."
     }
    ]
   },
