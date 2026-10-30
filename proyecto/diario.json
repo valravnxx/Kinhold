@@ -2856,5 +2856,22 @@
   "pruebas": "Sin cambios de código",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T20:23:07+00:00",
+  "fin": "2026-10-30T22:21:29+00:00",
+  "titulo": "Lo que crece sigue al jugador por la isla (demo v57) (carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Lo que crece se hace por trozos de 32 m del mundo (vegetacionTrozo en src/logica/vegetacion.js, lógica pura): alrededor del jugador, los más cercanos primero y unos 4 ms en cada fotograma (3 en el móvil); la hierba, solo en los trozos de su círculo. Lo de lejos se suelta. Al empezar, todo de una vez, como antes.",
+   "Las mallas (árboles en sus tres bandas de detalle, hierba, flores, matas y piedras) se vuelven a poner alrededor de donde estás cada 10 m andados (8 m en el móvil) o cuando acaban de llegar trozos; los obstáculos de lo que crece se cambian sin tocar los demás (las peñas de lo que se recoge).",
+   "Lo talado no se pierde: cada árbol es el mismo obstáculo mientras su trozo está cargado; la tala (src/logica/tala.js) aprende a añadir y quitar árboles y ya no descarta al cargar lo de un árbol que aún no ha llegado (solo lo que no tiene forma de árbol); en cuanto vuelve, sale talado y con su tocón.",
+   "Decisión provisional (en el registro de la demo): volver a poner cada 10 m (8 m) y soltar a más de 264 m (194 m en el móvil), la hierba a más de 109 m (96 m).",
+   "Pruebas nuevas: en node, cuatro trozos juntos dan exactamente lo mismo que su cuadro (con MUTAR=2 falla) y la tala con árboles que llegan y se van (rota a propósito, falla); en el navegador, que tras andar 200 m lo que crece está alrededor del jugador, que lo de lejos se suelta, que al llegar de golpe a 700 m ningún fotograma pasa de 60 ms (con MUTAR=3, todo de golpe, 305 ms: falla) y que un árbol talado sigue talado y con su tocón al irse y volver.",
+   "Aún mal (no es de esta tarea): el suelo amarillento y los robles y fresnos de copa plana, que parecen de sabana, como en la v55."
+  ],
+  "pruebas": "En la nube, la batería entera: todo bien salvo jugar en línea y duelo en línea (no paran la publicación) y la demo en el mundo, que falló por la propia prueba nueva (medía el cuadro desde el personaje y no desde donde se puso) y por esperar poco en el PC (en la nube va a 1 fps); arreglada la prueba, la demo en el mundo y el juego en inglés bien en la nube. MUTAR=3 de la prueba del mundo pasado aquí: falla, como debe. Capturas de PC y móvil miradas (andando a 200 m de la salida, salida, bosque).",
+  "capturas": "capturas/demo-v57",
+  "estado": "ok"
  }
 ]

@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-30T20:23:07+00:00",
-  "tarea": "Lo que crece sigue al jugador por la isla: los árboles, la hierba y las piedras se rehacen a su alrededor poco a poco al andar (como en la vista «Como en el juego» del mapa), sin perder lo talado",
-  "hito": "mundo-juego",
-  "rama": "trabajo/20261030-2023"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-30T20:52:51+00:00",
   "tarea": "Toca y cuello de la ropa (visto en la revisión del 30 oct): el borde sale dentado y entre la toca y el cuello asoma una mancha de piel rota",
