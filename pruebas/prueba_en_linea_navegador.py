@@ -210,7 +210,8 @@ try:
         # La página se carga entera otra vez: sin tarjeta gráfica, conectar tardó a veces más de 20 s (medido el 28 oct: 27 s).
         comprobar('el móvil vuelve a entrar en línea', esperar(B, 'window.__demo && window.__demo.listo', 60000) and esperar(B, f"{K}.enLinea && {K}.enLinea.estado === 'conectado'", 60000))
         esperar(B, f'!{K}.mundoJ || {K}.mundoListo', 120000)
-        comprobar('con el mismo personaje (mismo autor)', B.evaluate(f"{K}.enLinea.red.yo") == yoB, B.evaluate(f"{K}.enLinea.red.yo"))
+        # el autor llega con la bienvenida del servidor, que en una máquina cargada puede tardar algo más que «conectado»
+        comprobar('con el mismo personaje (mismo autor)', esperar(B, f"{K}.enLinea.red.yo === {json.dumps(yoB)}", 30000), B.evaluate(f"{K}.enLinea.red.yo"))
         B.evaluate(f"Object.assign({K}.pj, {{ x: -1.0, z: 5.0, rot: -Math.PI * 0.25 }})")
         comprobar('PC sigue viendo a uno solo, no a uno más', esperar(A, f"{K}.enLinea.remotos.size === 1", 8000) and A.wait_for_timeout(1500) is None and A.evaluate(f"{K}.enLinea.remotos.size") == 1
                    and '1 más' in A.inner_text('#estadoRed'), A.inner_text('#estadoRed'))
