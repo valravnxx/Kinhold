@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 30 oct 2026 (06:43–06:53) — por el chat: comarcas con bordes naturales y zonas de clan
+valravnx: «habría que redondear los bordes de las comarcas, que no sean cuadriculados, sino por frontera más natural. Y luego cada una habría que dividirla en subzonas, como en un juego que conozco, donde al asentarte en un lado esa zona pasaba a ser tuya; no pueden ser tan grandes, tiene que ser una comarquita pequeñita». Después: «separaremos el mojón de construir de lo que se ponga para reclamar, ¿de acuerdo? Lo de reclamar será más para tema de clanes y tener zonas», y «1 km² aprox no suena mal, al final es donde haces un castillo; depende de cómo se vea en el mapa luego, si no, ampliamos». → Anotado en el GDD (apartado 11): zonas de clan de aproximadamente 1 km², aparte del mojón. El chat rehace las comarcas de Whitholm con bordes naturales y las divide en zonas.
+
 ### 30 oct 2026 (05:55) — por el chat: Despejar, barbas y capa, servidor, recursos y comarcas
 valravnx, a lo que le esperaba: «1 hecho, 2 se ven muy bien las nuevas, 3 en ello, esta tarde lo hago, 4 añade en las montañas una gran veta de hierro, 5 podemos ponernos con ello». → (1) El hito Despejar queda aprobado: hecho. (2) Las barbas nuevas (taller-v14) y la capa nueva (taller-v15) le parecen bien; el pulido de la capa sigue en el carril B. (3) El servidor de Hetzner lo crea él esta tarde: la decisión sigue abierta hasta entonces. (4) Recursos de Whitholm decididos: lo que ya tiene y además una gran veta de hierro en lo alto de la sierra; la pone esta sesión de chat en el generador del mapa. (5) Las comarcas de Whitholm se diseñan ahora en el chat.
 
