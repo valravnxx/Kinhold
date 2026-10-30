@@ -64,6 +64,7 @@ for (const m of constr.slice(constr.indexOf('function motivoSinApoyo')).matchAll
 // recoger del suelo y de las plantas: sus motivos, lo que se recoge (avisos) y el motivo de no caber en el inventario
 for (const m of leer('src/logica/recoleccion.js').matchAll(/motivo: '([^']+)'/g)) meter(m[1]);
 for (const d of Object.values(RECOLECTABLES)) meter(CATALOGO_REC[d.da].nombre);
+for (const m of leer('src/logica/troceo.js').matchAll(/'((?:Necesitas|Ahí no|Eso no|Está|Aún)[^']+)'/g)) meter(m[1]); // tronzar y partir: sus motivos
 for (const m of leer('src/logica/inventario.js').matchAll(/motivo: '(No te cabe[^']+)'/g)) meter(m[1]);
 for (const linea of leer('src/combate/logica.js').split('\n')) if (/(this|\w+)\.caer\(/.test(linea)) for (const m of linea.matchAll(/'([A-ZÁÉÍÓÚ][^']+)'/g)) meter(m[1]);
 
