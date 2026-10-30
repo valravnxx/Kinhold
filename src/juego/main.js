@@ -162,6 +162,13 @@ const recoleccion = crearRecoleccion({ raiz: escena, altura: decorado.altura, ob
 const sueloObjetos = crearSuelo({ raiz: escena, altura: decorado.altura, almacen, enTierras: (autor, x, z) => !!mundo.dentroDeTierra(x, z) });
 // los árboles se talan a golpes de hacha, caen, dejan tocón y vuelven a crecer (src/juego/tala.js)
 const talaV = crearTala({ raiz: escena, obstaculos, altura: decorado.altura, almacen, sueloObjetos });
+// en el mundo, lo que crece sigue al jugador: los árboles que llegan pasan por la tala (su tocón, si se taló) y los
+// que se van se sueltan; al ponerlos, los talados no se dibujan
+if (decorado.paso) {
+  decorado.enPie = (o) => talaV.enPie(o);
+  decorado.alLlegar = (lista) => talaV.anadir(lista);
+  decorado.alIrse = (ids) => talaV.quitar(ids);
+}
 // los troncos del suelo se tronzan (el largo, en 3–4 cortos) y se parten (el corto, en leña) a golpes de hacha
 const troceo = new Troceo(sueloObjetos.suelo);
 if (almacen) cargarTroceo(almacen, troceo, Date.now());
@@ -1432,7 +1439,8 @@ function golpeTroceo(id) {
 const msMundo = { max: 0, total: 0, n: 0 };
 let mundoListo = false;
 function pasoMundo() {
-  const ms = mundoJ.paso(pj.x, pj.z, { prisa: !mundoListo });
+  // y lo que crece, que también sigue al jugador (src/mundo/vegetacion_mundo.js): cuenta en el mismo tiempo
+  const ms = mundoJ.paso(pj.x, pj.z, { prisa: !mundoListo }) + (decorado.paso ? decorado.paso(pj) : 0);
   if (mundoListo) { msMundo.n++; msMundo.total += ms; if (ms > msMundo.max) msMundo.max = ms; }
   if (mundoJ.listo !== mundoListo) {
     mundoListo = mundoJ.listo;

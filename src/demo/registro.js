@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v57 (siempre en línea)';
+export const VERSION_DEMO = 'Demo única · v58 (lo que crece sigue al jugador)';
 export const REGISTRO_DEMO = [
+  "v58: en «Construir», lo que crece sigue al jugador por la isla: los árboles, la hierba, las matas y las piedras se hacen por trozos de 32 m a su alrededor, los más cercanos primero y unos pocos milisegundos en cada fotograma, y lo de lejos se suelta. Siempre lo mismo en cada sitio, y lo talado sigue talado (con su tocón) aunque te vayas lejos y vuelvas.",
+  "v58, provisional: las mallas de lo que crece se vuelven a poner alrededor de ti cada 10 m andados (8 m en el móvil) o cuando llegan trozos nuevos; lo de más de 264 m (194 m en el móvil) se suelta, y la hierba de más de 109 m (96 m).",
   "v57: siempre en línea (valravnx, 30 oct): el juego entra siempre al mundo del servidor de prueba, también desde la web, y es el único modo. En el menú, «Jugar» (Whitholm con los demás), «Duelo» (contra otro jugador) y «Personaje»; fuera el modo en solitario y las Opciones con la dirección del servidor. Sin servidor no se juega: un cartel lo dice, con un botón para volver a intentarlo.",
   "v57, provisional: quien tenía guardada en el navegador otra dirección del servidor (la de casa) entra ya al de todos; para probar con otro servidor, ?servidor= en la dirección. Las pruebas automáticas siguen entrando sin servidor con ?sinservidor=1, que no sale en ningún botón.",
   "v56: en «Construir», obras con lo que llevas: lo que se lleva a una obra sale de lo que llevas encima, no de un montón común. El montón común es ahora el arcón de pruebas del inventario («Materiales de obra», con lo que queda de cada uno), y «+ Materiales» lo llena.",
