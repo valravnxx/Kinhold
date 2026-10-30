@@ -2660,5 +2660,37 @@
   "pruebas": "En la nube: 17 de 18 grupos bien a la primera; «juego en inglés» falló a los 7 s (contexto de la página destruido por una navegación) y pasó entero aquí y al repetirlo en la nube. Tras unir main, repetidos en la nube lógica, demo, demo en el mundo, en línea, duelo en línea, inglés, personaje y web: bien; duelo en línea, jugar en línea y lógica (prueba_combate_servidor.mjs) fallaron una vez cada uno y pasaron al repetirlos (aquí, la del servidor 64/64 dos veces). Tras la última unión con main (tala y comarcas), solo los textos traducidos aquí: bien.",
   "capturas": "capturas/personaje-v28",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T11:37:13+01:00",
+  "fin": "2026-10-30T11:39:15+01:00",
+  "titulo": "Clanes en las comarcas: al GDD y al plan",
+  "hito": "tierras",
+  "hecho": [
+   "Diseño de valravnx al GDD (apartado 11, «Comarcas, zonas y clanes»): el centro del castillo toma la zona y la comarca; vasallos; renta en moneda por el trabajo en la comarca sin quitar nada a quien trabaja; atacar a quien trabaja o a un vasallo corta su renta un tiempo; ventana de asedio.",
+   "Lo que falta por fijar, como propuesta: qué cuenta como trabajo, tope por jugador y día, duración del corte, la ventana, qué pasa al caer el centro, cuántas zonas por clan y el abandono.",
+   "Vasallaje del apartado 17 puesto al día; dos preguntas nuevas para valravnx (las causas de guerra y si las comarcas de inicio se pueden tomar).",
+   "Hitos Tierras, Asedio y Economía con lo nuevo, para cuando los planifiquen los carriles."
+  ],
+  "pruebas": "Web regenerada; prueba de la web en la nube",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T09:57:34+00:00",
+  "fin": "2026-10-30T10:58:15+00:00",
+  "titulo": "Ropa cosida con su hechura y su tinte en el inventario, y la cota larga o corta (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Cada prenda del inventario lleva su hechura (material, corte, tejido) y su tinte: van con ella al quitársela, soltarla al suelo, cogerla y al guardar y cargar; dos prendas del mismo tipo con distinta hechura no se juntan. Lo que no vale vuelve a lo de siempre y lo de siempre no se apunta (los guardados de antes siguen igual). Lógica en src/logica/hechura.js (rasgosPrenda, vestidoDe, nombrePrenda) y src/logica/inventario.js.",
+   "La cota de malla tiene corte: larga hasta la rodilla o corta (no se cose en el banco: es de la forja). En el cargador, su falda se corta igual que la tela, con su sombra.",
+   "Puesta, se ve con su hechura y su tinte en el juego y en la demo; en línea se manda con el aspecto y se vuelve a mandar al cambiarse, y el servidor lo comprueba con la misma lógica (validarAspecto).",
+   "El juego pasa a los personajes de la taller-v17 (antes taller-v12, sin tintes): barbas, bigote y capa nuevos también en Construir y en el Duelo.",
+   "Mientras no se cosa en el banco, el arcón de pruebas trae «Ropa cosida (muestras)»; la ropa elegida en el visor entra en el inventario con su tinte y su hechura.",
+   "Publicado como construcción v41 y demo v51. Choques avisados: el carril A y el chat del combate cambian también src/juego/main.js (el chat, vestir() e iniciarEnLinea) y los registros: al fusionar, a mano."
+  ],
+  "pruebas": "Todas en la nube (20 grupos). Primera vuelta: fallaron el panel de inventario (error de sintaxis de la prueba nueva, arreglado), jugar en línea, duelo en línea y niveles de detalle (la misma falla salió en otra rama sin estos cambios); repetidos los cuatro: todo correcto. Prueba nueva en prueba_hechura.mjs (43) rota a propósito (sin rasgos al copiar: falla) y en la del inventario en el navegador (MUTAR_COSIDA: falla). Capturas miradas en PC y móvil.",
+  "capturas": "capturas/construccion-v41",
+  "estado": "ok"
  }
 ]

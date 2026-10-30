@@ -20,7 +20,8 @@
 //  - Recetas: las de sistemas.html (camisa y pantalón: 2 telas + hilo; gambesón: 4 telas + relleno + hilo; capa: 2 telas
 //    de lana; capucha: 1), en el banco. La tela del tejido elegido sale del telar; el tinte, de una tina con la planta.
 
-import { paletaDe } from './tintes.js';
+import { paletaDe, PRENDAS_TENIBLES, normalizarTintes } from './tintes.js';
+import { PRENDAS, DIBUJO_EN_OTRO_CUERPO, capasDibujo } from './prendas.js';
 
 export const MATERIALES_TELA = {
   lino: { nombre: 'Lino', natural: [206, 196, 172], grano: 0.035 },
@@ -55,6 +56,8 @@ export const HECHURAS = {
   manto:      { nombre: 'Manto',      materiales: ['lana'],         cortes: ['largo'],                   telas: 2, extra: {} },
   capucha:    { nombre: 'Capucha',    materiales: ['lana'],         cortes: ['largo'],                   telas: 1, extra: {} },
   toca:       { nombre: 'Toca',       materiales: ['lino'],         cortes: ['largo'],                   telas: 1, extra: {} },
+  // la cota de malla no se cose (es de anillas, de la forja): solo tiene corte, larga hasta la rodilla o corta
+  cota:       { nombre: 'Cota de malla', materiales: ['malla'],     cortes: ['largo', 'corto'],          telas: 0, extra: {}, forja: true },
 };
 
 // devuelve una hechura válida para esa prenda: { material, corte, tejido }. Lo que falte o no valga, el de siempre.
@@ -94,6 +97,7 @@ export function recetaHechura(prenda, h) {
   const n = normalizarHechura(prenda, h);
   if (!n) return null;
   const d = HECHURAS[prenda];
+  if (d.forja) return null; // la cota no sale del banco de coser
   const tela = `tela_${n.material}${n.tejido === 'liso' ? '' : '_' + n.tejido}`;
   return { estacion: 'banco', piden: { [tela]: d.telas, hilo: 1, ...d.extra } };
 }
@@ -109,4 +113,67 @@ export function coserPrenda({ autor, prenda, hechura, tinte = 'natural' }, tengo
   for (const [k, n] of Object.entries(r.piden)) if ((tengo[k] || 0) < n) falta[k] = n - (tengo[k] || 0);
   if (Object.keys(falta).length) return { falta };
   return { hecha: { prenda, hechura: normalizarHechura(prenda, hechura), tinte: Object.hasOwn(paletaDe(prenda), tinte) ? tinte : 'natural', autor }, gasta: r.piden };
+}
+
+// ---- La prenda que se lleva: su hechura y su tinte van con ella en el inventario ----
+// Cada prenda del inventario (src/logica/inventario.js) puede llevar { hechura, tinte }: los de cuando se
+// cosió. Sin ellos, la de siempre (como antes: los guardados viejos se ven igual). El material de la hechura es el de
+// la prenda del catálogo (la camisa de lana es de lana) si esa prenda lo admite; el gambesón (acolchado) lleva por
+// fuera lino o lana, el que diga su hechura. Devuelve solo lo que vale y no es lo de siempre: {} si no hay nada.
+export function rasgosPrenda(tipo, o) {
+  const p = PRENDAS[tipo];
+  if (!p || o === null || typeof o !== 'object') return {};
+  const r = {}, d = HECHURAS[p.dibujo];
+  if (d && o.hechura !== null && typeof o.hechura === 'object') {
+    const propio = d.materiales.includes(p.material) ? p.material : null;
+    const h = normalizarHechura(p.dibujo, { ...o.hechura, ...(propio ? { material: propio } : {}) });
+    const base = normalizarHechura(p.dibujo, propio ? { material: propio } : {});
+    if (h.material !== base.material || h.corte !== base.corte || h.tejido !== base.tejido) r.hechura = h;
+  }
+  if (PRENDAS_TENIBLES[p.dibujo] && typeof o.tinte === 'string' && Object.hasOwn(paletaDe(p.dibujo), o.tinte)) r.tinte = o.tinte;
+  return r;
+}
+// ¿Son la misma prenda (mismo tipo, hechura y tinte)? Las que no, no se juntan.
+export const mismosRasgos = (a, b) => JSON.stringify(rasgosPrenda(a.tipo, a)) === JSON.stringify(rasgosPrenda(b.tipo, b));
+
+// Lo que se ve puesto: con lo que lleva en sus lugares ropa:<capa>, las capas del taller, los tintes ({ prendas,
+// blason }) y las hechuras ({ pieza: hechura }) para el cargador (ponerCapas, ponerTintes, ponerHechuras). Las piezas
+// que no lleva puestas quedan con lo de siempre (el taller las lleva siempre: la camisa y las calzas bajo todo).
+// blason: el de la sobreveste (aún no va con la prenda: se elige en el visor).
+export function vestidoDe(lugares, sexo = 'hombre', blason = undefined) {
+  const cambia = DIBUJO_EN_OTRO_CUERPO[sexo] || {};
+  const puestas = Object.entries(lugares || {}).filter(([l, c]) => l.startsWith('ropa:') && c && PRENDAS[c.tipo]).map(([, c]) => c);
+  const tintes = {}, hechuras = {};
+  for (const c of puestas) {
+    const p = PRENDAS[c.tipo];
+    let d = p.dibujo;
+    if (d in cambia) d = cambia[d];
+    if (!d) continue;
+    const r = rasgosPrenda(c.tipo, c);
+    if (r.tinte) tintes[d] = r.tinte;
+    // sin hechura propia, la de su material (la camisa de lana se ve de lana)
+    const h = r.hechura || (HECHURAS[d] && HECHURAS[d].materiales.includes(p.material) ? { material: p.material } : null);
+    if (h && HECHURAS[d]) hechuras[d] = normalizarHechura(d, h);
+  }
+  return {
+    capas: capasDibujo(puestas.map(c => c.tipo), sexo),
+    tintes: normalizarTintes({ prendas: tintes, blason }, sexo),
+    hechuras: normalizarHechuras(hechuras),
+  };
+}
+
+// Nombre de una prenda con su hechura y su tinte, para el inventario: «Túnica de lana · corta, sarga · Rojo de rubia».
+export function nombrePrenda(tipo, o, tr = (x) => x) {
+  const p = PRENDAS[tipo];
+  if (!p) return '';
+  const r = rasgosPrenda(tipo, o), partes = [];
+  if (r.hechura) {
+    const d = HECHURAS[p.dibujo], b = [];
+    if (r.hechura.material !== d.materiales[0] && !d.materiales.includes(p.material)) b.push(tr(MATERIALES_TELA[r.hechura.material].nombre));
+    if (r.hechura.corte !== d.cortes[0]) b.push(tr(CORTES[r.hechura.corte].nombre));
+    if (r.hechura.tejido !== 'liso') b.push(tr(TEJIDOS[r.hechura.tejido]));
+    if (b.length) partes.push(b.join(', '));
+  }
+  if (r.tinte) partes.push(tr(paletaDe(p.dibujo)[r.tinte][0]));
+  return [tr(p.nombre), ...partes].join(' · ');
 }

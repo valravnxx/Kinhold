@@ -11,6 +11,9 @@ import { tr } from '../idioma.js';
 // alAbrir(enviar): conectado (también al volver); alMensaje(msg, ahora): cada mensaje, ya apuntado aquí;
 // alCortar(): se ha cortado (ya sin presencia); conectado(): la línea de estado cuando se está conectado (y el
 // servidor no es antiguo); bienvenida(direccion): el aviso al conectar; avisar(texto, mal); alEstado(texto).
+// lo que se guarda del aspecto de otro: cuerpo, ropa, personalización y, si vienen, los tintes y la hechura de su ropa
+const deAspecto = (a) => ({ sexo: a.sexo, capas: a.capas, aspecto: a.aspecto, ...(a.tintes ? { tintes: a.tintes } : {}), ...(a.hechuras ? { hechuras: a.hechuras } : {}) });
+
 export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienvenida, avisar, alEstado }) {
   const direccion = direccionServidor();
   let con = null, estado = 'conectando', antiguo = false, yo = null;   // antiguo: el servidor es de una versión anterior al juego
@@ -31,8 +34,8 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
       presencia.recibir(msg, ahora);
       if (msg.tipo === 'bienvenida') {
         estado = 'conectado'; yo = msg.autor; antiguo = servidorAntiguo(msg);
-        for (const a of msg.aspectos || []) aspectos.set(a.autor, { sexo: a.sexo, capas: a.capas, aspecto: a.aspecto });
-      } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, { sexo: msg.sexo, capas: msg.capas, aspecto: msg.aspecto });
+        for (const a of msg.aspectos || []) aspectos.set(a.autor, deAspecto(a));
+      } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, deAspecto(msg));
       else if (msg.tipo === 'sale') aspectos.delete(msg.autor);
       else if (msg.tipo === 'error') console.warn('Servidor:', msg.motivo);
       alMensaje(msg, ahora);

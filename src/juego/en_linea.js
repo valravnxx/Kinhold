@@ -20,7 +20,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
 
   cli = abrirCliente({
     alAbrir: (enviar) => {
-      if (aspecto) enviar({ tipo: 'aspecto', sexo: aspecto.sexo, capas: aspecto.capas, aspecto: aspecto.aspecto });
+      mandarAspecto();
       // fuera de la liza: quien viene del duelo en línea en la misma pestaña es el mismo jugador para el servidor,
       // y seguía en la liza, así que los demás no le dibujaban (valravnx, 28 oct)
       enviar({ tipo: 'combate', que: 'mundo' });
@@ -40,6 +40,12 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     alEstado,
   });
   const { presencia, aspectos } = cli;
+  // lo propio: cuerpo, ropa puesta (capas), personalización y los tintes y la hechura de la ropa. `aspecto` puede ser
+  // una función (lo que se lleva puesto cambia con el inventario): se vuelve a mandar con mandarAspecto()
+  function mandarAspecto() {
+    const a = typeof aspecto === 'function' ? aspecto() : aspecto;
+    if (a) cli.enviar({ tipo: 'aspecto', sexo: a.sexo, capas: a.capas, aspecto: a.aspecto, ...(a.tintes ? { tintes: a.tintes } : {}), ...(a.hechuras ? { hechuras: a.hechuras } : {}) });
+  }
 
   function quitar(autor) {
     const r = remotos.get(autor);
@@ -57,11 +63,11 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       siguen.add(e.autor);
       const asp = aspectos.get(e.autor) || { sexo: 'hombre', capas: [] };
       // sin personalización, la de por defecto (como la pone el servidor): así no se viste dos veces al llegar
-      const clave = asp.sexo + ':' + asp.capas.join(',') + ':' + JSON.stringify(normalizarAspecto(asp.aspecto, asp.sexo));
+      const clave = asp.sexo + ':' + asp.capas.join(',') + ':' + JSON.stringify(normalizarAspecto(asp.aspecto, asp.sexo)) + ':' + JSON.stringify([asp.tintes || null, asp.hechuras || null]);
       let r = remotos.get(e.autor);
       if (r && r.clave !== clave) { quitar(e.autor); r = null; }   // ha llegado su aspecto: se viste de nuevo
       if (!r) {
-        r = { j: crearJugador(recursos, asp.sexo, asp.capas, asp.aspecto), clave, x: e.x, z: e.z, vel: 0 };
+        r = { j: crearJugador(recursos, asp.sexo, asp.capas, asp.aspecto, { tintes: asp.tintes, hechuras: asp.hechuras }), clave, x: e.x, z: e.z, vel: 0 };
         r.j.raiz.userData.autor = e.autor;
         escena.add(r.j.raiz); remotos.set(e.autor, r);
       }
@@ -77,7 +83,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   }
 
   return {
-    red, direccion: cli.direccion, paso,
+    red, direccion: cli.direccion, paso, mandarAspecto,
     get estado() { return cli.estado; },
     get antiguo() { return cli.antiguo; },
     get remotos() { return remotos; },

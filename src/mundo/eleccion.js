@@ -7,20 +7,22 @@ export const CLAVE_PERSONAJE = 'kinhold_personaje_v2';
 // La carpeta de los personajes del taller propio que usan la construcción, el duelo y el visor del mapa (las versiones
 // publicadas viven en jugar/<prototipo>/ y los modelos en recursos/personajes/taller-vN/; las anteriores no se tocan).
 // Se puede cambiar con ?recursosMH= para las pruebas. Un solo sitio: al publicar un taller nuevo se cambia aquí.
-export const TALLER = 'taller-v12';
+export const TALLER = 'taller-v17';
 export const recursosTaller = () => new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/' + TALLER + '/';
 
 // la misma regla que el visor: si no se ha tocado la ropa, túnica en el hombre y vestido en la mujer
 export const capasPorDefecto = (sexo) => [sexo === 'mujer' ? 'vestido' : 'tunica'];
 
-// { sexo, capas, aspecto } del personaje elegido; null si nunca se ha elegido (se queda lo de cada prototipo)
+// { sexo, capas, aspecto, tintes, hechuras } del personaje elegido; null si nunca se ha elegido (se queda lo de cada prototipo)
 export function personajeElegido() {
   let e = null;
   try { e = JSON.parse(localStorage.getItem(CLAVE_PERSONAJE) || 'null'); } catch (err) { return null; }
   if (!e || typeof e !== 'object') return null;
   const sexo = e.sexo === 'mujer' ? 'mujer' : 'hombre';
   const lista = e.capas && Array.isArray(e.capas[sexo]) ? e.capas[sexo] : capasPorDefecto(sexo);
-  return { sexo, capas: lista.filter(c => typeof c === 'string'), aspecto: normalizarAspecto(e.aspecto && e.aspecto[sexo], sexo) };
+  // los tintes y la hechura de la ropa elegida en el visor (desde el personaje v22 y v23), tal cual: los limpia quien los usa
+  const de = (k) => e[k] && typeof e[k] === 'object' && e[k][sexo] && typeof e[k][sexo] === 'object' ? e[k][sexo] : undefined;
+  return { sexo, capas: lista.filter(c => typeof c === 'string'), aspecto: normalizarAspecto(e.aspecto && e.aspecto[sexo], sexo), tintes: de('tintes'), hechuras: de('hechuras') };
 }
 
 // Capas del luchador en el duelo: la armadura manda (lo que protege es lo que se ve). Con «lino» va la ropa

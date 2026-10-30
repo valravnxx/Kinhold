@@ -392,7 +392,24 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span><b>Conquista:</b> se conquista destruyendo los mojones del enemigo. Si tienes un territorio de nivel alto, sus alrededores cuentan como tierra tuya, así que al quitar los mojones enemigos cercanos esa tierra pasa a ser tuya.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Nivel del mojón:</b> sube depositando materiales del nivel tecnológico correspondiente. Cuanto más alto el nivel, mayor el radio de exclusión y el territorio.</p>
 <p><span class="tag ok">DECIDIDO</span>Acceso a puertas y arcones por <b>permisos de familia</b>.</p>
-<p><span class="tag ok">DECIDIDO</span><b>Zonas de clan, aparte del mojón</b> (valravnx, 30 oct): el mojón sigue siendo lo de tu casa y lo que construyes (mantenimiento, protección, radio de exclusión). Además, cada comarca se divide en <b>zonas</b> fijas de aproximadamente 1 km² (donde cabe un castillo), con bordes naturales que siguen los arroyos y el relieve. Un clan reclama una zona con una pieza propia, distinta del mojón, y la zona sale en el mapa con su estandarte y su nombre. Si en el mapa se ven pequeñas, se amplían. Lo demás (la pieza, cómo se mantiene y qué se puede hacer en la zona) se decide con los clanes.</p>
+<h3>Comarcas, zonas y clanes</h3>
+<p><span class="tag ok">DECIDIDO</span><b>Aparte del mojón</b> (valravnx, 30 oct): el mojón sigue siendo lo de tu casa y lo que construyes (mantenimiento, protección, radio de exclusión). Lo de los clanes va aparte, con las comarcas y sus zonas. Aquí «clan» es la familia del apartado 17.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Zonas:</b> cada comarca se divide en zonas fijas de aproximadamente 1 km² (donde cabe un castillo), con bordes naturales y en curva. Cualquier clan puede tomar una zona levantando su castillo y poniendo en él el <b>centro</b>, una pieza propia, distinta del mojón. La zona sale en el mapa con su estandarte y su nombre. Si en el mapa se ven pequeñas, se amplían.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Tomar una comarca entera:</b> el centro es también lo que da la comarca. El clan que la tiene es su señor, y la comarca sale en el mapa con su estandarte. El castillo puede ir en cualquier sitio de la comarca.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Vasallos:</b> un clan que toma una zona en una comarca que ya tiene señor pasa a ser vasallo del clan principal. Sigue mandando en su zona (su castillo, sus puertas y sus permisos).</p>
+<p><span class="tag ok">DECIDIDO</span><b>Renta:</b> lo que se trabaja en la comarca le da renta al señor, sin quitarle nada a quien trabaja: quien tala cien troncos se queda sus cien, igual que en cualquier otro sitio. La renta no son objetos (los troncos hay que procesarlos y llevarlos): llega en <b>moneda</b> al centro, y el clan la gasta con los NPCs (mercenarios, ambulantes, mantenimiento…). Así al señor le conviene que en su comarca trabaje mucha gente, también los grupos pequeños, en vez de acosarlos.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Proteger sale a cuenta:</b> si el clan señor ataca o mata a alguien que trabaja en su comarca, la renta de esa persona deja de contar durante un tiempo. Puede atacar a un clan vasallo (por ejemplo, para echar a uno que cree que le va a quitar la comarca), pero pierde durante un tiempo la renta de todo ese clan.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Ventana de asedio:</b> el centro solo se puede asediar en su ventana. Entre una ventana y la siguiente va juntando la renta.</p>
+<div class="box p"><span class="tag prop">PROPUESTA</span> Lo que falta por fijar (del chat, 30 oct):
+<ul>
+  <li><b>Qué cuenta como trabajo:</b> talar, cavar, cosechar, cazar y construir. Lo que hace el propio clan señor no cuenta.</li>
+  <li><b>Tope de renta</b> por jugador y día, para que nadie la infle con cuentas de más.</li>
+  <li><b>El corte de renta</b> por atacar dura una semana real.</li>
+  <li><b>La ventana:</b> una vez por semana, unas 2 horas, a la hora que elige el clan.</li>
+  <li><b>Al caer el centro del señor,</b> la comarca pasa al clan que lo ha tirado si tiene su centro en ella (un vasallo que se rebela, por ejemplo); si no, queda libre y la toma el primer clan que ponga el suyo. Los vasallos siguen con sus zonas y pasan al nuevo señor.</li>
+  <li><b>Cuántas zonas:</b> un clan solo puede tener unas pocas, más cuanto más nivel tenga su centro.</li>
+  <li><b>Abandono:</b> un centro sin mantenimiento acaba dejando libre su zona y, si es el del señor, la comarca.</li>
+</ul></div>
 <div class="box p"><span class="tag prop">PROPUESTA</span> Reglas que se mantienen de la v0.3:
 <ul>
   <li>La tierra crece con lo construido dentro, no con el número de cuentas.</li>
@@ -488,11 +505,11 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <section id="social">
 <h2>17. Familias, alianzas y vasallajes</h2>
 <p><span class="tag ok">DECIDIDO</span>Familias, con PvP desactivado dentro.</p>
-<p><span class="tag ok">DECIDIDO</span><b>Vasallaje:</b> una alianza que exige un pago periódico. Si no se paga a tiempo, el señor tiene derecho a declarar la guerra.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Vasallaje</b> (actualizado el 30 oct): sale de la tierra. Un clan con una zona en una comarca que tiene señor es su vasallo (apartado 11), y lo que paga es la renta que da el trabajo en la comarca. Antes era una alianza con un pago periódico y, si no se pagaba, el señor podía declarar la guerra: cómo casa eso con el vasallaje de comarca queda pendiente (apartado 21).</p>
 <p><span class="tag ok">DECIDIDO</span><b>Alianzas:</b> el PvP entre aliados se desactiva solo si las dos partes lo activan.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Comunicación solo por proximidad.</b></p>
 <p><span class="tag ok">DECIDIDO</span><b>Editor de escudo de armas</b> propio para cada familia.</p>
-<p><span class="tag ok">DECIDIDO</span>El pago de vasallaje es <b>en moneda</b>.</p>
+<p><span class="tag ok">DECIDIDO</span>La renta y los pagos entre señores y vasallos son <b>en moneda</b>.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Cartas por mensajero NPC:</b> envías un mensajero a un asentamiento que conozcas; viaja hasta allí y entrega la carta a un miembro de tu familia que esté en ese lugar.</p>
 <div class="box m"><span class="tag method">MÉTODO</span>
 <ul>
@@ -592,7 +609,11 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 
 <section id="preguntas">
 <h2>21. Preguntas pendientes</h2>
-<p>Ninguna que frene el trabajo. El coste del servidor se medirá con 100 jugadores simulados en el hito 1f.</p>
+<p>El coste del servidor se medirá con 100 jugadores simulados en el hito 1f. Pendiente desde el 30 oct, con las comarcas de los clanes:</p>
+<ul>
+  <li><b>La guerra entre clanes</b> pedía una causa: el impago de un vasallaje. Con el vasallaje de comarca no hay un pago que dejar de hacer: ¿qué causas quedan? ¿Asediar un centro en su ventana necesita guerra declarada?</li>
+  <li><b>Las comarcas de inicio</b> (Motdale, Breiddal y Strandvang), ¿se pueden tomar? La propuesta de la v0.3 dice que no haya reclamaciones cerca de las zonas de inicio.</li>
+</ul>
 </section>
 </div>
 </body>

@@ -14,6 +14,8 @@
 //                        { tipo: 'sale', autor }                                                  cuando alguien se va
 
 import { normalizarAspecto } from './aspecto.js';
+import { normalizarTintes } from './tintes.js';
+import { normalizarHechuras } from './hechura.js';
 import { SALIDA, dentroDeIsla } from './whitholm.js';
 
 export const CADA = 100;        // ms entre estados que manda cada cliente (10 por segundo)
@@ -41,6 +43,9 @@ export function validarEstado(m) {
 // que los demás lo vean como se eligió. Se manda una vez al conectar: { tipo: 'aspecto', sexo, capas, aspecto }.
 // La personalización (`aspecto`) se comprueba con la misma lógica que el visor (src/logica/aspecto.js): lo que no
 // exista se pone por defecto y los números se recortan. Si no viene, sale la de por defecto (clientes de antes).
+// Con la ropa puesta van su tinte y su hechura (`tintes`: { prendas, blason }; `hechuras`: { pieza: hechura }), los de
+// las prendas que lleva en el inventario; se comprueban igual (src/logica/tintes.js y hechura.js) y, si no vienen, no
+// se mandan (los demás lo ven con los de siempre). Se vuelve a mandar cada vez que cambia lo que lleva puesto.
 // Devuelve el aspecto limpio o null.
 export function validarAspecto(m) {
   if (!m || typeof m !== 'object') return null;
@@ -48,7 +53,10 @@ export function validarAspecto(m) {
   if (!Array.isArray(m.capas) || m.capas.length > 12) return null;
   if (!m.capas.every(c => typeof c === 'string' && /^[a-z_0-9]{1,24}$/.test(c))) return null;
   if (m.aspecto !== undefined && m.aspecto !== null && (typeof m.aspecto !== 'object' || Array.isArray(m.aspecto))) return null;
-  return { sexo: m.sexo, capas: [...m.capas], aspecto: normalizarAspecto(m.aspecto, m.sexo) };
+  for (const k of ['tintes', 'hechuras'])
+    if (m[k] !== undefined && m[k] !== null && (typeof m[k] !== 'object' || Array.isArray(m[k]))) return null;
+  return { sexo: m.sexo, capas: [...m.capas], aspecto: normalizarAspecto(m.aspecto, m.sexo),
+    ...(m.tintes ? { tintes: normalizarTintes(m.tintes, m.sexo) } : {}), ...(m.hechuras ? { hechuras: normalizarHechuras(m.hechuras) } : {}) };
 }
 
 export function normalizarAngulo(a) {

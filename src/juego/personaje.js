@@ -131,12 +131,13 @@ function empunarHacha(mh) {
 
 // Devuelve { raiz, animar(velocidad, dt, talando), cargado(), modo(), mh }. `recursos`: carpeta de los .glb del taller.
 // `sexo`, `capas` y `aspecto`: los del personaje elegido en el visor (por defecto, hombre con camisa y calzas, descalzo).
-export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], aspecto = undefined) {
+// `ropa`: { tintes, hechuras } de lo que lleva puesto (src/logica/hechura.js: vestidoDe); sin ella, los de siempre.
+export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], aspecto = undefined, ropa = {}) {
   const raiz = new THREE.Group();
   const muneco = crearMuneco();
   raiz.add(muneco);
   const j = { raiz, mh: null, error: null, modo: 'quieto' };
-  j.listo = crearPersonajeMH({ sexo, capas, aspecto }, recursos).then(mh => {
+  j.listo = crearPersonajeMH({ sexo, capas, aspecto, tintes: ropa.tintes, hechuras: ropa.hechuras }, recursos).then(mh => {
     raiz.remove(muneco);
     raiz.add(mh.raiz);
     j.mh = mh;
