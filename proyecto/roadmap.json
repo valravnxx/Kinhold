@@ -90,9 +90,15 @@
     },
     {
      "nombre": "Pruebas en la gráfica del PC de valravnx cuando lo permite (si no, en GitHub Actions)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T08:28:49+01:00",
-     "rama": "trabajo/20261031-0830-grafica"
+     "fin": "2026-10-31T09:02:45+01:00"
+    },
+    {
+     "nombre": "El servidor se actualiza solo con cada versión nueva de la demo",
+     "estado": "hecho",
+     "inicio": "2026-10-31T09:24:43+01:00",
+     "fin": "2026-10-31T09:31:02+01:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -950,13 +956,15 @@
     },
     {
      "nombre": "Capa de espalda (visto en la revisión del 30 oct): sale casi negra y lisa, sin pliegues a la vista",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T03:53:07+00:00",
-     "rama": "trabajo/20261031-0353"
+     "fin": "2026-10-31T08:03:53+00:00"
     },
     {
      "nombre": "Herramienta en la mano al trabajar (visto en la revisión del 30 oct): al picar el personaje no lleva pico",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T08:58:36+00:00",
+     "rama": "trabajo/20261031-0858"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -1262,6 +1270,12 @@
      "inicio": "2026-10-30T09:39:49+01:00",
      "rama": "trabajo/20261030-0945-combate",
      "fin": "2026-10-30T15:54:31+01:00"
+    },
+    {
+     "nombre": "Cuatro direcciones y ataque comprometido (valravnx, 31 oct): alto, izquierda, derecha y abajo para clavar (fuera el tajo bajo y el centro); el escudo para todo lo que viene de frente sin elegir lado; el golpe no cambia de dirección al cargarlo, y el botón de parar lo cancela con una finta (para parar o para empezar otro golpe)",
+     "estado": "en_curso",
+     "inicio": "2026-10-31T10:02:41+01:00",
+     "rama": "trabajo/20261031-1005-cuatro"
     }
    ],
    "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
@@ -1962,6 +1976,13 @@
      "archivo": "jugar/demo/v63.html",
      "capturas": "capturas/demo-v63",
      "notas": "En línea, lo que llevas es lo del servidor: el inventario, soltar y coger del suelo, talar, tronzar, partir y recoger pasan por el servidor con tu autor, y lo que dejas en el suelo y los tocones los ven todos y siguen ahí al volver."
+    },
+    {
+     "v": "v64",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v64.html",
+     "capturas": "capturas/personaje-v31",
+     "notas": "Capa de espalda (como en el personaje v31): lana sin teñir más clara y pliegues redondos y hondos que se ven también en sombra. Personajes en taller-v20."
     }
    ]
   },
@@ -2676,6 +2697,13 @@
      "archivo": "jugar/personaje/v30.html",
      "capturas": "capturas/personaje-v30",
      "notas": "Nacimiento del pelo y cejas: el pelo ya no corta en seco en la frente como un casquete (nace poco a poco y en el borde va pegado a la piel); las cejas asientan en el arco, más pobladas y sin trozos sueltos, en su propio calco con más resolución. Personajes en taller-v19."
+    },
+    {
+     "v": "v31",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/personaje/v31.html",
+     "capturas": "capturas/personaje-v31",
+     "notas": "Capa de espalda: ya no sale casi negra y lisa; lana sin teñir más clara, pliegues redondos y hondos de unos 14 cm que empiezan más arriba, el fondo de cada pliegue más oscuro en la tela (se ven también en sombra), y la vista «Espalda» de cuerpo entero. Personajes en taller-v20."
     }
    ]
   },

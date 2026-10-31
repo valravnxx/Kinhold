@@ -1,0 +1,12 @@
+# Cada 5 minutos mira si hay una versión nueva de la demo (servidor/nube/auto_actualizar.sh).
+[Unit]
+Description=Kinhold: mirar cada 5 minutos si hay una versión nueva
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+RandomizedDelaySec=30
+Persistent=true
+
+[Install]
+WantedBy=timers.target

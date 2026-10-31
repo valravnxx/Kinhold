@@ -35,8 +35,8 @@ const $ = (id) => document.getElementById(id);
 const CLAVE = 'kinhold_personaje_v2';
 // carpeta de los modelos: la versión publicada vive en jugar/personaje/, los modelos en recursos/personajes/v1/
 const RECURSOS = new URLSearchParams(location.search).get('recursos') || '../../recursos/personajes/v1/';
-// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v19/ (las anteriores publicadas no se tocan)
-const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v19/';
+// personajes del taller propio (MakeHuman vestido por código), en recursos/personajes/taller-v20/ (las anteriores publicadas no se tocan)
+const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/taller-v20/';
 // las 39 animaciones extra del taller propio, pasadas a su esqueleto (aparte: taller-anim-v1/)
 const DETALLE = +(new URLSearchParams(location.search).get('detalle') || 0);
 const RECURSOS_ANIM_MH = new URLSearchParams(location.search).get('animMH') || '../../recursos/personajes/taller-anim-v1/';
@@ -91,7 +91,7 @@ const VISTAS = {
   cuerpo:  () => [rel(0.9, 1.35, 3.1), rel(0, 0.9, 0)],
   cara:    () => { const y = alturaCara(); return [rel(0.22, y + 0.03, 0.78), rel(0, y - 0.02, 0)]; },
   perfil:  () => { const y = alturaCara(); return [rel(0.78, y + 0.02, 0.12), rel(0, y - 0.02, 0.02)]; },
-  espalda: () => [rel(-1.9, 1.4, -1.6), rel(0, 1.0, 0)],
+  espalda: () => [rel(-2.6, 1.3, -2.2), rel(0, 0.9, 0)], // de cuerpo entero (v31: antes cortaba por los muslos y la capa se veía sin el bajo, donde están los pliegues)
   pies:    () => [rel(0.55, 0.5, 1.35), rel(0, 0.14, 0)], // de cerca: zapatos, botas o descalzo
 };
 

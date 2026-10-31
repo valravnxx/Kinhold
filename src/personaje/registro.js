@@ -1,6 +1,7 @@
 // Decisiones tomadas en el personaje, para revisar.
-export const VERSION_PERSONAJE = 'Personaje · v30 (nacimiento del pelo y cejas)';
+export const VERSION_PERSONAJE = 'Personaje · v31 (capa de espalda)';
 export const REGISTRO_PERSONAJE = [
+  'v31: la capa de espalda ya no sale casi negra y lisa: la lana sin teñir es más clara, los pliegues son redondos, de unos 14 cm, más hondos y empiezan más arriba (la malla tiene casi el doble de columnas para dibujarlos), y el fondo de cada pliegue va más oscuro pintado en la tela, así se ven también en sombra. La vista «Espalda» es de cuerpo entero, con el bajo de la capa. Personajes en recursos/personajes/taller-v20/.',
   'v30: el pelo ya no corta en seco en la frente como un casquete: nace poco a poco en algo más de 1 cm, primero pelos sueltos que se van juntando, y el bulto del pelo corto crece desde el borde (en el borde va pegado a la piel). Las cejas asientan en el arco, justo encima del párpado, más pobladas, con la cabeza redondeada y los pelos hacia arriba junto a la nariz y hacia fuera en la cola. Personajes en recursos/personajes/taller-v19/.',
   'v30, aún mal: detrás de la oreja se ve una línea negra fina entre la oreja y la cabeza; justo detrás del nacimiento la cáscara del pelo sale algo más oscura que el pelo pintado.',
   'v29: entre el escote y el cuello ya no asoma una mancha de piel rota con huecos negros a los lados: la piel sigue bajo la ropa hasta bien por debajo de cualquier escote. Bajo la toca ya no va la cofia, que asomaba bajo la barbilla con el borde dentado. Personajes en recursos/personajes/taller-v18/.',

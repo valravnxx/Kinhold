@@ -6,7 +6,7 @@
 # a esa altura (en la malla que se ve), y el de lejos, como antes; una cerca, a ras del suelo de su sitio; el
 # personaje pisa el cimiento; la brocha redonda alisa un círculo. Capturas de cerca: la ladera antes y después.
 # MUTAR=1: los cimientos no alisan el suelo (se quitan las marcas antes de rehacer los trozos): tiene que fallar.
-import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver
+import sys, os, re, json, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
@@ -18,7 +18,7 @@ os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 for c in os.listdir(os.path.join(RAIZ, 'docs/recursos/personajes')):
     o = os.path.join(RAIZ, f'docs/recursos/personajes/{c}')
-    if os.path.isdir(o) and (c in ('v1', 'taller-anim-v1') or c.startswith('taller-v1')): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
+    if os.path.isdir(o) and (c in ('v1', 'taller-anim-v1') or re.fullmatch(r'taller-v\d+', c)): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))

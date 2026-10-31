@@ -6,10 +6,10 @@
   "rama": "trabajo/20261031-0726"
  },
  "B": {
-  "inicio": "2026-10-31T07:53:38+00:00",
-  "tarea": "Capa de espalda (visto en la revisión del 30 oct): sale casi negra y lisa, sin pliegues a la vista",
+  "inicio": "2026-10-31T08:58:36+00:00",
+  "tarea": "Herramienta en la mano al trabajar (visto en la revisión del 30 oct): al picar el personaje no lleva pico",
   "hito": "arte",
-  "rama": "trabajo/20261031-0353"
+  "rama": "trabajo/20261031-0858"
  },
  "chat:trabajo/20261031-0500-volver": {
   "inicio": "2026-10-31T05:00:43+00:00",
@@ -17,10 +17,10 @@
   "hito": "mundo-juego",
   "rama": "trabajo/20261031-0500-volver"
  },
- "chat:trabajo/20261031-0830-grafica": {
-  "inicio": "2026-10-31T08:28:49+01:00",
-  "tarea": "Pruebas en la gráfica del PC de valravnx cuando lo permite (si no, en GitHub Actions)",
-  "hito": "infra",
-  "rama": "trabajo/20261031-0830-grafica"
+ "chat:trabajo/20261031-1005-cuatro": {
+  "inicio": "2026-10-31T10:02:41+01:00",
+  "tarea": "Cuatro direcciones y ataque comprometido (valravnx, 31 oct): alto, izquierda, derecha y abajo para clavar (fuera el tajo bajo y el centro); el escudo para todo lo que viene de frente sin elegir lado; el golpe no cambia de dirección al cargarlo, y el botón de parar lo cancela con una finta (para parar o para empezar otro golpe)",
+  "hito": "duelo",
+  "rama": "trabajo/20261031-1005-cuatro"
  }
 }

@@ -6,6 +6,12 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (09:01 UTC) — por el chat: cuatro direcciones y ataque comprometido
+valravnx: «pequeño cambio en el combate, el bloqueo está god como está, con escudo sí es verdad que no hay direccional, bloquea todo lo que tenga delante (no golpes desde lados o atrás), lo que quitaría el golpe bajo, clavar será el golpe bajo, porque bloquear o atacar a centro es hiper difícil, así que serán cuatro direcciones en vez de 5 simplificando el combate; luego, mientras el sistema de bloqueo está bien, meteremos un cambio al ataque: una vez seleccionas dirección, haces commit a esa dirección, pero se puede cancelar con el botón de bloqueo causando una finta, tanto para decidir bloquear como para comenzar otro ataque en otra dirección». → Tarea del chat en «Duelo», para el combate en el mundo.
+
+### 31 oct 2026 (08:23 UTC) — por el chat: el servidor, al día solo
+valravnx: «necesito que el servidor se actualice automáticamente con cada versión». → Tarea del chat en «Infraestructura»: el servidor de Hetzner mira cada pocos minutos si en main hay una versión nueva de la demo y, si la hay, se pone al día solo (el mundo no se toca). Para encenderlo, una vez, la actualización a mano de siempre.
+
 ### 31 oct 2026 (07:23 UTC) — por el chat: las pruebas en la gráfica de su PC
 valravnx: «créame un programa para poder usar tú la gráfica de mi PC en tus procesos cuando yo lo permita (noches sobre todo); que lo que hagan tus tests sea: comprobar si tengo el programa encendido, si sí, usarlo para los testeos, si no, ir a GitHub Actions; así no me usas el PC mientras juego pero sí cuando no estoy en casa». → Tarea del chat en «Infraestructura»: un programa para Windows que, mientras está abierto y con permiso, deja a GitHub Actions usar su PC (máquina propia de GitHub, «self-hosted runner»); las pruebas miran primero si está encendido.
 
