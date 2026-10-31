@@ -530,6 +530,12 @@
      "estado": "en_curso",
      "inicio": "2026-10-31T05:00:43+00:00",
      "rama": "trabajo/20261031-0500-volver"
+    },
+    {
+     "nombre": "Tejados pisables y menú de Usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en Usar (o dejándolo pulsado en el móvil), se elige qué usar si hay varias cosas al alcance",
+     "estado": "en_curso",
+     "inicio": "2026-10-31T10:05:51+00:00",
+     "rama": "trabajo/20261031-1006-tejados"
     }
    ]
   },
