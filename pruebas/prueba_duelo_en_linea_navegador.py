@@ -2,6 +2,7 @@
 # una en PC y otra en móvil, que pelean entre sí. El servidor resuelve los golpes y las dos ven los mismos golpes y heridas.
 # Uso: python3 pruebas/prueba_duelo_en_linea_navegador.py <html de la demo> <carpeta_capturas>
 # MUTAR=1 tira las intenciones de combate que manda cada página (como si no se mandaran): la prueba tiene que fallar.
+import time
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket
 from playwright.sync_api import sync_playwright
 
@@ -45,6 +46,16 @@ def tapado(pg, sel):
 def esperar(pg, cond, ms=20000):
     try: pg.wait_for_function(cond, timeout=ms, polling=250); return True
     except Exception: return False
+# como esperar, pero preguntando desde aquí: con el servidor apagado, wait_for_function no llegaba a ver la condición
+# aunque se cumplía (aquí y en la nube, desde el 31 oct; evaluate sí la ve)
+def sondear(pg, cond, ms=20000):
+    fin = time.time() + ms / 1000
+    while time.time() < fin:
+        try:
+            if pg.evaluate(cond): return True
+        except Exception: pass
+        time.sleep(0.25)
+    return False
 def captura(pg, ruta):
     # con la otra página dibujando sin tarjeta gráfica, a veces la captura falla a la primera
     for i in range(4):
@@ -209,7 +220,7 @@ try:
 
         print('El servidor se apaga')
         servidor.terminate(); servidor.wait(5)
-        comprobar('PC dice que se ha cortado (y que vuelve a conectar) y ya no ve al otro', esperar(A, f"document.getElementById('estadoRed').textContent === 'Volviendo a conectar…' && {D}.otros.size === 0", 20000),
+        comprobar('PC dice que se ha cortado (y que vuelve a conectar) y ya no ve al otro', sondear(A, f"document.getElementById('estadoRed').textContent === 'Volviendo a conectar…' && {D}.otros.size === 0", 20000),
                   f"estado: {A.inner_text('#estadoRed')} · otros: {A.evaluate(f'{D}.otros.size')}")
         comprobar('sin conexión no se ataca', not A.evaluate(f"{D}.atacar('alto')"))
         for nombre, (pg, err) in paginas.items():
