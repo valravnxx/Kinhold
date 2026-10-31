@@ -3177,6 +3177,24 @@
   "estado": "fallo"
  },
  {
+  "inicio": "2026-10-31T11:09:01+00:00",
+  "fin": "2026-10-31T13:25:55+00:00",
+  "titulo": "Las pruebas en la gráfica del PC de valravnx, funcionando (chat con valravnx)",
+  "hito": "infra",
+  "hecho": [
+   "Visto en GitHub: desde las 09:07 todos los grupos que cogía el PC de valravnx fallaban en el primer paso con «bash: command not found», y se repetían en la nube. Git para Windows solo pone Git\\cmd en el PATH, no su bash, y los pasos del flujo van en bash.",
+   "Arreglado en el flujo de pruebas, sin tocar nada en su PC: un primer paso en PowerShell pone el bash de Git y el Python de su usuario (3.10) en el PATH, y la salida de Python en UTF-8. En Windows, setup-node va sin la caché de GitHub (restaurarla llegó a tardar 10 min) y pip va con python -m pip.",
+   "Ya prueba con su tarjeta: ANGLE con la NVIDIA GeForce RTX 3060 (Direct3D 11). La prueba de construcción tarda 3,8 min en su PC; en la nube, 46 y 52 min hoy.",
+   "Con la tarjeta salieron fallos que en la nube no se veían, arreglados: el navegador «nuevo» sin pantalla pedía /favicon.ico (404; ahora se prueba primero el de la nube, que también llega a la tarjeta); en Windows, el servidor de páginas de las pruebas rechazaba conexiones que no cabían en su cola de 5 (la web; sitecustomize.py la pone en 128, solo en su PC); los enlaces simbólicos piden administrador (volver donde lo dejaste; se hace una unión de carpeta).",
+   "Dos pruebas iban a destiempo a velocidad real: en combate, Espacio en verde llegaba tarde desde Python (la ventana es de 0,25 s) y ahora se pulsa desde la propia página; en construcción, el muro pide 4 troncos que no caben encima de una vez y la obra empezaba con material de menos y se paraba al medio segundo: la prueba ahora hace varios viajes.",
+   "Visto y no arreglado aquí (es del juego): Usar en una obra con parte del material entrega lo que llevas y se pone a construir, y al medio segundo para con «Primero hay que llevarle todo el material». En la nube no se veía porque a 2 fps la prueba miraba antes.",
+   "El nombre de rama demasiado largo al repetir en la nube lo del PC ya lo arreglan otras dos ramas (cuatro direcciones y mapa del rey): pruebas_nube.mjs se queda como en main."
+  ],
+  "pruebas": "Batería entera con el PC de valravnx encendido: 25 grupos en su tarjeta y la lógica en la nube, 41 min; todo bien salvo «jugar en línea» (exento hasta la fase 2) y «volver donde lo dejaste» (el enlace simbólico; arreglado y repetido en su PC, bien). Construcción, combate y web cambiados, también bien en la nube.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-31T11:49:59+00:00",
   "fin": "2026-10-31T11:49:59+00:00",
   "titulo": "Decidido: las animaciones de cargar las hacemos nosotros (chat con valravnx)",
@@ -3207,5 +3225,55 @@
   "pruebas": "Todas en la nube (26 grupos, sin el PC de valravnx: su programa fallaba al repartir con un nombre de rama demasiado largo). En la primera vuelta fallaron lógica (la prueba de lo que crece, por la lista nueva de sitios; arreglada), jugar en línea, lo que llevas en línea y duelo en línea; al repetirlas pasaron todas menos jugar en línea, que falla en cosas distintas cada vez y también en main. valravnx: «jugar en línea ya no existe, hizo merge con jugar al ser ahora todo full online».",
   "capturas": "capturas/demo-v67",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T11:54:23+00:00",
+  "fin": "2026-10-31T13:32:29+00:00",
+  "titulo": "Hito 3: recetas que conoce cada personaje y desbloqueo por práctica (carril B)",
+  "hito": "crafting",
+  "hecho": [
+   "Cada personaje guarda las recetas de estación que conoce y su práctica en cada tipo de estación (lógica pura, src/logica/fabricacion.js); lo que no conoce no se encarga y no gasta nada.",
+   "Construir una estación da sus recetas básicas; cada cosa hecha en una estación de ese tipo y recogida por su autor cuenta una vez de práctica y abre las siguientes. El registro de acciones anota lo que aprende cada uno.",
+   "Decisión provisional: lo que se hace con las manos lo sabe todo el mundo. Hoguera: todo básico. Piedra de tallar: básica la lasca de sílex, y el hacha de piedra con 1 cosa hecha (el primer día: «una lasca y un hacha»). Banco de tronco: básicas la cuerda, las cestas de recolección y la pala; con 3 cosas hechas, el cinturón de cuerda, la trampa de lazo, el cubo, el cesto de pescador y la nasa; con 6, la azada, la hoz de sílex y el mayal.",
+   "Decisión provisional: la práctica es de cada uno y por tipo de estación (vale también la de otro), pero usar la estación de otro sin haber construido una de ese tipo no da sus básicas (más adelante, los tomos). Anotado en el código y aquí; no en el registro de la demo porque aún no hay versión jugable que lo enseñe.",
+   "Guardado con migración: el formato de la fabricación pasa a la versión 2 con lo que sabe cada uno; un guardado de la versión 1 se carga y quien colocó cada estación conoce sus básicas, sin práctica.",
+   "Herramienta: con el PC de valravnx apagado, pruebas_nube.mjs no podía pasar los grupos a la nube (el nombre de la rama del pedido pasaba de 255 bytes); se lanzaron con SOLO_NUBE=1. No se toca aquí porque la rama del chat sobre la gráfica cambia ese archivo."
+  ],
+  "pruebas": "En la nube, la batería entera (26 grupos, sin el PC de valravnx): bien todos salvo «jugar en línea», que falla en «PC se pone a construir» y lo que sigue (también en main; valravnx, 31 oct: «jugar en línea ya no existe»); esta tarea no toca código que use el juego. Tras unir main, lógica bien otra vez en la nube. Prueba de fabricación 88/88; rota a propósito (sin mirar lo que se conoce, o con la práctica de más) falla 4.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T10:05:51+00:00",
+  "fin": "2026-10-31T14:35:39+00:00",
+  "titulo": "Tejados pisables y clic derecho para usar (chat con valravnx)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Los tejados terminados se pisan: desde el andamio se sale al alero y se sube por la pendiente hasta la cumbrera, así que un tejado entero se hace con un solo andamio (antes se atravesaban y caías). Si te sales del tejado, caes al suelo; un tejado en obras aún no se pisa.",
+   "Clic derecho en lo que quieras usar: sale un menú junto al puntero con esa cosa y lo muy cercano a tu alcance (obras, puertas, chimenea, escaleras y andamios, talar, trocear, coger del suelo, recoger). En el móvil, el dedo quieto medio segundo encima; el clic de levantar el dedo no elige nada. Usar a secas sigue igual.",
+   "El botón derecho ya no gira la cámara (la gira la rueda pulsada), como pidió valravnx; la ayuda lo dice.",
+   "Pruebas nuevas: alto de la cara del tejado en cada punto (lógica), andar por el tejado, el menú del clic derecho en PC y el del dedo quieto en el móvil. Rotas a propósito una vez (MUTAR=1, __sinPisarTejados, __menuUsarSinPuntero): fallan.",
+   "Publicado como demo v68."
+  ],
+  "pruebas": "Todas en la nube (el PC de valravnx fallaba en el primer paso de cada grupo, «Sin cambiar los finales de línea», y se mandaron solo a la nube): todo bien salvo «jugar en línea» y «duelo en línea» (fallan también en main mientras no esté el servidor de verdad). Tras el último arreglo del móvil y tras unir main se repitieron construcción, demo única y juego en inglés: bien. En el primer intento, «niveles de detalle del personaje» falló una vez en «el panel dice cuántos hay en cada nivel» y al repetirlo pasó.",
+  "capturas": "capturas/demo-v68",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T11:22:19+00:00",
+  "fin": "2026-10-31T14:03:16+00:00",
+  "titulo": "Hito 2: lo que llevas se ve puesto en el personaje (carril A, sin publicar)",
+  "hito": "equipo",
+  "hecho": [
+   "Lo que llevas se ve en el personaje del taller: el cinturón (cordel, cuerda trenzada o los tres cintos de cuero, con hebilla y anillas) y lo que cuelga de sus huecos (el hacha por el cinto, el cuchillo en su funda, la espada envainada, una bolsa o un hatillo); a la espalda el leñero, el porta-piedras y la mochila de bastidor con sus correas, el zurrón, el fardo, los cestos, la caja de herramientas, el carcaj y el escudo, con lo de dentro asomando; al hombro el saco, la bandolera, el odre o un tronco corto; y en las manos la piedra, la rama, la leña o la herramienta.",
+   "Se ajusta a cada cuerpo y a su ropa: al ponerlo se miden los vértices del cuerpo vestido (sin brazos ni cabeza) y cada pieza se ata a un hueso (pelvis, espalda o mano) y lo sigue al animarse. Lo grande en las dos manos va entre las dos manos con la animación de llevar en brazos.",
+   "En línea, lo que se ve que lleva cada uno lo saca el servidor de su inventario y lo reparte con el aspecto (y otra vez cuando cambia); lo que diga el navegador no se cree. Lógica pura en src/logica/llevado.js.",
+   "Pruebas nuevas: prueba_llevado.mjs (del inventario a lo que se ve, lo que llega por la red, y el servidor con dos clientes; con MUTAR=1, un servidor que se fía del cliente, falla) y prueba_llevado_navegador.py (cada pieza en su sitio del cuerpo, siguiendo a su hueso al andar; con MUTAR=1 falla), con capturas de cerca en PC y móvil. La prueba de la construcción mira los modos de andar con las manos vacías y comprueba que con un tronco en brazos anda con la animación de llevar.",
+   "No se publica: en la nube fallan «jugar en línea», «duelo en línea», «la demo en el mundo» y una vez la de combate en el servidor, cada vez con un fallo distinto (verse el uno al otro, la reconexión, la vegetación en el agua, una intención rechazada); la de combate en el servidor pasa tres veces seguidas aquí. «Jugar en línea» falla hoy en todas las ramas (lo anotó el carril B). El PC de valravnx seguía fallando en el primer paso («bash: command not found»), así que todo fue a la nube. La tarea queda a medias en trabajo/20261031-1123, lista para publicar como demo v67 en cuanto pasen.",
+   "Aún mal (visto en las capturas): las correas de la mochila hacen un quiebro delante; el hacha colgada llega casi a la pantorrilla; el cuero es liso, más plano que la madera de la v5; al hombro, el tronco y el saco no los sujeta la mano (la animación se hará en el taller)."
+  ],
+  "pruebas": "En la nube: lógica, construcción (tras arreglar su prueba), lo que llevas se ve puesto, lo que llevas en línea, panel de inventario, personaje y el resto bien; fallan jugar en línea, duelo en línea y la demo en el mundo. No comprobado: si esos fallos pasan en main sin este cambio.",
+  "capturas": "",
+  "estado": "fallo"
  }
 ]

@@ -7,8 +7,12 @@
 import os, sys, json
 from playwright.sync_api import sync_playwright
 
-# de la más corriente en Windows a la de último recurso (con ventana, fuera de la pantalla)
+# de la más corriente en Windows a la de último recurso (con ventana, fuera de la pantalla). Primero el navegador sin
+# pantalla de siempre (el de la nube): el otro («chromium», el nuevo modo sin pantalla) pide /favicon.ico, que las
+# pruebas no sirven, y sale un 404 en la consola que en la nube no sale.
 MANERAS = [
+    (None, True, ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist', '--enable-webgl']),
+    (None, True, ['--use-angle=d3d11on12', '--enable-gpu', '--ignore-gpu-blocklist', '--enable-webgl']),
     ('chromium', True, ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist', '--enable-webgl']),
     ('chromium', True, ['--use-angle=d3d11on12', '--enable-gpu', '--ignore-gpu-blocklist', '--enable-webgl']),
     ('chromium', True, ['--use-angle=gl', '--enable-gpu', '--ignore-gpu-blocklist', '--enable-webgl']),

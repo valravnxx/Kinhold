@@ -699,6 +699,19 @@ export function geometriaTejados(c) {
   return res;
 }
 
+// Alto (en tramos, sobre lo alto de los muros de debajo) de la cara de arriba de un tejado en el punto (lx, lz), local
+// de la construcción, dentro de su casilla. tj: lo de esa pieza en geometriaTejados. Sirve para pisar el tejado
+// (valravnx, 31 oct: «los tejados deben poder ser pisables para poder construir tejados con un solo andamio»).
+export function altoTejadoEn(p, tj, lx, lz) {
+  const u = Math.min(1, Math.max(0, lx / MODULO - p.i)), v = Math.min(1, Math.max(0, lz / MODULO - p.j));
+  const d = p.dir || 0, w = [2 * u - 1, 2 * v - 1];
+  const z = (w[0] * SUBE[d][0] + w[1] * SUBE[d][1] + 1) / 2, x = (w[0] * X_LOCAL[d][0] + w[1] * X_LOCAL[d][1] + 1) / 2;
+  const forma = tj && tj.forma;
+  if (forma === 'tesa') return Math.min(z, x);
+  if (forma === 'hoya') return Math.max(z, x);
+  return ((tj && tj.arranque) || 0) + z;
+}
+
 // ---------- Chimenea (hogar interior) ----------
 // La chimenea (pieza hogar, hueco 'h') de la casilla (i, j), terminada o en obras, o null. Solo va en la planta baja.
 export function hogarEn(c, i, j) {

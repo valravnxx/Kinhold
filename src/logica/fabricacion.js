@@ -24,6 +24,19 @@
 //    (no hay hueso), refugio de ramas (es una obra), carretilla (no hay rodaja de tronco), zurrón y chaleco (no hay
 //    piel limpia), vendas, y lo de cocinar y calentarse en la hoguera.
 //  - Lo terminado va donde quepa en lo que llevas (como lo recogido del suelo); si no cabe, sigue en la estación.
+//
+// Recetas que conoce cada personaje (GDD, apartado 9): construir una estación le da sus recetas básicas y practicar en
+// ellas (cada cosa fabricada en una estación de ese tipo y recogida por su autor cuenta una vez) abre las siguientes.
+// Decisiones provisionales (el GDD no las fija; anotadas en el diario):
+//  - Lo que se hace con las manos lo sabe todo el mundo desde el principio (no hay estación que construir).
+//  - Hoguera: todo es básico (lanza endurecida y antorchas). Piedra de tallar: básica la lasca de sílex; el hacha
+//    de piedra se abre con 1 cosa hecha en ella (el primer día, apartado 11: «una lasca y un hacha de piedra»).
+//    Banco de tronco: básicas la cuerda, las cestas de recolección y la pala de madera (lo que sigue al primer día);
+//    con 3 cosas hechas, el cinturón de cuerda, la trampa de lazo, el cubo, el cesto de pescador y la nasa; con 6,
+//    la azada, la hoz de sílex y el mayal (el campo).
+//  - La práctica es de cada personaje y por tipo de estación (vale cualquier estación de ese tipo, también la de
+//    otro). Usar la estación de otro sin haber construido una de ese tipo no da las básicas: hace falta construir
+//    una (o, más adelante, un tomo que las enseñe).
 import { CATALOGO } from './inventario.js';
 
 export const ALCANCE_ESTACION = 2.5; // m, del jugador a la estación
@@ -71,6 +84,16 @@ export const RECETAS = {
   hoz_silex:         r('Hoz de sílex', 'banco_tronco', 'hoz_silex', { rama: 1, lasca_silex: 3 }, 45),
   mayal:             r('Mayal', 'banco_tronco', 'mayal', { rama: 2, cuerda: 1 }, 45),
   cubo:              r('Cubo de madera', 'banco_tronco', 'cubo', { tronco_corto: 1 }, 60),
+};
+
+// Por tipo de estación: las recetas básicas (al construirla) y las siguientes con la práctica que piden.
+export const SABER = {
+  hoguera:       { basicas: ['lanza_endurecida', 'antorcha', 'antorcha_resina'], siguientes: {} },
+  piedra_tallar: { basicas: ['lasca_silex'], siguientes: { hacha_piedra: 1 } },
+  banco_tronco:  {
+    basicas: ['cuerda', 'cesta_recoleccion', 'cesta_juncos', 'pala_madera'],
+    siguientes: { cuerda_trenzada: 3, trampa_lazo: 3, cubo: 3, cesto_pescador: 3, nasa: 3, azada: 6, hoz_silex: 6, mayal: 6 },
+  },
 };
 
 const tiene = (o, k) => typeof k === 'string' && Object.hasOwn(o, k);
@@ -128,12 +151,40 @@ function gastarTodo(gasta, inv, arcones) {
 const textoFaltan = f => 'Te falta: ' + Object.entries(f).map(([t, n]) => `${n} de ${(CATALOGO[t] || {}).nombre || t}`).join(', ') + '.';
 
 // ---------------- Estaciones y colas ----------------
-export const VERSION_FABRICACION = 1;
+export const VERSION_FABRICACION = 2;
 export class Fabricacion {
   constructor() {
     this.estaciones = {}; // id → { id, tipo, x, z, autor, cola: [{ autor, receta, empieza, fin }] }
     this.manos = {};      // autor → [{ autor, receta, empieza, fin }]
     this.siguiente = 1;
+    this.saber = {};      // autor → { conoce: Set de recetas de estación, practica: { tipo de estación: n } }
+  }
+
+  // ---- Lo que sabe cada personaje ----
+  saberDe(autor) { return (this.saber[autor] ||= { conoce: new Set(), practica: {} }); }
+  conoce(autor, receta) {
+    if (!tiene(RECETAS, receta)) return false;
+    if (RECETAS[receta].donde === 'manos') return true;
+    return tiene(this.saber, autor) && this.saber[autor].conoce.has(receta);
+  }
+  practica(autor, tipo) { return tiene(this.saber, autor) && tiene(this.saber[autor].practica, tipo) ? this.saber[autor].practica[tipo] : 0; }
+  // Aprende lo que le toca de un tipo de estación (las básicas si la ha construido, y las que abre su práctica).
+  // Devuelve las recetas nuevas.
+  aprender(autor, tipo, basicas) {
+    const s = this.saberDe(autor), nuevas = [], sb = SABER[tipo];
+    const meter = k => { if (!s.conoce.has(k)) { s.conoce.add(k); nuevas.push(k); } };
+    if (basicas) sb.basicas.forEach(meter);
+    const n = this.practica(autor, tipo);
+    for (const [k, pide] of Object.entries(sb.siguientes)) if (n >= pide) meter(k);
+    return nuevas;
+  }
+  // Las recetas de un tipo de estación para un personaje: las que conoce (en el orden de RECETAS) y cuántas le quedan
+  // por conocer (sin decir cuáles).
+  recetasDe(autor, tipo) {
+    if (!tiene(ESTACIONES, tipo)) return { conocidas: [], porConocer: 0 };
+    const todas = Object.keys(RECETAS).filter(k => RECETAS[k].donde === tipo);
+    const conocidas = todas.filter(k => this.conoce(autor, k));
+    return { conocidas, porConocer: todas.length - conocidas.length, practica: this.practica(autor, tipo) };
   }
 
   // Colocar una estación en (x, z): gasta su coste de lo que llevas y de los arcones a pocos pasos de ese sitio.
@@ -148,7 +199,7 @@ export class Fabricacion {
     const usado = gastarTodo(e.coste, inv, cerca);
     const id = `${tipo}:${this.siguiente++}`;
     this.estaciones[id] = { id, tipo, x, z, autor, cola: [] };
-    return { ok: true, id, usado };
+    return { ok: true, id, usado, aprendidas: this.aprender(autor, tipo, true) };
   }
 
   // La cola de una estación (o de las manos de un autor).
@@ -158,6 +209,7 @@ export class Fabricacion {
   fabricar(autor, receta, estacion, pos, inv, arcones, ahora) {
     if (!tiene(RECETAS, receta)) return { ok: false, motivo: 'Esa receta no existe.' };
     const rc = RECETAS[receta];
+    if (!this.conoce(autor, receta)) return { ok: false, motivo: 'Aún no sabes hacer eso.' };
     let sitio = pos, cola, max = COLA_MANOS;
     if (rc.donde === 'manos') {
       if (estacion) return { ok: false, motivo: 'Eso se hace con las manos.' };
@@ -190,12 +242,12 @@ export class Fabricacion {
   // Recoger lo terminado del autor en una estación (o de sus manos): va a lo que lleva, donde quepa; lo que no cabe
   // sigue esperando.
   recoger(autor, estacion, pos, inv, ahora) {
-    let cola;
+    let cola, tipo = null;
     if (estacion) {
       const e = tiene(this.estaciones, estacion) ? this.estaciones[estacion] : null;
       if (!e) return { ok: false, motivo: 'Ahí no hay estación.' };
       if (dist(e, pos) > ALCANCE_ESTACION) return { ok: false, motivo: 'Estás demasiado lejos de la estación.' };
-      cola = e.cola;
+      cola = e.cola; tipo = e.tipo;
     } else cola = this.colaDe(null, autor);
     const mios = cola.filter(c => c.autor === autor && ahora >= c.fin);
     if (!mios.length) return { ok: false, motivo: cola.some(c => c.autor === autor) ? 'Aún no está terminado.' : 'Aquí no tienes nada.' };
@@ -208,7 +260,14 @@ export class Fabricacion {
       dados.push({ objeto: rc.da, cantidad: rc.n, donde: m.donde });
     }
     if (!dados.length) return { ok: false, motivo: 'No te cabe: no tienes sitio libre.' };
-    return { ok: true, dados, quedan: sinSitio };
+    // la práctica: cada cosa recogida de una estación cuenta una vez para ese tipo de estación
+    let aprendidas = [];
+    if (tipo) {
+      const s = this.saberDe(autor);
+      s.practica[tipo] = (s.practica[tipo] || 0) + dados.length;
+      aprendidas = this.aprender(autor, tipo, false);
+    }
+    return { ok: true, dados, quedan: sinSitio, aprendidas };
   }
 
   exportar() {
@@ -217,12 +276,13 @@ export class Fabricacion {
       version: VERSION_FABRICACION, siguiente: this.siguiente,
       estaciones: Object.values(this.estaciones).map(e => ({ ...e, cola: copia(e.cola) })),
       manos: Object.fromEntries(Object.entries(this.manos).filter(([, l]) => l.length).map(([k, l]) => [k, copia(l)])),
+      saber: Object.fromEntries(Object.entries(this.saber).map(([k, s]) => [k, { conoce: [...s.conoce].sort(), practica: { ...s.practica } }])),
     };
   }
   // Lo guardado que no se entiende (estaciones o recetas que ya no existen) se descarta.
   importar(datos) {
     const d = migrarFabricacion(datos);
-    this.estaciones = {}; this.manos = {}; this.siguiente = 1;
+    this.estaciones = {}; this.manos = {}; this.siguiente = 1; this.saber = {};
     if (!d) return this;
     const bueno = c => c && typeof c.autor === 'string' && tiene(RECETAS, c.receta) && Number.isFinite(c.empieza) && Number.isFinite(c.fin);
     const limpia = l => (Array.isArray(l) ? l : []).filter(bueno).map(c => ({ autor: c.autor, receta: c.receta, empieza: c.empieza, fin: c.fin }));
@@ -232,12 +292,32 @@ export class Fabricacion {
     }
     for (const [k, l] of Object.entries(d.manos || {})) { const m = limpia(l); if (m.length) this.manos[k] = m; }
     this.siguiente = Number.isInteger(d.siguiente) && d.siguiente > 0 ? d.siguiente : 1;
+    // lo que sabe cada uno: solo recetas de estación que existen, y práctica entera y no negativa de estaciones que existen
+    for (const [k, s] of Object.entries(d.saber || {})) {
+      if (!s || typeof s !== 'object' || k in Object.prototype) continue;
+      const conoce = (Array.isArray(s.conoce) ? s.conoce : []).filter(r => tiene(RECETAS, r) && RECETAS[r].donde !== 'manos');
+      const practica = {};
+      for (const [t, n] of Object.entries(s.practica && typeof s.practica === 'object' ? s.practica : {}))
+        if (tiene(ESTACIONES, t) && Number.isInteger(n) && n > 0) practica[t] = n;
+      this.saber[k] = { conoce: new Set(conoce), practica };
+    }
     return this;
   }
 }
 
 // Paso de formatos antiguos al de ahora: MIGRACIONES_FABRICACION[v] pasa de v a v+1.
-export const MIGRACIONES_FABRICACION = {};
+export const MIGRACIONES_FABRICACION = {
+  // v1 no guardaba lo que sabe cada uno: quien había colocado una estación conoce sus básicas, sin práctica.
+  1: d => {
+    const saber = {};
+    for (const e of Array.isArray(d.estaciones) ? d.estaciones : []) {
+      if (!e || typeof e.autor !== 'string' || !tiene(SABER, e.tipo) || e.autor in Object.prototype) continue;
+      const s = (saber[e.autor] ||= { conoce: [], practica: {} });
+      for (const r of SABER[e.tipo].basicas) if (!s.conoce.includes(r)) s.conoce.push(r);
+    }
+    return { ...d, version: 2, saber };
+  },
+};
 export function migrarFabricacion(datos) {
   if (!datos || typeof datos !== 'object' || !Number.isInteger(datos.version)) return null;
   let d = datos;
@@ -269,6 +349,9 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, arcones 
   }
   const e = registro.anotar(accion || {}, res);
   e.ahora = ahora;
-  if (res.ok) e.resultado = res.id ? { estacion: res.id } : res.encargo ? { receta: res.encargo.receta, fin: res.encargo.fin } : { dados: res.dados.map(d => [d.objeto, d.cantidad]) };
+  if (res.ok) {
+    e.resultado = res.id ? { estacion: res.id } : res.encargo ? { receta: res.encargo.receta, fin: res.encargo.fin } : { dados: res.dados.map(d => [d.objeto, d.cantidad]) };
+    if (res.aprendidas && res.aprendidas.length) e.resultado.aprendidas = [...res.aprendidas];
+  }
   return res;
 }

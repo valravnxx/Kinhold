@@ -52,6 +52,22 @@ jobs:
       run:
         shell: bash
     steps:
+      # En Windows, Git solo pone Git\cmd en el PATH, no su bash: sin esto, todos los pasos con «shell: bash» fallaban
+      # al empezar («bash: command not found», 31 oct). Este paso va en PowerShell, que siempre está.
+      - name: El bash de Git en el PATH (en Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $git = @("$env:ProgramFiles\Git", "${env:ProgramFiles(x86)}\Git", "$env:LOCALAPPDATA\Programs\Git") | Where-Object { Test-Path "$_\bin\bash.exe" } | Select-Object -First 1
+          if (-not $git) { Write-Output '::error::No encuentro el bash de Git en este PC (Git para Windows).'; exit 1 }
+          Add-Content -Encoding ascii -Path $env:GITHUB_PATH -Value "$git\bin"
+          Add-Content -Encoding ascii -Path $env:GITHUB_PATH -Value "$git\usr\bin"
+          # y el Python que puso herramientas/pc_grafica (para su usuario), delante del atajo de la tienda de Windows
+          $py = Get-ChildItem "$env:LOCALAPPDATA\Programs\Python\Python3*\python.exe", "$env:ProgramFiles\Python3*\python.exe" -ErrorAction SilentlyContinue | Sort-Object FullName -Descending | Select-Object -First 1
+          if ($py) { Add-Content -Encoding ascii -Path $env:GITHUB_PATH -Value $py.DirectoryName; Add-Content -Encoding ascii -Path $env:GITHUB_PATH -Value "$($py.DirectoryName)\Scripts"; Write-Output "python: $($py.FullName)" }
+          # la salida de Python, en UTF-8 (en Windows sería cp1252 y fallaría con letras como → o ✓)
+          Add-Content -Encoding ascii -Path $env:GITHUB_ENV -Value 'PYTHONUTF8=1'
+          Write-Output "bash: $git\bin\bash.exe"
       - name: Sin cambiar los finales de línea (en Windows)
         if: runner.os == 'Windows'
         run: git config --global core.autocrlf false
@@ -59,7 +75,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
+          # en el PC de valravnx, sin la caché de GitHub (npm ya guarda lo suyo allí; restaurarla llegó a tardar 10 min)
+          cache: ${{ runner.os == 'Linux' && 'npm' || '' }}
       # en Windows, setup-python necesita permisos de administrador: en el PC de valravnx, el Python que pone
       # herramientas/pc_grafica (para su usuario)
       - uses: actions/setup-python@v5
@@ -69,7 +86,7 @@ jobs:
       - run: npm ci
       - name: Navegador y Python
         run: |
-          pip install -q playwright==1.63.0 pillow numpy
+          python -m pip install -q playwright==1.63.0 pillow numpy
           if [ "$RUNNER_OS" = Windows ]; then python -m playwright install chromium; else python -m playwright install --with-deps chromium; fi
       - name: En el PC, python3 es python y la tarjeta gráfica de verdad
         if: runner.os == 'Windows'

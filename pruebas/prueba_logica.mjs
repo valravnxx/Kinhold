@@ -1,6 +1,6 @@
 // Pruebas de la lógica de construcción de Kinhold. Ejecutar: node pruebas/prueba_logica.mjs
 // Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR.
-import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, polipastoPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, trampillaCerrada, progresoEscalera, salidaEscalera, hogarEn, huellaHogar, altoCanon, HOGAR, adarveEn, adarveDeEscalera, empalizadasDe, ALTO_ADARVE } from '../src/logica/construccion.js';
+import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, polipastoPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, trampillaCerrada, progresoEscalera, salidaEscalera, hogarEn, huellaHogar, altoCanon, HOGAR, adarveEn, adarveDeEscalera, empalizadasDe, ALTO_ADARVE, altoTejadoEn } from '../src/logica/construccion.js';
 import { PIEZAS, CLASE_PESO, MATERIALES } from '../src/logica/piezas.js';
 import { ejecutar, RegistroAcciones, seAbre, seEnciende, acabarObra } from '../src/logica/acciones.js';
 
@@ -925,6 +925,17 @@ console.log('22. Adarve (pasarela por detrás de la empalizada: tablas y postes,
   const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
   const p2 = adarveEn(m2.construcciones[0], 0, 0);
   comprobar('se guarda y se carga', p2 && p2.tipo === 'adarve' && p2.dir === 0);
+}
+
+{
+  console.log('\nTejado pisable: alto de su cara en cada punto de la casilla');
+  // valravnx, 31 oct: los tejados se pisan. Tramo de la casilla (0, 0) que sube hacia +j (dir 0) y otro hacia -i (dir 1)
+  const S = 2, cerca = (a, b) => Math.abs(a - b) < 1e-6;
+  const alto = (dir, arranque, lx, lz, forma) => altoTejadoEn({ i: 0, j: 0, dir }, { arranque, forma }, process.env.MUTAR === '1' ? lz : lx, process.env.MUTAR === '1' ? lx : lz);
+  comprobar('dir 0: en el alero 0, en lo alto 1 tramo, a media casilla 0,5', cerca(alto(0, 0, 1, 0), 0) && cerca(alto(0, 0, 1, S), 1) && cerca(alto(0, 0, 0.3, S / 2), 0.5));
+  comprobar('dir 1 (sube hacia -i): alto en i=0, alero en i=1', cerca(alto(1, 0, 0, 1), 1) && cerca(alto(1, 0, S, 1), 0));
+  comprobar('el segundo tramo de una pendiente arranca 1 tramo más arriba', cerca(alto(0, 1, 1, 0), 1) && cerca(alto(0, 1, 1, S), 2));
+  comprobar('remate de esquina: limatesa baja hacia los dos aleros, limahoya sube', cerca(alto(0, 0, 0, S, 'tesa'), 0) && cerca(alto(0, 0, S, S, 'tesa'), 1) && cerca(alto(0, 0, 0, S, 'hoya'), 1));
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
