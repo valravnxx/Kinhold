@@ -474,9 +474,10 @@
     },
     {
      "nombre": "Construir en el mundo, a la altura del suelo (valravnx, 30 oct: «relativamente prioritario»): lo que se coloca (piezas, muebles, objetos) se pone sobre el terreno de verdad, no en la altura 0, y los suelos de base alisan el terreno de debajo para construir encima; hoy quedan cosas flotando o hundidas. Es cambiar la malla del mundo, como al cavar: una acción con autor por la lógica pura, que el servidor guarda y reparte. Con la rejilla anclada al terreno y la brocha redonda para nivelar en ladera (GDD)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T00:22:40+00:00",
-     "rama": "trabajo/20261031-0022"
+     "rama": "trabajo/20261031-0022",
+     "fin": "2026-10-31T02:30:48+00:00"
     },
     {
      "nombre": "La brocha de nivelar en el juego: un botón en «Construir» y su fantasma redondo para alisar el suelo en ladera a mano (la acción con autor ya está en la lógica y en el servidor), y la hierba y las matas de alrededor de lo alisado a la altura nueva",
@@ -1905,6 +1906,13 @@
      "archivo": "jugar/demo/v59.html",
      "capturas": "capturas/personaje-v29",
      "notas": "Toca y cuello de la ropa: la piel sigue bajo el escote y bajo la toca ya no va la cofia (personajes en taller-v18)."
+    },
+    {
+     "v": "v60",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v60.html",
+     "capturas": "capturas/demo-v60",
+     "notas": "Construir a la altura del suelo: cada construcción queda a la altura del terreno donde empieza y los cimientos alisan el suelo de debajo; cercas y empalizadas siguen el suelo de su sitio, y el mojón y los muebles van en el suelo."
     }
    ]
   },
