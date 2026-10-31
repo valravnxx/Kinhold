@@ -636,9 +636,10 @@
     },
     {
      "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T09:24:25+00:00",
-     "rama": "trabajo/20261031-0924"
+     "rama": "trabajo/20261031-0924",
+     "fin": "2026-10-31T10:58:44+00:00"
     },
     {
      "nombre": "Animaciones de llevar al hombro y de arrastrar: no están en las bibliotecas de Quaternius; sacarlas de donde decida valravnx y pasarlas al esqueleto del taller",
