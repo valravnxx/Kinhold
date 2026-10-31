@@ -1,9 +1,4 @@
 {
  "A": null,
- "B": {
-  "inicio": "2026-10-31T17:57:59+00:00",
-  "tarea": "Animaciones de llevar al hombro y de arrastrar, hechas en el taller (valravnx, 31 oct): a partir de las que hay (andar con algo en brazos, empujar), moviendo brazos y tronco por código y pasadas al esqueleto del taller. El tronco al hombro tiene que notarse al moverse: hoy, un tronco solo al hombro apenas frena (la ralentización va por lo lleno que vas y así se queda en un 1 %)",
-  "hito": "equipo",
-  "rama": "trabajo/20261031-1757"
- }
+ "B": null
 }
