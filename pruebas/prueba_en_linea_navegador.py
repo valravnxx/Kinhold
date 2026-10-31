@@ -62,8 +62,11 @@ def captura(pg, ruta):
     try: pg.screenshot(path=ruta, timeout=90000)
     except Exception as e: print(f'  (sin captura {os.path.basename(ruta)}: {str(e)[:80]})')
 
+# LENTO: todas las esperas por 3 (31 oct: en la nube, con dos páginas del mundo y el servidor en una máquina sin tarjeta
+# gráfica, cada vuelta se agotaban esperas distintas sin que nada fallara de verdad; solo alarga cuando algo tarda)
+LENTO = float(os.environ.get('LENTO', '3'))
 def esperar(pg, cond, ms=20000):
-    try: pg.wait_for_function(cond, timeout=ms, polling=250); return True
+    try: pg.wait_for_function(cond, timeout=ms * LENTO, polling=250); return True
     except Exception: return False
 K = 'window.__kinhold'
 ASPECTO_PC = "{ piel: 'morena', ojos: 'verdes', pelo: 'rubio', formas: { altura: 1, peso: 0.8, cara: 0.6 } }"
@@ -95,7 +98,7 @@ try:
             if not movil:
                 pg.goto(URL)
                 pg.evaluate("localStorage.setItem('kinhold_personaje_v2', JSON.stringify({ sexo: 'mujer', capas: { mujer: ['vestido', 'gambeson'] }, aspecto: { mujer: " + ASPECTO_PC + " } }))")
-            pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
+            pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo', timeout=120000)
             j = pg.get_attribute('[data-ir=construir]', 'href') or ''
             comprobar(f'{nombre}: «Jugar» del menú va en línea, al servidor de la dirección', 'enlinea=1' in j and 'servidor=' in j, j)
             comprobar(f'{nombre}: el menú ya no tiene modo en solitario ni Opciones', pg.locator('a.parte').count() == 2 and pg.locator('#btnDemoOpciones').count() == 0 and pg.locator('#demoEnLinea').count() == 0)
@@ -225,7 +228,7 @@ try:
         B.evaluate(f"Object.assign({K}.pj, {{ x: 7.5, z: -6.0, rot: 0.8 }})")
         comprobar('PC ve al móvil en su sitio nuevo', esperar(A, f"(() => {{ const r = [...{K}.enLinea.remotos.values()][0]; return r && Math.hypot(r.x - 7.5, r.z + 6.0) < 0.3; }})()", 20000))
         t0 = time.time()
-        B.click('#btnDemoMenu', timeout=180000); B.wait_for_function('window.__demo && window.__demo.listo')
+        B.click('#btnDemoMenu', timeout=180000); B.wait_for_function('window.__demo && window.__demo.listo', timeout=120000)
         print(f'  (volver al menú: {time.time() - t0:.1f} s)')
         B.click('[data-ir=construir]'); B.wait_for_load_state('load')
         # La página se carga entera otra vez: sin tarjeta gráfica, conectar tardó a veces más de 20 s (medido el 28 oct: 27 s).
@@ -263,6 +266,9 @@ try:
         captura(A, f'{SALIDA}/pc_5_vuelve.png')
         captura(B, f'{SALIDA}/movil_5_vuelve.png')
         print('Sin servidor no se juega')
+        # las otras dos ya han terminado: se cierran (sus errores ya están apuntados), que tres páginas del mundo a la vez
+        # no caben en la máquina de la nube (31 oct: la tercera no llegaba a cargar en 3 minutos)
+        for pg, _ in paginas.values(): pg.close()
         ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True, locale='es-ES')
         if MUTAR_SIN: ctx.add_init_script("(() => { const a = Node.prototype.appendChild; Node.prototype.appendChild = function (n) { if (n && n.id === 'sinConexion') return n; return a.call(this, n); }; })()")
         C = ctx.new_page()
