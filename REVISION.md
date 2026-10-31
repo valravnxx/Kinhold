@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (14:20 UTC) — por el chat: fuera las pruebas en línea
+valravnx: «he dicho un millón de veces, la prueba de en línea LA BORRAS. NO SE VA A HACER NUNCA MÁS, NO EXISTE, DEJA ESAS PRUEBAS, NO LA VUELVAS A HACER». → Borradas las pruebas de navegador «jugar en línea» y «duelo en línea» (archivos y pasos de probar_todo.sh) y la regla, en CLAUDE.md.
+
 ### 31 oct 2026 (11:49 UTC) — por el chat: las animaciones de cargar, hechas por nosotros
 valravnx, respondiendo a la decisión de llevar al hombro y arrastrar: «las tratamos de hacer nosotros pues, es que cargue el tronco en el hombro con penalizacion a movimiento». → Opción (b): se hacen en el taller a partir de las que hay. La tarea en espera de «Equipo y carga por huecos» pasa a pendiente, y lleva también que el tronco al hombro se note al moverse.
 
