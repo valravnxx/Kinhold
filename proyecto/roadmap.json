@@ -652,7 +652,9 @@
     },
     {
      "nombre": "Animaciones de llevar al hombro y de arrastrar, hechas en el taller (valravnx, 31 oct): a partir de las que hay (andar con algo en brazos, empujar), moviendo brazos y tronco por código y pasadas al esqueleto del taller. El tronco al hombro tiene que notarse al moverse: hoy, un tronco solo al hombro apenas frena (la ralentización va por lo lleno que vas y así se queda en un 1 %)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T17:57:59+00:00",
+     "rama": "trabajo/20261031-1757"
     },
     {
      "nombre": "Lo que llevas se ve puesto en el personaje del taller: el cinturón y lo que cuelga de él, el leñero o la mochila a la espalda, el saco al hombro y lo que tienes en las manos, con el estilo v5. Capturas de cerca para valravnx",
