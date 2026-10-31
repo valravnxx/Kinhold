@@ -24,7 +24,7 @@ for c in ['v1', 'taller-v12', 'taller-v19', 'taller-anim-v1']:
     shutil.copytree(os.path.join(RAIZ, f'docs/recursos/personajes/{c}'), f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
-web = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
+web = socketserver.ThreadingTCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))   # con hilos: una descarga grande no deja esperando a la otra página
 threading.Thread(target=web.serve_forever, daemon=True).start()
 # hilos=1: un solo hilo para el terreno por trozos en cada página (sin tarjeta gráfica, dos páginas con tres hilos cada una
 # dejaban sin tiempo al dibujo y a la red)
@@ -260,7 +260,7 @@ try:
         base = URL.split('?')[0]
         # un enlace de antes, sin enlinea=1, entra en línea igual
         # en el llano: sin generar el mapa, que en la nube, con otras dos páginas abiertas, tardaba más que la espera
-        C.goto(base + '?modo=construir&llano=1&hilos=1&servidor=ws://127.0.0.1:1'); C.wait_for_load_state('load')
+        C.goto(base + '?modo=construir&llano=1&hilos=1&servidor=ws://127.0.0.1:1', wait_until='domcontentloaded', timeout=180000)
         comprobar('un enlace a «Construir» sin enlinea pasa a en línea', esperar(C, "location.search.includes('enlinea=1')", 20000), C.url)
         comprobar('sin servidor sale el cartel «Sin conexión», que tapa el juego', esperar(C, "!!document.getElementById('sinConexion')", 120000) and 'servidor' in C.inner_text('#sinConexion'))
         if not MUTAR_SIN:
