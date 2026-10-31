@@ -1439,5 +1439,8 @@
  "v66: el mapa sale de lo mismo que el mundo: la costa, los biomas y los ríos son los del juego (la costa del mapa es la que se ve al andar). El estilo, el de las cartas pintadas a mano: papel envejecido, líneas de agua a lo largo de la costa, montes de perfil con la sombra rayada, árboles uno a uno y las fronteras de rayas con una franja de color por dentro.": "v66: карта строится из тех же данных, что и мир: побережье, биомы и реки — игровые (берег на карте тот же, что видно при ходьбе). Стиль — как у карт, расписанных вручную: состаренная бумага, линии воды вдоль берега, горы в профиль со штрихованной тенью, деревья по одному и пунктирные границы с цветной полосой внутри.",
  "v66: el mapa se pinta poco a poco en cuanto el mundo está listo, sin parar el juego (en el PC, unos 2 s repartidos en pasos de menos de 25 ms); si lo abres antes, se termina de golpe («Desplegando el mapa…»).": "v66: карта рисуется понемногу, как только мир готов, не останавливая игру (на ПК около 2 с, разбитых на шаги короче 25 мс); если открыть её раньше, она дорисуется сразу («Разворачиваем карту…»).",
  "v66, provisional: dónde está la ciudad del rey, hasta que se haga su boceto: junto a la desembocadura del río principal de Strandvang, a unos 600 m río arriba, en un llano de pradera fuera del cauce (src/logica/whitholm.js, CIUDAD_REY). En el mundo aún no hay ciudad: solo está en el mapa.": "v66, временно: где стоит королевский город, пока не сделан его набросок: у устья главной реки Страндванга, примерно в 600 м вверх по течению, на луговой равнине вне русла (src/logica/whitholm.js, CIUDAD_REY). В мире города пока нет: он есть только на карте.",
- "Demo única · v66 (el mapa del rey)": "Единое демо · v66 (карта короля)"
+ "Demo única · v66 (el mapa del rey)": "Единое демо · v66 (карта короля)",
+ "Kinhold · Jugar": "Kinhold · Играть",
+ "Kinhold · Duelo": "Kinhold · Поединок",
+ "Kinhold · Personaje": "Kinhold · Персонаж"
 }
