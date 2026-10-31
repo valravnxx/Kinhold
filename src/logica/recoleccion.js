@@ -78,6 +78,16 @@ export class Recoleccion {
     this.porId = new Map(puntos.map(p => [p.id, p]));
     this.estado = {}; // id → { vuelve (ms), veces }
   }
+  // En el mundo, los puntos llegan y se van con los trozos de alrededor del jugador (src/logica/recogida_mundo.js): lo
+  // recogido de un punto que se va se guarda igual (en estado), y vuelve con él.
+  anadir(lista) {
+    for (const p of lista) if (!this.porId.has(p.id)) { this.puntos.push(p); this.porId.set(p.id, p); }
+  }
+  quitar(ids) {
+    const fuera = new Set(ids); if (!fuera.size) return;
+    this.puntos = this.puntos.filter(p => !fuera.has(p.id));
+    for (const id of fuera) this.porId.delete(id);
+  }
   disponible(id, ahora) {
     if (!this.porId.has(id)) return false;
     const e = this.estado[id];
@@ -105,13 +115,14 @@ export class Recoleccion {
     return { ok: true, objeto: d.da, cantidad: n, donde: r.donde, vuelve: this.estado[id].vuelve };
   }
   exportar() { return { version: VERSION_RECOLECCION, estado: Object.fromEntries(Object.entries(this.estado).map(([k, v]) => [k, { ...v }])) }; }
-  // Lo guardado de puntos que ya no existen se descarta.
-  importar(datos) {
+  // Lo guardado de puntos que ya no existen se descarta; con { todo: true } se guarda también lo de los puntos que aún
+  // no están (en el mundo, los de los trozos que no se han hecho).
+  importar(datos, { todo = false } = {}) {
     const d = migrarRecoleccion(datos);
     this.estado = {};
     if (!d) return this;
     for (const [id, e] of Object.entries(d.estado)) {
-      if (!this.porId.has(id) || !e || !Number.isFinite(e.vuelve)) continue;
+      if ((!todo && !this.porId.has(id)) || !e || !Number.isFinite(e.vuelve)) continue;
       this.estado[id] = { vuelve: e.vuelve, veces: Number.isInteger(e.veces) && e.veces > 0 ? e.veces : 1 };
     }
     return this;
@@ -132,8 +143,8 @@ export const CLAVE_RECOLECCION = 'kinhold.recoleccion';
 export function guardarRecoleccion(almacen, rec, clave = CLAVE_RECOLECCION) {
   try { almacen.setItem(clave, JSON.stringify(rec.exportar())); return true; } catch (e) { return false; }
 }
-export function cargarRecoleccion(almacen, rec, clave = CLAVE_RECOLECCION) {
-  try { const t = almacen.getItem(clave); if (t) rec.importar(JSON.parse(t)); } catch (e) { /* roto o sin almacenamiento */ }
+export function cargarRecoleccion(almacen, rec, clave = CLAVE_RECOLECCION, opc = {}) {
+  try { const t = almacen.getItem(clave); if (t) rec.importar(JSON.parse(t), opc); } catch (e) { /* roto o sin almacenamiento */ }
   return rec;
 }
 
