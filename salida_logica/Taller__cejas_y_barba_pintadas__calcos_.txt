@@ -1,0 +1,10 @@
+Calcos en docs/recursos/personajes/taller-v21
+  OK   hombre: hay cejas
+  OK   hombre: las cejas ocupan al menos el 1,5 % de su textura — 3.1 %
+  OK   hombre: la caja de las cejas mide más de un sexto del lado en las dos direcciones — 315×287 de 512×512
+  OK   hombre: hay barba corta y túnica
+  OK   hombre: la barba baja por el cuello hasta la ropa (alfa medio > 0,6 en los 3 cm sobre la túnica) — 0.75 en 18 puntos
+  OK   mujer: hay cejas
+  OK   mujer: las cejas ocupan al menos el 1,5 % de su textura — 2.2 %
+  OK   mujer: la caja de las cejas mide más de un sexto del lado en las dos direcciones — 511×90 de 512×512
+Calcos: 8 bien, 0 mal
