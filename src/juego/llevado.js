@@ -12,8 +12,8 @@
 // Decisiones provisionales (anotadas en el diario y en el registro de la demo):
 //  - Los huecos del cinturón cuelgan en este orden: cadera derecha, cadera izquierda, detrás a la derecha, detrás a
 //    la izquierda. Lo pequeño que no es herramienta va en una bolsa de cuero; lo mediano, en un hatillo.
-//  - Lo grande en las manos (el tronco corto) se lleva bajo, atravesado delante de los muslos, con las manos en
-//    las puntas; sin animación propia de llevar en brazos (está en «espera de decisión»), los brazos no se cierran.
+//  - Lo grande en las manos (el tronco corto) va entre las dos manos, con la animación de llevar en brazos
+//    («cargar», Walk_Carry_Loop): los brazos lo sujetan delante; quieto, la misma postura.
 //  - Las hachas de las manos las pone el personaje (src/juego/personaje.js); aquí no se repiten.
 import * as THREE from 'three';
 import { Lote } from '../mundo/estilos.js';
