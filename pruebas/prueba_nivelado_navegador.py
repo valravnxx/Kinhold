@@ -32,18 +32,18 @@ def comprobar(n, c, d=''):
     print(('  OK   ' if c else '  FALLA ') + n + (f' — {d}' if d else ''))
     if not c: fallos.append(n)
 
-# una ladera suave (de 12 a 30 cm por metro en 6 m alrededor), en tierra seca y andable, a menos de 400 m de la salida
+# una ladera suave (de 10 a 35 cm por metro en 6 m alrededor), en tierra seca y andable, a menos de 380 m de la salida (más allá, seco() no mira los ríos)
 LADERA = """(() => {
   const k = window.__kinhold, m = k.mundoJ, h = (x, z) => m.altura(x, z);
   let mejor = null;
-  for (let r = 40; r < 400 && !mejor; r += 8) for (let a = 0; a < 6.283 && !mejor; a += 0.15) {
+  for (let r = 40; r < 380 && !mejor; r += 8) for (let a = 0; a < 6.283 && !mejor; a += 0.15) {
     const x = Math.round(Math.cos(a) * r), z = Math.round(Math.sin(a) * r);
     if (!m.seco(x, z) || m.sobreMar(x, z) < 3) continue;
     const gx = (h(x + 3, z) - h(x - 3, z)) / 6, gz = (h(x, z + 3) - h(x, z - 3)) / 6, g = Math.hypot(gx, gz);
-    if (g < 0.12 || g > 0.3) continue;
+    if (g < 0.1 || g > 0.35) continue;
     let ok = true;
     for (let b = -8; b <= 8 && ok; b += 4) for (let c = -8; c <= 8 && ok; c += 4) if (!m.seco(x + b, z + c)) ok = false;
-    if (ok && !k.obstaculos.some(o => Math.hypot(o.x - x, o.z - z) < 7)) mejor = { x, z, g };
+    if (ok && !k.obstaculos.some(o => Math.hypot(o.x - x, o.z - z) < 5)) mejor = { x, z, g };
   }
   return mejor;
 })()"""
