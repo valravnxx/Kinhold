@@ -89,8 +89,8 @@ jobs:
           mkdir -p "$HOME/kinhold_bin" && printf '#!/bin/sh\nexec python "$@"\n' > "$HOME/kinhold_bin/python3" && chmod +x "$HOME/kinhold_bin/python3"
           cygpath -w "$HOME/kinhold_bin" >> "$GITHUB_PATH"
           python herramientas/pc_grafica/elegir_gpu.py
-      - name: Letra Inter
-        if: runner.os == 'Linux' por defecto (como en las sesiones, para que las capturas salgan iguales)
+      - name: Letra Inter por defecto (como en las sesiones, para que las capturas salgan iguales)
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get install -y -q fonts-inter
           mkdir -p ~/.config/fontconfig
