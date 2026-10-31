@@ -51,7 +51,9 @@ que abra la demo entra en este mundo y puede construir.
   No borra el mundo.
 - **Con un dominio propio** (si algún día compras uno): apúntalo a la IP y lanza
   `KINHOLD_DOMINIO=juego.tudominio.com bash /opt/kinhold/servidor/nube/instalar.sh`.
-- **Empezar el mundo de cero:** `systemctl stop kinhold && rm /var/lib/kinhold/*.jsonl && systemctl start kinhold`.
+- **Empezar el mundo de cero (wipe):** `systemctl stop kinhold && rm -f /var/lib/kinhold/*.json /var/lib/kinhold/*.jsonl && systemctl start kinhold`.
+  Borra lo construido, lo que lleva cada uno y lo del suelo, quién es quién (fichas) y dónde estaba cada uno: todos
+  vuelven a empezar como nuevos, en la salida.
 
 ## Qué hay en esta carpeta
 

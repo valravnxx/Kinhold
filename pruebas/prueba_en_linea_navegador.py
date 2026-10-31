@@ -14,6 +14,7 @@ os.makedirs(SALIDA, exist_ok=True)
 MUTAR = bool(os.environ.get('MUTAR'))
 MUTAR_OBRA = bool(os.environ.get('MUTAR_OBRA'))
 MUTAR_FICHA = bool(os.environ.get('MUTAR_FICHA'))   # la página no guarda su ficha: al volver sería otro jugador; tiene que fallar
+MUTAR_POS = bool(os.environ.get('MUTAR_POS'))       # un servidor que no manda dónde estabas: al volver no sale ahí; tiene que fallar
 
 # la web, como en GitHub Pages: la demo en jugar/demo/ y los personajes en recursos/personajes/
 sitio = tempfile.mkdtemp()
@@ -32,7 +33,11 @@ URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html?hilos=1'
 # el servidor del juego, en un puerto libre y con un mundo nuevo
 s = socket.socket(); s.bind(('127.0.0.1', 0)); PUERTO = s.getsockname()[1]; s.close()
 ARCHIVO = os.path.join(sitio, 'mundo.jsonl')
-servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs'), str(PUERTO), ARCHIVO], cwd=RAIZ,
+SERVIDOR = os.path.join(RAIZ, 'servidor/servidor.mjs')
+if MUTAR_POS:
+    t = open(SERVIDOR).read(); m = t.replace('posicion: posiciones.get(autor) || null', 'posicion: null'); assert m != t
+    SERVIDOR = os.path.join(RAIZ, 'servidor/.servidor_mutado_pos.mjs'); open(SERVIDOR, 'w').write(m)
+servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), ARCHIVO], cwd=RAIZ,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()  # «Servidor de Kinhold en el puerto …»
 DIRECCION = f'ws://127.0.0.1:{PUERTO}'
@@ -205,8 +210,11 @@ try:
             for pg in (A, B): pg.evaluate('window.__rehacerTodo = false')
         piezasAntes = piezas(A)   # con el portillo
 
-        print('Salir al menú y volver: sigue siendo el mismo')
+        print('Salir al menú y volver: sigue siendo el mismo, y donde lo dejó')
         yoB = B.evaluate(f"{K}.enLinea.red.yo")
+        # volver donde lo dejaste (valravnx, 31 oct): el móvil se va a otro sitio y PC lo ve allí (el servidor ya lo sabe)
+        B.evaluate(f"Object.assign({K}.pj, {{ x: 7.5, z: -6.0, rot: 0.8 }})")
+        comprobar('PC ve al móvil en su sitio nuevo', esperar(A, f"(() => {{ const r = [...{K}.enLinea.remotos.values()][0]; return r && Math.hypot(r.x - 7.5, r.z + 6.0) < 0.3; }})()", 20000))
         t0 = time.time()
         B.click('#btnDemoMenu', timeout=180000); B.wait_for_function('window.__demo && window.__demo.listo')
         print(f'  (volver al menú: {time.time() - t0:.1f} s)')
@@ -216,6 +224,8 @@ try:
         esperar(B, f'!{K}.mundoJ || {K}.mundoListo', 120000)
         # el autor llega con la bienvenida del servidor, que en una máquina cargada puede tardar algo más que «conectado»
         comprobar('con el mismo personaje (mismo autor)', esperar(B, f"{K}.enLinea.red.yo === {json.dumps(yoB)}", 30000), B.evaluate(f"{K}.enLinea.red.yo"))
+        pB = B.evaluate(f"({{ x: {K}.pj.x, z: {K}.pj.z }})")
+        comprobar('y aparece donde lo dejó, no en la salida', abs(pB['x'] - 7.5) < 0.3 and abs(pB['z'] + 6.0) < 0.3, str(pB))
         B.evaluate(f"Object.assign({K}.pj, {{ x: -1.0, z: 5.0, rot: -Math.PI * 0.25 }})")
         comprobar('PC sigue viendo a uno solo, no a uno más', esperar(A, f"{K}.enLinea.remotos.size === 1", 8000) and A.wait_for_timeout(1500) is None and A.evaluate(f"{K}.enLinea.remotos.size") == 1
                    and '1 más' in A.inner_text('#estadoRed'), A.inner_text('#estadoRed'))
@@ -229,7 +239,7 @@ try:
         A.evaluate(f"{K}.cambiarModo('mover')")
         A.screenshot(path=f'{SALIDA}/pc_4_sin_conexion.png')
         B.screenshot(path=f'{SALIDA}/movil_4_sin_conexion.png')
-        servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs'), str(PUERTO), ARCHIVO], cwd=RAIZ,
+        servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), ARCHIVO], cwd=RAIZ,
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         servidor.stdout.readline()
         for nombre, pg, yo in [('PC', A, yoA), ('el móvil', B, yoB)]:
@@ -243,6 +253,14 @@ try:
         A.wait_for_timeout(800)
         A.screenshot(path=f'{SALIDA}/pc_5_vuelve.png')
         B.screenshot(path=f'{SALIDA}/movil_5_vuelve.png')
+        print('Cerrar la pestaña y volver: el mismo jugador')
+        # la ficha se guarda en el navegador (no en la pestaña): una pestaña nueva de PC es PC (y la vieja se queda fuera)
+        A2 = A.context.new_page()
+        A2.goto(URL.replace('?', '?modo=construir&enlinea=1&', 1)); A2.wait_for_load_state('load')
+        comprobar('una pestaña nueva de PC entra como PC', esperar(A2, f"{K} && {K}.enLinea && {K}.enLinea.red.yo === {json.dumps(yoA)}", 120000), A2.evaluate(f"window.__kinhold && window.__kinhold.enLinea && window.__kinhold.enLinea.red.yo"))
+        comprobar('y la de antes dice que ha entrado desde otra pestaña', esperar(A, "!!document.getElementById('sinConexion') && document.getElementById('sinConexion').innerText.includes('otra pestaña')", 20000))
+        A2.close()
+
         print('Sin servidor no se juega')
         ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True, locale='es-ES')
         if MUTAR_SIN: ctx.add_init_script("(() => { const a = Node.prototype.appendChild; Node.prototype.appendChild = function (n) { if (n && n.id === 'sinConexion') return n; return a.call(this, n); }; })()")
@@ -263,6 +281,7 @@ try:
         nav.close()
 finally:
     if servidor.poll() is None: servidor.terminate()
+    if MUTAR_POS: os.remove(SERVIDOR)
     web.shutdown()
     shutil.rmtree(sitio, ignore_errors=True)
 

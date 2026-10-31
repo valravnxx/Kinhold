@@ -49,6 +49,7 @@ paso "Servidor mínimo con dos clientes" node pruebas/prueba_servidor.mjs
 paso "Jugadores que se ven, con lag simulado" node pruebas/prueba_presencia.mjs
 paso "Mundo en línea: dos clientes con el servidor" node pruebas/prueba_en_linea.mjs
 paso "Conexiones que se cortan y datos mal formados" node pruebas/prueba_conexiones.mjs
+paso "Volver donde lo dejaste (posiciones en el servidor)" node pruebas/prueba_posicion_servidor.mjs
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
 paso "Inventario y suelo en el servidor, con dos clientes" node pruebas/prueba_objetos_servidor.mjs
 paso "Bots: jugadores simulados contra el servidor" node pruebas/prueba_bots.mjs
