@@ -96,9 +96,9 @@
     },
     {
      "nombre": "El servidor se actualiza solo con cada versión nueva de la demo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T09:24:43+01:00",
-     "rama": "trabajo/20261031-0925-servidor-auto"
+     "fin": "2026-10-31T09:31:02+01:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."

@@ -3061,5 +3061,18 @@
   "pruebas": "Con su PC apagado, en la nube: «logica» y «web» bien (se mandó «web» a su PC, no lo cogió en 45 s y se hizo en la nube). Aquí: elegir_gpu.py no encuentra tarjeta y sale con error (como debe); con sitecustomize.py el navegador cambia de modo sin tocar la prueba. actionlint sin errores en el flujo; la ventana, sin errores de sintaxis en PowerShell 7. No comprobado: nada en Windows (la ventana, la instalación, la tarjeta de verdad).",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T09:24:43+01:00",
+  "fin": "2026-10-31T09:31:02+01:00",
+  "titulo": "El servidor de prueba, al día solo con cada versión nueva de la demo (chat con valravnx)",
+  "hito": "infra",
+  "hecho": [
+   "En el servidor de Hetzner, un temporizador (kinhold-actualizar.timer) mira cada 5 minutos la última docs/jugar/demo/vN.html de main; si es nueva, lanza actualizar.sh (trae main y reinicia el servidor; el mundo no se toca). Con lo demás de main no hace nada, para no reiniciarse sin necesidad.",
+   "Lo instalan instalar.sh (máquinas nuevas) y actualizar.sh; en el servidor que ya está en marcha se enciende con una actualización a mano, una vez."
+  ],
+  "pruebas": "Lógica en la nube: bien. Prueba nueva (pruebas/prueba_auto_actualizar.mjs, 6/6) con un repositorio de mentira y una copia corta como la del servidor; con MUTAR falla (4 fallos). Encontró un fallo de verdad (la orden de poner al día no respetaba las comillas). Las unidades de systemd, sin errores en systemd-analyze. Solo cambian el servidor y su prueba: los grupos de navegador no se han pasado. No comprobado: en la máquina de Hetzner de verdad.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
