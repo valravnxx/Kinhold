@@ -34,7 +34,7 @@ with sync_playwright() as p:
     pg = nav.new_page(viewport={'width': 1280, 'height': 800}, locale='es-ES')
     errores = []
     pg.on('pageerror', lambda e: errores.append(str(e)))
-    pg.on('console', lambda m: errores.append(m.text) if m.type == 'error' else None)
+    pg.on('console', lambda m: errores.append(m.text + (f" ({m.location.get('url')})" if '404' in m.text and m.location.get('url') else '')) if m.type == 'error' else None)
     pg.goto(URL)
     pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
     pg.evaluate('localStorage.clear(); window.__kinhold.reiniciar()')
@@ -649,7 +649,7 @@ with sync_playwright() as p:
     esperar(pg, 600)
     teclas_antes = ev(f"!!{K}.obrando")
     pg.keyboard.down('s'); esperar(pg, 400); pg.keyboard.up('s')
-    comprobar('moverse deja la obra', teclas_antes and not ev(f"{K}.obrando"))
+    comprobar('moverse deja la obra', teclas_antes and not ev(f"{K}.obrando"), f'obrando antes={teclas_antes}, aviso={ev("document.getElementById(\'aviso\').textContent")!r}')
     ev(f"{K}.pj.x=-15.6; {K}.pj.z=-13.6; {K}.pj.rot=0.6; {K}.cam.yaw=Math.PI+0.5; {K}.cam.pitch=0.3; {K}.cam.dist=4.2")
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/29_obra_muro_de_cerca.png')
