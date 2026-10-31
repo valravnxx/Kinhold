@@ -910,15 +910,16 @@ def personaje(nombre, macros, objetivos, ropa):
         u = np.clip((x - 0.013) / 0.047, 0, 1)  # 0 en la cabeza, 1 al final de la cola
         zb = ojo_arriba + 0.0075 + 0.0045 * np.sin(np.pi * np.clip(u / 1.3, 0, 1)) - 0.006 * suave(0.6, 1.0, u)
         alto = (0.0038 if mujer else 0.0050) * (1.05 - 0.6 * u ** 1.4)  # medio alto: más ancha en la cabeza
+        alto = alto * (0.55 + 0.45 * suave(0.009, 0.022, x))  # la cabeza, redondeada (no cortada en recto)
         dz = z - zb + 0.0012 * (fbm(P, 220) - 0.5)
         dz = np.where(dz < 0, dz * 1.25, dz)  # el borde de abajo, más marcado
-        dentro = suave(1.0, 0.55, np.abs(dz) / alto)
-        largo = suave(0.009, 0.016, x) * suave(0.064, 0.056, x) * suave(-0.085, -0.10, y)
+        dentro = suave(1.0, 0.45, np.abs(dz) / alto) * np.where(dz > 0, suave(1.0, 0.0, dz / alto) * 0.4 + 0.6, 1.0)  # arriba, más rala
+        largo = suave(0.007 + 0.004 * ruido(P, (40, 40, 900)), 0.017, x) * suave(0.064, 0.052, x) * suave(-0.085, -0.10, y)
         # pelos: en la cabeza van hacia arriba (rayas verticales), en el cuerpo y la cola hacia fuera (horizontales)
-        vert = ruido(P, (1500, 1500, 260)); hori = ruido(P + 0.31, (260, 1500, 1500))
+        vert = ruido(P, (1800, 1800, 300)); hori = ruido(P + 0.31, (300, 1800, 1800))
         pelos = vert * (1 - suave(0.1, 0.35, u)) + hori * suave(0.1, 0.35, u)
-        borde = suave(1.25, 0.6, np.abs(dz) / alto) * (0.35 + 0.65 * pelos)  # pelos sueltos fuera de la mancha
-        return largo * np.maximum(dentro * (0.82 + 0.18 * pelos), borde)
+        borde = suave(1.3, 0.6, np.abs(dz) / alto) * suave(0.45, 0.8, pelos)  # pelos sueltos fuera de la mancha
+        return largo * np.maximum(dentro * (0.55 + 0.45 * pelos), 0.8 * borde)
     def alto_pelo(P):
         """cuánto está un punto por encima de la línea del pelo (metros; negativo: por debajo, en la piel)"""
         x, y, z = np.abs(P[..., 0]), P[..., 1], P[..., 2]
@@ -938,7 +939,7 @@ def personaje(nombre, macros, objetivos, ropa):
         pelo pintado queda debajo en la frente y el paso de piel a pelo es gradual"""
         d = alto_pelo(P)
         m = 0.5 * ruido(P, (900, 900, 150)) + 0.5 * ruido(P + 0.5, (400, 400, 70))
-        return suave(0.0, 0.012, d - 0.005 + 0.008 * (m - 0.5))
+        return suave(0.0, 0.012, d - 0.009 + 0.008 * (m - 0.5))
     def zona_barba(P, A, tipo='corta'):
         """barba pintada (corta, bigote o perilla): bordes difusos y con pelillos; el bigote baja por las comisuras y se une
         a la barba"""
@@ -1006,10 +1007,10 @@ def personaje(nombre, macros, objetivos, ropa):
     # cáscara: valravnx vio que la cáscara dejaba mal la barbilla
     pelillos = lambda P: colpelo * (0.7 + 0.45 * ruido(P, (900, 900, 500))[..., None])
     def pintar_vello(P, A):
-        ce = 0.92 * zona_cejas(P)
-        pe = 0.85 * zona_pelo(P) * (1 - suave(0.1, 0.35, A[..., 1]))  # pelo rapado o nacimiento del pelo (bajo la cofia no se ve)
+        ce = 0.85 * zona_cejas(P)
+        pe = 0.95 * zona_pelo(P) * (1 - suave(0.1, 0.35, A[..., 1]))  # pelo rapado o nacimiento del pelo (bajo la cofia no se ve)
         a = np.maximum(ce, pe)
-        claro = np.where(ce >= pe, 0.62 + 0.3 * ruido(P, (260, 1500, 1500)), 0.7 + 0.45 * ruido(P, (900, 900, 500)))
+        claro = np.where(ce >= pe, 0.7 + 0.4 * ruido(P, (300, 1800, 1800)), 0.7 + 0.45 * ruido(P, (900, 900, 500)))
         return np.concatenate([colpelo * claro[..., None], a[..., None]], -1)
     def pelos_barba(P, m):
         """barba pintada (antes una mancha lisa con el borde duro: valravnx, «horribles»). Dentro, tupida y casi del
@@ -1505,6 +1506,21 @@ if os.environ.get('FOTOS') == 'peinados':  # de cerca, cada peinado y cada barba
             foto((x - 0.95, -0.75, cz + 0.02), (x, 0, cz - 0.06), 60, base_ + '_34.png', 640, 640)
             foto((x + 0.9, 0.85, cz + 0.06), (x, 0, cz - 0.08), 60, base_ + '_atras.png', 640, 640)
             foto((x + 1.3, -0.1, cz + 0.0), (x, 0, cz - 0.06), 60, base_ + '_perfil.png', 640, 640)
+    print('listo', SALIDA); sys.exit(0)
+if os.environ.get('FOTOS') == 'nacimiento':  # de cerca, la frente: nacimiento del pelo y cejas (frente, tres cuartos, perfil)
+    esc.cycles.samples = 32
+    for rig, piezas, pos in gente:
+        for otro, op, _ in gente:
+            for ob in [otro] + op: ob.hide_render = otro is not rig
+        x = rig.location.x; cz = pos['head'].z + 0.04
+        for peinado in os.environ.get('PEINADOS', 'corto,rapado' if rig.name == 'hombre' else 'coleta').split(','):
+            cabeza_como(rig, piezas, peinado, 'ninguna')
+            for ob in piezas:
+                if '_capa_' in ob.name and not any(k in ob.name for k in ('tunica', 'vestido', 'calzas', 'zapatos')): ob.hide_render = True
+            b_ = os.path.join(SALIDA, f'nacimiento_{rig.name}_{peinado}')
+            foto((x, -0.7, cz + 0.05), (x, 0, cz), 85, b_ + '_frente.png', 700, 700)
+            foto((x - 0.55, -0.45, cz + 0.06), (x, 0, cz), 85, b_ + '_34.png', 700, 700)
+            foto((x + 0.75, -0.02, cz + 0.02), (x, 0, cz), 85, b_ + '_perfil.png', 700, 700)
     print('listo', SALIDA); sys.exit(0)
 if os.environ.get('FOTOS') == 'barbas':  # muy de cerca, cada barba: de frente, de tres cuartos, de perfil y desde abajo
     esc.cycles.samples = 32
