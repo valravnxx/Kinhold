@@ -3048,8 +3048,8 @@
  },
  {
   "inicio": "2026-10-31T07:26:13+00:00",
-  "fin": "",
-  "titulo": "Hito «Equipo y carga»: las obras cobran de lo que llevas también en línea (carril A)",
+  "fin": "2026-10-31T09:19:17+00:00",
+  "titulo": "Hito «Equipo y carga»: las obras cobran de lo que llevas también en línea (demo v65; carril A)",
   "hito": "equipo",
   "hecho": [
    "Lógica pura (src/logica/acciones.js): entregar, subir y el arcón de materiales (sacar_arcon y dejar_arcon) se ejecutan en el servidor con los inventarios que lleva él. Lo que sale bien se anota ya pagado: la entrada lleva «lleva» y la cantidad que de verdad se entregó (en dejar_arcon, también el material).",
@@ -3058,10 +3058,11 @@
    "En el juego: el navegador adelanta la entrega con lo que llevas (que es el del servidor) y el servidor la confirma o la deshace. Si no llevas el material, Usar (F) dice qué le falta a la obra, como en solitario. El arcón de materiales del panel de inventario va por el servidor.",
    "Los bots del servidor cogen del arcón de pruebas antes de entregar a sus obras (3 piedras o un tronco corto cada vez).",
    "Prueba nueva: prueba_obras_en_linea.mjs, con dos clientes de verdad y el servidor (22 comprobaciones: sin material no se entrega aunque el navegador diga «lleva», el arcón por el servidor, la entrada ya pagada, los tres mundos cuadran, dejar en el arcón y volver a arrancar el servidor). Con MUTAR=1 (el servidor sin los inventarios) falla 7.",
-   "Aún mal: el servidor escribe la entrega en el archivo del mundo antes de guardar lo que llevas; si se apagara justo entre las dos cosas, esa entrega quedaría hecha sin haberse cobrado."
+   "Aún mal: el servidor escribe la entrega en el archivo del mundo antes de guardar lo que llevas; si se apagara justo entre las dos cosas, esa entrega quedaría hecha sin haberse cobrado.",
+   "Publicada la demo v65 (la v64 la había publicado mientras tanto el carril B, con la capa de espalda). Quien lleva el servidor tiene que actualizarlo (protocolo 6); desde hoy el servidor de Hetzner se pone al día solo con cada versión nueva."
   ],
-  "pruebas": "",
-  "capturas": "",
+  "pruebas": "En la nube, la batería entera: bien salvo «jugar en línea» (exento hasta la fase 2), que falla en «verse el uno al otro» (el móvil no ve a PC donde está y una captura agota su tiempo); su parte de construir en el servidor, que ahora coge del arcón y entrega con lo que llevas, pasa. La primera tanda se cortó por tiempo en esta sesión sin traer construcción ni el mapa; repetidos aparte: bien. Tras unir main (solo cambios de recursos y del servidor en la nube), aquí: obras en línea 22/22, servidor con dos clientes 40/40, mundo en línea 21/21, obras con lo que llevas 32/32, bots 16/16, idiomas bien.",
+  "capturas": "capturas/demo-v65",
   "estado": "ok"
  },
  {
