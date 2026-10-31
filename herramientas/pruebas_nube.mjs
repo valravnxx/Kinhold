@@ -33,7 +33,11 @@ const sha = sh('git', ['rev-parse', 'HEAD']);
 if (!sh('git', ['ls-tree', 'HEAD', '.github/workflows/pruebas.yml'])) { console.error('Esta rama no tiene .github/workflows/pruebas.yml: une main primero.'); process.exit(2); }
 
 const todos = JSON.parse(sh('bash', ['herramientas/probar_todo.sh', '--grupos']));
-const pedidos = process.argv.slice(2).length ? process.argv.slice(2) : todos;
+// valravnx, 31 oct: «no hagas las pruebas de en línea de ningún tipo» (las de dos páginas y un servidor: jugar, duelo,
+// volver donde lo dejaste, lo que llevas en línea). Sin nombrarlas no se lanzan; nombradas a mano, sí.
+const EN_LINEA = (g) => /en-linea|volver-donde/.test(g);
+const pedidos = process.argv.slice(2).length ? process.argv.slice(2) : todos.filter(g => !EN_LINEA(g));
+if (!process.argv.slice(2).length) console.log(`Sin las de en línea (valravnx, 31 oct): ${todos.filter(EN_LINEA).join(', ')}`);
 const alPC = process.env.SOLO_NUBE ? [] : pedidos.filter(g => g !== 'logica');
 const aNube = pedidos.filter(g => !alPC.includes(g));
 console.log(`Pruebas de ${rama} (${sha.slice(0, 7)})${process.argv.length > 2 ? ': ' + pedidos.join(', ') : ''}`);

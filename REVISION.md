@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (14:10 UTC) — por el chat: sin pruebas en línea
+valravnx: «no hagas las pruebas de en linea de ningun tipo». → `pruebas_nube.mjs` deja fuera por defecto los grupos en línea (jugar, duelo, volver donde lo dejaste, lo que llevas en línea); nombrados a mano sí se lanzan. Anotado en CLAUDE.md, en lugar de la regla de que paraban la publicación.
+
 ### 31 oct 2026 (11:49 UTC) — por el chat: las animaciones de cargar, hechas por nosotros
 valravnx, respondiendo a la decisión de llevar al hombro y arrastrar: «las tratamos de hacer nosotros pues, es que cargue el tronco en el hombro con penalizacion a movimiento». → Opción (b): se hacen en el taller a partir de las que hay. La tarea en espera de «Equipo y carga por huecos» pasa a pendiente, y lleva también que el tronco al hombro se note al moverse.
 
