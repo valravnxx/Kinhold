@@ -512,9 +512,9 @@
     },
     {
      "nombre": "Panel de depuración con clave de admin (valravnx, 30 oct): se abre con una tecla; mapa de la isla con los jugadores conectados, lista de jugadores, y teletransportarse a un punto del mapa o junto a otro jugador. Ver a todos y teletransportarse pasan por el servidor con su autor, y solo los acepta con la clave de admin que valravnx pone en la máquina (en servidor/nube/LEEME.md, cómo)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T20:23:16+00:00",
-     "rama": "trabajo/20261031-2023"
+     "fin": "2026-10-31T21:34:52+00:00"
     },
     {
      "nombre": "Lo que se recoge sale del sitio: ramas en el bosque, sílex en la caliza, piedra en las laderas y los ríos, fibra en los claros y las riberas",
@@ -2174,6 +2174,13 @@
      "archivo": "jugar/demo/v74.html",
      "capturas": "capturas/demo-v74",
      "notas": "El tronco al hombro: el personaje lo sujeta con la mano derecha por encima y va algo inclinado, andando y quieto (también lo ven los demás); animaciones de llevar al hombro y de arrastrar hechas en el taller (taller-carga-v1). Y el tronco al hombro frena por su peso: al 90 %."
+    },
+    {
+     "v": "v75",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v75.html",
+     "capturas": "capturas/demo-v75",
+     "notas": "Panel de depuración del admin: F9 (o el botón «Admin» con ?admin) abre el mapa del rey con todos los jugadores conectados y su lista; un clic en el mapa te lleva ahí y «Ir» te pone junto a otro jugador. Todo pasa por el servidor con la clave de admin que valravnx pone en la máquina (servidor/nube/LEEME.md)."
     }
    ]
   },

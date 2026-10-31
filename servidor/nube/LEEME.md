@@ -59,6 +59,18 @@ que abra la demo entra en este mundo y puede construir.
   No borra el mundo.
 - **Con un dominio propio** (si algún día compras uno): apúntalo a la IP y lanza
   `KINHOLD_DOMINIO=juego.tudominio.com bash /opt/kinhold/servidor/nube/instalar.sh`.
+- **Clave de admin para el panel de depuración** (F9 en el juego, o el botón «Admin» con `?admin` en la dirección; lo
+  pidió valravnx el 30 oct): sin clave puesta, el panel no funciona para nadie. Para ponerla (una vez), en la consola
+  de Hetzner, como root:
+  ```
+  mkdir -p /etc/kinhold && echo "KINHOLD_ADMIN=$(openssl rand -hex 16)" > /etc/kinhold/admin.env && chmod 600 /etc/kinhold/admin.env && cat /etc/kinhold/admin.env
+  ```
+  y después `bash /opt/kinhold/servidor/nube/actualizar.sh` (pone el servicio que la lee y reinicia; si ya está al día,
+  basta con `systemctl restart kinhold`). La clave es lo que sale detrás de `KINHOLD_ADMIN=`: se pega en el panel la
+  primera vez y el navegador la recuerda hasta pulsar «Olvidar la clave». Tiene que tener 12 letras o más. Para
+  cambiarla, se vuelve a lanzar la misma línea y `systemctl restart kinhold`; para quitar el panel,
+  `rm /etc/kinhold/admin.env && systemctl restart kinhold`. Con cinco claves mal seguidas, el servidor cierra esa
+  conexión. Lo que se ha pedido con el panel (quién, qué y si valió; nunca la clave) queda en `/var/lib/kinhold/admin.jsonl`.
 - **Empezar el mundo de cero (wipe):** `systemctl stop kinhold && rm -f /var/lib/kinhold/*.json /var/lib/kinhold/*.jsonl && systemctl start kinhold`.
   Borra lo construido, lo que lleva cada uno y lo del suelo, quién es quién (fichas) y dónde estaba cada uno: todos
   vuelven a empezar como nuevos, en la salida.
