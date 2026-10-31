@@ -41,8 +41,11 @@ console.log(`Pruebas de ${rama} (${sha.slice(0, 7)})${process.argv.length > 2 ? 
 // sube la rama del pedido y encuentra su ejecución
 async function lanzar(donde, grupos) {
   const id = `${ahora().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
-  const enTodos = donde === 'pc' ? todos.filter(g => g !== 'logica') : todos;
-  const nombre = grupos.length === enTodos.length && enTodos.every(g => grupos.includes(g)) ? 'todos' : grupos.join('+');
+  const igual = (l) => grupos.length === l.length && l.every(g => grupos.includes(g));
+  const sinLogica = todos.filter(g => g !== 'logica');
+  let nombre = donde === 'pc' && igual(sinLogica) ? 'todos' : igual(todos) ? 'todos' : igual(sinLogica) ? 'todos-menos-logica' : grupos.join('+');
+  // GitHub no admite ramas de más de 255 caracteres: una lista larga va por el número de cada grupo
+  if (nombre.length > 150) nombre = 'n-' + grupos.map(g => todos.indexOf(g)).join('+');
   const pedido = `${donde === 'pc' ? 'pc' : 'nube'}-pedido/${id}/${nombre}`;
   sh('git', ['push', '-q', 'origin', `HEAD:refs/heads/${pedido}`]);
   let run = null;
