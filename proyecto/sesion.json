@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-31T23:31:19+00:00",
+  "tarea": "Lo que se recoge sale del sitio: ramas en el bosque, sílex en la caliza, piedra en las laderas y los ríos, fibra en los claros y las riberas",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261031-2331"
+ },
  "B": {
   "inicio": "2026-10-31T22:53:58+00:00",
   "tarea": "Revisión completa y publicación",
