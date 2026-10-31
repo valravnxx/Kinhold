@@ -1,0 +1,36 @@
+== pc
+  OK   lenero: el cinturón rodea la cintura — centro [0.004, 0.906, -0.004], ancho 0.33, pelvis [0.005, 0.881, -0.033]
+  OK   lenero: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.012, 1.102, -0.15], fondo 0.526
+  OK   lenero: lo del hombro va por encima de la cintura — centro [-0.108, 1.312, -0.115]
+  OK   lenero: lo de la mano r está en la mano — [-0.346, 0.889, 0.228] · mano [-0.293, 0.884, 0.085]
+  OK   lenero: se ve todo lo que lleva — piezas ['cinturon', 'colgado_1', 'colgado_2', 'espalda', 'hacha_colgada', 'hombro', 'mano_r'], faltan []
+  OK   mochila: el cinturón rodea la cintura — centro [0.004, 0.904, -0.004], ancho 0.33, pelvis [-0.001, 0.879, -0.033]
+  OK   mochila: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.008, 1.102, -0.152], fondo 0.543
+  OK   mochila: lo del hombro va por encima de la cintura — centro [0.079, 1.09, 0.001]
+  OK   mochila: lo de la mano l está en la mano — [0.323, 0.844, 0.257] · mano [0.321, 0.891, 0.201]
+  OK   mochila: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'colgado_1', 'espalda', 'hombro', 'mano_l'], faltan []
+  OK   cesta: el cinturón rodea la cintura — centro [0.004, 0.878, -0.006], ancho 0.338, pelvis [0.004, 0.877, -0.034]
+  OK   cesta: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.008, 1.166, -0.181], fondo 0.606
+  OK   cesta: lo del hombro va por encima de la cintura — centro [0.085, 1.093, 0.001]
+  OK   cesta: lo de la mano r está en la mano — [-0.303, 0.796, 0.21] · mano [-0.288, 0.879, 0.102]
+  OK   cesta: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'espalda', 'hombro', 'mano_r'], faltan []
+  OK   armas: el cinturón rodea la cintura — centro [0.004, 0.903, -0.002], ancho 0.33, pelvis [0, 0.876, -0.034]
+  OK   armas: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.037, 1.057, -0.056], fondo 0.395
+  OK   armas: lo del hombro va por encima de la cintura — centro [-0.132, 1.517, -0.116]
+  OK   armas: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'colgado_1', 'espalda', 'hombro'], faltan []
+  OK   zurron: el cinturón rodea la cintura — centro [-0.001, 0.878, 0.01], ancho 0.357, pelvis [-0.008, 0.836, 0.004]
+  OK   zurron: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.016, 1.15, -0.107], fondo 0.418
+  OK   zurron: lo grande, delante, entre las dos manos — [-0.015, 1.016, 0.367] · entre las manos [-0.014, 0.992, 0.304]
+  OK   zurron: y el personaje lo sujeta (postura de llevar en brazos) — cargar
+  OK   zurron: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'espalda', 'manos'], faltan []
+Al andar, cada pieza sigue a su hueso
+  OK   el personaje anda — correr
+  OK   andando, la rama sigue en la mano — 0.099 m de la mano
+  OK   andando, el leñero sigue detrás — [0.1, 1.167, -0.227]
+  OK   la mano se ha movido con la animación (si no, la prueba no prueba nada) — 0.141 m
+  OK   sin nada encima, no se dibuja nada
+  OK   pc: sin errores en la página
+== movil
+  OK   movil: sin errores en la página
+
+TODO CORRECTO
