@@ -22,11 +22,5 @@
   "tarea": "Cuatro direcciones y ataque comprometido (valravnx, 31 oct): alto, izquierda, derecha y abajo para clavar (fuera el tajo bajo y el centro); el escudo para todo lo que viene de frente sin elegir lado; el golpe no cambia de dirección al cargarlo, y el botón de parar lo cancela con una finta (para parar o para empezar otro golpe)",
   "hito": "duelo",
   "rama": "trabajo/20261031-1005-cuatro"
- },
- "chat:trabajo/20261031-1040-isla-del-rey": {
-  "inicio": "2026-10-31T10:41:24+01:00",
-  "tarea": "La isla del rey y la ciudad NPC de Strandvang, en el GDD",
-  "hito": "mundo",
-  "rama": "trabajo/20261031-1040-isla-del-rey"
  }
 }

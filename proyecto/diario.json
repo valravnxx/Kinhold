@@ -3093,5 +3093,21 @@
   "pruebas": "Lógica en la nube: bien. Prueba nueva (pruebas/prueba_auto_actualizar.mjs, 6/6) con un repositorio de mentira y una copia corta como la del servidor; con MUTAR falla (4 fallos). Encontró un fallo de verdad (la orden de poner al día no respetaba las comillas). Las unidades de systemd, sin errores en systemd-analyze. Solo cambian el servidor y su prueba: los grupos de navegador no se han pasado. No comprobado: en la máquina de Hetzner de verdad.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T10:41:24+01:00",
+  "fin": "2026-10-31T10:48:03+01:00",
+  "titulo": "La isla del rey y la ciudad NPC de Strandvang, en el GDD (chat con valravnx)",
+  "hito": "mundo",
+  "hecho": [
+   "Whitholm es la isla del rey y está cartografiada: al llegar te dan el mapa del rey. El continente (Kinland) está por explorar y la cartografía sirve para él.",
+   "Strandvang (comarca E) es dominio del rey: neutral, sin PvP y fuera del sistema de clanes. Ahí se vive con el mojón normal; las otras siete comarcas siguen siendo de los clanes.",
+   "Una sola ciudad NPC, en Strandvang: no es para vivir; se va a comprar (metal, herramientas, carros, animales), vender lo que sobra de la cosecha, contratar NPCs, quedar con otros y hacer duelos contra NPCs. Cambia lo decidido el 27 oct («sin ciudades NPC»).",
+   "Mojones: uno por personaje en la isla; en el continente, hasta tres más en total cuando se llegue en barco.",
+   "Los mercaderes ambulantes salen de la ciudad con sus mercancías y son raros. Los torneos y las ferias se celebran en la ciudad.",
+   "GDD cambiado en español, inglés y ruso, con la huella nueva."
+  ],
+  "pruebas": "Solo cambia el diseño; la web se genera sin errores (comprueba las traducciones y las huellas).",
+  "estado": "ok"
  }
 ]

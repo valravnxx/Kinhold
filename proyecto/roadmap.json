@@ -1150,9 +1150,10 @@
     },
     {
      "nombre": "La isla del rey y la ciudad NPC de Strandvang, en el GDD",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T10:41:24+01:00",
-     "rama": "trabajo/20261031-1040-isla-del-rey"
+     "rama": "trabajo/20261031-1040-isla-del-rey",
+     "fin": "2026-10-31T10:48:03+01:00"
     }
    ],
    "lleva": "chat",
