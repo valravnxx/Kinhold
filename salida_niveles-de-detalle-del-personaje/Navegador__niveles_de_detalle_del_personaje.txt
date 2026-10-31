@@ -1,0 +1,56 @@
+Vista pc
+    nivel 0: {'nivel': 0, 'triangulos': 28786, 'piezas': 19, 'dibujados': 59}
+    nivel 1: {'nivel': 1, 'triangulos': 10976, 'piezas': 15, 'dibujados': 51}
+    nivel 2: {'nivel': 2, 'triangulos': 3978, 'piezas': 1, 'dibujados': 23}
+  OK   nivel medio: como mucho el 55 % de los triángulos — 28786 → 10976
+  OK   nivel lejos: como mucho el 25 % — 28786 → 3978
+  OK   nivel lejos: una sola pieza (texturas juntas) — 19 → 1
+  OK   nivel lejos: menos llamadas de dibujo — 59 → 23
+  OK   nivel 1: la misma silueta que de cerca — 0.99 de 3937 px
+  OK   nivel 2: la misma silueta que de cerca — 0.92 de 3998 px
+  OK   nivel lejos: el mismo color de media que de cerca — [93, 50, 39] → [95, 53, 41]
+  OK   más lejos: no se dibuja — {'nivel': 3, 'triangulos': 3978, 'piezas': 1}
+  OK   de vuelta a cerca: entero otra vez — {'nivel': 0, 'triangulos': 28786, 'piezas': 19}
+  OK   lejos: al cambiar de ropa se rehace la malla — 3978 → {'nivel': 2, 'triangulos': 3544, 'piezas': 1}
+  OK   visor: sin errores en la consola
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_detalle_navegador.py", line 116, in <module>
+    pg.click('#btnDemoFps'); pg.wait_for_timeout(1300); pg.screenshot(path=f'{SALIDA}/{nombre}_demo_20_panel.png')
+    ~~~~~~~~^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 11102, in click
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.click(
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 889, in click
+    return await self._main_frame._click(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 594, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#btnDemoFps")
+    - locator resolved to <button class="lento" id="btnDemoFps" title="Rendimiento">1 fps</button>
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - performing click action
+
