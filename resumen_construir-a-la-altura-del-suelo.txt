@@ -1,0 +1,43 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2253 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2033 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1625 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2100 KB
+
+== Construir demo única
+      1822 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2569 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1620 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2070 KB
+dist/kinhold_trozos.html 1618 KB
+hilo de los trozos 14 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: construir a la altura del suelo (ladera de Whitholm)
+playwright._impl._errors.Error: Page.evaluate: TypeError: k.accionArcon is not a function
+    at eval (eval at evaluate (:311:30), <anonymous>:1:73)
+    at UtilityScript.evaluate (<anonymous>:318:18)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+!! FALLA: python3 pruebas/prueba_nivelado_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/nivelado
+
+HAY FALLOS
+tardó 70 s
