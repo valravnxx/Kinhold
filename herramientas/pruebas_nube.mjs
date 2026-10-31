@@ -65,7 +65,7 @@ if (alPC.length) ejecuciones.push(await lanzar('pc', alPC));
 if (aNube.length) ejecuciones.push(await lanzar('nube', aNube));
 
 for (;;) {
-  const activas = ejecuciones.filter(e => !e.dejado && e.run.status !== 'completed');
+  const activas = ejecuciones.filter(e => !e.dejado && !e.terminada);
   if (!activas.length) break;
   await dormir(activas.some(e => e.donde === 'pc' && !e.aceptado) ? 10 : 30);
   for (const e of activas) {
@@ -105,8 +105,10 @@ for (;;) {
       }
     }
     try { e.run = gh(`repos/${REPO}/actions/runs/${e.run.id}`); } catch {}
+    // terminada cuando han acabado todos sus grupos (no se espera a «limpiar», que borra las ramas viejas)
+    e.terminada = e.run.status === 'completed' || (lista?.status === 'completed' && grupos.length > 0 && grupos.every(j => j.status === 'completed'));
     // el PC ha terminado: los grupos sin su resumen (se cortaron, o no llegó a la tarjeta), otra vez en la nube
-    if (e.donde === 'pc' && e.run.status === 'completed' && !e.repasado) {
+    if (e.donde === 'pc' && e.terminada && !e.repasado) {
       e.repasado = true;
       const devueltos = new Set(ramasDe(e.run.id).map(r => r.slice(`refs/heads/nube/${e.run.id}-`.length)));
       const sinResumen = e.grupos.filter(g => !devueltos.has(g));
