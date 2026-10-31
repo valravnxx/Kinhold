@@ -595,9 +595,13 @@
     },
     {
      "nombre": "El juego en línea usa lo que llevas y el suelo del servidor: el panel de inventario, soltar y coger del suelo y lo que se entrega a las obras pasan por el servidor, y talar y trocear también, con lo que dejan en el suelo, para que nada de lo que llevas salga solo del navegador. Mientras el servidor no conozca el mundo, se fía del árbol que dice el navegador si estás a su lado (decisión provisional)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T02:24:31+00:00",
-     "rama": "trabajo/20261031-0224"
+     "fin": "2026-10-31T06:43:32+00:00"
+    },
+    {
+     "nombre": "Las obras cobran de lo que llevas también en línea: lo que se entrega a una obra (y lo que se sube a una obra en alto) sale de lo que llevas en el servidor, el arcón de materiales de obra va por el servidor, y el mundo se rehace igual al volver a arrancar el servidor y en el navegador de los demás",
+     "estado": "pendiente"
     },
     {
      "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
@@ -1943,6 +1947,13 @@
      "archivo": "jugar/demo/v62.html",
      "capturas": "capturas/demo-v62",
      "notas": "El agua y el nado: los ríos y el mar de cerca alrededor del jugador; se vadea y se nada con un aguante (el de correr) que baja más deprisa cuanto más pesa lo que llevas; sin aguante te ahogas."
+    },
+    {
+     "v": "v63",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v63.html",
+     "capturas": "capturas/demo-v63",
+     "notas": "En línea, lo que llevas es lo del servidor: el inventario, soltar y coger del suelo, talar, tronzar, partir y recoger pasan por el servidor con tu autor, y lo que dejas en el suelo y los tocones los ven todos y siguen ahí al volver."
     }
    ]
   },

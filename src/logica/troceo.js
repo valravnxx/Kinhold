@@ -52,6 +52,7 @@ export class Troceo {
     this.suelo = suelo;
     this.estado = {};       // id del objeto del suelo → { parte, golpes, veces }
     this.ultimoGolpe = {};  // autor → ms (no se guarda: solo frena los golpes demasiado seguidos)
+    this.entre = ENTRE_GOLPES; // ms entre golpe y golpe del mismo autor (el servidor pide menos: la red los junta)
   }
   progreso(id) { const e = this.estado[id]; return e ? Math.min(1, e.parte) : 0; }
   // Olvida lo que ya no está en el suelo (se cogió, desapareció) o ha cambiado de tipo.
@@ -70,7 +71,7 @@ export class Troceo {
     const h = hachaEnMano(inv);
     if (!h) return { ok: false, motivo: t.accion === 'tronzar' ? 'Necesitas un hacha en la mano para tronzar.' : 'Necesitas un hacha en la mano para partir leña.' };
     const ult = this.ultimoGolpe[autor];
-    if (ult !== undefined && ahora - ult < ENTRE_GOLPES) return { ok: false, motivo: 'Aún no has terminado el golpe anterior.' };
+    if (ult !== undefined && ahora - ult < this.entre) return { ok: false, motivo: 'Aún no has terminado el golpe anterior.' };
     this.ultimoGolpe[autor] = ahora;
     const e = this.estado[id] || (this.estado[id] = { parte: 0, golpes: 0, veces: 0 });
     const total = t.golpes[h.clase];

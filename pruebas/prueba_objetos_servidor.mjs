@@ -3,9 +3,12 @@
 // Ejecutar: node pruebas/prueba_objetos_servidor.mjs
 // Comprueba: la bienvenida lleva lo que llevas y el suelo; soltar al suelo lo quita de tu inventario y lo ven los
 // dos; el otro lo coge y pasa a su inventario; el autor lo pone el servidor (no se puede soltar lo de otro); el sitio
-// es el de la presencia (no se coge desde lejos diciendo que estás al lado); no se mete nada de la nada ('coger') ni se
-// hace desaparecer ('soltar'); lo que se reordena (mover, ponerse, quitarse) va al inventario del autor; y al volver a
-// arrancar el servidor, los inventarios y el suelo siguen igual (y el jugador que vuelve con su ficha, con lo suyo).
+// es el de la presencia (no se coge desde lejos diciendo que estás al lado); 'coger' y 'soltar' solo con el arcón de
+// pruebas (sin él no se mete nada de la nada ni se hace desaparecer); lo que se reordena (mover, ponerse, quitarse) va
+// al inventario del autor; talar (el árbol que dice el navegador vale si su nombre cuadra con su sitio y estás al lado),
+// lo que deja en el suelo y el tocón lo ven los dos; trocear lo del suelo; recoger va a lo que llevas y el punto se
+// agota para los dos; y al volver a arrancar el servidor, los inventarios, el suelo, lo talado y lo recogido siguen
+// igual (y el jugador que vuelve con su ficha, con lo suyo).
 // Con MUTAR=1 se prueba un servidor que se fía del autor que manda el cliente: debe FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, readFileSync, writeFileSync, rmSync } from 'fs';
@@ -31,6 +34,8 @@ if (MUTAR) {
   ruta = copia;
 }
 const { crearServidor } = await import(pathToFileURL(ruta).href);
+const { ObjetosServidor } = await import(pathToFileURL(join(raiz, 'src/logica/objetos_red.js')).href);
+const { idArbol } = await import(pathToFileURL(join(raiz, 'src/logica/tala.js')).href);
 
 function cliente(puerto, ficha) {
   return new Promise((listo, fallo) => {
@@ -100,11 +105,21 @@ try {
   r = await a.objeto({ tipo: 'coger_suelo', objeto: id, x: 0, z: 0 });
   comprobar('ya no está para A', !r.ok, r.motivo);
 
-  console.log('Nada de la nada');
+  console.log('El arcón de pruebas');
+  {
+    const sin = new ObjetosServidor({ posicion: () => ({ x: 0, z: 0 }) });
+    const r1 = sin.ejecutar({ autor: yoA, tipo: 'coger', objeto: 'hacha_hierro', cantidad: 1, a: 'mano:der' }, Date.now());
+    const r2 = sin.ejecutar({ autor: yoA, tipo: 'soltar', de: 'ropa:piernas' }, Date.now());
+    comprobar("sin arcón de pruebas, 'coger' (meter algo de la nada) y 'soltar' (hacerlo desaparecer) se rechazan",
+      !r1.ok && !r2.ok && !tiene(sin.inventarioDe(yoA), 'hacha_hierro') && lugar(sin.inventarioDe(yoA), 'ropa:piernas'), `${r1.motivo} · ${r2.motivo}`);
+  }
   r = await a.objeto({ tipo: 'coger', objeto: 'hacha_hierro', cantidad: 1, a: 'mano:der' });
-  comprobar("'coger' (meter algo de la nada) se rechaza", !r.ok && !tiene(s.objetos.inventarioDe(yoA), 'hacha_hierro'), r.motivo);
-  r = await a.objeto({ tipo: 'soltar', de: 'ropa:piernas' });
-  comprobar("'soltar' (hacerlo desaparecer) se rechaza", !r.ok && lugar(s.objetos.inventarioDe(yoA), 'ropa:piernas'), r.motivo);
+  comprobar('con él (el servidor de pruebas), A coge un hacha del arcón', r.ok && lugar(s.objetos.inventarioDe(yoA), 'mano:der')?.tipo === 'hacha_hierro', r.motivo);
+  const invMal = a.esperar(m => m.tipo === 'inventario');
+  r = await a.objeto({ tipo: 'coger', objeto: 'hacha_hierro', cantidad: 1, a: 'mano:der' });
+  comprobar('y no otra donde ya lleva algo', !r.ok, r.motivo);
+  const msgInv = await invMal;
+  comprobar('aunque salga mal, le llega lo que lleva (para deshacer lo adelantado)', lugar(msgInv.inventario, 'mano:der')?.tipo === 'hacha_hierro');
   r = await a.objeto({ tipo: 'nada' });
   comprobar('una acción desconocida se rechaza', !r.ok, r.motivo);
 
@@ -116,13 +131,52 @@ try {
   comprobar('y se pone la que ha cogido', r.ok && lugar(s.objetos.inventarioDe(yoB), 'ropa:interior')?.tipo === 'camisa_lino' && !lugar(s.objetos.inventarioDe(yoB), ruta2), `${ruta2} · ${r.motivo || ''}`);
   r = await b.objeto({ tipo: 'mover', de: 'mano:izq', a: 'mano:der' });
   comprobar('y pasa la suya a la otra mano', r.ok && lugar(s.objetos.inventarioDe(yoB), 'mano:der')?.tipo === 'camisa_lino' && !lugar(s.objetos.inventarioDe(yoB), 'mano:izq'), r.motivo);
-  comprobar('lo de A no cambia', !lugar(s.objetos.inventarioDe(yoA), 'ropa:interior') && !lugar(s.objetos.inventarioDe(yoA), 'mano:der'));
+  comprobar('lo de A no cambia', !lugar(s.objetos.inventarioDe(yoA), 'ropa:interior') && lugar(s.objetos.inventarioDe(yoA), 'mano:der')?.tipo === 'hacha_hierro');
 
   console.log('Mensajes raros');
   a.ws.send(JSON.stringify({ tipo: 'objeto', id: 99, accion: [1, 2] }));
   a.ws.send(JSON.stringify({ tipo: 'objeto', id: 98, accion: { tipo: 'mover', de: { x: 1 }, a: null } }));
   await pausa(150);
-  comprobar('no tumban el servidor', (await a.objeto({ tipo: 'mover', de: 'mano:der', a: 'mano:izq' })).ok === false);
+  comprobar('no tumban el servidor', (await a.objeto({ tipo: 'mover', de: 'mano:izq', a: 'mano:der' })).ok === false);
+
+  console.log('Talar');
+  s.objetos.tala.entre = 0; s.objetos.troceo.entre = 0;   // sin esperar entre golpes (la prueba no espera 0,5 s cada uno)
+  a.estar(10, 10); await pausa(150);
+  const arbol = idArbol(11, 10);
+  r = await a.objeto({ tipo: 'talar', arbol: idArbol(30, 10), x: 10, z: 10, ax: 30, az: 10, edad: 'adulto' });
+  comprobar('un árbol lejos de donde estás no vale', !r.ok, r.motivo);
+  r = await a.objeto({ tipo: 'talar', arbol, x: 10, z: 10, ax: 10.5, az: 10, edad: 'adulto' });
+  comprobar('ni uno cuyo nombre no cuadra con su sitio', !r.ok, r.motivo);
+  r = await b.objeto({ tipo: 'talar', arbol, x: 1, z: 0, ax: 11, az: 10, edad: 'adulto' });
+  comprobar('B, lejos, no lo tala aunque diga que está al lado', !r.ok, r.motivo);
+  const talaB = b.esperar(m => m.tipo === 'tala', 4000), sueloTala = b.esperar(m => m.tipo === 'suelo' && m.objetos.some(o => o.cosa.tipo === 'tronco_largo'), 4000);
+  let golpes = 0;
+  do { r = await a.objeto({ tipo: 'talar', arbol, x: 10, z: 10, ax: 11, az: 10, edad: 'adulto' }); golpes++; } while (r.ok && !r.datos.cae && golpes < 30);
+  comprobar('A lo tala a golpes (adulto con hierro: 14) y el resultado dice que cae y hacia dónde', r.ok && r.datos.cae && golpes === 14 && Number.isFinite(r.datos.dir), `${golpes} golpes · ${r.motivo || ''}`);
+  const tb = await talaB, sl = await sueloTala;
+  comprobar('B se entera: el árbol cae y queda el tocón', tb.cae.arbol === arbol && tb.cae.autor === yoA && tb.estado.estado[arbol]?.vuelve > Date.now());
+  comprobar('y ve el tronco largo y las ramas en el suelo', sl.objetos.some(o => o.cosa.tipo === 'tronco_largo') && sl.objetos.some(o => o.cosa.tipo === 'rama'));
+  r = await a.objeto({ tipo: 'talar', arbol, x: 10, z: 10, ax: 11, az: 10, edad: 'joven' });
+  comprobar('talado, ya no se tala (ni diciendo que es otro árbol más joven)', !r.ok, r.motivo);
+
+  console.log('Trocear');
+  const tronco = s.objetos.sueloVisible(Date.now()).find(o => o.cosa.tipo === 'tronco_largo');
+  a.estar(tronco.x, tronco.z); await pausa(150);
+  golpes = 0;
+  do { r = await a.objeto({ tipo: 'trocear', objeto: tronco.id, x: tronco.x, z: tronco.z }); golpes++; } while (r.ok && !r.datos.termina && golpes < 40);
+  comprobar('A tronza el tronco largo (18 golpes con hierro) en troncos cortos', r.ok && r.datos.termina && golpes === 18 && r.datos.da.tipo === 'tronco_corto', `${golpes} golpes · ${r.motivo || JSON.stringify(r.datos.da)}`);
+  comprobar('el tronco largo ya no está y los cortos sí', !s.objetos.sueloVisible(Date.now()).some(o => o.id === tronco.id) && s.objetos.sueloVisible(Date.now()).some(o => o.cosa.tipo === 'tronco_corto'));
+
+  console.log('Recoger');
+  a.estar(5, 5); await pausa(150);
+  const recB = b.esperar(m => m.tipo === 'recoleccion');
+  r = await a.objeto({ tipo: 'recoger', punto: 'piedra:3', x: 5, z: 5, px: 5.5, pz: 5, clase: 'piedra' });
+  comprobar('A recoge una piedra suelta y va a lo que lleva', r.ok && r.datos.objeto === 'piedra' && tiene(s.objetos.inventarioDe(yoA), 'piedra'), r.motivo);
+  comprobar('B se entera de que ese punto ya está recogido', (await recB).estado.estado['piedra:3']?.vuelve > Date.now());
+  r = await a.objeto({ tipo: 'recoger', punto: 'piedra:3', x: 5, z: 5, px: 5.5, pz: 5, clase: 'piedra' });
+  comprobar('y no se vuelve a recoger hasta que vuelva', !r.ok, r.motivo);
+  r = await a.objeto({ tipo: 'recoger', punto: 'piedra:4', x: 5, z: 5, px: 5.5, pz: 5, clase: 'silex' });
+  comprobar('un punto cuyo nombre no cuadra con su clase no vale', !r.ok, r.motivo);
 
   const fichaB = b.bienvenida.ficha;
   const foto = JSON.stringify(s.objetos.exportar());
@@ -138,6 +192,7 @@ try {
   const b2 = await cliente(puerto, fichaB);
   comprobar('B vuelve con su ficha y lleva lo suyo', b2.bienvenida.autor === yoB && lugar(b2.bienvenida.inventario, 'mano:der')?.tipo === 'camisa_lino' && lugar(b2.bienvenida.inventario, 'ropa:interior')?.tipo === 'camisa_lino');
   comprobar('y ve en el suelo los pantalones que soltó', b2.bienvenida.suelo.some(o => o.cosa.tipo === 'pantalon_lino' && o.autor === yoB));
+  comprobar('y el tocón y lo recogido', b2.bienvenida.tala.estado[arbol]?.vuelve > Date.now() && b2.bienvenida.recoleccion.estado['piedra:3']?.vuelve > Date.now());
   b2.ws.close(); await pausa(50);
   await s.cerrar();
 } catch (e) {

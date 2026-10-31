@@ -11,7 +11,9 @@
 //               y los demás te veían con el aspecto por defecto.
 //   4 (28 oct): curarse en el duelo ({ tipo: 'combate', que: 'curar', herida, metodo } y 'dejarCura'); la foto de
 //               cada luchador lleva lo que se le ha hecho a cada herida y su botiquín.
-export const PROTOCOLO = 4;
+//   5 (31 oct): lo que llevas y el suelo son los del servidor ({ tipo: 'objeto' }), también talar, trocear, recoger
+//               y el arcón de pruebas; un servidor anterior no los conoce y te quedarías sin poder coger nada.
+export const PROTOCOLO = 5;
 
 // La versión del servidor por su bienvenida. Los servidores de antes de este número no la mandan: los que ya
 // llevaban el reloj del combate (tc) se cuentan como la 1, y los anteriores como la 0.
