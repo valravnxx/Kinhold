@@ -38,7 +38,7 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
   const raiz = document.createElement('div'); raiz.id = 'panelAdmin'; raiz.hidden = true;
   document.body.appendChild(raiz);
 
-  let clave = leer(), jugadores = [], yo = null, ultimo = null, id = 0, reloj = null, estadoTxt = '', estadoMal = false;
+  let huellaLista = '', clave = leer(), jugadores = [], yo = null, ultimo = null, id = 0, reloj = null, estadoTxt = '', estadoMal = false;
   const pendientes = new Map();   // id → 'ver' | 'ir'
 
   function mandar(m) {
@@ -64,7 +64,10 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
       guardar(clave);
       yo = m.yo; jugadores = (m.jugadores || []).filter(j => j.autor !== yo); ultimo = Date.now();
       ponerEstado(tr('{n} conectados además de ti', { n: jugadores.length }));
-      pintarPanel(); if (mapaRey) mapaRey.pintar();
+      // la lista se rehace solo si ha cambiado (así un botón no se cambia por otro mientras se pulsa)
+      const h = JSON.stringify(jugadores.map(j => [j.autor, Math.round(j.x), Math.round(j.z)]));
+      if (h !== huellaLista || !raiz.querySelector('ul')) { huellaLista = h; pintarPanel(); }
+      if (mapaRey) mapaRey.pintar();
     } else if (m.que === 'ir') {
       irA(m.x, Number.isFinite(m.y) ? m.y : null, m.z, Number.isFinite(m.giro) ? m.giro : null);
       avisar(tr('Teletransportado (admin).'));
