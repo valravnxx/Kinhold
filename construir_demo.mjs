@@ -9,7 +9,7 @@ const parte = (archivo) => {
   const cuerpo = h.match(/<body>([\s\S]*)<\/body>/)[1].replace(/<script>\/\*APP\*\/<\/script>/, '');
   return { estilo, cuerpo };
 };
-const PLANTILLAS = { construir: parte('src/plantilla.html'), duelo: parte('src/combate/plantilla.html'), personaje: parte('src/personaje/plantilla.html') };
+const PLANTILLAS = { construir: parte('src/plantilla.html'), personaje: parte('src/personaje/plantilla.html') };
 const virtual = { name: 'plantillas-demo', setup(b) {
   b.onResolve({ filter: /^plantillas-demo$/ }, () => ({ path: 'plantillas-demo', namespace: 'pd' }));
   b.onLoad({ filter: /.*/, namespace: 'pd' }, () => ({ contents: JSON.stringify(PLANTILLAS), loader: 'json' }));

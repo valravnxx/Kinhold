@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v67 (el mapa del rey)';
+export const VERSION_DEMO = 'Demo única · v67 (el mapa del rey; fuera «Duelo»)';
 export const REGISTRO_DEMO = [
+  'v67: fuera «Duelo» del menú (valravnx, 31 oct: «ya está integrado en jugar […] está todo 100 % online en solo jugar»): se lucha en el mundo, en «Jugar», contra otros jugadores o contra un rival de prácticas. Un enlace de antes a «Duelo» lleva a «Jugar». El campo de pruebas de combate aparte sigue en la web, en sus versiones de siempre.',
   'v67: el mapa del rey (valravnx, 31 oct): Whitholm es la isla del rey y está cartografiada. En el mundo de verdad lo llevas desde que apareces; se abre con M o con el botón «Mapa» y enseña la costa, las ocho comarcas con su nombre (Strandvang, «tierras del rey», en dorado), los ríos, los montes y los bosques, la ciudad del rey y tu marca, con hacia dónde miras. Se arrastra y se acerca con la rueda o con dos dedos; «Dónde estoy» te pone en el centro. Sin viaje rápido: solo se mira.',
   'v67: el mapa sale de lo mismo que el mundo: la costa, los biomas y los ríos son los del juego (la costa del mapa es la que se ve al andar). El estilo, el de las cartas pintadas a mano: papel envejecido, líneas de agua a lo largo de la costa, montes de perfil con la sombra rayada, árboles uno a uno y las fronteras de rayas con una franja de color por dentro.',
   'v67: el mapa se pinta poco a poco en cuanto el mundo está listo, sin parar el juego (en el PC, unos 2 s repartidos en pasos de menos de 25 ms); si lo abres antes, se termina de golpe («Desplegando el mapa…»).',
