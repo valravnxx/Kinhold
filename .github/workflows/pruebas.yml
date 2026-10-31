@@ -67,6 +67,13 @@ jobs:
           if ($py) { Add-Content -Encoding ascii -Path $env:GITHUB_PATH -Value $py.DirectoryName; Add-Content -Encoding ascii -Path $env:GITHUB_PATH -Value "$($py.DirectoryName)\Scripts"; Write-Output "python: $($py.FullName)" }
           # la salida de Python, en UTF-8 (en Windows sería cp1252 y fallaría con letras como → o ✓)
           Add-Content -Encoding ascii -Path $env:GITHUB_ENV -Value 'PYTHONUTF8=1'
+          # Lo que guardan las pruebas, en el disco del programa y no en el de Windows (le llenaron el SSD: 7 GB de
+          # carpetas temporales en 170 vueltas, 31 oct). Lo temporal, en la carpeta temporal del trabajo, que el
+          # programa de GitHub vacía con cada uno; el navegador de las pruebas y las cachés de pip y npm, a su lado.
+          $guardar = Join-Path $env:RUNNER_TOOL_CACHE 'kinhold'
+          @("TEMP=$env:RUNNER_TEMP", "TMP=$env:RUNNER_TEMP", "PLAYWRIGHT_BROWSERS_PATH=$guardar\ms-playwright",
+            "PIP_CACHE_DIR=$guardar\pip", "npm_config_cache=$guardar\npm") | Add-Content -Encoding ascii -Path $env:GITHUB_ENV
+          Write-Output "temporal: $env:RUNNER_TEMP · navegador y cachés: $guardar"
           Write-Output "bash: $git\bin\bash.exe"
       - name: Sin cambiar los finales de línea (en Windows)
         if: runner.os == 'Windows'
