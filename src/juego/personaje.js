@@ -8,6 +8,7 @@ import { Lote } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
 import { NIVELES, OCULTO, RADIO_VISTA, nivelDetalle, pixelesEnPantalla } from '../logica/detalle.js';
+import { crearLlevado } from './llevado.js';
 
 // Niveles de detalle (src/logica/detalle.js): cada personaje mira lo alto que sale en pantalla desde la cámara que se
 // le da aquí y pone el suyo. Sin cámara, todos enteros. `forzar`: un nivel fijo para todos (pruebas y capturas).
@@ -165,5 +166,11 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     if (cada && j.cuadro % cada === 0) { j.mh.mezclador.update(j.dtPendiente); j.dtPendiente = 0; }
     else if (!cada) j.dtPendiente = Math.min(j.dtPendiente, 1);
   };
+  // lo que llevas se ve puesto (src/juego/llevado.js): ponerLlevado(lo de src/logica/llevado.js); va con los huesos
+  const llevado = crearLlevado(j), animarCuerpo = j.animar;
+  j.llevado = llevado;
+  j.ponerLlevado = (l) => { j.llevadoPedido = l; if (j.mh) llevado.poner(l); };
+  j.listo.then(() => { if (j.mh && j.llevadoPedido) llevado.poner(j.llevadoPedido); });
+  j.animar = (...a) => { animarCuerpo(...a); llevado.paso(); };
   return j;
 }

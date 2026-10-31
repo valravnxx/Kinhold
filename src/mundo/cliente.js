@@ -2,6 +2,7 @@
 // (src/combate/en_linea.js) al hablar con el servidor. Abre la conexión (src/mundo/conexion.js, que vuelve a conectar
 // sola), lleva el estado (conectando, conectado, volviendo, cortado), la presencia de los demás, sus aspectos, si el
 // servidor es antiguo, la línea de estado y los avisos de bienvenida y de corte. Cada parte añade solo lo suyo.
+import { normalizarLlevado } from '../logica/llevado.js';
 import { PresenciaCliente } from '../logica/presencia.js';
 import { servidorAntiguo } from '../logica/protocolo.js';
 import { direccionServidor } from './direccion_servidor.js';
@@ -12,7 +13,9 @@ import { tr } from '../idioma.js';
 // alCortar(): se ha cortado (ya sin presencia); conectado(): la línea de estado cuando se está conectado (y el
 // servidor no es antiguo); bienvenida(direccion): el aviso al conectar; avisar(texto, mal); alEstado(texto).
 // lo que se guarda del aspecto de otro: cuerpo, ropa, personalización y, si vienen, los tintes y la hechura de su ropa
-const deAspecto = (a) => ({ sexo: a.sexo, capas: a.capas, aspecto: a.aspecto, ...(a.tintes ? { tintes: a.tintes } : {}), ...(a.hechuras ? { hechuras: a.hechuras } : {}) });
+// `llevado`: lo que se ve que lleva (src/logica/llevado.js), lo pone el servidor; se comprueba otra vez al llegar
+const deAspecto = (a) => ({ sexo: a.sexo, capas: a.capas, aspecto: a.aspecto, ...(a.tintes ? { tintes: a.tintes } : {}), ...(a.hechuras ? { hechuras: a.hechuras } : {}),
+  ...(a.llevado ? { llevado: normalizarLlevado(a.llevado) } : {}) });
 
 // Siempre en línea (valravnx, 30 oct): sin servidor no se juega. Si no se puede conectar, o se corta y no vuelve a
 // intentarlo, un cartel tapa el juego con el motivo y un botón para volver a intentarlo (recarga la página).

@@ -4,6 +4,7 @@ import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geome
 import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto, moverHumo } from '../mundo/modelos.js';
+import { llevadoDe } from '../logica/llevado.js';
 import { crearJugador, camaraDetalle, usarDetalle, detalleEncendido, nivelesEnUso } from './personaje.js';
 import { personajeElegido, recursosTaller } from '../mundo/eleccion.js';
 import { REGISTRO, VERSION } from './registro.js';
@@ -1776,6 +1777,9 @@ function vestir() {
   if (huella !== vestidoVisto) { vestidoVisto = huella; if (enLinea && enLinea.mandarAspecto) enLinea.mandarAspecto(); }
   // el hacha de mano se ve en la mano derecha si la llevas en una mano (lo demás de las manos, con su tarea del hito 2)
   jugador.hachaEnMano = ['mano:der', 'mano:izq'].some(l => HACHAS[inventario().lugares[l]?.tipo]);
+  // lo demás que llevas (cinturón y lo que cuelga, espalda, hombro y manos) se ve puesto (src/juego/llevado.js); en
+  // línea, a los demás se lo cuenta el servidor con tu aspecto, sacado de su inventario
+  jugador.ponerLlevado(llevadoDe(inventario().lugares));
 }
 ropaDelVisor();
 jugador.listo.then(vestir);
