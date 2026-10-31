@@ -620,7 +620,9 @@
     },
     {
      "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T09:24:25+00:00",
+     "rama": "trabajo/20261031-0924"
     },
     {
      "nombre": "Lo que llevas se ve puesto en el personaje del taller: el cinturón y lo que cuelga de él, el leñero o la mochila a la espalda, el saco al hombro y lo que tienes en las manos, con el estilo v5. Capturas de cerca para valravnx",

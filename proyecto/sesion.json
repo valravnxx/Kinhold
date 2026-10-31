@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-31T09:24:25+00:00",
+  "tarea": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
+  "hito": "equipo",
+  "rama": "trabajo/20261031-0924"
+ },
  "B": {
   "inicio": "2026-10-31T08:58:36+00:00",
   "tarea": "Herramienta en la mano al trabajar (visto en la revisión del 30 oct): al picar el personaje no lleva pico",
