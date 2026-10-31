@@ -1,6 +1,6 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR } from '../logica/construccion.js';
+import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, altoTejadoEn, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto, moverHumo } from '../mundo/modelos.js';
@@ -784,12 +784,18 @@ addEventListener('keyup', (e) => {
 
 // ---------------- Entrada: ratón y táctil ----------------
 const punteros = new Map(); // pointerId -> {x,y,x0,y0,t0}
-let arrastrando = false, pinzaDist = 0;
+let arrastrando = false, pinzaDist = 0, dedoQuieto = null;
 lienzo.addEventListener('contextmenu', e => e.preventDefault());
 lienzo.addEventListener('pointerdown', (e) => {
   lienzo.setPointerCapture(e.pointerId);
   punteros.set(e.pointerId, { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, t0: performance.now(), boton: e.button });
   arrastrando = false;
+  // en táctil, el dedo quieto medio segundo sobre algo abre el menú de usar
+  clearTimeout(dedoQuieto);
+  if (e.pointerType !== 'mouse' && punteros.size === 1 && estado.modo === 'mover' && !document.body.classList.contains('combate')) {
+    const q = punteros.get(e.pointerId);
+    dedoQuieto = setTimeout(() => { if (!arrastrando && punteros.size === 1) { q.menu = true; abrirMenuUsar(q.x, q.y, true); } }, 500);
+  }
   if (punteros.size === 2) {
     const [a, b] = [...punteros.values()];
     pinzaDist = Math.hypot(a.x - b.x, a.y - b.y);
@@ -813,7 +819,9 @@ lienzo.addEventListener('pointermove', (e) => {
     cam.yaw -= dx * 0.004;
     return;
   }
-  const rotarCamara = e.pointerType !== 'mouse' || p.boton === 2 || p.boton === 1 || (p.boton === 0 && estado.modo === 'mover');
+  if (arrastrando) clearTimeout(dedoQuieto);
+  // el botón derecho ya no gira la cámara: es para usar lo que tocas (la rueda pulsada gira; valravnx, 31 oct)
+  const rotarCamara = e.pointerType !== 'mouse' || p.boton === 1 || (p.boton === 0 && estado.modo === 'mover');
   if (arrastrando && rotarCamara) {
     cam.yaw -= dx * 0.006;
     cam.pitch = THREE.MathUtils.clamp(cam.pitch + dy * 0.004, 0.06, 1.35); // hasta casi a ras de suelo (valravnx, 30 oct)
@@ -824,7 +832,11 @@ lienzo.addEventListener('pointerup', (e) => {
   const p = punteros.get(e.pointerId);
   punteros.delete(e.pointerId);
   if (punteros.size < 2) pinzaDist = 0;
+  clearTimeout(dedoQuieto);
   if (!p || arrastrando) return;
+  if (p.menu) { ignorarClicMenu = performance.now() + 600; return; } // el dedo quieto ya abrió el menú de usar
+  // clic derecho sin arrastre: el menú de usar lo que hay ahí
+  if (e.pointerType === 'mouse' && p.boton === 2) { if (estado.modo === 'mover' && !document.body.classList.contains('combate')) abrirMenuUsar(e.clientX, e.clientY); return; }
   // toque o clic sin arrastre
   if (e.pointerType === 'mouse' && p.boton !== 0) return;
   if (estado.modo === 'desmontar') {
@@ -914,8 +926,9 @@ function cambiarPlanta(d) {
 }
 
 // Usar: puertas y escaleras cercanas
-function interactivoCercano() {
-  let mejor = null, md = 1.8;
+// todos los que están al alcance, del más cercano al más lejano (para el menú de Usar)
+function interactivosCercanos() {
+  const lista = [];
   for (const c of mundo.construcciones) {
     for (const [key, p] of c.piezas) {
       if (p.obra) continue;
@@ -927,11 +940,12 @@ function interactivoCercano() {
       let mismaPlanta = p.k === pj.k || (esc && p.k === pj.k - 1) || (p.hueco === 't' && p.k === pj.k + 1); // la trampilla, también desde abajo
       // en una pila de andamios, estando en una plataforma con otro andamio encima, Usar sube (no baja)
       if (PIEZAS[p.tipo].andamio && p.k === pj.k - 1 && andamioEn(c, p.i, p.j, pj.k)) mismaPlanta = false;
-      if (mismaPlanta && d < md) { md = d; mejor = { c, key, p, tipo: puerta ? 'puerta' : fuego ? 'fuego' : 'escalera' }; }
+      if (mismaPlanta && d < 1.8) lista.push({ c, key, p, d, tipo: puerta ? 'puerta' : fuego ? 'fuego' : 'escalera' });
     }
   }
-  return mejor;
+  return lista.sort((a, b) => a.d - b.d);
 }
+function interactivoCercano() { return interactivosCercanos()[0] || null; }
 // árbol en pie al alcance del hacha (a menos de 1 m de su tronco), en la planta baja
 function arbolCercano() {
   if (pj.k !== 0) return null;
@@ -944,15 +958,16 @@ function arbolCercano() {
   return mejor;
 }
 // obra a medias al alcance: en tu planta o la de encima (un muro o un tejado que se apoya en lo que pisas)
-function obraCercana() {
-  let mejor = null, md = 2.3;
+function obrasCercanas() {
+  const lista = [];
   for (const c of mundo.construcciones) for (const [key, p] of c.piezas) {
     if (!p.obra || p.k < pj.k || p.k > pj.k + 1) continue;
     const m = centroMundo(c, p), d = Math.hypot(m.x - pj.x, m.z - pj.z);
-    if (d < md) { md = d; mejor = { c, key, p }; }
+    if (d < 2.3) lista.push({ c, key, p, d });
   }
-  return mejor;
+  return lista.sort((a, b) => a.d - b.d);
 }
+function obraCercana() { return obrasCercanas()[0] || null; }
 // Usar junto a una obra: le llevas lo que le falta y, si ya lo tiene todo, te pones a construir (moverse lo para).
 // Si la obra está en alto (GDD, «Obras»): lo ligero se lleva a mano subiendo por la escalera (hay que estar en su
 // planta) y lo pesado se sube rodándolo por dos varas con una cuerda, de uno en uno (aquí juegas solo: entre dos,
@@ -1201,6 +1216,73 @@ function usar() {
     }
     mostrarAviso(t('nadaQueUsar')); return;
   }
+  usarInteractivo(it);
+}
+// Clic derecho en lo que quieras usar (valravnx, 31 oct: «poder hacer clic derecho y seleccionar qué quieres usar si
+// es que hay varias opciones en la zona… clicando con clic derecho en lo que quieras usar: pilla lo que toques y muy
+// cercanos»). En el móvil, dejando el dedo quieto encima. Sale un menú, junto al puntero, con lo que está al alcance
+// (como Usar) y además bajo el puntero o muy cerca de él; cada cosa hace lo mismo que haría Usar con ella. Usar a
+// secas (F o el botón) sigue haciendo lo primero de siempre.
+function opcionesUsar() {
+  const ops = [], nombrePieza = p => tr(PIEZAS[p.tipo].nombre);
+  for (const o of obrasCercanas()) ops.push({ texto: tr('Obra: {p}', { p: nombrePieza(o.p) }), pos: centroMundo(o.c, o.p), y: oyDe(o.c) + o.p.k * ALTURA, hacer: () => usarObra(o) });
+  for (const it of interactivosCercanos()) {
+    const p = it.p, n = nombrePieza(p);
+    const texto = it.tipo === 'fuego' ? (p.apagado ? tr('Encender: {p}', { p: n }) : tr('Apagar: {p}', { p: n }))
+      : it.tipo === 'puerta' ? (p.abierta ? tr('Cerrar: {p}', { p: n }) : tr('Abrir: {p}', { p: n }))
+      : (p.k === pj.k && !(adarveDeEscalera(it.c, p, false) && pj.k !== 0) ? tr('Subir: {p}', { p: n }) : tr('Bajar: {p}', { p: n }));
+    const cl = centroLocal(p);
+    ops.push({ texto, pos: localAMundo(it.c, cl.lx, cl.lz), y: oyDe(it.c) + p.k * ALTURA, hacer: () => usarInteractivo(it) });
+  }
+  const a = arbolCercano();
+  if (a) ops.push({ texto: tr('Talar el árbol'), pos: a, alto: 3, hacer: () => hachaEnMano(inventario()) ? empezarTala(a) : mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true) });
+  if (pj.k === 0) {
+    const tronco = troncoCercano();
+    if (tronco && hachaEnMano(inventario())) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
+    for (const so of sueloObjetos.cercanos(pj.x, pj.z)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
+    for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) }), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
+  }
+  return ops;
+}
+const menuUsar = $('menuUsar');
+function cerrarMenuUsar() { menuUsar.hidden = true; menuUsar.innerHTML = ''; }
+const CERCA_DEL_PUNTERO = 1.3, PX_DEL_PUNTERO = 48;
+// lo que hay bajo el puntero (cx, cy) o muy cerca: a menos de 1,3 m del punto que toca (una pieza o el suelo) o, en la
+// pantalla, a menos de 48 px de la cosa (para lo que tiene altura, como un árbol, que el rayo atraviesa por la copa)
+function opcionesEn(cx, cy) {
+  const hit = piezaBajo(cx, cy), suelo = hit ? null : sueloBajoRayo(rayoDesde(cx, cy).ray);
+  const punto = hit ? hit.point : suelo;
+  const r = renderer.domElement.getBoundingClientRect(), v = new THREE.Vector3();
+  const enPantalla = (x, y, z) => { v.set(x, y, z).project(camara); return v.z < 1 ? Math.hypot((v.x + 1) / 2 * r.width + r.left - cx, (1 - v.y) / 2 * r.height + r.top - cy) : Infinity; };
+  return opcionesUsar().map(op => {
+    const y0 = op.y ?? sueloEn(op.pos.x, op.pos.z);
+    const dMundo = punto ? Math.hypot(op.pos.x - punto.x, op.pos.z - punto.z) : Infinity;
+    const dPx = Math.min(...[0, 0.5, 1].map(f => enPantalla(op.pos.x, y0 + f * (op.alto ?? 1.6), op.pos.z)));
+    return { op, d: Math.min(dMundo / CERCA_DEL_PUNTERO, dPx / PX_DEL_PUNTERO) };
+  }).filter(o => o.d <= 1).sort((a, b) => a.d - b.d).map(o => o.op);
+}
+let ignorarClicMenu = 0;
+function abrirMenuUsar(cx, cy, tactil = false) {
+  const ops = window.__menuUsarSinPuntero ? opcionesUsar() : opcionesEn(cx, cy);  // __menuUsarSinPuntero: solo para comprobar que la prueba falla
+  if (!ops.length) { cerrarMenuUsar(); mostrarAviso(tr('Ahí no hay nada que usar a tu alcance.')); return; }
+  menuUsar.innerHTML = '';
+  for (const op of ops.slice(0, 8)) {
+    const b = document.createElement('button');
+    b.textContent = op.texto;
+    // el clic que el navegador manda al levantar el dedo tras dejarlo quieto no elige nada (caería en el menú)
+    b.onclick = (e) => { e.stopPropagation(); if (performance.now() < ignorarClicMenu) return; cerrarMenuUsar(); op.hacer(); };
+    menuUsar.appendChild(b);
+  }
+  menuUsar.hidden = false;
+  menuUsar.dataset.x = pj.x; menuUsar.dataset.z = pj.z;
+  // junto al puntero, sin salirse de la pantalla
+  const w = menuUsar.offsetWidth, h = menuUsar.offsetHeight;
+  menuUsar.style.left = Math.max(6, Math.min(innerWidth - w - 6, cx + 10)) + 'px';
+  // con el dedo, por encima de él, para no taparlo
+  menuUsar.style.top = Math.max(6, Math.min(innerHeight - h - 6, tactil ? cy - h - 40 : cy - 10)) + 'px';
+}
+// puerta, trampilla, chimenea, escalera o andamio
+function usarInteractivo(it) {
   if (it.tipo === 'fuego') { // chimenea: encender o apagar el fuego (solo se rehace ella)
     const r = accion({ tipo: 'usar', construccion: it.c.id, clave: it.key });
     if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
@@ -1421,6 +1503,21 @@ function escaleraBajoJugador() {
   }
   return null;
 }
+// Tejado terminado de la casilla (i, j) que cubre la planta k - 1 (sus muros acaban a la altura de la planta k): altura
+// de su cara de arriba bajo el jugador, o null. Se pisa (valravnx, 31 oct: «los tejados deben poder ser pisables para
+// poder construir tejados con un solo andamio»): desde el andamio se sale al tramo de al lado y desde ahí se alcanza
+// el siguiente. Si su cara está muy por encima de tus pies (llegas por debajo, a un tramo alto), no se sube de golpe.
+// Grueso de cada tejado por encima de su plano, en vertical (m; del dibujo de modelos.js): paja en dos hiladas,
+// tablillas sobre la tablazón, tejas de canal y cobija.
+const SOBRE_TEJADO = { paja: 0.44, tablilla: 0.13, teja: 0.25 };
+function tejadoBajoJugador(c, i, j, k, l) {
+  const key = clave('r', i, j, k), p = c.piezas.get(key);
+  if (!p || p.obra || window.__sinPisarTejados) return null;
+  const tj = geometriaTejados(c).get(key);
+  const material = Object.keys(SOBRE_TEJADO).find(m => p.tipo.endsWith(m)) || 'tablilla';
+  const y = oyDe(c) + k * ALTURA + altoTejadoEn(p, tj, l.lx, l.lz) * P.subidaTejado + SOBRE_TEJADO[material];
+  return y - pj.y > 0.8 ? null : y;
+}
 function alturaSuelo() {
   const e = escaleraBajoJugador();
   if (e) { pj.k = e.k; return e.y; }
@@ -1434,6 +1531,7 @@ function alturaSuelo() {
       if (k === 1 && adarveEn(c, i, j)) { pj.k = 1; return oy + ALTO_ADARVE; } // en el piso del adarve
       if (k > 0 && trampillaCerrada(c, i, j, k - 1)) { pj.k = k; return oy + k * ALTURA + P.superficieSuelo; } // la trampilla cerrada se pisa
       if (k > 0 && andamioEn(c, i, j, k - 1)) { pj.k = k; return oy + k * ALTURA + P.superficieSuelo; } // plataforma del andamio
+      if (k > 0) { const y = tejadoBajoJugador(c, i, j, k, l); if (y !== null) { pj.k = k; return y; } } // el tejado terminado se pisa
     }
     // sin suelo construido debajo, el terreno: llano en la zona de construir, y las lomas de más allá (donde está la
     // ladera con la piedra suelta y el sílex), que antes se cruzaban por dentro
@@ -1662,6 +1760,7 @@ function paso() {
     for (const obj of g.children) obj.visible = !techo || obj.userData.k <= pj.k;
   }
   for (const obj of raizDeco.children) obj.visible = !bajoTecho || plantaDeco(obj.userData.deco) <= pj.k;
+  if (!menuUsar.hidden && Math.hypot(pj.x - menuUsar.dataset.x, pj.z - menuUsar.dataset.z) > 1) cerrarMenuUsar(); // te alejas: lo de la lista ya no está al alcance
   const it = interactivoCercano();
   recoleccion.paso(); // vuelve a salir lo que toca
   talaV.paso(dt); // el árbol que cae y los que vuelven a crecer
@@ -1739,7 +1838,10 @@ $('btnGirar').onclick = girar;
 $('btnColocar').onclick = colocar;
 $('btnSube').onclick = () => cambiarPlanta(1);
 $('btnBaja').onclick = () => cambiarPlanta(-1);
-$('btnUsar').onclick = usar;
+$('btnUsar').onclick = () => { cerrarMenuUsar(); usar(); };
+// se cierra al pulsar fuera, con Escape o al alejarse
+addEventListener('pointerdown', (e) => { if (!menuUsar.hidden && !menuUsar.contains(e.target)) cerrarMenuUsar(); });
+addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarMenuUsar(); });
 $('btnConfirmar').onclick = confirmarDesmontaje;
 $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltado(); estado.pendienteDesmontar = null; mostrarAviso(''); };
 // Panel de inventario (hito 2): lo que llevas encima y un arcón de pruebas para coger equipo.
@@ -1752,7 +1854,7 @@ const panelInventario = montarPanelInventario({ panel: $('panelInventario'), bot
 // coge) y las teclas pulsadas, para no seguir andando sin ver.
 const mapaRey = mundoJ ? montarMapaRey({ paisaje: mundoJ.paisaje, comarcas: crearComarcas(MUNDO.mapa), esTactil: matchMedia('(pointer: coarse)').matches,
   posicion: () => ({ x: pj.x + mundoJ.salida.x, z: pj.z + mundoJ.salida.z, rot: pj.rot }),
-  alAbrir: () => { if (document.pointerLockElement) document.exitPointerLock(); teclas.clear(); } }) : null;
+  alAbrir: () => { if (document.pointerLockElement) document.exitPointerLock(); teclas.clear(); cerrarMenuUsar(); } }) : null;
 if ($('btnMapa')) { $('btnMapa').hidden = !mapaRey; $('btnMapa').onclick = () => mapaRey && mapaRey.alternar(); }
 // El personaje lleva puesto lo que dice el inventario (valravnx, 29 oct: el inventario es el equipo). La ropa elegida
 // en el visor de personaje entra en el inventario una vez por cada elección; después manda el inventario.
@@ -2026,6 +2128,7 @@ window.__kinhold = {
   fijarSubida(t) { if (estado.obrando) estado.obrando.desde = performance.now() + 1e9; if (rampa) { rampa.t = rampa.meta = t; moverRampa(0); } },
   seguirSubida() { if (estado.obrando) estado.obrando.desde = performance.now(); },
   interactivoCercano() { const o = interactivoCercano(); return o && { c: o.c.id, key: o.key, tipo: o.tipo }; },
+  opcionesUsar: () => opcionesUsar().map(o => o.texto), abrirMenuUsar, cerrarMenuUsar, opcionesEn: (cx, cy) => opcionesEn(cx, cy).map(o => o.texto), menuUsar: () => menuUsar.hidden ? null : [...menuUsar.children].map(b => b.textContent),
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; sueloObjetos.suelo.objetos = []; sueloObjetos.refrescar(); talaV.tala.estado = {}; talaV.refrescar(); troceo.estado = {}; reconstruir(); ropaDelVisor(); vestir(); pintarLlevas(); panelInventario.pintar(); },
   get registroAcciones() { return registroAcciones; },
   accionInventario, get inventario() { return inventario(); }, panelInventario,

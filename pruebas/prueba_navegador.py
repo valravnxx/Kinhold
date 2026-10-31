@@ -490,6 +490,65 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/47_tejado_teja_detras.png')
 
+    print('PC: el tejado terminado se pisa (un solo andamio para todo el tejado)')
+    # valravnx, 31 oct: «los tejados deben poder ser pisables para poder construir tejados con un solo andamio, por
+    # ahora los atraviesas y caes». Se sale del andamio (planta 1, a 2,62 m) al alero del tramo de z=-17 (sube hacia +z)
+    # y se anda por él hasta la cumbrera.
+    if os.environ.get('MUTAR_TEJADO'): ev('window.__sinPisarTejados = true')
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=1.2; {K}.pj.z=-17.8; {K}.pj.k=1; {K}.pj.y=2.62; {K}.pj.rot=0; {K}.cam.yaw=Math.PI+0.9; {K}.cam.pitch=0.35; {K}.cam.dist=7")
+    esperar(pg, 900)
+    y_alero = ev(f"{K}.pj.y"); k_alero = ev(f"{K}.pj.k")
+    for paso_z in range(1, 9):  # andando: de 20 en 20 cm (de golpe, un escalón de más de 0,8 m no se sube)
+        ev(f"{K}.pj.z={-17.8 + 0.2 * paso_z:.2f}"); esperar(pg, 300)
+    esperar(pg, 600)
+    y_cumbre = ev(f"{K}.pj.y"); k_cumbre = ev(f"{K}.pj.k")
+    comprobar('en el alero del tejado no se cae: sigue en la planta 1, sobre la paja/teja', k_alero == 1 and 2.6 < y_alero < 3.2, f'k={k_alero} y={y_alero:.2f}')
+    comprobar('andando hacia la cumbrera se sube por la pendiente (unos 0,96 m en 1,6 m)', k_cumbre == 1 and 0.8 < y_cumbre - y_alero < 1.1, f'k={k_cumbre} y={y_alero:.2f} → {y_cumbre:.2f}')
+    pg.screenshot(path=f'{SALIDA}/47b_de_pie_en_el_tejado.png')
+    ev(f"{K}.pj.x=6.5; {K}.pj.z=-17"); esperar(pg, 900)
+    comprobar('fuera del tejado, se cae al suelo', ev(f"{K}.pj.k") == 0 and ev(f"{K}.pj.y") < 0.5, f"k={ev(f'{K}.pj.k')} y={ev(f'{K}.pj.y'):.2f}")
+
+    print('PC: clic derecho en lo que quieras usar (menú con lo que tocas y lo muy cercano)')
+    # valravnx, 31 oct: «poder hacer clic derecho y seleccionar qué quieres usar si es que hay varias opciones en la
+    # zona… quita el rotar cámara con clic derecho, que ya está en el central, y clicando con clic derecho en lo que
+    # quieras usar (pilla lo que toques y muy cercanos)». Junto a la puerta de varas de la cabaña, con una piedra en el
+    # suelo al lado: Usar a secas abre la puerta; con el clic derecho en la piedra se coge sin tocar la puerta.
+    ev(f"{K}.pj.x=1; {K}.pj.z=-0.7; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=0; {K}.cam.yaw=Math.PI+0.6; {K}.cam.pitch=0.5; {K}.cam.dist=7")
+    ev(f"{K}.sueloObjetos.suelo.dejar({{ tipo: 'piedra', n: 1 }}, 1.6, -1.1, Date.now(), {K}.AUTOR_LOCAL, true); {K}.sueloObjetos.refrescar()")
+    esperar(pg, 900)
+    ops = ev(f"{K}.opcionesUsar()")
+    comprobar('al alcance: la puerta y la piedra del suelo', any('Puerta de varas' in o for o in ops) and any('Coger del suelo' in o for o in ops), json.dumps(ops, ensure_ascii=False))
+    if os.environ.get('MUTAR_MENU'): ev('window.__menuUsarSinPuntero = true')
+    yaw0 = ev(f"{K}.cam.yaw")
+    # un punto de la pantalla, en el suelo, lejos de todo lo que se puede usar
+    lejos = ev(f"""(() => {{ for (const [x, y] of [[160, 700], [1000, 700], [160, 420], [640, 740], [400, 300]]) if (!{K}.opcionesEn(x, y).length) return {{ x, y }}; return null; }})()""")
+    comprobar('hay un punto del suelo lejos de todo para probar', lejos is not None)
+    lejos = lejos or {'x': 160, 'y': 700}
+    pg.mouse.move(lejos['x'], lejos['y']); pg.mouse.down(button='right'); pg.mouse.move(lejos['x'] + 120, lejos['y'] + 40, steps=6); pg.mouse.up(button='right')
+    esperar(pg, 400)
+    comprobar('arrastrar con el botón derecho ya no gira la cámara (gira la rueda pulsada)', abs(ev(f"{K}.cam.yaw") - yaw0) < 1e-6, f"{yaw0:.3f} → {ev(f'{K}.cam.yaw'):.3f}")
+    ev(f"{K}.cerrarMenuUsar && {K}.cerrarMenuUsar()")
+    pg.mouse.click(lejos['x'], lejos['y'], button='right'); esperar(pg, 400)
+    comprobar('clic derecho en el suelo lejos de todo: no sale menú', ev(f"{K}.menuUsar()") is None, json.dumps(ev(f"{K}.menuUsar()"), ensure_ascii=False))
+    pt = ev(f"{K}.proyectar(1.6, 0.05, -1.1)")
+    pg.mouse.click(pt['x'], pt['y'], button='right'); esperar(pg, 500)
+    menu = ev(f"{K}.menuUsar()")
+    comprobar('clic derecho en la piedra: menú con la piedra primero (y la puerta, que está muy cerca)', menu is not None and 'Coger del suelo' in menu[0], json.dumps(menu, ensure_ascii=False))
+    caja = ev("(() => { const r = document.getElementById('menuUsar').getBoundingClientRect(); return { x: r.left, y: r.top }; })()")
+    comprobar('el menú sale junto al puntero', abs(caja['x'] - pt['x']) < 80 and abs(caja['y'] - pt['y']) < 80, json.dumps(caja))
+    pg.screenshot(path=f'{SALIDA}/47c_menu_usar.png')
+    puerta0 = ev(f"[...{K}.mundo.construcciones[0].piezas.values()].find(p => p.tipo === 'puerta_varas').abierta || false")
+    piedras0 = ev(f"{K}.sueloObjetos.suelo.objetos.filter(o => o.cosa.tipo === 'piedra').length")
+    if menu: pg.locator('#menuUsar button', has_text='Coger del suelo').first.click()
+    esperar(pg, 500)
+    puerta1 = ev(f"[...{K}.mundo.construcciones[0].piezas.values()].find(p => p.tipo === 'puerta_varas').abierta || false")
+    piedras1 = ev(f"{K}.sueloObjetos.suelo.objetos.filter(o => o.cosa.tipo === 'piedra').length")
+    comprobar('elegir «Coger del suelo» coge la piedra y no toca la puerta; el menú se cierra', piedras1 == piedras0 - 1 and puerta1 == puerta0 and ev(f"{K}.menuUsar()") is None, f'piedras {piedras0} → {piedras1}, puerta {puerta0} → {puerta1}')
+    pg.click('#btnUsar')
+    esperar(pg, 400)
+    comprobar('Usar a secas sigue haciendo lo de siempre (abre la puerta)', ev(f"[...{K}.mundo.construcciones[0].piezas.values()].find(p => p.tipo === 'puerta_varas').abierta || false") != puerta1)
+    pg.click('#btnUsar')
+
     print('PC: remate de tejado (esquinas): casa en L con limatesa y limahoya')
     # lejos de lo demás, dentro de la tierra (mojón en -3,-6, radio 20): ala de 3×2 y ala de 2×1 que sale de su punta
     celdasL = [(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (1, 2), (2, 2)]
@@ -1076,6 +1135,22 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=9.4; {K}.pj.z=-11.4; {K}.pj.k=1; {K}.pj.y=2.62; {K}.cam.yaw=0.5; {K}.cam.pitch=0.8; {K}.cam.dist=6")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06e_movil_trampilla.png')
+    # en el móvil, el dedo quieto medio segundo sobre la puerta de la cabaña abre el menú de usar
+    mv.evaluate(f"{K}.pj.x=1; {K}.pj.z=-0.7; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=Math.PI+0.6; {K}.cam.pitch=0.5; {K}.cam.dist=7")
+    mv.wait_for_timeout(900)
+    pt = mv.evaluate(f"{K}.proyectar(1, 1, 0)")
+    cdp = ctx.new_cdp_session(mv)
+    puerta0 = mv.evaluate(f"[...{K}.mundo.construcciones[0].piezas.values()].find(p => p.tipo === 'puerta_varas').abierta || false")
+    cdp.send('Input.dispatchTouchEvent', {'type': 'touchStart', 'touchPoints': [{'x': pt['x'], 'y': pt['y']}]})
+    # sin tarjeta gráfica cada fotograma tarda y el temporizador del dedo quieto puede llegar tarde
+    try: mv.wait_for_function(f"{K}.menuUsar() !== null", timeout=20000)
+    except Exception: pass
+    mmenu = mv.evaluate(f"{K}.menuUsar()")
+    cdp.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': []})
+    mv.wait_for_timeout(1500)
+    mv.screenshot(path=f'{SALIDA}/06g_movil_menu_usar.png')
+    comprobar('móvil: el dedo quieto sobre la puerta abre el menú con ella', mmenu is not None and any('Puerta de varas' in o for o in mmenu), json.dumps(mmenu, ensure_ascii=False))
+    comprobar('móvil: al levantar el dedo el menú sigue ahí para elegir y no se ha usado nada', mv.evaluate(f"{K}.menuUsar()") is not None and mv.evaluate(f"[...{K}.mundo.construcciones[0].piezas.values()].find(p => p.tipo === 'puerta_varas').abierta || false") == puerta0)
     mv.evaluate(f"{K}.pj.x=3.5; {K}.pj.z=-20.8; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI-0.3; {K}.cam.pitch=0.7; {K}.cam.dist=11")
     mv.wait_for_timeout(900)
     comprobar('móvil: el tejado de teja se carga del guardado', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'tejado_teja').length") == 4)

@@ -538,10 +538,10 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Tejados pisables y menú de Usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en Usar (o dejándolo pulsado en el móvil), se elige qué usar si hay varias cosas al alcance",
-     "estado": "en_curso",
+     "nombre": "Tejados pisables y clic derecho para usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en lo que quieras usar (en el móvil, dejando el dedo quieto encima), sale un menú con eso y lo muy cercano para elegir; el botón derecho ya no gira la cámara (la gira la rueda pulsada)",
+     "estado": "hecho",
      "inicio": "2026-10-31T10:05:51+00:00",
-     "rama": "trabajo/20261031-1006-tejados"
+     "fin": "2026-10-31T14:35:39+00:00"
     }
    ]
   },
@@ -2099,6 +2099,13 @@
      "archivo": "jugar/demo/v67.html",
      "capturas": "capturas/demo-v67",
      "notas": "Sin cortados rectos de kilómetros: las laderas de los valles de los ríos ya no son planos lisos y rectos (valravnx, 31 oct); llevan relieve, el borde se redondea y la cabecera del valle es suave"
+    },
+    {
+     "v": "v68",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v68.html",
+     "capturas": "capturas/demo-v68",
+     "notas": "Los tejados terminados se pisan (un tejado entero con un solo andamio) y clic derecho en lo que quieras usar: menú con eso y lo muy cercano (en el móvil, el dedo quieto); el botón derecho ya no gira la cámara"
     }
    ]
   },

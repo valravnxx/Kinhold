@@ -3195,23 +3195,6 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-10-31T11:22:19+00:00",
-  "fin": "2026-10-31T14:03:16+00:00",
-  "titulo": "Hito 2: lo que llevas se ve puesto en el personaje (carril A, sin publicar)",
-  "hito": "equipo",
-  "hecho": [
-   "Lo que llevas se ve en el personaje del taller: el cinturón (cordel, cuerda trenzada o los tres cintos de cuero, con hebilla y anillas) y lo que cuelga de sus huecos (el hacha por el cinto, el cuchillo en su funda, la espada envainada, una bolsa o un hatillo); a la espalda el leñero, el porta-piedras y la mochila de bastidor con sus correas, el zurrón, el fardo, los cestos, la caja de herramientas, el carcaj y el escudo, con lo de dentro asomando; al hombro el saco, la bandolera, el odre o un tronco corto; y en las manos la piedra, la rama, la leña o la herramienta.",
-   "Se ajusta a cada cuerpo y a su ropa: al ponerlo se miden los vértices del cuerpo vestido (sin brazos ni cabeza) y cada pieza se ata a un hueso (pelvis, espalda o mano) y lo sigue al animarse. Lo grande en las dos manos va entre las dos manos con la animación de llevar en brazos.",
-   "En línea, lo que se ve que lleva cada uno lo saca el servidor de su inventario y lo reparte con el aspecto (y otra vez cuando cambia); lo que diga el navegador no se cree. Lógica pura en src/logica/llevado.js.",
-   "Pruebas nuevas: prueba_llevado.mjs (del inventario a lo que se ve, lo que llega por la red, y el servidor con dos clientes; con MUTAR=1, un servidor que se fía del cliente, falla) y prueba_llevado_navegador.py (cada pieza en su sitio del cuerpo, siguiendo a su hueso al andar; con MUTAR=1 falla), con capturas de cerca en PC y móvil. La prueba de la construcción mira los modos de andar con las manos vacías y comprueba que con un tronco en brazos anda con la animación de llevar.",
-   "No se publica: en la nube fallan «jugar en línea», «duelo en línea», «la demo en el mundo» y una vez la de combate en el servidor, cada vez con un fallo distinto (verse el uno al otro, la reconexión, la vegetación en el agua, una intención rechazada); la de combate en el servidor pasa tres veces seguidas aquí. «Jugar en línea» falla hoy en todas las ramas (lo anotó el carril B). El PC de valravnx seguía fallando en el primer paso («bash: command not found»), así que todo fue a la nube. La tarea queda a medias en trabajo/20261031-1123, lista para publicar como demo v67 en cuanto pasen.",
-   "Aún mal (visto en las capturas): las correas de la mochila hacen un quiebro delante; el hacha colgada llega casi a la pantorrilla; el cuero es liso, más plano que la madera de la v5; al hombro, el tronco y el saco no los sujeta la mano (la animación se hará en el taller)."
-  ],
-  "pruebas": "En la nube: lógica, construcción (tras arreglar su prueba), lo que llevas se ve puesto, lo que llevas en línea, panel de inventario, personaje y el resto bien; fallan jugar en línea, duelo en línea y la demo en el mundo. No comprobado: si esos fallos pasan en main sin este cambio.",
-  "capturas": "",
-  "estado": "fallo"
- },
- {
   "inicio": "2026-10-31T11:49:59+00:00",
   "fin": "2026-10-31T11:49:59+00:00",
   "titulo": "Decidido: las animaciones de cargar las hacemos nosotros (chat con valravnx)",
@@ -3259,5 +3242,38 @@
   "pruebas": "En la nube, la batería entera (26 grupos, sin el PC de valravnx): bien todos salvo «jugar en línea», que falla en «PC se pone a construir» y lo que sigue (también en main; valravnx, 31 oct: «jugar en línea ya no existe»); esta tarea no toca código que use el juego. Tras unir main, lógica bien otra vez en la nube. Prueba de fabricación 88/88; rota a propósito (sin mirar lo que se conoce, o con la práctica de más) falla 4.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T10:05:51+00:00",
+  "fin": "2026-10-31T14:35:39+00:00",
+  "titulo": "Tejados pisables y clic derecho para usar (chat con valravnx)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Los tejados terminados se pisan: desde el andamio se sale al alero y se sube por la pendiente hasta la cumbrera, así que un tejado entero se hace con un solo andamio (antes se atravesaban y caías). Si te sales del tejado, caes al suelo; un tejado en obras aún no se pisa.",
+   "Clic derecho en lo que quieras usar: sale un menú junto al puntero con esa cosa y lo muy cercano a tu alcance (obras, puertas, chimenea, escaleras y andamios, talar, trocear, coger del suelo, recoger). En el móvil, el dedo quieto medio segundo encima; el clic de levantar el dedo no elige nada. Usar a secas sigue igual.",
+   "El botón derecho ya no gira la cámara (la gira la rueda pulsada), como pidió valravnx; la ayuda lo dice.",
+   "Pruebas nuevas: alto de la cara del tejado en cada punto (lógica), andar por el tejado, el menú del clic derecho en PC y el del dedo quieto en el móvil. Rotas a propósito una vez (MUTAR=1, __sinPisarTejados, __menuUsarSinPuntero): fallan.",
+   "Publicado como demo v68."
+  ],
+  "pruebas": "Todas en la nube (el PC de valravnx fallaba en el primer paso de cada grupo, «Sin cambiar los finales de línea», y se mandaron solo a la nube): todo bien salvo «jugar en línea» y «duelo en línea» (fallan también en main mientras no esté el servidor de verdad). Tras el último arreglo del móvil y tras unir main se repitieron construcción, demo única y juego en inglés: bien. En el primer intento, «niveles de detalle del personaje» falló una vez en «el panel dice cuántos hay en cada nivel» y al repetirlo pasó.",
+  "capturas": "capturas/demo-v68",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T11:22:19+00:00",
+  "fin": "2026-10-31T14:03:16+00:00",
+  "titulo": "Hito 2: lo que llevas se ve puesto en el personaje (carril A, sin publicar)",
+  "hito": "equipo",
+  "hecho": [
+   "Lo que llevas se ve en el personaje del taller: el cinturón (cordel, cuerda trenzada o los tres cintos de cuero, con hebilla y anillas) y lo que cuelga de sus huecos (el hacha por el cinto, el cuchillo en su funda, la espada envainada, una bolsa o un hatillo); a la espalda el leñero, el porta-piedras y la mochila de bastidor con sus correas, el zurrón, el fardo, los cestos, la caja de herramientas, el carcaj y el escudo, con lo de dentro asomando; al hombro el saco, la bandolera, el odre o un tronco corto; y en las manos la piedra, la rama, la leña o la herramienta.",
+   "Se ajusta a cada cuerpo y a su ropa: al ponerlo se miden los vértices del cuerpo vestido (sin brazos ni cabeza) y cada pieza se ata a un hueso (pelvis, espalda o mano) y lo sigue al animarse. Lo grande en las dos manos va entre las dos manos con la animación de llevar en brazos.",
+   "En línea, lo que se ve que lleva cada uno lo saca el servidor de su inventario y lo reparte con el aspecto (y otra vez cuando cambia); lo que diga el navegador no se cree. Lógica pura en src/logica/llevado.js.",
+   "Pruebas nuevas: prueba_llevado.mjs (del inventario a lo que se ve, lo que llega por la red, y el servidor con dos clientes; con MUTAR=1, un servidor que se fía del cliente, falla) y prueba_llevado_navegador.py (cada pieza en su sitio del cuerpo, siguiendo a su hueso al andar; con MUTAR=1 falla), con capturas de cerca en PC y móvil. La prueba de la construcción mira los modos de andar con las manos vacías y comprueba que con un tronco en brazos anda con la animación de llevar.",
+   "No se publica: en la nube fallan «jugar en línea», «duelo en línea», «la demo en el mundo» y una vez la de combate en el servidor, cada vez con un fallo distinto (verse el uno al otro, la reconexión, la vegetación en el agua, una intención rechazada); la de combate en el servidor pasa tres veces seguidas aquí. «Jugar en línea» falla hoy en todas las ramas (lo anotó el carril B). El PC de valravnx seguía fallando en el primer paso («bash: command not found»), así que todo fue a la nube. La tarea queda a medias en trabajo/20261031-1123, lista para publicar como demo v67 en cuanto pasen.",
+   "Aún mal (visto en las capturas): las correas de la mochila hacen un quiebro delante; el hacha colgada llega casi a la pantorrilla; el cuero es liso, más plano que la madera de la v5; al hombro, el tronco y el saco no los sujeta la mano (la animación se hará en el taller)."
+  ],
+  "pruebas": "En la nube: lógica, construcción (tras arreglar su prueba), lo que llevas se ve puesto, lo que llevas en línea, panel de inventario, personaje y el resto bien; fallan jugar en línea, duelo en línea y la demo en el mundo. No comprobado: si esos fallos pasan en main sin este cambio.",
+  "capturas": "",
+  "estado": "fallo"
  }
 ]
