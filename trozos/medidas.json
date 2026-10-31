@@ -1,0 +1,206 @@
+{
+ "pc_hilo1": {
+  "enHilo": true,
+  "conHilo": true,
+  "hilos": 3,
+  "movil": false,
+  "msCarga": 34260,
+  "fotograma": {
+   "n": 162,
+   "media": 1203.77,
+   "p95": 1300.4,
+   "max": 1313.9
+  },
+  "fotogramaCruce": {
+   "n": 5,
+   "media": 1179.82,
+   "p95": 1223.1,
+   "max": 1223.1
+  },
+  "trabajo": {
+   "n": 162,
+   "media": 0.59,
+   "p95": 1.1,
+   "max": 2.8
+  },
+  "trabajoCruce": {
+   "n": 5,
+   "media": 0.9,
+   "p95": 2.7,
+   "max": 2.7
+  },
+  "trozos": 508,
+  "faltan": 0,
+  "sinMalla": 0,
+  "triangulos": 310464,
+  "llamadas": 103,
+  "montados": 798,
+  "tirados": 0,
+  "pedidos": 798,
+  "msTrozoMax": 128.2,
+  "msTrozoMedia": 7.1,
+  "errores": [],
+  "memoriaMB": 38,
+  "jugador": {
+   "x": 184748,
+   "z": 46739.2
+  },
+  "altura": {
+   "malla": 250.81307657420834,
+   "paisaje": 250.81231074757312
+  }
+ },
+ "pc_hilo0": {
+  "enHilo": false,
+  "conHilo": false,
+  "hilos": 0,
+  "movil": false,
+  "msCarga": 24148,
+  "fotograma": {
+   "n": 162,
+   "media": 1187.61,
+   "p95": 1291.9,
+   "max": 1312.7
+  },
+  "fotogramaCruce": {
+   "n": 5,
+   "media": 1162.52,
+   "p95": 1207.2,
+   "max": 1207.2
+  },
+  "trabajo": {
+   "n": 162,
+   "media": 5.14,
+   "p95": 16.1,
+   "max": 17.6
+  },
+  "trabajoCruce": {
+   "n": 5,
+   "media": 16.56,
+   "p95": 17.6,
+   "max": 17.6
+  },
+  "trozos": 508,
+  "faltan": 64,
+  "sinMalla": 58,
+  "triangulos": 302016,
+  "llamadas": 81,
+  "montados": 734,
+  "tirados": 0,
+  "pedidos": 734,
+  "msTrozoMax": 29.7,
+  "msTrozoMedia": 2.3,
+  "errores": [],
+  "memoriaMB": 37,
+  "jugador": {
+   "x": 184748,
+   "z": 46739.2
+  },
+  "altura": {
+   "malla": 250.81307657420834,
+   "paisaje": 250.81231074757312
+  }
+ },
+ "movil_hilo1": {
+  "enHilo": true,
+  "conHilo": true,
+  "hilos": 3,
+  "movil": true,
+  "msCarga": 21070,
+  "fotograma": {
+   "n": 162,
+   "media": 794.14,
+   "p95": 830.8,
+   "max": 848.9
+  },
+  "fotogramaCruce": {
+   "n": 5,
+   "media": 790.08,
+   "p95": 813.4,
+   "max": 813.4
+  },
+  "trabajo": {
+   "n": 162,
+   "media": 0.62,
+   "p95": 1.8,
+   "max": 3.2
+  },
+  "trabajoCruce": {
+   "n": 5,
+   "media": 1.08,
+   "p95": 2.1,
+   "max": 2.1
+  },
+  "trozos": 508,
+  "faltan": 0,
+  "sinMalla": 0,
+  "triangulos": 310464,
+  "llamadas": 58,
+  "montados": 798,
+  "tirados": 0,
+  "pedidos": 798,
+  "msTrozoMax": 100.5,
+  "msTrozoMedia": 6.6,
+  "errores": [],
+  "memoriaMB": 36,
+  "jugador": {
+   "x": 184748,
+   "z": 46739.2
+  },
+  "altura": {
+   "malla": 250.81307657420834,
+   "paisaje": 250.81231074757312
+  }
+ },
+ "movil_hilo0": {
+  "enHilo": false,
+  "conHilo": false,
+  "hilos": 0,
+  "movil": true,
+  "msCarga": 15421,
+  "fotograma": {
+   "n": 162,
+   "media": 788.28,
+   "p95": 832.7,
+   "max": 851.9
+  },
+  "fotogramaCruce": {
+   "n": 5,
+   "media": 783.28,
+   "p95": 810,
+   "max": 810
+  },
+  "trabajo": {
+   "n": 162,
+   "media": 4.86,
+   "p95": 15.9,
+   "max": 19
+  },
+  "trabajoCruce": {
+   "n": 5,
+   "media": 16.66,
+   "p95": 19,
+   "max": 19
+  },
+  "trozos": 508,
+  "faltan": 49,
+  "sinMalla": 46,
+  "triangulos": 302976,
+  "llamadas": 47,
+  "montados": 749,
+  "tirados": 0,
+  "pedidos": 749,
+  "msTrozoMax": 27,
+  "msTrozoMedia": 2.2,
+  "errores": [],
+  "memoriaMB": 45,
+  "jugador": {
+   "x": 184748,
+   "z": 46739.2
+  },
+  "altura": {
+   "malla": 250.81307657420834,
+   "paisaje": 250.81231074757312
+  }
+ }
+}
