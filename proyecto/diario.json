@@ -3188,5 +3188,24 @@
   "pruebas": "Sin pruebas: solo cambian el roadmap, REVISION.md y el diario.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T11:26:08+00:00",
+  "fin": "2026-10-31T12:57:46+00:00",
+  "titulo": "Sin cortados rectos de kilómetros en los valles de los ríos (chat con valravnx)",
+  "hito": "mundo",
+  "hecho": [
+   "Buscado en toda Whitholm (rejilla de 25 m): los cortados rectos salían de los valles de los ríos. Donde el río va muy por debajo del terreno de alrededor (hasta 250 m), el valle se tallaba con una pendiente fija y dejaba una pared lisa, recta a lo largo de cada tramo de río y con una arista viva arriba; la más larga medía 1,6 km.",
+   "Las laderas del valle ya no son planos: la pendiente cambia por trechos de unos cientos de metros (el borde de arriba no va recto), llevan el relieve del sitio y la arista de arriba se redondea. Río arriba de donde nace, el valle se cierra con media pendiente en vez de con una pared.",
+   "Prueba nueva, prueba_valles.mjs: en toda la isla, ninguna ladera de valle lisa de más de 800 m (ahora, 612 m) y lo liso, menos del 11 % de lo tallado (ahora, 8,7 %). Rota a propósito (MUTAR=1, las laderas de antes): falla con 1.595 m y 13,2 %.",
+   "Al cambiar el terreno cambian los sitios de salida al azar (de 258 a 260); a quien le tocaba uno que ya no vale se le elige otro solo. La prueba de lo que crece mira ahora uno de cada 7 sitios: con uno de cada 13 ya no caía ninguno junto a bosque cerrado.",
+   "Publicado como demo v67.",
+   "Aún mal: los valles siguen siendo hondos donde el mapa los pone hondos, ahora con ladera y no con pared; y en la cabecera de algún río queda una arista suave donde se juntan los valles de dos ríos.",
+   "No comprobado: no sé dónde está el sitio de la captura de valravnx y no lo he visto en el juego de cerca (aquí el juego va a 1 fotograma por segundo); lo comprobado es el relieve de toda la isla y las capturas de las pruebas.",
+   "La rama del mapa del rey también toca paisaje.js y whitholm.js: el sitio de la ciudad que apunta sigue valiendo con el terreno nuevo (comprobado), pero su prueba puede encontrar antes otro sitio."
+  ],
+  "pruebas": "Todas en la nube (26 grupos, sin el PC de valravnx: su programa fallaba al repartir con un nombre de rama demasiado largo). En la primera vuelta fallaron lógica (la prueba de lo que crece, por la lista nueva de sitios; arreglada), jugar en línea, lo que llevas en línea y duelo en línea; al repetirlas pasaron todas menos jugar en línea, que falla en cosas distintas cada vez y también en main. valravnx: «jugar en línea ya no existe, hizo merge con jugar al ser ahora todo full online».",
+  "capturas": "capturas/demo-v67",
+  "estado": "ok"
  }
 ]

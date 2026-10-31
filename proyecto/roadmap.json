@@ -1207,9 +1207,9 @@
     },
     {
      "nombre": "Sin cortados rectos de kilómetros (valravnx, 31 oct): los valles de los ríos dejaban paredes lisas y rectas de cientos de metros, kilómetros de largo, donde el río va muy por debajo del terreno de alrededor; las paredes del valle salen ahora con relieve, con el borde redondeado y sin línea recta, y una prueba lo mira en toda la isla",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T11:26:08+00:00",
-     "rama": "trabajo/20261031-1125-cortados"
+     "fin": "2026-10-31T12:57:46+00:00"
     }
    ],
    "lleva": "chat",
@@ -2092,6 +2092,13 @@
      "archivo": "jugar/demo/v66.html",
      "capturas": "capturas/demo-v66",
      "notas": "Volver donde lo dejaste: el navegador recuerda quién eres aunque cierres la pestaña, y al volver a entrar apareces donde estabas al salir (el servidor lo guarda). Dos pestañas del mismo navegador son el mismo jugador."
+    },
+    {
+     "v": "v67",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v67.html",
+     "capturas": "capturas/demo-v67",
+     "notas": "Sin cortados rectos de kilómetros: las laderas de los valles de los ríos ya no son planos lisos y rectos (valravnx, 31 oct); llevan relieve, el borde se redondea y la cabecera del valle es suave"
     }
    ]
   },
