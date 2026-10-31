@@ -1,0 +1,25 @@
+Guiones
+  OK   instalar.sh sin errores de sintaxis
+  OK   actualizar.sh sin errores de sintaxis
+  OK   cloud-config empieza por #cloud-config y lanza instalar.sh
+  OK   cloud-config clona el repositorio con K mayúscula
+Archivos rellenos (IP 1.2.3.4)
+  OK   el dominio sale de la IP con sslip.io — 1-2-3-4.sslip.io
+  OK   no queda nada sin rellenar
+  OK   el Caddyfile sirve ese dominio
+  OK   quien abre la dirección va a la demo con wss:// de ese dominio
+  OK   el WebSocket va al servidor del juego en 8080 dentro de la máquina
+  OK   el servicio arranca servidor/servidor.mjs en 8080 — ExecStart=/usr/bin/node servidor/servidor.mjs 8080 /var/lib/kinhold/mundo.jsonl
+  OK   el mundo se guarda en /var/lib/kinhold (StateDirectory), fuera del código
+  OK   el servicio vuelve a arrancar si se cae
+  OK   sin IP válida se para con un aviso
+  OK   con dominio propio y otro puerto
+Caddy y systemd los aceptan
+  OK   caddy validate
+  OK   systemd-analyze verify
+De verdad: Caddy (HTTPS local) delante del servidor del juego
+  OK   abrir la dirección lleva a la demo con el servidor puesto — 302 → https://valravnxx.github.io/Kinhold/jugar/demo/index.html?servidor=wss://localhost
+  OK   dos clientes conectan por wss:// a través de Caddy y reciben la bienvenida — jugador:74a05115 y jugador:44212342
+  OK   lo que manda uno le llega al otro a través de Caddy
+
+19/19 comprobaciones correctas
