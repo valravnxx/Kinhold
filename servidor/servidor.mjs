@@ -28,6 +28,13 @@
 //   'combate_rechazo', que, motivo }. La bienvenida lleva tc (reloj del combate, ms) y luchadores. Lo que
 //   resuelve el combate (golpes, disparos, impactos) se guarda aparte, en combate.jsonl junto al mundo.
 //
+//   Lo que lleva cada uno y lo del suelo (src/logica/objetos_red.js): el cliente manda { tipo: 'objeto', id, accion:
+//   { tipo: 'mover'|'ponerse'|'quitarse'|'soltar_suelo'|'coger_suelo', … } }; el servidor la hace con el autor de la
+//   conexión, su hora y el sitio donde lo tiene (su presencia), y contesta { tipo: 'resultado_objeto', id, ok, motivo? }.
+//   Al autor le manda lo que lleva tal como queda, { tipo: 'inventario', inventario }, y si cambia el suelo, a todos
+//   { tipo: 'suelo', objetos }. La bienvenida lleva los dos (inventario, suelo). Se guarda entero en objetos.json
+//   junto al mundo, y cada acción (bien o mal) en objetos.jsonl.
+//
 //   Conexiones que se cortan (src/logica/limites.js y abajo):
 //   - Ficha: la bienvenida lleva una ficha secreta (solo para ese cliente). Si el cliente vuelve a conectar con
 //     ?ficha=… en la dirección, es el mismo jugador (mismo autor) y su luchador vuelve como estaba (heridas
@@ -45,7 +52,7 @@
 //
 // Uso: node servidor/servidor.mjs [puerto] [archivo]   (por defecto 8080 y servidor/mundo.jsonl)
 import { WebSocketServer } from 'ws';
-import { readFileSync, appendFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, appendFileSync, existsSync, mkdirSync, writeFileSync, renameSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { randomUUID, createHash } from 'crypto';
 import { fileURLToPath } from 'url';
@@ -55,6 +62,7 @@ import { PresenciaServidor, CADA, validarAspecto, validarEstado } from '../src/l
 import { PROTOCOLO } from '../src/logica/protocolo.js';
 import { CombateServidor } from '../src/logica/combate_servidor.js';
 import { Limitador, LIMITES } from '../src/logica/limites.js';
+import { ObjetosServidor } from '../src/logica/objetos_red.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -77,6 +85,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   archivo = resolve(archivo);
   const archivoCombate = resolve(dirname(archivo), 'combate.jsonl');
   const archivoFichas = resolve(dirname(archivo), 'fichas.jsonl');
+  const archivoObjetos = resolve(dirname(archivo), 'objetos.json');
+  const archivoObjetosReg = resolve(dirname(archivo), 'objetos.jsonl');
   mkdirSync(dirname(archivo), { recursive: true });
   const previas = leerArchivo(archivo);
   // si quedó una línea a medias, lo nuevo empieza en una línea aparte
@@ -90,6 +100,18 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const fichas = new Map();
   for (const f of leerArchivo(archivoFichas)) if (f && typeof f.h === 'string' && typeof f.autor === 'string') fichas.set(f.h, f.autor);
   if (existsSync(archivoFichas)) { const t = readFileSync(archivoFichas, 'utf8'); if (t && !t.endsWith('\n')) appendFileSync(archivoFichas, '\n'); }
+
+  // lo que lleva cada uno y lo del suelo: dónde está cada autor lo dice su presencia (más abajo)
+  let presencia = null;
+  const objetos = new ObjetosServidor({
+    posicion: (a) => { const e = presencia && presencia.ultimo.get(a); return e ? { x: e.x, z: e.z } : null; },
+    enTierras: (a, x, z) => !!mundo.dentroDeTierra(x, z),
+  });
+  if (existsSync(archivoObjetos)) {
+    try { objetos.importar(JSON.parse(readFileSync(archivoObjetos, 'utf8'))); } catch (e) { registrar(`objetos.json no válido, se empieza de cero: ${e && e.message}`); }
+  }
+  // se escribe en uno aparte y se cambia de nombre: si el servidor se apaga a mitad, queda el anterior entero
+  const guardarObjetos = () => { writeFileSync(archivoObjetos + '.tmp', JSON.stringify(objetos.exportar())); renameSync(archivoObjetos + '.tmp', archivoObjetos); };
 
   const wss = new WebSocketServer({ port: puerto, maxPayload: limites.maxMensaje });
   wss.on('error', (e) => registrar(`error del servidor: ${e && e.message}`));
@@ -119,7 +141,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   }, ticoCombate);
 
   // presencia: cada tic, a cada uno los que han cambiado menos él mismo
-  const presencia = new PresenciaServidor();
+  presencia = new PresenciaServidor();
   const tic = setInterval(() => {
     const lista = presencia.tic();
     if (!lista.length) return;
@@ -139,6 +161,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     }
     const ahora = reloj();
     for (const [a, x] of apartados) if (x.hasta <= ahora) apartados.delete(a);
+    // lo soltado fuera de las tierras desaparece pasada su hora
+    const t = Date.now();
+    if (objetos.limpiar(t)) { guardarObjetos(); const lista = objetos.sueloVisible(t); for (const ws of clientes.keys()) enviar(ws, { tipo: 'suelo', objetos: lista }); }
   }, latido);
 
   wss.on('connection', (ws, req) => {
@@ -169,7 +194,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       if (ap) { apartados.delete(autor); combate.volver(autor, ap.L); } else combate.entrar(autor);
     }
     enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, entradas: hechas, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
-      aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true) });
+      aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true),
+      inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now()) });
 
     ws.on('message', (datos, binario) => {
       if (conexionDe.get(autor) !== ws) return;   // sustituida por otra: ya no cuenta
@@ -180,7 +206,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       if (paso === 'no') {
         if (!ws.avisado) { ws.avisado = true; enviar(ws, { tipo: 'error', motivo: 'Demasiados mensajes.' }); setTimeout(() => { ws.avisado = false; }, 1000); }
         // una acción sí recibe respuesta, para que el cliente quite su copia y no se quede esperando
-        if (!binario && tam < 4096) { try { const m = JSON.parse(datos.toString()); if (m && m.tipo === 'accion' && Number.isSafeInteger(m.id)) enviar(ws, { tipo: 'resultado', id: m.id, ok: false, motivo: 'Demasiados mensajes.' }); } catch (e) { /* nada */ } }
+        if (!binario && tam < 4096) { try { const m = JSON.parse(datos.toString()); if (m && (m.tipo === 'accion' || m.tipo === 'objeto') && Number.isSafeInteger(m.id)) enviar(ws, { tipo: m.tipo === 'objeto' ? 'resultado_objeto' : 'resultado', id: m.id, ok: false, motivo: 'Demasiados mensajes.' }); } catch (e) { /* nada */ } }
         return;
       }
       if (binario) return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
@@ -216,6 +242,18 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         for (const [otro, a] of clientes) if (a !== autor) enviar(otro, { tipo: 'aspecto', autor, ...e });
         return;
       }
+      if (msg && msg.tipo === 'objeto') {
+        if (!msg.accion || typeof msg.accion !== 'object' || Array.isArray(msg.accion)) return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
+        // el autor lo pone el servidor, y la hora también
+        const ahora = Date.now();
+        const r = objetos.ejecutar(Object.assign({}, msg.accion, { autor }), ahora);
+        if (r.entrada) appendFileSync(archivoObjetosReg, JSON.stringify(r.entrada) + '\n');
+        if (r.ok) guardarObjetos();
+        enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? {} : { motivo: r.motivo }) });
+        if (r.ok) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
+        if (r.suelo) { const lista = objetos.sueloVisible(ahora); for (const otro of clientes.keys()) enviar(otro, { tipo: 'suelo', objetos: lista }); }
+        return;
+      }
       if (!msg || msg.tipo !== 'accion' || !msg.accion || typeof msg.accion !== 'object' || Array.isArray(msg.accion))
         return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
       // el autor lo pone el servidor; el que traiga el cliente se pisa
@@ -244,7 +282,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, archivo, archivoCombate, archivoFichas, presencia, combate, apartados, clientes,
+    wss, mundo, archivo, archivoCombate, archivoFichas, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
     cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticCombate); clearInterval(ticLatido); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };

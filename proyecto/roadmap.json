@@ -581,10 +581,14 @@
      "fin": "2026-10-30T19:45:50+00:00"
     },
     {
-     "nombre": "Inventario y recogida por el servidor: en línea, lo que llevas y lo que recoges lo guarda y lo valida el servidor (hoy solo está en el navegador de cada uno)",
-     "estado": "en_curso",
+     "nombre": "Inventario y suelo en el servidor: lo que lleva cada jugador y lo que hay en el suelo los guarda el servidor, que valida cada acción con el autor de la conexión, su hora y el sitio donde lo tiene (soltar y coger del suelo, mover, ponerse y quitarse)",
+     "estado": "hecho",
      "inicio": "2026-10-30T22:37:50+00:00",
-     "rama": "trabajo/20261030-2237"
+     "fin": "2026-10-31T01:50:23+00:00"
+    },
+    {
+     "nombre": "El juego en línea usa lo que llevas y el suelo del servidor: el panel de inventario, soltar y coger del suelo y lo que se entrega a las obras pasan por el servidor, y talar y trocear también, con lo que dejan en el suelo, para que nada de lo que llevas salga solo del navegador. Mientras el servidor no conozca el mundo, se fía del árbol que dice el navegador si estás a su lado (decisión provisional)",
+     "estado": "pendiente"
     },
     {
      "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
