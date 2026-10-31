@@ -3410,5 +3410,24 @@
   "pruebas": "Batería entera en la nube (SOLO_NUBE=1, tras unir main con la toca del carril B): 24 grupos bien. Antes, en el PC de valravnx, fallaron 6 grupos por la carpeta nueva que no copiaban (404), ya arreglado. Tras unir la v73 del carril A (sin archivos de código en común) solo se pasaron aquí las de lógica tocadas.",
   "capturas": "capturas/demo-v74",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T20:22:22+00:00",
+  "fin": "2026-10-31T21:34:52+00:00",
+  "titulo": "Panel de depuración con clave de admin (demo v75, carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "F9 (o el botón «Admin», que sale con ?admin en la dirección o con la clave ya puesta en ese navegador) abre el mapa del rey con todos los jugadores conectados, pintados donde están, y su lista al lado.",
+   "Un clic en el mapa te lleva a ese punto, en el suelo de allí; «Ir» te pone junto a otro jugador (a 1,6 m a su lado y mirándole).",
+   "Todo lo pide el navegador al servidor con la clave de admin; el servidor la compara resumida y en tiempo fijo, pone el autor de la conexión y apunta cada petición (bien o mal, sin la clave) en admin.jsonl. Solo se mueve al jugador cuando el servidor dice que sí. Con cinco claves mal seguidas, cierra esa conexión.",
+   "Sin clave puesta en la máquina (o con menos de 12 letras), no hay panel para nadie. Cómo ponerla, en servidor/nube/LEEME.md: una línea que la crea en /etc/kinhold/admin.env, y el servicio la lee (EnvironmentFile) desde la próxima actualización.",
+   "En el móvil el panel va abajo, para no tapar el mapa ni sus botones. Textos en inglés y ruso.",
+   "Lógica pura en src/logica/admin.js; el mapa del rey admite una capa encima (los demás jugadores y el clic para ir).",
+   "Pruebas nuevas: «Panel del admin en el servidor» (lógica, 25 comprobaciones; MUTAR=1, un servidor que no mira la clave, falla) y «Navegador: panel del admin» (una sola página y un jugador simulado sin navegador; PC, móvil e inglés).",
+   "Decisiones provisionales (registro de la demo): la tecla F9, la clave en /etc/kinhold/admin.env, cinco claves mal y fuera, 1,6 m al lado del otro."
+  ],
+  "pruebas": "En la nube: 25 grupos (sin las de en línea). Todo bien menos «panel del admin» la primera vez: el otro jugador estaba a 39 m y tu flecha lo tapaba en el mapa; en la prueba se pone a 1,7 km y se repitió: bien (30/30). El PC de valravnx no pudo pasar ninguna: «Espacio en disco insuficiente» en su runner; se repitió todo con SOLO_NUBE=1. No comprobado: la prueba de navegador con MUTAR=1 (sí la del servidor). Lo último (el texto del registro de la demo) entró después de la batería; la prueba de idiomas, pasada aquí.",
+  "capturas": "capturas/demo-v75",
+  "estado": "ok"
  }
 ]
