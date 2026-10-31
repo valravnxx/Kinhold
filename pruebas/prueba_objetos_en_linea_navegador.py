@@ -99,8 +99,9 @@ try:
         A.wait_for_timeout(1200)   # que el servidor sepa dónde está (la presencia)
         comprobar('PC lo tiene al alcance', A.evaluate(f"!!{K}.arbolCercano()"))
         A.evaluate(f"{K}.usar()")
-        # a 1 fotograma por segundo la caída puede acabar entre dos miradas: vale también si ya está talado
-        cayendo = esperar(A, f"{K}.talaV.cayendo > 0 || !!{K}.talaV.tala.estado[{json.dumps(arbol['id'])}]?.vuelve", 90000)
+        # a 1 fotograma por segundo (en la nube) cada golpe tarda varios segundos y la caída puede acabar entre dos miradas:
+        # se espera más y vale también si ya está talado
+        cayendo = esperar(A, f"{K}.talaV.cayendo > 0 || !!{K}.talaV.tala.estado[{json.dumps(arbol['id'])}]?.vuelve", 240000)
         comprobar('a golpes, el árbol cae (el servidor lo ha talado)', cayendo, A.inner_text('#aviso'))
         A.wait_for_timeout(400); captura(A, f'{SALIDA}/pc_1_cae.png')
         d = servidorDice(lambda d: d['tala']['estado'].get(arbol['id'], {}).get('vuelve', 0) > 0 and enSuelo(d, 'rama'))
