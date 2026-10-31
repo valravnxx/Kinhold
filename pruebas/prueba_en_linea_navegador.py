@@ -174,6 +174,7 @@ try:
         comprobar('PC tiene la obra al alcance', A.evaluate(f"!!{K}.obraCercana()"))
         esperar(B, f"{K}.mundo.construcciones.reduce((t, c) => t + c.piezas.size, 0) === 4", 5000); B.wait_for_timeout(500)
         for pg in (A, B): pg.evaluate("window.__rehechos.todo = 0; window.__rehechos.pieza = 0")
+        A.evaluate(f"{K}.llevar()")   # las obras cobran de lo que llevas (v65): coge del arcón lo que le falta
         A.evaluate(f"{K}.usar()")
         comprobar('PC se pone a construir', A.evaluate(f"!!{K}.obrando"))
         A.wait_for_timeout(7000)
@@ -193,6 +194,7 @@ try:
         comprobar('PC pone el marco de un portillo', g is not None, str(g))
         if g:
             A.evaluate(f"Object.assign({K}.pj, {{ x: {g['x']} + 0.3, z: {g['z']} + 1.1, rot: Math.PI }})"); A.wait_for_timeout(300)
+            A.evaluate(f"{K}.llevar()")
             A.evaluate(f"{K}.usar()")
             comprobar('PC termina el portillo', esperar(A, f"!({donde}).obra && {K}.enLinea.red.pendientes.length === 0", 30000) and esperar(B, f"({donde}) && !({donde}).obra", 10000))
             A.evaluate(f"{K}.estado.obrando = null"); A.wait_for_timeout(500)
@@ -243,7 +245,7 @@ try:
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         servidor.stdout.readline()
         for nombre, pg, yo in [('PC', A, yoA), ('el móvil', B, yoB)]:
-            comprobar(f'{nombre} vuelve a conectar solo, sin recargar', esperar(pg, f"{K}.enLinea.estado === 'conectado'", 20000))
+            comprobar(f'{nombre} vuelve a conectar solo, sin recargar', esperar(pg, f"{K}.enLinea.estado === 'conectado'", 40000))   # (vuelve a probar cada 10 s como mucho; con la máquina cargada, 20 s no siempre bastaban)
             comprobar(f'{nombre} sigue con el mismo personaje (la ficha vale tras reiniciar el servidor)', pg.evaluate(f"{K}.enLinea.red.yo") == yo)
         comprobar('PC avisa de que ha vuelto', 'recuperada' in A.inner_text('#aviso'), A.inner_text('#aviso'))
         comprobar('el mundo es el de antes', piezas(A) == piezasAntes and foto(A) == foto(B))
