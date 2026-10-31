@@ -56,6 +56,7 @@ paso "Terreno por trozos: anillos, bordes y faldones" node pruebas/prueba_trozos
 paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whitholm.mjs
 paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma" node pruebas/prueba_vegetacion.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
+paso "Aguante, agua y nado" node pruebas/prueba_nado.mjs
 paso "Medición del servidor (CPU, memoria, red y disco)" node pruebas/prueba_medir.mjs
 [ -z "$LISTAR" ] && { [ -z "$GRUPO" ] || [ "$GRUPO" = logica ]; } && ! command -v caddy >/dev/null && {  apt-get install -y -q caddy >/dev/null 2>&1 || { apt-get update -q >/dev/null 2>&1; apt-get install -y -q caddy >/dev/null 2>&1; } || true; }
 paso "Servidor de prueba en internet (Caddy con HTTPS delante del juego)" node pruebas/prueba_nube.mjs

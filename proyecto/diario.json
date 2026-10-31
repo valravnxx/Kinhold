@@ -2779,6 +2779,24 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-30T14:15:36+01:00",
+  "fin": "2026-10-31T06:24:02+01:00",
+  "titulo": "Ríos que siguen el terreno, ríos de verdad y nadar (mapa v18, demo v62; chat con valravnx)",
+  "hito": "mundo",
+  "hecho": [
+   "Arreglo (valravnx, 30 oct): muchos ríos iban elevados por los valles, como un puente. La altura del río salía del mapa de 1 km y el relieve de detalle hundía el suelo de alrededor; ahora cada punto del río toma el suelo más bajo de su tramo y nunca sube río abajo. En Whitholm, de unos 600 puntos con el agua por encima del suelo a ninguno; una prueba nueva lo vigila (menos del 1 %).",
+   "Ríos de verdad: la hondura va con el grueso del río (arroyos de 30 a 60 cm, que se vadean; ríos de 1,5 a 2,5 m con algún vado de 70 cm; los grandes, de 2,8 a 4,3 m), y los ríos sin saltos hacen meandros.",
+   "El agua en el juego: alrededor del jugador se dibujan los ríos y el mar de cerca, la misma agua que en el mapa (corriente, hondura, orilla, oleaje y espuma), y se rehace poco a poco al moverse.",
+   "Nadar (valravnx, 30 oct): en lo somero se anda, por la cintura se vadea y más hondo se nada. Un solo aguante, el de correr con Mayúsculas, que al nadar baja más deprisa cuanto más pesa lo que llevas (con cota de malla y gambesón, o con un tronco, casi enseguida); sin aguante te ahogas y vuelves a tu sitio de salida. La corriente te arrastra. El GDD lo recoge.",
+   "Arreglo (31 oct): mar adentro, el mar de lejos asomaba en manchas lisas entre las olas (la hondura no daba para separarlo 0,8 m del agua de cerca, en una lámina tan grande); ahora se dibuja antes que el agua de cerca y sin escribir la hondura.",
+   "Arreglo (31 oct): al llegar de golpe a otro sitio, el agua de cerca se rehacía a filas enteras y dejaba mucha basura que recoger, y en el móvil algún fotograma de lo que crece llegaba a 70–78 ms; ahora va en pasos de unos pocos ms con los índices en un arreglo fijo (33 ms en la nube).",
+   "Aún mal: no hay animación de nadar; en línea, los demás te ven andar en el agua; de lejos los ríos siguen a tramos rectos; los arroyos someros se ven blanquecinos; y en algunas costas bajas salen manchas de arena tierra adentro."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main (construir a la altura del suelo): bien salvo «jugar en línea» y «duelo en línea» (excepción de CLAUDE.md) y la prueba nueva de main del nivelado (buscaba tierra junto a la mitad del río más largo, y con los ríos a lo más bajo de su tramo allí no la hay: ahora la busca a lo largo del río; 31/31, y con MUTAR falla). Tras unir el pelo y las cejas (sin código en común), otra vez lógica, la demo en el mundo, la demo única y el mapa: bien (el agua del río que se mueve, 0,9 % una vez y 2,1 % repetida). Lógica: nado 17/17, mapa 88/88. Las mutaciones se rompieron a propósito. No comprobado: MUTAR_NADO en la nube (la de navegador).",
+  "capturas": "capturas/demo-v62",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-30T15:26:49+00:00",
   "fin": "2026-10-30T16:52:08+00:00",
   "titulo": "Tronzar y partir, y el tronco corto al hombro (construcción v43, demo v54; carril A)",

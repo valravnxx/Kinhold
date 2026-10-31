@@ -68,12 +68,17 @@ ok(nivelar(base, []) === base, 'sin marcas, la misma función');
 // --- los trozos del terreno ---
 const mapa = generarMapa(4242, { N: 96 }), pai = crearPaisaje(mapa);
 // un sitio con tierra: junto al río más largo (como en la prueba de los trozos), en el centro de su trozo (i, j)
-const rio = pai.rios.slice().sort((a, b) => b.length - a.length)[0], pr = rio[Math.floor(rio.length / 2)];
-const i = Math.floor(pr.p[0] * 1000 / 64), j = Math.floor(pr.p[1] * 1000 / 64);
-let sitio = null;
-for (const [dx, dz] of [[32, 32], [16, 16], [48, 48], [16, 48], [48, 16]]) {
-  const x = i * 64 + dx, z = j * 64 + dz, y = alturaDeTrozo(pai, i, j)(x, z);
-  if (!sitio && y > 1) sitio = { x, z, y };
+// (desde la mitad del río hacia los dos lados: con los ríos a la altura de lo más bajo de su tramo, 30 oct, junto al
+// cauce puede quedar todo a menos de 1 m)
+const rio = pai.rios.slice().sort((a, b) => b.length - a.length)[0], mitad = Math.floor(rio.length / 2);
+let sitio = null, i = 0, j = 0;
+for (let o = 0; o < rio.length && !sitio; o++) for (const k of [mitad + o, mitad - o]) {
+  if (sitio || k < 0 || k >= rio.length) continue;
+  const pr = rio[k], ii = Math.floor(pr.p[0] * 1000 / 64), jj = Math.floor(pr.p[1] * 1000 / 64);
+  for (const [dx, dz] of [[32, 32], [16, 16], [48, 48], [16, 48], [48, 16]]) {
+    const x = ii * 64 + dx, z = jj * 64 + dz, y = alturaDeTrozo(pai, ii, jj)(x, z);
+    if (!sitio && y > 1) { sitio = { x, z, y }; i = ii; j = jj; }
+  }
 }
 ok(!!sitio, 'hay tierra en el mapa de prueba');
 const marcaW = { x: sitio.x, z: sitio.z, y: Math.round(sitio.y) + 1.5, r: 3, borde: BORDE };
