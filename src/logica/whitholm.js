@@ -154,3 +154,26 @@ export function elegirSalida(azar = Math.random()) {
 
 // ¿Es (x, z) uno de los sitios de salida conocidos (SALIDA o uno de SALIDAS)? Para no fiarse de lo guardado en el navegador.
 export const esSitioDeSalida = (x, z) => (x === SALIDA.x && z === SALIDA.z) || SALIDAS.some(s => s[0] === x && s[1] === z);
+
+// ---------------- La ciudad del rey (valravnx, 31 oct) ----------------
+// Whitholm es la isla del rey y Strandvang (la comarca E) su dominio; ahí está la única ciudad NPC. Dónde exactamente,
+// decisión provisional del 31 oct (hasta el boceto de la ciudad, en el hito Mundo): junto a la desembocadura del río
+// principal de Strandvang (su boca, en el mar, en 217767, 53292), en el primer llano de pradera río arriba, fuera del
+// cauce y algo por encima del mar. Sale de buscarCiudad con CIUDAD_REQ; la prueba comprueba que sigue valiendo.
+export const CIUDAD_REY = { x: 217558, z: 52730 };
+export const CIUDAD_REQ = { alturaMin: 3, alturaMax: 60, radio: 60, desnivel: 3, rio: 80 };
+export const BOCA_STRANDVANG = { x: 217767, z: 53292 };
+
+// Busca el sitio de la ciudad: en corros desde la boca del río, el primer punto de Strandvang que cumple CIUDAD_REQ.
+export function buscarCiudad(mapa, paisaje, comarcas, boca = BOCA_STRANDVANG, req = CIUDAD_REQ) {
+  const alt = alturaMundo(paisaje);
+  for (let r = 200; r < 4000; r += 50) {
+    const n = Math.max(8, Math.round(2 * Math.PI * r / 50));
+    for (let k = 0; k < n; k++) {
+      const x = Math.round(boca.x + Math.cos(k / n * 2 * Math.PI) * r), z = Math.round(boca.z + Math.sin(k / n * 2 * Math.PI) * r);
+      if (comarcas.nombreEn(x, z) !== 'Strandvang' || !esSalida(mapa, paisaje, alt, x, z, req)) continue;
+      return { x, z, y: alt(x, z) };
+    }
+  }
+  return null;
+}

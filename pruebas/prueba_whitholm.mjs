@@ -10,10 +10,12 @@
 //     los ríos y por debajo de la cuarta parte de lo más alto de la isla; y elegirSalida da siempre uno de ellos
 // Uso: node pruebas/prueba_whitholm.mjs   MUTAR=1 → la salida en el centro de la región sin buscar: tiene que fallar.
 //                                         MUTAR=2 → la salida común (en Lindholt) metida en SALIDAS: tiene que fallar.
+//                                         MUTAR=3 → la ciudad del rey en el mar, frente a la boca: tiene que fallar.
+// Y la ciudad del rey (valravnx, 31 oct): en Strandvang, en tierra llana fuera del río, cerca de la boca, y es la que sale de buscarCiudad.
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearPaisaje, PENDIENTE_ANDAR } from '../src/logica/paisaje.js';
 import { ISLA, SALIDA, SALIDA_REQ, limitesIsla, buscarSalida, alturaMundo, dentroDeIsla, SALIDAS as SALIDAS_APUNTADAS, buscarSalidas,
-  esSalida, elegirSalida, esSitioDeSalida, COMARCAS_INICIO, BIOMAS_FUERA } from '../src/logica/whitholm.js';
+  esSalida, elegirSalida, esSitioDeSalida, COMARCAS_INICIO, BIOMAS_FUERA, CIUDAD_REY, CIUDAD_REQ, BOCA_STRANDVANG, buscarCiudad } from '../src/logica/whitholm.js';
 import { crearComarcas } from '../src/logica/comarcas.js';
 
 const MUTAR = process.env.MUTAR || '';
@@ -86,6 +88,16 @@ for (let i = 0; i <= 1000; i++) { const e = elegirSalida(i / 1000); if (!esSitio
 comprobar('elegirSalida da siempre un sitio de la lista (también con 0 y con 1)', fuera === 0, `${fuera} fuera`);
 comprobar('elegirSalida reparte por toda la lista', elegidas.size === SALIDAS_APUNTADAS.length, `${elegidas.size} de ${SALIDAS_APUNTADAS.length}`);
 comprobar('un sitio inventado no pasa por sitio de salida', !esSitioDeSalida(SALIDA.x + 1, SALIDA.z) && esSitioDeSalida(SALIDA.x, SALIDA.z));
+
+// ---------------- La ciudad del rey (valravnx, 31 oct) ----------------
+const ciudad = MUTAR === '3' ? { x: BOCA_STRANDVANG.x + 400, z: BOCA_STRANDVANG.z } : CIUDAD_REY;
+const hallada = buscarCiudad(mapa, pai, comarcas);
+comprobar('la ciudad del rey apuntada es la que sale de buscarCiudad', hallada && hallada.x === CIUDAD_REY.x && hallada.z === CIUDAD_REY.z, JSON.stringify(hallada));
+comprobar('la ciudad está en Strandvang', comarcas.nombreEn(ciudad.x, ciudad.z) === 'Strandvang', comarcas.nombreEn(ciudad.x, ciudad.z));
+const yc = alt(ciudad.x, ciudad.z);
+comprobar('la ciudad está en tierra, llana y fuera del río', esSalida(mapa, pai, alt, ciudad.x, ciudad.z, CIUDAD_REQ), `${yc.toFixed(1)} m`);
+const dBoca = Math.hypot(ciudad.x - BOCA_STRANDVANG.x, ciudad.z - BOCA_STRANDVANG.z);
+comprobar('la ciudad está cerca de la boca del río (a menos de 1,5 km)', dBoca < 1500, `${Math.round(dBoca)} m`);
 
 console.log(fallos ? `\n${fallos} fallos` : '\nTodo bien');
 process.exit(fallos ? 1 : 0);

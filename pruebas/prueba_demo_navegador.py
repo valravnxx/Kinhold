@@ -1,4 +1,5 @@
-# Prueba en navegador de la demo única: menú, las tres partes, el botón «Menú» y el personaje elegido en todo.
+# Prueba en navegador de la demo única: menú, las dos partes (Jugar y Personaje; «Duelo» ya no está: valravnx, 31 oct),
+# el botón «Menú», el personaje elegido en todo y que un enlace antiguo a «Duelo» lleva a «Jugar».
 # Uso: python3 pruebas/prueba_demo_navegador.py <html> <carpeta_capturas>
 # Sirve el html en jugar/demo/ y los recursos de personaje en recursos/personajes/ (como la web).
 # MUTAR=1 borra lo guardado al cambiar de parte (como si no se pasara el personaje): la prueba tiene que fallar.
@@ -78,9 +79,10 @@ with sync_playwright() as p:
         pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
         pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
         # 1. menú
-        comprobar('menú: tres partes (Jugar, Duelo y Personaje)', pg.locator('a.parte').count() == 3)
+        # (sin «Duelo» desde el 31 oct: el combate está en «Jugar»)
+        comprobar('menú: dos partes (Jugar y Personaje)', pg.locator('a.parte').count() == 2)
         comprobar('menú: sin personaje elegido lo dice', 'Aún no has elegido' in pg.inner_text('#demoPersonaje'))
-        for s in ['[data-ir=construir]', '[data-ir=duelo]', '[data-ir=personaje]']:
+        for s in ['[data-ir=construir]', '[data-ir=personaje]']:
             t = tapado(pg, s); comprobar(f'menú: {s} se ve y no está tapado', t == '', t)
         pg.screenshot(path=f'{SALIDA}/{nombre}_menu.png')
         # 2. personaje: se elige mujer con vestido y gambesón
@@ -159,29 +161,12 @@ with sync_playwright() as p:
         abrirPanel(pg, 'construir')
         pg.screenshot(path=f'{SALIDA}/{nombre}_construir_rendimiento.png')
         pg.click('#btnDemoFps')
-        # 5. duelo: con lino lleva su vestido sin gambesón; con malla, gambesón y cota
-        ir(pg, '#btnDemoMenu'); ir(pg, '[data-ir=duelo]')
-        pg.wait_for_function("window.__duelo && window.__duelo.mJugador.userData.taller && window.__duelo.mJugador.userData.taller.estado === 'listo'", timeout=180000)
-        arm = pg.evaluate('window.__duelo.opc.armadura')
-        mh = pg.evaluate('({s: window.__duelo.mJugador.userData.taller.mh.opciones.sexo, c: window.__duelo.mJugador.userData.taller.mh.capas})')
-        esperado = {'lino': ['vestido'], 'gambeson': ['gambeson'], 'malla': ['gambeson', 'cota']}.get(arm)
-        comprobar(f'duelo: la elegida con armadura {arm}', mh['s'] == 'mujer' and mh['c'] == esperado, str(mh))
-        pg.evaluate("window.__duelo.configurar({armadura: 'malla'})")
-        pg.wait_for_function("window.__duelo.mJugador.userData.taller && window.__duelo.mJugador.userData.taller.estado === 'listo'", timeout=180000)
-        c = pg.evaluate('window.__duelo.mJugador.userData.taller.mh.capas')
-        comprobar('duelo: con cota se ven gambesón y cota', c == ['gambeson', 'cota'], str(c))
-        rv = pg.evaluate("window.__duelo.mRival && window.__duelo.mRival.userData.taller && window.__duelo.mRival.userData.taller.mh ? window.__duelo.mRival.userData.taller.mh.opciones.sexo : 'hombre'")
-        comprobar('duelo: el rival sigue siendo el de siempre', rv == 'hombre', rv)
-        t = tapado(pg, '#btnDemoMenu'); comprobar('duelo: botón Menú libre', t == '', t)
-        pg.wait_for_timeout(1500)
-        png = pg.screenshot(path=f'{SALIDA}/{nombre}_duelo.png')
-        v = variedad(png); comprobar('duelo: se dibuja', v > 8, f'{v:.1f}')
-        medir(pg, nombre, 'duelo', 2)
-        abrirPanel(pg, 'duelo')
-        pg.screenshot(path=f'{SALIDA}/{nombre}_duelo_rendimiento.png')
-        pg.click('#btnDemoFps')
         ir(pg, '#btnDemoMenu')
-        comprobar('vuelve al menú', pg.locator('a.parte').count() == 3)
+        comprobar('vuelve al menú', pg.locator('a.parte').count() == 2)
+        # un enlace de antes a «Duelo» lleva a «Jugar»
+        pg.goto(URL + '&modo=duelo'); pg.wait_for_function('window.__demo && window.__demo.modo', timeout=60000)
+        comprobar('un enlace a «Duelo» lleva a «Jugar»', pg.evaluate('window.__demo.modo') == 'construir' and 'modo=construir' in pg.url, pg.url)
+        pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
         errores = [e for e in err if 'favicon' not in e]
         comprobar('sin errores en la consola', not errores, '; '.join(errores[:3]))
         ctx.close()

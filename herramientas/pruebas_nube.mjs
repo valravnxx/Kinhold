@@ -42,7 +42,10 @@ console.log(`Pruebas de ${rama} (${sha.slice(0, 7)})${process.argv.length > 2 ? 
 async function lanzar(donde, grupos) {
   const id = `${ahora().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
   const enTodos = donde === 'pc' ? todos.filter(g => g !== 'logica') : todos;
-  const nombre = grupos.length === enTodos.length && enTodos.every(g => grupos.includes(g)) ? 'todos' : grupos.join('+');
+  let nombre = grupos.length === enTodos.length && enTodos.every(g => grupos.includes(g)) ? 'todos' : grupos.join('+');
+  // GitHub no admite nombres de rama de más de 255 bytes: con muchos grupos (todos los de navegador, cuando el PC no los
+  // coge), se piden todos; lo que sobra (la lógica, otra vez) no hace daño
+  if (nombre.length > 200) nombre = 'todos';
   const pedido = `${donde === 'pc' ? 'pc' : 'nube'}-pedido/${id}/${nombre}`;
   sh('git', ['push', '-q', 'origin', `HEAD:refs/heads/${pedido}`]);
   let run = null;
