@@ -1,0 +1,75 @@
+Vista pc
+  OK   pc: sale el taller propio
+  OK   pc hombre: se cargan las 9 básicas, las 41 extra y las 3 de cargar del taller — 53 clips
+  OK   pc hombre: botones Empujar, Coger de una mesa, Al hombro y Arrastrar — 44 botones
+  OK   pc hombre: el botón pone «empujar»
+  OK   pc hombre: «empujar» se aparta de estar quieto (más de 10 cm) — 77 cm
+  OK   pc hombre: con «empujar» el cuerpo no se desarma — 0.97 m
+  OK   pc hombre: al empujar, las manos van por delante del pecho — 67 cm (quieto 38 cm)
+  OK   pc hombre: el botón pone «cogerDeMesa»
+  OK   pc hombre: «cogerDeMesa» se aparta de estar quieto (más de 10 cm) — 47 cm
+  OK   pc hombre: con «cogerDeMesa» el cuerpo no se desarma — 0.89 m
+  OK   pc hombre: el botón pone «hombro»
+  OK   pc hombre: «hombro» se aparta de estar quieto (más de 10 cm) — 64 cm
+  OK   pc hombre: con «hombro» el cuerpo no se desarma — 0.86 m
+  OK   pc hombre: al hombro, la mano derecha arriba — mano 1.52 m · pecho 1.14 m
+  OK   pc hombre: el botón pone «arrastrar»
+  OK   pc hombre: «arrastrar» se aparta de estar quieto (más de 10 cm) — 32 cm
+  OK   pc hombre: con «arrastrar» el cuerpo no se desarma — 0.86 m
+  OK   pc hombre: al arrastrar, las manos abajo, junto a la cadera — manos 0.93/0.93 m · cadera 0.92 m
+  OK   pc mujer: se cargan las 9 básicas, las 41 extra y las 3 de cargar del taller — 53 clips
+  OK   pc mujer: botones Empujar, Coger de una mesa, Al hombro y Arrastrar — 44 botones
+  OK   pc mujer: el botón pone «empujar»
+  OK   pc mujer: «empujar» se aparta de estar quieto (más de 10 cm) — 61 cm
+  OK   pc mujer: con «empujar» el cuerpo no se desarma — 0.81 m
+  OK   pc mujer: al empujar, las manos van por delante del pecho — 52 cm (quieto 28 cm)
+  OK   pc mujer: el botón pone «cogerDeMesa»
+  OK   pc mujer: «cogerDeMesa» se aparta de estar quieto (más de 10 cm) — 33 cm
+  OK   pc mujer: con «cogerDeMesa» el cuerpo no se desarma — 0.72 m
+  OK   pc mujer: el botón pone «hombro»
+  OK   pc mujer: «hombro» se aparta de estar quieto (más de 10 cm) — 54 cm
+  OK   pc mujer: con «hombro» el cuerpo no se desarma — 0.70 m
+  OK   pc mujer: al hombro, la mano derecha arriba — mano 1.30 m · pecho 0.96 m
+  OK   pc mujer: el botón pone «arrastrar»
+  OK   pc mujer: «arrastrar» se aparta de estar quieto (más de 10 cm) — 25 cm
+  OK   pc mujer: con «arrastrar» el cuerpo no se desarma — 0.70 m
+  OK   pc mujer: al arrastrar, las manos abajo, junto a la cadera — manos 0.80/0.80 m · cadera 0.76 m
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: sale el taller propio
+  OK   movil hombre: se cargan las 9 básicas, las 41 extra y las 3 de cargar del taller — 53 clips
+  OK   movil hombre: botones Empujar, Coger de una mesa, Al hombro y Arrastrar — 44 botones
+  OK   movil hombre: el botón pone «empujar»
+  OK   movil hombre: «empujar» se aparta de estar quieto (más de 10 cm) — 75 cm
+  OK   movil hombre: con «empujar» el cuerpo no se desarma — 0.97 m
+  OK   movil hombre: al empujar, las manos van por delante del pecho — 67 cm (quieto 38 cm)
+  OK   movil hombre: el botón pone «cogerDeMesa»
+  OK   movil hombre: «cogerDeMesa» se aparta de estar quieto (más de 10 cm) — 41 cm
+  OK   movil hombre: con «cogerDeMesa» el cuerpo no se desarma — 0.88 m
+  OK   movil hombre: el botón pone «hombro»
+  OK   movil hombre: «hombro» se aparta de estar quieto (más de 10 cm) — 64 cm
+  OK   movil hombre: con «hombro» el cuerpo no se desarma — 0.86 m
+  OK   movil hombre: al hombro, la mano derecha arriba — mano 1.51 m · pecho 1.13 m
+  OK   movil hombre: el botón pone «arrastrar»
+  OK   movil hombre: «arrastrar» se aparta de estar quieto (más de 10 cm) — 32 cm
+  OK   movil hombre: con «arrastrar» el cuerpo no se desarma — 0.86 m
+  OK   movil hombre: al arrastrar, las manos abajo, junto a la cadera — manos 0.92/0.92 m · cadera 0.92 m
+  OK   movil mujer: se cargan las 9 básicas, las 41 extra y las 3 de cargar del taller — 53 clips
+  OK   movil mujer: botones Empujar, Coger de una mesa, Al hombro y Arrastrar — 44 botones
+  OK   movil mujer: el botón pone «empujar»
+  OK   movil mujer: «empujar» se aparta de estar quieto (más de 10 cm) — 61 cm
+  OK   movil mujer: con «empujar» el cuerpo no se desarma — 0.81 m
+  OK   movil mujer: al empujar, las manos van por delante del pecho — 52 cm (quieto 28 cm)
+  OK   movil mujer: el botón pone «cogerDeMesa»
+  OK   movil mujer: «cogerDeMesa» se aparta de estar quieto (más de 10 cm) — 33 cm
+  OK   movil mujer: con «cogerDeMesa» el cuerpo no se desarma — 0.72 m
+  OK   movil mujer: el botón pone «hombro»
+  OK   movil mujer: «hombro» se aparta de estar quieto (más de 10 cm) — 54 cm
+  OK   movil mujer: con «hombro» el cuerpo no se desarma — 0.70 m
+  OK   movil mujer: al hombro, la mano derecha arriba — mano 1.30 m · pecho 0.96 m
+  OK   movil mujer: el botón pone «arrastrar»
+  OK   movil mujer: «arrastrar» se aparta de estar quieto (más de 10 cm) — 25 cm
+  OK   movil mujer: con «arrastrar» el cuerpo no se desarma — 0.70 m
+  OK   movil mujer: al arrastrar, las manos abajo, junto a la cadera — manos 0.80/0.80 m · cadera 0.76 m
+  OK   movil: sin errores en la página
+Todo correcto
