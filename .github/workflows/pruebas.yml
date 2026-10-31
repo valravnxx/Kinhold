@@ -12,7 +12,7 @@
 # En el PC de valravnx (lo pidió el 31 oct: su tarjeta gráfica, cuando él lo permite): las ramas pc-pedido/<id>/<grupos>
 # mandan los grupos a su PC (máquina propia con la etiqueta kinhold-gpu, que solo está en marcha mientras tiene abierto
 # herramientas/pc_grafica/); «todos» ahí son todos menos «logica» (esa va siempre a la nube). Si su PC no los coge,
-# pruebas_nube.mjs cancela la ejecución y los manda a la nube.
+# pruebas_nube.mjs cancela la ejecución y los manda a la nube (nube-pedido/<id>/navegador: todos menos «logica»).
 name: pruebas
 run-name: ${{ github.ref_name }}
 on:
@@ -32,7 +32,7 @@ jobs:
           RAMA: ${{ github.ref_name }}
         run: |
           pedidos="${RAMA#*-pedido/*/}"
-          if [ "$pedidos" = todos ] && [ "${RAMA%%/*}" = pc-pedido ]; then echo "grupos=$(bash herramientas/probar_todo.sh --grupos | python3 -c 'import json,sys; print(json.dumps([g for g in json.load(sys.stdin) if g != "logica"]))')" >> "$GITHUB_OUTPUT"
+          if { [ "$pedidos" = todos ] && [ "${RAMA%%/*}" = pc-pedido ]; } || [ "$pedidos" = navegador ]; then echo "grupos=$(bash herramientas/probar_todo.sh --grupos | python3 -c 'import json,sys; print(json.dumps([g for g in json.load(sys.stdin) if g != "logica"]))')" >> "$GITHUB_OUTPUT"
           elif [ "$pedidos" = todos ]; then echo "grupos=$(bash herramientas/probar_todo.sh --grupos)" >> "$GITHUB_OUTPUT"
           else echo "grupos=[\"${pedidos//+/\",\"}\"]" >> "$GITHUB_OUTPUT"; fi
   grupo:
