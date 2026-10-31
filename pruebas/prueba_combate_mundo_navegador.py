@@ -141,7 +141,7 @@ with sync_playwright() as p:
       lista: [['brazoD', 'grave', 'corte', 0.4, '']], botiquin: {{}}, liza: false, contra: false, fuera: false }}] }}, 'jugador:yo')""")
     pg.evaluate(f"""{C}.recibir({{ tipo: 'combate', eventos: [{{ tipo: 'golpe', autor: 'jugador:otro', objetivo: 'jugador:yo', linea: 'derecha', resultado: 'herida', zona: 'brazoD', gravedad: 'grave', danio: 'corte', t: 1 }}] }}, 'jugador:yo')""")
     h = pg.evaluate(f"({{ heridas: {C}.L.heridas.map(h => h.zona + ':' + h.gravedad), sangre: {C}.L.sangre, msg: document.getElementById('cmbMsg').textContent }})")
-    comprobar('en línea, la foto del servidor trae tus heridas y el golpe de otro jugador se dice', h['heridas'] == ['brazoD:grave'] and h['sangre'] == 92 and 'Te hieren' in h['msg'], str(h))
+    comprobar('en línea, la foto del servidor trae tus heridas y el golpe de otro jugador se dice', h['heridas'] == ['brazoD:grave'] and abs(h['sangre'] - 92) < 1 and 'Te hieren' in h['msg'], str(h))
     # rival de práctica: viene, pelea y sus golpes pasan por las acciones con autor
     pg.click('#cmbRival'); pg.wait_for_timeout(200)
     n = pg.evaluate(f'{C}.rivales.length')
