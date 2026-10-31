@@ -155,6 +155,8 @@ export function empunar(mh, modelo) {
   // la mano tiene la escala del esqueleto: la herramienta se deja a su tamaño de verdad
   const e = new THREE.Vector3(); mano.getWorldScale(e); modelo.scale.divideScalar(e.x || 1);
   modelo.visible = false;
+  // no es del cuerpo: los niveles de detalle (src/personajes/detalle.js) no la tocan ni la cuentan
+  modelo.traverse(o => { if (o.isMesh) o.userData.herramienta = true; });
   mano.add(modelo);
   return modelo;
 }

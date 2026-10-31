@@ -323,7 +323,7 @@ window.__personaje = {
   nivel: async (n) => {
     await pj.ponerNivel(n); dibujar();
     let piezas = 0, triangulos = 0;
-    pj.modelo.traverse(o => { if (o.isMesh && o.visible) { piezas++; triangulos += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3; } });
+    pj.modelo.traverse(o => { if (o.isMesh && o.visible && !o.userData.herramienta) { piezas++; triangulos += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3; } });
     return { nivel: pj.nivel, triangulos, piezas };
   },
   // la herramienta que se ve en la mano ('hacha', 'pico' o null) y dónde están su mango y su cabeza (para las pruebas)
