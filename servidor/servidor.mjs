@@ -95,6 +95,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const archivoFichas = resolve(dirname(archivo), 'fichas.jsonl');
   const archivoObjetos = resolve(dirname(archivo), 'objetos.json');
   const archivoObjetosReg = resolve(dirname(archivo), 'objetos.jsonl');
+  const archivoPosiciones = resolve(dirname(archivo), 'posiciones.json');
   mkdirSync(dirname(archivo), { recursive: true });
   const previas = leerArchivo(archivo);
   // si quedó una línea a medias, lo nuevo empieza en una línea aparte
@@ -121,6 +122,29 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   }
   // se escribe en uno aparte y se cambia de nombre: si el servidor se apaga a mitad, queda el anterior entero
   const guardarObjetos = () => { writeFileSync(archivoObjetos + '.tmp', JSON.stringify(objetos.exportar())); renameSync(archivoObjetos + '.tmp', archivoObjetos); };
+
+  // Volver donde lo dejaste (valravnx, 31 oct): dónde estaba cada jugador al salir (autor → { x, y, z, giro }, relativo
+  // al sitio de salida, como su presencia). Se apunta al salir y, por si el servidor se apaga de golpe, en cada latido
+  // con los que están conectados; se manda en la bienvenida para que el cliente ponga ahí a su jugador.
+  const posiciones = new Map();
+  if (existsSync(archivoPosiciones)) {
+    try { for (const [a, p] of Object.entries(JSON.parse(readFileSync(archivoPosiciones, 'utf8')))) { const e = validarEstado({ ...p, anim: 'quieto' }); if (e) posiciones.set(a, { x: e.x, y: e.y, z: e.z, giro: e.giro }); } }
+    catch (e) { registrar(`posiciones.json no válido, se empieza de cero: ${e && e.message}`); }
+  }
+  let posicionesCambiadas = false;
+  // (en el «Duelo» se está en la liza, una escena aparte: esa posición no es la del mundo y no se apunta)
+  const apuntarPosicion = (a) => {
+    const e = presencia && presencia.ultimo.get(a);
+    if (!e || (combate.luchadores[a] && combate.luchadores[a].liza)) return;
+    const p = posiciones.get(a);
+    if (p && p.x === e.x && p.y === e.y && p.z === e.z && p.giro === e.giro) return;
+    posiciones.set(a, { x: e.x, y: e.y, z: e.z, giro: e.giro }); posicionesCambiadas = true;
+  };
+  const guardarPosiciones = () => {
+    if (!posicionesCambiadas) return;
+    posicionesCambiadas = false;
+    writeFileSync(archivoPosiciones + '.tmp', JSON.stringify(Object.fromEntries(posiciones))); renameSync(archivoPosiciones + '.tmp', archivoPosiciones);
+  };
 
   const wss = new WebSocketServer({ port: puerto, maxPayload: limites.maxMensaje });
   wss.on('error', (e) => registrar(`error del servidor: ${e && e.message}`));
@@ -168,6 +192,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       ws.vivo = false;
       try { ws.ping(); } catch (e) { /* ya cerrada */ }
     }
+    for (const a of clientes.values()) apuntarPosicion(a);
+    guardarPosiciones();
     const ahora = reloj();
     for (const [a, x] of apartados) if (x.hasta <= ahora) apartados.delete(a);
     // lo soltado fuera de las tierras desaparece pasada su hora
@@ -189,7 +215,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     }
     // si seguía conectado con otra (colgada, otra pestaña), manda la nueva
     const vieja = conexionDe.get(autor);
-    if (vieja) { conexionDe.delete(autor); clientes.delete(vieja); presencia.quitar(autor); vieja.close(4001, 'Otra conexión'); setTimeout(() => vieja.terminate(), 1000); }
+    if (vieja) { conexionDe.delete(autor); clientes.delete(vieja); apuntarPosicion(autor); presencia.quitar(autor); vieja.close(4001, 'Otra conexión'); setTimeout(() => vieja.terminate(), 1000); }
     clientes.set(ws, autor); conexionDe.set(autor, ws);
     ws.vivo = true;
     ws.on('pong', () => { ws.vivo = true; });
@@ -204,7 +230,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     }
     enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, entradas: hechas, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
       aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true),
-      inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now()), tala: objetos.talaVisible(), recoleccion: objetos.recoleccionVisible() });
+      inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now()), tala: objetos.talaVisible(), recoleccion: objetos.recoleccionVisible(), posicion: posiciones.get(autor) || null });
 
     ws.on('message', (datos, binario) => {
       if (conexionDe.get(autor) !== ws) return;   // sustituida por otra: ya no cuenta
@@ -292,6 +318,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       clientes.delete(ws);
       if (conexionDe.get(autor) !== ws) return;   // la sustituyó otra del mismo jugador: él sigue
       conexionDe.delete(autor);
+      apuntarPosicion(autor); guardarPosiciones();
       aspectos.delete(autor); presencia.quitar(autor);
       ponerAlDia();
       const L = combate.apartar(autor);
@@ -302,7 +329,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, archivo, archivoCombate, archivoFichas, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
+    wss, mundo, archivo, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
     cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticCombate); clearInterval(ticLatido); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };

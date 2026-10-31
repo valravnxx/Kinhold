@@ -34,7 +34,7 @@ with sync_playwright() as p:
     pg = nav.new_page(viewport={'width': 1280, 'height': 800}, locale='es-ES')
     errores = []
     pg.on('pageerror', lambda e: errores.append(str(e)))
-    pg.on('console', lambda m: errores.append(m.text) if m.type == 'error' else None)
+    pg.on('console', lambda m: errores.append(m.text + (f" ({m.location.get('url')})" if '404' in m.text and m.location.get('url') else '')) if m.type == 'error' else None)
     pg.goto(URL)
     pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
     pg.evaluate('localStorage.clear(); window.__kinhold.reiniciar()')
@@ -704,11 +704,15 @@ with sync_playwright() as p:
     fin = ev(f"(() => {{ const c = {K}.mundo.construcciones.find(c => c.id === {oc['c']}); const p = c.piezas.get('{oc['key']}'); return !p.obra; }})()")
     comprobar('al acabar el tiempo de la pieza (7 s de trabajo), el poste queda terminado', fin)
     comprobar('cada rato de trabajo queda en el registro con su autor', ev(f"{K}.registroAcciones.entradas.filter(e => e.tipo === 'trabajar' && e.datos.clave === '{oc['key']}' && e.autor === 'jugador:local' && e.ok).length") >= 2)
-    ev(f"{K}.pj.x=-14.6; {K}.pj.z=-13.4; {K}.llevar(); {K}.usar()")
+    # el muro pide 4 troncos y no caben todos encima de una vez: se va y vuelve hasta entregarlos todos (con tarjeta
+    # gráfica, en el PC de valravnx, la obra empezada con material de menos se paraba antes de mirarla: 31 oct)
+    ev(f"""(() => {{ const K = {K}; K.pj.x=-14.6; K.pj.z=-13.4;
+      for (let i = 0; i < 8; i++) {{ K.llevar(); K.usar(); const o = K.obraCercana(); const c = o && K.mundo.construcciones.find(c => c.id === o.c);
+        if (!c || !K.mundo.faltaEntregar(c.piezas.get(o.key)).length) break; }} }})()""")
     esperar(pg, 600)
     teclas_antes = ev(f"!!{K}.obrando")
     pg.keyboard.down('s'); esperar(pg, 400); pg.keyboard.up('s')
-    comprobar('moverse deja la obra', teclas_antes and not ev(f"{K}.obrando"))
+    comprobar('moverse deja la obra', teclas_antes and not ev(f"{K}.obrando"), 'obrando antes=%s, aviso=%r' % (teclas_antes, ev("document.getElementById('aviso').textContent")))
     ev(f"{K}.pj.x=-15.6; {K}.pj.z=-13.6; {K}.pj.rot=0.6; {K}.cam.yaw=Math.PI+0.5; {K}.cam.pitch=0.3; {K}.cam.dist=4.2")
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/29_obra_muro_de_cerca.png')

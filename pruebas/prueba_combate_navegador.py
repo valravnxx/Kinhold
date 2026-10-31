@@ -196,12 +196,17 @@ with sync_playwright() as p:
     rojo = hasta("document.querySelector('#rosa [data-l=derecha]').classList.contains('amenaza')", 3000)
     comprobar('la zona del golpe que viene se pone roja (lado espejo)', rojo)
     pg.screenshot(path=f'{SALIDA}/03_aviso_rojo.png')
-    verde = hasta("document.querySelector('#rosa [data-l=derecha]').classList.contains('verde')", 5000)
+    # Espacio se pulsa desde la propia página en el primer fotograma en verde: con tarjeta gráfica el juego va a su
+    # velocidad y la ventana (0,25 s) es más corta que la ida y vuelta desde Python (en el PC de valravnx, 31 oct, la
+    # parada llegaba tarde); sin tarjeta, a 2-4 fps, daba igual
+    ev("""(() => { const s = document.querySelector('#rosa [data-l=derecha]'); window.__vioVerde = false;
+      const mira = () => { if (s.classList.contains('verde')) { window.__vioVerde = true; dispatchEvent(new KeyboardEvent('keydown', { key: ' ', code: 'Space' })); } else requestAnimationFrame(mira); };
+      mira(); })()""")
+    verde = hasta("window.__vioVerde", 5000)
     comprobar('se pone verde en la ventana de parada perfecta', verde)
-    pg.keyboard.down(' ')
     hasta(f"{D}.rival.accion !== 'preparando'", 4000)
     espera(100)
-    pg.keyboard.up(' ')
+    ev("dispatchEvent(new KeyboardEvent('keyup', { key: ' ', code: 'Space' }))")
     st = ev(f"{D}.stats")
     comprobar('parar con Espacio en verde da parada perfecta', st['perfectas'] == 1, json.dumps(st))
     comprobar('y abre el contraataque', ev(f"{D}.jugador.puedeContraatacar()") and ev("document.getElementById('rosa').classList.contains('contra')"))

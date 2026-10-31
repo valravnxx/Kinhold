@@ -3125,5 +3125,122 @@
   ],
   "pruebas": "Solo cambia el roadmap; la web se genera sin errores, con todo traducido.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T09:24:25+00:00",
+  "fin": "2026-10-31T10:58:44+00:00",
+  "titulo": "Hito 2: animaciones para cargar (carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Buscadas animaciones libres para uso comercial de cargar: en las bibliotecas de Quaternius (CC0) solo hay empujar (Push_Loop, en la primera, versión Standard), coger algo de una mesa con una mano (PickUp_Table) y andar con algo en brazos (Walk_Carry_Loop, que el taller ya tenía). Se miraron los 45 clips de la primera y los 134 de la segunda: no hay llevar al hombro ni arrastrar.",
+   "Push_Loop y PickUp_Table pasadas al esqueleto del taller (hombre y mujer) con pasar_animaciones.mjs, junto con las 39 extra de antes y con las mismas correcciones: recursos nuevos en recursos/personajes/taller-anim-v2/ (unos 1,1 MB por cuerpo), con su procedencia, licencia y la huella del archivo de origen en PROCEDENCIA.md. La v1 no se toca.",
+   "En el visor de personaje salen como «Empujar» y «Coger de una mesa» cuando se cargan las de la v2 (?animMH=…/taller-anim-v2/); el juego sigue con la v1 hasta que las use la carretilla o la rastra. Textos en inglés y ruso.",
+   "Decisión pendiente para valravnx: de dónde salen llevar al hombro y arrastrar (la base de captura de movimiento de la CMU, hacerlas en el taller a partir de las que hay o dejarlas para más adelante); tarea nueva en espera.",
+   "Lo que aún está mal: al empujar, las manos van algo más altas que en el original (a la altura de la cabeza; el cuerpo del taller tiene otras proporciones) y la falda del vestido se abre como un pantalón al agacharse (el vestido sigue a las piernas); «coger de una mesa» es un gesto de una mano, no sirve para levantar algo pesado."
+  ],
+  "pruebas": "En la nube, la batería entera: bien salvo «jugar en línea» y «duelo en línea» (exentos hasta la fase 2) y «lo que llevas en línea», que falló esperando a que cayera el árbol en el otro jugador y pasó al repetirla sola. Antes, el PC de valravnx devolvió todos los grupos con fallo en 0,1 min y la vuelta a la nube no se pudo pedir porque el nombre de la rama pasaba de 255 caracteres (lo arregla el carril B en su rama); se lanzó todo en la nube con SOLO_NUBE=1. Pruebas nuevas: animaciones para cargar (lógica, 14/14; con MUTAR=1, 6 fallos) y en el navegador (PC y móvil, hombre y mujer; con MUTAR=1, 16 fallos). Capturas miradas de frente y de lado.",
+  "capturas": "capturas/anim-carga-v1",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T05:00:43+00:00",
+  "fin": "2026-10-31T11:05:50+00:00",
+  "titulo": "Volver donde lo dejaste (chat con valravnx)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "La ficha que da el servidor se guarda en el navegador (localStorage), no en la pestaña: dura aunque se cierre. La que había en la pestaña se pasa sola. Dos pestañas del mismo navegador son el mismo jugador: la nueva deja fuera a la de antes, que lo dice en su cartel, y ya no borra la ficha.",
+   "El servidor apunta dónde estaba cada jugador (posiciones.json, junto al mundo) al salir y en cada latido, y se lo manda en la bienvenida; el juego le pone ahí la primera vez que conecta (al volver tras un corte no mueve a nadie). En el «Duelo» no se apunta: la liza es una escena aparte.",
+   "La guía del servidor: el wipe borra también los .json (lo del suelo, lo que lleva cada uno y las posiciones); antes solo los .jsonl.",
+   "Pruebas nuevas: prueba_posicion_servidor.mjs (7, rota a propósito: el servidor sin posición falla) y prueba_volver_navegador.py (recargar, pestaña nueva y otro navegador, en PC y móvil; rota a propósito de dos formas: el servidor sin posición y la ficha en la pestaña, las dos fallan). En la prueba en línea, salir al menú y volver sale donde lo dejó.",
+   "Publicado como demo v66 (la v62 a la v65 salieron mientras tanto de las otras sesiones; se unió main tres veces).",
+   "Visto al probar: si el PC de valravnx coge los grupos y los falla todos en segundos, pruebas_nube.mjs intenta mandarlos a la nube con una rama de nombre demasiado largo (más de 255 letras) y se para; con SOLO_NUBE=1 va bien. No arreglado aquí."
+  ],
+  "pruebas": "Todas en la nube (25 grupos) sobre la rama con main unido: 22 bien a la primera; la demo en el mundo falló por un fotograma de 62,6 ms (el límite es 60) y pasó al repetirla; jugar en línea y duelo en línea fallan (exentos hasta la fase 2), aunque en la vuelta anterior pasaron enteros los dos, también el cartel sin conexión y volver donde lo dejaste. Tras unir main la última vez (animaciones para cargar, sin archivos de código en común), aquí: la del servidor y la de cargar.",
+  "capturas": "capturas/demo-v66",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T08:51:54+00:00",
+  "fin": "2026-10-31T11:43:38+00:00",
+  "titulo": "Herramienta en la mano al trabajar: el pico al picar (sin publicar)",
+  "hito": "arte",
+  "hecho": [
+   "En el visor de personaje, con «Picar» el personaje lleva un pico de una mano en la mano derecha (mango de fresno de unos 70 cm, punta delante algo curvada hacia el mango y azuela detrás, con el estilo v5 como el hacha); con «Talar», el hacha; con lo demás, la mano vacía.",
+   "El agarre del hacha pasa a una función común (empunar) que vale para cualquier herramienta y cualquier cuerpo.",
+   "Arreglado de paso: la herramienta de la mano quedaba dentro de los niveles de detalle; al cambiar de nivel se escondía para siempre (también el hacha del juego) y contaba como triángulos del cuerpo.",
+   "Pruebas nuevas: el pico en la prueba de modelos (largo, punta y azuela, la punta curvada; con MUTAR_PICO falla) y, en la del personaje, que al picar lleva el pico en la mano derecha y al talar el hacha, y con un golpe de espada nada.",
+   "La prueba de lo que llevas en línea servía los personajes de la taller-v19 y la demo ya usa los de la taller-v20 (daba 404).",
+   "No se publica: desde las 11:18 «jugar en línea» para la publicación como los demás grupos, y falla en esta rama como en todas las ramas probadas hoy (al construir una obra en línea y al volver a conectar). La tarea queda a medias en trabajo/20261031-0858, lista para publicar como personaje v32 en cuanto «jugar en línea» pase."
+  ],
+  "pruebas": "En la nube (el PC de valravnx fallaba en el primer paso): todos los grupos bien salvo «jugar en línea»; «lo que llevas en línea» y «niveles de detalle» fallaron una vez y pasaron al repetirlos. No comprobado: la prueba nueva del navegador rota a propósito (MUTAR) no se ha pasado.",
+  "capturas": "",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-31T11:09:01+00:00",
+  "fin": "2026-10-31T13:25:55+00:00",
+  "titulo": "Las pruebas en la gráfica del PC de valravnx, funcionando (chat con valravnx)",
+  "hito": "infra",
+  "hecho": [
+   "Visto en GitHub: desde las 09:07 todos los grupos que cogía el PC de valravnx fallaban en el primer paso con «bash: command not found», y se repetían en la nube. Git para Windows solo pone Git\\cmd en el PATH, no su bash, y los pasos del flujo van en bash.",
+   "Arreglado en el flujo de pruebas, sin tocar nada en su PC: un primer paso en PowerShell pone el bash de Git y el Python de su usuario (3.10) en el PATH, y la salida de Python en UTF-8. En Windows, setup-node va sin la caché de GitHub (restaurarla llegó a tardar 10 min) y pip va con python -m pip.",
+   "Ya prueba con su tarjeta: ANGLE con la NVIDIA GeForce RTX 3060 (Direct3D 11). La prueba de construcción tarda 3,8 min en su PC; en la nube, 46 y 52 min hoy.",
+   "Con la tarjeta salieron fallos que en la nube no se veían, arreglados: el navegador «nuevo» sin pantalla pedía /favicon.ico (404; ahora se prueba primero el de la nube, que también llega a la tarjeta); en Windows, el servidor de páginas de las pruebas rechazaba conexiones que no cabían en su cola de 5 (la web; sitecustomize.py la pone en 128, solo en su PC); los enlaces simbólicos piden administrador (volver donde lo dejaste; se hace una unión de carpeta).",
+   "Dos pruebas iban a destiempo a velocidad real: en combate, Espacio en verde llegaba tarde desde Python (la ventana es de 0,25 s) y ahora se pulsa desde la propia página; en construcción, el muro pide 4 troncos que no caben encima de una vez y la obra empezaba con material de menos y se paraba al medio segundo: la prueba ahora hace varios viajes.",
+   "Visto y no arreglado aquí (es del juego): Usar en una obra con parte del material entrega lo que llevas y se pone a construir, y al medio segundo para con «Primero hay que llevarle todo el material». En la nube no se veía porque a 2 fps la prueba miraba antes.",
+   "El nombre de rama demasiado largo al repetir en la nube lo del PC ya lo arreglan otras dos ramas (cuatro direcciones y mapa del rey): pruebas_nube.mjs se queda como en main."
+  ],
+  "pruebas": "Batería entera con el PC de valravnx encendido: 25 grupos en su tarjeta y la lógica en la nube, 41 min; todo bien salvo «jugar en línea» (exento hasta la fase 2) y «volver donde lo dejaste» (el enlace simbólico; arreglado y repetido en su PC, bien). Construcción, combate y web cambiados, también bien en la nube.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T11:49:59+00:00",
+  "fin": "2026-10-31T11:49:59+00:00",
+  "titulo": "Decidido: las animaciones de cargar las hacemos nosotros (chat con valravnx)",
+  "hito": "equipo",
+  "hecho": [
+   "Decidido por valravnx: llevar al hombro y arrastrar se hacen en el taller a partir de las animaciones que ya hay, sin traerlas de fuera; y el tronco al hombro tiene que frenar al moverse.",
+   "La tarea pasa de esperar la decisión a pendiente, en «Equipo y carga por huecos», justo detrás de la de las animaciones para cargar."
+  ],
+  "pruebas": "Sin pruebas: solo cambian el roadmap, REVISION.md y el diario.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T11:26:08+00:00",
+  "fin": "2026-10-31T12:57:46+00:00",
+  "titulo": "Sin cortados rectos de kilómetros en los valles de los ríos (chat con valravnx)",
+  "hito": "mundo",
+  "hecho": [
+   "Buscado en toda Whitholm (rejilla de 25 m): los cortados rectos salían de los valles de los ríos. Donde el río va muy por debajo del terreno de alrededor (hasta 250 m), el valle se tallaba con una pendiente fija y dejaba una pared lisa, recta a lo largo de cada tramo de río y con una arista viva arriba; la más larga medía 1,6 km.",
+   "Las laderas del valle ya no son planos: la pendiente cambia por trechos de unos cientos de metros (el borde de arriba no va recto), llevan el relieve del sitio y la arista de arriba se redondea. Río arriba de donde nace, el valle se cierra con media pendiente en vez de con una pared.",
+   "Prueba nueva, prueba_valles.mjs: en toda la isla, ninguna ladera de valle lisa de más de 800 m (ahora, 612 m) y lo liso, menos del 11 % de lo tallado (ahora, 8,7 %). Rota a propósito (MUTAR=1, las laderas de antes): falla con 1.595 m y 13,2 %.",
+   "Al cambiar el terreno cambian los sitios de salida al azar (de 258 a 260); a quien le tocaba uno que ya no vale se le elige otro solo. La prueba de lo que crece mira ahora uno de cada 7 sitios: con uno de cada 13 ya no caía ninguno junto a bosque cerrado.",
+   "Publicado como demo v67.",
+   "Aún mal: los valles siguen siendo hondos donde el mapa los pone hondos, ahora con ladera y no con pared; y en la cabecera de algún río queda una arista suave donde se juntan los valles de dos ríos.",
+   "No comprobado: no sé dónde está el sitio de la captura de valravnx y no lo he visto en el juego de cerca (aquí el juego va a 1 fotograma por segundo); lo comprobado es el relieve de toda la isla y las capturas de las pruebas.",
+   "La rama del mapa del rey también toca paisaje.js y whitholm.js: el sitio de la ciudad que apunta sigue valiendo con el terreno nuevo (comprobado), pero su prueba puede encontrar antes otro sitio."
+  ],
+  "pruebas": "Todas en la nube (26 grupos, sin el PC de valravnx: su programa fallaba al repartir con un nombre de rama demasiado largo). En la primera vuelta fallaron lógica (la prueba de lo que crece, por la lista nueva de sitios; arreglada), jugar en línea, lo que llevas en línea y duelo en línea; al repetirlas pasaron todas menos jugar en línea, que falla en cosas distintas cada vez y también en main. valravnx: «jugar en línea ya no existe, hizo merge con jugar al ser ahora todo full online».",
+  "capturas": "capturas/demo-v67",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T11:54:23+00:00",
+  "fin": "2026-10-31T13:32:29+00:00",
+  "titulo": "Hito 3: recetas que conoce cada personaje y desbloqueo por práctica (carril B)",
+  "hito": "crafting",
+  "hecho": [
+   "Cada personaje guarda las recetas de estación que conoce y su práctica en cada tipo de estación (lógica pura, src/logica/fabricacion.js); lo que no conoce no se encarga y no gasta nada.",
+   "Construir una estación da sus recetas básicas; cada cosa hecha en una estación de ese tipo y recogida por su autor cuenta una vez de práctica y abre las siguientes. El registro de acciones anota lo que aprende cada uno.",
+   "Decisión provisional: lo que se hace con las manos lo sabe todo el mundo. Hoguera: todo básico. Piedra de tallar: básica la lasca de sílex, y el hacha de piedra con 1 cosa hecha (el primer día: «una lasca y un hacha»). Banco de tronco: básicas la cuerda, las cestas de recolección y la pala; con 3 cosas hechas, el cinturón de cuerda, la trampa de lazo, el cubo, el cesto de pescador y la nasa; con 6, la azada, la hoz de sílex y el mayal.",
+   "Decisión provisional: la práctica es de cada uno y por tipo de estación (vale también la de otro), pero usar la estación de otro sin haber construido una de ese tipo no da sus básicas (más adelante, los tomos). Anotado en el código y aquí; no en el registro de la demo porque aún no hay versión jugable que lo enseñe.",
+   "Guardado con migración: el formato de la fabricación pasa a la versión 2 con lo que sabe cada uno; un guardado de la versión 1 se carga y quien colocó cada estación conoce sus básicas, sin práctica.",
+   "Herramienta: con el PC de valravnx apagado, pruebas_nube.mjs no podía pasar los grupos a la nube (el nombre de la rama del pedido pasaba de 255 bytes); se lanzaron con SOLO_NUBE=1. No se toca aquí porque la rama del chat sobre la gráfica cambia ese archivo."
+  ],
+  "pruebas": "En la nube, la batería entera (26 grupos, sin el PC de valravnx): bien todos salvo «jugar en línea», que falla en «PC se pone a construir» y lo que sigue (también en main; valravnx, 31 oct: «jugar en línea ya no existe»); esta tarea no toca código que use el juego. Tras unir main, lógica bien otra vez en la nube. Prueba de fabricación 88/88; rota a propósito (sin mirar lo que se conoce, o con la práctica de más) falla 4.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

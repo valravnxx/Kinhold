@@ -6,6 +6,21 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (11:49 UTC) — por el chat: las animaciones de cargar, hechas por nosotros
+valravnx, respondiendo a la decisión de llevar al hombro y arrastrar: «las tratamos de hacer nosotros pues, es que cargue el tronco en el hombro con penalizacion a movimiento». → Opción (b): se hacen en el taller a partir de las que hay. La tarea en espera de «Equipo y carga por huecos» pasa a pendiente, y lleva también que el tronco al hombro se note al moverse.
+
+### 31 oct 2026 (12:58 UTC) — por el chat: «jugar en línea» ya no existe aparte
+Al preguntarle si publicar el arreglo de los cortados con la prueba «jugar en línea» fallando (en cosas distintas cada vez, también en main), valravnx: «jugar en línea ya no existe, hizo merge con jugar al ser ahora todo full online». → Se publica el arreglo (demo v67), con la prueba anotada en el diario.
+
+### 31 oct 2026 (11:25 UTC) — por el chat: los cortados rectos de kilómetros
+valravnx (con captura): «el mapa me ha generado en un punto de la isla que no conozco una separación de alturas anormal recta que ocupa kilómetros [...] esto no puede pasar en NINGÚN LUGAR DEL MUNDO». → Tarea del chat en «Mundo»: buscar en toda la isla de dónde salen y arreglarlo en el generador del paisaje para que no salga en ningún sitio, con una prueba que lo mire en toda la isla.
+
+### 31 oct 2026 (11:18 UTC) — por el chat: ya hay servidor de verdad
+valravnx: «ya hay servidor de verdad, elimina lo de que dije que no, ya se juega en línea». → Fuera la excepción del 30 oct: si fallan «jugar en línea» o «duelo en línea», no se publica, como con cualquier otro grupo. Cambiado en CLAUDE.md.
+
+### 31 oct 2026 (11:09 UTC) — por el chat: las pruebas en la gráfica del PC fallan siempre
+valravnx: «revisa cómo arreglar el programa que me has hecho para usar mi gráfica en GitHub Actions, da error todo el tiempo en tus pruebas, vamos a dedicarnos a ello un momento». → Tarea del chat en «Infraestructura». Visto en GitHub: desde las 09:07 todos los grupos que cogía su PC fallaban en el primer paso con «bash: command not found» (Git para Windows solo pone `Git\cmd` en el PATH, no su bash).
+
 ### 31 oct 2026 (10:05 UTC) — por el chat: tejados pisables y menú de Usar
 valravnx: «arreglo relativamente rápido: los tejados deben poder ser pisables para poder construir tejados con un solo andamio, por ahora los atraviesas y caes, y para afinar sobre el botón de usar, poder hacer clic derecho y seleccionar qué quieres usar si es que hay varias opciones en la zona». → Tarea del chat en «El juego en el mundo de verdad».
 Y después: «no es desde el menú usar, quita el rotar mapa con click derecho que ya está en el central, y clicando con clic derecho en lo que quieras usar (pilla lo que toques y muy cercanos)». → El clic derecho va sobre la cosa del mundo, no sobre el botón Usar, y ya no gira la cámara.
