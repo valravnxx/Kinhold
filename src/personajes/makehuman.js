@@ -259,8 +259,8 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
     resultado.capas = [...lista]; resultado.tocado = tocado;
     ponerCabeza();
   };
-  // pelo, barba, orejas y cofia según el peinado, la barba y el tocado (src/logica/aspecto.js: piezasCabeza)
-  const cabezaDe = (n) => { const m = n.isMesh && n.name.match(/(_pelo(_[a-z]+)?|_barba_[a-z]+|_orejas|_cofia)$/); return m && m[1]; };
+  // pelo (también el pintado), barba, orejas y cofia según el peinado, la barba y el tocado (src/logica/aspecto.js: piezasCabeza)
+  const cabezaDe = (n) => { const m = n.isMesh && n.name.match(/(_pelo(_[a-z]+)?|_barba_[a-z]+|_orejas|_cofia|_vello)$/); return m && m[1]; };
   const ponerCabeza = () => {
     if (!resultado.aspecto) return;
     const ver = piezasCabeza(resultado.aspecto, resultado.tocado);
