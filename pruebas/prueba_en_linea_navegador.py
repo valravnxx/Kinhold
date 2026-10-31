@@ -175,6 +175,7 @@ try:
         A.evaluate(f"Object.assign({K}.pj, {{ x: 4.6, z: 3.2 }})"); A.wait_for_timeout(400)
         comprobar('PC tiene la obra al alcance', A.evaluate(f"!!{K}.obraCercana()"))
         esperar(B, f"{K}.mundo.construcciones.reduce((t, c) => t + c.piezas.size, 0) === 4", 5000); B.wait_for_timeout(500)
+        A.evaluate(f"{K}.llevar()"); esperar(A, f"{K}.enLinea.red.pendientes.length === 0", 20000)   # (las obras cobran de lo que llevas, desde la v65)
         for pg in (A, B): pg.evaluate("window.__rehechos.todo = 0; window.__rehechos.pieza = 0")
         A.evaluate(f"{K}.usar()")
         comprobar('PC se pone a construir', A.evaluate(f"!!{K}.obrando"))
@@ -195,6 +196,7 @@ try:
         comprobar('PC pone el marco de un portillo', g is not None, str(g))
         if g:
             A.evaluate(f"Object.assign({K}.pj, {{ x: {g['x']} + 0.3, z: {g['z']} + 1.1, rot: Math.PI }})"); A.wait_for_timeout(300)
+            A.evaluate(f"{K}.llevar()"); esperar(A, f"{K}.enLinea.red.pendientes.length === 0", 20000)   # (las obras cobran de lo que llevas, desde la v65)
             A.evaluate(f"{K}.usar()")
             comprobar('PC termina el portillo', esperar(A, f"!({donde}).obra && {K}.enLinea.red.pendientes.length === 0", 30000) and esperar(B, f"({donde}) && !({donde}).obra", 10000))
             A.evaluate(f"{K}.estado.obrando = null"); A.wait_for_timeout(500)
