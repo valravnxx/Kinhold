@@ -1,0 +1,28 @@
+  OK   sin bienvenida no se construye
+La acción propia se ve enseguida y llega a los demás
+  OK   el mojón de A está en su mundo antes de que conteste el servidor
+  OK   mientras tanto, la base (lo del servidor) aún no lo tiene
+  OK   B ve el mojón de A
+  OK   confirmado, A ya no tiene copia: su mundo es la base
+Dos ponen lo mismo a la vez
+  OK   los dos lo ven puesto en su pantalla al momento
+  OK   el servidor rechaza al segundo y se le avisa — Ese hueco ya está ocupado.
+  OK   los dos clientes y el servidor tienen el mismo mundo — 1 pieza, materiales iguales
+Lo de otro llega mientras hay acciones propias por confirmar
+  OK   B ve la pieza de A sin perder las suyas por confirmar — 4 piezas en B, 2 por confirmar
+  OK   las cuatro piezas en los dos clientes — A 4, B 4
+  OK   y los tres mundos siguen iguales
+Aspecto: cuerpo y ropa
+  OK   B recibe el aspecto de A con su autor
+  OK   A no recibe su propio aspecto
+  OK   sin personalización (clientes de antes) llega la de por defecto
+Aspecto: forma, colores, peinado y barba (comprobados con src/logica/aspecto.js)
+  OK   B recibe la personalización de A — {"piel":"morena","ojos":"verdes","pelo":"pelirrojo","peinado":"rapado","barba":"bigote","formas":{"altura":-1,"peso":0.5,"musculo":0,"cara":0,"nariz":0,"nariz_larga":0,"menton":0}}
+  OK   el servidor la limpia: números recortados, lo que no existe fuera — {"altura":-1,"peso":0.5,"musculo":0,"cara":0,"nariz":0,"nariz_larga":0,"menton":0}
+  OK   lo que no es de su cuerpo o de la paleta sale por defecto (mujer sin barba ni rapado) — {"piel":"clara","ojos":"grises","pelo":"castano_oscuro","peinado":"cofia","barba":"ninguna","formas":{"altura":0,"peso":0,"musculo":0,"cara":0,"nariz":0,"nariz_larga":0,"menton":0}}
+  OK   una personalización que no es un objeto se rechaza
+  OK   un aspecto mal formado se rechaza
+  OK   el que llega después recibe el aspecto de los que ya están, con su personalización
+  OK   y el mundo tal como está
+
+21 correctas, 0 fallos
