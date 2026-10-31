@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-10-31T20:23:16+00:00",
-  "tarea": "Panel de depuración con clave de admin (valravnx, 30 oct): se abre con una tecla; mapa de la isla con los jugadores conectados, lista de jugadores, y teletransportarse a un punto del mapa o junto a otro jugador. Ver a todos y teletransportarse pasan por el servidor con su autor, y solo los acepta con la clave de admin que valravnx pone en la máquina (en servidor/nube/LEEME.md, cómo)",
-  "hito": "mundo-juego",
-  "rama": "trabajo/20261031-2023"
+  "inicio": "2026-10-31T21:23:14+00:00",
+  "tarea": "Rastra (N0: dos varas largas con travesaños): se arrastra a mano, despacio, con 2–3 troncos cortos o un montón de piedras, y se queda donde la dejas con lo que lleve. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
+  "hito": "equipo",
+  "rama": "trabajo/20261031-2123"
  },
  "B": {
   "inicio": "2026-10-31T20:56:07+00:00",

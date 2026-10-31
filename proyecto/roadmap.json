@@ -669,7 +669,9 @@
     },
     {
      "nombre": "Rastra (N0: dos varas largas con travesaños): se arrastra a mano, despacio, con 2–3 troncos cortos o un montón de piedras, y se queda donde la dejas con lo que lleve. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T21:23:14+00:00",
+     "rama": "trabajo/20261031-2123"
     },
     {
      "nombre": "Carretilla de rueda maciza (N1: la rueda es una rodaja de tronco): se empuja, se aparca y hace de contenedor; dentro de tus tierras está protegida y fuera cualquiera puede coger lo que lleva. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
