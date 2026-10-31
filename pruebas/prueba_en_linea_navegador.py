@@ -51,6 +51,12 @@ def tapado(pg, sel):
       return x === e || e.contains(x) ? '' : (x ? x.id || x.tagName : 'nada'); }""", sel)
 # mira la condición cada 250 ms (no en cada fotograma: con dos páginas del mundo en la máquina de pruebas, sin tarjeta
 # gráfica, un fotograma puede tardar segundos y las esperas cortas se agotaban sin que nada fallara de verdad)
+# Las capturas: sin tarjeta gráfica, con dos páginas y el servidor en la misma máquina de la nube, una captura puede
+# tardar más de 30 s; se le dan 90 y, si aun así no sale, se avisa y se sigue (la captura no es lo que se prueba)
+def captura(pg, ruta):
+    try: pg.screenshot(path=ruta, timeout=90000)
+    except Exception as e: print(f'  (sin captura {os.path.basename(ruta)}: {str(e)[:80]})')
+
 def esperar(pg, cond, ms=20000):
     try: pg.wait_for_function(cond, timeout=ms, polling=250); return True
     except Exception: return False
@@ -144,21 +150,22 @@ try:
         comprobar('PC ve al móvil con el aspecto por defecto, igual que el móvil se ve', aspRemoto(A) == aspPropio(B), aspRemoto(A))
         # andar: el otro lo ve moverse y con la animación de andar
         A.evaluate(f"{K}.pj.z = 6.5; window.__andar = setInterval(() => {{ {K}.pj.x += 0.05; }}, 33)")
-        comprobar('cuando PC anda, el móvil lo ve andar', esperar(B, f"[...{K}.enLinea.remotos.values()][0].j.modo !== 'quieto'", 15000), B.evaluate(f"[...{K}.enLinea.remotos.values()][0].j.modo"))
+        # (45 s: en la nube, con dos páginas sin tarjeta gráfica, el móvil va a pocos fotogramas por segundo)
+        comprobar('cuando PC anda, el móvil lo ve andar', esperar(B, f"[...{K}.enLinea.remotos.values()][0].j.modo !== 'quieto'", 45000), B.evaluate(f"[...{K}.enLinea.remotos.values()][0].j.modo"))
         A.evaluate("clearInterval(window.__andar)")
         A.evaluate(f"Object.assign({K}.pj, {{ x: 1.2, z: 6.5, rot: Math.PI * 0.75 }})")
         esperar(B, vistoEn(B, 1.2, 6.5), 8000); A.wait_for_timeout(800)
         for nombre, (pg, _) in paginas.items():
-            pg.screenshot(path=f'{SALIDA}/{nombre}_2_en_linea.png')
+            captura(pg, f'{SALIDA}/{nombre}_2_en_linea.png')
         # de cerca, para ver los personajes
         A.evaluate(f"{K}.cam.dist = 4.5; {K}.cam.pitch = 0.25"); B.evaluate(f"{K}.cam.dist = 4.5; {K}.cam.pitch = 0.25")
         A.wait_for_timeout(600)
         for nombre, (pg, _) in paginas.items():
-            pg.screenshot(path=f'{SALIDA}/{nombre}_3_de_cerca.png')
+            captura(pg, f'{SALIDA}/{nombre}_3_de_cerca.png')
         # el móvil, al lado de PC: así se ve su aspecto de cerca (morena, alta y de más peso)
         B.evaluate(f"Object.assign({K}.pj, {{ x: 0.0, z: 5.9, rot: Math.atan2(1.2, 0.6) }}); {K}.cam.yaw = Math.atan2(-1.2, -0.6) + 0.45; {K}.cam.dist = 3.2; {K}.cam.pitch = 0.18")
         esperar(A, vistoEn(A, 0.0, 5.9), 8000); B.wait_for_timeout(800)
-        B.screenshot(path=f'{SALIDA}/movil_3b_ve_a_pc.png')
+        captura(B, f'{SALIDA}/movil_3b_ve_a_pc.png')
 
         print('Construir una obra sin rehacer todo')
         # mientras alguien trabaja en una obra, solo se rehace esa pieza (en su página y en la del otro), no lo construido entero
@@ -227,8 +234,8 @@ try:
         A.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','cim_piedra'); {K}.apuntar(5,1); {K}.colocar()")
         comprobar('sin conexión no se construye', piezas(A) == piezasAntes and 'conexión' in A.inner_text('#aviso'), A.inner_text('#aviso'))
         A.evaluate(f"{K}.cambiarModo('mover')")
-        A.screenshot(path=f'{SALIDA}/pc_4_sin_conexion.png')
-        B.screenshot(path=f'{SALIDA}/movil_4_sin_conexion.png')
+        captura(A, f'{SALIDA}/pc_4_sin_conexion.png')
+        captura(B, f'{SALIDA}/movil_4_sin_conexion.png')
         servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs'), str(PUERTO), ARCHIVO], cwd=RAIZ,
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         servidor.stdout.readline()
@@ -241,8 +248,8 @@ try:
         A.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','cim_piedra'); {K}.apuntar(5,1); {K}.colocar(); {K}.cambiarModo('mover')")
         comprobar('y se puede construir otra vez', esperar(A, f"{K}.enLinea.red.pendientes.length === 0", 8000) and piezas(A) == piezasAntes + 1, f'{piezas(A)} piezas')
         A.wait_for_timeout(800)
-        A.screenshot(path=f'{SALIDA}/pc_5_vuelve.png')
-        B.screenshot(path=f'{SALIDA}/movil_5_vuelve.png')
+        captura(A, f'{SALIDA}/pc_5_vuelve.png')
+        captura(B, f'{SALIDA}/movil_5_vuelve.png')
         print('Sin servidor no se juega')
         ctx = nav.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True, locale='es-ES')
         if MUTAR_SIN: ctx.add_init_script("(() => { const a = Node.prototype.appendChild; Node.prototype.appendChild = function (n) { if (n && n.id === 'sinConexion') return n; return a.call(this, n); }; })()")
