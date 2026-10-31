@@ -191,8 +191,11 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     const bloqueado = document.pointerLockElement === lienzo;
     if (!bloqueado && !c.raton) return;
     const dx = e.movementX || 0, dy = e.movementY || 0;
-    moverRaton(dx, dy, e.timeStamp / 1000);
-    pulsados(e);
+    // al coger el ratón (pointer lock) llega un salto enorme sin botones: no es un movimiento de la mano
+    if (Math.abs(dx) + Math.abs(dy) < 400) moverRaton(dx, dy, e.timeStamp / 1000);
+    // solo si cambia un botón (con otro ya pulsado, el navegador lo avisa así, con «button» ≥ 0); un movimiento
+    // normal trae button = -1 y sus «buttons» no sirven para saber qué se ha pulsado o soltado
+    if (e.button >= 0) pulsados(e);
   }, true);
   lienzo.addEventListener('pointerup', (e) => {
     if (!nuestro(e)) return;
