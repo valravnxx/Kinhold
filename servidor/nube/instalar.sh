@@ -3,7 +3,8 @@
 # Lo llama cloud-config.yaml al crear la máquina; también se puede lanzar a mano como root:
 #   bash /opt/kinhold/servidor/nube/instalar.sh
 # Deja: Node.js 22, el juego en /opt/kinhold, el servicio «kinhold» (el mundo en /var/lib/kinhold), Caddy con
-# HTTPS delante y el cortafuegos con solo SSH, HTTP y HTTPS abiertos. Repetirlo no hace daño.
+# HTTPS delante, el cortafuegos con solo SSH, HTTP y HTTPS abiertos, y kinhold-actualizar.timer, que lo pone al día
+# solo con cada versión nueva de la demo (auto_actualizar.sh). Repetirlo no hace daño.
 #
 # Variables (todas opcionales):
 #   KINHOLD_DOMINIO  dirección propia (si no, <ip-con-guiones>.sslip.io, que apunta sola a la IP)
@@ -50,6 +51,7 @@ if [ "${1:-}" = "--solo-archivos" ]; then
   mkdir -p "$2"
   rellenar "$NUBE/Caddyfile.plantilla" > "$2/Caddyfile"
   rellenar "$NUBE/kinhold.service.plantilla" > "$2/kinhold.service"
+  rellenar "$NUBE/kinhold-actualizar.service.plantilla" > "$2/kinhold-actualizar.service"
   echo "$DOMINIO"
   exit 0
 fi
@@ -87,6 +89,9 @@ if [ -d "$DIR/.git" ]; then git -C "$DIR" pull --ff-only; else git clone --depth
 
 DOMINIO="$(dominio)"
 rellenar "$DIR/servidor/nube/kinhold.service.plantilla" > /etc/systemd/system/kinhold.service
+# al día solo con cada versión nueva de la demo (auto_actualizar.sh, cada 5 minutos)
+rellenar "$DIR/servidor/nube/kinhold-actualizar.service.plantilla" > /etc/systemd/system/kinhold-actualizar.service
+cp "$DIR/servidor/nube/kinhold-actualizar.timer" /etc/systemd/system/kinhold-actualizar.timer
 rellenar "$DIR/servidor/nube/Caddyfile.plantilla" > /etc/caddy/Caddyfile
 caddy validate --adapter caddyfile --config /etc/caddy/Caddyfile
 
@@ -98,6 +103,7 @@ systemctl enable --now kinhold
 systemctl restart kinhold
 systemctl enable caddy
 systemctl restart caddy
+systemctl enable --now kinhold-actualizar.timer
 echo "$DOMINIO" > /etc/kinhold-dominio
 
 echo

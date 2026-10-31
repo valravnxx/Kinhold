@@ -62,6 +62,7 @@ paso "Aguante, agua y nado" node pruebas/prueba_nado.mjs
 paso "Medición del servidor (CPU, memoria, red y disco)" node pruebas/prueba_medir.mjs
 [ -z "$LISTAR" ] && { [ -z "$GRUPO" ] || [ "$GRUPO" = logica ]; } && ! command -v caddy >/dev/null && {  apt-get install -y -q caddy >/dev/null 2>&1 || { apt-get update -q >/dev/null 2>&1; apt-get install -y -q caddy >/dev/null 2>&1; } || true; }
 paso "Servidor de prueba en internet (Caddy con HTTPS delante del juego)" node pruebas/prueba_nube.mjs
+paso "Servidor de prueba: al día solo con cada versión nueva de la demo" node pruebas/prueba_auto_actualizar.mjs
 paso "Taller: los cinturones ciñen su prenda" node pruebas/prueba_cinturones.mjs
 paso "Taller: capa, calzado y tocados" node pruebas/prueba_prendas.mjs
 paso "Taller: formas y colores para personalizar" node pruebas/prueba_aspecto_modelos.mjs

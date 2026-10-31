@@ -9,15 +9,16 @@
 //  - (desde taller-v16) que los pliegues de la espalda se ven: a 30 cm del bajo, por detrás, la tela entra y sale al
 //    menos 6,5 cm (en la v15, 5 cm: de espalda no se distinguían).
 // Uso: node pruebas/prueba_manto.mjs [carpeta de recursos]   (por defecto, la última taller-vN publicada)
-//      MUTAR=1 → mira la taller-v15, con los pliegues de antes: tiene que fallar (la v14, con la capa de antes, falla más).
+//      MUTAR=1 → mira la taller-v19, con los pliegues finos de antes: tiene que fallar.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { MeshoptDecoder } from 'meshoptimizer';
 import { readdirSync } from 'fs';
+import sharp from 'sharp';
 
 const base = 'docs/recursos/personajes';
 const ultima = readdirSync(base).filter(d => /^taller-v\d+$/.test(d)).sort((a, b) => +a.slice(8) - +b.slice(8)).at(-1);
-const carpeta = process.env.MUTAR ? `${base}/taller-v15` : (process.argv[2] || `${base}/${ultima}`);
+const carpeta = process.env.MUTAR ? `${base}/taller-v19` : (process.argv[2] || `${base}/${ultima}`);
 await MeshoptDecoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
 let ok = 0, mal = 0;
@@ -56,6 +57,33 @@ for (const sexo of ['hombre', 'mujer']) {
   const tras = P.filter(p => Math.abs(p[1] - (abajo + 0.3)) < 0.01 && Math.abs(p[0]) < 0.15 && p[2] < medio).map(p => p[2]);
   const hondo = tras.length ? Math.max(...tras) - Math.min(...tras) : 0;
   comprobar(`${sexo}: pliegues hondos por detrás (al menos 6,5 cm a 30 cm del bajo)`, hondo >= 0.065, cm(hondo));
+  // (desde taller-v20) los pliegues de la espalda, anchos y que la malla dibuja: a 30 cm del bajo, de lado a lado de la
+  // espalda (40 cm), lo más saliente de cada centímetro, sin la curva de la espalda (media de 16 cm): de lomo a
+  // valle, al menos 9 cm y no más de 3 lomos (en la taller-v19, 4 lomos y 7 cm: muchos y finos, y de espalda se veía lisa)
+  const banda = P.filter(p => Math.abs(p[1] - (abajo + 0.3)) < 0.015 && Math.abs(p[0]) < 0.2 && p[2] < medio);
+  const fuera = []; // por centímetro: cuánto sale hacia atrás
+  for (let i = 0; i < 40; i++) { const e = banda.filter(p => p[0] >= -0.2 + i / 100 && p[0] < -0.19 + i / 100).map(p => -p[2]); fuera.push(e.length ? Math.max(...e) : NaN); }
+  const relleno = fuera.map((v, i) => Number.isNaN(v) ? fuera.find((w, j) => j > i && !Number.isNaN(w)) ?? fuera.findLast(w => !Number.isNaN(w)) : v);
+  const resto = relleno.map((v, i) => { const t = relleno.slice(Math.max(0, i - 8), i + 9); return v - t.reduce((a, b) => a + b, 0) / t.length; });
+  let lomos = 0, sube = 0;
+  for (let i = 1; i < 39; i++) if (resto[i] > resto[i - 1] && resto[i] >= resto[i + 1] && resto[i] > 0.004) lomos++;
+  for (let i = 0; i < 40; i++) for (let j = i; j < Math.min(40, i + 10); j++) sube = Math.max(sube, Math.abs(resto[j] - resto[i]));
+  // (desde taller-v20) la sombra de los pliegues pintada en la tela, que es lo que los dibuja de espalda y en sombra (en el
+  // juego, solo con la luz del cielo, la capa salía casi negra y lisa): en la mitad de abajo, por el centro de la tela,
+  // el fondo de los pliegues a lo sumo al 70 % de la luz de los lomos, en sRGB (en la taller-v19, al 80 %)
+  const tex = m.getMesh().listPrimitives()[0].getMaterial()?.getBaseColorTexture();
+  if (tex) {
+    const { data, info } = await sharp(Buffer.from(tex.getImage())).raw().toBuffer({ resolveWithObject: true });
+    const col = [];
+    for (let x = Math.floor(info.width * 0.25); x < info.width * 0.75; x += 4) {
+      let suma = 0, n = 0;
+      for (let y = Math.floor(info.height * 0.6); y < info.height * 0.9; y += 4) { const k = (y * info.width + x) * info.channels; suma += data[k] + data[k + 1] + data[k + 2]; n++; }
+      col.push(suma / n);
+    }
+    const proporcion = Math.min(...col) / Math.max(...col);
+    comprobar(`${sexo}: la sombra de los pliegues, pintada en la tela (fondo a lo sumo al 70 % del lomo)`, proporcion <= 0.70, `${Math.round(proporcion * 100)} %`);
+  } else comprobar(`${sexo}: la capa lleva su textura`, false);
+  comprobar(`${sexo}: pliegues de la espalda anchos y marcados (9 cm o más de lomo a valle, como mucho 3 lomos en 40 cm)`, sube >= 0.09 && lomos >= 1 && lomos <= 3, `${lomos} lomos, ${cm(sube)} de lomo a valle`);
 }
 console.log(`Capa: ${ok} bien, ${mal} mal`);
 process.exit(mal ? 1 : 0);

@@ -47,7 +47,15 @@ que abra la demo entra en este mundo y puede construir.
 - **Entrar en la máquina:** en la consola de Hetzner, el botón de consola del servidor (se abre en el navegador),
   o desde un ordenador `ssh root@65.21.10.20`. Lo que hizo la instalación está en `/var/log/kinhold-instalar.log`.
 - **Ver el servidor del juego:** `systemctl status kinhold` y `journalctl -u kinhold -f` (quién entra y sale).
-- **Poner la última versión del juego** (cuando se publique una nueva): `bash /opt/kinhold/servidor/nube/actualizar.sh`.
+- **Al día solo** (desde el 31 oct, lo pidió valravnx): cada 5 minutos el servidor mira si en main hay una versión
+  nueva de la demo y, si la hay, se pone al día él solo (`auto_actualizar.sh`, que lanza `actualizar.sh`). Con lo
+  demás que se sube (el diario, la web) no hace nada, para no reiniciarse sin necesidad. Al ponerse al día, los que
+  estén jugando se desconectan unos segundos y el juego vuelve a conectar solo. Lo que ha hecho:
+  `journalctl -u kinhold-actualizar`. Para pararlo: `systemctl disable --now kinhold-actualizar.timer`.
+  **Para encenderlo en el servidor que ya está en marcha (una vez):** en la consola de Hetzner, como root,
+  `bash /opt/kinhold/servidor/nube/actualizar.sh`; esa actualización deja puesto el temporizador. Las máquinas nuevas
+  lo traen de serie.
+- **Poner la última versión del juego a mano** (ya no hace falta, pero vale): `bash /opt/kinhold/servidor/nube/actualizar.sh`.
   No borra el mundo.
 - **Con un dominio propio** (si algún día compras uno): apúntalo a la IP y lanza
   `KINHOLD_DOMINIO=juego.tudominio.com bash /opt/kinhold/servidor/nube/instalar.sh`.
@@ -59,7 +67,10 @@ que abra la demo entra en este mundo y puede construir.
 - `instalar.sh` — instala Node.js 22, Caddy, el juego en `/opt/kinhold`, el servicio `kinhold` (arranca solo y
   vuelve a arrancar si se cae) y el cortafuegos (solo SSH, HTTP y HTTPS; el puerto del juego no se ve desde fuera).
   Repetirlo no hace daño.
-- `actualizar.sh` — trae lo último de main y reinicia el servidor.
+- `actualizar.sh` — trae lo último de main y reinicia el servidor (y deja puesto el temporizador de abajo).
+- `auto_actualizar.sh`, `kinhold-actualizar.service.plantilla` y `kinhold-actualizar.timer` — el servidor al día solo
+  con cada versión nueva de la demo. Su prueba: `node pruebas/prueba_auto_actualizar.mjs` (un repositorio de mentira
+  y una copia corta como la del servidor).
 - `Caddyfile.plantilla` y `kinhold.service.plantilla` — lo que rellena `instalar.sh`. Caddy pone el HTTPS (la web
   pública va por HTTPS y solo puede conectar con `wss://`), pasa el WebSocket al juego y manda a quien abre la
   dirección a la demo con `?servidor=wss://…`.

@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v63 (lo que llevas, por el servidor)';
+export const VERSION_DEMO = 'Demo única · v64 (capa de espalda)';
 export const REGISTRO_DEMO = [
+  'v64: en «Personaje» y en el juego, la capa de espalda ya no sale casi negra y lisa: lana sin teñir más clara y pliegues redondos y hondos que se ven también en sombra. Personajes en recursos/personajes/taller-v20/.',
   "v63: en «Jugar», lo que llevas es lo que tiene el servidor, no el navegador: el panel de inventario, soltar y coger del suelo, talar, tronzar y partir, y recoger ramas, piedras y lo demás pasan por el servidor con tu autor. Lo que sueltas, lo que deja un árbol y los tocones los ven todos, y siguen ahí al recargar o al volver otro día. Un árbol que tala otro se ve caer.",
   "v63, provisional: el servidor aún no genera el mundo, así que se fía del árbol o del punto de recogida que dice tu navegador si estás a su lado (su nombre tiene que cuadrar con su sitio); el arcón de pruebas del inventario sigue en línea mientras el servidor sea el de pruebas (sin él nadie tendría un hacha), y cada cosa que sale o entra queda anotada con su autor. Entre golpe y golpe de hacha, el servidor pide medio segundo (la red puede juntar dos). La ropa elegida en «Personaje» entra en lo que llevas en el servidor una vez por cada jugador.",
   "v63, aún mal: lo que se entrega a las obras en línea sigue saliendo del montón común, no de lo que llevas (va en la tarea siguiente); y quien lleva el servidor tiene que actualizarlo: un servidor anterior no conoce nada de esto y el juego avisa de que es antiguo.",
