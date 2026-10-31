@@ -1202,6 +1202,12 @@
      "inicio": "2026-10-31T10:50:46+01:00",
      "rama": "trabajo/20261031-1052-roadmap-isla",
      "fin": "2026-10-31T10:51:57+01:00"
+    },
+    {
+     "nombre": "Sin cortados rectos de kilómetros (valravnx, 31 oct): los valles de los ríos dejaban paredes lisas y rectas de cientos de metros, kilómetros de largo, donde el río va muy por debajo del terreno de alrededor; las paredes del valle salen ahora con relieve, con el borde redondeado y sin línea recta, y una prueba lo mira en toda la isla",
+     "estado": "en_curso",
+     "inicio": "2026-10-31T11:26:08+00:00",
+     "rama": "trabajo/20261031-1125-cortados"
     }
    ],
    "lleva": "chat",

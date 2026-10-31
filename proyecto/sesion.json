@@ -34,5 +34,11 @@
   "tarea": "Arreglar las pruebas en la gráfica del PC de valravnx (valravnx, 31 oct): fallaban todas al empezar («bash: command not found»)",
   "hito": "infra",
   "rama": "trabajo/20261031-1109-grafica"
+ },
+ "chat:trabajo/20261031-1125-cortados": {
+  "inicio": "2026-10-31T11:26:08+00:00",
+  "tarea": "Sin cortados rectos de kilómetros (valravnx, 31 oct): los valles de los ríos dejaban paredes lisas y rectas de cientos de metros, kilómetros de largo, donde el río va muy por debajo del terreno de alrededor; las paredes del valle salen ahora con relieve, con el borde redondeado y sin línea recta, y una prueba lo mira en toda la isla",
+  "hito": "mundo",
+  "rama": "trabajo/20261031-1125-cortados"
  }
 }

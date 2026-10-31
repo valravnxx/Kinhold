@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (11:25 UTC) — por el chat: los cortados rectos de kilómetros
+valravnx (con captura): «el mapa me ha generado en un punto de la isla que no conozco una separación de alturas anormal recta que ocupa kilómetros [...] esto no puede pasar en NINGÚN LUGAR DEL MUNDO». → Tarea del chat en «Mundo»: buscar en toda la isla de dónde salen y arreglarlo en el generador del paisaje para que no salga en ningún sitio, con una prueba que lo mire en toda la isla.
+
 ### 31 oct 2026 (11:18 UTC) — por el chat: ya hay servidor de verdad
 valravnx: «ya hay servidor de verdad, elimina lo de que dije que no, ya se juega en línea». → Fuera la excepción del 30 oct: si fallan «jugar en línea» o «duelo en línea», no se publica, como con cualquier otro grupo. Cambiado en CLAUDE.md.
 
