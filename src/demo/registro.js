@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v65 (las obras cobran de lo que llevas en línea)';
+export const VERSION_DEMO = 'Demo única · v66 (volver donde lo dejaste)';
 export const REGISTRO_DEMO = [
+  "v66: volver donde lo dejaste (valravnx, 31 oct): el navegador recuerda quién eres aunque cierres la pestaña, y al volver a entrar apareces donde estabas al salir; el servidor lo apunta al salir y cada pocos segundos. Dos pestañas del mismo navegador son el mismo jugador: la nueva deja fuera a la de antes. Un wipe del servidor lo borra y se vuelve a empezar en la salida.",
+  "v66, provisional: lo que pasa en el «Duelo» no cuenta como sitio del mundo: al volver a «Jugar» se sale donde se estaba antes del duelo.",
   'v65: en «Jugar», las obras cobran de lo que llevas, como en solitario. Lo que entregas a una obra (y la pieza que subes a una obra en alto) sale de lo que llevas en el servidor, y el arcón de materiales de obra del inventario va por el servidor: lo que se coge y se deja en él lo ven igual todos. Si no llevas el material, Usar (F) dice qué le falta a la obra.',
   'v64: en «Personaje» y en el juego, la capa de espalda ya no sale casi negra y lisa: lana sin teñir más clara y pliegues redondos y hondos que se ven también en sombra. Personajes en recursos/personajes/taller-v20/.',
   "v63: en «Jugar», lo que llevas es lo que tiene el servidor, no el navegador: el panel de inventario, soltar y coger del suelo, talar, tronzar y partir, y recoger ramas, piedras y lo demás pasan por el servidor con tu autor. Lo que sueltas, lo que deja un árbol y los tocones los ven todos, y siguen ahí al recargar o al volver otro día. Un árbol que tala otro se ve caer.",
