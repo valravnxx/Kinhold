@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-10-31T02:24:31+00:00",
-  "tarea": "El juego en línea usa lo que llevas y el suelo del servidor: el panel de inventario, soltar y coger del suelo y lo que se entrega a las obras pasan por el servidor, y talar y trocear también, con lo que dejan en el suelo, para que nada de lo que llevas salga solo del navegador. Mientras el servidor no conozca el mundo, se fía del árbol que dice el navegador si estás a su lado (decisión provisional)",
-  "hito": "equipo",
-  "rama": "trabajo/20261031-0224"
+  "inicio": "2026-10-31T05:36:55+00:00",
+  "tarea": "Estaciones y recetas en la lógica pura, con los datos del documento de sistemas (apartados 7 y 8) de las primeras estaciones: hoguera y piedra de tallar (N0) y banco de trabajo de tronco (entrada a N1); cada receta con lo que gasta, lo que da, dónde se hace y su tiempo. Fabricar con autor, gastando lo que llevas encima y lo de los arcones a pocos pasos, con una cola pequeña por estación y el tiempo contado por tiempo transcurrido. Pruebas de lógica",
+  "hito": "crafting",
+  "rama": "trabajo/20261031-0536"
  },
  "B": {
   "inicio": "2026-10-31T03:53:07+00:00",
@@ -11,10 +11,10 @@
   "hito": "arte",
   "rama": "trabajo/20261031-0353"
  },
- "chat:trabajo/20261030-1415-rios": {
-  "inicio": "2026-10-30T14:15:36+01:00",
-  "tarea": "Ríos que se adaptan al terreno (valravnx, 30 oct): desde los saltos de agua, muchos ríos quedan nivelados y, al cruzar un valle, van elevados como un puente por encima del terreno; el río tiene que seguir el terreno y no levantarlo",
-  "hito": "mundo",
-  "rama": "trabajo/20261030-1415-rios"
+ "chat:trabajo/20261031-0500-volver": {
+  "inicio": "2026-10-31T05:00:43+00:00",
+  "tarea": "Volver donde lo dejaste (valravnx, 31 oct): el navegador recuerda quién eres aunque cierres la pestaña, y el servidor guarda dónde estaba cada jugador al salir y lo pone ahí al volver a entrar (un wipe lo borra)",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261031-0500-volver"
  }
 }

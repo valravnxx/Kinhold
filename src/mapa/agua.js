@@ -16,6 +16,14 @@
 import * as THREE from 'three';
 
 export const tiempoAgua = { value: 0 };
+// La altura del oleaje del mar (m) en un punto de la escena (x, z) y en el tiempo t (s): las mismas tres olas de
+// Gerstner del sombreador (solo lo que suben y bajan), para que lo que flota o nada vaya con ellas
+const OLAS = [[1, 0.25, 22, 0.32], [0.7, -0.7, 11, 0.14], [0.2, 1, 6.5, 0.06]].map(([x, z, largo, alto]) => { const l = Math.hypot(x, z); return { dx: x / l, dz: z / l, k: 2 * Math.PI / largo, alto }; });
+export function alturaOla(x, z, t = tiempoAgua.value) {
+  let y = 0;
+  for (const o of OLAS) { const c = Math.sqrt(9.8 / o.k); y += o.alto * Math.sin(o.k * (o.dx * x + o.dz * z - c * t)); }
+  return y;
+}
 const LEJOS = new THREE.Vector4(1e9, 1e9, -1e9, -1e9);
 
 // hueco: un rectángulo (x0, z0, x1, z1) de la escena donde este agua no se dibuja (el de lejos, bajo el trozo de cerca)

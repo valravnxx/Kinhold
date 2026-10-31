@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (05:00 UTC) — por el chat: volver donde lo dejaste
+valravnx: «cuando salgo del juego y vuelvo a entrar, no aparezco donde desconecté». El chat le explicó las dos causas (la ficha que le reconoce vive en la pestaña, y en línea todos aparecen en la salida común porque el servidor no guarda la posición). valravnx: «haz las dos». → Tarea del chat en «El juego en el mundo de verdad»: la ficha dura aunque se cierre la pestaña, y el servidor guarda dónde estaba cada uno y le pone ahí al volver.
+
 ### 30 oct 2026 (20:40 UTC) — por el chat (carril B): ya está lo del online; construir a la altura del suelo
 valravnx: «avisa que ya está lo del online, haz lo que estabas haciendo de pasar todo al modo online, y que las ramas de trabajo se adapten a ello y muevan en su dirección». Y que «los objetos que se coloquen se coloquen a la altura del suelo, no de la línea de altura 0, y que los suelos de base que coloques alisen el suelo de abajo para construir; por ahora no lo hace y quedan cosas flotantes o hundidas en el suelo; debe ser relativamente prioritario, aunque es muy relacionado con el cavar, al modificar malla del mundo». → Aviso en CLAUDE.md (lo leen todas las sesiones al empezar). El chat hace ya «Siempre en línea» (rama trabajo/20261030-2040-enlinea). La tarea «Construir en el mundo» se reescribe con lo pedido y sube justo detrás, antes del panel de depuración.
 

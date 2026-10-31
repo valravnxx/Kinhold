@@ -12,6 +12,7 @@ import { SALIDA, ISLA, dentroDeIsla, alturaMundo } from '../logica/whitholm.js';
 import { crearGestor, ANILLOS, LADO as LADO_TROZO, claveTrozo } from '../logica/trozos.js';
 import { crearTerrenoTrozos } from './terreno_trozos.js';
 import { materialSuelo } from '../mapa/suelo.js';
+import { crearAguaMundo } from './agua_mundo.js';
 import { nivelar as conMarcas } from '../logica/nivelado.js';
 
 const movil = typeof innerWidth !== 'undefined' && Math.min(innerWidth, innerHeight) < 700;
@@ -34,14 +35,18 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
   const terreno = crearTerrenoTrozos({ grupo, material: materialSuelo(), mapa, paisaje, origen: O, gestor, hilos: nh,
     verticesPorFotograma: movil ? 12000 : 20000, msPorFotograma: movil ? 2 : 3 });
 
-  // el mar: una lámina a la altura 0 del mundo, del tamaño de la isla y algo más (de momento lisa; el agua de verdad,
-  // con su oleaje y los ríos, llega en otra tarea)
+  // el mar de lejos: una lámina lisa a la altura 0 del mundo, del tamaño de la isla y algo más, un poco por debajo del
+  // agua de cerca (src/mundo/agua_mundo.js: ríos y mar con su corriente y su oleaje alrededor del jugador)
   const ancho = ISLA.x1 - ISLA.x0 + 6000, largo = ISLA.z1 - ISLA.z0 + 6000;
   const mar = new THREE.Mesh(new THREE.PlaneGeometry(ancho, largo).rotateX(-Math.PI / 2),
     new THREE.MeshLambertMaterial({ color: 0x4a6470 }));
   mar.name = 'mar';
-  mar.position.set((ISLA.x0 + ISLA.x1) / 2 - O.x, -y0 + 0.05, (ISLA.z0 + ISLA.z1) / 2 - O.z);
+  mar.position.set((ISLA.x0 + ISLA.x1) / 2 - O.x, -y0 - 0.8, (ISLA.z0 + ISLA.z1) / 2 - O.z);   // (por debajo de los senos de las olas de cerca, que bajan hasta medio metro)
   mar.receiveShadow = true;
+  // se dibuja antes que el agua de cerca y sin escribir la hondura: con la lámina tan grande, la hondura no da para
+  // separarla 0,8 m del agua de cerca y asomaba en manchas lisas entre las olas (en la nube, mar adentro, 31 oct).
+  // El fondo del mar sí lo tapa (va después de lo opaco y se compara con su hondura)
+  mar.material.transparent = true; mar.material.depthWrite = false; mar.renderOrder = -1;
   escena.add(mar);
 
   // la altura del suelo en la escena: la de la malla del trozo que se ve; si aún no ha llegado, la exacta
@@ -66,11 +71,29 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
   const tramos = paisaje.riosEn(O.x - 400, O.z - 400, O.x + 400, O.z + 400);
   const seco = (x, z) => sobreMar(x, z) > 1 && paisaje.agua(x + O.x, z + O.z, tramos) === null;
 
-  // ¿se puede andar de (x0, z0) a (x1, z1)? Dentro de la isla, sin meterse en el mar y sin subir cuestas de más de
-  // PENDIENTE_ANDAR (las paredes de los cortados). Bajar sí se puede (se resbala, como en el mapa).
+  const agua = crearAguaMundo({ grupo, paisaje, origen: O, altW: (x, z) => altW(x, z) });   // (con el suelo nivelado de ahora)
+  // los ríos de alrededor del jugador (se rehacen al alejarse 300 m)
+  let rios = null;
+  function riosCerca(x, z) {
+    const xm = x + O.x, zm = z + O.z;
+    if (!rios || Math.hypot(xm - rios.x, zm - rios.z) > 300) rios = { x: xm, z: zm, tramos: paisaje.riosEn(xm - 900, zm - 900, xm + 900, zm + 900) };
+    return rios.tramos;
+  }
+  // el agua donde estás (valravnx, 30 oct): lo hondo (m; null en seco), la altura de su superficie en la escena y la
+  // corriente (m/s), del río o del mar
+  function aguaEn(x, z) {
+    const xm = x + O.x, zm = z + O.z, tr = riosCerca(x, z), suelo = altura(x, z) + y0;
+    const w = paisaje.agua(xm, zm, tr);
+    if (w !== null && w > suelo) { const c = paisaje.corriente(xm, zm, tr); return { hondo: w - suelo, superficie: w - y0, dx: c.dx * c.vel, dz: c.dy * c.vel }; }
+    if (suelo < 0) return { hondo: -suelo, superficie: -y0, dx: 0, dz: 0, mar: true };
+    return null;
+  }
+
+  // ¿se puede andar de (x0, z0) a (x1, z1)? Dentro de la isla y sin subir cuestas de más de PENDIENTE_ANDAR (las
+  // paredes de los cortados). Bajar sí se puede (se resbala, como en el mapa). Al agua se entra (y se nada: ver
+  // src/logica/nado.js); desde el agua se sale por donde se hace pie.
   function andable(x0, z0, x1, z1) {
     if (!dentroDeIsla(x1 + O.x, z1 + O.z)) return false;
-    if (sobreMar(x1, z1) < ORILLA) return false;
     const d = Math.hypot(x1 - x0, z1 - z0);
     if (d < 1e-6) return true;
     const sube = altura(x1, z1) - altura(x0, z0);
@@ -81,6 +104,7 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
   let listo = false;
   function paso(x, z, opc) {
     const ms = terreno.actualizar(x + O.x, z + O.z, opc);
+    agua.paso(x, z);
     // listo cuando los trozos de los 3 × 3 de alrededor tienen su malla
     const i = Math.floor((x + O.x) / LADO_TROZO), j = Math.floor((z + O.z) / LADO_TROZO);
     let ok = true;
@@ -89,6 +113,7 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
     return ms;
   }
 
-  return { altura, sobreMar, seco, andable, paso, nivelar, terreno, paisaje, grupo, mar, y0,
+  const dentro = (x, z) => dentroDeIsla(x + O.x, z + O.z);
+  return { altura, sobreMar, seco, andable, dentro, aguaEn, agua, paso, nivelar, terreno, paisaje, grupo, mar, y0,
     get listo() { return listo; }, salida: O, isla: ISLA };
 }

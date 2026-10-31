@@ -124,6 +124,22 @@ for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
     }
     comprobar(`${n}: en el cauce, cada salto baja de golpe (en 10 m, más de la mitad de su alto)`, escalonBien >= muestra.length * 0.9, `${escalonBien} de ${muestra.length}`);
     comprobar(`${n}: el agua del río cubre el lecho y queda bajo la orilla`, aguaBien / aguaN > 0.97, `${aguaBien} de ${aguaN}`);
+    // ríos que se adaptan al terreno (valravnx, 30 oct): en los tramos de valle (menos del 2 % de pendiente), el agua
+    // no queda por encima de lo más bajo de los dos lados (hasta 250 m): nada de ríos en terraplén. MUTAR: el agua, 5 m más alta
+    if (semilla === 66172) {
+      let vegaN = 0, enAlto = 0;
+      for (const r of pai.rios) for (let k = 0; k < r.length - 1; k += 2) {
+        const a = r[k], b = r[k + 1], ax = a.p[0] * 1000, ay = a.p[1] * 1000, bx = b.p[0] * 1000, by = b.p[1] * 1000;
+        if (ax < 160000 || ax > 221000 || ay < 21000 || ay > 84000) continue;      // Whitholm
+        const L = Math.hypot(bx - ax, by - ay) || 1, nx = -(by - ay) / L, ny = (bx - ax) / L;
+        if ((a.h - b.h) / L > 0.02) continue;
+        const x = (ax + bx) / 2, y = (ay + by) / 2, tr = pai.riosEn(x - 800, y - 800, x + 800, y + 800);
+        const w = pai.agua(x, y, tr); if (w === null) continue; vegaN++;
+        const lo = [1, -1].map(sg => { let v = Infinity; for (let d = 30; d <= 250; d += 20) v = Math.min(v, pai.altura(x + nx * d * sg, y + ny * d * sg, tr)); return v; });
+        if (w + (MUTAR ? 5 : 0) - Math.max(...lo) > 1) enAlto++;
+      }
+      comprobar(`${n}: los ríos siguen el terreno: en el valle, el agua nunca va en alto sobre los dos lados (Whitholm, menos del 1 %)`, vegaN > 300 && enAlto <= vegaN * 0.01, `${enAlto} de ${vegaN} puntos de valle en terraplén`);
+    }
   }
 }
 // la regla del ancho de los ríos (los gruesos del GDD)

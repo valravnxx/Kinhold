@@ -4,7 +4,8 @@
 # Comprueba, en PC y móvil: que se genera el mundo y aparece el terreno por trozos (sin el llano), que se sale en el sitio
 # de salida (en la isla, en tierra y no en un pico), que el personaje pisa el suelo, que andando
 # 200 m el terreno llega a tiempo (el trabajo del terreno en cada fotograma, medido) y el personaje sigue el suelo, y
-# que no se puede entrar en el mar ni salir de la isla. Y la salida al azar (valravnx, 30 oct): un jugador nuevo sale en
+# que no se puede salir de la isla. Y el agua y el nado (valravnx, 30 oct): al mar se entra y se nada (el agua se ve,
+# con su lámina de cerca), con el anillo del aguante, y sin aguante te ahogas y vuelves a tu sitio de salida. Y la salida al azar (valravnx, 30 oct): un jugador nuevo sale en
 # uno de los sitios de la lista (src/logica/whitholm.js), al recargar vuelve al mismo, y quien ya tenía algo guardado de
 # antes sigue en el sitio común (donde está lo que construyó).
 # Y lo que crece (src/mundo/vegetacion_mundo.js): árboles de las especies de su sitio, hierba, flores, matas y piedras,
@@ -13,6 +14,7 @@
 # piedras alrededor de donde está (sin que un fotograma tarde más de 60 ms, con el suelo), lo de lejos se suelta, y un
 # árbol talado sigue talado (con su tocón) al irse lejos y volver.
 # MUTAR=1 abre la demo con ?llano=1 (el llano de antes): la prueba tiene que fallar.
+# MUTAR_NADO=1: no se le quita el aguante al nadar (no se ahoga): tiene que fallar.
 # MUTAR=2: lo que crece, con otra semilla en cada carga: tiene que fallar (no sale en el mismo sitio al recargar).
 # MUTAR=3: lo que crece se hace todo en un fotograma al andar (no poco a poco): tiene que fallar.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver
@@ -183,10 +185,10 @@ with sync_playwright() as p:
             antes = null; }}
           return null; }})()""")
         print('  costa:', json.dumps(c))
-        comprobar('no se puede entrar en el mar', c is not None and c['entra'] is False, json.dumps(c))
+        comprobar('al mar se puede entrar (a nado)', c is not None and c['entra'] is True, json.dumps(c))
         comprobar('no se puede salir de la isla', c is not None and c['fuera'] is False)
         if c:
-            # llevar al personaje a la orilla y andar hacia el mar con la tecla: se queda en tierra
+            # llevar al personaje a la orilla y andar hacia el mar con la tecla: entra en el agua y nada
             # tierra adentro, donde el suelo ya está a 1 m sobre el mar
             pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}, l = Math.hypot(mx - tx, mz - tz) || 1; let d = 2;
               while (d < 400 && k.mundoJ.sobreMar(tx - (mx - tx) / l * d, tz - (mz - tz) / l * d) < 1) d += 2;
@@ -199,13 +201,53 @@ with sync_playwright() as p:
             for _ in range(6):
                 pg.keyboard.down('w'); pg.wait_for_timeout(2500); pg.keyboard.up('w')
             pg.wait_for_timeout(300)
-            e = pg.evaluate(f"(() => {{ const k = {K}; return {{ sobreMar: k.mundoJ.sobreMar(k.pj.x, k.pj.z), x: k.pj.x, z: k.pj.z }}; }})()")
+            e = pg.evaluate(f"(() => {{ const k = {K}, a = k.mundoJ.aguaEn(k.pj.x, k.pj.z); return {{ sobreMar: k.mundoJ.sobreMar(k.pj.x, k.pj.z), x: k.pj.x, z: k.pj.z, y: k.pj.y, modo: k.nado.modo, superficie: a && a.superficie, aguante: k.nado.e.aguante, anillo: !document.getElementById('aguante')?.hidden, lamina: !!k.mundoJ.agua.malla }}; }})()")
             e['andado'] = ((e['x'] - a0[0]) ** 2 + (e['z'] - a0[1]) ** 2) ** 0.5
-            comprobar('andando hacia el mar, avanza y no se mete en el agua', e['andado'] > 0.5 and e['sobreMar'] >= 0.1, json.dumps(e))
+            comprobar('andando hacia el mar, avanza (ya no le para la orilla)', e['andado'] > 0.5, json.dumps(e))
+            # mar adentro (donde cubre más de 4 m): nada con la cabeza fuera, el aguante baja y se ve su anillo
+            # (en esta máquina sin tarjeta gráfica el juego va a pocos fotogramas: andando no se llega; se le lleva)
+            # (primero mar adentro en línea recta; si por ahí es una ría o una bahía somera, en otros rumbos desde la orilla:
+            # la salida es al azar y la costa que se encuentra cambia de una vez a otra)
+            hondo = pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}, a0 = Math.atan2(mz - tz, mx - tx);
+              const hondo = (x, z) => k.mundoJ.dentro(x, z) && k.mundoJ.sobreMar(x, z) < -4;
+              for (let r = 0; r < 16; r++) {{ const a = a0 + (r % 2 ? 1 : -1) * Math.ceil(r / 2) * Math.PI / 8, ux = Math.cos(a), uz = Math.sin(a);
+                for (let d = 0; d < 4000; d += 4) {{
+                  const x = mx + ux * d, z = mz + uz * d;
+                  if (!k.mundoJ.dentro(x, z)) break;
+                  if (hondo(x, z) && hondo(x + ux * 15, z + uz * 15) && hondo(x + ux * 30, z + uz * 30)) {{ k.pj.x = x + ux * 15; k.pj.z = z + uz * 15; return [k.pj.x, k.pj.z, r]; }}
+                }}
+              }}
+              // si esa «costa» era una ría o una laguna somera, el mar hondo más cercano, por anillos alrededor del jugador
+              const px = k.pj.x, pz = k.pj.z;
+              for (let R = 200; R < 40000; R += 200) {{ const n = Math.ceil(2 * Math.PI * R / 200);
+                for (let i = 0; i < n; i++) {{ const a = i / n * 2 * Math.PI, x = px + Math.cos(a) * R, z = pz + Math.sin(a) * R;
+                  if (hondo(x, z) && hondo(x + 15, z) && hondo(x - 15, z) && hondo(x, z + 15) && hondo(x, z - 15)) {{ k.pj.x = x; k.pj.z = z; return [x, z, 'anillo ' + R]; }}
+                }}
+              }}
+              return null; }}""", c['tierra'] + c['mar'])
+            print('  mar hondo:', hondo)
+            try: pg.wait_for_function(f'{K}.mundoListo && {K}.mundoJ.agua.cerca({K}.pj.x, {K}.pj.z)', timeout=300000)
+            except Exception: pass
+            pg.keyboard.down('w'); pg.wait_for_timeout(3000); pg.keyboard.up('w'); pg.wait_for_timeout(500)
+            e = pg.evaluate(f"(() => {{ const k = {K}, a = k.mundoJ.aguaEn(k.pj.x, k.pj.z); return {{ sobreMar: k.mundoJ.sobreMar(k.pj.x, k.pj.z), x: k.pj.x, z: k.pj.z, y: k.pj.y, modo: k.nado.modo, superficie: a && a.superficie, aguante: k.nado.e.aguante, anillo: !document.getElementById('aguante')?.hidden, lamina: k.mundoJ.agua.cerca(k.pj.x, k.pj.z) }}; }})()")
+            comprobar('mar adentro nada, con la cabeza fuera (el pecho a ras del agua, con las olas)', e['modo'] == 'nadar' and e['superficie'] is not None and abs(e['y'] - (e['superficie'] - 1.25)) < 0.65, json.dumps(e))
+            comprobar('nadando, el aguante baja y se ve su anillo', e['aguante'] < 1 and e['anillo'], json.dumps(e))
+            comprobar('el agua de cerca se dibuja (la lámina de ríos y mar)', e['lamina'])
             # la captura, con la cámara del lado del mar (por detrás, tierra adentro, la tapa la costa y se acerca mucho)
             pg.evaluate(f"""([tx, tz, mx, mz]) => {{ const k = {K}; k.cam.yaw = Math.atan2(mx - tx, mz - tz) + 0.5; k.cam.pitch = 0.4; k.cam.dist = 16; }}""", c['tierra'] + c['mar'])
             pg.wait_for_timeout(1500)
             pg.screenshot(path=f'{SALIDA}/{nombre}_costa.png')
+            pg.evaluate(f"(() => {{ const k = {K}; k.cam.pitch = 0.18; k.cam.dist = 7; }})()"); pg.wait_for_timeout(1200)
+            pg.screenshot(path=f'{SALIDA}/{nombre}_nadando.png')
+            # sin aguante, nadando, te ahogas: a los pocos segundos vuelves a tu sitio de salida
+            # (se le deja casi ahogado: lo que se tarda en ahogarse ya lo mide la prueba de lógica, y aquí, a menos de 1
+            # fotograma por segundo, 8 s de juego son muchos minutos)
+            if not os.environ.get('MUTAR_NADO'): pg.evaluate(f"Object.assign({K}.nado.e, {{ aguante: 0, ahogo: 0.9 }})")
+            # (8 s de juego sin aguante; a los pocos fotogramas por segundo de esta máquina, bastante más de reloj)
+            try: pg.wait_for_function(f'{K}.nado.muertes > 0', timeout=300000)
+            except Exception: pass
+            ah = pg.evaluate(f"(() => {{ const k = {K}; return {{ muertes: k.nado.muertes, x: k.pj.x, z: k.pj.z, aviso: document.getElementById('aviso').textContent }}; }})()")
+            comprobar('sin aguante te ahogas y vuelves a tu sitio de salida', ah['muertes'] >= 1 and abs(ah['x']) < 5 and abs(ah['z'] - 4) < 5, json.dumps(ah))
         if not movil:
             # al recargar, el mismo sitio; con algo guardado de antes de la salida al azar, el sitio común
             def salida_tras_recargar():
