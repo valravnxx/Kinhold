@@ -119,6 +119,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
     ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(fondo, ox, oy, aw, ah);
     const t = s / datos.pxKm;   // cuántos px de pantalla por px del fondo
+    pliego = [ox, oy, ox + aw, oy + ah];
     lineas(s); rios(s); montes(s); arboles(s, t); ciudad(s); nombres(s); marco(ox, oy, aw, ah, s); jugador(s);
   }
   // un tamaño en km, pasado a px, con un mínimo para que de lejos se siga viendo
@@ -129,6 +130,8 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
   function lineas(s) {
     const z = Math.sqrt(s / vista.base);
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.lineWidth = Math.min(1.6, 0.8 * z);
+    for (const { fuerza, l } of datos.agua) { ctx.strokeStyle = `rgba(56,80,90,${fuerza})`; trazo(l); }
     ctx.strokeStyle = 'rgba(122,40,28,.9)'; ctx.lineWidth = Math.min(2.6, 1.1 * z); ctx.setLineDash([5 * z, 3.5 * z]);
     for (const l of datos.fronteras) trazo(l);
     ctx.setLineDash([]);
@@ -201,9 +204,15 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
     ctx.restore();
     etiqueta(tr('Ciudad del rey'), cx, cy + Math.max(12, r * 0.75), Math.max(12, Math.min(19, r * 0.9)), 'italic 700', ROJO);
   }
+  // un texto con su halo de papel; nunca se sale del pliego (si no cabe donde va, se corre hacia dentro)
+  let pliego = null;
   function etiqueta(texto, x, y, px, peso, color, espacio = 0) {
     ctx.font = `${peso} ${px}px ${LETRA}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     if ('letterSpacing' in ctx) ctx.letterSpacing = `${espacio}px`;
+    if (pliego) {
+      const m = ctx.measureText(texto).width / 2 + 4, a = pliego[0] + 12 + m, b = pliego[2] - 12 - m;
+      x = a > b ? (pliego[0] + pliego[2]) / 2 : Math.max(a, Math.min(b, x));
+    }
     ctx.lineJoin = 'round'; ctx.lineWidth = Math.max(3, px / 3.2); ctx.strokeStyle = 'rgba(236,222,186,.9)'; ctx.strokeText(texto, x, y);
     ctx.fillStyle = color; ctx.fillText(texto, x, y);
     if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';

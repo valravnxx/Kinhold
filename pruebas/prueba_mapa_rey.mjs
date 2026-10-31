@@ -22,10 +22,12 @@ const mapa = generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO });
 const pai = crearPaisaje(mapa), C = crearComarcas(mapa);
 const g = pintarMapaRey(pai, C, { filas: 4 });
 let r, t0 = performance.now(); const pasos = [];
-do { const a = performance.now(); r = g.next(); pasos.push(performance.now() - a); } while (!r.done);
+let sinAvance = 0;
+do { const a = performance.now(); r = g.next(); pasos.push(performance.now() - a); if (!r.done && !(r.value && r.value.avance >= 0 && r.value.avance <= 1)) sinAvance++; } while (!r.done);
 const resto = pasos.slice(1).sort((a, b) => a - b), max = resto[resto.length - 1], p99 = resto[Math.floor(resto.length * 0.99)];
 const d = r.value;
 console.log(`  (${d.ancho} × ${d.alto} px, ${Math.round(performance.now() - t0)} ms en total, ${d.rios.length} ríos, ${d.montes.length} montes, ${d.arboles.length} árboles)`);
+comprobar('cada paso dice cuánto lleva (lo usa la página)', sinAvance === 0, `${sinAvance} pasos sin avance`);
 comprobar('se pinta a pasos cortos (el 99 % en menos de 25 ms, ninguno de más de 80)', p99 <= 25 && max <= 80, `${pasos.length} pasos; 99 %: ${p99.toFixed(1)} ms; el más largo: ${max.toFixed(1)} ms`);
 if (MUTAR === '1') d.etiquetas.forEach(e => { e.k = (e.k + 1) % 8; });
 

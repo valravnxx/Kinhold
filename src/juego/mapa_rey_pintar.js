@@ -41,7 +41,7 @@ export function* contornos(W, H, v, nivel, vale, caja = null) {
   const segs = [], porLado = new Map();
   const [X0, Y0, X1, Y1] = caja ? [Math.max(0, caja[0] - 1), Math.max(0, caja[1] - 1), Math.min(W - 1, caja[2] + 1), Math.min(H - 1, caja[3] + 1)] : [0, 0, W - 1, H - 1];
   for (let y = Y0; y < Y1; y++) {
-    if ((y - Y0) % 24 === 23) yield null;
+    if ((y - Y0) % 24 === 23) yield { avance: 0.965 };
     let a = v(X0, y), d = v(X0, y + 1);
     for (let x = X0; x < X1; x++) {
       const b = v(x + 1, y), c = v(x + 1, y + 1);
@@ -164,10 +164,6 @@ export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } =
       if (!tierra[i]) {
         const d = dMar[i];
         col = mezclar(col, MAR, 0.42 + 0.2 * clamp(d / 90, 0, 1));
-        // líneas de agua a lo largo de la costa, cada vez más separadas y claras mar adentro
-        for (const [r, fuerza] of [[4.5, 0.55], [9.5, 0.4], [16, 0.28], [24, 0.16]]) {
-          const e = Math.abs(d - r); if (e < 0.9) col = mezclar(col, [62, 84, 92], fuerza * (1 - e / 0.9));
-        }
         if (d <= 3) col = mezclar(col, [70, 92, 98], 0.25 * (1 - d / 3));   // el agua de la orilla, algo más oscura (la costa va como línea)
       } else {
         const b = bio[i], a = alt[i];
@@ -216,7 +212,29 @@ export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } =
   montes.sort((a, b) => a[1] - b[1]); arboles.sort((a, b) => a[1] - b[1]);   // de arriba abajo: los de delante tapan a los de detrás
   yield { avance: 0.96 };
 
-  // 5) la costa y las fronteras como líneas (contornos, nítidos a cualquier zoom): la costa, donde la forma del juego
+  // 5) las líneas de agua a lo largo de la costa (como en las cartas grabadas), cada vez más separadas mar adentro: los
+  // contornos de la distancia a la costa, suavizada para que no salga a escalones
+  const dSuave = new Float32Array(NP), tmp = new Float32Array(NP), R = 3;
+  for (let pasada = 0; pasada < 2; pasada++) {
+    const src = pasada ? dSuave : dMar;
+    for (let y = 0; y < H; y++) {   // en horizontal
+      let suma = 0; for (let k = -R; k <= R; k++) suma += Math.min(40, src[y * W + clamp(k, 0, W - 1)]);
+      for (let x = 0; x < W; x++) { tmp[y * W + x] = suma / (2 * R + 1); suma += Math.min(40, src[y * W + clamp(x + R + 1, 0, W - 1)]) - Math.min(40, src[y * W + clamp(x - R, 0, W - 1)]); }
+      if (y % 96 === 95) yield { avance: 0.955 };
+    }
+    for (let x = 0; x < W; x++) {   // en vertical
+      let suma = 0; for (let k = -R; k <= R; k++) suma += tmp[clamp(k, 0, H - 1) * W + x];
+      for (let y = 0; y < H; y++) { dSuave[y * W + x] = suma / (2 * R + 1); suma += tmp[clamp(y + R + 1, 0, H - 1) * W + x] - tmp[clamp(y - R, 0, H - 1) * W + x]; }
+      if (x % 96 === 95) yield { avance: 0.955 };
+    }
+  }
+  const agua = [];
+  for (const [nivel, fuerza] of [[5, 0.6], [10, 0.45], [17, 0.3], [26, 0.18]]) {
+    const vale = (x, y) => !tierra[y * W + x] && !tierra[y * W + x + 1] && !tierra[(y + 1) * W + x] && !tierra[(y + 1) * W + x + 1];
+    for (const l of yield* contornos(W, H, (x, y) => dSuave[y * W + x], nivel, vale)) agua.push({ fuerza, l: l.map(([x, y]) => [kmX(x), kmY(y)]) });
+  }
+
+  // 6) la costa y las fronteras como líneas (contornos, nítidos a cualquier zoom): la costa, donde la forma del juego
   // pasa por 0; las fronteras, donde cambia la comarca (cada una una sola vez, de la comarca de número menor)
   const costa = (yield* contornos(W, H, (x, y) => forma[y * W + x], 0, null)).map(l => l.map(([x, y]) => [kmX(x), kmY(y)]));
   yield { avance: 0.965 };
@@ -232,7 +250,7 @@ export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } =
     yield { avance: 0.965 + c * 0.002 };
   }
 
-  // 6) los ríos del juego que pasan por el mapa (en km, con su ancho en m), cortados en la costa
+  // 7) los ríos del juego que pasan por el mapa (en km, con su ancho en m), cortados en la costa
   const rios = [];
   for (const r of paisaje.rios) {
     const pts = [];
@@ -256,7 +274,7 @@ export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } =
   }
   yield { avance: 0.98 };
 
-  // 7) dónde va el nombre de cada comarca: el sitio más lejos de su frontera y de la costa (no su centro de masas, que en
+  // 8) dónde va el nombre de cada comarca: el sitio más lejos de su frontera y de la costa (no su centro de masas, que en
   // las comarcas alargadas cae fuera); el de Strandvang, además, lejos de la ciudad, para no taparla
   const mejor = comarcas.letras.map(() => ({ nota: -1, x: 0, y: 0 }));
   for (let i = 0; i < NP; i++) {
@@ -268,6 +286,6 @@ export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } =
     if (nota > mejor[c].nota) mejor[c] = { nota, x, y };
   }
   yield { avance: 1 };
-  return { ancho: W, alto: H, pxKm, cuadro, rgba, comarca: com, tierra, rios, montes, arboles, costa, fronteras,
+  return { ancho: W, alto: H, pxKm, cuadro, rgba, comarca: com, tierra, rios, montes, arboles, costa, fronteras, agua,
     etiquetas: mejor.map((m, k) => (m.nota < 0 ? null : { k, x: m.x, y: m.y })).filter(Boolean) };
 }
