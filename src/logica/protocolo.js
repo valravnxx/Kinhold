@@ -16,7 +16,9 @@
 //   6 (31 oct): las obras cobran de lo que llevas también en línea (entregar, subir y el arcón de materiales, con
 //               los inventarios del servidor); sus entradas van ya pagadas («lleva») y un servidor anterior las
 //               cobraría del montón común, así que el mundo de cada navegador dejaría de cuadrar con el suyo.
-export const PROTOCOLO = 6;
+//   7 (31 oct): pelear en el mundo: fuera de la liza el combate va en el modo direccional, con 'arma', 'cargar',
+//               'descargar', 'fintar' y 'parar' con su lado; un servidor anterior no los conoce y los golpes no harían nada.
+export const PROTOCOLO = 7;
 
 // La versión del servidor por su bienvenida. Los servidores de antes de este número no la mandan: los que ya
 // llevaban el reloj del combate (tc) se cuentan como la 1, y los anteriores como la 0.
