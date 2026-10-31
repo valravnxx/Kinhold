@@ -2869,7 +2869,7 @@
    "Nadar (valravnx, 30 oct): en lo somero se anda, por la cintura se vadea y más hondo se nada. Un solo aguante, el de correr con Mayúsculas, que al nadar baja más deprisa cuanto más pesa lo que llevas (con cota de malla y gambesón, o con un tronco, casi enseguida); sin aguante te ahogas y vuelves a tu sitio de salida. La corriente te arrastra. El GDD lo recoge.",
    "Aún mal: no hay animación de nadar; en línea, los demás te ven andar en el agua; de lejos los ríos siguen a tramos rectos; los arroyos someros se ven blanquecinos; y en algunas costas bajas salen manchas de arena tierra adentro."
   ],
-  "pruebas": "Batería entera en la nube: 20 de 22 grupos bien. Fallan «jugar en línea» y «duelo en línea» (excepción de CLAUDE.md, fallan también en main). Después, «la demo en el mundo» otra vez tras arreglar su prueba del mar: bien. Lógica: nado 17/17, mapa 88/88. Las mutaciones se rompieron a propósito (MUTAR en el terraplén de los ríos y en la de nado de lógica). No comprobado: MUTAR_NADO en la nube (la de navegador).",
+  "pruebas": "Batería entera en la nube tras unir main (siempre en línea): 20 de 22 grupos bien. Falla «jugar en línea» (excepción de CLAUDE.md, falla también en main) y «la demo en el mundo», porque su prueba tomó una ría somera por costa y no encontró mar hondo; ahora lo busca también por anillos alrededor del jugador, y repetida: bien. Lógica: nado 17/17, mapa 88/88. Las mutaciones se rompieron a propósito (MUTAR en el terraplén de los ríos y en la de nado de lógica). No comprobado: MUTAR_NADO en la nube (la de navegador).",
   "capturas": "capturas/demo-v58",
   "estado": "ok"
  },
