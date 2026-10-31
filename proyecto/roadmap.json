@@ -1027,7 +1027,9 @@
     },
     {
      "nombre": "Cejas y cuello del hombre (visto en la revisión del 31 oct): de cerca las cejas son trazos gruesos en bloque y entre la barba y el cuello queda una franja clara cortada",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T20:56:07+00:00",
+     "rama": "trabajo/20261031-2056"
     },
     {
      "nombre": "Revisión completa y publicación",
