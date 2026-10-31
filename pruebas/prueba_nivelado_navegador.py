@@ -113,8 +113,13 @@ with sync_playwright() as p:
         comprobar('la construcción se dibuja a su altura', d['gy'] is not None and abs(d['gy'] - r['oy']) < 1e-6, str(d['gy']))
         comprobar('la cerca, a ras del suelo de su sitio', d['cy'] is not None and abs(d['cy'] - d['sueloCerca']) < 0.06, f"{d['cy']} / {d['sueloCerca']}")
         # el personaje sobre el cimiento
-        pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x + 0.3; k.pj.z = z + 0.3; }}', [X, Z]); pg.wait_for_timeout(1500)
-        y = pg.evaluate(f'{K}.pj.y')
+        pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x + 2; k.pj.z = z; }}', [X, Z])
+        # la altura del personaje va hacia la del suelo poco a poco (por fotogramas): sin tarjeta gráfica, a 1 o 2 fps,
+        # tarda; se espera a que se quede quieta (como mucho 30 s)
+        y, antes = pg.evaluate(f'{K}.pj.y'), None
+        for _ in range(30):
+            pg.wait_for_timeout(1000); antes, y = y, pg.evaluate(f'{K}.pj.y')
+            if abs(y - antes) < 0.001: break
         comprobar('el personaje pisa el cimiento (a la altura de la construcción)', abs(y - r['oy']) < 0.6 and y > r['oy'] - 0.01, f'{y:.3f} / oy {r["oy"]:.3f}')
         # la captura de cerca, con el personaje fuera, mirando la obra de lado
         pg.evaluate(f'{K}.cambiarModo("mover")'); pg.evaluate(ENCUADRE, [X + 1, Z + 1]); pg.wait_for_timeout(2500)
