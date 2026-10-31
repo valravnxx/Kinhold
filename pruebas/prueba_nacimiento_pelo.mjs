@@ -1,7 +1,8 @@
 // Comprueba el nacimiento del pelo en los personajes del taller (desde la taller-v19; antes el pelo corto cortaba en
 // seco en la frente, como un casquete: la cáscara del pelo salía ya despegada de la piel unos 5-6 mm justo en su borde).
 // Ahora el bulto del pelo crece desde el borde hacia dentro: por delante, en el centro de la frente, los puntos más bajos
-// de la cáscara (los del borde) van pegados a la piel (a menos de 2,5 mm), y más arriba el pelo sí tiene su bulto.
+// de la cáscara (de 2 a 4,5 cm sobre el ojo) van pegados a la piel (a menos de 2,5 mm), y más arriba (a más de 6,5 cm) el
+// pelo sí tiene su bulto.
 // Uso: node pruebas/prueba_nacimiento_pelo.mjs [carpeta de recursos]   (por defecto, la última taller-vN publicada)
 //      MUTAR=1 → mira la taller-v18, de antes del arreglo: tiene que fallar.
 import { NodeIO } from '@gltf-transform/core';
@@ -31,19 +32,20 @@ for (const f of readdirSync(carpeta).filter(f => f.endsWith('.glb'))) {
   const d = await io.read(`${carpeta}/${f}`);
   const sexo = f.includes('mujer') ? 'mujer' : 'hombre';
   const nodo = (s) => d.getRoot().listNodes().find(n => n.getName() === `${sexo}_${s}` && n.getMesh());
-  const piel = nodo('piel'), pelo = nodo('pelo');
-  comprobar(`${f}: tiene piel y pelo corto`, !!piel && !!pelo);
-  if (!piel || !pelo) continue;
+  const piel = nodo('piel'), pelo = nodo('pelo'), ojo = nodo('ojo_l');
+  comprobar(`${f}: tiene piel, pelo corto y ojo`, !!piel && !!pelo && !!ojo);
+  if (!piel || !pelo || !ojo) continue;
   const P = puntos(piel);
   const separacion = (p) => Math.min(...P.map(q => dist(p, q)));
-  // la frente: puntos de la cáscara en el centro y por delante (la cara mira hacia +z)
-  const frente = puntos(pelo).filter(p => Math.abs(p[0]) < 0.025);
+  const ojoArriba = Math.max(...puntos(ojo).map(p => p[1]));
+  // la frente: puntos de la cáscara en el centro y por delante (la cara mira hacia +z), según su altura sobre el ojo
+  const frente = puntos(pelo).filter(p => Math.abs(p[0]) < 0.025 && p[1] > ojoArriba + 0.02);
   const zDelante = Math.max(...frente.map(p => p[2]));
-  const delante = frente.filter(p => p[2] > zDelante - 0.045).sort((a, b) => a[1] - b[1]);
-  const borde = delante.slice(0, 6), arriba = delante.filter(p => p[1] > delante[0][1] + 0.035);
-  const sBorde = media(borde.map(separacion)), sArriba = arriba.length ? media(arriba.map(separacion)) : 0;
-  comprobar(`${f}: en el borde de la frente el pelo va pegado a la piel`, sBorde < 0.0025, `${(sBorde * 1000).toFixed(1)} mm`);
-  comprobar(`${f}: más arriba el pelo tiene bulto`, sArriba > 0.004, `${(sArriba * 1000).toFixed(1)} mm a más de 3,5 cm por encima del borde`);
+  const delante = frente.filter(p => p[2] > zDelante - 0.045);
+  const borde = delante.filter(p => p[1] < ojoArriba + 0.045), arriba = delante.filter(p => p[1] > ojoArriba + 0.065);
+  const sBorde = borde.length ? media(borde.map(separacion)) : 1, sArriba = arriba.length ? media(arriba.map(separacion)) : 0;
+  comprobar(`${f}: en el borde de la frente el pelo va pegado a la piel`, sBorde < 0.0025, `${(sBorde * 1000).toFixed(1)} mm (de 2 a 4,5 cm sobre el ojo)`);
+  comprobar(`${f}: más arriba el pelo tiene bulto`, sArriba > 0.004, `${(sArriba * 1000).toFixed(1)} mm (a más de 6,5 cm sobre el ojo)`);
 }
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
 process.exit(mal ? 1 : 0);

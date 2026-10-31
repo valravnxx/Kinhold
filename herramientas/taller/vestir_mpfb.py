@@ -1006,12 +1006,14 @@ def personaje(nombre, macros, objetivos, ropa):
     # despegada 1 mm y con la transparencia de la textura (el juego los dibuja encima de la piel). Barba pintada y no
     # cáscara: valravnx vio que la cáscara dejaba mal la barbilla
     pelillos = lambda P: colpelo * (0.7 + 0.45 * ruido(P, (900, 900, 500))[..., None])
-    def pintar_vello(P, A):
-        ce = 0.92 * zona_cejas(P)
-        pe = 0.95 * zona_pelo(P) * (1 - suave(0.1, 0.35, A[..., 1]))  # pelo rapado o nacimiento del pelo (bajo la cofia no se ve)
-        a = np.maximum(ce, pe)
-        claro = np.where(ce >= pe, 0.55 + 0.45 * ruido(P, (300, 1800, 1800)), 0.7 + 0.45 * ruido(P, (900, 900, 500)))
-        return np.concatenate([colpelo * claro[..., None], a[..., None]], -1)
+    def pintar_vello(P, A):  # pelo rapado o nacimiento del pelo (bajo la cofia no se ve)
+        a = 0.95 * zona_pelo(P) * (1 - suave(0.1, 0.35, A[..., 1]))
+        return np.concatenate([colpelo * (0.7 + 0.45 * ruido(P, (900, 900, 500)))[..., None], a[..., None]], -1)
+    def pintar_cejas(P, A):
+        """las cejas, en su propio calco (desde taller-v19): en el del pelo les tocaban 3-4 píxeles de alto de la textura
+        y salían a trozos"""
+        a = 0.92 * zona_cejas(P)
+        return np.concatenate([colpelo * (0.55 + 0.45 * ruido(P, (300, 1800, 1800)))[..., None], a[..., None]], -1)
     def pelos_barba(P, m):
         """barba pintada (antes una mancha lisa con el borde duro: valravnx, «horribles»). Dentro, tupida y casi del
         todo opaca, con un grano fino de pelos a lo largo de la caída (arriba-abajo) que solo cambia el tono; en el borde,
@@ -1048,10 +1050,10 @@ def personaje(nombre, macros, objetivos, ropa):
     if True:  # las orejas van aparte: en el juego se esconden bajo la capucha, la toca o la cofia (si no, asoman)
         piezas.append(trozo(base, nombre + '_orejas', lambda i, c: en(i, 'body') and en(i, 'ears', 0.1), textura=(512, pintar_piel),
                             rugosidad=0.62, sss=0.2, ajustar_uv=True, **f_piel))
-    calcos = [('vello', pintar_vello)] + ([('barba_corta', pintar_barba('corta')), ('barba_bigote', pintar_barba('bigote')), ('barba_perilla', pintar_barba('perilla'))] if ropa.get('barba') else [])
-    for n_, fn in calcos:
+    calcos = [('vello', pintar_vello, 1024), ('cejas', pintar_cejas, 512)] + ([(n_, pintar_barba(n_[6:]), 1024) for n_ in ('barba_corta', 'barba_bigote', 'barba_perilla')] if ropa.get('barba') else [])
+    for n_, fn, res in calcos:
         sel = donde(fn)
-        piezas.append(trozo(base, f'{nombre}_{n_}', lambda i, c, sel=sel: sel[i] and sin_orejas(i, c), empuje=0.001, textura=(1024, fn),
+        piezas.append(trozo(base, f'{nombre}_{n_}', lambda i, c, sel=sel: sel[i] and sin_orejas(i, c), empuje=0.001, textura=(res, fn),
                             rugosidad=0.7, ajustar_uv=True, **f_pelo))
 
     # --- barba larga: una malla propia con volumen (antes era la piel estirada: de perfil salía como una lámina hueca, y

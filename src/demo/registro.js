@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v59 (toca y cuello de la ropa)';
+export const VERSION_DEMO = 'Demo única · v60 (nacimiento del pelo y cejas)';
 export const REGISTRO_DEMO = [
+  'v60: en «Personaje» y en el juego, el pelo ya no corta en seco en la frente como un casquete (nace poco a poco y en el borde va pegado a la piel) y las cejas asientan en el arco, más pobladas y sin trozos sueltos. Personajes en recursos/personajes/taller-v19/.',
   'v59: en «Personaje» y en el juego, entre el escote y el cuello ya no asoma una mancha de piel rota (la piel sigue bajo la ropa) y bajo la toca ya no va la cofia (asomaba bajo la barbilla con el borde dentado). Personajes en recursos/personajes/taller-v18/.',
   "v58: en «Construir», lo que crece sigue al jugador por la isla: los árboles, la hierba, las matas y las piedras se hacen por trozos de 32 m a su alrededor, los más cercanos primero y unos pocos milisegundos en cada fotograma, y lo de lejos se suelta. Siempre lo mismo en cada sitio, y lo talado sigue talado (con su tocón) aunque te vayas lejos y vuelvas.",
   "v58, provisional: las mallas de lo que crece se vuelven a poner alrededor de ti cada 10 m andados (8 m en el móvil) o cuando llegan trozos nuevos; lo de más de 264 m (194 m en el móvil) se suelta, y la hierba de más de 109 m (96 m).",
