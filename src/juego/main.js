@@ -33,6 +33,7 @@ import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
 import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } from '../logica/nado.js';
 import { hachaEnMano, HACHAS, edadDeEscala } from '../logica/tala.js';
+import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
 import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_TROCEO } from '../logica/troceo.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
@@ -436,6 +437,7 @@ function reconstruir() {
   despejarDecorado();
   // los cimientos alisan el suelo de debajo: se rehacen los trozos del terreno que tocan
   if (mundoJ) mundoJ.nivelar(mundo.marcasNivelado());
+  if (decorado.nivelar && !window.__sinNivelarVegetacion) decorado.nivelar(mundo.marcasNivelado()); // la hierba, las matas y lo demás, a la altura nueva
   if (mallaMojon) { escena.remove(mallaMojon); liberar(mallaMojon); mallaMojon = null; }
   if (anilloTierra) { escena.remove(anilloTierra); liberar(anilloTierra); anilloTierra = null; }
   if (mundo.mojon) {
@@ -555,12 +557,51 @@ function prepararFantasma() {
   if (!tipo) return;
   if (estado.sel.clase === 'pieza') fantasma = modeloPieza(estado.sel.tipo);
   else if (estado.sel.clase === 'deco') fantasma = modeloDeco(estado.sel.tipo);
+  else if (estado.sel.clase === 'nivelar') fantasma = modeloBrocha();
   else fantasma = modeloMojon();
   if (estado.sel.clase === 'pieza' && PIEZAS[estado.sel.tipo].esquina) fantasmaForma = 'tesa';
   velarFantasma();
   fantasma.visible = false;
   escena.add(fantasma);
 }
+// ---------------- Brocha de nivelar ----------------
+// GDD: «nivelar para cimientos con una brocha redonda que rebaja o alisa con bordes suaves». El fantasma: un disco llano
+// a la altura a la que deja el suelo (lo que sobra asoma por encima, lo que falta queda por debajo) y, pegada al suelo,
+// la raya de hasta dónde llega el borde suave. Decisiones provisionales (registro.js): la primera pasada alisa a la
+// altura del suelo en su centro, y las siguientes siguen a esa misma altura (para hacer un llano grande a pasadas)
+// mientras no te alejes más de 12 m de la última o vuelvas a coger la brocha; R o Girar cambian el tamaño.
+const RADIOS_BROCHA = [0.5, 1, 2, 3, 4].filter(r => r >= BROCHA_MIN && r <= BROCHA_MAX);
+const SEGUIR_BROCHA = 12;
+estado.radioBrocha = 2; estado.alturaBrocha = null;
+function modeloBrocha() {
+  const g = new THREE.Group();
+  const disco = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshLambertMaterial({ color: 0xc9b48a }));
+  disco.rotation.x = -Math.PI / 2; disco.name = 'disco';
+  g.add(disco);
+  const raya = new THREE.LineLoop(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(64 * 3), 3)),
+    new THREE.LineBasicMaterial({ color: 0xf2ead8, transparent: true, opacity: 0.85, depthTest: false }));
+  raya.name = 'borde'; raya.renderOrder = 3; raya.frustumCulled = false;
+  g.add(raya);
+  return g;
+}
+// la altura a la que alisaría una pasada en (x, z), con lo que haya debajo
+function alturaBrocha(x, z, ySuelo) {
+  const ul = estado.ultimaBrocha;
+  if (estado.alturaBrocha !== null && ul && Math.hypot(x - ul.x, z - ul.z) <= SEGUIR_BROCHA) return estado.alturaBrocha;
+  return ySuelo;
+}
+function ponerBrocha(x, y, z) {
+  const r = estado.radioBrocha, disco = fantasma.getObjectByName('disco'), raya = fantasma.getObjectByName('borde');
+  fantasma.position.set(0, 0, 0); fantasma.rotation.set(0, 0, 0); fantasma.scale.set(1, 1, 1);
+  disco.position.set(x, y + 0.02, z); disco.scale.set(r, r, 1);
+  const pos = raya.geometry.attributes.position, n = pos.count, R = r + BORDE_BROCHA;
+  for (let q = 0; q < n; q++) {
+    const a = q / n * Math.PI * 2, px = x + Math.cos(a) * R, pz = z + Math.sin(a) * R;
+    pos.setXYZ(q, px, sueloEn(px, pz) + 0.06, pz);
+  }
+  pos.needsUpdate = true;
+}
+
 function pintarFantasma(valido) {
   if (!fantasma) return;
   fantasma.traverse(o => { if (o.isMesh) o.material = matVelo(o.userData.matBase, valido ? 'ok' : 'mal'); });
@@ -580,6 +621,18 @@ function evaluarColocacion() {
     const v = mundo.mojon ? { ok: false, motivo: t('yaMojon') } : mundo.puedePagar(PIEZAS.mojon.coste) ? { ok: true } : { ok: false, motivo: t('faltanMateriales') };
     pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
     estado.candidato = { tipo: 'mojon', x, z, v };
+    return;
+  }
+  if (sel.clase === 'nivelar') {
+    const ys = estado.puntero.ySuelo ?? sueloEn(x, z), y = redondoMm(alturaBrocha(x, z, ys));
+    ponerBrocha(x, y, z);
+    let v = { ok: true };
+    if (!mundo.mojon) v = { ok: false, motivo: t('primeroMojon') };
+    else if (!mundo.dentroDeTierra(x, z)) v = { ok: false, motivo: t('fueraTierra') };
+    pintarFantasma(v.ok);
+    const r = estado.radioBrocha.toLocaleString(document.documentElement.lang || 'es');
+    mostrarAviso(v.ok ? tr('Brocha de {r} m: alisa el suelo a la altura del disco. Cambia el tamaño con R o Girar.', { r }) : tr(v.motivo), !v.ok);
+    estado.candidato = { tipo: 'nivelar', x, y, z, v };
     return;
   }
   if (sel.clase === 'deco') {
@@ -634,10 +687,12 @@ function colocar() {
   if (!ca.v.ok) { mostrarAviso(tr(ca.v.motivo), true); return; }
   let r;
   if (ca.tipo === 'mojon') r = accion({ tipo: 'mojon', x: ca.x, z: ca.z });
+  else if (ca.tipo === 'nivelar') r = accion({ tipo: 'nivelar', x: redondoMm(ca.x), z: redondoMm(ca.z), y: ca.y, radio: estado.radioBrocha });
   else if (ca.tipo === 'deco') r = accion({ tipo: 'decorar', pieza: estado.sel.tipo, x: ca.x, y: ca.y, z: ca.z, rot: estado.rotDeco || 0 });
   else r = accion({ tipo: 'colocar', ...ca.datos });
   if (r.ok) {
     if (ca.tipo === 'mojon') { estado.sel = { clase: 'pieza', tipo: 'cim_piedra' }; marcarSeleccion(); }
+    if (ca.tipo === 'nivelar') { estado.alturaBrocha = ca.y; estado.ultimaBrocha = { x: ca.x, z: ca.z }; }
     guardar(); reconstruir(); evaluarColocacion();
     if (r.obra) mostrarAviso(t('marcoPuesto'));
   } else mostrarAviso(tr(r.motivo), true);
@@ -917,6 +972,8 @@ function girar() {
     // el giro libre solo cuenta para la primera pieza de una construcción nueva
     else if (nueva) estado.rotLibre = (estado.rotLibre + Math.PI / 12) % (Math.PI * 2);
     if (nueva && (h === 'r' || h === 'l' || h === 'g')) estado.rotLibre = (estado.rotLibre + Math.PI / 12) % (Math.PI * 2);
+  } else if (sel.clase === 'nivelar') {
+    estado.radioBrocha = RADIOS_BROCHA[(RADIOS_BROCHA.indexOf(estado.radioBrocha) + 1) % RADIOS_BROCHA.length];
   } else estado.rotDeco = ((estado.rotDeco || 0) + Math.PI / 12) % (Math.PI * 2);
   evaluarColocacion();
 }
@@ -1796,21 +1853,24 @@ function construirBarra() {
   const entradas = categoria === 'deco'
     ? Object.entries(DECORACION).map(([k, d]) => ({ clase: 'deco', tipo: k, def: d }))
     : Object.entries(PIEZAS).filter(([, d]) => d.cat === categoria).map(([k, d]) => ({ clase: k === 'mojon' ? 'mojon' : 'pieza', tipo: k, def: d }));
+  if (categoria === 'tierra') entradas.push({ clase: 'nivelar', tipo: 'brocha', def: { nombre: 'Brocha de nivelar', coste: {} }, nota: tr('alisa el suelo') });
   for (const e of entradas) {
     const b = document.createElement('button');
     b.className = 'pieza' + (estado.sel.tipo === e.tipo ? ' sel' : '');
-    const coste = Object.entries(e.def.coste).map(([m, n]) => `${n} ${tr(MATERIALES[m]).toLowerCase()}`).join(' · ');
+    const coste = e.nota || Object.entries(e.def.coste).map(([m, n]) => `${n} ${tr(MATERIALES[m]).toLowerCase()}`).join(' · ');
     b.innerHTML = `<b>${tr(e.def.nombre)}</b><small>${coste}</small>`;
+    if (e.clase === 'nivelar') b.id = 'btnBrocha';
     b.onclick = () => {
       estado.sel = { clase: e.clase, tipo: e.tipo };
       estado.dir = 0;
+      if (e.clase === 'nivelar') estado.alturaBrocha = null; // al volver a coger la brocha, la altura se vuelve a tomar del suelo
       if (estado.modo !== 'construir') cambiarModo('construir');
       construirBarra(); evaluarColocacion();
     };
     lista.appendChild(b);
   }
 }
-function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : (estado.sel.clase === 'mojon' ? 'tierra' : PIEZAS[estado.sel.tipo].cat); construirBarra(); }
+function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : (estado.sel.clase === 'mojon' || estado.sel.clase === 'nivelar' ? 'tierra' : PIEZAS[estado.sel.tipo].cat); construirBarra(); }
 
 function actualizarUI() {
   const m = $('materiales');
@@ -2080,8 +2140,9 @@ window.__kinhold = {
   // los sitios de salida (src/logica/whitholm.js): el común y si uno es de la lista de la salida al azar
   salidas: { comun: SALIDA, total: SALIDAS.length, deLista: (x, z) => SALIDAS.some(s => s[0] === x && s[1] === z) },
   cambiarModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
-  // una acción del mundo, como las del jugador (para las pruebas: la brocha de nivelar aún no tiene botón)
+  // una acción del mundo, como las del jugador
   accion: (a) => accion(a),
+  get brocha() { return { radio: estado.radioBrocha, altura: estado.alturaBrocha }; },
   plantaDeco, get teclas() { return [...teclas]; }, get fantasmaForma() { return fantasmaForma; },
   seleccionar(clase, tipo) { estado.sel = { clase, tipo }; estado.dir = 0; marcarSeleccion(); evaluarColocacion(); },
   apuntar(x, z, y = 0) { estado.puntero = { x, z, ySuperficie: y }; evaluarColocacion(); },
