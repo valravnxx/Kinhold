@@ -3376,5 +3376,22 @@
   "pruebas": "En la nube, 25 grupos: 24 bien; «web» falló por el menú de la demo con dos partes, ya arreglado en main. Tras unir main: logica, web, juego en inglés y demo única correctos (3 en el PC de valravnx). Aspecto 28/28 aquí; prueba de idiomas del juego correcta. Capturas de cerca miradas en PC y móvil (cofia, toca, capucha de lejos en el móvil).",
   "capturas": "capturas/personaje-v33",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T17:23:32+00:00",
+  "fin": "2026-10-31T19:53:48+00:00",
+  "titulo": "Hito 1i: la brocha de nivelar en el juego (demo v73, carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "La brocha de nivelar tiene botón: «Construir» → «Tierra» → «Brocha de nivelar». Va por la acción con autor que ya estaba (en línea, por el servidor).",
+   "Su fantasma: un disco llano a la altura a la que deja el suelo (en ladera, una parte asoma y otra queda enterrada) y una raya pegada al suelo hasta donde llega el borde suave. R o «Girar» cambian el radio (0,5, 1, 2, 3 y 4 m); en el móvil se pone con «Colocar».",
+   "Decisión provisional (registro de la demo): la primera pasada alisa a la altura del suelo en su centro y las seguidas siguen a esa altura mientras no te alejes más de 12 m de la última, para hacer un llano a pasadas; al volver a coger la brocha se toma otra vez del suelo.",
+   "La hierba, las flores, las matas, las piedras y los árboles de lo alisado (con la brocha o con los cimientos) suben o bajan con el suelo: cada cosa guarda su altura de antes y se le suma lo que el nivelado ha movido el suelo en su sitio (src/mundo/vegetacion_mundo.js).",
+   "La prueba de nivelar en el navegador usa ya el botón y el fantasma, comprueba dos pasadas seguidas a la misma altura y la hierba y las matas a la altura nueva; con MUTAR=2 (las plantas no siguen al suelo) falla, comprobado. Busca una ladera algo más empinada (12 cm por metro en vez de 10): con la de antes, una vez salió menos de 0,2 m de desnivel bajo la obra y fallaba sin motivo.",
+   "La v72 la publicó a la vez el chat (combate a cuatro direcciones): esta sale como v73, con main unido y las pruebas pasadas otra vez."
+  ],
+  "pruebas": "Todas en la nube y en el PC de valravnx, dos veces (antes y después de unir main): todo correcto salvo, una vez, «combate» en su PC (la parada perfecta, por tiempos; pasó en la nube) y, una vez, la de nivelar por la ladera poco empinada (arreglada y repetida: bien). Capturas miradas en PC y móvil.",
+  "capturas": "capturas/demo-v73",
+  "estado": "ok"
  }
 ]

@@ -505,9 +505,10 @@
     },
     {
      "nombre": "La brocha de nivelar en el juego: un botón en «Construir» y su fantasma redondo para alisar el suelo en ladera a mano (la acción con autor ya está en la lógica y en el servidor), y la hierba y las matas de alrededor de lo alisado a la altura nueva",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T17:23:32+00:00",
-     "rama": "trabajo/20261031-1723"
+     "rama": "trabajo/20261031-1723",
+     "fin": "2026-10-31T19:53:48+00:00"
     },
     {
      "nombre": "Panel de depuración con clave de admin (valravnx, 30 oct): se abre con una tecla; mapa de la isla con los jugadores conectados, lista de jugadores, y teletransportarse a un punto del mapa o junto a otro jugador. Ver a todos y teletransportarse pasan por el servidor con su autor, y solo los acepta con la clave de admin que valravnx pone en la máquina (en servidor/nube/LEEME.md, cómo)",
@@ -2152,6 +2153,13 @@
      "archivo": "jugar/demo/v72.html",
      "capturas": "capturas/demo-v72",
      "notas": "Combate a cuatro direcciones (valravnx, 31 oct): arriba, izquierda, derecha y abajo para clavar; el escudo para todo lo que viene de frente; el golpe va comprometido y el botón de parar lo cancela con una finta"
+    },
+    {
+     "v": "v73",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v73.html",
+     "capturas": "capturas/demo-v73",
+     "notas": "La brocha de nivelar en «Construir» → «Tierra»: un disco a la altura a la que deja el suelo y la raya del borde suave; alisa un círculo de 0,5 a 4 m (R o Girar cambian el tamaño) y las pasadas seguidas siguen a la misma altura. La hierba, las matas, las piedras y los árboles de lo alisado siguen al suelo."
     }
    ]
   },

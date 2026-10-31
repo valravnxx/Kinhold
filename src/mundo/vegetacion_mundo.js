@@ -13,6 +13,7 @@ import { ROCAS_COLOR, lin } from './color_suelo.js';
 import { vegetacionTrozo, LADO_VEG } from '../logica/vegetacion.js';
 import { idArbol } from '../logica/tala.js';
 import { alturaMundo } from '../logica/whitholm.js';
+import { aplicar, marcasEn, caja } from '../logica/nivelado.js';
 
 // Medidas (decisión provisional del 30 oct): árboles y piedras en un cuadro de 400 m alrededor del jugador (260 m en
 // el móvil); hierba, flores y matas en un círculo de 45 m (32 m en el móvil); los árboles enteros hasta 60 m (45 m) y
@@ -57,12 +58,51 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
         edad: e.tam >= TAM_ADULTO ? 'adulto' : 'joven', giro: e.giro, tono: e.tono, id: idArbol(e.x, e.z), malla: null, instancia: -1, matriz: null }));
       t.piedras = v.piedras.map(esc).filter(e => lejos(e, CLARO)).map(e => ({ ...e, y: e.y - 0.2, ob: { x: e.x, z: e.z, r: e.tam * 1.1, veg: true } }));
       trozos.set(clave(i, j), t);
+      for (const e of [...t.arboles, ...t.piedras]) e.yb = e.y;
+      alNivel([...t.arboles, ...t.piedras], cajaTrozo(i, j));
     }
     if (conHierba && !t.hierba) {
       const fuera = (l) => l.map(esc).filter(e => lejos(e, CLARO));
       t.hierba = { hierba: fuera(v.hierba), flores: fuera(v.flores), matas: fuera(v.matas).map(e => ({ ...e, ob: { x: e.x, z: e.z, r: 0.55 * e.tam, mata: true, veg: true } })) };
+      const todo = [...t.hierba.hierba, ...t.hierba.flores, ...t.hierba.matas];
+      for (const e of todo) e.yb = e.y;
+      alNivel(todo, cajaTrozo(i, j));
     }
     return t;
+  }
+
+  // El suelo nivelado (src/logica/nivelado.js; la brocha y los cimientos): lo que crece donde se ha alisado sube o
+  // baja con el suelo. Cada cosa guarda su altura de antes (yb) y se le suma lo que el nivelado ha movido el suelo en
+  // su sitio. Las marcas, en metros de la escena (las del mundo de construcción).
+  let marcasV = [], claveV = '[]';
+  const baseEsc = (x, z) => altW(x + O.x, z + O.z) - y0;
+  const cajaTrozo = (i, j) => ({ x0: i * L - O.x, z0: j * L - O.z, x1: (i + 1) * L - O.x, z1: (j + 1) * L - O.z });
+  function alNivel(lista, b) {
+    const ms = marcasEn(marcasV, b.x0, b.z0, b.x1, b.z1);
+    for (const e of lista) {
+      if (!ms.length) { e.y = e.yb; continue; }
+      const h = baseEsc(e.x, e.z);
+      e.y = e.yb + aplicar(h, e.x, e.z, ms) - h;
+    }
+  }
+  // Devuelve cuántas cosas se han movido de altura (0 si las marcas no han cambiado).
+  function nivelar(marcas) {
+    const k = JSON.stringify(marcas || []);
+    if (k === claveV) return 0;
+    const antes = marcasV;
+    marcasV = (marcas || []).map(m => ({ ...m })); claveV = k;
+    const cajas = [...antes, ...marcasV].map(caja);
+    let n = 0;
+    for (const t of trozos.values()) {
+      const b = cajaTrozo(t.i, t.j);
+      if (!cajas.some(c => c.x1 >= b.x0 && c.x0 <= b.x1 && c.z1 >= b.z0 && c.z0 <= b.z1)) continue;
+      const lista = [...t.arboles, ...t.piedras, ...(t.hierba ? [...t.hierba.hierba, ...t.hierba.flores, ...t.hierba.matas] : [])];
+      const antesY = lista.map(e => e.y);
+      alNivel(lista, b);
+      lista.forEach((e, q) => { if (Math.abs(e.y - antesY[q]) > 1e-4) n++; });
+    }
+    if (n && centro) poner(centro);
+    return n;
   }
   // los trozos que hacen falta alrededor de P (escena): los de los árboles en el cuadro y los de la hierba en su
   // círculo, los más cercanos primero
@@ -209,7 +249,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     tapan = ahora;
     return ahora.size;
   }
-  return Object.defineProperties(api, Object.getOwnPropertyDescriptors({ raiz, obstaculos, altura: mundoJ.altura, destapar, paso,
+  return Object.defineProperties(api, Object.getOwnPropertyDescriptors({ raiz, obstaculos, altura: mundoJ.altura, destapar, paso, nivelar,
     despejar: (ocupado) => { ocupadoUlt = ocupado; return despejarMallas(mallas, ocupado); },
     get cuenta() { return cuenta; }, get tapan() { return tapan.size; }, get centro() { return centro; },
     get pendientes() { return pendientes.length; }, get msMax() { return msMax; }, set msMax(v) { msMax = v; } }));

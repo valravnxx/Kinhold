@@ -6,6 +6,7 @@
 # a esa altura (en la malla que se ve), y el de lejos, como antes; una cerca, a ras del suelo de su sitio; el
 # personaje pisa el cimiento; la brocha redonda alisa un círculo. Capturas de cerca: la ladera antes y después.
 # MUTAR=1: los cimientos no alisan el suelo (se quitan las marcas antes de rehacer los trozos): tiene que fallar.
+# MUTAR=2: la hierba y las matas no siguen al suelo alisado: tiene que fallar la de las plantas.
 import sys, os, re, json, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
@@ -32,7 +33,7 @@ def comprobar(n, c, d=''):
     print(('  OK   ' if c else '  FALLA ') + n + (f' — {d}' if d else ''))
     if not c: fallos.append(n)
 
-# una ladera suave (de 10 a 35 cm por metro en 6 m alrededor), en tierra seca y andable, a menos de 380 m de la salida (más allá, seco() no mira los ríos)
+# una ladera suave (de 12 a 35 cm por metro en 6 m alrededor), en tierra seca y andable, a menos de 380 m de la salida (más allá, seco() no mira los ríos)
 LADERA = """(() => {
   const k = window.__kinhold, m = k.mundoJ, h = (x, z) => m.altura(x, z);
   let mejor = null;
@@ -40,7 +41,7 @@ LADERA = """(() => {
     const x = Math.round(Math.cos(a) * r), z = Math.round(Math.sin(a) * r);
     if (!m.seco(x, z) || m.sobreMar(x, z) < 3) continue;
     const gx = (h(x + 3, z) - h(x - 3, z)) / 6, gz = (h(x, z + 3) - h(x, z - 3)) / 6, g = Math.hypot(gx, gz);
-    if (g < 0.1 || g > 0.35) continue;
+    if (g < 0.12 || g > 0.35) continue;   // (con 0,1 a veces salía menos de 0,2 m de desnivel bajo la obra y fallaba sin motivo)
     let ok = true;
     for (let b = -8; b <= 8 && ok; b += 4) for (let c = -8; c <= 8 && ok; c += 4) if (!m.seco(x + b, z + c)) ok = false;
     if (ok && !k.obstaculos.some(o => Math.hypot(o.x - x, o.z - z) < 5)) mejor = { x, z, g };
@@ -58,6 +59,7 @@ with sync_playwright() as p:
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
         pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
+        if MUTAR == '2': pg.add_init_script('window.__sinNivelarVegetacion = true')
         pg.goto(URL)
         pg.wait_for_function('window.__demo && (window.__demo.listo || window.__demo.error)', timeout=240000)
         comprobar('la demo arranca sin error', not pg.evaluate('window.__demo.error'), str(pg.evaluate('window.__demo.error')))
@@ -124,12 +126,47 @@ with sync_playwright() as p:
         # la captura de cerca, con el personaje fuera, mirando la obra de lado
         pg.evaluate(f'{K}.cambiarModo("mover")'); pg.evaluate(ENCUADRE, [X + 1, Z + 1]); pg.wait_for_timeout(2500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_ladera_cimientos.png')
-        # la brocha redonda: alisa un círculo de 2 m a 30 cm por encima del suelo de su centro
+        # la brocha redonda, desde su botón en «Construir» → «Tierra»: el fantasma (un disco a la altura a la que deja el
+        # suelo y la raya del borde suave pegada al suelo), y al ponerla, el suelo llano a la altura del suelo de su centro
         bx, bz = X - 6, Z - 4
-        b = pg.evaluate(f"""([x, z]) => {{ const k = {K}, y = k.mundoJ.altura(x, z) + 0.3; const r = k.accion({{ tipo: 'nivelar', x, z, y, radio: 2 }}); k.reconstruir(); return {{ ok: r.ok, y }}; }}""", [bx, bz])
-        pg.wait_for_timeout(300); pg.wait_for_function(ESPERAR_TERRENO, timeout=240000)
-        hb = pg.evaluate(f'([x, z]) => {{ const m = {K}.mundoJ; return [m.altura(x, z), m.altura(x + 1.2, z - 1)]; }}', [bx, bz])
-        comprobar('la brocha alisa un círculo a su altura', b['ok'] and abs(hb[0] - b['y']) < 0.03 and abs(hb[1] - b['y']) < 0.03, f"{hb} / {b['y']:.3f}")
+        pg.evaluate(f"{K}.cambiarModo('construir')")
+        pg.click('#pestanas button[data-cat="tierra"]')
+        comprobar('la brocha tiene su botón en Construir → Tierra', pg.locator('#btnBrocha').count() == 1)
+        pg.click('#btnBrocha')
+        PLANTAS = f"""([x, z, R]) => {{ const k = {K}, r = [], M = new (k.escena.matrix.constructor)();
+          for (const im of k.decorado.raiz.children) {{ if (!im.isInstancedMesh || !['hierba', 'flores', 'matorrales'].includes(im.name)) continue;
+            for (let q = 0; q < im.count; q++) {{ im.getMatrixAt(q, M); const e = M.elements; if (Math.abs(e[0]) + Math.abs(e[5]) < 1e-6) continue;
+              const px = e[12], py = e[13], pz = e[14]; if (Math.hypot(px - x, pz - z) < R) r.push([im.name, px, py, pz]); }} }}
+          return r; }}"""
+        antesP = pg.evaluate(PLANTAS, [bx, bz, 3.4])
+        # (en la ladera, para la captura, el personaje a un lado y la cámara mirando la brocha)
+        pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x + 4; k.pj.z = z + 4; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.cam.yaw = Math.atan2(4, 4); k.cam.pitch = 0.45; k.cam.dist = 8; }}', [bx, bz])
+        pg.evaluate(f'([x, z]) => {K}.apuntar(x, z, {K}.alturaSuelo(x, z))', [bx, bz])
+        f = pg.evaluate(f"""(() => {{ const k = {K}, c = k.estado.candidato, d = k.escena.getObjectByName('disco');
+          return {{ sel: k.estado.sel.clase, ok: c && c.v.ok, tipo: c && c.tipo, y: c && c.y, disco: d && d.visible !== false && d.parent && d.parent.visible ? [d.position.x, d.position.y, d.position.z, d.scale.x] : null, suelo: k.alturaSuelo(c.x, c.z), aviso: document.getElementById('aviso').textContent }}; }})()""")
+        print('  ', json.dumps(f))
+        comprobar('con la brocha cogida sale su fantasma redondo de 2 m a la altura del suelo del centro', f['sel'] == 'nivelar' and f['ok'] and f['disco'] and abs(f['disco'][3] - 2) < 1e-6 and abs(f['y'] - f['suelo']) < 0.01, json.dumps(f))
+        pg.wait_for_timeout(1500)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_brocha_fantasma.png')
+        if movil: pg.click('#btnColocar')
+        else: pg.evaluate(f'{K}.colocar()')
+        b = pg.evaluate(f"(() => {{ const k = {K}; return {{ n: k.mundo.nivelados.filter(m => m.de === 'brocha').length, y: k.brocha.altura }}; }})()")
+        comprobar('la pasada se hace con su acción (una marca de la brocha)', b['n'] == 1 and b['y'] is not None, json.dumps(b))
+        # una segunda pasada al lado sigue a la misma altura (para hacer un llano a pasadas)
+        pg.evaluate(f'([x, z]) => {{ const k = {K}; k.apuntar(x, z, k.alturaSuelo(x, z)); k.colocar(); }}', [bx + 2.5, bz])
+        pg.wait_for_timeout(300); pg.wait_for_function(ESPERAR_TERRENO, timeout=240000); pg.wait_for_timeout(800)
+        hb = pg.evaluate(f'([x, z]) => {{ const m = {K}.mundoJ, h = (a, b) => m.terreno.alturaEn(a + m.salida.x, b + m.salida.z) - m.y0; return [h(x, z), h(x + 1.2, z - 1), h(x - 1, z + 1.3), h(x + 2.5, z), h(x + 3.8, z + 1)]; }}', [bx, bz])
+        comprobar('la brocha alisa a su altura y la segunda pasada sigue a la misma (malla que se ve)', max(abs(v - b['y']) for v in hb) < 0.03, f"{[round(v, 3) for v in hb]} / {b['y']:.3f}")
+        # la hierba, las flores y las matas de lo alisado, a la altura nueva del suelo
+        despuesP = pg.evaluate(PLANTAS, [bx, bz, 3.4])
+        alt = pg.evaluate(f'(ps) => ps.map(([n, x, y, z]) => {K}.mundoJ.altura(x, z))', despuesP)
+        difs = [abs(p[2] - a) for p, a in zip(despuesP, alt)]
+        movidas = sum(1 for a, d in zip(antesP, despuesP) if abs(a[2] - d[2]) > 0.05) if len(antesP) == len(despuesP) else -1
+        comprobar('la hierba y las matas de lo alisado, a la altura nueva', len(despuesP) >= 3 and max(difs) < 0.12 and movidas > 0, f'{len(despuesP)} plantas, desfase máx. {max(difs) if difs else 0:.3f} m, movidas {movidas}')
+        pg.wait_for_timeout(1500)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_brocha_alisado.png')
+        pg.evaluate(f'{K}.cambiarModo("mover")'); pg.wait_for_timeout(1500)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_brocha_alisado_sin_fantasma.png')
         malos = [e for e in err if 'favicon' not in e]
         comprobar('sin errores en la página', not malos, '; '.join(malos[:3]))
         ctx.close()
