@@ -653,9 +653,10 @@
     },
     {
      "nombre": "Animaciones de llevar al hombro y de arrastrar, hechas en el taller (valravnx, 31 oct): a partir de las que hay (andar con algo en brazos, empujar), moviendo brazos y tronco por código y pasadas al esqueleto del taller. El tronco al hombro tiene que notarse al moverse: hoy, un tronco solo al hombro apenas frena (la ralentización va por lo lleno que vas y así se queda en un 1 %)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T17:57:59+00:00",
-     "rama": "trabajo/20261031-1757"
+     "rama": "trabajo/20261031-1757",
+     "fin": "2026-10-31T20:05:26+00:00"
     },
     {
      "nombre": "Lo que llevas se ve puesto en el personaje del taller: el cinturón y lo que cuelga de él, el leñero o la mochila a la espalda, el saco al hombro y lo que tienes en las manos, con el estilo v5. Capturas de cerca para valravnx",
@@ -2160,6 +2161,13 @@
      "archivo": "jugar/demo/v73.html",
      "capturas": "capturas/demo-v73",
      "notas": "La brocha de nivelar en «Construir» → «Tierra»: un disco a la altura a la que deja el suelo y la raya del borde suave; alisa un círculo de 0,5 a 4 m (R o Girar cambian el tamaño) y las pasadas seguidas siguen a la misma altura. La hierba, las matas, las piedras y los árboles de lo alisado siguen al suelo."
+    },
+    {
+     "v": "v74",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v74.html",
+     "capturas": "capturas/demo-v74",
+     "notas": "El tronco al hombro: el personaje lo sujeta con la mano derecha por encima y va algo inclinado, andando y quieto (también lo ven los demás); animaciones de llevar al hombro y de arrastrar hechas en el taller (taller-carga-v1). Y el tronco al hombro frena por su peso: al 90 %."
     }
    ]
   },

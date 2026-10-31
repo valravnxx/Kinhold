@@ -3393,5 +3393,22 @@
   "pruebas": "Todas en la nube y en el PC de valravnx, dos veces (antes y después de unir main): todo correcto salvo, una vez, «combate» en su PC (la parada perfecta, por tiempos; pasó en la nube) y, una vez, la de nivelar por la ladera poco empinada (arreglada y repetida: bien). Capturas miradas en PC y móvil.",
   "capturas": "capturas/demo-v73",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T17:57:59+00:00",
+  "fin": "2026-10-31T20:05:26+00:00",
+  "titulo": "Animaciones de llevar al hombro y de arrastrar, hechas en el taller (carril B)",
+  "hito": "equipo",
+  "hecho": [
+   "Herramienta nueva del taller, hacer_cargas.mjs: parte de andar y de estar quieto del propio esqueleto, inclina el tronco girando las vértebras y lleva cada brazo que sujeta algo a su punto con IK de dos huesos; los dedos, cerrados como al llevar en brazos.",
+   "Tres animaciones nuevas por sexo, en recursos/personajes/taller-carga-v1/ (unos 76 KB cada uno): al hombro andando, al hombro quieto y arrastrar (para la rastra).",
+   "En el juego, con un tronco corto al hombro el personaje lo sujeta con la mano derecha por encima y va algo inclinado; lo ven también los demás jugadores. En «Personaje», tres botones más en «Más animaciones».",
+   "El tronco al hombro frena: lo pesado suelto en las manos o al hombro baja la velocidad por su peso, hasta el 80 % con 50 kg; el tronco corto, al 90 % (antes, solo al hombro, un 1 %). Decisión provisional, anotada en el registro de la demo.",
+   "Pruebas: la de inventario mira lo que frena el tronco (MUTAR_PESO=1 la rompe), la de animaciones de cargar mira las tres nuevas (MUTAR_CARGAS=1) y la de lo que llevas mira que con el tronco al hombro la mano derecha lo sujeta (MUTAR_HOMBRO=1). Las demás pruebas de navegador copian también la carpeta nueva.",
+   "Aún mal: el tronco va muy pegado a la cabeza y de frente parece rozarla; los dedos no se cierran del todo sobre el tronco; arrastrar no se puede ver en el juego hasta que esté la rastra."
+  ],
+  "pruebas": "Batería entera en la nube (SOLO_NUBE=1, tras unir main con la toca del carril B): 24 grupos bien. Antes, en el PC de valravnx, fallaron 6 grupos por la carpeta nueva que no copiaban (404), ya arreglado. Tras unir la v73 del carril A (sin archivos de código en común) solo se pasaron aquí las de lógica tocadas.",
+  "capturas": "capturas/demo-v74",
+  "estado": "ok"
  }
 ]
