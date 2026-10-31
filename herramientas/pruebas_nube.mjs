@@ -38,8 +38,22 @@ const alPC = process.env.SOLO_NUBE ? [] : pedidos.filter(g => g !== 'logica');
 const aNube = pedidos.filter(g => !alPC.includes(g));
 console.log(`Pruebas de ${rama} (${sha.slice(0, 7)})${process.argv.length > 2 ? ': ' + pedidos.join(', ') : ''}`);
 
-// sube la rama del pedido y encuentra su ejecución
+// sube la rama del pedido y encuentra su ejecución. Los grupos van en el nombre de la rama: si no caben (GitHub no
+// acepta nombres de más de 255 letras; pasaba al repetir en la nube lo que no volvía del PC), van en varios pedidos.
+const LARGO_MAX = 150;
 async function lanzar(donde, grupos) {
+  const enTodos = donde === 'pc' ? todos.filter(g => g !== 'logica') : todos;
+  if (grupos.length === enTodos.length && enTodos.every(g => grupos.includes(g))) return [await lanzarUno(donde, grupos)];
+  const tandas = [[]];
+  for (const g of grupos) {
+    const t = tandas[tandas.length - 1];
+    if (t.length && [...t, g].join('+').length > LARGO_MAX) tandas.push([g]); else t.push(g);
+  }
+  const r = [];
+  for (const t of tandas) r.push(await lanzarUno(donde, t));
+  return r;
+}
+async function lanzarUno(donde, grupos) {
   const id = `${ahora().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
   const enTodos = donde === 'pc' ? todos.filter(g => g !== 'logica') : todos;
   const nombre = grupos.length === enTodos.length && enTodos.every(g => grupos.includes(g)) ? 'todos' : grupos.join('+');
@@ -61,8 +75,8 @@ const ramasDe = (runId) => sh('git', ['ls-remote', 'origin', `refs/heads/nube/${
 
 const resultado = new Map();   // grupo → { bien, min, donde }
 const ejecuciones = [];
-if (alPC.length) ejecuciones.push(await lanzar('pc', alPC));
-if (aNube.length) ejecuciones.push(await lanzar('nube', aNube));
+if (alPC.length) ejecuciones.push(...await lanzar('pc', alPC));
+if (aNube.length) ejecuciones.push(...await lanzar('nube', aNube));
 
 for (;;) {
   const activas = ejecuciones.filter(e => !e.dejado && !e.terminada);
@@ -89,7 +103,7 @@ for (;;) {
       if (!e.aceptado && e.listaHecha && ahora() - e.listaHecha > ESPERA_PC * 1000) {
         cancelar(e);
         console.log('  El PC de valravnx no está encendido para pruebas (o está ocupado): todo a la nube.');
-        ejecuciones.push(await lanzar('nube', e.grupos));
+        ejecuciones.push(...await lanzar('nube', e.grupos));
         continue;
       }
       // lo ha apagado a medias: lo que falta, a la nube
@@ -100,7 +114,7 @@ for (;;) {
         const faltan = e.grupos.filter(g => !devueltos.has(g));
         for (const g of faltan) resultado.delete(g);
         console.log(`  El PC de valravnx se ha apagado: ${faltan.join(', ')}, a la nube.`);
-        ejecuciones.push(await lanzar('nube', faltan));
+        ejecuciones.push(...await lanzar('nube', faltan));
         continue;
       }
     }
@@ -115,7 +129,7 @@ for (;;) {
       if (sinResumen.length) {
         console.log(`  Del PC no han vuelto ${sinResumen.join(', ')}: otra vez en la nube.`);
         for (const g of sinResumen) resultado.delete(g);
-        ejecuciones.push(await lanzar('nube', sinResumen));
+        ejecuciones.push(...await lanzar('nube', sinResumen));
       }
     }
   }
