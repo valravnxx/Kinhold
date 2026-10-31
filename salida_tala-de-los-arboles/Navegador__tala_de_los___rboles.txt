@@ -1,0 +1,29 @@
+PC: talar un árbol joven con hacha de piedra
+  OK   sin hacha no se tala: lo dice — Necesitas un hacha en la mano para talar.
+  OK   el hacha de piedra está en el catálogo y se coge con la mano
+  OK   con el hacha en la mano, Usar junto al árbol tala
+  OK   cada golpe se cuenta y dice cuántos faltan — Talas el árbol: faltan 7 golpes.
+  OK   el golpe va al registro con su autor
+  OK   con los golpes que pide, cae — {'ok': True, 'cae': True, 'faltan': 0, 'motivo': '', 'dir': 1.11}
+  OK   ya no está en pie (queda el tocón) y Usar no lo encuentra
+  OK   el árbol cae (se ve caer)
+  OK   lo que deja no se ve mientras cae
+  OK   queda el tocón en el sitio
+  OK   el árbol del bosque ya no se dibuja
+  OK   en el suelo, un tronco delgado y de 2 a 4 ramas — [{'tipo': 'tronco_delgado', 'n': 1, 'x': 25.39, 'z': 12.46}, {'tipo': 'rama', 'n': 2, 'x': 26.91, 'z': 13.21}]
+  OK   el tronco queda tumbado a lo largo de donde cayó — -0.46 y 1.11
+  OK   se ven, donde cayó el árbol
+  OK   el tronco delgado se coge con Usar (en las dos manos) — {"tipo":"tronco_delgado","n":1}
+PC: se guarda y vuelve a crecer
+  OK   al recargar sigue el tocón
+  OK   pasado su tiempo, vuelve a crecer: sin tocón y otra vez en el bosque
+PC: el adulto con hacha de piedra, muy lento
+  OK   un golpe de piedra a un adulto: faltan 55 — {'ok': True, 'cae': False, 'faltan': 55, 'motivo': '', 'dir': None}
+  OK   con el hacha de hierro cae enseguida y deja un tronco largo — {'ok': True, 'cae': True, 'faltan': 0, 'motivo': '', 'dir': 2.03}
+  FALLA sin errores en la consola (PC) — Failed to load resource: the server responded with a status of 404 (File not found); Failed to load resource: the server responded with a status of 404 (File not found)
+Móvil: talar con el botón Usar
+  OK   móvil: el botón Usar tala
+  OK   móvil: cae y queda el tocón
+  FALLA sin errores en la consola (móvil) — Failed to load resource: the server responded with a status of 404 (File not found)
+
+2 FALLOS: sin errores en la consola (PC), sin errores en la consola (móvil)
