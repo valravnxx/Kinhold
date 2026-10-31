@@ -643,7 +643,9 @@
     },
     {
      "nombre": "Estaciones y recetas en la lógica pura, con los datos del documento de sistemas (apartados 7 y 8) de las primeras estaciones: hoguera y piedra de tallar (N0) y banco de trabajo de tronco (entrada a N1); cada receta con lo que gasta, lo que da, dónde se hace y su tiempo. Fabricar con autor, gastando lo que llevas encima y lo de los arcones a pocos pasos, con una cola pequeña por estación y el tiempo contado por tiempo transcurrido. Pruebas de lógica",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T05:36:55+00:00",
+     "rama": "trabajo/20261031-0536"
     },
     {
      "nombre": "Recetas que conoce cada personaje y desbloqueo por práctica (GDD, apartado 9): construir la estación da sus recetas básicas y fabricar en ella abre las siguientes. Lo que el GDD no fija (qué recetas son básicas y cuánta práctica abre las demás) se decide de forma provisional y sencilla y se anota en el registro de decisiones y en el diario. Guardado en el navegador con migración. Pruebas de lógica",
