@@ -1,0 +1,38 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2256 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2040 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1632 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2108 KB
+
+== Construir demo única
+      1778 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2573 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1627 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2075 KB
+dist/kinhold_trozos.html 1622 KB
+hilo de los trozos 14 KB
+
+== Navegador: la demo en el mundo (Whitholm)
+  OK   andando hacia el mar, avanza y no se mete en el agua — {"sobreMar": 0.9673763823510839, "x": 9755.240000000005, "z": -1.9839278146187122e-16, "andado": 3.2400000000052387}
+  OK   sin errores en la página
+
+Todo bien
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 1422 s
