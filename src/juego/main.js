@@ -19,6 +19,7 @@ import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
 import { montarMapaRey } from './mapa_rey.js';
+import { montarPanelAdmin } from './panel_admin.js';
 import { crearComarcas } from '../logica/comarcas.js';
 import { dibujarRetrato } from './retrato.js';
 import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
@@ -829,7 +830,8 @@ addEventListener('keydown', (e) => {
   if (k === 'pagedown' || k === '-') cambiarPlanta(-1);
   if (k === 'f') usar();
   if (k === 'i') panelInventario.alternar();
-  if (k === 'm' && mapaRey) mapaRey.alternar();
+  if (k === 'm' && mapaRey) { if (panelAdmin && panelAdmin.abierto) panelAdmin.cerrar(); else mapaRey.alternar(); }
+  if (k === 'f9' && panelAdmin) { e.preventDefault(); panelAdmin.alternar(); }
   if (k === 'escape') { if (mapaRey && mapaRey.abierto) mapaRey.cerrar(); else cambiarModo('mover'); }
 });
 addEventListener('keyup', (e) => {
@@ -2106,6 +2108,12 @@ function iniciarEnLinea() {
   Object.defineProperty(enLinea.red, 'invs', { get: () => (objetosRed.deServidor ? deInventario : null) });
 }
 
+// Panel de depuración del admin (valravnx, 30 oct; src/juego/panel_admin.js): F9 o el botón «Admin». El mapa con todos
+// los conectados y teletransportarse, siempre pedido al servidor con la clave de admin; el jugador se mueve cuando el
+// servidor contesta que sí. Se pone en el suelo de allí (o en el piso de una obra, si cae encima de una).
+const panelAdmin = mapaRey ? montarPanelAdmin({ mapaRey, enLinea, salida: mundoJ.salida, avisar: mostrarAviso,
+  irA: (x, y, z, giro) => { Object.assign(pj, { x, z, k: 0, vel: 0 }); if (giro !== null) pj.rot = giro; pj.y = alturaSuelo(); } }) : null;
+
 // Atajo de prueba (obras con lo que llevas): coge del arcón de pruebas, con acciones, lo que le falta a la obra p (lo
 // pesado de una obra en alto, de uno en uno, y dos varas y una cuerda para rodarlo); si no llevas mochila ni cinturón,
 // se pone una mochila de bastidor y un cinto con anillas del arcón. En línea, por el servidor (se adelanta aquí).
@@ -2134,7 +2142,7 @@ window.__kinhold = {
   get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos, talaV, decorado, combate,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
-  mundoJ, get mundoListo() { return mundoListo; }, mapaRey, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
+  mundoJ, get mundoListo() { return mundoListo; }, mapaRey, panelAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado
   nado,
   // los sitios de salida (src/logica/whitholm.js): el común y si uno es de la lista de la salida al azar

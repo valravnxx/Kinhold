@@ -18,6 +18,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   const red = new MundoEnLinea((m) => { if (cli) cli.enviar(m); });
   const remotos = new Map();    // autor → { j, clave, x, z, vel }
   const enLiza = new Set();     // los que están en el «Duelo en línea»: no están en este mundo y no se dibujan
+  const escuchas = new Set();   // lo que quiere ver los mensajes del panel del admin (src/juego/panel_admin.js)
 
   cli = abrirCliente({
     alAbrir: (enviar) => {
@@ -28,6 +29,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       enviar({ tipo: 'combate', que: 'mundo' });
     },
     alMensaje: (msg) => {
+      if (msg.tipo === 'admin') { for (const f of escuchas) f(msg); return; }
       for (const l of msg.tipo === 'luchadores' ? msg.lista : msg.tipo === 'bienvenida' ? msg.luchadores || [] : [])
         if (l.liza) enLiza.add(l.autor); else enLiza.delete(l.autor);
       if (msg.tipo === 'sale') { quitar(msg.autor); enLiza.delete(msg.autor); }
@@ -88,6 +90,8 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
 
   return {
     red, direccion: cli.direccion, paso, mandarAspecto,
+    // para el panel del admin: mandar al servidor y escuchar sus respuestas ({ tipo: 'admin' })
+    enviar: (m) => cli.enviar(m), escuchar: (f) => { escuchas.add(f); return () => escuchas.delete(f); },
     get estado() { return cli.estado; },
     get antiguo() { return cli.antiguo; },
     get remotos() { return remotos; },

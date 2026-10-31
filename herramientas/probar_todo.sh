@@ -51,6 +51,7 @@ paso "Jugadores que se ven, con lag simulado" node pruebas/prueba_presencia.mjs
 paso "Mundo en línea: dos clientes con el servidor" node pruebas/prueba_en_linea.mjs
 paso "Conexiones que se cortan y datos mal formados" node pruebas/prueba_conexiones.mjs
 paso "Volver donde lo dejaste (posiciones en el servidor)" node pruebas/prueba_posicion_servidor.mjs
+paso "Panel del admin en el servidor (clave, ver a todos, teletransportarse)" node pruebas/prueba_admin_servidor.mjs
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
 paso "Inventario y suelo en el servidor, con dos clientes" node pruebas/prueba_objetos_servidor.mjs
 paso "Obras con lo que llevas en línea, con dos clientes" node pruebas/prueba_obras_en_linea.mjs
@@ -113,6 +114,7 @@ paso "Navegador: niveles de detalle del personaje" python3 pruebas/prueba_detall
 paso "Navegador: terreno por trozos (en un hilo aparte)" python3 pruebas/prueba_trozos_navegador.py dist/kinhold_trozos.html "$C/trozos"
 paso "Navegador: mapa del mundo" python3 pruebas/prueba_mapa_navegador.py dist/kinhold_mapa.html "$C/mapa"
 paso "Navegador: mapa del rey" python3 pruebas/prueba_mapa_rey_navegador.py dist/kinhold_demo.html "$C/mapa_rey"
+paso "Navegador: panel del admin" python3 pruebas/prueba_admin_navegador.py dist/kinhold_demo.html "$C/admin"
 paso "Web de progreso" node herramientas/construir_web.mjs
 paso "Navegador: web" python3 pruebas/prueba_web.py "$C/web"
 if [ -n "$LISTAR" ]; then printf '['; sep=; for g in "${grupos[@]}"; do printf '%s"%s"' "$sep" "$g"; sep=,; done; echo ']'; exit 0; fi
