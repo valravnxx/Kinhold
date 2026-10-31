@@ -512,9 +512,9 @@
     },
     {
      "nombre": "Panel de depuración con clave de admin (valravnx, 30 oct): se abre con una tecla; mapa de la isla con los jugadores conectados, lista de jugadores, y teletransportarse a un punto del mapa o junto a otro jugador. Ver a todos y teletransportarse pasan por el servidor con su autor, y solo los acepta con la clave de admin que valravnx pone en la máquina (en servidor/nube/LEEME.md, cómo)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T20:23:16+00:00",
-     "rama": "trabajo/20261031-2023"
+     "fin": "2026-10-31T21:34:52+00:00"
     },
     {
      "nombre": "Lo que se recoge sale del sitio: ramas en el bosque, sílex en la caliza, piedra en las laderas y los ríos, fibra en los claros y las riberas",
@@ -669,7 +669,9 @@
     },
     {
      "nombre": "Rastra (N0: dos varas largas con travesaños): se arrastra a mano, despacio, con 2–3 troncos cortos o un montón de piedras, y se queda donde la dejas con lo que lleve. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T21:23:14+00:00",
+     "rama": "trabajo/20261031-2123"
     },
     {
      "nombre": "Carretilla de rueda maciza (N1: la rueda es una rodaja de tronco): se empuja, se aparca y hace de contenedor; dentro de tus tierras está protegida y fuera cualquiera puede coger lo que lleva. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
@@ -1366,6 +1368,12 @@
      "inicio": "2026-10-31T10:02:41+01:00",
      "rama": "trabajo/20261031-1005-cuatro",
      "fin": "2026-10-31T18:52:54+01:00"
+    },
+    {
+     "nombre": "Pelear en línea en el mundo (valravnx, 31 oct): al sacar el arma, los demás la ven en la mano, y los golpes y las paradas van por el servidor y hieren de verdad al otro",
+     "estado": "en_curso",
+     "inicio": "2026-10-31T22:59:16+01:00",
+     "rama": "trabajo/20261031-2300-pelea"
     }
    ],
    "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
@@ -2172,6 +2180,13 @@
      "archivo": "jugar/demo/v74.html",
      "capturas": "capturas/demo-v74",
      "notas": "El tronco al hombro: el personaje lo sujeta con la mano derecha por encima y va algo inclinado, andando y quieto (también lo ven los demás); animaciones de llevar al hombro y de arrastrar hechas en el taller (taller-carga-v1). Y el tronco al hombro frena por su peso: al 90 %."
+    },
+    {
+     "v": "v75",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v75.html",
+     "capturas": "capturas/demo-v75",
+     "notas": "Panel de depuración del admin: F9 (o el botón «Admin» con ?admin) abre el mapa del rey con todos los jugadores conectados y su lista; un clic en el mapa te lleva ahí y «Ir» te pone junto a otro jugador. Todo pasa por el servidor con la clave de admin que valravnx pone en la máquina (servidor/nube/LEEME.md)."
     }
    ]
   },

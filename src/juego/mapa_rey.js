@@ -2,6 +2,8 @@
 // lleva desde que apareces. Se abre con M (o el botón «Mapa» en el móvil) y enseña la costa, las comarcas con su
 // nombre, los ríos, la ciudad del rey (en Strandvang) y dónde estás tú, con hacia dónde miras. Sin viaje rápido: solo se
 // mira. Se arrastra para moverlo y se acerca con la rueda o con dos dedos.
+// El panel del admin (src/juego/panel_admin.js) le pone una capa encima (ponerCapa): pinta a los demás jugadores y
+// recibe los clics en el mapa (en metros del mundo) para ir ahí; sin capa, el mapa es solo para mirar.
 //
 // La imagen de fondo (papel, mar, tierra, fronteras) la calcula src/juego/mapa_rey_pintar.js a pasos cortos en cuanto
 // el mundo está listo, sin parar el juego; si lo abres antes de que acabe, se termina de golpe («Desplegando el
@@ -79,6 +81,8 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
   // ---------- vista: km del mundo → píxeles de pantalla ----------
   const vista = { s: 1, x: 0, y: 0 };   // px por km y dónde cae el km (0, 0)
   const kmAPant = (x, y) => [vista.x + x * vista.s, vista.y + y * vista.s];
+  const pantAKm = (x, y) => [(x - vista.x) / vista.s, (y - vista.y) / vista.s];
+  let capa = null;   // { pintar(ctx, { kmAPant, s, etiqueta }), clic(x, z) en m del mundo, alCerrar() }
   function encuadrar() {
     const W = innerWidth, H = innerHeight, cu = datos.cuadro, m = 8;
     vista.s = Math.min((W - 2 * m) / (cu.x1 - cu.x0), (H - 2 * m) / (cu.y1 - cu.y0));
@@ -120,7 +124,9 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
     ctx.drawImage(fondo, ox, oy, aw, ah);
     const t = s / datos.pxKm;   // cuántos px de pantalla por px del fondo
     pliego = [ox, oy, ox + aw, oy + ah];
-    lineas(s); rios(s); montes(s); arboles(s, t); ciudad(s); nombres(s); marco(ox, oy, aw, ah, s); jugador(s);
+    lineas(s); rios(s); montes(s); arboles(s, t); ciudad(s); nombres(s); marco(ox, oy, aw, ah, s);
+    if (capa && capa.pintar) capa.pintar(ctx, { kmAPant, s, etiqueta });
+    jugador(s);
   }
   // un tamaño en km, pasado a px, con un mínimo para que de lejos se siga viendo
   const tam = (km, s, min) => Math.max(min, km * s);
@@ -282,18 +288,20 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
     else { encuadrar(); pintar(); }
     clearInterval(reloj); reloj = setInterval(pintar, 250);   // tu marca se mueve si andas con el mapa abierto
   }
-  function cerrar() { raiz.hidden = true; clearInterval(reloj); reloj = null; }
+  function cerrar() { if (raiz.hidden) return; raiz.hidden = true; clearInterval(reloj); reloj = null; if (capa && capa.alCerrar) capa.alCerrar(); }
   const alternar = () => (raiz.hidden ? abrir() : cerrar());
   raiz.querySelector('.mr-cerrar').addEventListener('click', cerrar);
   raiz.querySelector('.mr-yo').addEventListener('click', () => { if (datos) centrarEnMi(); });
 
-  const dedos = new Map(); let pinza = 0;
+  const dedos = new Map(); let pinza = 0, toque = null;   // toque: dónde empezó un clic (si no se arrastra, es un clic)
   lienzo.addEventListener('pointerdown', (e) => {
     lienzo.setPointerCapture(e.pointerId); dedos.set(e.pointerId, { x: e.clientX, y: e.clientY }); lienzo.classList.add('arrastrando');
+    toque = dedos.size === 1 ? { x: e.clientX, y: e.clientY } : null;
     if (dedos.size === 2) { const [a, b] = [...dedos.values()]; pinza = Math.hypot(a.x - b.x, a.y - b.y); }
   });
   lienzo.addEventListener('pointermove', (e) => {
     const d = dedos.get(e.pointerId); if (!d || !datos) return;
+    if (toque && Math.hypot(e.clientX - toque.x, e.clientY - toque.y) >= 6) toque = null;
     if (dedos.size === 2) {
       d.x = e.clientX; d.y = e.clientY;
       const [a, b] = [...dedos.values()], n = Math.hypot(a.x - b.x, a.y - b.y);
@@ -302,13 +310,19 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
     }
     vista.x += e.clientX - d.x; vista.y += e.clientY - d.y; d.x = e.clientX; d.y = e.clientY; limitar(); pintar();
   });
-  const soltar = (e) => { dedos.delete(e.pointerId); pinza = 0; if (!dedos.size) lienzo.classList.remove('arrastrando'); };
+  const soltar = (e) => {
+    if (e.type === 'pointerup' && toque && dedos.size === 1 && Math.hypot(e.clientX - toque.x, e.clientY - toque.y) < 6 && capa && capa.clic && datos) {
+      const [x, y] = pantAKm(e.clientX, e.clientY); capa.clic(x * 1000, y * 1000);
+    }
+    if (dedos.size !== 1) toque = null;
+    dedos.delete(e.pointerId); pinza = 0; if (!dedos.size) lienzo.classList.remove('arrastrando'); };
   lienzo.addEventListener('pointerup', soltar); lienzo.addEventListener('pointercancel', soltar);
   lienzo.addEventListener('wheel', (e) => { e.preventDefault(); if (datos) zoom(Math.exp(-e.deltaY * 0.0015), e.clientX, e.clientY); }, { passive: false });
   addEventListener('resize', () => { if (!raiz.hidden && datos) { encuadrar(); pintar(); } });
 
   return {
-    abrir, cerrar, alternar, preparar, centrarEnMi, zoom,
+    abrir, cerrar, alternar, preparar, centrarEnMi, zoom, pantAKm,
+    ponerCapa(c) { capa = c; lienzo.style.cursor = c && c.clic ? 'crosshair' : ''; pintar(); }, pintar: () => pintar(),
     get abierto() { return !raiz.hidden; }, get listo() { return !!datos; }, get datos() { return datos; },
     get vista() { return { ...vista }; }, get marca() { return marca; }, kmAPant,
     get medida() { return { msPintar: Math.round(msPintar), msMaxPaso: Math.round(msMaxPaso), avance: datos ? 1 : Math.round(avance * 100) / 100 }; },
