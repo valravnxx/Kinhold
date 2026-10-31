@@ -3464,5 +3464,21 @@
   "pruebas": "Batería entera en la nube tras unir main: todos los grupos bien salvo «construir a la altura del suelo», que falló por no encontrar plantas en la ladera elegida al azar (nada que ver con la rastra) y pasó al repetirlo solo. Prueba nueva de lógica (42) y de navegador (PC y móvil), rotas a propósito con MUTAR=1. El PC de valravnx no pudo con ninguna: sin espacio en disco (avisado).",
   "capturas": "capturas/demo-v77",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T22:53:58+00:00",
+  "fin": "2026-10-31T23:37:50+00:00",
+  "titulo": "Hito de arte: revisión completa; dos arreglos más antes de darlo por terminado (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Batería entera sobre main con la demo v76 (25 grupos): todos correctos. El PC de valravnx cogió los grupos de navegador pero no devolvió ninguno; pasaron solos a la nube.",
+   "Capturas miradas en PC y móvil (cara del hombre y de la mujer, espalda con capa, picar, la demo y el mundo). Ya bien lo de la revisión de la tarde: en el móvil el pelo no asoma por la toca, y las cejas tienen pelos y borde suave en vez de bloques.",
+   "Aún mal, de cerca: las cejas se cortan en escalones rectos; el bigote es una banda plana separada de la barba por las comisuras; la barba corta baja por el cuello en un gris claro, como escarcha. Con toca, en el móvil, el borde del cuello sale en dientes de sierra y asoma una cuña de piel entre la toca y el cuello.",
+   "Como aún se ve peor que la referencia, el hito no pasa a revisión: quedan dos tareas antes de la revisión final, que vuelve a pendiente.",
+   "Sin versión nueva (no hay cambios jugables); las capturas de la revisión, en capturas/revision-arte-31oct-noche."
+  ],
+  "pruebas": "En la nube: 25 de 25 grupos correctos",
+  "capturas": "capturas/revision-arte-31oct-noche",
+  "estado": "ok"
  }
 ]
