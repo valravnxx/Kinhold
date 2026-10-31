@@ -31,6 +31,65 @@ export const BOSQUES = { taiga: 'conifera', caducifolio: 'redondo', mixto: 'mixt
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const mezclar = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 
+// Contornos (marching squares): las líneas por donde v(x, y) pasa por `nivel`, con los puntos en los centros de los
+// píxeles y el corte de cada lado interpolado. vale(x, y): si la casilla (x, y)–(x+1, y+1) cuenta (null: todas).
+// Solo dentro del recuadro `caja` ([x0, y0, x1, y1] en px; si no, todo). Es un generador: cada 24 filas deja seguir al
+// juego, y al final devuelve las polilíneas en px, ya encadenadas.
+const CASOS = { 1: [['L', 'B']], 2: [['B', 'R']], 3: [['L', 'R']], 4: [['T', 'R']], 5: [['L', 'T'], ['B', 'R']], 6: [['T', 'B']], 7: [['L', 'T']],
+  8: [['L', 'T']], 9: [['T', 'B']], 10: [['T', 'R'], ['L', 'B']], 11: [['T', 'R']], 12: [['L', 'R']], 13: [['B', 'R']], 14: [['L', 'B']] };
+export function* contornos(W, H, v, nivel, vale, caja = null) {
+  const segs = [], porLado = new Map();
+  const [X0, Y0, X1, Y1] = caja ? [Math.max(0, caja[0] - 1), Math.max(0, caja[1] - 1), Math.min(W - 1, caja[2] + 1), Math.min(H - 1, caja[3] + 1)] : [0, 0, W - 1, H - 1];
+  for (let y = Y0; y < Y1; y++) {
+    if ((y - Y0) % 24 === 23) yield null;
+    let a = v(X0, y), d = v(X0, y + 1);
+    for (let x = X0; x < X1; x++) {
+      const b = v(x + 1, y), c = v(x + 1, y + 1);
+      const caso = (a > nivel ? 8 : 0) | (b > nivel ? 4 : 0) | (c > nivel ? 2 : 0) | (d > nivel ? 1 : 0);
+      if (caso && caso !== 15 && (!vale || vale(x, y))) {
+        const t = (p, q) => (nivel - p) / (q - p || 1e-9);
+        const lado = { T: [`${x},${y},h`, x + t(a, b), y], R: [`${x + 1},${y},v`, x + 1, y + t(b, c)], B: [`${x},${y + 1},h`, x + t(d, c), y + 1], L: [`${x},${y},v`, x, y + t(a, d)] };
+        for (const [p, q] of CASOS[caso]) {
+          const k = segs.length; segs.push([lado[p], lado[q]]);
+          for (const e of [lado[p][0], lado[q][0]]) { const l = porLado.get(e); if (l) l.push(k); else porLado.set(e, [k]); }
+        }
+      }
+      a = b; d = c;
+    }
+  }
+  // encadenar: desde cada segmento sin usar, hacia los dos lados
+  const usado = new Uint8Array(segs.length), lineas = [];
+  const siguiente = (clave) => { for (const k of porLado.get(clave) || []) if (!usado[k]) return k; return -1; };
+  for (let k0 = 0; k0 < segs.length; k0++) {
+    if (usado[k0]) continue;
+    usado[k0] = 1;
+    const linea = [[segs[k0][0][1], segs[k0][0][2]], [segs[k0][1][1], segs[k0][1][2]]];
+    for (const [punta, alPrincipio] of [[segs[k0][1][0], false], [segs[k0][0][0], true]]) {
+      let clave = punta;
+      for (;;) {
+        const k = siguiente(clave); if (k < 0) break;
+        usado[k] = 1;
+        const [p, q] = segs[k], otro = p[0] === clave ? q : p;
+        if (alPrincipio) linea.unshift([otro[1], otro[2]]); else linea.push([otro[1], otro[2]]);
+        clave = otro[0];
+      }
+    }
+    if (linea.length > 2) lineas.push(linea);
+  }
+  return lineas;
+}
+// suaviza una polilínea (esquinas cortadas): los escalones de las fronteras, que salen de la rejilla de píxeles
+export function chaikin(l) {
+  if (l.length < 3) return l;
+  const r = [l[0]];
+  for (let k = 0; k < l.length - 1; k++) {
+    const [ax, ay] = l[k], [bx, by] = l[k + 1];
+    r.push([ax * 0.75 + bx * 0.25, ay * 0.75 + by * 0.25], [ax * 0.25 + bx * 0.75, ay * 0.25 + by * 0.75]);
+  }
+  r.push(l[l.length - 1]);
+  return r;
+}
+
 // el cuadro del mapa en km del mundo
 export function cuadroMapa() {
   return { x0: ISLA.x0 / 1000 - MARGEN_KM, y0: ISLA.z0 / 1000 - MARGEN_KM, x1: ISLA.x1 / 1000 + MARGEN_KM, y1: ISLA.z1 / 1000 + MARGEN_KM };
@@ -43,19 +102,22 @@ export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } =
   const cuadro = cuadroMapa();
   const W = Math.ceil((cuadro.x1 - cuadro.x0) * pxKm), H = Math.ceil((cuadro.y1 - cuadro.y0) * pxKm), NP = W * H;
   const kmX = (px) => cuadro.x0 + (px + 0.5) / pxKm, kmY = (py) => cuadro.y0 + (py + 0.5) / pxKm;
-  const tierra = new Uint8Array(NP), alt = new Float32Array(NP), com = new Int8Array(NP).fill(-1), bio = new Array(NP);
+  const cajas = [];   // el recuadro de cada comarca en px (para no recorrer la imagen entera al sacar sus fronteras)
+  const tierra = new Uint8Array(NP), alt = new Float32Array(NP), com = new Int8Array(NP).fill(-1), bio = new Array(NP), forma = new Float32Array(NP);
 
   // 1) lo caro, por filas: tierra, altura, bioma y comarca de cada píxel
   for (let py = 0; py < H; py++) {
     for (let px = 0; px < W; px++) {
       const i = py * W + px, xm = kmX(px) * 1000, ym = kmY(py) * 1000;
       const g = paisaje.grande(xm, ym);
+      forma[i] = g.f;
       if (g.f < 0) continue;
       tierra[i] = 1;
       // la altura del mapa con algo de relieve de detalle (como el visor del mapa), para que el sombreado no salga liso
       const a = alt[i] = Math.max(1, g.hm + (fbm(xm / 2200, ym / 2200, 79, 4) - 0.5) * (40 + g.hm * 0.12));
       bio[i] = paisaje.sitio(xm, ym, a).bioma;
-      com[i] = comarcas.zonaEn(xm, ym).comarca;
+      const c = com[i] = comarcas.zonaEn(xm, ym).comarca;
+      if (c >= 0) { const k = cajas[c] || (cajas[c] = [px, py, px, py]); if (px < k[0]) k[0] = px; if (px > k[2]) k[2] = px; if (py > k[3]) k[3] = py; }
     }
     if (py % filas === filas - 1) yield { avance: (py + 1) / H * 0.75 };
   }
@@ -106,7 +168,7 @@ export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } =
         for (const [r, fuerza] of [[4.5, 0.55], [9.5, 0.4], [16, 0.28], [24, 0.16]]) {
           const e = Math.abs(d - r); if (e < 0.9) col = mezclar(col, [62, 84, 92], fuerza * (1 - e / 0.9));
         }
-        if (d <= 2) col = mezclar(col, TINTA, d <= 1 ? 0.92 : 0.45);   // la costa entintada
+        if (d <= 3) col = mezclar(col, [70, 92, 98], 0.25 * (1 - d / 3));   // el agua de la orilla, algo más oscura (la costa va como línea)
       } else {
         const b = bio[i], a = alt[i];
         col = mezclar(col, BIOMAS[b] ? BIOMAS[b].color : [146, 152, 92], b === 'nieve' ? 0.15 : 0.3);
@@ -125,9 +187,7 @@ export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } =
           const db = dBorde[i], ancho = c === COMARCA_REY ? 11 : 7;
           if (c === COMARCA_REY) col = mezclar(col, TINTAS[c], 0.12);
           if (db < ancho) col = mezclar(col, TINTAS[c], 0.55 * Math.pow(1 - db / ancho, 1.4));
-          if (db < 1.5 && ((Math.floor(px / 4) + Math.floor(py / 4)) & 1)) col = mezclar(col, RAYA, 0.9);
         }
-        if (dCosta[i] < 1) col = mezclar(col, TINTA, 0.8);   // la costa por el lado de tierra
       }
       rgba[o] = col[0]; rgba[o + 1] = col[1]; rgba[o + 2] = col[2]; rgba[o + 3] = 255;
     }
@@ -156,7 +216,23 @@ export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } =
   montes.sort((a, b) => a[1] - b[1]); arboles.sort((a, b) => a[1] - b[1]);   // de arriba abajo: los de delante tapan a los de detrás
   yield { avance: 0.96 };
 
-  // 5) los ríos del juego que pasan por el mapa (en km, con su ancho en m), cortados en la costa
+  // 5) la costa y las fronteras como líneas (contornos, nítidos a cualquier zoom): la costa, donde la forma del juego
+  // pasa por 0; las fronteras, donde cambia la comarca (cada una una sola vez, de la comarca de número menor)
+  const costa = (yield* contornos(W, H, (x, y) => forma[y * W + x], 0, null)).map(l => l.map(([x, y]) => [kmX(x), kmY(y)]));
+  yield { avance: 0.965 };
+  const fronteras = [];
+  for (let c = 0; c < comarcas.letras.length; c++) {
+    const v = (x, y) => { const i = y * W + x; return tierra[i] && com[i] === c ? 1 : 0; };
+    const vale = (x, y) => {
+      for (const i of [y * W + x, y * W + x + 1, (y + 1) * W + x, (y + 1) * W + x + 1]) if (!tierra[i] || com[i] < c) return false;
+      return true;
+    };
+    if (!cajas[c]) continue;
+    for (const l of yield* contornos(W, H, v, 0.5, vale, cajas[c])) fronteras.push(chaikin(chaikin(l)).map(([x, y]) => [kmX(x), kmY(y)]));
+    yield { avance: 0.965 + c * 0.002 };
+  }
+
+  // 6) los ríos del juego que pasan por el mapa (en km, con su ancho en m), cortados en la costa
   const rios = [];
   for (const r of paisaje.rios) {
     const pts = [];
@@ -180,10 +256,11 @@ export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } =
   }
   yield { avance: 0.98 };
 
-  // 6) dónde va el nombre de cada comarca: el sitio más lejos de su frontera y de la costa (no su centro de masas, que en
+  // 7) dónde va el nombre de cada comarca: el sitio más lejos de su frontera y de la costa (no su centro de masas, que en
   // las comarcas alargadas cae fuera); el de Strandvang, además, lejos de la ciudad, para no taparla
   const mejor = comarcas.letras.map(() => ({ nota: -1, x: 0, y: 0 }));
   for (let i = 0; i < NP; i++) {
+    if (i % (W * 64) === W * 64 - 1) yield { avance: 0.99 };
     const c = com[i]; if (c < 0 || !tierra[i]) continue;
     const x = kmX(i % W), y = kmY((i / W) | 0);
     let nota = Math.min(dBorde[i], dCosta[i]) / pxKm;
@@ -191,6 +268,6 @@ export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } =
     if (nota > mejor[c].nota) mejor[c] = { nota, x, y };
   }
   yield { avance: 1 };
-  return { ancho: W, alto: H, pxKm, cuadro, rgba, comarca: com, tierra, rios, montes, arboles,
+  return { ancho: W, alto: H, pxKm, cuadro, rgba, comarca: com, tierra, rios, montes, arboles, costa, fronteras,
     etiquetas: mejor.map((m, k) => (m.nota < 0 ? null : { k, x: m.x, y: m.y })).filter(Boolean) };
 }

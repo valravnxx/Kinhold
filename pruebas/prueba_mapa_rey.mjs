@@ -4,7 +4,8 @@
 //   - la ciudad del rey cae en tierra de Strandvang
 //   - los ríos son los del juego y acaban en el mar o en otro río (no en mitad de la tierra a lo tonto); ningún árbol ni
 //     monte en el mar, y ningún árbol pegado a la ciudad
-//   - se pinta a pasos cortos (ningún paso de más de 40 ms con 4 filas por paso, medido en node)
+//   - se pinta a pasos cortos: con 4 filas por paso, el 99 % de los pasos por debajo de 25 ms y ninguno de más de 80 ms
+//     (sin contar el primero, en el que el motor de JavaScript compila el código; medido en node)
 // Uso: node pruebas/prueba_mapa_rey.mjs        MUTAR=1 → los nombres cambiados de comarca: tiene que fallar.
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearPaisaje } from '../src/logica/paisaje.js';
@@ -20,11 +21,12 @@ const comprobar = (n, c, d = '') => { console.log((c ? '  OK   ' : '  FALLA ') +
 const mapa = generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO });
 const pai = crearPaisaje(mapa), C = crearComarcas(mapa);
 const g = pintarMapaRey(pai, C, { filas: 4 });
-let r, max = 0, t0 = performance.now();
-do { const a = performance.now(); r = g.next(); max = Math.max(max, performance.now() - a); } while (!r.done);
+let r, t0 = performance.now(); const pasos = [];
+do { const a = performance.now(); r = g.next(); pasos.push(performance.now() - a); } while (!r.done);
+const resto = pasos.slice(1).sort((a, b) => a - b), max = resto[resto.length - 1], p99 = resto[Math.floor(resto.length * 0.99)];
 const d = r.value;
 console.log(`  (${d.ancho} × ${d.alto} px, ${Math.round(performance.now() - t0)} ms en total, ${d.rios.length} ríos, ${d.montes.length} montes, ${d.arboles.length} árboles)`);
-comprobar('se pinta a pasos cortos (ningún paso de más de 40 ms)', max <= 40, `${max.toFixed(1)} ms`);
+comprobar('se pinta a pasos cortos (el 99 % en menos de 25 ms, ninguno de más de 80)', p99 <= 25 && max <= 80, `${pasos.length} pasos; 99 %: ${p99.toFixed(1)} ms; el más largo: ${max.toFixed(1)} ms`);
 if (MUTAR === '1') d.etiquetas.forEach(e => { e.k = (e.k + 1) % 8; });
 
 const px = (x, y) => { const a = Math.floor((x - d.cuadro.x0) * d.pxKm), b = Math.floor((y - d.cuadro.y0) * d.pxKm); return a < 0 || b < 0 || a >= d.ancho || b >= d.alto ? -1 : b * d.ancho + a; };

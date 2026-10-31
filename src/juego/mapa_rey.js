@@ -52,16 +52,21 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
     return false;
   }
   // en segundo plano, en los huecos que deja el juego entre fotograma y fotograma (requestIdleCallback dice cuánto
-  // queda de cada hueco); donde no lo hay, 8 ms cada vez
+  // queda de cada hueco; donde no lo hay, cada 16 ms). Cada vez, como mucho el 12 % del tiempo desde la vez anterior
+  // (entre 6 y 40 ms): en un móvil que va a 60 fotogramas, unos 6 ms; en una máquina lenta, que tarda 300 ms en cada
+  // fotograma, más, para que no tarde minutos
   let preparando = false;
   function preparar() {
     if (preparando || datos) return;
     preparando = true;
     const hueco = typeof requestIdleCallback === 'function';
+    let antes = performance.now();
     const programar = () => (hueco ? requestIdleCallback(seguir, { timeout: 120 }) : setTimeout(seguir, 16));
     const seguir = (dl) => {
-      const pres = dl && !dl.didTimeout ? Math.max(4, Math.min(14, dl.timeRemaining())) : 8;
-      if (!paso(pres)) programar();
+      const ahora = performance.now(), porTiempo = Math.max(6, Math.min(40, (ahora - antes) * 0.12));
+      const pres = dl && !dl.didTimeout ? Math.max(porTiempo, Math.min(14, dl.timeRemaining())) : porTiempo;
+      const hecho = paso(pres); antes = performance.now();
+      if (!hecho) programar();
     };
     programar();
   }
@@ -85,9 +90,11 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
     const cu = datos.cuadro, W = innerWidth, H = innerHeight;
     vista.s = Math.max(vista.base, Math.min(vista.base * 8, vista.s));
     const [ax, ay] = kmAPant(cu.x0, cu.y0), [bx, by] = kmAPant(cu.x1, cu.y1);
-    // el papel no se puede sacar de la pantalla: siempre se ve algo de él en el centro
-    if (bx - ax <= W) vista.x += (W - bx - ax) / 2 - 0; else { if (ax > 0) vista.x -= ax; if (bx < W) vista.x += W - bx; }
-    if (by - ay <= H) vista.y += (H - by - ay) / 2; else { if (ay > 0) vista.y -= ay; if (by < H) vista.y += H - by; }
+    // el papel no se puede sacar de la pantalla: su borde entra como mucho hasta el 45 % (así cualquier sitio de la isla
+    // se puede poner en el centro); entero, va centrado
+    const hx = W * 0.45, hy = H * 0.45;
+    if (bx - ax <= W) vista.x += (W - bx - ax) / 2; else { if (ax > hx) vista.x -= ax - hx; if (bx < W - hx) vista.x += W - hx - bx; }
+    if (by - ay <= H) vista.y += (H - by - ay) / 2; else { if (ay > hy) vista.y -= ay - hy; if (by < H - hy) vista.y += H - hy - by; }
   }
   function zoom(f, cx, cy) {
     const s0 = vista.s; vista.s *= f; limitar(); const k = vista.s / s0;
@@ -112,11 +119,22 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
     ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(fondo, ox, oy, aw, ah);
     const t = s / datos.pxKm;   // cuántos px de pantalla por px del fondo
-    rios(s); montes(s); arboles(s, t); ciudad(s); nombres(s); marco(ox, oy, aw, ah, s); jugador(s);
+    lineas(s); rios(s); montes(s); arboles(s, t); ciudad(s); nombres(s); marco(ox, oy, aw, ah, s); jugador(s);
   }
   // un tamaño en km, pasado a px, con un mínimo para que de lejos se siga viendo
   const tam = (km, s, min) => Math.max(min, km * s);
 
+  // la costa entintada y las fronteras de las comarcas, de rayas, como líneas (nítidas a cualquier zoom)
+  function trazo(l) { ctx.beginPath(); l.forEach(([x, y], k) => { const [a, b] = kmAPant(x, y); if (k) ctx.lineTo(a, b); else ctx.moveTo(a, b); }); ctx.stroke(); }
+  function lineas(s) {
+    const z = Math.sqrt(s / vista.base);
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(122,40,28,.9)'; ctx.lineWidth = Math.min(2.6, 1.1 * z); ctx.setLineDash([5 * z, 3.5 * z]);
+    for (const l of datos.fronteras) trazo(l);
+    ctx.setLineDash([]);
+    ctx.strokeStyle = TINTA; ctx.lineWidth = Math.min(2.8, 1.2 * z);
+    for (const l of datos.costa) trazo(l);
+  }
   function rios(s) {
     ctx.strokeStyle = AGUA; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     const z = Math.sqrt(s / vista.base);
@@ -133,10 +151,10 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
       const w = tam(0.95 + 0.75 * a, s, 7), h = w * (0.5 + 0.35 * a), [cx, cy] = kmAPant(x, y);
       const l = cx - w / 2, r = cx + w / 2, pk = cx + w * 0.06, top = cy - h;
       ctx.beginPath(); ctx.moveTo(l, cy); ctx.quadraticCurveTo(cx - w * 0.22, cy - h * 0.55, pk, top); ctx.quadraticCurveTo(cx + w * 0.24, cy - h * 0.5, r, cy); ctx.closePath();
-      ctx.fillStyle = 'rgba(238,224,190,.92)'; ctx.fill();
+      ctx.fillStyle = 'rgba(226,206,164,.94)'; ctx.fill();
       // la sombra: la mitad derecha, rayada
       ctx.save(); ctx.clip();
-      ctx.fillStyle = 'rgba(96,70,46,.28)'; ctx.fillRect(pk, top, r - pk, h);
+      ctx.fillStyle = 'rgba(96,70,46,.34)'; ctx.fillRect(pk, top, r - pk, h);
       ctx.strokeStyle = 'rgba(70,50,34,.55)'; ctx.lineWidth = Math.max(0.6, w / 40);
       const n = Math.max(3, Math.round(w / 4));
       for (let k = 1; k <= n; k++) { const u = k / (n + 1), x0 = pk + (r - pk) * u * 0.9; ctx.beginPath(); ctx.moveTo(x0, top + h * 0.15 + h * u * 0.4); ctx.lineTo(x0 + w * 0.06, cy); ctx.stroke(); }
@@ -159,21 +177,29 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
       ctx.fill(); ctx.stroke();
     }
   }
-  // la ciudad del rey: una muralla redonda con sus torres y las casas dentro, en rojo de tinta y oro
+  // la ciudad del rey: una villa amurallada de perfil, como en las cartas: lienzo de muralla con almenas, dos torres
+  // en los extremos y, detrás, la torre del rey y los tejados rojos de las casas, sobre su sombra
   function ciudad(s) {
-    const [cx, cy] = kmAPant(CIUDAD_REY.x / 1000, CIUDAD_REY.z / 1000), r = tam(0.42, s, 9);
-    ctx.save();
-    ctx.fillStyle = 'rgba(240,224,180,.95)'; ctx.strokeStyle = ROJO; ctx.lineWidth = Math.max(1.4, r / 6);
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = ROJO;
-    for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2 + 0.3, tx = cx + Math.cos(a) * r, ty = cy + Math.sin(a) * r, q = Math.max(2.2, r / 4.5); ctx.fillRect(tx - q / 2, ty - q / 2, q, q); }
-    // las casas: tres tejados y la torre del rey en medio
-    ctx.fillStyle = '#b5893a';
-    for (const [dx, dy] of [[-0.42, 0.25], [0.38, 0.3], [0.05, 0.5]]) { const x = cx + dx * r, y = cy + dy * r, q = r * 0.28; ctx.beginPath(); ctx.moveTo(x - q, y); ctx.lineTo(x, y - q * 0.9); ctx.lineTo(x + q, y); ctx.closePath(); ctx.fill(); }
-    ctx.fillStyle = ROJO; ctx.fillRect(cx - r * 0.16, cy - r * 0.62, r * 0.32, r * 0.7);
-    ctx.beginPath(); ctx.moveTo(cx - r * 0.16, cy - r * 0.62); ctx.lineTo(cx, cy - r * 0.95); ctx.lineTo(cx + r * 0.16, cy - r * 0.62); ctx.fill();
+    const [cx, cy] = kmAPant(CIUDAD_REY.x / 1000, CIUDAD_REY.z / 1000), r = tam(0.5, s, 13);
+    const piedra = '#e6d2a6', tinta = TINTA, teja = '#a8432c';
+    ctx.save(); ctx.lineJoin = 'miter'; ctx.lineWidth = Math.max(1, r / 14); ctx.strokeStyle = tinta;
+    ctx.fillStyle = 'rgba(70,50,34,.22)'; ctx.beginPath(); ctx.ellipse(cx, cy + r * 0.05, r * 1.25, r * 0.3, 0, 0, Math.PI * 2); ctx.fill();
+    const caja = (x, y, w, h, color) => { ctx.fillStyle = color; ctx.fillRect(x, y, w, h); ctx.strokeRect(x, y, w, h); };
+    const tejado = (x, y, w, h) => { ctx.fillStyle = teja; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w / 2, y - h); ctx.lineTo(x + w, y); ctx.closePath(); ctx.fill(); ctx.stroke(); };
+    // detrás: casas y la torre del rey
+    caja(cx - r * 0.75, cy - r * 0.75, r * 0.45, r * 0.4, piedra); tejado(cx - r * 0.8, cy - r * 0.75, r * 0.55, r * 0.32);
+    caja(cx + r * 0.32, cy - r * 0.7, r * 0.42, r * 0.35, piedra); tejado(cx + r * 0.27, cy - r * 0.7, r * 0.52, r * 0.3);
+    caja(cx - r * 0.18, cy - r * 1.2, r * 0.36, r * 0.85, piedra); tejado(cx - r * 0.25, cy - r * 1.2, r * 0.5, r * 0.5);
+    ctx.fillStyle = ROJO; ctx.beginPath(); ctx.moveTo(cx, cy - r * 1.7); ctx.lineTo(cx, cy - r * 1.95); ctx.lineTo(cx + r * 0.28, cy - r * 1.86); ctx.lineTo(cx, cy - r * 1.78); ctx.fill();   // el pendón
+    ctx.beginPath(); ctx.moveTo(cx, cy - r * 1.7); ctx.lineTo(cx, cy - r * 1.95); ctx.stroke();
+    // delante: la muralla con almenas y sus dos torres
+    caja(cx - r, cy - r * 0.42, r * 2, r * 0.42, piedra);
+    ctx.fillStyle = piedra;
+    for (let k = 0; k < 5; k++) caja(cx - r * 0.7 + k * r * 0.33, cy - r * 0.54, r * 0.16, r * 0.12, piedra);
+    for (const x of [cx - r * 1.12, cx + r * 0.78]) { caja(x, cy - r * 0.78, r * 0.34, r * 0.78, piedra); tejado(x - r * 0.04, cy - r * 0.78, r * 0.42, r * 0.34); }
+    ctx.fillStyle = tinta; ctx.beginPath(); ctx.moveTo(cx - r * 0.13, cy); ctx.lineTo(cx - r * 0.13, cy - r * 0.2); ctx.arc(cx, cy - r * 0.2, r * 0.13, Math.PI, 0); ctx.lineTo(cx + r * 0.13, cy); ctx.fill();   // la puerta
     ctx.restore();
-    etiqueta(tr('Ciudad del rey'), cx, cy + r + Math.max(11, r * 0.9), Math.max(11, Math.min(18, r * 1.1)), 'italic 600', ROJO);
+    etiqueta(tr('Ciudad del rey'), cx, cy + Math.max(12, r * 0.75), Math.max(12, Math.min(19, r * 0.9)), 'italic 700', ROJO);
   }
   function etiqueta(texto, x, y, px, peso, color, espacio = 0) {
     ctx.font = `${peso} ${px}px ${LETRA}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -183,11 +209,11 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
     if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
   }
   function nombres(s) {
-    const px = Math.max(10, Math.min(30, s * 0.62));
+    const px = Math.max(12, Math.min(30, s * 0.62));
     for (const e of datos.etiquetas) {
       const [x, y] = kmAPant(e.x, e.y), n = comarcas.nombres[e.k];
       etiqueta(tr(n).toUpperCase(), x, y, px, '600', TINTA, px * 0.18);
-      if (e.k === COMARCA_REY) etiqueta(tr('tierras del rey'), x, y + px * 0.95, px * 0.62, 'italic 600', ROJO);
+      if (e.k === COMARCA_REY) etiqueta(tr('tierras del rey'), x, y + px * 1.05, Math.max(10, px * 0.68), 'italic 700', ROJO);
     }
   }
   // el marco del pliego, el título con la rosa de los vientos y la escala, en el mar de las esquinas
@@ -195,11 +221,14 @@ export function montarMapaRey({ paisaje, comarcas, posicion, alAbrir = () => {},
     ctx.strokeStyle = TINTA; ctx.lineWidth = 2.2; ctx.strokeRect(ox + 5, oy + 5, aw - 10, ah - 10);
     ctx.lineWidth = 0.8; ctx.strokeRect(ox + 9, oy + 9, aw - 18, ah - 18);
     const u = Math.max(0.7, Math.min(2.2, s / 9));   // tamaño de lo del marco
-    // el título, arriba a la izquierda (mar abierto)
-    const tx = ox + 24 * u + 60 * u, ty = oy + 34 * u;
-    etiqueta(tr('Whitholm').toUpperCase(), tx, ty, 26 * u, '700', TINTA, 5 * u);
-    etiqueta(tr('la isla del rey'), tx, ty + 24 * u, 14 * u, 'italic 600', ROJO);
-    ctx.strokeStyle = TINTA; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(tx - 70 * u, ty + 12 * u); ctx.lineTo(tx + 70 * u, ty + 12 * u); ctx.stroke();
+    // el título, arriba a la izquierda (mar abierto), siempre dentro del pliego
+    const titulo = tr('Whitholm').toUpperCase(), tp = 26 * u;
+    ctx.font = `700 ${tp}px ${LETRA}`; if ('letterSpacing' in ctx) ctx.letterSpacing = `${5 * u}px`;
+    const ancho = ctx.measureText(titulo).width; if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+    const tx = ox + 22 + ancho / 2, ty = oy + 22 + tp * 0.7;
+    etiqueta(titulo, tx, ty, tp, '700', TINTA, 5 * u);
+    ctx.strokeStyle = TINTA; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(tx - ancho * 0.45, ty + tp * 0.5); ctx.lineTo(tx + ancho * 0.45, ty + tp * 0.5); ctx.stroke();
+    etiqueta(tr('la isla del rey'), tx, ty + tp * 0.95, 14 * u, 'italic 600', ROJO);
     // la rosa de los vientos, abajo a la izquierda
     const rx = ox + 48 * u, ry = oy + ah - 56 * u, R = 30 * u;
     ctx.save(); ctx.translate(rx, ry);
