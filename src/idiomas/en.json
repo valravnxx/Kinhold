@@ -1424,5 +1424,7 @@
  "Cinturón de cuerda": "Rope belt",
  "Cesta de recolección (de juncos)": "Gathering basket (rushes)",
  "v65: en «Jugar», las obras cobran de lo que llevas, como en solitario. Lo que entregas a una obra (y la pieza que subes a una obra en alto) sale de lo que llevas en el servidor, y el arcón de materiales de obra del inventario va por el servidor: lo que se coge y se deja en él lo ven igual todos. Si no llevas el material, Usar (F) dice qué le falta a la obra.": "v65: in «Play», building sites take what you carry, just like playing alone. What you deliver to a building site (and the piece you hoist up to a raised site) comes out of what you carry on the server, and the inventory's building-materials chest goes through the server: everyone sees the same things taken from it and left in it. If you don't carry the material, Use (F) says what the site still needs.",
- "Demo única · v65 (las obras cobran de lo que llevas en línea)": "Single demo · v65 (building sites take what you carry online)"
+ "Demo única · v65 (las obras cobran de lo que llevas en línea)": "Single demo · v65 (building sites take what you carry online)",
+ "Empujar": "Push",
+ "Coger de una mesa": "Pick up from a table"
 }
