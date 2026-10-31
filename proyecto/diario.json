@@ -2872,5 +2872,21 @@
   "pruebas": "En la nube: 20 de 22 grupos bien; fallan jugar en línea (el móvil tarda en conectar y una captura no sale a tiempo) y duelo en línea (el corte del servidor, como en otras ramas), exentos hasta la fase 2. Repetidos los dos: vuelven a fallar (el duelo, en lo mismo; jugar en línea, en otra captura y en lo que tarda el móvil en conectar). El cartel sin conexión no llegó a probarse en la nube (la prueba en línea se paró antes por la captura): comprobado aquí con su parte suelta, y roto a propósito (sin el cartel, falla).",
   "capturas": "capturas/demo-v57",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T22:37:50+00:00",
+  "fin": null,
+  "titulo": "Hito «Equipo y carga»: inventario y suelo en el servidor (carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Lógica pura nueva (src/logica/objetos_red.js): el servidor lleva el inventario de cada jugador y los objetos del suelo con la misma lógica que el navegador (inventario.js y suelo.js).",
+   "En el servidor, el mensaje «objeto»: mover, ponerse, quitarse, soltar al suelo y coger del suelo, con el autor de la conexión (el que mande el navegador no cuenta) y la hora del servidor. Al autor le llega lo que lleva tal como queda; el suelo, a todos. La bienvenida lleva los dos.",
+   "El sitio es el que el servidor tiene por la presencia: el del mensaje solo vale a menos de 3 m de ahí (decisión provisional); desde lejos no se coge nada. No se acepta meter algo de la nada ni hacerlo desaparecer.",
+   "Se guarda entero en objetos.json junto al mundo (escrito aparte y cambiado de nombre, para que un apagón no lo deje a medias) y cada acción, bien o mal, en objetos.jsonl. Lo soltado fuera de tus tierras desaparece pasada su hora también en el servidor.",
+   "La tarea se parte en dos (decisión del carril A): esta, la del servidor, y otra nueva justo detrás para que el juego en línea lo use. No se puede hacer a medias en el juego: talar y trocear siguen en el navegador y dejan sus troncos en el suelo de cada uno, así que tienen que pasar al servidor a la vez que el inventario. Sin versión nueva: aún no cambia nada de lo que se juega."
+  ],
+  "pruebas": "(en marcha)",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
