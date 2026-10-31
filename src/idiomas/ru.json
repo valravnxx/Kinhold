@@ -1422,5 +1422,8 @@
  "Banco de trabajo de tronco": "Верстак из бревна",
  "Antorcha (con resina)": "Факел (со смолой)",
  "Cinturón de cuerda": "Верёвочный пояс",
- "Cesta de recolección (de juncos)": "Корзина для сбора (из камыша)"
+ "Cesta de recolección (de juncos)": "Корзина для сбора (из камыша)",
+ "v32: al trabajar se lleva la herramienta en la mano (revisión del 30 oct: al picar no llevaba pico). Con «Picar», un pico de una mano en la mano derecha: mango de fresno de unos 70 cm, cabeza de hierro atravesada con la punta delante, algo curvada hacia el mango, y una azuela corta y ancha detrás, con el estilo v5 como el hacha. Con «Talar», el hacha (la misma del juego). Con lo demás, la mano vacía.": "v32: во время работы инструмент в руке (проверка 30 окт.: при работе киркой не было кирки). С «Работать киркой» — одноручная кирка в правой руке: ясеневая рукоять около 70 см, железная головка поперёк с остриём спереди, слегка загнутым к рукояти, и короткое широкое тесло сзади, в стиле v5, как топор. С «Рубка» — топор (тот же, что в игре). С остальным — пустая рука.",
+ "v32, provisional: el pico se lleva con una mano, como lo pide el gesto del paquete (la otra mano queda libre), y se agarra igual que el hacha, cerca del extremo del mango. Las otras animaciones que piden un objeto (arco, caña, escudo, regadera) siguen sin él: el arco y el escudo ya se ven en el duelo, y la caña y la regadera llegarán con sus trabajos.": "v32, временно: кирку держат одной рукой, как требует движение из пакета (другая рука свободна), и хватают так же, как топор, у конца рукояти. Остальные анимации, которым нужен предмет (лук, удочка, щит, лейка), пока без него: лук и щит уже видны в поединке, а удочка и лейка появятся со своими работами.",
+ "Personaje · v32 (herramienta en la mano)": "Персонаж · v32 (инструмент в руке)"
 }
