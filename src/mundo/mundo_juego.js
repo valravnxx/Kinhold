@@ -41,6 +41,10 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
   mar.name = 'mar';
   mar.position.set((ISLA.x0 + ISLA.x1) / 2 - O.x, -y0 - 0.8, (ISLA.z0 + ISLA.z1) / 2 - O.z);   // (por debajo de los senos de las olas de cerca, que bajan hasta medio metro)
   mar.receiveShadow = true;
+  // se dibuja antes que el agua de cerca y sin escribir la hondura: con la lámina tan grande, la hondura no da para
+  // separarla 0,8 m del agua de cerca y asomaba en manchas lisas entre las olas (en la nube, mar adentro, 31 oct).
+  // El fondo del mar sí lo tapa (va después de lo opaco y se compara con su hondura)
+  mar.material.transparent = true; mar.material.depthWrite = false; mar.renderOrder = -1;
   escena.add(mar);
 
   // la altura del suelo en la escena: la de la malla del trozo que se ve; si aún no ha llegado, la exacta
