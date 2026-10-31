@@ -1,0 +1,15 @@
+  (910 × 938 px, 1340 ms en total, 43 ríos, 163 montes, 1984 árboles)
+  OK   cada paso dice cuánto lleva (lo usa la página) — 0 pasos sin avance
+  OK   se pinta a pasos cortos (el 99 % en menos de 25 ms, ninguno de más de 80) — 942 pasos; 99 %: 7.3 ms; el más largo: 14.3 ms
+  OK   la costa del mapa es la del juego — 0 de 3000 puntos no casan
+  OK   las 8 comarcas tienen su nombre
+  OK   cada nombre está dentro de su comarca
+  OK   el nombre de Strandvang no tapa la ciudad (a más de 3 km) — 12.4 km
+  OK   la ciudad del rey cae en tierra de Strandvang
+  OK   hay ríos y son los del juego — 43 de 474
+  OK   los ríos acaban en el mar o en otro río — 0 sueltos
+  OK   ningún árbol ni monte en el mar
+  OK   ningún árbol pegado a la ciudad (1,6 km)
+  OK   hay montes y bosques dibujados — 163 montes, 1984 árboles
+
+Todo bien
