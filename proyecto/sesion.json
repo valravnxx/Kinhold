@@ -16,5 +16,11 @@
   "tarea": "Volver donde lo dejaste (valravnx, 31 oct): el navegador recuerda quién eres aunque cierres la pestaña, y el servidor guarda dónde estaba cada jugador al salir y lo pone ahí al volver a entrar (un wipe lo borra)",
   "hito": "mundo-juego",
   "rama": "trabajo/20261031-0500-volver"
+ },
+ "chat:trabajo/20261031-1005-cuatro": {
+  "inicio": "2026-10-31T10:02:41+01:00",
+  "tarea": "Cuatro direcciones y ataque comprometido (valravnx, 31 oct): alto, izquierda, derecha y abajo para clavar (fuera el tajo bajo y el centro); el escudo para todo lo que viene de frente sin elegir lado; el golpe no cambia de dirección al cargarlo, y el botón de parar lo cancela con una finta (para parar o para empezar otro golpe)",
+  "hito": "duelo",
+  "rama": "trabajo/20261031-1005-cuatro"
  }
 }

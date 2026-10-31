@@ -1270,6 +1270,12 @@
      "inicio": "2026-10-30T09:39:49+01:00",
      "rama": "trabajo/20261030-0945-combate",
      "fin": "2026-10-30T15:54:31+01:00"
+    },
+    {
+     "nombre": "Cuatro direcciones y ataque comprometido (valravnx, 31 oct): alto, izquierda, derecha y abajo para clavar (fuera el tajo bajo y el centro); el escudo para todo lo que viene de frente sin elegir lado; el golpe no cambia de dirección al cargarlo, y el botón de parar lo cancela con una finta (para parar o para empezar otro golpe)",
+     "estado": "en_curso",
+     "inicio": "2026-10-31T10:02:41+01:00",
+     "rama": "trabajo/20261031-1005-cuatro"
     }
    ],
    "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
