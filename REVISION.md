@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (14:20 UTC) — por el chat: fuera las pruebas en línea
+valravnx: «he dicho un millón de veces, la prueba de en línea LA BORRAS. NO SE VA A HACER NUNCA MÁS, NO EXISTE, DEJA ESAS PRUEBAS, NO LA VUELVAS A HACER». → Borradas las pruebas de navegador «jugar en línea» y «duelo en línea» (archivos y pasos de probar_todo.sh) y la regla, en CLAUDE.md.
+
 ### 31 oct 2026 (14:09 UTC) — por el chat: fuera «Duelo» y la prueba de «jugar en línea»
 valravnx: «de hecho quita duelo en línea, ya está integrado en jugar»; «y no solo eso, está todo 100% online en solo jugar, no hay nada ya “en línea”»; «evita la de jugar en línea, eso ya no existe, no la hagas». → Fuera «Duelo» del menú de la demo (un enlace antiguo lleva a «Jugar») y fuera las pruebas aparte de «duelo en línea» y «jugar en línea». Anotado en CLAUDE.md.
 
