@@ -2860,7 +2860,7 @@
  {
   "inicio": "2026-10-30T14:15:36+01:00",
   "fin": "2026-10-31T03:37:10+01:00",
-  "titulo": "Ríos que siguen el terreno, ríos de verdad y nadar (mapa v18, demo v61; chat con valravnx)",
+  "titulo": "Ríos que siguen el terreno, ríos de verdad y nadar (mapa v18, demo v62; chat con valravnx)",
   "hito": "mundo",
   "hecho": [
    "Arreglo (valravnx, 30 oct): muchos ríos iban elevados por los valles, como un puente. La altura del río salía del mapa de 1 km y el relieve de detalle hundía el suelo de alrededor; ahora cada punto del río toma el suelo más bajo de su tramo y nunca sube río abajo. En Whitholm, de unos 600 puntos con el agua por encima del suelo a ninguno; una prueba nueva lo vigila (menos del 1 %).",
@@ -2871,7 +2871,7 @@
    "Aún mal: no hay animación de nadar; en línea, los demás te ven andar en el agua; de lejos los ríos siguen a tramos rectos; los arroyos someros se ven blanquecinos; y en algunas costas bajas salen manchas de arena tierra adentro."
   ],
   "pruebas": "Batería entera en la nube tras unir main (lo que crece sigue al jugador) y arreglar las manchas del mar: 19 de 22 grupos bien. Fallan «jugar en línea» y «duelo en línea» (excepción de CLAUDE.md, fallan también en main) y «la demo en el mundo» en el móvil por un fotograma de 70,5 ms al llegar de golpe a otro sitio (lo que crece; el límite es 60 y en el PC 29,8); repetida: bien (49 ms). Antes, la prueba del mar tomaba a veces una ría somera por costa: ahora busca el mar hondo también por anillos alrededor del jugador. Lógica: nado 17/17, mapa 88/88. Las mutaciones se rompieron a propósito (MUTAR en el terraplén de los ríos y en la de nado de lógica). No comprobado: MUTAR_NADO en la nube (la de navegador).",
-  "capturas": "capturas/demo-v61",
+  "capturas": "capturas/demo-v62",
   "estado": "ok"
  },
  {
@@ -2958,6 +2958,23 @@
   ],
   "pruebas": "En la nube, todos los grupos bien salvo «jugar en línea» (falla también en main mientras no esté el servidor de verdad: no para la publicación); «combate» falló una vez (la pantalla de victoria) y pasó al repetirlo; la prueba nueva de la ladera, bien en PC y móvil tras esperar a que el personaje se asiente",
   "capturas": "capturas/demo-v60",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T00:54:33+00:00",
+  "fin": "2026-10-31T03:23:55+00:00",
+  "titulo": "Hito de arte: nacimiento del pelo y cejas (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Mirado de cerca en el taller (fotos nuevas FOTOS=nacimiento: frente, tres cuartos y perfil): el pelo corto cortaba en seco en la frente y su cáscara salía ya despegada unos 6 mm justo en el borde (un casquete); las cejas eran una raya fina y alta, y en la mujer salían a trozos porque en el calco del pelo les tocaban 3-4 píxeles de alto de la textura.",
+   "Nacimiento del pelo: el pelo pintado nace poco a poco en algo más de 1 cm (pelos sueltos que se van juntando, frente algo más alta en las entradas); la cáscara del pelo corto empieza más adentro, con el borde a mechones, y su bulto crece desde el borde (1,2 mm sobre la piel en el borde, todo su grosor a unos 2,5 cm).",
+   "Cejas: asientan en el arco, justo encima del párpado, más pobladas, con la cabeza redondeada y los pelos hacia arriba junto a la nariz y hacia fuera en la cola; van en su propio calco (_cejas, 512 px), que el juego trata como los demás calcos.",
+   "Personajes nuevos en recursos/personajes/taller-v19/. Personaje v30 y demo v61 (la v60 la publicó antes el carril A, con construir a la altura del suelo).",
+   "Prueba nueva: el nacimiento del pelo (prueba_nacimiento_pelo.mjs: en el borde de la frente la cáscara va a menos de 2,5 mm de la piel y más arriba tiene bulto; con MUTAR=1 mira la taller-v18 y falla, 5,8 mm). Las de barbas, aspecto de los modelos y personaje en el navegador cuentan también el calco de las cejas.",
+   "Aún mal: en el juego, de cerca, el borde de las cejas sale algo en escalones; justo detrás del nacimiento la cáscara del pelo se ve algo más oscura que el pelo pintado; las cejas de la mujer, algo cortas; detrás de la oreja se ve una línea negra fina (ya estaba antes)."
+  ],
+  "pruebas": "En la nube, la batería entera (22 grupos): bien salvo jugar en línea (exento hasta la fase 2: el móvil no ve a PC y el cartel sin conexión no sale). Tras unir main (construir a la altura del suelo), repetidos lógica, web, demo única, la demo en el mundo y juego en inglés: bien.",
+  "capturas": "capturas/personaje-v30",
   "estado": "ok"
  }
 ]
