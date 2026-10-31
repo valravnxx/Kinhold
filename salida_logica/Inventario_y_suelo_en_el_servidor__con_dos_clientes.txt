@@ -1,0 +1,54 @@
+Bienvenida
+  OK   lleva el inventario del jugador — {"tipo":"camisa_lino","n":1}
+  OK   y el suelo (vacío al empezar)
+Sin presencia, nada que dependa del sitio
+  OK   soltar sin que el servidor sepa dónde estás se rechaza — El servidor aún no sabe dónde estás.
+Soltar al suelo
+  OK   A suelta su camisa
+  OK   A recibe su inventario sin la camisa
+  OK   B ve la camisa en el suelo — {"id":"s1","cosa":{"tipo":"camisa_lino","n":1},"x":0.2,"z":0,"autor":"jugador:3c816461","soltado":1793447410194,"desaparece":1793451010194}
+  OK   B no recibe el inventario de A
+El autor lo pone el servidor
+  OK   B diciendo que es A suelta lo suyo, no lo de A
+El sitio es el de la presencia
+  OK   B lejos, diciendo que está al lado, no la coge — No estás ahí.
+  OK   B al lado sí la coge
+  OK   la camisa está en lo que lleva B
+  OK   ya no está para A — Ahí no hay nada que coger.
+El arcón de pruebas
+  OK   sin arcón de pruebas, 'coger' (meter algo de la nada) y 'soltar' (hacerlo desaparecer) se rechazan — Aquí no hay arcón. · Aquí no hay arcón.
+  OK   con él (el servidor de pruebas), A coge un hacha del arcón
+  OK   y no otra donde ya lleva algo — Ese sitio está ocupado.
+  OK   aunque salga mal, le llega lo que lleva (para deshacer lo adelantado)
+  OK   una acción desconocida se rechaza — Acción desconocida.
+Reordenar lo que llevas
+  OK   B se quita su camisa a la mano izquierda
+  OK   y se pone la que ha cogido — mano:der · 
+  OK   y pasa la suya a la otra mano
+  OK   lo de A no cambia
+Mensajes raros
+  OK   no tumban el servidor
+Talar
+  OK   un árbol lejos de donde estás no vale — Está demasiado lejos.
+  OK   ni uno cuyo nombre no cuadra con su sitio — Ahí no hay ningún árbol.
+  OK   B, lejos, no lo tala aunque diga que está al lado — Está demasiado lejos.
+  OK   A lo tala a golpes (adulto con hierro: 14) y el resultado dice que cae y hacia dónde — 14 golpes · 
+  OK   B se entera: el árbol cae y queda el tocón
+  OK   y ve el tronco largo y las ramas en el suelo
+  OK   talado, ya no se tala (ni diciendo que es otro árbol más joven) — Ese árbol ya está talado: solo queda el tocón.
+Trocear
+  OK   A tronza el tronco largo (18 golpes con hierro) en troncos cortos — 18 golpes · {"tipo":"tronco_corto","n":3}
+  OK   el tronco largo ya no está y los cortos sí
+Recoger
+  OK   A recoge una piedra suelta y va a lo que lleva
+  OK   B se entera de que ese punto ya está recogido
+  OK   y no se vuelve a recoger hasta que vuelva — Ya lo han recogido: aún no ha vuelto a salir.
+  OK   un punto cuyo nombre no cuadra con su clase no vale — Datos no válidos.
+  OK   cada acción queda en el registro, bien o mal, con su autor — 53 entradas
+Al volver a arrancar
+  OK   los inventarios y el suelo siguen igual
+  OK   B vuelve con su ficha y lleva lo suyo
+  OK   y ve en el suelo los pantalones que soltó
+  OK   y el tocón y lo recogido
+
+40 correctas, 0 fallos
