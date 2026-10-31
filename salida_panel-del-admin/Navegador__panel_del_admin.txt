@@ -1,0 +1,37 @@
+Jugador simulado: jugador:2a06a78a
+Vista pc
+  OK   pc: entra en línea con el mundo listo
+  OK   pc: el botón «Admin» no sale sin ?admin ni clave
+  OK   pc: se abre y pide la clave
+  OK   pc: con la clave mal no se ve a nadie y lo dice — 0 jugadores; «Clave de admin incorrecta.»
+  OK   pc: con la buena, el otro jugador sale en la lista
+  FALLA pc: el otro jugador, pintado en el mapa donde está — {'x': 571.265432835821, 'y': 327.5092537313433, 'rgb': [179, 38, 28]}
+  OK   pc: «Ir» te pone junto a él y cierra el panel — a 1.60 m
+  OK   pc: al volver a abrirlo no pide la clave
+  OK   pc: un clic en el mapa te lleva a ese punto — esperado {'x': 434.6122448979877, 'z': -274.897959183676}, está {'x': 434.6122448979877, 'y': 37.581552261597125, 'z': -274.897959183676, 'suelo': 37.581552261597125}
+  OK   pc: y en el suelo — {'x': 434.6122448979877, 'y': 37.581552261597125, 'z': -274.897959183676, 'suelo': 37.581552261597125}
+  OK   pc: Esc lo cierra
+  OK   pc: M lo cierra
+  OK   pc: «Olvidar la clave» la quita
+  OK   pc: «Cerrar» lo cierra con el mapa
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: entra en línea con el mundo listo
+  OK   movil: el botón «Admin» sale con ?admin
+  OK   movil: se abre y pide la clave
+  OK   movil: con la clave mal no se ve a nadie y lo dice — 0 jugadores; «Clave de admin incorrecta.»
+  OK   movil: con la buena, el otro jugador sale en la lista
+  FALLA movil: el otro jugador, pintado en el mapa donde está — {'x': 161.2019076923077, 'y': 386.35492307692306, 'rgb': [179, 38, 28]}
+  OK   movil: «Ir» te pone junto a él y cierra el panel — a 1.60 m
+  OK   movil: al volver a abrirlo no pide la clave
+  OK   movil: un clic en el mapa te lleva a ese punto — esperado {'x': 342.50267379678553, 'z': -384.27807486630627}, está {'x': 342.50267379678553, 'y': 27.444563562152467, 'z': -384.27807486630627, 'suelo': 27.444563562152467}
+  OK   movil: y en el suelo — {'x': 342.50267379678553, 'y': 27.444563562152467, 'z': -384.27807486630627, 'suelo': 27.444563562152467}
+  OK   movil: «Olvidar la clave» la quita
+  OK   movil: «Cerrar» lo cierra con el mapa
+  OK   movil: sin errores en la página
+Vista pc_en
+  OK   en inglés: ningún texto sin traducir — []
+  OK   en inglés: el panel en inglés — Debug (admin)1 connected besides you2a06a78a30, 25GoClick on the map to go there.
+        Forget the keyClose
+
+2 fallos
