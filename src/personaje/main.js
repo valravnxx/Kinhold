@@ -7,6 +7,7 @@ import { vigilar } from '../mundo/rendimiento.js';
 import { crearEscena } from '../estilo/escena.js';
 import { crearPersonaje, OPCIONES } from '../personajes/cargar.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
+import { empunar, HERRAMIENTA_DE, MODELOS_HERRAMIENTA } from '../juego/personaje.js';
 import { VERSION_PERSONAJE, REGISTRO_PERSONAJE } from './registro.js';
 import { BASES, CAPAS, ANIMS, ANIMS_EXTRA, ZONAS_TABLA, GOLPES_TABLA } from './textos.js';
 import { PRENDAS, prendasDeCapas, proteccion, abrigo, peso } from '../logica/prendas.js';
@@ -120,7 +121,9 @@ async function rehacer() {
   pj = nuevo;
   pj.raiz.position.copy(POS); pj.raiz.rotation.y = GIRO;
   escena.add(pj.raiz);
-  pj.poner(estado.modo, 0); pj.mezclador.update(0.5);
+  // las herramientas de los trabajos, en la mano derecha (escondidas hasta que se pone su animación)
+  if (pj.hueso?.hand_r) pj.herramientas = Object.fromEntries(Object.entries(MODELOS_HERRAMIENTA).map(([k, f]) => [k, empunar(pj, f())]));
+  pj.poner(estado.modo, 0); mostrarHerramienta(); pj.mezclador.update(0.5);
   // ?detalle=1 o 2: el personaje con el nivel de detalle de media distancia o de lejos, visto de cerca (para revisarlos)
   if (pj.ponerNivel && DETALLE) { await pj.ponerNivel(DETALLE); medida.nivel = pj.nivel; }
   pj.raiz.updateMatrixWorld(true);
@@ -141,7 +144,11 @@ function ponerVista(v) {
   camara.position.copy(pos); control.target.copy(mira); control.update();
   marcar('vista', v); guardar(); dibujar();
 }
-function ponerModo(m) { estado.modo = m; if (pj) pj.poner(m); marcar('modo', m); guardar(); }
+function ponerModo(m) { estado.modo = m; if (pj) pj.poner(m); mostrarHerramienta(); marcar('modo', m); guardar(); }
+// al trabajar, la herramienta del trabajo en la mano (el hacha al talar, el pico al picar); si no, ninguna
+function mostrarHerramienta() {
+  for (const [k, h] of Object.entries(pj?.herramientas || {})) if (h) h.visible = HERRAMIENTA_DE[estado.modo] === k;
+}
 function marcar(tipo, v) { for (const b of document.querySelectorAll(`[data-${tipo}]`)) b.classList.toggle('sel', b.dataset[tipo] === v); }
 
 // panel de personalización
@@ -318,6 +325,14 @@ window.__personaje = {
     let piezas = 0, triangulos = 0;
     pj.modelo.traverse(o => { if (o.isMesh && o.visible) { piezas++; triangulos += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3; } });
     return { nivel: pj.nivel, triangulos, piezas };
+  },
+  // la herramienta que se ve en la mano ('hacha', 'pico' o null) y dónde están su mango y su cabeza (para las pruebas)
+  herramienta: () => {
+    const k = Object.keys(pj?.herramientas || {}).find(k => pj.herramientas[k]?.visible) || null;
+    if (!k) return null;
+    const h = pj.herramientas[k]; h.updateMatrixWorld(true);
+    const mano = new THREE.Vector3(), cabeza = h.localToWorld(new THREE.Vector3(0, 0.55, 0)); h.getWorldPosition(mano);
+    return { tipo: k, mano: mano.toArray(), cabeza: cabeza.toArray(), largo: cabeza.distanceTo(mano) };
   },
   hueso: (n) => { const v = new THREE.Vector3(); pj.hueso[n].getWorldPosition(v); return [v.x, v.y, v.z]; },
 };

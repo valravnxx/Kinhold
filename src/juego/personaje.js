@@ -109,9 +109,40 @@ export function modeloHacha() {
   const g = deMano(L); g.name = 'hacha'; // como las armas: echa sombra sin recibirla y con sombreado plano
   return g;
 }
-// Pone el hacha en la mano derecha: el mango atravesado a los dedos (del meñique al índice, la cabeza por el lado
-// del pulgar) y el filo hacia los nudillos, como se agarra. Se calcula con los huesos, así vale para cualquier cuerpo.
-function empunarHacha(mh) {
+// Pico de una mano con el estilo v5 (como el hacha): mango de fresno con veta y, arriba, la cabeza de hierro atravesada,
+// con la punta hacia delante (+Z, hacia los nudillos, por donde se golpea), algo curvada hacia el mango como los de
+// verdad, y por detrás una azuela corta y ancha (el pico de cantero y de minero medieval: punta y pala). Mango a lo
+// largo de +Y con la mano en el origen, como el hacha.
+export function modeloPico() {
+  const L = new Lote({ variacion: 0.04, rangoSuelo: 0.001, suelo: -100 });
+  L.add(cil(0.016, 0.02, 0.68, 8), 'tabla', 0, 0.24, 0, { x: -0.03 }, { tex: 'veta' });
+  L.add(new THREE.SphereGeometry(0.022, 8, 5), 'tabla', 0, -0.1, 0.003, null, { escala: new THREE.Vector3(1, 0.7, 1.3), tex: 'veta' });
+  const y = 0.55;
+  L.add(cajaR(0.036, 0.07, 0.064, 0.01), 'hierro', 0, y, 0);                                              // ojo
+  // un tramo de la cabeza: de (y0, z0) hacia delante (s = 1) o hacia atrás (s = -1), bajando el ángulo a (rad)
+  const tramo = (y0, z0, s, a, largo, r0, r1, lados = 6, esc = null) => {
+    const dy = -Math.sin(a), dz = s * Math.cos(a);
+    L.add(cil(r1, r0, largo, lados), 'hierro', 0, y0 + dy * largo / 2, z0 + dz * largo / 2,
+      { x: s > 0 ? Math.PI / 2 + a : -(Math.PI / 2 + a) }, { plano: true, escala: esc });
+    return [y0 + dy * largo, z0 + dz * largo];
+  };
+  // la punta: tres tramos que se afinan y se curvan hacia el mango
+  let [py, pz] = tramo(y + 0.006, 0.026, 1, 0.08, 0.09, 0.019, 0.015);
+  [py, pz] = tramo(py, pz, 1, 0.22, 0.08, 0.015, 0.009);
+  [py, pz] = tramo(py, pz, 1, 0.42, 0.06, 0.009, 0.002);
+  L.add(new THREE.SphereGeometry(0.004, 5, 3), 0x8e8f8e, 0, py, pz, null, { plano: true, brillo: 1.15 });  // la punta, gastada y clara
+  // la azuela de atrás: corta, aplastada y que se abre hacia el filo
+  [py, pz] = tramo(y + 0.004, -0.026, -1, 0.1, 0.1, 0.018, 0.012, 4, new THREE.Vector3(2.4, 1, 0.55));
+  L.add(cil(0.004, 0.004, 0.05, 4), 0x9a9b9a, 0, py - 0.002, pz - 0.002, { z: Math.PI / 2 }, { escala: new THREE.Vector3(1, 1, 1.6), plano: true, brillo: 1.15 }); // filo, más claro
+  L.add(new THREE.CircleGeometry(0.013, 6), 'corte', 0, y + 0.0355, 0, { x: -Math.PI / 2 });              // cuña
+  const g = deMano(L); g.name = 'pico';
+  return g;
+}
+
+// Pone una herramienta (mango a lo largo de +Y, la mano en el origen) en la mano derecha: el mango atravesado a los
+// dedos (del meñique al índice, la cabeza por el lado del pulgar) y el filo o la punta hacia los nudillos, como se
+// agarra. Se calcula con los huesos, así vale para cualquier cuerpo. Sale escondida.
+export function empunar(mh, modelo) {
   const h = mh.hueso, mano = h.hand_r, med = h.middle_01_r, ind = h.index_01_r, men = h.pinky_01_r;
   if (!mano || !med || !ind || !men) return null;
   mh.raiz.updateMatrixWorld(true);
@@ -119,15 +150,17 @@ function empunarHacha(mh) {
   const pm = loc(med), f = pm.clone().normalize();                       // hacia los nudillos
   const y = loc(ind).sub(loc(men)); y.addScaledVector(f, -y.dot(f)).normalize(); // del meñique al índice
   const x = new THREE.Vector3().crossVectors(y, f);
-  const hacha = modeloHacha();
-  hacha.matrix.makeBasis(x, y, f).setPosition(pm.multiplyScalar(1.15));
-  hacha.matrix.decompose(hacha.position, hacha.quaternion, hacha.scale);
-  // la mano tiene la escala del esqueleto: el hacha se deja a su tamaño de verdad
-  const e = new THREE.Vector3(); mano.getWorldScale(e); hacha.scale.divideScalar(e.x || 1);
-  hacha.visible = false;
-  mano.add(hacha);
-  return hacha;
+  modelo.matrix.makeBasis(x, y, f).setPosition(pm.multiplyScalar(1.15));
+  modelo.matrix.decompose(modelo.position, modelo.quaternion, modelo.scale);
+  // la mano tiene la escala del esqueleto: la herramienta se deja a su tamaño de verdad
+  const e = new THREE.Vector3(); mano.getWorldScale(e); modelo.scale.divideScalar(e.x || 1);
+  modelo.visible = false;
+  mano.add(modelo);
+  return modelo;
 }
+// La herramienta que pide cada trabajo (la animación): sin ella, el gesto se ve con la mano vacía
+export const HERRAMIENTA_DE = { talar: 'hacha', minar: 'pico' };
+export const MODELOS_HERRAMIENTA = { hacha: modeloHacha, pico: modeloPico };
 
 // Devuelve { raiz, animar(velocidad, dt, talando), cargado(), modo(), mh }. `recursos`: carpeta de los .glb del taller.
 // `sexo`, `capas` y `aspecto`: los del personaje elegido en el visor (por defecto, hombre con camisa y calzas, descalzo).
@@ -141,7 +174,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     raiz.remove(muneco);
     raiz.add(mh.raiz);
     j.mh = mh;
-    j.hacha = empunarHacha(mh);
+    j.hacha = empunar(mh, modeloHacha());
     cuenta.add(j);
   }).catch(e => { j.error = e.message || String(e); console.warn('Personaje del taller no cargado, sigue el muñeco:', e); });
   j.animar = (velocidad, dt, talando = false) => {

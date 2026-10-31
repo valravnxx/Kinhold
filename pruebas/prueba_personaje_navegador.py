@@ -193,7 +193,19 @@ with sync_playwright() as p:
                 pg.click(f'#anims-extra [data-modo="{k}"]'); pg.wait_for_timeout(100)
                 if nombre == 'movil': pg.click('#btnOpciones')
                 pg.evaluate(f'{E}.instante({t})'); pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_extra_{k}.png')
+                if k == 'minar': herr_minar = pg.evaluate(f'{E}.herramienta()')
             comprobar(f'taller propio ({sexo}): el botón pone la animación extra', pg.evaluate(f'{E}.estado().modo') == 'golpePesado1')
+            # herramienta en la mano al trabajar (revisión del 30 oct): al picar, el pico en la mano derecha; al talar, el
+            # hacha; con lo demás, la mano vacía
+            herr_golpe = pg.evaluate(f'{E}.herramienta()')
+            pg.evaluate(f"{E}.ponerModo('talar')"); pg.evaluate(f'{E}.instante(0.4)'); herr_talar = pg.evaluate(f'{E}.herramienta()')
+            if nombre == 'pc' or sexo == 'hombre': pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_talar.png')
+            if os.environ.get('MUTAR'): herr_minar = None
+            cerca = lambda h: h and sum((h['mano'][i] - pg.evaluate(f"{E}.hueso('hand_r')")[i]) ** 2 for i in range(3)) ** 0.5 < 0.15
+            comprobar(f'taller propio ({sexo}): al picar lleva el pico en la mano derecha',
+                      bool(herr_minar) and herr_minar['tipo'] == 'pico' and 0.45 < herr_minar['largo'] < 0.65, str(herr_minar))
+            comprobar(f'taller propio ({sexo}): al talar lleva el hacha en la mano derecha, y con un golpe de espada no lleva herramienta',
+                      bool(herr_talar) and herr_talar['tipo'] == 'hacha' and cerca(herr_talar) and herr_golpe is None, f'{herr_talar} / {herr_golpe}')
             pg.evaluate(f"{E}.ponerModo('quieto')")
         # ropa por capas: el botón Gambesón lo pone encima (y esconde el cuerpo del vestido, que queda tapado)
         vis = lambda: pg.evaluate(f"(() => {{ const v = []; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.visible) v.push(o.name); }}); return v; }})()")
