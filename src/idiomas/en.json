@@ -1512,5 +1512,8 @@
  "Depuración (admin)": "Debug (admin)",
  "El panel de admin solo está en el mundo de verdad.": "The admin panel is only in the real world.",
  "Admin": "Admin",
- "Conectados además de ti: {n}": "Connected besides you: {n}"
+ "Conectados además de ti: {n}": "Connected besides you: {n}",
+ "Demo única · v75 (panel de admin)": "Single demo · v75 (admin panel)",
+ "v75: panel de depuración del admin (valravnx, 30 oct): F9 (o el botón «Admin», con ?admin en la dirección) abre el mapa del rey con todos los jugadores conectados y su lista; un clic en el mapa te lleva ahí y «Ir» te pone junto a otro jugador. Todo lo pide al servidor con la clave de admin que valravnx pone en la máquina; sin ella, no enseña nada.": "v75: admin debug panel (valravnx, 30 Oct): F9 (or the «Admin» button, with ?admin in the address) opens the king's map with every connected player and their list; a click on the map takes you there and «Go» puts you next to another player. Everything is asked of the server with the admin key valravnx sets on the machine; without it, nothing is shown.",
+ "v75, provisional: la clave se pone en la máquina en /etc/kinhold/admin.env (KINHOLD_ADMIN, de 12 letras o más); el navegador la recuerda hasta «Olvidar la clave». Con cinco claves mal seguidas, el servidor cierra esa conexión. Al ir junto a otro, a 1,6 m a su lado y mirándole; al ir a un punto del mapa, en el suelo de allí. Cada petición queda apuntada en el servidor (admin.jsonl) con su autor y sin la clave.": "v75, provisional: the key is set on the machine in /etc/kinhold/admin.env (KINHOLD_ADMIN, 12 characters or more); the browser remembers it until «Forget the key». After five wrong keys in a row, the server closes that connection. Going next to someone puts you 1.6 m beside them, facing them; going to a point on the map puts you on the ground there. Every request is logged on the server (admin.jsonl) with its author and without the key."
 }

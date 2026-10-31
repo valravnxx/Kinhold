@@ -1512,5 +1512,8 @@
  "Depuración (admin)": "Отладка (администратор)",
  "El panel de admin solo está en el mundo de verdad.": "Панель администратора есть только в настоящем мире.",
  "Admin": "Админ",
- "Conectados además de ti: {n}": "В сети, кроме вас: {n}"
+ "Conectados además de ti: {n}": "В сети, кроме вас: {n}",
+ "Demo única · v75 (panel de admin)": "Единое демо · v75 (панель администратора)",
+ "v75: panel de depuración del admin (valravnx, 30 oct): F9 (o el botón «Admin», con ?admin en la dirección) abre el mapa del rey con todos los jugadores conectados y su lista; un clic en el mapa te lleva ahí y «Ir» te pone junto a otro jugador. Todo lo pide al servidor con la clave de admin que valravnx pone en la máquina; sin ella, no enseña nada.": "v75: панель отладки администратора (valravnx, 30 окт.): F9 (или кнопка «Админ», с ?admin в адресе) открывает карту короля со всеми игроками в сети и их списком; щелчок по карте переносит туда, а «Идти» ставит рядом с другим игроком. Всё запрашивается у сервера с ключом администратора, который valravnx задаёт на машине; без него ничего не показывается.",
+ "v75, provisional: la clave se pone en la máquina en /etc/kinhold/admin.env (KINHOLD_ADMIN, de 12 letras o más); el navegador la recuerda hasta «Olvidar la clave». Con cinco claves mal seguidas, el servidor cierra esa conexión. Al ir junto a otro, a 1,6 m a su lado y mirándole; al ir a un punto del mapa, en el suelo de allí. Cada petición queda apuntada en el servidor (admin.jsonl) con su autor y sin la clave.": "v75, временно: ключ задаётся на машине в /etc/kinhold/admin.env (KINHOLD_ADMIN, от 12 символов); браузер помнит его до «Забыть ключ». После пяти неверных ключей подряд сервер закрывает это соединение. Переход к другому игроку ставит в 1,6 м сбоку, лицом к нему; переход в точку карты — на землю там. Каждый запрос записывается на сервере (admin.jsonl) с автором и без ключа."
 }
