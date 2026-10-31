@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-31T05:36:55+00:00",
-  "tarea": "Estaciones y recetas en la lógica pura, con los datos del documento de sistemas (apartados 7 y 8) de las primeras estaciones: hoguera y piedra de tallar (N0) y banco de trabajo de tronco (entrada a N1); cada receta con lo que gasta, lo que da, dónde se hace y su tiempo. Fabricar con autor, gastando lo que llevas encima y lo de los arcones a pocos pasos, con una cola pequeña por estación y el tiempo contado por tiempo transcurrido. Pruebas de lógica",
-  "hito": "crafting",
-  "rama": "trabajo/20261031-0536"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-31T03:53:07+00:00",
   "tarea": "Capa de espalda (visto en la revisión del 30 oct): sale casi negra y lisa, sin pliegues a la vista",

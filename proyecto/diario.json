@@ -3010,5 +3010,21 @@
   "pruebas": "En la nube, la batería entera tras unir main (agua y nado): bien salvo «jugar en línea» y «duelo en línea» (exentos hasta la fase 2) y «lo que llevas en línea», que se quedó a un golpe de talar el árbol por la espera corta; con la espera de 4 minutos, bien. Antes, con la main anterior, «la demo en el mundo» falló una vez («nada en el agua», salida al azar) y pasó al repetirla. Aquí: servidor con dos clientes 40/40 (MUTAR=1: 2 fallos), nado 17/17.",
   "capturas": "capturas/demo-v63",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T05:36:55+00:00",
+  "fin": "2026-10-31T07:09:21+00:00",
+  "titulo": "Hito 3: estaciones y recetas en la lógica pura (carril A)",
+  "hito": "crafting",
+  "hecho": [
+   "Nuevo src/logica/fabricacion.js: las tres primeras estaciones del documento de sistemas (apartado 7) con su coste: hoguera (6 piedras y 4 ramas), piedra de tallar y banco de trabajo de tronco (2 troncos cortos, y llevar una herramienta de piedra, que no se gasta).",
+   "Recetas del apartado 8 que ya tienen sus materiales: con las manos (cordel, palo cavador, honda, leñero, rastra, fardo, arpón, odre), en la piedra de tallar (lasca de sílex, hacha de piedra), en la hoguera (lanza endurecida, antorcha) y en el banco (cuerda, cinturón de cuerda, cestas, nasa, trampa de lazo, pala, azada, hoz de sílex, mayal, cubo). Cada una con lo que gasta, lo que da, dónde se hace y su tiempo. Catorce objetos nuevos en el catálogo del inventario, con su nombre en inglés y en ruso.",
+   "Fabricar con autor (acciones colocar_estacion, fabricar y recoger_fabricado, anotadas en el registro): junto a la estación, gasta primero lo que llevas encima y luego lo de los arcones a pocos pasos; nunca lo que llevas puesto (el cinturón, la mochila). Cola de 3 encargos por estación y de 1 con las manos; el tiempo lo pone quien valida y se cuenta por la hora, aunque nadie juegue. Lo terminado espera en la estación hasta que su autor lo recoge, donde le quepa. Se guarda y se carga con versión.",
+   "Provisional (el documento no lo fija): tiempos de 10 a 60 s; junto a la estación es a 2,5 m y los arcones «a pocos pasos», a 6 m; la «piedra grande» de la piedra de tallar es 1 piedra suelta; «rama larga» y «rama curva» son ramas. Quedan para cuando existan sus materiales: envueltas de piel, anzuelo, refugio de ramas (es una obra), carretilla, zurrón, chaleco, vendas y cocinar.",
+   "Prueba nueva: prueba_fabricacion.mjs (58 comprobaciones: datos del documento, colocar, fabricar con las manos y en las estaciones, la cola, el tiempo por la hora, los arcones cercanos y lejanos, si no cabe, guardar y cargar, y las acciones con autor). Con MUTAR=1 (el hacha de piedra sin cordel y al momento) falla 8.",
+   "Sin versión nueva: es lógica sin nada jugable aún. Ni el servidor ni la demo la usan todavía: las estaciones como obras y su panel son las tareas siguientes del hito, y las acciones ya llevan autor para que el servidor las valide."
+  ],
+  "pruebas": "En la nube, la batería entera (23 grupos): bien salvo «jugar en línea» y «duelo en línea» (exentos hasta la fase 2) y lógica, que falló porque faltaban en inglés y en ruso los nombres de los objetos nuevos; arreglado. Tras unir main, repetidos lógica, panel de inventario, demo única y recoger del suelo: bien.",
+  "estado": "ok"
  }
 ]
