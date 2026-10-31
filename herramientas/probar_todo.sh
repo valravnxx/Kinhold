@@ -71,6 +71,7 @@ paso "Taller: formas y colores para personalizar" node pruebas/prueba_aspecto_mo
 paso "Taller: manos enteras y botas de la mujer bajo la falda" node pruebas/prueba_manos.mjs
 paso "Taller: pies descalzos" node pruebas/prueba_pies.mjs
 paso "Taller: barba larga con volumen" node pruebas/prueba_barbas.mjs
+paso "Taller: cejas y barba pintadas (calcos)" node pruebas/prueba_calcos.mjs
 paso "Taller: capa que cae de los hombros" node pruebas/prueba_manto.mjs
 paso "Taller: la piel bajo el escote" node pruebas/prueba_toca.mjs
 paso "Taller: el nacimiento del pelo" node pruebas/prueba_nacimiento_pelo.mjs

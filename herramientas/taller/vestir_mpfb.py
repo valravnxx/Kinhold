@@ -88,6 +88,15 @@ def rasterizar(ob, res, attrs):
         hay[y0:y1 + 1, x0:x1 + 1] |= dentro
     return img, hay
 
+def empaquetar_uv(ob):
+    """junta las islas UV de `ob` en el cuadrado (con giro, para aprovechar la textura)"""
+    for o in bpy.context.view_layer.objects: o.select_set(False)
+    bpy.context.view_layer.objects.active = ob; ob.select_set(True)
+    bpy.context.scene.tool_settings.use_uv_select_sync = True
+    bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.uv.pack_islands(rotate=True, margin=0.02)
+    bpy.ops.object.mode_set(mode='OBJECT')
+
 def dilatar(rgba, hay, pasos=6):
     """estira el color fuera de las islas UV para que no se vean costuras al reducir la textura"""
     rgba = rgba.copy(); hay = hay.copy()
@@ -137,7 +146,7 @@ def mapear(ob, pos, orig):
     kd.balance()
     MAPA[ob.name] = np.array([orig[kd.find(v.co)[1]] for v in ob.data.vertices], dtype=np.int64)
 
-def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None, metal=0.0, tapar=None, factor=None, tinte=None, entero=None, prenda=None):
+def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosidad=0.85, sss=0.0, subdividir=0, diezmar=1.0, brillo=0.0, ajustar_uv=False, alisar=None, colgar=None, metal=0.0, tapar=None, factor=None, tinte=None, entero=None, prenda=None, empaquetar=False):
     """copia de `base` con solo los vértices para los que quedarse(i, co) es cierto; la empuja por la normal.
     color(P, A) da el color por vértice; textura=(res, fn(P, A) → rgba) pinta una textura en su mapa UV"""
     ob = base.copy(); ob.data = base.data.copy(); ob.name = nombre
@@ -196,6 +205,10 @@ def trozo(base, nombre, quedarse, empuje=0.0, color=None, textura=None, rugosida
     nv = len(me.vertices); pos = np.zeros(nv * 3); me.vertices.foreach_get('co', pos); pos = pos.reshape(-1, 3)
     orig = np.zeros(nv, dtype=np.int32); me.attributes['orig'].data.foreach_get('value', orig)
     me.materials.clear()
+    if empaquetar:  # calcos (desde taller-v21): sus trozos del mapa UV de la piel quedan lejos unos de otros (las cejas, entre la
+        # isla de la frente y la del párpado) y, al estirar la caja de todos, la ceja se quedaba en una tira de unos 24 píxeles
+        # de ancho de los 512: de cerca salía en bloques (revisión del 31 oct). Se juntan las islas y luego se estira la caja.
+        empaquetar_uv(ob)
     if ajustar_uv:  # las mallas auxiliares ocupan un rincón del mapa UV: se estira su trozo para que use toda la textura
         uv = np.zeros(len(me.loops) * 2); me.uv_layers['UVMap'].data.foreach_get('uv', uv); uv = uv.reshape(-1, 2)
         lo, hi = uv.min(0), uv.max(0); uv = 0.01 + 0.98 * (uv - lo) / (hi - lo)
@@ -959,8 +972,10 @@ def personaje(nombre, macros, objetivos, ropa):
         arriba = suave(-0.009, 0.005, zc - z + borde)  # en el borde los pelos se van espaciando (pelos_barba)
         # en el cuello se va aclarando, sin corte. Por delante, bajo la barbilla, baja más: antes se aclaraba ya en la
         # barbilla (lo vio valravnx: «una claridad en la barbilla»)
-        z_cuello = cuello_z + 0.03 - 0.04 * suave(-0.02, -0.07, y)
-        abajo = suave(-0.02, 0.012, z - z_cuello + borde)
+        # Desde taller-v21 baja hasta el cuello de la ropa y se va aclarando en unos 4 cm: antes, a los lados, acababa 3 cm
+        # por encima y entre la barba y la ropa quedaba una franja clara de cuello, cortada por la tela (revisión del 31 oct)
+        z_cuello = cuello_z - 0.015 * suave(-0.02, -0.07, y)
+        abajo = suave(-0.035, 0.025, z - z_cuello + 1.5 * borde)  # en el cuello de la ropa, ya rala (pelos sueltos)
         m = arriba * abajo * (0.9 + 0.1 * suave(boca_z, boca_z - 0.04, z))  # más poblada en la barbilla
         frente = suave(-0.11, -0.125, y)
         bigote = suave(0.034, 0.026, x) * suave(-0.003, 0.002, z - (boca_z + 0.004)) * suave(0.003, -0.002, z - (boca_z + 0.016 - 0.1 * x * x * 10)) * frente
@@ -971,7 +986,7 @@ def personaje(nombre, macros, objetivos, ropa):
         elif tipo == 'bigote': m = 0.85 * np.maximum(bigote, comisura)
         else: m = np.maximum(m, 0.85 * np.maximum(bigote, comisura))
         if A is not None: m *= (1 - suave(0.1, 0.35, A[..., 1])) * (1 - suave(0.3, 0.6, A[..., 0]))
-        m *= suave(-0.01, -0.03, y)
+        m *= suave(0.0, -0.035, y + 0.012 * (fbm(P, 80) - 0.5))  # hacia la nuca se acaba poco a poco y no en una raya recta
         return m
     def zona_cofia(P):
         x, y, z = P[..., 0], P[..., 1], P[..., 2]
@@ -1061,7 +1076,7 @@ def personaje(nombre, macros, objetivos, ropa):
     for n_, fn, res in calcos:
         sel = donde(fn)
         piezas.append(trozo(base, f'{nombre}_{n_}', lambda i, c, sel=sel: sel[i] and sin_orejas(i, c), empuje=0.001, textura=(res, fn),
-                            rugosidad=0.7, ajustar_uv=True, **f_pelo))
+                            rugosidad=0.7, ajustar_uv=True, empaquetar=True, **f_pelo))
 
     # --- barba larga: una malla propia con volumen (antes era la piel estirada: de perfil salía como una lámina hueca, y
     # valravnx la vio «horrible»). Como la melena: columnas alrededor de la cara, de la patilla a la otra patilla; cada
