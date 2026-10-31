@@ -1,0 +1,75 @@
+  OK   C saca el arma: el luchador sale, con la mira, y el personaje de andar se esconde — {'a': True, 'm': True, 'mira': True, 'arma': True, 'pj': False}
+  OK   la mira tiene cuatro direcciones — 4
+  OK   la cámara se inclina hasta casi a ras de suelo — 0.06 rad
+  OK   ratón hacia izquierda y clic: carga el golpe izquierda — {'accion': 'preparando', 'linea': 'izquierda', 'finta': False, 'carga': 0.09523809523809523, 'bloq': False, 'lb': 'alto'}
+  OK   ratón hacia alto y clic: carga el golpe alto — {'accion': 'preparando', 'linea': 'alto', 'finta': False, 'carga': 0.09523809523809523, 'bloq': False, 'lb': 'alto'}
+  OK   ratón hacia derecha y clic: carga el golpe derecha — {'accion': 'preparando', 'linea': 'derecha', 'finta': False, 'carga': 0.09523809523809523, 'bloq': False, 'lb': 'alto'}
+  OK   ratón hacia estocada y clic: carga el golpe estocada — {'accion': 'preparando', 'linea': 'estocada', 'finta': False, 'carga': 0.125, 'bloq': False, 'lb': 'alto'}
+  OK   sin mover el ratón: la última dirección usada (abajo, clavar) — {'accion': 'preparando', 'linea': 'estocada', 'finta': False, 'carga': 0.125, 'bloq': False, 'lb': 'alto'}
+  OK   mantener el clic carga el golpe — {'accion': 'preparando', 'linea': 'alto', 'finta': False, 'carga': 0.6666666666666666, 'bloq': False, 'lb': 'alto'}
+  OK   a mitad del clic, mover el ratón no cambia el golpe (va comprometido) — {'accion': 'preparando', 'linea': 'alto', 'finta': False, 'carga': 1, 'bloq': False, 'lb': 'alto'}
+  OK   con el golpe cargado, el botón derecho lo cancela (finta) y para — {'accion': 'libre', 'linea': 'alto', 'finta': True, 'carga': 0, 'bloq': True, 'lb': 'alto'}
+  OK   tras la finta se empieza otro golpe por otro lado — {'accion': 'preparando', 'linea': 'derecha', 'finta': False, 'carga': 0.0761904761904762, 'bloq': False, 'lb': 'alto'}
+  OK   ratón de verdad: el botón izquierdo carga el golpe — {'accion': 'preparando', 'linea': 'derecha', 'finta': False, 'carga': 0.2285714285714286, 'bloq': False, 'lb': 'alto'}
+  FALLA ratón de verdad: el derecho a la vez lo cancela (finta) y para — {'accion': 'libre', 'linea': 'derecha', 'finta': True, 'carga': 0, 'bloq': False, 'lb': 'izquierda'}
+  FALLA ratón de verdad: al soltar los dos, ni golpe ni parada — {'accion': 'preparando', 'linea': 'izquierda', 'finta': False, 'carga': 0.1523809523809524, 'bloq': False, 'lb': 'izquierda'}
+  FALLA al soltar, el golpe sale — {'accion': 'libre', 'linea': 'izquierda', 'finta': False, 'carga': 0, 'bloq': False, 'lb': 'izquierda'}
+  OK   botón derecho: para por el lado del ratón — {'accion': 'libre', 'linea': 'izquierda', 'finta': False, 'carga': 0, 'bloq': True, 'lb': 'izquierda'}
+  OK   sin soltar, el ratón hacia arriba pasa a parar arriba — {'accion': 'libre', 'linea': 'izquierda', 'finta': False, 'carga': 0, 'bloq': True, 'lb': 'alto'}
+  OK   soltar el botón derecho deja de parar — {'accion': 'libre', 'linea': 'izquierda', 'finta': False, 'carga': 0, 'bloq': False, 'lb': 'alto'}
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_combate_mundo_navegador.py", line 135, in <module>
+    pg.click('#cmbRival'); pg.wait_for_timeout(200)
+    ~~~~~~~~^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 11102, in click
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.click(
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 889, in click
+    return await self._main_frame._click(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 594, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#cmbRival")
+    - locator resolved to <button id="cmbRival">Rival</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - performing click action
+      - <canvas id="lienzo" width="1280" height="800" data-engine="three.js r186"></canvas> intercepts pointer events
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - performing click action
+      - <canvas id="lienzo" width="1280" height="800" data-engine="three.js r186"></canvas> intercepts pointer events
+    - retrying click action
+      - waiting 100ms
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+
