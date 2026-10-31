@@ -1,5 +1,6 @@
 // Kinhold — lógica de construcción (sin gráficos, comprobable en Node)
 import { PIEZAS, DECORACION, MODULO, ALTURA, RECUPERACION, MAX_PLANTA, MATERIALES_INICIALES, CLASE_PESO } from './piezas.js';
+import { alisa, centroCasilla, validarPasada, RADIO_CIMIENTO, BORDE as BORDE_NIVELADO } from './nivelado.js';
 
 export const RADIO_MOJON = 20;        // radio de tierra del mojón de nivel 1 (m)
 export const DIST_ENGANCHE = 3 * MODULO; // a esta distancia de una construcción, se encaja en su rejilla
@@ -33,6 +34,8 @@ const HUECOS_ARISTA = new Set(['e', 'b', 'g', 'p', 'q', 'w']);
 export function clave(hueco, i, j, k, d) {
   return HUECOS_ARISTA.has(hueco) ? `${hueco}:${i},${j},${k},${d}` : `${hueco}:${i},${j},${k}`;
 }
+
+const redondo = v => Math.round(v * 1000) / 1000;
 
 // ---------- Conversión de coordenadas (mismo convenio que three.js con rotation.y = rot) ----------
 export function localAMundo(c, lx, lz) {
@@ -87,6 +90,9 @@ export class Mundo {
     this.materiales = { ...MATERIALES_INICIALES };
     this.siguienteId = 1;
     this.obrasTerminadas = []; // quién llevó qué y quién trabajó en cada obra terminada (para el servidor; no se guarda)
+    // el suelo nivelado para construir (src/logica/nivelado.js): las pasadas de la brocha y lo que alisan los cimientos,
+    // por orden, con su autor. Se quedan aunque se desmonte lo de encima (la tierra movida no vuelve sola)
+    this.nivelados = [];
   }
 
   // --- materiales ---
@@ -137,7 +143,9 @@ export class Mundo {
 
   // Calcula la pieza candidata (sin colocarla) para un tipo en un punto del mundo.
   // rotLibre: giro elegido por el jugador cuando la pieza empieza una construcción nueva.
-  candidata(tipo, x, z, k, rotLibre = 0, dir = 0) {
+  // y: la altura del suelo en (x, z); si la pieza empieza una construcción nueva, la planta baja de toda ella queda ahí
+  // (oy), a ras del terreno de ese sitio, y no en la altura 0.
+  candidata(tipo, x, z, k, rotLibre = 0, dir = 0, y = 0) {
     const def = PIEZAS[tipo];
     if (!def || def.hueco === 'libre') return null;
     let c = this.construccionCercana(x, z);
@@ -147,7 +155,7 @@ export class Mundo {
       const co = Math.cos(rotLibre), si = Math.sin(rotLibre);
       const ox = x - (MODULO / 2) * co - (MODULO / 2) * si;
       const oz = z + (MODULO / 2) * si - (MODULO / 2) * co;
-      c = { id: -1, ox, oz, rot: rotLibre, piezas: new Map() };
+      c = { id: -1, ox, oz, oy: Number.isFinite(y) ? y : 0, rot: rotLibre, piezas: new Map() };
       nueva = true;
     }
     const l = mundoALocal(c, x, z);
@@ -361,15 +369,21 @@ export class Mundo {
   // Coloca una pieza. Con marco = true (como se construye en el juego: «Obras», GDD) solo pone el marco de la obra:
   // no paga nada, se ve como un armazón, no sostiene nada y su peso ya cuenta (así, al terminarla, aguanta seguro).
   // Sin marco, la pieza sale terminada y pagada de golpe (lo usan las pruebas de la estructura).
-  colocar(cand, marco = false) {
+  // autor: quién la pone (lo que alisa un cimiento queda anotado a su nombre).
+  colocar(cand, marco = false, autor = null) {
     const v = this.validar(cand, marco);
     if (!v.ok) return v;
     let { construccion: c, pieza: p, nueva } = cand;
     if (nueva) {
-      c = { id: this.siguienteId++, ox: c.ox, oz: c.oz, rot: c.rot, piezas: new Map() };
+      c = { id: this.siguienteId++, ox: c.ox, oz: c.oz, oy: c.oy || 0, rot: c.rot, piezas: new Map() };
       this.construcciones.push(c);
     }
     p.id = this.siguienteId++;
+    // un cimiento alisa el terreno de su casilla a la altura de la planta baja (GDD: en ladera hay que nivelar)
+    if (alisa(p)) {
+      const l = centroCasilla(p), m = localAMundo(c, l.lx, l.lz);
+      this.nivelados.push({ id: p.id, x: redondo(m.x), z: redondo(m.z), y: redondo(c.oy || 0), r: RADIO_CIMIENTO, borde: BORDE_NIVELADO, autor, de: 'cimiento' });
+    }
     if (PIEZAS[p.tipo].andamio) p.dir = dirAndamio(c, p.i, p.j, p.k);
     if (PIEZAS[p.tipo].hogar) p.dir = dirHogar(c, p.i, p.j);
     if (PIEZAS[p.tipo].adarve) p.dir = dirAdarve(c, p.i, p.j);
@@ -514,6 +528,20 @@ export class Mundo {
     return { ok: true, caen: pre.caen, devuelto };
   }
 
+  // ---------- Nivelar con la brocha redonda (GDD) ----------
+  // a = { x, z, y, radio }: alisa a la altura y un círculo de ese radio, con su borde suave. Solo en tu tierra.
+  nivelar(a, autor = null) {
+    const mal = validarPasada(a || {});
+    if (mal) return { ok: false, motivo: mal };
+    if (!this.mojon) return { ok: false, motivo: 'Primero coloca tu mojón.' };
+    if (!this.dentroDeTierra(a.x, a.z)) return { ok: false, motivo: 'Fuera de tu tierra.' };
+    const n = { id: this.siguienteId++, x: redondo(a.x), z: redondo(a.z), y: redondo(a.y), r: a.radio, borde: BORDE_NIVELADO, autor, de: 'brocha' };
+    this.nivelados.push(n);
+    return { ok: true, nivelado: n.id };
+  }
+  // las marcas de nivelado, por orden (las de src/logica/nivelado.js)
+  marcasNivelado() { return this.nivelados; }
+
   // ---------- Decoración libre ----------
   colocarDecoracion(tipo, x, y, z, rot) {
     const def = DECORACION[tipo];
@@ -541,8 +569,9 @@ export class Mundo {
       materiales: this.materiales,
       mojon: this.mojon,
       siguienteId: this.siguienteId,
-      construcciones: this.construcciones.map(c => ({ id: c.id, ox: c.ox, oz: c.oz, rot: c.rot, piezas: [...c.piezas.values()] })),
+      construcciones: this.construcciones.map(c => ({ id: c.id, ox: c.ox, oz: c.oz, oy: c.oy || 0, rot: c.rot, piezas: [...c.piezas.values()] })),
       decoracion: this.decoracion,
+      nivelados: this.nivelados,
     };
   }
   static importar(datos) {
@@ -554,9 +583,11 @@ export class Mundo {
     m.construcciones = (datos.construcciones || []).map(c => {
       const mapa = new Map();
       for (const p of c.piezas) mapa.set(clave(p.hueco, p.i, p.j, p.k, p.d), p);
-      return { id: c.id, ox: c.ox, oz: c.oz, rot: c.rot, piezas: mapa };
+      return { id: c.id, ox: c.ox, oz: c.oz, oy: Number.isFinite(c.oy) ? c.oy : 0, rot: c.rot, piezas: mapa };
     });
     m.decoracion = datos.decoracion || [];
+    // los guardados de antes del 31 oct no tienen oy ni nivelados: todo a la altura 0, como se construyó
+    m.nivelados = Array.isArray(datos.nivelados) ? datos.nivelados.map(n => ({ ...n })) : [];
     return m;
   }
 }

@@ -33,6 +33,7 @@ paso "Construir demo única" node construir_demo.mjs
 paso "Construir prueba de cavar" node construir_mina.mjs
 paso "Construir visor del mapa" node construir_mapa.mjs
 paso "Lógica de construcción" node pruebas/prueba_logica.mjs
+paso "Construir a la altura del suelo y nivelar" node pruebas/prueba_nivelado.mjs
 paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs
@@ -88,6 +89,7 @@ paso "Navegador: pruebas de estilo" python3 pruebas/prueba_estilo_navegador.py d
 paso "Navegador: personaje" python3 pruebas/prueba_personaje_navegador.py dist/kinhold_personaje.html "$C/personaje"
 paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html "$C/demo"
 paso "Navegador: la demo en el mundo (Whitholm)" python3 pruebas/prueba_mundo_navegador.py dist/kinhold_demo.html "$C/mundo"
+paso "Navegador: construir a la altura del suelo (ladera de Whitholm)" python3 pruebas/prueba_nivelado_navegador.py dist/kinhold_demo.html "$C/nivelado"
 paso "Navegador: jugar en línea (dos páginas y un servidor)" python3 pruebas/prueba_en_linea_navegador.py dist/kinhold_demo.html "$C/en_linea"
 paso "Navegador: duelo en línea (dos páginas y un servidor)" python3 pruebas/prueba_duelo_en_linea_navegador.py dist/kinhold_demo.html "$C/duelo_en_linea"
 paso "Navegador: recursos de personaje v2" python3 pruebas/prueba_recursos_personaje.py "$C/recursos"
