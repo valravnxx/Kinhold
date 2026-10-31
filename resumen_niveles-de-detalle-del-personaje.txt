@@ -1,0 +1,43 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2350 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2102 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1694 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2171 KB
+
+== Construir demo única
+      2056 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2673 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1688 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2144 KB
+dist/kinhold_trozos.html 1690 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: niveles de detalle del personaje
+  OK   demo: con niveles, menos triángulos (≤ 70 %) — 1295270 → 777430
+  OK   demo: con niveles, menos llamadas de dibujo — 686 → 418
+  OK   demo: sin errores en la consola
+FALLOS: demo: el panel dice cuántos hay en cada nivel
+!! FALLA: python3 pruebas/prueba_detalle_navegador.py dist/kinhold_personaje.html dist/kinhold_demo.html /tmp/kinhold_capturas/detalle
+
+HAY FALLOS
+tardó 318 s
