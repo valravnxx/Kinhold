@@ -1,0 +1,31 @@
+Lógica de los tintes
+  OK   hombre: todas las prendas teñibles tienen tinte
+  OK   hombre: sobreveste roja de rubia y lisa por defecto
+  OK   hombre: un tinte que no existe vuelve al de por defecto
+  OK   hombre: el cuero solo con tintes de cuero
+  OK   hombre: se guarda un tinte válido
+  OK   hombre: blasón y color de figura que no valen vuelven al defecto
+  OK   hombre: el resultado ya normalizado no cambia
+  OK   mujer: todas las prendas teñibles tienen tinte
+  OK   mujer: sobreveste roja de rubia y lisa por defecto
+  OK   mujer: un tinte que no existe vuelve al de por defecto
+  OK   mujer: el cuero solo con tintes de cuero
+  OK   mujer: se guarda un tinte válido
+  OK   mujer: blasón y color de figura que no valen vuelven al defecto
+  OK   mujer: el resultado ya normalizado no cambia
+  OK   «Sin teñir» da el color propio de cada prenda
+  OK   un tinte da su color
+  OK   cada blasón tiene su número en el sombreado (liso = 0)
+  OK   la figura del blasón tiene color
+  OK   colores apagados (nada chillón: saturación ≤ 0,7)
+Modelos de docs/recursos/personajes/taller-v21
+  OK   mh_hombre.glb: se tiñen camisa, tunica, gambeson, sobreveste, manto, capucha, zapatos, botas, calzas — botas, calzas, camisa, capucha, gambeson, manto, sobreveste, tunica, zapatos
+  OK   mh_hombre.glb: cada pieza teñible dice qué prenda es (de las teñibles) y su gris de referencia
+  OK   mh_hombre.glb: con los tintes por defecto, cada prenda tiene el color de antes — diferencia mayor 0.0000 (hombre_capa_camisa)
+  OK   mh_hombre.glb: la cota de malla no se tiñe
+  OK   mh_mujer.glb: se tiñen camisa, vestido, gambeson, sobreveste, manto, capucha, zapatos, botas, toca — botas, camisa, capucha, gambeson, manto, sobreveste, toca, vestido, zapatos
+  OK   mh_mujer.glb: cada pieza teñible dice qué prenda es (de las teñibles) y su gris de referencia
+  OK   mh_mujer.glb: con los tintes por defecto, cada prenda tiene el color de antes — diferencia mayor 0.0000 (mujer_capa_camisa)
+  OK   mh_mujer.glb: la cota de malla no se tiñe
+
+27 correctas, 0 fallos

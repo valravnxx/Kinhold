@@ -1,0 +1,50 @@
+Lo que dice el documento de sistemas (apartado 3, «De los árboles»)
+  OK   se tronza el tronco largo y se parte el corto; el delgado no
+  OK   el largo da 3–4 troncos cortos (grandes)
+  OK   el corto da leña (mediana)
+  OK   tronzar con hacha es lento: más golpes que partir
+  OK   con hacha de piedra, bastante más lento — 54 y 18
+  OK   salen 3 y 4 troncos, según el tronco y la vez
+  OK   fijo: el mismo tronco y la misma vez dan lo mismo
+Tronzar el tronco largo
+  OK   sin hacha no se tronza — Necesitas un hacha en la mano para tronzar.
+  OK   de lejos no
+  OK   con hacha de hierro, los golpes que pide — 18 golpes
+  OK   el tronco largo ya no está
+  OK   en el suelo, 3 o 4 troncos cortos más — 4
+  OK   caen al lado, tumbados como estaba el largo, y no desaparecen
+  OK   cada golpe queda en el registro con su autor
+  OK   con hacha de piedra, muchos más golpes — 54
+  OK   de una pila de dos, queda uno
+Partir el tronco corto
+  OK   con hacha de piedra, los golpes que pide — 6
+  OK   da 6 de leña y queda un tronco corto
+  OK   el segundo: la leña se suma a la misma pila
+  OK   la leña no se trocea más
+  OK   el leñero lleva 18 de leña: tres troncos partidos
+  OK   y la leña se guarda ahí (con un tronco en las manos)
+Golpes, autores y acciones
+  OK   dos golpes demasiado seguidos del mismo autor, no
+  OK   otro autor sí (entre dos va más rápido)
+  OK   sin autor, no
+  OK   sin hora, no
+  OK   datos raros, no
+  OK   lo que no existe, no
+  OK   las tierras se miran con el autor de la acción
+Llevar el tronco corto: con las dos manos o al hombro
+  OK   se coge con las dos manos
+  OK   «Ponérselo» lo pasa al hombro y deja las manos libres
+  OK   al hombro cuenta como el hombro lleno
+  OK   no caben dos al hombro
+  OK   del hombro vuelve a las manos si están libres
+  OK   de una pila de troncos cortos se coge uno, con las dos manos
+  OK   el largo y el delgado no van al hombro
+  OK   va en el leñero (2 troncos cortos)
+  OK   se guarda y se carga al hombro
+Guardado
+  OK   se guarda
+  OK   lo que va a medias sigue al cargar
+  OK   lo que ya no está en el suelo se olvida
+  OK   un guardado ilegible no rompe nada
+
+42 bien, 0 mal
