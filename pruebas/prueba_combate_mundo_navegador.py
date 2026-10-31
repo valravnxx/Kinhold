@@ -116,6 +116,8 @@ with sync_playwright() as p:
     comprobar('ratón de verdad: el botón izquierdo carga el golpe', e1['accion'] == 'preparando', str(e1))
     comprobar('ratón de verdad: el derecho a la vez lo cancela (finta) y para', e2['accion'] == 'libre' and e2['finta'] and e2['bloq'], str(e2))
     comprobar('ratón de verdad: al soltar los dos, ni golpe ni parada', e3['accion'] == 'libre' and not e3['bloq'], str(e3))
+    # suelta el ratón cogido (si no, el lienzo tapa los botones del panel)
+    pg.evaluate('document.exitPointerLock && document.exitPointerLock()'); pg.wait_for_timeout(300)
     # al soltar sale
     libre(pg); golpe(pg, 0, -45)
     pg.evaluate(f'{C}.raton.soltar(0)')
