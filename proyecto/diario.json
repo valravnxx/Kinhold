@@ -3324,5 +3324,20 @@
   "pruebas": "En la nube: 24 de 24 grupos correctos",
   "capturas": "capturas/revision-arte-31oct",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T14:11:02+00:00",
+  "fin": "2026-10-31T17:04:19+00:00",
+  "titulo": "Hito 2: lo que llevas se ve puesto, publicado (demo v71, carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "valravnx (chat): las pruebas de navegador «jugar en línea» y «duelo en línea» no existen y no se vuelven a hacer. Borradas (archivos y pasos de probar_todo.sh) y la regla, en CLAUDE.md.",
+   "Lo que llevas se ve puesto en el personaje (cinturón y lo que cuelga, espalda con lo de dentro, hombro y manos; lo grande, en brazos), también para los demás en línea por el servidor: publicado como demo v71 (la v67 a la v70 las cogieron otras sesiones mientras tanto).",
+   "La prueba de la web pedía 3 partes en el menú de la demo; desde la v70 (fuera el «Duelo») son 2: ajustada.",
+   "Corregido un anuncio mal hecho de este carril: al retomar, «ocupar» cogió una tarea de fabricación (las estaciones como obras); volvió a pendiente."
+  ],
+  "pruebas": "En la nube, batería entera tras unir main: 25 de 25 grupos bien (la web, al repetirla con su prueba ajustada). Antes, «la demo en el mundo» falló dos veces con fallos distintos (fotograma de 92 ms, vegetación en el agua) y pasó al repetirla.",
+  "capturas": "capturas/demo-v71",
+  "estado": "ok"
  }
 ]

@@ -230,8 +230,9 @@ with sync_playwright() as p:
             with pg.expect_navigation():
                 pg.locator('#listaJuegos [data-juego]').first.click()
             pg.wait_for_timeout(2500)
-            # la primera tarjeta es la demo única, que abre su menú (sin lienzo hasta elegir una parte)
-            comprobar('el botón Jugar abre el juego', 'jugar/' in pg.url and (pg.locator('canvas').count() >= 1 or pg.locator('#demoMenu a.parte').count() >= 3), pg.url)
+            # la primera tarjeta es la demo única, que abre su menú (sin lienzo hasta elegir una parte): «Jugar» y «Personaje»
+            # (el «Duelo» salió con la v70)
+            comprobar('el botón Jugar abre el juego', 'jugar/' in pg.url and (pg.locator('canvas').count() >= 1 or pg.locator('#demoMenu a.parte').count() >= 2), pg.url)
             pg.screenshot(path=f'{SALIDA}/{nombre}_7_juego_abierto.png')
         # sin nadie trabajando: «ahora mismo» lo dice, y ninguna tarea sale en proceso
         ctx.unroute('https://raw.githubusercontent.com/**')

@@ -1044,6 +1044,10 @@ with sync_playwright() as p:
         comprobar('lleva camisa y calzas', vis.get('hombre_capa_camisa') and vis.get('hombre_capa_calzas'))
         comprobar('sin túnica ni armadura, y descalzo (como empieza el GDD: se ven los pies, no los zapatos)', vis.get('hombre_pies') and not vis.get('hombre_capa_zapatos') and not any(vis.get(f'hombre_capa_{c}') for c in ['tunica', 'gambeson', 'cota', 'sobreveste']),
                   ', '.join(k for k, x in vis.items() if x))
+        # con un tronco en brazos (lo deja aquí lo de llevar material a las obras) anda con la animación de llevar en brazos;
+        # lo de abajo es con las manos vacías
+        brazos = ev(f"(() => {{ const K = {K}, j = K.jugador, l = K.inventario.lugares; l['mano:der'] = {{ tipo: 'tronco_corto', n: 1 }}; l['mano:izq'] = null; K.vestir(); j.animar(1.0, 0.016, false); const m = j.modo; l['mano:der'] = null; K.vestir(); return m; }})()")
+        comprobar('con un tronco corto en las manos, anda con la animación de llevar en brazos', brazos == 'cargar', brazos)
         modos = ev(f"(() => {{ const j = {K}.jugador, r = []; for (const [v, t] of [[1.0, false], [3.6, false], [6, false], [0, false], [0, true]]) {{ j.animar(v, 0.016, t); r.push(j.modo + ':' + j.mh.acciones[j.modo].timeScale.toFixed(2)); }} return r; }})()")
         comprobar('andar, correr, quieto y talar según la velocidad', [m.split(':')[0] for m in modos] == ['andar', 'correr', 'correr', 'quieto', 'talar'], ', '.join(modos))
         # a 3,6 m/s (la velocidad normal) la carrera va casi a su ritmo natural (medido al cargar): sin resbalar ni cámara lenta
