@@ -1,8 +1,6 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v70 (combate a cuatro direcciones y finta)';
+export const VERSION_DEMO = 'Demo única · v69 (herramienta en la mano al trabajar)';
 export const REGISTRO_DEMO = [
-  "v70: combate a cuatro direcciones (valravnx, 31 oct): arriba, izquierda, derecha y abajo, que es clavar (la estocada); fuera el tajo bajo y el centro. Con escudo se para todo lo que viene de frente sin elegir lado (de lado o por detrás, no). El golpe va comprometido: una vez elegida la dirección, mover el ratón (o el dedo en la rosa) ya no la cambia; el botón de parar lo cancela con una finta (cuesta aliento), para parar o para empezar otro golpe por otro lado. Sin movimiento antes del clic, la dirección es la última usada (al empezar, arriba).",
-  "v70, provisional: la finta cuesta el mismo aliento que antes cambiar de línea a media carga; una vez soltado el golpe (lanzándolo) ya no se puede fintar. El duelo de dos jugadores y el servidor siguen con las cinco líneas de antes (cambian cuando el combate del mundo vaya por el servidor).",
   "v69: en «Personaje», al trabajar se lleva la herramienta en la mano (revisión del 30 oct): el pico al picar y el hacha al talar (personaje v32).",
   "v68: los tejados terminados se pisan (valravnx, 31 oct): desde el andamio se sale al alero y se anda por la pendiente hasta la cumbrera, así que un tejado entero se hace con un solo andamio. Antes se atravesaban y caías. Un tejado en obras aún no se pisa.",
   "v68: clic derecho en lo que quieras usar (valravnx, 31 oct): sale un menú junto al puntero con esa cosa y las que están muy cerca de ella (y a tu alcance), para elegir: obras, puertas, chimenea, escaleras y andamios, talar, trocear, coger del suelo y recoger. En el móvil, dejando el dedo quieto encima medio segundo. Usar (F o el botón) sigue haciendo lo de siempre. El botón derecho ya no gira la cámara: la gira la rueda pulsada (o Q y E).",
