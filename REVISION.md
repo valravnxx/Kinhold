@@ -6,6 +6,18 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (14:20 UTC) — por el chat: fuera las pruebas en línea
+valravnx: «he dicho un millón de veces, la prueba de en línea LA BORRAS. NO SE VA A HACER NUNCA MÁS, NO EXISTE, DEJA ESAS PRUEBAS, NO LA VUELVAS A HACER». → Borradas las pruebas de navegador «jugar en línea» y «duelo en línea» (archivos y pasos de probar_todo.sh) y la regla, en CLAUDE.md.
+
+### 31 oct 2026 (11:49 UTC) — por el chat: las animaciones de cargar, hechas por nosotros
+valravnx, respondiendo a la decisión de llevar al hombro y arrastrar: «las tratamos de hacer nosotros pues, es que cargue el tronco en el hombro con penalizacion a movimiento». → Opción (b): se hacen en el taller a partir de las que hay. La tarea en espera de «Equipo y carga por huecos» pasa a pendiente, y lleva también que el tronco al hombro se note al moverse.
+
+### 31 oct 2026 (12:58 UTC) — por el chat: «jugar en línea» ya no existe aparte
+Al preguntarle si publicar el arreglo de los cortados con la prueba «jugar en línea» fallando (en cosas distintas cada vez, también en main), valravnx: «jugar en línea ya no existe, hizo merge con jugar al ser ahora todo full online». → Se publica el arreglo (demo v67), con la prueba anotada en el diario.
+
+### 31 oct 2026 (11:25 UTC) — por el chat: los cortados rectos de kilómetros
+valravnx (con captura): «el mapa me ha generado en un punto de la isla que no conozco una separación de alturas anormal recta que ocupa kilómetros [...] esto no puede pasar en NINGÚN LUGAR DEL MUNDO». → Tarea del chat en «Mundo»: buscar en toda la isla de dónde salen y arreglarlo en el generador del paisaje para que no salga en ningún sitio, con una prueba que lo mire en toda la isla.
+
 ### 31 oct 2026 (11:18 UTC) — por el chat: ya hay servidor de verdad
 valravnx: «ya hay servidor de verdad, elimina lo de que dije que no, ya se juega en línea». → Fuera la excepción del 30 oct: si fallan «jugar en línea» o «duelo en línea», no se publica, como con cualquier otro grupo. Cambiado en CLAUDE.md.
 

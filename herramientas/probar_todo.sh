@@ -85,6 +85,7 @@ paso "Dos carriles en paralelo sin pisarse" node pruebas/prueba_carriles.mjs
 paso "Excavación y malla de la roca" node pruebas/prueba_excavacion.mjs
 paso "Versiones antiguas a las releases" node pruebas/prueba_archivar.mjs
 paso "Generador del mapa del mundo" node pruebas/prueba_mapa.mjs
+paso "Valles sin paredes lisas de kilómetros" node pruebas/prueba_valles.mjs
 paso "Azar y ruido: un solo módulo, los mismos números" node pruebas/prueba_azar.mjs
 paso "Textos traducidos" node pruebas/prueba_idiomas.mjs
 paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold_hito1.html "$C/construccion"
@@ -102,8 +103,6 @@ paso "Navegador: animaciones para cargar" python3 pruebas/prueba_anim_carga_nave
 paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html "$C/demo"
 paso "Navegador: la demo en el mundo (Whitholm)" python3 pruebas/prueba_mundo_navegador.py dist/kinhold_demo.html "$C/mundo"
 paso "Navegador: construir a la altura del suelo (ladera de Whitholm)" python3 pruebas/prueba_nivelado_navegador.py dist/kinhold_demo.html "$C/nivelado"
-paso "Navegador: jugar en línea (dos páginas y un servidor)" python3 pruebas/prueba_en_linea_navegador.py dist/kinhold_demo.html "$C/en_linea"
-paso "Navegador: duelo en línea (dos páginas y un servidor)" python3 pruebas/prueba_duelo_en_linea_navegador.py dist/kinhold_demo.html "$C/duelo_en_linea"
 paso "Navegador: volver donde lo dejaste" python3 pruebas/prueba_volver_navegador.py dist/kinhold_demo.html "$C/volver"
 paso "Navegador: lo que llevas en línea (inventario, suelo, tala y recogida por el servidor)" python3 pruebas/prueba_objetos_en_linea_navegador.py dist/kinhold_demo.html "$C/objetos_en_linea"
 paso "Navegador: recursos de personaje v2" python3 pruebas/prueba_recursos_personaje.py "$C/recursos"
