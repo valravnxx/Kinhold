@@ -1,0 +1,147 @@
+1. Alcance y orientación
+  OK   a 1,5 m la espada larga alcanza
+  OK   a 2,5 m no alcanza
+  OK   de espaldas no alcanza
+  OK   la estocada llega más lejos que el tajo
+2. Defensa por capas
+  OK   parar sin elegir línea detiene un golpe alto — cansancio +10.84
+  OK   parar sin elegir línea detiene un golpe bajo — cansancio +10.84
+  OK   parar sin elegir línea detiene un golpe izquierda — cansancio +10.84
+  OK   parar justo antes del impacto es parada perfecta — parada perfecta
+  OK   y abre un contraataque
+  OK   el contraataque se prepara más rápido — 0.25 s frente a 0.42 s
+  OK   y es imparable
+  OK   una parada normal no detiene el contraataque — {"r":"herida","nota":"imparable"}
+  OK   parar con mucha antelación es parada normal — parada
+  OK   atacar por el mismo lado al principio es golpe maestro — golpe maestro
+  OK   y el golpe maestro entra — herida
+  OK   por el lado contrario no es golpe maestro — herida
+  OK   demasiado tarde no es golpe maestro — herida
+  OK   cambiar de línea al principio es una finta — cansancio +8
+  OK   pasado el 60% ya no se puede fintar
+  OK   agotado, la parada cede — {"r":"herida","nota":"guardia rota"}
+  OK   un golpe al aire cansa más — +18
+  OK   mantener la parada 5 s cansa — 10%
+3. Guardias y tiempo
+  OK   el arado cubre la estocada
+  OK   y abre una ventana de contraataque
+  OK   el contraataque se prepara en la mitad de tiempo — 0.11 s frente a 0.22 s
+  OK   el arado deja abierto el alto
+  OK   mientras cambia de guardia no cubre nada
+  OK   desde el buey la estocada es rápida y el bajo lento — 0.22 s / 0.48 s
+  OK   entre las cuatro guardias se cubren las cinco líneas
+4. Armaduras
+  OK   contra el tajo: malla < gambesón < lino — lino 1.01 · gambesón 0.55 · malla 0.2
+  OK   la malla para peor la estocada que el tajo — estocada 0.55 vs tajo 0.2
+5. Heridas y sus efectos
+  OK   una pierna herida grave te frena — 3.6 → 2.16 m/s
+  OK   un brazo de la espada herido hace los golpes más lentos — 0.42 → 0.6 s
+  OK   herida muy grave en la cabeza: fuera de combate
+  OK   una herida muy grave en el torso desangra en segundos — cae a los 16.7 s
+  OK   un corte leve deja de sangrar y no te mata — sangre 94.62 tras 2 min
+  OK   un golpe contundente fuerte aturde
+  OK   una herida grave interrumpe el golpe que preparabas
+6. Balística
+  OK   a plena tensión cae cerca del punto a 10 m — error medio 0.47 m
+  OK   a plena tensión cae cerca del punto a 20 m — error medio 0.49 m
+  OK   a plena tensión cae cerca del punto a 35 m — error medio 0.66 m
+  OK   a plena tensión cae cerca del punto a 50 m — error medio 0.8 m
+  OK   a media tensión se queda corta — cae a 19.99 m de 30
+  OK   aguantar tenso 5 s hace temblar el pulso — 0.51 m → 16.97 m
+  OK   el arco no llega a 400 m (máximo realista unos 300 m)
+6b. Arco: tensión mínima, correr y recarga
+  OK   soltar antes del 50% de tensión no dispara y cancela — tensión 0, acción libre
+  OK   soltar a partir del 50% sí dispara
+  OK   correr cancela el tensado — libre
+  OK   no se puede empezar a tensar corriendo
+  OK   el arco no dispara más de una flecha cada 1,3 s — 8 flechas en 10 s
+  OK   las piedras: una cada 0,75 s como mucho — 14 piedras en 10 s
+  OK   tras disparar, 0,8 s para encajar la siguiente flecha — a 0,7 s: false, a 0,85 s: true
+6c. Escudo (provisional)
+  OK   con el escudo levantado, las flechas de frente se paran — {"escudo":40,"blanco":0,"otro":0}
+  OK   y las piedras también — {"escudo":40,"blanco":0,"otro":0}
+  OK   con el escudo bajado, las flechas hieren — {"escudo":0,"blanco":40,"otro":0}
+  OK   por la espalda el escudo no para — {"escudo":0,"blanco":40,"otro":0}
+  OK   con la espada larga no se paran flechas — {"escudo":0,"blanco":40,"otro":0}
+  OK   parar con escudo cuesta menos aliento — escudo +6.84, espada larga +10.84
+  OK   con escudo la parada perfecta funciona igual — parada perfecta
+  OK   con escudo el golpe maestro funciona igual — golpe maestro
+  OK   la espada de una mano es algo más corta que la larga — 1.7 m frente a 1.9 m
+  OK   el rival con escudo lo levanta al verte tensar y para la flecha — 10/10
+7. Flechas contra personas y dianas
+  OK   a 15 m, apuntando al pecho, casi todas aciertan — 40/40 {"torso":40}
+  OK   y la mayoría da en torso o brazos
+  OK   la diana puntúa — {"tipo":"diana","puntos":8}
+8. El rival lee los ataques según la dificultad
+  OK   aprendiz detiene menos que normal y normal menos que realista — aprendiz 45% · normal 74% · realista 86%
+8b. El rival no se aleja durante su propio golpe
+  OK   contra alguien quieto a su alcance, ningún golpe al aire — 167 golpes, 0 al aire
+9. Combates completos simulados (máquina contra máquina)
+  OK   modo capas: los combates terminan — 20/20 · mediana 5.92 s · rango 1.4–17.36 s
+  OK   modo guardias: los combates terminan — 20/20 · mediana 5.52 s · rango 1.28–10.64 s
+10. Cámara táctil (un dedo)
+  OK   un dedo sobre la rosa golpea
+  OK   un dedo lejos de la rosa es zona libre
+  OK   sin rosa, todo es zona libre
+  OK   con arco, el dedo tensa y apunta
+  OK   un toque con temblor (5 px) no gira la cámara — giro 0
+  OK   arrastrar 60 px a la derecha gira lo arrastrado desde el inicio — giro -0.36
+  OK   volver 20 px a la izquierda gira al otro lado
+  OK   arco con el dedo en el centro: la cámara no se mueve
+  OK   arco con el dedo junto al borde derecho: gira a la derecha (yaw menor)
+  OK   arco con el dedo junto al borde izquierdo: gira a la izquierda
+  OK   arco: más cerca del borde gira más deprisa, con tope
+11. Curación de heridas
+  OK   vendar empieza la cura
+  OK   mientras curas no atacas ni paras
+  OK   mientras curas apenas te mueves (vendido) — v=0.9
+  OK   vendar no es instantáneo (a los 2 s aún curando)
+  OK   a los 4 s la herida está vendada y sangra menos — 2→0.7
+  OK   gasta una venda
+  OK   no se venda dos veces
+  OK   coser un corte grave
+  OK   cosida: ya no sangra
+  OK   si te hieren mientras curas, la cura se pierde sin gastar
+  OK   echar a correr corta la cura
+  OK   no se cose un golpe contundente
+  OK   no se entablilla un corte
+  OK   entablillar empieza
+  OK   entablillar una pierna rota: te mueves mejor — 0.6→0.85
+  OK   cauterizar necesita un fuego cerca
+  OK   cauterizar para el sangrado y deja secuela
+  OK   sin vendas no se venda
+  OK   método o herida que no existen: no
+  OK   con el brazo herido se tarda más — 4 s y 8 s
+  OK   descansando, con emplasto la herida grave pasa antes a leve
+  OK   si nada sangra, la sangre se recupera despacio — 94.18%
+  OK   la herida leve acaba curándose del todo
+  OK   una herida que sangra no sana sola
+  OK   curarse es una acción con autor y queda en el registro
+12. Modo direccional: golpe cargado, cambio de lado sin soltar y paradas por lado
+  OK   soltar enseguida: el golpe sale al llegar a la carga mínima, más rápido que cargado — 0.41 s
+  OK   soltar enseguida: con la fuerza mínima — fuerza 0.8
+  OK   cargado del todo: el golpe sale al soltar, con toda la fuerza — 0.67 s, fuerza 1
+  OK   mientras se mantiene el botón no sale el golpe, y mantenerlo cargado cansa — cansancio 12 → 22.36
+  OK   un golpe cargado hiere más que uno soltado enseguida — 1.05 contra 0.84
+  OK   a mitad de la carga se cambia de lado sin soltar (es una finta: cuesta aliento y la carga baja) — carga 0.71 → 0.35
+  OK   el golpe sale por el lado nuevo
+  OK   ya soltado, no se cambia de lado
+  OK   parar por el lado bueno detiene el golpe — parada
+  OK   parar por otro lado no sirve — herida
+  OK   la estocada se para sin lado (el centro) — parada
+  OK   pasar al lado bueno sin soltar justo antes del golpe es parada perfecta — parada perfecta
+  OK   la máquina para por el lado bueno más a menudo en realista que en aprendiz — 45 contra 19 de 60
+  OK   combates máquina contra máquina en modo direccional que terminan — 6 de 6
+13. Dirección con el ratón
+  OK   ratón a la izquierda y clic: golpe por la izquierda
+  OK   ratón hacia arriba y clic: golpe alto
+  OK   ratón hacia abajo y clic: golpe bajo
+  OK   ratón a la derecha y clic: golpe por la derecha
+  OK   sin mover el ratón: estocada
+  OK   un movimiento de hace rato no cuenta: estocada
+  OK   un temblor tampoco cuenta: estocada
+  OK   con el botón pulsado, un temblor no cambia de lado
+  OK   con el botón pulsado, un movimiento claro hacia arriba cambia a alto
+  OK   y luego a la derecha, sin soltar
+
+Resultado: 129 correctas, 0 fallidas
