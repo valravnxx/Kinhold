@@ -1,0 +1,94 @@
+semilla 66172, 256 km: 4584 ms · {"tierraKm2":25117,"fraccionTierra":0.3832550048828125,"separacionIsla":45,"cumbre":3256,"areaPais":[2071,5717,5680,5920,5729],"bocas":{"arroyo":102,"rio":58,"grande":1},"vetas":{"hierroPantano":4,"granHierro":5,"granCarbon":3,"hierroVeta":160,"carbon":160}}
+  OK   semilla 66172, 256 km: la misma semilla da el mismo mundo
+  OK   semilla 66172, 256 km: hay tierra y mar (entre el 30 y el 60 % de tierra) — 38 %
+  OK   semilla 66172, 256 km: cumbres de unos 3.000 m — 3256 m
+  OK   semilla 66172, 256 km: la isla grande queda a más de 20 km de mar de cualquier otra costa — 45 km
+  OK   semilla 66172, 256 km: la isla es una región entera (la 1) — 2071 km²
+  OK   semilla 66172, 256 km: toda la lluvia llega al mar (sin ciclos ni hoyos sin salida) — 0 celdas atascadas
+  OK   semilla 66172, 256 km: cinco países, los del continente parecidos (±35 %) — 2071 / 5717 / 5680 / 5920 / 5729 km²
+  OK   semilla 66172, 256 km: el mar no es de ningún país — 0 celdas de mar con país
+  OK   semilla 66172, 256 km: casi toda la tierra tiene país (salvo islas sueltas) — 0 celdas sin país
+  OK   semilla 66172, 256 km: cada sitio de tierra tiene bioma y roca — 0 sin
+  OK   semilla 66172, 256 km: cada veta en su sitio (grandes de hierro en granito o pizarra, salvo la de la sierra de Whitholm, de carbón en arenisca, pantano en turberas) — 332 vetas, 0 mal puestas
+  OK   semilla 66172, 256 km: Whitholm tiene una gran veta de hierro, en lo alto de la sierra (por encima del 60 % de su cumbre) — 1 en la isla, a 1685 m (cumbre 1795 m)
+  OK   semilla 66172, 256 km: pocas grandes vetas de hierro (2 a 8) y a más de 45 km entre sí — 5, a 71 km como poco
+  OK   semilla 66172, 256 km: pocas grandes vetas de carbón (2 a 8) y a más de 45 km entre sí — 3, a 45 km como poco
+  OK   semilla 66172, 256 km: desde cualquier sitio con país hay hierro a menos de 25 km — el más lejano a 17.8 km
+  OK   semilla 66172, 256 km: desde cualquier sitio con país hay carbón a menos de 25 km — el más lejano a 14.9 km
+  OK   semilla 66172, 256 km: desembocan ríos (de más de 5 m) — {"arroyo":102,"rio":58,"grande":1}
+  OK   semilla 66172, 256 km: junto a los ríos no hay zanjas (pendiente más fuerte a ±300 m: el 90 % por debajo de 1, el 99 % por debajo de 2,5) — 953 perfiles · p90 0.92 · p99 1.95
+  OK   semilla 66172, 256 km: la costa de cerca no sale en saltos verticales (pendiente más fuerte a través de la costa: el 90 % por debajo de 6, ninguna por encima de 40; un acantilado empinado sí) — 64 costas · p90 5.7 · máx. 7.9
+  OK   semilla 66172, 256 km: en la montaña de pizarra hay cortados (paredes que no se suben andando) en un 5 a 35 % del suelo — 6.3 % de 40000 puntos
+  OK   semilla 66172, 256 km: las laderas de montaña no van en escalones (en 20 sitios de montaña, la mediana por debajo de 8 paredes por km) — mediana 4.2 por km · máx. 37.9 (un afloramiento)
+  OK   semilla 66172, 256 km: hay saltos de agua (de 200 a 2.000), en roca dura y de 4 a 35 m — 584 saltos · 0 fuera de roca dura · de 3.5 a 35.2 m
+  OK   semilla 66172, 256 km: en el cauce, cada salto baja de golpe (en 10 m, más de la mitad de su alto) — 24 de 24
+  OK   semilla 66172, 256 km: el agua del río cubre el lecho y queda bajo la orilla — 936 de 939
+  OK   semilla 66172, 256 km: los ríos siguen el terreno: en el valle, el agua nunca va en alto sobre los dos lados (Whitholm, menos del 1 %) — 0 de 361 puntos de valle en terraplén
+semilla 7, 256 km: 4635 ms · {"tierraKm2":24839,"fraccionTierra":0.3790130615234375,"separacionIsla":46,"cumbre":2750,"areaPais":[1758,5462,5714,6248,5657],"bocas":{"arroyo":111,"rio":59,"grande":0},"vetas":{"hierroPantano":2,"granHierro":5,"granCarbon":3,"hierroVeta":167,"carbon":167}}
+  OK   semilla 7, 256 km: hay tierra y mar (entre el 30 y el 60 % de tierra) — 38 %
+  OK   semilla 7, 256 km: cumbres de unos 3.000 m — 2750 m
+  OK   semilla 7, 256 km: la isla grande queda a más de 20 km de mar de cualquier otra costa — 46 km
+  OK   semilla 7, 256 km: la isla es una región entera (la 1) — 1758 km²
+  OK   semilla 7, 256 km: toda la lluvia llega al mar (sin ciclos ni hoyos sin salida) — 0 celdas atascadas
+  OK   semilla 7, 256 km: cinco países, los del continente parecidos (±35 %) — 1758 / 5462 / 5714 / 6248 / 5657 km²
+  OK   semilla 7, 256 km: el mar no es de ningún país — 0 celdas de mar con país
+  OK   semilla 7, 256 km: casi toda la tierra tiene país (salvo islas sueltas) — 0 celdas sin país
+  OK   semilla 7, 256 km: cada sitio de tierra tiene bioma y roca — 0 sin
+  OK   semilla 7, 256 km: cada veta en su sitio (grandes de hierro en granito o pizarra, salvo la de la sierra de Whitholm, de carbón en arenisca, pantano en turberas) — 344 vetas, 0 mal puestas
+  OK   semilla 7, 256 km: Whitholm tiene una gran veta de hierro, en lo alto de la sierra (por encima del 60 % de su cumbre) — 1 en la isla, a 1122 m (cumbre 1122 m)
+  OK   semilla 7, 256 km: pocas grandes vetas de hierro (2 a 8) y a más de 45 km entre sí — 5, a 63 km como poco
+  OK   semilla 7, 256 km: pocas grandes vetas de carbón (2 a 8) y a más de 45 km entre sí — 3, a 153 km como poco
+  OK   semilla 7, 256 km: desde cualquier sitio con país hay hierro a menos de 25 km — el más lejano a 17.5 km
+  OK   semilla 7, 256 km: desde cualquier sitio con país hay carbón a menos de 25 km — el más lejano a 15.0 km
+  OK   semilla 7, 256 km: desembocan ríos (de más de 5 m) — {"arroyo":111,"rio":59,"grande":0}
+semilla 42, 256 km: 4470 ms · {"tierraKm2":25053,"fraccionTierra":0.3822784423828125,"separacionIsla":45,"cumbre":2781,"areaPais":[1980,5793,5744,5787,5749],"bocas":{"arroyo":76,"rio":54,"grande":1},"vetas":{"hierroPantano":7,"granHierro":4,"granCarbon":3,"hierroVeta":165,"carbon":165}}
+  OK   semilla 42, 256 km: hay tierra y mar (entre el 30 y el 60 % de tierra) — 38 %
+  OK   semilla 42, 256 km: cumbres de unos 3.000 m — 2781 m
+  OK   semilla 42, 256 km: la isla grande queda a más de 20 km de mar de cualquier otra costa — 45 km
+  OK   semilla 42, 256 km: la isla es una región entera (la 1) — 1980 km²
+  OK   semilla 42, 256 km: toda la lluvia llega al mar (sin ciclos ni hoyos sin salida) — 0 celdas atascadas
+  OK   semilla 42, 256 km: cinco países, los del continente parecidos (±35 %) — 1980 / 5793 / 5744 / 5787 / 5749 km²
+  OK   semilla 42, 256 km: el mar no es de ningún país — 0 celdas de mar con país
+  OK   semilla 42, 256 km: casi toda la tierra tiene país (salvo islas sueltas) — 0 celdas sin país
+  OK   semilla 42, 256 km: cada sitio de tierra tiene bioma y roca — 0 sin
+  OK   semilla 42, 256 km: cada veta en su sitio (grandes de hierro en granito o pizarra, salvo la de la sierra de Whitholm, de carbón en arenisca, pantano en turberas) — 344 vetas, 0 mal puestas
+  OK   semilla 42, 256 km: Whitholm tiene una gran veta de hierro, en lo alto de la sierra (por encima del 60 % de su cumbre) — 1 en la isla, a 1473 m (cumbre 1745 m)
+  OK   semilla 42, 256 km: pocas grandes vetas de hierro (2 a 8) y a más de 45 km entre sí — 4, a 58 km como poco
+  OK   semilla 42, 256 km: pocas grandes vetas de carbón (2 a 8) y a más de 45 km entre sí — 3, a 78 km como poco
+  OK   semilla 42, 256 km: desde cualquier sitio con país hay hierro a menos de 25 km — el más lejano a 15.3 km
+  OK   semilla 42, 256 km: desde cualquier sitio con país hay carbón a menos de 25 km — el más lejano a 16.4 km
+  OK   semilla 42, 256 km: desembocan ríos (de más de 5 m) — {"arroyo":76,"rio":54,"grande":1}
+semilla 3, 188 km: 4589 ms · {"tierraKm2":13460,"fraccionTierra":0.380828857421875,"separacionIsla":42,"cumbre":2658,"areaPais":[1089,3016,3210,2985,3159],"bocas":{"arroyo":47,"rio":33,"grande":0},"vetas":{"hierroPantano":6,"granHierro":3,"granCarbon":2,"hierroVeta":90,"carbon":90}}
+  OK   semilla 3, 188 km: hay tierra y mar (entre el 30 y el 60 % de tierra) — 38 %
+  OK   semilla 3, 188 km: cumbres de unos 3.000 m — 2658 m
+  OK   semilla 3, 188 km: la isla grande queda a más de 20 km de mar de cualquier otra costa — 42 km
+  OK   semilla 3, 188 km: la isla es una región entera (la 1) — 1089 km²
+  OK   semilla 3, 188 km: toda la lluvia llega al mar (sin ciclos ni hoyos sin salida) — 0 celdas atascadas
+  OK   semilla 3, 188 km: cinco países, los del continente parecidos (±35 %) — 1089 / 3016 / 3210 / 2985 / 3159 km²
+  OK   semilla 3, 188 km: el mar no es de ningún país — 0 celdas de mar con país
+  OK   semilla 3, 188 km: casi toda la tierra tiene país (salvo islas sueltas) — 0 celdas sin país
+  OK   semilla 3, 188 km: cada sitio de tierra tiene bioma y roca — 0 sin
+  OK   semilla 3, 188 km: cada veta en su sitio (grandes de hierro en granito o pizarra, salvo la de la sierra de Whitholm, de carbón en arenisca, pantano en turberas) — 191 vetas, 0 mal puestas
+  OK   semilla 3, 188 km: Whitholm tiene una gran veta de hierro, en lo alto de la sierra (por encima del 60 % de su cumbre) — 1 en la isla, a 1328 m (cumbre 1544 m)
+  OK   semilla 3, 188 km: pocas grandes vetas de hierro (2 a 8) y a más de 45 km entre sí — 3, a 94 km como poco
+  OK   semilla 3, 188 km: pocas grandes vetas de carbón (2 a 8) y a más de 45 km entre sí — 2, a 49 km como poco
+  OK   semilla 3, 188 km: desde cualquier sitio con país hay hierro a menos de 25 km — el más lejano a 17.7 km
+  OK   semilla 3, 188 km: desde cualquier sitio con país hay carbón a menos de 25 km — el más lejano a 16.1 km
+  OK   semilla 3, 188 km: desembocan ríos (de más de 5 m) — {"arroyo":47,"rio":33,"grande":0}
+  OK   ancho de río: 10 km² → unos 2 m (arroyo)
+  OK   ancho de río: 1.000 km² → unos 20 m (río)
+  OK   ancho de río: 10.000 km² → unos 63 m (gran río)
+  OK   nombres: el continente es Kinland y hay cinco regiones con nombre
+  OK   nombres: Whitholm es la isla — región 1
+  OK   nombres: Eikwold está al noroeste del continente — (0.30, 0.37)
+  OK   nombres: Rudmere está al suroeste y es la más cálida del continente — (0.31, 0.76), 11.1 °C
+  OK   nombres: Highfell tiene la cumbre más alta del mundo — 3256 m
+  OK   nombres: Storaa está al sureste y por ella corre el gran río — 40 celdas de gran río
+  OK   nombres: en otra semilla no hay nombres (Región N)
+  OK   bosques: cada árbol es de una de las 2 o 3 especies de su bioma, y la principal es la que más abunda — 0 de 3147 fuera de su bioma; principal equivocada en: ninguno
+  OK   bosques: en rodales (a 6 m, la misma especie casi siempre; a 600 m, a menudo otra) — a 6 m iguales 91 %, a 600 m distintas 56 %
+  OK   bosques: hay claros pero domina el bosque, y las lindes son graduales — 19 % de claro; el mayor salto de la linde en 5 m, 0.090
+  OK   bosques: en campo abierto los árboles van en corros, no sueltos al azar — el 30 % más espeso tiene el 84 % de los árboles (3000 sitios)
+  OK   bosques: límite del bosque en la montaña (por encima, nada; junto a él, solo coníferas bajas) — 0 árboles por encima; 0 de 300 junto al límite mal
+
+Resultado: 88 correctas, 0 fallidas
