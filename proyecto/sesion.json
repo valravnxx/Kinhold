@@ -6,9 +6,15 @@
   "rama": "trabajo/20261031-2123"
  },
  "B": {
-  "inicio": "2026-10-31T20:56:07+00:00",
-  "tarea": "Cejas y cuello del hombre (visto en la revisión del 31 oct): de cerca las cejas son trazos gruesos en bloque y entre la barba y el cuello queda una franja clara cortada",
+  "inicio": "2026-10-31T22:53:58+00:00",
+  "tarea": "Revisión completa y publicación",
   "hito": "arte",
-  "rama": "trabajo/20261031-2056"
+  "rama": "trabajo/20261031-2253"
+ },
+ "chat:trabajo/20261031-2300-pelea": {
+  "inicio": "2026-10-31T22:59:16+01:00",
+  "tarea": "Pelear en línea en el mundo (valravnx, 31 oct): al sacar el arma, los demás la ven en la mano, y los golpes y las paradas van por el servidor y hieren de verdad al otro",
+  "hito": "duelo",
+  "rama": "trabajo/20261031-2300-pelea"
  }
 }

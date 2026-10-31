@@ -1029,13 +1029,15 @@
     },
     {
      "nombre": "Cejas y cuello del hombre (visto en la revisión del 31 oct): de cerca las cejas son trazos gruesos en bloque y entre la barba y el cuello queda una franja clara cortada",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T20:56:07+00:00",
-     "rama": "trabajo/20261031-2056"
+     "fin": "2026-10-31T22:26:49+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T22:53:58+00:00",
+     "rama": "trabajo/20261031-2253"
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «han roto las manos de todos los personajes» y prendas rotas): desde taller-v9 la piel se diezma con la cara protegida pero con la proporción de toda la piel, así que las manos se quedaban en una tira; diezmar solo lo que se puede diezmar, rehacer los personajes y repasar todas las prendas de cerca",
@@ -1368,6 +1370,12 @@
      "inicio": "2026-10-31T10:02:41+01:00",
      "rama": "trabajo/20261031-1005-cuatro",
      "fin": "2026-10-31T18:52:54+01:00"
+    },
+    {
+     "nombre": "Pelear en línea en el mundo (valravnx, 31 oct): al sacar el arma, los demás la ven en la mano, y los golpes y las paradas van por el servidor y hieren de verdad al otro",
+     "estado": "en_curso",
+     "inicio": "2026-10-31T22:59:16+01:00",
+     "rama": "trabajo/20261031-2300-pelea"
     }
    ],
    "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
@@ -2181,6 +2189,13 @@
      "archivo": "jugar/demo/v75.html",
      "capturas": "capturas/demo-v75",
      "notas": "Panel de depuración del admin: F9 (o el botón «Admin» con ?admin) abre el mapa del rey con todos los jugadores conectados y su lista; un clic en el mapa te lleva ahí y «Ir» te pone junto a otro jugador. Todo pasa por el servidor con la clave de admin que valravnx pone en la máquina (servidor/nube/LEEME.md)."
+    },
+    {
+     "v": "v76",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v76.html",
+     "capturas": "capturas/personaje-v34",
+     "notas": "Cejas y cuello del hombre: de cerca las cejas ya no salen en bloques gruesos y la barba corta baja por el cuello hasta la ropa, sin la franja clara de antes (personajes en taller-v21)."
     }
    ]
   },
@@ -2916,6 +2931,13 @@
      "archivo": "jugar/personaje/v33.html",
      "capturas": "capturas/personaje-v33",
      "notas": "Con la cofia o la toca ya no asoma el pelo por la tela: en el móvil y de lejos salía a manchas castañas y blancas por toda la cabeza (revisión del 31 oct). La cofia y la toca tapan toda la cabeza: debajo ya no va el pelo pintado ni el corto. Con la capucha y el sombrero, sigue."
+    },
+    {
+     "v": "v34",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/personaje/v34.html",
+     "capturas": "capturas/personaje-v34",
+     "notas": "Cejas y cuello del hombre: de cerca las cejas ya no salen en bloques gruesos y la barba corta baja por el cuello hasta la ropa, sin la franja clara de antes (personajes en taller-v21)."
     }
    ]
   },
