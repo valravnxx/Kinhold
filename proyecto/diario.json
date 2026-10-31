@@ -3109,5 +3109,21 @@
   ],
   "pruebas": "Solo cambia el diseño; la web se genera sin errores (comprueba las traducciones y las huellas).",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T10:50:46+01:00",
+  "fin": "2026-10-31T10:51:57+01:00",
+  "titulo": "El roadmap al día con la isla del rey y la ciudad de Strandvang (chat con valravnx)",
+  "hito": "mundo",
+  "hecho": [
+   "«El juego en el mundo de verdad»: dos tareas nuevas, el mapa del rey (se lleva desde que apareces, con la tecla M o un botón en el móvil) y Strandvang sin PvP entre jugadores, por el servidor.",
+   "«Tierras y familias»: un mojón por personaje en Whitholm, y Strandvang fuera de los clanes (sin centro, sin señor, sin renta y sin asedio).",
+   "«Economía y NPCs»: ahora gira en torno a la ciudad del rey, con el mercado, contratar NPCs, los duelos en la liza y los mercaderes ambulantes que salen de la ciudad.",
+   "«Mundo»: el boceto de la ciudad en Strandvang, para revisarlo.",
+   "«Navegación» y «Cartografía» pasan a ser para el continente, sin mapa y por explorar; «PvP» anota que en Strandvang no hay.",
+   "La decisión pendiente de las comarcas de inicio queda solo para Motdale y Breiddal."
+  ],
+  "pruebas": "Solo cambia el roadmap; la web se genera sin errores, con todo traducido.",
+  "estado": "ok"
  }
 ]

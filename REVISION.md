@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (09:49 UTC) — por el chat: meterlo todo en el roadmap
+valravnx: «actualiza todos los hitos, tareas y todo para ya meter todo esto». → Tareas nuevas en «El juego en el mundo de verdad», «Tierras y familias», «Economía y NPCs» y «Mundo»; Navegación, Cartografía y PvP anotados; la decisión de las comarcas de inicio, solo para Motdale y Breiddal.
+
 ### 31 oct 2026 (09:40 UTC) — por el chat: la isla del rey y la ciudad NPC
 valravnx (hablado con su mujer): vuelven las ciudades NPC, a pequeña escala. «WHITHOLM ES LA ISLA DEL REY, el resto es mundo inexplorado que cartografiar»; la comarca E (Strandvang) es la del rey, neutral y sin PvP, donde vive la gente más casual («la ciudad no es "para vivir" como tal, vives en la comarca del rey… a la ciudad vas a contratar npc, vender, comprar, quedar con otros… incluso ahí podríamos hacer lo de los duelos con npc»). «Mojón normal, dejemos a la gente pve ser feliz, pero solo puedes tener un mojón»: uno en la isla y otros tres en total en el continente. Una ciudad, en Strandvang; los mercaderes ambulantes, raros y saliendo de la ciudad. → GDD cambiado (decidido), en los tres idiomas.
 
