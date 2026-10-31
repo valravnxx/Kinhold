@@ -513,7 +513,9 @@
     },
     {
      "nombre": "El mapa del rey (valravnx, 31 oct): al aparecer en Whitholm ya lo llevas; se abre con una tecla (M) o un botón en el móvil y enseña la costa, las comarcas con su nombre, los ríos, la ciudad de Strandvang y dónde estás tú; sin viaje rápido",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T10:53:09+01:00",
+     "rama": "trabajo/20261031-1100-mapa-rey"
     },
     {
      "nombre": "Strandvang, tierras del rey (valravnx, 31 oct): en la comarca E nadie puede herir a otro jugador (el servidor rechaza el golpe, con su autor) y se avisa al entrar y al salir; los duelos contra NPCs sí valen",
