@@ -38,7 +38,8 @@ const ruidoD = (x, y, s) => ruidoDerivadas(x, y, s, _d);
 
 // opciones.afloramientos: qué parte del mundo es afloramiento de roca, donde salen cortados (0,66 de umbral del ruido:
 // un 8 % del mundo); para las pruebas se puede bajar a 0 (todo afloramiento, como era antes de separar laderas y cortados)
-export function crearPaisaje(mapa, { afloramientos = 0.66 } = {}) {
+// opciones.valleLiso: solo para las pruebas, las laderas de los valles de antes del 31 oct (planos lisos y rectos)
+export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } = {}) {
   const { N, lado, h, forma, temp, lluvia, bioma, roca, pais } = mapa;
   const celda = lado * 1000 / N, S = mapa.semilla % 100000;
   // rugosidad del mapa: diferencia entre lo más alto y lo más bajo alrededor de cada celda (m)
@@ -70,7 +71,7 @@ export function crearPaisaje(mapa, { afloramientos = 0.66 } = {}) {
     for (const r of rios) for (let k = 0; k < r.length - 1; k++) {
       const a = r[k], b = r[k + 1], ax = a.p[0] * 1000, ay = a.p[1] * 1000, bx = b.p[0] * 1000, by = b.p[1] * 1000;
       if (Math.max(ax, bx) < x0 - margen || Math.min(ax, bx) > x1 + margen || Math.max(ay, by) < y0 - margen || Math.min(ay, by) > y1 + margen) continue;
-      const t = { ax, ay, bx, by, ha: a.h, hb: b.h, ga: a.g, gb: b.g, ancho: Math.max(2, anchoRio(Math.max(a.a, b.a))) };
+      const t = { ax, ay, bx, by, ha: a.h, hb: b.h, ga: a.g, gb: b.g, ancho: Math.max(2, anchoRio(Math.max(a.a, b.a))), fuente: k === 0 };
       t.largo = Math.hypot(bx - ax, by - ay) || 1;
       t.salto = saltoDe(t);
       t.hondoA = hondoDe(ax, ay, t.ancho); t.hondoB = hondoDe(bx, by, t.ancho);
@@ -179,7 +180,7 @@ export function crearPaisaje(mapa, { afloramientos = 0.66 } = {}) {
   function altura(xm, ym, tramos = null, fino = false) {
     const { f, hm, r } = grande(xm, ym);
     if (f < 0) return Math.max(-60, f * 1.6);              // mar: el fondo baja desde la línea de costa (sin escalón)
-    const { dm, nivel, ancho, salto, lecho, hondo } = rioCercano(xm, ym, tramos);
+    const { dm, nivel, ancho, salto, lecho, hondo, cabeza } = rioCercano(xm, ym, tramos);
     const monte = suave(120, 600, r);                      // 0 en el llano, 1 en la montaña
     // junto al río, el detalle se apaga: el fondo del valle lo marca el río (que ya talló el valle grande del mapa),
     // no el ruido; si no, el ruido levanta el fondo decenas de metros y el río queda en una zanja
@@ -214,14 +215,26 @@ export function crearPaisaje(mapa, { afloramientos = 0.66 } = {}) {
       // (el escalón del salto de agua va encima: si no, al recortar el cauce a la altura del mapa se perdía)
       const cauce = lecho, orilla = cauce + 0.8, borde = ancho / 2 + 1.5;
       const vega = (ancho * 2.5 + 25) * (1 - 0.8 * monte);
-      const ladera = lerp(0.14, 0.75, monte);              // desnivel por metro de distancia
-      const fuera = Math.max(0, dm - borde);
-      const valle = fuera < vega ? orilla + fuera * 0.015 : orilla + vega * 0.015 + (fuera - vega) * ladera;
+      // desnivel por metro de distancia; río arriba de donde nace (cabeza: cuánto, en m), poco a poco hasta la mitad: el
+      // valle se cierra en una cabecera suave y no en una pared (el río nace ya en lo hondo del valle del mapa)
+      const ladera = lerp(0.14, 0.75, monte) * (valleLiso ? 1 : 1 - 0.5 * suave(0, 200, cabeza));
+      const fuera = Math.max(0, dm - borde), pie = orilla + vega * 0.015;
+      let valle = fuera < vega ? orilla + fuera * 0.015 : pie + (fuera - vega) * ladera;
+      // Las laderas del valle no son planos (valravnx, 31 oct: «una separación de alturas anormal recta que ocupa
+      // kilómetros»): donde el río va muy por debajo del terreno de alrededor, el valle tallado con una pendiente fija
+      // dejaba una pared lisa, recta a lo largo del tramo y con una arista viva arriba. Ahora la pendiente cambia por
+      // trechos de unos cientos de metros (el borde de arriba no va recto), la ladera lleva el relieve de detalle del
+      // sitio y la arista de arriba se redondea (mínimo suave, más abajo)
+      if (fuera > vega && !valleLiso) {
+        const alto = valle - pie;
+        valle = pie + Math.max(alto * 0.5, alto * (0.7 + 0.6 * fbm(xm / 450, ym / 450, S + 151, 3)) + det * 0.6 * suave(0, 150, alto));   // (nunca por debajo de la vega: nada de hoyos junto al río)
+      }
       // el lecho baja hasta un metro bajo el cauce y sube a la orilla en rampa (sin escalón: el borde del agua
       // sale liso y no en dientes de sierra). Hasta el final de la vega el suelo es el del río (rebaja o rellena:
       // si no, donde el terreno queda más bajo el agua se saldría); más allá, el río solo rebaja (nunca levanta muros)
       const perfil = dm < borde ? lerp(cauce + 0.2 - hondo, orilla, Math.pow(dm / borde, 1.5)) : valle;
-      z = lerp(perfil, Math.min(z, perfil), suave(vega * 0.6, vega + 40, fuera));
+      const tallado = fuera > vega && !valleLiso ? sminimo(z, perfil, Math.max(0.01, Math.min(24, (fuera - vega) * ladera * 0.4))) : Math.min(z, perfil);   // (junto a la vega, sin redondeo: no baja del suelo del valle)
+      z = lerp(perfil, tallado, suave(vega * 0.6, vega + 40, fuera));
     }
     return z;
   }
@@ -260,15 +273,15 @@ export function crearPaisaje(mapa, { afloramientos = 0.66 } = {}) {
 
   // el río más cercano a un punto: distancia (m), altura del río en ese tramo y ancho
   function rioCercano(xm, ym, tramos) {
-    let dm = Infinity, nivel = 0, ancho = 2, tramo = null, uu = 0, salto = 0, suelo = 0;
+    let dm = Infinity, nivel = 0, ancho = 2, tramo = null, uu = 0, salto = 0, suelo = 0, cabeza = 0;
     if (tramos) for (const t of tramos) {
       const vx = t.bx - t.ax, vy = t.by - t.ay, l2 = vx * vx + vy * vy || 1;
       const u0 = ((xm - t.ax) * vx + (ym - t.ay) * vy) / l2, u = Math.max(0, Math.min(1, u0));
       // dentro del tramo, la distancia al cauce con su meandro (a lo ancho); en las puntas, al punto
       const dd = u0 > 0 && u0 < 1 && t.meandro ? Math.abs(((ym - t.ay) * vx - (xm - t.ax) * vy) / t.largo - desvio(t, u)) : Math.hypot(xm - t.ax - vx * u, ym - t.ay - vy * u);
-      if (dd < dm) { dm = dd; nivel = nivelTramo(t, u); salto = nivel - lerp(t.ha, t.hb, u); ancho = t.ancho; tramo = t; uu = u; suelo = lerp(t.ga ?? Infinity, t.gb ?? Infinity, u); }
+      if (dd < dm) { dm = dd; nivel = nivelTramo(t, u); salto = nivel - lerp(t.ha, t.hb, u); ancho = t.ancho; tramo = t; uu = u; suelo = lerp(t.ga ?? Infinity, t.gb ?? Infinity, u); cabeza = t.fuente ? Math.max(0, -u0 * t.largo) : 0; }
     }
-    return { dm, nivel, ancho, tramo, u: uu, salto, lecho: lechoDe(nivel, salto, suelo), hondo: tramo ? hondoTramo(tramo, uu) : 1.2 };   // salto: lo que el salto de agua sube o baja el cauce aquí
+    return { dm, nivel, ancho, tramo, u: uu, salto, cabeza, lecho: lechoDe(nivel, salto, suelo), hondo: tramo ? hondoTramo(tramo, uu) : 1.2 };   // salto: lo que el salto de agua sube o baja el cauce aquí
   }
   // la altura del cauce (m): la del río, 1,2 m por debajo del agua. Por encima del salto de agua el río va más alto que
   // la línea recta del tramo, pero nunca por encima del suelo de alrededor (si no, quedaba en terraplén); por debajo
