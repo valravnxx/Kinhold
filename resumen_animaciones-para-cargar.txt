@@ -1,0 +1,42 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2348 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2104 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1696 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2173 KB
+
+== Construir demo única
+      1965 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2672 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1690 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2146 KB
+dist/kinhold_trozos.html 1692 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: animaciones para cargar
+  OK   movil mujer: «cogerDeMesa» se aparta de estar quieto (más de 10 cm) — 33 cm
+  OK   movil mujer: con «cogerDeMesa» el cuerpo no se desarma — 0.72 m
+  OK   movil: sin errores en la página
+Todo correcto
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 65 s
