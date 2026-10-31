@@ -1,6 +1,7 @@
 # Prueba en navegador de las animaciones para cargar (recursos/personajes/taller-anim-v2/) en el visor de personaje,
 # con el taller propio, hombre y mujer, en PC y móvil: se cargan las 41 extra, salen los botones Empujar y Coger de una
-# mesa, cada una mueve el cuerpo sin desarmarlo y, al empujar, las manos van por delante del pecho. Capturas de cerca.
+# mesa, cada una mueve el cuerpo sin desarmarlo y, al empujar, las manos van por delante del pecho. Y las de cargar hechas
+# en el taller (taller-carga-v1): al hombro (la mano derecha arriba) y arrastrar (las manos junto a la cadera). Capturas.
 # Uso: python3 pruebas/prueba_anim_carga_navegador.py <html del personaje> <carpeta_capturas>
 # MUTAR=1 carga las animaciones de la v1 (sin las nuevas): la prueba tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
@@ -13,7 +14,7 @@ os.makedirs(SALIDA, exist_ok=True)
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
-for c in ['v1', 'taller-v20', 'taller-anim-v1', 'taller-anim-v2']:
+for c in ['v1', 'taller-v20', 'taller-anim-v1', 'taller-anim-v2', 'taller-carga-v1']:
     shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes', c), f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -46,13 +47,13 @@ with sync_playwright() as p:
                 pg.evaluate(f"{E}.cambiar({{sexo: '{sexo}'}})"); listo(pg)
             pg.evaluate(f'{E}.pausar(true)')
             n = pg.evaluate(f'{E}.diag().pj.clips.length')
-            comprobar(f'{nombre} {sexo}: se cargan las 9 básicas y las 41 extra', n == 9 + 41, f'{n} clips')
+            comprobar(f'{nombre} {sexo}: se cargan las 9 básicas, las 41 extra y las 3 de cargar del taller', n == 9 + 41 + 3, f'{n} clips')
             if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
             botones = pg.evaluate("[...document.querySelectorAll('#anims-extra [data-modo]')].map(b => b.dataset.modo)")
-            comprobar(f'{nombre} {sexo}: botones Empujar y Coger de una mesa', 'empujar' in botones and 'cogerDeMesa' in botones, f'{len(botones)} botones')
+            comprobar(f'{nombre} {sexo}: botones Empujar, Coger de una mesa, Al hombro y Arrastrar', all(k in botones for k in ['empujar', 'cogerDeMesa', 'hombro', 'hombroQuieto', 'arrastrar']), f'{len(botones)} botones')
             pose = lambda: pg.evaluate(f"{HUESOS}.map(n => {E}.hueso(n))")
             pg.evaluate(f"{E}.ponerModo('quieto')"); pg.evaluate(f'{E}.instante(0.5)'); quieto = pose()
-            for k, t in [('empujar', 0.6), ('cogerDeMesa', 0.5)]:
+            for k, t in [('empujar', 0.6), ('cogerDeMesa', 0.5), ('hombro', 0.25), ('arrastrar', 0.25)]:
                 if k not in botones: comprobar(f'{nombre} {sexo}: {k}', False, 'no está'); continue
                 if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
                 pg.click(f'#anims-extra [data-modo="{k}"]'); pg.wait_for_timeout(100)
@@ -70,6 +71,12 @@ with sync_playwright() as p:
                     alcance, alcance0 = (h(a, 2) + h(a, 3)) / 2, (h(quieto, 2) + h(quieto, 3)) / 2
                     comprobar(f'{nombre} {sexo}: al empujar, las manos van por delante del pecho', alcance > alcance0 + 0.15 and alcance > 0.3,
                               f'{alcance * 100:.0f} cm (quieto {alcance0 * 100:.0f} cm)')
+                if k == 'hombro':
+                    # la mano derecha arriba, sobre el hombro (encima del pecho y por encima del cuello, menos 5 cm)
+                    comprobar(f'{nombre} {sexo}: al hombro, la mano derecha arriba', a[3][1] > a[6][1] + 0.15, f'mano {a[3][1]:.2f} m · pecho {a[6][1]:.2f} m')
+                if k == 'arrastrar':
+                    # las dos manos abajo, a la altura de la cadera y por detrás del pecho (mirando a donde mira)
+                    comprobar(f'{nombre} {sexo}: al arrastrar, las manos abajo, junto a la cadera', all(abs(a[j][1] - a[0][1]) < 0.25 for j in (2, 3)), f'manos {a[2][1]:.2f}/{a[3][1]:.2f} m · cadera {a[0][1]:.2f} m')
                 # de frente y de lado (el cuerpo girado un cuarto de vuelta, con la cámara de cuerpo entero)
                 if pg.is_visible('[data-vista="cuerpo"]'): pg.click('[data-vista="cuerpo"]')
                 giro0 = pg.evaluate(f'{E}.diag().pj.raiz.rotation.y')

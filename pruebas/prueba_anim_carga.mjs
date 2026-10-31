@@ -64,5 +64,25 @@ for (const sexo of ['hombre', 'mujer']) {
 }
 comprobar('el juego conoce los nombres nuevos (CLIPS_EXTRA)', CLIPS_EXTRA.empujar === 'Push_Loop' && CLIPS_EXTRA.cogerDeMesa === 'PickUp_Table');
 comprobar('y tienen su texto en el visor', !!ANIMS_EXTRA.empujar && !!ANIMS_EXTRA.cogerDeMesa);
+
+// Las de cargar hechas en el taller (taller-carga-v1, herramientas/taller/hacer_cargas.mjs): al hombro andando y quieto,
+// y arrastrar. MUTAR_CARGAS=1 las mira en taller-anim-v2 (donde no están): tiene que fallar.
+{
+  const C1 = `docs/recursos/personajes/${process.env.MUTAR_CARGAS ? 'taller-anim-v2' : 'taller-carga-v1'}`;
+  const man = JSON.parse(readFileSync(`${C1}/manifiesto.json`, 'utf8'));
+  const CARGAS = ['Hombro_Walk_Loop', 'Hombro_Idle_Loop', 'Drag_Walk_Loop'];
+  for (const sexo of ['hombre', 'mujer']) {
+    const bytes = readFileSync(`${C1}/mh_${sexo}_extra.glb`);
+    comprobar(`cargas ${sexo}: el archivo es el del manifiesto`, createHash('sha256').update(bytes).digest('hex') === man[`mh_${sexo}_extra`]?.sha256);
+    const doc = await io.readBinary(new Uint8Array(bytes)), anims = new Map(doc.getRoot().listAnimations().map(a => [a.getName(), a]));
+    comprobar(`cargas ${sexo}: solo las 3 de cargar, sin mallas`, anims.size === 3 && CARGAS.every(k => anims.has(k)) && doc.getRoot().listMeshes().length === 0, [...anims.keys()].join(', '));
+    comprobar(`cargas ${sexo}: pequeñas (menos de 150 KB)`, bytes.length < 150 * 1024, `${Math.round(bytes.length / 1024)} KB`);
+    // andando, las piernas se mueven (salen de andar); quieto, casi nada
+    const piernas = (k) => anims.get(k) ? Math.max(...['thigh_l', 'thigh_r'].map(h => giro(anims.get(k), h))) : 0;
+    comprobar(`cargas ${sexo}: al hombro y arrastrar, andan (las piernas giran más de 20°)`, piernas('Hombro_Walk_Loop') > 20 && piernas('Drag_Walk_Loop') > 20, `${piernas('Hombro_Walk_Loop').toFixed(0)}° y ${piernas('Drag_Walk_Loop').toFixed(0)}°`);
+  }
+}
+comprobar('el juego conoce las de cargar (CLIPS_EXTRA)', CLIPS_EXTRA.hombro === 'Hombro_Walk_Loop' && CLIPS_EXTRA.hombroQuieto === 'Hombro_Idle_Loop' && CLIPS_EXTRA.arrastrar === 'Drag_Walk_Loop');
+comprobar('y su texto en el visor', !!ANIMS_EXTRA.hombro && !!ANIMS_EXTRA.hombroQuieto && !!ANIMS_EXTRA.arrastrar);
 console.log(fallos ? `${fallos} fallos` : 'Todo correcto');
 process.exit(fallos ? 1 : 0);

@@ -16,6 +16,7 @@ export const ANIMS_EXTRA = {
   trepar: 'Trepar', comer: 'Comer', abrirCofre: 'Abrir un arcón', tumbarse: 'Tumbarse', levantarse: 'Levantarse', brazosCruzados: 'Brazos cruzados',
   empujado: 'Empujado', lanzar: 'Lanzar',
   empujar: 'Empujar', cogerDeMesa: 'Coger de una mesa', // solo con taller-anim-v2
+  hombro: 'Al hombro', hombroQuieto: 'Al hombro, quieto', arrastrar: 'Arrastrar', // las de taller-carga-v1
   Sword_Block_2: 'Parar con la espada (otra)', // la de las extra que se llama igual que una básica
 };
 // tabla de lo que frena la ropa (filas: zona que se mira; columnas: tipo de golpe de src/logica/prendas.js)

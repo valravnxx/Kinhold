@@ -16,6 +16,9 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/construccion'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v20'), f'{sitio}/recursos/personajes/taller-v20')
+# las animaciones de cargar hechas en el taller (al hombro, arrastrar). MUTAR_HOMBRO=1 no las copia: tiene que fallar
+if not os.environ.get('MUTAR_HOMBRO'):
+    shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v1'), f'{sitio}/recursos/personajes/taller-carga-v1')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -57,7 +60,7 @@ MEDIR = '''() => { const K = window.__kinhold, j = K.jugador, H = j.mh.hueso; K.
         x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); z0 = Math.min(z0, p.z); x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y); z1 = Math.max(z1, p.z); } });
     r.piezas[o.name.slice(8)] = [(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2, x1 - x0, y1 - y0, z1 - z0].map(v => +v.toFixed(3));
   }
-  r.modo = j.modo;
+  r.modo = j.modo; r.alHombro = !!j.alHombro;
   for (const n of ['pelvis', 'spine_03', 'hand_r', 'hand_l', 'neck_01']) r[n] = local(H[n]).toArray().map(v => +v.toFixed(3));
   return r; }'''
 
@@ -66,6 +69,11 @@ def equipar(pg, lugares):
       for (const k of ['cintura', 'espalda', 'hombro', 'mano:der', 'mano:izq']) inv.lugares[k] = l[k] ? JSON.parse(JSON.stringify(l[k])) : null;
       K.vestir(); }''', lugares)
     pg.wait_for_timeout(300)
+    if 'hombro' in lugares and lugares['hombro']['tipo'] == 'tronco_corto':
+        # que la postura de llevarlo al hombro haya entrado del todo (el fundido dura 0,2 s)
+        try: pg.wait_for_function(f"{K}.jugador.modo === 'hombroQuieto'", timeout=8000)
+        except Exception: pass
+        pg.wait_for_timeout(1200)
 
 def mirar(pg, giro, dist=2.3, alto=0.35):
     # la cámara cerca del personaje: el personaje mira a +Z de su raíz; giro 0 = de frente
@@ -86,6 +94,12 @@ def revisar(nombre, m):
     if 'hombro' in p:
         h = p['hombro']
         comprobar(f'{nombre}: lo del hombro va por encima de la cintura', h[1] > P[1] + 0.15, f'centro {h[:3]}')
+        if m.get('alHombro'):
+            # el tronco al hombro: la postura de llevarlo (taller-carga-v1) y la mano derecha arriba, sobre el tronco
+            comprobar(f'{nombre}: con el tronco al hombro, la postura de llevarlo', m.get('modo') == 'hombroQuieto', m.get('modo'))
+            mano = m['hand_r']
+            comprobar(f'{nombre}: la mano derecha sujeta el tronco (sobre el hombro, cerca del tronco)', mano[1] > m['neck_01'][1] - 0.05 and abs(mano[0] - h[0]) < 0.15 and abs(mano[1] - h[1]) < 0.2,
+                      f'mano {mano} · tronco {h[:3]} · cuello {m["neck_01"]}')
     for lado, hueso in (('r', 'hand_r'), ('l', 'hand_l')):
         if 'mano_' + lado in p:
             comprobar(f'{nombre}: lo de la mano {lado} está en la mano', dist(p['mano_' + lado], m[hueso]) < 0.35, f'{p["mano_" + lado][:3]} · mano {m[hueso]}')

@@ -45,6 +45,7 @@
 //    cuenta como hueco lleno.
 //  - La reducción crece con el cuadrado de lo lleno que vas: 1 − 0,2·f². Con poco no se nota (las manos llenas,
 //    nada más: 1,25%) y todo lleno da el 80%. Se aplica al andar y al correr.
+//  - Además, lo pesado suelto en las manos o al hombro frena por su peso (ver factorPeso, abajo).
 //  - La ropa y la armadura no cuentan aquí (su peso está en src/logica/prendas.js; lo que ralentiza la armadura va
 //    con el combate con armadura).
 import { PRENDAS } from './prendas.js';
@@ -178,6 +179,16 @@ export const RALENTIZACION_MAXIMA = 0.2; // al máximo en todo, el 80% de la vel
 export function factorVelocidad(fraccion) {
   const f = Math.min(1, Math.max(0, Number.isFinite(fraccion) ? fraccion : 0));
   return 1 - RALENTIZACION_MAXIMA * f * f;
+}
+// Lo pesado que llevas suelto, en las manos o al hombro (un tronco), frena por su peso aunque el resto vaya vacío
+// (valravnx, 31 oct: «que cargue el tronco en el hombro con penalización a movimiento»; con lo lleno, un tronco corto
+// solo al hombro se quedaba en un 1 %). Decisión provisional (anotada en el diario y en el registro): baja en línea
+// recta con los kilos, hasta el mismo 80 % con KILOS_TOPE; el tronco corto (25 kg), al 90 %. Se toma lo que frene más
+// de las dos cuentas, no se suman: cargado al máximo en todo sigue siendo el 80 % (GDD).
+export const KILOS_TOPE = 50;
+export function factorPeso(kilos) {
+  const k = Math.min(KILOS_TOPE, Math.max(0, Number.isFinite(kilos) ? kilos : 0));
+  return 1 - RALENTIZACION_MAXIMA * k / KILOS_TOPE;
 }
 
 // Una cosa: { tipo, n } y, si es una prenda cosida, su hechura y su tinte (src/logica/hechura.js: rasgosPrenda). Cada
@@ -428,16 +439,18 @@ export class Inventario {
   }
 
   // Lo que se multiplica la velocidad al moverse por lo que llevas (1 sin carga, 0,8 al máximo en todo).
-  velocidad() { return factorVelocidad(this.lleno().fraccion); }
+  velocidad() { return Math.min(factorVelocidad(this.lleno().fraccion), factorPeso(this.kilosSueltos())); }
 
   // Lo que pesa todo lo que llevas encima (kg): la ropa y la armadura (con su peso de src/logica/prendas.js) y lo que
   // cargas, con lo que hay dentro. Para el nado (src/logica/nado.js). Decisión provisional (30 oct): lo que no tiene
   // peso propio en KILOS, por su tamaño (pequeño 0,3 kg, mediano 2, grande 12, enorme 50).
-  kilos() {
+  kilos(lugares = LUGARES) {
     const de = (c) => !c ? 0 : (PRENDAS[c.tipo] ? PRENDAS[c.tipo].peso : KILOS[c.tipo] ?? KILOS_TAMANO[this.def(c).tam] ?? 1) * (c.n || 1)
       + (c.dentro ? c.dentro.reduce((s, x) => s + de(x), 0) : 0);
-    return Math.round(LUGARES.reduce((s, l) => s + de(this.lugares[l]), 0) * 100) / 100;
+    return Math.round(lugares.reduce((s, l) => s + de(this.lugares[l]), 0) * 100) / 100;
   }
+  // lo que pesa lo que llevas suelto, en las manos y al hombro (para factorPeso)
+  kilosSueltos() { return this.kilos([...MANOS, 'hombro']); }
 
   exportarJugador() {
     return { lugares: Object.fromEntries(Object.entries(this.lugares).map(([k, v]) => [k, copiar(v)])), apartado: this.apartado.map(copiar) };

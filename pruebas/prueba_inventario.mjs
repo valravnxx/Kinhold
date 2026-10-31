@@ -2,7 +2,7 @@
 // Con MUTAR=1 el tronco corto pasa a ser mediano (cabría en una mano y en un hueco mediano): las pruebas deben FALLAR.
 // Con MUTAR=2 el leñero admite piedras y el cinto de cuero pierde su hueco mediano: las del equipo de carga deben FALLAR.
 import { Inventario, Inventarios, CATALOGO, pila, ejecutarInventario, migrar, MIGRACIONES, VERSION_INVENTARIO,
-  guardarInventarios, cargarInventarios, CLAVE_INVENTARIO, capacidad, EQUIPO_CARGA, factorVelocidad, RALENTIZACION_MAXIMA } from '../src/logica/inventario.js';
+  guardarInventarios, cargarInventarios, CLAVE_INVENTARIO, capacidad, EQUIPO_CARGA, factorVelocidad, factorPeso, RALENTIZACION_MAXIMA } from '../src/logica/inventario.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -285,7 +285,8 @@ console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
 {
   const casi = (a, b) => Math.abs(a - b) < 1e-9;
   const mutar = !!process.env.MUTAR_CARGA; // rompe la cuenta a propósito: estas pruebas tienen que fallar
-  const vel = inv => mutar ? 1 - RALENTIZACION_MAXIMA * inv.lleno().fraccion : inv.velocidad();
+  const mutarPeso = !!process.env.MUTAR_PESO; // quita lo que frena el peso: las del tronco tienen que fallar
+  const vel = inv => mutar ? 1 - RALENTIZACION_MAXIMA * inv.lleno().fraccion : mutarPeso ? factorVelocidad(inv.lleno().fraccion) : inv.velocidad();
   const inv = Inventario.inicial();
   comprobar('sin carga se anda a la velocidad de siempre', vel(inv) === 1 && inv.lleno().fraccion === 0);
   comprobar('la ropa puesta no ralentiza (aún)', inv.lugares['ropa:interior'] && vel(inv) === 1);
@@ -294,7 +295,14 @@ console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
   inv.soltar('mano:der');
   inv.coger('tronco_corto', 1, 'mano:der');
   comprobar('lo grande llena las dos manos', casi(inv.lleno().lugares.manos, 1));
-  comprobar('las manos llenas y nada más: poco (más del 98%)', vel(inv) > 0.98 && vel(inv) < 0.99, String(vel(inv)));
+  comprobar('un tronco corto en las manos frena por su peso: el 90%', casi(vel(inv), 0.9), String(vel(inv)));
+  // al hombro, solo: antes apenas frenaba (lo lleno daba un 1%); ahora frena por sus 25 kg (valravnx, 31 oct)
+  inv.ponerse('mano:der');
+  comprobar('el tronco corto al hombro frena: el 90%', inv.lugares.hombro?.tipo === 'tronco_corto' && casi(vel(inv), 0.9), String(vel(inv)));
+  inv.soltar('hombro');
+  const ligera = Inventario.inicial(); ligera.coger('hacha_piedra', 1, 'mano:der');
+  comprobar('un hacha en la mano casi no se nota (más del 98%)', vel(ligera) > 0.98 && vel(ligera) < 1, String(vel(ligera)));
+  comprobar('el peso no frena más del 80% ni con datos raros', factorPeso(500) === 0.8 && factorPeso(-3) === 1 && factorPeso(NaN) === 1);
   // todo lleno: leñero lleno a la espalda, cinto lleno, saco lleno al hombro y las manos llenas
   const t = Inventario.inicial();
   const ok = [

@@ -173,7 +173,8 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
   const muneco = crearMuneco();
   raiz.add(muneco);
   const j = { raiz, mh: null, error: null, modo: 'quieto' };
-  j.listo = crearPersonajeMH({ sexo, capas, aspecto, tintes: ropa.tintes, hechuras: ropa.hechuras }, recursos).then(mh => {
+  // cargas: las animaciones de llevar al hombro y arrastrar hechas en el taller (taller-carga-v1, unos 76 KB)
+  j.listo = crearPersonajeMH({ sexo, capas, aspecto, tintes: ropa.tintes, hechuras: ropa.hechuras, cargas: true }, recursos).then(mh => {
     raiz.remove(muneco);
     raiz.add(mh.raiz);
     j.mh = mh;
@@ -191,6 +192,12 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     } else if (talando) m = 'talar';
     // con algo grande en las dos manos (src/juego/llevado.js), los brazos lo sujetan delante; quieto, la misma postura
     if (j.cargaDos && m !== 'talar' && j.mh.acciones.cargar) { m = 'cargar'; if (velocidad <= 0.1) ritmo = 0; }
+    // un tronco al hombro: la mano derecha arriba sujetándolo y el cuerpo algo inclinado, andando o quieto (taller-carga-v1).
+    // Corriendo, la misma de andar, más deprisa (con el tronco al hombro no se corre suelto)
+    else if (j.alHombro && m !== 'talar' && j.mh.acciones.hombro) {
+      if (m === 'quieto') m = 'hombroQuieto';
+      else { ritmo = THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.6, 1.8); m = 'hombro'; }
+    }
     if (m !== j.modo) { j.mh.poner(m, 0.2); j.modo = m; }
     if (j.hacha) j.hacha.visible = m === 'talar' || !!j.hachaEnMano;   // también si la llevas en la mano (inventario)
     j.mh.acciones[m].timeScale = ritmo;
@@ -206,7 +213,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
   // lo que llevas se ve puesto (src/juego/llevado.js): ponerLlevado(lo de src/logica/llevado.js); va con los huesos
   const llevado = crearLlevado(j), animarCuerpo = j.animar;
   j.llevado = llevado;
-  j.ponerLlevado = (l) => { j.llevadoPedido = l; j.cargaDos = !!(l && l.dos); if (j.mh) llevado.poner(l); };
+  j.ponerLlevado = (l) => { j.llevadoPedido = l; j.cargaDos = !!(l && l.dos); j.alHombro = !!(l && l.hombro === 'tronco_corto'); if (j.mh) llevado.poner(l); };
   j.listo.then(() => { if (j.mh && j.llevadoPedido) llevado.poner(j.llevadoPedido); });
   j.animar = (...a) => { animarCuerpo(...a); llevado.paso(); };
   return j;
