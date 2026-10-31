@@ -49,6 +49,11 @@ comprobar('los valores por defecto existen en sus listas', ['hombre', 'mujer'].e
   const pt = process.env.MUTAR === '3' ? (a, t) => piezasCabeza(a, null) : pc;
   const ft = pt({ peinado: 'cofia', barba: 'ninguna' }, 'toca'), fc = pt({ peinado: 'cofia', barba: 'ninguna' }, 'capucha');
   comprobar('con la cofia bajo la toca no se ve la cofia; bajo la capucha, sí', !ft._cofia && !ft._pelo && !ft._orejas && fc._cofia);
+  // la cofia y la toca tapan toda la cabeza: debajo no va el pelo pintado (vello) ni el corto, que asomaban a manchas por
+  // la tela en el móvil (revisión del 31 oct); bajo la capucha y el sombrero siguen (se ven en la frente y la nuca)
+  const pv = process.env.MUTAR === '4' ? (a, t) => ({ ...piezasCabeza(a, t), _vello: true }) : pc;
+  const vt = pv({ peinado: 'melena', barba: 'ninguna' }, 'toca'), vf = pv({ peinado: 'cofia', barba: 'ninguna' }), vc = pv({ peinado: 'corto', barba: 'corta' }, 'capucha'), vs = pv({ peinado: 'rapado', barba: 'ninguna' }, 'sombrero');
+  comprobar('bajo la toca y con la cofia no va el pelo pintado ni el corto; con capucha o sombrero, sí', !vt._vello && !vt._pelo && !vf._vello && !vf._pelo && vc._vello && vc._pelo && vs._vello && pv({ peinado: 'corto', barba: 'ninguna' })._vello);
   comprobar('el bigote con volumen va con corta, larga, bigote y perilla, y no sin barba', ['corta', 'larga', 'bigote', 'perilla'].every(b => pc({ peinado: 'corto', barba: b })._barba_mostacho) && !pc({ peinado: 'corto', barba: 'ninguna' })._barba_mostacho);
   const r = pc({ peinado: 'rapado', barba: 'perilla' });
   comprobar('rapado con perilla', !r._pelo && r._orejas && r._barba_perilla && !r._barba_corta);
