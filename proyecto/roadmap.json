@@ -907,9 +907,9 @@
     },
     {
      "nombre": "Toca y cuello de la ropa (visto en la revisión del 30 oct): el borde sale dentado y entre la toca y el cuello asoma una mancha de piel rota",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T20:52:51+00:00",
-     "rama": "trabajo/20261030-2052"
+     "fin": "2026-10-31T00:30:05+00:00"
     },
     {
      "nombre": "Nacimiento del pelo y cejas (visto en la revisión del 30 oct): el pelo corta en seco en la frente, como un casquete, y las cejas son trazos finos y a trozos que flotan",
@@ -1886,6 +1886,13 @@
      "archivo": "jugar/demo/v58.html",
      "capturas": "capturas/demo-v58",
      "notas": "Lo que crece sigue al jugador por la isla: árboles, hierba, matas y piedras se hacen a su alrededor por trozos de 32 m, poco a poco, y lo de lejos se suelta; lo talado sigue talado al irse y volver."
+    },
+    {
+     "v": "v59",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v59.html",
+     "capturas": "capturas/personaje-v29",
+     "notas": "Toca y cuello de la ropa: la piel sigue bajo el escote y bajo la toca ya no va la cofia (personajes en taller-v18)."
     }
    ]
   },
@@ -2586,6 +2593,13 @@
      "archivo": "jugar/personaje/v28.html",
      "capturas": "capturas/personaje-v28",
      "notas": "Bigote con volumen (una malla propia sobre el labio de arriba, que cae por las comisuras) y barba larga pulida: ondas distintas en cada mechón y, por los lados, baja por el cuello. Personajes en recursos/personajes/taller-v17/."
+    },
+    {
+     "v": "v29",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/personaje/v29.html",
+     "capturas": "capturas/personaje-v29",
+     "notas": "Toca y cuello de la ropa: la piel sigue bajo el escote (sin mancha de piel rota ni huecos negros) y bajo la toca ya no va la cofia. Personajes en taller-v18."
     }
    ]
   },
