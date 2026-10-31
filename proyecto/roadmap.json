@@ -1368,6 +1368,12 @@
      "inicio": "2026-10-31T10:02:41+01:00",
      "rama": "trabajo/20261031-1005-cuatro",
      "fin": "2026-10-31T18:52:54+01:00"
+    },
+    {
+     "nombre": "Pelear en línea en el mundo (valravnx, 31 oct): al sacar el arma, los demás la ven en la mano, y los golpes y las paradas van por el servidor y hieren de verdad al otro",
+     "estado": "en_curso",
+     "inicio": "2026-10-31T22:59:16+01:00",
+     "rama": "trabajo/20261031-2300-pelea"
     }
    ],
    "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
