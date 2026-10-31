@@ -151,3 +151,20 @@ Prueba: `node pruebas/prueba_tintes.mjs` (con `MUTAR=1` mira la taller-v12, sin 
 - Para probar más deprisa: `SOLO=mujer PRENDAS=toca FOTOS=prendas python3 herramientas/taller/vestir_mpfb.py <carpeta>`
   (solo la mujer y solo esas prendas; nunca se publica así).
 - Prueba: `node pruebas/prueba_toca.mjs` (con `MUTAR=1` mira la taller-v17 y falla).
+
+## Nacimiento del pelo y cejas (desde taller-v19)
+
+- **Nacimiento del pelo:** `alto_pelo(P)` dice cuánto está un punto por encima de la línea del pelo (en la frente, un poco
+  más alta en las entradas). El pelo pintado (`zona_pelo`, en el calco `_vello`) nace en algo más de 1 cm: primero
+  pelos sueltos (grano fino hacia atrás) que se van juntando. La cáscara del pelo corto (`zona_casco`) empieza 9 mm más
+  adentro, con el borde a mechones (el juego la recorta con alphaTest), y su bulto crece desde el borde: 1,2 mm sobre la
+  piel en el borde y todo su grosor a unos 2,5 cm hacia dentro. Antes (hasta taller-v18) cortaba en seco en 6 mm y la
+  cáscara salía ya despegada 5-6 mm justo en el borde: parecía un casquete.
+- **Cejas** (`zona_cejas`, en su propio calco `_cejas` de 512 px: en el del pelo les tocaban 3-4 píxeles de alto y salían a
+  trozos; el juego lo trata como los demás calcos): asientan en el arco, justo encima del párpado (antes, una raya fina y alta que flotaba). La
+  cabeza, junto a la nariz, más ancha y redondeada, con los pelos hacia arriba; el cuerpo sube un poco hasta el arco y la
+  cola baja y se afila con los pelos hacia fuera. Más pobladas abajo que arriba; el borde, en pelos sueltos.
+- Fotos de cerca de la frente (frente, tres cuartos y perfil): `FOTOS=nacimiento python3 herramientas/taller/vestir_mpfb.py
+  <carpeta>` (con `SOLO=hombre PEINADOS=corto` para probar más deprisa; nunca se publica así).
+- Prueba: `node pruebas/prueba_nacimiento_pelo.mjs` (con `MUTAR=1` mira la taller-v18 y falla).
+- Aún mal: detrás de la oreja se ve una línea negra fina entre la oreja y la cabeza.

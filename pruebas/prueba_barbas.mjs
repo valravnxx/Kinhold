@@ -65,7 +65,7 @@ if (most && bigote) {
   comprobar('por los lados cae más que en el centro (por las comisuras)', bajoC - bajoL > 0.008, `${((bajoC - bajoL) * 100).toFixed(1)} cm`);
 }
 const fuente = readFileSync('src/personajes/makehuman.js', 'utf8') + readFileSync('src/personajes/detalle.js', 'utf8');
-const regs = [...fuente.matchAll(/\/_\(vello\|barba_[^/]+\/\.test|const CALCO = (\/[^;]+\/);/g)].map(m => m[1] || m[0].replace('.test', ''));
+const regs = [...fuente.matchAll(/\/_\(vello\|(?:cejas\|)?barba_[^/]+\/\.test|const CALCO = (\/[^;]+\/);/g)].map(m => m[1] || m[0].replace('.test', ''));
 const esCalco = (nombre) => regs.length > 0 && regs.every(r => new RegExp(r.slice(1, r.lastIndexOf('/'))).test(nombre));
 comprobar('el cargador pinta corta, bigote y perilla como calcos, y la larga no', regs.length >= 2 && ['hombre_barba_corta', 'hombre_barba_bigote', 'hombre_barba_perilla'].every(esCalco) && !regs.some(r => new RegExp(r.slice(1, r.lastIndexOf('/'))).test('hombre_barba_larga')), regs.join(' '));
 console.log(`Barbas: ${ok} bien, ${mal} mal`);

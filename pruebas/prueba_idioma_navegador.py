@@ -22,7 +22,7 @@ sitio = tempfile.mkdtemp()
 for carpeta, html in (('personaje', PERSONAJE), ('construccion', CONSTR), ('combate', COMB), ('estilo', ESTILO)):
     os.makedirs(f'{sitio}/jugar/{carpeta}'); shutil.copy(html, f'{sitio}/jugar/{carpeta}/prueba.html')
 os.makedirs(f'{sitio}/recursos/personajes')
-for c in ('v1', 'taller-v12', 'taller-v13', 'taller-v14', 'taller-v15', 'taller-v16', 'taller-v18', 'taller-anim-v1'):
+for c in ('v1', 'taller-v12', 'taller-v13', 'taller-v14', 'taller-v15', 'taller-v16', 'taller-v19', 'taller-anim-v1'):
     shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes', c), f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
