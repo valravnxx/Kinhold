@@ -13,11 +13,17 @@
 //    alrededor; sin fijar, cámara y movimiento libres.
 // Un rival de práctica (botón «Rival») viene a por ti con la máquina del duelo. Todo golpe pasa por las acciones con
 // autor (ejecutarCombate). Provisional, hasta que el arma salga del inventario: espada larga.
+// En línea (valravnx, 31 oct: «sacábamos arma y no veíamos al otro con arma en mano ni los ataques nos hacían nada»):
+// sacar y guardar el arma, cargar, soltar, fintar y parar se mandan también al servidor (src/logica/combate_servidor.js),
+// que resuelve los golpes entre jugadores con su autor; aquí se hace enseguida en la copia propia para no esperar a la
+// red, y las heridas, la sangre y caer las dice el servidor (su foto). A los demás los dibuja src/juego/en_linea.js.
+// Provisional: el rival de práctica sigue siendo solo tuyo (lo que te hace se ve aquí hasta la próxima foto del servidor).
 import * as THREE from 'three';
 import { Luchador, IA, LINEAS_DIRECCIONAL as LINEAS, ESPEJO, NOMBRE_ZONA, angulo, difAngulo, RITMO, azar } from '../combate/logica.js';
 import { crearCombatiente, ponerArma, animarCombatiente, pintarHeridas, sacudir, Rastro } from '../combate/modelos.js';
 import { LectorDireccion, lineaDe } from '../combate/direccion.js';
 import { ejecutarCombate } from '../logica/acciones.js';
+import { aplicarFoto, resultadoDeEvento } from '../logica/combate_cliente.js';
 import { tr } from '../idioma.js';
 
 // abajo, clavar (la estocada): la punta hacia delante
@@ -26,7 +32,7 @@ const FLECHA = { alto: '▲', izquierda: '◀', derecha: '▶', estocada: '▼' 
 const SITIO = { alto: [0, -1], izquierda: [-1, 0], derecha: [1, 0], estocada: [0, 1] };
 
 export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, recursos, sexo, aspecto, capasActuales, armaduraActual,
-  modo, alturaEn, registro, esTactil, aviso }) {
+  modo, alturaEn, registro, esTactil, aviso, red = () => null }) {
   const c = {
     activo: false, L: null, modelo: null, rivales: [], fijado: null, ctx: null,
     lector: new LectorDireccion(), atacando: false, parando: false, raton: false, reloj: 0,
@@ -78,6 +84,11 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   (document.getElementById('modos') || document.body).appendChild(bArma);
   estadoEl.querySelector('[data-t="aliento"]').textContent = tr('Aliento');
 
+  // en línea: lo mismo se manda al servidor (si no hay conexión, no pasa nada: se juega con el rival de práctica)
+  const enRed = () => { const e = red(); return e && e.estado === 'conectado' && e.red.yo ? e : null; };
+  const mandar = (m) => { const e = enRed(); if (e) e.enviar({ tipo: 'combate', ...m }); };
+  const ARMADURAS_RED = ['lino', 'gambeson', 'malla'];
+
   let tMsg = 0;
   function decir(texto) { msg.textContent = texto; msg.hidden = false; tMsg = 2.6; }
 
@@ -94,6 +105,8 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
       escena.add(c.modelo);
     }
     c.modelo.visible = true; jugador.raiz.visible = false;
+    if (ARMADURAS_RED.includes(c.L.armadura)) mandar({ que: 'equipar', arma: 'espada_larga', armadura: c.L.armadura });
+    mandar({ que: 'arma', sacada: true });
     c.ctx = { luchadores: { jugador: c.L }, r };
     // la cámara se acerca y baja para luchar (por detrás del hombro); al guardar el arma vuelve a como estaba
     c.camAntes = { dist: cam.dist, pitch: cam.pitch };
@@ -105,6 +118,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (!c.activo) return;
     c.activo = false; c.fijado = null; c.atacando = false; c.parando = false;
     if (c.L) { c.L.bloquear(false); if (c.L.accion === 'preparando') c.L.descargar(); }
+    mandar({ que: 'arma', sacada: false });
     if (c.modelo) c.modelo.visible = false;
     jugador.raiz.visible = true;
     if (document.pointerLockElement === lienzo) document.exitPointerLock();
@@ -153,15 +167,16 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   // ---------- Atacar y parar (comunes a ratón y rosa) ----------
   function empezarGolpe(linea) {
     if (!c.activo || !c.L || c.L.fuera) return;
-    if (c.L.bloqueando) c.L.bloquear(false);
-    if (c.L.cargar(linea)) c.atacando = true;
+    if (c.L.bloqueando) { c.L.bloquear(false); mandar({ que: 'parar', activo: false }); }
+    if (c.L.cargar(linea)) { c.atacando = true; mandar({ que: 'cargar', linea }); }
   }
-  function soltarGolpe() { if (c.atacando) { c.L.descargar(); c.atacando = false; } }
+  function soltarGolpe() { if (c.atacando) { c.L.descargar(); c.atacando = false; mandar({ que: 'descargar' }); } }
   // el botón de parar mientras se prepara un golpe lo cancela (finta) y, si se mantiene, para
   function fintar() {
     if (!c.L || c.L.accion !== 'preparando') return false;
     c.atacando = false;
     if (!c.L.fintar()) return false;
+    mandar({ que: 'fintar' });
     decir(tr('Finta'));
     return true;
   }
@@ -170,6 +185,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (activo) fintar();
     c.parando = activo;
     c.L.bloquear(activo, linea);
+    mandar(activo ? { que: 'parar', activo: true, linea: c.L.lineaBloqueo } : { que: 'parar', activo: false });
   }
 
   // ---------- Ratón (PC): el ratón cogido gira la cámara y elige la dirección ----------
@@ -331,7 +347,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     const evJ = L.actualizar(dt, corriendo);
     for (const e of evJ) if (e.tipo === 'impacto') {
       const b = blancoDelJugador();
-      if (!b) { decir(tr('Golpe al aire')); continue; }
+      if (!b) { if (!enRed()) decir(tr('Golpe al aire')); continue; }   // en línea, lo que dé a otro jugador lo dice el servidor
       const res = resolver('jugador', b.id, e.linea);
       if (res) { decirResultado(res, true); efectos(res, c.modelo, b.m); }
     }
@@ -363,6 +379,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (L.fuera && !c.caidoHasta) { c.caidoHasta = c.reloj + 5; decir(tr('Caes: {m}', { m: tr(L.motivoFuera) })); c.fijado = null; }
     if (L.fuera && c.reloj >= c.caidoHasta) {
       c.caidoHasta = 0;
+      mandar({ que: 'reiniciar' });
       c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', armadura: armaduraActual(), modo: 'direccional', ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
       c.ctx.luchadores.jugador = c.L;
       decir(tr('Te levantas (prueba: vuelves curado)'));
@@ -403,8 +420,38 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     estadoEl.querySelector('.sangre').textContent = tr('Sangre {s} %', { s: Math.round(L.sangre) });
   }
 
+  // ---------- Lo que dice el servidor (en línea) ----------
+  // yo: el autor propio. La foto propia trae las heridas, la sangre y si has caído (lo que deciden los golpes de los
+  // demás); los eventos de golpe propios o contra ti, el texto y la sacudida. Lo de los demás lo dibuja en_linea.js.
+  function recibir(msg, yo, modeloDe = () => null) {
+    if (!yo) return;
+    // al conectar (o volver a conectar), el servidor sabe si llevas el arma sacada
+    if (msg.tipo === 'bienvenida' && c.activo) { if (c.L && ARMADURAS_RED.includes(c.L.armadura)) mandar({ que: 'equipar', arma: 'espada_larga', armadura: c.L.armadura }); mandar({ que: 'arma', sacada: true }); }
+    if (msg.tipo === 'luchadores' || msg.tipo === 'bienvenida') {
+      const f = (msg.tipo === 'luchadores' ? msg.lista : msg.luchadores || []).find(x => x.autor === yo);
+      if (!f || f.liza) return;
+      if (!c.L) c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', armadura: armaduraActual(), modo: 'direccional', ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
+      const caido = c.L.fuera;
+      aplicarFoto(c.L, f, { propio: true, prediciendo: true });
+      c.L.modo = 'direccional';
+      // de pie otra vez (tras volver a empezar sano en el servidor)
+      if (!c.L.fuera && caido) { c.caidoHasta = 0; c.L.accion = 'libre'; }
+      return;
+    }
+    if (msg.tipo !== 'combate') return;
+    for (const e of msg.eventos || []) {
+      if (e.tipo !== 'golpe' || (e.autor !== yo && e.objetivo !== yo)) continue;
+      const res = resultadoDeEvento(e);
+      const propio = e.autor === yo;
+      if (propio && res.resultado === 'fallo' && blancoDelJugador()) continue;   // ya lo resolvió el rival de práctica
+      decirResultado(res, propio);
+      const otro = modeloDe(propio ? e.objetivo : e.autor);
+      if (propio) efectos(res, c.modelo, otro); else efectos(res, otro, c.modelo);
+    }
+  }
+
   return {
-    paso, sacar, guardar, llamarRival, fijar,
+    paso, sacar, guardar, llamarRival, fijar, recibir,
     get activo() { return c.activo; },
     // para el movimiento del mundo: con el arma sacada se anda como dice la lógica (cargando, parando, herido…)
     factorVelocidad(corriendo) { return c.activo && c.L ? c.L.velocidad(corriendo) / (corriendo ? 6 : 3.6) : 1; },

@@ -1966,6 +1966,7 @@ const combate = crearCombateMundo({
   armaduraActual: () => { const p = puestasDe(inventario().lugares); return p.includes('cota_malla') ? 'malla' : p.includes('gambeson') ? 'gambeson' : 'lino'; },
   modo: () => estado.modo, alturaEn: (x, z) => decorado.altura(x, z),
   registro: { anotar: (a, r) => registroAcciones.anotar(a, r) }, esTactil: estado.esTactil,
+  red: () => enLinea,   // en línea, lo que haces con el arma va también al servidor (pelear con los demás)
 });
 // Lo que llevas en las manos y al hombro no está en el panel (valravnx, 29 oct): se coge del mundo y se suelta al mundo.
 // Mientras no se vea en el personaje (tarea del hito 2), una línea abajo dice qué llevas, cada cosa con «Soltar» (al
@@ -2066,6 +2067,9 @@ function iniciarEnLinea() {
     avisar: mostrarAviso,
     alEstado: (txt) => { marca.textContent = txt; },
     alCambiar(info, msg) {
+      // pelear en el mundo: tus heridas y lo que pasa con tus golpes y los de los demás contra ti (src/juego/combate_mundo.js)
+      if (msg.tipo === 'luchadores' || msg.tipo === 'combate' || msg.tipo === 'bienvenida') combate.recibir(msg, enLinea.red.yo || msg.autor, (a) => enLinea.modeloDe(a));
+      if (msg.tipo === 'luchadores' || msg.tipo === 'combate' || msg.tipo === 'combate_rechazo') return;
       // lo que llevas, el suelo, lo talado y lo recogido (src/juego/objetos_en_linea.js)
       if (objetosRed.recibir(msg)) {
         if (msg.tipo === 'bienvenida') ropaDelVisor();
