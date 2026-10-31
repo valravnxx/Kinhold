@@ -1,0 +1,30 @@
+PC: tronzar un tronco largo
+  OK   sin hacha no se tronza — Eso es enorme: se arrastra, va en carro o entre varios.
+  OK   con el hacha de hierro en la mano
+  OK   Usar junto al tronco largo empieza a tronzarlo — Tronzas el tronco largo.
+  OK   cada golpe dice cuántos faltan — Tronzas el tronco: faltan 17 golpes.
+  OK   el golpe va al registro con su autor
+  OK   con los golpes que pide, queda tronzado — {'ok': True, 'termina': True, 'faltan': 0, 'motivo': '', 'da': {'tipo': 'tronco_corto', 'n': 4}}
+  OK   el tronco largo ya no está y hay 3 o 4 troncos cortos — 4
+  OK   se ven los troncos cortos y no el largo
+  OK   el aviso dice cuántos — Tronzado: 4 troncos cortos.
+PC: partir un tronco corto
+  OK   Usar junto a los troncos cortos empieza a partir — Partes el tronco en leña.
+  OK   partido: 6 de leña en el suelo y un tronco corto menos — {'ok': True, 'termina': True, 'faltan': 0, 'motivo': '', 'da': {'tipo': 'lena', 'n': 6}} 6
+  OK   se ve la leña
+PC: el tronco corto, con las dos manos o al hombro
+  OK   el tronco corto se coge con las dos manos
+  OK   abajo sale «Al hombro»
+  OK   «Al hombro» lo pasa al hombro y deja las manos libres
+  OK   y sale «A las manos»
+  OK   «A las manos» lo devuelve
+PC: lo que va a medias se guarda
+  OK   al recargar sigue a medias — 0.16666666666666666
+  FALLA sin errores en la consola (PC) — Failed to load resource: the server responded with a status of 404 (File not found); Failed to load resource: the server responded with a status of 404 (File not found)
+Móvil: tronzar con el botón Usar
+  OK   móvil: el botón Usar tronza (con piedra: 54 golpes) — Tronzas el tronco: faltan 53 golpes.
+  OK   móvil: queda tronzado
+  OK   móvil: «Al hombro» funciona
+  FALLA sin errores en la consola (móvil) — Failed to load resource: the server responded with a status of 404 (File not found)
+
+2 FALLOS: sin errores en la consola (PC), sin errores en la consola (móvil)
