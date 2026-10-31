@@ -909,17 +909,17 @@ def personaje(nombre, macros, objetivos, ropa):
         x, y, z = np.abs(P[..., 0]), P[..., 1], P[..., 2]
         u = np.clip((x - 0.013) / 0.047, 0, 1)  # 0 en la cabeza, 1 al final de la cola
         zb = ojo_arriba + 0.0075 + 0.0045 * np.sin(np.pi * np.clip(u / 1.3, 0, 1)) - 0.006 * suave(0.6, 1.0, u)
-        alto = (0.0038 if mujer else 0.0050) * (1.05 - 0.6 * u ** 1.4)  # medio alto: más ancha en la cabeza
+        alto = (0.0044 if mujer else 0.0052) * (1.05 - 0.55 * u ** 1.4)  # medio alto: más ancha en la cabeza
         alto = alto * (0.55 + 0.45 * suave(0.009, 0.022, x))  # la cabeza, redondeada (no cortada en recto)
         dz = z - zb + 0.0012 * (fbm(P, 220) - 0.5)
         dz = np.where(dz < 0, dz * 1.25, dz)  # el borde de abajo, más marcado
-        dentro = suave(1.0, 0.45, np.abs(dz) / alto) * np.where(dz > 0, suave(1.0, 0.0, dz / alto) * 0.4 + 0.6, 1.0)  # arriba, más rala
+        dentro = suave(1.0, 0.45, np.abs(dz) / alto) * np.where(dz > 0, suave(1.0, 0.0, dz / alto) * 0.25 + 0.75, 1.0)  # arriba, más rala
         largo = suave(0.007 + 0.004 * ruido(P, (40, 40, 900)), 0.017, x) * suave(0.064, 0.052, x) * suave(-0.085, -0.10, y)
         # pelos: en la cabeza van hacia arriba (rayas verticales), en el cuerpo y la cola hacia fuera (horizontales)
         vert = ruido(P, (1800, 1800, 300)); hori = ruido(P + 0.31, (300, 1800, 1800))
         pelos = vert * (1 - suave(0.1, 0.35, u)) + hori * suave(0.1, 0.35, u)
         borde = suave(1.3, 0.6, np.abs(dz) / alto) * suave(0.45, 0.8, pelos)  # pelos sueltos fuera de la mancha
-        return largo * np.maximum(dentro * (0.55 + 0.45 * pelos), 0.8 * borde)
+        return largo * np.maximum(dentro * (0.78 + 0.22 * pelos), 0.8 * borde)
     def alto_pelo(P):
         """cuánto está un punto por encima de la línea del pelo (metros; negativo: por debajo, en la piel)"""
         x, y, z = np.abs(P[..., 0]), P[..., 1], P[..., 2]
@@ -1007,10 +1007,10 @@ def personaje(nombre, macros, objetivos, ropa):
     # cáscara: valravnx vio que la cáscara dejaba mal la barbilla
     pelillos = lambda P: colpelo * (0.7 + 0.45 * ruido(P, (900, 900, 500))[..., None])
     def pintar_vello(P, A):
-        ce = 0.85 * zona_cejas(P)
+        ce = 0.92 * zona_cejas(P)
         pe = 0.95 * zona_pelo(P) * (1 - suave(0.1, 0.35, A[..., 1]))  # pelo rapado o nacimiento del pelo (bajo la cofia no se ve)
         a = np.maximum(ce, pe)
-        claro = np.where(ce >= pe, 0.7 + 0.4 * ruido(P, (300, 1800, 1800)), 0.7 + 0.45 * ruido(P, (900, 900, 500)))
+        claro = np.where(ce >= pe, 0.55 + 0.45 * ruido(P, (300, 1800, 1800)), 0.7 + 0.45 * ruido(P, (900, 900, 500)))
         return np.concatenate([colpelo * claro[..., None], a[..., None]], -1)
     def pelos_barba(P, m):
         """barba pintada (antes una mancha lisa con el borde duro: valravnx, «horribles»). Dentro, tupida y casi del
@@ -1225,7 +1225,7 @@ def personaje(nombre, macros, objetivos, ropa):
         # el bulto del pelo crece desde el borde (1 mm sobre la piel) hacia dentro: en la frente ya no es un escalón
         def empuje(c, i):
             d = float(alto_pelo(np.array([[tuple(c)]]))[0, 0])
-            return 0.0012 + (0.002 + 0.007 * min(1.0, max(0.0, c.z - ojo_arriba) / 0.1)) * float(suave(0.004, 0.04, d))
+            return 0.0012 + (0.002 + 0.007 * min(1.0, max(0.0, c.z - ojo_arriba) / 0.1)) * float(suave(0.003, 0.025, d))
         piezas.append(trozo(base, nombre + '_pelo', cab, empuje=empuje, textura=(1024, pintar_pelo), rugosidad=0.55, diezmar=DIEZMAR, **f_pelo))
     # --- pelo largo: melena, coleta y trenzas (mallas propias sobre la cáscara del pelo corto) ---
     piezas += pelo_largo(nombre, co, cabeza, pos, ojo_arriba, oreja_arriba, oreja_medio, cuello_z, colpelo, f_pelo['factor'])
