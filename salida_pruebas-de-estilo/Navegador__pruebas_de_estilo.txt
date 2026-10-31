@@ -1,0 +1,63 @@
+Vista pc
+  OK   luz manana puesta y marcada
+  OK   manana/maqueta: la imagen tiene contenido — desviación 32
+  OK   manana/maqueta: dentro del presupuesto — 49112 triángulos (máx. 50000), 21 dibujados (máx. 60)
+  OK   manana/cabana: la imagen tiene contenido — desviación 41
+  OK   manana/cabana: dentro del presupuesto — 49112 triángulos (máx. 50000), 21 dibujados (máx. 60)
+  OK   manana/lado: la imagen tiene contenido — desviación 40
+  OK   manana/lado: dentro del presupuesto — 49112 triángulos (máx. 50000), 21 dibujados (máx. 60)
+  OK   luz tarde puesta y marcada
+  OK   tarde/maqueta: la imagen tiene contenido — desviación 26
+  OK   tarde/maqueta: dentro del presupuesto — 49112 triángulos (máx. 50000), 21 dibujados (máx. 60)
+  OK   tarde/cabana: la imagen tiene contenido — desviación 32
+  OK   tarde/cabana: dentro del presupuesto — 49112 triángulos (máx. 50000), 21 dibujados (máx. 60)
+  OK   tarde/lado: la imagen tiene contenido — desviación 31
+  OK   tarde/lado: dentro del presupuesto — 49112 triángulos (máx. 50000), 21 dibujados (máx. 60)
+  OK   mañana y tarde se distinguen
+  OK   no queda nada del muñeco por código — [False, 0, 'undefined', 'undefined']
+  OK   las vistas son distintas
+  OK   sin desplazamiento horizontal — 1280px
+  OK   #estilos dentro de la pantalla
+  OK   #inferior dentro de la pantalla
+  OK   #medida dentro de la pantalla
+  OK   las notas se abren
+  OK   las notas no tapan las barras (una fila)
+  OK   arrastrar gira la cámara — diferencia 13.2
+  OK   el botón quita el desenfoque
+  OK   y lo vuelve a poner
+  OK   recuerda luz y vista al recargar — {'luz': 'tarde', 'vista': 'cabana', 'desenfoque': True}
+  OK   un guardado de la v8 se adapta — {'luz': 'tarde', 'vista': 'maqueta', 'desenfoque': False}
+  OK   sin errores en consola (pc)
+Vista movil
+  OK   luz manana puesta y marcada
+  OK   manana/maqueta: la imagen tiene contenido — desviación 31
+  OK   manana/maqueta: dentro del presupuesto — 49112 triángulos (máx. 50000), 21 dibujados (máx. 60)
+  OK   manana/cabana: la imagen tiene contenido — desviación 42
+  OK   manana/cabana: dentro del presupuesto — 49112 triángulos (máx. 50000), 21 dibujados (máx. 60)
+  OK   manana/lado: la imagen tiene contenido — desviación 44
+  OK   manana/lado: dentro del presupuesto — 49112 triángulos (máx. 50000), 21 dibujados (máx. 60)
+  OK   luz tarde puesta y marcada
+  OK   tarde/maqueta: la imagen tiene contenido — desviación 28
+  OK   tarde/maqueta: dentro del presupuesto — 49112 triángulos (máx. 50000), 21 dibujados (máx. 60)
+  OK   tarde/cabana: la imagen tiene contenido — desviación 33
+  OK   tarde/cabana: dentro del presupuesto — 49112 triángulos (máx. 50000), 21 dibujados (máx. 60)
+  OK   tarde/lado: la imagen tiene contenido — desviación 38
+  OK   tarde/lado: dentro del presupuesto — 49112 triángulos (máx. 50000), 21 dibujados (máx. 60)
+  OK   mañana y tarde se distinguen
+  OK   no queda nada del muñeco por código — [False, 0, 'undefined', 'undefined']
+  OK   las vistas son distintas
+  OK   sin desplazamiento horizontal — 390px
+  OK   #estilos dentro de la pantalla
+  OK   #inferior dentro de la pantalla
+  OK   #medida dentro de la pantalla
+  OK   las notas se abren
+  OK   las notas no tapan las barras (una fila)
+  OK   la barra de vistas estrechada ocupa dos filas — 68px
+  OK   las notas no tapan las barras (dos filas)
+  OK   el botón quita el desenfoque
+  OK   y lo vuelve a poner
+  OK   recuerda luz y vista al recargar — {'luz': 'tarde', 'vista': 'cabana', 'desenfoque': True}
+  OK   un guardado de la v8 se adapta — {'luz': 'tarde', 'vista': 'maqueta', 'desenfoque': False}
+  OK   sin errores en consola (movil)
+
+Resultado: TODO CORRECTO
