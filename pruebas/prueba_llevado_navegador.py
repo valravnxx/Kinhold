@@ -57,6 +57,7 @@ MEDIR = '''() => { const K = window.__kinhold, j = K.jugador, H = j.mh.hueso; K.
         x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); z0 = Math.min(z0, p.z); x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y); z1 = Math.max(z1, p.z); } });
     r.piezas[o.name.slice(8)] = [(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2, x1 - x0, y1 - y0, z1 - z0].map(v => +v.toFixed(3));
   }
+  r.modo = j.modo;
   for (const n of ['pelvis', 'spine_03', 'hand_r', 'hand_l', 'neck_01']) r[n] = local(H[n]).toArray().map(v => +v.toFixed(3));
   return r; }'''
 
@@ -89,7 +90,9 @@ def revisar(nombre, m):
         if 'mano_' + lado in p:
             comprobar(f'{nombre}: lo de la mano {lado} está en la mano', dist(p['mano_' + lado], m[hueso]) < 0.35, f'{p["mano_" + lado][:3]} · mano {m[hueso]}')
     if 'manos' in p:
-        comprobar(f'{nombre}: lo grande, delante y bajo, entre las dos manos', p['manos'][2] > P[2] + 0.1 and p['manos'][1] < P[1] + 0.1, f'{p["manos"][:3]}')
+        medio = [(m['hand_r'][i] + m['hand_l'][i]) / 2 for i in range(3)]
+        comprobar(f'{nombre}: lo grande, delante, entre las dos manos', p['manos'][2] > P[2] + 0.1 and dist(p['manos'], medio) < 0.15, f'{p["manos"][:3]} · entre las manos {[round(v, 3) for v in medio]}')
+        comprobar(f'{nombre}: y el personaje lo sujeta (postura de llevar en brazos)', m.get('modo') == 'cargar', m.get('modo'))
 
 with sync_playwright() as pw:
     nav = pw.chromium.launch(args=ARGS)

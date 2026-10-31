@@ -154,6 +154,8 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       m = velocidad < 1.8 ? 'andar' : 'correr'; ritmo = velocidad / (j.mh.velocidad[m] || 1); // natural, medida al cargar
       ritmo = THREE.MathUtils.clamp(ritmo, 0.6, 1.6);
     } else if (talando) m = 'talar';
+    // con algo grande en las dos manos (src/juego/llevado.js), los brazos lo sujetan delante; quieto, la misma postura
+    if (j.cargaDos && m !== 'talar' && j.mh.acciones.cargar) { m = 'cargar'; if (velocidad <= 0.1) ritmo = 0; }
     if (m !== j.modo) { j.mh.poner(m, 0.2); j.modo = m; }
     if (j.hacha) j.hacha.visible = m === 'talar' || !!j.hachaEnMano;   // también si la llevas en la mano (inventario)
     j.mh.acciones[m].timeScale = ritmo;
@@ -169,7 +171,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
   // lo que llevas se ve puesto (src/juego/llevado.js): ponerLlevado(lo de src/logica/llevado.js); va con los huesos
   const llevado = crearLlevado(j), animarCuerpo = j.animar;
   j.llevado = llevado;
-  j.ponerLlevado = (l) => { j.llevadoPedido = l; if (j.mh) llevado.poner(l); };
+  j.ponerLlevado = (l) => { j.llevadoPedido = l; j.cargaDos = !!(l && l.dos); if (j.mh) llevado.poner(l); };
   j.listo.then(() => { if (j.mh && j.llevadoPedido) llevado.poner(j.llevadoPedido); });
   j.animar = (...a) => { animarCuerpo(...a); llevado.paso(); };
   return j;

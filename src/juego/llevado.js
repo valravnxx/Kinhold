@@ -334,12 +334,21 @@ function atar(obj, hueso, invRaiz) {
   obj.matrixAutoUpdate = false;
   return obj;
 }
-const _inv = new THREE.Matrix4();
+const _inv = new THREE.Matrix4(), _a = new THREE.Vector3(), _b = new THREE.Vector3(), _x = new THREE.Vector3(), _y = new THREE.Vector3(), _z = new THREE.Vector3();
 function seguir(grupo, raiz) {
   if (globalThis.__sinSeguirLlevado) return; // solo para comprobar que la prueba de seguir a los huesos falla
   // las dos matrices son las del último dibujo: así lo que se ha movido el personaje entre medias no cuenta
   _inv.copy(raiz.matrixWorld).invert();
   for (const o of grupo.children) {
+    const em = o.userData.entreManos;
+    if (em) { // lo grande en las dos manos: entre las dos, atravesado de una a otra
+      em[0].getWorldPosition(_a).applyMatrix4(_inv); em[1].getWorldPosition(_b).applyMatrix4(_inv);
+      _x.subVectors(_b, _a); const largo = _x.length(); _x.normalize();
+      _y.set(0, 1, 0).addScaledVector(_x, -_x.y).normalize(); _z.crossVectors(_x, _y);
+      o.matrix.makeBasis(_x, _y, _z).setPosition(_a.lerp(_b, 0.5).addScaledVector(_z, 0.06).addScaledVector(_y, 0.02));
+      o.matrixWorldNeedsUpdate = true; o.userData.largoManos = largo;
+      continue;
+    }
     const h = o.userData.hueso; if (!h) continue;
     o.matrix.multiplyMatrices(_inv, h.matrixWorld).multiply(o.userData.desfase);
     o.matrixWorldNeedsUpdate = true;
@@ -353,14 +362,14 @@ function pieza(L, nombre, m, hueso, invRaiz) {
   return atar(g, hueso, invRaiz);
 }
 // La base de la mano, como empunar() de personaje.js: +Y del meñique al índice, +Z hacia los nudillos (en el cuerpo).
-function baseMano(mh, lado, invRaiz) {
+function baseMano(mh, lado, invRaiz, hasta = 1.1) {
   const h = mh.hueso, mano = h['hand_' + lado], med = h['middle_01_' + lado], ind = h['index_01_' + lado], men = h['pinky_01_' + lado];
   if (!mano || !med || !ind || !men) return null;
   const en = b => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(invRaiz);
   const o = en(mano), pm = en(med), f = pm.clone().sub(o).normalize();
   const y = en(ind).sub(en(men)); y.addScaledVector(f, -y.dot(f)).normalize();
   const x = new THREE.Vector3().crossVectors(y, f);
-  return { mano, m: new THREE.Matrix4().makeBasis(x, y, f).setPosition(o.lerp(pm, 1.1)) };
+  return { mano, m: new THREE.Matrix4().makeBasis(x, y, f).setPosition(o.lerp(pm, hasta)) };
 }
 
 // Crea lo que se ve de lo que lleva `j` (el de crearJugador). poner(llevado) lo rehace si ha cambiado; paso() en cada
@@ -432,7 +441,7 @@ export function crearLlevado(j) {
           else hatillo(C, 0, 0, 0, 0.9);
           // de lado sobre la cadera, mirando hacia fuera; la espada inclinada hacia atrás
           const m = new THREE.Matrix4().makeRotationY(a);
-          if (t === 'espada') m.multiply(new THREE.Matrix4().makeRotationX(-0.45)).multiply(new THREE.Matrix4().makeTranslation(0, 0.05, 0));
+          if (t === 'espada') m.multiply(new THREE.Matrix4().makeRotationZ(0.5)).multiply(new THREE.Matrix4().makeTranslation(0, 0.05, 0)); // la punta hacia atrás
           else if (CATALOGO[t].herramienta && t !== 'cuchillo') m.multiply(new THREE.Matrix4().makeRotationZ(Math.PI)).multiply(new THREE.Matrix4().makeTranslation(0, -0.05, 0));
           m.setPosition(p);
           grupo.add(pieza(C, 'colgado_' + i, m, pelvis, invRaiz));
@@ -503,12 +512,15 @@ export function crearLlevado(j) {
       const L = nuevoLote();
       if (l.der === 'tronco_corto' || l.der === 'tronco_delgado') troncoCorto(L, 0, 0, 0, l.der === 'tronco_corto' ? 0.9 : 1.2, l.der === 'tronco_corto' ? 0.13 : 0.09, 'x');
       else hatillo(L, 0, 0.12, 0, 2.2);
-      const cin = contorno(medida, yPelvis - 0.06, 0.04) || cE;
-      const z = cin ? cin.cz + cin.en(0) + 0.12 : 0.2;
-      grupo.add(pieza(L, 'manos', new THREE.Matrix4().makeTranslation(cin ? cin.cx : 0, yPelvis - 0.02, z), pelvis, invRaiz));
+      // va entre las dos manos (con la animación de llevar en brazos, delante del pecho): lo pone seguir()
+      const g = deMano(L); g.name = 'llevado_manos'; g.matrixAutoUpdate = false;
+      g.traverse(o => { if (o.isMesh) o.userData.herramienta = true; });
+      if (H.hand_r && H.hand_l) { g.userData.entreManos = [H.hand_r, H.hand_l]; grupo.add(g); }
     } else for (const [lado, t] of [['r', l.der], ['l', l.izq]]) {
       if (!t || HACHAS.has(t)) continue;
-      const b = baseMano(mh, lado, invRaiz); if (!b) continue;
+      // lo largo (herramientas, ramas, varas) por el puño, como el hacha; lo redondo (una piedra), en la palma
+      const largo = ['rama', 'vara', 'tabla', 'lena', 'espada', 'cuchillo', 'lasca_silex'].includes(t) || (CATALOGO[t] && CATALOGO[t].herramienta);
+      const b = baseMano(mh, lado, invRaiz, largo ? 1.1 : 0.6); if (!b) continue;
       grupo.add(pieza(enMano(t), 'mano_' + lado, b.m, b.mano, invRaiz));
     }
     seguir(grupo, j.raiz);

@@ -12,7 +12,7 @@
 //   dos: bool }                      lo de la mano derecha es grande y ocupa las dos
 //
 // Decisiones provisionales (anotadas en el diario y en el registro de la demo):
-//  - Lo que se ve de lo de dentro de la espalda es lo que más hay de cada tipo, sumado (no hueco por hueco).
+//  - De lo que lleva dentro la espalda se ve lo de cada tipo sumado (no hueco por hueco).
 //  - En la mano solo se ve un objeto aunque haya varios apilados (tres piedras: una piedra en la mano).
 import { CATALOGO } from './inventario.js';
 
