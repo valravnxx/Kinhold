@@ -1,6 +1,6 @@
 {
  "A": {
-  "inicio": "2026-10-31T02:24:31+00:00",
+  "inicio": "2026-10-31T04:25:54+00:00",
   "tarea": "El juego en línea usa lo que llevas y el suelo del servidor: el panel de inventario, soltar y coger del suelo y lo que se entrega a las obras pasan por el servidor, y talar y trocear también, con lo que dejan en el suelo, para que nada de lo que llevas salga solo del navegador. Mientras el servidor no conozca el mundo, se fía del árbol que dice el navegador si estás a su lado (decisión provisional)",
   "hito": "equipo",
   "rama": "trabajo/20261031-0224"
