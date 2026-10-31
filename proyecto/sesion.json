@@ -5,22 +5,11 @@
   "hito": "equipo",
   "rama": "trabajo/20261031-1123"
  },
- "B": {
-  "inicio": "2026-10-31T15:04:26+00:00",
-  "tarea": "Revisión completa y publicación",
-  "hito": "arte",
-  "rama": "trabajo/20261031-1504"
- },
+ "B": null,
  "chat:trabajo/20261031-1005-cuatro": {
   "inicio": "2026-10-31T10:02:41+01:00",
   "tarea": "Cuatro direcciones y ataque comprometido (valravnx, 31 oct): alto, izquierda, derecha y abajo para clavar (fuera el tajo bajo y el centro); el escudo para todo lo que viene de frente sin elegir lado; el golpe no cambia de dirección al cargarlo, y el botón de parar lo cancela con una finta (para parar o para empezar otro golpe)",
   "hito": "duelo",
   "rama": "trabajo/20261031-1005-cuatro"
- },
- "chat:trabajo/20261031-1100-mapa-rey": {
-  "inicio": "2026-10-31T10:53:09+01:00",
-  "tarea": "El mapa del rey (valravnx, 31 oct): al aparecer en Whitholm ya lo llevas; se abre con una tecla (M) o un botón en el móvil y enseña la costa, las comarcas con su nombre, los ríos, la ciudad de Strandvang y dónde estás tú; sin viaje rápido",
-  "hito": "mundo-juego",
-  "rama": "trabajo/20261031-1100-mapa-rey"
  }
 }

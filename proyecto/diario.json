@@ -3291,5 +3291,38 @@
   "pruebas": "Batería entera (26 grupos; 25 en el PC de valravnx y la lógica en la nube): todo bien salvo «la demo en el mundo» (andando, el personaje a 0,70 m del suelo) y «jugar en línea» (desde «PC se pone a construir»). Repetidas en la nube: «la demo en el mundo» falló en otras cosas (volver a conectar solo; un fotograma de 81 ms) y repetida en el PC, bien; «jugar en línea» falla igual que en main (anotado en las entradas anteriores; valravnx: «jugar en línea ya no existe»). No comprobado: la prueba nueva del navegador rota a propósito (MUTAR).",
   "capturas": "capturas/personaje-v32",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T10:53:09+01:00",
+  "fin": "2026-10-31T16:48:13+01:00",
+  "titulo": "El mapa del rey y fuera «Duelo» (demo v70, chat con valravnx)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "El mapa del rey (valravnx, 31 oct): en el mundo de verdad lo llevas desde que apareces; se abre con M o con el botón «Mapa» y enseña la costa, las ocho comarcas con su nombre (Strandvang, «tierras del rey», en dorado), los ríos, montes, bosques, la ciudad del rey y tu flecha. Se arrastra y se acerca; «Dónde estoy» te pone en el centro. Sin viaje rápido.",
+   "Sale de lo mismo que el mundo: la costa (paisaje.grande), los biomas y los ríos son los del juego; la prueba lo comprueba en 3.000 puntos. Estilo de carta pintada a mano: papel, líneas de agua, montes de perfil, árboles uno a uno, fronteras de rayas con una franja de color; la costa, las fronteras y las líneas de agua como líneas nítidas a cualquier zoom.",
+   "Se pinta en segundo plano en cuanto el mundo está listo, a pasos cortos (en node, el 99 % por debajo de 20 ms; en el navegador de pruebas, el paso más largo, unos 20 ms).",
+   "Provisional: la ciudad del rey, a unos 600 m de la boca del río principal de Strandvang, en un llano de pradera (src/logica/whitholm.js, CIUDAD_REY); aún solo está en el mapa.",
+   "Fuera «Duelo» del menú de la demo (valravnx: el combate está en «Jugar», todo en línea); un enlace antiguo lleva a «Jugar». Fuera las pruebas aparte de «duelo en línea» y «jugar en línea».",
+   "De paso: la prueba de jugar en línea, puesta al día (las obras cobran de lo que llevas) antes de quitarla; más margen en la nube a las de lo que llevas en línea y el mapa del mundo; pruebas_nube.mjs ya no rompe con nombres de rama de más de 255 bytes; el título de la página de cada parte, traducido; faltaba la traducción de la tarea de los tejados."
+  ],
+  "pruebas": "Batería entera en la nube (pruebas_nube.mjs): todos los grupos correctos, PC y móvil; el mapa del rey además en inglés. Prueba nueva de lógica del mapa y del sitio de la ciudad, rotas a propósito con MUTAR.",
+  "capturas": "capturas/demo-v70",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T15:04:26+00:00",
+  "fin": "2026-10-31T16:16:01+00:00",
+  "titulo": "Hito de arte: revisión completa; dos arreglos antes de darlo por terminado (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Batería entera en la nube sobre main (24 grupos, 60 min): todos correctos.",
+   "pruebas_nube.mjs falló al pasar los grupos a la nube cuando el PC de valravnx no los cogió: el nombre de la rama del pedido pasaba de 255 bytes. Se lanzó con SOLO_NUBE=1; el arreglo ya está en dos ramas del chat, sin unir aún.",
+   "Capturas miradas en PC y móvil (cara, espalda, picar, la demo y el mundo). Ya bien lo de la revisión del 30 oct: la capa de espalda tiene pliegues y color, el pico va en la mano al picar, la toca en PC tiene el borde limpio y el pelo no corta en seco.",
+   "Aún mal: en el móvil (calidad ligera) el pelo asoma por la toca y la cabeza sale a manchas; de cerca, las cejas del hombre son trazos gruesos en bloque y entre la barba y el cuello queda una franja clara cortada. Quedan como dos tareas del hito, antes de la revisión final, que vuelve a pendiente.",
+   "Sin versión nueva (no hay cambios jugables); las capturas de la revisión, en capturas/revision-arte-31oct."
+  ],
+  "pruebas": "En la nube: 24 de 24 grupos correctos",
+  "capturas": "capturas/revision-arte-31oct",
+  "estado": "ok"
  }
 ]

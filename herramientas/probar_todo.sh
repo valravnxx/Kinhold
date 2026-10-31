@@ -59,6 +59,7 @@ paso "Terreno por trozos: anillos, bordes y faldones" node pruebas/prueba_trozos
 paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whitholm.mjs
 paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma" node pruebas/prueba_vegetacion.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
+paso "Mapa del rey: costa del juego, nombres, ciudad y ríos" node pruebas/prueba_mapa_rey.mjs
 paso "Aguante, agua y nado" node pruebas/prueba_nado.mjs
 paso "Medición del servidor (CPU, memoria, red y disco)" node pruebas/prueba_medir.mjs
 [ -z "$LISTAR" ] && { [ -z "$GRUPO" ] || [ "$GRUPO" = logica ]; } && ! command -v caddy >/dev/null && {  apt-get install -y -q caddy >/dev/null 2>&1 || { apt-get update -q >/dev/null 2>&1; apt-get install -y -q caddy >/dev/null 2>&1; } || true; }
@@ -109,6 +110,7 @@ paso "Navegador: cavar" python3 pruebas/prueba_mina_navegador.py dist/kinhold_mi
 paso "Navegador: niveles de detalle del personaje" python3 pruebas/prueba_detalle_navegador.py dist/kinhold_personaje.html dist/kinhold_demo.html "$C/detalle"
 paso "Navegador: terreno por trozos (en un hilo aparte)" python3 pruebas/prueba_trozos_navegador.py dist/kinhold_trozos.html "$C/trozos"
 paso "Navegador: mapa del mundo" python3 pruebas/prueba_mapa_navegador.py dist/kinhold_mapa.html "$C/mapa"
+paso "Navegador: mapa del rey" python3 pruebas/prueba_mapa_rey_navegador.py dist/kinhold_demo.html "$C/mapa_rey"
 paso "Web de progreso" node herramientas/construir_web.mjs
 paso "Navegador: web" python3 pruebas/prueba_web.py "$C/web"
 if [ -n "$LISTAR" ]; then printf '['; sep=; for g in "${grupos[@]}"; do printf '%s"%s"' "$sep" "$g"; sep=,; done; echo ']'; exit 0; fi

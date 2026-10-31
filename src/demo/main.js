@@ -15,18 +15,20 @@ import { generar, SEMILLA_MUNDO, LADO_MUNDO } from '../logica/mapa.js';
 
 const MODOS = {
   construir: { carga: () => import('../juego/main.js'), menu: '#menu', nombre: 'Jugar' },
-  duelo: { carga: () => import('../combate/main.js'), menu: '#menu', nombre: 'Duelo' },
   personaje: { carga: () => import('../personaje/main.js'), menu: '#estilos', nombre: 'Personaje' },
 };
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
+if (params.get('modo') === 'duelo') { params.set('modo', 'construir'); history.replaceState(null, '', location.pathname + '?' + params); }
 const modo = params.get('modo');
 
-// Siempre en línea (valravnx, 30 oct): «Jugar» y «Duelo» van siempre al servidor (src/mundo/direccion_servidor.js); ya no
+// «Duelo» ya no está (valravnx, 31 oct: «ya está integrado en jugar […] está todo 100 % online en solo jugar»): se lucha
+// en el mundo; un enlace de antes a ?modo=duelo lleva a «Jugar».
+// Siempre en línea (valravnx, 30 oct): «Jugar» va siempre al servidor (src/mundo/direccion_servidor.js); ya no
 // hay modo en solitario en el menú. Solo para las pruebas automáticas, ?sinservidor=1 deja entrar sin servidor (como antes
 // del 30 oct), para probar el juego sin levantar uno; no sale en ningún botón.
 const SIN_SERVIDOR = params.get('sinservidor') === '1';
-const VAN_EN_LINEA = new Set(['construir', 'duelo']);
+const VAN_EN_LINEA = new Set(['construir']);
 const redirige = VAN_EN_LINEA.has(modo) && !SIN_SERVIDOR && params.get('enlinea') !== '1';   // un enlace de antes, sin enlinea
 if (redirige) location.replace(enlace(modo));
 
