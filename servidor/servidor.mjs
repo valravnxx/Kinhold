@@ -114,7 +114,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   // lo que lleva cada uno y lo del suelo: dónde está cada autor lo dice su presencia (más abajo)
   let presencia = null;
   const objetos = new ObjetosServidor({
-    posicion: (a) => { const e = presencia && presencia.ultimo.get(a); return e ? { x: e.x, z: e.z } : null; },
+    posicion: (a) => { const e = presencia && presencia.ultimo.get(a); return e ? { x: e.x, z: e.z, giro: e.giro } : null; },
     enTierras: (a, x, z) => !!mundo.dentroDeTierra(x, z),
     arconPruebas,
   });
@@ -333,6 +333,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       if (conexionDe.get(autor) !== ws) return;   // la sustituyó otra del mismo jugador: él sigue
       conexionDe.delete(autor);
       apuntarPosicion(autor); guardarPosiciones();
+      // la rastra que arrastraba se queda donde estaba (antes de olvidar dónde estaba él)
+      if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); const lista = objetos.sueloVisible(Date.now()); for (const otro of clientes.keys()) enviar(otro, { tipo: 'suelo', objetos: lista }); }
       aspectos.delete(autor); presencia.quitar(autor);
       ponerAlDia();
       const L = combate.apartar(autor);

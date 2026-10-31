@@ -203,6 +203,7 @@ export class Inventario {
     this.cat = cat;
     this.lugares = Object.fromEntries(LUGARES.map(l => [l, null]));
     this.apartado = []; // lo que no cupo al cargar un guardado (a tus pies)
+    this.manosEn = null; // 'rastra' mientras la arrastras (src/logica/rastra.js): no se coge nada con las manos; no se guarda
   }
 
   // Empiezas casi con lo puesto: camisa y pantalón de lino (GDD).
@@ -251,6 +252,7 @@ export class Inventario {
     if (r.lugar) {
       const l = r.lugar;
       if (l.startsWith('mano:')) {
+        if (this.manosEn === 'rastra') return 'Tienes las manos en la rastra: suéltala antes.';
         if (this.manoBloqueada(l)) return 'Tienes las dos manos ocupadas.';
         if (d.tam === 'G') {
           const otra = l === 'mano:der' ? 'mano:izq' : 'mano:der';
