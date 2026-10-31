@@ -209,7 +209,7 @@ try:
 
         print('El servidor se apaga')
         servidor.terminate(); servidor.wait(5)
-        comprobar('PC dice que se ha cortado (y que vuelve a conectar) y ya no ve al otro', esperar(A, "document.getElementById('estadoRed').textContent === 'Volviendo a conectar…'", 20000) and A.evaluate(f"{D}.otros.size") == 0,
+        comprobar('PC dice que se ha cortado (y que vuelve a conectar) y ya no ve al otro', esperar(A, f"document.getElementById('estadoRed').textContent === 'Volviendo a conectar…' && {D}.otros.size === 0", 20000),
                   f"estado: {A.inner_text('#estadoRed')} · otros: {A.evaluate(f'{D}.otros.size')}")
         comprobar('sin conexión no se ataca', not A.evaluate(f"{D}.atacar('alto')"))
         for nombre, (pg, err) in paginas.items():
