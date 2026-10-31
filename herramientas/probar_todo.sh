@@ -85,6 +85,7 @@ paso "Dos carriles en paralelo sin pisarse" node pruebas/prueba_carriles.mjs
 paso "Excavación y malla de la roca" node pruebas/prueba_excavacion.mjs
 paso "Versiones antiguas a las releases" node pruebas/prueba_archivar.mjs
 paso "Generador del mapa del mundo" node pruebas/prueba_mapa.mjs
+paso "Valles sin paredes lisas de kilómetros" node pruebas/prueba_valles.mjs
 paso "Azar y ruido: un solo módulo, los mismos números" node pruebas/prueba_azar.mjs
 paso "Textos traducidos" node pruebas/prueba_idiomas.mjs
 paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold_hito1.html "$C/construccion"

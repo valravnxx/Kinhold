@@ -6,10 +6,10 @@
   "rama": "trabajo/20261031-1123"
  },
  "B": {
-  "inicio": "2026-10-31T11:54:23+00:00",
-  "tarea": "Recetas que conoce cada personaje y desbloqueo por práctica (GDD, apartado 9): construir la estación da sus recetas básicas y fabricar en ella abre las siguientes. Lo que el GDD no fija (qué recetas son básicas y cuánta práctica abre las demás) se decide de forma provisional y sencilla y se anota en el registro de decisiones y en el diario. Guardado en el navegador con migración. Pruebas de lógica",
-  "hito": "crafting",
-  "rama": "trabajo/20261031-1154"
+  "inicio": "2026-10-31T13:52:37+00:00",
+  "tarea": "Herramienta en la mano al trabajar (visto en la revisión del 30 oct): al picar el personaje no lleva pico",
+  "hito": "arte",
+  "rama": "trabajo/20261031-0858"
  },
  "chat:trabajo/20261031-1005-cuatro": {
   "inicio": "2026-10-31T10:02:41+01:00",
@@ -28,17 +28,5 @@
   "tarea": "Tejados pisables y menú de Usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en Usar (o dejándolo pulsado en el móvil), se elige qué usar si hay varias cosas al alcance",
   "hito": "mundo-juego",
   "rama": "trabajo/20261031-1006-tejados"
- },
- "chat:trabajo/20261031-1109-grafica": {
-  "inicio": "2026-10-31T11:09:01+00:00",
-  "tarea": "Arreglar las pruebas en la gráfica del PC de valravnx (valravnx, 31 oct): fallaban todas al empezar («bash: command not found»)",
-  "hito": "infra",
-  "rama": "trabajo/20261031-1109-grafica"
- },
- "chat:trabajo/20261031-1125-cortados": {
-  "inicio": "2026-10-31T11:26:08+00:00",
-  "tarea": "Sin cortados rectos de kilómetros (valravnx, 31 oct): los valles de los ríos dejaban paredes lisas y rectas de cientos de metros, kilómetros de largo, donde el río va muy por debajo del terreno de alrededor; las paredes del valle salen ahora con relieve, con el borde redondeado y sin línea recta, y una prueba lo mira en toda la isla",
-  "hito": "mundo",
-  "rama": "trabajo/20261031-1125-cortados"
  }
 }

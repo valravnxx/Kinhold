@@ -102,9 +102,9 @@
     },
     {
      "nombre": "Arreglar las pruebas en la gráfica del PC de valravnx (valravnx, 31 oct): fallaban todas al empezar («bash: command not found»)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T11:09:01+00:00",
-     "rama": "trabajo/20261031-1109-grafica"
+     "fin": "2026-10-31T13:25:55+00:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -699,9 +699,9 @@
     },
     {
      "nombre": "Recetas que conoce cada personaje y desbloqueo por práctica (GDD, apartado 9): construir la estación da sus recetas básicas y fabricar en ella abre las siguientes. Lo que el GDD no fija (qué recetas son básicas y cuánta práctica abre las demás) se decide de forma provisional y sencilla y se anota en el registro de decisiones y en el diario. Guardado en el navegador con migración. Pruebas de lógica",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T11:54:23+00:00",
-     "rama": "trabajo/20261031-1154"
+     "fin": "2026-10-31T13:32:29+00:00"
     },
     {
      "nombre": "Las estaciones se construyen en la demo como obras (marco, materiales y tiempo) y se ven con el estilo v5: hoguera con su fuego y su luz de noche, piedra de tallar y banco de trabajo de tronco. Capturas de cerca comparadas con la v5 para valravnx",
@@ -1207,9 +1207,9 @@
     },
     {
      "nombre": "Sin cortados rectos de kilómetros (valravnx, 31 oct): los valles de los ríos dejaban paredes lisas y rectas de cientos de metros, kilómetros de largo, donde el río va muy por debajo del terreno de alrededor; las paredes del valle salen ahora con relieve, con el borde redondeado y sin línea recta, y una prueba lo mira en toda la isla",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T11:26:08+00:00",
-     "rama": "trabajo/20261031-1125-cortados"
+     "fin": "2026-10-31T12:57:46+00:00"
     }
    ],
    "lleva": "chat",
@@ -2092,6 +2092,13 @@
      "archivo": "jugar/demo/v66.html",
      "capturas": "capturas/demo-v66",
      "notas": "Volver donde lo dejaste: el navegador recuerda quién eres aunque cierres la pestaña, y al volver a entrar apareces donde estabas al salir (el servidor lo guarda). Dos pestañas del mismo navegador son el mismo jugador."
+    },
+    {
+     "v": "v67",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v67.html",
+     "capturas": "capturas/demo-v67",
+     "notas": "Sin cortados rectos de kilómetros: las laderas de los valles de los ríos ya no son planos lisos y rectos (valravnx, 31 oct); llevan relieve, el borde se redondea y la cabecera del valle es suave"
     }
    ]
   },
