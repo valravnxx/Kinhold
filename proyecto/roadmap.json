@@ -648,8 +648,8 @@
      "fin": "2026-10-31T10:58:44+00:00"
     },
     {
-     "nombre": "Animaciones de llevar al hombro y de arrastrar: no están en las bibliotecas de Quaternius; sacarlas de donde decida valravnx y pasarlas al esqueleto del taller",
-     "estado": "espera_decision"
+     "nombre": "Animaciones de llevar al hombro y de arrastrar, hechas en el taller (valravnx, 31 oct): a partir de las que hay (andar con algo en brazos, empujar), moviendo brazos y tronco por código y pasadas al esqueleto del taller. El tronco al hombro tiene que notarse al moverse: hoy, un tronco solo al hombro apenas frena (la ralentización va por lo lleno que vas y así se queda en un 1 %)",
+     "estado": "pendiente"
     },
     {
      "nombre": "Lo que llevas se ve puesto en el personaje del taller: el cinturón y lo que cuelga de él, el leñero o la mochila a la espalda, el saco al hombro y lo que tienes en las manos, con el estilo v5. Capturas de cerca para valravnx",
@@ -2972,11 +2972,6 @@
    "pregunta": "Las comarcas de inicio Motdale y Breiddal: ¿las puede tomar un clan? La propuesta de la v0.3 decía que no hubiera reclamaciones cerca de las zonas de inicio. (Strandvang no: es del rey, valravnx 31 oct.)",
    "desde": "2026-10-30",
    "hito": "tierras"
-  },
-  {
-   "pregunta": "Animaciones de llevar al hombro y de arrastrar: no hay ninguna en las bibliotecas libres de Quaternius (se miraron los 45 clips de la primera y los 134 de la segunda). Opciones: (a) la base de captura de movimiento de la CMU (gratis y se puede usar en un juego que se venda, pero no revender los datos; pide citarla; esqueleto distinto y sin dedos, hay que limpiarla); (b) hacerlas en el taller a partir de las que hay (andar con algo en brazos, empujar), moviendo brazos y tronco por código; (c) dejarlas para más adelante y usar «andar con algo en brazos» también para el tronco al hombro. ¿Cuál?",
-   "desde": "2026-10-31",
-   "hito": "equipo"
   }
  ]
 }

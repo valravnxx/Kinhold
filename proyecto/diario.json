@@ -3175,5 +3175,18 @@
   "pruebas": "En la nube (el PC de valravnx fallaba en el primer paso): todos los grupos bien salvo «jugar en línea»; «lo que llevas en línea» y «niveles de detalle» fallaron una vez y pasaron al repetirlos. No comprobado: la prueba nueva del navegador rota a propósito (MUTAR) no se ha pasado.",
   "capturas": "",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-31T11:49:59+00:00",
+  "fin": "2026-10-31T11:49:59+00:00",
+  "titulo": "Decidido: las animaciones de cargar las hacemos nosotros (chat con valravnx)",
+  "hito": "equipo",
+  "hecho": [
+   "Decidido por valravnx: llevar al hombro y arrastrar se hacen en el taller a partir de las animaciones que ya hay, sin traerlas de fuera; y el tronco al hombro tiene que frenar al moverse.",
+   "La tarea pasa de esperar la decisión a pendiente, en «Equipo y carga por huecos», justo detrás de la de las animaciones para cargar."
+  ],
+  "pruebas": "Sin pruebas: solo cambian el roadmap, REVISION.md y el diario.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
