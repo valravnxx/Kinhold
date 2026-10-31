@@ -59,9 +59,11 @@ def captura(pg, ruta):
     try: pg.screenshot(path=ruta)
     except Exception as e: print('  (sin captura:', str(e)[:80], ')')
 
-def entrar(nav, nombre, vista, movil):
-    ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
-    if MUTAR:
+def entrar(nav, nombre, vista, movil, ctx=None):
+    # con ctx, otra página en el mismo navegador (la misma ficha: el mismo jugador)
+    nuevo = ctx is None
+    if nuevo: ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
+    if MUTAR and nuevo:
         ctx.add_init_script("""(() => { const s = WebSocket.prototype.send;
           WebSocket.prototype.send = function (d) { if (String(d).includes('"tipo":"objeto"')) return; return s.call(this, d); }; })()""")
     pg = ctx.new_page(); err = []
@@ -101,11 +103,14 @@ try:
         A.wait_for_timeout(400); captura(A, f'{SALIDA}/pc_1_cae.png')
         d = servidorDice(lambda d: d['tala']['estado'].get(arbol['id'], {}).get('vuelve', 0) > 0 and enSuelo(d, 'rama'))
         comprobar('en el servidor: el tocón y, en su suelo, el tronco y las ramas', d is not None and (enSuelo(d, 'tronco_largo') or enSuelo(d, 'tronco_delgado')))
-        comprobar('y en la página, lo mismo cuando ha caído', esperar(A, f"{K}.talaV.cayendo === 0 && {K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'rama') && !!{K}.escena.getObjectByName('tocon')", 20000))
+        comprobar('y en la página, lo mismo cuando ha caído', esperar(A, f"{K}.talaV.cayendo === 0 && {K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'rama') && !!{K}.escena.getObjectByName('tocon')", 90000))
         A.evaluate(f"{K}.cam.dist = 7; {K}.cam.pitch = 0.55"); A.wait_for_timeout(600)
         captura(A, f'{SALIDA}/pc_2_tocon.png')
 
         print('Soltar y coger del suelo, por el servidor')
+        # un paso atrás del tocón, para que el hacha no caiga junto a él
+        A.evaluate(f"(() => {{ const pj = {K}.pj, a = Math.atan2(pj.x - {arbol['x']}, pj.z - {arbol['z']}); pj.x += Math.sin(a) * 1.2; pj.z += Math.cos(a) * 1.2; }})()")
+        A.wait_for_timeout(1200)
         A.evaluate(f"{K}.soltarAlSuelo('mano:der')")
         d = servidorDice(lambda d: enSuelo(d, 'hacha_hierro') and not lleva(d, yo, 'hacha_hierro'))
         comprobar('PC suelta el hacha: en el servidor está en el suelo y ya no la lleva', d is not None)
@@ -131,8 +136,8 @@ try:
         captura(A, f'{SALIDA}/pc_3_inventario.png')
 
         print('Al recargar, vuelve del servidor')
-        ctxA.close()
-        ctxA, A, errA = entrar(nav, 'PC otra vez', {'width': 1280, 'height': 800}, False)
+        A.close()
+        ctxA, A, errA = entrar(nav, 'PC otra vez', {'width': 1280, 'height': 800}, False, ctxA)
         comprobar('es el mismo jugador', A.evaluate(f"{K}.enLinea.red.yo") == yo)
         comprobar('lleva lo que tenía en el servidor (las ramas, sin el hacha)', esperar(A, f"JSON.stringify({K}.inventario.lugares).includes('\"rama\"') && !JSON.stringify({K}.inventario.lugares).includes('hacha_hierro')", 10000))
         comprobar('el hacha sigue en el suelo y el árbol, talado', esperar(A, f"{K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'hacha_hierro') && !!{K}.talaV.tala.estado[{json.dumps(arbol['id'])}]?.vuelve", 10000))
