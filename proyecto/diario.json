@@ -3093,5 +3093,53 @@
   "pruebas": "Lógica en la nube: bien. Prueba nueva (pruebas/prueba_auto_actualizar.mjs, 6/6) con un repositorio de mentira y una copia corta como la del servidor; con MUTAR falla (4 fallos). Encontró un fallo de verdad (la orden de poner al día no respetaba las comillas). Las unidades de systemd, sin errores en systemd-analyze. Solo cambian el servidor y su prueba: los grupos de navegador no se han pasado. No comprobado: en la máquina de Hetzner de verdad.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T10:41:24+01:00",
+  "fin": "2026-10-31T10:48:03+01:00",
+  "titulo": "La isla del rey y la ciudad NPC de Strandvang, en el GDD (chat con valravnx)",
+  "hito": "mundo",
+  "hecho": [
+   "Whitholm es la isla del rey y está cartografiada: al llegar te dan el mapa del rey. El continente (Kinland) está por explorar y la cartografía sirve para él.",
+   "Strandvang (comarca E) es dominio del rey: neutral, sin PvP y fuera del sistema de clanes. Ahí se vive con el mojón normal; las otras siete comarcas siguen siendo de los clanes.",
+   "Una sola ciudad NPC, en Strandvang: no es para vivir; se va a comprar (metal, herramientas, carros, animales), vender lo que sobra de la cosecha, contratar NPCs, quedar con otros y hacer duelos contra NPCs. Cambia lo decidido el 27 oct («sin ciudades NPC»).",
+   "Mojones: uno por personaje en la isla; en el continente, hasta tres más en total cuando se llegue en barco.",
+   "Los mercaderes ambulantes salen de la ciudad con sus mercancías y son raros. Los torneos y las ferias se celebran en la ciudad.",
+   "GDD cambiado en español, inglés y ruso, con la huella nueva."
+  ],
+  "pruebas": "Solo cambia el diseño; la web se genera sin errores (comprueba las traducciones y las huellas).",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T10:50:46+01:00",
+  "fin": "2026-10-31T10:51:57+01:00",
+  "titulo": "El roadmap al día con la isla del rey y la ciudad de Strandvang (chat con valravnx)",
+  "hito": "mundo",
+  "hecho": [
+   "«El juego en el mundo de verdad»: dos tareas nuevas, el mapa del rey (se lleva desde que apareces, con la tecla M o un botón en el móvil) y Strandvang sin PvP entre jugadores, por el servidor.",
+   "«Tierras y familias»: un mojón por personaje en Whitholm, y Strandvang fuera de los clanes (sin centro, sin señor, sin renta y sin asedio).",
+   "«Economía y NPCs»: ahora gira en torno a la ciudad del rey, con el mercado, contratar NPCs, los duelos en la liza y los mercaderes ambulantes que salen de la ciudad.",
+   "«Mundo»: el boceto de la ciudad en Strandvang, para revisarlo.",
+   "«Navegación» y «Cartografía» pasan a ser para el continente, sin mapa y por explorar; «PvP» anota que en Strandvang no hay.",
+   "La decisión pendiente de las comarcas de inicio queda solo para Motdale y Breiddal."
+  ],
+  "pruebas": "Solo cambia el roadmap; la web se genera sin errores, con todo traducido.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T09:24:25+00:00",
+  "fin": "2026-10-31T10:58:44+00:00",
+  "titulo": "Hito 2: animaciones para cargar (carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Buscadas animaciones libres para uso comercial de cargar: en las bibliotecas de Quaternius (CC0) solo hay empujar (Push_Loop, en la primera, versión Standard), coger algo de una mesa con una mano (PickUp_Table) y andar con algo en brazos (Walk_Carry_Loop, que el taller ya tenía). Se miraron los 45 clips de la primera y los 134 de la segunda: no hay llevar al hombro ni arrastrar.",
+   "Push_Loop y PickUp_Table pasadas al esqueleto del taller (hombre y mujer) con pasar_animaciones.mjs, junto con las 39 extra de antes y con las mismas correcciones: recursos nuevos en recursos/personajes/taller-anim-v2/ (unos 1,1 MB por cuerpo), con su procedencia, licencia y la huella del archivo de origen en PROCEDENCIA.md. La v1 no se toca.",
+   "En el visor de personaje salen como «Empujar» y «Coger de una mesa» cuando se cargan las de la v2 (?animMH=…/taller-anim-v2/); el juego sigue con la v1 hasta que las use la carretilla o la rastra. Textos en inglés y ruso.",
+   "Decisión pendiente para valravnx: de dónde salen llevar al hombro y arrastrar (la base de captura de movimiento de la CMU, hacerlas en el taller a partir de las que hay o dejarlas para más adelante); tarea nueva en espera.",
+   "Lo que aún está mal: al empujar, las manos van algo más altas que en el original (a la altura de la cabeza; el cuerpo del taller tiene otras proporciones) y la falda del vestido se abre como un pantalón al agacharse (el vestido sigue a las piernas); «coger de una mesa» es un gesto de una mano, no sirve para levantar algo pesado."
+  ],
+  "pruebas": "En la nube, la batería entera: bien salvo «jugar en línea» y «duelo en línea» (exentos hasta la fase 2) y «lo que llevas en línea», que falló esperando a que cayera el árbol en el otro jugador y pasó al repetirla sola. Antes, el PC de valravnx devolvió todos los grupos con fallo en 0,1 min y la vuelta a la nube no se pudo pedir porque el nombre de la rama pasaba de 255 caracteres (lo arregla el carril B en su rama); se lanzó todo en la nube con SOLO_NUBE=1. Pruebas nuevas: animaciones para cargar (lógica, 14/14; con MUTAR=1, 6 fallos) y en el navegador (PC y móvil, hombre y mujer; con MUTAR=1, 16 fallos). Capturas miradas de frente y de lado.",
+  "capturas": "capturas/anim-carga-v1",
+  "estado": "ok"
  }
 ]

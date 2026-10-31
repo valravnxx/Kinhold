@@ -427,7 +427,7 @@
    "num": "1i",
    "estado": "en_curso",
    "nombre": "El juego en el mundo de verdad",
-   "jugable": "El personaje aparece en su región de Kinland y anda por el mundo de verdad, cargado por trozos y fluido en el móvil; ahí construye (nivelando en ladera), recoge lo que da cada sitio y pelea, con el servidor sabiendo del mundo.",
+   "jugable": "El personaje aparece en Whitholm, la isla del rey, con el mapa del rey, y anda por el mundo de verdad, cargado por trozos y fluido en el móvil; ahí construye (nivelando en ladera), recoge lo que da cada sitio y pelea (en Strandvang, solo contra NPCs), con el servidor sabiendo del mundo.",
    "nota": "Fase 1 de la revisión del 29 oct (aprobada por valravnx): une el mapa con la demo. Reúne «Andar por el mundo de verdad» y «Que aguante en el móvil» (del hito Mundo), el terreno por trozos (del hito de arte) y nivelar para cimientos (del hito de cavar). Lo llevan los carriles.",
    "tareas": [
     {
@@ -512,6 +512,16 @@
      "estado": "pendiente"
     },
     {
+     "nombre": "El mapa del rey (valravnx, 31 oct): al aparecer en Whitholm ya lo llevas; se abre con una tecla (M) o un botón en el móvil y enseña la costa, las comarcas con su nombre, los ríos, la ciudad de Strandvang y dónde estás tú; sin viaje rápido",
+     "estado": "en_curso",
+     "inicio": "2026-10-31T10:53:09+01:00",
+     "rama": "trabajo/20261031-1100-mapa-rey"
+    },
+    {
+     "nombre": "Strandvang, tierras del rey (valravnx, 31 oct): en la comarca E nadie puede herir a otro jugador (el servidor rechaza el golpe, con su autor) y se avisa al entrar y al salir; los duelos contra NPCs sí valen",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
     },
@@ -520,6 +530,12 @@
      "estado": "en_curso",
      "inicio": "2026-10-31T05:00:43+00:00",
      "rama": "trabajo/20261031-0500-volver"
+    },
+    {
+     "nombre": "Tejados pisables y menú de Usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en Usar (o dejándolo pulsado en el móvil), se elige qué usar si hay varias cosas al alcance",
+     "estado": "en_curso",
+     "inicio": "2026-10-31T10:05:51+00:00",
+     "rama": "trabajo/20261031-1006-tejados"
     }
    ]
   },
@@ -620,9 +636,14 @@
     },
     {
      "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T09:24:25+00:00",
-     "rama": "trabajo/20261031-0924"
+     "rama": "trabajo/20261031-0924",
+     "fin": "2026-10-31T10:58:44+00:00"
+    },
+    {
+     "nombre": "Animaciones de llevar al hombro y de arrastrar: no están en las bibliotecas de Quaternius; sacarlas de donde decida valravnx y pasarlas al esqueleto del taller",
+     "estado": "espera_decision"
     },
     {
      "nombre": "Lo que llevas se ve puesto en el personaje del taller: el cinturón y lo que cuelga de él, el leñero o la mochila a la espalda, el saco al hombro y lo que tienes en las manos, con el estilo v5. Capturas de cerca para valravnx",
@@ -752,7 +773,7 @@
    "id": "tierras",
    "num": "13",
    "nombre": "Tierras y familias",
-   "jugable": "Mojones (tu casa: radio de exclusión, mantenimiento y deterioro) y, aparte, los clanes en las comarcas: el centro del castillo toma su zona y, el primero, la comarca entera; los clanes con zona en una comarca con señor son sus vasallos; renta en moneda por el trabajo en la comarca y su corte por atacar a quien trabaja o a un vasallo. Peajes, familias, alianzas y escudos de armas.",
+   "jugable": "Mojones (tu casa: uno por personaje en Whitholm, con radio de exclusión, mantenimiento y deterioro) y, aparte, los clanes en las comarcas (todas menos Strandvang, que es del rey): el centro del castillo toma su zona y, el primero, la comarca entera; los clanes con zona en una comarca con señor son sus vasallos; renta en moneda por el trabajo en la comarca y su corte por atacar a quien trabaja o a un vasallo. Peajes, familias, alianzas y escudos de armas.",
    "estado": "pendiente",
    "tareas": [
     {
@@ -761,9 +782,17 @@
      "inicio": "2026-10-30T11:37:13+01:00",
      "rama": "trabajo/20261030-1135-clanes",
      "fin": "2026-10-30T11:39:15+01:00"
+    },
+    {
+     "nombre": "Un mojón por personaje en Whitholm (valravnx, 31 oct): la lógica con autor no deja poner un segundo; en el continente, hasta tres más en total, cuando se llegue en barco",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Strandvang fuera de los clanes (valravnx, 31 oct): ahí no se puede poner el centro del castillo, no tiene señor, no da renta ni se asedia; se vive con el mojón normal",
+     "estado": "pendiente"
     }
    ],
-   "nota": "Revisión del 29 oct: lo primero (reclamar con el mojón, radio de exclusión, mantenimiento y deterioro) va en la fase 2, con el servidor y las cuentas: es lo que protege lo construido cuando estás fuera. Los clanes en las comarcas, después (diseño decidido por valravnx el 30 oct, GDD apartado 11, «Comarcas, zonas y clanes»; las comarcas y sus zonas ya están en la lógica, src/logica/comarcas.js). Al planificar el hito, cada paso con su prueba: el centro y su zona; el señor de la comarca y los vasallos; la renta (lógica pura con autor, en el servidor); el corte de renta; el mapa con los estandartes."
+   "nota": "Revisión del 29 oct: lo primero (reclamar con el mojón, radio de exclusión, mantenimiento y deterioro) va en la fase 2, con el servidor y las cuentas: es lo que protege lo construido cuando estás fuera. Los clanes en las comarcas, después (diseño decidido por valravnx el 30 oct, GDD apartado 11, «Comarcas, zonas y clanes»; las comarcas y sus zonas ya están en la lógica, src/logica/comarcas.js). Al planificar el hito, cada paso con su prueba: el centro y su zona; el señor de la comarca y los vasallos; la renta (lógica pura con autor, en el servidor); el corte de renta; el mapa con los estandartes. Valravnx, 31 oct: un mojón por personaje en Whitholm (hasta tres más en el continente) y Strandvang queda fuera de los clanes."
   },
   {
    "id": "arte",
@@ -1101,6 +1130,10 @@
      "estado": "pendiente"
     },
     {
+     "nombre": "La ciudad del rey en Strandvang (valravnx, 31 oct): dónde está en la comarca E y cómo es, con el estilo v5 (cerca o muralla, plaza del mercado, liza, casas y muelle), en boceto para que valravnx la revise",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
     },
@@ -1147,6 +1180,20 @@
      "inicio": "2026-10-30T05:56:35+01:00",
      "rama": "trabajo/20261030-0556-veta",
      "fin": "2026-10-30T07:10:35+01:00"
+    },
+    {
+     "nombre": "La isla del rey y la ciudad NPC de Strandvang, en el GDD",
+     "estado": "hecho",
+     "inicio": "2026-10-31T10:41:24+01:00",
+     "rama": "trabajo/20261031-1040-isla-del-rey",
+     "fin": "2026-10-31T10:48:03+01:00"
+    },
+    {
+     "nombre": "El roadmap al día con la isla del rey y la ciudad de Strandvang",
+     "estado": "hecho",
+     "inicio": "2026-10-31T10:50:46+01:00",
+     "rama": "trabajo/20261031-1052-roadmap-isla",
+     "fin": "2026-10-31T10:51:57+01:00"
     }
    ],
    "lleva": "chat",
@@ -1490,15 +1537,42 @@
    "nombre": "PvP online y protección offline",
    "jugable": "Combate y asedio entre jugadores; reglas de guerra.",
    "estado": "pendiente",
-   "tareas": []
+   "tareas": [],
+   "nota": "Valravnx, 31 oct: en Strandvang, la comarca del rey, no hay PvP; en las otras siete comarcas de Whitholm, sí."
   },
   {
    "id": "economia",
    "num": "14",
    "nombre": "Economía y NPCs",
-   "jugable": "Encargos y moneda, puestos sin conexión, tomos, NPCs ambulantes a sueldo, centinelas y mensajeros; la renta de las comarcas llega en moneda y se gasta con los NPCs.",
+   "jugable": "La ciudad del rey en Strandvang: mercado (comprar metal, herramientas, carros y animales; vender lo que sobra), contratar NPCs y duelos en la liza. Encargos y moneda, puestos sin conexión, tomos, NPCs ambulantes a sueldo, centinelas y mensajeros; la renta de las comarcas llega en moneda y se gasta con los NPCs.",
    "estado": "pendiente",
-   "tareas": []
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD (la comarca del rey y su ciudad, los NPCs y los mercaderes) y del documento de sistemas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Mercado de la ciudad del rey: comprar metal, herramientas mejores, carros y animales, y vender lo que sobra de la cosecha y demás por moneda; cada compra y venta con su autor, por el servidor",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Contratar NPCs en la ciudad del rey, a sueldo, como dice el GDD",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Duelos contra NPCs en la liza de la ciudad, para practicar (el rival del combate en el mundo, con su IA)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Mercaderes ambulantes: salen de la ciudad del rey con sus mercancías y van andando a los asentamientos; son raros",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "Desde el 31 oct (valravnx) hay una ciudad NPC, la del rey, en Strandvang (GDD, «La comarca del rey y su ciudad»): no es para vivir, sino para comprar, vender, contratar, quedar y practicar. Cambia lo del 27 oct («sin ciudades NPC»)."
   },
   {
    "id": "caballos",
@@ -1520,17 +1594,19 @@
    "id": "navegacion",
    "num": "16",
    "nombre": "Navegación",
-   "jugable": "Astillero, barcos, navegar con otros.",
+   "jugable": "Astillero, barcos, navegar con otros; con barcos grandes se llega al continente (Kinland fuera de Whitholm), sin mapa y por explorar.",
    "estado": "pendiente",
-   "tareas": []
+   "tareas": [],
+   "nota": "Valravnx, 31 oct: Whitholm es la isla del rey y el resto de Kinland, el continente, está por explorar; no se llega antes de tener barcos grandes. Allí se podrán poner hasta tres mojones más en total."
   },
   {
    "id": "cartografia",
    "num": "17",
    "nombre": "Cartografía",
-   "jugable": "Mesa de cartógrafo y mapas como objetos.",
+   "jugable": "Mesa de cartógrafo y mapas del continente como objetos (Whitholm ya va con el mapa del rey).",
    "estado": "pendiente",
-   "tareas": []
+   "tareas": [],
+   "nota": "Valravnx, 31 oct: la cartografía es para el continente, que está sin mapa; Whitholm, la isla del rey, ya está cartografiada."
   }
  ],
  "prototipos": [
@@ -2872,9 +2948,14 @@
    "hito": "tierras"
   },
   {
-   "pregunta": "Las comarcas de inicio (Motdale, Breiddal y Strandvang): ¿las puede tomar un clan? La propuesta de la v0.3 decía que no hubiera reclamaciones cerca de las zonas de inicio.",
+   "pregunta": "Las comarcas de inicio Motdale y Breiddal: ¿las puede tomar un clan? La propuesta de la v0.3 decía que no hubiera reclamaciones cerca de las zonas de inicio. (Strandvang no: es del rey, valravnx 31 oct.)",
    "desde": "2026-10-30",
    "hito": "tierras"
+  },
+  {
+   "pregunta": "Animaciones de llevar al hombro y de arrastrar: no hay ninguna en las bibliotecas libres de Quaternius (se miraron los 45 clips de la primera y los 134 de la segunda). Opciones: (a) la base de captura de movimiento de la CMU (gratis y se puede usar en un juego que se venda, pero no revender los datos; pide citarla; esqueleto distinto y sin dedos, hay que limpiarla); (b) hacerlas en el taller a partir de las que hay (andar con algo en brazos, empujar), moviendo brazos y tronco por código; (c) dejarlas para más adelante y usar «andar con algo en brazos» también para el tronco al hombro. ¿Cuál?",
+   "desde": "2026-10-31",
+   "hito": "equipo"
   }
  ]
 }

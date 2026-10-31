@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-31T09:24:25+00:00",
-  "tarea": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
-  "hito": "equipo",
-  "rama": "trabajo/20261031-0924"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-31T08:58:36+00:00",
   "tarea": "Herramienta en la mano al trabajar (visto en la revisión del 30 oct): al picar el personaje no lleva pico",
@@ -22,5 +17,17 @@
   "tarea": "Cuatro direcciones y ataque comprometido (valravnx, 31 oct): alto, izquierda, derecha y abajo para clavar (fuera el tajo bajo y el centro); el escudo para todo lo que viene de frente sin elegir lado; el golpe no cambia de dirección al cargarlo, y el botón de parar lo cancela con una finta (para parar o para empezar otro golpe)",
   "hito": "duelo",
   "rama": "trabajo/20261031-1005-cuatro"
+ },
+ "chat:trabajo/20261031-1100-mapa-rey": {
+  "inicio": "2026-10-31T10:53:09+01:00",
+  "tarea": "El mapa del rey (valravnx, 31 oct): al aparecer en Whitholm ya lo llevas; se abre con una tecla (M) o un botón en el móvil y enseña la costa, las comarcas con su nombre, los ríos, la ciudad de Strandvang y dónde estás tú; sin viaje rápido",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261031-1100-mapa-rey"
+ },
+ "chat:trabajo/20261031-1006-tejados": {
+  "inicio": "2026-10-31T10:05:51+00:00",
+  "tarea": "Tejados pisables y menú de Usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en Usar (o dejándolo pulsado en el móvil), se elige qué usar si hay varias cosas al alcance",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261031-1006-tejados"
  }
 }

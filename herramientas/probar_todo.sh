@@ -76,6 +76,7 @@ paso "Taller: el nacimiento del pelo" node pruebas/prueba_nacimiento_pelo.mjs
 paso "Taller: tintes de la ropa y blasón" node pruebas/prueba_tintes.mjs
 paso "Hechura de la ropa (material, corte y tejido)" node pruebas/prueba_hechura.mjs
 paso "Niveles de detalle de los personajes" node pruebas/prueba_detalle.mjs
+paso "Animaciones para cargar (taller-anim-v2)" node pruebas/prueba_anim_carga.mjs
 paso "Taller: versiones fijadas" python3 herramientas/taller/comprobar_taller.py --prueba
 paso "Capturas: solo las del cambio" node pruebas/prueba_capturas.mjs
 paso "Unión del diario y las traducciones" node pruebas/prueba_unir_json.mjs
@@ -95,6 +96,7 @@ paso "Navegador: combate" python3 pruebas/prueba_combate_navegador.py dist/kinho
 paso "Navegador: combate en el mundo" python3 pruebas/prueba_combate_mundo_navegador.py dist/kinhold_hito1.html "$C/combate_mundo"
 paso "Navegador: pruebas de estilo" python3 pruebas/prueba_estilo_navegador.py dist/kinhold_estilo.html "$C/estilo"
 paso "Navegador: personaje" python3 pruebas/prueba_personaje_navegador.py dist/kinhold_personaje.html "$C/personaje"
+paso "Navegador: animaciones para cargar" python3 pruebas/prueba_anim_carga_navegador.py dist/kinhold_personaje.html "$C/anim_carga"
 paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html "$C/demo"
 paso "Navegador: la demo en el mundo (Whitholm)" python3 pruebas/prueba_mundo_navegador.py dist/kinhold_demo.html "$C/mundo"
 paso "Navegador: construir a la altura del suelo (ladera de Whitholm)" python3 pruebas/prueba_nivelado_navegador.py dist/kinhold_demo.html "$C/nivelado"

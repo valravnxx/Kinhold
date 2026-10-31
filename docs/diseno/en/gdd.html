@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="c6788ef4433305a1684cac2fb56e4c7bf3148bed">
+<meta name="kinhold-origen" content="13c235f6f1277fc85460bb5de021299426a8e0bf">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.9</title>
 <style>
@@ -61,7 +61,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Version 0.9 · 26 Oct 2026 · Expansion for a finished game: no NPC cities, districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
+  <div class="sub">Version 0.9 · 26 Oct 2026 (31 Oct: the king's island and its city) · Expansion for a finished game: districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDED</span> you said so
     <span class="tag method">METHOD</span> how to do it technically
@@ -187,7 +187,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 
 <section id="viaje">
 <h2>5. Travel, map and sailing</h2>
-<p><span class="tag ok">DECIDED</span>The map is discovered by exploring. <b>Endgame cartography:</b> a cartographer's table to draw what has been explored on paper; the map is an item that can be copied, sold or stolen from you.</p>
+<p><span class="tag ok">DECIDED</span><b>Whitholm is the king's island, and it is mapped</b> (valravnx, 31 Oct): when you arrive you are given the king's map, with the coast, the districts, the rivers and the city of Strandvang; nobody gets lost on the island. <b>The continent (Kinland) is unexplored</b>: there is no map of it, it is reached by ship and it has to be mapped. <b>Endgame cartography:</b> a cartographer's table to draw on paper what has been explored of the continent; the map is an item that can be copied, sold or stolen from you.</p>
 <p><span class="tag ok">DECIDED</span>Paths form through use. Buildable bridges in various materials and shapes.</p>
 <p><span class="tag ok">DECIDED</span>Sailing in a late phase: design ships and sail with others.</p>
 <div class="box m"><span class="tag method">METHOD</span>
@@ -416,7 +416,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <ul>
   <li>Land grows with what is built on it, not with the number of accounts.</li>
   <li>Land with no activity or upkeep eventually becomes free.</li>
-  <li>Limit on claims per character.</li>
+  <li>Boundary stones: <b>one per character on Whitholm</b>, and on the continent up to three more in all, once it is reached by ship (valravnx, 31 Oct).</li>
   <li>Important veins cannot be hoarded entirely.</li>
   <li>No claims near the starting areas.</li>
 </ul></div>
@@ -478,7 +478,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span><b>Coins are minted only by NPCs.</b> They are earned through <b>NPC orders</b>: they ask for what they need and you bring it; they do not buy whatever you want to sell.</p>
 <p><span class="tag ok">DECIDED</span>Market stalls that work while you are offline.</p>
 <p><span class="tag ok">DECIDED</span><b>NPCs in your service, like the mercenaries of the era:</b> you have to get them the gear they will wear, their food and their pay; you keep them as long as you can support them. Comfort affects these NPCs. Sentries work this way.</p>
-<p><span class="tag ok">DECIDED</span>No NPC villages or bandits at first.</p>
+<p><span class="tag ok">DECIDED</span>No NPC villages or bandits at first; the only NPC city is the king's, in Strandvang (31 Oct).</p>
 <div class="box p"><span class="tag prop">PROPOSAL</span>
 <ul>
   <li>Between players: barter or coin, as they wish.</li>
@@ -490,7 +490,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="box p"><span class="tag ok">APPROVED</span> How they arrive and what types there are:
 <ul>
   <li><b>Arrival:</b> every so often a traveller passes through your settlement (you need a boundary stone for them to come). They stay for a while; if you do not hire them, they move on. With a higher boundary stone level they come more often and in more types.</li>
-  <li><b>Where they come from:</b> they appear out of sight, about 2 km from any player, and walk to the settlement. There are no NPC cities. A merchant only stays permanently in a settlement if a system for it is created, like the one for hiring mercenaries; otherwise they trade and move on.</li>
+  <li><b>Where they come from:</b> they leave the king's city with their goods and walk to the settlements; they are rare and uncommon (valravnx, 31 Oct): normally you go to the city. A merchant only stays permanently in a settlement if a system for it is created, like the one for hiring mercenaries; otherwise they trade and move on.</li>
   <li><b>Types:</b>
     <ul>
       <li><b>Mercenary / sentry:</b> guards and defends your lands.</li>
@@ -574,7 +574,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h2>20. Expansion for a finished game</h2>
 <p class="note">Approved by valravnx on 26 Oct from the analysis of what was missing for a finished game. In brackets, the milestone where each item is planned.</p>
 <h3>World</h3>
-<p><span class="tag ok">DECIDED</span><b>No NPC cities</b> (decided on 27 Oct): they would break the survival feeling of a world to explore. Dealing with NPCs comes with the travelling merchants and mercenaries, who appear about 2 km from any player and walk to the settlements (section 16). (Milestone 14)</p>
+<p><span class="tag ok">DECIDED</span><b>The king's district and its city</b> (valravnx, 31 Oct; replaces the 27 Oct decision, «no NPC cities»): <b>Strandvang</b> (district E of Whitholm, one of the starting ones) is the king's domain, governed by NPCs and neutral: <b>no PvP</b> and outside the clan system (no seat can be placed, it can't be taken, it gives no income and there are no sieges). You live there with the ordinary boundary stone (house, crops, animals), so people who play peacefully feel at home. The other seven districts remain the clans', with PvP. Strandvang holds <b>the only NPC city</b>: not a place to live, but where you go to buy (metal, better tools, carts, animals) and sell (surplus harvest and so on, for coin), hire NPCs, meet others and practise in duels against NPCs, and whatever gets added. (Milestone 14)</p>
 <p><span class="tag ok">DECIDED</span><b>Named districts:</b> each region is divided into districts that follow the terrain (a valley, a river plain, a range), named in the region's style. valravnx reviews and adjusts the world map and its names by hand. (Milestone 10)</p>
 <p><span class="tag ok">DECIDED</span>The world is <b>never reset</b>. (Milestone 11)</p>
 <p><span class="tag ok">DECIDED</span><b>Weather:</b> clear, cloudy, rain, snow (north and winter) and fog, over large areas and by season. In the north, rivers freeze in winter and can be crossed on foot. (Milestone 4)</p>
@@ -594,7 +594,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span><b>Trade window:</b> each side puts in their goods and both confirm; nothing changes hands until both accept. (Milestone 14)</p>
 <p><span class="tag ok">DECIDED</span><b>Ruling a district:</b> the family with the highest-level boundary stone in a district rules it; its coat of arms appears over it on maps and it can rename it. It loses it if another family overtakes it or knocks down its stone. <b>Titles</b> by what is ruled: lord, baron, count, king of a country. (Milestone 13)</p>
 <p><span class="tag ok">DECIDED</span><b>Named settlements:</b> when placing a boundary stone the settlement is given a name; it is the one shown on the map and the one messengers are sent to. (Milestone 13)</p>
-<p><span class="tag ok">DECIDED</span><b>The map as a game board</b>, keeping that it is discovered by exploring: on explored ground and on cartographer's maps you see the families' coats of arms over their lands and districts, in green, blue or red (yours, ally, enemy), with alerts for fighting on your lands and for boundary stones whose upkeep is about to run out. No fast travel. (Milestones 13 and 17)</p>
+<p><span class="tag ok">DECIDED</span><b>The map as a game board</b>: on the king's map (Whitholm) and on explored ground and cartographer's maps (the continent) you see the families' coats of arms over their lands and districts, in green, blue or red (yours, ally, enemy), with alerts for fighting on your lands and for boundary stones whose upkeep is about to run out. No fast travel. (Milestones 13 and 17)</p>
 <h3>Technical and production</h3>
 <p><span class="tag method">METHOD</span>Every process (tanning, crops, charcoal kiln, drying rack, decay, trees) is calculated from elapsed time, so the server doesn't simulate every minute. (Milestone 11)</p>
 <p><span class="tag method">METHOD</span>A shared pathfinding system for animals, livestock and NPCs (navigation meshes by chunks), in the pure logic; first with wildlife. (Milestone 7)</p>
@@ -605,7 +605,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h3>Later on (cosmetic and expansion)</h3>
 <p><span class="tag ok">DECIDED</span><b>Home:</b> tableware and pottery on the table, woven tapestries with designs (with the same editor as the coat of arms), curtains, cushions and furs, candles, oil lamps and candelabras, hunting and fishing trophies, flowerpots, strings of garlic and onions, weapon racks and a mannequin for armour.</p>
 <p><span class="tag ok">DECIDED</span><b>Social life:</b> board games playable between players (tables, alquerque, dice), simple instruments (flute, drum, hurdy-gurdy), emotes (sit, wave, bow, toast) and a cat as a pet.</p>
-<p><span class="tag ok">DECIDED</span><b>Gatherings:</b> fencing tournaments and seasonal fairs with merchants from other regions; where they are held is still to be decided, now that there are no NPC cities.</p>
+<p><span class="tag ok">DECIDED</span><b>Gatherings:</b> fencing tournaments and seasonal fairs with merchants from other regions, in the king's city (Strandvang).</p>
 <p><span class="tag ok">DECIDED</span><b>Siege and farm:</b> scaling ladders and mantlets, and fire spreading from one piece to another (milestone 6); water troughs, feeders, wells and irrigation ditches (milestone 9).</p>
 </section>
 
