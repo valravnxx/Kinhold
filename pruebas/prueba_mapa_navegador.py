@@ -140,7 +140,8 @@ with sync_playwright() as p:
             # el agua se mueve: dos capturas seguidas mirando al río, con la cámara quieta, tienen que diferir
             if os.environ.get('MUTAR') or os.environ.get('MUTAR_AGUA'): pg.evaluate('window.__cerca.pararAgua = true')   # MUTAR_AGUA=1: solo para el agua
             pg.evaluate(f"window.__cerca.camara(0.6, 14, {r['dir']} + 1.57)"); pg.wait_for_timeout(1500)
-            pg.screenshot(path=f'{SALIDA}/{nombre}_10a_rio_de_cerca.png', timeout=240000); pg.wait_for_timeout(1200)
+            # (3 s entre las dos: en la nube va a pocos fotogramas por segundo y con 1,2 s el agua cambiaba justo el 1 %, a veces menos)
+            pg.screenshot(path=f'{SALIDA}/{nombre}_10a_rio_de_cerca.png', timeout=240000); pg.wait_for_timeout(3000)
             pg.screenshot(path=f'{SALIDA}/{nombre}_10b_rio_de_cerca.png', timeout=240000)
             from PIL import Image, ImageChops
             a = Image.open(f'{SALIDA}/{nombre}_10a_rio_de_cerca.png').convert('L'); b = Image.open(f'{SALIDA}/{nombre}_10b_rio_de_cerca.png').convert('L')

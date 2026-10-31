@@ -17,6 +17,8 @@ import { conectarEnLinea } from './en_linea.js';
 import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
+import { montarMapaRey } from './mapa_rey.js';
+import { crearComarcas } from '../logica/comarcas.js';
 import { dibujarRetrato } from './retrato.js';
 import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
 import { vestidoDe, rasgosPrenda } from '../logica/hechura.js';
@@ -750,7 +752,7 @@ function piezaBajo(clientX, clientY) {
 // (o cualquier otra) W escribe «ц» y antes no movía (lo vio valravnx el 27 oct). Lo que no está en la tabla
 // (+, - y demás) sigue por la letra. Al perder el foco se sueltan todas, para que ninguna se quede pulsada.
 const TECLAS_FISICAS = {
-  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f', KeyI: 'i',
+  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f', KeyI: 'i', KeyM: 'm',
   ArrowUp: 'arrowup', ArrowDown: 'arrowdown', ArrowLeft: 'arrowleft', ArrowRight: 'arrowright',
   ShiftLeft: 'shift', ShiftRight: 'shift', PageUp: 'pageup', PageDown: 'pagedown', Escape: 'escape',
   NumpadAdd: '+', NumpadSubtract: '-',
@@ -771,7 +773,8 @@ addEventListener('keydown', (e) => {
   if (k === 'pagedown' || k === '-') cambiarPlanta(-1);
   if (k === 'f') usar();
   if (k === 'i') panelInventario.alternar();
-  if (k === 'escape') cambiarModo('mover');
+  if (k === 'm' && mapaRey) mapaRey.alternar();
+  if (k === 'escape') { if (mapaRey && mapaRey.abierto) mapaRey.cerrar(); else cambiarModo('mover'); }
 });
 addEventListener('keyup', (e) => {
   teclas.delete(nombreTecla(e));
@@ -1645,6 +1648,7 @@ function pasoMundo() {
   if (mundoJ.listo !== mundoListo) {
     mundoListo = mundoJ.listo;
     const av = $('avisoMundo'); if (av) av.hidden = mundoListo;
+    if (mundoListo && mapaRey) mapaRey.preparar();   // el mapa del rey se pinta a pasos, ya con el mundo a la vista
   }
 }
 if (mundoJ) {
@@ -1845,6 +1849,13 @@ $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltad
 const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario,
   accionArcon: (a) => { const r = accion(a); if (r.ok) { guardar(); actualizarUI(); } return r; }, materialesArcon: () => mundo.materiales,
   alCambiar: () => { pintarLlevas(); vestir(); }, retrato: (lienzo) => dibujarRetrato(renderer, jugador.mh, lienzo) });
+// El mapa del rey (valravnx, 31 oct): Whitholm, la isla del rey, cartografiada; lo llevas desde que apareces y se abre con
+// M o el botón «Mapa» (src/juego/mapa_rey.js). Solo en el mundo de verdad. Al abrirlo se suelta el ratón (el combate lo
+// coge) y las teclas pulsadas, para no seguir andando sin ver.
+const mapaRey = mundoJ ? montarMapaRey({ paisaje: mundoJ.paisaje, comarcas: crearComarcas(MUNDO.mapa), esTactil: matchMedia('(pointer: coarse)').matches,
+  posicion: () => ({ x: pj.x + mundoJ.salida.x, z: pj.z + mundoJ.salida.z, rot: pj.rot }),
+  alAbrir: () => { if (document.pointerLockElement) document.exitPointerLock(); teclas.clear(); cerrarMenuUsar(); } }) : null;
+if ($('btnMapa')) { $('btnMapa').hidden = !mapaRey; $('btnMapa').onclick = () => mapaRey && mapaRey.alternar(); }
 // El personaje lleva puesto lo que dice el inventario (valravnx, 29 oct: el inventario es el equipo). La ropa elegida
 // en el visor de personaje entra en el inventario una vez por cada elección; después manda el inventario.
 const SEXO = elegido ? elegido.sexo : 'hombre';
@@ -2059,7 +2070,7 @@ window.__kinhold = {
   get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos, talaV, decorado, combate,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
-  mundoJ, get mundoListo() { return mundoListo; }, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
+  mundoJ, get mundoListo() { return mundoListo; }, mapaRey, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado
   nado,
   // los sitios de salida (src/logica/whitholm.js): el común y si uno es de la lista de la salida al azar
