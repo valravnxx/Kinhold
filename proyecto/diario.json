@@ -3429,5 +3429,23 @@
   "pruebas": "En la nube: 25 grupos (sin las de en línea). Todo bien menos «panel del admin» la primera vez: el otro jugador estaba a 39 m y tu flecha lo tapaba en el mapa; en la prueba se pone a 1,7 km y se repitió: bien (30/30). El PC de valravnx no pudo pasar ninguna: «Espacio en disco insuficiente» en su runner; se repitió todo con SOLO_NUBE=1. No comprobado: la prueba de navegador con MUTAR=1 (sí la del servidor). Lo último (el texto del registro de la demo) entró después de la batería; la prueba de idiomas, pasada aquí.",
   "capturas": "capturas/demo-v75",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T20:52:36+00:00",
+  "fin": "2026-10-31T22:26:49+00:00",
+  "titulo": "Hito de arte: cejas y cuello del hombre (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Las cejas salían en bloques porque su calco aprovechaba muy poco la textura: sus trozos del mapa UV de la piel quedan lejos unos de otros (la frente y el párpado) y, al estirar la caja de todos, la ceja ocupaba una tira de 8 píxeles de ancho de los 512 (medido en la taller-v20).",
+   "Arreglo en el taller: los calcos de pelo (cejas, pelo pintado y barbas pintadas) juntan sus islas UV antes de estirarlas; la caja de las cejas pasa a unos 300×290 píxeles en el hombre y lo pintado, del 0,3 % al 3,1 % de la textura.",
+   "La barba corta baja por el cuello hasta la ropa y se va aclarando en unos 4 cm (antes, a los lados acababa 3 cm por encima y quedaba una franja clara de cuello cortada por la túnica); hacia la nuca se acaba poco a poco y no en una raya recta.",
+   "Personajes nuevos en recursos/personajes/taller-v21/. Personaje v34 y demo v76 (la v75 la publicó antes el carril A, con el panel de admin).",
+   "Prueba nueva: los calcos (prueba_calcos.mjs: lo que ocupan las cejas en su textura y la barba en los 3 cm sobre la túnica); con MUTAR=1 mira la taller-v20 y falla en 5 de 8.",
+   "Aún mal: con la barba rala justo encima del cuello de la ropa se ve algo de piel clara entre los pelos; la cola de las cejas de la mujer acaba algo en recto; de tres cuartos, detrás de la mandíbula la barba acaba en una línea algo marcada hacia la nuca.",
+   "El PC de valravnx no pudo pasar pruebas: todos los grupos fallaban al empezar con «Espacio en disco insuficiente» en su disco (carpeta del programa de pruebas). Se pasaron todas en la nube (SOLO_NUBE=1)."
+  ],
+  "pruebas": "En la nube, 24 de 24 grupos correctos (sin las de en línea). Tras unir main (panel de admin, demo v75): logica, demo única, panel del admin y web correctos. Capturas de cerca miradas en PC y móvil (cara del hombre y de la mujer) y comparadas con la revisión del 31 oct. No comprobado: las notas de la versión entraron después de la batería (solo texto; la prueba de idiomas del juego, correcta aquí).",
+  "capturas": "capturas/personaje-v34",
+  "estado": "ok"
  }
 ]
