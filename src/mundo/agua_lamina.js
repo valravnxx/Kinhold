@@ -19,10 +19,10 @@ export function* hacerLaminaAgua({ pai, tramos, cx, cz, x0, z0, n, paso, H, mate
         const k = j * n + i, w = pai.agua(cx + x0 + i * paso, cz + z0 + j * paso, tramos);
         if (w !== null) { W[k] = w; hayAgua = true; } else if (H[k] < 0.3) { W[k] = 0; T[k] = 1; hayAgua = true; }
       }
-      if (j % 8 === 7) yield;
+      if (j % 2 === 1) yield;
     }
     if (hayAgua) {
-      const pa = new Float32Array(n * n * 3), ia = [], fl = new Float32Array(n * n * 2), ho = new Float32Array(n * n), ti = new Float32Array(n * n), ol = new Float32Array(n * n);
+      const pa = new Float32Array(n * n * 3), ia = new Uint32Array((n - 1) * (n - 1) * 6), fl = new Float32Array(n * n * 2), ho = new Float32Array(n * n), ti = new Float32Array(n * n), ol = new Float32Array(n * n);
       for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
         const k = j * n + i, x = x0 + i * paso, z = z0 + j * paso;
         // un vértice seco junto al agua se queda a la altura del agua de al lado: la lámina sigue plana bajo la orilla
@@ -34,15 +34,16 @@ export function* hacerLaminaAgua({ pai, tramos, cx, cz, x0, z0, n, paso, H, mate
         ho[k] = Math.max(0, W[k] - H[k]); ti[k] = T[k];
         if (T[k]) { const borde = Math.min(i, j, n - 1 - i, n - 1 - j) * paso; ol[k] = suave(0.4, 4, ho[k]) * suave(4, 30, borde); }
         else { const co = pai.corriente(cx + x, cz + z, tramos); fl[k * 2] = co.dx * co.vel; fl[k * 2 + 1] = co.dy * co.vel; }
-        if (i === n - 1 && j % 16 === 15) yield;
+        if (i === n - 1 && j % 4 === 3) yield;
       }
+      let ni = 0;
       for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++) {
         const a = j * n + i, b = a + 1, c2 = a + n, d = c2 + 1;
         if (isNaN(W[a]) && isNaN(W[b]) && isNaN(W[c2]) && isNaN(W[d])) continue;
-        ia.push(a, c2, b, b, c2, d);
+        ia[ni++] = a; ia[ni++] = c2; ia[ni++] = b; ia[ni++] = b; ia[ni++] = c2; ia[ni++] = d;
       }
       yield;
-      const ga = new THREE.BufferGeometry(); ga.setAttribute('position', new THREE.BufferAttribute(pa, 3)); ga.setIndex(ia); ga.computeVertexNormals();
+      const ga = new THREE.BufferGeometry(); ga.setAttribute('position', new THREE.BufferAttribute(pa, 3)); ga.setIndex(new THREE.BufferAttribute(ia.subarray(0, ni), 1)); ga.computeVertexNormals();
       // la orilla exacta: hondura con signo (negativa en seco, con el agua de al lado) y, en cada lado de la rejilla que
       // cruza la orilla, dónde corta el agua; la distancia sale de ahí (no de los puntos), y la línea queda lisa
       const seco = new Uint8Array(n * n), hs = new Float32Array(n * n), sem = new Float32Array(n * n).fill(NaN);

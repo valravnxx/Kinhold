@@ -21,7 +21,7 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
     const x0 = -LADO_AGUA / 2, z0 = -LADO_AGUA / 2;
     const tramos = paisaje.riosEn(cx - LADO_AGUA, cz - LADO_AGUA, cx + LADO_AGUA, cz + LADO_AGUA);
     const H = new Float32Array(n * n);
-    for (let j = 0; j < n; j++) { for (let i = 0; i < n; i++) H[j * n + i] = altW(cx + x0 + i * PASO, cz + z0 + j * PASO); yield; }
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { H[j * n + i] = altW(cx + x0 + i * PASO, cz + z0 + j * PASO); if (i % 20 === 19) yield; }
     const { malla: m } = yield* hacerLaminaAgua({ pai: paisaje, tramos, cx, cz, x0, z0, n, paso: PASO, H, material });
     nuevo = { malla: m, cx, cz };
   }
