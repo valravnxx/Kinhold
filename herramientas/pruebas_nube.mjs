@@ -42,10 +42,7 @@ console.log(`Pruebas de ${rama} (${sha.slice(0, 7)})${process.argv.length > 2 ? 
 async function lanzar(donde, grupos) {
   const id = `${ahora().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
   const enTodos = donde === 'pc' ? todos.filter(g => g !== 'logica') : todos;
-  const iguales = (a, b) => a.length === b.length && b.every(g => a.includes(g));
-  const navegador = todos.filter(g => g !== 'logica');
-  // «navegador»: todos menos «logica» (con todos los nombres, la rama pasaba de los 255 caracteres que deja GitHub)
-  const nombre = iguales(grupos, enTodos) ? 'todos' : iguales(grupos, navegador) ? 'navegador' : grupos.join('+');
+  const nombre = grupos.length === enTodos.length && enTodos.every(g => grupos.includes(g)) ? 'todos' : grupos.join('+');
   const pedido = `${donde === 'pc' ? 'pc' : 'nube'}-pedido/${id}/${nombre}`;
   sh('git', ['push', '-q', 'origin', `HEAD:refs/heads/${pedido}`]);
   let run = null;
