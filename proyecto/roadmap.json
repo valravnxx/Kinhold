@@ -1004,9 +1004,10 @@
     },
     {
      "nombre": "Herramienta en la mano al trabajar (visto en la revisión del 30 oct): al picar el personaje no lleva pico",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T08:58:36+00:00",
-     "rama": "trabajo/20261031-0858"
+     "rama": "trabajo/20261031-0858",
+     "fin": "2026-10-31T15:01:20+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -2106,6 +2107,13 @@
      "archivo": "jugar/demo/v68.html",
      "capturas": "capturas/demo-v68",
      "notas": "Los tejados terminados se pisan (un tejado entero con un solo andamio) y clic derecho en lo que quieras usar: menú con eso y lo muy cercano (en el móvil, el dedo quieto); el botón derecho ya no gira la cámara"
+    },
+    {
+     "v": "v69",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v69.html",
+     "capturas": "capturas/personaje-v32",
+     "notas": "Herramienta en la mano al trabajar en «Personaje» (personaje v32)"
     }
    ]
   },
@@ -2827,6 +2835,13 @@
      "archivo": "jugar/personaje/v31.html",
      "capturas": "capturas/personaje-v31",
      "notas": "Capa de espalda: ya no sale casi negra y lisa; lana sin teñir más clara, pliegues redondos y hondos de unos 14 cm que empiezan más arriba, el fondo de cada pliegue más oscuro en la tela (se ven también en sombra), y la vista «Espalda» de cuerpo entero. Personajes en taller-v20."
+    },
+    {
+     "v": "v32",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/personaje/v32.html",
+     "capturas": "capturas/personaje-v32",
+     "notas": "Herramienta en la mano al trabajar: el pico al picar y el hacha al talar"
     }
    ]
   },

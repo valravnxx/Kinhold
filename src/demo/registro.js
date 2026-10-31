@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v68 (tejados pisables y clic derecho para usar)';
+export const VERSION_DEMO = 'Demo única · v69 (herramienta en la mano al trabajar)';
 export const REGISTRO_DEMO = [
+  "v69: en «Personaje», al trabajar se lleva la herramienta en la mano (revisión del 30 oct): el pico al picar y el hacha al talar (personaje v32).",
   "v68: los tejados terminados se pisan (valravnx, 31 oct): desde el andamio se sale al alero y se anda por la pendiente hasta la cumbrera, así que un tejado entero se hace con un solo andamio. Antes se atravesaban y caías. Un tejado en obras aún no se pisa.",
   "v68: clic derecho en lo que quieras usar (valravnx, 31 oct): sale un menú junto al puntero con esa cosa y las que están muy cerca de ella (y a tu alcance), para elegir: obras, puertas, chimenea, escaleras y andamios, talar, trocear, coger del suelo y recoger. En el móvil, dejando el dedo quieto encima medio segundo. Usar (F o el botón) sigue haciendo lo de siempre. El botón derecho ya no gira la cámara: la gira la rueda pulsada (o Q y E).",
   "v68, provisional: un tejado se sube andando si su cara está a menos de 0,8 m por encima de tus pies (de golpe, más alto no); «muy cerca» del puntero es a menos de 1,3 m del punto que tocas o a menos de 48 píxeles de la cosa en la pantalla; el dedo quieto, medio segundo.",
