@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (11:18 UTC) — por el chat: ya hay servidor de verdad
+valravnx: «ya hay servidor de verdad, elimina lo de que dije que no, ya se juega en línea». → Fuera la excepción del 30 oct: si fallan «jugar en línea» o «duelo en línea», no se publica, como con cualquier otro grupo. Cambiado en CLAUDE.md.
+
 ### 31 oct 2026 (11:09 UTC) — por el chat: las pruebas en la gráfica del PC fallan siempre
 valravnx: «revisa cómo arreglar el programa que me has hecho para usar mi gráfica en GitHub Actions, da error todo el tiempo en tus pruebas, vamos a dedicarnos a ello un momento». → Tarea del chat en «Infraestructura». Visto en GitHub: desde las 09:07 todos los grupos que cogía su PC fallaban en el primer paso con «bash: command not found» (Git para Windows solo pone `Git\cmd` en el PATH, no su bash).
 
