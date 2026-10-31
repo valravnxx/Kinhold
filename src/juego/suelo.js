@@ -112,6 +112,7 @@ export function crearSuelo({ raiz, altura, almacen, enTierras }) {
     // lo que desaparece pasada la hora se quita (por tiempo transcurrido): se mira cada pocos segundos
     paso() { const t = Date.now(); if (t - ultimo > 5000) { ultimo = t; if (suelo.limpiar(t)) guardarlo(); refrescar(t); } },
     cercano(x, z, dist = 1.6, ahora = Date.now()) { return suelo.cercanos(x, z, ahora, dist)[0] || null; },
+    cercanos(x, z, dist = 1.6, ahora = Date.now()) { return suelo.cercanos(x, z, ahora, dist); },
     // soltar y coger con autor; se guarda en el navegador y se redibuja
     soltar(invs, registro, autor, de, x, z, cantidad, ahora = Date.now()) {
       const r = ejecutarSuelo(suelo, invs, registro, { autor, tipo: 'soltar_suelo', de, x, z, ...(cantidad ? { cantidad } : {}) }, ahora, enTierras);
