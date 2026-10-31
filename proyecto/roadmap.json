@@ -950,9 +950,9 @@
     },
     {
      "nombre": "Capa de espalda (visto en la revisión del 30 oct): sale casi negra y lisa, sin pliegues a la vista",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T03:53:07+00:00",
-     "rama": "trabajo/20261031-0353"
+     "fin": "2026-10-31T08:03:53+00:00"
     },
     {
      "nombre": "Herramienta en la mano al trabajar (visto en la revisión del 30 oct): al picar el personaje no lleva pico",
@@ -1962,6 +1962,13 @@
      "archivo": "jugar/demo/v63.html",
      "capturas": "capturas/demo-v63",
      "notas": "En línea, lo que llevas es lo del servidor: el inventario, soltar y coger del suelo, talar, tronzar, partir y recoger pasan por el servidor con tu autor, y lo que dejas en el suelo y los tocones los ven todos y siguen ahí al volver."
+    },
+    {
+     "v": "v64",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v64.html",
+     "capturas": "capturas/personaje-v31",
+     "notas": "Capa de espalda (como en el personaje v31): lana sin teñir más clara y pliegues redondos y hondos que se ven también en sombra. Personajes en taller-v20."
     }
    ]
   },
@@ -2676,6 +2683,13 @@
      "archivo": "jugar/personaje/v30.html",
      "capturas": "capturas/personaje-v30",
      "notas": "Nacimiento del pelo y cejas: el pelo ya no corta en seco en la frente como un casquete (nace poco a poco y en el borde va pegado a la piel); las cejas asientan en el arco, más pobladas y sin trozos sueltos, en su propio calco con más resolución. Personajes en taller-v19."
+    },
+    {
+     "v": "v31",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/personaje/v31.html",
+     "capturas": "capturas/personaje-v31",
+     "notas": "Capa de espalda: ya no sale casi negra y lisa; lana sin teñir más clara, pliegues redondos y hondos de unos 14 cm que empiezan más arriba, el fondo de cada pliegue más oscuro en la tela (se ven también en sombra), y la vista «Espalda» de cuerpo entero. Personajes en taller-v20."
     }
    ]
   },
