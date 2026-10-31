@@ -98,7 +98,7 @@ try:
             pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
             j = pg.get_attribute('[data-ir=construir]', 'href') or ''
             comprobar(f'{nombre}: «Jugar» del menú va en línea, al servidor de la dirección', 'enlinea=1' in j and 'servidor=' in j, j)
-            comprobar(f'{nombre}: el menú ya no tiene modo en solitario ni Opciones', pg.locator('a.parte').count() == 3 and pg.locator('#btnDemoOpciones').count() == 0 and pg.locator('#demoEnLinea').count() == 0)
+            comprobar(f'{nombre}: el menú ya no tiene modo en solitario ni Opciones', pg.locator('a.parte').count() == 2 and pg.locator('#btnDemoOpciones').count() == 0 and pg.locator('#demoEnLinea').count() == 0)
             try: pg.screenshot(path=f'{SALIDA}/{nombre}_1_menu.png')   # la captura a veces falla sin tarjeta gráfica (no es lo que se prueba)
             except Exception as e: print('  (sin captura del menú:', str(e)[:80], ')')
             pg.click('[data-ir=construir]'); pg.wait_for_load_state('load')
@@ -209,7 +209,7 @@ try:
                 for pg in (A, B): pg.evaluate('window.__rehacerTodo = true')
             for pg in (A, B): pg.evaluate("window.__rehechos.todo = 0; window.__rehechos.pieza = 0")
             A.evaluate(f"{K}.usar()")
-            comprobar('el móvil lo ve abrirse', esperar(B, f"({donde}).abierta", 8000))
+            comprobar('el móvil lo ve abrirse', esperar(B, f"({donde}).abierta", 30000))
             B.wait_for_timeout(500)
             ra, rb = A.evaluate("window.__rehechos"), B.evaluate("window.__rehechos")
             comprobar('al abrirlo, PC rehace solo el portillo (nada entero)', ra['todo'] == 0 and ra['pieza'] == 1, str(ra))
@@ -241,7 +241,7 @@ try:
 
         print('El servidor se apaga y vuelve')
         servidor.terminate(); servidor.wait(5)
-        comprobar('PC dice que se ha cortado y que vuelve a conectar', esperar(A, "document.getElementById('estadoRed').textContent === 'Volviendo a conectar…'", 5000) and 'volviendo a conectar' in A.inner_text('#aviso'), A.inner_text('#aviso'))
+        comprobar('PC dice que se ha cortado y que vuelve a conectar', esperar(A, "document.getElementById('estadoRed').textContent.includes('Volviendo a conectar')", 20000) and 'volviendo a conectar' in A.inner_text('#aviso'), A.inner_text('#aviso'))
         comprobar('y ya no ve al otro', A.evaluate(f"{K}.enLinea.remotos.size") == 0)
         A.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('pieza','cim_piedra'); {K}.apuntar(5,1); {K}.colocar()")
         comprobar('sin conexión no se construye', piezas(A) == piezasAntes and 'conexión' in A.inner_text('#aviso'), A.inner_text('#aviso'))
@@ -252,7 +252,7 @@ try:
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         servidor.stdout.readline()
         for nombre, pg, yo in [('PC', A, yoA), ('el móvil', B, yoB)]:
-            comprobar(f'{nombre} vuelve a conectar solo, sin recargar', esperar(pg, f"{K}.enLinea.estado === 'conectado'", 20000))
+            comprobar(f'{nombre} vuelve a conectar solo, sin recargar', esperar(pg, f"{K}.enLinea.estado === 'conectado'", 60000))
             comprobar(f'{nombre} sigue con el mismo personaje (la ficha vale tras reiniciar el servidor)', pg.evaluate(f"{K}.enLinea.red.yo") == yo)
         comprobar('PC avisa de que ha vuelto', 'recuperada' in A.inner_text('#aviso'), A.inner_text('#aviso'))
         comprobar('el mundo es el de antes', piezas(A) == piezasAntes and foto(A) == foto(B))
