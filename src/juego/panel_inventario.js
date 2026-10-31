@@ -22,7 +22,8 @@ const GRUPOS = [
   ['Cinturones', d => d.lugar === 'cintura'],
   ['A la espalda', d => d.lugar === 'espalda'],
   ['Al hombro', d => d.lugar === 'hombro'],
-  ['Herramientas y armas', d => !d.recurso && !d.lugar && !d.capa],
+  ['Herramientas y armas', d => !d.recurso && !d.lugar && !d.capa && d.tam !== 'E'],
+  ['Para arrastrar', d => !d.recurso && d.tam === 'E'],
   ['Recursos', (d, k) => d.recurso && d.tam !== 'E' && !(k in MATERIAL_DE_OBJETO)],
 ];
 
@@ -44,7 +45,8 @@ const NOMBRE_TAM = { P: 'pequeño', M: 'mediano', G: 'grande', E: 'enorme' };
 // accionArcon y materialesArcon (opcionales): la acción de construcción con autor (sacar_arcon, dejar_arcon) y lo que
 // hay en el arcón de materiales; sin ellos (en línea, hasta que el servidor lleve los inventarios), los materiales de
 // obra se cogen del arcón como los demás recursos.
-export function montarPanelInventario({ panel, boton, inventario, accion, alCambiar = () => {}, retrato = null, accionArcon = null, materialesArcon = null }) {
+// alSuelo(tipo) (opcional): lo enorme del arcón (la rastra) no cabe en el inventario: va al suelo, delante de ti.
+export function montarPanelInventario({ panel, boton, inventario, accion, alCambiar = () => {}, retrato = null, accionArcon = null, materialesArcon = null, alSuelo = null }) {
   let sel = null;          // { de: 'arcon', tipo } o { de: 'inv', ruta }
   let vista = null;        // ruta del contenedor cuyos huecos se ven
   let aviso = { txt: '', error: false };
@@ -199,9 +201,10 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     const alHombro = d.lugar === 'hombro';
     const ponible = (d.capa || d.lugar) && !puesto && !alHombro;
     const manos = sel.de === 'arcon' && !d.capa && !d.lugar && d.tam !== 'E';
+    const aSuelo = sel.de === 'arcon' && d.tam === 'E' && !d.recurso && !!alSuelo;
     caja.innerHTML = `<p><b>${nombreDe(c)}</b> · ${tr(NOMBRE_TAM[d.tam])}${d.huecos ? ' · ' + tr('{n} huecos', { n: d.huecos.length }) : ''}</p>
-      <p class="inv-nota">${tr(sel.de === 'arcon' && !ponible && !alHombro ? 'Cógelo con las manos o toca un hueco donde guardarlo.' : 'Ahora toca dónde lo quieres.')}</p>
-      <div class="inv-botones">${ponible ? `<button class="inv-ponerse">${tr('Ponérselo')}</button>` : ''}${alHombro && sel.de === 'arcon' ? `<button class="inv-ponerse">${tr('Al hombro')}</button>` : ''}${manos ? `<button class="inv-manos">${tr('Cogerlo con las manos')}</button>` : ''}${sel.de === 'inv' ? `<button class="inv-devolver">${tr('Al arcón')}</button>` : ''}<button class="inv-dejar">${tr('Cancelar')}</button></div>`;
+      <p class="inv-nota">${tr(aSuelo ? 'Es enorme: no se lleva encima. Déjalo en el suelo y arrástralo.' : sel.de === 'arcon' && !ponible && !alHombro ? 'Cógelo con las manos o toca un hueco donde guardarlo.' : 'Ahora toca dónde lo quieres.')}</p>
+      <div class="inv-botones">${aSuelo ? `<button class="inv-alsuelo">${tr('Dejarlo en el suelo')}</button>` : ''}${ponible ? `<button class="inv-ponerse">${tr('Ponérselo')}</button>` : ''}${alHombro && sel.de === 'arcon' ? `<button class="inv-ponerse">${tr('Al hombro')}</button>` : ''}${manos ? `<button class="inv-manos">${tr('Cogerlo con las manos')}</button>` : ''}${sel.de === 'inv' ? `<button class="inv-devolver">${tr('Al arcón')}</button>` : ''}<button class="inv-dejar">${tr('Cancelar')}</button></div>`;
   }
 
   function pintarCarga() {
@@ -253,6 +256,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     }
     if (t.classList.contains('inv-ponerse')) ponerse();
     else if (t.classList.contains('inv-manos')) aLasManos();
+    else if (t.classList.contains('inv-alsuelo')) { const r = alSuelo(sel.tipo); if (r && r.ok) sel = null; }
     else if (t.classList.contains('inv-devolver')) alArcon();
     else if (t.classList.contains('inv-dejar')) sel = null;
     pintar();

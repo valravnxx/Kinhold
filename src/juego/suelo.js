@@ -14,6 +14,7 @@ import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { modelosRecoleccion } from './recoleccion.js';
 import { modeloHacha } from './personaje.js';
+import { modeloRastra } from './rastra.js';
 import { Suelo, cargarSuelo, guardarSuelo, ejecutarSuelo } from '../logica/suelo.js';
 import { CATALOGO } from '../logica/inventario.js';
 
@@ -65,6 +66,7 @@ function hatillo(grande, id) { // un paño de lino con las cuatro puntas atadas 
 
 function modeloDe(o) {
   const t = o.cosa.tipo, n = o.cosa.n, mods = modelosRecoleccion();
+  if (t === 'rastra') return modeloRastra(o.cosa.carga || null, o.id);
   if (t === 'rama') return deLista(mods.ramas);
   if (t === 'silex') return deLista(mods.silex);
   if (t === 'piedra') { // montón: más ancho y más alto cuantas más
@@ -96,11 +98,12 @@ export function crearSuelo({ raiz, altura, almacen, enTierras }) {
     const hay = suelo.visibles(ahora).filter(o => !escondidos.has(o.id)), ids = new Set(hay.map(o => o.id));
     for (const [id, v] of vistos) if (!ids.has(id)) { grupo.remove(v.obj); vistos.delete(id); }
     for (const o of hay) {
-      const firma = o.cosa.tipo + ':' + o.cosa.n, v = vistos.get(o.id);
-      if (v && v.firma === firma) continue;
+      const firma = o.cosa.tipo + ':' + o.cosa.n + (o.cosa.carga ? ':' + o.cosa.carga.tipo + o.cosa.carga.n : '') + (o.arrastra ? '@' + o.arrastra : ''), v = vistos.get(o.id);
+      if (v && v.firma === firma) { if (!o.arrastra && (v.obj.position.x !== o.x || v.obj.position.z !== o.z)) { v.obj.position.set(o.x, altura(o.x, o.z) - 0.01, o.z); if (Number.isFinite(o.giro)) v.obj.rotation.set(0, o.giro, 0); } continue; }
       if (v) grupo.remove(v.obj);
       const obj = modeloDe(o); obj.position.set(o.x, altura(o.x, o.z) - 0.01, o.z); obj.rotation.y += Number.isFinite(o.giro) ? o.giro : az(o.id, 9) * Math.PI * 2;
-      obj.name = 'suelo_' + o.cosa.tipo; obj.userData.id = o.id;
+      obj.name = 'suelo_' + o.cosa.tipo; obj.userData.id = o.id; obj.userData.arrastra = o.arrastra || null;
+      if (v && v.obj.userData.sigue && o.arrastra) obj.userData.sigue = v.obj.userData.sigue;   // la que arrastras no salta al cargarla
       grupo.add(obj); vistos.set(o.id, { obj, firma });
     }
   }

@@ -28,7 +28,7 @@
 //    distancia (va detrás de ti), pero para descargarla hay que soltarla antes.
 //  - No desaparece nunca, esté donde esté (src/logica/suelo.js: NO_DESAPARECE), y cualquiera puede descargarla o
 //    llevársela (proteger lo que lleva en tus tierras es de la carretilla, la tarea siguiente).
-//  - Lo que se descarga cae a 1 m de su centro, de lado, y se suma a una pila de lo mismo si la hay, como todo lo del suelo.
+//  - Lo que se descarga cae a 1,1 m de su centro, de lado (los troncos, a lo largo de ella), y se suma a una pila de lo mismo si la hay, como todo lo del suelo.
 //  - Si el que la arrastra se va del juego, la rastra se queda donde la tiene el servidor (su último sitio conocido).
 import { CATALOGO, KILOS } from './inventario.js';
 
@@ -37,7 +37,7 @@ export const ALCANCE_RASTRA = 2;      // m, desde su centro
 export const DETRAS = 1.6;            // m: el centro de la rastra, por detrás del que la arrastra
 export const MARGEN_SOLTAR = 0.8;     // m
 export const VEL_VACIA = 0.7, VEL_LLENA = 0.5, KILOS_LLENA = 75;
-export const LADO_DESCARGA = 1;       // m
+export const LADO_DESCARGA = 1.1;     // m
 
 const redondo = v => Math.round(v * 100) / 100;
 export const kilosCarga = carga => (carga ? (KILOS[carga.tipo] ?? 0) * carga.n : 0);
@@ -145,9 +145,9 @@ export class Rastras {
     if (!carga || carga.n < 1) return { ok: false, motivo: 'La rastra va vacía.' };
     const g = Number.isFinite(o.giro) ? o.giro : 0;
     const dx = o.x + Math.cos(g) * LADO_DESCARGA, dz = o.z - Math.sin(g) * LADO_DESCARGA;
-    const s = this.suelo.dejar({ tipo: carga.tipo, n: carga.n }, dx, dz, ahora, autor, !!enTierras(dx, dz), g);
+    const s = this.suelo.dejar({ tipo: carga.tipo, n: carga.n }, dx, dz, ahora, autor, !!enTierras(dx, dz), g + Math.PI / 2);   // los troncos, a lo largo de ella
     o.cosa.carga = null;
-    return { ok: true, objeto: o.id, tipo: carga.tipo, cantidad: carga.n, suelo: s.id };
+    return { ok: true, objeto: o.id, tipo: carga.tipo, cantidad: carga.n, pila: s.id };
   }
 }
 
