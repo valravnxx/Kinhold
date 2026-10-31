@@ -12,7 +12,8 @@ export { SERVIDOR, direccionServidor } from '../mundo/direccion_servidor.js';
 // alCambiar(info): el mundo o lo que pasa ha cambiado (info = lo que devuelve MundoEnLinea.recibir);
 // avisar(texto, error): un aviso para el jugador; alEstado(texto): la línea de estado de la conexión.
 // La conexión, el estado, la presencia y los avisos comunes: src/mundo/cliente.js.
-export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, alEstado }) {
+// alAbrir(enviar) y alCortarse(): para lo que también va por esta conexión (lo que llevas y el suelo).
+export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, alEstado, alAbrir = null, alCortarse = null }) {
   let cli = null;
   const red = new MundoEnLinea((m) => { if (cli) cli.enviar(m); });
   const remotos = new Map();    // autor → { j, clave, x, z, vel }
@@ -20,6 +21,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
 
   cli = abrirCliente({
     alAbrir: (enviar) => {
+      if (alAbrir) alAbrir(enviar);
       mandarAspecto();
       // fuera de la liza: quien viene del duelo en línea en la misma pestaña es el mismo jugador para el servidor,
       // y seguía en la liza, así que los demás no le dibujaban (valravnx, 28 oct)
@@ -33,7 +35,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       alCambiar(info, msg);
       if (info.rechazo) avisar(tr('El servidor no lo ha aceptado: {m}', { m: tr(info.rechazo) }), true);
     },
-    alCortar: () => { red.yo = null; for (const a of [...remotos.keys()]) quitar(a); },
+    alCortar: () => { red.yo = null; for (const a of [...remotos.keys()]) quitar(a); if (alCortarse) alCortarse(); },
     conectado: () => tr('En línea · {n} más', { n: [...cli.presencia.remotos.keys()].filter(a => !enLiza.has(a)).length }),
     bienvenida: (d) => tr('En línea: el mundo es el del servidor ({d}).', { d }),
     avisar: (texto, mal) => { if (mal) avisar(texto, true); else avisar(texto); },

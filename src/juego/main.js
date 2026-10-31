@@ -14,6 +14,7 @@ import { crearDecorado } from '../mundo/decorado.js';
 import { crearVegetacionMundo } from '../mundo/vegetacion_mundo.js';
 import { vigilar, ofrecerGente } from '../mundo/rendimiento.js';
 import { conectarEnLinea } from './en_linea.js';
+import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
 import { dibujarRetrato } from './retrato.js';
@@ -28,7 +29,7 @@ import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
 import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } from '../logica/nado.js';
-import { hachaEnMano, HACHAS, nombreTronco } from '../logica/tala.js';
+import { hachaEnMano, HACHAS, edadDeEscala } from '../logica/tala.js';
 import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_TROCEO } from '../logica/troceo.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
@@ -78,10 +79,16 @@ function accion(a) {
 const USA_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon']);
 // Lo que lleva el jugador (inventario por huecos, src/logica/inventario.js): también por acciones con autor.
 // Cuenta para ir más despacio cargado; se ve y se cambia en el panel de inventario (src/juego/panel_inventario.js).
-const almacen = (() => { try { return localStorage; } catch (e) { return null; } })();
+// En línea (valravnx, 30 oct: siempre en línea), lo que llevas, el suelo, lo talado y lo recogido son los del servidor
+// (src/juego/objetos_en_linea.js): nada de eso se guarda ni se lee en el navegador.
+const almacenNav = (() => { try { return localStorage; } catch (e) { return null; } })();
+const almacen = EN_LINEA ? null : almacenNav;
 const inventarios = almacen ? cargarInventarios(almacen) : cargarInventarios({ getItem: () => null });
 function accionInventario(a) {
   const r = ejecutarInventario(inventarios, registroAcciones, { autor: AUTOR_LOCAL, ...a });
+  // en línea se adelanta aquí (el panel no espera a la red) y lo decide el servidor: si no lo acepta, lo que llevas
+  // vuelve a ser el suyo
+  if (r.ok && objetosRed) objetosRed.mandar(a, (rs) => { if (!rs.ok) mostrarAviso(tr('El servidor no lo ha aceptado: {m}', { m: tr(rs.motivo) }), true); });
   if (r.ok && almacen) guardarInventarios(almacen, inventarios);
   return r;
 }
@@ -174,6 +181,9 @@ if (decorado.paso) {
 // los troncos del suelo se tronzan (el largo, en 3–4 cortos) y se parten (el corto, en leña) a golpes de hacha
 const troceo = new Troceo(sueloObjetos.suelo);
 if (almacen) cargarTroceo(almacen, troceo, Date.now());
+// en línea, todo eso es lo del servidor (src/juego/objetos_en_linea.js); se pinta de nuevo cuando llega
+const objetosRed = EN_LINEA ? crearObjetosEnLinea({ inventarios, autor: AUTOR_LOCAL, sueloObjetos, talaV, recoleccion,
+  alCambiar: (que) => { if (que === 'inventario' && typeof pintarTodoInventario === 'function') pintarTodoInventario(); } }) : null;
 
 // ---------------- Personaje y cámara ----------------
 // personaje del taller propio (la carpeta, en src/mundo/eleccion.js)
@@ -1238,6 +1248,14 @@ function usar() {
 }
 
 function recoger(punto) {
+  if (objetosRed) { // en línea lo recoge el servidor (el punto, como lo ve este navegador: decisión provisional)
+    pj.rot = Math.atan2(punto.x - pj.x, punto.z - pj.z);
+    objetosRed.mandar({ tipo: 'recoger', punto: punto.id, x: pj.x, z: pj.z, px: punto.x, pz: punto.z, clase: punto.tipo }, (r) => {
+      if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      mostrarAviso(tr('Recoges: {n} × {c}.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) }));
+    });
+    return;
+  }
   const r = recoleccion.recoger(inventarios, registroAcciones, AUTOR_LOCAL, punto.id, pj.x, pj.z);
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   if (almacen) guardarInventarios(almacen, inventarios);
@@ -1248,6 +1266,14 @@ function recoger(punto) {
 
 // Coger del suelo lo que se soltó (todo, o de una pila lo que quepa).
 function cogerDelSuelo(o) {
+  if (objetosRed) { // en línea, del suelo del servidor
+    pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+    objetosRed.mandar({ tipo: 'coger_suelo', objeto: o.id, x: pj.x, z: pj.z }, (r) => {
+      if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      mostrarAviso(tr('Coges del suelo: {n} × {c}.', { n: r.cantidad, c: tr(CATALOGO[r.objeto].nombre) }) + (r.queda ? ' ' + tr('Quedan {n}.', { n: r.queda }) : ''));
+    });
+    return;
+  }
   const r = sueloObjetos.coger(inventarios, registroAcciones, AUTOR_LOCAL, o.id, pj.x, pj.z);
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   if (almacen) guardarInventarios(almacen, inventarios);
@@ -1257,6 +1283,13 @@ function cogerDelSuelo(o) {
 }
 // Soltar al suelo, a tus pies, lo que hay en un lugar del inventario.
 function soltarAlSuelo(de) {
+  if (objetosRed) { // en línea, al suelo del servidor (lo ven todos)
+    objetosRed.mandar({ tipo: 'soltar_suelo', de, x: pj.x, z: pj.z }, (r) => {
+      if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      mostrarAviso(r.desaparece === null ? tr('Lo dejas en el suelo: aquí se queda.') : tr('Lo dejas en el suelo: fuera de tus tierras desaparece en una hora.'));
+    });
+    return { ok: true, enviado: true };
+  }
   const r = sueloObjetos.soltar(inventarios, registroAcciones, AUTOR_LOCAL, de, pj.x, pj.z);
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return r; }
   if (almacen) guardarInventarios(almacen, inventarios);
@@ -1445,12 +1478,23 @@ function golpeTala() {
   const a = estado.talando;
   if (a.troceo) { golpeTroceo(a.troceo); return; }
   estado.golpeEn = RITMO_TALA;
+  if (objetosRed) { // en línea, el golpe lo da el servidor (el árbol, como lo ve este navegador: decisión provisional)
+    objetosRed.mandar({ tipo: 'talar', arbol: a.id, x: pj.x, z: pj.z, ax: a.x, az: a.z, edad: a.edad || edadDeEscala(a.escala) }, (r) => {
+      if (estado.talando !== a) return;   // ya ha dejado de talar
+      if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+      avisoTala(a, r);
+    });
+    return;
+  }
   const r = talaV.golpe(inventarios, registroAcciones, AUTOR_LOCAL, a, pj.x, pj.z);
   if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+  avisoTala(a, r);
+}
+function avisoTala(a, r) {
   if (!r.cae) { mostrarAviso(r.faltan === 1 ? tr('Talas el árbol: falta 1 golpe.') : tr('Talas el árbol: faltan {n} golpes.', { n: r.faltan })); return; }
   estado.talando = null;
-  const ramas = r.deja.find(d => d.tipo === 'rama');
-  mostrarAviso(tr('¡El árbol cae! Deja {tronco} y {n} ramas.', { tronco: tr(nombreTronco(talaV.tala.porId.get(a.id).edad)).toLowerCase(), n: ramas ? ramas.n : 0 }));
+  const ramas = r.deja.find(d => d.tipo === 'rama'), tronco = r.deja.find(d => d.tipo !== 'rama');
+  mostrarAviso(tr('¡El árbol cae! Deja {tronco} y {n} ramas.', { tronco: tr(CATALOGO[tronco.tipo].nombre).toLowerCase(), n: ramas ? ramas.n : 0 }));
 }
 
 // Tronzar y partir (src/logica/troceo.js): el tronco del suelo más cercano que se trocea, en la planta baja.
@@ -1464,10 +1508,23 @@ function empezarTroceo(o) {
 }
 function golpeTroceo(id) {
   estado.golpeEn = RITMO_TALA;
+  if (objetosRed) { // en línea, el golpe lo da el servidor, en su suelo
+    const yendo = estado.talando;
+    objetosRed.mandar({ tipo: 'trocear', objeto: id, x: pj.x, z: pj.z }, (r) => {
+      if (estado.talando !== yendo) return;
+      if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+      avisoTroceo(r);
+    });
+    return { ok: true, enviado: true };
+  }
   const r = ejecutarTroceo(troceo, inventarios, registroAcciones, { autor: AUTOR_LOCAL, tipo: 'trocear', objeto: id, x: pj.x, z: pj.z }, Date.now(),
     (autor, x, z) => !!mundo.dentroDeTierra(x, z));
   if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return r; }
   if (almacen) guardarTroceo(almacen, troceo);
+  sueloObjetos.guardar(); sueloObjetos.refrescar();
+  return avisoTroceo(r);
+}
+function avisoTroceo(r) {
   const tronzar = r.accion === 'tronzar';
   if (!r.termina) {
     mostrarAviso(tronzar ? (r.faltan === 1 ? tr('Tronzas el tronco: falta 1 golpe.') : tr('Tronzas el tronco: faltan {n} golpes.', { n: r.faltan }))
@@ -1475,7 +1532,6 @@ function golpeTroceo(id) {
     return r;
   }
   estado.talando = null;
-  sueloObjetos.guardar(); sueloObjetos.refrescar();
   mostrarAviso(tronzar ? tr('Tronzado: {n} troncos cortos.', { n: r.da.n }) : tr('Partido: {n} de leña.', { n: r.da.n }));
   return r;
 }
@@ -1693,10 +1749,13 @@ const SEXO = elegido ? elegido.sexo : 'hombre';
 const CLAVE_ROPA_VISOR = 'kinhold_ropa_visor_v1';
 // Cada prenda entra con el tinte y la hechura que se le dieron en el visor (src/logica/hechura.js: rasgosPrenda): desde
 // ahí son suyos y van con ella (al quitársela, al soltarla, al dejarla en el arcón no: el arcón la devuelve sin coser).
+// En línea, la ropa entra en lo que llevas en el servidor (por el arcón de pruebas), al llegar su bienvenida, una vez por
+// cada elección y cada jugador del servidor (clave: también su autor; tras un borrado del mundo, otra vez).
 function ropaDelVisor() {
   if (!elegido) return;
-  const huella = JSON.stringify([elegido.sexo, elegido.capas, elegido.tintes || null, elegido.hechuras || null]);
-  let hecha = null; try { hecha = almacen && almacen.getItem(CLAVE_ROPA_VISOR); } catch (e) { /* sin almacenamiento */ }
+  if (EN_LINEA && !(enLinea && enLinea.red.yo && objetosRed.deServidor)) return;
+  const huella = JSON.stringify([elegido.sexo, elegido.capas, elegido.tintes || null, elegido.hechuras || null]) + (EN_LINEA ? '@' + enLinea.red.yo : '');
+  let hecha = null; try { hecha = almacenNav && almacenNav.getItem(CLAVE_ROPA_VISOR + (EN_LINEA ? '_red' : '')); } catch (e) { /* sin almacenamiento */ }
   if (hecha === huella) return;
   for (const p of prendasDeCapas(elegido.capas, elegido.sexo)) {
     const lugar = 'ropa:' + PRENDAS[p].capa, ya = inventario().lugares[lugar], d = PRENDAS[p].dibujo;
@@ -1705,7 +1764,7 @@ function ropaDelVisor() {
     if (ya) accionInventario({ tipo: 'soltar', de: lugar });
     accionInventario({ tipo: 'coger', objeto: p, cantidad: 1, a: lugar, ...rasgos });
   }
-  try { almacen && almacen.setItem(CLAVE_ROPA_VISOR, huella); } catch (e) { /* sin almacenamiento */ }
+  try { almacenNav && almacenNav.setItem(CLAVE_ROPA_VISOR + (EN_LINEA ? '_red' : ''), huella); } catch (e) { /* sin almacenamiento */ }
 }
 // lo que se ve puesto: capas, tintes y hechura de cada prenda del inventario (el blasón, el del visor)
 const vestidoAhora = () => vestidoDe(inventario().lugares, SEXO, elegido && elegido.tintes && elegido.tintes.blason);
@@ -1763,8 +1822,11 @@ function cambiarHombro(de) {
   return r;
 }
 pintarLlevas();
+// en línea, cuando llega lo que llevas en el servidor: el panel, la línea de abajo y lo que se ve puesto
+function pintarTodoInventario() { pintarLlevas(); vestir(); panelInventario.pintar(); }
 // lo que no cupo al cargar el inventario (por ejemplo, si un contenedor tiene ahora menos huecos) cae a tus pies
-if (sueloObjetos.dejarApartado(inventario(), AUTOR_LOCAL, pj.x, pj.z)) { if (almacen) guardarInventarios(almacen, inventarios); }
+// (en línea, lo que lleva el servidor ya viene como cabe)
+if (!EN_LINEA && sueloObjetos.dejarApartado(inventario(), AUTOR_LOCAL, pj.x, pj.z)) { if (almacen) guardarInventarios(almacen, inventarios); }
 $('btnRellenar').onclick = () => { accion({ tipo: 'rellenar', cantidad: 50 }); guardar(); actualizarUI(); evaluarColocacion(); panelInventario.pintar(); }; // llena el arcón de pruebas
 {
   let armado = false, tmr = null;
@@ -1819,11 +1881,17 @@ function iniciarEnLinea() {
   let colocadoEnLinea = false;
   enLinea = conectarEnLinea({
     escena, recursos: RECURSOS_MH,
+    alAbrir: (enviar) => objetosRed.conectar(enviar), alCortarse: () => objetosRed.desconectar(),
     // lo que llevas puesto en el inventario, con sus tintes y su hechura (cambia al vestirse: vestir() lo vuelve a mandar)
     aspecto: () => { const v = vestidoAhora(); return { sexo: SEXO, aspecto: elegido ? elegido.aspecto : undefined, capas: v.capas, tintes: v.tintes, hechuras: v.hechuras }; },
     avisar: mostrarAviso,
     alEstado: (txt) => { marca.textContent = txt; },
     alCambiar(info, msg) {
+      // lo que llevas, el suelo, lo talado y lo recogido (src/juego/objetos_en_linea.js)
+      if (objetosRed.recibir(msg)) {
+        if (msg.tipo === 'bienvenida') ropaDelVisor();
+        if (msg.tipo !== 'bienvenida') return;
+      }
       const antes = mundo;
       mundo = enLinea.red.mundo;
       const e = info.entrada;
@@ -1935,7 +2003,7 @@ window.__kinhold = {
   inventarios, golpeTala, arbolCercano, vestir, troceo, troncoCercano, golpeTroceo, usar, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas, // lo soltado en el suelo (src/juego/suelo.js)
-  get enLinea() { return enLinea; },
+  get enLinea() { return enLinea; }, objetosRed, // en línea: lo que llevas y el suelo del servidor
   reconstruir() { reconstruir(); },
   render() { renderer.render(escena, camara); },
 };
