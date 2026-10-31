@@ -1,0 +1,43 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2427 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2152 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1744 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2225 KB
+
+== Construir demo única
+      2078 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2692 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1738 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2194 KB
+dist/kinhold_trozos.html 1740 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: mapa del rey
+  OK   en inglés no falta ningún texto — []
+  OK   sin errores en la página
+
+Todo bien
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 37 s
+en el PC de valravnx, con su tarjeta: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002504) Direct3D11 vs_5_0 ps_5_0, D3D11)
