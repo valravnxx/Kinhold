@@ -913,7 +913,9 @@
     },
     {
      "nombre": "Nacimiento del pelo y cejas (visto en la revisión del 30 oct): el pelo corta en seco en la frente, como un casquete, y las cejas son trazos finos y a trozos que flotan",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T00:54:33+00:00",
+     "rama": "trabajo/20261031-0054"
     },
     {
      "nombre": "Capa de espalda (visto en la revisión del 30 oct): sale casi negra y lisa, sin pliegues a la vista",
