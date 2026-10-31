@@ -1,0 +1,34 @@
+Vista pc
+  OK   pc: entra en línea
+  OK   pc: la primera vez, en la salida — {'x': 0, 'z': 4, 'rot': 3.141592653589793}
+  recarga la página
+  OK   pc: vuelve a entrar
+  OK   pc: el mismo jugador
+  OK   pc: aparece donde lo dejó — {'x': 14, 'z': -9, 'rot': 1.1}
+  pestaña nueva del mismo navegador
+  OK   pc: la pestaña nueva entra
+  OK   pc: y es el mismo jugador (la ficha va en el navegador) — jugador:123d0a32
+  OK   pc: también donde lo dejó — {'x': 14, 'z': -9, 'rot': 1.1}
+  OK   pc: la de antes se queda fuera y lo dice
+  otro navegador
+  OK   pc: otro navegador entra
+  OK   pc: es otro jugador, en la salida — {'x': 0, 'z': 4, 'rot': 3.141592653589793}
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: entra en línea
+  OK   movil: la primera vez, en la salida — {'x': 0, 'z': 4, 'rot': 3.141592653589793}
+  recarga la página
+  OK   movil: vuelve a entrar
+  OK   movil: el mismo jugador
+  OK   movil: aparece donde lo dejó — {'x': -11, 'z': 13, 'rot': 1.1}
+  pestaña nueva del mismo navegador
+  OK   movil: la pestaña nueva entra
+  OK   movil: y es el mismo jugador (la ficha va en el navegador) — jugador:ec6e92c7
+  OK   movil: también donde lo dejó — {'x': -11, 'z': 13, 'rot': 1.1}
+  OK   movil: la de antes se queda fuera y lo dice
+  otro navegador
+  OK   movil: otro navegador entra
+  OK   movil: es otro jugador, en la salida — {'x': 0, 'z': 4, 'rot': 3.141592653589793}
+  OK   movil: sin errores en la página
+
+TODO CORRECTO
