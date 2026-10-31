@@ -791,7 +791,7 @@ lienzo.addEventListener('pointerdown', (e) => {
   clearTimeout(dedoQuieto);
   if (e.pointerType !== 'mouse' && punteros.size === 1 && estado.modo === 'mover' && !document.body.classList.contains('combate')) {
     const q = punteros.get(e.pointerId);
-    dedoQuieto = setTimeout(() => { if (!arrastrando && punteros.size === 1) { q.menu = true; abrirMenuUsar(q.x, q.y); } }, 500);
+    dedoQuieto = setTimeout(() => { if (!arrastrando && punteros.size === 1) { q.menu = true; abrirMenuUsar(q.x, q.y, true); } }, 500);
   }
   if (punteros.size === 2) {
     const [a, b] = [...punteros.values()];
@@ -831,7 +831,7 @@ lienzo.addEventListener('pointerup', (e) => {
   if (punteros.size < 2) pinzaDist = 0;
   clearTimeout(dedoQuieto);
   if (!p || arrastrando) return;
-  if (p.menu) return; // el dedo quieto ya abrió el menú de usar
+  if (p.menu) { ignorarClicMenu = performance.now() + 600; return; } // el dedo quieto ya abrió el menú de usar
   // clic derecho sin arrastre: el menú de usar lo que hay ahí
   if (e.pointerType === 'mouse' && p.boton === 2) { if (estado.modo === 'mover' && !document.body.classList.contains('combate')) abrirMenuUsar(e.clientX, e.clientY); return; }
   // toque o clic sin arrastre
@@ -1258,14 +1258,16 @@ function opcionesEn(cx, cy) {
     return { op, d: Math.min(dMundo / CERCA_DEL_PUNTERO, dPx / PX_DEL_PUNTERO) };
   }).filter(o => o.d <= 1).sort((a, b) => a.d - b.d).map(o => o.op);
 }
-function abrirMenuUsar(cx, cy) {
+let ignorarClicMenu = 0;
+function abrirMenuUsar(cx, cy, tactil = false) {
   const ops = window.__menuUsarSinPuntero ? opcionesUsar() : opcionesEn(cx, cy);  // __menuUsarSinPuntero: solo para comprobar que la prueba falla
   if (!ops.length) { cerrarMenuUsar(); mostrarAviso(tr('Ahí no hay nada que usar a tu alcance.')); return; }
   menuUsar.innerHTML = '';
   for (const op of ops.slice(0, 8)) {
     const b = document.createElement('button');
     b.textContent = op.texto;
-    b.onclick = (e) => { e.stopPropagation(); cerrarMenuUsar(); op.hacer(); };
+    // el clic que el navegador manda al levantar el dedo tras dejarlo quieto no elige nada (caería en el menú)
+    b.onclick = (e) => { e.stopPropagation(); if (performance.now() < ignorarClicMenu) return; cerrarMenuUsar(); op.hacer(); };
     menuUsar.appendChild(b);
   }
   menuUsar.hidden = false;
@@ -1273,7 +1275,8 @@ function abrirMenuUsar(cx, cy) {
   // junto al puntero, sin salirse de la pantalla
   const w = menuUsar.offsetWidth, h = menuUsar.offsetHeight;
   menuUsar.style.left = Math.max(6, Math.min(innerWidth - w - 6, cx + 10)) + 'px';
-  menuUsar.style.top = Math.max(6, Math.min(innerHeight - h - 6, cy - 10)) + 'px';
+  // con el dedo, por encima de él, para no taparlo
+  menuUsar.style.top = Math.max(6, Math.min(innerHeight - h - 6, tactil ? cy - h - 40 : cy - 10)) + 'px';
 }
 // puerta, trampilla, chimenea, escalera o andamio
 function usarInteractivo(it) {
