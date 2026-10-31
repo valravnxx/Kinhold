@@ -1,0 +1,42 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2283 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2060 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1652 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2128 KB
+
+== Construir demo única
+      1890 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2603 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1647 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2096 KB
+dist/kinhold_trozos.html 1644 KB
+hilo de los trozos 14 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: combate en el mundo
+  OK   móvil: con «Parar» pulsado, la rosa elige el lado de la parada — {'accion': 'libre', 'linea': 'izquierda', 'finta': True, 'carga': 0, 'bloq': True, 'lb': 'derecha'}
+  OK   sin errores en consola (móvil) — []
+
+Resultado: TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 150 s
