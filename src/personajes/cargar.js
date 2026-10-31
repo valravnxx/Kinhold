@@ -34,6 +34,8 @@ export const CLIPS_EXTRA = {
   andarAdelante: 'Walk_Fwd_Loop', andarAtras: 'Walk_Bwd_Loop', andarIzquierda: 'Walk_L_Loop', andarDerecha: 'Walk_R_Loop', girarIzquierda: 'Turn180_L', girarDerecha: 'Turn180_R',
   trepar: 'ClimbUp_1m', comer: 'Consume', abrirCofre: 'Chest_Open', tumbarse: 'IdleToLay', levantarse: 'LayToIdle', brazosCruzados: 'Idle_FoldArms_Loop',
   empujado: 'Hit_Knockback', lanzar: 'OverhandThrow',
+  // para cargar (taller-anim-v2): empujar (carretilla, rastra) y coger algo de una mesa (con una mano)
+  empujar: 'Push_Loop', cogerDeMesa: 'PickUp_Table',
 };
 
 const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder); // la v2 va comprimida con meshopt

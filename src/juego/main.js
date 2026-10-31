@@ -1889,6 +1889,7 @@ function iniciarEnLinea() {
     return !p ? -1 : p.obra ? Math.floor(4 * p.obra.trabajo / tiempoObra(p.tipo)) : 4;
   };
   const vistos = new Map(); // obra → cuarto de trabajo con el que se dibujó
+  let colocadoEnLinea = false;
   enLinea = conectarEnLinea({
     escena, recursos: RECURSOS_MH,
     alAbrir: (enviar) => objetosRed.conectar(enviar), alCortarse: () => objetosRed.desconectar(),
@@ -1920,6 +1921,13 @@ function iniciarEnLinea() {
         // abrir o cerrar una puerta: solo esa pieza (la propia ya se rehízo al usarla)
         redibujar = false;
         if (e.autor !== enLinea.red.yo) rehacerPieza(e.datos.construccion, e.datos.clave);
+      }
+      // volver donde lo dejaste (valravnx, 31 oct): la primera bienvenida trae dónde estabas al salir (si el servidor
+      // lo sabe); al volver a conectar tras un corte no se mueve a nadie
+      if (msg.tipo === 'bienvenida' && !colocadoEnLinea) {
+        colocadoEnLinea = true;
+        const p = msg.posicion;
+        if (p && [p.x, p.y, p.z, p.giro].every(Number.isFinite)) Object.assign(pj, { x: p.x, y: p.y, z: p.z, rot: p.giro, vel: 0 });
       }
       if (msg.tipo === 'bienvenida' || info.rechazo) redibujar = true;
       if (redibujar) { reconstruir(); if (estado.modo === 'construir') evaluarColocacion(); }
