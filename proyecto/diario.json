@@ -3447,5 +3447,22 @@
   "pruebas": "En la nube, 24 de 24 grupos correctos (sin las de en línea). Tras unir main (panel de admin, demo v75): logica, demo única, panel del admin y web correctos. Capturas de cerca miradas en PC y móvil (cara del hombre y de la mujer) y comparadas con la revisión del 31 oct. No comprobado: las notas de la versión entraron después de la batería (solo texto; la prueba de idiomas del juego, correcta aquí).",
   "capturas": "capturas/personaje-v34",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T21:23:14+00:00",
+  "fin": "2026-10-31T23:14:08+00:00",
+  "titulo": "La rastra (carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "La rastra en la lógica pura (src/logica/rastra.js), con autor: engancharla, soltarla, cargarla y descargarla. Es un objeto del suelo que no desaparece nunca y se queda donde la dejas con lo que lleve; en línea va por el servidor, que mira dónde estás, y si te vas del juego arrastrándola se queda donde estabas.",
+   "Lleva una sola clase de cosa a la vez: hasta 3 troncos cortos, hasta 24 piedras o un bloque de piedra en bruto. Arrastrándola vas despacio: del 70 % vacía al 50 % con tres troncos cortos. Mientras la arrastras no coges nada con las manos. Decisiones provisionales, anotadas en el registro de la demo.",
+   "El modelo con el estilo v5: dos varas de corteza de 3,2 m, cuatro travesaños atados con cordel y las agarraderas enrolladas; la carga se ve encima (troncos a lo largo, montón de piedras o el bloque). Arrastrándola, las varas suben a las manos y lo de atrás roza el suelo; el personaje usa la animación de arrastrar del taller (la que no se podía ver hasta ahora).",
+   "En el juego: sale del arcón de pruebas al suelo («Para arrastrar», «Dejarlo en el suelo»); Usar la engancha, la suelta o carga lo que lleves en las manos o al hombro; con el clic derecho (o el dedo quieto) se carga de una pila del suelo y se descarga a su lado; abajo sale «Arrastras: Rastra» con Soltar. Los demás la ven detrás de quien la arrastra.",
+   "Publicada como demo v77 (la v75 y la v76 las publicaron otras sesiones mientras tanto); textos del juego en inglés y ruso.",
+   "Aún mal: las manos quedan casi en las varas, pero no se cierran justo encima; la rastra no choca con nada (atraviesa árboles y casas); las obras aún no cogen material de la rastra que tengas al lado."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main: todos los grupos bien salvo «construir a la altura del suelo», que falló por no encontrar plantas en la ladera elegida al azar (nada que ver con la rastra) y pasó al repetirlo solo. Prueba nueva de lógica (42) y de navegador (PC y móvil), rotas a propósito con MUTAR=1. El PC de valravnx no pudo con ninguna: sin espacio en disco (avisado).",
+  "capturas": "capturas/demo-v77",
+  "estado": "ok"
  }
 ]

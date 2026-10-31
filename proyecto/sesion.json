@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-31T21:23:14+00:00",
-  "tarea": "Rastra (N0: dos varas largas con travesaños): se arrastra a mano, despacio, con 2–3 troncos cortos o un montón de piedras, y se queda donde la dejas con lo que lleve. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
-  "hito": "equipo",
-  "rama": "trabajo/20261031-2123"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-31T22:53:58+00:00",
   "tarea": "Revisión completa y publicación",
