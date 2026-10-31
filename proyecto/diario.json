@@ -3339,5 +3339,25 @@
   "pruebas": "En la nube, batería entera tras unir main: 25 de 25 grupos bien (la web, al repetirla con su prueba ajustada). Antes, «la demo en el mundo» falló dos veces con fallos distintos (fotograma de 92 ms, vegetación en el agua) y pasó al repetirla.",
   "capturas": "capturas/demo-v71",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T10:02:41+01:00",
+  "fin": "2026-10-31T18:52:54+01:00",
+  "titulo": "Combate a cuatro direcciones y ataque comprometido con finta (chat con valravnx)",
+  "hito": "duelo",
+  "hecho": [
+   "Cuatro direcciones en el combate del mundo: arriba, izquierda, derecha y abajo, que es clavar (la estocada). Fuera el tajo bajo y el centro; la mira y la rosa del móvil tienen cuatro marcas.",
+   "Con escudo se para todo lo que viene de frente sin elegir lado; de lado o por detrás, no.",
+   "El golpe va comprometido: una vez elegida la dirección, mover el ratón o el dedo ya no la cambia. El botón de parar lo cancela con una finta (cuesta aliento), para parar o para empezar otro golpe por otro lado. Sin movimiento antes del clic, vale la última dirección usada.",
+   "Con el ratón de verdad, el botón derecho mientras el izquierdo carga llega como un movimiento con los dos botones: ahora se lee y hace la finta. El salto que manda el navegador al coger el ratón ya no se toma como soltar un botón.",
+   "El prototipo de combate aparte y el servidor siguen con las cinco líneas de antes (provisional, anotado en el registro).",
+   "Pruebas: la de lógica del combate (138) y la del navegador del combate en el mundo, con el ratón de verdad, la finta, el escudo de frente y la rosa del móvil; rotas a propósito con MUTAR=1.",
+   "Sin pruebas en línea (valravnx, 31 oct): pruebas_nube.mjs deja fuera por defecto volver donde lo dejaste y lo que llevas en línea; jugar y duelo en línea ya las había borrado otra sesión.",
+   "Arreglos de pruebas que fallaban con la tarjeta gráfica del PC de valravnx: en la del combate en el mundo, levantar el dedo pronto lanza el golpe al llegar a la carga mínima (ahora se espera a eso); en la del prototipo de combate, Espacio se pulsaba en el borde mismo de la ventana de parada perfecta y un fotograma de más la sacaba (ahora, a 0,15 s del impacto).",
+   "Publicado como demo v72."
+  ],
+  "pruebas": "Todas menos las de en línea (valravnx), casi todas en el PC de valravnx. «La demo en el mundo» falla en «andando, el personaje sigue el suelo» (0,62–0,71 m, el límite es 0,6) también en main (1,09 m), así que no es de este cambio. Fallaron una vez y pasaron al repetirlas: el combate en el servidor (un rechazo de más, con lag simulado; aquí 3 de 3 bien) y niveles de detalle.",
+  "capturas": "capturas/demo-v72",
+  "estado": "ok"
  }
 ]
