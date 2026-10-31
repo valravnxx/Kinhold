@@ -924,9 +924,9 @@
     },
     {
      "nombre": "Nacimiento del pelo y cejas (visto en la revisión del 30 oct): el pelo corta en seco en la frente, como un casquete, y las cejas son trazos finos y a trozos que flotan",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T00:54:33+00:00",
-     "rama": "trabajo/20261031-0054"
+     "fin": "2026-10-31T03:23:55+00:00"
     },
     {
      "nombre": "Capa de espalda (visto en la revisión del 30 oct): sale casi negra y lisa, sin pliegues a la vista",
@@ -1913,6 +1913,13 @@
      "archivo": "jugar/demo/v60.html",
      "capturas": "capturas/demo-v60",
      "notas": "Construir a la altura del suelo: cada construcción queda a la altura del terreno donde empieza y los cimientos alisan el suelo de debajo; cercas y empalizadas siguen el suelo de su sitio, y el mojón y los muebles van en el suelo."
+    },
+    {
+     "v": "v61",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v61.html",
+     "capturas": "capturas/personaje-v30",
+     "notas": "Nacimiento del pelo y cejas: en «Personaje» y en el juego, el pelo nace poco a poco en la frente (ya no es un casquete) y las cejas asientan en el arco, más pobladas y sin trozos. Personajes en taller-v19."
     }
    ]
   },
@@ -2620,6 +2627,13 @@
      "archivo": "jugar/personaje/v29.html",
      "capturas": "capturas/personaje-v29",
      "notas": "Toca y cuello de la ropa: la piel sigue bajo el escote (sin mancha de piel rota ni huecos negros) y bajo la toca ya no va la cofia. Personajes en taller-v18."
+    },
+    {
+     "v": "v30",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/personaje/v30.html",
+     "capturas": "capturas/personaje-v30",
+     "notas": "Nacimiento del pelo y cejas: el pelo ya no corta en seco en la frente como un casquete (nace poco a poco y en el borde va pegado a la piel); las cejas asientan en el arco, más pobladas y sin trozos sueltos, en su propio calco con más resolución. Personajes en taller-v19."
     }
    ]
   },
