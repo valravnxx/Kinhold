@@ -259,7 +259,8 @@ try:
         C = ctx.new_page()
         base = URL.split('?')[0]
         # un enlace de antes, sin enlinea=1, entra en línea igual
-        C.goto(base + '?modo=construir&servidor=ws://127.0.0.1:1'); C.wait_for_load_state('load')
+        # en el llano: sin generar el mapa, que en la nube, con otras dos páginas abiertas, tardaba más que la espera
+        C.goto(base + '?modo=construir&llano=1&hilos=1&servidor=ws://127.0.0.1:1'); C.wait_for_load_state('load')
         comprobar('un enlace a «Construir» sin enlinea pasa a en línea', esperar(C, "location.search.includes('enlinea=1')", 20000), C.url)
         comprobar('sin servidor sale el cartel «Sin conexión», que tapa el juego', esperar(C, "!!document.getElementById('sinConexion')", 120000) and 'servidor' in C.inner_text('#sinConexion'))
         if not MUTAR_SIN:
