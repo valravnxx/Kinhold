@@ -2923,5 +2923,24 @@
   "pruebas": "Prueba nueva del inventario y el suelo en el servidor con dos clientes, 24/24 (con MUTAR=1, un servidor que se fía del autor del cliente, fallan 3). Batería entera en la nube (22 grupos): bien salvo «jugar en línea» y «duelo en línea», exentos hasta la fase 2. El programa que espera la nube se quedó colgado después de que acabara el último grupo (construcción, bien a las 23:48); el resultado se miró en GitHub Actions. Tras unir main, repetidas aquí las pruebas de lógica del servidor, en línea, suelo, inventario, tala y bots: bien. Sin capturas: no cambia nada de lo que se ve.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T00:22:40+00:00",
+  "fin": "2026-10-31T02:30:48+00:00",
+  "titulo": "Construir en el mundo, a la altura del suelo (carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Cada construcción guarda la altura del suelo donde se pone su primera pieza (oy) y se dibuja ahí: ya no queda flotando ni hundida en ladera. La acción «colocar» lleva la altura (y); los guardados de antes, sin ella, siguen a 0.",
+   "Los cimientos alisan el suelo de su casilla: cada uno deja una marca de nivelado con su autor (lógica pura nueva, src/logica/nivelado.js), que el servidor guarda y reparte con la pieza. Lo alisado se queda aunque se desmonte.",
+   "El terreno por trozos sale con el suelo nivelado: el hilo aparte recibe las marcas y se rehacen solo los trozos que tocan (la malla vieja se queda hasta que llega la nueva).",
+   "Las cercas y las empalizadas siguen el suelo de su sitio; el mojón y los muebles se ponen en el suelo; el puntero apunta al punto del terreno que miras y no a un plano a la altura 0; el personaje pisa los cimientos, los suelos, las escaleras y el adarve a la altura de su construcción, y las varas, la polea y el polipasto salen a esa altura.",
+   "La brocha redonda de nivelar (GDD) está como acción con autor en la lógica y en el servidor (de 0,5 a 4 m de radio, solo en tu tierra); su botón en el juego queda como tarea nueva, con la hierba de alrededor de lo alisado a la altura nueva.",
+   "Pruebas nuevas: prueba_nivelado.mjs (31 comprobaciones; con MUTAR=1, los trozos sin las marcas, falla) y prueba_nivelado_navegador.py en una ladera de Whitholm, en PC y móvil (con MUTAR=1, sin lo alisado, falla).",
+   "Decisiones provisionales: cada cimiento alisa un círculo de 1,45 m de radio en el centro de su casilla con 1,5 m de borde suave; el servidor aún no conoce el terreno y se fía de la altura que manda el jugador.",
+   "Aún mal: la hierba y las matas del borde de lo alisado siguen a la altura de antes (pueden quedar un poco en el aire o hundidas)."
+  ],
+  "pruebas": "En la nube, todos los grupos bien salvo «jugar en línea» (falla también en main mientras no esté el servidor de verdad: no para la publicación); «combate» falló una vez (la pantalla de victoria) y pasó al repetirlo; la prueba nueva de la ladera, bien en PC y móvil tras esperar a que el personaje se asiente",
+  "capturas": "capturas/demo-v60",
+  "estado": "ok"
  }
 ]
