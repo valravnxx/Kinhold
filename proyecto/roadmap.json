@@ -578,9 +578,9 @@
     },
     {
      "nombre": "Inventario y suelo en el servidor: lo que lleva cada jugador y lo que hay en el suelo los guarda el servidor, que valida cada acción con el autor de la conexión, su hora y el sitio donde lo tiene (soltar y coger del suelo, mover, ponerse y quitarse)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-30T22:37:50+00:00",
-     "rama": "trabajo/20261030-2237"
+     "fin": "2026-10-31T01:50:23+00:00"
     },
     {
      "nombre": "El juego en línea usa lo que llevas y el suelo del servidor: el panel de inventario, soltar y coger del suelo y lo que se entrega a las obras pasan por el servidor, y talar y trocear también, con lo que dejan en el suelo, para que nada de lo que llevas salga solo del navegador. Mientras el servidor no conozca el mundo, se fía del árbol que dice el navegador si estás a su lado (decisión provisional)",

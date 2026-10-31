@@ -2910,7 +2910,7 @@
  },
  {
   "inicio": "2026-10-30T22:37:50+00:00",
-  "fin": null,
+  "fin": "2026-10-31T01:50:23+00:00",
   "titulo": "Hito «Equipo y carga»: inventario y suelo en el servidor (carril A)",
   "hito": "equipo",
   "hecho": [
@@ -2920,7 +2920,7 @@
    "Se guarda entero en objetos.json junto al mundo (escrito aparte y cambiado de nombre, para que un apagón no lo deje a medias) y cada acción, bien o mal, en objetos.jsonl. Lo soltado fuera de tus tierras desaparece pasada su hora también en el servidor.",
    "La tarea se parte en dos (decisión del carril A): esta, la del servidor, y otra nueva justo detrás para que el juego en línea lo use. No se puede hacer a medias en el juego: talar y trocear siguen en el navegador y dejan sus troncos en el suelo de cada uno, así que tienen que pasar al servidor a la vez que el inventario. Sin versión nueva: aún no cambia nada de lo que se juega."
   ],
-  "pruebas": "(en marcha)",
+  "pruebas": "Prueba nueva del inventario y el suelo en el servidor con dos clientes, 24/24 (con MUTAR=1, un servidor que se fía del autor del cliente, fallan 3). Batería entera en la nube (22 grupos): bien salvo «jugar en línea» y «duelo en línea», exentos hasta la fase 2. El programa que espera la nube se quedó colgado después de que acabara el último grupo (construcción, bien a las 23:48); el resultado se miró en GitHub Actions. Tras unir main, repetidas aquí las pruebas de lógica del servidor, en línea, suelo, inventario, tala y bots: bien. Sin capturas: no cambia nada de lo que se ve.",
   "capturas": "",
   "estado": "ok"
  }

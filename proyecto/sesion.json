@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-30T22:37:50+00:00",
-  "tarea": "Inventario y suelo en el servidor: lo que lleva cada jugador y lo que hay en el suelo los guarda el servidor, que valida cada acción con el autor de la conexión, su hora y el sitio donde lo tiene (soltar y coger del suelo, mover, ponerse y quitarse)",
-  "hito": "equipo",
-  "rama": "trabajo/20261030-2237"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-31T00:54:33+00:00",
   "tarea": "Nacimiento del pelo y cejas (visto en la revisión del 30 oct): el pelo corta en seco en la frente, como un casquete, y las cejas son trazos finos y a trozos que flotan",
