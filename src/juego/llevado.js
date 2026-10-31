@@ -384,6 +384,7 @@ export function crearLlevado(j) {
   function montar(l) {
     vaciar();
     const mh = j.mh; if (!mh || !l) return;
+    if (!l.cintura && !l.espalda && !l.hombro && !l.der && !l.izq) return; // nada encima: ni se mide el cuerpo
     // el cuerpo, medido solo si ha cambiado lo que lleva puesto (cuesta unos milisegundos)
     const clave = JSON.stringify([mh.capas, mh.hechuras, mh.nivel]);
     if (!medida || clave !== claveMedida) { medida = medir(mh, j.raiz); claveMedida = clave; }
