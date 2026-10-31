@@ -50,7 +50,7 @@ for (const f of readdirSync(carpeta).filter(f => f.endsWith('.glb'))) {
   comprobar(`${f}: la ropa engorda y adelgaza con el cuerpo, pero no lleva las formas de la cara`,
     ['peso_mas', 'peso_menos', 'musculo_mas', 'musculo_menos'].every(k => ft.includes(k)) && !ft.some(k => /^(cara|nariz|menton)/.test(k)), ft.join(', '));
   const tinte = (s) => { const n = nodo(s), e = n && n.getExtras(); return e && e.tinte ? `${e.tinte}/${e.ref}` : null; };
-  const piezas = { piel: 'piel', vello: 'pelo', iris_l: 'ojos', iris_r: 'ojos', ...(sexo === 'hombre' ? { pelo: 'pelo', orejas: 'piel', barba_corta: 'pelo', barba_bigote: 'pelo' } : {}) };
+  const piezas = { piel: 'piel', vello: 'pelo', cejas: 'pelo', iris_l: 'ojos', iris_r: 'ojos', ...(sexo === 'hombre' ? { pelo: 'pelo', orejas: 'piel', barba_corta: 'pelo', barba_bigote: 'pelo' } : {}) };
   const mal_ = Object.entries(piezas).filter(([s, t]) => !(tinte(s) || '').startsWith(t + '/'));
   comprobar(`${f}: piel, pelo, cejas, barba e iris llevan su tinte y su color de referencia`, !mal_.length, mal_.map(([s]) => `${s}: ${tinte(s)}`).join(', '));
   comprobar(`${f}: el blanco del ojo no cambia de color (sin tinte)`, nodo('ojo_l') && !tinte('ojo_l'));
