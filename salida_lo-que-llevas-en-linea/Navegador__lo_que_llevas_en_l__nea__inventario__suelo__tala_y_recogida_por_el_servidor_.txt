@@ -1,0 +1,38 @@
+  OK   PC: el juego carga — []
+  OK   PC: el terreno de alrededor llega
+  OK   PC: se conecta y le llega lo que lleva en el servidor
+El arcón de pruebas, por el servidor
+  OK   PC coge un hacha y el servidor la tiene en su mano
+Talar, por el servidor
+  OK   hay un árbol cerca — {'id': 'arbol:33,122', 'x': 3.287697557359934, 'z': 12.22093643527478, 'd': 8.853968099191395}
+  OK   PC lo tiene al alcance
+  OK   a golpes, el árbol cae (el servidor lo ha talado) — ¡El árbol cae! Deja tronco delgado y 2 ramas.
+  OK   en el servidor: el tocón y, en su suelo, el tronco y las ramas
+  OK   y en la página, lo mismo cuando ha caído
+Soltar y coger del suelo, por el servidor
+  OK   PC suelta el hacha: en el servidor está en el suelo y ya no la lleva
+  OK   y la página la ve en el suelo
+  OK   PC coge las ramas: van a lo que lleva en el servidor
+  OK   y la página lo ve en lo que lleva
+Recoger, por el servidor
+  OK   hay algo que recoger — {'id': 'ramas:27', 'tipo': 'ramas'}
+  OK   PC lo recoge: el servidor lo da por recogido y va a lo que lleva
+  OK   nada de eso se guarda en el navegador
+Al recargar, vuelve del servidor
+  OK   PC otra vez: el juego carga — []
+  OK   PC otra vez: el terreno de alrededor llega
+  OK   PC otra vez: se conecta y le llega lo que lleva en el servidor
+  OK   es el mismo jugador
+  OK   lleva lo que tenía en el servidor (las ramas, sin el hacha)
+  OK   el hacha sigue en el suelo y el árbol, talado
+Otro jugador lo ve
+  OK   móvil: el juego carga — []
+  OK   móvil: el terreno de alrededor llega
+  OK   móvil: se conecta y le llega lo que lleva en el servidor
+  OK   el móvil es otro jugador
+  OK   y ve el hacha en el suelo y el árbol talado
+  OK   y el tocón se dibuja en su pantalla
+  OK   PC: sin errores en la consola — []
+  OK   móvil: sin errores en la consola — []
+
+TODO CORRECTO
