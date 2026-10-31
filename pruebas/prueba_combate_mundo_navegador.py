@@ -207,7 +207,11 @@ with sync_playwright() as p:
     mv.evaluate(f"window.__rosa('pointerdown', {x0 + w / 2}, {y0 + w * 0.85})")
     mv.wait_for_function(f'{C}.L.carga() > 0.05', timeout=60000); e = estado(mv)
     comprobar('móvil: abajo en la rosa es clavar (la estocada)', e['accion'] == 'preparando' and e['linea'] == 'estocada', str(e))
-    mv.evaluate(f"window.__rosa('pointerup', {x0 + w / 2}, {y0 + w * 0.85})"); mv.wait_for_timeout(120); e = estado(mv)
+    mv.evaluate(f"window.__rosa('pointerup', {x0 + w / 2}, {y0 + w * 0.85})")
+    # soltado pronto, sale al llegar a la carga mínima (con tarjeta gráfica se llega aquí antes de eso)
+    try: mv.wait_for_function(f'{C}.L.accion !== "preparando"', timeout=10000)
+    except Exception: pass
+    e = estado(mv)
     comprobar('móvil: levantar el dedo lanza el golpe', e['accion'] in ('lanzando', 'golpeando', 'recuperando'), str(e))
     libre(mv)
     mv.evaluate("document.getElementById('cmbParar').dispatchEvent(new PointerEvent('pointerdown', { pointerId: 8, pointerType: 'touch', bubbles: true }))")
