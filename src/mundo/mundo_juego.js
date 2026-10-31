@@ -2,8 +2,8 @@
 // mapa del mundo, por trozos de 64 m hechos en un hilo aparte (src/mundo/terreno_trozos.js), con rejilla de 1 m cerca y
 // más basta lejos; alrededor, el mar. La escena tiene su 0 en el sitio de salida del jugador (`origen`: uno de los de
 // src/logica/whitholm.js; si no se da, el común, SALIDA): x y z, en metros desde él, y la altura, desde el suelo de ese
-// sitio (así lo que se construye junto a la salida queda a ras de
-// suelo, como en el llano de antes, hasta que llegue «Construir en el mundo»).
+// sitio. Lo que se construye va sobre el terreno de verdad (cada construcción, a la altura del suelo donde empieza) y
+// los cimientos alisan el suelo de debajo (src/logica/nivelado.js): nivelar() rehace los trozos que tocan.
 //
 // El mapa se genera antes (lo hace el menú de la demo, con su barra de progreso: tarda unos segundos) y llega hecho.
 import * as THREE from 'three';
@@ -12,6 +12,7 @@ import { SALIDA, ISLA, dentroDeIsla, alturaMundo } from '../logica/whitholm.js';
 import { crearGestor, ANILLOS, LADO as LADO_TROZO, claveTrozo } from '../logica/trozos.js';
 import { crearTerrenoTrozos } from './terreno_trozos.js';
 import { materialSuelo } from '../mapa/suelo.js';
+import { nivelar as conMarcas } from '../logica/nivelado.js';
 
 const movil = typeof innerWidth !== 'undefined' && Math.min(innerWidth, innerHeight) < 700;
 // los anillos de detalle: en el PC, los del juego (src/logica/trozos.js); en el móvil, los de la vista de juego del mapa
@@ -22,8 +23,9 @@ export const ORILLA = 0.15;  // m sobre el mar (la lámina del mar está a 0,05)
 export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
   const O = { x: origen.x, z: origen.z };
   const paisaje = crearPaisaje(mapa);
-  const altW = alturaMundo(paisaje);
-  const y0 = altW(O.x, O.z);          // el suelo del sitio de salida es el 0 de la escena
+  const altBase = alturaMundo(paisaje);
+  const y0 = altBase(O.x, O.z);       // el suelo del sitio de salida es el 0 de la escena
+  let altW = altBase;                 // la altura exacta, con el suelo nivelado
   const grupo = new THREE.Group(); grupo.name = 'trozos'; grupo.position.y = -y0;
   escena.add(grupo);
   const gestor = crearGestor({ anillos: ANILLOS_MUNDO, limites: ISLA });
@@ -48,6 +50,14 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
     const y = terreno.alturaEn(xm, zm);
     return (y === null ? altW(xm, zm) : y) - y0;
   }
+  // El suelo nivelado para construir: las marcas del mundo (src/logica/nivelado.js), en metros de la escena como todo
+  // lo del mundo de construcción; aquí se pasan a metros del mundo para los trozos.
+  function nivelar(marcasEscena) {
+    const w = (marcasEscena || []).map(m => ({ x: m.x + O.x, z: m.z + O.z, y: m.y + y0, r: m.r, borde: m.borde }));
+    altW = conMarcas(altBase, w);
+    return terreno.ponerMarcas(w);
+  }
+
   // la altura sobre el nivel del mar (m)
   const sobreMar = (x, z) => altura(x, z) + y0;
 
@@ -79,6 +89,6 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
     return ms;
   }
 
-  return { altura, sobreMar, seco, andable, paso, terreno, paisaje, grupo, mar, y0,
+  return { altura, sobreMar, seco, andable, paso, nivelar, terreno, paisaje, grupo, mar, y0,
     get listo() { return listo; }, salida: O, isla: ISLA };
 }

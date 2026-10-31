@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-10-31T00:22:40+00:00",
-  "tarea": "Construir en el mundo, a la altura del suelo (valravnx, 30 oct: «relativamente prioritario»): lo que se coloca (piezas, muebles, objetos) se pone sobre el terreno de verdad, no en la altura 0, y los suelos de base alisan el terreno de debajo para construir encima; hoy quedan cosas flotando o hundidas. Es cambiar la malla del mundo, como al cavar: una acción con autor por la lógica pura, que el servidor guarda y reparte. Con la rejilla anclada al terreno y la brocha redonda para nivelar en ladera (GDD)",
-  "hito": "mundo-juego",
-  "rama": "trabajo/20261031-0022"
+  "inicio": "2026-10-31T02:24:31+00:00",
+  "tarea": "El juego en línea usa lo que llevas y el suelo del servidor: el panel de inventario, soltar y coger del suelo y lo que se entrega a las obras pasan por el servidor, y talar y trocear también, con lo que dejan en el suelo, para que nada de lo que llevas salga solo del navegador. Mientras el servidor no conozca el mundo, se fía del árbol que dice el navegador si estás a su lado (decisión provisional)",
+  "hito": "equipo",
+  "rama": "trabajo/20261031-0224"
  },
  "B": {
   "inicio": "2026-10-31T00:54:33+00:00",

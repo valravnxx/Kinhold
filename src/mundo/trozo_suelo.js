@@ -8,6 +8,7 @@
 // con las alturas de verdad del vecino, no recortadas.
 import { mallaTrozo, alturaDeTrozo, LADO } from '../logica/trozos.js';
 import { colorJuego } from './color_suelo.js';
+import { nivelar, marcasEn } from '../logica/nivelado.js';
 
 const BORDE = 3;
 const _c = [0, 0, 0];
@@ -15,10 +16,12 @@ const _c = [0, 0, 0];
 // paisaje: el de crearPaisaje(mapa); (i, j): el trozo; paso: su rejilla (m).
 // Devuelve lo de mallaTrozo (posiciones relativas a la esquina x0, z0) más normales, colores (lineales), uvs, y ms (lo
 // que ha tardado). recortar: solo para romper la prueba a propósito (los vecinos del borde, recortados al trozo).
-export function hacerSueloTrozo(paisaje, i, j, paso, { lado = LADO, recortar = false } = {}) {
+// marcas: el suelo nivelado para construir (src/logica/nivelado.js), en metros del mundo; solo cuentan las que tocan el trozo.
+export function hacerSueloTrozo(paisaje, i, j, paso, { lado = LADO, recortar = false, marcas = null } = {}) {
   const t0 = typeof performance !== 'undefined' ? performance.now() : Date.now();
-  const altura = alturaDeTrozo(paisaje, i, j, lado);
   const x0 = i * lado, z0 = j * lado, c = lado / paso, n = c + 1, m = n + 2 * BORDE;
+  const margen = (BORDE + 1) * paso;
+  const altura = nivelar(alturaDeTrozo(paisaje, i, j, lado), marcasEn(marcas, x0 - margen, z0 - margen, x0 + lado + margen, z0 + lado + margen));
   // la rejilla ampliada: E[(b + BORDE) · m + (a + BORDE)] es la altura del punto (a, b) del trozo, con a y b de -BORDE a
   // n - 1 + BORDE
   const E = new Float32Array(m * m);
