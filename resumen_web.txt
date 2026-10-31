@@ -1,0 +1,50 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2382 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2112 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1704 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2180 KB
+
+== Construir demo única
+      1968 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2706 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1698 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2154 KB
+dist/kinhold_trozos.html 1700 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Web de progreso
+ - faltan 1 traducciones en proyecto/idiomas/en.json (añade la clave en español con su traducción):
+     · Tejados pisables y menú de Usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en Usar (o dejándolo pulsado en el móvil), se elige qué usar si hay varias cosas al alcance
+ - faltan 1 traducciones en proyecto/idiomas/ru.json (añade la clave en español con su traducción):
+     · Tejados pisables y menú de Usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en Usar (o dejándolo pulsado en el móvil), se elige qué usar si hay varias cosas al alcance
+!! FALLA: node herramientas/construir_web.mjs
+
+== Navegador: web
+  OK   «ahora mismo» en ruso
+  OK   sin errores en consola (movil)
+
+Resultado: 6 fallos: roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso, roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso
+!! FALLA: python3 pruebas/prueba_web.py /tmp/kinhold_capturas/web
+
+HAY FALLOS
+tardó 122 s

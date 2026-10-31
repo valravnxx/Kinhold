@@ -1,0 +1,5 @@
+ERRORES:
+ - faltan 1 traducciones en proyecto/idiomas/en.json (añade la clave en español con su traducción):
+     · Tejados pisables y menú de Usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en Usar (o dejándolo pulsado en el móvil), se elige qué usar si hay varias cosas al alcance
+ - faltan 1 traducciones en proyecto/idiomas/ru.json (añade la clave en español con su traducción):
+     · Tejados pisables y menú de Usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en Usar (o dejándolo pulsado en el móvil), se elige qué usar si hay varias cosas al alcance
