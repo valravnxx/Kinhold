@@ -90,9 +90,9 @@
     },
     {
      "nombre": "Pruebas en la gráfica del PC de valravnx cuando lo permite (si no, en GitHub Actions)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T08:28:49+01:00",
-     "rama": "trabajo/20261031-0830-grafica"
+     "fin": "2026-10-31T09:02:45+01:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."

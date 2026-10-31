@@ -11,11 +11,5 @@
   "tarea": "Volver donde lo dejaste (valravnx, 31 oct): el navegador recuerda quién eres aunque cierres la pestaña, y el servidor guarda dónde estaba cada jugador al salir y lo pone ahí al volver a entrar (un wipe lo borra)",
   "hito": "mundo-juego",
   "rama": "trabajo/20261031-0500-volver"
- },
- "chat:trabajo/20261031-0830-grafica": {
-  "inicio": "2026-10-31T08:28:49+01:00",
-  "tarea": "Pruebas en la gráfica del PC de valravnx cuando lo permite (si no, en GitHub Actions)",
-  "hito": "infra",
-  "rama": "trabajo/20261031-0830-grafica"
  }
 }

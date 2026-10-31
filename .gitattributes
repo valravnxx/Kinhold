@@ -1,3 +1,9 @@
 proyecto/diario.json merge=kinhold-json
 proyecto/idiomas/*.json merge=kinhold-json
 proyecto/sesion.json merge=kinhold-json
+
+# Las pruebas también se hacen en Windows (el PC de valravnx, herramientas/pc_grafica/): los scripts de bash, con LF
+# aunque Git convierta los finales de línea; los .bat y .ps1 de Windows, con CRLF.
+*.sh text eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
