@@ -69,13 +69,15 @@ with sync_playwright() as p:
         X, Z = lad['x'], lad['z']
         print('  ladera en', X, Z, 'pendiente', round(lad['g'], 3))
         # al sitio: el jugador, un poco más abajo, y la cámara mirando la ladera de lado
-        pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x - 5; k.pj.z = z + 5; k.pj.k = 0; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.cam.yaw = 0.8; k.cam.pitch = 0.35; k.cam.dist = 13; }}', [X, Z])
+        # la cámara detrás del personaje, mirando hacia la obra (que va más allá de él)
+        ENCUADRE = f'([x, z]) => {{ const k = {K}; k.pj.x = x - 3; k.pj.z = z + 5; k.pj.k = 0; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.cam.yaw = Math.atan2(-4, 6); k.cam.pitch = 0.32; k.cam.dist = 9; }}'
+        pg.evaluate(ENCUADRE, [X + 1, Z + 1])
         pg.wait_for_function(ESPERAR_TERRENO, timeout=240000); pg.wait_for_timeout(1200)
         base = pg.evaluate(f'([x, z]) => {{ const m = {K}.mundoJ, r = []; for (const [a, b] of [[0, 0], [2, 0], [0, 2], [2, 2], [-1, 3], [12, -9], [-11, 10]]) r.push(m.altura(x + a, z + b)); return r; }}', [X, Z])
         pg.screenshot(path=f'{SALIDA}/{nombre}_ladera_antes.png')
 
         # el mojón, en el suelo
-        pg.evaluate(f"([x, z]) => {{ const k = {K}; k.cambiarModo('construir'); k.accionArcon({{ tipo: 'rellenar', cantidad: 50 }}); k.seleccionar('mojon', 'mojon'); k.apuntar(x - 3, z + 3); k.colocar(); }}", [X, Z])
+        pg.evaluate(f"([x, z]) => {{ const k = {K}; k.cambiarModo('construir'); k.accion({{ tipo: 'rellenar', cantidad: 50 }}); k.seleccionar('mojon', 'mojon'); k.apuntar(x - 3, z + 3); k.colocar(); }}", [X, Z])
         mj = pg.evaluate(f'(() => {{ const k = {K}, g = k.escena.children.find(o => o.name === "mojon") || null; return {{ mojon: k.mundo.mojon }}; }})()')
         comprobar('el mojón se pone', bool(mj['mojon']), json.dumps(mj))
         # dos cimientos y un muro encima de uno, empezando en (X, Z)
@@ -95,7 +97,7 @@ with sync_playwright() as p:
         }}""", [X, Z, MUTAR == '1'])
         print('  ', json.dumps(r))
         comprobar('la construcción se pone (cimientos, cerca y muro, terminados)', r['n'] >= 1 and len(r['piezas']) >= 4 and not any('*' in t for t in r['piezas']), json.dumps(r['piezas']))
-        comprobar('la construcción queda a la altura del suelo donde empieza (no a 0)', r['oy'] is not None and abs(r['oy'] - base[0]) < 0.05 and abs(r['oy']) > 0.3, f"oy {r['oy']}, suelo {base[0]:.3f}")
+        comprobar('la construcción queda a la altura del suelo donde empieza (no a 0)', r['oy'] is not None and abs(r['oy'] - base[0]) < 0.05 and max(base[:5]) - min(base[:5]) > 0.2, f"oy {r['oy']}, suelo {base[0]:.3f}, desnivel debajo {max(base[:5]) - min(base[:5]):.2f} m")
         pg.wait_for_timeout(500)
         pg.wait_for_function(ESPERAR_TERRENO, timeout=240000); pg.wait_for_timeout(800)
         d = pg.evaluate(f"""([x, z]) => {{ const k = {K}, m = k.mundoJ, c = k.mundo.construcciones[0], h = (a, b) => m.terreno.alturaEn(a + m.salida.x, b + m.salida.z) - m.y0;
@@ -115,11 +117,11 @@ with sync_playwright() as p:
         y = pg.evaluate(f'{K}.pj.y')
         comprobar('el personaje pisa el cimiento (a la altura de la construcción)', abs(y - r['oy']) < 0.6 and y > r['oy'] - 0.01, f'{y:.3f} / oy {r["oy"]:.3f}')
         # la captura de cerca, con el personaje fuera, mirando la obra de lado
-        pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x - 4; k.pj.z = z + 6; k.pj.k = 0; k.cambiarModo("mover"); k.cam.yaw = 0.8; k.cam.pitch = 0.3; k.cam.dist = 10; }}', [X, Z]); pg.wait_for_timeout(2000)
+        pg.evaluate(f'{K}.cambiarModo("mover")'); pg.evaluate(ENCUADRE, [X + 1, Z + 1]); pg.wait_for_timeout(2500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_ladera_cimientos.png')
         # la brocha redonda: alisa un círculo de 2 m a 30 cm por encima del suelo de su centro
         bx, bz = X - 6, Z - 4
-        b = pg.evaluate(f"""([x, z]) => {{ const k = {K}, y = k.mundoJ.altura(x, z) + 0.3; const r = k.accionArcon({{ tipo: 'nivelar', x, z, y, radio: 2 }}); k.reconstruir(); return {{ ok: r.ok, y }}; }}""", [bx, bz])
+        b = pg.evaluate(f"""([x, z]) => {{ const k = {K}, y = k.mundoJ.altura(x, z) + 0.3; const r = k.accion({{ tipo: 'nivelar', x, z, y, radio: 2 }}); k.reconstruir(); return {{ ok: r.ok, y }}; }}""", [bx, bz])
         pg.wait_for_timeout(300); pg.wait_for_function(ESPERAR_TERRENO, timeout=240000)
         hb = pg.evaluate(f'([x, z]) => {{ const m = {K}.mundoJ; return [m.altura(x, z), m.altura(x + 1.2, z - 1)]; }}', [bx, bz])
         comprobar('la brocha alisa un círculo a su altura', b['ok'] and abs(hb[0] - b['y']) < 0.03 and abs(hb[1] - b['y']) < 0.03, f"{hb} / {b['y']:.3f}")

@@ -1820,6 +1820,8 @@ window.__kinhold = {
   // los sitios de salida (src/logica/whitholm.js): el común y si uno es de la lista de la salida al azar
   salidas: { comun: SALIDA, total: SALIDAS.length, deLista: (x, z) => SALIDAS.some(s => s[0] === x && s[1] === z) },
   cambiarModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+  // una acción del mundo, como las del jugador (para las pruebas: la brocha de nivelar aún no tiene botón)
+  accion: (a) => accion(a),
   plantaDeco, get teclas() { return [...teclas]; }, get fantasmaForma() { return fantasmaForma; },
   seleccionar(clase, tipo) { estado.sel = { clase, tipo }; estado.dir = 0; marcarSeleccion(); evaluarColocacion(); },
   apuntar(x, z, y = 0) { estado.puntero = { x, z, ySuperficie: y }; evaluarColocacion(); },
