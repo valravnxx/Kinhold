@@ -1,0 +1,33 @@
+PC: recoger cada cosa
+  OK   en la demo hay ramas, piedra, sílex, ortigas y hierba larga — {'ramas': 30, 'piedra': 14, 'ortiga': 10, 'hierba_larga': 12, 'silex': 8}
+  OK   cada cosa en su zona: ramas en el bosque, fibra en el claro, piedra en la ladera, sílex en la caliza — {'ramas': True, 'fibra': True, 'piedra': True, 'silex': True}
+  OK   ramas: junto al punto, Usar se enciende
+  OK   ramas: Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Rama.»
+  OK   ramas: el punto ya no está
+  OK   ramas: queda en el registro con autor
+  OK   piedra: junto al punto, Usar se enciende
+  OK   piedra: Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Piedra.»
+  OK   piedra: el punto ya no está
+  OK   piedra: queda en el registro con autor
+  OK   silex: junto al punto, Usar se enciende
+  OK   silex: Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Sílex.»
+  OK   silex: el punto ya no está
+  OK   silex: queda en el registro con autor
+  OK   ortiga: junto al punto, Usar se enciende
+  OK   ortiga: Usar lo recoge y va al inventario — 0 → 4 · «Recoges: 4 × Fibra cruda.»
+  OK   ortiga: el punto ya no está
+  OK   ortiga: queda en el registro con autor
+  OK   hierba_larga: junto al punto, Usar se enciende
+  OK   hierba_larga: Usar lo recoge y va al inventario — 0 → 2 · «Recoges: 2 × Fibra cruda.»
+  OK   hierba_larga: el punto ya no está
+  OK   hierba_larga: queda en el registro con autor
+  OK   pasado su tiempo, el punto vuelve a salir
+     Recoges: 1 × Rama.
+  OK   al recargar la página, lo recogido sigue sin salir (guardado)
+  OK   al recargar, lo recogido sigue en el inventario
+  FALLA sin errores en la página (PC) — Failed to load resource: the server responded with a status of 404 (File not found); Failed to load resource: the server responded with a status of 404 (File not found)
+Móvil: recoger con el botón Usar
+  OK   móvil, ortiga: el botón Usar lo recoge — 0 → 2
+  OK   móvil, ramas: el botón Usar lo recoge — 0 → 3
+  FALLA sin errores en la página (móvil) — Failed to load resource: the server responded with a status of 404 (File not found)
+FALLAN 2: sin errores en la página (PC), sin errores en la página (móvil)
