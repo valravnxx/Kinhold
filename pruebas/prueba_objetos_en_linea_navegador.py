@@ -18,7 +18,7 @@ MUTAR = bool(os.environ.get('MUTAR'))
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-for c in ['v1', 'taller-v18', 'taller-anim-v1']:
+for c in ['v1', 'taller-v19', 'taller-anim-v1']:
     shutil.copytree(os.path.join(RAIZ, f'docs/recursos/personajes/{c}'), f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -59,14 +59,15 @@ def captura(pg, ruta):
     try: pg.screenshot(path=ruta)
     except Exception as e: print('  (sin captura:', str(e)[:80], ')')
 
-def entrar(nav, nombre, vista, movil, ctx=None):
-    # con ctx, otra página en el mismo navegador (la misma ficha: el mismo jugador)
+def entrar(nav, nombre, vista, movil, ctx=None, pg=None):
+    # con pg, la misma pestaña otra vez (recargar: la ficha va en sessionStorage, que es de cada pestaña)
     nuevo = ctx is None
     if nuevo: ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
     if MUTAR and nuevo:
         ctx.add_init_script("""(() => { const s = WebSocket.prototype.send;
           WebSocket.prototype.send = function (d) { if (String(d).includes('"tipo":"objeto"')) return; return s.call(this, d); }; })()""")
-    pg = ctx.new_page(); err = []
+    if pg is None: pg = ctx.new_page()
+    err = []
     pg.on('pageerror', lambda e, err=err: err.append(str(e)))
     pg.on('console', lambda m, err=err: err.append(m.text) if m.type == 'error' else None)
     pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
@@ -98,7 +99,8 @@ try:
         A.wait_for_timeout(1200)   # que el servidor sepa dónde está (la presencia)
         comprobar('PC lo tiene al alcance', A.evaluate(f"!!{K}.arbolCercano()"))
         A.evaluate(f"{K}.usar()")
-        cayendo = esperar(A, f"{K}.talaV.cayendo > 0", 90000)
+        # a 1 fotograma por segundo la caída puede acabar entre dos miradas: vale también si ya está talado
+        cayendo = esperar(A, f"{K}.talaV.cayendo > 0 || !!{K}.talaV.tala.estado[{json.dumps(arbol['id'])}]?.vuelve", 90000)
         comprobar('a golpes, el árbol cae (el servidor lo ha talado)', cayendo, A.inner_text('#aviso'))
         A.wait_for_timeout(400); captura(A, f'{SALIDA}/pc_1_cae.png')
         d = servidorDice(lambda d: d['tala']['estado'].get(arbol['id'], {}).get('vuelve', 0) > 0 and enSuelo(d, 'rama'))
@@ -136,8 +138,7 @@ try:
         captura(A, f'{SALIDA}/pc_3_inventario.png')
 
         print('Al recargar, vuelve del servidor')
-        A.close()
-        ctxA, A, errA = entrar(nav, 'PC otra vez', {'width': 1280, 'height': 800}, False, ctxA)
+        ctxA, A, errA = entrar(nav, 'PC otra vez', {'width': 1280, 'height': 800}, False, ctxA, A)
         comprobar('es el mismo jugador', A.evaluate(f"{K}.enLinea.red.yo") == yo)
         comprobar('lleva lo que tenía en el servidor (las ramas, sin el hacha)', esperar(A, f"JSON.stringify({K}.inventario.lugares).includes('\"rama\"') && !JSON.stringify({K}.inventario.lugares).includes('hacha_hierro')", 10000))
         comprobar('el hacha sigue en el suelo y el árbol, talado', esperar(A, f"{K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'hacha_hierro') && !!{K}.talaV.tala.estado[{json.dumps(arbol['id'])}]?.vuelve", 10000))
