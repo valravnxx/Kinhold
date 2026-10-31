@@ -1,0 +1,42 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2362 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2118 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1710 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2186 KB
+
+== Construir demo única
+      1965 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2688 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1704 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2160 KB
+dist/kinhold_trozos.html 1706 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: objetos en el suelo
+  OK   móvil: «Soltar» deja el hacha en el suelo
+  OK   móvil: el botón Usar la coge
+  OK   sin errores en la página (móvil)
+TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 94 s
