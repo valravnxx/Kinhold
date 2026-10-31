@@ -126,7 +126,15 @@ console.log('Guardar y cargar (los navegadores y el servidor: por tiempo transcu
   const t2 = cargarTala(almacen, new Tala(arboles));
   comprobar('el tocón sigue al cargar, con su hora de volver', !t2.enPie(JOVEN, T0 + 1000) && t2.enPie(JOVEN, T0 + DA.joven.vuelve + 60000));
   comprobar('y la muesca del adulto también', t2.progreso(ADULTO) > 0 && Math.abs(t2.progreso(ADULTO) - 1 / GOLPES.adulto.hierro) < 1e-9);
-  comprobar('lo de árboles que ya no están se descarta', Object.keys(cargarTala(almacen, new Tala([arboles[1]])).estado).join() === ADULTO);
+  // los árboles llegan al acercarse (src/mundo/vegetacion_mundo.js): lo de uno que aún no está se queda y vale al llegar
+  const t3 = cargarTala(almacen, new Tala([arboles[1]]));
+  comprobar('lo de un árbol aún sin cargar no cuenta (no hay tocón ni árbol)', !t3.enPie(JOVEN, T0 + 1000) && t3.tocones(T0 + 1000).length === 0);
+  t3.anadir([arboles[0]]);
+  comprobar('y en cuanto llega, sigue talado', !t3.enPie(JOVEN, T0 + 1000) && t3.tocones(T0 + 1000).length === 1);
+  t3.quitar([JOVEN]);
+  comprobar('si se va y vuelve, también; y se vuelve a guardar', (t3.anadir([arboles[0]]), !t3.enPie(JOVEN, T0 + 1000)) && JSON.stringify(t3.exportar()).includes(JOVEN));
+  const raroId = cargarTala({ getItem: () => JSON.stringify({ version: VERSION_TALA, estado: { 'dragon': { vuelve: T0 } } }) }, new Tala(arboles));
+  comprobar('lo que no es un árbol se descarta', Object.keys(raroId.estado).length === 0);
   comprobar('un guardado roto o sin versión se descarta', !migrarTala({ estado: {} }) && !migrarTala(null) && !migrarTala({ version: VERSION_TALA + 1, estado: {} }));
   const roto = { d: { 'kinhold.tala': '{no' }, getItem(k) { return this.d[k]; } };
   comprobar('un guardado ilegible no rompe nada', Object.keys(cargarTala(roto, new Tala(arboles)).estado).length === 0);

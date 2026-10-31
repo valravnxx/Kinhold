@@ -5,10 +5,11 @@
 //   - cada árbol es de una de las especies de su bioma (las de MEZCLA_BOSQUE), y en la isla salen varias especies
 //   - la hierba solo dentro de su círculo, y más hierba en los claros que bajo el bosque cerrado
 // Uso: node pruebas/prueba_vegetacion.mjs    MUTAR=1 → el segundo cuadro con otra semilla: tiene que fallar.
+// MUTAR=2 → dos de los cuatro trozos con otra semilla: tiene que fallar.
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearPaisaje, MEZCLA_BOSQUE, bosqueEn } from '../src/logica/paisaje.js';
 import { alturaMundo, SALIDA, SALIDAS } from '../src/logica/whitholm.js';
-import { vegetacionEn } from '../src/logica/vegetacion.js';
+import { vegetacionEn, vegetacionTrozo, LADO_VEG } from '../src/logica/vegetacion.js';
 
 const MUTAR = process.env.MUTAR || '';
 let fallos = 0;
@@ -34,6 +35,21 @@ comprobar('las piedras de la parte en común, iguales', firma(en(a.piedras, comu
 const enAmbos = (e) => Math.hypot(e.x - X, e.z - Z) < 39 && Math.hypot(e.x - X - 20, e.z - Z) < 39;
 comprobar('la hierba de donde se solapan, igual', firma(a.hierba.filter(enAmbos)) === firma(b.hierba.filter(enAmbos)) && a.hierba.filter(enAmbos).length > 0, `${a.hierba.filter(enAmbos).length}`);
 comprobar('la hierba, solo dentro de su círculo', a.hierba.every(e => Math.hypot(e.x - X, e.z - Z) <= 40.5));
+
+// por trozos (los que el juego va haciendo alrededor del jugador): cuatro trozos juntos dan lo mismo que su cuadro
+{
+  const i0 = Math.floor(X / LADO_VEG), j0 = Math.floor(Z / LADO_VEG), L = LADO_VEG;
+  const c = { x0: i0 * L, z0: j0 * L, x1: (i0 + 2) * L, z1: (j0 + 2) * L };
+  const g = vegetacionEn(pai, alt, sem, c, c), suyo = (e) => e.x >= c.x0 && e.x < c.x1 && e.z >= c.z0 && e.z < c.z1;
+  const t = { arboles: [], piedras: [], hierba: [], flores: [], matas: [] };
+  for (const [di, dj] of [[0, 0], [1, 0], [0, 1], [1, 1]]) {
+    const v = vegetacionTrozo(pai, alt, MUTAR === '2' && di ? sem + 1 : sem, i0 + di, j0 + dj, true);
+    for (const k of Object.keys(t)) t[k].push(...v[k]);
+  }
+  const igual = Object.keys(t).every(k => firma(g[k].filter(suyo)) === firma(t[k]));
+  comprobar('cuatro trozos juntos dan lo mismo que su cuadro (árboles, piedras, hierba, flores y matas), sin repetir nada', igual && t.hierba.length > 0,
+    Object.keys(t).map(k => `${k} ${t[k].length}/${g[k].filter(suyo).length}`).join(', '));
+}
 
 // por la isla: en varios sitios de salida y alrededor
 let enAgua = 0, malEspecie = 0, total = 0;

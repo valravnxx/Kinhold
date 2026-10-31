@@ -139,3 +139,15 @@ Prueba: `node pruebas/prueba_tintes.mjs` (con `MUTAR=1` mira la taller-v12, sin 
   Desde taller-v16, en el perfil se cuentan también los brazos girados hacia abajo (la capa cae por encima de ellos a los
   costados) y los pliegues son más hondos por detrás. Que se mueva al andar no va en el modelo: lo hace el juego
   (`VUELO_GLSL` en `src/personajes/makehuman.js`). Prueba: `node pruebas/prueba_manto.mjs` (con `MUTAR=1` mira la v15).
+
+## Cuello de la ropa y toca (desde taller-v18)
+
+- **La piel bajo el escote:** por delante la piel sigue hasta unos 11 cm por debajo del cuello (7 cm por detrás), dentro
+  de los hombros, para que su borde quede siempre tapado por la ropa. Antes acababa justo en el escote y su borde, a
+  trozos por el diezmado, se veía como una mancha de piel rota con huecos negros a los lados del cuello.
+- **Bajo la toca no va la cofia** (`piezasCabeza` en `src/logica/aspecto.js`; las fotos del taller hacen lo mismo).
+- La toca lleva `colgar`, pero en el centro de la garganta lo más saliente es el pecho y apenas cambia: bajo la barbilla
+  aún se mete hacia el cuello (aún mal).
+- Para probar más deprisa: `SOLO=mujer PRENDAS=toca FOTOS=prendas python3 herramientas/taller/vestir_mpfb.py <carpeta>`
+  (solo la mujer y solo esas prendas; nunca se publica así).
+- Prueba: `node pruebas/prueba_toca.mjs` (con `MUTAR=1` mira la taller-v17 y falla).
