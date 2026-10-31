@@ -1,0 +1,30 @@
+Lógica pura
+  OK   «ver» vale
+  OK   «ir» a un punto de la isla vale
+  OK   «ir» fuera de la isla no vale
+  OK   «ir» con números raros no vale
+  OK   «ir» junto a un autor con forma rara no vale
+  OK   otra cosa no vale
+  OK   junto a otro: a 1,6 m, a su altura y mirándole — {"x":11.223747499655182,"y":3,"z":18.969251700419694,"giro":-0.8707963267948967}
+  OK   una clave corta no se acepta como clave del servidor
+Sin clave en el servidor
+  OK   sin clave: no hay panel — {"tipo":"admin","id":1,"que":"ver","ok":false,"motivo":"Este servidor no tiene clave de admin."}
+  OK   clave demasiado corta: no hay panel — {"tipo":"admin","id":1,"que":"ver","ok":false,"motivo":"Este servidor no tiene clave de admin."}
+Con clave
+  OK   clave mal: no se ve nada — {"tipo":"admin","id":1,"que":"ver","ok":false,"motivo":"Clave de admin incorrecta."}
+  OK   sin clave en la petición: no se ve nada — {"tipo":"admin","id":2,"que":"ver","ok":false,"motivo":"Clave de admin incorrecta."}
+  OK   clave mal: no se va a ningún sitio — {"tipo":"admin","id":3,"que":"ir","ok":false,"motivo":"Clave de admin incorrecta."}
+  OK   clave buena: «ver» da los tres conectados — {"n":3,"yo":"jugador:27ae38e6"}
+  OK   con su posición — {"autor":"jugador:d2203c96","x":40,"y":5.5,"z":-30,"giro":1.1}
+  OK   el que se ha ido ya no sale
+  OK   «ir» a un punto: el servidor responde ese punto (la altura la pone el navegador) — {"tipo":"admin","id":3,"que":"ir","ok":true,"x":250.5,"y":null,"z":-1200}
+  OK   «ir» fuera de la isla: no — {"tipo":"admin","id":4,"que":"ir","ok":false,"motivo":"Petición de admin no válida."}
+  OK   «ir» junto a otro: a su lado y a su altura — {"tipo":"admin","id":5,"que":"ir","ok":true,"x":40.72575379428093,"y":5.5,"z":-31.425931776098295,"giro":-0.4707963267948966}
+  OK   «ir» junto a uno que no está: no — {"tipo":"admin","id":6,"que":"ir","ok":false,"motivo":"Ese jugador no está conectado."}
+  OK   «ir» junto a sí mismo: no — {"tipo":"admin","id":7,"que":"ir","ok":false,"motivo":"Ese jugador no está conectado."}
+  OK   cada petición queda en admin.jsonl con su autor — 8 líneas
+  OK   la clave no se apunta nunca
+  OK   a la quinta clave mal seguida se cierra la conexión — 1008
+  OK   el admin sigue conectado
+
+25 bien, 0 mal
