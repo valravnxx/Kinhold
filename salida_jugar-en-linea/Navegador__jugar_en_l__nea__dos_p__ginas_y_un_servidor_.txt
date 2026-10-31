@@ -1,0 +1,79 @@
+Página pc
+  OK   pc: «Jugar» del menú va en línea, al servidor de la dirección — /jugar/demo/prueba.html?hilos=1&servidor=ws%3A%2F%2F127.0.0.1%3A41311&modo=construir&enlinea=1
+  OK   pc: el menú ya no tiene modo en solitario ni Opciones
+  OK   pc: la construcción carga — []
+  OK   pc: el terreno de alrededor llega
+  OK   pc: se conecta al servidor
+  OK   pc: «Reiniciar» no está en línea
+  OK   pc: el estado de la conexión se ve arriba — En línea · 0 más
+Página movil
+  OK   movil: «Jugar» del menú va en línea, al servidor de la dirección — /jugar/demo/prueba.html?hilos=1&servidor=ws%3A%2F%2F127.0.0.1%3A41311&modo=construir&enlinea=1
+  OK   movil: el menú ya no tiene modo en solitario ni Opciones
+  OK   movil: la construcción carga — []
+  OK   movil: el terreno de alrededor llega
+  OK   movil: se conecta al servidor
+  OK   movil: «Reiniciar» no está en línea
+  OK   movil: el estado de la conexión se ve arriba — En línea · 1 más
+Construir en el mundo del servidor
+  OK   PC pone el mojón
+  OK   el móvil ve el mojón de PC
+  OK   PC pone dos cimientos y los termina (llevando material y trabajando, por el servidor) — 2 piezas, 0 obras
+  OK   el móvil construye sobre la obra de PC
+  OK   PC ve el cimiento del móvil, terminado
+  OK   y las dos lo dibujan terminado (sin el armazón de obra)
+  OK   las dos páginas tienen el mismo mundo
+  OK   en línea no se guarda nada en el navegador
+  OK   el servidor guarda las acciones con el autor de cada página — 25 acciones de 2 autores
+Verse el uno al otro
+  OK   el móvil ve a PC donde está
+  OK   PC ve al móvil donde está
+  OK   cada uno ve a uno solo (no a sí mismo)
+  OK   el móvil ve a PC con el cuerpo y la ropa que lleva puesta, como se ve ella — mujer:gambeson:{"piel":"morena","ojos":"verdes","pelo":"rubio","peinado":"cofia","barba":"ninguna","formas":{"altura":1,"peso":0.8,"musculo":0,"cara":0.6,"nariz":0,"nariz_larga":0,"menton":0}}:[{"prendas":{"camisa":"natural","calzas":"natural","tunica":"natural","vestido":"glasto_claro","gambeson":"natural","sobreveste":"rubia","manto":"natural","capucha":"natural","toca":"natural","zapatos":"natural","botas":"natural"},"blason":{"dibujo":"liso","color":"blanco"}},{"camisa":{"material":"lino","corte":"largo","tejido":"liso"},"calzas":{"material":"lino","corte":"largo","tejido":"liso"},"tunica":{"material":"lana","corte":"largo","tejido":"liso"},"vestido":{"material":"lana","corte":"largo","tejido":"liso"},"gambeson":{"material":"lino","corte":"largo","tejido":"liso"},"sobreveste":{"material":"lino","corte":"largo","tejido":"liso"},"manto":{"material":"lana","corte":"largo","tejido":"liso"},"capucha":{"material":"lana","corte":"largo","tejido":"liso"},"toca":{"material":"lino","corte":"largo","tejido":"liso"},"cota":{"material":"malla","corte":"largo","tejido":"liso"}}] / gambeson
+  OK   PC ve al móvil como el de por defecto (camisa y calzas, descalzo)
+  OK   los dos son personajes del taller (no el muñeco)
+  OK   el móvil ve a PC con su aspecto (morena, ojos verdes, alta, de más peso) — {"piel":"morena","ojos":"verdes","pelo":"rubio","peinado":"cofia","barba":"ninguna","formas":{"altura":1,"peso":0.8,"musculo":0,"cara":0.6,"nariz":0,"nariz_larga":0,"menton":0}}
+  OK   y a su altura (escala del modelo)
+  OK   con el mismo color de piel en las dos pantallas
+  OK   PC ve al móvil con el aspecto por defecto, igual que el móvil se ve — {"piel":"clara_rosada","ojos":"castanos","pelo":"castano_oscuro","peinado":"corto","barba":"corta","formas":{"altura":0,"peso":0,"musculo":0,"cara":0,"nariz":0,"nariz_larga":0,"menton":0}}
+  OK   cuando PC anda, el móvil lo ve andar — andar
+Construir una obra sin rehacer todo
+  OK   PC tiene la obra al alcance
+  FALLA PC se pone a construir
+  FALLA mientras construye, PC rehace solo la obra (nada entero) — {'todo': 0, 'pieza': 0}
+  FALLA y el otro tampoco rehace todo al verla avanzar — {'todo': 0, 'pieza': 0}
+Abrir un portillo en línea sin rehacer todo
+  OK   PC pone el marco de un portillo — {'x': -2, 'z': 3, 'obra': True, 'abierta': False}
+  FALLA PC termina el portillo
+  FALLA el móvil lo ve abrirse
+  FALLA al abrirlo, PC rehace solo el portillo (nada entero) — {'todo': 0, 'pieza': 0}
+  FALLA y el móvil, también solo el portillo — {'todo': 0, 'pieza': 0}
+  FALLA y en el móvil el portillo se ve abierto (la hoja girada) — 0
+Salir al menú y volver: sigue siendo el mismo
+  (volver al menú: 54.4 s)
+  FALLA el móvil vuelve a entrar en línea
+  FALLA con el mismo personaje (mismo autor) — jugador:840e9b25
+  OK   PC sigue viendo a uno solo, no a uno más — En línea · 1 más
+El servidor se apaga y vuelve
+  FALLA PC dice que se ha cortado y que vuelve a conectar — Se ha cortado la conexión con el servidor: volviendo a conectar…
+  OK   y ya no ve al otro
+  OK   sin conexión no se construye — Sin conexión con el servidor.
+  FALLA PC vuelve a conectar solo, sin recargar
+  OK   PC sigue con el mismo personaje (la ficha vale tras reiniciar el servidor)
+  OK   el móvil vuelve a conectar solo, sin recargar
+  OK   el móvil sigue con el mismo personaje (la ficha vale tras reiniciar el servidor)
+  OK   PC avisa de que ha vuelto — Conexión recuperada: sigues con el mismo personaje.
+  OK   el mundo es el de antes
+  OK   y se vuelven a ver
+  FALLA y se puede construir otra vez — 6 piezas
+Sin servidor no se juega
+  OK   un enlace a «Construir» sin enlinea pasa a en línea — http://127.0.0.1:50501/jugar/demo/prueba.html?modo=construir&servidor=ws%3A%2F%2F127.0.0.1%3A1&enlinea=1
+  FALLA sin servidor sale el cartel «Sin conexión», que tapa el juego
+  FALLA con su botón para volver a intentarlo, que se ve entero — no está
+  (sin captura: Page.screenshot: Timeout 30000ms exceeded.
+Call log:
+  - taking page screenshot
+ )
+  OK   pc: sin errores en la consola — []
+  OK   movil: sin errores en la consola — []
+
+15 FALLOS
