@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (22:57 UTC+1) — por el chat: pelear en línea no hacía nada
+valravnx: «cuando íbamos a probar pelear mi chica y yo ambos sacábamos arma y no veíamos al otro con arma en mano ni los ataques nos hacían nada, ¿puedes arreglarlo?». → Tarea «Pelear en línea en el mundo» en el hito del duelo: el arma sacada, los golpes y las paradas del mundo van por el servidor (modo direccional) y los demás te ven con el arma en la mano.
+
 ### 31 oct 2026 (14:20 UTC) — por el chat: fuera las pruebas en línea
 valravnx: «he dicho un millón de veces, la prueba de en línea LA BORRAS. NO SE VA A HACER NUNCA MÁS, NO EXISTE, DEJA ESAS PRUEBAS, NO LA VUELVAS A HACER». → Borradas las pruebas de navegador «jugar en línea» y «duelo en línea» (archivos y pasos de probar_todo.sh) y la regla, en CLAUDE.md.
 
