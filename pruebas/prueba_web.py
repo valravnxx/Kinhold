@@ -50,7 +50,7 @@ with sync_playwright() as p:
         pg = ctx.new_page()
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
-        pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
+        pg.on('console', lambda m: err.append(m.text + (f" ({m.location.get('url')})" if 'Failed to load' in m.text else '')) if m.type == 'error' else None)
         malos = []
         pg.on('response', lambda r: malos.append(r.url) if r.status >= 400 else None)
         servir_github(ctx, SESION)

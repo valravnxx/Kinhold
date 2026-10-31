@@ -3177,6 +3177,24 @@
   "estado": "fallo"
  },
  {
+  "inicio": "2026-10-31T11:09:01+00:00",
+  "fin": "2026-10-31T13:25:55+00:00",
+  "titulo": "Las pruebas en la gráfica del PC de valravnx, funcionando (chat con valravnx)",
+  "hito": "infra",
+  "hecho": [
+   "Visto en GitHub: desde las 09:07 todos los grupos que cogía el PC de valravnx fallaban en el primer paso con «bash: command not found», y se repetían en la nube. Git para Windows solo pone Git\\cmd en el PATH, no su bash, y los pasos del flujo van en bash.",
+   "Arreglado en el flujo de pruebas, sin tocar nada en su PC: un primer paso en PowerShell pone el bash de Git y el Python de su usuario (3.10) en el PATH, y la salida de Python en UTF-8. En Windows, setup-node va sin la caché de GitHub (restaurarla llegó a tardar 10 min) y pip va con python -m pip.",
+   "Ya prueba con su tarjeta: ANGLE con la NVIDIA GeForce RTX 3060 (Direct3D 11). La prueba de construcción tarda 3,8 min en su PC; en la nube, 46 y 52 min hoy.",
+   "Con la tarjeta salieron fallos que en la nube no se veían, arreglados: el navegador «nuevo» sin pantalla pedía /favicon.ico (404; ahora se prueba primero el de la nube, que también llega a la tarjeta); en Windows, el servidor de páginas de las pruebas rechazaba conexiones que no cabían en su cola de 5 (la web; sitecustomize.py la pone en 128, solo en su PC); los enlaces simbólicos piden administrador (volver donde lo dejaste; se hace una unión de carpeta).",
+   "Dos pruebas iban a destiempo a velocidad real: en combate, Espacio en verde llegaba tarde desde Python (la ventana es de 0,25 s) y ahora se pulsa desde la propia página; en construcción, el muro pide 4 troncos que no caben encima de una vez y la obra empezaba con material de menos y se paraba al medio segundo: la prueba ahora hace varios viajes.",
+   "Visto y no arreglado aquí (es del juego): Usar en una obra con parte del material entrega lo que llevas y se pone a construir, y al medio segundo para con «Primero hay que llevarle todo el material». En la nube no se veía porque a 2 fps la prueba miraba antes.",
+   "El nombre de rama demasiado largo al repetir en la nube lo del PC ya lo arreglan otras dos ramas (cuatro direcciones y mapa del rey): pruebas_nube.mjs se queda como en main."
+  ],
+  "pruebas": "Batería entera con el PC de valravnx encendido: 25 grupos en su tarjeta y la lógica en la nube, 41 min; todo bien salvo «jugar en línea» (exento hasta la fase 2) y «volver donde lo dejaste» (el enlace simbólico; arreglado y repetido en su PC, bien). Construcción, combate y web cambiados, también bien en la nube.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-31T11:49:59+00:00",
   "fin": "2026-10-31T11:49:59+00:00",
   "titulo": "Decidido: las animaciones de cargar las hacemos nosotros (chat con valravnx)",
