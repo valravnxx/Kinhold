@@ -14,7 +14,7 @@ import { tr } from '../idioma.js';
 const TINTA = '#3a2a1e', PAPEL = '#ead8ae', ROJO = '#8c2a1e', AGUA = '#45677a';
 const LETRA = 'Georgia, "Palatino Linotype", "Book Antiqua", "Times New Roman", serif';
 const CSS = `
-#mapaRey{position:fixed;inset:0;z-index:40;background:rgba(20,16,12,.82);touch-action:none}
+#mapaRey{position:fixed;inset:0;z-index:40;background:rgba(20,16,12,.94);touch-action:none}
 #mapaRey canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab}
 #mapaRey canvas.arrastrando{cursor:grabbing}
 #mapaRey .mr-botones{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px));display:flex;gap:6px}
