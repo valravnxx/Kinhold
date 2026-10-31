@@ -2995,5 +2995,20 @@
   "pruebas": "En la nube, la batería entera: todo bien salvo «jugar en línea» (exento; la ropa del visor sí llega por el servidor) y la prueba nueva, en dos comprobaciones que eran de la prueba: al recargar abría otra pestaña y la ficha va por pestaña (otro jugador). Arreglado en la prueba; no comprobado en la nube tras el arreglo. Lógica del servidor, en línea, tala, troceo y recogida: bien aquí.",
   "capturas": "",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-31T04:25:54+00:00",
+  "fin": "2026-10-31T06:43:32+00:00",
+  "titulo": "Lo que llevas, por el servidor en el juego (demo v63; carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Retomado desde la rama de la sesión anterior del carril A, que lo dejó hecho pero sin publicar (su entrada del diario, justo antes). Se unió main dos veces (pelo y cejas, demo v61; agua y nado, demo v62): estas notas pasan a la demo v63.",
+   "La prueba «lo que llevas en línea» arreglada en tres cosas que eran de la prueba: al recargar usa la misma pestaña (la ficha va por pestaña), carga los personajes taller-v19 (con la taller-v18 salía un 404 en la consola) y espera hasta 4 minutos a que caiga el árbol, porque en la nube, a 1 fotograma por segundo, cada golpe de hacha tarda unos 18 s (el paso del juego no pasa de 0,05 s).",
+   "Publicada la demo v63: en línea, lo que llevas, el suelo, la tala, el troceo y la recogida son los del servidor. Quien lleva el servidor tiene que actualizarlo (protocolo 5): uno anterior sale como antiguo.",
+   "Aún mal: el hacha soltada en el suelo se ve muy pequeña y casi no se distingue; las obras en línea siguen cobrando del montón común (tarea siguiente)."
+  ],
+  "pruebas": "En la nube, la batería entera tras unir main (agua y nado): bien salvo «jugar en línea» y «duelo en línea» (exentos hasta la fase 2) y «lo que llevas en línea», que se quedó a un golpe de talar el árbol por la espera corta; con la espera de 4 minutos, bien. Antes, con la main anterior, «la demo en el mundo» falló una vez («nada en el agua», salida al azar) y pasó al repetirla. Aquí: servidor con dos clientes 40/40 (MUTAR=1: 2 fallos), nado 17/17.",
+  "capturas": "capturas/demo-v63",
+  "estado": "ok"
  }
 ]
