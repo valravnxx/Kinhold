@@ -1,0 +1,19 @@
+  OK   lo que pesa lo puesto: camisa y pantalón de lino, 0,6 kg — 0.6 kg
+  OK   con gambesón y cota de malla, unos 14 kg — 14.1 kg
+  OK   cargando un tronco delgado, 15 kg más — 15.6 kg
+  OK   ligero de ropa, se nada más de un minuto antes de quedarse sin aguante — 71.1 s
+  OK   sin aguante, en unos segundos te ahogas y mueres — 8.0 s después
+  OK   con gambesón y cota de malla, el aguante se acaba enseguida (menos de 15 s) — 11.6 s
+  OK   cargando un tronco, aún antes (menos de 12 s) — 10.1 s
+  OK   cuanto más peso, menos se aguanta
+  OK   corriendo con el aguante lleno, unos 40 s — 39.3 s
+  OK   sin aguante no se corre
+  OK   andando se recupera (10 s, la mitad) — 0.52
+  OK   en tierra nadie se ahoga
+  OK   si llegas a donde haces pie, el ahogo se pasa — 0.00
+  OK   en seco o con el agua por el tobillo, a pie
+  OK   por la cintura, vadeando; por el pecho o más, nadando
+  OK   vadear frena más cuanto más hondo
+  OK   el peso hace que el aguante baje más deprisa al nadar (factor)
+
+Resultado: 17 correctas, 0 fallidas
