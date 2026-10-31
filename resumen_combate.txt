@@ -1,0 +1,46 @@
+
+== Construir construcción
+  warnings: [Getter/Setter]
+}
+
+Node.js v22.23.4
+!! FALLA: node construir.mjs
+
+== Construir combate
+dist/kinhold_combate.html 2137 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1728 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2210 KB
+
+== Construir demo única
+  warnings: [Getter/Setter]
+}
+
+Node.js v22.23.4
+!! FALLA: node construir_demo.mjs
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1723 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2179 KB
+dist/kinhold_trozos.html 1725 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: combate
+  OK   móvil: tocar Curar empieza a vendar
+  OK   sin errores en consola (móvil)
+
+Resultado: 3 fallos: parar con Espacio en verde da parada perfecta, y abre el contraataque, el contraataque es imparable
+!! FALLA: python3 pruebas/prueba_combate_navegador.py dist/kinhold_combate.html /tmp/kinhold_capturas/combate
+
+HAY FALLOS
+tardó 84 s
+en el PC de valravnx, con su tarjeta: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002504) Direct3D11 vs_5_0 ps_5_0, D3D11)
