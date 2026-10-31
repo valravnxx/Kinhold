@@ -1,0 +1,45 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2310 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2071 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1664 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2139 KB
+
+== Construir demo única
+      1863 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2630 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1658 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2113 KB
+dist/kinhold_trozos.html 1660 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.23.4
+!! FALLA: node pruebas/prueba_nivelado.mjs
+
+== Navegador: personaje
+  OK   recuerda vista y personaje al recargar — {'luz': 'manana', 'vista': 'perfil', 'modo': 'quieto', 'sexo': 'hombre', 'ropa': 'campesino', 'pelo': 'largo', 'colorPelo': 'rubio', 'piel': 'clara', 'barba': 'si', 'calidad': 'alta', 'sombras': True, 'escena': True, 'base': 'quaternius', 'capas': {'mujer': ['vestido'], 'hombre': ['tunica']}, 'tintes': {'hombre': {'prendas': {'camisa': 'natural', 'calzas': 'natural', 'tunica': 'pardo', 'vestido': 'natural', 'gambeson': 'natural', 'sobreveste': 'rubia', 'manto': 'natural', 'capucha': 'natural', 'toca': 'natural', 'zapatos': 'natural', 'botas': 'natural'}, 'blason': {'dibujo': 'liso', 'color': 'negro'}}}, 'hechuras': {'hombre': {'camisa': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'calzas': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'tunica': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'vestido': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'gambeson': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'sobreveste': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'manto': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'capucha': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'toca': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'cota': {'material': 'malla', 'corte': 'largo', 'tejido': 'liso'}}}, 'aspecto': {}}
+  OK   sin errores en consola (movil)
+
+Resultado: TODO CORRECTO
+
+HAY FALLOS
+tardó 2123 s
