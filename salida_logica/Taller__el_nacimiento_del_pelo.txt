@@ -1,0 +1,9 @@
+Nacimiento del pelo de docs/recursos/personajes/taller-v19
+  OK   mh_hombre.glb: tiene piel, pelo corto y ojo
+  OK   mh_hombre.glb: en el borde de la frente el pelo va pegado a la piel — 1.4 mm (de 2 a 4,5 cm sobre el ojo)
+  OK   mh_hombre.glb: más arriba el pelo tiene bulto — 8.3 mm (a más de 6,5 cm sobre el ojo)
+  OK   mh_mujer.glb: tiene piel, pelo corto y ojo
+  OK   mh_mujer.glb: en el borde de la frente el pelo va pegado a la piel — 1.9 mm (de 2 a 4,5 cm sobre el ojo)
+  OK   mh_mujer.glb: más arriba el pelo tiene bulto — 8.3 mm (a más de 6,5 cm sobre el ojo)
+
+Resultado: 6 correctas, 0 fallidas
