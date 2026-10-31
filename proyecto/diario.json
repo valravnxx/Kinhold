@@ -3093,5 +3093,37 @@
   "pruebas": "Lógica en la nube: bien. Prueba nueva (pruebas/prueba_auto_actualizar.mjs, 6/6) con un repositorio de mentira y una copia corta como la del servidor; con MUTAR falla (4 fallos). Encontró un fallo de verdad (la orden de poner al día no respetaba las comillas). Las unidades de systemd, sin errores en systemd-analyze. Solo cambian el servidor y su prueba: los grupos de navegador no se han pasado. No comprobado: en la máquina de Hetzner de verdad.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T10:41:24+01:00",
+  "fin": "2026-10-31T10:48:03+01:00",
+  "titulo": "La isla del rey y la ciudad NPC de Strandvang, en el GDD (chat con valravnx)",
+  "hito": "mundo",
+  "hecho": [
+   "Whitholm es la isla del rey y está cartografiada: al llegar te dan el mapa del rey. El continente (Kinland) está por explorar y la cartografía sirve para él.",
+   "Strandvang (comarca E) es dominio del rey: neutral, sin PvP y fuera del sistema de clanes. Ahí se vive con el mojón normal; las otras siete comarcas siguen siendo de los clanes.",
+   "Una sola ciudad NPC, en Strandvang: no es para vivir; se va a comprar (metal, herramientas, carros, animales), vender lo que sobra de la cosecha, contratar NPCs, quedar con otros y hacer duelos contra NPCs. Cambia lo decidido el 27 oct («sin ciudades NPC»).",
+   "Mojones: uno por personaje en la isla; en el continente, hasta tres más en total cuando se llegue en barco.",
+   "Los mercaderes ambulantes salen de la ciudad con sus mercancías y son raros. Los torneos y las ferias se celebran en la ciudad.",
+   "GDD cambiado en español, inglés y ruso, con la huella nueva."
+  ],
+  "pruebas": "Solo cambia el diseño; la web se genera sin errores (comprueba las traducciones y las huellas).",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T10:50:46+01:00",
+  "fin": "2026-10-31T10:51:57+01:00",
+  "titulo": "El roadmap al día con la isla del rey y la ciudad de Strandvang (chat con valravnx)",
+  "hito": "mundo",
+  "hecho": [
+   "«El juego en el mundo de verdad»: dos tareas nuevas, el mapa del rey (se lleva desde que apareces, con la tecla M o un botón en el móvil) y Strandvang sin PvP entre jugadores, por el servidor.",
+   "«Tierras y familias»: un mojón por personaje en Whitholm, y Strandvang fuera de los clanes (sin centro, sin señor, sin renta y sin asedio).",
+   "«Economía y NPCs»: ahora gira en torno a la ciudad del rey, con el mercado, contratar NPCs, los duelos en la liza y los mercaderes ambulantes que salen de la ciudad.",
+   "«Mundo»: el boceto de la ciudad en Strandvang, para revisarlo.",
+   "«Navegación» y «Cartografía» pasan a ser para el continente, sin mapa y por explorar; «PvP» anota que en Strandvang no hay.",
+   "La decisión pendiente de las comarcas de inicio queda solo para Motdale y Breiddal."
+  ],
+  "pruebas": "Solo cambia el roadmap; la web se genera sin errores, con todo traducido.",
+  "estado": "ok"
  }
 ]
