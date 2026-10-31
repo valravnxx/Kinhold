@@ -1,0 +1,3 @@
+Textos del juego: 999; sin traducir (en): 0; con variables distintas: 0
+Textos del juego: 999; sin traducir (ru): 0; con variables distintas: 0; sin cirílico: 0
+TODO CORRECTO
