@@ -67,6 +67,7 @@ export class Tala {
     this.porId = new Map(arboles.map(a => [a.id, a]));
     this.estado = {};       // id → { golpes, veces, caido?, vuelve?, dir? }  (dir: hacia dónde cayó, en radianes)
     this.ultimoGolpe = {};  // autor → ms (no se guarda: solo frena los golpes demasiado seguidos)
+    this.entre = ENTRE_GOLPES; // ms entre golpe y golpe del mismo autor (el servidor pide menos: la red los junta)
   }
   // Los árboles van llegando y yéndose según por dónde anda el jugador (src/mundo/vegetacion_mundo.js): lo guardado de
   // cada uno se queda aunque no esté cargado y vale en cuanto vuelve a llegar.
@@ -100,7 +101,7 @@ export class Tala {
     const h = hachaEnMano(inv);
     if (!h) return { ok: false, motivo: 'Necesitas un hacha en la mano para talar.' };
     const ult = this.ultimoGolpe[autor];
-    if (ult !== undefined && ahora - ult < ENTRE_GOLPES) return { ok: false, motivo: 'Aún no has terminado el golpe anterior.' };
+    if (ult !== undefined && ahora - ult < this.entre) return { ok: false, motivo: 'Aún no has terminado el golpe anterior.' };
     this.ultimoGolpe[autor] = ahora;
     let e = this.estado[id];
     if (!e || e.vuelve) e = this.estado[id] = { golpes: 0, parte: 0, veces: e ? e.veces : 0 };
