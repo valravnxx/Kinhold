@@ -705,7 +705,9 @@
     },
     {
      "nombre": "Las estaciones se construyen en la demo como obras (marco, materiales y tiempo) y se ven con el estilo v5: hoguera con su fuego y su luz de noche, piedra de tallar y banco de trabajo de tronco. Capturas de cerca comparadas con la v5 para valravnx",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T14:11:02+00:00",
+     "rama": "trabajo/20261031-1123"
     },
     {
      "nombre": "Panel de la estación en la demo: al acercarte a una estación, sus recetas (las que conoces, y las que aún no, sin desvelar cuáles son), lo que falta para cada una, la cola y el tiempo que queda. En PC y en el móvil, con capturas",
