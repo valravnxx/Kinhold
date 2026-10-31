@@ -157,7 +157,7 @@ with sync_playwright() as p:
     pg.locator('#btnUsar').tap()
     comprobar('móvil: el botón Usar la engancha', pg.evaluate(f"!!{K}.miRastra()"), aviso(pg))
     andar(pg, 40)
-    camara(pg, dist=4.4, pitch=0.4, giro=0.8)
+    camara(pg, dist=6, pitch=0.42, giro=1.15)
     foto(pg, 'rastra_06_movil_arrastrando')
     pg.locator('#llevas [data-soltarrastra]').tap()
     comprobar('móvil: «Soltar» de abajo la deja', not pg.evaluate(f"!!{K}.miRastra()") and not rastra(pg).get('arrastra'), aviso(pg))

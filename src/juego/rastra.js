@@ -2,7 +2,7 @@
 // que la arrastra. La lógica (quién la arrastra, lo que lleva, dónde se queda) está en src/logica/rastra.js; el objeto
 // es uno más del suelo (src/juego/suelo.js la dibuja con modeloRastra).
 //
-// El modelo: dos varas largas de 3 m (corteza, algo torcidas) que se juntan delante, donde se agarran, y se abren
+// El modelo: dos varas largas de 3,2 m (corteza, algo torcidas) que se juntan delante, donde se agarran, y se abren
 // detrás, en el suelo; cuatro travesaños atados con cordel a las varas en la mitad de atrás, donde va la carga (los
 // troncos cortos a lo largo, las piedras en montón o el bloque). Parada, descansa en el suelo; arrastrándola, las
 // puntas de delante suben a las manos (a la altura de la cadera) y lo de atrás roza el suelo.
@@ -13,10 +13,11 @@ import { cil } from '../mundo/decorado.js';
 import { modelosRecoleccion } from './recoleccion.js';
 import { DETRAS } from '../logica/rastra.js';
 
-export const LARGO_VARAS = 3.0;      // m
+export const LARGO_VARAS = 3.2;      // m
 const ATRAS = 1.5;                    // del centro a las puntas de atrás (en el suelo)
-const ANCHO_ATRAS = 0.46, ANCHO_DELANTE = 0.2, R_VARA = 0.035;
-export const ALTO_MANOS = 0.82;       // m: a qué altura van las puntas de delante arrastrándola
+const ANCHO_ATRAS = 0.46, ANCHO_DELANTE = 0.27, R_VARA = 0.035;
+export const ALTO_MANOS = 0.86;       // m: a qué altura van las varas en las manos arrastrándola
+const A_MANOS = ATRAS + DETRAS - 0.2;  // m: de las puntas de atrás a las manos (van un poco por detrás de la cadera)
 
 const mallas = L => {
   const grupos = L.cerrar(null, true), g = new THREE.Group();
@@ -67,8 +68,9 @@ export function modeloRastra(carga, id = 'r') {
     }
   });
   // las agarraderas: un trozo de cordel enrollado en cada punta de delante, donde van las manos
+  const zM = A_MANOS + 0.05;
   for (const s of [-1, 1]) for (let k = 0; k < 4; k++)
-    L.add(new THREE.TorusGeometry(R_VARA * 0.95, 0.007, 4, 9), 'lino', xEn(s, zD - 0.22 - k * 0.025), R_VARA, zD - 0.22 - k * 0.025, { y: Math.atan2(-s * (ANCHO_ATRAS - ANCHO_DELANTE), LARGO_VARAS) }, { sinSuelo: true, tex: 'tejido' });
+    L.add(new THREE.TorusGeometry(R_VARA * 0.95, 0.007, 4, 9), 'lino', xEn(s, zM - k * 0.025), R_VARA, zM - k * 0.025, { y: Math.atan2(-s * (ANCHO_ATRAS - ANCHO_DELANTE), LARGO_VARAS) }, { sinSuelo: true, tex: 'tejido' });
   const cuerpo = mallas(L);
   cuerpo.name = 'cuerpo';
   // la carga, sobre los travesaños
@@ -108,7 +110,7 @@ export function modeloRastra(carga, id = 'r') {
 // Inclina el cuerpo: arrastrando, las puntas de delante a la altura de las manos; parada, en el suelo.
 export function inclinarRastra(raiz, arrastrando) {
   const c = raiz.getObjectByName('cuerpo');
-  if (c) c.rotation.x = arrastrando ? -Math.asin(Math.min(0.9, (ALTO_MANOS - R_VARA) / LARGO_VARAS)) : 0;
+  if (c) c.rotation.x = arrastrando ? -Math.asin(Math.min(0.9, (ALTO_MANOS - R_VARA) / A_MANOS)) : 0;
 }
 
 // Cada fotograma: las rastras que alguien arrastra van detrás de él, como de una cuerda (el centro, a DETRAS m de él;
