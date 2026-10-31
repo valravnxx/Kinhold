@@ -645,7 +645,11 @@ with sync_playwright() as p:
     fin = ev(f"(() => {{ const c = {K}.mundo.construcciones.find(c => c.id === {oc['c']}); const p = c.piezas.get('{oc['key']}'); return !p.obra; }})()")
     comprobar('al acabar el tiempo de la pieza (7 s de trabajo), el poste queda terminado', fin)
     comprobar('cada rato de trabajo queda en el registro con su autor', ev(f"{K}.registroAcciones.entradas.filter(e => e.tipo === 'trabajar' && e.datos.clave === '{oc['key']}' && e.autor === 'jugador:local' && e.ok).length") >= 2)
-    ev(f"{K}.pj.x=-14.6; {K}.pj.z=-13.4; {K}.llevar(); {K}.usar()")
+    # el muro pide 4 troncos y no caben todos encima de una vez: se va y vuelve hasta entregarlos todos (con tarjeta
+    # gráfica, en el PC de valravnx, la obra empezada con material de menos se paraba antes de mirarla: 31 oct)
+    ev(f"""(() => {{ const K = {K}; K.pj.x=-14.6; K.pj.z=-13.4;
+      for (let i = 0; i < 8; i++) {{ K.llevar(); K.usar(); const o = K.obraCercana(); const c = o && K.mundo.construcciones.find(c => c.id === o.c);
+        if (!c || !K.mundo.faltaEntregar(c.piezas.get(o.key)).length) break; }} }})()""")
     esperar(pg, 600)
     teclas_antes = ev(f"!!{K}.obrando")
     pg.keyboard.down('s'); esperar(pg, 400); pg.keyboard.up('s')
