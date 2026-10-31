@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v62 (agua y nado)';
+export const VERSION_DEMO = 'Demo única · v63 (volver donde lo dejaste)';
 export const REGISTRO_DEMO = [
+  "v63: volver donde lo dejaste (valravnx, 31 oct): el navegador recuerda quién eres aunque cierres la pestaña, y al volver a entrar apareces donde estabas al salir; el servidor lo apunta al salir y cada pocos segundos. Dos pestañas del mismo navegador son el mismo jugador: la nueva deja fuera a la de antes. Un wipe del servidor lo borra y se vuelve a empezar en la salida.",
+  "v63, provisional: lo que pasa en el «Duelo» no cuenta como sitio del mundo: al volver a «Jugar» se sale donde se estaba antes del duelo.",
   'v62: el agua en «Construir»: alrededor del jugador se dibujan los ríos y el mar de cerca, con su corriente, su hondura, la orilla, el oleaje y la espuma de los saltos (la misma agua que en el mapa). Se rehace al alejarse, poco a poco, sin parar el juego.',
   'v62: nadar (valravnx, 30 oct): en lo somero se anda; con el agua por la cintura se vadea, más despacio; más hondo, se nada (0,9 m/s; con Mayúsculas 1,5, que cansa el doble). Un solo aguante, el mismo que al correr con Mayúsculas (40 s de carrera; andando se recupera en 20 s): un anillo a la derecha lo enseña. Nadando baja más deprisa cuanto más pesa lo que llevas: con camisa y pantalón de lino unos 70 s; con gambesón y cota de malla unos 12 s; cargando un tronco unos 10 s. Sin aguante te ahogas en 8 s. En el río, la corriente te lleva.',
   'v62, provisional: al ahogarte vuelves a tu sitio de salida con el aguante lleno y sin perder nada (lo que pasa al morir llega con el hito de supervivencia). Lo que no tiene peso propio pesa por su tamaño (pequeño 0,3 kg, mediano 2, grande 12). Las salidas al azar son ahora 258 (con los ríos nuevos, 3 de los 261 sitios quedaban junto al agua).',
