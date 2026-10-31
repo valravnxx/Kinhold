@@ -1,0 +1,21 @@
+Ángulos y estados
+  OK   el giro de 170° a -170° pasa por 180° (camino corto) — 180.0°
+  OK   un estado roto no vale (NaN, lejísimos, animación rara)
+  OK   el servidor solo cubre Whitholm: un estado fuera del cuadro de la isla no se admite, dentro sí
+  OK   a mitad de camino, a mitad de sitio; lo desordenado no cuenta — x=0.5
+  OK   sin estados nuevos sigue un poco y se para — x=3.5 a los 900 ms
+  OK   el servidor quita el vaivén de la subida y no se deja engañar con la hora — 1100, 1300, 1301
+Dos clientes con lag de 60–140 ms en cada sentido
+  OK   B ve a A con el autor que puso el servidor, y no se ve a sí mismo — 249 fotogramas con A; autores vistos: jugador:10a8ed00
+  OK   A ve a B quieto donde está
+  OK   A sigue el círculo en la pantalla de B (menos de 10 cm fuera) — 2.1 cm como mucho
+  OK   el movimiento es suave: ningún salto de más de 2,5 veces lo que toca y casi ningún fotograma parado — paso mayor 2.43×, 0 de 248 parados
+  OK   el giro cambia poco a poco, también al pasar por 180° — giro mayor por fotograma 0.074 rad
+  OK   llega la animación
+  OK   B ve a A con menos de medio segundo de retraso — medio 332 ms, máximo 371 ms
+  (tráfico que recibe B con un jugador a la vista: 1.58 KB/s)
+  OK   un estado roto recibe un error y no se reparte
+  OK   el que llega después ve dónde están los demás — jugador:10a8ed00, jugador:806cf5c7
+  OK   cuando A se va, desaparece de B y de C
+
+16 correctas, 0 fallos
