@@ -1,0 +1,67 @@
+Lo que dice el documento de sistemas (apartados 7 y 8)
+  OK   hoguera: N0, 6 piedras sueltas y 4 ramas
+  OK   piedra de tallar: N0, 1 piedra
+  OK   banco de tronco: N1, 2 troncos cortos y herramienta de piedra
+  OK   cordel: 3 fibra cruda, con las manos
+  OK   lasca de sílex: 1 sílex y 1 piedra, en la piedra de tallar
+  OK   hacha de piedra: 1 piedra, 1 rama y 2 cordel, en la piedra de tallar — {"piedra":1,"rama":1,"cordel":2}
+  OK   lanza endurecida: 1 rama, en la hoguera
+  OK   leñero: 4 ramas y 2 cordel, con las manos
+  OK   cuerda: 3 cordel, en el banco
+  OK   pala de madera y cubo: 1 tronco corto, en el banco
+  OK   todas las recetas dan y gastan cosas del catálogo, en una estación que existe
+  OK   todas tienen un tiempo de más de 0 s
+  OK   todas las estaciones cuestan cosas del catálogo
+Colocar estaciones
+  OK   sin materiales no se coloca, y dice qué falta — Te falta: 6 de Piedra, 4 de Rama.
+  OK   con lo que llevas y un arcón a pocos pasos, se coloca — hoguera:1
+  OK   gasta primero lo que llevas y luego el arcón cercano — {"piedra":2,"rama":1}
+  OK   el arcón lejano no se toca
+  OK   el arcón lejano no cuenta
+  OK   el banco de tronco pide llevar una herramienta de piedra — Hace falta llevar hacha de piedra o lasca de sílex.
+  OK   con una lasca y 2 troncos cortos (uno al hombro), se coloca y la lasca no se gasta — banco_tronco:2
+  OK   una estación desconocida no se coloca
+Fabricar con las manos: el cordel
+  OK   cordel con 3 fibra: se encarga
+  OK   termina pasado su tiempo
+  OK   con las manos, una cosa a la vez — Ya estás haciendo otra cosa.
+  OK   antes de tiempo no se recoge — Aún no está terminado.
+  OK   pasado el tiempo se recoge y va a lo que llevas — [{"objeto":"cordel","cantidad":1,"donde":[["mano:izq",1]]}]
+  OK   el cinturón de cordel puesto no se gasta nunca
+  OK   el hacha de piedra no se hace con las manos — Hace falta piedra de tallar.
+  OK   el cordel no se hace en una estación — Eso se hace con las manos.
+Fabricar en una estación: piedra de tallar y hoguera
+  OK   la piedra de tallar gasta 1 piedra
+  OK   lejos de la estación no se fabrica — Estás demasiado lejos de la estación.
+  OK   junto a ella, la lasca gasta 1 sílex y 1 piedra
+  OK   el hacha sin cordel no se encarga y no gasta nada — Te falta: 2 de Cordel de fibra.
+  OK   con 2 cordel sí, y gasta piedra, rama y los dos cordeles — {"encima":{"piedra":1,"rama":1,"cordel":2},"arcones":{}}
+  OK   en la cola, empieza cuando acaba la lasca
+  OK   el estado dice qué está terminado y cuánto falta
+  OK   otro jugador no recoge lo de Ana — Aquí no tienes nada.
+  OK   Ana recoge la lasca; el hacha sigue en la cola
+  OK   pasada una hora, aunque nadie juegue, el hacha está hecha
+  OK   la cola de una estación admite 3 encargos sin terminar — 3
+  OK   las ramas salieron de lo que lleva y del arcón junto a la hoguera — {"rama":6}
+  OK   cuando termina el primero, hay sitio en la cola (también para otro jugador)
+  OK   la lasca no se hace en la hoguera — Eso se hace en piedra de tallar.
+Si no te cabe
+  OK   con las manos llenas no se recoge y lo hecho sigue esperando — No te cabe: no tienes sitio libre.
+  OK   al hacer sitio, se recoge
+Guardar y cargar
+  OK   se guarda la versión
+  OK   al cargar, las estaciones, sus colas y lo de las manos son lo mismo
+  OK   y se sigue contando por la hora: lo que acabó mientras tanto se recoge
+  OK   lo que no se entiende se descarta (estación o receta que no existe, receta de otra estación)
+  OK   un guardado sin versión no se carga
+Acciones con autor
+  OK   sin autor no vale
+  OK   colocar con autor gasta de lo de Ana
+  OK   Blas no fabrica con lo que lleva Ana — Te falta: 1 de Sílex, 1 de Piedra.
+  OK   Ana sí, y el tiempo lo pone quien valida, no el mensaje
+  OK   recoger con autor
+  OK   nombres raros de receta no cuelan
+  OK   datos no válidos
+  OK   todo queda en el registro, salga bien o no
+
+58 bien, 0 mal
