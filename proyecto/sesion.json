@@ -11,11 +11,5 @@
   "tarea": "Volver donde lo dejaste (valravnx, 31 oct): el navegador recuerda quién eres aunque cierres la pestaña, y el servidor guarda dónde estaba cada jugador al salir y lo pone ahí al volver a entrar (un wipe lo borra)",
   "hito": "mundo-juego",
   "rama": "trabajo/20261031-0500-volver"
- },
- "chat:trabajo/20261031-0925-servidor-auto": {
-  "inicio": "2026-10-31T09:24:43+01:00",
-  "tarea": "El servidor se actualiza solo con cada versión nueva de la demo",
-  "hito": "infra",
-  "rama": "trabajo/20261031-0925-servidor-auto"
  }
 }
