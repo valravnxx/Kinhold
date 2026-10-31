@@ -3359,5 +3359,22 @@
   "pruebas": "Todas menos las de en línea (valravnx), casi todas en el PC de valravnx. «La demo en el mundo» falla en «andando, el personaje sigue el suelo» (0,62–0,71 m, el límite es 0,6) también en main (1,09 m), así que no es de este cambio. Fallaron una vez y pasaron al repetirlas: el combate en el servidor (un rechazo de más, con lag simulado; aquí 3 de 3 bien) y niveles de detalle.",
   "capturas": "capturas/demo-v72",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T16:56:54+00:00",
+  "fin": "2026-10-31T18:19:54+00:00",
+  "titulo": "Hito de arte: la toca y la cofia en el móvil (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Con la cofia o la toca ya no asoma el pelo por la tela (revisión del 31 oct: en el móvil la cabeza salía a manchas castañas y blancas). Visto de cerca en el visor: pasaba igual en calidad alta y en la ligera, y solo en el móvil (de lejos, menos píxeles).",
+   "La causa: el pelo pintado sobre la piel (vello) se dibuja adelantado para no hundirse en ella y, de lejos, pasaba por delante de la tela, pegada al cráneo. Comprobado escondiéndolo: la cofia sale limpia.",
+   "Arreglo: la cofia y la toca tapan toda la cabeza, así que debajo ya no va ni el pelo pintado ni el corto (src/logica/aspecto.js, piezasCabeza). Con la capucha y el sombrero sigue, se ve en la frente y la nuca; en el móvil de lejos la capucha se ve bien.",
+   "Prueba de aspecto con una comprobación nueva (MUTAR=4 la rompe y falla). Personaje v33.",
+   "Aún mal: con la cofia, el borde de abajo, en el cuello, sale con una raya gris dentada de cerca; de las dos cosas de la revisión queda la de las cejas del hombre y la franja clara entre la barba y el cuello.",
+   "Coordinación: la batería tardó 53 min y otra sesión del carril B (la de las 17:49) ocupó el carril para otra tarea (equipo) mientras esta seguía; no se tocan los mismos archivos. Esta sesión no suelta el carril B para no borrar el anuncio de la otra."
+  ],
+  "pruebas": "En la nube, 25 grupos: 24 bien; «web» falló por el menú de la demo con dos partes, ya arreglado en main. Tras unir main: logica, web, juego en inglés y demo única correctos (3 en el PC de valravnx). Aspecto 28/28 aquí; prueba de idiomas del juego correcta. Capturas de cerca miradas en PC y móvil (cofia, toca, capucha de lejos en el móvil).",
+  "capturas": "capturas/personaje-v33",
+  "estado": "ok"
  }
 ]

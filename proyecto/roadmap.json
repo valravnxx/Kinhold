@@ -1017,9 +1017,9 @@
     },
     {
      "nombre": "Toca en el móvil (visto en la revisión del 31 oct): con la calidad ligera el pelo asoma por la toca y la cabeza sale a manchas blancas y oscuras; en PC se ve bien",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T16:57:43+00:00",
-     "rama": "trabajo/20261031-1657"
+     "fin": "2026-10-31T18:19:54+00:00"
     },
     {
      "nombre": "Cejas y cuello del hombre (visto en la revisión del 31 oct): de cerca las cejas son trazos gruesos en bloque y entre la barba y el cuello queda una franja clara cortada",
@@ -2880,6 +2880,13 @@
      "archivo": "jugar/personaje/v32.html",
      "capturas": "capturas/personaje-v32",
      "notas": "Herramienta en la mano al trabajar: el pico al picar y el hacha al talar"
+    },
+    {
+     "v": "v33",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/personaje/v33.html",
+     "capturas": "capturas/personaje-v33",
+     "notas": "Con la cofia o la toca ya no asoma el pelo por la tela: en el móvil y de lejos salía a manchas castañas y blancas por toda la cabeza (revisión del 31 oct). La cofia y la toca tapan toda la cabeza: debajo ya no va el pelo pintado ni el corto. Con la capucha y el sombrero, sigue."
     }
    ]
   },
