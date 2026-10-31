@@ -72,7 +72,15 @@ const CAMPOS_CONSTRUCCION = {
 // Obras con lo que llevas (roadmap, hito «Equipo y carga»): con los inventarios (invs), lo que se entrega a una obra
 // sale de lo que lleva el autor encima, no de un montón común. El montón común del mundo (mundo.materiales) pasa a
 // ser el arcón de pruebas del prototipo: de ahí se coge el material, y el botón de rellenar lo llena.
-// Sin inventarios (en línea, hasta que el servidor los lleve; y el atajo acabarObra) se sigue usando el montón común.
+// Sin inventarios (el atajo acabarObra) se sigue usando el montón común.
+// En línea (valravnx, 30 oct: siempre en línea), el servidor ejecuta estas acciones con los inventarios que lleva él
+// (src/logica/objetos_red.js). Lo que sale bien se anota ya pagado: la entrada lleva «lleva: true» y la cantidad que
+// de verdad se entregó (en dejar_arcon, también el material). Así, al rehacer el mundo sin inventarios (el servidor
+// al volver a arrancar, el navegador de los demás con las entradas que reparte), esas entregas no vuelven a cobrar ni
+// tocan el montón común, y el arcón de materiales queda igual en todos. Con inventarios, «lleva» no cuenta (lo que
+// diga el navegador se pisa): solo vale al rehacer.
+export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon']);
+const RESERVA_PAGADA = { hay: () => Infinity, gastar: () => {}, parcial: true };
 export function reservaDe(inv) {
   const tipo = m => OBJETO_DE_MATERIAL[m];
   return { hay: m => (tipo(m) ? inv.cuantos(tipo(m)) : 0), gastar: (m, n) => { inv.gastar(tipo(m), n); }, parcial: true };
@@ -91,12 +99,19 @@ function aplicarConstruccion(m, a, invs) {
     case 'entregar': case 'trabajar': case 'subir': {
       const c = m.construcciones.find(x => x.id === a.construccion);
       if (!c) return { ok: false, motivo: 'No existe.' };
-      const reserva = invs ? reservaDe(invs.de(a.autor)) : undefined;
+      const reserva = invs ? reservaDe(invs.de(a.autor)) : a.lleva === true ? RESERVA_PAGADA : undefined;
+      if (invs) delete a.lleva;
       if (a.tipo === 'entregar') {
         if (a.desde !== undefined && !numero(a.desde)) return { ok: false, motivo: 'Datos no válidos.' };
-        return m.entregar(c, a.clave, a.material, a.cantidad, a.autor, a.desde === undefined ? 0 : a.desde, reserva);
+        const r = m.entregar(c, a.clave, a.material, a.cantidad, a.autor, a.desde === undefined ? 0 : a.desde, reserva);
+        if (r.ok && invs) { a.cantidad = r.entregado; a.lleva = true; }   // ya pagado: lo que de verdad se entregó
+        return r;
       }
-      if (a.tipo === 'subir') return m.subir(c, a.clave, a.material, a.segundos, a.autor, a.metodo, reserva);
+      if (a.tipo === 'subir') {
+        const r = m.subir(c, a.clave, a.material, a.segundos, a.autor, a.metodo, reserva);
+        if (r.ok && invs) a.lleva = true;
+        return r;
+      }
       return m.trabajar(c, a.clave, a.segundos, a.autor);
     }
     case 'decorar': return m.colocarDecoracion(a.pieza, a.x, a.y, a.z, a.rot);
@@ -122,7 +137,14 @@ function aplicarConstruccion(m, a, invs) {
       return { ok: true };
     }
     case 'sacar_arcon': {
+      if (!invs && a.lleva === true) { // ya hecho en el servidor: al rehacer, solo sale del arcón
+        if (!Object.hasOwn(OBJETO_DE_MATERIAL, a.material) || !Number.isInteger(a.cantidad) || a.cantidad < 1) return { ok: false, motivo: 'Datos no válidos.' };
+        if ((m.materiales[a.material] || 0) < a.cantidad) return { ok: false, motivo: 'En el arcón no hay tanto.' };
+        m.materiales[a.material] -= a.cantidad;
+        return { ok: true };
+      }
       if (!invs) return { ok: false, motivo: 'Aquí no hay arcón.' };
+      delete a.lleva;
       const tipo = Object.hasOwn(OBJETO_DE_MATERIAL, a.material) ? OBJETO_DE_MATERIAL[a.material] : null;
       if (!tipo) return { ok: false, motivo: 'Eso no está en el arcón.' };
       if (!Number.isInteger(a.cantidad) || a.cantidad < 1) return { ok: false, motivo: 'Cantidad no válida.' };
@@ -132,10 +154,17 @@ function aplicarConstruccion(m, a, invs) {
       const inv = invs.de(a.autor), r = a.a !== undefined ? inv.coger(tipo, a.cantidad, a.a) : inv.meterDonde(tipo, a.cantidad);
       if (!r.ok) return r;
       m.materiales[a.material] -= a.cantidad;
+      a.lleva = true;
       return { ok: true, donde: r.donde };
     }
     case 'dejar_arcon': {
+      if (!invs && a.lleva === true) { // ya hecho en el servidor: al rehacer, solo entra en el arcón
+        if (!Object.hasOwn(OBJETO_DE_MATERIAL, a.material) || !Number.isInteger(a.cantidad) || a.cantidad < 1) return { ok: false, motivo: 'Datos no válidos.' };
+        m.materiales[a.material] = (m.materiales[a.material] || 0) + a.cantidad;
+        return { ok: true, material: a.material, n: a.cantidad };
+      }
       if (!invs) return { ok: false, motivo: 'Aquí no hay arcón.' };
+      delete a.lleva;
       const inv = invs.de(a.autor), b = inv.buscar(a.de);
       if (b.motivo) return { ok: false, motivo: b.motivo };
       const mat = b.cosa && Object.hasOwn(MATERIAL_DE_OBJETO, b.cosa.tipo) ? MATERIAL_DE_OBJETO[b.cosa.tipo] : null;
@@ -143,6 +172,7 @@ function aplicarConstruccion(m, a, invs) {
       const r = inv.sacar(a.de, a.cantidad);
       if (!r.ok) return r;
       m.materiales[mat] = (m.materiales[mat] || 0) + r.cosa.n;
+      a.material = mat; a.cantidad = r.cosa.n; a.lleva = true;
       return { ok: true, material: mat, n: r.cosa.n };
     }
   }

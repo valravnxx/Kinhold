@@ -965,7 +965,7 @@ function usarObra(o) {
     if (r.ok) { entregado = true; continue; }
     if (r.escalera) { escalera = r; continue; }
     // obras con lo que llevas: lo que no llevas encima no se entrega (se coge del arcón de pruebas, en el inventario)
-    if (!enLinea && r.faltan) { noLlevas = true; continue; }
+    if (r.faltan) { noLlevas = true; continue; }
     const que = mundo.faltaEntregar(p).map(x => `${x.n} ${tr(MATERIALES[x.m]).toLowerCase()}`).join(', ');
     guardar(); actualizarUI();
     mostrarAviso(`${t('faltanMateriales')} ${t('leFalta')}: ${que}`, true);
@@ -1741,7 +1741,7 @@ $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltad
 // Panel de inventario (hito 2): lo que llevas encima y un arcón de pruebas para coger equipo.
 // El arcón de pruebas tiene también los materiales de obra (el montón común de antes): se cogen con acciones del mundo.
 const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario,
-  accionArcon: (a) => { const r = accion(a); if (r.ok) { guardar(); actualizarUI(); } return r; }, materialesArcon: () => enLinea ? null : mundo.materiales,
+  accionArcon: (a) => { const r = accion(a); if (r.ok) { guardar(); actualizarUI(); } return r; }, materialesArcon: () => mundo.materiales,
   alCambiar: () => { pintarLlevas(); vestir(); }, retrato: (lienzo) => dibujarRetrato(renderer, jugador.mh, lienzo) });
 // El personaje lleva puesto lo que dice el inventario (valravnx, 29 oct: el inventario es el equipo). La ropa elegida
 // en el visor de personaje entra en el inventario una vez por cada elección; después manda el inventario.
@@ -1916,6 +1916,32 @@ function iniciarEnLinea() {
       if (info.cambio || e) actualizarUI();
     },
   });
+  // las obras cobran de lo que llevas, que es el del servidor (objetosRed): hasta que llegue, no se adelanta nada
+  const deInventario = { de: () => inventario() };
+  Object.defineProperty(enLinea.red, 'invs', { get: () => (objetosRed.deServidor ? deInventario : null) });
+}
+
+// Atajo de prueba (obras con lo que llevas): coge del arcón de pruebas, con acciones, lo que le falta a la obra p (lo
+// pesado de una obra en alto, de uno en uno, y dos varas y una cuerda para rodarlo); si no llevas mochila ni cinturón,
+// se pone una mochila de bastidor y un cinto con anillas del arcón. En línea, por el servidor (se adelanta aquí).
+function tomarPara(p) {
+  const inv = inventario();
+  if (!inv.lugares.espalda) accionInventario({ tipo: 'coger', objeto: 'mochila_bastidor', cantidad: 1, a: 'espalda' });
+  if (!inv.lugares.cintura) accionInventario({ tipo: 'coger', objeto: 'cinto_anillas', cantidad: 1, a: 'cintura' });
+  const tomar = (m, n, a) => { for (let k = n; k >= 1; k--) if (accion({ tipo: 'sacar_arcon', material: m, cantidad: k, a }).ok) return k; return 0; };
+  const cogido = {};
+  for (const f of mundo.faltaEntregar(p)) {
+    if (hayQueSubir(p, f.m)) {
+      if (inv.cuantos(OBJETO_DE_MATERIAL[f.m]) < 1) cogido[f.m] = tomar(f.m, 1, f.m === 'tronco' ? 'hombro' : undefined);
+      for (const [m, n] of Object.entries(VARAS_PARA_RODAR)) { const q = n - inv.cuantos(OBJETO_DE_MATERIAL[m]); if (q > 0) cogido[m] = (cogido[m] || 0) + tomar(m, q); }
+    } else {
+      // lo que le falta entero, aunque ya lleves algo (lo que sobre se queda encima); un tronco, al hombro
+      let n = f.n, h = 0;
+      if (f.m === 'tronco' && !inv.lugares.hombro) h = tomar(f.m, 1, 'hombro');
+      cogido[f.m] = h + (n - h > 0 ? tomar(f.m, n - h) : 0);
+    }
+  }
+  return cogido;
 }
 
 // acceso para pruebas automáticas
@@ -1944,11 +1970,18 @@ window.__kinhold = {
       for (const [id, key] of obras) {
         const pieza = () => { const c = mundo.construcciones.find(x => x.id === id); return c && c.piezas.get(key); };
         const planta = plantaObra(pieza());
-        for (const f of mundo.faltaEntregar(pieza())) {
-          if (planta > 0 && clasePeso(f.m) !== 'ligero') { // lo pesado, a una obra en alto, se sube por las varas
-            for (let i = 0; i < 10000 && pieza() && mundo.faltaEntregar(pieza()).some(x => x.m === f.m); i++)
-              if (!accion({ tipo: 'subir', construccion: id, clave: key, material: f.m, segundos: MAX_RATO, metodo: 'varas' }).ok) break;
-          } else accion({ tipo: 'entregar', construccion: id, clave: key, material: f.m, cantidad: f.n, desde: planta });
+        // las obras cobran de lo que llevas: se coge del arcón de pruebas lo que falta y se lleva, hasta que no falte nada
+        const queda = () => mundo.faltaEntregar(pieza()).reduce((t, f) => t + f.n, 0);
+        for (let vuelta = 0; vuelta < 40 && pieza() && queda() > 0; vuelta++) {
+          const antes = queda();
+          tomarPara(pieza());
+          for (const f of mundo.faltaEntregar(pieza())) {
+            if (planta > 0 && clasePeso(f.m) !== 'ligero') { // lo pesado, a una obra en alto, se sube por las varas
+              for (let i = 0; i < 10000 && pieza() && mundo.faltaEntregar(pieza()).some(x => x.m === f.m); i++)
+                if (!accion({ tipo: 'subir', construccion: id, clave: key, material: f.m, segundos: MAX_RATO, metodo: 'varas' }).ok) break;
+            } else accion({ tipo: 'entregar', construccion: id, clave: key, material: f.m, cantidad: f.n, desde: planta });
+          }
+          if (queda() >= antes) break;
         }
         let r = { ok: true };
         for (let i = 0; i < 1000 && r.ok && pieza() && pieza().obra; i++) r = accion({ tipo: 'trabajar', construccion: id, clave: key, segundos: MAX_RATO });
@@ -1963,23 +1996,8 @@ window.__kinhold = {
   // cercana (lo pesado de una obra en alto, de uno en uno, y dos varas y una cuerda para rodarlo); si no llevas
   // mochila ni cinturón, se pone una mochila de bastidor y un cinto con anillas del arcón. Sin obra cerca, nada.
   llevar() {
-    const o = obraCercana(); if (!o || enLinea) return null;
-    const inv = inventario();
-    if (!inv.lugares.espalda) accionInventario({ tipo: 'coger', objeto: 'mochila_bastidor', cantidad: 1, a: 'espalda' });
-    if (!inv.lugares.cintura) accionInventario({ tipo: 'coger', objeto: 'cinto_anillas', cantidad: 1, a: 'cintura' });
-    const tomar = (m, n, a) => { for (let k = n; k >= 1; k--) if (accion({ tipo: 'sacar_arcon', material: m, cantidad: k, a }).ok) return k; return 0; };
-    const cogido = {};
-    for (const f of mundo.faltaEntregar(o.p)) {
-      if (hayQueSubir(o.p, f.m)) {
-        if (inv.cuantos(OBJETO_DE_MATERIAL[f.m]) < 1) cogido[f.m] = tomar(f.m, 1, f.m === 'tronco' ? 'hombro' : undefined);
-        for (const [m, n] of Object.entries(VARAS_PARA_RODAR)) { const q = n - inv.cuantos(OBJETO_DE_MATERIAL[m]); if (q > 0) cogido[m] = (cogido[m] || 0) + tomar(m, q); }
-      } else {
-        // lo que le falta entero, aunque ya lleves algo (lo que sobre se queda encima); un tronco, al hombro
-        let n = f.n, h = 0;
-        if (f.m === 'tronco' && !inv.lugares.hombro) h = tomar(f.m, 1, 'hombro');
-        cogido[f.m] = h + (n - h > 0 ? tomar(f.m, n - h) : 0);
-      }
-    }
+    const o = obraCercana(); if (!o) return null;
+    const cogido = tomarPara(o.p);
     guardar(); actualizarUI(); pintarLlevas(); panelInventario.pintar();
     return cogido;
   },
