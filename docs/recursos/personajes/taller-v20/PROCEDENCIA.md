@@ -61,6 +61,7 @@ de 1 cm) y el bulto del pelo corto crece desde el borde, pegado a la piel en el 
 cáscara salía ya despegada unos 6 mm: parecía un casquete). Las cejas asientan en el arco, justo encima del párpado,
 más pobladas, con la cabeza redondeada, y van en su propio calco (`_cejas`, con más resolución: antes, trazos finos y
 a trozos que flotaban). Lo demás, igual que la v18.
-v20, capa de espalda (revisión del 30 oct: de espalda salía casi negra y lisa): pliegues más anchos y más hondos
-(unos 9 por vuelta en lugar de 16; la malla, con 96 columnas, los dibuja), el fondo de cada pliegue más oscuro pintado
-en la tela y el lomo más claro, y la lana sin teñir del manto más clara (antes casi negra). Lo demás, igual que la v19.
+v20, capa de espalda (revisión del 30 oct: de espalda salía casi negra y lisa): pliegues algo más anchos y más hondos,
+que empiezan más arriba, y la malla con 128 columnas en lugar de 72 (antes no llegaba a dibujarlos y salían a trozos);
+el fondo de cada pliegue, más oscuro pintado en la tela, y el lomo más claro; la lana sin teñir del manto, más clara
+(antes casi negra). Lo demás, igual que la v19.

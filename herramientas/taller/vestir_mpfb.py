@@ -684,7 +684,7 @@ def manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, colo
     for _ in range(3): R = (np.roll(R, 1, 0) + 2 * R + np.roll(R, -1, 0)) / 4
     # largo de cada perfil (r, z), para repartir las filas por la tela y no por la altura
     s = np.concatenate([np.zeros((NT, 1)), np.cumsum(np.hypot(np.diff(R, axis=1), DZ), 1)], 1)
-    NU, NV = 96, 44  # 96 columnas (taller-v20; antes 72): unas 11 por pliegue en la espalda
+    NU, NV = 128, 44  # 128 columnas (taller-v20; antes 72): unas 10 por pliegue
     def theta_max(t):  # medio ángulo que cubre la capa: casi cerrada en el broche, abierta hacia abajo
         return math.radians(94 + 78 * float(suave(0.32, 0.02, t)))
     def perfil(th, t):
@@ -698,15 +698,15 @@ def manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, colo
     rng = np.random.default_rng(7)
     fase1, fase2 = rng.uniform(0, 2 * math.pi, 2)
     def pliegue(th):  # forma de los pliegues alrededor: irregular (dos ondas), entre -1 y 1. Pocos y anchos (taller-v20:
-        # con 16 por vuelta salían de unos 7 cm y la malla, con una columna cada 5 grados, no llegaba a dibujarlos: de
-        # espalda la capa se veía lisa). Ahora, unos 9 por vuelta (14 cm de pliegue a pliegue en la espalda), como el
-        # paño de lana grueso, que no hace pliegues finos
-        return np.clip(0.68 * np.sin(9.0 * th + fase1) + 0.32 * np.sin(14.5 * th + fase2 + 0.5 * np.sin(3 * th)), -1, 1)
+        # con la malla de una columna cada 5 grados, los pliegues de antes salían a trozos y la espalda se veía lisa).
+        # Unos 13 por radián: de pliegue a pliegue, unos 14 cm en la espalda (4 o 5 de lado a lado), como el paño de lana
+        # grueso; con 128 columnas, cada pliegue lleva unas 10
+        return np.clip(0.7 * np.sin(13.0 * th + fase1) + 0.3 * np.sin(20.0 * th + fase2 + 0.5 * np.sin(3 * th)), -1, 1)
     def hondo(z, th=math.pi / 2):  # cuánto pliegue a esa altura: nada sobre los hombros, crece hacia el bajo; más hondo
         # por detrás (taller-v16: de espalda no se distinguían), donde la tela cuelga libre y no la sujetan los brazos
-        return 0.052 * float(suave(hombro_z - 0.04, hombro_z - 0.70, z)) * (0.8 + 0.55 * math.cos(th) ** 2 * (math.cos(th) > 0))
+        return 0.045 * float(suave(hombro_z - 0.02, hombro_z - 0.55, z)) * (0.8 + 0.55 * math.cos(th) ** 2 * (math.cos(th) > 0))
     def salida(p):  # los lomos salen hacia fuera más de lo que entran los valles (la tela cuelga sobre el cuerpo y no lo atraviesa)
-        return max(p, 0.0) + 0.45 * min(p, 0.0) + 0.3
+        return max(p, 0.0) + 0.7 * min(p, 0.0) + 0.25
     vs, uv, ths_v, zs_v = [], [], [], []
     for j in range(NV):
         t = j / (NV - 1); TM = theta_max(t)
@@ -769,8 +769,8 @@ def manto(nombre, co, W, PR, pos, en, mano, cuello_z, cintura_z, rodilla_z, colo
         # (taller-v16: más marcada, y luz en los lomos; de espalda, a contraluz, era lo único que dibujaba los pliegues.
         # taller-v20: aún más, porque en el juego, de espalda y en sombra, la capa salía casi negra y lisa: el fondo de
         # cada pliegue, oscuro como la oclusión de verdad, y el lomo, más claro)
-        crece = suave(0.06, 0.45, t)[..., None]
-        col = col * (1 - 0.50 * crece * suave(0.1, -0.85, pl)[..., None]) * (1 + 0.20 * crece * suave(0.15, 0.85, pl)[..., None])
+        crece = suave(0.03, 0.35, t)[..., None]
+        col = col * (1 - 0.60 * crece * suave(0.1, -0.85, pl)[..., None]) * (1 + 0.22 * crece * suave(0.15, 0.85, pl)[..., None])
         return np.concatenate([col, np.ones(U.shape + (1,))], -1)
     res = 1024
     U, V = np.meshgrid((np.arange(res) + 0.5) / res, (np.arange(res) + 0.5) / res)

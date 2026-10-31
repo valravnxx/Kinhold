@@ -91,7 +91,7 @@ const VISTAS = {
   cuerpo:  () => [rel(0.9, 1.35, 3.1), rel(0, 0.9, 0)],
   cara:    () => { const y = alturaCara(); return [rel(0.22, y + 0.03, 0.78), rel(0, y - 0.02, 0)]; },
   perfil:  () => { const y = alturaCara(); return [rel(0.78, y + 0.02, 0.12), rel(0, y - 0.02, 0.02)]; },
-  espalda: () => [rel(-1.9, 1.4, -1.6), rel(0, 1.0, 0)],
+  espalda: () => [rel(-2.6, 1.3, -2.2), rel(0, 0.9, 0)], // de cuerpo entero (v31: antes cortaba por los muslos y la capa se veía sin el bajo, donde están los pliegues)
   pies:    () => [rel(0.55, 0.5, 1.35), rel(0, 0.14, 0)], // de cerca: zapatos, botas o descalzo
 };
 
