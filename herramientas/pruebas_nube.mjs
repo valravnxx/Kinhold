@@ -33,7 +33,11 @@ const sha = sh('git', ['rev-parse', 'HEAD']);
 if (!sh('git', ['ls-tree', 'HEAD', '.github/workflows/pruebas.yml'])) { console.error('Esta rama no tiene .github/workflows/pruebas.yml: une main primero.'); process.exit(2); }
 
 const todos = JSON.parse(sh('bash', ['herramientas/probar_todo.sh', '--grupos']));
-const pedidos = process.argv.slice(2).length ? process.argv.slice(2) : todos;
+// valravnx, 31 oct: «no hagas las pruebas de en línea de ningún tipo» (las de dos páginas y un servidor: jugar, duelo,
+// volver donde lo dejaste, lo que llevas en línea). Sin nombrarlas no se lanzan; nombradas a mano, sí.
+const EN_LINEA = (g) => /en-linea|volver-donde/.test(g);
+const pedidos = process.argv.slice(2).length ? process.argv.slice(2) : todos.filter(g => !EN_LINEA(g));
+if (!process.argv.slice(2).length) console.log(`Sin las de en línea (valravnx, 31 oct): ${todos.filter(EN_LINEA).join(', ')}`);
 const alPC = process.env.SOLO_NUBE ? [] : pedidos.filter(g => g !== 'logica');
 const aNube = pedidos.filter(g => !alPC.includes(g));
 console.log(`Pruebas de ${rama} (${sha.slice(0, 7)})${process.argv.length > 2 ? ': ' + pedidos.join(', ') : ''}`);
@@ -41,11 +45,11 @@ console.log(`Pruebas de ${rama} (${sha.slice(0, 7)})${process.argv.length > 2 ? 
 // sube la rama del pedido y encuentra su ejecución
 async function lanzar(donde, grupos) {
   const id = `${ahora().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
-  const enTodos = donde === 'pc' ? todos.filter(g => g !== 'logica') : todos;
-  let nombre = grupos.length === enTodos.length && enTodos.every(g => grupos.includes(g)) ? 'todos' : grupos.join('+');
-  // GitHub no admite nombres de rama de más de 255 bytes: con muchos grupos (todos los de navegador, cuando el PC no los
-  // coge), se piden todos; lo que sobra (la lógica, otra vez) no hace daño
-  if (nombre.length > 200) nombre = 'todos';
+  const igual = (l) => grupos.length === l.length && l.every(g => grupos.includes(g));
+  const sinLogica = todos.filter(g => g !== 'logica');
+  let nombre = donde === 'pc' && igual(sinLogica) ? 'todos' : igual(todos) ? 'todos' : igual(sinLogica) ? 'todos-menos-logica' : grupos.join('+');
+  // GitHub no admite ramas de más de 255 caracteres: una lista larga va por el número de cada grupo
+  if (nombre.length > 150) nombre = 'n-' + grupos.map(g => todos.indexOf(g)).join('+');
   const pedido = `${donde === 'pc' ? 'pc' : 'nube'}-pedido/${id}/${nombre}`;
   sh('git', ['push', '-q', 'origin', `HEAD:refs/heads/${pedido}`]);
   let run = null;

@@ -60,8 +60,13 @@ export const PELO_LARGO = ['melena', 'coleta', 'trenzas'];
 // Bajo la capucha o la toca no se ve el pelo largo (provisional: no hay una versión aplastada por la tela)
 export function piezasCabeza(aspecto, tocado = null) {
   const p = aspecto.peinado, b = aspecto.barba, tapada = tocado === 'capucha' || tocado === 'toca';
+  // la toca y la cofia tapan toda la cabeza: debajo no va nada de pelo. El pelo pintado (vello) se dibuja adelantado
+  // sobre la piel (polygonOffset) y, visto de lejos o en el móvil, asomaba a manchas por la tela, pegada al cráneo
+  // (revisión del 31 oct); el pelo corto, igual por la toca
+  const cubierta = p === 'cofia' || tocado === 'toca';
   return {
-    _pelo: p !== 'rapado' && p !== 'cofia',
+    _pelo: p !== 'rapado' && !cubierta,
+    _vello: !cubierta,
     _pelo_melena: p === 'melena' && !tapada,
     _pelo_coleta: p === 'coleta' && !tapada,
     _pelo_trenzas: p === 'trenzas' && !tapada,

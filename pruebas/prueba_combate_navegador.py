@@ -198,9 +198,11 @@ with sync_playwright() as p:
     pg.screenshot(path=f'{SALIDA}/03_aviso_rojo.png')
     # Espacio se pulsa desde la propia página en el primer fotograma en verde: con tarjeta gráfica el juego va a su
     # velocidad y la ventana (0,25 s) es más corta que la ida y vuelta desde Python (en el PC de valravnx, 31 oct, la
-    # parada llegaba tarde); sin tarjeta, a 2-4 fps, daba igual
+    # parada llegaba tarde); sin tarjeta, a 2-4 fps, daba igual. Y no en el primerísimo: la ventana es de 0,25 s y, pulsando
+    # en su borde, un fotograma de más la sacaba de ella (en el PC fallaba o no según cosas tan ajenas como el tamaño de
+    # los textos traducidos); se pulsa ya bien dentro, a 0,15 s del impacto
     ev("""(() => { const s = document.querySelector('#rosa [data-l=derecha]'); window.__vioVerde = false;
-      const mira = () => { if (s.classList.contains('verde')) { window.__vioVerde = true; dispatchEvent(new KeyboardEvent('keydown', { key: ' ', code: 'Space' })); } else requestAnimationFrame(mira); };
+      const mira = () => { if (s.classList.contains('verde') && window.__duelo.rival.hastaImpacto() <= 0.15) { window.__vioVerde = true; dispatchEvent(new KeyboardEvent('keydown', { key: ' ', code: 'Space' })); } else requestAnimationFrame(mira); };
       mira(); })()""")
     verde = hasta("window.__vioVerde", 5000)
     comprobar('se pone verde en la ventana de parada perfecta', verde)

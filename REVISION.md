@@ -12,6 +12,9 @@ valravnx: «he dicho un millón de veces, la prueba de en línea LA BORRAS. NO S
 ### 31 oct 2026 (14:09 UTC) — por el chat: fuera «Duelo» y la prueba de «jugar en línea»
 valravnx: «de hecho quita duelo en línea, ya está integrado en jugar»; «y no solo eso, está todo 100% online en solo jugar, no hay nada ya “en línea”»; «evita la de jugar en línea, eso ya no existe, no la hagas». → Fuera «Duelo» del menú de la demo (un enlace antiguo lleva a «Jugar») y fuera las pruebas aparte de «duelo en línea» y «jugar en línea». Anotado en CLAUDE.md.
 
+### 31 oct 2026 (14:10 UTC) — por el chat: sin pruebas en línea
+valravnx: «no hagas las pruebas de en linea de ningun tipo». → `pruebas_nube.mjs` deja fuera por defecto las demás pruebas en línea (volver donde lo dejaste, lo que llevas en línea); nombrados a mano sí se lanzan. Anotado en CLAUDE.md, en lugar de la regla de que paraban la publicación.
+
 ### 31 oct 2026 (11:49 UTC) — por el chat: las animaciones de cargar, hechas por nosotros
 valravnx, respondiendo a la decisión de llevar al hombro y arrastrar: «las tratamos de hacer nosotros pues, es que cargue el tronco en el hombro con penalizacion a movimiento». → Opción (b): se hacen en el taller a partir de las que hay. La tarea en espera de «Equipo y carga por huecos» pasa a pendiente, y lleva también que el tronco al hombro se note al moverse.
 

@@ -32,7 +32,10 @@ jobs:
           RAMA: ${{ github.ref_name }}
         run: |
           pedidos="${RAMA#*-pedido/*/}"
-          if [ "$pedidos" = todos ] && [ "${RAMA%%/*}" = pc-pedido ]; then echo "grupos=$(bash herramientas/probar_todo.sh --grupos | python3 -c 'import json,sys; print(json.dumps([g for g in json.load(sys.stdin) if g != "logica"]))')" >> "$GITHUB_OUTPUT"
+          # «todos-menos-logica» (y «todos» en el PC): todos salvo «logica»; «n-3+7+…»: por su número en la lista
+          # (una lista larga de nombres pasa de los 255 caracteres que admite GitHub en una rama)
+          if [ "$pedidos" = todos-menos-logica ] || { [ "$pedidos" = todos ] && [ "${RAMA%%/*}" = pc-pedido ]; }; then echo "grupos=$(bash herramientas/probar_todo.sh --grupos | python3 -c 'import json,sys; print(json.dumps([g for g in json.load(sys.stdin) if g != "logica"]))')" >> "$GITHUB_OUTPUT"
+          elif [ "${pedidos#n-}" != "$pedidos" ]; then echo "grupos=$(bash herramientas/probar_todo.sh --grupos | python3 -c 'import json,sys; t=json.load(sys.stdin); print(json.dumps([t[int(i)] for i in sys.argv[1].split("+")]))' "${pedidos#n-}")" >> "$GITHUB_OUTPUT"
           elif [ "$pedidos" = todos ]; then echo "grupos=$(bash herramientas/probar_todo.sh --grupos)" >> "$GITHUB_OUTPUT"
           else echo "grupos=[\"${pedidos//+/\",\"}\"]" >> "$GITHUB_OUTPUT"; fi
   grupo:
