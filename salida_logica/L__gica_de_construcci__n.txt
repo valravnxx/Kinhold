@@ -1,0 +1,279 @@
+1. Coordenadas
+  OK   ida y vuelta local↔mundo — (3.200, 1.100)
+2. Mojón y tierra
+  OK   sin mojón no se construye
+  OK   mojón cuesta 3 piedras — piedra=117
+  OK   segundo mojón rechazado
+  OK   fuera de tierra rechazado
+3. Primera pieza fija la rejilla; las siguientes encajan
+  OK   primera pieza crea construcción
+  OK   la primera pieza queda donde apuntaste — (3.00, 4.00)
+  OK   segunda pieza en la misma rejilla
+  OK   pieza lejana crea otra construcción con su propio giro
+4. Apoyos
+  OK   muro sin cimiento rechazado
+  OK   empalizada directa al suelo
+  OK   empalizada en planta 1 rechazada
+  OK   cimiento en planta 1 rechazado
+  OK   suelo en planta 0 rechazado
+  OK   muro junto a cimiento
+  OK   puerta sin hueco rechazada
+  OK   puerta en muro con hueco
+  OK   hueco ocupado rechazado
+5. Carga: zarzo no sostiene troncos
+  OK   muro de troncos sobre zarzo rechazado — carga=300 cap=250
+  OK   tejado de paja sobre zarzo admitido
+6. Carga: torre de muros de troncos
+  OK   cuatro plantas de muro admitidas (el máximo de plantas) — carga muro bajo=900
+  OK   quinta planta rechazada — Planta no permitida.
+7. Desmontar: cascada y recuperación del 75%
+  OK   previsualización: caen muro de arriba y hastial — caen=e:0,0,1,0 g:0,0,2,0
+  OK   recupera 3 de 4 troncos (75%) — +3
+  OK   solo queda el cimiento
+8. Desmontar bloqueado por sobrecarga
+  OK   suelo sobre dos vigas y cuatro muros encima — carga por viga=660
+  OK   quitar una viga queda bloqueado (la otra cargaría 1020 > 1000) — {"ok":false,"motivo":"No se puede desmontar: otra pieza quedaría sobrecargada.","debil":"b:0,1,0,0","caen":[]}
+9. Materiales
+  OK   sin piedra suficiente rechazado — [{"m":"piedra","n":8,"hay":2}]
+10. Guardar y cargar
+  OK   mismo contenido tras guardar — 525 bytes
+11. Tejados: los muros cierran hasta el tejado
+  OK   dos aguas: cada tramo cierra sus dos extremos y nada en la cumbrera — ["lado","lado"]
+  OK   dos aguas: la cumbrera la remata uno solo de los dos tramos — [false,true]
+  OK   dos aguas: cada tramo suelto vuela por sus dos lados — [[1,-1],[1,-1]]
+  OK   tramos de lado: solo vuelan los bordes (1, 0, 1 lados) — extremos=1,0,1
+  OK   tramos de lado: paridad alterna (no se montan a la misma altura) — par=0,1,0
+  OK   una caída sin tramo enfrente: sin cumbrera
+  OK   una caída: dos lados y el muro alto
+  OK   pendiente continua: arranques 0,1,2 y muro alto de 3 tramos — arranques=0,1,2
+  OK   sin muro alto entre tramos seguidos (aunque haya tabique debajo) — altos=0,0,1
+12. Lo que no aguanta peso no cuenta como apoyo
+  OK   una cerca bajo el borde de un tejado se puede poner — {"ok":true,"clave":"e:0,1,0,0"}
+  OK   y el tejado no la usa de apoyo
+13. Casas de varias plantas (valravnx: «la madera es demasiado débil»)
+  OK   casa de 3×3, 2 plantas y tejado, toda de troncos: se puede hacer entera
+  OK   casa de 4×3, 2 plantas y tejado, toda de troncos: se puede hacer entera
+  OK   casa de 4×4, 2 plantas y tejado, toda de troncos: se puede hacer entera
+  OK   y con margen: ninguna pieza pasa del 75% de lo que aguanta — peor 70%
+  OK   3 plantas sobre cimiento de troncos: no aguanta (hace falta piedra) — muro k2 0,0,1: La estructura no soporta ese peso.
+  OK   3 plantas sobre cimiento de piedra: se puede
+  OK   el zarzo no da para dos plantas
+  OK   casa de 5×5: el centro no se sostiene sin vigas (vano de una casilla como mucho) — suelo k1 2,2: Un suelo en alto necesita muros o vigas debajo, o un suelo al lado que los tenga. | tejado 2,2: El tejado necesita muros o vigas debajo, o un tramo de tejado al lado que los tenga.
+  OK   tejado apoyado en el tramo de al lado
+  OK   y cae si se quita el tramo en el que se apoya — caen=r:1,0,1
+  OK   pero no se encadena: dos casillas sin muro no se sostienen — El tejado necesita muros o vigas debajo, o un tramo de tejado al lado que los tenga.
+14. Escalera de tablas
+  OK   escalera de tablas sobre el cimiento
+  OK   cuesta 6 tablas y 6 clavos
+  OK   suelo de arriba en la casilla de salida
+  OK   encima de la escalera queda el hueco abierto: no deja poner suelo — Ahí está el hueco de una escalera.
+  OK   la escalera de mano no está en la misma casilla (una escalera por casilla)
+  OK   con suelo encima no se puede poner (no habría hueco) — Encima de la escalera tiene que quedar el hueco abierto: quita ese suelo.
+  OK   en la última planta no cabe
+  OK   se apoya en el cimiento de su casilla
+  OK   el cimiento carga sus 100 kg de más — 900 → 1000 kg
+  OK   en la planta 1 se apoya en un suelo
+  OK   y cae si se quita ese suelo — caen=l:0,1,1
+  OK   sin suelo en alto no se pone
+  OK   se sube andando: abajo en el borde de entrada, arriba en el de salida
+  OK   sale por arriba al suelo de la casilla de al lado
+  OK   girada sube hacia +x
+  OK   la escalera de mano no se sube andando (va con Usar)
+  OK   se guarda y se carga
+Barandillas y portillo
+  OK   suelo de arriba junto al hueco de la escalera
+  OK   medio muro como barandilla en el borde de un suelo en alto
+  OK   y en el borde del hueco de la escalera
+  OK   la del hueco se apoya en el suelo de al lado — f:1,0,1
+  OK   en el aire no se pone
+  OK   si se quita el suelo, la barandilla del hueco cae con él — e:1,0,1,1
+  OK   la barandilla no sostiene nada (capacidad 0)
+  OK   el portillo se pone en el suelo, como la cerca
+  OK   cuesta 4 varas y 1 cuerda
+  OK   portillo y cerca en la misma rejilla
+  OK   solo en la planta baja
+  OK   el portillo se abre con Usar
+  OK   y se vuelve a cerrar
+  OK   la cerca normal no se abre
+  OK   el medio muro tampoco
+  OK   el portón de la empalizada sigue abriéndose
+  OK   cada Usar queda anotado con su autor
+  OK   abierto se guarda y se carga abierto
+15. Obras en alto: clase de peso y subir el material
+  OK   cada material tiene clase de peso
+  OK   tablas, varas, paja y clavos son ligeros; troncos, pesados (GDD)
+  OK   a ras de suelo, lo pesado se entrega sin subirlo
+  OK   en la planta 1, los troncos no se entregan a mano (ni estando arriba) — Lo pesado no se sube a mano: entre dos, con una polea, o rodándolo por dos varas con una cuerda.
+  OK   sola y sin varas, la subida no avanza de la mitad: espera ayuda — {"ok":true,"subido":false,"progreso":0.5,"esperaAyuda":true}
+  OK   el tronco sale de la reserva al empezar a subirlo
+  OK   entre dos, el tronco llega arriba — {"ok":true,"subido":true,"progreso":1,"falta":[{"m":"tronco","n":3}]}
+  OK   la subida queda anotada con los dos autores y sus segundos
+  OK   sola, rodándolo por dos varas con una cuerda, también lo sube
+  OK   pero tarda el doble de trabajo que entre dos — 10 s sola
+  OK   las varas y la cuerda no se gastan
+  OK   sin dos varas no se puede rodar
+  OK   lo ligero no se sube con varas
+  OK   a ras de suelo no hace falta subir
+  OK   la subida a medias se guarda y se carga
+  OK   desmontar la obra devuelve lo subido y el tronco que iba subiendo — 96 → 99
+  OK   lo ligero no llega a la planta 1 desde abajo — Súbelo a mano por la escalera o el andamio hasta la planta de la obra.
+  OK   sin decir desde dónde, cuenta como desde el suelo
+  OK   subido a mano por la escalera, sí se entrega
+  OK   acabarObra termina una obra en alto con todo por acciones
+16. Obras: andamio pegado al muro y polea en una viga
+  OK   el andamio cuesta varas y cuerda y va en la categoría de acceso
+  OK   lejos de un muro no se pone — El andamio va pegado a un muro (o a la obra de un muro), en esta planta o en la de arriba.
+  OK   pegado al muro, a ras de suelo, se pone
+  OK   un andamio terminado cuenta como andamio
+  OK   mira solo hacia su muro (la barandilla y la escalerilla quedan por fuera) — 0 y 1
+  OK   donde arriba hay suelo no cabe su plataforma — Encima del andamio va su plataforma: ahí ya hay un suelo.
+  OK   en alto, sin andamio debajo, no se sostiene — La escalera necesita un suelo; el andamio, la tierra, un suelo u otro andamio debajo.
+  OK   encima de otro andamio, sí
+  OK   en la última planta no cabe (su plataforma iría por encima)
+  OK   no se pone un suelo donde está la plataforma del andamio
+  OK   aguanta otro andamio encima (sin sobrecarga)
+  OK   se apilan tres andamios hasta la planta 3, pegados a la obra de arriba
+  OK   lo ligero no llega a la planta 2 desde la 1 — Súbelo a mano por la escalera o el andamio hasta la planta de la obra.
+  OK   subido al andamio (en la planta 2), se entrega y se trabaja
+  OK   al quitar el andamio de abajo caen los de encima — ["l:0,-1,1","l:0,-1,2"]
+  OK   la polea va en la categoría de acceso y cuelga de una viga
+  OK   sin viga no se cuelga — La polea se cuelga de una viga terminada.
+  OK   de una viga en obras tampoco
+  OK   de una viga terminada, sí
+  OK   la polea de lo alto de la planta 1 sirve para la planta 2
+  OK   una persona sola sube un tronco con la polea
+  OK   con polea, una sola hace lo de dos a pulso: la mitad que con varas — 10 s a la planta 2 (con varas, 20 s)
+  OK   queda anotado que se subió con polea y quién
+  OK   sin polea en la construcción, no se sube con polea — Para subirlo con polea hace falta una polea en una viga de esta construcción, a la altura de la obra o más arriba.
+  OK   una polea en lo alto de la planta baja no llega a la planta 2
+  OK   pero sí a la planta 1
+  OK   el andamio y la polea se guardan y se cargan
+  OK   al quitar la viga, cae la polea — {"ok":true,"caen":["q:0,1,1,0"]}
+17. Obras: polipasto con torno (lo muy pesado, entre dos)
+  OK   el polipasto va en acceso, cuelga de una viga y lleva cuerda, hierro y madera
+  OK   sin viga no se cuelga (y lo dice del polipasto) — El polipasto se cuelga de una viga terminada.
+  OK   de una viga terminada, sí
+  OK   en la misma viga no cabe además una polea
+  OK   el polipasto de lo alto de la planta 1 sirve para la planta 2; no cuenta como polea
+  OK   lo muy pesado no se lleva a mano — Lo muy pesado solo se sube con un polipasto con torno, entre dos.
+  OK   lo muy pesado no se sube con «varas» — Lo muy pesado solo se sube con un polipasto con torno, entre dos.
+  OK   lo muy pesado no se sube con «polea» — Lo muy pesado solo se sube con un polipasto con torno, entre dos.
+  OK   lo muy pesado no se sube con «entre_dos» — Lo muy pesado solo se sube con un polipasto con torno, entre dos.
+  OK   una persona sola no sube un sillar con el polipasto: espera a otra que guíe —  progreso 0.5
+  OK   en cuanto otro ayuda (guía), el sillar llega arriba — {"ok":true,"subido":true,"progreso":1,"falta":[{"m":"sillar_prueba","n":1}]}
+  OK   queda anotado con polipasto y los dos autores
+  OK   entre dos, un sillar a la planta 2 cuesta 4 × SUBIR_PLANTA × 2 s de trabajo — 20 s
+  OK   con los sillares arriba, la obra se termina
+  OK   un tronco lo sube una persona sola con el polipasto, como con polea — 10 s 
+  OK   con solo una polea no se sube «con polipasto» — Para subirlo con polipasto hace falta un polipasto en una viga de esta construcción, a la altura de la obra o más arriba.
+  OK   el polipasto se guarda y se carga
+18. Contraventana, trampilla y muro de tablas con ventana
+  OK   el muro de tablas con ventana se pone
+  OK   cuesta menos que el muro de tablas entero
+  OK   la contraventana no va en un muro sin ventana — La contraventana va en un muro con ventana.
+  OK   ni en el aire
+  OK   la contraventana se pone en el muro de tablas con ventana — w:1,0,0,0
+  OK   cuesta 2 tablas y 2 clavos
+  OK   y en el de troncos con ventana — w:0,1,0,0
+  OK   en obras no se abre
+  OK   se abre con Usar
+  OK   y se cierra
+  OK   se apoya en su muro
+  OK   si se quita el muro, la contraventana cae con él — w:1,0,0,0
+  OK   la trampilla no va donde no hay escalera — La trampilla va en el hueco de arriba de una escalera de tablas, con suelo al lado.
+  OK   ni en la planta de la escalera
+  OK   la trampilla se pone en el hueco de la escalera — t:0,0,1
+  OK   la bisagra no va en el lado por el que se sale de la escalera (abierta taparía la salida) — dir=0
+  OK   sin suelo en los lados ni en el arranque, va en un lado — dir=0
+  OK   en obras no tapa el hueco
+  OK   terminada y cerrada tapa el hueco (se pisa y la escalera no sube)
+  OK   descansa en el suelo de al lado
+  OK   se abre con Usar y deja el hueco libre
+  OK   el hueco sigue sin admitir un suelo
+  OK   si se quita la escalera, la trampilla cae con ella — t:0,0,1
+  OK   con suelo a un lado de la escalera, la bisagra va en ese lado —  dir=1
+  OK   cada Usar y cada obra quedan anotados con su autor
+  OK   se guardan y se cargan (abierta y cerrada)
+19. Tejado de teja (pesa 200 kg: el doble y más que la paja)
+  OK   material nuevo «teja», ligero (se sube a mano)
+  OK   N2, 10 tejas y las vigas (1 tronco), y no se pudre ni arde fácil
+  OK   casa de 3×3 y 2 plantas de troncos con tejado de teja: se puede hacer entera
+  OK   y los cimientos cargan 120 kg más por cada tramo (9 tramos: 1080 kg) — 10350 → 11430 kg
+  OK   la pieza más cargada sube (paja 70 % → teja 76 %), con margen — 70 % → 76 %
+  OK   3 plantas sobre cimiento de piedra con teja: aún se puede, pero al límite (≥ 95 %) — peor 99 % 
+  OK   zarzo de 3×3: con paja va holgado; con teja, los muros del medio llegan al tope (250 kg) — paja 40 % · teja 100 %
+  OK   y un tramo de teja más, volando y apoyado en el de al lado, se rechaza por el peso — La estructura no soporta ese peso.
+  OK   (con paja ese mismo tramo sí cabe)
+  OK   como obra, con su autor: cuesta 10 tejas y 1 tronco —  
+  OK   se guarda y se carga
+  OK   una partida guardada sin tejas se carga con las de partida
+20. Remate de tejado: esquinas que cierran (limatesa y limahoya)
+  OK   a cuatro aguas: los remates y los tramos se ponen
+  OK   a cuatro aguas: las cuatro esquinas son limatesa — ["tesa","tesa","tesa","tesa"]
+  OK   a cuatro aguas: nada que cerrar bajo el tejado (sin hastiales) — []
+  OK   a cuatro aguas: los tramos del medio siguen en las esquinas (no vuelan por los lados) — [[],[]]
+  OK   a cuatro aguas: una sola cumbrera en medio
+  OK   los remates no se apilan: arranque 0
+  OK   pirámide de teja: cuatro limatesas y nada que cerrar
+  OK   en L: todo se pone (el rincón, sin muros debajo, se apoya en los tramos de al lado)
+  OK   en L: el rincón es limahoya y la esquina de fuera limatesa — hoya tesa
+  OK   en L: los tramos junto a los remates no vuelan por ese lado — [[],[],[],[],[1]]
+  OK   en L: las dos cumbreras llegan al rincón (las ponen los tramos de al lado)
+  OK   en L: solo se cierran con hastial las dos puntas — r:0,0,1 r:0,1,1 r:2,3,1 r:3,3,1
+  OK   remate de paja: 40 kg, cuesta 1 vara y 2 de paja
+  OK   el remate se guarda y se carga
+21. Chimenea u hogar interior (piedras y barro, 600 kg, sobre cimiento de piedra)
+  OK   N2, piedras y barro, 600 kg, en la planta baja
+  OK   no va sobre un cimiento de troncos — La chimenea va en la planta baja, sobre un cimiento de piedra terminado.
+  OK   ni en la tierra sin cimiento
+  OK   ni en una planta de arriba
+  OK   se pone sobre el cimiento de piedra, por acciones con autor — h:0,0,0
+  OK   se arrima al primer muro de su casilla (el de +z: dir 0) — dir=0
+  OK   en obras no se enciende
+  OK   se termina y gasta sus piedras y su barro
+  OK   carga sus 600 kg en el cimiento de piedra — 600
+  OK   terminada, está encendida
+  OK   se apaga con Usar
+  OK   y se vuelve a encender
+  OK   no caben dos en la misma casilla
+  OK   no cabe una escalera en la casilla de la chimenea — Por esa casilla sube el cañón de una chimenea.
+  OK   lo que ocupa está dentro de su casilla y pegado al lado del muro — [{"lx":0.25,"lz":1.05},{"lx":1.75,"lz":1.05},{"lx":1.75,"lz":1.92},{"lx":0.25,"lz":1.92}]
+  OK   el cañón ocupa menos que el hogar y va pegado al muro
+  OK   sin nada encima, el cañón pasa de la planta baja — 3.25
+  OK   con una planta encima y tejado, sale por encima del tejado — 6.95
+  OK   si se quita el cimiento, la chimenea cae con él — h:5,-3,0
+  OK   sin muros alrededor, mira hacia +z
+  OK   cada Usar queda anotado con su autor
+  OK   se guarda y se carga (apagada)
+22. Adarve (pasarela por detrás de la empalizada: tablas y postes, 100 kg, sostiene 300)
+  OK   N2, tablas y postes (troncos), 100 kg, sostiene 300, en la planta baja
+  OK   su piso está entre 1,5 y 2 m: con la empalizada de 3 m queda parapeto para asomarse — 1.8
+  OK   no va donde no hay empalizada — El adarve va en la planta baja, en una casilla junto a una empalizada terminada.
+  OK   ni junto a una cerca
+  OK   ni en una planta de arriba
+  OK   se pone detrás de la empalizada, por acciones con autor — a:0,0,0
+  OK   se arrima solo a su empalizada (la de +z: dir 0), gire como gire — dir=0
+  OK   en obras no se pisa
+  OK   se termina y gasta sus tablas, clavos y troncos
+  OK   terminado, se pisa
+  OK   su peso va a sus postes (la tierra): la empalizada no carga nada
+  OK   otro tramo al lado, seguido
+  OK   no caben dos en la misma casilla
+  OK   no cabe una escalera en su casilla — Ahí está el adarve: eso va en la casilla de al lado.
+  OK   ni un suelo encima
+  OK   la escalera de mano de delante, apoyada en él, lleva al adarve
+  OK   girada hacia otro lado, no
+  OK   ni apoyada hacia atrás
+  OK   la escalera de tablas de delante, también
+  OK   si se quita su empalizada, el adarve cae con ella — a:0,0,0
+  OK   en una esquina ve las dos empalizadas
+  OK   cada colocación queda anotada con su autor
+  OK   se guarda y se carga
+
+Tejado pisable: alto de su cara en cada punto de la casilla
+  OK   dir 0: en el alero 0, en lo alto 1 tramo, a media casilla 0,5
+  OK   dir 1 (sube hacia -i): alto en i=0, alero en i=1
+  OK   el segundo tramo de una pendiente arranca 1 tramo más arriba
+  OK   remate de esquina: limatesa baja hacia los dos aleros, limahoya sube
+
+Resultado: 252 correctas, 0 fallidas
