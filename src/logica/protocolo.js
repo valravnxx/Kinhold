@@ -13,7 +13,10 @@
 //               cada luchador lleva lo que se le ha hecho a cada herida y su botiquín.
 //   5 (31 oct): lo que llevas y el suelo son los del servidor ({ tipo: 'objeto' }), también talar, trocear, recoger
 //               y el arcón de pruebas; un servidor anterior no los conoce y te quedarías sin poder coger nada.
-export const PROTOCOLO = 5;
+//   6 (31 oct): las obras cobran de lo que llevas también en línea (entregar, subir y el arcón de materiales, con
+//               los inventarios del servidor); sus entradas van ya pagadas («lleva») y un servidor anterior las
+//               cobraría del montón común, así que el mundo de cada navegador dejaría de cuadrar con el suyo.
+export const PROTOCOLO = 6;
 
 // La versión del servidor por su bienvenida. Los servidores de antes de este número no la mandan: los que ya
 // llevaban el reloj del combate (tc) se cuentan como la 1, y los anteriores como la 0.

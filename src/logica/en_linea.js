@@ -10,7 +10,7 @@
 //
 // El autor de cada acción lo pone el servidor; aquí se usa el de la bienvenida solo para la copia local.
 import { Mundo } from './construccion.js';
-import { RegistroAcciones, ejecutar, reproducir } from './acciones.js';
+import { RegistroAcciones, ejecutar, reproducir, USAN_INVENTARIO } from './acciones.js';
 
 const copiar = (m) => Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
 
@@ -25,6 +25,11 @@ export class MundoEnLinea {
     this.caidas = new Set();  // ids propias que ya no salían al rehacer (lo de otro llegó antes): su rechazo se espera
     this.id = 0;
     this.registro = new RegistroAcciones(200);   // lo hecho aquí (la copia), para mirarlo; el que vale es el del servidor
+    // Lo que llevas (hito «Equipo y carga»): las obras cobran de ahí. Lo pone quien la usa ({ de: () => Inventario },
+    // el del jugador tal como lo manda el servidor). Entregar, subir y el arcón de materiales se adelantan con él (lo que
+    // llevas cambia ya; el servidor manda luego el suyo, que manda); la acción queda ya pagada («lleva») y al rehacer
+    // la copia no vuelve a cobrar. Sin él, no se adelantan: «No llevas ese material».
+    this.invs = null;
   }
   get conectado() { return this.yo !== null; }
 
@@ -33,10 +38,13 @@ export class MundoEnLinea {
     if (!this.conectado) return { ok: false, motivo: 'Sin conexión con el servidor.' };
     const accion = { ...a, autor: this.yo };
     if (this.mundo === this.base) this.mundo = copiar(this.base);
-    const r = ejecutar(this.mundo, this.registro, accion);
+    delete accion.lleva;   // eso solo lo pone la lógica al cobrar
+    const usa = USAN_INVENTARIO.has(accion.tipo);
+    if (usa && !this.invs) { if (!this.pendientes.length) this.mundo = this.base; return { ok: false, motivo: 'No llevas ese material.', faltan: [] }; }
+    const r = ejecutar(this.mundo, this.registro, accion, usa ? this.invs : null);
     if (!r.ok) { if (!this.pendientes.length) this.mundo = this.base; return r; }
     const id = ++this.id;
-    const { autor, ...sinAutor } = accion;   // el autor no se manda: lo pone el servidor
+    const { autor, lleva, ...sinAutor } = accion;   // el autor no se manda (lo pone el servidor), ni «lleva»
     this.pendientes.push({ id, accion });
     this.enviar({ tipo: 'accion', id, accion: sinAutor });
     return r;

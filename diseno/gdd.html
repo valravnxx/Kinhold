@@ -60,7 +60,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Versión 0.9 · 26 oct 2026 · Ampliación para un juego acabado: sin ciudades NPC, comarcas, transporte, ropa tejida y convivencia online · El catálogo de contenido sigue en el documento de análisis</div>
+  <div class="sub">Versión 0.9 · 26 oct 2026 (31 oct: la isla del rey y su ciudad) · Ampliación para un juego acabado: comarcas, transporte, ropa tejida y convivencia online · El catálogo de contenido sigue en el documento de análisis</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDIDO</span> lo has dicho tú
     <span class="tag method">MÉTODO</span> cómo hacerlo técnicamente
@@ -186,7 +186,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 
 <section id="viaje">
 <h2>5. Viaje, mapa y navegación</h2>
-<p><span class="tag ok">DECIDIDO</span>El mapa se descubre explorando. <b>Cartografía de final de juego:</b> mesa de cartógrafo para dibujar en papel lo explorado; el mapa es un objeto que se copia, se vende o te roban.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Whitholm es la isla del rey, y está cartografiada</b> (valravnx, 31 oct): al llegar te dan el mapa del rey, con la costa, las comarcas, los ríos y la ciudad de Strandvang; nadie se pierde en la isla. <b>El continente (Kinland) está por explorar</b>: no hay mapa suyo, se llega en barco y se cartografía. <b>Cartografía de final de juego:</b> mesa de cartógrafo para dibujar en papel lo explorado del continente; el mapa es un objeto que se copia, se vende o te roban.</p>
 <p><span class="tag ok">DECIDIDO</span>Los caminos se forman con el uso. Puentes construibles con varios materiales y formas.</p>
 <p><span class="tag ok">DECIDIDO</span>Navegación en fase tardía: diseñar barcos y navegar con otros.</p>
 <div class="box m"><span class="tag method">MÉTODO</span>
@@ -415,7 +415,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <ul>
   <li>La tierra crece con lo construido dentro, no con el número de cuentas.</li>
   <li>Una tierra sin actividad ni mantenimiento acaba quedando libre.</li>
-  <li>Límite de reclamaciones por personaje.</li>
+  <li>Mojones: <b>uno por personaje en Whitholm</b>, y en el continente hasta tres más en total, cuando se llegue en barco (valravnx, 31 oct).</li>
   <li>Las vetas importantes no se pueden acaparar enteras.</li>
   <li>Nada de reclamaciones cerca de las zonas de inicio.</li>
 </ul></div>
@@ -477,7 +477,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span><b>La moneda la acuñan solo los NPCs.</b> Se gana con <b>encargos de los NPCs</b>: ellos piden lo que necesitan y tú se lo traes; no compran cualquier cosa que quieras vender.</p>
 <p><span class="tag ok">DECIDIDO</span>Puestos de venta que funcionan sin estar conectado.</p>
 <p><span class="tag ok">DECIDIDO</span><b>NPCs a tu servicio, como mercenarios de la época:</b> hay que conseguirles el equipo que llevarán, su comida y su paga; los tienes mientras puedas mantenerlos. La comodidad afecta a estos NPCs. Los centinelas funcionan así.</p>
-<p><span class="tag ok">DECIDIDO</span>Sin aldeas ni bandidos NPC al principio.</p>
+<p><span class="tag ok">DECIDIDO</span>Sin aldeas ni bandidos NPC al principio; la única ciudad NPC es la del rey, en Strandvang (31 oct).</p>
 <div class="box p"><span class="tag prop">PROPUESTA</span>
 <ul>
   <li>Entre jugadores: trueque o moneda, como quieran.</li>
@@ -489,7 +489,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="box p"><span class="tag ok">APROBADO</span> Cómo llegan y qué tipos hay:
 <ul>
   <li><b>Llegada:</b> cada cierto tiempo pasa por tu asentamiento un ambulante (necesitas un mojón para que vengan). Se queda un tiempo; si no lo contratas, sigue su camino. Con más nivel de mojón vienen más a menudo y de más tipos.</li>
-  <li><b>De dónde salen:</b> aparecen fuera de la vista, a unos 2 km de cualquier jugador, y llegan andando al asentamiento. No hay ciudades NPC. Un mercader solo se queda fijo en un asentamiento si se crea un sistema para ello, como el de contratar mercenarios; si no, comercia y sigue su camino.</li>
+  <li><b>De dónde salen:</b> salen de la ciudad del rey con sus mercancías y van andando a los asentamientos; son raros y poco habituales (valravnx, 31 oct): lo normal es ir a la ciudad. Un mercader solo se queda fijo en un asentamiento si se crea un sistema para ello, como el de contratar mercenarios; si no, comercia y sigue su camino.</li>
   <li><b>Tipos:</b>
     <ul>
       <li><b>Mercenario / centinela:</b> vigila y defiende tus tierras.</li>
@@ -573,7 +573,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h2>20. Ampliación para un juego acabado</h2>
 <p class="note">Aprobado por valravnx el 26 oct a partir del análisis de lo que faltaba para un juego acabado. Entre paréntesis, el hito donde se planifica cada cosa.</p>
 <h3>Mundo</h3>
-<p><span class="tag ok">DECIDIDO</span><b>Sin ciudades NPC</b> (decidido el 27 oct): romperían la sensación de mundo por explorar del survival. El trato con NPCs llega con los mercaderes y mercenarios ambulantes, que aparecen a unos 2 km de cualquier jugador y van andando a los asentamientos (apartado 16). (Hito 14)</p>
+<p><span class="tag ok">DECIDIDO</span><b>La comarca del rey y su ciudad</b> (valravnx, 31 oct; cambia lo del 27 oct, «sin ciudades NPC»): <b>Strandvang</b> (la comarca E de Whitholm, una de las de inicio) es dominio del rey, gobernada por NPCs y neutral: <b>sin PvP</b> y fuera del sistema de clanes (no se pone un centro, no se toma, no da renta ni hay asedios). Ahí se vive con el mojón normal (casa, cultivos, animales), para que la gente que juega en paz esté a gusto. Las otras siete comarcas siguen siendo de los clanes, con PvP. En Strandvang está <b>la única ciudad NPC</b>: no es para vivir, sino a la que se va a comprar (metal, herramientas mejores, carros, animales) y vender (lo que sobra de la cosecha y demás, por moneda), contratar NPCs, quedar con otros y practicar en duelos contra NPCs, y lo que se añada. (Hito 14)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Comarcas con nombre:</b> cada región se divide en comarcas que siguen el relieve (un valle, una vega, una sierra), con nombre al estilo de la región. El mapa del mundo y sus nombres los revisa y ajusta valravnx a mano. (Hito 10)</p>
 <p><span class="tag ok">DECIDIDO</span>El mundo <b>no se reinicia nunca</b>. (Hito 11)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Clima:</b> despejado, nublado, lluvia, nieve (norte e invierno) y niebla, por zonas grandes y según la estación. En el norte, los ríos se hielan en invierno y se cruzan andando. (Hito 4)</p>
@@ -593,7 +593,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span><b>Ventana de trueque:</b> cada uno pone lo suyo y los dos confirman; nada cambia de manos hasta que ambos aceptan. (Hito 14)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Dominar una comarca:</b> la familia con el mojón de más nivel dentro de una comarca es su señora; su escudo aparece sobre ella en los mapas y puede rebautizarla. La pierde si otra familia la supera o le tumba el mojón. <b>Títulos</b> según lo que se domina: señor, barón, conde, rey de un país. (Hito 13)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Asentamientos con nombre:</b> al poner un mojón se le da nombre al asentamiento; es el que sale en el mapa y al que se envían mensajeros. (Hito 13)</p>
-<p><span class="tag ok">DECIDIDO</span><b>El mapa como tablero</b>, respetando que se descubre explorando: en lo explorado y en los mapas de cartógrafo se ven los escudos de las familias sobre sus tierras y comarcas, en verde, azul o rojo (tuyo, aliado, enemigo), con avisos de combate en tus tierras y de mojones con el mantenimiento a punto de acabarse. Sin viaje rápido. (Hitos 13 y 17)</p>
+<p><span class="tag ok">DECIDIDO</span><b>El mapa como tablero</b>: en el mapa del rey (Whitholm) y en lo explorado y los mapas de cartógrafo (el continente) se ven los escudos de las familias sobre sus tierras y comarcas, en verde, azul o rojo (tuyo, aliado, enemigo), con avisos de combate en tus tierras y de mojones con el mantenimiento a punto de acabarse. Sin viaje rápido. (Hitos 13 y 17)</p>
 <h3>Técnica y producción</h3>
 <p><span class="tag method">MÉTODO</span>Todo proceso (curtido, cultivos, carbonera, secadero, deterioro, árboles) se calcula por tiempo transcurrido, para que el servidor no simule cada minuto. (Hito 11)</p>
 <p><span class="tag method">MÉTODO</span>Un sistema común de rutas para animales, ganado y NPCs (mallas de navegación por trozos), en la lógica pura; primero con la fauna. (Hito 7)</p>
@@ -604,7 +604,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h3>Más adelante (estético y ampliación)</h3>
 <p><span class="tag ok">DECIDIDO</span><b>Hogar:</b> vajilla y cerámica sobre la mesa, tapices tejidos con dibujo (con el mismo editor que el escudo de armas), cortinas, cojines y pieles, velas, candiles y candelabros, trofeos de caza y pesca, macetas, ristras, armeros y maniquí para la armadura.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Vida social:</b> juegos de mesa jugables entre jugadores (tablas, alquerque, dados), instrumentos sencillos (flauta, tambor, zanfoña), gestos (sentarse, saludar, reverencia, brindar) y gato como mascota.</p>
-<p><span class="tag ok">DECIDIDO</span><b>Encuentros:</b> torneos de esgrima y ferias de estación con mercaderes de otras regiones; dónde se celebran queda por decidir, ahora que no hay ciudades NPC.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Encuentros:</b> torneos de esgrima y ferias de estación con mercaderes de otras regiones, en la ciudad del rey (Strandvang).</p>
 <p><span class="tag ok">DECIDIDO</span><b>Asedio y granja:</b> escalas y mantelete, y el fuego que pasa de una pieza a otra (hito 6); abrevadero, comedero, pozos y acequias (hito 9).</p>
 </section>
 
