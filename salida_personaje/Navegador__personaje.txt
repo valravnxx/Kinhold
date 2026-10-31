@@ -1,0 +1,207 @@
+Vista pc
+  OK   por defecto sale el taller propio
+  OK   cuerpo: se ve el personaje — desviación 48
+  OK   cara: se ve el personaje — desviación 41
+  OK   perfil: se ve el personaje — desviación 55
+  OK   espalda: se ve el personaje — desviación 39
+  OK   las vistas son distintas
+  OK   personaje dentro de presupuesto (≤ 36 mil triángulos) — 19825
+  OK   al andar se mueven piernas y brazos — 0.250 m
+  OK   variante 1 cargada y distinta — diferencia 9.1
+  OK   variante 1: se ve la cara
+  OK   variante 2 cargada y distinta — diferencia 8.2
+  OK   variante 2: se ve la cara
+  OK   variante 3 cargada y distinta — diferencia 8.6
+  OK   variante 3: se ve la cara
+  OK   calidad alta por defecto
+  OK   calidad ligera: todo con material sencillo — [14, 0, 'ligera']
+  OK   ropa, pelo y barba comparten un solo esqueleto — 1 esqueletos
+  OK   el traje de explorador no se ofrece (demasiado de fantasía)
+  OK   los interruptores quitan sombras y escenario — [False, False]
+  OK   el botón Hombre cambia el personaje
+  OK   sin desplazamiento horizontal — 1280px
+  OK   #estilos dentro de la pantalla
+  OK   #inferior dentro de la pantalla
+  OK   #opciones dentro de la pantalla
+  OK   las notas se abren
+  OK   taller propio: carga el personaje de MakeHuman
+  OK   taller propio (hombre): se ve — 6.5
+  OK   taller propio (hombre): se ve la cara — 12.6
+  OK   taller propio (hombre): de pie recto (cabeza y hombros sobre la pelvis, brazos sin irse atrás) — 8.5 cm, 5.7 cm, 2.0 cm, 2.0 cm
+  OK   taller propio (hombre): al andar se mueven piernas y brazos — 0.222 m
+  OK   taller propio (hombre): al correr, zancada natural y poco bote — correr 3.53 m/s, andar 0.95 m/s, bote 10 cm
+  OK   taller propio (hombre): las 39 animaciones extra se cargan — 48 clips
+  OK   taller propio (hombre): botones de las 39 extra en «Más animaciones» — 39
+  OK   taller propio (hombre): cada animación extra se aparta de estar quieto (más de 5 cm)
+  OK   taller propio (hombre): con las extra el cuerpo no se desarma
+  OK   taller propio (hombre): el botón pone la animación extra
+  OK   taller propio (hombre): al picar lleva el pico en la mano derecha — {'tipo': 'pico', 'mano': [1.841507878183905, 0.8313530191521529, 5.584815364440654], 'cabeza': [1.6662783037607325, 1.3178352145419594, 5.772244551184469], 'largo': 0.5500000274793264}
+  OK   taller propio (hombre): al talar lleva el hacha en la mano derecha, y con un golpe de espada no lleva herramienta — {'tipo': 'hacha', 'mano': [1.8834762138142136, 1.1818354655717185, 5.527654817952985], 'cabeza': [1.4348740129881148, 1.457021513037842, 5.687431983418762], 'largo': 0.550000034463931} / None
+  OK   taller propio (mujer): se ve — 5.8
+  OK   taller propio (mujer): se ve la cara — 16.6
+  OK   taller propio (mujer): de pie recto (cabeza y hombros sobre la pelvis, brazos sin irse atrás) — 5.5 cm, 3.5 cm, 0.7 cm, 1.7 cm
+  OK   taller propio (mujer): al andar se mueven piernas y brazos — 0.182 m
+  OK   taller propio (mujer): al correr, zancada natural y poco bote — correr 2.85 m/s, andar 0.77 m/s, bote 9 cm
+  OK   taller propio (mujer): las 39 animaciones extra se cargan — 48 clips
+  OK   taller propio (mujer): botones de las 39 extra en «Más animaciones» — 39
+  OK   taller propio (mujer): cada animación extra se aparta de estar quieto (más de 5 cm)
+  OK   taller propio (mujer): con las extra el cuerpo no se desarma
+  OK   taller propio (mujer): el botón pone la animación extra
+  OK   taller propio (mujer): al picar lleva el pico en la mano derecha — {'tipo': 'pico', 'mano': [1.7981157099301697, 0.7170925713101527, 5.46146546434956], 'cabeza': [1.6526098705033494, 1.2192402295164984, 5.632274716503555], 'largo': 0.5500000187007519}
+  OK   taller propio (mujer): al talar lleva el hacha en la mano derecha, y con un golpe de espada no lleva herramienta — {'tipo': 'hacha', 'mano': [1.8373056365204556, 0.9998694932870269, 5.399667210137635], 'cabeza': [1.4026517565533962, 1.3052639406247217, 5.542181256417794], 'largo': 0.5500000156565981} / None
+  OK   capas: el gambesón se pone encima y tapa el cuerpo de la prenda de debajo — mujer_capa_gambeson, mujer_capa_gambeson_falda, mujer_capa_gambeson_mangas, mujer_capa_vestido, mujer_capa_vestido_mangas, mujer_cinturon_gambeson, mujer_cinturon_vestido
+  OK   capas: al quitarlo vuelve como estaba
+  OK   capas: con sobreveste se ven las mangas y el cuello de la cota — mujer_capa_cota, mujer_capa_cota_mangas, mujer_capa_sobreveste, mujer_capa_sobreveste_falda, mujer_capa_vestido_falda, mujer_capa_vestido_mangas, mujer_capa_zapatos
+  OK   ropa: la tabla dice lo que frena la cota (torso y brazos 64 % del corte; cabeza nada) y lo que pesa — [['', 'Corte', 'Estocada', 'Contundente'], ['Cabeza', '—', '—', '—'], ['Torso', '64 %', '31 %', '13 %'], ['Brazos', '64 %', '31 %', '13 %'], ['Piernas', '64 %', '31 %', '13 %']] · Peso: 12,5 kg · Abrigo: 19,5Llevas: Camisa de lino, Zapatos de cuero, Vestido de lana, Cota de malla, Sobreveste de lino
+  OK   hombre con cota: se ve su cinturón y ciñe la cintura (no llega a los brazos) — medio ancho 0.186 m
+  OK   tocados: de uno en uno (poner el sombrero quita la capucha) y se quitan — hombre_capa_calzas, hombre_capa_sombrero, hombre_capa_tunica, hombre_capa_tunica_falda, hombre_capa_tunica_mangas, hombre_capa_zapatos
+  OK   tocados: bajo la capucha no asoman las orejas; con el sombrero, sí
+  OK   botas en lugar de zapatos; con la capa se siguen viendo la túnica y su cinturón — hombre_capa_botas, hombre_capa_calzas, hombre_capa_manto, hombre_capa_manto_broche, hombre_capa_manto_falda, hombre_capa_tunica, hombre_capa_tunica_falda, hombre_capa_tunica_mangas, hombre_cinturon_tunica
+  OK   la capa se queda atrás al andar (el bajo, al menos 6 cm) y ondea — {'x': 0, 'z': -0.0812801864195305, 'onda': 0.0074982289655800205}
+  OK   al pararse, la capa vuelve a caer recta — {'x': 0, 'z': -1.575935539038186e-10, 'onda': 0}
+  OK   descalzo: se ven los pies y no los zapatos (con zapatos, al revés) — hombre_pies
+  OK   descalzo y con botas: se ven las botas, no los pies
+  OK   tintes: por defecto, sobreveste roja (rubia) — [0.2294362480811885, 0.028879445197401796, 0.018969047699531495]
+  OK   tintes: la sobreveste pasa a azul (glasto), con su falda del mismo color — [0.2294362480811885, 0.028879445197401796, 0.018969047699531495] → [0.04809093290024329, 0.08219235032541261, 0.15941222226677756]
+  OK   tintes: la túnica pasa a verde, mangas incluidas — [0.06390256257061674, 0.10862656473457542, 0.04109489618547978]
+  OK   tintes: la camisa blanqueada es más clara que la cruda — [0.7816809010030331, 0.7006239402554102, 0.5256349077094838] → [0.9215059842007564, 0.8676006497461027, 0.7324662299370767]
+  OK   tintes: el personaje se ve de otro color — diferencia 4.6
+  OK   blasón: «cruz» de gualda se ve sobre la sobreveste — diferencia 3.45
+  OK   blasón: «cuartelado» de blanco se ve sobre la sobreveste — diferencia 9.60
+  OK   blasón: «banda» de negro se ve sobre la sobreveste — diferencia 1.49
+  OK   tintes: sin volver a cargar el modelo
+  OK   tintes: se recuerdan al recargar — {'prendas': {'camisa': 'blanco', 'calzas': 'natural', 'tunica': 'verde', 'vestido': 'natural', 'gambeson': 'natural', 'sobreveste': 'glasto', 'manto': 'natural', 'capucha': 'natural', 'toca': 'natural', 'zapatos': 'natural', 'botas': 'natural'}, 'blason': {'dibujo': 'banda', 'color': 'negro'}}
+  OK   tintes: vuelven a los de antes
+  OK   hechura: la túnica de lino sin teñir es más clara que la de lana — [0.27439964759358487, 0.20455083935661234, 0.12643145526199986] → [0.7816809010030331, 0.7006239402554102, 0.5256349077094838]
+  OK   hechura: con la túnica larga, la falda de la camisa no se ve
+  OK   hechura: con la túnica corta asoma la camisa, más larga
+  OK   hechura: la túnica corta se ve distinta — diferencia 1.64
+  OK   hechura: el tejido «cuadros» se ve en la túnica — diferencia 0.69
+  OK   hechura: el tejido «rayas» se ve en la túnica — diferencia 0.59
+  OK   hechura: sin volver a cargar el modelo
+  OK   hechura: se recuerda al recargar — {'material': 'lino', 'corte': 'corto', 'tejido': 'espiguilla'}
+  OK   hechura: vuelve a la de siempre
+  OK   aspecto: cambian la piel, los ojos y el pelo (también las cejas y la barba, del mismo color) — piel [0.8845824477447658, 0.5467542764398701, 0.3769194691668358] → [0.42194577167788105, 0.1925184370415175, 0.0868561956797466]
+  OK   aspecto: el pelo rubio es más claro que el castaño oscuro
+  OK   aspecto: con «Bigote» se ve el bigote y no la barba corta
+  OK   aspecto: la cara se ve distinta — diferencia 13.8
+  OK   aspecto: afeitado y rapado (sin barba ni pelo; las cejas y el pelo pintado se quedan)
+  OK   aspecto: melena y barba larga (con el pelo corto, la barba corta debajo y el bigote con volumen)
+  OK   aspecto: trenzas y perilla
+  OK   aspecto: bajo la capucha no asoman las trenzas ni las orejas
+  OK   aspecto: sin la capucha vuelven las trenzas y las orejas
+  OK   formas: peso en la piel y en la túnica; cara, nariz y mentón en la piel (no en la túnica) — [1, 1, 1, 1, 1, None]
+  OK   formas: la piel y la túnica se mueven de verdad (más de 5 mm) y ninguna pieza calcula formas en la GPU — 14 y 19 mm; 0 con formas en la GPU
+  OK   formas: más alto (la cabeza sube un 6 % aprox.) — 1.527 → 1.613 m
+  OK   aspecto: sin volver a cargar el modelo
+  OK   aspecto: se recuerda al recargar — {'piel': 'morena', 'ojos': 'azules', 'pelo': 'rubio', 'peinado': 'rapado', 'barba': 'ninguna', 'formas': {'altura': 1, 'peso': 1, 'musculo': 0, 'cara': 1, 'nariz': -1, 'nariz_larga': 0, 'menton': 1}}
+  OK   taller propio en calidad alta: todo escribe profundidad
+  OK   taller propio dentro de presupuesto (≤ 36 mil triángulos) — 25074
+  OK   vuelve a la base de Quaternius
+  OK   recuerda vista y personaje al recargar — {'luz': 'manana', 'vista': 'perfil', 'modo': 'quieto', 'sexo': 'hombre', 'ropa': 'campesino', 'pelo': 'largo', 'colorPelo': 'rubio', 'piel': 'clara', 'barba': 'si', 'calidad': 'alta', 'sombras': True, 'escena': True, 'base': 'quaternius', 'capas': {'mujer': ['vestido'], 'hombre': ['tunica']}, 'tintes': {'hombre': {'prendas': {'camisa': 'natural', 'calzas': 'natural', 'tunica': 'pardo', 'vestido': 'natural', 'gambeson': 'natural', 'sobreveste': 'rubia', 'manto': 'natural', 'capucha': 'natural', 'toca': 'natural', 'zapatos': 'natural', 'botas': 'natural'}, 'blason': {'dibujo': 'liso', 'color': 'negro'}}}, 'hechuras': {'hombre': {'camisa': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'calzas': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'tunica': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'vestido': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'gambeson': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'sobreveste': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'manto': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'capucha': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'toca': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'cota': {'material': 'malla', 'corte': 'largo', 'tejido': 'liso'}}}, 'aspecto': {}}
+  OK   sin errores en consola (pc)
+Vista movil
+  OK   por defecto sale el taller propio
+  OK   cuerpo: se ve el personaje — desviación 42
+  OK   cara: se ve el personaje — desviación 42
+  OK   perfil: se ve el personaje — desviación 63
+  OK   espalda: se ve el personaje — desviación 56
+  OK   las vistas son distintas
+  OK   personaje dentro de presupuesto (≤ 36 mil triángulos) — 19825
+  OK   al andar se mueven piernas y brazos — 0.250 m
+  OK   variante 1 cargada y distinta — diferencia 5.4
+  OK   variante 1: se ve la cara
+  OK   variante 2 cargada y distinta — diferencia 4.2
+  OK   variante 2: se ve la cara
+  OK   variante 3 cargada y distinta — diferencia 4.4
+  OK   variante 3: se ve la cara
+  OK   en el móvil el panel empieza cerrado
+  OK   calidad alta por defecto
+  OK   calidad ligera: todo con material sencillo — [14, 0, 'ligera']
+  OK   ropa, pelo y barba comparten un solo esqueleto — 1 esqueletos
+  OK   el traje de explorador no se ofrece (demasiado de fantasía)
+  OK   los interruptores quitan sombras y escenario — [False, False]
+  OK   el botón Hombre cambia el personaje
+  OK   sin desplazamiento horizontal — 390px
+  OK   #estilos dentro de la pantalla
+  OK   #inferior dentro de la pantalla
+  OK   #opciones dentro de la pantalla
+  OK   las notas se abren
+  OK   taller propio: carga el personaje de MakeHuman
+  OK   taller propio (hombre): se ve — 1.9
+  OK   taller propio (hombre): se ve la cara — 8.8
+  OK   taller propio (hombre): de pie recto (cabeza y hombros sobre la pelvis, brazos sin irse atrás) — 8.5 cm, 5.7 cm, 2.0 cm, 2.0 cm
+  OK   taller propio (hombre): al andar se mueven piernas y brazos — 0.222 m
+  OK   taller propio (hombre): al correr, zancada natural y poco bote — correr 3.53 m/s, andar 0.95 m/s, bote 10 cm
+  OK   taller propio (hombre): las 39 animaciones extra se cargan — 48 clips
+  OK   taller propio (hombre): botones de las 39 extra en «Más animaciones» — 39
+  OK   taller propio (hombre): cada animación extra se aparta de estar quieto (más de 5 cm)
+  OK   taller propio (hombre): con las extra el cuerpo no se desarma
+  OK   taller propio (hombre): el botón pone la animación extra
+  OK   taller propio (hombre): al picar lleva el pico en la mano derecha — {'tipo': 'pico', 'mano': [1.841507878183905, 0.8313530191521529, 5.584815364440654], 'cabeza': [1.6662783037607325, 1.3178352145419594, 5.772244551184469], 'largo': 0.5500000274793264}
+  OK   taller propio (hombre): al talar lleva el hacha en la mano derecha, y con un golpe de espada no lleva herramienta — {'tipo': 'hacha', 'mano': [1.8834762138142136, 1.1818354655717185, 5.527654817952985], 'cabeza': [1.4348740129881148, 1.457021513037842, 5.687431983418762], 'largo': 0.550000034463931} / None
+  OK   taller propio (mujer): se ve — 5.5
+  OK   taller propio (mujer): se ve la cara — 24.3
+  OK   taller propio (mujer): de pie recto (cabeza y hombros sobre la pelvis, brazos sin irse atrás) — 5.5 cm, 3.5 cm, 0.7 cm, 1.7 cm
+  OK   taller propio (mujer): al andar se mueven piernas y brazos — 0.182 m
+  OK   taller propio (mujer): al correr, zancada natural y poco bote — correr 2.85 m/s, andar 0.77 m/s, bote 9 cm
+  OK   taller propio (mujer): las 39 animaciones extra se cargan — 48 clips
+  OK   taller propio (mujer): botones de las 39 extra en «Más animaciones» — 39
+  OK   taller propio (mujer): cada animación extra se aparta de estar quieto (más de 5 cm)
+  OK   taller propio (mujer): con las extra el cuerpo no se desarma
+  OK   taller propio (mujer): el botón pone la animación extra
+  OK   taller propio (mujer): al picar lleva el pico en la mano derecha — {'tipo': 'pico', 'mano': [1.7981157099301697, 0.7170925713101527, 5.46146546434956], 'cabeza': [1.6526098705033494, 1.2192402295164984, 5.632274716503555], 'largo': 0.5500000187007519}
+  OK   taller propio (mujer): al talar lleva el hacha en la mano derecha, y con un golpe de espada no lleva herramienta — {'tipo': 'hacha', 'mano': [1.8373056365204556, 0.9998694932870269, 5.399667210137635], 'cabeza': [1.4026517565533962, 1.3052639406247217, 5.542181256417794], 'largo': 0.5500000156565981} / None
+  OK   capas: el gambesón se pone encima y tapa el cuerpo de la prenda de debajo — mujer_capa_gambeson, mujer_capa_gambeson_falda, mujer_capa_gambeson_mangas, mujer_capa_vestido, mujer_capa_vestido_mangas, mujer_cinturon_gambeson, mujer_cinturon_vestido
+  OK   capas: al quitarlo vuelve como estaba
+  OK   capas: con sobreveste se ven las mangas y el cuello de la cota — mujer_capa_cota, mujer_capa_cota_mangas, mujer_capa_sobreveste, mujer_capa_sobreveste_falda, mujer_capa_vestido_falda, mujer_capa_vestido_mangas, mujer_capa_zapatos
+  OK   ropa: la tabla dice lo que frena la cota (torso y brazos 64 % del corte; cabeza nada) y lo que pesa — [['', 'Corte', 'Estocada', 'Contundente'], ['Cabeza', '—', '—', '—'], ['Torso', '64 %', '31 %', '13 %'], ['Brazos', '64 %', '31 %', '13 %'], ['Piernas', '64 %', '31 %', '13 %']] · Peso: 12,5 kg · Abrigo: 19,5Llevas: Camisa de lino, Zapatos de cuero, Vestido de lana, Cota de malla, Sobreveste de lino
+  OK   hombre con cota: se ve su cinturón y ciñe la cintura (no llega a los brazos) — medio ancho 0.186 m
+  OK   tocados: de uno en uno (poner el sombrero quita la capucha) y se quitan — hombre_capa_calzas, hombre_capa_sombrero, hombre_capa_tunica, hombre_capa_tunica_falda, hombre_capa_tunica_mangas, hombre_capa_zapatos
+  OK   tocados: bajo la capucha no asoman las orejas; con el sombrero, sí
+  OK   botas en lugar de zapatos; con la capa se siguen viendo la túnica y su cinturón — hombre_capa_botas, hombre_capa_calzas, hombre_capa_manto, hombre_capa_manto_broche, hombre_capa_manto_falda, hombre_capa_tunica, hombre_capa_tunica_falda, hombre_capa_tunica_mangas, hombre_cinturon_tunica
+  OK   la capa se queda atrás al andar (el bajo, al menos 6 cm) y ondea — {'x': 0, 'z': -0.0812801864195305, 'onda': 0.0074982289655800205}
+  OK   al pararse, la capa vuelve a caer recta — {'x': 0, 'z': -1.801308291742869e-10, 'onda': 0}
+  OK   descalzo: se ven los pies y no los zapatos (con zapatos, al revés) — hombre_pies
+  OK   descalzo y con botas: se ven las botas, no los pies
+  OK   tintes: por defecto, sobreveste roja (rubia) — [0.2294362480811885, 0.028879445197401796, 0.018969047699531495]
+  OK   tintes: la sobreveste pasa a azul (glasto), con su falda del mismo color — [0.2294362480811885, 0.028879445197401796, 0.018969047699531495] → [0.04809093290024329, 0.08219235032541261, 0.15941222226677756]
+  OK   tintes: la túnica pasa a verde, mangas incluidas — [0.06390256257061674, 0.10862656473457542, 0.04109489618547978]
+  OK   tintes: la camisa blanqueada es más clara que la cruda — [0.7816809010030331, 0.7006239402554102, 0.5256349077094838] → [0.9215059842007564, 0.8676006497461027, 0.7324662299370767]
+  OK   tintes: el personaje se ve de otro color — diferencia 10.4
+  OK   blasón: «cruz» de gualda se ve sobre la sobreveste — diferencia 8.36
+  OK   blasón: «cuartelado» de blanco se ve sobre la sobreveste — diferencia 9.93
+  OK   blasón: «banda» de negro se ve sobre la sobreveste — diferencia 7.63
+  OK   tintes: sin volver a cargar el modelo
+  OK   tintes: se recuerdan al recargar — {'prendas': {'camisa': 'blanco', 'calzas': 'natural', 'tunica': 'verde', 'vestido': 'natural', 'gambeson': 'natural', 'sobreveste': 'glasto', 'manto': 'natural', 'capucha': 'natural', 'toca': 'natural', 'zapatos': 'natural', 'botas': 'natural'}, 'blason': {'dibujo': 'banda', 'color': 'negro'}}
+  OK   tintes: vuelven a los de antes
+  OK   hechura: la túnica de lino sin teñir es más clara que la de lana — [0.27439964759358487, 0.20455083935661234, 0.12643145526199986] → [0.7816809010030331, 0.7006239402554102, 0.5256349077094838]
+  OK   hechura: con la túnica larga, la falda de la camisa no se ve
+  OK   hechura: con la túnica corta asoma la camisa, más larga
+  OK   hechura: la túnica corta se ve distinta — diferencia 0.85
+  OK   hechura: el tejido «cuadros» se ve en la túnica — diferencia 1.09
+  OK   hechura: el tejido «rayas» se ve en la túnica — diferencia 0.96
+  OK   hechura: sin volver a cargar el modelo
+  OK   hechura: se recuerda al recargar — {'material': 'lino', 'corte': 'corto', 'tejido': 'espiguilla'}
+  OK   hechura: vuelve a la de siempre
+  OK   aspecto: cambian la piel, los ojos y el pelo (también las cejas y la barba, del mismo color) — piel [0.8845824477447658, 0.5467542764398701, 0.3769194691668358] → [0.42194577167788105, 0.1925184370415175, 0.0868561956797466]
+  OK   aspecto: el pelo rubio es más claro que el castaño oscuro
+  OK   aspecto: con «Bigote» se ve el bigote y no la barba corta
+  OK   aspecto: la cara se ve distinta — diferencia 12.0
+  OK   aspecto: afeitado y rapado (sin barba ni pelo; las cejas y el pelo pintado se quedan)
+  OK   aspecto: melena y barba larga (con el pelo corto, la barba corta debajo y el bigote con volumen)
+  OK   aspecto: trenzas y perilla
+  OK   aspecto: bajo la capucha no asoman las trenzas ni las orejas
+  OK   aspecto: sin la capucha vuelven las trenzas y las orejas
+  OK   formas: peso en la piel y en la túnica; cara, nariz y mentón en la piel (no en la túnica) — [1, 1, 1, 1, 1, None]
+  OK   formas: la piel y la túnica se mueven de verdad (más de 5 mm) y ninguna pieza calcula formas en la GPU — 14 y 19 mm; 0 con formas en la GPU
+  OK   formas: más alto (la cabeza sube un 6 % aprox.) — 1.528 → 1.613 m
+  OK   aspecto: sin volver a cargar el modelo
+  OK   aspecto: se recuerda al recargar — {'piel': 'morena', 'ojos': 'azules', 'pelo': 'rubio', 'peinado': 'rapado', 'barba': 'ninguna', 'formas': {'altura': 1, 'peso': 1, 'musculo': 0, 'cara': 1, 'nariz': -1, 'nariz_larga': 0, 'menton': 1}}
+  OK   taller propio en calidad alta: todo escribe profundidad
+  OK   taller propio dentro de presupuesto (≤ 36 mil triángulos) — 25074
+  OK   vuelve a la base de Quaternius
+  OK   recuerda vista y personaje al recargar — {'luz': 'manana', 'vista': 'perfil', 'modo': 'quieto', 'sexo': 'hombre', 'ropa': 'campesino', 'pelo': 'largo', 'colorPelo': 'rubio', 'piel': 'clara', 'barba': 'si', 'calidad': 'alta', 'sombras': True, 'escena': True, 'base': 'quaternius', 'capas': {'mujer': ['vestido'], 'hombre': ['tunica']}, 'tintes': {'hombre': {'prendas': {'camisa': 'natural', 'calzas': 'natural', 'tunica': 'pardo', 'vestido': 'natural', 'gambeson': 'natural', 'sobreveste': 'rubia', 'manto': 'natural', 'capucha': 'natural', 'toca': 'natural', 'zapatos': 'natural', 'botas': 'natural'}, 'blason': {'dibujo': 'liso', 'color': 'negro'}}}, 'hechuras': {'hombre': {'camisa': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'calzas': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'tunica': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'vestido': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'gambeson': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'sobreveste': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'manto': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'capucha': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'toca': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'cota': {'material': 'malla', 'corte': 'largo', 'tejido': 'liso'}}}, 'aspecto': {}}
+  OK   sin errores en consola (movil)
+
+Resultado: TODO CORRECTO
