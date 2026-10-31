@@ -10,10 +10,6 @@
 import { azar } from '../logica/azar.js';
 
 export const LINEAS = ['alto', 'izquierda', 'derecha', 'bajo', 'estocada'];
-// Modo direccional (el combate en el mundo; valravnx, 31 oct): cuatro direcciones. Abajo es clavar (la estocada): fuera
-// el tajo bajo y el centro («bloquear o atacar al centro es hiper difícil»).
-export const LINEAS_DIRECCIONAL = ['alto', 'izquierda', 'derecha', 'estocada'];
-export const lineasDe = (modo) => modo === 'direccional' ? LINEAS_DIRECCIONAL : LINEAS;
 export const NOMBRE_LINEA = { alto: 'Alto', izquierda: 'Izquierda', derecha: 'Derecha', bajo: 'Bajo', estocada: 'Estocada' };
 export const ZONAS = ['cabeza', 'torso', 'brazoI', 'brazoD', 'piernaI', 'piernaD'];
 export const NOMBRE_ZONA = { cabeza: 'cabeza', torso: 'torso', brazoI: 'brazo izquierdo', brazoD: 'brazo derecho', piernaI: 'pierna izquierda', piernaD: 'pierna derecha' };
@@ -187,11 +183,10 @@ export class Luchador {
     if (this.cansancio > 70) p *= 1.25;
     return p;
   }
-  // Atacar por una línea. Si ya estás preparando otro golpe, cambiar de línea es una finta (en el modo direccional,
-  // no: el golpe está comprometido y la finta es cancelarlo con el botón de parar, fintar()).
+  // Atacar por una línea. Si ya estás preparando otro golpe, cambiar de línea es una finta.
   atacar(linea) {
-    if (!lineasDe(this.modo).includes(linea) || this.def.tipo !== 'cuerpo' || this.fuera) return false;
-    if (this.modo === 'direccional') return this.accion === 'preparando' ? false : (this.cargar(linea) && this.descargar());
+    if (!LINEAS.includes(linea) || this.def.tipo !== 'cuerpo' || this.fuera) return false;
+    if (this.modo === 'direccional') return this.accion === 'preparando' && !this.soltado ? this.cambiarLinea(linea) : (this.cargar(linea) && this.descargar());
     if (this.accion === 'preparando' && this.modo !== 'guardias') {
       if (linea === this.linea || this.tAccion / this.duracion > T.limiteFinta || this.cansancio >= T.guardiaRota) return false;
       this.linea = linea;
@@ -218,7 +213,7 @@ export class Luchador {
   // Empezar a cargar un golpe por una línea (se mantiene el botón). soltarEn: carga (0..1) a la que se suelta sola
   // (para la máquina); sin ella, hasta que se llame a descargar().
   cargar(linea, soltarEn = null) {
-    if (this.modo !== 'direccional' || !LINEAS_DIRECCIONAL.includes(linea) || this.def.tipo !== 'cuerpo') return false;
+    if (this.modo !== 'direccional' || !LINEAS.includes(linea) || this.def.tipo !== 'cuerpo') return false;
     if (!this.puedeActuar() || this.cansancio >= 100) return false;
     this.bloqueando = false;
     this.imparable = this.puedeContraatacar();
@@ -231,12 +226,14 @@ export class Luchador {
     this.cansancio = Math.min(100, this.cansancio + this.def.cansancio);
     return true;
   }
-  // Finta (valravnx, 31 oct): elegida la dirección, el golpe está comprometido; el botón de parar lo cancela mientras
-  // se prepara (no cuando ya ha salido). Cuesta aliento y deja libre para parar o para empezar otro golpe por otro lado.
-  fintar() {
-    if (this.modo !== 'direccional' || this.accion !== 'preparando' || this.fuera) return false;
-    this.accion = 'libre'; this.tAccion = 0; this.duracion = 0;
-    this.soltado = true; this.soltarEn = null; this.imparable = false;
+  // Cambiar de dirección sin soltar el botón: es una finta (cuesta aliento y la carga vuelve a empezar casi de cero).
+  cambiarLinea(linea) {
+    if (this.modo !== 'direccional' || this.accion !== 'preparando' || this.soltado || !LINEAS.includes(linea) || linea === this.linea) return false;
+    if (this.cansancio >= T.guardiaRota) return false;
+    this.linea = linea;
+    this.duracion = this.duracionPreparacion(linea);
+    this.prepTotal = this.duracion;
+    this.tAccion = Math.min(this.tAccion, this.duracion * 0.35);
     this.finta = true;
     this.cansancio = Math.min(100, this.cansancio + T.costeFinta);
     return true;
@@ -263,8 +260,7 @@ export class Luchador {
     if (this.modo === 'guardias') { this.bloqueando = false; return; }
     if (activo && (this.accion !== 'libre' || this.fuera)) return;
     if (activo && !this.bloqueando) this.tBloqueo = 0;
-    // (con escudo no hay lado: cambiarlo no vuelve a abrir la parada perfecta)
-    if (activo && this.modo === 'direccional' && !this.def.escudo && this.bloqueando && linea && linea !== this.lineaBloqueo) this.tBloqueo = 0;
+    if (activo && this.modo === 'direccional' && this.bloqueando && linea && linea !== this.lineaBloqueo) this.tBloqueo = 0;
     this.bloqueando = activo;
     if (linea) this.lineaBloqueo = linea;
   }
@@ -278,8 +274,7 @@ export class Luchador {
   cubre(linea) {
     if (this.fuera) return false;
     if (this.modo === 'guardias') return this.accion !== 'cambioGuardia' && this.accion !== 'aturdido' && GUARDIAS[this.guardia].cubre.includes(linea);
-    // con escudo, sin lado: para todo lo que viene de frente (el ángulo lo mira resolverGolpe; valravnx, 31 oct)
-    if (this.modo === 'direccional') return this.bloqueando && this.accion === 'libre' && (!!this.def.escudo || this.lineaBloqueo === ESPEJO[linea]);
+    if (this.modo === 'direccional') return this.bloqueando && this.accion === 'libre' && this.lineaBloqueo === ESPEJO[linea];
     return this.bloqueando && this.accion === 'libre';
   }
 
@@ -467,8 +462,7 @@ export function resolverGolpe(at, de, linea, r) {
     const h = de.recibirHerida(zona, sev, tipo);
     return { resultado: 'herida', zona, gravedad: h.gravedad, sev, tipo, nota };
   };
-  // de frente: con escudo en el modo direccional, lo que entra en su ángulo (ni de lado ni por la espalda)
-  const encara = mira(de, at, de.def.escudo && de.modo === 'direccional' ? T.anguloEscudo : T.anguloDefensa);
+  const encara = mira(de, at, T.anguloDefensa);
 
   if (de.modo === 'guardias') {
     if (de.cubre(linea) && encara) {
@@ -632,7 +626,7 @@ export class IA {
       if (!this.plan && this.tVista >= d.reaccion) {
         const leeBien = r() < d.lectura;
         // modo direccional: si lo lee bien, para por el lado por el que viene; si no, por otro
-        const otros = lineasDe(b.modo).filter(l => l !== ESPEJO[rival.linea]);
+        const otros = LINEAS.filter(l => l !== ESPEJO[rival.linea]);
         this.lado = leeBien ? ESPEJO[rival.linea] : otros[Math.floor(r() * otros.length)];
         if (leeBien && b.puedeActuar() && r() < d.maestro && rival.progreso() < T.ventanaMaestro * 0.8 && dist <= alcance) {
           if (b.modo === 'direccional') b.cargar(ESPEJO[rival.linea], T.cargaMinima); else b.atacar(ESPEJO[rival.linea]);        // golpe maestro por el mismo lado
@@ -674,12 +668,9 @@ export class IA {
 
     // ---- fintar si el rival para demasiado pronto ----
     if (b.accion === 'preparando' && !b.finta && rival.bloqueando && b.progreso() < T.limiteFinta && r() < d.finta * dt * 8) {
-      // en el modo direccional, cancela el golpe (finta) y empieza otro por un lado que no esté parando
-      const otras = lineasDe(b.modo).filter(l => l !== b.linea && !(b.modo === 'direccional' && rival.lineaBloqueo === ESPEJO[l]));
-      if (otras.length) {
-        const l = otras[Math.floor(r() * otras.length)];
-        if (b.modo === 'direccional') { if (b.fintar()) b.cargar(l, T.cargaMinima + r() * (1 - T.cargaMinima)); } else b.atacar(l);
-      }
+      // en el modo direccional, a un lado que no esté parando
+      const otras = LINEAS.filter(l => l !== b.linea && !(b.modo === 'direccional' && rival.lineaBloqueo === ESPEJO[l]));
+      if (otras.length) b.atacar(otras[Math.floor(r() * otras.length)]);
     }
 
     // ---- atacar: contraataque en cuanto se pueda; si no, cuando toque ----
@@ -690,7 +681,7 @@ export class IA {
       if (rival.modo === 'guardias') {
         const abiertas = LINEAS.filter(l => !rival.cubre(l));
         linea = (abiertas.length && r() < d.lectura + 0.2) ? abiertas[Math.floor(r() * abiertas.length)] : LINEAS[Math.floor(r() * LINEAS.length)];
-      } else { const ls = lineasDe(b.modo); linea = ls[Math.floor(r() * ls.length)]; }
+      } else linea = LINEAS[Math.floor(r() * LINEAS.length)];
       // en el modo direccional, unas veces suelta enseguida y otras carga del todo
       const lanza = b.modo === 'direccional' ? b.cargar(linea, T.cargaMinima + r() * (1 - T.cargaMinima)) : b.atacar(linea);
       if (lanza) { this.esperaAtaque = 0.9 + r() * 1.4; this.retrocederTras = r() < 0.4; }
