@@ -57,6 +57,7 @@ const CAMPOS_CONSTRUCCION = {
   mojon: { x: 'n', z: 'n' },
   colocar: { pieza: 't', x: 'n', z: 'n', k: 'n', rot: 'n', dir: 'n' },
   decorar: { pieza: 't', x: 'n', y: 'n', z: 'n', rot: 'n' },
+  nivelar: { x: 'n', z: 'n', y: 'n', radio: 'n' },   // una pasada de la brocha redonda (y: la altura a la que deja el suelo)
   desmontar: { construccion: 'n', clave: 't' },
   quitar: { id: 'n' },
   entregar: { construccion: 'n', clave: 't', material: 't', cantidad: 'n' }, // llevar material a una obra (desde: planta en la que estás)
@@ -81,7 +82,12 @@ function aplicarConstruccion(m, a, invs) {
   switch (a.tipo) {
     case 'mojon': return m.colocarMojon(a.x, a.z);
     // se construye por obras (GDD): colocar pone el marco; luego se entregan los materiales y se trabaja
-    case 'colocar': return m.colocar(m.candidata(a.pieza, a.x, a.z, a.k, a.rot, a.dir), true);
+    // y (opcional): la altura del suelo donde se pone; la planta baja de una construcción nueva queda ahí
+    case 'colocar': {
+      if (a.y !== undefined && !numero(a.y)) return { ok: false, motivo: 'Datos no válidos.' };
+      return m.colocar(m.candidata(a.pieza, a.x, a.z, a.k, a.rot, a.dir, a.y === undefined ? 0 : a.y), true, a.autor);
+    }
+    case 'nivelar': return m.nivelar(a, a.autor);
     case 'entregar': case 'trabajar': case 'subir': {
       const c = m.construcciones.find(x => x.id === a.construccion);
       if (!c) return { ok: false, motivo: 'No existe.' };

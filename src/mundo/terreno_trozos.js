@@ -15,6 +15,7 @@
 import * as THREE from 'three';
 import { crearGestor, claveTrozo, distanciaTrozo, alturaEnMalla, trozoDe, LADO } from '../logica/trozos.js';
 import { hacerSueloTrozo } from './trozo_suelo.js';
+import { caja } from '../logica/nivelado.js';
 
 /* global __CODIGO_HILO_TROZOS__ */
 const CODIGO = typeof __CODIGO_HILO_TROZOS__ !== 'undefined' ? __CODIGO_HILO_TROZOS__ : null;
@@ -37,6 +38,7 @@ export function crearTerrenoTrozos({ grupo, material, mapa, paisaje = null, orig
   const llegados = [];              // suelos que han vuelto del hilo y esperan a montarse
   const med = { fotogramas: 0, trabajoMax: 0, trabajoTotal: 0, montados: 0, tirados: 0, msHiloMax: 0, msHiloTotal: 0, pedidos: 0, errores: [] };
   let idSig = 1, ultimo = null, listoHilos = false;
+  let marcas = [], claveMarcas = '[]';   // el suelo nivelado para construir (src/logica/nivelado.js), en metros del mundo
 
   // los hilos
   const lista = [];
@@ -127,7 +129,7 @@ export function crearTerrenoTrozos({ grupo, material, mapa, paisaje = null, orig
       while (q < orden.length && (prisa ? ahora() - t0 < 40 : hechos < porFotograma && (hechos === 0 || ahora() - t0 < msPorFotograma))) {
         const { v } = orden[q++], id = idSig++;
         v.pedido = id; pendientes.delete(claveTrozo(v.i, v.j));
-        aplicar({ id, ...hacerSueloTrozo(paisaje, v.i, v.j, pasoDe(v.nivel), { lado: g.lado }) });
+        aplicar({ id, ...hacerSueloTrozo(paisaje, v.i, v.j, pasoDe(v.nivel), { lado: g.lado, marcas }) });
         hechos++; med.pedidos++;
       }
     }
@@ -159,6 +161,28 @@ export function crearTerrenoTrozos({ grupo, material, mapa, paisaje = null, orig
     return ms;
   }
 
+  // El suelo nivelado para construir: con las marcas nuevas (todas, en metros del mundo), los trozos que tocan las que
+  // han cambiado se rehacen (la malla de antes se queda hasta que llega la nueva). Devuelve cuántos trozos se rehacen.
+  function ponerMarcas(nuevas) {
+    const k = JSON.stringify(nuevas || []);
+    if (k === claveMarcas) return 0;
+    const antes = new Map(marcas.map(m => [JSON.stringify(m), m])), ahoraM = new Map((nuevas || []).map(m => [JSON.stringify(m), m]));
+    const cambian = [...[...antes].filter(([c]) => !ahoraM.has(c)), ...[...ahoraM].filter(([c]) => !antes.has(c))].map(([, m]) => caja(m));
+    // si cambia el orden (no solo se añaden o se quitan), se rehace todo lo que toca cualquiera
+    const mismoOrden = (() => { const a = [...antes.keys()].filter(c => ahoraM.has(c)), b = [...ahoraM.keys()].filter(c => antes.has(c)); return a.join('|') === b.join('|'); })();
+    if (!mismoOrden) for (const m of [...marcas, ...(nuevas || [])]) cambian.push(caja(m));
+    marcas = (nuevas || []).map(m => ({ ...m })); claveMarcas = k;
+    for (const h of lista) h.w.postMessage({ tipo: 'marcas', marcas });
+    let n = 0;
+    for (const [kv, v] of vivos) {
+      const x0 = v.i * g.lado, z0 = v.j * g.lado, x1 = x0 + g.lado, z1 = z0 + g.lado;
+      if (!cambian.some(b => b.x1 >= x0 - 4 && b.x0 <= x1 + 4 && b.z1 >= z0 - 4 && b.z0 <= z1 + 4)) continue;
+      v.pedido = null; pendientes.add(kv); n++;
+    }
+    if (ultimo) pedir(ultimo.x, ultimo.z, ahora(), false);
+    return n;
+  }
+
   // la altura del suelo que se ve (m), en metros del mundo; null si ese trozo aún no está
   function alturaEn(x, z) {
     const { i, j } = trozoDe(x, z, g.lado), v = vivos.get(claveTrozo(i, j));
@@ -181,6 +205,6 @@ export function crearTerrenoTrozos({ grupo, material, mapa, paisaje = null, orig
     for (const h of lista) h.w.terminate();
   }
 
-  return { actualizar, alturaEn, faltan, sinMalla, triangulos, soltarTodo, medidas: med, gestor: g, vivos, conHilo, hilos: lista.length,
+  return { actualizar, alturaEn, ponerMarcas, get marcas() { return marcas; }, faltan, sinMalla, triangulos, soltarTodo, medidas: med, gestor: g, vivos, conHilo, hilos: lista.length,
     get listo() { return conHilo ? listoHilos : true; }, lado: LADO };
 }

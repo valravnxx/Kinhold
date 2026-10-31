@@ -1,14 +1,14 @@
 {
  "A": {
-  "inicio": "2026-10-30T22:37:50+00:00",
-  "tarea": "Inventario y recogida por el servidor: en línea, lo que llevas y lo que recoges lo guarda y lo valida el servidor (hoy solo está en el navegador de cada uno)",
+  "inicio": "2026-10-31T02:24:31+00:00",
+  "tarea": "El juego en línea usa lo que llevas y el suelo del servidor: el panel de inventario, soltar y coger del suelo y lo que se entrega a las obras pasan por el servidor, y talar y trocear también, con lo que dejan en el suelo, para que nada de lo que llevas salga solo del navegador. Mientras el servidor no conozca el mundo, se fía del árbol que dice el navegador si estás a su lado (decisión provisional)",
   "hito": "equipo",
-  "rama": "trabajo/20261030-2237"
+  "rama": "trabajo/20261031-0224"
  },
  "B": {
-  "inicio": "2026-10-30T20:52:51+00:00",
-  "tarea": "Toca y cuello de la ropa (visto en la revisión del 30 oct): el borde sale dentado y entre la toca y el cuello asoma una mancha de piel rota",
+  "inicio": "2026-10-31T00:54:33+00:00",
+  "tarea": "Nacimiento del pelo y cejas (visto en la revisión del 30 oct): el pelo corta en seco en la frente, como un casquete, y las cejas son trazos finos y a trozos que flotan",
   "hito": "arte",
-  "rama": "trabajo/20261030-2052"
+  "rama": "trabajo/20261031-0054"
  }
 }

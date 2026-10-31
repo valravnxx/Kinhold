@@ -251,6 +251,16 @@ let mallaMojon = null, anilloTierra = null;
 // el material del anillo de la tierra es siempre el mismo: si se tirara al rehacer, se volvería a compilar su sombreador
 const MAT_ANILLO = new THREE.MeshBasicMaterial({ color: 0xf2e3b5, transparent: true, opacity: 0.55, depthWrite: false });
 const registroMallas = []; // {obj, c, key, deco}
+// Construir a la altura del suelo (valravnx, 30 oct): cada construcción tiene su planta baja a la altura del terreno donde
+// empezó (c.oy; las de antes, a 0) y los cimientos alisan el suelo de debajo (src/logica/nivelado.js). Lo que va suelto
+// en el suelo (cercas, empalizadas) sigue el terreno de su sitio.
+const oyDe = (c) => c.oy || 0;
+const sueloEn = (x, z) => decorado.altura(x, z);
+function aRasDeSuelo(obj, c, p) {
+  if (p.k !== 0 || !PIEZAS[p.tipo] || !PIEZAS[p.tipo].suelo) return;
+  const m = centroMundo(c, p);
+  obj.position.y += sueloEn(m.x, m.z) - oyDe(c);
+}
 
 function transformarPieza(obj, p) {
   const l = centroLocal(p);
@@ -347,6 +357,7 @@ function rellenoDe(rel, arranque) {
 function objPieza(c, key, p, tj) {
   const obj = modeloDe(p.tipo, tj || contextoSuelo(c, p));
   transformarPieza(obj, p);
+  aRasDeSuelo(obj, c, p);
   aplicarAperturas(obj, p);
   if (tj) {
     obj.position.y += tj.arranque * P.subidaTejado;
@@ -389,7 +400,7 @@ function reconstruir() {
   registroMallas.length = 0;
   for (const c of mundo.construcciones) {
     const g = new THREE.Group();
-    g.position.set(c.ox, 0, c.oz);
+    g.position.set(c.ox, oyDe(c), c.oz);
     g.rotation.y = c.rot;
     g.userData.c = c;
     const tejados = geometriaTejados(c);
@@ -410,11 +421,13 @@ function reconstruir() {
     registroMallas.push({ obj, deco: d });
   }
   despejarDecorado();
+  // los cimientos alisan el suelo de debajo: se rehacen los trozos del terreno que tocan
+  if (mundoJ) mundoJ.nivelar(mundo.marcasNivelado());
   if (mallaMojon) { escena.remove(mallaMojon); liberar(mallaMojon); mallaMojon = null; }
   if (anilloTierra) { escena.remove(anilloTierra); liberar(anilloTierra); anilloTierra = null; }
   if (mundo.mojon) {
     mallaMojon = modeloMojon();
-    mallaMojon.position.set(mundo.mojon.x, 0, mundo.mojon.z);
+    mallaMojon.position.set(mundo.mojon.x, sueloEn(mundo.mojon.x, mundo.mojon.z), mundo.mojon.z);
     escena.add(mallaMojon);
     const anillo = new THREE.Mesh(new THREE.RingGeometry(RADIO_MOJON - 0.15, RADIO_MOJON, 96), MAT_ANILLO);
     anillo.rotation.x = -Math.PI / 2;
@@ -550,7 +563,7 @@ function evaluarColocacion() {
   const sel = estado.sel;
   fantasma.visible = true;
   if (sel.clase === 'mojon') {
-    fantasma.position.set(x, 0, z); fantasma.rotation.set(0, 0, 0);
+    fantasma.position.set(x, sueloEn(x, z), z); fantasma.rotation.set(0, 0, 0);
     const v = mundo.mojon ? { ok: false, motivo: t('yaMojon') } : mundo.puedePagar(PIEZAS.mojon.coste) ? { ok: true } : { ok: false, motivo: t('faltanMateriales') };
     pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
     estado.candidato = { tipo: 'mojon', x, z, v };
@@ -567,15 +580,17 @@ function evaluarColocacion() {
     estado.candidato = { tipo: 'deco', x, y, z, v };
     return;
   }
-  const datos = { pieza: sel.tipo, x, z, k: estado.planta, rot: estado.rotLibre, dir: estado.dir };
-  const cand = mundo.candidata(datos.pieza, x, z, datos.k, datos.rot, datos.dir);
+  // y: la altura del suelo donde apuntas (si la pieza empieza una construcción, su planta baja queda ahí)
+  const datos = { pieza: sel.tipo, x, z, k: estado.planta, rot: estado.rotLibre, dir: estado.dir, y: redondoMm(estado.puntero.ySuelo ?? sueloEn(x, z)) };
+  const cand = mundo.candidata(datos.pieza, x, z, datos.k, datos.rot, datos.dir, datos.y);
   const v = mundo.validar(cand, true); // se pone el marco de la obra: el material se lleva después
   // colocar el fantasma en la rejilla de su construcción
   const c = cand.construccion;
   const tmp = new THREE.Group();
-  tmp.position.set(c.ox, 0, c.oz); tmp.rotation.y = c.rot; tmp.updateMatrixWorld();
+  tmp.position.set(c.ox, oyDe(c), c.oz); tmp.rotation.y = c.rot; tmp.updateMatrixWorld();
   const local = new THREE.Object3D();
   transformarPieza(local, cand.pieza);
+  aRasDeSuelo(local, c, cand.pieza);
   tmp.add(local); tmp.updateMatrixWorld(true);
   local.matrixWorld.decompose(fantasma.position, fantasma.quaternion, fantasma.scale);
   if (cand.pieza.hueco === 'r' && !cand.nueva && v.ok) {
@@ -680,10 +695,38 @@ function punteroDesde(clientX, clientY) {
     if (hits.length) return { x: hits[0].point.x, z: hits[0].point.z, ySuperficie: hits[0].point.y };
     if (pj.k > 0) return null; // arriba, fuera de los suelos de tu planta no hay dónde ponerla
   }
-  const plano = new THREE.Plane(new THREE.Vector3(0, 1, 0), -estado.planta * ALTURA * (estado.sel.clase === 'pieza' ? 1 : 0));
+  // el punto del terreno que hay bajo el puntero (no el plano de la altura 0: en ladera, se apuntaba a otro sitio)
+  const suelo = sueloBajoRayo(rr.ray);
+  if (estado.sel.clase !== 'pieza') return suelo && { x: suelo.x, z: suelo.z, ySuperficie: suelo.y, ySuelo: suelo.y };
+  // una pieza: en la planta en la que estás de la construcción que hay ahí (su planta baja está a su altura, oy); si
+  // empieza una construcción nueva, en el suelo
   const pto = new THREE.Vector3();
-  if (!rr.ray.intersectPlane(plano, pto)) return null;
-  return { x: pto.x, z: pto.z, ySuperficie: 0 };
+  const c = suelo ? mundo.construccionCercana(suelo.x, suelo.z) : null;
+  if (c || estado.planta > 0) {
+    const y = (c ? oyDe(c) : suelo ? suelo.y : 0) + estado.planta * ALTURA;
+    if (!rr.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -y), pto)) return null;
+    return { x: pto.x, z: pto.z, ySuperficie: y, ySuelo: suelo ? suelo.y : sueloEn(pto.x, pto.z) };
+  }
+  return suelo && { x: suelo.x, z: suelo.z, ySuperficie: suelo.y, ySuelo: suelo.y };
+}
+const redondoMm = (v) => Math.round(v * 1000) / 1000;
+// Dónde corta el rayo el terreno: se avanza a pasos (más largos cuanto más lejos) hasta pasar por debajo del suelo y
+// se afina a medias. Devuelve { x, y, z } o null si no lo corta en 400 m.
+function sueloBajoRayo(r) {
+  const o = r.origin, d = r.direction, f = (t) => o.y + d.y * t - sueloEn(o.x + d.x * t, o.z + d.z * t);
+  let t0 = 0, f0 = f(0);
+  if (f0 < 0) return null;
+  for (let t = 0.25; t < 400; t += 0.25 + t * 0.01) {
+    const ft = f(t);
+    if (ft <= 0) {
+      let a = t0, b = t;
+      for (let k = 0; k < 14; k++) { const m = (a + b) / 2; if (f(m) > 0) a = m; else b = m; }
+      const tt = (a + b) / 2;
+      return { x: o.x + d.x * tt, y: sueloEn(o.x + d.x * tt, o.z + d.z * tt), z: o.z + d.z * tt };
+    }
+    t0 = t; f0 = ft;
+  }
+  return null;
 }
 function piezaBajo(clientX, clientY) {
   const rr = rayoDesde(clientX, clientY);
@@ -981,7 +1024,7 @@ function ponerRampa(c, p) {
   }
   const alto = plantaObra(p) * ALTURA + P.superficieSuelo, largo = alto * 0.85;
   const g = new THREE.Group(); g.name = 'rampa';
-  g.position.set(m.x + ox + nx * (largo + 0.2), 0, m.z + oz + nz * (largo + 0.2));
+  g.position.set(m.x + ox + nx * (largo + 0.2), oyDe(c), m.z + oz + nz * (largo + 0.2));
   g.rotation.y = Math.atan2(-nx, -nz);
   g.add(rampaVaras(alto));
   const tronco = troncoSuelto(); g.add(tronco);
@@ -1001,7 +1044,7 @@ function ponerPolea(c, q, p) {
   quitarRampa();
   const m = centroMundo(c, q), rot = c.rot + (q.d === 1 ? -Math.PI / 2 : 0);
   const g = new THREE.Group(); g.name = 'polea_subiendo';
-  g.position.set(m.x, 0, m.z); g.rotation.y = rot;
+  g.position.set(m.x, oyDe(c), m.z); g.rotation.y = rot;
   // lado de la viga en el que estás (z local del grupo)
   const lz = (pj.x - m.x) * Math.sin(rot) + (pj.z - m.z) * Math.cos(rot);
   const lado = Math.sign(lz) || 1;
@@ -1027,7 +1070,7 @@ function ponerPolipasto(c, q, p) {
   // la carga: cuelga bajo la viga, del lado en el que estás
   const rot = c.rot + (q.d === 1 ? -Math.PI / 2 : 0);
   const lz = (pj.x - m.x) * Math.sin(rot) + (pj.z - m.z) * Math.cos(rot), lado = Math.sign(lz) || 1;
-  const carga = new THREE.Group(); carga.position.set(m.x, 0, m.z); carga.rotation.y = rot;
+  const carga = new THREE.Group(); carga.position.set(m.x, oyDe(c), m.z); carga.rotation.y = rot;
   const tronco = troncoSuelto(); carga.add(tronco);
   const eslinga = [0, 1].map(() => { const cu = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 1, 5), MAT_CUERDA); carga.add(cu); return cu; });
   g.add(carga);
@@ -1334,7 +1377,7 @@ function escaleraBajoJugador() {
       if (!p || trampillaCerrada(c, i, j, k0)) continue; // con la trampilla cerrada, la escalera no sube
       const t = progresoEscalera(p, l.lx, l.lz);
       const base = c.piezas.has(clave('f', i, j, k0)) ? (k0 === 0 ? P.superficieCimiento : P.superficieSuelo) : 0;
-      const y0 = k0 * ALTURA + base, y1 = adarveDeEscalera(c, p, false) ? ALTO_ADARVE : (k0 + 1) * ALTURA + P.superficieSuelo;
+      const y0 = oyDe(c) + k0 * ALTURA + base, y1 = oyDe(c) + (adarveDeEscalera(c, p, false) ? ALTO_ADARVE : (k0 + 1) * ALTURA + P.superficieSuelo);
       const y = y0 + t * (y1 - y0);
       if (pj.k === k0 && y - pj.y > 0.8) continue; // estás debajo de la escalera, no encima
       return { k: t > 0.5 ? k0 + 1 : k0, y };
@@ -1350,10 +1393,11 @@ function alturaSuelo() {
       const l = mundoALocal(c, pj.x, pj.z);
       const i = Math.floor(l.lx / MODULO), j = Math.floor(l.lz / MODULO);
       const f = c.piezas.get(clave('f', i, j, k));
-      if (f && !f.obra) { pj.k = k; return k * ALTURA + (k === 0 ? P.superficieCimiento : P.superficieSuelo); }
-      if (k === 1 && adarveEn(c, i, j)) { pj.k = 1; return ALTO_ADARVE; } // en el piso del adarve
-      if (k > 0 && trampillaCerrada(c, i, j, k - 1)) { pj.k = k; return k * ALTURA + P.superficieSuelo; } // la trampilla cerrada se pisa
-      if (k > 0 && andamioEn(c, i, j, k - 1)) { pj.k = k; return k * ALTURA + P.superficieSuelo; } // plataforma del andamio
+      const oy = oyDe(c);
+      if (f && !f.obra) { pj.k = k; return oy + k * ALTURA + (k === 0 ? P.superficieCimiento : P.superficieSuelo); }
+      if (k === 1 && adarveEn(c, i, j)) { pj.k = 1; return oy + ALTO_ADARVE; } // en el piso del adarve
+      if (k > 0 && trampillaCerrada(c, i, j, k - 1)) { pj.k = k; return oy + k * ALTURA + P.superficieSuelo; } // la trampilla cerrada se pisa
+      if (k > 0 && andamioEn(c, i, j, k - 1)) { pj.k = k; return oy + k * ALTURA + P.superficieSuelo; } // plataforma del andamio
     }
     // sin suelo construido debajo, el terreno: llano en la zona de construir, y las lomas de más allá (donde está la
     // ladera con la piedra suelta y el sílex), que antes se cruzaban por dentro
@@ -1363,7 +1407,7 @@ function alturaSuelo() {
 }
 
 // planta en la que está un mueble, por su altura (los del suelo de arriba están a una altura de planta o más)
-const plantaDeco = (d) => Math.max(0, Math.floor((d.y + 0.3) / ALTURA));
+const plantaDeco = (d) => Math.max(0, Math.floor((d.y - sueloEn(d.x, d.z) + 0.3) / ALTURA));
 
 // ---------------- Fuego de las chimeneas ----------------
 // Las llamas se mueven, el humo sube y el fuego alumbra. Luces: solo dos (las de las chimeneas encendidas más cerca
@@ -1817,6 +1861,8 @@ window.__kinhold = {
   // los sitios de salida (src/logica/whitholm.js): el común y si uno es de la lista de la salida al azar
   salidas: { comun: SALIDA, total: SALIDAS.length, deLista: (x, z) => SALIDAS.some(s => s[0] === x && s[1] === z) },
   cambiarModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+  // una acción del mundo, como las del jugador (para las pruebas: la brocha de nivelar aún no tiene botón)
+  accion: (a) => accion(a),
   plantaDeco, get teclas() { return [...teclas]; }, get fantasmaForma() { return fantasmaForma; },
   seleccionar(clase, tipo) { estado.sel = { clase, tipo }; estado.dir = 0; marcarSeleccion(); evaluarColocacion(); },
   apuntar(x, z, y = 0) { estado.puntero = { x, z, ySuperficie: y }; evaluarColocacion(); },

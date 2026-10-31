@@ -33,6 +33,7 @@ paso "Construir demo única" node construir_demo.mjs
 paso "Construir prueba de cavar" node construir_mina.mjs
 paso "Construir visor del mapa" node construir_mapa.mjs
 paso "Lógica de construcción" node pruebas/prueba_logica.mjs
+paso "Construir a la altura del suelo y nivelar" node pruebas/prueba_nivelado.mjs
 paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs
@@ -49,6 +50,7 @@ paso "Jugadores que se ven, con lag simulado" node pruebas/prueba_presencia.mjs
 paso "Mundo en línea: dos clientes con el servidor" node pruebas/prueba_en_linea.mjs
 paso "Conexiones que se cortan y datos mal formados" node pruebas/prueba_conexiones.mjs
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
+paso "Inventario y suelo en el servidor, con dos clientes" node pruebas/prueba_objetos_servidor.mjs
 paso "Bots: jugadores simulados contra el servidor" node pruebas/prueba_bots.mjs
 paso "Terreno por trozos: anillos, bordes y faldones" node pruebas/prueba_trozos.mjs
 paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whitholm.mjs
@@ -65,6 +67,7 @@ paso "Taller: manos enteras y botas de la mujer bajo la falda" node pruebas/prue
 paso "Taller: pies descalzos" node pruebas/prueba_pies.mjs
 paso "Taller: barba larga con volumen" node pruebas/prueba_barbas.mjs
 paso "Taller: capa que cae de los hombros" node pruebas/prueba_manto.mjs
+paso "Taller: la piel bajo el escote" node pruebas/prueba_toca.mjs
 paso "Taller: tintes de la ropa y blasón" node pruebas/prueba_tintes.mjs
 paso "Hechura de la ropa (material, corte y tejido)" node pruebas/prueba_hechura.mjs
 paso "Niveles de detalle de los personajes" node pruebas/prueba_detalle.mjs
@@ -89,6 +92,7 @@ paso "Navegador: pruebas de estilo" python3 pruebas/prueba_estilo_navegador.py d
 paso "Navegador: personaje" python3 pruebas/prueba_personaje_navegador.py dist/kinhold_personaje.html "$C/personaje"
 paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html "$C/demo"
 paso "Navegador: la demo en el mundo (Whitholm)" python3 pruebas/prueba_mundo_navegador.py dist/kinhold_demo.html "$C/mundo"
+paso "Navegador: construir a la altura del suelo (ladera de Whitholm)" python3 pruebas/prueba_nivelado_navegador.py dist/kinhold_demo.html "$C/nivelado"
 paso "Navegador: jugar en línea (dos páginas y un servidor)" python3 pruebas/prueba_en_linea_navegador.py dist/kinhold_demo.html "$C/en_linea"
 paso "Navegador: duelo en línea (dos páginas y un servidor)" python3 pruebas/prueba_duelo_en_linea_navegador.py dist/kinhold_demo.html "$C/duelo_en_linea"
 paso "Navegador: recursos de personaje v2" python3 pruebas/prueba_recursos_personaje.py "$C/recursos"

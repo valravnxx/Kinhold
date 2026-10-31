@@ -1,5 +1,5 @@
 // Pruebas del aspecto del personaje (personalización). Ejecutar: node pruebas/prueba_aspecto.mjs
-// Con MUTAR=1 se rompe a propósito (la normalización deja pasar números fuera de rango): debe FALLAR.
+// Con MUTAR=3, la cofia bajo la toca. Con MUTAR=1 se rompe a propósito (la normalización deja pasar números fuera de rango): debe FALLAR.
 import { normalizarAspecto, pesosFormas, escalaAltura, colorDe, PALETAS, FORMAS, ASPECTO_INICIAL, PEINADOS, BARBAS, ESCALA_ALTURA, piezasCabeza } from '../src/logica/aspecto.js';
 
 let ok = 0, mal = 0;
@@ -45,6 +45,10 @@ comprobar('los valores por defecto existen en sus listas', ['hombre', 'mujer'].e
   comprobar('bajo la capucha no asoman las trenzas ni las orejas', !c._pelo_trenzas && !c._orejas && c._pelo);
   const f = pc({ peinado: 'cofia', barba: 'ninguna' });
   comprobar('con la cofia, ni pelo ni orejas', f._cofia && !f._pelo && !f._orejas);
+  // bajo la toca no va la cofia (asomaba bajo la barbilla con el borde dentado); bajo la capucha, sí (se ve en la frente)
+  const pt = process.env.MUTAR === '3' ? (a, t) => piezasCabeza(a, null) : pc;
+  const ft = pt({ peinado: 'cofia', barba: 'ninguna' }, 'toca'), fc = pt({ peinado: 'cofia', barba: 'ninguna' }, 'capucha');
+  comprobar('con la cofia bajo la toca no se ve la cofia; bajo la capucha, sí', !ft._cofia && !ft._pelo && !ft._orejas && fc._cofia);
   comprobar('el bigote con volumen va con corta, larga, bigote y perilla, y no sin barba', ['corta', 'larga', 'bigote', 'perilla'].every(b => pc({ peinado: 'corto', barba: b })._barba_mostacho) && !pc({ peinado: 'corto', barba: 'ninguna' })._barba_mostacho);
   const r = pc({ peinado: 'rapado', barba: 'perilla' });
   comprobar('rapado con perilla', !r._pelo && r._orejas && r._barba_perilla && !r._barba_corta);

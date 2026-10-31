@@ -2860,7 +2860,7 @@
  {
   "inicio": "2026-10-30T14:15:36+01:00",
   "fin": "2026-10-31T03:37:10+01:00",
-  "titulo": "Ríos que siguen el terreno, ríos de verdad y nadar (mapa v18, demo v59; chat con valravnx)",
+  "titulo": "Ríos que siguen el terreno, ríos de verdad y nadar (mapa v18, demo v61; chat con valravnx)",
   "hito": "mundo",
   "hecho": [
    "Arreglo (valravnx, 30 oct): muchos ríos iban elevados por los valles, como un puente. La altura del río salía del mapa de 1 km y el relieve de detalle hundía el suelo de alrededor; ahora cada punto del río toma el suelo más bajo de su tramo y nunca sube río abajo. En Whitholm, de unos 600 puntos con el agua por encima del suelo a ninguno; una prueba nueva lo vigila (menos del 1 %).",
@@ -2871,7 +2871,7 @@
    "Aún mal: no hay animación de nadar; en línea, los demás te ven andar en el agua; de lejos los ríos siguen a tramos rectos; los arroyos someros se ven blanquecinos; y en algunas costas bajas salen manchas de arena tierra adentro."
   ],
   "pruebas": "Batería entera en la nube tras unir main (lo que crece sigue al jugador) y arreglar las manchas del mar: 19 de 22 grupos bien. Fallan «jugar en línea» y «duelo en línea» (excepción de CLAUDE.md, fallan también en main) y «la demo en el mundo» en el móvil por un fotograma de 70,5 ms al llegar de golpe a otro sitio (lo que crece; el límite es 60 y en el PC 29,8); repetida: bien (49 ms). Antes, la prueba del mar tomaba a veces una ría somera por costa: ahora busca el mar hondo también por anillos alrededor del jugador. Lógica: nado 17/17, mapa 88/88. Las mutaciones se rompieron a propósito (MUTAR en el terraplén de los ríos y en la de nado de lógica). No comprobado: MUTAR_NADO en la nube (la de navegador).",
-  "capturas": "capturas/demo-v59",
+  "capturas": "capturas/demo-v61",
   "estado": "ok"
  },
  {
@@ -2905,6 +2905,59 @@
   ],
   "pruebas": "En la nube: 20 de 22 grupos bien; fallan jugar en línea (el móvil tarda en conectar y una captura no sale a tiempo) y duelo en línea (el corte del servidor, como en otras ramas), exentos hasta la fase 2. Repetidos los dos: vuelven a fallar (el duelo, en lo mismo; jugar en línea, en otra captura y en lo que tarda el móvil en conectar). El cartel sin conexión no llegó a probarse en la nube (la prueba en línea se paró antes por la captura): comprobado aquí con su parte suelta, y roto a propósito (sin el cartel, falla).",
   "capturas": "capturas/demo-v57",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T20:52:51+00:00",
+  "fin": "2026-10-31T00:30:05+00:00",
+  "titulo": "Hito de arte: toca y cuello de la ropa (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Mirado de cerca en el visor del personaje (PC y móvil): con la cofia, entre el escote del vestido y el cuello asomaba la piel con el borde a trozos y dos huecos negros a los lados; con la toca, la cofia de debajo asomaba bajo la barbilla con el borde dentado y un hueco oscuro.",
+   "La piel sigue bajo la ropa hasta bien por debajo de cualquier escote (por delante, unos 11 cm por debajo del cuello): su borde queda tapado. Personajes nuevos en recursos/personajes/taller-v18/.",
+   "Bajo la toca ya no va la cofia (piezasCabeza, en src/logica/aspecto.js; las fotos del taller hacen lo mismo).",
+   "Probado y descartado: alisar la garganta de la toca como una membrana (le abría un agujero en la oreja) y hacerla caer recta desde la barbilla (pliegues sueltos en la garganta). Queda «colgar», que en el centro de la garganta apenas cambia nada (medido).",
+   "Prueba nueva: la piel baja bajo cualquier escote (prueba_toca.mjs; con MUTAR=1 mira la taller-v17 y falla). En la del aspecto, que bajo la toca no va la cofia y bajo la capucha sí (con MUTAR=3 falla).",
+   "Personaje v29 y demo v59 (la v57 y la v58 las publicaron antes el chat, con «Siempre en línea», y el carril A, con lo que crece sigue al jugador).",
+   "Aún mal: bajo la barbilla la toca se mete hacia el cuello y desde algunos ángulos se ve una rendija oscura donde se junta con la esclavina; con la cofia quedan dos huecos oscuros pequeños detrás del cuello; el borde del escote sigue en escalones del tamaño del píxel (probado el alphaToCoverage: suaviza poco y deja una línea blanca a trazos en el borde de la cofia, descartado)."
+  ],
+  "pruebas": "En la nube, la batería entera (22 grupos): bien salvo jugar en línea y duelo en línea (sin servidor de verdad, no paran la publicación) y niveles de detalle del personaje, que falló en «el panel dice cuántos hay en cada nivel» (el panel salió vacío; no toca nada de este cambio) y pasó al repetirlo. Tras unir main (Siempre en línea), otra vez la batería entera: bien salvo jugar en línea (exento). Tras unir lo que crece sigue al jugador, repetidos lógica, web, demo única, la demo en el mundo y juego en inglés: bien.",
+  "capturas": "capturas/personaje-v29",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T22:37:50+00:00",
+  "fin": "2026-10-31T01:50:23+00:00",
+  "titulo": "Hito «Equipo y carga»: inventario y suelo en el servidor (carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Lógica pura nueva (src/logica/objetos_red.js): el servidor lleva el inventario de cada jugador y los objetos del suelo con la misma lógica que el navegador (inventario.js y suelo.js).",
+   "En el servidor, el mensaje «objeto»: mover, ponerse, quitarse, soltar al suelo y coger del suelo, con el autor de la conexión (el que mande el navegador no cuenta) y la hora del servidor. Al autor le llega lo que lleva tal como queda; el suelo, a todos. La bienvenida lleva los dos.",
+   "El sitio es el que el servidor tiene por la presencia: el del mensaje solo vale a menos de 3 m de ahí (decisión provisional); desde lejos no se coge nada. No se acepta meter algo de la nada ni hacerlo desaparecer.",
+   "Se guarda entero en objetos.json junto al mundo (escrito aparte y cambiado de nombre, para que un apagón no lo deje a medias) y cada acción, bien o mal, en objetos.jsonl. Lo soltado fuera de tus tierras desaparece pasada su hora también en el servidor.",
+   "La tarea se parte en dos (decisión del carril A): esta, la del servidor, y otra nueva justo detrás para que el juego en línea lo use. No se puede hacer a medias en el juego: talar y trocear siguen en el navegador y dejan sus troncos en el suelo de cada uno, así que tienen que pasar al servidor a la vez que el inventario. Sin versión nueva: aún no cambia nada de lo que se juega."
+  ],
+  "pruebas": "Prueba nueva del inventario y el suelo en el servidor con dos clientes, 24/24 (con MUTAR=1, un servidor que se fía del autor del cliente, fallan 3). Batería entera en la nube (22 grupos): bien salvo «jugar en línea» y «duelo en línea», exentos hasta la fase 2. El programa que espera la nube se quedó colgado después de que acabara el último grupo (construcción, bien a las 23:48); el resultado se miró en GitHub Actions. Tras unir main, repetidas aquí las pruebas de lógica del servidor, en línea, suelo, inventario, tala y bots: bien. Sin capturas: no cambia nada de lo que se ve.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T00:22:40+00:00",
+  "fin": "2026-10-31T02:30:48+00:00",
+  "titulo": "Construir en el mundo, a la altura del suelo (carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Cada construcción guarda la altura del suelo donde se pone su primera pieza (oy) y se dibuja ahí: ya no queda flotando ni hundida en ladera. La acción «colocar» lleva la altura (y); los guardados de antes, sin ella, siguen a 0.",
+   "Los cimientos alisan el suelo de su casilla: cada uno deja una marca de nivelado con su autor (lógica pura nueva, src/logica/nivelado.js), que el servidor guarda y reparte con la pieza. Lo alisado se queda aunque se desmonte.",
+   "El terreno por trozos sale con el suelo nivelado: el hilo aparte recibe las marcas y se rehacen solo los trozos que tocan (la malla vieja se queda hasta que llega la nueva).",
+   "Las cercas y las empalizadas siguen el suelo de su sitio; el mojón y los muebles se ponen en el suelo; el puntero apunta al punto del terreno que miras y no a un plano a la altura 0; el personaje pisa los cimientos, los suelos, las escaleras y el adarve a la altura de su construcción, y las varas, la polea y el polipasto salen a esa altura.",
+   "La brocha redonda de nivelar (GDD) está como acción con autor en la lógica y en el servidor (de 0,5 a 4 m de radio, solo en tu tierra); su botón en el juego queda como tarea nueva, con la hierba de alrededor de lo alisado a la altura nueva.",
+   "Pruebas nuevas: prueba_nivelado.mjs (31 comprobaciones; con MUTAR=1, los trozos sin las marcas, falla) y prueba_nivelado_navegador.py en una ladera de Whitholm, en PC y móvil (con MUTAR=1, sin lo alisado, falla).",
+   "Decisiones provisionales: cada cimiento alisa un círculo de 1,45 m de radio en el centro de su casilla con 1,5 m de borde suave; el servidor aún no conoce el terreno y se fía de la altura que manda el jugador.",
+   "Aún mal: la hierba y las matas del borde de lo alisado siguen a la altura de antes (pueden quedar un poco en el aire o hundidas)."
+  ],
+  "pruebas": "En la nube, todos los grupos bien salvo «jugar en línea» (falla también en main mientras no esté el servidor de verdad: no para la publicación); «combate» falló una vez (la pantalla de victoria) y pasó al repetirlo; la prueba nueva de la ladera, bien en PC y móvil tras esperar a que el personaje se asiente",
+  "capturas": "capturas/demo-v60",
   "estado": "ok"
  }
 ]

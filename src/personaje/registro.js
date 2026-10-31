@@ -1,6 +1,8 @@
 // Decisiones tomadas en el personaje, para revisar.
-export const VERSION_PERSONAJE = 'Personaje · v28 (bigote con volumen)';
+export const VERSION_PERSONAJE = 'Personaje · v29 (toca y cuello de la ropa)';
 export const REGISTRO_PERSONAJE = [
+  'v29: entre el escote y el cuello ya no asoma una mancha de piel rota con huecos negros a los lados: la piel sigue bajo la ropa hasta bien por debajo de cualquier escote. Bajo la toca ya no va la cofia, que asomaba bajo la barbilla con el borde dentado. Personajes en recursos/personajes/taller-v18/.',
+  'v29, aún mal: bajo la barbilla la toca se mete hacia el cuello y, desde algunos ángulos, deja ver una rendija oscura donde se junta con la esclavina; con la cofia quedan dos huecos oscuros pequeños detrás del cuello, a los lados; el borde del escote sigue en escalones del tamaño del píxel.',
   'v28: el bigote tiene volumen (antes solo pintado y plano): una malla propia que nace bajo la nariz, se abomba sobre el labio de arriba y cae por las comisuras, con la punta desigual pelo a pelo. Va con la barba corta, la larga, el bigote y la perilla, encima del bigote pintado.',
   'v28: la barba larga tiene ondas distintas en cada mechón (antes salían todas iguales y en fila) y por los lados baja por el cuello: de frente ya no asoma el cuello a los lados de la barbilla. Personajes en recursos/personajes/taller-v17/.',
   'v28, aún mal: la barba larga va con la cabeza y no se mueve sola; el bigote va fijo a la cabeza, como la barba.',
