@@ -5,12 +5,7 @@
   "hito": "equipo",
   "rama": "trabajo/20261031-1123"
  },
- "B": {
-  "inicio": "2026-10-31T11:54:23+00:00",
-  "tarea": "Recetas que conoce cada personaje y desbloqueo por práctica (GDD, apartado 9): construir la estación da sus recetas básicas y fabricar en ella abre las siguientes. Lo que el GDD no fija (qué recetas son básicas y cuánta práctica abre las demás) se decide de forma provisional y sencilla y se anota en el registro de decisiones y en el diario. Guardado en el navegador con migración. Pruebas de lógica",
-  "hito": "crafting",
-  "rama": "trabajo/20261031-1154"
- },
+ "B": null,
  "chat:trabajo/20261031-1005-cuatro": {
   "inicio": "2026-10-31T10:02:41+01:00",
   "tarea": "Cuatro direcciones y ataque comprometido (valravnx, 31 oct): alto, izquierda, derecha y abajo para clavar (fuera el tajo bajo y el centro); el escudo para todo lo que viene de frente sin elegir lado; el golpe no cambia de dirección al cargarlo, y el botón de parar lo cancela con una finta (para parar o para empezar otro golpe)",
