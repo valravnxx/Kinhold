@@ -29,11 +29,15 @@
 //   resuelve el combate (golpes, disparos, impactos) se guarda aparte, en combate.jsonl junto al mundo.
 //
 //   Lo que lleva cada uno y lo del suelo (src/logica/objetos_red.js): el cliente manda { tipo: 'objeto', id, accion:
-//   { tipo: 'mover'|'ponerse'|'quitarse'|'soltar_suelo'|'coger_suelo', … } }; el servidor la hace con el autor de la
-//   conexión, su hora y el sitio donde lo tiene (su presencia), y contesta { tipo: 'resultado_objeto', id, ok, motivo? }.
-//   Al autor le manda lo que lleva tal como queda, { tipo: 'inventario', inventario }, y si cambia el suelo, a todos
-//   { tipo: 'suelo', objetos }. La bienvenida lleva los dos (inventario, suelo). Se guarda entero en objetos.json
-//   junto al mundo, y cada acción (bien o mal) en objetos.jsonl.
+//   { tipo: 'mover'|'ponerse'|'quitarse'|'soltar_suelo'|'coger_suelo'|'talar'|'trocear'|'recoger'|'coger'|'soltar', … } };
+//   el servidor la hace con el autor de la conexión, su hora y el sitio donde lo tiene (su presencia), y contesta
+//   { tipo: 'resultado_objeto', id, ok, motivo?, datos? } (datos: lo que ha pasado, p. ej. si el árbol cae y hacia dónde).
+//   Al autor le manda lo que lleva tal como queda, { tipo: 'inventario', inventario } (también si sale mal: así el
+//   navegador deshace lo que había adelantado), y si cambia el suelo, a todos { tipo: 'suelo', objetos }. Si cae un
+//   árbol, a todos (antes que el suelo) { tipo: 'tala', estado, cae: { arbol, dir, autor, objetos } }; si se recoge algo, { tipo: 'recoleccion',
+//   estado }. La bienvenida lleva todo eso (inventario, suelo, tala, recoleccion). 'coger' y 'soltar' son el arcón de
+//   pruebas (arconPruebas, sí por ahora). Se guarda entero en objetos.json junto al mundo, y cada acción (bien o mal)
+//   en objetos.jsonl.
 //
 //   Conexiones que se cortan (src/logica/limites.js y abajo):
 //   - Ficha: la bienvenida lleva una ficha secreta (solo para ese cliente). Si el cliente vuelve a conectar con
@@ -81,7 +85,7 @@ export function leerArchivo(archivo) {
 }
 
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
-  gracia = GRACIA, latido = LATIDO, limites = LIMITES } = {}) {
+  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true } = {}) {
   archivo = resolve(archivo);
   const archivoCombate = resolve(dirname(archivo), 'combate.jsonl');
   const archivoFichas = resolve(dirname(archivo), 'fichas.jsonl');
@@ -106,6 +110,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const objetos = new ObjetosServidor({
     posicion: (a) => { const e = presencia && presencia.ultimo.get(a); return e ? { x: e.x, z: e.z } : null; },
     enTierras: (a, x, z) => !!mundo.dentroDeTierra(x, z),
+    arconPruebas,
   });
   if (existsSync(archivoObjetos)) {
     try { objetos.importar(JSON.parse(readFileSync(archivoObjetos, 'utf8'))); } catch (e) { registrar(`objetos.json no válido, se empieza de cero: ${e && e.message}`); }
@@ -195,7 +200,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     }
     enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, entradas: hechas, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
       aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true),
-      inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now()) });
+      inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now()), tala: objetos.talaVisible(), recoleccion: objetos.recoleccionVisible() });
 
     ws.on('message', (datos, binario) => {
       if (conexionDe.get(autor) !== ws) return;   // sustituida por otra: ya no cuenta
@@ -249,9 +254,13 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         const r = objetos.ejecutar(Object.assign({}, msg.accion, { autor }), ahora);
         if (r.entrada) appendFileSync(archivoObjetosReg, JSON.stringify(r.entrada) + '\n');
         if (r.ok) guardarObjetos();
-        enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? {} : { motivo: r.motivo }) });
-        if (r.ok) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
+        const { ok: _o, motivo: _m, entrada: _e, suelo: _s, ...datos } = r;
+        enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? { datos } : { motivo: r.motivo }) });
+        enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
+        // lo talado antes que el suelo: así el navegador esconde lo que deja el árbol hasta que lo ve caer
+        if (r.ok && r.cae) { const m = { tipo: 'tala', estado: objetos.talaVisible(), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, objetos: r.objetos } }; for (const otro of clientes.keys()) enviar(otro, m); }
         if (r.suelo) { const lista = objetos.sueloVisible(ahora); for (const otro of clientes.keys()) enviar(otro, { tipo: 'suelo', objetos: lista }); }
+        if (r.ok && msg.accion.tipo === 'recoger') { const m = { tipo: 'recoleccion', estado: objetos.recoleccionVisible() }; for (const otro of clientes.keys()) enviar(otro, m); }
         return;
       }
       if (!msg || msg.tipo !== 'accion' || !msg.accion || typeof msg.accion !== 'object' || Array.isArray(msg.accion))

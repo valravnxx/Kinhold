@@ -87,6 +87,12 @@
      "estado": "hecho",
      "inicio": "2026-10-29T14:44:49+01:00",
      "fin": "2026-10-29T15:15:59+01:00"
+    },
+    {
+     "nombre": "Pruebas en la gráfica del PC de valravnx cuando lo permite (si no, en GitHub Actions)",
+     "estado": "en_curso",
+     "inicio": "2026-10-31T08:28:49+01:00",
+     "rama": "trabajo/20261031-0830-grafica"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -595,9 +601,15 @@
     },
     {
      "nombre": "El juego en línea usa lo que llevas y el suelo del servidor: el panel de inventario, soltar y coger del suelo y lo que se entrega a las obras pasan por el servidor, y talar y trocear también, con lo que dejan en el suelo, para que nada de lo que llevas salga solo del navegador. Mientras el servidor no conozca el mundo, se fía del árbol que dice el navegador si estás a su lado (decisión provisional)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T02:24:31+00:00",
-     "rama": "trabajo/20261031-0224"
+     "fin": "2026-10-31T06:43:32+00:00"
+    },
+    {
+     "nombre": "Las obras cobran de lo que llevas también en línea: lo que se entrega a una obra (y lo que se sube a una obra en alto) sale de lo que llevas en el servidor, el arcón de materiales de obra va por el servidor, y el mundo se rehace igual al volver a arrancar el servidor y en el navegador de los demás",
+     "estado": "en_curso",
+     "inicio": "2026-10-31T07:26:29+00:00",
+     "rama": "trabajo/20261031-0726"
     },
     {
      "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
@@ -643,9 +655,9 @@
     },
     {
      "nombre": "Estaciones y recetas en la lógica pura, con los datos del documento de sistemas (apartados 7 y 8) de las primeras estaciones: hoguera y piedra de tallar (N0) y banco de trabajo de tronco (entrada a N1); cada receta con lo que gasta, lo que da, dónde se hace y su tiempo. Fabricar con autor, gastando lo que llevas encima y lo de los arcones a pocos pasos, con una cola pequeña por estación y el tiempo contado por tiempo transcurrido. Pruebas de lógica",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T05:36:55+00:00",
-     "rama": "trabajo/20261031-0536"
+     "fin": "2026-10-31T07:09:21+00:00"
     },
     {
      "nombre": "Recetas que conoce cada personaje y desbloqueo por práctica (GDD, apartado 9): construir la estación da sus recetas básicas y fabricar en ella abre las siguientes. Lo que el GDD no fija (qué recetas son básicas y cuánta práctica abre las demás) se decide de forma provisional y sencilla y se anota en el registro de decisiones y en el diario. Guardado en el navegador con migración. Pruebas de lógica",
@@ -1943,6 +1955,13 @@
      "archivo": "jugar/demo/v62.html",
      "capturas": "capturas/demo-v62",
      "notas": "El agua y el nado: los ríos y el mar de cerca alrededor del jugador; se vadea y se nada con un aguante (el de correr) que baja más deprisa cuanto más pesa lo que llevas; sin aguante te ahogas."
+    },
+    {
+     "v": "v63",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v63.html",
+     "capturas": "capturas/demo-v63",
+     "notas": "En línea, lo que llevas es lo del servidor: el inventario, soltar y coger del suelo, talar, tronzar, partir y recoger pasan por el servidor con tu autor, y lo que dejas en el suelo y los tocones los ven todos y siguen ahí al volver."
     }
    ]
   },

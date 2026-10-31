@@ -39,6 +39,7 @@ paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs
 paso "Inventario por huecos" node pruebas/prueba_inventario.mjs
 paso "Recoger del suelo y de las plantas" node pruebas/prueba_recoleccion.mjs
+paso "Estaciones y recetas" node pruebas/prueba_fabricacion.mjs
 paso "Objetos en el suelo" node pruebas/prueba_suelo.mjs
 paso "Tala de los árboles" node pruebas/prueba_tala.mjs
 paso "Tronzar y partir" node pruebas/prueba_troceo.mjs
@@ -96,6 +97,7 @@ paso "Navegador: la demo en el mundo (Whitholm)" python3 pruebas/prueba_mundo_na
 paso "Navegador: construir a la altura del suelo (ladera de Whitholm)" python3 pruebas/prueba_nivelado_navegador.py dist/kinhold_demo.html "$C/nivelado"
 paso "Navegador: jugar en línea (dos páginas y un servidor)" python3 pruebas/prueba_en_linea_navegador.py dist/kinhold_demo.html "$C/en_linea"
 paso "Navegador: duelo en línea (dos páginas y un servidor)" python3 pruebas/prueba_duelo_en_linea_navegador.py dist/kinhold_demo.html "$C/duelo_en_linea"
+paso "Navegador: lo que llevas en línea (inventario, suelo, tala y recogida por el servidor)" python3 pruebas/prueba_objetos_en_linea_navegador.py dist/kinhold_demo.html "$C/objetos_en_linea"
 paso "Navegador: recursos de personaje v2" python3 pruebas/prueba_recursos_personaje.py "$C/recursos"
 paso "Navegador: juego en inglés (también estilo y personaje)" python3 pruebas/prueba_idioma_navegador.py dist/kinhold_hito1.html dist/kinhold_combate.html dist/kinhold_estilo.html dist/kinhold_personaje.html "$C/idioma"
 paso "Navegador: cavar" python3 pruebas/prueba_mina_navegador.py dist/kinhold_mina.html "$C/mina"

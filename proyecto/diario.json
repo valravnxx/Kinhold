@@ -2779,6 +2779,24 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-10-30T14:15:36+01:00",
+  "fin": "2026-10-31T06:24:02+01:00",
+  "titulo": "Ríos que siguen el terreno, ríos de verdad y nadar (mapa v18, demo v62; chat con valravnx)",
+  "hito": "mundo",
+  "hecho": [
+   "Arreglo (valravnx, 30 oct): muchos ríos iban elevados por los valles, como un puente. La altura del río salía del mapa de 1 km y el relieve de detalle hundía el suelo de alrededor; ahora cada punto del río toma el suelo más bajo de su tramo y nunca sube río abajo. En Whitholm, de unos 600 puntos con el agua por encima del suelo a ninguno; una prueba nueva lo vigila (menos del 1 %).",
+   "Ríos de verdad: la hondura va con el grueso del río (arroyos de 30 a 60 cm, que se vadean; ríos de 1,5 a 2,5 m con algún vado de 70 cm; los grandes, de 2,8 a 4,3 m), y los ríos sin saltos hacen meandros.",
+   "El agua en el juego: alrededor del jugador se dibujan los ríos y el mar de cerca, la misma agua que en el mapa (corriente, hondura, orilla, oleaje y espuma), y se rehace poco a poco al moverse.",
+   "Nadar (valravnx, 30 oct): en lo somero se anda, por la cintura se vadea y más hondo se nada. Un solo aguante, el de correr con Mayúsculas, que al nadar baja más deprisa cuanto más pesa lo que llevas (con cota de malla y gambesón, o con un tronco, casi enseguida); sin aguante te ahogas y vuelves a tu sitio de salida. La corriente te arrastra. El GDD lo recoge.",
+   "Arreglo (31 oct): mar adentro, el mar de lejos asomaba en manchas lisas entre las olas (la hondura no daba para separarlo 0,8 m del agua de cerca, en una lámina tan grande); ahora se dibuja antes que el agua de cerca y sin escribir la hondura.",
+   "Arreglo (31 oct): al llegar de golpe a otro sitio, el agua de cerca se rehacía a filas enteras y dejaba mucha basura que recoger, y en el móvil algún fotograma de lo que crece llegaba a 70–78 ms; ahora va en pasos de unos pocos ms con los índices en un arreglo fijo (33 ms en la nube).",
+   "Aún mal: no hay animación de nadar; en línea, los demás te ven andar en el agua; de lejos los ríos siguen a tramos rectos; los arroyos someros se ven blanquecinos; y en algunas costas bajas salen manchas de arena tierra adentro."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main (construir a la altura del suelo): bien salvo «jugar en línea» y «duelo en línea» (excepción de CLAUDE.md) y la prueba nueva de main del nivelado (buscaba tierra junto a la mitad del río más largo, y con los ríos a lo más bajo de su tramo allí no la hay: ahora la busca a lo largo del río; 31/31, y con MUTAR falla). Tras unir el pelo y las cejas (sin código en común), otra vez lógica, la demo en el mundo, la demo única y el mapa: bien (el agua del río que se mueve, 0,9 % una vez y 2,1 % repetida). Lógica: nado 17/17, mapa 88/88. Las mutaciones se rompieron a propósito. No comprobado: MUTAR_NADO en la nube (la de navegador).",
+  "capturas": "capturas/demo-v62",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-10-30T15:26:49+00:00",
   "fin": "2026-10-30T16:52:08+00:00",
   "titulo": "Tronzar y partir, y el tronco corto al hombro (construcción v43, demo v54; carril A)",
@@ -2855,24 +2873,6 @@
   ],
   "pruebas": "Sin cambios de código",
   "capturas": "",
-  "estado": "ok"
- },
- {
-  "inicio": "2026-10-30T14:15:36+01:00",
-  "fin": "2026-10-31T06:24:02+01:00",
-  "titulo": "Ríos que siguen el terreno, ríos de verdad y nadar (mapa v18, demo v62; chat con valravnx)",
-  "hito": "mundo",
-  "hecho": [
-   "Arreglo (valravnx, 30 oct): muchos ríos iban elevados por los valles, como un puente. La altura del río salía del mapa de 1 km y el relieve de detalle hundía el suelo de alrededor; ahora cada punto del río toma el suelo más bajo de su tramo y nunca sube río abajo. En Whitholm, de unos 600 puntos con el agua por encima del suelo a ninguno; una prueba nueva lo vigila (menos del 1 %).",
-   "Ríos de verdad: la hondura va con el grueso del río (arroyos de 30 a 60 cm, que se vadean; ríos de 1,5 a 2,5 m con algún vado de 70 cm; los grandes, de 2,8 a 4,3 m), y los ríos sin saltos hacen meandros.",
-   "El agua en el juego: alrededor del jugador se dibujan los ríos y el mar de cerca, la misma agua que en el mapa (corriente, hondura, orilla, oleaje y espuma), y se rehace poco a poco al moverse.",
-   "Nadar (valravnx, 30 oct): en lo somero se anda, por la cintura se vadea y más hondo se nada. Un solo aguante, el de correr con Mayúsculas, que al nadar baja más deprisa cuanto más pesa lo que llevas (con cota de malla y gambesón, o con un tronco, casi enseguida); sin aguante te ahogas y vuelves a tu sitio de salida. La corriente te arrastra. El GDD lo recoge.",
-   "Arreglo (31 oct): mar adentro, el mar de lejos asomaba en manchas lisas entre las olas (la hondura no daba para separarlo 0,8 m del agua de cerca, en una lámina tan grande); ahora se dibuja antes que el agua de cerca y sin escribir la hondura.",
-   "Arreglo (31 oct): al llegar de golpe a otro sitio, el agua de cerca se rehacía a filas enteras y dejaba mucha basura que recoger, y en el móvil algún fotograma de lo que crece llegaba a 70–78 ms; ahora va en pasos de unos pocos ms con los índices en un arreglo fijo (33 ms en la nube).",
-   "Aún mal: no hay animación de nadar; en línea, los demás te ven andar en el agua; de lejos los ríos siguen a tramos rectos; los arroyos someros se ven blanquecinos; y en algunas costas bajas salen manchas de arena tierra adentro."
-  ],
-  "pruebas": "Batería entera en la nube tras unir main (construir a la altura del suelo): bien salvo «jugar en línea» y «duelo en línea» (excepción de CLAUDE.md) y la prueba nueva de main del nivelado (buscaba tierra junto a la mitad del río más largo, y con los ríos a lo más bajo de su tramo allí no la hay: ahora la busca a lo largo del río; 31/31, y con MUTAR falla). Tras unir el pelo y las cejas (sin código en común), otra vez lógica, la demo en el mundo, la demo única y el mapa: bien (el agua del río que se mueve, 0,9 % una vez y 2,1 % repetida). Lógica: nado 17/17, mapa 88/88. Las mutaciones se rompieron a propósito. No comprobado: MUTAR_NADO en la nube (la de navegador).",
-  "capturas": "capturas/demo-v62",
   "estado": "ok"
  },
  {
@@ -2976,6 +2976,55 @@
   ],
   "pruebas": "En la nube, la batería entera (22 grupos): bien salvo jugar en línea (exento hasta la fase 2: el móvil no ve a PC y el cartel sin conexión no sale). Tras unir main (construir a la altura del suelo), repetidos lógica, web, demo única, la demo en el mundo y juego en inglés: bien.",
   "capturas": "capturas/personaje-v30",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T02:24:31+00:00",
+  "fin": "2026-10-31T04:34:29+00:00",
+  "titulo": "Hito «Equipo y carga»: lo que llevas, por el servidor en el juego (carril A; sin publicar, lo sigue el relevo)",
+  "hito": "equipo",
+  "hecho": [
+   "Servidor (src/logica/objetos_red.js): además de lo que llevas y el suelo, ahora talar, trocear, recoger y el arcón de pruebas ('coger' y 'soltar', solo con arconPruebas, que el servidor de pruebas trae puesto). Lo talado, lo troceado a medias y lo recogido se guardan en objetos.json (versión 2; la 1 se sigue leyendo).",
+   "Decisión provisional: el servidor aún no genera el mundo, así que se fía del árbol o del punto de recogida que dice el navegador si el autor está a su lado; el nombre del árbol tiene que salir de su sitio y el del punto, de su clase. Entre golpe y golpe de hacha el servidor pide 0,5 s (el navegador da uno cada 0,9 s y la red puede juntar dos).",
+   "El servidor contesta cada acción con lo que ha pasado (si el árbol cae y hacia dónde, cuántos golpes faltan…) y manda lo que llevas también cuando sale mal; si cae un árbol avisa a todos antes que el suelo, con lo que deja. Protocolo 5: un servidor anterior sale como antiguo.",
+   "En el juego (src/juego/objetos_en_linea.js): en línea, lo que llevas, el suelo, los tocones y lo recogido son los del servidor y no se guardan en el navegador. El panel adelanta sus acciones y el servidor las confirma o las deshace; talar, trocear, recoger y soltar o coger del suelo esperan su respuesta. Un árbol que tala otro se ve caer. La ropa elegida en «Personaje» entra en el servidor por el arcón, una vez por jugador.",
+   "Pruebas: la del servidor con dos clientes crece a 40 comprobaciones (talar, trocear, recoger, el arcón; con MUTAR=1 falla); prueba de navegador nueva, «lo que llevas en línea» (con MUTAR=1, que no manda los mensajes de objetos, falla en la primera).",
+   "Lo que se entrega a las obras en línea sigue saliendo del montón común: tarea nueva justo detrás (hace falta que el servidor y los demás navegadores rehagan el mundo igual sin conocer lo que lleva cada uno).",
+   "Sin publicar: mientras esperaba la batería en la nube (más de una hora sin subir nada a la rama), la siguiente sesión del carril A dio la tarea por cortada y la retomó desde esta rama a las 04:25. Se le deja a ella para no trabajar dos en lo mismo; esta sesión no suelta el carril."
+  ],
+  "pruebas": "En la nube, la batería entera: todo bien salvo «jugar en línea» (exento; la ropa del visor sí llega por el servidor) y la prueba nueva, en dos comprobaciones que eran de la prueba: al recargar abría otra pestaña y la ficha va por pestaña (otro jugador). Arreglado en la prueba; no comprobado en la nube tras el arreglo. Lógica del servidor, en línea, tala, troceo y recogida: bien aquí.",
+  "capturas": "",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-31T04:25:54+00:00",
+  "fin": "2026-10-31T06:43:32+00:00",
+  "titulo": "Lo que llevas, por el servidor en el juego (demo v63; carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Retomado desde la rama de la sesión anterior del carril A, que lo dejó hecho pero sin publicar (su entrada del diario, justo antes). Se unió main dos veces (pelo y cejas, demo v61; agua y nado, demo v62): estas notas pasan a la demo v63.",
+   "La prueba «lo que llevas en línea» arreglada en tres cosas que eran de la prueba: al recargar usa la misma pestaña (la ficha va por pestaña), carga los personajes taller-v19 (con la taller-v18 salía un 404 en la consola) y espera hasta 4 minutos a que caiga el árbol, porque en la nube, a 1 fotograma por segundo, cada golpe de hacha tarda unos 18 s (el paso del juego no pasa de 0,05 s).",
+   "Publicada la demo v63: en línea, lo que llevas, el suelo, la tala, el troceo y la recogida son los del servidor. Quien lleva el servidor tiene que actualizarlo (protocolo 5): uno anterior sale como antiguo.",
+   "Aún mal: el hacha soltada en el suelo se ve muy pequeña y casi no se distingue; las obras en línea siguen cobrando del montón común (tarea siguiente)."
+  ],
+  "pruebas": "En la nube, la batería entera tras unir main (agua y nado): bien salvo «jugar en línea» y «duelo en línea» (exentos hasta la fase 2) y «lo que llevas en línea», que se quedó a un golpe de talar el árbol por la espera corta; con la espera de 4 minutos, bien. Antes, con la main anterior, «la demo en el mundo» falló una vez («nada en el agua», salida al azar) y pasó al repetirla. Aquí: servidor con dos clientes 40/40 (MUTAR=1: 2 fallos), nado 17/17.",
+  "capturas": "capturas/demo-v63",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T05:36:55+00:00",
+  "fin": "2026-10-31T07:09:21+00:00",
+  "titulo": "Hito 3: estaciones y recetas en la lógica pura (carril A)",
+  "hito": "crafting",
+  "hecho": [
+   "Nuevo src/logica/fabricacion.js: las tres primeras estaciones del documento de sistemas (apartado 7) con su coste: hoguera (6 piedras y 4 ramas), piedra de tallar y banco de trabajo de tronco (2 troncos cortos, y llevar una herramienta de piedra, que no se gasta).",
+   "Recetas del apartado 8 que ya tienen sus materiales: con las manos (cordel, palo cavador, honda, leñero, rastra, fardo, arpón, odre), en la piedra de tallar (lasca de sílex, hacha de piedra), en la hoguera (lanza endurecida, antorcha) y en el banco (cuerda, cinturón de cuerda, cestas, nasa, trampa de lazo, pala, azada, hoz de sílex, mayal, cubo). Cada una con lo que gasta, lo que da, dónde se hace y su tiempo. Catorce objetos nuevos en el catálogo del inventario, con su nombre en inglés y en ruso.",
+   "Fabricar con autor (acciones colocar_estacion, fabricar y recoger_fabricado, anotadas en el registro): junto a la estación, gasta primero lo que llevas encima y luego lo de los arcones a pocos pasos; nunca lo que llevas puesto (el cinturón, la mochila). Cola de 3 encargos por estación y de 1 con las manos; el tiempo lo pone quien valida y se cuenta por la hora, aunque nadie juegue. Lo terminado espera en la estación hasta que su autor lo recoge, donde le quepa. Se guarda y se carga con versión.",
+   "Provisional (el documento no lo fija): tiempos de 10 a 60 s; junto a la estación es a 2,5 m y los arcones «a pocos pasos», a 6 m; la «piedra grande» de la piedra de tallar es 1 piedra suelta; «rama larga» y «rama curva» son ramas. Quedan para cuando existan sus materiales: envueltas de piel, anzuelo, refugio de ramas (es una obra), carretilla, zurrón, chaleco, vendas y cocinar.",
+   "Prueba nueva: prueba_fabricacion.mjs (58 comprobaciones: datos del documento, colocar, fabricar con las manos y en las estaciones, la cola, el tiempo por la hora, los arcones cercanos y lejanos, si no cabe, guardar y cargar, y las acciones con autor). Con MUTAR=1 (el hacha de piedra sin cordel y al momento) falla 8.",
+   "Sin versión nueva: es lógica sin nada jugable aún. Ni el servidor ni la demo la usan todavía: las estaciones como obras y su panel son las tareas siguientes del hito, y las acciones ya llevan autor para que el servidor las valide."
+  ],
+  "pruebas": "En la nube, la batería entera (23 grupos): bien salvo «jugar en línea» y «duelo en línea» (exentos hasta la fase 2) y lógica, que falló porque faltaban en inglés y en ruso los nombres de los objetos nuevos; arreglado. Tras unir main, repetidos lógica, panel de inventario, demo única y recoger del suelo: bien.",
   "estado": "ok"
  }
 ]
