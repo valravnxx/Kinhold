@@ -6,10 +6,10 @@ import { prepararRenderer, crearAmbiente } from '../../src/mundo/ambiente.js';
 import { suelo } from '../../src/mundo/decorado.js';
 import { modeloPieza, decoracion, mojon } from '../../src/mundo/modelos.js';
 import { modeloArma, modeloEscudo, modeloFlecha, modeloPoste, modeloDiana } from '../../src/combate/modelos.js';
-import { modeloHacha } from '../../src/juego/personaje.js';
-// ?armas=espada_larga,espada_escudo,palo,arco,escudo,flecha,poste,diana,hacha: lo que se lleva en la mano, de pie sobre el suelo
+import { modeloHacha, modeloPico } from '../../src/juego/personaje.js';
+// ?armas=espada_larga,espada_escudo,palo,arco,escudo,flecha,poste,diana,hacha,pico: lo que se lleva en la mano, de pie sobre el suelo
 const ARMAS = { escudo: () => modeloEscudo(), flecha: () => { const g = new THREE.Group(), f = modeloFlecha(); f.rotation.x = -Math.PI / 2; g.add(f); return g; },
-  poste: modeloPoste, diana: () => modeloDiana(), hacha: modeloHacha };
+  poste: modeloPoste, diana: () => modeloDiana(), hacha: modeloHacha, pico: modeloPico };
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 prepararRenderer(renderer); document.body.style.margin = '0'; document.body.appendChild(renderer.domElement);

@@ -3275,5 +3275,21 @@
   "pruebas": "En la nube: lógica, construcción (tras arreglar su prueba), lo que llevas se ve puesto, lo que llevas en línea, panel de inventario, personaje y el resto bien; fallan jugar en línea, duelo en línea y la demo en el mundo. No comprobado: si esos fallos pasan en main sin este cambio.",
   "capturas": "",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-31T13:52:37+00:00",
+  "fin": "2026-10-31T15:01:20+00:00",
+  "titulo": "Hito de arte: herramienta en la mano al trabajar (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Retomada desde su rama (trabajo/20261031-0858), cortada a las 11:43 sin publicar: unida con main, sin choques en el código.",
+   "En «Personaje», con «Picar» se ve un pico de una mano en la mano derecha (mango de unos 70 cm, punta curvada hacia el mango y azuela detrás, estilo v5) y con «Talar» el hacha; con lo demás, la mano vacía.",
+   "Personaje v32 y demo v69 (en la demo solo cambia «Personaje»; en el mundo aún no se pica).",
+   "Prueba de modelos del pico rota a propósito (MUTAR_PICO=1): falla la de la punta curvada, como debe.",
+   "Aún mal: en PC, con el panel abierto, la cabeza del pico queda medio tapada por el panel; el pico se agarra por el extremo del mango con el puño algo separado (la mano no cierra del todo sobre él)."
+  ],
+  "pruebas": "Batería entera (26 grupos; 25 en el PC de valravnx y la lógica en la nube): todo bien salvo «la demo en el mundo» (andando, el personaje a 0,70 m del suelo) y «jugar en línea» (desde «PC se pone a construir»). Repetidas en la nube: «la demo en el mundo» falló en otras cosas (volver a conectar solo; un fotograma de 81 ms) y repetida en el PC, bien; «jugar en línea» falla igual que en main (anotado en las entradas anteriores; valravnx: «jugar en línea ya no existe»). No comprobado: la prueba nueva del navegador rota a propósito (MUTAR).",
+  "capturas": "capturas/personaje-v32",
+  "estado": "ok"
  }
 ]

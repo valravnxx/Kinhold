@@ -265,7 +265,7 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
       if (!n.isMesh) return;
       const k = cabezaDe(n);
       if (k) n.visible = !!ver[k];
-      if (n.visible) tri += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3;
+      if (n.visible && !n.userData.herramienta) tri += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3;
     });
     resultado.triangulos = tri;
   };

@@ -173,7 +173,7 @@ export function prepararDetalle(mh) {
     const usarJuntas = v.juntar && juntas;
     let tri = 0;
     mh.modelo.traverse(o => {
-      if (!o.isMesh || o === juntas) return;
+      if (!o.isMesh || o === juntas || o.userData.herramienta) return; // lo de la mano (empunar) va aparte
       const ver = o.userData.visibleLogico && !(usarJuntas && juntas.userData.piezas.has(o)) && (v.ojos || !esOjo(o)) && (v.calcos || !esCalco(o));
       o.visible = ver;
       if (ver && o.geometry.index) { o.geometry = geometriaNivel(o, n); tri += o.geometry.index.count / 3; }
@@ -190,10 +190,10 @@ export function prepararDetalle(mh) {
   };
   // las capas, el aspecto, los tintes y la hechura cambian lo que se ve, la forma o el color: antes, cada pieza vuelve a
   // lo que se ve de verdad; después, eso se apunta y se vuelve a aplicar el nivel (la malla de lejos se rehace)
-  const restaurar = () => mh.modelo.traverse(o => { if (o.isMesh && o !== juntas && 'visibleLogico' in o.userData) o.visible = o.userData.visibleLogico; });
+  const restaurar = () => mh.modelo.traverse(o => { if (o.isMesh && o !== juntas && !o.userData.herramienta && 'visibleLogico' in o.userData) o.visible = o.userData.visibleLogico; });
   const cambiado = () => {
     sucio = true;
-    mh.modelo.traverse(o => { if (o.isMesh && o !== juntas) o.userData.visibleLogico = o.visible; });
+    mh.modelo.traverse(o => { if (o.isMesh && o !== juntas && !o.userData.herramienta) o.userData.visibleLogico = o.visible; });
     if (mh.nivel !== 0) listo.then(aplicar);
     else quitarJuntas();
   };

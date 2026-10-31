@@ -326,10 +326,10 @@ console.log('Muebles con el estilo v5');
 console.log('Armas, herramientas y objetos del duelo con el estilo v5');
 {
   const { modeloArma, modeloEscudo, modeloFlecha, modeloPiedra, modeloPoste, modeloDiana } = await import('../src/combate/modelos.js');
-  const { modeloHacha } = await import('../src/juego/personaje.js');
+  const { modeloHacha, modeloPico } = await import('../src/juego/personaje.js');
   const lista = [['Espada larga', modeloArma('espada_larga')], ['Espada de una mano', modeloArma('espada_escudo')], ['Palo', modeloArma('palo')],
     ['Arco', modeloArma('arco')], ['Piedra en la mano', modeloArma('piedras')], ['Escudo', modeloEscudo()], ['Flecha', modeloFlecha()],
-    ['Piedra lanzada', modeloPiedra()], ['Poste de práctica', modeloPoste()], ['Diana', modeloDiana()], ['Hacha de talar', modeloHacha()]];
+    ['Piedra lanzada', modeloPiedra()], ['Poste de práctica', modeloPoste()], ['Diana', modeloDiana()], ['Hacha de talar', modeloHacha()], ['Pico', modeloPico()]];
   // MUTAR_ARMA=1 le añade a la espada larga una caja de color plano (el aspecto inicial): la prueba tiene que fallar
   if (process.env.MUTAR_ARMA) lista[0][1].add(new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.9, 0.01)));
   for (const [nombre, o] of lista) {
@@ -347,6 +347,12 @@ console.log('Armas, herramientas y objetos del duelo con el estilo v5');
   comprobar('Escudo: las tablas llenan el círculo de 0,64 m de lado a lado', Math.abs(at - 0.636) < 0.012 && Math.abs(ht - 0.636) < 0.012, `${r3(at)} × ${r3(ht)} m`);
   const bh = caja(modeloHacha());
   comprobar('Hacha de talar: unos 75 cm de largo, con la cabeza arriba y el filo hacia +z', bh.max.y - bh.min.y > 0.7 && bh.max.y - bh.min.y < 0.85 && bh.max.z > 0.14, `${r3(bh.max.y - bh.min.y)} m, filo a ${r3(bh.max.z)} m`);
+  // el pico: mango de unos 70 cm, la cabeza atravesada (punta delante, azuela detrás) y la punta curvada hacia el mango
+  const bp = caja(modeloPico()), largoP = bp.max.y - bp.min.y;
+  comprobar('Pico: mango de 65–80 cm, punta hacia +z (más de 20 cm) y azuela hacia −z (más de 10 cm)', largoP > 0.65 && largoP < 0.8 && bp.max.z > 0.2 && bp.min.z < -0.1, `${r3(largoP)} m, de ${r3(bp.min.z)} a ${r3(bp.max.z)} m en z`);
+  const puntaP = (() => { let mejor = null; const v = new THREE.Vector3(); const o = modeloPico(); o.updateMatrixWorld(true);
+    o.traverse(m => { if (!m.isMesh) return; const p = m.geometry.attributes.position; for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i).applyMatrix4(m.matrixWorld); if (!mejor || v.z > mejor.z) mejor = v.clone(); } }); return mejor; })();
+  comprobar('Pico: la punta se curva hacia el mango (más baja que el ojo)', puntaP.y < 0.55 - (process.env.MUTAR_PICO ? 1 : 0.03), `punta a ${r3(puntaP.y)} m de alto`);
 }
 
 console.log('Suelos y cimientos de troncos seguidos (se juntan de una)');
