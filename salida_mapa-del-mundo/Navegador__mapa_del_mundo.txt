@@ -1,0 +1,75 @@
+  OK   pc: abre el mundo elegido (semilla 66172, 256 km)
+  OK   pc: el mundo elegido se llama Kinland y su nombre va en el mar bajo la costa sur — Kinland · Semilla 66172 · mundo de 256 × 256 km · tierra 25.
+  OK   pc: hay grandes vetas marcadas — {"hierroPantano": 4, "granHierro": 5, "granCarbon": 3, "hierroVeta": 160, "carbon": 160}
+  OK   pc: se genera el mundo — 3385 ms · 25117 km² de tierra
+  OK   pc: la isla grande está apartada (más de 20 km de mar) — 45 km
+  OK   pc: se dibuja la tierra (relieve) — 23 % del lienzo
+  OK   pc: se dibuja la tierra (biomas) — 23 % del lienzo
+  OK   pc: la leyenda no tapa los botones de arriba
+  OK   pc: la leyenda enseña rocas y vetas
+  OK   pc: las 8 comarcas de Whitholm (A a H)
+  OK   pc: la leyenda explica las comarcas y las zonas
+  OK   pc: ampliado se pintan los lindes de las zonas — 194846 píxeles · {'12': 204, '40': 1695} ms
+  OK   pc: tocar en Whitholm dice su comarca (con su nombre) y su zona — 933 m de altura · Bosque de coníferas · Caliza · Whitholm · 4 °C de media · comarca Breiddal, zona 51-159 · hierro a 7 km, carbón a 7 km · 188.5, 52.5 kmVer de cerca
+  OK   pc: tocar un sitio dice qué hay, con el nombre de la región (y a cuánto está el hierro y el carbón) — 103 m de altura · Encinar · Arenisca · Rudmere · 14 °C de media · hierro a 4 km, carbón a 5 km · 41.5, 216.5 kmVer de cerca
+  OK   pc: hierro y carbón a menos de 25 km del sitio tocado — [4, 5]
+  OK   pc: al tocar sale «Ver de cerca»
+  OK   pc: de cerca se dibuja el terreno y el bosque — {"ms": 1358, "triangulos": 3017650, "arboles": 32028, "especies": {"abeto": 0, "pino": 7819, "abedul": 0, "roble": 3259, "haya": 0, "fresno": 0, "encina": 20950}, "rejilla": 420, "pasoM": 9.5}
+  OK   pc: la vista a pie se pone — [1280, 800]
+  OK   pc: como en el juego, el trozo de cerca tiene rejilla de 1–1,25 m, hierba, piedras y árboles — {"ms": 422, "rejilla": 241, "pasoM": 1, "arboles": 887, "especies": {"abeto": 0, "pino": 416, "abedul": 0, "roble": 230, "haya": 0, "fresno": 0, "encina": 241}, "hierba": 5552, "flores": 216, "matas": 553, "rocas": 50, "paredes": 0, "triangulosDecorado": 429416, "triangulosSuelo": 152448, "trozos": 49, "triangulos": 581864, "ladoTrozosM": 448, "msFotogramaMax": 1.9, "rehechos": 0}
+  OK   pc: sale la ayuda de andar
+  OK   pc: el personaje anda y va pegado al suelo — [15.446855529432739, 88.74665544961555, 138.78098492800294, 138.78098492800294]
+  OK   pc: como en el juego, el suelo va por trozos con rejilla de 1 m cerca — 289 trozos, 264576 triángulos de suelo, cuadro de 1088 m
+  OK   pc: al andar 200 m el decorado se rehace sin parar el juego (ningún fotograma pasa de 60 ms en suelo y decorado) — 3 veces rehecho, fotograma más largo 19.6 ms
+  OK   pc: junto al río se dibuja su agua de cerca — río de 4 m a 1998 m del centro
+  OK   pc: el agua del río se mueve (cambia entre dos capturas con la cámara quieta) — 2.0 % de la imagen
+  OK   pc: al rehacer el trozo de cerca en otro sitio, lo que ya estaba sale igual (árboles, hierba y piedras) — 1 árboles, 366 matas de hierba, 0 piedras en la parte común
+  OK   pc: al salir del juego se quita el trozo de cerca
+  OK   pc: «Volver al mapa» vuelve
+  OK   pc: las notas se abren
+  OK   pc: nada se sale de la pantalla — 1280px
+  OK   pc: botones, leyenda y datos dentro de la pantalla
+  OK   pc: la leyenda no tapa los datos
+  OK   pc: junto al acantilado de costa hay paredes de roca — {'d': 26.307252218504246, 'x': -731.3858619804594, 'z': 27.338821178636678, 'dir': -1.185097316360537}
+  OK   pc: las paredes del acantilado llevan piezas de roca 3D — 1527 piezas · 824738 triángulos
+  OK   pc: el personaje se para al pie de la pared y no la sube — pared, subió 0.0 m
+  OK   pc: el salto de agua de 33 m cae en una lámina casi vertical, con su poza de espuma — 46 puntos de agua cayendo · espuma al pie 0.97
+  OK   pc: también se genera el mundo de 188 km — 13367 km²
+  OK   pc: en inglés no falta ningún texto
+  OK   pc: sin errores en consola
+  OK   movil: abre el mundo elegido (semilla 66172, 256 km)
+  OK   movil: el mundo elegido se llama Kinland y su nombre va en el mar bajo la costa sur — Kinland · Semilla 66172 · mundo de 256 × 256 km · tierra 25.
+  OK   movil: hay grandes vetas marcadas — {"hierroPantano": 4, "granHierro": 5, "granCarbon": 3, "hierroVeta": 160, "carbon": 160}
+  OK   movil: se genera el mundo — 3436 ms · 25117 km² de tierra
+  OK   movil: la isla grande está apartada (más de 20 km de mar) — 45 km
+  OK   movil: se dibuja la tierra (relieve) — 16 % del lienzo
+  OK   movil: se dibuja la tierra (biomas) — 16 % del lienzo
+  OK   móvil: la leyenda empieza escondida (no tapa el mapa)
+  OK   movil: la leyenda no tapa los botones de arriba
+  OK   movil: la leyenda enseña rocas y vetas
+  OK   movil: las 8 comarcas de Whitholm (A a H)
+  OK   movil: la leyenda explica las comarcas y las zonas
+  OK   movil: ampliado se pintan los lindes de las zonas — 115765 píxeles · {'12': 184, '24': 605} ms
+  OK   movil: tocar en Whitholm dice su comarca (con su nombre) y su zona — 933 m de altura · Bosque de coníferas · Caliza · Whitholm · 4 °C de media · comarca Breiddal, zona 51-159 · hierro a 7 km, carbón a 7 km · 188.5, 52.5 kmVer de cerca
+  OK   movil: tocar un sitio dice qué hay, con el nombre de la región (y a cuánto está el hierro y el carbón) — 103 m de altura · Encinar · Arenisca · Rudmere · 14 °C de media · hierro a 4 km, carbón a 5 km · 41.5, 216.5 kmVer de cerca
+  OK   movil: hierro y carbón a menos de 25 km del sitio tocado — [4, 5]
+  OK   movil: al tocar sale «Ver de cerca»
+  OK   movil: de cerca se dibuja el terreno y el bosque — {"ms": 701, "triangulos": 883586, "arboles": 9009, "especies": {"abeto": 0, "pino": 2151, "abedul": 0, "roble": 897, "haya": 0, "fresno": 0, "encina": 5961}, "rejilla": 260, "pasoM": 15.4}
+  OK   movil: la vista a pie se pone — [585, 1266]
+  OK   movil: como en el juego, el trozo de cerca tiene rejilla de 1–1,25 m, hierba, piedras y árboles — {"ms": 193, "rejilla": 151, "pasoM": 1, "arboles": 344, "especies": {"abeto": 0, "pino": 197, "abedul": 0, "roble": 117, "haya": 0, "fresno": 0, "encina": 30}, "hierba": 1973, "flores": 75, "matas": 190, "rocas": 21, "paredes": 0, "triangulosDecorado": 174650, "triangulosSuelo": 78208, "trozos": 25, "triangulos": 252858, "ladoTrozosM": 320, "msFotogramaMax": 3.4, "rehechos": 0}
+  OK   movil: sale la ayuda de andar
+  OK   movil: el personaje anda y va pegado al suelo — [15.596668197843785, 88.80283520026968, 138.79761642930137, 138.79761642930137]
+  OK   movil: como en el juego, el suelo va por trozos con rejilla de 1 m cerca — 49 trozos, 95232 triángulos de suelo, cuadro de 448 m
+  OK   movil: al andar 200 m el decorado se rehace sin parar el juego (ningún fotograma pasa de 60 ms en suelo y decorado) — 6 veces rehecho, fotograma más largo 14.6 ms
+  OK   movil: junto al río se dibuja su agua de cerca — río de 4 m a 1998 m del centro
+  OK   movil: el agua del río se mueve (cambia entre dos capturas con la cámara quieta) — 2.0 % de la imagen
+  OK   movil: al rehacer el trozo de cerca en otro sitio, lo que ya estaba sale igual (árboles, hierba y piedras) — 1 árboles, 366 matas de hierba, 0 piedras en la parte común
+  OK   movil: al salir del juego se quita el trozo de cerca
+  OK   movil: «Volver al mapa» vuelve
+  OK   movil: las notas se abren
+  OK   movil: nada se sale de la pantalla — 390px
+  OK   movil: botones, leyenda y datos dentro de la pantalla
+  OK   movil: la leyenda no tapa los datos
+  OK   movil: sin errores en consola
+
+Resultado: TODO CORRECTO
