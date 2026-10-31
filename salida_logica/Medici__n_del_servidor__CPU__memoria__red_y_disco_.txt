@@ -1,0 +1,16 @@
+Medición con 6 bots durante 14 s
+  OK   una muestra por segundo — 14 muestras
+  OK   hay resumen (sin los primeros segundos) — 3 s
+  OK   la CPU del servidor se mide — {"media":0.9,"p95":1,"max":1}
+  OK   la memoria se mide — {"rssMax":69.6,"heapMax":8.2}
+  OK   el retraso del bucle se mide — {"p99Medio":6.4,"p99Max":6.4,"max":6.6}
+  OK   sale tráfico del servidor — {"salidaKBs":35,"entradaKBs":5.8,"salidaPorJugadorKBs":5.8,"entradaPorJugadorKBs":1,"salidaPorJugadorHoraMB":20.5,"salidaMbps":0.29}
+  OK   la red medida en los sockets cuadra con lo que reciben los bots — 5.8 KB/s por jugador en el servidor, 5.6 en los bots
+  OK   entra el estado de cada uno (unos 10 por segundo) — 1 KB/s
+  OK   el mundo crece en disco — {"crecimientoMBHora":2.1,"alFinalMB":0}
+  OK   siguen todos conectados — 6
+  OK   se mide la bienvenida — 9735 bytes
+  OK   los bots no tienen errores
+  OK   se apunta la máquina
+
+Medición: 13 bien, 0 mal

@@ -1,0 +1,48 @@
+Lo que dice el GDD (apartado 7)
+  OK   lo soltado fuera de tus tierras desaparece pasada 1 hora real
+  OK   troncos y piedras se quedan como pila
+  OK   todo lo de pila existe en el catálogo
+Soltar y que desaparezca (por tiempo transcurrido)
+  OK   soltar el cuchillo: sale de la mano y queda en el suelo a tus pies
+  OK   el objeto guarda quién lo soltó y cuándo
+  OK   a los 59 minutos sigue ahí
+  OK   pasada la hora ya no está
+  OK   no se puede coger lo que ya desapareció
+  OK   limpiar lo quita de la lista
+  OK   dentro de tus tierras no desaparece (ni pasado un año)
+  OK   soltar 2 de 6 sílex: quedan 4 en el hueco y 2 en el suelo
+  OK   soltar de un hueco vacío no hace nada
+Pilas de troncos y piedras
+  OK   la piedra soltada fuera de tus tierras no desaparece
+  OK   otra piedra a menos de 1 m se suma a la pila — 1 objetos
+  OK   más lejos, otra pila
+  OK   los troncos hacen su propia pila, sin mezclarse con la piedra
+  OK   las ramas no hacen pila y desaparecen
+  OK   coger de una pila de 30 piedras sin decir cuánto: lo que cabe (9) y el resto se queda — 9
+  OK   con todo lleno no se coge nada
+  OK   coger 2 a la mano izquierda
+  OK   el tronco largo es enorme: no se coge con las manos
+Coger del suelo
+  OK   lejos (más de 2 m) no se coge
+  OK   cerca se coge: va a la mano y deja el suelo
+  OK   la cesta se suelta con las bayas dentro
+  OK   y se coge a la espalda con las bayas
+  OK   el tronco delgado (grande) no se coge con una mano ocupada
+  OK   lo que no cupo al cargar («a tus pies») cae al suelo
+Acciones con autor
+  OK   ana suelta en sus tierras: no desaparece
+  OK   luis lo coge: va a su inventario, no al de ana
+  OK   luis suelta en las tierras de ana: sí desaparece (no son las suyas)
+  OK   sin autor no vale
+  OK   datos raros no valen
+  OK   sin hora no vale
+  OK   todo queda anotado en el registro, salga bien o no, con su autor — 8
+Guardado con migración
+  OK   se guarda y se carga igual (con lo de dentro de la cesta)
+  OK   los ids nuevos no repiten los cargados
+  OK   versión del formato
+  OK   lo roto, sin versión o de una versión futura se descarta
+  OK   lo desconocido o sin sitio se descarta; lo bueno se queda con su hora
+  OK   un almacén roto no rompe nada
+
+40 bien, 0 mal
