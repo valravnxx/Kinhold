@@ -72,7 +72,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
+          # en el PC de valravnx, sin la caché de GitHub (npm ya guarda lo suyo allí; restaurarla llegó a tardar 10 min)
+          cache: ${{ runner.os == 'Linux' && 'npm' || '' }}
       # en Windows, setup-python necesita permisos de administrador: en el PC de valravnx, el Python que pone
       # herramientas/pc_grafica (para su usuario)
       - uses: actions/setup-python@v5
