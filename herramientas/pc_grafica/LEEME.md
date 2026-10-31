@@ -42,6 +42,10 @@ que abres). Solo ejecutan el código del repositorio de Kinhold.
 
 ## Si algo va mal
 
+- **31 oct: todos los grupos fallaban en segundos** con «bash: command not found». Git para Windows solo pone
+  `Git\cmd` en el PATH, no su bash, y los pasos del flujo van en bash. Arreglado en el propio flujo (un primer paso en
+  PowerShell pone el bash de Git y el Python del usuario en el PATH): en el PC no hay que cambiar nada.
+
 - **Ver el registro** (en la ventana): lo que ha hecho el programa. Lo que dice el programa de GitHub está en
   `%LOCALAPPDATA%\KinholdGrafica\runner.txt`.
 - Para volver a unir el PC (otro PC, o lo quitaste en GitHub): borra la carpeta `%LOCALAPPDATA%\KinholdGrafica\runner`
