@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v61 (nacimiento del pelo y cejas)';
+export const VERSION_DEMO = 'Demo única · v62 (capa de espalda)';
 export const REGISTRO_DEMO = [
+  'v62: en «Personaje» y en el juego, la capa de espalda ya no sale casi negra y lisa: lana sin teñir más clara y pliegues redondos y hondos que se ven también en sombra. Personajes en recursos/personajes/taller-v20/.',
   'v61: en «Personaje» y en el juego, el pelo ya no corta en seco en la frente como un casquete (nace poco a poco y en el borde va pegado a la piel) y las cejas asientan en el arco, más pobladas y sin trozos sueltos. Personajes en recursos/personajes/taller-v19/.',
   "v60: en «Construir», lo que se coloca va sobre el terreno de verdad (valravnx, 30 oct): cada construcción queda a la altura del suelo donde pones su primera pieza, no en la altura 0 de la salida, y cada cimiento alisa el suelo de su casilla a esa altura, con el borde suave, para construir encima en ladera. Las cercas y las empalizadas siguen el suelo de su sitio, y el mojón y los muebles se ponen en el suelo. Al apuntar, el puntero va al punto del terreno que miras (antes, a un plano a la altura 0). En línea pasa por el servidor: la altura va con la pieza y lo alisado queda anotado con su autor.",
   "v60, provisional: cada cimiento alisa un círculo de 1,45 m de radio en el centro de su casilla (tapa sus esquinas) con 1,5 m de borde suave, y lo alisado se queda aunque se desmonte el cimiento. La brocha redonda de nivelar (de 0,5 a 4 m de radio, solo en tu tierra) ya está en la lógica y en el servidor, pero aún no tiene botón en el juego. Lo construido antes en tu navegador sigue a la altura 0.",
