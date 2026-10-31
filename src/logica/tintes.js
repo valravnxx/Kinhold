@@ -36,7 +36,7 @@ export const PRENDAS_TENIBLES = {
   vestido: { nombre: 'Vestido', natural: [128, 112, 90], paleta: 'tela' },
   gambeson: { nombre: 'Gambesón', natural: [172, 156, 122], paleta: 'tela' },
   sobreveste: { nombre: 'Sobreveste', natural: [150, 138, 116], paleta: 'tela' },
-  manto: { nombre: 'Manto', natural: [78, 70, 58], paleta: 'tela' },
+  manto: { nombre: 'Manto', natural: [108, 98, 82], paleta: 'tela' },
   capucha: { nombre: 'Capucha', natural: [92, 76, 58], paleta: 'tela' },
   toca: { nombre: 'Toca', natural: [226, 220, 204], paleta: 'tela' },
   zapatos: { nombre: 'Zapatos', natural: [52, 34, 22], paleta: 'cuero' },
