@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "C:\Users\Usuario\AppData\Local\KinholdGrafica\runner\_work\Kinhold\Kinhold\pruebas\prueba_volver_navegador.py", line 22, in <module>
+    os.symlink(os.path.join(RAIZ, 'docs/recursos'), f'{sitio}/recursos')
+OSError: [WinError 1314] El cliente no dispone de un privilegio requerido: 'C:\\Users\\Usuario\\AppData\\Local\\KinholdGrafica\\runner\\_work\\Kinhold\\Kinhold\\docs/recursos' -> 'C:\\Users\\Usuario\\AppData\\Local\\Temp\\tmpim2wdzmv/recursos'
