@@ -17,7 +17,7 @@ SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_admin'
 os.makedirs(SALIDA, exist_ok=True)
 MUTAR = os.environ.get('MUTAR', '') == '1'
 CLAVE = 'clave-admin-de-prueba-42'
-OTRO = (30.0, 25.0)   # dónde está el jugador simulado (m, relativos a la salida)
+OTRO = (1500.0, 900.0)   # dónde está el jugador simulado (m, relativos a la salida; lejos, para que tu marca no lo tape)
 
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo')

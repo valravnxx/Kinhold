@@ -1501,7 +1501,6 @@
  "Este servidor no tiene clave de admin.": "This server has no admin key.",
  "Petición de admin no válida.": "Invalid admin request.",
  "Ese jugador no está conectado.": "That player is not connected.",
- "{n} conectados además de ti": "{n} connected besides you",
  "Teletransportado (admin).": "Teleported (admin).",
  "Pidiendo al servidor…": "Asking the server…",
  "Clave de admin (la que está puesta en el servidor)": "Admin key (the one set on the server)",
@@ -1512,5 +1511,6 @@
  "Ir": "Go",
  "Depuración (admin)": "Debug (admin)",
  "El panel de admin solo está en el mundo de verdad.": "The admin panel is only in the real world.",
- "Admin": "Admin"
+ "Admin": "Admin",
+ "Conectados además de ti: {n}": "Connected besides you: {n}"
 }

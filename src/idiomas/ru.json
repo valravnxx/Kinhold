@@ -1501,7 +1501,6 @@
  "Este servidor no tiene clave de admin.": "На этом сервере нет ключа администратора.",
  "Petición de admin no válida.": "Неверный запрос администратора.",
  "Ese jugador no está conectado.": "Этот игрок не в сети.",
- "{n} conectados además de ti": "В сети, кроме вас: {n}",
  "Teletransportado (admin).": "Телепортация (администратор).",
  "Pidiendo al servidor…": "Запрос к серверу…",
  "Clave de admin (la que está puesta en el servidor)": "Ключ администратора (тот, что задан на сервере)",
@@ -1512,5 +1511,6 @@
  "Ir": "Идти",
  "Depuración (admin)": "Отладка (администратор)",
  "El panel de admin solo está en el mundo de verdad.": "Панель администратора есть только в настоящем мире.",
- "Admin": "Админ"
+ "Admin": "Админ",
+ "Conectados además de ti: {n}": "В сети, кроме вас: {n}"
 }

@@ -28,6 +28,7 @@ const CSS = `
 #panelAdmin input{font:inherit;width:100%;box-sizing:border-box;margin:4px 0 6px;padding:6px 8px;border-radius:8px;border:1px solid rgba(241,232,216,.25);background:#1e1914;color:#f1e8d8}
 #panelAdmin .pa-pie{display:flex;gap:6px;flex-wrap:wrap}
 #panelAdmin .pa-ayuda{font-size:11.5px;color:#bfb19a;margin:0 0 8px}
+@media (max-width:600px){#panelAdmin{top:auto;bottom:calc(44px + env(safe-area-inset-bottom,0px));max-height:38vh}}
 `;
 
 // mapaRey: el mapa (src/juego/mapa_rey.js); enLinea: la conexión (src/juego/en_linea.js); salida: el sitio de salida
@@ -63,7 +64,7 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
     if (m.que === 'ver') {
       guardar(clave);
       yo = m.yo; jugadores = (m.jugadores || []).filter(j => j.autor !== yo); ultimo = Date.now();
-      ponerEstado(tr('{n} conectados además de ti', { n: jugadores.length }));
+      ponerEstado(tr('Conectados además de ti: {n}', { n: jugadores.length }));
       // la lista se rehace solo si ha cambiado (así un botón no se cambia por otro mientras se pulsa)
       const h = JSON.stringify(jugadores.map(j => [j.autor, Math.round(j.x), Math.round(j.z)]));
       if (h !== huellaLista || !raiz.querySelector('ul')) { huellaLista = h; pintarPanel(); }
