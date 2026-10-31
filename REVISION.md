@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (07:23 UTC) — por el chat: las pruebas en la gráfica de su PC
+valravnx: «créame un programa para poder usar tú la gráfica de mi PC en tus procesos cuando yo lo permita (noches sobre todo); que lo que hagan tus tests sea: comprobar si tengo el programa encendido, si sí, usarlo para los testeos, si no, ir a GitHub Actions; así no me usas el PC mientras juego pero sí cuando no estoy en casa». → Tarea del chat en «Infraestructura»: un programa para Windows que, mientras está abierto y con permiso, deja a GitHub Actions usar su PC (máquina propia de GitHub, «self-hosted runner»); las pruebas miran primero si está encendido.
+
 ### 31 oct 2026 (05:00 UTC) — por el chat: volver donde lo dejaste
 valravnx: «cuando salgo del juego y vuelvo a entrar, no aparezco donde desconecté». El chat le explicó las dos causas (la ficha que le reconoce vive en la pestaña, y en línea todos aparecen en la salida común porque el servidor no guarda la posición). valravnx: «haz las dos». → Tarea del chat en «El juego en el mundo de verdad»: la ficha dura aunque se cierre la pestaña, y el servidor guarda dónde estaba cada uno y le pone ahí al volver.
 
