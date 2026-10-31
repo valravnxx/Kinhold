@@ -1012,7 +1012,9 @@
     },
     {
      "nombre": "Toca en el móvil (visto en la revisión del 31 oct): con la calidad ligera el pelo asoma por la toca y la cabeza sale a manchas blancas y oscuras; en PC se ve bien",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T16:57:43+00:00",
+     "rama": "trabajo/20261031-1657"
     },
     {
      "nombre": "Cejas y cuello del hombre (visto en la revisión del 31 oct): de cerca las cejas son trazos gruesos en bloque y entre la barba y el cuello queda una franja clara cortada",
