@@ -44,7 +44,11 @@ que abres). Solo ejecutan el código del repositorio de Kinhold.
 
 - **31 oct: todos los grupos fallaban en segundos** con «bash: command not found». Git para Windows solo pone
   `Git\cmd` en el PATH, no su bash, y los pasos del flujo van en bash. Arreglado en el propio flujo (un primer paso en
-  PowerShell pone el bash de Git y el Python del usuario en el PATH): en el PC no hay que cambiar nada.
+  PowerShell pone el bash de Git y el Python del usuario en el PATH): en el PC no hay que cambiar nada. Con eso,
+  salieron cuatro cosas que solo pasan en Windows o con tarjeta, también arregladas: el navegador «nuevo» pedía
+  favicon.ico (ahora va el de la nube), la cola del servidor de páginas de las pruebas rechazaba conexiones, los enlaces
+  simbólicos piden administrador (se hacen uniones de carpeta) y dos pruebas iban a destiempo a velocidad real
+  (combate y construcción). La batería entera en su PC: 25 grupos en unos 40 min, todos bien salvo «jugar en línea».
 
 - **Ver el registro** (en la ventana): lo que ha hecho el programa. Lo que dice el programa de GitHub está en
   `%LOCALAPPDATA%\KinholdGrafica\runner.txt`.

@@ -102,9 +102,9 @@
     },
     {
      "nombre": "Arreglar las pruebas en la gráfica del PC de valravnx (valravnx, 31 oct): fallaban todas al empezar («bash: command not found»)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T11:09:01+00:00",
-     "rama": "trabajo/20261031-1109-grafica"
+     "fin": "2026-10-31T13:25:55+00:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
