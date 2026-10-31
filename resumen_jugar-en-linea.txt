@@ -1,0 +1,43 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2347 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2105 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1696 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2173 KB
+
+== Construir demo única
+      1939 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2670 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1691 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2146 KB
+dist/kinhold_trozos.html 1693 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: jugar en línea (dos páginas y un servidor)
+playwright._impl._errors.TimeoutError: Page.goto: Timeout 180000ms exceeded.
+Call log:
+  - navigating to "http://127.0.0.1:58925/jugar/demo/prueba.html?modo=construir&llano=1&hilos=1&servidor=ws://127.0.0.1:1", waiting until "domcontentloaded"
+
+!! FALLA: python3 pruebas/prueba_en_linea_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/en_linea
+
+HAY FALLOS
+tardó 1108 s
