@@ -1,0 +1,20 @@
+Capa en docs/recursos/personajes/taller-v19
+  OK   hombre: hay capa
+  OK   hombre: tinte de la ropa, prenda «manto» — {"tinte":"ropa","ref":0.8,"prenda":"manto"}
+  OK   hombre: con su falda
+  OK   hombre: con broche
+  OK   hombre: por detrás cae, no se mete en la cintura — atrás en el pecho 16.7 cm, en la cintura 20.8 cm
+  OK   hombre: abajo, al menos tan ancha como en los hombros — hombros 59.3 cm, bajo 78.7 cm
+  OK   hombre: larga (más de 90 cm de alto) — 115.2 cm
+  OK   hombre: abierta por delante (nada delante del pecho a media altura) — 0 puntos
+  OK   hombre: pliegues hondos por detrás (al menos 6,5 cm a 30 cm del bajo) — 7.8 cm
+  OK   mujer: hay capa
+  OK   mujer: tinte de la ropa, prenda «manto» — {"tinte":"ropa","ref":0.8,"prenda":"manto"}
+  OK   mujer: con su falda
+  OK   mujer: con broche
+  OK   mujer: por detrás cae, no se mete en la cintura — atrás en el pecho 14.8 cm, en la cintura 21.6 cm
+  OK   mujer: abajo, al menos tan ancha como en los hombros — hombros 50.5 cm, bajo 68.7 cm
+  OK   mujer: larga (más de 90 cm de alto) — 99.6 cm
+  OK   mujer: abierta por delante (nada delante del pecho a media altura) — 0 puntos
+  OK   mujer: pliegues hondos por detrás (al menos 6,5 cm a 30 cm del bajo) — 7.3 cm
+Capa: 18 bien, 0 mal
