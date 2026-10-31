@@ -1011,10 +1011,16 @@
      "fin": "2026-10-31T15:01:20+00:00"
     },
     {
+     "nombre": "Toca en el móvil (visto en la revisión del 31 oct): con la calidad ligera el pelo asoma por la toca y la cabeza sale a manchas blancas y oscuras; en PC se ve bien",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Cejas y cuello del hombre (visto en la revisión del 31 oct): de cerca las cejas son trazos gruesos en bloque y entre la barba y el cuello queda una franja clara cortada",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
-     "inicio": "2026-10-31T15:04:26+00:00",
-     "rama": "trabajo/20261031-1504"
+     "estado": "pendiente"
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «han roto las manos de todos los personajes» y prendas rotas): desde taller-v9 la piel se diezma con la cara protegida pero con la proporción de toda la piel, así que las manos se quedaban en una tira; diezmar solo lo que se puede diezmar, rehacer los personajes y repasar todas las prendas de cerca",

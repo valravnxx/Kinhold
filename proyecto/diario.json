@@ -3308,5 +3308,21 @@
   "pruebas": "Batería entera en la nube (pruebas_nube.mjs): todos los grupos correctos, PC y móvil; el mapa del rey además en inglés. Prueba nueva de lógica del mapa y del sitio de la ciudad, rotas a propósito con MUTAR.",
   "capturas": "capturas/demo-v70",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T15:04:26+00:00",
+  "fin": "2026-10-31T16:16:01+00:00",
+  "titulo": "Hito de arte: revisión completa; dos arreglos antes de darlo por terminado (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Batería entera en la nube sobre main (24 grupos, 60 min): todos correctos.",
+   "pruebas_nube.mjs falló al pasar los grupos a la nube cuando el PC de valravnx no los cogió: el nombre de la rama del pedido pasaba de 255 bytes. Se lanzó con SOLO_NUBE=1; el arreglo ya está en dos ramas del chat, sin unir aún.",
+   "Capturas miradas en PC y móvil (cara, espalda, picar, la demo y el mundo). Ya bien lo de la revisión del 30 oct: la capa de espalda tiene pliegues y color, el pico va en la mano al picar, la toca en PC tiene el borde limpio y el pelo no corta en seco.",
+   "Aún mal: en el móvil (calidad ligera) el pelo asoma por la toca y la cabeza sale a manchas; de cerca, las cejas del hombre son trazos gruesos en bloque y entre la barba y el cuello queda una franja clara cortada. Quedan como dos tareas del hito, antes de la revisión final, que vuelve a pendiente.",
+   "Sin versión nueva (no hay cambios jugables); las capturas de la revisión, en capturas/revision-arte-31oct."
+  ],
+  "pruebas": "En la nube: 24 de 24 grupos correctos",
+  "capturas": "capturas/revision-arte-31oct",
+  "estado": "ok"
  }
 ]
