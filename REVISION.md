@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (11:09 UTC) — por el chat: las pruebas en la gráfica del PC fallan siempre
+valravnx: «revisa cómo arreglar el programa que me has hecho para usar mi gráfica en GitHub Actions, da error todo el tiempo en tus pruebas, vamos a dedicarnos a ello un momento». → Tarea del chat en «Infraestructura». Visto en GitHub: desde las 09:07 todos los grupos que cogía su PC fallaban en el primer paso con «bash: command not found» (Git para Windows solo pone `Git\cmd` en el PATH, no su bash).
+
 ### 31 oct 2026 (10:05 UTC) — por el chat: tejados pisables y menú de Usar
 valravnx: «arreglo relativamente rápido: los tejados deben poder ser pisables para poder construir tejados con un solo andamio, por ahora los atraviesas y caes, y para afinar sobre el botón de usar, poder hacer clic derecho y seleccionar qué quieres usar si es que hay varias opciones en la zona». → Tarea del chat en «El juego en el mundo de verdad».
 
