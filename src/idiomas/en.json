@@ -1435,5 +1435,7 @@
  "Talar el árbol": "Fell the tree",
  "Trocear: {c}": "Cut up: {c}",
  "Coger del suelo: {n} × {c}": "Pick up: {n} × {c}",
- "Recoger: {c}": "Gather: {c}"
+ "Recoger: {c}": "Gather: {c}",
+ "Ahí no hay nada que usar a tu alcance.": "There is nothing within your reach to use there.",
+ "<kbd>W A S D</kbd> moverse · <kbd>Mayús</kbd> correr · <kbd>Q</kbd>/<kbd>E</kbd> o rueda pulsada: girar cámara · rueda: zoom · clic derecho en algo: elegir qué usar": "<kbd>W A S D</kbd> move · <kbd>Shift</kbd> run · <kbd>Q</kbd>/<kbd>E</kbd> or pressed wheel: turn camera · wheel: zoom · right-click on something: choose what to use"
 }

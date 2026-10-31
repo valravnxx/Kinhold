@@ -1435,5 +1435,7 @@
  "Talar el árbol": "Срубить дерево",
  "Trocear: {c}": "Разделать: {c}",
  "Coger del suelo: {n} × {c}": "Поднять: {n} × {c}",
- "Recoger: {c}": "Собрать: {c}"
+ "Recoger: {c}": "Собрать: {c}",
+ "Ahí no hay nada que usar a tu alcance.": "Там нет ничего в пределах досягаемости.",
+ "<kbd>W A S D</kbd> moverse · <kbd>Mayús</kbd> correr · <kbd>Q</kbd>/<kbd>E</kbd> o rueda pulsada: girar cámara · rueda: zoom · clic derecho en algo: elegir qué usar": "<kbd>W A S D</kbd> идти · <kbd>Shift</kbd> бежать · <kbd>Q</kbd>/<kbd>E</kbd> или нажатое колёсико: поворот камеры · колёсико: масштаб · правый клик по предмету: выбрать, что использовать"
 }

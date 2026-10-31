@@ -781,12 +781,18 @@ addEventListener('keyup', (e) => {
 
 // ---------------- Entrada: ratón y táctil ----------------
 const punteros = new Map(); // pointerId -> {x,y,x0,y0,t0}
-let arrastrando = false, pinzaDist = 0;
+let arrastrando = false, pinzaDist = 0, dedoQuieto = null;
 lienzo.addEventListener('contextmenu', e => e.preventDefault());
 lienzo.addEventListener('pointerdown', (e) => {
   lienzo.setPointerCapture(e.pointerId);
   punteros.set(e.pointerId, { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, t0: performance.now(), boton: e.button });
   arrastrando = false;
+  // en táctil, el dedo quieto medio segundo sobre algo abre el menú de usar
+  clearTimeout(dedoQuieto);
+  if (e.pointerType !== 'mouse' && punteros.size === 1 && estado.modo === 'mover' && !document.body.classList.contains('combate')) {
+    const q = punteros.get(e.pointerId);
+    dedoQuieto = setTimeout(() => { if (!arrastrando && punteros.size === 1) { q.menu = true; abrirMenuUsar(q.x, q.y); } }, 500);
+  }
   if (punteros.size === 2) {
     const [a, b] = [...punteros.values()];
     pinzaDist = Math.hypot(a.x - b.x, a.y - b.y);
@@ -810,7 +816,9 @@ lienzo.addEventListener('pointermove', (e) => {
     cam.yaw -= dx * 0.004;
     return;
   }
-  const rotarCamara = e.pointerType !== 'mouse' || p.boton === 2 || p.boton === 1 || (p.boton === 0 && estado.modo === 'mover');
+  if (arrastrando) clearTimeout(dedoQuieto);
+  // el botón derecho ya no gira la cámara: es para usar lo que tocas (la rueda pulsada gira; valravnx, 31 oct)
+  const rotarCamara = e.pointerType !== 'mouse' || p.boton === 1 || (p.boton === 0 && estado.modo === 'mover');
   if (arrastrando && rotarCamara) {
     cam.yaw -= dx * 0.006;
     cam.pitch = THREE.MathUtils.clamp(cam.pitch + dy * 0.004, 0.06, 1.35); // hasta casi a ras de suelo (valravnx, 30 oct)
@@ -821,7 +829,11 @@ lienzo.addEventListener('pointerup', (e) => {
   const p = punteros.get(e.pointerId);
   punteros.delete(e.pointerId);
   if (punteros.size < 2) pinzaDist = 0;
+  clearTimeout(dedoQuieto);
   if (!p || arrastrando) return;
+  if (p.menu) return; // el dedo quieto ya abrió el menú de usar
+  // clic derecho sin arrastre: el menú de usar lo que hay ahí
+  if (e.pointerType === 'mouse' && p.boton === 2) { if (estado.modo === 'mover' && !document.body.classList.contains('combate')) abrirMenuUsar(e.clientX, e.clientY); return; }
   // toque o clic sin arrastre
   if (e.pointerType === 'mouse' && p.boton !== 0) return;
   if (estado.modo === 'desmontar') {
@@ -1203,34 +1215,52 @@ function usar() {
   }
   usarInteractivo(it);
 }
-// Menú de Usar (valravnx, 31 oct: «poder hacer clic derecho y seleccionar qué quieres usar si es que hay varias
-// opciones en la zona»): clic derecho en el botón Usar o, en el móvil, dejarlo pulsado. Lista todo lo que está al
-// alcance, cada cosa con lo mismo que haría Usar con ella; Usar a secas sigue haciendo lo primero de siempre.
+// Clic derecho en lo que quieras usar (valravnx, 31 oct: «poder hacer clic derecho y seleccionar qué quieres usar si
+// es que hay varias opciones en la zona… clicando con clic derecho en lo que quieras usar: pilla lo que toques y muy
+// cercanos»). En el móvil, dejando el dedo quieto encima. Sale un menú, junto al puntero, con lo que está al alcance
+// (como Usar) y además bajo el puntero o muy cerca de él; cada cosa hace lo mismo que haría Usar con ella. Usar a
+// secas (F o el botón) sigue haciendo lo primero de siempre.
 function opcionesUsar() {
   const ops = [], nombrePieza = p => tr(PIEZAS[p.tipo].nombre);
-  for (const o of obrasCercanas()) ops.push({ texto: tr('Obra: {p}', { p: nombrePieza(o.p) }), hacer: () => usarObra(o) });
+  for (const o of obrasCercanas()) ops.push({ texto: tr('Obra: {p}', { p: nombrePieza(o.p) }), pos: centroMundo(o.c, o.p), y: oyDe(o.c) + o.p.k * ALTURA, hacer: () => usarObra(o) });
   for (const it of interactivosCercanos()) {
     const p = it.p, n = nombrePieza(p);
     const texto = it.tipo === 'fuego' ? (p.apagado ? tr('Encender: {p}', { p: n }) : tr('Apagar: {p}', { p: n }))
       : it.tipo === 'puerta' ? (p.abierta ? tr('Cerrar: {p}', { p: n }) : tr('Abrir: {p}', { p: n }))
       : (p.k === pj.k && !(adarveDeEscalera(it.c, p, false) && pj.k !== 0) ? tr('Subir: {p}', { p: n }) : tr('Bajar: {p}', { p: n }));
-    ops.push({ texto, hacer: () => usarInteractivo(it) });
+    const cl = centroLocal(p);
+    ops.push({ texto, pos: localAMundo(it.c, cl.lx, cl.lz), y: oyDe(it.c) + p.k * ALTURA, hacer: () => usarInteractivo(it) });
   }
   const a = arbolCercano();
-  if (a) ops.push({ texto: tr('Talar el árbol'), hacer: () => hachaEnMano(inventario()) ? empezarTala(a) : mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true) });
+  if (a) ops.push({ texto: tr('Talar el árbol'), pos: a, alto: 3, hacer: () => hachaEnMano(inventario()) ? empezarTala(a) : mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true) });
   if (pj.k === 0) {
     const tronco = troncoCercano();
-    if (tronco && hachaEnMano(inventario())) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), hacer: () => empezarTroceo(tronco) });
-    for (const so of sueloObjetos.cercanos(pj.x, pj.z)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), hacer: () => cogerDelSuelo(so) });
-    for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) }), hacer: () => recoger(rc) });
+    if (tronco && hachaEnMano(inventario())) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
+    for (const so of sueloObjetos.cercanos(pj.x, pj.z)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
+    for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) }), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
   }
   return ops;
 }
 const menuUsar = $('menuUsar');
 function cerrarMenuUsar() { menuUsar.hidden = true; menuUsar.innerHTML = ''; }
-function abrirMenuUsar() {
-  const ops = opcionesUsar();
-  if (!ops.length) { cerrarMenuUsar(); mostrarAviso(t('nadaQueUsar')); return; }
+const CERCA_DEL_PUNTERO = 1.3, PX_DEL_PUNTERO = 48;
+// lo que hay bajo el puntero (cx, cy) o muy cerca: a menos de 1,3 m del punto que toca (una pieza o el suelo) o, en la
+// pantalla, a menos de 48 px de la cosa (para lo que tiene altura, como un árbol, que el rayo atraviesa por la copa)
+function opcionesEn(cx, cy) {
+  const hit = piezaBajo(cx, cy), suelo = hit ? null : sueloBajoRayo(rayoDesde(cx, cy).ray);
+  const punto = hit ? hit.point : suelo;
+  const r = renderer.domElement.getBoundingClientRect(), v = new THREE.Vector3();
+  const enPantalla = (x, y, z) => { v.set(x, y, z).project(camara); return v.z < 1 ? Math.hypot((v.x + 1) / 2 * r.width + r.left - cx, (1 - v.y) / 2 * r.height + r.top - cy) : Infinity; };
+  return opcionesUsar().map(op => {
+    const y0 = op.y ?? sueloEn(op.pos.x, op.pos.z);
+    const dMundo = punto ? Math.hypot(op.pos.x - punto.x, op.pos.z - punto.z) : Infinity;
+    const dPx = Math.min(...[0, 0.5, 1].map(f => enPantalla(op.pos.x, y0 + f * (op.alto ?? 1.6), op.pos.z)));
+    return { op, d: Math.min(dMundo / CERCA_DEL_PUNTERO, dPx / PX_DEL_PUNTERO) };
+  }).filter(o => o.d <= 1).sort((a, b) => a.d - b.d).map(o => o.op);
+}
+function abrirMenuUsar(cx, cy) {
+  const ops = window.__menuUsarSinPuntero ? opcionesUsar() : opcionesEn(cx, cy);  // __menuUsarSinPuntero: solo para comprobar que la prueba falla
+  if (!ops.length) { cerrarMenuUsar(); mostrarAviso(tr('Ahí no hay nada que usar a tu alcance.')); return; }
   menuUsar.innerHTML = '';
   for (const op of ops.slice(0, 8)) {
     const b = document.createElement('button');
@@ -1240,6 +1270,10 @@ function abrirMenuUsar() {
   }
   menuUsar.hidden = false;
   menuUsar.dataset.x = pj.x; menuUsar.dataset.z = pj.z;
+  // junto al puntero, sin salirse de la pantalla
+  const w = menuUsar.offsetWidth, h = menuUsar.offsetHeight;
+  menuUsar.style.left = Math.max(6, Math.min(innerWidth - w - 6, cx + 10)) + 'px';
+  menuUsar.style.top = Math.max(6, Math.min(innerHeight - h - 6, cy - 10)) + 'px';
 }
 // puerta, trampilla, chimenea, escalera o andamio
 function usarInteractivo(it) {
@@ -1797,19 +1831,9 @@ $('btnGirar').onclick = girar;
 $('btnColocar').onclick = colocar;
 $('btnSube').onclick = () => cambiarPlanta(1);
 $('btnBaja').onclick = () => cambiarPlanta(-1);
-$('btnUsar').onclick = () => { if (pulsadoLargo) { pulsadoLargo = false; return; } cerrarMenuUsar(); usar(); };
-$('btnUsar').addEventListener('contextmenu', (e) => { e.preventDefault(); abrirMenuUsar(); });
-// en el móvil, dejar pulsado Usar abre el menú (y ya no hace lo de Usar al soltar)
-let pulsadoLargo = false, temporizadorUsar = null;
-$('btnUsar').addEventListener('pointerdown', (e) => {
-  pulsadoLargo = false;
-  if (e.pointerType === 'mouse') return;
-  clearTimeout(temporizadorUsar);
-  temporizadorUsar = setTimeout(() => { pulsadoLargo = true; abrirMenuUsar(); }, 450);
-});
-for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) $('btnUsar').addEventListener(ev, () => clearTimeout(temporizadorUsar));
+$('btnUsar').onclick = () => { cerrarMenuUsar(); usar(); };
 // se cierra al pulsar fuera, con Escape o al alejarse
-addEventListener('pointerdown', (e) => { if (!menuUsar.hidden && !menuUsar.contains(e.target) && e.target !== $('btnUsar')) cerrarMenuUsar(); });
+addEventListener('pointerdown', (e) => { if (!menuUsar.hidden && !menuUsar.contains(e.target)) cerrarMenuUsar(); });
 addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarMenuUsar(); });
 $('btnConfirmar').onclick = confirmarDesmontaje;
 $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltado(); estado.pendienteDesmontar = null; mostrarAviso(''); };
@@ -2082,7 +2106,7 @@ window.__kinhold = {
   fijarSubida(t) { if (estado.obrando) estado.obrando.desde = performance.now() + 1e9; if (rampa) { rampa.t = rampa.meta = t; moverRampa(0); } },
   seguirSubida() { if (estado.obrando) estado.obrando.desde = performance.now(); },
   interactivoCercano() { const o = interactivoCercano(); return o && { c: o.c.id, key: o.key, tipo: o.tipo }; },
-  opcionesUsar: () => opcionesUsar().map(o => o.texto), abrirMenuUsar, menuUsar: () => menuUsar.hidden ? null : [...menuUsar.children].map(b => b.textContent),
+  opcionesUsar: () => opcionesUsar().map(o => o.texto), abrirMenuUsar, cerrarMenuUsar, opcionesEn: (cx, cy) => opcionesEn(cx, cy).map(o => o.texto), menuUsar: () => menuUsar.hidden ? null : [...menuUsar.children].map(b => b.textContent),
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; sueloObjetos.suelo.objetos = []; sueloObjetos.refrescar(); talaV.tala.estado = {}; talaV.refrescar(); troceo.estado = {}; reconstruir(); ropaDelVisor(); vestir(); pintarLlevas(); panelInventario.pintar(); },
   get registroAcciones() { return registroAcciones; },
   accionInventario, get inventario() { return inventario(); }, panelInventario,
