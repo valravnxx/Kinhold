@@ -1,11 +1,15 @@
 # Kinhold — en el PC de valravnx (pruebas con su tarjeta gráfica): Python carga este archivo solo al empezar si su
 # carpeta está en PYTHONPATH (lo pone .github/workflows/pruebas.yml, y solo en su PC). Cambia, sin tocar las pruebas,
-# cómo abren el navegador: quita el «--use-gl=swiftshader» (dibujar sin tarjeta) y pone lo que eligió
+# cómo abren el navegador (y la cola del servidor de páginas, más larga): quita el «--use-gl=swiftshader» (dibujar sin tarjeta) y pone lo que eligió
 # herramientas/pc_grafica/elegir_gpu.py para usar la de verdad. En la nube (y en las sesiones) no hace nada.
 import os, json
 
 _args = os.environ.get('KINHOLD_GPU_ARGS')
 if _args:
+    # las pruebas sirven las páginas con un socketserver.TCPServer de una sola cola de 5: en Linux, lo que no cabe
+    # espera; en Windows, se rechaza (ERR_CONNECTION_REFUSED al pedir muchas imágenes a la vez: la web, 31 oct)
+    import socketserver
+    socketserver.TCPServer.request_queue_size = 128
     try:
         from playwright.sync_api._generated import BrowserType
     except Exception:

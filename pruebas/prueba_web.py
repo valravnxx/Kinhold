@@ -227,17 +227,12 @@ with sync_playwright() as p:
         # abrir un juego desde la tarjeta
         if not movil:
             pg.click('nav button[data-s=jugar]')
-            n0 = len(err)
             with pg.expect_navigation():
                 pg.locator('#listaJuegos [data-juego]').first.click()
             pg.wait_for_timeout(2500)
             # la primera tarjeta es la demo única, que abre su menú (sin lienzo hasta elegir una parte)
             comprobar('el botón Jugar abre el juego', 'jugar/' in pg.url and (pg.locator('canvas').count() >= 1 or pg.locator('#demoMenu a.parte').count() >= 3), pg.url)
             pg.screenshot(path=f'{SALIDA}/{nombre}_7_juego_abierto.png')
-            # lo que diga la consola del juego no es de la web: el juego, siempre en línea, busca su servidor (que aquí
-            # no hay) y, con tarjeta gráfica, llega a intentarlo en esos 2,5 s (en el PC de valravnx, 31 oct). Sus
-            # errores los miran las pruebas del juego.
-            del err[n0:]
         # sin nadie trabajando: «ahora mismo» lo dice, y ninguna tarea sale en proceso
         ctx.unroute('https://raw.githubusercontent.com/**')
         servir_github(ctx, {'A': None, 'B': None})
