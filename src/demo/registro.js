@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v74 (el tronco al hombro)';
+export const VERSION_DEMO = 'Demo única · v75 (cejas y cuello del hombre)';
 export const REGISTRO_DEMO = [
+  'v75: en «Personaje» y en el juego, de cerca las cejas ya no salen en bloques gruesos y la barba corta baja por el cuello hasta la ropa, sin la franja clara de antes. Personajes en recursos/personajes/taller-v21/.',
   'v74: con un tronco corto al hombro, el personaje lo sujeta con la mano derecha por encima y va algo inclinado; quieto y andando (lo ven también los demás). Animaciones hechas en el taller a partir de andar y estar quieto (recursos/personajes/taller-carga-v1/, unos 76 KB por cuerpo); también la de arrastrar, para la rastra. En «Personaje», «Más animaciones»: «Al hombro», «Al hombro, quieto» y «Arrastrar».',
   'v74: el tronco al hombro frena (valravnx, 31 oct): lo pesado que llevas suelto, en las manos o al hombro, baja la velocidad por su peso; el tronco corto (25 kg), al 90 %. Antes, solo al hombro, apenas se notaba (un 1 %).',
   'v74, provisional: lo que frena el peso baja en línea recta con los kilos de lo que llevas en las manos y al hombro, hasta el 80 % con 50 kg; se toma lo que frene más entre eso y lo lleno que vas (no se suman), así que cargado al máximo en todo sigue siendo el 80 % (GDD). Corriendo con el tronco al hombro se usa la misma animación de andar, más deprisa.',
