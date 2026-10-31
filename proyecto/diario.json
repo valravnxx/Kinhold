@@ -3026,5 +3026,24 @@
   ],
   "pruebas": "En la nube, la batería entera (23 grupos): bien salvo «jugar en línea» y «duelo en línea» (exentos hasta la fase 2) y lógica, que falló porque faltaban en inglés y en ruso los nombres de los objetos nuevos; arreglado. Tras unir main, repetidos lógica, panel de inventario, demo única y recoger del suelo: bien.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T03:53:07+00:00",
+  "fin": "2026-10-31T08:19:13+00:00",
+  "titulo": "Hito de arte: capa de espalda (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Mirado en el juego y en el taller: de espalda la capa salía casi negra (la lana sin teñir del manto era muy oscura) y lisa: los pliegues, de unos 7 cm, salían a trozos porque la malla tenía una columna cada 5 grados, y en sombra solo los dibuja la tela pintada, que apenas los marcaba. La vista «Espalda» además cortaba por los muslos, sin el bajo, donde están los pliegues.",
+   "Capa nueva (taller-v20): pliegues redondos de unos 14 cm, más hondos (casi 10 cm de lomo a valle a 30 cm del bajo) y que empiezan más arriba; la malla con 128 columnas en lugar de 72; el fondo de cada pliegue, más oscuro pintado en la tela, y el lomo más claro.",
+   "La lana sin teñir del manto, más clara (de 78, 70, 58 a 108, 98, 82): sigue apagada pero ya no casi negra.",
+   "La vista «Espalda» del personaje, de cuerpo entero (se ve el bajo de la capa).",
+   "Personaje v31 y demo v64 (la v62 la publicó antes el chat, con el agua y el nado, y la v63 el carril A).",
+   "Prueba de la capa ampliada: pliegues de la espalda anchos y marcados (9 cm o más de lomo a valle y como mucho 3 lomos en 40 cm) y la sombra de los pliegues pintada en la tela (fondo a lo sumo al 70 % del lomo); con MUTAR=1 mira la taller-v19 y falla (4 lomos y 7 cm; 80 %). La prueba de construir a la altura del suelo copiaba solo las taller-v1x y con la v20 daba 404: ahora copia todas.",
+   "La sesión pasó de las 4 horas (tres baterías enteras en la nube de una hora) y, mientras, otra sesión del carril B retomó la misma rama creyéndola parada; se unió lo suyo (solo unir main) antes de publicar.",
+   "Aún mal: de espalda en el móvil el panel de opciones tapa la mitad de abajo del personaje (ya pasaba); por el costado, entre la capa y el brazo, se ve algo de la túnica por una rendija; la malla de la capa sube unos 3000 triángulos en el personaje de cerca."
+  ],
+  "pruebas": "En la nube, la batería entera (23 grupos): bien salvo jugar en línea y duelo en línea (exentos hasta la fase 2). Tras unir main (agua y nado), la batería entera otra vez: lógica (presencia con lag simulado, paso mayor 2,78×) y combate (pantalla de victoria) fallaron una vez y, repetidos en la nube, pasaron; jugar en línea, exento. Tras unir otra vez main (lo que llevas por el servidor, del carril A; demo v63), repetidos lógica y demo única: bien; el personaje no se esperó (había pasado dos veces con estos personajes).",
+  "capturas": "capturas/personaje-v31",
+  "estado": "ok"
  }
 ]

@@ -5,12 +5,7 @@
   "hito": "equipo",
   "rama": "trabajo/20261031-0726"
  },
- "B": {
-  "inicio": "2026-10-31T07:53:38+00:00",
-  "tarea": "Capa de espalda (visto en la revisión del 30 oct): sale casi negra y lisa, sin pliegues a la vista",
-  "hito": "arte",
-  "rama": "trabajo/20261031-0353"
- },
+ "B": null,
  "chat:trabajo/20261031-0500-volver": {
   "inicio": "2026-10-31T05:00:43+00:00",
   "tarea": "Volver donde lo dejaste (valravnx, 31 oct): el navegador recuerda quién eres aunque cierres la pestaña, y el servidor guarda dónde estaba cada jugador al salir y lo pone ahí al volver a entrar (un wipe lo borra)",
