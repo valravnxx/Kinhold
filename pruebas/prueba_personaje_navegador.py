@@ -156,9 +156,9 @@ with sync_playwright() as p:
             ids = pg.evaluate(f"(() => {{ const pj = {E}.diag().pj; return [pj.clips.length, Object.keys(pj.acciones).filter(k => pj.acciones[k] && k !== pj.acciones[k].getClip().name)]; }})()")
             n_clips = ids[0]
             if os.environ.get('MUTAR'): n_clips = 9
-            comprobar(f'taller propio ({sexo}): las 39 animaciones extra se cargan', n_clips == 9 + 39, f'{n_clips} clips')
+            comprobar(f'taller propio ({sexo}): las 39 animaciones extra y las 3 de cargar del taller se cargan', n_clips == 9 + 39 + 3, f'{n_clips} clips')
             botones = pg.evaluate("[...document.querySelectorAll('#anims-extra [data-modo]')].map(b => b.dataset.modo)")
-            comprobar(f'taller propio ({sexo}): botones de las 39 extra en «Más animaciones»', len(botones) == 39, str(len(botones)))
+            comprobar(f'taller propio ({sexo}): botones de las 39 extra y las 3 de cargar en «Más animaciones»', len(botones) == 39 + 3, str(len(botones)))
             HUESOS = ['pelvis', 'head', 'hand_l', 'hand_r', 'foot_l', 'foot_r', 'lowerarm_l', 'lowerarm_r']
             pose = lambda: pg.evaluate(f"{HUESOS}.map(n => {E}.hueso(n))")
             quietas, rotas, fotos = [], [], []

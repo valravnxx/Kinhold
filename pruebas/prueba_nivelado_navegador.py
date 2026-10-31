@@ -18,7 +18,7 @@ os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 for c in os.listdir(os.path.join(RAIZ, 'docs/recursos/personajes')):
     o = os.path.join(RAIZ, f'docs/recursos/personajes/{c}')
-    if os.path.isdir(o) and (c in ('v1', 'taller-anim-v1') or re.fullmatch(r'taller-v\d+', c)): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
+    if os.path.isdir(o) and (c in ('v1', 'taller-anim-v1', 'taller-carga-v1') or re.fullmatch(r'taller-v\d+', c)): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
