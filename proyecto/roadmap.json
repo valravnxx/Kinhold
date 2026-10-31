@@ -502,6 +502,12 @@
     {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Volver donde lo dejaste (valravnx, 31 oct): el navegador recuerda quién eres aunque cierres la pestaña, y el servidor guarda dónde estaba cada jugador al salir y lo pone ahí al volver a entrar (un wipe lo borra)",
+     "estado": "en_curso",
+     "inicio": "2026-10-31T05:00:43+00:00",
+     "rama": "trabajo/20261031-0500-volver"
     }
    ]
   },
