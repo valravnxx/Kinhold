@@ -1,0 +1,42 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2490 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2187 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1776 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2264 KB
+
+== Construir demo única
+      2150 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2760 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1771 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2255 KB
+dist/kinhold_trozos.html 1773 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: la demo en el mundo (Whitholm)
+  OK   sin aguante te ahogas y vuelves a tu sitio de salida — {"muertes": 1, "x": 0, "z": 4, "aviso": "Te has ahogado. Vuelves a tu sitio de salida."}
+  OK   sin errores en la página
+
+Todo bien
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 880 s
