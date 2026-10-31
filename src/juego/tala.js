@@ -133,6 +133,8 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
       if (t - ultimo > 5000) { ultimo = t; refrescar(t); }
     },
     get cayendo() { return cayendo.length; },
+    // en línea, el árbol que tala cualquiera lo hace caer el servidor (src/juego/objetos_en_linea.js)
+    caer: (o, dir, deja) => { esconder(o); caer(o, dir, deja); },
     refrescar, guardar: guardarlo, anadir, quitar,
   };
 }

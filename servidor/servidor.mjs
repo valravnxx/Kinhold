@@ -34,7 +34,7 @@
 //   { tipo: 'resultado_objeto', id, ok, motivo?, datos? } (datos: lo que ha pasado, p. ej. si el árbol cae y hacia dónde).
 //   Al autor le manda lo que lleva tal como queda, { tipo: 'inventario', inventario } (también si sale mal: así el
 //   navegador deshace lo que había adelantado), y si cambia el suelo, a todos { tipo: 'suelo', objetos }. Si cae un
-//   árbol, a todos { tipo: 'tala', estado, cae: { arbol, dir, autor } }; si se recoge algo, { tipo: 'recoleccion',
+//   árbol, a todos (antes que el suelo) { tipo: 'tala', estado, cae: { arbol, dir, autor, objetos } }; si se recoge algo, { tipo: 'recoleccion',
 //   estado }. La bienvenida lleva todo eso (inventario, suelo, tala, recoleccion). 'coger' y 'soltar' son el arcón de
 //   pruebas (arconPruebas, sí por ahora). Se guarda entero en objetos.json junto al mundo, y cada acción (bien o mal)
 //   en objetos.jsonl.
@@ -257,8 +257,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         const { ok: _o, motivo: _m, entrada: _e, suelo: _s, ...datos } = r;
         enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? { datos } : { motivo: r.motivo }) });
         enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
+        // lo talado antes que el suelo: así el navegador esconde lo que deja el árbol hasta que lo ve caer
+        if (r.ok && r.cae) { const m = { tipo: 'tala', estado: objetos.talaVisible(), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, objetos: r.objetos } }; for (const otro of clientes.keys()) enviar(otro, m); }
         if (r.suelo) { const lista = objetos.sueloVisible(ahora); for (const otro of clientes.keys()) enviar(otro, { tipo: 'suelo', objetos: lista }); }
-        if (r.ok && r.cae) { const m = { tipo: 'tala', estado: objetos.talaVisible(), cae: { arbol: msg.accion.arbol, dir: r.dir, autor } }; for (const otro of clientes.keys()) enviar(otro, m); }
         if (r.ok && msg.accion.tipo === 'recoger') { const m = { tipo: 'recoleccion', estado: objetos.recoleccionVisible() }; for (const otro of clientes.keys()) enviar(otro, m); }
         return;
       }
