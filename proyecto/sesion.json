@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-31T17:23:32+00:00",
+  "tarea": "La brocha de nivelar en el juego: un botón en «Construir» y su fantasma redondo para alisar el suelo en ladera a mano (la acción con autor ya está en la lógica y en el servidor), y la hierba y las matas de alrededor de lo alisado a la altura nueva",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261031-1723"
+ },
  "B": {
   "inicio": "2026-10-31T16:57:43+00:00",
   "tarea": "Toca en el móvil (visto en la revisión del 31 oct): con la calidad ligera el pelo asoma por la toca y la cabeza sale a manchas blancas y oscuras; en PC se ve bien",
