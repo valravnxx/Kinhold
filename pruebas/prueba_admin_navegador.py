@@ -41,8 +41,8 @@ BOT = f"""import {{ WebSocket }} from 'ws';
 const ws = new WebSocket('ws://127.0.0.1:{PUERTO}');
 ws.on('open', () => setInterval(() => ws.send(JSON.stringify({{ tipo: 'estado', x: {OTRO[0]}, y: 3, z: {OTRO[1]}, giro: 0.4, anim: 'quieto' }})), 200));
 ws.on('message', (d) => {{ const m = JSON.parse(d.toString()); if (m.tipo === 'bienvenida') console.log(m.autor); }});"""
-bot_js = os.path.join(RAIZ, 'servidor/.bot_admin_prueba.mjs'); open(bot_js, 'w').write(BOT)
-bot = subprocess.Popen(['node', bot_js], cwd=RAIZ, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+# (con -e: los import se buscan desde cwd, la raíz del repositorio, donde está ws; no se escribe ningún archivo)
+bot = subprocess.Popen(['node', '--input-type=module', '-e', BOT], cwd=RAIZ, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 AUTOR_BOT = bot.stdout.readline().strip()
 
 URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html?modo=construir&enlinea=1&servidor=ws://127.0.0.1:{PUERTO}'
@@ -76,7 +76,7 @@ try:
             boton = pg.evaluate("!!document.getElementById('btnAdmin')")
             comprobar(f'{nombre}: el botón «Admin» ' + ('sale con ?admin' if movil else 'no sale sin ?admin ni clave'), boton == movil)
             abrir = (lambda: pg.tap('#btnAdmin')) if movil else (lambda: pg.keyboard.press('F9'))
-            pulsar = (lambda sel: pg.tap(sel)) if movil else (lambda sel: pg.click(sel))
+            pulsar = (lambda sel: pg.tap(sel, timeout=90000)) if movil else (lambda sel: pg.click(sel, timeout=90000))
             abrir(); pg.wait_for_timeout(400)
             comprobar(f'{nombre}: se abre y pide la clave', pg.evaluate(f"{PANEL}.abierto && {K}.mapaRey.abierto && !!document.querySelector('#panelAdmin input[type=password]')"))
             # la clave mal
@@ -156,7 +156,7 @@ try:
         nav.close()
 finally:
     bot.kill(); servidor.kill(); web.shutdown()
-    for f in [bot_js] + ([SERVIDOR] if MUTAR else []):
+    for f in ([SERVIDOR] if MUTAR else []):
         if os.path.exists(f): os.remove(f)
     shutil.rmtree(sitio, ignore_errors=True)
 print(f'\n{len(fallos)} fallos' if fallos else '\nTodo bien')
