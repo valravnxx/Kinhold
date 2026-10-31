@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v18'), f'{sitio}/recursos/personajes/taller-v18')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v19'), f'{sitio}/recursos/personajes/taller-v19')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-anim-v1'), f'{sitio}/recursos/personajes/taller-anim-v1')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -377,7 +377,7 @@ with sync_playwright() as p:
         piel1, iris1, pelo1 = mat('hombre_piel'), mat('hombre_iris_l'), mat('hombre_pelo')
         cambia = lambda x, y: x and y and sum(abs(x[i] - y[i]) for i in range(3)) > 0.05
         comprobar('aspecto: cambian la piel, los ojos y el pelo (también las cejas y la barba, del mismo color)',
-                  cambia(piel0, piel1) and cambia(iris0, iris1) and cambia(pelo0, pelo1) and mat('hombre_vello')[:3] == pelo1[:3] and mat('hombre_barba_bigote')[:3] == pelo1[:3],
+                  cambia(piel0, piel1) and cambia(iris0, iris1) and cambia(pelo0, pelo1) and mat('hombre_vello')[:3] == pelo1[:3] and mat('hombre_cejas')[:3] == pelo1[:3] and mat('hombre_barba_bigote')[:3] == pelo1[:3],
                   f'piel {piel0[:3]} → {piel1[:3]}')
         comprobar('aspecto: el pelo rubio es más claro que el castaño oscuro', sum(pelo1[:3]) > sum(pelo0[:3]) * 2)
         comprobar('aspecto: con «Bigote» se ve el bigote y no la barba corta', mat('hombre_barba_bigote')[3] and not mat('hombre_barba_corta')[3])
@@ -432,7 +432,7 @@ with sync_playwright() as p:
         # en calidad alta, toda la ropa y el pelo escriben profundidad (si no, la piel se pinta encima: v5)
         pg.evaluate(f"{E}.cambiar({{calidad: 'alta'}})"); listo(pg)
         # (menos los calcos de pelo pintados sobre la piel, que van con mezcla suave y despegados con polygonOffset)
-        malos = pg.evaluate(f"""(() => {{ const m = []; {E}.diag().pj.modelo.traverse(o => {{ const calco = /_(vello|barba_(corta|bigote|perilla))$/.test(o.name);
+        malos = pg.evaluate(f"""(() => {{ const m = []; {E}.diag().pj.modelo.traverse(o => {{ const calco = /_(vello|cejas|barba_(corta|bigote|perilla))$/.test(o.name);
             if (o.isMesh && (calco ? !(o.material.transparent && o.material.polygonOffset) : (!o.material.depthWrite || o.material.transparent))) m.push(o.name); }}); return m; }})()""")
         if os.environ.get('MUTAR'): malos = ['mutado']
         comprobar('taller propio en calidad alta: todo escribe profundidad', not malos, ', '.join(malos))
