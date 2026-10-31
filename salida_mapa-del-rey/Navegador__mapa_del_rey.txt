@@ -1,0 +1,47 @@
+Vista pc
+  OK   la demo arranca sin error — None
+  OK   hay mapa del rey en el mundo de verdad
+  OK   el mapa se prepara solo en cuanto el mundo está listo (sin abrirlo) — {'msPintar': 1520, 'msMaxPaso': 13, 'avance': 1}
+  OK   sin tirones al prepararlo (ningún paso de más de 80 ms) — 13 ms el paso más largo, 1520 ms en total
+  OK   las 8 comarcas con su nombre, ríos, montes y árboles — {'etiquetas': 8, 'rios': 43, 'montes': 163, 'arboles': 1984}
+  OK   el botón «Mapa» se ve y cabe en la pantalla — [776.703125, 10, 830, 40.875]
+  OK   se abre (M)
+  OK   el mapa está pintado (papel, no en blanco) — {'opacos': 6400, 'media': 129.7559375}
+  OK   tu marca está donde estás — {'esperada': [868.1791044776121, 382.4945671641791], 'marca': {'x': 868.1791044776121, 'y': 382.4945671641791}}
+  OK   la marca te sigue si andas con el mapa abierto — {'esperada': [877.5402985074627, 376.64382089552237], 'marca': {'x': 877.5402985074627, 'y': 376.64382089552237}}
+  OK   «Dónde estoy» acerca el mapa y te pone en el centro — marca {'x': 640, 'y': 400}, zoom 3.0
+  OK   se cierra (Esc)
+  OK   M lo abre y lo vuelve a cerrar
+  OK   sin errores en la página
+Vista movil
+  OK   la demo arranca sin error — None
+  OK   hay mapa del rey en el mundo de verdad
+  OK   el mapa se prepara solo en cuanto el mundo está listo (sin abrirlo) — {'msPintar': 1509, 'msMaxPaso': 13, 'avance': 1}
+  OK   sin tirones al prepararlo (ningún paso de más de 80 ms) — 13 ms el paso más largo, 1509 ms en total
+  OK   las 8 comarcas con su nombre, ríos, montes y árboles — {'etiquetas': 8, 'rios': 43, 'montes': 163, 'arboles': 1984}
+  OK   el botón «Mapa» se ve y cabe en la pantalla — [245.78125, 43.515625, 292.578125, 71.03125]
+  OK   se abre (botón)
+  OK   el mapa está pintado (papel, no en blanco) — {'opacos': 6400, 'media': 118.47421874999999}
+  OK   tu marca está donde estás — {'esperada': [307.20000000000005, 413.39224615384614], 'marca': {'x': 307.20000000000005, 'y': 413.39224615384614}}
+  OK   la marca te sigue si andas con el mapa abierto — {'esperada': [311.803076923077, 410.51532307692304], 'marca': {'x': 311.803076923077, 'y': 410.51532307692304}}
+  OK   «Dónde estoy» acerca el mapa y te pone en el centro — marca {'x': 195, 'y': 422}, zoom 3.0
+  OK   se cierra (✕)
+  OK   sin errores en la página
+Vista pc_en
+  OK   la demo arranca sin error — None
+  OK   hay mapa del rey en el mundo de verdad
+  OK   el mapa se prepara solo en cuanto el mundo está listo (sin abrirlo) — {'msPintar': 1549, 'msMaxPaso': 13, 'avance': 1}
+  OK   sin tirones al prepararlo (ningún paso de más de 80 ms) — 13 ms el paso más largo, 1549 ms en total
+  OK   las 8 comarcas con su nombre, ríos, montes y árboles — {'etiquetas': 8, 'rios': 43, 'montes': 163, 'arboles': 1984}
+  OK   el botón «Mapa» se ve y cabe en la pantalla — [813.171875, 10, 860.109375, 40.875]
+  OK   se abre (M)
+  OK   el mapa está pintado (papel, no en blanco) — {'opacos': 6400, 'media': 129.7559375}
+  OK   tu marca está donde estás — {'esperada': [868.1791044776121, 382.4945671641791], 'marca': {'x': 868.1791044776121, 'y': 382.4945671641791}}
+  OK   la marca te sigue si andas con el mapa abierto — {'esperada': [877.5402985074627, 376.64382089552237], 'marca': {'x': 877.5402985074627, 'y': 376.64382089552237}}
+  OK   «Dónde estoy» acerca el mapa y te pone en el centro — marca {'x': 640, 'y': 400}, zoom 3.0
+  OK   se cierra (Esc)
+  OK   M lo abre y lo vuelve a cerrar
+  OK   en inglés no falta ningún texto — []
+  OK   sin errores en la página
+
+Todo bien
