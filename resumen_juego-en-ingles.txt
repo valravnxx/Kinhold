@@ -1,0 +1,45 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2310 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2071 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1664 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2139 KB
+
+== Construir demo única
+      1863 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2630 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1658 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2113 KB
+dist/kinhold_trozos.html 1660 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.23.4
+!! FALLA: node pruebas/prueba_nivelado.mjs
+
+== Navegador: juego en inglés (también estilo y personaje)
+  OK   ru personaje móvil, notas: nada se sale por los lados — 0px de más
+  OK   ruso: sin errores (móvil)
+
+TODO CORRECTO
+
+HAY FALLOS
+tardó 689 s
