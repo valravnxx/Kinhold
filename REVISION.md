@@ -26,6 +26,7 @@ valravnx: «revisa cómo arreglar el programa que me has hecho para usar mi grá
 
 ### 31 oct 2026 (10:05 UTC) — por el chat: tejados pisables y menú de Usar
 valravnx: «arreglo relativamente rápido: los tejados deben poder ser pisables para poder construir tejados con un solo andamio, por ahora los atraviesas y caes, y para afinar sobre el botón de usar, poder hacer clic derecho y seleccionar qué quieres usar si es que hay varias opciones en la zona». → Tarea del chat en «El juego en el mundo de verdad».
+Y después: «no es desde el menú usar, quita el rotar mapa con click derecho que ya está en el central, y clicando con clic derecho en lo que quieras usar (pilla lo que toques y muy cercanos)». → El clic derecho va sobre la cosa del mundo, no sobre el botón Usar, y ya no gira la cámara.
 
 ### 31 oct 2026 (09:49 UTC) — por el chat: meterlo todo en el roadmap
 valravnx: «actualiza todos los hitos, tareas y todo para ya meter todo esto». → Tareas nuevas en «El juego en el mundo de verdad», «Tierras y familias», «Economía y NPCs» y «Mundo»; Navegación, Cartografía y PvP anotados; la decisión de las comarcas de inicio, solo para Motdale y Breiddal.

@@ -158,6 +158,8 @@ export function crearRecoleccion({ raiz, altura, obstaculos, almacen, semilla = 
     despejar(fn) { ocupado = fn; refrescar(); },
     // el punto disponible más cercano a (x, z) a menos de dist m
     cercano(x, z, dist = 1.6, ahora = Date.now()) { return rec.cercanos(x, z, ahora, dist).find(p => !ocupado(p.x, p.z)) || null; },
+    // todos los disponibles a menos de dist m, del más cercano al más lejano (para el menú de Usar)
+    cercanos(x, z, dist = 1.6, ahora = Date.now()) { return rec.cercanos(x, z, ahora, dist).filter(p => !ocupado(p.x, p.z)); },
     // recoger con autor; lo guarda en el navegador y esconde el punto
     recoger(invs, registro, autor, punto, x, z, ahora = Date.now()) {
       const r = ejecutarRecoleccion(rec, invs, registro, { autor, tipo: 'recoger', punto, x, z }, ahora);

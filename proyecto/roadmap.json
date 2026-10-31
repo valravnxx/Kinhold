@@ -538,10 +538,10 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Tejados pisables y menú de Usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en Usar (o dejándolo pulsado en el móvil), se elige qué usar si hay varias cosas al alcance",
-     "estado": "en_curso",
+     "nombre": "Tejados pisables y clic derecho para usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en lo que quieras usar (en el móvil, dejando el dedo quieto encima), sale un menú con eso y lo muy cercano para elegir; el botón derecho ya no gira la cámara (la gira la rueda pulsada)",
+     "estado": "hecho",
      "inicio": "2026-10-31T10:05:51+00:00",
-     "rama": "trabajo/20261031-1006-tejados"
+     "fin": "2026-10-31T14:35:39+00:00"
     }
    ]
   },
@@ -1004,13 +1004,16 @@
     },
     {
      "nombre": "Herramienta en la mano al trabajar (visto en la revisión del 30 oct): al picar el personaje no lleva pico",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T08:58:36+00:00",
-     "rama": "trabajo/20261031-0858"
+     "rama": "trabajo/20261031-0858",
+     "fin": "2026-10-31T15:01:20+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T15:04:26+00:00",
+     "rama": "trabajo/20261031-1504"
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «han roto las manos de todos los personajes» y prendas rotas): desde taller-v9 la piel se diezma con la cara protegida pero con la proporción de toda la piel, así que las manos se quedaban en una tira; diezmar solo lo que se puede diezmar, rehacer los personajes y repasar todas las prendas de cerca",
@@ -2099,6 +2102,20 @@
      "archivo": "jugar/demo/v67.html",
      "capturas": "capturas/demo-v67",
      "notas": "Sin cortados rectos de kilómetros: las laderas de los valles de los ríos ya no son planos lisos y rectos (valravnx, 31 oct); llevan relieve, el borde se redondea y la cabecera del valle es suave"
+    },
+    {
+     "v": "v68",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v68.html",
+     "capturas": "capturas/demo-v68",
+     "notas": "Los tejados terminados se pisan (un tejado entero con un solo andamio) y clic derecho en lo que quieras usar: menú con eso y lo muy cercano (en el móvil, el dedo quieto); el botón derecho ya no gira la cámara"
+    },
+    {
+     "v": "v69",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v69.html",
+     "capturas": "capturas/personaje-v32",
+     "notas": "Herramienta en la mano al trabajar en «Personaje» (personaje v32)"
     }
    ]
   },
@@ -2820,6 +2837,13 @@
      "archivo": "jugar/personaje/v31.html",
      "capturas": "capturas/personaje-v31",
      "notas": "Capa de espalda: ya no sale casi negra y lisa; lana sin teñir más clara, pliegues redondos y hondos de unos 14 cm que empiezan más arriba, el fondo de cada pliegue más oscuro en la tela (se ven también en sombra), y la vista «Espalda» de cuerpo entero. Personajes en taller-v20."
+    },
+    {
+     "v": "v32",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/personaje/v32.html",
+     "capturas": "capturas/personaje-v32",
+     "notas": "Herramienta en la mano al trabajar: el pico al picar y el hacha al talar"
     }
    ]
   },
