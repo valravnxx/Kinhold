@@ -1,0 +1,4 @@
+  File "C:\Users\Usuario\AppData\Local\KinholdGrafica\runner\_work\Kinhold\Kinhold\pruebas\prueba_navegador.py", line 652
+    comprobar('moverse deja la obra', teclas_antes and not ev(f"{K}.obrando"), f'obrando antes={teclas_antes}, aviso={ev("document.getElementById(\'aviso\').textContent")!r}')
+                                                                                                                                                                              ^
+SyntaxError: f-string expression part cannot include a backslash
