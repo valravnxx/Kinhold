@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-31T07:26:29+00:00",
+  "tarea": "Las obras cobran de lo que llevas también en línea: lo que se entrega a una obra (y lo que se sube a una obra en alto) sale de lo que llevas en el servidor, el arcón de materiales de obra va por el servidor, y el mundo se rehace igual al volver a arrancar el servidor y en el navegador de los demás",
+  "hito": "equipo",
+  "rama": "trabajo/20261031-0726"
+ },
  "B": {
   "inicio": "2026-10-31T03:53:07+00:00",
   "tarea": "Capa de espalda (visto en la revisión del 30 oct): sale casi negra y lisa, sin pliegues a la vista",
