@@ -613,13 +613,16 @@
     },
     {
      "nombre": "Las obras cobran de lo que llevas también en línea: lo que se entrega a una obra (y lo que se sube a una obra en alto) sale de lo que llevas en el servidor, el arcón de materiales de obra va por el servidor, y el mundo se rehace igual al volver a arrancar el servidor y en el navegador de los demás",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T07:26:29+00:00",
-     "rama": "trabajo/20261031-0726"
+     "rama": "trabajo/20261031-0726",
+     "fin": "2026-10-31T09:19:17+00:00"
     },
     {
      "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T09:24:25+00:00",
+     "rama": "trabajo/20261031-0924"
     },
     {
      "nombre": "Lo que llevas se ve puesto en el personaje del taller: el cinturón y lo que cuelga de él, el leñero o la mochila a la espalda, el saco al hombro y lo que tienes en las manos, con el estilo v5. Capturas de cerca para valravnx",
@@ -1983,6 +1986,13 @@
      "archivo": "jugar/demo/v64.html",
      "capturas": "capturas/personaje-v31",
      "notas": "Capa de espalda (como en el personaje v31): lana sin teñir más clara y pliegues redondos y hondos que se ven también en sombra. Personajes en taller-v20."
+    },
+    {
+     "v": "v65",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v65.html",
+     "capturas": "capturas/demo-v65",
+     "notas": "En «Jugar», las obras cobran de lo que llevas, como en solitario: lo que se entrega a una obra (y lo que se sube a una obra en alto) sale de lo que llevas en el servidor, y el arcón de materiales de obra va por el servidor. El servidor guarda las entregas ya pagadas, así que al volver a arrancar y en el navegador de los demás el mundo se rehace igual. Protocolo 6: quien lleva el servidor tiene que actualizarlo."
     }
    ]
   },
