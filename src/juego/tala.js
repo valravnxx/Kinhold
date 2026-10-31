@@ -55,15 +55,17 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
     if (!o.matriz) { o.matriz = new THREE.Matrix4(); o.malla.getMatrixAt(o.instancia, o.matriz); }
     return o.matriz;
   }
+  // (en el mundo, un árbol que está cargado pero lejos no tiene malla: sin dibujar; al ponerlo, el decorado mira si está
+  // en pie, src/mundo/vegetacion_mundo.js)
   function esconder(o) {
-    original(o); o.malla.setMatrixAt(o.instancia, cero); o.malla.instanceMatrix.needsUpdate = true;
+    if (o.malla) { original(o); o.malla.setMatrixAt(o.instancia, cero); o.malla.instanceMatrix.needsUpdate = true; }
     if (!tocones.has(o.id)) {
       const t = tocon(o); t.position.set(o.x, altura(o.x, o.z), o.z); t.rotation.y = (tala.estado[o.id]?.dir || 0);
       grupo.add(t); tocones.set(o.id, t);
     }
   }
   function mostrar(o) {
-    o.malla.setMatrixAt(o.instancia, original(o)); o.malla.instanceMatrix.needsUpdate = true;
+    if (o.malla) { o.malla.setMatrixAt(o.instancia, original(o)); o.malla.instanceMatrix.needsUpdate = true; }
     const t = tocones.get(o.id); if (t) { grupo.remove(t); tocones.delete(o.id); }
   }
   // lo de ahora: tocones donde se taló y árboles donde ya volvieron a crecer
@@ -85,6 +87,26 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
     m.castShadow = true; m.receiveShadow = true; pivote.add(m); pivote.name = 'arbol_cayendo';
     grupo.add(pivote);
     cayendo.push({ pivote, t: 0, eje: new THREE.Vector3(Math.cos(dir), 0, -Math.sin(dir)), deja });
+  }
+
+  // los árboles del mundo llegan y se van al andar (src/mundo/vegetacion_mundo.js): lo talado de cada uno se guarda
+  // igual, esté o no cargado, y en cuanto vuelve sale su tocón
+  function anadir(lista) {
+    const nuevos = [];
+    for (const o of lista) {
+      if (!o.arbol) continue;
+      const id = o.id || idArbol(o.x, o.z); o.id = id; porId.set(id, o);
+      nuevos.push({ id, x: o.x, z: o.z, edad: o.edad || edadDeEscala(o.escala) });
+    }
+    tala.anadir(nuevos);
+    for (const o of lista) if (o.id && !tala.enPie(o.id, Date.now()) && !tocones.has(o.id)) esconder(o);
+  }
+  function quitar(ids) {
+    for (const id of ids) {
+      porId.delete(id);
+      const t = tocones.get(id); if (t) { grupo.remove(t); tocones.delete(id); }
+    }
+    tala.quitar(ids);
   }
 
   const guardarlo = () => { if (almacen) guardarTala(almacen, tala); };
@@ -111,6 +133,6 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
       if (t - ultimo > 5000) { ultimo = t; refrescar(t); }
     },
     get cayendo() { return cayendo.length; },
-    refrescar, guardar: guardarlo,
+    refrescar, guardar: guardarlo, anadir, quitar,
   };
 }

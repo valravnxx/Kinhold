@@ -2860,7 +2860,7 @@
  {
   "inicio": "2026-10-30T14:15:36+01:00",
   "fin": "2026-10-30T22:48:17+01:00",
-  "titulo": "Ríos que siguen el terreno, ríos de verdad y nadar (mapa v18, demo v58; chat con valravnx)",
+  "titulo": "Ríos que siguen el terreno, ríos de verdad y nadar (mapa v18, demo v59; chat con valravnx)",
   "hito": "mundo",
   "hecho": [
    "Arreglo (valravnx, 30 oct): muchos ríos iban elevados por los valles, como un puente. La altura del río salía del mapa de 1 km y el relieve de detalle hundía el suelo de alrededor; ahora cada punto del río toma el suelo más bajo de su tramo y nunca sube río abajo. En Whitholm, de unos 600 puntos con el agua por encima del suelo a ninguno; una prueba nueva lo vigila (menos del 1 %).",
@@ -2870,6 +2870,23 @@
    "Aún mal: no hay animación de nadar; en línea, los demás te ven andar en el agua; de lejos los ríos siguen a tramos rectos; los arroyos someros se ven blanquecinos; y en algunas costas bajas salen manchas de arena tierra adentro."
   ],
   "pruebas": "Batería entera en la nube tras unir main (siempre en línea): 20 de 22 grupos bien. Falla «jugar en línea» (excepción de CLAUDE.md, falla también en main) y «la demo en el mundo», porque su prueba tomó una ría somera por costa y no encontró mar hondo; ahora lo busca también por anillos alrededor del jugador, y repetida: bien. Lógica: nado 17/17, mapa 88/88. Las mutaciones se rompieron a propósito (MUTAR en el terraplén de los ríos y en la de nado de lógica). No comprobado: MUTAR_NADO en la nube (la de navegador).",
+  "capturas": "capturas/demo-v59",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-30T20:23:07+00:00",
+  "fin": "2026-10-30T23:39:59+00:00",
+  "titulo": "Lo que crece sigue al jugador por la isla (demo v58) (carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Lo que crece se hace por trozos de 32 m del mundo (vegetacionTrozo en src/logica/vegetacion.js, lógica pura): alrededor del jugador, los más cercanos primero y unos 4 ms en cada fotograma (3 en el móvil); la hierba, solo en los trozos de su círculo. Lo de lejos se suelta. Al empezar, todo de una vez, como antes.",
+   "Las mallas (árboles en sus tres bandas de detalle, hierba, flores, matas y piedras) se vuelven a poner alrededor de donde estás cada 10 m andados (8 m en el móvil) o cuando acaban de llegar trozos; los obstáculos de lo que crece se cambian sin tocar los demás (las peñas de lo que se recoge).",
+   "Lo talado no se pierde: cada árbol es el mismo obstáculo mientras su trozo está cargado; la tala (src/logica/tala.js) aprende a añadir y quitar árboles y ya no descarta al cargar lo de un árbol que aún no ha llegado (solo lo que no tiene forma de árbol); en cuanto vuelve, sale talado y con su tocón.",
+   "Decisión provisional (en el registro de la demo): volver a poner cada 10 m (8 m) y soltar a más de 264 m (194 m en el móvil), la hierba a más de 109 m (96 m).",
+   "Pruebas nuevas: en node, cuatro trozos juntos dan exactamente lo mismo que su cuadro (con MUTAR=2 falla) y la tala con árboles que llegan y se van (rota a propósito, falla); en el navegador, que tras andar 200 m lo que crece está alrededor del jugador, que lo de lejos se suelta, que al llegar de golpe a 700 m ningún fotograma pasa de 60 ms (con MUTAR=3, todo de golpe, 305 ms: falla) y que un árbol talado sigue talado y con su tocón al irse y volver.",
+   "Aún mal (no es de esta tarea): el suelo amarillento y los robles y fresnos de copa plana, que parecen de sabana, como en la v55."
+  ],
+  "pruebas": "En la nube, la batería entera: todo bien salvo jugar en línea y duelo en línea (no paran la publicación) y la demo en el mundo, que falló por la propia prueba nueva (medía el cuadro desde el personaje y no desde donde se puso) y por esperar poco en el PC (en la nube va a 1 fps); arreglada la prueba, la demo en el mundo y el juego en inglés bien en la nube. MUTAR=3 de la prueba del mundo pasado aquí: falla, como debe. Capturas de PC y móvil miradas (andando a 200 m de la salida, salida, bosque). Al ir a unir en main, la otra sesión acababa de publicar la v57 (siempre en línea): unido main, lo que crece sale como demo v58 y se repitió la batería entera en la nube: todo bien salvo jugar en línea (no para la publicación), la web (faltaba la carpeta de capturas de la v58, aún sin publicar) y, en el móvil, «andando, el personaje sigue el suelo» (0,65 m de 0,6; el terreno, en esa salida al azar); repetidas la demo en el mundo y la web con la v58 publicada: bien.",
   "capturas": "capturas/demo-v58",
   "estado": "ok"
  },

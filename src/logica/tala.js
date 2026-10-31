@@ -68,12 +68,22 @@ export class Tala {
     this.estado = {};       // id → { golpes, veces, caido?, vuelve?, dir? }  (dir: hacia dónde cayó, en radianes)
     this.ultimoGolpe = {};  // autor → ms (no se guarda: solo frena los golpes demasiado seguidos)
   }
+  // Los árboles van llegando y yéndose según por dónde anda el jugador (src/mundo/vegetacion_mundo.js): lo guardado de
+  // cada uno se queda aunque no esté cargado y vale en cuanto vuelve a llegar.
+  anadir(arboles) {
+    for (const a of arboles) if (!this.porId.has(a.id)) { this.porId.set(a.id, a); this.arboles.push(a); }
+  }
+  quitar(ids) {
+    const fuera = new Set(ids); if (!fuera.size) return;
+    for (const id of fuera) this.porId.delete(id);
+    this.arboles = this.arboles.filter(a => !fuera.has(a.id));
+  }
   // ¿Está en pie? (no talado, o ya ha vuelto a crecer)
   enPie(id, ahora) { const e = this.estado[id]; return this.porId.has(id) && (!e || !e.vuelve || ahora >= e.vuelve); }
   // Los tocones de ahora: [{ arbol, caido, vuelve, dir }]
   tocones(ahora) {
     const r = [];
-    for (const [id, e] of Object.entries(this.estado)) if (e.vuelve && ahora < e.vuelve) r.push({ arbol: this.porId.get(id), caido: e.caido, vuelve: e.vuelve, dir: e.dir });
+    for (const [id, e] of Object.entries(this.estado)) if (e.vuelve && ahora < e.vuelve && this.porId.has(id)) r.push({ arbol: this.porId.get(id), caido: e.caido, vuelve: e.vuelve, dir: e.dir });
     return r;
   }
   golpesPara(id, clase) { const a = this.porId.get(id); return a ? GOLPES[a.edad][clase] : 0; }
@@ -106,14 +116,15 @@ export class Tala {
   }
 
   exportar() { return { version: VERSION_TALA, estado: Object.fromEntries(Object.entries(this.estado).map(([k, v]) => [k, { ...v }])) }; }
-  // Lo guardado de árboles que ya no existen se descarta.
+  // Lo guardado de árboles que aún no están cargados se queda (llegan al acercarse el jugador); lo que no tiene forma
+  // de árbol (el id) se descarta.
   importar(datos) {
     const d = migrarTala(datos);
     this.estado = {};
     if (!d) return this;
     const num = v => Number.isFinite(v);
     for (const [id, e] of Object.entries(d.estado)) {
-      if (!this.porId.has(id) || !e || typeof e !== 'object') continue;
+      if (!/^arbol:-?\d+,-?\d+$/.test(id) || !e || typeof e !== 'object') continue;
       const x = { golpes: Number.isInteger(e.golpes) && e.golpes > 0 ? e.golpes : 0, parte: num(e.parte) ? Math.min(1, Math.max(0, e.parte)) : 0,
         veces: Number.isInteger(e.veces) && e.veces > 0 ? e.veces : 0 };
       if (num(e.vuelve)) Object.assign(x, { caido: num(e.caido) ? e.caido : e.vuelve, vuelve: e.vuelve, dir: num(e.dir) ? e.dir : 0, golpes: 0, parte: 0 });
