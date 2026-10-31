@@ -17,11 +17,5 @@
   "tarea": "El mapa del rey (valravnx, 31 oct): al aparecer en Whitholm ya lo llevas; se abre con una tecla (M) o un botón en el móvil y enseña la costa, las comarcas con su nombre, los ríos, la ciudad de Strandvang y dónde estás tú; sin viaje rápido",
   "hito": "mundo-juego",
   "rama": "trabajo/20261031-1100-mapa-rey"
- },
- "chat:trabajo/20261031-1006-tejados": {
-  "inicio": "2026-10-31T10:05:51+00:00",
-  "tarea": "Tejados pisables y clic derecho para usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en lo que quieras usar (en el móvil, dejando el dedo quieto encima), sale un menú con eso y lo muy cercano para elegir; el botón derecho ya no gira la cámara (la gira la rueda pulsada)",
-  "hito": "mundo-juego",
-  "rama": "trabajo/20261031-1006-tejados"
  }
 }

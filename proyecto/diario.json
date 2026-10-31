@@ -3242,5 +3242,21 @@
   "pruebas": "En la nube, la batería entera (26 grupos, sin el PC de valravnx): bien todos salvo «jugar en línea», que falla en «PC se pone a construir» y lo que sigue (también en main; valravnx, 31 oct: «jugar en línea ya no existe»); esta tarea no toca código que use el juego. Tras unir main, lógica bien otra vez en la nube. Prueba de fabricación 88/88; rota a propósito (sin mirar lo que se conoce, o con la práctica de más) falla 4.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T10:05:51+00:00",
+  "fin": "2026-10-31T14:35:39+00:00",
+  "titulo": "Tejados pisables y clic derecho para usar (chat con valravnx)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Los tejados terminados se pisan: desde el andamio se sale al alero y se sube por la pendiente hasta la cumbrera, así que un tejado entero se hace con un solo andamio (antes se atravesaban y caías). Si te sales del tejado, caes al suelo; un tejado en obras aún no se pisa.",
+   "Clic derecho en lo que quieras usar: sale un menú junto al puntero con esa cosa y lo muy cercano a tu alcance (obras, puertas, chimenea, escaleras y andamios, talar, trocear, coger del suelo, recoger). En el móvil, el dedo quieto medio segundo encima; el clic de levantar el dedo no elige nada. Usar a secas sigue igual.",
+   "El botón derecho ya no gira la cámara (la gira la rueda pulsada), como pidió valravnx; la ayuda lo dice.",
+   "Pruebas nuevas: alto de la cara del tejado en cada punto (lógica), andar por el tejado, el menú del clic derecho en PC y el del dedo quieto en el móvil. Rotas a propósito una vez (MUTAR=1, __sinPisarTejados, __menuUsarSinPuntero): fallan.",
+   "Publicado como demo v68."
+  ],
+  "pruebas": "Todas en la nube (el PC de valravnx fallaba en el primer paso de cada grupo, «Sin cambiar los finales de línea», y se mandaron solo a la nube): todo bien salvo «jugar en línea» y «duelo en línea» (fallan también en main mientras no esté el servidor de verdad). Tras el último arreglo del móvil y tras unir main se repitieron construcción, demo única y juego en inglés: bien. En el primer intento, «niveles de detalle del personaje» falló una vez en «el panel dice cuántos hay en cada nivel» y al repetirlo pasó.",
+  "capturas": "capturas/demo-v68",
+  "estado": "ok"
  }
 ]
