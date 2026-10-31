@@ -1,0 +1,31 @@
+  OK   sin huecos: todo trozo a menos de 768 m está cargado (1500 pasos) — 0 huecos
+  OK   no sobra nada: más allá del último anillo y su margen no queda nada — 0
+  OK   fuera del mundo no se carga nada — 0
+  OK   cada trozo con el detalle de su anillo (o el de antes, dentro del margen) — 0 mal
+  OK   dos trozos vecinos nunca se llevan más de un nivel — 0
+  OK   lo que dicen cargar, cambiar y soltar cuadra con lo cargado (sin repetidos) — 0
+         como mucho 518 trozos cargados a la vez; vistos por nivel (suma de pasos): 1 m: 12210, 2 m: 38770, 4 m: 141696, 8 m: 303271
+  OK   ir y venir 8 m sobre una frontera 60 veces no carga ni suelta nada otra vez — 0 cambios
+  OK   alejarse de verdad sí carga y suelta — 75 cargados, 68 soltados
+  OK   junto a un río (63.4, 65.3 km): 232 mallas, 430 bordes compartidos — 330 con el mismo detalle, 100 con distinto
+  OK   mismo detalle: la misma altura, exacta, en todo el borde común — 0 puntos distintos
+  OK   distinto detalle: los puntos del basto, exactos en el fino — 0 puntos distintos
+  OK   distinto detalle: el faldón del basto tapa la rendija en todo el borde (cada metro) — 0 metros sin tapar; rendija mayor 1.25 m, faldón mayor 1.80 m
+  OK   el río pasa por alguno de los trozos probados
+  OK   índices dentro de la malla — 0
+  OK   los 206336 triángulos del suelo miran hacia arriba — 0 hacia abajo
+  OK   los triángulos del faldón miran hacia fuera del trozo — 0 hacia dentro
+  OK   alturaEnMalla da la altura de la rejilla en sus puntos — 0
+         tiempo por trozo (este procesador, en ms): 1 m: 10.3 (7), 2 m: 3.0 (34), 4 m: 1.5 (143), 8 m: 1.7 (48)
+         malla de 1 m: 4225 vértices del suelo y 260 del faldón, 8704 triángulos
+  OK   suelo de los trozos: normales y colores iguales a los dos lados del borde común (214 puntos, rejillas de 1, 2 y 8 m) — 0 distintos
+  OK   suelo de los trozos: un valor por vértice (normales, colores y textura) — 0
+  OK   suelo de los trozos: normales unitarias hacia arriba — 0
+  OK   suelo de los trozos: colores válidos — 0
+         suelo listo para dibujar, por trozo (este procesador): 1 m: 101.3 ms, 2 m: 11.0 ms, 8 m: 2.8 ms
+  OK   en un plano el faldón cuelga solo lo mínimo — 0.25000037193298397, 0.2500004005432128, 0.250000410079954, 0.25000028610229563
+  OK   la malla va relativa a la esquina del trozo
+  OK   un paso que no cabe en el trozo se rechaza
+  OK   trozoDe con negativos
+
+Todo correcto
