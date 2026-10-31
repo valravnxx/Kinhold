@@ -78,6 +78,7 @@ paso "Taller: tintes de la ropa y blasón" node pruebas/prueba_tintes.mjs
 paso "Hechura de la ropa (material, corte y tejido)" node pruebas/prueba_hechura.mjs
 paso "Niveles de detalle de los personajes" node pruebas/prueba_detalle.mjs
 paso "Animaciones para cargar (taller-anim-v2)" node pruebas/prueba_anim_carga.mjs
+paso "Lo que llevas se ve puesto: del inventario y por el servidor" node pruebas/prueba_llevado.mjs
 paso "Taller: versiones fijadas" python3 herramientas/taller/comprobar_taller.py --prueba
 paso "Capturas: solo las del cambio" node pruebas/prueba_capturas.mjs
 paso "Unión del diario y las traducciones" node pruebas/prueba_unir_json.mjs
@@ -93,6 +94,7 @@ paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_reco
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_hito1.html "$C/tala"
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_hito1.html "$C/troceo"
 paso "Navegador: panel de inventario" python3 pruebas/prueba_inventario_navegador.py dist/kinhold_hito1.html "$C/inventario"
+paso "Navegador: lo que llevas se ve puesto" python3 pruebas/prueba_llevado_navegador.py dist/kinhold_hito1.html "$C/llevado"
 paso "Navegador: objetos en el suelo" python3 pruebas/prueba_suelo_navegador.py dist/kinhold_hito1.html "$C/suelo"
 paso "Navegador: combate" python3 pruebas/prueba_combate_navegador.py dist/kinhold_combate.html "$C/combate"
 paso "Navegador: combate en el mundo" python3 pruebas/prueba_combate_mundo_navegador.py dist/kinhold_hito1.html "$C/combate_mundo"

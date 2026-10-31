@@ -1,13 +1,16 @@
 # Prueba en navegador del combate dentro del mundo (valravnx, 30 oct), en el prototipo de construcción:
 #  - la cámara se inclina hasta casi a ras de suelo;
-#  - con el arma sacada (C), el ratón elige la dirección: la del último movimiento al pulsar (sin movimiento,
-#    estocada); mantener carga el golpe y moverse claramente hacia otro lado lo cambia sin soltar; el botón derecho
-#    para por el lado del ratón y también se cambia sin soltar;
+#  - con el arma sacada (C), el ratón elige la dirección: la del último movimiento al pulsar, entre cuatro (arriba,
+#    izquierda, derecha y abajo, que es clavar; sin movimiento, la última usada; valravnx, 31 oct); mantener carga el
+#    golpe, que va comprometido (moverse no lo cambia); el botón derecho lo cancela (finta) y para, también con el
+#    ratón de verdad (los dos botones a la vez); después se puede empezar otro golpe por otro lado; el botón derecho
+#    para por el lado del ratón y se cambia sin soltar;
 #  - un rival de práctica viene, pelea y sus golpes pasan por las acciones con autor; Tab lo fija y la cámara se
 #    pone detrás de ti mirándole;
-#  - en el móvil, la rosa queda fija a un lado con «Parar», «Fijar» y «Rival», y tocarla carga el golpe.
+#  - en el móvil, la rosa (cuatro sectores) queda fija a un lado con «Parar», «Fijar» y «Rival», tocarla carga el
+#    golpe, deslizar el dedo no lo cambia y «Parar» lo cancela (finta).
 # Uso: python3 pruebas/prueba_combate_mundo_navegador.py <html de la construcción> <carpeta de capturas>
-#      MUTAR=1: el ratón no cambia de lado sin soltar y la cámara no baja: tiene que fallar.
+#      MUTAR=1: el ratón no cambia de lado sin soltar, la cámara no baja y el botón de parar no finta: tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
@@ -63,6 +66,9 @@ with sync_playwright() as p:
     pg.keyboard.press('c'); pg.wait_for_timeout(300)
     act = pg.evaluate(f'({{ a: {C}.activo, m: !!{C}.L, mira: !document.getElementById("cmbMira").hidden, arma: document.getElementById("btnArma").classList.contains("sel"), pj: {K}.jugador.raiz.visible }})')
     comprobar('C saca el arma: el luchador sale, con la mira, y el personaje de andar se esconde', act['a'] and act['m'] and act['mira'] and act['arma'] and not act['pj'], str(act))
+    if MUTAR: pg.evaluate(f'{C}.L.fintar = () => false')
+    n_mira = pg.evaluate("document.querySelectorAll('#cmbMira b').length")
+    comprobar('la mira tiene cuatro direcciones', n_mira == 4, str(n_mira))
     # cámara: con el ratón cogido, moverlo hacia arriba la baja hasta casi a ras de suelo
     for _ in range(12): mover(pg, 0, -60, 2)
     pitch = pg.evaluate(f'{K}.cam.pitch')
@@ -70,22 +76,50 @@ with sync_playwright() as p:
     pg.evaluate(f'{K}.cam.pitch = 0.35'); pg.wait_for_timeout(600)
     pg.screenshot(path=f'{SALIDA}/pc_camara_baja.png')
     # golpes: dirección del último movimiento al pulsar
-    for dx, dy, quiero in [(-45, 0, 'izquierda'), (0, -45, 'alto'), (45, 0, 'derecha'), (0, 45, 'bajo')]:
+    for dx, dy, quiero in [(-45, 0, 'izquierda'), (0, -45, 'alto'), (45, 0, 'derecha'), (0, 45, 'estocada')]:
         libre(pg); golpe(pg, dx, dy); e = estado(pg)
         comprobar(f'ratón hacia {quiero} y clic: carga el golpe {quiero}', e['accion'] == 'preparando' and e['linea'] == quiero, str(e))
         pg.evaluate(f'{C}.raton.soltar(0)')
     libre(pg); pg.wait_for_timeout(400); pg.evaluate(f'{C}.raton.pulsar(0)'); e = estado(pg)
-    comprobar('sin mover el ratón: estocada', e['linea'] == 'estocada', str(e))
+    comprobar('sin mover el ratón: la última dirección usada (abajo, clavar)', e['linea'] == 'estocada', str(e))
     pg.evaluate(f'{C}.raton.soltar(0)')
-    # mantener carga; un movimiento claro cambia de lado sin soltar
+    # mantener carga; el golpe va comprometido: moverse no lo cambia
     libre(pg); golpe(pg, 0, -45)
     pg.wait_for_function(f'{C}.L.carga() > 0.6', timeout=120000)
     e1 = estado(pg)
     pg.screenshot(path=f'{SALIDA}/pc_cargando_alto.png')
     mover(pg, 60, 0); e2 = estado(pg)
     comprobar('mantener el clic carga el golpe', e1['accion'] == 'preparando' and e1['carga'] > 0.5, str(e1))
-    comprobar('a mitad del clic, el ratón a la derecha cambia el golpe sin soltar (finta)', e2['accion'] == 'preparando' and e2['linea'] == 'derecha' and e2['finta'], str(e2))
-    # al soltar sale; si la finta dejó la carga por debajo del mínimo, sale al llegar a él (sin volver a pulsar)
+    comprobar('a mitad del clic, mover el ratón no cambia el golpe (va comprometido)', e2['accion'] == 'preparando' and e2['linea'] == 'alto' and not e2['finta'], str(e2))
+    # el botón derecho lo cancela (finta) y para
+    pg.evaluate(f'{C}.raton.pulsar(2)'); e = estado(pg)
+    comprobar('con el golpe cargado, el botón derecho lo cancela (finta) y para', e['accion'] == 'libre' and e['finta'] and e['bloq'], str(e))
+    pg.wait_for_timeout(300); pg.screenshot(path=f'{SALIDA}/pc_finta.png')
+    pg.evaluate(f'{C}.raton.soltar(2)'); pg.evaluate(f'{C}.raton.soltar(0)')
+    # y después, otro golpe por otro lado
+    libre(pg); golpe(pg, 45, 0); e = estado(pg)
+    comprobar('tras la finta se empieza otro golpe por otro lado', e['accion'] == 'preparando' and e['linea'] == 'derecha', str(e))
+    pg.evaluate(f'{C}.raton.soltar(0)')
+    try: pg.wait_for_function(f'{C}.L.accion !== "preparando"', timeout=60000)
+    except Exception: pass
+    # con el ratón de verdad: el izquierdo pulsado y el derecho a la vez (el navegador no da un «pulsar» para el
+    # segundo botón, sino un movimiento con los dos botones)
+    libre(pg)
+    pg.mouse.move(640, 400); pg.mouse.down(); pg.mouse.up()          # el primer clic solo coge el ratón
+    libre(pg)
+    pg.mouse.down()
+    try: pg.wait_for_function(f'{C}.L.carga() > 0.2', timeout=60000)
+    except Exception: pass
+    e1 = estado(pg)
+    pg.mouse.down(button='right'); e2 = estado(pg)
+    pg.mouse.up(button='right'); pg.mouse.up(); e3 = estado(pg)
+    comprobar('ratón de verdad: el botón izquierdo carga el golpe', e1['accion'] == 'preparando', str(e1))
+    comprobar('ratón de verdad: el derecho a la vez lo cancela (finta) y para', e2['accion'] == 'libre' and e2['finta'] and e2['bloq'], str(e2))
+    comprobar('ratón de verdad: al soltar los dos, ni golpe ni parada', e3['accion'] == 'libre' and not e3['bloq'], str(e3))
+    # suelta el ratón cogido (si no, el lienzo tapa los botones del panel)
+    pg.evaluate('document.exitPointerLock && document.exitPointerLock()'); pg.wait_for_timeout(300)
+    # al soltar sale
+    libre(pg); golpe(pg, 0, -45)
     pg.evaluate(f'{C}.raton.soltar(0)')
     try: pg.wait_for_function(f'{C}.L.accion !== "preparando"', timeout=60000)
     except Exception: pass
@@ -154,15 +188,30 @@ with sync_playwright() as p:
     comprobar('móvil: sin la mira del ratón', mira)
     caja = mv.evaluate("(() => { const b = document.getElementById('cmbRosa').getBoundingClientRect(); return [b.left, b.top, b.width]; })()")
     x0, y0, w = caja
-    # tocar el sector de arriba y mantener: carga alto; deslizar a la izquierda: cambia
+    n_rosa = mv.evaluate("document.querySelectorAll('#cmbRosa b').length")
+    comprobar('móvil: la rosa tiene cuatro sectores', n_rosa == 4, str(n_rosa))
+    # tocar el sector de arriba y mantener: carga alto; deslizar a la izquierda: no cambia (va comprometido)
     mv.evaluate(f"""(() => {{ const r = document.getElementById('cmbRosa'); const ev = (t, x, y) => r.dispatchEvent(new PointerEvent(t, {{ pointerId: 7, pointerType: 'touch', clientX: x, clientY: y, bubbles: true }}));
       window.__rosa = ev; ev('pointerdown', {x0 + w / 2}, {y0 + w * 0.15}); }})()""")
     mv.wait_for_function(f'{C}.L.carga() > 0.05', timeout=60000); e = estado(mv)
     comprobar('móvil: tocar arriba en la rosa y mantener carga el golpe alto', e['accion'] == 'preparando' and e['linea'] == 'alto', str(e))
     mv.screenshot(path=f'{SALIDA}/movil_rosa_cargando.png')
     mv.evaluate(f"window.__rosa('pointermove', {x0 + w * 0.12}, {y0 + w / 2})"); e = estado(mv)
-    comprobar('móvil: deslizar el dedo a la izquierda cambia el golpe sin soltar', e['linea'] == 'izquierda' and e['finta'], str(e))
-    mv.evaluate(f"window.__rosa('pointerup', {x0 + w * 0.12}, {y0 + w / 2})"); mv.wait_for_timeout(120); e = estado(mv)
+    comprobar('móvil: deslizar el dedo no cambia el golpe (va comprometido)', e['linea'] == 'alto' and not e['finta'], str(e))
+    # «Parar» con el golpe cargado: finta
+    mv.evaluate("document.getElementById('cmbParar').dispatchEvent(new PointerEvent('pointerdown', { pointerId: 9, pointerType: 'touch', bubbles: true }))"); e = estado(mv)
+    comprobar('móvil: «Parar» con el golpe cargado lo cancela (finta) y para', e['accion'] == 'libre' and e['finta'] and e['bloq'], str(e))
+    mv.evaluate("document.getElementById('cmbParar').dispatchEvent(new PointerEvent('pointerup', { pointerId: 9, pointerType: 'touch', bubbles: true }))")
+    mv.evaluate(f"window.__rosa('pointerup', {x0 + w * 0.12}, {y0 + w / 2})")
+    libre(mv)
+    mv.evaluate(f"window.__rosa('pointerdown', {x0 + w / 2}, {y0 + w * 0.85})")
+    mv.wait_for_function(f'{C}.L.carga() > 0.05', timeout=60000); e = estado(mv)
+    comprobar('móvil: abajo en la rosa es clavar (la estocada)', e['accion'] == 'preparando' and e['linea'] == 'estocada', str(e))
+    mv.evaluate(f"window.__rosa('pointerup', {x0 + w / 2}, {y0 + w * 0.85})")
+    # soltado pronto, sale al llegar a la carga mínima (con tarjeta gráfica se llega aquí antes de eso)
+    try: mv.wait_for_function(f'{C}.L.accion !== "preparando"', timeout=10000)
+    except Exception: pass
+    e = estado(mv)
     comprobar('móvil: levantar el dedo lanza el golpe', e['accion'] in ('lanzando', 'golpeando', 'recuperando'), str(e))
     libre(mv)
     mv.evaluate("document.getElementById('cmbParar').dispatchEvent(new PointerEvent('pointerdown', { pointerId: 8, pointerType: 'touch', bubbles: true }))")

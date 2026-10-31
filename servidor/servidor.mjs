@@ -67,6 +67,7 @@ import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
 import { RegistroAcciones, ejecutar, reproducir, USAN_INVENTARIO } from '../src/logica/acciones.js';
 import { PresenciaServidor, CADA, validarAspecto, validarEstado } from '../src/logica/presencia.js';
+import { llevadoDe, huellaLlevado } from '../src/logica/llevado.js';
 import { PROTOCOLO } from '../src/logica/protocolo.js';
 import { CombateServidor } from '../src/logica/combate_servidor.js';
 import { Limitador, LIMITES } from '../src/logica/limites.js';
@@ -154,6 +155,14 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const aspectos = new Map();   // autor → { sexo, capas, aspecto }
 
   const enviar = (ws, msg) => { if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(msg)); };
+  // Si ha cambiado lo que se ve que lleva (al coger, soltar, ponerse algo…), se vuelve a repartir su aspecto.
+  const repartirLlevado = (autor) => {
+    const e = aspectos.get(autor); if (!e) return;
+    const l = llevadoDe(objetos.invs.de(autor).lugares);
+    if (huellaLlevado(l) === huellaLlevado(e.llevado)) return;
+    e.llevado = l;
+    for (const [otro, a] of clientes) if (a !== autor) enviar(otro, { tipo: 'aspecto', autor, ...e });
+  };
   const reloj = () => Math.round(performance.now());   // hora del servidor (ms), la que llevan los estados
 
   // combate: el reloj es el del servidor; antes de cada intención se avanza hasta ahora
@@ -273,6 +282,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       if (msg && msg.tipo === 'aspecto') {
         const e = validarAspecto(msg);
         if (!e) return enviar(ws, { tipo: 'error', motivo: 'Aspecto no válido.' });
+        // lo que lleva encima (cinturón, espalda, hombro y manos) lo pone el servidor, de su inventario: el del
+        // navegador no se cree (src/logica/llevado.js)
+        e.llevado = llevadoDe(objetos.invs.de(autor).lugares);
         aspectos.set(autor, e);
         for (const [otro, a] of clientes) if (a !== autor) enviar(otro, { tipo: 'aspecto', autor, ...e });
         return;
@@ -287,6 +299,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         const { ok: _o, motivo: _m, entrada: _e, suelo: _s, ...datos } = r;
         enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? { datos } : { motivo: r.motivo }) });
         enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
+        if (r.ok) repartirLlevado(autor);
         // lo talado antes que el suelo: así el navegador esconde lo que deja el árbol hasta que lo ve caer
         if (r.ok && r.cae) { const m = { tipo: 'tala', estado: objetos.talaVisible(), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, objetos: r.objetos } }; for (const otro of clientes.keys()) enviar(otro, m); }
         if (r.suelo) { const lista = objetos.sueloVisible(ahora); for (const otro of clientes.keys()) enviar(otro, { tipo: 'suelo', objetos: lista }); }
@@ -309,6 +322,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       enviar(ws, { tipo: 'resultado', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? {} : { motivo: r.motivo }) });
       // lo que llevas tal como queda (también si sale mal: el navegador lo había adelantado)
       if (usaInventario) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
+      if (usaInventario && r.ok) repartirLlevado(autor);
       if (r.ok) {
         hechas.push(entrada);
         for (const otro of clientes.keys()) enviar(otro, { tipo: 'accion', entrada });

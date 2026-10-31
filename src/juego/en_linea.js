@@ -79,6 +79,8 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       r.x = e.x; r.z = e.z;
       r.j.raiz.position.set(e.x, e.y, e.z);
       r.j.raiz.rotation.y = e.giro;
+      // lo que lleva (no hace falta vestirlo de nuevo: solo se rehace lo que se ve encima)
+      if (r.j.ponerLlevado && r.llevado !== asp.llevado) { r.llevado = asp.llevado; r.j.ponerLlevado(asp.llevado || null); }
       r.j.animar(r.vel > 0.3 ? r.vel : 0, dt, e.anim === 'talar');
     }
     for (const a of [...remotos.keys()]) if (!siguen.has(a)) quitar(a);

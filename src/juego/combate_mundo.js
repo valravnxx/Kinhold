@@ -1,26 +1,29 @@
 // Kinhold — el combate dentro del mundo (valravnx, 30 oct): sin liza ni duelo aparte. En «Mover», con el arma
 // sacada (tecla C o el botón «Arma»):
 //  - PC: al hacer clic el ratón queda cogido: moverlo gira la cámara (también arriba y abajo) y Esc lo suelta.
-//    Clic izquierdo mantenido: carga el golpe en la dirección del último movimiento del ratón (arriba, abajo,
-//    izquierda, derecha; sin movimiento, estocada); al soltar sale, con más fuerza cuanto más se cargó. Mientras se
-//    carga, un movimiento claro hacia otro lado cambia de dirección sin soltar (finta). Clic derecho mantenido: parar,
-//    por el lado del último movimiento (sin movimiento, la estocada), cambiándolo sin soltar.
-//  - Móvil: la rosa fija abajo a la derecha (tocar un sector carga por ese lado, soltar lo lanza, deslizar a otro
-//    sector cambia de lado); «Parar» mantenido para por el lado que toques en la rosa.
+//    Cuatro direcciones (valravnx, 31 oct): arriba, izquierda, derecha y abajo, que es clavar (la estocada). Clic
+//    izquierdo mantenido: carga el golpe en la dirección del último movimiento del ratón (sin movimiento, la última
+//    usada); al soltar sale, con más fuerza cuanto más se cargó. El golpe va comprometido: moverse no lo cambia; el
+//    clic derecho lo cancela (finta, cuesta aliento) y, si se mantiene, para; también se puede empezar otro golpe.
+//    Clic derecho mantenido: parar, por el lado del último movimiento, cambiándolo sin soltar (con escudo, sin lado:
+//    para lo que viene de frente).
+//  - Móvil: la rosa fija abajo a la derecha, con cuatro sectores (tocar un sector carga por ese lado, soltar lo
+//    lanza); «Parar» cancela el golpe que se carga (finta) y, mantenido, para por el lado que toques en la rosa.
 //  - Fijar (Tab o el botón): con un rival fijado vuelve la cámara del duelo (detrás de ti, mirándole) y andas a su
 //    alrededor; sin fijar, cámara y movimiento libres.
 // Un rival de práctica (botón «Rival») viene a por ti con la máquina del duelo. Todo golpe pasa por las acciones con
 // autor (ejecutarCombate). Provisional, hasta que el arma salga del inventario: espada larga.
 import * as THREE from 'three';
-import { Luchador, IA, LINEAS, ESPEJO, NOMBRE_ZONA, angulo, difAngulo, RITMO, azar } from '../combate/logica.js';
+import { Luchador, IA, LINEAS_DIRECCIONAL as LINEAS, ESPEJO, NOMBRE_ZONA, angulo, difAngulo, RITMO, azar } from '../combate/logica.js';
 import { crearCombatiente, ponerArma, animarCombatiente, pintarHeridas, sacudir, Rastro } from '../combate/modelos.js';
 import { LectorDireccion, lineaDe } from '../combate/direccion.js';
 import { ejecutarCombate } from '../logica/acciones.js';
 import { tr } from '../idioma.js';
 
-const FLECHA = { alto: '▲', bajo: '▼', izquierda: '◀', derecha: '▶', estocada: '●' };
+// abajo, clavar (la estocada): la punta hacia delante
+const FLECHA = { alto: '▲', izquierda: '◀', derecha: '▶', estocada: '▼' };
 // dónde va cada marca alrededor del centro (en múltiplos del radio)
-const SITIO = { alto: [0, -1], bajo: [0, 1], izquierda: [-1, 0], derecha: [1, 0], estocada: [0, 0] };
+const SITIO = { alto: [0, -1], izquierda: [-1, 0], derecha: [1, 0], estocada: [0, 1] };
 
 export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, recursos, sexo, aspecto, capasActuales, armaduraActual,
   modo, alturaEn, registro, esTactil, aviso }) {
@@ -62,7 +65,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   const carga = div('cmbCarga', '<i></i>');
   const estadoEl = div('cmbEstado', `<span data-t="aliento"></span><span class="barra"><i></i></span><span class="sangre"></span>`);
   const msg = div('cmbMsg');
-  const rosa = div('cmbRosa', '<span class="centro"></span>' + LINEAS.map(l => `<b data-l="${l}" style="left:${50 + SITIO[l][0] * 34}%;top:${50 + SITIO[l][1] * 34}%">${FLECHA[l]}</b>`).join(''));
+  const rosa = div('cmbRosa', LINEAS.map(l => `<b data-l="${l}" style="left:${50 + SITIO[l][0] * 34}%;top:${50 + SITIO[l][1] * 34}%">${FLECHA[l]}</b>`).join(''));
   const botones = div('cmbBotones');
   const boton = (id, texto, donde = botones) => { const b = document.createElement('button'); b.id = id; b.textContent = tr(texto); donde.appendChild(b); return b; };
   const bParar = esTactil ? boton('cmbParar', 'Parar') : null;
@@ -153,10 +156,18 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (c.L.bloqueando) c.L.bloquear(false);
     if (c.L.cargar(linea)) c.atacando = true;
   }
-  function cambiarGolpe(linea) { if (c.atacando && c.L.cambiarLinea(linea)) c.lector.linea = linea; }
   function soltarGolpe() { if (c.atacando) { c.L.descargar(); c.atacando = false; } }
+  // el botón de parar mientras se prepara un golpe lo cancela (finta) y, si se mantiene, para
+  function fintar() {
+    if (!c.L || c.L.accion !== 'preparando') return false;
+    c.atacando = false;
+    if (!c.L.fintar()) return false;
+    decir(tr('Finta'));
+    return true;
+  }
   function parar(activo, linea) {
     if (!c.activo || !c.L) return;
+    if (activo) fintar();
     c.parando = activo;
     c.L.bloquear(activo, linea);
   }
@@ -170,12 +181,9 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (document.pointerLockElement !== lienzo) {
       // el primer clic solo coge el ratón (en las pruebas, sin bloqueo de puntero, ya cuenta como cogido)
       try { const p = lienzo.requestPointerLock(); if (p && p.catch) p.catch(() => {}); } catch (err) { /* sin bloqueo */ }
-      if (!c.raton) { c.raton = true; return; }
+      if (!c.raton) { c.raton = true; botonesAntes = e.buttons || 0; return; }
     }
-    // la hora de cada evento (no la de cuando se atiende): con pocos fotogramas, el movimiento de antes del clic sigue contando
-    const t = e.timeStamp / 1000;
-    if (e.button === 0) empezarGolpe(c.lector.alPulsar(t));
-    else if (e.button === 2) parar(true, c.lector.alPulsar(t));
+    pulsados(e);
   }, true);
   lienzo.addEventListener('pointermove', (e) => {
     if (!nuestro(e)) return;
@@ -183,14 +191,30 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     const bloqueado = document.pointerLockElement === lienzo;
     if (!bloqueado && !c.raton) return;
     const dx = e.movementX || 0, dy = e.movementY || 0;
-    moverRaton(dx, dy, e.timeStamp / 1000);
+    // al coger el ratón (pointer lock) llega un salto enorme sin botones: no es un movimiento de la mano
+    if (Math.abs(dx) + Math.abs(dy) < 400) moverRaton(dx, dy, e.timeStamp / 1000);
+    // solo si cambia un botón (con otro ya pulsado, el navegador lo avisa así, con «button» ≥ 0); un movimiento
+    // normal trae button = -1 y sus «buttons» no sirven para saber qué se ha pulsado o soltado
+    if (e.button >= 0) pulsados(e);
   }, true);
   lienzo.addEventListener('pointerup', (e) => {
     if (!nuestro(e)) return;
     e.stopImmediatePropagation();
-    if (e.button === 0) soltarGolpe();
-    else if (e.button === 2) parar(false);
+    pulsados(e);
   }, true);
+  // Qué botones se pulsan y se sueltan, mirando cuáles cambian: con un botón ya pulsado, pulsar o soltar el otro no da
+  // pointerdown ni pointerup sino un pointermove con otros «buttons» (y la finta es justo eso: parar con el golpe cargado).
+  // La hora de cada evento (no la de cuando se atiende): con pocos fotogramas, el movimiento de antes del clic sigue contando.
+  let botonesAntes = 0;
+  function pulsados(e) {
+    const b = e.buttons || 0, t = e.timeStamp / 1000;
+    const sube = b & ~botonesAntes, baja = botonesAntes & ~b;
+    botonesAntes = b;
+    if (sube & 1) empezarGolpe(c.lector.alPulsar(t));
+    if (sube & 2) parar(true, c.lector.alPulsar(t));
+    if (baja & 1) soltarGolpe();
+    if (baja & 2) parar(false);
+  }
   function moverRaton(dx, dy, t = ahora()) {
     c.lector.mover(dx, dy, t);
     // sin rival fijado, el ratón gira la cámara (izquierda-derecha y arriba-abajo)
@@ -198,22 +222,22 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
       cam.yaw -= dx * 0.0035;
       cam.pitch = THREE.MathUtils.clamp(cam.pitch + dy * 0.0028, 0.06, 1.35);
     }
-    if (c.atacando || c.parando) {
+    // el golpe va comprometido; la parada sí cambia de lado sin soltar
+    if (c.parando && !c.atacando) {
       const l = c.lector.cambio(t);
-      if (l && c.atacando) cambiarGolpe(l);
-      else if (l && c.parando) parar(true, l);
+      if (l) parar(true, l);
     }
   }
   document.addEventListener('pointerlockchange', () => {
     c.raton = document.pointerLockElement === lienzo;
-    if (!c.raton) { soltarGolpe(); if (c.parando) parar(false); }
+    if (!c.raton) { botonesAntes = 0; soltarGolpe(); if (c.parando) parar(false); }
   });
 
   // ---------- Rosa (móvil) ----------
-  let lineaParadaRosa = 'estocada', dedoRosa = null;
+  let lineaParadaRosa = 'alto', dedoRosa = null;
   const lineaRosa = (x, y) => {
-    const b = rosa.getBoundingClientRect(), dx = x - (b.left + b.width / 2), dy = y - (b.top + b.height / 2);
-    return Math.hypot(dx, dy) < b.width * 0.21 ? 'estocada' : lineaDe(dx, dy);
+    const b = rosa.getBoundingClientRect();
+    return lineaDe(x - (b.left + b.width / 2), y - (b.top + b.height / 2));
   };
   rosa.addEventListener('pointerdown', (e) => {
     e.preventDefault(); e.stopPropagation();
@@ -225,12 +249,12 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   rosa.addEventListener('pointermove', (e) => {
     if (e.pointerId !== dedoRosa) return;
     const l = lineaRosa(e.clientX, e.clientY);
-    if (c.parando) { if (l !== lineaParadaRosa) { lineaParadaRosa = l; parar(true, l); } } else if (c.atacando && l !== c.L.linea) cambiarGolpe(l);
+    if (c.parando && l !== lineaParadaRosa) { lineaParadaRosa = l; parar(true, l); }   // (el golpe no cambia: va comprometido)
   });
   const finRosa = (e) => { if (e.pointerId !== dedoRosa) return; dedoRosa = null; soltarGolpe(); };
   rosa.addEventListener('pointerup', finRosa); rosa.addEventListener('pointercancel', finRosa);
   if (bParar) {
-    bParar.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); try { bParar.setPointerCapture(e.pointerId); } catch (err) { /* nada */ } soltarGolpe(); parar(true, lineaParadaRosa); bParar.classList.add('sel'); });
+    bParar.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); try { bParar.setPointerCapture(e.pointerId); } catch (err) { /* nada */ } parar(true, lineaParadaRosa); bParar.classList.add('sel'); });
     const fin = () => { parar(false); bParar.classList.remove('sel'); };
     bParar.addEventListener('pointerup', fin); bParar.addEventListener('pointercancel', fin);
   }
