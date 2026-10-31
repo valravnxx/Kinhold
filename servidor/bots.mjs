@@ -186,7 +186,20 @@ export class Bot {
       if (!p || !p.obra) { if (p) this.m.obrasTerminadas++; this.obra = null; this.desdeTrabajo = undefined; return 'quieto'; }
       if (this.destino && this.andarHacia(this.destino, dt, 1.2)) return 'andar';
       const falta = M.faltaEntregar(p);
-      if (falta.length) this.hacer({ tipo: 'entregar', construccion: c.id, clave: this.obra.clave, material: falta[0].m, cantidad: falta[0].n, desde: 0 });
+      if (falta.length) {
+        // las obras cobran de lo que llevas (como la demo): primero se coge del arcón de pruebas (3 piedras en las manos,
+        // un tronco corto con las dos; si no cabe tanto, de uno en uno) y luego se entrega
+        const f = falta[0];
+        if (this.lleva !== f.m) this.hacer({ tipo: 'sacar_arcon', material: f.m, cantidad: Math.min(f.n, this.deUno || f.m === 'tronco' ? 1 : 3) }, null, (r) => {
+          if (r.ok) this.lleva = f.m;
+          else if (/cabe/i.test(r.motivo || '')) {
+            this.deUno = true;
+            // con las manos llenas de lo que sobró, de vuelta al arcón
+            if (/sitio libre/.test(r.motivo)) for (const de of ['mano:der', 'mano:izq']) this.accion({ tipo: 'dejar_arcon', de, cantidad: 3 });
+          }
+        });
+        else this.hacer({ tipo: 'entregar', construccion: c.id, clave: this.obra.clave, material: f.m, cantidad: f.n, desde: 0 }, null, () => { this.lleva = null; });
+      }
       else {
         // como la demo: un rato de trabajo cada medio segundo, con el tiempo de verdad que ha pasado
         if (this.desdeTrabajo === undefined) this.desdeTrabajo = t;
@@ -220,15 +233,16 @@ export class Bot {
   }
   // Manda una acción de obra y espera su respuesta antes de la siguiente (como un jugador, que no repite el
   // clic hasta ver qué pasa). alAplicar: se llama cuando la copia del mundo aplica esa acción (con su resultado).
-  hacer(accion, alAplicar) {
+  hacer(accion, alAplicar, alResultado) {
     this.ocupado = true;
     const E = this.enjambre.espejo;
     if (alAplicar) E.avisos.set(this.yo, (e, r) => { if (e.tipo === accion.tipo) { E.avisos.delete(this.yo); alAplicar(e, r); } });
     this.accion(accion).then((r) => {
       this.ocupado = false;
+      if (alResultado) alResultado(r);
       if (!r.ok) {
         if (alAplicar) E.avisos.delete(this.yo);
-        if (r.motivo === 'Faltan materiales.' || /material/i.test(r.motivo || '')) this.accion({ tipo: 'rellenar', cantidad: 1000 });
+        if (r.motivo === 'Faltan materiales.' || r.motivo === 'En el arcón no hay tanto.') this.accion({ tipo: 'rellenar', cantidad: 1000 });
       }
     });
   }

@@ -38,6 +38,10 @@
 //   estado }. La bienvenida lleva todo eso (inventario, suelo, tala, recoleccion). 'coger' y 'soltar' son el arcón de
 //   pruebas (arconPruebas, sí por ahora). Se guarda entero en objetos.json junto al mundo, y cada acción (bien o mal)
 //   en objetos.jsonl.
+//   Las obras cobran de ahí (src/logica/acciones.js): entregar, subir y el arcón de materiales (sacar_arcon y dejar_arcon,
+//   solo con arconPruebas) se ejecutan con los inventarios del servidor; la entrada que se guarda y se reparte va ya
+//   pagada («lleva» y la cantidad de verdad), así que al volver a arrancar y en los demás navegadores el mundo se rehace
+//   igual sin conocer lo que lleva cada uno. Al autor le llega además { tipo: 'inventario' } (bien o mal).
 //
 //   Conexiones que se cortan (src/logica/limites.js y abajo):
 //   - Ficha: la bienvenida lleva una ficha secreta (solo para ese cliente). Si el cliente vuelve a conectar con
@@ -61,7 +65,7 @@ import { dirname, resolve } from 'path';
 import { randomUUID, createHash } from 'crypto';
 import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
-import { RegistroAcciones, ejecutar, reproducir } from '../src/logica/acciones.js';
+import { RegistroAcciones, ejecutar, reproducir, USAN_INVENTARIO } from '../src/logica/acciones.js';
 import { PresenciaServidor, CADA, validarAspecto, validarEstado } from '../src/logica/presencia.js';
 import { PROTOCOLO } from '../src/logica/protocolo.js';
 import { CombateServidor } from '../src/logica/combate_servidor.js';
@@ -267,11 +271,18 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
       // el autor lo pone el servidor; el que traiga el cliente se pisa
       const accion = { ...msg.accion, autor };
-      const r = ejecutar(mundo, registro, accion);
+      // las obras cobran de lo que llevas (los inventarios del servidor); el arcón de materiales, solo si hay arcón de pruebas
+      const usaInventario = USAN_INVENTARIO.has(accion.tipo);
+      const sinArcon = !arconPruebas && (accion.tipo === 'sacar_arcon' || accion.tipo === 'dejar_arcon');
+      const r = sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
+      if (sinArcon) registro.anotar(accion, r);
       const entrada = registro.entradas[registro.entradas.length - 1];
       registro.entradas.length = 0;   // lo guardado va al archivo; en memoria basta con «hechas»
       appendFileSync(archivo, JSON.stringify(entrada) + '\n');
+      if (usaInventario && r.ok) guardarObjetos();
       enviar(ws, { tipo: 'resultado', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? {} : { motivo: r.motivo }) });
+      // lo que llevas tal como queda (también si sale mal: el navegador lo había adelantado)
+      if (usaInventario) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
       if (r.ok) {
         hechas.push(entrada);
         for (const otro of clientes.keys()) enviar(otro, { tipo: 'accion', entrada });

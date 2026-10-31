@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v64 (capa de espalda)';
+export const VERSION_DEMO = 'Demo única · v65 (las obras cobran de lo que llevas en línea)';
 export const REGISTRO_DEMO = [
+  'v65: en «Jugar», las obras cobran de lo que llevas, como en solitario. Lo que entregas a una obra (y la pieza que subes a una obra en alto) sale de lo que llevas en el servidor, y el arcón de materiales de obra del inventario va por el servidor: lo que se coge y se deja en él lo ven igual todos. Si no llevas el material, Usar (F) dice qué le falta a la obra.',
   'v64: en «Personaje» y en el juego, la capa de espalda ya no sale casi negra y lisa: lana sin teñir más clara y pliegues redondos y hondos que se ven también en sombra. Personajes en recursos/personajes/taller-v20/.',
   "v63: en «Jugar», lo que llevas es lo que tiene el servidor, no el navegador: el panel de inventario, soltar y coger del suelo, talar, tronzar y partir, y recoger ramas, piedras y lo demás pasan por el servidor con tu autor. Lo que sueltas, lo que deja un árbol y los tocones los ven todos, y siguen ahí al recargar o al volver otro día. Un árbol que tala otro se ve caer.",
   "v63, provisional: el servidor aún no genera el mundo, así que se fía del árbol o del punto de recogida que dice tu navegador si estás a su lado (su nombre tiene que cuadrar con su sitio); el arcón de pruebas del inventario sigue en línea mientras el servidor sea el de pruebas (sin él nadie tendría un hacha), y cada cosa que sale o entra queda anotada con su autor. Entre golpe y golpe de hacha, el servidor pide medio segundo (la red puede juntar dos). La ropa elegida en «Personaje» entra en lo que llevas en el servidor una vez por cada jugador.",
