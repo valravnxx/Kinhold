@@ -1,0 +1,14 @@
+▲ [WARNING] Duplicate key "usar" in object literal [duplicate-object-key]
+
+    src/juego/main.js:2139:84:
+      2139 │ ...vestir, troceo, troncoCercano, golpeTroceo, usar, cambiarHombro,
+           ╵                                                ~~~~
+
+  The original key "usar" is here:
+
+    src/juego/main.js:2082:46:
+      2082 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2469 KB
+dist/publicar/kinhold.html listo
