@@ -1,6 +1,9 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v66 (volver donde lo dejaste)';
+export const VERSION_DEMO = 'Demo única · v67 (valles sin cortados rectos)';
 export const REGISTRO_DEMO = [
+  "v67: el terreno sin cortados rectos de kilómetros (valravnx, 31 oct): donde un río va muy por debajo del terreno de alrededor, las laderas de su valle eran planos lisos, rectos a lo largo de cada tramo de río y con una arista viva arriba (el más largo, 1,6 km). Ahora la ladera cambia de pendiente por trechos (el borde de arriba no va recto), lleva el relieve del sitio y el borde se redondea; río arriba de donde nace, el valle se cierra en una cabecera suave y no en una pared.",
+  "v67, provisional: cambia el terreno junto a los ríos, así que algunos sitios de salida al azar cambian (ahora 260); a quien le tocaba uno que ya no vale se le da otro. Lo construido junto a un río puede quedar algo hundido o en el aire hasta el siguiente wipe.",
+  "v67, aún mal: los valles siguen siendo hondos donde el mapa los pone hondos (hasta unos 250 m bajo el terreno de alrededor), ahora con ladera y no con pared.",
   "v66: volver donde lo dejaste (valravnx, 31 oct): el navegador recuerda quién eres aunque cierres la pestaña, y al volver a entrar apareces donde estabas al salir; el servidor lo apunta al salir y cada pocos segundos. Dos pestañas del mismo navegador son el mismo jugador: la nueva deja fuera a la de antes. Un wipe del servidor lo borra y se vuelve a empezar en la salida.",
   "v66, provisional: lo que pasa en el «Duelo» no cuenta como sitio del mundo: al volver a «Jugar» se sale donde se estaba antes del duelo.",
   'v65: en «Jugar», las obras cobran de lo que llevas, como en solitario. Lo que entregas a una obra (y la pieza que subes a una obra en alto) sale de lo que llevas en el servidor, y el arcón de materiales de obra del inventario va por el servidor: lo que se coge y se deja en él lo ven igual todos. Si no llevas el material, Usar (F) dice qué le falta a la obra.',
