@@ -5,12 +5,7 @@
   "hito": "equipo",
   "rama": "trabajo/20261031-2123"
  },
- "B": {
-  "inicio": "2026-10-31T22:53:58+00:00",
-  "tarea": "Revisión completa y publicación",
-  "hito": "arte",
-  "rama": "trabajo/20261031-2253"
- },
+ "B": null,
  "chat:trabajo/20261031-2300-pelea": {
   "inicio": "2026-10-31T22:59:16+01:00",
   "tarea": "Pelear en línea en el mundo (valravnx, 31 oct): al sacar el arma, los demás la ven en la mano, y los golpes y las paradas van por el servidor y hieren de verdad al otro",
