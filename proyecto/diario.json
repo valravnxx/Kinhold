@@ -3158,5 +3158,35 @@
   "pruebas": "Todas en la nube (25 grupos) sobre la rama con main unido: 22 bien a la primera; la demo en el mundo falló por un fotograma de 62,6 ms (el límite es 60) y pasó al repetirla; jugar en línea y duelo en línea fallan (exentos hasta la fase 2), aunque en la vuelta anterior pasaron enteros los dos, también el cartel sin conexión y volver donde lo dejaste. Tras unir main la última vez (animaciones para cargar, sin archivos de código en común), aquí: la del servidor y la de cargar.",
   "capturas": "capturas/demo-v66",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T08:51:54+00:00",
+  "fin": "2026-10-31T11:43:38+00:00",
+  "titulo": "Herramienta en la mano al trabajar: el pico al picar (sin publicar)",
+  "hito": "arte",
+  "hecho": [
+   "En el visor de personaje, con «Picar» el personaje lleva un pico de una mano en la mano derecha (mango de fresno de unos 70 cm, punta delante algo curvada hacia el mango y azuela detrás, con el estilo v5 como el hacha); con «Talar», el hacha; con lo demás, la mano vacía.",
+   "El agarre del hacha pasa a una función común (empunar) que vale para cualquier herramienta y cualquier cuerpo.",
+   "Arreglado de paso: la herramienta de la mano quedaba dentro de los niveles de detalle; al cambiar de nivel se escondía para siempre (también el hacha del juego) y contaba como triángulos del cuerpo.",
+   "Pruebas nuevas: el pico en la prueba de modelos (largo, punta y azuela, la punta curvada; con MUTAR_PICO falla) y, en la del personaje, que al picar lleva el pico en la mano derecha y al talar el hacha, y con un golpe de espada nada.",
+   "La prueba de lo que llevas en línea servía los personajes de la taller-v19 y la demo ya usa los de la taller-v20 (daba 404).",
+   "No se publica: desde las 11:18 «jugar en línea» para la publicación como los demás grupos, y falla en esta rama como en todas las ramas probadas hoy (al construir una obra en línea y al volver a conectar). La tarea queda a medias en trabajo/20261031-0858, lista para publicar como personaje v32 en cuanto «jugar en línea» pase."
+  ],
+  "pruebas": "En la nube (el PC de valravnx fallaba en el primer paso): todos los grupos bien salvo «jugar en línea»; «lo que llevas en línea» y «niveles de detalle» fallaron una vez y pasaron al repetirlos. No comprobado: la prueba nueva del navegador rota a propósito (MUTAR) no se ha pasado.",
+  "capturas": "",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-10-31T11:49:59+00:00",
+  "fin": "2026-10-31T11:49:59+00:00",
+  "titulo": "Decidido: las animaciones de cargar las hacemos nosotros (chat con valravnx)",
+  "hito": "equipo",
+  "hecho": [
+   "Decidido por valravnx: llevar al hombro y arrastrar se hacen en el taller a partir de las animaciones que ya hay, sin traerlas de fuera; y el tronco al hombro tiene que frenar al moverse.",
+   "La tarea pasa de esperar la decisión a pendiente, en «Equipo y carga por huecos», justo detrás de la de las animaciones para cargar."
+  ],
+  "pruebas": "Sin pruebas: solo cambian el roadmap, REVISION.md y el diario.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

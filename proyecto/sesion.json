@@ -6,10 +6,10 @@
   "rama": "trabajo/20261031-1123"
  },
  "B": {
-  "inicio": "2026-10-31T08:58:36+00:00",
-  "tarea": "Herramienta en la mano al trabajar (visto en la revisión del 30 oct): al picar el personaje no lleva pico",
-  "hito": "arte",
-  "rama": "trabajo/20261031-0858"
+  "inicio": "2026-10-31T11:54:23+00:00",
+  "tarea": "Recetas que conoce cada personaje y desbloqueo por práctica (GDD, apartado 9): construir la estación da sus recetas básicas y fabricar en ella abre las siguientes. Lo que el GDD no fija (qué recetas son básicas y cuánta práctica abre las demás) se decide de forma provisional y sencilla y se anota en el registro de decisiones y en el diario. Guardado en el navegador con migración. Pruebas de lógica",
+  "hito": "crafting",
+  "rama": "trabajo/20261031-1154"
  },
  "chat:trabajo/20261031-1005-cuatro": {
   "inicio": "2026-10-31T10:02:41+01:00",
