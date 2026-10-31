@@ -512,7 +512,9 @@
     },
     {
      "nombre": "Panel de depuración con clave de admin (valravnx, 30 oct): se abre con una tecla; mapa de la isla con los jugadores conectados, lista de jugadores, y teletransportarse a un punto del mapa o junto a otro jugador. Ver a todos y teletransportarse pasan por el servidor con su autor, y solo los acepta con la clave de admin que valravnx pone en la máquina (en servidor/nube/LEEME.md, cómo)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-10-31T20:23:16+00:00",
+     "rama": "trabajo/20261031-2023"
     },
     {
      "nombre": "Lo que se recoge sale del sitio: ramas en el bosque, sílex en la caliza, piedra en las laderas y los ríos, fibra en los claros y las riberas",
