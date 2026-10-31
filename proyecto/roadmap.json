@@ -479,6 +479,10 @@
      "rama": "trabajo/20261031-0022"
     },
     {
+     "nombre": "La brocha de nivelar en el juego: un botón en «Construir» y su fantasma redondo para alisar el suelo en ladera a mano (la acción con autor ya está en la lógica y en el servidor), y la hierba y las matas de alrededor de lo alisado a la altura nueva",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Panel de depuración con clave de admin (valravnx, 30 oct): se abre con una tecla; mapa de la isla con los jugadores conectados, lista de jugadores, y teletransportarse a un punto del mapa o junto a otro jugador. Ver a todos y teletransportarse pasan por el servidor con su autor, y solo los acepta con la clave de admin que valravnx pone en la máquina (en servidor/nube/LEEME.md, cómo)",
      "estado": "pendiente"
     },
