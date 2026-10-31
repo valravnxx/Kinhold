@@ -1,7 +1,12 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-10-31T11:23:10+00:00",
+  "tarea": "Lo que llevas se ve puesto en el personaje del taller: el cinturón y lo que cuelga de él, el leñero o la mochila a la espalda, el saco al hombro y lo que tienes en las manos, con el estilo v5. Capturas de cerca para valravnx",
+  "hito": "equipo",
+  "rama": "trabajo/20261031-1123"
+ },
  "B": {
-  "inicio": "2026-10-31T08:58:36+00:00",
+  "inicio": "2026-10-31T13:52:37+00:00",
   "tarea": "Herramienta en la mano al trabajar (visto en la revisión del 30 oct): al picar el personaje no lleva pico",
   "hito": "arte",
   "rama": "trabajo/20261031-0858"
@@ -23,11 +28,5 @@
   "tarea": "Tejados pisables y menú de Usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en Usar (o dejándolo pulsado en el móvil), se elige qué usar si hay varias cosas al alcance",
   "hito": "mundo-juego",
   "rama": "trabajo/20261031-1006-tejados"
- },
- "chat:trabajo/20261031-1109-grafica": {
-  "inicio": "2026-10-31T11:09:01+00:00",
-  "tarea": "Arreglar las pruebas en la gráfica del PC de valravnx (valravnx, 31 oct): fallaban todas al empezar («bash: command not found»)",
-  "hito": "infra",
-  "rama": "trabajo/20261031-1109-grafica"
  }
 }
