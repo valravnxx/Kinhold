@@ -94,6 +94,22 @@ export const CATALOGO = {
   hacha_mano: { nombre: 'Hacha de mano', tam: 'M', herramienta: true },
   hacha_piedra: { nombre: 'Hacha de piedra', tam: 'M', herramienta: true },
   hacha_hierro: { nombre: 'Hacha de hierro', tam: 'M', herramienta: true },
+  // lo que se fabrica en N0 y en la entrada a N1 (documento de sistemas, apartado 8; src/logica/fabricacion.js).
+  // Tamaños provisionales (anotados en el diario): la rastra se arrastra (enorme); lo demás, en una mano.
+  lasca_silex: { nombre: 'Lasca de sílex', tam: 'P', herramienta: true },
+  lanza_endurecida: { nombre: 'Lanza endurecida', tam: 'M' },
+  palo_cavador: { nombre: 'Palo cavador', tam: 'M', herramienta: true },
+  honda: { nombre: 'Honda', tam: 'P' },
+  antorcha: { nombre: 'Antorcha', tam: 'M' },
+  rastra: { nombre: 'Rastra', tam: 'E' },
+  arpon: { nombre: 'Arpón', tam: 'M', herramienta: true },
+  nasa: { nombre: 'Nasa', tam: 'M' },
+  trampa_lazo: { nombre: 'Trampa de lazo', tam: 'P' },
+  pala_madera: { nombre: 'Pala de madera', tam: 'M', herramienta: true },
+  azada: { nombre: 'Azada de madera y piedra', tam: 'M', herramienta: true },
+  hoz_silex: { nombre: 'Hoz de sílex', tam: 'M', herramienta: true },
+  mayal: { nombre: 'Mayal', tam: 'M', herramienta: true },
+  cubo: { nombre: 'Cubo de madera', tam: 'M' },
   espada: { nombre: 'Espada', tam: 'M' },
   escudo: { nombre: 'Escudo', tam: 'M' },
   // cinturones (GDD: sus huecos). El cordel de fibra es el de inicio.

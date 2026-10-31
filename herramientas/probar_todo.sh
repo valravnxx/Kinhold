@@ -39,6 +39,7 @@ paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs
 paso "Inventario por huecos" node pruebas/prueba_inventario.mjs
 paso "Recoger del suelo y de las plantas" node pruebas/prueba_recoleccion.mjs
+paso "Estaciones y recetas" node pruebas/prueba_fabricacion.mjs
 paso "Objetos en el suelo" node pruebas/prueba_suelo.mjs
 paso "Tala de los árboles" node pruebas/prueba_tala.mjs
 paso "Tronzar y partir" node pruebas/prueba_troceo.mjs
