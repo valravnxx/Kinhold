@@ -1,0 +1,25 @@
+Diario: unión de tres vías
+  OK   las dos ramas añaden al final: entran las dos, la nuestra primero — a,b,c,d
+  OK   las entradas de la otra rama se meten por su hora de inicio — a,b,d,c,e
+  OK   la misma entrada en las dos ramas entra una sola vez
+  OK   un cambio de una rama en una entrada vieja se conserva
+  OK   el cambio de la otra rama también se conserva
+  OK   lo que quita una rama sin que la otra lo cambie se quita
+  OK   las dos cambian la misma entrada de forma distinta: choque, no se elige solo — 2026-10-25T11:00:00+00:00|b
+  OK   sin ancestro común (archivo nuevo en las dos ramas)
+  OK   una entrada repetida en un lado se avisa — entrada repetida en el diario: 2026-10-25T10:00:00+00:00|a
+Traducciones: unión de tres vías
+  OK   textos nuevos de las dos ramas entran, en orden — Hola,Casa,Muro,Puerta
+  OK   una traducción corregida en una rama se conserva
+  OK   la misma traducción cambiada distinto en las dos: choque
+  OK   un texto que ya no se usa y se quita en una rama se quita
+Formato del archivo
+  OK   mantiene la sangría de un espacio y no añade salto final
+  OK   si el archivo acaba en salto de línea, lo mantiene
+Caso real con git: dos sesiones en paralelo
+  OK   la segunda fusión no da conflicto — unir_json: proyecto/diario.json unido sin choques.
+  OK   el diario lleva las entradas de las dos sesiones — a,chat,auto
+  OK   en.json y ru.json llevan los textos de las dos
+  OK   si las dos cambian la misma traducción distinto, git lo deja en conflicto
+
+19 correctas, 0 fallidas
