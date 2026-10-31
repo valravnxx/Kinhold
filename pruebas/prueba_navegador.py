@@ -649,7 +649,7 @@ with sync_playwright() as p:
     esperar(pg, 600)
     teclas_antes = ev(f"!!{K}.obrando")
     pg.keyboard.down('s'); esperar(pg, 400); pg.keyboard.up('s')
-    comprobar('moverse deja la obra', teclas_antes and not ev(f"{K}.obrando"), f'obrando antes={teclas_antes}, aviso={ev("document.getElementById(\'aviso\').textContent")!r}')
+    comprobar('moverse deja la obra', teclas_antes and not ev(f"{K}.obrando"), 'obrando antes=%s, aviso=%r' % (teclas_antes, ev("document.getElementById('aviso').textContent")))
     ev(f"{K}.pj.x=-15.6; {K}.pj.z=-13.6; {K}.pj.rot=0.6; {K}.cam.yaw=Math.PI+0.5; {K}.cam.pitch=0.3; {K}.cam.dist=4.2")
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/29_obra_muro_de_cerca.png')
