@@ -594,6 +594,10 @@
      "rama": "trabajo/20261031-0224"
     },
     {
+     "nombre": "Las obras cobran de lo que llevas también en línea: lo que se entrega a una obra (y lo que se sube a una obra en alto) sale de lo que llevas en el servidor, el arcón de materiales de obra va por el servidor, y el mundo se rehace igual al volver a arrancar el servidor y en el navegador de los demás",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Animaciones para cargar: buscar animaciones libres para uso comercial de llevar algo pesado en brazos o al hombro, arrastrar y empujar, y pasarlas al esqueleto del taller con pasar_animaciones.mjs (procedencia y licencia en PROCEDENCIA.md)",
      "estado": "pendiente"
     },
