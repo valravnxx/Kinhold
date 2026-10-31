@@ -1,0 +1,34 @@
+Vista pc
+  OK   la demo arranca sin error — None
+  OK   hay una ladera suave cerca de la salida — {"x": -33, "z": 22, "g": 0.14453507227629717}
+  ladera en -33 22 pendiente 0.145
+  OK   el mojón se pone — {"mojon": {"x": -36, "z": 25}}
+   {"n": 1, "piezas": ["cim_piedra", "cim_piedra", "cim_piedra", "cerca", "muro_tronco"], "oy": -1.047, "nivelados": 3, "primera": true, "grupoY": null}
+  OK   la construcción se pone (cimientos, cerca y muro, terminados) — ["cim_piedra", "cim_piedra", "cim_piedra", "cerca", "muro_tronco"]
+  OK   la construcción queda a la altura del suelo donde empieza (no a 0) — oy -1.047, suelo -1.047, desnivel debajo 0.24 m
+   {"pts": [-1.3276314774213205e-06, -1.3276314774213205e-06, -1.3276314774213205e-06, -1.3276314774213205e-06, -1.3276314774213205e-06, -1.3276314774213205e-06], "lejos": [0.10833314502477265, -1.5603527680611649], "gy": -1.047, "cy": -0.6884960786080399, "sueloCerca": -0.6884960786080399}
+  OK   el terreno de debajo de los cimientos sale llano a su altura (malla que se ve) — [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0]
+  OK   el terreno de lejos, como antes — [0.10833314502477265, -1.5603527680611649] / [0.10833314502477265, -1.5603527680611649]
+  OK   la construcción se dibuja a su altura — -1.047
+  OK   la cerca, a ras del suelo de su sitio — -0.6884960786080399 / -0.6884960786080399
+  OK   el personaje pisa el cimiento (a la altura de la construcción) — -0.927 / oy -1.047
+  OK   la brocha alisa un círculo a su altura — [-0.09000059520960235, -0.09288450634258538] / -0.090
+  OK   sin errores en la página
+Vista movil
+  OK   la demo arranca sin error — None
+  OK   hay una ladera suave cerca de la salida — {"x": -50, "z": -25, "g": 0.1070021263300665}
+  ladera en -50 -25 pendiente 0.107
+  OK   el mojón se pone — {"mojon": {"x": -53, "z": -22}}
+   {"n": 1, "piezas": ["cim_piedra", "cim_piedra", "cim_piedra", "cerca", "muro_tronco"], "oy": 1.887, "nivelados": 3, "primera": true, "grupoY": null}
+  OK   la construcción se pone (cimientos, cerca y muro, terminados) — ["cim_piedra", "cim_piedra", "cim_piedra", "cerca", "muro_tronco"]
+  OK   la construcción queda a la altura del suelo donde empieza (no a 0) — oy 1.887, suelo 1.887, desnivel debajo 0.44 m
+   {"pts": [-1.8865790663014081e-07, -1.8865790663014081e-07, -1.8865790663014081e-07, -1.8865790663014081e-07, -1.8865790663014081e-07, -1.8865790663014081e-07], "lejos": [1.5335900441912145, 3.224922861268851], "gy": 1.887, "cy": 1.4756419317034215, "sueloCerca": 1.4756419317034215}
+  OK   el terreno de debajo de los cimientos sale llano a su altura (malla que se ve) — [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0]
+  OK   el terreno de lejos, como antes — [1.5335900441912145, 3.224922861268851] / [1.5335900441912145, 3.224922861268851]
+  OK   la construcción se dibuja a su altura — 1.887
+  OK   la cerca, a ras del suelo de su sitio — 1.4756419317034215 / 1.4756419317034215
+  OK   el personaje pisa el cimiento (a la altura de la construcción) — 2.007 / oy 1.887
+  OK   la brocha alisa un círculo a su altura — [2.4570004598406285, 2.450629724671801] / 2.457
+  OK   sin errores en la página
+
+Todo bien
