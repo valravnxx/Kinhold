@@ -2959,5 +2959,23 @@
   "pruebas": "En la nube, la batería entera (22 grupos): bien salvo jugar en línea (exento hasta la fase 2: el móvil no ve a PC y el cartel sin conexión no sale). Tras unir main (construir a la altura del suelo), repetidos lógica, web, demo única, la demo en el mundo y juego en inglés: bien.",
   "capturas": "capturas/personaje-v30",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T02:24:31+00:00",
+  "fin": "2026-10-31T04:34:29+00:00",
+  "titulo": "Hito «Equipo y carga»: lo que llevas, por el servidor en el juego (carril A; sin publicar, lo sigue el relevo)",
+  "hito": "equipo",
+  "hecho": [
+   "Servidor (src/logica/objetos_red.js): además de lo que llevas y el suelo, ahora talar, trocear, recoger y el arcón de pruebas ('coger' y 'soltar', solo con arconPruebas, que el servidor de pruebas trae puesto). Lo talado, lo troceado a medias y lo recogido se guardan en objetos.json (versión 2; la 1 se sigue leyendo).",
+   "Decisión provisional: el servidor aún no genera el mundo, así que se fía del árbol o del punto de recogida que dice el navegador si el autor está a su lado; el nombre del árbol tiene que salir de su sitio y el del punto, de su clase. Entre golpe y golpe de hacha el servidor pide 0,5 s (el navegador da uno cada 0,9 s y la red puede juntar dos).",
+   "El servidor contesta cada acción con lo que ha pasado (si el árbol cae y hacia dónde, cuántos golpes faltan…) y manda lo que llevas también cuando sale mal; si cae un árbol avisa a todos antes que el suelo, con lo que deja. Protocolo 5: un servidor anterior sale como antiguo.",
+   "En el juego (src/juego/objetos_en_linea.js): en línea, lo que llevas, el suelo, los tocones y lo recogido son los del servidor y no se guardan en el navegador. El panel adelanta sus acciones y el servidor las confirma o las deshace; talar, trocear, recoger y soltar o coger del suelo esperan su respuesta. Un árbol que tala otro se ve caer. La ropa elegida en «Personaje» entra en el servidor por el arcón, una vez por jugador.",
+   "Pruebas: la del servidor con dos clientes crece a 40 comprobaciones (talar, trocear, recoger, el arcón; con MUTAR=1 falla); prueba de navegador nueva, «lo que llevas en línea» (con MUTAR=1, que no manda los mensajes de objetos, falla en la primera).",
+   "Lo que se entrega a las obras en línea sigue saliendo del montón común: tarea nueva justo detrás (hace falta que el servidor y los demás navegadores rehagan el mundo igual sin conocer lo que lleva cada uno).",
+   "Sin publicar: mientras esperaba la batería en la nube (más de una hora sin subir nada a la rama), la siguiente sesión del carril A dio la tarea por cortada y la retomó desde esta rama a las 04:25. Se le deja a ella para no trabajar dos en lo mismo; esta sesión no suelta el carril."
+  ],
+  "pruebas": "En la nube, la batería entera: todo bien salvo «jugar en línea» (exento; la ropa del visor sí llega por el servidor) y la prueba nueva, en dos comprobaciones que eran de la prueba: al recargar abría otra pestaña y la ficha va por pestaña (otro jugador). Arreglado en la prueba; no comprobado en la nube tras el arreglo. Lógica del servidor, en línea, tala, troceo y recogida: bien aquí.",
+  "capturas": "",
+  "estado": "fallo"
  }
 ]

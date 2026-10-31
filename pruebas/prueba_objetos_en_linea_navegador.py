@@ -59,17 +59,17 @@ def captura(pg, ruta):
     try: pg.screenshot(path=ruta)
     except Exception as e: print('  (sin captura:', str(e)[:80], ')')
 
-def entrar(nav, nombre, vista, movil, ctx=None, pg=None):
-    # con pg, la misma pestaña otra vez (recargar: la ficha va en sessionStorage, que es de cada pestaña)
+def entrar(nav, nombre, vista, movil, ctx=None, pg=None, err=None):
+    # con ctx y pg, la misma pestaña otra vez (la ficha va en sessionStorage, por pestaña: el mismo jugador)
     nuevo = ctx is None
     if nuevo: ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
     if MUTAR and nuevo:
         ctx.add_init_script("""(() => { const s = WebSocket.prototype.send;
           WebSocket.prototype.send = function (d) { if (String(d).includes('"tipo":"objeto"')) return; return s.call(this, d); }; })()""")
-    if pg is None: pg = ctx.new_page()
-    err = []
-    pg.on('pageerror', lambda e, err=err: err.append(str(e)))
-    pg.on('console', lambda m, err=err: err.append(m.text) if m.type == 'error' else None)
+    if pg is None:
+        pg = ctx.new_page(); err = []
+        pg.on('pageerror', lambda e, err=err: err.append(str(e)))
+        pg.on('console', lambda m, err=err: err.append(m.text) if m.type == 'error' else None)
     pg.goto(URL); pg.wait_for_function('window.__demo && window.__demo.listo')
     pg.click('[data-ir=construir]'); pg.wait_for_load_state('load')
     comprobar(f'{nombre}: el juego carga', esperar(pg, 'window.__demo && window.__demo.listo', 60000), str(err[:2]))
@@ -138,7 +138,7 @@ try:
         captura(A, f'{SALIDA}/pc_3_inventario.png')
 
         print('Al recargar, vuelve del servidor')
-        ctxA, A, errA = entrar(nav, 'PC otra vez', {'width': 1280, 'height': 800}, False, ctxA, A)
+        ctxA, A, errA = entrar(nav, 'PC otra vez', {'width': 1280, 'height': 800}, False, ctxA, A, errA)
         comprobar('es el mismo jugador', A.evaluate(f"{K}.enLinea.red.yo") == yo)
         comprobar('lleva lo que tenía en el servidor (las ramas, sin el hacha)', esperar(A, f"JSON.stringify({K}.inventario.lugares).includes('\"rama\"') && !JSON.stringify({K}.inventario.lugares).includes('hacha_hierro')", 10000))
         comprobar('el hacha sigue en el suelo y el árbol, talado', esperar(A, f"{K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'hacha_hierro') && !!{K}.talaV.tala.estado[{json.dumps(arbol['id'])}]?.vuelve", 10000))
