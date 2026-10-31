@@ -1,0 +1,7 @@
+Cuello de la ropa de docs/recursos/personajes/taller-v19
+  OK   mh_hombre.glb: tiene piel y camisa
+  OK   mh_hombre.glb: por delante, la piel baja bajo cualquier escote — 10.9 cm por debajo de lo alto de la camisa
+  OK   mh_mujer.glb: tiene piel y camisa
+  OK   mh_mujer.glb: por delante, la piel baja bajo cualquier escote — 12.6 cm por debajo de lo alto de la camisa
+
+Resultado: 4 correctas, 0 fallidas

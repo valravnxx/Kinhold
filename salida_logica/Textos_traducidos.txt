@@ -1,0 +1,30 @@
+Textos del juego: 994; sin traducir (en): 14; con variables distintas: 0
+  FALTA (en)  Lasca de sílex
+  FALTA (en)  Lanza endurecida
+  FALTA (en)  Palo cavador
+  FALTA (en)  Honda
+  FALTA (en)  Antorcha
+  FALTA (en)  Rastra
+  FALTA (en)  Arpón
+  FALTA (en)  Nasa
+  FALTA (en)  Trampa de lazo
+  FALTA (en)  Pala de madera
+  FALTA (en)  Azada de madera y piedra
+  FALTA (en)  Hoz de sílex
+  FALTA (en)  Mayal
+  FALTA (en)  Cubo de madera
+Textos del juego: 994; sin traducir (ru): 14; con variables distintas: 0; sin cirílico: 0
+  FALTA (ru)  Lasca de sílex
+  FALTA (ru)  Lanza endurecida
+  FALTA (ru)  Palo cavador
+  FALTA (ru)  Honda
+  FALTA (ru)  Antorcha
+  FALTA (ru)  Rastra
+  FALTA (ru)  Arpón
+  FALTA (ru)  Nasa
+  FALTA (ru)  Trampa de lazo
+  FALTA (ru)  Pala de madera
+  FALTA (ru)  Azada de madera y piedra
+  FALTA (ru)  Hoz de sílex
+  FALTA (ru)  Mayal
+  FALTA (ru)  Cubo de madera
