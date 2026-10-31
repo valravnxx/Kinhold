@@ -1,0 +1,340 @@
+PC
+  OK   construcción: idioma inglés con ?lang=en
+  OK   construcción: botón Build
+  OK   construcción: aviso en inglés — The wall needs a foundation or floor next to it, a wall below it, or posts at both ends.
+  OK   construcción PC (inglés): el aviso no tapa ningún botón
+  OK   construcción PC, construyendo: ningún texto sin traducir
+  OK   construcción PC, construyendo: no se ve español —  … In the chest: | 117 | stone | 120 | log | 120 | rod | 80 | clay | 80 | straw | 40 | rope | 80 | plank | 120 | nail | 20 | iron | 100 | roof tile | Inventory | + Materials | Decisions | Help | Restart 
+  OK   construcción PC, ayuda: ningún texto sin traducir
+  OK   construcción PC, ayuda: no se ve español —  … In the chest: | 117 | stone | 120 | log | 120 | rod | 80 | clay | 80 | straw | 40 | rope | 80 | plank | 120 | nail | 20 | iron | 100 | roof tile | Inventory | + Materials | Decisions | Help | Restart 
+  OK   construcción PC, decisiones: ningún texto sin traducir
+  OK   construcción PC, decisiones: no se ve español —  … In the chest: | 117 | stone | 120 | log | 120 | rod | 80 | clay | 80 | straw | 40 | rope | 80 | plank | 120 | nail | 20 | iron | 100 | roof tile | Inventory | + Materials | Decisions | Help | Restart 
+  OK   construcción: navegador en español → juego en español
+  OK   construcción: la partida sigue al cambiar de idioma
+  OK   construcción: el botón EN cambia a inglés
+  OK   construcción: la partida sigue tras el botón
+  OK   construcción: recuerda el inglés al volver
+  OK   construcción: el botón ES vuelve al español
+  OK   combate: recuerda el inglés elegido en la construcción
+  OK   combate PC, duelo: ningún texto sin traducir
+  OK   combate PC, duelo: no se ve español —  … Longsword | Options | Decisions | Help | Restart | ES | EN | RU | You wound the opponent: critical to the torso | Duel. Click or tap a zone of the rose to strike from that side. | High | Right | Low |
+  OK   combate PC, opciones: ningún texto sin traducir
+  OK   combate PC, opciones: no se ve español —  … Longsword | Options | Decisions | Help | Restart | ES | EN | RU | Mode | Your weapon | Your clothing | Opponent's clothing | Opponent's weapon | Difficulty | Sound | You wound the opponent: critical t
+  OK   combate: armas en inglés en el menú
+  OK   combate PC, ayuda: ningún texto sin traducir
+  OK   combate PC, ayuda: no se ve español —  … Longsword | Options | Decisions | Help | Restart | ES | EN | RU | You wound the opponent: critical to the torso | Duel. Click or tap a zone of the rose to strike from that side. | High | Right | Low |
+  OK   combate PC, decisiones: ningún texto sin traducir
+  OK   combate PC, decisiones: no se ve español —  … Longsword | Options | Decisions | Help | Restart | ES | EN | RU | You wound the opponent: critical to the torso | Duel. Click or tap a zone of the rose to strike from that side. | High | Right | Low |
+  OK   combate: pantalla final en inglés — You have won
+The opponent: bled out.
+Blows thrown
+1
+Wounds dealt
+1
+Blows parried
+0
+Perfect parries
+0
+Master strikes
+0
+Wounds taken
+0
+Again
+  OK   combate PC, final: ningún texto sin traducir
+  OK   combate PC, final: no se ve español —  … Longsword | Options | Decisions | Help | Restart | ES | EN | RU | You wound the opponent: critical to the torso | Duel. Click or tap a zone of the rose to strike from that side. | You have won | The o
+  OK   estilo: recuerda el inglés elegido
+  OK   estilo: botones en inglés — Morning
+Afternoon
+Blur
+ES
+EN
+RU
+1 fps · resolution 0.75× · 49.1k triangles · 21 draw calls
+  OK   estilo: medida en inglés — 3 fps · resolution 0.75× · 49.1k triangles · 21 draw calls
+  OK   estilo PC: ningún texto sin traducir
+  OK   estilo PC: no se ve español —  … Morning | Afternoon | Blur | ES | EN | RU | 3 fps · resolution 0.75× · 49.1k triangles · 21 draw calls | Overview | Hut | Side | Notes
+  OK   estilo: notas en inglés — Style test · v10 (miniature realism; the notes don't cover the views)
+v10: the n
+  OK   estilo PC, notas: ningún texto sin traducir
+  OK   estilo PC, notas: no se ve español —  … Morning | Afternoon | Blur | ES | EN | RU | 3 fps · resolution 0.75× · 49.1k triangles · 21 draw calls | Overview | Hut | Side | Notes | Style test · v10 (miniature realism; the notes don't cover the 
+  OK   estilo: el botón ES vuelve al español
+  OK   personaje: inglés con ?lang=en
+  OK   personaje (makehuman): opciones en inglés — CHARACTER BASE
+Quaternius pack
+Own workshop (MakeHuman)
+BODY
+Man
+Woman
+LAYERED CLOTHING (ALWAYS A SHIRT AND HOSE UNDERNE
+  OK   personaje PC, makehuman: ningún texto sin traducir
+  OK   personaje PC, makehuman: no se ve español —  … Customise | Morning | Afternoon | ES | EN | RU | 1 fps · resolution 0.75× · character 25.9k triangles · scene 100.9k · 55 draw calls | Body | Face | Profile | Back | Feet | Notes | Character base | Qu
+  OK   personaje (quaternius): opciones en inglés — CHARACTER BASE
+Quaternius pack
+Own workshop (MakeHuman)
+BODY
+Man
+Woman
+CLOTHING
+Peasant
+HAIR
+Side parting
+Shaved
+Long
+HA
+  OK   personaje PC, quaternius: ningún texto sin traducir
+  OK   personaje PC, quaternius: no se ve español —  … Customise | Morning | Afternoon | ES | EN | RU | 1 fps · resolution 0.75× · character 25.9k triangles · scene 100.9k · 55 draw calls | Body | Face | Profile | Back | Feet | Notes | Character base | Qu
+  OK   personaje: capas en inglés — CHARACTER BASE
+Quaternius pack
+Own workshop (MakeHuman)
+BODY
+Man
+Woman
+LAYERED CLOTHING (ALWAYS A SHIRT AND HOSE UNDERNEATH, AND SHOES UNLESS YOU GO BAREFOOT)
+Tunic
+Gambeson
+Mail hauberk
+Surcoat
+Cloak
+  OK   personaje: notas en inglés — Character · v33 (wimple and coif on mobile)
+v33: with the coif or the wimple the
+  OK   personaje PC, notas: ningún texto sin traducir
+  OK   personaje PC, notas: no se ve español —  … Customise | Morning | Afternoon | ES | EN | RU | 1 fps · resolution 0.75× · character 25.9k triangles · scene 100.9k · 55 draw calls | Body | Face | Profile | Back | Feet | Notes | Character · v33 (wi
+  OK   personaje: el botón ES vuelve al español
+  OK   personaje: el botón EN cambia a inglés
+  OK   sin errores (PC)
+móvil
+  OK   construcción: idioma inglés con ?lang=en
+  OK   construcción: botón Build
+  OK   construcción: aviso en inglés — The wall needs a foundation or floor next to it, a wall below it, or posts at both ends.
+  OK   construcción móvil (inglés): el aviso no tapa ningún botón
+  OK   construcción móvil, construyendo: ningún texto sin traducir
+  OK   construcción móvil, construyendo: no se ve español —  … In the chest: | 117 | stone | 120 | log | 120 | rod | 80 | clay | 80 | straw | 40 | rope | 80 | plank | 120 | nail | 20 | iron | 100 | roof tile | Inventory | + Materials | Decisions | Help | Restart 
+  OK   construcción móvil, ayuda: ningún texto sin traducir
+  OK   construcción móvil, ayuda: no se ve español —  … In the chest: | 117 | stone | 120 | log | 120 | rod | 80 | clay | 80 | straw | 40 | rope | 80 | plank | 120 | nail | 20 | iron | 100 | roof tile | Inventory | + Materials | Decisions | Help | Restart 
+  OK   construcción móvil, decisiones: ningún texto sin traducir
+  OK   construcción móvil, decisiones: no se ve español —  … In the chest: | 117 | stone | 120 | log | 120 | rod | 80 | clay | 80 | straw | 40 | rope | 80 | plank | 120 | nail | 20 | iron | 100 | roof tile | Inventory | + Materials | Decisions | Help | Restart 
+  OK   construcción: navegador en español → juego en español
+  OK   construcción: la partida sigue al cambiar de idioma
+  OK   construcción: el botón EN cambia a inglés
+  OK   construcción: la partida sigue tras el botón
+  OK   construcción: recuerda el inglés al volver
+  OK   construcción: el botón ES vuelve al español
+  OK   combate: recuerda el inglés elegido en la construcción
+  OK   combate móvil, duelo: ningún texto sin traducir
+  OK   combate móvil, duelo: no se ve español —  … Longsword | Options | Decisions | Help | Restart | You wound the opponent: critical to the left leg | Duel. Click or tap a zone of the rose to strike from that side. | High | Right | Low | Left | Thru
+  OK   combate móvil, opciones: ningún texto sin traducir
+  OK   combate móvil, opciones: no se ve español —  … Longsword | Options | Decisions | Help | Restart | Mode | Your weapon | Your clothing | Opponent's clothing | Opponent's weapon | Difficulty | Sound | You wound the opponent: critical to the left leg 
+  OK   combate: armas en inglés en el menú
+  OK   combate móvil, ayuda: ningún texto sin traducir
+  OK   combate móvil, ayuda: no se ve español —  … Longsword | Options | Decisions | Help | Restart | You wound the opponent: critical to the left leg | Duel. Click or tap a zone of the rose to strike from that side. | High | Right | Low | Left | Thru
+  OK   combate móvil, decisiones: ningún texto sin traducir
+  OK   combate móvil, decisiones: no se ve español —  … Longsword | Options | Decisions | Help | Restart | You wound the opponent: critical to the left leg | Duel. Click or tap a zone of the rose to strike from that side. | High | Right | Low | Left | Thru
+  OK   combate: pantalla final en inglés — You have won
+The opponent: bled out.
+Blows thrown
+1
+Wounds dealt
+1
+Blows parried
+0
+Perfect parries
+0
+Master strikes
+0
+Wounds taken
+0
+Again
+  OK   combate móvil, final: ningún texto sin traducir
+  OK   combate móvil, final: no se ve español —  … Longsword | Options | Decisions | Help | Restart | You wound the opponent: critical to the left leg | Duel. Click or tap a zone of the rose to strike from that side. | Parry | You have won | The oppon
+  OK   estilo: recuerda el inglés elegido
+  OK   estilo: botones en inglés — Morning
+Afternoon
+Blur
+ES
+EN
+RU
+2 fps · resolution 1.25× · 49.1k triangles · 21 draw calls
+  OK   estilo: medida en inglés — 5 fps · resolution 0.75× · 49.1k triangles · 21 draw calls
+  OK   estilo móvil: ningún texto sin traducir
+  OK   estilo móvil: no se ve español —  … Morning | Afternoon | Blur | 5 fps · resolution 0.75× · 49.1k triangles · 21 draw calls | Overview | Hut | Side | Notes
+  OK   estilo: notas en inglés — Style test · v10 (miniature realism; the notes don't cover the views)
+v10: the n
+  OK   estilo móvil, notas: ningún texto sin traducir
+  OK   estilo móvil, notas: no se ve español —  … Morning | Afternoon | Blur | 5 fps · resolution 0.75× · 49.1k triangles · 21 draw calls | Overview | Hut | Side | Notes | Style test · v10 (miniature realism; the notes don't cover the views) | v10: t
+  OK   estilo: el botón ES vuelve al español
+  OK   personaje: inglés con ?lang=en
+  OK   personaje (makehuman): opciones en inglés — CHARACTER BASE
+Quaternius pack
+Own workshop (MakeHuman)
+BODY
+Man
+Woman
+LAYERED CLOTHING (ALWAYS A SHIRT AND HOSE UNDERNE
+  OK   personaje móvil, makehuman: ningún texto sin traducir
+  OK   personaje móvil, makehuman: no se ve español —  … Customise | Morning | Afternoon | 2 fps · resolution 0.75× · character 25.9k triangles · scene 100.9k · 55 draw calls | Body | Face | Profile | Back | Feet | Notes | Character base | Quaternius pack |
+  OK   personaje (quaternius): opciones en inglés — CHARACTER BASE
+Quaternius pack
+Own workshop (MakeHuman)
+BODY
+Man
+Woman
+CLOTHING
+Peasant
+HAIR
+Side parting
+Shaved
+Long
+HA
+  OK   personaje móvil, quaternius: ningún texto sin traducir
+  OK   personaje móvil, quaternius: no se ve español —  … Customise | Morning | Afternoon | 2 fps · resolution 0.75× · character 25.9k triangles · scene 100.9k · 55 draw calls | Body | Face | Profile | Back | Feet | Notes | Character base | Quaternius pack |
+  OK   personaje: capas en inglés — CHARACTER BASE
+Quaternius pack
+Own workshop (MakeHuman)
+BODY
+Man
+Woman
+LAYERED CLOTHING (ALWAYS A SHIRT AND HOSE UNDERNEATH, AND SHOES UNLESS YOU GO BAREFOOT)
+Tunic
+Gambeson
+Mail hauberk
+Surcoat
+Cloak
+  OK   personaje: notas en inglés — Character · v33 (wimple and coif on mobile)
+v33: with the coif or the wimple the
+  OK   personaje móvil, notas: ningún texto sin traducir
+  OK   personaje móvil, notas: no se ve español —  … Customise | Morning | Afternoon | 2 fps · resolution 0.75× · character 25.9k triangles · scene 100.9k · 55 draw calls | Body | Face | Profile | Back | Feet | Notes | Character · v33 (wimple and coif o
+  OK   personaje: el botón ES vuelve al español
+  OK   personaje: el botón EN cambia a inglés
+  OK   sin errores (móvil)
+PC (ruso)
+  OK   ruso: construcción con ?lang=ru
+  OK   ruso: se ve el selector de idioma
+  OK   ruso: el menú de arriba no tapa los botones de modo — -273px
+  OK   ru construcción PC: ningún texto sin traducir
+  OK   ru construcción PC: no se ve español ni inglés —  … В сундуке: | 120 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гвоздь | 20 | железо | 100 | черепица | Снаряжение | + Материалы | Решения | Помощ
+  OK   ru construcción PC: se ve cirílico — В сундуке: | 120 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гв
+  OK   ru construcción PC: nada se sale por los lados — 0px de más
+  OK   ruso: aviso de construcción en ruso — Стене нужен фундамент или пол рядом, стена под ней или столбы на обоих концах.
+  OK   ru construcción PC: el aviso no tapa ningún botón
+  OK   ru construcción PC, construyendo: ningún texto sin traducir
+  OK   ru construcción PC, construyendo: no se ve español ni inglés —  … В сундуке: | 117 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гвоздь | 20 | железо | 100 | черепица | Снаряжение | + Материалы | Решения | Помощ
+  OK   ru construcción PC, construyendo: se ve cirílico — В сундуке: | 117 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гв
+  OK   ru construcción PC, construyendo: nada se sale por los lados — 0px de más
+  OK   ru construcción PC, ayuda: ningún texto sin traducir
+  OK   ru construcción PC, ayuda: no se ve español ni inglés —  … В сундуке: | 117 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гвоздь | 20 | железо | 100 | черепица | Снаряжение | + Материалы | Решения | Помощ
+  OK   ru construcción PC, ayuda: se ve cirílico — В сундуке: | 117 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гв
+  OK   ru construcción PC, ayuda: nada se sale por los lados — 0px de más
+  OK   ru construcción PC, decisiones: ningún texto sin traducir
+  OK   ru construcción PC, decisiones: no se ve español ni inglés —  … В сундуке: | 117 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гвоздь | 20 | железо | 100 | черепица | Снаряжение | + Материалы | Решения | Помощ
+  OK   ru construcción PC, decisiones: se ve cirílico — В сундуке: | 117 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гв
+  OK   ru construcción PC, decisiones: nada se sale por los lados — 0px de más
+  OK   ruso: el botón RU cambia a ruso y la partida sigue
+  OK   ruso: el combate recuerda el ruso
+  OK   ru combate PC, duelo: ningún texto sin traducir
+  OK   ru combate PC, duelo: no se ve español ni inglés —  … Длинный меч | Настройки | Решения | Помощь | Начать заново | ES | EN | RU | Вы раните противника: очень тяжёлая рана, левая нога | Поединок. Щёлкните или коснитесь зоны розы, чтобы ударить с этой стор
+  OK   ru combate PC, duelo: se ve cirílico — Длинный меч | Настройки | Решения | Помощь | Начать заново | ES | EN | RU | Вы раните противника: очень тяжёлая рана, ле
+  OK   ru combate PC, duelo: nada se sale por los lados — 0px de más
+  OK   ru combate PC, opciones: ningún texto sin traducir
+  OK   ru combate PC, opciones: no se ve español ni inglés —  … Длинный меч | Настройки | Решения | Помощь | Начать заново | ES | EN | RU | Режим | Ваше оружие | Ваша одежда | Одежда противника | Оружие противника | Сложность | Звук | Вы раните противника: очень т
+  OK   ru combate PC, opciones: se ve cirílico — Длинный меч | Настройки | Решения | Помощь | Начать заново | ES | EN | RU | Режим | Ваше оружие | Ваша одежда | Одежда п
+  OK   ru combate PC, opciones: nada se sale por los lados — 0px de más
+  OK   ru combate PC, ayuda: ningún texto sin traducir
+  OK   ru combate PC, ayuda: no se ve español ni inglés —  … Длинный меч | Настройки | Решения | Помощь | Начать заново | ES | EN | RU | Вы раните противника: очень тяжёлая рана, левая нога | Поединок. Щёлкните или коснитесь зоны розы, чтобы ударить с этой стор
+  OK   ru combate PC, ayuda: se ve cirílico — Длинный меч | Настройки | Решения | Помощь | Начать заново | ES | EN | RU | Вы раните противника: очень тяжёлая рана, ле
+  OK   ru combate PC, ayuda: nada se sale por los lados — 0px de más
+  OK   ru combate PC, decisiones: ningún texto sin traducir
+  OK   ru combate PC, decisiones: no se ve español ni inglés —  … Длинный меч | Настройки | Решения | Помощь | Начать заново | ES | EN | RU | Вы раните противника: очень тяжёлая рана, левая нога | Поединок. Щёлкните или коснитесь зоны розы, чтобы ударить с этой стор
+  OK   ru combate PC, decisiones: se ve cirílico — Длинный меч | Настройки | Решения | Помощь | Начать заново | ES | EN | RU | Вы раните противника: очень тяжёлая рана, ле
+  OK   ru combate PC, decisiones: nada se sale por los lados — 0px de más
+  OK   ru combate PC, final: ningún texto sin traducir
+  OK   ru combate PC, final: no se ve español ni inglés —  … Длинный меч | Настройки | Решения | Помощь | Начать заново | ES | EN | RU | Вы раните противника: очень тяжёлая рана, левая нога | Поединок. Щёлкните или коснитесь зоны розы, чтобы ударить с этой стор
+  OK   ru combate PC, final: se ve cirílico — Длинный меч | Настройки | Решения | Помощь | Начать заново | ES | EN | RU | Вы раните противника: очень тяжёлая рана, ле
+  OK   ru combate PC, final: nada se sale por los lados — 0px de más
+  OK   ru estilo PC: ningún texto sin traducir
+  OK   ru estilo PC: no se ve español ni inglés —  … Утро | День | Размытие | ES | EN | RU | 3 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общий вид | Хижина | Сбоку | Заметки
+  OK   ru estilo PC: se ve cirílico — Утро | День | Размытие | ES | EN | RU | 3 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общи
+  OK   ru estilo PC: nada se sale por los lados — 0px de más
+  OK   ru estilo PC, notas: ningún texto sin traducir
+  OK   ru estilo PC, notas: no se ve español ni inglés —  … Утро | День | Размытие | ES | EN | RU | 3 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общий вид | Хижина | Сбоку | Заметки | Проба стиля · v10 (миниатюрный реализм; замет
+  OK   ru estilo PC, notas: se ve cirílico — Утро | День | Размытие | ES | EN | RU | 3 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общи
+  OK   ru estilo PC, notas: nada se sale por los lados — 0px de más
+  OK   ru personaje PC, opciones: ningún texto sin traducir
+  OK   ru personaje PC, opciones: no se ve español ni inglés —  … Внешность | Утро | День | ES | EN | RU | 2 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 21 вызовов отрисовки | Тело | Лицо | Профиль | Спина | Ступни | Заметки | Основа
+  OK   ru personaje PC, opciones: se ve cirílico — Внешность | Утро | День | ES | EN | RU | 2 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 
+  OK   ru personaje PC, opciones: nada se sale por los lados — 0px de más
+  OK   ru personaje PC: ningún texto sin traducir
+  OK   ru personaje PC: no se ve español ni inglés —  … Внешность | Утро | День | ES | EN | RU | 2 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 21 вызовов отрисовки | Тело | Лицо | Профиль | Спина | Ступни | Заметки
+  OK   ru personaje PC: se ve cirílico — Внешность | Утро | День | ES | EN | RU | 2 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 
+  OK   ru personaje PC: nada se sale por los lados — 0px de más
+  OK   ru personaje PC, notas: ningún texto sin traducir
+  OK   ru personaje PC, notas: no se ve español ni inglés —  … Внешность | Утро | День | ES | EN | RU | 2 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 21 вызовов отрисовки | Тело | Лицо | Профиль | Спина | Ступни | Заметки | Персон
+  OK   ru personaje PC, notas: se ve cirílico — Внешность | Утро | День | ES | EN | RU | 2 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 
+  OK   ru personaje PC, notas: nada se sale por los lados — 0px de más
+  OK   ruso: sin errores (PC)
+móvil (ruso)
+  OK   ruso: construcción con ?lang=ru
+  OK   ruso: se ve el selector de idioma
+  OK   ruso: el menú de arriba no tapa los botones de modo — -10px
+  OK   ru construcción móvil: ningún texto sin traducir
+  OK   ru construcción móvil: no se ve español ni inglés —  … В сундуке: | 120 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гвоздь | 20 | железо | 100 | черепица | Снаряжение | + Материалы | Решения | Помощ
+  OK   ru construcción móvil: se ve cirílico — В сундуке: | 120 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гв
+  OK   ru construcción móvil: nada se sale por los lados — 0px de más
+  OK   ruso: aviso de construcción en ruso — Стене нужен фундамент или пол рядом, стена под ней или столбы на обоих концах.
+  OK   ru construcción móvil: el aviso no tapa ningún botón
+  OK   ru construcción móvil, construyendo: ningún texto sin traducir
+  OK   ru construcción móvil, construyendo: no se ve español ni inglés —  … В сундуке: | 117 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гвоздь | 20 | железо | 100 | черепица | Снаряжение | + Материалы | Решения | Помощ
+  OK   ru construcción móvil, construyendo: se ve cirílico — В сундуке: | 117 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гв
+  OK   ru construcción móvil, construyendo: nada se sale por los lados — 0px de más
+  OK   ru construcción móvil, ayuda: ningún texto sin traducir
+  OK   ru construcción móvil, ayuda: no se ve español ni inglés —  … В сундуке: | 117 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гвоздь | 20 | железо | 100 | черепица | Снаряжение | + Материалы | Решения | Помощ
+  OK   ru construcción móvil, ayuda: se ve cirílico — В сундуке: | 117 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гв
+  OK   ru construcción móvil, ayuda: nada se sale por los lados — 0px de más
+  OK   ru construcción móvil, decisiones: ningún texto sin traducir
+  OK   ru construcción móvil, decisiones: no se ve español ni inglés —  … В сундуке: | 117 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гвоздь | 20 | железо | 100 | черепица | Снаряжение | + Материалы | Решения | Помощ
+  OK   ru construcción móvil, decisiones: se ve cirílico — В сундуке: | 117 | камень | 120 | бревно | 120 | жердь | 80 | глина | 80 | солома | 40 | верёвка | 80 | доска | 120 | гв
+  OK   ru construcción móvil, decisiones: nada se sale por los lados — 0px de más
+  OK   ruso: el botón RU cambia a ruso y la partida sigue
+  OK   ruso: el combate recuerda el ruso
+  OK   ru combate móvil, duelo: ningún texto sin traducir
+  OK   ru combate móvil, duelo: no se ve español ni inglés —  … Длинный меч | Настройки | Решения | Помощь | Начать заново | Вы раните противника: очень тяжёлая рана, левая нога | Поединок. Щёлкните или коснитесь зоны розы, чтобы ударить с этой стороны. | Верх | П
+  OK   ru combate móvil, duelo: se ve cirílico — Длинный меч | Настройки | Решения | Помощь | Начать заново | Вы раните противника: очень тяжёлая рана, левая нога | Поед
+  OK   ru combate móvil, duelo: nada se sale por los lados — 0px de más
+  OK   ru combate móvil, opciones: ningún texto sin traducir
+  OK   ru combate móvil, opciones: no se ve español ni inglés —  … Длинный меч | Настройки | Решения | Помощь | Начать заново | Режим | Ваше оружие | Ваша одежда | Одежда противника | Оружие противника | Сложность | Звук | Вы раните противника: очень тяжёлая рана, ле
+  OK   ru combate móvil, opciones: se ve cirílico — Длинный меч | Настройки | Решения | Помощь | Начать заново | Режим | Ваше оружие | Ваша одежда | Одежда противника | Ору
+  OK   ru combate móvil, opciones: nada se sale por los lados — 0px de más
+  OK   ru combate móvil, ayuda: ningún texto sin traducir
+  OK   ru combate móvil, ayuda: no se ve español ni inglés —  … Длинный меч | Настройки | Решения | Помощь | Начать заново | Вы раните противника: очень тяжёлая рана, левая нога | Поединок. Щёлкните или коснитесь зоны розы, чтобы ударить с этой стороны. | Верх | П
+  OK   ru combate móvil, ayuda: se ve cirílico — Длинный меч | Настройки | Решения | Помощь | Начать заново | Вы раните противника: очень тяжёлая рана, левая нога | Поед
+  OK   ru combate móvil, ayuda: nada se sale por los lados — 0px de más
+  OK   ru combate móvil, decisiones: ningún texto sin traducir
+  OK   ru combate móvil, decisiones: no se ve español ni inglés —  … Длинный меч | Настройки | Решения | Помощь | Начать заново | Вы раните противника: очень тяжёлая рана, левая нога | Поединок. Щёлкните или коснитесь зоны розы, чтобы ударить с этой стороны. | Верх | П
+  OK   ru combate móvil, decisiones: se ve cirílico — Длинный меч | Настройки | Решения | Помощь | Начать заново | Вы раните противника: очень тяжёлая рана, левая нога | Поед
+  OK   ru combate móvil, decisiones: nada se sale por los lados — 0px de más
+  OK   ru combate móvil, final: ningún texto sin traducir
+  OK   ru combate móvil, final: no se ve español ni inglés —  … Длинный меч | Настройки | Решения | Помощь | Начать заново | Вы раните противника: очень тяжёлая рана, левая нога | Поединок. Щёлкните или коснитесь зоны розы, чтобы ударить с этой стороны. | Парирова
+  OK   ru combate móvil, final: se ve cirílico — Длинный меч | Настройки | Решения | Помощь | Начать заново | Вы раните противника: очень тяжёлая рана, левая нога | Поед
+  OK   ru combate móvil, final: nada se sale por los lados — 0px de más
+  OK   ru estilo móvil: ningún texto sin traducir
+  OK   ru estilo móvil: no se ve español ni inglés —  … Утро | День | Размытие | 5 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общий вид | Хижина | Сбоку | Заметки
+  OK   ru estilo móvil: se ve cirílico — Утро | День | Размытие | 5 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общий вид | Хижина 
+  OK   ru estilo móvil: nada se sale por los lados — 0px de más
+  OK   ru estilo móvil, notas: ningún texto sin traducir
+  OK   ru estilo móvil, notas: no se ve español ni inglés —  … Утро | День | Размытие | 5 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общий вид | Хижина | Сбоку | Заметки | Проба стиля · v10 (миниатюрный реализм; заметки не закрывают
+  OK   ru estilo móvil, notas: se ve cirílico — Утро | День | Размытие | 5 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общий вид | Хижина 
+  OK   ru estilo móvil, notas: nada se sale por los lados — 0px de más
+  OK   ru personaje móvil, opciones: ningún texto sin traducir
+  OK   ru personaje móvil, opciones: no se ve español ni inglés —  … Внешность | Утро | День | 2 fps · разрешение 0.75× · персонаж 25.9 тыс. треугольников · сцена 100.9 тыс. · 55 вызовов отрисовки | Тело | Лицо | Профиль | Спина | Ступни | Заметки | Основа персонажа | 
+  OK   ru personaje móvil, opciones: se ve cirílico — Внешность | Утро | День | 2 fps · разрешение 0.75× · персонаж 25.9 тыс. треугольников · сцена 100.9 тыс. · 55 вызовов от
+  OK   ru personaje móvil, opciones: nada se sale por los lados — 0px de más
+  OK   ru personaje móvil: ningún texto sin traducir
+  OK   ru personaje móvil: no se ve español ni inglés —  … Внешность | Утро | День | 2 fps · разрешение 0.75× · персонаж 25.9 тыс. треугольников · сцена 100.9 тыс. · 55 вызовов отрисовки | Тело | Лицо | Профиль | Спина | Ступни | Заметки
+  OK   ru personaje móvil: se ve cirílico — Внешность | Утро | День | 2 fps · разрешение 0.75× · персонаж 25.9 тыс. треугольников · сцена 100.9 тыс. · 55 вызовов от
+  OK   ru personaje móvil: nada se sale por los lados — 0px de más
+  OK   ru personaje móvil, notas: ningún texto sin traducir
+  OK   ru personaje móvil, notas: no se ve español ni inglés —  … Внешность | Утро | День | 2 fps · разрешение 0.75× · персонаж 25.9 тыс. треугольников · сцена 100.9 тыс. · 55 вызовов отрисовки | Тело | Лицо | Профиль | Спина | Ступни | Заметки | Персонаж · v33 (апо
+  OK   ru personaje móvil, notas: se ve cirílico — Внешность | Утро | День | 2 fps · разрешение 0.75× · персонаж 25.9 тыс. треугольников · сцена 100.9 тыс. · 55 вызовов от
+  OK   ru personaje móvil, notas: nada se sale por los lados — 0px de más
+  OK   ruso: sin errores (móvil)
+
+TODO CORRECTO
