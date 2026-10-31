@@ -37,6 +37,8 @@ body.construyendo #llevas{display:none}
 #modos button,#acciones button{min-width:96px}
 #acciones{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(178px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;align-items:flex-end}
 #btnUsar.activo{background:var(--verde);color:#14240f;font-weight:600}
+#menuUsar{position:fixed;left:0;top:0;display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--linea);border-radius:12px;padding:8px;max-width:min(300px,62vw);z-index:15}
+#menuUsar button{text-align:left;padding:8px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #controlPlanta{display:flex;gap:6px;align-items:center;background:var(--panel);border-radius:10px;padding:4px}
 #controlPlanta span{min-width:62px;text-align:center}
 #acciones #controlPlanta button{min-width:0;padding:6px 10px}
@@ -158,6 +160,7 @@ body.construyendo #pomo{left:25px;top:25px}
   <button id="btnColocar" class="sel">Colocar</button>
   <button id="btnUsar">Usar</button>
 </div>
+<div id="menuUsar" hidden></div>
 
 <div id="barra" hidden>
   <div id="pestanas"></div>
@@ -190,7 +193,7 @@ body.construyendo #pomo{left:25px;top:25px}
     <li data-tr>Las puertas y la escalera de mano se usan con <b>Usar</b>.</li>
   </ol>
   <div id="ayudaPC">
-    <p data-tr><kbd>W A S D</kbd> moverse · <kbd>Mayús</kbd> correr · <kbd>Q</kbd>/<kbd>E</kbd> o botón derecho: girar cámara · rueda: zoom</p>
+    <p data-tr><kbd>W A S D</kbd> moverse · <kbd>Mayús</kbd> correr · <kbd>Q</kbd>/<kbd>E</kbd> o rueda pulsada: girar cámara · rueda: zoom · clic derecho en algo: elegir qué usar</p>
     <p data-tr><kbd>B</kbd> construir · <kbd>X</kbd> desmontar · <kbd>R</kbd> girar pieza · <kbd>RePág</kbd>/<kbd>AvPág</kbd> planta · <kbd>F</kbd> usar · <kbd>Esc</kbd> salir</p>
   </div>
   <div id="ayudaTactil">

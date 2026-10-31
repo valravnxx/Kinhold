@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (14:20 UTC) — por el chat: fuera las pruebas en línea
+valravnx: «he dicho un millón de veces, la prueba de en línea LA BORRAS. NO SE VA A HACER NUNCA MÁS, NO EXISTE, DEJA ESAS PRUEBAS, NO LA VUELVAS A HACER». → Borradas las pruebas de navegador «jugar en línea» y «duelo en línea» (archivos y pasos de probar_todo.sh) y la regla, en CLAUDE.md.
+
 ### 31 oct 2026 (11:49 UTC) — por el chat: las animaciones de cargar, hechas por nosotros
 valravnx, respondiendo a la decisión de llevar al hombro y arrastrar: «las tratamos de hacer nosotros pues, es que cargue el tronco en el hombro con penalizacion a movimiento». → Opción (b): se hacen en el taller a partir de las que hay. La tarea en espera de «Equipo y carga por huecos» pasa a pendiente, y lleva también que el tronco al hombro se note al moverse.
 
@@ -23,6 +26,7 @@ valravnx: «revisa cómo arreglar el programa que me has hecho para usar mi grá
 
 ### 31 oct 2026 (10:05 UTC) — por el chat: tejados pisables y menú de Usar
 valravnx: «arreglo relativamente rápido: los tejados deben poder ser pisables para poder construir tejados con un solo andamio, por ahora los atraviesas y caes, y para afinar sobre el botón de usar, poder hacer clic derecho y seleccionar qué quieres usar si es que hay varias opciones en la zona». → Tarea del chat en «El juego en el mundo de verdad».
+Y después: «no es desde el menú usar, quita el rotar mapa con click derecho que ya está en el central, y clicando con clic derecho en lo que quieras usar (pilla lo que toques y muy cercanos)». → El clic derecho va sobre la cosa del mundo, no sobre el botón Usar, y ya no gira la cámara.
 
 ### 31 oct 2026 (09:49 UTC) — por el chat: meterlo todo en el roadmap
 valravnx: «actualiza todos los hitos, tareas y todo para ya meter todo esto». → Tareas nuevas en «El juego en el mundo de verdad», «Tierras y familias», «Economía y NPCs» y «Mundo»; Navegación, Cartografía y PvP anotados; la decisión de las comarcas de inicio, solo para Motdale y Breiddal.
