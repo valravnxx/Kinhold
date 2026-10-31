@@ -51,11 +51,12 @@ comprobar('la hierba, solo dentro de su círculo', a.hierba.every(e => Math.hypo
     Object.keys(t).map(k => `${k} ${t[k].length}/${g[k].filter(suyo).length}`).join(', '));
 }
 
-// por la isla: en varios sitios de salida y alrededor
+// por la isla: en varios sitios de salida y alrededor (uno de cada 7: con uno de cada 13, al cambiar la lista de sitios el
+// 31 oct no caía ninguno junto a bosque cerrado y no había con qué comparar la hierba)
 let enAgua = 0, malEspecie = 0, total = 0;
 const especies = new Set();
 let hClaro = 0, nClaro = 0, hBosque = 0, nBosque = 0;
-for (const [x, z] of SALIDAS.filter((_, i) => i % 13 === 0)) {
+for (const [x, z] of SALIDAS.filter((_, i) => i % 7 === 0)) {
   const v = vegetacionEn(pai, alt, sem, cuadro(x, z, 120), { x, z, r: 30 });
   const tramos = pai.riosEn(x - 120, z - 120, x + 120, z + 120);
   for (const e of [...v.arboles, ...v.hierba, ...v.piedras, ...v.matas]) {
