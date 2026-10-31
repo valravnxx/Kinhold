@@ -485,6 +485,12 @@
      "fin": "2026-10-30T21:56:36+00:00"
     },
     {
+     "nombre": "Volver donde lo dejaste (valravnx, 31 oct): el navegador recuerda quién eres aunque cierres la pestaña, y el servidor guarda dónde estaba cada jugador al salir y lo pone ahí al volver a entrar (un wipe lo borra)",
+     "estado": "hecho",
+     "inicio": "2026-10-31T05:00:43+00:00",
+     "fin": "2026-10-31T11:05:50+00:00"
+    },
+    {
      "nombre": "Construir en el mundo, a la altura del suelo (valravnx, 30 oct: «relativamente prioritario»): lo que se coloca (piezas, muebles, objetos) se pone sobre el terreno de verdad, no en la altura 0, y los suelos de base alisan el terreno de debajo para construir encima; hoy quedan cosas flotando o hundidas. Es cambiar la malla del mundo, como al cavar: una acción con autor por la lógica pura, que el servidor guarda y reparte. Con la rejilla anclada al terreno y la brocha redonda para nivelar en ladera (GDD)",
      "estado": "hecho",
      "inicio": "2026-10-31T00:22:40+00:00",
@@ -524,12 +530,6 @@
     {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
-    },
-    {
-     "nombre": "Volver donde lo dejaste (valravnx, 31 oct): el navegador recuerda quién eres aunque cierres la pestaña, y el servidor guarda dónde estaba cada jugador al salir y lo pone ahí al volver a entrar (un wipe lo borra)",
-     "estado": "en_curso",
-     "inicio": "2026-10-31T05:00:43+00:00",
-     "rama": "trabajo/20261031-0500-volver"
     },
     {
      "nombre": "Tejados pisables y menú de Usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en Usar (o dejándolo pulsado en el móvil), se elige qué usar si hay varias cosas al alcance",
@@ -2069,6 +2069,13 @@
      "archivo": "jugar/demo/v65.html",
      "capturas": "capturas/demo-v65",
      "notas": "En «Jugar», las obras cobran de lo que llevas, como en solitario: lo que se entrega a una obra (y lo que se sube a una obra en alto) sale de lo que llevas en el servidor, y el arcón de materiales de obra va por el servidor. El servidor guarda las entregas ya pagadas, así que al volver a arrancar y en el navegador de los demás el mundo se rehace igual. Protocolo 6: quien lleva el servidor tiene que actualizarlo."
+    },
+    {
+     "v": "v66",
+     "fecha": "2026-10-31",
+     "archivo": "jugar/demo/v66.html",
+     "capturas": "capturas/demo-v66",
+     "notas": "Volver donde lo dejaste: el navegador recuerda quién eres aunque cierres la pestaña, y al volver a entrar apareces donde estabas al salir (el servidor lo guarda). Dos pestañas del mismo navegador son el mismo jugador."
     }
    ]
   },

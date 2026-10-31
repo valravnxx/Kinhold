@@ -3141,5 +3141,22 @@
   "pruebas": "En la nube, la batería entera: bien salvo «jugar en línea» y «duelo en línea» (exentos hasta la fase 2) y «lo que llevas en línea», que falló esperando a que cayera el árbol en el otro jugador y pasó al repetirla sola. Antes, el PC de valravnx devolvió todos los grupos con fallo en 0,1 min y la vuelta a la nube no se pudo pedir porque el nombre de la rama pasaba de 255 caracteres (lo arregla el carril B en su rama); se lanzó todo en la nube con SOLO_NUBE=1. Pruebas nuevas: animaciones para cargar (lógica, 14/14; con MUTAR=1, 6 fallos) y en el navegador (PC y móvil, hombre y mujer; con MUTAR=1, 16 fallos). Capturas miradas de frente y de lado.",
   "capturas": "capturas/anim-carga-v1",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T05:00:43+00:00",
+  "fin": "2026-10-31T11:05:50+00:00",
+  "titulo": "Volver donde lo dejaste (chat con valravnx)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "La ficha que da el servidor se guarda en el navegador (localStorage), no en la pestaña: dura aunque se cierre. La que había en la pestaña se pasa sola. Dos pestañas del mismo navegador son el mismo jugador: la nueva deja fuera a la de antes, que lo dice en su cartel, y ya no borra la ficha.",
+   "El servidor apunta dónde estaba cada jugador (posiciones.json, junto al mundo) al salir y en cada latido, y se lo manda en la bienvenida; el juego le pone ahí la primera vez que conecta (al volver tras un corte no mueve a nadie). En el «Duelo» no se apunta: la liza es una escena aparte.",
+   "La guía del servidor: el wipe borra también los .json (lo del suelo, lo que lleva cada uno y las posiciones); antes solo los .jsonl.",
+   "Pruebas nuevas: prueba_posicion_servidor.mjs (7, rota a propósito: el servidor sin posición falla) y prueba_volver_navegador.py (recargar, pestaña nueva y otro navegador, en PC y móvil; rota a propósito de dos formas: el servidor sin posición y la ficha en la pestaña, las dos fallan). En la prueba en línea, salir al menú y volver sale donde lo dejó.",
+   "Publicado como demo v66 (la v62 a la v65 salieron mientras tanto de las otras sesiones; se unió main tres veces).",
+   "Visto al probar: si el PC de valravnx coge los grupos y los falla todos en segundos, pruebas_nube.mjs intenta mandarlos a la nube con una rama de nombre demasiado largo (más de 255 letras) y se para; con SOLO_NUBE=1 va bien. No arreglado aquí."
+  ],
+  "pruebas": "Todas en la nube (25 grupos) sobre la rama con main unido: 22 bien a la primera; la demo en el mundo falló por un fotograma de 62,6 ms (el límite es 60) y pasó al repetirla; jugar en línea y duelo en línea fallan (exentos hasta la fase 2), aunque en la vuelta anterior pasaron enteros los dos, también el cartel sin conexión y volver donde lo dejaste. Tras unir main la última vez (animaciones para cargar, sin archivos de código en común), aquí: la del servidor y la de cargar.",
+  "capturas": "capturas/demo-v66",
+  "estado": "ok"
  }
 ]
