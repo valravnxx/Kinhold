@@ -22,6 +22,7 @@ import { cajaR, deMano } from '../mundo/modelos.js';
 import { OCULTO } from '../logica/detalle.js';
 import { CATALOGO } from '../logica/inventario.js';
 import { huellaLlevado } from '../logica/llevado.js';
+import { TRONCO_HOMBRO } from '../personajes/medidas_carga.js';
 import { modeloHacha } from './personaje.js'; // (se usa al montar: el ciclo entre los dos módulos no molesta)
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
@@ -482,8 +483,17 @@ export function crearLlevado(j) {
     // al hombro
     if (l.hombro && cH && cE) {
       const L = nuevoLote(), h = hombroDe(-1), t = l.hombro;
+      let hueso = pecho;
       if (t === 'tronco_corto') {
-        troncoCorto(L, h.x - 0.045, h.y + 0.085, h.z - 0.1, 0.9, 0.1, 'z');
+        // apoyado en lo alto del hombro derecho, encima de la articulación (no junto al cuello: ahí tapaba la cabeza,
+        // revisión del 1 nov), y atado a la clavícula para que suba con el hombro en la postura de llevarlo.
+        // La mano derecha lo sujeta por encima (la animación del taller, taller-carga-v3, con las mismas medidas).
+        const s = H.upperarm_r && H.clavicle_r && !globalThis.__troncoComoAntes /* solo para comprobar que la prueba falla */ ? H.upperarm_r.getWorldPosition(v3(0, 0, 0)).applyMatrix4(invRaiz) : null;
+        if (s) {
+          const x = s.x + TRONCO_HOMBRO.x, z = s.z + TRONCO_HOMBRO.z;
+          troncoCorto(L, x, s.y + TRONCO_HOMBRO.y, z, 0.9, TRONCO_HOMBRO.r, 'z');
+          hueso = H.clavicle_r;
+        } else troncoCorto(L, h.x - 0.045, h.y + 0.085, h.z - 0.1, 0.9, 0.1, 'z');
       } else if (t === 'saco') {
         // el saco lleno, echado sobre el hombro derecho y colgando a la espalda; la boca atada por delante
         L.add(new THREE.IcosahedronGeometry(0.2, 2), 'lino', h.x - 0.02, h.y - 0.12, h.z - 0.2, { x: 0.35 }, { escala: v3(0.85, 1.25, 0.65), plano: true });
@@ -505,7 +515,7 @@ export function crearLlevado(j) {
           L.add(cajaR(0.21, 0.09, 0.02, 0.01), CUERO_OSC, abajo.x + 0.06, abajo.y - 0.05, abajo.z + 0.01, { y: 1.35 }, { tex: 'liso' });
         }
       }
-      grupo.add(pieza(L, 'hombro', I, pecho, invRaiz));
+      grupo.add(pieza(L, 'hombro', I, hueso, invRaiz));
     }
 
     // en las manos (el hacha la pone el personaje)

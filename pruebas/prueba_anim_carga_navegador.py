@@ -1,7 +1,7 @@
 # Prueba en navegador de las animaciones para cargar (recursos/personajes/taller-anim-v2/) en el visor de personaje,
 # con el taller propio, hombre y mujer, en PC y móvil: se cargan las 41 extra, salen los botones Empujar y Coger de una
 # mesa, cada una mueve el cuerpo sin desarmarlo y, al empujar, las manos van por delante del pecho. Y las de cargar hechas
-# en el taller (taller-carga-v2): al hombro (la mano derecha arriba) y arrastrar (las manos junto a la cadera). Capturas.
+# en el taller (taller-carga-v3): al hombro (la mano derecha arriba) y arrastrar (las manos junto a la cadera). Capturas.
 # Uso: python3 pruebas/prueba_anim_carga_navegador.py <html del personaje> <carpeta_capturas>
 # MUTAR=1 carga las animaciones de la v1 (sin las nuevas): la prueba tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
@@ -14,7 +14,7 @@ os.makedirs(SALIDA, exist_ok=True)
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
-for c in ['v1', 'taller-v24', 'taller-anim-v1', 'taller-anim-v2', 'taller-carga-v2']:
+for c in ['v1', 'taller-v24', 'taller-anim-v1', 'taller-anim-v2', 'taller-carga-v3']:
     shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes', c), f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass

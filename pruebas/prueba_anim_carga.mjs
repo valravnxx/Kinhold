@@ -12,6 +12,7 @@ import { MeshoptDecoder } from 'meshoptimizer';
 import { CLIPS_EXTRA } from '../src/personajes/cargar.js';
 import { ANIMS_EXTRA } from '../src/personaje/textos.js';
 import * as THREE from 'three';
+import { TRONCO_HOMBRO, MANO_TRONCO } from '../src/personajes/medidas_carga.js';
 import { AGARRADERAS, GIRO_EMPUJAR, R_RUEDA } from '../src/juego/carretilla.js';
 
 const TALLER = readFileSync('src/mundo/eleccion.js', 'utf8').match(/TALLER = '(taller-v\d+)'/)[1];
@@ -33,6 +34,33 @@ function distManos(cuerpo, anim) {
     for (const [l, s] of [['l', 1], ['r', -1]]) peor = Math.max(peor, P['middle_01_' + l].getWorldPosition(new THREE.Vector3()).distanceTo(new THREE.Vector3(s * ax, AGARRADERAS.y, az)));
   }
   return peor;
+}
+
+
+// El tronco al hombro (revisión del 1 nov): con el esqueleto del juego, en cada fotograma de `anim`, dónde queda el
+// tronco (atado a la clavícula derecha como en src/juego/llevado.js, puesto con la postura de estar quieto) respecto a
+// la cabeza, al hombro y a la muñeca derecha. Devuelve lo peor de todos los fotogramas.
+function troncoAlHombro(cuerpo, anim, quieto) {
+  const obj = new Map(), P = {}, escena = new THREE.Object3D(), padres = new Set();
+  for (const n of cuerpo.getRoot().listNodes()) { const o = new THREE.Object3D(); o.name = n.getName(); obj.set(n.getName(), [n, o]); P[o.name] = o; }
+  for (const [, [n, o]] of obj) for (const c of n.listChildren()) { o.add(P[c.getName()]); padres.add(c.getName()); }
+  for (const [k, [, o]] of obj) if (!padres.has(k)) escena.add(o);
+  const reposo = () => { for (const [, [nd, o]] of obj) { o.position.fromArray(nd.getTranslation()); o.quaternion.fromArray(nd.getRotation()); o.scale.fromArray(nd.getScale()); } };
+  const poner = (a, i) => { for (const c of a.listChannels()) { const o = P[c.getTargetNode().getName()], v = c.getSampler().getOutput().getElement(i, []); if (!o) continue; if (c.getTargetPath() === 'rotation') o.quaternion.fromArray(v); else if (c.getTargetPath() === 'translation') o.position.fromArray(v); } };
+  const W = (o) => o.getWorldPosition(new THREE.Vector3());
+  // el tronco se ata con la postura de estar quieto (primer fotograma de Idle_Loop)
+  reposo(); poner(quieto, 0); escena.updateMatrixWorld(true);
+  const local = P.clavicle_r.worldToLocal(W(P.upperarm_r).add(new THREE.Vector3(TRONCO_HOMBRO.x, TRONCO_HOMBRO.y, TRONCO_HOMBRO.z)));
+  const r = { cabeza: Infinity, hueco: -Infinity, huecoMin: Infinity, mano: 0 };
+  const n = anim.listChannels()[0].getSampler().getInput().getCount();
+  for (let i = 0; i < n; i++) {
+    reposo(); poner(anim, i); escena.updateMatrixWorld(true);
+    const t = P.clavicle_r.localToWorld(local.clone()), cab = W(P.head), hom = W(P.upperarm_r);
+    r.cabeza = Math.min(r.cabeza, Math.abs(t.x - cab.x)); // de lado: la cara no queda detrás del tronco
+    const hueco = t.y - TRONCO_HOMBRO.r - hom.y; r.hueco = Math.max(r.hueco, hueco); r.huecoMin = Math.min(r.huecoMin, hueco);
+    r.mano = Math.max(r.mano, W(P.hand_r).distanceTo(t.add(new THREE.Vector3(MANO_TRONCO.x, MANO_TRONCO.y, MANO_TRONCO.z))));
+  }
+  return r;
 }
 
 const V2 = `docs/recursos/personajes/${process.env.MUTAR ? 'taller-anim-v1' : 'taller-anim-v2'}`, V1 = 'docs/recursos/personajes/taller-anim-v1';
@@ -88,11 +116,11 @@ for (const sexo of ['hombre', 'mujer']) {
 comprobar('el juego conoce los nombres nuevos (CLIPS_EXTRA)', CLIPS_EXTRA.empujar === 'Push_Loop' && CLIPS_EXTRA.cogerDeMesa === 'PickUp_Table');
 comprobar('y tienen su texto en el visor', !!ANIMS_EXTRA.empujar && !!ANIMS_EXTRA.cogerDeMesa);
 
-// Las de cargar hechas en el taller (taller-carga-v2, herramientas/taller/hacer_cargas.mjs): al hombro andando y quieto,
-// arrastrar, y empujar la carretilla andando y quieto. MUTAR_CARGAS=1 las mira en taller-carga-v1 (donde no está la de
-// empujar): tiene que fallar.
+// Las de cargar hechas en el taller (taller-carga-v3, herramientas/taller/hacer_cargas.mjs): al hombro andando y quieto,
+// arrastrar, y empujar la carretilla andando y quieto. MUTAR_CARGAS=1 las mira en taller-carga-v2 (la mano del tronco
+// al hombro subía al cuello): tiene que fallar.
 {
-  const C1 = `docs/recursos/personajes/${process.env.MUTAR_CARGAS ? 'taller-carga-v1' : 'taller-carga-v2'}`;
+  const C1 = `docs/recursos/personajes/${process.env.MUTAR_CARGAS ? 'taller-carga-v2' : 'taller-carga-v3'}`;
   const man = JSON.parse(readFileSync(`${C1}/manifiesto.json`, 'utf8'));
   const CARGAS = ['Hombro_Walk_Loop', 'Hombro_Idle_Loop', 'Drag_Walk_Loop', 'Empujar_Walk_Loop', 'Empujar_Idle_Loop'];
   for (const sexo of ['hombre', 'mujer']) {
@@ -107,6 +135,17 @@ comprobar('y tienen su texto en el visor', !!ANIMS_EXTRA.empujar && !!ANIMS_EXTR
     // empujar: en cada fotograma, andando y quieto, los nudillos (middle_01) en las agarraderas de la carretilla
     // (src/juego/carretilla.js, AGARRADERAS: a esa altura y a esa distancia por delante del que la empuja), con el
     // esqueleto del personaje del juego
+    if (anims.has('Hombro_Walk_Loop')) {
+      const cuerpo = await io.read(`docs/recursos/personajes/${TALLER}/mh_${sexo}.glb`);
+      const quieto = cuerpo.getRoot().listAnimations().find(a => a.getName() === 'Idle_Loop');
+      for (const k of ['Hombro_Walk_Loop', 'Hombro_Idle_Loop']) {
+        const r = troncoAlHombro(cuerpo, anims.get(k), quieto);
+        // la cabeza mide unos 15 cm de ancho: el centro del tronco, a más de su radio y media cabeza de ella
+        comprobar(`hombro ${sexo} (${k}): el tronco va al lado de la cabeza, sin taparla`, r.cabeza > TRONCO_HOMBRO.r + 0.07, `${(r.cabeza * 100).toFixed(1)} cm de lado entre la cabeza y el centro del tronco`);
+        comprobar(`hombro ${sexo} (${k}): apoyado sobre el hombro (de 2 a 9 cm por encima de la articulación)`, r.huecoMin > 0.02 && r.hueco < 0.09, `${(r.huecoMin * 100).toFixed(1)}–${(r.hueco * 100).toFixed(1)} cm`);
+        comprobar(`hombro ${sexo} (${k}): la mano derecha encima, sujetándolo (a menos de 4 cm de su sitio)`, r.mano < 0.04, `${(r.mano * 100).toFixed(1)} cm`);
+      }
+    }
     if (anims.has('Empujar_Walk_Loop')) {
       const cuerpo = await io.read(`docs/recursos/personajes/${TALLER}/mh_${sexo}.glb`);
       for (const k of ['Empujar_Walk_Loop', 'Empujar_Idle_Loop']) {

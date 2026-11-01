@@ -18,7 +18,7 @@ os.makedirs(f'{sitio}/jugar/construccion'); os.makedirs(f'{sitio}/recursos/perso
 shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
 TALLER = re.search(r"TALLER = '(taller-v\d+)'", open(os.path.join(RAIZ, 'src/mundo/eleccion.js'), encoding='utf8').read()).group(1)
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes', TALLER), f'{sitio}/recursos/personajes/{TALLER}')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v2'), f'{sitio}/recursos/personajes/taller-carga-v2')  # las de cargar del taller
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v3'), f'{sitio}/recursos/personajes/taller-carga-v3')  # las de cargar del taller
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -126,7 +126,7 @@ with sync_playwright() as p:
     giro1 = pg.evaluate(f"{VISTA}.getObjectByName('rueda').rotation.x")
     comprobar('la rueda rueda al avanzar (unos 6 m: 25 rad)', giro1 - giro0 > 20, f'{giro1 - giro0:.1f}')
     comprobar('las varas suben a las manos', pg.evaluate(f"{VISTA}.getObjectByName('cuerpo').rotation.x > 0.1"))
-    # la animación de empujar del taller (taller-carga-v2): andando, empujarCarretilla; parado, empujarQuieto
+    # la animación de empujar del taller (taller-carga-v3): andando, empujarCarretilla; parado, empujarQuieto
     comprobar('el personaje la empuja con la animación de empujar (no la de llevar en brazos)', pg.evaluate(f"{K}.jugador.mh ? ['empujarCarretilla', 'empujarQuieto'].includes({K}.jugador.modo) : true") != MUTAR_ANIM, pg.evaluate(f"{K}.jugador.modo"))
     comprobar('la carretilla va poco levantada (menos de 25°)', pg.evaluate(f"(() => {{ const c = {VISTA}.getObjectByName('cuerpo'), cama = c.getObjectByName('cama'); return (c.rotation.x + cama.rotation.x) * 180 / Math.PI; }})()") < 25)
     manos = pg.evaluate(MANOS)

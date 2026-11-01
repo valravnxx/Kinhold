@@ -716,9 +716,9 @@
     },
     {
      "nombre": "Tronco al hombro (visto en la revisión del 1 nov): en el juego, el tronco corto al hombro va a la altura de la cabeza y la tapa entera (de lado, en PC y en el móvil, la cabeza queda dentro del tronco), y la mano sube al cuello en vez de sujetarlo. Tiene que ir apoyado sobre un hombro, al lado de la cabeza, con la mano encima. Capturas de cerca para valravnx",
-     "estado": "en_curso",
-     "inicio": "2026-11-01T12:25:03+00:00",
-     "rama": "trabajo/20261101-1225"
+     "estado": "hecho",
+     "inicio": "2026-11-01T12:24:20+00:00",
+     "fin": "2026-11-01T13:43:14+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -2368,6 +2368,13 @@
      "archivo": "jugar/demo/v90.html",
      "capturas": "capturas/demo-v90",
      "notas": "Strandvang, tierras del rey: en la comarca E nadie puede herir a otro jugador. El servidor rechaza el golpe o la flecha entre jugadores (llega, pero no hiere; queda en el registro con su autor y el motivo) y se dice; al entrar y al salir sale un cartel. Contra el rival de práctica se pelea igual."
+    },
+    {
+     "v": "v91",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/demo/v91.html",
+     "capturas": "capturas/demo-v91",
+     "notas": "El tronco corto al hombro va apoyado encima del hombro derecho, al lado de la cabeza, y la mano derecha lo sujeta por encima (antes tapaba la cabeza y la mano subía al cuello). Hombre y mujer, quieto y andando. Animaciones en taller-carga-v3."
     }
    ]
   },
