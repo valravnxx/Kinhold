@@ -3796,5 +3796,19 @@
   "pruebas": "Sin pruebas: solo cambian el roadmap, REVISION.md, CLAUDE.md y la web (con el estado nuevo).",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T15:47:00+01:00",
+  "fin": "2026-11-01T16:02:11+01:00",
+  "titulo": "La web: «Qué es Kinhold» y «Noticias» (chat con valravnx)",
+  "hito": "orden",
+  "hecho": [
+   "Dos pestañas nuevas al principio de la web: «Qué es Kinhold» (el juego entero y su alcance, con una captura del juego por apartado, recortadas sin la interfaz) y «Noticias» (la primera: la revisión del 1 nov y el plan de los próximos días). En español, inglés y ruso.",
+   "Los textos los redactó el chat y los aprobó valravnx: el desarrollo, asistido por IA, sin ocultarlo.",
+   "Las capturas salen de las ya publicadas (las más recientes y limpias); para el combate de dos luchadores no había ninguna bonita y limpia: queda una de uno solo."
+  ],
+  "pruebas": "Prueba de la web, aquí: todo correcto. Capturas de la pestaña nueva en PC y en móvil, en los tres idiomas.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

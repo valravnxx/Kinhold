@@ -204,6 +204,12 @@ section{display:none;padding-top:28px} section.sel{display:block}
 .quees .bloque a{display:block;border-radius:4px;overflow:hidden;box-shadow:0 4px 12px rgba(60,30,8,.3);margin-bottom:10px}
 .quees h3,.noticia h3{font:800 21px var(--titulos);color:var(--rubrica-osc,#6b1a12);margin:6px 0 6px}
 .quees .bloque p{font-size:16px;margin:0}
+.quees .bloque img{aspect-ratio:16/10;object-fit:cover}
+.quees .bloque:last-child:nth-child(odd){grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 22px;align-items:center}
+.quees .bloque:last-child:nth-child(odd) img{aspect-ratio:auto}
+.quees .bloque:last-child:nth-child(odd) a{grid-row:1/3}
+.quees .bloque:last-child:nth-child(odd) h3{align-self:end} .quees .bloque:last-child:nth-child(odd) p{align-self:start}
+@media (max-width:720px){.quees .bloque:last-child:nth-child(odd){display:block}}
 .quees .final{margin-top:20px}
 .noticia{margin:0 0 26px} .noticia .fecha{font-style:italic;color:var(--tinta2)} .noticia p{font-size:17px;line-height:1.6;margin:0 0 10px}
 .noticia p.punto{margin:0 0 6px 14px}
