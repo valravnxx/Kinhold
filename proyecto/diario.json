@@ -3464,5 +3464,37 @@
   "pruebas": "Batería entera en la nube tras unir main: todos los grupos bien salvo «construir a la altura del suelo», que falló por no encontrar plantas en la ladera elegida al azar (nada que ver con la rastra) y pasó al repetirlo solo. Prueba nueva de lógica (42) y de navegador (PC y móvil), rotas a propósito con MUTAR=1. El PC de valravnx no pudo con ninguna: sin espacio en disco (avisado).",
   "capturas": "capturas/demo-v77",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T22:53:58+00:00",
+  "fin": "2026-10-31T23:37:50+00:00",
+  "titulo": "Hito de arte: revisión completa; dos arreglos más antes de darlo por terminado (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Batería entera sobre main con la demo v76 (25 grupos): todos correctos. El PC de valravnx cogió los grupos de navegador pero no devolvió ninguno; pasaron solos a la nube.",
+   "Capturas miradas en PC y móvil (cara del hombre y de la mujer, espalda con capa, picar, la demo y el mundo). Ya bien lo de la revisión de la tarde: en el móvil el pelo no asoma por la toca, y las cejas tienen pelos y borde suave en vez de bloques.",
+   "Aún mal, de cerca: las cejas se cortan en escalones rectos; el bigote es una banda plana separada de la barba por las comisuras; la barba corta baja por el cuello en un gris claro, como escarcha. Con toca, en el móvil, el borde del cuello sale en dientes de sierra y asoma una cuña de piel entre la toca y el cuello.",
+   "Como aún se ve peor que la referencia, el hito no pasa a revisión: quedan dos tareas antes de la revisión final, que vuelve a pendiente.",
+   "Sin versión nueva (no hay cambios jugables); las capturas de la revisión, en capturas/revision-arte-31oct-noche."
+  ],
+  "pruebas": "En la nube: 25 de 25 grupos correctos",
+  "capturas": "capturas/revision-arte-31oct-noche",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T23:50:39+00:00",
+  "fin": "2026-11-01T00:05:20+00:00",
+  "titulo": "Las pruebas del PC de valravnx, en el disco D y sin llenar el de Windows (chat con valravnx)",
+  "hito": "infra",
+  "hecho": [
+   "Medido en su PC con un trabajo de una vez (solo tamaños de lo de las pruebas): el disco de Windows, sin nada libre. De las pruebas había 7,1 GB en 169 carpetas temporales (cada prueba de navegador copia la web de prueba a una carpeta temporal y no la borra; en la nube da igual, la máquina se tira), 1,35 GB del programa de GitHub y su trabajo, 0,69 GB del navegador de las pruebas y 5,3 GB de caché de pip (de las pruebas y quizá de otros programas).",
+   "El flujo de pruebas, en Windows: lo temporal va a la carpeta temporal de cada trabajo, que el programa de GitHub vacía al acabar, y el navegador de las pruebas y las cachés de pip y npm, junto al programa de GitHub (en su disco).",
+   "El programa de la gráfica guarda en D:\\KinholdGrafica (o en la carpeta que se elija en la ventana): el programa de GitHub, su trabajo, lo temporal, el navegador y las cachés. Al abrirlo, si encuentra en C lo de la versión anterior, pregunta y lo pasa a D (el programa de GitHub ya unido, sin pedir otra vez el código) y borra de C la carpeta de antes, el navegador de las pruebas y las carpetas temporales que se reconocen como suyas; la caché de pip la pregunta aparte. «Liberar el disco de Windows» lo vuelve a mirar.",
+   "Prueba nueva del programa en Windows PowerShell 5.1 (probar_programa.ps1, en una máquina windows-latest de la nube, con carpetas de prueba): 12 comprobaciones bien, también rutas de más de 260 letras y que no toca lo ajeno; rota a propósito (sin pasar el programa de GitHub), falla.",
+   "Comprobado en su PC después de poner el programa nuevo (00:12): el programa de GitHub pasó a D:\\KinholdGrafica sin pedir otra vez el código, y la prueba de cavar fue bien con su tarjeta, con todo en D (el trabajo, lo temporal, el navegador de las pruebas y las cachés)."
+  ],
+  "pruebas": "probar_programa.ps1 en Windows (nube): 12/12, y rota falla. Flujo de pruebas: cavar en la nube, bien; en su PC no se puede probar hasta liberar el disco.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

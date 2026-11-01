@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (23:50 UTC) — por el chat: las pruebas del PC llenan el SSD
+valravnx: «tengo el programa de tu gráfica para las pruebas, pero usa mi SSD de Windows, no el HDD de datos que es lo que quería, y me ha llenado el SSD; quiero que pueda borrar todo lo guardado en el SSD de Windows petado y ponerlo todo en D con una actualización del programa». → Tarea del chat en «Infraestructura».
+
 ### 31 oct 2026 (14:20 UTC) — por el chat: fuera las pruebas en línea
 valravnx: «he dicho un millón de veces, la prueba de en línea LA BORRAS. NO SE VA A HACER NUNCA MÁS, NO EXISTE, DEJA ESAS PRUEBAS, NO LA VUELVAS A HACER». → Borradas las pruebas de navegador «jugar en línea» y «duelo en línea» (archivos y pasos de probar_todo.sh) y la regla, en CLAUDE.md.
 
