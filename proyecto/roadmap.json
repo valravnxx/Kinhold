@@ -1054,9 +1054,9 @@
     },
     {
      "nombre": "Cuello de la ropa con toca en el móvil (visto en la revisión del 31 oct, noche): con la calidad ligera el borde del cuello sale en dientes de sierra y entre la toca y el cuello asoma una cuña de piel",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-01T01:52:36+00:00",
-     "rama": "trabajo/20261101-0152"
+     "fin": "2026-11-01T04:16:09+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -2240,6 +2240,13 @@
      "archivo": "jugar/demo/v79.html",
      "capturas": "capturas/personaje-v35",
      "notas": "En el juego, cejas sin escalones, barba que clarea en pelos sueltos y bigote unido a la barba (personajes taller-v22)."
+    },
+    {
+     "v": "v80",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/demo/v80.html",
+     "capturas": "capturas/personaje-v36",
+     "notas": "En «Personaje» y en el juego: la cofia baja hasta quedar metida bajo el escote y los bordes recortados de la ropa y el pelo ya no salen en dientes de sierra con poca resolución, como en el móvil (taller-v23)."
     }
    ]
   },
@@ -2989,6 +2996,13 @@
      "archivo": "jugar/personaje/v35.html",
      "capturas": "capturas/personaje-v35",
      "notas": "Cejas sin escalones rectos, la barba corta clarea en el cuello en pelos sueltos y oscuros (no en un gris como escarcha) y el bigote se une a la barba en las comisuras (taller-v22)."
+    },
+    {
+     "v": "v36",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/personaje/v36.html",
+     "capturas": "capturas/personaje-v36",
+     "notas": "La cofia baja hasta quedar metida bajo el escote (ya no asoma una cuña de piel) y los bordes recortados de la ropa y el pelo ya no salen en dientes de sierra con poca resolución, como en el móvil (taller-v23)."
     }
    ]
   },

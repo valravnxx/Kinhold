@@ -3532,5 +3532,22 @@
   "pruebas": "27 de 27 grupos correctos (26 en el PC de valravnx; «panel del admin» falló allí al cargar la prueba, por su versión de Python, y pasó en la nube)",
   "capturas": "capturas/personaje-v35",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T01:52:36+00:00",
+  "fin": "2026-11-01T04:16:09+00:00",
+  "titulo": "Hito de arte: cofia y escote en el móvil (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Lo de la revisión es la cofia (lo que lleva la mujer por defecto), no la toca. Reproducido en el visor con la resolución de la revisión (0,5× en el móvil): el escote y el borde de la cofia salían en escalones del tamaño del píxel, y entre el bajo de la cofia (6 mm por encima del cuello) y el escote del vestido quedaban unos 3 cm de piel.",
+   "Bordes recortados sin dientes (src/personajes/makehuman.js), para todas las piezas recortadas en la textura (escote, mangas, cofia, toca, pelo), también en el juego: la transparencia se lee de la textura entera (con las mipmaps, de lejos o con poca resolución salía borrosa) y el borde se reparte entre las muestras del antialias (alpha to coverage). Lo que se guarda en la transparencia de la pantalla no se toca: así no sale la línea blanca a trazos por la que se descartó en la taller-v18.",
+   "En la tarjeta gráfica de valravnx, la primera versión dejaba una raya fina en lo alto de la cofia (una costura del mapa UV); el paso del borde se limita a medio y la raya ya no sale (comprobado en su PC; queda a veces un trazo muy corto).",
+   "La cofia baja hasta 3 cm por debajo del cuello (y a los lados, sobre lo alto de los hombros, hasta 4 cm más) y queda metida bajo el escote de cualquier prenda. Personajes nuevos en recursos/personajes/taller-v23/ (el hombre, idéntico a la v22: mismo archivo). Personaje v36 y demo v80.",
+   "Pruebas nuevas: en la del cuello (prueba_toca.mjs), que la cofia baja bajo el escote delante y detrás (con MUTAR=2 mira la taller-v22 y falla); en la del personaje, que todas las piezas recortadas llevan el borde suavizado (comprobado que en la v35 da 0 de 15).",
+   "Aún mal: el borde del escote del vestido es ondulado (la forma está así en la textura); a los lados del cuello, por el escote, se ve un poco el revés oscuro del vestido. No comprobado: los fotogramas en un móvil de verdad (la transparencia se lee de la textura entera)."
+  ],
+  "pruebas": "Batería entera dos veces. La primera (antes de los dos últimos arreglos): 26 grupos en el PC de valravnx, bien salvo «panel del admin» (falla allí al cargar la prueba, por su versión de Python), que pasó en la nube. La segunda, en la nube (SOLO_NUBE=1): 26 de 27; «construir a la altura del suelo» falló por la hierba de lo alisado (la ladera de la prueba cambia con la salida; no toca nada de esto), volvió a fallar en el PC y pasó a la tercera. Después, «personaje» otra vez en el PC (para mirar la cofia en una tarjeta gráfica): bien. Capturas de cerca miradas en PC y móvil.",
+  "capturas": "capturas/personaje-v36",
+  "estado": "ok"
  }
 ]
