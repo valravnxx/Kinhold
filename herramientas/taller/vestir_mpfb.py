@@ -1051,9 +1051,11 @@ def personaje(nombre, macros, objetivos, ropa):
         # entre ellos, en vez de una neblina medio transparente: esa neblina, castaña sobre la piel clara, salía como un
         # gris claro, «como escarcha» (revisión del 31 oct, noche). Cada píxel es pelo o piel; los pelos se van espaciando.
         # Debajo, una sombra muy suave de pelo corto (alfa 0,12 como mucho) para que el paso no salga a lunares.
-        pelo = suave(0.25, 0.75, g + 0.25 * (raya - 0.5))  # grano de pelo estirado a 0..1
+        # pelos finos y largos (un tercio de milímetro de grueso y unos 4 mm de largo, a lo largo de la caída), no granos
+        trazo = 0.65 * ruido(P + 0.19, (3200, 3200, 260)) + 0.35 * ruido(P + 0.43, (5200, 5200, 420))
+        pelo = suave(0.3, 0.7, trazo)
         umbral = 1.0 - 1.1 * m ** 0.85
-        sueltos = suave(umbral - 0.05, umbral + 0.05, pelo) * suave(0.0, 0.08, m)
+        sueltos = suave(umbral - 0.12, umbral + 0.12, pelo) * suave(0.0, 0.08, m)
         sombra = 0.12 * suave(0.0, 0.5, m)
         a = np.maximum(np.maximum(a * suave(0.75, 0.95, m), 0.95 * sueltos), sombra)
         claro = 0.56 + 0.6 * raya + 0.2 * (g - 0.5) + 0.1 * (fbm(P, 35) - 0.5)
@@ -1096,7 +1098,7 @@ def personaje(nombre, macros, objetivos, ropa):
     if True:  # las orejas van aparte: en el juego se esconden bajo la capucha, la toca o la cofia (si no, asoman)
         piezas.append(trozo(base, nombre + '_orejas', lambda i, c: en(i, 'body') and en(i, 'ears', 0.1), textura=(512, pintar_piel),
                             rugosidad=0.62, sss=0.2, ajustar_uv=True, **f_piel))
-    calcos = [('vello', pintar_vello, 1024), ('cejas', pintar_cejas, 512)] + ([(n_, pintar_barba(n_[6:]), 1024) for n_ in ('barba_corta', 'barba_bigote', 'barba_perilla')] if ropa.get('barba') else [])
+    calcos = [('vello', pintar_vello, 1024), ('cejas', pintar_cejas, 1024)] + ([(n_, pintar_barba(n_[6:]), 1024) for n_ in ('barba_corta', 'barba_bigote', 'barba_perilla')] if ropa.get('barba') else [])
     for n_, fn, res in calcos:
         sel = donde(fn)
         piezas.append(trozo(base, f'{nombre}_{n_}', lambda i, c, sel=sel: sel[i] and sin_orejas(i, c), empuje=0.001, textura=(res, fn),
