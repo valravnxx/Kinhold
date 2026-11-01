@@ -23,7 +23,7 @@ const GRUPOS = [
   ['A la espalda', d => d.lugar === 'espalda'],
   ['Al hombro', d => d.lugar === 'hombro'],
   ['Herramientas y armas', d => !d.recurso && !d.lugar && !d.capa && d.tam !== 'E'],
-  ['Para arrastrar', d => !d.recurso && d.tam === 'E'],
+  ['Para arrastrar o empujar', d => !d.recurso && d.tam === 'E'],
   ['Recursos', (d, k) => d.recurso && d.tam !== 'E' && !(k in MATERIAL_DE_OBJETO)],
 ];
 
