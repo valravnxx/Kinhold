@@ -1056,9 +1056,9 @@
    "tareas": [
     {
      "nombre": "Cuentas en el servidor: usuario y contraseña (guardada con sal y hash lento, nunca en claro), crear cuenta y entrar; cada cuenta con su personaje (el autor de sus acciones). Lógica pura y servidor, con pruebas (también de lo que no debe dejar: contraseña mala, usuario repetido, demasiados intentos)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-01T14:25:06+00:00",
-     "rama": "trabajo/20261101-1425"
+     "fin": "2026-11-01T15:47:22+00:00"
     },
     {
      "nombre": "Entrar en el juego con la cuenta: pantalla de entrar y de crear cuenta (PC y móvil) antes del mundo; el personaje que ya tenías en este navegador (su ficha) pasa a tu cuenta al crearla, sin perder nada; se sigue entrando solo desde otro aparato con la misma cuenta",

@@ -3826,5 +3826,24 @@
   "pruebas": "Prueba de la web, aquí: todo correcto. Capturas de la pestaña nueva en PC y en móvil, en los tres idiomas.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T14:25:06+00:00",
+  "fin": "2026-11-01T15:47:22+00:00",
+  "titulo": "P1: cuentas en el servidor (usuario y contraseña)",
+  "hito": "servidor",
+  "hecho": [
+   "Cuentas en el servidor: crear cuenta y entrar con usuario y contraseña, por mensajes del juego ({ tipo: 'cuenta', que: 'crear' | 'entrar' }). Lógica pura en src/logica/cuentas.js.",
+   "Cada cuenta tiene su personaje: al crearla se queda con el autor de la conexión (el personaje que ya llevas); al entrar desde otro aparato, el servidor da una ficha de ese personaje y con ella se vuelve a conectar siendo el mismo (la conexión vieja se cierra).",
+   "La contraseña nunca se guarda ni se apunta en claro: se resume con scrypt (N = 2^16, r = 8, p = 1) y una sal al azar por cuenta, en segundo plano para no parar el juego; se compara en tiempo fijo. Se guarda en cuentas.jsonl junto al mundo.",
+   "Lo que no deja: usuario repetido (sin mirar mayúsculas), un segundo usuario para el mismo personaje, usuario de menos de 3 o más de 20 letras o con símbolos, contraseña de menos de 8 caracteres o igual al usuario. Contraseña mala y usuario que no existe dan el mismo mensaje y tardan lo mismo.",
+   "Demasiados intentos: tras 5 contraseñas malas a una cuenta, o 20 fallos desde la misma dirección, 15 minutos de espera; como mucho 5 cuentas nuevas por dirección y hora. Detrás de Caddy, la dirección es la que él pasa.",
+   "Decisiones provisionales: los números de arriba (usuario, contraseña, intentos y esperas) y los de scrypt (64 MiB por resumen; en esta máquina tarda unos 230-280 ms). El wipe del servidor de prueba ya no borra las cuentas (servidor/nube/LEEME.md): cada uno entra con su usuario y empieza de cero.",
+   "Prueba nueva con 44 comprobaciones (lógica, scrypt y servidor con clientes de verdad, también tras reiniciar); rota a propósito (MUTAR=1, un servidor que da por buena cualquier contraseña) falla.",
+   "Aún no se ve en el juego: la pantalla de entrar y de crear cuenta es la tarea siguiente. No comprobado: que Caddy pase X-Forwarded-For en el servidor de Hetzner."
+  ],
+  "pruebas": "Batería entera en la nube (30 grupos; el PC de valravnx no estaba encendido para pruebas): 29 correctos; «la demo en el mundo» falló por «nada en el agua» (la salida cae cada vez en un sitio, ya pasó otras veces) y repetida sola pasó. Cuentas 44/44; rota a propósito, falla. Tras unir main (noticias en Discord, sin código del juego), cuentas y Discord otra vez bien.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
