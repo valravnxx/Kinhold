@@ -1062,7 +1062,9 @@
     },
     {
      "nombre": "Entrar en el juego con la cuenta: pantalla de entrar y de crear cuenta (PC y móvil) antes del mundo; el personaje que ya tenías en este navegador (su ficha) pasa a tu cuenta al crearla, sin perder nada; se sigue entrando solo desde otro aparato con la misma cuenta",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-01T16:24:16+00:00",
+     "rama": "trabajo/20261101-1624"
     },
     {
      "nombre": "El admin, por la cuenta: la cuenta de valravnx es la de administrador y el panel de depuración (mapa con los conectados y teletransportarse) sale solo con ella, sin clave aparte",

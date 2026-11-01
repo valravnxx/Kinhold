@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-01T16:24:16+00:00",
+  "tarea": "Entrar en el juego con la cuenta: pantalla de entrar y de crear cuenta (PC y móvil) antes del mundo; el personaje que ya tenías en este navegador (su ficha) pasa a tu cuenta al crearla, sin perder nada; se sigue entrando solo desde otro aparato con la misma cuenta",
+  "hito": "servidor",
+  "rama": "trabajo/20261101-1624"
+ },
  "B": null,
  "chat:trabajo/20261101-1630-discord-idiomas": {
   "inicio": "2026-11-01T16:29:59+01:00",
