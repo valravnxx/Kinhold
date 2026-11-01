@@ -43,16 +43,23 @@ HONDO = "((x, z) => { const a = window.__kinhold.mundoJ.aguaEn(x, z); return a ?
 # donde ya se nada (al menos 2 m de hondo), con el agua honda también 4 m más allá
 ORILLA = f"""(() => {{
   const k = window.__kinhold, m = k.mundoJ, hondo = {HONDO};
-  for (let r = 10; r < 1500; r += 6) for (let a = 0; a < 6.283; a += 6 / r) {{
-    const x = Math.round(Math.cos(a) * r), z = Math.round(Math.sin(a) * r);
-    if (!m.dentro(x, z) || hondo(x, z) < 2 || hondo(x + Math.cos(a) * 4, z + Math.sin(a) * 4) < 2) continue;
-    // hacia la salida, el primer punto seco
-    for (let d = 3; d <= 6; d += 1) {{
+  for (let r = 10; r < 20000; r += 20) for (let a = 0; a < 6.283; a += 20 / r) {{
+    const x = Math.cos(a) * r, z = Math.sin(a) * r;
+    if (!m.dentro(x, z) || hondo(x, z) < 1.6) continue;
+    // hacia la salida, el primer punto seco (a menos de 60 m)
+    for (let d = 1; d <= 60; d += 1) {{
       const tx = x - Math.cos(a) * d, tz = z - Math.sin(a) * d;
       if (hondo(tx, tz) > 0) continue;
-      let ok = true;
-      for (let b = 0; b < 8 && ok; b++) {{ const bx = tx + Math.cos(b * 0.785) * 2, bz = tz + Math.sin(b * 0.785) * 2; ok = hondo(bx, bz) < 1.25 && m.andable(tx, tz, bx, bz); }}
-      if (ok && !k.obstaculos.some(o => Math.hypot(o.x - tx, o.z - tz) < 3)) return {{ tierra: [tx, tz], agua: [x, z], rumbo: a }};
+      // el agua donde ya se nada, a menos de 25 m de la orilla, y honda también 3 m más allá
+      let w = null;
+      for (let e = 2; e <= 25 && !w; e += 1) {{ const wx = tx + Math.cos(a) * e, wz = tz + Math.sin(a) * e;
+        if (hondo(wx, wz) >= 1.6 && hondo(wx + Math.cos(a) * 3, wz + Math.sin(a) * 3) >= 1.6) w = [wx, wz]; }}
+      // el jugador, 2 m tierra adentro, en llano: andable y sin agua honda a 2 m alrededor
+      const px = tx - Math.cos(a) * 2, pz = tz - Math.sin(a) * 2;
+      let ok = !!w && hondo(px, pz) === 0;
+      for (let b = 0; b < 8 && ok; b++) {{ const bx = px + Math.cos(b * 0.785) * 2, bz = pz + Math.sin(b * 0.785) * 2; ok = hondo(bx, bz) < 0.5 && m.andable(px, pz, bx, bz); }}
+      if (ok) return {{ tierra: [px, pz], agua: w, rumbo: a, r }};
+      break;
     }}
   }}
   return null;
@@ -79,7 +86,10 @@ with sync_playwright() as p:
           const os = k.obstaculos.filter(o => o.arbol && !o.oculto && o.r > 0.1).sort((a, b) => Math.hypot(a.x, a.z) - Math.hypot(b.x, b.z));
           for (const o of os) {{ const x0 = o.x + o.r + 1.2, z0 = o.z;
             if (!k.mundoJ.andable(x0, z0, o.x, o.z)) continue;   // de un árbol en una cuesta empinada ya no se sabría si es por el árbol
-            const p = k.andarHasta(x0, z0, o.x, o.z); return {{ r: o.r, d: Math.hypot(p.x - o.x, p.z - o.z) }}; }}
+            // a pasos de rival (0,2 m), hacia el tronco y más allá: nunca dentro
+            let x = x0, z = z0, d = Infinity;
+            for (let i = 0; i < 30; i++) {{ const p = k.andarHasta(x, z, x - 0.2, z); x = p.x; z = p.z; d = Math.min(d, Math.hypot(x - o.x, z - o.z)); }}
+            return {{ r: o.r, d }}; }}
           return null; }})()""")
         comprobar('el rival no atraviesa los árboles', arbol is not None and arbol['d'] >= arbol['r'] - 0.01, json.dumps(arbol))
         # un cortado: un paso que sube más de lo que se anda no se da
@@ -119,11 +129,12 @@ with sync_playwright() as p:
             comprobar('el rival aparece donde se anda (seco, sin árbol encima, al que se llega)', sale['hondo'] < 1.25 and not sale['arbol'] and sale['llega'], json.dumps(sale))
             # se deja venir al rival y se fija
             pg.wait_for_function(f"(() => {{ const L = {C}.rivales[0].L; return Math.hypot(L.x - {K}.pj.x, L.z - {K}.pj.z) < 3.5; }})()", timeout=240000)
-            pg.evaluate(f'{C}.fijar()')
-            pg.evaluate(f"([a]) => {{ const k = {K}; k.cam.pitch = 0.3; k.cam.dist = 6; }}", [rumbo])
+            # la captura: desde tierra, mirando al agua, con la lámina del río o del mar ya dibujada
+            try: pg.wait_for_function(f'{K}.mundoJ.agua.cerca({K}.pj.x, {K}.pj.z)', timeout=120000)
+            except Exception: pass
+            pg.evaluate(f"([a]) => {{ const k = {K}; k.cam.yaw = Math.atan2(Math.cos(a), Math.sin(a)) + Math.PI + 0.6; k.cam.pitch = 0.28; k.cam.dist = 6.5; }}", [rumbo])
             pg.wait_for_timeout(1500)
             pg.screenshot(path=f'{SALIDA}/{nombre}_orilla.png')
-            pg.evaluate(f'{C}.fijar()')   # suelta el fijado
         # ---------- a nado ----------
         # lo que pisa el rival, en cada fotograma, desde que te metes en el agua
         pg.evaluate(f"""(() => {{ window.__rivalHondo = 0; const h = {HONDO}; const mira = () => {{ for (const x of {C}.rivales) if (!x.L.fuera) window.__rivalHondo = Math.max(window.__rivalHondo, h(x.L.x, x.L.z)); requestAnimationFrame(mira); }}; mira(); }})()""")

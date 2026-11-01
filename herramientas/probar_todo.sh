@@ -108,6 +108,7 @@ paso "Navegador: lo que llevas se ve puesto" python3 pruebas/prueba_llevado_nave
 paso "Navegador: objetos en el suelo" python3 pruebas/prueba_suelo_navegador.py dist/kinhold_hito1.html "$C/suelo"
 paso "Navegador: combate" python3 pruebas/prueba_combate_navegador.py dist/kinhold_combate.html "$C/combate"
 paso "Navegador: combate en el mundo" python3 pruebas/prueba_combate_mundo_navegador.py dist/kinhold_hito1.html "$C/combate_mundo"
+paso "Navegador: pelear en cualquier sitio del mundo" python3 pruebas/prueba_pelear_mundo_navegador.py dist/kinhold_demo.html "$C/pelear_mundo"
 paso "Navegador: pruebas de estilo" python3 pruebas/prueba_estilo_navegador.py dist/kinhold_estilo.html "$C/estilo"
 paso "Navegador: personaje" python3 pruebas/prueba_personaje_navegador.py dist/kinhold_personaje.html "$C/personaje"
 paso "Navegador: animaciones para cargar" python3 pruebas/prueba_anim_carga_navegador.py dist/kinhold_personaje.html "$C/anim_carga"
