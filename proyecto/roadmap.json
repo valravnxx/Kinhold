@@ -537,7 +537,9 @@
     },
     {
      "nombre": "El servidor guarda por trozo lo cambiado del mundo (lo talado, lo recogido, lo cavado y lo nivelado) y a cada jugador le manda solo lo de su alrededor, no todo en la bienvenida",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-01T04:22:45+00:00",
+     "rama": "trabajo/20261101-0422"
     },
     {
      "nombre": "El duelo en el mundo: pelear en cualquier sitio, sin escena aparte",

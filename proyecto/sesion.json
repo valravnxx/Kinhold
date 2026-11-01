@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-01T04:22:45+00:00",
+  "tarea": "El servidor guarda por trozo lo cambiado del mundo (lo talado, lo recogido, lo cavado y lo nivelado) y a cada jugador le manda solo lo de su alrededor, no todo en la bienvenida",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261101-0422"
+ },
  "B": {
   "inicio": "2026-11-01T01:52:36+00:00",
   "tarea": "Cuello de la ropa con toca en el móvil (visto en la revisión del 31 oct, noche): con la calidad ligera el borde del cuello sale en dientes de sierra y entre la toca y el cuello asoma una cuña de piel",
