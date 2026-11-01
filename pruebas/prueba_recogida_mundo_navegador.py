@@ -6,6 +6,7 @@
 #  - que junto a un punto de cada tipo que haya cerca, Usar lo recoge (al inventario, con su autor) y el punto se va
 #  - que lo que se recoge sigue al jugador: lejos (400 m) hay puntos alrededor de donde está y los de la salida se
 #    sueltan, sin fotogramas largos; y al volver, lo recogido sigue recogido
+# En PC, en el sitio de la salida al azar con más tipos cerca (para verlos todos); en el móvil, en uno al azar.
 # Capturas de cerca de cada tipo, antes y después.
 # Uso: python3 pruebas/prueba_recogida_mundo_navegador.py <html de la demo> <carpeta_capturas>
 # MUTAR=1: lo que se recoge, con otra semilla (no sale donde dice la lógica): tiene que fallar.
@@ -48,6 +49,20 @@ console.log(JSON.stringify(recogidaEn(p, alturaMundo(p), m.semilla, {{ x0: {x0},
     r = subprocess.run(['node', '--input-type=module', '-e', js], cwd=RAIZ, capture_output=True, text=True, timeout=300)
     return set(json.loads(r.stdout.strip().splitlines()[-1]))
 
+# el sitio de la salida al azar con más tipos a menos de 50 m (para la vista de PC; la del móvil, uno al azar)
+def sitio_con_todo():
+    js = """import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from './src/logica/mapa.js';
+import { crearPaisaje } from './src/logica/paisaje.js'; import { alturaMundo, SALIDAS } from './src/logica/whitholm.js';
+import { recogidaEn } from './src/logica/recogida_mundo.js';
+const m = generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO }), p = crearPaisaje(m), a = alturaMundo(p); let mejor = [0, 0];
+for (let k = 0; k < SALIDAS.length && mejor[0] < 5; k++) { const [x, z] = SALIDAS[k];
+  const n = new Set(recogidaEn(p, a, m.semilla, { x0: x - 50, z0: z - 50, x1: x + 50, z1: z + 50 }).map(q => q.tipo)).size; if (n > mejor[0]) mejor = [n, k]; }
+console.log(JSON.stringify(mejor));"""
+    r = subprocess.run(['node', '--input-type=module', '-e', js], cwd=RAIZ, capture_output=True, text=True, timeout=600)
+    return json.loads(r.stdout.strip().splitlines()[-1])
+TODO = sitio_con_todo()
+print('  sitio de salida con más tipos cerca:', TODO)
+
 DONDE = {'ramas': ['bosque'], 'piedra': ['rio', 'ladera'], 'silex': ['caliza', 'rio'], 'ortiga': ['claro', 'ribera'], 'hierba_larga': ['claro', 'ribera']}
 LISTO = f"{K}.mundoListo && {K}.recoleccion.listo && {K}.decorado.pendientes === 0"
 
@@ -61,7 +76,7 @@ with sync_playwright() as p:
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
         pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
-        pg.goto(URL)
+        pg.goto(URL + ('' if movil else f'&salida={TODO[1]}'))
         pg.wait_for_function('window.__kinhold !== undefined && window.__kinhold.mundoJ', timeout=240000)
         pg.evaluate(f"localStorage.removeItem('kinhold.recoleccion.mundo'); {K}.recoleccion.rec.estado = {{}}; {K}.recoleccion.refrescar()")
         pg.wait_for_function(LISTO, timeout=240000)
@@ -104,7 +119,8 @@ with sync_playwright() as p:
             pg.evaluate(f"{K}.render()"); pg.screenshot(path=f'{SALIDA}/{nombre}_{tipo}_despues.png')
             cogidos.append(pt['id'])
             pg.evaluate(f"(() => {{ const i = {K}.inventario; i.lugares['mano:der'] = null; i.lugares['mano:izq'] = null; }})()")
-        comprobar('cerca de la salida se han podido recoger al menos tres tipos', len(cogidos) >= 3, ', '.join(cogidos))
+        if movil: comprobar('cerca de la salida (al azar) se ha podido recoger algo', len(cogidos) >= 1, ', '.join(cogidos))
+        else: comprobar(f'junto al sitio de salida {TODO[1]} se recogen los {TODO[0]} tipos que hay cerca', len(cogidos) >= TODO[0] >= 4, ', '.join(cogidos))
         # 3) lejos y de vuelta
         x0, z0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
         pg.evaluate(f"{K}.recoleccion.cuenta.msMax = 0")
