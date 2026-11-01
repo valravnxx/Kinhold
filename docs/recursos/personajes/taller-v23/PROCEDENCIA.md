@@ -76,5 +76,5 @@ rectos), y la textura de las cejas pasa a 1024; donde la barba clarea van pelos 
 entre ellos, en vez de una neblina medio transparente que salía gris, «como escarcha»; el bigote baja algo más por los
 lados y se une a la barba (los labios ya no quitan la barba en las comisuras), con mechones de distinto grueso y tono.
 v23, la cofia por debajo del escote (revisión del 31 oct, noche): su bajo pasa de 6 mm por encima del cuello a 3 cm
-por debajo, y queda metido bajo el escote de cualquier prenda; antes, entre la cofia y el escote asomaba una cuña de
-piel. El hombre sale igual que en la v22 (mismo archivo).
+por debajo (y a los lados, sobre lo alto de los hombros, hasta 4 cm más), y queda metido bajo el escote de cualquier
+prenda; antes, entre la cofia y el escote asomaba una cuña de piel. El hombre sale igual que en la v22 (mismo archivo).
