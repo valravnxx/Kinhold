@@ -109,7 +109,8 @@ export function leerArchivo(archivo) {
 }
 
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
-  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, claveAdmin = process.env.KINHOLD_ADMIN, terreno = null } = {}) {
+  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, claveAdmin = process.env.KINHOLD_ADMIN, terreno = null,
+  tierras = terreno && terreno.tierras } = {}) {
   archivo = resolve(archivo);
   const archivoCombate = resolve(dirname(archivo), 'combate.jsonl');
   const archivoFichas = resolve(dirname(archivo), 'fichas.jsonl');
@@ -192,7 +193,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const reloj = () => Math.round(performance.now());   // hora del servidor (ms), la que llevan los estados
 
   // combate: el reloj es el del servidor; antes de cada intención se avanza hasta ahora
-  const combate = new CombateServidor({ semilla });
+  // Strandvang, tierras del rey: ahí no se hiere a otro jugador (tierras: en(x, z) de src/logica/tierras_rey.js)
+  const combate = new CombateServidor({ semilla, tierras: tierras || null });
   const t0 = reloj();
   const ponerAlDia = () => combate.avanzarHasta((reloj() - t0) / 1000);
   let escritas = 0;

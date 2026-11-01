@@ -23,6 +23,8 @@ import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from './vegetaci
 import { recogidaTrozo, LADO_RECOGIDA } from './recogida_mundo.js';
 import { idArbol } from './tala.js';
 import { nivelar as conMarcas, marcasEn } from './nivelado.js';
+import { crearComarcas } from './comarcas.js';
+import { crearTierrasRey } from './tierras_rey.js';
 
 export const ALTURAS = { bajoSuelo: 40, sobreSuelo: 120, plantaBaja: 1.5, brocha: 6, decoBajo: 0.5, decoSobre: 40, orilla: 0.15 };
 const MAX_TROZOS = 400;   // trozos de lo que crece guardados (los más viejos se van)
@@ -116,7 +118,10 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
 }
 
 // Whitholm tal cual lo ve el navegador: el mapa del mundo elegido (unos 5 s en generarse) y su paisaje.
+// Y Strandvang, tierras del rey (src/logica/tierras_rey.js): tierras(x, z) dice si un sitio de la escena es de ahí.
 export function terrenoWhitholm(opc = {}) {
   const mapa = generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO });
-  return crearTerreno({ paisaje: crearPaisaje(mapa), semilla: mapa.semilla, ...opc });
+  const t = crearTerreno({ paisaje: crearPaisaje(mapa), semilla: mapa.semilla, ...opc });
+  t.tierras = crearTierrasRey(crearComarcas(mapa), opc.origen || SALIDA).en;
+  return t;
 }

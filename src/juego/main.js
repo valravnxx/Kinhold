@@ -21,6 +21,7 @@ import { montarPanelInventario } from './panel_inventario.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
 import { crearComarcas } from '../logica/comarcas.js';
+import { crearTierrasRey, vigiaTierras } from '../logica/tierras_rey.js';
 import { dibujarRetrato } from './retrato.js';
 import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
 import { vestidoDe, rasgosPrenda } from '../logica/hechura.js';
@@ -158,6 +159,31 @@ function sitioDeSalida() {
   return s;
 }
 const mundoJ = MUNDO ? crearMundoJuego({ escena, mapa: MUNDO.mapa, origen: sitioDeSalida() }) : null;
+// las comarcas de Whitholm (src/logica/comarcas.js): para el mapa del rey y para saber si estás en Strandvang, tierras
+// del rey (src/logica/tierras_rey.js), donde nadie puede herir a otro jugador: al entrar y al salir, un cartel
+const comarcasMundo = mundoJ ? crearComarcas(MUNDO.mapa) : null;
+const tierrasRey = mundoJ ? crearTierrasRey(comarcasMundo, mundoJ.salida) : null;
+const vigiaRey = tierrasRey ? vigiaTierras(window.__mutarTierras ? () => false : tierrasRey.en) : null;
+let cartelTierras = null, cartelHasta = 0, tierrasMirado = 0;
+function mirarTierras() {
+  const t = performance.now();
+  if (cartelTierras && !cartelTierras.hidden && t > cartelHasta) cartelTierras.hidden = true;
+  if (t - tierrasMirado < 400) return;
+  tierrasMirado = t;
+  const cambio = vigiaRey.mirar(pj.x, pj.z);
+  if (!cambio) return;
+  if (!cartelTierras) {
+    cartelTierras = document.createElement('div'); cartelTierras.id = 'cartelTierras';
+    cartelTierras.style.cssText = 'position:fixed;left:50%;top:16%;transform:translateX(-50%);max-width:min(88vw,520px);padding:10px 18px;border-radius:8px;background:rgba(30,26,20,.82);color:#f2e8d0;font:15px/1.35 Georgia,serif;text-align:center;z-index:21;pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.35)';
+    document.body.appendChild(cartelTierras);
+  }
+  const n = tr(tierrasRey.nombre);
+  cartelTierras.innerHTML = cambio === 'entra'
+    ? `<b style="font-size:17px;letter-spacing:.04em">${tr('Entras en {n}, tierras del rey', { n })}</b><br>${tr('Aquí nadie puede herir a otro jugador.')}`
+    : `<b style="font-size:17px;letter-spacing:.04em">${tr('Sales de {n}, tierras del rey', { n })}</b><br>${tr('Fuera de sus lindes, otros jugadores pueden herirte.')}`;
+  cartelTierras.dataset.cambio = cambio;
+  cartelTierras.hidden = false; cartelHasta = t + 6000;
+}
 
 // decorado común (src/mundo/decorado.js): llano para construir, bosque, hierba y rocas con colisión.
 // Como la prueba de estilo v5: hierba densa con flores desde el centro, matorrales, calvas de tierra pisada,
@@ -1825,6 +1851,7 @@ let mundoListo = false;
 function pasoMundo() {
   // y lo que crece, que también sigue al jugador (src/mundo/vegetacion_mundo.js): cuenta en el mismo tiempo
   const ms = mundoJ.paso(pj.x, pj.z, { prisa: !mundoListo }) + (decorado.paso ? decorado.paso(pj) : 0);
+  if (mundoListo) mirarTierras();
   if (mundoListo) { msMundo.n++; msMundo.total += ms; if (ms > msMundo.max) msMundo.max = ms; }
   if (mundoJ.listo !== mundoListo) {
     mundoListo = mundoJ.listo;
@@ -2038,7 +2065,7 @@ const panelInventario = montarPanelInventario({ panel: $('panelInventario'), bot
 // El mapa del rey (valravnx, 31 oct): Whitholm, la isla del rey, cartografiada; lo llevas desde que apareces y se abre con
 // M o el botón «Mapa» (src/juego/mapa_rey.js). Solo en el mundo de verdad. Al abrirlo se suelta el ratón (el combate lo
 // coge) y las teclas pulsadas, para no seguir andando sin ver.
-const mapaRey = mundoJ ? montarMapaRey({ paisaje: mundoJ.paisaje, comarcas: crearComarcas(MUNDO.mapa), esTactil: matchMedia('(pointer: coarse)').matches,
+const mapaRey = mundoJ ? montarMapaRey({ paisaje: mundoJ.paisaje, comarcas: comarcasMundo, esTactil: matchMedia('(pointer: coarse)').matches,
   posicion: () => ({ x: pj.x + mundoJ.salida.x, z: pj.z + mundoJ.salida.z, rot: pj.rot }),
   alAbrir: () => { if (document.pointerLockElement) document.exitPointerLock(); teclas.clear(); cerrarMenuUsar(); } }) : null;
 if ($('btnMapa')) { $('btnMapa').hidden = !mapaRey; $('btnMapa').onclick = () => mapaRey && mapaRey.alternar(); }
@@ -2278,7 +2305,7 @@ window.__kinhold = {
   get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos, talaV, decorado, combate,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
-  mundoJ, get mundoListo() { return mundoListo; }, mapaRey, panelAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
+  mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado
   nado,
   // un paso de alguien que anda por el suelo del mundo (el rival de práctica)

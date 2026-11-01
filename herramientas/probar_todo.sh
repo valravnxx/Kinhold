@@ -67,6 +67,7 @@ paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, espe
 paso "Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, claros y riberas), siempre igual" node pruebas/prueba_recogida_mundo.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
 paso "Mapa del rey: costa del juego, nombres, ciudad y ríos" node pruebas/prueba_mapa_rey.mjs
+paso "Strandvang, tierras del rey: nadie hiere a otro jugador (el servidor lo rechaza, con su autor)" node pruebas/prueba_tierras_rey.mjs
 paso "Aguante, agua y nado" node pruebas/prueba_nado.mjs
 paso "Medición del servidor (CPU, memoria, red y disco)" node pruebas/prueba_medir.mjs
 [ -z "$LISTAR" ] && { [ -z "$GRUPO" ] || [ "$GRUPO" = logica ]; } && ! command -v caddy >/dev/null && {  apt-get install -y -q caddy >/dev/null 2>&1 || { apt-get update -q >/dev/null 2>&1; apt-get install -y -q caddy >/dev/null 2>&1; } || true; }
@@ -125,6 +126,7 @@ paso "Navegador: niveles de detalle del personaje" python3 pruebas/prueba_detall
 paso "Navegador: terreno por trozos (en un hilo aparte)" python3 pruebas/prueba_trozos_navegador.py dist/kinhold_trozos.html "$C/trozos"
 paso "Navegador: mapa del mundo" python3 pruebas/prueba_mapa_navegador.py dist/kinhold_mapa.html "$C/mapa"
 paso "Navegador: mapa del rey" python3 pruebas/prueba_mapa_rey_navegador.py dist/kinhold_demo.html "$C/mapa_rey"
+paso "Navegador: tierras del rey" python3 pruebas/prueba_tierras_rey_navegador.py dist/kinhold_demo.html "$C/tierras_rey"
 paso "Navegador: panel del admin" python3 pruebas/prueba_admin_navegador.py dist/kinhold_demo.html "$C/admin"
 paso "Web de progreso" node herramientas/construir_web.mjs
 paso "Navegador: web" python3 pruebas/prueba_web.py "$C/web"

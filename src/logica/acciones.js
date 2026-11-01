@@ -249,7 +249,10 @@ export function ejecutarCombate(ctx, registro, accion) {
     if (!L) r = { ok: false, motivo };
     else if (accion.tipo === 'golpe') {
       const de = ctx.luchadores[accion.objetivo];
+      // ctx.protegido (opcional): si dice un motivo, el golpe se rechaza sin herida (Strandvang, tierras del rey)
+      const prot = de && ctx.protegido ? ctx.protegido(L, de) : null;
       if (!de) r = { ok: false, motivo: 'El objetivo no está en el combate.' };
+      else if (prot) r = { ok: false, motivo: prot };
       else r = { ok: true, ...resolverGolpe(L, de, accion.linea, ctx.r) };
     } else if (accion.tipo === 'curar') {
       const motivo = L.motivoNoCurar(accion.herida, accion.metodo);
@@ -268,9 +271,15 @@ export function ejecutarCombate(ctx, registro, accion) {
 // Avanza un proyectil disparado con ejecutarCombate. Si da a alguien (herida o escudo), lo anota
 // como consecuencia del disparo, con el mismo autor.
 // blancos: a quién puede dar (por defecto, todos los luchadores del combate).
+// Con ctx.protegido, la flecha que llega a alguien protegido se para sin herir y se anota rechazada, con su autor.
 export function avanzarProyectil(ctx, registro, p, dt, blancos = Object.values(ctx.luchadores), dianas = []) {
-  const res = moverProyectil(p, dt, blancos, ctx.r, dianas);
-  if (res && (res.tipo === 'blanco' || res.tipo === 'escudo')) {
+  const tirador = ctx.protegido ? ctx.luchadores[p.autor] || p.tirador : null;
+  const protegido = tirador ? (L) => ctx.protegido(tirador, L) : null;
+  const res = moverProyectil(p, dt, blancos, ctx.r, dianas, protegido);
+  if (res && res.tipo === 'protegido') {
+    const objetivo = Object.keys(ctx.luchadores).find(id => ctx.luchadores[id] === res.luchador);
+    registro.anotar({ autor: p.autor || 'desconocido', tipo: 'impacto', objetivo, arma: p.arma }, { ok: false, motivo: res.motivo });
+  } else if (res && (res.tipo === 'blanco' || res.tipo === 'escudo')) {
     const objetivo = Object.keys(ctx.luchadores).find(id => ctx.luchadores[id] === res.luchador);
     const e = registro.anotar({ autor: p.autor || 'desconocido', tipo: 'impacto', objetivo, arma: p.arma }, { ok: true, resultado: res.tipo === 'blanco' ? 'herida' : 'escudo' });
     if (res.zona) { e.zona = res.zona; e.gravedad = res.gravedad; }
