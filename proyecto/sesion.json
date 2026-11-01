@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-01T14:25:06+00:00",
+  "tarea": "Cuentas en el servidor: usuario y contraseña (guardada con sal y hash lento, nunca en claro), crear cuenta y entrar; cada cuenta con su personaje (el autor de sus acciones). Lógica pura y servidor, con pruebas (también de lo que no debe dejar: contraseña mala, usuario repetido, demasiados intentos)",
+  "hito": "servidor",
+  "rama": "trabajo/20261101-1425"
+ },
  "B": null,
  "chat:trabajo/20261101-1520-discord": {
   "inicio": "2026-11-01T15:18:08+01:00",
