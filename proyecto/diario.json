@@ -3796,5 +3796,21 @@
   "pruebas": "Sin pruebas: solo cambian el roadmap, REVISION.md, CLAUDE.md y la web (con el estado nuevo).",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T15:18:08+01:00",
+  "fin": "2026-11-01T16:21:54+01:00",
+  "titulo": "Noticias del desarrollo en Discord",
+  "hito": "infra",
+  "hecho": [
+   "Publicador de noticias (herramientas/discord_noticias.mjs): cada versión jugable nueva sale en #versiones con su nota, su captura y el enlace para jugarla, y cada entrada nueva del diario en #diario-de-desarrollo con lo hecho, el hito, el tiempo y las pruebas.",
+   "Lo lanza GitHub al subir a main (flujo «Noticias en Discord»), así que no depende de tener nada encendido; sin los secretos de los webhooks no publica nada.",
+   "Nunca repite lo ya publicado, manda como mucho 8 de golpe y las imágenes van por el commit exacto, para que estén desde el primer momento.",
+   "Prueba nueva «Noticias del desarrollo en Discord»: con datos de mentira y de punta a punta contra un webhook falso; rota a propósito (MUTAR=1) falla.",
+   "Aparte, fuera del repositorio: el kit para que valravnx monte el servidor de Discord de una vez (canales de noticias, foros, rangos por nivel con Lurkr, preguntas de bienvenida y los webhooks), con su guía."
+  ],
+  "pruebas": "Batería entera en la nube: 30 grupos correctos, también la prueba nueva. El montador del servidor, contra un Discord simulado: todo bien, y roto a propósito (sin Comunidad) falla. No comprobado: el Discord de verdad, hasta que valravnx lo monte.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
