@@ -1396,9 +1396,10 @@
     },
     {
      "nombre": "Pelear en línea en el mundo (valravnx, 31 oct): al sacar el arma, los demás la ven en la mano, y los golpes y las paradas van por el servidor y hieren de verdad al otro",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T22:59:16+01:00",
-     "rama": "trabajo/20261031-2300-pelea"
+     "rama": "trabajo/20261031-2300-pelea",
+     "fin": "2026-11-01T03:33:30+01:00"
     }
    ],
    "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
@@ -2240,6 +2241,13 @@
      "archivo": "jugar/demo/v79.html",
      "capturas": "capturas/personaje-v35",
      "notas": "En el juego, cejas sin escalones, barba que clarea en pelos sueltos y bigote unido a la barba (personajes taller-v22)."
+    },
+    {
+     "v": "v80",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/demo/v80.html",
+     "capturas": "capturas/demo-v80",
+     "notas": "Pelear en línea en el mundo (valravnx, 31 oct): el arma sacada, los golpes y las paradas van por el servidor; los demás te ven con la espada en la mano y sus golpes hieren de verdad"
     }
    ]
   },
