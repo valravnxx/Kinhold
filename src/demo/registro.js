@@ -1,5 +1,5 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v83 (el servidor manda lo de tu alrededor)";
+export const VERSION_DEMO = "Demo única · v84 (las obras, también por trozos)";
 export const REGISTRO_DEMO = [
   "v84: las obras, los muebles y lo alisado con la brocha también llegan solo de los trozos de alrededor. Al entrar y al cambiar de trozo te llega el mundo de construcción de tus 5 × 5 trozos (en vez de todo lo construido en la isla desde el principio), y lo que se construye solo lo reciben los que tienen ese trozo alrededor (el mojón y el arcón de pruebas, todos). Cada obra que llega trae el contador de ids, el arcón y el mojón del servidor, para que en tu navegador salga igual aunque no te haya llegado lo de otros sitios; si aun así no sale igual, se pide otra vez lo de tus trozos.",
   "v84, provisional: una construcción entera va en el trozo de su origen (la esquina de su primera casilla), aunque crezca hacia otro; los muebles y lo alisado, en el de su punto.",
