@@ -57,10 +57,10 @@
 //   Crear: la cuenta es del personaje de esta conexión (su autor). Entrar: contesta con una ficha de ese personaje y el
 //   cliente vuelve a conectar con ?ficha=… (abajo). Las contraseñas, resumidas con scrypt y sal (servidor/claves.mjs) en
 //   cuentas.jsonl junto al mundo; nunca en claro ni en el registro. La bienvenida dice { cuenta: usuario | null }.
-//   Panel de depuración del admin (src/logica/admin.js): { tipo: 'admin', id, clave, que: 'ver' | 'ir', … }. Solo con la
-//   clave de admin de la máquina (claveAdmin, o la variable KINHOLD_ADMIN; servidor/nube/LEEME.md); sin ella puesta, no
-//   hay panel. La clave se compara resumida (sha256) y en tiempo fijo; tras ADMIN_FALLOS claves mal, se cierra la
-//   conexión (código 1008). Cada petición, bien o mal, va a admin.jsonl junto al mundo con su autor (nunca la clave).
+//   Panel de depuración del admin (src/logica/admin.js): { tipo: 'admin', id, que: 'ver' | 'ir', … }. Solo para la
+//   conexión cuyo personaje es de una cuenta de admin (cuentasAdmin, o la variable KINHOLD_ADMIN_CUENTA; por defecto la
+//   cuenta «valravnx»; servidor/nube/LEEME.md). Sin clave aparte. La bienvenida dice { admin: true } a esa conexión, y la
+//   respuesta al crear la cuenta también. Cada petición, bien o mal, va a admin.jsonl junto al mundo con su autor.
 //
 //   Conexiones que se cortan (src/logica/limites.js y abajo):
 //   - Ficha: la bienvenida lleva una ficha secreta (solo para ese cliente). Si el cliente vuelve a conectar con
@@ -81,7 +81,7 @@
 import { WebSocketServer } from 'ws';
 import { readFileSync, appendFileSync, existsSync, mkdirSync, writeFileSync, renameSync } from 'fs';
 import { dirname, resolve } from 'path';
-import { randomUUID, createHash, timingSafeEqual } from 'crypto';
+import { randomUUID, createHash } from 'crypto';
 import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
 import { RegistroAcciones, ejecutar, reproducir, USAN_INVENTARIO } from '../src/logica/acciones.js';
@@ -91,7 +91,7 @@ import { PROTOCOLO } from '../src/logica/protocolo.js';
 import { CombateServidor } from '../src/logica/combate_servidor.js';
 import { Limitador, LIMITES } from '../src/logica/limites.js';
 import { ObjetosServidor } from '../src/logica/objetos_red.js';
-import { validarPeticionAdmin, sitioJunto, listaJugadores, claveUsable, ADMIN_FALLOS } from '../src/logica/admin.js';
+import { validarPeticionAdmin, sitioJunto, listaJugadores, cuentasAdmin as listaAdmin, esCuentaAdmin, NO_ADMIN } from '../src/logica/admin.js';
 import { Cuentas, validarPeticionCuenta } from '../src/logica/cuentas.js';
 import * as claves from './claves.mjs';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
@@ -115,7 +115,7 @@ export function leerArchivo(archivo) {
 }
 
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
-  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, claveAdmin = process.env.KINHOLD_ADMIN, terreno = null,
+  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, cuentasAdmin = process.env.KINHOLD_ADMIN_CUENTA, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS } = {}) {
   archivo = resolve(archivo);
   const archivoCombate = resolve(dirname(archivo), 'combate.jsonl');
@@ -125,10 +125,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const archivoPosiciones = resolve(dirname(archivo), 'posiciones.json');
   const archivoAdmin = resolve(dirname(archivo), 'admin.jsonl');
   const archivoCuentas = resolve(dirname(archivo), 'cuentas.jsonl');
-  // la clave del admin, resumida (sha256): así se compara siempre en el mismo tiempo, sea cual sea su largo
-  const sha = (t) => createHash('sha256').update(String(t)).digest();
-  const resumenAdmin = claveUsable(claveAdmin) ? sha(claveAdmin) : null;
-  const esAdmin = (c) => !!resumenAdmin && typeof c === 'string' && c.length <= 200 && timingSafeEqual(sha(c), resumenAdmin);
+  // las cuentas de admin (el admin, por la cuenta: revisión del 1 nov)
+  const admins = listaAdmin(cuentasAdmin);
   mkdirSync(dirname(archivo), { recursive: true });
   const previas = leerArchivo(archivo);
   // si quedó una línea a medias, lo nuevo empieza en una línea aparte
@@ -145,6 +143,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   // cuentas: usuario → su personaje (autor), con la contraseña resumida (scrypt con sal); nunca en claro
   if (existsSync(archivoCuentas)) { const t = readFileSync(archivoCuentas, 'utf8'); if (t && !t.endsWith('\n')) appendFileSync(archivoCuentas, '\n'); }
   const cuentas = new Cuentas({ resumir: (c, s) => claves.resumir(c, s, parametrosClave), sal: claves.sal, iguales: claves.iguales, previas: leerArchivo(archivoCuentas) });
+  const usuarioDe = (autor) => (cuentas.deAutor(autor) || {}).usuario || null;
+  const esAdmin = (autor) => esCuentaAdmin(usuarioDe(autor), admins);
   // una ficha nueva para un autor (al entrar con la cuenta: con ella vuelve a conectar y es su personaje)
   const fichaPara = (autor) => {
     const f = randomUUID().replace(/-/g, '');
@@ -294,7 +294,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, obras: obrasEnTrozos(mundo, suyos), n: registro.total, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
       aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true),
       inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now(), suyos), tala: objetos.talaVisible(suyos), recoleccion: objetos.recoleccionVisible(suyos),
-      trozos: { lado: LADO_RED, radio: RADIO_RED }, posicion: posiciones.get(autor) || null, cuenta: (cuentas.deAutor(autor) || {}).usuario || null });
+      trozos: { lado: LADO_RED, radio: RADIO_RED }, posicion: posiciones.get(autor) || null, cuenta: usuarioDe(autor), admin: esAdmin(autor) });
 
     ws.on('message', (datos, binario) => {
       if (conexionDe.get(autor) !== ws) return;   // sustituida por otra: ya no cuenta
@@ -373,7 +373,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
             if (p.que === 'crear' && r.ok) {
               appendFileSync(archivoCuentas, JSON.stringify(r.cuenta) + '\n');
               registrar(`cuenta nueva «${r.cuenta.usuario}» para ${autor} (desde ${origen})`);
-              return responder({ ok: true, usuario: r.cuenta.usuario, autor });
+              return responder({ ok: true, usuario: r.cuenta.usuario, autor, admin: esAdmin(autor) });
             }
             if (p.que === 'entrar' && r.ok) {
               registrar(`entra con la cuenta «${r.usuario}» → ${r.autor} (desde ${origen})`);
@@ -388,22 +388,16 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       }
       if (msg && msg.tipo === 'admin') {
         const id = Number.isSafeInteger(msg.id) ? msg.id : null, que = msg.que === 'ver' || msg.que === 'ir' ? msg.que : null;
-        const apuntar = (r) => appendFileSync(archivoAdmin, JSON.stringify({ t: new Date().toISOString(), autor, que, ...(que === 'ir' ? { x: Number.isFinite(msg.x) ? msg.x : undefined, z: Number.isFinite(msg.z) ? msg.z : undefined, junto: typeof msg.junto === 'string' ? msg.junto.slice(0, 60) : undefined } : {}), ok: r.ok, ...(r.ok ? {} : { motivo: r.motivo }) }) + '\n');
+        const apuntar = (r) => appendFileSync(archivoAdmin, JSON.stringify({ t: new Date().toISOString(), autor, cuenta: usuarioDe(autor), que, ...(que === 'ir' ? { x: Number.isFinite(msg.x) ? msg.x : undefined, z: Number.isFinite(msg.z) ? msg.z : undefined, junto: typeof msg.junto === 'string' ? msg.junto.slice(0, 60) : undefined } : {}), ok: r.ok, ...(r.ok ? {} : { motivo: r.motivo }) }) + '\n');
         const responder = (r) => { if (que !== 'ver' || !r.ok) apuntar(r); enviar(ws, { tipo: 'admin', id, que, ...r }); };
-        if (!resumenAdmin) return responder({ ok: false, motivo: 'Este servidor no tiene clave de admin.' });
-        if (!esAdmin(msg.clave)) {
-          ws.fallosAdmin = (ws.fallosAdmin || 0) + 1;
-          responder({ ok: false, motivo: 'Clave de admin incorrecta.' });
-          if (ws.fallosAdmin >= ADMIN_FALLOS) { registrar(`echado ${autor} (clave de admin mal ${ws.fallosAdmin} veces)`); ws.close(1008, 'Clave de admin'); }
-          return;
-        }
-        ws.fallosAdmin = 0;
+        // solo la cuenta de admin (la de esta conexión: lo que diga el mensaje no cuenta)
+        if (!esAdmin(autor)) return responder({ ok: false, motivo: NO_ADMIN });
         const p = validarPeticionAdmin(msg);
         if (!p) return responder({ ok: false, motivo: 'Petición de admin no válida.' });
         if (p.que === 'ver') {
           const estados = new Map();
           for (const a of conexionDe.keys()) { const e = presencia.ultimo.get(a); if (e) estados.set(a, e); }
-          return responder({ ok: true, yo: autor, jugadores: listaJugadores(estados) });
+          return responder({ ok: true, yo: autor, jugadores: listaJugadores(estados, usuarioDe) });
         }
         if (p.junto !== undefined) {
           const e = conexionDe.has(p.junto) && presencia.ultimo.get(p.junto);
