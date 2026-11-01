@@ -1308,6 +1308,9 @@
  "Sacar o guardar el arma (C)": "Достать или убрать оружие (C)",
  "Aliento": "Дыхание",
  "Un rival de práctica viene a por ti": "Противник для тренировки идёт к тебе",
+ "Nadando no se puede sacar el arma": "Вплавь нельзя достать оружие",
+ "Aquí no hay sitio para un rival": "Здесь нет места для противника",
+ "Nadando no se lucha: guardas el arma.": "Вплавь не сражаются: ты убираешь оружие.",
  "No hay nadie cerca a quien fijar": "Рядом нет никого, на ком можно зафиксироваться",
  "Golpe al aire": "Удар в пустоту",
  "El rival cae: {m}": "Противник падает: {m}",
@@ -1628,5 +1631,8 @@
  "Atacar": "Атаковать",
  "Demo única · v86 (parar con su rosa en el móvil)": "Единое демо · v86 (защита своей розой на телефоне)",
  "v86: en el móvil se para con su propia rosa (valravnx, 1 nov: «parar sigue siendo un botón y no otro joystick como el de atacar»): dos rosas a la derecha, «Atacar» abajo y «Parar» encima. En la de parar, tocar un sector para por ese lado, deslizar el dedo cambia de lado y soltar deja de parar; con un golpe cargándose, tocarla lo cancela (finta). Fijar y Rival pasan a la izquierda, encima del aliento, y mientras se pelea no sale lo que llevas en las manos (tapaba la rosa). En PC, el aliento va encima de lo que llevas.": "v86: на телефоне защита теперь со своей розой (valravnx, 1 нояб.: «защита всё ещё кнопка, а не второй джойстик, как у атаки»): две розы справа — «Атаковать» внизу и «Парировать» над ней. На розе защиты касание сектора даёт защиту с этой стороны, скольжение пальца меняет сторону, а отпускание прекращает защиту; если заряжается удар, касание отменяет его (финт). «Зафиксировать» и «Противник» переехали влево, над дыханием, а во время боя не показывается то, что в руках (это закрывало розу). На ПК полоса дыхания стоит над тем, что несёшь.",
- "v86, provisional: en pantallas de menos de 740 px de alto las rosas son algo más pequeñas (116 px en vez de 138).": "v86, временно: на экранах ниже 740 px розы немного меньше (116 px вместо 138)."
+ "v86, provisional: en pantallas de menos de 740 px de alto las rosas son algo más pequeñas (116 px en vez de 138).": "v86, временно: на экранах ниже 740 px розы немного меньше (116 px вместо 138).",
+ "v88: pelear en cualquier sitio del mundo, sin escena aparte. El rival de práctica anda por donde andarías tú: rodea los árboles y lo construido, no sube por los cortados y no entra donde cubre (si te metes a nado, se queda en la orilla). Aparece a unos 6 m, en un sitio al que se llega andando desde donde estás; si no hay ninguno, se avisa.": "v88: сражаться в любом месте мира, без отдельной сцены. Противник для тренировки ходит там, где ходил бы ты: обходит деревья и постройки, не взбирается на обрывы и не заходит туда, где уже нельзя стоять (если ты уплывёшь, он останется на берегу). Он появляется примерно в 6 м, в месте, куда можно дойти пешком оттуда, где ты стоишь; если такого места нет, об этом сообщается.",
+ "v88, provisional: nadando no se lucha. Al meterte donde ya no haces pie se guarda el arma, con un aviso, y no se saca hasta volver a hacer pie; vadeando sí se lucha, más despacio.": "v88, предварительно: вплавь не сражаются. Когда заходишь туда, где уже нельзя стоять, оружие убирается (с предупреждением) и не достаётся, пока снова не встанешь на дно; вброд сражаться можно, но медленнее.",
+ "Demo única · v88 (pelear en cualquier sitio del mundo)": "Единое демо · v88 (сражаться в любом месте мира)"
 }

@@ -34,7 +34,10 @@ const FLECHA = { alto: '▲', izquierda: '◀', derecha: '▶', estocada: '▼' 
 const SITIO = { alto: [0, -1], izquierda: [-1, 0], derecha: [1, 0], estocada: [0, 1] };
 
 export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, recursos, sexo, aspecto, capasActuales, armaduraActual,
-  modo, alturaEn, registro, esTactil, aviso, red = () => null }) {
+  modo, alturaEn, registro, esTactil, aviso, red = () => null,
+  // pelear en cualquier sitio del mundo (hito «El juego en el mundo de verdad»): el rival de práctica anda por donde
+  // andarías tú (sin atravesar obras ni árboles, sin subir cortados ni meterse donde cubre), y nadando no se lucha
+  andarHasta = (x0, z0, x1, z1) => ({ x: x1, z: z1 }), puedeLuchar = () => true }) {
   const c = {
     activo: false, L: null, modelo: null, rivales: [], fijado: null, ctx: null,
     lector: new LectorDireccion(), atacando: false, parando: false, raton: false, reloj: 0,
@@ -107,6 +110,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   // ---------- Sacar y guardar el arma ----------
   function sacar() {
     if (c.activo || modo() !== 'mover') return;
+    if (!puedeLuchar()) { decir(tr('Nadando no se puede sacar el arma')); return; }
     c.activo = true;
     const ritmo = RITMO.normal;
     if (!c.L || c.L.fuera) c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', armadura: armaduraActual(), modo: 'direccional', ritmo, x: pj.x, z: pj.z, rot: pj.rot });
@@ -144,8 +148,14 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   // ---------- Rivales de práctica ----------
   function llamarRival() {
     if (c.rivales.filter(x => !x.L.fuera).length >= 3) return;
-    const d = 6, a = pj.rot + (r() - 0.5) * 0.8;
-    const x = pj.x + Math.sin(a) * d, z = pj.z + Math.cos(a) * d;
+    // aparece a unos 6 m, por delante si se puede: el primer sitio al que se llega andando desde donde estás
+    let x = null, z = null, a = 0;
+    for (let i = 0; i < 16 && x === null; i++) {
+      a = pj.rot + (i === 0 ? (r() - 0.5) * 0.8 : Math.ceil(i / 2) * (i % 2 ? 1 : -1) * Math.PI / 8);
+      const px = pj.x + Math.sin(a) * 6, pz = pj.z + Math.cos(a) * 6, p = andarHasta(pj.x, pj.z, px, pz);
+      if (Math.hypot(p.x - px, p.z - pz) < 0.05) { x = px; z = pz; }
+    }
+    if (x === null) { decir(tr('Aquí no hay sitio para un rival')); return; }
     const L = new Luchador({ nombre: tr('Rival'), arma: 'espada_larga', armadura: 'gambeson', modo: 'direccional', ritmo: RITMO.normal, x, z, rot: a + Math.PI });
     const ia = new IA(L, 'normal', azar((Date.now() >> 3) & 0xffff));
     const m = crearCombatiente({ armadura: 'gambeson', colorCinta: 0xb3923f, recursos });
@@ -371,13 +381,21 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
       let v = 0;
       if (!L.fuera && !x.L.fuera) {
         const m = x.ia.pensar(dt, L);
-        if (m.mx || m.mz) { v = x.L.velocidad(m.correr); x.L.x += m.mx * v * dt; x.L.z += m.mz * v * dt; }
+        if (m.mx || m.mz) {
+          v = x.L.velocidad(m.correr);
+          const p = andarHasta(x.L.x, x.L.z, x.L.x + m.mx * v * dt, x.L.z + m.mz * v * dt);
+          x.L.x = p.x; x.L.z = p.z;
+        }
       } else if (x.L.bloqueando) x.L.bloquear(false);
       for (const e of x.L.actualizar(dt, false)) if (e.tipo === 'impacto') {
         const res = resolver(x.id, 'jugador', e.linea);
         if (res) { decirResultado(res, false); efectos(res, x.m, c.modelo); }
       }
-      if (!x.L.fuera) separar(L, x.L);
+      if (!x.L.fuera) {   // apartarse de ti, pero sin meterse en una pared ni en el agua
+        const x0 = x.L.x, z0 = x.L.z;
+        separar(L, x.L);
+        const p = andarHasta(x0, z0, x.L.x, x.L.z); x.L.x = p.x; x.L.z = p.z;
+      }
       x.m.position.set(x.L.x, alturaEn(x.L.x, x.L.z), x.L.z);
       x.m.rotation.y = x.L.rot;
       pintarHeridas(x.m, x.L.heridas);
