@@ -3678,7 +3678,7 @@
  },
  {
   "inicio": "2026-11-01T06:56:17+00:00",
-  "fin": "2026-11-01T10:23:26+00:00",
+  "fin": "2026-11-01T10:59:10+00:00",
   "titulo": "Hito de arte: bigote y barba del cuello (carril B)",
   "hito": "arte",
   "hecho": [
@@ -3689,7 +3689,7 @@
    "Prueba de los calcos con dos comprobaciones nuevas: el bigote no se aparta más de 6,5 mm de la piel, y de 2 a 4,5 cm por encima de la túnica la piel queda a la vista en menos del 6 % de la barba (5,0 % en la v24; con MUTAR=2 mira la taller-v23 y fallan las dos: 8,0 mm y 6,6 %). El margen de la segunda es corto.",
    "Aún mal: en las comisuras el bigote aún cae como dos colas oscuras; justo encima del cuello de la ropa quedan algunos pelos sueltos sobre la piel clara; en el móvil, en la vista Cara, el panel de opciones tapa la cara (ya pasaba antes)."
   ],
-  "pruebas": "En la nube: 27 grupos tras unir la demo v85 del carril A; fallaron tres que no tocan nada de esto y miden fotogramas o dónde sales (mapa del rey y la demo en el mundo pasaron al repetirlos). «Lo que se recoge en el mundo» sigue fallando en el móvil (16-18 puntos alrededor de la salida, pide más de 20) y falla igual en main sin este cambio (comprobado en una rama aparte desde main): se deja anotado. Tras unir la demo v86 del chat: lógica, demo única, juego en inglés, personaje y web, correctos. Capturas de cerca miradas en PC y móvil al lado de las de la taller-v23.",
+  "pruebas": "En la nube: 27 grupos tras unir la demo v85 del carril A; fallaron tres que no tocan nada de esto y miden fotogramas o dónde sales (mapa del rey y la demo en el mundo pasaron al repetirlos). «Lo que se recoge en el mundo» sigue fallando en el móvil (16-18 puntos alrededor de la salida, pide más de 20) y falla igual en main sin este cambio (comprobado en una rama aparte desde main): se deja anotado. Tras unir las demos v86, v87 y v88: lógica, demo única, juego en inglés, personaje, animaciones para cargar y web, correctos. Capturas de cerca miradas en PC y móvil al lado de las de la taller-v23.",
   "capturas": "capturas/personaje-v37",
   "estado": "ok"
  },
