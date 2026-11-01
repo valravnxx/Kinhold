@@ -877,6 +877,7 @@ def personaje(nombre, macros, objetivos, ropa):
     nombres = {g.index: g.name for g in base.vertex_groups}
     W = [{nombres[g.group]: g.weight for g in v.groups} for v in base.data.vertices]
     co = [v.co.copy() for v in base.data.vertices]
+    ARISTAS = np.array([tuple(e.vertices) for e in base.data.edges])  # para crecer la zona de los calcos por la malla
     igual = np.abs(malla_de(macros, objetivos) - np.array([tuple(c) for c in co])).max()
     print(f'{nombre}: la base de las formas se aparta {igual * 1000:.3f} mm de la del personaje')
     assert igual < 1e-4, 'las formas no salen de la misma base que el personaje'
@@ -985,7 +986,9 @@ def personaje(nombre, macros, objetivos, ropa):
             m = np.maximum(m, 0.85 * np.maximum(bigote, comisura))
         elif tipo == 'bigote': m = 0.85 * np.maximum(bigote, comisura)
         else: m = np.maximum(m, 0.85 * np.maximum(bigote, comisura))
-        if A is not None: m *= (1 - suave(0.1, 0.35, A[..., 1])) * (1 - suave(0.3, 0.6, A[..., 0]))
+        # los labios quitan la barba, pero no en las comisuras (desde taller-v22): ahí quedaba un hueco de piel entre el
+        # bigote y la barba (revisión del 31 oct, noche)
+        if A is not None: m *= (1 - suave(0.1, 0.35, A[..., 1])) * (1 - suave(0.3, 0.6, A[..., 0]) * suave(0.027, 0.021, x))
         m *= suave(0.0, -0.035, y + 0.012 * (fbm(P, 80) - 0.5))  # hacia la nuca se acaba poco a poco y no en una raya recta
         return m
     def zona_cofia(P):
@@ -1044,21 +1047,42 @@ def personaje(nombre, macros, objetivos, ropa):
         g = ruido(P, (2600, 2600, 420))  # grano de pelo, menos de medio milímetro
         raya = 0.6 * ruido(P + 0.37, (1500, 1500, 140)) + 0.4 * ruido(P + 0.71, (800, 800, 70))  # pelos a lo largo
         a = suave(0.0, 1.0, 1.25 * m + 0.7 * (g - 0.5) - 0.1) * suave(0.0, 0.1, m)  # fuera de la barba, nada
+        # Desde taller-v22, donde clarea (el cuello, el borde de las mejillas) van pelos sueltos y oscuros con la piel limpia
+        # entre ellos, en vez de una neblina medio transparente: esa neblina, castaña sobre la piel clara, salía como un
+        # gris claro, «como escarcha» (revisión del 31 oct, noche). Cada píxel es pelo o piel; los pelos se van espaciando.
+        # Debajo, una sombra muy suave de pelo corto (alfa 0,12 como mucho) para que el paso no salga a lunares.
+        pelo = suave(0.25, 0.75, g + 0.25 * (raya - 0.5))  # grano de pelo estirado a 0..1
+        umbral = 1.0 - 1.1 * m ** 0.85
+        sueltos = suave(umbral - 0.05, umbral + 0.05, pelo) * suave(0.0, 0.08, m)
+        sombra = 0.12 * suave(0.0, 0.5, m)
+        a = np.maximum(np.maximum(a * suave(0.75, 0.95, m), 0.95 * sueltos), sombra)
         claro = 0.56 + 0.6 * raya + 0.2 * (g - 0.5) + 0.1 * (fbm(P, 35) - 0.5)
+        claro = claro * (0.75 + 0.25 * suave(0.2, 0.9, m))  # los pelos sueltos, algo más oscuros (no grises)
         return colpelo * claro[..., None], a
     def pintar_barba(tipo):
         def f(P, A):
             col, a = pelos_barba(P, zona_barba(P, A, tipo))
             return np.concatenate([col, (0.95 * a)[..., None]], -1)
         return f
-    def donde(fn, margen=0.015):
+    def donde(fn, margen=0.006):
         """vértices de la piel donde el calco pinta algo, mirando también alrededor (las cejas son más finas que los cuadros
         de la malla: con poco margen quedaban cuadros sin calco y la ceja salía a trozos)"""
         P = np.array([tuple(c) for c in co]); A = ATR
         m = np.zeros(len(P))
-        for d in [(x, y, z) for x in (-margen, 0, margen) for y in (-margen, 0, margen) for z in (-margen, 0, margen)]:
+        # Desde taller-v22: antes se miraba solo en el punto y a 1,5 cm (margen) y quedaban huecos más anchos que una ceja:
+        # un punto de la malla a 3 mm por encima de la ceja no pinta nada ni él ni sus vecinos a 1,5 cm (ya por debajo de
+        # ella), su cuadro se quitaba y la ceja salía cortada en escalones rectos, por los bordes de los cuadros (revisión
+        # del 31 oct, noche). Ahora se mira en una rejilla fina (3 mm, hasta `margen`) y luego se añaden los vecinos por la
+        # malla, dos vueltas: así todo cuadro donde se pinta algo entra entero, sin coger de más (la textura es la misma).
+        n_ = int(round(margen / 0.003))
+        fino = [0.003 * k for k in range(-n_, n_ + 1)]
+        for d in [(x, y, z) for x in fino for y in fino for z in fino]:
             m = np.maximum(m, fn(P + np.array(d), A)[..., 3])
-        return m > 0.01
+        sel = m > 0.01
+        for _ in range(2):
+            mas = sel.copy(); mas[ARISTAS[sel[ARISTAS[:, 0]], 1]] = True; mas[ARISTAS[sel[ARISTAS[:, 1]], 0]] = True
+            sel = mas
+        return sel
 
     # --- piel: solo lo que se ve (cabeza, cuello, manos y un poco de muñeca) ---
     # Bajo el cuello, la piel sigue hasta bien por debajo de cualquier escote (desde taller-v18): antes acababa justo en el
@@ -1185,8 +1209,11 @@ def personaje(nombre, macros, objetivos, ropa):
         for k in range(NB + 1):
             s = -1 + 2 * k / NB; a_ = abs(s)
             xr, zr = ax + 0.029 * s, boca_z + 0.015 - 8 * (0.029 * s) ** 2  # raíz: bajo la nariz, baja hacia los lados
-            xt = ax + 0.029 * s * 1.12 + 0.005 * s * a_ ** 2
-            zt = boca_z + 0.0015 - 0.017 * a_ ** 2.2  # punta: tapa el borde del labio y por los lados cae por las comisuras
+            xt = ax + 0.029 * s * 1.12 + 0.007 * s * a_ ** 2
+            # desde taller-v22 los lados bajan algo más (2,2 cm) y se meten en la barba: antes acababan en la comisura y
+            # entre el bigote y la barba quedaba piel (revisión del 31 oct, noche)
+            zt = boca_z + 0.0015 - 0.022 * a_ ** 2.2
+            bulto = 0.8 + 0.4 * ruido(np.array([[[k * 0.37, 0.0, 0.0]]]), (1, 1, 1))[0, 0]  # mechones de distinto grueso (no una banda lisa)  # punta: tapa el borde del labio y por los lados cae por las comisuras
             for j in range(NBO):
                 t = j / (NBO - 1)
                 x = xr + (xt - xr) * t ** 1.3; z = zr + (zt - zr) * t
@@ -1194,7 +1221,7 @@ def personaje(nombre, macros, objetivos, ropa):
                 # bajo la nariz el rayo puede dar en la punta de la nariz: nunca más fuera que el labio de arriba
                 r_lab = piel_r(th, boca_z + 0.005)
                 if r_lab is not None: rr = min(rr, r_lab + 0.003)
-                h = 0.0008 + 0.0055 * (4 * t * (1 - t)) ** 0.7 * (1 - 0.45 * a_ ** 2) + 0.0018 * t
+                h = 0.0008 + 0.0055 * bulto * (4 * t * (1 - t)) ** 0.7 * (1 - 0.45 * a_ ** 2) + 0.0018 * t
                 vs_b.append((ax + (rr + h) * math.sin(th), ay - (rr + h) * math.cos(th), z)); uv_b.append((k / NB, 1 - t))
         caras_b = [(k * NBO + j, (k + 1) * NBO + j, (k + 1) * NBO + j + 1, k * NBO + j + 1) for k in range(NB) for j in range(NBO - 1)]
         def pintar_mostacho(U, V):
@@ -1203,7 +1230,8 @@ def personaje(nombre, macros, objetivos, ropa):
             Qo = Q + np.stack([0.0012 * (fbm(Q, (60, 40, 1)) - 0.5), 0 * U, 0 * U], -1)
             n = 0.5 * ruido(Qo, (2400, 60, 1)) + 0.3 * ruido(Qo, (900, 30, 1)) + 0.2 * ruido(Qo, (5000, 120, 1))
             surco = suave(0.3, 0.1, ruido(Qo, (700, 20, 1)))
-            col = colpelo * (0.5 + 0.8 * n[..., None]) * (1 - 0.4 * surco[..., None]) * (0.75 + 0.3 * t[..., None])  # la raíz, más en sombra
+            mechon = ruido(Qo + 0.53, (380, 6, 1))  # mechones de unos 2-3 mm, unos más claros que otros (no una banda lisa)
+            col = colpelo * (0.5 + 0.8 * n[..., None]) * (1 - 0.5 * surco[..., None]) * (0.75 + 0.3 * t[..., None]) * (0.7 + 0.6 * mechon[..., None])  # la raíz, más en sombra
             mech = 0.6 * ruido(Qo, (1500, 1, 1)) + 0.4 * ruido(Qo, (4000, 2, 1))
             corte = 0.97 - 0.28 * mech ** 1.4  # cada pelo acaba a su largo
             a = suave(corte, corte - 0.06, t)
