@@ -3694,5 +3694,21 @@
   "pruebas": "Batería entera en la nube y en el PC de valravnx (hasta que se apagó): 28 de 28 grupos correctos (objetos en el suelo falló una vez en su PC al recargar la página y pasó al repetirlo en la nube). Tras unir main (demo v86 del chat): lógica, la carretilla, animaciones para cargar, demo única, combate en el mundo, juego en inglés y web, 7 de 7 correctos",
   "capturas": "capturas/demo-v87",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T08:06:10+00:00",
+  "fin": "2026-11-01T10:23:16+00:00",
+  "titulo": "Hito A: pelear en cualquier sitio del mundo (demo v88, carril B)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "El combate ya iba en el mundo desde el 30 oct (sin liza ni duelo aparte); faltaba que el rival de práctica anduviera por el mundo de verdad: antes atravesaba árboles, obras y cortados y se metía en el agua.",
+   "El rival da cada paso como tú: sin atravesar obras ni árboles, sin subir por los cortados ni salir de la isla y sin entrar donde cubre; si no puede de frente, se desliza por un eje. Aparece a unos 6 m en un sitio al que se llega andando, y si no hay ninguno se avisa.",
+   "Decisión provisional (en el registro de la demo): nadando no se lucha; al meterte donde ya no haces pie se guarda el arma con un aviso y no se saca hasta volver a hacer pie. Vadeando sí.",
+   "Prueba nueva de navegador en el mundo de verdad, en PC y en móvil: el rival no atraviesa árboles ni sube cortados, en la orilla de un río o del mar aparece donde se anda y no se mete a nado detrás de ti, y nadando se guarda el arma y no se saca. Rota a propósito una vez (MUTAR=1) para ver que falla.",
+   "Unido main con el chat (parar con su rosa en el móvil, demo v86), que tocaba el mismo archivo del combate: repasado a mano y vuelta a pasar toda la batería; esto pasa a ser la demo v88."
+  ],
+  "pruebas": "Todas en la nube (GitHub Actions), también tras unir main: correctas. La de combate en el servidor falló una vez en la nube y pasó 3 de 3 aquí y al repetirla.",
+  "capturas": "capturas/demo-v88",
+  "estado": "ok"
  }
 ]
