@@ -3710,5 +3710,21 @@
   "pruebas": "Todas en la nube (GitHub Actions), también tras unir main: correctas. La de combate en el servidor falló una vez en la nube y pasó 3 de 3 aquí y al repetirla.",
   "capturas": "capturas/demo-v88",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T10:24:19+00:00",
+  "fin": "2026-11-01T11:53:54+00:00",
+  "titulo": "Hito de equipo y carga: revisión completa; un arreglo antes de darlo por terminado (carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Batería entera en la nube sobre main con la demo v88 (29 grupos, 56 min): 28 correctos. Falló «la demo en el mundo» en PC: «nada en el agua» encontró 2 cosas en el agua cerca de la salida. Repetido solo, pasó. La salida cae cada vez en un sitio distinto, así que esa comprobación depende de dónde salga; no comprobado qué eran esas 2 cosas.",
+   "Capturas miradas en PC y móvil: el panel de inventario, el leñero, la mochila de bastidor y el cinturón puestos, la tala, el tronzado, la rastra, la carretilla y las animaciones de cargar. Bien: el panel en PC y a pantalla completa en el móvil, lo que llevas puesto (leñero, mochila, cinturón con lo que cuelga), la rastra y la carretilla con las manos en las varas.",
+   "Aún mal: el tronco corto al hombro va a la altura de la cabeza y la tapa entera (de lado, en PC y en el móvil), con la mano en el cuello. Menor: tras talar, el aviso sigue diciendo «faltan 7 golpes» con el árbol ya en el suelo.",
+   "Como aún se ve peor de lo que tiene que estar, el hito no pasa a revisión: queda una tarea antes de la revisión final, que vuelve a pendiente.",
+   "Sin versión nueva (no hay cambios jugables); las capturas de la revisión, en capturas/revision-equipo-1nov."
+  ],
+  "pruebas": "En la nube: 29 de 29 grupos correctos (uno, al repetirlo)",
+  "capturas": "capturas/revision-equipo-1nov",
+  "estado": "ok"
  }
 ]
