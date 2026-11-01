@@ -3675,5 +3675,24 @@
   "pruebas": "Todas menos las de en línea, casi todas en el PC de valravnx: bien salvo «construir a la altura del suelo», que falló una vez (como en vueltas anteriores, en cosas distintas) y pasó al repetirla. Tras unir main, el combate en el mundo y la demo, otra vez bien. No comprobado: pantallas de menos de 740 px de alto.",
   "capturas": "capturas/demo-v86",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T08:22:09+00:00",
+  "fin": "2026-11-01T10:03:55+00:00",
+  "titulo": "Equipo: animación de empujar la carretilla (carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "Animaciones de empujar la carretilla hechas en el taller (herramientas/taller/hacer_cargas.mjs), andando y quieta, a partir de andar y estar quieto: el tronco algo inclinado hacia delante y cada brazo por IK de dos huesos hasta un punto fijo delante de los pies, así las manos no resbalan por las varas al andar.",
+   "Las manos agarran las varas: la palma encima y por fuera, la línea de los nudillos a lo largo de la vara y los dedos cerrados alrededor, por dentro y por debajo; los codos hacia atrás, sin abrirse.",
+   "Nuevas en recursos/personajes/taller-carga-v2/ (unos 103 KB por cuerpo, con las de al hombro y arrastrar); taller-carga-v1 no se toca. El juego y el visor las cargan de ahí; en «Personaje», «Más animaciones»: «Empujar la carretilla» y «Empujar la carretilla, quieto».",
+   "La carretilla va más baja: las agarraderas a 0,9 m (antes 1,1 m), unos 22° en vez de 29°.",
+   "Decisión provisional (registro de la demo): el hombre y la mujer empujan la misma carretilla a la misma altura; él, con los brazos casi estirados; ella (más baja), algo más doblados.",
+   "Pruebas: la de animaciones para cargar mira en todos los fotogramas, con el esqueleto del juego, que los puños quedan en las agarraderas (hombre a 6,0 cm, mujer a 4,2 cm de los nudillos); con MUTAR_CARGAS=1 falla. La de la carretilla en el navegador mira que se usa la animación de empujar, que va a menos de 25° y que los puños están en las varas; con MUTAR_ANIM=1 falla.",
+   "Aún mal: los brazos del hombre no van del todo estirados y los de la mujer van bastante doblados; las varas asoman un poco por detrás de los puños.",
+   "Publicada la demo v87 (la v86 la había publicado el chat mientras tanto)."
+  ],
+  "pruebas": "Batería entera en la nube y en el PC de valravnx (hasta que se apagó): 28 de 28 grupos correctos (objetos en el suelo falló una vez en su PC al recargar la página y pasó al repetirlo en la nube). Tras unir main (demo v86 del chat): lógica, la carretilla, animaciones para cargar, demo única, combate en el mundo, juego en inglés y web, 7 de 7 correctos",
+  "capturas": "capturas/demo-v87",
+  "estado": "ok"
  }
 ]

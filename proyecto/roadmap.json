@@ -708,9 +708,9 @@
     },
     {
      "nombre": "Animación de empujar la carretilla, hecha en el taller como las de cargar: andando y quieto, con los brazos bajos y estirados hacia las varas y el cuerpo algo inclinado hacia delante, para que la carretilla vaya poco levantada (hoy usa la de llevar algo en brazos: las manos a la altura del pecho y la carretilla a unos 29°). Capturas de cerca para valravnx",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-01T08:22:50+00:00",
-     "rama": "trabajo/20261101-0822"
+     "fin": "2026-11-01T10:03:55+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -2330,6 +2330,13 @@
      "archivo": "jugar/demo/v86.html",
      "capturas": "capturas/demo-v86",
      "notas": "En el móvil se para con su propia rosa, como la de atacar (valravnx, 1 nov), y los botones del combate ya no se tapan"
+    },
+    {
+     "v": "v87",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/demo/v87.html",
+     "capturas": "capturas/demo-v87",
+     "notas": "Empujar la carretilla tiene su animación, hecha en el taller (andando y quieta): algo inclinado hacia delante, con los brazos bajos y las manos cerradas alrededor de las varas. La carretilla va más baja: unos 22° en vez de 29°."
     }
    ]
   },
