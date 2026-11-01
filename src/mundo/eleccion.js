@@ -7,7 +7,7 @@ export const CLAVE_PERSONAJE = 'kinhold_personaje_v2';
 // La carpeta de los personajes del taller propio que usan la construcción, el duelo y el visor del mapa (las versiones
 // publicadas viven en jugar/<prototipo>/ y los modelos en recursos/personajes/taller-vN/; las anteriores no se tocan).
 // Se puede cambiar con ?recursosMH= para las pruebas. Un solo sitio: al publicar un taller nuevo se cambia aquí.
-export const TALLER = 'taller-v20';
+export const TALLER = 'taller-v21';
 export const recursosTaller = () => new URLSearchParams(location.search).get('recursosMH') || '../../recursos/personajes/' + TALLER + '/';
 
 // la misma regla que el visor: si no se ha tocado la ropa, túnica en el hombre y vestido en la mujer

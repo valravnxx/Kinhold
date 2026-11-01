@@ -15,6 +15,9 @@
 //   { tipo: 'talar', arbol, x, z, ax, az, edad }  — un golpe de hacha a un árbol (src/logica/tala.js); lo que deja cae al suelo
 //   { tipo: 'trocear', objeto, x, z }             — un golpe de hacha a un tronco del suelo (src/logica/troceo.js)
 //   { tipo: 'recoger', punto, x, z, px, pz, clase, a? } — recoger del suelo o de una planta (src/logica/recoleccion.js)
+//   { tipo: 'enganchar_rastra' | 'soltar_rastra' | 'cargar_rastra' | 'descargar_rastra', … } — la rastra (src/logica/rastra.js);
+//     al soltarla, si el sitio que dice el navegador no vale, se deja detrás de donde el servidor tiene al autor
+//   { tipo: 'arcon_al_suelo', objeto: 'rastra', x, z } — del arcón de pruebas al suelo (solo con arconPruebas)
 //   { tipo: 'coger', objeto, cantidad, a, … } y { tipo: 'soltar', de } — el arcón de pruebas del panel (solo con
 //     arconPruebas: sacar algo de la nada y hacerlo desaparecer; sin él, se rechazan)
 //
@@ -40,13 +43,14 @@ import { RegistroAcciones } from './acciones.js';
 import { Tala, ejecutarTala, idArbol, DA, ALCANCE_TALA } from './tala.js';
 import { Troceo, ejecutarTroceo } from './troceo.js';
 import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER } from './recoleccion.js';
+import { Rastras, ejecutarRastra, TIPOS_RASTRA, ejecutarArconAlSuelo } from './rastra.js';
 
 export const TOLERANCIA = 3; // m
 export const ENTRE_GOLPES_RED = 500; // ms
 export const VERSION_OBJETOS = 2;
 const DEL_INVENTARIO = new Set(['mover', 'ponerse', 'quitarse']);
 const DEL_ARCON = new Set(['coger', 'soltar']);
-const DEL_SUELO = new Set(['soltar_suelo', 'coger_suelo', 'talar', 'trocear', 'recoger']);
+const DEL_SUELO = new Set(['soltar_suelo', 'coger_suelo', 'talar', 'trocear', 'recoger', 'arcon_al_suelo', ...TIPOS_RASTRA]);
 export const TIPOS_OBJETOS = new Set([...DEL_INVENTARIO, ...DEL_ARCON, ...DEL_SUELO]);
 const num = v => typeof v === 'number' && Number.isFinite(v);
 const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
@@ -64,7 +68,7 @@ export class ObjetosServidor {
     this.arconPruebas = arconPruebas;
     this.registro = new RegistroAcciones(1);   // la última; lo que se audita va al archivo
   }
-  ponerSuelo(suelo) { this.suelo = suelo; this.troceo = new Troceo(suelo); this.troceo.entre = ENTRE_GOLPES_RED; }
+  ponerSuelo(suelo) { this.suelo = suelo; this.troceo = new Troceo(suelo); this.troceo.entre = ENTRE_GOLPES_RED; this.rastras = new Rastras(suelo); }
 
   // accion: { tipo, ...datos } con el autor ya puesto por el servidor. ahora: la hora del servidor (ms).
   // Devuelve { ok, motivo?, entrada, suelo: bool (si ha cambiado el suelo) }.
@@ -91,6 +95,12 @@ export class ObjetosServidor {
       } else if (a.tipo === 'recoger') {
         const fallo = this.conocerPunto(a, p);
         r = fallo ? this.anotar(a, { ok: false, motivo: fallo }, ahora) : ejecutarRecoleccion(this.recoleccion, this.invs, this.registro, a, ahora);
+      } else if (a.tipo === 'arcon_al_suelo') {
+        r = this.arconPruebas ? ejecutarArconAlSuelo(this.suelo, this.registro, a, ahora, this.enTierras) : this.anotar(a, { ok: false, motivo: 'Aquí no hay arcón.' }, ahora);
+        suelo = !!r.ok;
+      } else if (TIPOS_RASTRA.has(a.tipo)) {
+        r = ejecutarRastra(this.rastras, this.invs, this.registro, a, ahora, this.enTierras, p.giro);
+        suelo = !!r.ok;
       } else {
         r = ejecutarSuelo(this.suelo, this.invs, this.registro, a, ahora, this.enTierras);
         suelo = !!r.ok;
@@ -123,6 +133,17 @@ export class ObjetosServidor {
   // Lo recogido (cuándo vuelve cada punto), para todos.
   recoleccionVisible() { return this.recoleccion.exportar(); }
   anotar(a, r, ahora) { const e = this.registro.anotar(a, r); e.ahora = ahora; return r; }
+
+  // El que se va del juego suelta la rastra que arrastraba: se queda donde el servidor la tenía, detrás de su último
+  // sitio. Devuelve true si ha cambiado el suelo.
+  soltarAlSalir(autor, ahora) {
+    if (!this.rastras.deAutor(autor, ahora)) return false;
+    const p = this.posicion(autor);
+    const o = this.rastras.deAutor(autor, ahora);
+    const r = this.rastras.soltar(this.invs.de(autor), autor, p ? p.x : o.x, p ? p.z : o.z, undefined, undefined, ahora, p && Number.isFinite(p.giro) ? p.giro : 0);
+    this.anotar({ autor, tipo: 'soltar_rastra', alSalir: true }, r, ahora);
+    return !!r.ok;
+  }
 
   // Lo que se le manda a un jugador: lo que lleva.
   inventarioDe(autor) { return this.invs.de(autor).exportarJugador(); }

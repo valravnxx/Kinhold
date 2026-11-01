@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 31 oct 2026 (23:50 UTC) — por el chat: las pruebas del PC llenan el SSD
+valravnx: «tengo el programa de tu gráfica para las pruebas, pero usa mi SSD de Windows, no el HDD de datos que es lo que quería, y me ha llenado el SSD; quiero que pueda borrar todo lo guardado en el SSD de Windows petado y ponerlo todo en D con una actualización del programa». → Tarea del chat en «Infraestructura».
+
 ### 31 oct 2026 (22:57 UTC+1) — por el chat: pelear en línea no hacía nada
 valravnx: «cuando íbamos a probar pelear mi chica y yo ambos sacábamos arma y no veíamos al otro con arma en mano ni los ataques nos hacían nada, ¿puedes arreglarlo?». → Tarea «Pelear en línea en el mundo» en el hito del duelo: el arma sacada, los golpes y las paradas del mundo van por el servidor (modo direccional) y los demás te ven con el arma en la mano.
 

@@ -191,7 +191,10 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       ritmo = THREE.MathUtils.clamp(ritmo, 0.6, 1.6);
     } else if (talando) m = 'talar';
     // con algo grande en las dos manos (src/juego/llevado.js), los brazos lo sujetan delante; quieto, la misma postura
-    if (j.cargaDos && m !== 'talar' && j.mh.acciones.cargar) { m = 'cargar'; if (velocidad <= 0.1) ritmo = 0; }
+    // arrastrando la rastra (src/juego/rastra.js): inclinado, con las manos atrás en las varas; quieto, la misma postura
+    if (j.arrastra && j.mh.acciones.arrastrar) {
+      ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'arrastrar';
+    } else if (j.cargaDos && m !== 'talar' && j.mh.acciones.cargar) { m = 'cargar'; if (velocidad <= 0.1) ritmo = 0; }
     // un tronco al hombro: la mano derecha arriba sujetándolo y el cuerpo algo inclinado, andando o quieto (taller-carga-v1).
     // Corriendo, la misma de andar, más deprisa (con el tronco al hombro no se corre suelto)
     else if (j.alHombro && m !== 'talar' && j.mh.acciones.hombro) {

@@ -43,6 +43,7 @@ paso "Estaciones y recetas" node pruebas/prueba_fabricacion.mjs
 paso "Objetos en el suelo" node pruebas/prueba_suelo.mjs
 paso "Tala de los árboles" node pruebas/prueba_tala.mjs
 paso "Tronzar y partir" node pruebas/prueba_troceo.mjs
+paso "La rastra" node pruebas/prueba_rastra.mjs
 paso "Obras con lo que llevas" node pruebas/prueba_obras_llevas.mjs
 paso "Datos de cada prenda (zonas, protección, abrigo y peso)" node pruebas/prueba_ropa.mjs
 paso "Aspecto del personaje (personalización)" node pruebas/prueba_aspecto.mjs
@@ -72,6 +73,7 @@ paso "Taller: formas y colores para personalizar" node pruebas/prueba_aspecto_mo
 paso "Taller: manos enteras y botas de la mujer bajo la falda" node pruebas/prueba_manos.mjs
 paso "Taller: pies descalzos" node pruebas/prueba_pies.mjs
 paso "Taller: barba larga con volumen" node pruebas/prueba_barbas.mjs
+paso "Taller: cejas y barba pintadas (calcos)" node pruebas/prueba_calcos.mjs
 paso "Taller: capa que cae de los hombros" node pruebas/prueba_manto.mjs
 paso "Taller: la piel bajo el escote" node pruebas/prueba_toca.mjs
 paso "Taller: el nacimiento del pelo" node pruebas/prueba_nacimiento_pelo.mjs
@@ -94,6 +96,7 @@ paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_hito1.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_hito1.html "$C/tala"
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_hito1.html "$C/troceo"
+paso "Navegador: la rastra" python3 pruebas/prueba_rastra_navegador.py dist/kinhold_hito1.html "$C/rastra"
 paso "Navegador: panel de inventario" python3 pruebas/prueba_inventario_navegador.py dist/kinhold_hito1.html "$C/inventario"
 paso "Navegador: lo que llevas se ve puesto" python3 pruebas/prueba_llevado_navegador.py dist/kinhold_hito1.html "$C/llevado"
 paso "Navegador: objetos en el suelo" python3 pruebas/prueba_suelo_navegador.py dist/kinhold_hito1.html "$C/suelo"

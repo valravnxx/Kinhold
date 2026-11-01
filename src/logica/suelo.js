@@ -24,6 +24,8 @@ export const RADIO_PILA = 1;             // m: lo que cae a menos de esto de una
 export const ALCANCE_COGER = 2;          // m
 export const DE_PILA = ['tronco_delgado', 'tronco_largo', 'tronco_corto', 'lena', 'piedra', 'bloque_piedra'];
 export const esDePila = tipo => DE_PILA.includes(tipo);
+// Lo que tampoco desaparece aunque no sea de pila: la rastra se queda donde la dejas (src/logica/rastra.js).
+export const NO_DESAPARECE = ['rastra'];
 
 const copiar = c => c && JSON.parse(JSON.stringify(c));
 const redondo = v => Math.round(v * 100) / 100;
@@ -52,7 +54,7 @@ export class Suelo {
       if (p) { p.cosa.n += c.n; return p; }
     }
     const o = { id: 's' + this.siguiente++, cosa: copiar(c), x: redondo(x), z: redondo(z), autor, soltado: ahora,
-      desaparece: esDePila(c.tipo) || enTierras ? null : ahora + DURA_SUELO };
+      desaparece: esDePila(c.tipo) || NO_DESAPARECE.includes(c.tipo) || enTierras ? null : ahora + DURA_SUELO };
     if (Number.isFinite(giro)) o.giro = redondo(giro);
     this.objetos.push(o);
     return o;

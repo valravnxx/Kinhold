@@ -3429,5 +3429,56 @@
   "pruebas": "En la nube: 25 grupos (sin las de en línea). Todo bien menos «panel del admin» la primera vez: el otro jugador estaba a 39 m y tu flecha lo tapaba en el mapa; en la prueba se pone a 1,7 km y se repitió: bien (30/30). El PC de valravnx no pudo pasar ninguna: «Espacio en disco insuficiente» en su runner; se repitió todo con SOLO_NUBE=1. No comprobado: la prueba de navegador con MUTAR=1 (sí la del servidor). Lo último (el texto del registro de la demo) entró después de la batería; la prueba de idiomas, pasada aquí.",
   "capturas": "capturas/demo-v75",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T20:52:36+00:00",
+  "fin": "2026-10-31T22:26:49+00:00",
+  "titulo": "Hito de arte: cejas y cuello del hombre (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Las cejas salían en bloques porque su calco aprovechaba muy poco la textura: sus trozos del mapa UV de la piel quedan lejos unos de otros (la frente y el párpado) y, al estirar la caja de todos, la ceja ocupaba una tira de 8 píxeles de ancho de los 512 (medido en la taller-v20).",
+   "Arreglo en el taller: los calcos de pelo (cejas, pelo pintado y barbas pintadas) juntan sus islas UV antes de estirarlas; la caja de las cejas pasa a unos 300×290 píxeles en el hombre y lo pintado, del 0,3 % al 3,1 % de la textura.",
+   "La barba corta baja por el cuello hasta la ropa y se va aclarando en unos 4 cm (antes, a los lados acababa 3 cm por encima y quedaba una franja clara de cuello cortada por la túnica); hacia la nuca se acaba poco a poco y no en una raya recta.",
+   "Personajes nuevos en recursos/personajes/taller-v21/. Personaje v34 y demo v76 (la v75 la publicó antes el carril A, con el panel de admin).",
+   "Prueba nueva: los calcos (prueba_calcos.mjs: lo que ocupan las cejas en su textura y la barba en los 3 cm sobre la túnica); con MUTAR=1 mira la taller-v20 y falla en 5 de 8.",
+   "Aún mal: con la barba rala justo encima del cuello de la ropa se ve algo de piel clara entre los pelos; la cola de las cejas de la mujer acaba algo en recto; de tres cuartos, detrás de la mandíbula la barba acaba en una línea algo marcada hacia la nuca.",
+   "El PC de valravnx no pudo pasar pruebas: todos los grupos fallaban al empezar con «Espacio en disco insuficiente» en su disco (carpeta del programa de pruebas). Se pasaron todas en la nube (SOLO_NUBE=1)."
+  ],
+  "pruebas": "En la nube, 24 de 24 grupos correctos (sin las de en línea). Tras unir main (panel de admin, demo v75): logica, demo única, panel del admin y web correctos. Capturas de cerca miradas en PC y móvil (cara del hombre y de la mujer) y comparadas con la revisión del 31 oct. No comprobado: las notas de la versión entraron después de la batería (solo texto; la prueba de idiomas del juego, correcta aquí).",
+  "capturas": "capturas/personaje-v34",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T21:23:14+00:00",
+  "fin": "2026-10-31T23:14:08+00:00",
+  "titulo": "La rastra (carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "La rastra en la lógica pura (src/logica/rastra.js), con autor: engancharla, soltarla, cargarla y descargarla. Es un objeto del suelo que no desaparece nunca y se queda donde la dejas con lo que lleve; en línea va por el servidor, que mira dónde estás, y si te vas del juego arrastrándola se queda donde estabas.",
+   "Lleva una sola clase de cosa a la vez: hasta 3 troncos cortos, hasta 24 piedras o un bloque de piedra en bruto. Arrastrándola vas despacio: del 70 % vacía al 50 % con tres troncos cortos. Mientras la arrastras no coges nada con las manos. Decisiones provisionales, anotadas en el registro de la demo.",
+   "El modelo con el estilo v5: dos varas de corteza de 3,2 m, cuatro travesaños atados con cordel y las agarraderas enrolladas; la carga se ve encima (troncos a lo largo, montón de piedras o el bloque). Arrastrándola, las varas suben a las manos y lo de atrás roza el suelo; el personaje usa la animación de arrastrar del taller (la que no se podía ver hasta ahora).",
+   "En el juego: sale del arcón de pruebas al suelo («Para arrastrar», «Dejarlo en el suelo»); Usar la engancha, la suelta o carga lo que lleves en las manos o al hombro; con el clic derecho (o el dedo quieto) se carga de una pila del suelo y se descarga a su lado; abajo sale «Arrastras: Rastra» con Soltar. Los demás la ven detrás de quien la arrastra.",
+   "Publicada como demo v77 (la v75 y la v76 las publicaron otras sesiones mientras tanto); textos del juego en inglés y ruso.",
+   "Aún mal: las manos quedan casi en las varas, pero no se cierran justo encima; la rastra no choca con nada (atraviesa árboles y casas); las obras aún no cogen material de la rastra que tengas al lado."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main: todos los grupos bien salvo «construir a la altura del suelo», que falló por no encontrar plantas en la ladera elegida al azar (nada que ver con la rastra) y pasó al repetirlo solo. Prueba nueva de lógica (42) y de navegador (PC y móvil), rotas a propósito con MUTAR=1. El PC de valravnx no pudo con ninguna: sin espacio en disco (avisado).",
+  "capturas": "capturas/demo-v77",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T22:53:58+00:00",
+  "fin": "2026-10-31T23:37:50+00:00",
+  "titulo": "Hito de arte: revisión completa; dos arreglos más antes de darlo por terminado (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Batería entera sobre main con la demo v76 (25 grupos): todos correctos. El PC de valravnx cogió los grupos de navegador pero no devolvió ninguno; pasaron solos a la nube.",
+   "Capturas miradas en PC y móvil (cara del hombre y de la mujer, espalda con capa, picar, la demo y el mundo). Ya bien lo de la revisión de la tarde: en el móvil el pelo no asoma por la toca, y las cejas tienen pelos y borde suave en vez de bloques.",
+   "Aún mal, de cerca: las cejas se cortan en escalones rectos; el bigote es una banda plana separada de la barba por las comisuras; la barba corta baja por el cuello en un gris claro, como escarcha. Con toca, en el móvil, el borde del cuello sale en dientes de sierra y asoma una cuña de piel entre la toca y el cuello.",
+   "Como aún se ve peor que la referencia, el hito no pasa a revisión: quedan dos tareas antes de la revisión final, que vuelve a pendiente.",
+   "Sin versión nueva (no hay cambios jugables); las capturas de la revisión, en capturas/revision-arte-31oct-noche."
+  ],
+  "pruebas": "En la nube: 25 de 25 grupos correctos",
+  "capturas": "capturas/revision-arte-31oct-noche",
+  "estado": "ok"
  }
 ]

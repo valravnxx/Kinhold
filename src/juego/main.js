@@ -36,6 +36,8 @@ import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } f
 import { hachaEnMano, HACHAS, edadDeEscala } from '../logica/tala.js';
 import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
 import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_TROCEO } from '../logica/troceo.js';
+import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, CABE_RASTRA, ALCANCE_RASTRA, sitioRastra } from '../logica/rastra.js';
+import { moverRastras } from './rastra.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -186,9 +188,11 @@ if (decorado.paso) {
 // los troncos del suelo se tronzan (el largo, en 3–4 cortos) y se parten (el corto, en leña) a golpes de hacha
 const troceo = new Troceo(sueloObjetos.suelo);
 if (almacen) cargarTroceo(almacen, troceo, Date.now());
+// la rastra: un objeto del suelo que se arrastra con las dos manos, con su carga (src/logica/rastra.js)
+const rastras = new Rastras(sueloObjetos.suelo);
 // en línea, todo eso es lo del servidor (src/juego/objetos_en_linea.js); se pinta de nuevo cuando llega
 const objetosRed = EN_LINEA ? crearObjetosEnLinea({ inventarios, autor: AUTOR_LOCAL, sueloObjetos, talaV, recoleccion,
-  alCambiar: (que) => { if (que === 'inventario' && typeof pintarTodoInventario === 'function') pintarTodoInventario(); } }) : null;
+  alCambiar: (que) => { if (que === 'inventario' && typeof pintarTodoInventario === 'function') pintarTodoInventario(); if (que === 'suelo' && typeof pintarLlevas === 'function') pintarLlevas(); } }) : null;
 
 // ---------------- Personaje y cámara ----------------
 // personaje del taller propio (la carpeta, en src/mundo/eleccion.js)
@@ -1260,9 +1264,17 @@ function usar() {
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { empezarTala(arbolCercano()); return; }
   // con un hacha en la mano, junto a un tronco tumbado, se tronza (el largo) o se parte (el corto)
   if (!it && hachaEnMano(inventario()) && troncoCercano()) { empezarTroceo(troncoCercano()); return; }
+  // arrastrando la rastra, Usar la suelta; junto a una parada, con algo que va en ella en las manos o al hombro, se
+  // carga, y si no, se engancha (se descarga y se carga del suelo desde el menú del clic derecho)
+  if (!it && pj.k === 0 && miRastra()) { soltarRastra(); return; }
+  if (!it && pj.k === 0 && rastraCercana()) {
+    const de = paraCargar();
+    if (de) cargarRastra(rastraCercana(), { de }); else engancharRastra(rastraCercana());
+    return;
+  }
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
-    const so = sueloObjetos.cercano(pj.x, pj.z); // lo que hay en el suelo, antes que lo que se recoge
+    const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => o.cosa.tipo !== 'rastra'); // lo que hay en el suelo, antes que lo que se recoge
     if (so) { cogerDelSuelo(so); return; }
     const rc = recoleccion.cercano(pj.x, pj.z);
     if (rc) { recoger(rc); return; }
@@ -1299,7 +1311,8 @@ function opcionesUsar() {
   if (pj.k === 0) {
     const tronco = troncoCercano();
     if (tronco && hachaEnMano(inventario())) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
-    for (const so of sueloObjetos.cercanos(pj.x, pj.z)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
+    for (const op of opcionesRastra()) ops.push(op);
+    for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (so.cosa.tipo !== 'rastra') ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
     for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) }), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
   }
   return ops;
@@ -1441,6 +1454,84 @@ function soltarAlSuelo(de) {
   pintarLlevas(); vestir(); panelInventario.pintar();
   mostrarAviso(r.desaparece === null ? tr('Lo dejas en el suelo: aquí se queda.') : tr('Lo dejas en el suelo: fuera de tus tierras desaparece en una hora.'));
   return r;
+}
+
+// ---- La rastra (src/logica/rastra.js y src/juego/rastra.js) ----
+// Quién soy en el suelo: en línea, el autor que me da el servidor; sin red, el local.
+const yoSuelo = () => (objetosRed && enLinea && enLinea.red.yo) || AUTOR_LOCAL;
+const miRastra = () => rastras.deAutor(yoSuelo(), Date.now());
+const rastraCercana = () => (miRastra() ? null : rastras.cercanas(pj.x, pj.z, Date.now())[0] || null);
+// lo que llevas en las manos o al hombro que va en la rastra (la ruta), o null
+function paraCargar() {
+  const inv = inventario();
+  return ['mano:der', 'mano:izq', 'hombro'].find(l => inv.lugares[l] && Object.hasOwn(CABE_RASTRA, inv.lugares[l].tipo)) || null;
+}
+// Arrastrándola, vas despacio: lo que frene más, la rastra o lo que llevas encima.
+function velocidadCarga() { const r = miRastra(); return r ? Math.min(inventario().velocidad(), factorRastra(r.cosa.carga)) : inventario().velocidad(); }
+let sitiosRastra = {};   // id → { x, z }: dónde se ve cada rastra que se arrastra (para soltarla ahí)
+function pasoRastras() {
+  const quien = (autor) => {
+    if (autor === yoSuelo()) return pj.k === 0 ? { x: pj.x, z: pj.z, giro: pj.rot } : null;
+    const r = enLinea && enLinea.remotos.get(autor);
+    return r ? { x: r.x, z: r.z, giro: r.j.raiz.rotation.y } : null;
+  };
+  sitiosRastra = moverRastras(sueloObjetos.grupo, quien, decorado.altura);
+  jugador.arrastra = !!miRastra();
+  if (enLinea) for (const [autor, r] of enLinea.remotos) r.j.arrastra = !!rastras.deAutor(autor, Date.now());
+}
+// Una acción de la rastra: en línea, al servidor (se espera su respuesta); sin red, aquí con la misma lógica.
+function accionRastra(a, alSalir) {
+  const fin = (r) => {
+    if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+    if (!objetosRed) { sueloObjetos.guardar(); sueloObjetos.refrescar(); if (almacen) guardarInventarios(almacen, inventarios); }
+    pintarLlevas(); panelInventario.pintar(); vestir();
+    alSalir(r);
+  };
+  if (objetosRed) { objetosRed.mandar(a, fin); return; }
+  const accionLocal = { autor: AUTOR_LOCAL, ...a };
+  fin(a.tipo === 'arcon_al_suelo' ? ejecutarArconAlSuelo(sueloObjetos.suelo, registroAcciones, accionLocal, Date.now(), (au, x, z) => !!mundo.dentroDeTierra(x, z))
+    : ejecutarRastra(rastras, inventarios, registroAcciones, accionLocal, Date.now(), (au, x, z) => !!mundo.dentroDeTierra(x, z), pj.rot));
+}
+const nombreCarga = c => (c ? tr('{n} × {c}', { n: c.n, c: tr(CATALOGO[c.tipo].nombre) }) : tr('vacía'));
+function engancharRastra(o) {
+  pj.rot = Math.atan2(pj.x - o.x, pj.z - o.z);   // de espaldas a ella: va detrás
+  accionRastra({ tipo: 'enganchar_rastra', objeto: o.id, x: pj.x, z: pj.z }, () => mostrarAviso(tr('Arrastras la rastra ({c}). Vas despacio; Usar la suelta.', { c: nombreCarga(o.cosa.carga) })));
+}
+function soltarRastra() {
+  const o = miRastra(); if (!o) return;
+  const s = sitiosRastra[o.id] || {};
+  accionRastra({ tipo: 'soltar_rastra', x: pj.x, z: pj.z, ...(Number.isFinite(s.x) ? { rx: s.x, rz: s.z } : {}) }, () => mostrarAviso(tr('Dejas la rastra: se queda aquí, con lo que lleve.')));
+}
+// cargar en la rastra o lo de una ruta de lo que llevas ({ de }) o lo de un objeto del suelo ({ suelo })
+function cargarRastra(o, que) {
+  accionRastra({ tipo: 'cargar_rastra', objeto: o.id, x: pj.x, z: pj.z, ...que }, (r) => mostrarAviso(tr('Cargas en la rastra: {n} × {c}. Lleva {m}.', { n: r.cantidad, c: tr(CATALOGO[r.tipo].nombre), m: r.lleva })));
+}
+function descargarRastra(o) {
+  accionRastra({ tipo: 'descargar_rastra', objeto: o.id, x: pj.x, z: pj.z }, (r) => mostrarAviso(tr('Descargas la rastra: {n} × {c} en el suelo.', { n: r.cantidad, c: tr(CATALOGO[r.tipo].nombre) })));
+}
+// lo que se puede hacer con la rastra desde el menú del clic derecho (o el dedo quieto)
+function opcionesRastra() {
+  const ops = [], mia = miRastra(), ahora = Date.now();
+  const cargables = (o) => sueloObjetos.cercanos(pj.x, pj.z, ALCANCE_RASTRA).filter(s => s !== o && Object.hasOwn(CABE_RASTRA, s.cosa.tipo) && sitioRastra(o.cosa.carga, s.cosa.tipo) > 0);
+  const de = paraCargar();
+  if (mia) {
+    ops.push({ texto: tr('Soltar la rastra'), pos: sitiosRastra[mia.id] || pj, hacer: soltarRastra });
+    if (de && sitioRastra(mia.cosa.carga, inventario().lugares[de].tipo) > 0) ops.push({ texto: tr('Cargar en la rastra: {c}', { c: tr(CATALOGO[inventario().lugares[de].tipo].nombre) }), pos: pj, hacer: () => cargarRastra(mia, { de }) });
+    for (const s of cargables(mia)) ops.push({ texto: tr('Cargar en la rastra: {n} × {c}', { n: Math.min(s.cosa.n, sitioRastra(mia.cosa.carga, s.cosa.tipo)), c: tr(CATALOGO[s.cosa.tipo].nombre) }), pos: s, hacer: () => cargarRastra(mia, { suelo: s.id }) });
+    return ops;
+  }
+  for (const o of rastras.cercanas(pj.x, pj.z, ahora)) {
+    ops.push({ texto: tr('Arrastrar la rastra ({c})', { c: nombreCarga(o.cosa.carga) }), pos: o, alto: 0.4, hacer: () => engancharRastra(o) });
+    if (de && sitioRastra(o.cosa.carga, inventario().lugares[de].tipo) > 0) ops.push({ texto: tr('Cargar en la rastra: {c}', { c: tr(CATALOGO[inventario().lugares[de].tipo].nombre) }), pos: o, alto: 0.4, hacer: () => cargarRastra(o, { de }) });
+    for (const s of cargables(o)) ops.push({ texto: tr('Cargar en la rastra: {n} × {c}', { n: Math.min(s.cosa.n, sitioRastra(o.cosa.carga, s.cosa.tipo)), c: tr(CATALOGO[s.cosa.tipo].nombre) }), pos: s, hacer: () => cargarRastra(o, { suelo: s.id }) });
+    if (o.cosa.carga) ops.push({ texto: tr('Descargar la rastra ({c})', { c: nombreCarga(o.cosa.carga) }), pos: o, alto: 0.4, hacer: () => descargarRastra(o) });
+  }
+  return ops;
+}
+// del arcón de pruebas al suelo, a tus pies (la rastra no cabe en el inventario)
+function arconAlSuelo(tipo) {
+  accionRastra({ tipo: 'arcon_al_suelo', objeto: tipo, x: pj.x + Math.sin(pj.rot) * 1.2, z: pj.z + Math.cos(pj.rot) * 1.2 }, () => mostrarAviso(tr('La rastra está en el suelo, delante de ti: Usar la engancha.')));
+  return { ok: true };
 }
 
 // Andamio (GDD, «Obras»): Usar al pie sube por su escalerilla a la plataforma, que está a la altura del suelo de la
@@ -1762,7 +1853,7 @@ function paso() {
   nado.modo = modo; nado.agua = ag;
   const rapido = teclas.has('shift');
   const correr = rapido && modo !== 'nadar' && puedeCorrer(nado.e);
-  let vel = (correr ? 6 : 3.6) * mag * inventario().velocidad() * combate.factorVelocidad(correr); // cargado al máximo en todo, al 80% (GDD); con el arma sacada, lo que diga el combate
+  let vel = (correr ? 6 : 3.6) * mag * velocidadCarga() * combate.factorVelocidad(correr); // cargado al máximo en todo, al 80% (GDD); con el arma sacada, lo que diga el combate
   if (modo === 'vadear') vel *= factorVadeo(ag.hondo);
   if (modo === 'nadar') vel = (rapido && nado.e.aguante > 0 ? NADO.velNadarRapido : NADO.velNadar) * mag;
   nado.e = pasoAguante(nado.e, dt, { modo, moviendo: mag > 0.05, rapido, kg: inventario().kilos() });
@@ -1826,11 +1917,12 @@ function paso() {
   talaV.paso(dt); // el árbol que cae y los que vuelven a crecer
   if (estado.talando && (estado.golpeEn -= dt) <= 0) golpeTala();
   sueloObjetos.paso(); // desaparece lo soltado hace más de una hora fuera de tus tierras
-  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana() || (pj.k === 0 && (!!recoleccion.cercano(pj.x, pj.z) || !!sueloObjetos.cercano(pj.x, pj.z))));
+  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana() || (pj.k === 0 && (!!recoleccion.cercano(pj.x, pj.z) || !!sueloObjetos.cercano(pj.x, pj.z) || !!miRastra())));
 
   moverGente(dt);
   moverFuegos();
   if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
+  pasoRastras();
   actualizarCamara();
   renderer.render(escena, camara);
   requestAnimationFrame(paso);
@@ -1909,7 +2001,7 @@ $('btnConfirmar').onclick = confirmarDesmontaje;
 $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltado(); estado.pendienteDesmontar = null; mostrarAviso(''); };
 // Panel de inventario (hito 2): lo que llevas encima y un arcón de pruebas para coger equipo.
 // El arcón de pruebas tiene también los materiales de obra (el montón común de antes): se cogen con acciones del mundo.
-const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario,
+const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario, alSuelo: arconAlSuelo,
   accionArcon: (a) => { const r = accion(a); if (r.ok) { guardar(); actualizarUI(); } return r; }, materialesArcon: () => mundo.materiales,
   alCambiar: () => { pintarLlevas(); vestir(); }, retrato: (lienzo) => dibujarRetrato(renderer, jugador.mh, lienzo) });
 // El mapa del rey (valravnx, 31 oct): Whitholm, la isla del rey, cartografiada; lo llevas desde que apareces y se abre con
@@ -1983,12 +2075,15 @@ function pintarLlevas() {
   const grupo = (et, l) => `<span class="llevo"><span>${et}</span><b>${nom(inv.lugares[l])}</b>${cambio(l)}<button data-soltar="${l}">${tr('Soltar')}</button></span>`;
   for (const l of manos) partes.push(grupo(tr('En la mano:'), l));
   if (inv.lugares.hombro) partes.push(grupo(tr('Al hombro:'), 'hombro'));
+  const ra = miRastra();
+  if (ra) partes.push(`<span class="llevo"><span>${tr('Arrastras:')}</span><b>${tr('Rastra')} (${nombreCarga(ra.cosa.carga)})</b><button data-soltarrastra="1">${tr('Soltar')}</button></span>`);
   $('llevas').hidden = !partes.length;
   $('llevas').innerHTML = partes.join('<i></i>');
 }
 $('llevas').onclick = (e) => {
   const h = e.target.closest('[data-alhombro]'), m = e.target.closest('[data-amanos]');
   if (h || m) { cambiarHombro(h ? h.dataset.alhombro : null); return; }
+  if (e.target.closest('[data-soltarrastra]')) { soltarRastra(); return; }
   const b = e.target.closest('[data-soltar]'); if (!b) return;
   soltarAlSuelo(b.dataset.soltar);
 };
@@ -2211,7 +2306,8 @@ window.__kinhold = {
   accionInventario, get inventario() { return inventario(); }, panelInventario,
   inventarios, golpeTala, arbolCercano, vestir, troceo, troncoCercano, golpeTroceo, usar, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
-  sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas, // lo soltado en el suelo (src/juego/suelo.js)
+  sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas,
+  rastras, miRastra, engancharRastra, soltarRastra, cargarRastra, descargarRastra, arconAlSuelo, opcionesRastra: () => opcionesRastra().map(o => o.texto), velocidadCarga, sitiosRastra: () => sitiosRastra, // la rastra // lo soltado en el suelo (src/juego/suelo.js)
   get enLinea() { return enLinea; }, objetosRed, // en línea: lo que llevas y el suelo del servidor
   reconstruir() { reconstruir(); },
   render() { renderer.render(escena, camara); },

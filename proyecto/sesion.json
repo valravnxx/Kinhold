@@ -1,20 +1,26 @@
 {
  "A": {
-  "inicio": "2026-10-31T21:23:14+00:00",
-  "tarea": "Rastra (N0: dos varas largas con travesaños): se arrastra a mano, despacio, con 2–3 troncos cortos o un montón de piedras, y se queda donde la dejas con lo que lleve. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
-  "hito": "equipo",
-  "rama": "trabajo/20261031-2123"
+  "inicio": "2026-10-31T23:31:19+00:00",
+  "tarea": "Lo que se recoge sale del sitio: ramas en el bosque, sílex en la caliza, piedra en las laderas y los ríos, fibra en los claros y las riberas",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261031-2331"
  },
  "B": {
-  "inicio": "2026-10-31T20:56:07+00:00",
-  "tarea": "Cejas y cuello del hombre (visto en la revisión del 31 oct): de cerca las cejas son trazos gruesos en bloque y entre la barba y el cuello queda una franja clara cortada",
+  "inicio": "2026-10-31T23:54:00+00:00",
+  "tarea": "Cejas, bigote y barba en el cuello (visto en la revisión del 31 oct, noche): de cerca las cejas aún se cortan en escalones rectos, el bigote es una banda plana separada de la barba por las comisuras y la barba corta baja por el cuello en un gris claro, como escarcha, en vez de clarear sobre la piel",
   "hito": "arte",
-  "rama": "trabajo/20261031-2056"
+  "rama": "trabajo/20261031-2354"
  },
  "chat:trabajo/20261031-2300-pelea": {
   "inicio": "2026-10-31T22:59:16+01:00",
   "tarea": "Pelear en línea en el mundo (valravnx, 31 oct): al sacar el arma, los demás la ven en la mano, y los golpes y las paradas van por el servidor y hieren de verdad al otro",
   "hito": "duelo",
   "rama": "trabajo/20261031-2300-pelea"
+ },
+ "chat:trabajo/20261031-2350-disco-d": {
+  "inicio": "2026-10-31T23:50:39+00:00",
+  "tarea": "Las pruebas en el PC de valravnx, en el disco D (valravnx, 31 oct): todo lo que guardan va a D en vez de al SSD de Windows, y el programa limpia lo que dejaron en C",
+  "hito": "infra",
+  "rama": "trabajo/20261031-2350-disco-d"
  }
 }
