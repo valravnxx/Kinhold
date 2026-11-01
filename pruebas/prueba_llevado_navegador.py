@@ -61,7 +61,7 @@ MEDIR = '''() => { const K = window.__kinhold, j = K.jugador, H = j.mh.hueso; K.
     r.piezas[o.name.slice(8)] = [(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2, x1 - x0, y1 - y0, z1 - z0].map(v => +v.toFixed(3));
   }
   r.modo = j.modo; r.alHombro = !!j.alHombro;
-  for (const n of ['pelvis', 'spine_03', 'hand_r', 'hand_l', 'neck_01']) r[n] = local(H[n]).toArray().map(v => +v.toFixed(3));
+  for (const n of ['pelvis', 'spine_03', 'hand_r', 'hand_l', 'neck_01', 'head', 'upperarm_r']) r[n] = local(H[n]).toArray().map(v => +v.toFixed(3));
   return r; }'''
 
 def equipar(pg, lugares):
