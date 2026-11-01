@@ -1,0 +1,25 @@
+  OK   hombre: el archivo es el del manifiesto
+  OK   hombre: lleva las 39 de antes y las 2 nuevas — 41 clips
+  OK   hombre: solo esqueleto, sin mallas
+  OK   hombre: Push_Loop mueve brazos o piernas (más de 20°) y dura de verdad — giro 86°, 2.67 s
+  OK   hombre: PickUp_Table mueve brazos o piernas (más de 20°) y dura de verdad — giro 76°, 0.83 s
+  OK   hombre: las 39 de antes no cambian
+  OK   mujer: el archivo es el del manifiesto
+  OK   mujer: lleva las 39 de antes y las 2 nuevas — 41 clips
+  OK   mujer: solo esqueleto, sin mallas
+  OK   mujer: Push_Loop mueve brazos o piernas (más de 20°) y dura de verdad — giro 86°, 2.67 s
+  OK   mujer: PickUp_Table mueve brazos o piernas (más de 20°) y dura de verdad — giro 76°, 0.83 s
+  OK   mujer: las 39 de antes no cambian
+  OK   el juego conoce los nombres nuevos (CLIPS_EXTRA)
+  OK   y tienen su texto en el visor
+  OK   cargas hombre: el archivo es el del manifiesto
+  OK   cargas hombre: solo las 3 de cargar, sin mallas — Hombro_Walk_Loop, Hombro_Idle_Loop, Drag_Walk_Loop
+  OK   cargas hombre: pequeñas (menos de 150 KB) — 75 KB
+  OK   cargas hombre: al hombro y arrastrar, andan (las piernas giran más de 20°) — 69° y 69°
+  OK   cargas mujer: el archivo es el del manifiesto
+  OK   cargas mujer: solo las 3 de cargar, sin mallas — Hombro_Walk_Loop, Hombro_Idle_Loop, Drag_Walk_Loop
+  OK   cargas mujer: pequeñas (menos de 150 KB) — 75 KB
+  OK   cargas mujer: al hombro y arrastrar, andan (las piernas giran más de 20°) — 69° y 69°
+  OK   el juego conoce las de cargar (CLIPS_EXTRA)
+  OK   y su texto en el visor
+Todo correcto
