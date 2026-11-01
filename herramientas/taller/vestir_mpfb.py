@@ -1260,9 +1260,14 @@ def personaje(nombre, macros, objetivos, ropa):
         lino = lin(ropa['cofia'])
         def pintar_cofia(P, A):
             col = lino[None, None, :] * (0.88 + 0.12 * fbm(P, 60)[..., None]) * (0.96 + 0.04 * ruido(P, 700)[..., None])
-            borde = suave(-0.002, 0.002, P[..., 2] - (cuello_z + 0.006))  # bajo de la toca recto y limpio, sin dientes
+            # el bajo baja hasta 3 cm por debajo del cuello (desde taller-v23): queda metido bajo el escote de cualquier
+            # prenda (el más bajo, el del vestido por delante, a 2,4 cm). Antes acababa 6 mm por encima del cuello y entre
+            # la cofia y el escote asomaba una cuña de piel (revisión del 31 oct, noche)
+            borde = suave(-0.002, 0.002, P[..., 2] - (cuello_z - COFIA_BAJO))
             return np.concatenate([col, (zona_cofia(P) * borde)[..., None]], -1)
-        cof = lambda i, c: cabeza(i) and c.z > cuello_z - 0.035
+        COFIA_BAJO = 0.03
+        # la cabeza y, por debajo del cuello, lo que rodea la garganta y la nuca (sin los hombros) hasta el bajo y algo más
+        cof = lambda i, c: en(i, 'body') and not mano(i) and c.z > cuello_z - COFIA_BAJO - 0.02 and (cabeza(i) or (c.z > cuello_z - COFIA_BAJO - 0.02 and abs(c.x) < 0.075))
         def empuje(c, i):  # las orejas quedan aplastadas bajo el lino (si no, la cofia sale arrugada)
             if ATR[i, 1] > 0.0: c[:] = kd_craneo.find(c)[0]  # la oreja se pega al cráneo; luego se alisa como una membrana
             return 0.005 + 0.004 * max(0.0, c.y + 0.03) / 0.1
