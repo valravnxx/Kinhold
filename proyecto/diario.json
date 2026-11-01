@@ -3608,5 +3608,21 @@
   "pruebas": "Batería entera en la nube y en el PC de valravnx (sin las de en línea): todo bien tras arreglar la prueba del combate y las traducciones, salvo «la demo en el mundo» en el PC de valravnx, que falló dos veces en la vista de móvil por «andando, el personaje sigue el suelo» (0,72 y 0,76 m, con 0,6 de límite; la salida cambia en cada pasada) y con el mismo código pasó en la nube (0,17 y 0,12 m). No toca nada de este cambio (es sin servidor); en pasadas anteriores en el PC de esta prueba salió 0,51 m: queda anotado como frágil. Tras unir main: lógica, demo única y web, bien. No comprobado: el servidor de Hetzner con este cambio ni dos navegadores en línea (las pruebas en línea no se pasan).",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T04:52:02+00:00",
+  "fin": "2026-11-01T06:01:36+00:00",
+  "titulo": "Hito de arte: revisión completa; dos arreglos más antes de darlo por terminado (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Batería entera en la nube sobre main con la demo v82 (27 grupos, 58 min): 26 correctos. Falló «lo que se recoge en el mundo» en el móvil (19 puntos alrededor de la salida, pide más de 20); repetido solo, pasó (36). La salida del móvil cae cada vez en un sitio distinto, así que esa comprobación depende de dónde salga.",
+   "Capturas miradas en PC y móvil (cara del hombre y de la mujer, espalda con capa, cuerpo, la demo y el mundo). Ya bien lo de la revisión de anoche: las cejas sin escalones y el borde del cuello con toca sin dientes de sierra.",
+   "Aún mal, de cerca: el bigote sigue siendo una banda oscura gruesa de borde duro y bajo la barbilla la barba pasa de golpe de un bloque oscuro a motas grises sobre el cuello claro. La cofia nueva sale lisa y ceñida como un gorro de baño, con una raya oscura a lo largo de la mandíbula, y el borde del escote sale ondulado, como roto.",
+   "Como aún se ve peor que la referencia, el hito no pasa a revisión: quedan dos tareas antes de la revisión final, que vuelve a pendiente.",
+   "Sin versión nueva (no hay cambios jugables); las capturas de la revisión, en capturas/revision-arte-1nov."
+  ],
+  "pruebas": "En la nube y en el PC de valravnx: 27 de 27 grupos correctos (uno, al repetirlo)",
+  "capturas": "capturas/revision-arte-1nov",
+  "estado": "ok"
  }
 ]
