@@ -1052,7 +1052,7 @@
    "num": "P1",
    "nombre": "Cuentas",
    "jugable": "Entras con tu usuario y tu contraseña desde cualquier aparato y sigues siendo tú: tu personaje, tu casa, tu mojón y lo que llevas no se pierden al cambiar de navegador.",
-   "estado": "en_curso",
+   "estado": "revision",
    "tareas": [
     {
      "nombre": "Cuentas en el servidor: usuario y contraseña (guardada con sal y hash lento, nunca en claro), crear cuenta y entrar; cada cuenta con su personaje (el autor de sus acciones). Lógica pura y servidor, con pruebas (también de lo que no debe dejar: contraseña mala, usuario repetido, demasiados intentos)",
@@ -1074,9 +1074,9 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-01T19:40:28+00:00",
-     "rama": "trabajo/20261101-1940"
+     "fin": "2026-11-01T20:39:13+00:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: lo primero, para que lo que se construya no se pierda. Solo lo mínimo; registros, expulsar y lo demás, en «Administración»."

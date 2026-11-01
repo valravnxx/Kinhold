@@ -3882,5 +3882,24 @@
   "pruebas": "Batería entera en la nube (el PC de valravnx no estaba para pruebas): todo bien salvo «pelear en cualquier sitio del mundo», que se quedó esperando a que se acercara el rival; repetida en la nube, bien. La del panel del admin también pasada aquí entera (PC, móvil e inglés) y rota a propósito.",
   "capturas": "capturas/demo-v93",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T19:23:33+00:00",
+  "fin": "2026-11-01T20:39:13+00:00",
+  "titulo": "P1 Cuentas: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "servidor",
+  "hecho": [
+   "Esperado a que terminara la sesión anterior del carril A, que seguía viva y fusionó «el admin, por la cuenta» (demo v93) a las 19:38; después, ocupada la revisión del hito.",
+   "Batería entera en la nube sobre main con la demo v93 (31 grupos, 56 min; el PC de valravnx no estaba para pruebas): 30 correctos. Falló «construir a la altura del suelo» en PC: «hay una ladera suave cerca de la salida» no encontró ninguna (depende de dónde caiga la salida, que cambia cada vez). Repetido solo en la nube, pasó.",
+   "Capturas miradas en PC y móvil: la pantalla de crear cuenta y la de entrar (con «Usuario o contraseña incorrectos»), entrar desde otro aparato, la cuenta en el menú con «Salir de la cuenta», y el panel del admin (mapa con el otro jugador, lista e «Ir» junto a él). Se leen bien y no se tapan en el móvil.",
+   "Lo que el hito prometía está: cuentas con usuario y contraseña (resumida con sal), entrar desde cualquier aparato con tu personaje, y el panel de depuración solo para la cuenta de admin.",
+   "Para valravnx al probarlo: la cuenta de admin es la del usuario «valravnx». Quien cree primero una cuenta con ese nombre en el servidor será el admin, así que conviene crearla (o comprobar que ya es tuya) en cuanto el servidor esté actualizado a main; si se llama de otra manera, se pone en KINHOLD_ADMIN_CUENTA.",
+   "Aún se ve en la parte de arriba el contador de materiales del arcón de pruebas: se quita en P2, no en este hito.",
+   "El hito «Cuentas» pasa a revisión: no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables); las capturas de la revisión, en capturas/revision-cuentas-1nov.",
+   "No comprobado: en el servidor de Hetzner (hace falta actualizarlo a main)."
+  ],
+  "pruebas": "En la nube: 31 de 31 grupos correctos (uno, al repetirlo); sin las de en línea, que no se pasan",
+  "capturas": "capturas/revision-cuentas-1nov",
+  "estado": "ok"
  }
 ]
