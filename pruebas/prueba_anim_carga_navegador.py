@@ -47,13 +47,13 @@ with sync_playwright() as p:
                 pg.evaluate(f"{E}.cambiar({{sexo: '{sexo}'}})"); listo(pg)
             pg.evaluate(f'{E}.pausar(true)')
             n = pg.evaluate(f'{E}.diag().pj.clips.length')
-            comprobar(f'{nombre} {sexo}: se cargan las 9 básicas, las 41 extra y las 3 de cargar del taller', n == 9 + 41 + 3, f'{n} clips')
+            comprobar(f'{nombre} {sexo}: se cargan las 9 básicas, las 41 extra y las 5 de cargar del taller', n == 9 + 41 + 5, f'{n} clips')
             if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
             botones = pg.evaluate("[...document.querySelectorAll('#anims-extra [data-modo]')].map(b => b.dataset.modo)")
-            comprobar(f'{nombre} {sexo}: botones Empujar, Coger de una mesa, Al hombro y Arrastrar', all(k in botones for k in ['empujar', 'cogerDeMesa', 'hombro', 'hombroQuieto', 'arrastrar']), f'{len(botones)} botones')
+            comprobar(f'{nombre} {sexo}: botones Empujar, Coger de una mesa, Al hombro, Arrastrar y Empujar la carretilla', all(k in botones for k in ['empujar', 'cogerDeMesa', 'hombro', 'hombroQuieto', 'arrastrar', 'empujarCarretilla', 'empujarQuieto']), f'{len(botones)} botones')
             pose = lambda: pg.evaluate(f"{HUESOS}.map(n => {E}.hueso(n))")
             pg.evaluate(f"{E}.ponerModo('quieto')"); pg.evaluate(f'{E}.instante(0.5)'); quieto = pose()
-            for k, t in [('empujar', 0.6), ('cogerDeMesa', 0.5), ('hombro', 0.25), ('arrastrar', 0.25)]:
+            for k, t in [('empujar', 0.6), ('cogerDeMesa', 0.5), ('hombro', 0.25), ('arrastrar', 0.25), ('empujarCarretilla', 0.25)]:
                 if k not in botones: comprobar(f'{nombre} {sexo}: {k}', False, 'no está'); continue
                 if not pg.is_visible('#opciones'): pg.click('#btnOpciones')
                 pg.click(f'#anims-extra [data-modo="{k}"]'); pg.wait_for_timeout(100)
