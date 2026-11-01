@@ -6,6 +6,9 @@ import { normalizarAspecto } from '../logica/aspecto.js';
 import { crearJugador } from './personaje.js';
 import { tr } from '../idioma.js';
 import { abrirCliente } from '../mundo/cliente.js';
+import { Luchador } from '../combate/logica.js';
+import { crearCombatiente, ponerArma, animarCombatiente, pintarHeridas, Rastro } from '../combate/modelos.js';
+import { aplicarFoto, avanzarCopia } from '../logica/combate_cliente.js';
 export { SERVIDOR, direccionServidor } from '../mundo/direccion_servidor.js';
 
 // escena: donde se ponen los demás; recursos: carpeta del taller; aspecto: { sexo, capas, aspecto } propio;
@@ -18,6 +21,9 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   const red = new MundoEnLinea((m) => { if (cli) cli.enviar(m); });
   const remotos = new Map();    // autor → { j, clave, x, z, vel }
   const enLiza = new Set();     // los que están en el «Duelo en línea»: no están en este mundo y no se dibujan
+  // Pelear en el mundo (valravnx, 31 oct): la foto de cada luchador que reparte el servidor. Con el arma sacada, el otro
+  // se dibuja con su modelo de combate (espada en mano) y se mueve como dice su luchador (cargar, golpear, parar, caer)
+  const fotos = new Map();      // autor → foto de su luchador (src/logica/combate_servidor.js)
   const escuchas = new Set();   // lo que quiere ver los mensajes del panel del admin (src/juego/panel_admin.js)
 
   cli = abrirCliente({
@@ -30,14 +36,16 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     },
     alMensaje: (msg) => {
       if (msg.tipo === 'admin') { for (const f of escuchas) f(msg); return; }
-      for (const l of msg.tipo === 'luchadores' ? msg.lista : msg.tipo === 'bienvenida' ? msg.luchadores || [] : [])
+      for (const l of msg.tipo === 'luchadores' ? msg.lista : msg.tipo === 'bienvenida' ? msg.luchadores || [] : []) {
         if (l.liza) enLiza.add(l.autor); else enLiza.delete(l.autor);
-      if (msg.tipo === 'sale') { quitar(msg.autor); enLiza.delete(msg.autor); }
+        fotos.set(l.autor, l);
+      }
+      if (msg.tipo === 'sale') { quitar(msg.autor); enLiza.delete(msg.autor); fotos.delete(msg.autor); }
       const info = red.recibir(msg);
       alCambiar(info, msg);
       if (info.rechazo) avisar(tr('El servidor no lo ha aceptado: {m}', { m: tr(info.rechazo) }), true);
     },
-    alCortar: () => { red.yo = null; for (const a of [...remotos.keys()]) quitar(a); if (alCortarse) alCortarse(); },
+    alCortar: () => { red.yo = null; for (const a of [...remotos.keys()]) quitar(a); fotos.clear(); if (alCortarse) alCortarse(); },
     conectado: () => tr('En línea · {n} más', { n: [...cli.presencia.remotos.keys()].filter(a => !enLiza.has(a)).length }),
     bienvenida: (d) => tr('En línea: el mundo es el del servidor ({d}).', { d }),
     avisar: (texto, mal) => { if (mal) avisar(texto, true); else avisar(texto); },
@@ -53,7 +61,30 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
 
   function quitar(autor) {
     const r = remotos.get(autor);
-    if (r) { escena.remove(r.j.raiz); remotos.delete(autor); }
+    if (r) { escena.remove(r.j.raiz); quitarCombate(r); remotos.delete(autor); }
+  }
+  function quitarCombate(r) {
+    if (!r.comb) return;
+    escena.remove(r.comb.m); escena.remove(r.comb.rastro.malla); r.comb.rastro.geo.dispose();
+    r.comb = null; r.j.raiz.visible = true;
+  }
+  // con el arma sacada: su modelo de combate, con su cuerpo y su ropa, y una copia de su luchador
+  function dibujarCombate(r, e, f, asp, dt) {
+    if (!r.comb) {
+      const m = crearCombatiente({ armadura: f.armadura, colorCinta: 0xb3923f, recursos, sexo: asp.sexo, capas: asp.capas, aspecto: asp.aspecto });
+      ponerArma(m, f.arma); m.userData.autor = e.autor;
+      escena.add(m);
+      r.comb = { m, L: new Luchador({ arma: f.arma, armadura: f.armadura, modo: 'direccional' }), foto: null, arma: f.arma, rastro: new Rastro(escena) };
+      r.j.raiz.visible = false;
+    }
+    const c = r.comb, L = c.L;
+    if (c.foto !== f) { c.foto = f; aplicarFoto(L, f); if (c.arma !== f.arma) { c.arma = f.arma; ponerArma(c.m, f.arma); } }
+    L.x = e.x; L.z = e.z; if (!L.fuera) L.rot = e.giro;
+    avanzarCopia(L, dt);
+    c.m.position.set(e.x, e.y, e.z); c.m.rotation.y = L.rot;
+    pintarHeridas(c.m, L.heridas);
+    animarCombatiente(c.m, L, dt, r.vel > 0.3 ? r.vel : 0, L.factorPiernas() < 0.9, 'estocada');
+    c.rastro.actualizar(c.m, L.accion === 'golpeando' || L.accion === 'lanzando');
   }
 
   // cada fotograma: mandar lo propio (como mucho 10 veces por segundo) y dibujar a los demás
@@ -84,6 +115,8 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       // lo que lleva (no hace falta vestirlo de nuevo: solo se rehace lo que se ve encima)
       if (r.j.ponerLlevado && r.llevado !== asp.llevado) { r.llevado = asp.llevado; r.j.ponerLlevado(asp.llevado || null); }
       r.j.animar(r.vel > 0.3 ? r.vel : 0, dt, e.anim === 'talar');
+      const f = fotos.get(e.autor);
+      if (f && f.sacada && !f.liza) dibujarCombate(r, e, f, asp, dt); else quitarCombate(r);
     }
     for (const a of [...remotos.keys()]) if (!siguen.has(a)) quitar(a);
   }
@@ -95,6 +128,9 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     get estado() { return cli.estado; },
     get antiguo() { return cli.antiguo; },
     get remotos() { return remotos; },
+    // el modelo con el que se ve a otro jugador ahora (el de combate si tiene el arma sacada): para las sacudidas
+    modeloDe: (autor) => { const r = remotos.get(autor); return r ? (r.comb ? r.comb.m : r.j.raiz) : null; },
+    fotos,
     cerrar() { cli.cerrar(); },
   };
 }

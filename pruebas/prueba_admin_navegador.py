@@ -37,9 +37,12 @@ servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 
                             env={**os.environ, 'KINHOLD_ADMIN': CLAVE}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
 # el otro jugador: un cliente de node que manda su estado, quieto
+# (a la altura del suelo de su sitio: el servidor conoce el terreno y no admite a nadie muy por encima o por debajo)
 BOT = f"""import {{ WebSocket }} from 'ws';
+import {{ terrenoWhitholm }} from './src/logica/terreno_servidor.js';
+const y = terrenoWhitholm().suelo({OTRO[0]}, {OTRO[1]});
 const ws = new WebSocket('ws://127.0.0.1:{PUERTO}');
-ws.on('open', () => setInterval(() => ws.send(JSON.stringify({{ tipo: 'estado', x: {OTRO[0]}, y: 3, z: {OTRO[1]}, giro: 0.4, anim: 'quieto' }})), 200));
+ws.on('open', () => setInterval(() => ws.send(JSON.stringify({{ tipo: 'estado', x: {OTRO[0]}, y, z: {OTRO[1]}, giro: 0.4, anim: 'quieto' }})), 200));
 ws.on('message', (d) => {{ const m = JSON.parse(d.toString()); if (m.tipo === 'bienvenida') console.log(m.autor); }});"""
 # (con -e: los import se buscan desde cwd, la raíz del repositorio, donde está ws; no se escribe ningún archivo)
 bot = subprocess.Popen(['node', '--input-type=module', '-e', BOT], cwd=RAIZ, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
@@ -47,6 +50,8 @@ AUTOR_BOT = bot.stdout.readline().strip()
 
 URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html?modo=construir&enlinea=1&servidor=ws://127.0.0.1:{PUERTO}'
 K = 'window.__kinhold'
+# (fuera de la f-string: el Python del PC de valravnx no admite barras invertidas dentro de sus llaves)
+ESTADO_PANEL = 'document.querySelector("#panelAdmin .pa-estado").textContent'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 fallos = []
 def comprobar(nombre, ok, detalle=''):
@@ -85,7 +90,7 @@ try:
             pg.wait_for_timeout(1200)
             n = pg.evaluate(f"{PANEL}.jugadores.length")
             comprobar(f'{nombre}: con la clave mal no se ve a nadie y lo dice', n == 0 and pg.evaluate("!!document.querySelector('#panelAdmin .pa-estado.mal') && !!document.querySelector('#panelAdmin input')"),
-                      f"{n} jugadores; «{pg.evaluate('document.querySelector(\"#panelAdmin .pa-estado\").textContent')}»")
+                      f"{n} jugadores; «{pg.evaluate(ESTADO_PANEL)}»")
             if nombre == 'pc': captura(pg, f'{SALIDA}/{nombre}_clave_mal.png')
             # la buena
             pg.fill('#panelAdmin input', CLAVE); pulsar('#panelAdmin .pa-si')

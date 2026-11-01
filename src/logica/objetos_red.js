@@ -21,10 +21,13 @@
 //   { tipo: 'coger', objeto, cantidad, a, … } y { tipo: 'soltar', de } — el arcón de pruebas del panel (solo con
 //     arconPruebas: sacar algo de la nada y hacerlo desaparecer; sin él, se rechazan)
 //
-// El servidor aún no conoce el mundo (los árboles y los puntos de recogida los pone el navegador con la semilla del
-// mapa). Decisión provisional (tarea del juego en línea, 31 oct): se fía del árbol o del punto que dice el navegador
-// (su sitio, su edad o su clase) si el autor está a su lado; el nombre tiene que cuadrar con el sitio (el del árbol
-// sale de él, idArbol) y lo que ya conoce no se cambia. Cuando el servidor genere el mundo, lo sacará de ahí.
+// Los árboles y los puntos de recogida: con el terreno (src/logica/terreno_servidor.js; el servidor genera Whitholm con
+// la misma semilla que el navegador), el servidor los saca él: del navegador solo cuenta el nombre y por dónde está
+// (para saber en qué trozo mirar); el sitio, la edad y la clase son los del servidor. Lo que se guarda (objetos.json) es
+// solo lo que ha cambiado: los árboles talados o a medias y los puntos recogidos; los demás salen otra vez del mundo.
+// Sin terreno (las pruebas que no generan el mundo), decisión provisional del 31 oct: se fía del árbol o del punto que
+// dice el navegador (su sitio, su edad o su clase) si el autor está a su lado; el nombre tiene que cuadrar con el sitio
+// (el del árbol sale de él, idArbol) y lo que ya conoce no se cambia.
 // Decisión provisional: el arcón de pruebas sigue en línea mientras el servidor sea el de pruebas (sin él, nadie
 // tendría un hacha: aún no se fabrica nada); cada cosa que sale o entra queda en el registro con su autor.
 //
@@ -58,7 +61,9 @@ const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
 export class ObjetosServidor {
   // posicion(autor) → { x, z } o null: dónde lo tiene el servidor. enTierras(autor, x, z): si ese sitio es de sus tierras.
   // arconPruebas: si se acepta el arcón de pruebas ('coger' y 'soltar').
-  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false } = {}) {
+  // terreno: el mundo que conoce el servidor (crearTerreno), o null.
+  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null } = {}) {
+    this.terreno = terreno;
     this.invs = new Inventarios();
     this.ponerSuelo(new Suelo());
     this.tala = new Tala([]); this.tala.entre = ENTRE_GOLPES_RED;
@@ -113,6 +118,13 @@ export class ObjetosServidor {
   // alcance de donde el servidor tiene al autor. Devuelve el motivo si no vale.
   conocerArbol(a, p) {
     if (this.tala.porId.has(a.arbol)) return null;
+    if (this.terreno) {
+      const t = this.terreno.arbol(a.arbol, num(a.ax) ? a.ax : a.x, num(a.az) ? a.az : a.z);
+      if (!t) return 'Ahí no hay ningún árbol.';
+      if (Math.hypot(t.x - p.x, t.z - p.z) > ALCANCE_TALA + TOLERANCIA) return 'Está demasiado lejos.';
+      this.tala.anadir([{ ...t }]);
+      return null;
+    }
     if (!txt(a.arbol) || !num(a.ax) || !num(a.az) || !Object.hasOwn(DA, a.edad)) return 'Datos no válidos.';
     if (idArbol(a.ax, a.az) !== a.arbol) return 'Ahí no hay ningún árbol.';
     if (Math.hypot(a.ax - p.x, a.az - p.z) > ALCANCE_TALA + TOLERANCIA) return 'Está demasiado lejos.';
@@ -122,6 +134,13 @@ export class ObjetosServidor {
   // Lo mismo con un punto de recogida: su clase (ramas, piedra…) y su sitio.
   conocerPunto(a, p) {
     if (this.recoleccion.porId.has(a.punto)) return null;
+    if (this.terreno) {
+      const t = this.terreno.punto(a.punto, num(a.px) ? a.px : a.x, num(a.pz) ? a.pz : a.z);
+      if (!t) return 'Ahí no hay nada que recoger.';
+      if (Math.hypot(t.x - p.x, t.z - p.z) > ALCANCE_RECOGER + TOLERANCIA) return 'Está demasiado lejos.';
+      const q = { ...t }; this.recoleccion.puntos.push(q); this.recoleccion.porId.set(q.id, q);
+      return null;
+    }
     if (!txt(a.punto) || !num(a.px) || !num(a.pz) || !Object.hasOwn(RECOLECTABLES, a.clase) || !a.punto.startsWith(a.clase + ':')) return 'Datos no válidos.';
     if (Math.hypot(a.px - p.x, a.pz - p.z) > ALCANCE_RECOGER + TOLERANCIA) return 'Está demasiado lejos.';
     const q = { id: a.punto, tipo: a.clase, x: Math.round(a.px * 100) / 100, z: Math.round(a.pz * 100) / 100 };
@@ -152,11 +171,15 @@ export class ObjetosServidor {
   // Quita lo que ya ha desaparecido; true si ha cambiado algo.
   limpiar(ahora) { return this.suelo.limpiar(ahora) > 0; }
 
-  // Los árboles y los puntos que el servidor ha conocido se guardan con su estado (no los genera él).
+  // Los árboles y los puntos que el servidor ha conocido se guardan con su estado. Con el terreno, solo los que han
+  // cambiado (talados o a medias, recogidos): los demás los vuelve a sacar del mundo.
   exportar() {
+    const tala = this.tala.exportar(), rec = this.recoleccion.exportar();
+    const arboles = this.terreno ? this.tala.arboles.filter(a => Object.hasOwn(tala.estado, a.id)) : this.tala.arboles;
+    const puntos = this.terreno ? this.recoleccion.puntos.filter(q => Object.hasOwn(rec.estado, q.id)) : this.recoleccion.puntos;
     return { version: VERSION_OBJETOS, inventarios: this.invs.exportar(), suelo: this.suelo.exportar(),
-      arboles: this.tala.arboles.map(a => ({ ...a })), tala: this.tala.exportar(), troceo: this.troceo.exportar(),
-      puntos: this.recoleccion.puntos.map(q => ({ ...q })), recoleccion: this.recoleccion.exportar() };
+      arboles: arboles.map(a => ({ ...a })), tala, troceo: this.troceo.exportar(),
+      puntos: puntos.map(q => ({ ...q })), recoleccion: rec };
   }
   // Lo guardado se comprueba con el catálogo de ahora (Inventarios.importar y Suelo.importar); si no se entiende,
   // se empieza de cero. La versión 1 (sin tala, troceo ni recogida) se lee igual.
@@ -166,10 +189,13 @@ export class ObjetosServidor {
     this.ponerSuelo(new Suelo().importar(datos.suelo));
     if (datos.version === 1) return this;
     const lista = (v, bien) => (Array.isArray(v) ? v.filter(bien) : []);
-    const arboles = lista(datos.arboles, a => a && txt(a.id) && num(a.x) && num(a.z) && Object.hasOwn(DA, a.edad));
+    let arboles = lista(datos.arboles, a => a && txt(a.id) && num(a.x) && num(a.z) && Object.hasOwn(DA, a.edad));
+    // con el terreno, solo los que de verdad están en el mundo, y como son en él (lo guardado antes lo decía el navegador)
+    if (this.terreno) arboles = arboles.map(a => this.terreno.arbol(a.id, a.x, a.z)).filter(Boolean);
     this.tala = new Tala(arboles.map(a => ({ id: a.id, x: a.x, z: a.z, edad: a.edad }))).importar(datos.tala); this.tala.entre = ENTRE_GOLPES_RED;
     this.troceo.importar(datos.troceo, ahora);
-    const puntos = lista(datos.puntos, q => q && txt(q.id) && num(q.x) && num(q.z) && Object.hasOwn(RECOLECTABLES, q.tipo));
+    let puntos = lista(datos.puntos, q => q && txt(q.id) && num(q.x) && num(q.z) && Object.hasOwn(RECOLECTABLES, q.tipo));
+    if (this.terreno) puntos = puntos.map(q => this.terreno.punto(q.id, q.x, q.z)).filter(Boolean);
     this.recoleccion = new Recoleccion(puntos.map(q => ({ id: q.id, tipo: q.tipo, x: q.x, z: q.z }))).importar(datos.recoleccion);
     return this;
   }

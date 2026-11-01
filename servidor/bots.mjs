@@ -5,7 +5,7 @@
 //
 // Cada bot va pasando por tres fases, de FASE segundos cada una, en este orden: andar (pasea cerca del mojón),
 // construir (pone el marco de un cimiento de piedra o de troncos, le lleva el material y trabaja en él hasta terminarlo) y
-// pelear (se acerca a su pareja y se tiran golpes por líneas al azar, paran y cambian de guardia). Los bots van
+// pelear (se acerca a su pareja y, con el arma sacada, se tiran golpes cargados por cuatro lados y paran por un lado). Los bots van
 // por parejas (0 y 1, 2 y 3…) con la misma fase, para que se encuentren al pelear. Un bot fuera de combate
 // vuelve a empezar sano al acabar la pelea.
 //
@@ -29,7 +29,7 @@ import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
 import { Mundo, RADIO_MOJON, MAX_RATO } from '../src/logica/construccion.js';
 import { RegistroAcciones, ejecutar } from '../src/logica/acciones.js';
-import { LINEAS, GUARDIAS } from '../src/combate/logica.js';
+import { LINEAS_DIRECCIONAL, ESPEJO } from '../src/combate/logica.js';
 
 export const FASE = 20;          // s de cada fase (andar, construir, pelear)
 export const CADA = 100;         // ms entre estados
@@ -256,10 +256,18 @@ export class Bot {
     if (d > DISTANCIA_PELEA + 0.15) { this.andarHacia({ x: P.x, z: P.z }, dt, DISTANCIA_PELEA); return 'andar'; }
     this.giro = Math.atan2(dx, dz);
     if (t < this.siguiente) return 'quieto';
-    const r = this.r();
-    if (r < 0.55) this.intencion({ que: 'atacar', linea: LINEAS[Math.floor(this.r() * LINEAS.length)] });
-    else if (r < 0.85) { this.intencion({ que: 'parar', activo: true }); setTimeout(() => this.intencion({ que: 'parar', activo: false }), 250 + this.r() * 300); }
-    else this.intencion({ que: 'guardia', guardia: Object.keys(GUARDIAS)[Math.floor(this.r() * Object.keys(GUARDIAS).length)] });
+    // pelean como en el mundo (valravnx, 31 oct): con el arma sacada, golpes cargados por cuatro lados y paradas por
+    // un lado (unas veces el bueno, el espejo del golpe que viene, y otras no)
+    if (!this.L || !this.L.sacada) this.intencion({ que: 'arma', sacada: true });
+    const r = this.r(), lado = () => LINEAS_DIRECCIONAL[Math.floor(this.r() * LINEAS_DIRECCIONAL.length)];
+    if (r < 0.55) {
+      this.intencion({ que: 'cargar', linea: lado() });
+      setTimeout(() => this.intencion({ que: 'descargar' }), 150 + this.r() * 500);
+    } else {
+      const viene = P.L && P.L.accion === 'preparando' && this.r() < 0.6 ? ESPEJO[P.L.linea] : lado();
+      this.intencion({ que: 'parar', activo: true, linea: viene });
+      setTimeout(() => this.intencion({ que: 'parar', activo: false }), 400 + this.r() * 500);
+    }
     this.siguiente = t + 700 + this.r() * 900;
     return 'quieto';
   }

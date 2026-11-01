@@ -10,7 +10,8 @@ import { modelosPlantas, despejarMallas } from './decorado.js';
 import { modelosEspecies, ESPECIES, RADIO_TRONCO, TAMANO_ESPECIE } from './especies.js';
 import { material } from './estilos.js';
 import { ROCAS_COLOR, lin } from './color_suelo.js';
-import { vegetacionTrozo, LADO_VEG } from '../logica/vegetacion.js';
+import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from '../logica/vegetacion.js';
+export { TAM_ADULTO };
 import { idArbol } from '../logica/tala.js';
 import { alturaMundo } from '../logica/whitholm.js';
 import { aplicar, marcasEn, caja } from '../logica/nivelado.js';
@@ -22,8 +23,7 @@ import { aplicar, marcasEn, caja } from '../logica/nivelado.js';
 // páginas a la vez en la máquina de pruebas (sin tarjeta gráfica), más que esto no daba abasto.
 const movil = typeof innerWidth !== 'undefined' && Math.min(innerWidth, innerHeight) < 700;
 export const MEDIDAS_VEGETACION = movil ? { cuadro: 130, hierba: 32, arbolEntero: 45, sombra: 30, max: 1200 } : { cuadro: 200, hierba: 45, arbolEntero: 60, sombra: 40, max: 3000 };
-const CLARO_ARBOLES = 8, CLARO = 3;
-export const TAM_ADULTO = 0.95;     // desde este tamaño (1 = adulto normal de su especie), el árbol es adulto al talarlo
+const CLARO = 3;   // (el de los árboles, CLARO_ARBOLES, y TAM_ADULTO están en la lógica: el servidor saca los mismos árboles)
 const FLORES = [0xe8e2d0, 0xd9c27a, 0xa98aa6];
 
 // Lo que crece sigue al jugador por la isla (30 oct): se hace por trozos de 32 m del mundo (vegetacionTrozo, siempre lo
