@@ -18,7 +18,7 @@ os.makedirs(f'{sitio}/jugar/construccion'); os.makedirs(f'{sitio}/recursos/perso
 shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
 TALLER = re.search(r"TALLER = '(taller-v\d+)'", open(os.path.join(RAIZ, 'src/mundo/eleccion.js'), encoding='utf8').read()).group(1)
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes', TALLER), f'{sitio}/recursos/personajes/{TALLER}')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v1'), f'{sitio}/recursos/personajes/taller-carga-v1')  # las de cargar del taller
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v2'), f'{sitio}/recursos/personajes/taller-carga-v2')  # las de cargar del taller
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -26,6 +26,7 @@ threading.Thread(target=srv.serve_forever, daemon=True).start()
 URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/construccion/prueba.html'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 MUTAR = os.environ.get('MUTAR') == '1'
+MUTAR_ANIM = os.environ.get('MUTAR_ANIM') == '1'   # da por buena la de llevar en brazos: tiene que fallar
 
 fallos = []
 def comprobar(nombre, cond, detalle=''):
@@ -73,10 +74,11 @@ VISTA = f"{K}.escena.getObjectByName('suelo_carretilla')"
 def lejos(pg):  # lo lejos que se ve el centro de la carretilla del personaje
     return pg.evaluate(f"(() => {{ const k = {K}, o = {VISTA}; return o ? Math.hypot(o.position.x - k.pj.x, o.position.z - k.pj.z) : -1; }})()")
 
-# lo lejos que quedan las agarraderas de las manos del personaje (m), o None si no hay personaje del taller
+# lo lejos que quedan las agarraderas de los puños del personaje (los nudillos, middle_01; m), o None si no hay personaje
+# del taller. [hueso, distancia, altura del nudillo, altura de la agarradera]
 MANOS = """(() => { const k = window.__kinhold, j = k.jugador, o = k.escena.getObjectByName('suelo_carretilla'); if (!j.mh || !o) return null;
   k.escena.updateMatrixWorld(true); const V = o.position.constructor, manos = [], ags = [];
-  j.mh.raiz.traverse(n => { if (/^hand_[lr]$/i.test(n.name)) manos.push(n); });
+  j.mh.raiz.traverse(n => { if (/^middle_01_[lr]$/i.test(n.name)) manos.push(n); });
   o.traverse(n => { if (n.name === 'agarradera') ags.push(n.getWorldPosition(new V())); });
   return manos.map(m => { const v = m.getWorldPosition(new V()); return [m.name, +Math.min(...ags.map(a => a.distanceTo(v))).toFixed(3), +v.y.toFixed(3), +ags[0].y.toFixed(3)]; }); })()"""
 
@@ -124,10 +126,15 @@ with sync_playwright() as p:
     giro1 = pg.evaluate(f"{VISTA}.getObjectByName('rueda').rotation.x")
     comprobar('la rueda rueda al avanzar (unos 6 m: 25 rad)', giro1 - giro0 > 20, f'{giro1 - giro0:.1f}')
     comprobar('las varas suben a las manos', pg.evaluate(f"{VISTA}.getObjectByName('cuerpo').rotation.x > 0.1"))
-    comprobar('el personaje la empuja con los brazos delante', pg.evaluate(f"{K}.jugador.mh ? {K}.jugador.modo === 'cargar' : true"), pg.evaluate(f"{K}.jugador.modo"))
+    # la animación de empujar del taller (taller-carga-v2): andando, empujarCarretilla; parado, empujarQuieto
+    comprobar('el personaje la empuja con la animación de empujar (no la de llevar en brazos)', pg.evaluate(f"{K}.jugador.mh ? ['empujarCarretilla', 'empujarQuieto'].includes({K}.jugador.modo) : true") != MUTAR_ANIM, pg.evaluate(f"{K}.jugador.modo"))
+    comprobar('la carretilla va poco levantada (menos de 25°)', pg.evaluate(f"(() => {{ const c = {VISTA}.getObjectByName('cuerpo'), cama = c.getObjectByName('cama'); return (c.rotation.x + cama.rotation.x) * 180 / Math.PI; }})()") < 25)
     manos = pg.evaluate(MANOS)
-    print('     manos y agarraderas:', manos)
-    comprobar('las agarraderas quedan en las manos (a menos de 15 cm de la muñeca)', manos is None or (len(manos) == 2 and all(m[1] < 0.15 for m in manos)), str(manos))
+    print('     puños y agarraderas:', manos)
+    comprobar('las agarraderas quedan en los puños (a menos de 8 cm de los nudillos), quieto', manos is None or (len(manos) == 2 and all(m[1] < 0.08 for m in manos)), str(manos))
+    camara(pg, dist=1.9, pitch=0.25, giro=1.3)
+    foto(pg, 'carretilla_08_manos_de_cerca')
+    # andando, que las manos sigan en las varas lo mira pruebas/prueba_anim_carga.mjs en todos los fotogramas
     camara(pg, dist=4.0, pitch=0.3, giro=0.8)
     foto(pg, 'carretilla_03_empujando')
     camara(pg, dist=2.8, pitch=0.2, giro=1.6)
