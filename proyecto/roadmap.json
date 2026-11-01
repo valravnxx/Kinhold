@@ -531,9 +531,9 @@
     },
     {
      "nombre": "El servidor conoce el mundo: la misma semilla, comprueba posiciones y obras contra el terreno y guarda solo lo cambiado por trozo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-01T01:22:45+00:00",
-     "rama": "trabajo/20261101-0124"
+     "fin": "2026-11-01T03:39:19+00:00"
     },
     {
      "nombre": "El servidor guarda por trozo lo cambiado del mundo (lo talado, lo recogido, lo cavado y lo nivelado) y a cada jugador le manda solo lo de su alrededor, no todo en la bienvenida",
@@ -2252,6 +2252,13 @@
      "archivo": "jugar/demo/v80.html",
      "capturas": "capturas/demo-v80",
      "notas": "Pelear en línea en el mundo (valravnx, 31 oct): el arma sacada, los golpes y las paradas van por el servidor; los demás te ven con la espada en la mano y sus golpes hieren de verdad"
+    },
+    {
+     "v": "v81",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/demo/v81.html",
+     "capturas": "capturas/demo-v81",
+     "notas": "v81: el servidor conoce el mundo. Genera Whitholm con la misma semilla que tu navegador y saca él los árboles y lo que se recoge: su sitio, la edad del árbol y la clase de cada cosa son los del servidor, y un árbol o un punto que no está en el mundo no vale aunque lo diga el navegador. Comprueba contra el terreno dónde estás (dentro de la isla y cerca del suelo) y las obras: el mojón en tierra firme, la planta baja de lo que empiezas a ras del suelo (también del alisado), y la brocha y la decoración a una altura con sentido. De los árboles y los puntos guarda solo lo que ha cambiado (lo talado y lo recogido). v81, provisional: un jugador puede estar hasta 40 m bajo el suelo (cavando) y 120 m por encima; la planta baja de lo que se empieza, a 1,5 m del suelo como mucho (el navegador lo mide en la malla del trozo, que en ladera se aparta algo del suelo exacto); la brocha, a 6 m (al arrastrarla sigue a la altura de la pasada anterior, ladera arriba o abajo); la decoración, de 0,5 m por debajo a 40 m por encima; el mojón, a más de 0,15 m sobre el mar. v81, aún mal: lo guardado aún no va por trozos y la bienvenida sigue mandando todo lo talado y lo recogido de la isla (va en la tarea siguiente); el servidor tarda unos 5 s más en arrancar, lo que tarda en generar la isla."
     }
    ]
   },
