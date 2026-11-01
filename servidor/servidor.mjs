@@ -405,8 +405,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const puerto = Number(process.argv[2]) || 8080;
   const archivo = process.argv[3] || 'servidor/mundo.jsonl';
   // el mundo de verdad, con la misma semilla que el navegador (unos segundos al arrancar)
-  const t0 = Date.now(), terreno = terrenoWhitholm();
-  console.log(new Date().toISOString(), `Whitholm generado en ${Date.now() - t0} ms`);
+  // (lo primero que escribe es la línea de «en el puerto», cuando ya escucha: las pruebas la esperan para conectar)
+  const t0 = Date.now(), terreno = terrenoWhitholm(), ms = Date.now() - t0;
   const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t) });
-  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones`));
+  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms`));
 }
