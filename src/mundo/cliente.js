@@ -8,6 +8,7 @@ import { servidorAntiguo } from '../logica/protocolo.js';
 import { direccionServidor } from './direccion_servidor.js';
 import { abrirConexion } from './conexion.js';
 import { tr } from '../idioma.js';
+import { pantallaCuenta, guardarUsuario } from './pantalla_cuenta.js';
 
 // alAbrir(enviar): conectado (también al volver); alMensaje(msg, ahora): cada mensaje, ya apuntado aquí;
 // alCortar(): se ha cortado (ya sin presencia); conectado(): la línea de estado cuando se está conectado (y el
@@ -43,6 +44,9 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
   const enviar = (m) => !!con && con.enviar(m);
   const presencia = new PresenciaCliente(enviar);
   const aspectos = new Map();   // autor → { sexo, capas, aspecto }
+  // Cuentas (P1, revisión del 1 nov): si el personaje de esta conexión aún no tiene cuenta, la pantalla de crearla o de
+  // entrar (src/mundo/pantalla_cuenta.js) tapa el juego. Un servidor anterior a las cuentas no manda `cuenta`: sin pantalla.
+  let pantalla = null, cuenta = null;
 
   const ponerEstado = () => alEstado(estado === 'conectado' ? (antiguo ? tr('En línea · el servidor es antiguo: hay que actualizarlo') : conectado())
     : estado === 'conectando' ? tr('Conectando con el servidor…')
@@ -59,6 +63,12 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
         quitarSinConexion();
         estado = 'conectado'; yo = msg.autor; antiguo = servidorAntiguo(msg);
         for (const a of msg.aspectos || []) aspectos.set(a.autor, deAspecto(a));
+        cuenta = typeof msg.cuenta === 'string' ? msg.cuenta : null;
+        if (cuenta) guardarUsuario(direccion, cuenta); else if (msg.cuenta === null) guardarUsuario(direccion, null);
+        if (msg.cuenta === null && !(pantalla && pantalla.abierta)) {
+          pantalla = pantallaCuenta({ enviar, direccion, alCrear: (u) => { cuenta = u; avisar(tr('Cuenta creada: {u}. Tu personaje ya es de tu cuenta.', { u }), false); } });
+        } else if (msg.cuenta !== null && pantalla) { pantalla.quitar(); pantalla = null; }
+      } else if (msg.tipo === 'cuenta') { if (pantalla) pantalla.recibir(msg);
       } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, deAspecto(msg));
       else if (msg.tipo === 'sale') aspectos.delete(msg.autor);
       else if (msg.tipo === 'error') console.warn('Servidor:', msg.motivo);
@@ -86,6 +96,7 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
   return {
     direccion, presencia, aspectos, enviar, ponerEstado,
     get yo() { return yo; },
+    get cuenta() { return cuenta; },   // el usuario de la cuenta de este personaje (null si aún no tiene)
     get estado() { return estado; },
     get antiguo() { return antiguo; },
     cortar() { if (con) con.cortar(); },   // para las pruebas: como si se cayera la conexión

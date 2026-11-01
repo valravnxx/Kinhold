@@ -19,7 +19,8 @@ const leerFicha = (d) => {
     return vieja;
   } catch (e) { return null; }
 };
-const guardarFicha = (d, f) => { try { if (f) localStorage.setItem(CLAVE_FICHA + d, f); else localStorage.removeItem(CLAVE_FICHA + d); } catch (e) { /* sin almacenamiento */ } };
+// también la pone la pantalla de la cuenta (src/mundo/pantalla_cuenta.js) al entrar: la de tu personaje
+export const guardarFicha = (d, f) => { try { if (f) localStorage.setItem(CLAVE_FICHA + d, f); else localStorage.removeItem(CLAVE_FICHA + d); } catch (e) { /* sin almacenamiento */ } };
 
 export function conDireccionFicha(direccion, ficha) {
   if (!ficha) return direccion;

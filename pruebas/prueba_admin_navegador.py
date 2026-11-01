@@ -63,6 +63,16 @@ def esperar(pg, cond, ms=30000):
 def captura(pg, ruta):
     try: pg.screenshot(path=ruta)
     except Exception as e: print('  (sin captura:', str(e)[:80], ')')
+# Cuentas (P1): la primera vez sale la pantalla de crear cuenta, que tapa el juego; se crea una (si sale) y se sigue
+_n_cuentas = [0]
+def crear_cuenta(pg, ms=10000):
+    try: pg.wait_for_function("!!document.getElementById('pantallaCuenta')", timeout=ms)
+    except Exception: return False
+    _n_cuentas[0] += 1
+    clave = 'clave-de-prueba-123'
+    pg.fill('#pcUsuario', f'prueba{_n_cuentas[0]}'); pg.fill('#pcClave', clave); pg.fill('#pcClave2', clave); pg.click('#pcIr')
+    pg.wait_for_function("!document.getElementById('pantallaCuenta')", timeout=20000)
+    return True
 PANEL = f"{K}.panelAdmin"
 
 try:
@@ -77,6 +87,7 @@ try:
             pg.on('pageerror', lambda e, err=err: err.append(str(e)))
             pg.goto(URL + ('&admin' if movil else ''), wait_until='domcontentloaded', timeout=180000)
             comprobar(f'{nombre}: entra en línea con el mundo listo', esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado' && {K}.mundoListo && {PANEL}", 300000))
+            comprobar(f'{nombre}: crea su cuenta', crear_cuenta(pg))
             esperar(pg, f"{K}.mapaRey.listo", 300000)
             boton = pg.evaluate("!!document.getElementById('btnAdmin')")
             comprobar(f'{nombre}: el botón «Admin» ' + ('sale con ?admin' if movil else 'no sale sin ?admin ni clave'), boton == movil)
@@ -148,6 +159,7 @@ try:
         pg = ctx.new_page()
         pg.goto(URL + '&lang=en', wait_until='domcontentloaded', timeout=180000)
         esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado' && {K}.mundoListo && {PANEL}", 300000)
+        crear_cuenta(pg)
         esperar(pg, f"{K}.mapaRey.listo", 300000)
         pg.keyboard.press('F9'); pg.wait_for_timeout(300)
         pg.fill('#panelAdmin input', 'mal-mal-mal-mal'); pg.click('#panelAdmin .pa-si'); pg.wait_for_timeout(1200)

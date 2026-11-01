@@ -64,6 +64,16 @@ def captura(pg, ruta):
     try: pg.screenshot(path=ruta)
     except Exception as e: print('  (sin captura:', str(e)[:80], ')')
 
+# Cuentas (P1): la primera vez sale la pantalla de crear cuenta, que tapa el juego; se crea una (si sale) y se sigue
+_n_cuentas = [0]
+def crear_cuenta(pg, ms=10000):
+    try: pg.wait_for_function("!!document.getElementById('pantallaCuenta')", timeout=ms)
+    except Exception: return False
+    _n_cuentas[0] += 1
+    clave = 'clave-de-prueba-123'
+    pg.fill('#pcUsuario', f'prueba{_n_cuentas[0]}'); pg.fill('#pcClave', clave); pg.fill('#pcClave2', clave); pg.click('#pcIr')
+    pg.wait_for_function("!document.getElementById('pantallaCuenta')", timeout=20000)
+    return True
 def entrar(nav, nombre, vista, movil, ctx=None, pg=None, err=None):
     # con ctx y pg, la misma pestaña otra vez (la ficha va en sessionStorage, por pestaña: el mismo jugador)
     nuevo = ctx is None
@@ -80,6 +90,7 @@ def entrar(nav, nombre, vista, movil, ctx=None, pg=None, err=None):
     comprobar(f'{nombre}: el juego carga', esperar(pg, 'window.__demo && window.__demo.listo', 60000), str(err[:2]))
     comprobar(f'{nombre}: el terreno de alrededor llega', esperar(pg, f'!{K}.mundoJ || {K}.mundoListo', 120000))
     comprobar(f'{nombre}: se conecta y le llega lo que lleva en el servidor', esperar(pg, f"{K}.enLinea && {K}.enLinea.red.yo && {K}.objetosRed && {K}.objetosRed.deServidor", 60000))
+    crear_cuenta(pg, 3000)
     return ctx, pg, err
 
 try:

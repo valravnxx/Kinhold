@@ -47,9 +47,21 @@ def esperar(pg, cond, ms=30000):
 def captura(pg, ruta):
     try: pg.screenshot(path=ruta)   # sin tarjeta gráfica, a veces no sale: no es lo que se prueba
     except Exception as e: print('  (sin captura:', str(e)[:80], ')')
+# Cuentas (P1): la primera vez sale la pantalla de crear cuenta, que tapa el juego; se crea una (si sale) y se sigue
+_n_cuentas = [0]
+def crear_cuenta(pg, ms=10000):
+    try: pg.wait_for_function("!!document.getElementById('pantallaCuenta')", timeout=ms)
+    except Exception: return False
+    _n_cuentas[0] += 1
+    clave = 'clave-de-prueba-123'
+    pg.fill('#pcUsuario', f'prueba{_n_cuentas[0]}'); pg.fill('#pcClave', clave); pg.fill('#pcClave2', clave); pg.click('#pcIr')
+    pg.wait_for_function("!document.getElementById('pantallaCuenta')", timeout=20000)
+    return True
 def entrar(pg):
     pg.goto(URL, wait_until='domcontentloaded', timeout=180000)
-    return esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado' && !!{K}.enLinea.red.yo", 180000)
+    ok = esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado' && !!{K}.enLinea.red.yo", 180000)
+    crear_cuenta(pg, 3000)
+    return ok
 pos = lambda pg: pg.evaluate(f"({{ x: {K}.pj.x, z: {K}.pj.z, rot: {K}.pj.rot }})")
 
 try:

@@ -12,6 +12,9 @@ import { CAPAS } from '../personaje/textos.js';
 import { ponerRendimiento } from './rendimiento.js';
 import { medidaRendimiento, genteDePrueba } from '../mundo/rendimiento.js';
 import { generar, SEMILLA_MUNDO, LADO_MUNDO } from '../logica/mapa.js';
+import { usuarioGuardado, guardarUsuario } from '../mundo/pantalla_cuenta.js';
+import { guardarFicha } from '../mundo/conexion.js';
+import { direccionServidor } from '../mundo/direccion_servidor.js';
 
 const MODOS = {
   construir: { carga: () => import('../juego/main.js'), menu: '#menu', nombre: 'Jugar' },
@@ -79,6 +82,14 @@ if (redirige) {
   botonesIdioma($('demoIdioma'));
   for (const a of document.querySelectorAll('[data-ir]')) a.href = enlace(a.dataset.ir);
   $('demoPersonaje').textContent = resumenPersonaje();
+  // la cuenta con la que se entra desde este navegador (src/mundo/pantalla_cuenta.js): salir de ella olvida la ficha de
+  // su personaje aquí; al volver a «Jugar» se pide otra vez entrar o crear cuenta (el personaje sigue en la cuenta)
+  const dirServidor = direccionServidor(), usuario = usuarioGuardado(dirServidor);
+  if (usuario) {
+    $('demoCuenta').hidden = false;
+    $('demoCuentaTexto').textContent = tr('Cuenta: {u}', { u: usuario });
+    $('btnDemoSalirCuenta').onclick = () => { guardarFicha(dirServidor, null); guardarUsuario(dirServidor, null); $('demoCuenta').hidden = true; };
+  }
   $('demoNotas').innerHTML = `<b>${tr(VERSION_DEMO)}</b><ul>${REGISTRO_DEMO.map(t => `<li>${tr(t)}</li>`).join('')}</ul>`;
   $('btnDemoNotas').onclick = () => { $('demoNotas').hidden = !$('demoNotas').hidden; $('demoOpciones').hidden = true; };
   window.__demo = { modo: null, listo: true };

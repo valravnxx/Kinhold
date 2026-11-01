@@ -130,6 +130,7 @@ paso "Navegador: mapa del mundo" python3 pruebas/prueba_mapa_navegador.py dist/k
 paso "Navegador: mapa del rey" python3 pruebas/prueba_mapa_rey_navegador.py dist/kinhold_demo.html "$C/mapa_rey"
 paso "Navegador: tierras del rey" python3 pruebas/prueba_tierras_rey_navegador.py dist/kinhold_demo.html "$C/tierras_rey"
 paso "Navegador: panel del admin" python3 pruebas/prueba_admin_navegador.py dist/kinhold_demo.html "$C/admin"
+paso "Navegador: entrar con la cuenta" python3 pruebas/prueba_cuenta_navegador.py dist/kinhold_demo.html "$C/cuenta"
 paso "Web de progreso" node herramientas/construir_web.mjs
 paso "Navegador: web" python3 pruebas/prueba_web.py "$C/web"
 if [ -n "$LISTAR" ]; then printf '['; sep=; for g in "${grupos[@]}"; do printf '%s"%s"' "$sep" "$g"; sep=,; done; echo ']'; exit 0; fi
