@@ -3574,7 +3574,7 @@
  },
  {
   "inicio": "2026-11-01T01:52:36+00:00",
-  "fin": "2026-11-01T04:16:09+00:00",
+  "fin": "2026-11-01T04:32:04+00:00",
   "titulo": "Hito de arte: cofia y escote en el móvil (carril B)",
   "hito": "arte",
   "hecho": [
@@ -3585,7 +3585,7 @@
    "Pruebas nuevas: en la del cuello (prueba_toca.mjs), que la cofia baja bajo el escote delante y detrás (con MUTAR=2 mira la taller-v22 y falla); en la del personaje, que todas las piezas recortadas llevan el borde suavizado (comprobado que en la v35 da 0 de 15).",
    "Aún mal: el borde del escote del vestido es ondulado (la forma está así en la textura); a los lados del cuello, por el escote, se ve un poco el revés oscuro del vestido. No comprobado: los fotogramas en un móvil de verdad (la transparencia se lee de la textura entera)."
   ],
-  "pruebas": "Batería entera dos veces. La primera (antes de los dos últimos arreglos): 26 grupos en el PC de valravnx, bien salvo «panel del admin» (falla allí al cargar la prueba, por su versión de Python), que pasó en la nube. La segunda, en la nube (SOLO_NUBE=1): 26 de 27; «construir a la altura del suelo» falló por la hierba de lo alisado (la ladera de la prueba cambia con la salida; no toca nada de esto), volvió a fallar en el PC y pasó a la tercera. Después, «personaje» otra vez en el PC (para mirar la cofia en una tarjeta gráfica): bien. Capturas de cerca miradas en PC y móvil.",
+  "pruebas": "Batería entera dos veces. La primera (antes de los dos últimos arreglos): 26 grupos en el PC de valravnx, bien salvo «panel del admin» (falla allí al cargar la prueba, por su versión de Python), que pasó en la nube. La segunda, en la nube (SOLO_NUBE=1): 26 de 27; «construir a la altura del suelo» falló por la hierba de lo alisado (la ladera de la prueba cambia con la salida; no toca nada de esto), volvió a fallar en el PC y pasó a la tercera. Después, «personaje» otra vez en el PC (para mirar la cofia en una tarjeta gráfica): bien. Capturas de cerca miradas en PC y móvil. Tras unir main (demo v81 del carril A): lógica, demo única, la demo en el mundo, juego en inglés, personaje y web, correctos.",
   "capturas": "capturas/personaje-v36",
   "estado": "ok"
  }
