@@ -3675,5 +3675,22 @@
   "pruebas": "Todas menos las de en línea, casi todas en el PC de valravnx: bien salvo «construir a la altura del suelo», que falló una vez (como en vueltas anteriores, en cosas distintas) y pasó al repetirla. Tras unir main, el combate en el mundo y la demo, otra vez bien. No comprobado: pantallas de menos de 740 px de alto.",
   "capturas": "capturas/demo-v86",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T06:56:17+00:00",
+  "fin": "2026-11-01T10:23:26+00:00",
+  "titulo": "Hito de arte: bigote y barba del cuello (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Reproducido en el visor de cerca (de frente, de tres cuartos y desde abajo) con la taller-v23: el bigote con volumen se apartaba hasta 8 mm de la piel y su punta acababa en una línea dura sobre el labio; bajo la barbilla lo tupido de la barba se cortaba en seco (en la textura, de opaco a pelos sueltos entre m = 0,75 y 0,95) y por debajo quedaban pelos sueltos sobre el cuello claro, que de lejos se ven como motas grises.",
+   "Bigote (taller): menos abombado (5,5 → 3,8 mm) y con la punta pegada al labio; acaba 1,5 mm más arriba en el centro; la punta se deshace en pelos de distinto largo en unos 3 mm (cada píxel, pelo o nada) y las puntas son algo más claras. Lo más que se aparta de la piel baja de 8,0 a 5,7 mm.",
+   "Barba del cuello (taller): lo tupido acaba siguiendo los pelos (cada pelo largo a su altura) y se reparte entre m = 0,5 y 0,9; el paso hacia la ropa va de 1,5 cm por encima del cuello a 5 cm por debajo, casi todo bajo la túnica; los pelos sueltos se espacian más despacio y entre ellos la piel queda algo más oscura (sombra 0,18 en vez de 0,12, sin llegar a neblina: lo medio transparente sigue en el 4,6 % de lo pintado).",
+   "Personajes nuevos en recursos/personajes/taller-v24/ (la mujer, el mismo archivo que en la v23). Personaje v37 y demo v87 (la v85 la publicó el carril A y la v86 el chat). El esqueleto no cambia: las animaciones aparte (taller-anim, taller-carga) siguen valiendo.",
+   "Prueba de los calcos con dos comprobaciones nuevas: el bigote no se aparta más de 6,5 mm de la piel, y de 2 a 4,5 cm por encima de la túnica la piel queda a la vista en menos del 6 % de la barba (5,0 % en la v24; con MUTAR=2 mira la taller-v23 y fallan las dos: 8,0 mm y 6,6 %). El margen de la segunda es corto.",
+   "Aún mal: en las comisuras el bigote aún cae como dos colas oscuras; justo encima del cuello de la ropa quedan algunos pelos sueltos sobre la piel clara; en el móvil, en la vista Cara, el panel de opciones tapa la cara (ya pasaba antes)."
+  ],
+  "pruebas": "En la nube: 27 grupos tras unir la demo v85 del carril A; fallaron tres que no tocan nada de esto y miden fotogramas o dónde sales (mapa del rey y la demo en el mundo pasaron al repetirlos). «Lo que se recoge en el mundo» sigue fallando en el móvil (16-18 puntos alrededor de la salida, pide más de 20) y falla igual en main sin este cambio (comprobado en una rama aparte desde main): se deja anotado. Tras unir la demo v86 del chat: lógica, demo única, juego en inglés, personaje y web, correctos. Capturas de cerca miradas en PC y móvil al lado de las de la taller-v23.",
+  "capturas": "capturas/personaje-v37",
+  "estado": "ok"
  }
 ]
