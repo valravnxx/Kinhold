@@ -1,0 +1,44 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2591 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2264 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1853 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2343 KB
+
+== Construir demo única
+      2253 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2870 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1847 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2332 KB
+dist/kinhold_trozos.html 1849 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v84 (las obras, también por trozos); v84: las obras, los muebles y lo alisado con la brocha también llegan solo de los trozos de alrededor. Al entrar y al cambiar de trozo te llega el mundo de construcción de tus 5 × 5 trozos (en vez de todo lo construido en la isla desde el principio), y lo que se construye solo lo reciben los que tienen ese trozo alrededor (el mojón y el arcón de pruebas, todos). Cada obra que llega trae el contador de ids, el arcón y el mojón del servidor, para que en tu navegador salga igual aunque no te haya llegado lo de otros sitios; si aun así no sale igual, se pide otra vez lo de tus trozos.; v84, provisional: una construcción entera va en el trozo de su origen (la esquina de su primera casilla), aunque crezca hacia otro; los muebles y lo alisado, en el de su punto.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 48 s
+en el PC de valravnx, con su tarjeta: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002504) Direct3D11 vs_5_0 ps_5_0, D3D11)
