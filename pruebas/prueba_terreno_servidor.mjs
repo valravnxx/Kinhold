@@ -20,6 +20,7 @@ import { recogidaEn } from '../src/logica/recogida_mundo.js';
 import { idArbol } from '../src/logica/tala.js';
 import { SALIDA, SALIDAS, ISLA } from '../src/logica/whitholm.js';
 import { crearServidor } from '../servidor/servidor.mjs';
+import { desagrupar, trozoDe } from '../src/logica/trozos_red.js';
 
 const MUTAR = process.env.MUTAR === '1';
 let ok = 0, mal = 0;
@@ -141,13 +142,15 @@ try {
   comprobar('y en tierra firme se pone', r.ok, r.motivo);
   r = await a.accion({ tipo: 'colocar', pieza: 'suelo_tablas', x: px + 3, z: pz + 3, k: 0, rot: 0, dir: 0, y: T.suelo(px + 3, pz + 3) + 4 });
   comprobar('una planta baja que empieza a 4 m del suelo se rechaza', !r.ok, r.motivo);
-  const exp = s.objetos.exportar();
-  comprobar('lo que se guarda es solo lo cambiado: el árbol a medias, ni el falso ni ninguno más', exp.arboles.length === 1 && exp.arboles[0].id === id && exp.puntos.length === 0, `${exp.arboles.length} árboles, ${exp.puntos.length} puntos`);
+  // (lo guardado va por trozos, src/logica/trozos_red.js)
+  const exp = s.objetos.exportar(), expA = desagrupar(exp.tala.trozos).cosas, expP = desagrupar(exp.recoleccion.trozos).cosas;
+  comprobar('lo que se guarda es solo lo cambiado: el árbol a medias, ni el falso ni ninguno más', expA.length === 1 && expA[0].id === id && expP.length === 0, `${expA.length} árboles, ${expP.length} puntos`);
   a.ws.close(); await s.cerrar(); s = null;
   // lo guardado con un árbol que no está en el mundo (de cuando el servidor se fiaba del navegador): se descarta
   const guardado = JSON.parse(readFileSync(join(dir, 'objetos.json'), 'utf8'));
-  guardado.arboles.push({ id: falsoCerca, x: r2(px + 0.5), z: r2(pz), edad: 'adulto' });
-  guardado.tala.estado[falsoCerca] = { golpes: 3, parte: 0.2, veces: 0 };
+  const kf = trozoDe(r2(px + 0.5), r2(pz)), tf = guardado.tala.trozos[kf] || (guardado.tala.trozos[kf] = { cosas: [], estado: {} });
+  tf.cosas.push({ id: falsoCerca, x: r2(px + 0.5), z: r2(pz), edad: 'adulto' });
+  tf.estado[falsoCerca] = { golpes: 3, parte: 0.2, veces: 0 };
   writeFileSync(join(dir, 'objetos.json'), JSON.stringify(guardado));
   s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T });
   await s.listo;

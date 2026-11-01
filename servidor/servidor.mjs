@@ -35,7 +35,12 @@
 //   Al autor le manda lo que lleva tal como queda, { tipo: 'inventario', inventario } (también si sale mal: así el
 //   navegador deshace lo que había adelantado), y si cambia el suelo, a todos { tipo: 'suelo', objetos }. Si cae un
 //   árbol, a todos (antes que el suelo) { tipo: 'tala', estado, cae: { arbol, dir, autor, objetos } }; si se recoge algo, { tipo: 'recoleccion',
-//   estado }. La bienvenida lleva todo eso (inventario, suelo, tala, recoleccion). 'coger' y 'soltar' son el arcón de
+//   estado }. La bienvenida lleva todo eso (inventario, suelo, tala, recoleccion).
+//   Por trozos (src/logica/trozos_red.js): lo del suelo, lo talado y lo recogido llega solo de los trozos que cada uno
+//   tiene alrededor (la bienvenida, los de donde aparece). Al cambiar de trozo le llega { tipo: 'trozos', entran,
+//   tala, recoleccion, suelo } (lo talado y lo recogido de los trozos que le entran, y el suelo de todos los suyos).
+//   'tala' y 'recoleccion' llevan solo lo de su trozo y solo a quien lo tiene; 'suelo', lo de los trozos de cada uno.
+//   El navegador junta lo que le llega de lo talado y lo recogido con lo que ya tenía. 'coger' y 'soltar' son el arcón de
 //   pruebas (arconPruebas, sí por ahora). Se guarda entero en objetos.json junto al mundo, y cada acción (bien o mal)
 //   en objetos.jsonl.
 //   Las obras cobran de ahí (src/logica/acciones.js): entregar, subir y el arcón de materiales (sacar_arcon y dejar_arcon,
@@ -79,6 +84,7 @@ import { Limitador, LIMITES } from '../src/logica/limites.js';
 import { ObjetosServidor } from '../src/logica/objetos_red.js';
 import { validarPeticionAdmin, sitioJunto, listaJugadores, claveUsable, ADMIN_FALLOS } from '../src/logica/admin.js';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
+import { VistaTrozos, trozoDe, LADO_RED, RADIO_RED } from '../src/logica/trozos_red.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -165,6 +171,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const conexionDe = new Map(); // autor → ws (la que vale)
   const apartados = new Map();  // autor → { L, hasta }: luchadores de los que se han cortado
   const aspectos = new Map();   // autor → { sexo, capas, aspecto }
+  const vista = new VistaTrozos(); // autor → los trozos que tiene alrededor (lo que se le ha mandado)
+  // el suelo de los trozos de cada uno, a todos
+  const repartirSuelo = (ahora) => { for (const [ws, a] of clientes) enviar(ws, { tipo: 'suelo', objetos: objetos.sueloVisible(ahora, vista.trozosDe(a)) }); };
 
   const enviar = (ws, msg) => { if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(msg)); };
   // Si ha cambiado lo que se ve que lleva (al coger, soltar, ponerse algo…), se vuelve a repartir su aspecto.
@@ -219,7 +228,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     for (const [a, x] of apartados) if (x.hasta <= ahora) apartados.delete(a);
     // lo soltado fuera de las tierras desaparece pasada su hora
     const t = Date.now();
-    if (objetos.limpiar(t)) { guardarObjetos(); const lista = objetos.sueloVisible(t); for (const ws of clientes.keys()) enviar(ws, { tipo: 'suelo', objetos: lista }); }
+    if (objetos.limpiar(t)) { guardarObjetos(); repartirSuelo(t); }
   }, latido);
 
   wss.on('connection', (ws, req) => {
@@ -249,9 +258,14 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       const ap = apartados.get(autor);
       if (ap) { apartados.delete(autor); combate.volver(autor, ap.L); } else combate.entrar(autor);
     }
+    // lo de alrededor de donde aparece: donde lo dejó o la salida
+    vista.quitar(autor);
+    { const p = posiciones.get(autor); vista.mover(autor, p ? p.x : 0, p ? p.z : 0); }
+    const suyos = vista.trozosDe(autor);
     enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, entradas: hechas, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
       aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true),
-      inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now()), tala: objetos.talaVisible(), recoleccion: objetos.recoleccionVisible(), posicion: posiciones.get(autor) || null });
+      inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now(), suyos), tala: objetos.talaVisible(suyos), recoleccion: objetos.recoleccionVisible(suyos),
+      trozos: { lado: LADO_RED, radio: RADIO_RED }, posicion: posiciones.get(autor) || null });
 
     ws.on('message', (datos, binario) => {
       if (conexionDe.get(autor) !== ws) return;   // sustituida por otra: ya no cuenta
@@ -286,6 +300,14 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         ponerAlDia();
         const e = validarEstado(msg);
         combate.colocar(autor, e.x, e.z, e.giro);
+        // si ha cambiado de trozo, lo de los trozos que le entran (en la liza no: es una escena aparte)
+        if (!(combate.luchadores[autor] && combate.luchadores[autor].liza)) {
+          const entran = vista.mover(autor, e.x, e.z);
+          if (entran.length) {
+            const nuevos = new Set(entran);
+            enviar(ws, { tipo: 'trozos', entran, tala: objetos.talaVisible(nuevos), recoleccion: objetos.recoleccionVisible(nuevos), suelo: objetos.sueloVisible(Date.now(), vista.trozosDe(autor)) });
+          }
+        }
         return;
       }
       if (msg && msg.tipo === 'combate') {
@@ -347,9 +369,14 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
         if (r.ok) repartirLlevado(autor);
         // lo talado antes que el suelo: así el navegador esconde lo que deja el árbol hasta que lo ve caer
-        if (r.ok && r.cae) { const m = { tipo: 'tala', estado: objetos.talaVisible(), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, objetos: r.objetos } }; for (const otro of clientes.keys()) enviar(otro, m); }
-        if (r.suelo) { const lista = objetos.sueloVisible(ahora); for (const otro of clientes.keys()) enviar(otro, { tipo: 'suelo', objetos: lista }); }
-        if (r.ok && msg.accion.tipo === 'recoger') { const m = { tipo: 'recoleccion', estado: objetos.recoleccionVisible() }; for (const otro of clientes.keys()) enviar(otro, m); }
+        // lo talado y lo recogido, solo lo de su trozo y solo a quien lo tiene alrededor (el autor siempre)
+        const aSuTrozo = (sitio, hacer) => {
+          const k = sitio ? trozoDe(sitio.x, sitio.z) : null, solo = k ? new Set([k]) : new Set();
+          for (const [otro, a] of clientes) if (a === autor || (k && vista.tiene(a, k))) hacer(otro, solo);
+        };
+        if (r.ok && r.cae) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, objetos: r.objetos } }));
+        if (r.suelo) repartirSuelo(ahora);
+        if (r.ok && msg.accion.tipo === 'recoger') aSuTrozo(objetos.sitioPunto(msg.accion.punto), (otro, solo) => enviar(otro, { tipo: 'recoleccion', estado: objetos.recoleccionVisible(solo) }));
         return;
       }
       if (!msg || msg.tipo !== 'accion' || !msg.accion || typeof msg.accion !== 'object' || Array.isArray(msg.accion))
@@ -383,8 +410,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       conexionDe.delete(autor);
       apuntarPosicion(autor); guardarPosiciones();
       // la rastra que arrastraba se queda donde estaba (antes de olvidar dónde estaba él)
-      if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); const lista = objetos.sueloVisible(Date.now()); for (const otro of clientes.keys()) enviar(otro, { tipo: 'suelo', objetos: lista }); }
-      aspectos.delete(autor); presencia.quitar(autor);
+      if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); repartirSuelo(Date.now()); }
+      aspectos.delete(autor); presencia.quitar(autor); vista.quitar(autor);
       ponerAlDia();
       const L = combate.apartar(autor);
       if (L) apartados.set(autor, { L, hasta: reloj() + gracia });
@@ -394,7 +421,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, terreno, archivo, archivoAdmin, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
+    wss, mundo, terreno, vista, archivo, archivoAdmin, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
     cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticCombate); clearInterval(ticLatido); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };

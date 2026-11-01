@@ -47,10 +47,11 @@ import { Tala, ejecutarTala, idArbol, DA, ALCANCE_TALA } from './tala.js';
 import { Troceo, ejecutarTroceo } from './troceo.js';
 import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER } from './recoleccion.js';
 import { Rastras, ejecutarRastra, TIPOS_RASTRA, ejecutarArconAlSuelo } from './rastra.js';
+import { agrupar, desagrupar, estadoEnTrozos, trozoDe } from './trozos_red.js';
 
 export const TOLERANCIA = 3; // m
 export const ENTRE_GOLPES_RED = 500; // ms
-export const VERSION_OBJETOS = 2;
+export const VERSION_OBJETOS = 3;   // 3: lo talado y lo recogido, agrupado por trozo (src/logica/trozos_red.js)
 const DEL_INVENTARIO = new Set(['mover', 'ponerse', 'quitarse']);
 const DEL_ARCON = new Set(['coger', 'soltar']);
 const DEL_SUELO = new Set(['soltar_suelo', 'coger_suelo', 'talar', 'trocear', 'recoger', 'arcon_al_suelo', ...TIPOS_RASTRA]);
@@ -147,10 +148,22 @@ export class ObjetosServidor {
     this.recoleccion.puntos.push(q); this.recoleccion.porId.set(q.id, q);
     return null;
   }
-  // Lo de los árboles que se ve (tocones y lo que llevan dado no: solo lo talado), para todos.
-  talaVisible() { return this.tala.exportar(); }
-  // Lo recogido (cuándo vuelve cada punto), para todos.
-  recoleccionVisible() { return this.recoleccion.exportar(); }
+  // Lo de los árboles que se ve (tocones y lo que llevan dado no: solo lo talado). Con trozos (un Set de claves de
+  // trozo, src/logica/trozos_red.js), solo lo de esos trozos.
+  talaVisible(trozos = null) {
+    const t = this.tala.exportar();
+    if (trozos) t.estado = estadoEnTrozos(t.estado, id => this.tala.porId.get(id), trozos);
+    return t;
+  }
+  // Lo recogido (cuándo vuelve cada punto); con trozos, solo lo de esos trozos.
+  recoleccionVisible(trozos = null) {
+    const r = this.recoleccion.exportar();
+    if (trozos) r.estado = estadoEnTrozos(r.estado, id => this.recoleccion.porId.get(id), trozos);
+    return r;
+  }
+  // Dónde está un árbol o un punto que el servidor conoce (null si no lo conoce).
+  sitioArbol(id) { return this.tala.porId.get(id) || null; }
+  sitioPunto(id) { return this.recoleccion.porId.get(id) || null; }
   anotar(a, r, ahora) { const e = this.registro.anotar(a, r); e.ahora = ahora; return r; }
 
   // El que se va del juego suelta la rastra que arrastraba: se queda donde el servidor la tenía, detrás de su último
@@ -167,7 +180,11 @@ export class ObjetosServidor {
   // Lo que se le manda a un jugador: lo que lleva.
   inventarioDe(autor) { return this.invs.de(autor).exportarJugador(); }
   // Lo que se ve en el suelo ahora (para todos).
-  sueloVisible(ahora) { return this.suelo.visibles(ahora).map(o => JSON.parse(JSON.stringify(o))); }
+  // Con trozos, solo lo de esos trozos.
+  sueloVisible(ahora, trozos = null) {
+    const l = this.suelo.visibles(ahora);
+    return (trozos ? l.filter(o => trozos.has(trozoDe(o.x, o.z))) : l).map(o => JSON.parse(JSON.stringify(o)));
+  }
   // Quita lo que ya ha desaparecido; true si ha cambiado algo.
   limpiar(ahora) { return this.suelo.limpiar(ahora) > 0; }
 
@@ -177,14 +194,21 @@ export class ObjetosServidor {
     const tala = this.tala.exportar(), rec = this.recoleccion.exportar();
     const arboles = this.terreno ? this.tala.arboles.filter(a => Object.hasOwn(tala.estado, a.id)) : this.tala.arboles;
     const puntos = this.terreno ? this.recoleccion.puntos.filter(q => Object.hasOwn(rec.estado, q.id)) : this.recoleccion.puntos;
+    // por trozo (versión 3): { "i,j": { cosas: [árboles o puntos], estado } }
     return { version: VERSION_OBJETOS, inventarios: this.invs.exportar(), suelo: this.suelo.exportar(),
-      arboles: arboles.map(a => ({ ...a })), tala, troceo: this.troceo.exportar(),
-      puntos: puntos.map(q => ({ ...q })), recoleccion: rec };
+      tala: { version: tala.version, trozos: agrupar(arboles, tala.estado) }, troceo: this.troceo.exportar(),
+      recoleccion: { version: rec.version, trozos: agrupar(puntos, rec.estado) } };
   }
   // Lo guardado se comprueba con el catálogo de ahora (Inventarios.importar y Suelo.importar); si no se entiende,
-  // se empieza de cero. La versión 1 (sin tala, troceo ni recogida) se lee igual.
+  // se empieza de cero. La versión 1 (sin tala, troceo ni recogida) y la 2 (sin trozos) se leen igual.
   importar(datos, ahora = Date.now()) {
-    if (!datos || typeof datos !== 'object' || ![1, VERSION_OBJETOS].includes(datos.version)) return this;
+    if (!datos || typeof datos !== 'object' || ![1, 2, VERSION_OBJETOS].includes(datos.version)) return this;
+    // la versión 3 va por trozos: se junta como era la 2 (arboles, tala, puntos, recoleccion) y se sigue igual
+    if (datos.version === VERSION_OBJETOS) {
+      const t = desagrupar(datos.tala && datos.tala.trozos), r = desagrupar(datos.recoleccion && datos.recoleccion.trozos);
+      datos = { ...datos, version: 2, arboles: t.cosas, tala: { version: datos.tala && datos.tala.version, estado: t.estado },
+        puntos: r.cosas, recoleccion: { version: datos.recoleccion && datos.recoleccion.version, estado: r.estado } };
+    }
     this.invs = Inventarios.importar(datos.inventarios);
     this.ponerSuelo(new Suelo().importar(datos.suelo));
     if (datos.version === 1) return this;

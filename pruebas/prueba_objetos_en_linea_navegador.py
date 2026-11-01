@@ -54,6 +54,11 @@ def servidorDice(f, ms=15000):
 def lleva(d, autor, tipo):
     j = d['inventarios']['jugadores'].get(autor)
     return j is not None and f'"tipo": "{tipo}"' in json.dumps(j)
+def estadoDe(d, que):
+    # lo guardado va por trozos (src/logica/trozos_red.js): { trozos: { "i,j": { cosas, estado } } }
+    r = {}
+    for t in (d.get(que, {}).get('trozos') or {}).values(): r.update(t.get('estado') or {})
+    return r
 def enSuelo(d, tipo): return any(o['cosa']['tipo'] == tipo for o in d['suelo']['objetos'])
 def captura(pg, ruta):
     try: pg.screenshot(path=ruta)
@@ -104,7 +109,7 @@ try:
         cayendo = esperar(A, f"{K}.talaV.cayendo > 0 || !!{K}.talaV.tala.estado[{json.dumps(arbol['id'])}]?.vuelve", 240000)
         comprobar('a golpes, el árbol cae (el servidor lo ha talado)', cayendo, A.inner_text('#aviso'))
         A.wait_for_timeout(400); captura(A, f'{SALIDA}/pc_1_cae.png')
-        d = servidorDice(lambda d: d['tala']['estado'].get(arbol['id'], {}).get('vuelve', 0) > 0 and enSuelo(d, 'rama'))
+        d = servidorDice(lambda d: estadoDe(d, 'tala').get(arbol['id'], {}).get('vuelve', 0) > 0 and enSuelo(d, 'rama'))
         comprobar('en el servidor: el tocón y, en su suelo, el tronco y las ramas', d is not None and (enSuelo(d, 'tronco_largo') or enSuelo(d, 'tronco_delgado')))
         comprobar('y en la página, lo mismo cuando ha caído', esperar(A, f"{K}.talaV.cayendo === 0 && {K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'rama') && !!{K}.escena.getObjectByName('tocon')", 90000))
         A.evaluate(f"{K}.cam.dist = 7; {K}.cam.pitch = 0.55"); A.wait_for_timeout(600)
@@ -131,7 +136,7 @@ try:
         comprobar('hay algo que recoger', punto is not None, str(punto))
         A.wait_for_timeout(1500)
         A.evaluate(f"{K}.usar()")
-        d = servidorDice(lambda d: d['recoleccion']['estado'].get(punto['id'], {}).get('vuelve', 0) > 0)
+        d = servidorDice(lambda d: estadoDe(d, 'recoleccion').get(punto['id'], {}).get('vuelve', 0) > 0)
         comprobar('PC lo recoge: el servidor lo da por recogido y va a lo que lleva', d is not None and lleva(d, yo, 'piedra' if punto['tipo'] == 'piedra' else 'rama'))
 
         comprobar('nada de eso se guarda en el navegador', A.evaluate("['kinhold.inventario', 'kinhold.suelo', 'kinhold.tala', 'kinhold.recoleccion'].every(k => localStorage.getItem(k) === null)"))
