@@ -165,7 +165,7 @@ nav button{--c:var(--pano-crema);font:700 18px var(--titulos);color:var(--tinta)
   padding:8px 16px 18px;margin-bottom:6px;
   background:linear-gradient(90deg,rgba(0,0,0,.16),transparent 25%,rgba(255,255,255,.12) 50%,transparent 75%,rgba(0,0,0,.16)), var(--tela), var(--c);
   clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);transition:padding .15s}
-nav button:nth-child(2){--c:#cdb98b} nav button:nth-child(3){--c:#d7c393} nav button:nth-child(4){--c:#cdb98b} nav button:nth-child(5){--c:#d7c393} nav button:nth-child(6){--c:#cdb98b}
+nav button:nth-child(2){--c:#cdb98b} nav button:nth-child(3){--c:#d7c393} nav button:nth-child(4){--c:#cdb98b} nav button:nth-child(5){--c:#d7c393} nav button:nth-child(6){--c:#cdb98b} nav button:nth-child(7){--c:#d7c393} nav button:nth-child(8){--c:#cdb98b}
 nav button:hover{padding-bottom:22px}
 nav button.sel{--c:var(--pano-rojo);color:var(--oro-claro);padding-bottom:26px;text-shadow:0 1px 0 #0008;margin-bottom:0}
 nav button .n{display:inline-block;min-width:21px;margin-left:5px;padding:0 6px;border-radius:999px;font:800 13px/19px var(--titulos);
@@ -197,6 +197,17 @@ section{display:none;padding-top:28px} section.sel{display:block}
 .cinta{display:block;width:max-content;max-width:100%;margin:-8px auto 18px;padding:5px 34px 7px;font:800 19px var(--titulos);color:var(--oro-claro);letter-spacing:.03em;
   background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.18)), var(--tela), var(--rubrica);
   clip-path:polygon(0 0,100% 0,96% 50%,100% 100%,0 100%,4% 50%);text-shadow:0 1px 0 #0007}
+.quees .cabecera{display:block;margin:0 0 18px;border-radius:4px;overflow:hidden;box-shadow:0 6px 16px rgba(60,30,8,.35)}
+.quees .cabecera img,.quees .bloque img{display:block;width:100%;height:auto}
+.quees p{font-size:17.5px;line-height:1.6;margin:0 0 12px}
+.quees .bloques{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:22px 0}
+.quees .bloque a{display:block;border-radius:4px;overflow:hidden;box-shadow:0 4px 12px rgba(60,30,8,.3);margin-bottom:10px}
+.quees h3,.noticia h3{font:800 21px var(--titulos);color:var(--rubrica-osc,#6b1a12);margin:6px 0 6px}
+.quees .bloque p{font-size:16px;margin:0}
+.quees .final{margin-top:20px}
+.noticia{margin:0 0 26px} .noticia .fecha{font-style:italic;color:var(--tinta2)} .noticia p{font-size:17px;line-height:1.6;margin:0 0 10px}
+.noticia p.punto{margin:0 0 6px 14px}
+@media (max-width:720px){.quees .bloques{grid-template-columns:1fr}}
 .orla{height:24px;max-width:420px;margin:14px auto;background:var(--orla) center/contain no-repeat}
 
 /* ---- botones, selects, chips ---- */
@@ -436,14 +447,24 @@ footer{max-width:640px;margin:34px auto 0;text-align:center;padding:12px 30px 14
   </header>
   <div id="resumen"></div>
   <nav id="pestanas"><div class="viga"></div><div class="cintas">
-    <button data-s="jugar" class="sel" data-t="t_jugar"></button>
+    <button data-s="kinhold" class="sel" data-t="t_kinhold"></button>
+    <button data-s="noticias" data-t="t_noticias"></button>
+    <button data-s="jugar" data-t="t_jugar"></button>
     <button data-s="roadmap" data-t="t_roadmap"></button>
     <button data-s="diario" data-t="t_diario"></button>
     <button data-s="tiempos" data-t="t_tiempos"></button>
     <button data-s="decisiones"><span data-t="t_espera"></span></button>
     <button data-s="documentos" data-t="t_diseno"></button>
   </div></nav>
-  <section id="jugar" class="sel"><div class="pergamino"><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div><div class="papel">
+  <section id="kinhold" class="sel"><div class="pergamino"><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div><div class="papel">
+    <span class="cinta" data-t="t_kinhold"></span>
+    <div id="queEs"></div>
+  </div><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div></div></section>
+  <section id="noticias"><div class="pergamino"><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div><div class="papel">
+    <span class="cinta" data-t="t_noticias"></span>
+    <div id="listaNoticias"></div>
+  </div><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div></div></section>
+  <section id="jugar"><div class="pergamino"><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div><div class="papel">
     <span class="cinta" data-t="alpha_cinta"></span>
     <div id="listaJuegos"></div>
     <p class="nota" data-t="nota_jugar"></p>
@@ -491,7 +512,7 @@ const DIARIO_VISIBLES = 12;        // entradas del diario a la vista; las demás
 const UI = {
   es: {
     lema: 'Supervivencia medieval en el navegador · diario de desarrollo', actualizado: 'Actualizado',
-    t_jugar: 'Jugar', t_roadmap: 'Roadmap', t_diario: 'Diario', t_tiempos: 'Tiempos', t_espera: 'Te espera', t_diseno: 'Diseño',
+    t_kinhold: 'Qué es Kinhold', t_noticias: 'Noticias', t_jugar: 'Jugar', t_roadmap: 'Roadmap', t_diario: 'Diario', t_tiempos: 'Tiempos', t_espera: 'Te espera', t_diseno: 'Diseño',
     nota_jugar: 'Cada versión se queda guardada: si una nueva no te convence, puedes abrir la anterior desde el desplegable. Lo que guarda el juego en tu navegador se conserva entre versiones.',
     nota_revision: 'Para responder o pedir cambios: dímelo en el chat, o edita el archivo <a href="https://github.com/valravnxx/kinhold/edit/main/REVISION.md">REVISION.md</a> en GitHub. El trabajo automático lo lee al empezar cada hora.',
     doc_gdd: 'Documento de diseño: visión, mundo, sistemas y orden de hitos.', doc_sis_t: 'Sistemas y contenido', doc_sis: 'Recursos, recetas, piezas, estaciones y valores.',
@@ -517,7 +538,7 @@ const UI = {
   },
   en: {
     lema: 'Medieval survival in the browser · development log', actualizado: 'Updated',
-    t_jugar: 'Play', t_roadmap: 'Roadmap', t_diario: 'Log', t_tiempos: 'Times', t_espera: 'Waiting on you', t_diseno: 'Design',
+    t_kinhold: 'What is Kinhold', t_noticias: 'News', t_jugar: 'Play', t_roadmap: 'Roadmap', t_diario: 'Log', t_tiempos: 'Times', t_espera: 'Waiting on you', t_diseno: 'Design',
     nota_jugar: 'Every version is kept: if a new one doesn’t convince you, you can open the previous one from the drop-down. What the game saves in your browser carries over between versions.',
     nota_revision: 'To reply or ask for changes: tell me in the chat, or edit the <a href="https://github.com/valravnxx/kinhold/edit/main/REVISION.md">REVISION.md</a> file on GitHub. The automatic work reads it at the start of every hour.',
     doc_gdd: 'Design document: vision, world, systems and milestone order.', doc_sis_t: 'Systems and content', doc_sis: 'Resources, recipes, pieces, workstations and values.',
@@ -543,7 +564,7 @@ const UI = {
   },
   ru: {
     lema: 'Средневековое выживание в браузере · дневник разработки', actualizado: 'Обновлено',
-    t_jugar: 'Играть', t_roadmap: 'План', t_diario: 'Дневник', t_tiempos: 'Время', t_espera: 'Ждёт тебя', t_diseno: 'Дизайн',
+    t_kinhold: 'Что такое Kinhold', t_noticias: 'Новости', t_jugar: 'Играть', t_roadmap: 'План', t_diario: 'Дневник', t_tiempos: 'Время', t_espera: 'Ждёт тебя', t_diseno: 'Дизайн',
     nota_jugar: 'Каждая версия сохраняется: если новая не понравится, предыдущую можно открыть из выпадающего списка. То, что игра сохраняет в браузере, переходит из версии в версию.',
     nota_revision: 'Чтобы ответить или попросить изменения: напиши мне в чате или отредактируй файл <a href="https://github.com/valravnxx/kinhold/edit/main/REVISION.md">REVISION.md</a> на GitHub. Автоматическая работа читает его в начале каждого часа.',
     doc_gdd: 'Дизайн-документ: замысел, мир, системы и порядок этапов.', doc_sis_t: 'Системы и содержание', doc_sis: 'Ресурсы, рецепты, детали, станки и значения.',
@@ -653,6 +674,24 @@ function pintar() {
     try { localStorage.setItem('kinhold_web_idioma', idioma); } catch (e) { /* sin almacenamiento */ }
     pintar();
   });
+
+  // ---------- Qué es Kinhold y noticias (proyecto/presentacion.json) ----------
+  const PRES = DATOS.presentacion || {};
+  const esc = (x) => String(x ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const K = PRES.kinhold;
+  if (K && $('#queEs')) {
+    const img = (src, alt) => src ? `<a href="${esc(src)}" class="ampliar"><img src="${esc(src)}" alt="${esc(alt)}" loading="lazy"></a>` : '';
+    $('#queEs').innerHTML = `<div class="quees">` +
+      (K.imagen ? `<div class="cabecera">${img(K.imagen, 'Kinhold')}</div>` : '') +
+      (K.intro || []).map(p => `<p>${esc(tr(p))}</p>`).join('') +
+      `<div class="bloques">` + (K.secciones || []).map(b => `<div class="bloque">${img(b.imagen, tr(b.titulo))}<h3>${esc(tr(b.titulo))}</h3><p>${esc(tr(b.texto))}</p></div>`).join('') + `</div>` +
+      [K.quienes, K.estado].filter(Boolean).map(x => `<div class="final"><h3>${esc(tr(x.titulo))}</h3>${(x.texto || []).map(p => `<p>${esc(tr(p))}</p>`).join('')}</div>`).join('') +
+      `</div>`;
+  }
+  if ($('#listaNoticias')) {
+    $('#listaNoticias').innerHTML = (PRES.noticias || []).map(n => `<article class="noticia"><h3>${esc(tr(n.titulo))}</h3><p class="fecha">${esc(new Date(n.fecha + 'T12:00:00').toLocaleDateString(LOCALE[idioma], { day: 'numeric', month: 'long', year: 'numeric' }))}</p>` +
+      (n.cuerpo || []).map(p => { const t = tr(p); return `<p${/^(•|\d+\.)/.test(p) ? ' class="punto"' : ''}>${esc(t)}</p>`; }).join('') + `</article>`).join('');
+  }
 
   // ---------- Resumen ----------
   const tareas = R.hitos.flatMap(h => h.tareas.map(t => ({ ...t, hito: h })));
@@ -790,7 +829,7 @@ function ir(s) {
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => { ir(b.dataset.s); b.scrollIntoView({ block: 'nearest', inline: 'center' }); history.replaceState(null, '', location.search + '#' + b.dataset.s); });
 { const s0 = location.hash.slice(1); const el = s0 && document.getElementById(s0); if (el && el.tagName === 'SECTION') ir(s0); }
 document.addEventListener('click', (e) => {
-  const a = e.target.closest('.miniaturas a, .galeria a');
+  const a = e.target.closest('.miniaturas a, .galeria a, .quees a.ampliar');
   if (!a) return;
   e.preventDefault(); $('#visor img').src = a.href; $('#visor').hidden = false;
 });
