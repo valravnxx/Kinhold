@@ -1424,6 +1424,12 @@
      "inicio": "2026-10-31T22:59:16+01:00",
      "rama": "trabajo/20261031-2300-pelea",
      "fin": "2026-11-01T03:33:30+01:00"
+    },
+    {
+     "nombre": "Combate en el móvil (valravnx, 1 nov): parar con su propia rosa, como la de atacar, para elegir el lado; y los botones del combate sin taparse unos a otros",
+     "estado": "en_curso",
+     "inicio": "2026-11-01T08:48:18+01:00",
+     "rama": "trabajo/20261101-0850-rosa"
     }
    ],
    "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
