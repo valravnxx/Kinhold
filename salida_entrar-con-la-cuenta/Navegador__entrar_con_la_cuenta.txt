@@ -1,0 +1,69 @@
+Vista pc
+  OK   pc: entra en línea con el mundo listo
+  OK   pc: sale la pantalla de la cuenta
+  OK   pc: la pantalla tapa el juego entero
+  OK   pc: la caja cabe en la pantalla — [450, 830, 166.3125, 633.6875]
+  OK   pc: usuario corto, dicho al momento — El usuario tiene que tener de 3 a 20 letras.
+  OK   pc: contraseñas distintas, dicho al momento — Las dos contraseñas no son iguales.
+  OK   pc: lo que no vale no llega al servidor
+  FALLA pc: al crear la cuenta se quita la pantalla — Un momento…
+  OK   pc: sigue siendo el mismo personaje
+  FALLA pc: el cliente sabe su cuenta — None
+  OK   pc: el servidor la guarda con ese personaje — [{'usuario': 'Ana_pc', 'autor': 'jugador:8958e9e2', 'sal': '3fb68882df4a7f01dcc23c040182cdbb', 'hash': '5ae06b0a758f7927
+  OK   pc: sin la contraseña en claro
+  OK   pc: al recargar entra solo
+  OK   pc: en otro aparato, pantalla y otro personaje
+  OK   pc: «Entrar» no pide repetir la contraseña
+  FALLA pc: contraseña mal, lo dice y no entra — Un momento…
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_cuenta_navegador.py", line 119, in <module>
+    rellenar(pg, USUARIO.lower(), CLAVE)   # sin mirar mayúsculas
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_cuenta_navegador.py", line 64, in rellenar
+    pg.click('#pcIr')
+    ~~~~~~~~^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 11102, in click
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.click(
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 889, in click
+    return await self._main_frame._click(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 594, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#pcIr")
+    - locator resolved to <button disabled id="pcIr" type="submit" class="pc-ir">Entrar</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is not enabled
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is not enabled
+    - retrying click action
+      - waiting 100ms
+    - waiting for element to be visible, enabled and stable
+    - element is not enabled
+  - retrying click action
+    - waiting 500ms
+    - waiting for element to be visible, enabled and stable
+
