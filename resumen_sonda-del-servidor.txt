@@ -1,0 +1,42 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2692 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2353 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1935 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2426 KB
+
+== Construir demo única
+      2322 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2979 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1929 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2415 KB
+dist/kinhold_trozos.html 1931 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: sonda del servidor
+wss://juego.playkinhold.com · protocolo 7 · con cuentas · arrancó hace 7 min, a las 2026-11-01T18:07:28.343Z
+wss://2-31-141-224.sslip.io · protocolo 7 · con cuentas · arrancó hace 7 min, a las 2026-11-01T18:07:28.330Z
+https://juego.playkinhold.com/ 302 https://playkinhold.com/jugar/demo/index.html?servidor=wss://juego.playkinhold.com
+https://2-31-141-224.sslip.io/ 302 https://playkinhold.com/jugar/demo/index.html?servidor=wss://juego.playkinhold.com
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 5 s
