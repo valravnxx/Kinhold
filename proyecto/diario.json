@@ -3743,5 +3743,24 @@
   "pruebas": "En la nube: 29 de 29 grupos correctos (uno, al repetirlo)",
   "capturas": "capturas/revision-equipo-1nov",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T10:57:02+00:00",
+  "fin": "2026-11-01T13:01:11+00:00",
+  "titulo": "Hito A: Strandvang, tierras del rey (demo v90, carril B)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "En Strandvang (la comarca E) nadie puede herir a otro jugador: el servidor rechaza el golpe o la flecha entre jugadores. Llega, pero no hiere; queda en el registro de combate con su autor y el motivo, y el evento sale con resultado «tierras del rey», que el juego dice a los dos.",
+   "La cuenta es una sola, en la lógica pura (src/logica/tierras_rey.js), con las zonas de la comarca (las mismas del mapa del rey): la usa el servidor para rechazar y el navegador para avisar.",
+   "Al entrar y al salir de Strandvang, un cartel unos segundos: arriba en el PC y más abajo en el móvil (arriba están los botones). En español, inglés y ruso.",
+   "Contra el rival de práctica se pelea igual (es un NPC, va en el navegador); y si algún día hay NPCs en el servidor, con npc: true tampoco cuentan.",
+   "Decisión provisional (en el registro de la demo): cuenta dónde están los dos; basta con que el que ataca o el que recibe esté en Strandvang, para que no se hiera desde fuera con una flecha por encima de la frontera ni se salga a herir desde dentro.",
+   "Pruebas nuevas: de lógica (el golpe y la flecha rechazados con su autor dentro, que hieren fuera, la frontera, los NPCs) y de navegador (el cartel al entrar, al salir y al volver, en PC, móvil e inglés). Rotas a propósito una vez (MUTAR=1) para ver que fallan.",
+   "Unido main dos veces (el bigote y la barba, demo v89, y la revisión del hito de equipo): sin choques de código; lo de las tierras del rey pasa a la demo v90.",
+   "La sesión se alargó con la batería en la nube (64 min) y otra sesión del carril B retomó la tarea desde la misma rama a las 12:54; esta la termina y la publica."
+  ],
+  "pruebas": "Batería entera en la nube (GitHub Actions) sobre la rama ya unida con main: 29 de 30 grupos correctos a la primera; «terreno por trozos» falló una medida de tiempo en el móvil (12,7 ms sin hilo frente a 6,4 ms con él, pedía más diferencia), no tocado en esta tarea, y repetido solo pasó. Lógica 410 líneas de resultados sin fallos. Capturas de las tierras del rey miradas en PC, móvil e inglés.",
+  "capturas": "capturas/demo-v90",
+  "estado": "ok"
  }
 ]

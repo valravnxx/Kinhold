@@ -37,10 +37,14 @@
 //   Liza: los luchadores de la liza (duelo en línea) solo se dan entre ellos, y los de fuera (los que construyen)
 //   tampoco les dan ni les ven las flechas; así un duelo y una obra pueden ir a la vez en el mismo servidor.
 //   La posición y el giro del luchador salen de su estado de presencia ({ tipo: 'estado', … }).
+//   Strandvang, tierras del rey (valravnx, 31 oct): con `tierras` (en(x, z) de src/logica/tierras_rey.js), el golpe o la
+//   flecha entre dos jugadores cuando uno de los dos está en Strandvang se rechaza: no hiere, queda en el registro con
+//   su autor y el motivo, y el evento sale con resultado «tierras del rey».
 //   servidor → clientes  { tipo: 'combate', eventos: [...] }               golpes, flechas e impactos, en orden
 //                        { tipo: 'luchadores', t, lista: [...] }             cada tic, los que han cambiado
 import { Luchador, LINEAS, LINEAS_DIRECCIONAL, GUARDIAS, ARMAS, ARMADURAS, RITMO, TRATAMIENTOS, azar, angulo, difAngulo } from '../combate/logica.js';
 import { RegistroAcciones, ejecutarCombate, avanzarProyectil } from './acciones.js';
+import { motivoProtegido, RESULTADO_TIERRAS } from './tierras_rey.js';
 
 export const PASO = 1 / 60;          // s: el combate se avanza en pasos de como mucho esto
 export const DURA_PROYECTIL = 8;     // s: una flecha que no ha caído en este tiempo se quita
@@ -99,8 +103,11 @@ const clave = (f) => [f.arma, f.armadura, f.accion, f.linea, f.bloqueando, f.lin
 
 export class CombateServidor {
   // ritmo: el de RITMO (decisión provisional: «normal» para todos en línea). semilla: azar de las heridas.
-  constructor({ ritmo = RITMO.normal, modo = 'capas', modoMundo = 'direccional', semilla = 1, registro = new RegistroAcciones(1000) } = {}) {
+  // tierras: en(x, z) de crearTierrasRey (src/logica/tierras_rey.js), o null para no proteger ningún sitio.
+  constructor({ ritmo = RITMO.normal, modo = 'capas', modoMundo = 'direccional', semilla = 1, registro = new RegistroAcciones(1000), tierras = null } = {}) {
     this.ctx = { luchadores: {}, r: azar(semilla) };
+    this.tierras = tierras;
+    if (tierras) this.ctx.protegido = (A, B) => motivoProtegido(tierras, A, B);
     this.registro = registro;
     this.ritmo = ritmo; this.modo = modo;   // modo: el de la liza (el «Duelo en línea»)
     this.modoMundo = modoMundo;            // fuera de la liza (el mundo): el del combate del mundo
@@ -238,10 +245,11 @@ export class CombateServidor {
         p.liza = lado;
         const res = avanzarProyectil(this.ctx, this.registro, p, h, Object.values(this.ctx.luchadores).filter(o => !!o.liza === lado));
         if (res) {
-          const e = { tipo: 'flecha', autor: p.autor, arma: p.arma, t: this.ms(), x: p.x, y: p.y, z: p.z, resultado: res.tipo };
+          const e = { tipo: 'flecha', autor: p.autor, arma: p.arma, t: this.ms(), x: p.x, y: p.y, z: p.z, resultado: res.tipo === 'protegido' ? RESULTADO_TIERRAS : res.tipo };
           if (this.registro.total > antes) {
             const r = this.registro.entradas[this.registro.entradas.length - 1];
             Object.assign(e, { n: r.n, objetivo: r.datos.objetivo });
+            if (!r.ok) e.motivo = r.motivo;
             if (r.zona) { e.zona = r.zona; e.gravedad = r.gravedad; }
           }
           this.pendientes.push(e);
@@ -272,6 +280,7 @@ export class CombateServidor {
     }
     const r = ejecutarCombate(this.ctx, this.registro, { autor, tipo: 'golpe', objetivo, linea });
     const e = { tipo: 'golpe', n: this.registro.total, autor, objetivo, linea, resultado: r.resultado, t: this.ms() };
+    if (!r.ok) { e.resultado = RESULTADO_TIERRAS; e.motivo = r.motivo; }   // rechazado (tierras del rey)
     if (r.zona) { e.zona = r.zona; e.gravedad = r.gravedad; e.danio = r.tipo; }
     if (r.nota) e.nota = r.nota;
     this.pendientes.push(e);

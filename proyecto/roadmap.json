@@ -562,9 +562,9 @@
     },
     {
      "nombre": "Strandvang, tierras del rey (valravnx, 31 oct): en la comarca E nadie puede herir a otro jugador (el servidor rechaza el golpe, con su autor) y se avisa al entrar y al salir; los duelos contra NPCs sí valen",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-01T10:58:08+00:00",
-     "rama": "trabajo/20261101-1058"
+     "fin": "2026-11-01T13:01:11+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -2361,6 +2361,13 @@
      "archivo": "jugar/demo/v89.html",
      "capturas": "capturas/demo-v89",
      "notas": "Bigote y barba del cuello: el bigote más fino, sin banda oscura sobre el labio, y la barba se aclara poco a poco bajo la barbilla. Personajes en taller-v24."
+    },
+    {
+     "v": "v90",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/demo/v90.html",
+     "capturas": "capturas/demo-v90",
+     "notas": "Strandvang, tierras del rey: en la comarca E nadie puede herir a otro jugador. El servidor rechaza el golpe o la flecha entre jugadores (llega, pero no hiere; queda en el registro con su autor y el motivo) y se dice; al entrar y al salir sale un cartel. Contra el rival de práctica se pelea igual."
     }
    ]
   },

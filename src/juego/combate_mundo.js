@@ -20,6 +20,8 @@
 // que resuelve los golpes entre jugadores con su autor; aquí se hace enseguida en la copia propia para no esperar a la
 // red, y las heridas, la sangre y caer las dice el servidor (su foto). A los demás los dibuja src/juego/en_linea.js.
 // Provisional: el rival de práctica sigue siendo solo tuyo (lo que te hace se ve aquí hasta la próxima foto del servidor).
+// En Strandvang, tierras del rey (src/logica/tierras_rey.js), el servidor rechaza los golpes entre jugadores: el evento
+// llega con resultado «tierras del rey» y se dice; contra el rival de práctica se pelea igual.
 import * as THREE from 'three';
 import { Luchador, IA, LINEAS_DIRECCIONAL as LINEAS, ESPEJO, NOMBRE_ZONA, angulo, difAngulo, RITMO, azar } from '../combate/logica.js';
 import { crearCombatiente, ponerArma, animarCombatiente, pintarHeridas, sacudir, Rastro } from '../combate/modelos.js';
@@ -319,9 +321,11 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
       herida: tr('Hieres al rival: {g} en {z}', { g, z }), parada: tr('El rival para tu golpe'),
       'parada perfecta': tr('El rival para en el momento justo: quedas descolocado'), 'golpe maestro': tr('¡Golpe maestro del rival! Desvía el tuyo'),
       fallo: tr('Golpe al aire: fuera de alcance'),
+      'tierras del rey': tr('Tierras del rey: aquí no puedes herir a otro jugador'),
     } : {
       herida: tr('Te hieren: {g} en {z}', { g, z }), parada: tr('Paras el golpe'), 'parada perfecta': tr('¡Parada perfecta! Contraataca ya'),
       'golpe maestro': tr('¡Golpe maestro! Desvías su golpe y el tuyo entra'), fallo: tr('El rival golpea al aire'),
+      'tierras del rey': tr('Tierras del rey: su golpe no te hiere'),
     };
     if (textos[res.resultado]) decir(textos[res.resultado]);
   }

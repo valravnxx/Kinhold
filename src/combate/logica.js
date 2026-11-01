@@ -550,7 +550,8 @@ export function zonaPorAltura(l, y, lateral) {
   return 'cabeza';
 }
 // Avanza un proyectil; devuelve { tipo: 'suelo' } o { tipo: 'blanco', luchador, zona, ... } o null
-export function moverProyectil(p, dt, blancos, r, dianas = []) {
+// protegido (opcional): (L) → motivo o null. A quien protege, la flecha llega pero no le hiere (se para ahí).
+export function moverProyectil(p, dt, blancos, r, dianas = [], protegido = null) {
   if (!p.activo) return null;
   const pasos = Math.max(1, Math.ceil(Math.hypot(p.vx, p.vy, p.vz) * dt / 0.15));
   const h = dt / pasos;
@@ -563,6 +564,8 @@ export function moverProyectil(p, dt, blancos, r, dianas = []) {
       const ex = p.x - L.x, ez = p.z - L.z;
       if (Math.hypot(ex, ez) <= 0.3 && p.y > 0 && p.y < 1.8) {
         p.activo = false;
+        const motivo = protegido ? protegido(L) : null;
+        if (motivo) return { tipo: 'protegido', luchador: L, motivo };
         if (L.paraConEscudo(p.vx, p.vz)) {
           L.cansancio = Math.min(100, L.cansancio + T.costeParada * T.factorEscudo);
           return { tipo: 'escudo', luchador: L };
