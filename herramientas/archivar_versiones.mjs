@@ -20,7 +20,7 @@ export const RECIENTES = 5;
 // versiones que se quedan siempre en la web: la prueba de estilo aprobada, referencia de todo lo que se ve
 export const FIJAS = { estilo: ['v5'] };
 export const REPO = 'valravnxx/Kinhold';
-export const WEB = 'https://valravnxx.github.io/Kinhold/';
+export const WEB = 'https://playkinhold.com/';
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const rutaRoadmap = join(raiz, 'proyecto', 'roadmap.json');
 

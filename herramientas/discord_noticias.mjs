@@ -17,7 +17,7 @@
 import { execFileSync } from 'child_process';
 import { readFileSync } from 'fs';
 
-export const WEB = 'https://valravnxx.github.io/Kinhold/';
+export const WEB = 'https://playkinhold.com/';
 export const REPO = 'valravnxx/Kinhold';
 export const ICONO = WEB + 'recursos/marca/v1/icono_k_192.png';
 export const MAX_MENSAJES = 8;
