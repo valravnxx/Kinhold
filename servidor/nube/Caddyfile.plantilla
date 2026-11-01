@@ -1,6 +1,6 @@
 # Caddy delante del servidor del juego (lo rellena instalar.sh). Pone el certificado HTTPS solo
 # (Let's Encrypt y, si falla, ZeroSSL) para que la web pública, que va por HTTPS, pueda conectar con wss://.
-@@DOMINIO@@ {
+@@DOMINIOS@@ {
 	# El juego conecta por WebSocket: eso va al servidor de Kinhold, que solo escucha dentro de la máquina.
 	@juego {
 		header Connection *Upgrade*

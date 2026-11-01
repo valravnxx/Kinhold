@@ -8,3 +8,4 @@ Se hace cuando el hito P3 «De nada a una casa» llegue a revisión (o antes si 
 
 - Fintas en el móvil: casi imposibles sin jugar con dos dedos (1 nov, para más adelante).
 - El carril B: si se vuelve a encender cuando haya cosas que puedan ir en paralelo.
+- ¿Repositorio privado? Hoy es público: la web en GitHub Pages y las pruebas en la nube son gratis por eso. Privado: Pages pide GitHub Pro y las pruebas en la nube quedan en 3.000 minutos al mes (con el PC de valravnx, sin límite). No hay claves en el repositorio.
