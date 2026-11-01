@@ -1054,7 +1054,9 @@
     },
     {
      "nombre": "Cuello de la ropa con toca en el móvil (visto en la revisión del 31 oct, noche): con la calidad ligera el borde del cuello sale en dientes de sierra y entre la toca y el cuello asoma una cuña de piel",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-01T01:52:36+00:00",
+     "rama": "trabajo/20261101-0152"
     },
     {
      "nombre": "Revisión completa y publicación",
