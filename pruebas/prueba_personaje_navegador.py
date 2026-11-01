@@ -14,7 +14,7 @@ sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v22'), f'{sitio}/recursos/personajes/taller-v22')
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v23'), f'{sitio}/recursos/personajes/taller-v23')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v1'), f'{sitio}/recursos/personajes/taller-carga-v1')  # las de cargar del taller
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-anim-v1'), f'{sitio}/recursos/personajes/taller-anim-v1')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
@@ -125,6 +125,12 @@ with sync_playwright() as p:
             pg.click('[data-vista="cara"]'); pg.evaluate(f'{E}.instante(1.0)')
             png = pg.screenshot(path=f'{SALIDA}/{nombre}_taller_{sexo}_cara.png')
             comprobar(f'taller propio ({sexo}): se ve la cara', se_ve(pg, png) > 4, f'{se_ve(pg, png):.1f}')
+            # bordes recortados sin dientes (revisión del 31 oct, noche: en el móvil el escote salía a dientes de sierra):
+            # todas las piezas recortadas (escote, mangas, cofia, pelo) leen la transparencia entera y usan alpha to coverage
+            rec = pg.evaluate(f"""(() => {{ let n = 0, bien = 0; {E}.diag().pj.modelo.traverse(o => {{ if (o.isMesh && o.material.alphaTest > 0) {{
+                n++; if (o.material.alphaToCoverage && o.material.userData.recorteSuave && o.material.customProgramCacheKey().endsWith('-recorte')) bien++; }} }}); return [n, bien]; }})()""")
+            if os.environ.get('MUTAR'): rec = [rec[0], rec[1] - 1]
+            comprobar(f'taller propio ({sexo}): los bordes recortados, suavizados', rec[0] > 5 and rec[0] == rec[1], f'{rec[1]} de {rec[0]} piezas')
             # postura al estar quieto (valravnx: «doblado hacia delante», «hombros muy para atrás»): cabeza y hombros sobre la pelvis
             pg.evaluate(f"{E}.ponerModo('quieto')"); pg.evaluate(f'{E}.instante(1.0)')
             post = pg.evaluate(f"""(() => {{ const d = {E}.diag(), h = d.pj.hueso, v = (n) => {{ const p = new d.THREE.Vector3(); h[n].getWorldPosition(p); return d.pj.modelo.worldToLocal(p); }};

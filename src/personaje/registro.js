@@ -1,6 +1,8 @@
 // Decisiones tomadas en el personaje, para revisar.
-export const VERSION_PERSONAJE = 'Personaje · v35 (cejas, bigote y barba en el cuello)';
+export const VERSION_PERSONAJE = 'Personaje · v36 (cofia y escote sin dientes)';
 export const REGISTRO_PERSONAJE = [
+  'v36: los bordes que van recortados en la textura (el escote, las mangas, la cofia, la toca, el pelo) ya no salen en dientes de sierra cuando se ven pequeños o con poca resolución, como en el móvil: la forma del borde se lee siempre de la textura entera y se suaviza con el antialias de la pantalla.',
+  'v36: la cofia de la mujer baja hasta 3 cm por debajo del cuello y queda metida bajo el escote: entre la cofia y el vestido ya no asoma una cuña de piel. Personajes en recursos/personajes/taller-v23/.',
   'v35: de cerca, las cejas ya no se cortan en escalones rectos: la malla sobre la que se pintan no llegaba a todo lo pintado (un punto justo fuera de la ceja quitaba su cuadro). Ahora coge entero cada cuadro donde se pinta algo, y la textura de las cejas pasa a 1024.',
   'v35: la barba corta, donde clarea (el cuello y el borde de las mejillas), son pelos sueltos y oscuros con la piel limpia entre ellos, en vez de una neblina medio transparente que salía gris, «como escarcha». El bigote baja algo más por los lados y se une a la barba en las comisuras, con mechones de distinto grueso y tono.',
   'v35, aún mal: de muy cerca, los pelos sueltos de la barba salen algo gruesos y de borde duro, como trazos de pincel; el bigote sigue siendo una banda bastante lisa; el cuello bajo la barbilla sale muy iluminado, sin la sombra del mentón.',
