@@ -108,9 +108,9 @@
     },
     {
      "nombre": "Las pruebas en el PC de valravnx, en el disco D (valravnx, 31 oct): todo lo que guardan va a D en vez de al SSD de Windows, y el programa limpia lo que dejaron en C",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T23:50:39+00:00",
-     "rama": "trabajo/20261031-2350-disco-d"
+     "fin": "2026-11-01T00:05:20+00:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
