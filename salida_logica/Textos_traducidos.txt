@@ -1,0 +1,14 @@
+Textos del juego: 1096; sin traducir (en): 6; con variables distintas: 0
+  FALTA (en)  v37: el bigote es más fino y menos abombado, y acaba un poco más arriba: ya no tapa el borde del labio con una banda oscura de borde duro. Su punta se deshace en pelos sueltos de distinto largo en unos 3 mm, y las puntas son algo más claras.
+  FALTA (en)  v37: bajo la barbilla, la barba ya no pasa de golpe de un bloque oscuro a motas grises: lo tupido acaba siguiendo los pelos y se va aclarando más despacio, de 1,5 cm por encima del cuello a 5 cm por debajo (casi todo bajo la ropa), con la piel algo más oscura entre los pelos sueltos. Personajes en recursos/personajes/taller-v24/ (la mujer, igual que en la v23).
+  FALTA (en)  v37, aún mal: en las comisuras el bigote aún cae como dos colas oscuras; justo encima del cuello de la ropa quedan algunos pelos sueltos sobre la piel clara.
+  FALTA (en)  Personaje · v37 (bigote y barba del cuello)
+  FALTA (en)  v85: en «Personaje» y en el juego, el bigote es más fino y ya no tapa el borde del labio con una banda oscura, y bajo la barbilla la barba se va aclarando poco a poco hasta la ropa en vez de pasar de golpe de un bloque oscuro a motas grises. Personajes en recursos/personajes/taller-v24/.
+  FALTA (en)  Demo única · v85 (bigote y barba del cuello)
+Textos del juego: 1096; sin traducir (ru): 6; con variables distintas: 0; sin cirílico: 0
+  FALTA (ru)  v37: el bigote es más fino y menos abombado, y acaba un poco más arriba: ya no tapa el borde del labio con una banda oscura de borde duro. Su punta se deshace en pelos sueltos de distinto largo en unos 3 mm, y las puntas son algo más claras.
+  FALTA (ru)  v37: bajo la barbilla, la barba ya no pasa de golpe de un bloque oscuro a motas grises: lo tupido acaba siguiendo los pelos y se va aclarando más despacio, de 1,5 cm por encima del cuello a 5 cm por debajo (casi todo bajo la ropa), con la piel algo más oscura entre los pelos sueltos. Personajes en recursos/personajes/taller-v24/ (la mujer, igual que en la v23).
+  FALTA (ru)  v37, aún mal: en las comisuras el bigote aún cae como dos colas oscuras; justo encima del cuello de la ropa quedan algunos pelos sueltos sobre la piel clara.
+  FALTA (ru)  Personaje · v37 (bigote y barba del cuello)
+  FALTA (ru)  v85: en «Personaje» y en el juego, el bigote es más fino y ya no tapa el borde del labio con una banda oscura, y bajo la barbilla la barba se va aclarando poco a poco hasta la ropa en vez de pasar de golpe de un bloque oscuro a motas grises. Personajes en recursos/personajes/taller-v24/.
+  FALTA (ru)  Demo única · v85 (bigote y barba del cuello)
