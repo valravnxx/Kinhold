@@ -172,8 +172,8 @@ export class ObjetosServidor {
     if (!this.rastras.deAutor(autor, ahora)) return false;
     const p = this.posicion(autor);
     const o = this.rastras.deAutor(autor, ahora);
-    const r = this.rastras.soltar(this.invs.de(autor), autor, p ? p.x : o.x, p ? p.z : o.z, undefined, undefined, ahora, p && Number.isFinite(p.giro) ? p.giro : 0);
-    this.anotar({ autor, tipo: 'soltar_rastra', alSalir: true }, r, ahora);
+    const r = this.rastras.soltar(this.invs.de(autor), autor, p ? p.x : o.x, p ? p.z : o.z, undefined, undefined, ahora, p && Number.isFinite(p.giro) ? p.giro : 0, (x, z) => this.enTierras(autor, x, z));
+    this.anotar({ autor, tipo: o.cosa.tipo === 'carretilla' ? 'aparcar_carretilla' : 'soltar_rastra', alSalir: true }, r, ahora);
     return !!r.ok;
   }
 
