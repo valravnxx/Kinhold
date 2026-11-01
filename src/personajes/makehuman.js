@@ -146,6 +146,38 @@ function sombraCortada(u) {
   return m;
 }
 
+// ---- bordes recortados (escote, mangas, cofia, toca, pelo) sin dientes de sierra ----
+// El borde va en la transparencia de la textura (recorte en 0,5). Con las mipmaps, cuanto más pequeño se ve (en el móvil
+// la resolución baja hasta 0,5×), más borrosa es la transparencia que se lee y el borde sale ondulado y a dientes (visto
+// en la revisión del 31 oct). Por eso la transparencia se lee siempre de la textura entera (nivel 0, la forma exacta) y
+// el borde se suaviza un píxel con el antialias de la pantalla (alpha to coverage: el recorte se reparte entre las
+// muestras del píxel). Lo que se guarda en la transparencia de la pantalla no se toca (el lienzo es transparente y,
+// si no, el borde dejaba ver el fondo de la página como una línea blanca a trazos: por eso se descartó en la taller-v18).
+const RECORTE_GLSL = `
+#ifdef USE_ALPHATEST
+#ifdef USE_MAP
+  diffuseColor.a = opacity * textureLod( map, vMapUv, 0.0 ).a;
+#endif
+  float kh_fw = max( fwidth( diffuseColor.a ), 1e-4 );
+  diffuseColor.a = clamp( ( diffuseColor.a - alphaTest ) / kh_fw + 0.5, 0.0, 1.0 );
+  if ( diffuseColor.a == 0.0 ) discard;
+#endif
+`;
+function ponerRecorteSuave(material) {
+  if (!(material.alphaTest > 0) || material.userData.recorteSuave) return;
+  material.userData.recorteSuave = true;
+  const antes = material.onBeforeCompile, clave = material.customProgramCacheKey;
+  material.onBeforeCompile = (sh, r) => {
+    if (antes) antes(sh, r);
+    sh.fragmentShader = sh.fragmentShader.replace('#include <alphatest_fragment>', RECORTE_GLSL);
+  };
+  const k = clave ? clave.call(material) : '';
+  material.customProgramCacheKey = () => k + '-recorte';
+  // alpha to coverage, y en la transparencia de la pantalla se queda lo que hubiera (o se suma): sin mezclar el color
+  Object.assign(material, { alphaToCoverage: true, blending: THREE.CustomBlending, blendEquation: THREE.AddEquation,
+    blendSrc: THREE.OneFactor, blendDst: THREE.ZeroFactor, blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneFactor });
+}
+
 // ---- la capa se mueve al andar (tela sencilla, sin simulación) ----
 // Lo habitual en juegos sin simulación de tela: la capa va con la espalda y la pelvis (taller-v15) y, encima, el
 // sombreado la desplaza en cada vértice según su altura (nada en los hombros; más cuanto más abajo, al cuadrado, como un
@@ -463,6 +495,8 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   ponerAspecto(o.aspecto);
   ponerHechuras(o.hechuras);
   ponerTintes(o.tintes);
+  // los bordes recortados, sin dientes (después de los demás sombreados, que se encadenan)
+  modelo.traverse(n => { if (n.isMesh) ponerRecorteSuave(n.material); });
   // niveles de detalle (detalle.js): ponerNivel(n) y, envueltas, las funciones de arriba para rehacer la malla de lejos
   await prepararDetalle(resultado);
   return resultado;
