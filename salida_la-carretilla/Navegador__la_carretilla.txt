@@ -1,0 +1,40 @@
+PC: la carretilla sale del arcón al suelo y se carga
+  OK   del arcón sale la carretilla al suelo, delante de ti — La carretilla está en el suelo, delante de ti: Usar la empuja.
+  OK   no desaparece
+  OK   tiene su rueda de rodaja de tronco
+  OK   no se coge con las manos
+  OK   el menú ofrece empujarla y cargar 4 de la pila (caben 4) — ['Empujar la carretilla (vacía)', 'Cargar en la carretilla: 4 × Tronco corto']
+  OK   lleva 4 troncos cortos y queda 1 en la pila — Cargas en la carretilla: 4 × Tronco corto. Lleva 4.
+  OK   la carga se ve en la caja
+  OK   cargar queda en el registro con su autor
+PC: empujarla
+  OK   con algo en las manos no se empuja — Para empujarla necesitas las dos manos libres.
+  OK   con las manos libres, Usar la empuja — Empujas la carretilla (4 × Tronco corto). Usar la aparca.
+  OK   con cuatro troncos vas al 65 % (más que con la rastra llena) — 0.65
+  OK   abajo sale «Empujas: Carretilla» con Aparcar
+  OK   al andar, la carretilla va delante (a 1,4 m) — 1.40
+  OK   delante de verdad: hacia donde anda
+  OK   la rueda rueda al avanzar (unos 6 m: 25 rad) — 25.0
+  OK   las varas suben a las manos
+  OK   el personaje la empuja con la animación de empujar (no la de llevar en brazos) — empujarQuieto
+  OK   la carretilla va poco levantada (menos de 25°)
+     puños y agarraderas: [['middle_01_l', 0.053, 0.853, 0.89], ['middle_01_r', 0.053, 0.853, 0.89]]
+  OK   las agarraderas quedan en los puños (a menos de 8 cm de los nudillos), quieto — [['middle_01_l', 0.053, 0.853, 0.89], ['middle_01_r', 0.053, 0.853, 0.89]]
+  OK   empujándola no se coge nada con las manos
+PC: aparcarla y volver
+  OK   Usar la aparca donde se ve — 7.6,4 / [7.600000000000005, 4]
+  OK   fuera de tus tierras avisa de que cualquiera puede coger lo que lleva — Aparcas la carretilla fuera de tus tierras: cualquiera puede coger lo que lleva.
+  OK   aparcada, descansa en las patas
+  OK   y vuelves a andar a tu paso
+  OK   al recargar sigue donde la dejaste, con lo que lleva
+  OK   descargada, los 4 troncos caen a su lado — Descargas la carretilla: 4 × Tronco corto en el suelo.
+  OK   la leña va en la carretilla — Cargas en la carretilla: 30 × Leña. Lleva 30.
+  OK   sin errores en la consola (PC)
+Móvil: desde el panel y con los botones
+  OK   móvil: en el arcón, la carretilla sale con «Dejarlo en el suelo»
+  OK   móvil: la deja en el suelo
+  OK   móvil: el botón Usar la empuja — Empujas la carretilla (vacía). Usar la aparca.
+  OK   móvil: «Aparcar» de abajo la deja — Aparcas la carretilla fuera de tus tierras: cualquiera puede coger lo que lleva.
+  OK   sin errores en la consola (móvil)
+
+TODO CORRECTO
