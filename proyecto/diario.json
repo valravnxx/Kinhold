@@ -3491,7 +3491,7 @@
    "El flujo de pruebas, en Windows: lo temporal va a la carpeta temporal de cada trabajo, que el programa de GitHub vacía al acabar, y el navegador de las pruebas y las cachés de pip y npm, junto al programa de GitHub (en su disco).",
    "El programa de la gráfica guarda en D:\\KinholdGrafica (o en la carpeta que se elija en la ventana): el programa de GitHub, su trabajo, lo temporal, el navegador y las cachés. Al abrirlo, si encuentra en C lo de la versión anterior, pregunta y lo pasa a D (el programa de GitHub ya unido, sin pedir otra vez el código) y borra de C la carpeta de antes, el navegador de las pruebas y las carpetas temporales que se reconocen como suyas; la caché de pip la pregunta aparte. «Liberar el disco de Windows» lo vuelve a mirar.",
    "Prueba nueva del programa en Windows PowerShell 5.1 (probar_programa.ps1, en una máquina windows-latest de la nube, con carpetas de prueba): 12 comprobaciones bien, también rutas de más de 260 letras y que no toca lo ajeno; rota a propósito (sin pasar el programa de GitHub), falla.",
-   "No comprobado en su PC: con el disco lleno, el programa de GitHub no puede ni empezar (falla al descargar el paso de checkout); la prueba de cavar se repitió sola en la nube, bien. Hace falta que ponga el programa nuevo."
+   "Comprobado en su PC después de poner el programa nuevo (00:12): el programa de GitHub pasó a D:\\KinholdGrafica sin pedir otra vez el código, y la prueba de cavar fue bien con su tarjeta, con todo en D (el trabajo, lo temporal, el navegador de las pruebas y las cachés)."
   ],
   "pruebas": "probar_programa.ps1 en Windows (nube): 12/12, y rota falla. Flujo de pruebas: cavar en la nube, bien; en su PC no se puede probar hasta liberar el disco.",
   "capturas": "",
