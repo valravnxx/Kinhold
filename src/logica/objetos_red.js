@@ -15,7 +15,8 @@
 //   { tipo: 'talar', arbol, x, z, ax, az, edad }  — un golpe de hacha a un árbol (src/logica/tala.js); lo que deja cae al suelo
 //   { tipo: 'trocear', objeto, x, z }             — un golpe de hacha a un tronco del suelo (src/logica/troceo.js)
 //   { tipo: 'recoger', punto, x, z, px, pz, clase, a? } — recoger del suelo o de una planta (src/logica/recoleccion.js)
-//   { tipo: 'enganchar_rastra' | 'soltar_rastra' | 'cargar_rastra' | 'descargar_rastra', … } — la rastra (src/logica/rastra.js);
+//   { tipo: 'enganchar_rastra' | 'soltar_rastra' | 'cargar_rastra' | 'descargar_rastra', … } — la rastra (src/logica/rastra.js),
+//   y las mismas de la carretilla (empujar_carretilla, aparcar_carretilla, cargar_carretilla, descargar_carretilla);
 //     al soltarla, si el sitio que dice el navegador no vale, se deja detrás de donde el servidor tiene al autor
 //   { tipo: 'arcon_al_suelo', objeto: 'rastra', x, z } — del arcón de pruebas al suelo (solo con arconPruebas)
 //   { tipo: 'coger', objeto, cantidad, a, … } y { tipo: 'soltar', de } — el arcón de pruebas del panel (solo con
