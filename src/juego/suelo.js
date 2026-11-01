@@ -15,6 +15,7 @@ import { cil } from '../mundo/decorado.js';
 import { modelosRecoleccion } from './recoleccion.js';
 import { modeloHacha } from './personaje.js';
 import { modeloRastra } from './rastra.js';
+import { modeloCarretilla } from './carretilla.js';
 import { Suelo, cargarSuelo, guardarSuelo, ejecutarSuelo } from '../logica/suelo.js';
 import { CATALOGO } from '../logica/inventario.js';
 
@@ -67,6 +68,7 @@ function hatillo(grande, id) { // un paño de lino con las cuatro puntas atadas 
 function modeloDe(o) {
   const t = o.cosa.tipo, n = o.cosa.n, mods = modelosRecoleccion();
   if (t === 'rastra') return modeloRastra(o.cosa.carga || null, o.id);
+  if (t === 'carretilla') return modeloCarretilla(o.cosa.carga || null, o.id);
   if (t === 'rama') return deLista(mods.ramas);
   if (t === 'silex') return deLista(mods.silex);
   if (t === 'piedra') { // montón: más ancho y más alto cuantas más

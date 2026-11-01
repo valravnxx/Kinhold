@@ -3643,5 +3643,22 @@
   "pruebas": "Batería entera en el PC de valravnx y en la nube (sin las de en línea): todo bien salvo tres grupos. «Lógica» y «demo única» fallaron por las traducciones al ruso y al inglés de los textos nuevos del registro: añadidas, y en la nube pasan. «La demo en el mundo» falló en el PC de valravnx en «andando hacia el mar, avanza» (andado 0 m), sin servidor, y en la nube con el mismo código pasó: no toca nada de este cambio y queda anotada como frágil en el PC, como en la sesión anterior. Tras unir main (solo trajo diario, roadmap, traducciones y capturas del hito de arte) no se ha vuelto a pasar. No comprobado: el servidor de Hetzner con este cambio ni dos navegadores en línea (las pruebas en línea no se pasan).",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T06:29:15+00:00",
+  "fin": "2026-11-01T07:45:45+00:00",
+  "titulo": "Hito 2: la carretilla de rueda maciza (demo v85, carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "La carretilla va con la misma lógica que la rastra, como otro vehículo de mano: se empuja con las dos manos libres, se aparca donde está con lo que lleve, se carga y se descarga; acciones con autor y nombre propio en el registro (empujar, aparcar, cargar y descargar la carretilla), también por el servidor.",
+   "Protegida en tus tierras: aparcada dentro de las tierras del que la aparca, queda a su guarda y nadie más puede empujarla, cargarla ni descargarla; aparcada fuera, cualquiera coge lo que lleva. La guarda se guarda en el servidor y vuelve al arrancarlo.",
+   "Decisiones provisionales (en el registro de la demo): una clase de cosa a la vez, hasta 4 troncos cortos, 40 de leña, 36 piedras o un bloque; la velocidad baja del 85 % (vacía) al 65 % (100 kg); va 1,4 m por delante del que la empuja.",
+   "Modelo con el estilo v5: la rueda es una rodaja de tronco (anillos en las caras, corteza en el canto, eje de palo), dos varas largas con agarraderas de cordel, la caja de tablas hendidas atada a las varas y dos patas. Empujándola gira sobre el eje hasta que las agarraderas llegan a las manos (medido en el navegador: a 9–11 cm de la muñeca) y la rueda rueda con lo que avanza.",
+   "Aún mal: no hay animación de empujar; el personaje la lleva con la de llevar algo en brazos, con las manos a la altura del pecho, así que la carretilla va muy levantada (unos 29°) y los brazos abiertos. Tarea nueva en el hito para hacerla en el taller.",
+   "Pruebas nuevas: lógica de la carretilla (40 comprobaciones; con MUTAR=1, sin protección, fallan 13) y de navegador en PC y móvil (con MUTAR=1 no se deja empujar y falla)."
+  ],
+  "pruebas": "Batería entera en el PC de valravnx y en la nube: 28 de 28 grupos correctos. Tras unir main (demo v84 del carril B), otra vez lógica, la carretilla, la rastra, la demo, la demo en el mundo, objetos en el suelo y el panel de inventario: 7 de 7 correctos",
+  "capturas": "capturas/demo-v85",
+  "estado": "ok"
  }
 ]
