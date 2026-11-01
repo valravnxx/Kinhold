@@ -94,7 +94,8 @@ with sync_playwright() as p:
         comprobar('el rival no atraviesa los árboles', arbol is not None and arbol['d'] >= arbol['r'] - 0.01, json.dumps(arbol))
         # un cortado: un paso que sube más de lo que se anda no se da
         cortado = pg.evaluate(f"""(() => {{ const k = {K}, m = k.mundoJ;
-          for (let r = 10; r < 1500; r += 5) for (let a = 0; a < 6.283; a += 5 / r) {{
+          // (por anillos, cada vez más lejos: según la salida, el primer cortado puede estar a varios kilómetros)
+          for (let r = 10; r < 12000; r += r < 1500 ? 5 : 20) for (let a = 0; a < 6.283; a += (r < 1500 ? 5 : 20) / r) {{
             const x = Math.cos(a) * r, z = Math.sin(a) * r;
             for (let b = 0; b < 8; b++) {{ const ux = Math.cos(b * 0.785), uz = Math.sin(b * 0.785);
               if (m.dentro(x, z) && !m.andable(x, z, x + ux * 0.5, z + uz * 0.5) && m.dentro(x + ux * 0.5, z + uz * 0.5) && m.altura(x + ux * 0.5, z + uz * 0.5) > m.altura(x, z)) {{
