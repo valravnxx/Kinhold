@@ -29,6 +29,7 @@ import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
 import { Mundo, RADIO_MOJON, MAX_RATO } from '../src/logica/construccion.js';
 import { RegistroAcciones, ejecutar } from '../src/logica/acciones.js';
+import { ponerComun } from '../src/logica/obras_red.js';
 import { LINEAS_DIRECCIONAL, ESPEJO } from '../src/combate/logica.js';
 
 export const FASE = 20;          // s de cada fase (andar, construir, pelear)
@@ -49,9 +50,15 @@ export function azar(semilla) {
 // visto todas las anteriores.
 export class EspejoMundo {
   constructor() { this.mundo = new Mundo(); this.registro = new RegistroAcciones(1); this.ultimo = 0; this.avisos = new Map(); }
-  meter(e) {
+  // la foto de las obras de la bienvenida (src/logica/obras_red.js), con el número de la última acción que lleva
+  foto(obras, n) {
+    if (!obras || !Number.isInteger(n) || n < this.ultimo) return;
+    this.mundo = Mundo.importar(obras); this.ultimo = n;
+  }
+  meter(e, antes = null) {
     if (!e || !e.ok || !(e.n > this.ultimo)) return;
     this.ultimo = e.n;
+    if (antes) ponerComun(this.mundo, antes);
     const r = ejecutar(this.mundo, this.registro, { autor: e.autor, tipo: e.tipo, ...e.datos });
     const aviso = this.avisos.get(e.autor);
     if (aviso) aviso(e, r);
@@ -119,9 +126,10 @@ export class Bot {
     switch (msg.tipo) {
       case 'bienvenida':
         this.yo = msg.autor;
-        for (const e of msg.entradas) E.meter(e);
+        if (msg.obras) E.foto(msg.obras, msg.n);
+        else for (const e of msg.entradas || []) E.meter(e);
         break;
-      case 'accion': E.meter(msg.entrada); break;
+      case 'accion': E.meter(msg.entrada, msg.antes); break;
       case 'resultado': {
         const e = this.esperando.get(msg.id);
         if (!e) break;

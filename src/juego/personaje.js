@@ -195,7 +195,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     if (j.arrastra && j.mh.acciones.arrastrar) {
       ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'arrastrar';
     // empujando la carretilla (src/juego/carretilla.js): los brazos delante, en las varas, como al llevar algo en brazos
-    // (decisión provisional, v84: aún no hay una animación de empujar hecha en el taller)
+    // (decisión provisional, v85: aún no hay una animación de empujar hecha en el taller)
     } else if (j.empuja && j.mh.acciones.cargar) {
       ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'cargar';
     } else if (j.cargaDos && m !== 'talar' && j.mh.acciones.cargar) { m = 'cargar'; if (velocidad <= 0.1) ritmo = 0; }

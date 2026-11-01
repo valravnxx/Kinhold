@@ -9,9 +9,9 @@
 //
 // Mensajes (JSON):
 //   cliente → servidor   { tipo: 'accion', id, accion: { tipo, ...datos } }
-//   servidor → cliente   { tipo: 'bienvenida', autor, entradas }       al conectar: lo que ha salido bien hasta ahora
+//   servidor → cliente   { tipo: 'bienvenida', autor, obras }          al conectar: el mundo de construcción de sus trozos (abajo)
 //                        { tipo: 'resultado', id, ok, motivo? }         respuesta al que la mandó
-//                        { tipo: 'accion', entrada }                    a todos, cuando una acción sale bien
+//                        { tipo: 'accion', entrada, antes }             cuando una acción sale bien (a quien tiene su trozo)
 //                        { tipo: 'error', motivo }                      mensaje que no se entiende
 //   Presencia (src/logica/presencia.js): el cliente manda { tipo: 'estado', x, y, z, giro, anim } unas 10 veces
 //   por segundo; el servidor le pone el autor y su hora, y cada tic (100 ms) manda a cada uno los que han
@@ -39,6 +39,11 @@
 //   Por trozos (src/logica/trozos_red.js): lo del suelo, lo talado y lo recogido llega solo de los trozos que cada uno
 //   tiene alrededor (la bienvenida, los de donde aparece). Al cambiar de trozo le llega { tipo: 'trozos', entran,
 //   tala, recoleccion, suelo } (lo talado y lo recogido de los trozos que le entran, y el suelo de todos los suyos).
+//   Las obras, la decoración y lo alisado (src/logica/obras_red.js): la bienvenida lleva obras (la foto del mundo de
+//   construcción con solo lo de sus trozos) en vez de todas las entradas, y al cambiar de trozo le llega { tipo: 'obras',
+//   obras } con la de sus trozos nuevos (también si la pide, { tipo: 'obras' }: el navegador lo hace si una acción que le
+//   llega no le sale igual). { tipo: 'accion', entrada, antes } va solo a quien tiene su trozo (y al autor); las de todo
+//   el mundo (mojón, arcón), a todos. «antes»: el contador de ids, el arcón y el mojón justo antes de hacerla.
 //   'tala' y 'recoleccion' llevan solo lo de su trozo y solo a quien lo tiene; 'suelo', lo de los trozos de cada uno.
 //   El navegador junta lo que le llega de lo talado y lo recogido con lo que ya tenía. 'coger' y 'soltar' son el arcón de
 //   pruebas (arconPruebas, sí por ahora). Se guarda entero en objetos.json junto al mundo, y cada acción (bien o mal)
@@ -85,6 +90,7 @@ import { ObjetosServidor } from '../src/logica/objetos_red.js';
 import { validarPeticionAdmin, sitioJunto, listaJugadores, claveUsable, ADMIN_FALLOS } from '../src/logica/admin.js';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { VistaTrozos, trozoDe, LADO_RED, RADIO_RED } from '../src/logica/trozos_red.js';
+import { sitioAccion, sitioColocada, comunDe, obrasEnTrozos } from '../src/logica/obras_red.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -122,7 +128,6 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const mundo = reproducir(previas);
   const registro = new RegistroAcciones();
   registro.total = previas.reduce((m, e) => Math.max(m, e.n || 0), 0);
-  const hechas = previas.filter(e => e.ok);   // lo que se manda a cada cliente nuevo
 
   // fichas: resumen (sha256) → autor
   const fichas = new Map();
@@ -262,7 +267,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     vista.quitar(autor);
     { const p = posiciones.get(autor); vista.mover(autor, p ? p.x : 0, p ? p.z : 0); }
     const suyos = vista.trozosDe(autor);
-    enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, entradas: hechas, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
+    enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, obras: obrasEnTrozos(mundo, suyos), n: registro.total, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
       aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true),
       inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now(), suyos), tala: objetos.talaVisible(suyos), recoleccion: objetos.recoleccionVisible(suyos),
       trozos: { lado: LADO_RED, radio: RADIO_RED }, posicion: posiciones.get(autor) || null });
@@ -306,10 +311,12 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           if (entran.length) {
             const nuevos = new Set(entran);
             enviar(ws, { tipo: 'trozos', entran, tala: objetos.talaVisible(nuevos), recoleccion: objetos.recoleccionVisible(nuevos), suelo: objetos.sueloVisible(Date.now(), vista.trozosDe(autor)) });
+            enviar(ws, { tipo: 'obras', obras: obrasEnTrozos(mundo, vista.trozosDe(autor)) });
           }
         }
         return;
       }
+      if (msg && msg.tipo === 'obras') return enviar(ws, { tipo: 'obras', obras: obrasEnTrozos(mundo, vista.trozosDe(autor)) });
       if (msg && msg.tipo === 'combate') {
         // el autor es el de la conexión; lo que diga el mensaje no cuenta
         ponerAlDia();
@@ -389,10 +396,12 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       // con el terreno, las obras se miran contra él (la planta baja, solo si empieza una construcción nueva)
       const nueva = accion.tipo !== 'colocar' || !Number.isFinite(accion.x) || !Number.isFinite(accion.z) || !mundo.construccionCercana(accion.x, accion.z);
       const contraTerreno = terreno && nueva ? terreno.obra(accion, mundo.marcasNivelado()) : null;
+      // dónde cae (antes de hacerla: desmontar puede quitar la construcción) y lo de todos tal como estaba
+      const sitioAntes = sitioAccion(mundo, accion), antes = comunDe(mundo);
       const r = sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
       if (sinArcon || contraTerreno) registro.anotar(accion, r);
       const entrada = registro.entradas[registro.entradas.length - 1];
-      registro.entradas.length = 0;   // lo guardado va al archivo; en memoria basta con «hechas»
+      registro.entradas.length = 0;   // lo guardado va al archivo; en memoria basta con el mundo
       appendFileSync(archivo, JSON.stringify(entrada) + '\n');
       if (usaInventario && r.ok) guardarObjetos();
       enviar(ws, { tipo: 'resultado', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? {} : { motivo: r.motivo }) });
@@ -400,8 +409,10 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       if (usaInventario) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
       if (usaInventario && r.ok) repartirLlevado(autor);
       if (r.ok) {
-        hechas.push(entrada);
-        for (const otro of clientes.keys()) enviar(otro, { tipo: 'accion', entrada });
+        // solo a quien tiene su trozo alrededor (y al autor); lo que no tiene sitio, a todos
+        const sitio = accion.tipo === 'colocar' ? (sitioColocada(r) || sitioAntes) : sitioAntes;
+        const k = sitio ? trozoDe(sitio.x, sitio.z) : null;
+        for (const [otro, a] of clientes) if (!k || a === autor || vista.tiene(a, k)) enviar(otro, { tipo: 'accion', entrada, antes });
       }
     }
     ws.on('close', () => {

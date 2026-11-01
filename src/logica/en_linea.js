@@ -9,8 +9,15 @@
 // Sin acciones por confirmar, `mundo` es la misma base (no hay copia).
 //
 // El autor de cada acción lo pone el servidor; aquí se usa el de la bienvenida solo para la copia local.
+//
+// Por trozos (src/logica/obras_red.js): la base es solo lo de los trozos de alrededor. La bienvenida y cada cambio de
+// trozo traen la foto de esos trozos ({ tipo: 'obras' }), que pasa a ser la base; cada acción que llega trae «antes» (el
+// contador de ids, el arcón y el mojón del servidor justo antes), que se pone en la base antes de hacerla. Si aun así no
+// sale igual que en el servidor (algo de un trozo que aquí no está), se pide la foto otra vez. Con un servidor anterior,
+// que manda todas las entradas en la bienvenida y sin «antes», funciona como siempre.
 import { Mundo } from './construccion.js';
 import { RegistroAcciones, ejecutar, reproducir, USAN_INVENTARIO } from './acciones.js';
+import { ponerComun } from './obras_red.js';
 
 const copiar = (m) => Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
 
@@ -54,9 +61,17 @@ export class MundoEnLinea {
   recibir(msg) {
     if (msg.tipo === 'bienvenida') {
       this.yo = msg.autor;
-      this.base = reproducir(msg.entradas || []);
+      this.base = msg.obras ? Mundo.importar(msg.obras) : reproducir(msg.entradas || []);
       this.mundo = this.base; this.pendientes = []; this.caidas.clear();
       return { cambio: true };
+    }
+    if (msg.tipo === 'obras' && msg.obras) {
+      // la foto de los trozos de alrededor: si no cambia nada de lo que ya había, no hace falta redibujar
+      const nueva = Mundo.importar(msg.obras);
+      const igual = JSON.stringify(nueva.exportar()) === JSON.stringify(this.base.exportar());
+      this.base = nueva;
+      this.rehacer();
+      return { cambio: !igual };
     }
     if (msg.tipo === 'resultado') {
       if (this.caidas.delete(msg.id)) return msg.ok ? { cambio: false } : { cambio: false, rechazo: msg.motivo || 'El servidor no lo ha aceptado.' };
@@ -69,7 +84,10 @@ export class MundoEnLinea {
     }
     if (msg.tipo === 'accion' && msg.entrada) {
       const e = msg.entrada;
-      ejecutar(this.base, new RegistroAcciones(1), { autor: e.autor, tipo: e.tipo, ...e.datos });
+      if (msg.antes) ponerComun(this.base, msg.antes);
+      const r = ejecutar(this.base, new RegistroAcciones(1), { autor: e.autor, tipo: e.tipo, ...e.datos });
+      // en el servidor salió bien: si aquí no, falta algo de otro trozo; se pide la foto de los de alrededor
+      if (!r.ok && msg.antes) this.enviar({ tipo: 'obras' });
       const propia = e.autor === this.yo;
       if (!this.pendientes.length) {
         // sin nada propio por confirmar, lo que se ve es la base (una propia ya estaba en la copia: igual)
