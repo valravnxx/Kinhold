@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 1 nov 2026 (14:52–14:54 UTC+1) — por el chat: revisión, los árboles
+valravnx: que el árbol caiga por física y no por animación, haciendo daño a quien se ponga en medio; diferenciar más el joven del grande; los grandes un 30 % más altos («los árboles ahora son muy pequeños»). Aprobado lo propuesto («perfecto»): caída sobre el tocón con la física de un tronco que gira (hacia la boca que se corta; si no, hacia donde se inclina o cuesta abajo), crujido de aviso, daño que decide el servidor con su autor, en el roadmap justo después del primer tramo de fabricación; adultos un 30 % más altos y más gruesos; jóvenes de 3–5 m, finos y de copa rala, sobre todo en bordes, claros y lo que rebrota; el grande puede seguir costando con hacha de piedra (el joven es el de la primera casa).
+
 ### 1 nov 2026 (14:49 UTC+1) — por el chat: revisión, recetas, almacenaje y carga
 valravnx: «quitamos el aprender recetas, va; luego quiero almacenajes varios para la base; si llevas algo al hombro, olvídate de llevar nada en manos a la vez, ¿en qué mundo tendría eso sentido?; y hacerlo de modo que podamos quitar el modo arcón de objetos infinitos y el contador de materiales de la parte superior de la pantalla, o eso o adaptarlo: que al entrar en tu zona del mojón puedas ver, si es tuyo, qué materiales de construcción tienes almacenados». → Fuera el aprendizaje de recetas por práctica; almacenajes de la base (varios, por tipo); con algo al hombro, las manos libres no cargan nada; fuera el arcón infinito, y el contador de arriba solo dentro de tu tierra con lo que tienes almacenado en ella.
 
