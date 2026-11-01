@@ -1,0 +1,4 @@
+  File "D:\KinholdGrafica\runner\_work\Kinhold\Kinhold\pruebas\prueba_admin_navegador.py", line 91
+    f"{n} jugadores; «{pg.evaluate('document.querySelector(\"#panelAdmin .pa-estado\").textContent')}»")
+                                                                                                         ^
+SyntaxError: f-string expression part cannot include a backslash
