@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 1 nov 2026 (17:26 UTC+1) — por el chat: el código en la web
+valravnx: «me preocupa que en la web en documentos esté el código del juego, ¿es peligroso? yo lo quitaba». → Quitado el enlace al repositorio de la pestaña de documentos. El repositorio sigue público (GitHub Pages gratis y las pruebas en la nube gratis lo necesitan); no hay claves en él. Que sea privado se decide en la próxima reunión.
+
 ### 1 nov 2026 (15:11 UTC+1) — por el chat: salidas en la pradera, y se enciende el carril A
 valravnx, a la decisión de las salidas sin sílex cerca: «la b, quiero dentro del realismo tener accesibilidad, aunque en menor cantidad» → algo de piedra y sílex sueltos también en la pradera, en menor cantidad (tarea de P2). Aprobado el roadmap nuevo; se vuelve a encender solo el carril A.
 
