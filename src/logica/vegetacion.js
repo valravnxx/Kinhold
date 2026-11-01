@@ -19,6 +19,8 @@ const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a)
 export const CELDA = { arbol: 4.5, hierba: 0.85, piedra: 2.5 };
 const CAPA = { arbol: 1, hierba: 2, piedra: 3 };
 export const DENSIDAD_BOSQUE = 0.55;   // de cerca, la densidad de un bosque de verdad (la del mapa)
+export const TAM_ADULTO = 0.95;     // desde este tamaño (1 = adulto normal de su especie), el árbol es adulto al talarlo
+export const CLARO_ARBOLES = 8;     // m sin árboles alrededor del sitio de salida (el personaje empieza en (0, 4) de la escena)
 const PRADO = { pradera: 1, mixto: 0.8, caducifolio: 0.7, encinar: 0.55, taiga: 0.5, brezal: 0.6, matorral: 0.45, turbera: 0.8, alpino: 0.6 };
 const PASO_PEND = 3;                   // la pendiente, con vecinos a 3 m (la forma del terreno, no cada piedrecita)
 

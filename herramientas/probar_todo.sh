@@ -55,6 +55,7 @@ paso "Volver donde lo dejaste (posiciones en el servidor)" node pruebas/prueba_p
 paso "Panel del admin en el servidor (clave, ver a todos, teletransportarse)" node pruebas/prueba_admin_servidor.mjs
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
 paso "Inventario y suelo en el servidor, con dos clientes" node pruebas/prueba_objetos_servidor.mjs
+paso "El servidor conoce el mundo (árboles, recogida, posiciones y obras contra el terreno)" node pruebas/prueba_terreno_servidor.mjs
 paso "Obras con lo que llevas en línea, con dos clientes" node pruebas/prueba_obras_en_linea.mjs
 paso "Bots: jugadores simulados contra el servidor" node pruebas/prueba_bots.mjs
 paso "Terreno por trozos: anillos, bordes y faldones" node pruebas/prueba_trozos.mjs

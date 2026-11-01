@@ -78,6 +78,7 @@ import { CombateServidor } from '../src/logica/combate_servidor.js';
 import { Limitador, LIMITES } from '../src/logica/limites.js';
 import { ObjetosServidor } from '../src/logica/objetos_red.js';
 import { validarPeticionAdmin, sitioJunto, listaJugadores, claveUsable, ADMIN_FALLOS } from '../src/logica/admin.js';
+import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -96,7 +97,7 @@ export function leerArchivo(archivo) {
 }
 
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
-  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, claveAdmin = process.env.KINHOLD_ADMIN } = {}) {
+  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, claveAdmin = process.env.KINHOLD_ADMIN, terreno = null } = {}) {
   archivo = resolve(archivo);
   const archivoCombate = resolve(dirname(archivo), 'combate.jsonl');
   const archivoFichas = resolve(dirname(archivo), 'fichas.jsonl');
@@ -127,7 +128,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const objetos = new ObjetosServidor({
     posicion: (a) => { const e = presencia && presencia.ultimo.get(a); return e ? { x: e.x, z: e.z, giro: e.giro } : null; },
     enTierras: (a, x, z) => !!mundo.dentroDeTierra(x, z),
-    arconPruebas,
+    arconPruebas, terreno,
   });
   if (existsSync(archivoObjetos)) {
     try { objetos.importar(JSON.parse(readFileSync(archivoObjetos, 'utf8'))); } catch (e) { registrar(`objetos.json no válido, se empieza de cero: ${e && e.message}`); }
@@ -276,6 +277,11 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       if (!msg || typeof msg !== 'object' || Array.isArray(msg) || typeof msg.tipo !== 'string')
         return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
       if (msg && msg.tipo === 'estado') {
+        // con el terreno, dentro de la isla y cerca del suelo (en la liza del «Duelo» no: es una escena aparte)
+        if (terreno && !(combate.luchadores[autor] && combate.luchadores[autor].liza)) {
+          const e = validarEstado(msg), mal = e ? terreno.posicion(e) : null;
+          if (mal) return enviar(ws, { tipo: 'error', motivo: mal });
+        }
         if (!presencia.recibir(autor, msg, reloj())) return enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
         ponerAlDia();
         const e = validarEstado(msg);
@@ -353,8 +359,11 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       // las obras cobran de lo que llevas (los inventarios del servidor); el arcón de materiales, solo si hay arcón de pruebas
       const usaInventario = USAN_INVENTARIO.has(accion.tipo);
       const sinArcon = !arconPruebas && (accion.tipo === 'sacar_arcon' || accion.tipo === 'dejar_arcon');
-      const r = sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
-      if (sinArcon) registro.anotar(accion, r);
+      // con el terreno, las obras se miran contra él (la planta baja, solo si empieza una construcción nueva)
+      const nueva = accion.tipo !== 'colocar' || !Number.isFinite(accion.x) || !Number.isFinite(accion.z) || !mundo.construccionCercana(accion.x, accion.z);
+      const contraTerreno = terreno && nueva ? terreno.obra(accion, mundo.marcasNivelado()) : null;
+      const r = sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
+      if (sinArcon || contraTerreno) registro.anotar(accion, r);
       const entrada = registro.entradas[registro.entradas.length - 1];
       registro.entradas.length = 0;   // lo guardado va al archivo; en memoria basta con «hechas»
       appendFileSync(archivo, JSON.stringify(entrada) + '\n');
@@ -385,7 +394,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, archivo, archivoAdmin, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
+    wss, mundo, terreno, archivo, archivoAdmin, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
     cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticCombate); clearInterval(ticLatido); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };
@@ -395,6 +404,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const puerto = Number(process.argv[2]) || 8080;
   const archivo = process.argv[3] || 'servidor/mundo.jsonl';
-  const s = crearServidor({ puerto, archivo, registrar: t => console.log(new Date().toISOString(), t) });
+  // el mundo de verdad, con la misma semilla que el navegador (unos segundos al arrancar)
+  const t0 = Date.now(), terreno = terrenoWhitholm();
+  console.log(new Date().toISOString(), `Whitholm generado en ${Date.now() - t0} ms`);
+  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t) });
   s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones`));
 }
