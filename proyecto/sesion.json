@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-01T06:29:15+00:00",
+  "tarea": "Carretilla de rueda maciza (N1: la rueda es una rodaja de tronco): se empuja, se aparca y hace de contenedor; dentro de tus tierras está protegida y fuera cualquiera puede coger lo que lleva. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
+  "hito": "equipo",
+  "rama": "trabajo/20261101-0629"
+ },
  "B": {
   "inicio": "2026-11-01T05:52:47+00:00",
   "tarea": "Las obras y lo alisado con la brocha, también por trozo: la bienvenida y lo que cambia, solo lo de alrededor de cada jugador (en la v83 aún llegan todos); y cavar en el mundo en línea, guardado por trozo, cuando se haga",
