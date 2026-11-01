@@ -716,7 +716,9 @@
     },
     {
      "nombre": "Tronco al hombro (visto en la revisión del 1 nov): en el juego, el tronco corto al hombro va a la altura de la cabeza y la tapa entera (de lado, en PC y en el móvil, la cabeza queda dentro del tronco), y la mano sube al cuello en vez de sujetarlo. Tiene que ir apoyado sobre un hombro, al lado de la cabeza, con la mano encima. Capturas de cerca para valravnx",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-01T12:25:03+00:00",
+     "rama": "trabajo/20261101-1225"
     },
     {
      "nombre": "Revisión completa y publicación",
