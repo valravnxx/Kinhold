@@ -1552,5 +1552,8 @@
  "En la rastra solo van troncos cortos, piedras o un bloque de piedra.": "На волокушу кладут только короткие брёвна, камни или каменную глыбу.",
  "La rastra ya lleva otra cosa: descárgala antes.": "Волокуша уже везёт другое: сначала разгрузи её.",
  "La rastra va llena.": "Волокуша полная.",
- "La rastra va vacía.": "Волокуша пустая."
+ "La rastra va vacía.": "Волокуша пустая.",
+ "Demo única · v78 (pelear en línea en el mundo)": "Единое демо · v78 (бой онлайн в мире)",
+ "v78: pelear en línea en el mundo (valravnx, 31 oct: «sacábamos arma y no veíamos al otro con arma en mano ni los ataques nos hacían nada»): sacar y guardar el arma, cargar el golpe, soltarlo, fintar y parar por un lado van también al servidor, que resuelve los golpes entre jugadores con su autor. Los demás te ven con la espada en la mano, cargando, golpeando, parando y cayendo, y sus golpes te hieren de verdad (tus heridas y tu sangre son las del servidor).": "v78: бой онлайн в мире (valravnx, 31 окт.: «мы доставали оружие, но не видели друг друга с оружием в руке, и удары ничего не делали»): достать и убрать оружие, зарядить удар, отпустить его, сделать финт и защититься с одной стороны теперь тоже идёт на сервер, который разрешает удары между игроками с их автором. Другие видят тебя с мечом в руке — как ты заряжаешь, бьёшь, защищаешься и падаешь, — а их удары по-настоящему ранят тебя (твои раны и кровь — те, что на сервере).",
+ "v78, provisional: el rival de práctica sigue siendo solo tuyo (lo que te hace se ve hasta la próxima foto del servidor); al caer, a los 5 s vuelves a estar sano, también en el servidor. Hace falta el servidor nuevo (protocolo 7): uno anterior avisa de que es antiguo.": "v78, временно: тренировочный противник по-прежнему только твой (то, что он тебе сделал, видно до следующего снимка с сервера); упав, через 5 с ты снова здоров, в том числе на сервере. Нужен новый сервер (протокол 7): старый предупредит, что он устарел."
 }
