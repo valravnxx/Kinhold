@@ -54,6 +54,7 @@ paso "Mundo en línea: dos clientes con el servidor" node pruebas/prueba_en_line
 paso "Conexiones que se cortan y datos mal formados" node pruebas/prueba_conexiones.mjs
 paso "Volver donde lo dejaste (posiciones en el servidor)" node pruebas/prueba_posicion_servidor.mjs
 paso "Panel del admin en el servidor (clave, ver a todos, teletransportarse)" node pruebas/prueba_admin_servidor.mjs
+paso "Cuentas: usuario y contraseña (resumida con sal), crear, entrar, intentos y lo que no debe dejar" node pruebas/prueba_cuentas.mjs
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
 paso "Inventario y suelo en el servidor, con dos clientes" node pruebas/prueba_objetos_servidor.mjs
 paso "El servidor conoce el mundo (árboles, recogida, posiciones y obras contra el terreno)" node pruebas/prueba_terreno_servidor.mjs

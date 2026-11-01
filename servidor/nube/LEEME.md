@@ -71,9 +71,15 @@ que abra la demo entra en este mundo y puede construir.
   cambiarla, se vuelve a lanzar la misma línea y `systemctl restart kinhold`; para quitar el panel,
   `rm /etc/kinhold/admin.env && systemctl restart kinhold`. Con cinco claves mal seguidas, el servidor cierra esa
   conexión. Lo que se ha pedido con el panel (quién, qué y si valió; nunca la clave) queda en `/var/lib/kinhold/admin.jsonl`.
-- **Empezar el mundo de cero (wipe):** `systemctl stop kinhold && rm -f /var/lib/kinhold/*.json /var/lib/kinhold/*.jsonl && systemctl start kinhold`.
-  Borra lo construido, lo que lleva cada uno y lo del suelo, quién es quién (fichas) y dónde estaba cada uno: todos
-  vuelven a empezar como nuevos, en la salida.
+- **Empezar el mundo de cero (wipe):** `systemctl stop kinhold && find /var/lib/kinhold -maxdepth 1 \( -name '*.json' -o -name '*.jsonl' \) ! -name cuentas.jsonl -delete && systemctl start kinhold`.
+  Borra lo construido, lo que lleva cada uno y lo del suelo, las fichas de cada navegador y dónde estaba cada uno: todos
+  vuelven a empezar como nuevos, en la salida. **Las cuentas se quedan** (`cuentas.jsonl`): cada uno entra con su
+  usuario y su contraseña y es el mismo personaje, empezando de cero. Para borrar también las cuentas, el `rm -f
+  /var/lib/kinhold/*.json /var/lib/kinhold/*.jsonl` de antes.
+- **Cuentas** (usuario y contraseña): en `/var/lib/kinhold/cuentas.jsonl`, una por línea, con la contraseña resumida
+  (scrypt con sal; nunca en claro). Tras 5 contraseñas mal seguidas a una cuenta, o 20 fallos desde la misma dirección,
+  se espera 15 minutos; como mucho 5 cuentas nuevas por dirección y hora. La dirección es la que pasa Caddy
+  (`X-Forwarded-For`).
 
 ## Qué hay en esta carpeta
 
