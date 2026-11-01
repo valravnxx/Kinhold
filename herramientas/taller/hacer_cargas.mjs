@@ -17,6 +17,7 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { prune } from '@gltf-transform/functions';
 import { MeshoptDecoder } from 'meshoptimizer';
 import * as THREE from 'three';
+import { TRONCO_HOMBRO, MANO_TRONCO } from '../../src/personajes/medidas_carga.js';
 
 const [entrada, salida] = process.argv.slice(2);
 const FPS = 30;
@@ -84,8 +85,9 @@ const inclinar = (grados, eje) => { // repartido entre las tres vértebras
 const ARRIBA = new THREE.Vector3(0, 1, 0), DELANTE = new THREE.Vector3(0, 0, 1), IZQ = new THREE.Vector3(1, 0, 0);
 const DEDOS = /^(index|middle|ring|pinky|thumb)_0[123]_[lr]$/;
 // la mano cerrada (agarrando), del primer fotograma de llevar en brazos
-const cerrada = {};
-{ reposo(); muestrear(clips.get('Walk_Carry_Loop'), 0); for (const o of Object.values(porNombre)) if (DEDOS.test(o.name)) cerrada[o.name] = o.quaternion.clone(); }
+const cerrada = {}, reposoDedos = {};
+{ reposo(); muestrear(clips.get('Walk_Carry_Loop'), 0); for (const o of Object.values(porNombre)) if (DEDOS.test(o.name)) cerrada[o.name] = o.quaternion.clone();
+  reposo(); for (const o of Object.values(porNombre)) if (DEDOS.test(o.name)) reposoDedos[o.name] = o.quaternion.clone(); }
 
 // En el pecho (spine_03), los puntos de cada carga. Medidas en m, respecto al hombro derecho (upperarm_r) en reposo
 // del clip, en los ejes del personaje: decisiones provisionales, mirando las capturas.
@@ -116,28 +118,46 @@ const VARAS = { x: 0.223, y: 0.9, z: 0.297 };
 // (el índice delante), la palma hacia dentro y los dedos cerrados alrededor, por debajo. `dentro`: hacia el centro.
 const VARA = new THREE.Vector3(0, -Math.sin(THREE.MathUtils.degToRad(22)), Math.cos(THREE.MathUtils.degToRad(22)));
 function agarrarVara(lado, dentro) {
-  const m = porNombre['hand_' + lado], d = (n) => porNombre[`${n}_01_${lado}`];
-  const marco = () => {   // los dedos (de la muñeca al nudillo del medio) y la línea de los nudillos (del meñique al índice)
-    const f = W(d('middle')).sub(W(m)).normalize(), l = W(d('index')).sub(W(d('pinky')));
-    return [f, l.sub(f.clone().multiplyScalar(l.dot(f))).normalize()];
-  };
-  // 1. los dedos (antes de cerrarlos), hacia abajo y algo hacia dentro, de través a la vara
+  // los dedos (antes de cerrarlos), hacia abajo y algo hacia dentro, de través a la vara; la palma hacia dentro
   const fObj = new THREE.Vector3(0, -1, 0).add(dentro.clone().multiplyScalar(0.45)); fObj.sub(VARA.clone().multiplyScalar(fObj.dot(VARA))).normalize();
-  let [f] = marco();
+  ponerMano(lado, fObj, dentro, [40, 45, 30]);
+  if (process.env.DEPURAR) { const [ff, l] = marcoMano(lado); console.log(lado, 'nudillos·vara', l.dot(VARA).toFixed(2), 'dedos', ff.toArray().map(v => v.toFixed(2)).join(' ')); }
+}
+// los dedos (de la muñeca al nudillo del medio) y la línea de los nudillos (del meñique al índice), en el mundo
+function marcoMano(lado) {
+  const m = porNombre['hand_' + lado], d = (n) => porNombre[`${n}_01_${lado}`];
+  const f = W(d('middle')).sub(W(m)).normalize(), l = W(d('index')).sub(W(d('pinky')));
+  return [f, l.sub(f.clone().multiplyScalar(l.dot(f))).normalize()];
+}
+// Orienta la mano: 1. los dedos hacia `fObj`; 2. girando sobre ellos, la palma (hacia donde se doblan los dedos) hacia
+// `haciaPalma`; 3. cada falange (01, 02, 03) se cierra hacia la palma los grados de `cierre`, sobre la línea de los nudillos
+function ponerMano(lado, fObj, haciaPalma, cierre) {
+  const m = porNombre['hand_' + lado], d = (n) => porNombre[`${n}_01_${lado}`];
+  fObj = fObj.clone().normalize();
+  let [f] = marcoMano(lado);
   girarMundo(m, new THREE.Quaternion().setFromUnitVectors(f, fObj));
-  // 2. girando sobre los dedos, la palma hacia dentro (la palma: hacia donde se doblan los dedos de la mano cerrada de
-  // partida), con lo que la línea de los nudillos queda a lo largo de la vara
-  const palma = () => { const [ff] = marco(), p = W(porNombre[`middle_03_${lado}`]).sub(W(d('middle'))); return p.sub(ff.clone().multiplyScalar(p.dot(ff))).normalize(); };
-  const pObj = dentro.clone().sub(fObj.clone().multiplyScalar(dentro.dot(fObj))).normalize();
+  const palma = () => { const [ff] = marcoMano(lado), p = W(porNombre[`middle_03_${lado}`]).sub(W(d('middle'))); return p.sub(ff.clone().multiplyScalar(p.dot(ff))).normalize(); };
+  const pObj = haciaPalma.clone().sub(fObj.clone().multiplyScalar(haciaPalma.dot(fObj))).normalize();
   const pa = palma(), ang = Math.atan2(pa.clone().cross(pObj).dot(fObj), pa.dot(pObj));
   girarMundo(m, new THREE.Quaternion().setFromAxisAngle(fObj, ang));
-  // 3. cerrar más los dedos alrededor de la vara: cada falange gira hacia la palma, sobre la línea de los nudillos
-  for (const dedo of ['index', 'middle', 'ring', 'pinky']) for (const [f3, grados] of [['01', 40], ['02', 45], ['03', 30]]) {
+  for (const dedo of ['index', 'middle', 'ring', 'pinky']) for (const [f3, grados] of [['01', cierre[0]], ['02', cierre[1]], ['03', cierre[2]]]) {
     const h = porNombre[`${dedo}_${f3}_${lado}`];
-    const [ff, eje] = marco(), pp = palma(), ojo = eje.clone().cross(ff).dot(pp) > 0 ? 1 : -1; // girar f hacia la palma
+    const [ff, eje] = marcoMano(lado), pp = palma(), ojo = eje.clone().cross(ff).dot(pp) > 0 ? 1 : -1; // girar f hacia la palma
     girarMundo(h, new THREE.Quaternion().setFromAxisAngle(eje, ojo * THREE.MathUtils.degToRad(grados)));
   }
-  if (process.env.DEPURAR) { const [ff, l] = marco(); console.log(lado, 'palma·dentro', palma().dot(dentro).toFixed(2), 'nudillos·vara', l.dot(VARA).toFixed(2), 'dedos', ff.toArray().map(v => v.toFixed(2)).join(' ')); }
+}
+// El centro del tronco al hombro en el espacio de la clavícula derecha, como lo ata el juego: medido con la postura de
+// estar quieto (Idle_Loop, primer fotograma), respecto a la articulación del hombro (medidas_carga.js)
+let _troncoClav = null;
+function troncoEnClavicula() {
+  if (_troncoClav) return _troncoClav.clone();
+  const guardado = new Map([...obj.values()].map(o => [o, [o.position.clone(), o.quaternion.clone()]]));
+  reposo(); muestrear(clips.get('Idle_Loop'), 0); escena.updateMatrixWorld(true);
+  const p = W(porNombre.upperarm_r).add(new THREE.Vector3(TRONCO_HOMBRO.x, TRONCO_HOMBRO.y, TRONCO_HOMBRO.z));
+  _troncoClav = porNombre.clavicle_r.worldToLocal(p);
+  for (const [o, [pp, q]] of guardado) { o.position.copy(pp); o.quaternion.copy(q); }
+  escena.updateMatrixWorld(true);
+  return _troncoClav.clone();
 }
 function postura(cfg) {
   const pecho = porNombre.spine_03, cadera = porNombre.pelvis;
@@ -145,14 +165,15 @@ function postura(cfg) {
     inclinar(5, DELANTE.clone().negate());          // hacia la izquierda (contrapeso del tronco a la derecha)
     inclinar(5, IZQ);                                // y un poco adelante
     girarMundo(porNombre.clavicle_r, new THREE.Quaternion().setFromAxisAngle(DELANTE, THREE.MathUtils.degToRad(-6))); // el hombro arriba
-    // la mano sobre el tronco: encima del hombro y algo por delante, con el codo hacia delante y abajo
-    const s = W(porNombre.upperarm_r);
-    const objetivo = s.clone().add(new THREE.Vector3(-0.06, 0.13, 0.07)); // la derecha es −X
+    // la mano sobre el tronco (revisión del 1 nov: antes subía al cuello): el tronco va donde lo pone el juego
+    // (src/juego/llevado.js, atado a la clavícula) y la muñeca por encima, por delante y por fuera; el codo hacia
+    // delante y abajo
+    escena.updateMatrixWorld(true);
+    const objetivo = porNombre.clavicle_r.localToWorld(troncoEnClavicula()).add(new THREE.Vector3(MANO_TRONCO.x, MANO_TRONCO.y, MANO_TRONCO.z)); // la derecha es −X
     ik(porNombre.upperarm_r, porNombre.lowerarm_r, porNombre.hand_r, objetivo, new THREE.Vector3(-0.25, -1, 0.9).normalize());
-    // la palma sobre el tronco: los dedos por encima, hacia atrás y algo hacia dentro
-    const m = porNombre.hand_r;
-    apuntar(m, porNombre.middle_01_r, W(m).add(new THREE.Vector3(0.08, 0.05, -1)));
-    for (const [k, v] of Object.entries(cerrada)) if (k.endsWith('_r')) porNombre[k].quaternion.copy(v);
+    // la palma encima del tronco, hacia abajo; los dedos de través, por encima hacia dentro (+X) y bajando por la curva
+    for (const [k, v] of Object.entries(cerrada)) if (k.endsWith('_r')) porNombre[k].quaternion.copy(reposoDedos[k]);
+    ponerMano('r', new THREE.Vector3(1, -0.45, -0.15), new THREE.Vector3(0.3, -1, 0), [25, 30, 20]);
   }
   if (cfg.arrastrar) {
     inclinar(14, IZQ);                               // adelante
