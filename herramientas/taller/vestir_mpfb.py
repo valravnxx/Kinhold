@@ -976,7 +976,9 @@ def personaje(nombre, macros, objetivos, ropa):
         # Desde taller-v21 baja hasta el cuello de la ropa y se va aclarando en unos 4 cm: antes, a los lados, acababa 3 cm
         # por encima y entre la barba y la ropa quedaba una franja clara de cuello, cortada por la tela (revisión del 31 oct)
         z_cuello = cuello_z - 0.015 * suave(-0.02, -0.07, y)
-        abajo = suave(-0.035, 0.025, z - z_cuello + 1.5 * borde)  # en el cuello de la ropa, ya rala (pelos sueltos)
+        # Desde taller-v24 el paso es más largo y empieza más abajo (de 1,5 cm por encima del cuello a 5 cm por debajo, casi todo bajo la ropa): bajo
+        # la barbilla la barba pasaba de golpe de un bloque oscuro a motas grises sobre el cuello claro (revisión del 1 nov)
+        abajo = suave(-0.05, 0.015, z - z_cuello + 1.5 * borde) ** 0.7  # en el cuello de la ropa, ya rala (pelos sueltos)
         m = arriba * abajo * (0.9 + 0.1 * suave(boca_z, boca_z - 0.04, z))  # más poblada en la barbilla
         frente = suave(-0.11, -0.125, y)
         bigote = suave(0.034, 0.026, x) * suave(-0.003, 0.002, z - (boca_z + 0.004)) * suave(0.003, -0.002, z - (boca_z + 0.016 - 0.1 * x * x * 10)) * frente
@@ -1054,10 +1056,13 @@ def personaje(nombre, macros, objetivos, ropa):
         # pelos finos y largos (un tercio de milímetro de grueso y unos 4 mm de largo, a lo largo de la caída), no granos
         trazo = 0.65 * ruido(P + 0.19, (3200, 3200, 260)) + 0.35 * ruido(P + 0.43, (5200, 5200, 420))
         pelo = suave(0.3, 0.7, trazo)
-        umbral = 1.0 - 1.1 * m ** 0.85
+        umbral = 1.0 - 1.15 * m ** 0.7  # desde taller-v24 los pelos se espacian más despacio (más tupidos a media barba)
         sueltos = suave(umbral - 0.12, umbral + 0.12, pelo) * suave(0.0, 0.08, m)
-        sombra = 0.12 * suave(0.0, 0.5, m)
-        a = np.maximum(np.maximum(a * suave(0.75, 0.95, m), 0.95 * sueltos), sombra)
+        sombra = 0.18 * suave(0.0, 0.5, m)  # desde taller-v24, 0,18 (antes 0,12): entre los pelos sueltos, la piel algo más oscura, sin llegar a neblina
+        # Lo tupido no se corta en m = 0,75 (antes, suave(0.75, 0.95, m): por encima, un bloque liso; por debajo, pelos sueltos,
+        # y bajo la barbilla se veía la raya entre los dos, revisión del 1 nov). Ahora el borde de lo tupido sigue los pelos
+        # (cada pelo largo acaba a su altura) y se reparte entre m = 0,5 y 0,9
+        a = np.maximum(np.maximum(a * suave(0.5, 0.9, m + 0.35 * (pelo - 0.5)), 0.95 * sueltos), sombra)
         claro = 0.56 + 0.6 * raya + 0.2 * (g - 0.5) + 0.1 * (fbm(P, 35) - 0.5)
         claro = claro * (0.75 + 0.25 * suave(0.2, 0.9, m))  # los pelos sueltos, algo más oscuros (no grises)
         return colpelo * claro[..., None], a
@@ -1214,7 +1219,8 @@ def personaje(nombre, macros, objetivos, ropa):
             xt = ax + 0.029 * s * 1.12 + 0.007 * s * a_ ** 2
             # desde taller-v22 los lados bajan algo más (2,2 cm) y se meten en la barba: antes acababan en la comisura y
             # entre el bigote y la barba quedaba piel (revisión del 31 oct, noche)
-            zt = boca_z + 0.0015 - 0.022 * a_ ** 2.2
+            # desde taller-v24 acaba 1,5 mm más arriba en el centro: tapaba el borde del labio con una banda (revisión del 1 nov)
+            zt = boca_z + 0.003 - 0.0235 * a_ ** 2.2
             bulto = 0.8 + 0.4 * ruido(np.array([[[k * 0.37, 0.0, 0.0]]]), (1, 1, 1))[0, 0]  # mechones de distinto grueso (no una banda lisa)  # punta: tapa el borde del labio y por los lados cae por las comisuras
             for j in range(NBO):
                 t = j / (NBO - 1)
@@ -1223,7 +1229,8 @@ def personaje(nombre, macros, objetivos, ropa):
                 # bajo la nariz el rayo puede dar en la punta de la nariz: nunca más fuera que el labio de arriba
                 r_lab = piel_r(th, boca_z + 0.005)
                 if r_lab is not None: rr = min(rr, r_lab + 0.003)
-                h = 0.0008 + 0.0055 * bulto * (4 * t * (1 - t)) ** 0.7 * (1 - 0.45 * a_ ** 2) + 0.0018 * t
+                # desde taller-v24, menos abombado (5,5 → 3,8 mm) y la punta pegada al labio (1,8 → 0,8 mm): era una banda gruesa
+                h = 0.0008 + 0.0038 * bulto * (4 * t * (1 - t)) ** 0.7 * (1 - 0.45 * a_ ** 2) + 0.0008 * t
                 vs_b.append((ax + (rr + h) * math.sin(th), ay - (rr + h) * math.cos(th), z)); uv_b.append((k / NB, 1 - t))
         caras_b = [(k * NBO + j, (k + 1) * NBO + j, (k + 1) * NBO + j + 1, k * NBO + j + 1) for k in range(NB) for j in range(NBO - 1)]
         def pintar_mostacho(U, V):
@@ -1233,10 +1240,13 @@ def personaje(nombre, macros, objetivos, ropa):
             n = 0.5 * ruido(Qo, (2400, 60, 1)) + 0.3 * ruido(Qo, (900, 30, 1)) + 0.2 * ruido(Qo, (5000, 120, 1))
             surco = suave(0.3, 0.1, ruido(Qo, (700, 20, 1)))
             mechon = ruido(Qo + 0.53, (380, 6, 1))  # mechones de unos 2-3 mm, unos más claros que otros (no una banda lisa)
-            col = colpelo * (0.5 + 0.8 * n[..., None]) * (1 - 0.5 * surco[..., None]) * (0.75 + 0.3 * t[..., None]) * (0.7 + 0.6 * mechon[..., None])  # la raíz, más en sombra
+            col = colpelo * (0.55 + 0.85 * n[..., None]) * (1 - 0.45 * surco[..., None]) * (0.75 + 0.45 * t[..., None]) * (0.7 + 0.65 * mechon[..., None])  # desde taller-v24 las puntas, algo más claras (les da la luz)  # la raíz, más en sombra
             mech = 0.6 * ruido(Qo, (1500, 1, 1)) + 0.4 * ruido(Qo, (4000, 2, 1))
-            corte = 0.97 - 0.28 * mech ** 1.4  # cada pelo acaba a su largo
-            a = suave(corte, corte - 0.06, t)
+            corte = 0.98 - 0.42 * mech ** 1.2  # cada pelo acaba a su largo
+            # desde taller-v24 la punta se deshace en pelos en unos 3 mm, no en uno: el borde sobre el labio era una línea dura
+            # (revisión del 1 nov). Cada píxel es pelo o nada (sin neblina): los pelos más largos van espaciándose
+            fino = ruido(Qo + 0.29, (6000, 3, 1))
+            a = suave(corte, corte - 0.05, t) * suave(0.35, 0.55, fino + 2.0 * (corte - t))
             lado = np.minimum(U, 1 - U)
             a = a * suave(0.0, 0.06 + 0.05 * ruido(Qo, (1200, 4, 1)), lado)  # las puntas de los lados, deshilachadas
             return np.concatenate([col, a[..., None]], -1)

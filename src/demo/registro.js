@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v88 (pelear en cualquier sitio del mundo)";
+export const VERSION_DEMO = "Demo única · v89 (bigote y barba del cuello)";
 export const REGISTRO_DEMO = [
+  "v89: en «Personaje» y en el juego, el bigote es más fino y ya no tapa el borde del labio con una banda oscura, y bajo la barbilla la barba se va aclarando poco a poco hasta la ropa en vez de pasar de golpe de un bloque oscuro a motas grises. Personajes en recursos/personajes/taller-v24/.",
   "v88: pelear en cualquier sitio del mundo, sin escena aparte. El rival de práctica anda por donde andarías tú: rodea los árboles y lo construido, no sube por los cortados y no entra donde cubre (si te metes a nado, se queda en la orilla). Aparece a unos 6 m, en un sitio al que se llega andando desde donde estás; si no hay ninguno, se avisa.",
   "v88, provisional: nadando no se lucha. Al meterte donde ya no haces pie se guarda el arma, con un aviso, y no se saca hasta volver a hacer pie; vadeando sí se lucha, más despacio.",
   "v87: empujar la carretilla tiene su animación, hecha en el taller como las de cargar (andando y quieto): el cuerpo algo inclinado hacia delante, los brazos bajos hacia las varas y las manos cerradas alrededor de ellas (la palma encima y por fuera, los dedos por dentro y por debajo). La carretilla va más baja: las agarraderas a 0,9 m (antes 1,1 m), unos 22° en vez de 29°. Animaciones en recursos/personajes/taller-carga-v2/ (unos 103 KB por cuerpo; también en «Personaje», «Más animaciones»: «Empujar la carretilla»).",
