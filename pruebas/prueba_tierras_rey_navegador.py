@@ -45,6 +45,8 @@ with sync_playwright() as p:
     for nombre, vista, movil, lang in [('pc', {'width': 1280, 'height': 800}, False, 'es'), ('movil', {'width': 390, 'height': 844}, True, 'es'), ('pc_en', {'width': 1280, 'height': 800}, False, 'en')]:
         print('Vista', nombre)
         ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
+        # el cartel dura 6 s; con 1 fotograma por segundo sin tarjeta gráfica, para las capturas, 20
+        ctx.add_init_script('window.__duraCartel = 20000')
         if MUTAR == '1': ctx.add_init_script('window.__mutarTierras = true')
         pg = ctx.new_page()
         err = []
@@ -59,17 +61,15 @@ with sync_playwright() as p:
         en = lang == 'en'
         comprobar('al aparecer dentro, el cartel de entrar', bool(c) and (('Strandvang' in c['texto'] and ("king's lands" in c['texto'] if en else 'tierras del rey' in c['texto']))), c and c['texto'])
         comprobar('el cartel cabe en la pantalla', bool(c) and c['caja'][0] >= 0 and c['caja'][2] <= vista['width'] and c['caja'][1] >= 0, c and str(c['caja']))
-        pg.wait_for_timeout(500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_entras.png')
         # a Motdale: 400 m al oeste
         pg.evaluate(f'{K}.pj.x -= 400')
         c = esperar_cartel(pg, 'sale')
         comprobar('al cruzar a Motdale, el cartel de salir', bool(c) and not pg.evaluate(f'{K}.tierrasRey.en({K}.pj.x, {K}.pj.z)'), c and c['texto'])
-        pg.wait_for_timeout(500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_sales.png')
         # se va solo
         try:
-            pg.wait_for_function("(() => { const c = document.getElementById('cartelTierras'); return c && c.hidden; })()", timeout=15000); ido = True
+            pg.wait_for_function("(() => { const c = document.getElementById('cartelTierras'); return c && c.hidden; })()", timeout=60000); ido = True
         except Exception: ido = False
         comprobar('el cartel se va solo a los pocos segundos', ido)
         pg.evaluate(f'{K}.pj.x += 400')

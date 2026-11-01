@@ -173,16 +173,23 @@ function mirarTierras() {
   const cambio = vigiaRey.mirar(pj.x, pj.z);
   if (!cambio) return;
   if (!cartelTierras) {
+    // arriba en el PC; en el móvil, más abajo (arriba están los botones), entre ellos y el jugador
+    const estilo = document.createElement('style');
+    estilo.textContent = `#cartelTierras{position:fixed;left:50%;top:16%;transform:translateX(-50%);width:max-content;max-width:min(88vw,520px);
+      padding:10px 18px;border-radius:8px;background:rgba(30,26,20,.82);color:#f2e8d0;font:15px/1.35 Georgia,serif;text-align:center;
+      z-index:21;pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+      #cartelTierras b{font-size:17px;letter-spacing:.04em}
+      @media (max-width:600px){#cartelTierras{top:40%;font-size:14px}#cartelTierras b{font-size:15px}}`;
+    document.head.appendChild(estilo);
     cartelTierras = document.createElement('div'); cartelTierras.id = 'cartelTierras';
-    cartelTierras.style.cssText = 'position:fixed;left:50%;top:16%;transform:translateX(-50%);max-width:min(88vw,520px);padding:10px 18px;border-radius:8px;background:rgba(30,26,20,.82);color:#f2e8d0;font:15px/1.35 Georgia,serif;text-align:center;z-index:21;pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.35)';
     document.body.appendChild(cartelTierras);
   }
   const n = tr(tierrasRey.nombre);
   cartelTierras.innerHTML = cambio === 'entra'
-    ? `<b style="font-size:17px;letter-spacing:.04em">${tr('Entras en {n}, tierras del rey', { n })}</b><br>${tr('Aquí nadie puede herir a otro jugador.')}`
-    : `<b style="font-size:17px;letter-spacing:.04em">${tr('Sales de {n}, tierras del rey', { n })}</b><br>${tr('Fuera de sus lindes, otros jugadores pueden herirte.')}`;
+    ? `<b>${tr('Entras en {n}, tierras del rey', { n })}</b><br>${tr('Aquí nadie puede herir a otro jugador.')}`
+    : `<b>${tr('Sales de {n}, tierras del rey', { n })}</b><br>${tr('Fuera de sus lindes, otros jugadores pueden herirte.')}`;
   cartelTierras.dataset.cambio = cambio;
-  cartelTierras.hidden = false; cartelHasta = t + 6000;
+  cartelTierras.hidden = false; cartelHasta = t + (window.__duraCartel || 6000);   // (__duraCartel: las pruebas, para las capturas)
 }
 
 // decorado común (src/mundo/decorado.js): llano para construir, bosque, hierba y rocas con colisión.
