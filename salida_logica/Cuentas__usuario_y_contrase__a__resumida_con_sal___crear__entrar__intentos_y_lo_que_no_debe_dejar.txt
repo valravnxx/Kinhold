@@ -1,0 +1,49 @@
+Lógica pura
+  OK   usuario válido (con ñ y tilde)
+  OK   usuario demasiado corto
+  OK   usuario demasiado largo
+  OK   usuario con espacio o símbolos
+  OK   usuario que no es texto
+  OK   contraseña corta
+  OK   contraseña igual al usuario
+  OK   contraseña larga y buena
+  OK   petición rara no vale
+  OK   entrar sin contraseña no vale
+  OK   crear una cuenta
+  OK   lo guardado no lleva la contraseña
+  OK   usuario repetido (otras mayúsculas) no
+  OK   un personaje, una cuenta
+  OK   entrar (sin mirar mayúsculas) da su personaje
+  OK   contraseña mala y usuario que no existe: el mismo motivo
+  OK   con un usuario que no existe también se resume (tarda lo mismo)
+  OK   tras 5 fallos, ni con la buena — Demasiados intentos; prueba dentro de 15 min.
+  OK   pasada la espera, se puede entrar
+  OK   tras 20 fallos desde una dirección, esa dirección no; otra sí
+  OK   como mucho 5 altas por dirección
+  OK   dos altas a la vez del mismo usuario: solo una
+  OK   las cuentas guardadas se cargan (y lo raro se descarta)
+Resumen de la contraseña (scrypt con sal)
+  OK   sal distinta → resumen distinto
+  OK   el resumen no contiene la contraseña
+  OK   la misma contraseña con su sal da lo mismo; otra no
+  OK   el resumen es lento (más de 20 ms) — 164 ms en esta máquina
+Servidor
+  OK   al entrar sin cuenta, la bienvenida lo dice
+  OK   crear la cuenta con el personaje de la conexión — {"tipo":"cuenta","id":1,"que":"crear","ok":true,"usuario":"Leñadora","autor":"jugador:2fba7194"}
+  OK   el mismo personaje no crea otra
+  OK   usuario repetido no
+  OK   usuario corto y contraseña corta no
+  OK   contraseña mala no
+  OK   entrar desde otro aparato da una ficha
+  OK   con esa ficha se vuelve a ser el mismo personaje
+  OK   la conexión vieja de ese personaje se cierra — 4001
+  OK   mensajes raros no tumban nada
+  OK   tras 5 contraseñas malas, ni con la buena — Demasiados intentos; prueba dentro de 15 min.
+  OK   cuentas.jsonl tiene la cuenta, con sal y resumen
+  OK   la contraseña no está en cuentas.jsonl
+  OK   ni en el registro del servidor
+  OK   tras reiniciar el servidor, se entra igual
+  OK   y la mala sigue sin valer
+  OK   y el usuario sigue cogido
+
+44 bien, 0 mal
