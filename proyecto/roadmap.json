@@ -1068,9 +1068,9 @@
     },
     {
      "nombre": "El admin, por la cuenta: la cuenta de valravnx es la de administrador y el panel de depuración (mapa con los conectados y teletransportarse) sale solo con ella, sin clave aparte",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-01T18:23:17+00:00",
-     "rama": "trabajo/20261101-1823"
+     "fin": "2026-11-01T19:37:27+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -2532,6 +2532,13 @@
      "archivo": "jugar/demo/v92.html",
      "capturas": "capturas/demo-v92",
      "notas": "Tu cuenta: pantalla de crear cuenta y de entrar antes del mundo; el personaje que ya llevabas pasa a tu cuenta, y desde otro aparato entras con él"
+    },
+    {
+     "v": "v93",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/demo/v93.html",
+     "capturas": "capturas/demo-v93",
+     "notas": "El admin, por la cuenta: el panel de depuración (F9 o el botón «Admin») sale solo con la cuenta de admin, la de valravnx, sin clave aparte. Con otra cuenta no sale y el servidor lo rechaza. En el panel, cada jugador con el nombre de su cuenta."
     }
    ]
   },

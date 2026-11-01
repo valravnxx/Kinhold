@@ -46,7 +46,8 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
   const aspectos = new Map();   // autor → { sexo, capas, aspecto }
   // Cuentas (P1, revisión del 1 nov): si el personaje de esta conexión aún no tiene cuenta, la pantalla de crearla o de
   // entrar (src/mundo/pantalla_cuenta.js) tapa el juego. Un servidor anterior a las cuentas no manda `cuenta`: sin pantalla.
-  let pantalla = null, cuenta = null;
+  // El admin, por la cuenta: el servidor dice si esta conexión es de la cuenta de admin (bienvenida, o al crear la cuenta).
+  let pantalla = null, cuenta = null, admin = false;
 
   const ponerEstado = () => alEstado(estado === 'conectado' ? (antiguo ? tr('En línea · el servidor es antiguo: hay que actualizarlo') : conectado())
     : estado === 'conectando' ? tr('Conectando con el servidor…')
@@ -64,11 +65,12 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
         estado = 'conectado'; yo = msg.autor; antiguo = servidorAntiguo(msg);
         for (const a of msg.aspectos || []) aspectos.set(a.autor, deAspecto(a));
         cuenta = typeof msg.cuenta === 'string' ? msg.cuenta : null;
+        admin = msg.admin === true;
         if (cuenta) guardarUsuario(direccion, cuenta); else if (msg.cuenta === null) guardarUsuario(direccion, null);
         if (msg.cuenta === null && !(pantalla && pantalla.abierta)) {
           pantalla = pantallaCuenta({ enviar, direccion, alCrear: (u) => { cuenta = u; avisar(tr('Cuenta creada: {u}. Tu personaje ya es de tu cuenta.', { u }), false); } });
         } else if (msg.cuenta !== null && pantalla) { pantalla.quitar(); pantalla = null; }
-      } else if (msg.tipo === 'cuenta') { if (pantalla) pantalla.recibir(msg);
+      } else if (msg.tipo === 'cuenta') { if (msg.que === 'crear' && msg.ok && msg.admin === true) admin = true; if (pantalla) pantalla.recibir(msg);
       } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, deAspecto(msg));
       else if (msg.tipo === 'sale') aspectos.delete(msg.autor);
       else if (msg.tipo === 'error') console.warn('Servidor:', msg.motivo);
@@ -80,7 +82,7 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
       ponerEstado();
     },
     alCortar: ({ motivo, vuelve }) => {
-      const antes = estado; estado = vuelve ? 'volviendo' : 'cortado'; yo = null;
+      const antes = estado; estado = vuelve ? 'volviendo' : 'cortado'; yo = null; admin = false;
       presencia.remotos.clear();
       alCortar();
       ponerEstado();
@@ -97,6 +99,7 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
     direccion, presencia, aspectos, enviar, ponerEstado,
     get yo() { return yo; },
     get cuenta() { return cuenta; },   // el usuario de la cuenta de este personaje (null si aún no tiene)
+    get admin() { return admin; },     // si es la cuenta de admin (lo dice el servidor)
     get estado() { return estado; },
     get antiguo() { return antiguo; },
     cortar() { if (con) con.cortar(); },   // para las pruebas: como si se cayera la conexión

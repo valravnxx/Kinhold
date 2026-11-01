@@ -3865,5 +3865,22 @@
   "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido): todo bien salvo panel del admin y entrar con la cuenta, por el id de texto; arreglado, las dos bien. Tras unir main (dirección playkinhold.com) y pasar la ficha de la dirección de antes: lógica, demo única, entrar con la cuenta y juego en inglés bien (lógica falló una vez en el combate con lag simulado, «lo que no se puede se rechaza», y repetida pasó; aquí también pasa, 80/80). Entrar con la cuenta: 42 comprobaciones; rota a propósito, falla.",
   "capturas": "capturas/demo-v92",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T18:22:36+00:00",
+  "fin": "2026-11-01T19:37:27+00:00",
+  "titulo": "P1: el admin, por la cuenta",
+  "hito": "servidor",
+  "hecho": [
+   "El panel de depuración (mapa con los conectados y teletransportarse) ya no pide clave: el servidor solo lo acepta de la conexión cuyo personaje es de la cuenta de admin, la del usuario «valravnx» (sin mirar mayúsculas). Lo que diga el mensaje no cuenta: mira la cuenta de la conexión.",
+   "La bienvenida del servidor dice a cada conexión si es la de admin, y la respuesta al crear la cuenta también: el botón «Admin» sale solo entonces, sin recargar. Con otra cuenta no sale (tampoco con ?admin en la dirección) y F9 no abre nada.",
+   "En la lista y en el mapa del panel, cada jugador sale con el nombre de su cuenta (o su número si aún no tiene). En admin.jsonl se apunta también la cuenta de cada petición.",
+   "Fuera la clave KINHOLD_ADMIN, la cuenta atrás de cinco claves mal y «Olvidar la clave»; la clave que guardaba el navegador se borra. Decisión provisional (registro de la demo): la cuenta de admin es «valravnx» por defecto; en la máquina se puede poner otra, o varias, con KINHOLD_ADMIN_CUENTA en /etc/kinhold/admin.env (LEEME del servidor al día). Las cuentas no se borran con los wipes.",
+   "Pruebas del panel rehechas: la del servidor (36 comprobaciones: sin cuenta, con otra cuenta, con la de admin, otra lista en la máquina, entrar con la cuenta desde otro aparato y tras reiniciar) y la de navegador en PC y móvil (cuenta normal sin panel; cuenta de admin con panel, ir junto a otro y a un punto del mapa). Rotas a propósito (MUTAR=1: un servidor que no mira la cuenta, o que dice a todos que son admin), fallan.",
+   "Demo única v93 publicada. No comprobado: en el servidor de Hetzner (hace falta actualizarlo a main) ni si la cuenta de valravnx se llama «valravnx»; si es otra, hay que ponerla en KINHOLD_ADMIN_CUENTA."
+  ],
+  "pruebas": "Batería entera en la nube (el PC de valravnx no estaba para pruebas): todo bien salvo «pelear en cualquier sitio del mundo», que se quedó esperando a que se acercara el rival; repetida en la nube, bien. La del panel del admin también pasada aquí entera (PC, móvil e inglés) y rota a propósito.",
+  "capturas": "capturas/demo-v93",
+  "estado": "ok"
  }
 ]

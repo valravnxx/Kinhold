@@ -59,18 +59,15 @@ que abra la demo entra en este mundo y puede construir.
   No borra el mundo.
 - **Con un dominio propio** (si algún día compras uno): apúntalo a la IP y lanza
   `KINHOLD_DOMINIO=juego.tudominio.com bash /opt/kinhold/servidor/nube/instalar.sh`.
-- **Clave de admin para el panel de depuración** (F9 en el juego, o el botón «Admin» con `?admin` en la dirección; lo
-  pidió valravnx el 30 oct): sin clave puesta, el panel no funciona para nadie. Para ponerla (una vez), en la consola
-  de Hetzner, como root:
+- **El admin, por la cuenta** (panel de depuración: F9 en el juego o el botón «Admin»; revisión del 1 nov): el panel
+  sale solo a quien ha entrado con la cuenta de admin, que es la del usuario `valravnx` (sin mayúsculas: ValravnX vale
+  igual). No hay que poner nada en la máquina ni ninguna clave: basta con crear esa cuenta en el juego (o entrar con
+  ella). Para que sea otra cuenta, o varias, en la consola de Hetzner, como root:
   ```
-  mkdir -p /etc/kinhold && echo "KINHOLD_ADMIN=$(openssl rand -hex 16)" > /etc/kinhold/admin.env && chmod 600 /etc/kinhold/admin.env && cat /etc/kinhold/admin.env
+  mkdir -p /etc/kinhold && echo "KINHOLD_ADMIN_CUENTA=valravnx,otra" > /etc/kinhold/admin.env && chmod 600 /etc/kinhold/admin.env && systemctl restart kinhold
   ```
-  y después `bash /opt/kinhold/servidor/nube/actualizar.sh` (pone el servicio que la lee y reinicia; si ya está al día,
-  basta con `systemctl restart kinhold`). La clave es lo que sale detrás de `KINHOLD_ADMIN=`: se pega en el panel la
-  primera vez y el navegador la recuerda hasta pulsar «Olvidar la clave». Tiene que tener 12 letras o más. Para
-  cambiarla, se vuelve a lanzar la misma línea y `systemctl restart kinhold`; para quitar el panel,
-  `rm /etc/kinhold/admin.env && systemctl restart kinhold`. Con cinco claves mal seguidas, el servidor cierra esa
-  conexión. Lo que se ha pedido con el panel (quién, qué y si valió; nunca la clave) queda en `/var/lib/kinhold/admin.jsonl`.
+  La clave `KINHOLD_ADMIN=` de antes ya no se usa (si está en ese archivo, no hace nada). Lo que se ha pedido con el
+  panel (quién, con qué cuenta, qué y si valió) queda en `/var/lib/kinhold/admin.jsonl`.
 - **Empezar el mundo de cero (wipe):** `systemctl stop kinhold && find /var/lib/kinhold -maxdepth 1 \( -name '*.json' -o -name '*.jsonl' \) ! -name cuentas.jsonl -delete && systemctl start kinhold`.
   Borra lo construido, lo que lleva cada uno y lo del suelo, las fichas de cada navegador y dónde estaba cada uno: todos
   vuelven a empezar como nuevos, en la salida. **Las cuentas se quedan** (`cuentas.jsonl`): cada uno entra con su
