@@ -97,7 +97,48 @@ const NUEVAS = {
   // arrastrar la rastra: inclinado adelante, los brazos casi estirados a los lados, un poco por detrás de la cadera,
   // agarrando las dos varas
   Drag_Walk_Loop: { de: 'Walk_Loop', arrastrar: true },
+  // empujar la carretilla (roadmap, «Equipo», 1 nov): el cuerpo algo inclinado adelante y los brazos bajos, casi
+  // estirados, hacia las varas. Las manos van a un punto fijo respecto a los pies (la carretilla va fija delante del que
+  // la empuja, src/juego/carretilla.js), no respecto al pecho: así no resbalan por las varas al andar.
+  Empujar_Walk_Loop: { de: 'Walk_Loop', empujar: true },
+  Empujar_Idle_Loop: { de: 'Idle_Loop', empujar: true },
 };
+// dónde van las manos al empujar, en m respecto al suelo bajo el personaje (x: a cada lado; y: altura; z: delante).
+// Tienen que ser las de las agarraderas de src/juego/carretilla.js (ALTO_MANOS_CARR y AGARRADERAS): lo mira
+// pruebas/prueba_anim_carga.mjs. Son las muñecas: la palma va encima de la vara y algo por fuera, y los dedos la rodean
+// por dentro y por debajo (agarrarVara). Las dos
+// complexiones empujan la misma carretilla: al hombre le llega con los brazos casi estirados; a la mujer (más baja), algo
+// doblados.
+const MANOS_EMPUJAR = { x: 0.27, y: 0.945, z: 0.297 };
+// las agarraderas de la carretilla empujándola (src/juego/carretilla.js, AGARRADERAS, desde el que la empuja): para medir
+const VARAS = { x: 0.223, y: 0.9, z: 0.297 };
+// La mano agarrando una vara que va hacia delante y abajo (la de la carretilla, ~22°): los nudillos a lo largo de la vara
+// (el índice delante), la palma hacia dentro y los dedos cerrados alrededor, por debajo. `dentro`: hacia el centro.
+const VARA = new THREE.Vector3(0, -Math.sin(THREE.MathUtils.degToRad(22)), Math.cos(THREE.MathUtils.degToRad(22)));
+function agarrarVara(lado, dentro) {
+  const m = porNombre['hand_' + lado], d = (n) => porNombre[`${n}_01_${lado}`];
+  const marco = () => {   // los dedos (de la muñeca al nudillo del medio) y la línea de los nudillos (del meñique al índice)
+    const f = W(d('middle')).sub(W(m)).normalize(), l = W(d('index')).sub(W(d('pinky')));
+    return [f, l.sub(f.clone().multiplyScalar(l.dot(f))).normalize()];
+  };
+  // 1. los dedos (antes de cerrarlos), hacia abajo y algo hacia dentro, de través a la vara
+  const fObj = new THREE.Vector3(0, -1, 0).add(dentro.clone().multiplyScalar(0.45)); fObj.sub(VARA.clone().multiplyScalar(fObj.dot(VARA))).normalize();
+  let [f] = marco();
+  girarMundo(m, new THREE.Quaternion().setFromUnitVectors(f, fObj));
+  // 2. girando sobre los dedos, la palma hacia dentro (la palma: hacia donde se doblan los dedos de la mano cerrada de
+  // partida), con lo que la línea de los nudillos queda a lo largo de la vara
+  const palma = () => { const [ff] = marco(), p = W(porNombre[`middle_03_${lado}`]).sub(W(d('middle'))); return p.sub(ff.clone().multiplyScalar(p.dot(ff))).normalize(); };
+  const pObj = dentro.clone().sub(fObj.clone().multiplyScalar(dentro.dot(fObj))).normalize();
+  const pa = palma(), ang = Math.atan2(pa.clone().cross(pObj).dot(fObj), pa.dot(pObj));
+  girarMundo(m, new THREE.Quaternion().setFromAxisAngle(fObj, ang));
+  // 3. cerrar más los dedos alrededor de la vara: cada falange gira hacia la palma, sobre la línea de los nudillos
+  for (const dedo of ['index', 'middle', 'ring', 'pinky']) for (const [f3, grados] of [['01', 40], ['02', 45], ['03', 30]]) {
+    const h = porNombre[`${dedo}_${f3}_${lado}`];
+    const [ff, eje] = marco(), pp = palma(), ojo = eje.clone().cross(ff).dot(pp) > 0 ? 1 : -1; // girar f hacia la palma
+    girarMundo(h, new THREE.Quaternion().setFromAxisAngle(eje, ojo * THREE.MathUtils.degToRad(grados)));
+  }
+  if (process.env.DEPURAR) { const [ff, l] = marco(); console.log(lado, 'palma·dentro', palma().dot(dentro).toFixed(2), 'nudillos·vara', l.dot(VARA).toFixed(2), 'dedos', ff.toArray().map(v => v.toFixed(2)).join(' ')); }
+}
 function postura(cfg) {
   const pecho = porNombre.spine_03, cadera = porNombre.pelvis;
   if (cfg.hombro) {
@@ -120,6 +161,17 @@ function postura(cfg) {
       const objetivo = new THREE.Vector3(h.x + s * 0.07, p.y - 0.06, p.z - 0.2);
       ik(porNombre['upperarm_' + lado], porNombre['lowerarm_' + lado], porNombre['hand_' + lado], objetivo, new THREE.Vector3(s * 0.6, 0, -1).normalize());
       for (const [k, v] of Object.entries(cerrada)) if (k.endsWith('_' + lado)) porNombre[k].quaternion.copy(v);
+    }
+  }
+  if (cfg.empujar) {
+    inclinar(12, IZQ);                               // adelante, cargando el peso en las varas
+    girarMundo(porNombre.neck_01, new THREE.Quaternion().setFromAxisAngle(IZQ, THREE.MathUtils.degToRad(-8))); // la vista al frente
+    for (const [lado, s] of [['l', 1], ['r', -1]]) {
+      const objetivo = new THREE.Vector3(s * MANOS_EMPUJAR.x, MANOS_EMPUJAR.y, MANOS_EMPUJAR.z);
+      // el codo hacia atrás, apenas afuera (con más, se abren los brazos como asas)
+      ik(porNombre['upperarm_' + lado], porNombre['lowerarm_' + lado], porNombre['hand_' + lado], objetivo, new THREE.Vector3(s * 0.2, 0, -1).normalize());
+      for (const [k, v] of Object.entries(cerrada)) if (k.endsWith('_' + lado)) porNombre[k].quaternion.copy(v);
+      agarrarVara(lado, new THREE.Vector3(-s, 0, 0));
     }
   }
 }
@@ -146,6 +198,17 @@ for (const [nombre, cfg] of Object.entries(NUEVAS)) {
   for (const h of huesos) canal(h, 'rotation', 'VEC4', rot.get(h));
   canal(huesos.find(h => h.getName() === 'pelvis'), 'translation', 'VEC3', tra);
   hechos.push(`${nombre} (${dur.toFixed(2)} s, de ${cfg.de})`);
+  if (cfg.empujar) { // cuánto se separan las muñecas del punto de las varas (si no llega el brazo, se ve aquí)
+    let peor = 0, puno = 0;
+    for (let i = 0; i < N; i += 5) {
+      reposo(); muestrear(base, dur * i / (N - 1)); postura(cfg);
+      for (const [l, s] of [['l', 1], ['r', -1]]) {
+        peor = Math.max(peor, W(porNombre['hand_' + l]).distanceTo(new THREE.Vector3(s * MANOS_EMPUJAR.x, MANOS_EMPUJAR.y, MANOS_EMPUJAR.z)));
+        puno = Math.max(puno, W(porNombre['middle_01_' + l]).distanceTo(new THREE.Vector3(s * VARAS.x, VARAS.y, VARAS.z)));
+      }
+    }
+    hechos.push(`  muñecas a ${(peor * 100).toFixed(1)} cm como mucho de su sitio; nudillos a ${(puno * 100).toFixed(1)} cm de las varas`);
+  }
 }
 // fuera las de partida: solo quedan las nuevas
 for (const a of [...clips.values()]) a.dispose();

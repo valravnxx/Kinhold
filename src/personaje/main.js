@@ -41,8 +41,8 @@ const RECURSOS_MH = new URLSearchParams(location.search).get('recursosMH') || '.
 // las 39 animaciones extra del taller propio, pasadas a su esqueleto (aparte: taller-anim-v1/)
 const DETALLE = +(new URLSearchParams(location.search).get('detalle') || 0);
 const RECURSOS_ANIM_MH = new URLSearchParams(location.search).get('animMH') || '../../recursos/personajes/taller-anim-v1/';
-// las de cargar hechas en el taller (al hombro, arrastrar): aparte, en taller-carga-v1/
-const RECURSOS_CARGAS_MH = new URLSearchParams(location.search).get('cargasMH') || '../../recursos/personajes/taller-carga-v1/';
+// las de cargar hechas en el taller (al hombro, arrastrar, empujar la carretilla): aparte, en taller-carga-v2/
+const RECURSOS_CARGAS_MH = new URLSearchParams(location.search).get('cargasMH') || '../../recursos/personajes/taller-carga-v2/';
 // capas puestas en el taller propio, por sexo (por defecto: túnica en el hombre, vestido en la mujer)
 const capasMH = () => (estado.capas && estado.capas[estado.sexo]) || [estado.sexo === 'mujer' ? 'vestido' : 'tunica'];
 // aspecto del taller propio (forma, colores, peinado y barba), por sexo; se guarda con lo demás (src/logica/aspecto.js)

@@ -36,8 +36,10 @@ export const CLIPS_EXTRA = {
   empujado: 'Hit_Knockback', lanzar: 'OverhandThrow',
   // para cargar (taller-anim-v2): empujar (carretilla, rastra) y coger algo de una mesa (con una mano)
   empujar: 'Push_Loop', cogerDeMesa: 'PickUp_Table',
-  // hechas en el taller (taller-carga-v1, herramientas/taller/hacer_cargas.mjs): al hombro andando y quieto, arrastrar
+  // hechas en el taller (taller-carga-v2, herramientas/taller/hacer_cargas.mjs): al hombro andando y quieto, arrastrar,
+  // y empujar la carretilla andando y quieto
   hombro: 'Hombro_Walk_Loop', hombroQuieto: 'Hombro_Idle_Loop', arrastrar: 'Drag_Walk_Loop',
+  empujarCarretilla: 'Empujar_Walk_Loop', empujarQuieto: 'Empujar_Idle_Loop',
 };
 
 const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder); // la v2 va comprimida con meshopt
