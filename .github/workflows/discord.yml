@@ -1,0 +1,36 @@
+# Noticias del desarrollo en Discord (valravnx, 1 nov): al subir a main una versión jugable nueva o entradas nuevas del
+# diario, se publican solas en el Discord de Kinhold (herramientas/discord_noticias.mjs). Las direcciones de los webhooks
+# son secretos del repositorio (DISCORD_WEBHOOK_VERSIONES y DISCORD_WEBHOOK_DIARIO, los da el montador del Discord);
+# sin ellos no hace nada.
+name: Noticias en Discord
+on:
+  push:
+    branches: [main]
+    paths: ['proyecto/diario.json', 'docs/jugar/**']
+concurrency:
+  group: noticias-discord
+  cancel-in-progress: false
+jobs:
+  noticias:
+    if: github.repository == 'valravnxx/Kinhold'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # solo lo necesario: el historial reciente sin los archivos grandes (los que hagan falta se traen al leerlos)
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+          filter: blob:none
+          sparse-checkout: |
+            herramientas
+            proyecto
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Publicar en Discord
+        env:
+          DISCORD_WEBHOOK_VERSIONES: ${{ secrets.DISCORD_WEBHOOK_VERSIONES }}
+          DISCORD_WEBHOOK_DIARIO: ${{ secrets.DISCORD_WEBHOOK_DIARIO }}
+        run: |
+          git cat-file -e "${{ github.event.before }}^{commit}" 2>/dev/null || git fetch -q --filter=blob:none origin "${{ github.event.before }}" || true
+          node herramientas/discord_noticias.mjs "${{ github.event.before }}" "${{ github.sha }}"

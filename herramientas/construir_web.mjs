@@ -77,6 +77,19 @@ for (const h of roadmap.hitos) { anade(h.nombre); anade(h.jugable); anade(h.nota
 for (const p of roadmap.prototipos) { anade(p.nombre); anade(p.descripcion); for (const v of p.versiones) anade(v.notas); }
 for (const d of roadmap.decisiones_pendientes || []) anade(d.pregunta);
 for (const e of diario) { anade(e.titulo); anade(e.pruebas); for (const x of e.hecho || []) anade(x); }
+// «Qué es Kinhold» y las noticias (proyecto/presentacion.json): sus textos también se traducen
+let presentacion = null;
+try { presentacion = leer('proyecto/presentacion.json'); } catch (e) { /* sin presentación */ }
+if (presentacion) {
+  const k = presentacion.kinhold;
+  if (k) {
+    anade(k.titulo); (k.intro || []).forEach(anade);
+    for (const s of k.secciones || []) { anade(s.titulo); anade(s.texto); if (s.imagen && !existsSync(join(docs, s.imagen))) errores.push(`falta la imagen de «${s.titulo}»: ${s.imagen}`); }
+    for (const x of [k.quienes, k.estado]) if (x) { anade(x.titulo); (x.texto || []).forEach(anade); }
+    if (k.imagen && !existsSync(join(docs, k.imagen))) errores.push(`falta la imagen de la cabecera: ${k.imagen}`);
+  }
+  for (const n of presentacion.noticias || []) { anade(n.titulo); (n.cuerpo || []).forEach(anade); }
+}
 const idiomas = {};
 const carpetaIdiomas = join(raiz, 'proyecto/idiomas');
 for (const f of existsSync(carpetaIdiomas) ? readdirSync(carpetaIdiomas).filter(f => f.endsWith('.json')) : []) {
@@ -96,7 +109,7 @@ let sesion = {};
 try { sesion = leer('proyecto/sesion.json'); } catch (e) { /* sin sesiones */ }
 const agentes = leerAgentes(conLatido(sesion, fechasRamas())).filter(a => a.tarea)
   .map(({ quien, clave, inicio, tarea, hito, rama, ultimo }) => ({ quien, clave, inicio, tarea, hito, rama, ultimo }));
-const datos = { roadmap, diario, capturas, idiomas, agentes, generado: new Date().toISOString() };
+const datos = { roadmap, diario, capturas, idiomas, agentes, presentacion, generado: new Date().toISOString() };
 const json = JSON.stringify(datos).replace(/</g, '\\u003c');
 const html = readFileSync(join(raiz, 'herramientas/plantilla_web.html'), 'utf8').replace('/*DATOS*/null', () => json);
 writeFileSync(join(docs, 'index.html'), html);

@@ -1,0 +1,83 @@
+{
+ "kinhold": {
+  "titulo": "Qué es Kinhold",
+  "imagen": "capturas/presentacion/intro.jpg",
+  "intro": [
+   "Kinhold es un juego medieval de supervivencia, construcción y conquista en un mundo en línea compartido. Se juega desde el navegador, en PC, móvil o tableta, y está pensado tanto para quien juega solo como para parejas, familias y clanes enteros.",
+   "Es una Edad Media sin fantasía: no hay magia ni monstruos. Hay hierro, madera, piedra, frío, hambre y gente. Empiezas sin nada en Whitholm, la isla del rey, y a partir de ahí el camino es tuyo: puedes vivir apartado con lo justo o levantar un señorío y gobernar una comarca. Del survival al reino, o a vivir aislado y bien."
+  ],
+  "secciones": [
+   {
+    "titulo": "Supervivencia realista",
+    "texto": "Las cosas cuestan lo que costarían de verdad. Hay hambre, sed, frío y cansancio, el día y la noche, las estaciones, y morir tiene consecuencias.",
+    "imagen": "capturas/presentacion/supervivencia.jpg"
+   },
+   {
+    "titulo": "Construcción libre",
+    "texto": "De la choza a la casa y del muro de troncos al castillo de piedra, todo pieza a pieza, en tu propia tierra.",
+    "imagen": "capturas/presentacion/construccion.jpg"
+   },
+   {
+    "titulo": "Progresión sin niveles",
+    "texto": "Avanzan tus oficios y tu equipo, no un número. La tecnología va de la Alta a la Baja Edad Media a través de los talleres que construyes.",
+    "imagen": "capturas/presentacion/progresion.jpg"
+   },
+   {
+    "titulo": "Familias, clanes y política",
+    "texto": "Los clanes pueden gobernar comarcas, cobrar renta, tener vasallos y alianzas, y hacer guerras con causa y asedios a castillos. Tus tierras quedan protegidas mientras no estás.",
+    "imagen": "capturas/presentacion/clanes.jpg"
+   },
+   {
+    "titulo": "Combate de habilidad",
+    "texto": "Se inspira en la esgrima histórica, con heridas reales en lugar de barras de vida. Más adelante llegarán el combate a caballo y a distancia.",
+    "imagen": "capturas/presentacion/combate.jpg"
+   },
+   {
+    "titulo": "Vida rural",
+    "texto": "Caza, caballos, ganado, cultivos según el clima y la estación, y una economía con mercaderes, encargos y gente a tu servicio.",
+    "imagen": "capturas/presentacion/vida.jpg"
+   },
+   {
+    "titulo": "Un mundo por descubrir",
+    "texto": "Whitholm es solo el principio. Al otro lado del mar está Kinland, un continente sin cartografiar con cinco regiones distintas, al que se llega en barcos construidos por los propios jugadores y que se cartografía explorándolo.",
+    "imagen": "capturas/presentacion/mundo.jpg"
+   }
+  ],
+  "quienes": {
+   "titulo": "Quiénes somos",
+   "texto": [
+    "Kinhold es el proyecto de valravnx, diseñador de juego, que decide qué es el juego, cómo se juega y cómo se ve. El desarrollo, la programación, el mundo, los modelos y la web, está asistido por IA. Lo contamos abiertamente porque forma parte del proyecto: un juego de diseño humano, desarrollado con IA y construido a la vista de todos.",
+    "Todo el desarrollo es público: en esta web están el roadmap, el diario de trabajo y cada versión jugable, en español, inglés y ruso."
+   ]
+  },
+  "estado": {
+   "titulo": "Dónde estamos",
+   "texto": [
+    "Estamos en desarrollo temprano. Ya existen la isla, el servidor en línea, los personajes, la construcción y el combate. Ahora el objetivo es que cualquiera pueda empezar de cero y levantar su primera casa. Todo lo demás llegará por etapas, y se puede ver crecer desde hoy."
+   ]
+  }
+ },
+ "noticias": [
+  {
+   "fecha": "2026-11-01",
+   "titulo": "Alto en el camino: revisión completa y nuevo rumbo",
+   "cuerpo": [
+    "Hoy hemos parado. Durante los últimos días Kinhold ha crecido muy rápido: dos agentes de IA trabajando cada hora en paralelo han levantado un mundo enorme, personajes con ropa por capas, construcción por piezas, combate de esgrima en línea, ríos y nado. Pero al jugarlo nos dimos cuenta de algo importante: todavía no se podía ir de no tener nada a tener tu propia casa sin trampas. Había mucho construido a lo ancho y el bucle básico del juego seguía sin cerrarse.",
+    "Así que pausamos todo el trabajo automático e hicimos una revisión completa del proyecto: qué funciona de verdad, qué está roto y qué se había hecho antes de tiempo. Salieron cosas serias: fabricar no estaba aún en el juego, faltaban materiales en el mundo, había un solo mojón para todo el servidor y subir un tronco a una planta alta era un sinsentido de inventario.",
+    "Lo que hemos decidido:",
+    "• Fabricar en cualquier sitio, con lo que llevas y lo que tienes en el suelo al lado, sin tener que aprender recetas, y con una progresión que se vea clara.",
+    "• Fuego con sentido: la hoguera, fuera, se enciende con yesca, se alimenta con leña y se apaga; dentro de la casa, el hogar humilde, más duradero, que más adelante servirá para cocinar.",
+    "• Almacenajes para tu base: acopio de troncos, pila de piedras, leñera, almiar y más, que se ven llenarse y son de quien tiene la tierra.",
+    "• Cargar con realismo: si llevas algo al hombro, no llevas nada en las manos.",
+    "• Árboles de verdad: los jóvenes, finos y talables con hacha de piedra; los adultos, más altos y grandes. Más adelante caerán por física y podrán aplastar a quien se ponga debajo.",
+    "• Fuera el arcón de materiales infinito: todo se consigue jugando.",
+    "El nuevo plan, en orden de prioridad:",
+    "1. Cuentas: usuario y contraseña, para que tu personaje, tu casa y tus cosas no se pierdan al cambiar de navegador o de aparato.",
+    "2. Jugar entre dos sin trampas: un mojón y una tierra para cada jugador, lo tuyo es tuyo, y una salida al azar de verdad.",
+    "3. De nada a una casa: fabricar tus herramientas de piedra, acopiar materiales y levantar una casa humilde con su hogar, hasta el banco de trabajo que abre el siguiente nivel.",
+    "Después vendrán un primer día con hambre, sed, frío, día y noche, y talar de verdad. El resto de ideas (minas, granja, fauna, comercio, asedios…) no se olvida: queda congelado hasta que le toque.",
+    "A partir de ahora trabaja un solo agente a la vez, cada parte se prueba como un jugador nuevo y sin trampas antes de publicarse, y al terminar cada etapa paramos a revisarla. Cuando la casa esté lista, otra reunión grande para decidir cómo seguir."
+   ]
+  }
+ ]
+}

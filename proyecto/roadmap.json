@@ -114,9 +114,15 @@
     },
     {
      "nombre": "Noticias del desarrollo en Discord: cada versión jugable y cada entrada del diario se publican solas en el Discord de Kinhold",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-01T15:18:08+01:00",
-     "rama": "trabajo/20261101-1520-discord"
+     "fin": "2026-11-01T16:21:54+01:00"
+    },
+    {
+     "nombre": "Noticias del desarrollo en Discord en tres idiomas: en inglés en los canales comunes y en español y ruso en los suyos",
+     "estado": "en_curso",
+     "inicio": "2026-11-01T16:29:59+01:00",
+     "rama": "trabajo/20261101-1630-discord-idiomas"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."

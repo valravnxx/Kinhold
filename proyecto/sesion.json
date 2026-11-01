@@ -6,10 +6,10 @@
   "rama": "trabajo/20261101-1425"
  },
  "B": null,
- "chat:trabajo/20261101-1520-discord": {
-  "inicio": "2026-11-01T15:18:08+01:00",
-  "tarea": "Noticias del desarrollo en Discord: cada versión jugable y cada entrada del diario se publican solas en el Discord de Kinhold",
+ "chat:trabajo/20261101-1630-discord-idiomas": {
+  "inicio": "2026-11-01T16:29:59+01:00",
+  "tarea": "Noticias del desarrollo en Discord en tres idiomas: en inglés en los canales comunes y en español y ruso en los suyos",
   "hito": "infra",
-  "rama": "trabajo/20261101-1520-discord"
+  "rama": "trabajo/20261101-1630-discord-idiomas"
  }
 }
