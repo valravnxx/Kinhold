@@ -1047,9 +1047,10 @@
     },
     {
      "nombre": "Cejas, bigote y barba en el cuello (visto en la revisión del 31 oct, noche): de cerca las cejas aún se cortan en escalones rectos, el bigote es una banda plana separada de la barba por las comisuras y la barba corta baja por el cuello en un gris claro, como escarcha, en vez de clarear sobre la piel",
-     "estado": "en_curso",
-     "inicio": "2026-10-31T23:54:00+00:00",
-     "rama": "trabajo/20261031-2354"
+     "estado": "hecho",
+     "inicio": "2026-10-31T23:53:43+00:00",
+     "rama": "trabajo/20261031-2354",
+     "fin": "2026-11-01T01:45:41+00:00"
     },
     {
      "nombre": "Cuello de la ropa con toca en el móvil (visto en la revisión del 31 oct, noche): con la calidad ligera el borde del cuello sale en dientes de sierra y entre la toca y el cuello asoma una cuña de piel",
@@ -2230,6 +2231,13 @@
      "archivo": "jugar/demo/v78.html",
      "capturas": "capturas/demo-v78",
      "notas": "Lo que se recoge sale del sitio en el mundo: ramas bajo los árboles, sílex en la caliza y los ríos, piedra en las laderas y los ríos, ortigas y hierba larga en los claros y las riberas; siempre en el mismo sitio para todos y apareciendo a tu alrededor al andar."
+    },
+    {
+     "v": "v79",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/demo/v79.html",
+     "capturas": "capturas/personaje-v35",
+     "notas": "En el juego, cejas sin escalones, barba que clarea en pelos sueltos y bigote unido a la barba (personajes taller-v22)."
     }
    ]
   },
@@ -2972,6 +2980,13 @@
      "archivo": "jugar/personaje/v34.html",
      "capturas": "capturas/personaje-v34",
      "notas": "Cejas y cuello del hombre: de cerca las cejas ya no salen en bloques gruesos y la barba corta baja por el cuello hasta la ropa, sin la franja clara de antes (personajes en taller-v21)."
+    },
+    {
+     "v": "v35",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/personaje/v35.html",
+     "capturas": "capturas/personaje-v35",
+     "notas": "Cejas sin escalones rectos, la barba corta clarea en el cuello en pelos sueltos y oscuros (no en un gris como escarcha) y el bigote se une a la barba en las comisuras (taller-v22)."
     }
    ]
   },
