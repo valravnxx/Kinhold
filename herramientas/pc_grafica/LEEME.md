@@ -21,12 +21,14 @@ Lo pidió valravnx el 31 oct 2026: que las pruebas de Kinhold usen la tarjeta gr
 
 ## Ponerlo en marcha (una vez)
 
-1. Copia esta carpeta a tu PC (por ejemplo, `D:\valravnxdev\kinhold_grafica`).
+1. Copia esta carpeta a tu PC (por ejemplo, `D:\valravnxdev\kinhold_grafica`). Para actualizarlo, cambia
+   `kinhold_grafica.ps1` por el nuevo con la ventana cerrada.
 2. Doble clic en **Abrir Kinhold grafica.bat**. Si Windows avisa («Windows protegió su PC»), «Más información» →
    «Ejecutar de todas formas».
 3. Pulsa **Permitir**. La primera vez:
    - instala Git y Python si no los tienes (con winget, para tu usuario);
-   - descarga el programa de GitHub para usar el PC (en `%LOCALAPPDATA%\KinholdGrafica`);
+   - descarga el programa de GitHub para usar el PC (en `D:\KinholdGrafica`, o en la carpeta que elijas abajo en la
+     ventana; si no hay disco D, en `%LOCALAPPDATA%\KinholdGrafica`);
    - abre GitHub en «New self-hosted runner»: copia el código que va detrás de `--token` y pégalo en la ventanita.
 4. Cuando diga **Permitido: esperando pruebas**, ya está. En GitHub, *Settings → Actions → Runners* lo verás como
    `pc-valravnx-gpu`, «Idle».
@@ -40,6 +42,20 @@ sesiones de Claude).
 Ten en cuenta que, mientras está permitido, las pruebas se ejecutan con tu usuario de Windows (como cualquier programa
 que abres). Solo ejecutan el código del repositorio de Kinhold.
 
+## Dónde guarda (31 oct: le llenaba el SSD a valravnx)
+
+- Todo lo que guardan las pruebas va a **una carpeta que eliges**, por defecto `D:\KinholdGrafica`: el programa de
+  GitHub y su trabajo, el navegador de las pruebas, las cachés de pip y npm y lo temporal. En la ventana, abajo,
+  «Guarda en … (cambiar)» la cambia y se lleva todo (sin volver a pedir el código).
+- Lo temporal de cada tanda se borra solo al acabar (antes se quedaba en la carpeta temporal de Windows: 7 GB en 170
+  vueltas).
+- Al abrir la versión nueva, si encuentra en el disco de Windows lo de la anterior, pregunta y lo pasa a la carpeta y
+  borra de C: la carpeta `%LOCALAPPDATA%\KinholdGrafica`, el navegador de las pruebas (`%LOCALAPPDATA%\ms-playwright`) y
+  las carpetas temporales de las pruebas (solo las que se reconocen como suyas). La caché de pip (`%LOCALAPPDATA%\pip\Cache`)
+  la pregunta aparte, porque puede ser también de otros programas. «Liberar el disco de Windows» lo vuelve a mirar.
+- Los paquetes de Python de las pruebas (playwright, pillow, numpy) se quedan en tu Python (unos cientos de MB).
+- `probar_programa.ps1` prueba todo esto en Windows con carpetas de prueba (en la nube, en una máquina windows-latest).
+
 ## Si algo va mal
 
 - **31 oct: todos los grupos fallaban en segundos** con «bash: command not found». Git para Windows solo pone
@@ -51,11 +67,11 @@ que abres). Solo ejecutan el código del repositorio de Kinhold.
   (combate y construcción). La batería entera en su PC: 25 grupos en unos 40 min, todos bien salvo «jugar en línea».
 
 - **Ver el registro** (en la ventana): lo que ha hecho el programa. Lo que dice el programa de GitHub está en
-  `%LOCALAPPDATA%\KinholdGrafica\runner.txt`.
-- Para volver a unir el PC (otro PC, o lo quitaste en GitHub): borra la carpeta `%LOCALAPPDATA%\KinholdGrafica\runner`
+  `runner.txt`, en esa carpeta.
+- Para volver a unir el PC (otro PC, o lo quitaste en GitHub): borra la carpeta `runner` de esa carpeta
   y pulsa **Permitir**.
 - Para quitarlo del todo: en GitHub, *Settings → Actions → Runners* → `pc-valravnx-gpu` → *Remove*; y borra
-  `%LOCALAPPDATA%\KinholdGrafica`.
+  esa carpeta (y `kinhold_grafica_ajustes.json`, junto al programa).
 
 ## Para las sesiones de Claude
 

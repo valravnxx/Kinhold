@@ -330,7 +330,9 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
     const w = agua(xm, ym, tramos);
     return w === null ? null : Math.max(0, w - z);
   }
-  return { altura, agua, hondura, corriente, saltosEn, vadosEn, sitio, riosEn, rios, celda, grande };   // grande: la forma de lejos (el mapa del rey)
+  // lo lejos que está un punto del eje del río más cercano (m) y el ancho de ese río (para las riberas)
+  function rioCerca(xm, ym, tramos) { const { dm, ancho } = rioCercano(xm, ym, tramos); return { dm, ancho }; }
+  return { altura, agua, hondura, corriente, saltosEn, vadosEn, sitio, riosEn, rioCerca, rios, celda, grande };   // grande: la forma de lejos (el mapa del rey)
 }
 
 // El bosque en un punto del mundo (xm, ym en metros): cuánto de espeso (d, 0–1), qué especie, de qué tamaño (tam,

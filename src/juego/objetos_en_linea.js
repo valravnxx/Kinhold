@@ -41,7 +41,7 @@ export function crearObjetosEnLinea({ inventarios, autor, sueloObjetos, talaV, r
   }
   function ponerRecoleccion(datos) {
     if (!datos) return;
-    recoleccion.rec.importar(datos); recoleccion.refrescar();
+    recoleccion.importar(datos);
     alCambiar('recoleccion');
   }
   function talaDeRed(msg) {

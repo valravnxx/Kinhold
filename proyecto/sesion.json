@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-10-31T23:31:19+00:00",
-  "tarea": "Lo que se recoge sale del sitio: ramas en el bosque, sílex en la caliza, piedra en las laderas y los ríos, fibra en los claros y las riberas",
-  "hito": "mundo-juego",
-  "rama": "trabajo/20261031-2331"
- },
+ "A": null,
  "B": {
   "inicio": "2026-10-31T23:54:00+00:00",
   "tarea": "Cejas, bigote y barba en el cuello (visto en la revisión del 31 oct, noche): de cerca las cejas aún se cortan en escalones rectos, el bigote es una banda plana separada de la barba por las comisuras y la barba corta baja por el cuello en un gris claro, como escarcha, en vez de clarear sobre la piel",
@@ -16,11 +11,5 @@
   "tarea": "Pelear en línea en el mundo (valravnx, 31 oct): al sacar el arma, los demás la ven en la mano, y los golpes y las paradas van por el servidor y hieren de verdad al otro",
   "hito": "duelo",
   "rama": "trabajo/20261031-2300-pelea"
- },
- "chat:trabajo/20261031-2350-disco-d": {
-  "inicio": "2026-10-31T23:50:39+00:00",
-  "tarea": "Las pruebas en el PC de valravnx, en el disco D (valravnx, 31 oct): todo lo que guardan va a D en vez de al SSD de Windows, y el programa limpia lo que dejaron en C",
-  "hito": "infra",
-  "rama": "trabajo/20261031-2350-disco-d"
  }
 }

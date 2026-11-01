@@ -2,8 +2,9 @@
 # Mientras esta ventana está abierta y en «Permitir», las pruebas de Kinhold que lanzan las sesiones de Claude se hacen en
 # este PC, con su tarjeta gráfica (una máquina propia de GitHub Actions, «self-hosted runner», con la etiqueta
 # kinhold-gpu). Con «Parar», o al cerrar la ventana, deja de estar disponible y las pruebas vuelven a la nube.
-# La primera vez descarga el programa de GitHub para eso (en %LOCALAPPDATA%\KinholdGrafica) y pide el código para unirlo
-# al repositorio. Se abre con «Abrir Kinhold grafica.bat».
+# La primera vez descarga el programa de GitHub para eso y pide el código para unirlo al repositorio. Todo lo que guarda
+# va a una carpeta que se elige (por defecto D:\KinholdGrafica, no el disco de Windows: lo pidió valravnx el 31 oct, le
+# llenaba el SSD), y lo que dejó en C la versión anterior se pasa allí o se borra. Se abre con «Abrir Kinhold grafica.bat».
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName Microsoft.VisualBasic
@@ -11,12 +12,17 @@ $ErrorActionPreference = 'Stop'
 
 $REPO = 'valravnxx/Kinhold'
 $ETIQUETA = 'kinhold-gpu'
-$DATOS = Join-Path $env:LOCALAPPDATA 'KinholdGrafica'
-$RUNNER = Join-Path $DATOS 'runner'
-$REGISTRO = Join-Path $DATOS 'registro.txt'
-$AJUSTES = Join-Path $DATOS 'ajustes.json'
-New-Item -ItemType Directory -Force -Path $DATOS | Out-Null
-$SALIDA_RUNNER = Join-Path $DATOS 'runner.txt'
+# los ajustes, junto a este programa (son unas líneas); lo que pesa, en la carpeta elegida ($DATOS)
+$AJUSTES = Join-Path $PSScriptRoot 'kinhold_grafica_ajustes.json'
+$VIEJA = Join-Path $env:LOCALAPPDATA 'KinholdGrafica'      # donde lo guardaba la versión anterior (en C)
+$TEMP_WINDOWS = [IO.Path]::GetTempPath()                     # (antes de cambiar TEMP para las pruebas)
+function Poner-Carpeta($c) {
+  $script:DATOS = $c
+  $script:RUNNER = Join-Path $c 'runner'
+  $script:REGISTRO = Join-Path $c 'registro.txt'
+  $script:SALIDA_RUNNER = Join-Path $c 'runner.txt'
+  New-Item -ItemType Directory -Force -Path $c | Out-Null
+}
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # una sola ventana a la vez
@@ -26,7 +32,14 @@ if (-not $mutex.WaitOne(0)) { [System.Windows.Forms.MessageBox]::Show('Kinhold g
 # todo lo que arranca desde aquí (las pruebas, el navegador) va con prioridad baja: si juegas, el juego va primero
 [System.Diagnostics.Process]::GetCurrentProcess().PriorityClass = 'BelowNormal'
 
-function Leer-Ajustes { if (Test-Path $AJUSTES) { try { return Get-Content $AJUSTES -Raw | ConvertFrom-Json } catch {} }; return [pscustomobject]@{ pararA = $false; hora = '08:00' } }
+function Carpeta-Por-Defecto { if (Test-Path 'D:\') { 'D:\KinholdGrafica' } else { $VIEJA } }
+function Leer-Ajustes {
+  $a = $null
+  foreach ($f in @($AJUSTES, (Join-Path $VIEJA 'ajustes.json'))) { if (-not $a -and (Test-Path $f)) { try { $a = Get-Content $f -Raw | ConvertFrom-Json } catch {} } }
+  if (-not $a) { $a = [pscustomobject]@{ pararA = $false; hora = '08:00' } }
+  if (-not $a.PSObject.Properties['carpeta'] -or -not $a.carpeta) { $a | Add-Member -Force -MemberType NoteProperty -Name carpeta -Value (Carpeta-Por-Defecto) }
+  return $a
+}
 function Guardar-Ajustes($a) { $a | ConvertTo-Json | Set-Content -Encoding UTF8 $AJUSTES }
 function Anotar($t) { Add-Content -Encoding UTF8 -Path $REGISTRO -Value ("{0:yyyy-MM-dd HH:mm:ss}  {1}" -f (Get-Date), $t) }
 function Configurado { Test-Path (Join-Path $RUNNER '.runner') }
@@ -94,12 +107,25 @@ function Preparar($avisar) {
 
 # ---------- encender y apagar ----------
 $script:proc = $null
-function Procesos-Runner { Get-Process -Name 'Runner.Listener', 'Runner.Worker' -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.StartsWith($RUNNER, 'OrdinalIgnoreCase') } }
+function Es-Nuestro($ruta) { $ruta -and ($ruta.StartsWith($RUNNER, 'OrdinalIgnoreCase') -or $ruta.StartsWith((Join-Path $VIEJA 'runner'), 'OrdinalIgnoreCase')) }
+function Procesos-Runner { Get-Process -Name 'Runner.Listener', 'Runner.Worker' -ErrorAction SilentlyContinue | Where-Object { Es-Nuestro $_.Path } }
 function Encendido { ($script:proc -and -not $script:proc.HasExited) -or (Procesos-Runner) }
-function Haciendo-Pruebas { [bool](Get-Process -Name 'Runner.Worker' -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.StartsWith($RUNNER, 'OrdinalIgnoreCase') }) }
+function Haciendo-Pruebas { [bool](Get-Process -Name 'Runner.Worker' -ErrorAction SilentlyContinue | Where-Object { Es-Nuestro $_.Path }) }
 
+# lo que guardan las pruebas, también en la carpeta elegida: el navegador de las pruebas, las cachés de pip y npm y lo
+# temporal (las pruebas lo heredan del programa de GitHub; el flujo de pruebas lo pone además en su carpeta de trabajo)
+function Entorno-En-Carpeta {
+  $tmp = Join-Path $DATOS 'temp'
+  if (Test-Path $tmp) { Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$tmp\*" }
+  New-Item -ItemType Directory -Force -Path $tmp | Out-Null
+  $env:TEMP = $tmp; $env:TMP = $tmp
+  $env:PLAYWRIGHT_BROWSERS_PATH = Join-Path $DATOS 'cache\ms-playwright'
+  $env:PIP_CACHE_DIR = Join-Path $DATOS 'cache\pip'
+  $env:npm_config_cache = Join-Path $DATOS 'cache\npm'
+}
 function Encender {
   if (Encendido) { return }
+  Entorno-En-Carpeta
   $psi = New-Object System.Diagnostics.ProcessStartInfo
   $psi.FileName = $env:ComSpec
   $psi.Arguments = "/c `"`"$RUNNER\run.cmd`" >> `"$SALIDA_RUNNER`" 2>&1`""
@@ -118,11 +144,76 @@ function Apagar {
   Anotar 'Parado: las pruebas vuelven a la nube'
 }
 
+# ---------- pasar a otra carpeta y limpiar lo que quedó en C ----------
+function Tamano($p) { if (-not (Test-Path -LiteralPath $p)) { return 0 }; $b = (Get-ChildItem -LiteralPath $p -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum; if ($b) { $b } else { 0 } }
+function GB($b) { '{0:N1} GB' -f ($b / 1GB) }
+# en la carpeta temporal de Windows, solo lo que se reconoce como de las pruebas: las carpetas tmp… con la web de
+# prueba dentro (jugar, recursos o el mundo del servidor), los perfiles del navegador de las pruebas y sus capturas
+function Restos-En-Temp {
+  Get-ChildItem -LiteralPath $TEMP_WINDOWS -Force -ErrorAction SilentlyContinue | Where-Object {
+    $_.Name -in @('kinhold_capturas', 'vuelta', 'resumen.txt') -or $_.Name -like 'playwright_*' -or
+    ($_.PSIsContainer -and $_.Name -like 'tmp*' -and ((Test-Path (Join-Path $_.FullName 'jugar')) -or (Test-Path (Join-Path $_.FullName 'recursos')) -or (Test-Path (Join-Path $_.FullName 'mundo.jsonl'))))
+  }
+}
+# borrar sin que lo paren las rutas largas (node_modules pasa de 260 letras): «rd» con \\?\ delante
+function Borrar($p) {
+  if (-not (Test-Path -LiteralPath $p)) { return }
+  if ((Get-Item -LiteralPath $p -Force).PSIsContainer) { & cmd /c rd /s /q "\\?\$p" 2>&1 | Out-Null }
+  if (Test-Path -LiteralPath $p) { Remove-Item -LiteralPath $p -Recurse -Force -ErrorAction SilentlyContinue }
+}
+# pasa a la carpeta $destino: el programa de GitHub ya unido (de la carpeta de ahora o de la de la versión anterior, en C)
+# se lleva entero, sin su carpeta de trabajo, que se rehace sola; así no hay que volver a pedir el código. Después
+# borra lo que las pruebas dejaron en C y la carpeta de antes.
+function Mover-Y-Limpiar($destino, $avisar) {
+  $estaba = Encendido
+  if ($estaba) { Apagar }
+  $origen = $DATOS
+  Poner-Carpeta $destino
+  $desde = @($origen, $VIEJA) | Where-Object { $_ -ne $destino -and (Test-Path (Join-Path $_ 'runner\.runner')) } | Select-Object -First 1
+  if ($desde -and -not (Configurado)) {
+    & $avisar 'Pasando el programa de GitHub a la carpeta nueva…'
+    Borrar (Join-Path $desde 'runner\_work')
+    & robocopy (Join-Path $desde 'runner') $RUNNER /E /MOVE /R:1 /W:1 /NFL /NDL /NJH /NJS /NP | Out-Null
+    if ($LASTEXITCODE -ge 8) { throw "No he podido pasar el programa de GitHub a $RUNNER (robocopy $LASTEXITCODE)." }
+    foreach ($f in 'registro.txt', 'runner.txt') { if (Test-Path (Join-Path $desde $f)) { Get-Content (Join-Path $desde $f) | Add-Content -Encoding UTF8 (Join-Path $destino $f) } }
+  }
+  & $avisar 'Borrando lo que las pruebas dejaron en el disco de Windows…'
+  $borrar = @(@($origen, $VIEJA) | Where-Object { $_ -ne $destino -and (Test-Path $_) } | Select-Object -Unique)
+  $borrar += (Join-Path $env:LOCALAPPDATA 'ms-playwright')
+  $borrar += @(Restos-En-Temp | ForEach-Object { $_.FullName })
+  foreach ($b in $borrar) { Borrar $b }
+  Anotar "Carpeta: $destino (antes $origen). Borrado: $($borrar.Count) carpetas y archivos de las pruebas."
+  if ($estaba) { Encender }
+}
+# lo que hay que preguntar: si la carpeta elegida no es la de antes y en C quedó algo de las pruebas
+function Revisar-Disco-C($avisar, $siempre) {
+  $vieja = Tamano $VIEJA; $pw = Tamano (Join-Path $env:LOCALAPPDATA 'ms-playwright')
+  $restos = @(Restos-En-Temp); $tmp = ($restos | ForEach-Object { Tamano $_.FullName } | Measure-Object -Sum).Sum; if (-not $tmp) { $tmp = 0 }
+  $pip = Tamano (Join-Path $env:LOCALAPPDATA 'pip\Cache')
+  $total = $(if ($VIEJA -ne $DATOS) { $vieja } else { 0 }) + $pw + $tmp
+  if (-not $siempre -and $total -lt 50MB) { return }
+  $txt = "Las pruebas guardan ahora en:`n    $DATOS`n`nEn el disco de Windows quedó de las pruebas:`n" +
+    $(if ($VIEJA -ne $DATOS) { "    $(GB $vieja)  el programa de GitHub y su trabajo (se pasa a la carpeta nueva, sin pedir otra vez el código)`n" } else { '' }) +
+    "    $(GB $pw)  el navegador de las pruebas`n    $(GB $tmp)  carpetas temporales de las pruebas ($($restos.Count))`n`n¿Lo paso y borro de C ($(GB $total))?"
+  $r = [System.Windows.Forms.MessageBox]::Show($txt, 'Kinhold · liberar el disco de Windows', 'YesNo', 'Question')
+  if ($r -eq 'Yes') {
+    Mover-Y-Limpiar $DATOS $avisar
+    if ($pip -gt 100MB) {
+      $r2 = [System.Windows.Forms.MessageBox]::Show("Queda también la caché de pip en C ($(GB $pip)): son paquetes de Python descargados, de las pruebas y quizá de otros programas tuyos. Borrarla no rompe nada (se vuelven a descargar si hacen falta). ¿La borro?", 'Kinhold', 'YesNo', 'Question')
+      if ($r2 -eq 'Yes') { Borrar (Join-Path $env:LOCALAPPDATA 'pip\Cache'); Anotar "Borrada la caché de pip de C ($(GB $pip))." }
+    }
+    $libre = (Get-PSDrive C).Free
+    [System.Windows.Forms.MessageBox]::Show("Hecho. Libre en C: $(GB $libre).", 'Kinhold') | Out-Null
+  }
+}
+
 # ---------- la ventana ----------
 $aj = Leer-Ajustes
+Poner-Carpeta $aj.carpeta
+Guardar-Ajustes $aj
 $f = New-Object System.Windows.Forms.Form
 $f.Text = 'Kinhold · tu gráfica para las pruebas'
-$f.Size = New-Object System.Drawing.Size(460, 300)
+$f.Size = New-Object System.Drawing.Size(460, 325)
 $f.FormBorderStyle = 'FixedSingle'; $f.MaximizeBox = $false
 $f.StartPosition = 'CenterScreen'
 $f.Font = New-Object System.Drawing.Font('Segoe UI', 10)
@@ -158,6 +249,33 @@ $ver.Location = '20,226'; $ver.Size = '200,22'; $ver.Text = 'Ver el registro'
 $ver.LinkColor = [System.Drawing.Color]::FromArgb(214, 168, 72)
 $ver.Add_LinkClicked({ if (Test-Path $REGISTRO) { Start-Process notepad $REGISTRO } })
 $f.Controls.Add($ver)
+
+$donde = New-Object System.Windows.Forms.LinkLabel
+$donde.Location = '20,250'; $donde.Size = '410,22'
+$donde.LinkColor = [System.Drawing.Color]::FromArgb(214, 168, 72)
+$f.Controls.Add($donde)
+function Pintar-Carpeta { $donde.Text = "Guarda en $DATOS (cambiar)" }
+$donde.Add_LinkClicked({
+  $d = New-Object System.Windows.Forms.FolderBrowserDialog
+  $d.Description = 'Carpeta donde guardan las pruebas (mejor en el disco de datos, no en el de Windows)'
+  $d.SelectedPath = $DATOS
+  if ($d.ShowDialog() -ne 'OK') { return }
+  $nueva = Join-Path $d.SelectedPath 'KinholdGrafica'
+  if ((Split-Path $d.SelectedPath -Leaf) -eq 'KinholdGrafica') { $nueva = $d.SelectedPath }
+  if ($nueva -eq $DATOS) { return }
+  if (Haciendo-Pruebas) { [System.Windows.Forms.MessageBox]::Show('Hay pruebas en marcha: para primero («Parar»).', 'Kinhold') | Out-Null; return }
+  try {
+    Mover-Y-Limpiar $nueva { param($t) Pintar $t }
+    & $guardar; Pintar-Carpeta
+  } catch { Anotar ("error: " + $_.Exception.Message); [System.Windows.Forms.MessageBox]::Show("No ha ido bien: $($_.Exception.Message)", 'Kinhold') | Out-Null }
+  Pintar
+})
+
+$limpiar = New-Object System.Windows.Forms.LinkLabel
+$limpiar.Location = '240,226'; $limpiar.Size = '190,22'; $limpiar.Text = 'Liberar el disco de Windows'; $limpiar.TextAlign = 'TopRight'
+$limpiar.LinkColor = [System.Drawing.Color]::FromArgb(214, 168, 72)
+$limpiar.Add_LinkClicked({ try { Revisar-Disco-C { param($t) Pintar $t } $true } catch { [System.Windows.Forms.MessageBox]::Show("No ha ido bien: $($_.Exception.Message)", 'Kinhold') | Out-Null }; Pintar })
+$f.Controls.Add($limpiar)
 
 $icono = New-Object System.Windows.Forms.NotifyIcon
 $icono.Icon = [System.Drawing.SystemIcons]::Application
@@ -206,7 +324,7 @@ function Cambiar {
 $boton.Add_Click({ Cambiar })
 $mCambiar.Add_Click({ Cambiar })
 
-$guardar = { Guardar-Ajustes ([pscustomobject]@{ pararA = $parar.Checked; hora = $hora.Value.ToString('HH:mm') }) }
+$guardar = { Guardar-Ajustes ([pscustomobject]@{ pararA = $parar.Checked; hora = $hora.Value.ToString('HH:mm'); carpeta = $DATOS }) }
 $parar.Add_CheckedChanged($guardar); $hora.Add_ValueChanged($guardar)
 
 # cada 2 s: el estado y la hora de parar
@@ -223,6 +341,9 @@ $reloj.Start()
 $f.Add_FormClosing({ $reloj.Stop(); if (Encendido) { Apagar }; $icono.Visible = $false; $icono.Dispose() })
 # si quedó algo encendido de otra vez (el programa se cerró mal), se apaga: solo vale lo que se permite ahora
 if (Procesos-Runner) { Apagar }
+Pintar-Carpeta
 Pintar
+# al abrir, si quedó en C algo de las pruebas (de la versión anterior), se ofrece pasarlo y borrarlo
+$f.Add_Shown({ try { Revisar-Disco-C { param($t) Pintar $t } $false } catch { Anotar ("error al limpiar: " + $_.Exception.Message); [System.Windows.Forms.MessageBox]::Show("No ha ido bien: $($_.Exception.Message)", 'Kinhold') | Out-Null }; Pintar-Carpeta; Pintar })
 [System.Windows.Forms.Application]::Run($f)
 $mutex.ReleaseMutex()
