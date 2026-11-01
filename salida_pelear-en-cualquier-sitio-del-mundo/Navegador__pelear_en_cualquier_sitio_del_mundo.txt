@@ -1,0 +1,40 @@
+Vista pc
+  OK   la demo arranca sin error — None
+  OK   el rival no atraviesa los árboles — {"r": 0.5144648217923848, "d": 0.834464821792384}
+  OK   el rival no sube por los cortados — {"x": 2758.419569150229, "z": 1370.2267989384325, "sube": 0.00015699090883458666, "quiere": 0.5496058414320686, "llega": false}
+  OK   hay una orilla con agua honda cerca de la salida — {"tierra": [2738.46028049609, 1365.4432584861506], "agua": [2742.934888797554, 1367.6743749215855], "rumbo": 0.462540716612378, "r": 3070}
+  orilla {"tierra": [2738.46028049609, 1365.4432584861506], "agua": [2742.934888797554, 1367.6743749215855], "rumbo": 0.462540716612378, "r": 3070}
+  OK   un paso del rival hacia donde cubre no se da — {"hondo": 0.4968352543373414, "x": 2742.934888797554, "z": 1365.4432584861506}
+  OK   sale un rival de práctica en la orilla — 1
+  OK   el rival aparece donde se anda (seco, sin árbol encima, al que se llega) — {"x": 2743.308406527173, "z": 1368.9781805484793, "hondo": 1.0823827028955009, "llega": true, "arbol": false}
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_pelear_mundo_navegador.py", line 132, in <module>
+    pg.wait_for_function(f"(() => {{ const L = {C}.rivales[0].L; return Math.hypot(L.x - {K}.pj.x, L.z - {K}.pj.z) < 3.5; }})()", timeout=240000)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 12809, in wait_for_function
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.wait_for_function(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 1153, in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 941, in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 240000ms exceeded.
