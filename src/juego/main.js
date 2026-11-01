@@ -36,7 +36,7 @@ import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } f
 import { hachaEnMano, HACHAS, edadDeEscala } from '../logica/tala.js';
 import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
 import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_TROCEO } from '../logica/troceo.js';
-import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, CABE_RASTRA, ALCANCE_RASTRA, sitioRastra } from '../logica/rastra.js';
+import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo } from '../logica/rastra.js';
 import { moverRastras } from './rastra.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
@@ -1270,13 +1270,13 @@ function usar() {
   // carga, y si no, se engancha (se descarga y se carga del suelo desde el menú del clic derecho)
   if (!it && pj.k === 0 && miRastra()) { soltarRastra(); return; }
   if (!it && pj.k === 0 && rastraCercana()) {
-    const de = paraCargar();
+    const de = paraCargar(rastraCercana().cosa.tipo);
     if (de) cargarRastra(rastraCercana(), { de }); else engancharRastra(rastraCercana());
     return;
   }
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
-    const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => o.cosa.tipo !== 'rastra'); // lo que hay en el suelo, antes que lo que se recoge
+    const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => !esVehiculo(o.cosa.tipo)); // lo que hay en el suelo, antes que lo que se recoge
     if (so) { cogerDelSuelo(so); return; }
     const rc = recoleccion.cercano(pj.x, pj.z);
     if (rc) { recoger(rc); return; }
@@ -1314,7 +1314,7 @@ function opcionesUsar() {
     const tronco = troncoCercano();
     if (tronco && hachaEnMano(inventario())) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
     for (const op of opcionesRastra()) ops.push(op);
-    for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (so.cosa.tipo !== 'rastra') ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
+    for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (!esVehiculo(so.cosa.tipo)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
     for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) }), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
   }
   return ops;
@@ -1458,19 +1458,22 @@ function soltarAlSuelo(de) {
   return r;
 }
 
-// ---- La rastra (src/logica/rastra.js y src/juego/rastra.js) ----
+// ---- La rastra y la carretilla (src/logica/rastra.js, src/juego/rastra.js y src/juego/carretilla.js) ----
 // Quién soy en el suelo: en línea, el autor que me da el servidor; sin red, el local.
 const yoSuelo = () => (objetosRed && enLinea && enLinea.red.yo) || AUTOR_LOCAL;
 const miRastra = () => rastras.deAutor(yoSuelo(), Date.now());
 const rastraCercana = () => (miRastra() ? null : rastras.cercanas(pj.x, pj.z, Date.now())[0] || null);
-// lo que llevas en las manos o al hombro que va en la rastra (la ruta), o null
-function paraCargar() {
-  const inv = inventario();
-  return ['mano:der', 'mano:izq', 'hombro'].find(l => inv.lugares[l] && Object.hasOwn(CABE_RASTRA, inv.lugares[l].tipo)) || null;
+const esCarr = o => o && o.cosa.tipo === 'carretilla';
+// el texto de la rastra o el de la carretilla
+const segun = (o, deRastra, deCarretilla) => (esCarr(o) ? deCarretilla : deRastra);
+// lo que llevas en las manos o al hombro que va en ese vehículo (la ruta), o null
+function paraCargar(veh = 'rastra') {
+  const inv = inventario(), cabe = (VEHICULOS[veh] || VEHICULOS.rastra).cabe;
+  return ['mano:der', 'mano:izq', 'hombro'].find(l => inv.lugares[l] && Object.hasOwn(cabe, inv.lugares[l].tipo)) || null;
 }
-// Arrastrándola, vas despacio: lo que frene más, la rastra o lo que llevas encima.
-function velocidadCarga() { const r = miRastra(); return r ? Math.min(inventario().velocidad(), factorRastra(r.cosa.carga)) : inventario().velocidad(); }
-let sitiosRastra = {};   // id → { x, z }: dónde se ve cada rastra que se arrastra (para soltarla ahí)
+// Arrastrándola o empujándola, vas despacio: lo que frene más, el vehículo o lo que llevas encima.
+function velocidadCarga() { const r = miRastra(); return r ? Math.min(inventario().velocidad(), factorRastra(r.cosa.carga, r.cosa.tipo)) : inventario().velocidad(); }
+let sitiosRastra = {};   // id → { x, z }: dónde se ve cada rastra o carretilla que se lleva (para dejarla ahí)
 function pasoRastras() {
   const quien = (autor) => {
     if (autor === yoSuelo()) return pj.k === 0 ? { x: pj.x, z: pj.z, giro: pj.rot } : null;
@@ -1478,10 +1481,11 @@ function pasoRastras() {
     return r ? { x: r.x, z: r.z, giro: r.j.raiz.rotation.y } : null;
   };
   sitiosRastra = moverRastras(sueloObjetos.grupo, quien, decorado.altura);
-  jugador.arrastra = !!miRastra();
-  if (enLinea) for (const [autor, r] of enLinea.remotos) r.j.arrastra = !!rastras.deAutor(autor, Date.now());
+  const mia = miRastra();
+  jugador.arrastra = !!mia && !esCarr(mia); jugador.empuja = esCarr(mia);
+  if (enLinea) for (const [autor, r] of enLinea.remotos) { const o = rastras.deAutor(autor, Date.now()); r.j.arrastra = !!o && !esCarr(o); r.j.empuja = esCarr(o); }
 }
-// Una acción de la rastra: en línea, al servidor (se espera su respuesta); sin red, aquí con la misma lógica.
+// Una acción de la rastra o la carretilla: en línea, al servidor (se espera su respuesta); sin red, aquí con la misma lógica.
 function accionRastra(a, alSalir) {
   const fin = (r) => {
     if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
@@ -1496,43 +1500,55 @@ function accionRastra(a, alSalir) {
 }
 const nombreCarga = c => (c ? tr('{n} × {c}', { n: c.n, c: tr(CATALOGO[c.tipo].nombre) }) : tr('vacía'));
 function engancharRastra(o) {
+  if (esCarr(o)) {
+    pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);   // de cara a ella: va delante
+    accionRastra({ tipo: 'empujar_carretilla', objeto: o.id, x: pj.x, z: pj.z }, () => mostrarAviso(tr('Empujas la carretilla ({c}). Usar la aparca.', { c: nombreCarga(o.cosa.carga) })));
+    return;
+  }
   pj.rot = Math.atan2(pj.x - o.x, pj.z - o.z);   // de espaldas a ella: va detrás
   accionRastra({ tipo: 'enganchar_rastra', objeto: o.id, x: pj.x, z: pj.z }, () => mostrarAviso(tr('Arrastras la rastra ({c}). Vas despacio; Usar la suelta.', { c: nombreCarga(o.cosa.carga) })));
 }
 function soltarRastra() {
   const o = miRastra(); if (!o) return;
-  const s = sitiosRastra[o.id] || {};
-  accionRastra({ tipo: 'soltar_rastra', x: pj.x, z: pj.z, ...(Number.isFinite(s.x) ? { rx: s.x, rz: s.z } : {}) }, () => mostrarAviso(tr('Dejas la rastra: se queda aquí, con lo que lleve.')));
+  const s = sitiosRastra[o.id] || {}, carr = esCarr(o);
+  accionRastra({ tipo: carr ? 'aparcar_carretilla' : 'soltar_rastra', x: pj.x, z: pj.z, ...(Number.isFinite(s.x) ? { rx: s.x, rz: s.z } : {}) },
+    (r) => mostrarAviso(!carr ? tr('Dejas la rastra: se queda aquí, con lo que lleve.')
+      : r.guarda ? tr('Aparcas la carretilla en tus tierras: lo que lleva está protegido.') : tr('Aparcas la carretilla fuera de tus tierras: cualquiera puede coger lo que lleva.')));
 }
-// cargar en la rastra o lo de una ruta de lo que llevas ({ de }) o lo de un objeto del suelo ({ suelo })
+// cargar en la rastra o la carretilla lo de una ruta de lo que llevas ({ de }) o lo de un objeto del suelo ({ suelo })
 function cargarRastra(o, que) {
-  accionRastra({ tipo: 'cargar_rastra', objeto: o.id, x: pj.x, z: pj.z, ...que }, (r) => mostrarAviso(tr('Cargas en la rastra: {n} × {c}. Lleva {m}.', { n: r.cantidad, c: tr(CATALOGO[r.tipo].nombre), m: r.lleva })));
+  accionRastra({ tipo: segun(o, 'cargar_rastra', 'cargar_carretilla'), objeto: o.id, x: pj.x, z: pj.z, ...que },
+    (r) => mostrarAviso(tr(segun(o, 'Cargas en la rastra: {n} × {c}. Lleva {m}.', 'Cargas en la carretilla: {n} × {c}. Lleva {m}.'), { n: r.cantidad, c: tr(CATALOGO[r.tipo].nombre), m: r.lleva })));
 }
 function descargarRastra(o) {
-  accionRastra({ tipo: 'descargar_rastra', objeto: o.id, x: pj.x, z: pj.z }, (r) => mostrarAviso(tr('Descargas la rastra: {n} × {c} en el suelo.', { n: r.cantidad, c: tr(CATALOGO[r.tipo].nombre) })));
+  accionRastra({ tipo: segun(o, 'descargar_rastra', 'descargar_carretilla'), objeto: o.id, x: pj.x, z: pj.z },
+    (r) => mostrarAviso(tr(segun(o, 'Descargas la rastra: {n} × {c} en el suelo.', 'Descargas la carretilla: {n} × {c} en el suelo.'), { n: r.cantidad, c: tr(CATALOGO[r.tipo].nombre) })));
 }
-// lo que se puede hacer con la rastra desde el menú del clic derecho (o el dedo quieto)
+// lo que se puede hacer con la rastra o la carretilla desde el menú del clic derecho (o el dedo quieto)
 function opcionesRastra() {
   const ops = [], mia = miRastra(), ahora = Date.now();
-  const cargables = (o) => sueloObjetos.cercanos(pj.x, pj.z, ALCANCE_RASTRA).filter(s => s !== o && Object.hasOwn(CABE_RASTRA, s.cosa.tipo) && sitioRastra(o.cosa.carga, s.cosa.tipo) > 0);
-  const de = paraCargar();
+  const cargables = (o) => sueloObjetos.cercanos(pj.x, pj.z, ALCANCE_RASTRA).filter(s => s !== o && !esVehiculo(s.cosa.tipo) && sitioRastra(o.cosa.carga, s.cosa.tipo, o.cosa.tipo) > 0);
+  const tCargar = o => segun(o, 'Cargar en la rastra: {c}', 'Cargar en la carretilla: {c}'), tCargarN = o => segun(o, 'Cargar en la rastra: {n} × {c}', 'Cargar en la carretilla: {n} × {c}');
   if (mia) {
-    ops.push({ texto: tr('Soltar la rastra'), pos: sitiosRastra[mia.id] || pj, hacer: soltarRastra });
-    if (de && sitioRastra(mia.cosa.carga, inventario().lugares[de].tipo) > 0) ops.push({ texto: tr('Cargar en la rastra: {c}', { c: tr(CATALOGO[inventario().lugares[de].tipo].nombre) }), pos: pj, hacer: () => cargarRastra(mia, { de }) });
-    for (const s of cargables(mia)) ops.push({ texto: tr('Cargar en la rastra: {n} × {c}', { n: Math.min(s.cosa.n, sitioRastra(mia.cosa.carga, s.cosa.tipo)), c: tr(CATALOGO[s.cosa.tipo].nombre) }), pos: s, hacer: () => cargarRastra(mia, { suelo: s.id }) });
+    const de = paraCargar(mia.cosa.tipo);
+    ops.push({ texto: tr(segun(mia, 'Soltar la rastra', 'Aparcar la carretilla')), pos: sitiosRastra[mia.id] || pj, hacer: soltarRastra });
+    if (de && sitioRastra(mia.cosa.carga, inventario().lugares[de].tipo, mia.cosa.tipo) > 0) ops.push({ texto: tr(tCargar(mia), { c: tr(CATALOGO[inventario().lugares[de].tipo].nombre) }), pos: pj, hacer: () => cargarRastra(mia, { de }) });
+    for (const s of cargables(mia)) ops.push({ texto: tr(tCargarN(mia), { n: Math.min(s.cosa.n, sitioRastra(mia.cosa.carga, s.cosa.tipo, mia.cosa.tipo)), c: tr(CATALOGO[s.cosa.tipo].nombre) }), pos: s, hacer: () => cargarRastra(mia, { suelo: s.id }) });
     return ops;
   }
   for (const o of rastras.cercanas(pj.x, pj.z, ahora)) {
-    ops.push({ texto: tr('Arrastrar la rastra ({c})', { c: nombreCarga(o.cosa.carga) }), pos: o, alto: 0.4, hacer: () => engancharRastra(o) });
-    if (de && sitioRastra(o.cosa.carga, inventario().lugares[de].tipo) > 0) ops.push({ texto: tr('Cargar en la rastra: {c}', { c: tr(CATALOGO[inventario().lugares[de].tipo].nombre) }), pos: o, alto: 0.4, hacer: () => cargarRastra(o, { de }) });
-    for (const s of cargables(o)) ops.push({ texto: tr('Cargar en la rastra: {n} × {c}', { n: Math.min(s.cosa.n, sitioRastra(o.cosa.carga, s.cosa.tipo)), c: tr(CATALOGO[s.cosa.tipo].nombre) }), pos: s, hacer: () => cargarRastra(o, { suelo: s.id }) });
-    if (o.cosa.carga) ops.push({ texto: tr('Descargar la rastra ({c})', { c: nombreCarga(o.cosa.carga) }), pos: o, alto: 0.4, hacer: () => descargarRastra(o) });
+    const de = paraCargar(o.cosa.tipo);
+    ops.push({ texto: tr(segun(o, 'Arrastrar la rastra ({c})', 'Empujar la carretilla ({c})'), { c: nombreCarga(o.cosa.carga) }), pos: o, alto: 0.4, hacer: () => engancharRastra(o) });
+    if (de && sitioRastra(o.cosa.carga, inventario().lugares[de].tipo, o.cosa.tipo) > 0) ops.push({ texto: tr(tCargar(o), { c: tr(CATALOGO[inventario().lugares[de].tipo].nombre) }), pos: o, alto: 0.4, hacer: () => cargarRastra(o, { de }) });
+    for (const s of cargables(o)) ops.push({ texto: tr(tCargarN(o), { n: Math.min(s.cosa.n, sitioRastra(o.cosa.carga, s.cosa.tipo, o.cosa.tipo)), c: tr(CATALOGO[s.cosa.tipo].nombre) }), pos: s, hacer: () => cargarRastra(o, { suelo: s.id }) });
+    if (o.cosa.carga) ops.push({ texto: tr(segun(o, 'Descargar la rastra ({c})', 'Descargar la carretilla ({c})'), { c: nombreCarga(o.cosa.carga) }), pos: o, alto: 0.4, hacer: () => descargarRastra(o) });
   }
   return ops;
 }
-// del arcón de pruebas al suelo, a tus pies (la rastra no cabe en el inventario)
+// del arcón de pruebas al suelo, delante de ti (la rastra y la carretilla no caben en el inventario)
 function arconAlSuelo(tipo) {
-  accionRastra({ tipo: 'arcon_al_suelo', objeto: tipo, x: pj.x + Math.sin(pj.rot) * 1.2, z: pj.z + Math.cos(pj.rot) * 1.2 }, () => mostrarAviso(tr('La rastra está en el suelo, delante de ti: Usar la engancha.')));
+  accionRastra({ tipo: 'arcon_al_suelo', objeto: tipo, x: pj.x + Math.sin(pj.rot) * 1.2, z: pj.z + Math.cos(pj.rot) * 1.2 },
+    () => mostrarAviso(tipo === 'carretilla' ? tr('La carretilla está en el suelo, delante de ti: Usar la empuja.') : tr('La rastra está en el suelo, delante de ti: Usar la engancha.')));
   return { ok: true };
 }
 
@@ -2078,7 +2094,8 @@ function pintarLlevas() {
   for (const l of manos) partes.push(grupo(tr('En la mano:'), l));
   if (inv.lugares.hombro) partes.push(grupo(tr('Al hombro:'), 'hombro'));
   const ra = miRastra();
-  if (ra) partes.push(`<span class="llevo"><span>${tr('Arrastras:')}</span><b>${tr('Rastra')} (${nombreCarga(ra.cosa.carga)})</b><button data-soltarrastra="1">${tr('Soltar')}</button></span>`);
+  if (ra && esCarr(ra)) partes.push(`<span class="llevo"><span>${tr('Empujas:')}</span><b>${tr('Carretilla')} (${nombreCarga(ra.cosa.carga)})</b><button data-soltarrastra="1">${tr('Aparcar')}</button></span>`);
+  else if (ra) partes.push(`<span class="llevo"><span>${tr('Arrastras:')}</span><b>${tr('Rastra')} (${nombreCarga(ra.cosa.carga)})</b><button data-soltarrastra="1">${tr('Soltar')}</button></span>`);
   $('llevas').hidden = !partes.length;
   $('llevas').innerHTML = partes.join('<i></i>');
 }

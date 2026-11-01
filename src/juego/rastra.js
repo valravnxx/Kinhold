@@ -11,7 +11,8 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { modelosRecoleccion } from './recoleccion.js';
-import { DETRAS } from '../logica/rastra.js';
+import { DETRAS, DELANTE_CARRETILLA } from '../logica/rastra.js';
+import { inclinarCarretilla, rodarCarretilla } from './carretilla.js';
 
 export const LARGO_VARAS = 3.2;      // m
 const ATRAS = 1.5;                    // del centro a las puntas de atrás (en el suelo)
@@ -19,18 +20,18 @@ const ANCHO_ATRAS = 0.46, ANCHO_DELANTE = 0.27, R_VARA = 0.035;
 export const ALTO_MANOS = 0.86;       // m: a qué altura van las varas en las manos arrastrándola
 const A_MANOS = ATRAS + DETRAS - 0.2;  // m: de las puntas de atrás a las manos (van un poco por detrás de la cadera)
 
-const mallas = L => {
+export const mallas = L => {
   const grupos = L.cerrar(null, true), g = new THREE.Group();
   for (const [tex, geos] of Object.entries(grupos)) {
     const m = new THREE.Mesh(mergeGeometries(geos), materialTex(tex)); m.castShadow = m.receiveShadow = true; g.add(m);
   }
   return g;
 };
-const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
-const deLista = lista => { const g = new THREE.Group(); for (const { geo, mat } of lista) { const m = new THREE.Mesh(geo, mat); m.castShadow = m.receiveShadow = true; g.add(m); } return g; };
+export const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
+export const deLista = lista => { const g = new THREE.Group(); for (const { geo, mat } of lista) { const m = new THREE.Mesh(geo, mat); m.castShadow = m.receiveShadow = true; g.add(m); } return g; };
 
 // una vara de (x0, z0) a (x1, z1) a la altura y, en tramos un poco quebrados (una rama larga, no un tubo)
-function vara(L, x0, z0, x1, z1, y, r, id, k) {
+export function vara(L, x0, z0, x1, z1, y, r, id, k) {
   const tramos = 3;
   let px = x0, pz = z0;
   for (let i = 1; i <= tramos; i++) {
@@ -116,9 +117,12 @@ export function inclinarRastra(raiz, arrastrando) {
 // Cada fotograma: las rastras que alguien arrastra van detrás de él, como de una cuerda (el centro, a DETRAS m de él;
 // gira hacia donde tira). quien(autor) → { x, z, giro } o null (si no se le ve, se queda en su último sitio).
 // altura(x, z): el terreno. Devuelve el sitio de cada una ({ id: { x, z } }), para soltarla donde se ve.
+// La carretilla va delante, firme en las manos: su centro a DELANTE_CARRETILLA m, mirando hacia donde mira él, y la
+// rueda rueda lo que avanza.
 export function moverRastras(grupo, quien, altura) {
   const sitios = {};
   for (const obj of grupo.children) {
+    if (obj.name === 'suelo_carretilla') { moverCarretilla(obj, quien, altura, sitios); continue; }
     if (obj.name !== 'suelo_rastra') continue;
     const autor = obj.userData.arrastra, p = autor ? quien(autor) : null;
     inclinarRastra(obj, !!p);
@@ -132,4 +136,17 @@ export function moverRastras(grupo, quien, altura) {
     sitios[obj.userData.id] = { x: s.x, z: s.z };
   }
   return sitios;
+}
+
+function moverCarretilla(obj, quien, altura, sitios) {
+  const autor = obj.userData.arrastra, p = autor ? quien(autor) : null;
+  inclinarCarretilla(obj, !!p);
+  if (!p) { delete obj.userData.sigue; return; }
+  const x = p.x + Math.sin(p.giro) * DELANTE_CARRETILLA, z = p.z + Math.cos(p.giro) * DELANTE_CARRETILLA;
+  const antes = obj.userData.sigue;
+  if (antes) rodarCarretilla(obj, (x - antes.x) * Math.sin(p.giro) + (z - antes.z) * Math.cos(p.giro));
+  obj.userData.sigue = { x, z };
+  obj.position.set(x, altura(x, z) - 0.01, z);
+  obj.rotation.set(0, p.giro, 0);
+  sitios[obj.userData.id] = { x, z };
 }

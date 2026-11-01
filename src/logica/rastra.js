@@ -38,7 +38,7 @@
 // Decisiones provisionales de la carretilla (anotadas en el registro de decisiones y en el diario):
 //  - Lleva una sola clase de cosa a la vez, más que la rastra: hasta 4 troncos cortos, 40 de leña, 36 piedras o un
 //    bloque de piedra en bruto.
-//  - Se empuja con las dos manos y va delante: su centro, 1,3 m por delante del que la empuja. Más ligera que la
+//  - Se empuja con las dos manos y va delante: su centro, 1,4 m por delante (las varas son largas: así las agarraderas quedan en las manos) del que la empuja. Más ligera que la
 //    rastra: la velocidad baja del 85 % (vacía) al 65 % (100 kg: cuatro troncos cortos).
 //  - «Protegida en tus tierras»: si se aparca dentro de las tierras del que la aparca, queda a su guarda (guarda: autor)
 //    y nadie más puede empujarla, cargarla ni descargarla. Aparcada fuera, no tiene guarda: cualquiera la descarga o se
@@ -53,7 +53,7 @@ export const VEL_VACIA = 0.7, VEL_LLENA = 0.5, KILOS_LLENA = 75;
 export const LADO_DESCARGA = 1.1;     // m
 
 export const CABE_CARRETILLA = { tronco_corto: 4, lena: 40, piedra: 36, bloque_piedra: 1 };
-export const DELANTE_CARRETILLA = 1.3; // m: el centro de la carretilla, por delante del que la empuja
+export const DELANTE_CARRETILLA = 1.4; // m: el centro de la carretilla, por delante del que la empuja
 
 // Los vehículos de mano: lo que cabe, dónde va su centro respecto al que la lleva (off: + delante, − detrás), lo que
 // frena (del factor vacía al de llena, en kilos) y si se protege en tus tierras.
