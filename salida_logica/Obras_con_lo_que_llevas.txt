@@ -1,0 +1,39 @@
+Cada material de las obras es un objeto que se lleva
+  OK   «piedra» tiene su objeto en el catálogo — piedra
+  OK   «tronco» tiene su objeto en el catálogo — tronco_corto
+  OK   «vara» tiene su objeto en el catálogo — vara
+  OK   «barro» tiene su objeto en el catálogo — barro
+  OK   «paja» tiene su objeto en el catálogo — paja
+  OK   «cuerda» tiene su objeto en el catálogo — cuerda
+  OK   «tabla» tiene su objeto en el catálogo — tabla
+  OK   «clavo» tiene su objeto en el catálogo — clavo
+  OK   «hierro» tiene su objeto en el catálogo — barra_hierro
+  OK   «teja» tiene su objeto en el catálogo — teja
+  OK   el tronco de las obras es el tronco corto (sale de tronzar)
+Entregar a una obra sale de lo que llevas
+  OK   con las manos vacías no se entrega nada, aunque el arcón esté lleno — No llevas ese material.
+  OK   del arcón se cogen 6 piedras (dos manos, 3 en cada una) — {"ok":true,"donde":[["mano:der",3],["mano:izq",3]]}
+  OK   lo que no cabe se queda en el arcón — No te cabe: no tienes sitio libre.
+  OK   se entrega lo que llevas (6 de 8) y el arcón no cambia — {"ok":true,"entregado":6,"falta":[{"m":"piedra","n":2}]}
+  OK   la entrega queda con su autor
+  OK   el otro jugador no entrega con lo que llevo yo — No llevas ese material.
+  OK   el otro entrega lo que le falta con lo suyo, y le sobra 1 — {"ok":true,"entregado":2,"falta":[]}
+  OK   con todo entregado, se trabaja hasta terminarla
+Lo de los contenedores y el hombro también cuenta
+  OK   los troncos cortos del leñero y del hombro se entregan como «tronco» — {"ok":true,"entregado":2,"falta":[{"m":"tronco","n":2}]}
+Subir lo pesado a una obra en alto: la unidad y las varas, de lo que llevas
+  OK   sin llevar el tronco ni las varas no se sube — Para rodarlo hacen falta dos varas y una cuerda.
+  OK   con el tronco pero sin dos varas y una cuerda, tampoco — Para rodarlo hacen falta dos varas y una cuerda.
+  OK   con el tronco al hombro, dos varas y una cuerda: el tronco sale de lo que llevas; las varas no se gastan — {"ok":true,"subido":false,"progreso":0.5,"esperaAyuda":false}
+El arcón de pruebas: dejar, rellenar y sin inventarios
+  OK   se coge donde se pide
+  OK   con una ruta, va justo ahí o no se coge (la piedra no entra en el leñero, ni acaba en otro sitio) — Eso no va en ese hueco.
+  OK   dejar en el arcón devuelve el material — {"ok":true,"material":"tabla","n":2}
+  OK   lo que no es material no va al arcón de materiales
+  OK   un material desconocido no se saca
+  OK   rellenar llena el arcón de pruebas
+  OK   sin inventarios, la entrega sale del montón común (como antes)
+  OK   sin inventarios no hay arcón
+  OK   el mundo se rehace igual desde el registro
+
+Resultado: 32 correctas, 0 fallidas
