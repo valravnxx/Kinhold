@@ -43,6 +43,11 @@ export function aplicarFoto(L, f, { propio = false, prediciendo = false } = {}) 
   }
   L.bloqueando = !!f.bloqueando; L.guardia = f.guardia;
   L.tension = f.tension;
+  // el combate del mundo (modo direccional): el lado de la parada, y el golpe que se carga se queda cargado hasta que
+  // el servidor diga que ha salido (la copia no sabe cuándo suelta el botón el otro)
+  if (f.modo) L.modo = f.modo;
+  if (f.lineaBloqueo) L.lineaBloqueo = f.lineaBloqueo;
+  if (L.modo === 'direccional' && f.accion === 'preparando') { L.soltado = false; L.soltarEn = null; }
 }
 
 // Avanza una copia sin dejar que resuelva nada: devuelve sus eventos (que se tiran) y no la deja caer por su

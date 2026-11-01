@@ -3513,5 +3513,43 @@
   "pruebas": "Batería entera en la nube (sin las de en línea; el PC de valravnx, con el disco lleno, no pudo con ninguna): todos los grupos bien salvo la prueba nueva de navegador, que en PC salía en un sitio de pradera sin ramas ni piedra cerca; se cambió para salir, en PC, en el sitio de la salida al azar con los cinco tipos cerca, y pasó con lógica tras unir main. Capturas de cerca miradas en PC y móvil. Prueba de lógica rota con MUTAR=1 (7 fallos) y la de navegador también (25 puntos distintos de la lógica). No comprobado: la batería entera tras el último cambio de la prueba y de las notas (solo se repitieron lógica y la recogida en el mundo).",
   "capturas": "capturas/demo-v78",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T23:53:43+00:00",
+  "fin": "2026-11-01T01:45:41+00:00",
+  "titulo": "Hito de arte: cejas, bigote y barba en el cuello (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Las cejas se cortaban en escalones rectos porque su malla no llegaba a todo lo que se pinta: se miraba solo en el punto y a 1,5 cm, y un punto de la malla justo encima de la ceja no pintaba nada ni él ni sus vecinos (ya por debajo de ella), así que su cuadro se quitaba. Visto en la textura publicada y en el visor, muy de cerca.",
+   "Arreglo en el taller: se mira en una rejilla fina de 3 mm y luego se añaden los vecinos por la malla, dos vueltas; la textura de las cejas pasa a 1024. Comprobado en la textura: nada de lo pintado toca ya el borde de la malla (en la taller-v21, el 13,7 % en el hombre y el 32,6 % en la mujer).",
+   "La barba que bajaba por el cuello «como escarcha» era una neblina medio transparente: pelo castaño mezclado con la piel clara sale gris. Ahora, donde clarea, cada píxel es pelo o piel: pelos finos, largos y oscuros que se van espaciando, con una sombra muy suave debajo (en la textura, lo medio transparente baja del 12,7 % al 4,5 % de lo pintado).",
+   "El bigote baja algo más por los lados y se mete en la barba, y los labios ya no quitan la barba en las comisuras: entre los dos ya no queda piel. Tiene mechones de distinto grueso y tono.",
+   "Personajes nuevos en recursos/personajes/taller-v22/. Personaje v35 y demo v79 (la v78 la publicó antes el carril A).",
+   "Prueba de los calcos con dos comprobaciones nuevas (cejas sin cortes en el borde de su malla y barba sin neblina gris); con MUTAR=1 mira la taller-v20 y falla en 8 de 11.",
+   "El visor del personaje deja mover la cámara desde las pruebas (diag: cámara y control), para las capturas de muy cerca.",
+   "Aún mal: de muy cerca, los pelos sueltos de la barba salen algo gruesos y de borde duro, como trazos de pincel; el bigote sigue siendo una banda bastante lisa; el cuello bajo la barbilla sale muy iluminado, sin la sombra del mentón."
+  ],
+  "pruebas": "27 de 27 grupos correctos (26 en el PC de valravnx; «panel del admin» falló allí al cargar la prueba, por su versión de Python, y pasó en la nube)",
+  "capturas": "capturas/personaje-v35",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T22:59:16+01:00",
+  "fin": "2026-11-01T03:33:30+01:00",
+  "titulo": "Pelear en línea en el mundo (chat con valravnx)",
+  "hito": "duelo",
+  "hecho": [
+   "Qué fallaba: el combate del mundo era solo del navegador; el servidor no sabía que habías sacado el arma ni tus golpes, así que los demás no te veían con ella y no herías a nadie.",
+   "En el servidor, fuera de la liza, los luchadores van en el modo direccional del combate del mundo, con intenciones nuevas: sacar y guardar el arma, cargar el golpe, soltarlo, fintar y parar por un lado. Sin el arma sacada no se carga ni se para. La foto de cada luchador dice si lleva el arma sacada, el modo y el lado de la parada. Protocolo 7.",
+   "En el juego, lo que haces con el arma se hace enseguida en tu copia y se manda al servidor; tus heridas, tu sangre y caer los dice el servidor, y los golpes de otro jugador contra ti se dicen y te sacuden. Al caer, a los 5 s vuelves sano también en el servidor.",
+   "A los demás, con el arma sacada, se les dibuja con su modelo de combate (su cuerpo y su ropa, la espada en la mano), cargando, golpeando, parando y cayendo como dice su luchador; el golpe que cargan no sale hasta que el servidor dice que ha salido.",
+   "Los bots del servidor pelean como en el mundo (arma sacada, golpes cargados por cuatro lados, paradas por un lado).",
+   "Pruebas: la del combate en el servidor (80), con el modo del mundo sin red y con el servidor de verdad y dos clientes por websocket (el otro ve el arma sacada y el golpe le hiere); y en la del combate en el mundo, la foto del servidor con tus heridas y el aviso del golpe de otro. Rotas a propósito: sin exigir el arma sacada y con la copia del otro soltando el golpe sola, fallan.",
+   "No comprobado: verlo con dos navegadores a la vez (sería una prueba en línea; valravnx no las quiere). Las capturas son las del combate sin servidor.",
+   "Publicado como demo v80."
+  ],
+  "pruebas": "Todas menos las de en línea. Varias vueltas por las uniones con main: «construir a la altura del suelo» falló dos veces en cosas distintas (la ladera cerca de la salida, la hierba de lo alisado) y pasó en main y aquí tras unirlo; en la nube, dos grupos se quedaron atascados instalando el navegador y se repitieron; el PC de valravnx fallaba al empezar.",
+  "capturas": "capturas/demo-v80",
+  "estado": "ok"
  }
 ]

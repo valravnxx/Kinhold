@@ -133,6 +133,15 @@ with sync_playwright() as p:
     comprobar('sin soltar, el ratón hacia arriba pasa a parar arriba', e['bloq'] and e['lb'] == 'alto', str(e))
     pg.evaluate(f'{C}.raton.soltar(2)'); e = estado(pg)
     comprobar('soltar el botón derecho deja de parar', not e['bloq'], str(e))
+    # en línea, lo que dice el servidor (aquí sin servidor: se le pasan sus mensajes): la foto propia trae tus heridas
+    # y un golpe de otro jugador contra ti se dice (valravnx, 31 oct: «los ataques no nos hacían nada»)
+    libre(pg)
+    pg.evaluate(f"""{C}.recibir({{ tipo: 'luchadores', t: 1, lista: [{{ autor: 'jugador:yo', arma: 'espada_larga', armadura: 'lino', accion: 'libre', linea: 'alto',
+      duracion: 0, tAccion: 0, bloqueando: false, modo: 'direccional', lineaBloqueo: 'alto', sacada: true, cansancio: 10, sangre: 92, heridas: 1,
+      lista: [['brazoD', 'grave', 'corte', 0.4, '']], botiquin: {{}}, liza: false, contra: false, fuera: false }}] }}, 'jugador:yo')""")
+    pg.evaluate(f"""{C}.recibir({{ tipo: 'combate', eventos: [{{ tipo: 'golpe', autor: 'jugador:otro', objetivo: 'jugador:yo', linea: 'derecha', resultado: 'herida', zona: 'brazoD', gravedad: 'grave', danio: 'corte', t: 1 }}] }}, 'jugador:yo')""")
+    h = pg.evaluate(f"({{ heridas: {C}.L.heridas.map(h => h.zona + ':' + h.gravedad), sangre: {C}.L.sangre, msg: document.getElementById('cmbMsg').textContent }})")
+    comprobar('en línea, la foto del servidor trae tus heridas y el golpe de otro jugador se dice', h['heridas'] == ['brazoD:grave'] and abs(h['sangre'] - 92) < 1 and 'Te hieren' in h['msg'], str(h))
     # rival de práctica: viene, pelea y sus golpes pasan por las acciones con autor
     pg.click('#cmbRival'); pg.wait_for_timeout(200)
     n = pg.evaluate(f'{C}.rivales.length')

@@ -33,7 +33,7 @@ function comprobar(nombre, cond, detalle = '') {
 console.log('Combate en el servidor, sin red');
 // A en el origen mirando a +z; B a 1,5 m delante, mirándole
 function pareja(opc = {}) {
-  const c = new CombateServidor({ semilla: 5, ...opc });
+  const c = new CombateServidor({ semilla: 5, modoMundo: 'capas', ...opc });   // (las capas: lo de antes; el mundo, más abajo)
   c.entrar('jugador:a', { z: 0, rot: 0 });
   c.entrar('jugador:b', { z: 1.5, rot: Math.PI });
   return c;
@@ -133,7 +133,7 @@ function pareja(opc = {}) {
 
 {
   // la liza (el «Duelo en línea»): sus luchadores solo se dan entre ellos
-  const c = new CombateServidor({ semilla: 5 });
+  const c = new CombateServidor({ semilla: 5, modoMundo: 'capas' });
   c.entrar('jugador:a', { z: 0, rot: 0 });
   c.entrar('jugador:obra', { z: 1.5, rot: Math.PI });   // uno que construye, delante de A
   comprobar('entrar en la liza es una intención válida', c.intencion('jugador:a', { tipo: 'combate', que: 'liza' }).ok && c.luchadores['jugador:a'].liza === true);
@@ -168,7 +168,7 @@ function pareja(opc = {}) {
 }
 {
   // la copia de un cliente: se pone como dice el servidor; lo propio no se pisa mientras se predice
-  const c = new CombateServidor({ semilla: 3 });
+  const c = new CombateServidor({ semilla: 3, modoMundo: 'capas' });
   c.entrar('jugador:a', { z: 0, rot: 0 }); c.entrar('jugador:b', { z: 1.5, rot: Math.PI });
   for (const x of ['jugador:a', 'jugador:b']) c.intencion(x, { tipo: 'combate', que: 'liza' });
   c.intencion('jugador:a', { tipo: 'combate', que: 'atacar', linea: 'derecha' });
@@ -217,6 +217,57 @@ function pareja(opc = {}) {
   comprobar('la copia del cliente ve la venda', copia.heridas[0].vendada && copia.botiquin.vendas === 2);
   c.intencion('jugador:a', { tipo: 'combate', que: 'curar', herida: 0, metodo: 'coser' });
   comprobar('dejar la cura a medias', c.intencion('jugador:a', { tipo: 'combate', que: 'dejarCura' }).ok && La.accion === 'libre' && !La.heridas[0].cosida);
+}
+
+// Pelear en el mundo (valravnx, 31 oct): fuera de la liza, el modo direccional del combate del mundo
+console.log('Pelear en el mundo (modo direccional)');
+{
+  const c = new CombateServidor({ semilla: 5 });
+  c.entrar('jugador:a', { z: 0, rot: 0 });
+  c.entrar('jugador:b', { z: 1.5, rot: Math.PI });
+  const La = c.luchadores['jugador:a'], Lb = c.luchadores['jugador:b'];
+  const ic = (a, m) => c.intencion(a, { tipo: 'combate', ...m });
+  comprobar('en el mundo los luchadores van en el modo direccional', La.modo === 'direccional' && Lb.modo === 'direccional');
+  comprobar('sin el arma sacada no se carga un golpe', !ic('jugador:a', { que: 'cargar', linea: 'alto' }).ok && La.accion === 'libre');
+  comprobar('sacar el arma es una intención válida, y la foto lo dice', ic('jugador:a', { que: 'arma', sacada: true }).ok && c.cambiados(true).find(f => f.autor === 'jugador:a').sacada === true);
+  comprobar('las intenciones nuevas mal formadas no valen', !validarIntencion({ tipo: 'combate', que: 'cargar', linea: 'bajo' }) && !validarIntencion({ tipo: 'combate', que: 'arma', sacada: 'si' })
+    && !validarIntencion({ tipo: 'combate', que: 'parar', activo: true, linea: 'centro' }));
+  comprobar('cargar un golpe por arriba', ic('jugador:a', { que: 'cargar', linea: 'alto' }).ok && La.accion === 'preparando' && La.linea === 'alto');
+  c.avanzar(0.3);
+  comprobar('la finta lo cancela', ic('jugador:a', { que: 'fintar' }).ok && La.accion === 'libre');
+  c.sacarEventos();
+  ic('jugador:a', { que: 'cargar', linea: 'derecha' });
+  c.avanzar(0.2);
+  ic('jugador:a', { que: 'descargar' });
+  c.avanzar(2);
+  let g = c.sacarEventos().find(e => e.tipo === 'golpe');
+  comprobar('al soltar sale y hiere al otro, con su autor', g && g.autor === 'jugador:a' && g.objetivo === 'jugador:b' && g.resultado === 'herida' && Lb.heridas.length === 1, g && g.resultado);
+  // B saca el arma y para por su lado izquierdo (el espejo de la derecha de A)
+  ic('jugador:b', { que: 'arma', sacada: true });
+  comprobar('parar por un lado', ic('jugador:b', { que: 'parar', activo: true, linea: 'izquierda' }).ok && Lb.bloqueando && Lb.lineaBloqueo === 'izquierda');
+  c.avanzar(1.5);
+  ic('jugador:a', { que: 'cargar', linea: 'derecha' }); c.avanzar(0.1); ic('jugador:a', { que: 'descargar' });
+  c.avanzar(2);
+  g = c.sacarEventos().find(e => e.tipo === 'golpe');
+  comprobar('la parada por el lado bueno para el golpe', g && g.resultado === 'parada', g && g.resultado);
+  ic('jugador:b', { que: 'parar', activo: true, linea: 'alto' });
+  c.avanzar(1.5);
+  ic('jugador:a', { que: 'cargar', linea: 'derecha' }); c.avanzar(0.1); ic('jugador:a', { que: 'descargar' });
+  c.avanzar(2);
+  g = c.sacarEventos().find(e => e.tipo === 'golpe');
+  comprobar('por el lado malo, no', g && g.resultado !== 'parada' && g.resultado !== 'parada perfecta', g && g.resultado);
+  comprobar('la foto lleva el lado de la parada y el modo', (() => { const f = c.cambiados(true).find(x => x.autor === 'jugador:b'); return f.lineaBloqueo === 'alto' && f.modo === 'direccional' && f.bloqueando; })());
+  ic('jugador:a', { que: 'cargar', linea: 'alto' });
+  comprobar('guardar el arma deja de cargar y la foto lo dice', ic('jugador:a', { que: 'arma', sacada: false }).ok && La.accion === 'libre' && c.cambiados(true).find(f => f.autor === 'jugador:a').sacada === false);
+  // la liza (el prototipo de duelo) sigue con sus capas, y al volver al mundo, otra vez direccional
+  ic('jugador:a', { que: 'liza' });
+  comprobar('en la liza, las capas; y al volver, direccional', La.modo === 'capas' && ic('jugador:a', { que: 'mundo' }).ok && La.modo === 'direccional');
+  // la copia que dibuja a otro jugador: con el golpe cargado no lo suelta por su cuenta (no sabe cuándo suelta el botón)
+  ic('jugador:a', { que: 'arma', sacada: true }); ic('jugador:a', { que: 'cargar', linea: 'izquierda' });
+  const copia = new Luchador({ modo: 'direccional' });
+  aplicarFoto(copia, c.cambiados(true).find(f => f.autor === 'jugador:a'));
+  for (let i = 0; i < 120; i++) avanzarCopia(copia, 1 / 60);
+  comprobar('la copia de otro sigue cargando hasta que el servidor diga que sale', copia.accion === 'preparando' && copia.linea === 'izquierda' && copia.modo === 'direccional', copia.accion);
 }
 
 // ---------------- 2. El servidor, con dos clientes y lag ----------------
@@ -273,6 +324,8 @@ try {
   const a = A.bienvenida.autor, b = B.bienvenida.autor;
   comprobar('la bienvenida trae los luchadores (cada jugador tiene el suyo)', B.bienvenida.luchadores.some(l => l.autor === a) && B.bienvenida.luchadores.some(l => l.autor === b) && typeof B.bienvenida.tc === 'number');
 
+  // lo de abajo prueba el combate de capas (el de la liza); el del mundo, en su apartado sin red
+  A.mandar({ tipo: 'combate', que: 'liza' }); B.mandar({ tipo: 'combate', que: 'liza' });
   // se colocan frente a frente por la presencia
   A.mandar({ tipo: 'estado', x: 0, y: 0, z: 0, giro: 0, anim: 'quieto' });
   B.mandar({ tipo: 'estado', x: 0, y: 0, z: 1.5, giro: Math.PI, anim: 'quieto' });
@@ -334,6 +387,22 @@ try {
   comprobar('el combate se guarda aparte del mundo, con autor y numerado', lineas.length >= 4 && lineas.every((e, i) => e.n === i + 1 && e.autor)
     && lineas.some(e => e.tipo === 'impacto' && e.autor === a), `${lineas.length} líneas: ${lineas.map(e => e.tipo).join(', ')}`);
   comprobar('el archivo del mundo no se mezcla con el combate', !existsSync(archivo) || !readFileSync(archivo, 'utf8').includes('"golpe"'));
+
+  // pelear en el mundo, por el servidor (valravnx, 31 oct): de vuelta al mundo, con espada, B saca el arma y A golpea
+  for (const C of [A, B]) { C.mandar({ tipo: 'combate', que: 'mundo' }); C.mandar({ tipo: 'combate', que: 'equipar', arma: 'espada_larga' }); }
+  A.mandar({ tipo: 'estado', x: 0, y: 0, z: 0, giro: 0, anim: 'quieto' });
+  A.mandar({ tipo: 'combate', que: 'reiniciar' }); B.mandar({ tipo: 'combate', que: 'reiniciar' });   // sanos (si alguno cayó)
+  await pausa(600);
+  A.mandar({ tipo: 'combate', que: 'arma', sacada: true });
+  const visto = await B.esperar(m => m.tipo === 'luchadores' && m.lista.some(l => l.autor === a && l.sacada && l.modo === 'direccional'));
+  comprobar('el otro ve que has sacado el arma (en el mundo, modo direccional)', !!visto);
+  const heridasAntes = s.combate.luchadores[b].heridas.length;
+  A.mandar({ tipo: 'combate', que: 'cargar', linea: 'alto' });
+  await pausa(250);
+  A.mandar({ tipo: 'combate', que: 'descargar' });
+  const gm = await B.esperar(m => m.tipo === 'combate' && m.eventos.some(e => e.tipo === 'golpe' && e.autor === a && e.linea === 'alto' && e.t > (visto.t || 0)), 6000);
+  const em = gm.eventos.find(e => e.tipo === 'golpe' && e.autor === a && e.linea === 'alto');
+  comprobar('el golpe cargado en el mundo le hiere de verdad, con tu autor', em.objetivo === b && em.resultado === 'herida' && s.combate.luchadores[b].heridas.length === heridasAntes + 1, `${em.resultado}`);
 
   // al irse, su luchador se quita
   B.ws.close();

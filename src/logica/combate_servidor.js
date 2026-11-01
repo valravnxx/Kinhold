@@ -26,12 +26,20 @@
 //                                                                             del duelo seguía en la liza y no se le veía)
 //                        { tipo: 'combate', que: 'reiniciar' }               vuelve a empezar sano: solo si está fuera
 //                                                                             de combate o no hay nadie en pie cerca
+//   Pelear en el mundo (valravnx, 31 oct): fuera de la liza los luchadores van en el modo direccional, el del
+//   combate del mundo (cuatro direcciones, golpe cargado y comprometido, finta con el botón de parar):
+//                        { tipo: 'combate', que: 'arma', sacada }           saca o guarda el arma (los demás la ven)
+//                        { tipo: 'combate', que: 'cargar', linea }          empieza a cargar un golpe (alto, izquierda,
+//                                                                             derecha, estocada); solo con el arma sacada
+//                        { tipo: 'combate', que: 'descargar' }              suelta el botón: el golpe sale
+//                        { tipo: 'combate', que: 'fintar' }                 cancela el golpe que se carga (finta)
+//                        { tipo: 'combate', que: 'parar', activo, linea }   linea: el lado de la parada (direccional)
 //   Liza: los luchadores de la liza (duelo en línea) solo se dan entre ellos, y los de fuera (los que construyen)
 //   tampoco les dan ni les ven las flechas; así un duelo y una obra pueden ir a la vez en el mismo servidor.
 //   La posición y el giro del luchador salen de su estado de presencia ({ tipo: 'estado', … }).
 //   servidor → clientes  { tipo: 'combate', eventos: [...] }               golpes, flechas e impactos, en orden
 //                        { tipo: 'luchadores', t, lista: [...] }             cada tic, los que han cambiado
-import { Luchador, LINEAS, GUARDIAS, ARMAS, ARMADURAS, RITMO, TRATAMIENTOS, azar, angulo, difAngulo } from '../combate/logica.js';
+import { Luchador, LINEAS, LINEAS_DIRECCIONAL, GUARDIAS, ARMAS, ARMADURAS, RITMO, TRATAMIENTOS, azar, angulo, difAngulo } from '../combate/logica.js';
 import { RegistroAcciones, ejecutarCombate, avanzarProyectil } from './acciones.js';
 
 export const PASO = 1 / 60;          // s: el combate se avanza en pasos de como mucho esto
@@ -46,7 +54,14 @@ export function validarIntencion(m) {
   if (!m || typeof m !== 'object' || m.tipo !== 'combate') return null;
   switch (m.que) {
     case 'atacar': return LINEAS.includes(m.linea) ? { que: 'atacar', linea: m.linea } : null;
-    case 'parar': return typeof m.activo === 'boolean' ? { que: 'parar', activo: m.activo } : null;
+    case 'parar':
+      if (typeof m.activo !== 'boolean') return null;
+      if (m.linea !== undefined && !LINEAS_DIRECCIONAL.includes(m.linea)) return null;
+      return { que: 'parar', activo: m.activo, ...(m.linea ? { linea: m.linea } : {}) };
+    case 'arma': return typeof m.sacada === 'boolean' ? { que: 'arma', sacada: m.sacada } : null;
+    case 'cargar': return LINEAS_DIRECCIONAL.includes(m.linea) ? { que: 'cargar', linea: m.linea } : null;
+    case 'descargar': return { que: 'descargar' };
+    case 'fintar': return { que: 'fintar' };
     case 'guardia': return Object.hasOwn(GUARDIAS, m.guardia) ? { que: 'guardia', guardia: m.guardia } : null;
     case 'tensar': return { que: 'tensar' };
     case 'liza': return { que: 'liza' };
@@ -68,7 +83,7 @@ function foto(autor, L) {
   return {
     autor, arma: L.arma, armadura: L.armadura, accion: L.accion, linea: L.linea,
     duracion: Math.round(L.duracion * 1000), tAccion: Math.round(L.tAccion * 1000),
-    bloqueando: L.bloqueando, guardia: L.guardia, tension: Math.round(L.tension * 100) / 100,
+    bloqueando: L.bloqueando, guardia: L.guardia, modo: L.modo, lineaBloqueo: L.lineaBloqueo, sacada: !!L.sacada, tension: Math.round(L.tension * 100) / 100,
     cansancio: Math.round(L.cansancio), sangre: Math.round(L.sangre), heridas: L.heridas.length,
     // cada herida: zona, gravedad y tipo (para dibujarla y decir qué hace); el sangrado lo lleva el servidor
     // y lo que se le ha hecho (v: vendada, c: cosida, q: cauterizada, e: entablillada, h: emplasto)
@@ -80,14 +95,15 @@ function foto(autor, L) {
 export const MARCAS_CURA = { v: 'vendada', c: 'cosida', q: 'cauterizada', e: 'entablillada', h: 'hierbas' };
 const marcasCura = (h) => Object.entries(MARCAS_CURA).filter(([, k]) => h[k]).map(([m]) => m).join('');
 // lo que cambia sin parar (el avance de la acción) no cuenta para decidir si hay que mandarlo otra vez
-const clave = (f) => [f.arma, f.armadura, f.accion, f.linea, f.bloqueando, f.guardia, f.cansancio, f.sangre, f.lista.map(h => h[1] + h[4]).join(','), Object.values(f.botiquin).join(','), f.fuera, f.liza, f.contra, Math.round(f.tension * 10)].join('|');
+const clave = (f) => [f.arma, f.armadura, f.accion, f.linea, f.bloqueando, f.lineaBloqueo, f.sacada, f.modo, f.guardia, f.cansancio, f.sangre, f.lista.map(h => h[1] + h[4]).join(','), Object.values(f.botiquin).join(','), f.fuera, f.liza, f.contra, Math.round(f.tension * 10)].join('|');
 
 export class CombateServidor {
   // ritmo: el de RITMO (decisión provisional: «normal» para todos en línea). semilla: azar de las heridas.
-  constructor({ ritmo = RITMO.normal, modo = 'capas', semilla = 1, registro = new RegistroAcciones(1000) } = {}) {
+  constructor({ ritmo = RITMO.normal, modo = 'capas', modoMundo = 'direccional', semilla = 1, registro = new RegistroAcciones(1000) } = {}) {
     this.ctx = { luchadores: {}, r: azar(semilla) };
     this.registro = registro;
-    this.ritmo = ritmo; this.modo = modo;
+    this.ritmo = ritmo; this.modo = modo;   // modo: el de la liza (el «Duelo en línea»)
+    this.modoMundo = modoMundo;            // fuera de la liza (el mundo): el del combate del mundo
     this.proyectiles = [];
     this.reloj = 0;            // s del combate
     this.pendientes = [];      // eventos sin repartir
@@ -96,7 +112,7 @@ export class CombateServidor {
   get luchadores() { return this.ctx.luchadores; }
 
   entrar(autor, { arma = 'espada_larga', armadura = 'gambeson', x = 0, z = 0, rot = 0 } = {}) {
-    this.ctx.luchadores[autor] = new Luchador({ nombre: autor, arma, armadura, modo: this.modo, ritmo: this.ritmo, x, z, rot });
+    this.ctx.luchadores[autor] = new Luchador({ nombre: autor, arma, armadura, modo: this.modoMundo, ritmo: this.ritmo, x, z, rot });
     this.ctx.luchadores[autor].reloj = this.reloj;
     return this.ctx.luchadores[autor];
   }
@@ -134,12 +150,26 @@ export class CombateServidor {
     if (!i) return { ok: false, motivo: 'Intención no válida.' };
     if (i.que === 'reiniciar') return this.reiniciar(autor);
     // entrar o salir de la liza vale también estando fuera de combate (quien cayó en el duelo puede irse a construir)
-    if (i.que === 'liza' || i.que === 'mundo') { L.liza = i.que === 'liza'; return { ok: true }; }
+    if (i.que === 'liza' || i.que === 'mundo') {
+      L.liza = i.que === 'liza';
+      const modo = L.liza ? this.modo : this.modoMundo;
+      if (L.modo !== modo) { L.modo = modo; L.bloquear(false); if (L.accion === 'preparando') { L.accion = 'libre'; L.tAccion = 0; L.soltado = true; } }
+      return { ok: true };
+    }
     if (L.fuera) return { ok: false, motivo: 'Estás fuera de combate.' };
     let ok = false;
     switch (i.que) {
       case 'atacar': ok = L.atacar(i.linea); break;
-      case 'parar': L.bloquear(i.activo); ok = L.bloqueando === i.activo; break;
+      case 'parar':
+        if (i.activo && L.modo === 'direccional' && !L.sacada) break;
+        L.bloquear(i.activo, i.linea); ok = L.bloqueando === i.activo; break;
+      // pelear en el mundo: el golpe se carga mientras se mantiene el botón, sale al soltarlo y la finta lo cancela
+      case 'arma':
+        if (!i.sacada) { L.bloquear(false); if (L.accion === 'preparando') L.fintar(); }
+        L.sacada = i.sacada; ok = true; break;
+      case 'cargar': ok = !!L.sacada && L.cargar(i.linea); break;
+      case 'descargar': ok = L.modo === 'direccional'; if (L.accion === 'preparando') L.descargar(); break;
+      case 'fintar': ok = L.fintar(); break;
       case 'guardia': ok = L.cambiarGuardia(i.guardia); break;
       case 'tensar': ok = L.empezarTensar(); break;
       case 'soltar': {
@@ -175,7 +205,7 @@ export class CombateServidor {
     const cerca = this.rivales(autor).some(o => !o.fuera && Math.hypot(o.x - L.x, o.z - L.z) < CERCA_REINICIAR);
     if (!L.fuera && cerca) return { ok: false, motivo: 'Hay alguien cerca: no se puede volver a empezar en mitad de una pelea.' };
     const N = this.entrar(autor, { arma: L.arma, armadura: L.armadura, x: L.x, z: L.z, rot: L.rot });
-    N.liza = L.liza;
+    N.liza = L.liza; N.modo = L.modo; N.sacada = L.sacada;
     this.pendientes.push({ tipo: 'reinicio', autor, t: this.ms() });
     return { ok: true };
   }
