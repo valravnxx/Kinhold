@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 1 nov 2026 (15:11 UTC+1) — por el chat: salidas en la pradera, y se enciende el carril A
+valravnx, a la decisión de las salidas sin sílex cerca: «la b, quiero dentro del realismo tener accesibilidad, aunque en menor cantidad» → algo de piedra y sílex sueltos también en la pradera, en menor cantidad (tarea de P2). Aprobado el roadmap nuevo; se vuelve a encender solo el carril A.
+
 ### 1 nov 2026 (14:52–14:54 UTC+1) — por el chat: revisión, los árboles
 valravnx: que el árbol caiga por física y no por animación, haciendo daño a quien se ponga en medio; diferenciar más el joven del grande; los grandes un 30 % más altos («los árboles ahora son muy pequeños»). Aprobado lo propuesto («perfecto»): caída sobre el tocón con la física de un tronco que gira (hacia la boca que se corta; si no, hacia donde se inclina o cuesta abajo), crujido de aviso, daño que decide el servidor con su autor, en el roadmap justo después del primer tramo de fabricación; adultos un 30 % más altos y más gruesos; jóvenes de 3–5 m, finos y de copa rala, sobre todo en bordes, claros y lo que rebrota; el grande puede seguir costando con hacha de piedra (el joven es el de la primera casa).
 

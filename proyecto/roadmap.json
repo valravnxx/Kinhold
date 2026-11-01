@@ -1090,7 +1090,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio de las tres comarcas de inicio y lo recuerda (hoy todos salen en el sitio común); y lo que decida valravnx sobre las salidas en pradera sin sílex cerca",
+     "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio de las tres comarcas de inicio y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
      "estado": "pendiente"
     },
     {
@@ -3431,11 +3431,6 @@
    "pregunta": "Las comarcas de inicio Motdale y Breiddal: ¿las puede tomar un clan? La propuesta de la v0.3 decía que no hubiera reclamaciones cerca de las zonas de inicio. (Strandvang no: es del rey, valravnx 31 oct.)",
    "desde": "2026-10-30",
    "hito": "tierras"
-  },
-  {
-   "pregunta": "En la pradera abierta, algunos sitios de la salida al azar no tienen sílex a menos de 500 m (2 de 12 mirados) ni ramas o piedra muy cerca: ahí no hay bosque, caliza, laderas ni ríos, que es donde el documento pone cada cosa. ¿(a) La salida al azar solo en sitios con ramas, piedra, sílex y fibra cerca (se rehace la lista de sitios), (b) algo de piedra y sílex sueltos también en la pradera, o (c) se deja así (hay que andar)?",
-   "desde": "2026-11-01",
-   "hito": "mundo-juego"
   }
  ]
 }
