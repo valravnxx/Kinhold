@@ -699,9 +699,10 @@
     },
     {
      "nombre": "Carretilla de rueda maciza (N1: la rueda es una rodaja de tronco): se empuja, se aparca y hace de contenedor; dentro de tus tierras está protegida y fuera cualquiera puede coger lo que lleva. Lógica pura con autor, modelo con el estilo v5, en la demo y con pruebas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-01T06:29:15+00:00",
-     "rama": "trabajo/20261101-0629"
+     "rama": "trabajo/20261101-0629",
+     "fin": "2026-11-01T07:45:45+00:00"
     },
     {
      "nombre": "Animación de empujar la carretilla, hecha en el taller como las de cargar: andando y quieto, con los brazos bajos y estirados hacia las varas y el cuerpo algo inclinado hacia delante, para que la carretilla vaya poco levantada (hoy usa la de llevar algo en brazos: las manos a la altura del pecho y la carretilla a unos 29°). Capturas de cerca para valravnx",
@@ -2304,6 +2305,13 @@
      "archivo": "jugar/demo/v84.html",
      "capturas": null,
      "notas": "Las obras, los muebles y lo alisado con la brocha llegan solo de los trozos de alrededor de cada jugador: al entrar y al cambiar de trozo, el mundo de construcción de esos trozos (no todo lo construido en la isla), y cada obra solo a quien tiene su trozo, con el contador de ids, el arcón y el mojón del servidor para que salga igual. No cambia nada de lo que se ve."
+    },
+    {
+     "v": "v85",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/demo/v85.html",
+     "capturas": "capturas/demo-v85",
+     "notas": "La carretilla de rueda maciza: la rueda es una rodaja de tronco. Sale del arcón de pruebas; Usar la empuja (va delante, con las varas en las manos, y la rueda rueda) y la aparca donde está, con lo que lleve. Lleva más que la rastra (4 troncos cortos, 40 de leña, 36 piedras o un bloque) y frena menos. Aparcada en tus tierras, nadie más la toca; fuera, cualquiera coge lo que lleva. Por el servidor, con su autor. Aún mal: falta una animación de empujar (usa la de llevar en brazos y va muy levantada)."
     }
    ]
   },
