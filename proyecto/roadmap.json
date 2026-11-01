@@ -543,7 +543,9 @@
     },
     {
      "nombre": "Las obras y lo alisado con la brocha, también por trozo: la bienvenida y lo que cambia, solo lo de alrededor de cada jugador (en la v83 aún llegan todos); y cavar en el mundo en línea, guardado por trozo, cuando se haga",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-01T05:52:47+00:00",
+     "rama": "trabajo/20261101-0552"
     },
     {
      "nombre": "El duelo en el mundo: pelear en cualquier sitio, sin escena aparte",
