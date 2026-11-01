@@ -1,0 +1,28 @@
+Vista pc
+  OK   la demo arranca sin error — None
+  OK   el rival no atraviesa los árboles — {"r": 0.26555519488360735, "d": 0.5855551948836073}
+  OK   el rival no sube por los cortados — {"x": 1394.9091452230412, "z": 447.72031065512886, "sube": -0.0009747057217737165, "quiere": 0.7010598919823678, "llega": false}
+  OK   hay una orilla con agua honda cerca de la salida — {"tierra": [-97.31568093704352, 2921.3795813354623], "agua": [-97.44885326812398, 2925.377363862093], "rumbo": 1.6040955631399396, "r": 2930}
+  orilla {"tierra": [-97.31568093704352, 2921.3795813354623], "agua": [-97.44885326812398, 2925.377363862093], "rumbo": 1.6040955631399396, "r": 2930}
+  OK   un paso del rival hacia donde cubre no se da — {"hondo": 0, "x": -97.44885326812398, "z": 2921.3795813354623}
+  OK   sale un rival de práctica en la orilla — 1
+  OK   el rival aparece donde se anda (seco, sin árbol encima, al que se llega) — {"x": -93.80216161481142, "z": 2925.7914723101244, "hondo": 1.059917107420894, "llega": true, "arbol": false}
+  OK   al meterte donde cubre se guarda el arma, con su aviso — {"activo": false, "aviso": "Nadando no se lucha: guardas el arma."}
+  OK   nadando, el arma no se saca
+  OK   el rival no se mete a nado detrás de ti (se queda en la orilla) — lo más hondo que pisó: 1.01 m
+  OK   sin errores en la página
+Vista movil
+  OK   la demo arranca sin error — None
+  OK   el rival no atraviesa los árboles — {"r": 0.6486676999519518, "d": 0.9686676999519523}
+  OK   el rival no sube por los cortados — {"x": 390.1375556455372, "z": -462.4042470338323, "sube": 0.009308269959944937, "quiere": 0.5030508481015943, "llega": false}
+  OK   hay una orilla con agua honda cerca de la salida — {"tierra": [2103.2962869502476, 6005.323782220348], "agua": [2104.949042165516, 6010.042722800436], "rumbo": 1.2339089481946688, "r": 6370}
+  orilla {"tierra": [2103.2962869502476, 6005.323782220348], "agua": [2104.949042165516, 6010.042722800436], "rumbo": 1.2339089481946688, "r": 6370}
+  OK   un paso del rival hacia donde cubre no se da — {"hondo": 0, "x": 2104.949042165516, "z": 6005.323782220348}
+  OK   sale un rival de práctica en la orilla — 1
+  OK   el rival aparece donde se anda (seco, sin árbol encima, al que se llega) — {"x": 2106.7764094365557, "z": 6009.762064261892, "hondo": 1.0272357787746684, "llega": true, "arbol": false}
+  OK   al meterte donde cubre se guarda el arma, con su aviso — {"activo": false, "aviso": "Nadando no se lucha: guardas el arma."}
+  OK   nadando, el arma no se saca
+  OK   el rival no se mete a nado detrás de ti (se queda en la orilla) — lo más hondo que pisó: 1.21 m
+  OK   sin errores en la página
+
+Todo correcto
