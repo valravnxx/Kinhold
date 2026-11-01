@@ -1,0 +1,14 @@
+Volver con la ficha
+  OK   un jugador nuevo no trae posición — null
+  OK   al volver con su ficha, la bienvenida trae dónde estaba al salir — {"x":12.5,"y":1.25,"z":-21.25,"giro":1.2}
+  OK   otro jugador (sin ficha) no recibe la de nadie
+El latido la guarda sin salir
+  OK   en posiciones.json, la de ahora de quien sigue conectado — {"x":30,"y":1.25,"z":5,"giro":0.5}
+En el duelo no se apunta
+  OK   vuelve al sitio del mundo, no al de la liza — {"x":30,"y":1.25,"z":5,"giro":0.5}
+Tras reiniciar el servidor
+  OK   sigue sabiendo dónde estaba — {"x":-40,"y":1.25,"z":15,"giro":0.5}
+Archivo roto
+  OK   con posiciones.json roto, el servidor arranca y no da posición
+
+7 bien, 0 mal
