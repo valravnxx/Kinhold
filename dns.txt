@@ -1,0 +1,46 @@
+== playkinhold.com
+185.199.109.153
+185.199.110.153
+185.199.111.153
+185.199.108.153
+185.199.109.153
+185.199.111.153
+185.199.110.153
+185.199.108.153
+== www.playkinhold.com
+valravnxx.github.io.
+185.199.108.153
+185.199.109.153
+185.199.110.153
+185.199.111.153
+valravnxx.github.io.
+valravnxx.github.io.
+185.199.109.153
+185.199.111.153
+185.199.108.153
+185.199.110.153
+== juego.playkinhold.com
+2.31.141.224
+2.31.141.224
+== NS
+adelaide.ns.cloudflare.com.
+javier.ns.cloudflare.com.
+== http web
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Length: 2962967
+Server: GitHub.com
+== https web
+200 https://playkinhold.com/
+<title>Kinhold · desarrollo
+== github.io
+HTTP/2 301 
+location: http://playkinhold.com/
+== https juego
+302 https://playkinhold.com/jugar/demo/index.html?servidor=wss://juego.playkinhold.com
+== https juego (sslip)
+302
+== http juego
+HTTP/1.1 308 Permanent Redirect
+Connection: close
+Location: https://juego.playkinhold.com/
