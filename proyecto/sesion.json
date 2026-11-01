@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-01T19:40:28+00:00",
+  "tarea": "Revisión completa y publicación",
+  "hito": "servidor",
+  "rama": "trabajo/20261101-1940"
+ },
  "B": null,
  "chat:trabajo/20261101-1630-discord-idiomas": {
   "inicio": "2026-11-01T16:29:59+01:00",
