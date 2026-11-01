@@ -18,7 +18,7 @@ shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v24'), f'{sitio}/recursos/personajes/taller-v24')
 # las animaciones de cargar hechas en el taller (al hombro, arrastrar). MUTAR_HOMBRO=1 no las copia: tiene que fallar
 if not os.environ.get('MUTAR_HOMBRO'):
-    shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v1'), f'{sitio}/recursos/personajes/taller-carga-v1')
+    shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v2'), f'{sitio}/recursos/personajes/taller-carga-v2')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -95,7 +95,7 @@ def revisar(nombre, m):
         h = p['hombro']
         comprobar(f'{nombre}: lo del hombro va por encima de la cintura', h[1] > P[1] + 0.15, f'centro {h[:3]}')
         if m.get('alHombro'):
-            # el tronco al hombro: la postura de llevarlo (taller-carga-v1) y la mano derecha arriba, sobre el tronco
+            # el tronco al hombro: la postura de llevarlo (taller-carga-v2) y la mano derecha arriba, sobre el tronco
             comprobar(f'{nombre}: con el tronco al hombro, la postura de llevarlo', m.get('modo') == 'hombroQuieto', m.get('modo'))
             mano = m['hand_r']
             comprobar(f'{nombre}: la mano derecha sujeta el tronco (sobre el hombro, cerca del tronco)', mano[1] > m['neck_01'][1] - 0.05 and abs(mano[0] - h[0]) < 0.15 and abs(mano[1] - h[1]) < 0.2,

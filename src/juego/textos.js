@@ -35,6 +35,7 @@ const ES = {
   construyendo: 'Construyendo:',
   obraTerminada: 'terminada.',
   dejasObra: 'Dejas la obra (vuelve con Usar).',
+  armaNadando: 'Nadando no se lucha: guardas el arma.',
   subiendoRodando: 'Subes rodándolo por dos varas con una cuerda:',
   subiendoPolea: 'Subes con la polea:',
   subiendoPolipasto: 'Subes con el polipasto, dando vueltas al torno:',

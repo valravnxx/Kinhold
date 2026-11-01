@@ -221,9 +221,9 @@ const VUELO = { atras: 0.085, max: 0.26, giro: 0.06, maxGiro: 0.12, rigidez: 38,
 export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/taller-v1/') {
   const o = { sexo: 'hombre', calidad: 'alta', extra: false, ...op };
   const carpetaExtra = typeof o.extra === 'string' ? o.extra : `${base}../taller-anim-v1/`;
-  // las de cargar hechas en el taller (llevar al hombro, arrastrar; herramientas/taller/hacer_cargas.mjs): op.cargas,
-  // aparte y pequeñas (unos 76 KB por sexo), para que el juego las tenga sin bajar las 41 extra
-  const carpetaCargas = typeof o.cargas === 'string' ? o.cargas : `${base}../taller-carga-v1/`;
+  // las de cargar hechas en el taller (llevar al hombro, arrastrar, empujar la carretilla; herramientas/taller/
+  // hacer_cargas.mjs): op.cargas, aparte y pequeñas (unos 100 KB por sexo), para que el juego las tenga sin bajar las 41 extra
+  const carpetaCargas = typeof o.cargas === 'string' ? o.cargas : `${base}../taller-carga-v2/`;
   const [g, gExtra, gCargas] = await Promise.all([cargar(`${base}mh_${o.sexo}.glb`), o.extra ? cargar(`${carpetaExtra}mh_${o.sexo}_extra.glb`) : null,
     o.cargas ? cargar(`${carpetaCargas}mh_${o.sexo}_extra.glb`).catch(e => { console.warn('Sin las animaciones de cargar:', e); return null; }) : null]);
   const raiz = new THREE.Group();

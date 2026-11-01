@@ -1651,6 +1651,18 @@ function resolverColision(x, z, k) {
   }
   return { x, z };
 }
+// Un paso de alguien que anda por el suelo del mundo (el rival de práctica): de (x0, z0) hacia (x1, z1) sin
+// atravesar obras ni árboles, sin subir cortados ni salir de la isla y sin meterse donde ya cubre (no nada). Si no
+// puede de frente, se desliza por un eje, como tú; si tampoco, se queda donde estaba.
+function andarHasta(x0, z0, x1, z1) {
+  const r = resolverColision(x1, z1, 0);
+  if (!mundoJ) return { x: THREE.MathUtils.clamp(r.x, -190, 190), z: THREE.MathUtils.clamp(r.z, -190, 190) };
+  const vale = (x, z) => mundoJ.andable(x0, z0, x, z) && modoAgua(mundoJ.aguaEn(x, z)?.hondo) !== 'nadar';
+  if (vale(r.x, r.z)) return r;
+  if (vale(r.x, z0)) return { x: r.x, z: z0 };
+  if (vale(x0, r.z)) return { x: x0, z: r.z };
+  return { x: x0, z: z0 };
+}
 // altura del suelo bajo el jugador en su planta; baja de planta si no hay suelo
 // Escalera de tablas bajo el jugador: se sube andando. Devuelve { k, y } o null.
 // Si vienes por debajo del tramo alto (o caes por el hueco desde arriba muy por encima), no cuenta.
@@ -1869,6 +1881,7 @@ function paso() {
   const ag = mundoJ && pj.k === 0 ? mundoJ.aguaEn(pj.x, pj.z) : null;
   const modo = modoAgua(ag ? ag.hondo : null);
   nado.modo = modo; nado.agua = ag;
+  if (modo === 'nadar' && combate.activo && !window.__mutarPelea) { combate.guardar(); mostrarAviso(t('armaNadando')); }   // nadando no se lucha
   const rapido = teclas.has('shift');
   const correr = rapido && modo !== 'nadar' && puedeCorrer(nado.e);
   let vel = (correr ? 6 : 3.6) * mag * velocidadCarga() * combate.factorVelocidad(correr); // cargado al máximo en todo, al 80% (GDD); con el arma sacada, lo que diga el combate
@@ -2077,6 +2090,9 @@ const combate = crearCombateMundo({
   modo: () => estado.modo, alturaEn: (x, z) => decorado.altura(x, z),
   registro: { anotar: (a, r) => registroAcciones.anotar(a, r) }, esTactil: estado.esTactil,
   red: () => enLinea,   // en línea, lo que haces con el arma va también al servidor (pelear con los demás)
+  // (window.__mutarPelea: solo para romper la prueba a propósito: el rival atraviesa todo y se lucha nadando)
+  andarHasta: window.__mutarPelea ? (x0, z0, x1, z1) => ({ x: x1, z: z1 }) : andarHasta,
+  puedeLuchar: () => window.__mutarPelea || nado.modo !== 'nadar',
 });
 // Lo que llevas en las manos y al hombro no está en el panel (valravnx, 29 oct): se coge del mundo y se suelta al mundo.
 // Mientras no se vea en el personaje (tarea del hito 2), una línea abajo dice qué llevas, cada cosa con «Soltar» (al
@@ -2265,6 +2281,8 @@ window.__kinhold = {
   mundoJ, get mundoListo() { return mundoListo; }, mapaRey, panelAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado
   nado,
+  // un paso de alguien que anda por el suelo del mundo (el rival de práctica)
+  andarHasta,
   // los sitios de salida (src/logica/whitholm.js): el común y si uno es de la lista de la salida al azar
   salidas: { comun: SALIDA, total: SALIDAS.length, deLista: (x, z) => SALIDAS.some(s => s[0] === x && s[1] === z) },
   cambiarModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,

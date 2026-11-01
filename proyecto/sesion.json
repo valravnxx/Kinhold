@@ -1,14 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-01T08:22:50+00:00",
-  "tarea": "Animación de empujar la carretilla, hecha en el taller como las de cargar: andando y quieto, con los brazos bajos y estirados hacia las varas y el cuerpo algo inclinado hacia delante, para que la carretilla vaya poco levantada (hoy usa la de llevar algo en brazos: las manos a la altura del pecho y la carretilla a unos 29°). Capturas de cerca para valravnx",
-  "hito": "equipo",
-  "rama": "trabajo/20261101-0822"
- },
- "B": {
-  "inicio": "2026-11-01T08:06:10+00:00",
-  "tarea": "El duelo en el mundo: pelear en cualquier sitio, sin escena aparte",
-  "hito": "mundo-juego",
-  "rama": "trabajo/20261101-0806"
- }
+ "A": null,
+ "B": null
 }

@@ -11,6 +11,29 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { MeshoptDecoder } from 'meshoptimizer';
 import { CLIPS_EXTRA } from '../src/personajes/cargar.js';
 import { ANIMS_EXTRA } from '../src/personaje/textos.js';
+import * as THREE from 'three';
+import { AGARRADERAS, GIRO_EMPUJAR, R_RUEDA } from '../src/juego/carretilla.js';
+
+const TALLER = readFileSync('src/mundo/eleccion.js', 'utf8').match(/TALLER = '(taller-v\d+)'/)[1];
+// lo más que se separan los nudillos (middle_01_l y _r) de las agarraderas en los fotogramas de `anim`, con el esqueleto
+// de `cuerpo` (un documento de gltf-transform): la postura de cada hueso, en el mundo, con three
+function distManos(cuerpo, anim) {
+  const obj = new Map(), P = {}, escena = new THREE.Object3D(), padres = new Set();
+  for (const n of cuerpo.getRoot().listNodes()) { const o = new THREE.Object3D(); o.name = n.getName(); obj.set(n.getName(), [n, o]); P[o.name] = o; }
+  for (const [, [n, o]] of obj) for (const c of n.listChildren()) { o.add(P[c.getName()]); padres.add(c.getName()); }
+  for (const [k, [, o]] of obj) if (!padres.has(k)) escena.add(o);
+  const canales = anim.listChannels().map(c => ({ o: P[c.getTargetNode().getName()], ruta: c.getTargetPath(), s: c.getSampler() }));
+  const n = canales[0].s.getInput().getCount();
+  const az = AGARRADERAS.delante + AGARRADERAS.z, ax = 0.223; // la x de las agarraderas: carretilla.js, xEn(s, −U_MANO)
+  let peor = 0;
+  for (let i = 0; i < n; i++) {
+    for (const [, [nd, o]] of obj) { o.position.fromArray(nd.getTranslation()); o.quaternion.fromArray(nd.getRotation()); o.scale.fromArray(nd.getScale()); }
+    for (const c of canales) { const v = c.s.getOutput().getElement(i, []); if (c.ruta === 'rotation') c.o.quaternion.fromArray(v); else if (c.ruta === 'translation') c.o.position.fromArray(v); }
+    escena.updateMatrixWorld(true);
+    for (const [l, s] of [['l', 1], ['r', -1]]) peor = Math.max(peor, P['middle_01_' + l].getWorldPosition(new THREE.Vector3()).distanceTo(new THREE.Vector3(s * ax, AGARRADERAS.y, az)));
+  }
+  return peor;
+}
 
 const V2 = `docs/recursos/personajes/${process.env.MUTAR ? 'taller-anim-v1' : 'taller-anim-v2'}`, V1 = 'docs/recursos/personajes/taller-anim-v1';
 await MeshoptDecoder.ready;
@@ -65,23 +88,36 @@ for (const sexo of ['hombre', 'mujer']) {
 comprobar('el juego conoce los nombres nuevos (CLIPS_EXTRA)', CLIPS_EXTRA.empujar === 'Push_Loop' && CLIPS_EXTRA.cogerDeMesa === 'PickUp_Table');
 comprobar('y tienen su texto en el visor', !!ANIMS_EXTRA.empujar && !!ANIMS_EXTRA.cogerDeMesa);
 
-// Las de cargar hechas en el taller (taller-carga-v1, herramientas/taller/hacer_cargas.mjs): al hombro andando y quieto,
-// y arrastrar. MUTAR_CARGAS=1 las mira en taller-anim-v2 (donde no están): tiene que fallar.
+// Las de cargar hechas en el taller (taller-carga-v2, herramientas/taller/hacer_cargas.mjs): al hombro andando y quieto,
+// arrastrar, y empujar la carretilla andando y quieto. MUTAR_CARGAS=1 las mira en taller-carga-v1 (donde no está la de
+// empujar): tiene que fallar.
 {
-  const C1 = `docs/recursos/personajes/${process.env.MUTAR_CARGAS ? 'taller-anim-v2' : 'taller-carga-v1'}`;
+  const C1 = `docs/recursos/personajes/${process.env.MUTAR_CARGAS ? 'taller-carga-v1' : 'taller-carga-v2'}`;
   const man = JSON.parse(readFileSync(`${C1}/manifiesto.json`, 'utf8'));
-  const CARGAS = ['Hombro_Walk_Loop', 'Hombro_Idle_Loop', 'Drag_Walk_Loop'];
+  const CARGAS = ['Hombro_Walk_Loop', 'Hombro_Idle_Loop', 'Drag_Walk_Loop', 'Empujar_Walk_Loop', 'Empujar_Idle_Loop'];
   for (const sexo of ['hombre', 'mujer']) {
     const bytes = readFileSync(`${C1}/mh_${sexo}_extra.glb`);
     comprobar(`cargas ${sexo}: el archivo es el del manifiesto`, createHash('sha256').update(bytes).digest('hex') === man[`mh_${sexo}_extra`]?.sha256);
     const doc = await io.readBinary(new Uint8Array(bytes)), anims = new Map(doc.getRoot().listAnimations().map(a => [a.getName(), a]));
-    comprobar(`cargas ${sexo}: solo las 3 de cargar, sin mallas`, anims.size === 3 && CARGAS.every(k => anims.has(k)) && doc.getRoot().listMeshes().length === 0, [...anims.keys()].join(', '));
+    comprobar(`cargas ${sexo}: solo las 5 de cargar, sin mallas`, anims.size === 5 && CARGAS.every(k => anims.has(k)) && doc.getRoot().listMeshes().length === 0, [...anims.keys()].join(', '));
     comprobar(`cargas ${sexo}: pequeñas (menos de 150 KB)`, bytes.length < 150 * 1024, `${Math.round(bytes.length / 1024)} KB`);
     // andando, las piernas se mueven (salen de andar); quieto, casi nada
     const piernas = (k) => anims.get(k) ? Math.max(...['thigh_l', 'thigh_r'].map(h => giro(anims.get(k), h))) : 0;
-    comprobar(`cargas ${sexo}: al hombro y arrastrar, andan (las piernas giran más de 20°)`, piernas('Hombro_Walk_Loop') > 20 && piernas('Drag_Walk_Loop') > 20, `${piernas('Hombro_Walk_Loop').toFixed(0)}° y ${piernas('Drag_Walk_Loop').toFixed(0)}°`);
+    comprobar(`cargas ${sexo}: al hombro, arrastrar y empujar, andan (las piernas giran más de 20°)`, ['Hombro_Walk_Loop', 'Drag_Walk_Loop', 'Empujar_Walk_Loop'].every(k => piernas(k) > 20), ['Hombro_Walk_Loop', 'Drag_Walk_Loop', 'Empujar_Walk_Loop'].map(k => piernas(k).toFixed(0) + '°').join(', '));
+    // empujar: en cada fotograma, andando y quieto, los nudillos (middle_01) en las agarraderas de la carretilla
+    // (src/juego/carretilla.js, AGARRADERAS: a esa altura y a esa distancia por delante del que la empuja), con el
+    // esqueleto del personaje del juego
+    if (anims.has('Empujar_Walk_Loop')) {
+      const cuerpo = await io.read(`docs/recursos/personajes/${TALLER}/mh_${sexo}.glb`);
+      for (const k of ['Empujar_Walk_Loop', 'Empujar_Idle_Loop']) {
+        const peor = distManos(cuerpo, anims.get(k));
+        comprobar(`empujar ${sexo} (${k}): los puños en las varas en todos los fotogramas (a menos de 7 cm)`, peor < 0.07, `${(peor * 100).toFixed(1)} cm`);
+      }
+    }
   }
 }
+comprobar('la carretilla va poco levantada empujándola (menos de 25°)', (GIRO_EMPUJAR + Math.asin((0.5 - R_RUEDA) / 1.9)) * 180 / Math.PI < 25, `${((GIRO_EMPUJAR + Math.asin((0.5 - R_RUEDA) / 1.9)) * 180 / Math.PI).toFixed(1)}°`);
+comprobar('el juego conoce las de empujar (CLIPS_EXTRA) y su texto en el visor', CLIPS_EXTRA.empujarCarretilla === 'Empujar_Walk_Loop' && CLIPS_EXTRA.empujarQuieto === 'Empujar_Idle_Loop' && !!ANIMS_EXTRA.empujarCarretilla && !!ANIMS_EXTRA.empujarQuieto);
 comprobar('el juego conoce las de cargar (CLIPS_EXTRA)', CLIPS_EXTRA.hombro === 'Hombro_Walk_Loop' && CLIPS_EXTRA.hombroQuieto === 'Hombro_Idle_Loop' && CLIPS_EXTRA.arrastrar === 'Drag_Walk_Loop');
 comprobar('y su texto en el visor', !!ANIMS_EXTRA.hombro && !!ANIMS_EXTRA.hombroQuieto && !!ANIMS_EXTRA.arrastrar);
 console.log(fallos ? `${fallos} fallos` : 'Todo correcto');

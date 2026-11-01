@@ -15,7 +15,7 @@ os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personaj
 shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v24'), f'{sitio}/recursos/personajes/taller-v24')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v1'), f'{sitio}/recursos/personajes/taller-carga-v1')  # las de cargar del taller
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v2'), f'{sitio}/recursos/personajes/taller-carga-v2')  # las de cargar del taller
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-anim-v1'), f'{sitio}/recursos/personajes/taller-anim-v1')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -162,9 +162,9 @@ with sync_playwright() as p:
             ids = pg.evaluate(f"(() => {{ const pj = {E}.diag().pj; return [pj.clips.length, Object.keys(pj.acciones).filter(k => pj.acciones[k] && k !== pj.acciones[k].getClip().name)]; }})()")
             n_clips = ids[0]
             if os.environ.get('MUTAR'): n_clips = 9
-            comprobar(f'taller propio ({sexo}): las 39 animaciones extra y las 3 de cargar del taller se cargan', n_clips == 9 + 39 + 3, f'{n_clips} clips')
+            comprobar(f'taller propio ({sexo}): las 39 animaciones extra y las 5 de cargar del taller se cargan', n_clips == 9 + 39 + 5, f'{n_clips} clips')
             botones = pg.evaluate("[...document.querySelectorAll('#anims-extra [data-modo]')].map(b => b.dataset.modo)")
-            comprobar(f'taller propio ({sexo}): botones de las 39 extra y las 3 de cargar en «Más animaciones»', len(botones) == 39 + 3, str(len(botones)))
+            comprobar(f'taller propio ({sexo}): botones de las 39 extra y las 5 de cargar en «Más animaciones»', len(botones) == 39 + 5, str(len(botones)))
             HUESOS = ['pelvis', 'head', 'hand_l', 'hand_r', 'foot_l', 'foot_r', 'lowerarm_l', 'lowerarm_r']
             pose = lambda: pg.evaluate(f"{HUESOS}.map(n => {E}.hueso(n))")
             quietas, rotas, fotos = [], [], []

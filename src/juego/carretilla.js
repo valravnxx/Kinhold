@@ -21,8 +21,8 @@ const ANCHO_RUEDA = 0.11;
 const Z_EJE = 0.55;                   // del centro de la carretilla al eje, hacia delante
 const LARGO = 1.9;                    // de eje a agarraderas, por las varas
 const ALTO_PARADA = 0.5;              // a qué altura quedan las agarraderas aparcada (sobre las patas)
-export const ALTO_MANOS_CARR = 1.1;   // m: a qué altura van las agarraderas empujándola (las manos de la animación de
-                                      // llevar en brazos, medidas en el navegador: 1,12–1,18 m la muñeca)
+export const ALTO_MANOS_CARR = 0.9;   // m: a qué altura van las agarraderas empujándola: en el puño de la animación de
+                                      // empujar del taller (herramientas/taller/hacer_cargas.mjs: la muñeca a 0,95 m)
 const U_MANO = LARGO - 0.12;          // m: de eje a donde van las manos, por las varas
 const ALFA = Math.asin((ALTO_PARADA - R_RUEDA) / LARGO);   // lo que suben las varas del eje a las agarraderas
 const X_DELANTE = 0.12, X_ATRAS = 0.23, R_VARA = 0.032;
