@@ -278,8 +278,10 @@ with sync_playwright() as p:
     st = ev(f"{D}.stats")
     comprobar('el rival ataca y el jugador para sus golpes', st['paradas'] >= 2, json.dumps(st))
     comprobar('ningún golpe del rival va al aire', 'al aire' not in pg.inner_text('#registro'))
-    pg.screenshot(path=f'{SALIDA}/08_duelo_normal.png')
+    # el rival cae enseguida: mientras se hacía la captura, sin nadie que parase, un golpe suyo ya en camino podía
+    # matar al jugador antes (pasó tres veces seguidas el 1 nov, en la nube y en el PC de valravnx)
     ev(f"{D}.rival.caer('Desangrado')")
+    pg.screenshot(path=f'{SALIDA}/08_duelo_normal.png')
     espera(700)
     comprobar('al caer el rival aparece la pantalla de victoria', pg.is_visible('#final') and 'vencido' in pg.inner_text('#tituloFinal'))
     pg.screenshot(path=f'{SALIDA}/09_victoria.png')
