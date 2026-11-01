@@ -7,6 +7,8 @@
 // - Si se corta una conexión que estaba hecha, vuelve a conectar sola, esperando cada vez un poco más (1, 2, 4,
 //   8 s y luego cada 10 s). No lo hace si el servidor la ha cerrado a propósito: otra conexión con la misma
 //   ficha (código 4001) o demasiados mensajes (1008).
+import { SERVIDOR, SERVIDORES_ANTES } from './direccion_servidor.js';
+
 const CLAVE_FICHA = 'kinhold_ficha:';
 const ESPERAS = [1000, 2000, 4000, 8000, 10000];
 
@@ -14,6 +16,15 @@ const leerFicha = (d) => {
   try {
     const f = localStorage.getItem(CLAVE_FICHA + d);
     if (f) return f;
+    // la del mismo servidor con su dirección de antes (1 nov: de sslip.io a playkinhold.com), con su cuenta
+    if (d === SERVIDOR) for (const a of SERVIDORES_ANTES) {
+      const v = localStorage.getItem(CLAVE_FICHA + a);
+      if (!v) continue;
+      localStorage.setItem(CLAVE_FICHA + d, v); localStorage.removeItem(CLAVE_FICHA + a);
+      const u = localStorage.getItem('kinhold_cuenta:' + a);
+      if (u) { localStorage.setItem('kinhold_cuenta:' + d, u); localStorage.removeItem('kinhold_cuenta:' + a); }
+      return v;
+    }
     const vieja = sessionStorage.getItem(CLAVE_FICHA + d);   // la de antes del 31 oct, en la pestaña
     if (vieja) { localStorage.setItem(CLAVE_FICHA + d, vieja); sessionStorage.removeItem(CLAVE_FICHA + d); }
     return vieja;
