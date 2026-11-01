@@ -7,8 +7,9 @@
 #    para por el lado del ratón y se cambia sin soltar;
 #  - un rival de práctica viene, pelea y sus golpes pasan por las acciones con autor; Tab lo fija y la cámara se
 #    pone detrás de ti mirándole;
-#  - en el móvil, la rosa (cuatro sectores) queda fija a un lado con «Parar», «Fijar» y «Rival», tocarla carga el
-#    golpe, deslizar el dedo no lo cambia y «Parar» lo cancela (finta).
+#  - en el móvil, dos rosas fijas (cuatro sectores cada una; valravnx, 1 nov): la de atacar carga el golpe al tocarla y
+#    deslizar el dedo no lo cambia; la de parar para por el lado que se toca, cambia al deslizar y, con un golpe
+#    cargándose, lo cancela (finta). Nada se tapa: ni con el mapa, el admin, el estado de la red ni lo que llevas.
 # Uso: python3 pruebas/prueba_combate_mundo_navegador.py <html de la construcción> <carpeta de capturas>
 #      MUTAR=1: el ratón no cambia de lado sin soltar, la cámara no baja y el botón de parar no finta: tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
@@ -52,6 +53,19 @@ def mover(pg, dx, dy, pasos=5):
 def golpe(pg, dx, dy, boton=0):
     # moverse y pulsar seguidos, como al jugar
     pg.evaluate(f'(() => {{ for (let i = 0; i < 5; i++) {C}.raton.mover({dx / 5}, {dy / 5}); {C}.raton.pulsar({boton}); }})()')
+# lo que se ve encima del juego (botones, rosas, paneles), y qué pares se tapan
+SOLAPES = """(() => {
+  const vis = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && !e.closest('[hidden]') && getComputedStyle(e).display !== 'none' && getComputedStyle(e).visibility !== 'hidden'; };
+  const els = [...document.querySelectorAll('#menu > *, #modos > *, #btnUsar, #cmbBotones button, #cmbRosa, #cmbRosaParar, #cmbEstado, #joystick, #llevas, #aviso, #materiales, #btnDemoFps, #btnDemoMenu')].filter(vis);
+  const malos = [];
+  for (let i = 0; i < els.length; i++) for (let j = i + 1; j < els.length; j++) {
+    const a = els[i], b = els[j]; if (a.contains(b) || b.contains(a)) continue;
+    const r = a.getBoundingClientRect(), q = b.getBoundingClientRect();
+    if (r.left < q.right - 1 && q.left < r.right - 1 && r.top < q.bottom - 1 && q.top < r.bottom - 1) malos.push((a.id || a.textContent.trim().slice(0, 10)) + '/' + (b.id || b.textContent.trim().slice(0, 10)));
+  }
+  return malos;
+})()"""
+
 def libre(pg):
     # sin tarjeta gráfica el juego va a cámara lenta (cada fotograma avanza como mucho 0,05 s): se espera al estado
     pg.wait_for_function(f'{C}.L && {C}.L.accion === "libre" && !{C}.L.bloqueando', timeout=120000)
@@ -168,6 +182,12 @@ with sync_playwright() as p:
     pg.wait_for_function(f"{K}.registroAcciones.entradas.some(e => e.tipo === 'golpe' && e.autor === 'jugador')", timeout=60000)
     mios = pg.evaluate(f"{K}.registroAcciones.entradas.filter(e => e.tipo === 'golpe' && e.autor === 'jugador').length")
     comprobar('tus golpes al rival pasan por las acciones con autor', mios > 0, f'{mios} golpes')
+    # PC, con lo que llevas en las manos a la vista: el aliento no va encima (iban los dos abajo en el centro)
+    pg.evaluate("""(() => { const l = document.getElementById('llevas'); l.hidden = false; l.innerHTML = '<span class=llevo><span>En la mano:</span><b>Hacha</b><button>Soltar</button></span>'; })()""")
+    pg.wait_for_timeout(200)
+    solapes = pg.evaluate(SOLAPES)
+    comprobar('PC: nada tapa nada con el arma sacada (aliento, lo que llevas, botones, menú)', not solapes, str(solapes))
+    pg.evaluate("document.getElementById('llevas').hidden = true")
     pg.keyboard.press('c'); pg.wait_for_timeout(200)
     g = pg.evaluate(f'({{ a: {C}.activo, pj: {K}.jugador.raiz.visible }})')
     comprobar('C guarda el arma y vuelve el personaje de andar', not g['a'] and g['pj'], str(g))
@@ -182,17 +202,17 @@ with sync_playwright() as p:
     mv.on('pageerror', lambda e: err2.append(str(e)))
     mv.goto(URL); listo(mv)
     mv.tap('#btnArma'); mv.wait_for_timeout(400)
-    vis = mv.evaluate("['cmbRosa', 'cmbParar', 'cmbFijar', 'cmbRival'].map(id => { const e = document.getElementById(id); const b = e.getBoundingClientRect(); return [id, !e.closest('[hidden]') && b.width > 0, Math.round(b.right), Math.round(b.bottom)]; })")
-    comprobar('móvil: la rosa fija y los botones Parar, Fijar y Rival salen y caben', all(v[1] and v[2] <= 390 and v[3] <= 844 for v in vis), str(vis))
-    solapes = mv.evaluate("""(() => {
-      const caja = id => document.getElementById(id).getBoundingClientRect();
-      const choca = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
-      const malos = [];
-      for (const a of ['cmbParar', 'cmbFijar', 'cmbRival', 'cmbEstado', 'joystick']) for (const b of ['cmbRosa', 'joystick', 'cmbEstado'])
-        if (a !== b && !document.getElementById(a).hidden && !document.getElementById(b).hidden && choca(caja(a), caja(b))) malos.push(a + '/' + b);
-      return [...new Set(malos)];
-    })()""")
-    comprobar('móvil: los botones no tapan la rosa, y el aliento no tapa el joystick', not solapes, str(solapes))
+    # lo que sale en el juego de verdad y aquí no: el estado de la red, el mapa, el admin y lo que llevas en las manos
+    mv.evaluate("""(() => { const m = document.getElementById('menu'); const s = document.createElement('span'); s.id = 'estadoRed'; s.textContent = 'En línea · 1 más';
+      s.style.cssText = 'align-self:center;padding:6px 9px;font-size:12px'; m.prepend(s);
+      for (const [id, t] of [['btnMapaPrueba', 'Mapa'], ['btnAdminPrueba', 'Admin']]) { const b = document.createElement('button'); b.id = id; b.textContent = t; m.appendChild(b); }
+      const l = document.getElementById('llevas'); l.hidden = false; l.innerHTML = '<span class=llevo><span>En la mano:</span><b>Hacha</b><button>Soltar</button></span>'; })()""")
+    mv.wait_for_timeout(300)
+    vis = mv.evaluate("['cmbRosa', 'cmbRosaParar', 'cmbFijar', 'cmbRival'].map(id => { const e = document.getElementById(id); const b = e.getBoundingClientRect(); return [id, !e.closest('[hidden]') && b.width > 0, Math.round(b.right), Math.round(b.bottom)]; })")
+    comprobar('móvil: las rosas de atacar y de parar y los botones Fijar y Rival salen y caben', all(v[1] and v[2] <= 390 and v[3] <= 844 for v in vis), str(vis))
+    # todo lo que se ve, con todo lo que se ve: ningún botón ni panel encima de otro
+    solapes = mv.evaluate(SOLAPES)
+    comprobar('móvil: nada tapa nada (rosas, botones, aliento, joystick, menú, aviso)', not solapes, str(solapes))
     mira = mv.evaluate("document.getElementById('cmbMira').hidden")
     comprobar('móvil: sin la mira del ratón', mira)
     caja = mv.evaluate("(() => { const b = document.getElementById('cmbRosa').getBoundingClientRect(); return [b.left, b.top, b.width]; })()")
@@ -207,10 +227,16 @@ with sync_playwright() as p:
     mv.screenshot(path=f'{SALIDA}/movil_rosa_cargando.png')
     mv.evaluate(f"window.__rosa('pointermove', {x0 + w * 0.12}, {y0 + w / 2})"); e = estado(mv)
     comprobar('móvil: deslizar el dedo no cambia el golpe (va comprometido)', e['linea'] == 'alto' and not e['finta'], str(e))
-    # «Parar» con el golpe cargado: finta
-    mv.evaluate("document.getElementById('cmbParar').dispatchEvent(new PointerEvent('pointerdown', { pointerId: 9, pointerType: 'touch', bubbles: true }))"); e = estado(mv)
-    comprobar('móvil: «Parar» con el golpe cargado lo cancela (finta) y para', e['accion'] == 'libre' and e['finta'] and e['bloq'], str(e))
-    mv.evaluate("document.getElementById('cmbParar').dispatchEvent(new PointerEvent('pointerup', { pointerId: 9, pointerType: 'touch', bubbles: true }))")
+    # la rosa de parar con el golpe cargado: finta, y para por el lado que se toca
+    cp = mv.evaluate("(() => { const b = document.getElementById('cmbRosaParar').getBoundingClientRect(); return [b.left, b.top, b.width]; })()")
+    px0, py0, pw = cp
+    mv.evaluate(f"""(() => {{ const r = document.getElementById('cmbRosaParar'); window.__parar = (t, x, y) => r.dispatchEvent(new PointerEvent(t, {{ pointerId: 9, pointerType: 'touch', clientX: x, clientY: y, bubbles: true }}));
+      window.__parar('pointerdown', {px0 + pw * 0.15}, {py0 + pw / 2}); }})()"""); e = estado(mv)
+    comprobar('móvil: la rosa de parar con el golpe cargado lo cancela (finta) y para por el lado tocado (izquierda)', e['accion'] == 'libre' and e['finta'] and e['bloq'] and e['lb'] == 'izquierda', str(e))
+    mv.evaluate(f"window.__parar('pointermove', {px0 + pw / 2}, {py0 + pw * 0.12})"); e = estado(mv)
+    comprobar('móvil: deslizando en la rosa de parar cambia de lado (arriba)', e['bloq'] and e['lb'] == 'alto', str(e))
+    mv.evaluate(f"window.__parar('pointerup', {px0 + pw / 2}, {py0 + pw * 0.12})"); e = estado(mv)
+    comprobar('móvil: al soltar la rosa de parar, deja de parar', not e['bloq'], str(e))
     mv.evaluate(f"window.__rosa('pointerup', {x0 + w * 0.12}, {y0 + w / 2})")
     libre(mv)
     mv.evaluate(f"window.__rosa('pointerdown', {x0 + w / 2}, {y0 + w * 0.85})")
@@ -223,10 +249,10 @@ with sync_playwright() as p:
     e = estado(mv)
     comprobar('móvil: levantar el dedo lanza el golpe', e['accion'] in ('lanzando', 'golpeando', 'recuperando'), str(e))
     libre(mv)
-    mv.evaluate("document.getElementById('cmbParar').dispatchEvent(new PointerEvent('pointerdown', { pointerId: 8, pointerType: 'touch', bubbles: true }))")
-    mv.evaluate(f"window.__rosa('pointerdown', {x0 + w * 0.88}, {y0 + w / 2})"); e = estado(mv)
-    comprobar('móvil: con «Parar» pulsado, la rosa elige el lado de la parada', e['bloq'] and e['lb'] == 'derecha', str(e))
+    mv.evaluate(f"window.__parar('pointerdown', {px0 + pw * 0.88}, {py0 + pw / 2})"); e = estado(mv)
+    comprobar('móvil: la rosa de parar, a la derecha, para por la derecha', e['bloq'] and e['lb'] == 'derecha', str(e))
     mv.wait_for_timeout(300); mv.screenshot(path=f'{SALIDA}/movil_parando.png')
+    mv.evaluate(f"window.__parar('pointerup', {px0 + pw * 0.88}, {py0 + pw / 2})")
     comprobar('sin errores en consola (móvil)', not err2, str(err2[:3]))
     nav.close()
 

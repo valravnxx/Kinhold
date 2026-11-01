@@ -7,8 +7,10 @@
 //    clic derecho lo cancela (finta, cuesta aliento) y, si se mantiene, para; también se puede empezar otro golpe.
 //    Clic derecho mantenido: parar, por el lado del último movimiento, cambiándolo sin soltar (con escudo, sin lado:
 //    para lo que viene de frente).
-//  - Móvil: la rosa fija abajo a la derecha, con cuatro sectores (tocar un sector carga por ese lado, soltar lo
-//    lanza); «Parar» cancela el golpe que se carga (finta) y, mantenido, para por el lado que toques en la rosa.
+//  - Móvil: dos rosas fijas a la derecha, con cuatro sectores cada una (valravnx, 1 nov: «parar sigue siendo un botón
+//    y no otro joystick como el de atacar»). La de abajo ataca: tocar un sector carga por ese lado y soltar lo lanza.
+//    La de encima para: tocar un sector para por ese lado, deslizar el dedo cambia de lado y soltar deja de parar; con
+//    un golpe cargándose, tocarla lo cancela (finta). Fijar y Rival van a la izquierda, encima del aliento.
 //  - Fijar (Tab o el botón): con un rival fijado vuelve la cámara del duelo (detrás de ti, mirándole) y andas a su
 //    alrededor; sin fijar, cámara y movimiento libres.
 // Un rival de práctica (botón «Rival») viene a por ti con la máquina del duelo. Todo golpe pasa por las acciones con
@@ -58,12 +60,21 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   #cmbMsg{position:fixed;left:50%;top:22%;transform:translateX(-50%);padding:6px 12px;border-radius:8px;background:rgba(30,26,20,.78);color:#f2e8d0;font:15px system-ui,sans-serif;z-index:7;pointer-events:none;text-align:center;max-width:90vw}
   #cmbBotones{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(64px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;z-index:6}
   #cmbBotones button{min-width:84px}
-  #cmbRosa{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(150px + env(safe-area-inset-bottom,0px));width:150px;height:150px;border-radius:50%;background:rgba(36,30,24,.45);border:2px solid rgba(241,232,216,.35);touch-action:none;z-index:6}
-  #cmbRosa b{position:absolute;transform:translate(-50%,-50%);font:700 20px system-ui,sans-serif;color:rgba(241,232,216,.7);pointer-events:none}
-  #cmbRosa b.sel{color:#e8b64c} #cmbRosa b.para{color:#7fb2e6} #cmbRosa b.viene{color:#e05a4a}
-  #cmbRosa .centro{position:absolute;left:50%;top:50%;width:42%;height:42%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(241,232,216,.3);pointer-events:none}
-  /* móvil: la rosa abajo a la derecha, sus botones encima de ella y el aliento encima del joystick */
-  body.combate.tactil #cmbBotones{bottom:calc(316px + env(safe-area-inset-bottom,0px))}
+  #cmbRosa,#cmbRosaParar{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:138px;height:138px;border-radius:50%;background:rgba(36,30,24,.45);border:2px solid rgba(241,232,216,.35);touch-action:none;z-index:6}
+  #cmbRosaParar{bottom:calc(172px + env(safe-area-inset-bottom,0px));background:rgba(28,40,56,.45);border-color:rgba(127,178,230,.45)}
+  #cmbRosa b,#cmbRosaParar b{position:absolute;transform:translate(-50%,-50%);font:700 20px system-ui,sans-serif;color:rgba(241,232,216,.7);pointer-events:none}
+  #cmbRosa b.sel{color:#e8b64c} #cmbRosaParar b.para{color:#7fb2e6} #cmbRosa b.viene,#cmbRosaParar b.viene{color:#e05a4a}
+  #cmbRosa i,#cmbRosaParar i{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:600 12px system-ui,sans-serif;font-style:normal;color:rgba(241,232,216,.75);pointer-events:none}
+  #cmbRosaParar.sel{border-color:#7fb2e6}
+  /* móvil: las dos rosas a la derecha (atacar abajo, parar encima); Fijar y Rival en fila a la izquierda, encima del
+     aliento, que va encima del joystick; lo que llevas en las manos no se enseña mientras se pelea (tapaba la rosa) */
+  body.combate.tactil #cmbBotones{right:auto;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(222px + env(safe-area-inset-bottom,0px));flex-direction:row}
+  body.combate.tactil #cmbBotones button{min-width:0;padding:7px 12px}
+  body.combate.tactil #llevas{display:none}
+  /* pantallas bajas: las rosas algo más pequeñas, para que la de parar no llegue a los botones de modo */
+  @media (max-height:740px){#cmbRosa,#cmbRosaParar{width:116px;height:116px}#cmbRosaParar{bottom:calc(148px + env(safe-area-inset-bottom,0px))}}
+  /* PC: el aliento encima de lo que llevas en las manos (los dos iban abajo en el centro, uno encima del otro) */
+  body.combate:not(.tactil) #cmbEstado{bottom:calc(58px + env(safe-area-inset-bottom,0px))}
   body.combate.tactil #cmbEstado{left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(162px + env(safe-area-inset-bottom,0px));transform:none;flex-wrap:wrap;max-width:150px;gap:4px 8px;font-size:12px}
   body.combate.tactil #btnUsar{display:none}
   body.combate.tactil #cmbMsg{top:calc(50% - 150px);font-size:14px}
@@ -74,10 +85,11 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   const carga = div('cmbCarga', '<i></i>');
   const estadoEl = div('cmbEstado', `<span data-t="aliento"></span><span class="barra"><i></i></span><span class="sangre"></span>`);
   const msg = div('cmbMsg');
-  const rosa = div('cmbRosa', LINEAS.map(l => `<b data-l="${l}" style="left:${50 + SITIO[l][0] * 34}%;top:${50 + SITIO[l][1] * 34}%">${FLECHA[l]}</b>`).join(''));
+  const marcasRosa = (texto) => LINEAS.map(l => `<b data-l="${l}" style="left:${50 + SITIO[l][0] * 34}%;top:${50 + SITIO[l][1] * 34}%">${FLECHA[l]}</b>`).join('') + `<i>${texto}</i>`;
+  const rosa = div('cmbRosa', marcasRosa(tr('Atacar')));
+  const rosaParar = div('cmbRosaParar', marcasRosa(tr('Parar')));
   const botones = div('cmbBotones');
   const boton = (id, texto, donde = botones) => { const b = document.createElement('button'); b.id = id; b.textContent = tr(texto); donde.appendChild(b); return b; };
-  const bParar = esTactil ? boton('cmbParar', 'Parar') : null;
   const bFijar = boton('cmbFijar', 'Fijar');
   const bRival = boton('cmbRival', 'Rival');
   botones.hidden = true;
@@ -259,31 +271,34 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (!c.raton) { botonesAntes = 0; soltarGolpe(); if (c.parando) parar(false); }
   });
 
-  // ---------- Rosa (móvil) ----------
-  let lineaParadaRosa = 'alto', dedoRosa = null;
-  const lineaRosa = (x, y) => {
-    const b = rosa.getBoundingClientRect();
-    return lineaDe(x - (b.left + b.width / 2), y - (b.top + b.height / 2));
-  };
+  // ---------- Rosas (móvil) ----------
+  const lineaEn = (el, x, y) => { const b = el.getBoundingClientRect(); return lineaDe(x - (b.left + b.width / 2), y - (b.top + b.height / 2)); };
+  // atacar: tocar carga por ese lado y soltar lo lanza (el golpe va comprometido: deslizar no lo cambia)
+  let dedoRosa = null;
   rosa.addEventListener('pointerdown', (e) => {
     e.preventDefault(); e.stopPropagation();
     try { rosa.setPointerCapture(e.pointerId); } catch (err) { /* nada */ }
     dedoRosa = e.pointerId;
-    const l = lineaRosa(e.clientX, e.clientY);
-    if (c.parando) { lineaParadaRosa = l; parar(true, l); } else empezarGolpe(l);
-  });
-  rosa.addEventListener('pointermove', (e) => {
-    if (e.pointerId !== dedoRosa) return;
-    const l = lineaRosa(e.clientX, e.clientY);
-    if (c.parando && l !== lineaParadaRosa) { lineaParadaRosa = l; parar(true, l); }   // (el golpe no cambia: va comprometido)
+    empezarGolpe(lineaEn(rosa, e.clientX, e.clientY));
   });
   const finRosa = (e) => { if (e.pointerId !== dedoRosa) return; dedoRosa = null; soltarGolpe(); };
   rosa.addEventListener('pointerup', finRosa); rosa.addEventListener('pointercancel', finRosa);
-  if (bParar) {
-    bParar.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); try { bParar.setPointerCapture(e.pointerId); } catch (err) { /* nada */ } parar(true, lineaParadaRosa); bParar.classList.add('sel'); });
-    const fin = () => { parar(false); bParar.classList.remove('sel'); };
-    bParar.addEventListener('pointerup', fin); bParar.addEventListener('pointercancel', fin);
-  }
+  // parar: tocar para por ese lado (y, con un golpe cargándose, lo cancela: finta), deslizar cambia de lado, soltar deja de parar
+  let dedoParar = null, ladoParar = null;
+  rosaParar.addEventListener('pointerdown', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    try { rosaParar.setPointerCapture(e.pointerId); } catch (err) { /* nada */ }
+    dedoParar = e.pointerId;
+    ladoParar = lineaEn(rosaParar, e.clientX, e.clientY);
+    parar(true, ladoParar); rosaParar.classList.add('sel');
+  });
+  rosaParar.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== dedoParar) return;
+    const l = lineaEn(rosaParar, e.clientX, e.clientY);
+    if (l !== ladoParar) { ladoParar = l; parar(true, l); }
+  });
+  const finParar = (e) => { if (e.pointerId !== dedoParar) return; dedoParar = null; parar(false); rosaParar.classList.remove('sel'); };
+  rosaParar.addEventListener('pointerup', finParar); rosaParar.addEventListener('pointercancel', finParar);
 
   // ---------- Teclas ----------
   addEventListener('keydown', (e) => {
@@ -342,7 +357,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
       c.vistaAntes = clave;
       bArma.hidden = modo() !== 'mover';
       mira.hidden = !vis || esTactil; carga.hidden = !vis || esTactil;
-      estadoEl.hidden = !vis; botones.hidden = !vis; rosa.hidden = !vis || !esTactil;
+      estadoEl.hidden = !vis; botones.hidden = !vis; rosa.hidden = rosaParar.hidden = !vis || !esTactil;
     }
     if (tMsg > 0) { tMsg -= dt; if (tMsg <= 0) msg.hidden = true; }
     if (!c.L) return;
@@ -427,7 +442,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   }
   function pintarInterfaz() {
     const L = c.L, amenaza = rivalQueAtaca(), viene = amenaza ? ESPEJO[amenaza.L.linea] : null;
-    for (const cont of [mira, rosa]) for (const b of cont.querySelectorAll('b')) {
+    for (const cont of [mira, rosa, rosaParar]) for (const b of cont.querySelectorAll('b')) {
       const l = b.dataset.l;
       b.classList.toggle('sel', L.atacando() && L.linea === l);
       b.classList.toggle('para', L.bloqueando && L.lineaBloqueo === l);
