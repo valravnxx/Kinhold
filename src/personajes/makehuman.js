@@ -158,7 +158,9 @@ const RECORTE_GLSL = `
 #ifdef USE_MAP
   diffuseColor.a = opacity * textureLod( map, vMapUv, 0.0 ).a;
 #endif
-  float kh_fw = max( fwidth( diffuseColor.a ), 1e-4 );
+  // como mucho medio paso: en las costuras del mapa UV, los píxeles vecinos del cuadro caen fuera de la pieza (sin
+  // transparencia) y el borde salía como una raya fina en medio de la tela (visto en la cofia, en la cabeza)
+  float kh_fw = clamp( fwidth( diffuseColor.a ), 1e-4, 0.5 );
   diffuseColor.a = clamp( ( diffuseColor.a - alphaTest ) / kh_fw + 0.5, 0.0, 1.0 );
   if ( diffuseColor.a == 0.0 ) discard;
 #endif

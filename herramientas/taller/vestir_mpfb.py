@@ -1263,11 +1263,14 @@ def personaje(nombre, macros, objetivos, ropa):
             # el bajo baja hasta 3 cm por debajo del cuello (desde taller-v23): queda metido bajo el escote de cualquier
             # prenda (el más bajo, el del vestido por delante, a 2,4 cm). Antes acababa 6 mm por encima del cuello y entre
             # la cofia y el escote asomaba una cuña de piel (revisión del 31 oct, noche)
-            borde = suave(-0.002, 0.002, P[..., 2] - (cuello_z - COFIA_BAJO))
+            # a los lados, sobre los hombros, baja más (hasta 4 cm más): la piel de lo alto del hombro asomaba entre la
+            # cofia y el escote, que ahí es ancho
+            borde = suave(-0.002, 0.002, P[..., 2] - (cuello_z - COFIA_BAJO - 0.04 * suave(0.03, 0.08, np.abs(P[..., 0]))))
             return np.concatenate([col, (zona_cofia(P) * borde)[..., None]], -1)
         COFIA_BAJO = 0.03
-        # la cabeza y, por debajo del cuello, lo que rodea la garganta y la nuca (sin los hombros) hasta el bajo y algo más
-        cof = lambda i, c: en(i, 'body') and not mano(i) and c.z > cuello_z - COFIA_BAJO - 0.02 and (cabeza(i) or (c.z > cuello_z - COFIA_BAJO - 0.02 and abs(c.x) < 0.075))
+        # la cabeza y, por debajo del cuello, lo que rodea la garganta, la nuca y lo alto de los hombros (hasta 10 cm a los
+        # lados) hasta el bajo y algo más; lo de más lo tapa la ropa
+        cof = lambda i, c: en(i, 'body') and not mano(i) and c.z > cuello_z - COFIA_BAJO - 0.07 and (cabeza(i) or abs(c.x) < 0.1)
         def empuje(c, i):  # las orejas quedan aplastadas bajo el lino (si no, la cofia sale arrugada)
             if ATR[i, 1] > 0.0: c[:] = kd_craneo.find(c)[0]  # la oreja se pega al cráneo; luego se alisa como una membrana
             return 0.005 + 0.004 * max(0.0, c.y + 0.03) / 0.1
