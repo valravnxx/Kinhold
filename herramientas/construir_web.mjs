@@ -60,7 +60,7 @@ for (const c of Object.keys(capturas)) {
 for (const p of roadmap.prototipos) for (const v of p.versiones)
   if (!/^https?:/.test(v.archivo) && !existsSync(join(docs, v.archivo))) errores.push(`falta la versión ${p.id} ${v.v}: ${v.archivo}`);
 // estados válidos
-const ESTADOS = ['hecho', 'en_curso', 'revision', 'espera_decision', 'pendiente', 'fallo'];
+const ESTADOS = ['hecho', 'en_curso', 'revision', 'espera_decision', 'pendiente', 'congelado', 'fallo'];   // congelado: aparcado hasta que toque (revisión del 1 nov)
 for (const h of roadmap.hitos) {
   if (!ESTADOS.includes(h.estado)) errores.push(`estado raro en el hito ${h.id}: ${h.estado}`);
   for (const t of h.tareas) if (!ESTADOS.includes(t.estado)) errores.push(`estado raro en la tarea "${t.nombre}": ${t.estado}`);

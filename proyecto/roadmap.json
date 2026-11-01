@@ -437,10 +437,10 @@
   {
    "id": "mundo-juego",
    "num": "1i",
-   "estado": "en_curso",
+   "estado": "hecho",
    "nombre": "El juego en el mundo de verdad",
    "jugable": "El personaje aparece en Whitholm, la isla del rey, con el mapa del rey, y anda por el mundo de verdad, cargado por trozos y fluido en el móvil; ahí construye (nivelando en ladera), recoge lo que da cada sitio y pelea (en Strandvang, solo contra NPCs), con el servidor sabiendo del mundo.",
-   "nota": "Fase 1 de la revisión del 29 oct (aprobada por valravnx): une el mapa con la demo. Reúne «Andar por el mundo de verdad» y «Que aguante en el móvil» (del hito Mundo), el terreno por trozos (del hito de arte) y nivelar para cimientos (del hito de cavar). Lo llevan los carriles.",
+   "nota": "Revisión del 1 nov con valravnx: cerrado con lo hecho; lo que le queda mal pasa a los hitos nuevos.",
    "tareas": [
     {
      "nombre": "Planificar el hito: cómo cargan otros juegos el terreno por trozos con niveles de detalle (y en un hilo aparte), medir el visor del mapa v13 en el móvil y desglosar las tareas",
@@ -567,10 +567,6 @@
      "fin": "2026-11-01T13:01:11+00:00"
     },
     {
-     "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
-    },
-    {
      "nombre": "Tejados pisables y clic derecho para usar (valravnx, 31 oct): los tejados terminados se pisan (para hacer un tejado entero con un solo andamio; antes se atravesaban y caías) y, con clic derecho en lo que quieras usar (en el móvil, dejando el dedo quieto encima), sale un menú con eso y lo muy cercano para elegir; el botón derecho ya no gira la cámara (la gira la rueda pulsada)",
      "estado": "hecho",
      "inicio": "2026-10-31T10:05:51+00:00",
@@ -583,7 +579,7 @@
    "num": "2",
    "nombre": "Equipo y carga por huecos",
    "jugable": "Panel de inventario, cinturones, leñero y otras mochilas; tala, transporte y ralentización por cargar.",
-   "estado": "en_curso",
+   "estado": "hecho",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
@@ -719,153 +715,17 @@
      "estado": "hecho",
      "inicio": "2026-11-01T12:24:20+00:00",
      "fin": "2026-11-01T13:43:14+00:00"
-    },
-    {
-     "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
     }
    ],
-   "nota": "Revisión del 29 oct: va justo después de «El juego en el mundo de verdad»; primero lo que hace que lo recogido sirva (objetos en el suelo, tala, obras con lo que llevas, por el servidor)."
-  },
-  {
-   "id": "crafting",
-   "num": "3",
-   "nombre": "Estaciones y crafting",
-   "jugable": "Primeras estaciones, recetas, desbloqueo por práctica, durabilidad y reparación.",
-   "estado": "en_curso",
-   "tareas": [
-    {
-     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
-     "estado": "hecho",
-     "inicio": "2026-10-28T19:23:07+00:00",
-     "fin": "2026-10-28T19:24:54+00:00"
-    },
-    {
-     "nombre": "Recoger del suelo y de las plantas lo que pide el nivel N0 (documento de sistemas, apartado 3): ramas caídas, piedra suelta y sílex con las manos, y fibra arrancada de ortigas y hierba larga; cada cosa sale donde dice el documento, da lo que dice, va al inventario por huecos y vuelve a salir pasado su tiempo, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
-     "estado": "hecho",
-     "inicio": "2026-10-29T01:21:05+00:00",
-     "fin": "2026-10-29T10:11:30+00:00"
-    },
-    {
-     "nombre": "Estaciones y recetas en la lógica pura, con los datos del documento de sistemas (apartados 7 y 8) de las primeras estaciones: hoguera y piedra de tallar (N0) y banco de trabajo de tronco (entrada a N1); cada receta con lo que gasta, lo que da, dónde se hace y su tiempo. Fabricar con autor, gastando lo que llevas encima y lo de los arcones a pocos pasos, con una cola pequeña por estación y el tiempo contado por tiempo transcurrido. Pruebas de lógica",
-     "estado": "hecho",
-     "inicio": "2026-10-31T05:36:55+00:00",
-     "fin": "2026-10-31T07:09:21+00:00"
-    },
-    {
-     "nombre": "Recetas que conoce cada personaje y desbloqueo por práctica (GDD, apartado 9): construir la estación da sus recetas básicas y fabricar en ella abre las siguientes. Lo que el GDD no fija (qué recetas son básicas y cuánta práctica abre las demás) se decide de forma provisional y sencilla y se anota en el registro de decisiones y en el diario. Guardado en el navegador con migración. Pruebas de lógica",
-     "estado": "hecho",
-     "inicio": "2026-10-31T11:54:23+00:00",
-     "fin": "2026-10-31T13:32:29+00:00"
-    },
-    {
-     "nombre": "Las estaciones se construyen en la demo como obras (marco, materiales y tiempo) y se ven con el estilo v5: hoguera con su fuego y su luz de noche, piedra de tallar y banco de trabajo de tronco. Capturas de cerca comparadas con la v5 para valravnx",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Panel de la estación en la demo: al acercarte a una estación, sus recetas (las que conoces, y las que aún no, sin desvelar cuáles son), lo que falta para cada una, la cola y el tiempo que queda. En PC y en el móvil, con capturas",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Lo que se fabrica en N0 y N1 se ve con el estilo v5, en la mano, en el cinturón o a la espalda: lasca de sílex, hacha de piedra, lanza endurecida, palo cavador, antorcha (que alumbra y se apaga pasado un rato), cordel, leñero, pala de madera y cubo. Capturas de cerca para valravnx",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Durabilidad en la lógica pura (GDD, apartado 9; valores iniciales del documento de sistemas, apartado 10): herramientas y armas se gastan al usarlas (talar, cavar, golpes en el duelo) y la ropa y la armadura al recibir golpes; al llegar a cero no sirven hasta repararlas. Se ve en el panel del inventario. Pruebas de lógica y de navegador",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Reparar en la estación que fabricó el objeto, con material del mismo tipo (GDD, apartado 9): lógica pura con autor, en el panel de la estación y con pruebas",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "El primer día de un jugador (documento de sistemas, apartado 11) se puede recorrer en la demo: fibra y cordel, cordel de cinturón, piedra de tallar con lasca y hacha de piedra, leñero, hoguera, y el banco de tronco que abre N1. Prueba de navegador que lo recorre entero",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
-    }
-   ],
-   "nota": "Revisión del 29 oct: después del equipo; las estaciones y lo fabricado, en el mundo de verdad y por el servidor."
-  },
-  {
-   "id": "supervivencia",
-   "num": "4",
-   "nombre": "Supervivencia",
-   "jugable": "Necesidades con avisos, ropa contra el frío, cama ligada y muerte con saqueo parcial.",
-   "estado": "pendiente",
-   "tareas": [
-    {
-     "nombre": "Planificar el hito con el GDD (apartados 4, 6 y 20) y el documento de sistemas (apartados 10 y 11): sed (beber del río), hambre, frío y cansancio con sus avisos; hoguera; refugio de ramas y cama ligada; muerte con la mitad saqueable; día de 2 h y noche de 1 h; y lo mínimo de caza que pide el primer día (liebres que huyen, despiece y asar)",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "El primer día de un jugador, entero, en el mundo de verdad y en línea entre dos (PC y móvil), como lo cuenta el documento de sistemas: prueba de navegador que lo recorre y capturas para valravnx",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
-    }
-   ],
-   "nota": "Meta de la fase 1 de la revisión del 29 oct: jugar el primer día entero en Kinland, en línea y entre dos."
-  },
-  {
-   "id": "servidor",
-   "num": "11",
-   "nombre": "Servidor y cuentas",
-   "jugable": "Registro e inicio de sesión seguros, recuperación de cuenta, creación de personaje, mundo persistente con servidor autoritativo.",
-   "estado": "pendiente",
-   "tareas": [
-    {
-     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
-     "estado": "pendiente"
-    }
-   ],
-   "nota": "Prioridad alta. Contraseñas con hash, conexión cifrada, límite de intentos, copias de seguridad. Fase 2 de la revisión del 29 oct: justo después del primer día jugable. Alojamiento elegido por valravnx: Hetzner."
-  },
-  {
-   "id": "admin",
-   "num": "11b",
-   "nombre": "Administración, registros y seguridad",
-   "estado": "pendiente",
-   "jugable": "Roles (jugador, moderador, administrador) para la cuenta de valravnx y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
-   "nota": "Prioridad alta: es un juego online persistente. Desde ya, toda acción que cambia el mundo pasa por la lógica con autor, para poder registrarla después.",
-   "tareas": []
-  },
-  {
-   "id": "tierras",
-   "num": "13",
-   "nombre": "Tierras y familias",
-   "jugable": "Mojones (tu casa: uno por personaje en Whitholm, con radio de exclusión, mantenimiento y deterioro) y, aparte, los clanes en las comarcas (todas menos Strandvang, que es del rey): el centro del castillo toma su zona y, el primero, la comarca entera; los clanes con zona en una comarca con señor son sus vasallos; renta en moneda por el trabajo en la comarca y su corte por atacar a quien trabaja o a un vasallo. Peajes, familias, alianzas y escudos de armas.",
-   "estado": "pendiente",
-   "tareas": [
-    {
-     "nombre": "Comarcas para los clanes (valravnx, 30 oct): el centro del castillo toma la zona y la comarca, vasallos, renta en moneda por el trabajo en la comarca, corte de renta por atacar y ventana de asedio; al GDD y al plan",
-     "estado": "hecho",
-     "inicio": "2026-10-30T11:37:13+01:00",
-     "rama": "trabajo/20261030-1135-clanes",
-     "fin": "2026-10-30T11:39:15+01:00"
-    },
-    {
-     "nombre": "Un mojón por personaje en Whitholm (valravnx, 31 oct): la lógica con autor no deja poner un segundo; en el continente, hasta tres más en total, cuando se llegue en barco",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Strandvang fuera de los clanes (valravnx, 31 oct): ahí no se puede poner el centro del castillo, no tiene señor, no da renta ni se asedia; se vive con el mojón normal",
-     "estado": "pendiente"
-    }
-   ],
-   "nota": "Revisión del 29 oct: lo primero (reclamar con el mojón, radio de exclusión, mantenimiento y deterioro) va en la fase 2, con el servidor y las cuentas: es lo que protege lo construido cuando estás fuera. Los clanes en las comarcas, después (diseño decidido por valravnx el 30 oct, GDD apartado 11, «Comarcas, zonas y clanes»; las comarcas y sus zonas ya están en la lógica, src/logica/comarcas.js). Al planificar el hito, cada paso con su prueba: el centro y su zona; el señor de la comarca y los vasallos; la renta (lógica pura con autor, en el servidor); el corte de renta; el mapa con los estandartes. Valravnx, 31 oct: un mojón por personaje en Whitholm (hasta tres más en el continente) y Strandvang queda fuera de los clanes."
+   "nota": "Revisión del 1 nov con valravnx: cerrado con lo hecho; lo que le queda mal pasa a los hitos nuevos."
   },
   {
    "id": "arte",
    "num": "1b",
    "nombre": "Dirección de arte y personajes",
-   "estado": "en_curso",
+   "estado": "hecho",
    "jugable": "Personaje con proporciones y detalle realistas, personalización (cuerpo, cara, pelo, piel) y ropa y armaduras que se ven puestas; luz, materiales y paleta sobrios; terreno y piezas de construcción con más detalle. Low-poly por código, pero que se vea bien y aguante en móvil.",
-   "nota": "Prioridad alta: antes de añadir más piezas o sistemas, para no rehacerlos luego con el estilo nuevo. Desde el 29 oct lo lleva el carril B, en paralelo a lo demás (revisión del proyecto, aprobada por valravnx).",
+   "nota": "Revisión del 1 nov con valravnx: cerrado con lo que hay. Desde ahora el arte se cuida dentro de cada tarea (cada pieza nueva con el estilo v5), no en un hito aparte; la cofia y el escote quedan congelados en «Pulido».",
    "tareas": [
     {
      "nombre": "Correr más natural (valravnx: «la animación de correr me parece fea y exagerada»): primero suavizar por código la del paquete (menos braceo, rebote e inclinación); después probar carreras de captura de movimiento libres para uso comercial (Rokoko o CMU) si valravnx las baja",
@@ -1098,29 +958,379 @@
      "rama": "trabajo/20261101-0656"
     },
     {
-     "nombre": "Cofia y escote de la mujer (visto en la revisión del 1 nov): la cofia sale lisa y ceñida como un gorro de baño, sin pliegues ni caída de tela; a lo largo de la mandíbula queda una raya oscura entre la piel y la cofia, y el borde del escote sale ondulado e irregular, como roto",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
-    },
-    {
      "nombre": "Arreglo (valravnx, 29 oct: «han roto las manos de todos los personajes» y prendas rotas): desde taller-v9 la piel se diezma con la cara protegida pero con la proporción de toda la piel, así que las manos se quedaban en una tira; diezmar solo lo que se puede diezmar, rehacer los personajes y repasar todas las prendas de cerca",
      "estado": "hecho",
      "inicio": "2026-10-29T05:46:31+01:00",
      "fin": "2026-10-29T09:36:02+00:00"
     }
+   ]
+  },
+  {
+   "id": "duelo",
+   "num": "5",
+   "nombre": "Duelo",
+   "jugable": "Esgrima contra un bot con heridas.",
+   "estado": "hecho",
+   "tareas": [
+    {
+     "nombre": "Combate v1: líneas de golpe, guardias, heridas, arco",
+     "estado": "hecho"
+    },
+    {
+     "nombre": "Combate v2: rosa de golpes, parada perfecta, golpe maestro, fintas, peso de los golpes",
+     "estado": "hecho"
+    },
+    {
+     "nombre": "Arreglo del arco: no soltar antes del 50% de tensión, correr cancela el tensado, 0,8 s para encajar otra flecha (piedras 0,5 s), con pruebas",
+     "estado": "hecho",
+     "inicio": "2026-10-24T19:13:50+02:00",
+     "fin": "2026-10-24T19:23:09+02:00"
+    },
+    {
+     "nombre": "Escudo provisional: opción «Espada y escudo» (espada de una mano), para flechas y piedras de frente, parada más barata, se ve en el brazo izquierdo y se levanta al parar; también para el rival",
+     "estado": "hecho",
+     "inicio": "2026-10-24T20:20:27+02:00",
+     "fin": "2026-10-24T20:36:27+02:00"
+    },
+    {
+     "nombre": "Cámara táctil con un dedo durante el combate",
+     "estado": "hecho",
+     "inicio": "2026-10-27T08:50:44+00:00",
+     "fin": "2026-10-27T13:40:27+00:00"
+    },
+    {
+     "nombre": "Curación de heridas",
+     "estado": "hecho",
+     "inicio": "2026-10-28T14:53:19+00:00",
+     "fin": "2026-10-28T21:54:09+00:00"
+    },
+    {
+     "nombre": "Combate en el mundo (valravnx, 30 oct): en PC, ratón cogido y ataque cargado mientras se mantiene el clic, en la dirección del último movimiento (sin movimiento, estocada) y cambiable sin soltar; paradas con el botón derecho por dirección, también cambiables; fijar rival con la cámara del duelo; en el móvil, la rosa fija a un lado; cámara que se inclina más",
+     "estado": "hecho",
+     "inicio": "2026-10-30T09:39:49+01:00",
+     "rama": "trabajo/20261030-0945-combate",
+     "fin": "2026-10-30T15:54:31+01:00"
+    },
+    {
+     "nombre": "Cuatro direcciones y ataque comprometido (valravnx, 31 oct): alto, izquierda, derecha y abajo para clavar (fuera el tajo bajo y el centro); el escudo para todo lo que viene de frente sin elegir lado; el golpe no cambia de dirección al cargarlo, y el botón de parar lo cancela con una finta (para parar o para empezar otro golpe)",
+     "estado": "hecho",
+     "inicio": "2026-10-31T10:02:41+01:00",
+     "rama": "trabajo/20261031-1005-cuatro",
+     "fin": "2026-10-31T18:52:54+01:00"
+    },
+    {
+     "nombre": "Pelear en línea en el mundo (valravnx, 31 oct): al sacar el arma, los demás la ven en la mano, y los golpes y las paradas van por el servidor y hieren de verdad al otro",
+     "estado": "hecho",
+     "inicio": "2026-10-31T22:59:16+01:00",
+     "rama": "trabajo/20261031-2300-pelea",
+     "fin": "2026-11-01T03:33:30+01:00"
+    },
+    {
+     "nombre": "Combate en el móvil (valravnx, 1 nov): parar con su propia rosa, como la de atacar, para elegir el lado; y los botones del combate sin taparse unos a otros",
+     "estado": "hecho",
+     "inicio": "2026-11-01T08:48:18+01:00",
+     "rama": "trabajo/20261101-0850-rosa",
+     "fin": "2026-11-01T09:59:42+01:00"
+    }
    ],
-   "bloquea": true,
-   "carril": "B"
+   "nota": "Revisión del 1 nov con valravnx: cerrado: el combate es el del mundo. La tarea de «cinco direcciones» se quita (son cuatro, 31 oct); la tabla de armadura única y el arma del inventario pasan a «Orden»."
+  },
+  {
+   "id": "servidor",
+   "num": "P1",
+   "nombre": "Cuentas",
+   "jugable": "Entras con tu usuario y tu contraseña desde cualquier aparato y sigues siendo tú: tu personaje, tu casa, tu mojón y lo que llevas no se pierden al cambiar de navegador.",
+   "estado": "en_curso",
+   "tareas": [
+    {
+     "nombre": "Cuentas en el servidor: usuario y contraseña (guardada con sal y hash lento, nunca en claro), crear cuenta y entrar; cada cuenta con su personaje (el autor de sus acciones). Lógica pura y servidor, con pruebas (también de lo que no debe dejar: contraseña mala, usuario repetido, demasiados intentos)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Entrar en el juego con la cuenta: pantalla de entrar y de crear cuenta (PC y móvil) antes del mundo; el personaje que ya tenías en este navegador (su ficha) pasa a tu cuenta al crearla, sin perder nada; se sigue entrando solo desde otro aparato con la misma cuenta",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El admin, por la cuenta: la cuenta de valravnx es la de administrador y el panel de depuración (mapa con los conectados y teletransportarse) sale solo con ella, sin clave aparte",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "Revisión del 1 nov con valravnx: lo primero, para que lo que se construya no se pierda. Solo lo mínimo; registros, expulsar y lo demás, en «Administración»."
+  },
+  {
+   "id": "entre-dos",
+   "num": "P2",
+   "nombre": "Jugar entre dos sin trampas",
+   "estado": "pendiente",
+   "jugable": "Cada uno reclama su tierra con su mojón y construye en ella; nadie toca lo tuyo; se sale en un sitio al azar de verdad; sin arcón de materiales infinito; con algo al hombro no llevas nada en las manos.",
+   "nota": "Revisión del 1 nov con valravnx: lo que rompe jugar entre dos, antes de que nadie construya en serio.",
+   "tareas": [
+    {
+     "nombre": "Recorrido de jugador automático: una prueba que juega como un jugador nuevo, sin arcón y con lo que se recoge, de principio a fin de lo que haya (hoy: recoger, talar, el mojón y un cimiento), y que falla si algo no se puede hacer así. Desde aquí, una tarea de juego no se publica si su parte del recorrido no sale",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Un mojón por personaje en Whitholm (valravnx, 31 oct): la lógica con autor no deja poner un segundo; en el continente, hasta tres más en total, cuando se llegue en barco",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El mojón y lo que se pone en tu tierra se pagan de lo que llevas (no del montón común), por el servidor con su autor",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Lo tuyo es tuyo: en tu tierra solo tú desmontas, usas puertas y sacas de tus almacenajes; el servidor lo comprueba con el autor",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El servidor no se fía del navegador en las obras: comprueba que estás cerca de la obra y en su planta antes de entregar, subir, trabajar o desmontar",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio de las tres comarcas de inicio y lo recuerda (hoy todos salen en el sitio común); y lo que decida valravnx sobre las salidas en pradera sin sílex cerca",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Fuera el arcón de materiales infinito del servidor de verdad (solo para las pruebas automáticas, sin botón); el contador de materiales de arriba sale solo dentro de tu tierra, con lo que tienes almacenado en ella",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Con algo al hombro, las manos no llevan nada (ni el hacha): lógica del inventario, en la demo y por el servidor",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo (teja, chimenea, adarve, empalizada, polea, polipasto, escalera de tablas y los muebles caros quedan guardados para su nivel)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Pruebas que no fallan a ratos: las de navegador con una salida fija (?salida=N), y mirar de verdad lo que salía como «ruido» (el personaje a más de 0,6 m del suelo andando, cosas en el agua)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "crafting",
+   "num": "P3",
+   "nombre": "De nada a una casa (fabricar y la casa humilde)",
+   "jugable": "Un jugador nuevo, sin nada, fabrica sus herramientas de piedra con lo que recoge, tala árboles jóvenes, acopia troncos, piedras, varas, juncos y barro en su tierra, levanta una casa humilde de una planta con su hogar dentro y llega al banco de tronco, la entrada al tier 1. Sin arcón.",
+   "estado": "pendiente",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
+     "estado": "hecho",
+     "inicio": "2026-10-28T19:23:07+00:00",
+     "fin": "2026-10-28T19:24:54+00:00"
+    },
+    {
+     "nombre": "Recoger del suelo y de las plantas lo que pide el nivel N0 (documento de sistemas, apartado 3): ramas caídas, piedra suelta y sílex con las manos, y fibra arrancada de ortigas y hierba larga; cada cosa sale donde dice el documento, da lo que dice, va al inventario por huecos y vuelve a salir pasado su tiempo, contado por tiempo transcurrido. Lógica pura con autor, en la demo y con pruebas",
+     "estado": "hecho",
+     "inicio": "2026-10-29T01:21:05+00:00",
+     "fin": "2026-10-29T10:11:30+00:00"
+    },
+    {
+     "nombre": "Estaciones y recetas en la lógica pura, con los datos del documento de sistemas (apartados 7 y 8) de las primeras estaciones: hoguera y piedra de tallar (N0) y banco de trabajo de tronco (entrada a N1); cada receta con lo que gasta, lo que da, dónde se hace y su tiempo. Fabricar con autor, gastando lo que llevas encima y lo de los arcones a pocos pasos, con una cola pequeña por estación y el tiempo contado por tiempo transcurrido. Pruebas de lógica",
+     "estado": "hecho",
+     "inicio": "2026-10-31T05:36:55+00:00",
+     "fin": "2026-10-31T07:09:21+00:00"
+    },
+    {
+     "nombre": "Recetas que conoce cada personaje y desbloqueo por práctica (GDD, apartado 9): construir la estación da sus recetas básicas y fabricar en ella abre las siguientes. Lo que el GDD no fija (qué recetas son básicas y cuánta práctica abre las demás) se decide de forma provisional y sencilla y se anota en el registro de decisiones y en el diario. Guardado en el navegador con migración. Pruebas de lógica",
+     "estado": "hecho",
+     "inicio": "2026-10-31T11:54:23+00:00",
+     "fin": "2026-10-31T13:32:29+00:00"
+    },
+    {
+     "nombre": "Pasar al GDD y al documento de sistemas lo decidido en la revisión del 1 nov para este tramo (fabricar en cualquier sitio y sin aprender recetas, estaciones por uso, hoguera y hogar, almacenajes, carga al hombro, la casa humilde, los árboles), con sus traducciones",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Fabricar sin aprender recetas: fuera el aprendizaje por práctica de la lógica (las recetas de cada sitio, siempre a la vista); recetas por uso (con las manos, hoguera y hogar, piedra de tallar, banco de tronco) en vez de por nivel; y la fabricación con lo que llevas y lo que hay en el suelo a tu lado. Lógica pura con autor y pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Fabricar por el servidor, con su autor: lo gastado sale de tu inventario o del suelo de al lado y lo hecho va a tu inventario (o al suelo si no cabe)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Panel de fabricación (tecla y botón, PC y móvil): arriba lo que puedes hacer ya, debajo lo que casi (lo que falta en rojo), y en gris lo que se abre después y con qué; dice de dónde sale cada cosa (tu mano, el cinturón o el suelo)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Árboles jóvenes y adultos bien distintos: los jóvenes de 3–5 m, finos y de copa rala, sobre todo en bordes, claros y lo que rebrota; los adultos un 30 % más altos y más gruesos. Medir los fotogramas en el móvil",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Talar un árbol joven con hacha de piedra da un tronco delgado y varas; el tronco delgado es la madera de la casa humilde (las piezas de este tramo lo piden a él)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Materiales del tramo que no tenían origen: juncos o hierba larga (orillas y prados), barro (cavado en la orilla con el palo cavador) y yesca (fibra seca, corteza, hongo de los árboles)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Lo que se fabrica con las manos, con su modelo (estilo v5) en la mano, el cinturón o la espalda: cordel, cuerda, lasca, hacha de piedra, palo cavador, taladro de fuego, leñero y rastra",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La hoguera, fuera: piedras en círculo y ramas; se enciende con yesca y el taladro de fuego, arde un rato por cada leña o rama que se le echa y se apaga sola (quedan cenizas); luz y calor. Por el servidor, todos la ven igual",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Almacenajes de la base (con su modelo, que se ve lleno): acopio de troncos, pila de piedras y leñera. Guardar y sacar con Usar; de quien tiene la tierra; la obra no coge de ellos sola",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Más almacenajes: soporte de varas, almiar (paja y juncos), hoyo de barro y cesto (lo pequeño)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos o de paja y puerta de varas, con el estilo v5 y pagada con lo que llevas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El hogar, dentro de la casa: el mismo fuego que la hoguera pero fijo y más duradero (se puede dejar en brasas); luz y calor; más adelante, cocinar",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El banco de tronco (2 troncos cortos y el hacha): la entrada al tier 1, con sus recetas de madera (tablas, mangos, cestas, la cuerda buena)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recorrido entero de nada al banco de tronco, sin arcón, en el recorrido de jugador; y prueba de valravnx entre dos",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
+  },
+  {
+   "id": "supervivencia",
+   "num": "P4",
+   "nombre": "Un primer día con sentido",
+   "jugable": "Día y noche; sed, hambre, frío y cansancio con sus avisos; la cama; morir y que te saqueen; liebres para cazar y asar; herramientas que se gastan y se reparan.",
+   "estado": "pendiente",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito con el GDD y el documento de sistemas: día y noche, sed (beber del río), hambre, frío y cansancio, cama ligada, morir y saqueo, liebres (despiece y asar en la hoguera o el hogar), durabilidad y reparar. Cada tarea de una sesión y con su parte en el recorrido de jugador",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "Revisión del 1 nov con valravnx: después de la casa; se planifica al llegar, con lo que ya hay (la hoguera y el hogar calientan y cocinarán)."
+  },
+  {
+   "id": "talar",
+   "num": "P5",
+   "nombre": "Talar de verdad",
+   "estado": "pendiente",
+   "jugable": "El árbol cae por física hacia la boca que le cortas, con un crujido de aviso, y hiere a quien esté debajo.",
+   "nota": "Revisión del 1 nov con valravnx: aprobado: caída sobre el tocón con la física de un tronco que gira; el daño lo decide el servidor con su autor.",
+   "tareas": [
+    {
+     "nombre": "Hacia dónde cae: la boca que se corta (el lado desde el que talas); sin boca, hacia donde se inclina o cuesta abajo. Lógica pura, con pruebas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La caída: gira sobre el tocón con la aceleración de la gravedad, choca con el suelo, rebota un poco y se asienta según el terreno; si da con otro árbol o una obra, se queda apoyado o se desvía. Todos la ven igual (sale de la dirección y el momento)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Crujido de aviso y daño: un crujido antes de caer; el servidor mira quién queda debajo al caer y le hiere según la parte del tronco, con su autor (también al compañero)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "orden",
+   "num": "P6",
+   "nombre": "Orden en el código y en los documentos",
+   "estado": "pendiente",
+   "jugable": "Nada nuevo a la vista: menos código muerto, una sola armadura, el arma del inventario y un servidor que aguanta.",
+   "nota": "Revisión del 1 nov con valravnx: en tareas pequeñas, entre bloque y bloque.",
+   "tareas": [
+    {
+     "nombre": "Quitar lo que ya no se juega: el prototipo de combate aparte, la liza y los modos de combate de capas y guardias; la construcción aparte (hito1) y lo suelto (viejo_tmp.mjs); las pruebas que solo probaban eso",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Una sola tabla de armadura: el duelo usa la protección de las prendas (src/logica/prendas.js) en vez de la suya, y las mismas zonas del cuerpo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El duelo con lo que llevas: la ropa y la armadura puestas y el arma de la mano salen del inventario",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El arma de la mano en el combate sale del inventario (hoy siempre es la espada larga) y el servidor lo comprueba",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El servidor guarda los objetos sin reescribir el archivo entero en cada acción (cada hachazo) y sin bloquear",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Partir src/juego/main.js (2.400 líneas) en partes con sentido, sin cambiar nada de lo que hace",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El GDD y el documento de sistemas al día con lo decidido (cuatro direcciones, siempre en línea, salida al azar, la revisión del 1 nov) y sin contradicciones",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "admin",
+   "num": "P7",
+   "nombre": "Administración, registros y seguridad",
+   "estado": "pendiente",
+   "jugable": "Roles (jugador, moderador, administrador) para la cuenta de valravnx y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
+   "nota": "Revisión del 1 nov con valravnx: después: registros, expulsar y herramientas de admin. El admin por la cuenta llega antes, con «Cuentas».",
+   "tareas": []
+  },
+  {
+   "id": "tierras",
+   "num": "13",
+   "nombre": "Tierras y familias",
+   "jugable": "Mojones (tu casa: uno por personaje en Whitholm, con radio de exclusión, mantenimiento y deterioro) y, aparte, los clanes en las comarcas (todas menos Strandvang, que es del rey): el centro del castillo toma su zona y, el primero, la comarca entera; los clanes con zona en una comarca con señor son sus vasallos; renta en moneda por el trabajo en la comarca y su corte por atacar a quien trabaja o a un vasallo. Peajes, familias, alianzas y escudos de armas.",
+   "estado": "congelado",
+   "tareas": [
+    {
+     "nombre": "Comarcas para los clanes (valravnx, 30 oct): el centro del castillo toma la zona y la comarca, vasallos, renta en moneda por el trabajo en la comarca, corte de renta por atacar y ventana de asedio; al GDD y al plan",
+     "estado": "hecho",
+     "inicio": "2026-10-30T11:37:13+01:00",
+     "rama": "trabajo/20261030-1135-clanes",
+     "fin": "2026-10-30T11:39:15+01:00"
+    },
+    {
+     "nombre": "Strandvang fuera de los clanes (valravnx, 31 oct): ahí no se puede poner el centro del castillo, no tiene señor, no da renta ni se asedia; se vive con el mojón normal",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Revisión del 29 oct: lo primero (reclamar con el mojón, radio de exclusión, mantenimiento y deterioro) va en la fase 2, con el servidor y las cuentas: es lo que protege lo construido cuando estás fuera. Los clanes en las comarcas, después (diseño decidido por valravnx el 30 oct, GDD apartado 11, «Comarcas, zonas y clanes»; las comarcas y sus zonas ya están en la lógica, src/logica/comarcas.js). Al planificar el hito, cada paso con su prueba: el centro y su zona; el señor de la comarca y los vasallos; la renta (lógica pura con autor, en el servidor); el corte de renta; el mapa con los estandartes. Valravnx, 31 oct: un mojón por personaje en Whitholm (hasta tres más en el continente) y Strandvang queda fuera de los clanes."
   },
   {
    "id": "mundo",
    "num": "10",
    "nombre": "Mundo",
    "jugable": "Pseudo-Europa por semilla a escala real: cordilleras como los Pirineos, valles y collados, ríos de tres gruesos (arroyos que se vadean, ríos con pocos vados, grandes ríos con barca o puente), bosques frondosos, pendientes que frenan; agua y nado; 5 países con estilo propio, caminos por uso, puentes; todo el terreno se puede cavar (relieve y materiales por semilla, malla suavizada cerca y niveles de detalle lejos).",
-   "estado": "en_curso",
+   "estado": "congelado",
    "tareas": [
     {
      "nombre": "Bocetos del mundo: mapa del continente por semilla (silueta, cordilleras, ríos de tres gruesos, biomas, cinco países, roca madre y dónde salen hierro y carbón) para revisarlo con valravnx",
@@ -1305,16 +1515,15 @@
      "fin": "2026-10-31T12:57:46+00:00"
     }
    ],
-   "lleva": "chat",
-   "nota": "Lo lleva el chat con valravnx: lo visual y creativo del mundo. Desde el 29 oct, unir el mapa con el juego (terreno por trozos, aparecer y andar por el mundo) está en el hito «El juego en el mundo de verdad», que llevan los carriles."
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Lo lleva el chat con valravnx: lo visual y creativo del mundo. Desde el 29 oct, unir el mapa con el juego (terreno por trozos, aparecer y andar por el mundo) está en el hito «El juego en el mundo de verdad», que llevan los carriles."
   },
   {
    "id": "excavacion",
    "num": "1g",
    "nombre": "Cavar y minar",
-   "estado": "en_curso",
+   "estado": "congelado",
    "jugable": "Cavar zanjas y nivelar con una brocha redonda, y abrir minas con roca irregular sin cuadros; dentro, lo de encima oculto y negro lo que no se ve, con entibado.",
-   "nota": "Desde el 29 oct (revisión del proyecto, aprobada por valravnx) lo técnico lo llevan los carriles, después del servidor y las cuentas; cava en el mundo de verdad, con su roca y sus vetas.",
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Desde el 29 oct (revisión del proyecto, aprobada por valravnx) lo técnico lo llevan los carriles, después del servidor y las cuentas; cava en el mundo de verdad, con su roca y sus vetas.",
    "tareas": [
     {
      "nombre": "Prueba de rendimiento de cavar (vóxeles suavizados): un trozo de roca de 8 m con cubitos de 50 cm, golpes de pico que quitan un puñado redondeado, pared lisa con rugosidad por semilla fija; medir fotogramas y lo que tarda en rehacerse la malla en PC y móvil",
@@ -1369,97 +1578,11 @@
    ]
   },
   {
-   "id": "duelo",
-   "num": "5",
-   "nombre": "Duelo",
-   "jugable": "Esgrima contra un bot con heridas.",
-   "estado": "en_curso",
-   "tareas": [
-    {
-     "nombre": "Combate v1: líneas de golpe, guardias, heridas, arco",
-     "estado": "hecho"
-    },
-    {
-     "nombre": "Combate v2: rosa de golpes, parada perfecta, golpe maestro, fintas, peso de los golpes",
-     "estado": "hecho"
-    },
-    {
-     "nombre": "Arreglo del arco: no soltar antes del 50% de tensión, correr cancela el tensado, 0,8 s para encajar otra flecha (piedras 0,5 s), con pruebas",
-     "estado": "hecho",
-     "inicio": "2026-10-24T19:13:50+02:00",
-     "fin": "2026-10-24T19:23:09+02:00"
-    },
-    {
-     "nombre": "Escudo provisional: opción «Espada y escudo» (espada de una mano), para flechas y piedras de frente, parada más barata, se ve en el brazo izquierdo y se levanta al parar; también para el rival",
-     "estado": "hecho",
-     "inicio": "2026-10-24T20:20:27+02:00",
-     "fin": "2026-10-24T20:36:27+02:00"
-    },
-    {
-     "nombre": "Cámara táctil con un dedo durante el combate",
-     "estado": "hecho",
-     "inicio": "2026-10-27T08:50:44+00:00",
-     "fin": "2026-10-27T13:40:27+00:00"
-    },
-    {
-     "nombre": "Curación de heridas",
-     "estado": "hecho",
-     "inicio": "2026-10-28T14:53:19+00:00",
-     "fin": "2026-10-28T21:54:09+00:00"
-    },
-    {
-     "nombre": "Prueba de golpes en las cinco direcciones de la rosa con el personaje del taller: el brazo va hacia el objetivo (cinemática inversa) sobre una animación base, porque el paquete solo trae unos pocos golpes; si no convence, buscar otra vía antes de seguir",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Una sola tabla de armadura: el duelo usa la protección de las prendas (src/logica/prendas.js) en vez de la suya, y las mismas zonas del cuerpo",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "El duelo con lo que llevas: la ropa y la armadura puestas y el arma de la mano salen del inventario",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Combate en el mundo (valravnx, 30 oct): en PC, ratón cogido y ataque cargado mientras se mantiene el clic, en la dirección del último movimiento (sin movimiento, estocada) y cambiable sin soltar; paradas con el botón derecho por dirección, también cambiables; fijar rival con la cámara del duelo; en el móvil, la rosa fija a un lado; cámara que se inclina más",
-     "estado": "hecho",
-     "inicio": "2026-10-30T09:39:49+01:00",
-     "rama": "trabajo/20261030-0945-combate",
-     "fin": "2026-10-30T15:54:31+01:00"
-    },
-    {
-     "nombre": "Cuatro direcciones y ataque comprometido (valravnx, 31 oct): alto, izquierda, derecha y abajo para clavar (fuera el tajo bajo y el centro); el escudo para todo lo que viene de frente sin elegir lado; el golpe no cambia de dirección al cargarlo, y el botón de parar lo cancela con una finta (para parar o para empezar otro golpe)",
-     "estado": "hecho",
-     "inicio": "2026-10-31T10:02:41+01:00",
-     "rama": "trabajo/20261031-1005-cuatro",
-     "fin": "2026-10-31T18:52:54+01:00"
-    },
-    {
-     "nombre": "Pelear en línea en el mundo (valravnx, 31 oct): al sacar el arma, los demás la ven en la mano, y los golpes y las paradas van por el servidor y hieren de verdad al otro",
-     "estado": "hecho",
-     "inicio": "2026-10-31T22:59:16+01:00",
-     "rama": "trabajo/20261031-2300-pelea",
-     "fin": "2026-11-01T03:33:30+01:00"
-    },
-    {
-     "nombre": "Combate en el móvil (valravnx, 1 nov): parar con su propia rosa, como la de atacar, para elegir el lado; y los botones del combate sin taparse unos a otros",
-     "estado": "hecho",
-     "inicio": "2026-11-01T08:48:18+01:00",
-     "rama": "trabajo/20261101-0850-rosa",
-     "fin": "2026-11-01T09:59:42+01:00"
-    }
-   ],
-   "nota": "El campo de pruebas de combate se adelantó para probar el sistema antes del resto. v1 y v2 hechas el 24 oct entre las 16:45 y las 17:25 aprox."
-  },
-  {
    "id": "construccion-mas",
    "num": "1c",
    "nombre": "Más piezas de construcción",
    "jugable": "Piezas y muebles con el estilo elegido; obras con marco, materiales y tiempo, andamio, polea y polipasto; escaleras, barandillas, contraventanas, tejas, remates, chimenea, adarve y decoración; muros de piedra con grúa de rueda.",
-   "estado": "en_curso",
+   "estado": "congelado",
    "tareas": [
     {
      "nombre": "Arreglo (pedido de valravnx, 27 oct): varios suelos de troncos seguidos no acaban de cerrar (rendija verde y testas de los troncos en cada junta); entre casillas del mismo suelo o cimiento de troncos, los troncos siguen de largo y la capa de debajo llega al borde",
@@ -1582,15 +1705,15 @@
      "estado": "pendiente"
     }
    ],
-   "nota": "La primera tarea (madera más resistente) se adelantó el 24 oct porque la casa de dos plantas de valravnx y su pareja no admitía el tejado en las esquinas. Planificado el 25 oct a petición de valravnx por el chat, en paralelo a la sesión de la ropa. Los puentes de troncos no entran: necesitan agua en el mapa y llegan con el hito Mundo. Revisión del 29 oct: los muros de piedra con grúa pasan al hito de asedio (son de N3), los puentes vuelven aquí y lo que queda va después de la fase 1."
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). La primera tarea (madera más resistente) se adelantó el 24 oct porque la casa de dos plantas de valravnx y su pareja no admitía el tejado en las esquinas. Planificado el 25 oct a petición de valravnx por el chat, en paralelo a la sesión de la ropa. Los puentes de troncos no entran: necesitan agua en el mapa y llegan con el hito Mundo. Revisión del 29 oct: los muros de piedra con grúa pasan al hito de asedio (son de N3), los puentes vuelven aquí y lo que queda va después de la fase 1."
   },
   {
    "id": "pulido-animaciones",
    "num": "10b",
    "nombre": "Pulido de manos, animaciones y heridas",
-   "estado": "pendiente",
+   "estado": "congelado",
    "jugable": "Las manos agarran bien cada herramienta y arma que llevan, las animaciones no atraviesan el propio cuerpo, la ropa por capas ni a otros personajes, y las heridas se ven bien donde entran.",
-   "nota": "Pedido por valravnx el 27 oct: importante, pero para más adelante; ahora va primero algo jugable.",
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Pedido por valravnx el 27 oct: importante, pero para más adelante; ahora va primero algo jugable.",
    "tareas": [
     {
      "nombre": "Planificar el hito: ver qué herramientas y armas hay ya, qué animaciones atraviesan algo y cómo lo resuelven otros (puntos de agarre por objeto, cinemática inversa de las manos, colisiones aproximadas del cuerpo), y desglosarlo en tareas de una sesión",
@@ -1623,6 +1746,10 @@
     {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Cofia y escote de la mujer (visto en la revisión del 1 nov): la cofia sale lisa y ceñida como un gorro de baño, sin pliegues ni caída de tela; a lo largo de la mandíbula queda una raya oscura entre la piel y la cofia, y el borde del escote sale ondulado e irregular, como roto",
+     "estado": "pendiente"
     }
    ]
   },
@@ -1631,45 +1758,48 @@
    "num": "7",
    "nombre": "Fauna y caza",
    "jugable": "Animales realistas.",
-   "estado": "pendiente",
-   "tareas": []
+   "estado": "congelado",
+   "tareas": [],
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos)."
   },
   {
    "id": "granja",
    "num": "9",
    "nombre": "Granja y estaciones del año",
    "jugable": "Siembras por franja, ganado.",
-   "estado": "pendiente",
-   "tareas": []
+   "estado": "congelado",
+   "tareas": [],
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos)."
   },
   {
    "id": "asedio",
    "num": "6",
    "nombre": "Asedio, fuego y mantenimiento",
    "jugable": "Ariete, daño por fuego, mojón con materiales y la ventana de asedio del centro de los clanes (solo se le puede asediar en ella).",
-   "estado": "pendiente",
+   "estado": "congelado",
    "tareas": [
     {
      "nombre": "Muros de piedra (mampostería) y grúa de rueda para subir la piedra en grupo: una o dos personas andando en la rueda y alguien guiando; la grúa se sube de planta según crece la obra",
      "estado": "pendiente"
     }
-   ]
+   ],
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos)."
   },
   {
    "id": "pvp",
    "num": "12",
    "nombre": "PvP online y protección offline",
    "jugable": "Combate y asedio entre jugadores; reglas de guerra.",
-   "estado": "pendiente",
+   "estado": "congelado",
    "tareas": [],
-   "nota": "Valravnx, 31 oct: en Strandvang, la comarca del rey, no hay PvP; en las otras siete comarcas de Whitholm, sí."
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Valravnx, 31 oct: en Strandvang, la comarca del rey, no hay PvP; en las otras siete comarcas de Whitholm, sí."
   },
   {
    "id": "economia",
    "num": "14",
    "nombre": "Economía y NPCs",
    "jugable": "La ciudad del rey en Strandvang: mercado (comprar metal, herramientas, carros y animales; vender lo que sobra), contratar NPCs y duelos en la liza. Encargos y moneda, puestos sin conexión, tomos, NPCs ambulantes a sueldo, centinelas y mensajeros; la renta de las comarcas llega en moneda y se gasta con los NPCs.",
-   "estado": "pendiente",
+   "estado": "congelado",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD (la comarca del rey y su ciudad, los NPCs y los mercaderes) y del documento de sistemas",
@@ -1696,41 +1826,43 @@
      "estado": "pendiente"
     }
    ],
-   "nota": "Desde el 31 oct (valravnx) hay una ciudad NPC, la del rey, en Strandvang (GDD, «La comarca del rey y su ciudad»): no es para vivir, sino para comprar, vender, contratar, quedar y practicar. Cambia lo del 27 oct («sin ciudades NPC»)."
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Desde el 31 oct (valravnx) hay una ciudad NPC, la del rey, en Strandvang (GDD, «La comarca del rey y su ciudad»): no es para vivir, sino para comprar, vender, contratar, quedar y practicar. Cambia lo del 27 oct («sin ciudades NPC»)."
   },
   {
    "id": "caballos",
    "num": "8",
    "nombre": "Caballos",
    "jugable": "Domar, montar, cuadra y pasto.",
-   "estado": "pendiente",
-   "tareas": []
+   "estado": "congelado",
+   "tareas": [],
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos)."
   },
   {
    "id": "distancia",
    "num": "15",
    "nombre": "Combate a caballo y a distancia",
    "jugable": "Arcos, ballestas, lanzas de caballería.",
-   "estado": "pendiente",
-   "tareas": []
+   "estado": "congelado",
+   "tareas": [],
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos)."
   },
   {
    "id": "navegacion",
    "num": "16",
    "nombre": "Navegación",
    "jugable": "Astillero, barcos, navegar con otros; con barcos grandes se llega al continente (Kinland fuera de Whitholm), sin mapa y por explorar.",
-   "estado": "pendiente",
+   "estado": "congelado",
    "tareas": [],
-   "nota": "Valravnx, 31 oct: Whitholm es la isla del rey y el resto de Kinland, el continente, está por explorar; no se llega antes de tener barcos grandes. Allí se podrán poner hasta tres mojones más en total."
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Valravnx, 31 oct: Whitholm es la isla del rey y el resto de Kinland, el continente, está por explorar; no se llega antes de tener barcos grandes. Allí se podrán poner hasta tres mojones más en total."
   },
   {
    "id": "cartografia",
    "num": "17",
    "nombre": "Cartografía",
    "jugable": "Mesa de cartógrafo y mapas del continente como objetos (Whitholm ya va con el mapa del rey).",
-   "estado": "pendiente",
+   "estado": "congelado",
    "tareas": [],
-   "nota": "Valravnx, 31 oct: la cartografía es para el continente, que está sin mapa; Whitholm, la isla del rey, ya está cartografiada."
+   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Valravnx, 31 oct: la cartografía es para el continente, que está sin mapa; Whitholm, la isla del rey, ya está cartografiada."
   }
  ],
  "prototipos": [

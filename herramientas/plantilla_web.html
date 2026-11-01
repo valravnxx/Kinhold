@@ -209,7 +209,7 @@ section{display:none;padding-top:28px} section.sel{display:block}
 select{font:16px var(--texto);color:var(--tinta);background:var(--perg-claro);border:1px solid var(--tinta2);border-radius:3px;padding:6px 8px;max-width:100%}
 .chip{display:inline-block;font:700 14px/1.2 var(--titulos);padding:2px 9px 3px;border:1.5px solid currentColor;border-radius:3px;color:var(--tinta2);white-space:nowrap;background:rgba(255,250,235,.35);transform:rotate(-1.5deg)}
 .chip.hecho{color:var(--verde)} .chip.en_curso{color:var(--azul)} .chip.revision{color:var(--rubrica);background:rgba(142,31,23,.08)}
-.chip.espera_decision{color:var(--naranja)} .chip.fallo{color:var(--rubrica)}
+.chip.espera_decision{color:var(--naranja)} .chip.fallo{color:var(--rubrica)} .chip.congelado{color:var(--muted,#8a8070)}
 .chip.version{transform:none;color:var(--rubrica);font-size:15px}
 .nota{font-style:italic;color:var(--tinta2);border-left:4px double var(--rubrica);padding:6px 0 6px 14px;margin:18px 0 0}
 .fila{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -498,7 +498,7 @@ const UI = {
     doc_rev_t: 'Revisión del 29 oct', doc_rev: 'Qué hay, cómo encaja, qué falta y el plan por fases que manda ahora.',
     doc_ana_t: 'Análisis del GDD', doc_ana: 'Lo que faltaba, propuestas y preguntas respondidas.', doc_cod_t: 'Código', doc_cod: 'Repositorio en GitHub.',
     pie: 'Esta página se genera sola con cada cambio del repositorio.',
-    estado: { hecho: 'Hecho', en_curso: 'En curso', revision: 'Esperando tu revisión', espera_decision: 'Espera tu decisión', pendiente: 'Pendiente', fallo: 'Falló' },
+    estado: { hecho: 'Hecho', en_curso: 'En curso', revision: 'Esperando tu revisión', espera_decision: 'Espera tu decisión', pendiente: 'Pendiente', congelado: 'Congelado', fallo: 'Falló' },
     r_hitos: 'hitos terminados', r_tareas: 'tareas hechas (de las ya desglosadas)', r_trabajo: 'de trabajo registrado',
     jugar: 'Jugar', version: 'Versión', sin_desglosar: 'Sin desglosar: se planifica al empezar el hito.', hecho: 'hecho',
     en_curso_d: 'en curso', pruebas: 'Pruebas', ver_todas: 'Ver todas las capturas ({n})', sin_entradas: 'Todavía no hay entradas.',
@@ -524,7 +524,7 @@ const UI = {
     doc_rev_t: '29 Oct review', doc_rev: 'What there is, how it fits together, what is missing and the phased plan that now leads.',
     doc_ana_t: 'GDD analysis', doc_ana: 'What was missing, proposals and answered questions.', doc_cod_t: 'Code', doc_cod: 'Repository on GitHub.',
     pie: 'This page is generated automatically with every change to the repository.',
-    estado: { hecho: 'Done', en_curso: 'In progress', revision: 'Awaiting your review', espera_decision: 'Awaiting your decision', pendiente: 'Pending', fallo: 'Failed' },
+    estado: { hecho: 'Done', en_curso: 'In progress', revision: 'Awaiting your review', espera_decision: 'Awaiting your decision', pendiente: 'Pending', congelado: 'Frozen', fallo: 'Failed' },
     r_hitos: 'milestones finished', r_tareas: 'tasks done (of those broken down so far)', r_trabajo: 'of logged work',
     jugar: 'Play', version: 'Version', sin_desglosar: 'Not broken down yet: planned when the milestone starts.', hecho: 'done',
     en_curso_d: 'in progress', pruebas: 'Tests', ver_todas: 'See all screenshots ({n})', sin_entradas: 'No entries yet.',
@@ -550,7 +550,7 @@ const UI = {
     doc_rev_t: 'Обзор от 29 окт.', doc_rev: 'Что есть, как всё связано, чего не хватает и план по фазам, который теперь главный.',
     doc_ana_t: 'Разбор GDD', doc_ana: 'Чего не хватало, предложения и вопросы с ответами.', doc_cod_t: 'Код', doc_cod: 'Репозиторий на GitHub.',
     pie: 'Эта страница создаётся автоматически при каждом изменении в репозитории.',
-    estado: { hecho: 'Готово', en_curso: 'В работе', revision: 'Ждёт твоей проверки', espera_decision: 'Ждёт твоего решения', pendiente: 'Ожидает', fallo: 'Сбой' },
+    estado: { hecho: 'Готово', en_curso: 'В работе', revision: 'Ждёт твоей проверки', espera_decision: 'Ждёт твоего решения', pendiente: 'Ожидает', congelado: 'Заморожено', fallo: 'Сбой' },
     r_hitos: 'этапов завершено', r_tareas: 'задач выполнено (из уже расписанных)', r_trabajo: 'учтённой работы',
     jugar: 'Играть', version: 'Версия', sin_desglosar: 'Ещё не расписан: задачи появятся, когда этап начнётся.', hecho: 'готово',
     en_curso_d: 'в работе', pruebas: 'Тесты', ver_todas: 'Все снимки экрана ({n})', sin_entradas: 'Записей пока нет.',
@@ -705,7 +705,7 @@ function pintar() {
   document.querySelectorAll('#listaJuegos select').forEach(s => s.onchange = () => { s.closest('.cuerpo').querySelector('[data-juego]').href = s.value; });
 
   // ---------- Roadmap ----------
-  $('#leyenda').innerHTML = ['hecho', 'en_curso', 'revision', 'espera_decision', 'pendiente']
+  $('#leyenda').innerHTML = ['hecho', 'en_curso', 'revision', 'espera_decision', 'pendiente', 'congelado']
     .filter(e => e === 'hecho' || e === 'en_curso' || e === 'pendiente' || R.hitos.some(h => h.estado === e)).map(e => `<span>${chip(e)}</span>`).join('')
     + (tareas.some(t => t.estado === 'en_curso' && !lleva.has(t.nombre)) ? `<span><span class="chip a_medias">${u('a_medias')}</span></span>` : '');
   $('#listaHitos').innerHTML = R.hitos.map(h => {

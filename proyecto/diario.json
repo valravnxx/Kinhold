@@ -3780,5 +3780,21 @@
   "pruebas": "En la nube: 29 de 29 grupos correctos (55,9 min). Aquí, sueltas: las animaciones de cargar, correctas; la del navegador de lo que llevas, con el tronco y la mujer bien, pero con dos comprobaciones fuera de tiempo (la postura sin acabar de entrar y la rama al andar) porque aquí va a menos de 3 fotogramas por segundo; en la nube, correcta",
   "capturas": "capturas/demo-v91",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T14:17:00+01:00",
+  "fin": "2026-11-01T15:08:33+01:00",
+  "titulo": "Revisión completa y nuevo roadmap (chat con valravnx)",
+  "hito": "servidor",
+  "hecho": [
+   "Pausados los dos carriles automáticos para la revisión; desde ahora, uno solo.",
+   "Tres revisiones del estado real (cadena de construcción, GDD frente a lo hecho, lo roto y lo frágil): hoy no se puede ir de nada a una casa sin el arcón de pruebas (la fabricación no está en el juego, faltan varas, juncos, barro y cuerda en el mundo, el tronco del hacha de piedra no sirve para las obras, hay un solo mojón para todo el servidor, subir un tronco pide llevar varas y cuerda además del tronco).",
+   "Decidido con valravnx: fabricar en cualquier sitio y sin aprender recetas, estaciones por uso, hoguera fuera y hogar dentro de la casa, almacenajes de la base (la obra no coge de ellos sola), nada en las manos con algo al hombro, fuera el arcón infinito, la casa humilde de una planta, árboles jóvenes y adultos distintos (adultos un 30 % más altos), caída de los árboles por física con daño, y cuentas lo primero.",
+   "Roadmap rehecho por prioridad: P1 Cuentas, P2 Jugar entre dos sin trampas, P3 De nada a una casa, P4 Un primer día con sentido, P5 Talar de verdad, P6 Orden, P7 Administración. Cerrados con lo hecho el juego en el mundo de verdad, equipo, arte y duelo; congelados hasta que toquen catorce hitos (tierras, mundo, cavar, más piezas, pulido, fauna, granja, asedio, PvP, economía, caballos, distancia, navegación y cartografía). Nuevo estado «congelado» en la web.",
+   "CLAUDE.md al día: un carril, la prioridad nueva, el recorrido de jugador como condición para publicar y las decisiones de la revisión."
+  ],
+  "pruebas": "Sin pruebas: solo cambian el roadmap, REVISION.md, CLAUDE.md y la web (con el estado nuevo).",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
