@@ -3624,5 +3624,24 @@
   "pruebas": "En la nube y en el PC de valravnx: 27 de 27 grupos correctos (uno, al repetirlo)",
   "capturas": "capturas/revision-arte-1nov",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T05:52:47+00:00",
+  "fin": "2026-11-01T06:53:28+00:00",
+  "titulo": "Las obras y lo alisado, también por trozos (carril B)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Las obras, los muebles y lo alisado con la brocha llegan solo de los trozos de alrededor de cada jugador (src/logica/obras_red.js, lógica pura). La bienvenida ya no lleva todas las acciones de construcción desde el principio, sino una foto del mundo de construcción con solo lo de sus 5 × 5 trozos; al cambiar de trozo le llega un mensaje nuevo, «obras», con la foto de los trozos que tiene ahora.",
+   "Cada obra que sale bien se reparte solo a quien tiene su trozo alrededor (y al autor); el mojón y el arcón de pruebas, que son de todo el mundo, a todos. Una construcción va entera en el trozo de su origen (la esquina de su primera casilla); los muebles y lo alisado, en el de su punto.",
+   "Como los ids salen de un contador común y el arcón y el mojón son de todos, cada obra que llega trae «antes» (el contador, el arcón y el mojón del servidor justo antes de hacerla): así en el navegador sale con los mismos ids aunque no le hayan llegado las de otros trozos. Si aun así no sale igual, el navegador pide la foto otra vez.",
+   "Con un servidor anterior, que manda todas las entradas, el navegador funciona igual; no hace falta subir el protocolo. Los bots de carga leen también la foto (la bienvenida lleva el número de la última acción).",
+   "Decisión provisional, en el registro de la demo: una construcción va en el trozo de su origen aunque crezca hacia otro.",
+   "Cavar en el mundo en línea no se ha hecho: va con la tarea «Mina jugable» del hito de excavación, que sigue pendiente; ahí se guardará por trozo.",
+   "Prueba nueva: prueba_obras_red.mjs (25 comprobaciones: la foto de un trozo, el sitio de cada acción, que a quien está lejos no le llega lo de otro trozo, que su mundo queda con los mismos ids y el mismo arcón que el del servidor, la foto al acercarse y al pedirla, y quien llega nuevo). Rota a propósito dos veces: repartiendo las obras a todos (MUTAR=1, 2 fallos) y sin «antes» en el navegador (los ids salen distintos, 1 fallo). Adaptada prueba_servidor.mjs a la bienvenida nueva.",
+   "Publicada como demo v84. Sin capturas nuevas: no cambia nada de lo que se ve (mirada la vista de construir de la demo en PC y en móvil)."
+  ],
+  "pruebas": "Batería entera en el PC de valravnx y en la nube (sin las de en línea): todo bien salvo tres grupos. «Lógica» y «demo única» fallaron por las traducciones al ruso y al inglés de los textos nuevos del registro: añadidas, y en la nube pasan. «La demo en el mundo» falló en el PC de valravnx en «andando hacia el mar, avanza» (andado 0 m), sin servidor, y en la nube con el mismo código pasó: no toca nada de este cambio y queda anotada como frágil en el PC, como en la sesión anterior. Tras unir main (solo trajo diario, roadmap, traducciones y capturas del hito de arte) no se ha vuelto a pasar. No comprobado: el servidor de Hetzner con este cambio ni dos navegadores en línea (las pruebas en línea no se pasan).",
+  "capturas": null,
+  "estado": "ok"
  }
 ]
