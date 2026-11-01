@@ -549,7 +549,9 @@
     },
     {
      "nombre": "El duelo en el mundo: pelear en cualquier sitio, sin escena aparte",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-01T08:06:10+00:00",
+     "rama": "trabajo/20261101-0806"
     },
     {
      "nombre": "El mapa del rey (valravnx, 31 oct): al aparecer en Whitholm ya lo llevas; se abre con una tecla (M) o un botón en el móvil y enseña la costa, las comarcas con su nombre, los ríos, la ciudad de Strandvang y dónde estás tú; sin viaje rápido",
