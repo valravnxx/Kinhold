@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 1 nov 2026 (14:45 UTC+1) — por el chat: revisión, crafting temprano (segunda tanda)
+valravnx: el soporte de troncos «es una mesa de acopio, no de abastecimiento automático» (las obras no cogen de ahí solas; «todo es debatible»); los muros de la casa humilde, de las dos maneras (tronco delgado y zarzo con barro); subir troncos a lo alto se deja para cuando haga falta (la primera casa es de una planta); «hogar en casa, hoguera fuera: el hogar es más permanente y la hoguera se apaga antes (hay que alimentarla con leña y encender con yesca)».
+
 ### 1 nov 2026 (14:38 UTC+1) — por el chat: revisión, primeras decisiones del crafting temprano
 valravnx: «sobre todo el crafting debe ser muy pulido y poder hacerlo en cualquier lugar que tenga materiales básicos, y tener una progresión clara; por ejemplo la hoguera se ve muy avanzada, yo la dejaría para tiers muy altos, antes que eso tendría un hogar clásico medieval de familias humildes, más sencillo de hacer también; luego no sea una estación de trabajo por tier sino por uso real, el mismo fuego de hogar pueda servir a futuro para cocina básica o calentar algo, etcétera. Para troncos me gusta la idea de estas mesas que son para colocar muchos troncos largos en el exterior, así poder hacer stock de ellos para construcción». → En la revisión: fabricar en cualquier sitio con lo básico, progresión clara; fuera la hoguera de los primeros niveles, en su lugar el hogar humilde (que luego sirve para cocinar y calentar); estaciones por uso, no por nivel; un soporte exterior para apilar troncos largos como reserva de la obra. Se va concretando en el chat antes de tocar código.
 
