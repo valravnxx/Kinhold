@@ -3496,5 +3496,22 @@
   "pruebas": "probar_programa.ps1 en Windows (nube): 12/12, y rota falla. Flujo de pruebas: cavar en la nube, bien; en su PC no se puede probar hasta liberar el disco.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T23:31:19+00:00",
+  "fin": "2026-11-01T00:39:58+00:00",
+  "titulo": "Lo que se recoge sale del sitio (carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Dónde sale cada cosa en el mundo de verdad, en la lógica pura (src/logica/recogida_mundo.js): ramas caídas donde hay árboles (más cuanto más denso el bosque), sílex en la roca caliza y en la orilla de los ríos, piedra suelta en las laderas y en la grava de los ríos, y ortigas y hierba larga en los claros y las riberas. Cada punto sale de su celda del mundo y de la semilla del mapa, con su nombre por su sitio: el mismo para todos y el servidor podrá sacarlo igual.",
+   "En el juego, lo que se recoge sigue al jugador por la isla, como lo que crece: se hace por trozos de 32 m en un cuadro de 64 m (48 m en el móvil), unos pocos ms por fotograma, y lo de lejos se suelta. Lo recogido de un punto que se va se guarda (en el navegador y en el servidor) y vuelve con él. Fuera del mundo (la construcción del llano) sigue lo de antes.",
+   "Pruebas nuevas: de lógica (prueba_recogida_mundo.mjs: en una muestra de 150 sitios de la isla, cada punto en una zona suya mirando otra vez el terreno, nada en el agua ni encima de un árbol, siempre lo mismo y por trozos igual que en un cuadro) y de navegador en PC y móvil (los puntos de la página son los de la lógica, Usar recoge cada tipo, lejos se rehace y al volver sigue recogido). Rotas a propósito con MUTAR=1.",
+   "Publicada como demo v78; textos del juego en inglés y ruso.",
+   "Decisión pendiente para valravnx: en la pradera abierta hay sitios de la salida al azar sin sílex a menos de 500 m (2 de 12 mirados) y sin ramas ni piedra muy cerca, porque ahí no hay bosque, ni caliza, ni laderas, ni ríos.",
+   "Aún mal: el servidor sigue fiándose del punto que dice el navegador (lo arregla «El servidor conoce el mundo»); las cosas de recoger no suben ni bajan al nivelar el suelo hasta que se rehacen; los puntos solo evitan los sitios de los árboles, no las piedras grandes del pedregal (esas se esconden en el juego)."
+  ],
+  "pruebas": "Batería entera en la nube (sin las de en línea; el PC de valravnx, con el disco lleno, no pudo con ninguna): todos los grupos bien salvo la prueba nueva de navegador, que en PC salía en un sitio de pradera sin ramas ni piedra cerca; se cambió para salir, en PC, en el sitio de la salida al azar con los cinco tipos cerca, y pasó con lógica tras unir main. Capturas de cerca miradas en PC y móvil. Prueba de lógica rota con MUTAR=1 (7 fallos) y la de navegador también (25 puntos distintos de la lógica). No comprobado: la batería entera tras el último cambio de la prueba y de las notas (solo se repitieron lógica y la recogida en el mundo).",
+  "capturas": "capturas/demo-v78",
+  "estado": "ok"
  }
 ]

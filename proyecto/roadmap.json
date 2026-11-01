@@ -524,9 +524,10 @@
     },
     {
      "nombre": "Lo que se recoge sale del sitio: ramas en el bosque, sílex en la caliza, piedra en las laderas y los ríos, fibra en los claros y las riberas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-10-31T23:31:19+00:00",
-     "rama": "trabajo/20261031-2331"
+     "rama": "trabajo/20261031-2331",
+     "fin": "2026-11-01T00:39:58+00:00"
     },
     {
      "nombre": "El servidor conoce el mundo: la misma semilla, comprueba posiciones y obras contra el terreno y guarda solo lo cambiado por trozo",
@@ -2220,6 +2221,13 @@
      "archivo": "jugar/demo/v77.html",
      "capturas": "capturas/demo-v77",
      "notas": "La rastra: sale del arcón de pruebas al suelo, se engancha con Usar (con las manos libres) y se arrastra despacio, con la animación de arrastrar; lleva hasta 3 troncos cortos, 24 piedras o un bloque de piedra, y se queda donde la dejas con lo que lleve. En línea, por el servidor."
+    },
+    {
+     "v": "v78",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/demo/v78.html",
+     "capturas": "capturas/demo-v78",
+     "notas": "Lo que se recoge sale del sitio en el mundo: ramas bajo los árboles, sílex en la caliza y los ríos, piedra en las laderas y los ríos, ortigas y hierba larga en los claros y las riberas; siempre en el mismo sitio para todos y apareciendo a tu alrededor al andar."
     }
    ]
   },
@@ -3123,6 +3131,11 @@
    "pregunta": "Las comarcas de inicio Motdale y Breiddal: ¿las puede tomar un clan? La propuesta de la v0.3 decía que no hubiera reclamaciones cerca de las zonas de inicio. (Strandvang no: es del rey, valravnx 31 oct.)",
    "desde": "2026-10-30",
    "hito": "tierras"
+  },
+  {
+   "pregunta": "En la pradera abierta, algunos sitios de la salida al azar no tienen sílex a menos de 500 m (2 de 12 mirados) ni ramas o piedra muy cerca: ahí no hay bosque, caliza, laderas ni ríos, que es donde el documento pone cada cosa. ¿(a) La salida al azar solo en sitios con ramas, piedra, sílex y fibra cerca (se rehace la lista de sitios), (b) algo de piedra y sílex sueltos también en la pradera, o (c) se deja así (hay que andar)?",
+   "desde": "2026-11-01",
+   "hito": "mundo-juego"
   }
  ]
 }
