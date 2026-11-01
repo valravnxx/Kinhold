@@ -531,7 +531,9 @@
     },
     {
      "nombre": "El servidor conoce el mundo: la misma semilla, comprueba posiciones y obras contra el terreno y guarda solo lo cambiado por trozo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-01T01:22:45+00:00",
+     "rama": "trabajo/20261101-0124"
     },
     {
      "nombre": "El duelo en el mundo: pelear en cualquier sitio, sin escena aparte",

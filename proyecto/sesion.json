@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-01T01:22:45+00:00",
+  "tarea": "El servidor conoce el mundo: la misma semilla, comprueba posiciones y obras contra el terreno y guarda solo lo cambiado por trozo",
+  "hito": "mundo-juego",
+  "rama": "trabajo/20261101-0124"
+ },
  "B": {
   "inicio": "2026-10-31T23:54:00+00:00",
   "tarea": "Cejas, bigote y barba en el cuello (visto en la revisión del 31 oct, noche): de cerca las cejas aún se cortan en escalones rectos, el bigote es una banda plana separada de la barba por las comisuras y la barba corta baja por el cuello en un gris claro, como escarcha, en vez de clarear sobre la piel",
