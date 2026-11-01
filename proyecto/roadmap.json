@@ -1062,9 +1062,9 @@
     },
     {
      "nombre": "Entrar en el juego con la cuenta: pantalla de entrar y de crear cuenta (PC y móvil) antes del mundo; el personaje que ya tenías en este navegador (su ficha) pasa a tu cuenta al crearla, sin perder nada; se sigue entrando solo desde otro aparato con la misma cuenta",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-01T16:24:16+00:00",
-     "rama": "trabajo/20261101-1624"
+     "fin": "2026-11-01T18:05:35+00:00"
     },
     {
      "nombre": "El admin, por la cuenta: la cuenta de valravnx es la de administrador y el panel de depuración (mapa con los conectados y teletransportarse) sale solo con ella, sin clave aparte",
@@ -2523,6 +2523,13 @@
      "archivo": "jugar/demo/v91.html",
      "capturas": "capturas/demo-v91",
      "notas": "El tronco corto al hombro va apoyado encima del hombro derecho, al lado de la cabeza, y la mano derecha lo sujeta por encima (antes tapaba la cabeza y la mano subía al cuello). Hombre y mujer, quieto y andando. Animaciones en taller-carga-v3."
+    },
+    {
+     "v": "v92",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/demo/v92.html",
+     "capturas": "capturas/demo-v92",
+     "notas": "Tu cuenta: pantalla de crear cuenta y de entrar antes del mundo; el personaje que ya llevabas pasa a tu cuenta, y desde otro aparato entras con él"
     }
    ]
   },

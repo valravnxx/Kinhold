@@ -3845,5 +3845,25 @@
   "pruebas": "Batería entera en la nube (30 grupos; el PC de valravnx no estaba encendido para pruebas): 29 correctos; «la demo en el mundo» falló por «nada en el agua» (la salida cae cada vez en un sitio, ya pasó otras veces) y repetida sola pasó. Cuentas 44/44; rota a propósito, falla. Tras unir main (noticias en Discord, sin código del juego), cuentas y Discord otra vez bien.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T16:24:16+00:00",
+  "fin": "2026-11-01T18:05:35+00:00",
+  "titulo": "P1: entrar en el juego con la cuenta",
+  "hito": "servidor",
+  "hecho": [
+   "Pantalla de tu cuenta al entrar en «Jugar», en PC y en móvil: tapa el juego hasta que creas la cuenta o entras con ella. Sale cuando el servidor dice que el personaje de esta conexión aún no tiene cuenta.",
+   "Crear cuenta: usuario y contraseña (repetida). El personaje que ya llevabas en este navegador pasa a tu cuenta con todo lo suyo y se sigue jugando sin recargar. Lo que no vale (usuario corto o con símbolos, contraseña corta o igual al usuario, las dos distintas) se dice al momento, con las mismas reglas que el servidor.",
+   "Entrar desde otro aparato: con tu usuario (sin mirar mayúsculas) y tu contraseña, el servidor da la ficha de tu personaje, se guarda en el navegador y la página se recarga una vez para entrar como él; desde entonces ese aparato entra solo. Contraseña mal: «Usuario o contraseña incorrectos», sin entrar.",
+   "En el menú sale con qué cuenta entras desde este navegador y «Salir de la cuenta», que olvida aquí la ficha (el personaje sigue en la cuenta).",
+   "La dirección del servidor cambió hoy a juego.playkinhold.com y la ficha se guarda por dirección: el personaje guardado con la de antes (sslip.io) pasa solo a la nueva, para no perderlo (comprobado con una prueba suelta en node).",
+   "Arreglado en la sesión: el cliente mandaba un id de texto y el servidor solo devuelve ids enteros (la pantalla se quedaba en «Un momento…»).",
+   "Decisiones provisionales: mientras está la pantalla, tu personaje ya está en el mundo (quieto en la salida) y los demás lo ven; al entrar con una cuenta la página se recarga una vez; con un servidor anterior a las cuentas no sale la pantalla.",
+   "Prueba nueva en navegador «entrar con la cuenta» (PC y móvil, una página cada vez); rota a propósito (MUTAR=1, un servidor que al entrar da la ficha de otro personaje), falla. La del panel del admin (y las de en línea, que no se pasan) crean su cuenta al entrar.",
+   "Demo única v92 publicada. No comprobado: en el servidor de Hetzner (hace falta que esté actualizado a main para que pida la cuenta)."
+  ],
+  "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido): todo bien salvo panel del admin y entrar con la cuenta, por el id de texto; arreglado, las dos bien. Tras unir main (dirección playkinhold.com) y pasar la ficha de la dirección de antes: lógica, demo única, entrar con la cuenta y juego en inglés bien (lógica falló una vez en el combate con lag simulado, «lo que no se puede se rechaza», y repetida pasó; aquí también pasa, 80/80). Entrar con la cuenta: 42 comprobaciones; rota a propósito, falla.",
+  "capturas": "capturas/demo-v92",
+  "estado": "ok"
  }
 ]
