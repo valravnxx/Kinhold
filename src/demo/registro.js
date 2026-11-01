@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = 'Demo única · v79 (cejas, bigote y barba)';
+export const VERSION_DEMO = 'Demo única · v80 (cofia y escote sin dientes)';
 export const REGISTRO_DEMO = [
+  'v80: en «Personaje» y en el juego, los bordes recortados de la ropa y el pelo (escote, mangas, cofia, toca) ya no salen en dientes de sierra con poca resolución, como en el móvil, y la cofia de la mujer baja hasta quedar metida bajo el escote: ya no asoma una cuña de piel entre las dos. Personajes en recursos/personajes/taller-v23/.',
   'v79: en «Personaje» y en el juego, las cejas ya no se cortan en escalones rectos, la barba corta clarea en el cuello en pelos sueltos y oscuros (no en un gris claro, como escarcha) y el bigote se une a la barba en las comisuras. Personajes en recursos/personajes/taller-v22/.',
   "v78: en el mundo, lo que se recoge sale del sitio: ramas caídas bajo los árboles (más cuanto más denso el bosque, y algunas bajo los sueltos de la pradera), sílex en la tierra caliza y en la orilla de los ríos, piedra suelta en las laderas y en la grava de los ríos, y ortigas y hierba larga en los claros y las riberas. Sale siempre en el mismo sitio para todos y va apareciendo a tu alrededor al andar por la isla; lo recogido se guarda aunque te vayas lejos.",
   "v78, provisional: una celda de 8 m da como mucho una cosa; lo «medio» del documento (ramas, piedra) sale en una de cada 3 o 4 celdas de su zona y lo «poco» (sílex, fibra), en una de cada 10 o 20, y más en la orilla de los ríos. Ladera es una pendiente de más de 0,2; ribera, hasta 16 m del agua de un río. Lo de alrededor llega hasta 64 m (48 m en el móvil).",
