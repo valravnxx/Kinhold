@@ -7,9 +7,15 @@
 //  - que las cejas no se cortan en el borde de su malla (desde taller-v22: salían en escalones rectos);
 //  - que la barba clarea en pelos sueltos y no en una neblina gris (desde taller-v22: «como escarcha»);
 //  - que la barba corta del hombre baja por delante del cuello hasta la ropa, rala: en los 3 cm por encima de la túnica,
-//    alfa medio de más de 0,6.
+//    alfa medio de más de 0,6;
+//  - (desde taller-v24, revisión del 1 nov: «el bigote sigue siendo una banda oscura gruesa con el borde duro sobre el
+//    labio, y bajo la barbilla la barba pasa de golpe de un bloque oscuro a motas grises sobre el cuello claro») que el
+//    bigote con volumen no se aparta más de 6,5 mm de la piel (en la taller-v23, 8 mm), y que bajo la barbilla, de 2 a
+//    4,5 cm por encima de la túnica, la piel queda a la vista (alfa < 0,25) en menos de un 6 % de la barba: las motas
+//    empiezan justo encima de la ropa y no a media garganta.
 // Uso: node pruebas/prueba_calcos.mjs [carpeta de recursos]   (por defecto, la última taller-vN publicada)
 //      MUTAR=1 → mira la taller-v20, con los calcos de antes: tiene que fallar.
+//      MUTAR=2 → mira la taller-v23 (bigote grueso y barba del cuello a motas): fallan las dos comprobaciones de la v24.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { MeshoptDecoder } from 'meshoptimizer';
@@ -18,7 +24,7 @@ import { execFileSync } from 'child_process';
 
 const base = 'docs/recursos/personajes';
 const ultima = readdirSync(base).filter(d => /^taller-v\d+$/.test(d)).sort((a, b) => +a.slice(8) - +b.slice(8)).at(-1);
-const carpeta = process.env.MUTAR ? `${base}/taller-v20` : (process.argv[2] || `${base}/${ultima}`);
+const carpeta = process.env.MUTAR === '2' ? `${base}/taller-v23` : process.env.MUTAR ? `${base}/taller-v20` : (process.argv[2] || `${base}/${ultima}`);
 await MeshoptDecoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
 let ok = 0, mal = 0;
@@ -128,6 +134,31 @@ for (const sexo of ['hombre', 'mujer']) {
     suma += a[Math.min(h - 1, Math.floor(uv[1] * h)) * w + Math.min(w - 1, Math.floor(uv[0] * w))] / 255; n++;
   }
   comprobar('hombre: la barba baja por el cuello hasta la ropa (alfa medio > 0,6 en los 3 cm sobre la túnica)', n > 10 && suma / n > 0.6, `${(suma / Math.max(n, 1)).toFixed(2)} en ${n} puntos`);
+  // bajo la barbilla, sin motas a media garganta (desde taller-v24): se muestrea dentro de cada triángulo de la barba (los
+  // vértices son pocos en el cuello) y, por columnas como arriba, se cuenta dónde se ve la piel entre los pelos
+  const I = pb.getIndices(), el = (A, i) => { const o = []; A.getElement(i, o); return o; };
+  let enBanda = 0, piel = 0;
+  for (let t = 0; t < I.getCount() / 3; t++) {
+    const ii = [0, 1, 2].map(j => I.getScalar(3 * t + j)), ps = ii.map(i => el(P, i)), us = ii.map(i => el(UV, i));
+    for (let s1 = 0; s1 < 6; s1++) for (let s2 = 0; s1 + s2 < 6; s2++) {
+      const u = (s1 + 0.33) / 6.5, v = (s2 + 0.33) / 6.5, w0 = 1 - u - v;
+      if (w0 < 0) continue;
+      const q = [0, 1, 2].map(k => ps[0][k] * w0 + ps[1][k] * u + ps[2][k] * v), uq = [0, 1].map(k => us[0][k] * w0 + us[1][k] * u + us[2][k] * v);
+      const c = col(q);
+      if (c === null || alto[c] === undefined || q[1] < alto[c] + 0.02 || q[1] > alto[c] + 0.045) continue;
+      enBanda++; if (a[Math.min(h - 1, Math.floor(uq[1] * h)) * w + Math.min(w - 1, Math.floor(uq[0] * w))] < 64) piel++;
+    }
+  }
+  comprobar('hombre: bajo la barbilla, sin motas a media garganta (piel a la vista en menos del 6 % de 2 a 4,5 cm sobre la túnica)', enBanda > 200 && piel / enBanda < 0.06, `${(100 * piel / Math.max(enBanda, 1)).toFixed(1)} % de ${enBanda} muestras`);
+  // el bigote con volumen, fino (desde taller-v24): lo más que se aparta de la piel
+  const mo = nodo('barba_mostacho'), pi = nodo('piel');
+  if (mo && pi) {
+    const pts = (nd) => { const r = []; for (const pr of nd.getMesh().listPrimitives()) { const A = pr.getAttribute('POSITION'); for (let k = 0; k < A.getCount(); k++) r.push(el(A, k)); } return r; };
+    const cara = pts(pi).filter(q => q[2] > 0.03), bm = pts(mo);
+    let mx = 0;
+    for (const q of bm) { let m = Infinity; for (const r of cara) { const d = (q[0] - r[0]) ** 2 + (q[1] - r[1]) ** 2 + (q[2] - r[2]) ** 2; if (d < m) m = d; } mx = Math.max(mx, Math.sqrt(m)); }
+    comprobar('hombre: el bigote no se aparta más de 6,5 mm de la piel (sin banda gruesa)', mx < 0.0065, `${(1000 * mx).toFixed(1)} mm`);
+  } else comprobar('hombre: hay bigote con volumen y piel', false);
 }
 console.log(`Calcos: ${ok} bien, ${mal} mal`);
 process.exit(mal ? 1 : 0);

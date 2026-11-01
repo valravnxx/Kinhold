@@ -1,4 +1,4 @@
-# Personajes del taller propio (v21)
+# Personajes del taller propio (v24)
 
 - **Cuerpo:** malla base de MakeHuman a través de MPFB2 (github.com/makehumancommunity/mpfb2). Los recursos de MakeHuman
   (malla base, objetivos de forma y esqueleto «game_engine») son CC0.
@@ -78,3 +78,8 @@ lados y se une a la barba (los labios ya no quitan la barba en las comisuras), c
 v23, la cofia por debajo del escote (revisión del 31 oct, noche): su bajo pasa de 6 mm por encima del cuello a 3 cm
 por debajo (y a los lados, sobre lo alto de los hombros, hasta 4 cm más), y queda metido bajo el escote de cualquier
 prenda; antes, entre la cofia y el escote asomaba una cuña de piel. El hombre sale igual que en la v22 (mismo archivo).
+v24, bigote y barba del cuello (revisión del 1 nov): el bigote con volumen, más fino (abombado 3,8 mm en vez de 5,5) y
+acabando 1,5 mm más arriba, con la punta deshecha en pelos sueltos de distinto largo en unos 3 mm; bajo la barbilla lo
+tupido de la barba acaba siguiendo los pelos y se va aclarando de 1,5 cm por encima del cuello a 5 cm por debajo (antes
+pasaba de golpe de un bloque oscuro a motas grises), con la piel algo más oscura entre los pelos sueltos. La mujer sale
+igual que en la v23 (mismo archivo).

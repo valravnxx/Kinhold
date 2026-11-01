@@ -1,6 +1,9 @@
 // Decisiones tomadas en el personaje, para revisar.
-export const VERSION_PERSONAJE = 'Personaje · v36 (cofia y escote sin dientes)';
+export const VERSION_PERSONAJE = 'Personaje · v37 (bigote y barba del cuello)';
 export const REGISTRO_PERSONAJE = [
+  'v37: el bigote es más fino y menos abombado, y acaba un poco más arriba: ya no tapa el borde del labio con una banda oscura de borde duro. Su punta se deshace en pelos sueltos de distinto largo en unos 3 mm, y las puntas son algo más claras.',
+  'v37: bajo la barbilla, la barba ya no pasa de golpe de un bloque oscuro a motas grises: lo tupido acaba siguiendo los pelos y se va aclarando más despacio, de 1,5 cm por encima del cuello a 5 cm por debajo (casi todo bajo la ropa), con la piel algo más oscura entre los pelos sueltos. Personajes en recursos/personajes/taller-v24/ (la mujer, igual que en la v23).',
+  'v37, aún mal: en las comisuras el bigote aún cae como dos colas oscuras; justo encima del cuello de la ropa quedan algunos pelos sueltos sobre la piel clara.',
   'v36: los bordes que van recortados en la textura (el escote, las mangas, la cofia, la toca, el pelo) ya no salen en dientes de sierra cuando se ven pequeños o con poca resolución, como en el móvil: la forma del borde se lee siempre de la textura entera y se suaviza con el antialias de la pantalla.',
   'v36: la cofia de la mujer baja hasta 3 cm por debajo del cuello y queda metida bajo el escote: entre la cofia y el vestido ya no asoma una cuña de piel. Personajes en recursos/personajes/taller-v23/.',
   'v35: de cerca, las cejas ya no se cortan en escalones rectos: la malla sobre la que se pintan no llegaba a todo lo pintado (un punto justo fuera de la ceja quitaba su cuadro). Ahora coge entero cada cuadro donde se pinta algo, y la textura de las cejas pasa a 1024.',
