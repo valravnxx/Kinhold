@@ -1,0 +1,26 @@
+Vista pc
+  OK   la demo arranca sin error — None
+  FALLA hay una ladera suave cerca de la salida — null
+Vista movil
+  OK   la demo arranca sin error — None
+  OK   hay una ladera suave cerca de la salida — {"x": -38, "z": -12, "g": 0.12713984324754787}
+  ladera en -38 -12 pendiente 0.127
+  OK   el mojón se pone — {"mojon": {"x": -41, "z": -9}}
+   {"n": 1, "piezas": ["cim_piedra", "cim_piedra", "cim_piedra", "cerca", "muro_tronco"], "oy": 1.181, "nivelados": 3, "primera": true, "grupoY": null}
+  OK   la construcción se pone (cimientos, cerca y muro, terminados) — ["cim_piedra", "cim_piedra", "cim_piedra", "cerca", "muro_tronco"]
+  OK   la construcción queda a la altura del suelo donde empieza (no a 0) — oy 1.181, suelo 1.181, desnivel debajo 0.28 m
+   {"pts": [-1.1652891185320868e-07, -1.1652891185320868e-07, -1.1652891185320868e-07, -1.1652891185320868e-07, -1.1652891185320868e-07, -1.1652891185320868e-07], "lejos": [1.3827992761712835, 1.380840429125385], "gy": 1.181, "cy": 1.009563573656635, "sueloCerca": 1.009563573656635}
+  OK   el terreno de debajo de los cimientos sale llano a su altura (malla que se ve) — [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0]
+  OK   el terreno de lejos, como antes — [1.3827992761712835, 1.380840429125385] / [1.3827992761712835, 1.380840429125385]
+  OK   la construcción se dibuja a su altura — 1.181
+  OK   la cerca, a ras del suelo de su sitio — 1.009563573656635 / 1.009563573656635
+  OK   el personaje pisa el cimiento (a la altura de la construcción) — 1.301 / oy 1.181
+  OK   la brocha tiene su botón en Construir → Tierra
+   {"sel": "nivelar", "ok": true, "tipo": "nivelar", "y": 1.851, "disco": [-44, 1.871, -16, 2], "suelo": 1.8506661737542913, "aviso": "Brocha de 2 m: alisa el suelo a la altura del disco. Cambia el tama\u00f1o con R o Girar."}
+  OK   con la brocha cogida sale su fantasma redondo de 2 m a la altura del suelo del centro — {"sel": "nivelar", "ok": true, "tipo": "nivelar", "y": 1.851, "disco": [-44, 1.871, -16, 2], "suelo": 1.8506661737542913, "aviso": "Brocha de 2 m: alisa el suelo a la altura del disco. Cambia el tama\u00f1o con R o Girar."}
+  OK   la pasada se hace con su acción (una marca de la brocha) — {"n": 1, "y": 1.851}
+  OK   la brocha alisa a su altura y la segunda pasada sigue a la misma (malla que se ve) — [1.851, 1.851, 1.849, 1.851, 1.851] / 1.851
+  OK   la hierba y las matas de lo alisado, a la altura nueva — 39 plantas, desfase máx. 0.032 m, movidas 21
+  OK   sin errores en la página
+
+1 fallos
