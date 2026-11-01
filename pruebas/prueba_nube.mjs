@@ -26,7 +26,7 @@ function comprobar(nombre, cond, detalle = '') {
 }
 const libre = () => new Promise(r => { const s = createServer(); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => r(p)); }); });
 const tmp = mkdtempSync(join(tmpdir(), 'kinhold_nube_'));
-const JUEGO = 'https://valravnxx.github.io/Kinhold/jugar/demo/index.html';
+const JUEGO = 'https://playkinhold.com/jugar/demo/index.html';
 
 // Con MUTAR=1, una copia de la carpeta con la plantilla estropeada (el WebSocket no llega al juego).
 let carpeta = nube;
@@ -64,9 +64,12 @@ comprobar('el mundo se guarda en /var/lib/kinhold (StateDirectory), fuera del c�
 comprobar('el servicio vuelve a arrancar si se cae', /^Restart=always$/m.test(serv1) && /^WantedBy=multi-user.target$/m.test(serv1));
 const sinIp = spawnSync('bash', [join(nube, 'instalar.sh'), '--solo-archivos', join(tmp, 'mal')], { env: { ...process.env, KINHOLD_IP: 'nada', KINHOLD_DOMINIO: '' } });
 comprobar('sin IP válida se para con un aviso', sinIp.status !== 0 && /IP pública/.test(sinIp.stderr.toString()));
-const propio = archivos({ KINHOLD_DOMINIO: 'juego.ejemplo.org', KINHOLD_PUERTO: '9000' }, join(tmp, 'propio'));
+const propio = archivos({ KINHOLD_DOMINIO: 'juego.ejemplo.org', KINHOLD_IP: '1.2.3.4', KINHOLD_PUERTO: '9000' }, join(tmp, 'propio'));
 const caddyP = readFileSync(join(tmp, 'propio', 'Caddyfile'), 'utf8');
 comprobar('con dominio propio y otro puerto', propio === 'juego.ejemplo.org' && caddyP.includes('reverse_proxy 127.0.0.1:9000') && caddyP.includes('wss://juego.ejemplo.org"'));
+comprobar('con dominio propio sigue sirviendo el de sslip.io (las versiones publicadas lo llevan)', /^juego\.ejemplo\.org, 1-2-3-4\.sslip\.io \{/m.test(caddyP), caddyP.split('\n').find(l => l.endsWith('{')));
+const vP = spawnSync('caddy', ['validate', '--adapter', 'caddyfile', '--config', join(tmp, 'propio', 'Caddyfile')], { env: { ...process.env, XDG_DATA_HOME: tmp, XDG_CONFIG_HOME: tmp } });
+comprobar('caddy validate con las dos direcciones', vP.status === 0 || !!vP.error, vP.status ? vP.stderr.toString().trim().split('\n').pop() : '');
 
 console.log('Caddy y systemd los aceptan');
 const v = spawnSync('caddy', ['validate', '--adapter', 'caddyfile', '--config', join(d1, 'Caddyfile')], { env: { ...process.env, XDG_DATA_HOME: tmp, XDG_CONFIG_HOME: tmp } });
