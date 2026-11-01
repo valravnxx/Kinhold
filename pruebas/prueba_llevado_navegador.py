@@ -18,7 +18,7 @@ shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v24'), f'{sitio}/recursos/personajes/taller-v24')
 # las animaciones de cargar hechas en el taller (al hombro, arrastrar). MUTAR_HOMBRO=1 no las copia: tiene que fallar
 if not os.environ.get('MUTAR_HOMBRO'):
-    shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v2'), f'{sitio}/recursos/personajes/taller-carga-v2')
+    shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v3'), f'{sitio}/recursos/personajes/taller-carga-v3')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -61,7 +61,7 @@ MEDIR = '''() => { const K = window.__kinhold, j = K.jugador, H = j.mh.hueso; K.
     r.piezas[o.name.slice(8)] = [(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2, x1 - x0, y1 - y0, z1 - z0].map(v => +v.toFixed(3));
   }
   r.modo = j.modo; r.alHombro = !!j.alHombro;
-  for (const n of ['pelvis', 'spine_03', 'hand_r', 'hand_l', 'neck_01']) r[n] = local(H[n]).toArray().map(v => +v.toFixed(3));
+  for (const n of ['pelvis', 'spine_03', 'hand_r', 'hand_l', 'neck_01', 'head', 'upperarm_r']) r[n] = local(H[n]).toArray().map(v => +v.toFixed(3));
   return r; }'''
 
 def equipar(pg, lugares):
@@ -81,7 +81,23 @@ def mirar(pg, giro, dist=2.3, alto=0.35):
       K.cam.yaw = K.jugador.raiz.rotation.y + g; }''', [giro, dist, alto])
     pg.wait_for_timeout(500)
 
+def cercaTronco(pg, disp, quien):
+    equipar(pg, {'hombro': C('tronco_corto')})
+    vistas = {'frente': (0.0, 1.5, 0.3), 'der': (-1.5708, 1.5, 0.3), 'izq': (1.5708, 1.5, 0.3), 'arriba': (-0.8, 1.3, 0.7)} if disp == 'pc' else {'frente': (0.3, 2.0, 0.3), 'arriba': (-0.8, 1.8, 0.7)}
+    for v, (g, d, a) in vistas.items():
+        mirar(pg, g, d, a)
+        pg.screenshot(path=f'{SALIDA}/{disp}_tronco_{quien}_{v}.png')
+
 def dist(a, b): return sum((a[i] - b[i]) ** 2 for i in range(3)) ** 0.5
+
+# El tronco al hombro (revisión del 1 nov: tapaba la cabeza y la mano subía al cuello): al lado de la cabeza, apoyado
+# sobre el hombro y la muñeca derecha por encima de él y por delante. MUTAR_TRONCO=1 lo pone donde iba antes: tiene que fallar
+def revisarTronco(nombre, m):
+    h, cab, hom, mano = m['piezas']['hombro'], m['head'], m['upperarm_r'], m['hand_r']
+    r = h[3] / 2  # el radio: lo ancho del tronco de lado
+    comprobar(f'{nombre}: el tronco va al lado de la cabeza, sin taparla', abs(h[0] - cab[0]) > r + 0.07, f'{abs(h[0] - cab[0]) * 100:.1f} cm de lado entre la cabeza y el centro del tronco (radio {r * 100:.0f} cm)')
+    comprobar(f'{nombre}: el tronco apoyado sobre el hombro (de 2 a 9 cm por encima de la articulación)', 0.02 < h[1] - r - hom[1] < 0.09, f'{(h[1] - r - hom[1]) * 100:.1f} cm')
+    comprobar(f'{nombre}: la mano encima del tronco y por delante del hombro', mano[1] > h[1] + r * 0.6 and mano[2] > hom[2] + 0.1, f'mano {mano} · tronco {h[:3]} · hombro {hom}')
 
 def revisar(nombre, m):
     p, P = m['piezas'], m['pelvis']
@@ -95,11 +111,12 @@ def revisar(nombre, m):
         h = p['hombro']
         comprobar(f'{nombre}: lo del hombro va por encima de la cintura', h[1] > P[1] + 0.15, f'centro {h[:3]}')
         if m.get('alHombro'):
-            # el tronco al hombro: la postura de llevarlo (taller-carga-v2) y la mano derecha arriba, sobre el tronco
+            # el tronco al hombro: la postura de llevarlo (taller-carga-v3) y la mano derecha arriba, sobre el tronco
             comprobar(f'{nombre}: con el tronco al hombro, la postura de llevarlo', m.get('modo') == 'hombroQuieto', m.get('modo'))
             mano = m['hand_r']
             comprobar(f'{nombre}: la mano derecha sujeta el tronco (sobre el hombro, cerca del tronco)', mano[1] > m['neck_01'][1] - 0.05 and abs(mano[0] - h[0]) < 0.15 and abs(mano[1] - h[1]) < 0.2,
                       f'mano {mano} · tronco {h[:3]} · cuello {m["neck_01"]}')
+            revisarTronco(nombre, m)
     for lado, hueso in (('r', 'hand_r'), ('l', 'hand_l')):
         if 'mano_' + lado in p:
             comprobar(f'{nombre}: lo de la mano {lado} está en la mano', dist(p['mano_' + lado], m[hueso]) < 0.35, f'{p["mano_" + lado][:3]} · mano {m[hueso]}')
@@ -120,6 +137,7 @@ with sync_playwright() as pw:
         pg.evaluate(f'localStorage.clear(); {K}.reiniciar()')
         pg.wait_for_function(f'{K}.jugador.mh', timeout=120000)
         if os.environ.get('MUTAR'): pg.evaluate('globalThis.__sinSeguirLlevado = true')
+        if os.environ.get('MUTAR_TRONCO'): pg.evaluate('globalThis.__troncoComoAntes = true')
         pg.evaluate("document.querySelectorAll('#ayuda, .ayuda, #panelAyuda').forEach(e => e.style.display = 'none')")
         for nombre, lugares in EQUIPOS.items():
             equipar(pg, lugares)
@@ -132,6 +150,8 @@ with sync_playwright() as pw:
             for v, g in vistas.items():
                 mirar(pg, g, 2.3 if disp == 'pc' else 3.2)
                 pg.screenshot(path=f'{SALIDA}/{disp}_{nombre}_{v}.png')
+        # el tronco al hombro de cerca (revisión del 1 nov): de frente, de lado (los dos) y desde arriba, por delante
+        cercaTronco(pg, disp, 'hombre')
         if disp == 'pc':
             # al andar, lo de la mano sigue a la mano y lo de la espalda a la espalda
             print('Al andar, cada pieza sigue a su hueso')
@@ -148,6 +168,26 @@ with sync_playwright() as pw:
             equipar(pg, {})
             comprobar('sin nada encima, no se dibuja nada', pg.evaluate(f'{K}.jugador.llevado.grupo.children.length') == 0)
         comprobar(f'{disp}: sin errores en la página', not errores, '; '.join(errores[:3]))
+        ctx.close()
+        # y la mujer (hombros más estrechos): el mismo tronco, al lado de la cabeza, con la mano encima
+        ctx = nav.new_context(locale='es-ES', viewport=vp, **({'is_mobile': True, 'has_touch': True, 'device_scale_factor': 2} if disp == 'movil' else {}))
+        pg = ctx.new_page(); errores = []; pedidos = []
+        pg.on('pageerror', lambda e: errores.append(str(e)))
+        pg.on('request', lambda r: pedidos.append(r.url))
+        pg.goto(URL)
+        pg.wait_for_function('window.__kinhold !== undefined', timeout=60000)
+        pg.evaluate("localStorage.clear(); localStorage.setItem('kinhold_personaje_v2', JSON.stringify({sexo: 'mujer'})); location.reload()")
+        pg.wait_for_function('window.__kinhold !== undefined && window.__kinhold.jugador.mh', timeout=180000)
+        if os.environ.get('MUTAR_TRONCO'): pg.evaluate('globalThis.__troncoComoAntes = true')
+        pg.evaluate("document.querySelectorAll('#ayuda, .ayuda, #panelAyuda').forEach(e => e.style.display = 'none')")
+        comprobar(f'{disp}: la mujer, elegida (se cargan su cuerpo y sus animaciones de cargar)', any('mh_mujer.glb' in u for u in pedidos) and any('mh_mujer_extra.glb' in u for u in pedidos))
+        equipar(pg, {'hombro': C('tronco_corto')})
+        m = pg.evaluate(MEDIR)
+        if disp == 'pc':
+            comprobar('mujer: con el tronco al hombro, la postura de llevarlo', m.get('modo') == 'hombroQuieto', m.get('modo'))
+            revisarTronco('mujer', m)
+        cercaTronco(pg, disp, 'mujer')
+        comprobar(f'{disp} (mujer): sin errores en la página', not errores, '; '.join(errores[:3]))
         ctx.close()
     nav.close()
 srv.shutdown()

@@ -3762,5 +3762,23 @@
   "pruebas": "Batería entera en la nube (GitHub Actions) sobre la rama ya unida con main: 29 de 30 grupos correctos a la primera; «terreno por trozos» falló una medida de tiempo en el móvil (12,7 ms sin hilo frente a 6,4 ms con él, pedía más diferencia), no tocado en esta tarea, y repetido solo pasó. Lógica 410 líneas de resultados sin fallos. Capturas de las tierras del rey miradas en PC, móvil e inglés.",
   "capturas": "capturas/demo-v90",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-01T12:24:20+00:00",
+  "fin": "2026-11-01T13:43:14+00:00",
+  "titulo": "Tronco al hombro: sobre el hombro, al lado de la cabeza, y la mano encima (carril A)",
+  "hito": "equipo",
+  "hecho": [
+   "El tronco corto al hombro iba a la altura de la cabeza y la tapaba: se colocaba junto al cuello con las medidas del cuerpo quieto y no seguía al hombro. Ahora va encima de la articulación del hombro derecho y algo por fuera (4,5 cm), atado a la clavícula, así que sube con el hombro en la postura de llevarlo.",
+   "La mano derecha subía al cuello: la animación la llevaba a un punto fijo que no era el del tronco. Animaciones nuevas en recursos/personajes/taller-carga-v3/ (sobre los personajes de taller-v24): la muñeca va por delante del hombro, encima del tronco, con la palma encima y los dedos por encima hacia dentro; el codo, delante y abajo. Arrastrar y empujar la carretilla salen igual que en la v2.",
+   "Dónde van el tronco y la mano lo dice un solo sitio, src/personajes/medidas_carga.js, que leen el juego y el taller.",
+   "Decisión provisional (anotada en el registro de la demo): el tronco 4,5 cm por fuera del hombro, para que tampoco toque la cabeza en la mujer, de hombros más estrechos; la mano, unos 24 cm por delante de su centro.",
+   "Pruebas nuevas: en las animaciones, con el esqueleto del juego y en todos los fotogramas (hombre y mujer, quieto y andando), el tronco a más de 17 cm de lado de la cabeza, apoyado de 2 a 9 cm sobre el hombro y la muñeca a menos de 4 cm de su sitio (MUTAR_CARGAS=1, con las de la v2, falla: la mano a 10 cm). En el navegador, lo mismo en el juego, también con la mujer, y capturas de cerca (MUTAR_TRONCO=1, con el tronco donde iba antes, falla).",
+   "Capturas miradas (PC y móvil, hombre y mujer): la cara se ve entera y el tronco descansa en el hombro. Aún mal o mejorable: los dedos se meten un poco en la corteza; visto desde la izquierda, el antebrazo derecho pasa por delante de la cara (va delante del hombro); andando no hay capturas de cerca (solo lo miden las pruebas).",
+   "Publicada la demo v91 (la v90 la publicó el carril B mientras tanto). Sesión empezada antes de la pausa de los carriles del 1 nov; se termina, como pidió valravnx («que acaben los que están»)."
+  ],
+  "pruebas": "En la nube: 29 de 29 grupos correctos (55,9 min). Aquí, sueltas: las animaciones de cargar, correctas; la del navegador de lo que llevas, con el tronco y la mujer bien, pero con dos comprobaciones fuera de tiempo (la postura sin acabar de entrar y la rama al andar) porque aquí va a menos de 3 fotogramas por segundo; en la nube, correcta",
+  "capturas": "capturas/demo-v91",
+  "estado": "ok"
  }
 ]

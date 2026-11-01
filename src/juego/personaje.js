@@ -173,7 +173,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
   const muneco = crearMuneco();
   raiz.add(muneco);
   const j = { raiz, mh: null, error: null, modo: 'quieto' };
-  // cargas: las animaciones de llevar al hombro, arrastrar y empujar hechas en el taller (taller-carga-v2, unos 100 KB)
+  // cargas: las animaciones de llevar al hombro, arrastrar y empujar hechas en el taller (taller-carga-v3, unos 100 KB)
   j.listo = crearPersonajeMH({ sexo, capas, aspecto, tintes: ropa.tintes, hechuras: ropa.hechuras, cargas: true }, recursos).then(mh => {
     raiz.remove(muneco);
     raiz.add(mh.raiz);
@@ -195,13 +195,13 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     if (j.arrastra && j.mh.acciones.arrastrar) {
       ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'arrastrar';
     // empujando la carretilla (src/juego/carretilla.js): algo inclinado, con los brazos bajos en las varas, andando o
-    // quieto (la de empujar del taller, taller-carga-v2); sin ella, como al llevar algo en brazos
+    // quieto (la de empujar del taller, taller-carga-v3); sin ella, como al llevar algo en brazos
     } else if (j.empuja && j.mh.acciones.empujarCarretilla) {
       if (velocidad > 0.1) { ritmo = THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.5, 1.6); m = 'empujarCarretilla'; } else m = 'empujarQuieto';
     } else if (j.empuja && j.mh.acciones.cargar) {
       ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'cargar';
     } else if (j.cargaDos && m !== 'talar' && j.mh.acciones.cargar) { m = 'cargar'; if (velocidad <= 0.1) ritmo = 0; }
-    // un tronco al hombro: la mano derecha arriba sujetándolo y el cuerpo algo inclinado, andando o quieto (taller-carga-v2).
+    // un tronco al hombro: la mano derecha arriba sujetándolo y el cuerpo algo inclinado, andando o quieto (taller-carga-v3).
     // Corriendo, la misma de andar, más deprisa (con el tronco al hombro no se corre suelto)
     else if (j.alHombro && m !== 'talar' && j.mh.acciones.hombro) {
       if (m === 'quieto') m = 'hombroQuieto';

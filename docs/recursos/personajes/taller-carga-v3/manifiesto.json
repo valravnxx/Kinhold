@@ -1,0 +1,26 @@
+{
+ "mh_hombre_extra": {
+  "kb": 106,
+  "kb_antes": 514,
+  "sha256": "00c01fbdf6789c27370f771039955d87a9b7e4d638f53f9ad9b3fe02aa29c113",
+  "clips": [
+   "Hombro_Walk_Loop",
+   "Hombro_Idle_Loop",
+   "Drag_Walk_Loop",
+   "Empujar_Walk_Loop",
+   "Empujar_Idle_Loop"
+  ]
+ },
+ "mh_mujer_extra": {
+  "kb": 106,
+  "kb_antes": 513,
+  "sha256": "79ad9ffe3e7811c3bcd42308a41ce00ccf97d54b8aafc6375fd100cb74e77c49",
+  "clips": [
+   "Hombro_Walk_Loop",
+   "Hombro_Idle_Loop",
+   "Drag_Walk_Loop",
+   "Empujar_Walk_Loop",
+   "Empujar_Idle_Loop"
+  ]
+ }
+}
