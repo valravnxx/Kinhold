@@ -6,6 +6,13 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 1 nov 2026 (14:17 UTC+1) — por el chat: PAUSA y revisión completa
+valravnx: «es hora de parar todos los procesos de trabajo, que acaben los que están, pero que no salgan nuevos […] lo que tenemos que hacer es una revisión del GDD de lo que tenemos hasta ahora y del scope, de fallos, problemas […] se están añadiendo muchas cosas, pero algunas se están añadiendo rotas, otras no tienen sentido […] que en este tier de construcción todo funcione bien, desde no tener nada a tener una casa completada y poder empezar la estación de tier 1». → Pausadas las dos tareas programadas (carriles A y B): no sale ninguna sesión automática nueva hasta que valravnx diga. Revisión completa en el chat con valravnx (GDD, scope, lo hecho, lo que falla, lo que falta) y reestructuración del roadmap.
+Apuntado de lo que dijo:
+- Subir un tronco en alto pide llevar en el inventario las varas y la cuerda para rodarlo y además el tronco, y no cabe tanto: subirlo debería ser algo que se construye (o buscar otro método).
+- Las poleas: no ha sabido cómo se usan.
+- El combate contra la máquina lo ve bastante bien. En el móvil, hacer fintas es difícil o casi imposible sin jugar con dos dedos: apuntado para más adelante, no ahora.
+
 ### 1 nov 2026 (08:46 UTC+1) — por el chat: parar en el móvil
 valravnx: «en el móvil parar sigue siendo un botón y no otro joystick como el de atacar para elegir dirección, también se quedan botones mal y apelotonados sobre otros». → Tarea en el hito del duelo: una rosa para parar (como la de atacar) y los botones del combate en el móvil sin taparse.
 
