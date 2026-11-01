@@ -1,0 +1,42 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2545 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2223 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1813 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2301 KB
+
+== Construir demo única
+      2249 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 2818 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1808 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2291 KB
+dist/kinhold_trozos.html 1810 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: terreno por trozos (en un hilo aparte)
+     movil, hilo=0: fotograma más largo 683.5 ms (al cruzar un borde 654.2 ms, media 638.03 ms); trabajo de los trozos en el hilo de dibujo: máx. 14.2 ms, media 4.16 ms; un trozo tarda hasta 26.4 ms (media 1.8); memoria 50 MB
+  OK   movil: sin el hilo, el trabajo en el hilo de dibujo es mucho mayor (el hilo aparte sirve) — 14.2 ms sin hilo, 5.2 ms con él
+
+TODO CORRECTO · medidas en /tmp/kinhold_capturas/trozos/medidas.json
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 696 s
