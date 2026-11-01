@@ -320,7 +320,7 @@ window.__personaje = {
   hechuras: (p, c) => { if (p) cambiarHechura(p, c); return pj?.hechuras; },
   // milisegundos por fotograma dibujando n veces (para comparar calidades en las pruebas)
   tiempo: (n = 10) => { const gl = renderer.getContext(), px = new Uint8Array(4), sync = () => gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); dibujar(); sync(); const t = performance.now(); for (let i = 0; i < n; i++) { dibujar(); sync(); } return (performance.now() - t) / n; },
-  diag: () => ({ escena, renderer, pj, sol, THREE }),
+  diag: () => ({ escena, renderer, pj, sol, THREE, camara, control }),
   // nivel de detalle (src/logica/detalle.js) del personaje, visto donde esté: devuelve sus triángulos y piezas
   nivel: async (n) => {
     await pj.ponerNivel(n); dibujar();
