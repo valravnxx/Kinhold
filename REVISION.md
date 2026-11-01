@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 1 nov 2026 (14:49 UTC+1) — por el chat: revisión, recetas, almacenaje y carga
+valravnx: «quitamos el aprender recetas, va; luego quiero almacenajes varios para la base; si llevas algo al hombro, olvídate de llevar nada en manos a la vez, ¿en qué mundo tendría eso sentido?; y hacerlo de modo que podamos quitar el modo arcón de objetos infinitos y el contador de materiales de la parte superior de la pantalla, o eso o adaptarlo: que al entrar en tu zona del mojón puedas ver, si es tuyo, qué materiales de construcción tienes almacenados». → Fuera el aprendizaje de recetas por práctica; almacenajes de la base (varios, por tipo); con algo al hombro, las manos libres no cargan nada; fuera el arcón infinito, y el contador de arriba solo dentro de tu tierra con lo que tienes almacenado en ella.
+
 ### 1 nov 2026 (14:45 UTC+1) — por el chat: revisión, crafting temprano (segunda tanda)
 valravnx: el soporte de troncos «es una mesa de acopio, no de abastecimiento automático» (las obras no cogen de ahí solas; «todo es debatible»); los muros de la casa humilde, de las dos maneras (tronco delgado y zarzo con barro); subir troncos a lo alto se deja para cuando haga falta (la primera casa es de una planta); «hogar en casa, hoguera fuera: el hogar es más permanente y la hoguera se apaga antes (hay que alimentarla con leña y encender con yesca)».
 
