@@ -103,6 +103,7 @@ export const CATALOGO = {
   honda: { nombre: 'Honda', tam: 'P' },
   antorcha: { nombre: 'Antorcha', tam: 'M' },
   rastra: { nombre: 'Rastra', tam: 'E' },
+  carretilla: { nombre: 'Carretilla de rueda maciza', tam: 'E' },   // se empuja (src/logica/rastra.js)
   arpon: { nombre: 'Arpón', tam: 'M', herramienta: true },
   nasa: { nombre: 'Nasa', tam: 'M' },
   trampa_lazo: { nombre: 'Trampa de lazo', tam: 'P' },
@@ -253,6 +254,7 @@ export class Inventario {
       const l = r.lugar;
       if (l.startsWith('mano:')) {
         if (this.manosEn === 'rastra') return 'Tienes las manos en la rastra: suéltala antes.';
+        if (this.manosEn === 'carretilla') return 'Tienes las manos en la carretilla: apárcala antes.';
         if (this.manoBloqueada(l)) return 'Tienes las dos manos ocupadas.';
         if (d.tam === 'G') {
           const otra = l === 'mano:der' ? 'mano:izq' : 'mano:der';

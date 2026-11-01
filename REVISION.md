@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 1 nov 2026 (08:46 UTC+1) — por el chat: parar en el móvil
+valravnx: «en el móvil parar sigue siendo un botón y no otro joystick como el de atacar para elegir dirección, también se quedan botones mal y apelotonados sobre otros». → Tarea en el hito del duelo: una rosa para parar (como la de atacar) y los botones del combate en el móvil sin taparse.
+
 ### 31 oct 2026 (23:50 UTC) — por el chat: las pruebas del PC llenan el SSD
 valravnx: «tengo el programa de tu gráfica para las pruebas, pero usa mi SSD de Windows, no el HDD de datos que es lo que quería, y me ha llenado el SSD; quiero que pueda borrar todo lo guardado en el SSD de Windows petado y ponerlo todo en D con una actualización del programa». → Tarea del chat en «Infraestructura».
 

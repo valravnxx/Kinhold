@@ -25,7 +25,7 @@ export const ALCANCE_COGER = 2;          // m
 export const DE_PILA = ['tronco_delgado', 'tronco_largo', 'tronco_corto', 'lena', 'piedra', 'bloque_piedra'];
 export const esDePila = tipo => DE_PILA.includes(tipo);
 // Lo que tampoco desaparece aunque no sea de pila: la rastra se queda donde la dejas (src/logica/rastra.js).
-export const NO_DESAPARECE = ['rastra'];
+export const NO_DESAPARECE = ['rastra', 'carretilla'];
 
 const copiar = c => c && JSON.parse(JSON.stringify(c));
 const redondo = v => Math.round(v * 100) / 100;
@@ -138,7 +138,7 @@ export class Suelo {
       const n = Number.isInteger(o.cosa.n) && o.cosa.n > 0 ? o.cosa.n : 1;
       this.objetos.push({ id: String(o.id), cosa: { ...copiar(o.cosa), n }, x: o.x, z: o.z, autor: String(o.autor || ''),
         soltado: Number.isFinite(o.soltado) ? o.soltado : 0, desaparece: Number.isFinite(o.desaparece) ? o.desaparece : null,
-        ...(Number.isFinite(o.giro) ? { giro: o.giro } : {}) });
+        ...(Number.isFinite(o.giro) ? { giro: o.giro } : {}), ...(typeof o.guarda === 'string' && o.guarda ? { guarda: o.guarda } : {}) });
     }
     const max = Math.max(0, ...this.objetos.map(o => Number(String(o.id).slice(1)) || 0));
     this.siguiente = Math.max(Number.isInteger(d.siguiente) ? d.siguiente : 1, max + 1);
