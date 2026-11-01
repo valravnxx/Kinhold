@@ -95,7 +95,7 @@ export function pantallaCuenta({ enviar, direccion, alCrear }) {
     const u = usuario.value.trim(), c = clave.value;
     const m = motivoUsuario(u) || (que === 'crear' ? motivoClave(c, u) || (c !== clave2.value ? 'Las dos contraseñas no son iguales.' : null) : (c ? null : 'Falta la contraseña.'));
     if (m) return decir(tr(m));
-    const id = 'c' + (++n);
+    const id = ++n;   // el servidor solo devuelve ids enteros
     if (!enviar({ tipo: 'cuenta', id, que, usuario: u, clave: c })) return decir(tr('No hay conexión con el servidor.'));
     esperando = { id, que, usuario: u };
     ir.disabled = true; decir(tr('Un momento…'), true);
