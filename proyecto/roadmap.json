@@ -542,7 +542,7 @@
      "rama": "trabajo/20261101-0422"
     },
     {
-     "nombre": "Las obras y lo alisado con la brocha, también por trozo: la bienvenida y lo que cambia, solo lo de alrededor de cada jugador (en la v82 aún llegan todos); y cavar en el mundo en línea, guardado por trozo, cuando se haga",
+     "nombre": "Las obras y lo alisado con la brocha, también por trozo: la bienvenida y lo que cambia, solo lo de alrededor de cada jugador (en la v83 aún llegan todos); y cavar en el mundo en línea, guardado por trozo, cuando se haga",
      "estado": "pendiente"
     },
     {
@@ -1064,13 +1064,15 @@
     },
     {
      "nombre": "Cuello de la ropa con toca en el móvil (visto en la revisión del 31 oct, noche): con la calidad ligera el borde del cuello sale en dientes de sierra y entre la toca y el cuello asoma una cuña de piel",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-01T01:52:36+00:00",
-     "rama": "trabajo/20261101-0152"
+     "fin": "2026-11-01T04:32:04+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-01T04:52:48+00:00",
+     "rama": "trabajo/20261101-0452"
     },
     {
      "nombre": "Arreglo (valravnx, 29 oct: «han roto las manos de todos los personajes» y prendas rotas): desde taller-v9 la piel se diezma con la cara protegida pero con la proporción de toda la piel, así que las manos se quedaban en una tira; diezmar solo lo que se puede diezmar, rehacer los personajes y repasar todas las prendas de cerca",
@@ -2265,6 +2267,13 @@
      "archivo": "jugar/demo/v81.html",
      "capturas": "capturas/demo-v81",
      "notas": "v81: el servidor conoce el mundo. Genera Whitholm con la misma semilla que tu navegador y saca él los árboles y lo que se recoge: su sitio, la edad del árbol y la clase de cada cosa son los del servidor, y un árbol o un punto que no está en el mundo no vale aunque lo diga el navegador. Comprueba contra el terreno dónde estás (dentro de la isla y cerca del suelo) y las obras: el mojón en tierra firme, la planta baja de lo que empiezas a ras del suelo (también del alisado), y la brocha y la decoración a una altura con sentido. De los árboles y los puntos guarda solo lo que ha cambiado (lo talado y lo recogido). v81, provisional: un jugador puede estar hasta 40 m bajo el suelo (cavando) y 120 m por encima; la planta baja de lo que se empieza, a 1,5 m del suelo como mucho (el navegador lo mide en la malla del trozo, que en ladera se aparta algo del suelo exacto); la brocha, a 6 m (al arrastrarla sigue a la altura de la pasada anterior, ladera arriba o abajo); la decoración, de 0,5 m por debajo a 40 m por encima; el mojón, a más de 0,15 m sobre el mar. v81, aún mal: lo guardado aún no va por trozos y la bienvenida sigue mandando todo lo talado y lo recogido de la isla (va en la tarea siguiente); el servidor tarda unos 5 s más en arrancar, lo que tarda en generar la isla."
+    },
+    {
+     "v": "v82",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/demo/v82.html",
+     "capturas": "capturas/personaje-v36",
+     "notas": "En «Personaje» y en el juego: la cofia baja hasta quedar metida bajo el escote y los bordes recortados de la ropa y el pelo ya no salen en dientes de sierra con poca resolución, como en el móvil (taller-v23)."
     }
    ]
   },
@@ -3014,6 +3023,13 @@
      "archivo": "jugar/personaje/v35.html",
      "capturas": "capturas/personaje-v35",
      "notas": "Cejas sin escalones rectos, la barba corta clarea en el cuello en pelos sueltos y oscuros (no en un gris como escarcha) y el bigote se une a la barba en las comisuras (taller-v22)."
+    },
+    {
+     "v": "v36",
+     "fecha": "2026-11-01",
+     "archivo": "jugar/personaje/v36.html",
+     "capturas": "capturas/personaje-v36",
+     "notas": "La cofia baja hasta quedar metida bajo el escote (ya no asoma una cuña de piel) y los bordes recortados de la ropa y el pelo ya no salen en dientes de sierra con poca resolución, como en el móvil (taller-v23)."
     }
    ]
   },
