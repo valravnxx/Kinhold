@@ -50,6 +50,8 @@ AUTOR_BOT = bot.stdout.readline().strip()
 
 URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html?modo=construir&enlinea=1&servidor=ws://127.0.0.1:{PUERTO}'
 K = 'window.__kinhold'
+# (fuera de la f-string: el Python del PC de valravnx no admite barras invertidas dentro de sus llaves)
+ESTADO_PANEL = 'document.querySelector("#panelAdmin .pa-estado").textContent'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 fallos = []
 def comprobar(nombre, ok, detalle=''):
@@ -88,7 +90,7 @@ try:
             pg.wait_for_timeout(1200)
             n = pg.evaluate(f"{PANEL}.jugadores.length")
             comprobar(f'{nombre}: con la clave mal no se ve a nadie y lo dice', n == 0 and pg.evaluate("!!document.querySelector('#panelAdmin .pa-estado.mal') && !!document.querySelector('#panelAdmin input')"),
-                      f"{n} jugadores; «{pg.evaluate('document.querySelector(\"#panelAdmin .pa-estado\").textContent')}»")
+                      f"{n} jugadores; «{pg.evaluate(ESTADO_PANEL)}»")
             if nombre == 'pc': captura(pg, f'{SALIDA}/{nombre}_clave_mal.png')
             # la buena
             pg.fill('#panelAdmin input', CLAVE); pulsar('#panelAdmin .pa-si')
