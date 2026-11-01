@@ -2,7 +2,11 @@
 // fibra de ortigas y hierba larga. La lógica (dónde sale, qué da, cuándo vuelve) está en src/logica/recoleccion.js;
 // aquí se dibuja con el estilo v5 y se decide qué zonas tiene el terreno de la demo.
 //
-// Zonas del terreno de la demo (provisional; el mundo generado traerá las suyas):
+// En el mundo de verdad (crearRecoleccionMundo, abajo), lo que se recoge sale del sitio (src/logica/recogida_mundo.js):
+// ramas en el bosque, sílex en la caliza, piedra en las laderas y los ríos, fibra en los claros y las riberas, y sigue
+// al jugador por la isla como lo que crece. Lo de aquí debajo es solo para el llano de la construcción.
+//
+// Zonas del terreno del llano (provisional):
 //  - claro: el llano de hierba antes del bosque (a menos de 25 m del centro).
 //  - bosque: entre los árboles (de 30 a 110 m).
 //  - ladera: donde empiezan las lomas, pasado el llano (más de 62 m).
@@ -13,6 +17,8 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { Lote, materialTex, material } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { Recoleccion, repartirPuntos, RECOLECTABLES, cargarRecoleccion, guardarRecoleccion, ejecutarRecoleccion } from '../logica/recoleccion.js';
+import { recogidaTrozo, LADO_RECOGIDA } from '../logica/recogida_mundo.js';
+import { alturaMundo } from '../logica/whitholm.js';
 
 export const CALIZA = { x: 50, z: -46, r: 8 }; // el afloramiento calizo (a unos 68 m del centro)
 
@@ -167,5 +173,105 @@ export function crearRecoleccion({ raiz, altura, obstaculos, almacen, semilla = 
       return r;
     },
     refrescar,
+    importar(datos) { rec.importar(datos); refrescar(); },
+  };
+}
+
+// ---------------- En el mundo de verdad ----------------
+// Los puntos salen por trozos de 32 m del mundo (recogidaTrozo, siempre los mismos en cada sitio) en un cuadro de
+// RADIO m alrededor del jugador, unos pocos ms en cada fotograma; los de lejos se sueltan (lo recogido de ellos se
+// guarda igual, y vuelve con ellos). Decisión provisional (31 oct): 64 m (48 m en el móvil), lo que se distingue en
+// el suelo con la niebla del juego.
+const movil = typeof innerWidth !== 'undefined' && Math.min(innerWidth, innerHeight) < 700;
+export const RADIO_RECOGIDA = movil ? 48 : 64;
+const MS_FOTOGRAMA = 3, PASO_REHACER = 8;
+export const CLAVE_RECOLECCION_MUNDO = 'kinhold.recoleccion.mundo';
+
+// mundoJ: el mundo del juego (src/mundo/mundo_juego.js). altura(x, z): el suelo de la escena. obstaculos: los de lo que
+// crece (las rocas y las matas: lo que se recoge no sale dentro; los árboles ya los aparta la lógica).
+export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculos, almacen, radio = RADIO_RECOGIDA }) {
+  const O = mundoJ.salida, pai = mundoJ.paisaje, altW = alturaMundo(pai), L = LADO_RECOGIDA;
+  const rec = new Recoleccion([]);
+  if (almacen) cargarRecoleccion(almacen, rec, CLAVE_RECOLECCION_MUNDO, { todo: true });
+  const grupo = new THREE.Group(); grupo.name = 'recoleccion'; raiz.add(grupo);
+  const mods = modelosRecoleccion(), o = new THREE.Object3D();
+  const trozos = new Map(), clave = (i, j) => i + ',' + j;   // clave → los ids de sus puntos
+  let mallas = [], ocupado = () => false, centro = null, cambio = false, ultimo = 0;
+  const cuenta = { trozos: 0, puntos: 0, pendientes: 0, msMax: 0 };
+  const tapado = (p) => obstaculos.some(q => !q.arbol && (q.x - p.x) ** 2 + (q.z - p.z) ** 2 < (q.r + 0.3) ** 2);
+  const visible = (p, ahora) => rec.disponible(p.id, ahora) && !ocupado(p.x, p.z) && !p.tapado;
+
+  function hacer(i, j) {
+    const lista = recogidaTrozo(pai, altW, semilla, i, j).map(p => ({ id: p.id, tipo: p.tipo, x: Math.round((p.x - O.x) * 100) / 100, z: Math.round((p.z - O.z) * 100) / 100, giro: p.giro, zonas: p.zonas }));
+    rec.anadir(lista); trozos.set(clave(i, j), lista.map(p => p.id)); cambio = true;
+  }
+  // los trozos que faltan en el cuadro alrededor de P (escena), los más cercanos primero, y los de lejos se sueltan
+  function faltan(P) {
+    const X = P.x + O.x, Z = P.z + O.z, r = [];
+    for (let j = Math.floor((Z - radio) / L); j <= Math.floor((Z + radio) / L); j++) for (let i = Math.floor((X - radio) / L); i <= Math.floor((X + radio) / L); i++)
+      if (!trozos.has(clave(i, j))) r.push({ i, j, d: Math.hypot((i + 0.5) * L - X, (j + 0.5) * L - Z) });
+    return r.sort((a, b) => a.d - b.d);
+  }
+  function soltar(P) {
+    const X = P.x + O.x, Z = P.z + O.z;
+    for (const [k, ids] of trozos) {
+      const [i, j] = k.split(',').map(Number);
+      if (Math.max(Math.abs((i + 0.5) * L - X), Math.abs((j + 0.5) * L - Z)) > radio + 2 * L) { trozos.delete(k); rec.quitar(ids); cambio = true; }
+    }
+  }
+  // las mallas, de nuevo: una instanciada por tipo y textura; cada punto, su ejemplar
+  function poner() {
+    for (const { im } of mallas) { grupo.remove(im); im.dispose(); }
+    mallas = [];
+    for (const p of rec.puntos) { p.tapado = tapado(p); p.y = altura(p.x, p.z); }
+    for (const tipo of Object.keys(RECOLECTABLES)) {
+      const lista = rec.puntos.filter(p => p.tipo === tipo); if (!lista.length) continue;
+      for (const { geo, mat } of mods[tipo]) {
+        const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
+        lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(0.9 + (i % 4) * 0.08); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
+        im.castShadow = tipo !== 'hierba_larga'; im.receiveShadow = true; im.name = 'recoger_' + tipo; im.frustumCulled = false; grupo.add(im);
+        mallas.push({ im, lista, matrices });
+      }
+    }
+    cuenta.trozos = trozos.size; cuenta.puntos = rec.puntos.length;
+    refrescar();
+  }
+  function refrescar(ahora = Date.now()) {
+    for (const { im, lista, matrices } of mallas) {
+      lista.forEach((p, i) => im.setMatrixAt(i, visible(p, ahora) ? matrices[i] : CERO));
+      im.instanceMatrix.needsUpdate = true;
+    }
+  }
+  // cada fotograma: unos pocos trozos (como mucho MS_FOTOGRAMA ms) y, si ha cambiado algo, las mallas. Devuelve los ms.
+  function paso(P) {
+    const t0 = performance.now(), t = Date.now();
+    if (P && (!centro || Math.hypot(P.x - centro.x, P.z - centro.z) > PASO_REHACER || cuenta.pendientes)) {
+      const lista = faltan(P);
+      let n = 0;
+      while (n < lista.length && (n === 0 || performance.now() - t0 < MS_FOTOGRAMA)) { hacer(lista[n].i, lista[n].j); n++; }
+      cuenta.pendientes = lista.length - n;
+      if (!cuenta.pendientes) { soltar(P); centro = { x: P.x, z: P.z }; }
+    }
+    if (cambio) { cambio = false; poner(); }
+    else if (t - ultimo > 5000) { ultimo = t; refrescar(t); }   // vuelve a salir lo que toca
+    const ms = performance.now() - t0; cuenta.msMax = Math.max(cuenta.msMax, ms);
+    return ms;
+  }
+  const cercanos = (x, z, dist = 1.6, ahora = Date.now()) => rec.cercanos(x, z, ahora, dist).filter(p => !ocupado(p.x, p.z) && !p.tapado);
+  return {
+    rec, grupo, cuenta, paso, refrescar,
+    get puntos() { return rec.puntos; },
+    get listo() { return !!centro && !cuenta.pendientes; },
+    // donde se construye no se recoge (queda debajo), y las alturas de nuevo (el suelo nivelado)
+    despejar(fn) { ocupado = fn; cambio = true; },
+    cercano(x, z, dist = 1.6, ahora = Date.now()) { return cercanos(x, z, dist, ahora)[0] || null; },
+    cercanos,
+    // lo recogido que manda el servidor (de todos los puntos, estén o no cerca)
+    importar(datos) { rec.importar(datos, { todo: true }); refrescar(); },
+    recoger(invs, registro, autor, punto, x, z, ahora = Date.now()) {
+      const r = ejecutarRecoleccion(rec, invs, registro, { autor, tipo: 'recoger', punto, x, z }, ahora);
+      if (r.ok) { if (almacen) guardarRecoleccion(almacen, rec, CLAVE_RECOLECCION_MUNDO); refrescar(ahora); }
+      return r;
+    },
   };
 }

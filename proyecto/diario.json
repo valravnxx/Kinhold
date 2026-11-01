@@ -3480,5 +3480,57 @@
   "pruebas": "En la nube: 25 de 25 grupos correctos",
   "capturas": "capturas/revision-arte-31oct-noche",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T23:50:39+00:00",
+  "fin": "2026-11-01T00:05:20+00:00",
+  "titulo": "Las pruebas del PC de valravnx, en el disco D y sin llenar el de Windows (chat con valravnx)",
+  "hito": "infra",
+  "hecho": [
+   "Medido en su PC con un trabajo de una vez (solo tamaños de lo de las pruebas): el disco de Windows, sin nada libre. De las pruebas había 7,1 GB en 169 carpetas temporales (cada prueba de navegador copia la web de prueba a una carpeta temporal y no la borra; en la nube da igual, la máquina se tira), 1,35 GB del programa de GitHub y su trabajo, 0,69 GB del navegador de las pruebas y 5,3 GB de caché de pip (de las pruebas y quizá de otros programas).",
+   "El flujo de pruebas, en Windows: lo temporal va a la carpeta temporal de cada trabajo, que el programa de GitHub vacía al acabar, y el navegador de las pruebas y las cachés de pip y npm, junto al programa de GitHub (en su disco).",
+   "El programa de la gráfica guarda en D:\\KinholdGrafica (o en la carpeta que se elija en la ventana): el programa de GitHub, su trabajo, lo temporal, el navegador y las cachés. Al abrirlo, si encuentra en C lo de la versión anterior, pregunta y lo pasa a D (el programa de GitHub ya unido, sin pedir otra vez el código) y borra de C la carpeta de antes, el navegador de las pruebas y las carpetas temporales que se reconocen como suyas; la caché de pip la pregunta aparte. «Liberar el disco de Windows» lo vuelve a mirar.",
+   "Prueba nueva del programa en Windows PowerShell 5.1 (probar_programa.ps1, en una máquina windows-latest de la nube, con carpetas de prueba): 12 comprobaciones bien, también rutas de más de 260 letras y que no toca lo ajeno; rota a propósito (sin pasar el programa de GitHub), falla.",
+   "Comprobado en su PC después de poner el programa nuevo (00:12): el programa de GitHub pasó a D:\\KinholdGrafica sin pedir otra vez el código, y la prueba de cavar fue bien con su tarjeta, con todo en D (el trabajo, lo temporal, el navegador de las pruebas y las cachés)."
+  ],
+  "pruebas": "probar_programa.ps1 en Windows (nube): 12/12, y rota falla. Flujo de pruebas: cavar en la nube, bien; en su PC no se puede probar hasta liberar el disco.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T23:31:19+00:00",
+  "fin": "2026-11-01T00:39:58+00:00",
+  "titulo": "Lo que se recoge sale del sitio (carril A)",
+  "hito": "mundo-juego",
+  "hecho": [
+   "Dónde sale cada cosa en el mundo de verdad, en la lógica pura (src/logica/recogida_mundo.js): ramas caídas donde hay árboles (más cuanto más denso el bosque), sílex en la roca caliza y en la orilla de los ríos, piedra suelta en las laderas y en la grava de los ríos, y ortigas y hierba larga en los claros y las riberas. Cada punto sale de su celda del mundo y de la semilla del mapa, con su nombre por su sitio: el mismo para todos y el servidor podrá sacarlo igual.",
+   "En el juego, lo que se recoge sigue al jugador por la isla, como lo que crece: se hace por trozos de 32 m en un cuadro de 64 m (48 m en el móvil), unos pocos ms por fotograma, y lo de lejos se suelta. Lo recogido de un punto que se va se guarda (en el navegador y en el servidor) y vuelve con él. Fuera del mundo (la construcción del llano) sigue lo de antes.",
+   "Pruebas nuevas: de lógica (prueba_recogida_mundo.mjs: en una muestra de 150 sitios de la isla, cada punto en una zona suya mirando otra vez el terreno, nada en el agua ni encima de un árbol, siempre lo mismo y por trozos igual que en un cuadro) y de navegador en PC y móvil (los puntos de la página son los de la lógica, Usar recoge cada tipo, lejos se rehace y al volver sigue recogido). Rotas a propósito con MUTAR=1.",
+   "Publicada como demo v78; textos del juego en inglés y ruso.",
+   "Decisión pendiente para valravnx: en la pradera abierta hay sitios de la salida al azar sin sílex a menos de 500 m (2 de 12 mirados) y sin ramas ni piedra muy cerca, porque ahí no hay bosque, ni caliza, ni laderas, ni ríos.",
+   "Aún mal: el servidor sigue fiándose del punto que dice el navegador (lo arregla «El servidor conoce el mundo»); las cosas de recoger no suben ni bajan al nivelar el suelo hasta que se rehacen; los puntos solo evitan los sitios de los árboles, no las piedras grandes del pedregal (esas se esconden en el juego)."
+  ],
+  "pruebas": "Batería entera en la nube (sin las de en línea; el PC de valravnx, con el disco lleno, no pudo con ninguna): todos los grupos bien salvo la prueba nueva de navegador, que en PC salía en un sitio de pradera sin ramas ni piedra cerca; se cambió para salir, en PC, en el sitio de la salida al azar con los cinco tipos cerca, y pasó con lógica tras unir main. Capturas de cerca miradas en PC y móvil. Prueba de lógica rota con MUTAR=1 (7 fallos) y la de navegador también (25 puntos distintos de la lógica). No comprobado: la batería entera tras el último cambio de la prueba y de las notas (solo se repitieron lógica y la recogida en el mundo).",
+  "capturas": "capturas/demo-v78",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-10-31T23:53:43+00:00",
+  "fin": "2026-11-01T01:45:41+00:00",
+  "titulo": "Hito de arte: cejas, bigote y barba en el cuello (carril B)",
+  "hito": "arte",
+  "hecho": [
+   "Las cejas se cortaban en escalones rectos porque su malla no llegaba a todo lo que se pinta: se miraba solo en el punto y a 1,5 cm, y un punto de la malla justo encima de la ceja no pintaba nada ni él ni sus vecinos (ya por debajo de ella), así que su cuadro se quitaba. Visto en la textura publicada y en el visor, muy de cerca.",
+   "Arreglo en el taller: se mira en una rejilla fina de 3 mm y luego se añaden los vecinos por la malla, dos vueltas; la textura de las cejas pasa a 1024. Comprobado en la textura: nada de lo pintado toca ya el borde de la malla (en la taller-v21, el 13,7 % en el hombre y el 32,6 % en la mujer).",
+   "La barba que bajaba por el cuello «como escarcha» era una neblina medio transparente: pelo castaño mezclado con la piel clara sale gris. Ahora, donde clarea, cada píxel es pelo o piel: pelos finos, largos y oscuros que se van espaciando, con una sombra muy suave debajo (en la textura, lo medio transparente baja del 12,7 % al 4,5 % de lo pintado).",
+   "El bigote baja algo más por los lados y se mete en la barba, y los labios ya no quitan la barba en las comisuras: entre los dos ya no queda piel. Tiene mechones de distinto grueso y tono.",
+   "Personajes nuevos en recursos/personajes/taller-v22/. Personaje v35 y demo v79 (la v78 la publicó antes el carril A).",
+   "Prueba de los calcos con dos comprobaciones nuevas (cejas sin cortes en el borde de su malla y barba sin neblina gris); con MUTAR=1 mira la taller-v20 y falla en 8 de 11.",
+   "El visor del personaje deja mover la cámara desde las pruebas (diag: cámara y control), para las capturas de muy cerca.",
+   "Aún mal: de muy cerca, los pelos sueltos de la barba salen algo gruesos y de borde duro, como trazos de pincel; el bigote sigue siendo una banda bastante lisa; el cuello bajo la barbilla sale muy iluminado, sin la sombra del mentón."
+  ],
+  "pruebas": "27 de 27 grupos correctos (26 en el PC de valravnx; «panel del admin» falló allí al cargar la prueba, por su versión de Python, y pasó en la nube)",
+  "capturas": "capturas/personaje-v35",
+  "estado": "ok"
  }
 ]

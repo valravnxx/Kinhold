@@ -24,7 +24,7 @@ import { crearComarcas } from '../logica/comarcas.js';
 import { dibujarRetrato } from './retrato.js';
 import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
 import { vestidoDe, rasgosPrenda } from '../logica/hechura.js';
-import { crearRecoleccion } from './recoleccion.js';
+import { crearRecoleccion, crearRecoleccionMundo } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS } from '../logica/whitholm.js';
@@ -173,7 +173,9 @@ const decorado = mundoJ ? crearVegetacionMundo({ mundoJ, semilla: MUNDO.mapa.sem
 escena.add(decorado.raiz);
 const obstaculos = decorado.obstaculos; // {x,z,r}
 // lo que se recoge del suelo y de las plantas (N0): ramas, piedra, sílex y fibra (src/juego/recoleccion.js)
-const recoleccion = crearRecoleccion({ raiz: escena, altura: decorado.altura, obstaculos, almacen });
+// En el mundo, sale del sitio (ramas en el bosque, sílex en la caliza…) y sigue al jugador (src/logica/recogida_mundo.js).
+const recoleccion = mundoJ ? crearRecoleccionMundo({ raiz: escena, mundoJ, semilla: MUNDO.mapa.semilla + (window.__mutarRecogida ? 1 + Math.floor(Math.random() * 1e6) : 0), altura: decorado.altura, obstaculos, almacen })
+  : crearRecoleccion({ raiz: escena, altura: decorado.altura, obstaculos, almacen });
 // lo que se suelta cae al suelo, a tus pies; fuera de tus tierras desaparece pasada 1 hora real (src/juego/suelo.js)
 const sueloObjetos = crearSuelo({ raiz: escena, altura: decorado.altura, almacen, enTierras: (autor, x, z) => !!mundo.dentroDeTierra(x, z) });
 // los árboles se talan a golpes de hacha, caen, dejan tocón y vuelven a crecer (src/juego/tala.js)
@@ -1913,7 +1915,7 @@ function paso() {
   for (const obj of raizDeco.children) obj.visible = !bajoTecho || plantaDeco(obj.userData.deco) <= pj.k;
   if (!menuUsar.hidden && Math.hypot(pj.x - menuUsar.dataset.x, pj.z - menuUsar.dataset.z) > 1) cerrarMenuUsar(); // te alejas: lo de la lista ya no está al alcance
   const it = interactivoCercano();
-  recoleccion.paso(); // vuelve a salir lo que toca
+  recoleccion.paso(pj); // vuelve a salir lo que toca (y en el mundo, lo de alrededor del jugador)
   talaV.paso(dt); // el árbol que cae y los que vuelven a crecer
   if (estado.talando && (estado.golpeEn -= dt) <= 0) golpeTala();
   sueloObjetos.paso(); // desaparece lo soltado hace más de una hora fuera de tus tierras

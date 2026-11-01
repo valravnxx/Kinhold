@@ -2,8 +2,10 @@
 // trazos gruesos en bloque y entre la barba y el cuello queda una franja clara cortada»). Mira:
 //  - que las cejas (del hombre y de la mujer) aprovechan su textura: antes sus trozos del mapa UV quedaban lejos unos de
 //    otros y, al estirar la caja de todos, la ceja ocupaba una tira de unos 24 píxeles de ancho de los 512 (de cerca,
-//    en bloques). Se pide que lo pintado (alfa > 0,5) ocupe al menos el 4 % de la textura y que su caja mida más de un
-//    tercio del lado en las dos direcciones;
+//    en bloques). Se pide que lo pintado (alfa > 0,5) ocupe al menos 6000 píxeles y que su caja mida más de un sexto del
+//    lado en las dos direcciones;
+//  - que las cejas no se cortan en el borde de su malla (desde taller-v22: salían en escalones rectos);
+//  - que la barba clarea en pelos sueltos y no en una neblina gris (desde taller-v22: «como escarcha»);
 //  - que la barba corta del hombre baja por delante del cuello hasta la ropa, rala: en los 3 cm por encima de la túnica,
 //    alfa medio de más de 0,6.
 // Uso: node pruebas/prueba_calcos.mjs [carpeta de recursos]   (por defecto, la última taller-vN publicada)
@@ -33,6 +35,52 @@ sys.stdout.buffer.write(im.size[0].to_bytes(4, 'little') + im.size[1].to_bytes(4
   return { w: b.readUInt32LE(0), h: b.readUInt32LE(4), a: b.subarray(8) };
 }
 
+// Lo pintado que toca el borde de la malla del calco (desde taller-v22, revisión del 31 oct, noche: las cejas se cortaban
+// en escalones rectos porque la malla no llegaba a todo lo que se pinta). Se dibujan los triángulos en el mapa UV y se
+// cuentan los píxeles pintados (alfa > 0,4) que tienen a menos de 2 píxeles uno que no cae en ningún triángulo, contando
+// solo los bordes de la malla (una costura con otra isla no cuenta: el mismo punto sigue en la otra isla). Devuelve la
+// parte de lo pintado que está así.
+function cortados(prim, w, h, a) {
+  const UV = prim.getAttribute('TEXCOORD_0'), P = prim.getAttribute('POSITION'), I = prim.getIndices();
+  const tapa = new Uint8Array(w * h), uv = [], q = [];
+  const tri = (k) => [0, 1, 2].map(j => I ? I.getScalar(3 * k + j) : 3 * k + j);
+  const n = (I ? I.getCount() : P.getCount()) / 3;
+  // aristas que son borde de la malla (por posición, para que las costuras UV no cuenten)
+  const clave = (i) => { P.getElement(i, q); return q.map(x => Math.round(x * 1e5)).join(','); };
+  const usos = new Map();
+  for (let k = 0; k < n; k++) { const t = tri(k).map(clave); for (let j = 0; j < 3; j++) { const e = [t[j], t[(j + 1) % 3]].sort().join('|'); usos.set(e, (usos.get(e) || 0) + 1); } }
+  const borde = new Uint8Array(w * h);
+  for (let k = 0; k < n; k++) {
+    const t = tri(k), c = t.map(i => { UV.getElement(i, uv); return [uv[0] * w, uv[1] * h]; }), cl = t.map(clave);
+    const x0 = Math.max(0, Math.floor(Math.min(...c.map(v => v[0])))), x1 = Math.min(w - 1, Math.ceil(Math.max(...c.map(v => v[0]))));
+    const y0 = Math.max(0, Math.floor(Math.min(...c.map(v => v[1])))), y1 = Math.min(h - 1, Math.ceil(Math.max(...c.map(v => v[1]))));
+    const d = (c[1][1] - c[2][1]) * (c[0][0] - c[2][0]) + (c[2][0] - c[1][0]) * (c[0][1] - c[2][1]);
+    if (Math.abs(d) < 1e-12) continue;
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+      const X = x + 0.5, Y = y + 0.5;
+      const w0 = ((c[1][1] - c[2][1]) * (X - c[2][0]) + (c[2][0] - c[1][0]) * (Y - c[2][1])) / d;
+      const w1 = ((c[2][1] - c[0][1]) * (X - c[2][0]) + (c[0][0] - c[2][0]) * (Y - c[2][1])) / d;
+      if (w0 >= -0.01 && w1 >= -0.01 && 1 - w0 - w1 >= -0.01) tapa[y * w + x] = 1;
+    }
+    // los píxeles a lo largo de las aristas de borde de la malla
+    for (let j = 0; j < 3; j++) {
+      const e = [cl[j], cl[(j + 1) % 3]].sort().join('|');
+      if (usos.get(e) !== 1) continue;
+      const [ax, ay] = c[j], [bx, by] = c[(j + 1) % 3], pasos = Math.ceil(Math.hypot(bx - ax, by - ay) * 2) + 1;
+      for (let s = 0; s <= pasos; s++) { const x = Math.floor(ax + (bx - ax) * s / pasos), y = Math.floor(ay + (by - ay) * s / pasos); if (x >= 0 && y >= 0 && x < w && y < h) borde[y * w + x] = 1; }
+    }
+  }
+  let pintado = 0, malos = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (a[y * w + x] <= 102 || !tapa[y * w + x]) continue;
+    pintado++;
+    let cerca = false;
+    for (let dy = -2; dy <= 2 && !cerca; dy++) for (let dx = -2; dx <= 2; dx++) { const X = x + dx, Y = y + dy; if (X >= 0 && Y >= 0 && X < w && Y < h && borde[Y * w + X]) { cerca = true; break; } }
+    if (cerca) malos++;
+  }
+  return malos / Math.max(pintado, 1);
+}
+
 console.log('Calcos en', carpeta);
 for (const sexo of ['hombre', 'mujer']) {
   const d = await io.read(`${carpeta}/mh_${sexo}.glb`);
@@ -45,8 +93,12 @@ for (const sexo of ['hombre', 'mujer']) {
     const { w, h, a } = alfa(t.getImage());
     let n = 0, x0 = w, x1 = 0, y0 = h, y1 = 0;
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (a[y * w + x] > 127) { n++; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
-    comprobar(`${sexo}: las cejas ocupan al menos el 1,5 % de su textura`, n / (w * h) > 0.015, `${(100 * n / (w * h)).toFixed(1)} %`);
+    // en píxeles y no en parte de la textura (desde taller-v22 la textura de las cejas es de 1024: su malla coge ahora todo
+    // lo que se pinta y ocupa más del mapa UV). En la taller-v20 eran unos 800 píxeles; en la v21, unos 8000
+    comprobar(`${sexo}: las cejas ocupan al menos 6000 píxeles de su textura`, n > 6000, `${n} px (${(100 * n / (w * h)).toFixed(1)} % de ${w}×${h})`);
     comprobar(`${sexo}: la caja de las cejas mide más de un sexto del lado en las dos direcciones`, (x1 - x0) > w / 6 && (y1 - y0) > h / 6, `${x1 - x0}×${y1 - y0} de ${w}×${h}`);
+    const cortes = cortados(cejas.getMesh().listPrimitives()[0], w, h, a);
+    comprobar(`${sexo}: las cejas no se cortan en el borde de su malla (sin escalones)`, cortes < 0.002, `${(100 * cortes).toFixed(2)} % de lo pintado`);
   }
   if (sexo !== 'hombre') continue;
   const barba = nodo('barba_corta'), tunica = nodo('capa_tunica');
@@ -58,6 +110,12 @@ for (const sexo of ['hombre', 'mujer']) {
   const col = (p) => (p[0] >= 0 && p[0] < 0.06 && p[2] > 0) ? Math.floor(p[0] * 100) : null;
   const pb = barba.getMesh().listPrimitives()[0];
   const { w, h, a } = alfa(pb.getMaterial().getBaseColorTexture().getImage());
+  // donde la barba clarea, pelos sueltos (cada píxel, pelo o piel) y no una neblina medio transparente: castaña sobre la piel
+  // clara salía gris, «como escarcha» (revisión del 31 oct, noche; en la taller-v21, el 12,7 % de lo pintado tenía alfa
+  // entre 0,2 y 0,7). Se pide menos del 7 %.
+  let pint = 0, nieb = 0;
+  for (let k = 0; k < a.length; k++) { if (a[k] > 13) { pint++; if (a[k] > 51 && a[k] < 179) nieb++; } }
+  comprobar('hombre: la barba clarea en pelos sueltos, sin neblina gris (alfa entre 0,2 y 0,7 en menos del 7 % de lo pintado)', nieb / pint < 0.07, `${(100 * nieb / pint).toFixed(1)} %`);
   const P = pb.getAttribute('POSITION'), UV = pb.getAttribute('TEXCOORD_0'), p = [], uv = [], alto = {};
   for (const pr of tunica.getMesh().listPrimitives()) {
     const T = pr.getAttribute('POSITION');
