@@ -9,6 +9,7 @@ import { join, dirname } from 'path';
 import { tmpdir } from 'os';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { reproducir } from '../src/logica/acciones.js';
+import { Mundo } from '../src/logica/construccion.js';
 import { PROTOCOLO, protocoloDe, servidorAntiguo } from '../src/logica/protocolo.js';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -64,7 +65,7 @@ try {
   const A = await cliente(puerto), B = await cliente(puerto);
   comprobar('cada conexión recibe un autor del servidor, distinto', /^jugador:/.test(A.bienvenida.autor) && A.bienvenida.autor !== B.bienvenida.autor,
     `${A.bienvenida.autor} y ${B.bienvenida.autor}`);
-  comprobar('un mundo nuevo empieza vacío', A.bienvenida.entradas.length === 0);
+  comprobar('un mundo nuevo empieza vacío', A.bienvenida.obras.construcciones.length === 0 && !A.bienvenida.obras.mojon);
   // versión del protocolo: el servidor la dice y el juego sabe si es antiguo (valravnx, 28 oct: un servidor de antes
   // del duelo en línea dejaba a los dos «esperando rival» sin avisar)
   comprobar('la bienvenida dice la versión del protocolo del servidor', A.bienvenida.protocolo === PROTOCOLO && !servidorAntiguo(A.bienvenida), `protocolo ${A.bienvenida.protocolo}`);
@@ -125,8 +126,8 @@ try {
   puerto = await s.listo;
   comprobar('al arrancar, el mundo se rehace igual desde el archivo', foto(s.mundo) === mundoAntes);
   const C = await cliente(puerto);
-  comprobar('un cliente nuevo recibe lo hecho hasta ahora', C.bienvenida.entradas.length === 4 && foto(reproducir(C.bienvenida.entradas)) === mundoAntes,
-    `${C.bienvenida.entradas.length} acciones`);
+  comprobar('un cliente nuevo recibe lo hecho hasta ahora (la foto de las obras de alrededor)', foto(Mundo.importar(C.bienvenida.obras)) === mundoAntes && C.bienvenida.n === 6,
+    `${C.bienvenida.obras.construcciones.length} construcciones, n=${C.bienvenida.n}`);
   const r7 = await C.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: 4, z: 0, k: 0, rot: 0, dir: 0 });
   comprobar('y puede seguir construyendo', r7.ok, r7.motivo || '');
   const ultima = JSON.parse(readFileSync(archivo, 'utf8').trim().split('\n').pop());

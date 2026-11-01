@@ -2175,7 +2175,9 @@ function iniciarEnLinea() {
       const antes = mundo;
       mundo = enLinea.red.mundo;
       const e = info.entrada;
-      let redibujar = info.cambio || antes !== mundo;
+      // la foto de las obras al cambiar de trozo (src/logica/obras_red.js): solo si trae algo distinto (si no, es otro
+      // objeto con lo mismo y basta con reapuntar)
+      let redibujar = info.cambio || (antes !== mundo && msg.tipo !== 'obras');
       if (e && (e.tipo === 'trabajar' || e.tipo === 'entregar' || e.tipo === 'subir' || e.tipo === 'rellenar')) {
         // el mundo puede ser el mismo objeto antes y después: se compara con el cuarto que se vio la última vez
         redibujar = false;
