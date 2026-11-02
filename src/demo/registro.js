@@ -1,6 +1,9 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v94 (cuentas más seguras)";
+export const VERSION_DEMO = "Demo única · v95 (correo de la cuenta)";
 export const REGISTRO_DEMO = [
+  "v95: el correo de la cuenta. Al crear la cuenta hay que dar un correo (uno por cuenta) y confirmarlo con el código de 6 cifras que llega a él; sin confirmarlo no se entra en el mundo. Las cuentas de antes añaden su correo al entrar. Si no llega, se puede pedir otro o cambiar el correo.",
+  "v95, provisional: el código caduca a los 15 minutos; se puede pedir otro al cabo de un minuto, y como mucho 5 por hora a la misma cuenta o al mismo correo; tras 5 códigos mal, hay que pedir otro.",
+  "v95, provisional: quien aún no tiene cuenta sigue con la pantalla de la cuenta tapando el juego, como hasta ahora; el servidor deja fuera del mundo a las cuentas sin el correo confirmado. Cuando no se pueda jugar sin cuenta, también a quien no la tenga.",
   "v94: cuentas más seguras. La contraseña tiene que tener al menos 10 caracteres y no puede ser de las más usadas o filtradas (la lista va en el juego), ni una letra repetida, ni una serie como 1234567890. Ya no se pueden crear cuentas en masa: como mucho 3 por dirección y hora y 30 en total por hora, y entre una y la siguiente desde la misma dirección hay que esperar cada vez más (1 minuto, 2, 4…).",
   "v94: en el menú, «Salir en todos los aparatos» cierra la sesión de tu personaje en todos los navegadores donde habías entrado; para volver hace falta el usuario y la contraseña. Y cada aparato tiene que volver a entrar con la contraseña a los 30 días. El servidor apunta en su registro de seguridad las altas, las entradas, los fallos y las salidas.",
   "v94, provisional: los números de los límites de altas, los 30 días de la ficha, y que la ficha de un personaje sin cuenta no caduque (es lo único que lo une a él; cuando no se pueda jugar sin cuenta, todas caducarán). Las direcciones IPv6 cuentan por su bloque /64.",
