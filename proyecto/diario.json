@@ -3915,5 +3915,23 @@
   "pruebas": "Sin pruebas: solo cambian el roadmap y REVISION.md.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-02T05:22:49+00:00",
+  "fin": "2026-11-02T06:43:26+00:00",
+  "titulo": "Cuentas: más seguras, sin correo aún (carril A)",
+  "hito": "servidor",
+  "hecho": [
+   "Contraseñas de 10 caracteres o más; fuera las más usadas o filtradas (una lista propia guardada en el juego, en inglés, español y ruso, con las palabras de siempre más números y años), una letra repetida, las series como 1234567890 y los trozos cortos repetidos. Lo dice al momento la pantalla de la cuenta y lo vuelve a mirar el servidor.",
+   "Crear cuentas en masa ya no sale: como mucho 3 por dirección y hora y 30 en total por hora; entre una alta y la siguiente desde la misma dirección, una espera que crece (1 min, 2, 4…). Las IPv6 cuentan por su bloque /64, y la dirección es la última que pone Caddy (la que pudiera escribir el propio cliente no cuenta).",
+   "Las fichas de cada aparato caducan a los 30 días si su personaje tiene cuenta; en el menú, «Salir en todos los aparatos» deja sin valer todas las fichas de tu personaje (también tras reiniciar el servidor) y cierra sus conexiones.",
+   "Registro de seguridad en el servidor (seguridad.jsonl): altas, entradas, fallos, bloqueos, salidas en todos los aparatos y fichas caducadas, con hora, usuario y dirección; nunca la contraseña ni la ficha. El wipe del LEEME no lo borra.",
+   "Decisiones provisionales (en las notas de la demo v94): los números de los límites, los 30 días, que la ficha de un personaje sin cuenta no caduque (es lo único que lo une a él) y el bloque /64.",
+   "La prueba de niveles de detalle esperaba 1,3 s a que el panel se rellenara y en la nube, a 0 fps, falló dos veces seguidas: ahora espera a que salga el texto (hasta 30 s).",
+   "Las pruebas de navegador que crean varias cuentas seguidas arrancan el servidor con KINHOLD_PRUEBAS_ALTAS=libres; el servidor de verdad lo diría en su línea de arranque."
+  ],
+  "pruebas": "Batería entera en la nube: todo bien salvo niveles de detalle (el panel a 0 fps, dos veces); arreglada la espera de esa prueba y repetidos en la nube niveles de detalle, entrar con la cuenta, demo única y juego en inglés: bien. Cuentas 81/81 (MUTAR=1 y MUTAR=2, sin límites de altas, fallan como deben; también con la dirección del cliente en vez de la de Caddy). No comprobado: en el servidor de verdad (se actualiza con actualizar.sh).",
+  "capturas": "capturas/demo-v94",
+  "estado": "ok"
  }
 ]

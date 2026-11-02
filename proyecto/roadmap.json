@@ -1074,9 +1074,9 @@
     },
     {
      "nombre": "Cuentas más seguras, sin correo aún: contraseñas de 10 caracteres o más y fuera las más usadas o filtradas (lista guardada en el juego); límites de altas más duros (por dirección y en total por hora, con espera creciente); la ficha de cada aparato caduca y se puede cerrar la sesión en todos los aparatos; el registro de seguridad apunta altas, entradas y fallos. Con pruebas de lo que no debe dejar (crear cuentas en masa)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-02T05:22:49+00:00",
-     "rama": "trabajo/20261102-0522"
+     "fin": "2026-11-02T06:43:26+00:00"
     },
     {
      "nombre": "Correo en la cuenta y verificación con Resend (valravnx, 2 nov): el correo es obligatorio al crear la cuenta, un correo por cuenta; llega un código de 6 cifras que caduca, con reenvío limitado; sin confirmarlo no se entra en el mundo. Las cuentas que ya existen añaden y confirman su correo al entrar. Sin la clave de Resend en la máquina, el servidor de pruebas apunta el código en su registro. Los pasos para valravnx (cuenta en Resend, clave en el servidor, registros DNS en Cloudflare), en servidor/nube/LEEME.md",
@@ -2557,6 +2557,13 @@
      "archivo": "jugar/demo/v93.html",
      "capturas": "capturas/demo-v93",
      "notas": "El admin, por la cuenta: el panel de depuración (F9 o el botón «Admin») sale solo con la cuenta de admin, la de valravnx, sin clave aparte. Con otra cuenta no sale y el servidor lo rechaza. En el panel, cada jugador con el nombre de su cuenta."
+    },
+    {
+     "v": "v94",
+     "fecha": "2026-11-02",
+     "archivo": "jugar/demo/v94.html",
+     "capturas": "capturas/demo-v94",
+     "notas": "Cuentas más seguras: contraseñas de 10 caracteres o más y sin las más usadas, sin altas en masa (por dirección, en total por hora y con espera que crece), fichas que caducan, «Salir en todos los aparatos» y registro de seguridad en el servidor."
     }
    ]
   },
