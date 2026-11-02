@@ -57,6 +57,9 @@
 //   Crear: la cuenta es del personaje de esta conexión (su autor). Entrar: contesta con una ficha de ese personaje y el
 //   cliente vuelve a conectar con ?ficha=… (abajo). Las contraseñas, resumidas con scrypt y sal (servidor/claves.mjs) en
 //   cuentas.jsonl junto al mundo; nunca en claro ni en el registro. La bienvenida dice { cuenta: usuario | null }.
+//   { tipo: 'cuenta', que: 'salir_todos' }: todas las fichas de ese personaje dejan de valer y sus conexiones se cierran
+//   (código 4002). Las fichas de los personajes con cuenta caducan (src/logica/fichas.js). Altas, entradas, fallos,
+//   salidas y fichas caducadas van a seguridad.jsonl junto al mundo (con la dirección; nunca la contraseña ni la ficha).
 //   Panel de depuración del admin (src/logica/admin.js): { tipo: 'admin', id, que: 'ver' | 'ir', … }. Solo para la
 //   conexión cuyo personaje es de una cuenta de admin (cuentasAdmin, o la variable KINHOLD_ADMIN_CUENTA; por defecto la
 //   cuenta «valravnx»; servidor/nube/LEEME.md). Sin clave aparte. La bienvenida dice { admin: true } a esa conexión, y la
@@ -93,6 +96,7 @@ import { Limitador, LIMITES } from '../src/logica/limites.js';
 import { ObjetosServidor } from '../src/logica/objetos_red.js';
 import { validarPeticionAdmin, sitioJunto, listaJugadores, cuentasAdmin as listaAdmin, esCuentaAdmin, NO_ADMIN } from '../src/logica/admin.js';
 import { Cuentas, validarPeticionCuenta } from '../src/logica/cuentas.js';
+import { Fichas, FICHA_VIDA } from '../src/logica/fichas.js';
 import * as claves from './claves.mjs';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { VistaTrozos, trozoDe, LADO_RED, RADIO_RED } from '../src/logica/trozos_red.js';
@@ -116,7 +120,7 @@ export function leerArchivo(archivo) {
 
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, cuentasAdmin = process.env.KINHOLD_ADMIN_CUENTA, terreno = null,
-  tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS } = {}) {
+  tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {} } = {}) {
   archivo = resolve(archivo);
   const archivoCombate = resolve(dirname(archivo), 'combate.jsonl');
   const archivoFichas = resolve(dirname(archivo), 'fichas.jsonl');
@@ -125,6 +129,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const archivoPosiciones = resolve(dirname(archivo), 'posiciones.json');
   const archivoAdmin = resolve(dirname(archivo), 'admin.jsonl');
   const archivoCuentas = resolve(dirname(archivo), 'cuentas.jsonl');
+  // el registro de seguridad: altas, entradas, fallos y salidas en todos los aparatos (nunca la contraseña ni la ficha)
+  const archivoSeguridad = resolve(dirname(archivo), 'seguridad.jsonl');
+  const seguridad = (e) => { try { appendFileSync(archivoSeguridad, JSON.stringify({ t: new Date().toISOString(), ...e }) + '\n'); } catch (x) { registrar(`no se pudo apuntar en seguridad.jsonl: ${x && x.message}`); } };
   // las cuentas de admin (el admin, por la cuenta: revisión del 1 nov)
   const admins = listaAdmin(cuentasAdmin);
   mkdirSync(dirname(archivo), { recursive: true });
@@ -136,20 +143,21 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   registro.total = previas.reduce((m, e) => Math.max(m, e.n || 0), 0);
 
   // fichas: resumen (sha256) → autor
-  const fichas = new Map();
-  for (const f of leerArchivo(archivoFichas)) if (f && typeof f.h === 'string' && typeof f.autor === 'string') fichas.set(f.h, f.autor);
+  // (caducan a los vidaFicha ms si su personaje tiene cuenta; «salir en todos los aparatos»: src/logica/fichas.js)
+  const fichas = new Fichas({ vida: vidaFicha, conCuenta: (a) => !!cuentas.deAutor(a), lineas: leerArchivo(archivoFichas), ahora: Date.now() });
   if (existsSync(archivoFichas)) { const t = readFileSync(archivoFichas, 'utf8'); if (t && !t.endsWith('\n')) appendFileSync(archivoFichas, '\n'); }
 
   // cuentas: usuario → su personaje (autor), con la contraseña resumida (scrypt con sal); nunca en claro
   if (existsSync(archivoCuentas)) { const t = readFileSync(archivoCuentas, 'utf8'); if (t && !t.endsWith('\n')) appendFileSync(archivoCuentas, '\n'); }
-  const cuentas = new Cuentas({ resumir: (c, s) => claves.resumir(c, s, parametrosClave), sal: claves.sal, iguales: claves.iguales, previas: leerArchivo(archivoCuentas) });
+  const cuentas = new Cuentas({ resumir: (c, s) => claves.resumir(c, s, parametrosClave), sal: claves.sal, iguales: claves.iguales, previas: leerArchivo(archivoCuentas), altas });
   const usuarioDe = (autor) => (cuentas.deAutor(autor) || {}).usuario || null;
   const esAdmin = (autor) => esCuentaAdmin(usuarioDe(autor), admins);
   // una ficha nueva para un autor (al entrar con la cuenta: con ella vuelve a conectar y es su personaje)
   const fichaPara = (autor) => {
     const f = randomUUID().replace(/-/g, '');
-    fichas.set(resumen(f), autor);
-    appendFileSync(archivoFichas, JSON.stringify({ h: resumen(f), autor }) + '\n');
+    const t = Date.now();
+    fichas.poner(resumen(f), autor, t);
+    appendFileSync(archivoFichas, JSON.stringify({ h: resumen(f), autor, t }) + '\n');
     return f;
   };
 
@@ -258,15 +266,17 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
 
   wss.on('connection', (ws, req) => {
     // ¿vuelve alguien? (su ficha en la dirección: ?ficha=…)
-    let ficha = null, autor = null;
+    let ficha = null, autor = null, caducada = null;
     try { ficha = new URL(req.url, 'http://x').searchParams.get('ficha'); } catch (e) { ficha = null; }
-    if (fichaValida(ficha) && fichas.has(resumen(ficha))) autor = fichas.get(resumen(ficha));
+    if (fichaValida(ficha)) {
+      const r = fichas.de(resumen(ficha), Date.now());
+      autor = r.autor;
+      if (r.caducada) caducada = true;
+    }
     const vuelve = !!autor;
     if (!vuelve) {
       autor = 'jugador:' + randomUUID().slice(0, 8);
-      ficha = randomUUID().replace(/-/g, '');
-      fichas.set(resumen(ficha), autor);
-      appendFileSync(archivoFichas, JSON.stringify({ h: resumen(ficha), autor }) + '\n');
+      ficha = fichaPara(autor);
     }
     // si seguía conectado con otra (colgada, otra pestaña), manda la nueva
     const vieja = conexionDe.get(autor);
@@ -279,8 +289,10 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     const limitador = new Limitador(reloj(), limites);
     // de dónde viene (para los intentos de las cuentas): detrás de Caddy, lo que dice él; si no, la conexión
     const directa = (req.socket && req.socket.remoteAddress) || '?';
-    const reenviada = String((req.headers && req.headers['x-forwarded-for']) || '').split(',')[0].trim();
+    // (la última de la lista: la que pone Caddy; las de antes las podría haber escrito el propio cliente)
+    const reenviada = String((req.headers && req.headers['x-forwarded-for']) || '').split(',').pop().trim();
     const origen = (/^(::1|127\.|::ffff:127\.)/.test(directa) && reenviada) ? reenviada.slice(0, 64) : directa;
+    if (caducada) seguridad({ que: 'ficha_caducada', origen });
     registrar(`${vuelve ? 'vuelve' : 'entra'} ${autor}`);
     ponerAlDia();
     if (!combate.luchadores[autor]) {
@@ -360,12 +372,25 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         return;
       }
       if (msg && msg.tipo === 'cuenta') {
-        const id = Number.isSafeInteger(msg.id) ? msg.id : null, que = msg.que === 'crear' || msg.que === 'entrar' ? msg.que : null;
+        const id = Number.isSafeInteger(msg.id) ? msg.id : null, que = ['crear', 'entrar', 'salir_todos'].includes(msg.que) ? msg.que : null;
         const responder = (r) => enviar(ws, { tipo: 'cuenta', id, que, ...r });
+        // salir en todos los aparatos: todas las fichas de este personaje dejan de valer y se cierran sus conexiones
+        // (también esta: se vuelve a entrar con usuario y contraseña)
+        if (que === 'salir_todos') {
+          const usuario = usuarioDe(autor);
+          if (!usuario) { seguridad({ que, ok: false, autor, origen, motivo: 'sin cuenta' }); return responder({ ok: false, motivo: 'Este personaje no tiene cuenta.' }); }
+          const n = fichas.fuera(autor);
+          appendFileSync(archivoFichas, JSON.stringify({ fuera: autor, t: Date.now() }) + '\n');
+          seguridad({ que, ok: true, usuario, autor, origen, fichas: n });
+          registrar(`sale en todos los aparatos «${usuario}» (${n} fichas)`);
+          responder({ ok: true });
+          for (const [w, a] of clientes) if (a === autor) setTimeout(() => { try { w.close(4002, 'Sesión cerrada'); } catch (e) { /* ya cerrada */ } }, 100);
+          return;
+        }
         // una a la vez por conexión (resumir la contraseña cuesta): la que llega mientras, se rechaza
         if (ws.cuentaEnCurso) return responder({ ok: false, motivo: 'Espera a la respuesta anterior.' });
         const p = validarPeticionCuenta(msg);
-        if (p.motivo) return responder({ ok: false, motivo: p.motivo });
+        if (p.motivo) { seguridad({ que: que === 'crear' ? 'alta' : 'entrar', ok: false, autor, origen, motivo: p.motivo }); return responder({ ok: false, motivo: p.motivo }); }
         ws.cuentaEnCurso = true;
         const ahora = Date.now();
         (p.que === 'crear' ? cuentas.crear({ usuario: p.usuario, clave: p.clave, autor, origen, ahora }) : cuentas.entrar({ usuario: p.usuario, clave: p.clave, origen, ahora }))
@@ -373,13 +398,16 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
             if (p.que === 'crear' && r.ok) {
               appendFileSync(archivoCuentas, JSON.stringify(r.cuenta) + '\n');
               registrar(`cuenta nueva «${r.cuenta.usuario}» para ${autor} (desde ${origen})`);
+              seguridad({ que: 'alta', ok: true, usuario: r.cuenta.usuario, autor, origen });
               return responder({ ok: true, usuario: r.cuenta.usuario, autor, admin: esAdmin(autor) });
             }
             if (p.que === 'entrar' && r.ok) {
               registrar(`entra con la cuenta «${r.usuario}» → ${r.autor} (desde ${origen})`);
+              seguridad({ que: 'entrar', ok: true, usuario: r.usuario, autor: r.autor, origen });
               return responder({ ok: true, usuario: r.usuario, autor: r.autor, ficha: fichaPara(r.autor) });
             }
             registrar(`cuenta: ${p.que} «${p.usuario}» rechazado (${r.motivo}) desde ${origen}`);
+            seguridad({ que: p.que === 'crear' ? 'alta' : 'entrar', ok: false, usuario: p.usuario, autor, origen, motivo: r.motivo, ...(r.bloqueado ? { bloqueado: true } : {}) });
             responder({ ok: false, motivo: r.motivo });
           })
           .catch((e) => { registrar(`error con la cuenta: ${e && e.message}`); responder({ ok: false, motivo: 'Error del servidor.' }); })
@@ -477,7 +505,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, terreno, vista, archivo, archivoAdmin, archivoCuentas, cuentas, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
+    wss, mundo, terreno, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
     cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticCombate); clearInterval(ticLatido); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };
@@ -490,6 +518,9 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   // el mundo de verdad, con la misma semilla que el navegador (unos segundos al arrancar)
   // (lo primero que escribe es la línea de «en el puerto», cuando ya escucha: las pruebas la esperan para conectar)
   const t0 = Date.now(), terreno = terrenoWhitholm(), ms = Date.now() - t0;
-  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t) });
-  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms`));
+  // KINHOLD_PRUEBAS_ALTAS=libres: sin límite de altas, solo para las pruebas de navegador (crean varias cuentas seguidas
+  // desde la misma máquina). Nunca en el servidor de verdad: lo dice en la línea de arranque.
+  const altasLibres = process.env.KINHOLD_PRUEBAS_ALTAS === 'libres';
+  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {} });
+  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms${altasLibres ? ' · AVISO: altas sin límite (KINHOLD_PRUEBAS_ALTAS=libres), solo para pruebas' : ''}`));
 }

@@ -68,15 +68,24 @@ que abra la demo entra en este mundo y puede construir.
   ```
   La clave `KINHOLD_ADMIN=` de antes ya no se usa (si está en ese archivo, no hace nada). Lo que se ha pedido con el
   panel (quién, con qué cuenta, qué y si valió) queda en `/var/lib/kinhold/admin.jsonl`.
-- **Empezar el mundo de cero (wipe):** `systemctl stop kinhold && find /var/lib/kinhold -maxdepth 1 \( -name '*.json' -o -name '*.jsonl' \) ! -name cuentas.jsonl -delete && systemctl start kinhold`.
+- **Empezar el mundo de cero (wipe):** `systemctl stop kinhold && find /var/lib/kinhold -maxdepth 1 \( -name '*.json' -o -name '*.jsonl' \) ! -name cuentas.jsonl ! -name seguridad.jsonl -delete && systemctl start kinhold`.
   Borra lo construido, lo que lleva cada uno y lo del suelo, las fichas de cada navegador y dónde estaba cada uno: todos
   vuelven a empezar como nuevos, en la salida. **Las cuentas se quedan** (`cuentas.jsonl`): cada uno entra con su
   usuario y su contraseña y es el mismo personaje, empezando de cero. Para borrar también las cuentas, el `rm -f
   /var/lib/kinhold/*.json /var/lib/kinhold/*.jsonl` de antes.
 - **Cuentas** (usuario y contraseña): en `/var/lib/kinhold/cuentas.jsonl`, una por línea, con la contraseña resumida
   (scrypt con sal; nunca en claro). Tras 5 contraseñas mal seguidas a una cuenta, o 20 fallos desde la misma dirección,
-  se espera 15 minutos; como mucho 5 cuentas nuevas por dirección y hora. La dirección es la que pasa Caddy
-  (`X-Forwarded-For`).
+  se espera 15 minutos. Cuentas nuevas (2 nov): como mucho 3 por dirección y hora y 30 en total por hora, y entre una y
+  la siguiente desde la misma dirección una espera que crece (1 min, 2, 4…, recordando 24 h); las IPv6 cuentan por su
+  bloque /64. La dirección es la última que pasa Caddy en `X-Forwarded-For`. Contraseñas de 10 caracteres o más, sin
+  las más usadas (`src/logica/claves_comunes.js`).
+- **Fichas de cada navegador** (`fichas.jsonl`): las de un personaje con cuenta caducan a los 30 días (hay que volver a
+  entrar); «Salir en todos los aparatos», en el menú, deja sin valer todas las de ese personaje.
+- **Registro de seguridad**: `/var/lib/kinhold/seguridad.jsonl`, una línea por alta, entrada, fallo, salida en todos
+  los aparatos y ficha caducada, con la hora, el usuario y la dirección (nunca la contraseña ni la ficha). El wipe de
+  arriba no lo borra. Verlo: `tail -n 50 /var/lib/kinhold/seguridad.jsonl`.
+- `KINHOLD_PRUEBAS_ALTAS=libres` quita los límites de altas: **solo para las pruebas**; nunca en este servidor (si
+  estuviera, lo dice la línea de arranque en `journalctl -u kinhold`).
 
 ## Qué hay en esta carpeta
 

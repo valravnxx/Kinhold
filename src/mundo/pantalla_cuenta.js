@@ -24,6 +24,8 @@ function traducirMotivo(m) {
   if (r) return tr('Demasiados intentos; prueba dentro de {m} min.', { m: r[1] });
   r = m.match(/^Demasiadas cuentas nuevas desde aquí; prueba dentro de (\d+) min\.$/);
   if (r) return tr('Demasiadas cuentas nuevas desde aquí; prueba dentro de {m} min.', { m: r[1] });
+  r = m.match(/^Demasiadas cuentas nuevas ahora mismo; prueba dentro de (\d+) min\.$/);
+  if (r) return tr('Demasiadas cuentas nuevas ahora mismo; prueba dentro de {m} min.', { m: r[1] });
   return tr(m);
 }
 

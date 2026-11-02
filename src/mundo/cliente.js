@@ -86,10 +86,11 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
       presencia.remotos.clear();
       alCortar();
       ponerEstado();
-      if (!vuelve) sinConexion(motivo === 'otra' ? tr('Has entrado con este personaje desde otra pestaña o aparato.') : tr('No hay conexión con el servidor.'));
+      if (!vuelve) sinConexion(motivo === 'otra' ? tr('Has entrado con este personaje desde otra pestaña o aparato.') : motivo === 'sesion' ? tr('Se ha cerrado la sesión en todos los aparatos. Vuelve a entrar con tu cuenta.') : tr('No hay conexión con el servidor.'));
       if (antes === 'volviendo' && vuelve) return;   // sigue intentándolo: ya se ha avisado
       avisar(motivo === 'otra' ? tr('Has entrado con este personaje desde otra pestaña o aparato.')
         : motivo === 'inunda' ? tr('El servidor ha cerrado la conexión: demasiados mensajes.')
+        : motivo === 'sesion' ? tr('Se ha cerrado la sesión en todos los aparatos. Vuelve a entrar con tu cuenta.')
         : vuelve ? tr('Se ha cortado la conexión con el servidor: volviendo a conectar…')
         : antes === 'conectado' ? tr('Se ha perdido la conexión con el servidor.') : tr('No se puede conectar con el servidor: {d}', { d: direccion }), true);
     },
