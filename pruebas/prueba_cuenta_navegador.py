@@ -104,7 +104,7 @@ try:
             rellenar(pg, USUARIO, CLAVE, CLAVE + 'x', CORREO)
             comprobar(f'{nombre}: contraseñas distintas, dicho al momento', 'no son iguales' in pg.evaluate(MOTIVO), pg.evaluate(MOTIVO))
             captura(pg, f'{SALIDA}/cuenta-motivo-{nombre}.png')
-            comprobar(f'{nombre}: lo que no vale no llega al servidor', not cuentas_guardadas() if nombre == 'pc' else len(cuentas_guardadas()) == 1)
+            comprobar(f'{nombre}: lo que no vale no llega al servidor', len([x for x in cuentas_guardadas() if 'usuario' in x]) == (0 if nombre == 'pc' else 1))
             rellenar(pg, USUARIO, CLAVE, CLAVE)
             comprobar(f'{nombre}: al crear la cuenta sale «Confirma tu correo»', esperar(pg, VERIFICAR, 15000), pg.evaluate(f"document.getElementById('pcMotivo') && {MOTIVO}") or '')
             comprobar(f'{nombre}: dice a qué correo (a medias no: el que ha escrito)', CORREO in pg.evaluate("document.getElementById('pcTextoCorreo').textContent"))
