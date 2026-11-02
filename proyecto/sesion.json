@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-02T07:31:59+00:00",
+  "tarea": "Correo en la cuenta y verificación con Resend (valravnx, 2 nov): el correo es obligatorio al crear la cuenta, un correo por cuenta; llega un código de 6 cifras que caduca, con reenvío limitado; sin confirmarlo no se entra en el mundo. Las cuentas que ya existen añaden y confirman su correo al entrar. Sin la clave de Resend en la máquina, el servidor de pruebas apunta el código en su registro. Los pasos para valravnx (cuenta en Resend, clave en el servidor, registros DNS en Cloudflare), en servidor/nube/LEEME.md",
+  "hito": "servidor",
+  "rama": "trabajo/20261102-0731"
+ },
  "B": null,
  "chat:trabajo/20261101-1630-discord-idiomas": {
   "inicio": "2026-11-01T16:29:59+01:00",
