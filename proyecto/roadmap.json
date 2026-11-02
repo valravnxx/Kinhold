@@ -1080,9 +1080,9 @@
     },
     {
      "nombre": "Correo en la cuenta y verificación con Resend (valravnx, 2 nov): el correo es obligatorio al crear la cuenta, un correo por cuenta; llega un código de 6 cifras que caduca, con reenvío limitado; sin confirmarlo no se entra en el mundo. Las cuentas que ya existen añaden y confirman su correo al entrar. Sin la clave de Resend en la máquina, el servidor de pruebas apunta el código en su registro. Los pasos para valravnx (cuenta en Resend, clave en el servidor, registros DNS en Cloudflare), en servidor/nube/LEEME.md",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-02T07:31:59+00:00",
-     "rama": "trabajo/20261102-0731"
+     "fin": "2026-11-02T08:49:24+00:00"
     },
     {
      "nombre": "Recuperar la contraseña por correo (un código que caduca, con límites) y cambiar la contraseña o el correo desde el menú pidiendo la actual, con aviso por correo; al cambiar la contraseña se cierra la sesión en los demás aparatos",
@@ -2566,6 +2566,13 @@
      "archivo": "jugar/demo/v94.html",
      "capturas": "capturas/demo-v94",
      "notas": "Cuentas más seguras: contraseñas de 10 caracteres o más y sin las más usadas, sin altas en masa (por dirección, en total por hora y con espera que crece), fichas que caducan, «Salir en todos los aparatos» y registro de seguridad en el servidor."
+    },
+    {
+     "v": "v95",
+     "fecha": "2026-11-02",
+     "archivo": "jugar/demo/v95.html",
+     "capturas": "capturas/demo-v95",
+     "notas": "Cuentas con correo: al crear la cuenta hay que dar un correo (uno por cuenta) y confirmarlo con el código de 6 cifras que llega a él; sin confirmarlo no se entra en el mundo. Las cuentas de antes añaden su correo al entrar. Se puede pedir otro código o cambiar el correo. Mientras el servidor no tenga la clave de Resend, el código queda en su registro."
     }
    ]
   },

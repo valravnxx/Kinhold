@@ -68,6 +68,30 @@ que abra la demo entra en este mundo y puede construir.
   ```
   La clave `KINHOLD_ADMIN=` de antes ya no se usa (si está en ese archivo, no hace nada). Lo que se ha pedido con el
   panel (quién, con qué cuenta, qué y si valió) queda en `/var/lib/kinhold/admin.jsonl`.
+- **El correo de las cuentas (Resend; valravnx, 2 nov).** Al crear una cuenta hay que dar un correo (uno por cuenta) y
+  confirmarlo con un código de 6 cifras que llega a él (caduca a los 15 minutos; otro, como pronto al minuto, y como
+  mucho 5 por hora). **Sin confirmarlo no se entra en el mundo.** Las cuentas de antes lo añaden y lo confirman al entrar.
+  Los códigos los manda el servidor con [Resend](https://resend.com) desde `cuentas@playkinhold.com`.
+  **Mientras no esté la clave de Resend en la máquina, no se manda ningún correo:** el código queda en el registro del
+  servidor. Para verlo, en la consola de Hetzner, como root: `journalctl -u kinhold | grep 'código de verificación'`
+  (sale el usuario, el código y el correo a medias).
+  Pasos, una vez:
+  1. En Resend (ya hecho el 2 nov): cuenta creada y dominio `playkinhold.com` añadido (región Irlanda, eu-west-1) con la
+     configuración automática de Cloudflare.
+  2. En Cloudflare, en los DNS de `playkinhold.com`, tienen que estar los registros que pidió Resend: `send` (MX y TXT de
+     SPF, o los CNAME que dé Resend), `resend._domainkey` (TXT, DKIM) y, si lo pone, `_dmarc`. Todos **sin proxy** («DNS
+     only»). Esperar a que en Resend, en *Domains*, el dominio salga **Verified**.
+  3. En Resend, *API Keys* → *Create API Key*: permiso **Sending access** y dominio solo `playkinhold.com`. Copiar la
+     clave (empieza por `re_`; solo se ve una vez). **Nunca va al repositorio ni a ningún mensaje.**
+  4. En la consola de Hetzner, como root (cambiando `re_xxx` por la clave):
+     ```
+     mkdir -p /etc/kinhold && echo "RESEND_API_KEY=re_xxx" > /etc/kinhold/correo.env && chmod 600 /etc/kinhold/correo.env && bash /opt/kinhold/servidor/nube/actualizar.sh
+     ```
+     (`actualizar.sh` pone el servicio al día para que lea ese archivo y lo reinicia.) Al arrancar, el registro dice
+     `correo: Resend`; sin la clave, `correo: sin clave de Resend, los códigos van al registro`. Para mandar desde otra
+     dirección del dominio, añadir en ese archivo `KINHOLD_CORREO_DE=Kinhold <otra@playkinhold.com>`.
+  Cada código pedido (sin el código) y cada confirmación quedan en `/var/lib/kinhold/seguridad.jsonl`, con el correo a
+  medias. Si Resend no responde o rechaza el correo, el jugador ve «No se ha podido mandar el correo» y puede pedir otro.
 - **Empezar el mundo de cero (wipe):** `systemctl stop kinhold && find /var/lib/kinhold -maxdepth 1 \( -name '*.json' -o -name '*.jsonl' \) ! -name cuentas.jsonl ! -name seguridad.jsonl -delete && systemctl start kinhold`.
   Borra lo construido, lo que lleva cada uno y lo del suelo, las fichas de cada navegador y dónde estaba cada uno: todos
   vuelven a empezar como nuevos, en la salida. **Las cuentas se quedan** (`cuentas.jsonl`): cada uno entra con su

@@ -47,7 +47,7 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
   // Cuentas (P1, revisión del 1 nov): si el personaje de esta conexión aún no tiene cuenta, la pantalla de crearla o de
   // entrar (src/mundo/pantalla_cuenta.js) tapa el juego. Un servidor anterior a las cuentas no manda `cuenta`: sin pantalla.
   // El admin, por la cuenta: el servidor dice si esta conexión es de la cuenta de admin (bienvenida, o al crear la cuenta).
-  let pantalla = null, cuenta = null, admin = false;
+  let pantalla = null, cuenta = null, admin = false, sinCorreo = false;
 
   const ponerEstado = () => alEstado(estado === 'conectado' ? (antiguo ? tr('En línea · el servidor es antiguo: hay que actualizarlo') : conectado())
     : estado === 'conectando' ? tr('Conectando con el servidor…')
@@ -67,10 +67,15 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
         cuenta = typeof msg.cuenta === 'string' ? msg.cuenta : null;
         admin = msg.admin === true;
         if (cuenta) guardarUsuario(direccion, cuenta); else if (msg.cuenta === null) guardarUsuario(direccion, null);
-        if (msg.cuenta === null && !(pantalla && pantalla.abierta)) {
-          pantalla = pantallaCuenta({ enviar, direccion, alCrear: (u) => { cuenta = u; avisar(tr('Cuenta creada: {u}. Tu personaje ya es de tu cuenta.', { u }), false); } });
-        } else if (msg.cuenta !== null && pantalla) { pantalla.quitar(); pantalla = null; }
-      } else if (msg.tipo === 'cuenta') { if (msg.que === 'crear' && msg.ok && msg.admin === true) admin = true; if (pantalla) pantalla.recibir(msg);
+        // el correo sin confirmar (valravnx, 2 nov): la pantalla en «Confirma tu correo»; hasta entonces no se entra en el
+        // mundo (el servidor no atiende lo que haga). Un servidor de antes del correo no manda `correo`: como confirmado.
+        sinCorreo = !!(cuenta && msg.correo && msg.correo.verificado === false);
+        if ((msg.cuenta === null || sinCorreo) && !(pantalla && pantalla.abierta)) {
+          pantalla = pantallaCuenta({ enviar, direccion, verificar: sinCorreo ? { correo: msg.correo.correo } : null,
+            alCrear: (u, r) => { cuenta = u; sinCorreo = !!(r && r.correo && r.correo.verificado === false); if (!sinCorreo) avisar(tr('Cuenta creada: {u}. Tu personaje ya es de tu cuenta.', { u }), false); },
+            alConfirmar: () => { sinCorreo = false; avisar(tr('Correo confirmado. Tu personaje ya es de tu cuenta.'), false); } });
+        } else if (msg.cuenta !== null && !sinCorreo && pantalla) { pantalla.quitar(); pantalla = null; }
+      } else if (msg.tipo === 'cuenta') { if ((msg.que === 'crear' || msg.que === 'verificar') && msg.ok && msg.admin === true) admin = true; if (pantalla) pantalla.recibir(msg);
       } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, deAspecto(msg));
       else if (msg.tipo === 'sale') aspectos.delete(msg.autor);
       else if (msg.tipo === 'error') console.warn('Servidor:', msg.motivo);
@@ -101,6 +106,7 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
     get yo() { return yo; },
     get cuenta() { return cuenta; },   // el usuario de la cuenta de este personaje (null si aún no tiene)
     get admin() { return admin; },     // si es la cuenta de admin (lo dice el servidor)
+    get sinCorreo() { return sinCorreo; },   // si a la cuenta le falta confirmar el correo (no entra en el mundo)
     get estado() { return estado; },
     get antiguo() { return antiguo; },
     cortar() { if (con) con.cortar(); },   // para las pruebas: como si se cayera la conexión

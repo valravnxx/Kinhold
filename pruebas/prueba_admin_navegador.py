@@ -12,6 +12,7 @@
 # MUTAR=1: un servidor que dice a todos que son admin: tiene que fallar (a la cuenta que no lo es le saldría el botón).
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket
 from playwright.sync_api import sync_playwright
+from correo_prueba import Codigos, crear_y_confirmar
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
@@ -38,6 +39,7 @@ if MUTAR:
 servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ,
                             env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres', 'KINHOLD_ADMIN_CUENTA': ','.join(ADMINS)}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
+codigos = Codigos(servidor)
 # el otro jugador: un cliente de node que manda su estado, quieto
 # (a la altura del suelo de su sitio: el servidor conoce el terreno y no admite a nadie muy por encima o por debajo)
 BOT = f"""import {{ WebSocket }} from 'ws';
@@ -70,9 +72,8 @@ def crear_cuenta(pg, usuario, ms=10000):
     try: pg.wait_for_function("!!document.getElementById('pantallaCuenta')", timeout=ms)
     except Exception: return False
     clave = 'clave-de-prueba-123'
-    pg.fill('#pcUsuario', usuario); pg.fill('#pcClave', clave); pg.fill('#pcClave2', clave); pg.click('#pcIr')
-    pg.wait_for_function("!document.getElementById('pantallaCuenta')", timeout=20000)
-    return True
+    # y confirma el correo con el código que llega (pruebas/correo_prueba.py), como un jugador
+    return crear_y_confirmar(pg, codigos, usuario, clave)
 PANEL = f"{K}.panelAdmin"
 
 try:

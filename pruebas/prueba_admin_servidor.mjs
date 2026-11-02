@@ -52,16 +52,27 @@ function cliente(puerto, ficha = null) {
       return null;
     };
     // crear o entrar con una cuenta, y su respuesta
+    // (al crearla, también confirma el correo con el código que llega, como haría el jugador: sin eso no entra en el mundo)
+    const esperarCuenta = async (n) => { for (let k = 0; k < 250; k++) { const r = c.cuentas.find(a => a.id === n); if (r) return r; await pausa(20); } return null; };
     c.cuenta1 = async (que, usuario, clave = 'una-contraseña-larga') => {
-      const n = ++id; c.mandar({ tipo: 'cuenta', id: n, que, usuario, clave });
-      for (let k = 0; k < 250; k++) { const r = c.cuentas.find(a => a.id === n); if (r) return r; await pausa(20); }
-      return null;
+      const n = ++id; c.mandar({ tipo: 'cuenta', id: n, que, usuario, clave, correo: usuario.toLowerCase() + '@ejemplo.com' });
+      const r = await esperarCuenta(n);
+      if (que === 'crear' && r && r.ok) {
+        const carta = cartas.filter(x => x.usuario === r.usuario).at(-1);
+        const m = ++id; c.mandar({ tipo: 'cuenta', id: m, que: 'verificar', codigo: carta && carta.codigo });
+        const v = await esperarCuenta(m);
+        if (!v || !v.ok) console.log('  (no se pudo confirmar el correo de', usuario, JSON.stringify(v), ')');
+      }
+      return r;
     };
     ws.on('message', (d) => { const m = JSON.parse(d.toString()); if (m.tipo === 'bienvenida') { c.yo = m.autor; c.bienvenida = m; listo(c); } if (m.tipo === 'admin') c.admin.push(m); if (m.tipo === 'cuenta') c.cuentas.push(m); });
     ws.on('error', fallo);
   });
 }
 
+// el cartero de la prueba: guarda los códigos en lugar de mandarlos
+const cartas = [];
+const cartero = { conClave: true, enviar: async (x) => { cartas.push(x); return { ok: true }; } };
 const BARATO = { N: 1 << 10, r: 8, p: 1 };   // contraseñas resumidas rápido: aquí no se prueba scrypt
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-admin-'));
 try {
@@ -82,7 +93,7 @@ try {
 
   console.log('Otra cuenta de admin en la máquina');
   {
-    const s2 = crearServidor({ puerto: 0, archivo: join(dir, 'otra', 'mundo.jsonl'), cuentasAdmin: 'ana', parametrosClave: BARATO, altas: { origen: 1e6, total: 1e6, espera: 0 } });
+    const s2 = crearServidor({ puerto: 0, archivo: join(dir, 'otra', 'mundo.jsonl'), cuentasAdmin: 'ana', parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 } });
     const p = await s2.listo;
     const v = await cliente(p), a = await cliente(p);
     const rv = await v.cuenta1('crear', 'valravnx'), ra = await a.cuenta1('crear', 'Ana');
@@ -94,7 +105,7 @@ try {
 
   console.log('Con la cuenta de admin por defecto');
   const archivo = join(dir, 'mundo.jsonl');
-  let s = crearServidor({ puerto: 0, archivo, parametrosClave: BARATO, altas: { origen: 1e6, total: 1e6, espera: 0 } });
+  let s = crearServidor({ puerto: 0, archivo, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 } });
   let puerto = await s.listo;
   let admin = await cliente(puerto);
   const otro = await cliente(puerto), tercero = await cliente(puerto);
@@ -156,7 +167,7 @@ try {
   deNuevo.ws.close(); await deNuevo.cerrado;
   for (const c of [otro, tercero]) { c.ws.close(); await c.cerrado; }
   await s.cerrar();
-  s = crearServidor({ puerto: 0, archivo, parametrosClave: BARATO, altas: { origen: 1e6, total: 1e6, espera: 0 } });
+  s = crearServidor({ puerto: 0, archivo, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 } });
   puerto = await s.listo;
   admin = await cliente(puerto, re && re.ficha);
   comprobar('con esa ficha, tras reiniciar: la bienvenida dice admin y la cuenta', admin.bienvenida.admin === true && admin.bienvenida.cuenta === 'ValRavnX', JSON.stringify({ admin: admin.bienvenida.admin, cuenta: admin.bienvenida.cuenta }));

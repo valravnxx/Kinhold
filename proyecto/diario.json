@@ -3933,5 +3933,23 @@
   "pruebas": "Batería entera en la nube: todo bien salvo niveles de detalle (el panel a 0 fps, dos veces); arreglada la espera de esa prueba y repetidos en la nube niveles de detalle, entrar con la cuenta, demo única y juego en inglés: bien. Cuentas 81/81 (MUTAR=1 y MUTAR=2, sin límites de altas, fallan como deben; también con la dirección del cliente en vez de la de Caddy). No comprobado: en el servidor de verdad (se actualiza con actualizar.sh).",
   "capturas": "capturas/demo-v94",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-02T07:31:59+00:00",
+  "fin": "2026-11-02T08:49:24+00:00",
+  "titulo": "Cuentas: el correo y su verificación (carril A)",
+  "hito": "servidor",
+  "hecho": [
+   "El correo es obligatorio al crear la cuenta, y un correo es de una sola cuenta (sin mirar mayúsculas). Al crearla llega un código de 6 cifras y la pantalla pasa a «Confirma tu correo»: hasta escribirlo, el servidor no atiende sus acciones, objetos, combate, movimientos ni el panel del admin, y la pantalla tapa el juego (también al recargar).",
+   "Desde esa pantalla se puede pedir otro código o cambiar el correo (sin confirmar). Las cuentas de antes, sin correo, ven la misma pantalla para añadirlo y confirmarlo al entrar.",
+   "Los correos los manda el servidor con Resend (servidor/correo.mjs) desde cuentas@playkinhold.com, en el idioma del juego. Sin la clave de Resend en la máquina no manda nada: apunta el código en su registro (journalctl). La clave va en /etc/kinhold/correo.env, que el servicio ya lee; los pasos para valravnx (DNS en Cloudflare, la clave, el comando), en servidor/nube/LEEME.md.",
+   "El código solo se guarda resumido y en memoria; cuentas.jsonl apunta el correo y cuándo se confirma, y el registro de seguridad cada código pedido y cada confirmación, con el correo a medias.",
+   "Decisiones provisionales (en las notas de la demo v95): el código caduca a los 15 minutos; otro, al cabo de un minuto y como mucho 5 por hora a la misma cuenta o al mismo correo; 5 códigos mal y hay que pedir otro. Quien aún no tiene cuenta sigue como hasta ahora (la pantalla de la cuenta tapa el juego, pero el servidor no le deja fuera); cuando no se pueda jugar sin cuenta, también.",
+   "Pruebas nuevas: el correo en la lógica, el cartero (con y sin clave) y el servidor (prueba de cuentas, rota a propósito con MUTAR=3: un servidor que deja entrar sin confirmar), y en el navegador el recorrido entero de crear la cuenta y confirmar el correo; las de admin y las de en línea crean su cuenta confirmando el correo como un jugador.",
+   "La prueba de idiomas mira ahora también los motivos de las cuentas y del correo y la pantalla de la cuenta."
+  ],
+  "pruebas": "En la nube: todos los grupos bien (entrar con la cuenta, a la segunda tras arreglar la prueba; lógica, a la segunda: la prueba del combate en el servidor falló una vez en «lo que no se puede se rechaza al que lo manda» y pasó al repetirla y tres veces aquí, sin tocar nada del combate). Sin pasar, como pide valravnx: las de en línea. No comprobado: el envío de verdad por Resend (aún no hay clave en el servidor).",
+  "capturas": "capturas/demo-v95",
+  "estado": "ok"
  }
 ]

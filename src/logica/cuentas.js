@@ -16,9 +16,14 @@
 // - Contraseñas: de CLAVE_MIN caracteres o más; ni el usuario, ni una de las más usadas o filtradas (claves_comunes.js,
 //   guardada en el juego), ni una letra repetida, ni una serie seguida (1234567890, abcdefghij), ni un trozo corto repetido.
 // - Un personaje, una cuenta: un autor que ya tiene cuenta no puede crear otra.
+// - El correo (valravnx, 2 nov; src/logica/correo.js): obligatorio al crear la cuenta, uno por cuenta. La cuenta empieza
+//   con el correo sin confirmar; hasta confirmarlo con el código que llega, no se entra en el mundo. Las cuentas de antes
+//   del correo no tienen ninguno: lo añaden (y lo confirman) al entrar. En cuentas.jsonl, además de la línea de cada
+//   cuenta, { correo_de: usuario, correo, t } al poner o cambiar el correo sin confirmar y { verificado: usuario, correo, t }
+//   al confirmarlo.
 //
 // Mensajes (JSON):
-//   cliente → servidor   { tipo: 'cuenta', id, que: 'crear' | 'entrar', usuario, clave }
+//   cliente → servidor   { tipo: 'cuenta', id, que: 'crear' | 'entrar', usuario, clave, correo (al crear) }
 //   servidor → cliente   { tipo: 'cuenta', id, que, ok: true, usuario, autor, ficha }   (entrar: con esa ficha el cliente
 //                                                                                         vuelve a conectar y es su personaje)
 //                        { tipo: 'cuenta', id, que, ok: false, motivo }
@@ -35,6 +40,7 @@ export const ESPERA_ALTA = 60 * 1000;
 export const ALTAS_DIA = 24 * 60 * 60 * 1000;
 
 import { esClaveComun } from './claves_comunes.js';
+import { motivoCorreo, claveDeCorreo } from './correo.js';
 
 // Letras (también con tilde y ñ), números, guion y guion bajo.
 const FORMA_USUARIO = /^[\p{L}\p{N}_-]+$/u;
@@ -90,8 +96,12 @@ export function validarPeticionCuenta(m) {
   if (!m || typeof m !== 'object' || Array.isArray(m) || (m.que !== 'crear' && m.que !== 'entrar')) return { motivo: 'Petición de cuenta no válida.' };
   const mu = motivoUsuario(m.usuario);
   if (mu) return { motivo: mu };
-  if (m.que === 'crear') { const mc = motivoClave(m.clave, m.usuario); if (mc) return { motivo: mc }; }
-  else if (typeof m.clave !== 'string' || !m.clave || m.clave.length > CLAVE_MAX * 4) return { motivo: 'Usuario o contraseña incorrectos.' };
+  if (m.que === 'crear') {
+    const mc = motivoClave(m.clave, m.usuario) || motivoCorreo(m.correo);
+    if (mc) return { motivo: mc };
+    return { que: m.que, usuario: m.usuario.normalize('NFC'), clave: m.clave, correo: m.correo.trim().normalize('NFC') };
+  }
+  if (typeof m.clave !== 'string' || !m.clave || m.clave.length > CLAVE_MAX * 4) return { motivo: 'Usuario o contraseña incorrectos.' };
   return { que: m.que, usuario: m.usuario.normalize('NFC'), clave: m.clave };
 }
 
@@ -120,6 +130,7 @@ export class Cuentas {
   constructor({ resumir, sal, iguales = (a, b) => a === b, previas = [], altas = {} }) {
     this.resumir = resumir; this.sal = sal; this.iguales = iguales;
     this.porUsuario = new Map(); this.porAutor = new Map();
+    this.porCorreo = new Map();   // clave del correo (confirmado o no) → clave del usuario
     this.fallosUsuario = new Contador(FALLOS_USUARIO, ESPERA);
     this.fallosOrigen = new Contador(FALLOS_ORIGEN, ESPERA);
     this.altas = new Contador(altas.origen ?? ALTAS_ORIGEN, ALTAS_VENTANA);
@@ -127,15 +138,67 @@ export class Cuentas {
     this.esperaBase = altas.espera ?? ESPERA_ALTA;
     this.altasDia = new Contador(Infinity, ALTAS_DIA);   // para la espera que crece
     this.ocupados = new Set();   // usuarios con un alta a medias (resumir tarda): nadie más puede cogerlos
+    this.correosOcupados = new Set();   // y sus correos
     this.falsa = null;           // una cuenta de mentira, para tardar lo mismo con un usuario que no existe
     for (const c of previas) this._poner(c);
   }
   _poner(c) {
+    if (c && typeof c.correo_de === 'string') return this._correo(c.correo_de, c.correo, false);
+    if (c && typeof c.verificado === 'string') return this._correo(c.verificado, c.correo, true);
     if (!c || typeof c.usuario !== 'string' || typeof c.autor !== 'string' || typeof c.sal !== 'string' || typeof c.hash !== 'string') return false;
     const k = claveDeUsuario(c.usuario);
     if (this.porUsuario.has(k) || this.porAutor.has(c.autor)) return false;
     this.porUsuario.set(k, c); this.porAutor.set(c.autor, c);
+    // (un correo que ya es de otra no se le pone: no debería pasar, crear lo mira)
+    if (typeof c.correo === 'string') { if (this.porCorreo.has(claveDeCorreo(c.correo))) delete c.correo; else this.porCorreo.set(claveDeCorreo(c.correo), k); }
     return true;
+  }
+  // pone el correo de una cuenta (confirmado o no); el de antes queda libre
+  _correo(usuario, correo, verificado) {
+    const k = typeof usuario === 'string' ? claveDeUsuario(usuario) : null, c = k && this.porUsuario.get(k);
+    if (!c || typeof correo !== 'string') return false;
+    const kc = claveDeCorreo(correo), de = this.porCorreo.get(kc);
+    if (de && de !== k) return false;
+    if (typeof c.correo === 'string' && this.porCorreo.get(claveDeCorreo(c.correo)) === k) this.porCorreo.delete(claveDeCorreo(c.correo));
+    c.correo = correo; c.verificado = !!verificado;
+    this.porCorreo.set(kc, k);
+    return true;
+  }
+  // el correo de la cuenta de ese personaje: null si no tiene cuenta; { correo (o null), verificado } si la tiene
+  correoDe(autor) {
+    const c = this.porAutor.get(autor);
+    if (!c) return null;
+    return { usuario: c.usuario, correo: typeof c.correo === 'string' ? c.correo : null, verificado: !!c.verificado };
+  }
+  // ¿tiene cuenta y le falta confirmar el correo? (entonces no entra en el mundo)
+  sinConfirmar(autor) { const e = this.correoDe(autor); return !!e && !e.verificado; }
+  // ¿puede esa cuenta usar ese correo? (null si sí, o el motivo)
+  motivoCorreoDe(autor, correo) {
+    const m = motivoCorreo(correo);
+    if (m) return m;
+    const c = this.porAutor.get(autor);
+    if (!c) return 'Este personaje no tiene cuenta.';
+    if (c.verificado) return 'El correo de esta cuenta ya está confirmado.';
+    const kc = claveDeCorreo(correo), de = this.porCorreo.get(kc);
+    if ((de && de !== claveDeUsuario(c.usuario)) || this.correosOcupados.has(kc)) return 'Ese correo ya es de otra cuenta.';
+    return null;
+  }
+  // pone (o cambia) el correo sin confirmar de la cuenta de ese personaje. Devuelve { ok, linea } (para cuentas.jsonl) o { ok: false, motivo }
+  ponerCorreo(autor, correo, ahora) {
+    const m = this.motivoCorreoDe(autor, correo);
+    if (m) return { ok: false, motivo: m };
+    correo = correo.trim().normalize('NFC');
+    const c = this.porAutor.get(autor);
+    this._correo(c.usuario, correo, false);
+    return { ok: true, linea: { correo_de: c.usuario, correo, t: ahora } };
+  }
+  // confirma el correo de la cuenta de ese personaje. Devuelve { ok, linea } o { ok: false, motivo }
+  confirmarCorreo(autor, correo, ahora) {
+    const c = this.porAutor.get(autor);
+    if (!c) return { ok: false, motivo: 'Este personaje no tiene cuenta.' };
+    if (claveDeCorreo(c.correo || '') !== claveDeCorreo(correo)) return { ok: false, motivo: 'El correo ha cambiado; pide otro código.' };
+    this._correo(c.usuario, c.correo, true);
+    return { ok: true, linea: { verificado: c.usuario, correo: c.correo, t: ahora } };
   }
   get total() { return this.porUsuario.size; }
   deAutor(autor) { return this.porAutor.get(autor) || null; }
@@ -149,27 +212,28 @@ export class Cuentas {
   }
 
   // Crea la cuenta para el personaje de esa conexión. Devuelve { ok, cuenta } (la cuenta, para guardarla) o { ok: false, motivo }.
-  async crear({ usuario, clave, autor, origen = '?', ahora }) {
-    const mu = motivoUsuario(usuario) || motivoClave(clave, usuario);
+  async crear({ usuario, clave, correo, autor, origen = '?', ahora }) {
+    const mu = motivoUsuario(usuario) || motivoClave(clave, usuario) || motivoCorreo(correo);
     if (mu) return { ok: false, motivo: mu };
-    usuario = usuario.normalize('NFC');
-    const k = claveDeUsuario(usuario);
+    usuario = usuario.normalize('NFC'); correo = correo.trim().normalize('NFC');
+    const k = claveDeUsuario(usuario), kc = claveDeCorreo(correo);
     if (this.porAutor.has(autor)) return { ok: false, motivo: 'Este personaje ya tiene cuenta.' };
     if (this.porUsuario.has(k) || this.ocupados.has(k)) return { ok: false, motivo: 'Ese usuario ya existe.' };
+    if (this.porCorreo.has(kc) || this.correosOcupados.has(kc)) return { ok: false, motivo: 'Ese correo ya es de otra cuenta.' };
     origen = claveDeOrigen(origen);
     const espera = this.esperaAlta(origen, ahora);
     if (espera > 0) return { ok: false, motivo: `Demasiadas cuentas nuevas desde aquí; prueba dentro de ${minutos(espera)} min.`, bloqueado: true };
     if (this.altasTotal.lleno('*', ahora)) return { ok: false, motivo: `Demasiadas cuentas nuevas ahora mismo; prueba dentro de ${minutos(this.altasTotal.falta('*', ahora))} min.`, bloqueado: true };
     this.altas.sumar(origen, ahora); this.altasTotal.sumar('*', ahora); this.altasDia.sumar(origen, ahora);
-    this.ocupados.add(k);
+    this.ocupados.add(k); this.correosOcupados.add(kc);
     try {
       const sal = this.sal(), hash = await this.resumir(clave, sal);
       // mientras se resumía, el mismo personaje pudo crear otra (desde otra pestaña con su ficha)
       if (this.porAutor.has(autor)) return { ok: false, motivo: 'Este personaje ya tiene cuenta.' };
-      const cuenta = { usuario, autor, sal, hash, t: ahora };
+      const cuenta = { usuario, autor, sal, hash, t: ahora, correo };
       this._poner(cuenta);
       return { ok: true, cuenta };
-    } finally { this.ocupados.delete(k); }
+    } finally { this.ocupados.delete(k); this.correosOcupados.delete(kc); }
   }
 
   // Entra con usuario y contraseña. Devuelve { ok, autor, usuario } o { ok: false, motivo }. Mal el usuario o mal la
