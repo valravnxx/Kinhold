@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 2 nov 2026 (mañana) — por el chat: Resend, a medias
+valravnx ha creado la cuenta de Resend y ha añadido el dominio playkinhold.com (región eu-west-1, Irlanda) con la configuración automática de Cloudflare: registros `send` y `rsend` (CNAME, «DNS only») y `resend._domainkey` (TXT). Al dejarlo: `send` verificado; `rsend` y el DKIM, pendientes de propagar. Falta: que salga «Verified», crear la API key («Sending access», solo playkinhold.com) y, cuando esté la tarea del correo, ponerla en el servidor con el comando de `servidor/nube/LEEME.md`. La clave nunca va al repositorio.
+
 ### 2 nov 2026 (04:05 UTC) — por el chat: cuentas más seguras
 valravnx, al probar el hito «Cuentas»: «es funcional, pero quiero cuentas más seguras, ahora puedes hacer mil sin problema, quiero verificadas con email y toda la pesca mínima de seguridad». Preguntado en el chat: correos por **Resend** y **sin confirmar el correo no se entra en el mundo**. → El hito vuelve a en curso con cuatro tareas nuevas antes de la revisión (seguridad sin correo; correo y verificación; recuperar y cambiar la contraseña; el admin por la cuenta y su correo).
 
