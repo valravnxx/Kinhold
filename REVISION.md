@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 2 nov 2026 (04:05 UTC) — por el chat: cuentas más seguras
+valravnx, al probar el hito «Cuentas»: «es funcional, pero quiero cuentas más seguras, ahora puedes hacer mil sin problema, quiero verificadas con email y toda la pesca mínima de seguridad». Preguntado en el chat: correos por **Resend** y **sin confirmar el correo no se entra en el mundo**. → El hito vuelve a en curso con cuatro tareas nuevas antes de la revisión (seguridad sin correo; correo y verificación; recuperar y cambiar la contraseña; el admin por la cuenta y su correo).
+
 ### 1 nov 2026 (17:26 UTC+1) — por el chat: el código en la web
 valravnx: «me preocupa que en la web en documentos esté el código del juego, ¿es peligroso? yo lo quitaba». → Quitado el enlace al repositorio de la pestaña de documentos. El repositorio sigue público (GitHub Pages gratis y las pruebas en la nube gratis lo necesitan); no hay claves en él. Que sea privado se decide en la próxima reunión.
 

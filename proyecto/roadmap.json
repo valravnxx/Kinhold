@@ -1052,7 +1052,7 @@
    "num": "P1",
    "nombre": "Cuentas",
    "jugable": "Entras con tu usuario y tu contraseña desde cualquier aparato y sigues siendo tú: tu personaje, tu casa, tu mojón y lo que llevas no se pierden al cambiar de navegador.",
-   "estado": "revision",
+   "estado": "en_curso",
    "tareas": [
     {
      "nombre": "Cuentas en el servidor: usuario y contraseña (guardada con sal y hash lento, nunca en claro), crear cuenta y entrar; cada cuenta con su personaje (el autor de sus acciones). Lógica pura y servidor, con pruebas (también de lo que no debe dejar: contraseña mala, usuario repetido, demasiados intentos)",
@@ -1073,10 +1073,24 @@
      "fin": "2026-11-01T19:37:27+00:00"
     },
     {
+     "nombre": "Cuentas más seguras, sin correo aún: contraseñas de 10 caracteres o más y fuera las más usadas o filtradas (lista guardada en el juego); límites de altas más duros (por dirección y en total por hora, con espera creciente); la ficha de cada aparato caduca y se puede cerrar la sesión en todos los aparatos; el registro de seguridad apunta altas, entradas y fallos. Con pruebas de lo que no debe dejar (crear cuentas en masa)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Correo en la cuenta y verificación con Resend (valravnx, 2 nov): el correo es obligatorio al crear la cuenta, un correo por cuenta; llega un código de 6 cifras que caduca, con reenvío limitado; sin confirmarlo no se entra en el mundo. Las cuentas que ya existen añaden y confirman su correo al entrar. Sin la clave de Resend en la máquina, el servidor de pruebas apunta el código en su registro. Los pasos para valravnx (cuenta en Resend, clave en el servidor, registros DNS en Cloudflare), en servidor/nube/LEEME.md",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recuperar la contraseña por correo (un código que caduca, con límites) y cambiar la contraseña o el correo desde el menú pidiendo la actual, con aviso por correo; al cambiar la contraseña se cierra la sesión en los demás aparatos",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El admin, por la cuenta y su correo: solo es admin la cuenta con el correo confirmado que diga la máquina (KINHOLD_ADMIN_CORREO), para que nadie pueda quedarse antes el nombre «valravnx»",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Revisión completa y publicación",
-     "estado": "hecho",
-     "inicio": "2026-11-01T19:40:28+00:00",
-     "fin": "2026-11-01T20:39:13+00:00"
+     "estado": "pendiente"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: lo primero, para que lo que se construya no se pierda. Solo lo mínimo; registros, expulsar y lo demás, en «Administración»."

@@ -3901,5 +3901,19 @@
   "pruebas": "En la nube: 31 de 31 grupos correctos (uno, al repetirlo); sin las de en línea, que no se pasan",
   "capturas": "capturas/revision-cuentas-1nov",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-02T04:25:41+00:00",
+  "fin": "2026-11-02T04:25:41+00:00",
+  "titulo": "Cuentas más seguras: lo pide valravnx tras probar el hito (chat con valravnx)",
+  "hito": "servidor",
+  "hecho": [
+   "valravnx, al revisar «Cuentas»: funciona, pero quiere cuentas más seguras («ahora puedes hacer mil sin problema»), verificadas por correo y con lo mínimo de seguridad.",
+   "Decidido con valravnx: los correos salen por Resend (gratis hasta 3.000 al mes) y sin confirmar el correo no se entra en el mundo.",
+   "El hito vuelve a «en curso» con cuatro tareas nuevas antes de la revisión: seguridad sin correo, correo y verificación, recuperar y cambiar la contraseña, y el admin por la cuenta con su correo."
+  ],
+  "pruebas": "Sin pruebas: solo cambian el roadmap y REVISION.md.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
