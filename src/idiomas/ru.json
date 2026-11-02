@@ -1673,7 +1673,6 @@
  "Salir de la cuenta": "Выйти из учётной записи",
  "El usuario tiene que tener de 3 a 20 letras.": "Имя пользователя должно быть длиной от 3 до 20 символов.",
  "El usuario solo puede llevar letras, números, - y _.": "Имя пользователя может содержать только буквы, цифры, - и _.",
- "La contraseña tiene que tener al menos 8 caracteres.": "Пароль должен быть не короче 8 символов.",
  "La contraseña no puede pasar de 128 caracteres.": "Пароль не может быть длиннее 128 символов.",
  "La contraseña no puede ser el usuario.": "Пароль не может совпадать с именем пользователя.",
  "Petición de cuenta no válida.": "Неверный запрос учётной записи.",
@@ -1689,5 +1688,12 @@
  "Demo única · v93 (el admin, por la cuenta)": "Единое демо · v93 (администратор по учётной записи)",
  "v93: el admin, por la cuenta. El panel de depuración (F9 o el botón «Admin»: el mapa con todos los conectados y teletransportarse) sale solo si has entrado con la cuenta de admin, la de valravnx; ya no hay clave aparte ni que poner ?admin en la dirección. Con otra cuenta no sale el botón, F9 no hace nada y el servidor rechaza lo que se le pida. En la lista y en el mapa, cada jugador sale con el nombre de su cuenta.": "v93: администратор по учётной записи. Панель отладки (F9 или кнопка «Админ»: карта со всеми подключёнными и телепортация) появляется, только если ты вошёл под учётной записью администратора — учётной записью valravnx; отдельного ключа больше нет, и не нужно добавлять ?admin к адресу. С любой другой учётной записью кнопки нет, F9 ничего не делает, а сервер отклоняет любые запросы. В списке и на карте каждый игрок подписан именем своей учётной записи.",
  "v93, provisional: la cuenta de admin es la del usuario «valravnx» (sin mayúsculas, como todas las cuentas). En la máquina se puede poner otra, o varias separadas por comas, con KINHOLD_ADMIN_CUENTA en /etc/kinhold/admin.env; la clave KINHOLD_ADMIN de antes ya no se usa. La clave que guardaba este navegador se borra.": "v93, предварительно: учётная запись администратора — пользователь «valravnx» (без учёта регистра, как и все учётные записи). На машине можно задать другую или несколько через запятую с помощью KINHOLD_ADMIN_CUENTA в /etc/kinhold/admin.env; старый ключ KINHOLD_ADMIN больше не используется. Ключ, сохранённый в этом браузере, удаляется.",
- "Solo la cuenta de admin puede usar el panel.": "Пользоваться панелью может только учётная запись администратора."
+ "Solo la cuenta de admin puede usar el panel.": "Пользоваться панелью может только учётная запись администратора.",
+ "Esa contraseña es de las más usadas o fáciles de adivinar; elige otra.": "Этот пароль слишком распространённый или лёгкий; выбери другой.",
+ "Demasiadas cuentas nuevas ahora mismo; prueba dentro de {m} min.": "Сейчас слишком много новых учётных записей; попробуй через {m} мин.",
+ "Este personaje no tiene cuenta.": "У этого персонажа нет учётной записи.",
+ "Se ha cerrado la sesión en todos los aparatos. Vuelve a entrar con tu cuenta.": "Сеанс закрыт на всех устройствах. Войди снова в свою учётную запись.",
+ "Salir en todos los aparatos": "Выйти на всех устройствах",
+ "Sesión cerrada en todos los aparatos.": "Сеанс закрыт на всех устройствах.",
+ "La contraseña tiene que tener al menos 10 caracteres.": "Пароль должен быть не короче 10 символов."
 }

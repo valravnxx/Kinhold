@@ -27,7 +27,7 @@ threading.Thread(target=web.serve_forever, daemon=True).start()
 s = socket.socket(); s.bind(('127.0.0.1', 0)); PUERTO = s.getsockname()[1]; s.close()
 ARCHIVO = os.path.join(sitio, 'mundo.jsonl')
 OBJETOS = os.path.join(sitio, 'objetos.json')
-servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs'), str(PUERTO), ARCHIVO], cwd=RAIZ,
+servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs'), str(PUERTO), ARCHIVO], cwd=RAIZ, env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres'},
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
 URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html?hilos=1&servidor=ws://127.0.0.1:{PUERTO}'

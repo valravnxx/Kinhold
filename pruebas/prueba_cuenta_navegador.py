@@ -33,7 +33,7 @@ SERVIDOR = os.path.join(RAIZ, 'servidor/servidor.mjs')
 if MUTAR:
     t = open(SERVIDOR).read(); m = t.replace("ficha: fichaPara(r.autor)", "ficha: fichaPara('jugador:otro')"); assert m != t
     SERVIDOR = os.path.join(RAIZ, 'servidor/.servidor_mutado_cuenta_nav.mjs'); open(SERVIDOR, 'w').write(m)
-servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ,
+servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ, env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres'},
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
 

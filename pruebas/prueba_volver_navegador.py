@@ -30,7 +30,7 @@ SERVIDOR = os.path.join(RAIZ, 'servidor/servidor.mjs')
 if MUTAR:
     t = open(SERVIDOR).read(); m = t.replace('posicion: posiciones.get(autor) || null', 'posicion: null'); assert m != t
     SERVIDOR = os.path.join(RAIZ, 'servidor/.servidor_mutado_volver.mjs'); open(SERVIDOR, 'w').write(m)
-servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ,
+servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ, env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres'},
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
 URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html?modo=construir&enlinea=1&llano=1&servidor=ws://127.0.0.1:{PUERTO}'

@@ -36,7 +36,7 @@ if MUTAR:
     t = open(SERVIDOR).read(); m = t.replace('admin: esAdmin(autor) });', 'admin: true });'); assert m != t
     SERVIDOR = os.path.join(RAIZ, 'servidor/.servidor_mutado_admin_nav.mjs'); open(SERVIDOR, 'w').write(m)
 servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ,
-                            env={**os.environ, 'KINHOLD_ADMIN_CUENTA': ','.join(ADMINS)}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                            env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres', 'KINHOLD_ADMIN_CUENTA': ','.join(ADMINS)}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
 # el otro jugador: un cliente de node que manda su estado, quieto
 # (a la altura del suelo de su sitio: el servidor conoce el terreno y no admite a nadie muy por encima o por debajo)

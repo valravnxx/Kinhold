@@ -13,7 +13,7 @@ import { ponerRendimiento } from './rendimiento.js';
 import { medidaRendimiento, genteDePrueba } from '../mundo/rendimiento.js';
 import { generar, SEMILLA_MUNDO, LADO_MUNDO } from '../logica/mapa.js';
 import { usuarioGuardado, guardarUsuario } from '../mundo/pantalla_cuenta.js';
-import { guardarFicha } from '../mundo/conexion.js';
+import { guardarFicha, fichaGuardada, conDireccionFicha } from '../mundo/conexion.js';
 import { direccionServidor } from '../mundo/direccion_servidor.js';
 
 const MODOS = {
@@ -89,6 +89,29 @@ if (redirige) {
     $('demoCuenta').hidden = false;
     $('demoCuentaTexto').textContent = tr('Cuenta: {u}', { u: usuario });
     $('btnDemoSalirCuenta').onclick = () => { guardarFicha(dirServidor, null); guardarUsuario(dirServidor, null); $('demoCuenta').hidden = true; };
+    // salir en todos los aparatos (cuentas más seguras, 2 nov): se conecta un momento con la ficha de aquí y el servidor
+    // deja sin valer todas las fichas de tu personaje (las de los demás aparatos también); luego, como salir de la cuenta
+    $('btnDemoSalirTodos').onclick = () => {
+      const aviso = $('demoCuentaAviso'), ficha = fichaGuardada(dirServidor);
+      if (!ficha) { guardarUsuario(dirServidor, null); $('demoCuenta').hidden = true; return; }
+      aviso.textContent = tr('Un momento…');
+      let ws; try { ws = new WebSocket(conDireccionFicha(dirServidor, ficha)); } catch (e) { aviso.textContent = tr('No hay conexión con el servidor.'); return; }
+      const fin = setTimeout(() => { aviso.textContent = tr('No hay conexión con el servidor.'); try { ws.close(); } catch (e) { /* nada */ } }, 10000);
+      ws.onmessage = (ev) => {
+        let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+        if (m.tipo === 'bienvenida') {
+          if (!m.cuenta) { clearTimeout(fin); ws.close(); guardarFicha(dirServidor, null); guardarUsuario(dirServidor, null); $('demoCuenta').hidden = true; return; }
+          ws.send(JSON.stringify({ tipo: 'cuenta', id: 1, que: 'salir_todos' }));
+        } else if (m.tipo === 'cuenta' && m.id === 1) {
+          clearTimeout(fin);
+          if (!m.ok) { aviso.textContent = tr(m.motivo || 'Error del servidor.'); return; }
+          guardarFicha(dirServidor, null); guardarUsuario(dirServidor, null);
+          $('demoCuentaTexto').textContent = tr('Sesión cerrada en todos los aparatos.');
+          $('btnDemoSalirCuenta').hidden = $('btnDemoSalirTodos').hidden = true; aviso.textContent = '';
+        }
+      };
+      ws.onerror = () => { clearTimeout(fin); aviso.textContent = tr('No hay conexión con el servidor.'); };
+    };
   }
   $('demoNotas').innerHTML = `<b>${tr(VERSION_DEMO)}</b><ul>${REGISTRO_DEMO.map(t => `<li>${tr(t)}</li>`).join('')}</ul>`;
   $('btnDemoNotas').onclick = () => { $('demoNotas').hidden = !$('demoNotas').hidden; $('demoOpciones').hidden = true; };
