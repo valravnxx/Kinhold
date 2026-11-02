@@ -7,6 +7,9 @@
 //   mismo correo en una hora (para no llenar el buzón de nadie).
 // - FALLOS_CODIGO códigos mal seguidos y ese código deja de valer: hay que pedir otro.
 // - El código no se guarda en claro ni en disco: solo su resumen, en memoria (si el servidor se reinicia, se pide otro).
+// - Recuperar la contraseña (valravnx, 2 nov): lo mismo, con otra lista de códigos (los del correo y los de recuperar no
+//   se mezclan), solo a cuentas con el correo confirmado; y como mucho RECUPERAR_ORIGEN peticiones por hora desde la
+//   misma dirección. La respuesta es la misma exista o no la cuenta (no se puede saber qué cuentas hay probando).
 // (Números provisionales: registro en el diario.)
 
 export const CORREO_MAX = 254;
@@ -15,6 +18,7 @@ export const CODIGO_VIDA = 15 * 60 * 1000;
 export const REENVIO_ESPERA = 60 * 1000;
 export const ENVIOS_HORA = 5;
 export const FALLOS_CODIGO = 5;
+export const RECUPERAR_ORIGEN = 10;
 const HORA = 60 * 60 * 1000;
 
 import { Contador } from './cuentas.js';
