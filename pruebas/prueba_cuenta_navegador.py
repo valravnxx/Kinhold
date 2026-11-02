@@ -3,7 +3,11 @@
 # Una sola página abierta cada vez (no es de las de dos páginas en línea): la demo con un servidor local. En PC y en móvil:
 #   - al entrar por primera vez sale la pantalla de la cuenta (crear), que tapa el juego;
 #   - lo que no vale se dice al momento (usuario corto, contraseñas distintas) y no se manda;
-#   - al crear la cuenta se quita la pantalla y el personaje sigue siendo el mismo (mismo autor), y el servidor la guarda
+#   - el correo (valravnx, 2 nov): sin correo, o con uno que no vale, se dice al momento; al crear la cuenta sale «Confirma
+#     tu correo» (tapa el juego) y el servidor no atiende lo que haga; al recargar sin confirmar, otra vez esa pantalla; un
+#     código mal lo dice; pedir otro enseguida dice que espere; con el bueno (el que el servidor de pruebas apunta en su
+#     salida, sin clave de Resend) se quita la pantalla;
+#   - al crear la cuenta el personaje sigue siendo el mismo (mismo autor), y el servidor la guarda
 #     con ese autor y sin la contraseña en claro;
 #   - al recargar se entra solo, sin pantalla, con el mismo personaje;
 #   - desde otro aparato (otro navegador, sin nada guardado): pantalla otra vez, con otro personaje; «Entrar» con la
@@ -12,6 +16,7 @@
 # MUTAR=1: un servidor que al entrar da la ficha de otro personaje: tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, json
 from playwright.sync_api import sync_playwright
+from correo_prueba import Codigos
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
@@ -36,6 +41,7 @@ if MUTAR:
 servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ, env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres'},
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
+codigos = Codigos(servidor)
 
 BASE = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html'
 URL = f'{BASE}?modo=construir&enlinea=1&servidor=ws://127.0.0.1:{PUERTO}'
@@ -58,8 +64,11 @@ def captura(pg, ruta):
 def cuentas_guardadas():
     try: return [json.loads(l) for l in open(os.path.join(sitio, 'cuentas.jsonl')) if l.strip()]
     except FileNotFoundError: return []
-def rellenar(pg, usuario, clave, clave2=None):
+MOTIVO_C = "document.getElementById('pcMotivoCorreo').textContent"
+VERIFICAR = "!!document.getElementById('pcFormCorreo') && !document.getElementById('pcFormCorreo').hidden"
+def rellenar(pg, usuario, clave, clave2=None, correo=None):
     pg.fill('#pcUsuario', usuario); pg.fill('#pcClave', clave)
+    if correo is not None: pg.fill('#pcCorreo', correo)
     if clave2 is not None: pg.fill('#pcClave2', clave2)
     pg.click('#pcIr')
 
@@ -87,12 +96,45 @@ try:
             captura(pg, f'{SALIDA}/cuenta-crear-{nombre}.png')
             rellenar(pg, 'ab', CLAVE, CLAVE)
             comprobar(f'{nombre}: usuario corto, dicho al momento', 'de 3 a 20' in pg.evaluate(MOTIVO), pg.evaluate(MOTIVO))
-            rellenar(pg, USUARIO, CLAVE, CLAVE + 'x')
+            CORREO = f'ana.{nombre}@ejemplo.com'
+            rellenar(pg, USUARIO, CLAVE, CLAVE, '')
+            comprobar(f'{nombre}: sin correo, dicho al momento', 'Falta el correo' in pg.evaluate(MOTIVO), pg.evaluate(MOTIVO))
+            rellenar(pg, USUARIO, CLAVE, CLAVE, 'ana@ejemplo')
+            comprobar(f'{nombre}: correo que no vale, dicho al momento', 'no es válido' in pg.evaluate(MOTIVO), pg.evaluate(MOTIVO))
+            rellenar(pg, USUARIO, CLAVE, CLAVE + 'x', CORREO)
             comprobar(f'{nombre}: contraseñas distintas, dicho al momento', 'no son iguales' in pg.evaluate(MOTIVO), pg.evaluate(MOTIVO))
             captura(pg, f'{SALIDA}/cuenta-motivo-{nombre}.png')
             comprobar(f'{nombre}: lo que no vale no llega al servidor', not cuentas_guardadas() if nombre == 'pc' else len(cuentas_guardadas()) == 1)
             rellenar(pg, USUARIO, CLAVE, CLAVE)
-            comprobar(f'{nombre}: al crear la cuenta se quita la pantalla', esperar(pg, '!' + PANTALLA, 15000), pg.evaluate(f"document.getElementById('pcMotivo') && {MOTIVO}") or '')
+            comprobar(f'{nombre}: al crear la cuenta sale «Confirma tu correo»', esperar(pg, VERIFICAR, 15000), pg.evaluate(f"document.getElementById('pcMotivo') && {MOTIVO}") or '')
+            comprobar(f'{nombre}: dice a qué correo (a medias no: el que ha escrito)', CORREO in pg.evaluate("document.getElementById('pcTextoCorreo').textContent"))
+            comprobar(f'{nombre}: y sigue tapando el juego', pg.evaluate(PANTALLA) and pg.evaluate(f'{K}.enLinea.sinCorreo') is True)
+            caja = pg.evaluate("(() => { const r = document.getElementById('pcFormCorreo').getBoundingClientRect(); return [r.left, r.right, r.top, r.bottom]; })()")
+            comprobar(f'{nombre}: la caja del correo cabe en la pantalla', caja[0] >= 0 and caja[1] <= vista['width'] and caja[2] >= 0 and caja[3] <= vista['height'], str(caja))
+            pg.wait_for_timeout(800)
+            captura(pg, f'{SALIDA}/cuenta-correo-{nombre}.png')
+            # al recargar sin confirmar: la misma pantalla, ya en el correo
+            pg.reload(wait_until='domcontentloaded', timeout=180000)
+            comprobar(f'{nombre}: al recargar sin confirmar, otra vez «Confirma tu correo»', esperar(pg, LISTO, 300000) and esperar(pg, VERIFICAR, 15000) and pg.evaluate(f'{K}.enLinea.red.yo') == autor)
+            comprobar(f'{nombre}: (con el correo a medias, que es lo que sabe el servidor)', 'a***@e***.com' in pg.evaluate("document.getElementById('pcTextoCorreo').textContent"))
+            pg.fill('#pcCodigo', '12'); pg.click('#pcIrCorreo')
+            comprobar(f'{nombre}: código corto, dicho al momento', '6 cifras' in pg.evaluate(MOTIVO_C), pg.evaluate(MOTIVO_C))
+            bueno = codigos.de(USUARIO)
+            pg.fill('#pcCodigo', '000000' if bueno != '000000' else '000001'); pg.click('#pcIrCorreo')
+            comprobar(f'{nombre}: código mal, lo dice', esperar(pg, f"{MOTIVO_C}.includes('no es correcto')", 15000) and pg.evaluate(PANTALLA), pg.evaluate(MOTIVO_C))
+            # otro código: si ha pasado el minuto desde el primero, llega; el siguiente, enseguida, tiene que esperar
+            pg.click('#pcReenviar')
+            esperar(pg, f"{MOTIVO_C}.includes('Espera') || {MOTIVO_C}.includes('mandado')", 15000)
+            if 'mandado' in pg.evaluate(MOTIVO_C):
+                codigos.de(USUARIO, 1); pg.click('#pcReenviar')
+                esperar(pg, f"{MOTIVO_C}.includes('Espera')", 15000)
+            comprobar(f'{nombre}: otro código enseguida, que espere', 'Espera' in pg.evaluate(MOTIVO_C), pg.evaluate(MOTIVO_C))
+            bueno = codigos.de(USUARIO)
+            captura(pg, f'{SALIDA}/cuenta-correo-mal-{nombre}.png')
+            comprobar(f'{nombre}: el código llega (al registro del servidor de pruebas)', bool(bueno))
+            pg.fill('#pcCodigo', bueno or ''); pg.click('#pcIrCorreo')
+            comprobar(f'{nombre}: con el bueno se quita la pantalla', esperar(pg, '!' + PANTALLA, 15000), pg.evaluate(f"document.getElementById('pcMotivoCorreo') && {MOTIVO_C}") or '')
+            comprobar(f'{nombre}: y ya entra en el mundo', pg.evaluate(f'{K}.enLinea.sinCorreo') is False)
             comprobar(f'{nombre}: sigue siendo el mismo personaje', pg.evaluate(f'{K}.enLinea.red.yo') == autor)
             comprobar(f'{nombre}: el cliente sabe su cuenta', pg.evaluate(f'{K}.enLinea.cuenta') == USUARIO, str(pg.evaluate(f'{K}.enLinea.cuenta')))
             c = [x for x in cuentas_guardadas() if x.get('usuario') == USUARIO]
