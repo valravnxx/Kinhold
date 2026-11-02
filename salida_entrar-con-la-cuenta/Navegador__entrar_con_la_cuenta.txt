@@ -1,0 +1,47 @@
+Vista pc
+  OK   pc: entra en línea con el mundo listo
+  OK   pc: sale la pantalla de la cuenta
+  OK   pc: la pantalla tapa el juego entero
+  OK   pc: la caja cabe en la pantalla — [450, 830, 166.3125, 633.6875]
+  OK   pc: usuario corto, dicho al momento — El usuario tiene que tener de 3 a 20 letras.
+  OK   pc: contraseñas distintas, dicho al momento — Las dos contraseñas no son iguales.
+  OK   pc: lo que no vale no llega al servidor
+  OK   pc: al crear la cuenta se quita la pantalla
+  OK   pc: sigue siendo el mismo personaje
+  OK   pc: el cliente sabe su cuenta — Ana_pc
+  OK   pc: el servidor la guarda con ese personaje — [{'usuario': 'Ana_pc', 'autor': 'jugador:ea038fc4', 'sal': 'd3f931935ce1930c5af2108f8c4f3f6c', 'hash': 'e20b5728aa1d3435
+  OK   pc: sin la contraseña en claro
+  OK   pc: al recargar entra solo
+  OK   pc: en otro aparato, pantalla y otro personaje
+  OK   pc: «Entrar» no pide repetir la contraseña
+  OK   pc: contraseña mal, lo dice y no entra — Usuario o contraseña incorrectos.
+  OK   pc: con la buena, es el personaje de la cuenta — jugador:ea038fc4
+  OK   pc: y sin pantalla
+  OK   pc: el menú enseña la cuenta — Cuenta: Ana_pc
+  OK   pc: «Salir de la cuenta» olvida la ficha — []
+  OK   pc: al volver a jugar, pantalla otra vez
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: entra en línea con el mundo listo
+  OK   movil: sale la pantalla de la cuenta
+  OK   movil: la pantalla tapa el juego entero
+  OK   movil: la caja cabe en la pantalla — [16, 374, 179.21875, 664.78125]
+  OK   movil: usuario corto, dicho al momento — El usuario tiene que tener de 3 a 20 letras.
+  OK   movil: contraseñas distintas, dicho al momento — Las dos contraseñas no son iguales.
+  OK   movil: lo que no vale no llega al servidor
+  OK   movil: al crear la cuenta se quita la pantalla
+  OK   movil: sigue siendo el mismo personaje
+  OK   movil: el cliente sabe su cuenta — Ana_movil
+  OK   movil: el servidor la guarda con ese personaje — [{'usuario': 'Ana_movil', 'autor': 'jugador:b9d4aa3c', 'sal': 'da60a13c1a18afc44ec3ef69420743cd', 'hash': 'a527c27a16292
+  OK   movil: sin la contraseña en claro
+  OK   movil: al recargar entra solo
+  OK   movil: en otro aparato, pantalla y otro personaje
+  OK   movil: «Entrar» no pide repetir la contraseña
+  OK   movil: contraseña mal, lo dice y no entra — Usuario o contraseña incorrectos.
+  OK   movil: con la buena, es el personaje de la cuenta — jugador:b9d4aa3c
+  OK   movil: y sin pantalla
+  OK   movil: el menú enseña la cuenta — Cuenta: Ana_movil
+  OK   movil: «Salir de la cuenta» olvida la ficha — []
+  OK   movil: al volver a jugar, pantalla otra vez
+  OK   movil: sin errores en la página
+Fallos: 0
