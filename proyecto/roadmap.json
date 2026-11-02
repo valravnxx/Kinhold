@@ -1074,7 +1074,9 @@
     },
     {
      "nombre": "Cuentas más seguras, sin correo aún: contraseñas de 10 caracteres o más y fuera las más usadas o filtradas (lista guardada en el juego); límites de altas más duros (por dirección y en total por hora, con espera creciente); la ficha de cada aparato caduca y se puede cerrar la sesión en todos los aparatos; el registro de seguridad apunta altas, entradas y fallos. Con pruebas de lo que no debe dejar (crear cuentas en masa)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-02T05:22:49+00:00",
+     "rama": "trabajo/20261102-0522"
     },
     {
      "nombre": "Correo en la cuenta y verificación con Resend (valravnx, 2 nov): el correo es obligatorio al crear la cuenta, un correo por cuenta; llega un código de 6 cifras que caduca, con reenvío limitado; sin confirmarlo no se entra en el mundo. Las cuentas que ya existen añaden y confirman su correo al entrar. Sin la clave de Resend en la máquina, el servidor de pruebas apunta el código en su registro. Los pasos para valravnx (cuenta en Resend, clave en el servidor, registros DNS en Cloudflare), en servidor/nube/LEEME.md",

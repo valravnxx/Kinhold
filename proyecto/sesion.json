@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-02T05:22:49+00:00",
+  "tarea": "Cuentas más seguras, sin correo aún: contraseñas de 10 caracteres o más y fuera las más usadas o filtradas (lista guardada en el juego); límites de altas más duros (por dirección y en total por hora, con espera creciente); la ficha de cada aparato caduca y se puede cerrar la sesión en todos los aparatos; el registro de seguridad apunta altas, entradas y fallos. Con pruebas de lo que no debe dejar (crear cuentas en masa)",
+  "hito": "servidor",
+  "rama": "trabajo/20261102-0522"
+ },
  "B": null,
  "chat:trabajo/20261101-1630-discord-idiomas": {
   "inicio": "2026-11-01T16:29:59+01:00",
