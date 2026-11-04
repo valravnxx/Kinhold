@@ -488,9 +488,11 @@ function reconstruir() {
   for (const g of mallasMojon) { escena.remove(g); liberar(g); }
   mallasMojon = [];
   if (anilloTierra) { escena.remove(anilloTierra); liberar(anilloTierra); anilloTierra = null; }
-  for (const mj of Object.values(mundo.mojones)) {
+  for (const [autor, mj] of Object.entries(mundo.mojones)) {
     const g = modeloMojon();
     g.position.set(mj.x, sueloEn(mj.x, mj.z), mj.z);
+    // se puede elegir en Desmontar (el tuyo: quitarlo y dejar tu tierra; valravnx, 4 nov)
+    g.userData.mojon = autor; g.traverse(o => { o.userData.ref = g; });
     escena.add(g); mallasMojon.push(g);
   }
   const mio = miMojon();
@@ -757,6 +759,19 @@ function evaluarDesmontaje(hit) {
   if (!hit) { mostrarAviso(''); return; }
   const obj = hit.object.userData.ref;
   if (!obj) { mostrarAviso(''); return; }
+  if (obj.userData.mojon) {
+    // tu mojón: quitarlo deja tu tierra y se pierde todo lo construido en ella (valravnx, 4 nov: que avise)
+    if (obj.userData.mojon !== yoAutor()) { mostrarAviso(t('mojonAjeno'), true); return; }
+    const p = mundo.perderiaSinMojon(yoAutor());
+    if (!p) { mostrarAviso(''); return; }
+    resaltar(obj, 'naranja');
+    for (const c of p.construcciones) for (const k of c.piezas.keys()) { const o = objDe(c, k); if (o) resaltar(o, 'rojo'); }
+    for (const d of p.muebles) { const r = registroMallas.find(m => m.deco === d); if (r) resaltar(r.obj, 'rojo'); }
+    estado.pendienteDesmontar = { mojon: true };
+    const n = p.piezas + p.muebles.length;
+    mostrarAviso(n ? tr('Quitar tu mojón: dejas tu tierra y PIERDES lo construido en ella ({n} piezas y muebles, sin recuperar nada). Desmonta antes lo que quieras recuperar.', { n }) : t('quitarMojonVacio'), true);
+    return;
+  }
   if (obj.userData.deco) {
     resaltar(obj, 'naranja');
     estado.pendienteDesmontar = { deco: obj.userData.deco };
@@ -780,10 +795,16 @@ function confirmarDesmontaje() {
   const pd = estado.pendienteDesmontar;
   if (!pd) return;
   let r;
-  if (pd.deco) r = accion({ tipo: 'quitar', id: pd.deco.id });
+  if (pd.mojon) r = accion({ tipo: 'quitar_mojon' });
+  else if (pd.deco) r = accion({ tipo: 'quitar', id: pd.deco.id });
   else r = accion({ tipo: 'desmontar', construccion: pd.c.id, clave: pd.key });
   estado.pendienteDesmontar = null;
-  if (r.ok) {
+  if (r.ok && pd.mojon) {
+    guardar(); reconstruir();
+    const n = r.perdidas ? r.perdidas.piezas + r.perdidas.muebles : 0;
+    mostrarAviso(n ? tr('Mojón quitado: tu tierra queda libre y se han perdido {n} piezas y muebles. Pon el mojón donde quieras.', { n }) : t('mojonQuitado'));
+    cambiarModo('mover');
+  } else if (r.ok) {
     const dev = Object.entries(r.devuelto || {}).map(([m, n]) => `+${n} ${tr(MATERIALES[m]).toLowerCase()}`).join(', ');
     guardar(); reconstruir();
     mostrarAviso(`${t('desmontado')}${dev ? ': ' + dev : ''}${r.caen && r.caen.length ? ' · ' + r.caen.length + ' ' + (r.caen.length === 1 ? t('destruida1') : t('destruidas')) : ''}`);
@@ -850,7 +871,7 @@ function sueloBajoRayo(r) {
 }
 function piezaBajo(clientX, clientY) {
   const rr = rayoDesde(clientX, clientY);
-  const objs = registroMallas.filter(m => m.obj.visible).map(m => m.obj);
+  const objs = registroMallas.filter(m => m.obj.visible).map(m => m.obj).concat(mallasMojon);
   const hits = rr.intersectObjects(objs, true).filter(h => h.object.visible && h.object.userData.ref && h.object.userData.ref.visible);
   return hits[0] || null;
 }
