@@ -1,0 +1,72 @@
+// Perfiles gráficos (src/posprocesado/perfiles.js). Ejecutar: node pruebas/prueba_perfiles_graficos.mjs
+// Comprueba: seis perfiles de móvil básico a PC alto, cada uno con al menos lo del anterior de su familia; nada que
+// importe para jugar cambia entre perfiles (la niebla es la misma y el desenfoque nunca está puesto de inicio); la
+// gradación de color es suave (no cambia ningún color más de lo que se pide) y deja el gris medio casi igual; el perfil
+// de inicio sale razonable para aparatos conocidos; la medida elige el más alto que llega a su objetivo.
+// Con MUTAR=1 el móvil básico lleva la niebla más cerca (escondería lo lejano en un perfil): debe FALLAR.
+import { PERFILES, COMUN, efectosDe, gradar, rellenarTabla, sugerirPerfil, elegirPorMedida } from '../src/posprocesado/perfiles.js';
+
+let ok = 0, mal = 0;
+function comprobar(nombre, cond, detalle = '') {
+  if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
+  else { mal++; console.log(`  FALLA ${nombre}${detalle ? ' — ' + detalle : ''}`); }
+}
+const MUTAR = process.env.MUTAR === '1';
+const nieblaDe = (p) => (MUTAR && p.id === 'movil-1' ? [30, 80] : COMUN.niebla);
+
+console.log('Los seis perfiles');
+comprobar('son seis, de móvil básico a PC alto', PERFILES.length === 6 && PERFILES[0].id === 'movil-1' && PERFILES[5].id === 'pc-3', PERFILES.map(p => p.id).join(' '));
+const AO = [null, 'Performance', 'Low', 'Medium', 'High', 'Ultra'], SUAV = ['ninguno', 'smaa-bajo', 'smaa-medio', 'smaa-alto', 'msaa-4', 'msaa-8'];
+for (const fam of ['movil', 'pc']) {
+  const l = PERFILES.filter(p => p.id.startsWith(fam));
+  let crece = true;
+  for (let i = 1; i < l.length; i++) {
+    const a = l[i - 1], b = l[i];
+    if (b.res < a.res || b.sombras < a.sombras || AO.indexOf(b.ao) < AO.indexOf(a.ao) || (b.brillo || 0) < (a.brillo || 0) || (b.rayos || 0) < (a.rayos || 0) || SUAV.indexOf(b.suavizado) < SUAV.indexOf(a.suavizado)) crece = false;
+  }
+  comprobar(`en ${fam === 'movil' ? 'móvil' : 'PC'}, cada perfil lleva al menos lo del anterior`, crece);
+}
+comprobar('objetivos del GDD: 30 fps en móvil, 60 en PC', PERFILES.every(p => p.objetivo === (p.id.startsWith('movil') ? 30 : 60)));
+
+console.log('Nada que importe para jugar cambia entre perfiles (GDD, apartado 3)');
+comprobar('la niebla (lo lejos que se ve) es la misma en los seis', PERFILES.every(p => JSON.stringify(nieblaDe(p)) === JSON.stringify(COMUN.niebla)), PERFILES.map(p => nieblaDe(p).join('–')).join(' '));
+comprobar('el desenfoque nunca está puesto de inicio (solo en escenas concretas)', PERFILES.every(p => efectosDe(p).desenfoque === false));
+comprobar('el mapeo tonal y la gradación de color van en todos (la identidad del mundo)', PERFILES.every(p => efectosDe(p).tono && efectosDe(p).color));
+
+console.log('Gradación de color');
+let max = 0;
+for (let r = 0; r <= 1; r += 0.1) for (let g = 0; g <= 1; g += 0.1) for (let b = 0; b <= 1; b += 0.1) {
+  const [R, G, B] = gradar(r, g, b); max = Math.max(max, Math.abs(R - r), Math.abs(G - g), Math.abs(B - b));
+}
+comprobar('es suave: ningún canal cambia más de 0,13 (lo que más, el cian puro, que no sale en la paleta)', max <= 0.13, max.toFixed(3));
+const gris = gradar(0.5, 0.5, 0.5);
+comprobar('el gris medio queda casi igual', gris.every(v => Math.abs(v - 0.5) < 0.01), gris.map(v => v.toFixed(3)).join(' '));
+const [sr, , sb] = gradar(0.15, 0.15, 0.15), [lr, , lb] = gradar(0.85, 0.85, 0.85);
+comprobar('sombras algo frías y luces algo cálidas', sb > sr && lr > lb, `sombra r${sr.toFixed(3)} b${sb.toFixed(3)} · luz r${lr.toFixed(3)} b${lb.toFixed(3)}`);
+const verde = gradar(0.25, 0.55, 0.2), satAntes = 0.55 - 0.2, satDespues = verde[1] - verde[2];
+comprobar('los verdes, un poco menos saturados (nada chilla)', satDespues < satAntes, `${satAntes.toFixed(2)} → ${satDespues.toFixed(2)}`);
+const t = new Float32Array(4 * 8); for (let i = 0; i < 8; i++) t.set([i / 7, i / 7, i / 7, 1], i * 4);
+rellenarTabla(t, 2);
+comprobar('la tabla se rellena con la gradación y no toca el canal alfa', t[3] === 1 && Math.abs(t[0] - gradar(0, 0, 0)[0]) < 1e-6);
+
+console.log('Perfil de inicio (antes de medir)');
+const casos = [
+  [{ tactil: true, memoria: 2, nucleos: 4, grafica: 'Mali-G52' }, 'movil-1', 'móvil barato'],
+  [{ tactil: true, memoria: 6, nucleos: 8, grafica: 'Adreno (TM) 642L' }, 'movil-2', 'móvil medio'],
+  [{ tactil: true, memoria: 8, nucleos: 8, grafica: 'Adreno (TM) 740' }, 'movil-3', 'móvil alto'],
+  [{ tactil: true, memoria: 8, nucleos: 8, grafica: 'Apple GPU' }, 'movil-3', 'iPhone o iPad'],
+  [{ tactil: false, grafica: 'ANGLE (Intel, Intel(R) UHD Graphics 620)' }, 'pc-1', 'portátil con gráfica integrada'],
+  [{ tactil: false, grafica: 'ANGLE (NVIDIA, NVIDIA GeForce GTX 1060)' }, 'pc-2', 'PC con gráfica de hace años'],
+  [{ tactil: false, grafica: 'ANGLE (NVIDIA, NVIDIA GeForce RTX 4070)' }, 'pc-3', 'PC con gráfica buena'],
+  [{ tactil: false, grafica: 'Google SwiftShader' }, 'pc-1', 'sin tarjeta gráfica (las pruebas)'],
+];
+for (const [info, esperado, que] of casos) comprobar(`${que} → ${esperado}`, sugerirPerfil(info) === esperado, sugerirPerfil(info));
+
+console.log('Por la medida');
+comprobar('PC que hace 60 en el medio pero no en el alto → PC medio', elegirPorMedida({ 'movil-1': 3, 'movil-2': 5, 'movil-3': 7, 'pc-1': 9, 'pc-2': 14, 'pc-3': 22 }) === 'pc-2');
+comprobar('móvil que hace 38 fps en el medio (30 con margen) pero no en el alto → móvil medio', elegirPorMedida({ 'movil-1': 18, 'movil-2': 26, 'movil-3': 45, 'pc-1': 50, 'pc-2': 80, 'pc-3': 120 }, true) === 'movil-2');
+comprobar('un móvil muy rápido no pasa a los de PC', elegirPorMedida({ 'movil-1': 2, 'movil-2': 3, 'movil-3': 4, 'pc-1': 5, 'pc-2': 6, 'pc-3': 7 }, true) === 'movil-3');
+comprobar('si no llega a ninguno, el más bajo', elegirPorMedida({ 'movil-1': 90, 'movil-2': 120 }, true) === 'movil-1');
+
+console.log(`\n${ok} bien, ${mal} mal`);
+process.exit(mal ? 1 : 0);

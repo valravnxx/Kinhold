@@ -72,6 +72,10 @@ for (const linea of leer('src/combate/logica.js').split('\n')) if (/(this|\w+)\.
 for (const f of ['src/logica/cuentas.js', 'src/logica/correo.js', 'servidor/correo.mjs']) for (const m of leer(f).matchAll(/(?:motivo: |return |\|\| |\? |: )'([A-ZÁÉÍÓÚ][^'$]+\.)'/g)) meter(m[1]);
 meter(leer('servidor/servidor.mjs').match(/const SIN_CORREO = '([^']+)'/)[1]);
 
+// los nombres del suavizado de la prueba de posprocesado y los botones fijos de su página
+{ const src = leer('src/posprocesado/main.js'); const t = src.slice(src.indexOf('const SUAVIZADO'), src.indexOf('};', src.indexOf('const SUAVIZADO')));
+  for (const m of t.matchAll(/: '([^']+)'/g)) meter(m[1]);
+  for (const m of leer('src/posprocesado/plantilla.html').matchAll(/<button[^>]*>([^<]+)<\/button>/g)) meter(m[1]); }
 // 3. textos.js de la construcción
 for (const m of leer('src/juego/textos.js').matchAll(/:\s*'([^']+)'/g)) meter(m[1]);
 
@@ -96,12 +100,13 @@ function literalesEnTr(src) {
     i = j;
   }
 }
-for (const f of ['src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js', 'src/mina/main.js', 'src/mapa/main.js', 'src/mapa/cerca.js', 'src/juego/en_linea.js', 'src/combate/en_linea.js', 'src/mundo/cliente.js', 'src/mundo/pantalla_cuenta.js', 'src/juego/panel_inventario.js', 'src/juego/combate_mundo.js']) {
+for (const f of ['src/posprocesado/main.js', 'src/posprocesado/perfiles.js', 'src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js', 'src/mina/main.js', 'src/mapa/main.js', 'src/mapa/cerca.js', 'src/juego/en_linea.js', 'src/combate/en_linea.js', 'src/mundo/cliente.js', 'src/mundo/pantalla_cuenta.js', 'src/juego/panel_inventario.js', 'src/juego/combate_mundo.js']) {
   const src = leer(f);
   literalesEnTr(src);
   // títulos y opciones de los grupos del panel del personaje: grupo('clave', valores, 'Título')
   for (const m of src.matchAll(/grupo\('\w+', ([^;]*?), '([^']+)'\)/g)) { meter(m[2]); for (const v of m[1].matchAll(/: '([^']+)'/g)) meter(v[1]); }
   for (const m of src.matchAll(/nombre: '([^']+)'/g)) meter(m[1]);
+  if (f.endsWith('perfiles.js')) for (const m of src.matchAll(/ que: '([^']+)'/g)) meter(m[1]); // lo que hace cada efecto (prueba de posprocesado)
   for (const m of src.matchAll(/\['[\w:]+', '([^']+)', \d+, \d+\]|^  \['([^']+)', d =>/gm)) meter(m[1] || m[2]); // panel de inventario
   for (const m of src.matchAll(/\['([^']+)', stats\./g)) meter(m[1]); // filas de la pantalla final
 }

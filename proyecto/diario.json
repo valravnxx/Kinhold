@@ -4147,5 +4147,21 @@
   "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido), dos veces: la segunda, tras unir main (quitar el mojón), 28 de 31 grupos a la primera; los tres que fallaron son los que dependen de la salida al azar o de la medida del panel («alrededor de la salida hay cosas que recoger», «nada en el agua», el panel de niveles de detalle) y al repetirlos salieron bien (lo que se recoge, a la segunda repetición). Tras unir otra vez main (demo v100): lógica, construcción, quitar el mojón, juego en inglés, mapa del rey, construir a la altura del suelo y demo única, bien. Pruebas nuevas en obras con lo que llevas: rotas con MUTAR=1, fallan (19). Recorrido de jugador: 23 bien.",
   "capturas": "capturas/demo-v101",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T20:52:31+01:00",
+  "fin": "2026-11-04T23:43:55+01:00",
+  "titulo": "Prueba de posprocesado y seis perfiles gráficos",
+  "hito": "graficos",
+  "hecho": [
+   "valravnx, 4 nov: la tabla de efectos (oclusión ambiental, mapeo tonal, gradación de color, brillo moderado, niebla, desenfoque puntual y haces de luz) y seis perfiles, de móvil de gama baja a PC de gama alta. Prueba nueva, «Posprocesado y perfiles gráficos» v1, sobre la escena de la prueba de estilo v5 con dos antorchas y el sol en el cielo.",
+   "Antes de hacerlo se miró cómo se resuelve en three.js: la librería postprocessing junta los efectos en una sola pasada (lo que cuesta en el móvil son las pasadas de pantalla completa) y n8ao da la oclusión ambiental, con media resolución y modos de calidad. Versiones fijas (6.39.5 y 2.0.1), licencias Zlib e ISC.",
+   "Fallos encontrados y arreglados: con posprocesado la niebla salía mucho más espesa que en la v5 (three.js la mezcla después del mapeo tonal); ahora es un efecto propio y cuadra con la v5 publicada, medido. Y three.js 0.186 ya no tiene sombras PCFSoft: lo blando va por el radio del filtro.",
+   "Ningún perfil cambia lo que importa para jugar: la niebla y lo que se dibuja son los mismos en los seis, y el desenfoque nunca está puesto de inicio. El perfil de inicio sale del aparato; «Medir» mide en el aparato los ms por fotograma de cada perfil y de cada efecto y elige el que llega a su objetivo (30 fps en móvil, 60 en PC).",
+   "Aún mal o sin comprobar: los fps de verdad (aquí no hay tarjeta gráfica: los medirá valravnx con «Medir»); los haces de luz casi no se ven (salen como resplandor a contraluz: para haces marcados hacen falta huecos finos, y las copas son masas) y con la cámara del juego casi nunca se mira al sol; la página pesa unos 650 KB más que la de estilo."
+  ],
+  "pruebas": "Batería entera en la nube, 33 grupos correctos; tras unir main y los últimos cambios, repetidos lógica, posprocesado, juego en inglés y web: correctos. Prueba nueva de lógica de los perfiles (24 bien; rota, falla) y de navegador en PC y móvil (rota, 16 fallos). Capturas miradas: la niebla cuadra con la v5 publicada (medido).",
+  "capturas": "capturas/posprocesado-v1",
+  "estado": "ok"
  }
 ]
