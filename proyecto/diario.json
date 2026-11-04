@@ -3847,6 +3847,22 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-11-01T16:29:59+01:00",
+  "fin": "2026-11-04T11:59:14+01:00",
+  "titulo": "Noticias del desarrollo en Discord, en tres idiomas",
+  "hito": "infra",
+  "hecho": [
+   "El servidor de Discord va en inglés (valravnx, 1 nov: «que el main sea inglés»): las versiones y el diario salen en inglés en #versions y #dev-diary.",
+   "En español y en ruso salen las dos cosas juntas en el canal de noticias de cada idioma (#noticias y #новости), con las traducciones que ya tiene el juego; lo que aún no esté traducido sale en español.",
+   "Los enlaces llevan el idioma (?lang=) para que la web y el juego se abran en el idioma de cada canal.",
+   "Dos secretos nuevos para GitHub, DISCORD_WEBHOOK_ES y DISCORD_WEBHOOK_RU; el que falte se salta y los demás salen igual.",
+   "La prueba de las noticias comprueba los tres idiomas y los cuatro canales; rota a propósito (el inglés sin sus traducciones, MUTAR=2) falla."
+  ],
+  "pruebas": "Batería entera en la nube, 31 grupos correctos (8 grupos no pudieron devolver sus capturas por errores 500 de GitHub, pero sus pruebas pasaron); noticias en Discord: los tres idiomas y los cuatro canales",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-01T16:24:16+00:00",
   "fin": "2026-11-01T18:05:35+00:00",
   "titulo": "P1: entrar en el juego con la cuenta",
