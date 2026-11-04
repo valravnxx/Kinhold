@@ -1168,6 +1168,12 @@
      "estado": "hecho",
      "inicio": "2026-11-04T09:18:49+01:00",
      "fin": "2026-11-04T11:54:08+01:00"
+    },
+    {
+     "nombre": "El mapa del rey se acerca más y, de cerca, sin los nombres de las comarcas, que tapaban tu tierra (valravnx, 4 nov)",
+     "estado": "en_curso",
+     "inicio": "2026-11-04T14:06:27+01:00",
+     "rama": "trabajo/20261104-1408-mapa-zoom"
     }
    ]
   },

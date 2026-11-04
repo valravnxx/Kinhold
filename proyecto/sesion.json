@@ -11,5 +11,11 @@
   "tarea": "El admin, por la cuenta y su correo: solo es admin la cuenta con el correo confirmado que diga la máquina (KINHOLD_ADMIN_CORREO), para que nadie pueda quedarse antes el nombre «valravnx»",
   "hito": "servidor",
   "rama": "trabajo/20261104-0924"
+ },
+ "chat:trabajo/20261104-1408-mapa-zoom": {
+  "inicio": "2026-11-04T14:06:27+01:00",
+  "tarea": "El mapa del rey se acerca más y, de cerca, sin los nombres de las comarcas, que tapaban tu tierra (valravnx, 4 nov)",
+  "hito": "entre-dos",
+  "rama": "trabajo/20261104-1408-mapa-zoom"
  }
 }
