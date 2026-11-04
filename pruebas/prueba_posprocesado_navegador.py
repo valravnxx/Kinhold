@@ -58,7 +58,10 @@ def recorrido(pg, nombre, pref):
     for i, p in enumerate(pg.evaluate('window.__post.PERFILES.map(p => p.id)')):
         poner(v5=False, perfil=p, vista='maqueta'); cap(f'0{i + 1}_perfil_{p}')
         pasadas[p] = pg.evaluate('window.__post.pasadas()')
-    comprobar(f'{nombre}: cada perfil monta su cadena (de menos a más pasadas)', pasadas['movil-1'] <= pasadas['movil-2'] <= pasadas['movil-3'] and pasadas['pc-1'] <= pasadas['pc-3'] and pasadas['movil-1'] >= 2, str(pasadas))
+    # lo que debe llevar cada uno: el dibujo, la oclusión si la lleva, la pasada de efectos y el SMAA si es su suavizado
+    # (el MSAA de los PC medio y alto va en el propio dibujo: no cuesta pasada)
+    esperado = {p['id']: 2 + (1 if p['ao'] else 0) + (1 if p['suavizado'].startswith('smaa') else 0) for p in pg.evaluate('window.__post.PERFILES')}
+    comprobar(f'{nombre}: cada perfil monta la cadena que le toca', pasadas == esperado, f'{pasadas} (esperado {esperado})')
     # cada efecto, en el PC alto (los lleva todos), quitándolo: tiene que cambiar la imagen
     vistas = {'ao': 'rincon', 'tono': 'cabana', 'color': 'cabana', 'brillo': 'cabana', 'niebla': 'maqueta', 'desenfoque': 'cabana', 'rayos': 'contraluz'}
     luces = {'brillo': 'ocaso', 'rayos': 'ocaso'}

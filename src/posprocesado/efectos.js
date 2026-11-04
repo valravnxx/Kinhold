@@ -64,7 +64,7 @@ export function crearPosprocesado(renderer, escena, camara, { sol = null, foco =
     }
     const lista = [];
     if (on.brillo && perfil.brillo) lista.push(new BloomEffect({ luminanceThreshold: 0.95, luminanceSmoothing: 0.25, intensity: 0.75, radius: 0.7, mipmapBlur: true, levels: perfil.brillo }));
-    if (on.rayos && perfil.rayos && sol) lista.push(new GodRaysEffect(camara, sol, { samples: perfil.rayos, density: 0.95, decay: 0.92, weight: 0.32, exposure: 0.55, clampMax: 1, blur: true }));
+    if (on.rayos && perfil.rayos && sol) lista.push(new GodRaysEffect(camara, sol, { samples: perfil.rayos, density: 0.96, decay: 0.93, weight: 0.42, exposure: 0.62, clampMax: 1, blur: true }));
     lista.push(new ToneMappingEffect({ mode: on.tono ? ToneMappingMode.ACES_FILMIC : ToneMappingMode.LINEAR }));
     if (on.niebla && n) lista.push(new NieblaEffect(n));
     if (on.color) lista.push(new LUT3DEffect(tabla));

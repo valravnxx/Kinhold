@@ -34,13 +34,13 @@ const escena = new THREE.Scene();
 escena.add(crearEscena());
 // dos antorchas a los lados del camino, delante de la puerta; sus llamas brillan más de 1 para que el brillo las coja
 for (const [x, z] of [[1.15, 2.55], [-0.85, 2.55]]) {
-  const a = decoracion('antorcha'); a.position.set(x, 0, z);
+  const a = decoracion('candil'); a.position.set(x, 0, z);   // en la tabla de muebles, la antorcha es «candil»
   a.traverse(o => { if (o.name === 'llama' && o.material) { o.material = o.material.clone(); o.material.emissiveIntensity = 3.2; } });
   escena.add(a);
 }
 const ambiente = crearAmbiente(escena, { luz: 'manana', alcance: RADIO + 1, fondoPagina: false, niebla: COMUN.niebla });
 // el disco del sol (para los haces de luz): lejos, en la dirección de la luz; sin niebla
-const sol = new THREE.Mesh(new THREE.SphereGeometry(9, 16, 12), new THREE.MeshBasicMaterial({ color: 0xfff0d0, fog: false }));
+const sol = new THREE.Mesh(new THREE.SphereGeometry(5, 16, 12), new THREE.MeshBasicMaterial({ color: 0xfff0d0, fog: false }));
 sol.visible = false; escena.add(sol);
 function ponerSol() { const d = new THREE.Vector3().copy(ambiente.sol.position).sub(ambiente.sol.target.position).normalize(); sol.position.copy(d.multiplyScalar(300)); sol.material.color.set(LUCES[estado.luz].sol[0]).lerp(new THREE.Color(0xffffff), 0.5); }
 
@@ -48,14 +48,12 @@ const VISTAS = {
   maqueta: () => [new THREE.Vector3(21, 18, 28), new THREE.Vector3(0, -0.2, 0.4)],
   cabana: () => [new THREE.Vector3(8.5, 5.0, 10.5), new THREE.Vector3(0.2, 1.5, 0.6)],
   rincon: () => [new THREE.Vector3(4.2, 1.6, 5.2), new THREE.Vector3(0.6, 0.6, 1.8)],
-  // detrás de la cabaña, mirando al sol: el tejado se recorta contra él (para que los haces tengan por dónde pasar)
+  // detrás de la cabaña, mirando al sol, que asoma entre el tejado y un árbol (lo mejor de 30 sitios probados el 4 nov,
+  // midiendo cuánto cambian los haces la imagen): así los haces tienen por dónde pasar
   contraluz: () => {
-    const s = new THREE.Vector3().copy(ambiente.sol.position).sub(ambiente.sol.target.position).normalize();
-    const h = s.clone().setY(0).normalize(), alto = Math.atan2(s.y, Math.hypot(s.x, s.z));
-    const pos = h.clone().multiplyScalar(-11).setY(1.7);
-    // mira un poco por debajo del sol, para que quede dentro del encuadre, arriba
-    const mira = pos.clone().add(h.clone().multiplyScalar(20)).setY(1.7 + 20 * Math.tan(Math.max(0, alto - 0.07)));
-    return [pos, mira];
+    const s = sol.position.clone().normalize(), h = s.clone().setY(0).normalize(), lado = new THREE.Vector3(-h.z, 0, h.x);
+    const pos = h.clone().multiplyScalar(-18).addScaledVector(lado, 2).setY(1.6);
+    return [pos, sol.position.clone().setY(sol.position.y - 25)];
   },
 };
 
@@ -183,7 +181,7 @@ ponerVista(estado.vista);
 bucle();
 
 window.__post = {
-  PERFILES, sugerido, aparato, escena, renderer, pausar: (v) => { pausado = v; }, dibujar,
+  PERFILES, sugerido, aparato, escena, renderer, camara, pausar: (v) => { pausado = v; }, dibujar,
   estado: () => JSON.parse(JSON.stringify(estado)),
   poner({ perfil: p, on, v5, luz, vista } = {}) {
     if (p) { estado.perfil = p; estado.on = efectosDe(perfil(p)); }
