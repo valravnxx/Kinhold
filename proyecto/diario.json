@@ -3968,5 +3968,22 @@
   "pruebas": "En la nube: todos los grupos bien (lógica, a la segunda: la prueba del combate en el servidor falló otra vez en «lo que no se puede se rechaza al que lo manda», como el 2 nov, y pasó al repetirla y tres veces aquí, sin tocar nada del combate). Sin pasar, como pide valravnx: las de en línea. No comprobado: el envío de verdad por Resend.",
   "capturas": "capturas/demo-v96",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T09:18:49+01:00",
+  "fin": "2026-11-04T11:54:08+01:00",
+  "titulo": "P2: tu tierra es la zona entera de tu mojón, y el mapa la enseña (chat con valravnx)",
+  "hito": "entre-dos",
+  "hecho": [
+   "Un mojón por personaje (la lógica con su autor no deja poner un segundo) y tu tierra es la zona entera donde lo pones, de las zonas de cada comarca (aproximadamente 1,2 km²); una zona, un dueño. En la lógica pura, el servidor, el juego y los bots.",
+   "Invitar a tu tierra (lo eligió valravnx en el chat, para construir en pareja): desde el menú de Usar sobre quien tienes al lado; el invitado construye en tu zona. Por el servidor con su autor; como mucho 12 invitados (provisional).",
+   "El mapa del rey enseña tu tierra de color con su borde y tu mojón y, al acercarlo, los lindes de las zonas: se sacan a pasos (unos 14 ms cada trozo de 4 km), solo lo que se ve, y no se pintan en el agua.",
+   "Strandvang se reclama como las demás comarcas (decidido por valravnx). Whitholm tiene 1.773 zonas con tierra; 833 en las tres comarcas de inicio.",
+   "La tierra de quien deja de jugar (decidido por valravnx): vuelve al rey a los 30 días sin entrar el dueño ni sus invitados, a los 15 si no tiene ninguna obra terminada, con aviso por correo una semana antes y el último día. Tarea nueva en P2.",
+   "La parte del continente del mojón (hasta tres más, al llegar en barco) va con los hitos de navegar, congelados."
+  ],
+  "pruebas": "Batería entera en la nube bien (en seis grupos GitHub rechazó devolver las capturas, pero sus pruebas pasaron). Pruebas nuevas: zonas y dueños en la lógica (rota con MUTAR=2), las zonas del mapa (MUTAR=1), invitar por el servidor, las zonas de verdad en el servidor y el mapa del rey en el navegador (MUTAR=2). No comprobado en el navegador: el menú de invitar, que es solo en línea (las pruebas en línea no se pasan).",
+  "capturas": "capturas/demo-v97",
+  "estado": "ok"
  }
 ]

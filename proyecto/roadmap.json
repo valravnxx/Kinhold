@@ -1117,7 +1117,9 @@
     },
     {
      "nombre": "Un mojón por personaje en Whitholm (valravnx, 31 oct): la lógica con autor no deja poner un segundo; en el continente, hasta tres más en total, cuando se llegue en barco",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-04T09:18:49+01:00",
+     "fin": "2026-11-04T11:54:08+01:00"
     },
     {
      "nombre": "El mojón y lo que se pone en tu tierra se pagan de lo que llevas (no del montón común), por el servidor con su autor",
@@ -1161,9 +1163,9 @@
     },
     {
      "nombre": "Tu tierra es la zona entera de tu mojón (valravnx, 4 nov), un mojón por personaje; el mapa, al acercarlo, enseña las zonas de cada comarca y la tuya resaltada con su mojón",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-04T09:18:49+01:00",
-     "rama": "trabajo/20261104-0930-mapa-tierras"
+     "fin": "2026-11-04T11:54:08+01:00"
     }
    ]
   },
@@ -2594,6 +2596,13 @@
      "archivo": "jugar/demo/v96.html",
      "capturas": "capturas/demo-v96",
      "notas": "Recuperar y cambiar la contraseña: «¿Has olvidado la contraseña?» manda un código al correo confirmado de la cuenta para poner otra; en el menú, cambiar la contraseña o el correo pidiendo la actual, con aviso por correo. Al cambiar la contraseña se cierra la sesión en los demás aparatos."
+    },
+    {
+     "v": "v97",
+     "fecha": "2026-11-04",
+     "archivo": "jugar/demo/v97.html",
+     "capturas": "capturas/demo-v97",
+     "notas": "Tu tierra es la zona entera de tu mojón: un mojón por personaje y una zona, un dueño. El dueño puede invitar a quien tenga al lado a construir en su tierra. El mapa del rey enseña tu tierra de color con su mojón y, al acercarlo, los lindes de las zonas de cada comarca."
     }
    ]
   },
