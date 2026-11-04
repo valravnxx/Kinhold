@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-04T14:23:11+00:00",
+  "tarea": "Revisión completa y publicación",
+  "hito": "servidor",
+  "rama": "trabajo/20261104-1423"
+ },
  "B": null
 }
