@@ -75,7 +75,8 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
             alCrear: (u, r) => { cuenta = u; sinCorreo = !!(r && r.correo && r.correo.verificado === false); if (!sinCorreo) avisar(tr('Cuenta creada: {u}. Tu personaje ya es de tu cuenta.', { u }), false); },
             alConfirmar: () => { sinCorreo = false; avisar(tr('Correo confirmado. Tu personaje ya es de tu cuenta.'), false); } });
         } else if (msg.cuenta !== null && !sinCorreo && pantalla) { pantalla.quitar(); pantalla = null; }
-      } else if (msg.tipo === 'cuenta') { if ((msg.que === 'crear' || msg.que === 'verificar') && msg.ok && typeof msg.admin === 'boolean') admin = msg.admin;   // al confirmar el correo (o cambiarlo) el servidor dice si es de admin if (pantalla) pantalla.recibir(msg);
+      // al confirmar el correo (o cambiarlo) el servidor dice si la cuenta es de admin
+      } else if (msg.tipo === 'cuenta') { if ((msg.que === 'crear' || msg.que === 'verificar') && msg.ok && typeof msg.admin === 'boolean') admin = msg.admin; if (pantalla) pantalla.recibir(msg);
       } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, deAspecto(msg));
       else if (msg.tipo === 'sale') aspectos.delete(msg.autor);
       else if (msg.tipo === 'error') console.warn('Servidor:', msg.motivo);
