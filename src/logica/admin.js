@@ -3,10 +3,13 @@
 // las peticiones, y el navegador para saber dónde ponerse.
 //
 // El admin, por la cuenta (revisión del 1 nov con valravnx: «el admin, por la cuenta de valravnx»; P1): ya no hay clave
-// aparte. El servidor solo acepta el panel de la conexión cuyo personaje es de una cuenta de admin: por defecto, la
-// cuenta «valravnx»; en la máquina se puede poner otra lista con la variable KINHOLD_ADMIN_CUENTA (usuarios separados
-// por comas; servidor/nube/LEEME.md). La bienvenida dice { admin: true } a esa conexión, y solo entonces el navegador
-// enseña el panel. Cada petición (bien o mal) se apunta en admin.jsonl junto al mundo.
+// aparte. El servidor solo acepta el panel de la conexión cuyo personaje es de una cuenta de admin. Y por su correo
+// (valravnx, 2 nov: «el admin por la cuenta y su correo»): es admin la cuenta cuyo correo CONFIRMADO esté en la lista de
+// la máquina, la variable KINHOLD_ADMIN_CORREO (correos separados por comas; servidor/nube/LEEME.md). El nombre de
+// usuario ya no cuenta: así nadie se hace admin por quedarse antes el nombre «valravnx» (un correo confirmado solo
+// puede tenerlo una cuenta, y para confirmarlo hay que leer el código que llega a él). Sin esa variable, no hay admin.
+// La bienvenida dice { admin: true } a esa conexión (y la respuesta al confirmar el correo), y solo entonces el
+// navegador enseña el panel. Cada petición (bien o mal) se apunta en admin.jsonl junto al mundo.
 //
 // Mensajes (JSON):
 //   cliente → servidor   { tipo: 'admin', id, que: 'ver' }
@@ -19,23 +22,23 @@
 // Moverse no cambia el mundo: el navegador pone ahí a su jugador y sigue mandando su estado como siempre.
 
 import { SALIDA, dentroDeIsla } from './whitholm.js';
-import { claveDeUsuario, motivoUsuario } from './cuentas.js';
+import { motivoCorreo, claveDeCorreo } from './correo.js';
 
-export const CUENTAS_ADMIN = 'valravnx';   // la cuenta de admin si la máquina no dice otra (KINHOLD_ADMIN_CUENTA)
 export const JUNTO = 1.6;            // m al lado del otro jugador (a su lado, para no caerle encima)
 export const NO_ADMIN = 'Solo la cuenta de admin puede usar el panel.';
 
 const numero = (v) => typeof v === 'number' && Number.isFinite(v);
 
-// Las cuentas de admin, de la lista de la máquina («valravnx» o «ana, valravnx»): un conjunto con cada usuario sin
-// mayúsculas (como se comparan las cuentas). Lo que no es un usuario válido se descarta; vacía o sin poner, la de siempre.
-export function cuentasAdmin(lista = CUENTAS_ADMIN) {
-  const nombres = typeof lista === 'string' ? lista.split(',') : Array.isArray(lista) ? lista : [];
-  const c = new Set(nombres.filter(u => typeof u === 'string').map(u => u.trim()).filter(u => !motivoUsuario(u)).map(claveDeUsuario));
-  return c.size ? c : new Set([claveDeUsuario(CUENTAS_ADMIN)]);
+// Los correos de admin, de la lista de la máquina («yo@ejemplo.com» o «yo@ejemplo.com, otra@ejemplo.com»): un conjunto
+// con cada correo sin mayúsculas (como se comparan los correos). Lo que no es un correo válido se descarta; vacía o sin
+// poner, ninguno (nadie es admin).
+export function correosAdmin(lista) {
+  const correos = typeof lista === 'string' ? lista.split(',') : Array.isArray(lista) ? lista : [];
+  return new Set(correos.filter(c => typeof c === 'string').map(c => c.trim()).filter(c => c && !motivoCorreo(c)).map(claveDeCorreo));
 }
-// ¿Es de admin esta cuenta (su usuario, o null si el personaje no tiene cuenta)?
-export const esCuentaAdmin = (usuario, admins) => typeof usuario === 'string' && admins.has(claveDeUsuario(usuario));
+// ¿Es de admin esta cuenta? `e` es su correo como lo da Cuentas.correoDe ({ correo, verificado }, o null sin cuenta):
+// solo si está confirmado y en la lista.
+export const esCorreoAdmin = (e, admins) => !!e && e.verificado === true && typeof e.correo === 'string' && admins.has(claveDeCorreo(e.correo));
 
 // Comprueba una petición del panel (si es de admin lo mira el servidor, con la cuenta de la conexión). Devuelve la petición limpia o null.
 export function validarPeticionAdmin(m) {

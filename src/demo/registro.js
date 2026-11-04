@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v96 (recuperar y cambiar la contraseña)";
+export const VERSION_DEMO = "Demo única · v97 (el admin, por su correo)";
 export const REGISTRO_DEMO = [
+  "v97: el admin, por la cuenta y su correo. El panel de depuración sale solo con la cuenta cuyo correo confirmado es el que dice la máquina (KINHOLD_ADMIN_CORREO en /etc/kinhold/admin.env); el nombre de usuario ya no cuenta, así que quedarse antes el nombre «valravnx» no hace admin a nadie. Sale al confirmar ese correo, sin volver a entrar, y se va si se cambia por otro.",
+  "v97, provisional: sin KINHOLD_ADMIN_CORREO en la máquina no hay ninguna cuenta de admin (antes, por defecto, la del usuario «valravnx»). KINHOLD_ADMIN_CUENTA ya no se usa.",
   "v96: recuperar la contraseña. En la pantalla de la cuenta, en «Entrar», «¿Has olvidado la contraseña?»: con tu usuario o tu correo te llega un código al correo de tu cuenta (si está confirmado) y con él pones una contraseña nueva y entras con tu personaje. Se cierra la sesión en tus demás aparatos y te llega un aviso por correo.",
   "v96: en el menú, «Cambiar la contraseña» y «Cambiar el correo», pidiendo la contraseña actual. Al cambiar la contraseña se cierra la sesión en tus demás aparatos (en este sigues) y te llega un aviso al correo. El correo nuevo se confirma con el código que le llega; hasta entonces sigue el de antes, y al de antes le llega un aviso del cambio.",
   "v96, provisional: el código para recuperar caduca a los 15 minutos, con un minuto entre uno y otro, como mucho 5 por hora a la misma cuenta y 10 peticiones por hora desde la misma dirección; tras 5 códigos mal hay que pedir otro. La respuesta es la misma exista o no la cuenta, para que no se pueda saber qué cuentas hay. Una cuenta sin el correo confirmado no puede recuperar la contraseña.",

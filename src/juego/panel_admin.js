@@ -2,7 +2,7 @@
 // rey con todos los jugadores conectados y, al lado, su lista; un clic en el mapa te lleva ahí, e «Ir» te pone junto a
 // ese jugador.
 //
-// El admin, por la cuenta (revisión del 1 nov, P1): sin clave aparte. Solo sale con la cuenta de admin (la de valravnx):
+// El admin, por la cuenta (revisión del 1 nov, P1): sin clave aparte. Solo sale con la cuenta de admin (su correo confirmado en KINHOLD_ADMIN_CORREO):
 // lo dice el servidor al conectar (enLinea.admin) y es él quien acepta o no cada petición (src/logica/admin.js), con la
 // cuenta de la conexión; lo apunta y contesta, y solo entonces se mueve al jugador. Con otra cuenta no hay botón y F9
 // no hace nada.
@@ -136,7 +136,7 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
   }
 
   // el botón «Admin» (también para el móvil, sin teclado): solo con la cuenta de admin. El servidor lo dice al conectar (o
-  // al crear la cuenta), así que se mira cada poco; si deja de serlo (se corta, entra otro), se quita y se cierra el panel.
+  // al confirmar el correo), así que se mira cada poco; si deja de serlo (se corta, entra otro), se quita y se cierra el panel.
   const menu = document.getElementById('menu');
   let boton = null;
   function mirarBoton() {

@@ -19,7 +19,7 @@ RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_admin'
 os.makedirs(SALIDA, exist_ok=True)
 MUTAR = os.environ.get('MUTAR', '') == '1'
-ADMINS = ['valravnx', 'admmovil', 'admen']   # la cuenta de admin de cada vista (la máquina dice cuáles son)
+ADMINS = ['valravnx', 'admmovil', 'admen']   # la cuenta de admin de cada vista (la máquina dice sus correos: usuario@ejemplo.com, como los pone correo_prueba.py)
 OTRO = (1500.0, 900.0)   # dónde está el jugador simulado (m, relativos a la salida; lejos, para que tu marca no lo tape)
 
 sitio = tempfile.mkdtemp()
@@ -34,10 +34,10 @@ threading.Thread(target=web.serve_forever, daemon=True).start()
 s = socket.socket(); s.bind(('127.0.0.1', 0)); PUERTO = s.getsockname()[1]; s.close()
 SERVIDOR = os.path.join(RAIZ, 'servidor/servidor.mjs')
 if MUTAR:
-    t = open(SERVIDOR).read(); m = t.replace('admin: esAdmin(autor) });', 'admin: true });'); assert m != t
+    t = open(SERVIDOR).read(); m = t.replace('admin: esAdmin(autor),', 'admin: true,'); assert m != t
     SERVIDOR = os.path.join(RAIZ, 'servidor/.servidor_mutado_admin_nav.mjs'); open(SERVIDOR, 'w').write(m)
 servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ,
-                            env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres', 'KINHOLD_ADMIN_CUENTA': ','.join(ADMINS)}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                            env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres', 'KINHOLD_ADMIN_CORREO': ','.join(u + '@ejemplo.com' for u in ADMINS)}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
 codigos = Codigos(servidor)
 # el otro jugador: un cliente de node que manda su estado, quieto
