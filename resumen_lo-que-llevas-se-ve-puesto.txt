@@ -1,0 +1,43 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2775 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2427 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1996 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2487 KB
+
+== Construir demo única
+      2347 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3073 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1991 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2476 KB
+dist/kinhold_trozos.html 1993 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: lo que llevas se ve puesto
+  OK   movil: la mujer, elegida (se cargan su cuerpo y sus animaciones de cargar)
+  OK   movil (mujer): sin errores en la página
+
+FALLAN: mujer: el tronco va al lado de la cabeza, sin taparla
+!! FALLA: python3 pruebas/prueba_llevado_navegador.py dist/kinhold_hito1.html /tmp/kinhold_capturas/llevado
+
+HAY FALLOS
+tardó 166 s
