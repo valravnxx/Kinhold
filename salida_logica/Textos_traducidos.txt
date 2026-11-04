@@ -1,0 +1,8 @@
+Textos del juego: 1219; sin traducir (en): 3; con variables distintas: 0
+  FALTA (en)  v97: el admin, por la cuenta y su correo. El panel de depuración sale solo con la cuenta cuyo correo confirmado es el que dice la máquina (KINHOLD_ADMIN_CORREO en /etc/kinhold/admin.env); el nombre de usuario ya no cuenta, así que quedarse antes el nombre «valravnx» no hace admin a nadie. Sale al confirmar ese correo, sin volver a entrar, y se va si se cambia por otro.
+  FALTA (en)  v97, provisional: sin KINHOLD_ADMIN_CORREO en la máquina no hay ninguna cuenta de admin (antes, por defecto, la del usuario «valravnx»). KINHOLD_ADMIN_CUENTA ya no se usa.
+  FALTA (en)  Demo única · v97 (el admin, por su correo)
+Textos del juego: 1219; sin traducir (ru): 3; con variables distintas: 0; sin cirílico: 0
+  FALTA (ru)  v97: el admin, por la cuenta y su correo. El panel de depuración sale solo con la cuenta cuyo correo confirmado es el que dice la máquina (KINHOLD_ADMIN_CORREO en /etc/kinhold/admin.env); el nombre de usuario ya no cuenta, así que quedarse antes el nombre «valravnx» no hace admin a nadie. Sale al confirmar ese correo, sin volver a entrar, y se va si se cambia por otro.
+  FALTA (ru)  v97, provisional: sin KINHOLD_ADMIN_CORREO en la máquina no hay ninguna cuenta de admin (antes, por defecto, la del usuario «valravnx»). KINHOLD_ADMIN_CUENTA ya no se usa.
+  FALTA (ru)  Demo única · v97 (el admin, por su correo)

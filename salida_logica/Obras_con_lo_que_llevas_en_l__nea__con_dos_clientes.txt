@@ -1,0 +1,31 @@
+Una obra en el mundo
+  OK   se pone el marco de un cimiento
+Con las manos vacías no se entrega nada
+  OK   el servidor la rechaza — No llevas ese material.
+  OK   aunque el navegador diga que ya va pagada («lleva: true») — No llevas ese material.
+  OK   y el navegador ni la manda: no llevas ese material — No llevas ese material.
+El arcón de materiales va por el servidor
+  OK   sacar 6 piedras del arcón
+  OK   van a lo que llevas en el servidor — 6
+  OK   y al navegador le llega lo que lleva
+  OK   el otro navegador ve el arcón igual — 111 y 111
+Entregar cobra de lo que llevas en el servidor
+  OK   se entregan las 6 que lleva (de 8 que faltan)
+  OK   lo que lleva en el servidor queda sin piedras
+  OK   el arcón no cambia — 111
+  OK   la entrada que se reparte va ya pagada, con la cantidad de verdad — {"construccion":1,"clave":"f:0,0,0","material":"piedra","cantidad":6,"lleva":true}
+  OK   el otro navegador rehace la obra y el arcón igual que el servidor — {"entregado":{"piedra":6},"materiales":{"piedra":111,"tronco":120,"vara":120,"barro":80,"paja":80,"cuerda":40,"tabla":80,"clavo":120,"hierro":20,"teja":100}}
+  OK   y el propio también
+El adelanto del navegador cobra de lo que llevas
+  OK   se adelanta y lo que llevas baja ya — {"ok":true,"entregado":2,"falta":[]}
+  OK   el servidor la acepta y cobra de lo suyo
+  OK   los tres mundos cuadran
+Dejar en el arcón
+  OK   vuelve al arcón lo que llevaba en esa mano — {"de":"mano:der","cantidad":3,"material":"piedra","lleva":true}
+  OK   y el otro navegador lo ve igual
+Al volver a arrancar el servidor
+  OK   la obra y el arcón quedan igual — {"entregado":{"piedra":8},"materiales":{"piedra":109,"tronco":120,"vara":120,"barro":80,"paja":80,"cuerda":40,"tabla":80,"clavo":120,"hierro":20,"teja":100}}
+  OK   lo que lleva cada uno, también
+  OK   un navegador nuevo rehace el mismo mundo con la bienvenida
+
+22 correctas, 0 fallos
