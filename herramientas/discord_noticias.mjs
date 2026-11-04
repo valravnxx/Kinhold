@@ -1,10 +1,12 @@
 // Noticias del desarrollo en Discord (valravnx, 1 nov): cada versión jugable nueva y cada entrada nueva del diario se
-// publican solas en el Discord de Kinhold, en #versiones y en #diario-de-desarrollo, por los webhooks que crea el
-// montador del servidor. Lo lanza GitHub al subir a main (.github/workflows/discord.yml), así que no depende de que
+// publican solas en el Discord de Kinhold, por los webhooks que crea el montador del servidor. El servidor va en inglés
+// (valravnx, 1 nov: «que el main sea inglés»): en inglés salen en #versions y #dev-diary, y en español y en ruso, las
+// dos cosas juntas en el canal de noticias de cada idioma (las traducciones, las de proyecto/idiomas). Lo lanza GitHub al subir a main (.github/workflows/discord.yml), así que no depende de que
 // nadie tenga nada encendido.
 //
 // Uso: node herramientas/discord_noticias.mjs <commit de antes> <commit de ahora>
-//   Con DISCORD_WEBHOOK_VERSIONES y DISCORD_WEBHOOK_DIARIO (secretos del repositorio); si no están, no hace nada.
+//   Con los secretos del repositorio DISCORD_WEBHOOK_VERSIONES y DISCORD_WEBHOOK_DIARIO (en inglés) y
+//   DISCORD_WEBHOOK_ES y DISCORD_WEBHOOK_RU (español y ruso); los que falten se saltan, y sin ninguno no hace nada.
 //   SIN_ENVIAR=1 → escribe en la salida lo que mandaría, sin mandarlo.
 //
 // - Versiones: las páginas docs/jugar/<prototipo>/vN.html que aparecen entre los dos commits; la nota y las capturas,
@@ -22,6 +24,12 @@ export const REPO = 'valravnxx/Kinhold';
 export const ICONO = WEB + 'recursos/marca/v1/icono_k_192.png';
 export const MAX_MENSAJES = 8;
 const COLOR = { ok: 0x7a9a5a, fallo: 0xb04a3a, version: 0x8c2a1e };
+// los textos fijos de los mensajes, en cada idioma
+export const TEXTOS = {
+  es: { hito: 'Hito', tiempo: 'Tiempo', pruebas: 'Pruebas', min: 'min', jugar: 'Jugar', progreso: 'El progreso del desarrollo', nueva: 'Versión nueva.' },
+  en: { hito: 'Milestone', tiempo: 'Time', pruebas: 'Tests', min: 'min', jugar: 'Play', progreso: 'Development progress', nueva: 'New version.' },
+  ru: { hito: 'Этап', tiempo: 'Время', pruebas: 'Тесты', min: 'мин', jugar: 'Играть', progreso: 'Ход разработки', nueva: 'Новая версия.' },
+};
 
 const git = (...a) => execFileSync('git', a, { encoding: 'utf8', maxBuffer: 1 << 28 });
 const jsonEn = (commit, ruta) => { try { return JSON.parse(git('show', `${commit}:${ruta}`)); } catch { return null; } };
@@ -39,22 +47,26 @@ function primeraCaptura(sha, carpeta) {
 }
 
 // Lo que hay que publicar entre dos commits (puro con lo que le pasan; lo usa la prueba)
-export function noticias({ diarioAntes, diarioAhora, versionesNuevas, roadmap, sha, captura = () => null }) {
+// idioma: es, en o ru; trad: el diccionario de proyecto/idiomas/<idioma>.json (texto en español → traducción)
+export function noticias({ diarioAntes, diarioAhora, versionesNuevas, roadmap, sha, captura = () => null, idioma = 'es', trad = {} }) {
+  const tx = TEXTOS[idioma] || TEXTOS.es;
+  const t = (s) => (idioma === 'es' || !s ? s : (trad[s] ?? s));
+  const web = WEB + `?lang=${idioma}`;
   const clave = (e) => `${e.inicio}|${e.titulo}`;
   const antes = new Set((diarioAntes || []).map(clave));
-  const nombreHito = Object.fromEntries((roadmap?.hitos || []).map(h => [h.id, h.nombre]));
+  const nombreHito = Object.fromEntries((roadmap?.hitos || []).map(h => [h.id, t(h.nombre)]));
   const diario = (diarioAhora || []).filter(e => !antes.has(clave(e))).slice(-MAX_MENSAJES).map(e => {
     const min = Math.round((new Date(e.fin) - new Date(e.inicio)) / 60000);
-    const hecho = (e.hecho || []).map(h => '• ' + h).join('\n');
+    const hecho = (e.hecho || []).map(h => '• ' + t(h)).join('\n');
     const emb = {
-      title: corta((e.estado === 'fallo' ? '⚠️ ' : '') + e.titulo, 256),
-      url: WEB,
+      title: corta((e.estado === 'fallo' ? '⚠️ ' : '') + t(e.titulo), 256),
+      url: web,
       color: COLOR[e.estado] ?? COLOR.ok,
       description: corta(hecho || '—', 4000),
       fields: [
-        ...(nombreHito[e.hito] ? [{ name: 'Hito', value: corta(nombreHito[e.hito], 1024), inline: true }] : []),
-        ...(Number.isFinite(min) && min > 0 ? [{ name: 'Tiempo', value: `${min} min`, inline: true }] : []),
-        ...(e.pruebas ? [{ name: 'Pruebas', value: corta(e.pruebas, 1024) }] : []),
+        ...(nombreHito[e.hito] ? [{ name: tx.hito, value: corta(nombreHito[e.hito], 1024), inline: true }] : []),
+        ...(Number.isFinite(min) && min > 0 ? [{ name: tx.tiempo, value: `${min} ${tx.min}`, inline: true }] : []),
+        ...(e.pruebas ? [{ name: tx.pruebas, value: corta(t(e.pruebas), 1024) }] : []),
       ],
       timestamp: e.fin || e.inicio,
     };
@@ -67,10 +79,10 @@ export function noticias({ diarioAntes, diarioAhora, versionesNuevas, roadmap, s
     const p = protos[prototipo];
     const info = (p?.versiones || []).find(x => x.v === v) || {};
     const emb = {
-      title: corta(`${p?.nombre || prototipo} · ${v}`, 256),
-      url: WEB + `jugar/${prototipo}/${v}.html`,
+      title: corta(`${t(p?.nombre) || prototipo} · ${v}`, 256),
+      url: WEB + `jugar/${prototipo}/${v}.html?lang=${idioma}`,
       color: COLOR.version,
-      description: corta((info.notas || 'Versión nueva.') + `\n\n🎮 **[Jugar](${WEB}jugar/${prototipo}/)** · 🗺️ [El progreso del desarrollo](${WEB})`, 4000),
+      description: corta((t(info.notas) || tx.nueva) + `\n\n🎮 **[${tx.jugar}](${WEB}jugar/${prototipo}/?lang=${idioma})** · 🗺️ [${tx.progreso}](${web})`, 4000),
       timestamp: info.fecha ? new Date(info.fecha + 'T12:00:00Z').toISOString() : undefined,
     };
     const img = captura(info.capturas);
@@ -103,23 +115,30 @@ async function mandar(url, cuerpo) {
 async function principal() {
   const [antes, ahora] = process.argv.slice(2);
   if (!antes || !ahora) { console.error('Uso: node herramientas/discord_noticias.mjs <commit de antes> <commit de ahora>'); process.exit(2); }
-  const urlV = process.env.DISCORD_WEBHOOK_VERSIONES, urlD = process.env.DISCORD_WEBHOOK_DIARIO, seco = !!process.env.SIN_ENVIAR;
-  if (!seco && !urlV && !urlD) { console.log('Sin webhooks de Discord (secretos DISCORD_WEBHOOK_*): no se publica nada.'); return; }
+  const ev = process.env, seco = !!ev.SIN_ENVIAR;
+  // a dónde va cada cosa en cada idioma: [idioma, webhook de las versiones, webhook del diario]
+  const destinos = [['en', ev.DISCORD_WEBHOOK_VERSIONES, ev.DISCORD_WEBHOOK_DIARIO], ['es', ev.DISCORD_WEBHOOK_ES, ev.DISCORD_WEBHOOK_ES],
+    ['ru', ev.DISCORD_WEBHOOK_RU, ev.DISCORD_WEBHOOK_RU]].filter(([, v, d]) => seco || v || d);
+  if (!destinos.length) { console.log('Sin webhooks de Discord (secretos DISCORD_WEBHOOK_*): no se publica nada.'); return; }
   const sha = git('rev-parse', ahora).trim();
   const base = /^0+$/.test(antes) ? `${sha}~1` : antes;   // (el primer empuje de una rama trae un «antes» vacío)
-  const n = noticias({
+  const comun = {
     diarioAntes: jsonEn(base, 'proyecto/diario.json'), diarioAhora: jsonEn(sha, 'proyecto/diario.json'),
     versionesNuevas: versionesEntre(base, sha), roadmap: jsonEn(sha, 'proyecto/roadmap.json'), sha,
     captura: (carpeta) => primeraCaptura(sha, carpeta),
-  });
-  console.log(`${n.versiones.length} versiones y ${n.diario.length} entradas del diario nuevas.`);
+  };
   let mal = 0;
-  for (const [url, lista] of [[urlV, n.versiones], [urlD, n.diario]]) {
-    for (const m of lista) {
-      if (seco) { console.log(JSON.stringify(m)); continue; }
-      if (!url) continue;
-      if (!(await mandar(url, m))) mal++;
-      await new Promise(z => setTimeout(z, 1200));
+  for (const [idioma, urlV, urlD] of destinos) {
+    const trad = idioma === 'es' ? {} : (jsonEn(sha, `proyecto/idiomas/${idioma}.json`) || {});
+    const n = noticias({ ...comun, idioma, trad });
+    console.log(`${idioma}: ${n.versiones.length} versiones y ${n.diario.length} entradas del diario nuevas.`);
+    for (const [url, lista] of [[urlV, n.versiones], [urlD, n.diario]]) {
+      for (const m of lista) {
+        if (seco) { console.log(JSON.stringify(m)); continue; }
+        if (!url) continue;
+        if (!(await mandar(url, m))) mal++;
+        await new Promise(z => setTimeout(z, 1200));
+      }
     }
   }
   if (mal) { console.error(`${mal} mensajes no se han podido publicar.`); process.exit(1); }

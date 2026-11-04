@@ -1,15 +1,15 @@
 {
  "A": {
-  "inicio": "2026-11-04T09:24:20+00:00",
+  "inicio": "2026-11-04T12:25:18+00:00",
+  "tarea": "Recorrido de jugador automático: una prueba que juega como un jugador nuevo, sin arcón y con lo que se recoge, de principio a fin de lo que haya (hoy: recoger, talar, el mojón y un cimiento), y que falla si algo no se puede hacer así. Desde aquí, una tarea de juego no se publica si su parte del recorrido no sale",
+  "hito": "entre-dos",
+  "rama": "trabajo/20261104-1225"
+ },
+ "B": null,
+ "chat:trabajo/20261104-0924": {
+  "inicio": "2026-11-04T13:05:19+00:00",
   "tarea": "El admin, por la cuenta y su correo: solo es admin la cuenta con el correo confirmado que diga la máquina (KINHOLD_ADMIN_CORREO), para que nadie pueda quedarse antes el nombre «valravnx»",
   "hito": "servidor",
   "rama": "trabajo/20261104-0924"
- },
- "B": null,
- "chat:trabajo/20261101-1630-discord-idiomas": {
-  "inicio": "2026-11-04T10:53:24+01:00",
-  "tarea": "Noticias del desarrollo en Discord en tres idiomas: en inglés en los canales comunes y en español y ruso en los suyos",
-  "hito": "infra",
-  "rama": "trabajo/20261101-1630-discord-idiomas"
  }
 }

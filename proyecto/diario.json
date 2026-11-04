@@ -3847,6 +3847,22 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-11-01T16:29:59+01:00",
+  "fin": "2026-11-04T11:59:14+01:00",
+  "titulo": "Noticias del desarrollo en Discord, en tres idiomas",
+  "hito": "infra",
+  "hecho": [
+   "El servidor de Discord va en inglés (valravnx, 1 nov: «que el main sea inglés»): las versiones y el diario salen en inglés en #versions y #dev-diary.",
+   "En español y en ruso salen las dos cosas juntas en el canal de noticias de cada idioma (#noticias y #новости), con las traducciones que ya tiene el juego; lo que aún no esté traducido sale en español.",
+   "Los enlaces llevan el idioma (?lang=) para que la web y el juego se abran en el idioma de cada canal.",
+   "Dos secretos nuevos para GitHub, DISCORD_WEBHOOK_ES y DISCORD_WEBHOOK_RU; el que falte se salta y los demás salen igual.",
+   "La prueba de las noticias comprueba los tres idiomas y los cuatro canales; rota a propósito (el inglés sin sus traducciones, MUTAR=2) falla."
+  ],
+  "pruebas": "Batería entera en la nube, 31 grupos correctos (8 grupos no pudieron devolver sus capturas por errores 500 de GitHub, pero sus pruebas pasaron); noticias en Discord: los tres idiomas y los cuatro canales",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-01T16:24:16+00:00",
   "fin": "2026-11-01T18:05:35+00:00",
   "titulo": "P1: entrar en el juego con la cuenta",
@@ -3985,5 +4001,36 @@
   "pruebas": "Batería entera en la nube bien (en seis grupos GitHub rechazó devolver las capturas, pero sus pruebas pasaron). Pruebas nuevas: zonas y dueños en la lógica (rota con MUTAR=2), las zonas del mapa (MUTAR=1), invitar por el servidor, las zonas de verdad en el servidor y el mapa del rey en el navegador (MUTAR=2). No comprobado en el navegador: el menú de invitar, que es solo en línea (las pruebas en línea no se pasan).",
   "capturas": "capturas/demo-v97",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T12:43:17+01:00",
+  "fin": "2026-11-04T12:45:39+01:00",
+  "titulo": "GDD: el anexo de valravnx del 4 nov, dentro de sus apartados (chat con valravnx)",
+  "hito": "orden",
+  "hecho": [
+   "Apartado 2: gratis para siempre y lo de pago solo apariencia, sin cajas de botín, moneda premium, pase de temporada ni ofertas con prisa; la paridad funcional, obligatoria. El dominio, playkinhold.com.",
+   "Apartado 3: la dirección gráfica de la prueba v5 (siluetas que se leen, riqueza en materiales, luz y posprocesado), el ambiente y la calidad que se ajusta al aparato, con 30 y 60 fotogramas como objetivos orientativos.",
+   "Apartado 16: el almacén con mercado, una sola instalación que se adquiere en la ciudad del rey; el resto, abierto.",
+   "Apartado 20: lo premium son recetas de apariencia en packs; lo que se puede vender o robar, con fabricaciones limitadas; la ropa de pago se tiñe con los tintes del juego (los colores no son de pago); camas y muebles, la misma comodidad. Cuántos usos y si se recargan, abierto.",
+   "Retraducidos al inglés y al ruso con la huella nueva. Sin tocar el código."
+  ],
+  "pruebas": "Construir la web con el GDD nuevo y las traducciones; el GDD mirado en el navegador.",
+  "capturas": null,
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T09:23:36+00:00",
+  "fin": "2026-11-04T11:48:36+00:00",
+  "titulo": "Cuentas: el admin, por la cuenta y su correo confirmado, sin publicar (carril A)",
+  "hito": "servidor",
+  "hecho": [
+   "Hecho en la rama trabajo/20261104-0924, sin unir a main: es admin solo la cuenta cuyo correo confirmado está en KINHOLD_ADMIN_CORREO (en la máquina); el nombre de usuario ya no cuenta, sin la variable no hay admin, se pasa a serlo al confirmar el correo y se deja de ser al cambiarlo.",
+   "La prueba del admin en el servidor pasa (42 comprobaciones, rota a propósito dos veces y falla) y la del panel en el navegador también; un comentario mal puesto en el cliente que impedía crear cuentas se arregló en la sesión.",
+   "No se publica: tras unir main (la demo v97 de tu tierra), la prueba de navegador «lo que se recoge en el mundo» falla en la nube a ratos y cada vez en algo distinto (cosas alrededor de la salida, lo recogido al volver); pasó una vez de cuatro. También falló una vez el agua del río del mapa del mundo en el móvil. Ninguna toca lo del admin, pero no está comprobado que vengan de antes.",
+   "La siguiente sesión retoma la rama, vuelve a pasar esas pruebas y publica (sería la demo v98)."
+  ],
+  "pruebas": "Lógica bien. Navegador bien salvo «lo que se recoge en el mundo» (falla a ratos) y una vez el mapa del mundo en el móvil (el agua del río). Varias tandas: GitHub devolvió errores 500 al subir capturas, y se miró cada grupo en su registro.",
+  "capturas": null,
+  "estado": "fallo"
  }
 ]

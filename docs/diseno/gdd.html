@@ -60,7 +60,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Versión 0.9 · 26 oct 2026 (31 oct: la isla del rey y su ciudad) · Ampliación para un juego acabado: comarcas, transporte, ropa tejida y convivencia online · El catálogo de contenido sigue en el documento de análisis</div>
+  <div class="sub">Versión 0.9 · 26 oct 2026 (31 oct: la isla del rey y su ciudad; 4 nov: lo de pago, la dirección gráfica y el almacén con mercado) · Ampliación para un juego acabado: comarcas, transporte, ropa tejida y convivencia online · El catálogo de contenido sigue en el documento de análisis</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDIDO</span> lo has dicho tú
     <span class="tag method">MÉTODO</span> cómo hacerlo técnicamente
@@ -114,7 +114,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span>Web propia con cuentas. Servidor de pago si hace falta. PC, móvil y tablet.</p>
 <p><span class="tag ok">DECIDIDO</span>Tercera persona semiisométrica con <b>rotación libre</b>.</p>
 <p><span class="tag ok">DECIDIDO</span>Idiomas: <b>inglés, español y ruso.</b></p>
-<p><span class="tag ok">DECIDIDO</span><b>Gratis</b> con contenido premium solo estético: recetas que se desbloquean para fabricar versiones más bonitas de las cosas (ver apartado 20).</p>
+<p><span class="tag ok">DECIDIDO</span><b>Gratis para siempre</b>; lo de pago es solo apariencia, en recetas (ver apartado 20). Se ve exactamente lo que compras antes de comprarlo. Sin cajas de botín ni ruletas, sin moneda premium, sin pase de temporada y sin ofertas con prisa para empujar a comprar (4 nov).</p>
+<p><span class="tag ok">DECIDIDO</span><b>Paridad funcional obligatoria</b> (4 nov): nada de pago da ventaja funcional, defensiva, económica ni táctica. Una versión de pago tiene exactamente lo mismo que su equivalente sin pago: resistencia, estadísticas, choques, lo que tapa y lo que deja pasar, y cómo se pone, se usa y se rompe. Lo que no tiene equivalente es solo decoración: no para proyectiles, no da cobertura, no cierra pasos ni estorba al andar.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Tutorial opcional</b> siempre disponible en el menú de pausa: se puede leer sobre todos los sistemas del juego.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Tramposos: baneo inmediato</b>, también por IP.</p>
 <p><span class="tag ok">DECIDIDO</span>Requisitos mínimos: se decidirán a mitad de desarrollo.</p>
@@ -124,7 +125,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Textos del juego en archivos de traducción desde el primer hito, para que añadir idiomas no obligue a tocar el código.</li>
   <li>Baneo por IP: hay que saber que una IP la comparten a veces varias personas (una casa, una residencia, algunas operadoras móviles) y que con una VPN se esquiva. Conviene combinarlo con el baneo de la cuenta y de su correo.</li>
 </ul></div>
-<p><span class="tag ok">DECIDIDO</span>Nombre: <b>Kinhold</b>. Pendiente de comprobar dominio y registro de marca.</p>
+<p><span class="tag ok">DECIDIDO</span>Nombre: <b>Kinhold</b>. Dominio: <b>playkinhold.com</b> (1 nov). Pendiente el registro de marca.</p>
 </section>
 
 <section id="arte">
@@ -132,6 +133,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span>3D low-poly generado por código, con tus revisiones para ajustar.</p>
 <p><span class="tag ok">DECIDIDO</span>Sonido y música <b>relajantes y poco estridentes.</b></p>
 <p><span class="tag ok">DECIDIDO</span>Estilo del mundo: <b>«realismo en miniatura»</b> (prueba de estilo v5): formas limpias, texturas por código, luz suave con sombras de contacto, mundo sin recortar.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Dirección gráfica</b> (4 nov), la de la prueba v5 para todo lo que se ve: geometría sencilla y siluetas que se leen, con proporciones medievales creíbles; la riqueza va en los materiales, la luz y el posprocesado, no en polígonos de más. Ni hiperrealismo ni caricatura. La misma mano en arquitectura, terreno, objetos y personajes.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Ambiente:</b> luz del sol y luz ambiente cuidadas, sombras dinámicas medidas, materiales que respondan a la luz (nada de superficies planas y pobres), un brillo suave en las luces, posprocesado contenido y niebla para dar profundidad. Primero una imagen atractiva y coherente; los efectos caros, después o nunca.</p>
 <p><span class="tag ok">DECIDIDO</span>Personajes: <b>nunca esculpidos ni inventados por código.</b> El cuerpo sale de la malla libre de MakeHuman (CC0) y en el <b>taller propio</b> se le hacen por código la ropa, el pelo, la barba, la piel y los ojos. Las animaciones son de Quaternius (CC0), pasadas a ese esqueleto.</p>
 <div class="box m"><span class="tag method">MÉTODO</span>
 <ul>
@@ -140,6 +143,9 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Una paleta por material para que todo sea coherente.</li>
   <li>Taller propio sin pantalla (Blender + MPFB2, con versiones fijadas): genera los personajes vestidos, reduce mallas y pasa animaciones de un esqueleto a otro.</li>
   <li>Niveles de detalle: versiones más sencillas de personajes y piezas para verlas de lejos y aguantar mucha gente en el móvil.</li>
+  <li>Calidad que se ajusta al aparato (navegador, PC y Android): perfiles gráficos y ajustes; niveles de detalle e instancias; pocas luces dinámicas, sombras y distancia de dibujo controladas; nada de iluminación global avanzada ni efectos volumétricos caros.</li>
+  <li>Objetivos orientativos (4 nov): 30 fotogramas por segundo en un Android de gama media y 60 en PC. Son objetivos, no algo ya medido.</li>
+  <li>Ningún ajuste gráfico puede esconder ni cambiar lo que importa para jugar: lo que se puede usar y lo que pasa en un combate se lee igual en cualquier perfil.</li>
 </ul></div>
 </section>
 
@@ -476,6 +482,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h2>16. Economía y NPCs</h2>
 <p><span class="tag ok">DECIDIDO</span><b>La moneda la acuñan solo los NPCs.</b> Se gana con <b>encargos de los NPCs</b>: ellos piden lo que necesitan y tú se lo traes; no compran cualquier cosa que quieras vender.</p>
 <p><span class="tag ok">DECIDIDO</span>Puestos de venta que funcionan sin estar conectado.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Almacén con mercado en la ciudad del rey</b> (4 nov): una sola instalación que es a la vez almacén y puesto de venta, y que se adquiere en la ciudad del rey (la única ciudad). En ella guardas mercancías y las pones a la venta a otros jugadores. Lo que se vende sale de lo que hacen los jugadores: no es una tienda de objetos que crea el juego. Las cosas no aparecen ni viajan solas: hay que llevarlas hasta allí y recogerlas allí. Es otra cosa que los almacenajes de tu tierra.</p>
+<div class="box o"><span class="tag open">ABIERTO</span> Del almacén con mercado, por decidir: cómo se adquiere y con qué; si hay tamaños; si es de uno, compartido o de un grupo; cuánto cabe y si hay límites por mercancía; cómo se ponen, cambian y retiran las ofertas; cómo se cobra y se entrega; si cuesta mantenerlo o paga renta o impuestos; si tiene sitio de carga y mostrador a la vista de la calle; y qué pasa con él si su dueño deja de jugar.</div>
 <p><span class="tag ok">DECIDIDO</span><b>NPCs a tu servicio, como mercenarios de la época:</b> hay que conseguirles el equipo que llevarán, su comida y su paga; los tienes mientras puedas mantenerlos. La comodidad afecta a estos NPCs. Los centinelas funcionan así.</p>
 <p><span class="tag ok">DECIDIDO</span>Sin aldeas ni bandidos NPC al principio; la única ciudad NPC es la del rey, en Strandvang (31 oct).</p>
 <div class="box p"><span class="tag prop">PROPUESTA</span>
@@ -582,7 +590,14 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span><b>Objetos en el suelo:</b> lo que se suelta fuera de un contenedor desaparece pasado un tiempo (por ejemplo, 1 hora real), salvo dentro de tus tierras. Los troncos y las piedras se quedan como pila. <b>Pilas:</b> cada recurso tiene cuántas unidades caben en un hueco. (Hito 2)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Transporte desde el inicio:</b> la <b>rastra</b> (N0: dos varas largas con travesaños, se arrastra a mano) y la <b>carretilla de rueda maciza</b> (N1: la rueda es una rodaja de tronco). La carretilla se aparca y hace de contenedor: dentro de tus tierras está protegida; fuera, cualquiera puede coger lo que lleva. Después, el carro de dos ruedas (N2) y la carreta de cuatro (N3), con animales de tiro. (Hito 2)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Nada de calidades de objetos.</b> Lo que hace una prenda sale solo de su capa y su material (lino, lana, piel, gambesón, cuero endurecido, malla, placa). Lo que se ve se elige al tejer y coser: <b>corte</b> (túnica corta o larga, sayo, vestido, saya, capa con o sin capucha, calzas, sombrero o cofia), <b>tejido</b> (liso, sarga, espiguilla, cuadros, rayas), <b>tinte</b> de plantas de cada región (rubia para el rojo, gualda para el amarillo, glasto para el azul, cáscara de nuez para el marrón, agallas de roble con hierro para el negro) y, más adelante, orlas bordadas. Como los tintes están repartidos por franjas, dan motivos para comerciar. (Hitos 1b y 3)</p>
-<p><span class="tag ok">DECIDIDO</span><b>Premium:</b> desbloquea recetas para fabricar versiones más bonitas de las cosas (cortes de prenda, tapices, muebles con forma propia). Se siguen fabricando en el juego con sus materiales y no hacen nada mejor: solo se ven distinto. Se concreta más adelante.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Premium</b> (concretado el 4 nov): <b>recetas de apariencia</b>, en packs temáticos de arquitectura, ropa y armadura, heráldica y decoración. Se fabrican en el juego con los mismos materiales que su equivalente y no hacen nada mejor (paridad funcional, apartado 2): son otra apariencia de algo que ya tendrías, o piezas sin estadísticas.</p>
+<ul>
+  <li>Lo que se puede vender o robar (ropa, sombreros y demás) se fabrica <b>un número limitado de veces</b> por receta: si no, uno haría miles y las repartiría o vendería; siendo pocas, se cuidan.</li>
+  <li>La ropa de pago se <b>tiñe</b> como la otra; <b>los colores no son de pago</b>: salen de los tintes del juego (apartado 7), que siguen siendo motivo de comercio.</li>
+  <li>Camas y muebles de pago: <b>otra apariencia del mismo nivel</b> que el suyo, con la misma comodidad.</li>
+  <li>Heráldica de pago: formas y piezas para el editor de escudo de armas, que sigue siendo de todas las familias.</li>
+</ul>
+<div class="box o"><span class="tag open">ABIERTO</span> De las recetas con usos limitados: cuántas fabricaciones da cada una (se habló de 50 solo como ejemplo), qué cuenta como un uso, si se pueden recargar y cómo, y qué categorías llevan límite.</div>
 <h3>Fabricar, comer y pescar</h3>
 <p><span class="tag ok">DECIDIDO</span><b>Fabricar:</b> en la estación, con un tiempo según la receta y una pequeña cola por estación; usa lo que llevas encima y lo de los arcones a pocos pasos. (Hito 3)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Cocina:</b> recetas con utensilios (espetón, olla de barro, caldero, sartén); lo cocinado sacia más y dura más. El agua de río se bebe sin problema. (Hito 4)</p>

@@ -120,9 +120,9 @@
     },
     {
      "nombre": "Noticias del desarrollo en Discord en tres idiomas: en inglés en los canales comunes y en español y ruso en los suyos",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-01T16:29:59+01:00",
-     "rama": "trabajo/20261101-1630-discord-idiomas"
+     "fin": "2026-11-04T11:59:14+01:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -1113,7 +1113,9 @@
    "tareas": [
     {
      "nombre": "Recorrido de jugador automático: una prueba que juega como un jugador nuevo, sin arcón y con lo que se recoge, de principio a fin de lo que haya (hoy: recoger, talar, el mojón y un cimiento), y que falla si algo no se puede hacer así. Desde aquí, una tarea de juego no se publica si su parte del recorrido no sale",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-04T12:25:18+00:00",
+     "rama": "trabajo/20261104-1225"
     },
     {
      "nombre": "Un mojón por personaje en Whitholm (valravnx, 31 oct): la lógica con autor no deja poner un segundo; en el continente, hasta tres más en total, cuando se llegue en barco",
@@ -1315,7 +1317,7 @@
    "id": "orden",
    "num": "P6",
    "nombre": "Orden en el código y en los documentos",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "jugable": "Nada nuevo a la vista: menos código muerto, una sola armadura, el arma del inventario y un servidor que aguanta.",
    "nota": "Revisión del 1 nov con valravnx: en tareas pequeñas, entre bloque y bloque.",
    "tareas": [
@@ -1346,6 +1348,12 @@
     {
      "nombre": "El GDD y el documento de sistemas al día con lo decidido (cuatro direcciones, siempre en línea, salida al azar, la revisión del 1 nov) y sin contradicciones",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Pasar al GDD lo esencial del anexo de valravnx del 4 nov: lo de pago (recetas de apariencia con usos limitados y paridad funcional), la dirección gráfica y el almacén con mercado en la ciudad del rey",
+     "estado": "hecho",
+     "inicio": "2026-11-04T12:43:17+01:00",
+     "fin": "2026-11-04T12:45:39+01:00"
     }
    ]
   },
