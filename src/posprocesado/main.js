@@ -53,7 +53,9 @@ const VISTAS = {
   contraluz: () => {
     const s = sol.position.clone().normalize(), h = s.clone().setY(0).normalize(), lado = new THREE.Vector3(-h.z, 0, h.x);
     const pos = h.clone().multiplyScalar(-18).addScaledVector(lado, 2).setY(1.6);
-    return [pos, sol.position.clone().setY(sol.position.y - 25)];
+    // se mira a un punto a 15 m en esa dirección (el control de la cámara no deja alejarse más de 60 m de lo que mira)
+    const dir = sol.position.clone().setY(sol.position.y - 25).sub(pos).normalize();
+    return [pos, pos.clone().addScaledVector(dir, 15)];
   },
 };
 

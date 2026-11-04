@@ -30,6 +30,7 @@ paso "Construir combate" node construir_combate.mjs
 paso "Construir pruebas de estilo" node construir_estilo.mjs
 paso "Construir personaje" node construir_personaje.mjs
 paso "Construir demo única" node construir_demo.mjs
+paso "Construir posprocesado y perfiles gráficos" node construir_posprocesado.mjs
 paso "Construir prueba de cavar" node construir_mina.mjs
 paso "Construir visor del mapa" node construir_mapa.mjs
 paso "Lógica de construcción" node pruebas/prueba_logica.mjs
@@ -38,6 +39,7 @@ paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs
 paso "Quitar el mojón: dejar tu tierra y perder lo construido, para reposicionar" node pruebas/prueba_quitar_mojon.mjs
+paso "Perfiles gráficos: seis perfiles, gradación de color y perfil de inicio" node pruebas/prueba_perfiles_graficos.mjs
 paso "Inventario por huecos" node pruebas/prueba_inventario.mjs
 paso "Recoger del suelo y de las plantas" node pruebas/prueba_recoleccion.mjs
 paso "Estaciones y recetas" node pruebas/prueba_fabricacion.mjs
@@ -105,6 +107,7 @@ paso "Textos traducidos" node pruebas/prueba_idiomas.mjs
 paso "Noticias del desarrollo en Discord" node pruebas/prueba_discord_noticias.mjs
 paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold_hito1.html "$C/construccion"
 paso "Navegador: quitar el mojón" python3 pruebas/prueba_quitar_mojon_navegador.py dist/kinhold_hito1.html "$C/quitar_mojon"
+paso "Navegador: posprocesado y perfiles gráficos" python3 pruebas/prueba_posprocesado_navegador.py dist/kinhold_posprocesado.html "$C/posprocesado"
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_hito1.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_hito1.html "$C/tala"
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_hito1.html "$C/troceo"
