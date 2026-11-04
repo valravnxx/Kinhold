@@ -8,6 +8,7 @@ import { servidorAntiguo } from '../logica/protocolo.js';
 import { direccionServidor } from './direccion_servidor.js';
 import { abrirConexion } from './conexion.js';
 import { tr } from '../idioma.js';
+import { pantallaCuenta, guardarUsuario } from './pantalla_cuenta.js';
 
 // alAbrir(enviar): conectado (también al volver); alMensaje(msg, ahora): cada mensaje, ya apuntado aquí;
 // alCortar(): se ha cortado (ya sin presencia); conectado(): la línea de estado cuando se está conectado (y el
@@ -43,6 +44,10 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
   const enviar = (m) => !!con && con.enviar(m);
   const presencia = new PresenciaCliente(enviar);
   const aspectos = new Map();   // autor → { sexo, capas, aspecto }
+  // Cuentas (P1, revisión del 1 nov): si el personaje de esta conexión aún no tiene cuenta, la pantalla de crearla o de
+  // entrar (src/mundo/pantalla_cuenta.js) tapa el juego. Un servidor anterior a las cuentas no manda `cuenta`: sin pantalla.
+  // El admin, por la cuenta: el servidor dice si esta conexión es de la cuenta de admin (bienvenida, o al crear la cuenta).
+  let pantalla = null, cuenta = null, admin = false, sinCorreo = false;
 
   const ponerEstado = () => alEstado(estado === 'conectado' ? (antiguo ? tr('En línea · el servidor es antiguo: hay que actualizarlo') : conectado())
     : estado === 'conectando' ? tr('Conectando con el servidor…')
@@ -59,6 +64,18 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
         quitarSinConexion();
         estado = 'conectado'; yo = msg.autor; antiguo = servidorAntiguo(msg);
         for (const a of msg.aspectos || []) aspectos.set(a.autor, deAspecto(a));
+        cuenta = typeof msg.cuenta === 'string' ? msg.cuenta : null;
+        admin = msg.admin === true;
+        if (cuenta) guardarUsuario(direccion, cuenta); else if (msg.cuenta === null) guardarUsuario(direccion, null);
+        // el correo sin confirmar (valravnx, 2 nov): la pantalla en «Confirma tu correo»; hasta entonces no se entra en el
+        // mundo (el servidor no atiende lo que haga). Un servidor de antes del correo no manda `correo`: como confirmado.
+        sinCorreo = !!(cuenta && msg.correo && msg.correo.verificado === false);
+        if ((msg.cuenta === null || sinCorreo) && !(pantalla && pantalla.abierta)) {
+          pantalla = pantallaCuenta({ enviar, direccion, verificar: sinCorreo ? { correo: msg.correo.correo } : null,
+            alCrear: (u, r) => { cuenta = u; sinCorreo = !!(r && r.correo && r.correo.verificado === false); if (!sinCorreo) avisar(tr('Cuenta creada: {u}. Tu personaje ya es de tu cuenta.', { u }), false); },
+            alConfirmar: () => { sinCorreo = false; avisar(tr('Correo confirmado. Tu personaje ya es de tu cuenta.'), false); } });
+        } else if (msg.cuenta !== null && !sinCorreo && pantalla) { pantalla.quitar(); pantalla = null; }
+      } else if (msg.tipo === 'cuenta') { if ((msg.que === 'crear' || msg.que === 'verificar') && msg.ok && msg.admin === true) admin = true; if (pantalla) pantalla.recibir(msg);
       } else if (msg.tipo === 'aspecto') aspectos.set(msg.autor, deAspecto(msg));
       else if (msg.tipo === 'sale') aspectos.delete(msg.autor);
       else if (msg.tipo === 'error') console.warn('Servidor:', msg.motivo);
@@ -70,14 +87,15 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
       ponerEstado();
     },
     alCortar: ({ motivo, vuelve }) => {
-      const antes = estado; estado = vuelve ? 'volviendo' : 'cortado'; yo = null;
+      const antes = estado; estado = vuelve ? 'volviendo' : 'cortado'; yo = null; admin = false;
       presencia.remotos.clear();
       alCortar();
       ponerEstado();
-      if (!vuelve) sinConexion(motivo === 'otra' ? tr('Has entrado con este personaje desde otra pestaña o aparato.') : tr('No hay conexión con el servidor.'));
+      if (!vuelve) sinConexion(motivo === 'otra' ? tr('Has entrado con este personaje desde otra pestaña o aparato.') : motivo === 'sesion' ? tr('Se ha cerrado la sesión en todos los aparatos. Vuelve a entrar con tu cuenta.') : tr('No hay conexión con el servidor.'));
       if (antes === 'volviendo' && vuelve) return;   // sigue intentándolo: ya se ha avisado
       avisar(motivo === 'otra' ? tr('Has entrado con este personaje desde otra pestaña o aparato.')
         : motivo === 'inunda' ? tr('El servidor ha cerrado la conexión: demasiados mensajes.')
+        : motivo === 'sesion' ? tr('Se ha cerrado la sesión en todos los aparatos. Vuelve a entrar con tu cuenta.')
         : vuelve ? tr('Se ha cortado la conexión con el servidor: volviendo a conectar…')
         : antes === 'conectado' ? tr('Se ha perdido la conexión con el servidor.') : tr('No se puede conectar con el servidor: {d}', { d: direccion }), true);
     },
@@ -86,6 +104,9 @@ export function abrirCliente({ alAbrir, alMensaje, alCortar, conectado, bienveni
   return {
     direccion, presencia, aspectos, enviar, ponerEstado,
     get yo() { return yo; },
+    get cuenta() { return cuenta; },   // el usuario de la cuenta de este personaje (null si aún no tiene)
+    get admin() { return admin; },     // si es la cuenta de admin (lo dice el servidor)
+    get sinCorreo() { return sinCorreo; },   // si a la cuenta le falta confirmar el correo (no entra en el mundo)
     get estado() { return estado; },
     get antiguo() { return antiguo; },
     cortar() { if (con) con.cortar(); },   // para las pruebas: como si se cayera la conexión

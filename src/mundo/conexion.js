@@ -6,7 +6,9 @@
 //   segunda cierra la primera (como con una cuenta).
 // - Si se corta una conexión que estaba hecha, vuelve a conectar sola, esperando cada vez un poco más (1, 2, 4,
 //   8 s y luego cada 10 s). No lo hace si el servidor la ha cerrado a propósito: otra conexión con la misma
-//   ficha (código 4001) o demasiados mensajes (1008).
+//   ficha (código 4001), demasiados mensajes (1008) o la sesión cerrada en todos los aparatos (4002: la ficha se olvida).
+import { SERVIDOR, SERVIDORES_ANTES } from './direccion_servidor.js';
+
 const CLAVE_FICHA = 'kinhold_ficha:';
 const ESPERAS = [1000, 2000, 4000, 8000, 10000];
 
@@ -14,12 +16,23 @@ const leerFicha = (d) => {
   try {
     const f = localStorage.getItem(CLAVE_FICHA + d);
     if (f) return f;
+    // la del mismo servidor con su dirección de antes (1 nov: de sslip.io a playkinhold.com), con su cuenta
+    if (d === SERVIDOR) for (const a of SERVIDORES_ANTES) {
+      const v = localStorage.getItem(CLAVE_FICHA + a);
+      if (!v) continue;
+      localStorage.setItem(CLAVE_FICHA + d, v); localStorage.removeItem(CLAVE_FICHA + a);
+      const u = localStorage.getItem('kinhold_cuenta:' + a);
+      if (u) { localStorage.setItem('kinhold_cuenta:' + d, u); localStorage.removeItem('kinhold_cuenta:' + a); }
+      return v;
+    }
     const vieja = sessionStorage.getItem(CLAVE_FICHA + d);   // la de antes del 31 oct, en la pestaña
     if (vieja) { localStorage.setItem(CLAVE_FICHA + d, vieja); sessionStorage.removeItem(CLAVE_FICHA + d); }
     return vieja;
   } catch (e) { return null; }
 };
-const guardarFicha = (d, f) => { try { if (f) localStorage.setItem(CLAVE_FICHA + d, f); else localStorage.removeItem(CLAVE_FICHA + d); } catch (e) { /* sin almacenamiento */ } };
+export const fichaGuardada = (d) => leerFicha(d);
+// también la pone la pantalla de la cuenta (src/mundo/pantalla_cuenta.js) al entrar: la de tu personaje
+export const guardarFicha = (d, f) => { try { if (f) localStorage.setItem(CLAVE_FICHA + d, f); else localStorage.removeItem(CLAVE_FICHA + d); } catch (e) { /* sin almacenamiento */ } };
 
 export function conDireccionFicha(direccion, ficha) {
   if (!ficha) return direccion;
@@ -27,7 +40,7 @@ export function conDireccionFicha(direccion, ficha) {
 }
 
 // alAbrir(): conectado (también al volver); alMensaje(msg): cada mensaje (ya leído); alCortar({ motivo, vuelve }):
-// se ha cortado; motivo: 'no_conecta' | 'cortada' | 'otra' | 'inunda'; vuelve: si va a intentar conectar otra vez.
+// se ha cortado; motivo: 'no_conecta' | 'cortada' | 'otra' | 'inunda' | 'sesion'; vuelve: si va a intentar conectar otra vez.
 export function abrirConexion(direccion, { alAbrir, alMensaje, alCortar }) {
   let ws = null, hecha = false, cerrada = false, intentos = 0, espera = null;
   const enviar = (m) => { if (ws && ws.readyState === 1) { ws.send(JSON.stringify(m)); return true; } return false; };
@@ -52,6 +65,8 @@ export function abrirConexion(direccion, { alAbrir, alMensaje, alCortar }) {
       // otra pestaña o aparato ha entrado con la misma ficha: la ficha sigue (es de las dos), esta se queda fuera
       if (ev.code === 4001) return alCortar({ motivo: 'otra', vuelve: false });
       if (ev.code === 1008) return alCortar({ motivo: 'inunda', vuelve: false });
+      // se ha cerrado la sesión en todos los aparatos: la ficha ya no vale, se olvida aquí
+      if (ev.code === 4002) { guardarFicha(direccion, null); try { localStorage.removeItem('kinhold_cuenta:' + direccion); } catch (e) { /* sin almacenamiento */ } return alCortar({ motivo: 'sesion', vuelve: false }); }
       if (!hecha) return alCortar({ motivo: 'no_conecta', vuelve: false });
       espera = setTimeout(abrir, ESPERAS[Math.min(intentos++, ESPERAS.length - 1)]);
       alCortar({ motivo: 'cortada', vuelve: true });

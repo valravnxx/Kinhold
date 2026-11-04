@@ -17,6 +17,13 @@
 #demoMenu a.parte b{display:block;font-size:17px;color:var(--acento)}
 #demoMenu a.parte span{font-size:13px;color:var(--muted)}
 #demoMenu #demoPersonaje{font-size:13px;color:var(--ink);margin:12px 0 10px;padding:8px 10px;border-left:3px solid var(--acento);background:#0002;border-radius:4px}
+#demoMenu #demoCuenta{font-size:13px;margin:-2px 0 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#demoMenu #demoCambio{width:100%;background:#0002;border-radius:9px;padding:8px 10px}
+#demoMenu #demoCambio label{display:block;font-size:12.5px;color:var(--muted);margin:6px 0 2px}
+#demoMenu #demoCambio input{display:block;width:100%;font:inherit;font-size:16px;color:var(--ink);background:#0003;border:1px solid var(--linea);border-radius:8px;padding:7px 9px}
+#demoMenu #demoCambio .fila{display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap}
+#demoMenu #demoCambioMotivo{font-size:12.5px;color:#f0a58a}
+#demoMenu #demoCambioMotivo.bien{color:#b9d39a}
 #demoMenu .pie{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 #demoMenu .pie a{color:var(--muted);font-size:13px;margin-right:auto}
 #demoMenu button{font:inherit;font-size:12.5px;color:var(--ink);background:var(--panel2);border:1px solid var(--linea);border-radius:9px;padding:6px 9px;cursor:pointer}
@@ -34,6 +41,15 @@
     <a class="parte" data-ir="construir" href="?modo=construir&amp;enlinea=1"><b>Jugar</b><span>Entra en Whitholm con los demás: el mundo es el del servidor y ves a cada uno con su personaje.</span></a>
     <a class="parte" data-ir="personaje" href="?modo=personaje"><b>Personaje</b><span>Elige cuerpo y ropa por capas: es el que construye y el que lucha.</span></a>
     <div id="demoPersonaje"></div>
+    <div id="demoCuenta" hidden><span id="demoCuentaTexto"></span> <button id="btnDemoSalirCuenta">Salir de la cuenta</button> <button id="btnDemoSalirTodos">Salir en todos los aparatos</button> <button id="btnDemoCambiarClave">Cambiar la contraseña</button> <button id="btnDemoCambiarCorreo">Cambiar el correo</button><span id="demoCuentaAviso"></span>
+      <form id="demoCambio" novalidate hidden>
+        <div data-cambio="clave correo"><label for="demoActual">Contraseña actual</label><input id="demoActual" type="password" autocomplete="current-password" maxlength="128"></div>
+        <div data-cambio="clave"><label for="demoNueva">Contraseña nueva</label><input id="demoNueva" type="password" autocomplete="new-password" maxlength="128">
+        <label for="demoNueva2">Repite la contraseña</label><input id="demoNueva2" type="password" autocomplete="new-password" maxlength="128"></div>
+        <div data-cambio="correo"><label for="demoCorreoNuevo">Correo nuevo</label><input id="demoCorreoNuevo" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" maxlength="254"></div>
+        <div data-cambio="codigo"><label for="demoCodigo">Código</label><input id="demoCodigo" inputmode="numeric" autocomplete="one-time-code" maxlength="6"></div>
+        <div class="fila"><button type="submit" class="sel" id="btnDemoCambio">Cambiar</button><button type="button" id="btnDemoCambioNo">Cancelar</button><span id="demoCambioMotivo" role="status"></span></div>
+      </form></div>
     <div class="pie"><a href="../../index.html">Progreso del proyecto</a><button id="btnDemoNotas">Notas</button><span id="demoIdioma" class="pie"></span></div>
     <div id="demoNotas" hidden></div>
   </div>

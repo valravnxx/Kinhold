@@ -31,7 +31,7 @@ cobrarse.
 
 El mundo se guarda en la máquina (`/var/lib/kinhold/`): sigue ahí aunque se reinicie o se actualice.
 
-**En marcha desde el 30 oct** (lo creó valravnx): CX23 en Falkenstein, Ubuntu 24.04, https://2-31-141-224.sslip.io.
+**En marcha desde el 30 oct** (lo creó valravnx): CX23 en Falkenstein, Ubuntu 24.04, https://2-31-141-224.sslip.io. Desde el 1 nov, con la dirección propia **https://juego.playkinhold.com** (`/etc/kinhold-dominio`); Caddy sigue sirviendo también la de sslip.io, que llevan dentro las versiones ya publicadas.
 El juego es siempre en línea (valravnx, 30 oct): la demo de la web de GitHub entra también a este servidor (la
 dirección está en `src/mundo/direccion_servidor.js`; si cambia la IP, se cambia ahí).
 
@@ -59,21 +59,57 @@ que abra la demo entra en este mundo y puede construir.
   No borra el mundo.
 - **Con un dominio propio** (si algún día compras uno): apúntalo a la IP y lanza
   `KINHOLD_DOMINIO=juego.tudominio.com bash /opt/kinhold/servidor/nube/instalar.sh`.
-- **Clave de admin para el panel de depuración** (F9 en el juego, o el botón «Admin» con `?admin` en la dirección; lo
-  pidió valravnx el 30 oct): sin clave puesta, el panel no funciona para nadie. Para ponerla (una vez), en la consola
-  de Hetzner, como root:
+- **El admin, por la cuenta** (panel de depuración: F9 en el juego o el botón «Admin»; revisión del 1 nov): el panel
+  sale solo a quien ha entrado con la cuenta de admin, que es la del usuario `valravnx` (sin mayúsculas: ValravnX vale
+  igual). No hay que poner nada en la máquina ni ninguna clave: basta con crear esa cuenta en el juego (o entrar con
+  ella). Para que sea otra cuenta, o varias, en la consola de Hetzner, como root:
   ```
-  mkdir -p /etc/kinhold && echo "KINHOLD_ADMIN=$(openssl rand -hex 16)" > /etc/kinhold/admin.env && chmod 600 /etc/kinhold/admin.env && cat /etc/kinhold/admin.env
+  mkdir -p /etc/kinhold && echo "KINHOLD_ADMIN_CUENTA=valravnx,otra" > /etc/kinhold/admin.env && chmod 600 /etc/kinhold/admin.env && systemctl restart kinhold
   ```
-  y después `bash /opt/kinhold/servidor/nube/actualizar.sh` (pone el servicio que la lee y reinicia; si ya está al día,
-  basta con `systemctl restart kinhold`). La clave es lo que sale detrás de `KINHOLD_ADMIN=`: se pega en el panel la
-  primera vez y el navegador la recuerda hasta pulsar «Olvidar la clave». Tiene que tener 12 letras o más. Para
-  cambiarla, se vuelve a lanzar la misma línea y `systemctl restart kinhold`; para quitar el panel,
-  `rm /etc/kinhold/admin.env && systemctl restart kinhold`. Con cinco claves mal seguidas, el servidor cierra esa
-  conexión. Lo que se ha pedido con el panel (quién, qué y si valió; nunca la clave) queda en `/var/lib/kinhold/admin.jsonl`.
-- **Empezar el mundo de cero (wipe):** `systemctl stop kinhold && rm -f /var/lib/kinhold/*.json /var/lib/kinhold/*.jsonl && systemctl start kinhold`.
-  Borra lo construido, lo que lleva cada uno y lo del suelo, quién es quién (fichas) y dónde estaba cada uno: todos
-  vuelven a empezar como nuevos, en la salida.
+  La clave `KINHOLD_ADMIN=` de antes ya no se usa (si está en ese archivo, no hace nada). Lo que se ha pedido con el
+  panel (quién, con qué cuenta, qué y si valió) queda en `/var/lib/kinhold/admin.jsonl`.
+- **El correo de las cuentas (Resend; valravnx, 2 nov).** Al crear una cuenta hay que dar un correo (uno por cuenta) y
+  confirmarlo con un código de 6 cifras que llega a él (caduca a los 15 minutos; otro, como pronto al minuto, y como
+  mucho 5 por hora). **Sin confirmarlo no se entra en el mundo.** Las cuentas de antes lo añaden y lo confirman al entrar.
+  Los códigos los manda el servidor con [Resend](https://resend.com) desde `cuentas@playkinhold.com`.
+  **Mientras no esté la clave de Resend en la máquina, no se manda ningún correo:** el código queda en el registro del
+  servidor. Para verlo, en la consola de Hetzner, como root: `journalctl -u kinhold | grep 'código de verificación'`
+  (sale el usuario, el código y el correo a medias).
+  Pasos, una vez:
+  1. En Resend (ya hecho el 2 nov): cuenta creada y dominio `playkinhold.com` añadido (región Irlanda, eu-west-1) con la
+     configuración automática de Cloudflare.
+  2. En Cloudflare, en los DNS de `playkinhold.com`, tienen que estar los registros que pidió Resend: `send` (MX y TXT de
+     SPF, o los CNAME que dé Resend), `resend._domainkey` (TXT, DKIM) y, si lo pone, `_dmarc`. Todos **sin proxy** («DNS
+     only»). Esperar a que en Resend, en *Domains*, el dominio salga **Verified**.
+  3. En Resend, *API Keys* → *Create API Key*: permiso **Sending access** y dominio solo `playkinhold.com`. Copiar la
+     clave (empieza por `re_`; solo se ve una vez). **Nunca va al repositorio ni a ningún mensaje.**
+  4. En la consola de Hetzner, como root (cambiando `re_xxx` por la clave):
+     ```
+     mkdir -p /etc/kinhold && echo "RESEND_API_KEY=re_xxx" > /etc/kinhold/correo.env && chmod 600 /etc/kinhold/correo.env && bash /opt/kinhold/servidor/nube/actualizar.sh
+     ```
+     (`actualizar.sh` pone el servicio al día para que lea ese archivo y lo reinicia.) Al arrancar, el registro dice
+     `correo: Resend`; sin la clave, `correo: sin clave de Resend, los códigos van al registro`. Para mandar desde otra
+     dirección del dominio, añadir en ese archivo `KINHOLD_CORREO_DE=Kinhold <otra@playkinhold.com>`.
+  Cada código pedido (sin el código) y cada confirmación quedan en `/var/lib/kinhold/seguridad.jsonl`, con el correo a
+  medias. Si Resend no responde o rechaza el correo, el jugador ve «No se ha podido mandar el correo» y puede pedir otro.
+- **Empezar el mundo de cero (wipe):** `systemctl stop kinhold && find /var/lib/kinhold -maxdepth 1 \( -name '*.json' -o -name '*.jsonl' \) ! -name cuentas.jsonl ! -name seguridad.jsonl -delete && systemctl start kinhold`.
+  Borra lo construido, lo que lleva cada uno y lo del suelo, las fichas de cada navegador y dónde estaba cada uno: todos
+  vuelven a empezar como nuevos, en la salida. **Las cuentas se quedan** (`cuentas.jsonl`): cada uno entra con su
+  usuario y su contraseña y es el mismo personaje, empezando de cero. Para borrar también las cuentas, el `rm -f
+  /var/lib/kinhold/*.json /var/lib/kinhold/*.jsonl` de antes.
+- **Cuentas** (usuario y contraseña): en `/var/lib/kinhold/cuentas.jsonl`, una por línea, con la contraseña resumida
+  (scrypt con sal; nunca en claro). Tras 5 contraseñas mal seguidas a una cuenta, o 20 fallos desde la misma dirección,
+  se espera 15 minutos. Cuentas nuevas (2 nov): como mucho 3 por dirección y hora y 30 en total por hora, y entre una y
+  la siguiente desde la misma dirección una espera que crece (1 min, 2, 4…, recordando 24 h); las IPv6 cuentan por su
+  bloque /64. La dirección es la última que pasa Caddy en `X-Forwarded-For`. Contraseñas de 10 caracteres o más, sin
+  las más usadas (`src/logica/claves_comunes.js`).
+- **Fichas de cada navegador** (`fichas.jsonl`): las de un personaje con cuenta caducan a los 30 días (hay que volver a
+  entrar); «Salir en todos los aparatos», en el menú, deja sin valer todas las de ese personaje.
+- **Registro de seguridad**: `/var/lib/kinhold/seguridad.jsonl`, una línea por alta, entrada, fallo, salida en todos
+  los aparatos y ficha caducada, con la hora, el usuario y la dirección (nunca la contraseña ni la ficha). El wipe de
+  arriba no lo borra. Verlo: `tail -n 50 /var/lib/kinhold/seguridad.jsonl`.
+- `KINHOLD_PRUEBAS_ALTAS=libres` quita los límites de altas: **solo para las pruebas**; nunca en este servidor (si
+  estuviera, lo dice la línea de arranque en `journalctl -u kinhold`).
 
 ## Qué hay en esta carpeta
 

@@ -127,6 +127,9 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     enviar: (m) => cli.enviar(m), escuchar: (f) => { escuchas.add(f); return () => escuchas.delete(f); },
     get estado() { return cli.estado; },
     get antiguo() { return cli.antiguo; },
+    get cuenta() { return cli.cuenta; },   // el usuario de tu cuenta (null si aún no tienes)
+    get sinCorreo() { return cli.sinCorreo; },   // si a tu cuenta le falta confirmar el correo (no entras en el mundo)
+    get admin() { return cli.admin; },     // si tu cuenta es la de admin (lo dice el servidor): el panel de depuración
     get remotos() { return remotos; },
     // el modelo con el que se ve a otro jugador ahora (el de combate si tiene el arma sacada): para las sacudidas
     modeloDe: (autor) => { const r = remotos.get(autor); return r ? (r.comb ? r.comb.m : r.j.raiz) : null; },

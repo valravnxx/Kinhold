@@ -9,8 +9,11 @@ Wants=network-online.target
 User=kinhold
 Group=kinhold
 WorkingDirectory=@@DIR@@
-# la clave de admin del panel de depuración (KINHOLD_ADMIN=…), si se ha puesto (LEEME.md); sin ella, no hay panel
+# las cuentas de admin del panel de depuración (KINHOLD_ADMIN_CUENTA=…), si se han puesto (LEEME.md); sin ellas, la de valravnx
 EnvironmentFile=-/etc/kinhold/admin.env
+# la clave de Resend para mandar los códigos del correo de las cuentas (RESEND_API_KEY=…; LEEME.md); sin ella, los
+# códigos van al registro del servidor (journalctl -u kinhold)
+EnvironmentFile=-/etc/kinhold/correo.env
 ExecStart=@@NODE@@ servidor/servidor.mjs @@PUERTO@@ /var/lib/kinhold/mundo.jsonl
 Restart=always
 RestartSec=3

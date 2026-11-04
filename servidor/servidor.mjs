@@ -53,10 +53,29 @@
 //   pagada («lleva» y la cantidad de verdad), así que al volver a arrancar y en los demás navegadores el mundo se rehace
 //   igual sin conocer lo que lleva cada uno. Al autor le llega además { tipo: 'inventario' } (bien o mal).
 //
-//   Panel de depuración del admin (src/logica/admin.js): { tipo: 'admin', id, clave, que: 'ver' | 'ir', … }. Solo con la
-//   clave de admin de la máquina (claveAdmin, o la variable KINHOLD_ADMIN; servidor/nube/LEEME.md); sin ella puesta, no
-//   hay panel. La clave se compara resumida (sha256) y en tiempo fijo; tras ADMIN_FALLOS claves mal, se cierra la
-//   conexión (código 1008). Cada petición, bien o mal, va a admin.jsonl junto al mundo con su autor (nunca la clave).
+//   Cuentas (src/logica/cuentas.js; usuario y contraseña): { tipo: 'cuenta', id, que: 'crear' | 'entrar', usuario, clave }.
+//   Crear: la cuenta es del personaje de esta conexión (su autor). Entrar: contesta con una ficha de ese personaje y el
+//   cliente vuelve a conectar con ?ficha=… (abajo). Las contraseñas, resumidas con scrypt y sal (servidor/claves.mjs) en
+//   cuentas.jsonl junto al mundo; nunca en claro ni en el registro. La bienvenida dice { cuenta: usuario | null }.
+//   { tipo: 'cuenta', que: 'salir_todos' }: todas las fichas de ese personaje dejan de valer y sus conexiones se cierran
+//   (código 4002). Las fichas de los personajes con cuenta caducan (src/logica/fichas.js). Altas, entradas, fallos,
+//   salidas y fichas caducadas van a seguridad.jsonl junto al mundo (con la dirección; nunca la contraseña ni la ficha).
+//   El correo de la cuenta (valravnx, 2 nov; src/logica/correo.js): al crear la cuenta va también { correo } y se manda
+//   el código (servidor/correo.mjs: con Resend, o al registro si no hay clave). { tipo: 'cuenta', id, que: 'correo', correo }
+//   pone o cambia el correo sin confirmar y manda el código; { que: 'reenviar' } manda otro; { que: 'verificar', codigo }
+//   lo confirma. Mientras la cuenta de esta conexión no tenga el correo confirmado, no entra en el mundo: no se atienden
+//   sus acciones, objetos, combate, movimientos ni admin (las acciones y objetos reciben «Confirma tu correo…»). La
+//   bienvenida dice { correo: null (sin cuenta) | { correo: a***@d***.com | null, verificado } }.
+//   Recuperar y cambiar (valravnx, 2 nov): { que: 'recuperar', quien } (usuario o correo) manda un código al correo
+//   confirmado de esa cuenta (la respuesta es la misma si no existe); { que: 'restablecer', quien, codigo, clave } pone la
+//   contraseña nueva, deja sin valer todas las fichas de ese personaje (cierra sus conexiones, 4002) y da una ficha para
+//   este aparato. Desde el menú: { que: 'cambiar_clave', actual, clave } (lo mismo, pidiendo la actual) y
+//   { que: 'cambiar_correo', actual, correo } (manda el código al correo nuevo; con { que: 'verificar', codigo } se
+//   cambia). Cada cambio avisa por correo (el de la contraseña, al correo de la cuenta; el del correo, al de antes).
+//   Panel de depuración del admin (src/logica/admin.js): { tipo: 'admin', id, que: 'ver' | 'ir', … }. Solo para la
+//   conexión cuyo personaje es de una cuenta de admin (cuentasAdmin, o la variable KINHOLD_ADMIN_CUENTA; por defecto la
+//   cuenta «valravnx»; servidor/nube/LEEME.md). Sin clave aparte. La bienvenida dice { admin: true } a esa conexión, y la
+//   respuesta al crear la cuenta también. Cada petición, bien o mal, va a admin.jsonl junto al mundo con su autor.
 //
 //   Conexiones que se cortan (src/logica/limites.js y abajo):
 //   - Ficha: la bienvenida lleva una ficha secreta (solo para ese cliente). Si el cliente vuelve a conectar con
@@ -77,7 +96,7 @@
 import { WebSocketServer } from 'ws';
 import { readFileSync, appendFileSync, existsSync, mkdirSync, writeFileSync, renameSync } from 'fs';
 import { dirname, resolve } from 'path';
-import { randomUUID, createHash, timingSafeEqual } from 'crypto';
+import { randomUUID, createHash, randomInt } from 'crypto';
 import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
 import { RegistroAcciones, ejecutar, reproducir, USAN_INVENTARIO } from '../src/logica/acciones.js';
@@ -87,7 +106,13 @@ import { PROTOCOLO } from '../src/logica/protocolo.js';
 import { CombateServidor } from '../src/logica/combate_servidor.js';
 import { Limitador, LIMITES } from '../src/logica/limites.js';
 import { ObjetosServidor } from '../src/logica/objetos_red.js';
-import { validarPeticionAdmin, sitioJunto, listaJugadores, claveUsable, ADMIN_FALLOS } from '../src/logica/admin.js';
+import { validarPeticionAdmin, sitioJunto, listaJugadores, cuentasAdmin as listaAdmin, esCuentaAdmin, NO_ADMIN } from '../src/logica/admin.js';
+import { Cuentas, validarPeticionCuenta, claveDeUsuario, claveDeOrigen, Contador, motivoClave } from '../src/logica/cuentas.js';
+import { claveDeCorreo } from '../src/logica/correo.js';
+import { Verificaciones, enmascarar, codigoValido, CODIGO_CIFRAS, RECUPERAR_ORIGEN } from '../src/logica/correo.js';
+import { crearCartero } from './correo.mjs';
+import { Fichas, FICHA_VIDA } from '../src/logica/fichas.js';
+import * as claves from './claves.mjs';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { VistaTrozos, trozoDe, LADO_RED, RADIO_RED } from '../src/logica/trozos_red.js';
 import { sitioAccion, sitioColocada, comunDe, obrasEnTrozos } from '../src/logica/obras_red.js';
@@ -109,8 +134,8 @@ export function leerArchivo(archivo) {
 }
 
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
-  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, claveAdmin = process.env.KINHOLD_ADMIN, terreno = null,
-  tierras = terreno && terreno.tierras } = {}) {
+  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, cuentasAdmin = process.env.KINHOLD_ADMIN_CUENTA, terreno = null,
+  tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null } = {}) {
   archivo = resolve(archivo);
   const archivoCombate = resolve(dirname(archivo), 'combate.jsonl');
   const archivoFichas = resolve(dirname(archivo), 'fichas.jsonl');
@@ -118,10 +143,12 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const archivoObjetosReg = resolve(dirname(archivo), 'objetos.jsonl');
   const archivoPosiciones = resolve(dirname(archivo), 'posiciones.json');
   const archivoAdmin = resolve(dirname(archivo), 'admin.jsonl');
-  // la clave del admin, resumida (sha256): así se compara siempre en el mismo tiempo, sea cual sea su largo
-  const sha = (t) => createHash('sha256').update(String(t)).digest();
-  const resumenAdmin = claveUsable(claveAdmin) ? sha(claveAdmin) : null;
-  const esAdmin = (c) => !!resumenAdmin && typeof c === 'string' && c.length <= 200 && timingSafeEqual(sha(c), resumenAdmin);
+  const archivoCuentas = resolve(dirname(archivo), 'cuentas.jsonl');
+  // el registro de seguridad: altas, entradas, fallos y salidas en todos los aparatos (nunca la contraseña ni la ficha)
+  const archivoSeguridad = resolve(dirname(archivo), 'seguridad.jsonl');
+  const seguridad = (e) => { try { appendFileSync(archivoSeguridad, JSON.stringify({ t: new Date().toISOString(), ...e }) + '\n'); } catch (x) { registrar(`no se pudo apuntar en seguridad.jsonl: ${x && x.message}`); } };
+  // las cuentas de admin (el admin, por la cuenta: revisión del 1 nov)
+  const admins = listaAdmin(cuentasAdmin);
   mkdirSync(dirname(archivo), { recursive: true });
   const previas = leerArchivo(archivo);
   // si quedó una línea a medias, lo nuevo empieza en una línea aparte
@@ -131,9 +158,53 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   registro.total = previas.reduce((m, e) => Math.max(m, e.n || 0), 0);
 
   // fichas: resumen (sha256) → autor
-  const fichas = new Map();
-  for (const f of leerArchivo(archivoFichas)) if (f && typeof f.h === 'string' && typeof f.autor === 'string') fichas.set(f.h, f.autor);
+  // (caducan a los vidaFicha ms si su personaje tiene cuenta; «salir en todos los aparatos»: src/logica/fichas.js)
+  const fichas = new Fichas({ vida: vidaFicha, conCuenta: (a) => !!cuentas.deAutor(a), lineas: leerArchivo(archivoFichas), ahora: Date.now() });
   if (existsSync(archivoFichas)) { const t = readFileSync(archivoFichas, 'utf8'); if (t && !t.endsWith('\n')) appendFileSync(archivoFichas, '\n'); }
+
+  // cuentas: usuario → su personaje (autor), con la contraseña resumida (scrypt con sal); nunca en claro
+  if (existsSync(archivoCuentas)) { const t = readFileSync(archivoCuentas, 'utf8'); if (t && !t.endsWith('\n')) appendFileSync(archivoCuentas, '\n'); }
+  const cuentas = new Cuentas({ resumir: (c, s) => claves.resumir(c, s, parametrosClave), sal: claves.sal, iguales: claves.iguales, previas: leerArchivo(archivoCuentas), altas });
+  const usuarioDe = (autor) => (cuentas.deAutor(autor) || {}).usuario || null;
+  // el correo: los códigos pendientes (en memoria, resumidos) y quien los manda
+  const verificaciones = new Verificaciones({ azar: () => randomInt(0, 10 ** CODIGO_CIFRAS), resumir: (x) => createHash('sha256').update(x).digest('hex') });
+  if (!cartero) cartero = crearCartero({ registrar });
+  const SIN_CORREO = 'Confirma tu correo para entrar en el mundo.';
+  const estadoCorreo = (autor) => { const e = cuentas.correoDe(autor); return e ? { correo: e.correo ? enmascarar(e.correo) : null, verificado: e.verificado } : null; };
+  // un código nuevo para la cuenta de ese personaje, y a mandarlo. Promise<{ ok, motivo? }>
+  const mandarCodigo = async (autor, origen, idioma) => {
+    const e = cuentas.correoDe(autor);
+    if (!e || !e.correo) return { ok: false, motivo: 'Falta el correo.' };
+    if (e.verificado) return { ok: false, motivo: 'El correo de esta cuenta ya está confirmado.' };
+    const k = claveDeUsuario(e.usuario), r = verificaciones.pedir(k, e.correo, Date.now());
+    if (!r.ok) { seguridad({ que: 'codigo', ok: false, usuario: e.usuario, autor, origen, motivo: r.motivo }); return r; }
+    const s = await cartero.enviar({ para: e.correo, usuario: e.usuario, codigo: r.codigo, idioma });
+    seguridad({ que: 'codigo', ok: !!s.ok, usuario: e.usuario, autor, origen, correo: enmascarar(e.correo), ...(s.ok ? {} : { motivo: s.motivo }) });
+    if (!s.ok) verificaciones.olvidar(k);
+    return s.ok ? { ok: true } : { ok: false, motivo: s.motivo };
+  };
+  const esAdmin = (autor) => esCuentaAdmin(usuarioDe(autor), admins);
+  // recuperar la contraseña: sus códigos aparte de los del correo, y cuántas peticiones por dirección
+  const recuperaciones = new Verificaciones({ azar: () => randomInt(0, 10 ** CODIGO_CIFRAS), resumir: (x) => createHash('sha256').update('rec:' + x).digest('hex') });
+  const recuperarOrigen = new Contador(RECUPERAR_ORIGEN, 60 * 60 * 1000);
+  // avisa por correo (si no sale, solo se apunta: el cambio ya está hecho)
+  const avisarCorreo = (para, usuario, tipo, idioma, nuevo = '') => cartero.enviar({ para, usuario, tipo, idioma, nuevo })
+    .then((s) => { if (!s.ok) registrar(`no ha salido el aviso (${tipo}) a «${usuario}»`); }).catch(() => registrar(`no ha salido el aviso (${tipo}) a «${usuario}»`));
+  // todas las fichas de ese personaje dejan de valer y se cierran sus conexiones (menos la de `salvo`)
+  const cerrarSesiones = (autor, salvo = null) => {
+    const n = fichas.fuera(autor);
+    appendFileSync(archivoFichas, JSON.stringify({ fuera: autor, t: Date.now() }) + '\n');
+    for (const [w, a] of clientes) if (a === autor && w !== salvo) setTimeout(() => { try { w.close(4002, 'Sesión cerrada'); } catch (e) { /* ya cerrada */ } }, 100);
+    return n;
+  };
+  // una ficha nueva para un autor (al entrar con la cuenta: con ella vuelve a conectar y es su personaje)
+  const fichaPara = (autor) => {
+    const f = randomUUID().replace(/-/g, '');
+    const t = Date.now();
+    fichas.poner(resumen(f), autor, t);
+    appendFileSync(archivoFichas, JSON.stringify({ h: resumen(f), autor, t }) + '\n');
+    return f;
+  };
 
   // lo que lleva cada uno y lo del suelo: dónde está cada autor lo dice su presencia (más abajo)
   let presencia = null;
@@ -240,15 +311,17 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
 
   wss.on('connection', (ws, req) => {
     // ¿vuelve alguien? (su ficha en la dirección: ?ficha=…)
-    let ficha = null, autor = null;
+    let ficha = null, autor = null, caducada = null;
     try { ficha = new URL(req.url, 'http://x').searchParams.get('ficha'); } catch (e) { ficha = null; }
-    if (fichaValida(ficha) && fichas.has(resumen(ficha))) autor = fichas.get(resumen(ficha));
+    if (fichaValida(ficha)) {
+      const r = fichas.de(resumen(ficha), Date.now());
+      autor = r.autor;
+      if (r.caducada) caducada = true;
+    }
     const vuelve = !!autor;
     if (!vuelve) {
       autor = 'jugador:' + randomUUID().slice(0, 8);
-      ficha = randomUUID().replace(/-/g, '');
-      fichas.set(resumen(ficha), autor);
-      appendFileSync(archivoFichas, JSON.stringify({ h: resumen(ficha), autor }) + '\n');
+      ficha = fichaPara(autor);
     }
     // si seguía conectado con otra (colgada, otra pestaña), manda la nueva
     const vieja = conexionDe.get(autor);
@@ -259,6 +332,12 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     // sin esto, un error de la conexión (p. ej. un mensaje demasiado grande) tumbaría el servidor entero
     ws.on('error', (e) => registrar(`error en la conexión de ${autor}: ${e && (e.code || e.message)}`));
     const limitador = new Limitador(reloj(), limites);
+    // de dónde viene (para los intentos de las cuentas): detrás de Caddy, lo que dice él; si no, la conexión
+    const directa = (req.socket && req.socket.remoteAddress) || '?';
+    // (la última de la lista: la que pone Caddy; las de antes las podría haber escrito el propio cliente)
+    const reenviada = String((req.headers && req.headers['x-forwarded-for']) || '').split(',').pop().trim();
+    const origen = (/^(::1|127\.|::ffff:127\.)/.test(directa) && reenviada) ? reenviada.slice(0, 64) : directa;
+    if (caducada) seguridad({ que: 'ficha_caducada', origen });
     registrar(`${vuelve ? 'vuelve' : 'entra'} ${autor}`);
     ponerAlDia();
     if (!combate.luchadores[autor]) {
@@ -272,7 +351,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, obras: obrasEnTrozos(mundo, suyos), n: registro.total, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
       aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true),
       inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now(), suyos), tala: objetos.talaVisible(suyos), recoleccion: objetos.recoleccionVisible(suyos),
-      trozos: { lado: LADO_RED, radio: RADIO_RED }, posicion: posiciones.get(autor) || null });
+      trozos: { lado: LADO_RED, radio: RADIO_RED }, posicion: posiciones.get(autor) || null, cuenta: usuarioDe(autor), admin: esAdmin(autor), correo: estadoCorreo(autor) });
 
     ws.on('message', (datos, binario) => {
       if (conexionDe.get(autor) !== ws) return;   // sustituida por otra: ya no cuenta
@@ -297,6 +376,13 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       try { msg = JSON.parse(datos.toString()); } catch (e) { return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' }); }
       if (!msg || typeof msg !== 'object' || Array.isArray(msg) || typeof msg.tipo !== 'string')
         return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
+      // sin el correo confirmado no se entra en el mundo (las acciones y los objetos reciben su respuesta)
+      if (['estado', 'obras', 'combate', 'aspecto', 'accion', 'objeto', 'admin'].includes(msg.tipo) && cuentas.sinConfirmar(autor)) {
+        const id = Number.isSafeInteger(msg.id) ? msg.id : null;
+        if (msg.tipo === 'accion' || msg.tipo === 'objeto') enviar(ws, { tipo: msg.tipo === 'objeto' ? 'resultado_objeto' : 'resultado', id, ok: false, motivo: SIN_CORREO });
+        else if (msg.tipo === 'admin') enviar(ws, { tipo: 'admin', id, que: null, ok: false, motivo: SIN_CORREO });
+        return;
+      }
       if (msg && msg.tipo === 'estado') {
         // con el terreno, dentro de la isla y cerca del suelo (en la liza del «Duelo» no: es una escena aparte)
         if (terreno && !(combate.luchadores[autor] && combate.luchadores[autor].liza)) {
@@ -337,24 +423,196 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         for (const [otro, a] of clientes) if (a !== autor) enviar(otro, { tipo: 'aspecto', autor, ...e });
         return;
       }
-      if (msg && msg.tipo === 'admin') {
-        const id = Number.isSafeInteger(msg.id) ? msg.id : null, que = msg.que === 'ver' || msg.que === 'ir' ? msg.que : null;
-        const apuntar = (r) => appendFileSync(archivoAdmin, JSON.stringify({ t: new Date().toISOString(), autor, que, ...(que === 'ir' ? { x: Number.isFinite(msg.x) ? msg.x : undefined, z: Number.isFinite(msg.z) ? msg.z : undefined, junto: typeof msg.junto === 'string' ? msg.junto.slice(0, 60) : undefined } : {}), ok: r.ok, ...(r.ok ? {} : { motivo: r.motivo }) }) + '\n');
-        const responder = (r) => { if (que !== 'ver' || !r.ok) apuntar(r); enviar(ws, { tipo: 'admin', id, que, ...r }); };
-        if (!resumenAdmin) return responder({ ok: false, motivo: 'Este servidor no tiene clave de admin.' });
-        if (!esAdmin(msg.clave)) {
-          ws.fallosAdmin = (ws.fallosAdmin || 0) + 1;
-          responder({ ok: false, motivo: 'Clave de admin incorrecta.' });
-          if (ws.fallosAdmin >= ADMIN_FALLOS) { registrar(`echado ${autor} (clave de admin mal ${ws.fallosAdmin} veces)`); ws.close(1008, 'Clave de admin'); }
+      if (msg && msg.tipo === 'cuenta') {
+        const id = Number.isSafeInteger(msg.id) ? msg.id : null, que = ['crear', 'entrar', 'salir_todos', 'correo', 'reenviar', 'verificar', 'recuperar', 'restablecer', 'cambiar_clave', 'cambiar_correo'].includes(msg.que) ? msg.que : null;
+        const responder = (r) => enviar(ws, { tipo: 'cuenta', id, que, ...r });
+        // salir en todos los aparatos: todas las fichas de este personaje dejan de valer y se cierran sus conexiones
+        // (también esta: se vuelve a entrar con usuario y contraseña)
+        if (que === 'salir_todos') {
+          const usuario = usuarioDe(autor);
+          if (!usuario) { seguridad({ que, ok: false, autor, origen, motivo: 'sin cuenta' }); return responder({ ok: false, motivo: 'Este personaje no tiene cuenta.' }); }
+          const n = fichas.fuera(autor);
+          appendFileSync(archivoFichas, JSON.stringify({ fuera: autor, t: Date.now() }) + '\n');
+          seguridad({ que, ok: true, usuario, autor, origen, fichas: n });
+          registrar(`sale en todos los aparatos «${usuario}» (${n} fichas)`);
+          responder({ ok: true });
+          for (const [w, a] of clientes) if (a === autor) setTimeout(() => { try { w.close(4002, 'Sesión cerrada'); } catch (e) { /* ya cerrada */ } }, 100);
           return;
         }
-        ws.fallosAdmin = 0;
+        // una a la vez por conexión (resumir la contraseña cuesta): la que llega mientras, se rechaza
+        if (ws.cuentaEnCurso) return responder({ ok: false, motivo: 'Espera a la respuesta anterior.' });
+        const idioma = ['es', 'en', 'ru'].includes(msg.idioma) ? msg.idioma : 'es';
+        // el correo: ponerlo o cambiarlo (sin confirmar), pedir otro código, confirmarlo
+        if (que === 'correo' || que === 'reenviar' || que === 'verificar') {
+          const usuario = usuarioDe(autor);
+          if (!usuario) return responder({ ok: false, motivo: 'Este personaje no tiene cuenta.' });
+          if (que === 'verificar') {
+            const r = verificaciones.comprobar(claveDeUsuario(usuario), typeof msg.codigo === 'string' ? msg.codigo.slice(0, 20) : '', Date.now());
+            // con el correo ya confirmado, el código es el del correo nuevo (cambiar el correo desde el menú)
+            const antes = cuentas.correoDe(autor);
+            if (r.ok && antes.verificado) {
+              const c = cuentas.cambiarCorreo(autor, r.correo, Date.now());
+              seguridad({ que: 'cambiar_correo', ok: c.ok, usuario, autor, origen, ...(c.ok ? { correo: enmascarar(r.correo) } : { motivo: c.motivo }) });
+              if (!c.ok) return responder({ ok: false, motivo: c.motivo });
+              appendFileSync(archivoCuentas, JSON.stringify(c.linea) + '\n');
+              registrar(`correo cambiado de «${usuario}»`);
+              if (c.antes) avisarCorreo(c.antes, usuario, 'aviso_correo', idioma, r.correo);
+              return responder({ ok: true, cambiado: true, admin: esAdmin(autor), correo: estadoCorreo(autor) });
+            }
+            const c = r.ok ? cuentas.confirmarCorreo(autor, r.correo, Date.now()) : r;
+            seguridad({ que: 'verificar', ok: c.ok, usuario, autor, origen, ...(c.ok ? {} : { motivo: c.motivo }) });
+            if (!c.ok) return responder({ ok: false, motivo: c.motivo });
+            appendFileSync(archivoCuentas, JSON.stringify(c.linea) + '\n');
+            registrar(`correo confirmado de «${usuario}»`);
+            return responder({ ok: true, admin: esAdmin(autor), correo: estadoCorreo(autor) });
+          }
+          if (que === 'correo') {
+            const m = cuentas.motivoCorreoDe(autor, typeof msg.correo === 'string' ? msg.correo : null);
+            if (m) { seguridad({ que: 'correo', ok: false, usuario, autor, origen, motivo: m }); return responder({ ok: false, motivo: m }); }
+            // antes de cambiarlo, que se pueda mandar el código (si no, se cambiaría de correo sin espera)
+            const e = cuentas.correoDe(autor);
+            if (e.correo && verificaciones.falta(claveDeUsuario(usuario), msg.correo, Date.now()) > 0) {
+              const r = verificaciones.pedir(claveDeUsuario(usuario), msg.correo, Date.now());
+              return responder({ ok: false, motivo: r.motivo });
+            }
+            const r = cuentas.ponerCorreo(autor, msg.correo, Date.now());
+            appendFileSync(archivoCuentas, JSON.stringify(r.linea) + '\n');
+            verificaciones.olvidar(claveDeUsuario(usuario));
+          }
+          ws.cuentaEnCurso = true;
+          mandarCodigo(autor, origen, idioma)
+            .then((r) => responder({ ...r, correo: estadoCorreo(autor) }))
+            .catch((e) => { registrar(`error con el correo: ${e && e.message}`); responder({ ok: false, motivo: 'Error del servidor.' }); })
+            .finally(() => { ws.cuentaEnCurso = false; });
+          return;
+        }
+        // recuperar la contraseña: el código va al correo confirmado de esa cuenta (la respuesta, la misma si no existe)
+        if (que === 'recuperar') {
+          const MISMO = 'Si hay una cuenta con ese usuario o correo, y su correo está confirmado, le llegará un código.';
+          const ahora = Date.now(), o = claveDeOrigen(origen);
+          if (typeof msg.quien !== 'string' || !msg.quien.trim()) return responder({ ok: false, motivo: 'Escribe tu usuario o tu correo.' });
+          if (recuperarOrigen.lleno(o, ahora)) { seguridad({ que, ok: false, autor, origen, motivo: 'demasiadas' }); return responder({ ok: false, motivo: `Demasiados intentos; prueba dentro de ${Math.max(1, Math.ceil(recuperarOrigen.falta(o, ahora) / 60000))} min.` }); }
+          recuperarOrigen.sumar(o, ahora);
+          const c = cuentas.buscar(msg.quien);
+          if (!c || !c.verificado || typeof c.correo !== 'string') { seguridad({ que, ok: false, autor, origen, motivo: c ? 'sin correo confirmado' : 'no existe' }); return responder({ ok: true, motivo: MISMO }); }
+          const r = recuperaciones.pedir(claveDeUsuario(c.usuario), c.correo, ahora);
+          if (!r.ok) { seguridad({ que, ok: false, usuario: c.usuario, autor, origen, motivo: r.motivo }); return responder({ ok: true, motivo: MISMO }); }
+          ws.cuentaEnCurso = true;
+          cartero.enviar({ para: c.correo, usuario: c.usuario, codigo: r.codigo, idioma, tipo: 'recuperar' })
+            .then((e) => {
+              seguridad({ que, ok: !!e.ok, usuario: c.usuario, autor, origen, correo: enmascarar(c.correo), ...(e.ok ? {} : { motivo: e.motivo }) });
+              if (!e.ok) { recuperaciones.olvidar(claveDeUsuario(c.usuario)); return responder({ ok: false, motivo: e.motivo }); }
+              responder({ ok: true, motivo: MISMO });
+            })
+            .catch((e) => { registrar(`error al recuperar: ${e && e.message}`); responder({ ok: false, motivo: 'Error del servidor.' }); })
+            .finally(() => { ws.cuentaEnCurso = false; });
+          return;
+        }
+        // la contraseña nueva con el código; o, desde el menú, con la actual
+        if (que === 'restablecer' || que === 'cambiar_clave') {
+          const ahora = Date.now();
+          let c = null;
+          if (que === 'restablecer') {
+            const o = claveDeOrigen(origen), f = cuentas.fallosOrigen.falta(o, ahora);
+            if (f > 0) return responder({ ok: false, motivo: `Demasiados intentos; prueba dentro de ${Math.max(1, Math.ceil(f / 60000))} min.` });
+            c = cuentas.buscar(msg.quien);
+            const mc = motivoClave(msg.clave, c ? c.usuario : msg.quien);
+            if (mc) return responder({ ok: false, motivo: mc });
+            const r = c ? recuperaciones.comprobar(claveDeUsuario(c.usuario), typeof msg.codigo === 'string' ? msg.codigo.slice(0, 20) : '', ahora) : { ok: false, motivo: 'El código no es correcto.' };
+            if (r.ok && claveDeCorreo(r.correo) !== claveDeCorreo(c.correo || '')) r.ok = false, r.motivo = 'El correo ha cambiado; pide otro código.';
+            if (!r.ok) {
+              cuentas.fallosOrigen.sumar(o, ahora);
+              seguridad({ que, ok: false, ...(c ? { usuario: c.usuario } : {}), autor, origen, motivo: r.motivo });
+              return responder({ ok: false, motivo: c ? r.motivo : 'El código no es correcto.' });
+            }
+          } else {
+            c = cuentas.deAutor(autor);
+            if (!c) return responder({ ok: false, motivo: 'Este personaje no tiene cuenta.' });
+            const mc = motivoClave(msg.clave, c.usuario);
+            if (mc) return responder({ ok: false, motivo: mc });
+          }
+          ws.cuentaEnCurso = true;
+          (que === 'cambiar_clave' ? cuentas.comprobarClave(autor, msg.actual, origen, ahora) : Promise.resolve({ ok: true }))
+            .then(async (v) => {
+              if (!v.ok) { seguridad({ que, ok: false, usuario: c.usuario, autor, origen, motivo: v.motivo, ...(v.bloqueado ? { bloqueado: true } : {}) }); return responder({ ok: false, motivo: v.motivo }); }
+              const r = await cuentas.cambiarClave(c.usuario, msg.clave, ahora);
+              if (!r.ok) return responder({ ok: false, motivo: r.motivo });
+              appendFileSync(archivoCuentas, JSON.stringify(r.linea) + '\n');
+              // fuera la sesión en todos los aparatos de ese personaje; este sigue con una ficha nueva
+              const n = cerrarSesiones(c.autor, ws);
+              const ficha = fichaPara(c.autor);
+              seguridad({ que, ok: true, usuario: c.usuario, autor, origen, fichas: n });
+              registrar(`contraseña cambiada de «${c.usuario}» (${que}; ${n} fichas fuera)`);
+              if (c.verificado && typeof c.correo === 'string') avisarCorreo(c.correo, c.usuario, 'aviso_clave', idioma);
+              responder({ ok: true, usuario: c.usuario, autor: c.autor, ficha });
+            })
+            .catch((e) => { registrar(`error al cambiar la contraseña: ${e && e.message}`); responder({ ok: false, motivo: 'Error del servidor.' }); })
+            .finally(() => { ws.cuentaEnCurso = false; });
+          return;
+        }
+        // cambiar el correo desde el menú (con el de ahora confirmado): pide la contraseña y manda el código al nuevo
+        if (que === 'cambiar_correo') {
+          const c = cuentas.deAutor(autor);
+          if (!c) return responder({ ok: false, motivo: 'Este personaje no tiene cuenta.' });
+          if (!c.verificado) return responder({ ok: false, motivo: 'Confirma primero el correo de tu cuenta.' });
+          const nuevo = typeof msg.correo === 'string' ? msg.correo.trim().normalize('NFC') : null;
+          const m = cuentas.motivoCorreoNuevo(autor, nuevo);
+          if (m) return responder({ ok: false, motivo: m });
+          const ahora = Date.now(), k = claveDeUsuario(c.usuario);
+          ws.cuentaEnCurso = true;
+          cuentas.comprobarClave(autor, msg.actual, origen, ahora)
+            .then(async (v) => {
+              if (!v.ok) { seguridad({ que, ok: false, usuario: c.usuario, autor, origen, motivo: v.motivo }); return responder({ ok: false, motivo: v.motivo }); }
+              const r = verificaciones.pedir(k, nuevo, ahora);
+              if (!r.ok) return responder({ ok: false, motivo: r.motivo });
+              const e = await cartero.enviar({ para: nuevo, usuario: c.usuario, codigo: r.codigo, idioma });
+              seguridad({ que: 'codigo', ok: !!e.ok, usuario: c.usuario, autor, origen, correo: enmascarar(nuevo), para: 'cambiar_correo' });
+              if (!e.ok) { verificaciones.olvidar(k); return responder({ ok: false, motivo: e.motivo }); }
+              responder({ ok: true, pendiente: enmascarar(nuevo) });
+            })
+            .catch((e) => { registrar(`error al cambiar el correo: ${e && e.message}`); responder({ ok: false, motivo: 'Error del servidor.' }); })
+            .finally(() => { ws.cuentaEnCurso = false; });
+          return;
+        }
+        const p = validarPeticionCuenta(msg);
+        if (p.motivo) { seguridad({ que: que === 'crear' ? 'alta' : 'entrar', ok: false, autor, origen, motivo: p.motivo }); return responder({ ok: false, motivo: p.motivo }); }
+        ws.cuentaEnCurso = true;
+        const ahora = Date.now();
+        (p.que === 'crear' ? cuentas.crear({ usuario: p.usuario, clave: p.clave, correo: p.correo, autor, origen, ahora }) : cuentas.entrar({ usuario: p.usuario, clave: p.clave, origen, ahora }))
+          .then((r) => {
+            if (p.que === 'crear' && r.ok) {
+              appendFileSync(archivoCuentas, JSON.stringify(r.cuenta) + '\n');
+              registrar(`cuenta nueva «${r.cuenta.usuario}» para ${autor} (desde ${origen})`);
+              seguridad({ que: 'alta', ok: true, usuario: r.cuenta.usuario, autor, origen, correo: enmascarar(r.cuenta.correo) });
+              // y el código para confirmar el correo (si no sale, se pide otro desde la pantalla)
+              return mandarCodigo(autor, origen, idioma).then((m) =>
+                responder({ ok: true, usuario: r.cuenta.usuario, autor, admin: esAdmin(autor), correo: estadoCorreo(autor), ...(m.ok ? {} : { aviso: m.motivo }) }));
+            }
+            if (p.que === 'entrar' && r.ok) {
+              registrar(`entra con la cuenta «${r.usuario}» → ${r.autor} (desde ${origen})`);
+              seguridad({ que: 'entrar', ok: true, usuario: r.usuario, autor: r.autor, origen });
+              return responder({ ok: true, usuario: r.usuario, autor: r.autor, ficha: fichaPara(r.autor) });
+            }
+            registrar(`cuenta: ${p.que} «${p.usuario}» rechazado (${r.motivo}) desde ${origen}`);
+            seguridad({ que: p.que === 'crear' ? 'alta' : 'entrar', ok: false, usuario: p.usuario, autor, origen, motivo: r.motivo, ...(r.bloqueado ? { bloqueado: true } : {}) });
+            responder({ ok: false, motivo: r.motivo });
+          })
+          .catch((e) => { registrar(`error con la cuenta: ${e && e.message}`); responder({ ok: false, motivo: 'Error del servidor.' }); })
+          .finally(() => { ws.cuentaEnCurso = false; });
+        return;
+      }
+      if (msg && msg.tipo === 'admin') {
+        const id = Number.isSafeInteger(msg.id) ? msg.id : null, que = msg.que === 'ver' || msg.que === 'ir' ? msg.que : null;
+        const apuntar = (r) => appendFileSync(archivoAdmin, JSON.stringify({ t: new Date().toISOString(), autor, cuenta: usuarioDe(autor), que, ...(que === 'ir' ? { x: Number.isFinite(msg.x) ? msg.x : undefined, z: Number.isFinite(msg.z) ? msg.z : undefined, junto: typeof msg.junto === 'string' ? msg.junto.slice(0, 60) : undefined } : {}), ok: r.ok, ...(r.ok ? {} : { motivo: r.motivo }) }) + '\n');
+        const responder = (r) => { if (que !== 'ver' || !r.ok) apuntar(r); enviar(ws, { tipo: 'admin', id, que, ...r }); };
+        // solo la cuenta de admin (la de esta conexión: lo que diga el mensaje no cuenta)
+        if (!esAdmin(autor)) return responder({ ok: false, motivo: NO_ADMIN });
         const p = validarPeticionAdmin(msg);
         if (!p) return responder({ ok: false, motivo: 'Petición de admin no válida.' });
         if (p.que === 'ver') {
           const estados = new Map();
           for (const a of conexionDe.keys()) { const e = presencia.ultimo.get(a); if (e) estados.set(a, e); }
-          return responder({ ok: true, yo: autor, jugadores: listaJugadores(estados) });
+          return responder({ ok: true, yo: autor, jugadores: listaJugadores(estados, usuarioDe) });
         }
         if (p.junto !== undefined) {
           const e = conexionDe.has(p.junto) && presencia.ultimo.get(p.junto);
@@ -434,7 +692,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, terreno, vista, archivo, archivoAdmin, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
+    wss, mundo, terreno, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
     cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticCombate); clearInterval(ticLatido); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };
@@ -447,6 +705,9 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   // el mundo de verdad, con la misma semilla que el navegador (unos segundos al arrancar)
   // (lo primero que escribe es la línea de «en el puerto», cuando ya escucha: las pruebas la esperan para conectar)
   const t0 = Date.now(), terreno = terrenoWhitholm(), ms = Date.now() - t0;
-  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t) });
-  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms`));
+  // KINHOLD_PRUEBAS_ALTAS=libres: sin límite de altas, solo para las pruebas de navegador (crean varias cuentas seguidas
+  // desde la misma máquina). Nunca en el servidor de verdad: lo dice en la línea de arranque.
+  const altasLibres = process.env.KINHOLD_PRUEBAS_ALTAS === 'libres';
+  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {} });
+  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms · correo: ${s.cartero.conClave ? 'Resend' : 'sin clave de Resend, los códigos van al registro'}${altasLibres ? ' · AVISO: altas sin límite (KINHOLD_PRUEBAS_ALTAS=libres), solo para pruebas' : ''}`));
 }

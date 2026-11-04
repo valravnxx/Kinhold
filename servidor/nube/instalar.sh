@@ -7,7 +7,8 @@
 # solo con cada versión nueva de la demo (auto_actualizar.sh). Repetirlo no hace daño.
 #
 # Variables (todas opcionales):
-#   KINHOLD_DOMINIO  dirección propia (si no, <ip-con-guiones>.sslip.io, que apunta sola a la IP)
+#   KINHOLD_DOMINIO  dirección propia (si no, <ip-con-guiones>.sslip.io, que apunta sola a la IP); con una propia
+#                    sigue sirviendo también la de sslip.io
 #   KINHOLD_IP       la IP pública (si no, la de la máquina)
 #   KINHOLD_PUERTO   puerto interno del servidor del juego (8080)
 #
@@ -17,7 +18,7 @@ set -euo pipefail
 
 REPO=https://github.com/valravnxx/Kinhold.git
 DIR=/opt/kinhold
-JUEGO=https://valravnxx.github.io/Kinhold/jugar/demo/index.html
+JUEGO=https://playkinhold.com/jugar/demo/index.html
 NUBE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PUERTO="${KINHOLD_PUERTO:-8080}"
 
@@ -39,15 +40,23 @@ dominio() {
   echo "${ip//./-}.sslip.io"
 }
 
-# rellena una plantilla: @@DOMINIO@@, @@PUERTO@@, @@JUEGO@@, @@DIR@@, @@NODE@@
+# Con dirección propia (playkinhold.com desde el 1 nov) Caddy sirve también la de sslip.io: las versiones ya
+# publicadas la llevan dentro y nunca se cambian, así que tienen que seguir entrando.
+dominios() {
+  if [[ "$DOMINIO" == *.sslip.io ]]; then echo "$DOMINIO"; return; fi
+  local ip; ip="$(ip_publica)"
+  if [[ "$ip" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then echo "$DOMINIO, ${ip//./-}.sslip.io"; else echo "$DOMINIO"; fi
+}
+
+# rellena una plantilla: @@DOMINIO@@, @@DOMINIOS@@, @@PUERTO@@, @@JUEGO@@, @@DIR@@, @@NODE@@
 rellenar() {
-  sed -e "s|@@DOMINIO@@|$DOMINIO|g" -e "s|@@PUERTO@@|$PUERTO|g" -e "s|@@JUEGO@@|$JUEGO|g" \
+  sed -e "s|@@DOMINIOS@@|$DOMINIOS|g" -e "s|@@DOMINIO@@|$DOMINIO|g" -e "s|@@PUERTO@@|$PUERTO|g" -e "s|@@JUEGO@@|$JUEGO|g" \
       -e "s|@@DIR@@|$DIR|g" -e "s|@@NODE@@|$NODE|g" "$1"
 }
 
 if [ "${1:-}" = "--solo-archivos" ]; then
   [ -n "${2:-}" ] || { echo "Uso: instalar.sh --solo-archivos <carpeta>" >&2; exit 1; }
-  DOMINIO="$(dominio)"; NODE="${KINHOLD_NODE:-/usr/bin/node}"
+  DOMINIO="$(dominio)"; DOMINIOS="$(dominios)"; NODE="${KINHOLD_NODE:-/usr/bin/node}"
   mkdir -p "$2"
   rellenar "$NUBE/Caddyfile.plantilla" > "$2/Caddyfile"
   rellenar "$NUBE/kinhold.service.plantilla" > "$2/kinhold.service"
@@ -87,7 +96,7 @@ id kinhold >/dev/null 2>&1 || useradd --system --home-dir /var/lib/kinhold --she
 if [ -d "$DIR/.git" ]; then git -C "$DIR" pull --ff-only; else git clone --depth 1 "$REPO" "$DIR"; fi
 (cd "$DIR" && npm ci --omit=dev --no-audit --no-fund)
 
-DOMINIO="$(dominio)"
+DOMINIO="$(dominio)"; DOMINIOS="$(dominios)"
 rellenar "$DIR/servidor/nube/kinhold.service.plantilla" > /etc/systemd/system/kinhold.service
 # al día solo con cada versión nueva de la demo (auto_actualizar.sh, cada 5 minutos)
 rellenar "$DIR/servidor/nube/kinhold-actualizar.service.plantilla" > /etc/systemd/system/kinhold-actualizar.service

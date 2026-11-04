@@ -8,6 +8,7 @@
 # MUTAR=1 tira los mensajes de objetos que manda la página (como si se hiciera solo en el navegador): tiene que fallar.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
 from playwright.sync_api import sync_playwright
+from correo_prueba import Codigos, crear_y_confirmar
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
@@ -27,9 +28,10 @@ threading.Thread(target=web.serve_forever, daemon=True).start()
 s = socket.socket(); s.bind(('127.0.0.1', 0)); PUERTO = s.getsockname()[1]; s.close()
 ARCHIVO = os.path.join(sitio, 'mundo.jsonl')
 OBJETOS = os.path.join(sitio, 'objetos.json')
-servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs'), str(PUERTO), ARCHIVO], cwd=RAIZ,
+servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs'), str(PUERTO), ARCHIVO], cwd=RAIZ, env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres'},
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
+codigos = Codigos(servidor)
 URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html?hilos=1&servidor=ws://127.0.0.1:{PUERTO}'
 
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
@@ -64,6 +66,15 @@ def captura(pg, ruta):
     try: pg.screenshot(path=ruta)
     except Exception as e: print('  (sin captura:', str(e)[:80], ')')
 
+# Cuentas (P1): la primera vez sale la pantalla de crear cuenta, que tapa el juego; se crea una (si sale) y se sigue
+_n_cuentas = [0]
+def crear_cuenta(pg, ms=10000):
+    try: pg.wait_for_function("!!document.getElementById('pantallaCuenta')", timeout=ms)
+    except Exception: return False
+    _n_cuentas[0] += 1
+    clave = 'clave-de-prueba-123'
+    # y confirma el correo con el código que llega (pruebas/correo_prueba.py), como un jugador
+    return crear_y_confirmar(pg, codigos, f'prueba{_n_cuentas[0]}', clave)
 def entrar(nav, nombre, vista, movil, ctx=None, pg=None, err=None):
     # con ctx y pg, la misma pestaña otra vez (la ficha va en sessionStorage, por pestaña: el mismo jugador)
     nuevo = ctx is None
@@ -80,6 +91,7 @@ def entrar(nav, nombre, vista, movil, ctx=None, pg=None, err=None):
     comprobar(f'{nombre}: el juego carga', esperar(pg, 'window.__demo && window.__demo.listo', 60000), str(err[:2]))
     comprobar(f'{nombre}: el terreno de alrededor llega', esperar(pg, f'!{K}.mundoJ || {K}.mundoListo', 120000))
     comprobar(f'{nombre}: se conecta y le llega lo que lleva en el servidor', esperar(pg, f"{K}.enLinea && {K}.enLinea.red.yo && {K}.objetosRed && {K}.objetosRed.deServidor", 60000))
+    crear_cuenta(pg, 3000)
     return ctx, pg, err
 
 try:

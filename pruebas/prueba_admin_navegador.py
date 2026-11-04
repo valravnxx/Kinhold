@@ -1,22 +1,25 @@
-# Prueba en navegador del panel de depuración del admin (valravnx, 30 oct; src/juego/panel_admin.js).
+# Prueba en navegador del panel de depuración del admin (valravnx, 30 oct; src/juego/panel_admin.js), con el admin por la
+# cuenta (revisión del 1 nov, P1: sin clave aparte).
 # Uso: python3 pruebas/prueba_admin_navegador.py <html de la demo> <carpeta_capturas>
-# Una sola página (no es de las de dos páginas en línea): la demo con un servidor local que tiene clave de admin, y un
-# jugador simulado (un cliente de node, sin navegador) quieto en un sitio conocido. Comprueba, en PC y móvil:
-#   - sin ?admin ni clave guardada no sale el botón «Admin»; con ?admin, sí (móvil); en PC se abre con F9;
-#   - el panel pide la clave; con una mal, el servidor la rechaza y no se ve a nadie;
-#   - con la buena: el mapa del rey abierto, el otro jugador en la lista y pintado en el mapa donde está;
+# Una sola página a la vez (no es de las de dos páginas en línea): la demo con un servidor local, y un jugador simulado
+# (un cliente de node, sin navegador) quieto en un sitio conocido. Comprueba, en PC y móvil:
+#   - con una cuenta que no es de admin no sale el botón «Admin» (ni con ?admin en la dirección) y F9 no abre nada;
+#     la clave que guardaba el navegador antes se borra;
+#   - con la cuenta de admin sale el botón y el panel se abre (botón o F9) sin pedir ninguna clave: el mapa del rey
+#     abierto, el otro jugador en la lista y pintado en el mapa donde está;
 #   - «Ir» te pone junto a él (a menos de 2 m) y cierra el panel; un clic en el mapa te lleva a ese punto, en el suelo;
-#   - M o Esc lo cierran; la clave queda guardada (al volver a abrir no la pide) y «Olvidar la clave» la quita.
-# MUTAR=1: un servidor que no mira la clave: tiene que fallar (con la clave mal se vería a todos).
+#   - M, Esc y «Cerrar» lo cierran.
+# MUTAR=1: un servidor que dice a todos que son admin: tiene que fallar (a la cuenta que no lo es le saldría el botón).
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket
 from playwright.sync_api import sync_playwright
+from correo_prueba import Codigos, crear_y_confirmar
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_admin'
 os.makedirs(SALIDA, exist_ok=True)
 MUTAR = os.environ.get('MUTAR', '') == '1'
-CLAVE = 'clave-admin-de-prueba-42'
+ADMINS = ['valravnx', 'admmovil', 'admen']   # la cuenta de admin de cada vista (la máquina dice cuáles son)
 OTRO = (1500.0, 900.0)   # dónde está el jugador simulado (m, relativos a la salida; lejos, para que tu marca no lo tape)
 
 sitio = tempfile.mkdtemp()
@@ -31,11 +34,12 @@ threading.Thread(target=web.serve_forever, daemon=True).start()
 s = socket.socket(); s.bind(('127.0.0.1', 0)); PUERTO = s.getsockname()[1]; s.close()
 SERVIDOR = os.path.join(RAIZ, 'servidor/servidor.mjs')
 if MUTAR:
-    t = open(SERVIDOR).read(); m = t.replace('if (!esAdmin(msg.clave)) {', 'if (false) {'); assert m != t
+    t = open(SERVIDOR).read(); m = t.replace('admin: esAdmin(autor) });', 'admin: true });'); assert m != t
     SERVIDOR = os.path.join(RAIZ, 'servidor/.servidor_mutado_admin_nav.mjs'); open(SERVIDOR, 'w').write(m)
 servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ,
-                            env={**os.environ, 'KINHOLD_ADMIN': CLAVE}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                            env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres', 'KINHOLD_ADMIN_CUENTA': ','.join(ADMINS)}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
+codigos = Codigos(servidor)
 # el otro jugador: un cliente de node que manda su estado, quieto
 # (a la altura del suelo de su sitio: el servidor conoce el terreno y no admite a nadie muy por encima o por debajo)
 BOT = f"""import {{ WebSocket }} from 'ws';
@@ -63,6 +67,13 @@ def esperar(pg, cond, ms=30000):
 def captura(pg, ruta):
     try: pg.screenshot(path=ruta)
     except Exception as e: print('  (sin captura:', str(e)[:80], ')')
+# Cuentas (P1): la primera vez sale la pantalla de crear cuenta, que tapa el juego; se crea una (si sale) y se sigue
+def crear_cuenta(pg, usuario, ms=10000):
+    try: pg.wait_for_function("!!document.getElementById('pantallaCuenta')", timeout=ms)
+    except Exception: return False
+    clave = 'clave-de-prueba-123'
+    # y confirma el correo con el código que llega (pruebas/correo_prueba.py), como un jugador
+    return crear_y_confirmar(pg, codigos, usuario, clave)
 PANEL = f"{K}.panelAdmin"
 
 try:
@@ -71,31 +82,41 @@ try:
         nav = p.chromium.launch(args=ARGS)
         for nombre, vista, movil in [('pc', {'width': 1280, 'height': 800}, False), ('movil', {'width': 390, 'height': 844}, True)]:
             print('Vista', nombre)
+            # una cuenta que no es de admin (con la clave de antes guardada en el navegador, y ?admin en la dirección)
+            ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
+            ctx.add_init_script("try { if (!sessionStorage.getItem('puesta')) { localStorage.setItem('kinhold_admin_clave', 'clave-de-antes-0123456'); sessionStorage.setItem('puesta', '1'); } } catch (e) {}")
+            pg = ctx.new_page()
+            err = []
+            pg.on('pageerror', lambda e, err=err: err.append(str(e)))
+            pg.goto(URL + '&admin', wait_until='domcontentloaded', timeout=180000)
+            comprobar(f'{nombre}: entra en línea con el mundo listo', esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado' && {K}.mundoListo && {PANEL}", 300000))
+            comprobar(f'{nombre}: crea una cuenta que no es de admin', crear_cuenta(pg, f'jugador{nombre}'))
+            esperar(pg, f"{K}.mapaRey.listo", 300000)
+            pg.wait_for_timeout(1500)
+            comprobar(f'{nombre}: sin la cuenta de admin no sale el botón «Admin» (ni con ?admin)', not pg.evaluate("!!document.getElementById('btnAdmin')") and pg.evaluate(f"{K}.enLinea.admin === false"))
+            if not movil:
+                pg.keyboard.press('F9'); pg.wait_for_timeout(400)
+                comprobar(f'{nombre}: y F9 no abre nada', not pg.evaluate(f"{PANEL}.abierto || {K}.mapaRey.abierto"))
+            comprobar(f'{nombre}: la clave que guardaba el navegador antes se borra', pg.evaluate("localStorage.getItem('kinhold_admin_clave')") is None)
+            comprobar(f'{nombre}: sin errores en la página (sin admin)', not err, '; '.join(err)[:300])
+            ctx.close()
+
+            # la cuenta de admin
             ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
             pg = ctx.new_page()
             err = []
             pg.on('pageerror', lambda e, err=err: err.append(str(e)))
-            pg.goto(URL + ('&admin' if movil else ''), wait_until='domcontentloaded', timeout=180000)
-            comprobar(f'{nombre}: entra en línea con el mundo listo', esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado' && {K}.mundoListo && {PANEL}", 300000))
+            pg.goto(URL, wait_until='domcontentloaded', timeout=180000)
+            esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado' && {K}.mundoListo && {PANEL}", 300000)
+            comprobar(f'{nombre}: crea la cuenta de admin', crear_cuenta(pg, ADMINS[0] if not movil else ADMINS[1]))
             esperar(pg, f"{K}.mapaRey.listo", 300000)
-            boton = pg.evaluate("!!document.getElementById('btnAdmin')")
-            comprobar(f'{nombre}: el botón «Admin» ' + ('sale con ?admin' if movil else 'no sale sin ?admin ni clave'), boton == movil)
+            comprobar(f'{nombre}: con la cuenta de admin sale el botón «Admin», sin recargar', esperar(pg, "!!document.getElementById('btnAdmin')", 5000))
             abrir = (lambda: pg.tap('#btnAdmin')) if movil else (lambda: pg.keyboard.press('F9'))
             pulsar = (lambda sel: pg.tap(sel, timeout=90000)) if movil else (lambda sel: pg.click(sel, timeout=90000))
             abrir(); pg.wait_for_timeout(400)
-            comprobar(f'{nombre}: se abre y pide la clave', pg.evaluate(f"{PANEL}.abierto && {K}.mapaRey.abierto && !!document.querySelector('#panelAdmin input[type=password]')"))
-            # la clave mal
-            pg.fill('#panelAdmin input', 'esta-no-es-la-clave'); pulsar('#panelAdmin .pa-si')
-            esperar(pg, "document.querySelector('#panelAdmin .pa-estado.mal')", 5000)
-            pg.wait_for_timeout(1200)
-            n = pg.evaluate(f"{PANEL}.jugadores.length")
-            comprobar(f'{nombre}: con la clave mal no se ve a nadie y lo dice', n == 0 and pg.evaluate("!!document.querySelector('#panelAdmin .pa-estado.mal') && !!document.querySelector('#panelAdmin input')"),
-                      f"{n} jugadores; «{pg.evaluate(ESTADO_PANEL)}»")
-            if nombre == 'pc': captura(pg, f'{SALIDA}/{nombre}_clave_mal.png')
-            # la buena
-            pg.fill('#panelAdmin input', CLAVE); pulsar('#panelAdmin .pa-si')
+            comprobar(f'{nombre}: se abre sin pedir ninguna clave', pg.evaluate(f"{PANEL}.abierto && {K}.mapaRey.abierto && !document.querySelector('#panelAdmin input')"))
             vio = esperar(pg, f"{PANEL}.jugadores.some(j => j.autor === '{AUTOR_BOT}')", 8000)
-            comprobar(f'{nombre}: con la buena, el otro jugador sale en la lista', vio and pg.evaluate("document.querySelectorAll('#panelAdmin li').length") >= 1)
+            comprobar(f'{nombre}: el otro jugador sale en la lista', vio and pg.evaluate("document.querySelectorAll('#panelAdmin li').length") >= 1, pg.evaluate(ESTADO_PANEL))
             # pintado en el mapa donde está: el punto azul en su sitio
             punto = pg.evaluate(f"""(() => {{ const k = {K}, m = k.mapaRey, s = k.mundoJ.salida;
               const [x, y] = m.kmAPant((s.x + {OTRO[0]}) / 1000, (s.z + {OTRO[1]}) / 1000);
@@ -111,9 +132,9 @@ try:
             comprobar(f'{nombre}: «Ir» te pone junto a él y cierra el panel', junto and not pg.evaluate(f"{K}.mapaRey.abierto"), f'a {d:.2f} m')
             pg.wait_for_timeout(1500)
             captura(pg, f'{SALIDA}/{nombre}_junto.png')
-            # la clave queda guardada: al volver a abrir no la pide; un clic en el mapa lleva ahí
+            # al volver a abrirlo, un clic en el mapa lleva ahí
             abrir(); pg.wait_for_timeout(500)
-            comprobar(f'{nombre}: al volver a abrirlo no pide la clave', pg.evaluate(f"{PANEL}.abierto && !document.querySelector('#panelAdmin input')"))
+            comprobar(f'{nombre}: se vuelve a abrir', pg.evaluate(f"{PANEL}.abierto"))
             destino = pg.evaluate(f"""(() => {{ const k = {K}, m = k.mapaRey, s = k.mundoJ.salida;
               const [x, y] = m.kmAPant((s.x + 400) / 1000, (s.z - 300) / 1000); return {{ x: Math.round(x), y: Math.round(y) }}; }})()""")
             esperado = pg.evaluate(f"(() => {{ const k = {K}, [a, b] = k.mapaRey.pantAKm({destino['x']}, {destino['y']}); return {{ x: a * 1000 - k.mundoJ.salida.x, z: b * 1000 - k.mundoJ.salida.z }}; }})()")
@@ -125,7 +146,7 @@ try:
             comprobar(f'{nombre}: y en el suelo', abs(pj['y'] - pj['suelo']) < 0.5, str(pj))
             pg.wait_for_timeout(2500)
             captura(pg, f'{SALIDA}/{nombre}_clic.png')
-            # cerrar con M o Esc (PC); «Olvidar la clave»
+            # cerrar con M o Esc (PC) y con «Cerrar»
             abrir(); pg.wait_for_timeout(400)
             if not movil:
                 pg.keyboard.press('Escape'); pg.wait_for_timeout(300)
@@ -134,9 +155,6 @@ try:
                 pg.keyboard.press('m'); pg.wait_for_timeout(300)
                 comprobar(f'{nombre}: M lo cierra', not pg.evaluate(f"{PANEL}.abierto || {K}.mapaRey.abierto"))
                 abrir(); pg.wait_for_timeout(400)
-            pulsar('#panelAdmin .pa-olvidar'); pg.wait_for_timeout(300)
-            guardada = pg.evaluate("localStorage.getItem('kinhold_admin_clave')")
-            comprobar(f'{nombre}: «Olvidar la clave» la quita', guardada is None and pg.evaluate("!!document.querySelector('#panelAdmin input')"))
             pulsar('#panelAdmin .pa-cerrar'); pg.wait_for_timeout(300)
             comprobar(f'{nombre}: «Cerrar» lo cierra con el mapa', not pg.evaluate(f"{PANEL}.abierto || {K}.mapaRey.abierto"))
             faltan = pg.evaluate('window.__idioma ? [...window.__idioma.faltan] : []')
@@ -148,15 +166,15 @@ try:
         pg = ctx.new_page()
         pg.goto(URL + '&lang=en', wait_until='domcontentloaded', timeout=180000)
         esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado' && {K}.mundoListo && {PANEL}", 300000)
+        crear_cuenta(pg, ADMINS[2])
         esperar(pg, f"{K}.mapaRey.listo", 300000)
+        esperar(pg, "!!document.getElementById('btnAdmin')", 5000)
         pg.keyboard.press('F9'); pg.wait_for_timeout(300)
-        pg.fill('#panelAdmin input', 'mal-mal-mal-mal'); pg.click('#panelAdmin .pa-si'); pg.wait_for_timeout(1200)
-        pg.fill('#panelAdmin input', CLAVE); pg.click('#panelAdmin .pa-si')
         esperar(pg, f"{PANEL}.jugadores.length > 0", 8000)
         faltan = [f for f in pg.evaluate('[...window.__idioma.faltan]')]
         comprobar('en inglés: ningún texto sin traducir', not faltan, str(faltan))
         texto = pg.evaluate("document.getElementById('panelAdmin').textContent")
-        comprobar('en inglés: el panel en inglés', 'Debug (admin)' in texto and 'Forget the key' in texto, texto[:120])
+        comprobar('en inglés: el panel en inglés', 'Debug (admin)' in texto and 'Close' in texto, texto[:120])
         captura(pg, f'{SALIDA}/pc_en_panel.png')
         nav.close()
 finally:

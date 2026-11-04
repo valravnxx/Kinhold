@@ -8,6 +8,7 @@
 # MUTAR_FICHA=1 guarda la ficha en la pestaña, como antes (sessionStorage): la pestaña nueva es otro; tiene que fallar.
 import sys, os, json, tempfile, threading, http.server, functools, socketserver, subprocess, socket, shutil
 from playwright.sync_api import sync_playwright
+from correo_prueba import Codigos, crear_y_confirmar
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
@@ -30,9 +31,10 @@ SERVIDOR = os.path.join(RAIZ, 'servidor/servidor.mjs')
 if MUTAR:
     t = open(SERVIDOR).read(); m = t.replace('posicion: posiciones.get(autor) || null', 'posicion: null'); assert m != t
     SERVIDOR = os.path.join(RAIZ, 'servidor/.servidor_mutado_volver.mjs'); open(SERVIDOR, 'w').write(m)
-servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ,
+servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ, env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres'},
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
+codigos = Codigos(servidor)
 URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html?modo=construir&enlinea=1&llano=1&servidor=ws://127.0.0.1:{PUERTO}'
 K = 'window.__kinhold'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
@@ -47,9 +49,20 @@ def esperar(pg, cond, ms=30000):
 def captura(pg, ruta):
     try: pg.screenshot(path=ruta)   # sin tarjeta gráfica, a veces no sale: no es lo que se prueba
     except Exception as e: print('  (sin captura:', str(e)[:80], ')')
+# Cuentas (P1): la primera vez sale la pantalla de crear cuenta, que tapa el juego; se crea una (si sale) y se sigue
+_n_cuentas = [0]
+def crear_cuenta(pg, ms=10000):
+    try: pg.wait_for_function("!!document.getElementById('pantallaCuenta')", timeout=ms)
+    except Exception: return False
+    _n_cuentas[0] += 1
+    clave = 'clave-de-prueba-123'
+    # y confirma el correo con el código que llega (pruebas/correo_prueba.py), como un jugador
+    return crear_y_confirmar(pg, codigos, f'prueba{_n_cuentas[0]}', clave)
 def entrar(pg):
     pg.goto(URL, wait_until='domcontentloaded', timeout=180000)
-    return esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado' && !!{K}.enLinea.red.yo", 180000)
+    ok = esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado' && !!{K}.enLinea.red.yo", 180000)
+    crear_cuenta(pg, 3000)
+    return ok
 pos = lambda pg: pg.evaluate(f"({{ x: {K}.pj.x, z: {K}.pj.z, rot: {K}.pj.rot }})")
 
 try:

@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-11-01T14:25:06+00:00",
-  "tarea": "Cuentas en el servidor: usuario y contraseña (guardada con sal y hash lento, nunca en claro), crear cuenta y entrar; cada cuenta con su personaje (el autor de sus acciones). Lógica pura y servidor, con pruebas (también de lo que no debe dejar: contraseña mala, usuario repetido, demasiados intentos)",
+  "inicio": "2026-11-04T09:24:20+00:00",
+  "tarea": "El admin, por la cuenta y su correo: solo es admin la cuenta con el correo confirmado que diga la máquina (KINHOLD_ADMIN_CORREO), para que nadie pueda quedarse antes el nombre «valravnx»",
   "hito": "servidor",
-  "rama": "trabajo/20261101-1425"
+  "rama": "trabajo/20261104-0924"
  },
  "B": null,
  "chat:trabajo/20261101-1630-discord-idiomas": {
@@ -11,5 +11,11 @@
   "tarea": "Noticias del desarrollo en Discord en tres idiomas: en inglés en los canales comunes y en español y ruso en los suyos",
   "hito": "infra",
   "rama": "trabajo/20261101-1630-discord-idiomas"
+ },
+ "chat:trabajo/20261104-0930-mapa-tierras": {
+  "inicio": "2026-11-04T09:18:49+01:00",
+  "tarea": "Tu tierra es la zona entera de tu mojón (valravnx, 4 nov), un mojón por personaje; el mapa, al acercarlo, enseña las zonas de cada comarca y la tuya resaltada con su mojón",
+  "hito": "entre-dos",
+  "rama": "trabajo/20261104-0930-mapa-tierras"
  }
 }

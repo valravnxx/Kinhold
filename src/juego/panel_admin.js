@@ -1,17 +1,18 @@
-// Kinhold — panel de depuración del admin (valravnx, 30 oct). Se abre con F9 (o el botón «Admin», que sale con ?admin en
-// la dirección o si ya se ha puesto la clave en este navegador). Abre el mapa del rey con todos los jugadores conectados
-// y, al lado, su lista; un clic en el mapa te lleva ahí, y «Ir» te pone junto a ese jugador.
+// Kinhold — panel de depuración del admin (valravnx, 30 oct). Se abre con F9 o con el botón «Admin». Abre el mapa del
+// rey con todos los jugadores conectados y, al lado, su lista; un clic en el mapa te lleva ahí, e «Ir» te pone junto a
+// ese jugador.
 //
-// Todo lo pide al servidor con la clave de admin (src/logica/admin.js): el servidor mira la clave, pone el autor de la
-// conexión, lo apunta y contesta; solo entonces se mueve al jugador. Sin la clave buena, el panel no enseña nada.
-// La clave se guarda en este navegador (localStorage) hasta que se pulsa «Olvidar la clave» o el servidor la rechaza.
+// El admin, por la cuenta (revisión del 1 nov, P1): sin clave aparte. Solo sale con la cuenta de admin (la de valravnx):
+// lo dice el servidor al conectar (enLinea.admin) y es él quien acepta o no cada petición (src/logica/admin.js), con la
+// cuenta de la conexión; lo apunta y contesta, y solo entonces se mueve al jugador. Con otra cuenta no hay botón y F9
+// no hace nada.
 import { tr } from '../idioma.js';
 
-const CLAVE = 'kinhold_admin_clave';
 const CADA_VER = 1000;   // ms entre listas pedidas al servidor con el panel abierto
-const leer = () => { try { return localStorage.getItem(CLAVE) || ''; } catch (e) { return ''; } };
-const guardar = (c) => { try { if (c) localStorage.setItem(CLAVE, c); else localStorage.removeItem(CLAVE); } catch (e) { /* sin almacenamiento */ } };
+// la clave que se guardaba antes en este navegador (hasta la v92) ya no sirve: se borra
+try { localStorage.removeItem('kinhold_admin_clave'); } catch (e) { /* sin almacenamiento */ }
 const corto = (autor) => autor.replace(/^jugador:/, '');
+const nombre = (j) => j.cuenta || corto(j.autor);
 
 const CSS = `
 #panelAdmin{position:fixed;z-index:41;top:calc(10px + env(safe-area-inset-top,0px));left:calc(10px + env(safe-area-inset-left,0px));width:min(270px,calc(100vw - 20px));
@@ -25,7 +26,6 @@ const CSS = `
 #panelAdmin li .pa-donde{font-size:11px;color:#bfb19a}
 #panelAdmin button{font:inherit;font-size:12px;padding:4px 9px;color:#f1e8d8;background:rgba(58,48,38,.95);border:1px solid rgba(241,232,216,.2);border-radius:8px;cursor:pointer}
 #panelAdmin button.pa-si{color:#241b10;background:#d9a441;border:0;font-weight:600}
-#panelAdmin input{font:inherit;width:100%;box-sizing:border-box;margin:4px 0 6px;padding:6px 8px;border-radius:8px;border:1px solid rgba(241,232,216,.25);background:#1e1914;color:#f1e8d8}
 #panelAdmin .pa-pie{display:flex;gap:6px;flex-wrap:wrap}
 #panelAdmin .pa-ayuda{font-size:11.5px;color:#bfb19a;margin:0 0 8px}
 @media (max-width:600px){#panelAdmin{top:auto;bottom:calc(44px + env(safe-area-inset-bottom,0px));max-height:38vh}}
@@ -39,16 +39,17 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
   const raiz = document.createElement('div'); raiz.id = 'panelAdmin'; raiz.hidden = true;
   document.body.appendChild(raiz);
 
-  let huellaLista = '', clave = leer(), jugadores = [], yo = null, ultimo = null, id = 0, reloj = null, estadoTxt = '', estadoMal = false;
+  const esAdmin = () => !!(enLinea && enLinea.admin);
+  let huellaLista = '', jugadores = [], yo = null, ultimo = null, id = 0, reloj = null, estadoTxt = '', estadoMal = false;
   const pendientes = new Map();   // id → 'ver' | 'ir'
 
   function mandar(m) {
     if (!enLinea || enLinea.estado !== 'conectado') { ponerEstado(tr('Sin conexión con el servidor.'), true); return false; }
     id++; pendientes.set(id, m.que);
-    enLinea.enviar({ tipo: 'admin', id, clave, ...m });
+    enLinea.enviar({ tipo: 'admin', id, ...m });
     return true;
   }
-  const ver = () => { if (clave) mandar({ que: 'ver' }); };
+  const ver = () => { if (esAdmin()) mandar({ que: 'ver' }); };
   function ponerEstado(t, mal = false) { estadoTxt = t; estadoMal = mal; const e = raiz.querySelector('.pa-estado'); if (e) { e.textContent = t; e.classList.toggle('mal', mal); } }
 
   // lo que contesta el servidor
@@ -56,13 +57,12 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
     if (!pendientes.has(m.id)) return;
     pendientes.delete(m.id);
     if (!m.ok) {
-      if (m.motivo === 'Clave de admin incorrecta.') { clave = ''; guardar(''); jugadores = []; }
+      if (m.motivo === 'Solo la cuenta de admin puede usar el panel.') jugadores = [];
       ponerEstado(tr(m.motivo || 'El servidor no lo ha aceptado.'), true);
       pintarPanel(); if (mapaRey) mapaRey.pintar();
       return;
     }
     if (m.que === 'ver') {
-      guardar(clave);
       yo = m.yo; jugadores = (m.jugadores || []).filter(j => j.autor !== yo); ultimo = Date.now();
       ponerEstado(tr('Conectados además de ti: {n}', { n: jugadores.length }));
       // la lista se rehace solo si ha cambiado (así un botón no se cambia por otro mientras se pulsa)
@@ -84,11 +84,11 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
         const [x, y] = kmAPant((salida.x + j.x) / 1000, (salida.z + j.z) / 1000);
         ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2);
         ctx.fillStyle = '#2d5878'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#f4e6c2'; ctx.stroke();
-        etiqueta(corto(j.autor), x, y - R - 9, 12, '700', '#2d5878');
+        etiqueta(nombre(j), x, y - R - 9, 12, '700', '#2d5878');
       }
     },
     clic(x, z) {
-      if (!clave) return;
+      if (!esAdmin()) return;
       if (mandar({ que: 'ir', x: x - salida.x, z: z - salida.z })) ponerEstado(tr('Pidiendo al servidor…'));
     },
     alCerrar() { cerrar(); },
@@ -96,26 +96,15 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
 
   function pintarPanel() {
     if (raiz.hidden) return;
-    if (!clave) {
-      raiz.innerHTML = `<h3></h3><div class="pa-estado"></div><label class="pa-ayuda"></label><input type="password" autocomplete="off">
-        <div class="pa-pie"><button class="pa-si"></button><button class="pa-cerrar"></button></div>`;
-      raiz.querySelector('label').textContent = tr('Clave de admin (la que está puesta en el servidor)');
-      raiz.querySelector('.pa-si').textContent = tr('Entrar');
-      const entrar = () => { const v = raiz.querySelector('input').value.trim(); if (!v) return; clave = v; ponerEstado(tr('Comprobando la clave…')); ver(); };
-      raiz.querySelector('.pa-si').onclick = entrar;
-      raiz.querySelector('input').onkeydown = (e) => { if (e.key === 'Enter') entrar(); if (e.key === 'Escape') cerrar(); };
-      setTimeout(() => { const i = raiz.querySelector('input'); if (i) i.focus(); }, 0);
-    } else {
+    {
       raiz.innerHTML = `<h3></h3><div class="pa-estado"></div><ul></ul><p class="pa-ayuda"></p>
-        <div class="pa-pie"><button class="pa-olvidar"></button><button class="pa-cerrar"></button></div>`;
+        <div class="pa-pie"><button class="pa-cerrar"></button></div>`;
       raiz.querySelector('.pa-ayuda').textContent = tr('Clic en el mapa para ir ahí.');
-      raiz.querySelector('.pa-olvidar').textContent = tr('Olvidar la clave');
-      raiz.querySelector('.pa-olvidar').onclick = () => { clave = ''; guardar(''); jugadores = []; ponerEstado(''); pintarPanel(); if (mapaRey) mapaRey.pintar(); };
       const ul = raiz.querySelector('ul');
       for (const j of jugadores) {
         const li = document.createElement('li');
         li.innerHTML = '<span class="pa-nombre"></span><span class="pa-donde"></span><button></button>';
-        li.querySelector('.pa-nombre').textContent = corto(j.autor);
+        li.querySelector('.pa-nombre').textContent = nombre(j);
         li.querySelector('.pa-nombre').title = j.autor;
         li.querySelector('.pa-donde').textContent = `${Math.round(j.x)}, ${Math.round(j.z)}`;
         li.querySelector('button').textContent = tr('Ir');
@@ -130,7 +119,7 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
   }
 
   function abrir() {
-    if (!raiz.hidden) return;
+    if (!raiz.hidden || !esAdmin()) return;
     if (!mapaRey) { avisar(tr('El panel de admin solo está en el mundo de verdad.'), true); return; }
     raiz.hidden = false; estadoTxt = ''; estadoMal = false;
     mapaRey.ponerCapa(capa);
@@ -146,16 +135,23 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
     if (mapaRey.abierto) mapaRey.cerrar();
   }
 
-  // el botón «Admin», para el móvil (sin teclado): solo con ?admin en la dirección o con la clave ya puesta aquí
+  // el botón «Admin» (también para el móvil, sin teclado): solo con la cuenta de admin. El servidor lo dice al conectar (o
+  // al crear la cuenta), así que se mira cada poco; si deja de serlo (se corta, entra otro), se quita y se cierra el panel.
   const menu = document.getElementById('menu');
-  if (menu && mapaRey && (clave || new URLSearchParams(location.search).has('admin'))) {
-    const b = document.createElement('button'); b.id = 'btnAdmin'; b.textContent = tr('Admin');
-    b.onclick = () => (raiz.hidden ? abrir() : cerrar());
-    menu.appendChild(b);
+  let boton = null;
+  function mirarBoton() {
+    const si = esAdmin();
+    if (si && !boton && menu && mapaRey) {
+      boton = document.createElement('button'); boton.id = 'btnAdmin'; boton.textContent = tr('Admin');
+      boton.onclick = () => (raiz.hidden ? abrir() : cerrar());
+      menu.appendChild(boton);
+    } else if (!si && boton) { boton.remove(); boton = null; }
+    if (!si && !raiz.hidden && enLinea && enLinea.estado !== 'volviendo') cerrar();
   }
+  mirarBoton(); setInterval(mirarBoton, 500);
 
   return {
     abrir, cerrar, alternar: () => (raiz.hidden ? abrir() : cerrar()),
-    get abierto() { return !raiz.hidden; }, get jugadores() { return jugadores; }, get clave() { return !!clave; }, get ultimo() { return ultimo; },
+    get abierto() { return !raiz.hidden; }, get jugadores() { return jugadores; }, get admin() { return esAdmin(); }, get ultimo() { return ultimo; },
   };
 }

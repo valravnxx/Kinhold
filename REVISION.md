@@ -6,6 +6,18 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 4 nov 2026 (09:08 UTC+1) — por el chat: tu tierra, la zona entera, y en el mapa
+valravnx: «al ampliar ahora el mapa, saldrán las zonas de subdivisión de la comarca que hicimos en cada comarca; esa zona será entera tu zona de construcción si has puesto el mojón (tus tierras); en el mapa te saldrá marcado el mojón y el área entera de color resaltado». Y: «me preocupa que mucho jugador inactivo acabe dejando todo el mapa ocupado, aunque hay creo que varios miles de zonas libres». → Tarea de chat en P2 («Jugar entre dos sin trampas»): un mojón por personaje, tu tierra es la zona entera donde lo pones (una zona, un dueño), y el mapa enseña las zonas al acercarlo y la tuya resaltada con su mojón. Lo de los inactivos: valoración en el chat (se decide con valravnx).
+
+### 2 nov 2026 (mañana) — por el chat: Resend, a medias
+valravnx ha creado la cuenta de Resend y ha añadido el dominio playkinhold.com (región eu-west-1, Irlanda) con la configuración automática de Cloudflare: registros `send` y `rsend` (CNAME, «DNS only») y `resend._domainkey` (TXT). Al dejarlo: `send` verificado; `rsend` y el DKIM, pendientes de propagar. Falta: que salga «Verified», crear la API key («Sending access», solo playkinhold.com) y, cuando esté la tarea del correo, ponerla en el servidor con el comando de `servidor/nube/LEEME.md`. La clave nunca va al repositorio.
+
+### 2 nov 2026 (04:05 UTC) — por el chat: cuentas más seguras
+valravnx, al probar el hito «Cuentas»: «es funcional, pero quiero cuentas más seguras, ahora puedes hacer mil sin problema, quiero verificadas con email y toda la pesca mínima de seguridad». Preguntado en el chat: correos por **Resend** y **sin confirmar el correo no se entra en el mundo**. → El hito vuelve a en curso con cuatro tareas nuevas antes de la revisión (seguridad sin correo; correo y verificación; recuperar y cambiar la contraseña; el admin por la cuenta y su correo).
+
+### 1 nov 2026 (17:26 UTC+1) — por el chat: el código en la web
+valravnx: «me preocupa que en la web en documentos esté el código del juego, ¿es peligroso? yo lo quitaba». → Quitado el enlace al repositorio de la pestaña de documentos. El repositorio sigue público (GitHub Pages gratis y las pruebas en la nube gratis lo necesitan); no hay claves en él. Que sea privado se decide en la próxima reunión.
+
 ### 1 nov 2026 (15:11 UTC+1) — por el chat: salidas en la pradera, y se enciende el carril A
 valravnx, a la decisión de las salidas sin sílex cerca: «la b, quiero dentro del realismo tener accesibilidad, aunque en menor cantidad» → algo de piedra y sílex sueltos también en la pradera, en menor cantidad (tarea de P2). Aprobado el roadmap nuevo; se vuelve a encender solo el carril A.
 
