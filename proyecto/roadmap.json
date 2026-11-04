@@ -123,6 +123,12 @@
      "estado": "hecho",
      "inicio": "2026-11-01T16:29:59+01:00",
      "fin": "2026-11-04T11:59:14+01:00"
+    },
+    {
+     "nombre": "Auditoría global del 4 nov: GDD y roadmap al día con lo decidido (zonas del rey, mojón desmontable, comarcas de inicio, clanes y tierra personal, fabricar sin aprender, guerra sin causa fija, paridad de cosméticos) y las tareas que faltaban (movimiento sin trampas, copia de seguridad)",
+     "estado": "en_curso",
+     "inicio": "2026-11-04T17:12:15+01:00",
+     "rama": "trabajo/20261104-1700-auditoria"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."

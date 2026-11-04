@@ -5,5 +5,11 @@
   "hito": "servidor",
   "rama": "trabajo/20261104-1423"
  },
- "B": null
+ "B": null,
+ "chat:trabajo/20261104-1700-auditoria": {
+  "inicio": "2026-11-04T17:12:15+01:00",
+  "tarea": "Auditoría global del 4 nov: GDD y roadmap al día con lo decidido (zonas del rey, mojón desmontable, comarcas de inicio, clanes y tierra personal, fabricar sin aprender, guerra sin causa fija, paridad de cosméticos) y las tareas que faltaban (movimiento sin trampas, copia de seguridad)",
+  "hito": "infra",
+  "rama": "trabajo/20261104-1700-auditoria"
+ }
 }
