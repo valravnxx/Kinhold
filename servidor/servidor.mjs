@@ -73,9 +73,9 @@
 //   { que: 'cambiar_correo', actual, correo } (manda el código al correo nuevo; con { que: 'verificar', codigo } se
 //   cambia). Cada cambio avisa por correo (el de la contraseña, al correo de la cuenta; el del correo, al de antes).
 //   Panel de depuración del admin (src/logica/admin.js): { tipo: 'admin', id, que: 'ver' | 'ir', … }. Solo para la
-//   conexión cuyo personaje es de una cuenta de admin (cuentasAdmin, o la variable KINHOLD_ADMIN_CUENTA; por defecto la
-//   cuenta «valravnx»; servidor/nube/LEEME.md). Sin clave aparte. La bienvenida dice { admin: true } a esa conexión, y la
-//   respuesta al crear la cuenta también. Cada petición, bien o mal, va a admin.jsonl junto al mundo con su autor.
+//   conexión cuya cuenta tiene confirmado uno de los correos de admin (adminCorreo, o la variable KINHOLD_ADMIN_CORREO;
+//   sin ella, nadie; servidor/nube/LEEME.md). El nombre de usuario no cuenta. Sin clave aparte. La bienvenida dice
+//   { admin: true } a esa conexión, y la respuesta al confirmar el correo también. Cada petición, bien o mal, va a admin.jsonl junto al mundo con su autor.
 //
 //   Conexiones que se cortan (src/logica/limites.js y abajo):
 //   - Ficha: la bienvenida lleva una ficha secreta (solo para ese cliente). Si el cliente vuelve a conectar con
@@ -106,7 +106,7 @@ import { PROTOCOLO } from '../src/logica/protocolo.js';
 import { CombateServidor } from '../src/logica/combate_servidor.js';
 import { Limitador, LIMITES } from '../src/logica/limites.js';
 import { ObjetosServidor } from '../src/logica/objetos_red.js';
-import { validarPeticionAdmin, sitioJunto, listaJugadores, cuentasAdmin as listaAdmin, esCuentaAdmin, NO_ADMIN } from '../src/logica/admin.js';
+import { validarPeticionAdmin, sitioJunto, listaJugadores, correosAdmin, esCorreoAdmin, NO_ADMIN } from '../src/logica/admin.js';
 import { Cuentas, validarPeticionCuenta, claveDeUsuario, claveDeOrigen, Contador, motivoClave } from '../src/logica/cuentas.js';
 import { claveDeCorreo } from '../src/logica/correo.js';
 import { Verificaciones, enmascarar, codigoValido, CODIGO_CIFRAS, RECUPERAR_ORIGEN } from '../src/logica/correo.js';
@@ -135,7 +135,7 @@ export function leerArchivo(archivo) {
 }
 
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
-  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, cuentasAdmin = process.env.KINHOLD_ADMIN_CUENTA, terreno = null,
+  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null } = {}) {
   archivo = resolve(archivo);
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
@@ -150,8 +150,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   // el registro de seguridad: altas, entradas, fallos y salidas en todos los aparatos (nunca la contraseña ni la ficha)
   const archivoSeguridad = resolve(dirname(archivo), 'seguridad.jsonl');
   const seguridad = (e) => { try { appendFileSync(archivoSeguridad, JSON.stringify({ t: new Date().toISOString(), ...e }) + '\n'); } catch (x) { registrar(`no se pudo apuntar en seguridad.jsonl: ${x && x.message}`); } };
-  // las cuentas de admin (el admin, por la cuenta: revisión del 1 nov)
-  const admins = listaAdmin(cuentasAdmin);
+  // los correos de admin (el admin, por la cuenta y su correo confirmado: valravnx, 2 nov); sin ellos, nadie es admin
+  const admins = correosAdmin(adminCorreo);
+  if (!admins.size) registrar('sin KINHOLD_ADMIN_CORREO: nadie es admin (servidor/nube/LEEME.md)');
   mkdirSync(dirname(archivo), { recursive: true });
   const previas = leerArchivo(archivo);
   // si quedó una línea a medias, lo nuevo empieza en una línea aparte
@@ -186,7 +187,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     if (!s.ok) verificaciones.olvidar(k);
     return s.ok ? { ok: true } : { ok: false, motivo: s.motivo };
   };
-  const esAdmin = (autor) => esCuentaAdmin(usuarioDe(autor), admins);
+  const esAdmin = (autor) => esCorreoAdmin(cuentas.correoDe(autor), admins);
   // recuperar la contraseña: sus códigos aparte de los del correo, y cuántas peticiones por dirección
   const recuperaciones = new Verificaciones({ azar: () => randomInt(0, 10 ** CODIGO_CIFRAS), resumir: (x) => createHash('sha256').update('rec:' + x).digest('hex') });
   const recuperarOrigen = new Contador(RECUPERAR_ORIGEN, 60 * 60 * 1000);

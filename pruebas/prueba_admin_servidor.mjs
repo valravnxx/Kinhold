@@ -1,10 +1,12 @@
 // Prueba del panel de depuración del admin en el servidor (valravnx, 30 oct; src/logica/admin.js), con el admin por la
-// cuenta (revisión del 1 nov, P1: sin clave aparte).
+// cuenta (revisión del 1 nov, P1: sin clave aparte) y por su correo confirmado (valravnx, 2 nov).
 // Ejecutar: node pruebas/prueba_admin_servidor.mjs
 // Comprueba, con clientes de verdad por websocket:
 //   - sin cuenta, o con una cuenta que no es la de admin, el panel no responde (ni con la clave de antes en el mensaje);
-//   - la bienvenida dice admin: true solo a la cuenta de admin (también al volver a entrar con ella) y al crearla;
-//   - la cuenta de admin es «valravnx» por defecto (sin mayúsculas), o la lista de la máquina (KINHOLD_ADMIN_CUENTA);
+//   - la bienvenida dice admin: true solo a la cuenta de admin (también al volver a entrar con ella) y al confirmar su correo;
+//   - es admin la cuenta cuyo correo confirmado está en la lista de la máquina (KINHOLD_ADMIN_CORREO, sin mayúsculas);
+//     el nombre no cuenta (una cuenta «valravnx» con otro correo no es admin); sin la lista, nadie; sin confirmar, no;
+//     al cambiar el correo por otro que no está en la lista, deja de serlo;
 //   - con la de admin: «ver» da los conectados con su posición y el nombre de su cuenta, y nada de los que se han ido;
 //   - «ir» a un punto de la isla responde ese punto; fuera de la isla o con datos raros, no;
 //   - «ir» junto a otro: a su lado (a 1,6 m) y mirándole; junto a uno que no está o junto a sí mismo, no;
@@ -15,9 +17,10 @@ import { mkdtempSync, readFileSync, writeFileSync, rmSync, existsSync } from 'fs
 import { join, dirname } from 'path';
 import { tmpdir } from 'os';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { validarPeticionAdmin, sitioJunto, JUNTO, cuentasAdmin, esCuentaAdmin, NO_ADMIN } from '../src/logica/admin.js';
+import { validarPeticionAdmin, sitioJunto, JUNTO, correosAdmin, esCorreoAdmin, NO_ADMIN } from '../src/logica/admin.js';
 
-const MUTAR = process.env.MUTAR === '1';
+// Con MUTAR=correo, uno que da por confirmado el correo: también debe FALLAR.
+const MUTAR = process.env.MUTAR === '1' || process.env.MUTAR === 'correo';
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
@@ -29,7 +32,9 @@ const pausa = (ms) => new Promise(r => setTimeout(r, ms));
 let ruta = join(raiz, 'servidor/servidor.mjs'), copia = null;
 if (MUTAR) {
   const fuente = readFileSync(ruta, 'utf8');
-  const mutada = fuente.replace('if (!esAdmin(autor)) return responder({ ok: false, motivo: NO_ADMIN });', '');
+  const mutada = process.env.MUTAR === 'correo'
+    ? fuente.replace('esCorreoAdmin(cuentas.correoDe(autor), admins)', 'esCorreoAdmin({ ...cuentas.correoDe(autor), verificado: true }, admins)')
+    : fuente.replace('if (!esAdmin(autor)) return responder({ ok: false, motivo: NO_ADMIN });', '');
   if (mutada === fuente) { console.log('No se pudo mutar el servidor'); process.exit(1); }
   copia = join(raiz, 'servidor/.servidor_mutado_admin.mjs');
   writeFileSync(copia, mutada);
@@ -54,6 +59,7 @@ function cliente(puerto, ficha = null) {
     // crear o entrar con una cuenta, y su respuesta
     // (al crearla, también confirma el correo con el código que llega, como haría el jugador: sin eso no entra en el mundo)
     const esperarCuenta = async (n) => { for (let k = 0; k < 250; k++) { const r = c.cuentas.find(a => a.id === n); if (r) return r; await pausa(20); } return null; };
+    // (la respuesta lleva en `confirmado` la de confirmar el correo: con ella el servidor dice si es de admin)
     c.cuenta1 = async (que, usuario, clave = 'una-contraseña-larga') => {
       const n = ++id; c.mandar({ tipo: 'cuenta', id: n, que, usuario, clave, correo: usuario.toLowerCase() + '@ejemplo.com' });
       const r = await esperarCuenta(n);
@@ -62,8 +68,18 @@ function cliente(puerto, ficha = null) {
         const m = ++id; c.mandar({ tipo: 'cuenta', id: m, que: 'verificar', codigo: carta && carta.codigo });
         const v = await esperarCuenta(m);
         if (!v || !v.ok) console.log('  (no se pudo confirmar el correo de', usuario, JSON.stringify(v), ')');
+        r.confirmado = v;
       }
       return r;
+    };
+    // cambiar el correo desde el menú (con la contraseña) y confirmarlo con el código: la respuesta de confirmarlo
+    c.cambiarCorreo = async (usuario, nuevo, clave = 'una-contraseña-larga') => {
+      const n = ++id; c.mandar({ tipo: 'cuenta', id: n, que: 'cambiar_correo', actual: clave, correo: nuevo });
+      const r = await esperarCuenta(n);
+      if (!r || !r.ok) return r;
+      const carta = cartas.filter(x => x.usuario === usuario && x.para === nuevo).at(-1);
+      const m = ++id; c.mandar({ tipo: 'cuenta', id: m, que: 'verificar', codigo: carta && carta.codigo });
+      return esperarCuenta(m);
     };
     ws.on('message', (d) => { const m = JSON.parse(d.toString()); if (m.tipo === 'bienvenida') { c.yo = m.autor; c.bienvenida = m; listo(c); } if (m.tipo === 'admin') c.admin.push(m); if (m.tipo === 'cuenta') c.cuentas.push(m); });
     ws.on('error', fallo);
@@ -86,26 +102,48 @@ try {
   const j = sitioJunto({ x: 10, y: 3, z: 20, giro: 0.7 });
   comprobar('junto a otro: a 1,6 m, a su altura y mirándole', Math.abs(Math.hypot(j.x - 10, j.z - 20) - JUNTO) < 1e-9 && j.y === 3
     && Math.abs(Math.sin(j.giro) * JUNTO - (10 - j.x)) < 1e-9 && Math.abs(Math.cos(j.giro) * JUNTO - (20 - j.z)) < 1e-9, JSON.stringify(j));
-  comprobar('la cuenta de admin por defecto es «valravnx», sin mayúsculas', esCuentaAdmin('valravnx', cuentasAdmin()) && esCuentaAdmin('ValRavnX', cuentasAdmin(undefined)) && !esCuentaAdmin('ana', cuentasAdmin()));
-  comprobar('sin cuenta no se es admin', !esCuentaAdmin(null, cuentasAdmin()) && !esCuentaAdmin(undefined, cuentasAdmin()));
-  comprobar('la lista de la máquina manda (separada por comas)', esCuentaAdmin('Ana', cuentasAdmin(' ana , Berta ')) && esCuentaAdmin('berta', cuentasAdmin('ana,Berta')) && !esCuentaAdmin('valravnx', cuentasAdmin('ana')));
-  comprobar('una lista vacía o con nombres que no valen deja la de siempre', esCuentaAdmin('valravnx', cuentasAdmin('')) && esCuentaAdmin('valravnx', cuentasAdmin(' , a b, @@')) && !esCuentaAdmin('a b', cuentasAdmin('a b')));
+  const conf = (correo, verificado = true) => ({ usuario: 'x', correo, verificado });
+  comprobar('el correo de la lista, confirmado, es admin (sin mayúsculas ni espacios)', esCorreoAdmin(conf('yo@ejemplo.com'), correosAdmin(' Yo@Ejemplo.COM , otra@ejemplo.com')) && esCorreoAdmin(conf('OTRA@ejemplo.com'), correosAdmin('yo@ejemplo.com,otra@ejemplo.com')));
+  comprobar('sin confirmar no es admin', !esCorreoAdmin(conf('yo@ejemplo.com', false), correosAdmin('yo@ejemplo.com')));
+  comprobar('otro correo, sin correo o sin cuenta no es admin', !esCorreoAdmin(conf('tu@ejemplo.com'), correosAdmin('yo@ejemplo.com')) && !esCorreoAdmin(conf(null), correosAdmin('yo@ejemplo.com')) && !esCorreoAdmin(null, correosAdmin('yo@ejemplo.com')) && !esCorreoAdmin(undefined, correosAdmin('yo@ejemplo.com')));
+  comprobar('sin lista, vacía o con lo que no son correos: nadie es admin', [undefined, '', ' , ', 'valravnx', 'a b, @@', null, 7].every(l => correosAdmin(l).size === 0));
+  comprobar('lo que no es un correo se descarta y lo demás vale', correosAdmin('valravnx, yo@ejemplo.com').size === 1);
 
-  console.log('Otra cuenta de admin en la máquina');
+  console.log('Sin la lista en la máquina');
   {
-    const s2 = crearServidor({ puerto: 0, archivo: join(dir, 'otra', 'mundo.jsonl'), cuentasAdmin: 'ana', parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 } });
+    const s0 = crearServidor({ puerto: 0, archivo: join(dir, 'sin', 'mundo.jsonl'), adminCorreo: undefined, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 } });
+    const p = await s0.listo;
+    const v = await cliente(p);
+    const rv = await v.cuenta1('crear', 'valravnx');
+    comprobar('sin KINHOLD_ADMIN_CORREO, ni la cuenta «valravnx» es admin', rv && rv.ok && rv.confirmado && rv.confirmado.ok && rv.confirmado.admin === false, JSON.stringify(rv && rv.confirmado));
+    const r0 = await v.admin1({ que: 'ver' });
+    comprobar('y el panel no le responde', r0 && r0.ok === false && r0.motivo === NO_ADMIN, JSON.stringify(r0));
+    v.ws.close(); await v.cerrado; await s0.cerrar();
+  }
+
+  console.log('Quien se queda antes el nombre «valravnx» no es admin');
+  {
+    const s2 = crearServidor({ puerto: 0, archivo: join(dir, 'otra', 'mundo.jsonl'), adminCorreo: 'ANA@ejemplo.com', parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 } });
     const p = await s2.listo;
     const v = await cliente(p), a = await cliente(p);
     const rv = await v.cuenta1('crear', 'valravnx'), ra = await a.cuenta1('crear', 'Ana');
-    comprobar('al crearla, solo la de la lista es admin', rv && rv.ok && rv.admin === false && ra && ra.ok && ra.admin === true, JSON.stringify([rv && rv.admin, ra && ra.admin]));
+    comprobar('al crearlas, con el correo aún sin confirmar, ninguna es admin', rv && rv.ok && rv.admin === false && ra && ra.ok && ra.admin === false, JSON.stringify([rv && rv.admin, ra && ra.admin]));
+    comprobar('al confirmar el correo, solo la del correo de la lista es admin', rv.confirmado && rv.confirmado.admin === false && ra.confirmado && ra.confirmado.admin === true, JSON.stringify([rv.confirmado && rv.confirmado.admin, ra.confirmado && ra.confirmado.admin]));
     const r1 = await v.admin1({ que: 'ver' }), r2 = await a.admin1({ que: 'ver' });
-    comprobar('«valravnx» no es admin si la máquina dice otra; «Ana» sí', r1 && r1.ok === false && r2 && r2.ok === true, JSON.stringify([r1 && r1.ok, r2 && r2.ok]));
+    comprobar('la cuenta «valravnx» con otro correo no es admin; la del correo de la lista, sí', r1 && r1.ok === false && r2 && r2.ok === true, JSON.stringify([r1 && r1.ok, r2 && r2.ok]));
+    // cambiar el correo por otro que no está en la lista: deja de ser admin
+    const rc = await a.cambiarCorreo('Ana', 'ana.nueva@ejemplo.com');
+    comprobar('al cambiar el correo por otro, deja de ser admin', rc && rc.ok && rc.cambiado === true && rc.admin === false, JSON.stringify(rc));
+    const r3 = await a.admin1({ que: 'ver' });
+    comprobar('y el panel ya no le responde', r3 && r3.ok === false && r3.motivo === NO_ADMIN, JSON.stringify(r3));
+
     v.ws.close(); a.ws.close(); await v.cerrado; await a.cerrado; await s2.cerrar();
   }
 
-  console.log('Con la cuenta de admin por defecto');
+  console.log('Con la cuenta de admin (su correo en la lista de la máquina)');
+  const CORREO_ADMIN = 'valravnx@ejemplo.com';   // el de la cuenta «ValRavnX» de cuenta1
   const archivo = join(dir, 'mundo.jsonl');
-  let s = crearServidor({ puerto: 0, archivo, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 } });
+  let s = crearServidor({ puerto: 0, archivo, adminCorreo: CORREO_ADMIN, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 } });
   let puerto = await s.listo;
   let admin = await cliente(puerto);
   const otro = await cliente(puerto), tercero = await cliente(puerto);
@@ -119,7 +157,7 @@ try {
 
   // con otra cuenta, nada
   const ro = await otro.cuenta1('crear', 'Berta');
-  comprobar('otra cuenta: al crearla no es admin', ro && ro.ok && ro.admin === false, JSON.stringify(ro));
+  comprobar('otra cuenta: al crearla y al confirmar su correo no es admin', ro && ro.ok && ro.admin === false && ro.confirmado && ro.confirmado.admin === false, JSON.stringify(ro));
   r = await otro.admin1({ que: 'ver' });
   comprobar('otra cuenta: no se ve nada', r && r.ok === false && !r.jugadores, JSON.stringify(r));
   r = await otro.admin1({ que: 'ir', junto: tercero.yo });
@@ -127,9 +165,9 @@ try {
   for (let k = 0; k < 6; k++) await otro.admin1({ que: 'ver' });
   comprobar('pedir sin ser admin no echa a nadie (no hay clave que adivinar)', otro.ws.readyState === WebSocket.OPEN);
 
-  // la de admin: al crearla ya lo es, sin volver a entrar
+  // la de admin: al confirmar su correo ya lo es, sin volver a entrar
   const ra = await admin.cuenta1('crear', 'ValRavnX');
-  comprobar('al crear la cuenta «ValRavnX» (valravnx sin mayúsculas), la respuesta dice admin', ra && ra.ok && ra.admin === true, JSON.stringify(ra));
+  comprobar('al confirmar el correo de admin, la respuesta dice admin (sin volver a entrar)', ra && ra.ok && ra.confirmado && ra.confirmado.admin === true, JSON.stringify(ra && ra.confirmado));
   admin.estado(1, 2, 0); otro.estado(40, -30, 1.1, 5.5); tercero.estado(-12, 8); await pausa(150);
 
   // la buena
@@ -167,7 +205,7 @@ try {
   deNuevo.ws.close(); await deNuevo.cerrado;
   for (const c of [otro, tercero]) { c.ws.close(); await c.cerrado; }
   await s.cerrar();
-  s = crearServidor({ puerto: 0, archivo, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 } });
+  s = crearServidor({ puerto: 0, archivo, adminCorreo: CORREO_ADMIN, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 } });
   puerto = await s.listo;
   admin = await cliente(puerto, re && re.ficha);
   comprobar('con esa ficha, tras reiniciar: la bienvenida dice admin y la cuenta', admin.bienvenida.admin === true && admin.bienvenida.cuenta === 'ValRavnX', JSON.stringify({ admin: admin.bienvenida.admin, cuenta: admin.bienvenida.cuenta }));

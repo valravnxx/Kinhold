@@ -61,6 +61,7 @@ paso "El servidor conoce el mundo (árboles, recogida, posiciones y obras contra
 paso "Lo talado, lo recogido y el suelo, por trozos: a cada uno lo de su alrededor" node pruebas/prueba_trozos_red.mjs
 paso "Las obras y lo alisado, por trozos: a cada uno lo de su alrededor, con los mismos ids que el servidor" node pruebas/prueba_obras_red.mjs
 paso "Obras con lo que llevas en línea, con dos clientes" node pruebas/prueba_obras_en_linea.mjs
+paso "Recorrido de jugador: uno nuevo, sin arcón y con lo que recoge, de principio a fin" node pruebas/prueba_recorrido.mjs
 paso "Bots: jugadores simulados contra el servidor" node pruebas/prueba_bots.mjs
 paso "Terreno por trozos: anillos, bordes y faldones" node pruebas/prueba_trozos.mjs
 paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whitholm.mjs

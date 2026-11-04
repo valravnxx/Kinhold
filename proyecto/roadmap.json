@@ -1092,13 +1092,15 @@
     },
     {
      "nombre": "El admin, por la cuenta y su correo: solo es admin la cuenta con el correo confirmado que diga la máquina (KINHOLD_ADMIN_CORREO), para que nadie pueda quedarse antes el nombre «valravnx»",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-04T09:24:20+00:00",
-     "rama": "trabajo/20261104-0924"
+     "fin": "2026-11-04T13:55:29+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-04T14:23:11+00:00",
+     "rama": "trabajo/20261104-1423"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: lo primero, para que lo que se construya no se pierda. Solo lo mínimo; registros, expulsar y lo demás, en «Administración»."
@@ -1113,9 +1115,10 @@
    "tareas": [
     {
      "nombre": "Recorrido de jugador automático: una prueba que juega como un jugador nuevo, sin arcón y con lo que se recoge, de principio a fin de lo que haya (hoy: recoger, talar, el mojón y un cimiento), y que falla si algo no se puede hacer así. Desde aquí, una tarea de juego no se publica si su parte del recorrido no sale",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-04T12:25:18+00:00",
-     "rama": "trabajo/20261104-1225"
+     "rama": "trabajo/20261104-1225",
+     "fin": "2026-11-04T13:49:49+00:00"
     },
     {
      "nombre": "Un mojón por personaje en Whitholm (valravnx, 31 oct): la lógica con autor no deja poner un segundo; en el continente, hasta tres más en total, cuando se llegue en barco",
@@ -2617,6 +2620,13 @@
      "archivo": "jugar/demo/v97.html",
      "capturas": "capturas/demo-v97",
      "notas": "Tu tierra es la zona entera de tu mojón: un mojón por personaje y una zona, un dueño. El dueño puede invitar a quien tenga al lado a construir en su tierra. El mapa del rey enseña tu tierra de color con su mojón y, al acercarlo, los lindes de las zonas de cada comarca."
+    },
+    {
+     "v": "v98",
+     "fecha": "2026-11-04",
+     "archivo": "jugar/demo/v98.html",
+     "capturas": "capturas/demo-v98",
+     "notas": "El admin, por su correo: el panel de depuración sale solo con la cuenta cuyo correo confirmado dice la máquina (KINHOLD_ADMIN_CORREO); el nombre de usuario ya no cuenta."
     }
    ]
   },

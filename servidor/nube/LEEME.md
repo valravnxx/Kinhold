@@ -59,15 +59,17 @@ que abra la demo entra en este mundo y puede construir.
   No borra el mundo.
 - **Con un dominio propio** (si algún día compras uno): apúntalo a la IP y lanza
   `KINHOLD_DOMINIO=juego.tudominio.com bash /opt/kinhold/servidor/nube/instalar.sh`.
-- **El admin, por la cuenta** (panel de depuración: F9 en el juego o el botón «Admin»; revisión del 1 nov): el panel
-  sale solo a quien ha entrado con la cuenta de admin, que es la del usuario `valravnx` (sin mayúsculas: ValravnX vale
-  igual). No hay que poner nada en la máquina ni ninguna clave: basta con crear esa cuenta en el juego (o entrar con
-  ella). Para que sea otra cuenta, o varias, en la consola de Hetzner, como root:
+- **El admin, por la cuenta y su correo** (panel de depuración: F9 en el juego o el botón «Admin»; revisión del 1 nov y
+  valravnx, 2 nov): el panel sale solo a quien ha entrado con una cuenta cuyo correo **confirmado** sea el que diga la
+  máquina. El nombre de usuario ya no cuenta (así nadie se hace admin por quedarse antes el nombre «valravnx»), y
+  **sin poner el correo en la máquina no hay admin**. En la consola de Hetzner, como root, una vez (cambia
+  `tu@correo.com` por el correo de tu cuenta; para varios, separados por comas):
   ```
-  mkdir -p /etc/kinhold && echo "KINHOLD_ADMIN_CUENTA=valravnx,otra" > /etc/kinhold/admin.env && chmod 600 /etc/kinhold/admin.env && systemctl restart kinhold
+  mkdir -p /etc/kinhold && echo "KINHOLD_ADMIN_CORREO=tu@correo.com" > /etc/kinhold/admin.env && chmod 600 /etc/kinhold/admin.env && systemctl restart kinhold
   ```
-  La clave `KINHOLD_ADMIN=` de antes ya no se usa (si está en ese archivo, no hace nada). Lo que se ha pedido con el
-  panel (quién, con qué cuenta, qué y si valió) queda en `/var/lib/kinhold/admin.jsonl`.
+  Luego entra en el juego con tu cuenta y confirma ese correo (si no lo estaba). `KINHOLD_ADMIN_CUENTA=` y la clave
+  `KINHOLD_ADMIN=` de antes ya no se usan (si están en ese archivo, no hacen nada). Lo que se ha pedido con el panel
+  (quién, con qué cuenta, qué y si valió) queda en `/var/lib/kinhold/admin.jsonl`.
 - **El correo de las cuentas (Resend; valravnx, 2 nov).** Al crear una cuenta hay que dar un correo (uno por cuenta) y
   confirmarlo con un código de 6 cifras que llega a él (caduca a los 15 minutos; otro, como pronto al minuto, y como
   mucho 5 por hora). **Sin confirmarlo no se entra en el mundo.** Las cuentas de antes lo añaden y lo confirman al entrar.
