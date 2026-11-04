@@ -197,3 +197,13 @@ export function crearComarcas(m) {
   const nombreEn = (x, z) => { const zz = zonaEn(x, z); return zz.comarca >= 0 ? nombres[zz.comarca] : null; };
   return { letras, nombres, comarcaDeCelda: lab, zonaEn, comarcaEn, nombreEn };
 }
+
+// Tu tierra es la zona entera de tu mojón (valravnx, 4 nov; src/logica/construccion.js, ponerZonas): de qué zona es
+// cada sitio de la escena (origen: su 0 en m del mundo), o null en el mar.
+export function zonasDeEscena(comarcas, origen = { x: 0, z: 0 }) {
+  return (x, z) => {
+    if (!Number.isFinite(x) || !Number.isFinite(z)) return null;
+    const zz = comarcas.zonaEn(x + origen.x, z + origen.z);
+    return zz && zz.comarca >= 0 ? zz.id : null;
+  };
+}

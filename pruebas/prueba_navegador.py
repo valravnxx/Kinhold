@@ -54,7 +54,7 @@ with sync_playwright() as p:
 
     print('PC: cabaña completa')
     v = poner('mojon', 'mojon', -3, -6)
-    comprobar('mojón colocado', ev(f"!!{K}.mundo.mojon"))
+    comprobar('mojón colocado', ev(f"!!{K}.miMojon"))
     # cimientos 2x3 con la primera pieza en (1,1) sin giro
     for i in range(2):
         for j in range(3):

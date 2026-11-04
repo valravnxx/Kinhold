@@ -116,6 +116,7 @@ import * as claves from './claves.mjs';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { VistaTrozos, trozoDe, LADO_RED, RADIO_RED } from '../src/logica/trozos_red.js';
 import { sitioAccion, sitioColocada, comunDe, obrasEnTrozos } from '../src/logica/obras_red.js';
+import { ponerZonas } from '../src/logica/construccion.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -137,6 +138,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null } = {}) {
   archivo = resolve(archivo);
+  // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
+  ponerZonas(terreno && terreno.zona);
   const archivoCombate = resolve(dirname(archivo), 'combate.jsonl');
   const archivoFichas = resolve(dirname(archivo), 'fichas.jsonl');
   const archivoObjetos = resolve(dirname(archivo), 'objetos.json');
@@ -211,7 +214,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   let presencia = null;
   const objetos = new ObjetosServidor({
     posicion: (a) => { const e = presencia && presencia.ultimo.get(a); return e ? { x: e.x, z: e.z, giro: e.giro } : null; },
-    enTierras: (a, x, z) => !!mundo.dentroDeTierra(x, z),
+    enTierras: (a, x, z) => !!mundo.tierraDe(x, z),   // en la tierra de alguien, lo soltado no se pierde
     arconPruebas, terreno,
   });
   if (existsSync(archivoObjetos)) {

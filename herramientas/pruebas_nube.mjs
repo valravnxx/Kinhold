@@ -20,6 +20,19 @@ const C = '/tmp/kinhold_capturas';
 const ESPERA_PC = 45;          // s que se le dan al PC, después de la lista de grupos, para coger el primero
 const PARADO_PC = 4 * 60;      // s sin ningún grupo en marcha en el PC (con grupos esperando) para darlo por apagado
 const sh = (c, a, o = {}) => execFileSync(c, a, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 1 << 28, ...o }).trim();
+// GitHub a veces rechaza una subida con un error suyo («Internal Server Error», «fatal error in commit_refs»; 4 nov):
+// se reintenta unas veces con espera antes de darlo por fallado
+function subir(ref) {
+  for (let i = 1; ; i++) {
+    try { return sh('git', ['push', '-q', 'origin', ref]); }
+    catch (e) {
+      const m = String(e.stderr || e.message);
+      if (i >= 5 || !/Internal Server Error|commit_refs|502|503|timed out|reset/i.test(m)) throw e;
+      console.log(`  (GitHub no ha aceptado la subida, otra vez dentro de ${5 * i} s)`);
+      execFileSync('sleep', [String(5 * i)]);
+    }
+  }
+}
 const gh = (...a) => JSON.parse(sh('gh', ['api', ...a]) || 'null');
 const dormir = (s) => new Promise(r => setTimeout(r, s * 1000));
 const min = (a, b) => ((new Date(b) - new Date(a)) / 60000).toFixed(1);
@@ -28,7 +41,7 @@ const ahora = () => Date.now();
 const rama = sh('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
 if (rama === 'HEAD') { console.error('No estás en ninguna rama.'); process.exit(2); }
 if (sh('git', ['status', '--porcelain', '--untracked-files=no'])) console.log('Aviso: hay cambios sin commit; fuera se prueba lo subido.');
-sh('git', ['push', '-q', 'origin', `HEAD:refs/heads/${rama}`]);
+subir(`HEAD:refs/heads/${rama}`);
 const sha = sh('git', ['rev-parse', 'HEAD']);
 if (!sh('git', ['ls-tree', 'HEAD', '.github/workflows/pruebas.yml'])) { console.error('Esta rama no tiene .github/workflows/pruebas.yml: une main primero.'); process.exit(2); }
 
@@ -51,7 +64,7 @@ async function lanzar(donde, grupos) {
   // GitHub no admite ramas de más de 255 caracteres: una lista larga va por el número de cada grupo
   if (nombre.length > 150) nombre = 'n-' + grupos.map(g => todos.indexOf(g)).join('+');
   const pedido = `${donde === 'pc' ? 'pc' : 'nube'}-pedido/${id}/${nombre}`;
-  sh('git', ['push', '-q', 'origin', `HEAD:refs/heads/${pedido}`]);
+  subir(`HEAD:refs/heads/${pedido}`);
   let run = null;
   for (let i = 0; i < 40 && !run; i++) {
     await dormir(6);

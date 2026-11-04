@@ -111,6 +111,8 @@ try {
   const r1 = await A2.accion({ tipo: 'mojon', x: 0, z: 0 });
   const vista = await B.esperar(m => m.tipo === 'accion' && m.entrada.tipo === 'mojon');
   comprobar('lo que hace después lleva el mismo autor', r1.ok && vista.entrada.autor === yoA);
+  // un mojón por personaje (4 nov): A invita a B a su tierra, para que B siga construyendo en lo que sigue
+  comprobar('A invita a B a su tierra', (await A2.accion({ tipo: 'invitar', a: B.bienvenida.autor })).ok);
   const N = await cliente(puerto), F = await cliente(puerto, { ficha: '0123456789abcdef0123456789abcdef' }), X = await cliente(puerto, { ficha: '../../etc' });
   comprobar('sin ficha, o con una inventada o rota, es otro jugador', [N, F, X].every(c => c.bienvenida.autor !== yoA && !c.bienvenida.vuelve) && new Set([N, F, X].map(c => c.bienvenida.autor)).size === 3);
   N.ws.close(); F.ws.close(); X.ws.close();

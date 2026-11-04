@@ -1,6 +1,6 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, altoTejadoEn, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR } from '../logica/construccion.js';
+import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, altoTejadoEn, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR, ponerZonas, hayZonas } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto, moverHumo } from '../mundo/modelos.js';
@@ -20,7 +20,7 @@ import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OB
 import { montarPanelInventario } from './panel_inventario.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
-import { crearComarcas } from '../logica/comarcas.js';
+import { crearComarcas, zonasDeEscena } from '../logica/comarcas.js';
 import { crearTierrasRey, vigiaTierras } from '../logica/tierras_rey.js';
 import { dibujarRetrato } from './retrato.js';
 import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
@@ -75,6 +75,9 @@ const $ = (id) => document.getElementById(id);
 
 // ---------------- Estado ----------------
 let mundo = EN_LINEA ? new Mundo() : cargar();
+// quién eres para la tierra: el autor que da el servidor (en línea) o el de sin servidor; y tu mojón, si lo tienes
+const yoAutor = () => (enLinea && enLinea.red.yo) || AUTOR_LOCAL;
+const miMojon = () => mundo.mojonDe(yoAutor());
 // Toda acción que cambia el mundo pasa por la lógica pura con su autor y queda anotada (src/logica/acciones.js).
 let registroAcciones = new RegistroAcciones();
 function accion(a) {
@@ -163,6 +166,8 @@ const mundoJ = MUNDO ? crearMundoJuego({ escena, mapa: MUNDO.mapa, origen: sitio
 // del rey (src/logica/tierras_rey.js), donde nadie puede herir a otro jugador: al entrar y al salir, un cartel
 const comarcasMundo = mundoJ ? crearComarcas(MUNDO.mapa) : null;
 const tierrasRey = mundoJ ? crearTierrasRey(comarcasMundo, mundoJ.salida) : null;
+// tu tierra es la zona entera de tu mojón (valravnx, 4 nov; src/logica/construccion.js): de qué zona es cada sitio
+if (comarcasMundo) ponerZonas(zonasDeEscena(comarcasMundo, mundoJ.salida));
 const vigiaRey = tierrasRey ? vigiaTierras(window.__mutarTierras ? () => false : tierrasRey.en) : null;
 let cartelTierras = null, cartelHasta = 0, tierrasMirado = 0;
 function mirarTierras() {
@@ -210,7 +215,7 @@ const obstaculos = decorado.obstaculos; // {x,z,r}
 const recoleccion = mundoJ ? crearRecoleccionMundo({ raiz: escena, mundoJ, semilla: MUNDO.mapa.semilla + (window.__mutarRecogida ? 1 + Math.floor(Math.random() * 1e6) : 0), altura: decorado.altura, obstaculos, almacen })
   : crearRecoleccion({ raiz: escena, altura: decorado.altura, obstaculos, almacen });
 // lo que se suelta cae al suelo, a tus pies; fuera de tus tierras desaparece pasada 1 hora real (src/juego/suelo.js)
-const sueloObjetos = crearSuelo({ raiz: escena, altura: decorado.altura, almacen, enTierras: (autor, x, z) => !!mundo.dentroDeTierra(x, z) });
+const sueloObjetos = crearSuelo({ raiz: escena, altura: decorado.altura, almacen, enTierras: (autor, x, z) => !!mundo.tierraDe(x, z) });
 // los árboles se talan a golpes de hacha, caen, dejan tocón y vuelven a crecer (src/juego/tala.js)
 const talaV = crearTala({ raiz: escena, obstaculos, altura: decorado.altura, almacen, sueloObjetos });
 // en el mundo, lo que crece sigue al jugador: los árboles que llegan pasan por la tala (su tocón, si se taló) y los
@@ -301,7 +306,7 @@ const raizConstr = new THREE.Group();
 escena.add(raizConstr);
 const raizDeco = new THREE.Group();
 escena.add(raizDeco);
-let mallaMojon = null, anilloTierra = null;
+let mallasMojon = [], anilloTierra = null;
 // el material del anillo de la tierra es siempre el mismo: si se tirara al rehacer, se volvería a compilar su sombreador
 const MAT_ANILLO = new THREE.MeshBasicMaterial({ color: 0xf2e3b5, transparent: true, opacity: 0.55, depthWrite: false });
 const registroMallas = []; // {obj, c, key, deco}
@@ -351,7 +356,7 @@ function despejarDecorado() {
     circ.push([m.x, m.z, p.hueco === 'f' || p.hueco === 'a' || p.hueco === 'l' ? MODULO * 0.78 : MODULO * 0.45]); // casillas enteras (también adarve y escaleras)
   }
   for (const d of mundo.decoracion) if (d.y < 0.3) circ.push([d.x, d.z, 0.8]);
-  if (mundo.mojon) circ.push([mundo.mojon.x, mundo.mojon.z, 0.9]);
+  for (const mj of Object.values(mundo.mojones)) circ.push([mj.x, mj.z, 0.9]);
   const ocupado = (x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r);
   estado.plantasOcultas = decorado.despejar(ocupado);
   recoleccion.despejar(ocupado); // lo que queda debajo de lo construido no se ve ni se recoge
@@ -478,15 +483,21 @@ function reconstruir() {
   // los cimientos alisan el suelo de debajo: se rehacen los trozos del terreno que tocan
   if (mundoJ) mundoJ.nivelar(mundo.marcasNivelado());
   if (decorado.nivelar && !window.__sinNivelarVegetacion) decorado.nivelar(mundo.marcasNivelado()); // la hierba, las matas y lo demás, a la altura nueva
-  if (mallaMojon) { escena.remove(mallaMojon); liberar(mallaMojon); mallaMojon = null; }
+  // los mojones de todos (cada personaje el suyo); el anillo de la tierra, solo sin zonas (sin mundo): con ellas, tu
+  // tierra es la zona entera y se ve en el mapa
+  for (const g of mallasMojon) { escena.remove(g); liberar(g); }
+  mallasMojon = [];
   if (anilloTierra) { escena.remove(anilloTierra); liberar(anilloTierra); anilloTierra = null; }
-  if (mundo.mojon) {
-    mallaMojon = modeloMojon();
-    mallaMojon.position.set(mundo.mojon.x, sueloEn(mundo.mojon.x, mundo.mojon.z), mundo.mojon.z);
-    escena.add(mallaMojon);
+  for (const mj of Object.values(mundo.mojones)) {
+    const g = modeloMojon();
+    g.position.set(mj.x, sueloEn(mj.x, mj.z), mj.z);
+    escena.add(g); mallasMojon.push(g);
+  }
+  const mio = miMojon();
+  if (mio && !hayZonas()) {
     const anillo = new THREE.Mesh(new THREE.RingGeometry(RADIO_MOJON - 0.15, RADIO_MOJON, 96), MAT_ANILLO);
     anillo.rotation.x = -Math.PI / 2;
-    anillo.position.set(mundo.mojon.x, 0.03, mundo.mojon.z);
+    anillo.position.set(mio.x, 0.03, mio.z);
     anilloTierra = anillo;
     escena.add(anillo);
   }
@@ -658,7 +669,8 @@ function evaluarColocacion() {
   fantasma.visible = true;
   if (sel.clase === 'mojon') {
     fantasma.position.set(x, sueloEn(x, z), z); fantasma.rotation.set(0, 0, 0);
-    const v = mundo.mojon ? { ok: false, motivo: t('yaMojon') } : mundo.puedePagar(PIEZAS.mojon.coste) ? { ok: true } : { ok: false, motivo: t('faltanMateriales') };
+    const pm = mundo.puedeMojon(x, z, yoAutor());
+    const v = miMojon() ? { ok: false, motivo: t('yaMojon') } : !pm.ok ? pm : mundo.puedePagar(PIEZAS.mojon.coste) ? { ok: true } : { ok: false, motivo: t('faltanMateriales') };
     pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
     estado.candidato = { tipo: 'mojon', x, z, v };
     return;
@@ -667,8 +679,8 @@ function evaluarColocacion() {
     const ys = estado.puntero.ySuelo ?? sueloEn(x, z), y = redondoMm(alturaBrocha(x, z, ys));
     ponerBrocha(x, y, z);
     let v = { ok: true };
-    if (!mundo.mojon) v = { ok: false, motivo: t('primeroMojon') };
-    else if (!mundo.dentroDeTierra(x, z)) v = { ok: false, motivo: t('fueraTierra') };
+    if (!miMojon()) v = { ok: false, motivo: t('primeroMojon') };
+    else if (!mundo.dentroDeTierra(x, z, yoAutor())) v = { ok: false, motivo: t('fueraTierra') };
     pintarFantasma(v.ok);
     const r = estado.radioBrocha.toLocaleString(document.documentElement.lang || 'es');
     mostrarAviso(v.ok ? tr('Brocha de {r} m: alisa el suelo a la altura del disco. Cambia el tamaño con R o Girar.', { r }) : tr(v.motivo), !v.ok);
@@ -679,8 +691,8 @@ function evaluarColocacion() {
     const y = estado.puntero.ySuperficie || 0;
     fantasma.position.set(x, y, z); fantasma.rotation.set(0, estado.rotDeco || 0, 0);
     let v = { ok: true };
-    if (!mundo.mojon) v = { ok: false, motivo: t('primeroMojon') };
-    else if (!mundo.dentroDeTierra(x, z)) v = { ok: false, motivo: t('fueraTierra') };
+    if (!miMojon()) v = { ok: false, motivo: t('primeroMojon') };
+    else if (!mundo.dentroDeTierra(x, z, yoAutor())) v = { ok: false, motivo: t('fueraTierra') };
     else if (!mundo.puedePagar(DECORACION[sel.tipo].coste)) v = { ok: false, motivo: t('faltanMateriales') };
     pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
     estado.candidato = { tipo: 'deco', x, y, z, v };
@@ -689,7 +701,7 @@ function evaluarColocacion() {
   // y: la altura del suelo donde apuntas (si la pieza empieza una construcción, su planta baja queda ahí)
   const datos = { pieza: sel.tipo, x, z, k: estado.planta, rot: estado.rotLibre, dir: estado.dir, y: redondoMm(estado.puntero.ySuelo ?? sueloEn(x, z)) };
   const cand = mundo.candidata(datos.pieza, x, z, datos.k, datos.rot, datos.dir, datos.y);
-  const v = mundo.validar(cand, true); // se pone el marco de la obra: el material se lleva después
+  const v = mundo.validar(cand, true, yoAutor()); // se pone el marco de la obra: el material se lleva después
   // colocar el fantasma en la rejilla de su construcción
   const c = cand.construccion;
   const tmp = new THREE.Group();
@@ -1350,7 +1362,17 @@ function opcionesUsar() {
     for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (!esVehiculo(so.cosa.tipo)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
     for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) }), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
   }
+  // quien tienes al lado (a menos de 3 m): dejarle construir en tu tierra, o quitárselo (valravnx, 4 nov: la pareja)
+  if (enLinea && miMojon()) for (const [autor, r] of enLinea.remotos) {
+    if (Math.hypot(r.x - pj.x, r.z - pj.z) > 3) continue;
+    const ya = mundo.invitadosDe(yoAutor()).includes(autor);
+    ops.push({ texto: ya ? tr('Quitarle de tu tierra') : tr('Invitar a tu tierra'), pos: { x: r.x, z: r.z }, alto: 1.8, hacer: () => invitarATierra(autor, !ya) });
+  }
   return ops;
+}
+function invitarATierra(autor, si) {
+  const r = accion({ tipo: si ? 'invitar' : 'desinvitar', a: autor });
+  mostrarAviso(r.ok ? tr(si ? 'Ya puede construir en tu tierra.' : 'Ya no puede construir en tu tierra.') : tr(r.motivo), !r.ok);
 }
 const menuUsar = $('menuUsar');
 function cerrarMenuUsar() { menuUsar.hidden = true; menuUsar.innerHTML = ''; }
@@ -1528,8 +1550,8 @@ function accionRastra(a, alSalir) {
   };
   if (objetosRed) { objetosRed.mandar(a, fin); return; }
   const accionLocal = { autor: AUTOR_LOCAL, ...a };
-  fin(a.tipo === 'arcon_al_suelo' ? ejecutarArconAlSuelo(sueloObjetos.suelo, registroAcciones, accionLocal, Date.now(), (au, x, z) => !!mundo.dentroDeTierra(x, z))
-    : ejecutarRastra(rastras, inventarios, registroAcciones, accionLocal, Date.now(), (au, x, z) => !!mundo.dentroDeTierra(x, z), pj.rot));
+  fin(a.tipo === 'arcon_al_suelo' ? ejecutarArconAlSuelo(sueloObjetos.suelo, registroAcciones, accionLocal, Date.now(), (au, x, z) => !!mundo.tierraDe(x, z))
+    : ejecutarRastra(rastras, inventarios, registroAcciones, accionLocal, Date.now(), (au, x, z) => !!mundo.tierraDe(x, z), pj.rot));
 }
 const nombreCarga = c => (c ? tr('{n} × {c}', { n: c.n, c: tr(CATALOGO[c.tipo].nombre) }) : tr('vacía'));
 function engancharRastra(o) {
@@ -1833,7 +1855,7 @@ function golpeTroceo(id) {
     return { ok: true, enviado: true };
   }
   const r = ejecutarTroceo(troceo, inventarios, registroAcciones, { autor: AUTOR_LOCAL, tipo: 'trocear', objeto: id, x: pj.x, z: pj.z }, Date.now(),
-    (autor, x, z) => !!mundo.dentroDeTierra(x, z));
+    (autor, x, z) => !!mundo.tierraDe(x, z));
   if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return r; }
   if (almacen) guardarTroceo(almacen, troceo);
   sueloObjetos.guardar(); sueloObjetos.refrescar();
@@ -2042,7 +2064,7 @@ function actualizarUI() {
   $('controlPlanta').hidden = estado.modo !== 'construir';
   document.body.classList.toggle('construyendo', estado.modo === 'construir');
   $('planta').textContent = `${t('planta')} ${estado.planta}`;
-  if (!mundo.mojon && estado.modo !== 'construir') mostrarAviso(t('consejoMojon'));
+  if (!miMojon() && estado.modo !== 'construir') mostrarAviso(t('consejoMojon'));
 }
 let temporizadorAviso = null;
 function mostrarAviso(txt, error = false) {
@@ -2074,6 +2096,8 @@ const panelInventario = montarPanelInventario({ panel: $('panelInventario'), bot
 // coge) y las teclas pulsadas, para no seguir andando sin ver.
 const mapaRey = mundoJ ? montarMapaRey({ paisaje: mundoJ.paisaje, comarcas: comarcasMundo, esTactil: matchMedia('(pointer: coarse)').matches,
   posicion: () => ({ x: pj.x + mundoJ.salida.x, z: pj.z + mundoJ.salida.z, rot: pj.rot }),
+  // tu tierra (la zona entera de tu mojón): dónde está tu mojón, en m del mundo
+  tuTierra: () => { const m = miMojon(); return m ? { x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z } : null; },
   alAbrir: () => { if (document.pointerLockElement) document.exitPointerLock(); teclas.clear(); cerrarMenuUsar(); } }) : null;
 if ($('btnMapa')) { $('btnMapa').hidden = !mapaRey; $('btnMapa').onclick = () => mapaRey && mapaRey.alternar(); }
 // El personaje lleva puesto lo que dice el inventario (valravnx, 29 oct: el inventario es el equipo). La ropa elegida
@@ -2309,7 +2333,7 @@ function tomarPara(p) {
 
 // acceso para pruebas automáticas
 window.__kinhold = {
-  get mundo() { return mundo; }, estado, pj, cam, escena, renderer, jugador, obstaculos, talaV, decorado, combate,
+  get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, escena, renderer, jugador, obstaculos, talaV, decorado, combate,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),

@@ -67,6 +67,7 @@ paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whithol
 paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma" node pruebas/prueba_vegetacion.mjs
 paso "Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, claros y riberas), siempre igual" node pruebas/prueba_recogida_mundo.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
+paso "Las zonas en el mapa del rey y tu tierra" node pruebas/prueba_mapa_zonas.mjs
 paso "Mapa del rey: costa del juego, nombres, ciudad y ríos" node pruebas/prueba_mapa_rey.mjs
 paso "Strandvang, tierras del rey: nadie hiere a otro jugador (el servidor lo rechaza, con su autor)" node pruebas/prueba_tierras_rey.mjs
 paso "Aguante, agua y nado" node pruebas/prueba_nado.mjs

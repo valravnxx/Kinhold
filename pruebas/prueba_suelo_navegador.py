@@ -100,12 +100,12 @@ with sync_playwright() as p:
     pg.evaluate(f"(() => {{ const k = {K}; const o = k.sueloObjetos.suelo.objetos.find(o => o.cosa.tipo === 'silex'); o.desaparece = Date.now() - 1; k.sueloObjetos.refrescar(); }})()")
     comprobar('pasada la hora, el sílex ya no está ni se ve', not pg.evaluate(f"{K}.sueloObjetos.suelo.visibles(Date.now()).some(o => o.cosa.tipo === 'silex')") and not pg.evaluate(f"!!{K}.escena.getObjectByName('suelo_silex')"))
     # en tus tierras no desaparece
-    pg.evaluate(f"{K}.mundo.mojon = {{ x: -6, z: 8 }}")
+    pg.evaluate(f"{K}.mundo.mojones[{K}.yo] = {{ x: -6, z: 8 }}")
     ir(pg, -6, 9)
     en_mano(pg, 'rama', 2); soltar_boton(pg, 'mano:der')
     r = pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.find(o => o.cosa.tipo === 'rama')")
     comprobar('en tus tierras (junto a tu mojón) no desaparece', r is not None and r['desaparece'] is None)
-    pg.evaluate(f"{K}.mundo.mojon = null")
+    pg.evaluate(f"delete {K}.mundo.mojones[{K}.yo]")
     # más cosas para verlas juntas: troncos, leña, un hatillo de fibra y una cesta
     pg.evaluate(f"""(() => {{ const s = {K}.sueloObjetos, t = Date.now();
       s.suelo.dejar({{ tipo: 'tronco_corto', n: 3 }}, 0.8, 11, t, 'jugador:local', false);

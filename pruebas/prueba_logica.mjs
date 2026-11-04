@@ -1,6 +1,6 @@
 // Pruebas de la lógica de construcción de Kinhold. Ejecutar: node pruebas/prueba_logica.mjs
-// Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR.
-import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, polipastoPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, trampillaCerrada, progresoEscalera, salidaEscalera, hogarEn, huellaHogar, altoCanon, HOGAR, adarveEn, adarveDeEscalera, empalizadasDe, ALTO_ADARVE, altoTejadoEn } from '../src/logica/construccion.js';
+// Con MUTAR=1 se altera una capacidad a propósito: las pruebas deben FALLAR. Con MUTAR=2, las zonas de la tierra (2b).
+import { Mundo, SUBIR_PLANTA, clave, andamioEn, poleaPara, polipastoPara, localAMundo, mundoALocal, geometriaTejados, aristasDeCasilla, casillasDeArista, escaleraAndando, trampillaCerrada, progresoEscalera, salidaEscalera, hogarEn, huellaHogar, altoCanon, HOGAR, adarveEn, adarveDeEscalera, empalizadasDe, ALTO_ADARVE, altoTejadoEn, ponerZonas } from '../src/logica/construccion.js';
 import { PIEZAS, CLASE_PESO, MATERIALES } from '../src/logica/piezas.js';
 import { ejecutar, RegistroAcciones, seAbre, seEnciende, acabarObra } from '../src/logica/acciones.js';
 
@@ -56,6 +56,47 @@ console.log('2. Mojón y tierra');
   comprobar('segundo mojón rechazado', !m.colocarMojon(5, 5).ok);
   const lejos = m.candidata('cim_piedra', 30, 0, 0, 0);
   comprobar('fuera de tierra rechazado', m.validar(lejos).motivo === 'Fuera de tu tierra.');
+}
+
+console.log('2b. Un mojón por personaje y tu tierra, la zona entera (valravnx, 4 nov)');
+{
+  // zonas de prueba: franjas de 100 m de ancho (x de 0 a 100, de 100 a 200…); al oeste de -500, mar
+  // (con MUTAR=2, unas zonas rotas: cada sitio, su propia zona, así que la tierra es solo el punto del mojón)
+  ponerZonas(process.env.MUTAR === '2' ? (x, z) => `${x},${z}` : (x, z) => (x < -500 ? null : Math.floor(x / 100)));
+  const m = new Mundo(), R = new RegistroAcciones();
+  const A = (autor, a) => ejecutar(m, R, { autor, ...a });
+  comprobar('Ana pone su mojón', A('jugador:ana', { tipo: 'mojon', x: 10, z: 0 }).ok);
+  comprobar('Ana no puede poner un segundo, ni en otra zona', A('jugador:ana', { tipo: 'mojon', x: 350, z: 0 }).motivo === 'Ya tienes un mojón.');
+  comprobar('Blas no puede poner el suyo en la zona de Ana', A('jugador:blas', { tipo: 'mojon', x: 90, z: 40 }).motivo === 'Esta zona ya es tierra de otro.');
+  comprobar('ni en el mar', A('jugador:blas', { tipo: 'mojon', x: -600, z: 0 }).motivo === 'Ahí no hay tierra firme.');
+  comprobar('Blas pone el suyo en la zona de al lado', A('jugador:blas', { tipo: 'mojon', x: 150, z: 0 }).ok);
+  const enLaZona = A('jugador:ana', { tipo: 'colocar', pieza: 'cim_piedra', x: 95, z: 300, k: 0, rot: 0, dir: 0 });
+  comprobar('Ana construye en cualquier sitio de su zona, también lejos del mojón (300 m)', enLaZona.ok, enLaZona.motivo || '');
+  comprobar('pero no en la zona de Blas', A('jugador:ana', { tipo: 'colocar', pieza: 'cim_piedra', x: 160, z: 8, k: 0, rot: 0, dir: 0 }).motivo === 'Fuera de tu tierra.');
+  comprobar('ni Blas en la de Ana', A('jugador:blas', { tipo: 'colocar', pieza: 'cim_piedra', x: 40, z: -20, k: 0, rot: 0, dir: 0 }).motivo === 'Fuera de tu tierra.');
+  comprobar('Cai, sin mojón, no construye en ninguna', A('jugador:cai', { tipo: 'nivelar', x: 40, z: 0, y: 0, radio: 2 }).motivo === 'Primero coloca tu mojón.');
+  comprobar('los muebles, igual: Blas no amuebla la tierra de Ana', A('jugador:blas', { tipo: 'decorar', pieza: 'mesa', x: 30, y: 0, z: 0, rot: 0 }).motivo === 'Fuera de tu tierra.');
+  comprobar('de quién es cada sitio', m.tierraDe(50, 999) === 'jugador:ana' && m.tierraDe(199, 0) === 'jugador:blas' && m.tierraDe(250, 0) === null);
+  // se guarda y se lee con su dueño; un guardado de antes (un solo mojón) pasa a ser del jugador sin servidor
+  const copia = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  comprobar('al guardar y leer, cada mojón sigue con su dueño', copia.mojonDe('jugador:ana').x === 10 && copia.mojonDe('jugador:blas').x === 150 && !copia.mojonDe('jugador:cai'));
+  const viejo = Mundo.importar({ version: 1, materiales: {}, mojon: { x: 3, z: 4 }, construcciones: [] });
+  comprobar('un guardado de antes del 4 nov: su mojón, del jugador sin servidor', viejo.mojonDe(undefined).x === 3 && viejo.dentroDeTierra(60, 0));
+  // y rehecho desde el registro (como el servidor al arrancar), igual
+  const rehecho = new Mundo();
+  for (const e of R.entradas) ejecutar(rehecho, new RegistroAcciones(), { autor: e.autor, tipo: e.tipo, ...e.datos });
+  comprobar('rehecho desde el registro, los mismos dueños', rehecho.tierraDe(50, 0) === 'jugador:ana' && rehecho.tierraDe(150, 0) === 'jugador:blas');
+  // invitar a tu tierra (valravnx, 4 nov: la pareja construye en la tierra del otro)
+  comprobar('Ana invita a Cai', A('jugador:ana', { tipo: 'invitar', a: 'jugador:cai' }).ok);
+  comprobar('Cai, invitado, construye en la tierra de Ana aunque no tenga mojón', A('jugador:cai', { tipo: 'colocar', pieza: 'cim_piedra', x: 60, z: 120, k: 0, rot: 0, dir: 0 }).ok);
+  comprobar('pero no en la de Blas', A('jugador:cai', { tipo: 'colocar', pieza: 'cim_piedra', x: 170, z: 120, k: 0, rot: 0, dir: 0 }).motivo === 'Fuera de tu tierra.');
+  comprobar('no se invita dos veces, ni a uno mismo, ni sin mojón', A('jugador:ana', { tipo: 'invitar', a: 'jugador:cai' }).ok === false
+    && A('jugador:ana', { tipo: 'invitar', a: 'jugador:ana' }).ok === false && A('jugador:dora', { tipo: 'invitar', a: 'jugador:cai' }).motivo === 'Primero coloca tu mojón.');
+  const guardado = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  comprobar('los invitados se guardan', guardado.invitadosDe('jugador:ana').join() === 'jugador:cai');
+  comprobar('Ana se lo quita', A('jugador:ana', { tipo: 'desinvitar', a: 'jugador:cai' }).ok);
+  comprobar('y Cai ya no construye allí', A('jugador:cai', { tipo: 'colocar', pieza: 'cim_piedra', x: 60, z: 160, k: 0, rot: 0, dir: 0 }).motivo === 'Primero coloca tu mojón.');
+  ponerZonas(null);
 }
 
 console.log('3. Primera pieza fija la rejilla; las siguientes encajan');
@@ -376,14 +417,14 @@ console.log('Barandillas y portillo');
 
   // portillo de la cerca: corral en la planta baja
   const R = new RegistroAcciones();
-  const A = (a) => ejecutar(m, R, { autor: 'jugador:prueba', ...a });
+  const A = (a) => ejecutar(m, R, { autor: 'jugador:local', ...a });
   const antes = { ...m.materiales };
   const p1 = A({ tipo: 'colocar', pieza: 'cerca_portillo', x: 9, z: 9, k: 0, rot: 0, dir: 0 });
   comprobar('el portillo se pone en el suelo, como la cerca', p1.ok, p1.motivo || '');
-  acabarObra(m, R, 'jugador:prueba', p1.construccion.id, p1.clave);
+  acabarObra(m, R, 'jugador:local', p1.construccion.id, p1.clave);
   comprobar('cuesta 4 varas y 1 cuerda', antes.vara - m.materiales.vara === 4 && antes.cuerda - m.materiales.cuerda === 1);
   const p2 = A({ tipo: 'colocar', pieza: 'cerca', x: 11, z: 9, k: 0, rot: 0, dir: 0 });
-  acabarObra(m, R, 'jugador:prueba', p2.construccion.id, p2.clave);
+  acabarObra(m, R, 'jugador:local', p2.construccion.id, p2.clave);
   const cc = p1.construccion;
   const kp = p1.clave, kc = [...cc.piezas.entries()].find(([, p]) => p.tipo === 'cerca')[0];
   comprobar('portillo y cerca en la misma rejilla', cc.piezas.size === 2);
@@ -395,7 +436,7 @@ console.log('Barandillas y portillo');
   comprobar('la cerca normal no se abre', !A({ tipo: 'usar', construccion: cc.id, clave: kc }).ok && !seAbre(cc.piezas.get(kc)));
   comprobar('el medio muro tampoco', !seAbre(c.piezas.get(clave('e', 1, 0, 1, 0))));
   comprobar('el portón de la empalizada sigue abriéndose', seAbre({ tipo: 'empalizada_puerta', hueco: 'e' }));
-  comprobar('cada Usar queda anotado con su autor', R.entradas.filter(e => e.tipo === 'usar' && e.autor === 'jugador:prueba').length === 3);
+  comprobar('cada Usar queda anotado con su autor', R.entradas.filter(e => e.tipo === 'usar' && e.autor === 'jugador:local').length === 3);
   A({ tipo: 'usar', construccion: cc.id, clave: kp });
   const m2 = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
   comprobar('abierto se guarda y se carga abierto', m2.construcciones.find(x => x.id === cc.id).piezas.get(kp).abierta === true);
@@ -607,7 +648,7 @@ console.log('17. Obras: polipasto con torno (lo muy pesado, entre dos)');
 console.log('18. Contraventana, trampilla y muro de tablas con ventana');
 {
   const m = new Mundo(); m.colocarMojon(0, 0);
-  const R = new RegistroAcciones(), yo = 'jugador:prueba';
+  const R = new RegistroAcciones(), yo = 'jugador:local';
   const c = nuevaConstruccion(m);
   const pon = (tipo, i, j, k, d = 0, dir = 0) => m.colocar(enRejilla(m, c, tipo, i, j, k, d, dir));
   // casa de 2×1: cimientos, muros (uno de tablas con ventana y otro de troncos con ventana), suelo arriba y escalera
@@ -719,7 +760,7 @@ console.log('19. Tejado de teja (pesa 200 kg: el doble y más que la paja)');
   comprobar('(con paja ese mismo tramo sí cabe)', vp.ok, vp.motivo || '');
   // como obra: se ponen el marco, las tejas (a mano) y el tronco (con la polea o rodándolo) y se cobra lo suyo
   const m = new Mundo(); m.colocarMojon(0, 0);
-  const R = new RegistroAcciones(), yo = 'jugador:prueba';
+  const R = new RegistroAcciones(), yo = 'jugador:local';
   const c = nuevaConstruccion(m);
   m.colocar(enRejilla(m, c, 'cim_tronco', 0, 0, 0));
   for (const [i, j, d] of [[0, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1]]) m.colocar(enRejilla(m, c, 'muro_tronco', i, j, 0, d));
@@ -815,7 +856,7 @@ console.log('21. Chimenea u hogar interior (piedras y barro, 600 kg, sobre cimie
   const h = PIEZAS.hogar;
   comprobar('N2, piedras y barro, 600 kg, en la planta baja', h.nivel === 2 && h.peso === 600 && h.coste.piedra > 0 && h.coste.barro > 0 && Object.keys(h.coste).length === 2 && h.soloPlanta0 === true && h.hueco === 'h');
   const m = new Mundo(); m.colocarMojon(0, 0);
-  const R = new RegistroAcciones(), yo = 'jugador:prueba';
+  const R = new RegistroAcciones(), yo = 'jugador:local';
   const A = (a) => ejecutar(m, R, { autor: yo, ...a });
   const c = nuevaConstruccion(m);
   const pon = (tipo, i, j, k, d = 0, dir = 0) => m.colocar(enRejilla(m, c, tipo, i, j, k, d, dir));
@@ -879,7 +920,7 @@ console.log('22. Adarve (pasarela por detrás de la empalizada: tablas y postes,
   comprobar('N2, tablas y postes (troncos), 100 kg, sostiene 300, en la planta baja', a.nivel === 2 && a.peso === 100 && a.cap === 300 && a.coste.tabla > 0 && a.coste.tronco > 0 && a.soloPlanta0 && a.hueco === 'a' && a.adarve === true);
   comprobar('su piso está entre 1,5 y 2 m: con la empalizada de 3 m queda parapeto para asomarse', ALTO_ADARVE >= 1.5 && ALTO_ADARVE <= 2.0, String(ALTO_ADARVE));
   const m = new Mundo(); m.colocarMojon(0, 0);
-  const R = new RegistroAcciones(), yo = 'jugador:prueba';
+  const R = new RegistroAcciones(), yo = 'jugador:local';
   const A = (x) => ejecutar(m, R, { autor: yo, ...x });
   const c = nuevaConstruccion(m);
   const pon = (tipo, i, j, k, d = 0, dir = 0) => m.colocar(enRejilla(m, c, tipo, i, j, k, d, dir));
