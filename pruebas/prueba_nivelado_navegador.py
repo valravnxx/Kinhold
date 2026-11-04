@@ -79,7 +79,7 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/{nombre}_ladera_antes.png')
 
         # el mojón, en el suelo
-        pg.evaluate(f"([x, z]) => {{ const k = {K}; k.cambiarModo('construir'); k.accion({{ tipo: 'rellenar', cantidad: 50 }}); k.seleccionar('mojon', 'mojon'); k.apuntar(x - 3, z + 3); k.colocar(); }}", [X, Z])
+        pg.evaluate(f"([x, z]) => {{ const k = {K}; k.cambiarModo('construir'); k.accion({{ tipo: 'rellenar', cantidad: 50 }}); k.llevarPara('mojon', 'mojon'); k.seleccionar('mojon', 'mojon'); k.apuntar(x - 3, z + 3); k.colocar(); }}", [X, Z])
         mj = pg.evaluate(f'(() => {{ const k = {K}, g = k.escena.children.find(o => o.name === "mojon") || null; return {{ mojon: k.miMojon }}; }})()')
         comprobar('el mojón se pone', bool(mj['mojon']), json.dumps(mj))
         # dos cimientos y un muro encima de uno, empezando en (X, Z)

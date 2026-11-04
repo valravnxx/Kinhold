@@ -140,6 +140,7 @@ try {
   await pausa(150);
   const yo = s.presencia.ultimo.get(a.bienvenida.autor);
   comprobar('un estado a 200 m sobre el suelo se rechaza y el servidor le sigue teniendo donde estaba', !!m && Math.abs(yo.x - px) < 0.01 && yo.y < 50, m && m.motivo);
+  await a.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });   // el mojón se paga de lo que llevas
   r = await a.accion({ tipo: 'mojon', x: mar, z: 0 });
   comprobar('el mojón en el mar se rechaza', !r.ok, r.motivo);
   r = await a.accion({ tipo: 'mojon', x: px, z: pz });
@@ -155,6 +156,7 @@ try {
   }
   comprobar('hay un sitio de su zona a 300 m o más del mojón, y otra zona al lado', !!lejosMio && !!vecino, JSON.stringify({ lejosMio, vecino }));
   const b = await cliente(puerto);
+  await b.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });   // el mojón se paga de lo que llevas
   r = await b.accion({ tipo: 'mojon', x: px + 4, z: pz });
   comprobar('otro jugador no puede poner su mojón en la zona de A', !r.ok && r.motivo === 'Esta zona ya es tierra de otro.', r.motivo);
   r = await a.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: lejosMio.x, z: lejosMio.z, k: 0, rot: 0, dir: 0, y: T.suelo(lejosMio.x, lejosMio.z) });

@@ -44,6 +44,7 @@ with sync_playwright() as p:
     K = 'window.__kinhold'
     def ev(js): return pg.evaluate(js)
     def poner(clase, tipo, x, z, planta=0, girar=0):
+        if clase in ('mojon', 'deco'): ev(f"{K}.llevarPara('{clase}','{tipo}')")  # se pagan de lo que llevas: del arcón de pruebas
         ev(f"{K}.cambiarModo('construir'); {K}.estado.planta={planta}; {K}.seleccionar('{clase}','{tipo}');")
         for _ in range(girar): ev(f"{K}.girar()")
         ev(f"{K}.apuntar({x},{z})")
@@ -586,11 +587,12 @@ with sync_playwright() as p:
 
     print('PC: los muebles del piso de arriba no se ven desde abajo con el techo puesto')
     # un taburete arriba, sobre el suelo de la planta 1 (casilla de z=-11), y otro abajo, debajo de ese suelo
-    ev(f"{K}.cambiarModo('construir'); {K}.estado.planta=1; {K}.pj.k=1; {K}.seleccionar('deco','taburete'); {K}.apuntar(10.4, -10.6, 2.62); {K}.colocar()")
-    ev(f"{K}.cambiarModo('construir'); {K}.estado.planta=0; {K}.pj.k=0; {K}.seleccionar('deco','taburete'); {K}.apuntar(9.6, -10.6, 0); {K}.colocar()")
+    ev(f"{K}.llevarPara('deco','taburete'); {K}.cambiarModo('construir'); {K}.estado.planta=1; {K}.pj.k=1; {K}.seleccionar('deco','taburete'); {K}.apuntar(10.4, -10.6, 2.62); {K}.colocar()")
+    ev(f"{K}.llevarPara('deco','taburete'); {K}.cambiarModo('construir'); {K}.estado.planta=0; {K}.pj.k=0; {K}.seleccionar('deco','taburete'); {K}.apuntar(9.6, -10.6, 0); {K}.colocar()")
     ev(f"{K}.cambiarModo('mover')")
     ids = ev(f"(() => {{ const ds = {K}.mundo.decoracion.filter(d => d.tipo === 'taburete' && Math.abs(d.z + 10.6) < 0.01); return {{ arriba: (ds.find(d => d.y > 1) || {{}}).id, abajo: (ds.find(d => d.y < 1) || {{}}).id }}; }})()")
-    comprobar('taburetes colocados arriba y abajo', ids.get('arriba') is not None and ids.get('abajo') is not None, json.dumps(ids))
+    lleva = ev(f"Object.entries({K}.inventario.lugares).filter(([, c]) => c).map(([l, c]) => l + '=' + c.tipo + '×' + c.n).join(' ')")
+    comprobar('taburetes colocados arriba y abajo', ids.get('arriba') is not None and ids.get('abajo') is not None, json.dumps(ids) + ' lleva: ' + lleva)
     visible = lambda i: ev(f"(() => {{ let v = null; {K}.escena.traverse(x => {{ if (x.userData && x.userData.deco && x.userData.deco.id === {i}) v = x.visible; }}); return v; }})()")
     ev(f"{K}.pj.x=10; {K}.pj.z=-10.5; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=Math.PI*0.75; {K}.cam.pitch=0.6; {K}.cam.dist=8")
     esperar(pg, 500)
@@ -1020,9 +1022,11 @@ with sync_playwright() as p:
     print('PC: todos los muebles en fila, de cerca (estilo v5)')
     nd = ev(f"{K}.mundo.decoracion.length")
     muebles = ev(f"Object.keys({K}.DECORACION || {{}})") or ['cama_paja', 'cama_madera', 'mesa', 'banco', 'taburete', 'arcon', 'barril', 'estanteria', 'candil', 'alfombra', 'estandarte']
+    sin_llevar = []
     for i, t in enumerate(muebles):
+        if not ev(f"{K}.llevarPara('deco','{t}')"): sin_llevar.append(t)
         poner('deco', t, -11 + i * 1.6, -12)
-    comprobar('los 11 muebles colocados en fila', ev(f"{K}.mundo.decoracion.length") == nd + len(muebles), f'{len(muebles)} muebles')
+    comprobar('los 11 muebles colocados en fila', ev(f"{K}.mundo.decoracion.length") == nd + len(muebles), f'{len(muebles)} muebles; no se pudo llevar lo de: {sin_llevar}; lleva: ' + ev(f"Object.entries({K}.inventario.lugares).filter(([, c]) => c).map(([l, c]) => l + '=' + c.tipo + '×' + c.n).join(' ')"))
     ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-3; {K}.pj.z=-9.5; {K}.pj.y=0; {K}.pj.k=0; {K}.cam.yaw=0.35; {K}.cam.pitch=0.5; {K}.cam.dist=10")
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/24_muebles_en_fila.png')

@@ -66,7 +66,7 @@ with sync_playwright() as p:
         d = pg.evaluate(f'(() => {{ const d = {K}.mapaRey.datos; return {{ etiquetas: d.etiquetas.length, rios: d.rios.length, montes: d.montes.length, arboles: d.arboles.length }}; }})()')
         comprobar('las 8 comarcas con su nombre, ríos, montes y árboles', d['etiquetas'] == 8 and d['rios'] >= 10 and d['montes'] >= 20 and d['arboles'] >= 200, str(d))
         # tu mojón, a tu lado: tu tierra es la zona entera
-        r = pg.evaluate(f"(() => {{ const k = {K}; k.accion({{ tipo: 'rellenar', cantidad: 20 }}); return k.accion({{ tipo: 'mojon', x: k.pj.x + 2, z: k.pj.z + 1 }}); }})()")
+        r = pg.evaluate(f"(() => {{ const k = {K}; k.accion({{ tipo: 'rellenar', cantidad: 20 }}); k.llevarPara('mojon', 'mojon'); return k.accion({{ tipo: 'mojon', x: k.pj.x + 2, z: k.pj.z + 1 }}); }})()")
         comprobar('pones tu mojón', r['ok'], r.get('motivo', ''))
         # el botón «Mapa», a la vista y dentro de la pantalla
         caja = pg.evaluate("(() => { const b = document.getElementById('btnMapa'); if (!b || b.hidden) return null; const r = b.getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom]; })()")

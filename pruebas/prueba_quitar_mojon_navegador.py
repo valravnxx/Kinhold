@@ -34,6 +34,7 @@ def recorrido(pg, nombre, movil):
     pg.goto(URL); pg.wait_for_function(f'{K} !== undefined', timeout=20000)
     ev(f'localStorage.clear(); {K}.reiniciar()'); pg.wait_for_timeout(800)
     def poner(clase, tipo, x, z):
+        if clase in ('mojon', 'deco'): ev(f"{K}.llevarPara('{clase}','{tipo}')")  # se pagan de lo que llevas: del arcón de pruebas
         ev(f"{K}.cambiarModo('construir'); {K}.estado.planta=0; {K}.seleccionar('{clase}','{tipo}'); {K}.apuntar({x},{z}); {K}.colocar(); {K}.terminarObras()")
     poner('mojon', 'mojon', -3, -6)
     comprobar(f'{nombre}: mojón colocado', ev(f'!!{K}.miMojon'))
