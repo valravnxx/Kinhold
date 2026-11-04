@@ -81,16 +81,38 @@ const CAMPOS_CONSTRUCCION = {
 // al volver a arrancar, el navegador de los demás con las entradas que reparte), esas entregas no vuelven a cobrar ni
 // tocan el montón común, y el arcón de materiales queda igual en todos. Con inventarios, «lleva» no cuenta (lo que
 // diga el navegador se pisa): solo vale al rehacer.
-export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon']);
+// El mojón y los muebles (roadmap, hito «Jugar entre dos sin trampas»), igual: con los inventarios se pagan de lo que
+// lleva el autor, y al quitar un mueble lo que devuelve va a lo que llevas (todo o nada: si no te cabe, no se quita).
+// Al rehacer, con «lleva: true» ni cobran ni devuelven al montón común.
+export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar']);
 const RESERVA_PAGADA = { hay: () => Infinity, gastar: () => {}, parcial: true };
 export function reservaDe(inv) {
   const tipo = m => OBJETO_DE_MATERIAL[m];
   return { hay: m => (tipo(m) ? inv.cuantos(tipo(m)) : 0), gastar: (m, n) => { inv.gastar(tipo(m), n); }, parcial: true };
 }
 
+// De dónde paga una acción que cuesta algo al ponerla (el mojón, un mueble): con inventarios, de lo que lleva el autor
+// (y queda anotada como pagada); al rehacer una ya pagada, de nada; si no, del montón común.
+function pagaCon(m, a, invs) {
+  if (invs) { delete a.lleva; return reservaDe(invs.de(a.autor)); }
+  return a.lleva === true ? RESERVA_PAGADA : m.reservaComun();
+}
+const pagada = (r, a, invs) => { if (r.ok && invs) a.lleva = true; return r; };
+
+// Lo que devuelve un mueble al quitarlo, a lo que lleva el autor: todo o nada (si no cabe entero, nada cambia).
+function devolverA(inv, devuelto) {
+  const antes = inv.exportarJugador();
+  for (const [mat, n] of Object.entries(devuelto)) {
+    const tipo = Object.hasOwn(OBJETO_DE_MATERIAL, mat) ? OBJETO_DE_MATERIAL[mat] : null;
+    const r = tipo ? inv.meterDonde(tipo, n) : { ok: false, motivo: 'No válida.' };
+    if (!r.ok) { inv.restaurar(antes); return { ok: false, motivo: 'No te cabe lo que devuelve: haz sitio.' }; }
+  }
+  return { ok: true };
+}
+
 function aplicarConstruccion(m, a, invs) {
   switch (a.tipo) {
-    case 'mojon': return m.colocarMojon(a.x, a.z, a.autor);
+    case 'mojon': return pagada(m.colocarMojon(a.x, a.z, a.autor, pagaCon(m, a, invs)), a, invs);
     case 'invitar': return m.invitar(a.autor, a.a);
     case 'desinvitar': return m.desinvitar(a.autor, a.a);
     // se construye por obras (GDD): colocar pone el marco; luego se entregan los materiales y se trabaja
@@ -118,8 +140,19 @@ function aplicarConstruccion(m, a, invs) {
       }
       return m.trabajar(c, a.clave, a.segundos, a.autor);
     }
-    case 'decorar': return m.colocarDecoracion(a.pieza, a.x, a.y, a.z, a.rot, a.autor);
-    case 'quitar': return m.quitarDecoracion(a.id);
+    case 'decorar': return pagada(m.colocarDecoracion(a.pieza, a.x, a.y, a.z, a.rot, a.autor, pagaCon(m, a, invs)), a, invs);
+    case 'quitar': {
+      // con lo que llevas: solo en tu tierra (o en la de quien te invita), y lo que devuelve va a lo que llevas
+      if (invs) {
+        delete a.lleva;
+        const d = m.decoracion.find(x => x.id === a.id);
+        if (!d) return { ok: false };
+        if (!m.dentroDeTierra(d.x, d.z, a.autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
+        const inv = invs.de(a.autor);
+        return pagada(m.quitarDecoracion(a.id, (devuelto) => devolverA(inv, devuelto)), a, invs);
+      }
+      return m.quitarDecoracion(a.id, a.lleva === true ? () => ({ ok: true }) : null);
+    }
     case 'desmontar': {
       const c = m.construcciones.find(x => x.id === a.construccion);
       if (!c) return { ok: false, motivo: 'No existe.' };

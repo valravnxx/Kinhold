@@ -10,6 +10,7 @@ import { join, dirname } from 'path';
 import { tmpdir } from 'os';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { crearServidor } from '../servidor/servidor.mjs';
+import { Inventario } from '../src/logica/inventario.js';
 
 const MUTAR = process.env.MUTAR === '1';
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -43,6 +44,8 @@ function cliente(puerto) {
     ws.on('message', (d) => {
       const m = JSON.parse(d.toString());
       c.msgs.push(m);
+      // lo que llevas, el del servidor (el mojón y las obras cobran de ahí), como en el juego
+      if ((m.tipo === 'bienvenida' || m.tipo === 'inventario') && m.inventario) { c.inv = Inventario.importarJugador(m.inventario); c.red.invs = { de: () => c.inv }; }
       c.cambios.push(c.red.recibir(m));
       if (m.tipo === 'bienvenida') listo(c);
     });
@@ -60,6 +63,10 @@ try {
   comprobar('sin bienvenida no se construye', new MundoEnLinea(() => {}).accion({ tipo: 'mojon', x: 0, z: 0 }).ok === false);
 
   console.log('La acción propia se ve enseguida y llega a los demás');
+  // el mojón se paga de lo que llevas: cada uno coge antes sus tres piedras del arcón de pruebas
+  for (const c of [A, B]) c.red.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });
+  await calma(A, B);
+  comprobar('cada uno lleva sus tres piedras', A.inv.cuantos('piedra') === 3 && B.inv.cuantos('piedra') === 3);
   const r1 = A.red.accion({ tipo: 'mojon', x: 0, z: 0 });
   comprobar('el mojón de A está en su mundo antes de que conteste el servidor', r1.ok && !!A.red.mundo.mojonDe(A.red.yo) && A.red.pendientes.length === 1);
   comprobar('mientras tanto, la base (lo del servidor) aún no lo tiene', !A.red.base.mojonDe(A.red.yo));

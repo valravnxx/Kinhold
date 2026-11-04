@@ -16,6 +16,8 @@ const yo = 'jugador:a', otro = 'jugador:b';
 function nuevo() {
   const m = new Mundo(), reg = new RegistroAcciones(), invs = new Inventarios();
   const A = (autor, a) => ejecutar(m, reg, { autor, ...a }, process.env.MUTAR === '1' ? null : invs);
+  // el mojón se paga de lo que llevas: tres piedras del arcón de pruebas, a las manos (sin inventarios, del montón)
+  A(yo, { tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });
   A(yo, { tipo: 'mojon', x: 0, z: 0 });
   return { m, reg, invs, A };
 }
@@ -110,6 +112,48 @@ console.log('El arcón de pruebas: dejar, rellenar y sin inventarios');
   comprobar('sin inventarios, la entrega sale del montón común (como antes)', e.ok && e.entregado === 8);
   comprobar('sin inventarios no hay arcón', !ejecutar(m2, reg2, { autor: yo, tipo: 'sacar_arcon', material: 'piedra', cantidad: 1 }).ok);
   comprobar('el mundo se rehace igual desde el registro', reproducir(reg2.exportar()).construcciones.length === 1);
+}
+
+console.log('El mojón y los muebles se pagan de lo que llevas (no del montón común)');
+{
+  const m = new Mundo(), reg = new RegistroAcciones(), invs = new Inventarios();
+  const sinInv = process.env.MUTAR === '1';
+  const A = (autor, a) => ejecutar(m, reg, { autor, ...a }, sinInv ? null : invs);
+  const piedra0 = m.materiales.piedra;
+  const r0 = A(yo, { tipo: 'mojon', x: 0, z: 0 });
+  comprobar('con las manos vacías no se pone el mojón, aunque el montón común esté lleno', !r0.ok && !m.mojonDe(yo) && m.materiales.piedra === piedra0, r0.motivo);
+  comprobar('y dice que no llevas los materiales', r0.motivo === 'No llevas los materiales.', r0.motivo);
+  A(yo, { tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });
+  const enArcon = m.materiales.piedra;
+  const r1 = A(yo, { tipo: 'mojon', x: 0, z: 0, lleva: true });   // «lleva» del navegador no vale: se pisa
+  comprobar('con tres piedras encima sí, y salen de lo que llevas', r1.ok && invs.de(yo).cuantos('piedra') === 0 && m.materiales.piedra === enArcon, JSON.stringify(r1));
+  // un mueble: la mesa pide 3 tablas y 4 clavos
+  const mesa = { tipo: 'decorar', pieza: 'mesa', x: 1, y: 0, z: 1, rot: 0 };
+  const d0 = A(yo, mesa);
+  comprobar('sin las tablas y los clavos encima no se pone la mesa', !d0.ok && m.decoracion.length === 0, d0.motivo);
+  A(yo, { tipo: 'sacar_arcon', material: 'tabla', cantidad: 3 });
+  A(yo, { tipo: 'sacar_arcon', material: 'clavo', cantidad: 4 });
+  const tablas = m.materiales.tabla, d1 = A(yo, mesa);
+  comprobar('con ellas, sí, y se gastan de lo que llevas', d1.ok && invs.de(yo).cuantos('tabla') === 0 && invs.de(yo).cuantos('clavo') === 0 && m.materiales.tabla === tablas, JSON.stringify(d1));
+  // quitarla devuelve el 75 % a lo que llevas (2 tablas y 3 clavos), no al montón común
+  const q = A(yo, { tipo: 'quitar', id: d1.deco && d1.deco.id });
+  comprobar('al quitarla, lo que devuelve va a lo que llevas', q.ok && invs.de(yo).cuantos('tabla') === 2 && invs.de(yo).cuantos('clavo') === 3 && m.materiales.tabla === tablas, JSON.stringify(q));
+  // la de otro, en su tierra: no se quita (ni se lleva lo que devuelve)
+  A(otro, { tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });
+  A(otro, { tipo: 'mojon', x: 60, z: 0 });
+  A(otro, { tipo: 'sacar_arcon', material: 'paja', cantidad: 4 });
+  const cama = A(otro, { tipo: 'decorar', pieza: 'cama_paja', x: 60, y: 0, z: 2, rot: 0 });
+  const q2 = A(yo, { tipo: 'quitar', id: cama.deco && cama.deco.id });
+  comprobar('el mueble de otro, en su tierra, no lo quitas tú', cama.ok && !q2.ok && m.decoracion.length === 1, q2.motivo);
+  // si no te cabe lo que devuelve, no se quita
+  const cosas = invs.de(otro);
+  A(otro, { tipo: 'sacar_arcon', material: 'piedra', cantidad: 6 });   // las dos manos llenas de piedras
+  const q3 = A(otro, { tipo: 'quitar', id: cama.deco && cama.deco.id });
+  comprobar('con las manos llenas, la cama no se quita: no te cabe la paja', !q3.ok && m.decoracion.length === 1 && cosas.cuantos('paja') === 0, q3.motivo);
+  // al rehacer (el servidor al arrancar, los demás con lo que reparte), lo pagado no vuelve a cobrar del montón común
+  const re = reproducir(reg.exportar());
+  comprobar('el mundo se rehace igual, y el montón común queda como en el servidor', JSON.stringify(re.exportar()) === JSON.stringify(m.exportar()),
+    `piedra ${re.materiales.piedra}/${m.materiales.piedra}, tabla ${re.materiales.tabla}/${m.materiales.tabla}, muebles ${re.decoracion.length}/${m.decoracion.length}`);
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

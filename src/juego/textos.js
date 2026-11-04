@@ -3,6 +3,7 @@ import { tr } from '../idioma.js';
 const ES = {
   yaMojon: 'Ya tienes un mojón.',
   faltanMateriales: 'Faltan materiales.',
+  llevaMateriales: 'No llevas los materiales.',
   primeroMojon: 'Primero coloca tu mojón.',
   fueraTierra: 'Fuera de tu tierra.',
   puntoDebil: 'Punto débil',

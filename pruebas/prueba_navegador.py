@@ -44,6 +44,7 @@ with sync_playwright() as p:
     K = 'window.__kinhold'
     def ev(js): return pg.evaluate(js)
     def poner(clase, tipo, x, z, planta=0, girar=0):
+        if clase in ('mojon', 'deco'): ev(f"{K}.llevarPara('{clase}','{tipo}')")  # se pagan de lo que llevas: del arcón de pruebas
         ev(f"{K}.cambiarModo('construir'); {K}.estado.planta={planta}; {K}.seleccionar('{clase}','{tipo}');")
         for _ in range(girar): ev(f"{K}.girar()")
         ev(f"{K}.apuntar({x},{z})")
@@ -586,8 +587,8 @@ with sync_playwright() as p:
 
     print('PC: los muebles del piso de arriba no se ven desde abajo con el techo puesto')
     # un taburete arriba, sobre el suelo de la planta 1 (casilla de z=-11), y otro abajo, debajo de ese suelo
-    ev(f"{K}.cambiarModo('construir'); {K}.estado.planta=1; {K}.pj.k=1; {K}.seleccionar('deco','taburete'); {K}.apuntar(10.4, -10.6, 2.62); {K}.colocar()")
-    ev(f"{K}.cambiarModo('construir'); {K}.estado.planta=0; {K}.pj.k=0; {K}.seleccionar('deco','taburete'); {K}.apuntar(9.6, -10.6, 0); {K}.colocar()")
+    ev(f"{K}.llevarPara('deco','taburete'); {K}.cambiarModo('construir'); {K}.estado.planta=1; {K}.pj.k=1; {K}.seleccionar('deco','taburete'); {K}.apuntar(10.4, -10.6, 2.62); {K}.colocar()")
+    ev(f"{K}.llevarPara('deco','taburete'); {K}.cambiarModo('construir'); {K}.estado.planta=0; {K}.pj.k=0; {K}.seleccionar('deco','taburete'); {K}.apuntar(9.6, -10.6, 0); {K}.colocar()")
     ev(f"{K}.cambiarModo('mover')")
     ids = ev(f"(() => {{ const ds = {K}.mundo.decoracion.filter(d => d.tipo === 'taburete' && Math.abs(d.z + 10.6) < 0.01); return {{ arriba: (ds.find(d => d.y > 1) || {{}}).id, abajo: (ds.find(d => d.y < 1) || {{}}).id }}; }})()")
     comprobar('taburetes colocados arriba y abajo', ids.get('arriba') is not None and ids.get('abajo') is not None, json.dumps(ids))
