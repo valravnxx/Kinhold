@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-04T09:24:20+00:00",
-  "tarea": "El admin, por la cuenta y su correo: solo es admin la cuenta con el correo confirmado que diga la máquina (KINHOLD_ADMIN_CORREO), para que nadie pueda quedarse antes el nombre «valravnx»",
-  "hito": "servidor",
-  "rama": "trabajo/20261104-0924"
- },
+ "A": null,
  "B": null
 }

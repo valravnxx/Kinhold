@@ -4017,5 +4017,20 @@
   "pruebas": "Construir la web con el GDD nuevo y las traducciones; el GDD mirado en el navegador.",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T09:23:36+00:00",
+  "fin": "2026-11-04T11:48:36+00:00",
+  "titulo": "Cuentas: el admin, por la cuenta y su correo confirmado, sin publicar (carril A)",
+  "hito": "servidor",
+  "hecho": [
+   "Hecho en la rama trabajo/20261104-0924, sin unir a main: es admin solo la cuenta cuyo correo confirmado está en KINHOLD_ADMIN_CORREO (en la máquina); el nombre de usuario ya no cuenta, sin la variable no hay admin, se pasa a serlo al confirmar el correo y se deja de ser al cambiarlo.",
+   "La prueba del admin en el servidor pasa (42 comprobaciones, rota a propósito dos veces y falla) y la del panel en el navegador también; un comentario mal puesto en el cliente que impedía crear cuentas se arregló en la sesión.",
+   "No se publica: tras unir main (la demo v97 de tu tierra), la prueba de navegador «lo que se recoge en el mundo» falla en la nube a ratos y cada vez en algo distinto (cosas alrededor de la salida, lo recogido al volver); pasó una vez de cuatro. También falló una vez el agua del río del mapa del mundo en el móvil. Ninguna toca lo del admin, pero no está comprobado que vengan de antes.",
+   "La siguiente sesión retoma la rama, vuelve a pasar esas pruebas y publica (sería la demo v98)."
+  ],
+  "pruebas": "Lógica bien. Navegador bien salvo «lo que se recoge en el mundo» (falla a ratos) y una vez el mapa del mundo en el móvil (el agua del río). Varias tandas: GitHub devolvió errores 500 al subir capturas, y se miró cada grupo en su registro.",
+  "capturas": null,
+  "estado": "fallo"
  }
 ]
