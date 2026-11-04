@@ -112,10 +112,12 @@ try {
 
   console.log('A construye en los dos trozos, con B lejos');
   const accionesB = () => b.de('accion').map(m => m.entrada.tipo + (m.entrada.datos.x !== undefined ? '@' + m.entrada.datos.x : ''));
+  await a.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });   // el mojón se paga de lo que llevas
   let r = await a.accion({ tipo: 'mojon', x: MX, z: MZ });
   await pausa(100);
   comprobar('el mojón es de todo el mundo: le llega también a B', r.ok && b.de('accion').some(m => m.entrada.tipo === 'mojon'), r.motivo || accionesB().join(' '));
   const r1 = await a.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: DENTRO1, z: 0, k: 0, rot: 0, dir: 0 });
+  for (const [material, cantidad] of [['tabla', 3], ['clavo', 4]]) await a.accion({ tipo: 'sacar_arcon', material, cantidad });   // la mesa se paga de lo que llevas
   const d1 = await a.accion({ tipo: 'decorar', pieza: 'mesa', x: DENTRO1 - 2, y: 0.2, z: 3, rot: 0 });
   const n1 = await a.accion({ tipo: 'nivelar', x: DENTRO1 + 2, z: -4, y: 0, radio: 2 });
   await pausa(150);
@@ -129,6 +131,7 @@ try {
 
   console.log('A construye en el trozo 0,0, que B sí tiene');
   const r0 = await a.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: DENTRO0, z: 0, k: 0, rot: 0, dir: 0 });
+  for (const [material, cantidad] of [['tabla', 3], ['clavo', 4]]) await a.accion({ tipo: 'sacar_arcon', material, cantidad });   // la mesa se paga de lo que llevas
   const d0 = await a.accion({ tipo: 'decorar', pieza: 'mesa', x: DENTRO0 + 2, y: 0.2, z: 3, rot: 0 });
   const n0 = await a.accion({ tipo: 'nivelar', x: DENTRO0 + 3, z: -4, y: 0, radio: 2 });
   await pausa(150);
@@ -145,6 +148,7 @@ try {
   comprobar('al cambiar de trozo le llega la foto de las obras de sus trozos nuevos', !!ob && ob.obras.construcciones.length === 2);
   comprobar('y su mundo queda igual que el del servidor', foto(b.red.base) === foto(s.mundo) && b.red.mundo === b.red.base);
   // un mojón por personaje (4 nov): B pone el suyo para construir (sin las zonas del mundo de verdad, su círculo)
+  await b.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });   // el mojón se paga de lo que llevas
   const mb = await b.accion({ tipo: 'mojon', x: DENTRO1, z: 12 });
   const rb = mb.ok ? await b.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: DENTRO1, z: 6, k: 0, rot: 0, dir: 0 }) : mb;
   await pausa(150);

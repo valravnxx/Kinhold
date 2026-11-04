@@ -74,6 +74,7 @@ try {
     protocoloDe({ tipo: 'bienvenida', tc: 0 }) === 1 && servidorAntiguo({ tipo: 'bienvenida', tc: 0 }) && servidorAntiguo({ tipo: 'bienvenida', protocolo: PROTOCOLO - 1, tc: 0 }));
 
   // A coloca el mojón diciendo que es otro: el servidor lo pisa
+  await A.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });   // el mojón se paga de lo que llevas
   const r1 = await A.accion({ tipo: 'mojon', x: 0, z: 0, autor: 'jugador:falso' });
   comprobar('el mojón sale bien', r1.ok, r1.motivo || '');
   const vistaB = await B.esperar(m => m.tipo === 'accion' && m.entrada.tipo === 'mojon');
@@ -105,6 +106,7 @@ try {
   const e1 = await A.esperar(m => m.tipo === 'error');
   A.ws.send(JSON.stringify({ tipo: 'accion', accion: [1, 2] }));
   await pausa(50);
+  for (const [material, cantidad] of [['tabla', 3], ['clavo', 4]]) await B.accion({ tipo: 'sacar_arcon', material, cantidad });   // la mesa se paga de lo que llevas
   const r6 = await B.accion({ tipo: 'decorar', pieza: 'mesa', x: 0.3, y: 0.2, z: 0.3, rot: 0.5 });
   comprobar('un mensaje roto recibe un error y el servidor sigue', !!e1 && r6.ok, r6.ok ? '' : r6.motivo);
   await A.esperar(m => m.tipo === 'accion' && m.entrada.tipo === 'decorar');
@@ -114,9 +116,10 @@ try {
   comprobar('lo recibido por un cliente rehace el mismo mundo que el del servidor', foto(deA) === foto(s.mundo),
     `${s.mundo.construcciones[0].piezas.size} piezas, ${s.mundo.decoracion.length} mueble`);
 
-  // todo queda en el archivo, también lo rechazado (para auditar)
+  // todo queda en el archivo, también lo rechazado (para auditar); con lo que se saca del arcón de pruebas para pagar
+  // el mojón y la mesa de lo que se lleva
   const lineas = readFileSync(archivo, 'utf8').trim().split('\n').map(l => JSON.parse(l));
-  comprobar('el archivo guarda todas las acciones con su autor y numeradas', lineas.length === 7 && lineas.every((e, i) => e.n === i + 1 && /^jugador:/.test(e.autor)),
+  comprobar('el archivo guarda todas las acciones con su autor y numeradas', lineas.length === 10 && lineas.every((e, i) => e.n === i + 1 && /^jugador:/.test(e.autor)),
     `${lineas.length} líneas, ${lineas.filter(e => e.ok).length} correctas`);
 
   const mundoAntes = foto(s.mundo);
@@ -124,18 +127,19 @@ try {
   await s.cerrar();
 
   console.log('El servidor se apaga y vuelve a arrancar');
-  appendFileSync(archivo, '{"n":7,"autor":"jugador:x","tip');   // apagado a mitad de escribir
+  appendFileSync(archivo, '{"n":10,"autor":"jugador:x","tip');   // apagado a mitad de escribir
   s = crearServidor({ puerto: 0, archivo });
   puerto = await s.listo;
   comprobar('al arrancar, el mundo se rehace igual desde el archivo', foto(s.mundo) === mundoAntes);
   const C = await cliente(puerto);
-  comprobar('un cliente nuevo recibe lo hecho hasta ahora (la foto de las obras de alrededor)', foto(Mundo.importar(C.bienvenida.obras)) === mundoAntes && C.bienvenida.n === 7,
+  comprobar('un cliente nuevo recibe lo hecho hasta ahora (la foto de las obras de alrededor)', foto(Mundo.importar(C.bienvenida.obras)) === mundoAntes && C.bienvenida.n === 10,
     `${C.bienvenida.obras.construcciones.length} construcciones, n=${C.bienvenida.n}`);
+  await C.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });   // el mojón se paga de lo que llevas
   const m7 = await C.accion({ tipo: 'mojon', x: 4, z: 6 });   // (sin las zonas del mundo de verdad, su círculo)
   const r7 = m7.ok ? await C.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: 4, z: 0, k: 0, rot: 0, dir: 0 }) : m7;
   comprobar('y puede seguir construyendo (con su mojón)', r7.ok, r7.motivo || '');
   const ultima = JSON.parse(readFileSync(archivo, 'utf8').trim().split('\n').pop());
-  comprobar('la numeración sigue donde se quedó', ultima.n === 9 && ultima.autor === C.bienvenida.autor, `n=${ultima.n}`);
+  comprobar('la numeración sigue donde se quedó', ultima.n === 13 && ultima.autor === C.bienvenida.autor, `n=${ultima.n}`);
   C.ws.close();
   await s.cerrar();
 } catch (e) {

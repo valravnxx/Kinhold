@@ -1,8 +1,9 @@
 // Recorrido de jugador (revisión del 1 nov: las cosas llegaban rotas porque nadie las jugaba como jugador).
 // Un jugador nuevo, contra el servidor de verdad (servidor/servidor.mjs con el terreno de Whitholm y SIN el arcón de
 // pruebas), juega de principio a fin lo que haya, con los mismos mensajes que manda la demo y solo con lo que recoge:
-// empieza con lo puesto, anda hasta lo que se recoge, lo recoge, pone su mojón y levanta un cimiento de piedra con las
-// piedras que ha traído en las manos (en dos viajes), y lo trabaja hasta terminarlo. Falla si algo no se puede hacer así.
+// empieza con lo puesto, anda hasta lo que se recoge, lo recoge, pone su mojón pagándolo con tres de las piedras que
+// lleva, levanta un cimiento de piedra con las piedras que ha traído en las manos (en dos viajes), y lo trabaja hasta
+// terminarlo. Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
 // Cómo se amplía (CLAUDE.md, «Recorrido de jugador»): cada tarea de juego añade aquí su parte, como un paso más del
@@ -26,6 +27,7 @@ import { vegetacionEn, TAM_ADULTO, CLARO_ARBOLES } from '../src/logica/vegetacio
 import { idArbol } from '../src/logica/tala.js';
 import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS } from '../src/logica/piezas.js';
+import { USAN_INVENTARIO } from '../src/logica/acciones.js';
 import { crearServidor } from '../servidor/servidor.mjs';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -54,7 +56,7 @@ function cliente(puerto) {
     c.accion = (accion) => {
       const id = ++c.id + 100000;
       const p = c.esperar(m => m.tipo === 'resultado' && m.id === id);
-      const q = ['entregar', 'subir', 'sacar_arcon', 'dejar_arcon'].includes(accion.tipo) ? c.esperar(m => m.tipo === 'inventario') : null;
+      const q = USAN_INVENTARIO.has(accion.tipo) ? c.esperar(m => m.tipo === 'inventario') : null;
       ws.send(JSON.stringify({ tipo: 'accion', id, accion }));
       return q ? Promise.all([p, q]).then(([r]) => r) : p;
     };
@@ -102,10 +104,12 @@ try {
   comprobar('no puede sacar nada del arcón de pruebas (no hay)', !r.ok && J.cuantos('hacha_hierro') === 0, r.motivo);
   r = await J.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });
   comprobar('ni del arcón de materiales de las obras', !r.ok && J.cuantos('piedra') === 0, r.motivo);
+  r = await J.accion({ tipo: 'mojon', x: 0, z: 4 });
+  comprobar(`sin nada encima no puede poner su mojón (se paga con ${PIEZAS.mojon.coste.piedra} piedras de lo que lleva)`, !r.ok && !s.mundo.mojonDe(J.bienvenida.autor), r.motivo);
 
   console.log('2. Recoge piedras: anda hasta ellas y las coge con las manos');
   const piedras = cerca(puntos.filter(p => p.tipo === 'piedra'), { x: 0, z: 4 });
-  comprobar('hay piedras sueltas cerca de la salida (a menos de 120 m)', piedras.length >= 8, `${piedras.length}; la primera a ${piedras[0] ? Math.round(Math.hypot(piedras[0].x, piedras[0].z)) : '–'} m`);
+  comprobar('hay piedras sueltas cerca de la salida (a menos de 120 m)', piedras.length >= 6 + PIEZAS.cim_piedra.coste.piedra - (6 - PIEZAS.mojon.coste.piedra), `${piedras.length}; la primera a ${piedras[0] ? Math.round(Math.hypot(piedras[0].x, piedras[0].z)) : '–'} m`);
   const recoger = async (p) => {
     await J.andar(p.x + 0.4, p.z);
     return J.objeto({ tipo: 'recoger', punto: p.id, x: J.pos.x, z: J.pos.z, px: p.x, pz: p.z, clase: p.tipo });
@@ -130,10 +134,9 @@ try {
   console.log('4. Pone su mojón al volver a la salida: la zona es su tierra');
   const base = { x: 0, z: 4 };
   await J.andar(base.x, base.z);
+  const precio = PIEZAS.mojon.coste.piedra, montonAntes = s.mundo.materiales.piedra;
   r = await J.accion({ tipo: 'mojon', x: base.x, z: base.z });
-  // (hoy el mojón aún se paga del montón común: «El mojón y lo que se pone en tu tierra se pagan de lo que llevas»
-  //  lo cambia, y entonces este paso tendrá que llevar sus piedras)
-  comprobar('pone su mojón en la salida', r.ok, r.motivo);
+  comprobar(`pone su mojón en la salida y lo paga con ${precio} de las piedras que lleva (no del montón común)`, r.ok && J.cuantos('piedra') === 6 - precio && s.mundo.materiales.piedra === montonAntes, `${r.motivo || ''} lleva ${J.cuantos('piedra')}`);
   r = await J.accion({ tipo: 'mojon', x: base.x + 30, z: base.z });
   comprobar('y no un segundo (uno por personaje)', !r.ok, r.motivo);
 
@@ -144,14 +147,16 @@ try {
   const obra = s.mundo.construcciones.at(-1), clave = obra && [...obra.piezas.keys()].find(k => obra.piezas.get(k).tipo === 'cim_piedra');
   const pide = PIEZAS.cim_piedra.coste.piedra, falta = () => pide - ((obra?.piezas.get(clave)?.obra?.entregado?.piedra) || 0);
   await J.andar(sitio.x + 1.5, sitio.z);
+  const lleva = J.cuantos('piedra');
   r = await J.accion({ tipo: 'entregar', construccion: obra?.id, clave, material: 'piedra', cantidad: pide });
-  comprobar(`entrega las 6 que lleva (pide ${pide}) y se queda con las manos vacías`, r.ok && falta() === pide - 6 && J.cuantos('piedra') === 0, `${r.motivo || ''} faltan ${falta()}`);
+  comprobar(`entrega las ${lleva} que le quedan (pide ${pide}) y se queda con las manos vacías`, r.ok && lleva > 0 && falta() === pide - lleva && J.cuantos('piedra') === 0, `${r.motivo || ''} faltan ${falta()}`);
   r = await J.accion({ tipo: 'trabajar', construccion: obra?.id, clave, segundos: 5 });
   comprobar('sin todo el material aún no se puede trabajar', !r.ok, r.motivo);
   // segundo viaje: las que faltan
   cogidas = 0;
-  for (const p of piedras.slice(6, 6 + falta())) { r = await recoger(p); if (r.ok) cogidas++; }
-  comprobar(`vuelve a por las ${pide - 6} que faltan`, J.cuantos('piedra') === pide - 6, `${J.cuantos('piedra')} piedras`);
+  const faltan = falta();
+  for (const p of piedras.slice(6, 6 + faltan)) { r = await recoger(p); if (r.ok) cogidas++; }
+  comprobar(`vuelve a por las ${faltan} que faltan (le caben en las manos)`, faltan <= 6 && J.cuantos('piedra') === faltan, `${J.cuantos('piedra')} piedras`);
   await J.andar(sitio.x + 1.5, sitio.z);
   r = await J.accion({ tipo: 'entregar', construccion: obra?.id, clave, material: 'piedra', cantidad: falta() });
   comprobar('las entrega: el cimiento tiene todo lo que pide', r.ok && falta() === 0 && J.cuantos('piedra') === 0, r.motivo);
@@ -172,11 +177,13 @@ try {
     r = await J.accion({ tipo: 'quitar_mojon' });
     comprobar('quita su mojón: dice lo perdido', r.ok, r.motivo);
     comprobar('ya no tiene mojón y el cimiento ha desaparecido', !s.mundo.mojonDe(J.bienvenida.autor) && !s.mundo.construcciones.some(c => c.id === obra?.id), `${s.mundo.construcciones.length} construcciones`);
-    // y lo pone otra vez, 30 m más allá (hoy el mojón se paga del montón común; cuando se pague de lo que llevas,
-    // aquí habrá que recoger antes 3 piedras)
+    // y lo pone otra vez, 30 m más allá: el mojón se paga de lo que llevas, así que antes recoge sus 3 piedras
+    let nuevas = 0;
+    for (const p of piedras.slice(11)) { if (nuevas >= precio) break; r = await recoger(p); if (r.ok) nuevas++; }
+    comprobar(`recoge otras ${precio} piedras para el mojón nuevo`, J.cuantos('piedra') === precio, `${J.cuantos('piedra')} piedras`);
     await J.andar(base.x + 30, base.z);
     r = await J.accion({ tipo: 'mojon', x: base.x + 30, z: base.z });
-    comprobar('vuelve a poner su mojón 30 m más allá, sin espera', r.ok && !!s.mundo.mojonDe(J.bienvenida.autor), r.motivo);
+    comprobar('vuelve a poner su mojón 30 m más allá, sin espera, pagado con ellas', r.ok && !!s.mundo.mojonDe(J.bienvenida.autor) && J.cuantos('piedra') === 0, r.motivo);
   }
 
   // lo que sale de aquí, en la salida (para quien lo lea en la nube)

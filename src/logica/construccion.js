@@ -112,13 +112,19 @@ export class Mundo {
   }
 
   // --- materiales ---
-  puedePagar(coste) {
-    return Object.entries(coste).every(([m, n]) => (this.materiales[m] || 0) >= n);
+  // reserva (opcional): de dónde sale lo que se paga. Sin ella, el montón común del mundo; con la de lo que lleva el
+  // autor (reservaDe, acciones.js), de lo que lleva encima (el mojón y los muebles en línea: se pagan de lo que llevas).
+  puedePagar(coste, reserva = this.reservaComun()) {
+    return Object.entries(coste).every(([m, n]) => reserva.hay(m) >= n);
   }
-  faltan(coste) {
-    return Object.entries(coste).filter(([m, n]) => (this.materiales[m] || 0) < n).map(([m, n]) => ({ m, n, hay: this.materiales[m] || 0 }));
+  faltan(coste, reserva = this.reservaComun()) {
+    return Object.entries(coste).filter(([m, n]) => reserva.hay(m) < n).map(([m, n]) => ({ m, n, hay: reserva.hay(m) }));
   }
-  pagar(coste) { for (const [m, n] of Object.entries(coste)) this.materiales[m] -= n; }
+  pagar(coste, reserva = this.reservaComun()) { for (const [m, n] of Object.entries(coste)) reserva.gastar(m, n); }
+  // lo que dice cuando no alcanza: con lo que llevas, que no lo llevas; con el montón común, que faltan
+  sinMateriales(coste, reserva) {
+    return { ok: false, motivo: reserva && reserva.parcial ? 'No llevas los materiales.' : 'Faltan materiales.', faltan: this.faltan(coste, reserva) };
+  }
   devolver(coste, fraccion) {
     const devuelto = {};
     for (const [m, n] of Object.entries(coste)) {
@@ -146,12 +152,13 @@ export class Mundo {
     }
     return { ok: true };
   }
-  colocarMojon(x, z, autor) {
+  // reserva: de dónde se paga (ver puedePagar); en línea, de lo que lleva el autor
+  colocarMojon(x, z, autor, reserva = this.reservaComun()) {
     const v = this.puedeMojon(x, z, autor);
     if (!v.ok) return v;
     const coste = PIEZAS.mojon.coste;
-    if (!this.puedePagar(coste)) return { ok: false, motivo: 'Faltan materiales.', faltan: this.faltan(coste) };
-    this.pagar(coste);
+    if (!this.puedePagar(coste, reserva)) return this.sinMateriales(coste, reserva);
+    this.pagar(coste, reserva);
     const m = { x, z }; if (zonaDeSitio) m.zona = zonaDeSitio(x, z);
     this.mojones[dueno(autor)] = m;
     return { ok: true, mojon: { ...m } };
@@ -634,22 +641,30 @@ export class Mundo {
   marcasNivelado() { return this.nivelados; }
 
   // ---------- Decoración libre ----------
-  colocarDecoracion(tipo, x, y, z, rot, autor = null) {
-    const def = DECORACION[tipo];
+  colocarDecoracion(tipo, x, y, z, rot, autor = null, reserva = this.reservaComun()) {
+    const def = Object.hasOwn(DECORACION, tipo) ? DECORACION[tipo] : null;
     if (!def) return { ok: false, motivo: 'No válida.' };
     if (!this.mojonDe(autor) && !this.esInvitado(autor)) return { ok: false, motivo: 'Primero coloca tu mojón.' };
     if (!this.dentroDeTierra(x, z, autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
-    if (!this.puedePagar(def.coste)) return { ok: false, motivo: 'Faltan materiales.', faltan: this.faltan(def.coste) };
-    this.pagar(def.coste);
+    if (!this.puedePagar(def.coste, reserva)) return this.sinMateriales(def.coste, reserva);
+    this.pagar(def.coste, reserva);
     const d = { id: this.siguienteId++, tipo, x, y, z, rot };
     this.decoracion.push(d);
     return { ok: true, deco: d };
   }
-  quitarDecoracion(id) {
+  // devolverEn (opcional): a dónde va lo que devuelve, en vez del montón común (acciones.js: a lo que lleva el autor).
+  // Recibe { material: n } y dice { ok } o { ok: false, motivo }: si no puede, el mueble no se quita.
+  quitarDecoracion(id, devolverEn = null) {
     const d = this.decoracion.find(x => x.id === id);
     if (!d) return { ok: false };
+    let devuelto;
+    if (devolverEn) {
+      devuelto = {};
+      for (const [m, n] of Object.entries(DECORACION[d.tipo].coste)) { const r = Math.floor(n * RECUPERACION); if (r > 0) devuelto[m] = r; }
+      const r = devolverEn(devuelto);
+      if (!r.ok) return r;
+    } else devuelto = this.devolver(DECORACION[d.tipo].coste, RECUPERACION);
     this.decoracion = this.decoracion.filter(x => x !== d);
-    const devuelto = this.devolver(DECORACION[d.tipo].coste, RECUPERACION);
     return { ok: true, devuelto };
   }
 

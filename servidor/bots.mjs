@@ -301,11 +301,13 @@ export class Enjambre {
       this.bots.push(b);
       await b.conectar(this.url);
       if (this.escalonar) await new Promise(r => setTimeout(r, this.escalonar));
-      // sin mojón no se puede construir: cada uno pone el suyo donde empieza (si faltan materiales, rellena antes)
+      // sin mojón no se puede construir: cada uno pone el suyo donde empieza, pagado de lo que lleva (sus tres
+      // piedras del arcón de pruebas; si en el arcón no hay, rellena antes)
       if (!this.espejo.mundo.mojonDe(b.yo)) {
-        const sitio = { tipo: 'mojon', x: +b.x.toFixed(2), z: +b.z.toFixed(2) };
-        let r = await b.accion(sitio);
-        if (!r.ok && r.motivo === 'Faltan materiales.') { await b.accion({ tipo: 'rellenar', cantidad: 1000 }); r = await b.accion(sitio); }
+        const sitio = { tipo: 'mojon', x: +b.x.toFixed(2), z: +b.z.toFixed(2) }, piedras = { tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 };
+        let p = await b.accion(piedras);
+        if (!p.ok && p.motivo === 'En el arcón no hay tanto.') { await b.accion({ tipo: 'rellenar', cantidad: 1000 }); p = await b.accion(piedras); }
+        await b.accion(sitio);
       }
     }
     this.t0 = performance.now();
