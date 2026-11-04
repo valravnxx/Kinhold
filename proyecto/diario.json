@@ -4049,5 +4049,21 @@
   "pruebas": "En la nube: lógica bien (el recorrido, 17 comprobaciones) y navegador bien salvo «lo que se recoge en el mundo», que falló una vez en lo mismo que la sesión anterior (al volver, lo recogido sigue recogido) y pasó al repetirla sola; esta tarea no toca el navegador. Sin capturas: no cambia nada que se vea.",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T13:01:28+00:00",
+  "fin": "2026-11-04T13:55:29+00:00",
+  "titulo": "Cuentas: el admin, por la cuenta y su correo confirmado, publicado (demo v98; chat con valravnx)",
+  "hito": "servidor",
+  "hecho": [
+   "Retomado desde su rama a petición de valravnx («hazlo y verifica»); el correo que dio va solo en /etc/kinhold/admin.env del servidor, no en el repositorio.",
+   "El panel de depuración sale solo con la cuenta cuyo correo confirmado está en la lista de la máquina (KINHOLD_ADMIN_CORREO). El nombre de usuario ya no cuenta: quedarse antes el nombre «valravnx» no hace admin a nadie.",
+   "Sin confirmar el correo no se es admin; se pasa a serlo al confirmarlo, sin volver a entrar, y se deja de ser al cambiarlo por otro que no está en la lista. Sin la variable en la máquina, nadie es admin.",
+   "Cómo poner el correo de admin en el servidor de Hetzner, en servidor/nube/LEEME.md. KINHOLD_ADMIN_CUENTA ya no se usa.",
+   "Las pruebas que fallaban a ratos tras unir main pasan ahora en la nube: lo que se recoge en el mundo y el mapa del mundo; ninguna toca el admin."
+  ],
+  "pruebas": "En la nube, sobre la rama unida a main: lógica, lo que se recoge en el mundo, el mapa del mundo y el panel del admin, todo bien (la batería entera ya había pasado antes salvo esas, y desde entonces main solo ha cambiado las noticias de Discord). Capturas del panel en PC y móvil miradas. No comprobado: el admin en el servidor de Hetzner, que depende de poner KINHOLD_ADMIN_CORREO en la máquina.",
+  "capturas": "capturas/demo-v98",
+  "estado": "ok"
  }
 ]
