@@ -41,7 +41,8 @@ export function ponerRendimiento(boton) {
 
   function refrescar() {
     const m = medidaRendimiento();
-    if (!m || !m.fps) return;
+    // aún sin medida (ms 0); con fotogramas de más de 2 s los fps redondean a 0, y el panel tiene que salir igual
+    if (!m || !m.ms) return;
     b.textContent = tr('{f} fps', { f: m.fps });
     b.classList.toggle('lento', m.fps < 30);
     if (panel.hidden) return;
