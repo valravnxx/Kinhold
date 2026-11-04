@@ -1730,5 +1730,12 @@
  "v95, provisional: quien aún no tiene cuenta sigue con la pantalla de la cuenta tapando el juego, como hasta ahora; el servidor deja fuera del mundo a las cuentas sin el correo confirmado. Cuando no se pueda jugar sin cuenta, también a quien no la tenga.": "v95, временно: у кого ещё нет аккаунта, экран аккаунта по-прежнему закрывает игру; сервер не пускает в мир аккаунты с неподтверждённой почтой. Когда без аккаунта играть будет нельзя, не будет пускать и тех, у кого его нет.",
  "Demo única · v95 (correo de la cuenta)": "Единое демо · v95 (почта аккаунта)",
  "Esta zona ya es tierra de otro.": "Эта зона уже чужая земля.",
- "Tu tierra": "Твоя земля"
+ "Tu tierra": "Твоя земля",
+ "Invitar a tu tierra": "Пригласить на свою землю",
+ "Quitarle de tu tierra": "Убрать со своей земли",
+ "Ya puede construir en tu tierra.": "Теперь он может строить на твоей земле.",
+ "Ya no puede construir en tu tierra.": "Он больше не может строить на твоей земле.",
+ "Ya está invitado a tu tierra.": "Уже приглашён на твою землю.",
+ "No está invitado a tu tierra.": "Не приглашён на твою землю.",
+ "No caben más invitados en tu tierra.": "На твоей земле больше нет места для приглашённых."
 }

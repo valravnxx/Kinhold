@@ -55,6 +55,8 @@ export function seAbre(p) { return p.hueco === 'p' || p.hueco === 'w' || p.hueco
 
 const CAMPOS_CONSTRUCCION = {
   mojon: { x: 'n', z: 'n' },
+  invitar: { a: 't' },       // dejar construir en tu tierra a otro jugador (a: su autor)
+  desinvitar: { a: 't' },    // y quitárselo
   colocar: { pieza: 't', x: 'n', z: 'n', k: 'n', rot: 'n', dir: 'n' },
   decorar: { pieza: 't', x: 'n', y: 'n', z: 'n', rot: 'n' },
   nivelar: { x: 'n', z: 'n', y: 'n', radio: 'n' },   // una pasada de la brocha redonda (y: la altura a la que deja el suelo)
@@ -89,6 +91,8 @@ export function reservaDe(inv) {
 function aplicarConstruccion(m, a, invs) {
   switch (a.tipo) {
     case 'mojon': return m.colocarMojon(a.x, a.z, a.autor);
+    case 'invitar': return m.invitar(a.autor, a.a);
+    case 'desinvitar': return m.desinvitar(a.autor, a.a);
     // se construye por obras (GDD): colocar pone el marco; luego se entregan los materiales y se trabaja
     // y (opcional): la altura del suelo donde se pone; la planta baja de una construcción nueva queda ahí
     case 'colocar': {

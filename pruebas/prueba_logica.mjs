@@ -86,6 +86,16 @@ console.log('2b. Un mojón por personaje y tu tierra, la zona entera (valravnx, 
   const rehecho = new Mundo();
   for (const e of R.entradas) ejecutar(rehecho, new RegistroAcciones(), { autor: e.autor, tipo: e.tipo, ...e.datos });
   comprobar('rehecho desde el registro, los mismos dueños', rehecho.tierraDe(50, 0) === 'jugador:ana' && rehecho.tierraDe(150, 0) === 'jugador:blas');
+  // invitar a tu tierra (valravnx, 4 nov: la pareja construye en la tierra del otro)
+  comprobar('Ana invita a Cai', A('jugador:ana', { tipo: 'invitar', a: 'jugador:cai' }).ok);
+  comprobar('Cai, invitado, construye en la tierra de Ana aunque no tenga mojón', A('jugador:cai', { tipo: 'colocar', pieza: 'cim_piedra', x: 60, z: 120, k: 0, rot: 0, dir: 0 }).ok);
+  comprobar('pero no en la de Blas', A('jugador:cai', { tipo: 'colocar', pieza: 'cim_piedra', x: 170, z: 120, k: 0, rot: 0, dir: 0 }).motivo === 'Fuera de tu tierra.');
+  comprobar('no se invita dos veces, ni a uno mismo, ni sin mojón', A('jugador:ana', { tipo: 'invitar', a: 'jugador:cai' }).ok === false
+    && A('jugador:ana', { tipo: 'invitar', a: 'jugador:ana' }).ok === false && A('jugador:dora', { tipo: 'invitar', a: 'jugador:cai' }).motivo === 'Primero coloca tu mojón.');
+  const guardado = Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
+  comprobar('los invitados se guardan', guardado.invitadosDe('jugador:ana').join() === 'jugador:cai');
+  comprobar('Ana se lo quita', A('jugador:ana', { tipo: 'desinvitar', a: 'jugador:cai' }).ok);
+  comprobar('y Cai ya no construye allí', A('jugador:cai', { tipo: 'colocar', pieza: 'cim_piedra', x: 60, z: 160, k: 0, rot: 0, dir: 0 }).motivo === 'Primero coloca tu mojón.');
   ponerZonas(null);
 }
 

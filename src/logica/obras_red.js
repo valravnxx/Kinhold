@@ -30,14 +30,15 @@ export function sitioAccion(mundo, a) {
       const d = mundo.decoracion.find(x => x.id === a.id);
       return d ? { x: d.x, z: d.z } : null;
     }
-    default: return null;   // mojon, rellenar, sacar_arcon, dejar_arcon: de todos
+    default: return null;   // mojon, invitar, desinvitar, rellenar, sacar_arcon, dejar_arcon: de todos
   }
 }
 // La de 'colocar', ya hecha: el origen de su construcción (nueva o la que ya había).
 export const sitioColocada = (r) => (r && r.construccion && Number.isFinite(r.construccion.ox) ? { x: r.construccion.ox, z: r.construccion.oz } : null);
 
 // Lo de todo el mundo, justo antes de una acción (va con ella al repartirla).
-export const comunDe = (mundo) => ({ sid: mundo.siguienteId, materiales: { ...mundo.materiales }, mojones: copiaMojones(mundo.mojones) });
+export const comunDe = (mundo) => ({ sid: mundo.siguienteId, materiales: { ...mundo.materiales }, mojones: copiaMojones(mundo.mojones), invitados: copiaInvitados(mundo.invitados) });
+const copiaInvitados = (ms) => Object.fromEntries(Object.entries(ms || {}).filter(([, l]) => Array.isArray(l)).map(([a, l]) => [a, [...l]]));
 const copiaMojones = (ms) => Object.fromEntries(Object.entries(ms || {}).map(([a, m]) => [a, { ...m }]));
 // Y en el navegador, antes de hacerla.
 export function ponerComun(mundo, c) {
@@ -45,6 +46,7 @@ export function ponerComun(mundo, c) {
   if (Number.isSafeInteger(c.sid) && c.sid > 0) mundo.siguienteId = c.sid;
   if (c.materiales && typeof c.materiales === 'object' && !Array.isArray(c.materiales)) mundo.materiales = { ...mundo.materiales, ...c.materiales };
   if (c.mojones && typeof c.mojones === 'object' && !Array.isArray(c.mojones)) mundo.mojones = copiaMojones(c.mojones);
+  if (c.invitados && typeof c.invitados === 'object' && !Array.isArray(c.invitados)) mundo.invitados = copiaInvitados(c.invitados);
 }
 
 // La foto del mundo de construcción con solo lo de los trozos dados (un Set de claves «i,j»).

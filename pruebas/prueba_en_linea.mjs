@@ -97,6 +97,20 @@ try {
   comprobar('las cuatro piezas en los dos clientes', n(A) === 4 && n(B) === 4, `A ${n(A)}, B ${n(B)}`);
   comprobar('y los tres mundos siguen iguales', foto(A.red.mundo) === foto(s.mundo) && foto(B.red.mundo) === foto(s.mundo));
 
+  console.log('Invitar a tu tierra (4 nov): la pareja construye en la tierra del otro, por el servidor');
+  const I = await cliente(puerto);
+  const sinInvitar = I.red.accion({ ...pieza, x: -6, z: -6 });
+  comprobar('I, sin mojón ni invitación, no construye', sinInvitar.ok === false);
+  comprobar('A invita a I', A.red.accion({ tipo: 'invitar', a: I.red.yo }).ok);
+  await calma(A, B, I);
+  const deC = I.red.accion({ ...pieza, x: -6, z: -6 });
+  await calma(A, B, I);
+  comprobar('I construye en la tierra de A, y el servidor se lo admite', deC.ok && [...I.cambios, ...A.cambios].every(c => !c.rechazo) && foto(I.red.mundo) === foto(s.mundo), deC.motivo || '');
+  comprobar('el servidor sabe quién está invitado', s.mundo.invitadosDe(A.red.yo).includes(I.red.yo));
+  const falso = await new Promise(r => { const m = I.red.accion({ tipo: 'invitar', a: B.red.yo }); r(m); });
+  comprobar('I no puede invitar a nadie a la tierra de A (no tiene mojón)', falso.ok === false);
+  I.ws.close();
+
   console.log('Aspecto: cuerpo y ropa');
   A.ws.send(JSON.stringify({ tipo: 'aspecto', sexo: 'mujer', capas: ['vestido', 'gambeson'] }));
   await pausa(80);

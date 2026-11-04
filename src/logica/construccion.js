@@ -14,6 +14,7 @@ export const hayZonas = () => !!zonaDeSitio;
 // El dueño de lo que se hace sin autor (las pruebas sueltas y el juego sin servidor): el mismo que AUTOR_LOCAL
 // (src/logica/acciones.js, que importa este archivo).
 export const DUENO_LOCAL = 'jugador:local';
+export const MAX_INVITADOS = 12;   // a cuántos puede invitar cada dueño a su tierra (provisional, 4 nov)
 const dueno = (autor) => (typeof autor === 'string' && autor ? autor : DUENO_LOCAL);
 // la zona de un mojón (los de antes no la llevan apuntada: se mira en su sitio)
 const zonaDe = (m) => (m.zona !== undefined && m.zona !== null ? m.zona : zonaDeSitio ? zonaDeSitio(m.x, m.z) : null);
@@ -101,6 +102,7 @@ export class Mundo {
     this.construcciones = [];
     this.decoracion = [];
     this.mojones = {}; // autor → { x, z, zona }: el mojón de cada personaje (zona: la suya, si hay zonas)
+    this.invitados = {}; // dueño → [autores]: a quién deja construir en su tierra (valravnx, 4 nov: la pareja, luego el clan)
     this.materiales = { ...MATERIALES_INICIALES };
     this.siguienteId = 1;
     this.obrasTerminadas = []; // quién llevó qué y quién trabajó en cada obra terminada (para el servidor; no se guarda)
@@ -160,12 +162,34 @@ export class Mundo {
     for (const [a, m] of Object.entries(this.mojones)) if (Math.hypot(x - m.x, z - m.z) <= RADIO_MOJON) return a;
     return null;
   }
-  // ¿es (x, z) tierra de este autor? Con zonas, la zona entera de su mojón; sin ellas, el círculo de RADIO_MOJON.
+  // ¿puede este autor construir en (x, z)? En su tierra (con zonas, la zona entera de su mojón; sin ellas, el círculo
+  // de RADIO_MOJON) y en la de quien le haya invitado.
   dentroDeTierra(x, z, autor) {
-    const m = this.mojonDe(autor);
-    if (!m) return false;
-    if (zonaDeSitio) return zonaDeSitio(x, z) === zonaDe(m);
-    return Math.hypot(x - m.x, z - m.z) <= RADIO_MOJON;
+    const yo = dueno(autor), m = this.mojonDe(yo);
+    if (m && (zonaDeSitio ? zonaDeSitio(x, z) === zonaDe(m) : Math.hypot(x - m.x, z - m.z) <= RADIO_MOJON)) return true;
+    if (!this.esInvitado(yo)) return false;
+    const de = this.tierraDe(x, z);
+    return !!de && this.invitadosDe(de).includes(yo);
+  }
+  // --- invitados: el dueño deja construir en su tierra a quien quiera (y se lo quita) ---
+  invitadosDe(autor) { return this.invitados[dueno(autor)] || []; }
+  esInvitado(autor) { const yo = dueno(autor); return Object.values(this.invitados).some(l => l.includes(yo)); }
+  invitar(autor, a) {
+    const yo = dueno(autor);
+    if (!this.mojonDe(yo)) return { ok: false, motivo: 'Primero coloca tu mojón.' };
+    if (typeof a !== 'string' || !/^jugador:[\w-]{1,64}$/.test(a) || a === yo) return { ok: false, motivo: 'Datos no válidos.' };
+    const l = this.invitadosDe(yo);
+    if (l.includes(a)) return { ok: false, motivo: 'Ya está invitado a tu tierra.' };
+    if (l.length >= MAX_INVITADOS) return { ok: false, motivo: 'No caben más invitados en tu tierra.' };
+    this.invitados[yo] = [...l, a];
+    return { ok: true };
+  }
+  desinvitar(autor, a) {
+    const yo = dueno(autor), l = this.invitadosDe(yo);
+    if (!l.includes(a)) return { ok: false, motivo: 'No está invitado a tu tierra.' };
+    this.invitados[yo] = l.filter(x => x !== a);
+    if (!this.invitados[yo].length) delete this.invitados[yo];
+    return { ok: true };
   }
 
   // --- elegir rejilla ---
@@ -365,7 +389,7 @@ export class Mundo {
     if (!cand) return { ok: false, motivo: 'Pieza no válida.' };
     const { construccion: c, pieza: p } = cand;
     const def = PIEZAS[p.tipo];
-    if (!this.mojonDe(autor)) return { ok: false, motivo: 'Primero coloca tu mojón.' };
+    if (!this.mojonDe(autor) && !this.esInvitado(autor)) return { ok: false, motivo: 'Primero coloca tu mojón.' };
     const m = centroMundo(c, p);
     if (!this.dentroDeTierra(m.x, m.z, autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
     if (p.k < 0 || p.k > MAX_PLANTA) return { ok: false, motivo: 'Planta no permitida.' };
@@ -575,7 +599,7 @@ export class Mundo {
   nivelar(a, autor = null) {
     const mal = validarPasada(a || {});
     if (mal) return { ok: false, motivo: mal };
-    if (!this.mojonDe(autor)) return { ok: false, motivo: 'Primero coloca tu mojón.' };
+    if (!this.mojonDe(autor) && !this.esInvitado(autor)) return { ok: false, motivo: 'Primero coloca tu mojón.' };
     if (!this.dentroDeTierra(a.x, a.z, autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
     const n = { id: this.siguienteId++, x: redondo(a.x), z: redondo(a.z), y: redondo(a.y), r: a.radio, borde: BORDE_NIVELADO, autor, de: 'brocha' };
     this.nivelados.push(n);
@@ -588,7 +612,7 @@ export class Mundo {
   colocarDecoracion(tipo, x, y, z, rot, autor = null) {
     const def = DECORACION[tipo];
     if (!def) return { ok: false, motivo: 'No válida.' };
-    if (!this.mojonDe(autor)) return { ok: false, motivo: 'Primero coloca tu mojón.' };
+    if (!this.mojonDe(autor) && !this.esInvitado(autor)) return { ok: false, motivo: 'Primero coloca tu mojón.' };
     if (!this.dentroDeTierra(x, z, autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
     if (!this.puedePagar(def.coste)) return { ok: false, motivo: 'Faltan materiales.', faltan: this.faltan(def.coste) };
     this.pagar(def.coste);
@@ -610,6 +634,7 @@ export class Mundo {
       version: 1,
       materiales: this.materiales,
       mojones: this.mojones,
+      invitados: this.invitados,
       siguienteId: this.siguienteId,
       construcciones: this.construcciones.map(c => ({ id: c.id, ox: c.ox, oz: c.oz, oy: c.oy || 0, rot: c.rot, piezas: [...c.piezas.values()] })),
       decoracion: this.decoracion,
@@ -624,6 +649,8 @@ export class Mundo {
     m.mojones = {};
     if (datos.mojones && typeof datos.mojones === 'object') for (const [a, mj] of Object.entries(datos.mojones)) m.mojones[a] = { ...mj };
     else if (datos.mojon) m.mojones[DUENO_LOCAL] = { x: datos.mojon.x, z: datos.mojon.z };
+    m.invitados = {};
+    if (datos.invitados && typeof datos.invitados === 'object') for (const [a, l] of Object.entries(datos.invitados)) if (Array.isArray(l)) m.invitados[a] = l.filter(x => typeof x === 'string');
     m.siguienteId = datos.siguienteId || 1;
     m.construcciones = (datos.construcciones || []).map(c => {
       const mapa = new Map();

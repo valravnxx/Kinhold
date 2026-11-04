@@ -1730,5 +1730,12 @@
  "v95, provisional: quien aún no tiene cuenta sigue con la pantalla de la cuenta tapando el juego, como hasta ahora; el servidor deja fuera del mundo a las cuentas sin el correo confirmado. Cuando no se pueda jugar sin cuenta, también a quien no la tenga.": "v95, provisional: anyone without an account still has the account screen covering the game, as before; the server keeps accounts without a confirmed email out of the world. When playing without an account is no longer possible, it will also keep out those without one.",
  "Demo única · v95 (correo de la cuenta)": "Single demo · v95 (account email)",
  "Esta zona ya es tierra de otro.": "This zone is already someone else's land.",
- "Tu tierra": "Your land"
+ "Tu tierra": "Your land",
+ "Invitar a tu tierra": "Invite to your land",
+ "Quitarle de tu tierra": "Remove from your land",
+ "Ya puede construir en tu tierra.": "They can now build on your land.",
+ "Ya no puede construir en tu tierra.": "They can no longer build on your land.",
+ "Ya está invitado a tu tierra.": "Already invited to your land.",
+ "No está invitado a tu tierra.": "Not invited to your land.",
+ "No caben más invitados en tu tierra.": "No room for more guests on your land."
 }

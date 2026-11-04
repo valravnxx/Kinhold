@@ -1362,7 +1362,17 @@ function opcionesUsar() {
     for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (!esVehiculo(so.cosa.tipo)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
     for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) }), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
   }
+  // quien tienes al lado (a menos de 3 m): dejarle construir en tu tierra, o quitárselo (valravnx, 4 nov: la pareja)
+  if (enLinea && miMojon()) for (const [autor, r] of enLinea.remotos) {
+    if (Math.hypot(r.x - pj.x, r.z - pj.z) > 3) continue;
+    const ya = mundo.invitadosDe(yoAutor()).includes(autor);
+    ops.push({ texto: ya ? tr('Quitarle de tu tierra') : tr('Invitar a tu tierra'), pos: { x: r.x, z: r.z }, alto: 1.8, hacer: () => invitarATierra(autor, !ya) });
+  }
   return ops;
+}
+function invitarATierra(autor, si) {
+  const r = accion({ tipo: si ? 'invitar' : 'desinvitar', a: autor });
+  mostrarAviso(r.ok ? tr(si ? 'Ya puede construir en tu tierra.' : 'Ya no puede construir en tu tierra.') : tr(r.motivo), !r.ok);
 }
 const menuUsar = $('menuUsar');
 function cerrarMenuUsar() { menuUsar.hidden = true; menuUsar.innerHTML = ''; }
