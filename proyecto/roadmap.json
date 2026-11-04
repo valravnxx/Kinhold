@@ -1164,7 +1164,9 @@
     },
     {
      "nombre": "Desmontar el mojón (valravnx, 4 nov): el dueño quita su mojón cuando quiere, por el servidor con su autor; sus obras quedan como ruina sin dueño (o las desmonta antes, al 75 %) y no puede poner otro hasta pasados unos días reales (provisional: 3), para que reclamar y soltar no sirva para bloquear a otros",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-04T19:13:07+01:00",
+     "rama": "trabajo/20261104-1910-mojon"
     },
     {
      "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio de las tres comarcas de inicio y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
