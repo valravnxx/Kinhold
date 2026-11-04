@@ -1134,7 +1134,9 @@
     },
     {
      "nombre": "El mojón y lo que se pone en tu tierra se pagan de lo que llevas (no del montón común), por el servidor con su autor",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-04T16:25:03+00:00",
+     "rama": "trabajo/20261104-1625"
     },
     {
      "nombre": "Lo tuyo es tuyo: en tu tierra solo tú desmontas, usas puertas y sacas de tus almacenajes; el servidor lo comprueba con el autor",
