@@ -1,0 +1,45 @@
+Jugador simulado: jugador:278a0e87
+Vista pc
+  OK   pc: entra en línea con el mundo listo
+  FALLA pc: crea una cuenta que no es de admin
+  OK   pc: sin la cuenta de admin no sale el botón «Admin» (ni con ?admin)
+  OK   pc: y F9 no abre nada
+  OK   pc: la clave que guardaba el navegador antes se borra
+  OK   pc: sin errores en la página (sin admin)
+  FALLA pc: crea la cuenta de admin
+  FALLA pc: con la cuenta de admin sale el botón «Admin», sin recargar
+  FALLA pc: se abre sin pedir ninguna clave
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_admin_navegador.py", line 119, in <module>
+    comprobar(f'{nombre}: el otro jugador sale en la lista', vio and pg.evaluate("document.querySelectorAll('#panelAdmin li').length") >= 1, pg.evaluate(ESTADO_PANEL))
+                                                                                                                                             ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 9413, in evaluate
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.evaluate(expression=expression, arg=mapping.to_impl(arg))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 474, in evaluate
+    return await self._main_frame.evaluate(expression, arg)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 346, in evaluate
+    await self._channel.send(
+    ...<6 lines>...
+    )
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.17/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Page.evaluate: TypeError: Cannot read properties of null (reading 'textContent')
+    at eval (eval at evaluate (:311:30), <anonymous>:1:49)
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
