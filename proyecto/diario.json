@@ -4032,5 +4032,22 @@
   "pruebas": "Lógica bien. Navegador bien salvo «lo que se recoge en el mundo» (falla a ratos) y una vez el mapa del mundo en el móvil (el agua del río). Varias tandas: GitHub devolvió errores 500 al subir capturas, y se miró cada grupo en su registro.",
   "capturas": null,
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-04T12:24:24+00:00",
+  "fin": "2026-11-04T13:49:49+00:00",
+  "titulo": "Hito «Jugar entre dos»: el recorrido de jugador automático (carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "Nueva prueba pruebas/prueba_recorrido.mjs: un jugador nuevo, contra el servidor de verdad con el terreno de Whitholm y sin el arcón de pruebas, juega con los mismos mensajes que la demo y solo con lo que recoge.",
+   "El recorrido: empieza con lo puesto, el arcón no le da nada, anda hasta las piedras sueltas (la primera a 54 m de la salida), coge 6 (3 en cada mano; la séptima no cabe), pone su mojón, pone el marco de un cimiento de piedra, le lleva las piedras en dos viajes (pide 8), lo trabaja hasta terminarlo y, con las manos libres, recoge ramas.",
+   "Lo que un jugador aún no puede hacer va en su lista TODAVIA_NO, con el porqué y la tarea que lo trae; la prueba comprueba que de verdad no se puede, para que, cuando llegue, falle y obligue a pasarlo a los pasos de verdad.",
+   "Hallazgo: hoy un jugador nuevo no puede talar, porque no tiene hacha y aún no se fabrica nada (llega con «Fabricar por el servidor», en el hito «De nada a una casa»). El mojón aún se paga del montón común (lo cambia su tarea de este hito).",
+   "Decisiones provisionales: en la prueba anda a 20 m/s para que tarde poco (hoy el servidor no mira la velocidad) y empieza ya en el mundo, sin cuenta (la cuenta la juegan sus propias pruebas). Rota a propósito (MUTAR=1, un mundo sin piedras sueltas) falla en 7 comprobaciones.",
+   "Va en la batería (grupo de lógica); CLAUDE.md la nombra para que cada tarea de juego amplíe su parte. No es un cambio jugable: no hay versión nueva."
+  ],
+  "pruebas": "En la nube: lógica bien (el recorrido, 17 comprobaciones) y navegador bien salvo «lo que se recoge en el mundo», que falló una vez en lo mismo que la sesión anterior (al volver, lo recogido sigue recogido) y pasó al repetirla sola; esta tarea no toca el navegador. Sin capturas: no cambia nada que se vea.",
+  "capturas": null,
+  "estado": "ok"
  }
 ]
