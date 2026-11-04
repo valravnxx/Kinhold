@@ -65,7 +65,7 @@ try {
   const A = await cliente(puerto), B = await cliente(puerto);
   comprobar('cada conexión recibe un autor del servidor, distinto', /^jugador:/.test(A.bienvenida.autor) && A.bienvenida.autor !== B.bienvenida.autor,
     `${A.bienvenida.autor} y ${B.bienvenida.autor}`);
-  comprobar('un mundo nuevo empieza vacío', A.bienvenida.obras.construcciones.length === 0 && !A.bienvenida.obras.mojon);
+  comprobar('un mundo nuevo empieza vacío', A.bienvenida.obras.construcciones.length === 0 && !Object.keys(A.bienvenida.obras.mojones || {}).length);
   // versión del protocolo: el servidor la dice y el juego sabe si es antiguo (valravnx, 28 oct: un servidor de antes
   // del duelo en línea dejaba a los dos «esperando rival» sin avisar)
   comprobar('la bienvenida dice la versión del protocolo del servidor', A.bienvenida.protocolo === PROTOCOLO && !servidorAntiguo(A.bienvenida), `protocolo ${A.bienvenida.protocolo}`);
@@ -81,6 +81,9 @@ try {
   comprobar('los dos clientes reciben la acción', !!vistaA && !!vistaB);
   comprobar('el autor es el que puso el servidor, no el que dijo el cliente', vistaB.entrada.autor === A.bienvenida.autor, `autor: ${vistaB.entrada.autor}`);
 
+  // un mojón por personaje (4 nov): A invita a B a su tierra para que construyan juntos
+  const inv = await A.accion({ tipo: 'invitar', a: B.bienvenida.autor });
+  comprobar('A invita a B a su tierra', inv.ok, inv.motivo || '');
   // B construye sobre la obra de A; A lo ve
   const r2 = await B.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: 0, z: 0, k: 0, rot: 0, dir: 0 });
   const r3 = await A.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: 2, z: 0, k: 0, rot: 0, dir: 0 });
@@ -113,7 +116,7 @@ try {
 
   // todo queda en el archivo, también lo rechazado (para auditar)
   const lineas = readFileSync(archivo, 'utf8').trim().split('\n').map(l => JSON.parse(l));
-  comprobar('el archivo guarda todas las acciones con su autor y numeradas', lineas.length === 6 && lineas.every((e, i) => e.n === i + 1 && /^jugador:/.test(e.autor)),
+  comprobar('el archivo guarda todas las acciones con su autor y numeradas', lineas.length === 7 && lineas.every((e, i) => e.n === i + 1 && /^jugador:/.test(e.autor)),
     `${lineas.length} líneas, ${lineas.filter(e => e.ok).length} correctas`);
 
   const mundoAntes = foto(s.mundo);
@@ -126,12 +129,13 @@ try {
   puerto = await s.listo;
   comprobar('al arrancar, el mundo se rehace igual desde el archivo', foto(s.mundo) === mundoAntes);
   const C = await cliente(puerto);
-  comprobar('un cliente nuevo recibe lo hecho hasta ahora (la foto de las obras de alrededor)', foto(Mundo.importar(C.bienvenida.obras)) === mundoAntes && C.bienvenida.n === 6,
+  comprobar('un cliente nuevo recibe lo hecho hasta ahora (la foto de las obras de alrededor)', foto(Mundo.importar(C.bienvenida.obras)) === mundoAntes && C.bienvenida.n === 7,
     `${C.bienvenida.obras.construcciones.length} construcciones, n=${C.bienvenida.n}`);
-  const r7 = await C.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: 4, z: 0, k: 0, rot: 0, dir: 0 });
-  comprobar('y puede seguir construyendo', r7.ok, r7.motivo || '');
+  const m7 = await C.accion({ tipo: 'mojon', x: 4, z: 6 });   // (sin las zonas del mundo de verdad, su círculo)
+  const r7 = m7.ok ? await C.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: 4, z: 0, k: 0, rot: 0, dir: 0 }) : m7;
+  comprobar('y puede seguir construyendo (con su mojón)', r7.ok, r7.motivo || '');
   const ultima = JSON.parse(readFileSync(archivo, 'utf8').trim().split('\n').pop());
-  comprobar('la numeración sigue donde se quedó', ultima.n === 7 && ultima.autor === C.bienvenida.autor, `n=${ultima.n}`);
+  comprobar('la numeración sigue donde se quedó', ultima.n === 9 && ultima.autor === C.bienvenida.autor, `n=${ultima.n}`);
   C.ws.close();
   await s.cerrar();
 } catch (e) {

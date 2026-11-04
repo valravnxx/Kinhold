@@ -113,7 +113,7 @@ with sync_playwright() as p:
         comprobar('y tu mojón queda en el centro, con «Tu tierra»', bool(mo) and abs(mo['x'] - vista['width'] / 2) < 30 and abs(mo['y'] - vista['height'] / 2) < 30, str(mo))
         pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_tu_tierra.png')
         # a media distancia: tu tierra entre las zonas de alrededor
-        pg.evaluate(f'{K}.mapaRey.zoom(0.55, innerWidth / 2, innerHeight / 2)')
+        pg.evaluate(f"(() => {{ const k = {K}, mj = k.miMojon, sx = k.mundoJ.salida; k.mapaRey.centrarEn((mj.x + sx.x) / 1000, (mj.z + sx.z) / 1000, 4); }})()")
         try: pg.wait_for_function(f'{K}.mapaRey.zonas.pendientes === 0', timeout=60000)
         except Exception: pass
         pg.wait_for_timeout(300)

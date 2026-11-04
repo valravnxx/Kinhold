@@ -46,6 +46,12 @@ const zonas = Z.crearZonasMapa(comarcas);
     if (zonas.etiqueta(mx + nx, mz + nz) !== zonas.etiqueta(mx - nx, mz - nz)) buenos++;
   }
   comprobar('casi todos los lindes separan dos zonas (a un paso a cada lado)', buenos >= vistos * 0.85, `${buenos} de ${vistos}`);
+  // con lo que es tierra puesto (la imagen del mapa), los lindes no van por el agua
+  const soloOeste = Z.crearZonasMapa(comarcas); soloOeste.ponerTierra((x) => x < tx * Z.TESELA + Z.TESELA / 2);
+  soloOeste.tesela(tx, tz); soloOeste.paso(50);
+  const so = soloOeste.tesela(tx, tz);
+  let fuera = 0; for (let k = 0; k < so.length; k += 4) if ((so[k] + so[k + 2]) / 2 > tx * Z.TESELA + Z.TESELA / 2 + Z.PASO / 1000) fuera++;
+  comprobar('con lo que es tierra puesto, los lindes no van por el agua', so.length > 0 && so.length < s.length && fuera === 0, `${so.length / 4} de ${s.length / 4}, ${fuera} en el agua`);
   const v = zonas.visibles(SALIDA.x / 1000 - 10, SALIDA.z / 1000 - 6, SALIDA.x / 1000 + 10, SALIDA.z / 1000 + 6);
   comprobar('lo que se ve: las que ya hay y las que faltan, en cola', v.hay.length === 1 && v.faltan > 10 && zonas.pendientes === v.faltan, `${v.hay.length} hay, ${v.faltan} faltan`);
 }

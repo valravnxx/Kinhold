@@ -19,14 +19,16 @@ const etiquetaDe = (comarcas) => (x, z) => { const zz = comarcas.zonaEn(x, z); r
 
 // Cuadrados que marchan con etiquetas: rejilla de (n + 1) × (n + 1) muestras (fila a fila) con origen (x0, z0) y paso
 // h, en km. Devuelve los segmentos [x1, z1, x2, z2, …] en km. Los lindes con el mar sin zona no se trazan (la costa ya
-// está en el mapa).
-export function lindes(et, n, x0, z0, h) {
+// está en el mapa), ni, con «dentro» (x, z en km → si es tierra), los que caen en el agua: las zonas de la costa llevan
+// algo de mar.
+export function lindes(et, n, x0, z0, h, dentro = null) {
   const out = [], W = n + 1;
   const linde = (a, b) => a !== b && a >= 0 && b >= 0;
   for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
     const a = et[j * W + i], b = et[j * W + i + 1], c = et[(j + 1) * W + i + 1], d = et[(j + 1) * W + i];
     if (a === b && b === c && c === d) continue;
     const x = x0 + i * h, z = z0 + j * h, p = [];
+    if (dentro && !dentro(x + h / 2, z + h / 2)) continue;
     if (linde(a, b)) p.push(x + h / 2, z);          // arriba
     if (linde(b, c)) p.push(x + h, z + h / 2);      // derecha
     if (linde(d, c)) p.push(x + h / 2, z + h);      // abajo
@@ -39,6 +41,7 @@ export function lindes(et, n, x0, z0, h) {
 
 export function crearZonasMapa(comarcas) {
   const et = etiquetaDe(comarcas);
+  let esTierra = null;   // (x, z en km) → si es tierra; lo pone el mapa cuando tiene su imagen (ponerTierra)
   const teselas = new Map();   // «tx,ty» → Float32Array de segmentos en km
   const cola = [];             // teselas pedidas, la primera la más urgente
   let tierra = null;           // { clave, zona, x0, z0, n, h (km), mascara: Uint8Array n × n, segs }
@@ -47,7 +50,7 @@ export function crearZonasMapa(comarcas) {
     const n = Math.round(TESELA * 1000 / PASO), h = PASO / 1000, x0 = tx * TESELA, z0 = ty * TESELA;
     const e = new Int32Array((n + 1) * (n + 1));
     for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) e[j * (n + 1) + i] = et((x0 + i * h) * 1000, (z0 + j * h) * 1000);
-    teselas.set(`${tx},${ty}`, new Float32Array(lindes(e, n, x0, z0, h)));
+    teselas.set(`${tx},${ty}`, new Float32Array(lindes(e, n, x0, z0, h, esTierra)));
   }
 
   // tu zona: la de tu mojón (x, z en m del mundo), en una máscara alrededor de él
@@ -61,8 +64,8 @@ export function crearZonasMapa(comarcas) {
     for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) e[j * (n + 1) + i] = et((x0 + i * h) * 1000, (z0 + j * h) * 1000) === zona ? 1 : 0;
     // la máscara (casilla j, i: tuya si lo es su esquina de arriba a la izquierda) y su borde
     const mascara = new Uint8Array(n * n);
-    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) mascara[j * n + i] = e[j * (n + 1) + i];
-    tierra = { clave, zona, x0, z0, n, h, mascara, segs: new Float32Array(lindes(e, n, x0, z0, h)) };
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) mascara[j * n + i] = e[j * (n + 1) + i] && (!esTierra || esTierra(x0 + i * h, z0 + j * h)) ? 1 : 0;
+    tierra = { clave, zona, x0, z0, n, h, mascara, segs: new Float32Array(lindes(e, n, x0, z0, h, esTierra)) };
     return tierra;
   }
 
@@ -96,6 +99,8 @@ export function crearZonasMapa(comarcas) {
     get pendientes() { return cola.length; },
     get hechas() { return teselas.size; },
     tierra: hacerTierra,
+    // lo que es tierra (x, z en km): desde entonces, los lindes y tu zona no se pintan en el agua
+    ponerTierra(f) { esTierra = f; teselas.clear(); tierra = null; },
     etiqueta: et,
   };
 }

@@ -80,6 +80,10 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     programar();
   }
   function hacerFondo() {
+    // lo que es tierra, de la imagen del mapa: los lindes de las zonas no van por el agua
+    const d = datos;
+    zonas.ponerTierra((x, y) => { const px = Math.floor((x - d.cuadro.x0) * d.pxKm), py = Math.floor((y - d.cuadro.y0) * d.pxKm);
+      return px >= 0 && py >= 0 && px < d.ancho && py < d.alto && d.tierra[py * d.ancho + px] === 1; });
     const c = document.createElement('canvas'); c.width = datos.ancho; c.height = datos.alto;
     c.getContext('2d').putImageData(new ImageData(datos.rgba, datos.ancho, datos.alto), 0, 0);
     fondo = c;
