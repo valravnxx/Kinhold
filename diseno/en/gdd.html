@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="4efd4473de7ee6b7de25b5dd95a837580644a0e4">
+<meta name="kinhold-origen" content="4081780393873192b89f91b48586854dd1722f68">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.9</title>
 <style>
@@ -61,7 +61,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Version 0.9 · 26 Oct 2026 (31 Oct: the king's island and its city) · Expansion for a finished game: districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
+  <div class="sub">Version 0.9 · 26 Oct 2026 (31 Oct: the king's island and its city; 4 Nov: what is paid, the art direction and the warehouse with market) · Expansion for a finished game: districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDED</span> you said so
     <span class="tag method">METHOD</span> how to do it technically
@@ -115,7 +115,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span>Own website with accounts. Paid server if needed. PC, mobile and tablet.</p>
 <p><span class="tag ok">DECIDED</span>Semi-isometric third person with <b>free rotation</b>.</p>
 <p><span class="tag ok">DECIDED</span>Languages: <b>English, Spanish and Russian.</b></p>
-<p><span class="tag ok">DECIDED</span><b>Free</b> with cosmetic-only premium content: recipes you unlock to craft nicer-looking versions of things (see section 20).</p>
+<p><span class="tag ok">DECIDED</span><b>Free forever</b>; what is paid is only appearance, in recipes (see section 20). You see exactly what you buy before buying it. No loot boxes or wheels, no premium currency, no season pass and no rush offers to push people to buy (4 Nov).</p>
+<p><span class="tag ok">DECIDED</span><b>Mandatory functional parity</b> (4 Nov): nothing paid gives a functional, defensive, economic or tactical advantage. A paid version has exactly the same as its unpaid equivalent: resistance, stats, collisions, what it blocks and what it lets through, and how it is placed, used and broken. What has no equivalent is only decoration: it doesn't stop projectiles, give cover, close off passages or get in the way of walking.</p>
 <p><span class="tag ok">DECIDED</span><b>Optional tutorial</b> always available in the pause menu: you can read about every system in the game.</p>
 <p><span class="tag ok">DECIDED</span><b>Cheaters: immediate ban</b>, also by IP.</p>
 <p><span class="tag ok">DECIDED</span>Minimum requirements: to be decided midway through development.</p>
@@ -125,7 +126,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Game texts in translation files from the first milestone, so adding languages does not require touching the code.</li>
   <li>IP bans: note that an IP is sometimes shared by several people (a household, a residence hall, some mobile carriers) and that a VPN gets around it. Best combined with banning the account and its email.</li>
 </ul></div>
-<p><span class="tag ok">DECIDED</span>Name: <b>Kinhold</b>. Domain and trademark registration still to be checked.</p>
+<p><span class="tag ok">DECIDED</span>Name: <b>Kinhold</b>. Domain: <b>playkinhold.com</b> (1 Nov). Trademark registration still pending.</p>
 </section>
 
 <section id="arte">
@@ -133,6 +134,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span>Code-generated low-poly 3D, with your reviews to fine-tune it.</p>
 <p><span class="tag ok">DECIDED</span>Sound and music that are <b>relaxing and not harsh.</b></p>
 <p><span class="tag ok">DECIDED</span>World style: <b>«miniature realism»</b> (style test v5): clean shapes, textures made by code, soft light with contact shadows, an uncropped world.</p>
+<p><span class="tag ok">DECIDED</span><b>Art direction</b> (4 Nov), that of style test v5 for everything visible: simple geometry and readable silhouettes, with believable medieval proportions; the richness goes into materials, light and post-processing, not extra polygons. Neither hyperrealism nor caricature. The same hand in architecture, terrain, objects and characters.</p>
+<p><span class="tag ok">DECIDED</span><b>Atmosphere:</b> careful sunlight and ambient light, measured dynamic shadows, materials that respond to light (no flat, poor surfaces), a soft glow on lights, restrained post-processing and fog for depth. First an attractive, coherent image; costly effects later or never.</p>
 <p><span class="tag ok">DECIDED</span>Characters: <b>never sculpted or invented by code.</b> The body comes from the free MakeHuman mesh (CC0) and in the <b>own workshop</b> its clothing, hair, beard, skin and eyes are made by code. The animations are Quaternius's (CC0), transferred to that skeleton.</p>
 <div class="box m"><span class="tag method">METHOD</span>
 <ul>
@@ -141,6 +144,9 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>One palette per material so everything is consistent.</li>
   <li>Own headless workshop (Blender + MPFB2, with pinned versions): generates the dressed characters, reduces meshes and transfers animations from one skeleton to another.</li>
   <li>Levels of detail: simpler versions of characters and pieces to see them from afar and cope with many people on mobile.</li>
+  <li>Quality that adapts to the device (browser, PC and Android): graphics profiles and settings; levels of detail and instancing; few dynamic lights, controlled shadows and draw distance; no advanced global illumination or costly volumetric effects.</li>
+  <li>Indicative targets (4 Nov): 30 frames per second on a mid-range Android and 60 on PC. They are targets, not something already measured.</li>
+  <li>No graphics setting may hide or change what matters for playing: what can be used and what happens in a fight read the same in any profile.</li>
 </ul></div>
 </section>
 
@@ -477,6 +483,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h2>16. Economy and NPCs</h2>
 <p><span class="tag ok">DECIDED</span><b>Coins are minted only by NPCs.</b> They are earned through <b>NPC orders</b>: they ask for what they need and you bring it; they do not buy whatever you want to sell.</p>
 <p><span class="tag ok">DECIDED</span>Market stalls that work while you are offline.</p>
+<p><span class="tag ok">DECIDED</span><b>Warehouse with market in the king's city</b> (4 Nov): a single facility that is both a warehouse and a stall, acquired in the king's city (the only city). In it you store goods and put them up for sale to other players. What is sold comes from what players make: it is not a shop of items created by the game. Things don't appear or travel on their own: they have to be carried there and collected there. It is a different thing from the storage on your land.</p>
+<div class="box o"><span class="tag open">OPEN</span> About the warehouse with market, to be decided: how it is acquired and with what; whether there are sizes; whether it belongs to one person, is shared or belongs to a group; how much fits and whether there are limits per good; how offers are posted, changed and withdrawn; how payment and delivery work; whether it costs upkeep or pays rent or taxes; whether it has a loading area and a counter facing the street; and what happens to it if its owner stops playing.</div>
 <p><span class="tag ok">DECIDED</span><b>NPCs in your service, like the mercenaries of the era:</b> you have to get them the gear they will wear, their food and their pay; you keep them as long as you can support them. Comfort affects these NPCs. Sentries work this way.</p>
 <p><span class="tag ok">DECIDED</span>No NPC villages or bandits at first; the only NPC city is the king's, in Strandvang (31 Oct).</p>
 <div class="box p"><span class="tag prop">PROPOSAL</span>
@@ -583,7 +591,14 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span><b>Objects on the ground:</b> whatever is dropped outside a container disappears after a while (for example, 1 real hour), except inside your lands. Logs and stones stay as a pile. <b>Stacks:</b> each resource has how many units fit in one slot. (Milestone 2)</p>
 <p><span class="tag ok">DECIDED</span><b>Transport from the start:</b> the <b>drag sled</b> (N0: two long poles with crossbars, dragged by hand) and the <b>solid-wheel barrow</b> (N1: the wheel is a slice of a log). The barrow can be parked and works as a container: inside your lands it is protected; outside, anyone can take what it carries. Later, the two-wheeled cart (N2) and the four-wheeled wagon (N3), with draught animals. (Milestone 2)</p>
 <p><span class="tag ok">DECIDED</span><b>No item quality tiers.</b> What a garment does comes only from its layer and material (linen, wool, fur, gambeson, hardened leather, mail, plate). What it looks like is chosen when weaving and sewing: <b>cut</b> (short or long tunic, smock, dress, skirt, cloak with or without hood, hose, hat or coif), <b>weave</b> (plain, twill, herringbone, check, stripes), <b>dye</b> from each region's plants (madder for red, weld for yellow, woad for blue, walnut husk for brown, oak galls with iron for black) and, later, embroidered borders. Since the dyes are spread across climate bands, they give reasons to trade. (Milestones 1b and 3)</p>
-<p><span class="tag ok">DECIDED</span><b>Premium:</b> unlocks recipes to craft nicer-looking versions of things (garment cuts, tapestries, furniture with its own shape). They are still crafted in the game with their materials and do nothing better: they only look different. To be detailed later.</p>
+<p><span class="tag ok">DECIDED</span><b>Premium</b> (detailed on 4 Nov): <b>appearance recipes</b>, in themed packs of architecture, clothing and armour, heraldry and decoration. They are crafted in the game with the same materials as their equivalent and do nothing better (functional parity, section 2): they are another look for something you would already have, or pieces with no stats.</p>
+<ul>
+  <li>What can be sold or stolen (clothes, hats and the like) can be crafted <b>a limited number of times</b> per recipe: otherwise someone would make thousands and hand them out or sell them; being few, they are looked after.</li>
+  <li>Paid clothing is <b>dyed</b> like any other; <b>colours are not paid</b>: they come from the game's dyes (section 7), which remain a reason to trade.</li>
+  <li>Paid beds and furniture: <b>another look of the same level</b> as theirs, with the same comfort.</li>
+  <li>Paid heraldry: shapes and pieces for the coat of arms editor, which still belongs to every family.</li>
+</ul>
+<div class="box o"><span class="tag open">OPEN</span> About recipes with limited uses: how many crafts each one gives (50 was mentioned only as an example), what counts as a use, whether they can be recharged and how, and which categories have a limit.</div>
 <h3>Crafting, eating and fishing</h3>
 <p><span class="tag ok">DECIDED</span><b>Crafting:</b> at the station, taking a time set by the recipe, with a small queue per station; it uses what you carry and what is in chests a few steps away. (Milestone 3)</p>
 <p><span class="tag ok">DECIDED</span><b>Cooking:</b> recipes with utensils (spit, clay pot, cauldron, pan); cooked food fills you more and lasts longer. River water can be drunk safely. (Milestone 4)</p>

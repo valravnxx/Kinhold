@@ -1315,7 +1315,7 @@
    "id": "orden",
    "num": "P6",
    "nombre": "Orden en el código y en los documentos",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "jugable": "Nada nuevo a la vista: menos código muerto, una sola armadura, el arma del inventario y un servidor que aguanta.",
    "nota": "Revisión del 1 nov con valravnx: en tareas pequeñas, entre bloque y bloque.",
    "tareas": [
@@ -1346,6 +1346,12 @@
     {
      "nombre": "El GDD y el documento de sistemas al día con lo decidido (cuatro direcciones, siempre en línea, salida al azar, la revisión del 1 nov) y sin contradicciones",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Pasar al GDD lo esencial del anexo de valravnx del 4 nov: lo de pago (recetas de apariencia con usos limitados y paridad funcional), la dirección gráfica y el almacén con mercado en la ciudad del rey",
+     "estado": "hecho",
+     "inicio": "2026-11-04T12:43:17+01:00",
+     "fin": "2026-11-04T12:45:39+01:00"
     }
    ]
   },

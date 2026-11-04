@@ -4001,5 +4001,21 @@
   "pruebas": "Batería entera en la nube bien (en seis grupos GitHub rechazó devolver las capturas, pero sus pruebas pasaron). Pruebas nuevas: zonas y dueños en la lógica (rota con MUTAR=2), las zonas del mapa (MUTAR=1), invitar por el servidor, las zonas de verdad en el servidor y el mapa del rey en el navegador (MUTAR=2). No comprobado en el navegador: el menú de invitar, que es solo en línea (las pruebas en línea no se pasan).",
   "capturas": "capturas/demo-v97",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T12:43:17+01:00",
+  "fin": "2026-11-04T12:45:39+01:00",
+  "titulo": "GDD: el anexo de valravnx del 4 nov, dentro de sus apartados (chat con valravnx)",
+  "hito": "orden",
+  "hecho": [
+   "Apartado 2: gratis para siempre y lo de pago solo apariencia, sin cajas de botín, moneda premium, pase de temporada ni ofertas con prisa; la paridad funcional, obligatoria. El dominio, playkinhold.com.",
+   "Apartado 3: la dirección gráfica de la prueba v5 (siluetas que se leen, riqueza en materiales, luz y posprocesado), el ambiente y la calidad que se ajusta al aparato, con 30 y 60 fotogramas como objetivos orientativos.",
+   "Apartado 16: el almacén con mercado, una sola instalación que se adquiere en la ciudad del rey; el resto, abierto.",
+   "Apartado 20: lo premium son recetas de apariencia en packs; lo que se puede vender o robar, con fabricaciones limitadas; la ropa de pago se tiñe con los tintes del juego (los colores no son de pago); camas y muebles, la misma comodidad. Cuántos usos y si se recargan, abierto.",
+   "Retraducidos al inglés y al ruso con la huella nueva. Sin tocar el código."
+  ],
+  "pruebas": "Construir la web con el GDD nuevo y las traducciones; el GDD mirado en el navegador.",
+  "capturas": null,
+  "estado": "ok"
  }
 ]
