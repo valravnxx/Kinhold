@@ -4079,5 +4079,22 @@
   "pruebas": "Batería entera en la nube bien (las dos pruebas que dependen de la salida al azar, repetidas, bien); tras unir main, mapa, demo y juego en inglés otra vez bien. Pruebas nuevas en el mapa: sin nombres de cerca (rota con MUTAR=3, falla), el zoom máximo y que lo del centro sigue en el centro.",
   "capturas": "capturas/demo-v99",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T14:23:11+00:00",
+  "fin": "2026-11-04T16:22:20+00:00",
+  "titulo": "Cuentas: revisión completa, sin cerrar (falla a ratos lo que se recoge en el mundo; carril A)",
+  "hito": "servidor",
+  "hecho": [
+   "Batería entera en la nube sobre la demo v98 (31 grupos, 60 min; empezó en el PC de valravnx y siguió en la nube): 30 correctos. Falló «lo que se recoge en el mundo» en el móvil: «alrededor de la salida hay cosas que recoger» encontró 18 puntos (pide más de 20); la salida cae cada vez en un sitio distinto.",
+   "Repetido solo ese grupo: en PC bien, y en el móvil falló otra comprobación, «al volver, lo recogido sigue recogido» (uno de los cuatro puntos recogidos no estaba en la lista al volver, aunque seguía sin poderse recoger). Una tercera vez, sobre main con la demo v99, la nube no devolvió resultado en 33 min. No comprobado por qué.",
+   "Es la misma prueba que ya falló a ratos en la sesión de las 09:23. Lo arregla de fondo la tarea de P2 «Pruebas que no fallan a ratos» (salida fija); hasta entonces, el hito no pasa a revisión con un grupo en rojo.",
+   "Capturas miradas en PC y móvil (en la rama, capturas/revision-cuentas-4nov): crear cuenta con correo, confirmar el correo con el código, recuperar la contraseña (con «El código no es correcto»), cambiar la contraseña y el correo desde el menú, entrar desde otro aparato y el panel del admin. Se leen bien y no se tapan en el móvil.",
+   "Aún mal (menor): al cambiar el correo sigue a la vista el aviso anterior «Contraseña cambiada…». Y arriba sigue el contador del arcón de pruebas, que se quita en P2.",
+   "La tarea queda a medias en trabajo/20261104-1423: a la siguiente sesión le basta con repetir el grupo «lo-que-se-recoge-en-el-mundo» (el resto ya pasó) y, si sale, pasar el hito a revisión."
+  ],
+  "pruebas": "En la nube: 30 de 31 grupos correctos; «lo que se recoge en el mundo» falla en el móvil (dos comprobaciones distintas en dos vueltas)",
+  "capturas": "capturas/revision-cuentas-4nov",
+  "estado": "fallo"
  }
 ]
