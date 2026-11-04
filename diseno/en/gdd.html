@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="19a2ad154aecae6385673fc60bcbd547b5b36389">
+<meta name="kinhold-origen" content="f61c75ddd21fb0f6cbec38ede7c189d36dd03125">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.9</title>
 <style>
@@ -148,6 +148,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Own headless workshop (Blender + MPFB2, with pinned versions): generates the dressed characters, reduces meshes and transfers animations from one skeleton to another.</li>
   <li>Levels of detail: simpler versions of characters and pieces to see them from afar and cope with many people on mobile.</li>
   <li>Quality that adapts to the device (browser, PC and Android): graphics profiles and settings; levels of detail and instancing; few dynamic lights, controlled shadows and draw distance; no advanced global illumination or costly volumetric effects.</li>
+  <li><b>Six graphics profiles</b> (valravnx, 4 Nov), from low-end phone to high-end PC: Basic phone, Mid-range phone, High-end phone and tablet, Basic PC, Mid-range PC and High-end PC. They change the drawing resolution, the shadows, the ambient occlusion, the glow of lights, the light shafts and the anti-aliasing; <b>the fog and what is drawn are the same in all six</b> (nothing that matters for play). The starting one comes from the device and is refined by measuring (post-processing test v1, with "Measure").</li>
+  <li><b>The style's post-processing</b> (valravnx, 4 Nov): ambient occlusion (corners, joints and contacts), tone mapping (light to shadow transition), colour grading (colour identity: slightly cool shadows, slightly warm highlights, less garish greens), moderate glow of lights, fog (depth), blur only in specific scenes and optional light shafts. In three.js, with the postprocessing (everything in one pass) and n8ao (ambient occlusion) libraries.</li>
   <li>Indicative targets (4 Nov): 30 frames per second on a mid-range Android and 60 on PC. They are targets, not something already measured.</li>
   <li>No graphics setting may hide or change what matters for playing: what can be used and what happens in a fight read the same in any profile.</li>
 </ul></div>
@@ -615,7 +617,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag method">METHOD</span>A shared pathfinding system for animals, livestock and NPCs (navigation meshes by chunks), in the pure logic; first with wildlife. (Milestone 7)</p>
 <p><span class="tag method">METHOD</span>Animations: before each milestone, free animations are sought for what is missing (swimming, riding, pushing or pulling a cart, digging, carrying between two, climbing a ladder, forging, sawing, butchering, rowing, steering, spinning, weaving) and retargeted to the skeleton with the workshop.</p>
 <p><span class="tag method">METHOD</span>Sound in every milestone: footsteps by ground type, tools, ambience, rain, fire and combat; soft music.</p>
-<p><span class="tag ok">DECIDED</span><b>Options menu:</b> low, medium or high graphics quality, volume, controls and language. (Milestone 11)</p>
+<p><span class="tag ok">DECIDED</span><b>Options menu:</b> graphics profile (six, section 3), volume, controls and language. (Milestone 11)</p>
 <p><span class="tag method">METHOD</span><b>Ships:</b> on board, the character's position is stored relative to the ship, so you can walk on deck while it moves; when you get off it is counted relative to the world again. A ship is a construction anchored to something that moves. The camera is smoothed on mobile to avoid seasickness. (Milestone 16)</p>
 <h3>Later on (cosmetic and expansion)</h3>
 <p><span class="tag ok">DECIDED</span><b>Home:</b> tableware and pottery on the table, woven tapestries with designs (with the same editor as the coat of arms), curtains, cushions and furs, candles, oil lamps and candelabras, hunting and fishing trophies, flowerpots, strings of garlic and onions, weapon racks and a mannequin for armour.</p>
