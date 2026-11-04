@@ -6,10 +6,10 @@
   "rama": "trabajo/20261104-1625"
  },
  "B": null,
- "chat:trabajo/20261104-1910-mojon": {
-  "inicio": "2026-11-04T19:13:07+01:00",
-  "tarea": "Desmontar el mojón (valravnx, 4 nov): el dueño quita su mojón cuando quiere, por el servidor con su autor; sus obras quedan como ruina sin dueño (o las desmonta antes, al 75 %) y no puede poner otro hasta pasados unos días reales (provisional: 3), para que reclamar y soltar no sirva para bloquear a otros",
-  "hito": "entre-dos",
-  "rama": "trabajo/20261104-1910-mojon"
+ "chat:trabajo/20261104-2100-graficos": {
+  "inicio": "2026-11-04T20:52:31+01:00",
+  "tarea": "Prueba de posprocesado y seis perfiles gráficos (valravnx, 4 nov): oclusión ambiental, mapeo tonal, gradación de color, brillo moderado, niebla, desenfoque puntual y haces de luz, sobre la escena de la prueba de estilo v5, con capturas lado a lado y medida de lo que cuesta cada cosa",
+  "hito": "graficos",
+  "rama": "trabajo/20261104-2100-graficos"
  }
 }

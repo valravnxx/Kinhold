@@ -104,6 +104,7 @@ paso "Azar y ruido: un solo módulo, los mismos números" node pruebas/prueba_az
 paso "Textos traducidos" node pruebas/prueba_idiomas.mjs
 paso "Noticias del desarrollo en Discord" node pruebas/prueba_discord_noticias.mjs
 paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold_hito1.html "$C/construccion"
+paso "Navegador: quitar el mojón" python3 pruebas/prueba_quitar_mojon_navegador.py dist/kinhold_hito1.html "$C/quitar_mojon"
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_hito1.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_hito1.html "$C/tala"
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_hito1.html "$C/troceo"

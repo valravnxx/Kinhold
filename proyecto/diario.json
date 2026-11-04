@@ -4112,5 +4112,21 @@
   "pruebas": "Sin cambios de código: grupo de lógica en la nube correcto (textos traducidos, huellas de los documentos); la web se genera sin faltas",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T19:13:07+01:00",
+  "fin": "2026-11-04T20:25:28+01:00",
+  "titulo": "Quitar el mojón: dejar tu tierra y perder lo construido, para reposicionar",
+  "hito": "entre-dos",
+  "hecho": [
+   "valravnx, 4 nov (tarde): «que se pueda destruir el mojón y con ello dejar tu territorio, que avise que se perderán cualquier construcción, para poder reposicionar». Cambia lo escrito esa misma tarde en el GDD (ruina y espera de 3 días): se pierde todo y sin espera.",
+   "Lógica pura: perderiaSinMojon(autor) dice lo que se perdería (construcciones, piezas y muebles de su tierra) y quitarMojon(autor) lo quita todo, deja la zona libre y a los invitados sin invitación; sin devolver material y sin espera para volver a ponerlo. Acción «quitar_mojon» con autor, que el servidor reparte a todos.",
+   "En el juego: en Desmontar, al apuntar a tu mojón se resalta en naranja, lo que se perdería en rojo, y el aviso en rojo dice cuántas piezas y muebles se pierden; el botón pasa a «Quitar el mojón»; al confirmar, aviso de lo perdido y de que se puede poner el mojón donde se quiera. El mojón de otro no se toca. En los tres idiomas.",
+   "Pruebas: «Quitar el mojón» en la lógica (con zonas y sin ellas, rehecho desde el registro; rota con MUTAR=1 falla), «Navegador: quitar el mojón» en PC y móvil con capturas (rota con MUTAR=1 falla), y el recorrido de jugador amplía su paso 7: se arrepiente del sitio, quita el mojón, pierde el cimiento y lo vuelve a poner 30 m más allá.",
+   "GDD §11 al día con la regla final. Aviso: el avance de la lógica se subió a main por error antes de las pruebas en la nube (pasaron después); en línea, el aviso cuenta solo lo construido que tiene el navegador a la vista (el servidor lo quita todo)."
+  ],
+  "pruebas": "Batería entera, 32 grupos correctos (31 en la nube de GitHub y el grupo web repetido tras traer las capturas que faltaban); «Quitar el mojón» y «Navegador: quitar el mojón» nuevos, rotos a propósito fallan; recorrido de jugador 21/21",
+  "capturas": "capturas/demo-v100",
+  "estado": "ok"
  }
 ]

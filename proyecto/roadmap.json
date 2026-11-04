@@ -5,7 +5,7 @@
    "num": "0",
    "nombre": "Infraestructura",
    "jugable": "Repositorio en GitHub, web de progreso y trabajo automático por horas.",
-   "estado": "en_curso",
+   "estado": "hecho",
    "tareas": [
     {
      "nombre": "Repositorio, web de progreso y tarea programada",
@@ -129,10 +129,6 @@
      "estado": "hecho",
      "inicio": "2026-11-04T17:12:15+01:00",
      "fin": "2026-11-04T17:31:29+01:00"
-    },
-    {
-     "nombre": "Copia de seguridad diaria del servidor de verdad (el mundo, los objetos, las fichas y las cuentas), guardada fuera de la máquina (en el almacenamiento de Hetzner o en un repositorio privado), con las últimas 14 y una restauración probada una vez; antes de abrir el juego a nadie de fuera (auditoría del 4 nov)",
-     "estado": "pendiente"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -1164,9 +1160,9 @@
     },
     {
      "nombre": "Desmontar el mojón (valravnx, 4 nov): el dueño quita su mojón cuando quiere, por el servidor con su autor; sus obras quedan como ruina sin dueño (o las desmonta antes, al 75 %) y no puede poner otro hasta pasados unos días reales (provisional: 3), para que reclamar y soltar no sirva para bloquear a otros",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-04T19:13:07+01:00",
-     "rama": "trabajo/20261104-1910-mojon"
+     "fin": "2026-11-04T20:25:28+01:00"
     },
     {
      "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio de las tres comarcas de inicio y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
@@ -1407,7 +1403,29 @@
    "estado": "pendiente",
    "jugable": "Roles (jugador, moderador, administrador) para la cuenta de valravnx y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
    "nota": "Revisión del 1 nov con valravnx: después: registros, expulsar y herramientas de admin. El admin por la cuenta llega antes, con «Cuentas».",
-   "tareas": []
+   "tareas": [
+    {
+     "nombre": "Copia de seguridad diaria del servidor de verdad (el mundo, los objetos, las fichas y las cuentas), guardada fuera de la máquina (en el almacenamiento de Hetzner o en un repositorio privado), con las últimas 14 y una restauración probada una vez; antes de abrir el juego a nadie de fuera (auditoría del 4 nov)",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "graficos",
+   "nombre": "Perfiles gráficos y posprocesado",
+   "estado": "en_curso",
+   "lleva": "chat",
+   "jugable": "Seis perfiles gráficos, de móvil de gama baja a PC de gama alta, y el posprocesado del estilo (oclusión ambiental, gradación de color, brillo de las luces, niebla, desenfoque puntual y haces de luz), sin que ningún perfil esconda lo que importa para jugar.",
+   "nota": "Lo lleva el chat con valravnx (4 nov), aparte de los P1–P7: los carriles no lo tocan.",
+   "tareas": [
+    {
+     "nombre": "Prueba de posprocesado y seis perfiles gráficos (valravnx, 4 nov): oclusión ambiental, mapeo tonal, gradación de color, brillo moderado, niebla, desenfoque puntual y haces de luz, sobre la escena de la prueba de estilo v5, con capturas lado a lado y medida de lo que cuesta cada cosa",
+     "estado": "en_curso",
+     "inicio": "2026-11-04T20:52:31+01:00",
+     "rama": "trabajo/20261104-2100-graficos"
+    }
+   ],
+   "num": "G"
   },
   {
    "id": "tierras",
@@ -2668,6 +2686,13 @@
      "archivo": "jugar/demo/v99.html",
      "capturas": "capturas/demo-v99",
      "notas": "El mapa del rey se acerca más y, de cerca, ya no pone los nombres de las comarcas, que tapaban tu tierra; el zoom deja quieto el punto al que acercas."
+    },
+    {
+     "v": "v100",
+     "fecha": "2026-11-04",
+     "archivo": "jugar/demo/v100.html",
+     "capturas": "capturas/demo-v100",
+     "notas": "Quitar el mojón para reposicionar (valravnx, 4 nov): en Desmontar, apunta a tu mojón; se resalta en rojo lo que se perdería y el aviso dice cuántas piezas y muebles pierdes; al confirmar («Quitar el mojón»), tu tierra queda libre, lo construido en ella se pierde y puedes poner el mojón donde quieras, sin espera. El mojón de otro no se toca."
     }
    ]
   },
