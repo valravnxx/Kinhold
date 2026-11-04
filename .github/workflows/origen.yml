@@ -1,0 +1,50 @@
+# herramientas/comprobar_origen.mjs desde dos máquinas de GitHub (las sesiones no llegan al servidor del juego: su
+# proxy de salida no lo deja). La primera gasta el límite de «recuperar» con direcciones falsas en X-Forwarded-For; la
+# segunda, con otra dirección, pide una vez: si el servidor contara por la del proxy (Caddy), también saldría el límite.
+# Cada una apunta su dirección pública, para ver que de verdad son dos. Se lanza subiendo una rama
+# origen-pedido/<algo>; la borra al acabar.
+name: origen
+run-name: ${{ github.ref_name }}
+on:
+  push:
+    branches: ['origen-pedido/**']
+permissions:
+  contents: write
+jobs:
+  agotar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      ip: ${{ steps.ip.outputs.ip }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+      - id: ip
+        run: echo "ip=$(curl -s https://api.ipify.org)" | tee -a "$GITHUB_OUTPUT"
+      - run: node herramientas/comprobar_origen.mjs agotar
+  otra:
+    needs: agotar
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+      - name: Otra dirección que la primera
+        run: |
+          ip=$(curl -s https://api.ipify.org); echo "esta máquina: $ip · la que agotó: ${{ needs.agotar.outputs.ip }}"
+          [ -n "$ip" ] && [ "$ip" != "${{ needs.agotar.outputs.ip }}" ] || { echo "::error::Las dos máquinas salen con la misma dirección: no sirve"; exit 1; }
+      - run: node herramientas/comprobar_origen.mjs otra
+  limpiar:
+    needs: [agotar, otra]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Borrar la rama del pedido
+        run: git push origin --delete "${{ github.ref_name }}" || true
