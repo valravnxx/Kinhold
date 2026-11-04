@@ -6,12 +6,6 @@
   "rama": "trabajo/20261104-0924"
  },
  "B": null,
- "chat:trabajo/20261101-1630-discord-idiomas": {
-  "inicio": "2026-11-01T16:29:59+01:00",
-  "tarea": "Noticias del desarrollo en Discord en tres idiomas: en inglés en los canales comunes y en español y ruso en los suyos",
-  "hito": "infra",
-  "rama": "trabajo/20261101-1630-discord-idiomas"
- },
  "chat:trabajo/20261104-0930-mapa-tierras": {
   "inicio": "2026-11-04T09:18:49+01:00",
   "tarea": "Tu tierra es la zona entera de tu mojón (valravnx, 4 nov), un mojón por personaje; el mapa, al acercarlo, enseña las zonas de cada comarca y la tuya resaltada con su mojón",
