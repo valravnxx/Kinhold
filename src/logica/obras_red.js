@@ -30,7 +30,7 @@ export function sitioAccion(mundo, a) {
       const d = mundo.decoracion.find(x => x.id === a.id);
       return d ? { x: d.x, z: d.z } : null;
     }
-    default: return null;   // mojon, invitar, desinvitar, rellenar, sacar_arcon, dejar_arcon: de todos
+    default: return null;   // mojon, quitar_mojon, invitar, desinvitar, rellenar, sacar_arcon, dejar_arcon: de todos
   }
 }
 // La de 'colocar', ya hecha: el origen de su construcción (nueva o la que ya había).

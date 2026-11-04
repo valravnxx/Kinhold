@@ -37,6 +37,7 @@ paso "Construir a la altura del suelo y nivelar" node pruebas/prueba_nivelado.mj
 paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs
+paso "Quitar el mojón: dejar tu tierra y perder lo construido, para reposicionar" node pruebas/prueba_quitar_mojon.mjs
 paso "Inventario por huecos" node pruebas/prueba_inventario.mjs
 paso "Recoger del suelo y de las plantas" node pruebas/prueba_recoleccion.mjs
 paso "Estaciones y recetas" node pruebas/prueba_fabricacion.mjs

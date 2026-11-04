@@ -169,6 +169,23 @@ try {
   r = ramas[0] ? await recoger(ramas[0]) : { ok: false, motivo: 'no hay ramas cerca' };
   comprobar('recoge ramas caídas', r.ok && J.cuantos('rama') > 0, `${r.motivo || ''} ${J.cuantos('rama')} ramas`);
 
+  console.log('7. Se arrepiente del sitio: quita su mojón (pierde el cimiento) y lo vuelve a poner más allá');
+  {
+    // antes de quitarlo sabe lo que pierde (el aviso del juego sale de aquí)
+    const p = s.mundo.perderiaSinMojon(J.bienvenida.autor);
+    comprobar('sabe que perdería su cimiento (1 construcción, 1 pieza)', !!p && p.construcciones.length === 1 && p.piezas === 1, JSON.stringify(p && { c: p.construcciones.length, p: p.piezas }));
+    r = await J.accion({ tipo: 'quitar_mojon' });
+    comprobar('quita su mojón: dice lo perdido', r.ok, r.motivo);
+    comprobar('ya no tiene mojón y el cimiento ha desaparecido', !s.mundo.mojonDe(J.bienvenida.autor) && !s.mundo.construcciones.some(c => c.id === obra?.id), `${s.mundo.construcciones.length} construcciones`);
+    // y lo pone otra vez, 30 m más allá: el mojón se paga de lo que llevas, así que antes recoge sus 3 piedras
+    let nuevas = 0;
+    for (const p of piedras.slice(11)) { if (nuevas >= precio) break; r = await recoger(p); if (r.ok) nuevas++; }
+    comprobar(`recoge otras ${precio} piedras para el mojón nuevo`, J.cuantos('piedra') === precio, `${J.cuantos('piedra')} piedras`);
+    await J.andar(base.x + 30, base.z);
+    r = await J.accion({ tipo: 'mojon', x: base.x + 30, z: base.z });
+    comprobar('vuelve a poner su mojón 30 m más allá, sin espera, pagado con ellas', r.ok && !!s.mundo.mojonDe(J.bienvenida.autor) && J.cuantos('piedra') === 0, r.motivo);
+  }
+
   // lo que sale de aquí, en la salida (para quien lo lea en la nube)
   console.log(`\nTodavía no se puede (sin el arcón): ${Object.entries(TODAVIA_NO).map(([k, v]) => `${k} — ${v}`).join('; ')}`);
   J.ws.close();

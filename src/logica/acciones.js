@@ -55,6 +55,7 @@ export function seAbre(p) { return p.hueco === 'p' || p.hueco === 'w' || p.hueco
 
 const CAMPOS_CONSTRUCCION = {
   mojon: { x: 'n', z: 'n' },
+  quitar_mojon: {},          // destruir tu mojón: dejas tu tierra y se pierde lo construido en ella (para reposicionar)
   invitar: { a: 't' },       // dejar construir en tu tierra a otro jugador (a: su autor)
   desinvitar: { a: 't' },    // y quitárselo
   colocar: { pieza: 't', x: 'n', z: 'n', k: 'n', rot: 'n', dir: 'n' },
@@ -113,6 +114,7 @@ function devolverA(inv, devuelto) {
 function aplicarConstruccion(m, a, invs) {
   switch (a.tipo) {
     case 'mojon': return pagada(m.colocarMojon(a.x, a.z, a.autor, pagaCon(m, a, invs)), a, invs);
+    case 'quitar_mojon': return m.quitarMojon(a.autor);
     case 'invitar': return m.invitar(a.autor, a.a);
     case 'desinvitar': return m.desinvitar(a.autor, a.a);
     // se construye por obras (GDD): colocar pone el marco; luego se entregan los materiales y se trabaja

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="4081780393873192b89f91b48586854dd1722f68">
+<meta name="kinhold-origen" content="18a067d468f2d10f8ac56ba4c2dbd14334d4314d">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.9</title>
 <style>
@@ -44,6 +44,8 @@ li{margin:3px 0}
 .open{background:var(--open-bg);color:var(--open)}
 .method{background:var(--method-bg);color:var(--method)}
 .prop{background:var(--prop-bg);color:var(--prop)}
+.old{background:#e8e4dc;color:#7a7368}
+s{color:var(--muted)}
 .box{border-left:3px solid var(--line);padding:4px 0 4px 12px;margin:10px 0}
 .box.m{border-color:var(--method)}
 .box.o{border-color:var(--open)}
@@ -61,12 +63,13 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Version 0.9 · 26 Oct 2026 (31 Oct: the king's island and its city; 4 Nov: what is paid, the art direction and the warehouse with market) · Expansion for a finished game: districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
+  <div class="sub">Version 0.9 · 26 Oct 2026 (31 Oct: the king's island and its city; 4 Nov: what is paid, the art direction and the warehouse with market; 4 Nov, later, after the audit: your land is the whole zone, the king's zones, the boundary stone can be taken down, crafting without learning recipes, parity of paid items) · Expansion for a finished game: districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDED</span> you said so
     <span class="tag method">METHOD</span> how to do it technically
     <span class="tag prop">PROPOSAL</span> awaiting your approval
     <span class="tag open">OPEN</span> your call
+    <span class="tag old">SUPERSEDED</span> a later decision of yours replaces this (kept struck through, with the date)
   </p>
 </header>
 
@@ -324,7 +327,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span><b>Timber props</b> (posts and a log crossbeam) are placed like building works: frame, material and time, and several people finish sooner. Each material takes more or fewer strokes depending on its hardness and the tool. A decent mine costs time or people.</p>
 <p><span class="tag ok">DECIDED</span><b>Spoil is carried out</b> in a basket or wheelbarrow, and it is material that gets used. What each one is for (earth to fill and level, stone to build…) is decided with the recipes.</p>
 <p><span class="tag ok">DECIDED</span><b>Realistic layers and veins:</b> topsoil, clay or gravel beneath, and then each region's bedrock (limestone, sandstone, granite, slate). Surface iron is scarce and poor, and is found by signs (reddish water, waterlogged ground); the good iron is in veins inside the rock, which need a mine. Coal crops out on some slopes and is dug in shallow pits. Veins come from the world seed.</p>
-<p><span class="tag ok">DECIDED</span><b>No digging on other people's land:</b> neither inside another's boundary-stone territory nor within its exclusion radius.</p>
+<p><span class="tag ok">DECIDED</span><b>No digging on someone else's land</b> (their zone, section 11) unless its owner has invited you. <b>The king's zones</b> (valravnx, 4 Nov): zones holding a vein marked on the map, a starting site or the city <b>cannot be claimed</b>; anyone digs and gathers there. Small unmarked veins can end up inside private land (its owner and guests dig them): there is one of each per area of some 14 km, so nobody lacks one nearby.</p>
+<p><span class="tag old">SUPERSEDED · 4 Nov</span><s>nor within its exclusion radius (there is no radius any more: the land is the whole zone)</s></p>
 <div class="box m"><span class="tag method">METHOD</span>
 <ul>
   <li>«Smooth voxels»: the server only stores which small cubes were removed in each 8 × 8 × 8 m chunk of the world (a few hundred bytes per dug chunk; nothing where nobody has dug), each stroke with its author. Each client only rebuilds the mesh of the touched chunk.</li>
@@ -337,15 +341,10 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 
 <section id="progresion">
 <h2>9. Progression and technologies</h2>
-<p><span class="tag ok">DECIDED</span>Character technologies, unlocked through stations:</p>
-<ol>
-  <li>Building the station gives its basic recipes.</li>
-  <li>Practising at it opens the next ones.</li>
-  <li>Some recipes let you build new stations (that is how you advance from the Early to the Late Middle Ages).</li>
-  <li>Whoever knows a recipe can write it into a <b>tome</b> to teach it to others.</li>
-</ol>
+<p><span class="tag old">SUPERSEDED · 1 Nov</span><s>Character technologies, unlocked through stations: Building the station gives its basic recipes. Practising at it opens the next ones. Some recipes let you build new stations (that is how you advance from the Early to the Late Middle Ages). Whoever knows a recipe can write it into a <b>tome</b> to teach it to others.</s></p>
+<p><span class="tag ok">DECIDED</span><b>No learning recipes</b> (review of 1 Nov): every recipe is always visible in the crafting panel (what you can make now at the top, what you almost can below it with what is missing in red, and greyed out what opens later). You craft <b>anywhere</b>, with what you carry and what lies on the ground next to you. Stations are not levels but <b>tools by use</b> (the campfire cooks, the log bench works wood, the anvil works iron): a recipe asks for the station it really needs, and you advance from the Early to the Late Middle Ages by building the stations that earlier recipes allow. Recipe tomes are dropped.</p>
 <p><span class="tag ok">DECIDED</span>No forced specialisations; the limit is play time.</p>
-<p><span class="tag ok">DECIDED</span>Durability on tools, weapons and armour. They are <b>repaired at the station that made them, with material of the same type.</b> No item quality tiers.</p>
+<p><span class="tag ok">DECIDED</span>Durability on tools, weapons and armour. They are <b>repaired where they are made</b> (at the same station, if the recipe needs one), <b>with material of the same kind.</b> No item qualities.</p>
 </section>
 
 <section id="construccion">
@@ -394,15 +393,21 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 
 <section id="tierras">
 <h2>11. Lands and boundary stones</h2>
-<p><span class="tag ok">DECIDED</span>Land is claimed with a boundary stone placed in person. You can claim a mountain pass, a bridge or a ford and charge a toll: whoever does not want to pay can find another way.</p>
+<p><span class="tag ok">DECIDED</span><b>Your land is the whole zone</b> (valravnx, 4 Nov): it is claimed with <b>one boundary stone per character</b>, placed in person (on the mainland up to three more in total, once you get there by boat; valravnx, 31 Oct), and your land is the <b>whole zone</b> of the district where you place it (about 1.2 km²): one zone, one owner. You can claim the zone of a mountain pass, a bridge or a ford and charge a toll: whoever will not pay can look for another way. <b>The king's zones</b> (marked vein, starting site, city; section 8) cannot be claimed.</p>
 <p><span class="tag ok">DECIDED</span>No waiting period for new accounts: everyone must be able to settle soon.</p>
-<p><span class="tag ok">DECIDED</span><b>Exclusion radius:</b> if a house is settled within a certain distance, you cannot settle there, even if your plot is small. The radius grows with the boundary stone's level. People from the same family can settle inside the radius if the boundary stone allows it in its options.</p>
-<p><span class="tag ok">DECIDED</span><b>Conquest:</b> you conquer by destroying the enemy's boundary stones. If you have a high-level territory, its surroundings count as your land, so when the nearby enemy boundary stones are removed that land becomes yours.</p>
-<p><span class="tag ok">DECIDED</span><b>Boundary stone level:</b> it rises by depositing materials of the corresponding technology level. The higher the level, the larger the exclusion radius and the territory.</p>
+<p><span class="tag old">SUPERSEDED · 4 Nov</span><s><b>Exclusion radius:</b> if a house is settled within a certain distance, you cannot settle there, even if your plot is small. The radius grows with the boundary stone's level. People from the same family can settle inside the radius if the boundary stone allows it in its options.</s></p>
+<p><span class="tag ok">DECIDED</span>The zone is the radius: nobody settles in a zone that has an owner, except whoever the owner <b>invites</b> (they can invite anyone standing next to them to build and use what is on their land, and withdraw it whenever they like). The family permissions of section 17 still apply.</p>
+<p><span class="tag ok">DECIDED</span><b>Conquest:</b> you conquer by <b>toppling the enemy's boundary stone</b> (with siege gear, at war or while their offline protection is not active). The zone becomes free and its buildings ownerless, like those of expired land, until someone places their stone there: then they are theirs (and whoever already has a stone cannot place another without first taking theirs down).</p>
+<p><span class="tag old">SUPERSEDED · 4 Nov</span><s><b>Conquest:</b> you conquer by destroying the enemy's boundary stones. If you have a high-level territory, its surroundings count as your land, so when the nearby enemy boundary stones are removed that land becomes yours.</s></p>
+<p><span class="tag old">SUPERSEDED · 4 Nov</span><s><b>Boundary stone level:</b> it rises by depositing materials of the corresponding technology level. The higher the level, the larger the exclusion radius and the territory.</s></p>
+<p><span class="tag ok">DECIDED</span>The boundary stone <b>has no levels</b>: the land is the zone, whatever you have built. It is still where upkeep materials are deposited (section 10).</p>
+<p><span class="tag ok">DECIDED</span><b>Taking the stone down</b> (valravnx, 4 Nov): the owner can remove their stone whenever they like; whatever they built is left as an ownerless ruin (or they dismantle it first, at 75 %), and they cannot place another until some real days have passed (provisional: 3; tuned by playing), so that claiming and releasing cannot be used to block others.</p>
+<p><span class="tag ok">DECIDED</span><b>Unused land returns to the king</b> (valravnx, 4 Nov): 30 days without the owner or their guests entering (15 if there is no finished building), with an email warning a week before and on the last day. Its buildings are left as a ruin others can dismantle.</p>
+<p><span class="tag ok">DECIDED</span><b>Starting districts</b> (valravnx, 4 Nov): personal land is claimed in all three (Motdale, Breiddal and Strandvang). Strandvang is the king's and no clan takes it; <b>Motdale and Breiddal are taken by clans like the rest</b>, fights included.</p>
 <p><span class="tag ok">DECIDED</span>Access to doors and chests through <b>family permissions</b>.</p>
 <h3>Districts, zones and clans</h3>
 <p><span class="tag ok">DECIDED</span><b>Separate from the boundary stone</b> (valravnx, 30 Oct): the boundary stone is still what covers your home and what you build (upkeep, protection, exclusion radius). Clan matters go separately, with the districts and their zones. Here “clan” means the family of section 17.</p>
-<p><span class="tag ok">DECIDED</span><b>Zones:</b> every district is divided into fixed zones of roughly 1 km² (room for a castle), with natural, curved borders. Any clan can take a zone by raising its castle and placing in it the <b>centre</b>, a piece of its own, different from the boundary stone. The zone shows on the map with its banner and its name. If they look too small on the map, they are made bigger.</p>
+<p><span class="tag ok">DECIDED</span><b>Zones:</b> every district is divided into fixed zones of roughly 1 km² (room for a castle), with natural, curved borders. Any clan can take a zone by raising its castle and placing in it the <b>centre</b>, a piece of its own, different from the boundary stone. The zone shows on the map with its banner and its name. If they look too small on the map, they are made bigger. <b>A clan only takes free zones</b> (valravnx, 4 Nov): if the zone is already a player's land, only by toppling their stone at war; or the owner joins the clan and brings it in.</p>
 <p><span class="tag ok">DECIDED</span><b>Taking a whole district:</b> the centre is also what gives the district. The clan that holds it is its lord, and the district shows on the map with its banner. The castle can go anywhere in the district.</p>
 <p><span class="tag ok">DECIDED</span><b>Vassals:</b> a clan that takes a zone in a district that already has a lord becomes a vassal of the main clan. It still rules its zone (its castle, its doors and its permissions).</p>
 <p><span class="tag ok">DECIDED</span><b>Rent:</b> the work done in the district gives the lord rent, without taking anything from whoever does it: whoever fells a hundred logs keeps their hundred, as anywhere else. The rent is not items (logs have to be processed and carried): it arrives as <b>coin</b> at the centre, and the clan spends it with NPCs (mercenaries, wandering traders, upkeep…). That way the lord is better off with many people working in the district, small groups included, instead of harassing them.</p>
@@ -418,17 +423,10 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li><b>How many zones:</b> a clan can only hold a few, more the higher the level of its centre.</li>
   <li><b>Abandonment:</b> a centre without upkeep ends up freeing its zone and, if it is the lord's, the district.</li>
 </ul></div>
-<div class="box p"><span class="tag prop">PROPOSAL</span> Rules kept from v0.3:
-<ul>
-  <li>Land grows with what is built on it, not with the number of accounts.</li>
-  <li>Land with no activity or upkeep eventually becomes free.</li>
-  <li>Boundary stones: <b>one per character on Whitholm</b>, and on the continent up to three more in all, once it is reached by ship (valravnx, 31 Oct).</li>
-  <li>Important veins cannot be hoarded entirely.</li>
-  <li>No claims near the starting areas.</li>
-</ul></div>
+<div class="box m"><span class="tag method">METHOD</span> The rules carried over from v0.3 were settled on 4 Nov: land does not grow with what is built (it is the whole zone); unused land returns to the king (above); one boundary stone per character (31 Oct); marked veins lie in the king's zones (section 8); and the starting areas can be claimed as personal land.</div>
 <div class="box m"><span class="tag method">METHOD</span>
 <p>The boundary stone is the key piece of each land: it can be attacked with siege equipment only when offline protection is not active or war has been declared.</p></div>
-<p><span class="tag ok">DECIDED</span>When a boundary stone falls, its buildings <b>pass to the conqueror if they lie within their territory</b>; if not, they remain ownerless until someone places their own boundary stone.</p>
+<p><span class="tag old">SUPERSEDED · 4 Nov</span><s>When a boundary stone falls, its buildings <b>pass to the conqueror if they lie within their territory</b>; if not, they remain ownerless until someone places their own boundary stone.</s></p> <span class="note">Now: the zone becomes free and the buildings ownerless until someone places their stone there (conquest, above).</span>
 </section>
 
 <section id="offline">
@@ -438,14 +436,14 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span>The problem to solve: declaring war must not become the easy way to raid offline.</p>
 <div class="box p"><span class="tag prop">PROPOSAL</span> How a war is declared:
 <ul>
-  <li><b>Only with a cause:</b> non-payment of a vassalage (what you already decided) or a war accepted by both sides. Without a cause, there is no war and offline protection stays.</li>
+  <li><b>Only with a cause:</b> non-payment of a vassalage (what you already decided) or a war accepted by both sides. Without a cause, there is no war and offline protection stays. <span class="tag old">SUPERSEDED · 30 Oct</span> Non-payment no longer exists with district vassalage (the rent reaches the centre by itself): which causes remain is the question in section 21, for the meeting after P3.</li>
   <li><b>Advance notice:</b> the war starts some time after it is declared (for example, 24 real hours), and the attacked family is notified. This gives time to log in, pay what is owed or prepare the defence.</li>
   <li><b>Paying what is owed stops the war</b> before it starts.</li>
   <li><b>Limited duration</b> and, when it ends, a period during which war cannot be declared again on the same family.</li>
 </ul>
 <p>That way, war only exists when someone has accepted a vassalage and not paid it, or when both want to fight.</p>
 </div>
-<p><span class="tag ok">DECIDED</span>War rules approved: <b>war requires a casus belli.</b></p>
+<p><span class="tag ok">DECIDED</span>War rules approved: <b>war requires a casus belli.</b> Which one is pending (section 21).</p>
 </section>
 
 <section id="combate">
@@ -597,6 +595,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Paid clothing is <b>dyed</b> like any other; <b>colours are not paid</b>: they come from the game's dyes (section 7), which remain a reason to trade.</li>
   <li>Paid beds and furniture: <b>another look of the same level</b> as theirs, with the same comfort.</li>
   <li>Paid heraldry: shapes and pieces for the coat of arms editor, which still belongs to every family.</li>
+  <li><b>Full parity</b> (4 Nov, after the audit): a paid garment or armour <b>reads as the same layer and the same material</b> as its equivalent (no looking like leather while wearing mail); architecture and decoration variants have <b>the same collision geometry and the same openings</b>, and no paid decoration hides anything the free kind could not hide just as well.</li>
+  <li>Each pack's page warns that what is crafted with it can be lost, stolen or broken like any other item.</li>
 </ul>
 <div class="box o"><span class="tag open">OPEN</span> About recipes with limited uses: how many crafts each one gives (50 was mentioned only as an example), what counts as a use, whether they can be recharged and how, and which categories have a limit.</div>
 <h3>Crafting, eating and fishing</h3>
@@ -605,9 +605,9 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span><b>Fish</b> by water, climate band, time of day and season, in varying sizes. Rivers: trout, salmon (north, runs upriver in autumn), grayling, barbel, eel, tench, nase. Lakes: pike, perch, carp. Sea: herring and cod (north), sea bass, mackerel, sardine, gilt-head bream, red sea bream. Shore: mussel, oyster, crab, limpet. Rod fishing is skill-based (reeling in without snapping the line). Butchering: cleaned fish, bones and scales; preserved dried, smoked or salted. (Milestone 7)</p>
 <h3>Living together online and dominion</h3>
 <p><span class="tag ok">DECIDED</span><b>Newcomer protection:</b> nobody can hurt them, nor can they hurt anyone, during their first hours of play or until they place their boundary stone, whichever comes first. (Milestone 12)</p>
-<p><span class="tag ok">DECIDED</span><b>Against harassment:</b> anything built outside claimed land decays very quickly, and nobody can build within a certain distance of someone else's boundary stone. (Milestone 13)</p>
+<p><span class="tag ok">DECIDED</span><b>Against harassment:</b> anything built outside claimed land decays very fast, and nobody builds in someone else's zone without their invitation (section 11). (Milestone 13)</p>
 <p><span class="tag ok">DECIDED</span><b>Trade window:</b> each side puts in their goods and both confirm; nothing changes hands until both accept. (Milestone 14)</p>
-<p><span class="tag ok">DECIDED</span><b>Ruling a district:</b> the family with the highest-level boundary stone in a district rules it; its coat of arms appears over it on maps and it can rename it. It loses it if another family overtakes it or knocks down its stone. <b>Titles</b> by what is ruled: lord, baron, count, king of a country. (Milestone 13)</p>
+<p><span class="tag old">SUPERSEDED · 30 Oct</span><s><b>Ruling a district:</b> the family with the highest-level boundary stone in a district rules it; its coat of arms appears over it on maps and it can rename it. It loses it if another family overtakes it or knocks down its stone. <b>Titles</b> by what is ruled: lord, baron, count, king of a country. (Milestone 13)</s></p> <span class="note">The district is now granted by the clan's centre (section 11); the titles stay.</span>
 <p><span class="tag ok">DECIDED</span><b>Named settlements:</b> when placing a boundary stone the settlement is given a name; it is the one shown on the map and the one messengers are sent to. (Milestone 13)</p>
 <p><span class="tag ok">DECIDED</span><b>The map as a game board</b>: on the king's map (Whitholm) and on explored ground and cartographer's maps (the continent) you see the families' coats of arms over their lands and districts, in green, blue or red (yours, ally, enemy), with alerts for fighting on your lands and for boundary stones whose upkeep is about to run out. No fast travel. (Milestones 13 and 17)</p>
 <h3>Technical and production</h3>
@@ -628,8 +628,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h2>21. Open questions</h2>
 <p>The server cost will be measured with 100 simulated players in milestone 1f. Open since 30 Oct, with the clan districts:</p>
 <ul>
-  <li><b>War between clans</b> required a cause: an unpaid vassalage. With district vassalage there is no payment to miss: what causes are left? Does besieging a centre in its window require a declared war?</li>
-  <li><b>The starting districts</b> (Motdale, Breiddal and Strandvang): can they be taken? The v0.3 proposal says no claims near the starting areas.</li>
+  <li><b>War between clans</b> required a cause: an unpaid vassalage. With district vassalage there is no payment to miss: what causes are left? Does besieging a centre in its window require a declared war? For the meeting after P3.</li>
+  <li><s>Can the starting districts be taken?</s> Settled on 4 Nov (section 11): Motdale and Breiddal yes; Strandvang is the king's.</li>
 </ul>
 </section>
 </div>

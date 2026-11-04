@@ -6,6 +6,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 4 nov 2026 (16:31–17:00 UTC+1) — por el chat: la auditoría global y sus decisiones
+valravnx encargó una auditoría global e independiente del proyecto (informe fuera del repositorio) y pidió «emplea la auditoría para arreglar problemas de roadmap y de gdd, corrige el gdd y pregúntame cualquier duda crítica». Sus respuestas a las cuatro dudas críticas:
+- **Zonas del rey**: las zonas con una veta marcada en el mapa, un sitio de salida o la ciudad no se reclaman; en ellas cava y recoge cualquiera. Las vetas pequeñas sin marcar sí pueden quedar dentro de tierras privadas.
+- **El mojón se puede desmontar** por su dueño, con espera: sus obras quedan como ruina sin dueño (o las desmonta antes al 75 %) y no puede poner otro hasta pasados unos días reales (provisional: 3).
+- **Comarcas de inicio**: Motdale y Breiddal las toman los clanes como las demás; Strandvang es del rey. La tierra personal se reclama en las tres (responde la decisión pendiente del 30 oct).
+- **Clan y tierra personal**: un clan solo toma zonas libres; si la zona ya es de un jugador, solo tirándole el mojón en guerra, o el dueño se une al clan y la aporta.
+Hecho con ello: GDD (§8, §9, §11, §12, §20, §21) y documento de sistemas (§2, §10, §11) al día en los tres idiomas, con lo derogado tachado y fechado (etiqueta nueva DEROGADO); roadmap: en P1 comprobar la dirección tras el proxy en la máquina real; en P2 el movimiento sin trampas, las zonas del rey y desmontar el mojón; en P3 la tarea del GDD recortada y la primera; en P6 compactar el registro del mundo; en infraestructura la copia de seguridad diaria; la decisión de la guerra queda para la reunión tras P3 con las dos opciones escritas. Lo que la auditoría deja como opcional (archivo de «lo que sabemos que está mal», lista de comprobación manual en línea, versión del generador del mundo, contadores) no se ha convertido en tareas.
+
 ### 4 nov 2026 (14:06 UTC+1) — por el chat: el mapa de cerca
 valravnx, con una captura del móvil: «al ampliar el nombre te tapa la vista, yo permitiría ampliar más y a partir de este punto no mostraría el nombre de la comarca». → Hecho en la demo v99: se acerca hasta 150 px por km y de cerca no salen los nombres de las comarcas.
 

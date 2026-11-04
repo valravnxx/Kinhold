@@ -163,6 +163,31 @@ export class Mundo {
     this.mojones[dueno(autor)] = m;
     return { ok: true, mojon: { ...m } };
   }
+  // Lo que se perdería al quitar el mojón (valravnx, 4 nov: «destruir el mojón y con ello dejar tu territorio, que
+  // avise que se perderán cualquier construcción, para poder reposicionar»): las construcciones (con sus piezas y
+  // obras) y los muebles de su tierra. Lo mira también el navegador para el aviso antes de confirmar.
+  perderiaSinMojon(autor) {
+    const yo = dueno(autor);
+    if (!this.mojonDe(yo)) return null;
+    const construcciones = this.construcciones.filter(c => this.tierraDe(c.ox, c.oz) === yo);
+    const muebles = this.decoracion.filter(d => this.tierraDe(d.x, d.z) === yo);
+    return { construcciones, muebles, piezas: construcciones.reduce((n, c) => n + c.piezas.size, 0) };
+  }
+  // Quita el mojón del autor: deja su tierra libre y se pierde todo lo construido en ella (nada se devuelve: quien
+  // quiera recuperar el 75 % lo desmonta antes). Los invitados dejan de serlo. Sin espera para volver a ponerlo (para
+  // poder reposicionar; si se usara para bloquear a otros, se pondría una espera). Lo nivelado se queda (la tierra
+  // movida no vuelve sola) y lo del suelo (troncos, piedras) no es construcción y sigue ahí.
+  quitarMojon(autor) {
+    const yo = dueno(autor);
+    const p = this.perderiaSinMojon(yo);
+    if (!p) return { ok: false, motivo: 'No tienes mojón.' };
+    const fuera = new Set(p.construcciones), fueraM = new Set(p.muebles);
+    this.construcciones = this.construcciones.filter(c => !fuera.has(c));
+    this.decoracion = this.decoracion.filter(d => !fueraM.has(d));
+    delete this.mojones[yo];
+    delete this.invitados[yo];
+    return { ok: true, perdidas: { construcciones: p.construcciones.length, piezas: p.piezas, muebles: p.muebles.length } };
+  }
   // de quién es la tierra en (x, z): el autor, o null si no es de nadie
   tierraDe(x, z) {
     if (zonaDeSitio) return this.duenoDeZona(zonaDeSitio(x, z));

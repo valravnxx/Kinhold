@@ -43,6 +43,8 @@ li{margin:3px 0}
 .open{background:var(--open-bg);color:var(--open)}
 .method{background:var(--method-bg);color:var(--method)}
 .prop{background:var(--prop-bg);color:var(--prop)}
+.old{background:#e8e4dc;color:#7a7368}
+s{color:var(--muted)}
 .box{border-left:3px solid var(--line);padding:4px 0 4px 12px;margin:10px 0}
 .box.m{border-color:var(--method)}
 .box.o{border-color:var(--open)}
@@ -60,12 +62,13 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Versión 0.9 · 26 oct 2026 (31 oct: la isla del rey y su ciudad; 4 nov: lo de pago, la dirección gráfica y el almacén con mercado) · Ampliación para un juego acabado: comarcas, transporte, ropa tejida y convivencia online · El catálogo de contenido sigue en el documento de análisis</div>
+  <div class="sub">Versión 0.9 · 26 oct 2026 (31 oct: la isla del rey y su ciudad; 4 nov: lo de pago, la dirección gráfica y el almacén con mercado; 4 nov, tarde, tras la auditoría: tu tierra es la zona entera, zonas del rey, el mojón se desmonta, fabricar sin aprender recetas, paridad de lo de pago) · Ampliación para un juego acabado: comarcas, transporte, ropa tejida y convivencia online · El catálogo de contenido sigue en el documento de análisis</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDIDO</span> lo has dicho tú
     <span class="tag method">MÉTODO</span> cómo hacerlo técnicamente
     <span class="tag prop">PROPUESTA</span> pendiente de tu visto bueno
     <span class="tag open">ABIERTO</span> te toca decidir
+    <span class="tag old">DEROGADO</span> lo que decidiste después cambia esto (queda tachado, con la fecha)
   </p>
 </header>
 
@@ -323,7 +326,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span>Los <b>entibos</b> (postes y travesaño de troncos) se ponen como las obras de construcción: marco, material y tiempo, y entre varios se acaba antes. Cada material pide más o menos golpes según su dureza y la herramienta. Una mina decente cuesta tiempo o gente.</p>
 <p><span class="tag ok">DECIDIDO</span><b>El escombro se saca</b> en cesto o carretilla, y es material que se usa. Para qué sirve cada uno (tierra para rellenar y nivelar, piedra para construir…) se decide con las recetas.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Capas y vetas realistas:</b> tierra vegetal, debajo arcilla o grava, y luego la roca madre de cada región (caliza, arenisca, granito, pizarra). El hierro de superficie es poco y malo, y se encuentra por señales (agua rojiza, tierra encharcada); el bueno está en vetas dentro de la roca, que piden mina. El carbón aflora en algunas laderas y se saca en pozos poco hondos. Las vetas salen de la semilla del mundo.</p>
-<p><span class="tag ok">DECIDIDO</span><b>No se cava en tierra ajena:</b> ni dentro del territorio de un mojón ajeno ni en su radio de exclusión.</p>
+<p><span class="tag ok">DECIDIDO</span><b>No se cava en tierra ajena</b> (la zona de otro, apartado 11) sin que su dueño te haya invitado. <b>Zonas del rey</b> (valravnx, 4 nov): las zonas con una veta marcada en el mapa, con un sitio de salida o con la ciudad <b>no se reclaman</b>; en ellas cava y recoge cualquiera. Las vetas pequeñas sin marcar sí pueden quedar dentro de una tierra privada (las cava su dueño y sus invitados): hay una de cada por zona de unos 14 km, así que a nadie le faltan cerca.</p>
+<p><span class="tag old">DEROGADO · 4 nov</span><s>ni en su radio de exclusión (ya no hay radio: la tierra es la zona entera)</s></p>
 <div class="box m"><span class="tag method">MÉTODO</span>
 <ul>
   <li>«Vóxeles suavizados»: el servidor guarda solo qué cubitos se han quitado en cada trozo del mundo de 8 × 8 × 8 m (unos cientos de bytes por trozo excavado; nada donde no ha cavado nadie), cada golpe con su autor. Cada cliente rehace solo la malla del trozo tocado.</li>
@@ -336,15 +340,10 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 
 <section id="progresion">
 <h2>9. Progresión y tecnologías</h2>
-<p><span class="tag ok">DECIDIDO</span>Tecnologías del personaje, desbloqueadas por estaciones:</p>
-<ol>
-  <li>Construir la estación da sus recetas básicas.</li>
-  <li>Practicar en ella abre las siguientes.</li>
-  <li>Algunas recetas permiten construir estaciones nuevas (así se avanza de la Alta a la Baja Edad Media).</li>
-  <li>Quien conoce una receta puede escribirla en un <b>tomo</b> para enseñarla a otros.</li>
-</ol>
+<p><span class="tag old">DEROGADO · 1 nov</span><s>Tecnologías del personaje, desbloqueadas por estaciones: Construir la estación da sus recetas básicas. Practicar en ella abre las siguientes. Algunas recetas permiten construir estaciones nuevas (así se avanza de la Alta a la Baja Edad Media). Quien conoce una receta puede escribirla en un <b>tomo</b> para enseñarla a otros.</s></p>
+<p><span class="tag ok">DECIDIDO</span><b>Sin aprender recetas</b> (revisión del 1 nov): todas las recetas están siempre a la vista en el panel de fabricación (arriba lo que puedes hacer ya, debajo lo que casi, con lo que falta en rojo, y en gris lo que se abre después). Se fabrica <b>en cualquier sitio</b>, con lo que llevas y lo que hay en el suelo a tu lado. Las estaciones no son niveles sino <b>herramientas por uso</b> (la hoguera cuece, el banco de tronco trabaja la madera, el yunque el hierro): una receta pide la estación que de verdad hace falta, y se avanza de la Alta a la Baja Edad Media construyendo las estaciones que permiten las recetas de antes. Los tomos de recetas se retiran.</p>
 <p><span class="tag ok">DECIDIDO</span>Sin especializaciones forzosas; el límite es el tiempo de juego.</p>
-<p><span class="tag ok">DECIDIDO</span>Durabilidad en herramientas, armas y armaduras. Se <b>reparan en la estación que las fabricó, con material del mismo tipo.</b> Sin calidades de objetos.</p>
+<p><span class="tag ok">DECIDIDO</span>Durabilidad en herramientas, armas y armaduras. Se <b>reparan donde se fabrican</b> (con la misma estación, si la receta la pide), <b>con material del mismo tipo.</b> Sin calidades de objetos.</p>
 </section>
 
 <section id="construccion">
@@ -393,15 +392,21 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 
 <section id="tierras">
 <h2>11. Tierras y mojones</h2>
-<p><span class="tag ok">DECIDIDO</span>Se reclama con un mojón puesto en persona. Se puede reclamar un paso de montaña, un puente o un vado y cobrar peaje: quien no quiera pagar, que busque otro camino.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Tu tierra es la zona entera</b> (valravnx, 4 nov): se reclama con <b>un mojón por personaje</b>, puesto en persona (en el continente, hasta tres más en total, cuando se llegue en barco; valravnx, 31 oct), y tu tierra es la <b>zona entera</b> de la comarca donde lo pones (unas 1,2 km²): una zona, un dueño. Se puede reclamar la zona de un paso de montaña, un puente o un vado y cobrar peaje: quien no quiera pagar, que busque otro camino. Las <b>zonas del rey</b> (veta marcada, sitio de salida, ciudad; apartado 8) no se reclaman.</p>
 <p><span class="tag ok">DECIDIDO</span>Sin periodo de espera para cuentas nuevas: todo el mundo debe poder instalarse pronto.</p>
-<p><span class="tag ok">DECIDIDO</span><b>Radio de exclusión:</b> si hay una casa instalada a cierta distancia, no puedes instalarte ahí, aunque tu terreno sea pequeño. El radio crece con el nivel del mojón. La gente de la misma familia sí puede instalarse dentro del radio si el mojón lo permite en sus opciones.</p>
-<p><span class="tag ok">DECIDIDO</span><b>Conquista:</b> se conquista destruyendo los mojones del enemigo. Si tienes un territorio de nivel alto, sus alrededores cuentan como tierra tuya, así que al quitar los mojones enemigos cercanos esa tierra pasa a ser tuya.</p>
-<p><span class="tag ok">DECIDIDO</span><b>Nivel del mojón:</b> sube depositando materiales del nivel tecnológico correspondiente. Cuanto más alto el nivel, mayor el radio de exclusión y el territorio.</p>
+<p><span class="tag old">DEROGADO · 4 nov</span><s><b>Radio de exclusión:</b> si hay una casa instalada a cierta distancia, no puedes instalarte ahí, aunque tu terreno sea pequeño. El radio crece con el nivel del mojón. La gente de la misma familia sí puede instalarse dentro del radio si el mojón lo permite en sus opciones.</s></p>
+<p><span class="tag ok">DECIDIDO</span>La zona hace de radio: nadie se instala en una zona con dueño, salvo a quien el dueño <b>invita</b> (puede invitar a quien tenga al lado a construir y usar lo de su tierra, y quitárselo cuando quiera). Los permisos de familia del apartado 17 siguen valiendo.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Conquista:</b> se conquista <b>tirando el mojón</b> del enemigo (con equipo de asedio, en guerra o cuando su protección offline no está activa). La zona queda libre y sus obras sin dueño, como las de una tierra caducada, hasta que alguien ponga allí su mojón: entonces son suyas (y el que ya tiene mojón no puede poner otro sin quitar antes el suyo).</p>
+<p><span class="tag old">DEROGADO · 4 nov</span><s><b>Conquista:</b> se conquista destruyendo los mojones del enemigo. Si tienes un territorio de nivel alto, sus alrededores cuentan como tierra tuya, así que al quitar los mojones enemigos cercanos esa tierra pasa a ser tuya.</s></p>
+<p><span class="tag old">DEROGADO · 4 nov</span><s><b>Nivel del mojón:</b> sube depositando materiales del nivel tecnológico correspondiente. Cuanto más alto el nivel, mayor el radio de exclusión y el territorio.</s></p>
+<p><span class="tag ok">DECIDIDO</span>El mojón <b>no tiene niveles</b>: la tierra es la zona, sea lo que sea lo que hayas construido. Sigue siendo donde se depositan los materiales de mantenimiento (apartado 10).</p>
+<p><span class="tag ok">DECIDIDO</span><b>Desmontar el mojón</b> (valravnx, 4 nov): el dueño puede quitar su mojón cuando quiera; lo que tenga construido queda como ruina sin dueño (o lo desmonta antes, al 75 %), y no puede poner otro hasta pasados unos días reales (provisional: 3; se ajusta jugando), para que reclamar y soltar no sirva para bloquear a otros.</p>
+<p><span class="tag ok">DECIDIDO</span><b>La tierra vuelve al rey si no se usa</b> (valravnx, 4 nov): 30 días sin entrar el dueño ni sus invitados (15 si no tiene ninguna obra terminada), con aviso por correo una semana antes y el último día. Sus obras quedan como ruina que otros pueden desmontar.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Comarcas de inicio</b> (valravnx, 4 nov): la tierra personal se reclama en las tres (Motdale, Breiddal y Strandvang). Strandvang es del rey y ningún clan la toma; <b>Motdale y Breiddal las toman los clanes como las demás</b>, con sus peleas.</p>
 <p><span class="tag ok">DECIDIDO</span>Acceso a puertas y arcones por <b>permisos de familia</b>.</p>
 <h3>Comarcas, zonas y clanes</h3>
 <p><span class="tag ok">DECIDIDO</span><b>Aparte del mojón</b> (valravnx, 30 oct): el mojón sigue siendo lo de tu casa y lo que construyes (mantenimiento, protección, radio de exclusión). Lo de los clanes va aparte, con las comarcas y sus zonas. Aquí «clan» es la familia del apartado 17.</p>
-<p><span class="tag ok">DECIDIDO</span><b>Zonas:</b> cada comarca se divide en zonas fijas de aproximadamente 1 km² (donde cabe un castillo), con bordes naturales y en curva. Cualquier clan puede tomar una zona levantando su castillo y poniendo en él el <b>centro</b>, una pieza propia, distinta del mojón. La zona sale en el mapa con su estandarte y su nombre. Si en el mapa se ven pequeñas, se amplían.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Zonas:</b> cada comarca se divide en zonas fijas de aproximadamente 1 km² (donde cabe un castillo), con bordes naturales y en curva. Cualquier clan puede tomar una zona levantando su castillo y poniendo en él el <b>centro</b>, una pieza propia, distinta del mojón. La zona sale en el mapa con su estandarte y su nombre. Si en el mapa se ven pequeñas, se amplían. <b>Un clan solo toma zonas libres</b> (valravnx, 4 nov): si la zona ya es la tierra de un jugador, solo tirándole el mojón en guerra; o el dueño se une al clan y la aporta.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Tomar una comarca entera:</b> el centro es también lo que da la comarca. El clan que la tiene es su señor, y la comarca sale en el mapa con su estandarte. El castillo puede ir en cualquier sitio de la comarca.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Vasallos:</b> un clan que toma una zona en una comarca que ya tiene señor pasa a ser vasallo del clan principal. Sigue mandando en su zona (su castillo, sus puertas y sus permisos).</p>
 <p><span class="tag ok">DECIDIDO</span><b>Renta:</b> lo que se trabaja en la comarca le da renta al señor, sin quitarle nada a quien trabaja: quien tala cien troncos se queda sus cien, igual que en cualquier otro sitio. La renta no son objetos (los troncos hay que procesarlos y llevarlos): llega en <b>moneda</b> al centro, y el clan la gasta con los NPCs (mercenarios, ambulantes, mantenimiento…). Así al señor le conviene que en su comarca trabaje mucha gente, también los grupos pequeños, en vez de acosarlos.</p>
@@ -417,17 +422,10 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li><b>Cuántas zonas:</b> un clan solo puede tener unas pocas, más cuanto más nivel tenga su centro.</li>
   <li><b>Abandono:</b> un centro sin mantenimiento acaba dejando libre su zona y, si es el del señor, la comarca.</li>
 </ul></div>
-<div class="box p"><span class="tag prop">PROPUESTA</span> Reglas que se mantienen de la v0.3:
-<ul>
-  <li>La tierra crece con lo construido dentro, no con el número de cuentas.</li>
-  <li>Una tierra sin actividad ni mantenimiento acaba quedando libre.</li>
-  <li>Mojones: <b>uno por personaje en Whitholm</b>, y en el continente hasta tres más en total, cuando se llegue en barco (valravnx, 31 oct).</li>
-  <li>Las vetas importantes no se pueden acaparar enteras.</li>
-  <li>Nada de reclamaciones cerca de las zonas de inicio.</li>
-</ul></div>
+<div class="box m"><span class="tag method">MÉTODO</span> Las reglas que venían de la v0.3 quedaron resueltas el 4 nov: la tierra no crece con lo construido (es la zona entera); la tierra sin uso vuelve al rey (arriba); un mojón por personaje (31 oct); las vetas marcadas están en zonas del rey (apartado 8); y las zonas de inicio sí se reclaman como tierra personal.</div>
 <div class="box m"><span class="tag method">MÉTODO</span>
 <p>El mojón es la pieza clave de cada tierra: se puede atacar con equipo de asedio solo cuando la protección offline no está activa o hay guerra declarada.</p></div>
-<p><span class="tag ok">DECIDIDO</span>Al caer un mojón, sus construcciones <b>pasan al conquistador si quedan dentro de su territorio</b>; si no, quedan sin dueño hasta que alguien ponga su propio mojón.</p>
+<p><span class="tag old">DEROGADO · 4 nov</span><s>Al caer un mojón, sus construcciones <b>pasan al conquistador si quedan dentro de su territorio</b>; si no, quedan sin dueño hasta que alguien ponga su propio mojón.</s></p> <span class="note">Ahora: la zona queda libre y las obras sin dueño hasta que alguien ponga allí su mojón (conquista, arriba).</span>
 </section>
 
 <section id="offline">
@@ -437,14 +435,14 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span>El problema a resolver: que declarar la guerra no se convierta en la forma fácil de saquear offline.</p>
 <div class="box p"><span class="tag prop">PROPUESTA</span> Cómo se declara una guerra:
 <ul>
-  <li><b>Solo con causa:</b> impago de un vasallaje (lo que ya decidiste) o guerra aceptada por las dos partes. Sin causa, no hay guerra y la protección offline sigue.</li>
+  <li><b>Solo con causa:</b> impago de un vasallaje (lo que ya decidiste) o guerra aceptada por las dos partes. Sin causa, no hay guerra y la protección offline sigue. <span class="tag old">DEROGADO · 30 oct</span> El impago ya no existe con el vasallaje de comarca (la renta llega sola al centro): qué causas quedan es la pregunta del apartado 21, para la reunión tras P3.</li>
   <li><b>Aviso previo:</b> la guerra empieza un tiempo después de declararla (por ejemplo, 24 horas reales), y la familia atacada recibe aviso. Da tiempo a conectarse, pagar lo debido o preparar la defensa.</li>
   <li><b>Pagar lo debido detiene la guerra</b> antes de que empiece.</li>
   <li><b>Duración limitada</b> y, al terminar, un periodo sin poder volver a declararla a la misma familia.</li>
 </ul>
 <p>Así la guerra solo existe cuando alguien ha aceptado un vasallaje y no lo ha pagado, o cuando ambos quieren pelear.</p>
 </div>
-<p><span class="tag ok">DECIDIDO</span>Reglas de guerra aprobadas: <b>la guerra exige casus belli.</b></p>
+<p><span class="tag ok">DECIDIDO</span>Reglas de guerra aprobadas: <b>la guerra exige casus belli.</b> Cuál, pendiente (apartado 21).</p>
 </section>
 
 <section id="combate">
@@ -596,6 +594,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>La ropa de pago se <b>tiñe</b> como la otra; <b>los colores no son de pago</b>: salen de los tintes del juego (apartado 7), que siguen siendo motivo de comercio.</li>
   <li>Camas y muebles de pago: <b>otra apariencia del mismo nivel</b> que el suyo, con la misma comodidad.</li>
   <li>Heráldica de pago: formas y piezas para el editor de escudo de armas, que sigue siendo de todas las familias.</li>
+  <li><b>Paridad completa</b> (4 nov, tras la auditoría): una prenda o armadura de pago <b>se lee como la misma capa y el mismo material</b> que su equivalente (nada de aparentar cuero llevando malla); las variantes de arquitectura y decoración tienen <b>la misma geometría de colisión y los mismos huecos</b>, y ninguna decoración de pago oculta nada que lo gratuito no pueda ocultar igual.</li>
+  <li>En la ficha de cada pack se avisa de que lo fabricado con él se puede perder, robar o romper como cualquier otro objeto.</li>
 </ul>
 <div class="box o"><span class="tag open">ABIERTO</span> De las recetas con usos limitados: cuántas fabricaciones da cada una (se habló de 50 solo como ejemplo), qué cuenta como un uso, si se pueden recargar y cómo, y qué categorías llevan límite.</div>
 <h3>Fabricar, comer y pescar</h3>
@@ -604,9 +604,9 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span><b>Peces</b> según agua, franja, hora y estación, de tamaño variable. Ríos: trucha, salmón (norte, sube en otoño), tímalo, barbo, anguila, tenca, boga. Lagos: lucio, perca, carpa. Mar: arenque y bacalao (norte), lubina, caballa, sardina, dorada, besugo. Orilla: mejillón, ostra, cangrejo, lapa. Pescar con caña es de habilidad (recoger el sedal sin romperlo). Despiece: pescado limpio, espinas y escamas; se conserva seco, ahumado o en salazón. (Hito 7)</p>
 <h3>Convivencia online y dominio</h3>
 <p><span class="tag ok">DECIDIDO</span><b>Protección del recién llegado:</b> nadie le puede herir, ni él a nadie, durante sus primeras horas de juego o hasta que pone su mojón, lo que llegue antes. (Hito 12)</p>
-<p><span class="tag ok">DECIDIDO</span><b>Contra el acoso:</b> lo construido fuera de tierras reclamadas se deteriora muy rápido, y no se puede construir a menos de cierta distancia de un mojón ajeno. (Hito 13)</p>
+<p><span class="tag ok">DECIDIDO</span><b>Contra el acoso:</b> lo construido fuera de tierras reclamadas se deteriora muy rápido, y en la zona de otro no se construye sin su invitación (apartado 11). (Hito 13)</p>
 <p><span class="tag ok">DECIDIDO</span><b>Ventana de trueque:</b> cada uno pone lo suyo y los dos confirman; nada cambia de manos hasta que ambos aceptan. (Hito 14)</p>
-<p><span class="tag ok">DECIDIDO</span><b>Dominar una comarca:</b> la familia con el mojón de más nivel dentro de una comarca es su señora; su escudo aparece sobre ella en los mapas y puede rebautizarla. La pierde si otra familia la supera o le tumba el mojón. <b>Títulos</b> según lo que se domina: señor, barón, conde, rey de un país. (Hito 13)</p>
+<p><span class="tag old">DEROGADO · 30 oct</span><s><b>Dominar una comarca:</b> la familia con el mojón de más nivel dentro de una comarca es su señora; su escudo aparece sobre ella en los mapas y puede rebautizarla. La pierde si otra familia la supera o le tumba el mojón. <b>Títulos</b> según lo que se domina: señor, barón, conde, rey de un país. (Hito 13)</s></p> <span class="note">Ahora la comarca la da el centro del clan (apartado 11); los títulos siguen.</span>
 <p><span class="tag ok">DECIDIDO</span><b>Asentamientos con nombre:</b> al poner un mojón se le da nombre al asentamiento; es el que sale en el mapa y al que se envían mensajeros. (Hito 13)</p>
 <p><span class="tag ok">DECIDIDO</span><b>El mapa como tablero</b>: en el mapa del rey (Whitholm) y en lo explorado y los mapas de cartógrafo (el continente) se ven los escudos de las familias sobre sus tierras y comarcas, en verde, azul o rojo (tuyo, aliado, enemigo), con avisos de combate en tus tierras y de mojones con el mantenimiento a punto de acabarse. Sin viaje rápido. (Hitos 13 y 17)</p>
 <h3>Técnica y producción</h3>
@@ -627,8 +627,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h2>21. Preguntas pendientes</h2>
 <p>El coste del servidor se medirá con 100 jugadores simulados en el hito 1f. Pendiente desde el 30 oct, con las comarcas de los clanes:</p>
 <ul>
-  <li><b>La guerra entre clanes</b> pedía una causa: el impago de un vasallaje. Con el vasallaje de comarca no hay un pago que dejar de hacer: ¿qué causas quedan? ¿Asediar un centro en su ventana necesita guerra declarada?</li>
-  <li><b>Las comarcas de inicio</b> (Motdale, Breiddal y Strandvang), ¿se pueden tomar? La propuesta de la v0.3 dice que no haya reclamaciones cerca de las zonas de inicio.</li>
+  <li><b>La guerra entre clanes</b> pedía una causa: el impago de un vasallaje. Con el vasallaje de comarca no hay un pago que dejar de hacer: ¿qué causas quedan? ¿Asediar un centro en su ventana necesita guerra declarada? Para la reunión tras P3.</li>
+  <li><s>Las comarcas de inicio, ¿se pueden tomar?</s> Resuelto el 4 nov (apartado 11): Motdale y Breiddal sí; Strandvang es del rey.</li>
 </ul>
 </section>
 </div>
