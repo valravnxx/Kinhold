@@ -1164,9 +1164,9 @@
     },
     {
      "nombre": "Desmontar el mojón (valravnx, 4 nov): el dueño quita su mojón cuando quiere, por el servidor con su autor; sus obras quedan como ruina sin dueño (o las desmonta antes, al 75 %) y no puede poner otro hasta pasados unos días reales (provisional: 3), para que reclamar y soltar no sirva para bloquear a otros",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-04T19:13:07+01:00",
-     "rama": "trabajo/20261104-1910-mojon"
+     "fin": "2026-11-04T20:25:28+01:00"
     },
     {
      "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio de las tres comarcas de inicio y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
@@ -2668,6 +2668,13 @@
      "archivo": "jugar/demo/v99.html",
      "capturas": "capturas/demo-v99",
      "notas": "El mapa del rey se acerca más y, de cerca, ya no pone los nombres de las comarcas, que tapaban tu tierra; el zoom deja quieto el punto al que acercas."
+    },
+    {
+     "v": "v100",
+     "fecha": "2026-11-04",
+     "archivo": "jugar/demo/v100.html",
+     "capturas": "capturas/demo-v100",
+     "notas": "Quitar el mojón para reposicionar (valravnx, 4 nov): en Desmontar, apunta a tu mojón; se resalta en rojo lo que se perdería y el aviso dice cuántas piezas y muebles pierdes; al confirmar («Quitar el mojón»), tu tierra queda libre, lo construido en ella se pierde y puedes poner el mojón donde quieras, sin espera. El mojón de otro no se toca."
     }
    ]
   },
