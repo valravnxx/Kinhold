@@ -2086,6 +2086,8 @@ const panelInventario = montarPanelInventario({ panel: $('panelInventario'), bot
 // coge) y las teclas pulsadas, para no seguir andando sin ver.
 const mapaRey = mundoJ ? montarMapaRey({ paisaje: mundoJ.paisaje, comarcas: comarcasMundo, esTactil: matchMedia('(pointer: coarse)').matches,
   posicion: () => ({ x: pj.x + mundoJ.salida.x, z: pj.z + mundoJ.salida.z, rot: pj.rot }),
+  // tu tierra (la zona entera de tu mojón): dónde está tu mojón, en m del mundo
+  tuTierra: () => { const m = miMojon(); return m ? { x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z } : null; },
   alAbrir: () => { if (document.pointerLockElement) document.exitPointerLock(); teclas.clear(); cerrarMenuUsar(); } }) : null;
 if ($('btnMapa')) { $('btnMapa').hidden = !mapaRey; $('btnMapa').onclick = () => mapaRey && mapaRey.alternar(); }
 // El personaje lleva puesto lo que dice el inventario (valravnx, 29 oct: el inventario es el equipo). La ropa elegida

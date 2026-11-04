@@ -4,7 +4,9 @@
 # paso de más de 80 ms), que se abre con M (PC) o con el botón «Mapa» (móvil) y se cierra con M, Esc o ✕; que tiene las 8
 # comarcas con su nombre, los ríos, montes, árboles y la ciudad del rey; que tu marca está donde estás (y se mueve si
 # andas) y que «Dónde estoy» la pone en el centro; y que en inglés no falta ningún texto.
-# MUTAR=1: la marca del jugador, 3 km al este de donde está: tiene que fallar.
+# Y las zonas (valravnx, 4 nov): con tu mojón puesto, tu tierra (la zona entera) sale de color con su mojón, y al
+# acercar el mapa salen los lindes de las zonas de cada comarca, sin tirones.
+# MUTAR=1: la marca del jugador, 3 km al este de donde está: tiene que fallar. MUTAR=2: sin lindes de zonas.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
@@ -41,6 +43,7 @@ with sync_playwright() as p:
         print('Vista', nombre)
         ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
         if MUTAR == '1': ctx.add_init_script('window.__mutarMapaRey = true')
+        if MUTAR == '2': ctx.add_init_script('window.__mutarZonasMapa = true')
         pg = ctx.new_page()
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
@@ -60,6 +63,9 @@ with sync_playwright() as p:
             pg.evaluate(f'{K}.mapaRey.abrir()'); pg.wait_for_function(f'{K}.mapaRey.listo', timeout=120000); pg.evaluate(f'{K}.mapaRey.cerrar()')
         d = pg.evaluate(f'(() => {{ const d = {K}.mapaRey.datos; return {{ etiquetas: d.etiquetas.length, rios: d.rios.length, montes: d.montes.length, arboles: d.arboles.length }}; }})()')
         comprobar('las 8 comarcas con su nombre, ríos, montes y árboles', d['etiquetas'] == 8 and d['rios'] >= 10 and d['montes'] >= 20 and d['arboles'] >= 200, str(d))
+        # tu mojón, a tu lado: tu tierra es la zona entera
+        r = pg.evaluate(f"(() => {{ const k = {K}; k.accion({{ tipo: 'rellenar', cantidad: 20 }}); return k.accion({{ tipo: 'mojon', x: k.pj.x + 2, z: k.pj.z + 1 }}); }})()")
+        comprobar('pones tu mojón', r['ok'], r.get('motivo', ''))
         # el botón «Mapa», a la vista y dentro de la pantalla
         caja = pg.evaluate("(() => { const b = document.getElementById('btnMapa'); if (!b || b.hidden) return null; const r = b.getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom]; })()")
         comprobar('el botón «Mapa» se ve y cabe en la pantalla', caja is not None and caja[0] >= 0 and caja[2] <= vista['width'] and caja[1] >= 0, str(caja))
@@ -92,6 +98,26 @@ with sync_playwright() as p:
         ok = r['marca'] and abs(r['marca']['x'] - vista['width'] / 2) < 40 and abs(r['marca']['y'] - vista['height'] / 2) < 40 and v['s'] > v['base'] * 2.5
         comprobar('«Dónde estoy» acerca el mapa y te pone en el centro', bool(ok), f"marca {r['marca']}, zoom {v['s'] / v['base']:.1f}")
         pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_cerca.png')
+        # tu tierra: de color, con su borde y su mojón, a cualquier zoom; y de cerca, los lindes de las zonas
+        z = pg.evaluate(f'{K}.mapaRey.zonas')
+        comprobar('tu tierra sale en el mapa, con tu mojón', bool(z['tierra']) and bool(z['mojon']), str(z))
+        # de cerca del todo, con tu mojón en el centro
+        pg.evaluate(f"(() => {{ const k = {K}, mj = k.miMojon, sx = k.mundoJ.salida; k.mapaRey.centrarEn((mj.x + sx.x) / 1000, (mj.z + sx.z) / 1000, 8); }})()")
+        try:
+            pg.wait_for_function(f'{K}.mapaRey.zonas.pendientes === 0 && {K}.mapaRey.zonas.hechas > 0', timeout=60000); hechas = True
+        except Exception: hechas = False
+        pg.wait_for_timeout(400)
+        z = pg.evaluate(f'{K}.mapaRey.zonas'); v = pg.evaluate(f'{K}.mapaRey.vista')
+        comprobar('de cerca salen los lindes de las zonas (a pasos, todas las que se ven)', hechas and z['lindes'] > 200, f"{z['lindes']} segmentos, {z['hechas']} teselas, zoom {v['s']:.0f} px/km")
+        mo = z['mojon']
+        comprobar('y tu mojón queda en el centro, con «Tu tierra»', bool(mo) and abs(mo['x'] - vista['width'] / 2) < 30 and abs(mo['y'] - vista['height'] / 2) < 30, str(mo))
+        pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_tu_tierra.png')
+        # a media distancia: tu tierra entre las zonas de alrededor
+        pg.evaluate(f'{K}.mapaRey.zoom(0.55, innerWidth / 2, innerHeight / 2)')
+        try: pg.wait_for_function(f'{K}.mapaRey.zonas.pendientes === 0', timeout=60000)
+        except Exception: pass
+        pg.wait_for_timeout(300)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_zonas.png')
         # la ciudad del rey, de cerca
         pg.evaluate(f"""(() => {{ const m = {K}.mapaRey; m.zoom(1, 0, 0); const v = m.vista, c = m.kmAPant(217.558, 52.73);
           m.zoom(1, 0, 0); }})()""")
