@@ -23,7 +23,7 @@ import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from './vegetaci
 import { recogidaTrozo, LADO_RECOGIDA } from './recogida_mundo.js';
 import { idArbol } from './tala.js';
 import { nivelar as conMarcas, marcasEn } from './nivelado.js';
-import { crearComarcas } from './comarcas.js';
+import { crearComarcas, zonasDeEscena } from './comarcas.js';
 import { crearTierrasRey } from './tierras_rey.js';
 
 export const ALTURAS = { bajoSuelo: 40, sobreSuelo: 120, plantaBaja: 1.5, brocha: 6, decoBajo: 0.5, decoSobre: 40, orilla: 0.15 };
@@ -122,6 +122,9 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
 export function terrenoWhitholm(opc = {}) {
   const mapa = generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO });
   const t = crearTerreno({ paisaje: crearPaisaje(mapa), semilla: mapa.semilla, ...opc });
-  t.tierras = crearTierrasRey(crearComarcas(mapa), opc.origen || SALIDA).en;
+  const comarcas = crearComarcas(mapa);
+  t.tierras = crearTierrasRey(comarcas, opc.origen || SALIDA).en;
+  // y de qué zona es cada sitio: tu tierra es la zona entera de tu mojón (src/logica/construccion.js, ponerZonas)
+  t.zona = zonasDeEscena(comarcas, opc.origen || SALIDA);
   return t;
 }

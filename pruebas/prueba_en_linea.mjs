@@ -61,11 +61,16 @@ try {
 
   console.log('La acción propia se ve enseguida y llega a los demás');
   const r1 = A.red.accion({ tipo: 'mojon', x: 0, z: 0 });
-  comprobar('el mojón de A está en su mundo antes de que conteste el servidor', r1.ok && !!A.red.mundo.mojon && A.red.pendientes.length === 1);
-  comprobar('mientras tanto, la base (lo del servidor) aún no lo tiene', !A.red.base.mojon);
+  comprobar('el mojón de A está en su mundo antes de que conteste el servidor', r1.ok && !!A.red.mundo.mojonDe(A.red.yo) && A.red.pendientes.length === 1);
+  comprobar('mientras tanto, la base (lo del servidor) aún no lo tiene', !A.red.base.mojonDe(A.red.yo));
   await calma(A, B);
-  comprobar('B ve el mojón de A', !!B.red.mundo.mojon);
+  comprobar('B ve el mojón de A, que es de A y no suyo', !!B.red.mundo.mojonDe(A.red.yo) && !B.red.mundo.mojonDe(B.red.yo));
   comprobar('confirmado, A ya no tiene copia: su mundo es la base', A.red.mundo === A.red.base && A.red.pendientes.length === 0);
+
+  // un mojón por personaje (4 nov): B pone el suyo al lado para construir también (sin zonas, su círculo)
+  comprobar('B pone su propio mojón', B.red.accion({ tipo: 'mojon', x: 0, z: 5 }).ok);
+  await calma(A, B);
+  comprobar('el segundo mojón de A no vale', A.red.accion({ tipo: 'mojon', x: 30, z: 0 }).ok === false);
 
   console.log('Dos ponen lo mismo a la vez');
   const pieza = { tipo: 'colocar', pieza: 'cim_piedra', x: 0, z: 0, k: 0, rot: 0, dir: 0 };

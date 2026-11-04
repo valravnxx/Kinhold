@@ -43,7 +43,7 @@ try {
   const autores = E.bots.map(b => b.yo);
   console.log('Entran');
   comprobar(`entran los ${N} bots, cada uno con su autor del servidor`, new Set(autores).size === N && autores.every(a => /^jugador:/.test(a)), autores.join(' '));
-  comprobar('el primero pone el mojón (sin él no se construye)', !!s.mundo.mojon);
+  comprobar('cada uno pone su mojón (un mojón por personaje; sin él no se construye)', autores.every(a => !!s.mundo.mojonDe(a)), Object.keys(s.mundo.mojones).length + ' mojones');
 
   console.log('Construyen');
   await pausa(4000);
@@ -75,7 +75,7 @@ try {
   await pausa(3000);
   const despues = autores.map(a => s.presencia.todos().find(x => x.autor === a));
   const movidos = despues.filter((e, i) => e && antes[i] && Math.hypot(e.x - antes[i].x, e.z - antes[i].z) > 1).length;
-  comprobar('al andar se mueven por la tierra del mojón', movidos >= N - 1 && despues.every(e => Math.hypot(e.x, e.z) <= 20.5), `${movidos} se han movido`);
+  comprobar('al andar se mueven por la tierra del mojón', movidos >= N - 1 && despues.every(e => { const m = e && s.mundo.mojonDe(e.autor); return m && Math.hypot(e.x - m.x, e.z - m.z) <= 20.5; }), `${movidos} se han movido`);
 
   console.log('Lo medido');
   const m = E.medida();

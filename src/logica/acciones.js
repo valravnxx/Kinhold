@@ -88,7 +88,7 @@ export function reservaDe(inv) {
 
 function aplicarConstruccion(m, a, invs) {
   switch (a.tipo) {
-    case 'mojon': return m.colocarMojon(a.x, a.z);
+    case 'mojon': return m.colocarMojon(a.x, a.z, a.autor);
     // se construye por obras (GDD): colocar pone el marco; luego se entregan los materiales y se trabaja
     // y (opcional): la altura del suelo donde se pone; la planta baja de una construcción nueva queda ahí
     case 'colocar': {
@@ -114,7 +114,7 @@ function aplicarConstruccion(m, a, invs) {
       }
       return m.trabajar(c, a.clave, a.segundos, a.autor);
     }
-    case 'decorar': return m.colocarDecoracion(a.pieza, a.x, a.y, a.z, a.rot);
+    case 'decorar': return m.colocarDecoracion(a.pieza, a.x, a.y, a.z, a.rot, a.autor);
     case 'quitar': return m.quitarDecoracion(a.id);
     case 'desmontar': {
       const c = m.construcciones.find(x => x.id === a.construccion);

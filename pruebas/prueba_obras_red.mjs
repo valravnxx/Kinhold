@@ -62,13 +62,13 @@ console.log('Lógica');
   const solo0 = obrasEnTrozos(m, new Set(['0,0', k0]));
   comprobar('la foto de un trozo lleva solo lo suyo', solo0.construcciones.length === 1 && solo0.construcciones[0].id === r0.construccion.id && solo0.decoracion.length === 0 &&
     solo0.nivelados.every(n => n.x < 128) && solo0.nivelados.some(n => n.de === 'brocha'));
-  comprobar('y lo de todos: el contador de ids, el arcón y el mojón', solo0.siguienteId === m.siguienteId && solo0.mojon.x === MX && JSON.stringify(solo0.materiales) === JSON.stringify(m.materiales));
+  comprobar('y lo de todos: el contador de ids, el arcón y el mojón', solo0.siguienteId === m.siguienteId && solo0.mojones['jugador:a'].x === MX && JSON.stringify(solo0.materiales) === JSON.stringify(m.materiales));
   const copia = Mundo.importar(JSON.parse(JSON.stringify(solo0)));
   comprobar('la foto se lee como un mundo', copia.construcciones.length === 1 && copia.construcciones[0].piezas.size === 1);
   const otro = new Mundo(); ponerComun(otro, comunDe(m));
-  comprobar('lo de todos se copia de un mundo a otro', otro.siguienteId === m.siguienteId && otro.mojon.x === MX && otro.materiales.madera === m.materiales.madera);
-  ponerComun(otro, { sid: 'x', materiales: [1], mojon: undefined });
-  comprobar('lo de todos mal formado no rompe nada', otro.siguienteId === m.siguienteId && otro.materiales.madera === m.materiales.madera);
+  comprobar('lo de todos se copia de un mundo a otro', otro.siguienteId === m.siguienteId && otro.mojonDe('jugador:a').x === MX && otro.materiales.madera === m.materiales.madera);
+  ponerComun(otro, { sid: 'x', materiales: [1], mojones: [1] });
+  comprobar('lo de todos mal formado no rompe nada', otro.siguienteId === m.siguienteId && otro.materiales.madera === m.materiales.madera && !!otro.mojonDe('jugador:a'));
 }
 
 function cliente(puerto, conRed = false) {
@@ -144,7 +144,9 @@ try {
   const ob = b.de('obras').at(-1);
   comprobar('al cambiar de trozo le llega la foto de las obras de sus trozos nuevos', !!ob && ob.obras.construcciones.length === 2);
   comprobar('y su mundo queda igual que el del servidor', foto(b.red.base) === foto(s.mundo) && b.red.mundo === b.red.base);
-  const rb = await b.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: DENTRO1, z: 6, k: 0, rot: 0, dir: 0 });
+  // un mojón por personaje (4 nov): B pone el suyo para construir (sin las zonas del mundo de verdad, su círculo)
+  const mb = await b.accion({ tipo: 'mojon', x: DENTRO1, z: 12 });
+  const rb = mb.ok ? await b.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: DENTRO1, z: 6, k: 0, rot: 0, dir: 0 }) : mb;
   await pausa(150);
   comprobar('B construye junto a lo de A y A lo recibe', rb.ok && a.de('accion').some(m => m.entrada.autor === b.bienvenida.autor), rb.motivo || '');
   comprobar('después, el mundo de B sigue igual que el del servidor', foto(b.red.base) === foto(s.mundo));

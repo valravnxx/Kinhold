@@ -10,8 +10,9 @@
 // vuelve a empezar sano al acabar la pelea.
 //
 // Decisiones provisionales (para la medición, sin efecto en el juego):
-// - Todos construyen alrededor del único mojón del mundo (el servidor de prueba tiene uno; si no lo hay, lo
-//   pone el primer bot en 0,0): es el caso más cargado, todos se ven a todos.
+// - Cada bot pone su mojón donde empieza (un mojón por personaje desde el 4 nov) y construye en su tierra; las parejas
+//   empiezan juntas cerca de 0,0, así que es el caso más cargado: todos se ven a todos. Con las zonas del mundo de verdad
+//   (una zona, un dueño) solo el primero de cada zona tiene tierra; los demás no construyen.
 // - Si no queda sitio libre en la tierra del mojón, el bot desmonta un cimiento terminado al azar (de cualquiera): así el mundo
 //   no crece sin fin durante una medición larga.
 // - Si faltan materiales, el bot usa «rellenar» (el botón de pruebas del prototipo, que el servidor admite).
@@ -170,7 +171,7 @@ export class Bot {
     this.enviar({ tipo: 'estado', x: +this.x.toFixed(3), y: 0, z: +this.z.toFixed(3), giro: +this.giro.toFixed(3), anim, tc: Math.round(t) });
   }
   puntoTierra(radio) {
-    const M = this.enjambre.espejo.mundo.mojon || { x: 0, z: 0 };
+    const M = this.enjambre.espejo.mundo.mojonDe(this.yo) || { x: 0, z: 0 };
     const a = this.r() * Math.PI * 2, d = Math.sqrt(this.r()) * radio;
     return { x: M.x + Math.cos(a) * d, z: M.z + Math.sin(a) * d };
   }
@@ -187,7 +188,8 @@ export class Bot {
   construir(t, dt) {
     const M = this.enjambre.espejo.mundo;
     if (this.ocupado) return 'talar';
-    if (!M.mojon) return 'quieto';   // lo pone el enjambre al arrancar
+    const mio = M.mojonDe(this.yo);
+    if (!mio) return 'quieto';   // lo pone el enjambre al arrancar
     if (this.obra) {
       const c = M.construcciones.find(x => x.id === this.obra.construccion);
       const p = c && c.piezas.get(this.obra.clave);
@@ -221,11 +223,11 @@ export class Bot {
       // cerca de donde está (como un jugador, que construye a su alrededor); si cae fuera de la tierra, en otro sitio de ella
       const a = this.r() * Math.PI * 2, d = 1.5 + this.r() * 2.5;
       let q = { x: this.x + Math.cos(a) * d, z: this.z + Math.sin(a) * d };
-      if (Math.hypot(q.x - M.mojon.x, q.z - M.mojon.z) > RADIO_MOJON - 1.5) q = this.puntoTierra(RADIO_MOJON - 1.5);
+      if (Math.hypot(q.x - mio.x, q.z - mio.z) > RADIO_MOJON - 1.5) q = this.puntoTierra(RADIO_MOJON - 1.5);
       const pieza = this.piezas[Math.floor(this.r() * this.piezas.length)];
       const cand = M.candidata(pieza, q.x, q.z, 0, 0, 0);
       if (!cand) continue;
-      const v = M.validar(cand, true);
+      const v = M.validar(cand, true, this.yo);
       if (!v.ok) continue;
       this.destino = q;
       this.hacer({ tipo: 'colocar', pieza, x: q.x, z: q.z, k: 0, rot: 0, dir: 0 }, (e, r) => {
@@ -299,10 +301,11 @@ export class Enjambre {
       this.bots.push(b);
       await b.conectar(this.url);
       if (this.escalonar) await new Promise(r => setTimeout(r, this.escalonar));
-      // sin mojón no se puede construir: lo pone el primero en 0,0 (si faltan materiales, rellena antes)
-      if (i === 0 && !this.espejo.mundo.mojon) {
-        let r = await b.accion({ tipo: 'mojon', x: 0, z: 0 });
-        if (!r.ok && r.motivo === 'Faltan materiales.') { await b.accion({ tipo: 'rellenar', cantidad: 1000 }); r = await b.accion({ tipo: 'mojon', x: 0, z: 0 }); }
+      // sin mojón no se puede construir: cada uno pone el suyo donde empieza (si faltan materiales, rellena antes)
+      if (!this.espejo.mundo.mojonDe(b.yo)) {
+        const sitio = { tipo: 'mojon', x: +b.x.toFixed(2), z: +b.z.toFixed(2) };
+        let r = await b.accion(sitio);
+        if (!r.ok && r.motivo === 'Faltan materiales.') { await b.accion({ tipo: 'rellenar', cantidad: 1000 }); r = await b.accion(sitio); }
       }
     }
     this.t0 = performance.now();
