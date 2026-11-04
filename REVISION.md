@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 4 nov 2026 (20:48–20:51 UTC+1) — por el chat: perfiles gráficos y posprocesado
+valravnx: «lo de las mejoras gráficas que añadimos al GDD, con los diferentes perfiles gráficos» y la tabla: oclusión ambiental (oscurecer rincones, uniones y contactos), mapeo tonal (transición entre luces y sombras), gradación de color (identidad cromática coherente), brillo moderado (difusión de las fuentes de luz), niebla (profundidad), desenfoque puntual (escenas concretas) y haces de luz opcionales; «podemos hacer una prueba?»; y «la idea eran 6 perfiles, desde móvil de gama baja a PC gama alta, así que puedes volverte algo más loco». Hecho: hito nuevo G (lo lleva el chat) y la prueba «Posprocesado y perfiles gráficos» v1; el GDD (apartado 3 y el menú de opciones) con los seis perfiles. Pendiente de que valravnx mida con «Medir» y diga qué efectos se quedan.
+
 ### 4 nov 2026 (16:31–17:00 UTC+1) — por el chat: la auditoría global y sus decisiones
 valravnx encargó una auditoría global e independiente del proyecto (informe fuera del repositorio) y pidió «emplea la auditoría para arreglar problemas de roadmap y de gdd, corrige el gdd y pregúntame cualquier duda crítica». Sus respuestas a las cuatro dudas críticas:
 - **Zonas del rey**: las zonas con una veta marcada en el mapa, un sitio de salida o la ciudad no se reclaman; en ellas cava y recoge cualquiera. Las vetas pequeñas sin marcar sí pueden quedar dentro de tierras privadas.

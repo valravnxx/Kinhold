@@ -1420,9 +1420,13 @@
    "tareas": [
     {
      "nombre": "Prueba de posprocesado y seis perfiles gráficos (valravnx, 4 nov): oclusión ambiental, mapeo tonal, gradación de color, brillo moderado, niebla, desenfoque puntual y haces de luz, sobre la escena de la prueba de estilo v5, con capturas lado a lado y medida de lo que cuesta cada cosa",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-04T20:52:31+01:00",
-     "rama": "trabajo/20261104-2100-graficos"
+     "fin": "2026-11-04T23:43:55+01:00"
+    },
+    {
+     "nombre": "Llevar los perfiles gráficos y el posprocesado a la demo: el perfil en Opciones, el de inicio por el aparato y por la medida, y la cadena de efectos en el mundo de verdad (con la cámara del juego); después de que valravnx mida en su móvil y en su PC con «Medir»",
+     "estado": "espera_decision"
     }
    ],
    "num": "G"
@@ -3633,6 +3637,11 @@
    "pregunta": "Clanes y guerra (del 30 oct): con el vasallaje de comarca ya no hay un pago que dejar de hacer, así que el impago deja de ser causa de guerra. ¿Qué causas quedan, y asediar el centro de una comarca en su ventana necesita guerra declarada? Para la reunión tras P3, con las dos opciones escritas: solo guerra aceptada por las dos partes más las ventanas de asedio del centro, o causas automáticas tasadas",
    "desde": "2026-10-30",
    "hito": "tierras"
+  },
+  {
+   "pregunta": "Posprocesado (prueba v1): ¿qué te parece cada efecto en las capturas y en tu móvil y tu PC con «Medir»? ¿Se quedan los haces de luz (casi no se ven con la cámara del juego) o fuera?",
+   "desde": "2026-11-04",
+   "hito": "graficos"
   }
  ]
 }
