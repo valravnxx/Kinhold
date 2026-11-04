@@ -1,6 +1,9 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v99 (el mapa, más de cerca)";
+export const VERSION_DEMO = "Demo única · v100 (el mojón y los muebles, de lo que llevas)";
 export const REGISTRO_DEMO = [
+  "v100: el mojón y los muebles se pagan de lo que llevas encima, ya no del montón común: para poner el mojón hacen falta 3 piedras en las manos (o en lo que lleves), y cada mueble, sus materiales. Lo comprueba el servidor, con su autor; si no los llevas, «No llevas los materiales.».",
+  "v100: al quitar un mueble, lo que devuelve (el 75 %) va a lo que llevas; si no te cabe entero, no se quita («No te cabe lo que devuelve: haz sitio.»).",
+  "v100, provisional: un mueble solo lo quita quien puede construir donde está (el dueño de la tierra o quien tenga invitado). Lo que devuelve una pieza de obra al desmontarla sigue yendo al arcón de pruebas, hasta las tareas «Lo tuyo es tuyo» y «Fuera el arcón de materiales».",
   "v99: el mapa del rey se acerca más (hasta 150 px por km, o 8 veces la isla si es más) y, de cerca, ya no pone los nombres de las comarcas, que tapaban tu tierra: se desvanecen mientras aparecen los lindes de las zonas.",
   "v98: el admin, por la cuenta y su correo. El panel de depuración sale solo con la cuenta cuyo correo confirmado es el que dice la máquina (KINHOLD_ADMIN_CORREO en /etc/kinhold/admin.env); el nombre de usuario ya no cuenta, así que quedarse antes el nombre «valravnx» no hace admin a nadie. Sale al confirmar ese correo, sin volver a entrar, y se va si se cambia por otro.",
   "v98, provisional: sin KINHOLD_ADMIN_CORREO en la máquina no hay ninguna cuenta de admin (antes, por defecto, la del usuario «valravnx»). KINHOLD_ADMIN_CUENTA ya no se usa.",
