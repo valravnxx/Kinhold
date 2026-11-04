@@ -1,0 +1,13 @@
+Dos clientes en el mismo mundo
+  OK   cada conexión recibe un autor del servidor, distinto — jugador:dbc81135 y jugador:6bcd21c4
+  OK   un mundo nuevo empieza vacío
+  OK   la bienvenida dice la versión del protocolo del servidor — protocolo 7
+  OK   un servidor de antes del combate (sin versión ni reloj del combate) es antiguo
+  OK   uno con combate pero sin versión cuenta como la 1 (y ya es antiguo: no saca de la liza al construir); uno con una versión menor es antiguo
+  OK   el mojón sale bien
+  OK   los dos clientes reciben la acción
+  OK   el autor es el que puso el servidor, no el que dijo el cliente — autor: jugador:dbc81135
+  FALLA los dos construyen en el mismo mundo — Primero coloca tu mojón., ok
+  FALLA la prueba se cortó: tiempo agotado
+
+8 correctas, 2 fallos
