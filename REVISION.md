@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 4 nov 2026 (14:06 UTC+1) — por el chat: el mapa de cerca
+valravnx, con una captura del móvil: «al ampliar el nombre te tapa la vista, yo permitiría ampliar más y a partir de este punto no mostraría el nombre de la comarca». → Hecho en la demo v99: se acerca hasta 150 px por km y de cerca no salen los nombres de las comarcas.
+
 ### 4 nov (chat con valravnx)
 
 valravnx dio el correo de su cuenta para ser admin (no se escribe aquí: el repositorio es público) y pidió «hazlo y verifica»: terminar y publicar el admin por su correo (KINHOLD_ADMIN_CORREO) y comprobarlo. → Lo retoma una sesión de chat desde la rama trabajo/20261104-0924. El correo va solo en /etc/kinhold/admin.env del servidor.

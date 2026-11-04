@@ -1174,9 +1174,9 @@
     },
     {
      "nombre": "El mapa del rey se acerca más y, de cerca, sin los nombres de las comarcas, que tapaban tu tierra (valravnx, 4 nov)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-04T14:06:27+01:00",
-     "rama": "trabajo/20261104-1408-mapa-zoom"
+     "fin": "2026-11-04T16:36:12+01:00"
     }
    ]
   },
@@ -2627,6 +2627,13 @@
      "archivo": "jugar/demo/v98.html",
      "capturas": "capturas/demo-v98",
      "notas": "El admin, por su correo: el panel de depuración sale solo con la cuenta cuyo correo confirmado dice la máquina (KINHOLD_ADMIN_CORREO); el nombre de usuario ya no cuenta."
+    },
+    {
+     "v": "v99",
+     "fecha": "2026-11-04",
+     "archivo": "jugar/demo/v99.html",
+     "capturas": "capturas/demo-v99",
+     "notas": "El mapa del rey se acerca más y, de cerca, ya no pone los nombres de las comarcas, que tapaban tu tierra; el zoom deja quieto el punto al que acercas."
     }
    ]
   },
