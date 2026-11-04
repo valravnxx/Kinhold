@@ -2361,13 +2361,23 @@ window.__kinhold = {
     const inv = inventario();
     if (!inv.lugares.espalda) accionInventario({ tipo: 'coger', objeto: 'mochila_bastidor', cantidad: 1, a: 'espalda' });
     if (!inv.lugares.cintura) accionInventario({ tipo: 'coger', objeto: 'cinto_anillas', cantidad: 1, a: 'cintura' });
+    // lo que llevas en las manos y no hace falta aquí, si estorba, vuelve al arcón de pruebas
+    const soltarManos = () => {
+      for (const l of ['mano:der', 'mano:izq']) {
+        const c = inv.lugares[l], mat = c && Object.keys(OBJETO_DE_MATERIAL).find(k => OBJETO_DE_MATERIAL[k] === c.tipo);
+        if (mat && !coste[mat]) accion({ tipo: 'dejar_arcon', de: l, cantidad: c.n });
+      }
+    };
+    const sacar = (m, q) => {
+      // un tronco, al hombro si está libre (en las manos o la mochila puede no caber); si no, donde quepa
+      if (m === 'tronco' && q === 1 && !inv.lugares.hombro && accion({ tipo: 'sacar_arcon', material: m, cantidad: 1, a: 'hombro' }).ok) return true;
+      return accion({ tipo: 'sacar_arcon', material: m, cantidad: q }).ok;
+    };
     let todo = true;
     for (const [m, n] of Object.entries(coste)) {
       const q = n - inv.cuantos(OBJETO_DE_MATERIAL[m]);
       if (q <= 0) continue;
-      // un tronco, al hombro si está libre (en las manos o la mochila puede no caber); si no, donde quepa
-      if (m === 'tronco' && q === 1 && !inv.lugares.hombro && accion({ tipo: 'sacar_arcon', material: m, cantidad: 1, a: 'hombro' }).ok) continue;
-      if (!accion({ tipo: 'sacar_arcon', material: m, cantidad: q }).ok) todo = false;
+      if (!sacar(m, q)) { soltarManos(); if (!sacar(m, n - inv.cuantos(OBJETO_DE_MATERIAL[m]))) todo = false; }
     }
     return todo;
   },
