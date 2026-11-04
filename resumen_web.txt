@@ -1,0 +1,50 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 2775 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2427 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 1996 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2487 KB
+
+== Construir demo única
+      2347 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3073 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 1991 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2476 KB
+dist/kinhold_trozos.html 1993 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Web de progreso
+ - faltan 1 traducciones en proyecto/idiomas/en.json (añade la clave en español con su traducción):
+     · Auditoría global del 4 nov: GDD y roadmap al día con lo decidido (zonas del rey, mojón desmontable, comarcas de inicio, clanes y tierra personal, fabricar sin aprender, guerra sin causa fija, paridad de cosméticos) y las tareas que faltaban (movimiento sin trampas, copia de seguridad)
+ - faltan 1 traducciones en proyecto/idiomas/ru.json (añade la clave en español con su traducción):
+     · Auditoría global del 4 nov: GDD y roadmap al día con lo decidido (zonas del rey, mojón desmontable, comarcas de inicio, clanes y tierra personal, fabricar sin aprender, guerra sin causa fija, paridad de cosméticos) y las tareas que faltaban (movimiento sin trampas, copia de seguridad)
+!! FALLA: node herramientas/construir_web.mjs
+
+== Navegador: web
+  OK   «ahora mismo» en ruso
+  OK   sin errores en consola (movil)
+
+Resultado: 8 fallos: roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», diario: las 12 últimas a la vista y las demás en un desplegable, sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso, roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», diario: las 12 últimas a la vista y las demás en un desplegable, sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso
+!! FALLA: python3 pruebas/prueba_web.py /tmp/kinhold_capturas/web
+
+HAY FALLOS
+tardó 176 s
