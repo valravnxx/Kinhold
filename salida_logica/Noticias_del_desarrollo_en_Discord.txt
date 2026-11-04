@@ -1,0 +1,14 @@
+  OK   solo las entradas nuevas del diario — Tarea 3, ⚠️ Tarea 4
+  OK   la entrada lleva lo hecho, el hito, el tiempo y las pruebas — [{"name":"Hito","value":"Cuentas","inline":true},{"name":"Tiempo","value":"20 min","inline":true},{"name":"Pruebas","value":"Todo bien"}]
+  OK   y su captura
+  OK   las que fallaron salen marcadas
+  OK   la versión nueva lleva su nota, el enlace para jugarla y su captura — {"title":"Demo única · v91","url":"https://playkinhold.com/jugar/demo/v91.html","color":9185822,"description":"El tronco al hombro.\n\n🎮 **[Jugar](https://playkinhold.com/jugar/demo/)** · 🗺️ [El pro
+  OK   como mucho 8 de golpe (las últimas)
+  OK   los textos largos se cortan a lo que admite Discord
+  OK   manda la versión nueva a #versiones y la entrada nueva a #diario-de-desarrollo — 1 versiones y 1 entradas del diario nuevas.
+  OK   la versión vieja no se repite
+  OK   con el nombre y el icono de Kinhold, sin mencionar a nadie
+  OK   la captura es la de PC de esa versión, en el commit exacto — https://raw.githubusercontent.com/valravnxx/Kinhold/dc026c0448ea1d645ddec4eafaf0cbc061f7dc65/docs/capturas/demo-v91/pc_a.jpg
+  OK   sin webhooks no manda nada (y no falla) — Sin webhooks de Discord (secretos DISCORD_WEBHOOK_*): no se publica nada.
+
+Todo bien
