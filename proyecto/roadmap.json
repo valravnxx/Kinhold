@@ -126,9 +126,9 @@
     },
     {
      "nombre": "Auditoría global del 4 nov: GDD y roadmap al día con lo decidido (zonas del rey, mojón desmontable, comarcas de inicio, clanes y tierra personal, fabricar sin aprender, guerra sin causa fija, paridad de cosméticos) y las tareas que faltaban (movimiento sin trampas, copia de seguridad)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-04T17:12:15+01:00",
-     "rama": "trabajo/20261104-1700-auditoria"
+     "fin": "2026-11-04T17:31:29+01:00"
     },
     {
      "nombre": "Copia de seguridad diaria del servidor de verdad (el mundo, los objetos, las fichas y las cuentas), guardada fuera de la máquina (en el almacenamiento de Hetzner o en un repositorio privado), con las últimas 14 y una restauración probada una vez; antes de abrir el juego a nadie de fuera (auditoría del 4 nov)",
