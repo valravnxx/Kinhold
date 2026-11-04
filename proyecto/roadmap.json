@@ -1108,9 +1108,7 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
-     "inicio": "2026-11-04T14:23:11+00:00",
-     "rama": "trabajo/20261104-1423"
+     "estado": "pendiente"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: lo primero, para que lo que se construya no se pierda. Solo lo mínimo; registros, expulsar y lo demás, en «Administración»."

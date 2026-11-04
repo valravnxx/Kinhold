@@ -4163,5 +4163,21 @@
   "pruebas": "Batería entera en la nube, 33 grupos correctos; tras unir main y los últimos cambios, repetidos lógica, posprocesado, juego en inglés y web: correctos. Prueba nueva de lógica de los perfiles (24 bien; rota, falla) y de navegador en PC y móvil (rota, 16 fallos). Capturas miradas: la niebla cuadra con la v5 publicada (medido).",
   "capturas": "capturas/posprocesado-v1",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T21:27:59+00:00",
+  "fin": "2026-11-04T23:16:03+00:00",
+  "titulo": "Cuentas: batería entera bien, pero el hito aún no pasa a revisión (carril A)",
+  "hito": "servidor",
+  "hecho": [
+   "Retomada la revisión completa desde su rama y unida a main (demo v101). Batería entera en la nube (el PC de valravnx no estaba encendido): 29 de 31 grupos a la primera; esta vez «lo que se recoge en el mundo» salió bien.",
+   "Fallaron «construir a la altura del suelo» (en PC no encontró una ladera suave cerca de la salida, que cae al azar; repetido, bien) y «niveles de detalle del personaje»: el panel de rendimiento de la demo se quedaba vacío.",
+   "Arreglado el panel de rendimiento: con fotogramas de más de 2 segundos los fps redondean a 0 y el panel no se rellenaba nunca; ahora sale en cuanto hay una medida. Repetidos niveles de detalle, demo única, la demo en el mundo y juego en inglés: bien. Captura del panel en el móvil mirada.",
+   "Capturas de las cuentas miradas otra vez (PC y móvil): se leen bien. Sigue mal (menor): al cambiar el correo queda a la vista el aviso anterior «Contraseña cambiada…».",
+   "El hito no pasa a revisión: antes queda la tarea de comprobar en la máquina real que los límites de intentos ven la dirección del jugador y no la del proxy. Desde esta sesión no se puede entrar en el servidor de Hetzner (no hay clave SSH), así que la revisión completa vuelve a pendiente para después de esa tarea; la batería de hoy ya está pasada."
+  ],
+  "pruebas": "En la nube: 31 grupos; 29 a la primera, «construir a la altura del suelo» bien al repetir y «niveles de detalle» bien tras el arreglo (con demo única, la demo en el mundo y juego en inglés). Después se unió main (la prueba de posprocesado del chat, sin código del juego en común); no se volvió a pasar la batería sobre eso. No comprobado: los límites de intentos en la máquina real.",
+  "capturas": null,
+  "estado": "ok"
  }
 ]
