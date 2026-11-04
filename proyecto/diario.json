@@ -4096,5 +4096,21 @@
   "pruebas": "En la nube: 30 de 31 grupos correctos; «lo que se recoge en el mundo» falla en el móvil (dos comprobaciones distintas en dos vueltas)",
   "capturas": "capturas/revision-cuentas-4nov",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-04T17:12:15+01:00",
+  "fin": "2026-11-04T17:31:29+01:00",
+  "titulo": "Auditoría global del 4 nov: el GDD y el roadmap al día",
+  "hito": "infra",
+  "hecho": [
+   "Auditoría global e independiente del proyecto (un agente aparte, solo lectura, informe fuera del repositorio): identidad clara y plan P1–P7 bien ordenado, pero el GDD contradecía decisiones aprobadas en cinco apartados, «tu tierra es la zona entera» no se había recalculado (vetas, salidas, mojón inamovible, clanes), y faltaban el movimiento sin trampas, la copia de seguridad y la compactación del registro del mundo.",
+   "valravnx decidió: zonas del rey (veta marcada, sitio de salida, ciudad: no se reclaman); el mojón se desmonta con espera; Motdale y Breiddal las toman los clanes, Strandvang es del rey; un clan solo toma zonas libres o por conquista.",
+   "GDD al día en los tres idiomas (§8, §9, §11, §12, §20, §21): tu tierra es la zona entera, zonas del rey, mojón sin niveles y desmontable, caducidad, comarcas de inicio, fabricar sin aprender recetas y por uso, la causa de guerra pendiente, paridad completa de lo de pago. Lo derogado queda tachado y con fecha (etiqueta nueva DEROGADO).",
+   "Documento de sistemas al día (§2 niveles solo como guía de época, §10 tabla del mojón tachada, §11 primer día con la hoguera fuera y el hogar), con huellas nuevas en las traducciones.",
+   "Roadmap: en P1 comprobar la dirección tras el proxy en la máquina real; en P2 movimiento sin trampas, zonas del rey y desmontar el mojón; en P3 la tarea del GDD recortada y puesta la primera; en P6 compactar el registro del mundo; en infraestructura la copia de seguridad diaria; la decisión de las comarcas de inicio respondida y la de la guerra para la reunión tras P3."
+  ],
+  "pruebas": "Sin cambios de código: grupo de lógica en la nube correcto (textos traducidos, huellas de los documentos); la web se genera sin faltas",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
