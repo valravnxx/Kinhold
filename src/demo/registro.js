@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v97 (tu tierra, la zona entera)";
+export const VERSION_DEMO = "Demo única · v98 (el mapa, más de cerca)";
 export const REGISTRO_DEMO = [
+  "v98: el mapa del rey se acerca más (hasta 150 px por km, o 8 veces la isla si es más) y, de cerca, ya no pone los nombres de las comarcas, que tapaban tu tierra: se desvanecen mientras aparecen los lindes de las zonas.",
   "v97: tu tierra es la zona entera de tu mojón. Cada comarca está dividida en zonas de aproximadamente 1,2 km²; al poner tu mojón, la zona entera donde lo pones es tuya para construir. Un mojón por personaje y una zona, un dueño: en la zona de otro no se puede poner.",
   "v97: invitar a tu tierra. Con clic derecho (o dejando el dedo) sobre quien tengas al lado, «Invitar a tu tierra»: desde entonces puede construir en tu zona. «Quitarle de tu tierra» se lo quita.",
   "v97: el mapa del rey enseña tu tierra de color, con su borde y tu mojón, y al acercarlo salen los lindes de las zonas de cada comarca.",

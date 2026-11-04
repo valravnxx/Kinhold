@@ -129,7 +129,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
   }
   function limitar() {
     const cu = datos.cuadro, W = innerWidth, H = innerHeight;
-    vista.s = Math.max(vista.base, Math.min(Math.max(vista.base * 8, ZOOM_MAX_PX_KM), vista.s));
+    vista.s = zoomValido(vista.s);
     const [ax, ay] = kmAPant(cu.x0, cu.y0), [bx, by] = kmAPant(cu.x1, cu.y1);
     // el papel no se puede sacar de la pantalla: su borde entra como mucho hasta el 45 % (así cualquier sitio de la isla
     // se puede poner en el centro); entero, va centrado
@@ -137,9 +137,12 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     if (bx - ax <= W) vista.x += (W - bx - ax) / 2; else { if (ax > hx) vista.x -= ax - hx; if (bx < W - hx) vista.x += W - hx - bx; }
     if (by - ay <= H) vista.y += (H - by - ay) / 2; else { if (ay > hy) vista.y -= ay - hy; if (by < H - hy) vista.y += H - hy - by; }
   }
+  const zoomValido = (s) => Math.max(vista.base, Math.min(Math.max(vista.base * 8, ZOOM_MAX_PX_KM), s));
+  // acerca o aleja dejando quieto el punto (cx, cy) de la pantalla; el papel se recoloca después (antes se recolocaba
+  // también a medias, y un acercamiento grande saltaba al borde del pliego)
   function zoom(f, cx, cy) {
-    const s0 = vista.s; vista.s *= f; limitar(); const k = vista.s / s0;
-    vista.x = cx - (cx - vista.x) * k; vista.y = cy - (cy - vista.y) * k; limitar(); pintar();
+    const s0 = vista.s, k = zoomValido(s0 * f) / s0;
+    vista.s = s0 * k; vista.x = cx - (cx - vista.x) * k; vista.y = cy - (cy - vista.y) * k; limitar(); pintar();
   }
   // pone el sitio (en km) en el centro, con el zoom f veces el de la isla entera
   function centrarEn(x, y, f) {

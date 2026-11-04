@@ -116,6 +116,8 @@ with sync_playwright() as p:
         pg.evaluate(f"{K}.mapaRey.zoom(100, innerWidth / 2, innerHeight / 2)")
         v2 = pg.evaluate(f'{K}.mapaRey.vista')
         comprobar('se acerca hasta 150 px por km (o 8 veces la isla, si es más)', abs(v2['s'] - max(v2['base'] * 8, 150)) < 0.5, f"{v2['s']:.0f} px/km, isla {v2['base']:.1f}")
+        mo2 = pg.evaluate(f'{K}.mapaRey.zonas')['mojon']
+        comprobar('al acercar del todo, lo que estaba en el centro (tu mojón) sigue en el centro', bool(mo2) and abs(mo2['x'] - vista['width'] / 2) < 30 and abs(mo2['y'] - vista['height'] / 2) < 30, str(mo2))
         pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_lo_mas_cerca.png')
         pg.evaluate(f"(() => {{ const k = {K}, mj = k.miMojon, sx = k.mundoJ.salida; k.mapaRey.centrarEn((mj.x + sx.x) / 1000, (mj.z + sx.z) / 1000, 8); }})()")
         z = pg.evaluate(f'{K}.mapaRey.zonas')
