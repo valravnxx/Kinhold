@@ -1778,5 +1778,6 @@
  "Mojón quitado: tu tierra queda libre. Pon el mojón donde quieras.": "Boundary stone removed: your land is free. Place the stone wherever you like.",
  "Quitar tu mojón: dejas tu tierra y PIERDES lo construido en ella ({n} piezas y muebles, sin recuperar nada). Desmonta antes lo que quieras recuperar.": "Remove your boundary stone: you leave your land and LOSE everything built on it ({n} pieces and furnishings, nothing recovered). Dismantle first whatever you want to keep.",
  "Mojón quitado: tu tierra queda libre y se han perdido {n} piezas y muebles. Pon el mojón donde quieras.": "Boundary stone removed: your land is free and {n} pieces and furnishings are lost. Place the stone wherever you like.",
- "No tienes mojón.": "You have no boundary stone."
+ "No tienes mojón.": "You have no boundary stone.",
+ "Quitar el mojón": "Remove the stone"
 }

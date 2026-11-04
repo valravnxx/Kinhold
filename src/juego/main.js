@@ -756,6 +756,7 @@ function colocar() {
 function evaluarDesmontaje(hit) {
   limpiarResaltado();
   estado.pendienteDesmontar = null;
+  $('btnConfirmar').textContent = tr('Desmontar');
   if (!hit) { mostrarAviso(''); return; }
   const obj = hit.object.userData.ref;
   if (!obj) { mostrarAviso(''); return; }
@@ -768,6 +769,7 @@ function evaluarDesmontaje(hit) {
     for (const c of p.construcciones) for (const k of c.piezas.keys()) { const o = objDe(c, k); if (o) resaltar(o, 'rojo'); }
     for (const d of p.muebles) { const r = registroMallas.find(m => m.deco === d); if (r) resaltar(r.obj, 'rojo'); }
     estado.pendienteDesmontar = { mojon: true };
+    $('btnConfirmar').textContent = tr('Quitar el mojón');
     const n = p.piezas + p.muebles.length;
     mostrarAviso(n ? tr('Quitar tu mojón: dejas tu tierra y PIERDES lo construido en ella ({n} piezas y muebles, sin recuperar nada). Desmonta antes lo que quieras recuperar.', { n }) : t('quitarMojonVacio'), true);
     return;
@@ -800,10 +802,12 @@ function confirmarDesmontaje() {
   else r = accion({ tipo: 'desmontar', construccion: pd.c.id, clave: pd.key });
   estado.pendienteDesmontar = null;
   if (r.ok && pd.mojon) {
-    guardar(); reconstruir();
+    cambiarModo('mover'); guardar(); reconstruir();
     const n = r.perdidas ? r.perdidas.piezas + r.perdidas.muebles : 0;
+    // el último: lo que diga la interfaz al cambiar de modo (el consejo del mojón) no lo tapa
     mostrarAviso(n ? tr('Mojón quitado: tu tierra queda libre y se han perdido {n} piezas y muebles. Pon el mojón donde quieras.', { n }) : t('mojonQuitado'));
-    cambiarModo('mover');
+    limpiarResaltado(); $('confirmar').hidden = true;
+    return;
   } else if (r.ok) {
     const dev = Object.entries(r.devuelto || {}).map(([m, n]) => `+${n} ${tr(MATERIALES[m]).toLowerCase()}`).join(', ');
     guardar(); reconstruir();
@@ -2373,6 +2377,7 @@ window.__kinhold = {
   apuntar(x, z, y = 0) { estado.puntero = { x, z, ySuperficie: y }; evaluarColocacion(); },
   apuntarPantalla(cx, cy) { estado.puntero = punteroDesde(cx, cy); evaluarColocacion(); return estado.puntero; },
   apuntarPieza(cx, cy) { evaluarDesmontaje(piezaBajo(cx, cy)); },
+  elegirPieza(cx, cy) { elegirDesmontaje(cx, cy); },   // como el clic o el toque en Desmontar: deja elegido y saca Confirmar
   proyectar(x, y, z) { const v = new THREE.Vector3(x, y, z).project(camara); return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight }; },
   // atajo de prueba: lleva el material y termina todas las obras a medias, siempre con acciones
   terminarObras() {

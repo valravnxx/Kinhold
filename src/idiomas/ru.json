@@ -1778,5 +1778,6 @@
  "Mojón quitado: tu tierra queda libre. Pon el mojón donde quieras.": "Межевой камень убран: твоя земля свободна. Поставь камень где хочешь.",
  "Quitar tu mojón: dejas tu tierra y PIERDES lo construido en ella ({n} piezas y muebles, sin recuperar nada). Desmonta antes lo que quieras recuperar.": "Убрать межевой камень: ты покидаешь свою землю и ТЕРЯЕШЬ всё построенное на ней ({n} деталей и мебели, ничего не возвращается). Сначала разбери то, что хочешь сохранить.",
  "Mojón quitado: tu tierra queda libre y se han perdido {n} piezas y muebles. Pon el mojón donde quieras.": "Межевой камень убран: твоя земля свободна, потеряно {n} деталей и мебели. Поставь камень где хочешь.",
- "No tienes mojón.": "У тебя нет межевого камня."
+ "No tienes mojón.": "У тебя нет межевого камня.",
+ "Quitar el mojón": "Убрать камень"
 }
