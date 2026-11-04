@@ -4065,5 +4065,19 @@
   "pruebas": "En la nube, sobre la rama unida a main: lógica, lo que se recoge en el mundo, el mapa del mundo y el panel del admin, todo bien (la batería entera ya había pasado antes salvo esas, y desde entonces main solo ha cambiado las noticias de Discord). Capturas del panel en PC y móvil miradas. No comprobado: el admin en el servidor de Hetzner, que depende de poner KINHOLD_ADMIN_CORREO en la máquina.",
   "capturas": "capturas/demo-v98",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T14:06:27+01:00",
+  "fin": "2026-11-04T16:36:12+01:00",
+  "titulo": "Mapa del rey: más de cerca y sin los nombres encima de tu tierra (chat con valravnx)",
+  "hito": "entre-dos",
+  "hecho": [
+   "El mapa se acerca hasta 150 px por km (o 8 veces la isla, si es más); en el móvil antes se quedaba en unos 46.",
+   "Los nombres de las comarcas se desvanecen mientras aparecen los lindes de las zonas y de cerca no salen (lo pidió valravnx: tapaban tu tierra).",
+   "Arreglado: un acercamiento grande saltaba al borde del pliego; ahora el zoom deja quieto el punto al que acercas."
+  ],
+  "pruebas": "Batería entera en la nube bien (las dos pruebas que dependen de la salida al azar, repetidas, bien); tras unir main, mapa, demo y juego en inglés otra vez bien. Pruebas nuevas en el mapa: sin nombres de cerca (rota con MUTAR=3, falla), el zoom máximo y que lo del centro sigue en el centro.",
+  "capturas": "capturas/demo-v99",
+  "estado": "ok"
  }
 ]

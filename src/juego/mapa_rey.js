@@ -31,6 +31,9 @@ const CSS = `
 
 // Desde este zoom (px por km) salen los lindes de las zonas; del todo a partir de ZONAS_LLENO.
 export const ZONAS_DESDE = 28, ZONAS_LLENO = 42;
+// Hasta dónde se acerca (valravnx, 4 nov: «permitiría ampliar más»): 8 veces la isla entera o, si es más, 150 px por km
+// (en el móvil, la isla entera es más pequeña y 8 veces se quedaba corto para ver tu zona).
+export const ZOOM_MAX_PX_KM = 150;
 
 export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => null, alAbrir = () => {}, esTactil = false }) {
   const est = document.createElement('style'); est.textContent = CSS; document.head.appendChild(est);
@@ -126,7 +129,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
   }
   function limitar() {
     const cu = datos.cuadro, W = innerWidth, H = innerHeight;
-    vista.s = Math.max(vista.base, Math.min(vista.base * 8, vista.s));
+    vista.s = zoomValido(vista.s);
     const [ax, ay] = kmAPant(cu.x0, cu.y0), [bx, by] = kmAPant(cu.x1, cu.y1);
     // el papel no se puede sacar de la pantalla: su borde entra como mucho hasta el 45 % (así cualquier sitio de la isla
     // se puede poner en el centro); entero, va centrado
@@ -134,9 +137,12 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     if (bx - ax <= W) vista.x += (W - bx - ax) / 2; else { if (ax > hx) vista.x -= ax - hx; if (bx < W - hx) vista.x += W - hx - bx; }
     if (by - ay <= H) vista.y += (H - by - ay) / 2; else { if (ay > hy) vista.y -= ay - hy; if (by < H - hy) vista.y += H - hy - by; }
   }
+  const zoomValido = (s) => Math.max(vista.base, Math.min(Math.max(vista.base * 8, ZOOM_MAX_PX_KM), s));
+  // acerca o aleja dejando quieto el punto (cx, cy) de la pantalla; el papel se recoloca después (antes se recolocaba
+  // también a medias, y un acercamiento grande saltaba al borde del pliego)
   function zoom(f, cx, cy) {
-    const s0 = vista.s; vista.s *= f; limitar(); const k = vista.s / s0;
-    vista.x = cx - (cx - vista.x) * k; vista.y = cy - (cy - vista.y) * k; limitar(); pintar();
+    const s0 = vista.s, k = zoomValido(s0 * f) / s0;
+    vista.s = s0 * k; vista.x = cx - (cx - vista.x) * k; vista.y = cy - (cy - vista.y) * k; limitar(); pintar();
   }
   // pone el sitio (en km) en el centro, con el zoom f veces el de la isla entera
   function centrarEn(x, y, f) {
@@ -321,7 +327,16 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     ctx.fillStyle = color; ctx.fillText(texto, x, y);
     if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
   }
+  // los nombres de las comarcas: de cerca tapaban tu tierra (valravnx, 4 nov), así que se van desvaneciendo mientras
+  // aparecen los lindes de las zonas y desde ZONAS_LLENO no salen
+  let nombresVistos = 1;
   function nombres(s) {
+    nombresVistos = window.__mutarNombresMapa ? 1 : Math.max(0, Math.min(1, (ZONAS_LLENO - s) / (ZONAS_LLENO - ZONAS_DESDE)));
+    if (nombresVistos <= 0) return;
+    ctx.save(); ctx.globalAlpha = nombresVistos;
+    try { nombresDentro(s); } finally { ctx.restore(); }
+  }
+  function nombresDentro(s) {
     const px = Math.max(12, Math.min(30, s * 0.62));
     for (const e of datos.etiquetas) {
       const [x, y] = kmAPant(e.x, e.y), n = comarcas.nombres[e.k];
@@ -424,7 +439,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     get abierto() { return !raiz.hidden; }, get listo() { return !!datos; }, get datos() { return datos; },
     get vista() { return { ...vista }; }, get marca() { return marca; }, kmAPant,
     // las zonas: cuántos segmentos de lindes se han trazado en la última vez, cuántas teselas faltan y tu tierra
-    get zonas() { return { lindes: lindesVistos, pendientes: zonas.pendientes, hechas: zonas.hechas, tierra: tierraVista, mojon: mojonVisto, desde: ZONAS_DESDE }; },
+    get zonas() { return { lindes: lindesVistos, pendientes: zonas.pendientes, hechas: zonas.hechas, tierra: tierraVista, mojon: mojonVisto, desde: ZONAS_DESDE, nombres: nombresVistos }; },
     get medida() { return { msPintar: Math.round(msPintar), msMaxPaso: Math.round(msMaxPaso), avance: datos ? 1 : Math.round(avance * 100) / 100 }; },
   };
 }

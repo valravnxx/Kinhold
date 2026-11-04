@@ -6,7 +6,8 @@
 # andas) y que «Dónde estoy» la pone en el centro; y que en inglés no falta ningún texto.
 # Y las zonas (valravnx, 4 nov): con tu mojón puesto, tu tierra (la zona entera) sale de color con su mojón, y al
 # acercar el mapa salen los lindes de las zonas de cada comarca, sin tirones.
-# MUTAR=1: la marca del jugador, 3 km al este de donde está: tiene que fallar. MUTAR=2: sin lindes de zonas.
+# MUTAR=1: la marca del jugador, 3 km al este de donde está: tiene que fallar. MUTAR=2: sin lindes de zonas. MUTAR=3: los
+# nombres de las comarcas siempre a la vista.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
@@ -44,6 +45,7 @@ with sync_playwright() as p:
         ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
         if MUTAR == '1': ctx.add_init_script('window.__mutarMapaRey = true')
         if MUTAR == '2': ctx.add_init_script('window.__mutarZonasMapa = true')
+        if MUTAR == '3': ctx.add_init_script('window.__mutarNombresMapa = true')
         pg = ctx.new_page()
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
@@ -109,6 +111,16 @@ with sync_playwright() as p:
         pg.wait_for_timeout(400)
         z = pg.evaluate(f'{K}.mapaRey.zonas'); v = pg.evaluate(f'{K}.mapaRey.vista')
         comprobar('de cerca salen los lindes de las zonas (a pasos, todas las que se ven)', hechas and z['lindes'] > 200, f"{z['lindes']} segmentos, {z['hechas']} teselas, zoom {v['s']:.0f} px/km")
+        comprobar('de cerca no salen los nombres de las comarcas (tapaban tu tierra)', z['nombres'] == 0, f"opacidad {z['nombres']}")
+        # y se puede acercar más que antes (8 veces la isla o 150 px por km)
+        pg.evaluate(f"{K}.mapaRey.zoom(100, innerWidth / 2, innerHeight / 2)")
+        v2 = pg.evaluate(f'{K}.mapaRey.vista')
+        comprobar('se acerca hasta 150 px por km (o 8 veces la isla, si es más)', abs(v2['s'] - max(v2['base'] * 8, 150)) < 0.5, f"{v2['s']:.0f} px/km, isla {v2['base']:.1f}")
+        mo2 = pg.evaluate(f'{K}.mapaRey.zonas')['mojon']
+        comprobar('al acercar del todo, lo que estaba en el centro (tu mojón) sigue en el centro', bool(mo2) and abs(mo2['x'] - vista['width'] / 2) < 30 and abs(mo2['y'] - vista['height'] / 2) < 30, str(mo2))
+        pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_lo_mas_cerca.png')
+        pg.evaluate(f"(() => {{ const k = {K}, mj = k.miMojon, sx = k.mundoJ.salida; k.mapaRey.centrarEn((mj.x + sx.x) / 1000, (mj.z + sx.z) / 1000, 8); }})()")
+        z = pg.evaluate(f'{K}.mapaRey.zonas')
         mo = z['mojon']
         comprobar('y tu mojón queda en el centro, con «Tu tierra»', bool(mo) and abs(mo['x'] - vista['width'] / 2) < 30 and abs(mo['y'] - vista['height'] / 2) < 30, str(mo))
         pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_tu_tierra.png')
