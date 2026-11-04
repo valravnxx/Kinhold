@@ -1,0 +1,5 @@
+  455 cuadros de 2 km junto a ríos · 100859 puntos tallados · 17.5 s
+  OK   ninguna ladera de valle es un plano liso de más de 800 m — la más larga, 612 m (en 192554, 39843)
+  OK   lo liso es menos del 11 % de lo que tallan los valles — 8.7 % de 100859
+
+Resultado: todo correcto
