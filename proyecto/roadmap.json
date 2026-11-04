@@ -1092,7 +1092,9 @@
     },
     {
      "nombre": "El admin, por la cuenta y su correo: solo es admin la cuenta con el correo confirmado que diga la máquina (KINHOLD_ADMIN_CORREO), para que nadie pueda quedarse antes el nombre «valravnx»",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-04T09:24:20+00:00",
+     "rama": "trabajo/20261104-0924"
     },
     {
      "nombre": "Revisión completa y publicación",
