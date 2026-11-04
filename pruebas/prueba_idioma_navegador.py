@@ -101,7 +101,7 @@ with sync_playwright() as p:
         comprobar('construcción: idioma inglés con ?lang=en', pg.evaluate('document.documentElement.lang') == 'en')
         comprobar('construcción: botón Build', 'Build' in pg.inner_text('#modos'))
         pg.screenshot(path=f'{SALIDA}/construccion_{sufijo}_01_inicio.png')
-        pg.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('mojon','mojon'); {K}.apuntar(-3,-6); {K}.colocar()")
+        pg.evaluate(f"{K}.llevarPara('mojon','mojon'); {K}.cambiarModo('construir'); {K}.seleccionar('mojon','mojon'); {K}.apuntar(-3,-6); {K}.colocar()")
         pg.evaluate(f"{K}.seleccionar('pieza','muro_tronco'); {K}.apuntar(10,10)")  # fuera de la tierra: aviso
         pg.wait_for_timeout(300)
         av = pg.inner_text('#aviso').strip()
@@ -254,7 +254,7 @@ with sync_playwright() as p:
         solape = pg.evaluate("document.getElementById('menu').getBoundingClientRect().bottom - document.getElementById('modos').getBoundingClientRect().top")
         comprobar('ruso: el menú de arriba no tapa los botones de modo', solape <= 0, f'{solape:.0f}px')
         pg.screenshot(path=f'{SALIDA}/ru_construccion_{sufijo}_01_inicio.png'); revisar_ru(pg, f'ru construcción {etiqueta}')
-        pg.evaluate(f"{K}.cambiarModo('construir'); {K}.seleccionar('mojon','mojon'); {K}.apuntar(-3,-6); {K}.colocar()")
+        pg.evaluate(f"{K}.llevarPara('mojon','mojon'); {K}.cambiarModo('construir'); {K}.seleccionar('mojon','mojon'); {K}.apuntar(-3,-6); {K}.colocar()")
         pg.evaluate(f"{K}.seleccionar('pieza','muro_tronco'); {K}.apuntar(10,10)"); pg.wait_for_timeout(300)
         av = pg.inner_text('#aviso').strip()
         comprobar('ruso: aviso de construcción en ruso', bool(re.search('[А-Яа-я]', av)), av)

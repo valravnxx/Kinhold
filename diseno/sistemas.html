@@ -41,6 +41,8 @@ li{margin:3px 0}
 .tag{display:inline-block;font:600 .72rem/1.4 system-ui,sans-serif;padding:2px 8px;border-radius:99px;margin-right:6px;vertical-align:2px}
 .ok{background:var(--ok-bg);color:var(--ok)}
 .open{background:var(--open-bg);color:var(--open)}
+.old{background:#e8e4dc;color:#7a7368}
+s{color:#7a7368}
 .prop{background:var(--prop-bg);color:var(--prop)}
 .gap{background:var(--gap-bg);color:var(--gap)}
 .legend{font-family:system-ui,sans-serif;font-size:.85rem;color:var(--muted)}
@@ -116,7 +118,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.76rem;text-tra
 <tr><td><b>N3 Piedra</b></td><td>Plena</td><td>Calera</td><td>Cal, sillares, mortero, teja</td><td>Mampostería y sillería, castillos de piedra, molino de agua, cota de malla, ballesta, barcas</td></tr>
 <tr><td><b>N4 Acero</b></td><td>Baja</td><td>Horno alto</td><td>Acero, vidrio, bronce</td><td>Placa, espada larga, ballesta de cranequín, trabuquete, barcos grandes, vidrio, cartografía</td></tr>
 </table></div>
-<p class="note">Cada nivel se entra construyendo una estación concreta, y esa estación necesita materiales del nivel anterior. Así el avance es natural y no hay árbol de tecnologías que memorizar.</p>
+<p class="note"><span class="tag old">DEROGADO · 1 nov</span><s>Cada nivel se entra construyendo una estación concreta, y esa estación necesita materiales del nivel anterior.</s> Desde la revisión del 1 nov los niveles son solo una guía de época para las recetas: <b>las estaciones son herramientas por uso, no niveles</b>, se fabrica en cualquier sitio y sin aprender recetas (GDD, apartado 9). Y el mojón ya no sube de nivel (apartado 10).</p>
 </section>
 
 <!-- 3 -->
@@ -474,7 +476,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.76rem;text-tra
 </table></div>
 <p>Consumo del mojón: una cantidad pequeña por semana real según lo construido (por ejemplo, 1 unidad de cada material por cada 10 piezas de ese material). Así una cabaña se mantiene con un par de troncos a la semana.</p>
 <h3>Mojón</h3>
-<div class="tw"><table>
+<p><span class="tag old">DEROGADO · 4 nov</span> El mojón no tiene niveles ni radios: <b>tu tierra es la zona entera</b> de la comarca donde lo pones (una zona, un dueño; GDD, apartado 11). Se coloca igual (3 piedras). La tabla queda tachada.</p>
+<div class="tw" style="text-decoration:line-through;color:#7a7368"><table>
 <tr><th>Nivel</th><th>Se sube con</th><th>Radio de tierra</th><th>Radio de exclusión</th></tr>
 <tr><td>1</td><td>Colocarlo (3 piedras)</td><td>20 m</td><td>300 m</td></tr>
 <tr><td>2</td><td>Materiales N1 (troncos, cuerda, barro)</td><td>40 m</td><td>500 m</td></tr>
@@ -507,8 +510,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.76rem;text-tra
   <li>Avisos de sed: busca un río y bebe con las manos.</li>
   <li>Arranca fibra y hace cordel; se ata el cordel como cinturón (1 hueco).</li>
   <li>Recoge sílex y piedra, monta una piedra de tallar y hace una lasca y un hacha de piedra.</li>
-  <li>Recoge ramas, hace un leñero, enciende hoguera para la noche.</li>
-  <li>Planta su mojón (3 piedras) y construye un refugio de ramas, que liga como cama.</li>
+  <li>Recoge ramas, hace un leñero y enciende la <b>hoguera fuera</b> (yesca y taladro de fuego) para la noche; se alimenta con leña y se apaga.</li>
+  <li>Planta su mojón (3 piedras): su tierra es la zona entera. Construye un refugio de ramas, que liga como cama; con la casa humilde vendrá el <b>hogar</b> dentro, fijo y más duradero.</li>
   <li>Con la lanza endurecida caza una liebre, la despieza con la lasca y la asa.</li>
   <li>Tala un árbol joven, hace el banco de tronco y entra en N1.</li>
 </ol>

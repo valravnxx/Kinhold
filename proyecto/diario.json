@@ -4079,5 +4079,73 @@
   "pruebas": "Batería entera en la nube bien (las dos pruebas que dependen de la salida al azar, repetidas, bien); tras unir main, mapa, demo y juego en inglés otra vez bien. Pruebas nuevas en el mapa: sin nombres de cerca (rota con MUTAR=3, falla), el zoom máximo y que lo del centro sigue en el centro.",
   "capturas": "capturas/demo-v99",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T14:23:11+00:00",
+  "fin": "2026-11-04T16:22:20+00:00",
+  "titulo": "Cuentas: revisión completa, sin cerrar (falla a ratos lo que se recoge en el mundo; carril A)",
+  "hito": "servidor",
+  "hecho": [
+   "Batería entera en la nube sobre la demo v98 (31 grupos, 60 min; empezó en el PC de valravnx y siguió en la nube): 30 correctos. Falló «lo que se recoge en el mundo» en el móvil: «alrededor de la salida hay cosas que recoger» encontró 18 puntos (pide más de 20); la salida cae cada vez en un sitio distinto.",
+   "Repetido solo ese grupo: en PC bien, y en el móvil falló otra comprobación, «al volver, lo recogido sigue recogido» (uno de los cuatro puntos recogidos no estaba en la lista al volver, aunque seguía sin poderse recoger). Una tercera vez, sobre main con la demo v99, la nube no devolvió resultado en 33 min. No comprobado por qué.",
+   "Es la misma prueba que ya falló a ratos en la sesión de las 09:23. Lo arregla de fondo la tarea de P2 «Pruebas que no fallan a ratos» (salida fija); hasta entonces, el hito no pasa a revisión con un grupo en rojo.",
+   "Capturas miradas en PC y móvil (en la rama, capturas/revision-cuentas-4nov): crear cuenta con correo, confirmar el correo con el código, recuperar la contraseña (con «El código no es correcto»), cambiar la contraseña y el correo desde el menú, entrar desde otro aparato y el panel del admin. Se leen bien y no se tapan en el móvil.",
+   "Aún mal (menor): al cambiar el correo sigue a la vista el aviso anterior «Contraseña cambiada…». Y arriba sigue el contador del arcón de pruebas, que se quita en P2.",
+   "La tarea queda a medias en trabajo/20261104-1423: a la siguiente sesión le basta con repetir el grupo «lo-que-se-recoge-en-el-mundo» (el resto ya pasó) y, si sale, pasar el hito a revisión."
+  ],
+  "pruebas": "En la nube: 30 de 31 grupos correctos; «lo que se recoge en el mundo» falla en el móvil (dos comprobaciones distintas en dos vueltas)",
+  "capturas": "capturas/revision-cuentas-4nov",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-04T17:12:15+01:00",
+  "fin": "2026-11-04T17:31:29+01:00",
+  "titulo": "Auditoría global del 4 nov: el GDD y el roadmap al día",
+  "hito": "infra",
+  "hecho": [
+   "Auditoría global e independiente del proyecto (un agente aparte, solo lectura, informe fuera del repositorio): identidad clara y plan P1–P7 bien ordenado, pero el GDD contradecía decisiones aprobadas en cinco apartados, «tu tierra es la zona entera» no se había recalculado (vetas, salidas, mojón inamovible, clanes), y faltaban el movimiento sin trampas, la copia de seguridad y la compactación del registro del mundo.",
+   "valravnx decidió: zonas del rey (veta marcada, sitio de salida, ciudad: no se reclaman); el mojón se desmonta con espera; Motdale y Breiddal las toman los clanes, Strandvang es del rey; un clan solo toma zonas libres o por conquista.",
+   "GDD al día en los tres idiomas (§8, §9, §11, §12, §20, §21): tu tierra es la zona entera, zonas del rey, mojón sin niveles y desmontable, caducidad, comarcas de inicio, fabricar sin aprender recetas y por uso, la causa de guerra pendiente, paridad completa de lo de pago. Lo derogado queda tachado y con fecha (etiqueta nueva DEROGADO).",
+   "Documento de sistemas al día (§2 niveles solo como guía de época, §10 tabla del mojón tachada, §11 primer día con la hoguera fuera y el hogar), con huellas nuevas en las traducciones.",
+   "Roadmap: en P1 comprobar la dirección tras el proxy en la máquina real; en P2 movimiento sin trampas, zonas del rey y desmontar el mojón; en P3 la tarea del GDD recortada y puesta la primera; en P6 compactar el registro del mundo; en infraestructura la copia de seguridad diaria; la decisión de las comarcas de inicio respondida y la de la guerra para la reunión tras P3."
+  ],
+  "pruebas": "Sin cambios de código: grupo de lógica en la nube correcto (textos traducidos, huellas de los documentos); la web se genera sin faltas",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T19:13:07+01:00",
+  "fin": "2026-11-04T20:25:28+01:00",
+  "titulo": "Quitar el mojón: dejar tu tierra y perder lo construido, para reposicionar",
+  "hito": "entre-dos",
+  "hecho": [
+   "valravnx, 4 nov (tarde): «que se pueda destruir el mojón y con ello dejar tu territorio, que avise que se perderán cualquier construcción, para poder reposicionar». Cambia lo escrito esa misma tarde en el GDD (ruina y espera de 3 días): se pierde todo y sin espera.",
+   "Lógica pura: perderiaSinMojon(autor) dice lo que se perdería (construcciones, piezas y muebles de su tierra) y quitarMojon(autor) lo quita todo, deja la zona libre y a los invitados sin invitación; sin devolver material y sin espera para volver a ponerlo. Acción «quitar_mojon» con autor, que el servidor reparte a todos.",
+   "En el juego: en Desmontar, al apuntar a tu mojón se resalta en naranja, lo que se perdería en rojo, y el aviso en rojo dice cuántas piezas y muebles se pierden; el botón pasa a «Quitar el mojón»; al confirmar, aviso de lo perdido y de que se puede poner el mojón donde se quiera. El mojón de otro no se toca. En los tres idiomas.",
+   "Pruebas: «Quitar el mojón» en la lógica (con zonas y sin ellas, rehecho desde el registro; rota con MUTAR=1 falla), «Navegador: quitar el mojón» en PC y móvil con capturas (rota con MUTAR=1 falla), y el recorrido de jugador amplía su paso 7: se arrepiente del sitio, quita el mojón, pierde el cimiento y lo vuelve a poner 30 m más allá.",
+   "GDD §11 al día con la regla final. Aviso: el avance de la lógica se subió a main por error antes de las pruebas en la nube (pasaron después); en línea, el aviso cuenta solo lo construido que tiene el navegador a la vista (el servidor lo quita todo)."
+  ],
+  "pruebas": "Batería entera, 32 grupos correctos (31 en la nube de GitHub y el grupo web repetido tras traer las capturas que faltaban); «Quitar el mojón» y «Navegador: quitar el mojón» nuevos, rotos a propósito fallan; recorrido de jugador 21/21",
+  "capturas": "capturas/demo-v100",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T16:25:03+00:00",
+  "fin": "2026-11-04T21:17:51+00:00",
+  "titulo": "Entre dos: el mojón y los muebles se pagan de lo que llevas (demo v101; carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "El mojón (3 piedras) y los muebles se pagan de lo que lleva el autor encima, no del montón común: lo comprueba el servidor con los inventarios que lleva él, y si no los llevas dice «No llevas los materiales.». En el juego, el aviso al apuntar ya mira lo que llevas.",
+   "La acción queda anotada ya pagada («lleva»): al rehacer el mundo (el servidor al arrancar, los demás con lo que reparte) no vuelve a cobrar del montón común, y el «lleva» que mande el navegador no vale.",
+   "Al quitar un mueble, lo que devuelve (el 75 %) va a lo que llevas; si no te cabe entero, no se quita. Provisional (en el registro de la demo): solo lo quita quien puede construir donde está.",
+   "Lo que devuelve una pieza de obra al desmontarla sigue yendo al arcón de pruebas: lo cambian «Lo tuyo es tuyo» y «Fuera el arcón de materiales».",
+   "Recorrido de jugador ampliado: sin nada encima no puede poner el mojón; lo paga con 3 de las 6 piedras que trae y el cimiento se acaba con las otras 3 y un segundo viaje de 5.",
+   "Pruebas al día: las del servidor, los bots y las de navegador cogen antes del arcón de pruebas lo que cuesta el mojón o el mueble (atajo de prueba llevarPara, solo en las pruebas).",
+   "Para que se pudiera generar la web: las capturas de la revisión de Cuentas (de la rama trabajo/20261104-1423) y la traducción de la tarea del chat, tal cual estaban en su rama.",
+   "Esta sesión duró casi cinco horas: la prueba de construcción en el navegador tarda unos 55 min en la nube y hubo que pasarla cuatro veces (los atajos de prueba de los muebles no cabían en las manos llenas)."
+  ],
+  "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido), dos veces: la segunda, tras unir main (quitar el mojón), 28 de 31 grupos a la primera; los tres que fallaron son los que dependen de la salida al azar o de la medida del panel («alrededor de la salida hay cosas que recoger», «nada en el agua», el panel de niveles de detalle) y al repetirlos salieron bien (lo que se recoge, a la segunda repetición). Tras unir otra vez main (demo v100): lógica, construcción, quitar el mojón, juego en inglés, mapa del rey, construir a la altura del suelo y demo única, bien. Pruebas nuevas en obras con lo que llevas: rotas con MUTAR=1, fallan (19). Recorrido de jugador: 23 bien.",
+  "capturas": "capturas/demo-v101",
+  "estado": "ok"
  }
 ]

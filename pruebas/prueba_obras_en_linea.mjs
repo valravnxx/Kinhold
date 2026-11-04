@@ -83,6 +83,7 @@ try {
   const yoA = a.bienvenida.autor;
 
   console.log('Una obra en el mundo');
+  await a.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });   // el mojón se paga de lo que llevas
   let r = await a.accion({ tipo: 'mojon', x: 0, z: 0 });
   const vColocar = b.esperar(m => m.tipo === 'accion' && m.entrada.tipo === 'colocar');
   r = await a.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: 0, z: 0, k: 0, rot: 0, dir: 0 });

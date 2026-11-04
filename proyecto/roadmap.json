@@ -123,6 +123,12 @@
      "estado": "hecho",
      "inicio": "2026-11-01T16:29:59+01:00",
      "fin": "2026-11-04T11:59:14+01:00"
+    },
+    {
+     "nombre": "Auditoría global del 4 nov: GDD y roadmap al día con lo decidido (zonas del rey, mojón desmontable, comarcas de inicio, clanes y tierra personal, fabricar sin aprender, guerra sin causa fija, paridad de cosméticos) y las tareas que faltaban (movimiento sin trampas, copia de seguridad)",
+     "estado": "hecho",
+     "inicio": "2026-11-04T17:12:15+01:00",
+     "fin": "2026-11-04T17:31:29+01:00"
     }
    ],
    "nota": "Idiomas: español, inglés y ruso en el juego, la web y los documentos de diseño."
@@ -1097,6 +1103,10 @@
      "fin": "2026-11-04T13:55:29+00:00"
     },
     {
+     "nombre": "Comprobar en la máquina real que los límites de intentos ven la dirección del jugador y no la del proxy (el registro del servidor tras una entrada desde fuera; Caddy manda X-Forwarded-For), y anotarlo en el diario (auditoría del 4 nov)",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Revisión completa y publicación",
      "estado": "en_curso",
      "inicio": "2026-11-04T14:23:11+00:00",
@@ -1128,7 +1138,9 @@
     },
     {
      "nombre": "El mojón y lo que se pone en tu tierra se pagan de lo que llevas (no del montón común), por el servidor con su autor",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-04T16:25:03+00:00",
+     "fin": "2026-11-04T21:17:51+00:00"
     },
     {
      "nombre": "Lo tuyo es tuyo: en tu tierra solo tú desmontas, usas puertas y sacas de tus almacenajes; el servidor lo comprueba con el autor",
@@ -1137,6 +1149,20 @@
     {
      "nombre": "El servidor no se fía del navegador en las obras: comprueba que estás cerca de la obra y en su planta antes de entregar, subir, trabajar o desmontar",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Movimiento sin trampas: el servidor limita la velocidad y el salto entre dos estados seguidos de cada personaje (lo que llega por encima se recorta a lo posible y se anota), para que «sin trampas» valga para andar y no solo para las obras (auditoría del 4 nov)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Zonas del rey (valravnx, 4 nov): las zonas con una veta marcada en el mapa, un sitio de salida o la ciudad no se reclaman, y en ellas cava y recoge cualquiera. Antes, con la lógica de comarcas, contar cuántas zonas de Whitholm tienen veta marcada, vado, collado, salida o ciudad, para que las del rey sean las justas y se vea en el mapa",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Desmontar el mojón (valravnx, 4 nov): el dueño quita su mojón cuando quiere, por el servidor con su autor; sus obras quedan como ruina sin dueño (o las desmonta antes, al 75 %) y no puede poner otro hasta pasados unos días reales (provisional: 3), para que reclamar y soltar no sirva para bloquear a otros",
+     "estado": "hecho",
+     "inicio": "2026-11-04T19:13:07+01:00",
+     "fin": "2026-11-04T20:25:28+01:00"
     },
     {
      "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio de las tres comarcas de inicio y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
@@ -1212,7 +1238,7 @@
      "fin": "2026-10-31T13:32:29+00:00"
     },
     {
-     "nombre": "Pasar al GDD y al documento de sistemas lo decidido en la revisión del 1 nov para este tramo (fabricar en cualquier sitio y sin aprender recetas, estaciones por uso, hoguera y hogar, almacenajes, carga al hombro, la casa humilde, los árboles), con sus traducciones",
+     "nombre": "Pasar al GDD y al documento de sistemas lo que falta de la revisión del 1 nov para este tramo (almacenajes de la base, carga al hombro, la casa humilde, los árboles jóvenes y adultos), con sus traducciones; lo de fabricar sin aprender recetas, estaciones por uso, hoguera y hogar ya está (4 nov). Va la primera de P3 porque el hito se planifica leyendo esos documentos",
      "estado": "pendiente"
     },
     {
@@ -1351,6 +1377,10 @@
      "estado": "pendiente"
     },
     {
+     "nombre": "El registro del mundo (mundo.jsonl) se compacta: al arrancar, el servidor guarda el estado entero una vez y sigue desde ahí, en vez de reproducir cada acción desde el primer día; con una prueba de que el mundo compactado es el mismo (auditoría del 4 nov)",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Partir src/juego/main.js (2.400 líneas) en partes con sentido, sin cambiar nada de lo que hace",
      "estado": "pendiente"
     },
@@ -1373,7 +1403,29 @@
    "estado": "pendiente",
    "jugable": "Roles (jugador, moderador, administrador) para la cuenta de valravnx y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
    "nota": "Revisión del 1 nov con valravnx: después: registros, expulsar y herramientas de admin. El admin por la cuenta llega antes, con «Cuentas».",
-   "tareas": []
+   "tareas": [
+    {
+     "nombre": "Copia de seguridad diaria del servidor de verdad (el mundo, los objetos, las fichas y las cuentas), guardada fuera de la máquina (en el almacenamiento de Hetzner o en un repositorio privado), con las últimas 14 y una restauración probada una vez; antes de abrir el juego a nadie de fuera (auditoría del 4 nov)",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "graficos",
+   "nombre": "Perfiles gráficos y posprocesado",
+   "estado": "en_curso",
+   "lleva": "chat",
+   "jugable": "Seis perfiles gráficos, de móvil de gama baja a PC de gama alta, y el posprocesado del estilo (oclusión ambiental, gradación de color, brillo de las luces, niebla, desenfoque puntual y haces de luz), sin que ningún perfil esconda lo que importa para jugar.",
+   "nota": "Lo lleva el chat con valravnx (4 nov), aparte de los P1–P7: los carriles no lo tocan.",
+   "tareas": [
+    {
+     "nombre": "Prueba de posprocesado y seis perfiles gráficos (valravnx, 4 nov): oclusión ambiental, mapeo tonal, gradación de color, brillo moderado, niebla, desenfoque puntual y haces de luz, sobre la escena de la prueba de estilo v5, con capturas lado a lado y medida de lo que cuesta cada cosa",
+     "estado": "en_curso",
+     "inicio": "2026-11-04T20:52:31+01:00",
+     "rama": "trabajo/20261104-2100-graficos"
+    }
+   ],
+   "num": "G"
   },
   {
    "id": "tierras",
@@ -2634,6 +2686,20 @@
      "archivo": "jugar/demo/v99.html",
      "capturas": "capturas/demo-v99",
      "notas": "El mapa del rey se acerca más y, de cerca, ya no pone los nombres de las comarcas, que tapaban tu tierra; el zoom deja quieto el punto al que acercas."
+    },
+    {
+     "v": "v100",
+     "fecha": "2026-11-04",
+     "archivo": "jugar/demo/v100.html",
+     "capturas": "capturas/demo-v100",
+     "notas": "Quitar el mojón para reposicionar (valravnx, 4 nov): en Desmontar, apunta a tu mojón; se resalta en rojo lo que se perdería y el aviso dice cuántas piezas y muebles pierdes; al confirmar («Quitar el mojón»), tu tierra queda libre, lo construido en ella se pierde y puedes poner el mojón donde quieras, sin espera. El mojón de otro no se toca."
+    },
+    {
+     "v": "v101",
+     "fecha": "2026-11-04",
+     "archivo": "jugar/demo/v101.html",
+     "capturas": "capturas/demo-v101",
+     "notas": "El mojón y los muebles se pagan de lo que llevas encima, no del montón común (3 piedras para el mojón; cada mueble, sus materiales), por el servidor con su autor. Al quitar un mueble, lo que devuelve va a lo que llevas."
     }
    ]
   },
@@ -3550,12 +3616,7 @@
  ],
  "decisiones_pendientes": [
   {
-   "pregunta": "Clanes y guerra (del 30 oct): con el vasallaje de comarca ya no hay un pago que dejar de hacer, así que el impago deja de ser causa de guerra. ¿Qué causas quedan, y asediar el centro de una comarca en su ventana necesita guerra declarada?",
-   "desde": "2026-10-30",
-   "hito": "tierras"
-  },
-  {
-   "pregunta": "Las comarcas de inicio Motdale y Breiddal: ¿las puede tomar un clan? La propuesta de la v0.3 decía que no hubiera reclamaciones cerca de las zonas de inicio. (Strandvang no: es del rey, valravnx 31 oct.)",
+   "pregunta": "Clanes y guerra (del 30 oct): con el vasallaje de comarca ya no hay un pago que dejar de hacer, así que el impago deja de ser causa de guerra. ¿Qué causas quedan, y asediar el centro de una comarca en su ventana necesita guerra declarada? Para la reunión tras P3, con las dos opciones escritas: solo guerra aceptada por las dos partes más las ventanas de asedio del centro, o causas automáticas tasadas",
    "desde": "2026-10-30",
    "hito": "tierras"
   }

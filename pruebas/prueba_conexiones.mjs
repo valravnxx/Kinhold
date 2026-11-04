@@ -108,6 +108,7 @@ try {
   const L2 = s.combate.luchadores[yoA];
   comprobar('y su luchador vuelve como estaba (heridas, sangre, arma)', !!L2 && L2.heridas.length === 1 && L2.heridas[0].zona === 'brazoI' && L2.arma === 'hacha' && L2.sangre <= sangreAntes,
     `${L2 && L2.heridas.length} herida, sangre ${L2 && L2.sangre.toFixed(2)}`);
+  await A2.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });   // el mojón se paga de lo que llevas
   const r1 = await A2.accion({ tipo: 'mojon', x: 0, z: 0 });
   const vista = await B.esperar(m => m.tipo === 'accion' && m.entrada.tipo === 'mojon');
   comprobar('lo que hace después lleva el mismo autor', r1.ok && vista.entrada.autor === yoA);
@@ -166,6 +167,7 @@ try {
   for (let i = 0; i < 2000; i++) I.ws.send(estado);
   const codI = await Promise.race([I.cerrado, pausa(2000).then(() => null)]);
   comprobar('quien inunda (2000 mensajes de golpe) es echado (1008)', codI === 1008, `código ${codI}`);
+  for (const [material, cantidad] of [['tabla', 3], ['clavo', 4]]) await B.accion({ tipo: 'sacar_arcon', material, cantidad });   // la mesa se paga de lo que llevas
   const r3 = await B.accion({ tipo: 'decorar', pieza: 'mesa', x: 0.3, y: 0.2, z: 0.3, rot: 0.5 });
   comprobar('los demás siguen jugando', r3.ok, r3.motivo || '');
 
@@ -217,6 +219,7 @@ try {
   const aceptadas = M.recibidos.filter(m => m.tipo === 'resultado' && m.ok);
   comprobar('lo roto no cambia el mundo (o lo que cambia, lo acepta la lógica pura y se reparte)', aceptadas.length > 0 || foto(s.mundo) === mundoAntes, `${aceptadas.length} aceptadas`);
   comprobar('nadie se hace pasar por otro con __proto__', !M.recibidos.some(m => m.tipo === 'accion' && m.entrada.autor === 'jugador:falso'));
+  for (const [material, cantidad] of [['tabla', 3], ['clavo', 4]]) await B.accion({ tipo: 'sacar_arcon', material, cantidad });   // la mesa se paga de lo que llevas
   const r4 = await B.accion({ tipo: 'decorar', pieza: 'mesa', x: 0.6, y: 0.2, z: 0.6, rot: 0 });
   comprobar('después, el servidor sigue atendiendo a los demás', r4.ok, r4.motivo || '');
   const fichaA = A.bienvenida.ficha;

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="9134f37159e21329c8c338271352a0a1fb1183c0">
+<meta name="kinhold-origen" content="776aa13b5dc039d0e883a414f0f49d34b6bb9825">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold Systems and Content</title>
 <style>
@@ -42,6 +42,8 @@ li{margin:3px 0}
 .tag{display:inline-block;font:600 .72rem/1.4 system-ui,sans-serif;padding:2px 8px;border-radius:99px;margin-right:6px;vertical-align:2px}
 .ok{background:var(--ok-bg);color:var(--ok)}
 .open{background:var(--open-bg);color:var(--open)}
+.old{background:#e8e4dc;color:#7a7368}
+s{color:#7a7368}
 .prop{background:var(--prop-bg);color:var(--prop)}
 .gap{background:var(--gap-bg);color:var(--gap)}
 .legend{font-family:system-ui,sans-serif;font-size:.85rem;color:var(--muted)}
@@ -117,7 +119,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.76rem;text-tra
 <tr><td><b>N3 Stone</b></td><td>High</td><td>Lime kiln</td><td>Lime, ashlar, mortar, roof tile</td><td>Rubble masonry and ashlar masonry, stone castles, watermill, mail, crossbow, boats</td></tr>
 <tr><td><b>N4 Steel</b></td><td>Late</td><td>Blast furnace</td><td>Steel, glass, bronze</td><td>Plate, longsword, cranequin crossbow, trebuchet, large ships, glass, cartography</td></tr>
 </table></div>
-<p class="note">Each tier is entered by building a specific station, and that station needs materials from the previous tier. This way progress feels natural and there is no tech tree to memorise.</p>
+<p class="note"><span class="tag old">SUPERSEDED · 1 Nov</span><s>Each tier is entered by building a specific station, and that station needs materials from the previous tier.</s> Since the review of 1 Nov the tiers are only a period guide for the recipes: <b>stations are tools by use, not tiers</b>, you craft anywhere and without learning recipes (GDD, section 9). And the boundary stone no longer levels up (section 10).</p>
 </section>
 
 <!-- 3 -->
@@ -475,7 +477,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.76rem;text-tra
 </table></div>
 <p>Boundary stone consumption: a small amount per real week according to what is built (for example, 1 unit of each material for every 10 pieces of that material). So a hut is kept up with a couple of logs a week.</p>
 <h3>Boundary stone</h3>
-<div class="tw"><table>
+<p><span class="tag old">SUPERSEDED · 4 Nov</span> The boundary stone has no levels or radii: <b>your land is the whole zone</b> of the district where you place it (one zone, one owner; GDD, section 11). It is placed the same way (3 stones). The table is struck through.</p>
+<div class="tw" style="text-decoration:line-through;color:#7a7368"><table>
 <tr><th>Level</th><th>Upgraded with</th><th>Land radius</th><th>Exclusion radius</th></tr>
 <tr><td>1</td><td>Placing it (3 stones)</td><td>20 m</td><td>300 m</td></tr>
 <tr><td>2</td><td>N1 materials (logs, rope, mud)</td><td>40 m</td><td>500 m</td></tr>
@@ -508,8 +511,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.76rem;text-tra
   <li>Thirst warnings: finds a river and drinks with their hands.</li>
   <li>Pulls up fibre and makes cord; ties the cord on as a belt (1 slot).</li>
   <li>Gathers flint and stone, sets up a knapping stone and makes a flake and a stone axe.</li>
-  <li>Gathers branches, makes a firewood frame, lights a campfire for the night.</li>
-  <li>Plants their boundary stone (3 stones) and builds a branch shelter, which binds as a bed.</li>
+  <li>Gathers branches, makes a firewood frame and lights the <b>campfire outdoors</b> (tinder and fire drill) for the night; it is fed with firewood and goes out.</li>
+  <li>Places their boundary stone (3 stones): their land is the whole zone. Builds a branch shelter, which binds as a bed; with the humble house comes the <b>hearth</b> indoors, fixed and longer-lasting.</li>
   <li>With the fire-hardened spear hunts a hare, butchers it with the flake and roasts it.</li>
   <li>Fells a young tree, makes the log bench and enters N1.</li>
 </ol>

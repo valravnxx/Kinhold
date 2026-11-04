@@ -1,7 +1,7 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
 import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, altoTejadoEn, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR, ponerZonas, hayZonas } from '../logica/construccion.js';
-import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra } from '../logica/acciones.js';
+import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra, USAN_INVENTARIO, reservaDe } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto, moverHumo } from '../mundo/modelos.js';
 import { llevadoDe } from '../logica/llevado.js';
@@ -87,7 +87,8 @@ function accion(a) {
   if (r.ok && USA_INVENTARIO.has(a.tipo) && almacen) guardarInventarios(almacen, inventarios);
   return r;
 }
-const USA_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon']);
+// lo que cobra de lo que llevas (o te devuelve): las obras, el arcón de pruebas, el mojón y los muebles
+const USA_INVENTARIO = USAN_INVENTARIO;
 // Lo que lleva el jugador (inventario por huecos, src/logica/inventario.js): también por acciones con autor.
 // Cuenta para ir más despacio cargado; se ve y se cambia en el panel de inventario (src/juego/panel_inventario.js).
 // En línea (valravnx, 30 oct: siempre en línea), lo que llevas, el suelo, lo talado y lo recogido son los del servidor
@@ -488,9 +489,11 @@ function reconstruir() {
   for (const g of mallasMojon) { escena.remove(g); liberar(g); }
   mallasMojon = [];
   if (anilloTierra) { escena.remove(anilloTierra); liberar(anilloTierra); anilloTierra = null; }
-  for (const mj of Object.values(mundo.mojones)) {
+  for (const [autor, mj] of Object.entries(mundo.mojones)) {
     const g = modeloMojon();
     g.position.set(mj.x, sueloEn(mj.x, mj.z), mj.z);
+    // se puede elegir en Desmontar (el tuyo: quitarlo y dejar tu tierra; valravnx, 4 nov)
+    g.userData.mojon = autor; g.traverse(o => { o.userData.ref = g; });
     escena.add(g); mallasMojon.push(g);
   }
   const mio = miMojon();
@@ -670,7 +673,7 @@ function evaluarColocacion() {
   if (sel.clase === 'mojon') {
     fantasma.position.set(x, sueloEn(x, z), z); fantasma.rotation.set(0, 0, 0);
     const pm = mundo.puedeMojon(x, z, yoAutor());
-    const v = miMojon() ? { ok: false, motivo: t('yaMojon') } : !pm.ok ? pm : mundo.puedePagar(PIEZAS.mojon.coste) ? { ok: true } : { ok: false, motivo: t('faltanMateriales') };
+    const v = miMojon() ? { ok: false, motivo: t('yaMojon') } : !pm.ok ? pm : mundo.puedePagar(PIEZAS.mojon.coste, reservaDe(inventario())) ? { ok: true } : { ok: false, motivo: t('llevaMateriales') };
     pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
     estado.candidato = { tipo: 'mojon', x, z, v };
     return;
@@ -693,7 +696,7 @@ function evaluarColocacion() {
     let v = { ok: true };
     if (!miMojon()) v = { ok: false, motivo: t('primeroMojon') };
     else if (!mundo.dentroDeTierra(x, z, yoAutor())) v = { ok: false, motivo: t('fueraTierra') };
-    else if (!mundo.puedePagar(DECORACION[sel.tipo].coste)) v = { ok: false, motivo: t('faltanMateriales') };
+    else if (!mundo.puedePagar(DECORACION[sel.tipo].coste, reservaDe(inventario()))) v = { ok: false, motivo: t('llevaMateriales') };
     pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
     estado.candidato = { tipo: 'deco', x, y, z, v };
     return;
@@ -754,9 +757,24 @@ function colocar() {
 function evaluarDesmontaje(hit) {
   limpiarResaltado();
   estado.pendienteDesmontar = null;
+  $('btnConfirmar').textContent = tr('Desmontar');
   if (!hit) { mostrarAviso(''); return; }
   const obj = hit.object.userData.ref;
   if (!obj) { mostrarAviso(''); return; }
+  if (obj.userData.mojon) {
+    // tu mojón: quitarlo deja tu tierra y se pierde todo lo construido en ella (valravnx, 4 nov: que avise)
+    if (obj.userData.mojon !== yoAutor()) { mostrarAviso(t('mojonAjeno'), true); return; }
+    const p = mundo.perderiaSinMojon(yoAutor());
+    if (!p) { mostrarAviso(''); return; }
+    resaltar(obj, 'naranja');
+    for (const c of p.construcciones) for (const k of c.piezas.keys()) { const o = objDe(c, k); if (o) resaltar(o, 'rojo'); }
+    for (const d of p.muebles) { const r = registroMallas.find(m => m.deco === d); if (r) resaltar(r.obj, 'rojo'); }
+    estado.pendienteDesmontar = { mojon: true };
+    $('btnConfirmar').textContent = tr('Quitar el mojón');
+    const n = p.piezas + p.muebles.length;
+    mostrarAviso(n ? tr('Quitar tu mojón: dejas tu tierra y PIERDES lo construido en ella ({n} piezas y muebles, sin recuperar nada). Desmonta antes lo que quieras recuperar.', { n }) : t('quitarMojonVacio'), true);
+    return;
+  }
   if (obj.userData.deco) {
     resaltar(obj, 'naranja');
     estado.pendienteDesmontar = { deco: obj.userData.deco };
@@ -780,10 +798,18 @@ function confirmarDesmontaje() {
   const pd = estado.pendienteDesmontar;
   if (!pd) return;
   let r;
-  if (pd.deco) r = accion({ tipo: 'quitar', id: pd.deco.id });
+  if (pd.mojon) r = accion({ tipo: 'quitar_mojon' });
+  else if (pd.deco) r = accion({ tipo: 'quitar', id: pd.deco.id });
   else r = accion({ tipo: 'desmontar', construccion: pd.c.id, clave: pd.key });
   estado.pendienteDesmontar = null;
-  if (r.ok) {
+  if (r.ok && pd.mojon) {
+    cambiarModo('mover'); guardar(); reconstruir();
+    const n = r.perdidas ? r.perdidas.piezas + r.perdidas.muebles : 0;
+    // el último: lo que diga la interfaz al cambiar de modo (el consejo del mojón) no lo tapa
+    mostrarAviso(n ? tr('Mojón quitado: tu tierra queda libre y se han perdido {n} piezas y muebles. Pon el mojón donde quieras.', { n }) : t('mojonQuitado'));
+    limpiarResaltado(); $('confirmar').hidden = true;
+    return;
+  } else if (r.ok) {
     const dev = Object.entries(r.devuelto || {}).map(([m, n]) => `+${n} ${tr(MATERIALES[m]).toLowerCase()}`).join(', ');
     guardar(); reconstruir();
     mostrarAviso(`${t('desmontado')}${dev ? ': ' + dev : ''}${r.caen && r.caen.length ? ' · ' + r.caen.length + ' ' + (r.caen.length === 1 ? t('destruida1') : t('destruidas')) : ''}`);
@@ -850,7 +876,7 @@ function sueloBajoRayo(r) {
 }
 function piezaBajo(clientX, clientY) {
   const rr = rayoDesde(clientX, clientY);
-  const objs = registroMallas.filter(m => m.obj.visible).map(m => m.obj);
+  const objs = registroMallas.filter(m => m.obj.visible).map(m => m.obj).concat(mallasMojon);
   const hits = rr.intersectObjects(objs, true).filter(h => h.object.visible && h.object.userData.ref && h.object.userData.ref.visible);
   return hits[0] || null;
 }
@@ -2352,8 +2378,35 @@ window.__kinhold = {
   apuntar(x, z, y = 0) { estado.puntero = { x, z, ySuperficie: y }; evaluarColocacion(); },
   apuntarPantalla(cx, cy) { estado.puntero = punteroDesde(cx, cy); evaluarColocacion(); return estado.puntero; },
   apuntarPieza(cx, cy) { evaluarDesmontaje(piezaBajo(cx, cy)); },
+  elegirPieza(cx, cy) { elegirDesmontaje(cx, cy); },   // como el clic o el toque en Desmontar: deja elegido y saca Confirmar
   proyectar(x, y, z) { const v = new THREE.Vector3(x, y, z).project(camara); return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight }; },
-  // atajo de prueba: lleva el material y termina todas las obras a medias, siempre con acciones
+  // atajo de prueba: coge del arcón de pruebas lo que cuesta el mojón o un mueble (se pagan de lo que llevas), con acciones
+  llevarPara(clase, tipo) {
+    const coste = clase === 'mojon' ? PIEZAS.mojon.coste : DECORACION[tipo] && DECORACION[tipo].coste;
+    if (!coste) return false;
+    const inv = inventario();
+    if (!inv.lugares.espalda) accionInventario({ tipo: 'coger', objeto: 'mochila_bastidor', cantidad: 1, a: 'espalda' });
+    if (!inv.lugares.cintura) accionInventario({ tipo: 'coger', objeto: 'cinto_anillas', cantidad: 1, a: 'cintura' });
+    // lo que llevas en las manos y no hace falta aquí, si estorba, vuelve al arcón de pruebas
+    const soltarManos = () => {
+      for (const l of ['mano:der', 'mano:izq']) {
+        const c = inv.lugares[l], mat = c && Object.keys(OBJETO_DE_MATERIAL).find(k => OBJETO_DE_MATERIAL[k] === c.tipo);
+        if (mat && !coste[mat]) accion({ tipo: 'dejar_arcon', de: l, cantidad: c.n });
+      }
+    };
+    const sacar = (m, q) => {
+      // un tronco, al hombro si está libre (en las manos o la mochila puede no caber); si no, donde quepa
+      if (m === 'tronco' && q === 1 && !inv.lugares.hombro && accion({ tipo: 'sacar_arcon', material: m, cantidad: 1, a: 'hombro' }).ok) return true;
+      return accion({ tipo: 'sacar_arcon', material: m, cantidad: q }).ok;
+    };
+    let todo = true;
+    for (const [m, n] of Object.entries(coste)) {
+      const q = n - inv.cuantos(OBJETO_DE_MATERIAL[m]);
+      if (q <= 0) continue;
+      if (!sacar(m, q)) { soltarManos(); if (!sacar(m, n - inv.cuantos(OBJETO_DE_MATERIAL[m]))) todo = false; }
+    }
+    return todo;
+  },
   terminarObras() {
     if (enLinea) { // en línea, por el servidor: las mismas acciones que haría el jugador (llevar material y trabajar)
       const obras = []; for (const c of mundo.construcciones) for (const [key, p] of c.piezas) if (p.obra) obras.push([c.id, key]);

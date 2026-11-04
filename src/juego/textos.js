@@ -3,6 +3,7 @@ import { tr } from '../idioma.js';
 const ES = {
   yaMojon: 'Ya tienes un mojón.',
   faltanMateriales: 'Faltan materiales.',
+  llevaMateriales: 'No llevas los materiales.',
   primeroMojon: 'Primero coloca tu mojón.',
   fueraTierra: 'Fuera de tu tierra.',
   puntoDebil: 'Punto débil',
@@ -44,5 +45,8 @@ const ES = {
   subesAndamio: 'Subes al andamio, a la altura de la planta',
   quedan: 'quedan',
   confirmaReinicio: '¿Seguro? Pulsa otra vez para borrar todo.',
+  mojonAjeno: 'Ese mojón no es tuyo.',
+  quitarMojonVacio: 'Quitar tu mojón: dejas tu tierra (no hay nada construido en ella). Podrás ponerlo en otro sitio.',
+  mojonQuitado: 'Mojón quitado: tu tierra queda libre. Pon el mojón donde quieras.',
 };
 export function t(k) { return tr(ES[k] || k); }
