@@ -96,7 +96,7 @@ Las horas son reales (`date -Iseconds`), nunca estimadas. Las tareas guardan tam
   - **Árboles**: jóvenes (3–5 m, finos) bien distintos de los adultos (un 30 % más altos); el joven, con hacha de piedra, da tronco delgado y varas. Caída por física con daño (hito «Talar de verdad»).
   - **Cuentas antes que nada**: usuario y contraseña; el admin, por la cuenta de valravnx.
   - **El arte se cuida dentro de cada tarea** (cada pieza nueva con el estilo v5), ya no en un hito aparte.
-- **Tu tierra (valravnx, 4 nov)**: un mojón por personaje, y tu tierra es **la zona entera** (de las de cada comarca, aproximadamente 1,2 km²) donde lo pones; una zona, un dueño. El dueño puede **invitar** a quien tenga al lado a construir en su tierra (y quitárselo). También en Strandvang (sin peleas, pero se reclama). El mapa del rey enseña tu zona de color con su mojón y, al acercarlo, los lindes de las zonas. Qué pasa con la tierra de los que dejan de jugar, por decidir con valravnx.
+- **Tu tierra (valravnx, 4 nov)**: un mojón por personaje, y tu tierra es **la zona entera** (de las de cada comarca, aproximadamente 1,2 km²) donde lo pones; una zona, un dueño. El dueño puede **invitar** a quien tenga al lado a construir en su tierra (y quitárselo). También en Strandvang (sin peleas, pero se reclama). El mapa del rey enseña tu zona de color con su mojón y, al acercarlo, los lindes de las zonas. La tierra vuelve al rey si no se usa: 30 días sin entrar el dueño ni sus invitados (15 si no tiene ninguna obra terminada), con aviso por correo una semana antes y el último día (tarea de P2).
 
 ## Reglas de valravnx
 
