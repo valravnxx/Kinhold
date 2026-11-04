@@ -1104,7 +1104,9 @@
     },
     {
      "nombre": "Comprobar en la máquina real que los límites de intentos ven la dirección del jugador y no la del proxy (el registro del servidor tras una entrada desde fuera; Caddy manda X-Forwarded-For), y anotarlo en el diario (auditoría del 4 nov)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-04T23:23:32+00:00",
+     "rama": "trabajo/20261104-2323"
     },
     {
      "nombre": "Revisión completa y publicación",
