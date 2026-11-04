@@ -1113,9 +1113,10 @@
    "tareas": [
     {
      "nombre": "Recorrido de jugador automático: una prueba que juega como un jugador nuevo, sin arcón y con lo que se recoge, de principio a fin de lo que haya (hoy: recoger, talar, el mojón y un cimiento), y que falla si algo no se puede hacer así. Desde aquí, una tarea de juego no se publica si su parte del recorrido no sale",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-04T12:25:18+00:00",
-     "rama": "trabajo/20261104-1225"
+     "rama": "trabajo/20261104-1225",
+     "fin": "2026-11-04T13:49:49+00:00"
     },
     {
      "nombre": "Un mojón por personaje en Whitholm (valravnx, 31 oct): la lógica con autor no deja poner un segundo; en el continente, hasta tres más en total, cuando se llegue en barco",
