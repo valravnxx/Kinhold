@@ -4128,5 +4128,24 @@
   "pruebas": "Batería entera, 32 grupos correctos (31 en la nube de GitHub y el grupo web repetido tras traer las capturas que faltaban); «Quitar el mojón» y «Navegador: quitar el mojón» nuevos, rotos a propósito fallan; recorrido de jugador 21/21",
   "capturas": "capturas/demo-v100",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T16:25:03+00:00",
+  "fin": "2026-11-04T21:17:51+00:00",
+  "titulo": "Entre dos: el mojón y los muebles se pagan de lo que llevas (demo v101; carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "El mojón (3 piedras) y los muebles se pagan de lo que lleva el autor encima, no del montón común: lo comprueba el servidor con los inventarios que lleva él, y si no los llevas dice «No llevas los materiales.». En el juego, el aviso al apuntar ya mira lo que llevas.",
+   "La acción queda anotada ya pagada («lleva»): al rehacer el mundo (el servidor al arrancar, los demás con lo que reparte) no vuelve a cobrar del montón común, y el «lleva» que mande el navegador no vale.",
+   "Al quitar un mueble, lo que devuelve (el 75 %) va a lo que llevas; si no te cabe entero, no se quita. Provisional (en el registro de la demo): solo lo quita quien puede construir donde está.",
+   "Lo que devuelve una pieza de obra al desmontarla sigue yendo al arcón de pruebas: lo cambian «Lo tuyo es tuyo» y «Fuera el arcón de materiales».",
+   "Recorrido de jugador ampliado: sin nada encima no puede poner el mojón; lo paga con 3 de las 6 piedras que trae y el cimiento se acaba con las otras 3 y un segundo viaje de 5.",
+   "Pruebas al día: las del servidor, los bots y las de navegador cogen antes del arcón de pruebas lo que cuesta el mojón o el mueble (atajo de prueba llevarPara, solo en las pruebas).",
+   "Para que se pudiera generar la web: las capturas de la revisión de Cuentas (de la rama trabajo/20261104-1423) y la traducción de la tarea del chat, tal cual estaban en su rama.",
+   "Esta sesión duró casi cinco horas: la prueba de construcción en el navegador tarda unos 55 min en la nube y hubo que pasarla cuatro veces (los atajos de prueba de los muebles no cabían en las manos llenas)."
+  ],
+  "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido), dos veces: la segunda, tras unir main (quitar el mojón), 28 de 31 grupos a la primera; los tres que fallaron son los que dependen de la salida al azar o de la medida del panel («alrededor de la salida hay cosas que recoger», «nada en el agua», el panel de niveles de detalle) y al repetirlos salieron bien (lo que se recoge, a la segunda repetición). Tras unir otra vez main (demo v100): lógica, construcción, quitar el mojón, juego en inglés, mapa del rey, construir a la altura del suelo y demo única, bien. Pruebas nuevas en obras con lo que llevas: rotas con MUTAR=1, fallan (19). Recorrido de jugador: 23 bien.",
+  "capturas": "capturas/demo-v101",
+  "estado": "ok"
  }
 ]

@@ -1138,9 +1138,9 @@
     },
     {
      "nombre": "El mojón y lo que se pone en tu tierra se pagan de lo que llevas (no del montón común), por el servidor con su autor",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-04T16:25:03+00:00",
-     "rama": "trabajo/20261104-1625"
+     "fin": "2026-11-04T21:17:51+00:00"
     },
     {
      "nombre": "Lo tuyo es tuyo: en tu tierra solo tú desmontas, usas puertas y sacas de tus almacenajes; el servidor lo comprueba con el autor",
@@ -2693,6 +2693,13 @@
      "archivo": "jugar/demo/v100.html",
      "capturas": "capturas/demo-v100",
      "notas": "Quitar el mojón para reposicionar (valravnx, 4 nov): en Desmontar, apunta a tu mojón; se resalta en rojo lo que se perdería y el aviso dice cuántas piezas y muebles pierdes; al confirmar («Quitar el mojón»), tu tierra queda libre, lo construido en ella se pierde y puedes poner el mojón donde quieras, sin espera. El mojón de otro no se toca."
+    },
+    {
+     "v": "v101",
+     "fecha": "2026-11-04",
+     "archivo": "jugar/demo/v101.html",
+     "capturas": "capturas/demo-v101",
+     "notas": "El mojón y los muebles se pagan de lo que llevas encima, no del montón común (3 piedras para el mojón; cada mueble, sus materiales), por el servidor con su autor. Al quitar un mueble, lo que devuelve va a lo que llevas."
     }
    ]
   },
