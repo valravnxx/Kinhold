@@ -1,0 +1,192 @@
+Altura de cada muro
+  OK   Muro de zarzo y barro: arriba a 2.5 m — arriba=2.500 abajo=0.000
+  OK   Muro de zarzo y barro: abajo a 0 m
+  OK   Muro de troncos: arriba a 2.5 m — arriba=2.498 abajo=0.002
+  OK   Muro de troncos: abajo a 0 m
+  OK   Muro de troncos con puerta: arriba a 2.5 m — arriba=2.498 abajo=0.000
+  OK   Muro de troncos con puerta: abajo a 0 m
+  OK   Muro de troncos con ventana: arriba a 2.5 m — arriba=2.498 abajo=0.002
+  OK   Muro de troncos con ventana: abajo a 0 m
+  OK   Muro de entramado: arriba a 2.5 m — arriba=2.500 abajo=-0.000
+  OK   Muro de entramado: abajo a 0 m
+  OK   Muro de tablas: arriba a 2.5 m — arriba=2.500 abajo=0.000
+  OK   Muro de tablas: abajo a 0 m
+  OK   Muro de tablas con puerta: arriba a 2.5 m — arriba=2.500 abajo=0.000
+  OK   Muro de tablas con puerta: abajo a 0 m
+  OK   Muro de tablas con ventana: arriba a 2.5 m — arriba=2.500 abajo=0.000
+  OK   Muro de tablas con ventana: abajo a 0 m
+  OK   Medio muro: arriba a 1.25 m — arriba=1.248 abajo=0.002
+  OK   Medio muro: abajo a 0 m
+Huecos limpios
+  OK   Muro de troncos con puerta: hueco de puerta libre hasta 2 m
+  OK   Muro de tablas con puerta: hueco de puerta libre hasta 2 m
+  OK   Muro de troncos con ventana: hueco libre de 1 a 1.75 m
+  OK   Muro de tablas con ventana: hueco libre de 1 a 1.75 m
+Hiladas alineadas entre muros de troncos
+  OK   Muro de troncos: diez hiladas — 0.125 0.375 0.625 0.875 1.125 1.375 1.625 1.875 2.125 2.375
+  OK   Muro de troncos con puerta: cada tronco a la misma altura que en el muro liso
+  OK   Muro de troncos con ventana: cada tronco a la misma altura que en el muro liso
+Cimientos, suelos y escaleras con el estilo v5
+  OK   Cimiento de piedra: se pisa a 0.12 m — arriba=0.118
+  OK   Cimiento de piedra: no sale de la casilla — sale 0.047 m
+  OK   Cimiento de troncos: se pisa a 0.12 m — arriba=0.122
+  OK   Cimiento de troncos: no sale de la casilla — sale 0.010 m
+  OK   Suelo de troncos: se pisa a 0.12 m — arriba=0.121
+  OK   Suelo de troncos: no sale de la casilla — sale 0.003 m
+  OK   Suelo de tablas: se pisa a 0.12 m — arriba=0.120
+  OK   Suelo de tablas: no sale de la casilla — sale -0.005 m
+  OK   Cimiento de piedra: hecha con el estilo v5 (mallas por textura) — estilo_piedra
+  OK   Cimiento de troncos: hecha con el estilo v5 (mallas por textura) — estilo_veta estilo_anillos
+  OK   Suelo de troncos: hecha con el estilo v5 (mallas por textura) — estilo_corteza estilo_veta estilo_anillos
+  OK   Suelo de tablas: hecha con el estilo v5 (mallas por textura) — estilo_veta
+  OK   Escalera de mano: hecha con el estilo v5 (mallas por textura) — estilo_veta
+  OK   Escalera de tablas: hecha con el estilo v5 (mallas por textura) — estilo_veta
+  OK   Andamio: hecha con el estilo v5 (mallas por textura) — estilo_veta estilo_anillos estilo_liso
+  OK   Polea: hecha con el estilo v5 (mallas por textura) — estilo_liso estilo_veta
+  OK   Polipasto con torno: hecha con el estilo v5 (mallas por textura) — estilo_liso estilo_liso estilo_veta estilo_liso estilo_veta estilo_liso estilo_liso estilo_liso
+  OK   polipasto: el motón de abajo baja hasta la carga y los ramales se alargan con él — de 1.260 a -3.000; ramales 0.475 → 4.735
+  OK   polipasto: recogido, cuelga bajo la viga sin llegar al suelo de su planta — 1.260 m
+  OK   torno: hecho con el estilo v5 y con su tambor aparte — estilo_veta estilo_veta estilo_liso
+  OK   Andamio: la plataforma se pisa a la altura del suelo de la planta de encima — arriba=2.620 (suelo 2.620)
+Tejados y rellenos bajo el tejado con el estilo v5
+  OK   Tejado de paja: hecho con el estilo v5 (mallas por textura) — estilo_paja
+  OK   Tejado de paja: nada asoma por debajo del plano del tejado dentro de la casilla — asoma 0.000 m
+  OK   Tejado de tablillas: hecho con el estilo v5 (mallas por textura) — estilo_veta
+  OK   Tejado de tablillas: nada asoma por debajo del plano del tejado dentro de la casilla — asoma 0.000 m
+  OK   Tejado de teja: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_piedra
+  OK   Tejado de teja: nada asoma por debajo del plano del tejado dentro de la casilla — asoma 0.000 m
+  OK   Tejado de paja: entre tramos vecinos, lados planos que se tocan — x de -1.000 a 1.000
+  OK   Tejado de paja: vuela 20 cm por los lados sueltos — x hasta 1.200
+  OK   Tejado de paja: la cumbrera redonda solo si se pide — 1.437 → 1.690
+  OK   Tejado de teja: entre tramos vecinos, cada uno pone la cobija de su izquierda y no la de la derecha — x de -1.074 a 1.030
+  OK   Tejado de teja: vuela por los lados sueltos, con tabla de remate — x de -1.240 a 1.240
+  OK   Tejado de teja: el caballete de la cumbrera solo si se pide — 1.366 → 1.469
+  OK   Tejado de teja: ligero para el móvil (como mucho 2,5 veces los triángulos de la paja) — 2072 → 5056 triángulos
+  OK   Remate de paja (esquina) (tesa): nada asoma por debajo de su forma — asoma 0.000 m
+  OK   Remate de paja (esquina) (tesa): cada mitad se queda en su lado de la diagonal — sobresale 0.000 m
+  OK   Remate de paja (esquina) (hoya): nada asoma por debajo de su forma — asoma 0.000 m
+  OK   Remate de paja (esquina) (hoya): cada mitad se queda en su lado de la diagonal — sobresale 0.000 m
+  OK   Remate de paja (esquina): ligero para el móvil (como mucho el doble que su tramo: tiene dos aleros) — 2072 → 3982 triángulos
+  OK   Remate de tablillas (esquina) (tesa): nada asoma por debajo de su forma — asoma 0.000 m
+  OK   Remate de tablillas (esquina) (tesa): cada mitad se queda en su lado de la diagonal — sobresale 0.130 m
+  OK   Remate de tablillas (esquina) (hoya): nada asoma por debajo de su forma — asoma 0.000 m
+  OK   Remate de tablillas (esquina) (hoya): cada mitad se queda en su lado de la diagonal — sobresale 0.130 m
+  OK   Remate de tablillas (esquina): ligero para el móvil (como mucho el doble que su tramo: tiene dos aleros) — 2244 → 2592 triángulos
+  OK   Remate de teja (esquina) (tesa): nada asoma por debajo de su forma — asoma 0.000 m
+  OK   Remate de teja (esquina) (tesa): cada mitad se queda en su lado de la diagonal — sobresale 0.245 m
+  OK   Remate de teja (esquina) (hoya): nada asoma por debajo de su forma — asoma 0.000 m
+  OK   Remate de teja (esquina) (hoya): cada mitad se queda en su lado de la diagonal — sobresale 0.245 m
+  OK   Remate de teja (esquina): ligero para el móvil (como mucho el doble que su tramo: tiene dos aleros) — 5056 → 6658 triángulos
+  OK   relleno bajo el tejado (Muro de troncos): del muro al tejado, sin atravesarlo, con el estilo v5 — y de 0.000 a 1.196, atraviesa 0.000
+  OK   relleno bajo el tejado (Muro de tablas): del muro al tejado, sin atravesarlo, con el estilo v5 — y de 0.000 a 1.196, atraviesa 0.000
+  OK   relleno bajo el tejado (Muro de zarzo y barro): del muro al tejado, sin atravesarlo, con el estilo v5 — y de -0.000 a 1.200, atraviesa 0.000
+  OK   relleno bajo el tejado (Muro de entramado): del muro al tejado, sin atravesarlo, con el estilo v5 — y de -0.000 a 1.200, atraviesa 0.000
+Puertas, cercas, portillo, empalizada y mojón con el estilo v5
+  OK   Puerta de varas: hecha con el estilo v5 (mallas por textura) — estilo_veta estilo_liso
+  OK   Puerta de varas: la hoja que se abre va aparte
+  OK   Puerta de tablas: hecha con el estilo v5 (mallas por textura) — estilo_veta estilo_liso
+  OK   Puerta de tablas: la hoja que se abre va aparte
+  OK   Portillo de varas: hecha con el estilo v5 (mallas por textura) — estilo_veta estilo_anillos estilo_veta estilo_liso
+  OK   Portillo de varas: la hoja que se abre va aparte
+  OK   Puerta de empalizada: hecha con el estilo v5 (mallas por textura) — estilo_veta estilo_veta estilo_liso
+  OK   Puerta de empalizada: la hoja que se abre va aparte
+  OK   Cerca de varas: hecha con el estilo v5 (mallas por textura) — estilo_veta estilo_anillos estilo_liso
+  OK   Empalizada: hecha con el estilo v5 (mallas por textura) — estilo_veta
+  OK   Mojón: hecho con el estilo v5 (mallas por textura) — estilo_piedra estilo_veta estilo_liso
+  OK   Puerta de varas: cabe en el hueco del muro — x de -0.490 a 0.498, y hasta 1.930
+  OK   Puerta de varas: abierta, deja libre el hueco — llega a x=-0.439
+  OK   Puerta de tablas: cabe en el hueco del muro — x de -0.496 a 0.485, y hasta 1.950
+  OK   Puerta de tablas: abierta, deja libre el hueco — llega a x=-0.420
+  OK   Cerca de varas: las varas llegan al borde de la casilla — x de -1.039 a 1.039
+  OK   Empalizada: unos 3 m de alto con las puntas — y de -0.003 a 3.438
+Contraventana y trampilla con el estilo v5
+  OK   Contraventana (Muro de troncos con ventana): con el estilo v5 y dos hojas que se abren
+  OK   Contraventana (Muro de troncos con ventana): cerrada tapa la ventana — x de -0.484 a 0.484, y de 1.035 a 1.815
+  OK   Contraventana (Muro de troncos con ventana): cerrada queda por fuera del muro, sin meterse en él — hoja desde z=0.167, muro hasta z=0.160
+  OK   Contraventana (Muro de troncos con ventana): abierta, cada hoja deja libre la ventana y queda pegada al muro, por fuera — x de -0.937 a -0.455, z de 0.166 a 0.272 (muro hasta 0.160)
+  OK   Contraventana (Muro de troncos con ventana): abierta, cada hoja deja libre la ventana y queda pegada al muro, por fuera — x de 0.455 a 0.937, z de 0.166 a 0.272 (muro hasta 0.160)
+  OK   Contraventana (Muro de tablas con ventana): con el estilo v5 y dos hojas que se abren
+  OK   Contraventana (Muro de tablas con ventana): cerrada tapa la ventana — x de -0.484 a 0.484, y de 1.035 a 1.815
+  OK   Contraventana (Muro de tablas con ventana): cerrada queda por fuera del muro, sin meterse en él — hoja desde z=0.077, muro hasta z=0.070
+  OK   Contraventana (Muro de tablas con ventana): abierta, cada hoja deja libre la ventana y queda pegada al muro, por fuera — x de -0.937 a -0.455, z de 0.076 a 0.182 (muro hasta 0.070)
+  OK   Contraventana (Muro de tablas con ventana): abierta, cada hoja deja libre la ventana y queda pegada al muro, por fuera — x de 0.455 a 0.937, z de 0.076 a 0.182 (muro hasta 0.070)
+  OK   Contraventana: va por el lado de fuera del muro (el que no da al suelo de la casa) — z de -0.243 a -0.167
+  OK   Trampilla: con el estilo v5 y una hoja que se abre
+  OK   Trampilla: cerrada, a ras del suelo y tapando el hueco de la casilla — y hasta 0.144, x de -0.993 a 0.993, z de -1.018 a 0.985
+  OK   Trampilla: abierta, de pie en el borde del arranque de la escalera (deja libre el hueco) — y hasta 2.055, z de -1.074 a -0.930
+Chimenea con el estilo v5
+  OK   Chimenea (cañón hasta 3.25 m): con el estilo v5, apagada, sin llamas ni humo — estilo_piedra estilo_liso estilo_corteza estilo_anillos ceniza
+  OK   Chimenea (cañón hasta 3.25 m): el cañón acaba donde dice la lógica — arriba=3.250
+  OK   Chimenea (cañón hasta 3.25 m): dentro de lo que ocupa (pegada al muro de +z, dentro de su casilla) — x de -0.770 a 0.770, z de 0.030 a 0.990, y desde 0.100
+  OK   Chimenea (cañón hasta 6.15 m): con el estilo v5, apagada, sin llamas ni humo — estilo_piedra estilo_liso estilo_corteza estilo_anillos ceniza
+  OK   Chimenea (cañón hasta 6.15 m): el cañón acaba donde dice la lógica — arriba=6.150
+  OK   Chimenea (cañón hasta 6.15 m): dentro de lo que ocupa (pegada al muro de +z, dentro de su casilla) — x de -0.770 a 0.770, z de 0.030 a 0.990, y desde 0.100
+  OK   Chimenea: por encima de la campana solo sube el cañón — 0 vértices fuera
+  OK   Chimenea encendida: llamas, brasas y humo — llamas=6 humo=9
+  OK   Chimenea encendida: dice dónde alumbra el fuego (en el hogar) y de dónde sale el humo (la boca del cañón)
+  OK   Chimenea: menos de 10 000 triángulos con un cañón de 6 m (tiene que aguantar en el móvil) — 8104 triángulos
+Adarve y sus escaleras con el estilo v5
+  OK   Adarve: con el estilo v5 — estilo_veta estilo_anillos estilo_liso
+  OK   Adarve: el piso está donde pisa el jugador (ALTO_ADARVE) — arriba=1.805
+  OK   Adarve: los postes llegan a la tierra y todo queda en su casilla, sin tocar la empalizada (+z) — x de -1.000 a 1.000, z de -0.980 a 0.800, y desde 0.000
+  OK   Adarve: menos de 6000 triángulos (tiene que aguantar en el móvil) — 2304 triángulos
+  OK   Escalera de mano hacia el adarve: más corta, sobresale de su piso para agarrarse y se apoya en su borde (-z) — arriba=2.456 (larga 2.955), z de -1.208 a -0.375
+  OK   Escalera de tablas hacia el adarve: llega a su piso, en el borde de su casilla — arriba=1.795, z hasta 1.020
+Muebles con el estilo v5
+  OK   Todos los muebles del juego tienen su medida en la prueba
+  OK   Cama de paja: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_anillos estilo_paja estilo_tejido
+  OK   Cama de paja: apoyado en el suelo y dentro de su sitio — y desde -0.001, 1.028 × 2.035 m
+  OK   Cama de madera: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_anillos estilo_tejido
+  OK   Cama de madera: apoyado en el suelo y dentro de su sitio — y desde -0.000, 1.090 × 2.090 m
+  OK   Mesa: hecho con el estilo v5 (mallas por textura) — estilo_veta
+  OK   Mesa: apoyado en el suelo y dentro de su sitio — y desde -0.011, 1.400 × 0.823 m
+  OK   Banco: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_anillos
+  OK   Banco: apoyado en el suelo y dentro de su sitio — y desde -0.000, 1.200 × 0.300 m
+  OK   Taburete: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_anillos
+  OK   Taburete: apoyado en el suelo y dentro de su sitio — y desde -0.007, 0.408 × 0.412 m
+  OK   Arcón: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_liso
+  OK   Arcón: apoyado en el suelo y dentro de su sitio — y desde 0.000, 1.040 × 0.605 m
+  OK   Barril: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_liso
+  OK   Barril: apoyado en el suelo y dentro de su sitio — y desde -0.000, 0.608 × 0.610 m
+  OK   Estantería: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_piedra estilo_tejido estilo_paja
+  OK   Estantería: apoyado en el suelo y dentro de su sitio — y desde 0.000, 1.010 × 0.350 m
+  OK   Antorcha de pie: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_piedra estilo_liso estilo_paja llama llama
+  OK   Antorcha de pie: apoyado en el suelo y dentro de su sitio — y desde -0.011, 0.388 × 0.385 m
+  OK   Alfombra de piel: hecho con el estilo v5 (mallas por textura) — estilo_hojas estilo_liso
+  OK   Alfombra de piel: apoyado en el suelo y dentro de su sitio — y desde -0.004, 1.471 × 1.188 m
+  OK   Estandarte: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_liso estilo_piedra estilo_tejido
+  OK   Estandarte: apoyado en el suelo y dentro de su sitio — y desde -0.011, 0.820 × 0.395 m
+  OK   Antorcha de pie: la llama brilla y no da sombra
+Armas, herramientas y objetos del duelo con el estilo v5
+  OK   Espada larga: hecho con el estilo v5 (mallas por textura) — estilo_tejido estilo_liso estilo_acero
+  OK   Espada de una mano: hecho con el estilo v5 (mallas por textura) — estilo_tejido estilo_liso estilo_acero
+  OK   Palo: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_anillos
+  OK   Arco: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_tejido linea:cuerda
+  OK   Piedra en la mano: hecho con el estilo v5 (mallas por textura) — estilo_piedra
+  OK   Escudo: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_tejido estilo_liso
+  OK   Flecha: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_liso estilo_tejido
+  OK   Piedra lanzada: hecho con el estilo v5 (mallas por textura) — estilo_piedra
+  OK   Poste de práctica: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_anillos estilo_paja estilo_liso estilo_piedra
+  OK   Diana: hecho con el estilo v5 (mallas por textura) — estilo_paja estilo_liso estilo_tejido estilo_veta
+  OK   Hacha de talar: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_liso estilo_anillos
+  OK   Pico: hecho con el estilo v5 (mallas por textura) — estilo_veta estilo_liso estilo_anillos
+  OK   Espada larga: llega hasta su punta (1.2 m) y no más — hasta 1.183 m
+  OK   Espada de una mano: llega hasta su punta (0.88 m) y no más — hasta 0.848 m
+  OK   Palo: llega hasta su punta (1.15 m) y no más — hasta 1.151 m
+  OK   Escudo: las tablas llenan el círculo de 0,64 m de lado a lado — 0.636 × 0.636 m
+  OK   Hacha de talar: unos 75 cm de largo, con la cabeza arriba y el filo hacia +z — 0.737 m, filo a 0.148 m
+  OK   Pico: mango de 65–80 cm, punta hacia +z (más de 20 cm) y azuela hacia −z (más de 10 cm) — 0.701 m, de -0.134 a 0.252 m en z
+  OK   Pico: la punta se curva hacia el mango (más baja que el ojo) — punta a 0.509 m de alto
+Suelos y cimientos de troncos seguidos (se juntan de una)
+  OK   Suelo de troncos solo: testas en los bordes
+  OK   Suelo de troncos entre vecinos iguales: sin testas en las juntas — 0 triángulos de testa
+  OK   Suelo de troncos entre vecinos: ninguna rendija en el borde (se ve madera, no hierba) — 0 rayos sin madera
+  OK   Suelo de troncos solo: hacia fuera conserva su margen (control de la prueba de rendijas) — 105 rayos sin madera
+  OK   Suelo de troncos con vecino a un lado: testas solo hacia fuera
+  OK   Cimiento de troncos solo: testas en los bordes
+  OK   Cimiento de troncos entre vecinos iguales: sin testas en las juntas — 0 triángulos de testa
+  OK   Cimiento de troncos entre vecinos: ninguna rendija en el borde (se ve madera, no hierba) — 0 rayos sin madera
+  OK   Cimiento de troncos solo: hacia fuera conserva su margen (control de la prueba de rendijas) — 106 rayos sin madera
+  OK   Cimiento de troncos con vecino a un lado: testas solo hacia fuera
+
+Resultado: 178 correctas, 0 fallidas
