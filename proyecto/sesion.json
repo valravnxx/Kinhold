@@ -5,5 +5,11 @@
   "hito": "entre-dos",
   "rama": "trabajo/20261104-1625"
  },
- "B": null
+ "B": null,
+ "chat:trabajo/20261104-2100-graficos": {
+  "inicio": "2026-11-04T20:52:31+01:00",
+  "tarea": "Prueba de posprocesado y seis perfiles gráficos (valravnx, 4 nov): oclusión ambiental, mapeo tonal, gradación de color, brillo moderado, niebla, desenfoque puntual y haces de luz, sobre la escena de la prueba de estilo v5, con capturas lado a lado y medida de lo que cuesta cada cosa",
+  "hito": "graficos",
+  "rama": "trabajo/20261104-2100-graficos"
+ }
 }
