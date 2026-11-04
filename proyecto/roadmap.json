@@ -1086,9 +1086,9 @@
     },
     {
      "nombre": "Recuperar la contraseña por correo (un código que caduca, con límites) y cambiar la contraseña o el correo desde el menú pidiendo la actual, con aviso por correo; al cambiar la contraseña se cierra la sesión en los demás aparatos",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-02T09:25:16+00:00",
-     "rama": "trabajo/20261102-0925"
+     "fin": "2026-11-04T09:22:20+00:00"
     },
     {
      "nombre": "El admin, por la cuenta y su correo: solo es admin la cuenta con el correo confirmado que diga la máquina (KINHOLD_ADMIN_CORREO), para que nadie pueda quedarse antes el nombre «valravnx»",
@@ -2581,6 +2581,13 @@
      "archivo": "jugar/demo/v95.html",
      "capturas": "capturas/demo-v95",
      "notas": "Cuentas con correo: al crear la cuenta hay que dar un correo (uno por cuenta) y confirmarlo con el código de 6 cifras que llega a él; sin confirmarlo no se entra en el mundo. Las cuentas de antes añaden su correo al entrar. Se puede pedir otro código o cambiar el correo. Mientras el servidor no tenga la clave de Resend, el código queda en su registro."
+    },
+    {
+     "v": "v96",
+     "fecha": "2026-11-04",
+     "archivo": "jugar/demo/v96.html",
+     "capturas": "capturas/demo-v96",
+     "notas": "Recuperar y cambiar la contraseña: «¿Has olvidado la contraseña?» manda un código al correo confirmado de la cuenta para poner otra; en el menú, cambiar la contraseña o el correo pidiendo la actual, con aviso por correo. Al cambiar la contraseña se cierra la sesión en los demás aparatos."
     }
    ]
   },

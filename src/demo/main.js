@@ -13,6 +13,8 @@ import { ponerRendimiento } from './rendimiento.js';
 import { medidaRendimiento, genteDePrueba } from '../mundo/rendimiento.js';
 import { generar, SEMILLA_MUNDO, LADO_MUNDO } from '../logica/mapa.js';
 import { usuarioGuardado, guardarUsuario } from '../mundo/pantalla_cuenta.js';
+import { motivoClave } from '../logica/cuentas.js';
+import { motivoCorreo, codigoValido, CODIGO_CIFRAS } from '../logica/correo.js';
 import { guardarFicha, fichaGuardada, conDireccionFicha } from '../mundo/conexion.js';
 import { direccionServidor } from '../mundo/direccion_servidor.js';
 
@@ -88,11 +90,12 @@ if (redirige) {
   if (usuario) {
     $('demoCuenta').hidden = false;
     $('demoCuentaTexto').textContent = tr('Cuenta: {u}', { u: usuario });
+    const aviso = $('demoCuentaAviso');
     $('btnDemoSalirCuenta').onclick = () => { guardarFicha(dirServidor, null); guardarUsuario(dirServidor, null); $('demoCuenta').hidden = true; };
     // salir en todos los aparatos (cuentas más seguras, 2 nov): se conecta un momento con la ficha de aquí y el servidor
     // deja sin valer todas las fichas de tu personaje (las de los demás aparatos también); luego, como salir de la cuenta
     $('btnDemoSalirTodos').onclick = () => {
-      const aviso = $('demoCuentaAviso'), ficha = fichaGuardada(dirServidor);
+      const ficha = fichaGuardada(dirServidor);
       if (!ficha) { guardarUsuario(dirServidor, null); $('demoCuenta').hidden = true; return; }
       aviso.textContent = tr('Un momento…');
       let ws; try { ws = new WebSocket(conDireccionFicha(dirServidor, ficha)); } catch (e) { aviso.textContent = tr('No hay conexión con el servidor.'); return; }
@@ -107,10 +110,74 @@ if (redirige) {
           if (!m.ok) { aviso.textContent = tr(m.motivo || 'Error del servidor.'); return; }
           guardarFicha(dirServidor, null); guardarUsuario(dirServidor, null);
           $('demoCuentaTexto').textContent = tr('Sesión cerrada en todos los aparatos.');
-          $('btnDemoSalirCuenta').hidden = $('btnDemoSalirTodos').hidden = true; aviso.textContent = '';
+          $('btnDemoSalirCuenta').hidden = $('btnDemoSalirTodos').hidden = $('btnDemoCambiarClave').hidden = $('btnDemoCambiarCorreo').hidden = true; aviso.textContent = ''; form.hidden = true;
         }
       };
       ws.onerror = () => { clearTimeout(fin); aviso.textContent = tr('No hay conexión con el servidor.'); };
+    };
+    // cambiar la contraseña o el correo (valravnx, 2 nov): pidiendo la actual. Cada vez se conecta un momento con la ficha
+    // de aquí y pide el cambio. La contraseña: el servidor cierra la sesión en los demás aparatos y da una ficha nueva
+    // para este. El correo: llega un código al nuevo y, al escribirlo, cambia (al de antes le llega un aviso).
+    const form = $('demoCambio'), motivoCambio = $('demoCambioMotivo');
+    let cambio = null, esperando = false;
+    const decirCambio = (t, bien = false) => { motivoCambio.textContent = t || ''; motivoCambio.classList.toggle('bien', !!bien); };
+    const verCambio = (q) => {
+      cambio = q; form.hidden = !q; decirCambio('');
+      for (const e of form.querySelectorAll('[data-cambio]')) e.hidden = !q || !e.dataset.cambio.split(' ').includes(q);
+      $('btnDemoCambio').textContent = q === 'correo' ? tr('Mandar código') : q === 'codigo' ? tr('Confirmar') : tr('Cambiar');
+      if (q !== 'codigo') for (const i of form.querySelectorAll('input')) i.value = '';
+      const primero = form.querySelector('[data-cambio]:not([hidden]) input'); if (primero) setTimeout(() => { try { primero.focus({ preventScroll: true }); } catch (e) { /* sin foco */ } }, 0);
+    };
+    const pedirCuenta = (m) => new Promise((listo) => {
+      const ficha = fichaGuardada(dirServidor);
+      if (!ficha) return listo({ ok: false, motivo: 'Vuelve a entrar con tu cuenta.' });
+      let ws; try { ws = new WebSocket(conDireccionFicha(dirServidor, ficha)); } catch (e) { return listo({ ok: false, motivo: 'No hay conexión con el servidor.' }); }
+      const fin = setTimeout(() => { try { ws.close(); } catch (e) { /* nada */ } listo({ ok: false, motivo: 'No hay conexión con el servidor.' }); }, 20000);
+      ws.onmessage = (ev) => {
+        let r; try { r = JSON.parse(ev.data); } catch (e) { return; }
+        if (r.tipo === 'bienvenida') {
+          if (!r.cuenta) { clearTimeout(fin); ws.close(); return listo({ ok: false, motivo: 'Vuelve a entrar con tu cuenta.' }); }
+          ws.send(JSON.stringify({ tipo: 'cuenta', id: 1, idioma, ...m }));
+        } else if (r.tipo === 'cuenta' && r.id === 1) { clearTimeout(fin); ws.close(); listo(r); }
+      };
+      ws.onerror = () => { clearTimeout(fin); listo({ ok: false, motivo: 'No hay conexión con el servidor.' }); };
+    });
+    $('btnDemoCambiarClave').onclick = () => { if (!esperando) verCambio(cambio === 'clave' ? null : 'clave'); };
+    $('btnDemoCambiarCorreo').onclick = () => { if (!esperando) verCambio(cambio === 'correo' || cambio === 'codigo' ? null : 'correo'); };
+    $('btnDemoCambioNo').onclick = () => { if (!esperando) verCambio(null); };
+    const motivoDe = (m) => { const r = typeof m === 'string' && m.match(/^(Espera (\d+) s para pedir otro código\.|Demasiados (intentos|códigos); prueba dentro de (\d+) min\.)$/);
+      if (r && r[2]) return tr('Espera {s} s para pedir otro código.', { s: r[2] });
+      if (r && r[4]) return tr(r[3] === 'intentos' ? 'Demasiados intentos; prueba dentro de {m} min.' : 'Demasiados códigos; prueba dentro de {m} min.', { m: r[4] });
+      return tr(m || 'Error del servidor.'); };
+    form.onsubmit = async (ev) => {
+      ev.preventDefault();
+      if (esperando || !cambio) return;
+      const actual = $('demoActual').value;
+      let m = null, pedido = null;
+      if (cambio === 'clave') {
+        const k = $('demoNueva').value;
+        m = !actual ? 'Falta la contraseña.' : motivoClave(k, usuario) || (k !== $('demoNueva2').value ? 'Las dos contraseñas no son iguales.' : null);
+        pedido = { que: 'cambiar_clave', actual, clave: k };
+      } else if (cambio === 'correo') {
+        const c = $('demoCorreoNuevo').value.trim();
+        m = !actual ? 'Falta la contraseña.' : motivoCorreo(c);
+        pedido = { que: 'cambiar_correo', actual, correo: c };
+      } else {
+        const c = $('demoCodigo').value.trim();
+        m = codigoValido(c) ? null : tr('El código son {n} cifras.', { n: CODIGO_CIFRAS });
+        pedido = { que: 'verificar', codigo: c };
+      }
+      if (m) return decirCambio(tr(m));
+      esperando = true; $('btnDemoCambio').disabled = true; decirCambio(tr('Un momento…'), true);
+      const r = await pedirCuenta(pedido);
+      esperando = false; $('btnDemoCambio').disabled = false;
+      if (!r.ok) return decirCambio(motivoDe(r.motivo));
+      if (cambio === 'clave') {
+        if (r.ficha) guardarFicha(dirServidor, r.ficha);
+        verCambio(null); aviso.textContent = tr('Contraseña cambiada. Se ha cerrado la sesión en tus demás aparatos.');
+      } else if (cambio === 'correo') {
+        verCambio('codigo'); decirCambio(tr('Te hemos mandado un código de {n} cifras a {c}. Caduca en 15 minutos.', { n: CODIGO_CIFRAS, c: r.pendiente || '' }), true);
+      } else { verCambio(null); aviso.textContent = tr('Correo cambiado.'); }
     };
   }
   $('demoNotas').innerHTML = `<b>${tr(VERSION_DEMO)}</b><ul>${REGISTRO_DEMO.map(t => `<li>${tr(t)}</li>`).join('')}</ul>`;

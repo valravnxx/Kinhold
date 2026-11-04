@@ -1,6 +1,9 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v95 (correo de la cuenta)";
+export const VERSION_DEMO = "Demo única · v96 (recuperar y cambiar la contraseña)";
 export const REGISTRO_DEMO = [
+  "v96: recuperar la contraseña. En la pantalla de la cuenta, en «Entrar», «¿Has olvidado la contraseña?»: con tu usuario o tu correo te llega un código al correo de tu cuenta (si está confirmado) y con él pones una contraseña nueva y entras con tu personaje. Se cierra la sesión en tus demás aparatos y te llega un aviso por correo.",
+  "v96: en el menú, «Cambiar la contraseña» y «Cambiar el correo», pidiendo la contraseña actual. Al cambiar la contraseña se cierra la sesión en tus demás aparatos (en este sigues) y te llega un aviso al correo. El correo nuevo se confirma con el código que le llega; hasta entonces sigue el de antes, y al de antes le llega un aviso del cambio.",
+  "v96, provisional: el código para recuperar caduca a los 15 minutos, con un minuto entre uno y otro, como mucho 5 por hora a la misma cuenta y 10 peticiones por hora desde la misma dirección; tras 5 códigos mal hay que pedir otro. La respuesta es la misma exista o no la cuenta, para que no se pueda saber qué cuentas hay. Una cuenta sin el correo confirmado no puede recuperar la contraseña.",
   "v95: el correo de la cuenta. Al crear la cuenta hay que dar un correo (uno por cuenta) y confirmarlo con el código de 6 cifras que llega a él; sin confirmarlo no se entra en el mundo. Las cuentas de antes añaden su correo al entrar. Si no llega, se puede pedir otro o cambiar el correo.",
   "v95, provisional: el código caduca a los 15 minutos; se puede pedir otro al cabo de un minuto, y como mucho 5 por hora a la misma cuenta o al mismo correo; tras 5 códigos mal, hay que pedir otro.",
   "v95, provisional: quien aún no tiene cuenta sigue con la pantalla de la cuenta tapando el juego, como hasta ahora; el servidor deja fuera del mundo a las cuentas sin el correo confirmado. Cuando no se pueda jugar sin cuenta, también a quien no la tenga.",

@@ -12,7 +12,10 @@
 #   - al recargar se entra solo, sin pantalla, con el mismo personaje;
 #   - desde otro aparato (otro navegador, sin nada guardado): pantalla otra vez, con otro personaje; «Entrar» con la
 #     contraseña mal lo dice y no entra; con la buena, recarga y es el personaje de la cuenta, sin pantalla;
-#   - en el menú sale la cuenta y «Salir de la cuenta» olvida la ficha: al volver a «Jugar», pantalla otra vez.
+#   - en el menú sale la cuenta; recuperar y cambiar (valravnx, 2 nov): «Cambiar la contraseña» con la actual mal lo
+#     dice, con la buena cambia y deja una ficha nueva aquí; «Cambiar el correo» manda el código al nuevo y con él
+#     cambia; «Salir de la cuenta» olvida la ficha: al volver a «Jugar», pantalla otra vez; ahí «¿Has olvidado la
+#     contraseña?» con el usuario manda un código y con él y la contraseña nueva se entra con el personaje de la cuenta.
 # MUTAR=1: un servidor que al entrar da la ficha de otro personaje: tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, json
 from playwright.sync_api import sync_playwright
@@ -171,11 +174,55 @@ try:
             texto = pg.evaluate("document.getElementById('demoCuenta').hidden ? '' : document.getElementById('demoCuentaTexto').textContent")
             comprobar(f'{nombre}: el menú enseña la cuenta', USUARIO in texto, texto)
             captura(pg, f'{SALIDA}/cuenta-menu-{nombre}.png')
+            CAMBIO = "document.getElementById('demoCambioMotivo').textContent"
+            AVISO = "document.getElementById('demoCuentaAviso').textContent"
+            FICHA = "Object.keys(localStorage).filter(k => k.startsWith('kinhold_ficha:')).map(k => localStorage.getItem(k)).join()"
+            ficha0 = pg.evaluate(FICHA)
+            pg.click('#btnDemoCambiarClave')
+            comprobar(f'{nombre}: «Cambiar la contraseña» abre su caja', pg.is_visible('#demoActual') and pg.is_visible('#demoNueva2') and not pg.is_visible('#demoCorreoNuevo'))
+            caja = pg.evaluate("(() => { const r = document.getElementById('demoMenu').querySelector('.caja').getBoundingClientRect(); return [r.left, r.right]; })()")
+            comprobar(f'{nombre}: el menú cabe a lo ancho', caja[0] >= 0 and caja[1] <= vista['width'], str(caja))
+            CLAVE2, CLAVE3 = 'leña-seca-del-hogar-3', 'zarzo-con-barro-del-rio-5'
+            pg.fill('#demoActual', CLAVE + 'mal'); pg.fill('#demoNueva', CLAVE2); pg.fill('#demoNueva2', CLAVE2); pg.click('#btnDemoCambio')
+            comprobar(f'{nombre}: con la actual mal, lo dice', esperar(pg, f"{CAMBIO}.includes('actual')", 20000), pg.evaluate(CAMBIO))
+            captura(pg, f'{SALIDA}/cuenta-cambiar-clave-{nombre}.png')
+            pg.fill('#demoActual', CLAVE); pg.click('#btnDemoCambio')
+            comprobar(f'{nombre}: con la buena, cambia', esperar(pg, f"{AVISO}.includes('Contraseña cambiada')", 20000), pg.evaluate(CAMBIO))
+            comprobar(f'{nombre}: y aquí queda una ficha nueva', pg.evaluate(FICHA) not in ('', ficha0))
+            pg.click('#btnDemoCambiarCorreo')
+            CORREO2 = f'ana.nueva.{nombre}@ejemplo.com'
+            antes = len(codigos.todos(USUARIO))
+            pg.fill('#demoActual', CLAVE2); pg.fill('#demoCorreoNuevo', CORREO2); pg.click('#btnDemoCambio')
+            comprobar(f'{nombre}: «Cambiar el correo» manda el código al nuevo', esperar(pg, f"{CAMBIO}.includes('a***@e***.com')", 20000) and pg.is_visible('#demoCodigo'), pg.evaluate(CAMBIO))
+            captura(pg, f'{SALIDA}/cuenta-cambiar-correo-{nombre}.png')
+            pg.fill('#demoCodigo', codigos.de(USUARIO, antes) or ''); pg.click('#btnDemoCambio')
+            comprobar(f'{nombre}: con el código, el correo cambia', esperar(pg, f"{AVISO}.includes('Correo cambiado')", 20000), pg.evaluate(CAMBIO))
+            c = [x for x in cuentas_guardadas() if x.get('verificado') == USUARIO]
+            comprobar(f'{nombre}: el servidor guarda el correo nuevo', bool(c) and c[-1].get('correo') == CORREO2, str(c[-1:]))
             pg.click('#btnDemoSalirCuenta')
             fichas = pg.evaluate("Object.keys(localStorage).filter(k => k.startsWith('kinhold_ficha:') || k.startsWith('kinhold_cuenta:'))")
             comprobar(f'{nombre}: «Salir de la cuenta» olvida la ficha', not fichas and pg.evaluate("document.getElementById('demoCuenta').hidden"), str(fichas))
             pg.goto(URL, wait_until='domcontentloaded', timeout=180000)
             comprobar(f'{nombre}: al volver a jugar, pantalla otra vez', esperar(pg, LISTO, 300000) and esperar(pg, PANTALLA, 10000) and pg.evaluate(f'{K}.enLinea.red.yo') != autor)
+            # ¿has olvidado la contraseña?
+            MOTIVO_R = "document.getElementById('pcMotivoR').textContent"
+            pg.click('#pantallaCuenta .pc-pestanas button[data-que="entrar"]')
+            pg.click('#pcOlvido')
+            comprobar(f'{nombre}: «¿Has olvidado la contraseña?» abre recuperar', pg.is_visible('#pcQuien') and not pg.is_visible('#pcClaveN'))
+            caja = pg.evaluate("(() => { const r = document.getElementById('pcFormRecuperar').getBoundingClientRect(); return [r.left, r.right, r.top, r.bottom]; })()")
+            comprobar(f'{nombre}: la caja de recuperar cabe en la pantalla', caja[0] >= 0 and caja[1] <= vista['width'] and caja[2] >= 0 and caja[3] <= vista['height'], str(caja))
+            captura(pg, f'{SALIDA}/cuenta-recuperar-{nombre}.png')
+            pg.fill('#pcQuien', USUARIO); pg.click('#pcIrR')
+            comprobar(f'{nombre}: pide el código y la contraseña nueva', esperar(pg, "!document.getElementById('pcPaso2').hidden", 20000) and pg.is_visible('#pcClaveN2'), pg.evaluate(MOTIVO_R))
+            cod = codigos.recuperar(USUARIO)
+            comprobar(f'{nombre}: llega el código para recuperar', bool(cod))
+            pg.fill('#pcCodigoR', '000000' if cod != '000000' else '000001'); pg.fill('#pcClaveN', CLAVE3); pg.fill('#pcClaveN2', CLAVE3); pg.click('#pcIrR')
+            comprobar(f'{nombre}: con el código mal, lo dice', esperar(pg, f"{MOTIVO_R}.includes('no es correcto')", 20000), pg.evaluate(MOTIVO_R))
+            pg.wait_for_timeout(300)
+            captura(pg, f'{SALIDA}/cuenta-recuperar-codigo-{nombre}.png')
+            pg.fill('#pcCodigoR', cod or ''); pg.click('#pcIrR')
+            ok = esperar(pg, f"{LISTO} && {K}.enLinea.red.yo === {json.dumps(autor)}", 300000)
+            comprobar(f'{nombre}: con el bueno, entra con el personaje de la cuenta', ok and not pg.evaluate(PANTALLA), str(pg.evaluate(f'{K} && {K}.enLinea && {K}.enLinea.red.yo')))
             comprobar(f'{nombre}: sin errores en la página', not err, '; '.join(err)[:200])
             ctx.close()
         nav.close()
