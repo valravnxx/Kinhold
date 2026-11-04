@@ -2364,7 +2364,10 @@ window.__kinhold = {
     let todo = true;
     for (const [m, n] of Object.entries(coste)) {
       const q = n - inv.cuantos(OBJETO_DE_MATERIAL[m]);
-      if (q > 0 && !accion({ tipo: 'sacar_arcon', material: m, cantidad: q }).ok) todo = false;
+      if (q <= 0) continue;
+      // un tronco, al hombro si está libre (en las manos o la mochila puede no caber); si no, donde quepa
+      if (m === 'tronco' && q === 1 && !inv.lugares.hombro && accion({ tipo: 'sacar_arcon', material: m, cantidad: 1, a: 'hombro' }).ok) continue;
+      if (!accion({ tipo: 'sacar_arcon', material: m, cantidad: q }).ok) todo = false;
     }
     return todo;
   },
