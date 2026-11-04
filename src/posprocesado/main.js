@@ -78,9 +78,10 @@ const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(estado)
 // ponerLuz del ambiente crea una niebla nueva con el color de esa luz: la que se pone y se quita es esa
 const niebla = { actual: escena.fog };
 const post = crearPosprocesado(renderer, escena, camara, { sol, foco: control.target, niebla: () => niebla.actual, luzSol: ambiente.sol });
-function rehacer() { post.montar(perfil(estado.perfil), estado.on, estado.v5); pintarBotones(); guardar(); dibujar(); }
+function rehacer() { post.montar(perfil(estado.perfil), estado.on, estado.v5); pintarBotones(); colocar(); guardar(); dibujar(); }
 
 // ---------- Interfaz ----------
+const SUAVIZADO = { ninguno: 'sin suavizado', 'smaa-bajo': 'SMAA bajo', 'smaa-medio': 'SMAA medio', 'smaa-alto': 'SMAA alto', 'msaa-4': 'MSAA de 4 muestras', 'msaa-8': 'MSAA de 8 muestras' };
 function pintarBotones() {
   const p = perfil(estado.perfil);
   for (const b of document.querySelectorAll('[data-perfil]')) b.classList.toggle('sel', !estado.v5 && b.dataset.perfil === estado.perfil);
@@ -94,7 +95,7 @@ function pintarBotones() {
   }
   $('btnV5').classList.toggle('sel', estado.v5);
   $('resumen').textContent = estado.v5 ? tr('Sin posprocesado: como la prueba de estilo v5') : tr('{p}: {n} pasadas · resolución {r}× · sombras {s} px · suavizado {a}', {
-    p: tr(p.nombre), n: post.pasadas, r: Math.min(devicePixelRatio || 1, p.res), s: p.sombras, a: tr(p.suavizado),
+    p: tr(p.nombre), n: post.pasadas, r: Math.min(devicePixelRatio || 1, p.res), s: p.sombras, a: tr(SUAVIZADO[p.suavizado]),
   });
 }
 $('perfiles').innerHTML = PERFILES.map(p => `<button data-perfil="${p.id}">${tr(p.nombre)}${p.id === sugerido ? ' ★' : ''}</button>`).join('');
@@ -104,7 +105,16 @@ for (const b of document.querySelectorAll('[data-efecto]')) b.onclick = () => { 
 $('btnV5').onclick = () => { estado.v5 = !estado.v5; rehacer(); };
 for (const b of document.querySelectorAll('[data-luz]')) b.onclick = () => ponerLuz(b.dataset.luz);
 for (const b of document.querySelectorAll('[data-vista]')) b.onclick = () => ponerVista(b.dataset.vista);
-$('btnEfectos').onclick = () => { $('efectos').classList.toggle('abierto'); };
+$('btnEfectos').onclick = () => { $('efectos').classList.toggle('abierto'); colocar(); };
+// el resumen y los efectos (en el móvil) van justo encima de los botones de abajo, que pueden ocupar dos filas
+function colocar() {
+  const arriba = $('inferior').getBoundingClientRect().top;
+  $('resumen').style.bottom = Math.ceil(innerHeight - arriba) + 8 + 'px';
+  if (innerWidth <= 700) $('efectos').style.bottom = Math.ceil(innerHeight - arriba) + 8 + $('resumen').offsetHeight + 8 + 'px';
+  else $('efectos').style.bottom = '';
+}
+addEventListener('resize', colocar);
+if (window.ResizeObserver) { const ro = new ResizeObserver(colocar); ro.observe($('inferior')); ro.observe($('resumen')); }
 
 function ponerLuz(id) { estado.luz = ambiente.ponerLuz(id); niebla.actual = escena.fog; ponerSol(); rehacer(); if (estado.vista === 'contraluz') ponerVista('contraluz'); }
 function ponerVista(v) {
