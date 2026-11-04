@@ -1,6 +1,6 @@
 {
  "A": {
-  "inicio": "2026-11-02T09:25:16+00:00",
+  "inicio": "2026-11-04T08:24:48+00:00",
   "tarea": "Recuperar la contraseña por correo (un código que caduca, con límites) y cambiar la contraseña o el correo desde el menú pidiendo la actual, con aviso por correo; al cambiar la contraseña se cierra la sesión en los demás aparatos",
   "hito": "servidor",
   "rama": "trabajo/20261102-0925"
