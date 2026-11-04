@@ -9,17 +9,21 @@ class Codigos:
         threading.Thread(target=self._leer, args=(proceso,), daemon=True).start()
     def _leer(self, proceso):
         for l in proceso.stdout: self.lineas.append(l)
-    def todos(self, usuario):
-        r = re.compile(r'código de verificación para «' + re.escape(usuario) + r'»: (\d{6})')
+    def todos(self, usuario, que='código de verificación para'):
+        r = re.compile(re.escape(que) + r' «' + re.escape(usuario) + r'»: (\d{6})')
         return [m.group(1) for l in list(self.lineas) for m in [r.search(l)] if m]
     # el último código de ese usuario (espera a que haya más de `antes`)
-    def de(self, usuario, antes=0, ms=15000):
+    def de(self, usuario, antes=0, ms=15000, que='código de verificación para'):
         fin = time.time() + ms / 1000
         while time.time() < fin:
-            c = self.todos(usuario)
+            c = self.todos(usuario, que)
             if len(c) > antes: return c[-1]
             time.sleep(0.1)
         return None
+
+    # el último código para recuperar la contraseña de ese usuario
+    def recuperar(self, usuario, antes=0, ms=15000):
+        return self.de(usuario, antes, ms, 'código para recuperar la contraseña de')
 
 # crea la cuenta en la pantalla y confirma el correo con el código que llega; True si se quita la pantalla
 def crear_y_confirmar(pg, codigos, usuario, clave='clave-de-prueba-123', ms=20000):

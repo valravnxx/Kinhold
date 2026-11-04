@@ -19,6 +19,11 @@
 //     reenvío limitado y pocos intentos; sin confirmarlo, el servidor no atiende acciones, objetos ni movimientos; las
 //     cuentas de antes añaden su correo; lo confirmado sigue tras reiniciar; el cartero manda por Resend con la clave y
 //     sin ella apunta el código en el registro; el código no queda en cuentas.jsonl ni en el registro de seguridad.
+//   - recuperar y cambiar (valravnx, 2 nov): con el correo confirmado llega un código para poner otra contraseña (la
+//     respuesta es la misma si la cuenta no existe), con pocos intentos; con él se entra con la nueva y la vieja no vale;
+//     se cierra la sesión en los demás aparatos; cambiar la contraseña y el correo desde el menú pide la actual; el correo
+//     nuevo se confirma con su código y al de antes le llega un aviso; todo sigue tras reiniciar y nada queda en claro.
+// Con MUTAR=4 se prueba un servidor que cambia la contraseña sin mirar la actual: debe FALLAR.
 // Con MUTAR=3 se prueba un servidor que deja entrar en el mundo sin confirmar el correo: debe FALLAR.
 // Con MUTAR=1 se prueba un servidor que da por buena cualquier contraseña: debe FALLAR.
 import { WebSocket } from 'ws';
@@ -49,6 +54,14 @@ let ruta = join(raiz, 'servidor/servidor.mjs'), copia = null;
 if (MUTAR) {
   const fuente = readFileSync(ruta, 'utf8');
   const mutada = fuente.replace('resumir: (c, s) => claves.resumir(c, s, parametrosClave)', "resumir: (c, s) => claves.resumir('igual', s, parametrosClave)");
+  if (mutada === fuente) { console.log('No se pudo mutar el servidor'); process.exit(1); }
+  copia = join(raiz, 'servidor/.servidor_mutado_cuentas.mjs');
+  writeFileSync(copia, mutada);
+  ruta = copia;
+}
+if (process.env.MUTAR === '4') {
+  const fuente = readFileSync(ruta, 'utf8');
+  const mutada = fuente.replace("(que === 'cambiar_clave' ? cuentas.comprobarClave(autor, msg.actual, origen, ahora)", "(false ? 0");
   if (mutada === fuente) { console.log('No se pudo mutar el servidor'); process.exit(1); }
   copia = join(raiz, 'servidor/.servidor_mutado_cuentas.mjs');
   writeFileSync(copia, mutada);
@@ -471,6 +484,113 @@ console.log('El correo en el servidor');
     v2.ws.close();
     await s.cerrar();
   } finally { rmSync(dir2, { recursive: true, force: true }); }
+}
+
+console.log('Recuperar y cambiar la contraseña o el correo');
+{
+  const dir3 = mkdtempSync(join(tmpdir(), 'kinhold-recuperar-'));
+  const cartas = [];
+  const cartero = { conClave: true, enviar: async (c) => { cartas.push(c); return { ok: true }; } };
+  const reg = [];
+  const P = { N: 1024, r: 8, p: 1 };
+  const NUEVA = 'otra casa de zarzo 9', TERCERA = 'tercera clave del hogar 4';
+  try {
+    const altas = { origen: 100, total: 100, espera: 0 };
+    let s = crearServidor({ puerto: 0, archivo: join(dir3, 'mundo.jsonl'), registrar: (x) => reg.push(x), tico: 200, cartero, parametrosClave: P, altas });
+    let puerto = await s.listo;
+    const a = await cliente(puerto);
+    await a.pedir({ que: 'crear', usuario: 'Rosa', clave: CLAVE, correo: 'rosa@ejemplo.com' });
+    await pausa(50);
+    await a.pedir({ que: 'verificar', codigo: cartas.at(-1).codigo });
+    const otro = await cliente(puerto);   // otro aparato con su ficha
+    const fa = await otro.pedir({ que: 'entrar', usuario: 'Rosa', clave: CLAVE });
+    const b2 = await cliente(puerto, fa.ficha);
+    // recuperar
+    const x = await cliente(puerto);
+    const n0 = cartas.length;
+    const r0 = await x.pedir({ que: 'recuperar', quien: 'NoExiste' });
+    const r1 = await x.pedir({ que: 'recuperar', quien: 'ROSA@ejemplo.com' });
+    await pausa(50);
+    comprobar('recuperar: la misma respuesta exista o no la cuenta, y el código solo va a la que existe', r0 && r1 && r0.ok && r1.ok && r0.motivo === r1.motivo && cartas.length === n0 + 1 && cartas.at(-1).tipo === 'recuperar' && cartas.at(-1).para === 'rosa@ejemplo.com', JSON.stringify([r0, r1]));
+    const cod = cartas.at(-1).codigo;
+    const rOtra = await x.pedir({ que: 'recuperar', quien: 'Rosa' });
+    comprobar('otro código enseguida, no (y la respuesta no lo delata)', rOtra && rOtra.ok && cartas.length === n0 + 1);
+    const malo = cod === '000000' ? '000001' : '000000';
+    const rm = await x.pedir({ que: 'restablecer', quien: 'Rosa', codigo: malo, clave: NUEVA });
+    comprobar('con el código mal, no', rm && !rm.ok && /no es correcto/.test(rm.motivo));
+    const rf = await x.pedir({ que: 'restablecer', quien: 'Rosa', codigo: cod, clave: '1234567890' });
+    comprobar('una contraseña nueva fácil, no', rf && !rf.ok);
+    const ver = await cliente(puerto);
+    const cerrados = [b2.cerrado.then(() => b2.cerradoCon)];
+    const rb = await x.pedir({ que: 'restablecer', quien: 'Rosa', codigo: cod, clave: NUEVA });
+    comprobar('con el código bueno, contraseña nueva y una ficha de su personaje', rb && rb.ok && rb.autor === a.yo && /^[0-9a-f]{32}$/.test(rb.ficha), JSON.stringify(rb));
+    const cod2 = await Promise.race([cerrados[0], pausa(1500).then(() => null)]);
+    comprobar('y se cierra la sesión en los demás aparatos', cod2 === 4002, String(cod2));
+    const vieja = await ver.pedir({ que: 'entrar', usuario: 'Rosa', clave: CLAVE });
+    const nueva = await ver.pedir({ que: 'entrar', usuario: 'Rosa', clave: NUEVA });
+    comprobar('la vieja ya no vale; la nueva sí', vieja && !vieja.ok && nueva && nueva.ok);
+    const rr = await x.pedir({ que: 'restablecer', quien: 'Rosa', codigo: cod, clave: TERCERA });
+    comprobar('el código no vale dos veces', rr && !rr.ok);
+    await pausa(50);
+    comprobar('le llega el aviso de que ha cambiado la contraseña', cartas.some(c => c.tipo === 'aviso_clave' && c.para === 'rosa@ejemplo.com'));
+    // pocos intentos con el código
+    const y = await cliente(puerto);
+    const ny = await y.pedir({ que: 'crear', usuario: 'Pino', clave: CLAVE, correo: 'pino@ejemplo.com' });
+    await pausa(50); await y.pedir({ que: 'verificar', codigo: cartas.at(-1).codigo });
+    await x.pedir({ que: 'recuperar', quien: 'pino' }); await pausa(50);
+    const cp = cartas.at(-1).codigo, mp = cp === '000000' ? '000001' : '000000';
+    for (let i = 0; i < 5; i++) await x.pedir({ que: 'restablecer', quien: 'Pino', codigo: mp, clave: NUEVA });
+    const tras = await x.pedir({ que: 'restablecer', quien: 'Pino', codigo: cp, clave: NUEVA });
+    comprobar('tras 5 códigos mal, ni el bueno vale', ny && ny.ok && tras && !tras.ok, tras && tras.motivo);
+    // sin el correo confirmado no se recupera
+    const z = await cliente(puerto);
+    await z.pedir({ que: 'crear', usuario: 'Sauce', clave: CLAVE, correo: 'sauce@ejemplo.com' });
+    await pausa(50);
+    const nz = cartas.length;
+    await x.pedir({ que: 'recuperar', quien: 'Sauce' }); await pausa(50);
+    comprobar('sin el correo confirmado no llega código de recuperar', cartas.length === nz);
+    // desde el menú: cambiar la contraseña
+    const m = await cliente(puerto, nueva.ficha);
+    const mal1 = await m.pedir({ que: 'cambiar_clave', actual: 'no es esta clave', clave: TERCERA });
+    comprobar('cambiar la contraseña con la actual mal, no', mal1 && !mal1.ok && /actual/.test(mal1.motivo));
+    const bien1 = await m.pedir({ que: 'cambiar_clave', actual: NUEVA, clave: TERCERA });
+    await pausa(300);
+    comprobar('con la actual bien, cambia y esta conexión sigue, con una ficha nueva', bien1 && bien1.ok && /^[0-9a-f]{32}$/.test(bien1.ficha) && m.cerradoCon === null, JSON.stringify(bien1));
+    const conVieja = await cliente(puerto, nueva.ficha);
+    comprobar('la ficha de antes (la de los demás aparatos) ya no vale', conVieja.yo !== a.yo);
+    const vuelve = await cliente(puerto, bien1.ficha);
+    comprobar('con la ficha nueva vuelve a ser su personaje', vuelve.yo === a.yo && vuelve.bienvenida.cuenta === 'Rosa');
+    const mv = vuelve;
+    // desde el menú: cambiar el correo
+    const ce0 = await mv.pedir({ que: 'cambiar_correo', actual: TERCERA, correo: 'pino@ejemplo.com' });
+    comprobar('cambiar al correo de otra cuenta, no', ce0 && !ce0.ok && /otra cuenta/.test(ce0.motivo));
+    const ce1 = await mv.pedir({ que: 'cambiar_correo', actual: 'mala mala mala', correo: 'rosa.nueva@ejemplo.com' });
+    comprobar('cambiar el correo con la contraseña mal, no', ce1 && !ce1.ok);
+    const ce2 = await mv.pedir({ que: 'cambiar_correo', actual: TERCERA, correo: 'rosa.nueva@ejemplo.com' });
+    await pausa(50);
+    const cc = cartas.at(-1);
+    comprobar('con la contraseña bien, el código va al correo nuevo, y el de antes sigue mientras', ce2 && ce2.ok && cc.para === 'rosa.nueva@ejemplo.com' && s.cuentas.correoDe(a.yo).correo === 'rosa@ejemplo.com' && s.cuentas.correoDe(a.yo).verificado, JSON.stringify(ce2));
+    const cv = await mv.pedir({ que: 'verificar', codigo: cc.codigo });
+    await pausa(50);
+    comprobar('con el código, el correo cambia y al de antes le llega el aviso', cv && cv.ok && s.cuentas.correoDe(a.yo).correo === 'rosa.nueva@ejemplo.com' && s.cuentas.correoDe(a.yo).verificado && cartas.some(c => c.tipo === 'aviso_correo' && c.para === 'rosa@ejemplo.com'), JSON.stringify(cv));
+    const libre = await cliente(puerto);
+    const rl = await libre.pedir({ que: 'crear', usuario: 'Haya', clave: CLAVE, correo: 'rosa@ejemplo.com' });
+    comprobar('el correo de antes queda libre', rl && rl.ok, rl && rl.motivo);
+    const guardado = readFileSync(s.archivoCuentas, 'utf8'), seg = readFileSync(s.archivoSeguridad, 'utf8');
+    comprobar('ni las contraseñas ni los códigos quedan en claro', ![CLAVE, NUEVA, TERCERA].some(k => guardado.includes(k) || seg.includes(k) || reg.some(l => l.includes(k))) && !cartas.some(c => c.codigo && (guardado.includes(c.codigo) || seg.includes('"' + c.codigo + '"'))));
+    comprobar('el registro de seguridad apunta recuperar, restablecer y los cambios', ['recuperar', 'restablecer', 'cambiar_clave', 'cambiar_correo'].every(q => seg.includes(`"que":"${q}"`)));
+    for (const w of [a, otro, x, ver, y, z, m, conVieja, vuelve, libre]) try { w.ws.close(); } catch (e) { /* nada */ }
+    await s.cerrar();
+    s = crearServidor({ puerto: 0, archivo: join(dir3, 'mundo.jsonl'), registrar: (x) => reg.push(x), tico: 200, cartero, parametrosClave: P, altas });
+    puerto = await s.listo;
+    const t = await cliente(puerto);
+    const t1 = await t.pedir({ que: 'entrar', usuario: 'Rosa', clave: TERCERA });
+    const t2 = await t.pedir({ que: 'entrar', usuario: 'Rosa', clave: NUEVA });
+    const viejaF = await cliente(puerto, rb.ficha);
+    comprobar('tras reiniciar: vale la última contraseña, el correo nuevo y las fichas cerradas siguen cerradas', t1 && t1.ok && t2 && !t2.ok && s.cuentas.correoDe(a.yo).correo === 'rosa.nueva@ejemplo.com' && viejaF.yo !== a.yo);
+    t.ws.close(); viejaF.ws.close();
+    await s.cerrar();
+  } finally { rmSync(dir3, { recursive: true, force: true }); }
 }
 } finally {
   if (copia && existsSync(copia)) rmSync(copia);

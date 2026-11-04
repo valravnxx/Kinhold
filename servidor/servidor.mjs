@@ -66,6 +66,12 @@
 //   lo confirma. Mientras la cuenta de esta conexión no tenga el correo confirmado, no entra en el mundo: no se atienden
 //   sus acciones, objetos, combate, movimientos ni admin (las acciones y objetos reciben «Confirma tu correo…»). La
 //   bienvenida dice { correo: null (sin cuenta) | { correo: a***@d***.com | null, verificado } }.
+//   Recuperar y cambiar (valravnx, 2 nov): { que: 'recuperar', quien } (usuario o correo) manda un código al correo
+//   confirmado de esa cuenta (la respuesta es la misma si no existe); { que: 'restablecer', quien, codigo, clave } pone la
+//   contraseña nueva, deja sin valer todas las fichas de ese personaje (cierra sus conexiones, 4002) y da una ficha para
+//   este aparato. Desde el menú: { que: 'cambiar_clave', actual, clave } (lo mismo, pidiendo la actual) y
+//   { que: 'cambiar_correo', actual, correo } (manda el código al correo nuevo; con { que: 'verificar', codigo } se
+//   cambia). Cada cambio avisa por correo (el de la contraseña, al correo de la cuenta; el del correo, al de antes).
 //   Panel de depuración del admin (src/logica/admin.js): { tipo: 'admin', id, que: 'ver' | 'ir', … }. Solo para la
 //   conexión cuyo personaje es de una cuenta de admin (cuentasAdmin, o la variable KINHOLD_ADMIN_CUENTA; por defecto la
 //   cuenta «valravnx»; servidor/nube/LEEME.md). Sin clave aparte. La bienvenida dice { admin: true } a esa conexión, y la
@@ -101,8 +107,9 @@ import { CombateServidor } from '../src/logica/combate_servidor.js';
 import { Limitador, LIMITES } from '../src/logica/limites.js';
 import { ObjetosServidor } from '../src/logica/objetos_red.js';
 import { validarPeticionAdmin, sitioJunto, listaJugadores, cuentasAdmin as listaAdmin, esCuentaAdmin, NO_ADMIN } from '../src/logica/admin.js';
-import { Cuentas, validarPeticionCuenta, claveDeUsuario } from '../src/logica/cuentas.js';
-import { Verificaciones, enmascarar, codigoValido, CODIGO_CIFRAS } from '../src/logica/correo.js';
+import { Cuentas, validarPeticionCuenta, claveDeUsuario, claveDeOrigen, Contador, motivoClave } from '../src/logica/cuentas.js';
+import { claveDeCorreo } from '../src/logica/correo.js';
+import { Verificaciones, enmascarar, codigoValido, CODIGO_CIFRAS, RECUPERAR_ORIGEN } from '../src/logica/correo.js';
 import { crearCartero } from './correo.mjs';
 import { Fichas, FICHA_VIDA } from '../src/logica/fichas.js';
 import * as claves from './claves.mjs';
@@ -180,6 +187,19 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     return s.ok ? { ok: true } : { ok: false, motivo: s.motivo };
   };
   const esAdmin = (autor) => esCuentaAdmin(usuarioDe(autor), admins);
+  // recuperar la contraseña: sus códigos aparte de los del correo, y cuántas peticiones por dirección
+  const recuperaciones = new Verificaciones({ azar: () => randomInt(0, 10 ** CODIGO_CIFRAS), resumir: (x) => createHash('sha256').update('rec:' + x).digest('hex') });
+  const recuperarOrigen = new Contador(RECUPERAR_ORIGEN, 60 * 60 * 1000);
+  // avisa por correo (si no sale, solo se apunta: el cambio ya está hecho)
+  const avisarCorreo = (para, usuario, tipo, idioma, nuevo = '') => cartero.enviar({ para, usuario, tipo, idioma, nuevo })
+    .then((s) => { if (!s.ok) registrar(`no ha salido el aviso (${tipo}) a «${usuario}»`); }).catch(() => registrar(`no ha salido el aviso (${tipo}) a «${usuario}»`));
+  // todas las fichas de ese personaje dejan de valer y se cierran sus conexiones (menos la de `salvo`)
+  const cerrarSesiones = (autor, salvo = null) => {
+    const n = fichas.fuera(autor);
+    appendFileSync(archivoFichas, JSON.stringify({ fuera: autor, t: Date.now() }) + '\n');
+    for (const [w, a] of clientes) if (a === autor && w !== salvo) setTimeout(() => { try { w.close(4002, 'Sesión cerrada'); } catch (e) { /* ya cerrada */ } }, 100);
+    return n;
+  };
   // una ficha nueva para un autor (al entrar con la cuenta: con ella vuelve a conectar y es su personaje)
   const fichaPara = (autor) => {
     const f = randomUUID().replace(/-/g, '');
@@ -407,7 +427,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         return;
       }
       if (msg && msg.tipo === 'cuenta') {
-        const id = Number.isSafeInteger(msg.id) ? msg.id : null, que = ['crear', 'entrar', 'salir_todos', 'correo', 'reenviar', 'verificar'].includes(msg.que) ? msg.que : null;
+        const id = Number.isSafeInteger(msg.id) ? msg.id : null, que = ['crear', 'entrar', 'salir_todos', 'correo', 'reenviar', 'verificar', 'recuperar', 'restablecer', 'cambiar_clave', 'cambiar_correo'].includes(msg.que) ? msg.que : null;
         const responder = (r) => enviar(ws, { tipo: 'cuenta', id, que, ...r });
         // salir en todos los aparatos: todas las fichas de este personaje dejan de valer y se cierran sus conexiones
         // (también esta: se vuelve a entrar con usuario y contraseña)
@@ -431,6 +451,17 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           if (!usuario) return responder({ ok: false, motivo: 'Este personaje no tiene cuenta.' });
           if (que === 'verificar') {
             const r = verificaciones.comprobar(claveDeUsuario(usuario), typeof msg.codigo === 'string' ? msg.codigo.slice(0, 20) : '', Date.now());
+            // con el correo ya confirmado, el código es el del correo nuevo (cambiar el correo desde el menú)
+            const antes = cuentas.correoDe(autor);
+            if (r.ok && antes.verificado) {
+              const c = cuentas.cambiarCorreo(autor, r.correo, Date.now());
+              seguridad({ que: 'cambiar_correo', ok: c.ok, usuario, autor, origen, ...(c.ok ? { correo: enmascarar(r.correo) } : { motivo: c.motivo }) });
+              if (!c.ok) return responder({ ok: false, motivo: c.motivo });
+              appendFileSync(archivoCuentas, JSON.stringify(c.linea) + '\n');
+              registrar(`correo cambiado de «${usuario}»`);
+              if (c.antes) avisarCorreo(c.antes, usuario, 'aviso_correo', idioma, r.correo);
+              return responder({ ok: true, cambiado: true, admin: esAdmin(autor), correo: estadoCorreo(autor) });
+            }
             const c = r.ok ? cuentas.confirmarCorreo(autor, r.correo, Date.now()) : r;
             seguridad({ que: 'verificar', ok: c.ok, usuario, autor, origen, ...(c.ok ? {} : { motivo: c.motivo }) });
             if (!c.ok) return responder({ ok: false, motivo: c.motivo });
@@ -455,6 +486,94 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           mandarCodigo(autor, origen, idioma)
             .then((r) => responder({ ...r, correo: estadoCorreo(autor) }))
             .catch((e) => { registrar(`error con el correo: ${e && e.message}`); responder({ ok: false, motivo: 'Error del servidor.' }); })
+            .finally(() => { ws.cuentaEnCurso = false; });
+          return;
+        }
+        // recuperar la contraseña: el código va al correo confirmado de esa cuenta (la respuesta, la misma si no existe)
+        if (que === 'recuperar') {
+          const MISMO = 'Si hay una cuenta con ese usuario o correo, y su correo está confirmado, le llegará un código.';
+          const ahora = Date.now(), o = claveDeOrigen(origen);
+          if (typeof msg.quien !== 'string' || !msg.quien.trim()) return responder({ ok: false, motivo: 'Escribe tu usuario o tu correo.' });
+          if (recuperarOrigen.lleno(o, ahora)) { seguridad({ que, ok: false, autor, origen, motivo: 'demasiadas' }); return responder({ ok: false, motivo: `Demasiados intentos; prueba dentro de ${Math.max(1, Math.ceil(recuperarOrigen.falta(o, ahora) / 60000))} min.` }); }
+          recuperarOrigen.sumar(o, ahora);
+          const c = cuentas.buscar(msg.quien);
+          if (!c || !c.verificado || typeof c.correo !== 'string') { seguridad({ que, ok: false, autor, origen, motivo: c ? 'sin correo confirmado' : 'no existe' }); return responder({ ok: true, motivo: MISMO }); }
+          const r = recuperaciones.pedir(claveDeUsuario(c.usuario), c.correo, ahora);
+          if (!r.ok) { seguridad({ que, ok: false, usuario: c.usuario, autor, origen, motivo: r.motivo }); return responder({ ok: true, motivo: MISMO }); }
+          ws.cuentaEnCurso = true;
+          cartero.enviar({ para: c.correo, usuario: c.usuario, codigo: r.codigo, idioma, tipo: 'recuperar' })
+            .then((e) => {
+              seguridad({ que, ok: !!e.ok, usuario: c.usuario, autor, origen, correo: enmascarar(c.correo), ...(e.ok ? {} : { motivo: e.motivo }) });
+              if (!e.ok) { recuperaciones.olvidar(claveDeUsuario(c.usuario)); return responder({ ok: false, motivo: e.motivo }); }
+              responder({ ok: true, motivo: MISMO });
+            })
+            .catch((e) => { registrar(`error al recuperar: ${e && e.message}`); responder({ ok: false, motivo: 'Error del servidor.' }); })
+            .finally(() => { ws.cuentaEnCurso = false; });
+          return;
+        }
+        // la contraseña nueva con el código; o, desde el menú, con la actual
+        if (que === 'restablecer' || que === 'cambiar_clave') {
+          const ahora = Date.now();
+          let c = null;
+          if (que === 'restablecer') {
+            const o = claveDeOrigen(origen), f = cuentas.fallosOrigen.falta(o, ahora);
+            if (f > 0) return responder({ ok: false, motivo: `Demasiados intentos; prueba dentro de ${Math.max(1, Math.ceil(f / 60000))} min.` });
+            c = cuentas.buscar(msg.quien);
+            const mc = motivoClave(msg.clave, c ? c.usuario : msg.quien);
+            if (mc) return responder({ ok: false, motivo: mc });
+            const r = c ? recuperaciones.comprobar(claveDeUsuario(c.usuario), typeof msg.codigo === 'string' ? msg.codigo.slice(0, 20) : '', ahora) : { ok: false, motivo: 'El código no es correcto.' };
+            if (r.ok && claveDeCorreo(r.correo) !== claveDeCorreo(c.correo || '')) r.ok = false, r.motivo = 'El correo ha cambiado; pide otro código.';
+            if (!r.ok) {
+              cuentas.fallosOrigen.sumar(o, ahora);
+              seguridad({ que, ok: false, ...(c ? { usuario: c.usuario } : {}), autor, origen, motivo: r.motivo });
+              return responder({ ok: false, motivo: c ? r.motivo : 'El código no es correcto.' });
+            }
+          } else {
+            c = cuentas.deAutor(autor);
+            if (!c) return responder({ ok: false, motivo: 'Este personaje no tiene cuenta.' });
+            const mc = motivoClave(msg.clave, c.usuario);
+            if (mc) return responder({ ok: false, motivo: mc });
+          }
+          ws.cuentaEnCurso = true;
+          (que === 'cambiar_clave' ? cuentas.comprobarClave(autor, msg.actual, origen, ahora) : Promise.resolve({ ok: true }))
+            .then(async (v) => {
+              if (!v.ok) { seguridad({ que, ok: false, usuario: c.usuario, autor, origen, motivo: v.motivo, ...(v.bloqueado ? { bloqueado: true } : {}) }); return responder({ ok: false, motivo: v.motivo }); }
+              const r = await cuentas.cambiarClave(c.usuario, msg.clave, ahora);
+              if (!r.ok) return responder({ ok: false, motivo: r.motivo });
+              appendFileSync(archivoCuentas, JSON.stringify(r.linea) + '\n');
+              // fuera la sesión en todos los aparatos de ese personaje; este sigue con una ficha nueva
+              const n = cerrarSesiones(c.autor, ws);
+              const ficha = fichaPara(c.autor);
+              seguridad({ que, ok: true, usuario: c.usuario, autor, origen, fichas: n });
+              registrar(`contraseña cambiada de «${c.usuario}» (${que}; ${n} fichas fuera)`);
+              if (c.verificado && typeof c.correo === 'string') avisarCorreo(c.correo, c.usuario, 'aviso_clave', idioma);
+              responder({ ok: true, usuario: c.usuario, autor: c.autor, ficha });
+            })
+            .catch((e) => { registrar(`error al cambiar la contraseña: ${e && e.message}`); responder({ ok: false, motivo: 'Error del servidor.' }); })
+            .finally(() => { ws.cuentaEnCurso = false; });
+          return;
+        }
+        // cambiar el correo desde el menú (con el de ahora confirmado): pide la contraseña y manda el código al nuevo
+        if (que === 'cambiar_correo') {
+          const c = cuentas.deAutor(autor);
+          if (!c) return responder({ ok: false, motivo: 'Este personaje no tiene cuenta.' });
+          if (!c.verificado) return responder({ ok: false, motivo: 'Confirma primero el correo de tu cuenta.' });
+          const nuevo = typeof msg.correo === 'string' ? msg.correo.trim().normalize('NFC') : null;
+          const m = cuentas.motivoCorreoNuevo(autor, nuevo);
+          if (m) return responder({ ok: false, motivo: m });
+          const ahora = Date.now(), k = claveDeUsuario(c.usuario);
+          ws.cuentaEnCurso = true;
+          cuentas.comprobarClave(autor, msg.actual, origen, ahora)
+            .then(async (v) => {
+              if (!v.ok) { seguridad({ que, ok: false, usuario: c.usuario, autor, origen, motivo: v.motivo }); return responder({ ok: false, motivo: v.motivo }); }
+              const r = verificaciones.pedir(k, nuevo, ahora);
+              if (!r.ok) return responder({ ok: false, motivo: r.motivo });
+              const e = await cartero.enviar({ para: nuevo, usuario: c.usuario, codigo: r.codigo, idioma });
+              seguridad({ que: 'codigo', ok: !!e.ok, usuario: c.usuario, autor, origen, correo: enmascarar(nuevo), para: 'cambiar_correo' });
+              if (!e.ok) { verificaciones.olvidar(k); return responder({ ok: false, motivo: e.motivo }); }
+              responder({ ok: true, pendiente: enmascarar(nuevo) });
+            })
+            .catch((e) => { registrar(`error al cambiar el correo: ${e && e.message}`); responder({ ok: false, motivo: 'Error del servidor.' }); })
             .finally(() => { ws.cuentaEnCurso = false; });
           return;
         }

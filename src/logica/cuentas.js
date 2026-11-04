@@ -21,6 +21,10 @@
 //   del correo no tienen ninguno: lo añaden (y lo confirman) al entrar. En cuentas.jsonl, además de la línea de cada
 //   cuenta, { correo_de: usuario, correo, t } al poner o cambiar el correo sin confirmar y { verificado: usuario, correo, t }
 //   al confirmarlo.
+// - Recuperar y cambiar (valravnx, 2 nov): con el correo confirmado se puede recuperar la contraseña con un código que
+//   llega a ese correo (src/logica/correo.js); desde el menú se cambia la contraseña o el correo pidiendo la actual
+//   (comprobarClave cuenta los fallos igual que entrar). En cuentas.jsonl, { clave_de: usuario, sal, hash, t } al cambiar
+//   la contraseña (nunca en claro) y { verificado: usuario, correo, t } al cambiar el correo (ya confirmado con su código).
 //
 // Mensajes (JSON):
 //   cliente → servidor   { tipo: 'cuenta', id, que: 'crear' | 'entrar', usuario, clave, correo (al crear) }
@@ -145,6 +149,12 @@ export class Cuentas {
   _poner(c) {
     if (c && typeof c.correo_de === 'string') return this._correo(c.correo_de, c.correo, false);
     if (c && typeof c.verificado === 'string') return this._correo(c.verificado, c.correo, true);
+    if (c && typeof c.clave_de === 'string') {
+      const x = this.porUsuario.get(claveDeUsuario(c.clave_de));
+      if (!x || typeof c.sal !== 'string' || typeof c.hash !== 'string') return false;
+      x.sal = c.sal; x.hash = c.hash;
+      return true;
+    }
     if (!c || typeof c.usuario !== 'string' || typeof c.autor !== 'string' || typeof c.sal !== 'string' || typeof c.hash !== 'string') return false;
     const k = claveDeUsuario(c.usuario);
     if (this.porUsuario.has(k) || this.porAutor.has(c.autor)) return false;
@@ -199,6 +209,57 @@ export class Cuentas {
     if (claveDeCorreo(c.correo || '') !== claveDeCorreo(correo)) return { ok: false, motivo: 'El correo ha cambiado; pide otro código.' };
     this._correo(c.usuario, c.correo, true);
     return { ok: true, linea: { verificado: c.usuario, correo: c.correo, t: ahora } };
+  }
+  // la cuenta de ese usuario o de ese correo (para recuperar la contraseña), o null
+  buscar(quien) {
+    if (typeof quien !== 'string' || !quien.trim() || quien.length > 300) return null;
+    const t = quien.trim().normalize('NFC');
+    if (t.includes('@')) { const k = this.porCorreo.get(claveDeCorreo(t)); return k ? this.porUsuario.get(k) || null : null; }
+    return this.porUsuario.get(claveDeUsuario(t)) || null;
+  }
+  // ¿es esa la contraseña de la cuenta de ese personaje? (para cambiar la contraseña o el correo desde el menú). Los
+  // fallos cuentan como al entrar. Devuelve { ok } o { ok: false, motivo, bloqueado? }
+  async comprobarClave(autor, clave, origen = '?', ahora) {
+    const c = this.porAutor.get(autor);
+    if (!c) return { ok: false, motivo: 'Este personaje no tiene cuenta.' };
+    const k = claveDeUsuario(c.usuario);
+    origen = claveDeOrigen(origen);
+    const espera = Math.max(this.fallosUsuario.falta(k, ahora), this.fallosOrigen.falta(origen, ahora));
+    if (espera > 0) return { ok: false, motivo: `Demasiados intentos; prueba dentro de ${minutos(espera)} min.`, bloqueado: true };
+    if (typeof clave === 'string' && clave && clave.length <= CLAVE_MAX * 4 && this.iguales(await this.resumir(clave, c.sal), c.hash)) { this.fallosUsuario.borrar(k); return { ok: true }; }
+    this.fallosUsuario.sumar(k, ahora); this.fallosOrigen.sumar(origen, ahora);
+    return { ok: false, motivo: 'La contraseña actual no es correcta.' };
+  }
+  // pone una contraseña nueva a la cuenta de ese usuario. Devuelve { ok, linea } (para cuentas.jsonl) o { ok: false, motivo }
+  async cambiarClave(usuario, nueva, ahora) {
+    const c = typeof usuario === 'string' ? this.porUsuario.get(claveDeUsuario(usuario)) : null;
+    if (!c) return { ok: false, motivo: 'Este personaje no tiene cuenta.' };
+    const m = motivoClave(nueva, c.usuario);
+    if (m) return { ok: false, motivo: m };
+    const sal = this.sal(), hash = await this.resumir(nueva, sal);
+    c.sal = sal; c.hash = hash;
+    this.fallosUsuario.borrar(claveDeUsuario(c.usuario));
+    return { ok: true, linea: { clave_de: c.usuario, sal, hash, t: ahora } };
+  }
+  // ¿puede la cuenta de ese personaje (con el correo ya confirmado) pasar a ese correo nuevo? null si sí, o el motivo
+  motivoCorreoNuevo(autor, correo) {
+    const m = motivoCorreo(correo);
+    if (m) return m;
+    const c = this.porAutor.get(autor);
+    if (!c) return 'Este personaje no tiene cuenta.';
+    const kc = claveDeCorreo(correo), de = this.porCorreo.get(kc);
+    if (typeof c.correo === 'string' && claveDeCorreo(c.correo) === kc) return 'Ese ya es el correo de tu cuenta.';
+    if (de || this.correosOcupados.has(kc)) return 'Ese correo ya es de otra cuenta.';
+    return null;
+  }
+  // cambia el correo (ya confirmado con el código que llegó al nuevo). Devuelve { ok, linea, antes } o { ok: false, motivo }
+  cambiarCorreo(autor, correo, ahora) {
+    const m = this.motivoCorreoNuevo(autor, correo);
+    if (m) return { ok: false, motivo: m };
+    const c = this.porAutor.get(autor), antes = c.correo || null;
+    correo = correo.trim().normalize('NFC');
+    this._correo(c.usuario, correo, true);
+    return { ok: true, antes, linea: { verificado: c.usuario, correo, t: ahora } };
   }
   get total() { return this.porUsuario.size; }
   deAutor(autor) { return this.porAutor.get(autor) || null; }

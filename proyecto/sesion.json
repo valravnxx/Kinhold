@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-11-02T09:25:16+00:00",
-  "tarea": "Recuperar la contraseña por correo (un código que caduca, con límites) y cambiar la contraseña o el correo desde el menú pidiendo la actual, con aviso por correo; al cambiar la contraseña se cierra la sesión en los demás aparatos",
+  "inicio": "2026-11-04T09:24:20+00:00",
+  "tarea": "El admin, por la cuenta y su correo: solo es admin la cuenta con el correo confirmado que diga la máquina (KINHOLD_ADMIN_CORREO), para que nadie pueda quedarse antes el nombre «valravnx»",
   "hito": "servidor",
-  "rama": "trabajo/20261102-0925"
+  "rama": "trabajo/20261104-0924"
  },
  "B": null,
  "chat:trabajo/20261101-1630-discord-idiomas": {
