@@ -1762,5 +1762,10 @@
  "Ya no puede construir en tu tierra.": "Он больше не может строить на твоей земле.",
  "Ya está invitado a tu tierra.": "Уже приглашён на твою землю.",
  "No está invitado a tu tierra.": "Не приглашён на твою землю.",
- "No caben más invitados en tu tierra.": "На твоей земле больше нет места для приглашённых."
+ "No caben más invitados en tu tierra.": "На твоей земле больше нет места для приглашённых.",
+ "Demo única · v97 (tu tierra, la zona entera)": "Единое демо · v97 (твоя земля — вся зона)",
+ "v97: tu tierra es la zona entera de tu mojón. Cada comarca está dividida en zonas de aproximadamente 1,2 km²; al poner tu mojón, la zona entera donde lo pones es tuya para construir. Un mojón por personaje y una zona, un dueño: en la zona de otro no se puede poner.": "v97: твоя земля — вся зона, где стоит твой межевой камень. Каждая округа разделена на зоны примерно по 1,2 км²; когда ставишь межевой камень, вся зона, где он стоит, твоя для строительства. Один межевой камень на персонажа и один хозяин на зону: в чужой зоне его не поставить.",
+ "v97: invitar a tu tierra. Con clic derecho (o dejando el dedo) sobre quien tengas al lado, «Invitar a tu tierra»: desde entonces puede construir en tu zona. «Quitarle de tu tierra» se lo quita.": "v97: пригласить на свою землю. Правой кнопкой (или удерживая палец) на том, кто рядом, «Пригласить на свою землю»: с этого момента он может строить в твоей зоне. «Убрать со своей земли» отменяет это.",
+ "v97: el mapa del rey enseña tu tierra de color, con su borde y tu mojón, y al acercarlo salen los lindes de las zonas de cada comarca.": "v97: карта короля показывает твою землю цветом, с её границей и твоим межевым камнем, а при приближении появляются границы зон каждой округи.",
+ "v97, provisional: como mucho 12 invitados por tierra. Lo que sueltas en la tierra de alguien no desaparece. En el mundo ya no sale el círculo de 20 m alrededor del mojón: tu tierra se ve en el mapa.": "v97, временно: не больше 12 приглашённых на одну землю. То, что бросаешь на чьей-то земле, не исчезает. Круг в 20 м вокруг межевого камня в мире больше не показывается: твоя земля видна на карте."
 }
