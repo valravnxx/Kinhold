@@ -17,7 +17,7 @@
 // Cuesta alrededor de un segundo en el PC (medido el 31 oct en node); por eso pintarMapaRey es un generador que hace
 // unas pocas filas en cada paso y deja seguir al juego entre medias.
 import { fbm, hash2 } from '../logica/azar.js';
-import { BIOMAS } from '../logica/mapa.js';
+import { BIOMAS, anchoCauce } from '../logica/mapa.js';
 import { ISLA, CIUDAD_REY } from '../logica/whitholm.js';
 
 export const PX_KM = 14;          // resolución de la imagen de fondo (px por km)
@@ -256,7 +256,7 @@ export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } =
     const pts = [];
     for (const q of r) {
       const i = enPx(q.p[0], q.p[1]); if (i < 0) continue;
-      pts.push([q.p[0], q.p[1], 0.63 * Math.sqrt(q.a / 1e6)]);
+      pts.push([q.p[0], q.p[1], anchoCauce(q.a)]);   // (el ancho del cauce del juego)
       if (!tierra[i]) break;   // llega al mar
     }
     // la boca: el río del juego acaba en la línea de costa (unos metros antes, a veces), y en el mapa se quedaba un píxel

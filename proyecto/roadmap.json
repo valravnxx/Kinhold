@@ -1420,13 +1420,19 @@
    "id": "admin",
    "num": "P7",
    "nombre": "Administración, registros y seguridad",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "jugable": "Roles (jugador, moderador, administrador) para la cuenta de valravnx y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
    "nota": "Revisión del 1 nov con valravnx: después: registros, expulsar y herramientas de admin. El admin por la cuenta llega antes, con «Cuentas».",
    "tareas": [
     {
      "nombre": "Copia de seguridad diaria del servidor de verdad (el mundo, los objetos, las fichas y las cuentas), guardada fuera de la máquina (en el almacenamiento de Hetzner o en un repositorio privado), con las últimas 14 y una restauración probada una vez; antes de abrir el juego a nadie de fuera (auditoría del 4 nov)",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Explorar libre como admin (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente, no solo de la isla del rey, que quiero poder explorar libre»): el mapa del panel enseña el continente entero, un clic lleva a cualquier sitio y la cuenta de admin puede andar fuera de Whitholm",
+     "estado": "en_curso",
+     "inicio": "2026-11-05T13:15:46+01:00",
+     "rama": "trabajo/20261105-1320-admin-continente"
     }
    ]
   },
@@ -1677,9 +1683,9 @@
     },
     {
      "nombre": "Ríos de verdad (valravnx, 5 nov): los afluentes llegan al cauce del río al que entran, nacen estrechos, el doble de anchos (arroyos hasta 8 m, que se vadean; ríos de más, que se nadan o se cruzan por sus vados) y con lecho de piedra y grava en vez de hierba",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T06:58:57+01:00",
-     "rama": "trabajo/20261105-0700-rios"
+     "fin": "2026-11-05T12:55:50+01:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Lo lleva el chat con valravnx: lo visual y creativo del mundo. Desde el 29 oct, unir el mapa con el juego (terreno por trozos, aparecer y andar por el mundo) está en el hito «El juego en el mundo de verdad», que llevan los carriles."
@@ -2781,6 +2787,13 @@
      "capturas": "capturas/demo-v106",
      "notas": "Horizonte en los perfiles altos (Móvil alto y los tres de PC): detrás del terreno de cerca se ve la isla entera, en basto, con su relieve y su color, y el mar hasta el borde, fundidos con el cielo por la bruma.",
      "noticia": false
+    },
+    {
+     "v": "v107",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v107.html",
+     "capturas": "capturas/demo-v107",
+     "notas": "Ríos de verdad: los afluentes llegan al cauce del río al que entran, el doble de anchos (arroyos hasta 8 m que se vadean; ríos que se nadan o se cruzan por sus vados), nacen estrechos, y el lecho es de grava y cantos con orilla de barro en vez de hierba. Capturas: antes y después, en un arroyo, un río y una unión."
     }
    ]
   },

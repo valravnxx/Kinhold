@@ -16,8 +16,8 @@ import { fbm } from './mapa.js';
 const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
 // el tamaño de las celdas de cada cosa (m) y su capa de azar (las mismas que en el mapa)
-export const CELDA = { arbol: 4.5, hierba: 0.85, piedra: 2.5 };
-const CAPA = { arbol: 1, hierba: 2, piedra: 3 };
+export const CELDA = { arbol: 4.5, hierba: 0.85, piedra: 2.5, canto: 1.3 };
+const CAPA = { arbol: 1, hierba: 2, piedra: 3, canto: 4 };
 export const DENSIDAD_BOSQUE = 0.55;   // de cerca, la densidad de un bosque de verdad (la del mapa)
 export const TAM_ADULTO = 0.95;     // desde este tamaño (1 = adulto normal de su especie), el árbol es adulto al talarlo
 export const CLARO_ARBOLES = 8;     // m sin árboles alrededor del sitio de salida (el personaje empieza en (0, 4) de la escena)
@@ -102,6 +102,25 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
     const pie = s.s < 0.7 && pared > 1.1;
     if (q > (pie ? 0.45 : 0.006)) return;
     R.piedras.push({ x, z, y: s.y, tam: pie ? 0.5 + a * 1.5 : 0.3 + a * 0.6, giro, roca: s.st.roca });
+  });
+
+  // los cantos del río (valravnx, 5 nov: «lecho rocoso en el río que lo deje más visual»): piedras de río a manchas
+  // por el cauce (dentro del agua) y por la orilla (hasta 1,6 m fuera), de la roca del sitio; más gordas y más juntas
+  // donde el río baja con fuerza (la montaña). La grava fina la pinta el color del suelo (src/mundo/color_suelo.js).
+  // canto: true (las pequeñas no estorban al andar: src/mundo/vegetacion_mundo.js)
+  if (tramos.length && !globalThis.__sinCantos) recorrer(CELDA.canto, CAPA.canto, x0, z0, x1, z1, (cx, cz, r) => {
+    const x = cx + (r() - 0.5) * CELDA.canto, z = cz + (r() - 0.5) * CELDA.canto, q = r(), a = r(), giro = r() * 6.3;
+    if (x < x0 || x > x1 || z < z0 || z > z1) return;
+    const c = paisaje.rioCerca(x, z, tramos), b = c.dm - c.ancho / 2;
+    if (b > 1.6) return;
+    const y = alt(x, z); if (y < 0.3) return;                       // (en la desembocadura ya es el mar)
+    const fuerte = suave(0.7, 2.5, paisaje.corriente(x, z, tramos).vel);   // (la fuerza del río: su corriente, de 0,3 a 3 m/s)
+    // a manchas (unos bancos de cantos y tramos limpios), más en la orilla que en lo hondo
+    const mancha = suave(0.42, 0.62, fbm(x / 7, z / 7, 71, 2));
+    const p = (b < -0.6 ? 0.22 : 0.5) * (0.25 + 0.75 * mancha) * (0.6 + 0.8 * fuerte);
+    if (q > p) return;
+    const st = paisaje.sitio(x, z, y);
+    R.piedras.push({ x, z, y, tam: (0.12 + a * a * 0.45) * (1 + 1.4 * fuerte), giro, roca: (st && st.roca) || 'caliza', canto: true });
   });
   return R;
 }

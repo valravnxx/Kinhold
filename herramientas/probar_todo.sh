@@ -74,6 +74,7 @@ paso "Terreno por trozos: anillos, bordes y faldones" node pruebas/prueba_trozos
 paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whitholm.mjs
 paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma" node pruebas/prueba_vegetacion.mjs
 paso "Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, claros y riberas), siempre igual" node pruebas/prueba_recogida_mundo.mjs
+paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
 paso "Las zonas en el mapa del rey y tu tierra" node pruebas/prueba_mapa_zonas.mjs
 paso "Mapa del rey: costa del juego, nombres, ciudad y ríos" node pruebas/prueba_mapa_rey.mjs
@@ -140,6 +141,7 @@ paso "Navegador: niveles de detalle del personaje" python3 pruebas/prueba_detall
 paso "Navegador: terreno por trozos (en un hilo aparte)" python3 pruebas/prueba_trozos_navegador.py dist/kinhold_trozos.html "$C/trozos"
 paso "Navegador: mapa del mundo" python3 pruebas/prueba_mapa_navegador.py dist/kinhold_mapa.html "$C/mapa"
 paso "Navegador: mapa del rey" python3 pruebas/prueba_mapa_rey_navegador.py dist/kinhold_demo.html "$C/mapa_rey"
+paso "Navegador: ríos de verdad" python3 pruebas/prueba_rios_navegador.py dist/kinhold_demo.html "$C/rios"
 paso "Navegador: tierras del rey" python3 pruebas/prueba_tierras_rey_navegador.py dist/kinhold_demo.html "$C/tierras_rey"
 paso "Navegador: panel del admin" python3 pruebas/prueba_admin_navegador.py dist/kinhold_demo.html "$C/admin"
 paso "Navegador: entrar con la cuenta" python3 pruebas/prueba_cuenta_navegador.py dist/kinhold_demo.html "$C/cuenta"

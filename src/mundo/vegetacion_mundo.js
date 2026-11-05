@@ -56,7 +56,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
       t.arboles = v.arboles.map(esc).filter(e => lejos(e, CLARO_ARBOLES)).map(e => ({ x: e.x, z: e.z, y: e.y - 0.2,
         r: RADIO_TRONCO[e.especie] * e.tam + 0.1, arbol: true, veg: true, especie: e.especie, modelo: e.especie, escala: e.tam,
         edad: e.tam >= TAM_ADULTO ? 'adulto' : 'joven', giro: e.giro, tono: e.tono, id: idArbol(e.x, e.z), malla: null, instancia: -1, matriz: null }));
-      t.piedras = v.piedras.map(esc).filter(e => lejos(e, CLARO)).map(e => ({ ...e, y: e.y - 0.2, ob: { x: e.x, z: e.z, r: e.tam * 1.1, veg: true } }));
+      t.piedras = v.piedras.map(esc).filter(e => lejos(e, CLARO)).map(e => ({ ...e, y: e.y - (e.canto ? e.tam * 0.35 : 0.2), ob: e.canto && e.tam < 0.45 ? null : { x: e.x, z: e.z, r: e.tam * 1.1, veg: true } }));   // (los cantos del río, medio hundidos; los pequeños no estorban)
       trozos.set(clave(i, j), t);
       for (const e of [...t.arboles, ...t.piedras]) e.yb = e.y;
       alNivel([...t.arboles, ...t.piedras], cajaTrozo(i, j));
@@ -197,7 +197,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     vivas = nuevas; mallas = nuevasMallas; deArboles = arboles; tapan = new Set(); centro = { x: P.x, z: P.z };
     const otros = obstaculos.filter(q => !q.veg);
     obstaculos.length = 0;
-    obstaculos.push(...otros, ...arboles, ...matas.map(e => e.ob), ...piedras.map(e => e.ob));
+    obstaculos.push(...otros, ...arboles, ...matas.map(e => e.ob), ...piedras.map(e => e.ob).filter(Boolean));
     if (ocupadoUlt) despejarMallas(mallas, ocupadoUlt);
     cuenta = { ...(cuenta || {}), arboles: arboles.length, especies: Object.fromEntries(ESPECIES.map(e => [e, arboles.filter(a => a.especie === e).length])),
       hierba: hierba.length, flores: flores.length, matas: matas.length, piedras: piedras.length, trozos: trozos.size, puestas: (cuenta?.puestas || 0) + 1 };

@@ -69,7 +69,7 @@ for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
       let maxp = 0; for (let i = 1; i < h.length; i++) maxp = Math.max(maxp, Math.abs(h[i] - h[i - 1]) / 10);
       pend.push(maxp);
       // el agua cubre el lecho y queda por debajo de la orilla
-      const w = pai.agua(px, py, tr), ancho = Math.max(2, anchoRio(Math.max(a.a, b.a)));
+      const w = pai.agua(px, py, tr), ancho = pai.rioCerca(px, py, tr).ancho;   // (el ancho del cauce del juego, el de aquí)
       if (w === null && pai.altura(px, py, tr) < 0.5) continue;   // en la desembocadura ya es el mar
       aguaN++; if (w !== null && w > pai.altura(px, py, tr) && w < pai.altura(px + nx * (ancho / 2 + 3), py + ny * (ancho / 2 + 3), tr)) aguaBien++;
     }
