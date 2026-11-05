@@ -15,7 +15,18 @@ const ARENA = [0.76, 0.71, 0.58];
 
 // color del suelo (sRGB, 0–1) en un punto: bioma, más verde donde llueve, roca desnuda en lo empinado, playa y nieve
 export function colorDelSuelo(st, y, s, xm, ym) {
-  if (!st || !st.bioma) return [0.42, 0.46, 0.44];                                  // fondo del mar / cauce
+  if (!st || !st.bioma) {
+    if (y >= 0.3) return [0.42, 0.46, 0.44];                                         // cauce
+    // el fondo del mar (valravnx, 5 nov: «debería verse la arena debajo del agua a bastante distancia»): arena donde
+    // es llano, la roca del sitio donde es empinado (al pie de los acantilados), con ondas en la arena y manchas de
+    // algas; y cuanto más hondo, más se pierde en el azul verdoso del agua (lo que se ve a través del mar)
+    const roca = (st && ROCA[st.roca]) || ROCA.caliza;
+    let c = ARENA.map((v, n) => v + (roca[n] * 0.8 - v) * Math.min(1, Math.max(0, (s - 0.35) / 0.4)));
+    const onda = 0.94 + 0.06 * Math.sin(xm * 0.9 + fbm(xm / 9, ym / 9, 71, 2) * 9), alga = suave(0.6, 0.72, fbm(xm / 25, ym / 25, 72, 3)) * suave(1.5, 4, -y);
+    c = c.map((v, n) => v * onda + ([0.24, 0.3, 0.2][n] - v) * alga * 0.6);
+    const hondo = 1 - Math.exp(Math.min(0, y) / 7);
+    return c.map((v, n) => v + ([0.13, 0.25, 0.28][n] - v) * hondo);
+  }
   let c = SUELO[st.bioma] || SUELO.pradera;
   const verde = Math.max(-0.5, Math.min(0.5, st.P - 0.6)) + (fbm(xm / 420, ym / 420, 9, 3) - 0.5) * 0.6;
   if (st.bioma !== 'nieve') c = [c[0] * (1 - 0.12 * verde), c[1] * (1 + 0.1 * verde), c[2] * (1 - 0.1 * verde)];
