@@ -165,6 +165,30 @@ export function cargarSuelo(almacen, suelo, clave = CLAVE_SUELO) {
   return suelo;
 }
 
+// Lo almacenado en tu tierra (valravnx, 1 nov: «el contador de materiales de arriba solo en tu tierra, con lo
+// almacenado en ella»): cuántas unidades hay de cada tipo en los objetos del suelo cuyo sitio es tuyo (esMio(x, z)),
+// contando también lo que llevan dentro los contenedores que hay en el suelo. Provisional, mientras no haya
+// almacenajes de la base (hito «De nada a una casa»): lo almacenado es lo que está en el suelo de tu tierra, que ahí no
+// desaparece. Devuelve { tipo: n }.
+// Lo que no cupo en lo que llevas al desmontar una pieza (acciones.js, r.sobra: { tipo: n }) cae al suelo en (x, z).
+// Devuelve cuántos objetos ha dejado (las pilas de lo mismo se juntan).
+export function dejarSobra(suelo, sobra, x, z, ahora, autor, enTierras) {
+  let n = 0;
+  for (const [tipo, k] of Object.entries(sobra || {})) if (k > 0 && suelo.cat[tipo]) { suelo.dejar({ tipo, n: k }, x, z, ahora, autor, enTierras); n++; }
+  return n;
+}
+
+export function almacenadoEnTierra(objetos, esMio) {
+  const hay = {};
+  const sumar = (c) => {
+    if (!c) return;
+    hay[c.tipo] = (hay[c.tipo] || 0) + (c.n || 1);
+    if (c.dentro) for (const d of c.dentro) sumar(d);
+  };
+  for (const o of objetos) if (esMio(o.x, o.z)) sumar(o.cosa);
+  return hay;
+}
+
 // ---------------- Acciones con autor ----------------
 // { autor, tipo: 'soltar_suelo', de, cantidad?, x, z }       — de la ruta del inventario del autor al suelo, a sus pies
 // { autor, tipo: 'coger_suelo', objeto, x, z, a?, cantidad? } — del suelo al inventario del autor

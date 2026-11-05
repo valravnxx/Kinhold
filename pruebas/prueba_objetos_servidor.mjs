@@ -65,7 +65,7 @@ const tiene = (inv, tipo) => JSON.stringify(inv).includes(`"tipo":"${tipo}"`);
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-objetos-'));
 const archivo = join(dir, 'mundo.jsonl');
 try {
-  let s = crearServidor({ puerto: 0, archivo });
+  let s = crearServidor({ arconPruebas: true, puerto: 0, archivo });
   let puerto = await s.listo;
   const a = await cliente(puerto), b = await cliente(puerto);
   const yoA = a.bienvenida.autor, yoB = b.bienvenida.autor;
@@ -186,7 +186,7 @@ try {
   comprobar('cada acción queda en el registro, bien o mal, con su autor', auditoria.length >= 10 && auditoria.every(e => e.autor === yoA || e.autor === yoB), `${auditoria.length} entradas`);
 
   console.log('Al volver a arrancar');
-  s = crearServidor({ puerto: 0, archivo });
+  s = crearServidor({ arconPruebas: true, puerto: 0, archivo });
   puerto = await s.listo;
   comprobar('los inventarios y el suelo siguen igual', JSON.stringify(s.objetos.exportar()) === foto);
   const b2 = await cliente(puerto, fichaB);

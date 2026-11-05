@@ -84,7 +84,7 @@ function cliente(puerto) {
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-llevado-'));
 let s = null;
 try {
-  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl') });
+  s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl') });
   const puerto = await s.listo;
   const a = await cliente(puerto), b = await cliente(puerto);
   const yoA = a.bienvenida.autor;

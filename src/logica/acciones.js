@@ -84,8 +84,9 @@ const CAMPOS_CONSTRUCCION = {
 // diga el navegador se pisa): solo vale al rehacer.
 // El mojón y los muebles (roadmap, hito «Jugar entre dos sin trampas»), igual: con los inventarios se pagan de lo que
 // lleva el autor, y al quitar un mueble lo que devuelve va a lo que llevas (todo o nada: si no te cabe, no se quita).
+// Al desmontar una pieza, igual, pero lo que no te cabe cae al suelo a tus pies (r.sobra) en vez de no desmontarse.
 // Al rehacer, con «lleva: true» ni cobran ni devuelven al montón común.
-export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar']);
+export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar']);
 const RESERVA_PAGADA = { hay: () => Infinity, gastar: () => {}, parcial: true };
 export function reservaDe(inv) {
   const tipo = m => OBJETO_DE_MATERIAL[m];
@@ -109,6 +110,21 @@ function devolverA(inv, devuelto) {
     if (!r.ok) { inv.restaurar(antes); return { ok: false, motivo: 'No te cabe lo que devuelve: haz sitio.' }; }
   }
   return { ok: true };
+}
+// Lo que devuelve una pieza al desmontarla (sin arcón en el juego de verdad, valravnx 1 nov): a lo que lleva el autor
+// lo que le quepa, y lo demás cae al suelo a sus pies (lo pone quien tiene el suelo: el servidor, o la página sin él).
+// Provisional: una pieza grande devuelve más de lo que se puede llevar, y no se quiere que no se pueda desmontar.
+// Devuelve { ok: true, sobra: { tipo de objeto: n } }.
+function devolverOSuelo(inv, devuelto) {
+  const sobra = {};
+  for (const [mat, n] of Object.entries(devuelto)) {
+    const tipo = Object.hasOwn(OBJETO_DE_MATERIAL, mat) ? OBJETO_DE_MATERIAL[mat] : null;
+    if (!tipo) continue;
+    let k = n;
+    while (k > 0 && !inv.meterDonde(tipo, k).ok) k--;
+    if (n - k > 0) sobra[tipo] = n - k;
+  }
+  return { ok: true, sobra };
 }
 
 // El servidor no se fía del navegador en las obras (hito «Jugar entre dos sin trampas»): entregar, subir, trabajar y
@@ -177,7 +193,16 @@ function aplicarConstruccion(m, a, invs) {
     case 'desmontar': {
       const c = m.construcciones.find(x => x.id === a.construccion);
       if (!c) return { ok: false, motivo: 'No existe.' };
-      return m.desmontar(c, a.clave, a.autor);   // solo en tu tierra, en la de quien te invita o en tierra de nadie
+      // solo en tu tierra, en la de quien te invita o en tierra de nadie; con lo que llevas, lo que devuelve va a lo que
+      // llevas (sin arcón en el juego de verdad, valravnx 1 nov), y al rehacer una ya cobrada no toca el montón común
+      if (invs) {
+        delete a.lleva;
+        const inv = invs.de(a.autor);
+        let sobra = {};
+        const r = m.desmontar(c, a.clave, a.autor, (devuelto) => { const d = devolverOSuelo(inv, devuelto); sobra = d.sobra; return d; });
+        return pagada(r.ok ? { ...r, sobra } : r, a, invs);
+      }
+      return m.desmontar(c, a.clave, a.autor, a.lleva === true ? () => ({ ok: true }) : null);
     }
     case 'usar': {
       const c = m.construcciones.find(x => x.id === a.construccion);

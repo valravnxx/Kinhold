@@ -85,7 +85,7 @@ const dl = join(tmp, 'local');
 archivos({ KINHOLD_DOMINIO: 'localhost', KINHOLD_PUERTO: String(pJuego) }, dl);
 const global = `{\n\tadmin off\n\tlocal_certs\n\tskip_install_trust\n\thttp_port ${pHttp}\n\thttps_port ${pHttps}\n}\n`;
 writeFileSync(join(dl, 'Caddyfile'), global + readFileSync(join(dl, 'Caddyfile'), 'utf8'));
-const srv = crearServidor({ puerto: pJuego, archivo: join(tmp, 'mundo', 'mundo.jsonl') });
+const srv = crearServidor({ arconPruebas: true, puerto: pJuego, archivo: join(tmp, 'mundo', 'mundo.jsonl') });
 await srv.listo;
 const cad = spawn('caddy', ['run', '--adapter', 'caddyfile', '--config', join(dl, 'Caddyfile')], { env: { ...process.env, XDG_DATA_HOME: tmp, XDG_CONFIG_HOME: tmp }, stdio: ['ignore', 'ignore', 'pipe'] });
 let regCaddy = ''; cad.stderr.on('data', d => regCaddy += d);

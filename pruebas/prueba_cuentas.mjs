@@ -242,7 +242,7 @@ const lineas = [];
 const registrar = (t) => lineas.push(t);
 const CLAVE = 'mi casa de troncos 7';
 try {
-  let s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), registrar, tico: 200 });
+  let s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl'), registrar, tico: 200 });
   let puerto = await s.listo;
   const a = await cliente(puerto);
   comprobar('al entrar sin cuenta, la bienvenida lo dice', a.bienvenida.cuenta === null);
@@ -285,7 +285,7 @@ try {
   for (const x of [a2, b, c]) x.ws.close();
   await s.cerrar();
   // tras reiniciar
-  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), registrar, tico: 200 });
+  s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl'), registrar, tico: 200 });
   puerto = await s.listo;
   const d = await cliente(puerto);
   const r10 = await d.pedir({ que: 'entrar', usuario: 'leñadora', clave: CLAVE });
@@ -310,7 +310,7 @@ try {
   for (const x of [d, sinCuenta, e1, e2]) x.ws.close();
   await s.cerrar();
   // tras reiniciar, la salida sigue (las fichas de antes no vuelven a valer)
-  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), registrar, tico: 200 });
+  s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl'), registrar, tico: 200 });
   puerto = await s.listo;
   const e3 = await cliente(puerto, r13.ficha), e4 = await cliente(puerto, r16.ficha);
   comprobar('tras reiniciar, las fichas de antes de salir siguen sin valer; la nueva sí', e3.yo !== a.yo && e4.yo === a.yo);
@@ -333,7 +333,7 @@ try {
   e3.ws.close(); e4.ws.close();
   await s.cerrar();
   // las fichas caducan
-  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), registrar, tico: 200, vidaFicha: 400 });
+  s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl'), registrar, tico: 200, vidaFicha: 400 });
   puerto = await s.listo;
   const f1 = await cliente(puerto);
   const r17 = await f1.pedir({ que: 'entrar', usuario: 'leñadora', clave: CLAVE });
@@ -426,7 +426,7 @@ console.log('El correo en el servidor');
     // una cuenta de antes del correo, ya guardada
     writeFileSync(join(dir2, 'cuentas.jsonl'), JSON.stringify({ usuario: 'Antigua', autor: 'jugador:antigua', sal: '00', hash: '00', t: 1 }) + '\n');
     writeFileSync(join(dir2, 'fichas.jsonl'), JSON.stringify({ h: (await import('crypto')).createHash('sha256').update('a'.repeat(32)).digest('hex').slice(0, 32), autor: 'jugador:antigua', t: Date.now() }) + '\n');
-    let s = crearServidor({ puerto: 0, archivo: join(dir2, 'mundo.jsonl'), registrar: (x) => reg.push(x), tico: 200, cartero, parametrosClave: { N: 1024, r: 8, p: 1 } });
+    let s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir2, 'mundo.jsonl'), registrar: (x) => reg.push(x), tico: 200, cartero, parametrosClave: { N: 1024, r: 8, p: 1 } });
     let puerto = await s.listo;
     const a = await cliente(puerto);
     const acciones = [];
@@ -477,7 +477,7 @@ console.log('El correo en el servidor');
     comprobar('el registro de seguridad apunta los códigos y la confirmación, con el correo a medias', /"que":"codigo"/.test(seg) && /"que":"verificar","ok":true/.test(seg) && !seg.includes('correa@ejemplo.com'));
     for (const x of [a, b, espia, v, sinC]) x.ws.close();
     await s.cerrar();
-    s = crearServidor({ puerto: 0, archivo: join(dir2, 'mundo.jsonl'), registrar: (x) => reg.push(x), tico: 200, cartero, parametrosClave: { N: 1024, r: 8, p: 1 } });
+    s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir2, 'mundo.jsonl'), registrar: (x) => reg.push(x), tico: 200, cartero, parametrosClave: { N: 1024, r: 8, p: 1 } });
     puerto = await s.listo;
     const v2 = await cliente(puerto, 'a'.repeat(32));
     comprobar('tras reiniciar: el confirmado sigue confirmado; el de antes sigue sin confirmar, con su correo nuevo', s.cuentas.correoDe(a.yo).verificado === true && v2.bienvenida.correo.verificado === false && v2.bienvenida.correo.correo === 'a***@e***.com');
@@ -496,7 +496,7 @@ console.log('Recuperar y cambiar la contraseña o el correo');
   const NUEVA = 'otra casa de zarzo 9', TERCERA = 'tercera clave del hogar 4';
   try {
     const altas = { origen: 100, total: 100, espera: 0 };
-    let s = crearServidor({ puerto: 0, archivo: join(dir3, 'mundo.jsonl'), registrar: (x) => reg.push(x), tico: 200, cartero, parametrosClave: P, altas });
+    let s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir3, 'mundo.jsonl'), registrar: (x) => reg.push(x), tico: 200, cartero, parametrosClave: P, altas });
     let puerto = await s.listo;
     const a = await cliente(puerto);
     await a.pedir({ que: 'crear', usuario: 'Rosa', clave: CLAVE, correo: 'rosa@ejemplo.com' });
@@ -581,7 +581,7 @@ console.log('Recuperar y cambiar la contraseña o el correo');
     comprobar('el registro de seguridad apunta recuperar, restablecer y los cambios', ['recuperar', 'restablecer', 'cambiar_clave', 'cambiar_correo'].every(q => seg.includes(`"que":"${q}"`)));
     for (const w of [a, otro, x, ver, y, z, m, conVieja, vuelve, libre]) try { w.ws.close(); } catch (e) { /* nada */ }
     await s.cerrar();
-    s = crearServidor({ puerto: 0, archivo: join(dir3, 'mundo.jsonl'), registrar: (x) => reg.push(x), tico: 200, cartero, parametrosClave: P, altas });
+    s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir3, 'mundo.jsonl'), registrar: (x) => reg.push(x), tico: 200, cartero, parametrosClave: P, altas });
     puerto = await s.listo;
     const t = await cliente(puerto);
     const t1 = await t.pedir({ que: 'entrar', usuario: 'Rosa', clave: TERCERA });

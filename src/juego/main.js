@@ -29,6 +29,7 @@ import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
 import { vestidoDe, rasgosPrenda } from '../logica/hechura.js';
 import { crearRecoleccion, crearRecoleccionMundo } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
+import { almacenadoEnTierra } from '../logica/suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS } from '../logica/whitholm.js';
 import { nombreDe } from '../logica/recoleccion.js';
@@ -73,6 +74,10 @@ const CLAVE_GUARDADO = 'kinhold_h1_v1';
 // «Jugar en línea» (?enlinea=1): el mundo es el del servidor; nada se guarda en el navegador (src/juego/en_linea.js)
 const EN_LINEA = new URLSearchParams(location.search).get('enlinea') === '1';
 let enLinea = null;
+// El arcón de pruebas (valravnx, 1 nov: «fuera el arcón infinito» del juego de verdad): en línea, solo si el servidor lo
+// tiene (lo dice su bienvenida; el de verdad no lo tiene); sin servidor (las pruebas de navegador), sí.
+let arconServidor = false;
+const hayArcon = () => !enLinea || arconServidor;
 const $ = (id) => document.getElementById(id);
 
 // ---------------- Estado ----------------
@@ -85,7 +90,9 @@ let registroAcciones = new RegistroAcciones();
 function accion(a) {
   if (enLinea) { const r = enLinea.red.accion(a); mundo = enLinea.red.mundo; return r; }
   // obras con lo que llevas: lo que se entrega sale del inventario del jugador, y el material se coge del arcón de pruebas
-  const r = ejecutar(mundo, registroAcciones, { autor: AUTOR_LOCAL, ...a }, inventarios);
+  // sin servidor (las pruebas de navegador) hay arcón de pruebas, y lo desmontado vuelve a él como antes; en línea, a lo
+  // que llevas, y lo que no cabe, al suelo (lo pone el servidor)
+  const r = ejecutar(mundo, registroAcciones, { autor: AUTOR_LOCAL, ...a }, a.tipo === 'desmontar' ? null : inventarios);
   if (r.ok && USA_INVENTARIO.has(a.tipo) && almacen) guardarInventarios(almacen, inventarios);
   return r;
 }
@@ -1962,6 +1969,8 @@ const reloj = new THREE.Clock();
 function paso() {
   const dt = Math.min(reloj.getDelta(), 0.05);
   if (mundoJ) pasoMundo();
+  // el contador de arriba sigue a donde estás (entras o sales de tu tierra) y a lo que cambia en el suelo
+  if (enLinea && performance.now() - ultimoMateriales > 500) { ultimoMateriales = performance.now(); pintarMateriales(); }
   // entrada de movimiento relativa a la cámara
   let ax = 0, az = 0;
   if (teclas.has('w') || teclas.has('arrowup')) az -= 1;
@@ -2093,10 +2102,32 @@ function construirBarra() {
 }
 function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : (estado.sel.clase === 'mojon' || estado.sel.clase === 'nivelar' ? 'tierra' : PIEZAS[estado.sel.tipo].cat); construirBarra(); }
 
-function actualizarUI() {
+// El contador de arriba (valravnx, 1 nov): en línea, solo dentro de tu tierra (la zona de tu mojón) y con lo que tienes
+// almacenado en ella; fuera, no sale. Provisional, mientras no haya almacenajes de la base: lo almacenado es lo que hay
+// en el suelo de tu tierra (ahí no desaparece), de lo que te llega del servidor (los trozos de tu alrededor). Sin
+// servidor (las pruebas de navegador), lo que hay en el arcón de pruebas, como antes.
+let htmlMateriales = null;
+function pintarMateriales() {
   const m = $('materiales');
-  // lo que hay en el arcón de pruebas (en línea, el montón común del servidor, hasta que lleve los inventarios)
-  m.innerHTML = (enLinea ? '' : `<span>${tr('En el arcón:')}</span>`) + Object.entries(MATERIALES).map(([k, n]) => `<span><b>${mundo.materiales[k] ?? 0}</b> ${tr(n).toLowerCase()}</span>`).join('');
+  let html = '';
+  if (!enLinea) html = `<span>${tr('En el arcón:')}</span>` + Object.entries(MATERIALES).map(([k, n]) => `<span><b>${mundo.materiales[k] ?? 0}</b> ${tr(n).toLowerCase()}</span>`).join('');
+  else {
+    const mojon = miMojon(), zona = mojon ? mundo.tierraDe(mojon.x, mojon.z) : null;
+    const esMio = (x, z) => zona !== null && mundo.tierraDe(x, z) === zona;
+    if (esMio(pj.x, pj.z)) {
+      const hay = almacenadoEnTierra(sueloObjetos.suelo.visibles(Date.now()), esMio);
+      const ks = Object.keys(hay).filter(k => CATALOGO[k]).sort((a, b) => hay[b] - hay[a]);
+      html = `<span>${tr('En tu tierra:')}</span>` + (ks.length ? ks.map(k => `<span><b>${hay[k]}</b> ${tr(CATALOGO[k].nombre).toLowerCase()}</span>`).join('')
+        : `<span>${tr('aún no tienes nada almacenado')}</span>`);
+    }
+  }
+  if (html !== htmlMateriales) { htmlMateriales = html; m.innerHTML = html; }
+  m.hidden = !html;
+}
+let ultimoMateriales = 0;
+
+function actualizarUI() {
+  pintarMateriales();
   for (const b of document.querySelectorAll('#modos button')) b.classList.toggle('sel', b.dataset.modo === estado.modo);
   $('barra').hidden = estado.modo !== 'construir';
   $('btnColocar').hidden = !(estado.modo === 'construir' && estado.esTactil);
@@ -2129,7 +2160,7 @@ $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltad
 // Panel de inventario (hito 2): lo que llevas encima y un arcón de pruebas para coger equipo.
 // El arcón de pruebas tiene también los materiales de obra (el montón común de antes): se cogen con acciones del mundo.
 const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario, alSuelo: arconAlSuelo,
-  accionArcon: (a) => { const r = accion(a); if (r.ok) { guardar(); actualizarUI(); } return r; }, materialesArcon: () => mundo.materiales,
+  accionArcon: (a) => { const r = accion(a); if (r.ok) { guardar(); actualizarUI(); } return r; }, materialesArcon: () => (hayArcon() ? mundo.materiales : null), hayArcon,
   alCambiar: () => { pintarLlevas(); vestir(); }, retrato: (lienzo) => dibujarRetrato(renderer, jugador.mh, lienzo) });
 // El mapa del rey (valravnx, 31 oct): Whitholm, la isla del rey, cartografiada; lo llevas desde que apareces y se abre con
 // M o el botón «Mapa» (src/juego/mapa_rey.js). Solo en el mundo de verdad. Al abrirlo se suelta el ratón (el combate lo
@@ -2278,6 +2309,7 @@ paso();
 // de otro solo cuando su obra pasa de cuarto o se termina, como las propias).
 function iniciarEnLinea() {
   $('btnReiniciar').hidden = true; // el mundo del servidor no se borra desde aquí
+  $('btnRellenar').hidden = true;  // sin arcón, hasta que la bienvenida diga que el servidor lo tiene (el de verdad, no)
   const marca = document.createElement('span');
   marca.id = 'estadoRed';
   marca.style.cssText = 'pointer-events:auto;align-self:center;background:var(--panel);color:var(--acento);border-radius:9px;padding:6px 9px;font-size:12px';
@@ -2300,6 +2332,7 @@ function iniciarEnLinea() {
       if (msg.tipo === 'luchadores' || msg.tipo === 'combate' || msg.tipo === 'bienvenida') combate.recibir(msg, enLinea.red.yo || msg.autor, (a) => enLinea.modeloDe(a));
       if (msg.tipo === 'luchadores' || msg.tipo === 'combate' || msg.tipo === 'combate_rechazo') return;
       // lo que llevas, el suelo, lo talado y lo recogido (src/juego/objetos_en_linea.js)
+      if (msg.tipo === 'bienvenida') { arconServidor = msg.arcon === true; $('btnRellenar').hidden = !arconServidor; panelInventario.pintar(); }
       if (objetosRed.recibir(msg)) {
         if (msg.tipo === 'bienvenida') ropaDelVisor();
         if (msg.tipo !== 'bienvenida') return;
