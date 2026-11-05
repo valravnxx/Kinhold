@@ -1436,7 +1436,9 @@
     },
     {
      "nombre": "Llevar los perfiles gráficos y el posprocesado a la demo: el perfil en Opciones, el de inicio por el aparato y por la medida, y la cadena de efectos en el mundo de verdad (con la cámara del juego); después de que valravnx mida en su móvil y en su PC con «Medir»",
-     "estado": "espera_decision"
+     "estado": "en_curso",
+     "inicio": "2026-11-05T05:07:52+01:00",
+     "rama": "trabajo/20261105-0510-graficos-juego"
     }
    ],
    "num": "G"
@@ -3654,11 +3656,6 @@
    "pregunta": "Clanes y guerra (del 30 oct): con el vasallaje de comarca ya no hay un pago que dejar de hacer, así que el impago deja de ser causa de guerra. ¿Qué causas quedan, y asediar el centro de una comarca en su ventana necesita guerra declarada? Para la reunión tras P3, con las dos opciones escritas: solo guerra aceptada por las dos partes más las ventanas de asedio del centro, o causas automáticas tasadas",
    "desde": "2026-10-30",
    "hito": "tierras"
-  },
-  {
-   "pregunta": "Posprocesado (prueba v1): ¿qué te parece cada efecto en las capturas y en tu móvil y tu PC con «Medir»? ¿Se quedan los haces de luz (casi no se ven con la cámara del juego) o fuera?",
-   "desde": "2026-11-04",
-   "hito": "graficos"
   }
  ]
 }
