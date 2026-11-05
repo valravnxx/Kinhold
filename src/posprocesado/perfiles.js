@@ -21,19 +21,25 @@
 //   suavizado: 'ninguno' | 'smaa-bajo' | 'smaa-medio' | 'smaa-alto' | 'msaa-4' | 'msaa-8'
 //   desenfoque: si se puede usar el desenfoque puntual
 //   objetivo: fotogramas por segundo a los que apunta (GDD: 30 en Android de gama media, 60 en PC)
+//   horizonte (valravnx, 5 nov): la isla entera, basta, detrás del terreno de cerca (src/mundo/horizonte.js); paso:
+//     cada cuántos 100 m va un punto (4: cada 400 m, 2: cada 200, 1: cada 100). null: solo el terreno de cerca
 export const PERFILES = [
   { id: 'movil-1', nombre: 'Móvil básico', res: 0.75, sombras: 512, blandas: false, ao: null, aoMedia: true, brillo: null, rayos: null, suavizado: 'ninguno', desenfoque: false, objetivo: 30 },
   { id: 'movil-2', nombre: 'Móvil medio', res: 1, sombras: 1024, blandas: false, ao: 'Performance', aoMedia: true, brillo: 4, rayos: null, suavizado: 'smaa-bajo', desenfoque: true, objetivo: 30 },
-  { id: 'movil-3', nombre: 'Móvil alto y tableta', res: 1.5, sombras: 1024, blandas: true, ao: 'Low', aoMedia: true, brillo: 6, rayos: null, suavizado: 'smaa-medio', desenfoque: true, objetivo: 30 },
-  { id: 'pc-1', nombre: 'PC básico', res: 1, sombras: 2048, blandas: true, ao: 'Medium', aoMedia: true, brillo: 6, rayos: 32, suavizado: 'smaa-alto', desenfoque: true, objetivo: 60 },
-  { id: 'pc-2', nombre: 'PC medio', res: 1.5, sombras: 2048, blandas: true, ao: 'High', aoMedia: false, brillo: 8, rayos: 60, suavizado: 'msaa-4', desenfoque: true, objetivo: 60 },
-  { id: 'pc-3', nombre: 'PC alto', res: 2, sombras: 4096, blandas: true, ao: 'Ultra', aoMedia: false, brillo: 8, rayos: 90, suavizado: 'msaa-8', desenfoque: true, objetivo: 60 },
+  { id: 'movil-3', nombre: 'Móvil alto y tableta', res: 1.5, sombras: 1024, blandas: true, ao: 'Low', aoMedia: true, brillo: 6, rayos: null, suavizado: 'smaa-medio', desenfoque: true, objetivo: 30, horizonte: { paso: 4 } },
+  { id: 'pc-1', nombre: 'PC básico', res: 1, sombras: 2048, blandas: true, ao: 'Medium', aoMedia: true, brillo: 6, rayos: 32, suavizado: 'smaa-alto', desenfoque: true, objetivo: 60, horizonte: { paso: 4 } },
+  { id: 'pc-2', nombre: 'PC medio', res: 1.5, sombras: 2048, blandas: true, ao: 'High', aoMedia: false, brillo: 8, rayos: 60, suavizado: 'msaa-4', desenfoque: true, objetivo: 60, horizonte: { paso: 2 } },
+  { id: 'pc-3', nombre: 'PC alto', res: 2, sombras: 4096, blandas: true, ao: 'Ultra', aoMedia: false, brillo: 8, rayos: 90, suavizado: 'msaa-8', desenfoque: true, objetivo: 60, horizonte: { paso: 1 } },
 ];
 export const perfil = (id) => PERFILES.find(p => p.id === id) || PERFILES[2];
 
 // Lo mismo en todos los perfiles (lo que importa para jugar y la identidad del mundo): la niebla, el mapeo tonal y la
 // gradación de color. Los dos últimos van en la misma pasada, así que en el móvil básico no cuestan casi nada.
 export const COMUN = { niebla: [45, 130], tono: true, color: true };
+// Con horizonte, la niebla de cerca es la misma hasta que llega a «tope» (de ahí no pasa: si llegara a 1 taparía las
+// montañas) y lo lejano se va cubriendo de bruma hasta «max» a «lejos» metros (de verdad). Sin horizonte, como siempre.
+// Lo que cambia, por tanto: más allá de unos 500 m de ti (la niebla del juego va de 110 a 700) se ve algo más.
+export const HORIZONTE = { tope: 0.72, max: 0.88, lejos: 30000 };
 
 // Los efectos, en el orden de la tabla de valravnx, con lo que hace cada uno (para la interfaz)
 export const EFECTOS = [
