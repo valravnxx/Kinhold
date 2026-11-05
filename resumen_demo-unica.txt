@@ -1,0 +1,47 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 3254 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2526 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2094 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2586 KB
+
+== Construir demo única
+      2472 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3566 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2492 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2089 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2579 KB
+dist/kinhold_trozos.html 2095 KB
+hilo de los trozos 19 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v116 (con algo al hombro, las manos vacías); v116: con algo al hombro, las manos no llevan nada, ni el hacha (valravnx, 1 nov: «si llevas algo al hombro, olvídate de llevar nada en manos a la vez»). Con el tronco corto o el saco al hombro no se coge nada con las manos (lo que recoges va a la cintura o a la espalda, si llevas dónde), y para subirte algo al hombro tienes que llevar las manos vacías. Lo comprueba el servidor, en la misma lógica del inventario.; v116, provisional: lo que cuelga de una correa (la bandolera y el odre) no cuenta como carga al hombro y deja las manos libres; el tronco corto y el saco, que se sujetan con las manos, sí.
+  OK   menú en ru: nada tapado
+
+FALLAN 4: construir: con 8 más hay más triángulos, construir: con 8 más hay más triángulos, menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 50 s
+en el PC de valravnx, con su tarjeta: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002504) Direct3D11 vs_5_0 ps_5_0, D3D11)
