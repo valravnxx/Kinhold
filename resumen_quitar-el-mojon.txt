@@ -1,0 +1,45 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 3197 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2483 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2052 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2543 KB
+
+== Construir demo única
+      2382 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3504 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2449 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2046 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2536 KB
+dist/kinhold_trozos.html 2053 KB
+hilo de los trozos 19 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: quitar el mojón
+  OK   móvil: al recargar sigue el mojón nuevo y solo lo nuevo — {'x': 8, 'z': 8}
+  OK   sin errores de página
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas/quitar_mojon
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 72 s
