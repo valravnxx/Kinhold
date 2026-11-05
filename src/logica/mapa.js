@@ -497,10 +497,43 @@ export function riosDelMapa(m, minimo = 40e6) {
     if (!tierra[i] || A[i] < minimo || tieneArriba[i]) continue;
     let c = i; const pts = [];
     for (;;) { pts.push(punto(c)); if (visto[c] || !tierra[c]) break; visto[c] = 1; c = rec[c]; }
-    rios.push(chaikin(pts));   // entra en otro río o en el mar: el último punto es la unión
+    const r = chaikin(pts);   // entra en otro río o en el mar: el último punto es la unión
+    r.entra = !!tierra[c];    // (en otro río, no en el mar)
+    rios.push(r);
   }
   for (let i = 0; i < NN; i++) if (tierra[i] && A[i] >= minimo && !visto[i]) { visto[i] = 1; rios.push(chaikin([punto(i), punto(rec[i])])); }
+  if (!globalThis.__sinUnirRios) unirRios(rios);   // (la prueba lo quita a propósito: pruebas/prueba_rios.mjs)
   return rios;
+}
+// Las uniones (valravnx, 5 nov: «no están del todo unidos muchos ríos»): cada río se traza por las celdas del mapa
+// (de 1 km) y el que entra en otro acaba en el centro de la celda de la unión; pero luego cada uno se suaviza por su
+// lado y el río que lo recibe ya no pasa por ahí, así que el afluente se quedaba a decenas de metros del cauce (8 de
+// 11 en Whitholm, de media a 77 m). Con todos ya suavizados, el final de cada afluente se lleva al punto más cercano del
+// cauce que lo recibe, y ahí se mete un punto en ese río (donde los meandros valen cero: los dos cauces se tocan).
+// El afluente guarda ese punto (une) para que su agua llegue a la altura del río (src/logica/paisaje.js).
+function unirRios(rios) {
+  for (const r of rios) {
+    if (!r.entra || r.length < 2) continue;
+    const e = r[r.length - 1].p;
+    let mejor = null;
+    for (const o of rios) {
+      if (o === r) continue;
+      for (let k = 0; k < o.length - 1; k++) {
+        const a = o[k].p, b = o[k + 1].p, vx = b[0] - a[0], vy = b[1] - a[1], l2 = vx * vx + vy * vy || 1e-12;
+        const u = Math.max(0, Math.min(1, ((e[0] - a[0]) * vx + (e[1] - a[1]) * vy) / l2));
+        const d = Math.hypot(a[0] + vx * u - e[0], a[1] + vy * u - e[1]);
+        if (!mejor || d < mejor.d) mejor = { d, o, k, u };
+      }
+    }
+    if (!mejor || mejor.d > 0.6) continue;   // (más de 600 m: no es su unión)
+    const { o, k, u } = mejor, a = o[k], b = o[k + 1];
+    let q;
+    if (u < 1e-3) q = a; else if (u > 1 - 1e-3) q = b;
+    else { q = { p: [a.p[0] + (b.p[0] - a.p[0]) * u, a.p[1] + (b.p[1] - a.p[1]) * u], a: b.a, h: a.h + (b.h - a.h) * u }; o.splice(k + 1, 0, q); }
+    const f = r[r.length - 1];
+    r[r.length - 1] = { ...f, p: [q.p[0], q.p[1]] };
+    r.une = q; r.uneRio = o;
+  }
 }
 function chaikin(pts) {
   let r = pts;
@@ -525,6 +558,13 @@ export function generarMapa(semilla, opciones) {
 // los gruesos del GDD: 10 km² → 2 m, 1.000 km² → 20 m, 10.000 km² → 63 m.
 export const anchoRio = (areaM2) => 0.63 * Math.sqrt(areaM2 / 1e6);
 export const claseRio = (ancho) => ancho < 5 ? 'arroyo' : ancho < 40 ? 'rio' : 'grande';
+// El cauce en el juego (valravnx, 5 nov: «ríos de verdad»): el doble de ancho que el de arriba (que sigue igual porque
+// con él se reparte el mapa al generarlo), y arroyo hasta 8 m (se vadea); de ahí arriba, río (se nada o se cruza por
+// sus vados). En Whitholm, el arroyo más pequeño sale de unos 5 m y el río mayor de unos 22.
+export const ESCALA_CAUCE = 2.06;
+export const ARROYO_HASTA = 8, GRANDE_DESDE = 40;
+export const anchoCauce = (areaM2) => ESCALA_CAUCE * anchoRio(areaM2);
+export const claseCauce = (ancho) => ancho < ARROYO_HASTA ? 'arroyo' : ancho < GRANDE_DESDE ? 'rio' : 'grande';
 
 // Resumen para enseñar y comprobar.
 export function resumen(m) {
