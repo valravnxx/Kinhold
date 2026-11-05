@@ -1187,7 +1187,9 @@
     },
     {
      "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio LIBRE al azar de las tres comarcas de inicio (valravnx, 5 nov: si la zona de un sitio tiene un mojón puesto, deja de ser salida; las zonas de los sitios de salida sí se reclaman) y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-05T17:26:09+00:00",
+     "rama": "trabajo/20261105-1726"
     },
     {
      "nombre": "Fuera el arcón de materiales infinito del servidor de verdad (solo para las pruebas automáticas, sin botón); el contador de materiales de arriba sale solo dentro de tu tierra, con lo que tienes almacenado en ella",
@@ -1483,6 +1485,12 @@
      "estado": "en_curso",
      "inicio": "2026-11-05T16:43:36+01:00",
      "rama": "trabajo/20261105-1645-cortes"
+    },
+    {
+     "nombre": "El linde del bosque de lejos sin paredes (valravnx, 5 nov: «el fix de árboles de lejos que hiciste se corta de manera así ahora»): donde acaba el bosque, el dosel de lejos baja suave hasta el suelo y pasa a su color, en vez de caer en una pared de dientes de sierra",
+     "estado": "en_curso",
+     "inicio": "2026-11-05T18:53:41+01:00",
+     "rama": "trabajo/20261105-1855-linde-dosel"
     }
    ],
    "num": "G"
