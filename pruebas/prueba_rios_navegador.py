@@ -23,7 +23,7 @@ class Silencioso(http.server.SimpleHTTPRequestHandler):
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 MUTAR = os.environ.get('MUTAR', '')
-BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?sinservidor=1'
+BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'
 # los sitios (m del mundo, Whitholm), con la salida más cercana: un arroyo de unos 6 m, un río de unos 14 m y la unión
