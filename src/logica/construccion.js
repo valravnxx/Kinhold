@@ -1,5 +1,6 @@
 // Kinhold — lógica de construcción (sin gráficos, comprobable en Node)
 import { PIEZAS, DECORACION, MODULO, ALTURA, RECUPERACION, MAX_PLANTA, MATERIALES_INICIALES, CLASE_PESO } from './piezas.js';
+import { MOTIVO_REY } from './zonas_rey.js';
 import { alisa, centroCasilla, validarPasada, RADIO_CIMIENTO, BORDE as BORDE_NIVELADO } from './nivelado.js';
 
 export const RADIO_MOJON = 20;        // radio de tierra del mojón sin zonas (pruebas sueltas y prototipos sin mundo) (m)
@@ -8,8 +9,9 @@ export const RADIO_MOJON = 20;        // radio de tierra del mojón sin zonas (p
 // una vez el servidor y el navegador con el mundo de verdad: f(x, z) con coordenadas de la escena da el id de la zona, o
 // null en el mar. Sin ella (las pruebas de la lógica sola, los prototipos sin mundo), la tierra es el círculo de
 // RADIO_MOJON alrededor del mojón, como antes.
-let zonaDeSitio = null;
-export function ponerZonas(f) { zonaDeSitio = typeof f === 'function' ? f : null; }
+// esRey(id), si se da: las zonas del rey (src/logica/zonas_rey.js), que no se reclaman.
+let zonaDeSitio = null, zonaDelRey = null;
+export function ponerZonas(f, esRey = null) { zonaDeSitio = typeof f === 'function' ? f : null; zonaDelRey = zonaDeSitio && typeof esRey === 'function' ? esRey : null; }
 export const hayZonas = () => !!zonaDeSitio;
 // El dueño de lo que se hace sin autor (las pruebas sueltas y el juego sin servidor): el mismo que AUTOR_LOCAL
 // (src/logica/acciones.js, que importa este archivo).
@@ -164,6 +166,7 @@ export class Mundo {
     if (zonaDeSitio) {
       const zona = zonaDeSitio(x, z);
       if (zona === null || zona === undefined) return { ok: false, motivo: 'Ahí no hay tierra firme.' };
+      if (zonaDelRey && zonaDelRey(zona)) return { ok: false, motivo: MOTIVO_REY };
       if (this.duenoDeZona(zona)) return { ok: false, motivo: 'Esta zona ya es tierra de otro.' };
     }
     return { ok: true };

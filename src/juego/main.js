@@ -22,6 +22,7 @@ import { montarPanelInventario } from './panel_inventario.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
 import { crearComarcas, zonasDeEscena } from '../logica/comarcas.js';
+import { crearZonasRey } from '../logica/zonas_rey.js';
 import { crearTierrasRey, vigiaTierras } from '../logica/tierras_rey.js';
 import { dibujarRetrato } from './retrato.js';
 import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
@@ -174,7 +175,9 @@ soloEscena(escena); // el rendimiento cuenta un fotograma por dibujo del mundo, 
 const comarcasMundo = mundoJ ? crearComarcas(MUNDO.mapa) : null;
 const tierrasRey = mundoJ ? crearTierrasRey(comarcasMundo, mundoJ.salida) : null;
 // tu tierra es la zona entera de tu mojón (valravnx, 4 nov; src/logica/construccion.js): de qué zona es cada sitio
-if (comarcasMundo) ponerZonas(zonasDeEscena(comarcasMundo, mundoJ.salida));
+// y las zonas del rey (la de la gran veta, la de la ciudad y la de la salida; src/logica/zonas_rey.js) no se reclaman
+const zonasRey = comarcasMundo ? crearZonasRey(comarcasMundo) : null;
+if (comarcasMundo) ponerZonas(zonasDeEscena(comarcasMundo, mundoJ.salida), zonasRey.es);
 const vigiaRey = tierrasRey ? vigiaTierras(window.__mutarTierras ? () => false : tierrasRey.en) : null;
 let cartelTierras = null, cartelHasta = 0, tierrasMirado = 0;
 function mirarTierras() {
@@ -2135,6 +2138,7 @@ const mapaRey = mundoJ ? montarMapaRey({ paisaje: mundoJ.paisaje, comarcas: coma
   posicion: () => ({ x: pj.x + mundoJ.salida.x, z: pj.z + mundoJ.salida.z, rot: pj.rot }),
   // tu tierra (la zona entera de tu mojón): dónde está tu mojón, en m del mundo
   tuTierra: () => { const m = miMojon(); return m ? { x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z } : null; },
+  zonasRey: zonasRey ? zonasRey.lista : [],   // las zonas del rey, de oro viejo
   alAbrir: () => { if (document.pointerLockElement) document.exitPointerLock(); teclas.clear(); cerrarMenuUsar(); } }) : null;
 if ($('btnMapa')) { $('btnMapa').hidden = !mapaRey; $('btnMapa').onclick = () => mapaRey && mapaRey.alternar(); }
 // El personaje lleva puesto lo que dice el inventario (valravnx, 29 oct: el inventario es el equipo). La ropa elegida

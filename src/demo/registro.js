@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v107 (ríos de verdad)";
+export const VERSION_DEMO = "Demo única · v108 (zonas del rey)";
 export const REGISTRO_DEMO = [
+  "v108: zonas del rey (valravnx, 4 nov). La zona de la gran veta de hierro de la sierra (en Breiddal), la de la ciudad (en Strandvang) y la de la salida (en Lindholt) no se reclaman: ahí el mojón sale con «Es zona del rey: no se reclama (aquí cava y recoge cualquiera).», también por el servidor. En el mapa del rey salen de oro viejo con el borde a rayas y, de cerca, «Zona del rey» y por qué. Tu tierra, en la zona de al lado (la de la salida acaba a unos 400 m al oeste).",
+  "v108, provisional: los 259 sitios de la salida al azar (aún sin usar en línea) caerían en 235 zonas, el 28 % de las tres comarcas de inicio; no son del rey hasta que valravnx diga cuántos sitios de salida quiere (está en las decisiones pendientes). Los mojones ya puestos en una zona del rey se quedan hasta el próximo borrado del mundo.",
   "v107: ríos de verdad. El doble de anchos (los arroyos de unos 5 a 8 m, el río mayor de Whitholm de unos 22 m); los arroyos se vadean y los ríos se cruzan nadando o por sus vados. Nacen estrechos y se ensanchan en su primer kilómetro.",
   "v107: los afluentes llegan al cauce del río al que entran (antes se quedaban hasta 170 m antes) y su agua llega a la misma altura.",
   "v107: lecho de río: el fondo es de grava y cantos (del color de la roca del sitio) con barras de arena en los ríos anchos, la orilla es de barro húmedo, y hay cantos de río en el cauce y la orilla, más gordos donde la corriente es fuerte. El cauce tiene el fondo llano y la orilla marcada.",

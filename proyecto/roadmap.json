@@ -1174,9 +1174,10 @@
     },
     {
      "nombre": "Zonas del rey (valravnx, 4 nov): las zonas con una veta marcada en el mapa, un sitio de salida o la ciudad no se reclaman, y en ellas cava y recoge cualquiera. Antes, con la lógica de comarcas, contar cuántas zonas de Whitholm tienen veta marcada, vado, collado, salida o ciudad, para que las del rey sean las justas y se vea en el mapa",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T10:22:41+00:00",
-     "rama": "trabajo/20261105-1022"
+     "rama": "trabajo/20261105-1022",
+     "fin": "2026-11-05T13:05:17+00:00"
     },
     {
      "nombre": "Desmontar el mojón (valravnx, 4 nov): el dueño quita su mojón cuando quiere, por el servidor con su autor; sus obras quedan como ruina sin dueño (o las desmonta antes, al 75 %) y no puede poner otro hasta pasados unos días reales (provisional: 3), para que reclamar y soltar no sirva para bloquear a otros",
@@ -1186,7 +1187,7 @@
     },
     {
      "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio de las tres comarcas de inicio y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
-     "estado": "pendiente"
+     "estado": "espera_decision"
     },
     {
      "nombre": "Fuera el arcón de materiales infinito del servidor de verdad (solo para las pruebas automáticas, sin botón); el contador de materiales de arriba sale solo dentro de tu tierra, con lo que tienes almacenado en ella",
@@ -2794,6 +2795,13 @@
      "archivo": "jugar/demo/v107.html",
      "capturas": "capturas/demo-v107",
      "notas": "Ríos de verdad: los afluentes llegan al cauce del río al que entran, el doble de anchos (arroyos hasta 8 m que se vadean; ríos que se nadan o se cruzan por sus vados), nacen estrechos, y el lecho es de grava y cantos con orilla de barro en vez de hierba. Capturas: antes y después, en un arroyo, un río y una unión."
+    },
+    {
+     "v": "v108",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v108.html",
+     "capturas": "capturas/demo-v108",
+     "notas": "Zonas del rey (valravnx, 4 nov): la zona de la gran veta de hierro (Breiddal), la de la ciudad (Strandvang) y la de la salida (Lindholt) no se reclaman, también por el servidor; en el mapa del rey salen de oro viejo con «Zona del rey» y por qué."
     }
    ]
   },
@@ -3727,6 +3735,11 @@
    "pregunta": "Clanes y guerra (del 30 oct): con el vasallaje de comarca ya no hay un pago que dejar de hacer, así que el impago deja de ser causa de guerra. ¿Qué causas quedan, y asediar el centro de una comarca en su ventana necesita guerra declarada? Para la reunión tras P3, con las dos opciones escritas: solo guerra aceptada por las dos partes más las ventanas de asedio del centro, o causas automáticas tasadas",
    "desde": "2026-10-30",
    "hito": "tierras"
+  },
+  {
+   "pregunta": "Zonas del rey y la salida al azar (5 nov): los 259 sitios de la salida al azar caen en 235 zonas, el 28 % de las tres comarcas de inicio (853 zonas). Hoy son del rey solo la zona de la gran veta, la de la ciudad y la de la salida común. ¿Qué sitios de salida quieres? (a) todos, y sus 235 zonas del rey; (b) pocos sitios de salida, por ejemplo 3 por comarca de inicio (9 zonas del rey), y la salida al azar elige entre ellos; (c) solo la salida común, como ahora",
+   "desde": "2026-11-05",
+   "hito": "entre-dos"
   }
  ]
 }
