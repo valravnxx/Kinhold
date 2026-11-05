@@ -1,11 +1,12 @@
 // Pruebas de los objetos en el suelo (src/logica/suelo.js). Ejecutar: node pruebas/prueba_suelo.mjs
 // Con MUTAR=1 lo soltado no desaparece nunca y las piedras no hacen pila: las pruebas deben FALLAR.
 import { Suelo, DURA_SUELO, HORA, RADIO_PILA, ALCANCE_COGER, DE_PILA, esDePila, ejecutarSuelo, guardarSuelo, cargarSuelo,
-  migrarSuelo, VERSION_SUELO } from '../src/logica/suelo.js';
+  migrarSuelo, VERSION_SUELO, almacenadoEnTierra } from '../src/logica/suelo.js';
 import { Inventarios, Inventario, CATALOGO } from '../src/logica/inventario.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
 
-if (process.env.MUTAR === '1') { DE_PILA.splice(DE_PILA.indexOf('piedra'), 1); DE_PILA.push('cuchillo'); }
+const MUTAR = process.env.MUTAR === '1';
+if (MUTAR) { DE_PILA.splice(DE_PILA.indexOf('piedra'), 1); DE_PILA.push('cuchillo'); }
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -127,6 +128,22 @@ console.log('Guardado con migración');
   const raro = new Suelo().importar({ version: VERSION_SUELO, objetos: [{ id: 's1', cosa: { tipo: 'dragon', n: 1 }, x: 0, z: 0 }, { id: 's2', cosa: { tipo: 'rama', n: 1 }, x: 'x', z: 0 }, { id: 's3', cosa: { tipo: 'rama', n: 2 }, x: 1, z: 1, desaparece: T0 }] });
   comprobar('lo desconocido o sin sitio se descarta; lo bueno se queda con su hora', raro.objetos.length === 1 && raro.objetos[0].desaparece === T0);
   comprobar('un almacén roto no rompe nada', cargarSuelo({ getItem: () => '{roto' }, new Suelo()).objetos.length === 0);
+}
+
+console.log('Lo almacenado en tu tierra (el contador de arriba, valravnx 1 nov)');
+{
+  const s = new Suelo();
+  const mio = (x, z) => x >= 0 && x < 100 && (MUTAR || z >= 0) && z < 100;   // con MUTAR, cuenta también lo de fuera
+  s.dejar({ tipo: 'piedra', n: 4 }, 10, 10, T0, 'ana', true);
+  s.dejar({ tipo: 'piedra', n: 2 }, 10.4, 10, T0, 'ana', true);   // a la misma pila
+  s.dejar({ tipo: 'tronco_delgado', n: 3 }, 30, 30, T0, 'ana', true);
+  s.dejar({ tipo: 'cesta_recoleccion', n: 1, dentro: [{ tipo: 'bayas', n: 5 }, null, null, null, null, null] }, 40, 40, T0, 'ana', true);
+  s.dejar({ tipo: 'piedra', n: 9 }, 10, -50, T0, 'ana', false);   // fuera de su tierra
+  const h = almacenadoEnTierra(s.visibles(T0), mio);
+  comprobar('cuenta lo del suelo de tu tierra, por tipo (las pilas sumadas)', h.piedra === 6 && h.tronco_delgado === 3, JSON.stringify(h));
+  comprobar('y lo que llevan dentro los contenedores que hay en el suelo', h.cesta_recoleccion === 1 && h.bayas === 5);
+  comprobar('lo de fuera de tu tierra no cuenta', !('rama' in h) && h.piedra === 6);
+  comprobar('sin tierra, nada', Object.keys(almacenadoEnTierra(s.visibles(T0), () => false)).length === 0);
 }
 
 console.log(`\n${ok} bien, ${mal} mal`);

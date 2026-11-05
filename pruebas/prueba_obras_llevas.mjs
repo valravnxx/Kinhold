@@ -156,5 +156,22 @@ console.log('El mojón y los muebles se pagan de lo que llevas (no del montón c
     `piedra ${re.materiales.piedra}/${m.materiales.piedra}, tabla ${re.materiales.tabla}/${m.materiales.tabla}, muebles ${re.decoracion.length}/${m.decoracion.length}`);
 }
 
+console.log('Desmontar devuelve a lo que llevas, y lo que no cabe cae al suelo (sin arcón, valravnx 1 nov)');
+{
+  const { m, reg, invs, A } = nuevo();
+  const r = A(yo, { tipo: 'colocar', pieza: 'cim_piedra', x: 0, z: 0, k: 0, rot: 0, dir: 0 });
+  const c = r.construccion, kc = r.clave;
+  for (const n of [6, 2]) { A(yo, { tipo: 'sacar_arcon', material: 'piedra', cantidad: n }); A(yo, { tipo: 'entregar', construccion: c.id, clave: kc, material: 'piedra', cantidad: n }); }
+  let t = { ok: true }; for (let i = 0; i < 1000 && t.ok && !t.terminada; i++) t = A(yo, { tipo: 'trabajar', construccion: c.id, clave: kc, segundos: 5 });
+  A(yo, { tipo: 'sacar_arcon', material: 'tabla', cantidad: 1, a: 'mano:izq' });   // la izquierda, ocupada
+  const arcon0 = m.materiales.piedra;
+  const d = A(yo, { tipo: 'desmontar', construccion: c.id, clave: kc });
+  comprobar('el cimiento terminado se desmonta aunque no quepa todo', t.terminada && d.ok && !m.construcciones.includes(c), d.motivo || '');
+  comprobar('lo que devuelve (6 de 8 piedras) va a lo que llevas: 3 en la mano libre', invs.de(yo).cuantos('piedra') === 3, String(invs.de(yo).cuantos('piedra')));
+  comprobar('y lo que no cabe sale para el suelo (3), no al arcón', d.sobra && d.sobra.piedra === 3 && m.materiales.piedra === arcon0, JSON.stringify(d.sobra) + ` arcón ${arcon0} → ${m.materiales.piedra}`);
+  const re = reproducir(reg.exportar());
+  comprobar('al rehacer, el arcón queda igual (lo desmontado ya cobrado no vuelve a él)', re.materiales.piedra === m.materiales.piedra, `${re.materiales.piedra}/${m.materiales.piedra}`);
+}
+
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
 process.exit(mal ? 1 : 0);

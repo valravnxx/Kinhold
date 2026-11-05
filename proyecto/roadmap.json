@@ -1187,13 +1187,16 @@
     },
     {
      "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio LIBRE al azar de las tres comarcas de inicio (valravnx, 5 nov: si la zona de un sitio tiene un mojón puesto, deja de ser salida; las zonas de los sitios de salida sí se reclaman) y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-05T17:26:09+00:00",
+     "rama": "trabajo/20261105-1726"
     },
     {
      "nombre": "Fuera el arcón de materiales infinito del servidor de verdad (solo para las pruebas automáticas, sin botón); el contador de materiales de arriba sale solo dentro de tu tierra, con lo que tienes almacenado en ella",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T13:26:47+00:00",
-     "rama": "trabajo/20261105-1326"
+     "rama": "trabajo/20261105-1326",
+     "fin": "2026-11-05T17:01:17+00:00"
     },
     {
      "nombre": "Con algo al hombro, las manos no llevan nada (ni el hacha): lógica del inventario, en la demo y por el servidor",
@@ -1423,7 +1426,7 @@
    "id": "admin",
    "num": "P7",
    "nombre": "Administración, registros y seguridad",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "jugable": "Roles (jugador, moderador, administrador) para la cuenta de valravnx y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
    "nota": "Revisión del 1 nov con valravnx: después: registros, expulsar y herramientas de admin. El admin por la cuenta llega antes, con «Cuentas».",
    "tareas": [
@@ -1436,6 +1439,12 @@
      "estado": "hecho",
      "inicio": "2026-11-05T13:13:17+01:00",
      "fin": "2026-11-05T16:38:00+01:00"
+    },
+    {
+     "nombre": "Traer jugadores con el panel de admin (valravnx, 5 nov: «a parte de lo que ya está que es tpearme a gente, poder tpearlos a mi»): en la lista, junto a «Ir», «Traer» pone a ese jugador a tu lado; lo pide el servidor, solo con la cuenta de admin, y queda apuntado",
+     "estado": "en_curso",
+     "inicio": "2026-11-05T16:37:21+00:00",
+     "rama": "trabajo/20261105-1636-traer"
     }
    ]
   },
@@ -2825,6 +2834,13 @@
      "archivo": "jugar/demo/v110.html",
      "capturas": "capturas/demo-v110",
      "notas": "Explorar libre como admin: el mapa del panel del admin es el del continente entero, Kinland, con sus regiones; un clic te lleva a cualquier sitio y allí se carga el terreno y puedes andar. Solo la cuenta de admin puede salir de Whitholm."
+    },
+    {
+     "v": "v111",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v111.html",
+     "capturas": "capturas/demo-v111",
+     "notas": "Fuera el arcón infinito del juego de verdad: en línea ya no hay arcón de pruebas ni botón «+ Materiales», y lo que llevas se coge del mundo. El contador de materiales de arriba sale solo dentro de tu tierra, con lo almacenado en ella. Al desmontar una pieza, lo que devuelve va a lo que llevas, y lo que no te cabe cae al suelo a tus pies."
     }
    ]
   },

@@ -78,7 +78,7 @@ const huella = (mundo, id, clave) => JSON.stringify({ entregado: obraDe(mundo, i
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-obras-'));
 const archivo = join(dir, 'mundo.jsonl');
 try {
-  let s = crearServidor({ puerto: 0, archivo });
+  let s = crearServidor({ arconPruebas: true, puerto: 0, archivo });
   let puerto = await s.listo;
   const a = await cliente(puerto), b = await cliente(puerto);
   const yoA = a.bienvenida.autor;
@@ -145,7 +145,7 @@ try {
   const antes = huella(s.mundo, id, clave), llevaba = JSON.stringify(s.objetos.inventarioDe(yoA));
   a.ws.close(); b.ws.close();
   await new Promise(r => s.wss.close(r));
-  s = crearServidor({ puerto: 0, archivo });
+  s = crearServidor({ arconPruebas: true, puerto: 0, archivo });
   puerto = await s.listo;
   comprobar('la obra y el arcón quedan igual', huella(s.mundo, id, clave) === antes, huella(s.mundo, id, clave));
   comprobar('lo que lleva cada uno, también', JSON.stringify(s.objetos.inventarioDe(yoA)) === llevaba);

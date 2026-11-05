@@ -103,7 +103,7 @@ const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, cuadro).arboles
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-recorrido-'));
 let s = null;
 try {
-  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T, arconPruebas: false });
+  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T });   // sin arcón: como el servidor de verdad (es lo que hay si no se pide)
   const puerto = await s.listo, J = await cliente(puerto);
   // aparece en la salida (hoy la común; con «Salida al azar de verdad en línea», la que le dé el servidor)
   J.estar(0, 4); await pausa(200);
@@ -115,6 +115,10 @@ try {
   comprobar('no puede sacar nada del arcón de pruebas (no hay)', !r.ok && J.cuantos('hacha_hierro') === 0, r.motivo);
   r = await J.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });
   comprobar('ni del arcón de materiales de las obras', !r.ok && J.cuantos('piedra') === 0, r.motivo);
+  const piedraArcon = s.mundo.materiales.piedra;
+  r = await J.accion({ tipo: 'rellenar', cantidad: 50 });
+  comprobar('ni rellenarlo (el botón de pruebas)', !r.ok && s.mundo.materiales.piedra === piedraArcon, r.motivo);
+  comprobar('la bienvenida le dice que no hay arcón (el navegador no lo enseña)', J.bienvenida.arcon === false, String(J.bienvenida.arcon));
   r = await J.accion({ tipo: 'mojon', x: 0, z: 4 });
   comprobar('en la salida no puede poner su mojón: es zona del rey', !r.ok && !s.mundo.mojonDe(J.bienvenida.autor) && /zona del rey/.test(r.motivo || ''), r.motivo);
 

@@ -122,7 +122,7 @@ try {
 
   console.log('Sin la lista en la máquina');
   {
-    const s0 = crearServidor({ puerto: 0, archivo: join(dir, 'sin', 'mundo.jsonl'), adminCorreo: undefined, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 }, limiteMovimiento: false });
+    const s0 = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'sin', 'mundo.jsonl'), adminCorreo: undefined, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 }, limiteMovimiento: false });
     const p = await s0.listo;
     const v = await cliente(p);
     const rv = await v.cuenta1('crear', 'valravnx');
@@ -134,7 +134,7 @@ try {
 
   console.log('Quien se queda antes el nombre «valravnx» no es admin');
   {
-    const s2 = crearServidor({ puerto: 0, archivo: join(dir, 'otra', 'mundo.jsonl'), adminCorreo: 'ANA@ejemplo.com', parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 }, limiteMovimiento: false });
+    const s2 = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'otra', 'mundo.jsonl'), adminCorreo: 'ANA@ejemplo.com', parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 }, limiteMovimiento: false });
     const p = await s2.listo;
     const v = await cliente(p), a = await cliente(p);
     const rv = await v.cuenta1('crear', 'valravnx'), ra = await a.cuenta1('crear', 'Ana');
@@ -154,7 +154,7 @@ try {
   console.log('Con la cuenta de admin (su correo en la lista de la máquina)');
   const CORREO_ADMIN = 'valravnx@ejemplo.com';   // el de la cuenta «ValRavnX» de cuenta1
   const archivo = join(dir, 'mundo.jsonl');
-  let s = crearServidor({ puerto: 0, archivo, adminCorreo: CORREO_ADMIN, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 }, limiteMovimiento: false });
+  let s = crearServidor({ arconPruebas: true, puerto: 0, archivo, adminCorreo: CORREO_ADMIN, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 }, limiteMovimiento: false });
   let puerto = await s.listo;
   let admin = await cliente(puerto);
   const otro = await cliente(puerto), tercero = await cliente(puerto);
@@ -226,7 +226,7 @@ try {
   deNuevo.ws.close(); await deNuevo.cerrado;
   for (const c of [otro, tercero]) { c.ws.close(); await c.cerrado; }
   await s.cerrar();
-  s = crearServidor({ puerto: 0, archivo, adminCorreo: CORREO_ADMIN, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 }, limiteMovimiento: false });
+  s = crearServidor({ arconPruebas: true, puerto: 0, archivo, adminCorreo: CORREO_ADMIN, parametrosClave: BARATO, cartero, altas: { origen: 1e6, total: 1e6, espera: 0 }, limiteMovimiento: false });
   puerto = await s.listo;
   admin = await cliente(puerto, re && re.ficha);
   comprobar('con esa ficha, tras reiniciar: la bienvenida dice admin y la cuenta', admin.bienvenida.admin === true && admin.bienvenida.cuenta === 'ValRavnX', JSON.stringify({ admin: admin.bienvenida.admin, cuenta: admin.bienvenida.cuenta }));

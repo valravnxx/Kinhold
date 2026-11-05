@@ -120,7 +120,7 @@ console.log('En el servidor');
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-movimiento-'));
 try {
   const archivo = join(dir, 'mundo.jsonl');
-  let s = crearServidor({ puerto: 0, archivo });
+  let s = crearServidor({ arconPruebas: true, puerto: 0, archivo });
   let puerto = await s.listo;
   const A = await cliente(puerto), B = await cliente(puerto);
   A.estar(0, 4); await pausa(150);
@@ -143,7 +143,7 @@ try {
   A.ws.close(); B.ws.close(); await pausa(300);
   await s.cerrar();
   // vuelve: el sitio guardado es el recortado, y desde ahí sigue el límite
-  s = crearServidor({ puerto: 0, archivo }); puerto = await s.listo;
+  s = crearServidor({ arconPruebas: true, puerto: 0, archivo }); puerto = await s.listo;
   const A2 = await cliente(puerto, fichaA), C = await cliente(puerto);
   const p = A2.posicion;
   comprobar('lo que se guarda al salir es lo recortado', p && Math.hypot(p.x, p.z) < 60, p && `x=${r1(p.x)}, z=${r1(p.z)}`);

@@ -34,7 +34,7 @@ const { Enjambre } = await import(pathToFileURL(ruta).href);
 
 const N = 6, FASE = 17;
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-bots-'));
-const s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl') });
+const s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl') });
 let E = null;
 try {
   const puerto = await s.listo;

@@ -57,7 +57,7 @@ async function calma(...cs) { for (let i = 0; i < 100 && cs.some(c => c.red.pend
 
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-enlinea-'));
 try {
-  const s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl') });
+  const s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl') });
   const puerto = await s.listo;
   const A = await cliente(puerto), B = await cliente(puerto);
   comprobar('sin bienvenida no se construye', new MundoEnLinea(() => {}).accion({ tipo: 'mojon', x: 0, z: 0 }).ok === false);

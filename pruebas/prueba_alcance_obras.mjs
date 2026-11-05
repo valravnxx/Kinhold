@@ -68,7 +68,7 @@ console.log('El servidor de verdad: un navegador tramposo');
     ws.on('error', fallo);
   });
   const dir = mkdtempSync(join(tmpdir(), 'kinhold-alcance-'));
-  const s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl') });
+  const s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl') });
   try {
     const puerto = await s.listo;
     const Ana = await cliente(puerto);
@@ -115,8 +115,14 @@ console.log('El servidor de verdad: un navegador tramposo');
     const r7 = await Ana.accion({ tipo: 'desmontar', construccion: c.id, clave: k });
     comprobar('a 12 m no desmonta', !r7.ok && r7.motivo === LEJOS && c.piezas.has(k), r7.motivo || 'desmontó');
     Ana.estar(centro.x + 1, centro.z);
+    await Ana.accion({ tipo: 'sacar_arcon', material: 'tabla', cantidad: 1, a: 'mano:izq' });   // la izquierda, ocupada
+    const arcon0 = s.mundo.materiales.piedra, mano0 = s.objetos.invs.de(Ana.bienvenida.autor).cuantos('piedra');
     const r8 = await Ana.accion({ tipo: 'desmontar', construccion: c.id, clave: k });
     comprobar('junto a él, sí', r8.ok, r8.motivo || '');
+    // sin arcón en el juego de verdad: lo que devuelve va a lo que lleva, y lo que no le cabe, al suelo a sus pies
+    const yoA = Ana.bienvenida.autor, enMano = s.objetos.invs.de(yoA).cuantos('piedra') - mano0;
+    const aSusPies = s.objetos.suelo.visibles(Date.now()).filter(o => o.cosa.tipo === 'piedra' && Math.hypot(o.x - (centro.x + 1), o.z - centro.z) < 1.5).reduce((n, o) => n + o.cosa.n, 0);
+    comprobar('lo que devuelve (6 piedras): lo que le cabe a lo que lleva y lo demás al suelo a sus pies, nada al arcón', enMano + aSusPies === 6 && aSusPies > 0 && s.mundo.materiales.piedra === arcon0, `mano ${enMano}, suelo ${aSusPies}, arcón ${arcon0} → ${s.mundo.materiales.piedra}`);
     const e = await Ana.accion({ tipo: 'trabajar', construccion: c.id, clave: 'x:9:9:9', segundos: 1 });   // (la construcción, ya sin piezas, puede no existir)
     comprobar('lo que no existe lo dice la acción misma', !e.ok && e.motivo === 'No existe.', e.motivo);
     Ana.ws.close();

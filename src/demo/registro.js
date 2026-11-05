@@ -1,6 +1,11 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v110 (explorar libre como admin)";
+export const VERSION_DEMO = "Demo única · v111 (fuera el arcón infinito)";
 export const REGISTRO_DEMO = [
+  "v111: fuera el arcón infinito del servidor de verdad (valravnx, 1 nov). En línea ya no hay arcón de pruebas ni botón «+ Materiales»: lo que llevas se coge del mundo. El servidor rechaza sacar, dejar y rellenar el arcón, y coger o soltar equipo de él («Aquí no hay arcón.»); solo lo tienen las pruebas automáticas (KINHOLD_PRUEBAS_ARCON=si, que lo dice al arrancar).",
+  "v111: el contador de materiales de arriba sale solo dentro de tu tierra (la zona de tu mojón), con lo que tienes almacenado en ella; fuera de tu tierra no sale.",
+  "v111, provisional: mientras no haya almacenajes de la base, lo almacenado en tu tierra es lo que hay en su suelo (ahí no desaparece), contando lo de dentro de los contenedores; el navegador lo cuenta de lo que le llega del servidor, los trozos de tu alrededor.",
+  "v111: al desmontar una pieza, lo que devuelve (el 75 %, o todo lo entregado si estaba en obras) va a lo que llevas, ya no al arcón; lo que no te cabe cae al suelo a tus pies, por el servidor.",
+  "v111, provisional: lo que no cabe de lo desmontado cae al suelo en vez de no dejar desmontar (como al quitar un mueble), porque una pieza grande devuelve más de lo que se puede llevar encima.",
   "v110: explorar libre como admin (valravnx, 5 nov). El mapa del panel del admin es el del continente entero, Kinland, con el nombre de sus regiones; se acerca y se mueve por todo él, y un clic te lleva a cualquier sitio. Allí se carga el terreno y puedes andar.",
   "v110: solo la cuenta de admin puede estar fuera de Whitholm: el servidor no se lo acepta a nadie más. Fuera de la isla aún no hay nada del juego (ni tierras ni recogida): solo el terreno, los ríos y la vegetación.",
   "v110, provisional: el mapa del continente tiene menos detalle por km que el de la isla (3,5 px por km frente a 14), para que cueste lo mismo hacerlo; de cerca se ve borroso el fondo, pero la costa, los ríos y los símbolos salen nítidos.",
