@@ -1,6 +1,6 @@
 // Kinhold — panel de depuración del admin (valravnx, 30 oct). Se abre con F9 o con el botón «Admin». Abre el mapa del
 // rey con todos los jugadores conectados y, al lado, su lista; un clic en el mapa te lleva ahí, e «Ir» te pone junto a
-// ese jugador.
+// ese jugador; «Traer» lo pone a él junto a ti (valravnx, 5 nov: «poder tpearlos a mi»).
 //
 // El admin, por la cuenta (revisión del 1 nov, P1): sin clave aparte. Solo sale con la cuenta de admin (su correo confirmado en KINHOLD_ADMIN_CORREO):
 // lo dice el servidor al conectar (enLinea.admin) y es él quien acepta o no cada petición (src/logica/admin.js), con la
@@ -42,7 +42,7 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar, libre 
 
   const esAdmin = () => !!(enLinea && enLinea.admin);
   let huellaLista = '', jugadores = [], yo = null, ultimo = null, id = 0, reloj = null, estadoTxt = '', estadoMal = false;
-  const pendientes = new Map();   // id → 'ver' | 'ir'
+  const pendientes = new Map();   // id → 'ver' | 'ir' | 'traer'
 
   function mandar(m) {
     if (!enLinea || enLinea.estado !== 'conectado') { ponerEstado(tr('Sin conexión con el servidor.'), true); return false; }
@@ -55,6 +55,11 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar, libre 
 
   // lo que contesta el servidor
   if (enLinea) enLinea.escuchar((m) => {
+    // te ha traído el admin (para cualquier jugador, no solo el admin): el servidor ya te ha puesto ahí
+    if (m.que === 'traido' && m.id === undefined && !window.__mutarTraido) {   // (la prueba lo rompe a propósito)
+      if ([m.x, m.y, m.z].every(Number.isFinite)) { irA(m.x, m.y, m.z, Number.isFinite(m.giro) ? m.giro : null); avisar(tr('El admin te ha llevado junto a él.')); }
+      return;
+    }
     if (!pendientes.has(m.id)) return;
     pendientes.delete(m.id);
     if (!m.ok) {
@@ -70,6 +75,10 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar, libre 
       const h = JSON.stringify(jugadores.map(j => [j.autor, Math.round(j.x), Math.round(j.z)]));
       if (h !== huellaLista || !raiz.querySelector('ul')) { huellaLista = h; pintarPanel(); }
       if (mapaRey) mapaRey.pintar();
+    } else if (m.que === 'traer') {
+      const j = jugadores.find(e => e.autor === m.quien);
+      ponerEstado(tr('Traído: {n}', { n: j ? nombre(j) : corto(m.quien || '') }));
+      ver();
     } else if (m.que === 'ir') {
       irA(m.x, Number.isFinite(m.y) ? m.y : null, m.z, Number.isFinite(m.giro) ? m.giro : null);
       avisar(tr('Teletransportado (admin).'));
@@ -105,12 +114,15 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar, libre 
       const ul = raiz.querySelector('ul');
       for (const j of jugadores) {
         const li = document.createElement('li');
-        li.innerHTML = '<span class="pa-nombre"></span><span class="pa-donde"></span><button></button>';
+        li.innerHTML = '<span class="pa-nombre"></span><span class="pa-donde"></span><button class="pa-ir"></button><button class="pa-traer"></button>';
         li.querySelector('.pa-nombre').textContent = nombre(j);
         li.querySelector('.pa-nombre').title = j.autor;
         li.querySelector('.pa-donde').textContent = `${Math.round(j.x)}, ${Math.round(j.z)}`;
-        li.querySelector('button').textContent = tr('Ir');
-        li.querySelector('button').onclick = () => { if (mandar({ que: 'ir', junto: j.autor })) ponerEstado(tr('Pidiendo al servidor…')); };
+        li.querySelector('.pa-ir').textContent = tr('Ir');
+        li.querySelector('.pa-ir').onclick = () => { if (mandar({ que: 'ir', junto: j.autor })) ponerEstado(tr('Pidiendo al servidor…')); };
+        li.querySelector('.pa-traer').textContent = tr('Traer');
+        li.querySelector('.pa-traer').title = tr('Traerlo junto a ti');
+        li.querySelector('.pa-traer').onclick = () => { if (mandar({ que: 'traer', quien: j.autor })) ponerEstado(tr('Pidiendo al servidor…')); };
         ul.appendChild(li);
       }
     }

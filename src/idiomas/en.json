@@ -1870,5 +1870,10 @@
  "v110: explorar libre como admin (valravnx, 5 nov). El mapa del panel del admin es el del continente entero, Kinland, con el nombre de sus regiones; se acerca y se mueve por todo él, y un clic te lleva a cualquier sitio. Allí se carga el terreno y puedes andar.": "v110: explore freely as admin (valravnx, 5 Nov). The admin panel's map is the map of the whole continent, Kinland, with the names of its regions; you can zoom in and move over all of it, and a click takes you anywhere. The terrain loads there and you can walk.",
  "v110: solo la cuenta de admin puede estar fuera de Whitholm: el servidor no se lo acepta a nadie más. Fuera de la isla aún no hay nada del juego (ni tierras ni recogida): solo el terreno, los ríos y la vegetación.": "v110: only the admin account can be outside Whitholm: the server accepts it from nobody else. Outside the island there is still nothing of the game (no lands, no gathering): only the terrain, the rivers and the vegetation.",
  "v110, provisional: el mapa del continente tiene menos detalle por km que el de la isla (3,5 px por km frente a 14), para que cueste lo mismo hacerlo; de cerca se ve borroso el fondo, pero la costa, los ríos y los símbolos salen nítidos.": "v110, provisional: the continent map has less detail per km than the island map (3.5 px per km against 14), so that it costs the same to make; up close the background looks blurry, but the coast, rivers and symbols stay sharp.",
- "el continente": "the continent"
+ "el continente": "the continent",
+ "El admin te ha llevado junto a él.": "The admin has brought you to them.",
+ "Traído: {n}": "Brought: {n}",
+ "Traer": "Bring",
+ "Traerlo junto a ti": "Bring them to you",
+ "Fuera de la isla no se puede traer a nadie.": "Outside the island you can't bring anyone."
 }

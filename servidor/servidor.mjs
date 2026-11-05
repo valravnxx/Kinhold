@@ -72,7 +72,7 @@
 //   este aparato. Desde el menú: { que: 'cambiar_clave', actual, clave } (lo mismo, pidiendo la actual) y
 //   { que: 'cambiar_correo', actual, correo } (manda el código al correo nuevo; con { que: 'verificar', codigo } se
 //   cambia). Cada cambio avisa por correo (el de la contraseña, al correo de la cuenta; el del correo, al de antes).
-//   Panel de depuración del admin (src/logica/admin.js): { tipo: 'admin', id, que: 'ver' | 'ir', … }. Solo para la
+//   Panel de depuración del admin (src/logica/admin.js): { tipo: 'admin', id, que: 'ver' | 'ir' | 'traer', … }. Solo para la
 //   conexión cuya cuenta tiene confirmado uno de los correos de admin (adminCorreo, o la variable KINHOLD_ADMIN_CORREO;
 //   sin ella, nadie; servidor/nube/LEEME.md). El nombre de usuario no cuenta. Sin clave aparte. La bienvenida dice
 //   { admin: true } a esa conexión, y la respuesta al confirmar el correo también. Cada petición, bien o mal, va a admin.jsonl junto al mundo con su autor.
@@ -106,7 +106,7 @@ import { PROTOCOLO } from '../src/logica/protocolo.js';
 import { CombateServidor } from '../src/logica/combate_servidor.js';
 import { Limitador, LIMITES } from '../src/logica/limites.js';
 import { ObjetosServidor } from '../src/logica/objetos_red.js';
-import { validarPeticionAdmin, sitioJunto, listaJugadores, correosAdmin, esCorreoAdmin, NO_ADMIN } from '../src/logica/admin.js';
+import { validarPeticionAdmin, sitioJunto, sitioTraido, TRAER_FUERA, listaJugadores, correosAdmin, esCorreoAdmin, NO_ADMIN } from '../src/logica/admin.js';
 import { Cuentas, validarPeticionCuenta, claveDeUsuario, claveDeOrigen, Contador, motivoClave } from '../src/logica/cuentas.js';
 import { claveDeCorreo } from '../src/logica/correo.js';
 import { Verificaciones, enmascarar, codigoValido, CODIGO_CIFRAS, RECUPERAR_ORIGEN } from '../src/logica/correo.js';
@@ -621,8 +621,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         return;
       }
       if (msg && msg.tipo === 'admin') {
-        const id = Number.isSafeInteger(msg.id) ? msg.id : null, que = msg.que === 'ver' || msg.que === 'ir' ? msg.que : null;
-        const apuntar = (r) => appendFileSync(archivoAdmin, JSON.stringify({ t: new Date().toISOString(), autor, cuenta: usuarioDe(autor), que, ...(que === 'ir' ? { x: Number.isFinite(msg.x) ? msg.x : undefined, z: Number.isFinite(msg.z) ? msg.z : undefined, junto: typeof msg.junto === 'string' ? msg.junto.slice(0, 60) : undefined } : {}), ok: r.ok, ...(r.ok ? {} : { motivo: r.motivo }) }) + '\n');
+        const id = Number.isSafeInteger(msg.id) ? msg.id : null, que = msg.que === 'ver' || msg.que === 'ir' || msg.que === 'traer' ? msg.que : null;
+        const apuntar = (r) => appendFileSync(archivoAdmin, JSON.stringify({ t: new Date().toISOString(), autor, cuenta: usuarioDe(autor), que, ...(que === 'ir' ? { x: Number.isFinite(msg.x) ? msg.x : undefined, z: Number.isFinite(msg.z) ? msg.z : undefined, junto: typeof msg.junto === 'string' ? msg.junto.slice(0, 60) : undefined } : que === 'traer' ? { quien: typeof msg.quien === 'string' ? msg.quien.slice(0, 60) : undefined } : {}), ok: r.ok, ...(r.ok ? {} : { motivo: r.motivo }) }) + '\n');
         const responder = (r) => { if (que !== 'ver' || !r.ok) apuntar(r); enviar(ws, { tipo: 'admin', id, que, ...r }); };
         // solo la cuenta de admin (la de esta conexión: lo que diga el mensaje no cuenta)
         if (!esAdmin(autor)) return responder({ ok: false, motivo: NO_ADMIN });
@@ -632,6 +632,18 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           const estados = new Map();
           for (const a of conexionDe.keys()) { const e = presencia.ultimo.get(a); if (e) estados.set(a, e); }
           return responder({ ok: true, yo: autor, jugadores: listaJugadores(estados, usuarioDe) });
+        }
+        if (p.que === 'traer') {
+          // traer a otro junto al admin (valravnx, 5 nov): se le pone a su lado y su navegador lo sabe por su conexión
+          const e = conexionDe.has(p.quien) && presencia.ultimo.get(p.quien), yo = presencia.ultimo.get(autor);
+          if (!e || p.quien === autor) return responder({ ok: false, motivo: 'Ese jugador no está conectado.' });
+          if (!yo) return responder({ ok: false, motivo: 'El servidor aún no sabe dónde estás.' });
+          const d = sitioTraido(yo);
+          if (!d) return responder({ ok: false, motivo: TRAER_FUERA });
+          registrar(`admin ${autor} trae a ${p.quien}`);
+          presencia.anclar(p.quien, d, reloj());
+          enviar(conexionDe.get(p.quien), { tipo: 'admin', que: 'traido', x: d.x, y: d.y, z: d.z, giro: d.giro });
+          return responder({ ok: true, quien: p.quien, x: d.x, y: d.y, z: d.z, giro: d.giro });
         }
         if (p.junto !== undefined) {
           const e = conexionDe.has(p.junto) && presencia.ultimo.get(p.junto);

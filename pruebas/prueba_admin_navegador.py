@@ -8,13 +8,18 @@
 #   - con la cuenta de admin sale el botón y el panel se abre (botón o F9) sin pedir ninguna clave: el mapa del rey
 #     abierto, el otro jugador en la lista y pintado en el mapa donde está;
 #   - «Ir» te pone junto a él (a menos de 2 m) y cierra el panel; un clic en el mapa te lleva a ese punto, en el suelo;
+#   - «Traer» (valravnx, 5 nov: «poder tpearlos a mi»): pone al otro jugador junto a ti; a él le llega adónde, a menos
+#     de 2 m de ti;
+#   - al jugador traído (una cuenta que no es de admin), su navegador le pone donde dice el servidor y le avisa (el
+#     mensaje del servidor se mete en su conexión con route_web_socket: así sigue siendo una sola página);
 #   - M, Esc y «Cerrar» lo cierran.
 #   - explorar libre (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente… que quiero poder
 #     explorar libre»): el mapa del panel es el del continente entero; un clic en otra región te lleva allí, en el suelo,
 #     con el terreno cargado; andas, y el servidor te tiene allí. A una cuenta que no es de admin no le pasa (sigue en la isla).
 # MUTAR=1: un servidor que dice a todos que son admin: tiene que fallar (a la cuenta que no lo es le saldría el botón).
+# MUTAR=3: el navegador no hace caso de que le traigan: tiene que fallar.
 # MUTAR=2: el navegador no suelta a la cuenta de admin fuera de la isla: tiene que fallar (no puede andar allí).
-import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket
+import sys, os, re, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket
 from playwright.sync_api import sync_playwright
 from correo_prueba import Codigos, crear_y_confirmar
 
@@ -53,10 +58,17 @@ import {{ terrenoWhitholm }} from './src/logica/terreno_servidor.js';
 const y = terrenoWhitholm().suelo({OTRO[0]}, {OTRO[1]});
 const ws = new WebSocket('ws://127.0.0.1:{PUERTO}');
 ws.on('open', () => setInterval(() => ws.send(JSON.stringify({{ tipo: 'estado', x: {OTRO[0]}, y, z: {OTRO[1]}, giro: 0.4, anim: 'quieto' }})), 200));
-ws.on('message', (d) => {{ const m = JSON.parse(d.toString()); if (m.tipo === 'bienvenida') console.log(m.autor); }});"""
+ws.on('message', (d) => {{ const m = JSON.parse(d.toString()); if (m.tipo === 'bienvenida') console.log(m.autor);
+  if (m.tipo === 'admin' && m.que === 'traido') console.log('traido ' + JSON.stringify(m)); }});"""
 # (con -e: los import se buscan desde cwd, la raíz del repositorio, donde está ws; no se escribe ningún archivo)
 bot = subprocess.Popen(['node', '--input-type=module', '-e', BOT], cwd=RAIZ, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 AUTOR_BOT = bot.stdout.readline().strip()
+# lo que le llega al jugador simulado cuando le traen
+TRAIDO = []
+def leer_bot():
+    for l in bot.stdout:
+        if l.startswith('traido '): TRAIDO.append(json.loads(l[7:]))
+threading.Thread(target=leer_bot, daemon=True).start()
 
 URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html?modo=construir&enlinea=1&servidor=ws://127.0.0.1:{PUERTO}'
 K = 'window.__kinhold'
@@ -92,6 +104,12 @@ try:
             ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
             ctx.add_init_script("try { if (!sessionStorage.getItem('puesta')) { localStorage.setItem('kinhold_admin_clave', 'clave-de-antes-0123456'); sessionStorage.setItem('puesta', '1'); } } catch (e) {}")
             pg = ctx.new_page()
+            if MUTAR_TODO == '3': pg.add_init_script("window.__mutarTraido = true")
+            # su conexión pasa por aquí: para meterle luego lo que manda el servidor al traído
+            tubo = []
+            def pasar(ws, tubo=tubo):
+                ws.connect_to_server(); tubo.append(ws)
+            pg.route_web_socket(re.compile(r'^ws://127\.0\.0\.1:%d' % PUERTO), pasar)
             err = []
             pg.on('pageerror', lambda e, err=err: err.append(str(e)))
             pg.goto(URL + '&admin', wait_until='domcontentloaded', timeout=180000)
@@ -106,6 +124,11 @@ try:
             fuera = pg.evaluate(f"({{ libre: {K}.mundoJ.esLibre, dentro: {K}.mundoJ.dentro(-150000, 150000) }})")
             comprobar(f'{nombre}: sin la cuenta de admin no se puede ir fuera de la isla', fuera['libre'] is False and fuera['dentro'] is False, str(fuera))
             comprobar(f'{nombre}: la clave que guardaba el navegador antes se borra', pg.evaluate("localStorage.getItem('kinhold_admin_clave')") is None)
+            # le trae el admin: lo que le manda el servidor, metido en su conexión
+            if tubo: tubo[-1].send(json.dumps({'tipo': 'admin', 'que': 'traido', 'x': 300.0, 'y': 0, 'z': -200.0, 'giro': 1.2}))
+            traido = esperar(pg, f"Math.hypot({K}.pj.x - 300, {K}.pj.z + 200) < 0.1 && Math.abs({K}.pj.rot - 1.2) < 1e-6", 5000)
+            aviso = pg.evaluate("document.getElementById('aviso').textContent")
+            comprobar(f'{nombre}: al que trae el admin, su navegador le pone ahí y le avisa', bool(tubo) and traido and 'admin' in aviso, f'{aviso} · {pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")}')
             comprobar(f'{nombre}: sin errores en la página (sin admin)', not err, '; '.join(err)[:300])
             ctx.close()
 
@@ -135,7 +158,7 @@ try:
             comprobar(f'{nombre}: el otro jugador, pintado en el mapa donde está', azul, str(punto))
             captura(pg, f'{SALIDA}/{nombre}_panel.png')
             # «Ir» junto a él
-            pulsar('#panelAdmin li button')
+            pulsar('#panelAdmin li .pa-ir')
             junto = esperar(pg, f"!{PANEL}.abierto && Math.hypot({K}.pj.x - {OTRO[0]}, {K}.pj.z - {OTRO[1]}) < 2", 8000)
             d = pg.evaluate(f"Math.hypot({K}.pj.x - {OTRO[0]}, {K}.pj.z - {OTRO[1]})")
             comprobar(f'{nombre}: «Ir» te pone junto a él y cierra el panel', junto and not pg.evaluate(f"{K}.mapaRey.abierto"), f'a {d:.2f} m')
@@ -155,6 +178,20 @@ try:
             comprobar(f'{nombre}: y en el suelo', abs(pj['y'] - pj['suelo']) < 0.5, str(pj))
             pg.wait_for_timeout(2500)
             captura(pg, f'{SALIDA}/{nombre}_clic.png')
+            # «Traer»: el otro jugador, junto a ti
+            abrir(); pg.wait_for_timeout(500)
+            esperar(pg, f"{PANEL}.jugadores.some(j => j.autor === '{AUTOR_BOT}')", 8000)
+            n_antes = len(TRAIDO)
+            comprobar(f'{nombre}: en la lista, «Ir» y «Traer»', pg.evaluate("[...document.querySelectorAll('#panelAdmin li button')].map(b => b.textContent).join(',')") == 'Ir,Traer')
+            pulsar('#panelAdmin li .pa-traer')
+            dicho = esperar(pg, f"{ESTADO_PANEL}.startsWith('Traído')", 8000)
+            pg.wait_for_timeout(500)
+            yo = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+            t = TRAIDO[-1] if len(TRAIDO) > n_antes else None
+            cerca = t is not None and ((t['x'] - yo[0]) ** 2 + (t['z'] - yo[1]) ** 2) ** 0.5 < 2
+            comprobar(f'{nombre}: «Traer» le pone junto a ti y a él le llega adónde', dicho and cerca and pg.evaluate(f"{PANEL}.abierto"), f'{pg.evaluate(ESTADO_PANEL)} · {t} · {yo}')
+            captura(pg, f'{SALIDA}/{nombre}_traer.png')
+            pulsar('#panelAdmin .pa-cerrar'); pg.wait_for_timeout(300)
             # explorar libre: el mapa del continente entero y un clic en otra región
             abrir(); pg.wait_for_timeout(500)
             esperar(pg, f"{K}.mapaRey.continente", 120000)

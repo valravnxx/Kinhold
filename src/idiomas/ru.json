@@ -1870,5 +1870,10 @@
  "v110: explorar libre como admin (valravnx, 5 nov). El mapa del panel del admin es el del continente entero, Kinland, con el nombre de sus regiones; se acerca y se mueve por todo él, y un clic te lleva a cualquier sitio. Allí se carga el terreno y puedes andar.": "v110: свободное исследование для админа (valravnx, 5 нояб.). Карта панели админа — это карта всего континента, Кинланда, с названиями его регионов; её можно приближать и двигать целиком, а щелчок переносит в любое место. Там загружается местность, и можно ходить.",
  "v110: solo la cuenta de admin puede estar fuera de Whitholm: el servidor no se lo acepta a nadie más. Fuera de la isla aún no hay nada del juego (ni tierras ni recogida): solo el terreno, los ríos y la vegetación.": "v110: только учётная запись админа может находиться за пределами Whitholm: сервер больше никому этого не позволяет. За пределами острова пока нет ничего из игры (ни земель, ни сбора): только местность, реки и растительность.",
  "v110, provisional: el mapa del continente tiene menos detalle por km que el de la isla (3,5 px por km frente a 14), para que cueste lo mismo hacerlo; de cerca se ve borroso el fondo, pero la costa, los ríos y los símbolos salen nítidos.": "v110, временно: у карты континента меньше деталей на км, чем у карты острова (3,5 пикс. на км против 14), чтобы её построение стоило столько же; вблизи фон размыт, но берег, реки и значки остаются чёткими.",
- "el continente": "континент"
+ "el continente": "континент",
+ "El admin te ha llevado junto a él.": "Администратор перенёс вас к себе.",
+ "Traído: {n}": "Перенесён: {n}",
+ "Traer": "Привести",
+ "Traerlo junto a ti": "Перенести к себе",
+ "Fuera de la isla no se puede traer a nadie.": "За пределами острова никого нельзя перенести."
 }
