@@ -16,8 +16,9 @@ import { pintarMapaRey, COMARCA_REY } from './mapa_rey_pintar.js';
 import { CIUDAD_REY } from '../logica/whitholm.js';
 import { tr } from '../idioma.js';
 import { crearZonasMapa } from './mapa_zonas.js';
+import { POR_QUE } from '../logica/zonas_rey.js';
 
-const TINTA = '#3a2a1e', PAPEL = '#ead8ae', ROJO = '#8c2a1e', AGUA = '#45677a';
+const TINTA = '#3a2a1e', PAPEL = '#ead8ae', ROJO = '#8c2a1e', AGUA = '#45677a', ORO = [190, 140, 40];
 const LETRA = 'Georgia, "Palatino Linotype", "Book Antiqua", "Times New Roman", serif';
 const CSS = `
 #mapaRey{position:fixed;inset:0;z-index:40;background:rgba(20,16,12,.94);touch-action:none}
@@ -35,7 +36,7 @@ export const ZONAS_DESDE = 28, ZONAS_LLENO = 42;
 // (en el móvil, la isla entera es más pequeña y 8 veces se quedaba corto para ver tu zona).
 export const ZOOM_MAX_PX_KM = 150;
 
-export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => null, alAbrir = () => {}, esTactil = false }) {
+export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => null, zonasRey = [], alAbrir = () => {}, esTactil = false }) {
   const est = document.createElement('style'); est.textContent = CSS; document.head.appendChild(est);
   const raiz = document.createElement('div'); raiz.id = 'mapaRey'; raiz.hidden = true;
   raiz.innerHTML = `<canvas></canvas><div class="mr-desplegando" hidden></div>
@@ -104,14 +105,15 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
       if (zonas.pendientes) trabajarZonas();
     }, 0);
   }
-  let lienzoTierra = null, tierraHecha = null;   // la máscara de tu zona, pintada en un lienzo (una vez por zona)
-  function tierraDe(t) {
-    if (tierraHecha === t) return lienzoTierra;
+  // la máscara de una zona (tu tierra, o una del rey), pintada en un lienzo de su color (una vez por máscara)
+  const lienzos = new WeakMap();
+  function tierraDe(t, rgb = [196, 58, 34]) {
+    if (lienzos.has(t)) return lienzos.get(t);
     const c = document.createElement('canvas'); c.width = t.n; c.height = t.n;
     const g = c.getContext('2d'), img = g.createImageData(t.n, t.n);
-    for (let k = 0; k < t.mascara.length; k++) if (t.mascara[k]) { img.data[k * 4] = 196; img.data[k * 4 + 1] = 58; img.data[k * 4 + 2] = 34; img.data[k * 4 + 3] = 255; }
+    for (let k = 0; k < t.mascara.length; k++) if (t.mascara[k]) { img.data[k * 4] = rgb[0]; img.data[k * 4 + 1] = rgb[1]; img.data[k * 4 + 2] = rgb[2]; img.data[k * 4 + 3] = 255; }
     g.putImageData(img, 0, 0);
-    tierraHecha = t; lienzoTierra = c;
+    lienzos.set(t, c);
     return c;
   }
 
@@ -169,10 +171,13 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     ctx.drawImage(fondo, ox, oy, aw, ah);
     const t = s / datos.pxKm;   // cuántos px de pantalla por px del fondo
     pliego = [ox, oy, ox + aw, oy + ah];
-    const tierra = miTierra();
+    const tierra = miTierra(), rey = zonasDelRey();
+    for (const r of rey) tierraColor(r, ORO, 0.34);
     if (tierra) tierraColor(tierra);
-    lineas(s); lindesZonas(s); if (tierra) tierraBorde(tierra, s);
+    lineas(s); lindesZonas(s); for (const r of rey) tierraBorde(r, s, 'rgba(128,88,18,.95)', true);
+    if (tierra) tierraBorde(tierra, s);
     rios(s); montes(s); arboles(s, t); ciudad(s); nombres(s);
+    reyNombres(rey, s);
     if (tierra) mojon(s);
     marco(ox, oy, aw, ah, s);
     if (capa && capa.pintar) capa.pintar(ctx, { kmAPant, s, etiqueta });
@@ -221,18 +226,36 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     if (t) tierraVista = { zona: t.zona, x: m.x, z: m.z };
     return t ? { ...t, mx: m.x, mz: m.z } : null;
   }
-  function tierraColor(t) {
-    const c = tierraDe(t), h = t.h, [ax, ay] = kmAPant(t.x0 - h / 2, t.z0 - h / 2), [bx, by] = kmAPant(t.x0 - h / 2 + t.n * h, t.z0 - h / 2 + t.n * h);
-    ctx.save(); ctx.globalAlpha = 0.3; ctx.imageSmoothingEnabled = true; ctx.drawImage(c, ax, ay, bx - ax, by - ay); ctx.restore();
+  function tierraColor(t, rgb, alfa = 0.3) {
+    const c = tierraDe(t, rgb), h = t.h, [ax, ay] = kmAPant(t.x0 - h / 2, t.z0 - h / 2), [bx, by] = kmAPant(t.x0 - h / 2 + t.n * h, t.z0 - h / 2 + t.n * h);
+    ctx.save(); ctx.globalAlpha = alfa; ctx.imageSmoothingEnabled = true; ctx.drawImage(c, ax, ay, bx - ax, by - ay); ctx.restore();
   }
-  function tierraBorde(t, s) {
-    ctx.strokeStyle = 'rgba(150,34,22,.95)'; ctx.lineWidth = Math.max(1.5, Math.min(3, s / 18)); ctx.lineCap = 'round';
+  function tierraBorde(t, s, color = 'rgba(150,34,22,.95)', rayas = false) {
+    ctx.strokeStyle = color; ctx.lineWidth = Math.max(1.5, Math.min(3, s / 18)); ctx.lineCap = 'round';
+    if (rayas) ctx.setLineDash([6, 4]);
     ctx.beginPath();
     for (let k = 0; k < t.segs.length; k += 4) {
       const [ax, ay] = kmAPant(t.segs[k], t.segs[k + 1]), [bx, by] = kmAPant(t.segs[k + 2], t.segs[k + 3]);
       ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
     }
-    ctx.stroke();
+    ctx.stroke(); ctx.setLineDash([]);
+  }
+  // las zonas del rey (valravnx, 4 nov: la de la gran veta, la de la ciudad y la de la salida; src/logica/zonas_rey.js):
+  // de oro viejo, con el borde a rayas y, de cerca, «Zona del rey» y por qué. No se reclaman; en ellas recoge cualquiera.
+  let reyVistas = [];
+  function zonasDelRey() { return zonasRey && zonasRey.length && !window.__mutarZonasRey ? zonas.rey(zonasRey) : []; }   // (la prueba lo rompe a propósito)
+  function reyNombres(rey, s) {
+    reyVistas = rey.map(r => ({ id: r.zona, por: r.por }));
+    if (s < ZONAS_DESDE) return;
+    for (const r of rey) {
+      // el letrero, en lo alto de la zona (por encima de su sitio, para no tapar la ciudad ni tu mojón)
+      let zmin = Infinity, xs = 0, n = 0;
+      for (let j = 0; j < r.n && zmin === Infinity; j++) for (let i = 0; i < r.n; i++) if (r.mascara[j * r.n + i]) { zmin = r.z0 + j * r.h; xs += r.x0 + i * r.h; n++; }
+      if (!n) continue;
+      const [x, y] = kmAPant(xs / n, zmin + 0.12);
+      etiqueta(tr('Zona del rey'), x, y + 8, 13, 'italic 700', '#6e4a0e');
+      etiqueta(tr(POR_QUE[r.por] || ''), x, y + 24, 11, 'italic 400', '#6e4a0e');
+    }
   }
   // tu mojón: una piedra hincada, de perfil, y de cerca «Tu tierra»
   let mojonVisto = null;
@@ -439,7 +462,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     get abierto() { return !raiz.hidden; }, get listo() { return !!datos; }, get datos() { return datos; },
     get vista() { return { ...vista }; }, get marca() { return marca; }, kmAPant,
     // las zonas: cuántos segmentos de lindes se han trazado en la última vez, cuántas teselas faltan y tu tierra
-    get zonas() { return { lindes: lindesVistos, pendientes: zonas.pendientes, hechas: zonas.hechas, tierra: tierraVista, mojon: mojonVisto, desde: ZONAS_DESDE, nombres: nombresVistos }; },
+    get zonas() { return { lindes: lindesVistos, pendientes: zonas.pendientes, hechas: zonas.hechas, tierra: tierraVista, mojon: mojonVisto, desde: ZONAS_DESDE, nombres: nombresVistos, rey: reyVistas }; },
     get medida() { return { msPintar: Math.round(msPintar), msMaxPaso: Math.round(msMaxPaso), avance: datos ? 1 : Math.round(avance * 100) / 100 }; },
   };
 }

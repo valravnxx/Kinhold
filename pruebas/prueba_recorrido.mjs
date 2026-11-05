@@ -1,7 +1,8 @@
 // Recorrido de jugador (revisión del 1 nov: las cosas llegaban rotas porque nadie las jugaba como jugador).
 // Un jugador nuevo, contra el servidor de verdad (servidor/servidor.mjs con el terreno de Whitholm y SIN el arcón de
 // pruebas), juega de principio a fin lo que haya, con los mismos mensajes que manda la demo y solo con lo que recoge:
-// empieza con lo puesto, anda hasta lo que se recoge, lo recoge, pone su mojón pagándolo con tres de las piedras que
+// empieza con lo puesto, anda hasta lo que se recoge, lo recoge, anda hasta la zona de al lado (la de la salida es del
+// rey: no se reclama) y pone su mojón pagándolo con tres de las piedras que
 // lleva, levanta un cimiento de piedra con las piedras que ha traído en las manos (en dos viajes), y lo trabaja hasta
 // terminarlo. Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
@@ -82,8 +83,17 @@ function cliente(puerto) {
 const pausa = (ms) => new Promise(r => setTimeout(r, ms));
 const r2 = v => Math.round(v * 100) / 100;
 
-// lo que el navegador tiene alrededor de la salida (los puntos de recogida y los árboles, en coordenadas de la escena)
-const cuadro = { x0: O.x - 120, z0: O.z - 120, x1: O.x + 120, z1: O.z + 120 };
+// Las zonas del rey (valravnx, 4 nov; src/logica/zonas_rey.js): la de la salida no se reclama, así que pone su tierra
+// en la zona de al lado, al oeste (la más cercana), a BASE_DENTRO m de su linde y con sitio para mover el mojón 30 m más.
+const BASE_DENTRO = 70;
+const base = (() => {
+  const zs = T.zona(0, 4);
+  for (let r = 20; r < 3000; r += 10) { const id = T.zona(-r, 4); if (id !== null && id !== zs && !T.esZonaRey(id)) return { x: -r - BASE_DENTRO, z: 4, zona: id }; }
+  return { x: 0, z: 4, zona: zs };
+})();
+// lo que el navegador tiene alrededor de la salida y de camino a su tierra (los puntos de recogida y los árboles, en
+// coordenadas de la escena)
+const cuadro = { x0: O.x + base.x - 120, z0: O.z - 120, x1: O.x + 120, z1: O.z + 120 };
 const cerca = (l, p) => l.slice().sort((a, b) => Math.hypot(a.x - p.x, a.z - p.z) - Math.hypot(b.x - p.x, b.z - p.z));
 const puntos = recogidaEn(T.paisaje, T.alt, T.semilla, cuadro).map(p => ({ id: p.id, tipo: p.tipo, x: r2(p.x - O.x), z: r2(p.z - O.z) }));
 const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, cuadro).arboles
@@ -106,10 +116,11 @@ try {
   r = await J.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });
   comprobar('ni del arcón de materiales de las obras', !r.ok && J.cuantos('piedra') === 0, r.motivo);
   r = await J.accion({ tipo: 'mojon', x: 0, z: 4 });
-  comprobar(`sin nada encima no puede poner su mojón (se paga con ${PIEZAS.mojon.coste.piedra} piedras de lo que lleva)`, !r.ok && !s.mundo.mojonDe(J.bienvenida.autor), r.motivo);
+  comprobar('en la salida no puede poner su mojón: es zona del rey', !r.ok && !s.mundo.mojonDe(J.bienvenida.autor) && /zona del rey/.test(r.motivo || ''), r.motivo);
 
   console.log('2. Recoge piedras: anda hasta ellas y las coge con las manos');
-  const piedras = cerca(puntos.filter(p => p.tipo === 'piedra'), { x: 0, z: 4 });
+  const piedras = cerca(puntos.filter(p => p.tipo === 'piedra' && Math.hypot(p.x, p.z - 4) < 120), { x: 0, z: 4 });
+  const piedrasBase = cerca(puntos.filter(p => p.tipo === 'piedra' && Math.hypot(p.x - base.x, p.z - base.z) < 120), base);
   comprobar('hay piedras sueltas cerca de la salida (a menos de 120 m)', piedras.length >= 6 + PIEZAS.cim_piedra.coste.piedra - (6 - PIEZAS.mojon.coste.piedra), `${piedras.length}; la primera a ${piedras[0] ? Math.round(Math.hypot(piedras[0].x, piedras[0].z)) : '–'} m`);
   const recoger = async (p) => {
     await J.andar(p.x + 0.4, p.z);
@@ -132,13 +143,13 @@ try {
     comprobar(`talar: aún no se puede (${TODAVIA_NO.talar}); cuando se pueda, pasarlo a los pasos de verdad`, !r.ok, r.motivo);
   }
 
-  console.log('4. Pone su mojón al volver a la salida: la zona es su tierra');
-  const base = { x: 0, z: 4 };
+  console.log('4. Anda hasta la zona de al lado (la de la salida es del rey) y pone su mojón: la zona es su tierra');
+  comprobar('la zona de al lado de la salida no es del rey', base.zona !== T.zona(0, 4) && !T.esZonaRey(base.zona), `a ${-base.x} m al oeste`);
   await J.andar(base.x, base.z);
   const precio = PIEZAS.mojon.coste.piedra, montonAntes = s.mundo.materiales.piedra;
   r = await J.accion({ tipo: 'mojon', x: base.x, z: base.z });
-  comprobar(`pone su mojón en la salida y lo paga con ${precio} de las piedras que lleva (no del montón común)`, r.ok && J.cuantos('piedra') === 6 - precio && s.mundo.materiales.piedra === montonAntes, `${r.motivo || ''} lleva ${J.cuantos('piedra')}`);
-  r = await J.accion({ tipo: 'mojon', x: base.x + 30, z: base.z });
+  comprobar(`pone su mojón en ella y lo paga con ${precio} de las piedras que lleva (no del montón común)`, r.ok && J.cuantos('piedra') === 6 - precio && s.mundo.materiales.piedra === montonAntes, `${r.motivo || ''} lleva ${J.cuantos('piedra')}`);
+  r = await J.accion({ tipo: 'mojon', x: base.x - 30, z: base.z });
   comprobar('y no un segundo (uno por personaje)', !r.ok, r.motivo);
 
   console.log('5. Levanta un cimiento de piedra con las piedras que ha traído');
@@ -156,7 +167,7 @@ try {
   // segundo viaje: las que faltan
   cogidas = 0;
   const faltan = falta();
-  for (const p of piedras.slice(6, 6 + faltan)) { r = await recoger(p); if (r.ok) cogidas++; }
+  for (const p of piedrasBase.slice(0, faltan)) { r = await recoger(p); if (r.ok) cogidas++; }
   comprobar(`vuelve a por las ${faltan} que faltan (le caben en las manos)`, faltan <= 6 && J.cuantos('piedra') === faltan, `${J.cuantos('piedra')} piedras`);
   await J.andar(sitio.x + 1.5, sitio.z);
   r = await J.accion({ tipo: 'entregar', construccion: obra?.id, clave, material: 'piedra', cantidad: falta() });
@@ -168,7 +179,7 @@ try {
   console.log('5b. Llega otro jugador: lo de su tierra no lo toca (lo tuyo es tuyo)');
   {
     const K = await cliente(puerto);
-    K.estar(0, 4); await pausa(200); await K.andar(sitio.x + 2, sitio.z + 1);   // aparece en la salida y va andando
+    K.estar(0, 4); await pausa(200); await K.andar(sitio.x + 2, sitio.z + 1);   // aparece en la salida y va andando hasta ella
     const rk = await K.accion({ tipo: 'desmontar', construccion: obra?.id, clave });
     comprobar('otro jugador no puede desmontar su cimiento', !rk.ok && !!obra?.piezas.get(clave), rk.motivo);
     K.ws.close();
@@ -187,12 +198,15 @@ try {
     r = await J.accion({ tipo: 'quitar_mojon' });
     comprobar('quita su mojón: dice lo perdido', r.ok, r.motivo);
     comprobar('ya no tiene mojón y el cimiento ha desaparecido', !s.mundo.mojonDe(J.bienvenida.autor) && !s.mundo.construcciones.some(c => c.id === obra?.id), `${s.mundo.construcciones.length} construcciones`);
-    // y lo pone otra vez, 30 m más allá: el mojón se paga de lo que llevas, así que antes recoge sus 3 piedras
+    // y lo pone otra vez, 30 m más allá: el mojón se paga de lo que llevas, así que sin piedras no puede
+    r = await J.accion({ tipo: 'mojon', x: base.x - 30, z: base.z });
+    comprobar(`sin nada encima no puede volver a ponerlo (se paga con ${precio} piedras de lo que lleva)`, !r.ok && J.cuantos('piedra') === 0 && !s.mundo.mojonDe(J.bienvenida.autor), r.motivo);
+    // antes recoge sus 3 piedras
     let nuevas = 0;
-    for (const p of piedras.slice(11)) { if (nuevas >= precio) break; r = await recoger(p); if (r.ok) nuevas++; }
+    for (const p of piedrasBase.slice(faltan)) { if (nuevas >= precio) break; r = await recoger(p); if (r.ok) nuevas++; }
     comprobar(`recoge otras ${precio} piedras para el mojón nuevo`, J.cuantos('piedra') === precio, `${J.cuantos('piedra')} piedras`);
-    await J.andar(base.x + 30, base.z);
-    r = await J.accion({ tipo: 'mojon', x: base.x + 30, z: base.z });
+    await J.andar(base.x - 30, base.z);
+    r = await J.accion({ tipo: 'mojon', x: base.x - 30, z: base.z });
     comprobar('vuelve a poner su mojón 30 m más allá, sin espera, pagado con ellas', r.ok && !!s.mundo.mojonDe(J.bienvenida.autor) && J.cuantos('piedra') === 0, r.motivo);
   }
 
