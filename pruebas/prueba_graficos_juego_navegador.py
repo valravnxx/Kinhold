@@ -97,15 +97,15 @@ def recorrido(pg, nombre, pref):
     # el horizonte del PC alto: se termina de calcular de golpe (en el juego va poco a poco, 2 ms por fotograma)
     hz = pg.evaluate(f"(() => {{ const h = {G}.horizonte, m = h.muestras; while (!m.tiene(1)) m.avanzar(1000); {G}.poner('pc-3', false); return {{ activo: h.activo, tris: h.malla.geometry.index ? h.malla.geometry.index.count / 3 : 0 }}; }})()")
     comprobar(f'{nombre}: el PC alto lleva el horizonte, la isla entera cada 100 m', hz['activo'] and hz['tris'] > 200000, str(hz))
-    # mirando a ras: la franja del horizonte con y sin él (las montañas tienen que cambiarla)
-    pg.evaluate('(() => { window.__camAntes = { ...window.__kinhold.cam }; window.__kinhold.cam.pitch = 0.05; })()'); pg.wait_for_timeout(3000)
+    # mirando a ras hacia los montes y el mar (desde la salida, de frente solo hay llano): la franja del horizonte con y sin él
+    pg.evaluate('(() => { window.__camAntes = { ...window.__kinhold.cam }; window.__kinhold.cam.pitch = 0.05; window.__kinhold.cam.yaw = 3.14; })()'); pg.wait_for_timeout(3000)
     alto, ancho = pg.evaluate('[innerHeight, innerWidth]')
     franja = {'x': 0, 'y': round(alto * 0.3), 'width': ancho, 'height': round(alto * 0.25)}
     con = Image.open(io.BytesIO(pg.screenshot(clip=franja, timeout=180000))).convert('L')
     pg.screenshot(timeout=180000, path=f'{SALIDA}/{pref}_4_horizonte.png')
     pg.evaluate(f'{G}.horizonte.malla.visible = false'); pg.wait_for_timeout(2500)
     sin = Image.open(io.BytesIO(pg.screenshot(clip=franja, timeout=180000))).convert('L')
-    dif = sum(abs(a - b) for a, b in zip(con.getdata(), sin.getdata())) / (con.width * con.height)
+    dif = sum(abs(a - b) for a, b in zip(con.tobytes(), sin.tobytes())) / (con.width * con.height)
     comprobar(f'{nombre}: con el horizonte se ve lo lejano (cambia la franja del horizonte)', dif > 3, f'diferencia media {dif:.1f} de 255')
     pg.evaluate(f"{G}.poner('pc-3', false)")
     pg.evaluate('Object.assign(window.__kinhold.cam, window.__camAntes)'); pg.wait_for_timeout(1000)
