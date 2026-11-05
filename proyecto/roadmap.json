@@ -1160,9 +1160,10 @@
     },
     {
      "nombre": "El servidor no se fía del navegador en las obras: comprueba que estás cerca de la obra y en su planta antes de entregar, subir, trabajar o desmontar",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T05:41:35+00:00",
-     "rama": "trabajo/20261105-0541"
+     "rama": "trabajo/20261105-0541",
+     "fin": "2026-11-05T07:24:48+00:00"
     },
     {
      "nombre": "Movimiento sin trampas: el servidor limita la velocidad y el salto entre dos estados seguidos de cada personaje (lo que llega por encima se recorta a lo posible y se anota), para que «sin trampas» valga para andar y no solo para las obras (auditoría del 4 nov)",
@@ -2740,6 +2741,13 @@
      "archivo": "jugar/demo/v103.html",
      "capturas": "capturas/demo-v103",
      "notas": "Lo tuyo es tuyo: en tu tierra solo tú y quien tengas invitado desmontáis, abrís y cerráis las puertas y encendéis o apagáis el fuego; a los demás les sale «Es tierra de otro». Lo comprueba el servidor con el autor de cada uno."
+    },
+    {
+     "v": "v104",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v104.html",
+     "capturas": "capturas/demo-v104",
+     "notas": "El servidor no se fía del navegador en las obras: entregar, subir material, trabajar y desmontar solo valen junto a la pieza y en su planta (o en la de debajo), con la posición que el servidor tiene de ti. De lejos, «Estás demasiado lejos: acércate.»; desde el suelo no se entrega arriba. Al desmontar, la demo ya lo dice antes de pedir confirmación."
     }
    ]
   },

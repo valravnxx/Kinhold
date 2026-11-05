@@ -99,7 +99,7 @@ import { dirname, resolve } from 'path';
 import { randomUUID, createHash, randomInt } from 'crypto';
 import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
-import { RegistroAcciones, ejecutar, reproducir, USAN_INVENTARIO } from '../src/logica/acciones.js';
+import { RegistroAcciones, ejecutar, reproducir, USAN_INVENTARIO, fueraDeAlcance } from '../src/logica/acciones.js';
 import { PresenciaServidor, CADA, validarAspecto, validarEstado } from '../src/logica/presencia.js';
 import { llevadoDe, huellaLlevado } from '../src/logica/llevado.js';
 import { PROTOCOLO } from '../src/logica/protocolo.js';
@@ -662,8 +662,10 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       const contraTerreno = terreno && nueva ? terreno.obra(accion, mundo.marcasNivelado()) : null;
       // dónde cae (antes de hacerla: desmontar puede quitar la construcción) y lo de todos tal como estaba
       const sitioAntes = sitioAccion(mundo, accion), antes = comunDe(mundo);
-      const r = sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
-      if (sinArcon || contraTerreno) registro.anotar(accion, r);
+      // las obras, solo al alcance de donde el servidor tiene al jugador (lo que diga el navegador no cuenta)
+      const lejos = sinArcon || contraTerreno ? null : fueraDeAlcance(mundo, accion, presencia.ultimo.get(autor));
+      const r = sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : lejos || ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
+      if (sinArcon || contraTerreno || lejos) registro.anotar(accion, r);
       const entrada = registro.entradas[registro.entradas.length - 1];
       registro.entradas.length = 0;   // lo guardado va al archivo; en memoria basta con el mundo
       appendFileSync(archivo, JSON.stringify(entrada) + '\n');

@@ -4,7 +4,7 @@
 // nunca objetos de la escena. Se comprueba, se aplica y se anota en un registro, salga bien o no.
 // Con el registro de la construcción se puede rehacer el mundo desde cero (reproducir): así el
 // servidor podrá validar y auditar lo que pasa, y las pruebas ven si algo cambia el mundo sin pasar por aquí.
-import { Mundo, MAX_RATO, plantaObra, clasePeso, poleaPara, polipastoPara } from './construccion.js';
+import { Mundo, MAX_RATO, plantaObra, clasePeso, poleaPara, polipastoPara, alAlcance, plantaDeAltura } from './construccion.js';
 import { PIEZAS } from './piezas.js';
 import { OBJETO_DE_MATERIAL, MATERIAL_DE_OBJETO } from './inventario.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
@@ -109,6 +109,25 @@ function devolverA(inv, devuelto) {
     if (!r.ok) { inv.restaurar(antes); return { ok: false, motivo: 'No te cabe lo que devuelve: haz sitio.' }; }
   }
   return { ok: true };
+}
+
+// El servidor no se fía del navegador en las obras (hito «Jugar entre dos sin trampas»): entregar, subir, trabajar y
+// desmontar solo valen si el jugador, donde lo tiene el servidor (pos: su último estado { x, y, z }, o null), está al
+// alcance de la pieza (alAlcance, con holgura m de más por el retraso) y, al entregar, en la planta que dice («desde»).
+// Devuelve null si vale, o { ok: false, motivo } si no. Las demás acciones no se miran aquí.
+export const OBRA_CERCA = new Set(['entregar', 'subir', 'trabajar', 'desmontar']);
+export function fueraDeAlcance(m, a, pos, holgura = 3) {
+  if (!a || !OBRA_CERCA.has(a.tipo)) return null;
+  const c = m.construcciones.find(x => x.id === a.construccion);
+  const p = c && typeof a.clave === 'string' && c.piezas.get(a.clave);
+  if (!p) return null;   // lo que no existe lo dice la acción misma
+  if (!pos || ![pos.x, pos.y, pos.z].every(numero)) return { ok: false, motivo: 'El servidor aún no sabe dónde estás.' };
+  const k = plantaDeAltura(c, pos.y);
+  const r = alAlcance(c, p, pos.x, pos.z, k, holgura, 1);
+  if (!r.ok) return { ok: false, motivo: r.motivo };
+  // lo ligero a una obra en alto se sube a mano por la escalera: no vale decir que estás arriba estando abajo
+  if (a.tipo === 'entregar' && numero(a.desde) && a.desde > k) return { ok: false, motivo: 'No estás en su planta.' };
+  return null;
 }
 
 function aplicarConstruccion(m, a, invs) {

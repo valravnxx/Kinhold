@@ -123,6 +123,8 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
 
   return {
     red, direccion: cli.direccion, paso, mandarAspecto,
+    // mandar ya dónde estás, sin esperar al siguiente envío (los atajos de prueba que llevan al jugador junto a una obra)
+    mandarEstado: (propio) => { if (cli.estado !== 'conectado') return false; presencia.ultimoEnvio = -Infinity; return presencia.actualizar(performance.now(), propio); },
     // para el panel del admin: mandar al servidor y escuchar sus respuestas ({ tipo: 'admin' })
     enviar: (m) => cli.enviar(m), escuchar: (f) => { escuchas.add(f); return () => escuchas.delete(f); },
     get estado() { return cli.estado; },
