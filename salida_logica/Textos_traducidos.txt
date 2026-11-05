@@ -1,0 +1,12 @@
+Textos del juego: 1341; sin traducir (en): 5; con variables distintas: 0
+  FALTA (en)  v116: con algo al hombro, las manos no llevan nada, ni el hacha (valravnx, 1 nov: «si llevas algo al hombro, olvídate de llevar nada en manos a la vez»). Con el tronco corto o el saco al hombro no se coge nada con las manos (lo que recoges va a la cintura o a la espalda, si llevas dónde), y para subirte algo al hombro tienes que llevar las manos vacías. Lo comprueba el servidor, en la misma lógica del inventario.
+  FALTA (en)  v116, provisional: lo que cuelga de una correa (la bandolera y el odre) no cuenta como carga al hombro y deja las manos libres; el tronco corto y el saco, que se sujetan con las manos, sí.
+  FALTA (en)  Demo única · v116 (con algo al hombro, las manos vacías)
+  FALTA (en)  Llevas algo al hombro: con eso, las manos no llevan nada.
+  FALTA (en)  Para llevar eso al hombro, las manos tienen que ir vacías: guarda o suelta lo que llevas en ellas.
+Textos del juego: 1341; sin traducir (ru): 5; con variables distintas: 0; sin cirílico: 0
+  FALTA (ru)  v116: con algo al hombro, las manos no llevan nada, ni el hacha (valravnx, 1 nov: «si llevas algo al hombro, olvídate de llevar nada en manos a la vez»). Con el tronco corto o el saco al hombro no se coge nada con las manos (lo que recoges va a la cintura o a la espalda, si llevas dónde), y para subirte algo al hombro tienes que llevar las manos vacías. Lo comprueba el servidor, en la misma lógica del inventario.
+  FALTA (ru)  v116, provisional: lo que cuelga de una correa (la bandolera y el odre) no cuenta como carga al hombro y deja las manos libres; el tronco corto y el saco, que se sujetan con las manos, sí.
+  FALTA (ru)  Demo única · v116 (con algo al hombro, las manos vacías)
+  FALTA (ru)  Llevas algo al hombro: con eso, las manos no llevan nada.
+  FALTA (ru)  Para llevar eso al hombro, las manos tienen que ir vacías: guarda o suelta lo que llevas en ellas.
