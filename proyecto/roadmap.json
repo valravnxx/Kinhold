@@ -1433,7 +1433,7 @@
   {
    "id": "graficos",
    "nombre": "Perfiles gráficos y posprocesado",
-   "estado": "hecho",
+   "estado": "en_curso",
    "lleva": "chat",
    "jugable": "Seis perfiles gráficos, de móvil de gama baja a PC de gama alta, y el posprocesado del estilo (oclusión ambiental, gradación de color, brillo de las luces, niebla, desenfoque puntual y haces de luz), sin que ningún perfil esconda lo que importa para jugar.",
    "nota": "Lo lleva el chat con valravnx (4 nov), aparte de los P1–P7: los carriles no lo tocan.",
@@ -1455,6 +1455,12 @@
      "estado": "hecho",
      "inicio": "2026-11-05T09:18:41+01:00",
      "fin": "2026-11-05T11:26:35+01:00"
+    },
+    {
+     "nombre": "El bosque de lejos (valravnx, 5 nov: «simular las zonas donde el bioma es bosque… que a toda distancia ya puedas diferenciar bastante bien los biomas»): una capa de dosel con volumen y copas donde hay bosque, desde donde acaban los árboles de verdad hasta el borde de la isla",
+     "estado": "en_curso",
+     "inicio": "2026-11-05T12:19:08+01:00",
+     "rama": "trabajo/20261105-1220-dosel"
     }
    ],
    "num": "G"
