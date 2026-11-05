@@ -1420,13 +1420,19 @@
    "id": "admin",
    "num": "P7",
    "nombre": "Administración, registros y seguridad",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "jugable": "Roles (jugador, moderador, administrador) para la cuenta de valravnx y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
    "nota": "Revisión del 1 nov con valravnx: después: registros, expulsar y herramientas de admin. El admin por la cuenta llega antes, con «Cuentas».",
    "tareas": [
     {
      "nombre": "Copia de seguridad diaria del servidor de verdad (el mundo, los objetos, las fichas y las cuentas), guardada fuera de la máquina (en el almacenamiento de Hetzner o en un repositorio privado), con las últimas 14 y una restauración probada una vez; antes de abrir el juego a nadie de fuera (auditoría del 4 nov)",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Explorar libre como admin (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente, no solo de la isla del rey, que quiero poder explorar libre»): el mapa del panel enseña el continente entero, un clic lleva a cualquier sitio y la cuenta de admin puede andar fuera de Whitholm",
+     "estado": "en_curso",
+     "inicio": "2026-11-05T13:15:46+01:00",
+     "rama": "trabajo/20261105-1320-admin-continente"
     }
    ]
   },
