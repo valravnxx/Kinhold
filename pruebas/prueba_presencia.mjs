@@ -91,7 +91,7 @@ comprobar('el servidor quita el vaivén de la subida y no se deja engañar con l
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-presencia-'));
 try {
   console.log(`Dos clientes con lag de ${LAG}–${LAG + VAIVEN} ms en cada sentido`);
-  const s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl') });
+  const s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl') });
   const puerto = await s.listo;
   const A = await cliente(puerto), B = await cliente(puerto);
 

@@ -4412,5 +4412,22 @@
   "pruebas": "Batería entera en la nube tras unir main (zonas del rey y el bosque de lejos): 35 grupos correctos, sin las de en línea. En una ronda anterior «lo que llevas se ve puesto» volvió a fallar por milímetros (mide el radio del tronco en 10 u 11 cm según la vez) y pasó al repetirla sin cambios: no es de este cambio. Capturas del panel (el continente y fuera de la isla) miradas en PC y móvil.",
   "capturas": "capturas/demo-v110",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T13:26:47+00:00",
+  "fin": "2026-11-05T17:01:17+00:00",
+  "titulo": "Fuera el arcón infinito del servidor de verdad (P2, carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "El servidor de verdad ya no tiene arcón de pruebas: rechaza sacar, dejar y rellenar el arcón de materiales y coger o soltar equipo de él («Aquí no hay arcón.»). Solo lo tienen las pruebas automáticas: las de lógica lo piden al crear su servidor, y las de navegador que lo usan, con KINHOLD_PRUEBAS_ARCON=si (el servidor lo avisa al arrancar).",
+   "La bienvenida dice si hay arcón; sin él, el navegador no enseña el botón «+ Materiales» ni la parte del arcón del inventario. Sin servidor (las pruebas de navegador) todo sigue como antes.",
+   "El contador de materiales de arriba sale solo dentro de tu tierra (la zona de tu mojón), con lo almacenado en ella; fuera, no sale. Provisional (registro de la demo): mientras no haya almacenajes de la base, lo almacenado es lo que hay en el suelo de tu tierra, contando lo de dentro de los contenedores, de los trozos que te manda el servidor.",
+   "Al desmontar una pieza en línea, lo que devuelve va a lo que llevas, ya no al arcón (que el juego de verdad ya no tiene); lo que no te cabe cae al suelo a tus pies, por el servidor. Provisional: cae al suelo en vez de no dejar desmontar, porque una pieza grande devuelve más de lo que se puede llevar.",
+   "El recorrido de jugador ya prueba contra el servidor tal como arranca de verdad (sin arcón): tampoco se puede rellenar, y la bienvenida dice que no hay arcón. Pruebas nuevas en las de suelo, obras con lo que llevas y alcance de las obras, cada una rota a propósito una vez.",
+   "Visto en el navegador contra un servidor de aquí, en PC (1280×800) y móvil (390×844): sin arcón no salen ni el botón ni la parte del arcón; en tu tierra sale «En tu tierra: aún no tienes nada almacenado», y fuera de ella, nada. No comprobado en captura: el contador con cosas en el suelo de tu tierra (sí en la prueba de lógica)."
+  ],
+  "pruebas": "Batería entera en la nube (35 grupos, sin los de en línea), bien. Por el camino, «construir a la altura del suelo» falló dos veces en la vista de móvil (la ladera que le tocó, a -25,-117 de la salida, tenía 1 planta; la ladera cambia de una vez a otra) y pasó al repetirla; sobre main pasa igual. Tras unir main dos veces (el bosque de lejos y explorar libre como admin, que tocan main.js, el servidor, el registro y las traducciones) se repitió entera; 13 grupos no pudieron subir su resultado (GitHub rechazó la subida) y se repitieron: bien. Recorrido de jugador 28/28 contra el servidor tal como arranca de verdad. Pruebas nuevas rotas a propósito: suelo (MUTAR=1), obras con lo que llevas (MUTAR=1), alcance de las obras (sin dejar al suelo) y recorrido (con arcón): fallan.",
+  "capturas": "capturas/demo-v111",
+  "estado": "ok"
  }
 ]

@@ -1191,9 +1191,10 @@
     },
     {
      "nombre": "Fuera el arcón de materiales infinito del servidor de verdad (solo para las pruebas automáticas, sin botón); el contador de materiales de arriba sale solo dentro de tu tierra, con lo que tienes almacenado en ella",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T13:26:47+00:00",
-     "rama": "trabajo/20261105-1326"
+     "rama": "trabajo/20261105-1326",
+     "fin": "2026-11-05T17:01:17+00:00"
     },
     {
      "nombre": "Con algo al hombro, las manos no llevan nada (ni el hacha): lógica del inventario, en la demo y por el servidor",
@@ -2831,6 +2832,13 @@
      "archivo": "jugar/demo/v110.html",
      "capturas": "capturas/demo-v110",
      "notas": "Explorar libre como admin: el mapa del panel del admin es el del continente entero, Kinland, con sus regiones; un clic te lleva a cualquier sitio y allí se carga el terreno y puedes andar. Solo la cuenta de admin puede salir de Whitholm."
+    },
+    {
+     "v": "v111",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v111.html",
+     "capturas": "capturas/demo-v111",
+     "notas": "Fuera el arcón infinito del juego de verdad: en línea ya no hay arcón de pruebas ni botón «+ Materiales», y lo que llevas se coge del mundo. El contador de materiales de arriba sale solo dentro de tu tierra, con lo almacenado en ella. Al desmontar una pieza, lo que devuelve va a lo que llevas, y lo que no te cabe cae al suelo a tus pies."
     }
    ]
   },

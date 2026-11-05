@@ -317,7 +317,7 @@ const archivo = join(dir, 'mundo.jsonl');
 let s;
 try {
   console.log('Servidor con dos clientes y lag simulado (A: 80 ± 30 ms, B: 140 ± 50 ms, cada sentido)');
-  s = crearServidor({ puerto: 0, archivo, semilla: 9 });
+  s = crearServidor({ arconPruebas: true, puerto: 0, archivo, semilla: 9 });
   const puerto = await s.listo;
   const A = await cliente(puerto, 80, 30);
   const B = await cliente(puerto, 140, 50);

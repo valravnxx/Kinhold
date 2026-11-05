@@ -31,7 +31,7 @@ export const CALENTAR = 10;   // s que no cuentan en el resumen (se están coloc
 // ---------- proceso del servidor ----------
 async function procesoServidor(archivo) {
   const { crearServidor } = await import('./servidor.mjs');
-  const s = crearServidor({ puerto: 0, archivo });
+  const s = crearServidor({ arconPruebas: true, puerto: 0, archivo });
   const puerto = await s.listo;
   const sockets = new Set();
   let salidaCerrados = 0, entradaCerrados = 0;

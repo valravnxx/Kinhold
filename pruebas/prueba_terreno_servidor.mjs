@@ -122,7 +122,7 @@ try {
     .map(e => ({ ...e, x: e.x - O.x, z: e.z - O.z })).filter(e => Math.hypot(e.x, e.z - 2) >= CLARO_ARBOLES && e.tam >= TAM_ADULTO && e.x < 59 && e.z < 59)
     .sort((a, b) => Math.hypot(a.x, a.z) - Math.hypot(b.x, b.z))[0];
   const id = idArbol(e.x, e.z), px = e.x + 1, pz = e.z;
-  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T });
+  s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T });
   const puerto = await s.listo;
   const a = await cliente(puerto);
   a.estar(px, T.suelo(px, pz), pz); await pausa(200);
@@ -183,7 +183,7 @@ try {
   tf.cosas.push({ id: falsoCerca, x: r2(px + 0.5), z: r2(pz), edad: 'adulto' });
   tf.estado[falsoCerca] = { golpes: 3, parte: 0.2, veces: 0 };
   writeFileSync(join(dir, 'objetos.json'), JSON.stringify(guardado));
-  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T });
+  s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T });
   await s.listo;
   comprobar('al volver a arrancar, lo guardado que no está en el mundo se descarta y lo de verdad sigue', !s.objetos.tala.porId.has(falsoCerca) && s.objetos.tala.porId.get(id)?.edad === 'adulto' && s.objetos.tala.progreso(id) > 0);
 } catch (e) {

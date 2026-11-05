@@ -60,7 +60,7 @@ const dir = mkdtempSync(join(tmpdir(), 'kinhold-servidor-'));
 const archivo = join(dir, 'mundo.jsonl');
 try {
   console.log('Dos clientes en el mismo mundo');
-  let s = crearServidor({ puerto: 0, archivo });
+  let s = crearServidor({ arconPruebas: true, puerto: 0, archivo });
   let puerto = await s.listo;
   const A = await cliente(puerto), B = await cliente(puerto);
   comprobar('cada conexión recibe un autor del servidor, distinto', /^jugador:/.test(A.bienvenida.autor) && A.bienvenida.autor !== B.bienvenida.autor,
@@ -128,7 +128,7 @@ try {
 
   console.log('El servidor se apaga y vuelve a arrancar');
   appendFileSync(archivo, '{"n":10,"autor":"jugador:x","tip');   // apagado a mitad de escribir
-  s = crearServidor({ puerto: 0, archivo });
+  s = crearServidor({ arconPruebas: true, puerto: 0, archivo });
   puerto = await s.listo;
   comprobar('al arrancar, el mundo se rehace igual desde el archivo', foto(s.mundo) === mundoAntes);
   const C = await cliente(puerto);
