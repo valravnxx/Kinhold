@@ -4365,5 +4365,35 @@
   "pruebas": "Batería entera en la nube (GitHub Actions): 34 grupos correctos (48,2 min). Tras unir main (el horizonte del chat), otra vez entera: 31 bien; construcción (la página se recargó a mitad, «Execution context was destroyed»), lógica (prueba_nube.mjs: la conexión wss a través de Caddy, error de TLS) y web (faltaba la carpeta de capturas, aún sin publicar) fallaron, y repetidas salen bien las tres. Recorrido de jugador 26/26 y prueba del terreno del servidor 36/36 también aquí. Capturas del mapa del rey miradas en PC y móvil. Tras unir los ríos del chat, otra vez entera: 34 de 35 bien a la primera y la web, repetida al publicar.",
   "capturas": "capturas/demo-v108",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T13:39:24+00:00",
+  "fin": "2026-11-05T13:47:23+00:00",
+  "titulo": "Decisión: la salida al azar, solo en zonas libres",
+  "hito": "entre-dos",
+  "hecho": [
+   "valravnx respondió a la decisión de las zonas del rey y la salida al azar: «apareces en un punto aleatorio LIBRE, si una zona tiene mojón activo, deja de ser spawn». Las zonas de los sitios de salida se reclaman como las demás; la salida al azar elige solo entre los sitios cuya zona no tiene mojón.",
+   "Añadido a la tarea «Salida al azar de verdad en línea», que vuelve a pendiente. La zona de la salida común sigue siendo del rey."
+  ],
+  "pruebas": "Sin código: solo el roadmap y REVISION.md.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T12:19:08+01:00",
+  "fin": "2026-11-05T15:31:09+01:00",
+  "titulo": "El bosque de lejos",
+  "hito": "graficos",
+  "hecho": [
+   "valravnx, 5 nov: «¿Hay alguna forma que podamos simular las zonas donde el bioma es bosque…, para que a toda distancia tú ya puedas diferenciar bastante bien los biomas?» (y «haz», tras ver los métodos).",
+   "El dosel (src/logica/horizonte.js): donde el bosque es denso (bosqueEn, desde 0,22), una capa a lo alto de las copas de su especie (TAMANO_ESPECIE), ±45 % de bulto; fuera del bosque se mete bajo el suelo y el linde hace de pared. De lejos, con las muestras del horizonte, desde cada 200 m (cada 400 salían losas); en PC, otra fina (cada 16 m) desde el cuadro de los árboles de verdad hasta el horizonte, que se rehace al alejarse 140 m.",
+   "El sombreador le pone las copas: manchas de unos 6 y 20 m de cerca, de grupos de 60 m más lejos, y más oscuro de lejos (la sombra de dentro del bosque, lo que lo distingue de la pradera). En el móvil no va el dosel de cerca: entre 130 y 288 m se veía como lomas lisas.",
+   "Con horizonte: menos bruma de cerca (tope 0,3), el cielo pintado por la niebla (sin raya clara en las crestas con ningún suavizado), y la tierra baja de la costa ya no queda bajo la lámina del mar; el dosel lejano se adelanta en la hondura para no pisarse con el suelo (cuadritos). Horizonte cada 200 m también en Móvil alto y PC básico.",
+   "Pruebas: «Horizonte de los perfiles altos» con el dosel (solo en bosque y en tierra, copas de hasta unos 14 m, de cerca en el bosque sí y en la pradera no; con MUTAR=2, copas de 40 m, falla). Sin noticia, como lo demás de los perfiles gráficos.",
+   "Sin comprobar aquí: los fps con tarjeta gráfica (el PC alto suma unos 250 000 triángulos de dosel lejano y unos 20 000 de cerca); el dosel de cerca tarda unos 0,5 s de cálculo cada 140 m, repartidos en fotogramas. Mejor desde un alto: desde el llano los árboles de verdad tapan casi todo."
+  ],
+  "pruebas": "Batería entera en la nube: 35 grupos bien. Tras unir main (zonas del rey, que también toca main.js), otra vez entera: todo bien salvo «lo que llevas se ve puesto» (la mujer: 17,7 cm contra el radio del tronco más 7; el tronco sale de un radio u otro y queda en el borde); sobre main, el mismo grupo pasó con el mismo 17,7: no es del dosel. Lógica del horizonte y el dosel 30/30 (rota a propósito con MUTAR=1 y MUTAR=2, falla).",
+  "capturas": "capturas/demo-v109",
+  "estado": "ok",
+  "noticia": false
  }
 ]

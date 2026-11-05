@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 5 nov 2026 (13:39–13:45 UTC) — en la sesión del carril A: la salida al azar, solo en zonas libres
+valravnx, a la decisión «Zonas del rey y la salida al azar» (los 259 sitios de la salida al azar caen en 235 zonas, el 28 % de las comarcas de inicio): «podemos hacer que sean zonas sin tomar por nadie siempre» y, aclarado: «apareces en un punto aleatorio LIBRE, si una zona tiene mojón activo, deja de ser spawn». → Las zonas de los sitios de salida NO son del rey: se reclaman como las demás. La salida al azar elige solo entre los sitios cuya zona no tiene mojón puesto. Decisión quitada de las pendientes; añadido a la tarea «Salida al azar de verdad en línea» (vuelve a pendiente). La zona de la salida común sigue siendo del rey (no dicho; sin cambios).
+
 ### 5 nov 2026 (13:12 UTC+1) — por el chat: explorar libre como admin
 valravnx: «cambio pequeño, en el panel de admin ponme el mapa de todo el continente, no solo de la isla del rey, que quiero poder explorar libre». → Tarea de chat en el hito P7 (Administración): el mapa del panel es el del continente entero, un clic lleva a cualquier sitio y la cuenta de admin puede andar fuera de Whitholm (el servidor solo se lo deja a ella).
 
