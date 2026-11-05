@@ -53,7 +53,7 @@ export function crearMuestras(paisaje, rect, base = BASE, especies = null) {
       const y = alto[n], d = k * base;
       const gx = (A(ix + k, iz) - A(ix - k, iz)) / (2 * d), gz = (A(ix, iz + k) - A(ix, iz - k)) / (2 * d), s = Math.hypot(gx, gz);
       let c;
-      if (y <= MAR) c = [0.29, 0.39, 0.44];
+      if (y <= MAR) c = [0.21, 0.32, 0.37];   // (el azul del mar de lejos, src/mundo/mundo_juego.js)
       else {
         const st = paisaje.sitio(xm(ix), zm(iz), y);
         c = colorDelSuelo(st, y, s, xm(ix), zm(iz));

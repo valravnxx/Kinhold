@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v115 (eliges dónde empiezas)";
+export const VERSION_DEMO = "Demo única · v116 (el mar de verdad)";
 export const REGISTRO_DEMO = [
+  "v116: el mar de verdad (valravnx, 5 nov): el fondo baja enseguida: en las playas, unos 20 m de agua somera con la arena a la vista y luego un escalón hasta unos 8 m; al pie de los acantilados, hondo ya (unos 18 m a 50 m). Antes, a 100 m de la orilla cubría 0,8 m.",
+  "v116: sin la franja de fondo gris azulado al aire: el mar de lejos va a la altura de la orilla, algo transparente, y bajo el agua se ve el fondo de arena (o de cantos, en las costas de granito y pizarra) que se pierde en el azul con la hondura; la playa sube desde la orilla, de arena entera hasta 1 m.",
   "v115: eliges dónde empiezas (valravnx, 5 nov: «pon dos más, una será en la ciudad y otra en la otra comarca de inicio», «motdale», «lo eligen»). En línea hay tres salidas, cada una en una zona del rey que no se reclama: la común (Lindholt), junto a la ciudad del rey (Strandvang) y en Motdale. Un personaje nuevo elige una al entrar, una sola vez; el servidor lo recuerda. Quien ya jugaba sigue donde estaba.",
   "v115, provisional: la salida de la ciudad, a 80 m de su centro (el primer sitio llano de su zona fuera de la ciudad); la de Motdale, el sitio de salida más cercano al centro de la comarca.",
   "v115: en la pradera abierta (el claro, sin bosque) sale algo de piedra y de sílex sueltos, menos que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»). Provisional: la piedra, la séptima parte que en la ladera; el sílex, la sexta parte que en la caliza. Lo que ya salía sigue en su sitio.",

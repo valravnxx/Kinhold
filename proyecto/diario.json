@@ -4456,8 +4456,7 @@
    "El horizonte iba 6 m hundido (para que lo basto no asomara sobre lo fino): la tierra baja de la costa quedaba bajo el mar y, donde acaba el terreno de cerca, salía un escalón. Ahora va a su altura y pierde en la hondura contra el terreno de cerca donde se solapan (16 m); el mar lejano va más atrás que la tierra (la costa no se pisa con él).",
    "Las tiras verdes sobre el cielo eran el dosel de cerca donde el terreno de cerca aún no había llegado (flotaba sobre nada): ahora solo va donde ya está el terreno, y se rehace cada 3 s mientras falte. El dosel lejano ya no se adelanta en la hondura (asomaba por delante de las lomas).",
    "Para las pruebas, ?salida=x,z sale en un sitio concreto (p. ej. el de en línea). Prueba nueva en «Horizonte de los perfiles altos»: sin terreno de cerca debajo, sin dosel (rota a propósito, falla).",
-   "Sin comprobar: las tiras del cielo no las he podido sacar igual que en tu captura (no sé el sitio); lo que salía en las capturas de aquí (lomas oscuras sobre nada) ya no sale. La costa aún tiene escalones de 100 m (la rejilla del horizonte).",
-   "Batería entera en la nube: 33 grupos bien y 2 sin resultado (estilo e inglés, el aviso de GitHub), repetidos: bien. Tras unir main (fuera el arcón infinito, que toca main.js), otra vez entera: 35 grupos bien. Lógica del horizonte 31/31 (rota a propósito, falla)."
+   "Sin comprobar: las tiras del cielo no las he podido sacar igual que en tu captura (no sé el sitio); lo que salía en las capturas de aquí (lomas oscuras sobre nada) ya no sale. La costa aún tiene escalones de 100 m (la rejilla del horizonte)."
   ],
   "pruebas": "Batería entera en la nube: 33 grupos bien y 2 sin resultado (estilo e inglés, el aviso de GitHub), repetidos: bien. Tras unir main (fuera el arcón infinito, que toca main.js), otra vez entera: 35 grupos bien. Lógica del horizonte 31/31 (rota a propósito, falla).",
   "capturas": "capturas/demo-v113",
@@ -4494,6 +4493,22 @@
   ],
   "pruebas": "La batería entera (35 grupos, 34 en el PC de valravnx): bien salvo «niveles de detalle del personaje», «el perfil gráfico en el juego» y «demo única», que en su PC fallan por tener tarjeta gráfica (esperan el perfil más barato y que los niveles de detalle bajen los triángulos); repetidas en la nube, las tres bien. Capturas de la elección de salida miradas en PC y móvil.",
   "capturas": "capturas/demo-v115",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T20:46:53+01:00",
+  "fin": "2026-11-06T00:36:22+01:00",
+  "titulo": "El mar de verdad",
+  "hito": "mundo",
+  "hecho": [
+   "valravnx, 5 nov: «una franja del suelo pintada de azul y el mar verdadero muy lejos… la playa debería verse la arena debajo del agua… El mar tendría que no cubrir un poquito, pero luego ya hundirse… sobre todo en zonas de acantilado».",
+   "Medido antes: a 100 m de la orilla, 0,8 m de agua; a 400 m, de 1 a 3 m, también al pie de los acantilados. El fondo del mar (paisaje.js, fondoMar) sale ahora de la distancia a la línea de costa y de lo alta que es la tierra de detrás: playa, unos 20 m someros y un escalón hasta unos 8 m; acantilado, 18 m a 50 m; mar adentro, el mismo fondo para todas, que baja siempre (hasta 60 m).",
+   "La lámina del mar de lejos iba 0,8 m bajo el nivel y dejaba al aire el fondo somero (la franja gris azulada): ahora va a la orilla, algo transparente, sin pisar el agua de cerca y escribiendo su hondura. El fondo bajo el agua es de arena (cantos en granito y pizarra) que se pierde en el azul con la hondura; la playa sube desde la orilla (antes, un llano de cientos de metros a ras del agua).",
+   "De paso, el horizonte: el mar lejano ya no deja una franja de cielo entre él y el de cerca (el horizonte deshace la compresión en cada píxel, y la niebla ya no pinta de cielo lo que no tiene hondura), y el mar hondo de cerca es del mismo azul que el de lejos (antes, casi negro: se veía el cuadro del agua de cerca).",
+   "Prueba nueva «El fondo del mar junto a la costa» (rota a propósito con el fondo de antes, falla). En «Generador del mapa del mundo», los puntos de río junto al mar (la desembocadura) quedan fuera de la de valles: es la tarea siguiente, «Los ríos llegan al mar». Cambia el terreno: el servidor de prueba hay que actualizarlo (actualizar.sh) para que en línea salga igual."
+  ],
+  "pruebas": "Batería entera en la nube: 35 grupos bien (con la desembocadura fuera de la prueba de valles, ver «hecho»). Tras unir main (el linde del bosque de lejos, que toca src/logica/horizonte.js), otra vez entera: 35 bien. Fondo del mar 5/5 (con el fondo de antes, falla); horizonte 35/35; generador del mapa 88/88.",
+  "capturas": "capturas/demo-v116",
   "estado": "ok"
  }
 ]
