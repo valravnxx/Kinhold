@@ -4312,5 +4312,23 @@
   "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido): todo bien salvo el panel del admin, que falló porque su jugador simulado aparecía de golpe lejos; corregido y repetido en la nube, bien. El mapa del mundo no llegó a terminar en la primera ronda (se acabó el tiempo de espera de esta sesión) y se repitió: bien. Recorrido de jugador 24/24 aquí. Capturas del panel del admin (PC y móvil) miradas.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T09:18:41+01:00",
+  "fin": "2026-11-05T11:26:35+01:00",
+  "titulo": "El horizonte en los perfiles altos",
+  "hito": "graficos",
+  "hecho": [
+   "valravnx, 5 nov: «no noto casi ninguna diferencia más que la resolución; me interesaría que los altos aumentaran muchísimo la distancia de dibujado del mapa, aunque sea sin detalle, para ver las montañas y las formas».",
+   "Detrás del terreno de cerca, la isla entera en basto (src/logica/horizonte.js y src/mundo/horizonte.js): el alto de verdad del paisaje y su color de lejos (bioma, roca, nieve y el verde de las copas donde hay bosque), cada 400 m en Móvil alto y PC básico, cada 200 en PC medio y cada 100 en PC alto (unos 400 000 triángulos); y el mar de lejos hasta el borde de la isla.",
+   "Se calcula poco a poco al entrar (2 ms por fotograma, primero lo basto) y cabe dentro del alcance de la cámara: lo que está más allá de unos 830 m se acerca a ella por la misma línea de mirada, y la niebla lo deshace para saber la distancia de verdad.",
+   "La niebla de cerca, con horizonte, no pasa del 45 % (si llegara al 100 % taparía los montes) y lo lejano se funde con el cielo que tiene detrás; los bordes contra el cielo ya no salen con una raya clara.",
+   "Pruebas nuevas: «Horizonte de los perfiles altos» (lógica; rota a propósito, falla) y, en «el perfil gráfico en el juego», que el más barato no lo lleva y que con el PC alto cambia lo que se ve en la franja del horizonte (rota a propósito, falla). Sin noticia, como lo demás de los perfiles gráficos.",
+   "Sin comprobar aquí: los fps con una tarjeta gráfica de verdad (esta máquina no tiene); sin ella, calcular la isla entera lleva unos 1,5 s, repartidos en fotogramas."
+  ],
+  "pruebas": "Batería entera en la nube: todo bien salvo la comprobación nueva del horizonte, que medía la media de la franja; ajustada (lo que cambia de la franja) y repetida: bien (PC 14 %, móvil 23 %; rota a propósito, 0 %). Lógica del horizonte 21/21.",
+  "capturas": "capturas/demo-v106",
+  "estado": "ok",
+  "noticia": false
  }
 ]
