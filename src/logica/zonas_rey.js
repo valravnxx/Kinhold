@@ -8,11 +8,11 @@
 // Cuáles son (contadas el 5 nov con el mundo elegido, ver el diario): de las 1.840 zonas con tierra de Whitholm,
 //  - la de la gran veta de hierro de la sierra (la única veta marcada de la isla; en Breiddal),
 //  - la de la ciudad del rey (en Strandvang),
-//  - la de la salida común (en Lindholt): hoy todos aparecen ahí.
-// Decisión provisional (5 nov, en el registro de la demo y en decisiones_pendientes): los 259 sitios de la salida al
-// azar (SALIDAS, uno por km² que vale en las tres comarcas de inicio) caen en 235 zonas, el 28 % de esas tres
-// comarcas, y aún no se usan (llegan con «Salida al azar de verdad en línea»); hacerlas todas del rey dejaría poco que
-// reclamar donde empieza la gente, así que no lo son hasta que valravnx diga cuántos sitios de salida quiere.
+//  - la de la salida común (en Lindholt): el 0 de la escena en línea, y donde sale un nuevo si no queda sitio libre.
+// Los 259 sitios de la salida al azar (SALIDAS, uno por km² que vale en las tres comarcas de inicio) caen en 235 zonas,
+// el 28 % de esas tres comarcas, y NO son del rey (valravnx, 5 nov: «podemos hacer que sean zonas sin tomar por nadie
+// siempre… apareces en un punto aleatorio LIBRE, si una zona tiene mojón activo, deja de ser spawn»): se reclaman como
+// las demás, y el servidor da a cada personaje nuevo uno de los sitios cuya zona sigue libre (servidor/servidor.mjs).
 //
 // Lo que cuesta calcularlas (buscarZonasRey) es generar el mapa; por eso los sitios van apuntados en SITIOS_REY, que el
 // servidor y el navegador pasan a zonas con comarcas.zonaEn (9 puntos cada uno). La prueba (pruebas/prueba_zonas_rey.mjs)
