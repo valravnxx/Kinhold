@@ -4445,5 +4445,23 @@
   "pruebas": "Batería entera en la nube tras unir main: 34 de 35 grupos bien a la primera; «lo que llevas se ve puesto» falló por el radio del tronco (lo de siempre, no es de este cambio) y pasó al repetirlo sin cambios. Capturas del panel con «Traer» y del jugador traído miradas en PC y móvil.",
   "capturas": "capturas/demo-v112",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T16:43:36+01:00",
+  "fin": "2026-11-05T19:34:48+01:00",
+  "titulo": "El horizonte sin cortes ni tierra bajo el agua",
+  "hito": "graficos",
+  "hecho": [
+   "valravnx, 5 nov (con capturas del juego en línea): «parecen bajo el agua en algunos puntos… como clipeados a más altura o menos, como si tuviera cortes»; y tiras verdes flotando sobre el cielo.",
+   "El horizonte iba 6 m hundido (para que lo basto no asomara sobre lo fino): la tierra baja de la costa quedaba bajo el mar y, donde acaba el terreno de cerca, salía un escalón. Ahora va a su altura y pierde en la hondura contra el terreno de cerca donde se solapan (16 m); el mar lejano va más atrás que la tierra (la costa no se pisa con él).",
+   "Las tiras verdes sobre el cielo eran el dosel de cerca donde el terreno de cerca aún no había llegado (flotaba sobre nada): ahora solo va donde ya está el terreno, y se rehace cada 3 s mientras falte. El dosel lejano ya no se adelanta en la hondura (asomaba por delante de las lomas).",
+   "Para las pruebas, ?salida=x,z sale en un sitio concreto (p. ej. el de en línea). Prueba nueva en «Horizonte de los perfiles altos»: sin terreno de cerca debajo, sin dosel (rota a propósito, falla).",
+   "Sin comprobar: las tiras del cielo no las he podido sacar igual que en tu captura (no sé el sitio); lo que salía en las capturas de aquí (lomas oscuras sobre nada) ya no sale. La costa aún tiene escalones de 100 m (la rejilla del horizonte).",
+   "Batería entera en la nube: 33 grupos bien y 2 sin resultado (estilo e inglés, el aviso de GitHub), repetidos: bien. Tras unir main (fuera el arcón infinito, que toca main.js), otra vez entera: 35 grupos bien. Lógica del horizonte 31/31 (rota a propósito, falla)."
+  ],
+  "pruebas": "Batería entera en la nube: 33 grupos bien y 2 sin resultado (estilo e inglés, el aviso de GitHub), repetidos: bien. Tras unir main (fuera el arcón infinito, que toca main.js), otra vez entera: 35 grupos bien. Lógica del horizonte 31/31 (rota a propósito, falla).",
+  "capturas": "capturas/demo-v113",
+  "estado": "ok",
+  "noticia": false
  }
 ]

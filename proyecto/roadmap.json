@@ -1482,9 +1482,9 @@
     },
     {
      "nombre": "El horizonte sin cortes ni tierra bajo el agua (valravnx, 5 nov: «parecen bajo el agua en algunos puntos… como clipeados a más altura o menos, como si tuviera cortes»)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T16:43:36+01:00",
-     "rama": "trabajo/20261105-1645-cortes"
+     "fin": "2026-11-05T19:34:48+01:00"
     },
     {
      "nombre": "El linde del bosque de lejos sin paredes (valravnx, 5 nov: «el fix de árboles de lejos que hiciste se corta de manera así ahora»): donde acaba el bosque, el dosel de lejos baja suave hasta el suelo y pasa a su color, en vez de caer en una pared de dientes de sierra",
@@ -2854,6 +2854,14 @@
      "archivo": "jugar/demo/v112.html",
      "capturas": "capturas/demo-v112",
      "notas": "Traer jugadores como admin: en la lista del panel, junto a «Ir», «Traer» pone a ese jugador a tu lado (lo pide el servidor, solo con la cuenta de admin, y queda apuntado); a él le sale el aviso «El admin te ha llevado junto a él»."
+    },
+    {
+     "v": "v113",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v113.html",
+     "capturas": "capturas/demo-v113",
+     "notas": "El horizonte sin cortes: a su altura (sin escalón donde acaba el terreno de cerca ni tierra baja bajo el mar) y sin tiras de bosque flotando donde aún no ha llegado el terreno.",
+     "noticia": false
     }
    ]
   },
