@@ -1,0 +1,46 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 3239 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2512 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2081 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2572 KB
+
+== Construir demo única
+      2423 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3551 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2479 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2076 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2568 KB
+dist/kinhold_trozos.html 2085 KB
+hilo de los trozos 20 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: posprocesado y perfiles gráficos
+  OK   móvil: «Medir» mide los seis perfiles y elige uno — {'movil-1': 1.8, 'movil-2': 3.9, 'movil-3': 5.9, 'pc-1': 4.4, 'pc-2': 13.6, 'pc-3': 21.1} → movil-3
+  OK   móvil: sin errores de página
+
+TODO CORRECTO · capturas en D:/KinholdGrafica/runner/_work/_temp/kinhold_capturas/posprocesado
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 47 s
+en el PC de valravnx, con su tarjeta: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002504) Direct3D11 vs_5_0 ps_5_0, D3D11)
