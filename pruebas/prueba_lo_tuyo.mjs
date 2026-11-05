@@ -9,6 +9,7 @@
 import { Mundo, ponerZonas } from '../src/logica/construccion.js';
 import { RegistroAcciones, ejecutar, reproducir, acabarObra } from '../src/logica/acciones.js';
 import { MundoEnLinea } from '../src/logica/en_linea.js';
+import { Inventarios } from '../src/logica/inventario.js';
 import { WebSocket } from 'ws';
 import { mkdtempSync, rmSync } from 'fs';
 import { join } from 'path';
@@ -97,6 +98,7 @@ console.log('En línea: la copia del navegador lo rechaza sin mandarlo');
   const enviados = [];
   const red = new MundoEnLinea((msg) => enviados.push(msg));
   red.recibir({ tipo: 'bienvenida', autor: B, obras: m.exportar() });
+  red.invs = new Inventarios();   // lo que lleva (desmontar devuelve a lo que llevas: hace falta saberlo)
   const u = red.accion({ tipo: 'usar', construccion: c.id, clave: kPuerta });
   const d = red.accion({ tipo: 'desmontar', construccion: c.id, clave: kCim });
   comprobar('Bruno, en línea: ni abre ni desmonta lo de Ana', !u.ok && !d.ok && u.motivo === AJENO && d.motivo === AJENO);
@@ -122,7 +124,7 @@ console.log('El servidor de verdad: un navegador tramposo lo manda igual');
     ws.on('error', fallo);
   });
   const dir = mkdtempSync(join(tmpdir(), 'kinhold-lotuyo-'));
-  const s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl') });
+  const s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl') });
   try {
     const puerto = await s.listo;
     const Ana = await cliente(puerto), Bruno = await cliente(puerto);

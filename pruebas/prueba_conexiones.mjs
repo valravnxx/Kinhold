@@ -65,7 +65,7 @@ function cliente(puerto, { ficha = null, sinPong = false } = {}) {
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-conexiones-'));
 const archivo = join(dir, 'mundo.jsonl');
 const avisos = [];
-const servir = () => crearServidor({ puerto: 0, archivo, latido: 200, gracia: 3000, registrar: t => avisos.push(t) });
+const servir = () => crearServidor({ arconPruebas: true, puerto: 0, archivo, latido: 200, gracia: 3000, registrar: t => avisos.push(t) });
 try {
   // ---------------- Límites (lógica pura, con reloj de mentira) ----------------
   console.log('Limitador');

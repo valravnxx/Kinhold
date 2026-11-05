@@ -643,16 +643,26 @@ export class Mundo {
     return { ok: true, caen };
   }
 
-  desmontar(c, key, autor) {
+  // devolverEn (opcional): a dónde va lo que devuelve, en vez del montón común (acciones.js: a lo que lleva el autor,
+  // desde que no hay arcón en el juego de verdad). Recibe { material: n } y dice { ok } o { ok: false, motivo }: si no
+  // puede, no se desmonta nada.
+  desmontar(c, key, autor, devolverEn = null) {
     const pre = this.previsualizarDesmontaje(c, key, autor);
     if (!pre.ok) return pre;
     const p = c.piezas.get(key);
-    c.piezas.delete(key);
-    for (const k2 of pre.caen) c.piezas.delete(k2);
     // una obra a medias devuelve entero lo que se le había llevado (aún no se había gastado en nada)
     const obra = p.obra && { ...p.obra.entregado };
     if (p.obra && p.obra.subida) obra[p.obra.subida.material] = (obra[p.obra.subida.material] || 0) + 1; // la que iba subiendo
-    const devuelto = p.obra ? this.devolver(obra, 1) : this.devolver(PIEZAS[p.tipo].coste, RECUPERACION);
+    const coste = p.obra ? obra : PIEZAS[p.tipo].coste, fraccion = p.obra ? 1 : RECUPERACION;
+    let devuelto;
+    if (devolverEn) {
+      devuelto = {};
+      for (const [m, n] of Object.entries(coste)) { const r = Math.floor(n * fraccion); if (r > 0) devuelto[m] = r; }
+      const r = devolverEn(devuelto);
+      if (!r.ok) return r;
+    } else devuelto = this.devolver(coste, fraccion);
+    c.piezas.delete(key);
+    for (const k2 of pre.caen) c.piezas.delete(k2);
     if (c.piezas.size === 0) this.construcciones = this.construcciones.filter(x => x !== c);
     return { ok: true, caen: pre.caen, devuelto };
   }

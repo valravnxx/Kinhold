@@ -46,7 +46,8 @@
 //   el mundo (mojón, arcón), a todos. «antes»: el contador de ids, el arcón y el mojón justo antes de hacerla.
 //   'tala' y 'recoleccion' llevan solo lo de su trozo y solo a quien lo tiene; 'suelo', lo de los trozos de cada uno.
 //   El navegador junta lo que le llega de lo talado y lo recogido con lo que ya tenía. 'coger' y 'soltar' son el arcón de
-//   pruebas (arconPruebas, sí por ahora). Se guarda entero en objetos.json junto al mundo, y cada acción (bien o mal)
+//   pruebas (arconPruebas: solo en las pruebas automáticas; el servidor de verdad no lo tiene, valravnx 1 nov: «fuera el arcón
+//   infinito»; la bienvenida dice { arcon: true | false }). Se guarda entero en objetos.json junto al mundo, y cada acción (bien o mal)
 //   en objetos.jsonl.
 //   Las obras cobran de ahí (src/logica/acciones.js): entregar, subir y el arcón de materiales (sacar_arcon y dejar_arcon,
 //   solo con arconPruebas) se ejecutan con los inventarios del servidor; la entrada que se guarda y se reparte va ya
@@ -117,6 +118,7 @@ import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { VistaTrozos, trozoDe, LADO_RED, RADIO_RED } from '../src/logica/trozos_red.js';
 import { sitioAccion, sitioColocada, comunDe, obrasEnTrozos } from '../src/logica/obras_red.js';
 import { ponerZonas } from '../src/logica/construccion.js';
+import { dejarSobra } from '../src/logica/suelo.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -135,7 +137,7 @@ export function leerArchivo(archivo) {
 }
 
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
-  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
+  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true } = {}) {
   archivo = resolve(archivo);
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
@@ -365,7 +367,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, obras: obrasEnTrozos(mundo, suyos), n: registro.total, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
       aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true),
       inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now(), suyos), tala: objetos.talaVisible(suyos), recoleccion: objetos.recoleccionVisible(suyos),
-      trozos: { lado: LADO_RED, radio: RADIO_RED }, posicion: posiciones.get(autor) || null, cuenta: usuarioDe(autor), admin: esAdmin(autor), correo: estadoCorreo(autor) });
+      trozos: { lado: LADO_RED, radio: RADIO_RED }, posicion: posiciones.get(autor) || null, cuenta: usuarioDe(autor), admin: esAdmin(autor), correo: estadoCorreo(autor), arcon: !!arconPruebas });
 
     ws.on('message', (datos, binario) => {
       if (conexionDe.get(autor) !== ws) return;   // sustituida por otra: ya no cuenta
@@ -475,14 +477,14 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
               appendFileSync(archivoCuentas, JSON.stringify(c.linea) + '\n');
               registrar(`correo cambiado de «${usuario}»`);
               if (c.antes) avisarCorreo(c.antes, usuario, 'aviso_correo', idioma, r.correo);
-              return responder({ ok: true, cambiado: true, admin: esAdmin(autor), correo: estadoCorreo(autor) });
+              return responder({ ok: true, cambiado: true, admin: esAdmin(autor), correo: estadoCorreo(autor), arcon: !!arconPruebas });
             }
             const c = r.ok ? cuentas.confirmarCorreo(autor, r.correo, Date.now()) : r;
             seguridad({ que: 'verificar', ok: c.ok, usuario, autor, origen, ...(c.ok ? {} : { motivo: c.motivo }) });
             if (!c.ok) return responder({ ok: false, motivo: c.motivo });
             appendFileSync(archivoCuentas, JSON.stringify(c.linea) + '\n');
             registrar(`correo confirmado de «${usuario}»`);
-            return responder({ ok: true, admin: esAdmin(autor), correo: estadoCorreo(autor) });
+            return responder({ ok: true, admin: esAdmin(autor), correo: estadoCorreo(autor), arcon: !!arconPruebas });
           }
           if (que === 'correo') {
             const m = cuentas.motivoCorreoDe(autor, typeof msg.correo === 'string' ? msg.correo : null);
@@ -670,9 +672,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
       // el autor lo pone el servidor; el que traiga el cliente se pisa
       const accion = { ...msg.accion, autor };
-      // las obras cobran de lo que llevas (los inventarios del servidor); el arcón de materiales, solo si hay arcón de pruebas
+      // las obras cobran de lo que llevas (los inventarios del servidor); el arcón de materiales y rellenarlo, solo si hay arcón de pruebas
       const usaInventario = USAN_INVENTARIO.has(accion.tipo);
-      const sinArcon = !arconPruebas && (accion.tipo === 'sacar_arcon' || accion.tipo === 'dejar_arcon');
+      const sinArcon = !arconPruebas && (accion.tipo === 'sacar_arcon' || accion.tipo === 'dejar_arcon' || accion.tipo === 'rellenar');
       // con el terreno, las obras se miran contra él (la planta baja, solo si empieza una construcción nueva)
       const nueva = accion.tipo !== 'colocar' || !Number.isFinite(accion.x) || !Number.isFinite(accion.z) || !mundo.construccionCercana(accion.x, accion.z);
       const contraTerreno = terreno && nueva ? terreno.obra(accion, mundo.marcasNivelado()) : null;
@@ -685,6 +687,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       const entrada = registro.entradas[registro.entradas.length - 1];
       registro.entradas.length = 0;   // lo guardado va al archivo; en memoria basta con el mundo
       appendFileSync(archivo, JSON.stringify(entrada) + '\n');
+      // lo desmontado que no le cabe cae al suelo a sus pies, donde el servidor lo tiene (sin arcón, valravnx 1 nov)
+      const pos = presencia.ultimo.get(autor);
+      if (r.ok && r.sobra && pos && dejarSobra(objetos.suelo, r.sobra, pos.x, pos.z, Date.now(), autor, !!mundo.tierraDe(pos.x, pos.z))) repartirSuelo(Date.now());
       if (usaInventario && r.ok) guardarObjetos();
       enviar(ws, { tipo: 'resultado', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? {} : { motivo: r.motivo }) });
       // lo que llevas tal como queda (también si sale mal: el navegador lo había adelantado)
@@ -733,6 +738,9 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   // KINHOLD_PRUEBAS_MOVIMIENTO=libre: sin el límite de velocidad, solo para la prueba del panel del admin (su jugador
   // simulado aparece de golpe a 1,7 km de la salida). Nunca en el servidor de verdad: también lo dice al arrancar.
   const movimientoLibre = process.env.KINHOLD_PRUEBAS_MOVIMIENTO === 'libre';
-  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre });
-  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms · correo: ${s.cartero.conClave ? 'Resend' : 'sin clave de Resend, los códigos van al registro'}${altasLibres ? ' · AVISO: altas sin límite (KINHOLD_PRUEBAS_ALTAS=libres), solo para pruebas' : ''}${movimientoLibre ? ' · AVISO: sin límite de velocidad (KINHOLD_PRUEBAS_MOVIMIENTO=libre), solo para pruebas' : ''}`));
+  // KINHOLD_PRUEBAS_ARCON=si: con el arcón de materiales infinito, solo para las pruebas de navegador que lo usan.
+  // Nunca en el servidor de verdad (valravnx, 1 nov: «fuera el arcón infinito»): también lo dice al arrancar.
+  const arconPruebas = process.env.KINHOLD_PRUEBAS_ARCON === 'si';
+  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre, arconPruebas });
+  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms · correo: ${s.cartero.conClave ? 'Resend' : 'sin clave de Resend, los códigos van al registro'}${altasLibres ? ' · AVISO: altas sin límite (KINHOLD_PRUEBAS_ALTAS=libres), solo para pruebas' : ''}${movimientoLibre ? ' · AVISO: sin límite de velocidad (KINHOLD_PRUEBAS_MOVIMIENTO=libre), solo para pruebas' : ''}${arconPruebas ? ' · AVISO: con el arcón infinito (KINHOLD_PRUEBAS_ARCON=si), solo para pruebas' : ''}`));
 }

@@ -46,7 +46,7 @@ const NOMBRE_TAM = { P: 'pequeño', M: 'mediano', G: 'grande', E: 'enorme' };
 // hay en el arcón de materiales; sin ellos (en línea, hasta que el servidor lleve los inventarios), los materiales de
 // obra se cogen del arcón como los demás recursos.
 // alSuelo(tipo) (opcional): lo enorme del arcón (la rastra) no cabe en el inventario: va al suelo, delante de ti.
-export function montarPanelInventario({ panel, boton, inventario, accion, alCambiar = () => {}, retrato = null, accionArcon = null, materialesArcon = null, alSuelo = null }) {
+export function montarPanelInventario({ panel, boton, inventario, accion, alCambiar = () => {}, retrato = null, accionArcon = null, materialesArcon = null, alSuelo = null, hayArcon = () => true }) {
   let sel = null;          // { de: 'arcon', tipo } o { de: 'inv', ruta }
   let vista = null;        // ruta del contenedor cuyos huecos se ven
   let aviso = { txt: '', error: false };
@@ -204,7 +204,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     const aSuelo = sel.de === 'arcon' && d.tam === 'E' && !d.recurso && !!alSuelo;
     caja.innerHTML = `<p><b>${nombreDe(c)}</b> · ${tr(NOMBRE_TAM[d.tam])}${d.huecos ? ' · ' + tr('{n} huecos', { n: d.huecos.length }) : ''}</p>
       <p class="inv-nota">${tr(aSuelo ? 'Es enorme: no se lleva encima. Déjalo en el suelo y arrástralo.' : sel.de === 'arcon' && !ponible && !alHombro ? 'Cógelo con las manos o toca un hueco donde guardarlo.' : 'Ahora toca dónde lo quieres.')}</p>
-      <div class="inv-botones">${aSuelo ? `<button class="inv-alsuelo">${tr('Dejarlo en el suelo')}</button>` : ''}${ponible ? `<button class="inv-ponerse">${tr('Ponérselo')}</button>` : ''}${alHombro && sel.de === 'arcon' ? `<button class="inv-ponerse">${tr('Al hombro')}</button>` : ''}${manos ? `<button class="inv-manos">${tr('Cogerlo con las manos')}</button>` : ''}${sel.de === 'inv' ? `<button class="inv-devolver">${tr('Al arcón')}</button>` : ''}<button class="inv-dejar">${tr('Cancelar')}</button></div>`;
+      <div class="inv-botones">${aSuelo ? `<button class="inv-alsuelo">${tr('Dejarlo en el suelo')}</button>` : ''}${ponible ? `<button class="inv-ponerse">${tr('Ponérselo')}</button>` : ''}${alHombro && sel.de === 'arcon' ? `<button class="inv-ponerse">${tr('Al hombro')}</button>` : ''}${manos ? `<button class="inv-manos">${tr('Cogerlo con las manos')}</button>` : ''}${sel.de === 'inv' && hayArcon() ? `<button class="inv-devolver">${tr('Al arcón')}</button>` : ''}<button class="inv-dejar">${tr('Cancelar')}</button></div>`;
   }
 
   function pintarCarga() {
@@ -222,6 +222,9 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
       `<button class="inv-objeto${sel && sel.de === 'arcon' && sel.tipo === k ? ' sel' : ''}" data-tipo="${k}" data-arcon="${m}" draggable="true" title="${tr(NOMBRE_TAM[CATALOGO[k].tam])}">${nombre(k)} <b>${hay[m] || 0}</b></button>`).join('')}</div></div>`;
   }
   function pintarArcon() {
+    // sin arcón (el juego de verdad, valravnx 1 nov), no se ve: lo que llevas se coge del mundo
+    q('.inv-arcon').hidden = !hayArcon();
+    if (!hayArcon()) return;
     pintarMateriales();
     if (q('.inv-grupos').childElementCount) {
       for (const b of panel.querySelectorAll('.inv-objeto')) b.classList.toggle('sel', !!sel && sel.de === 'arcon' && sel.tipo === b.dataset.tipo && String(sel.muestra ?? '') === (b.dataset.muestra ?? ''));
@@ -245,7 +248,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   // ---- eventos: clic, arrastrar y soltar ----
   panel.addEventListener('click', (e) => {
     const t = e.target.closest('button');
-    if (!t) { if (e.target.closest('.inv-arcon') && sel && sel.de === 'inv') { alArcon(); pintar(); } return; }
+    if (!t) { if (hayArcon() && e.target.closest('.inv-arcon') && sel && sel.de === 'inv') { alArcon(); pintar(); } return; }
     if (t.classList.contains('inv-cerrar')) { cerrar(); return; }
     if (t.dataset.ruta) { tocar(t.dataset.ruta); return; }
     if (t.dataset.vista !== undefined) { vista = t.dataset.vista; pintar(); return; }
