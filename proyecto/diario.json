@@ -4395,5 +4395,22 @@
   "capturas": "capturas/demo-v109",
   "estado": "ok",
   "noticia": false
+ },
+ {
+  "inicio": "2026-11-05T13:13:17+01:00",
+  "fin": "2026-11-05T16:38:00+01:00",
+  "titulo": "Explorar libre como admin: el mapa del continente (chat con valravnx)",
+  "hito": "admin",
+  "hecho": [
+   "El mapa del panel del admin es el del continente entero, Kinland, con el nombre de sus cinco regiones; se abre centrado en ti a la escala de la isla y, alejándolo, se ve todo. El de los demás jugadores sigue siendo el de Whitholm.",
+   "Se pinta como el de la isla, con menos detalle por km (3,5 px por km frente a 14): medido en Node, 1,4 s el continente y 1,7 s la isla. Se hace la primera vez que se abre el panel.",
+   "Un clic en el mapa lleva a cualquier sitio del continente; allí se carga el terreno (el gestor de trozos ya no se limita a la isla para la cuenta de admin, y el mar de lejos se alarga a todo el continente) y se puede andar.",
+   "El servidor solo acepta fuera de la isla a la cuenta de admin: su estado, el «ir» del panel y su posición guardada; a las demás, como antes, solo en Whitholm.",
+   "Pruebas: la del admin en el servidor (48 comprobaciones; rota para que no deje al admin fuera de la isla, falla) y la del panel en el navegador (al Eikwold, a 108 km de la isla: terreno cargado, andar y el servidor te tiene allí; rota para que el navegador no suelte al admin, falla).",
+   "Fuera de la isla aún no hay nada del juego (ni tierras, ni recogida, ni zonas): solo el terreno, los ríos y la vegetación. Para que el servidor de prueba lo acepte hay que actualizarlo (actualizar.sh)."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main (zonas del rey y el bosque de lejos): 35 grupos correctos, sin las de en línea. En una ronda anterior «lo que llevas se ve puesto» volvió a fallar por milímetros (mide el radio del tronco en 10 u 11 cm según la vez) y pasó al repetirla sin cambios: no es de este cambio. Capturas del panel (el continente y fuera de la isla) miradas en PC y móvil.",
+  "capturas": "capturas/demo-v110",
+  "estado": "ok"
  }
 ]

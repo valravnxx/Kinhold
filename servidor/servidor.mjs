@@ -240,7 +240,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   // con los que están conectados; se manda en la bienvenida para que el cliente ponga ahí a su jugador.
   const posiciones = new Map();
   if (existsSync(archivoPosiciones)) {
-    try { for (const [a, p] of Object.entries(JSON.parse(readFileSync(archivoPosiciones, 'utf8')))) { const e = validarEstado({ ...p, anim: 'quieto' }); if (e) posiciones.set(a, { x: e.x, y: e.y, z: e.z, giro: e.giro }); } }
+    // (con admin: la de la cuenta de admin puede estar fuera de la isla; la de los demás se comprobó al llegar)
+    try { for (const [a, p] of Object.entries(JSON.parse(readFileSync(archivoPosiciones, 'utf8')))) { const e = validarEstado({ ...p, anim: 'quieto' }, { admin: true }); if (e) posiciones.set(a, { x: e.x, y: e.y, z: e.z, giro: e.giro }); } }
     catch (e) { registrar(`posiciones.json no válido, se empieza de cero: ${e && e.message}`); }
   }
   let posicionesCambiadas = false;
@@ -400,14 +401,14 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         return;
       }
       if (msg && msg.tipo === 'estado') {
-        // con el terreno, dentro de la isla y cerca del suelo (en la liza del «Duelo» no: es una escena aparte)
+        // con el terreno, dentro de la isla (la cuenta de admin, en todo el continente) y cerca del suelo (en la liza del «Duelo» no: es una escena aparte)
         if (terreno && !(combate.luchadores[autor] && combate.luchadores[autor].liza)) {
-          const e = validarEstado(msg), mal = e ? terreno.posicion(e) : null;
+          const ad = esAdmin(autor), e = validarEstado(msg, { admin: ad }), mal = e ? terreno.posicion(e, { admin: ad }) : null;
           if (mal) return enviar(ws, { tipo: 'error', motivo: mal });
         }
         // movimiento sin trampas: lo que llega más lejos de lo que se puede andar se recorta (src/logica/presencia.js)
         const enLiza = !!(combate.luchadores[autor] && combate.luchadores[autor].liza);
-        const rec = presencia.recibir(autor, msg, reloj(), { aparte: enLiza });
+        const rec = presencia.recibir(autor, msg, reloj(), { aparte: enLiza, admin: esAdmin(autor) });
         if (!rec) return enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
         if (rec.recortado) anotarRecorte(autor, rec.recortado);
         ponerAlDia();
@@ -477,14 +478,14 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
               appendFileSync(archivoCuentas, JSON.stringify(c.linea) + '\n');
               registrar(`correo cambiado de «${usuario}»`);
               if (c.antes) avisarCorreo(c.antes, usuario, 'aviso_correo', idioma, r.correo);
-              return responder({ ok: true, cambiado: true, admin: esAdmin(autor), correo: estadoCorreo(autor), arcon: !!arconPruebas });
+              return responder({ ok: true, cambiado: true, admin: esAdmin(autor), correo: estadoCorreo(autor) });
             }
             const c = r.ok ? cuentas.confirmarCorreo(autor, r.correo, Date.now()) : r;
             seguridad({ que: 'verificar', ok: c.ok, usuario, autor, origen, ...(c.ok ? {} : { motivo: c.motivo }) });
             if (!c.ok) return responder({ ok: false, motivo: c.motivo });
             appendFileSync(archivoCuentas, JSON.stringify(c.linea) + '\n');
             registrar(`correo confirmado de «${usuario}»`);
-            return responder({ ok: true, admin: esAdmin(autor), correo: estadoCorreo(autor), arcon: !!arconPruebas });
+            return responder({ ok: true, admin: esAdmin(autor), correo: estadoCorreo(autor) });
           }
           if (que === 'correo') {
             const m = cuentas.motivoCorreoDe(autor, typeof msg.correo === 'string' ? msg.correo : null);

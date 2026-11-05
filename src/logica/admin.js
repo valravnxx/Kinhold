@@ -21,7 +21,7 @@
 //                        { tipo: 'admin', id, que, ok: false, motivo }
 // Moverse no cambia el mundo: el navegador pone ahí a su jugador y sigue mandando su estado como siempre.
 
-import { SALIDA, dentroDeIsla } from './whitholm.js';
+import { SALIDA, dentroDePermitido } from './whitholm.js';
 import { motivoCorreo, claveDeCorreo } from './correo.js';
 
 export const JUNTO = 1.6;            // m al lado del otro jugador (a su lado, para no caerle encima)
@@ -47,16 +47,17 @@ export function validarPeticionAdmin(m) {
   if (m.que !== 'ir') return null;
   if (m.junto !== undefined) return typeof m.junto === 'string' && /^[a-z]{1,12}:[0-9a-z_-]{1,40}$/.test(m.junto) ? { que: 'ir', junto: m.junto } : null;
   if (![m.x, m.z].every(numero)) return null;
-  if (!dentroDeIsla(SALIDA.x + m.x, SALIDA.z + m.z)) return null;
+  // a cualquier sitio del continente (valravnx, 5 nov: «quiero poder explorar libre»): el panel solo es de admin
+  if (!dentroDePermitido(SALIDA.x + m.x, SALIDA.z + m.z, true)) return null;
   return { que: 'ir', x: m.x, z: m.z };
 }
 
 // Dónde se pone uno al ir junto a otro: a JUNTO m a un lado, a su altura y mirándole.
-// Si ese sitio se sale de la isla, en el mismo sitio que él.
+// Si ese sitio se sale de lo que se puede pisar, en el mismo sitio que él.
 export function sitioJunto(otro) {
   const dx = Math.cos(otro.giro) * JUNTO, dz = -Math.sin(otro.giro) * JUNTO;
   const x = otro.x + dx, z = otro.z + dz;
-  if (!dentroDeIsla(SALIDA.x + x, SALIDA.z + z)) return { x: otro.x, y: otro.y, z: otro.z, giro: otro.giro };
+  if (!dentroDePermitido(SALIDA.x + x, SALIDA.z + z, true)) return { x: otro.x, y: otro.y, z: otro.z, giro: otro.giro };
   return { x, y: otro.y, z, giro: Math.atan2(-dx, -dz) };
 }
 

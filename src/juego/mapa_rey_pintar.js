@@ -17,7 +17,7 @@
 // Cuesta alrededor de un segundo en el PC (medido el 31 oct en node); por eso pintarMapaRey es un generador que hace
 // unas pocas filas en cada paso y deja seguir al juego entre medias.
 import { fbm, hash2 } from '../logica/azar.js';
-import { BIOMAS, anchoCauce } from '../logica/mapa.js';
+import { BIOMAS, anchoCauce, LADO_MUNDO } from '../logica/mapa.js';
 import { ISLA, CIUDAD_REY } from '../logica/whitholm.js';
 
 export const PX_KM = 14;          // resolución de la imagen de fondo (px por km)
@@ -90,6 +90,11 @@ export function chaikin(l) {
   return r;
 }
 
+// el continente entero, en km del mundo (el panel del admin, valravnx, 5 nov: «quiero poder explorar libre»), con
+// menos detalle por km: así cuesta lo mismo que la isla
+export const PX_KM_CONTINENTE = 3.5;
+export const cuadroContinente = () => ({ x0: 0, y0: 0, x1: LADO_MUNDO, y1: LADO_MUNDO });
+
 // el cuadro del mapa en km del mundo
 export function cuadroMapa() {
   return { x0: ISLA.x0 / 1000 - MARGEN_KM, y0: ISLA.z0 / 1000 - MARGEN_KM, x1: ISLA.x1 / 1000 + MARGEN_KM, y1: ISLA.z1 / 1000 + MARGEN_KM };
@@ -98,8 +103,8 @@ export function cuadroMapa() {
 // Lo pinta a pasos. `filas`: cuántas filas por paso. Al terminar devuelve
 // { ancho, alto, pxKm, cuadro, rgba, comarca (Int8Array por píxel), tierra (Uint8Array), rios: [[[xkm, ykm, anchoM], …], …],
 //   montes: [[xkm, ykm, alto (0–1)], …], arboles: [[xkm, ykm, tipo], …], etiquetas: [{ k, x, y }] }
-export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16 } = {}) {
-  const cuadro = cuadroMapa();
+// cuadro: otro recuadro (en km) en vez del de la isla (el panel del admin pinta el continente entero: cuadroContinente)
+export function* pintarMapaRey(paisaje, comarcas, { pxKm = PX_KM, filas = 16, cuadro = cuadroMapa() } = {}) {
   const W = Math.ceil((cuadro.x1 - cuadro.x0) * pxKm), H = Math.ceil((cuadro.y1 - cuadro.y0) * pxKm), NP = W * H;
   const kmX = (px) => cuadro.x0 + (px + 0.5) / pxKm, kmY = (py) => cuadro.y0 + (py + 0.5) / pxKm;
   const cajas = [];   // el recuadro de cada comarca en px (para no recorrer la imagen entera al sacar sus fronteras)

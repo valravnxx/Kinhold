@@ -195,7 +195,7 @@ export function crearComarcas(m) {
   const comarcaEn = (x, z) => { const zz = zonaEn(x, z); return zz.comarca >= 0 ? letras[zz.comarca] : null; };
   const nombres = letras.map(l => (aprobado && NOMBRES_COMARCAS[l]) || l);
   const nombreEn = (x, z) => { const zz = zonaEn(x, z); return zz.comarca >= 0 ? nombres[zz.comarca] : null; };
-  return { letras, nombres, comarcaDeCelda: lab, zonaEn, comarcaEn, nombreEn };
+  return { letras, nombres, comarcaDeCelda: lab, zonaEn, comarcaEn, nombreEn, mapa: m };   // (mapa: el del mundo, para el mapa del continente)
 }
 
 // Tu tierra es la zona entera de tu mojón (valravnx, 4 nov; src/logica/construccion.js, ponerZonas): de qué zona es

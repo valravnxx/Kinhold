@@ -16,12 +16,12 @@
 import { normalizarAspecto } from './aspecto.js';
 import { normalizarTintes } from './tintes.js';
 import { normalizarHechuras } from './hechura.js';
-import { SALIDA, dentroDeIsla } from './whitholm.js';
+import { SALIDA, dentroDePermitido } from './whitholm.js';
 
 export const CADA = 100;        // ms entre estados que manda cada cliente (10 por segundo)
 export const RETRASO = 200;     // ms en el pasado a los que se dibuja a los demás: un tic del servidor y el vaivén de la red
 export const PREDICCION = 250;  // ms que se sigue la última dirección si no llega nada; luego se queda quieto
-const LIMITE = 100000;          // m: nadie está más lejos que esto del origen (dato roto si lo está)
+const LIMITE = 300000;          // m: nadie está más lejos que esto del origen (dato roto si lo está; el continente mide 256 km)
 
 // Movimiento sin trampas (auditoría del 4 nov): el servidor no se cree un estado que esté más lejos del anterior de lo
 // que se puede andar en ese tiempo. Lo más deprisa que va un jugador es corriendo, 6 m/s (src/juego/main.js); nadando con
@@ -37,13 +37,14 @@ export const RADIO_SALIDA = 12;  // m: volver al sitio de salida (al ahogarse) e
 const numero = (v) => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) <= LIMITE;
 
 // Comprueba un estado que manda un cliente. Devuelve el estado limpio (solo lo que se reparte) o null.
-export function validarEstado(m) {
+// admin: la cuenta de admin puede estar en todo el continente (valravnx, 5 nov: «quiero poder explorar libre»)
+export function validarEstado(m, { admin = false } = {}) {
   if (!m || typeof m !== 'object') return null;
   const { x, y, z, giro, anim } = m;
   if (![x, y, z, giro].every(numero)) return null;
   // el mundo, de momento, es solo Whitholm (valravnx, 29 oct): las posiciones van relativas al sitio de salida y nadie
-  // puede estar fuera del cuadro de la isla (src/logica/whitholm.js)
-  if (!dentroDeIsla(SALIDA.x + x, SALIDA.z + z)) return null;
+  // puede estar fuera del cuadro de la isla (src/logica/whitholm.js), salvo la cuenta de admin
+  if (!dentroDePermitido(SALIDA.x + x, SALIDA.z + z, admin)) return null;
   if (typeof anim !== 'string' || !/^[a-z_]{1,24}$/.test(anim)) return null;
   const e = { x, y, z, giro: normalizarAngulo(giro), anim };
   if (m.tc !== undefined) { if (!(typeof m.tc === 'number' && Number.isFinite(m.tc))) return null; e.tc = m.tc; }
@@ -94,10 +95,11 @@ export class PresenciaServidor {
   // La hora: con la del reloj del cliente (tc) pasada al del servidor, se quita el vaivén de la subida
   // (si no, los estados llegan a trompicones y la velocidad que se ve cambia). El desfase entre los dos
   // relojes es el del mensaje que llegó más deprisa. Nunca puede ser una hora futura ni de hace más de 1 s.
-  // `aparte`: está en otra escena (la liza del «Duelo»): no cuenta para el mundo ni toca su ancla.
+  // `aparte`: está en otra escena (la liza del «Duelo»): no cuenta para el mundo ni toca su ancla. `admin`: puede estar
+  // fuera de la isla (validarEstado).
   // Devuelve null si no vale; si vale, { estado, recortado } (recortado: los metros que se ha querido saltar de más).
-  recibir(autor, m, ahora, { aparte = false } = {}) {
-    const e = validarEstado(m);
+  recibir(autor, m, ahora, { aparte = false, admin = false } = {}) {
+    const e = validarEstado(m, { admin });
     if (!e) return null;
     let t = ahora;
     if (e.tc !== undefined) {

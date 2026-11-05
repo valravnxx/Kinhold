@@ -9,7 +9,11 @@
 #     abierto, el otro jugador en la lista y pintado en el mapa donde está;
 #   - «Ir» te pone junto a él (a menos de 2 m) y cierra el panel; un clic en el mapa te lleva a ese punto, en el suelo;
 #   - M, Esc y «Cerrar» lo cierran.
+#   - explorar libre (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente… que quiero poder
+#     explorar libre»): el mapa del panel es el del continente entero; un clic en otra región te lleva allí, en el suelo,
+#     con el terreno cargado; andas, y el servidor te tiene allí. A una cuenta que no es de admin no le pasa (sigue en la isla).
 # MUTAR=1: un servidor que dice a todos que son admin: tiene que fallar (a la cuenta que no lo es le saldría el botón).
+# MUTAR=2: el navegador no suelta a la cuenta de admin fuera de la isla: tiene que fallar (no puede andar allí).
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket
 from playwright.sync_api import sync_playwright
 from correo_prueba import Codigos, crear_y_confirmar
@@ -18,7 +22,8 @@ RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_admin'
 os.makedirs(SALIDA, exist_ok=True)
-MUTAR = os.environ.get('MUTAR', '') == '1'
+MUTAR_TODO = os.environ.get('MUTAR', '')
+MUTAR = MUTAR_TODO == '1'
 ADMINS = ['valravnx', 'admmovil', 'admen']   # la cuenta de admin de cada vista (la máquina dice sus correos: usuario@ejemplo.com, como los pone correo_prueba.py)
 OTRO = (1500.0, 900.0)   # dónde está el jugador simulado (m, relativos a la salida; lejos, para que tu marca no lo tape)
 
@@ -98,12 +103,15 @@ try:
             if not movil:
                 pg.keyboard.press('F9'); pg.wait_for_timeout(400)
                 comprobar(f'{nombre}: y F9 no abre nada', not pg.evaluate(f"{PANEL}.abierto || {K}.mapaRey.abierto"))
+            fuera = pg.evaluate(f"({{ libre: {K}.mundoJ.esLibre, dentro: {K}.mundoJ.dentro(-150000, 150000) }})")
+            comprobar(f'{nombre}: sin la cuenta de admin no se puede ir fuera de la isla', fuera['libre'] is False and fuera['dentro'] is False, str(fuera))
             comprobar(f'{nombre}: la clave que guardaba el navegador antes se borra', pg.evaluate("localStorage.getItem('kinhold_admin_clave')") is None)
             comprobar(f'{nombre}: sin errores en la página (sin admin)', not err, '; '.join(err)[:300])
             ctx.close()
 
             # la cuenta de admin
             ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
+            if MUTAR_TODO == '2': ctx.add_init_script('window.__mutarAdminLibre = true')
             pg = ctx.new_page()
             err = []
             pg.on('pageerror', lambda e, err=err: err.append(str(e)))
@@ -147,6 +155,40 @@ try:
             comprobar(f'{nombre}: y en el suelo', abs(pj['y'] - pj['suelo']) < 0.5, str(pj))
             pg.wait_for_timeout(2500)
             captura(pg, f'{SALIDA}/{nombre}_clic.png')
+            # explorar libre: el mapa del continente entero y un clic en otra región
+            abrir(); pg.wait_for_timeout(500)
+            esperar(pg, f"{K}.mapaRey.continente", 120000)
+            mapa = pg.evaluate(f"(() => {{ const m = {K}.mapaRey, d = m.datos; return {{ continente: m.continente, cuadro: d.cuadro, regiones: (d.regiones || []).map(r => [r.nombre, r.isla, r.x, r.y]) }}; }})()")
+            comprobar(f'{nombre}: el mapa del panel es el del continente entero, con sus regiones', mapa['continente'] and mapa['cuadro']['x1'] - mapa['cuadro']['x0'] >= 250 and len(mapa['regiones']) >= 4, str(mapa)[:300])
+            # se abre centrado en ti, a la escala de la isla; alejándolo del todo, el continente entero
+            pg.evaluate(f"(() => {{ const m = {K}.mapaRey, c = m.datos.cuadro; m.centrarEn((c.x0 + c.x1) / 2, (c.y0 + c.y1) / 2, 1); }})()")
+            pg.wait_for_timeout(800)
+            captura(pg, f'{SALIDA}/{nombre}_continente.png')
+            otra = next((r for r in mapa['regiones'] if not r[1]), None)
+            destino = pg.evaluate(f"(([x, y]) => {{ const [a, b] = {K}.mapaRey.kmAPant(x, y); return {{ x: Math.round(a), y: Math.round(b) }}; }})", [otra[2], otra[3]]) if otra else {'x': 0, 'y': 0}
+            esperado = pg.evaluate(f"(() => {{ const k = {K}, [a, b] = k.mapaRey.pantAKm({destino['x']}, {destino['y']}); return {{ x: a * 1000 - k.mundoJ.salida.x, z: b * 1000 - k.mundoJ.salida.z }}; }})()")
+            if movil: pg.touchscreen.tap(destino['x'], destino['y'])
+            else: pg.mouse.click(destino['x'], destino['y'])
+            fue = esperar(pg, f"!{PANEL}.abierto && Math.hypot({K}.pj.x - {esperado['x']}, {K}.pj.z - {esperado['z']}) < 0.5", 8000)
+            comprobar(f'{nombre}: un clic en otra región ({otra and otra[0]}) te lleva allí', fue, f'esperado {esperado}')
+            listo = esperar(pg, f"{K}.mundoJ.listo", 240000)
+            pg.wait_for_timeout(1500)
+            pj = pg.evaluate(f"({{ x: {K}.pj.x, y: {K}.pj.y, z: {K}.pj.z, suelo: {K}.alturaSuelo({K}.pj.x, {K}.pj.z), isla: {K}.mundoJ.dentro({K}.pj.x, {K}.pj.z) && !{K}.mundoJ.esLibre }})")
+            comprobar(f'{nombre}: allí se carga el terreno y estás en el suelo', listo and abs(pj['y'] - pj['suelo']) < 0.6, str(pj))
+            # andar un poco (hacia delante, 3 s)
+            antes = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+            pg.keyboard.down('w'); pg.wait_for_timeout(3000); pg.keyboard.up('w'); pg.wait_for_timeout(300)
+            ahora = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+            andado = ((ahora[0] - antes[0]) ** 2 + (ahora[1] - antes[1]) ** 2) ** 0.5
+            comprobar(f'{nombre}: y puedes andar por allí', andado > 0.3, f'{andado:.2f} m')
+            # el servidor te tiene allí: tu sitio en su lista
+            pg.wait_for_timeout(800)
+            serv = pg.evaluate(f"""() => new Promise((listo) => {{ const k = {K}; let fin = null;
+              const quitar = k.enLinea.escuchar((m) => {{ if (m.tipo === 'admin' && m.id === 999999) {{ quitar(); listo(m.jugadores ? (m.jugadores.find(j => j.autor === m.yo) || null) : m); }} }});
+              k.enLinea.enviar({{ tipo: 'admin', id: 999999, que: 'ver' }}); setTimeout(() => listo('sin respuesta'), 5000); }})""")
+            de_verdad = isinstance(serv, dict) and 'x' in serv and abs(serv['x'] - ahora[0]) < 3 and abs(serv['z'] - ahora[1]) < 3
+            comprobar(f'{nombre}: el servidor te tiene allí (fuera de la isla)', de_verdad, f'{serv} / {ahora}')
+            captura(pg, f'{SALIDA}/{nombre}_fuera.png')
             # cerrar con M o Esc (PC) y con «Cerrar»
             abrir(); pg.wait_for_timeout(400)
             if not movil:

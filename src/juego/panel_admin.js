@@ -34,7 +34,8 @@ const CSS = `
 // mapaRey: el mapa (src/juego/mapa_rey.js); enLinea: la conexión (src/juego/en_linea.js); salida: el sitio de salida
 // (m del mundo; las posiciones de la red van relativas a él); irA(x, y, z, giro): pone ahí al jugador (y o giro null:
 // los que ya tiene o el suelo); avisar(texto, mal).
-export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
+// libre(si): la cuenta de admin puede ir por todo el continente (valravnx, 5 nov: «quiero poder explorar libre»)
+export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar, libre = () => {} }) {
   const est = document.createElement('style'); est.textContent = CSS; document.head.appendChild(est);
   const raiz = document.createElement('div'); raiz.id = 'panelAdmin'; raiz.hidden = true;
   document.body.appendChild(raiz);
@@ -78,6 +79,7 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
 
   // la capa del mapa: los demás jugadores, y el clic para ir
   const capa = {
+    continente: true,   // el mapa del continente entero, no solo el de la isla (valravnx, 5 nov)
     pintar(ctx, { kmAPant, s, etiqueta }) {
       const R = Math.max(5, Math.min(9, s * 0.35));
       for (const j of jugadores) {
@@ -139,8 +141,12 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar }) {
   // al confirmar el correo), así que se mira cada poco; si deja de serlo (se corta, entra otro), se quita y se cierra el panel.
   const menu = document.getElementById('menu');
   let boton = null;
+  // (se suelta una vez y no se vuelve a cerrar: si la conexión se corta fuera de la isla, no te quedas encallado; lo que
+  // vale lo dice el servidor, que solo acepta fuera de la isla a la cuenta de admin)
+  let suelto = false;
   function mirarBoton() {
     const si = esAdmin();
+    if (si && !suelto && !window.__mutarAdminLibre) { suelto = true; libre(true); }   // (la prueba lo rompe a propósito)
     if (si && !boton && menu && mapaRey) {
       boton = document.createElement('button'); boton.id = 'btnAdmin'; boton.textContent = tr('Admin');
       boton.onclick = () => (raiz.hidden ? abrir() : cerrar());

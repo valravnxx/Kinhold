@@ -1423,7 +1423,7 @@
    "id": "admin",
    "num": "P7",
    "nombre": "Administración, registros y seguridad",
-   "estado": "en_curso",
+   "estado": "pendiente",
    "jugable": "Roles (jugador, moderador, administrador) para la cuenta de valravnx y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
    "nota": "Revisión del 1 nov con valravnx: después: registros, expulsar y herramientas de admin. El admin por la cuenta llega antes, con «Cuentas».",
    "tareas": [
@@ -1433,16 +1433,16 @@
     },
     {
      "nombre": "Explorar libre como admin (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente, no solo de la isla del rey, que quiero poder explorar libre»): el mapa del panel enseña el continente entero, un clic lleva a cualquier sitio y la cuenta de admin puede andar fuera de Whitholm",
-     "estado": "en_curso",
-     "inicio": "2026-11-05T13:15:46+01:00",
-     "rama": "trabajo/20261105-1320-admin-continente"
+     "estado": "hecho",
+     "inicio": "2026-11-05T13:13:17+01:00",
+     "fin": "2026-11-05T16:38:00+01:00"
     }
    ]
   },
   {
    "id": "graficos",
    "nombre": "Perfiles gráficos y posprocesado",
-   "estado": "hecho",
+   "estado": "en_curso",
    "lleva": "chat",
    "jugable": "Seis perfiles gráficos, de móvil de gama baja a PC de gama alta, y el posprocesado del estilo (oclusión ambiental, gradación de color, brillo de las luces, niebla, desenfoque puntual y haces de luz), sin que ningún perfil esconda lo que importa para jugar.",
    "nota": "Lo lleva el chat con valravnx (4 nov), aparte de los P1–P7: los carriles no lo tocan.",
@@ -1470,6 +1470,12 @@
      "estado": "hecho",
      "inicio": "2026-11-05T12:19:08+01:00",
      "fin": "2026-11-05T15:31:09+01:00"
+    },
+    {
+     "nombre": "El horizonte sin cortes ni tierra bajo el agua (valravnx, 5 nov: «parecen bajo el agua en algunos puntos… como clipeados a más altura o menos, como si tuviera cortes»)",
+     "estado": "en_curso",
+     "inicio": "2026-11-05T16:43:36+01:00",
+     "rama": "trabajo/20261105-1645-cortes"
     }
    ],
    "num": "G"
@@ -2812,6 +2818,13 @@
      "capturas": "capturas/demo-v109",
      "notas": "El bosque de lejos: donde hay bosque, una capa de copas a la altura de los árboles, con bultos y manchas de copas, más oscura cuanto más lejos, para distinguir de lejos los bosques de las praderas y los montes.",
      "noticia": false
+    },
+    {
+     "v": "v110",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v110.html",
+     "capturas": "capturas/demo-v110",
+     "notas": "Explorar libre como admin: el mapa del panel del admin es el del continente entero, Kinland, con sus regiones; un clic te lleva a cualquier sitio y allí se carga el terreno y puedes andar. Solo la cuenta de admin puede salir de Whitholm."
     }
    ]
   },

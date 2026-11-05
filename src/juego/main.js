@@ -2380,6 +2380,7 @@ function iniciarEnLinea() {
 // los conectados y teletransportarse, siempre pedido al servidor con la clave de admin; el jugador se mueve cuando el
 // servidor contesta que sí. Se pone en el suelo de allí (o en el piso de una obra, si cae encima de una).
 const panelAdmin = mapaRey ? montarPanelAdmin({ mapaRey, enLinea, salida: mundoJ.salida, avisar: mostrarAviso,
+  libre: (si) => mundoJ.libre(si),   // la cuenta de admin, por todo el continente
   irA: (x, y, z, giro) => { Object.assign(pj, { x, z, k: 0, vel: 0 }); if (giro !== null) pj.rot = giro; pj.y = alturaSuelo(); } }) : null;
 
 // Atajo de prueba (obras con lo que llevas): coge del arcón de pruebas, con acciones, lo que le falta a la obra p (lo
