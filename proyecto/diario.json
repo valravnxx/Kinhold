@@ -4258,5 +4258,23 @@
   "pruebas": "Batería entera en la nube: 33 grupos bien (58,9 min); recorrido de jugador 24/24. Capturas de la demo miradas en PC y móvil.",
   "capturas": "capturas/demo-v103",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T05:41:35+00:00",
+  "fin": "2026-11-05T07:24:48+00:00",
+  "titulo": "El servidor no se fía del navegador en las obras (P2, demo v104, carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "Al empezar, la tarea a medias del carril A («Lo tuyo es tuyo») la terminó la sesión anterior a las 05:37: no se tocó y se cogió la siguiente.",
+   "Lógica pura nueva (src/logica/construccion.js): alAlcance, a 2,3 m del centro de la pieza y en su planta o la de encima, como ya hacía la demo con las obras; plantaDeAltura, la planta por la altura de los pies sobre la base de la construcción, con 1 m de margen.",
+   "El servidor (fueraDeAlcance en src/logica/acciones.js) mira entregar, subir, trabajar y desmontar con la última posición que tiene del jugador, con 3 m más de margen por el retraso y una planta más hacia abajo; al entregar, «desde» no puede ser más alto que donde está. Si no sabe dónde está, tampoco.",
+   "La demo, al desmontar, ya avisa «Estás demasiado lejos: acércate.» antes de pedir confirmación; antes se podía desmontar cualquier cosa a la vista.",
+   "El atajo de prueba que termina las obras en línea lleva al jugador junto a cada obra (y le manda su posición) y luego lo devuelve.",
+   "Prueba nueva: pruebas/prueba_alcance_obras.mjs (28 comprobaciones, lógica y servidor de verdad con un navegador tramposo); rota a propósito (MUTAR=1, el servidor cree al jugador junto a la obra) da 5 fallos. Las pruebas de lo tuyo es tuyo, de las obras en línea y de construcción en el navegador dicen ahora dónde está el jugador.",
+   "Decisión provisional (registro de la demo): el GDD no dice desde dónde se desmonta; se toma lo mismo que para las obras."
+  ],
+  "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido): 32 de 33 grupos bien a la primera; «construcción» falló porque su prueba desmontaba a 4 m del muro; corregida, repetida en la nube y bien. Capturas de desmontar (PC) y de una obra (móvil) miradas. Sin las de en línea, como pidió valravnx.",
+  "capturas": "capturas/demo-v104",
+  "estado": "ok"
  }
 ]
