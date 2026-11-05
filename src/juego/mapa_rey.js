@@ -131,10 +131,11 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     const a = aRegiones(s);
     if (a <= 0) return;
     ctx.save(); ctx.globalAlpha = a;
-    const px = Math.max(16, Math.min(34, s * 4));
+    // (del tamaño del mapa: en el móvil, el continente entero mide unos 370 px y los nombres grandes se pisaban)
+    const px = Math.max(10, Math.min(28, s * 3.6));
     for (const e of contD.regiones) {
       const [x, y] = kmAPant(e.x, e.y);
-      etiqueta(tr(e.nombre).toUpperCase(), x, y, px, '700', e.isla ? ROJO : TINTA, px * 0.3);
+      etiqueta(tr(e.nombre).toUpperCase(), x, y, px, '700', e.isla ? ROJO : TINTA, px * 0.16);
     }
     ctx.restore();
   }
