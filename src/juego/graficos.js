@@ -23,9 +23,10 @@ export function aparatoDe(renderer) {
 }
 
 // escena, camara y ambiente: los del juego; la niebla de la escena se toma ahora (con posprocesado la pone el efecto)
-export function crearGraficos(renderer, escena, camara, ambiente) {
+// horizonte (opcional): el del mundo (src/mundo/horizonte.js): los perfiles altos lo encienden, con su niebla
+export function crearGraficos(renderer, escena, camara, ambiente, horizonte = null) {
   const niebla = escena.fog;
-  const post = crearPosprocesado(renderer, escena, camara, { niebla: () => niebla, luzSol: ambiente.sol });
+  const post = crearPosprocesado(renderer, escena, camara, { niebla: () => niebla, luzSol: ambiente.sol, compresion: horizonte ? () => horizonte.compresion : null, cielo: () => ambiente.cielo || null });
   const aparato = aparatoDe(renderer);
   const sugerido = sugerirPerfil(aparato);
   const enDireccion = new URLSearchParams(location.search).get('graficos');
@@ -35,6 +36,7 @@ export function crearGraficos(renderer, escena, camara, ambiente) {
     if (!PERFILES.some(p => p.id === id)) return false;
     actual = id;
     post.montar(perfil(id), { ...efectosDe(perfil(id)), desenfoque: false, rayos: false });
+    if (horizonte) horizonte.poner(perfil(id).horizonte || null);
     if (recordar) guardar(id);
     for (const f of alCambiar) f(id);
     return true;
@@ -46,6 +48,7 @@ export function crearGraficos(renderer, escena, camara, ambiente) {
     poner,
     alCambiar: (f) => alCambiar.push(f),
     get pasadas() { return post.pasadas; },
+    horizonte,
     dibujar: (dt) => post.dibujar(dt),
     setSize: (w, h) => post.setSize(w, h),
     medir: (n) => post.medir(n),

@@ -144,10 +144,6 @@ const MUNDO = window.__mundoDemo || null;
 const camara = new THREE.PerspectiveCamera(45, 1, 0.1, MUNDO ? 1600 : 500);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
 const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2048, niebla: MUNDO ? [110, 700] : [70, 200] });
-// el perfil gráfico y el posprocesado (valravnx, 5 nov; src/juego/graficos.js): la oclusión ambiental, el mapeo tonal, la
-// gradación de color, el brillo de las luces y la niebla, según el perfil (de móvil básico a PC alto)
-const graficos = crearGraficos(renderer, escena, camara, ambiente);
-soloEscena(escena); // el rendimiento cuenta un fotograma por dibujo del mundo, no por cada pasada del posprocesado
 // Dónde apareces (valravnx, 30 oct): un jugador nuevo, en un sitio al azar de las comarcas de inicio (src/logica/whitholm.js),
 // que se guarda en el navegador para que vuelvas siempre al mismo. Quien ya jugaba (hay algo guardado de antes) sigue en
 // el sitio común, que es donde está lo que construyó. En línea, todos en el sitio común (decisión provisional del 30 oct:
@@ -167,7 +163,12 @@ function sitioDeSalida() {
   try { localStorage.setItem(CLAVE_SALIDA, JSON.stringify(s)); } catch (e) { /* sin almacenamiento: otro sitio la próxima vez */ }
   return s;
 }
-const mundoJ = MUNDO ? crearMundoJuego({ escena, mapa: MUNDO.mapa, origen: sitioDeSalida() }) : null;
+const mundoJ = MUNDO ? crearMundoJuego({ escena, mapa: MUNDO.mapa, origen: sitioDeSalida(), camara }) : null;
+// el perfil gráfico y el posprocesado (valravnx, 5 nov; src/juego/graficos.js): la oclusión ambiental, el mapeo tonal, la
+// gradación de color, el brillo de las luces y la niebla, según el perfil (de móvil básico a PC alto); en los altos, el
+// horizonte: la isla entera, basta, detrás del terreno de cerca (src/mundo/horizonte.js)
+const graficos = crearGraficos(renderer, escena, camara, ambiente, mundoJ ? mundoJ.horizonte : null);
+soloEscena(escena); // el rendimiento cuenta un fotograma por dibujo del mundo, no por cada pasada del posprocesado
 // las comarcas de Whitholm (src/logica/comarcas.js): para el mapa del rey y para saber si estás en Strandvang, tierras
 // del rey (src/logica/tierras_rey.js), donde nadie puede herir a otro jugador: al entrar y al salir, un cartel
 const comarcasMundo = mundoJ ? crearComarcas(MUNDO.mapa) : null;

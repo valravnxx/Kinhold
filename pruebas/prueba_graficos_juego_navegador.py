@@ -4,8 +4,10 @@
 # panel de rendimiento enseña el perfil y deja cambiarlo; el cambio se guarda y vale al volver a entrar; ?graficos=
 # fuerza uno; cada perfil monta su cadena; el rendimiento cuenta un fotograma por dibujo del mundo (no uno por pasada)
 # y sus triángulos son los del mundo. Capturas del mismo sitio con Móvil básico, Móvil alto y PC alto, en PC y móvil.
+# El horizonte (valravnx, 5 nov: ver las montañas de lejos): el más barato no lo lleva; el PC alto sí, entero (la isla
+# cada 100 m) y cambia de verdad lo que se ve en la franja del horizonte (las montañas, en vez del cielo).
 # Uso: python3 pruebas/prueba_graficos_juego_navegador.py <html> <carpeta_capturas>
-# MUTAR=1: el juego dibuja sin posprocesado (como antes): la prueba tiene que fallar.
+# MUTAR=1: el juego dibuja sin posprocesado y sin horizonte (como antes): la prueba tiene que fallar.
 import sys, os, io, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 from PIL import Image, ImageStat
@@ -39,7 +41,7 @@ def entrar(pg, extra=''):
     pg.wait_for_function(f'{K} && {K}.mundoListo', timeout=300000)
     try: pg.wait_for_function(f'{K}.decorado.pendientes === 0', timeout=120000)
     except Exception: pass
-    if MUTAR: pg.evaluate("window.__graficos.dibujar = () => window.__kinhold.renderer.render(window.__kinhold.escena, window.__kinhold.camara)")
+    if MUTAR: pg.evaluate("(() => { window.__graficos.dibujar = () => window.__kinhold.renderer.render(window.__kinhold.escena, window.__kinhold.camara); if (window.__graficos.horizonte) window.__graficos.horizonte.malla.visible = false, window.__graficos.horizonte.poner = () => {}; })()")
     pg.wait_for_timeout(1500)
 
 def cielo(pg):
@@ -60,6 +62,7 @@ def recorrido(pg, nombre, pref):
     G = 'window.__graficos'
     comprobar(f'{nombre}: el juego tiene perfil gráfico', pg.evaluate(f'!!{G}'))
     comprobar(f'{nombre}: sin tarjeta gráfica arranca con el más barato (Móvil básico)', pg.evaluate(f'{G}.perfil') == 'movil-1' and pg.evaluate(f'{G}.sugerido') == 'movil-1', pg.evaluate(f'{G}.perfil'))
+    comprobar(f'{nombre}: el más barato no lleva horizonte', pg.evaluate(f'!!{G}.horizonte && !{G}.horizonte.activo'))
     comprobar(f'{nombre}: dibuja con posprocesado (2 pasadas en el más barato)', pg.evaluate(f'{G}.pasadas') == 2, str(pg.evaluate(f'{G}.pasadas')))
     # el rendimiento: un fotograma por dibujo del mundo y los triángulos del mundo
     pg.wait_for_timeout(2500)
@@ -91,6 +94,22 @@ def recorrido(pg, nombre, pref):
     c3 = cielo(pg)
     comprobar(f'{nombre}: con el PC alto también se ve el cielo', sum(c3) / 3 > 120, str(c3))
     pg.screenshot(timeout=180000, path=f'{SALIDA}/{pref}_3_pc-3.png')
+    # el horizonte del PC alto: se termina de calcular de golpe (en el juego va poco a poco, 2 ms por fotograma)
+    hz = pg.evaluate(f"(() => {{ const h = {G}.horizonte, m = h.muestras; while (!m.tiene(1)) m.avanzar(1000); {G}.poner('pc-3', false); return {{ activo: h.activo, tris: h.malla.geometry.index ? h.malla.geometry.index.count / 3 : 0 }}; }})()")
+    comprobar(f'{nombre}: el PC alto lleva el horizonte, la isla entera cada 100 m', hz['activo'] and hz['tris'] > 200000, str(hz))
+    # mirando a ras hacia los montes y el mar (desde la salida, de frente solo hay llano): la franja del horizonte con y sin él
+    pg.evaluate('(() => { window.__camAntes = { ...window.__kinhold.cam }; window.__kinhold.cam.pitch = 0.05; window.__kinhold.cam.yaw = 3.14; })()'); pg.wait_for_timeout(3000)
+    alto, ancho = pg.evaluate('[innerHeight, innerWidth]')
+    franja = {'x': 0, 'y': round(alto * 0.3), 'width': ancho, 'height': round(alto * 0.25)}
+    con = Image.open(io.BytesIO(pg.screenshot(clip=franja, timeout=180000))).convert('L')
+    pg.screenshot(timeout=180000, path=f'{SALIDA}/{pref}_4_horizonte.png')
+    pg.evaluate(f'{G}.horizonte.malla.visible = false'); pg.wait_for_timeout(2500)
+    sin = Image.open(io.BytesIO(pg.screenshot(clip=franja, timeout=180000))).convert('L')
+    # la parte de la franja que cambia de verdad (más de 6 de 255); el cielo de arriba no cambia, así que no vale la media
+    cambia = sum(1 for a, b in zip(con.tobytes(), sin.tobytes()) if abs(a - b) > 6) / (con.width * con.height)
+    comprobar(f'{nombre}: con el horizonte se ve lo lejano (cambia la franja del horizonte)', cambia > 0.03, f'cambia el {cambia * 100:.1f} % de la franja')
+    pg.evaluate(f"{G}.poner('pc-3', false)")
+    pg.evaluate('Object.assign(window.__kinhold.cam, window.__camAntes)'); pg.wait_for_timeout(1000)
     pg.evaluate('localStorage.removeItem("kinhold_graficos")')
     comprobar(f'{nombre}: sin errores de página', not errores, '; '.join(errores)[:300])
 
