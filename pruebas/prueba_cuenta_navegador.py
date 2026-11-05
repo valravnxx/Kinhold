@@ -148,7 +148,8 @@ try:
             comprobar(f'{nombre}: sin la contraseña en claro', CLAVE not in open(os.path.join(sitio, 'cuentas.jsonl')).read())
             # dónde empieza (valravnx, 5 nov: tres salidas del rey, «lo eligen»): sale al quitarse la pantalla de la cuenta
             PSAL = "!!document.getElementById('panelSalida')"
-            comprobar(f'{nombre}: personaje nuevo: sale «¿Dónde empiezas?» con las tres salidas', esperar(pg, PSAL, 15000) and pg.evaluate("document.querySelectorAll('#panelSalida button[data-salida]').length") == 3)
+            comprobar(f'{nombre}: personaje nuevo: sale «¿Dónde empiezas?» con las tres salidas', esperar(pg, PSAL, 15000) and pg.evaluate("document.querySelectorAll('#panelSalida button[data-salida]').length") == 3, '; '.join(err)[:300])
+            if not pg.evaluate(PSAL): raise RuntimeError('sin el panel de las salidas no se puede seguir')
             caja = pg.evaluate("(() => { const r = document.querySelector('#panelSalida .ps-caja').getBoundingClientRect(); return [r.left, r.right, r.top, r.bottom]; })()")
             comprobar(f'{nombre}: la caja de las salidas cabe en la pantalla', caja[0] >= 0 and caja[1] <= vista['width'] and caja[2] >= 0 and caja[3] <= vista['height'], str(caja))
             pg.wait_for_timeout(800)

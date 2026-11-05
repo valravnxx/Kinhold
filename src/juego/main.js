@@ -74,6 +74,7 @@ const CLAVE_GUARDADO = 'kinhold_h1_v1';
 // «Jugar en línea» (?enlinea=1): el mundo es el del servidor; nada se guarda en el navegador (src/juego/en_linea.js)
 const EN_LINEA = new URLSearchParams(location.search).get('enlinea') === '1';
 let enLinea = null;
+let panelSalida = null;   // el de «¿Dónde empiezas?» (elegirSalidaPanel, más abajo)
 // El arcón de pruebas (valravnx, 1 nov: «fuera el arcón infinito» del juego de verdad): en línea, solo si el servidor lo
 // tiene (lo dice su bienvenida; el de verdad no lo tiene); sin servidor (las pruebas de navegador), sí.
 let arconServidor = false;
@@ -2382,7 +2383,6 @@ function iniciarEnLinea() {
 // un personaje nuevo llega sin posición y elige una de las tres; la pide al servidor y, cuando dice que sí, el
 // jugador aparece allí. Queda debajo de la pantalla de la cuenta (sale cuando se quita); mientras no elige, está en la
 // salida común. Solo una vez: el servidor lo recuerda.
-let panelSalida = null;
 function elegirSalidaPanel() {
   if (!enLinea || panelSalida) return;
   const estilo = document.createElement('style');

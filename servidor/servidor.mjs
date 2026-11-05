@@ -251,6 +251,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const apuntarPosicion = (a) => {
     const e = presencia && presencia.ultimo.get(a);
     if (!e || (combate.luchadores[a] && combate.luchadores[a].liza)) return;
+    // con el mundo de verdad, quien aún no ha elegido dónde empieza no tiene posición que apuntar (elegirSalida)
+    if (terreno && !posiciones.has(a)) return;
     const p = posiciones.get(a);
     if (p && p.x === e.x && p.y === e.y && p.z === e.z && p.giro === e.giro) return;
     posiciones.set(a, { x: e.x, y: e.y, z: e.z, giro: e.giro }); posicionesCambiadas = true;

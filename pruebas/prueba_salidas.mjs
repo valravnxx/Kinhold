@@ -78,12 +78,20 @@ const dir = mkdtempSync(join(tmpdir(), 'kinhold-salidas-'));
 const archivo = join(dir, 'mundo.jsonl');
 let s = null;
 try {
-  s = crearServidor({ puerto: 0, archivo, terreno: T });
+  s = crearServidor({ puerto: 0, archivo, terreno: T, latido: 100 });
   let puerto = await s.listo;
 
   console.log('Un personaje nuevo elige');
   const a = await cliente(puerto);
   comprobar('llega sin posición (aún no ha elegido)', a.bienvenida.posicion === null, JSON.stringify(a.bienvenida.posicion));
+  // anda un poco por la salida común antes de elegir (y pasa un latido): eso no cuenta como haber empezado
+  a.ws.send(JSON.stringify({ tipo: 'estado', x: 2, y: T.suelo(2, 3), z: 3, giro: 0, anim: 'andar' }));
+  await new Promise(r => setTimeout(r, 400));
+  await salir(a);
+  const a1 = await cliente(puerto, a.bienvenida.ficha);
+  comprobar('si sale y vuelve sin haber elegido, sigue sin posición (el latido no la apunta)', a1.bienvenida.posicion === null, JSON.stringify(a1.bienvenida.posicion));
+  await salir(a1);
+  Object.assign(a, await cliente(puerto, a.bienvenida.ficha));
   let r = await a.salida('isla_secreta');
   comprobar('una salida que no existe no vale', !r.ok && !r.posicion, r.motivo);
   r = await a.salida('motdale');

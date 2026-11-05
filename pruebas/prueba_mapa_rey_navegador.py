@@ -5,7 +5,7 @@
 # comarcas con su nombre, los ríos, montes, árboles y la ciudad del rey; que tu marca está donde estás (y se mueve si
 # andas) y que «Dónde estoy» la pone en el centro; y que en inglés no falta ningún texto.
 # Y las zonas (valravnx, 4 nov): con tu mojón puesto, tu tierra (la zona entera) sale de color con su mojón, y al
-# acercar el mapa salen los lindes de las zonas de cada comarca, sin tirones; y las tres zonas del rey, de oro viejo.
+# acercar el mapa salen los lindes de las zonas de cada comarca, sin tirones; y las cuatro zonas del rey, de oro viejo.
 # MUTAR=1: la marca del jugador, 3 km al este de donde está: tiene que fallar. MUTAR=2: sin lindes de zonas. MUTAR=3: los
 # nombres de las comarcas siempre a la vista. MUTAR=4: sin las zonas del rey.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
@@ -143,7 +143,7 @@ with sync_playwright() as p:
         pg.wait_for_timeout(300)
         z = pg.evaluate(f'{K}.mapaRey.zonas')
         rey = z.get('rey') or []
-        comprobar('salen las tres zonas del rey (la gran veta, la ciudad y la salida)', len(rey) == 3 and sorted(r['por'] for r in rey) == ['ciudad', 'salida', 'veta'], str(rey))
+        comprobar('salen las cuatro zonas del rey (la gran veta, la ciudad con su salida, y las salidas de Lindholt y de Motdale)', len(rey) == 4 and sorted(r['por'] for r in rey) == ['ciudad', 'salida', 'salida', 'veta'], str(rey))
         pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_zona_rey.png')
         # cerrar: M o Esc en el PC, ✕ en el móvil
         if movil: pg.tap('#mapaRey .mr-cerrar')
