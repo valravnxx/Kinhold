@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v113 (horizonte sin cortes)";
+export const VERSION_DEMO = "Demo única · v114 (el linde del bosque de lejos)";
 export const REGISTRO_DEMO = [
+  "v114: el linde del bosque de lejos sin paredes (valravnx, 5 nov: «se corta de manera así»). El dosel de lejos ya no cae en el borde del bosque en una pared de unos 20 m con dientes de sierra: según el bosque que hay alrededor, las copas bajan poco a poco hasta el suelo y pasan a su color (entre vecinos, menos de 9 m de diferencia, antes 21).",
   "v113: el horizonte sin cortes: va a su altura (antes iba 6 m hundido, y salía un escalón donde acaba el terreno de cerca y la tierra baja de la costa quedaba bajo el mar), y cada capa tiene su sitio en la hondura para no pisarse; el dosel de cerca ya no se pone donde aún no ha llegado el terreno (flotaba en tiras sobre el cielo) (valravnx, 5 nov).",
   "v112: traer jugadores como admin (valravnx, 5 nov). En la lista del panel del admin, junto a «Ir», sale «Traer»: pone a ese jugador a tu lado, a 1,6 m y mirándote, y a él le sale el aviso «El admin te ha llevado junto a él». Lo pide el servidor, solo con la cuenta de admin, y queda apuntado en su registro.",
   "v112, provisional: fuera de Whitholm no se puede traer a nadie (los demás jugadores no pueden estar fuera de la isla); el panel lo dice.",
