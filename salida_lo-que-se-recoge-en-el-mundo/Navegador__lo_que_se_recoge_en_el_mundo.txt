@@ -1,0 +1,52 @@
+  sitio de salida con más tipos cerca: [5, 0] · el del móvil: 39
+Vista pc
+  alrededor de la salida: {"ramas": 4, "ortiga": 7, "piedra": 8, "hierba_larga": 15, "silex": 2} 36 puntos en 25 trozos
+  OK   alrededor de la salida hay cosas que recoger — 36
+  FALLA cada punto, en una zona suya del documento — piedra:2160244,309793, silex:2159948,310380, piedra:2160141,309536, piedra:2159586,309812
+  OK   son los mismos puntos que da la lógica para ese sitio del mundo — 15 en la página, 15 en la lógica, 0 distintos
+  OK   ramas (bosque, claro): Usar lo recoge y va al inventario — 0 → 2 · «Recoges: 2 × Rama.»
+  OK   ramas: el punto ya no está
+  OK   ramas: queda en el registro con autor
+  OK   piedra (claro): Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Piedra.»
+  OK   piedra: el punto ya no está
+  OK   piedra: queda en el registro con autor
+  (silex: no hay a menos de 60 m)
+  OK   ortiga (claro): Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Fibra cruda.»
+  OK   ortiga: el punto ya no está
+  OK   ortiga: queda en el registro con autor
+  OK   hierba_larga (claro): Usar lo recoge y va al inventario — 0 → 2 · «Recoges: 2 × Fibra cruda.»
+  OK   hierba_larga: el punto ya no está
+  OK   hierba_larga: queda en el registro con autor
+  FALLA junto al sitio de salida 0 se recogen los 5 tipos que hay cerca — ramas:2159976,310011, piedra:2160244,309793, ortiga:2160165,309790, hierba_larga:2160186,309901
+  a 400 m: {"n": 38, "lejos": 91.34000000000003, "cerca": 13, "ms": 9, "siguen": 0}
+  OK   lejos, los puntos están alrededor de donde estás y los de la salida se sueltan — {"n": 38, "lejos": 91.34000000000003, "cerca": 13, "ms": 9, "siguen": 0}
+  OK   hacer lo de alrededor no pide fotogramas largos (menos de 20 ms) — 9.0 ms
+  OK   al volver, lo recogido sigue recogido — [[true, false], [true, false], [true, false], [true, false]]
+  OK   sin errores en la página (pc)
+Vista movil
+  alrededor de la salida: {"silex": 20, "hierba_larga": 14, "ortiga": 4, "piedra": 6, "ramas": 4} 48 puntos en 16 trozos
+  OK   alrededor de la salida hay cosas que recoger — 48
+  FALLA cada punto, en una zona suya del documento — piedra:2030155,510383, piedra:2029555,509942, piedra:2029740,509893, piedra:2030479,510027
+  OK   son los mismos puntos que da la lógica para ese sitio del mundo — 20 en la página, 20 en la lógica, 0 distintos
+  OK   ramas (bosque, caliza): Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Rama.»
+  OK   ramas: el punto ya no está
+  OK   ramas: queda en el registro con autor
+  OK   piedra (claro, caliza): Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Piedra.»
+  OK   piedra: el punto ya no está
+  OK   piedra: queda en el registro con autor
+  OK   silex (claro, caliza): Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Sílex.»
+  OK   silex: el punto ya no está
+  OK   silex: queda en el registro con autor
+  OK   ortiga (claro, caliza): Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Fibra cruda.»
+  OK   ortiga: el punto ya no está
+  OK   ortiga: queda en el registro con autor
+  OK   hierba_larga (claro, caliza): Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Fibra cruda.»
+  OK   hierba_larga: el punto ya no está
+  OK   hierba_larga: queda en el registro con autor
+  OK   cerca de la salida 39 se ha podido recoger algo — ramas:2029844,510476, piedra:2030155,510383, silex:2030304,510297, ortiga:2030350,510074, hierba_larga:2030315,510221
+  a 400 m: {"n": 52, "lejos": 76.36, "cerca": 32, "ms": 4.7999999999883585, "siguen": 0}
+  OK   lejos, los puntos están alrededor de donde estás y los de la salida se sueltan — {"n": 52, "lejos": 76.36, "cerca": 32, "ms": 4.7999999999883585, "siguen": 0}
+  OK   hacer lo de alrededor no pide fotogramas largos (menos de 20 ms) — 4.8 ms
+  OK   al volver, lo recogido sigue recogido — [[true, false], [true, false], [true, false], [true, false], [true, false]]
+  OK   sin errores en la página (movil)
+FALLAN 3: cada punto, en una zona suya del documento, junto al sitio de salida 0 se recogen los 5 tipos que hay cerca, cada punto, en una zona suya del documento
