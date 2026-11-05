@@ -1,0 +1,48 @@
+Vista pc
+  OK   pc: entra en línea con el mundo listo
+  OK   pc: sale la pantalla de la cuenta
+  OK   pc: la pantalla tapa el juego entero
+  OK   pc: la caja cabe en la pantalla — [450, 830, 130.515625, 669.46875]
+  OK   pc: usuario corto, dicho al momento — El usuario tiene que tener de 3 a 20 letras.
+  OK   pc: sin correo, dicho al momento — Falta el correo.
+  OK   pc: correo que no vale, dicho al momento — Ese correo no es válido.
+  OK   pc: contraseñas distintas, dicho al momento — Las dos contraseñas no son iguales.
+  OK   pc: lo que no vale no llega al servidor
+  OK   pc: al crear la cuenta sale «Confirma tu correo» — Un momento…
+  OK   pc: dice a qué correo (a medias no: el que ha escrito)
+  OK   pc: y sigue tapando el juego
+  OK   pc: la caja del correo cabe en la pantalla — [450, 830, 246.390625, 553.609375]
+  OK   pc: al recargar sin confirmar, otra vez «Confirma tu correo»
+  OK   pc: (con el correo a medias, que es lo que sabe el servidor)
+  OK   pc: código corto, dicho al momento — El código son 6 cifras.
+  OK   pc: código mal, lo dice — El código no es correcto.
+  OK   pc: otro código enseguida, que espere — Espera 55 s para pedir otro código.
+  OK   pc: el código llega (al registro del servidor de pruebas)
+  OK   pc: con el bueno se quita la pantalla
+  OK   pc: y ya entra en el mundo
+  OK   pc: sigue siendo el mismo personaje
+  OK   pc: el cliente sabe su cuenta — Ana_pc
+  OK   pc: el servidor la guarda con ese personaje — [{'usuario': 'Ana_pc', 'autor': 'jugador:f75b3546', 'sal': '364f3babb3196c4d88937f58d39b791f', 'hash': '9b957f722659391e
+  OK   pc: sin la contraseña en claro
+  FALLA pc: personaje nuevo: sale «¿Dónde empiezas?» con las tres salidas
+Traceback (most recent call last):
+  File "D:\KinholdGrafica\runner\_work\Kinhold\Kinhold\pruebas\prueba_cuenta_navegador.py", line 152, in <module>
+    caja = pg.evaluate("(() => { const r = document.querySelector('#panelSalida .ps-caja').getBoundingClientRect(); return [r.left, r.right, r.top, r.bottom]; })()")
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\sync_api\_generated.py", line 9413, in evaluate
+    self._sync(
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_page.py", line 474, in evaluate
+    return await self._main_frame.evaluate(expression, arg)
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_frame.py", line 346, in evaluate
+    await self._channel.send(
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Page.evaluate: TypeError: Cannot read properties of null (reading 'getBoundingClientRect')
+    at eval (eval at evaluate (:311:30), <anonymous>:1:67)
+    at eval (eval at evaluate (:311:30), <anonymous>:1:138)
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
