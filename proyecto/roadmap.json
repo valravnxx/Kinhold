@@ -2782,6 +2782,13 @@
      "capturas": "capturas/demo-v106",
      "notas": "Horizonte en los perfiles altos (Móvil alto y los tres de PC): detrás del terreno de cerca se ve la isla entera, en basto, con su relieve y su color, y el mar hasta el borde, fundidos con el cielo por la bruma.",
      "noticia": false
+    },
+    {
+     "v": "v107",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v107.html",
+     "capturas": "capturas/demo-v107",
+     "notas": "Zonas del rey (valravnx, 4 nov): la zona de la gran veta de hierro (Breiddal), la de la ciudad (Strandvang) y la de la salida (Lindholt) no se reclaman, también por el servidor; en el mapa del rey salen de oro viejo con «Zona del rey» y por qué."
     }
    ]
   },
