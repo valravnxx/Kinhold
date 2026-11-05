@@ -158,13 +158,15 @@ function aplicarConstruccion(m, a, invs) {
     case 'desmontar': {
       const c = m.construcciones.find(x => x.id === a.construccion);
       if (!c) return { ok: false, motivo: 'No existe.' };
-      return m.desmontar(c, a.clave);
+      return m.desmontar(c, a.clave, a.autor);   // solo en tu tierra, en la de quien te invita o en tierra de nadie
     }
     case 'usar': {
       const c = m.construcciones.find(x => x.id === a.construccion);
       const p = c && c.piezas.get(a.clave);
       if (!p) return { ok: false, motivo: 'No existe.' };
       if (p.obra) return { ok: false, motivo: 'Está en obras.' };
+      const t = m.puedeTocar(c.ox, c.oz, a.autor);   // las puertas y el fuego de otro, solo él y sus invitados
+      if (!t.ok) return t;
       if (seEnciende(p)) { p.apagado = !p.apagado; return { ok: true, encendido: !p.apagado }; }
       if (!seAbre(p)) return { ok: false, motivo: 'Eso no se abre.' };
       p.abierta = !p.abierta;

@@ -1826,5 +1826,9 @@
  "solo en escenas concretas": "только в отдельных сценах",
  "opcionales, a contraluz": "по желанию, против света",
  "MSAA de 4 muestras": "MSAA, 4 выборки",
- "MSAA de 8 muestras": "MSAA, 8 выборок"
+ "MSAA de 8 muestras": "MSAA, 8 выборок",
+ "Es tierra de otro: solo su dueño y sus invitados.": "Это чужая земля: только её хозяин и его гости.",
+ "Demo única · v103 (lo tuyo es tuyo)": "Единая демо · v103 (твоё — это твоё)",
+ "v103: lo tuyo es tuyo. En tu tierra solo tú y quien tengas invitado desmontáis, abrís y cerráis las puertas y encendéis o apagáis el fuego; a los demás les sale «Es tierra de otro: solo su dueño y sus invitados.» (y lo de otro ya no se resalta como para desmontarlo). Lo comprueba el servidor con el autor de cada uno, aunque un navegador se lo mande igual.": "v103: твоё — это твоё. На твоей земле только ты и те, кого ты пригласил, можете разбирать постройки, открывать и закрывать двери и разжигать или гасить огонь; остальным выводится «Это чужая земля: только её хозяин и его гости.» (и чужое больше не подсвечивается для разборки). Это проверяет сервер по автору каждого действия, даже если браузер всё равно его отправит.",
+ "v103, provisional: lo que queda en tierra de nadie (sin mojón) lo puede tocar cualquiera, y una construcción es de la tierra donde está su origen (como al quitar el mojón). Los almacenajes de la base, cuando los haya (hito «De nada a una casa»), seguirán la misma regla.": "v103, временно: то, что осталось на ничьей земле (без межевого камня), может трогать кто угодно, а постройка принадлежит земле, где находится её начало (как при снятии межевого камня). Хранилища базы, когда они появятся (этап «От нуля до дома»), будут следовать тому же правилу."
 }

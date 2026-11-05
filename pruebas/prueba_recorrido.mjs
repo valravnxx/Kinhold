@@ -93,7 +93,7 @@ const dir = mkdtempSync(join(tmpdir(), 'kinhold-recorrido-'));
 let s = null;
 try {
   s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T, arconPruebas: false });
-  const J = await cliente(await s.listo);
+  const puerto = await s.listo, J = await cliente(puerto);
   // aparece en la salida (hoy la común; con «Salida al azar de verdad en línea», la que le dé el servidor)
   J.estar(0, 4); await pausa(200);
 
@@ -163,6 +163,15 @@ try {
   let t = { ok: true }, veces = 0;
   for (; veces < 400 && t.ok && obra?.piezas.get(clave)?.obra; veces++) t = await J.accion({ tipo: 'trabajar', construccion: obra.id, clave, segundos: 5 });
   comprobar('lo trabaja hasta terminarlo', !!obra?.piezas.get(clave) && !obra.piezas.get(clave).obra, `${veces} ratos de 5 s ${t.motivo || ''}`);
+
+  console.log('5b. Llega otro jugador: lo de su tierra no lo toca (lo tuyo es tuyo)');
+  {
+    const K = await cliente(puerto);
+    K.estar(sitio.x + 2, sitio.z + 1); await pausa(200);
+    const rk = await K.accion({ tipo: 'desmontar', construccion: obra?.id, clave });
+    comprobar('otro jugador no puede desmontar su cimiento', !rk.ok && !!obra?.piezas.get(clave), rk.motivo);
+    K.ws.close();
+  }
 
   console.log('6. Con las manos libres otra vez, recoge ramas del bosque');
   const ramas = cerca(puntos.filter(p => p.tipo === 'ramas'), J.pos);

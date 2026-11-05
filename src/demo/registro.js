@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v101 (el mojón y los muebles, de lo que llevas)";
+export const VERSION_DEMO = "Demo única · v103 (lo tuyo es tuyo)";
 export const REGISTRO_DEMO = [
+  "v103: lo tuyo es tuyo. En tu tierra solo tú y quien tengas invitado desmontáis, abrís y cerráis las puertas y encendéis o apagáis el fuego; a los demás les sale «Es tierra de otro: solo su dueño y sus invitados.» (y lo de otro ya no se resalta como para desmontarlo). Lo comprueba el servidor con el autor de cada uno, aunque un navegador se lo mande igual.",
+  "v103, provisional: lo que queda en tierra de nadie (sin mojón) lo puede tocar cualquiera, y una construcción es de la tierra donde está su origen (como al quitar el mojón). Los almacenajes de la base, cuando los haya (hito «De nada a una casa»), seguirán la misma regla.",
   "v101: el mojón y los muebles se pagan de lo que llevas encima, ya no del montón común: para poner el mojón hacen falta 3 piedras en las manos (o en lo que lleves), y cada mueble, sus materiales. Lo comprueba el servidor, con su autor; si no los llevas, «No llevas los materiales.».",
   "v101: al quitar un mueble, lo que devuelve (el 75 %) va a lo que llevas; si no te cabe entero, no se quita («No te cabe lo que devuelve: haz sitio.»).",
   "v101, provisional: un mueble solo lo quita quien puede construir donde está (el dueño de la tierra o quien tenga invitado). Lo que devuelve una pieza de obra al desmontarla sigue yendo al arcón de pruebas, hasta las tareas «Lo tuyo es tuyo» y «Fuera el arcón de materiales».",

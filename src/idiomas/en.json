@@ -1826,5 +1826,9 @@
  "solo en escenas concretas": "only in specific scenes",
  "opcionales, a contraluz": "optional, against the light",
  "MSAA de 4 muestras": "MSAA, 4 samples",
- "MSAA de 8 muestras": "MSAA, 8 samples"
+ "MSAA de 8 muestras": "MSAA, 8 samples",
+ "Es tierra de otro: solo su dueño y sus invitados.": "It's someone else's land: only its owner and their guests.",
+ "Demo única · v103 (lo tuyo es tuyo)": "Single demo · v103 (what is yours is yours)",
+ "v103: lo tuyo es tuyo. En tu tierra solo tú y quien tengas invitado desmontáis, abrís y cerráis las puertas y encendéis o apagáis el fuego; a los demás les sale «Es tierra de otro: solo su dueño y sus invitados.» (y lo de otro ya no se resalta como para desmontarlo). Lo comprueba el servidor con el autor de cada uno, aunque un navegador se lo mande igual.": "v103: what is yours is yours. On your land only you and whoever you have invited can take things down, open and close the doors and light or put out the fire; everyone else gets «It's someone else's land: only its owner and their guests.» (and someone else's things are no longer highlighted for taking down). The server checks it with each player as the author, even if a browser sends it anyway.",
+ "v103, provisional: lo que queda en tierra de nadie (sin mojón) lo puede tocar cualquiera, y una construcción es de la tierra donde está su origen (como al quitar el mojón). Los almacenajes de la base, cuando los haya (hito «De nada a una casa»), seguirán la misma regla.": "v103, provisional: whatever is left in no-man's land (without a boundary stone) can be touched by anyone, and a construction belongs to the land where its origin is (as when removing the boundary stone). The base storages, once they exist (milestone «From nothing to a house»), will follow the same rule."
 }
