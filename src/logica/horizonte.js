@@ -104,3 +104,22 @@ export function mallaDe(m, k, { ox = 0, oz = 0, y0 = 0 } = {}) {
   }
   return { pos, col, idx: tmp.slice(0, t), cx, cz };
 }
+
+// El mar de lejos: una rejilla lisa del cuadro de la isla (cada «paso» m), a la altura y (m de la escena). Tiene que ir
+// en trozos (no en un solo cuadro) porque la compresión se hace en cada vértice: así la lámina sigue la curva. La
+// lámina del mar de cerca acaba donde acaba la cámara (1,6 km); esta sigue hasta el borde de la isla.
+export const PASO_MAR = 500;
+export function mallaMar(rect, { ox = 0, oz = 0, y = 0, paso = PASO_MAR } = {}) {
+  const cx = Math.ceil((rect.x1 - rect.x0) / paso) + 1, cz = Math.ceil((rect.z1 - rect.z0) / paso) + 1;
+  const pos = new Float32Array(cx * cz * 3), idx = new Uint32Array((cx - 1) * (cz - 1) * 6);
+  for (let b = 0; b < cz; b++) for (let a = 0; a < cx; a++) {
+    const v = b * cx + a;
+    pos[v * 3] = Math.min(rect.x1, rect.x0 + a * paso) - ox; pos[v * 3 + 1] = y; pos[v * 3 + 2] = Math.min(rect.z1, rect.z0 + b * paso) - oz;
+  }
+  let t = 0;
+  for (let b = 0; b < cz - 1; b++) for (let a = 0; a < cx - 1; a++) {
+    const p = b * cx + a, q = p + 1, r = p + cx, s = r + 1;
+    idx[t++] = p; idx[t++] = r; idx[t++] = q; idx[t++] = q; idx[t++] = r; idx[t++] = s;
+  }
+  return { pos, idx, cx, cz };
+}

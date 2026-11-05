@@ -37,9 +37,10 @@ export const perfil = (id) => PERFILES.find(p => p.id === id) || PERFILES[2];
 // gradación de color. Los dos últimos van en la misma pasada, así que en el móvil básico no cuestan casi nada.
 export const COMUN = { niebla: [45, 130], tono: true, color: true };
 // Con horizonte, la niebla de cerca es la misma hasta que llega a «tope» (de ahí no pasa: si llegara a 1 taparía las
-// montañas) y lo lejano se va cubriendo de bruma hasta «max» a «lejos» metros (de verdad). Sin horizonte, como siempre.
-// Lo que cambia, por tanto: más allá de unos 500 m de ti (la niebla del juego va de 110 a 700) se ve algo más.
-export const HORIZONTE = { tope: 0.72, max: 0.88, lejos: 30000 };
+// montañas) y lo lejano se va fundiendo con el cielo de detrás hacia «max»: lo que falta, la mitad cada «lejos» metros
+// (de verdad). Sin horizonte, como siempre. Lo que cambia, por tanto: más allá de unos 420 m de ti (la niebla del juego
+// va de 110 a 700) se ve algo más, y a lo lejos, las montañas.
+export const HORIZONTE = { tope: 0.55, max: 0.8, lejos: 6000 };
 
 // Los efectos, en el orden de la tabla de valravnx, con lo que hace cada uno (para la interfaz)
 export const EFECTOS = [

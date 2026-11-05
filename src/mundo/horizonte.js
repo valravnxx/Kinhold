@@ -7,13 +7,13 @@
 //   - Cerca del jugador hay un hueco (donde ya está el terreno de verdad), y la malla va unos metros por debajo, para
 //     que lo basto nunca asome por encima de lo fino.
 import * as THREE from 'three';
-import { crearMuestras, mallaDe, compresion, NIVELES } from '../logica/horizonte.js';
+import { crearMuestras, mallaDe, mallaMar, compresion, NIVELES } from '../logica/horizonte.js';
 
 const FINO_A_BASTO = [...NIVELES].reverse();   // 1, 2, 4: el más fino que ya esté
 
 // paisaje y rect: los del mundo; origen y y0: el 0 de la escena; hasta: dónde acaba el terreno de cerca (m);
-// camara: la del juego (su alcance manda en la compresión)
-export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camara }) {
+// camara: la del juego (su alcance manda en la compresión); colorMar: el de la lámina del mar
+export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camara, colorMar = 0x4a6470 }) {
   const muestras = crearMuestras(paisaje, rect);
   const diagonal = Math.hypot(rect.x1 - rect.x0, rect.z1 - rect.z0);
   const comp = compresion(hasta, camara.far, diagonal);
@@ -35,6 +35,20 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   malla.visible = false;
   malla.renderOrder = -2;   // antes que el mar (que va sin escribir la hondura) y que lo de cerca
   escena.add(malla);
+  // el mar de lejos (el de cerca, src/mundo/mundo_juego.js, acaba con la cámara): liso, del color de la lámina del
+  // mar, un poco por debajo de ella (de cerca, la lámina lo tapa; la costa la hace la malla, que baja mucho en el mar)
+  const mm = mallaMar(rect, { ox: origen.x, oz: origen.z, y: -y0 - 1.5 });
+  const gm = new THREE.BufferGeometry();
+  gm.setAttribute('position', new THREE.BufferAttribute(mm.pos, 3));
+  const cm = new THREE.Color(colorMar), cols = new Float32Array(mm.pos.length);
+  for (let i = 0; i < cols.length; i += 3) { cols[i] = cm.r; cols[i + 1] = cm.g; cols[i + 2] = cm.b; }
+  gm.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+  gm.setIndex(new THREE.BufferAttribute(mm.idx, 1));
+  gm.computeVertexNormals();
+  const mar = new THREE.Mesh(gm, material);
+  mar.name = 'horizonte-mar'; mar.frustumCulled = false; mar.castShadow = false; mar.receiveShadow = false;
+  mar.renderOrder = -2;
+  malla.add(mar);   // se ve y se esconde con la malla
 
   let quiere = null, hecho = null;   // el nivel que pide el perfil (4, 2 o 1; null: sin horizonte) y el de la malla
   function rehacer(k) {
