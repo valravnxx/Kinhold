@@ -4179,5 +4179,22 @@
   "pruebas": "En la nube: 31 grupos; 29 a la primera, «construir a la altura del suelo» bien al repetir y «niveles de detalle» bien tras el arreglo (con demo única, la demo en el mundo y juego en inglés). Después se unió main (la prueba de posprocesado del chat, sin código del juego en común); no se volvió a pasar la batería sobre eso. No comprobado: los límites de intentos en la máquina real.",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-04T23:23:32+00:00",
+  "fin": "2026-11-05T00:35:06+00:00",
+  "titulo": "Los límites de intentos ven la dirección del jugador, comprobado desde fuera (carril A)",
+  "hito": "servidor",
+  "hecho": [
+   "Desde esta sesión no se llega a la máquina de Hetzner (no hay clave SSH) ni al juego (el proxy de salida rechaza juego.playkinhold.com), así que se comprueba desde fuera, por lo que contesta el servidor de verdad, sin entrar en la máquina.",
+   "Herramienta nueva, herramientas/comprobar_origen.mjs, con «recuperar la contraseña» para un usuario que no existe (no manda correos ni toca cuentas; límite de 10 por hora y dirección), lanzada en dos máquinas de GitHub a la vez (.github/workflows/origen.yml, rama origen-pedido/…).",
+   "Primera máquina: 11 peticiones repartidas en tres conexiones, dos de ellas diciendo direcciones falsas en X-Forwarded-For; el límite salta en la 11.ª. Lo que escribe el cliente en esa cabecera no reparte el límite.",
+   "Segunda máquina, con otra dirección pública (comprobado que eran distintas): su petición se acepta. El límite no se comparte, así que el servidor no cuenta por la dirección del proxy (Caddy) sino por la de cada jugador.",
+   "La herramienta se rompió a propósito una vez: contra un servidor local sin Caddy (donde sí se cree la cabecera), «agotar» falla como debe.",
+   "No comprobado: el registro de seguridad de la propia máquina (sin acceso a ella). Queda la revisión completa y publicación del hito Cuentas."
+  ],
+  "pruebas": "Comprobación en dos máquinas de GitHub contra el servidor de verdad: las dos bien (límite a la 11.ª petición; desde la otra dirección, aceptada). Herramienta rota a propósito contra un servidor local: falla como debe. Batería entera en la nube (el PC de valravnx no estaba encendido): 29 de 31 grupos bien; fallan «lo que se recoge en el mundo» (en el móvil, la salida al azar deja 19–20 puntos y la prueba pide más de 20) y «la demo en el mundo» (andar hacia el mar y nadar), también al repetirlas. Esta rama no cambia nada del juego ni de esas pruebas: quedan como tarea antes de la revisión del hito.",
+  "capturas": null,
+  "estado": "ok"
  }
 ]

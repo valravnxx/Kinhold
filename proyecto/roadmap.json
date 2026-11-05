@@ -1104,9 +1104,13 @@
     },
     {
      "nombre": "Comprobar en la máquina real que los límites de intentos ven la dirección del jugador y no la del proxy (el registro del servidor tras una entrada desde fuera; Caddy manda X-Forwarded-For), y anotarlo en el diario (auditoría del 4 nov)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-04T23:23:32+00:00",
-     "rama": "trabajo/20261104-2323"
+     "fin": "2026-11-05T00:35:06+00:00"
+    },
+    {
+     "nombre": "Arreglar las dos pruebas de navegador que fallan (5 nov): «lo que se recoge en el mundo» (en el móvil la salida cae al azar y a veces deja 19–20 puntos alrededor, y pide más de 20) y «la demo en el mundo» (andar hacia el mar desde lejos y nadar en el agua); antes de la revisión del hito",
+     "estado": "pendiente"
     },
     {
      "nombre": "Revisión completa y publicación",
