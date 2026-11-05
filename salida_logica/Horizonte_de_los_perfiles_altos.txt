@@ -1,0 +1,28 @@
+La compresión
+  OK   empieza pasado el terreno de cerca — r0 828 m
+  OK   lo más lejos de la isla (su diagonal) cabe en la cámara — 1513 m de 1600
+  OK   lo de cerca no cambia
+  OK   se deshace (la niebla sabe la distancia de verdad)
+  OK   lo más lejano sigue detrás de lo menos lejano
+Las muestras, poco a poco
+  OK   un fotograma hace poco (con el tope de milisegundos) — 128 puntos
+  OK   aún no hay ningún nivel
+  OK   llega primero lo basto y luego lo fino (cada 400, 200 y 100 m) — 4,2,1
+  OK   el alto es el del paisaje — 200/200
+  OK   hay montañas (lo que se quiere ver) — lo más alto 2131 m
+La malla
+  OK   lo fino tiene más triángulos que lo basto — 26542 y 396130
+  OK   quita los cuadros que son todo mar — 396130 de 768600
+  OK   va hundida y en metros de la escena — 2074.9 m
+  OK   el mar baja mucho (la costa la hace el mar de lejos)
+  OK   los colores son lineales y entre 0 y 1
+El mar de lejos
+  OK   cubre el cuadro de la isla y no se sale
+  OK   en trozos (para que siga la compresión) — 123×127
+Los perfiles
+  OK   los dos móviles más baratos no lo llevan — movil-1,movil-2
+  OK   cada perfil de PC al menos tan fino como el anterior
+  OK   los pasos son niveles que hay
+  OK   la niebla de cerca no tapa las montañas
+
+21 bien, 0 mal
