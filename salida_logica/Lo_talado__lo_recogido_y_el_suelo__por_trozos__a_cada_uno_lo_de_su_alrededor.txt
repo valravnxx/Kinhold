@@ -1,0 +1,33 @@
+Lógica de los trozos
+  OK   el trozo de un punto
+  OK   alrededor, un cuadro de 5 × 5
+  OK   la primera vez entran todos; en el mismo trozo, ninguno; al pasar al de al lado, una columna de 5 — 25 · 0 · 3,-2 3,-1 3,0 3,1 3,2
+  OK   lo que salió se olvida: al volver entra otra vez (por si ha cambiado mientras)
+  OK   mover con números raros no hace nada
+  OK   agrupar por trozo
+  OK   y desagrupar lo deja como estaba
+  OK   desagrupar algo raro no rompe
+  OK   la bienvenida dice el lado y el radio de los trozos
+  OK   B, al irse lejos, recibe los trozos que le entran — 25
+Talar cerca de A, con B lejos
+  OK   A tala el árbol
+  OK   A recibe que cae, con el tocón
+  OK   B, lejos, no recibe nada de ese árbol — 0 mensajes
+  OK   y en su suelo no está lo que ha dejado
+  OK   A sí lo ve en su suelo
+Recoger cerca de A
+  OK   A recoge y se entera
+  OK   B, lejos, no
+Quien entra lejos
+  OK   quien aparece en la salida lo ve en su bienvenida
+  OK   quien vuelve lejos (donde lo dejó) no recibe en la bienvenida lo de la salida — posición {"x":1000,"y":0,"z":1000,"giro":0} · tala 0 · rec 0 · suelo 0
+B se acerca
+  OK   le entran los trozos de la salida, con el árbol talado y lo recogido
+  OK   y el suelo de sus trozos, con lo que dejó el árbol
+  OK   lo de los trozos que le entran y nada más
+Guardado por trozos
+  OK   objetos.json, versión 3, con lo talado y lo recogido por trozo — 0,0
+  OK   al volver a arrancar se lee igual
+  OK   lo guardado con el formato anterior (2) se lee igual
+
+25 correctas, 0 fallos
