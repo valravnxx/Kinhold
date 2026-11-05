@@ -37,7 +37,12 @@ void mainImage(const in vec4 inputColor,const in vec2 uv,const in float depth,ou
     hacia=mix(cieloArriba,cieloAbajo,clamp((1.0-uv.y)/0.6,0.0,1.0));
     f+=(maxLejos-tope)*(1.0-exp2(-max(0.0,real-nieblaLejos)/lejosH));
   }
-  outputColor=vec4(aLineal(mix(aSRGB(clamp(inputColor.rgb,0.0,1.0)),hacia,f)),inputColor.a);
+  vec3 s=mix(aSRGB(clamp(inputColor.rgb,0.0,1.0)),hacia,f);
+  // en los bordes contra el cielo (el lienzo es transparente ahí) el suavizado deja píxeles a medias, que la página
+  // mezclaba con su fondo como si fueran más claros (una raya clara en las crestas): con el horizonte, el cielo de
+  // detrás se sabe, así que se mezcla aquí y el píxel queda opaco
+  if(tope<1.0&&inputColor.a<1.0) outputColor=vec4(aLineal(mix(hacia,s,inputColor.a)),1.0);
+  else outputColor=vec4(aLineal(s),inputColor.a);
 }`;
 
 export class NieblaEffect extends Effect {
