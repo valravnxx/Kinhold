@@ -4213,5 +4213,21 @@
   "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido): 33 de 33 grupos bien, también «la demo en el mundo» y «lo que se recoge en el mundo». Prueba de lo que crece rota a propósito: falla como debe. Capturas de la costa, el nado y lo que se recoge (PC y móvil) miradas.",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T03:24:37+00:00",
+  "fin": "2026-11-05T04:05:40+00:00",
+  "titulo": "Hito Cuentas terminado y publicado (demo v102): espera la revisión de valravnx (carril A)",
+  "hito": "servidor",
+  "hecho": [
+   "Batería entera en la nube sobre main (el PC de valravnx no estaba encendido): 33 de 33 grupos bien a la primera, también «la demo en el mundo» y «lo que se recoge en el mundo», que fallaban el 4 nov.",
+   "Capturas de las cuentas miradas en PC y móvil (crear, confirmar el correo, entrar mal, recuperar y cambiar la contraseña, cambiar el correo, otro aparato) y el panel del admin: se leen bien.",
+   "Sigue mal (menor): al cambiar el correo queda a la vista el aviso anterior «Contraseña cambiada…». En la captura «costa» de la prueba del mundo solo se ve agua: no enseña la orilla.",
+   "Publicada la demo v102 con lo que faltaba desde la v101: las piedras sueltas ya no salen en la orilla y el panel de rendimiento sale también a menos de 1 fps.",
+   "El hito Cuentas pasa a revisión: no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe."
+  ],
+  "pruebas": "En la nube: 33 de 33 grupos bien (37,9 min). No comprobado: el registro de seguridad de la propia máquina de Hetzner (sin acceso a ella).",
+  "capturas": "capturas/demo-v102",
+  "estado": "ok"
  }
 ]

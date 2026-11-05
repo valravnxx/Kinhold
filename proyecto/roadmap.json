@@ -1058,7 +1058,7 @@
    "num": "P1",
    "nombre": "Cuentas",
    "jugable": "Entras con tu usuario y tu contraseña desde cualquier aparato y sigues siendo tú: tu personaje, tu casa, tu mojón y lo que llevas no se pierden al cambiar de navegador.",
-   "estado": "en_curso",
+   "estado": "revision",
    "tareas": [
     {
      "nombre": "Cuentas en el servidor: usuario y contraseña (guardada con sal y hash lento, nunca en claro), crear cuenta y entrar; cada cuenta con su personaje (el autor de sus acciones). Lógica pura y servidor, con pruebas (también de lo que no debe dejar: contraseña mala, usuario repetido, demasiados intentos)",
@@ -1117,9 +1117,10 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T03:25:32+00:00",
-     "rama": "trabajo/20261105-0324"
+     "rama": "trabajo/20261105-0324",
+     "fin": "2026-11-05T04:05:40+00:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: lo primero, para que lo que se construya no se pierda. Solo lo mínimo; registros, expulsar y lo demás, en «Administración»."
@@ -2713,6 +2714,13 @@
      "archivo": "jugar/demo/v101.html",
      "capturas": "capturas/demo-v101",
      "notas": "El mojón y los muebles se pagan de lo que llevas encima, no del montón común (3 piedras para el mojón; cada mueble, sus materiales), por el servidor con su autor. Al quitar un mueble, lo que devuelve va a lo que llevas."
+    },
+    {
+     "v": "v102",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v102.html",
+     "capturas": "capturas/demo-v102",
+     "notas": "Hito Cuentas terminado, para la revisión de valravnx: cuentas con usuario, contraseña y correo confirmado; recuperar y cambiar la contraseña y el correo; límites de intentos por la dirección del jugador; el admin, solo por la cuenta con el correo de la máquina. Además: las piedras sueltas ya no salen en la orilla y el panel de rendimiento sale también a menos de 1 fps."
     }
    ]
   },
