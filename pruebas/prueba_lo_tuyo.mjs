@@ -114,6 +114,8 @@ console.log('El servidor de verdad: un navegador tramposo lo manda igual');
       const t = setTimeout(() => f(new Error('tiempo agotado')), ms);
       c.esperas.push({ cond, r: (m) => { clearTimeout(t); r(m); } });
     });
+    // dónde está (el servidor solo deja tocar las obras al alcance de donde tiene al jugador)
+    c.estar = (x, z) => ws.send(JSON.stringify({ tipo: 'estado', x, y: 0, z, giro: 0, anim: 'quieto' }));
     c.accion = (accion) => { const id = ++c.id; ws.send(JSON.stringify({ tipo: 'accion', id, accion })); return c.esperar(m => m.tipo === 'resultado' && m.id === id); };
     ws.on('message', (d) => { const m = JSON.parse(d.toString()); c.recibidos.push(m); c.esperas = c.esperas.filter(e => { if (e.cond(m)) { e.r(m); return false; } return true; }); });
     ws.on('open', async () => { c.bienvenida = await c.esperar(m => m.tipo === 'bienvenida'); listo(c); });
@@ -124,6 +126,7 @@ console.log('El servidor de verdad: un navegador tramposo lo manda igual');
   try {
     const puerto = await s.listo;
     const Ana = await cliente(puerto), Bruno = await cliente(puerto);
+    Ana.estar(1, 1); Bruno.estar(3, 1);   // los dos junto a la obra
     await Ana.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });   // el mojón se paga de lo que llevas
     const rm = await Ana.accion({ tipo: 'mojon', x: 0, z: 0 });
     const rc = await Ana.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: 2, z: 0, k: 0, rot: 0, dir: 0 });

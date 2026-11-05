@@ -39,6 +39,7 @@ paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs
 paso "Quitar el mojón: dejar tu tierra y perder lo construido, para reposicionar" node pruebas/prueba_quitar_mojon.mjs
+paso "Alcance de las obras: el servidor solo deja entregar, subir, trabajar y desmontar junto a la obra y en su planta" node pruebas/prueba_alcance_obras.mjs
 paso "Lo tuyo es tuyo: en tu tierra solo tú y tus invitados desmontáis y usáis puertas y fuego; el servidor lo comprueba" node pruebas/prueba_lo_tuyo.mjs
 paso "Perfiles gráficos: seis perfiles, gradación de color y perfil de inicio" node pruebas/prueba_perfiles_graficos.mjs
 paso "Inventario por huecos" node pruebas/prueba_inventario.mjs

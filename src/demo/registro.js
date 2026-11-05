@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v103 (lo tuyo es tuyo)";
+export const VERSION_DEMO = "Demo única · v104 (las obras, al alcance)";
 export const REGISTRO_DEMO = [
+  "v104: el servidor no se fía del navegador en las obras. Entregar, subir material, trabajar y desmontar solo valen junto a la pieza (a 2,3 m de ella, con 3 m más de margen por el retraso) y en su planta o en la de debajo, con la posición que el servidor tiene de ti; si no, «Estás demasiado lejos: acércate.» o «No estás en su planta.». Al desmontar, la demo ya lo dice antes de pedir confirmación: lo lejano no se desmonta.",
+  "v104, provisional: tu planta, para el servidor, sale de la altura de tus pies sobre la base de la construcción (con 1 m de margen); el GDD no dice desde dónde se desmonta, y se toma lo mismo que para las obras.",
   "v103: lo tuyo es tuyo. En tu tierra solo tú y quien tengas invitado desmontáis, abrís y cerráis las puertas y encendéis o apagáis el fuego; a los demás les sale «Es tierra de otro: solo su dueño y sus invitados.» (y lo de otro ya no se resalta como para desmontarlo). Lo comprueba el servidor con el autor de cada uno, aunque un navegador se lo mande igual.",
   "v103, provisional: lo que queda en tierra de nadie (sin mojón) lo puede tocar cualquiera, y una construcción es de la tierra donde está su origen (como al quitar el mojón). Los almacenajes de la base, cuando los haya (hito «De nada a una casa»), seguirán la misma regla.",
   "v101: el mojón y los muebles se pagan de lo que llevas encima, ya no del montón común: para poner el mojón hacen falta 3 piedras en las manos (o en lo que lleves), y cada mueble, sus materiales. Lo comprueba el servidor, con su autor; si no los llevas, «No llevas los materiales.».",
