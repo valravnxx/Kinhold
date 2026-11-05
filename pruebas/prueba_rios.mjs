@@ -1,11 +1,13 @@
 // Pruebas de los ríos de verdad (valravnx, 5 nov): las uniones (el afluente llega al cauce del río al que entra y su
 // agua, a la altura de ese río), el río nace estrecho, el doble de ancho que antes (arroyo hasta 8 m, que se vadea; río
 // de más, que se nada salvo en sus vados). Ejecutar: node pruebas/prueba_rios.mjs
-// Con MUTAR=1 no se unen los afluentes (como antes): tiene que fallar.
+// Con MUTAR=1 no se unen los afluentes (como antes) y con MUTAR=2 el cauce es de hierba (sin lecho): tiene que fallar.
 if (process.env.MUTAR === '1') globalThis.__sinUnirRios = true;
+if (process.env.MUTAR === '2') globalThis.__sinLecho = true;
 const { generarMapa, SEMILLA_MUNDO, LADO_MUNDO, anchoRio, ARROYO_HASTA } = await import('../src/logica/mapa.js');
 const { crearPaisaje } = await import('../src/logica/paisaje.js');
 const { ISLA } = await import('../src/logica/whitholm.js');
+const { colorJuego } = await import('../src/mundo/color_suelo.js');
 
 let bien = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') { if (cond) bien++; else mal++; console.log(`  ${cond ? 'OK  ' : 'FALLA'} ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -83,6 +85,29 @@ console.log('Se vadean los arroyos; los ríos, solo por sus vados');
   }
   comprobar('los arroyos se vadean (como mucho 0,75 m de agua en el centro)', arroyos > 50 && arroyosBien >= arroyos * 0.95, `${arroyosBien} de ${arroyos}`);
   comprobar('los ríos, no: en el centro hay que nadar (1,2 m o más, salvo en los vados)', riosN > 30 && riosBien >= riosN * 0.85, `${riosBien} de ${riosN}`);
+}
+
+console.log('El lecho: grava y piedra, no hierba');
+{
+  // en puntos de río de la isla, el color del suelo en el centro del cauce y a 6 m fuera de la orilla: el del centro, sin
+  // el verde de la hierba (el verde no pasa del rojo) y más apagado; el de fuera, el de antes
+  let lechoBien = 0, fueraBien = 0, n = 0;
+  for (const r of rios) for (let k = 2; k < r.length - 1; k += 3) {
+    const q = r[k]; if (!enIsla(q)) continue;
+    const x = q.p[0] * 1000, y = q.p[1] * 1000, tr = pai.riosEn(x - 100, y - 100, x + 100, y + 100), c = pai.rioCerca(x, y, tr);
+    if (c.dm > 1) continue;
+    const z = pai.altura(x, y, tr), st = pai.sitio(x, y, z); if (!st || !st.bioma || st.bioma === 'nieve') continue;
+    const dentro = colorJuego(st, z, 0.05, 0.05, 0, x, y, [0, 0, 0], c);
+    const sinRio = colorJuego(st, z, 0.05, 0.05, 0, x, y, [0, 0, 0], null);
+    if (sinRio[1] <= sinRio[0]) continue;   // (solo donde sin el río el suelo sería de hierba, verde)
+    n++;
+    if (dentro[1] <= dentro[0] * 1.05) lechoBien++;
+    const fuera = { dm: c.ancho / 2 + 6, ancho: c.ancho };
+    const a = colorJuego(st, z, 0.05, 0.05, 0, x + 1, y, [0, 0, 0], fuera), b2 = colorJuego(st, z, 0.05, 0.05, 0, x + 1, y, [0, 0, 0], null);
+    if (Math.abs(a[0] - b2[0]) + Math.abs(a[1] - b2[1]) + Math.abs(a[2] - b2[2]) < 1e-6) fueraBien++;
+  }
+  comprobar('en el centro del cauce el suelo es de grava y piedra (sin el verde de la hierba)', n > 50 && lechoBien >= n * 0.95, `${lechoBien} de ${n}`);
+  comprobar('a 6 m de la orilla, el suelo de siempre', fueraBien >= n, `${fueraBien} de ${n}`);
 }
 
 console.log(`\n${bien} bien, ${mal} mal`);
