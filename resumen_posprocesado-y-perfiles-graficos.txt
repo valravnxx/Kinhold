@@ -1,0 +1,45 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 3243 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2515 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2084 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2575 KB
+
+== Construir demo única
+      2423 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3555 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2481 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2078 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2571 KB
+dist/kinhold_trozos.html 2088 KB
+hilo de los trozos 20 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: posprocesado y perfiles gráficos
+  OK   móvil: «Medir» mide los seis perfiles y elige uno — {'movil-1': 154.0, 'movil-2': 521.8, 'movil-3': 1124.2, 'pc-1': 625.2, 'pc-2': 2212.4, 'pc-3': 4122.9} → movil-1
+  OK   móvil: sin errores de página
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas/posprocesado
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 653 s
