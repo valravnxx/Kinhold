@@ -16,7 +16,7 @@ import { modelosRecoleccion } from './recoleccion.js';
 import { modeloHacha } from './personaje.js';
 import { modeloRastra } from './rastra.js';
 import { modeloCarretilla } from './carretilla.js';
-import { Suelo, cargarSuelo, guardarSuelo, ejecutarSuelo, dejarSobra } from '../logica/suelo.js';
+import { Suelo, cargarSuelo, guardarSuelo, ejecutarSuelo } from '../logica/suelo.js';
 import { CATALOGO } from '../logica/inventario.js';
 
 const mallas = L => {
@@ -128,12 +128,6 @@ export function crearSuelo({ raiz, altura, almacen, enTierras }) {
       const r = ejecutarSuelo(suelo, invs, registro, { autor, tipo: 'coger_suelo', objeto, x, z }, ahora, enTierras);
       if (r.ok) { guardarlo(); refrescar(ahora); }
       return r;
-    },
-    // lo que no cupo de lo que devuelve una pieza al desmontarla cae a tus pies (sin servidor; con él, lo pone él)
-    dejarSobra(sobra, autor, x, z, ahora = Date.now()) {
-      const n = dejarSobra(suelo, sobra, x, z, ahora, autor, !!enTierras(autor, x, z));
-      if (n) { guardarlo(); refrescar(ahora); }
-      return n;
     },
     // lo que no cupo al cargar el inventario cae a tus pies
     dejarApartado(inv, autor, x, z, ahora = Date.now()) {

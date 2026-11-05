@@ -90,9 +90,10 @@ let registroAcciones = new RegistroAcciones();
 function accion(a) {
   if (enLinea) { const r = enLinea.red.accion(a); mundo = enLinea.red.mundo; return r; }
   // obras con lo que llevas: lo que se entrega sale del inventario del jugador, y el material se coge del arcón de pruebas
-  const r = ejecutar(mundo, registroAcciones, { autor: AUTOR_LOCAL, ...a }, inventarios);
+  // sin servidor (las pruebas de navegador) hay arcón de pruebas, y lo desmontado vuelve a él como antes; en línea, a lo
+  // que llevas, y lo que no cabe, al suelo (lo pone el servidor)
+  const r = ejecutar(mundo, registroAcciones, { autor: AUTOR_LOCAL, ...a }, a.tipo === 'desmontar' ? null : inventarios);
   if (r.ok && USA_INVENTARIO.has(a.tipo) && almacen) guardarInventarios(almacen, inventarios);
-  if (r.ok && r.sobra) sueloObjetos.dejarSobra(r.sobra, AUTOR_LOCAL, pj.x, pj.z);   // lo desmontado que no te cabe, a tus pies
   return r;
 }
 // lo que cobra de lo que llevas (o te devuelve): las obras, el arcón de pruebas, el mojón y los muebles
