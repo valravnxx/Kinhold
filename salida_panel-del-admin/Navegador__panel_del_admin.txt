@@ -1,0 +1,56 @@
+Jugador simulado: jugador:8e5366d2
+Vista pc
+  OK   pc: entra en línea con el mundo listo
+  OK   pc: crea una cuenta que no es de admin
+  OK   pc: sin la cuenta de admin no sale el botón «Admin» (ni con ?admin)
+  OK   pc: y F9 no abre nada
+  OK   pc: sin la cuenta de admin no se puede ir fuera de la isla — {'libre': False, 'dentro': False}
+  OK   pc: la clave que guardaba el navegador antes se borra
+  OK   pc: sin errores en la página (sin admin)
+  OK   pc: crea la cuenta de admin
+  OK   pc: con la cuenta de admin sale el botón «Admin», sin recargar
+  OK   pc: se abre sin pedir ninguna clave
+  OK   pc: el otro jugador sale en la lista — Conectados además de ti: 1
+  FALLA pc: el otro jugador, pintado en el mapa donde está — {'x': 817.919, 'y': 152.48875, 'rgb': [160, 170, 162]}
+  OK   pc: «Ir» te pone junto a él y cierra el panel — a 1.60 m
+  OK   pc: se vuelve a abrir
+  OK   pc: un clic en el mapa te lleva a ese punto — esperado {'x': 546.8571428571304, 'z': -239.1836734693934}, está {'x': 546.8571428571304, 'y': 43.16143555476614, 'z': -239.1836734693934, 'suelo': 43.16143555476614}
+  OK   pc: y en el suelo — {'x': 546.8571428571304, 'y': 43.16143555476614, 'z': -239.1836734693934, 'suelo': 43.16143555476614}
+  OK   pc: el mapa del panel es el del continente entero, con sus regiones — {'continente': True, 'cuadro': {'x0': 0, 'y0': 0, 'x1': 256, 'y1': 256}, 'regiones': [['Whitholm', True, 194.5, 51.5], ['Eikwold', False, 76.5, 95.5], ['Highfell', False, 136.5, 171.5], ['Storaa', False, 188.5, 173.5], ['Rudmere', False, 80.5, 194.5]]}
+  OK   pc: un clic en otra región (Eikwold) te lleva allí — esperado {'x': -108187.83673469388, 'z': 49066.93877551021}
+  OK   pc: allí se carga el terreno y estás en el suelo — {'x': -108187.83673469388, 'y': 124.23843422212569, 'z': 49066.93877551021, 'suelo': 124.23843410002524, 'isla': False}
+  OK   pc: y puedes andar por allí — 2.16 m
+  OK   pc: el servidor te tiene allí (fuera de la isla) — {'autor': 'jugador:ae148445', 'cuenta': 'valravnx', 'x': -108189.36408534125, 'y': 124.09112247054087, 'z': 49065.41142486283, 'giro': -2.3561746025113113} / [-108189.36408534125, 49065.41142486283]
+  OK   pc: Esc lo cierra
+  OK   pc: M lo cierra
+  OK   pc: «Cerrar» lo cierra con el mapa
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: entra en línea con el mundo listo
+  OK   movil: crea una cuenta que no es de admin
+  OK   movil: sin la cuenta de admin no sale el botón «Admin» (ni con ?admin)
+  OK   movil: sin la cuenta de admin no se puede ir fuera de la isla — {'libre': False, 'dentro': False}
+  OK   movil: la clave que guardaba el navegador antes se borra
+  OK   movil: sin errores en la página (sin admin)
+  OK   movil: crea la cuenta de admin
+  OK   movil: con la cuenta de admin sale el botón «Admin», sin recargar
+  OK   movil: se abre sin pedir ninguna clave
+  OK   movil: el otro jugador sale en la lista — Conectados además de ti: 1
+  FALLA movil: el otro jugador, pintado en el mapa donde está — {'x': 279.874625, 'y': 303.92703125, 'rgb': [184, 54, 42]}
+  OK   movil: «Ir» te pone junto a él y cierra el panel — a 1.60 m
+  OK   movil: se vuelve a abrir
+  OK   movil: un clic en el mapa te lleva a ese punto — esperado {'x': 216.8342245989188, 'z': -419.0374331550847}, está {'x': 216.8342245989188, 'y': 14.311211447849317, 'z': -419.0374331550847, 'suelo': 14.311281327515871}
+  OK   movil: y en el suelo — {'x': 216.8342245989188, 'y': 14.311211447849317, 'z': -419.0374331550847, 'suelo': 14.311281327515871}
+  OK   movil: el mapa del panel es el del continente entero, con sus regiones — {'continente': True, 'cuadro': {'x0': 0, 'y0': 0, 'x1': 256, 'y1': 256}, 'regiones': [['Whitholm', True, 194.5, 51.5], ['Eikwold', False, 76.5, 95.5], ['Highfell', False, 136.5, 171.5], ['Storaa', False, 188.5, 173.5], ['Rudmere', False, 80.5, 194.5]]}
+  OK   movil: un clic en otra región (Eikwold) te lleva allí — esperado {'x': -107932.89839572193, 'z': 49548.87700534759}
+  OK   movil: allí se carga el terreno y estás en el suelo — {'x': -107932.89839572193, 'y': 99.51351013881649, 'z': 49548.87700534759, 'suelo': 99.51351013885295, 'isla': False}
+  OK   movil: y puedes andar por allí — 4.23 m
+  OK   movil: el servidor te tiene allí (fuera de la isla) — {'autor': 'jugador:c8e58335', 'cuenta': 'admmovil', 'x': -107936.04116226679, 'y': 99.78366659068688, 'z': 49546.04597873877, 'giro': -2.356194489858685} / [-107936.04116226679, 49546.04597873877]
+  OK   movil: «Cerrar» lo cierra con el mapa
+  OK   movil: sin errores en la página
+Vista pc_en
+  FALLA en inglés: ningún texto sin traducir — ['el continente']
+  OK   en inglés: el panel en inglés — Debug (admin)Connected besides you: 18e5366d21500, 900GoClick on the map to go there.
+        Close
+
+3 fallos
