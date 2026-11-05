@@ -1716,9 +1716,9 @@
     },
     {
      "nombre": "El mar de verdad (valravnx, 5 nov): el fondo de la orilla baja enseguida (en las playas, un poco de agua somera con la arena a la vista y luego hondo; al pie de los acantilados, hondo ya), sin la franja de fondo azul al aire entre la orilla y el mar, y el fondo de arena o de roca que se ve bajo el agua",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T20:46:53+01:00",
-     "rama": "trabajo/20261105-2050-mar"
+     "fin": "2026-11-06T00:36:22+01:00"
     },
     {
      "nombre": "Los ríos llegan al mar (valravnx, 5 nov: «los ríos no finalizan en la entrada al mar, ni hay deltas»): el cauce sigue por la playa hasta el agua, se ensancha en la desembocadura y baja al nivel del mar; en los ríos grandes, un estuario o un delta",
@@ -2893,6 +2893,13 @@
      "archivo": "jugar/demo/v115.html",
      "capturas": "capturas/demo-v115",
      "notas": "Eliges dónde empiezas: en línea hay tres salidas del rey (Lindholt, junto a la ciudad y en Motdale) y cada personaje nuevo elige la suya una vez; en la pradera abierta, algo de piedra y sílex sueltos. Capturas: la elección en PC y móvil, la llegada a Motdale y a la ciudad, y lo que se recoge alrededor."
+    },
+    {
+     "v": "v116",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v116.html",
+     "capturas": "capturas/demo-v116",
+     "notas": "El mar de verdad: el fondo baja enseguida (en las playas, unos metros someros con la arena a la vista y luego hondo; al pie de los acantilados, hondo ya), sin la franja de fondo gris azulado al aire, y el fondo de arena que se ve bajo el agua."
     }
    ]
   },
