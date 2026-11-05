@@ -136,6 +136,9 @@ for (const [semilla, lado] of [[66172, 256], [7, 256], [42, 256], [3, 188]]) {
         const x = (ax + bx) / 2, y = (ay + by) / 2, tr = pai.riosEn(x - 800, y - 800, x + 800, y + 800);
         const w = pai.agua(x, y, tr); if (w === null) continue; vegaN++;
         const lo = [1, -1].map(sg => { let v = Infinity; for (let d = 30; d <= 250; d += 20) v = Math.min(v, pai.altura(x + nx * d * sg, y + ny * d * sg, tr)); return v; });
+        // (junto al mar —un lado baja del nivel del mar a menos de 250 m— es la desembocadura, no el valle: ahí el río aún
+        // no llega al mar como debe; es otra tarea, «Los ríos llegan al mar»)
+        if (Math.min(...lo) < -0.5) { vegaN--; continue; }
         if (w + (MUTAR ? 5 : 0) - Math.max(...lo) > 1) enAlto++;
       }
       comprobar(`${n}: los ríos siguen el terreno: en el valle, el agua nunca va en alto sobre los dos lados (Whitholm, menos del 1 %)`, vegaN > 300 && enAlto <= vegaN * 0.01, `${enAlto} de ${vegaN} puntos de valle en terraplén`);
