@@ -2387,7 +2387,7 @@ function elegirSalidaPanel() {
   if (!enLinea || panelSalida) return;
   const estilo = document.createElement('style');
   estilo.textContent = `#panelSalida{position:fixed;inset:0;z-index:57;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(20,16,12,.45);font:15px/1.4 system-ui,sans-serif;color:#efe6d6}
-#panelSalida .ps-caja{background:rgba(36,30,24,.96);border-radius:14px;padding:18px 20px 16px;width:min(400px,100%);box-shadow:0 10px 40px #0006}
+#panelSalida .ps-caja{background:#241e18;border-radius:14px;padding:18px 20px 16px;width:min(400px,100%);box-shadow:0 10px 40px #0006}
 #panelSalida h2{margin:0 0 4px;font:600 22px/1.15 Georgia,"Times New Roman",serif;letter-spacing:.04em}
 #panelSalida p{margin:0 0 12px;color:#cdbfa8;font-size:14px}
 #panelSalida button{display:block;width:100%;text-align:left;margin:0 0 8px;padding:10px 12px;border:1px solid #6b5a44;border-radius:9px;background:#4a3d2e;color:#f3ead9;font:inherit;cursor:pointer}
