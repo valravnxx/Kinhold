@@ -4229,5 +4229,17 @@
   "pruebas": "En la nube: 33 de 33 grupos bien (37,9 min). No comprobado: el registro de seguridad de la propia máquina de Hetzner (sin acceso a ella).",
   "capturas": "capturas/demo-v102",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T04:07:36+00:00",
+  "fin": "2026-11-05T04:07:46+00:00",
+  "titulo": "valravnx aprueba el hito Cuentas",
+  "hito": "servidor",
+  "hecho": [
+   "valravnx aprueba el hito Cuentas tras la revisión completa y la demo v102: pasa a hecho y queda anotado en REVISION.md (Procesado)."
+  ],
+  "pruebas": "Sin cambios de código.",
+  "capturas": null,
+  "estado": "ok"
  }
 ]

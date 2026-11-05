@@ -1058,7 +1058,7 @@
    "num": "P1",
    "nombre": "Cuentas",
    "jugable": "Entras con tu usuario y tu contraseña desde cualquier aparato y sigues siendo tú: tu personaje, tu casa, tu mojón y lo que llevas no se pierden al cambiar de navegador.",
-   "estado": "revision",
+   "estado": "hecho",
    "tareas": [
     {
      "nombre": "Cuentas en el servidor: usuario y contraseña (guardada con sal y hash lento, nunca en claro), crear cuenta y entrar; cada cuenta con su personaje (el autor de sus acciones). Lógica pura y servidor, con pruebas (también de lo que no debe dejar: contraseña mala, usuario repetido, demasiados intentos)",

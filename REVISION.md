@@ -9,6 +9,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 ### 5 nov 2026 (05:05 UTC+1) — por el chat: el posprocesado, al juego
 valravnx, sobre la prueba de posprocesado v1: «se ve bien, mi móvil como es el POCO F7 tira hasta el de PC de gama alta a 65 fps en la prueba, mételo sin noticia al juego ya». Responde la decisión pendiente del posprocesado (se quedan los efectos). «Sin noticia»: la versión y su entrada del diario no salen en Discord.
 
+### 5 nov 2026 (04:07 UTC) — en la sesión del carril A: aprobado el hito Cuentas
+valravnx, tras la revisión completa y la demo v102: «aprueba». → El hito Cuentas pasa a hecho.
+
 ### 4 nov 2026 (20:48–20:51 UTC+1) — por el chat: perfiles gráficos y posprocesado
 valravnx: «lo de las mejoras gráficas que añadimos al GDD, con los diferentes perfiles gráficos» y la tabla: oclusión ambiental (oscurecer rincones, uniones y contactos), mapeo tonal (transición entre luces y sombras), gradación de color (identidad cromática coherente), brillo moderado (difusión de las fuentes de luz), niebla (profundidad), desenfoque puntual (escenas concretas) y haces de luz opcionales; «podemos hacer una prueba?»; y «la idea eran 6 perfiles, desde móvil de gama baja a PC gama alta, así que puedes volverte algo más loco». Hecho: hito nuevo G (lo lleva el chat) y la prueba «Posprocesado y perfiles gráficos» v1; el GDD (apartado 3 y el menú de opciones) con los seis perfiles. Pendiente de que valravnx mida con «Medir» y diga qué efectos se quedan.
 
