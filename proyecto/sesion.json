@@ -11,5 +11,11 @@
   "tarea": "Ríos de verdad (valravnx, 5 nov): los afluentes llegan al cauce del río al que entran, nacen estrechos, el doble de anchos (arroyos hasta 8 m, que se vadean; ríos de más, que se nadan o se cruzan por sus vados) y con lecho de piedra y grava en vez de hierba",
   "hito": "mundo",
   "rama": "trabajo/20261105-0700-rios"
+ },
+ "chat:trabajo/20261105-1220-dosel": {
+  "inicio": "2026-11-05T12:19:08+01:00",
+  "tarea": "El bosque de lejos (valravnx, 5 nov: «simular las zonas donde el bioma es bosque… que a toda distancia ya puedas diferenciar bastante bien los biomas»): una capa de dosel con volumen y copas donde hay bosque, desde donde acaban los árboles de verdad hasta el borde de la isla",
+  "hito": "graficos",
+  "rama": "trabajo/20261105-1220-dosel"
  }
 }
