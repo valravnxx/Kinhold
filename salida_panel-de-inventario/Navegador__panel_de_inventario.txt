@@ -1,0 +1,43 @@
+PC: arrastrar del arcón a la silueta y a los huecos
+  OK   el botón abre el panel
+  OK   10 cuadros de equipo (espalda, cintura y 8 capas de ropa) — 10
+  OK   ni manos ni hombro en el panel (se cogen del mundo y se ven en el personaje)
+  OK   el retrato es tu personaje dibujado (un 10–60 % del cuadro) — 0.17
+  OK   empieza con camisa y pantalón de lino
+  OK   sin cinturón no hay cuadros de cintura
+  OK   arrastrar el cinto de cuero a la cintura se lo pone — cinto_cuero:1
+  OK   con el cinto, 3 cuadros de cintura bajo la silueta — 3
+  OK   el cuchillo, arrastrado a un hueco pequeño del cinto — cuchillo:1
+  OK   el hacha (mediana) no entra en un hueco pequeño, y se dice por qué — No cabe en ese hueco.
+  OK   tocar el leñero abre sus 6 huecos — lenero:1 ·  · espalda
+  OK   la leña entra en el leñero, una pila entera — lena:3
+  OK   la piedra no entra en el leñero
+  OK   el personaje se pone la túnica que dice el inventario — ['tunica', 'descalzo']
+  FALLA del arcón: el hacha con las manos y el saco al hombro — hacha_mano:1 · None
+  OK   el hacha se ve en la mano del personaje
+  FALLA abajo se ve lo que llevas en la mano y al hombro — En la mano:
+Hacha de mano
+Soltar
+  OK   arrastrar el cuchillo del cinto al arcón lo deja
+  OK   se ve la carga y la velocidad — Carga: 17% · velocidad al andar: 99%
+  OK   cada cambio queda en el registro de acciones con autor — 9
+  OK   «Soltar» deja lo de la mano (y el hacha ya no se ve)
+Traceback (most recent call last):
+  File "D:\KinholdGrafica\runner\_work\Kinhold\Kinhold\pruebas\prueba_inventario_navegador.py", line 112, in <module>
+    pg.click('#llevas [data-soltar="hombro"]')
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\sync_api\_generated.py", line 11102, in click
+    self._sync(
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_page.py", line 889, in click
+    return await self._main_frame._click(**locals_to_params(locals()))
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_frame.py", line 594, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#llevas [data-soltar=\"hombro\"]")
+
