@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 5 nov 2026 (18:50 UTC+1) — por el chat: el linde del bosque de lejos
+valravnx, con una captura de lomas lejanas con manchas verde oscuro de bordes en dientes de sierra: «el fix de árboles de lejos que hiciste se corta de manera así ahora». Mirado: el dosel de lejos (rejilla de 200 m) baja en sus esquinas sin bosque hasta 4 m bajo el suelo, y en el linde queda una pared de unos 20 m. → Tarea de chat en el hito G: el linde baja suave hasta el suelo y pasa a su color (solo la malla del dosel de lejos; lo demás del horizonte lo lleva la sesión «el horizonte sin cortes»).
+
 ### 5 nov 2026 (16:36 UTC) — por el chat: traer jugadores con el panel de admin
 valravnx: «mete que en el panel de admin, a parte de lo que ya está que es tpearme a gente, poder tpearlos a mi». → Tarea de chat en el hito P7 (Administración): en la lista del panel, junto a «Ir», un botón «Traer» que pone a ese jugador a tu lado (lo pide el servidor, solo para la cuenta de admin, y lo apunta en admin.jsonl).
 

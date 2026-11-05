@@ -1485,6 +1485,12 @@
      "estado": "en_curso",
      "inicio": "2026-11-05T16:43:36+01:00",
      "rama": "trabajo/20261105-1645-cortes"
+    },
+    {
+     "nombre": "El linde del bosque de lejos sin paredes (valravnx, 5 nov: «el fix de árboles de lejos que hiciste se corta de manera así ahora»): donde acaba el bosque, el dosel de lejos baja suave hasta el suelo y pasa a su color, en vez de caer en una pared de dientes de sierra",
+     "estado": "en_curso",
+     "inicio": "2026-11-05T18:53:41+01:00",
+     "rama": "trabajo/20261105-1855-linde-dosel"
     }
    ],
    "num": "G"
