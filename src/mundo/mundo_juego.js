@@ -13,6 +13,7 @@ import { crearGestor, ANILLOS, LADO as LADO_TROZO, claveTrozo } from '../logica/
 import { crearTerrenoTrozos } from './terreno_trozos.js';
 import { materialSuelo } from '../mapa/suelo.js';
 import { crearAguaMundo } from './agua_mundo.js';
+import { crearHorizonte } from './horizonte.js';
 import { nivelar as conMarcas } from '../logica/nivelado.js';
 
 const movil = typeof innerWidth !== 'undefined' && Math.min(innerWidth, innerHeight) < 700;
@@ -21,7 +22,8 @@ const movil = typeof innerWidth !== 'undefined' && Math.min(innerWidth, innerHei
 export const ANILLOS_MUNDO = movil ? [{ paso: 1, hasta: 32 }, { paso: 2, hasta: 128 }, { paso: 4, hasta: 288 }] : ANILLOS;
 export const ORILLA = 0.15;  // m sobre el mar (la lámina del mar está a 0,05): más abajo ya es agua y no se anda
 
-export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
+// camara (opcional): la del juego; con ella, el horizonte de los perfiles gráficos altos (src/mundo/horizonte.js)
+export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }) {
   const O = { x: origen.x, z: origen.z };
   const paisaje = crearPaisaje(mapa);
   const altBase = alturaMundo(paisaje);
@@ -48,6 +50,9 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
   // El fondo del mar sí lo tapa (va después de lo opaco y se compara con su hondura)
   mar.material.transparent = true; mar.material.depthWrite = false; mar.renderOrder = -1;
   escena.add(mar);
+
+  // el horizonte: la isla entera, basta, detrás del terreno de cerca (solo lo dibuja un perfil gráfico que lo pida)
+  const horizonte = camara ? crearHorizonte({ escena, paisaje, rect: ISLA, origen: O, y0, hasta: ANILLOS_MUNDO[ANILLOS_MUNDO.length - 1].hasta, camara }) : null;
 
   // la altura del suelo en la escena: la de la malla del trozo que se ve; si aún no ha llegado, la exacta
   function altura(x, z) {
@@ -103,8 +108,10 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
   // los trozos que tocan donde estás; listo: los que hay alrededor (de cerca) ya tienen su malla
   let listo = false;
   function paso(x, z, opc) {
-    const ms = terreno.actualizar(x + O.x, z + O.z, opc);
+    let ms = terreno.actualizar(x + O.x, z + O.z, opc);
     agua.paso(x, z);
+    // el horizonte se calcula cuando lo de cerca ya está (2 ms por fotograma como mucho)
+    if (horizonte) ms += horizonte.paso(x, z, listo ? 2 : 0);
     // listo cuando los trozos de los 3 × 3 de alrededor tienen su malla
     const i = Math.floor((x + O.x) / LADO_TROZO), j = Math.floor((z + O.z) / LADO_TROZO);
     let ok = true;
@@ -114,6 +121,6 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA }) {
   }
 
   const dentro = (x, z) => dentroDeIsla(x + O.x, z + O.z);
-  return { altura, sobreMar, seco, andable, dentro, aguaEn, agua, paso, nivelar, terreno, paisaje, grupo, mar, y0,
+  return { altura, sobreMar, seco, andable, dentro, aguaEn, agua, paso, nivelar, terreno, paisaje, grupo, mar, y0, horizonte,
     get listo() { return listo; }, salida: O, isla: ISLA };
 }

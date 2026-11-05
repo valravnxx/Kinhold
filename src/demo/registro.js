@@ -1,10 +1,12 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v106 (ríos de verdad)";
+export const VERSION_DEMO = "Demo única · v107 (ríos de verdad)";
 export const REGISTRO_DEMO = [
-  "v106: ríos de verdad. El doble de anchos (los arroyos de unos 5 a 8 m, el río mayor de Whitholm de unos 22 m); los arroyos se vadean y los ríos se cruzan nadando o por sus vados. Nacen estrechos y se ensanchan en su primer kilómetro.",
-  "v106: los afluentes llegan al cauce del río al que entran (antes se quedaban hasta 170 m antes) y su agua llega a la misma altura.",
-  "v106: lecho de río: el fondo es de grava y cantos (del color de la roca del sitio) con barras de arena en los ríos anchos, la orilla es de barro húmedo, y hay cantos de río en el cauce y la orilla, más gordos donde la corriente es fuerte. El cauce tiene el fondo llano y la orilla marcada.",
-  "v106: los saltos de agua dicen su alto de verdad (donde el suelo recorta el escalón, no cuentan como salto). Un sitio de salida que quedó junto a un río sale de la lista.",
+  "v107: ríos de verdad. El doble de anchos (los arroyos de unos 5 a 8 m, el río mayor de Whitholm de unos 22 m); los arroyos se vadean y los ríos se cruzan nadando o por sus vados. Nacen estrechos y se ensanchan en su primer kilómetro.",
+  "v107: los afluentes llegan al cauce del río al que entran (antes se quedaban hasta 170 m antes) y su agua llega a la misma altura.",
+  "v107: lecho de río: el fondo es de grava y cantos (del color de la roca del sitio) con barras de arena en los ríos anchos, la orilla es de barro húmedo, y hay cantos de río en el cauce y la orilla, más gordos donde la corriente es fuerte. El cauce tiene el fondo llano y la orilla marcada.",
+  "v107: los saltos de agua dicen su alto de verdad (donde el suelo recorta el escalón, no cuentan como salto). Un sitio de salida que quedó junto a un río sale de la lista.",
+  "v106: horizonte en los perfiles altos (Móvil alto y los tres de PC): detrás del terreno de cerca se ve la isla entera, en basto, con su relieve y su color, y el mar hasta el borde, fundidos con el cielo por la bruma; se calcula poco a poco al entrar (valravnx, 5 nov: «aumentaran muchísimo la distancia de dibujado de mapa aunque sea sin detalle para ver las montañas y las formas»).",
+  "v106: cada 400 m en Móvil alto y PC básico, cada 200 en PC medio y cada 100 en PC alto. Solo el paisaje: ni jugadores, ni obras, ni árboles sueltos.",
   "Servidor (5 nov), provisional: movimiento sin trampas. El servidor no se cree que vayas a más de 8 m/s (correr son 6): lo que llega más lejos se queda donde se podía llegar, en la misma dirección, y se anota. Se pueden juntar hasta 16 m, por los tirones de la red. Volver al sitio de salida al ahogarse es libre, y la liza del duelo no cuenta para el mundo.",
   "v105: el posprocesado del estilo en el juego, con seis perfiles gráficos de móvil básico a PC alto: oclusión ambiental (rincones, uniones y contactos), mapeo tonal, gradación de color, brillo de las luces y niebla, según el perfil (valravnx, 5 nov, tras la prueba de posprocesado v1).",
   "v105: el perfil se elige en el panel de rendimiento (el botón de los fps, junto a «Menú»), con ★ en el que sugiere tu aparato; el que elijas se queda guardado en el navegador. ?graficos=<perfil> en la dirección fuerza uno.",

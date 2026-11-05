@@ -71,6 +71,7 @@ export function crearAmbiente(escena, { luz = 'manana', alcance = 12.5, mapa = 1
   amb.ponerLuz = (id) => {
     if (!LUCES[id]) id = 'manana';
     amb.luz = id; const L = LUCES[id];
+    amb.cielo = [L.fondo[1], L.fondo[0]];   // arriba y en el horizonte (hex sRGB), para la bruma del horizonte
     sol.color.set(L.sol[0]); sol.intensity = L.sol[1];
     dir.set(...L.sol[2]); distancia = dir.length() * 1.6 * Math.max(1, alcance / 12.5); dir.normalize();
     hemi.color.set(L.hemi[0]); hemi.groundColor.set(L.hemi[1]); hemi.intensity = L.hemi[2];

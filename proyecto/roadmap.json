@@ -1174,7 +1174,9 @@
     },
     {
      "nombre": "Zonas del rey (valravnx, 4 nov): las zonas con una veta marcada en el mapa, un sitio de salida o la ciudad no se reclaman, y en ellas cava y recoge cualquiera. Antes, con la lógica de comarcas, contar cuántas zonas de Whitholm tienen veta marcada, vado, collado, salida o ciudad, para que las del rey sean las justas y se vea en el mapa",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-05T10:22:41+00:00",
+     "rama": "trabajo/20261105-1022"
     },
     {
      "nombre": "Desmontar el mojón (valravnx, 4 nov): el dueño quita su mojón cuando quiere, por el servidor con su autor; sus obras quedan como ruina sin dueño (o las desmonta antes, al 75 %) y no puede poner otro hasta pasados unos días reales (provisional: 3), para que reclamar y soltar no sirva para bloquear a otros",
@@ -1450,9 +1452,9 @@
     },
     {
      "nombre": "El horizonte en los perfiles altos (valravnx, 5 nov: «no noto casi ninguna diferencia más que la resolución; me interesaría que los altos aumentaran muchísimo la distancia de dibujado del mapa, aunque sea sin detalle, para ver las montañas y las formas»): el terreno de toda la isla, basto y lejano, detrás del de cerca",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T09:18:41+01:00",
-     "rama": "trabajo/20261105-0920-horizonte"
+     "fin": "2026-11-05T11:26:35+01:00"
     }
    ],
    "num": "G"
@@ -2764,6 +2766,14 @@
      "archivo": "jugar/demo/v105.html",
      "capturas": "capturas/demo-v105",
      "notas": "Perfiles gráficos y posprocesado en el juego: oclusión ambiental, mapeo tonal, gradación de color, brillo de las luces y niebla según el perfil, de Móvil básico a PC alto. El perfil se elige en el botón de los fps, junto a «Menú» (★ el que sugiere tu aparato) y se queda guardado.",
+     "noticia": false
+    },
+    {
+     "v": "v106",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v106.html",
+     "capturas": "capturas/demo-v106",
+     "notas": "Horizonte en los perfiles altos (Móvil alto y los tres de PC): detrás del terreno de cerca se ve la isla entera, en basto, con su relieve y su color, y el mar hasta el borde, fundidos con el cielo por la bruma.",
      "noticia": false
     }
    ]
