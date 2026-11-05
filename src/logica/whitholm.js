@@ -158,6 +158,19 @@ export function elegirSalida(azar = Math.random()) {
   return { x: SALIDAS[k][0], z: SALIDAS[k][1] };
 }
 
+// Las salidas en línea (valravnx, 5 nov: «se han marcado las zonas de inicio como zonas del rey, así que pon dos más,
+// una será en la ciudad y otra en la otra comarca de inicio», «motdale», «lo eligen»): tres sitios fijos, cada uno en
+// una zona del rey (src/logica/zonas_rey.js), y cada personaje nuevo elige en cuál empieza. La salida común (Lindholt);
+// junto a la ciudad del rey (Strandvang), a 80 m de su centro, el primer sitio que vale como salida (esSalida) y cae en
+// su zona; y en Motdale, el sitio de SALIDAS más cercano al centro de los de esa comarca. (La prueba de las salidas
+// comprueba que valen y dónde caen.) En metros del mundo.
+export const SALIDAS_INICIO = [
+  { id: 'lindholt', nombre: 'Lindholt', x: SALIDA.x, z: SALIDA.z },
+  { id: 'ciudad', nombre: 'La ciudad del rey', x: 217589, z: 52804 },
+  { id: 'motdale', nombre: 'Motdale', x: 204000, z: 57000 },
+];
+export const salidaInicio = (id) => SALIDAS_INICIO.find(s => s.id === id) || null;
+
 // ¿Es (x, z) uno de los sitios de salida conocidos (SALIDA o uno de SALIDAS)? Para no fiarse de lo guardado en el navegador.
 export const esSitioDeSalida = (x, z) => (x === SALIDA.x && z === SALIDA.z) || SALIDAS.some(s => s[0] === x && s[1] === z);
 

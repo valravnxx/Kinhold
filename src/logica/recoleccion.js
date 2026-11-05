@@ -4,6 +4,7 @@
 // Lo que pide el nivel N0, con las manos:
 //   Ramas caídas       — bosque            — recoger  — 1–3 ramas        (M) — vuelve en unos días reales
 //   Piedra suelta      — ríos, laderas     — recoger  — 1 piedra         (M) — lento (semanas)
+//   (y algo de piedra y de sílex sueltos en el claro, menos que en su sitio: valravnx, 1 nov)
 //   Sílex              — zonas calizas, ríos — recoger — 1 nódulo        (P) — lento
 //   Fibra (ortiga, hierba larga) — claros, riberas — arrancar — 2–4 fibra cruda (P) — una estación
 //
@@ -28,8 +29,8 @@ export const ALCANCE_RECOGER = 2; // m
 // Qué se recoge en cada tipo de punto. donde: zonas del terreno en las que sale. da: tipo del catálogo y cuánto.
 export const RECOLECTABLES = {
   ramas:        { nombre: 'Ramas caídas', donde: ['bosque'], con: 'manos', accion: 'recoger', da: 'rama', min: 1, max: 3, vuelve: TIEMPOS.dias },
-  piedra:       { nombre: 'Piedra suelta', donde: ['rio', 'ladera'], con: 'manos', accion: 'recoger', da: 'piedra', min: 1, max: 1, vuelve: TIEMPOS.semanas },
-  silex:        { nombre: 'Sílex', donde: ['caliza', 'rio'], con: 'manos', accion: 'recoger', da: 'silex', min: 1, max: 1, vuelve: TIEMPOS.semanas },
+  piedra:       { nombre: 'Piedra suelta', donde: ['rio', 'ladera', 'claro'], con: 'manos', accion: 'recoger', da: 'piedra', min: 1, max: 1, vuelve: TIEMPOS.semanas },
+  silex:        { nombre: 'Sílex', donde: ['caliza', 'rio', 'claro'], con: 'manos', accion: 'recoger', da: 'silex', min: 1, max: 1, vuelve: TIEMPOS.semanas },
   ortiga:       { nombre: 'Ortigas', donde: ['claro', 'ribera'], con: 'manos', accion: 'arrancar', da: 'fibra', min: 2, max: 4, vuelve: TIEMPOS.estacion },
   hierba_larga: { nombre: 'Hierba larga', donde: ['claro', 'ribera'], con: 'manos', accion: 'arrancar', da: 'fibra', min: 2, max: 4, vuelve: TIEMPOS.estacion },
 };

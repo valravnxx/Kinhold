@@ -25,6 +25,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   // se dibuja con su modelo de combate (espada en mano) y se mueve como dice su luchador (cargar, golpear, parar, caer)
   const fotos = new Map();      // autor → foto de su luchador (src/logica/combate_servidor.js)
   const escuchas = new Set();   // lo que quiere ver los mensajes del panel del admin (src/juego/panel_admin.js)
+  const escuchasSalida = new Set();   // y la respuesta a la salida que elige un personaje nuevo (src/juego/main.js)
 
   cli = abrirCliente({
     alAbrir: (enviar) => {
@@ -36,6 +37,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     },
     alMensaje: (msg) => {
       if (msg.tipo === 'admin') { for (const f of escuchas) f(msg); return; }
+      if (msg.tipo === 'salida') { for (const f of escuchasSalida) f(msg); return; }
       for (const l of msg.tipo === 'luchadores' ? msg.lista : msg.tipo === 'bienvenida' ? msg.luchadores || [] : []) {
         if (l.liza) enLiza.add(l.autor); else enLiza.delete(l.autor);
         fotos.set(l.autor, l);
@@ -127,6 +129,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     mandarEstado: (propio) => { if (cli.estado !== 'conectado') return false; presencia.ultimoEnvio = -Infinity; return presencia.actualizar(performance.now(), propio); },
     // para el panel del admin: mandar al servidor y escuchar sus respuestas ({ tipo: 'admin' })
     enviar: (m) => cli.enviar(m), escuchar: (f) => { escuchas.add(f); return () => escuchas.delete(f); },
+    escucharSalida: (f) => { escuchasSalida.add(f); return () => escuchasSalida.delete(f); },
     get estado() { return cli.estado; },
     get antiguo() { return cli.antiguo; },
     get cuenta() { return cli.cuenta; },   // el usuario de tu cuenta (null si aún no tienes)

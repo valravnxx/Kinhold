@@ -8,16 +8,15 @@
 // Cuáles son (contadas el 5 nov con el mundo elegido, ver el diario): de las 1.840 zonas con tierra de Whitholm,
 //  - la de la gran veta de hierro de la sierra (la única veta marcada de la isla; en Breiddal),
 //  - la de la ciudad del rey (en Strandvang),
-//  - la de la salida común (en Lindholt): hoy todos aparecen ahí.
-// Decisión provisional (5 nov, en el registro de la demo y en decisiones_pendientes): los 259 sitios de la salida al
-// azar (SALIDAS, uno por km² que vale en las tres comarcas de inicio) caen en 235 zonas, el 28 % de esas tres
-// comarcas, y aún no se usan (llegan con «Salida al azar de verdad en línea»); hacerlas todas del rey dejaría poco que
-// reclamar donde empieza la gente, así que no lo son hasta que valravnx diga cuántos sitios de salida quiere.
+//  - las de las tres salidas en línea (valravnx, 5 nov; SALIDAS_INICIO en src/logica/whitholm.js): la común (en
+//    Lindholt), la de junto a la ciudad (cae en la zona de la ciudad) y la de Motdale.
+// Los 259 sitios de la salida al azar (SALIDAS) ya no son salidas en línea (solo en el juego sin servidor) y sus zonas
+// se reclaman como las demás.
 //
 // Lo que cuesta calcularlas (buscarZonasRey) es generar el mapa; por eso los sitios van apuntados en SITIOS_REY, que el
 // servidor y el navegador pasan a zonas con comarcas.zonaEn (9 puntos cada uno). La prueba (pruebas/prueba_zonas_rey.mjs)
 // genera el mapa y comprueba que siguen siendo los mismos.
-import { ISLA, SALIDA, CIUDAD_REY, dentroDeIsla } from './whitholm.js';
+import { ISLA, CIUDAD_REY, SALIDAS_INICIO, dentroDeIsla } from './whitholm.js';
 
 // Por qué es del rey cada una (el texto sale en el mapa y en el aviso)
 export const POR_QUE = {
@@ -32,10 +31,10 @@ export const MOTIVO_REY = 'Es zona del rey: no se reclama (aquí cava y recoge c
 export const SITIOS_REY = [
   { x: 180500, z: 60500, por: 'veta' },
   { x: CIUDAD_REY.x, z: CIUDAD_REY.z, por: 'ciudad' },
-  { x: SALIDA.x, z: SALIDA.z, por: 'salida' },
+  ...SALIDAS_INICIO.map(s => ({ x: s.x, z: s.z, por: 'salida' })),
 ];
 
-// Busca los sitios con el mapa: las vetas marcadas (las grandes) de la isla, la ciudad y la salida común.
+// Busca los sitios con el mapa: las vetas marcadas (las grandes) de la isla, la ciudad y las tres salidas en línea.
 export function buscarZonasRey(mapa, comarcas, isla = ISLA) {
   const l = [];
   for (const v of mapa.vetas) {
@@ -46,7 +45,7 @@ export function buscarZonasRey(mapa, comarcas, isla = ISLA) {
     l.push({ x, z, por: v.tipo === 'granCarbon' ? 'carbon' : 'veta' });
   }
   l.push({ x: CIUDAD_REY.x, z: CIUDAD_REY.z, por: 'ciudad' });
-  l.push({ x: SALIDA.x, z: SALIDA.z, por: 'salida' });
+  for (const s of SALIDAS_INICIO) l.push({ x: s.x, z: s.z, por: 'salida' });
   return l;
 }
 

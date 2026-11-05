@@ -31,7 +31,7 @@ SERVIDOR = os.path.join(RAIZ, 'servidor/servidor.mjs')
 if MUTAR:
     t = open(SERVIDOR).read(); m = t.replace('posicion: posiciones.get(autor) || null', 'posicion: null'); assert m != t
     SERVIDOR = os.path.join(RAIZ, 'servidor/.servidor_mutado_volver.mjs'); open(SERVIDOR, 'w').write(m)
-servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ, env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres'},
+servidor = subprocess.Popen(['node', SERVIDOR, str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ, env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres', 'KINHOLD_PRUEBAS_SALIDA': 'comun'},
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
 codigos = Codigos(servidor)

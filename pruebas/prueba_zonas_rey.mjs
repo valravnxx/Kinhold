@@ -7,7 +7,7 @@
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearComarcas, zonasDeEscena } from '../src/logica/comarcas.js';
 import { crearPaisaje } from '../src/logica/paisaje.js';
-import { ISLA, SALIDA, SALIDAS, CIUDAD_REY, COMARCAS_INICIO } from '../src/logica/whitholm.js';
+import { ISLA, SALIDA, SALIDAS, CIUDAD_REY, COMARCAS_INICIO, SALIDAS_INICIO } from '../src/logica/whitholm.js';
 import { SITIOS_REY, buscarZonasRey, crearZonasRey, MOTIVO_REY, POR_QUE } from '../src/logica/zonas_rey.js';
 import { Mundo, ponerZonas } from '../src/logica/construccion.js';
 import { crearZonasMapa } from '../src/juego/mapa_zonas.js';
@@ -29,10 +29,11 @@ const buscados = buscarZonasRey(mapa, comarcas);
 comprobar('los apuntados en SITIOS_REY son los que salen del mapa', JSON.stringify(buscados) === JSON.stringify(SITIOS_REY), JSON.stringify(buscados));
 const rey = crearZonasRey(comarcas);
 const nombre = (id) => { for (const r of rey.lista) if (r.id === id) { const zz = comarcas.zonaEn(r.x, r.z); return comarcas.nombres[zz.comarca]; } return null; };
-comprobar('son tres zonas distintas: la de la gran veta, la de la ciudad y la de la salida', rey.lista.length === 3 && rey.ids.size === 3,
+comprobar('son cuatro zonas distintas: la de la gran veta, la de la ciudad (con la salida de junto a ella), la de la salida común y la de la salida de Motdale', rey.lista.length === 4 && rey.ids.size === 4,
   rey.lista.map(r => `${r.por} (${nombre(r.id)})`).join(', '));
-comprobar('la de la gran veta está en Breiddal, la de la ciudad en Strandvang y la de la salida en Lindholt',
-  rey.lista.map(r => nombre(r.id)).join(',') === 'Breiddal,Strandvang,Lindholt');
+comprobar('la de la gran veta está en Breiddal, la de la ciudad en Strandvang y las de las salidas en Lindholt y Motdale',
+  rey.lista.map(r => nombre(r.id)).join(',') === 'Breiddal,Strandvang,Lindholt,Motdale');
+comprobar('las tres salidas en línea (valravnx, 5 nov) caen en zonas del rey: la de la ciudad, en la de la ciudad', SALIDAS_INICIO.every(s => rey.es(comarcas.zonaEn(s.x, s.z).id)) && comarcas.zonaEn(SALIDAS_INICIO[1].x, SALIDAS_INICIO[1].z).id === comarcas.zonaEn(CIUDAD_REY.x, CIUDAD_REY.z).id);
 comprobar('cada una dice por qué es del rey', rey.lista.every(r => POR_QUE[r.por] && rey.porQue(r.id) === r.por));
 
 console.log('El mojón no se pone en ellas (con las coordenadas de la escena, como el servidor: el 0 en la salida)');
@@ -59,7 +60,7 @@ try {
 console.log('El mapa del rey las pinta');
 {
   const z = crearZonasMapa(comarcas), l = z.rey(rey.lista);
-  comprobar('una máscara por zona del rey, con su sitio dentro', l.length === 3 && l.every(r => {
+  comprobar('una máscara por zona del rey, con su sitio dentro', l.length === 4 && l.every(r => {
     const i = Math.floor((r.x / 1000 - r.x0) / r.h), j = Math.floor((r.z / 1000 - r.z0) / r.h);
     return r.mascara[j * r.n + i] === 1 && r.segs.length > 40;
   }), l.map(r => `${r.por}: ${r.mascara.reduce((a, b) => a + b, 0)} muestras`).join(', '));
@@ -84,7 +85,7 @@ console.log('Cuántas zonas tienen cada cosa (para que las del rey sean las just
   const cuenta = {}; for (const e of zonas.values()) for (const q of e.que) cuenta[q] = (cuenta[q] || 0) + 1;
   const inicio = [...zonas.values()].filter(e => COMARCAS_INICIO.includes(e.c)).length;
   console.log(`  ${zonas.size} zonas con tierra; ${inicio} en las comarcas de inicio. ${Object.entries(cuenta).map(([k, v]) => `${k}: ${v}`).join(' · ')}`);
-  comprobar('la salida al azar caería en muchas zonas (por eso no son del rey hasta que lo diga valravnx)', cuenta['salida al azar'] > 100, `${cuenta['salida al azar']} de ${inicio}`);
+  comprobar('los sitios de la salida al azar caen en muchas zonas (por eso no son del rey: valravnx, 5 nov)', cuenta['salida al azar'] > 100, `${cuenta['salida al azar']} de ${inicio}`);
 }
 
 console.log(`\n${bien} bien, ${mal} mal`);

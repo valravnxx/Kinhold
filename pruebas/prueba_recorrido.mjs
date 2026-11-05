@@ -1,7 +1,7 @@
 // Recorrido de jugador (revisión del 1 nov: las cosas llegaban rotas porque nadie las jugaba como jugador).
 // Un jugador nuevo, contra el servidor de verdad (servidor/servidor.mjs con el terreno de Whitholm y SIN el arcón de
 // pruebas), juega de principio a fin lo que haya, con los mismos mensajes que manda la demo y solo con lo que recoge:
-// empieza con lo puesto, anda hasta lo que se recoge, lo recoge, anda hasta la zona de al lado (la de la salida es del
+// elige dónde empieza (la salida común, en Lindholt; valravnx, 5 nov: hay tres y «lo eligen»), empieza con lo puesto, anda hasta lo que se recoge, lo recoge, anda hasta la zona de al lado (la de la salida es del
 // rey: no se reclama) y pone su mojón pagándolo con tres de las piedras que
 // lleva, levanta un cimiento de piedra con las piedras que ha traído en las manos (en dos viajes), y lo trabaja hasta
 // terminarlo. Falla si algo no se puede hacer así.
@@ -69,6 +69,7 @@ function cliente(puerto) {
       for (let i = 1; i <= n; i++) { c.estar(x0 + (x - x0) * i / n, z0 + (z - z0) * i / n); await pausa(100); }
       await pausa(150);
     };
+    c.salida = (salida) => { const id = ++c.id + 200000; const p = c.esperar(m => m.tipo === 'salida' && m.id === id); ws.send(JSON.stringify({ tipo: 'salida', id, salida })); return p; };
     c.cuantos = (tipo) => (c.inv ? c.inv.cuantos(tipo) : 0);
     ws.on('message', (d) => {
       const m = JSON.parse(d.toString());
@@ -105,7 +106,14 @@ let s = null;
 try {
   s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T });   // sin arcón: como el servidor de verdad (es lo que hay si no se pide)
   const puerto = await s.listo, J = await cliente(puerto);
-  // aparece en la salida (hoy la común; con «Salida al azar de verdad en línea», la que le dé el servidor)
+  console.log('0. Elige dónde empieza: la salida común (Lindholt), de las tres del rey');
+  comprobar('llega sin posición: aún no ha elegido', J.bienvenida.posicion === null, JSON.stringify(J.bienvenida.posicion));
+  let rs = await J.salida('motdale_no');
+  comprobar('una salida que no existe no vale', !rs.ok, rs.motivo);
+  rs = await J.salida('lindholt');
+  comprobar('elige Lindholt: aparece en la salida común, en el suelo', rs.ok && rs.posicion.x === 0 && rs.posicion.z === 0 && Math.abs(rs.posicion.y - T.suelo(0, 0)) < 1e-6, JSON.stringify(rs.posicion));
+  rs = await J.salida('ciudad');
+  comprobar('y no puede volver a elegir', !rs.ok, rs.motivo);
   J.estar(0, 4); await pausa(200);
 
   console.log('1. Empieza con lo puesto, y sin arcón');
@@ -183,6 +191,8 @@ try {
   console.log('5b. Llega otro jugador: lo de su tierra no lo toca (lo tuyo es tuyo)');
   {
     const K = await cliente(puerto);
+    const rk0 = await K.salida('lindholt');
+    comprobar('otro jugador nuevo elige también Lindholt', rk0.ok, rk0.motivo);
     K.estar(0, 4); await pausa(200); await K.andar(sitio.x + 2, sitio.z + 1);   // aparece en la salida y va andando hasta ella
     const rk = await K.accion({ tipo: 'desmontar', construccion: obra?.id, clave });
     comprobar('otro jugador no puede desmontar su cimiento', !rk.ok && !!obra?.piezas.get(clave), rk.motivo);

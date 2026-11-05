@@ -11,7 +11,7 @@
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearPaisaje, bosqueEn } from '../src/logica/paisaje.js';
 import { alturaMundo, SALIDA, SALIDAS, ISLA } from '../src/logica/whitholm.js';
-import { recogidaEn, recogidaTrozo, zonasRecogida, idPunto, LADO_RECOGIDA, DENSIDAD_RECOGIDA } from '../src/logica/recogida_mundo.js';
+import { recogidaEn, recogidaTrozo, zonasRecogida, idPunto, LADO_RECOGIDA, DENSIDAD_RECOGIDA, SUELTOS_CLARO } from '../src/logica/recogida_mundo.js';
 import { RECOLECTABLES, Recoleccion } from '../src/logica/recoleccion.js';
 import { CELDA } from '../src/logica/vegetacion.js';
 import { azarCelda } from '../src/logica/azar.js';
@@ -67,7 +67,17 @@ comprobar('las densidades solo usan zonas del documento', Object.entries(DENSIDA
 {
   const ramas = todos.filter(p => p.tipo === 'ramas'), silex = todos.filter(p => p.tipo === 'silex');
   comprobar('las ramas, todas en el bosque', ramas.length > 0 && ramas.every(p => p.zonas.includes('bosque')), `${ramas.length}`);
-  comprobar('el sílex, en la caliza o junto al río', silex.length > 0 && silex.every(p => p.zonas.includes('caliza') || p.zonas.includes('rio')), `${silex.length}`);
+  comprobar('el sílex, en la caliza o junto al río (o algo en el claro)', silex.length > 0 && silex.every(p => p.zonas.includes('caliza') || p.zonas.includes('rio') || p.zonas.includes('claro')), `${silex.length}`);
+  // piedra y sílex sueltos en la pradera abierta (valravnx, 1 nov: «dentro del realismo, accesibilidad»): algo en el
+  // claro, pero menos que donde les toca
+  const soloClaro = (t) => todos.filter(p => p.tipo === t && !RECOLECTABLES[t].donde.filter(w => w !== 'claro').some(w => p.zonas.includes(w))).length;
+  comprobar('en el claro sale algo de piedra y de sílex sueltos', soloClaro('piedra') > 0 && soloClaro('silex') > 0, `piedra ${soloClaro('piedra')}, sílex ${soloClaro('silex')}`);
+  comprobar('menos que donde les toca (la densidad del claro, por debajo de la de cada zona suya)',
+    Object.entries(SUELTOS_CLARO).every(([t, q]) => Object.values(DENSIDAD_RECOGIDA[t]).every(v => q < v)), JSON.stringify(SUELTOS_CLARO));
+  // y en una pradera abierta (claro sin bosque ni río) de verdad: en cada sitio de la salida al azar, en 120 m
+  let conPiedra = 0;
+  for (const [x, z] of SALIDAS) if (puntosDe(cuadro(x, z, 120)).some(p => p.tipo === 'piedra')) conPiedra++;
+  comprobar('alrededor de casi todos los sitios de la salida al azar hay piedra a menos de 120 m', conPiedra >= SALIDAS.length * 0.9, `${conPiedra} de ${SALIDAS.length}`);
 }
 
 // 4) a lo largo de un río de la isla: la piedra y el sílex de la orilla

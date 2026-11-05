@@ -1186,10 +1186,11 @@
      "fin": "2026-11-04T20:25:28+01:00"
     },
     {
-     "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio LIBRE al azar de las tres comarcas de inicio (valravnx, 5 nov: si la zona de un sitio tiene un mojón puesto, deja de ser salida; las zonas de los sitios de salida sí se reclaman) y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
-     "estado": "en_curso",
+     "nombre": "Salidas en línea (valravnx, 5 nov: «pon dos más, una será en la ciudad y otra en la otra comarca de inicio», «motdale», «lo eligen»): tres salidas fijas en zonas del rey (Lindholt, junto a la ciudad y en Motdale) y cada personaje nuevo elige la suya, que el servidor recuerda; y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
+     "estado": "hecho",
      "inicio": "2026-11-05T17:26:09+00:00",
-     "rama": "trabajo/20261105-1726"
+     "rama": "trabajo/20261105-1726",
+     "fin": "2026-11-05T22:49:06+00:00"
     },
     {
      "nombre": "Fuera el arcón de materiales infinito del servidor de verdad (solo para las pruebas automáticas, sin botón); el contador de materiales de arriba sale solo dentro de tu tierra, con lo que tienes almacenado en ella",
@@ -1200,7 +1201,9 @@
     },
     {
      "nombre": "Con algo al hombro, las manos no llevan nada (ni el hacha): lógica del inventario, en la demo y por el servidor",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-05T23:22:23+00:00",
+     "rama": "trabajo/20261105-2322"
     },
     {
      "nombre": "Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo (teja, chimenea, adarve, empalizada, polea, polipasto, escalera de tablas y los muebles caros quedan guardados para su nivel)",
@@ -2883,6 +2886,13 @@
      "archivo": "jugar/demo/v114.html",
      "capturas": "capturas/demo-v114",
      "notas": "El linde del bosque de lejos sin paredes: donde acaba el bosque, el dosel de lejos baja poco a poco hasta el suelo y pasa a su color, en vez de caer en una pared de dientes de sierra. Capturas: antes y después, mirando lomas con bosque a varios km."
+    },
+    {
+     "v": "v115",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v115.html",
+     "capturas": "capturas/demo-v115",
+     "notas": "Eliges dónde empiezas: en línea hay tres salidas del rey (Lindholt, junto a la ciudad y en Motdale) y cada personaje nuevo elige la suya una vez; en la pradera abierta, algo de piedra y sílex sueltos. Capturas: la elección en PC y móvil, la llegada a Motdale y a la ciudad, y lo que se recoge alrededor."
     }
    ]
   },

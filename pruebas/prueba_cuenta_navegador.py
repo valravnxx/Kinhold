@@ -49,6 +49,9 @@ codigos = Codigos(servidor)
 BASE = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html'
 URL = f'{BASE}?modo=construir&enlinea=1&servidor=ws://127.0.0.1:{PUERTO}'
 MENU = f'{BASE}?servidor=ws://127.0.0.1:{PUERTO}'
+# las tres salidas en línea (src/logica/whitholm.js, SALIDAS_INICIO), en metros del mundo, y la común (el 0 de la escena)
+SITIOS_SALIDA = {'lindholt': [184596, 46280], 'ciudad': [217589, 52804], 'motdale': [204000, 57000]}
+SALIDA_COMUN = SITIOS_SALIDA['lindholt']
 K = 'window.__kinhold'
 LISTO = f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado' && {K}.enLinea.red.yo && {K}.mundoListo"
 PANTALLA = "!!document.getElementById('pantallaCuenta')"
@@ -143,11 +146,29 @@ try:
             c = [x for x in cuentas_guardadas() if x.get('usuario') == USUARIO]
             comprobar(f'{nombre}: el servidor la guarda con ese personaje', len(c) == 1 and c[0].get('autor') == autor, str(c[:1])[:120])
             comprobar(f'{nombre}: sin la contraseña en claro', CLAVE not in open(os.path.join(sitio, 'cuentas.jsonl')).read())
+            # dónde empieza (valravnx, 5 nov: tres salidas del rey, «lo eligen»): sale al quitarse la pantalla de la cuenta
+            PSAL = "!!document.getElementById('panelSalida')"
+            comprobar(f'{nombre}: personaje nuevo: sale «¿Dónde empiezas?» con las tres salidas', esperar(pg, PSAL, 15000) and pg.evaluate("document.querySelectorAll('#panelSalida button[data-salida]').length") == 3, '; '.join(err)[:300])
+            if not pg.evaluate(PSAL): raise RuntimeError('sin el panel de las salidas no se puede seguir')
+            caja = pg.evaluate("(() => { const r = document.querySelector('#panelSalida .ps-caja').getBoundingClientRect(); return [r.left, r.right, r.top, r.bottom]; })()")
+            comprobar(f'{nombre}: la caja de las salidas cabe en la pantalla', caja[0] >= 0 and caja[1] <= vista['width'] and caja[2] >= 0 and caja[3] <= vista['height'], str(caja))
+            pg.wait_for_timeout(800)
+            captura(pg, f'{SALIDA}/cuenta-salida-{nombre}.png')
+            ELIGE = 'motdale' if nombre == 'pc' else 'ciudad'
+            esperada = [SITIOS_SALIDA[ELIGE][0] - SALIDA_COMUN[0], SITIOS_SALIDA[ELIGE][1] - SALIDA_COMUN[1]]
+            pg.click(f'#panelSalida button[data-salida="{ELIGE}"]')
+            comprobar(f'{nombre}: elige {ELIGE}: se quita el panel y aparece allí', esperar(pg, f"!{PSAL} && Math.hypot({K}.pj.x - {esperada[0]}, {K}.pj.z - {esperada[1]}) < 2", 20000), str(pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")))
+            pos = json.load(open(os.path.join(sitio, 'posiciones.json'))).get(autor) if os.path.exists(os.path.join(sitio, 'posiciones.json')) else None
+            comprobar(f'{nombre}: el servidor lo apunta como su sitio', bool(pos) and abs(pos['x'] - esperada[0]) < 1e-6 and abs(pos['z'] - esperada[1]) < 1e-6, str(pos))
+            pg.wait_for_timeout(6000)   # que llegue el terreno de allí
+            captura(pg, f'{SALIDA}/cuenta-salida-{ELIGE}-{nombre}.png')
             pg.wait_for_timeout(1500)
             captura(pg, f'{SALIDA}/cuenta-creada-{nombre}.png')
             # al recargar: se entra solo
             pg.reload(wait_until='domcontentloaded', timeout=180000)
             comprobar(f'{nombre}: al recargar entra solo', esperar(pg, LISTO, 300000) and pg.evaluate(f'{K}.enLinea.red.yo') == autor and not pg.evaluate(PANTALLA))
+            pg.wait_for_timeout(1500)
+            comprobar(f'{nombre}: y no vuelve a preguntar dónde empieza: sale donde eligió', not pg.evaluate(PSAL) and abs(pg.evaluate(f'{K}.pj.x') - esperada[0]) < 30 and abs(pg.evaluate(f'{K}.pj.z') - esperada[1]) < 30, str(pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")))
             ctx.close()
             # --- otro aparato: entrar con la cuenta
             ctx = nav.new_context(**opciones)
