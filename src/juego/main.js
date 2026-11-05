@@ -162,6 +162,8 @@ function sitioDeSalida() {
   if (EN_LINEA) return { x: SALIDA.x, z: SALIDA.z };
   const forzada = new URLSearchParams(location.search).get('salida');
   if (forzada !== null && SALIDAS[Number(forzada)]) return { x: SALIDAS[Number(forzada)][0], z: SALIDAS[Number(forzada)][1] };
+  // (pruebas) ?salida=x,z: un sitio concreto del mundo (m), p. ej. el de salida en línea
+  if (forzada && /^\d+,\d+$/.test(forzada)) { const [x, z] = forzada.split(',').map(Number); return { x, z }; }
   try {
     const g = JSON.parse(localStorage.getItem(CLAVE_SALIDA) || 'null');
     if (g && esSitioDeSalida(g.x, g.z)) return { x: g.x, z: g.z };

@@ -89,6 +89,14 @@ comprobar('de cerca, en un bosque mixto hay copas', bosque.g.idx.length > 3000, 
 comprobar('y en la pradera abierta (corros sueltos) casi nada', prado.g.idx.length < bosque.g.idx.length / 10, `${prado.g.idx.length / 3} triángulos`);
 let fuera = 0; for (let v = 0; v < bosque.g.pos.length / 3; v++) if (Math.abs(bosque.g.pos[v * 3]) > 520 || Math.abs(bosque.g.pos[v * 3 + 2]) > 520) fuera++;
 comprobar('de cerca, en su cuadro y en metros de la escena', fuera === 0);
+// donde aún no ha llegado el terreno de cerca, nada (flotaría): aquí, sin terreno al este de la salida
+{
+  const [x, z] = SALIDAS[249], c = crearDoselCerca(paisaje, alt, ESPECIES, Math.round(x / 16) * 16, Math.round(z / 16) * 16, 500, undefined, (px) => MUTAR2 || px < x);
+  while (!c.listo) c.avanzar(1e9);
+  const g = c.malla({ ox: x, oz: z });
+  let este = 0; for (let v = 0; v < g.pos.length / 3; v++) if (g.pos[v * 3] > 20 && g.pos[v * 3 + 1] > alt(g.pos[v * 3] + x, g.pos[v * 3 + 2] + z) - 1) este++;
+  comprobar('sin terreno de cerca debajo, sin dosel (y dice que faltan puntos)', este === 0 && c.faltan > 0 && g.idx.length > 0, `${este} copas al este; faltan ${c.faltan}`);
+}
 
 console.log('Los perfiles');
 const bajos = PERFILES.filter(p => !p.horizonte).map(p => p.id), altos = PERFILES.filter(p => p.horizonte);

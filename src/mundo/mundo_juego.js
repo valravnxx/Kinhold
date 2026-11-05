@@ -52,7 +52,7 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
   escena.add(mar);
 
   // el horizonte: la isla entera, basta, detrás del terreno de cerca (solo lo dibuja un perfil gráfico que lo pida)
-  const horizonte = camara ? crearHorizonte({ escena, paisaje, rect: ISLA, origen: O, y0, hasta: ANILLOS_MUNDO[ANILLOS_MUNDO.length - 1].hasta, camara, alt: (x, z) => altW(x, z) }) : null;
+  const horizonte = camara ? crearHorizonte({ escena, paisaje, rect: ISLA, origen: O, y0, hasta: ANILLOS_MUNDO[ANILLOS_MUNDO.length - 1].hasta, camara, alt: (x, z) => altW(x, z), hay: (x, z) => terreno.alturaEn(x, z) !== null }) : null;
 
   // la altura del suelo en la escena: la de la malla del trozo que se ve; si aún no ha llegado, la exacta
   function altura(x, z) {
