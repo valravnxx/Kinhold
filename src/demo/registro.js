@@ -1,8 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v112 (salida al azar en línea)";
+export const VERSION_DEMO = "Demo única · v112 (eliges dónde empiezas)";
 export const REGISTRO_DEMO = [
-  "v112: salida al azar de verdad en línea (valravnx, 30 oct y 5 nov). Cada personaje nuevo aparece donde le dice el servidor: un sitio al azar de los 259 de la salida al azar, en las tres comarcas de inicio, cuya zona no tiene mojón puesto. Si una zona tiene mojón, sus sitios dejan de ser salida. Lo recuerda: al volver, sales donde lo dejaste; quien ya jugaba sigue donde estaba.",
-  "v112, provisional: si no queda ningún sitio libre, el personaje nuevo sale en la salida común (su zona es del rey y nunca se toma).",
+  "v112: eliges dónde empiezas (valravnx, 5 nov: «pon dos más, una será en la ciudad y otra en la otra comarca de inicio», «motdale», «lo eligen»). En línea hay tres salidas, cada una en una zona del rey que no se reclama: la común (Lindholt), junto a la ciudad del rey (Strandvang) y en Motdale. Un personaje nuevo elige una al entrar, una sola vez; el servidor lo recuerda. Quien ya jugaba sigue donde estaba.",
+  "v112, provisional: la salida de la ciudad, a 80 m de su centro (el primer sitio llano de su zona fuera de la ciudad); la de Motdale, el sitio de salida más cercano al centro de la comarca.",
   "v112: en la pradera abierta (el claro, sin bosque) sale algo de piedra y de sílex sueltos, menos que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»). Provisional: la piedra, la séptima parte que en la ladera; el sílex, la sexta parte que en la caliza. Lo que ya salía sigue en su sitio.",
   "v111: fuera el arcón infinito del servidor de verdad (valravnx, 1 nov). En línea ya no hay arcón de pruebas ni botón «+ Materiales»: lo que llevas se coge del mundo. El servidor rechaza sacar, dejar y rellenar el arcón, y coger o soltar equipo de él («Aquí no hay arcón.»); solo lo tienen las pruebas automáticas (KINHOLD_PRUEBAS_ARCON=si, que lo dice al arrancar).",
   "v111: el contador de materiales de arriba sale solo dentro de tu tierra (la zona de tu mojón), con lo que tienes almacenado en ella; fuera de tu tierra no sale.",

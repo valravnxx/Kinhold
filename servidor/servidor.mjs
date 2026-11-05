@@ -118,7 +118,7 @@ import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { VistaTrozos, trozoDe, LADO_RED, RADIO_RED } from '../src/logica/trozos_red.js';
 import { sitioAccion, sitioColocada, comunDe, obrasEnTrozos } from '../src/logica/obras_red.js';
 import { ponerZonas } from '../src/logica/construccion.js';
-import { elegirSalidaLibre } from '../src/logica/whitholm.js';
+import { salidaInicio } from '../src/logica/whitholm.js';
 import { dejarSobra } from '../src/logica/suelo.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
@@ -140,7 +140,7 @@ export function leerArchivo(archivo) {
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true,
-  salidaAlAzar = false, azarSalida = Math.random } = {}) {
+  salidaComun = false } = {}) {
   archivo = resolve(archivo);
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
   ponerZonas(terreno && terreno.zona, terreno && terreno.esZonaRey);   // y las zonas del rey no se reclaman
@@ -260,19 +260,22 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     posicionesCambiadas = false;
     writeFileSync(archivoPosiciones + '.tmp', JSON.stringify(Object.fromEntries(posiciones))); renameSync(archivoPosiciones + '.tmp', archivoPosiciones);
   };
-  // Salida al azar de verdad en línea (valravnx, 30 oct y 5 nov): a un personaje nuevo (sin posición apuntada) el
-  // servidor le da un sitio LIBRE al azar de las tres comarcas de inicio (src/logica/whitholm.js, SALIDAS): uno cuya zona
-  // no tiene mojón puesto. Se apunta enseguida como su posición: es donde aparece y lo recuerda (si vuelve sin haberse
-  // movido, ahí sigue). Solo con el terreno de Whitholm y si se pide (el servidor de verdad; las pruebas que no la
-  // usan siguen en la salida común, el 0 de la escena).
-  const darSalida = (autor) => {
-    if (!salidaAlAzar || !terreno || posiciones.has(autor)) return;
-    const O = terreno.origen;
-    const s = elegirSalidaLibre((x, z) => !mundo.duenoDeZona(terreno.zona(x - O.x, z - O.z)), azarSalida());
-    const x = s.x - O.x, z = s.z - O.z;
-    posiciones.set(autor, { x, y: terreno.suelo(x, z), z, giro: 0 }); posicionesCambiadas = true;
-    registrar(`salida de ${autor}: ${s.comun ? 'la común (no queda ningún sitio libre)' : `${s.x}, ${s.z}`}`);
+  // Dónde empieza cada uno (valravnx, 5 nov: tres salidas en zonas del rey, «lo eligen»; src/logica/whitholm.js,
+  // SALIDAS_INICIO): un personaje nuevo (sin posición apuntada) llega sin posición y elige una con { tipo: 'salida',
+  // salida: id }. Se apunta enseguida como su posición: es donde aparece, y lo recuerda. Solo una vez: quien ya tiene
+  // posición no vuelve a elegir. Con salidaComun (solo pruebas de navegador), a los nuevos se les pone la común sin
+  // preguntar. Devuelve { ok, motivo, posicion }.
+  const elegirSalida = (autor, id) => {
+    if (!terreno) return { ok: false, motivo: 'Aquí no hay salidas.' };
+    if (posiciones.has(autor)) return { ok: false, motivo: 'Ya has empezado.' };
+    const s = salidaInicio(id);
+    if (!s) return { ok: false, motivo: 'Esa salida no existe.' };
+    const O = terreno.origen, x = s.x - O.x, z = s.z - O.z;
+    const p = { x, y: terreno.suelo(x, z), z, giro: 0 };
+    posiciones.set(autor, p); posicionesCambiadas = true;
+    registrar(`${autor} empieza en ${s.nombre}`);
     try { guardarPosiciones(); } catch (e) { registrar(`no se pudo guardar posiciones.json: ${e && e.message}`); }
+    return { ok: true, posicion: p };
   };
 
   const wss = new WebSocketServer({ port: puerto, maxPayload: limites.maxMensaje });
@@ -377,8 +380,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       const ap = apartados.get(autor);
       if (ap) { apartados.delete(autor); combate.volver(autor, ap.L); } else combate.entrar(autor);
     }
-    // lo de alrededor de donde aparece: donde lo dejó o la salida (si es nuevo, la que le toca)
-    darSalida(autor);
+    // lo de alrededor de donde aparece: donde lo dejó o la salida (si es nuevo, la común hasta que elija)
+    if (salidaComun && terreno && !posiciones.has(autor)) elegirSalida(autor, 'lindholt');
     vista.quitar(autor);
     { const p = posiciones.get(autor); vista.mover(autor, p ? p.x : 0, p ? p.z : 0); presencia.anclar(autor, p || { x: 0, z: 0 }, reloj()); }
     const suyos = vista.trozosDe(autor);
@@ -411,11 +414,20 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       if (!msg || typeof msg !== 'object' || Array.isArray(msg) || typeof msg.tipo !== 'string')
         return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
       // sin el correo confirmado no se entra en el mundo (las acciones y los objetos reciben su respuesta)
-      if (['estado', 'obras', 'combate', 'aspecto', 'accion', 'objeto', 'admin'].includes(msg.tipo) && cuentas.sinConfirmar(autor)) {
+      if (['estado', 'obras', 'combate', 'aspecto', 'accion', 'objeto', 'admin', 'salida'].includes(msg.tipo) && cuentas.sinConfirmar(autor)) {
         const id = Number.isSafeInteger(msg.id) ? msg.id : null;
         if (msg.tipo === 'accion' || msg.tipo === 'objeto') enviar(ws, { tipo: msg.tipo === 'objeto' ? 'resultado_objeto' : 'resultado', id, ok: false, motivo: SIN_CORREO });
         else if (msg.tipo === 'admin') enviar(ws, { tipo: 'admin', id, que: null, ok: false, motivo: SIN_CORREO });
+        else if (msg.tipo === 'salida') enviar(ws, { tipo: 'salida', id, ok: false, motivo: SIN_CORREO });
         return;
+      }
+      if (msg && msg.tipo === 'salida') {
+        // la salida que elige un personaje nuevo: queda apuntada como su posición, y el movimiento sin trampas cuenta
+        // desde ahí (lo de alrededor le llega con el siguiente estado, al cambiar de trozo)
+        const id = Number.isSafeInteger(msg.id) ? msg.id : null;
+        const r = elegirSalida(autor, typeof msg.salida === 'string' ? msg.salida : '');
+        if (r.ok) presencia.anclar(autor, r.posicion, reloj());
+        return enviar(ws, { tipo: 'salida', id, ...r });
       }
       if (msg && msg.tipo === 'estado') {
         // con el terreno, dentro de la isla (la cuenta de admin, en todo el continente) y cerca del suelo (en la liza del «Duelo» no: es una escena aparte)
@@ -759,9 +771,9 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   // KINHOLD_PRUEBAS_ARCON=si: con el arcón de materiales infinito, solo para las pruebas de navegador que lo usan.
   // Nunca en el servidor de verdad (valravnx, 1 nov: «fuera el arcón infinito»): también lo dice al arrancar.
   const arconPruebas = process.env.KINHOLD_PRUEBAS_ARCON === 'si';
-  // KINHOLD_PRUEBAS_SALIDA=comun: todos los nuevos en la salida común, solo para las pruebas de navegador que buscan lo
-  // de alrededor de ella. Nunca en el servidor de verdad (ahí cada personaje nuevo sale en un sitio libre al azar).
+  // KINHOLD_PRUEBAS_SALIDA=comun: los nuevos empiezan en la salida común sin elegir, solo para las pruebas de navegador
+  // que buscan lo de alrededor de ella. Nunca en el servidor de verdad (ahí cada personaje nuevo elige su salida).
   const salidaComun = process.env.KINHOLD_PRUEBAS_SALIDA === 'comun';
-  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre, arconPruebas, salidaAlAzar: !salidaComun });
-  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms · correo: ${s.cartero.conClave ? 'Resend' : 'sin clave de Resend, los códigos van al registro'}${altasLibres ? ' · AVISO: altas sin límite (KINHOLD_PRUEBAS_ALTAS=libres), solo para pruebas' : ''}${movimientoLibre ? ' · AVISO: sin límite de velocidad (KINHOLD_PRUEBAS_MOVIMIENTO=libre), solo para pruebas' : ''}${arconPruebas ? ' · AVISO: con el arcón infinito (KINHOLD_PRUEBAS_ARCON=si), solo para pruebas' : ''}${salidaComun ? ' · AVISO: todos en la salida común (KINHOLD_PRUEBAS_SALIDA=comun), solo para pruebas' : ''}`));
+  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre, arconPruebas, salidaComun });
+  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms · correo: ${s.cartero.conClave ? 'Resend' : 'sin clave de Resend, los códigos van al registro'}${altasLibres ? ' · AVISO: altas sin límite (KINHOLD_PRUEBAS_ALTAS=libres), solo para pruebas' : ''}${movimientoLibre ? ' · AVISO: sin límite de velocidad (KINHOLD_PRUEBAS_MOVIMIENTO=libre), solo para pruebas' : ''}${arconPruebas ? ' · AVISO: con el arcón infinito (KINHOLD_PRUEBAS_ARCON=si), solo para pruebas' : ''}${salidaComun ? ' · AVISO: los nuevos en la salida común sin elegir (KINHOLD_PRUEBAS_SALIDA=comun), solo para pruebas' : ''}`));
 }

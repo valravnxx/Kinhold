@@ -31,7 +31,7 @@ import { crearRecoleccion, crearRecoleccionMundo } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
 import { almacenadoEnTierra } from '../logica/suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
-import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS } from '../logica/whitholm.js';
+import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS, SALIDAS_INICIO } from '../logica/whitholm.js';
 import { nombreDe } from '../logica/recoleccion.js';
 import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
@@ -2365,6 +2365,7 @@ function iniciarEnLinea() {
         colocadoEnLinea = true;
         const p = msg.posicion;
         if (p && [p.x, p.y, p.z, p.giro].every(Number.isFinite)) Object.assign(pj, { x: p.x, y: p.y, z: p.z, rot: p.giro, vel: 0 });
+        else if (!p && mundoJ) elegirSalidaPanel();   // nuevo: elige dónde empieza
       }
       if (msg.tipo === 'bienvenida' || info.rechazo) redibujar = true;
       if (redibujar) { reconstruir(); if (estado.modo === 'construir') evaluarColocacion(); }
@@ -2375,6 +2376,53 @@ function iniciarEnLinea() {
   // las obras cobran de lo que llevas, que es el del servidor (objetosRed): hasta que llegue, no se adelanta nada
   const deInventario = { de: () => inventario() };
   Object.defineProperty(enLinea.red, 'invs', { get: () => (objetosRed.deServidor ? deInventario : null) });
+}
+
+// Dónde empiezas (valravnx, 5 nov: tres salidas en zonas del rey, «lo eligen»; src/logica/whitholm.js, SALIDAS_INICIO):
+// un personaje nuevo llega sin posición y elige una de las tres; la pide al servidor y, cuando dice que sí, el
+// jugador aparece allí. Queda debajo de la pantalla de la cuenta (sale cuando se quita); mientras no elige, está en la
+// salida común. Solo una vez: el servidor lo recuerda.
+let panelSalida = null;
+function elegirSalidaPanel() {
+  if (!enLinea || panelSalida) return;
+  const estilo = document.createElement('style');
+  estilo.textContent = `#panelSalida{position:fixed;inset:0;z-index:57;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(20,16,12,.45);font:15px/1.4 system-ui,sans-serif;color:#efe6d6}
+#panelSalida .ps-caja{background:rgba(36,30,24,.96);border-radius:14px;padding:18px 20px 16px;width:min(400px,100%);box-shadow:0 10px 40px #0006}
+#panelSalida h2{margin:0 0 4px;font:600 22px/1.15 Georgia,"Times New Roman",serif;letter-spacing:.04em}
+#panelSalida p{margin:0 0 12px;color:#cdbfa8;font-size:14px}
+#panelSalida button{display:block;width:100%;text-align:left;margin:0 0 8px;padding:10px 12px;border:1px solid #6b5a44;border-radius:9px;background:#4a3d2e;color:#f3ead9;font:inherit;cursor:pointer}
+#panelSalida button b{display:block;font-size:16px}
+#panelSalida button span{color:#cdbfa8;font-size:13px}
+#panelSalida button:hover,#panelSalida button:focus{background:#5c4b37;outline:none}
+#panelSalida button:disabled{opacity:.6;cursor:default}
+#panelSalida .ps-motivo{min-height:1.2em;color:#e8a27c;font-size:13px}`;
+  document.head.appendChild(estilo);
+  const DE = { lindholt: 'La salida común, cerca del centro de la isla.', ciudad: 'Junto a la ciudad del rey, en Strandvang: tierras del rey, donde nadie puede herir a otro jugador.', motdale: 'En Motdale, al oeste de la ciudad.' };
+  panelSalida = document.createElement('div');
+  panelSalida.id = 'panelSalida';
+  panelSalida.innerHTML = `<div class="ps-caja"><h2>${tr('¿Dónde empiezas?')}</h2><p>${tr('Elige una de las tres salidas del rey. Solo se elige una vez.')}</p>`
+    + SALIDAS_INICIO.map(e => `<button data-salida="${e.id}"><b>${tr(e.nombre)}</b><span>${tr(DE[e.id])}</span></button>`).join('')
+    + `<div class="ps-motivo" id="psMotivo"></div></div>`;
+  document.body.appendChild(panelSalida);
+  let pedida = 0;
+  const quitar = enLinea.escucharSalida((m) => {
+    if (m.id !== pedida) return;
+    if (!m.ok || !m.posicion) {
+      for (const b of panelSalida.querySelectorAll('button')) b.disabled = false;
+      panelSalida.querySelector('#psMotivo').textContent = tr(m.motivo || 'No se ha podido.');
+      return;
+    }
+    const p = m.posicion;
+    Object.assign(pj, { x: p.x, y: p.y, z: p.z, k: 0, vel: 0, rot: p.giro });
+    enLinea.mandarEstado({ x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: 'quieto' });
+    quitar(); panelSalida.remove(); panelSalida = 'elegida';
+  });
+  panelSalida.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button[data-salida]'); if (!b) return;
+    for (const x of panelSalida.querySelectorAll('button')) x.disabled = true;
+    pedida = Date.now() % 1e9;
+    enLinea.enviar({ tipo: 'salida', id: pedida, salida: b.dataset.salida });
+  });
 }
 
 // Panel de depuración del admin (valravnx, 30 oct; src/juego/panel_admin.js): F9 o el botón «Admin». El mapa con todos

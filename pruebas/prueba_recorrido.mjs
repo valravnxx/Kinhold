@@ -1,9 +1,8 @@
 // Recorrido de jugador (revisión del 1 nov: las cosas llegaban rotas porque nadie las jugaba como jugador).
 // Un jugador nuevo, contra el servidor de verdad (servidor/servidor.mjs con el terreno de Whitholm y SIN el arcón de
 // pruebas), juega de principio a fin lo que haya, con los mismos mensajes que manda la demo y solo con lo que recoge:
-// aparece en el sitio de la salida al azar que le da el servidor (uno libre de las comarcas de inicio), empieza con lo
-// puesto, anda hasta lo que se recoge, lo recoge, anda hasta la zona de al lado y pone su mojón pagándolo con tres de
-// las piedras que
+// elige dónde empieza (la salida común, en Lindholt; valravnx, 5 nov: hay tres y «lo eligen»), empieza con lo puesto, anda hasta lo que se recoge, lo recoge, anda hasta la zona de al lado (la de la salida es del
+// rey: no se reclama) y pone su mojón pagándolo con tres de las piedras que
 // lleva, levanta un cimiento de piedra con las piedras que ha traído en las manos (en dos viajes), y lo trabaja hasta
 // terminarlo. Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
@@ -31,7 +30,6 @@ import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS } from '../src/logica/piezas.js';
 import { USAN_INVENTARIO } from '../src/logica/acciones.js';
 import { crearServidor } from '../servidor/servidor.mjs';
-import { SALIDA, SALIDAS } from '../src/logica/whitholm.js';
 
 const MUTAR = process.env.MUTAR === '1';
 let ok = 0, mal = 0;
@@ -71,6 +69,7 @@ function cliente(puerto) {
       for (let i = 1; i <= n; i++) { c.estar(x0 + (x - x0) * i / n, z0 + (z - z0) * i / n); await pausa(100); }
       await pausa(150);
     };
+    c.salida = (salida) => { const id = ++c.id + 200000; const p = c.esperar(m => m.tipo === 'salida' && m.id === id); ws.send(JSON.stringify({ tipo: 'salida', id, salida })); return p; };
     c.cuantos = (tipo) => (c.inv ? c.inv.cuantos(tipo) : 0);
     ws.on('message', (d) => {
       const m = JSON.parse(d.toString());
@@ -85,53 +84,37 @@ function cliente(puerto) {
 const pausa = (ms) => new Promise(r => setTimeout(r, ms));
 const r2 = v => Math.round(v * 100) / 100;
 
-// La salida al azar de verdad en línea (valravnx, 30 oct y 5 nov): el servidor da a cada personaje nuevo un sitio libre
-// de SALIDAS. La prueba fija el azar (azarSalida) en el primer sitio de la lista con lo que necesita el recorrido
-// alrededor (piedras cerca, una zona al lado y piedras en ella); que casi todos los sitios tengan piedra cerca lo
-// comprueba la prueba de lo que se recoge. P: el sitio, en coordenadas de la escena (las de la salida común).
-// Pone su tierra en la zona de al lado, al oeste (la más cercana; la del sitio de salida la deja libre para los que
-// lleguen detrás), a BASE_DENTRO m de su linde y con sitio para mover el mojón 30 m más.
+// Las zonas del rey (valravnx, 4 nov; src/logica/zonas_rey.js): la de la salida no se reclama, así que pone su tierra
+// en la zona de al lado, al oeste (la más cercana), a BASE_DENTRO m de su linde y con sitio para mover el mojón 30 m más.
 const BASE_DENTRO = 70;
+const base = (() => {
+  const zs = T.zona(0, 4);
+  for (let r = 20; r < 3000; r += 10) { const id = T.zona(-r, 4); if (id !== null && id !== zs && !T.esZonaRey(id)) return { x: -r - BASE_DENTRO, z: 4, zona: id }; }
+  return { x: 0, z: 4, zona: zs };
+})();
+// lo que el navegador tiene alrededor de la salida y de camino a su tierra (los puntos de recogida y los árboles, en
+// coordenadas de la escena)
+const cuadro = { x0: O.x + base.x - 120, z0: O.z - 120, x1: O.x + 120, z1: O.z + 120 };
 const cerca = (l, p) => l.slice().sort((a, b) => Math.hypot(a.x - p.x, a.z - p.z) - Math.hypot(b.x - p.x, b.z - p.z));
-const NECESITA = { salida: 6 + PIEZAS.cim_piedra.coste.piedra - (6 - PIEZAS.mojon.coste.piedra), base: PIEZAS.cim_piedra.coste.piedra + PIEZAS.mojon.coste.piedra };
-function prepararSitio(k) {
-  const P = { x: SALIDAS[k][0] - O.x, z: SALIDAS[k][1] - O.z };
-  const zs = T.zona(P.x, P.z);
-  let base = null;
-  for (let r = 20; r < 3000 && !base; r += 10) { const id = T.zona(P.x - r, P.z); if (id !== null && id !== zs && !T.esZonaRey(id)) base = { x: P.x - r - BASE_DENTRO, z: P.z, zona: id }; }
-  if (!base || T.zona(base.x - 30, base.z) !== base.zona) return null;
-  // lo que el navegador tiene alrededor de la salida y de camino a su tierra (los puntos de recogida y los árboles, en
-  // coordenadas de la escena)
-  const cuadro = { x0: O.x + base.x - 120, z0: O.z + P.z - 120, x1: O.x + P.x + 120, z1: O.z + P.z + 120 };
-  const puntos = recogidaEn(T.paisaje, T.alt, T.semilla, cuadro).map(p => ({ id: p.id, tipo: p.tipo, x: r2(p.x - O.x), z: r2(p.z - O.z) }));
-  const piedras = cerca(puntos.filter(p => p.tipo === 'piedra' && Math.hypot(p.x - P.x, p.z - P.z) < 120), P);
-  const piedrasBase = cerca(puntos.filter(p => p.tipo === 'piedra' && Math.hypot(p.x - base.x, p.z - base.z) < 120), base);
-  if (piedras.length < NECESITA.salida || piedrasBase.length < NECESITA.base || !puntos.some(p => p.tipo === 'ramas')) return null;
-  const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, cuadro).arboles
-    .map(e => ({ x: e.x - O.x, z: e.z - O.z, edad: e.tam >= TAM_ADULTO ? 'adulto' : 'joven' }))
-    .filter(e => Math.hypot(e.x, e.z - 2) >= CLARO_ARBOLES).map(e => ({ ...e, id: idArbol(e.x, e.z) }));
-  if (!arboles.some(e => e.edad === 'joven')) return null;
-  return { k, P, base, puntos, piedras, piedrasBase, arboles };
-}
-let sitioSalida = null, probados = 0;
-for (let k = 0; k < SALIDAS.length && !sitioSalida; k++) { probados++; sitioSalida = prepararSitio(k); }
-if (!sitioSalida) { console.log('  FALLA ningún sitio de la salida al azar tiene lo que necesita el recorrido'); process.exit(1); }
-const { k: K_SALIDA, P, base, puntos, piedras, piedrasBase, arboles } = sitioSalida;
-console.log(`(sitio de salida ${K_SALIDA + 1} de ${SALIDAS.length}: ${SALIDAS[K_SALIDA].join(', ')}; ${probados - 1} antes sin lo que necesita el recorrido)`);
+const puntos = recogidaEn(T.paisaje, T.alt, T.semilla, cuadro).map(p => ({ id: p.id, tipo: p.tipo, x: r2(p.x - O.x), z: r2(p.z - O.z) }));
+const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, cuadro).arboles
+  .map(e => ({ x: e.x - O.x, z: e.z - O.z, edad: e.tam >= TAM_ADULTO ? 'adulto' : 'joven' }))
+  .filter(e => Math.hypot(e.x, e.z - 2) >= CLARO_ARBOLES).map(e => ({ ...e, id: idArbol(e.x, e.z) }));
 
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-recorrido-'));
 let s = null;
 try {
-  // sin arcón y con la salida al azar: como el servidor de verdad (el arcón no está si no se pide)
-  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T, salidaAlAzar: true, azarSalida: () => (K_SALIDA + 0.5) / SALIDAS.length });
+  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T });   // sin arcón: como el servidor de verdad (es lo que hay si no se pide)
   const puerto = await s.listo, J = await cliente(puerto);
-  // aparece donde le dice el servidor: el sitio de la salida al azar que le toca
-  const pb = J.bienvenida.posicion;
-  J.estar(pb ? pb.x : 0, pb ? pb.z : 0); await pausa(200);
-
-  console.log('0. Aparece en un sitio libre de la salida al azar');
-  comprobar('el servidor le da un sitio de la salida al azar, no la común', !!pb && pb.x === P.x && pb.z === P.z && !(pb.x === 0 && pb.z === 0), JSON.stringify(pb));
-  comprobar('en el suelo, en una zona que no es de nadie', !!pb && Math.abs(pb.y - T.suelo(pb.x, pb.z)) < 1e-6 && !s.mundo.duenoDeZona(T.zona(P.x, P.z)), pb && `${pb.y}`);
+  console.log('0. Elige dónde empieza: la salida común (Lindholt), de las tres del rey');
+  comprobar('llega sin posición: aún no ha elegido', J.bienvenida.posicion === null, JSON.stringify(J.bienvenida.posicion));
+  let rs = await J.salida('motdale_no');
+  comprobar('una salida que no existe no vale', !rs.ok, rs.motivo);
+  rs = await J.salida('lindholt');
+  comprobar('elige Lindholt: aparece en la salida común, en el suelo', rs.ok && rs.posicion.x === 0 && rs.posicion.z === 0 && Math.abs(rs.posicion.y - T.suelo(0, 0)) < 1e-6, JSON.stringify(rs.posicion));
+  rs = await J.salida('ciudad');
+  comprobar('y no puede volver a elegir', !rs.ok, rs.motivo);
+  J.estar(0, 4); await pausa(200);
 
   console.log('1. Empieza con lo puesto, y sin arcón');
   const lugares = J.inv ? Object.entries(J.inv.lugares).filter(([, c]) => c).map(([l, c]) => `${l}=${c.tipo}`) : [];
@@ -144,11 +127,13 @@ try {
   r = await J.accion({ tipo: 'rellenar', cantidad: 50 });
   comprobar('ni rellenarlo (el botón de pruebas)', !r.ok && s.mundo.materiales.piedra === piedraArcon, r.motivo);
   comprobar('la bienvenida le dice que no hay arcón (el navegador no lo enseña)', J.bienvenida.arcon === false, String(J.bienvenida.arcon));
-  r = await J.accion({ tipo: 'mojon', x: P.x, z: P.z });
-  comprobar('sin piedras no puede poner su mojón (se paga con lo que lleva)', !r.ok && !s.mundo.mojonDe(J.bienvenida.autor), r.motivo);
+  r = await J.accion({ tipo: 'mojon', x: 0, z: 4 });
+  comprobar('en la salida no puede poner su mojón: es zona del rey', !r.ok && !s.mundo.mojonDe(J.bienvenida.autor) && /zona del rey/.test(r.motivo || ''), r.motivo);
 
   console.log('2. Recoge piedras: anda hasta ellas y las coge con las manos');
-  comprobar('hay piedras sueltas cerca de la salida (a menos de 120 m)', piedras.length >= NECESITA.salida, `${piedras.length}; la primera a ${piedras[0] ? Math.round(Math.hypot(piedras[0].x - P.x, piedras[0].z - P.z)) : '–'} m`);
+  const piedras = cerca(puntos.filter(p => p.tipo === 'piedra' && Math.hypot(p.x, p.z - 4) < 120), { x: 0, z: 4 });
+  const piedrasBase = cerca(puntos.filter(p => p.tipo === 'piedra' && Math.hypot(p.x - base.x, p.z - base.z) < 120), base);
+  comprobar('hay piedras sueltas cerca de la salida (a menos de 120 m)', piedras.length >= 6 + PIEZAS.cim_piedra.coste.piedra - (6 - PIEZAS.mojon.coste.piedra), `${piedras.length}; la primera a ${piedras[0] ? Math.round(Math.hypot(piedras[0].x, piedras[0].z)) : '–'} m`);
   const recoger = async (p) => {
     await J.andar(p.x + 0.4, p.z);
     return J.objeto({ tipo: 'recoger', punto: p.id, x: J.pos.x, z: J.pos.z, px: p.x, pz: p.z, clase: p.tipo });
@@ -170,8 +155,8 @@ try {
     comprobar(`talar: aún no se puede (${TODAVIA_NO.talar}); cuando se pueda, pasarlo a los pasos de verdad`, !r.ok, r.motivo);
   }
 
-  console.log('4. Anda hasta la zona de al lado y pone su mojón: la zona es su tierra');
-  comprobar('la zona de al lado de la salida no es del rey', base.zona !== T.zona(P.x, P.z) && !T.esZonaRey(base.zona), `a ${Math.round(P.x - base.x)} m al oeste`);
+  console.log('4. Anda hasta la zona de al lado (la de la salida es del rey) y pone su mojón: la zona es su tierra');
+  comprobar('la zona de al lado de la salida no es del rey', base.zona !== T.zona(0, 4) && !T.esZonaRey(base.zona), `a ${-base.x} m al oeste`);
   await J.andar(base.x, base.z);
   const precio = PIEZAS.mojon.coste.piedra, montonAntes = s.mundo.materiales.piedra;
   r = await J.accion({ tipo: 'mojon', x: base.x, z: base.z });
@@ -206,9 +191,9 @@ try {
   console.log('5b. Llega otro jugador: lo de su tierra no lo toca (lo tuyo es tuyo)');
   {
     const K = await cliente(puerto);
-    const pk = K.bienvenida.posicion;
-    comprobar('el segundo jugador también sale en un sitio de la salida al azar (con el mismo azar, el mismo: su zona sigue libre)', !!pk && pk.x === P.x && pk.z === P.z, JSON.stringify(pk));
-    K.estar(pk ? pk.x : 0, pk ? pk.z : 0); await pausa(200); await K.andar(sitio.x + 2, sitio.z + 1);   // aparece en la salida y va andando hasta ella
+    const rk0 = await K.salida('lindholt');
+    comprobar('otro jugador nuevo elige también Lindholt', rk0.ok, rk0.motivo);
+    K.estar(0, 4); await pausa(200); await K.andar(sitio.x + 2, sitio.z + 1);   // aparece en la salida y va andando hasta ella
     const rk = await K.accion({ tipo: 'desmontar', construccion: obra?.id, clave });
     comprobar('otro jugador no puede desmontar su cimiento', !rk.ok && !!obra?.piezas.get(clave), rk.motivo);
     K.ws.close();
