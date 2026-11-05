@@ -4196,5 +4196,22 @@
   "pruebas": "Comprobación en dos máquinas de GitHub contra el servidor de verdad: las dos bien (límite a la 11.ª petición; desde la otra dirección, aceptada). Herramienta rota a propósito contra un servidor local: falla como debe. Batería entera en la nube (el PC de valravnx no estaba encendido): 29 de 31 grupos bien; fallan «lo que se recoge en el mundo» (en el móvil, la salida al azar deja 19–20 puntos y la prueba pide más de 20) y «la demo en el mundo» (andar hacia el mar y nadar), también al repetirlas. Esta rama no cambia nada del juego ni de esas pruebas: quedan como tarea antes de la revisión del hito.",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T01:29:16+00:00",
+  "fin": "2026-11-05T03:07:14+00:00",
+  "titulo": "Las dos pruebas de navegador que fallaban, arregladas (carril A)",
+  "hito": "servidor",
+  "hecho": [
+   "«La demo en el mundo» no fallaba al andar hacia el mar ni al nadar: lo que fallaba era «nada en el agua» (3 obstáculos), y solo en algunas salidas al azar; se ve en la salida de la prueba de la nube del 5 nov.",
+   "Reproducido aquí en la salida 147: eran tres piedras sueltas en la orilla, entre 0,5 y 0,8 m sobre el mar. La lógica de lo que crece las dejaba desde 0,5 m, y el juego llama tierra a lo que está a más de 1 m.",
+   "Las piedras sueltas ahora piden 1 m sobre el mar, como la hierba y las matas (src/logica/vegetacion.js). El servidor solo saca de ahí los árboles: no cambia nada suyo.",
+   "La prueba de lógica de lo que crece mira ahora 1 m (antes 0,3 m) y también las flores; rota a propósito (las piedras otra vez desde 0,5 m) falla como debe.",
+   "«Lo que se recoge en el mundo»: en el móvil salía en un sitio al azar, y en algunos había menos de 20 puntos. Ahora sale en uno fijo, la primera salida (otra que la del PC) con al menos 30 puntos a menos de 48 m (la 217).",
+   "Sin versión nueva: solo cambian tres piedras de la orilla en algunos sitios; llega con la publicación del hito. Queda la revisión completa y publicación del hito Cuentas."
+  ],
+  "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido): 33 de 33 grupos bien, también «la demo en el mundo» y «lo que se recoge en el mundo». Prueba de lo que crece rota a propósito: falla como debe. Capturas de la costa, el nado y lo que se recoge (PC y móvil) miradas.",
+  "capturas": null,
+  "estado": "ok"
  }
 ]

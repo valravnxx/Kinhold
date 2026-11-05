@@ -59,8 +59,10 @@ let hClaro = 0, nClaro = 0, hBosque = 0, nBosque = 0;
 for (const [x, z] of SALIDAS.filter((_, i) => i % 7 === 0)) {
   const v = vegetacionEn(pai, alt, sem, cuadro(x, z, 120), { x, z, r: 30 });
   const tramos = pai.riosEn(x - 120, z - 120, x + 120, z + 120);
-  for (const e of [...v.arboles, ...v.hierba, ...v.piedras, ...v.matas]) {
-    if (alt(e.x, e.z) < 0.3 || pai.agua(e.x, e.z, tramos) !== null) enAgua++;
+  // en tierra es a más de 1 m sobre el mar, como dice el juego (seco en src/mundo/mundo_juego.js); antes se miraba
+  // 0,3 m y las piedras sueltas salían en la orilla, entre 0,5 y 1 m (la prueba del navegador lo vio el 5 nov)
+  for (const e of [...v.arboles, ...v.hierba, ...v.flores, ...v.piedras, ...v.matas]) {
+    if (alt(e.x, e.z) < 1 || pai.agua(e.x, e.z, tramos) !== null) enAgua++;
   }
   for (const e of v.arboles) {
     total++; especies.add(e.especie);

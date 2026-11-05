@@ -97,7 +97,7 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
     const x = cx + (r() - 0.5) * 2.2, z = cz + (r() - 0.5) * 2.2, q = r(), a = r(), giro = r() * 6.3;
     if (x < x0 || x > x1 || z < z0 || z > z1) return;
     if (q > 0.45) return;                                          // ni al pie de un cortado pasaría: no se mira más
-    const s = sitioEn(x, z); if (!s || s.y < 0.5 || s.s > 0.8) return;
+    const s = sitioEn(x, z); if (!s || s.y < 1 || s.s > 0.8) return;   // a 1 m sobre el mar, como lo demás (antes 0,5: salían en la orilla)
     let pared = 0; for (let k = 0; k < 8; k++) pared = Math.max(pared, pendiente(x + Math.cos(k * 0.785) * 5, z + Math.sin(k * 0.785) * 5));
     const pie = s.s < 0.7 && pared > 1.1;
     if (q > (pie ? 0.45 : 0.006)) return;
