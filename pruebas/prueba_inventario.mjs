@@ -20,7 +20,7 @@ const CAT = {
   lenero_prueba: { nombre: 'Leñero de prueba', tam: 'G', lugar: 'espalda', huecos: [{ tam: 'G' }, { tam: 'G' }], admite: ['lena', 'tronco_corto'] },
   cinto_prueba: { nombre: 'Cinto de prueba', tam: 'M', lugar: 'cintura', huecos: [{ tam: 'M' }, { tam: 'P' }, { tam: 'M', admite: ['espada'] }] },
   bolsa_prueba: { nombre: 'Bolsa de prueba', tam: 'P', huecos: [{ tam: 'P' }, { tam: 'P' }] },
-  saco_prueba: { nombre: 'Saco de prueba', tam: 'M', lugar: 'hombro', huecos: [{ tam: 'M' }] },
+  saco_prueba: { nombre: 'Saco de prueba', tam: 'M', lugar: 'hombro', correa: true, huecos: [{ tam: 'M' }] },
   espada: { nombre: 'Espada', tam: 'M' },
 };
 
@@ -264,8 +264,11 @@ console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
   comprobar('el saco va al hombro', inv4.ponerse('mano:izq').ok && inv4.lugares.hombro.tipo === 'saco');
   const r6 = inv4.coger('grano', 10, 'hombro/0');
   comprobar('y no se abre: no tiene huecos', !r6.ok, r6.motivo);
-  inv4.coger('cesta_recoleccion', 1, 'mano:der');
-  comprobar('con el saco al hombro se puede llevar una cesta a la espalda', inv4.ponerse('mano:der').ok && inv4.coger('setas', 4, 'espalda/0').ok);
+  const r7 = inv4.coger('cesta_recoleccion', 1, 'mano:der');
+  comprobar('con el saco al hombro, las manos no cogen nada', !r7.ok && /al hombro/.test(r7.motivo) && !inv4.lugares['mano:der'], r7.motivo);
+  comprobar('con el saco al hombro se puede llevar una cesta a la espalda', inv4.coger('cesta_recoleccion', 1, 'espalda').ok && inv4.coger('setas', 4, 'espalda/0').ok);
+  comprobar('el saco se baja del hombro a la mano', inv4.quitarse('hombro', 'mano:izq').ok && inv4.lugares['mano:izq']?.tipo === 'saco' && !inv4.lugares.hombro);
+  inv4.soltar('mano:izq'); inv4.quitarse('espalda', 'mano:der'); inv4.ponerse('mano:der');
   // quitarse la mochila con lo que lleva dentro: nada se pierde
   comprobar('al quitarse la cesta se lleva lo que tiene dentro', inv4.quitarse('espalda', 'mano:der').ok && inv4.cuantos('setas') === 4 && inv4.lugares['mano:der'].dentro[0].n === 4);
   comprobar('y se puede volver a poner', inv4.ponerse('mano:der').ok && inv4.cuantos('setas') === 4 && inv4.lugares.espalda.tipo === 'cesta_recoleccion');
@@ -279,6 +282,44 @@ console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
   // un guardado de antes con agua en el odre: el agua no se pierde (queda a tus pies)
   const viejoOdre = Inventarios.importar({ version: 1, jugadores: { b: { lugares: { hombro: { tipo: 'odre', n: 1, dentro: [{ tipo: 'agua', n: 10 }] } }, apartado: [] } } }).de('b');
   comprobar('un odre guardado con agua: el odre al hombro y el agua a tus pies', viejoOdre.lugares.hombro.tipo === 'odre' && viejoOdre.apartado.some(c => c.tipo === 'agua' && c.n === 10));
+}
+
+// ---------------- Con algo al hombro, las manos no llevan nada (valravnx, 1 nov), ni el hacha ----------------
+{
+  const mutar = !!process.env.MUTAR_MANOS_HOMBRO; // vuelve a dejar coger con el hombro cargado: estas tienen que fallar
+  const coger = (inv, tipo, n, a) => mutar && a.startsWith('mano:') && inv.lugares.hombro && !inv.lugares[a] ? (inv.lugares[a] = { tipo, n }, { ok: true }) : inv.coger(tipo, n, a);
+  const inv = Inventario.inicial();
+  inv.coger('tronco_corto', 1, 'mano:der');
+  comprobar('el tronco corto pasa de las manos al hombro', inv.ponerse('mano:der').ok && inv.lugares.hombro?.tipo === 'tronco_corto');
+  const r1 = coger(inv, 'hacha_piedra', 1, 'mano:der');
+  comprobar('con el tronco al hombro no se coge el hacha', !r1.ok && !inv.lugares['mano:der'], r1.motivo);
+  const r2 = coger(inv, 'piedra', 1, 'mano:izq');
+  comprobar('ni una piedra en la otra mano', !r2.ok && !inv.lugares['mano:izq'], r2.motivo);
+  const r3 = inv.meterDonde('silex', 2);
+  comprobar('lo que se recoge no va a las manos (sin sitio, no se coge)', !r3.ok && !inv.lugares['mano:der'] && !inv.lugares['mano:izq'], r3.motivo);
+  inv.coger('cinto_cuero', 1, 'cintura');
+  const r4 = inv.meterDonde('silex', 2);
+  comprobar('con un cinto, lo recogido va al cinto y no a las manos', r4.ok && r4.donde.every(([r]) => r.startsWith('cintura/')), JSON.stringify(r4.donde));
+  comprobar('al bajar el tronco a las manos, se puede', inv.quitarse('hombro', 'mano:der').ok && inv.lugares['mano:der']?.tipo === 'tronco_corto');
+  // con algo en las manos, no se sube nada al hombro
+  const h = Inventario.inicial();
+  h.coger('hacha_piedra', 1, 'mano:izq');
+  const r5 = mutar ? { ok: true } : h.coger('tronco_corto', 1, 'hombro');
+  comprobar('con el hacha en la mano, el tronco no se sube al hombro', !r5.ok && /manos/.test(r5.motivo) && !h.lugares.hombro, r5.motivo);
+  h.soltar('mano:izq');
+  comprobar('con las manos libres, sí', h.coger('tronco_corto', 1, 'hombro').ok && h.lugares.hombro?.tipo === 'tronco_corto');
+  const r6 = h.coger('saco', 1, 'hombro');
+  comprobar('el hombro ocupado sigue ocupado', !r6.ok, r6.motivo);
+  // lo que cuelga de una correa (bandolera, odre) deja las manos libres
+  const o = Inventario.inicial();
+  o.coger('odre', 1, 'hombro');
+  comprobar('con el odre colgado, el hacha se coge', coger(o, 'hacha_piedra', 1, 'mano:der').ok && o.lugares['mano:der']?.tipo === 'hacha_piedra');
+  o.coger('bandolera', 1, 'mano:izq');
+  // por el servidor: la misma regla con autor
+  const invs = new Inventarios(), reg = new RegistroAcciones();
+  ejecutarInventario(invs, reg, { autor: 'jugador:ana', tipo: 'coger', objeto: 'tronco_corto', cantidad: 1, a: 'hombro' });
+  const a = ejecutarInventario(invs, reg, { autor: 'jugador:ana', tipo: 'coger', objeto: 'hacha_piedra', cantidad: 1, a: 'mano:der' });
+  comprobar('por acciones con autor: tronco al hombro y no coge el hacha', invs.de('jugador:ana').lugares.hombro?.tipo === 'tronco_corto' && !a.ok && !invs.de('jugador:ana').lugares['mano:der'], a.motivo);
 }
 
 // ---------------- Ralentización por carga (GDD: con poca carga no se nota; al máximo en todo, el 80%) ----------------
@@ -311,10 +352,10 @@ console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
     ...[2, 3, 4, 5].map(i => t.coger('lena', 3, 'espalda/' + i).ok),
     t.coger('cinto_anillas', 1, 'mano:der').ok, t.ponerse('mano:der').ok,
     t.coger('piedra', 3, 'cintura/0').ok, t.coger('rama', 3, 'cintura/1').ok, t.coger('silex', 10, 'cintura/2').ok, t.coger('resina', 10, 'cintura/3').ok,
-    t.coger('saco', 1, 'mano:der').ok, t.ponerse('mano:der').ok,
+    t.coger('bandolera', 1, 'mano:der').ok, t.ponerse('mano:der').ok,
     t.coger('piedra', 3, 'mano:der').ok, t.coger('rama', 3, 'mano:izq').ok,
   ];
-  comprobar('se puede llenar todo (leñero, cinto, saco al hombro y manos)', ok.every(x => x), ok.map(Number).join(''));
+  comprobar('se puede llenar todo (leñero, cinto, bandolera al hombro y manos)', ok.every(x => x), ok.map(Number).join(''));
   comprobar('cargado al máximo en todo: el 80%', casi(t.lleno().fraccion, 1) && casi(vel(t), 0.8), String(vel(t)));
   // a medias: la mitad de lleno se nota poco (el 95%), no la mitad de la reducción
   t.soltar('mano:der'); t.soltar('mano:izq'); t.soltar('hombro');

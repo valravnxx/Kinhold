@@ -133,8 +133,8 @@ export const CATALOGO = {
   correa_escudo: { nombre: 'Escudo a la espalda (correa)', tam: 'G', lugar: 'espalda', huecos: hs('M', 1), admite: ['escudo'] },
   // al hombro
   saco: { nombre: 'Saco', tam: 'M', lugar: 'hombro' },
-  bandolera: { nombre: 'Bandolera', tam: 'P', lugar: 'hombro' },
-  odre: { nombre: 'Odre', tam: 'M', lugar: 'hombro' },
+  bandolera: { nombre: 'Bandolera', tam: 'P', lugar: 'hombro', correa: true },
+  odre: { nombre: 'Odre', tam: 'M', lugar: 'hombro', correa: true },
   // ropa: sale de los datos de cada prenda (src/logica/prendas.js), con su capa. Toda es mediana.
   ...Object.fromEntries(Object.entries(PRENDAS).map(([k, p]) => [k, { nombre: p.nombre, tam: 'M', capa: p.capa }])),
 };
@@ -239,6 +239,14 @@ export class Inventario {
 
   poner(b, c) { if (b.padre) b.padre.dentro[b.hueco] = c; else this.lugares[b.hueco] = c; }
 
+  // Con algo al hombro, las manos no llevan nada, ni el hacha (valravnx, 1 nov: «si llevas algo al hombro, olvídate de
+  // llevar nada en manos a la vez»). Decisión provisional (diario y registro, 5 nov): cuenta la carga del hombro (el
+  // tronco corto, el saco), que se sujeta con las manos; lo que cuelga de una correa (bandolera, odre) deja las manos libres.
+  hombroCargado() {
+    const d = this.def(this.lugares.hombro);
+    return !!d && !d.correa;
+  }
+
   // La mano que queda bloqueada porque la otra lleva algo grande.
   manoBloqueada(mano) {
     const otra = this.lugares[mano === 'mano:der' ? 'mano:izq' : 'mano:der'];
@@ -255,6 +263,7 @@ export class Inventario {
       if (l.startsWith('mano:')) {
         if (this.manosEn === 'rastra') return 'Tienes las manos en la rastra: suéltala antes.';
         if (this.manosEn === 'carretilla') return 'Tienes las manos en la carretilla: apárcala antes.';
+        if (this.hombroCargado() && origen !== 'hombro') return 'Llevas algo al hombro: con eso, las manos no llevan nada.';
         if (this.manoBloqueada(l)) return 'Tienes las dos manos ocupadas.';
         if (d.tam === 'G') {
           const otra = l === 'mano:der' ? 'mano:izq' : 'mano:der';
@@ -265,6 +274,8 @@ export class Inventario {
       if (l.startsWith('ropa:')) return d.capa === l.slice(5) ? null : 'Eso no se pone ahí.';
       if (l === 'cintura' && d.lugar !== 'cintura') return 'Eso no es un cinturón.';
       if (l !== 'cintura' && d.lugar !== l && !(l === 'hombro' && d.hombro)) return 'Eso no se lleva ahí.';
+      if (l === 'hombro' && !d.correa && MANOS.some(m => this.lugares[m] && m !== origen))
+        return 'Para llevar eso al hombro, las manos tienen que ir vacías: guarda o suelta lo que llevas en ellas.';
       return null;
     }
     if (orden(d.tam) > orden(r.tam)) return 'No cabe en ese hueco.';

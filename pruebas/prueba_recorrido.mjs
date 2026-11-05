@@ -40,6 +40,7 @@ function comprobar(nombre, cond, detalle = '') {
 
 // Lo que un jugador nuevo aún no puede hacer sin el arcón, con el porqué y lo que lo trae.
 const TODAVIA_NO = {
+  hombro: 'con algo al hombro, las manos no llevan nada: un jugador nuevo aún no tiene tronco que subirse (llega con talar); lo prueba prueba_inventario.mjs',
   talar: 'un jugador nuevo no tiene hacha y aún no se fabrica nada: llega con «Fabricar por el servidor» (hito «De nada a una casa»)',
 };
 

@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v115 (eliges dónde empiezas)";
+export const VERSION_DEMO = "Demo única · v116 (con algo al hombro, las manos vacías)";
 export const REGISTRO_DEMO = [
+  "v116: con algo al hombro, las manos no llevan nada, ni el hacha (valravnx, 1 nov: «si llevas algo al hombro, olvídate de llevar nada en manos a la vez»). Con el tronco corto o el saco al hombro no se coge nada con las manos (lo que recoges va a la cintura o a la espalda, si llevas dónde), y para subirte algo al hombro tienes que llevar las manos vacías. Lo comprueba el servidor, en la misma lógica del inventario.",
+  "v116, provisional: lo que cuelga de una correa (la bandolera y el odre) no cuenta como carga al hombro y deja las manos libres; el tronco corto y el saco, que se sujetan con las manos, sí.",
   "v115: eliges dónde empiezas (valravnx, 5 nov: «pon dos más, una será en la ciudad y otra en la otra comarca de inicio», «motdale», «lo eligen»). En línea hay tres salidas, cada una en una zona del rey que no se reclama: la común (Lindholt), junto a la ciudad del rey (Strandvang) y en Motdale. Un personaje nuevo elige una al entrar, una sola vez; el servidor lo recuerda. Quien ya jugaba sigue donde estaba.",
   "v115, provisional: la salida de la ciudad, a 80 m de su centro (el primer sitio llano de su zona fuera de la ciudad); la de Motdale, el sitio de salida más cercano al centro de la comarca.",
   "v115: en la pradera abierta (el claro, sin bosque) sale algo de piedra y de sílex sueltos, menos que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»). Provisional: la piedra, la séptima parte que en la ladera; el sílex, la sexta parte que en la caliza. Lo que ya salía sigue en su sitio.",
