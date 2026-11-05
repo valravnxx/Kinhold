@@ -1201,7 +1201,9 @@
     },
     {
      "nombre": "Con algo al hombro, las manos no llevan nada (ni el hacha): lógica del inventario, en la demo y por el servidor",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-05T23:22:23+00:00",
+     "rama": "trabajo/20261105-2322"
     },
     {
      "nombre": "Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo (teja, chimenea, adarve, empalizada, polea, polipasto, escalera de tablas y los muebles caros quedan guardados para su nivel)",

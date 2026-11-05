@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-05T23:22:23+00:00",
+  "tarea": "Con algo al hombro, las manos no llevan nada (ni el hacha): lógica del inventario, en la demo y por el servidor",
+  "hito": "entre-dos",
+  "rama": "trabajo/20261105-2322"
+ },
  "B": null,
  "chat:trabajo/20261105-2050-mar": {
   "inicio": "2026-11-05T20:46:53+01:00",
