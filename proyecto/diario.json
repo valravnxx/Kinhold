@@ -4312,5 +4312,23 @@
   "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido): todo bien salvo el panel del admin, que falló porque su jugador simulado aparecía de golpe lejos; corregido y repetido en la nube, bien. El mapa del mundo no llegó a terminar en la primera ronda (se acabó el tiempo de espera de esta sesión) y se repitió: bien. Recorrido de jugador 24/24 aquí. Capturas del panel del admin (PC y móvil) miradas.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T10:22:41+00:00",
+  "fin": "2026-11-05T11:26:49+00:00",
+  "titulo": "Zonas del rey (P2, carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "Contadas las zonas de Whitholm con el mundo elegido: 1.840 zonas con tierra (853 en las tres comarcas de inicio). Tienen veta marcada (gran veta) 1, la de hierro de la sierra, en Breiddal; ciudad, 1 (Strandvang); salida común, 1 (Lindholt); vado, 18; veta pequeña, 32; y los 260 sitios de la salida al azar caen en 236 zonas, el 28 % de las comarcas de inicio. Los collados no están marcados en el mapa: contados a ojo como sillas del relieve por encima de 300 m salen unos 9 (no comprobado a fondo; no cambian nada, porque los collados sí se reclaman).",
+   "Son del rey la zona de la gran veta, la de la ciudad y la de la salida común (src/logica/zonas_rey.js, con sus sitios apuntados y comprobados con el mapa). Ahí el mojón sale con «Es zona del rey: no se reclama (aquí cava y recoge cualquiera).», en el navegador y en el servidor con su autor. Como no tienen dueño, en ellas recoge cualquiera y no construye nadie.",
+   "Decisión provisional (registro de la demo y decisiones pendientes): los sitios de la salida al azar no son del rey hasta que valravnx diga cuántos quiere; la tarea «Salida al azar de verdad en línea» queda esperando esa decisión. Los mojones ya puestos en una zona del rey se quedan hasta el próximo borrado del mundo.",
+   "El mapa del rey pinta las zonas del rey de oro viejo, con el borde a rayas y, de cerca, «Zona del rey» y por qué.",
+   "El recorrido de jugador ya no pone el mojón en la salida: lo intenta, sale «zona del rey», y anda unos 440 m hasta la zona de al lado; el segundo viaje de piedras y el mojón nuevo, con las piedras de allí. La prueba del terreno del servidor, igual.",
+   "Prueba nueva: pruebas/prueba_zonas_rey.mjs (13 comprobaciones); rota a propósito (MUTAR=1, sin pasar las zonas del rey) da 3 fallos. En la del mapa del rey, que salen las tres; rota (MUTAR=4) falla en PC y en móvil.",
+   "Publicada la demo v106."
+  ],
+  "pruebas": "Batería entera en la nube (GitHub Actions): 34 grupos correctos, 48,2 min. Recorrido de jugador 26/26 y prueba del terreno del servidor 36/36 también aquí. Capturas del mapa del rey miradas en PC y móvil.",
+  "capturas": "capturas/demo-v106",
+  "estado": "ok"
  }
 ]
