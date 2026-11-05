@@ -98,7 +98,10 @@ try {
   const m = enEscena(salidaInicio('motdale'));
   comprobar('elige Motdale y aparece allí', r.ok && r.posicion.x === m.x && r.posicion.z === m.z, JSON.stringify(r.posicion));
   comprobar('en el suelo, donde el servidor lo deja estar', r.ok && Math.abs(r.posicion.y - T.suelo(m.x, m.z)) < 1e-6 && T.posicion(r.posicion) === null);
-  const pa = r.posicion;
+  // lo que el navegador mandó desde la común antes de saber la respuesta no lo devuelve allí; luego anda en Motdale
+  a.ws.send(JSON.stringify({ tipo: 'estado', x: 3, y: T.suelo(3, 3), z: 3, giro: 0, anim: 'andar' }));
+  a.ws.send(JSON.stringify({ tipo: 'estado', x: m.x + 1, y: T.suelo(m.x + 1, m.z), z: m.z, giro: 0, anim: 'andar' }));
+  await new Promise(res => setTimeout(res, 400));
   r = await a.salida('ciudad');
   comprobar('no puede volver a elegir', !r.ok, r.motivo);
   const fa = a.bienvenida.ficha;
@@ -106,7 +109,8 @@ try {
 
   console.log('Lo recuerda');
   const a2 = await cliente(puerto, fa);
-  comprobar('al volver con su ficha sale donde eligió', a2.bienvenida.autor === a.bienvenida.autor && JSON.stringify(a2.bienvenida.posicion) === JSON.stringify(pa), JSON.stringify(a2.bienvenida.posicion));
+  const p2 = a2.bienvenida.posicion;
+  comprobar('al volver con su ficha sale donde lo dejó, en Motdale (lo mandado desde la común antes de elegir no cuenta)', a2.bienvenida.autor === a.bienvenida.autor && !!p2 && Math.abs(p2.x - (m.x + 1)) < 0.01 && Math.abs(p2.z - m.z) < 0.01, JSON.stringify(p2));
   await salir(a2);
 
   const b = await cliente(puerto);

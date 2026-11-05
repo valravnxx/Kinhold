@@ -49,7 +49,7 @@ console.log(JSON.stringify(recogidaEn(p, alturaMundo(p), m.semilla, {{ x0: {x0},
     r = subprocess.run(['node', '--input-type=module', '-e', js], cwd=RAIZ, capture_output=True, text=True, timeout=300)
     return set(json.loads(r.stdout.strip().splitlines()[-1]))
 
-# el sitio de la salida con más tipos a menos de 50 m, en redondo (para la vista de PC; en cuadro, lo de las esquinas
+# el sitio de la salida con más tipos a menos de 30 m, en redondo (para la vista de PC; en un cuadro de 100 m, lo de las esquinas
 # quedaba a más de los 60 m a los que se busca en la página: 5 nov) y, para la del móvil, uno fijo con bastantes
 # puntos (antes era al azar y en algunos sitios no llegaba a los 20 puntos: la prueba fallaba según la suerte, 5 nov)
 def sitio_con_todo():
@@ -58,7 +58,7 @@ import { crearPaisaje } from './src/logica/paisaje.js'; import { alturaMundo, SA
 import { recogidaEn } from './src/logica/recogida_mundo.js';
 const m = generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO }), p = crearPaisaje(m), a = alturaMundo(p); let mejor = [0, 0];
 for (let k = 0; k < SALIDAS.length && mejor[0] < 5; k++) { const [x, z] = SALIDAS[k];
-  const n = new Set(recogidaEn(p, a, m.semilla, { x0: x - 50, z0: z - 50, x1: x + 50, z1: z + 50 }).filter(q => Math.hypot(q.x - x, q.z - z) < 50).map(q => q.tipo)).size; if (n > mejor[0]) mejor = [n, k]; }
+  const n = new Set(recogidaEn(p, a, m.semilla, { x0: x - 50, z0: z - 50, x1: x + 50, z1: z + 50 }).filter(q => Math.hypot(q.x - x, q.z - z) < 30).map(q => q.tipo)).size; if (n > mejor[0]) mejor = [n, k]; }
 // para el móvil, la primera salida (otra que la de PC) con al menos 30 puntos a menos de 48 m: siempre la misma
 let km = -1;
 for (let k = 0; k < SALIDAS.length && km < 0; k++) { if (k === mejor[1]) continue; const [x, z] = SALIDAS[k];

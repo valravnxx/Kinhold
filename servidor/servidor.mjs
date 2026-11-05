@@ -267,6 +267,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   // salida: id }. Se apunta enseguida como su posición: es donde aparece, y lo recuerda. Solo una vez: quien ya tiene
   // posición no vuelve a elegir. Con salidaComun (solo pruebas de navegador), a los nuevos se les pone la común sin
   // preguntar. Devuelve { ok, motivo, posicion }.
+  const recienLlegado = new Map();   // autor → la salida que acaba de elegir (ver el mensaje «estado»)
   const elegirSalida = (autor, id) => {
     if (!terreno) return { ok: false, motivo: 'Aquí no hay salidas.' };
     if (posiciones.has(autor)) return { ok: false, motivo: 'Ya has empezado.' };
@@ -428,7 +429,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         // desde ahí (lo de alrededor le llega con el siguiente estado, al cambiar de trozo)
         const id = Number.isSafeInteger(msg.id) ? msg.id : null;
         const r = elegirSalida(autor, typeof msg.salida === 'string' ? msg.salida : '');
-        if (r.ok) presencia.anclar(autor, r.posicion, reloj());
+        if (r.ok) { presencia.anclar(autor, r.posicion, reloj()); recienLlegado.set(autor, r.posicion); }
         return enviar(ws, { tipo: 'salida', id, ...r });
       }
       if (msg && msg.tipo === 'estado') {
@@ -436,6 +437,13 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         if (terreno && !(combate.luchadores[autor] && combate.luchadores[autor].liza)) {
           const ad = esAdmin(autor), e = validarEstado(msg, { admin: ad }), mal = e ? terreno.posicion(e, { admin: ad }) : null;
           if (mal) return enviar(ws, { tipo: 'error', motivo: mal });
+        }
+        // recién elegida la salida, los estados que el navegador mandó desde la común antes de saberlo no cuentan (si no,
+        // moverían el ancla del movimiento sin trampas otra vez allí): hasta el primero junto a la salida elegida
+        const ll = recienLlegado.get(autor);
+        if (ll) {
+          if (Number.isFinite(msg.x) && Number.isFinite(msg.z) && Math.hypot(msg.x - ll.x, msg.z - ll.z) > 50) return;
+          recienLlegado.delete(autor);
         }
         // movimiento sin trampas: lo que llega más lejos de lo que se puede andar se recorta (src/logica/presencia.js)
         const enLiza = !!(combate.luchadores[autor] && combate.luchadores[autor].liza);
@@ -741,7 +749,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       apuntarPosicion(autor); guardarPosiciones();
       // la rastra que arrastraba se queda donde estaba (antes de olvidar dónde estaba él)
       if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); repartirSuelo(Date.now()); }
-      aspectos.delete(autor); presencia.quitar(autor); vista.quitar(autor);
+      aspectos.delete(autor); presencia.quitar(autor); recienLlegado.delete(autor); vista.quitar(autor);
       ponerAlDia();
       const L = combate.apartar(autor);
       if (L) apartados.set(autor, { L, hasta: reloj() + gracia });
