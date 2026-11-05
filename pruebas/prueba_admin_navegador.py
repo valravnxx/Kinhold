@@ -10,8 +10,8 @@
 #   - «Ir» te pone junto a él (a menos de 2 m) y cierra el panel; un clic en el mapa te lleva a ese punto, en el suelo;
 #   - «Traer» (valravnx, 5 nov: «poder tpearlos a mi»): pone al otro jugador junto a ti; a él le llega adónde, a menos
 #     de 2 m de ti;
-#   - al jugador traído (una cuenta que no es de admin), su navegador le pone donde dice el servidor y le avisa (el
-#     mensaje del servidor se mete en su conexión con route_web_socket: así sigue siendo una sola página);
+#   - al jugador traído (una cuenta que no es de admin), su navegador le pone donde dice el servidor y le avisa (le trae
+#     un admin simulado: otro cliente de node con una cuenta de admin; así sigue siendo una sola página);
 #   - M, Esc y «Cerrar» lo cierran.
 #   - explorar libre (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente… que quiero poder
 #     explorar libre»): el mapa del panel es el del continente entero; un clic en otra región te lleva allí, en el suelo,
@@ -19,7 +19,7 @@
 # MUTAR=1: un servidor que dice a todos que son admin: tiene que fallar (a la cuenta que no lo es le saldría el botón).
 # MUTAR=3: el navegador no hace caso de que le traigan: tiene que fallar.
 # MUTAR=2: el navegador no suelta a la cuenta de admin fuera de la isla: tiene que fallar (no puede andar allí).
-import sys, os, re, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket
+import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket
 from playwright.sync_api import sync_playwright
 from correo_prueba import Codigos, crear_y_confirmar
 
@@ -29,7 +29,7 @@ SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_admin'
 os.makedirs(SALIDA, exist_ok=True)
 MUTAR_TODO = os.environ.get('MUTAR', '')
 MUTAR = MUTAR_TODO == '1'
-ADMINS = ['valravnx', 'admmovil', 'admen']   # la cuenta de admin de cada vista (la máquina dice sus correos: usuario@ejemplo.com, como los pone correo_prueba.py)
+ADMINS = ['valravnx', 'admmovil', 'admen', 'admbotpc', 'admbotmovil']   # la cuenta de admin de cada vista (la máquina dice sus correos: usuario@ejemplo.com, como los pone correo_prueba.py)
 OTRO = (1500.0, 900.0)   # dónde está el jugador simulado (m, relativos a la salida; lejos, para que tu marca no lo tape)
 
 sitio = tempfile.mkdtemp()
@@ -93,6 +93,32 @@ def crear_cuenta(pg, usuario, ms=10000):
     # y confirma el correo con el código que llega (pruebas/correo_prueba.py), como un jugador
     return crear_y_confirmar(pg, codigos, usuario, clave)
 PANEL = f"{K}.panelAdmin"
+# el admin simulado: otro cliente de node que crea una cuenta de admin (el código del correo se lo pasa esta prueba por su
+# entrada), se queda quieto en ADMIN_BOT y trae al jugador que se le diga; da la respuesta del servidor y se va
+ADMIN_BOT = (1460.0, 880.0)
+ADMIN_JS = f"""import {{ WebSocket }} from 'ws';
+import {{ createInterface }} from 'readline';
+import {{ terrenoWhitholm }} from './src/logica/terreno_servidor.js';
+const [usuario, quien] = process.argv.slice(1);
+const y = terrenoWhitholm().suelo({ADMIN_BOT[0]}, {ADMIN_BOT[1]});
+const ws = new WebSocket('ws://127.0.0.1:{PUERTO}');
+const fin = (m) => {{ console.log('fin ' + JSON.stringify(m)); process.exit(0); }};
+setTimeout(() => fin({{ ok: false, motivo: 'sin respuesta' }}), 30000);
+ws.on('open', () => {{ setInterval(() => ws.send(JSON.stringify({{ tipo: 'estado', x: {ADMIN_BOT[0]}, y, z: {ADMIN_BOT[1]}, giro: 0, anim: 'quieto' }})), 200);
+  ws.send(JSON.stringify({{ tipo: 'cuenta', id: 1, que: 'crear', usuario, clave: 'clave-de-prueba-123', correo: usuario + '@ejemplo.com' }})); }});
+createInterface({{ input: process.stdin }}).on('line', (c) => ws.send(JSON.stringify({{ tipo: 'cuenta', id: 2, que: 'verificar', codigo: c.trim() }})));
+ws.on('message', (d) => {{ const m = JSON.parse(d.toString());
+  if (m.tipo === 'cuenta' && m.id === 2) {{ if (!m.ok || !m.admin) fin(m); else setTimeout(() => ws.send(JSON.stringify({{ tipo: 'admin', id: 3, que: 'traer', quien }})), 600); }}
+  if (m.tipo === 'admin' && m.id === 3) fin(m); }});"""
+def traer_con_admin(usuario, quien):
+    a = subprocess.Popen(['node', '--input-type=module', '-e', ADMIN_JS, usuario, quien], cwd=RAIZ, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    try:
+        c = codigos.de(usuario)
+        if c: a.stdin.write(c + '\n'); a.stdin.flush()
+        for l in a.stdout:
+            if l.startswith('fin '): return json.loads(l[4:])
+        return None
+    finally: a.kill()
 
 try:
     print('Jugador simulado:', AUTOR_BOT)
@@ -105,11 +131,6 @@ try:
             ctx.add_init_script("try { if (!sessionStorage.getItem('puesta')) { localStorage.setItem('kinhold_admin_clave', 'clave-de-antes-0123456'); sessionStorage.setItem('puesta', '1'); } } catch (e) {}")
             pg = ctx.new_page()
             if MUTAR_TODO == '3': pg.add_init_script("window.__mutarTraido = true")
-            # su conexión pasa por aquí: para meterle luego lo que manda el servidor al traído
-            tubo = []
-            def pasar(ws, tubo=tubo):
-                ws.connect_to_server(); tubo.append(ws)
-            pg.route_web_socket(re.compile(r'^ws://127\.0\.0\.1:%d' % PUERTO), pasar)
             err = []
             pg.on('pageerror', lambda e, err=err: err.append(str(e)))
             pg.goto(URL + '&admin', wait_until='domcontentloaded', timeout=180000)
@@ -124,11 +145,13 @@ try:
             fuera = pg.evaluate(f"({{ libre: {K}.mundoJ.esLibre, dentro: {K}.mundoJ.dentro(-150000, 150000) }})")
             comprobar(f'{nombre}: sin la cuenta de admin no se puede ir fuera de la isla', fuera['libre'] is False and fuera['dentro'] is False, str(fuera))
             comprobar(f'{nombre}: la clave que guardaba el navegador antes se borra', pg.evaluate("localStorage.getItem('kinhold_admin_clave')") is None)
-            # le trae el admin: lo que le manda el servidor, metido en su conexión
-            if tubo: tubo[-1].send(json.dumps({'tipo': 'admin', 'que': 'traido', 'x': 300.0, 'y': 0, 'z': -200.0, 'giro': 1.2}))
-            traido = esperar(pg, f"Math.hypot({K}.pj.x - 300, {K}.pj.z + 200) < 0.1 && Math.abs({K}.pj.rot - 1.2) < 1e-6", 5000)
+            # le trae el admin (simulado, con su cuenta de admin): su navegador le pone junto a él y le avisa
+            r = traer_con_admin(f'admbot{nombre}', pg.evaluate(f"{K}.yo"))
+            traido = esperar(pg, f"Math.hypot({K}.pj.x - {ADMIN_BOT[0]}, {K}.pj.z - {ADMIN_BOT[1]}) < 2", 8000)
             aviso = pg.evaluate("document.getElementById('aviso').textContent")
-            comprobar(f'{nombre}: al que trae el admin, su navegador le pone ahí y le avisa', bool(tubo) and traido and 'admin' in aviso, f'{aviso} · {pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")}')
+            comprobar(f'{nombre}: al que trae el admin, su navegador le pone junto a él y le avisa', bool(r and r.get('ok')) and traido and 'admin' in aviso, f'{r} · {aviso} · {pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")}')
+            pg.wait_for_timeout(1500)
+            captura(pg, f'{SALIDA}/{nombre}_traido.png')
             comprobar(f'{nombre}: sin errores en la página (sin admin)', not err, '; '.join(err)[:300])
             ctx.close()
 
