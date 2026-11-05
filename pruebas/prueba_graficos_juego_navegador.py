@@ -43,9 +43,13 @@ def entrar(pg, extra=''):
     pg.wait_for_timeout(1500)
 
 def cielo(pg):
-    """lo de arriba del todo (el cielo): con el lienzo transparente se ve el degradado de la página"""
-    im = Image.open(io.BytesIO(pg.screenshot(clip={'x': 0, 'y': 0, 'width': 300, 'height': 30}))).convert('RGB')
-    return [round(x) for x in ImageStat.Stat(im).mean]
+    """lo de arriba del todo (el cielo), con la cámara casi a ras de suelo para que se vea el horizonte: con el lienzo
+    transparente se ve el degradado de la página (claro); si el posprocesado tapara el cielo, saldría negro u opaco"""
+    pg.evaluate('(() => { window.__camAntes = { ...window.__kinhold.cam }; window.__kinhold.cam.pitch = 0.07; })()'); pg.wait_for_timeout(2500)
+    im = Image.open(io.BytesIO(pg.screenshot(clip={'x': 0, 'y': 60, 'width': 300, 'height': 30}))).convert('RGB')
+    r = [round(x) for x in ImageStat.Stat(im).mean]
+    pg.evaluate('Object.assign(window.__kinhold.cam, window.__camAntes)'); pg.wait_for_timeout(1500)
+    return r
 
 def recorrido(pg, nombre, pref):
     errores = []
@@ -68,14 +72,14 @@ def recorrido(pg, nombre, pref):
     comprobar(f'{nombre}: se sigue viendo el cielo de la página (no sale negro)', sum(c0) / 3 > 120, str(c0))
     pg.screenshot(path=f'{SALIDA}/{pref}_1_movil-1.png')
     # el panel: el perfil y los seis botones
-    pg.click('#btnDemoFps'); pg.wait_for_timeout(1300)
+    pg.evaluate("document.getElementById('btnDemoFps').click()"); pg.wait_for_timeout(1300)
     txt = pg.inner_text('#demoRend')
     comprobar(f'{nombre}: el panel de rendimiento dice el perfil', 'Móvil básico' in txt and 'pasadas' in txt, txt[:200].replace('\n', ' · '))
     comprobar(f'{nombre}: y tiene los seis perfiles para elegir', pg.evaluate("document.querySelectorAll('#demoRend [data-perfil]').length") == 6)
     pg.screenshot(path=f'{SALIDA}/{pref}_0_panel.png')
-    pg.click('#demoRend [data-perfil="movil-3"]'); pg.wait_for_timeout(1500)
+    pg.evaluate("document.querySelector('#demoRend [data-perfil=movil-3]').click()"); pg.wait_for_timeout(1500)
     comprobar(f'{nombre}: al pulsar «Móvil alto y tableta» cambia (4 pasadas: oclusión y suavizado)', pg.evaluate(f'{G}.perfil') == 'movil-3' and pg.evaluate(f'{G}.pasadas') == 4, f"{pg.evaluate(f'{G}.perfil')} {pg.evaluate(f'{G}.pasadas')}")
-    pg.click('#btnDemoFps'); pg.wait_for_timeout(1200)
+    pg.evaluate("document.getElementById('btnDemoFps').click()"); pg.wait_for_timeout(1200)
     pg.screenshot(path=f'{SALIDA}/{pref}_2_movil-3.png')
     # se queda guardado
     entrar(pg)

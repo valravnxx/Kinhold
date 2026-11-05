@@ -1826,5 +1826,9 @@
  "solo en escenas concretas": "only in specific scenes",
  "opcionales, a contraluz": "optional, against the light",
  "MSAA de 4 muestras": "MSAA, 4 samples",
- "MSAA de 8 muestras": "MSAA, 8 samples"
+ "MSAA de 8 muestras": "MSAA, 8 samples",
+ "Perfil gráfico": "Graphics profile",
+ "{p}, {n} pasadas": "{p}, {n} passes",
+ "Calidad gráfica:": "Graphics quality:",
+ "★ el que sugiere este aparato. El que elijas se queda guardado en este navegador.": "★ the one this device suggests. The one you choose stays saved in this browser."
 }

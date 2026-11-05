@@ -1826,5 +1826,9 @@
  "solo en escenas concretas": "только в отдельных сценах",
  "opcionales, a contraluz": "по желанию, против света",
  "MSAA de 4 muestras": "MSAA, 4 выборки",
- "MSAA de 8 muestras": "MSAA, 8 выборок"
+ "MSAA de 8 muestras": "MSAA, 8 выборок",
+ "Perfil gráfico": "Графический профиль",
+ "{p}, {n} pasadas": "{p}, проходов: {n}",
+ "Calidad gráfica:": "Качество графики:",
+ "★ el que sugiere este aparato. El que elijas se queda guardado en este navegador.": "★ тот, что предлагает это устройство. Выбранный сохраняется в этом браузере."
 }
