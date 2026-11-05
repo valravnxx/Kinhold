@@ -1,0 +1,5 @@
+ERRORES:
+ - faltan 1 traducciones en proyecto/idiomas/en.json (añade la clave en español con su traducción):
+     · Traer jugadores con el panel de admin (valravnx, 5 nov: «a parte de lo que ya está que es tpearme a gente, poder tpearlos a mi»): en la lista, junto a «Ir», «Traer» pone a ese jugador a tu lado; lo pide el servidor, solo con la cuenta de admin, y queda apuntado
+ - faltan 1 traducciones en proyecto/idiomas/ru.json (añade la clave en español con su traducción):
+     · Traer jugadores con el panel de admin (valravnx, 5 nov: «a parte de lo que ya está que es tpearme a gente, poder tpearlos a mi»): en la lista, junto a «Ir», «Traer» pone a ese jugador a tu lado; lo pide el servidor, solo con la cuenta de admin, y queda apuntado
