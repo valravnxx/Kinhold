@@ -58,7 +58,8 @@ const casos = [
   [{ tactil: false, grafica: 'ANGLE (Intel, Intel(R) UHD Graphics 620)' }, 'pc-1', 'portátil con gráfica integrada'],
   [{ tactil: false, grafica: 'ANGLE (NVIDIA, NVIDIA GeForce GTX 1060)' }, 'pc-2', 'PC con gráfica de hace años'],
   [{ tactil: false, grafica: 'ANGLE (NVIDIA, NVIDIA GeForce RTX 4070)' }, 'pc-3', 'PC con gráfica buena'],
-  [{ tactil: false, grafica: 'Google SwiftShader' }, 'pc-1', 'sin tarjeta gráfica (las pruebas)'],
+  [{ tactil: false, grafica: 'Google SwiftShader' }, 'movil-1', 'sin tarjeta gráfica (las pruebas): lo más barato'],
+  [{ tactil: true, memoria: 12, nucleos: 8, grafica: 'Adreno (TM) 825' }, 'movil-3', 'POCO F7 (Adreno 825; Chrome dice como mucho 8 GB)'],
 ];
 for (const [info, esperado, que] of casos) comprobar(`${que} → ${esperado}`, sugerirPerfil(info) === esperado, sugerirPerfil(info));
 

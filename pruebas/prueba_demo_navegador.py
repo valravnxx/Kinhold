@@ -63,7 +63,8 @@ def medir(pg, nombre, parte, personajes):
 def abrirPanel(pg, parte):
     pg.click('#btnDemoFps'); pg.wait_for_timeout(1200)
     txt = pg.inner_text('#demoRend')
-    comprobar(f'{parte}: el panel enseña los números', 'Triángulos' in txt and 'Personajes en escena' in txt and 'móvil' in txt, txt[:80])
+    # en el juego, también el perfil gráfico y los seis para elegir (valravnx, 5 nov); ya no pide los fps del móvil: los midió
+    comprobar(f'{parte}: el panel enseña los números', 'Triángulos' in txt and 'Personajes en escena' in txt and (parte != 'construir' or ('Perfil gráfico' in txt and 'Calidad gráfica' in txt)), txt[:80])
 def ir(pg, sel):
     if MUTAR: pg.evaluate('localStorage.clear()')
     pg.click(sel); pg.wait_for_load_state('load'); pg.wait_for_function('window.__demo && window.__demo.listo', timeout=60000)

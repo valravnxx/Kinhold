@@ -8,6 +8,7 @@
 //     canales de esos idiomas; y nada si no hay webhooks
 // Uso: node pruebas/prueba_discord_noticias.mjs     MUTAR=1 → el diario se publica entero (sin quitar lo de antes): tiene que fallar.
 //                                                   MUTAR=2 → el inglés sin sus traducciones: tiene que fallar.
+//                                                   MUTAR=3 → sin la marca «noticia: false»: tiene que fallar.
 import { noticias, MAX_MENSAJES } from '../herramientas/discord_noticias.mjs';
 import { execFileSync, spawn } from 'child_process';
 import { mkdtempSync, writeFileSync, mkdirSync } from 'fs';
@@ -42,6 +43,12 @@ const muchas = noticias({ diarioAntes: [], diarioAhora: Array.from({ length: 30 
 comprobar(`como mucho ${MAX_MENSAJES} de golpe (las últimas)`, muchas.diario.length === MAX_MENSAJES && muchas.diario.at(-1).embeds[0].title === 'Tarea 29');
 const largo = noticias({ diarioAntes: [], diarioAhora: [e(1, { hecho: Array(400).fill('x'.repeat(40)) })], versionesNuevas: [], roadmap, sha: 'x' });
 comprobar('los textos largos se cortan a lo que admite Discord', largo.diario[0].embeds[0].description.length <= 4000);
+
+// «sin noticia» (valravnx, 5 nov): lo marcado con noticia: false no sale (ni la entrada del diario ni la versión)
+const rmSin = { ...roadmap, prototipos: [{ id: 'demo', nombre: 'Demo única', versiones: [{ v: 'v91', fecha: '2026-11-01', notas: 'x' }, { v: 'v92', fecha: '2026-11-05', notas: 'y', noticia: MUTAR === '3' ? undefined : false }] }] };
+const sin = noticias({ diarioAntes: antes, diarioAhora: [...ahora, e(5, { noticia: MUTAR === '3' ? undefined : false })], versionesNuevas: [{ prototipo: 'demo', v: 'v91' }, { prototipo: 'demo', v: 'v92' }], roadmap: rmSin, sha: 'x' });
+comprobar('lo marcado «noticia: false» no sale en Discord (ni la entrada ni la versión); lo demás, sí', sin.diario.length === 2 && !sin.diario.some(m => m.embeds[0].title === 'Tarea 5') && sin.versiones.length === 1 && sin.versiones[0].embeds[0].title.endsWith('v91'),
+  `${sin.diario.map(m => m.embeds[0].title).join(', ')} · ${sin.versiones.map(m => m.embeds[0].title).join(', ')}`);
 
 const EN = { 'Tarea 3': 'Task 3', 'Hecho 3': 'Done 3', 'Todo bien': 'All good', 'Cuentas': 'Accounts', 'Demo única': 'Single demo', 'El tronco al hombro.': 'The log on the shoulder.' };
 const ne = noticias({ diarioAntes: antes, diarioAhora: ahora, versionesNuevas: [{ prototipo: 'demo', v: 'v91' }], roadmap, sha: 'abc', idioma: 'en', trad: MUTAR === '2' ? {} : EN });

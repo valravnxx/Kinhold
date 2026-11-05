@@ -1167,7 +1167,9 @@
     },
     {
      "nombre": "Movimiento sin trampas: el servidor limita la velocidad y el salto entre dos estados seguidos de cada personaje (lo que llega por encima se recorta a lo posible y se anota), para que «sin trampas» valga para andar y no solo para las obras (auditoría del 4 nov)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-05T08:23:19+00:00",
+     "rama": "trabajo/20261105-0823"
     },
     {
      "nombre": "Zonas del rey (valravnx, 4 nov): las zonas con una veta marcada en el mapa, un sitio de salida o la ciudad no se reclaman, y en ellas cava y recoge cualquiera. Antes, con la lógica de comarcas, contar cuántas zonas de Whitholm tienen veta marcada, vado, collado, salida o ciudad, para que las del rey sean las justas y se vea en el mapa",
@@ -1428,7 +1430,7 @@
   {
    "id": "graficos",
    "nombre": "Perfiles gráficos y posprocesado",
-   "estado": "en_curso",
+   "estado": "hecho",
    "lleva": "chat",
    "jugable": "Seis perfiles gráficos, de móvil de gama baja a PC de gama alta, y el posprocesado del estilo (oclusión ambiental, gradación de color, brillo de las luces, niebla, desenfoque puntual y haces de luz), sin que ningún perfil esconda lo que importa para jugar.",
    "nota": "Lo lleva el chat con valravnx (4 nov), aparte de los P1–P7: los carriles no lo tocan.",
@@ -1441,9 +1443,15 @@
     },
     {
      "nombre": "Llevar los perfiles gráficos y el posprocesado a la demo: el perfil en Opciones, el de inicio por el aparato y por la medida, y la cadena de efectos en el mundo de verdad (con la cámara del juego); después de que valravnx mida en su móvil y en su PC con «Medir»",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T05:07:52+01:00",
-     "rama": "trabajo/20261105-0510-graficos-juego"
+     "fin": "2026-11-05T09:09:05+01:00"
+    },
+    {
+     "nombre": "El horizonte en los perfiles altos (valravnx, 5 nov: «no noto casi ninguna diferencia más que la resolución; me interesaría que los altos aumentaran muchísimo la distancia de dibujado del mapa, aunque sea sin detalle, para ver las montañas y las formas»): el terreno de toda la isla, basto y lejano, detrás del de cerca",
+     "estado": "en_curso",
+     "inicio": "2026-11-05T09:18:41+01:00",
+     "rama": "trabajo/20261105-0920-horizonte"
     }
    ],
    "num": "G"
@@ -2748,6 +2756,14 @@
      "archivo": "jugar/demo/v104.html",
      "capturas": "capturas/demo-v104",
      "notas": "El servidor no se fía del navegador en las obras: entregar, subir material, trabajar y desmontar solo valen junto a la pieza y en su planta (o en la de debajo), con la posición que el servidor tiene de ti. De lejos, «Estás demasiado lejos: acércate.»; desde el suelo no se entrega arriba. Al desmontar, la demo ya lo dice antes de pedir confirmación."
+    },
+    {
+     "v": "v105",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v105.html",
+     "capturas": "capturas/demo-v105",
+     "notas": "Perfiles gráficos y posprocesado en el juego: oclusión ambiental, mapeo tonal, gradación de color, brillo de las luces y niebla según el perfil, de Móvil básico a PC alto. El perfil se elige en el botón de los fps, junto a «Menú» (★ el que sugiere tu aparato) y se queda guardado.",
+     "noticia": false
     }
    ]
   },

@@ -1,10 +1,13 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v105 (ríos de verdad)";
+export const VERSION_DEMO = "Demo única · v106 (ríos de verdad)";
 export const REGISTRO_DEMO = [
-  "v105: ríos de verdad. El doble de anchos (los arroyos de unos 5 a 8 m, el río mayor de Whitholm de unos 22 m); los arroyos se vadean y los ríos se cruzan nadando o por sus vados. Nacen estrechos y se ensanchan en su primer kilómetro.",
-  "v105: los afluentes llegan al cauce del río al que entran (antes se quedaban hasta 170 m antes) y su agua llega a la misma altura.",
-  "v105: lecho de río: el fondo es de grava y cantos (del color de la roca del sitio) con barras de arena en los ríos anchos, la orilla es de barro húmedo, y hay cantos de río en el cauce y la orilla, más gordos donde la corriente es fuerte. El cauce tiene el fondo llano y la orilla marcada.",
-  "v105: los saltos de agua dicen su alto de verdad (donde el suelo recorta el escalón, no cuentan como salto). Un sitio de salida que quedó junto a un río sale de la lista.",
+  "v106: ríos de verdad. El doble de anchos (los arroyos de unos 5 a 8 m, el río mayor de Whitholm de unos 22 m); los arroyos se vadean y los ríos se cruzan nadando o por sus vados. Nacen estrechos y se ensanchan en su primer kilómetro.",
+  "v106: los afluentes llegan al cauce del río al que entran (antes se quedaban hasta 170 m antes) y su agua llega a la misma altura.",
+  "v106: lecho de río: el fondo es de grava y cantos (del color de la roca del sitio) con barras de arena en los ríos anchos, la orilla es de barro húmedo, y hay cantos de río en el cauce y la orilla, más gordos donde la corriente es fuerte. El cauce tiene el fondo llano y la orilla marcada.",
+  "v106: los saltos de agua dicen su alto de verdad (donde el suelo recorta el escalón, no cuentan como salto). Un sitio de salida que quedó junto a un río sale de la lista.",
+  "v105: el posprocesado del estilo en el juego, con seis perfiles gráficos de móvil básico a PC alto: oclusión ambiental (rincones, uniones y contactos), mapeo tonal, gradación de color, brillo de las luces y niebla, según el perfil (valravnx, 5 nov, tras la prueba de posprocesado v1).",
+  "v105: el perfil se elige en el panel de rendimiento (el botón de los fps, junto a «Menú»), con ★ en el que sugiere tu aparato; el que elijas se queda guardado en el navegador. ?graficos=<perfil> en la dirección fuerza uno.",
+  "v105, provisional: en el juego no van el desenfoque (solo para escenas concretas, que aún no hay) ni los haces de luz (con la cámara del juego casi nunca se mira al sol). Sin tarjeta gráfica, el perfil más barato.",
   "v104: el servidor no se fía del navegador en las obras. Entregar, subir material, trabajar y desmontar solo valen junto a la pieza (a 2,3 m de ella, con 3 m más de margen por el retraso) y en su planta o en la de debajo, con la posición que el servidor tiene de ti; si no, «Estás demasiado lejos: acércate.» o «No estás en su planta.». Al desmontar, la demo ya lo dice antes de pedir confirmación: lo lejano no se desmonta.",
   "v104, provisional: tu planta, para el servidor, sale de la altura de tus pies sobre la base de la construcción (con 1 m de margen); el GDD no dice desde dónde se desmonta, y se toma lo mismo que para las obras.",
   "v103: lo tuyo es tuyo. En tu tierra solo tú y quien tengas invitado desmontáis, abrís y cerráis las puertas y encendéis o apagáis el fuego; a los demás les sale «Es tierra de otro: solo su dueño y sus invitados.» (y lo de otro ya no se resalta como para desmontarlo). Lo comprueba el servidor con el autor de cada uno, aunque un navegador se lo mande igual.",

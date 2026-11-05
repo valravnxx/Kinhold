@@ -55,7 +55,8 @@ export function noticias({ diarioAntes, diarioAhora, versionesNuevas, roadmap, s
   const clave = (e) => `${e.inicio}|${e.titulo}`;
   const antes = new Set((diarioAntes || []).map(clave));
   const nombreHito = Object.fromEntries((roadmap?.hitos || []).map(h => [h.id, t(h.nombre)]));
-  const diario = (diarioAhora || []).filter(e => !antes.has(clave(e))).slice(-MAX_MENSAJES).map(e => {
+  // «noticia: false» (en la entrada del diario o en la versión del roadmap): no sale en Discord (valravnx, 5 nov: «sin noticia»)
+  const diario = (diarioAhora || []).filter(e => !antes.has(clave(e)) && e.noticia !== false).slice(-MAX_MENSAJES).map(e => {
     const min = Math.round((new Date(e.fin) - new Date(e.inicio)) / 60000);
     const hecho = (e.hecho || []).map(h => '• ' + t(h)).join('\n');
     const emb = {
@@ -75,9 +76,10 @@ export function noticias({ diarioAntes, diarioAhora, versionesNuevas, roadmap, s
     return { embeds: [emb] };
   });
   const protos = Object.fromEntries((roadmap?.prototipos || []).map(p => [p.id, p]));
-  const versiones = (versionesNuevas || []).slice(-MAX_MENSAJES).map(({ prototipo, v }) => {
+  const deVersion = ({ prototipo, v }) => (protos[prototipo]?.versiones || []).find(x => x.v === v) || {};
+  const versiones = (versionesNuevas || []).filter(x => deVersion(x).noticia !== false).slice(-MAX_MENSAJES).map(({ prototipo, v }) => {
     const p = protos[prototipo];
-    const info = (p?.versiones || []).find(x => x.v === v) || {};
+    const info = deVersion({ prototipo, v });
     const emb = {
       title: corta(`${t(p?.nombre) || prototipo} · ${v}`, 256),
       url: WEB + `jugar/${prototipo}/${v}.html?lang=${idioma}`,

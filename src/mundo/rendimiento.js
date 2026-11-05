@@ -3,7 +3,7 @@
 // cuánto tarda cada uno, los triángulos y las llamadas de dibujo de cada fotograma, la memoria de la tarjeta
 // (geometrías y texturas que conoce three.js) y la de JavaScript (solo la dicen Chrome y los navegadores
 // basados en él). No dibuja nada en pantalla: los números los enseña la demo (src/demo/rendimiento.js).
-const estado = { renderer: null, escena: null, gente: null };
+const estado = { renderer: null, escena: null, gente: null, solo: null };
 const ventana = { cuenta: 0, t0: 0, peor: 0, antes: 0 };
 const medida = { fps: 0, ms: 0, peor: 0, triangulos: 0, dibujados: 0, geometrias: 0, texturas: 0, memoriaJS: null, personajes: 0, resolucion: 1, ancho: 0, alto: 0 };
 
@@ -20,6 +20,8 @@ export function vigilar(renderer) {
   const dibujar = renderer.render.bind(renderer);
   renderer.render = (escena, camara) => {
     dibujar(escena, camara);
+    // con posprocesado se dibuja varias veces por fotograma (el mundo y luego cada pasada): cuenta solo el mundo
+    if (estado.solo && escena !== estado.solo) return;
     estado.escena = escena;
     const ahora = performance.now();
     if (ventana.antes) ventana.peor = Math.max(ventana.peor, ahora - ventana.antes);
@@ -45,6 +47,8 @@ function cerrarVentana(ahora) {
 }
 
 // la última medida (se renueva cada segundo); null si ninguna parte ha registrado su renderer
+// la escena que cuenta como fotograma (con posprocesado, la del mundo)
+export function soloEscena(escena) { estado.solo = escena; }
 export function medidaRendimiento() { return estado.renderer ? { ...medida } : null; }
 
 // Una parte puede ofrecer personajes de más para medir con gente: { poner(n), cuantos() }
