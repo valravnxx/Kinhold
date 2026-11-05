@@ -1442,7 +1442,7 @@
   {
    "id": "graficos",
    "nombre": "Perfiles gráficos y posprocesado",
-   "estado": "en_curso",
+   "estado": "hecho",
    "lleva": "chat",
    "jugable": "Seis perfiles gráficos, de móvil de gama baja a PC de gama alta, y el posprocesado del estilo (oclusión ambiental, gradación de color, brillo de las luces, niebla, desenfoque puntual y haces de luz), sin que ningún perfil esconda lo que importa para jugar.",
    "nota": "Lo lleva el chat con valravnx (4 nov), aparte de los P1–P7: los carriles no lo tocan.",
@@ -1467,9 +1467,9 @@
     },
     {
      "nombre": "El bosque de lejos (valravnx, 5 nov: «simular las zonas donde el bioma es bosque… que a toda distancia ya puedas diferenciar bastante bien los biomas»): una capa de dosel con volumen y copas donde hay bosque, desde donde acaban los árboles de verdad hasta el borde de la isla",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T12:19:08+01:00",
-     "rama": "trabajo/20261105-1220-dosel"
+     "fin": "2026-11-05T15:31:09+01:00"
     }
    ],
    "num": "G"
@@ -2804,6 +2804,14 @@
      "archivo": "jugar/demo/v108.html",
      "capturas": "capturas/demo-v108",
      "notas": "Zonas del rey (valravnx, 4 nov): la zona de la gran veta de hierro (Breiddal), la de la ciudad (Strandvang) y la de la salida (Lindholt) no se reclaman, también por el servidor; en el mapa del rey salen de oro viejo con «Zona del rey» y por qué."
+    },
+    {
+     "v": "v109",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v109.html",
+     "capturas": "capturas/demo-v109",
+     "notas": "El bosque de lejos: donde hay bosque, una capa de copas a la altura de los árboles, con bultos y manchas de copas, más oscura cuanto más lejos, para distinguir de lejos los bosques de las praderas y los montes.",
+     "noticia": false
     }
    ]
   },

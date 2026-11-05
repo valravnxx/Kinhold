@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v108 (zonas del rey)";
+export const VERSION_DEMO = "Demo única · v109 (el bosque de lejos)";
 export const REGISTRO_DEMO = [
+  "v109: el bosque de lejos: donde hay bosque, una capa de copas a la altura de los árboles, con bultos y manchas de copas, más oscura cuanto más lejos; así, de lejos, se distinguen los bosques de las praderas y los montes (valravnx, 5 nov). En PC, también desde donde acaban los árboles de verdad (200 m) hasta el horizonte.",
+  "v109: el horizonte, cada 200 m también en Móvil alto y PC básico; con horizonte, menos bruma de cerca, el cielo sin raya clara en las crestas y la tierra baja de la costa ya no sale como mar.",
   "v108: zonas del rey (valravnx, 4 nov). La zona de la gran veta de hierro de la sierra (en Breiddal), la de la ciudad (en Strandvang) y la de la salida (en Lindholt) no se reclaman: ahí el mojón sale con «Es zona del rey: no se reclama (aquí cava y recoge cualquiera).», también por el servidor. En el mapa del rey salen de oro viejo con el borde a rayas y, de cerca, «Zona del rey» y por qué. Tu tierra, en la zona de al lado (la de la salida acaba a unos 400 m al oeste).",
   "v108, provisional: los 259 sitios de la salida al azar (aún sin usar en línea) caerían en 235 zonas, el 28 % de las tres comarcas de inicio; no son del rey hasta que valravnx diga cuántos sitios de salida quiere (está en las decisiones pendientes). Los mojones ya puestos en una zona del rey se quedan hasta el próximo borrado del mundo.",
   "v107: ríos de verdad. El doble de anchos (los arroyos de unos 5 a 8 m, el río mayor de Whitholm de unos 22 m); los arroyos se vadean y los ríos se cruzan nadando o por sus vados. Nacen estrechos y se ensanchan en su primer kilómetro.",
