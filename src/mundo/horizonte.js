@@ -18,7 +18,7 @@ const VERDES = { abeto: ['abeto', 'abetoOsc'], pino: ['pino', 'pinoOsc'], abedul
 export const ESPECIES_DOSEL = Object.fromEntries(Object.entries(VERDES).map(([e, [a, b]]) => {
   const x = (h) => [(h >> 16) & 255, (h >> 8) & 255, h & 255].map(v => v / 255);
   const A = x(PALETA[a]), B = x(PALETA[b]);
-  return [e, { alto: TAMANO_ESPECIE[e][1], color: A.map((v, i) => (v + B[i]) / 2 * 0.85) }];
+  return [e, { alto: TAMANO_ESPECIE[e][1], color: A.map((v, i) => (v + B[i]) / 2 * 0.55) }];
 }));
 
 // El material de lo lejano: colores por vértice, sin niebla de la escena (la pone el posprocesado) y con la compresión de
@@ -51,9 +51,11 @@ float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
   {
     vec2 hzP = vHzMundo.xz;
     float hzC = hzRuido( hzP / 5.5 ) * 0.6 + hzRuido( hzP / 19.0 + 3.7 ) * 0.4;
-    float hzK = mix( 0.62, 1.18, smoothstep( 0.25, 0.75, hzC ) );
-    float hzLejos = smoothstep( 900.0, 3500.0, length( vHzMundo - cameraPosition ) );
-    diffuseColor.rgb *= mix( hzK, 0.92, hzLejos );
+    float hzK = mix( 0.5, 1.22, smoothstep( 0.25, 0.75, hzC ) );
+    // más lejos, manchas de grupos (unos 60 m) y luego la masa, algo más oscura (la sombra de dentro del bosque)
+    float hzG = mix( 0.6, 1.12, smoothstep( 0.2, 0.8, hzRuido( hzP / 60.0 + 9.1 ) * 0.7 + hzRuido( hzP / 170.0 - 4.3 ) * 0.3 ) );
+    float hzD = length( vHzMundo - cameraPosition );
+    diffuseColor.rgb *= mix( mix( hzK, hzG, smoothstep( 700.0, 2500.0, hzD ) ), 0.85, smoothstep( 6000.0, 14000.0, hzD ) );
   }`);
   };
   return material;
@@ -77,6 +79,9 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   // verdad (su cuadro) hasta ahí. Las dos con el mismo corte (borde), para que no se pisen.
   const borde = Math.max(0, hasta - 28);
   const matDoselLejos = materialLejano({ ...comun, uHueco: { value: borde }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } }, true);
+  // lo lejano va comprimido: los pocos metros de las copas sobre el suelo se quedan en centímetros de hondura y se
+  // pisaban con la malla del horizonte (cuadritos): el dosel se adelanta un poco en la hondura
+  Object.assign(matDoselLejos, { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -8 });
   const matDoselCerca = materialLejano({ ...comun, uHueco: { value: 0 }, uHasta: { value: borde }, uCuadro: { value: cuadroArb } }, true);
   const malla = new THREE.Mesh(new THREE.BufferGeometry(), material);
   malla.name = 'horizonte'; malla.frustumCulled = false; malla.castShadow = false; malla.receiveShadow = false;
@@ -148,6 +153,8 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   return {
     malla, muestras, compresion: comp, doselLejos, doselCerca,
     get doselCercaListo() { return !!cerca; },
+    // para las pruebas (sin tarjeta gráfica van a 1–3 fotogramas por segundo): el dosel de cerca, entero, ya
+    completarDoselCerca(x, z) { pasoCerca(x, z, 1e-3); if (calculando) pasoCerca(x, z, 1e9); },
     // el cuadro de los árboles de verdad (m de la escena: su centro y su medio lado), donde no va el dosel de cerca
     cuadroArboles(x, z, medio) { cuadroArb.set(x, z, medio); },
     // cfg: el «horizonte» del perfil ({ paso: 4 | 2 | 1, … }) o null

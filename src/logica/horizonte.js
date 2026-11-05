@@ -147,8 +147,9 @@ export function doselDe(b, especies, x, z) {
   if (!b || !b.especie || b.d < DOSEL_DESDE) return null;
   const e = especies[b.especie]; if (!e) return null;
   const lleno = suave(DOSEL_DESDE, DOSEL_LLENO, b.d), r = azarSitio(x, z);
-  // lo alto de las copas (un 90 % del árbol), algo más bajo donde el bosque es claro, y con su bulto (±20 %)
-  const h = e.alto * b.tam * 0.9 * (0.6 + 0.4 * lleno) * (0.8 + 0.4 * r);
+  // lo alto de las copas (un 90 % del árbol), algo más bajo donde el bosque es claro, y con su bulto (±45 %: de lejos, el
+  // perfil dentado de las copas)
+  const h = e.alto * b.tam * 0.9 * (0.6 + 0.4 * lleno) * (0.55 + 0.9 * r);
   const t = 0.88 + 0.2 * azarSitio(z + 7.1, x - 3.3);
   return { h, c: e.color.map(v => v * t) };
 }

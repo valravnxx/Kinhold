@@ -40,7 +40,7 @@ export const COMUN = { niebla: [45, 130], tono: true, color: true };
 // montañas) y lo lejano se va fundiendo con el cielo de detrás hacia «max»: lo que falta, la mitad cada «lejos» metros
 // (de verdad). Sin horizonte, como siempre. Lo que cambia, por tanto: más allá de unos 420 m de ti (la niebla del juego
 // va de 110 a 700) se ve algo más, y a lo lejos, las montañas.
-export const HORIZONTE = { tope: 0.45, max: 0.75, lejos: 8000 };
+export const HORIZONTE = { tope: 0.3, max: 0.85, lejos: 10000 };
 
 // Los efectos, en el orden de la tabla de valravnx, con lo que hace cada uno (para la interfaz)
 export const EFECTOS = [
