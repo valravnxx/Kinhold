@@ -1,6 +1,7 @@
 // Decisiones tomadas en la demo única, para revisar.
 export const VERSION_DEMO = "Demo única · v105 (perfiles gráficos y posprocesado)";
 export const REGISTRO_DEMO = [
+  "Servidor (5 nov), provisional: movimiento sin trampas. El servidor no se cree que vayas a más de 8 m/s (correr son 6): lo que llega más lejos se queda donde se podía llegar, en la misma dirección, y se anota. Se pueden juntar hasta 16 m, por los tirones de la red. Volver al sitio de salida al ahogarse es libre, y la liza del duelo no cuenta para el mundo.",
   "v105: el posprocesado del estilo en el juego, con seis perfiles gráficos de móvil básico a PC alto: oclusión ambiental (rincones, uniones y contactos), mapeo tonal, gradación de color, brillo de las luces y niebla, según el perfil (valravnx, 5 nov, tras la prueba de posprocesado v1).",
   "v105: el perfil se elige en el panel de rendimiento (el botón de los fps, junto a «Menú»), con ★ en el que sugiere tu aparato; el que elijas se queda guardado en el navegador. ?graficos=<perfil> en la dirección fuerza uno.",
   "v105, provisional: en el juego no van el desenfoque (solo para escenas concretas, que aún no hay) ni los haces de luz (con la cámara del juego casi nunca se mira al sol). Sin tarjeta gráfica, el perfil más barato.",
