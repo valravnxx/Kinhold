@@ -15,11 +15,16 @@
 //   cliente → servidor   { tipo: 'admin', id, que: 'ver' }
 //                        { tipo: 'admin', id, que: 'ir', x, z }           a un punto (m, relativos a la salida)
 //                        { tipo: 'admin', id, que: 'ir', junto: autor }   junto a otro jugador
+//                        { tipo: 'admin', id, que: 'traer', quien: autor } traer a otro jugador junto a ti (valravnx,
+//                                                                          5 nov: «poder tpearlos a mi»)
 //   servidor → cliente   { tipo: 'admin', id, que, ok: true, jugadores: [{ autor, cuenta, x, y, z, giro }] }   (ver)
 //                        { tipo: 'admin', id, que, ok: true, x, y, z }   (ir: y es null si es un punto: el navegador pone
 //                                                                          el suelo)
+//                        { tipo: 'admin', id, que, ok: true, quien, x, y, z, giro }   (traer: dónde se le ha puesto)
 //                        { tipo: 'admin', id, que, ok: false, motivo }
+//   servidor → el traído { tipo: 'admin', que: 'traido', x, y, z, giro }   (sin id: no lo ha pedido él)
 // Moverse no cambia el mundo: el navegador pone ahí a su jugador y sigue mandando su estado como siempre.
+// Al traído, el servidor le mueve el ancla de la presencia al sitio nuevo (así su siguiente estado vale allí).
 
 import { SALIDA, dentroDePermitido } from './whitholm.js';
 import { motivoCorreo, claveDeCorreo } from './correo.js';
@@ -27,6 +32,7 @@ import { motivoCorreo, claveDeCorreo } from './correo.js';
 export const JUNTO = 1.6;            // m al lado del otro jugador (a su lado, para no caerle encima)
 export const NO_ADMIN = 'Solo la cuenta de admin puede usar el panel.';
 
+const AUTOR = /^[a-z]{1,12}:[0-9a-z_-]{1,40}$/;   // cómo es un autor («jugador:…»)
 const numero = (v) => typeof v === 'number' && Number.isFinite(v);
 
 // Los correos de admin, de la lista de la máquina («yo@ejemplo.com» o «yo@ejemplo.com, otra@ejemplo.com»): un conjunto
@@ -44,8 +50,9 @@ export const esCorreoAdmin = (e, admins) => !!e && e.verificado === true && type
 export function validarPeticionAdmin(m) {
   if (!m || typeof m !== 'object' || Array.isArray(m)) return null;
   if (m.que === 'ver') return { que: 'ver' };
+  if (m.que === 'traer') return typeof m.quien === 'string' && AUTOR.test(m.quien) ? { que: 'traer', quien: m.quien } : null;
   if (m.que !== 'ir') return null;
-  if (m.junto !== undefined) return typeof m.junto === 'string' && /^[a-z]{1,12}:[0-9a-z_-]{1,40}$/.test(m.junto) ? { que: 'ir', junto: m.junto } : null;
+  if (m.junto !== undefined) return typeof m.junto === 'string' && AUTOR.test(m.junto) ? { que: 'ir', junto: m.junto } : null;
   if (![m.x, m.z].every(numero)) return null;
   // a cualquier sitio del continente (valravnx, 5 nov: «quiero poder explorar libre»): el panel solo es de admin
   if (!dentroDePermitido(SALIDA.x + m.x, SALIDA.z + m.z, true)) return null;
@@ -60,6 +67,14 @@ export function sitioJunto(otro) {
   if (!dentroDePermitido(SALIDA.x + x, SALIDA.z + z, true)) return { x: otro.x, y: otro.y, z: otro.z, giro: otro.giro };
   return { x, y: otro.y, z, giro: Math.atan2(-dx, -dz) };
 }
+
+// Dónde se pone al que trae el admin: a su lado y mirándole, como al ir junto a otro (sitioJunto, desde el admin). Un
+// jugador que no es admin no puede estar fuera de la isla: si el admin anda fuera, no se le trae (null).
+export function sitioTraido(admin) {
+  const d = sitioJunto(admin);
+  return dentroDePermitido(SALIDA.x + d.x, SALIDA.z + d.z, false) ? d : null;
+}
+export const TRAER_FUERA = 'Fuera de la isla no se puede traer a nadie.';
 
 // La lista de jugadores que ve el panel, a partir de los estados de la presencia (autor → { x, y, z, giro }).
 // cuenta(autor): el usuario de su cuenta, o null (sale en la lista para saber quién es quién)
