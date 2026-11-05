@@ -7,29 +7,85 @@
 //   - Cerca del jugador hay un hueco (donde ya está el terreno de verdad), y la malla va unos metros por debajo, para
 //     que lo basto nunca asome por encima de lo fino.
 import * as THREE from 'three';
-import { crearMuestras, mallaDe, mallaMar, compresion, NIVELES } from '../logica/horizonte.js';
+import { crearMuestras, mallaDe, mallaMar, mallaDosel, crearDoselCerca, compresion, NIVELES, PASO_DOSEL_CERCA } from '../logica/horizonte.js';
+import { TAMANO_ESPECIE } from './especies.js';
+import { PALETA } from './estilos.js';
 
-const FINO_A_BASTO = [...NIVELES].reverse();   // 1, 2, 4: el más fino que ya esté
+// el dosel de cada especie: lo alto del árbol (escala 1) y el color de sus copas (la media de sus dos verdes, algo más
+// oscura: dentro de una masa de copas hay mucha sombra)
+const VERDES = { abeto: ['abeto', 'abetoOsc'], pino: ['pino', 'pinoOsc'], abedul: ['hojaClara', 'hoja'], roble: ['hoja', 'hojaOsc'],
+  haya: ['haya', 'hayaOsc'], fresno: ['fresno', 'hoja'], encina: ['encina', 'encinaOsc'] };
+export const ESPECIES_DOSEL = Object.fromEntries(Object.entries(VERDES).map(([e, [a, b]]) => {
+  const x = (h) => [(h >> 16) & 255, (h >> 8) & 255, h & 255].map(v => v / 255);
+  const A = x(PALETA[a]), B = x(PALETA[b]);
+  return [e, { alto: TAMANO_ESPECIE[e][1], color: A.map((v, i) => (v + B[i]) / 2 * 0.85) }];
+}));
 
-// paisaje y rect: los del mundo; origen y y0: el 0 de la escena; hasta: dónde acaba el terreno de cerca (m);
-// camara: la del juego (su alcance manda en la compresión); colorMar: el de la lámina del mar
-export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camara, colorMar = 0x4a6470 }) {
-  const muestras = crearMuestras(paisaje, rect);
-  const diagonal = Math.hypot(rect.x1 - rect.x0, rect.z1 - rect.z0);
-  const comp = compresion(hasta, camara.far, diagonal);
-  const uniformes = { uR0: { value: comp.r0 }, uS: { value: comp.s }, uJug: { value: new THREE.Vector2() }, uHueco: { value: Math.max(0, hasta - 48) } };
+// El material de lo lejano: colores por vértice, sin niebla de la escena (la pone el posprocesado) y con la compresión de
+// la distancia (más allá de r0, más cerca por la misma línea de mirada). u: los uniformes de esta malla: uR0, uS, uJug,
+// y lo que se tira: uHueco (m alrededor del jugador), uHasta (m: más allá, nada; 0 = sin límite) y uCuadro (el cuadro de
+// los árboles de verdad: xy su centro, z su medio lado; z = 0, sin cuadro). copas: true, las manchas de las copas.
+function materialLejano(u, copas = false) {
   const material = new THREE.MeshLambertMaterial({ vertexColors: true, fog: false });
   material.onBeforeCompile = (sh) => {
-    Object.assign(sh.uniforms, uniformes);
-    sh.vertexShader = 'uniform float uR0;\nuniform float uS;\nuniform vec2 uJug;\nvarying float vHzDist;\n' + sh.vertexShader.replace('#include <project_vertex>', `
+    Object.assign(sh.uniforms, u);
+    sh.vertexShader = 'uniform float uR0;\nuniform float uS;\nuniform vec2 uJug;\nvarying vec3 vHzMundo;\n' + sh.vertexShader.replace('#include <project_vertex>', `
       vec4 hzMundo = modelMatrix * vec4( transformed, 1.0 );
-      vHzDist = length( hzMundo.xz - uJug );
+      vHzMundo = hzMundo.xyz;
       vec3 hzV = hzMundo.xyz - cameraPosition; float hzD = length( hzV );
       if ( hzD > uR0 ) hzMundo.xyz = cameraPosition + hzV * ( ( uR0 + ( hzD - uR0 ) * uS ) / hzD );
       vec4 mvPosition = viewMatrix * hzMundo;
       gl_Position = projectionMatrix * mvPosition;`);
-    sh.fragmentShader = 'uniform float uHueco;\nvarying float vHzDist;\n' + sh.fragmentShader.replace('void main() {', 'void main() {\n  if ( vHzDist < uHueco ) discard;');
+    let f = 'uniform float uHueco;\nuniform float uHasta;\nuniform vec3 uCuadro;\nuniform vec2 uJug;\nvarying vec3 vHzMundo;\n';
+    if (copas) f += `float hzAzar(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
+float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
+  return mix(mix(hzAzar(i),hzAzar(i+vec2(1,0)),f.x),mix(hzAzar(i+vec2(0,1)),hzAzar(i+vec2(1,1)),f.x),f.y);}
+`;
+    sh.fragmentShader = f + sh.fragmentShader.replace('void main() {', `void main() {
+  float hzDist = length( vHzMundo.xz - uJug );
+  if ( hzDist < uHueco || ( uHasta > 0.0 && hzDist > uHasta ) ) discard;
+  if ( uCuadro.z > 0.0 && max( abs( vHzMundo.x - uCuadro.x ), abs( vHzMundo.z - uCuadro.y ) ) < uCuadro.z ) discard;`);
+    // las copas: manchas de unos 6 m (copas sueltas) y de unos 20 m (grupos), con huecos oscuros entre ellas; se
+    // apagan con la distancia (de lejos ya no se distinguen y harían centelleo)
+    if (copas) sh.fragmentShader = sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+  {
+    vec2 hzP = vHzMundo.xz;
+    float hzC = hzRuido( hzP / 5.5 ) * 0.6 + hzRuido( hzP / 19.0 + 3.7 ) * 0.4;
+    float hzK = mix( 0.5, 1.22, smoothstep( 0.25, 0.75, hzC ) );
+    // más lejos, manchas de grupos (unos 60 m) y luego la masa, algo más oscura (la sombra de dentro del bosque)
+    float hzG = mix( 0.6, 1.12, smoothstep( 0.2, 0.8, hzRuido( hzP / 60.0 + 9.1 ) * 0.7 + hzRuido( hzP / 170.0 - 4.3 ) * 0.3 ) );
+    float hzD = length( vHzMundo - cameraPosition );
+    diffuseColor.rgb *= mix( mix( hzK, hzG, smoothstep( 700.0, 2500.0, hzD ) ), 0.85, smoothstep( 6000.0, 14000.0, hzD ) );
+    // de cerca, del color de los árboles de verdad (que siguen justo delante); de lejos, más oscuro: la sombra de dentro
+    // de la masa del bosque, que es lo que hace que de lejos se distinga de la pradera
+    diffuseColor.rgb *= mix( 1.0, 0.62, smoothstep( 800.0, 3500.0, hzD ) );
+  }`);
   };
+  return material;
+}
+
+
+const FINO_A_BASTO = [...NIVELES].reverse();   // 1, 2, 4: el más fino que ya esté
+
+// paisaje y rect: los del mundo; origen y y0: el 0 de la escena; hasta: dónde acaba el terreno de cerca (m);
+// camara: la del juego (su alcance manda en la compresión); colorMar: el de la lámina del mar; alt(x, z): la altura
+// exacta del suelo (m del mundo), para el dosel de cerca (sin ella, no hay dosel de cerca)
+export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camara, colorMar = 0x4a6470, alt = null }) {
+  const muestras = crearMuestras(paisaje, rect, undefined, ESPECIES_DOSEL);
+  const diagonal = Math.hypot(rect.x1 - rect.x0, rect.z1 - rect.z0);
+  const comp = compresion(hasta, camara.far, diagonal);
+  const jug = new THREE.Vector2(), cuadroArb = new THREE.Vector3(0, 0, 1e6);   // (hasta que estén los árboles, nada de cerca)
+  const comun = { uR0: { value: comp.r0 }, uS: { value: comp.s }, uJug: { value: jug } };
+  const uniformes = { ...comun, uHueco: { value: Math.max(0, hasta - 48) }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } };
+  const material = materialLejano(uniformes);
+  // el dosel: de lejos, desde donde acaba el terreno de cerca (algo antes) hasta el borde; de cerca, desde los árboles de
+  // verdad (su cuadro) hasta ahí. Las dos con el mismo corte (borde), para que no se pisen.
+  const borde = Math.max(0, hasta - 28);
+  const matDoselLejos = materialLejano({ ...comun, uHueco: { value: borde }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } }, true);
+  // lo lejano va comprimido: los pocos metros de las copas sobre el suelo se quedan en centímetros de hondura y se
+  // pisaban con la malla del horizonte (cuadritos): el dosel se adelanta un poco en la hondura
+  Object.assign(matDoselLejos, { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -8 });
+  const matDoselCerca = materialLejano({ ...comun, uHueco: { value: 0 }, uHasta: { value: borde }, uCuadro: { value: cuadroArb } }, true);
   const malla = new THREE.Mesh(new THREE.BufferGeometry(), material);
   malla.name = 'horizonte'; malla.frustumCulled = false; malla.castShadow = false; malla.receiveShadow = false;
   malla.visible = false;
@@ -49,6 +105,23 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   mar.name = 'horizonte-mar'; mar.frustumCulled = false; mar.castShadow = false; mar.receiveShadow = false;
   mar.renderOrder = -2;
   malla.add(mar);   // se ve y se esconde con la malla
+  const doselLejos = new THREE.Mesh(new THREE.BufferGeometry(), matDoselLejos);
+  doselLejos.name = 'horizonte-dosel'; doselLejos.frustumCulled = false; doselLejos.renderOrder = -2;
+  malla.add(doselLejos);
+  const doselCerca = new THREE.Mesh(new THREE.BufferGeometry(), matDoselCerca);
+  doselCerca.name = 'dosel-cerca'; doselCerca.frustumCulled = false;
+  escena.add(doselCerca);
+  const geo = (m) => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(m.pos, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(m.col, 3));
+    g.setIndex(new THREE.BufferAttribute(m.idx, 1));
+    g.computeVertexNormals();
+    return g;
+  };
+  // el de cerca: un cuadro alrededor del jugador, que se rehace (poco a poco) al alejarse de su centro
+  const RADIO_CERCA = borde + 160, REHACER = 140;
+  let cerca = null, calculando = null;
 
   let quiere = null, hecho = null;   // el nivel que pide el perfil (4, 2 o 1; null: sin horizonte) y el de la malla
   function rehacer(k) {
@@ -59,10 +132,37 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
     g.setIndex(new THREE.BufferAttribute(m.idx, 1));
     g.computeVertexNormals();
     malla.geometry.dispose(); malla.geometry = g;
+    // el dosel de lejos, solo desde cada 200 m: cada 400 salían losas oscuras (el linde, de 400 m de rampa)
+    doselLejos.geometry.dispose(); doselLejos.geometry = k <= 2 ? geo(mallaDosel(muestras, k, { ox: origen.x, oz: origen.z, y0 })) : new THREE.BufferGeometry();
     hecho = k; malla.visible = true;
   }
+  // el dosel de cerca: si el jugador se ha alejado de su centro, se empieza otro (el de antes se queda hasta que esté)
+  function pasoCerca(x, z, ms) {
+    // (en el móvil, el terreno de cerca acaba a 288 m y los árboles de verdad llegan a 130: entre medias, el dosel se
+    // veía de demasiado cerca, como lomas lisas; ahí se queda el suelo)
+    if (!alt || ms <= 0 || hasta < 500) return 0;
+    const t0 = performance.now();
+    const xm = x + origen.x, zm = z + origen.z;
+    if (!calculando && (!cerca || Math.hypot(xm - cerca.cx, zm - cerca.cz) > REHACER)) {
+      const px = Math.round(xm / PASO_DOSEL_CERCA) * PASO_DOSEL_CERCA, pz = Math.round(zm / PASO_DOSEL_CERCA) * PASO_DOSEL_CERCA;
+      calculando = crearDoselCerca(paisaje, alt, ESPECIES_DOSEL, px, pz, RADIO_CERCA);
+    }
+    if (calculando) {
+      calculando.avanzar(ms);
+      if (calculando.listo) {
+        cerca = calculando; calculando = null;
+        doselCerca.geometry.dispose(); doselCerca.geometry = geo(cerca.malla({ ox: origen.x, oz: origen.z, y0 }));
+      }
+    }
+    return performance.now() - t0;
+  }
   return {
-    malla, muestras, compresion: comp,
+    malla, muestras, compresion: comp, doselLejos, doselCerca,
+    get doselCercaListo() { return !!cerca; },
+    // para las pruebas (sin tarjeta gráfica van a 1–3 fotogramas por segundo): el dosel de cerca, entero, ya
+    completarDoselCerca(x, z) { pasoCerca(x, z, 1e-3); if (calculando) pasoCerca(x, z, 1e9); },
+    // el cuadro de los árboles de verdad (m de la escena: su centro y su medio lado), donde no va el dosel de cerca
+    cuadroArboles(x, z, medio) { cuadroArb.set(x, z, medio); },
     // cfg: el «horizonte» del perfil ({ paso: 4 | 2 | 1, … }) o null
     poner(cfg) {
       quiere = cfg ? cfg.paso : null;
@@ -74,10 +174,12 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
     get activo() { return !!quiere && malla.visible; },
     // en cada fotograma: dónde está el jugador (m de la escena) y cuánto tiempo puede gastar en calcular
     paso(x, z, ms) {
-      uniformes.uJug.value.set(x, z);
+      jug.set(x, z);
+      const tc = pasoCerca(x, z, ms);
       // no calcula más fino de lo que pide el perfil (en el móvil basta cada 400 m)
-      if (!quiere || muestras.tiene(quiere) || ms <= 0) return 0;
-      const t0 = performance.now();
+      if (!quiere || muestras.tiene(quiere) || ms - tc <= 0) return tc;
+      ms -= tc;
+      const t0 = performance.now() - tc;
       muestras.avanzar(ms);
       // en cuanto hay un nivel mejor que el de la malla (sin pasarse del que pide el perfil), se rehace
       const k = FINO_A_BASTO.find(n => n >= quiere && muestras.tiene(n));

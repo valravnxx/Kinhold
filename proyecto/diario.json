@@ -4377,5 +4377,23 @@
   ],
   "pruebas": "Sin código: solo el roadmap y REVISION.md.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T12:19:08+01:00",
+  "fin": "2026-11-05T15:31:09+01:00",
+  "titulo": "El bosque de lejos",
+  "hito": "graficos",
+  "hecho": [
+   "valravnx, 5 nov: «¿Hay alguna forma que podamos simular las zonas donde el bioma es bosque…, para que a toda distancia tú ya puedas diferenciar bastante bien los biomas?» (y «haz», tras ver los métodos).",
+   "El dosel (src/logica/horizonte.js): donde el bosque es denso (bosqueEn, desde 0,22), una capa a lo alto de las copas de su especie (TAMANO_ESPECIE), ±45 % de bulto; fuera del bosque se mete bajo el suelo y el linde hace de pared. De lejos, con las muestras del horizonte, desde cada 200 m (cada 400 salían losas); en PC, otra fina (cada 16 m) desde el cuadro de los árboles de verdad hasta el horizonte, que se rehace al alejarse 140 m.",
+   "El sombreador le pone las copas: manchas de unos 6 y 20 m de cerca, de grupos de 60 m más lejos, y más oscuro de lejos (la sombra de dentro del bosque, lo que lo distingue de la pradera). En el móvil no va el dosel de cerca: entre 130 y 288 m se veía como lomas lisas.",
+   "Con horizonte: menos bruma de cerca (tope 0,3), el cielo pintado por la niebla (sin raya clara en las crestas con ningún suavizado), y la tierra baja de la costa ya no queda bajo la lámina del mar; el dosel lejano se adelanta en la hondura para no pisarse con el suelo (cuadritos). Horizonte cada 200 m también en Móvil alto y PC básico.",
+   "Pruebas: «Horizonte de los perfiles altos» con el dosel (solo en bosque y en tierra, copas de hasta unos 14 m, de cerca en el bosque sí y en la pradera no; con MUTAR=2, copas de 40 m, falla). Sin noticia, como lo demás de los perfiles gráficos.",
+   "Sin comprobar aquí: los fps con tarjeta gráfica (el PC alto suma unos 250 000 triángulos de dosel lejano y unos 20 000 de cerca); el dosel de cerca tarda unos 0,5 s de cálculo cada 140 m, repartidos en fotogramas. Mejor desde un alto: desde el llano los árboles de verdad tapan casi todo."
+  ],
+  "pruebas": "Batería entera en la nube: 35 grupos bien. Tras unir main (zonas del rey, que también toca main.js), otra vez entera: todo bien salvo «lo que llevas se ve puesto» (la mujer: 17,7 cm contra el radio del tronco más 7; el tronco sale de un radio u otro y queda en el borde); sobre main, el mismo grupo pasó con el mismo 17,7: no es del dosel. Lógica del horizonte y el dosel 30/30 (rota a propósito con MUTAR=1 y MUTAR=2, falla).",
+  "capturas": "capturas/demo-v109",
+  "estado": "ok",
+  "noticia": false
  }
 ]

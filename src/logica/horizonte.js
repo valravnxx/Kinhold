@@ -31,9 +31,11 @@ export const descomprimir = (d, { r0, s }) => (d <= r0 ? d : r0 + (d - r0) / s);
 
 // Las muestras de la isla: alto (m del mundo; NaN si aún no) y color (sRGB 0–255; listo cuando colorListo[k])
 // rect: { x0, z0, x1, z1 } en m del mundo (el cuadro de la isla)
-export function crearMuestras(paisaje, rect, base = BASE) {
+// especies (opcional): { abeto: { alto, color: [r, g, b] (sRGB 0–1) }, … } para el dosel (doselEn); sin ellas, sin dosel
+export function crearMuestras(paisaje, rect, base = BASE, especies = null) {
   const nx = Math.floor((rect.x1 - rect.x0) / base) + 1, nz = Math.floor((rect.z1 - rect.z0) / base) + 1;
   const alto = new Float32Array(nx * nz).fill(NaN), color = new Uint8Array(nx * nz * 3);
+  const dosel = new Float32Array(nx * nz), colorDosel = new Uint8Array(nx * nz * 3);   // m de copas sobre el suelo y su color
   const listo = { altos: new Set(), colores: new Set() };   // niveles (4, 2, 1) con todos sus altos o sus colores
   let nivel = 0, fase = 'altos', ix = 0, iz = 0;            // por dónde va
   const xm = (i) => rect.x0 + i * base, zm = (j) => rect.z0 + j * base;
@@ -51,7 +53,12 @@ export function crearMuestras(paisaje, rect, base = BASE) {
       else {
         const st = paisaje.sitio(xm(ix), zm(iz), y);
         c = colorDelSuelo(st, y, s, xm(ix), zm(iz));
-        if (st && st.bioma && st.bioma !== 'nieve') { const b = bosqueEn(st, s, xm(ix), zm(iz)).d; if (b > 0) c = c.map((v, q) => v + (DOSEL[q] - v) * Math.min(0.85, b * 1.1)); }
+        if (st && st.bioma && st.bioma !== 'nieve') {
+          const b = bosqueEn(st, s, xm(ix), zm(iz));
+          if (b.d > 0) c = c.map((v, q) => v + (DOSEL[q] - v) * Math.min(0.85, b.d * 1.1));
+          const dd = especies ? doselDe(b, especies, xm(ix), zm(iz)) : null;
+          if (dd) { dosel[n] = dd.h; for (let q = 0; q < 3; q++) colorDosel[n * 3 + q] = Math.round(Math.min(1, dd.c[q]) * 255); }
+        }
       }
       color[n * 3] = Math.round(Math.min(1, c[0]) * 255); color[n * 3 + 1] = Math.round(Math.min(1, c[1]) * 255); color[n * 3 + 2] = Math.round(Math.min(1, c[2]) * 255);
     }
@@ -65,7 +72,7 @@ export function crearMuestras(paisaje, rect, base = BASE) {
     }
   }
   return {
-    nx, nz, base, rect, alto, color, listo,
+    nx, nz, base, rect, alto, color, dosel, colorDosel, listo,
     get terminado() { return nivel >= NIVELES.length; },
     // sigue calculando hasta gastar ms milisegundos (o hasta terminar); devuelve cuántos puntos ha hecho
     avanzar(ms, ahora = () => performance.now()) {
@@ -89,12 +96,15 @@ export function mallaDe(m, k, { ox = 0, oz = 0, y0 = 0 } = {}) {
     const i = a * k, j = b * k, n = j * m.nx + i, v = b * cx + a;
     const y = m.alto[n];
     pos[v * 3] = m.rect.x0 + i * m.base - ox;
-    pos[v * 3 + 1] = (y <= MAR || Number.isNaN(y) ? -60 : y) - y0 - HUNDIDO;
+    // hundida, pero sin bajar de 0,2 m sobre el mar: si no, la tierra baja de la costa quedaba bajo la lámina del mar y
+    // salía como agua
+    pos[v * 3 + 1] = (y <= MAR || Number.isNaN(y) ? -60 - HUNDIDO : Math.max(y - HUNDIDO, Math.min(y, 0.2))) - y0;
     pos[v * 3 + 2] = m.rect.z0 + j * m.base - oz;
     col[v * 3] = lin(m.color[n * 3]); col[v * 3 + 1] = lin(m.color[n * 3 + 1]); col[v * 3 + 2] = lin(m.color[n * 3 + 2]);
   }
   // sin los cuadros que son todo mar (casi la mitad de la isla: los tapa la lámina del mar)
-  const seco = (v) => pos[v * 3 + 1] > -50;
+  // (por el alto de verdad: la y de la malla depende del 0 de la escena y antes quitaba también tierra baja)
+  const seco = (v) => { const a = v % cx, b = (v - a) / cx, y = m.alto[b * k * m.nx + a * k]; return y > MAR; };
   const tmp = new Uint32Array((cx - 1) * (cz - 1) * 6);
   let t = 0;
   for (let b = 0; b < cz - 1; b++) for (let a = 0; a < cx - 1; a++) {
@@ -122,4 +132,108 @@ export function mallaMar(rect, { ox = 0, oz = 0, y = 0, paso = PASO_MAR } = {}) 
     idx[t++] = p; idx[t++] = r; idx[t++] = q; idx[t++] = q; idx[t++] = r; idx[t++] = s;
   }
   return { pos, idx, cx, cz };
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// El dosel (valravnx, 5 nov: «simular las zonas donde el bioma es bosque… para que a toda distancia ya puedas
+// diferenciar bastante bien los biomas»). Los árboles de verdad llegan a 200 m (130 en el móvil); más allá, el bosque era
+// un suelo teñido de verde, plano. El dosel es una capa levantada a la altura de las copas solo donde hay bosque: de lejos
+// da el volumen (las crestas con su perfil dentado, el borde del bosque en el linde) y el sombreador le pone las copas.
+// Donde el bosque es claro, más bajo y fino; fuera del bosque, la capa se mete bajo el suelo (el linde hace de pared).
+export const DOSEL_DESDE = 0.22, DOSEL_LLENO = 0.55;   // densidad del bosque (bosqueEn().d) donde empieza y donde ya es entero
+const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+// un azar fijo de cada sitio (0–1): el mismo bulto en el mismo sitio, lo calcule quien lo calcule
+export function azarSitio(x, z) { const n = Math.sin(x * 12.9898 + z * 78.233) * 43758.5453; return n - Math.floor(n); }
+
+// b: lo que da bosqueEn; especies: { especie: { alto, color } }. Devuelve { h (m sobre el suelo), c (sRGB 0–1) } o null
+export function doselDe(b, especies, x, z) {
+  if (!b || !b.especie || b.d < DOSEL_DESDE) return null;
+  const e = especies[b.especie]; if (!e) return null;
+  const lleno = suave(DOSEL_DESDE, DOSEL_LLENO, b.d), r = azarSitio(x, z);
+  // lo alto de las copas (un 90 % del árbol), algo más bajo donde el bosque es claro, y con su bulto (±45 %: de lejos, el
+  // perfil dentado de las copas)
+  const h = e.alto * b.tam * 0.9 * (0.6 + 0.4 * lleno) * (0.55 + 0.9 * r);
+  const t = 0.88 + 0.2 * azarSitio(z + 7.1, x - 3.3);
+  return { h, c: e.color.map(v => v * t) };
+}
+
+// Las copas lejanas: la malla del dosel de un nivel (cada k puntos), en m de la escena como mallaDe; solo los cuadros
+// con algo de bosque. Las esquinas sin bosque bajan bajo la malla del horizonte (que va hundida) para cerrar el linde.
+export function mallaDosel(m, k, { ox = 0, oz = 0, y0 = 0 } = {}) {
+  const cx = Math.floor((m.nx - 1) / k) + 1, cz = Math.floor((m.nz - 1) / k) + 1;
+  const n = (a, b) => (b * k) * m.nx + a * k;
+  const usar = new Int32Array(cx * cz).fill(-1), idx = [];
+  let nv = 0;
+  const v = (a, b) => { const q = b * cx + a; if (usar[q] < 0) usar[q] = nv++; return usar[q]; };
+  for (let b = 0; b < cz - 1; b++) for (let a = 0; a < cx - 1; a++) {
+    if (!(m.dosel[n(a, b)] > 0 || m.dosel[n(a + 1, b)] > 0 || m.dosel[n(a, b + 1)] > 0 || m.dosel[n(a + 1, b + 1)] > 0)) continue;
+    const p = v(a, b), q = v(a + 1, b), r = v(a, b + 1), t = v(a + 1, b + 1);
+    idx.push(p, r, q, q, r, t);
+  }
+  const pos = new Float32Array(nv * 3), col = new Float32Array(nv * 3);
+  const lin = (c) => Math.pow(c / 255, 2.2);
+  for (let q = 0; q < cx * cz; q++) {
+    const w = usar[q]; if (w < 0) continue;
+    const a = q % cx, b = (q - a) / cx, i = n(a, b), y = m.alto[i], h = m.dosel[i];
+    pos[w * 3] = m.rect.x0 + a * k * m.base - ox;
+    pos[w * 3 + 1] = (h > 0 ? y + h : Math.max(y, 0) - HUNDIDO - 4) - y0;
+    pos[w * 3 + 2] = m.rect.z0 + b * k * m.base - oz;
+    const c = h > 0 ? m.colorDosel : m.color;
+    col[w * 3] = lin(c[i * 3]); col[w * 3 + 1] = lin(c[i * 3 + 1]); col[w * 3 + 2] = lin(c[i * 3 + 2]);
+  }
+  return { pos, col, idx: Uint32Array.from(idx) };
+}
+
+// Las copas de cerca: una rejilla fina (cada «paso» m) en un cuadro alrededor de (cx, cz) (m del mundo), con la altura
+// exacta del suelo (alt, la del juego) y la pendiente como la de los árboles (src/logica/vegetacion.js: vecinos a 3 m),
+// sin nada en el agua. Se calcula poco a poco (avanzar) y luego se pide la malla (en m de la escena).
+export const PASO_DOSEL_CERCA = 16;
+export function crearDoselCerca(paisaje, alt, especies, cx, cz, radio, paso = PASO_DOSEL_CERCA) {
+  const x0 = Math.floor((cx - radio) / paso) * paso, z0 = Math.floor((cz - radio) / paso) * paso;
+  const nx = Math.ceil((cx + radio - x0) / paso) + 1, nz = Math.ceil((cz + radio - z0) / paso) + 1;
+  const suelo = new Float32Array(nx * nz), h = new Float32Array(nx * nz), col = new Float32Array(nx * nz * 3);
+  const tramos = paisaje.riosEn(x0, z0, x0 + (nx - 1) * paso, z0 + (nz - 1) * paso);
+  let i = 0;
+  function uno() {
+    const a = i % nx, b = (i - a) / nx, x = x0 + a * paso, z = z0 + b * paso, y = alt(x, z);
+    suelo[i] = y;
+    let c = null;
+    if (y >= 0.3 && paisaje.agua(x, z, tramos) === null) {
+      const st = paisaje.sitio(x, z, y);
+      if (st && st.bioma) {
+        const s = Math.hypot(alt(x + 3, z) - alt(x - 3, z), alt(x, z + 3) - alt(x, z - 3)) / 6;
+        c = doselDe(bosqueEn(st, s, x, z), especies, x, z);
+      }
+    }
+    if (c) { h[i] = c.h; for (let q = 0; q < 3; q++) col[i * 3 + q] = Math.pow(Math.min(1, c.c[q]), 2.2); }
+    i++;
+  }
+  return {
+    cx, cz, radio, get listo() { return i >= nx * nz; },
+    avanzar(ms, ahora = () => performance.now()) {
+      const t0 = ahora(); let k = 0;
+      while (i < nx * nz) { uno(); k++; if ((k & 15) === 0 && ahora() - t0 >= ms) break; }
+      return k;
+    },
+    // la malla (m de la escena): solo los cuadros con bosque; las esquinas sin él, 3 m bajo el suelo
+    malla({ ox = 0, oz = 0, y0 = 0 } = {}) {
+      const usar = new Int32Array(nx * nz).fill(-1), idx = [];
+      let nv = 0;
+      const v = (q) => { if (usar[q] < 0) usar[q] = nv++; return usar[q]; };
+      for (let b = 0; b < nz - 1; b++) for (let a = 0; a < nx - 1; a++) {
+        const p = b * nx + a, q = p + 1, r = p + nx, t = r + 1;
+        if (!(h[p] > 0 || h[q] > 0 || h[r] > 0 || h[t] > 0)) continue;
+        idx.push(v(p), v(r), v(q), v(q), v(r), v(t));
+      }
+      const pos = new Float32Array(nv * 3), cc = new Float32Array(nv * 3);
+      for (let q = 0; q < nx * nz; q++) {
+        const w = usar[q]; if (w < 0) continue;
+        const a = q % nx, b = (q - a) / nx;
+        pos[w * 3] = x0 + a * paso - ox; pos[w * 3 + 1] = (h[q] > 0 ? suelo[q] + h[q] : suelo[q] - 3) - y0; pos[w * 3 + 2] = z0 + b * paso - oz;
+        if (h[q] > 0) { cc[w * 3] = col[q * 3]; cc[w * 3 + 1] = col[q * 3 + 1]; cc[w * 3 + 2] = col[q * 3 + 2]; }
+        else { cc[w * 3] = 0.05; cc[w * 3 + 1] = 0.07; cc[w * 3 + 2] = 0.035; }   // el linde: la sombra bajo las copas
+      }
+      return { pos, col: cc, idx: Uint32Array.from(idx) };
+    },
+  };
 }

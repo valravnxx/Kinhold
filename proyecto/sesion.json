@@ -6,12 +6,6 @@
   "rama": "trabajo/20261105-1326"
  },
  "B": null,
- "chat:trabajo/20261105-1220-dosel": {
-  "inicio": "2026-11-05T12:19:08+01:00",
-  "tarea": "El bosque de lejos (valravnx, 5 nov: «simular las zonas donde el bioma es bosque… que a toda distancia ya puedas diferenciar bastante bien los biomas»): una capa de dosel con volumen y copas donde hay bosque, desde donde acaban los árboles de verdad hasta el borde de la isla",
-  "hito": "graficos",
-  "rama": "trabajo/20261105-1220-dosel"
- },
  "chat:trabajo/20261105-1320-admin-continente": {
   "inicio": "2026-11-05T13:15:46+01:00",
   "tarea": "Explorar libre como admin (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente, no solo de la isla del rey, que quiero poder explorar libre»): el mapa del panel enseña el continente entero, un clic lleva a cualquier sitio y la cuenta de admin puede andar fuera de Whitholm",
