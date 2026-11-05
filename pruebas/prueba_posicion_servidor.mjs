@@ -50,7 +50,7 @@ const cerca = (p, x, z) => !!p && Math.abs(p.x - x) < 1e-9 && Math.abs(p.z - z) 
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-posicion-'));
 const archivo = join(dir, 'mundo.jsonl');
 try {
-  let s = crearServidor({ puerto: 0, archivo, latido: 200 });
+  let s = crearServidor({ puerto: 0, archivo, latido: 200, limiteMovimiento: false });
   let puerto = await s.listo;
 
   console.log('Volver con la ficha');
@@ -83,7 +83,7 @@ try {
 
   console.log('Tras reiniciar el servidor');
   await s.cerrar();
-  s = crearServidor({ puerto: 0, archivo, latido: 200 });
+  s = crearServidor({ puerto: 0, archivo, latido: 200, limiteMovimiento: false });
   puerto = await s.listo;
   const a4 = await cliente(puerto, ficha);
   comprobar('sigue sabiendo dónde estaba', cerca(a4.bienvenida.posicion, -40, 15), JSON.stringify(a4.bienvenida.posicion));
@@ -92,7 +92,7 @@ try {
 
   console.log('Archivo roto');
   writeFileSync(join(dir, 'posiciones.json'), '{ esto no es json');
-  s = crearServidor({ puerto: 0, archivo, latido: 200, registrar: () => {} });
+  s = crearServidor({ puerto: 0, archivo, latido: 200, limiteMovimiento: false, registrar: () => {} });
   puerto = await s.listo;
   const a5 = await cliente(puerto, ficha);
   comprobar('con posiciones.json roto, el servidor arranca y no da posición', a5.bienvenida.posicion === null && a5.bienvenida.autor === a.bienvenida.autor);

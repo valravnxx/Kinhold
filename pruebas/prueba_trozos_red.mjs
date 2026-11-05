@@ -83,7 +83,7 @@ const dir = mkdtempSync(join(tmpdir(), 'kinhold-trozos-'));
 const archivo = join(dir, 'mundo.jsonl');
 const LEJOS = 1000;   // m: a 7 trozos de la salida
 try {
-  let s = crearServidor({ puerto: 0, archivo });
+  let s = crearServidor({ puerto: 0, archivo, limiteMovimiento: false });
   const puerto = await s.listo;
   s.objetos.tala.entre = 0;
   const a = await cliente(puerto), b = await cliente(puerto);
@@ -143,7 +143,7 @@ try {
   const guardado = JSON.parse(readFileSync(join(dir, 'objetos.json'), 'utf8'));
   comprobar('objetos.json, versión 3, con lo talado y lo recogido por trozo',
     guardado.version === 3 && guardado.tala.trozos['0,0']?.estado[arbol] && guardado.recoleccion.trozos['0,0']?.estado['piedra:3'], Object.keys(guardado.tala.trozos || {}).join(' '));
-  const s2 = crearServidor({ puerto: 0, archivo }); await s2.listo;
+  const s2 = crearServidor({ puerto: 0, archivo, limiteMovimiento: false }); await s2.listo;
   { const x = JSON.stringify(s2.objetos.exportar()), y = JSON.stringify(guardado); let i = 0; while (i < x.length && x[i] === y[i]) i++;
     comprobar('al volver a arrancar se lee igual', x === y, x === y ? '' : 'distinto desde: ' + x.slice(i - 80, i + 80) + ' ‖ ' + y.slice(i - 80, i + 80)); }
   await s2.cerrar();
