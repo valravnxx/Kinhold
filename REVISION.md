@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 5 nov 2026 (13:12 UTC+1) — por el chat: explorar libre como admin
+valravnx: «cambio pequeño, en el panel de admin ponme el mapa de todo el continente, no solo de la isla del rey, que quiero poder explorar libre». → Tarea de chat en el hito P7 (Administración): el mapa del panel es el del continente entero, un clic lleva a cualquier sitio y la cuenta de admin puede andar fuera de Whitholm (el servidor solo se lo deja a ella).
+
 ### 5 nov 2026 (09:12–09:15 UTC+1) — por el chat: en español siempre; el horizonte
 valravnx: «en español SIEMPRE» (un mensaje del chat salió en inglés). Y sobre la v105: «no noto casi ninguna diferencia más que la resolución con estos cambios gráficos, me interesaría que los altos aumentaran muchísimo la distancia de dibujado de mapa aunque sea sin detalle para ver las montañas y las formas». → Tarea nueva en el hito G (lo lleva el chat).
 
