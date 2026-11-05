@@ -1110,9 +1110,10 @@
     },
     {
      "nombre": "Arreglar las dos pruebas de navegador que fallan (5 nov): «lo que se recoge en el mundo» (en el móvil la salida cae al azar y a veces deja 19–20 puntos alrededor, y pide más de 20) y «la demo en el mundo» (andar hacia el mar desde lejos y nadar en el agua); antes de la revisión del hito",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T01:29:16+00:00",
-     "rama": "trabajo/20261105-0129"
+     "rama": "trabajo/20261105-0129",
+     "fin": "2026-11-05T03:07:14+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
