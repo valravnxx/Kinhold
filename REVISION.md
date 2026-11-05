@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 5 nov 2026 (09:12–09:15 UTC+1) — por el chat: en español siempre; el horizonte
+valravnx: «en español SIEMPRE» (un mensaje del chat salió en inglés). Y sobre la v105: «no noto casi ninguna diferencia más que la resolución con estos cambios gráficos, me interesaría que los altos aumentaran muchísimo la distancia de dibujado de mapa aunque sea sin detalle para ver las montañas y las formas». → Tarea nueva en el hito G (lo lleva el chat).
+
 ### 5 nov 2026 (06:51–06:57 UTC+1) — por el chat: ríos de verdad
 valravnx, con una captura de un arroyo: los ríos son pequeños (un arroyo y un río mediano casi igual de anchos, se vadean «tocando el agua dos segundos»), muchos no están unidos o están cortados de forma extraña, y el cauce es hierba con agua a ratos; quiere lecho rocoso y ríos mucho más grandes («el arroyo de la imagen como el doble de ancho»). Revisado en el chat: 8 de las 11 uniones de Whitholm se quedan cortas (de media a 77 m del otro cauce) y el ancho mediano es 3,7 m (el mayor, 10,7). Aprobado («sí y sí, probemos»): anchos por 2 (el arroyo de unos 5 m, el río mayor de unos 22) y arroyo hasta 8 m. → Tarea de chat en el hito «Mundo».
 
