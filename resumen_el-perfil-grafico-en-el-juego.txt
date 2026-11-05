@@ -1,0 +1,46 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 3173 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2463 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2032 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2524 KB
+
+== Construir demo única
+      2381 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3475 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2429 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2027 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2513 KB
+dist/kinhold_trozos.html 2029 KB
+hilo de los trozos 16 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: el perfil gráfico en el juego
+  FALLA móvil: con el horizonte se ve lo lejano (cambia la franja del horizonte) — diferencia media 0.2 de 255
+  OK   móvil: sin errores de página
+
+HAY FALLOS: PC: con el horizonte se ve lo lejano (cambia la franja del horizonte), móvil: con el horizonte se ve lo lejano (cambia la franja del horizonte) · capturas en /tmp/kinhold_capturas/graficos_juego
+!! FALLA: python3 pruebas/prueba_graficos_juego_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/graficos_juego
+
+HAY FALLOS
+tardó 1070 s

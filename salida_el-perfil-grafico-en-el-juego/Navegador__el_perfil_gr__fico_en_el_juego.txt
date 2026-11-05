@@ -1,0 +1,38 @@
+/home/runner/work/Kinhold/Kinhold/pruebas/prueba_graficos_juego_navegador.py:108: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  dif = sum(abs(a - b) for a, b in zip(con.getdata(), sin.getdata())) / (con.width * con.height)
+PC
+  OK   PC: el juego tiene perfil gráfico
+  OK   PC: sin tarjeta gráfica arranca con el más barato (Móvil básico) — movil-1
+  OK   PC: el más barato no lleva horizonte
+  OK   PC: dibuja con posprocesado (2 pasadas en el más barato) — 2
+  OK   PC: el rendimiento cuenta los triángulos del mundo (no los de la última pasada) — 317102
+  OK   PC: los fps del panel son los del mundo (no uno por cada pasada) — panel 3 fps; el mundo se dibujó 8 veces en 2,5 s
+  OK   PC: se sigue viendo el cielo de la página (no sale negro) — [192, 207, 212]
+  OK   PC: el panel de rendimiento dice el perfil — Rendimiento en este aparato · Fotogramas	3 por segundo · Cada fotograma	370.2 ms de media; el más lento, 391 ms · Resolución	960×600 (0.75×) · Triángulos	317 mil por fotograma · Llamadas de dibujo	61 · Memoria gr
+  OK   PC: y tiene los seis perfiles para elegir
+  OK   PC: al pulsar «Móvil alto y tableta» cambia (4 pasadas: oclusión y suavizado) — movil-3 4
+  OK   PC: al volver a entrar sigue el elegido — movil-3
+  OK   PC: ?graficos=pc-3 pone el PC alto (3 pasadas: oclusión y MSAA) — pc-3 3
+  OK   PC: con el PC alto también se ve el cielo — [192, 207, 212]
+  OK   PC: el PC alto lleva el horizonte, la isla entera cada 100 m — {'activo': True, 'tris': 400490}
+  FALLA PC: con el horizonte se ve lo lejano (cambia la franja del horizonte) — diferencia media 0.1 de 255
+  OK   PC: sin errores de página
+Móvil
+  OK   móvil: el juego tiene perfil gráfico
+  OK   móvil: sin tarjeta gráfica arranca con el más barato (Móvil básico) — movil-1
+  OK   móvil: el más barato no lleva horizonte
+  OK   móvil: dibuja con posprocesado (2 pasadas en el más barato) — 2
+  OK   móvil: el rendimiento cuenta los triángulos del mundo (no los de la última pasada) — 211224
+  OK   móvil: los fps del panel son los del mundo (no uno por cada pasada) — panel 0 fps; el mundo se dibujó 3 veces en 2,5 s
+  OK   móvil: se sigue viendo el cielo de la página (no sale negro) — [130, 147, 131]
+  OK   móvil: el panel de rendimiento dice el perfil — Rendimiento en este aparato · Fotogramas	0 por segundo · Cada fotograma	2237.3 ms de media; el más lento, 2237 ms · Resolución	292×633 (0.75×) · Triángulos	211 mil por fotograma · Llamadas de dibujo	57 · Memoria 
+  OK   móvil: y tiene los seis perfiles para elegir
+  OK   móvil: al pulsar «Móvil alto y tableta» cambia (4 pasadas: oclusión y suavizado) — movil-3 4
+  OK   móvil: al volver a entrar sigue el elegido — movil-3
+  OK   móvil: ?graficos=pc-3 pone el PC alto (3 pasadas: oclusión y MSAA) — pc-3 3
+  OK   móvil: con el PC alto también se ve el cielo — [130, 147, 132]
+  OK   móvil: el PC alto lleva el horizonte, la isla entera cada 100 m — {'activo': True, 'tris': 400490}
+  FALLA móvil: con el horizonte se ve lo lejano (cambia la franja del horizonte) — diferencia media 0.2 de 255
+  OK   móvil: sin errores de página
+
+HAY FALLOS: PC: con el horizonte se ve lo lejano (cambia la franja del horizonte), móvil: con el horizonte se ve lo lejano (cambia la franja del horizonte) · capturas en /tmp/kinhold_capturas/graficos_juego
