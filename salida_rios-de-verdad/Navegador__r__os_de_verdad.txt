@@ -1,0 +1,26 @@
+Vista pc arroyo
+  OK   arroyo: hay agua en el río (de 3.1 m de ancho) — {"hondo": 0.5022460228431349, "superficie": -3.763328342385403, "dx": 0.07605170123538163, "dz": 0.29020017012263144}
+  OK   arroyo: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   arroyo: sin errores en la página
+Vista pc rio
+  OK   rio: hay agua en el río (de 6.9 m de ancho) — {"hondo": 2.1740690478252063, "superficie": -12.266478773387615, "dx": 0.8483259644554123, "dz": 0.13094467931478443}
+  OK   rio: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   rio: sin errores en la página
+Vista pc union
+  OK   union: hay agua en el río (de 4.0 m de ancho) — {"hondo": 0.487723428941095, "superficie": -10.43157469344991, "dx": 0.8515416610047045, "dz": 0.7136906328287475}
+  OK   union: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   union: sin errores en la página
+Vista movil arroyo
+  OK   arroyo: hay agua en el río (de 3.1 m de ancho) — {"hondo": 0.5022460228431349, "superficie": -3.763328342385403, "dx": 0.07605170123538163, "dz": 0.29020017012263144}
+  OK   arroyo: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   arroyo: sin errores en la página
+Vista movil rio
+  OK   rio: hay agua en el río (de 6.9 m de ancho) — {"hondo": 2.1740690478252063, "superficie": -12.266478773387615, "dx": 0.8483259644554123, "dz": 0.13094467931478443}
+  OK   rio: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   rio: sin errores en la página
+Vista movil union
+  OK   union: hay agua en el río (de 4.0 m de ancho) — {"hondo": 0.487723428941095, "superficie": -10.43157469344991, "dx": 0.8515416610047045, "dz": 0.7136906328287475}
+  OK   union: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   union: sin errores en la página
+
+Todo bien
