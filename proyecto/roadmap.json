@@ -1423,7 +1423,7 @@
    "id": "admin",
    "num": "P7",
    "nombre": "Administración, registros y seguridad",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "jugable": "Roles (jugador, moderador, administrador) para la cuenta de valravnx y las que él decida; panel de administración; registros consultables de lo que pasa en el mundo (comercio, saqueos, construcción y destrucción, muertes, conexiones); detección de trampas en el servidor (velocidad, alcance, acciones imposibles); sanciones (aviso, silencio, expulsión, bloqueo) y registro de lo que hace cada administrador.",
    "nota": "Revisión del 1 nov con valravnx: después: registros, expulsar y herramientas de admin. El admin por la cuenta llega antes, con «Cuentas».",
    "tareas": [
@@ -1436,6 +1436,12 @@
      "estado": "hecho",
      "inicio": "2026-11-05T13:13:17+01:00",
      "fin": "2026-11-05T16:38:00+01:00"
+    },
+    {
+     "nombre": "Traer jugadores con el panel de admin (valravnx, 5 nov: «a parte de lo que ya está que es tpearme a gente, poder tpearlos a mi»): en la lista, junto a «Ir», «Traer» pone a ese jugador a tu lado; lo pide el servidor, solo con la cuenta de admin, y queda apuntado",
+     "estado": "en_curso",
+     "inicio": "2026-11-05T16:37:21+00:00",
+     "rama": "trabajo/20261105-1636-traer"
     }
    ]
   },
