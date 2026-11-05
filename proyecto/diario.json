@@ -4463,5 +4463,21 @@
   "capturas": "capturas/demo-v113",
   "estado": "ok",
   "noticia": false
+ },
+ {
+  "inicio": "2026-11-05T18:53:41+01:00",
+  "fin": "2026-11-05T21:56:23+01:00",
+  "titulo": "El linde del bosque de lejos sin paredes (chat con valravnx)",
+  "hito": "graficos",
+  "hecho": [
+   "Causa, en el código: el dosel de lejos es una malla a la altura de las copas en una rejilla de 100–400 m; en sus esquinas sin bosque bajaba de golpe hasta 4 m bajo el suelo, y en el linde quedaba una pared de unos 20 m, con dientes de sierra (la diagonal de cada cuadro) y más oscura que la ladera.",
+   "Ahora cada punto lleva cuánto bosque tiene alrededor (sus 3 × 3 vecinos): dentro del bosque las copas van a su alto; hacia el linde bajan poco a poco y pasan al color del suelo; donde ya no hay bosque alrededor quedan en el suelo, de su color. Entre puntos vecinos, menos de 9 m de diferencia (antes, 21).",
+   "Las manchas oscuras de la captura de valravnx que asomaban por delante de lomas más cercanas venían de otra cosa: el dosel iba adelantado en la hondura. Eso lo quitó la sesión del horizonte sin cortes (demo v113); con las dos cosas juntas, el bosque de lejos queda detrás de lo que tiene delante y sin pared.",
+   "Prueba: la del horizonte mira el salto de las copas entre vecinos (cada 100 y 200 m) y que donde acaba el linde el color sea el del suelo; rota a propósito (MUTAR=linde, el linde de antes), falla con saltos de 21 m.",
+   "No comprobado: con tarjeta gráfica de verdad (las capturas son de esta máquina sin ella, de lomas con bosque a varios km); mirando al sur desde el sitio de salida 10 se ve una franja clara por encima de la línea de tierra que no es de este cambio y queda por mirar."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main: 35 grupos correctos, sin las de en línea. «Pelear en cualquier sitio del mundo» y «la demo en el mundo» fallaron una vez por tiempo (el decorado del móvil sin terminar de ponerse: 81 de 169 trozos) y pasaron al repetirlas sin cambios. Capturas del bosque de lejos, antes y después, miradas en PC y móvil.",
+  "capturas": "capturas/demo-v114",
+  "estado": "ok"
  }
 ]

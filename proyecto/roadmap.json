@@ -1488,9 +1488,9 @@
     },
     {
      "nombre": "El linde del bosque de lejos sin paredes (valravnx, 5 nov: «el fix de árboles de lejos que hiciste se corta de manera así ahora»): donde acaba el bosque, el dosel de lejos baja suave hasta el suelo y pasa a su color, en vez de caer en una pared de dientes de sierra",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T18:53:41+01:00",
-     "rama": "trabajo/20261105-1855-linde-dosel"
+     "fin": "2026-11-05T21:56:23+01:00"
     }
    ],
    "num": "G"
@@ -2876,6 +2876,13 @@
      "capturas": "capturas/demo-v113",
      "notas": "El horizonte sin cortes: a su altura (sin escalón donde acaba el terreno de cerca ni tierra baja bajo el mar) y sin tiras de bosque flotando donde aún no ha llegado el terreno.",
      "noticia": false
+    },
+    {
+     "v": "v114",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v114.html",
+     "capturas": "capturas/demo-v114",
+     "notas": "El linde del bosque de lejos sin paredes: donde acaba el bosque, el dosel de lejos baja poco a poco hasta el suelo y pasa a su color, en vez de caer en una pared de dientes de sierra. Capturas: antes y después, mirando lomas con bosque a varios km."
     }
    ]
   },

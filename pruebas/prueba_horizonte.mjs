@@ -82,6 +82,40 @@ comprobar('sin bosque, sin dosel', doselDe({ d: DOSEL_DESDE * 0.9, especie: 'hay
 const d1 = mallaDosel(m, 1), d4 = mallaDosel(m, 4);
 comprobar('la malla del dosel, solo donde hay bosque (menos que la del suelo)', d1.idx.length > 0 && d1.idx.length < g1.idx.length, `${d1.idx.length / 3} triángulos (el suelo, ${g1.idx.length / 3})`);
 comprobar('y más basta de lejos en los perfiles bajos', d4.idx.length * 8 < d1.idx.length, `${d4.idx.length / 3} cada 400 m`);
+// el linde (valravnx, 5 nov: «se corta de manera así»): entre dos puntos vecinos de la malla del dosel, lo que suben
+// las copas sobre el suelo no salta de golpe (antes, de unos 14 m a 4 m bajo el suelo: una pared con dientes de sierra);
+// y donde acaba, el color es el del suelo. MUTAR=linde: sin el linde suave (como antes): tiene que fallar
+if (process.env.MUTAR === 'linde') globalThis.__mutarLinde = true;
+function linde(k) {
+  const g = mallaDosel(m, k), cx = Math.floor((m.nx - 1) / k) + 1, cz = Math.floor((m.nz - 1) / k) + 1;
+  const n = (a, b) => (b * k) * m.nx + a * k, usado = new Map();
+  for (const w of g.idx) usado.set(w, true);
+  // el sitio de cada punto en la malla: lo que va de él sobre el suelo, y su color contra el del suelo
+  const sobre = new Map(), color = new Map();
+  for (let b = 0; b < cz; b++) for (let a = 0; a < cx; a++) { const q = b * cx + a; sobre.set(q, null); }
+  let vx = 0;
+  const pos = g.pos, col = g.col, lin = (c) => Math.pow(c / 255, 2.2);
+  // (los puntos van en el orden en que entran en la malla: se rehace el mapa punto → sitio como lo hace mallaDosel)
+  const usar = new Int32Array(cx * cz).fill(-1); let nv = 0;
+  const D = (a, b) => g.dens[b * cx + a];
+  for (let b = 0; b < cz - 1; b++) for (let a = 0; a < cx - 1; a++) {
+    if (!(D(a, b) > 0 || D(a + 1, b) > 0 || D(a, b + 1) > 0 || D(a + 1, b + 1) > 0)) continue;
+    for (const q of [b * cx + a, b * cx + a + 1, (b + 1) * cx + a, (b + 1) * cx + a + 1]) if (usar[q] < 0) usar[q] = nv++;
+  }
+  let salto = 0, malColor = 0, bordes = 0;
+  const alto = (q) => { const a = q % cx, b = (q - a) / cx, w = usar[q]; return pos[w * 3 + 1] - Math.max(m.alto[n(a, b)], 0); };
+  for (let b = 0; b < cz; b++) for (let a = 0; a < cx; a++) {
+    const q = b * cx + a, w = usar[q]; if (w < 0) continue;
+    for (const [da, db] of [[1, 0], [0, 1]]) { const a2 = a + da, b2 = b + db; if (a2 >= cx || b2 >= cz) continue; const r = b2 * cx + a2; if (usar[r] < 0) continue; salto = Math.max(salto, Math.abs(alto(q) - alto(r))); }
+    if (g.dens[q] === 0) { bordes++; const i = n(a, b); for (let c = 0; c < 3; c++) if (Math.abs(col[w * 3 + c] - lin(m.color[i * 3 + c])) > 1e-6) { malColor++; break; } }
+  }
+  return { salto, malColor, bordes };
+}
+for (const k of [1, 2]) {
+  const l = linde(k);
+  comprobar(`el linde del bosque de lejos sin pared (cada ${k * 100} m): las copas no saltan más de 10 m entre vecinos`, l.salto < 10, `salto máximo ${l.salto.toFixed(1)} m`);
+  comprobar(`y donde acaba, del color del suelo (cada ${k * 100} m)`, l.bordes > 0 && l.malColor === 0, `${l.malColor} de ${l.bordes}`);
+}
 const alt = alturaMundo(paisaje);
 const cercaDe = (i) => { const [x, z] = SALIDAS[i], c = crearDoselCerca(paisaje, alt, ESPECIES, Math.round(x / 16) * 16, Math.round(z / 16) * 16, 500); while (!c.listo) c.avanzar(1e9); return { c, g: c.malla({ ox: x, oz: z }) }; };
 const bosque = cercaDe(249), prado = cercaDe(0);
