@@ -5,11 +5,5 @@
   "hito": "entre-dos",
   "rama": "trabajo/20261105-1326"
  },
- "B": null,
- "chat:trabajo/20261105-1320-admin-continente": {
-  "inicio": "2026-11-05T13:15:46+01:00",
-  "tarea": "Explorar libre como admin (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente, no solo de la isla del rey, que quiero poder explorar libre»): el mapa del panel enseña el continente entero, un clic lleva a cualquier sitio y la cuenta de admin puede andar fuera de Whitholm",
-  "hito": "admin",
-  "rama": "trabajo/20261105-1320-admin-continente"
- }
+ "B": null
 }
