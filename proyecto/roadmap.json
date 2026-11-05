@@ -1710,6 +1710,20 @@
      "estado": "hecho",
      "inicio": "2026-11-05T06:58:57+01:00",
      "fin": "2026-11-05T12:55:50+01:00"
+    },
+    {
+     "nombre": "El mar de verdad (valravnx, 5 nov): el fondo de la orilla baja enseguida (en las playas, un poco de agua somera con la arena a la vista y luego hondo; al pie de los acantilados, hondo ya), sin la franja de fondo azul al aire entre la orilla y el mar, y el fondo de arena o de roca que se ve bajo el agua",
+     "estado": "en_curso",
+     "inicio": "2026-11-05T20:46:53+01:00",
+     "rama": "trabajo/20261105-2050-mar"
+    },
+    {
+     "nombre": "Los ríos llegan al mar (valravnx, 5 nov: «los ríos no finalizan en la entrada al mar, ni hay deltas»): el cauce sigue por la playa hasta el agua, se ensancha en la desembocadura y baja al nivel del mar; en los ríos grandes, un estuario o un delta",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Las rocas de los acantilados y los cortados, de vuelta en el juego (valravnx, 5 nov: «habíamos hecho unas rocas muy bonitas para los acantilados… las habéis quitado»): las piezas de roca 3D del visor del mapa (src/mundo/rocas.js), encajadas en las paredes del mundo del juego alrededor del jugador",
+     "estado": "pendiente"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Lo lleva el chat con valravnx: lo visual y creativo del mundo. Desde el 29 oct, unir el mapa con el juego (terreno por trozos, aparecer y andar por el mundo) está en el hito «El juego en el mundo de verdad», que llevan los carriles."
