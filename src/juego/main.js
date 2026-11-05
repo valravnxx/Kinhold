@@ -1,6 +1,6 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, altoTejadoEn, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR, ponerZonas, hayZonas } from '../logica/construccion.js';
+import { Mundo, alAlcance, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, altoTejadoEn, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR, ponerZonas, hayZonas } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra, USAN_INVENTARIO, reservaDe } from '../logica/acciones.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto, moverHumo } from '../mundo/modelos.js';
@@ -782,6 +782,9 @@ function evaluarDesmontaje(hit) {
     return;
   }
   const { c, key } = obj.userData;
+  // solo lo que tienes al alcance, en tu planta o la de encima (el servidor lo mira igual con dónde te tiene)
+  const al = c.piezas.has(key) ? alAlcance(c, c.piezas.get(key), pj.x, pj.z, pj.k) : { ok: true };
+  if (!al.ok) { mostrarAviso(tr(al.motivo), true); return; }
   const pre = mundo.previsualizarDesmontaje(c, key, yoAutor());   // lo de otro, ni se resalta como para desmontar
   resaltar(obj, 'naranja');
   for (const k2 of pre.caen || []) { const o = objDe(c, k2); if (o) resaltar(o, 'rojo'); }
@@ -2410,8 +2413,13 @@ window.__kinhold = {
   terminarObras() {
     if (enLinea) { // en línea, por el servidor: las mismas acciones que haría el jugador (llevar material y trabajar)
       const obras = []; for (const c of mundo.construcciones) for (const [key, p] of c.piezas) if (p.obra) obras.push([c.id, key]);
+      // el servidor solo deja hacerlo al alcance de la obra (como a un jugador): se le lleva junto a cada una, en su
+      // planta, y se le devuelve después adonde estaba
+      const vuelta = { x: pj.x, y: pj.y, z: pj.z, k: pj.k };
+      const junto = (c, p) => { const m = centroMundo(c, p); Object.assign(pj, { x: m.x, z: m.z, k: p.k, y: oyDe(c) + p.k * ALTURA + 0.05 }); enLinea.mandarEstado({ x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: 'quieto' }); };
       for (const [id, key] of obras) {
         const pieza = () => { const c = mundo.construcciones.find(x => x.id === id); return c && c.piezas.get(key); };
+        { const c = mundo.construcciones.find(x => x.id === id); if (c && pieza()) junto(c, pieza()); }
         const planta = plantaObra(pieza());
         // las obras cobran de lo que llevas: se coge del arcón de pruebas lo que falta y se lleva, hasta que no falte nada
         const queda = () => mundo.faltaEntregar(pieza()).reduce((t, f) => t + f.n, 0);
@@ -2429,6 +2437,7 @@ window.__kinhold = {
         let r = { ok: true };
         for (let i = 0; i < 1000 && r.ok && pieza() && pieza().obra; i++) r = accion({ tipo: 'trabajar', construccion: id, clave: key, segundos: MAX_RATO });
       }
+      if (obras.length) { Object.assign(pj, vuelta); enLinea.mandarEstado({ x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: 'quieto' }); }
       reconstruir(); return;
     }
     for (const c of mundo.construcciones) for (const [key, p] of [...c.piezas]) if (p.obra) acabarObra(mundo, registroAcciones, AUTOR_LOCAL, c.id, key);

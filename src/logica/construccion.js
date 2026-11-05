@@ -37,6 +37,22 @@ export const VARAS_PARA_RODAR = { vara: 2, cuerda: 1 }; // no se gastan: se vuel
 // Planta a la que hay que llevar el material de una obra: la de la pieza (lo que se apoya en lo alto de la planta
 // baja, como las vigas o el tejado de una cabaña, se alcanza desde el suelo; provisional).
 export function plantaObra(p) { return p.k; }
+// Alcance de las obras (hito «Jugar entre dos sin trampas»): a una pieza se le entrega, se le sube material, se trabaja
+// o se desmonta estando cerca de ella (ALCANCE_OBRA m del centro de la pieza, como en la demo) y en su planta o en la
+// de debajo (un muro o un tejado que se apoya en lo que pisas). El servidor lo mira con su última posición del jugador
+// y le da un margen por el retraso (holgura en metros, y una planta más hacia abajo).
+export const ALCANCE_OBRA = 2.3;   // m
+// Planta en la que está quien tiene los pies a la altura y, en una construcción de base c.oy: con 1 m de margen hacia
+// arriba (el terreno junto a la casa no es del todo llano, y en una planta los pies quedan un poco sobre el suelo).
+export function plantaDeAltura(c, y) { return Math.max(0, Math.floor((y - (c.oy || 0) + 1) / ALTURA)); }
+// ¿Llega quien está en (x, z), en la planta k, a la pieza p de c? holgura: metros de más; bajo: plantas de más hacia
+// abajo (el servidor, 1; la demo, 0).
+export function alAlcance(c, p, x, z, k, holgura = 0, bajo = 0) {
+  const m = centroMundo(c, p);
+  if (Math.hypot(m.x - x, m.z - z) > ALCANCE_OBRA + holgura) return { ok: false, motivo: 'Estás demasiado lejos: acércate.', lejos: true };
+  if (p.k < k - bajo || p.k > k + 1) return { ok: false, motivo: 'No estás en su planta.', lejos: true };
+  return { ok: true };
+}
 export function clasePeso(material) { return CLASE_PESO[material] || 'ligero'; }
 export function trabajoSubida(planta, personas, conVaras, conPolea = false, clase = 'pesado') {
   if (clase === 'muy_pesado') return personas >= 2 ? 4 * SUBIR_PLANTA * planta : Infinity; // con polipasto

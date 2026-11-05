@@ -66,7 +66,8 @@ function cliente(puerto) {
       c.esperas = c.esperas.filter(e => { if (e.cond(m)) { e.r(m); return false; } return true; });
     });
     const b = c.esperar(m => m.tipo === 'bienvenida');
-    ws.on('open', async () => { c.bienvenida = await b; listo(c); });
+    // junto a la obra (el servidor solo deja entregar, subir, trabajar y desmontar al alcance de donde tiene al jugador)
+    ws.on('open', async () => { c.bienvenida = await b; ws.send(JSON.stringify({ tipo: 'estado', x: 1, y: 0, z: 1, giro: 0, anim: 'quieto' })); listo(c); });
     ws.on('error', fallo);
   });
 }
