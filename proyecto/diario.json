@@ -4295,22 +4295,20 @@
   "noticia": false
  },
  {
-  "inicio": "2026-11-05T08:23:19+00:00",
-  "fin": "2026-11-05T10:05:26+00:00",
-  "titulo": "Movimiento sin trampas (P2, servidor, carril A)",
-  "hito": "entre-dos",
+  "inicio": "2026-11-05T06:58:57+01:00",
+  "fin": "2026-11-05T12:55:50+01:00",
+  "titulo": "Ríos de verdad: uniones, el doble de anchos y lecho de piedra (chat con valravnx)",
+  "hito": "mundo",
   "hecho": [
-   "El servidor ya no se cree un estado que esté más lejos del anterior de lo que se puede andar (src/logica/presencia.js): cada jugador tiene un crédito de metros que crece a 8 m/s (correr son 6; nadar con la corriente a favor, 3,9) hasta 16 m y que gasta al moverse. Lo que llega más lejos se recorta en la misma dirección, con la altura a juego.",
-   "Los recortes se apuntan en seguridad.jsonl (quién, su cuenta, cuántas veces y cuántos metros), como mucho una línea por jugador cada 10 s.",
-   "El servidor pone el ancla al conectar (donde lo dejaste o la salida, así que volver a conectar no sirve para saltar) y cuando el admin va junto a alguien o a un punto del mapa. La liza del duelo no cuenta para el mundo ni mueve su ancla.",
-   "Decisión provisional (registro de la demo y aquí): volver al sitio de salida al ahogarse es libre, porque el navegador te pone allí de golpe.",
-   "Lo que usa la posición en el servidor (alcance de las obras, lo que se recoge, los trozos que te llegan, la posición guardada al salir) usa ya la recortada.",
-   "Prueba nueva: pruebas/prueba_movimiento.mjs (16 comprobaciones: lógica y servidor de verdad con un cliente tramposo); rota a propósito (MUTAR=1, sin recortar) da 4 fallos.",
-   "El recorrido de jugador anda de verdad: pasos de 0,6 m cada 100 ms (6 m/s; antes iba a 20 m/s) y el segundo jugador llega andando desde la salida. Las pruebas que colocan a alguien de golpe para preparar otra cosa (admin, posiciones, trozos y obras por la red) crean su servidor con limiteMovimiento: false; la del panel del admin arranca el servidor con KINHOLD_PRUEBAS_MOVIMIENTO=libre (su jugador simulado aparece a 1,7 km), y el servidor lo avisa en su línea de arranque.",
-   "Sin versión nueva de la demo: el navegador no cambia. Hace falta actualizar el servidor de Hetzner a main para que valga en el juego (no comprobado desde aquí)."
+   "Los afluentes llegan al cauce del río al que entran: antes 8 de las 11 uniones se quedaban cortas (la mitad, a más de 77 m; la peor, a 174 m). Ahora acaban en un punto del otro río (menos de 1 m) y su agua llega a la misma altura: donde el afluente quedaba más bajo, se baja el río que lo recibe.",
+   "El doble de anchos: ancho mediano de 7,8 m (antes 4,0) y el mayor de Whitholm de 22 m (antes 10,7). Arroyos hasta 8 m, que se vadean; los ríos, que se nadan o se cruzan por sus vados. Nacen estrechos y se ensanchan en su primer kilómetro. El mapa del rey los dibuja con su ancho nuevo.",
+   "Lecho de río en vez de hierba: fondo de grava y cantos del color de la roca del sitio, barras de arena en los ríos anchos, orilla de barro húmedo y cantos de río en el cauce y la orilla, más gordos donde la corriente es fuerte. El cauce tiene el fondo llano y la orilla marcada.",
+   "Los saltos de agua dicen su alto de verdad (antes 3 de 24 fallaban en su prueba). Un sitio de salida que quedó junto a un río sale de la lista. Pintar el lecho hace los trozos de suelo de 1 m un 15 % más lentos de hacer (medido aquí: de 76 a 90 ms).",
+   "Pruebas nuevas: pruebas/prueba_rios.mjs (14 comprobaciones; rota a propósito sin uniones, sin lecho y sin cantos, falla cada vez) y pruebas/prueba_rios_navegador.py (un arroyo, un río y una unión en PC y móvil: agua seguida 60 m arriba y abajo; rota con agua a ratos, falla).",
+   "Aún mal: el agua honda es opaca y no deja ver su lecho; en móvil salen menos cantos; junto a la unión hay un peñasco grande; la cámara de la captura de la unión no enseña bien dónde se juntan."
   ],
-  "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido): todo bien salvo el panel del admin, que falló porque su jugador simulado aparecía de golpe lejos; corregido y repetido en la nube, bien. El mapa del mundo no llegó a terminar en la primera ronda (se acabó el tiempo de espera de esta sesión) y se repitió: bien. Recorrido de jugador 24/24 aquí. Capturas del panel del admin (PC y móvil) miradas.",
-  "capturas": "",
+  "pruebas": "Batería entera en la nube tras unir main (horizonte, demo v106): 35 grupos correctos, sin las de en línea. En la ronda anterior «lo que llevas se ve puesto» falló por 3 mm (17,7 cm contra 18, igual que en la sesión del posprocesado) y pasó sobre main con el mismo 17,7: está en el borde, no es de los ríos. Capturas de ríos miradas en PC y móvil.",
+  "capturas": "capturas/demo-v107",
   "estado": "ok"
  },
  {
@@ -4332,20 +4330,40 @@
   "noticia": false
  },
  {
-  "inicio": "2026-11-05T06:58:57+01:00",
-  "fin": "2026-11-05T12:55:50+01:00",
-  "titulo": "Ríos de verdad: uniones, el doble de anchos y lecho de piedra (chat con valravnx)",
-  "hito": "mundo",
+  "inicio": "2026-11-05T08:23:19+00:00",
+  "fin": "2026-11-05T10:05:26+00:00",
+  "titulo": "Movimiento sin trampas (P2, servidor, carril A)",
+  "hito": "entre-dos",
   "hecho": [
-   "Los afluentes llegan al cauce del río al que entran: antes 8 de las 11 uniones se quedaban cortas (la mitad, a más de 77 m; la peor, a 174 m). Ahora acaban en un punto del otro río (menos de 1 m) y su agua llega a la misma altura: donde el afluente quedaba más bajo, se baja el río que lo recibe.",
-   "El doble de anchos: ancho mediano de 7,8 m (antes 4,0) y el mayor de Whitholm de 22 m (antes 10,7). Arroyos hasta 8 m, que se vadean; los ríos, que se nadan o se cruzan por sus vados. Nacen estrechos y se ensanchan en su primer kilómetro. El mapa del rey los dibuja con su ancho nuevo.",
-   "Lecho de río en vez de hierba: fondo de grava y cantos del color de la roca del sitio, barras de arena en los ríos anchos, orilla de barro húmedo y cantos de río en el cauce y la orilla, más gordos donde la corriente es fuerte. El cauce tiene el fondo llano y la orilla marcada.",
-   "Los saltos de agua dicen su alto de verdad (antes 3 de 24 fallaban en su prueba). Un sitio de salida que quedó junto a un río sale de la lista. Pintar el lecho hace los trozos de suelo de 1 m un 15 % más lentos de hacer (medido aquí: de 76 a 90 ms).",
-   "Pruebas nuevas: pruebas/prueba_rios.mjs (14 comprobaciones; rota a propósito sin uniones, sin lecho y sin cantos, falla cada vez) y pruebas/prueba_rios_navegador.py (un arroyo, un río y una unión en PC y móvil: agua seguida 60 m arriba y abajo; rota con agua a ratos, falla).",
-   "Aún mal: el agua honda es opaca y no deja ver su lecho; en móvil salen menos cantos; junto a la unión hay un peñasco grande; la cámara de la captura de la unión no enseña bien dónde se juntan."
+   "El servidor ya no se cree un estado que esté más lejos del anterior de lo que se puede andar (src/logica/presencia.js): cada jugador tiene un crédito de metros que crece a 8 m/s (correr son 6; nadar con la corriente a favor, 3,9) hasta 16 m y que gasta al moverse. Lo que llega más lejos se recorta en la misma dirección, con la altura a juego.",
+   "Los recortes se apuntan en seguridad.jsonl (quién, su cuenta, cuántas veces y cuántos metros), como mucho una línea por jugador cada 10 s.",
+   "El servidor pone el ancla al conectar (donde lo dejaste o la salida, así que volver a conectar no sirve para saltar) y cuando el admin va junto a alguien o a un punto del mapa. La liza del duelo no cuenta para el mundo ni mueve su ancla.",
+   "Decisión provisional (registro de la demo y aquí): volver al sitio de salida al ahogarse es libre, porque el navegador te pone allí de golpe.",
+   "Lo que usa la posición en el servidor (alcance de las obras, lo que se recoge, los trozos que te llegan, la posición guardada al salir) usa ya la recortada.",
+   "Prueba nueva: pruebas/prueba_movimiento.mjs (16 comprobaciones: lógica y servidor de verdad con un cliente tramposo); rota a propósito (MUTAR=1, sin recortar) da 4 fallos.",
+   "El recorrido de jugador anda de verdad: pasos de 0,6 m cada 100 ms (6 m/s; antes iba a 20 m/s) y el segundo jugador llega andando desde la salida. Las pruebas que colocan a alguien de golpe para preparar otra cosa (admin, posiciones, trozos y obras por la red) crean su servidor con limiteMovimiento: false; la del panel del admin arranca el servidor con KINHOLD_PRUEBAS_MOVIMIENTO=libre (su jugador simulado aparece a 1,7 km), y el servidor lo avisa en su línea de arranque.",
+   "Sin versión nueva de la demo: el navegador no cambia. Hace falta actualizar el servidor de Hetzner a main para que valga en el juego (no comprobado desde aquí)."
   ],
-  "pruebas": "Batería entera en la nube tras unir main (horizonte, demo v106): 35 grupos correctos, sin las de en línea. En la ronda anterior «lo que llevas se ve puesto» falló por 3 mm (17,7 cm contra 18, igual que en la sesión del posprocesado) y pasó sobre main con el mismo 17,7: está en el borde, no es de los ríos. Capturas de ríos miradas en PC y móvil.",
-  "capturas": "capturas/demo-v107",
+  "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido): todo bien salvo el panel del admin, que falló porque su jugador simulado aparecía de golpe lejos; corregido y repetido en la nube, bien. El mapa del mundo no llegó a terminar en la primera ronda (se acabó el tiempo de espera de esta sesión) y se repitió: bien. Recorrido de jugador 24/24 aquí. Capturas del panel del admin (PC y móvil) miradas.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T10:22:41+00:00",
+  "fin": "2026-11-05T13:05:17+00:00",
+  "titulo": "Zonas del rey (P2, carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "Contadas las zonas de Whitholm con el mundo elegido: 1.840 zonas con tierra (853 en las tres comarcas de inicio). Tienen veta marcada (gran veta) 1, la de hierro de la sierra, en Breiddal; ciudad, 1 (Strandvang); salida común, 1 (Lindholt); vado, 51; veta pequeña, 32; y los 259 sitios de la salida al azar caen en 235 zonas, el 28 % de las comarcas de inicio. Los collados no están marcados en el mapa: contados a ojo como sillas del relieve por encima de 300 m salen unos 9 (no comprobado a fondo; no cambian nada, porque los collados sí se reclaman).",
+   "Son del rey la zona de la gran veta, la de la ciudad y la de la salida común (src/logica/zonas_rey.js, con sus sitios apuntados y comprobados con el mapa). Ahí el mojón sale con «Es zona del rey: no se reclama (aquí cava y recoge cualquiera).», en el navegador y en el servidor con su autor. Como no tienen dueño, en ellas recoge cualquiera y no construye nadie.",
+   "Decisión provisional (registro de la demo y decisiones pendientes): los sitios de la salida al azar no son del rey hasta que valravnx diga cuántos quiere; la tarea «Salida al azar de verdad en línea» queda esperando esa decisión. Los mojones ya puestos en una zona del rey se quedan hasta el próximo borrado del mundo.",
+   "El mapa del rey pinta las zonas del rey de oro viejo, con el borde a rayas y, de cerca, «Zona del rey» y por qué.",
+   "El recorrido de jugador ya no pone el mojón en la salida: lo intenta, sale «zona del rey», y anda unos 440 m hasta la zona de al lado; el segundo viaje de piedras y el mojón nuevo, con las piedras de allí. La prueba del terreno del servidor, igual.",
+   "Prueba nueva: pruebas/prueba_zonas_rey.mjs (13 comprobaciones); rota a propósito (MUTAR=1, sin pasar las zonas del rey) da 3 fallos. En la del mapa del rey, que salen las tres; rota (MUTAR=4) falla en PC y en móvil.",
+   "Publicada la demo v108 (la v106 y la v107 las publicaron antes los chats: el horizonte y los ríos)."
+  ],
+  "pruebas": "Batería entera en la nube (GitHub Actions): 34 grupos correctos (48,2 min). Tras unir main (el horizonte del chat), otra vez entera: 31 bien; construcción (la página se recargó a mitad, «Execution context was destroyed»), lógica (prueba_nube.mjs: la conexión wss a través de Caddy, error de TLS) y web (faltaba la carpeta de capturas, aún sin publicar) fallaron, y repetidas salen bien las tres. Recorrido de jugador 26/26 y prueba del terreno del servidor 36/36 también aquí. Capturas del mapa del rey miradas en PC y móvil. Tras unir los ríos del chat, otra vez entera: 34 de 35 bien a la primera y la web, repetida al publicar.",
+  "capturas": "capturas/demo-v108",
   "estado": "ok"
  }
 ]

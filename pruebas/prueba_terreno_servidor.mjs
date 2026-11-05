@@ -144,20 +144,25 @@ try {
   r = await a.accion({ tipo: 'mojon', x: mar, z: 0 });
   comprobar('el mojón en el mar se rechaza', !r.ok, r.motivo);
   r = await a.accion({ tipo: 'mojon', x: px, z: pz });
-  comprobar('y en tierra firme se pone', r.ok, r.motivo);
+  comprobar('junto a la salida, no: es zona del rey (src/logica/zonas_rey.js)', !r.ok && /zona del rey/.test(r.motivo || ''), r.motivo);
+  // y en tierra firme de la zona de al lado (al oeste, a 70 m de su linde), sí: desde aquí, el mojón de A
+  let mx = px, mz = pz;
+  for (let d = 20; d < 3000; d += 10) { const id = T.zona(-d, pz); if (id !== null && id !== T.zona(px, pz) && !T.esZonaRey(id)) { mx = -d - 70; break; } }
+  r = await a.accion({ tipo: 'mojon', x: mx, z: mz });
+  comprobar('y en tierra firme de la zona de al lado se pone', r.ok && mx !== px, `${r.motivo || ''} en x = ${Math.round(mx)}`);
   // un sitio de tierra firme lejos del mojón en su zona, y otro en la zona de al lado (buscando en anillos)
   const firme = (x, z) => T.suelo(x, z) + T.y0 > ALTURAS.orilla + 0.5;
   let lejosMio = null, vecino = null;
   for (let d = 150; d < 2500 && !(lejosMio && vecino); d += 50) for (let k = 0; k < 24; k++) {
-    const x = px + Math.cos(k / 24 * 2 * Math.PI) * d, z = pz + Math.sin(k / 24 * 2 * Math.PI) * d;
+    const x = mx + Math.cos(k / 24 * 2 * Math.PI) * d, z = mz + Math.sin(k / 24 * 2 * Math.PI) * d;
     if (!firme(x, z)) continue;
-    if (!lejosMio && d >= 300 && T.zona(x, z) === T.zona(px, pz)) lejosMio = { x: Math.round(x), z: Math.round(z) };
-    if (!vecino && T.zona(x, z) !== null && T.zona(x, z) !== T.zona(px, pz)) vecino = { x: Math.round(x), z: Math.round(z) };
+    if (!lejosMio && d >= 300 && T.zona(x, z) === T.zona(mx, mz)) lejosMio = { x: Math.round(x), z: Math.round(z) };
+    if (!vecino && T.zona(x, z) !== null && T.zona(x, z) !== T.zona(mx, mz) && !T.esZonaRey(T.zona(x, z))) vecino = { x: Math.round(x), z: Math.round(z) };
   }
-  comprobar('hay un sitio de su zona a 300 m o más del mojón, y otra zona al lado', !!lejosMio && !!vecino, JSON.stringify({ lejosMio, vecino }));
+  comprobar('hay un sitio de su zona a 300 m o más del mojón, y otra zona al lado (no del rey)', !!lejosMio && !!vecino, JSON.stringify({ lejosMio, vecino }));
   const b = await cliente(puerto);
   await b.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });   // el mojón se paga de lo que llevas
-  r = await b.accion({ tipo: 'mojon', x: px + 4, z: pz });
+  r = await b.accion({ tipo: 'mojon', x: mx + 4, z: mz });
   comprobar('otro jugador no puede poner su mojón en la zona de A', !r.ok && r.motivo === 'Esta zona ya es tierra de otro.', r.motivo);
   r = await a.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: lejosMio.x, z: lejosMio.z, k: 0, rot: 0, dir: 0, y: T.suelo(lejosMio.x, lejosMio.z) });
   comprobar('A construye en su zona lejos del mojón', r.ok, r.motivo);
@@ -166,7 +171,7 @@ try {
   r = await b.accion({ tipo: 'mojon', x: vecino.x, z: vecino.z });
   comprobar('y el otro jugador pone el suyo en la de al lado', r.ok, r.motivo);
   b.ws.close();
-  r = await a.accion({ tipo: 'colocar', pieza: 'suelo_tablas', x: px + 3, z: pz + 3, k: 0, rot: 0, dir: 0, y: T.suelo(px + 3, pz + 3) + 4 });
+  r = await a.accion({ tipo: 'colocar', pieza: 'suelo_tablas', x: mx + 3, z: mz + 3, k: 0, rot: 0, dir: 0, y: T.suelo(mx + 3, mz + 3) + 4 });
   comprobar('una planta baja que empieza a 4 m del suelo se rechaza', !r.ok, r.motivo);
   // (lo guardado va por trozos, src/logica/trozos_red.js)
   const exp = s.objetos.exportar(), expA = desagrupar(exp.tala.trozos).cosas, expP = desagrupar(exp.recoleccion.trozos).cosas;
