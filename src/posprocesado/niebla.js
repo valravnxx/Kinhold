@@ -19,7 +19,13 @@ uniform float tope;uniform float maxLejos;uniform float lejosH;uniform float r0;
 vec3 aSRGB(const in vec3 c){return mix(c*12.92,1.055*pow(c,vec3(1.0/2.4))-0.055,step(vec3(0.0031308),c));}
 vec3 aLineal(const in vec3 c){return mix(c/12.92,pow((c+0.055)/1.055,vec3(2.4)),step(vec3(0.04045),c));}
 void mainImage(const in vec4 inputColor,const in vec2 uv,const in float depth,out vec4 outputColor){
-  if(depth>=0.999999){outputColor=inputColor;return;}
+  // el cielo: con horizonte se pinta aquí (el mismo degradado que la página) y todo sale opaco: los bordes contra el
+  // cielo, con el suavizado que sea (MSAA o SMAA, que va después), ya no dejan una raya clara
+  if(depth>=0.999999){
+    if(tope<1.0) outputColor=vec4(aLineal(mix(cieloArriba,cieloAbajo,clamp((1.0-uv.y)/0.6,0.0,1.0))),1.0);
+    else outputColor=inputColor;
+    return;
+  }
 #ifdef PERSPECTIVE_CAMERA
   float d=-perspectiveDepthToViewZ(depth,cameraNear,cameraFar);
 #else

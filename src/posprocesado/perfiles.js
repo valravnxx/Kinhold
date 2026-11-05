@@ -26,8 +26,8 @@
 export const PERFILES = [
   { id: 'movil-1', nombre: 'Móvil básico', res: 0.75, sombras: 512, blandas: false, ao: null, aoMedia: true, brillo: null, rayos: null, suavizado: 'ninguno', desenfoque: false, objetivo: 30 },
   { id: 'movil-2', nombre: 'Móvil medio', res: 1, sombras: 1024, blandas: false, ao: 'Performance', aoMedia: true, brillo: 4, rayos: null, suavizado: 'smaa-bajo', desenfoque: true, objetivo: 30 },
-  { id: 'movil-3', nombre: 'Móvil alto y tableta', res: 1.5, sombras: 1024, blandas: true, ao: 'Low', aoMedia: true, brillo: 6, rayos: null, suavizado: 'smaa-medio', desenfoque: true, objetivo: 30, horizonte: { paso: 4 } },
-  { id: 'pc-1', nombre: 'PC básico', res: 1, sombras: 2048, blandas: true, ao: 'Medium', aoMedia: true, brillo: 6, rayos: 32, suavizado: 'smaa-alto', desenfoque: true, objetivo: 60, horizonte: { paso: 4 } },
+  { id: 'movil-3', nombre: 'Móvil alto y tableta', res: 1.5, sombras: 1024, blandas: true, ao: 'Low', aoMedia: true, brillo: 6, rayos: null, suavizado: 'smaa-medio', desenfoque: true, objetivo: 30, horizonte: { paso: 2 } },
+  { id: 'pc-1', nombre: 'PC básico', res: 1, sombras: 2048, blandas: true, ao: 'Medium', aoMedia: true, brillo: 6, rayos: 32, suavizado: 'smaa-alto', desenfoque: true, objetivo: 60, horizonte: { paso: 2 } },
   { id: 'pc-2', nombre: 'PC medio', res: 1.5, sombras: 2048, blandas: true, ao: 'High', aoMedia: false, brillo: 8, rayos: 60, suavizado: 'msaa-4', desenfoque: true, objetivo: 60, horizonte: { paso: 2 } },
   { id: 'pc-3', nombre: 'PC alto', res: 2, sombras: 4096, blandas: true, ao: 'Ultra', aoMedia: false, brillo: 8, rayos: 90, suavizado: 'msaa-8', desenfoque: true, objetivo: 60, horizonte: { paso: 1 } },
 ];

@@ -18,7 +18,7 @@ const VERDES = { abeto: ['abeto', 'abetoOsc'], pino: ['pino', 'pinoOsc'], abedul
 export const ESPECIES_DOSEL = Object.fromEntries(Object.entries(VERDES).map(([e, [a, b]]) => {
   const x = (h) => [(h >> 16) & 255, (h >> 8) & 255, h & 255].map(v => v / 255);
   const A = x(PALETA[a]), B = x(PALETA[b]);
-  return [e, { alto: TAMANO_ESPECIE[e][1], color: A.map((v, i) => (v + B[i]) / 2 * 0.55) }];
+  return [e, { alto: TAMANO_ESPECIE[e][1], color: A.map((v, i) => (v + B[i]) / 2 * 0.85) }];
 }));
 
 // El material de lo lejano: colores por vértice, sin niebla de la escena (la pone el posprocesado) y con la compresión de
@@ -56,6 +56,9 @@ float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
     float hzG = mix( 0.6, 1.12, smoothstep( 0.2, 0.8, hzRuido( hzP / 60.0 + 9.1 ) * 0.7 + hzRuido( hzP / 170.0 - 4.3 ) * 0.3 ) );
     float hzD = length( vHzMundo - cameraPosition );
     diffuseColor.rgb *= mix( mix( hzK, hzG, smoothstep( 700.0, 2500.0, hzD ) ), 0.85, smoothstep( 6000.0, 14000.0, hzD ) );
+    // de cerca, del color de los árboles de verdad (que siguen justo delante); de lejos, más oscuro: la sombra de dentro
+    // de la masa del bosque, que es lo que hace que de lejos se distinga de la pradera
+    diffuseColor.rgb *= mix( 1.0, 0.62, smoothstep( 800.0, 3500.0, hzD ) );
   }`);
   };
   return material;
@@ -129,12 +132,15 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
     g.setIndex(new THREE.BufferAttribute(m.idx, 1));
     g.computeVertexNormals();
     malla.geometry.dispose(); malla.geometry = g;
-    doselLejos.geometry.dispose(); doselLejos.geometry = geo(mallaDosel(muestras, k, { ox: origen.x, oz: origen.z, y0 }));
+    // el dosel de lejos, solo desde cada 200 m: cada 400 salían losas oscuras (el linde, de 400 m de rampa)
+    doselLejos.geometry.dispose(); doselLejos.geometry = k <= 2 ? geo(mallaDosel(muestras, k, { ox: origen.x, oz: origen.z, y0 })) : new THREE.BufferGeometry();
     hecho = k; malla.visible = true;
   }
   // el dosel de cerca: si el jugador se ha alejado de su centro, se empieza otro (el de antes se queda hasta que esté)
   function pasoCerca(x, z, ms) {
-    if (!alt || ms <= 0) return 0;
+    // (en el móvil, el terreno de cerca acaba a 288 m y los árboles de verdad llegan a 130: entre medias, el dosel se
+    // veía de demasiado cerca, como lomas lisas; ahí se queda el suelo)
+    if (!alt || ms <= 0 || hasta < 500) return 0;
     const t0 = performance.now();
     const xm = x + origen.x, zm = z + origen.z;
     if (!calculando && (!cerca || Math.hypot(xm - cerca.cx, zm - cerca.cz) > REHACER)) {
