@@ -1,0 +1,39 @@
+  OK   un personaje baja menos de un tercio que en la v1 — 8284 KB → 1759 KB
+  OK   las animaciones bajan de 4,4 MB a menos de 1 MB — 4448 KB → 726 KB
+  OK   el manifiesto de la v2 tiene la huella de cada archivo
+  OK   licencias junto a los modelos
+Vista pc
+  OK   variante 1: mismos triángulos en v1 y v2 — 19825 / 19825
+  OK   variante 1: tantos esqueletos como en la v1 (comprimir no rompe el esqueleto compartido) — 4 / 4
+  OK   variante 1 (cuerpo): la v2 se ve igual que la v1 — diferencia media 0.12 de 255
+  OK   variante 1 (cara): la v2 se ve igual que la v1 — diferencia media 0.39 de 255
+  OK   variante 2: mismos triángulos en v1 y v2 — 22120 / 22120
+  OK   variante 2: tantos esqueletos como en la v1 (comprimir no rompe el esqueleto compartido) — 1 / 1
+  OK   variante 2 (cuerpo): la v2 se ve igual que la v1 — diferencia media 0.08 de 255
+  OK   variante 2 (cara): la v2 se ve igual que la v1 — diferencia media 0.29 de 255
+  OK   variante 3: mismos triángulos en v1 y v2 — 19354 / 19354
+  OK   variante 3: tantos esqueletos como en la v1 (comprimir no rompe el esqueleto compartido) — 4 / 4
+  OK   variante 3 (cuerpo): la v2 se ve igual que la v1 — diferencia media 0.07 de 255
+  OK   variante 3 (cara): la v2 se ve igual que la v1 — diferencia media 0.22 de 255
+  OK   variante 4: mismos triángulos en v1 y v2 — 21742 / 21742
+  OK   variante 4: tantos esqueletos como en la v1 (comprimir no rompe el esqueleto compartido) — 1 / 1
+  OK   variante 4 (cuerpo): la v2 se ve igual que la v1 — diferencia media 0.08 de 255
+  OK   variante 4 (cara): la v2 se ve igual que la v1 — diferencia media 0.31 de 255
+  OK   las 39 animaciones extra se cargan (las que se llaman igual que una básica, como «nombre_2») — 65 clips en total, 39 extra
+  OK   las básicas no cambian al cargar las extra; las extra tienen su nombre en español — [True, True, 'Bandage_Loop', True]
+  OK   cada animación extra mueve el cuerpo (más de 3 cm respecto a estar quieto o entre dos instantes)
+  OK   sin errores en consola (pc)
+Vista movil
+  OK   variante 1: mismos triángulos en v1 y v2 — 19825 / 19825
+  OK   variante 1: tantos esqueletos como en la v1 (comprimir no rompe el esqueleto compartido) — 4 / 4
+  OK   variante 1 (cuerpo): la v2 se ve igual que la v1 — diferencia media 0.09 de 255
+  OK   variante 1 (cara): la v2 se ve igual que la v1 — diferencia media 0.66 de 255
+  OK   variante 2: mismos triángulos en v1 y v2 — 22120 / 22120
+  OK   variante 2: tantos esqueletos como en la v1 (comprimir no rompe el esqueleto compartido) — 1 / 1
+  OK   variante 2 (cuerpo): la v2 se ve igual que la v1 — diferencia media 0.07 de 255
+  OK   variante 2 (cara): la v2 se ve igual que la v1 — diferencia media 0.47 de 255
+  OK   las 39 animaciones extra se cargan (las que se llaman igual que una básica, como «nombre_2») — 65 clips en total, 39 extra
+  OK   las básicas no cambian al cargar las extra; las extra tienen su nombre en español — [True, True, 'Bandage_Loop', True]
+  OK   sin errores en consola (movil)
+
+Resultado: TODO CORRECTO
