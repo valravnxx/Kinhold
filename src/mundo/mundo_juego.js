@@ -41,7 +41,7 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
   // agua de cerca (src/mundo/agua_mundo.js: ríos y mar con su corriente y su oleaje alrededor del jugador)
   const ancho = ISLA.x1 - ISLA.x0 + 6000, largo = ISLA.z1 - ISLA.z0 + 6000;
   const mar = new THREE.Mesh(new THREE.PlaneGeometry(ancho, largo).rotateX(-Math.PI / 2),
-    new THREE.MeshLambertMaterial({ color: 0x4a6470 }));
+    new THREE.MeshLambertMaterial({ color: 0x35525e }));
   mar.name = 'mar';
   // A la altura de la orilla (valravnx, 5 nov): iba 0,8 m más bajo y dejaba al aire el fondo somero, una franja gris
   // azulada entre la tierra y el mar («playas azules»). Y algo transparente: se ve el fondo (arena o roca, que se pierde
@@ -49,7 +49,7 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
   // oleaje y su hondura): va encima, sin escribir la hondura, y si no se quitara se verían las dos.
   mar.position.set((ISLA.x0 + ISLA.x1) / 2 - O.x, -y0 - 0.05, (ISLA.z0 + ISLA.z1) / 2 - O.z);
   const uLamina = { value: new THREE.Vector3(0, 0, 0) };   // centro de la lámina de cerca (m de la escena) y su medio lado
-  mar.material.opacity = 0.74;
+  mar.material.opacity = 0.82;
   mar.material.onBeforeCompile = (sh) => {
     sh.uniforms.uLamina = uLamina;
     sh.vertexShader = 'varying vec3 vMarMundo;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vMarMundo = (modelMatrix * vec4(transformed, 1.0)).xyz;');

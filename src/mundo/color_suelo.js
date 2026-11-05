@@ -21,8 +21,11 @@ export function colorDelSuelo(st, y, s, xm, ym) {
     // es llano, la roca del sitio donde es empinado (al pie de los acantilados), con ondas en la arena y manchas de
     // algas; y cuanto más hondo, más se pierde en el azul verdoso del agua (lo que se ve a través del mar)
     const roca = (st && ROCA[st.roca]) || ROCA.caliza;
-    let c = ARENA.map((v, n) => v + (roca[n] * 0.8 - v) * Math.min(1, Math.max(0, (s - 0.35) / 0.4)));
-    const onda = 0.94 + 0.06 * Math.sin(xm * 0.9 + fbm(xm / 9, ym / 9, 71, 2) * 9), alga = suave(0.6, 0.72, fbm(xm / 25, ym / 25, 72, 3)) * suave(1.5, 4, -y);
+    // (arena donde la costa es de caliza o arenisca; donde es de granito o pizarra, cantos de su roca, como en tierra)
+    const fondo = st && (st.roca === 'granito' || st.roca === 'pizarra') ? roca.map(v => v * 0.85) : ARENA;
+    let c = fondo.map((v, n) => v + (roca[n] * 0.8 - v) * Math.min(1, Math.max(0, (s - 0.35) / 0.4)));
+    const onda = 1 - 0.035 * suave(0.2, 1.5, -y) * (0.5 + 0.5 * Math.sin(xm * 0.9 + fbm(xm / 9, ym / 9, 71, 2) * 9)),   // (las ondas, solo bajo el agua)
+          alga = suave(0.6, 0.72, fbm(xm / 25, ym / 25, 72, 3)) * suave(1.5, 4, -y);
     c = c.map((v, n) => v * onda + ([0.24, 0.3, 0.2][n] - v) * alga * 0.6);
     const hondo = 1 - Math.exp(Math.min(0, y) / 7);
     return c.map((v, n) => v + ([0.13, 0.25, 0.28][n] - v) * hondo);
@@ -40,11 +43,14 @@ export function colorDelSuelo(st, y, s, xm, ym) {
     const k = (1 - r * (0.16 * capa + 0.14 * Math.max(0, veta - 0.55) * 4)) * (1 - 0.28 * r);   // más oscura: lo que asoma entre las piezas de roca se lee como sombra
     c = c.map(v => v * k);
   }
-  if (y < 2.6 && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25) c = c.map((v, n) => v + (ARENA[n] - v) * (1 - y / 2.6)); // playa
+  if (y < 2.8 && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25) c = c.map((v, n) => v + (ARENA[n] - v) * arenaDe(y)); // playa
+  else if (y < 1.2 && (st.roca === 'granito' || st.roca === 'pizarra') && s < 0.4) c = c.map((v, n) => v + (roca[n] * 0.85 - v) * (1 - y / 1.2)); // orilla de cantos
   if (st.T < -1.5 && s < 0.9) c = SUELO.nieve;
   return c;
 }
 export const ROCAS_COLOR = ROCA;
+// cuánto es arena la playa a esa altura sobre el mar (0–1): entera hasta 1 m, y se va hasta 2,8 m
+export const arenaDe = (y) => 1 - Math.min(1, Math.max(0, (y - 1) / 1.8)) ** 2 * (3 - 2 * Math.min(1, Math.max(0, (y - 1) / 1.8)));
 export const lin = (c) => Math.pow(Math.max(0, c), 2.2);
 
 // El color del suelo de cerca (el de la vista «Como en el juego»), en lineal y ya con el sombreado de las vaguadas:
@@ -83,9 +89,11 @@ export function colorJuego(st, y, s, s1, lap, xm, ym, sal = [0, 0, 0], rio = nul
   // el color con la pendiente de aquí mismo (1 m): una repisa entre dos paredes tiene su hierba
   let c = colorDelSuelo(st, y, Math.max(s1, s * 0.6), xm, ym);
   // calvas de tierra en el prado y en el bosque, y algo de variación de cerca
-  if (st && st.bioma && st.bioma !== 'nieve' && s < 0.6) { const t = suave(0.62, 0.74, fbm(xm / 16, ym / 16, 41, 3)); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.7); }
+  // (en la arena de la playa, ni calvas ni hojarasca: salían manchas pardas)
+  const playa = st && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25 && y < 2.8 ? arenaDe(y) : 0;
+  if (st && st.bioma && st.bioma !== 'nieve' && s < 0.6) { const t = suave(0.62, 0.74, fbm(xm / 16, ym / 16, 41, 3)) * (1 - playa); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.7); }
   // bajo el bosque, el suelo es de hojarasca (más pardo y oscuro)
-  if (st && st.bioma && st.bioma !== 'nieve') { const d = bosqueEn(st, s, xm, ym).d; c = c.map((v, q) => v + (HOJARASCA[q] - v) * Math.min(1, d * 0.75)); }
+  if (st && st.bioma && st.bioma !== 'nieve') { const d = bosqueEn(st, s, xm, ym).d * (1 - playa); c = c.map((v, q) => v + (HOJARASCA[q] - v) * Math.min(1, d * 0.75)); }
   if (rio && rio.dm < rio.ancho / 2 + 3.5 && !window_sinLecho()) c = conLecho(c, st, rio, xm, ym);
   const v = 1 - Math.max(-0.1, Math.min(0.15, lap * 1.5)) + (fbm(xm / 5, ym / 5, 43, 3) - 0.5) * 0.16;
   // los colores de arriba están en sRGB (como los de la paleta); los de los vértices van en lineal

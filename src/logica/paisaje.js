@@ -216,8 +216,14 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
     // resto de la ladera queda continua, con su hierba, su pedregal o su nieve
     const zona = duro > 0.5 && f > 3 && calma > 0.9 ? suave(afloramientos - 0.03 * monte, afloramientos + 0.06 - 0.03 * monte, fbm(xm / 700, ym / 700, S + 125, 3)) : 0;
     if (zona > 0.001) z = escarpe(xm, ym, z, r, fino, duro * zona, calma);
-    if (hm < 8) z = lerp(f * 0.5, z, suave(0, 2.5, f));    // costa baja: la playa baja suave hasta el agua
-    z = Math.max(Math.min(0.4, f * 0.5), z);
+    // La playa (valravnx, 5 nov): antes, junto al mar, la tierra baja quedaba a ras del agua (f · 0,5, con un tope de
+    // 0,4 m) en una franja de cientos de metros, casi al nivel del mar: un llano enorme que se pintaba como fondo. Ahora
+    // sube desde la orilla por la distancia a ella (m): un 3 % la arena (1,2 m a 40 m) y luego un 2 %.
+    if (f < 3) {
+      const rampa = rampaPlaya(xm, ym, f);
+      if (hm < 8) z = lerp(rampa, z, suave(0, 2.5, f));    // costa baja: la playa baja suave hasta el agua
+      z = Math.max(Math.min(rampa, 0.4 + f), z);
+    }
     if (f < 10 && z > 2) {
       // junto al mar, la tierra alta baja en un cortado empinado (unos 60°) y no en una pared: la pared, en la rejilla,
       // sale en dientes de sierra. La distancia a la línea de costa sale de lo que cambia la forma alrededor
@@ -261,6 +267,13 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
       z = lerp(perfil, tallado, suave(vega * 0.6, vega + 40, fuera));
     }
     return z;
+  }
+
+  // la subida de la playa desde la orilla (m sobre el mar), con la distancia a la línea de costa
+  function rampaPlaya(xm, ym, f) {
+    const g1 = grande(xm + 4, ym).f, g2 = grande(xm, ym + 4).f, grad = Math.max(0.002, Math.hypot(g1 - f, g2 - f) / 4);
+    const d = f / grad;
+    return d < 40 ? 0.03 * d : 1.2 + 0.02 * (d - 40);
   }
 
   // El fondo del mar (valravnx, 5 nov: «tienes una distancia gigantesca en la cual el agua no cubre… El mar tendría que

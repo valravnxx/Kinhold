@@ -122,7 +122,7 @@ float lejos = length(vMundo - cameraPosition);
 pend *= 1.0 - smoothstep(35.0, 220.0, lejos);`)
       .replace('#include <color_fragment>', `#include <color_fragment>
 vec3 somero = vTipo > 0.5 ? vec3(0.30, 0.42, 0.40) : vec3(0.33, 0.40, 0.33);
-vec3 hondoC = vTipo > 0.5 ? vec3(0.06, 0.14, 0.18) : vec3(0.10, 0.17, 0.18);
+vec3 hondoC = vTipo > 0.5 ? vec3(0.07, 0.16, 0.2) : vec3(0.10, 0.17, 0.18);   // (el mar, algo menos negro: que case con el de lejos)
 diffuseColor.rgb = mix(somero, hondoC, smoothstep(0.0, vTipo > 0.5 ? 6.0 : 2.0, hondo));
 diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.86, 0.88, 0.86), espuma);
 diffuseColor.rgb = pow(diffuseColor.rgb, vec3(2.2));   // los colores de arriba van en sRGB, como los de la paleta; aquí se trabaja en lineal
