@@ -1,0 +1,26 @@
+Vista pc arroyo
+  OK   arroyo: hay agua en el río (de 6.4 m de ancho) — {"hondo": 0.5740290886390333, "superficie": -3.763328342385403, "dx": 0.09639630005024308, "dz": 0.2840911004178474}
+  OK   arroyo: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   arroyo: sin errores en la página
+Vista pc rio
+  OK   rio: hay agua en el río (de 14.3 m de ancho) — {"hondo": 2.1832548388408313, "superficie": -11.767730694829993, "dx": 0.844360260850406, "dz": 0.15446423827763983}
+  OK   rio: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   rio: sin errores en la página
+Vista pc union
+  OK   union: hay agua en el río (de 8.3 m de ancho) — {"hondo": 2.1309767553571106, "superficie": -10.43157469344991, "dx": 0.819646329852889, "dz": 0.7501049351742984}
+  OK   union: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   union: sin errores en la página
+Vista movil arroyo
+  OK   arroyo: hay agua en el río (de 6.4 m de ancho) — {"hondo": 0.5740290886390333, "superficie": -3.763328342385403, "dx": 0.09639630005024308, "dz": 0.2840911004178474}
+  OK   arroyo: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   arroyo: sin errores en la página
+Vista movil rio
+  OK   rio: hay agua en el río (de 14.3 m de ancho) — {"hondo": 2.1832548388408313, "superficie": -11.767730694829993, "dx": 0.844360260850406, "dz": 0.15446423827763983}
+  OK   rio: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   rio: sin errores en la página
+Vista movil union
+  OK   union: hay agua en el río (de 8.3 m de ancho) — {"hondo": 2.1309767553571106, "superficie": -10.43157469344991, "dx": 0.819646329852889, "dz": 0.7501049351742984}
+  OK   union: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   union: sin errores en la página
+
+Todo bien
