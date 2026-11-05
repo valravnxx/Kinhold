@@ -4429,5 +4429,21 @@
   "pruebas": "Batería entera en la nube (35 grupos, sin los de en línea), bien. Por el camino, «construir a la altura del suelo» falló dos veces en la vista de móvil (la ladera que le tocó, a -25,-117 de la salida, tenía 1 planta; la ladera cambia de una vez a otra) y pasó al repetirla; sobre main pasa igual. Tras unir main dos veces (el bosque de lejos y explorar libre como admin, que tocan main.js, el servidor, el registro y las traducciones) se repitió entera; 13 grupos no pudieron subir su resultado (GitHub rechazó la subida) y se repitieron: bien. Recorrido de jugador 28/28 contra el servidor tal como arranca de verdad. Pruebas nuevas rotas a propósito: suelo (MUTAR=1), obras con lo que llevas (MUTAR=1), alcance de las obras (sin dejar al suelo) y recorrido (con arcón): fallan.",
   "capturas": "capturas/demo-v111",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T16:36:50+00:00",
+  "fin": "2026-11-05T18:25:20+00:00",
+  "titulo": "Traer jugadores como admin (chat con valravnx)",
+  "hito": "admin",
+  "hecho": [
+   "En la lista del panel del admin, junto a «Ir», sale «Traer»: pone a ese jugador a tu lado, a 1,6 m y mirándote. Lo pide el servidor, solo con la cuenta de admin, y queda apuntado en admin.jsonl con quién trae a quién.",
+   "El servidor le mueve al traído el ancla de la presencia al sitio nuevo y se lo dice por su conexión; su navegador le pone ahí y le avisa: «El admin te ha llevado junto a él».",
+   "Fuera de Whitholm no se trae a nadie (los demás jugadores no pueden estar fuera de la isla): el panel lo dice. Decisión provisional, anotada en el registro de la demo.",
+   "Pruebas: la del admin en el servidor (57 comprobaciones; rota para que no le diga al traído adónde va, falla) y la del panel en el navegador (un admin simulado, otro cliente de node con cuenta de admin, trae al jugador de la página; y desde el panel se trae al jugador simulado; rota para que el navegador no haga caso, falla).",
+   "Para que el servidor de prueba lo haga hay que actualizarlo (actualizar.sh)."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main: 34 de 35 grupos bien a la primera; «lo que llevas se ve puesto» falló por el radio del tronco (lo de siempre, no es de este cambio) y pasó al repetirlo sin cambios. Capturas del panel con «Traer» y del jugador traído miradas en PC y móvil.",
+  "capturas": "capturas/demo-v112",
+  "estado": "ok"
  }
 ]

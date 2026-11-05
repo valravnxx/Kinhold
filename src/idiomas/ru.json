@@ -1878,5 +1878,13 @@
  "v111: al desmontar una pieza, lo que devuelve (el 75 %, o todo lo entregado si estaba en obras) va a lo que llevas, ya no al arcón; lo que no te cabe cae al suelo a tus pies, por el servidor.": "v111: при разборке детали то, что она возвращает (75 %, или всё доставленное, если она строилась), идёт в то, что ты несёшь, а не в сундук; то, что не помещается, падает на землю у твоих ног — через сервер.",
  "v111, provisional: lo que no cabe de lo desmontado cae al suelo en vez de no dejar desmontar (como al quitar un mueble), porque una pieza grande devuelve más de lo que se puede llevar encima.": "v111, временно: то, что не помещается после разборки, падает на землю, а не запрещает разборку (как при снятии мебели), потому что большая деталь возвращает больше, чем можно унести.",
  "En tu tierra:": "На твоей земле:",
- "aún no tienes nada almacenado": "у тебя пока ничего не хранится"
+ "aún no tienes nada almacenado": "у тебя пока ничего не хранится",
+ "El admin te ha llevado junto a él.": "Администратор перенёс вас к себе.",
+ "Traído: {n}": "Перенесён: {n}",
+ "Traer": "Привести",
+ "Traerlo junto a ti": "Перенести к себе",
+ "Fuera de la isla no se puede traer a nadie.": "За пределами острова никого нельзя перенести.",
+ "v112: traer jugadores como admin (valravnx, 5 nov). En la lista del panel del admin, junto a «Ir», sale «Traer»: pone a ese jugador a tu lado, a 1,6 m y mirándote, y a él le sale el aviso «El admin te ha llevado junto a él». Lo pide el servidor, solo con la cuenta de admin, y queda apuntado en su registro.": "v112: перенос игроков администратором (valravnx, 5 нояб.). В списке панели администратора рядом с «Идти» появилась кнопка «Привести»: она ставит этого игрока рядом с вами, в 1,6 м и лицом к вам, а он видит сообщение «Администратор перенёс вас к себе». Это делает сервер, только для учётной записи администратора, и всё записывается в его журнал.",
+ "v112, provisional: fuera de Whitholm no se puede traer a nadie (los demás jugadores no pueden estar fuera de la isla); el panel lo dice.": "v112, временно: за пределами Витхольма никого нельзя перенести (другие игроки не могут находиться за пределами острова); панель об этом сообщает.",
+ "Demo única · v112 (traer jugadores como admin)": "Единая демо · v112 (перенос игроков администратором)"
 }

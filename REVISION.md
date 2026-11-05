@@ -6,6 +6,12 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 5 nov 2026 (18:08 UTC) — en la sesión del carril A: la salida, en tres sitios fijos del rey que elige el jugador
+valravnx, a mitad de la tarea «Salida al azar de verdad en línea»: «deten este hito, se han marcado las zonas de inicio como zonas del rey, asi que pon dos mas, una será en la ciudad y otra en la otra comarca de inicio y ya». → Se para la salida al azar (los 259 sitios libres): la salida pasa a ser de sitios fijos en zonas del rey, la común (Lindholt) más dos: uno en la ciudad del rey (Strandvang) y otro en otra comarca de inicio. Preguntado a valravnx cuál de las dos que quedan (Motdale o Breiddal; la salida común está en Lindholt, que no es de inicio) y si cada nuevo sale al azar en uno de los tres. Respuesta (18:20 UTC): «motdale», «lo eligen» (cada personaje nuevo elige en cuál de los tres empieza) y la piedra y el sílex sueltos en la pradera se quedan. → La tarea «Salida al azar de verdad en línea» cambia: tres salidas fijas en zonas del rey (Lindholt, la ciudad y Motdale) y el jugador nuevo elige. El trabajo hecho queda en la rama trabajo/20261105-1726 (sin fusionar).
+
+### 5 nov 2026 (18:50 UTC+1) — por el chat: el linde del bosque de lejos
+valravnx, con una captura de lomas lejanas con manchas verde oscuro de bordes en dientes de sierra: «el fix de árboles de lejos que hiciste se corta de manera así ahora». Mirado: el dosel de lejos (rejilla de 200 m) baja en sus esquinas sin bosque hasta 4 m bajo el suelo, y en el linde queda una pared de unos 20 m. → Tarea de chat en el hito G: el linde baja suave hasta el suelo y pasa a su color (solo la malla del dosel de lejos; lo demás del horizonte lo lleva la sesión «el horizonte sin cortes»).
+
 ### 5 nov 2026 (16:36 UTC) — por el chat: traer jugadores con el panel de admin
 valravnx: «mete que en el panel de admin, a parte de lo que ya está que es tpearme a gente, poder tpearlos a mi». → Tarea de chat en el hito P7 (Administración): en la lista del panel, junto a «Ir», un botón «Traer» que pone a ese jugador a tu lado (lo pide el servidor, solo para la cuenta de admin, y lo apunta en admin.jsonl).
 

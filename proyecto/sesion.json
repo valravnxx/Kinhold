@@ -12,10 +12,10 @@
   "hito": "graficos",
   "rama": "trabajo/20261105-1645-cortes"
  },
- "chat:trabajo/20261105-1636-traer": {
-  "inicio": "2026-11-05T16:37:21+00:00",
-  "tarea": "Traer jugadores con el panel de admin (valravnx, 5 nov: «a parte de lo que ya está que es tpearme a gente, poder tpearlos a mi»): en la lista, junto a «Ir», «Traer» pone a ese jugador a tu lado; lo pide el servidor, solo con la cuenta de admin, y queda apuntado",
-  "hito": "admin",
-  "rama": "trabajo/20261105-1636-traer"
+ "chat:trabajo/20261105-1855-linde-dosel": {
+  "inicio": "2026-11-05T18:53:41+01:00",
+  "tarea": "El linde del bosque de lejos sin paredes (valravnx, 5 nov: «el fix de árboles de lejos que hiciste se corta de manera así ahora»): donde acaba el bosque, el dosel de lejos baja suave hasta el suelo y pasa a su color, en vez de caer en una pared de dientes de sierra",
+  "hito": "graficos",
+  "rama": "trabajo/20261105-1855-linde-dosel"
  }
 }
