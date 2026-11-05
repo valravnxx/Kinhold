@@ -136,7 +136,7 @@ export function leerArchivo(archivo) {
 
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = true, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
-  tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null } = {}) {
+  tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true } = {}) {
   archivo = resolve(archivo);
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
   ponerZonas(terreno && terreno.zona);
@@ -149,6 +149,16 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const archivoCuentas = resolve(dirname(archivo), 'cuentas.jsonl');
   // el registro de seguridad: altas, entradas, fallos y salidas en todos los aparatos (nunca la contraseña ni la ficha)
   const archivoSeguridad = resolve(dirname(archivo), 'seguridad.jsonl');
+  // los recortes del movimiento (quien se salta metros que no puede andar): al registro de seguridad, como mucho uno
+  // por jugador cada 10 s con lo que se ha recortado entre medias (un tramposo manda 10 estados por segundo)
+  const recortes = new Map();   // autor → { desde, n, metros }
+  const anotarRecorte = (autor, metros) => {
+    const r = recortes.get(autor) || { desde: -Infinity, n: 0, metros: 0 };
+    r.n++; r.metros += metros; recortes.set(autor, r);
+    if (Date.now() - r.desde < 10000) return;
+    seguridad({ que: 'movimiento_recortado', autor, cuenta: usuarioDe(autor), veces: r.n, metros: Math.round(r.metros * 10) / 10 });
+    r.desde = Date.now(); r.n = 0; r.metros = 0;
+  };
   const seguridad = (e) => { try { appendFileSync(archivoSeguridad, JSON.stringify({ t: new Date().toISOString(), ...e }) + '\n'); } catch (x) { registrar(`no se pudo apuntar en seguridad.jsonl: ${x && x.message}`); } };
   // los correos de admin (el admin, por la cuenta y su correo confirmado: valravnx, 2 nov); sin ellos, nadie es admin
   const admins = correosAdmin(adminCorreo);
@@ -286,7 +296,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   }, ticoCombate);
 
   // presencia: cada tic, a cada uno los que han cambiado menos él mismo
-  presencia = new PresenciaServidor();
+  presencia = new PresenciaServidor({ limitar: limiteMovimiento });   // false: solo pruebas que colocan de golpe
   const tic = setInterval(() => {
     const lista = presencia.tic();
     if (!lista.length) return;
@@ -350,7 +360,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     }
     // lo de alrededor de donde aparece: donde lo dejó o la salida
     vista.quitar(autor);
-    { const p = posiciones.get(autor); vista.mover(autor, p ? p.x : 0, p ? p.z : 0); }
+    { const p = posiciones.get(autor); vista.mover(autor, p ? p.x : 0, p ? p.z : 0); presencia.anclar(autor, p || { x: 0, z: 0 }, reloj()); }
     const suyos = vista.trozosDe(autor);
     enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, obras: obrasEnTrozos(mundo, suyos), n: registro.total, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
       aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true),
@@ -393,9 +403,13 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           const e = validarEstado(msg), mal = e ? terreno.posicion(e) : null;
           if (mal) return enviar(ws, { tipo: 'error', motivo: mal });
         }
-        if (!presencia.recibir(autor, msg, reloj())) return enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
+        // movimiento sin trampas: lo que llega más lejos de lo que se puede andar se recorta (src/logica/presencia.js)
+        const enLiza = !!(combate.luchadores[autor] && combate.luchadores[autor].liza);
+        const rec = presencia.recibir(autor, msg, reloj(), { aparte: enLiza });
+        if (!rec) return enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
+        if (rec.recortado) anotarRecorte(autor, rec.recortado);
         ponerAlDia();
-        const e = validarEstado(msg);
+        const e = rec.estado;
         combate.colocar(autor, e.x, e.z, e.giro);
         // si ha cambiado de trozo, lo de los trozos que le entran (en la liza no: es una escena aparte)
         if (!(combate.luchadores[autor] && combate.luchadores[autor].liza)) {
@@ -623,9 +637,11 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           if (!e || p.junto === autor) return responder({ ok: false, motivo: 'Ese jugador no está conectado.' });
           const d = sitioJunto(e);
           registrar(`admin ${autor} va junto a ${p.junto}`);
+          presencia.anclar(autor, d, reloj());
           return responder({ ok: true, x: d.x, y: d.y, z: d.z, giro: d.giro });
         }
         registrar(`admin ${autor} va a ${Math.round(p.x)}, ${Math.round(p.z)}`);
+        presencia.anclar(autor, p, reloj());
         return responder({ ok: true, x: p.x, y: null, z: p.z });
       }
       if (msg && msg.tipo === 'objeto') {

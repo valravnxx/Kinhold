@@ -61,10 +61,11 @@ function cliente(puerto) {
       return q ? Promise.all([p, q]).then(([r]) => r) : p;
     };
     c.estar = (x, z) => { c.pos = { x, z }; ws.send(JSON.stringify({ tipo: 'estado', x, y: T.suelo(x, z), z, giro: 0, anim: 'andar' })); };
-    // andar hasta (x, z): un paso de 1 m cada 50 ms, como lo mandaría la demo (más deprisa)
+    // andar hasta (x, z): corriendo, un paso de 0,6 m cada 100 ms (6 m/s), como lo manda la demo: el servidor recorta lo
+    // que vaya más deprisa de lo que se puede (movimiento sin trampas, src/logica/presencia.js)
     c.andar = async (x, z) => {
-      const { x: x0, z: z0 } = c.pos, d = Math.hypot(x - x0, z - z0), n = Math.max(1, Math.ceil(d));
-      for (let i = 1; i <= n; i++) { c.estar(x0 + (x - x0) * i / n, z0 + (z - z0) * i / n); await pausa(50); }
+      const { x: x0, z: z0 } = c.pos, d = Math.hypot(x - x0, z - z0), n = Math.max(1, Math.ceil(d / 0.6));
+      for (let i = 1; i <= n; i++) { c.estar(x0 + (x - x0) * i / n, z0 + (z - z0) * i / n); await pausa(100); }
       await pausa(150);
     };
     c.cuantos = (tipo) => (c.inv ? c.inv.cuantos(tipo) : 0);
@@ -167,7 +168,7 @@ try {
   console.log('5b. Llega otro jugador: lo de su tierra no lo toca (lo tuyo es tuyo)');
   {
     const K = await cliente(puerto);
-    K.estar(sitio.x + 2, sitio.z + 1); await pausa(200);
+    K.estar(0, 4); await pausa(200); await K.andar(sitio.x + 2, sitio.z + 1);   // aparece en la salida y va andando
     const rk = await K.accion({ tipo: 'desmontar', construccion: obra?.id, clave });
     comprobar('otro jugador no puede desmontar su cimiento', !rk.ok && !!obra?.piezas.get(clave), rk.motivo);
     K.ws.close();
