@@ -4350,7 +4350,7 @@
  },
  {
   "inicio": "2026-11-05T10:22:41+00:00",
-  "fin": "2026-11-05T12:13:43+00:00",
+  "fin": "2026-11-05T13:05:17+00:00",
   "titulo": "Zonas del rey (P2, carril A)",
   "hito": "entre-dos",
   "hecho": [
@@ -4362,7 +4362,7 @@
    "Prueba nueva: pruebas/prueba_zonas_rey.mjs (13 comprobaciones); rota a propósito (MUTAR=1, sin pasar las zonas del rey) da 3 fallos. En la del mapa del rey, que salen las tres; rota (MUTAR=4) falla en PC y en móvil.",
    "Publicada la demo v108 (la v106 y la v107 las publicaron antes los chats: el horizonte y los ríos)."
   ],
-  "pruebas": "Batería entera en la nube (GitHub Actions): 34 grupos correctos (48,2 min). Tras unir main (el horizonte del chat), otra vez entera: 31 bien; construcción (la página se recargó a mitad, «Execution context was destroyed»), lógica (prueba_nube.mjs: la conexión wss a través de Caddy, error de TLS) y web (faltaba la carpeta de capturas, aún sin publicar) fallaron, y repetidas salen bien las tres. Recorrido de jugador 26/26 y prueba del terreno del servidor 36/36 también aquí. Capturas del mapa del rey miradas en PC y móvil.",
+  "pruebas": "Batería entera en la nube (GitHub Actions): 34 grupos correctos (48,2 min). Tras unir main (el horizonte del chat), otra vez entera: 31 bien; construcción (la página se recargó a mitad, «Execution context was destroyed»), lógica (prueba_nube.mjs: la conexión wss a través de Caddy, error de TLS) y web (faltaba la carpeta de capturas, aún sin publicar) fallaron, y repetidas salen bien las tres. Recorrido de jugador 26/26 y prueba del terreno del servidor 36/36 también aquí. Capturas del mapa del rey miradas en PC y móvil. Tras unir los ríos del chat, otra vez entera: 34 de 35 bien a la primera y la web, repetida al publicar.",
   "capturas": "capturas/demo-v108",
   "estado": "ok"
  }

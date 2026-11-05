@@ -1177,7 +1177,7 @@
      "estado": "hecho",
      "inicio": "2026-11-05T10:22:41+00:00",
      "rama": "trabajo/20261105-1022",
-     "fin": "2026-11-05T12:13:43+00:00"
+     "fin": "2026-11-05T13:05:17+00:00"
     },
     {
      "nombre": "Desmontar el mojón (valravnx, 4 nov): el dueño quita su mojón cuando quiere, por el servidor con su autor; sus obras quedan como ruina sin dueño (o las desmonta antes, al 75 %) y no puede poner otro hasta pasados unos días reales (provisional: 3), para que reclamar y soltar no sirva para bloquear a otros",
@@ -2789,6 +2789,13 @@
      "archivo": "jugar/demo/v107.html",
      "capturas": "capturas/demo-v107",
      "notas": "Ríos de verdad: los afluentes llegan al cauce del río al que entran, el doble de anchos (arroyos hasta 8 m que se vadean; ríos que se nadan o se cruzan por sus vados), nacen estrechos, y el lecho es de grava y cantos con orilla de barro en vez de hierba. Capturas: antes y después, en un arroyo, un río y una unión."
+    },
+    {
+     "v": "v108",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v108.html",
+     "capturas": "capturas/demo-v108",
+     "notas": "Zonas del rey (valravnx, 4 nov): la zona de la gran veta de hierro (Breiddal), la de la ciudad (Strandvang) y la de la salida (Lindholt) no se reclaman, también por el servidor; en el mapa del rey salen de oro viejo con «Zona del rey» y por qué."
     }
    ]
   },
