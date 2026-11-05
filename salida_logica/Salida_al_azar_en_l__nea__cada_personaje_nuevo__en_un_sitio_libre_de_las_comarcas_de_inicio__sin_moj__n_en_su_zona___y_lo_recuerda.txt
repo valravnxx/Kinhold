@@ -1,0 +1,21 @@
+La elección (lógica pura)
+  OK   da siempre un sitio libre de la lista (también con 0 y con 1) — 0 mal
+  OK   reparte por todos los libres — 258 de 258
+  OK   sin ninguno libre, la salida común — {"x":184596,"z":46280,"comun":true}
+Un personaje nuevo
+  OK   trae posición en la bienvenida — {"x":31404,"y":-69.99130124377683,"z":-15280,"giro":0}
+  OK   es un sitio de la salida al azar, no la común — {"x":216000,"z":31000}
+  OK   el primero de la lista (azar 0, todos libres) — {"x":216000,"z":31000}
+  OK   está en el suelo — -69.99130124377683 y el suelo -69.99130124377683
+  OK   y el servidor lo deja estar ahí
+Lo recuerda
+  OK   al volver con su ficha sale en el mismo sitio — {"x":31404,"y":-69.99130124377683,"z":-15280,"giro":0}
+Un mojón en la zona de un sitio: deja de ser salida
+  OK   el siguiente nuevo sale en otro sitio de la lista — {"x":217000,"z":32000}
+  OK   y su zona no tiene mojón — {"x":217000,"z":32000}
+Tras reiniciar el servidor
+  OK   sigue sabiendo dónde sale cada uno (posiciones.json) — {"x":32404,"y":-70.35869760132867,"z":-14280,"giro":0}
+Sin la salida al azar (las pruebas que no la usan)
+  OK   un nuevo no trae posición: la salida común — null
+
+13 bien, 0 mal
