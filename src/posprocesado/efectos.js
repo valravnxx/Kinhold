@@ -11,13 +11,15 @@ import * as THREE from 'three';
 import { EffectComposer, RenderPass, EffectPass, BloomEffect, ToneMappingEffect, ToneMappingMode, LUT3DEffect, LookupTexture,
   GodRaysEffect, DepthOfFieldEffect, SMAAEffect, SMAAPreset } from 'postprocessing';
 import { N8AOPostPass } from 'n8ao';
-import { rellenarTabla } from './perfiles.js';
+import { rellenarTabla, HORIZONTE } from './perfiles.js';
 import { NieblaEffect } from './niebla.js';
 
 const SMAA = { 'smaa-bajo': SMAAPreset.LOW, 'smaa-medio': SMAAPreset.MEDIUM, 'smaa-alto': SMAAPreset.HIGH };
 
 // opciones: { sol: la malla del disco del sol (para los haces), foco: Vector3 al que mira el desenfoque, niebla: la de la escena }
-export function crearPosprocesado(renderer, escena, camara, { sol = null, foco = new THREE.Vector3(), niebla = null, luzSol = null } = {}) {
+// compresion (opcional): () => { r0, s } del horizonte del mundo (src/mundo/horizonte.js), o null si no hay;
+// cielo (opcional): () => [arriba, horizonte] (hex sRGB), el degradado del cielo, para que lo lejano se funda con él
+export function crearPosprocesado(renderer, escena, camara, { sol = null, foco = new THREE.Vector3(), niebla = null, luzSol = null, compresion = null, cielo = null } = {}) {
   const tabla = LookupTexture.createNeutral(32);
   rellenarTabla(tabla.image.data, 32);
   tabla.needsUpdate = true;
@@ -66,7 +68,9 @@ export function crearPosprocesado(renderer, escena, camara, { sol = null, foco =
     if (on.brillo && perfil.brillo) lista.push(new BloomEffect({ luminanceThreshold: 0.95, luminanceSmoothing: 0.25, intensity: 0.75, radius: 0.7, mipmapBlur: true, levels: perfil.brillo }));
     if (on.rayos && perfil.rayos && sol) lista.push(new GodRaysEffect(camara, sol, { samples: perfil.rayos, density: 0.96, decay: 0.94, weight: 0.5, exposure: 0.7, clampMax: 1, blur: true }));
     lista.push(new ToneMappingEffect({ mode: on.tono ? ToneMappingMode.ACES_FILMIC : ToneMappingMode.LINEAR }));
-    if (on.niebla && n) lista.push(new NieblaEffect(n));
+    // con horizonte (los perfiles altos, si el mundo lo tiene), la niebla deja ver lo lejano con su bruma
+    const comp = perfil.horizonte && compresion ? compresion() : null;
+    if (on.niebla && n) lista.push(new NieblaEffect(n, camara, comp ? { ...HORIZONTE, ...comp, cielo: cielo ? cielo() : null } : null));
     if (on.color) lista.push(new LUT3DEffect(tabla));
     composer.addPass(new EffectPass(camara, ...lista));
     if (SMAA[perfil.suavizado] !== undefined) composer.addPass(new EffectPass(camara, new SMAAEffect({ preset: SMAA[perfil.suavizado] })));

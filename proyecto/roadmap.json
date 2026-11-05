@@ -1434,7 +1434,7 @@
   {
    "id": "graficos",
    "nombre": "Perfiles gráficos y posprocesado",
-   "estado": "hecho",
+   "estado": "en_curso",
    "lleva": "chat",
    "jugable": "Seis perfiles gráficos, de móvil de gama baja a PC de gama alta, y el posprocesado del estilo (oclusión ambiental, gradación de color, brillo de las luces, niebla, desenfoque puntual y haces de luz), sin que ningún perfil esconda lo que importa para jugar.",
    "nota": "Lo lleva el chat con valravnx (4 nov), aparte de los P1–P7: los carriles no lo tocan.",
@@ -1453,9 +1453,15 @@
     },
     {
      "nombre": "El horizonte en los perfiles altos (valravnx, 5 nov: «no noto casi ninguna diferencia más que la resolución; me interesaría que los altos aumentaran muchísimo la distancia de dibujado del mapa, aunque sea sin detalle, para ver las montañas y las formas»): el terreno de toda la isla, basto y lejano, detrás del de cerca",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T09:18:41+01:00",
-     "rama": "trabajo/20261105-0920-horizonte"
+     "fin": "2026-11-05T11:26:35+01:00"
+    },
+    {
+     "nombre": "El bosque de lejos (valravnx, 5 nov: «simular las zonas donde el bioma es bosque… que a toda distancia ya puedas diferenciar bastante bien los biomas»): una capa de dosel con volumen y copas donde hay bosque, desde donde acaban los árboles de verdad hasta el borde de la isla",
+     "estado": "en_curso",
+     "inicio": "2026-11-05T12:19:08+01:00",
+     "rama": "trabajo/20261105-1220-dosel"
     }
    ],
    "num": "G"
@@ -2767,6 +2773,14 @@
      "archivo": "jugar/demo/v105.html",
      "capturas": "capturas/demo-v105",
      "notas": "Perfiles gráficos y posprocesado en el juego: oclusión ambiental, mapeo tonal, gradación de color, brillo de las luces y niebla según el perfil, de Móvil básico a PC alto. El perfil se elige en el botón de los fps, junto a «Menú» (★ el que sugiere tu aparato) y se queda guardado.",
+     "noticia": false
+    },
+    {
+     "v": "v106",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v106.html",
+     "capturas": "capturas/demo-v106",
+     "notas": "Horizonte en los perfiles altos (Móvil alto y los tres de PC): detrás del terreno de cerca se ve la isla entera, en basto, con su relieve y su color, y el mar hasta el borde, fundidos con el cielo por la bruma.",
      "noticia": false
     }
    ]

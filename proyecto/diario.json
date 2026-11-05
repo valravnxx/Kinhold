@@ -4295,6 +4295,24 @@
   "noticia": false
  },
  {
+  "inicio": "2026-11-05T09:18:41+01:00",
+  "fin": "2026-11-05T11:26:35+01:00",
+  "titulo": "El horizonte en los perfiles altos",
+  "hito": "graficos",
+  "hecho": [
+   "valravnx, 5 nov: «no noto casi ninguna diferencia más que la resolución; me interesaría que los altos aumentaran muchísimo la distancia de dibujado del mapa, aunque sea sin detalle, para ver las montañas y las formas».",
+   "Detrás del terreno de cerca, la isla entera en basto (src/logica/horizonte.js y src/mundo/horizonte.js): el alto de verdad del paisaje y su color de lejos (bioma, roca, nieve y el verde de las copas donde hay bosque), cada 400 m en Móvil alto y PC básico, cada 200 en PC medio y cada 100 en PC alto (unos 400 000 triángulos); y el mar de lejos hasta el borde de la isla.",
+   "Se calcula poco a poco al entrar (2 ms por fotograma, primero lo basto) y cabe dentro del alcance de la cámara: lo que está más allá de unos 830 m se acerca a ella por la misma línea de mirada, y la niebla lo deshace para saber la distancia de verdad.",
+   "La niebla de cerca, con horizonte, no pasa del 45 % (si llegara al 100 % taparía los montes) y lo lejano se funde con el cielo que tiene detrás; los bordes contra el cielo ya no salen con una raya clara.",
+   "Pruebas nuevas: «Horizonte de los perfiles altos» (lógica; rota a propósito, falla) y, en «el perfil gráfico en el juego», que el más barato no lo lleva y que con el PC alto cambia lo que se ve en la franja del horizonte (rota a propósito, falla). Sin noticia, como lo demás de los perfiles gráficos.",
+   "Sin comprobar aquí: los fps con una tarjeta gráfica de verdad (esta máquina no tiene); sin ella, calcular la isla entera lleva unos 1,5 s, repartidos en fotogramas."
+  ],
+  "pruebas": "Batería entera en la nube: todo bien salvo la comprobación nueva del horizonte, que medía la media de la franja; ajustada (lo que cambia de la franja) y repetida: bien (PC 14 %, móvil 23 %; rota a propósito, 0 %). Lógica del horizonte 21/21.",
+  "capturas": "capturas/demo-v106",
+  "estado": "ok",
+  "noticia": false
+ },
+ {
   "inicio": "2026-11-05T08:23:19+00:00",
   "fin": "2026-11-05T10:05:26+00:00",
   "titulo": "Movimiento sin trampas (P2, servidor, carril A)",
@@ -4325,10 +4343,10 @@
    "El mapa del rey pinta las zonas del rey de oro viejo, con el borde a rayas y, de cerca, «Zona del rey» y por qué.",
    "El recorrido de jugador ya no pone el mojón en la salida: lo intenta, sale «zona del rey», y anda unos 440 m hasta la zona de al lado; el segundo viaje de piedras y el mojón nuevo, con las piedras de allí. La prueba del terreno del servidor, igual.",
    "Prueba nueva: pruebas/prueba_zonas_rey.mjs (13 comprobaciones); rota a propósito (MUTAR=1, sin pasar las zonas del rey) da 3 fallos. En la del mapa del rey, que salen las tres; rota (MUTAR=4) falla en PC y en móvil.",
-   "Publicada la demo v106."
+   "Publicada la demo v107 (la v106 la publicó antes el chat, con el horizonte)."
   ],
   "pruebas": "Batería entera en la nube (GitHub Actions): 34 grupos correctos, 48,2 min. Recorrido de jugador 26/26 y prueba del terreno del servidor 36/36 también aquí. Capturas del mapa del rey miradas en PC y móvil.",
-  "capturas": "capturas/demo-v106",
+  "capturas": "capturas/demo-v107",
   "estado": "ok"
  }
 ]
