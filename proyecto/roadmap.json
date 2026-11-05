@@ -1442,9 +1442,9 @@
     },
     {
      "nombre": "Traer jugadores con el panel de admin (valravnx, 5 nov: «a parte de lo que ya está que es tpearme a gente, poder tpearlos a mi»): en la lista, junto a «Ir», «Traer» pone a ese jugador a tu lado; lo pide el servidor, solo con la cuenta de admin, y queda apuntado",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T16:37:21+00:00",
-     "rama": "trabajo/20261105-1636-traer"
+     "fin": "2026-11-05T18:25:20+00:00"
     }
    ]
   },
@@ -2847,6 +2847,13 @@
      "archivo": "jugar/demo/v111.html",
      "capturas": "capturas/demo-v111",
      "notas": "Fuera el arcón infinito del juego de verdad: en línea ya no hay arcón de pruebas ni botón «+ Materiales», y lo que llevas se coge del mundo. El contador de materiales de arriba sale solo dentro de tu tierra, con lo almacenado en ella. Al desmontar una pieza, lo que devuelve va a lo que llevas, y lo que no te cabe cae al suelo a tus pies."
+    },
+    {
+     "v": "v112",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v112.html",
+     "capturas": "capturas/demo-v112",
+     "notas": "Traer jugadores como admin: en la lista del panel, junto a «Ir», «Traer» pone a ese jugador a tu lado (lo pide el servidor, solo con la cuenta de admin, y queda apuntado); a él le sale el aviso «El admin te ha llevado junto a él»."
     }
    ]
   },
