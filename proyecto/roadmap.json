@@ -2768,13 +2768,6 @@
      "capturas": "capturas/demo-v105",
      "notas": "Perfiles gráficos y posprocesado en el juego: oclusión ambiental, mapeo tonal, gradación de color, brillo de las luces y niebla según el perfil, de Móvil básico a PC alto. El perfil se elige en el botón de los fps, junto a «Menú» (★ el que sugiere tu aparato) y se queda guardado.",
      "noticia": false
-    },
-    {
-     "v": "v106",
-     "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v106.html",
-     "capturas": "capturas/demo-v106",
-     "notas": "Zonas del rey (valravnx, 4 nov): la zona de la gran veta de hierro (Breiddal), la de la ciudad (Strandvang) y la de la salida (Lindholt) no se reclaman, también por el servidor; en el mapa del rey salen de oro viejo con «Zona del rey» y por qué."
     }
    ]
   },
