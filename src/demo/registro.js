@@ -1,6 +1,9 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v101 (el mojón y los muebles, de lo que llevas)";
+export const VERSION_DEMO = "Demo única · v103 (perfiles gráficos y posprocesado)";
 export const REGISTRO_DEMO = [
+  "v103: el posprocesado del estilo en el juego, con seis perfiles gráficos de móvil básico a PC alto: oclusión ambiental (rincones, uniones y contactos), mapeo tonal, gradación de color, brillo de las luces y niebla, según el perfil (valravnx, 5 nov, tras la prueba de posprocesado v1).",
+  "v103: el perfil se elige en el panel de rendimiento (el botón de los fps, junto a «Menú»), con ★ en el que sugiere tu aparato; el que elijas se queda guardado en el navegador. ?graficos=<perfil> en la dirección fuerza uno.",
+  "v103, provisional: en el juego no van el desenfoque (solo para escenas concretas, que aún no hay) ni los haces de luz (con la cámara del juego casi nunca se mira al sol). Sin tarjeta gráfica, el perfil más barato.",
   "v101: el mojón y los muebles se pagan de lo que llevas encima, ya no del montón común: para poner el mojón hacen falta 3 piedras en las manos (o en lo que lleves), y cada mueble, sus materiales. Lo comprueba el servidor, con su autor; si no los llevas, «No llevas los materiales.».",
   "v101: al quitar un mueble, lo que devuelve (el 75 %) va a lo que llevas; si no te cabe entero, no se quita («No te cabe lo que devuelve: haz sitio.»).",
   "v101, provisional: un mueble solo lo quita quien puede construir donde está (el dueño de la tierra o quien tenga invitado). Lo que devuelve una pieza de obra al desmontarla sigue yendo al arcón de pruebas, hasta las tareas «Lo tuyo es tuyo» y «Fuera el arcón de materiales».",

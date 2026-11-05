@@ -1830,5 +1830,9 @@
  "Perfil gráfico": "Graphics profile",
  "{p}, {n} pasadas": "{p}, {n} passes",
  "Calidad gráfica:": "Graphics quality:",
- "★ el que sugiere este aparato. El que elijas se queda guardado en este navegador.": "★ the one this device suggests. The one you choose stays saved in this browser."
+ "★ el que sugiere este aparato. El que elijas se queda guardado en este navegador.": "★ the one this device suggests. The one you choose stays saved in this browser.",
+ "Demo única · v103 (perfiles gráficos y posprocesado)": "Single demo · v103 (graphics profiles and post-processing)",
+ "v103: el posprocesado del estilo en el juego, con seis perfiles gráficos de móvil básico a PC alto: oclusión ambiental (rincones, uniones y contactos), mapeo tonal, gradación de color, brillo de las luces y niebla, según el perfil (valravnx, 5 nov, tras la prueba de posprocesado v1).": "v103: the style's post-processing in the game, with six graphics profiles from basic phone to high-end PC: ambient occlusion (corners, joints and contacts), tone mapping, colour grading, glow of lights and fog, depending on the profile (valravnx, 5 Nov, after post-processing test v1).",
+ "v103: el perfil se elige en el panel de rendimiento (el botón de los fps, junto a «Menú»), con ★ en el que sugiere tu aparato; el que elijas se queda guardado en el navegador. ?graficos=<perfil> en la dirección fuerza uno.": "v103: the profile is chosen in the performance panel (the fps button, next to «Menu»), with ★ on the one your device suggests; the one you choose stays saved in the browser. ?graficos=<profile> in the address forces one.",
+ "v103, provisional: en el juego no van el desenfoque (solo para escenas concretas, que aún no hay) ni los haces de luz (con la cámara del juego casi nunca se mira al sol). Sin tarjeta gráfica, el perfil más barato.": "v103, provisional: the game does not use blur (only for specific scenes, which do not exist yet) or light shafts (with the game camera you almost never look at the sun). Without a graphics card, the cheapest profile."
 }
