@@ -125,7 +125,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
   }
   // los nombres de las regiones del continente (Whitholm lleva el suyo encima de la isla): grandes de lejos, y se van
   // desvaneciendo al acercarse, cuando salen los de las comarcas
-  const aRegiones = (s) => (datos === contD ? Math.max(0, Math.min(1, (vista.base * 6 - s) / (vista.base * 3))) : 0);
+  const aRegiones = (s) => (datos === contD ? Math.max(0, Math.min(1, (vista.base * 3.2 - s) / (vista.base * 1.4))) : 0);
   function regiones(s) {
     if (datos !== contD || !contD.regiones) return;
     const a = aRegiones(s);
@@ -202,6 +202,14 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
   function centrarEn(x, y, f) {
     vista.s = vista.base * f; limitar();
     vista.x = innerWidth / 2 - x * vista.s; vista.y = innerHeight / 2 - y * vista.s; limitar(); pintar();
+  }
+  // al abrirlo: la isla entera; el continente, centrado en ti y a la escala de la isla entera (alejándolo se ve todo)
+  function encuadrarAqui() {
+    encuadrar();
+    if (datos !== contD || !islaD) { pintar(); return; }
+    const p = posicion(), cu = contD.cuadro, ci = islaD.cuadro;
+    const f = Math.min((cu.x1 - cu.x0) / (ci.x1 - ci.x0), (cu.y1 - cu.y0) / (ci.y1 - ci.y0));
+    centrarEn(p ? p.x / 1000 : (ci.x0 + ci.x1) / 2, p ? p.z / 1000 : (ci.y0 + ci.y1) / 2, f);
   }
   function centrarEnMi() {
     const p = posicion(); if (!p) return;
@@ -452,8 +460,8 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     if (!raiz.hidden) return;
     alAbrir();
     raiz.hidden = false;
-    if (!islaD || (continente && !contD)) { aviso.hidden = false; requestAnimationFrame(() => setTimeout(() => { while (!paso(1000)); if (continente) hacerContinente(); usar(); aviso.hidden = true; encuadrar(); pintar(); }, 0)); }
-    else { usar(); encuadrar(); pintar(); }
+    if (!islaD || (continente && !contD)) { aviso.hidden = false; requestAnimationFrame(() => setTimeout(() => { while (!paso(1000)); if (continente) hacerContinente(); usar(); aviso.hidden = true; encuadrarAqui(); }, 0)); }
+    else { usar(); encuadrarAqui(); }
     clearInterval(reloj); reloj = setInterval(pintar, 250);   // tu marca se mueve si andas con el mapa abierto
   }
   function cerrar() { if (raiz.hidden) return; raiz.hidden = true; clearInterval(reloj); reloj = null; if (capa && capa.alCerrar) capa.alCerrar(); }
@@ -494,7 +502,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
       capa = c; lienzo.style.cursor = c && c.clic ? 'crosshair' : '';
       // la del panel del admin pide el continente; sin ella, la isla (si ya está abierto, se vuelve a encuadrar)
       const antes = continente; continente = !!(c && c.continente);
-      if (continente !== antes && !raiz.hidden) { if (continente && !contD) { cerrar(); abrir(); return; } usar(); if (datos) encuadrar(); }
+      if (continente !== antes && !raiz.hidden) { if (continente && !contD) { cerrar(); abrir(); return; } usar(); if (datos) { encuadrarAqui(); return; } }
       pintar();
     }, pintar: () => pintar(), get continente() { return continente && datos === contD; },
     get abierto() { return !raiz.hidden; }, get listo() { return !!datos; }, get datos() { return datos; },

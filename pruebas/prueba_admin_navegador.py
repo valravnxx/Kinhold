@@ -160,6 +160,8 @@ try:
             esperar(pg, f"{K}.mapaRey.continente", 120000)
             mapa = pg.evaluate(f"(() => {{ const m = {K}.mapaRey, d = m.datos; return {{ continente: m.continente, cuadro: d.cuadro, regiones: (d.regiones || []).map(r => [r.nombre, r.isla, r.x, r.y]) }}; }})()")
             comprobar(f'{nombre}: el mapa del panel es el del continente entero, con sus regiones', mapa['continente'] and mapa['cuadro']['x1'] - mapa['cuadro']['x0'] >= 250 and len(mapa['regiones']) >= 4, str(mapa)[:300])
+            # se abre centrado en ti, a la escala de la isla; alejándolo del todo, el continente entero
+            pg.evaluate(f"(() => {{ const m = {K}.mapaRey, c = m.datos.cuadro; m.centrarEn((c.x0 + c.x1) / 2, (c.y0 + c.y1) / 2, 1); }})()")
             pg.wait_for_timeout(800)
             captura(pg, f'{SALIDA}/{nombre}_continente.png')
             otra = next((r for r in mapa['regiones'] if not r[1]), None)

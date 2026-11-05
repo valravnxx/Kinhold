@@ -1,6 +1,9 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v107 (ríos de verdad)";
+export const VERSION_DEMO = "Demo única · v108 (explorar libre como admin)";
 export const REGISTRO_DEMO = [
+  "v108: explorar libre como admin (valravnx, 5 nov). El mapa del panel del admin es el del continente entero, Kinland, con el nombre de sus regiones; se acerca y se mueve por todo él, y un clic te lleva a cualquier sitio. Allí se carga el terreno y puedes andar.",
+  "v108: solo la cuenta de admin puede estar fuera de Whitholm: el servidor no se lo acepta a nadie más. Fuera de la isla aún no hay nada del juego (ni tierras ni recogida): solo el terreno, los ríos y la vegetación.",
+  "v108, provisional: el mapa del continente tiene menos detalle por km que el de la isla (3,5 px por km frente a 14), para que cueste lo mismo hacerlo; de cerca se ve borroso el fondo, pero la costa, los ríos y los símbolos salen nítidos.",
   "v107: ríos de verdad. El doble de anchos (los arroyos de unos 5 a 8 m, el río mayor de Whitholm de unos 22 m); los arroyos se vadean y los ríos se cruzan nadando o por sus vados. Nacen estrechos y se ensanchan en su primer kilómetro.",
   "v107: los afluentes llegan al cauce del río al que entran (antes se quedaban hasta 170 m antes) y su agua llega a la misma altura.",
   "v107: lecho de río: el fondo es de grava y cantos (del color de la roca del sitio) con barras de arena en los ríos anchos, la orilla es de barro húmedo, y hay cantos de río en el cauce y la orilla, más gordos donde la corriente es fuerte. El cauce tiene el fondo llano y la orilla marcada.",
