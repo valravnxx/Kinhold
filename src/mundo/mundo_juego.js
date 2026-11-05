@@ -46,20 +46,24 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
   // A la altura de la orilla (valravnx, 5 nov): iba 0,8 m más bajo y dejaba al aire el fondo somero, una franja gris
   // azulada entre la tierra y el mar («playas azules»). Y algo transparente: se ve el fondo (arena o roca, que se pierde
   // en el azul con la hondura: src/mundo/color_suelo.js). Donde está el agua de cerca no se dibuja (ya la hay, con su
-  // oleaje y su hondura): va encima, sin escribir la hondura, y si no se quitara se verían las dos.
+  // oleaje y su hondura): si no se quitara, se verían las dos.
   mar.position.set((ISLA.x0 + ISLA.x1) / 2 - O.x, -y0 - 0.05, (ISLA.z0 + ISLA.z1) / 2 - O.z);
   const uLamina = { value: new THREE.Vector3(0, 0, 0) };   // centro de la lámina de cerca (m de la escena) y su medio lado
+  // y hasta dónde llega desde la cámara: con el horizonte, hasta donde empieza lo comprimido (más allá ya está su mar; y
+  // la niebla, que cree comprimido todo lo de más allá, la pintaba del color del cielo: una franja blanca en el mar)
+  const uHastaCam = { value: 1e9 };
   mar.material.opacity = 0.82;
   mar.material.onBeforeCompile = (sh) => {
-    sh.uniforms.uLamina = uLamina;
+    sh.uniforms.uLamina = uLamina; sh.uniforms.uHastaCam = uHastaCam;
     sh.vertexShader = 'varying vec3 vMarMundo;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vMarMundo = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-    sh.fragmentShader = 'uniform vec3 uLamina;\nvarying vec3 vMarMundo;\n' + sh.fragmentShader.replace('void main() {', 'void main() {\n  if (uLamina.z > 0.0 && max(abs(vMarMundo.x - uLamina.x), abs(vMarMundo.z - uLamina.y)) < uLamina.z) discard;');
+    sh.fragmentShader = 'uniform vec3 uLamina;\nuniform float uHastaCam;\nvarying vec3 vMarMundo;\n' + sh.fragmentShader.replace('void main() {', 'void main() {\n  if (uLamina.z > 0.0 && max(abs(vMarMundo.x - uLamina.x), abs(vMarMundo.z - uLamina.y)) < uLamina.z) discard;\n  if (length(vMarMundo - cameraPosition) > uHastaCam) discard;');
   };
   mar.receiveShadow = true;
-  // se dibuja antes que el agua de cerca y sin escribir la hondura: con la lámina tan grande, la hondura no da para
-  // separarla 0,8 m del agua de cerca y asomaba en manchas lisas entre las olas (en la nube, mar adentro, 31 oct).
-  // El fondo del mar sí lo tapa (va después de lo opaco y se compara con su hondura)
-  mar.material.transparent = true; mar.material.depthWrite = false; mar.renderOrder = -1;
+  // se dibuja antes que el agua de cerca (antes, sin escribir la hondura: asomaba en manchas lisas entre las olas,
+  // 31 oct; ahora no se solapan). El fondo del mar sí lo tapa (va después de lo opaco y se compara con su hondura)
+  // (ya no se pisa con el agua de cerca, que tiene su hueco: escribe su hondura, y así la niebla del posprocesado sabe que
+  // ahí hay mar; sin ella, donde detrás no hay nada aún, lo pintaba de cielo)
+  mar.material.transparent = true; mar.renderOrder = -1;
   escena.add(mar);
 
   // el horizonte: la isla entera, basta, detrás del terreno de cerca (solo lo dibuja un perfil gráfico que lo pida)
@@ -122,6 +126,7 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
     let ms = terreno.actualizar(x + O.x, z + O.z, opc);
     agua.paso(x, z);
     { const m = agua.malla; if (m) uLamina.value.set(m.position.x, m.position.z, LADO_AGUA / 2 - 1); else uLamina.value.z = 0; }
+    uHastaCam.value = horizonte && horizonte.activo ? horizonte.compresion.r0 - 2 : 1e9;
     // el horizonte se calcula cuando lo de cerca ya está (2 ms por fotograma como mucho)
     if (horizonte) ms += horizonte.paso(x, z, listo ? 2 : 0);
     // listo cuando los trozos de los 3 × 3 de alrededor tienen su malla
