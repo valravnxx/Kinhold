@@ -1836,5 +1836,10 @@
  "v104, provisional: tu planta, para el servidor, sale de la altura de tus pies sobre la base de la construcción (con 1 m de margen); el GDD no dice desde dónde se desmonta, y se toma lo mismo que para las obras.": "v104, временно: твой этаж для сервера определяется по высоте твоих ног над основанием постройки (с запасом 1 м); в GDD не сказано, откуда разбирают, и берётся то же правило, что и для стройки.",
  "Estás demasiado lejos: acércate.": "Ты слишком далеко: подойди ближе.",
  "No estás en su planta.": "Ты не на её этаже.",
- "El servidor aún no sabe dónde estás.": "Сервер ещё не знает, где ты."
+ "El servidor aún no sabe dónde estás.": "Сервер ещё не знает, где ты.",
+ "Demo única · v105 (ríos de verdad)": "Единое демо · v105 (настоящие реки)",
+ "v105: ríos de verdad. El doble de anchos (los arroyos de unos 5 a 8 m, el río mayor de Whitholm de unos 22 m); los arroyos se vadean y los ríos se cruzan nadando o por sus vados. Nacen estrechos y se ensanchan en su primer kilómetro.": "v105: настоящие реки. Вдвое шире (ручьи примерно от 5 до 8 м, самая большая река Whitholm — около 22 м); ручьи переходят вброд, а реки переплывают или переходят по бродам. Они начинаются узкими и расширяются на первом километре.",
+ "v105: los afluentes llegan al cauce del río al que entran (antes se quedaban hasta 170 m antes) y su agua llega a la misma altura.": "v105: притоки доходят до русла реки, в которую впадают (раньше они обрывались до 170 м раньше), и их вода приходит на ту же высоту.",
+ "v105: lecho de río: el fondo es de grava y cantos (del color de la roca del sitio) con barras de arena en los ríos anchos, la orilla es de barro húmedo, y hay cantos de río en el cauce y la orilla, más gordos donde la corriente es fuerte. El cauce tiene el fondo llano y la orilla marcada.": "v105: русло: дно из гравия и гальки (цвета местной породы) с песчаными отмелями в широких реках, берег из мокрой грязи, а в русле и на берегу лежат речные камни, крупнее там, где течение сильное. У русла плоское дно и чёткий берег.",
+ "v105: los saltos de agua dicen su alto de verdad (donde el suelo recorta el escalón, no cuentan como salto). Un sitio de salida que quedó junto a un río sale de la lista.": "v105: водопады сообщают свою настоящую высоту (где земля срезает уступ, это не считается водопадом). Место появления, оказавшееся у реки, убрано из списка."
 }
