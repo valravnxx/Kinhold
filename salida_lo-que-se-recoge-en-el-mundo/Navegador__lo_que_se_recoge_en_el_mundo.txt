@@ -1,0 +1,48 @@
+  sitio de salida con más tipos cerca: [5, 88] · el del móvil: 216
+Vista pc
+  alrededor de la salida: {"silex": 24, "hierba_larga": 16, "ramas": 4, "piedra": 2, "ortiga": 9} 55 puntos en 25 trozos
+  OK   alrededor de la salida hay cosas que recoger — 55
+  OK   cada punto, en una zona suya del documento
+  OK   son los mismos puntos que da la lógica para ese sitio del mundo — 15 en la página, 15 en la lógica, 0 distintos
+  OK   ramas (bosque, caliza): Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Rama.»
+  OK   ramas: el punto ya no está
+  OK   ramas: queda en el registro con autor
+  OK   piedra (claro, ladera, caliza): Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Piedra.»
+  OK   piedra: el punto ya no está
+  OK   piedra: queda en el registro con autor
+  OK   silex (claro, caliza): Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Sílex.»
+  OK   silex: el punto ya no está
+  OK   silex: queda en el registro con autor
+  OK   ortiga (claro, caliza): Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Fibra cruda.»
+  OK   ortiga: el punto ya no está
+  OK   ortiga: queda en el registro con autor
+  OK   hierba_larga (claro, caliza): Usar lo recoge y va al inventario — 0 → 4 · «Recoges: 4 × Fibra cruda.»
+  OK   hierba_larga: el punto ya no está
+  OK   hierba_larga: queda en el registro con autor
+  OK   junto al sitio de salida 88 se recogen los 5 tipos que hay cerca — ramas:1979702,569977, piedra:1979540,569773, silex:1979420,569991, ortiga:1979674,569826, hierba_larga:1979819,569674
+  a 400 m: {"n": 41, "lejos": 87.41, "cerca": 19, "ms": 6, "siguen": 0}
+  OK   lejos, los puntos están alrededor de donde estás y los de la salida se sueltan — {"n": 41, "lejos": 87.41, "cerca": 19, "ms": 6, "siguen": 0}
+  OK   hacer lo de alrededor no pide fotogramas largos (menos de 20 ms) — 6.0 ms
+  OK   al volver, lo recogido sigue recogido — [[true, false], [true, false], [true, false], [true, false], [true, false]]
+  OK   sin errores en la página (pc)
+Vista movil
+  alrededor de la salida: {"ramas": 53, "silex": 10} 63 puntos en 16 trozos
+  OK   alrededor de la salida hay cosas que recoger — 63
+  OK   cada punto, en una zona suya del documento
+  OK   son los mismos puntos que da la lógica para ese sitio del mundo — 23 en la página, 23 en la lógica, 0 distintos
+  OK   ramas (bosque, caliza): Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Rama.»
+  OK   ramas: el punto ya no está
+  OK   ramas: queda en el registro con autor
+  (piedra: no hay a menos de 60 m)
+  OK   silex (bosque, caliza): Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Sílex.»
+  OK   silex: el punto ya no está
+  OK   silex: queda en el registro con autor
+  (ortiga: no hay a menos de 60 m)
+  (hierba_larga: no hay a menos de 60 m)
+  OK   cerca de la salida 216 se ha podido recoger algo — ramas:1880086,729932, silex:1880019,729618
+  a 400 m: {"n": 40, "lejos": 76.13, "cerca": 26, "ms": 5.399999999994179, "siguen": 0}
+  OK   lejos, los puntos están alrededor de donde estás y los de la salida se sueltan — {"n": 40, "lejos": 76.13, "cerca": 26, "ms": 5.399999999994179, "siguen": 0}
+  OK   hacer lo de alrededor no pide fotogramas largos (menos de 20 ms) — 5.4 ms
+  OK   al volver, lo recogido sigue recogido — [[true, false], [true, false]]
+  OK   sin errores en la página (movil)
+TODO CORRECTO
