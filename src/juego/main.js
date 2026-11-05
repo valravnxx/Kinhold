@@ -12,7 +12,7 @@ import { t } from './textos.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearDecorado } from '../mundo/decorado.js';
-import { crearVegetacionMundo } from '../mundo/vegetacion_mundo.js';
+import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mundo.js';
 import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
 import { crearGraficos } from './graficos.js';
 import { conectarEnLinea } from './en_linea.js';
@@ -1925,6 +1925,8 @@ let mundoListo = false;
 function pasoMundo() {
   // y lo que crece, que también sigue al jugador (src/mundo/vegetacion_mundo.js): cuenta en el mismo tiempo
   const ms = mundoJ.paso(pj.x, pj.z, { prisa: !mundoListo }) + (decorado.paso ? decorado.paso(pj) : 0);
+  // el dosel de cerca empieza donde acaban los árboles de verdad (su cuadro, alrededor de donde se pusieron)
+  if (mundoJ.horizonte && decorado.centro) mundoJ.horizonte.cuadroArboles(decorado.centro.x, decorado.centro.z, MEDIDAS_VEGETACION.cuadro);
   if (mundoListo) mirarTierras();
   if (mundoListo) { msMundo.n++; msMundo.total += ms; if (ms > msMundo.max) msMundo.max = ms; }
   if (mundoJ.listo !== mundoListo) {
