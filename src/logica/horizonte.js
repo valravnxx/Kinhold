@@ -158,15 +158,36 @@ export function doselDe(b, especies, x, z) {
 }
 
 // Las copas lejanas: la malla del dosel de un nivel (cada k puntos), en m de la escena como mallaDe; solo los cuadros
-// con algo de bosque. Las esquinas sin bosque bajan bajo la malla del horizonte (que va hundida) para cerrar el linde.
+// con algo de bosque. El linde (valravnx, 5 nov: «se corta de manera así»): antes, las esquinas sin bosque bajaban de
+// golpe bajo el suelo y en el borde del bosque quedaba una pared de unos 20 m con dientes de sierra (la diagonal de cada
+// cuadro de 200 m), más oscura que la ladera. Ahora cada punto lleva cuánto bosque tiene alrededor (sus 3 × 3 vecinos,
+// el centro pesa más): dentro del bosque, las copas a su alto; hacia el linde bajan poco a poco y pasan al color del
+// suelo, y donde ya no hay nada alrededor quedan en el suelo (un poco por debajo), del color del suelo: sin pared ni corte.
+export const PESOS_LINDE = [1, 2, 1, 2, 4, 2, 1, 2, 1];   // los 3 × 3 vecinos (suman 16)
 export function mallaDosel(m, k, { ox = 0, oz = 0, y0 = 0 } = {}) {
   const cx = Math.floor((m.nx - 1) / k) + 1, cz = Math.floor((m.nz - 1) / k) + 1;
-  const n = (a, b) => (b * k) * m.nx + a * k;
+  const n = (a, b) => (Math.min(cz - 1, Math.max(0, b)) * k) * m.nx + Math.min(cx - 1, Math.max(0, a)) * k;
+  // cuánto bosque hay alrededor de cada punto (0–1), y el alto y el color medios de sus copas
+  const dens = new Float32Array(cx * cz), alto = new Float32Array(cx * cz), copa = new Float32Array(cx * cz * 3);
+  for (let b = 0; b < cz; b++) for (let a = 0; a < cx; a++) {
+    let d = 0, pb = 0, h = 0, r = 0, g = 0, z = 0;
+    for (let e = -1; e <= 1; e++) for (let f = -1; f <= 1; f++) {
+      const i = n(a + f, b + e), w = PESOS_LINDE[(e + 1) * 3 + f + 1];
+      if (!(m.dosel[i] > 0) || globalThis.__mutarLinde) continue;   // (la prueba lo rompe a propósito: sin linde suave)
+      d += w; pb += w; h += m.dosel[i] * w;
+      r += m.colorDosel[i * 3] * w; g += m.colorDosel[i * 3 + 1] * w; z += m.colorDosel[i * 3 + 2] * w;
+    }
+    const q = b * cx + a, aqui = m.dosel[n(a, b)] > 0;
+    dens[q] = globalThis.__mutarLinde ? (aqui ? 1 : 0) : d / 16;
+    if (pb) { alto[q] = h / pb; copa[q * 3] = r / pb; copa[q * 3 + 1] = g / pb; copa[q * 3 + 2] = z / pb; }
+    else if (aqui) { const i = n(a, b); alto[q] = m.dosel[i]; for (let c = 0; c < 3; c++) copa[q * 3 + c] = m.colorDosel[i * 3 + c]; }
+  }
   const usar = new Int32Array(cx * cz).fill(-1), idx = [];
   let nv = 0;
   const v = (a, b) => { const q = b * cx + a; if (usar[q] < 0) usar[q] = nv++; return usar[q]; };
+  const D = (a, b) => dens[b * cx + a];
   for (let b = 0; b < cz - 1; b++) for (let a = 0; a < cx - 1; a++) {
-    if (!(m.dosel[n(a, b)] > 0 || m.dosel[n(a + 1, b)] > 0 || m.dosel[n(a, b + 1)] > 0 || m.dosel[n(a + 1, b + 1)] > 0)) continue;
+    if (!(D(a, b) > 0 || D(a + 1, b) > 0 || D(a, b + 1) > 0 || D(a + 1, b + 1) > 0)) continue;
     const p = v(a, b), q = v(a + 1, b), r = v(a, b + 1), t = v(a + 1, b + 1);
     idx.push(p, r, q, q, r, t);
   }
@@ -174,14 +195,16 @@ export function mallaDosel(m, k, { ox = 0, oz = 0, y0 = 0 } = {}) {
   const lin = (c) => Math.pow(c / 255, 2.2);
   for (let q = 0; q < cx * cz; q++) {
     const w = usar[q]; if (w < 0) continue;
-    const a = q % cx, b = (q - a) / cx, i = n(a, b), y = m.alto[i], h = m.dosel[i];
+    const a = q % cx, b = (q - a) / cx, i = n(a, b), y = Math.max(m.alto[i], 0), d = dens[q];
+    // lo que sube y lo que se tiñe: suave, con lo que hay de bosque alrededor (sin nada, nada; rodeado, entero). Con
+    // más prisa (subir del todo con la mitad) quedaban saltos de unos 11 m entre vecinos; así, de menos de 9
+    const u = d * d * (3 - 2 * d);
     pos[w * 3] = m.rect.x0 + a * k * m.base - ox;
-    pos[w * 3 + 1] = (h > 0 ? y + h : Math.max(y, 0) - HUNDIDO - 4) - y0;
+    pos[w * 3 + 1] = (u > 0 ? y + alto[q] * u : y - HUNDIDO - 1) - y0;
     pos[w * 3 + 2] = m.rect.z0 + b * k * m.base - oz;
-    const c = h > 0 ? m.colorDosel : m.color;
-    col[w * 3] = lin(c[i * 3]); col[w * 3 + 1] = lin(c[i * 3 + 1]); col[w * 3 + 2] = lin(c[i * 3 + 2]);
+    for (let c = 0; c < 3; c++) col[w * 3 + c] = lin(m.color[i * 3 + c] + (copa[q * 3 + c] - m.color[i * 3 + c]) * u);
   }
-  return { pos, col, idx: Uint32Array.from(idx) };
+  return { pos, col, idx: Uint32Array.from(idx), dens };
 }
 
 // Las copas de cerca: una rejilla fina (cada «paso» m) en un cuadro alrededor de (cx, cz) (m del mundo), con la altura
