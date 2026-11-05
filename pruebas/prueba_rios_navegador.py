@@ -69,8 +69,9 @@ with sync_playwright() as p:
               return {{ x, z, ancho: c.ancho, dm: c.dm }}; }}""", [s['x'], s['z']])
             try:
                 pg.wait_for_function(f'{K}.mundoListo && {K}.decorado.pendientes === 0 && Math.hypot({K}.decorado.centro.x - {K}.pj.x, {K}.decorado.centro.z - {K}.pj.z) < 1', timeout=240000)
-            except Exception: pass
+            except Exception: print('  (el decorado no ha acabado de ponerse a tiempo)')
             pg.wait_for_timeout(4000)
+            print('  decorado:', json.dumps(pg.evaluate(f'(() => {{ const d = {K}.decorado; return {{ centro: d.centro, pendientes: d.pendientes, cuenta: d.cuenta, pj: [{K}.pj.x, {K}.pj.z] }}; }})()')))
             a = pg.evaluate(f'([x, z]) => {K}.mundoJ.aguaEn(x, z)', [r['x'], r['z']])
             comprobar(f"{s['n']}: hay agua en el río (de {r['ancho']:.1f} m de ancho)", bool(a) and a['hondo'] > 0.1, json.dumps(a))
             seg = pg.evaluate(SEGUIR, [r['x'], r['z'], 60, MUTAR == '1'])
