@@ -9,8 +9,8 @@
 //  - la de la gran veta de hierro de la sierra (la única veta marcada de la isla; en Breiddal),
 //  - la de la ciudad del rey (en Strandvang),
 //  - la de la salida común (en Lindholt): hoy todos aparecen ahí.
-// Decisión provisional (5 nov, en el registro de la demo y en decisiones_pendientes): los 260 sitios de la salida al
-// azar (SALIDAS, uno por km² que vale en las tres comarcas de inicio) caen en 236 zonas, el 28 % de esas tres
+// Decisión provisional (5 nov, en el registro de la demo y en decisiones_pendientes): los 259 sitios de la salida al
+// azar (SALIDAS, uno por km² que vale en las tres comarcas de inicio) caen en 235 zonas, el 28 % de esas tres
 // comarcas, y aún no se usan (llegan con «Salida al azar de verdad en línea»); hacerlas todas del rey dejaría poco que
 // reclamar donde empieza la gente, así que no lo son hasta que valravnx diga cuántos sitios de salida quiere.
 //
