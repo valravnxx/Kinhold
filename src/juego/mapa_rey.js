@@ -12,8 +12,12 @@
 // Las zonas (valravnx, 4 nov): al acercarlo salen los lindes de las zonas de cada comarca (src/juego/mapa_zonas.js, que
 // los saca a pasos en cuanto hacen falta) y, a cualquier zoom, tu tierra (la zona entera de tu mojón) de color, con su
 // borde y el mojón.
-import { pintarMapaRey, COMARCA_REY } from './mapa_rey_pintar.js';
+// El continente (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente… que quiero poder explorar
+// libre»): con una capa que lo pide (continente: true, la del panel del admin), el mapa es el del continente entero,
+// con menos detalle por km (se hace la primera vez que se abre así), y se acerca y se mueve por todo él.
+import { pintarMapaRey, COMARCA_REY, cuadroContinente, PX_KM_CONTINENTE } from './mapa_rey_pintar.js';
 import { CIUDAD_REY } from '../logica/whitholm.js';
+import { CONTINENTE, nombreRegion } from '../logica/mapa.js';
 import { tr } from '../idioma.js';
 import { crearZonasMapa } from './mapa_zonas.js';
 
@@ -50,15 +54,18 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
 
   // ---------- preparar el fondo a pasos ----------
   let gen = null, datos = null, fondo = null, msPintar = 0, msMaxPaso = 0, avance = 0;
+  // datos y fondo son los del mapa que se ve: la isla (islaD, islaF) o, con una capa que lo pide, el continente
+  let islaD = null, islaF = null, contD = null, contF = null, continente = false;
+  const usar = () => { if (continente && contD) { datos = contD; fondo = contF; } else { datos = islaD; fondo = islaF; } };
   function paso(presupuesto) {
-    if (datos) return true;
+    if (islaD) return true;
     if (!gen) gen = pintarMapaRey(paisaje, comarcas, { filas: 4 });
     const t0 = performance.now();
     while (performance.now() - t0 < presupuesto) {
       const a = performance.now(), r = gen.next();
       msMaxPaso = Math.max(msMaxPaso, performance.now() - a);
       if (!r.done) avance = r.value.avance;
-      if (r.done) { datos = r.value; hacerFondo(); msPintar += performance.now() - t0; return true; }
+      if (r.done) { islaD = r.value; hacerFondo(); msPintar += performance.now() - t0; return true; }
     }
     msPintar += performance.now() - t0;
     return false;
@@ -69,7 +76,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
   // fotograma, más, para que no tarde minutos
   let preparando = false;
   function preparar() {
-    if (preparando || datos) return;
+    if (preparando || islaD) return;
     preparando = true;
     const hueco = typeof requestIdleCallback === 'function';
     let antes = performance.now();
@@ -82,14 +89,61 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     };
     programar();
   }
+  // la imagen de unos datos, en un lienzo
+  function lienzoDe(d) {
+    const c = document.createElement('canvas'); c.width = d.ancho; c.height = d.alto;
+    c.getContext('2d').putImageData(new ImageData(d.rgba, d.ancho, d.alto), 0, 0);
+    return c;
+  }
+  // el continente: de una vez (la primera vez que se pide; unos segundos, como la isla)
+  function hacerContinente() {
+    if (contD) return;
+    const g = pintarMapaRey(paisaje, comarcas, { cuadro: cuadroContinente(), pxKm: PX_KM_CONTINENTE, filas: 64 });
+    let r; while (!(r = g.next()).done);
+    contD = r.value; contF = lienzoDe(contD);
+    contD.regiones = regionesDe(comarcas.mapa);
+  }
+  // dónde va el nombre de cada región del continente (en km): la celda de esa región más cercana a su centro
+  function regionesDe(m) {
+    if (!m || !m.pais) return [];
+    const { N, lado, pais, tierra } = m, c = lado / N, suma = new Map();
+    for (let i = 0; i < N * N; i++) {
+      const k = pais[i]; if (k < 0 || !tierra[i]) continue;
+      const v = suma.get(k) || [0, 0, 0]; v[0] += (i % N + 0.5) * c; v[1] += (Math.floor(i / N) + 0.5) * c; v[2]++; suma.set(k, v);
+    }
+    const r = [];
+    for (const [k, [sx, sy, n]] of suma) {
+      const cx = sx / n, cy = sy / n; let mejor = null, dm = Infinity;
+      for (let i = 0; i < N * N; i++) if (pais[i] === k && tierra[i]) {
+        const x = (i % N + 0.5) * c, y = (Math.floor(i / N) + 0.5) * c, d = Math.hypot(x - cx, y - cy);
+        if (d < dm) { dm = d; mejor = [x, y]; }
+      }
+      const nombre = nombreRegion(m, k);
+      if (mejor && nombre) r.push({ k, isla: k === m.paisIsla, x: mejor[0], y: mejor[1], nombre });
+    }
+    return r;
+  }
+  // los nombres de las regiones del continente (Whitholm lleva el suyo encima de la isla): grandes de lejos, y se van
+  // desvaneciendo al acercarse, cuando salen los de las comarcas
+  const aRegiones = (s) => (datos === contD ? Math.max(0, Math.min(1, (vista.base * 6 - s) / (vista.base * 3))) : 0);
+  function regiones(s) {
+    if (datos !== contD || !contD.regiones) return;
+    const a = aRegiones(s);
+    if (a <= 0) return;
+    ctx.save(); ctx.globalAlpha = a;
+    const px = Math.max(16, Math.min(34, s * 4));
+    for (const e of contD.regiones) {
+      const [x, y] = kmAPant(e.x, e.y);
+      etiqueta(tr(e.nombre).toUpperCase(), x, y, px, '700', e.isla ? ROJO : TINTA, px * 0.3);
+    }
+    ctx.restore();
+  }
   function hacerFondo() {
     // lo que es tierra, de la imagen del mapa: los lindes de las zonas no van por el agua
-    const d = datos;
+    const d = islaD;
     zonas.ponerTierra((x, y) => { const px = Math.floor((x - d.cuadro.x0) * d.pxKm), py = Math.floor((y - d.cuadro.y0) * d.pxKm);
       return px >= 0 && py >= 0 && px < d.ancho && py < d.alto && d.tierra[py * d.ancho + px] === 1; });
-    const c = document.createElement('canvas'); c.width = datos.ancho; c.height = datos.alto;
-    c.getContext('2d').putImageData(new ImageData(datos.rgba, datos.ancho, datos.alto), 0, 0);
-    fondo = c;
+    islaF = lienzoDe(d); usar();
   }
 
   // ---------- las zonas: los lindes, a pasos y solo lo que se ve; tu tierra, una vez ----------
@@ -172,7 +226,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     const tierra = miTierra();
     if (tierra) tierraColor(tierra);
     lineas(s); lindesZonas(s); if (tierra) tierraBorde(tierra, s);
-    rios(s); montes(s); arboles(s, t); ciudad(s); nombres(s);
+    rios(s); montes(s); arboles(s, t); ciudad(s); nombres(s); regiones(s);
     if (tierra) mojon(s);
     marco(ox, oy, aw, ah, s);
     if (capa && capa.pintar) capa.pintar(ctx, { kmAPant, s, etiqueta });
@@ -332,6 +386,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
   let nombresVistos = 1;
   function nombres(s) {
     nombresVistos = window.__mutarNombresMapa ? 1 : Math.max(0, Math.min(1, (ZONAS_LLENO - s) / (ZONAS_LLENO - ZONAS_DESDE)));
+    nombresVistos *= 1 - aRegiones(s);   // (en el continente, de lejos, van los de las regiones)
     if (nombresVistos <= 0) return;
     ctx.save(); ctx.globalAlpha = nombresVistos;
     try { nombresDentro(s); } finally { ctx.restore(); }
@@ -350,13 +405,13 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     ctx.lineWidth = 0.8; ctx.strokeRect(ox + 9, oy + 9, aw - 18, ah - 18);
     const u = Math.max(0.7, Math.min(2.2, s / 9));   // tamaño de lo del marco
     // el título, arriba a la izquierda (mar abierto), siempre dentro del pliego
-    const titulo = tr('Whitholm').toUpperCase(), tp = 26 * u;
+    const cont = datos === contD, titulo = tr(cont ? CONTINENTE : 'Whitholm').toUpperCase(), tp = 26 * u;
     ctx.font = `700 ${tp}px ${LETRA}`; if ('letterSpacing' in ctx) ctx.letterSpacing = `${5 * u}px`;
     const ancho = ctx.measureText(titulo).width; if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
     const tx = ox + 22 + ancho / 2, ty = oy + 22 + tp * 0.7;
     etiqueta(titulo, tx, ty, tp, '700', TINTA, 5 * u);
     ctx.strokeStyle = TINTA; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(tx - ancho * 0.45, ty + tp * 0.5); ctx.lineTo(tx + ancho * 0.45, ty + tp * 0.5); ctx.stroke();
-    etiqueta(tr('la isla del rey'), tx, ty + tp * 0.95, 14 * u, 'italic 600', ROJO);
+    etiqueta(tr(cont ? 'el continente' : 'la isla del rey'), tx, ty + tp * 0.95, 14 * u, 'italic 600', ROJO);
     // la rosa de los vientos, abajo a la izquierda
     const rx = ox + 48 * u, ry = oy + ah - 56 * u, R = 30 * u;
     ctx.save(); ctx.translate(rx, ry);
@@ -371,7 +426,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     ctx.restore();
     etiqueta('N', rx, ry - R - 9 * u, 13 * u, '700', ROJO);
     // la escala: 5 km a tramos, abajo a la derecha
-    const km = s < 10 ? 10 : s < 30 ? 5 : 2, largo = km * s, ex = ox + aw - 24 * u - largo, ey = oy + ah - 26 * u;
+    const km = s < 4 ? 50 : s < 10 ? 10 : s < 30 ? 5 : 2, largo = km * s, ex = ox + aw - 24 * u - largo, ey = oy + ah - 26 * u;
     for (let k = 0; k < 4; k++) { ctx.fillStyle = k % 2 ? PAPEL : TINTA; ctx.fillRect(ex + largo * k / 4, ey, largo / 4, 5 * u); }
     ctx.strokeStyle = TINTA; ctx.lineWidth = 0.8; ctx.strokeRect(ex, ey, largo, 5 * u);
     etiqueta(`${km} km`, ex + largo / 2, ey - 9 * u, 11 * u, 'italic 600', TINTA);
@@ -397,8 +452,8 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     if (!raiz.hidden) return;
     alAbrir();
     raiz.hidden = false;
-    if (!datos) { aviso.hidden = false; requestAnimationFrame(() => setTimeout(() => { while (!paso(1000)); aviso.hidden = true; encuadrar(); pintar(); }, 0)); }
-    else { encuadrar(); pintar(); }
+    if (!islaD || (continente && !contD)) { aviso.hidden = false; requestAnimationFrame(() => setTimeout(() => { while (!paso(1000)); if (continente) hacerContinente(); usar(); aviso.hidden = true; encuadrar(); pintar(); }, 0)); }
+    else { usar(); encuadrar(); pintar(); }
     clearInterval(reloj); reloj = setInterval(pintar, 250);   // tu marca se mueve si andas con el mapa abierto
   }
   function cerrar() { if (raiz.hidden) return; raiz.hidden = true; clearInterval(reloj); reloj = null; if (capa && capa.alCerrar) capa.alCerrar(); }
@@ -435,7 +490,13 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
 
   return {
     abrir, cerrar, alternar, preparar, centrarEnMi, centrarEn, zoom, pantAKm,
-    ponerCapa(c) { capa = c; lienzo.style.cursor = c && c.clic ? 'crosshair' : ''; pintar(); }, pintar: () => pintar(),
+    ponerCapa(c) {
+      capa = c; lienzo.style.cursor = c && c.clic ? 'crosshair' : '';
+      // la del panel del admin pide el continente; sin ella, la isla (si ya está abierto, se vuelve a encuadrar)
+      const antes = continente; continente = !!(c && c.continente);
+      if (continente !== antes && !raiz.hidden) { if (continente && !contD) { cerrar(); abrir(); return; } usar(); if (datos) encuadrar(); }
+      pintar();
+    }, pintar: () => pintar(), get continente() { return continente && datos === contD; },
     get abierto() { return !raiz.hidden; }, get listo() { return !!datos; }, get datos() { return datos; },
     get vista() { return { ...vista }; }, get marca() { return marca; }, kmAPant,
     // las zonas: cuántos segmentos de lindes se han trazado en la última vez, cuántas teselas faltan y tu tierra

@@ -8,7 +8,7 @@
 // El mapa se genera antes (lo hace el menú de la demo, con su barra de progreso: tarda unos segundos) y llega hecho.
 import * as THREE from 'three';
 import { crearPaisaje, PENDIENTE_ANDAR } from '../logica/paisaje.js';
-import { SALIDA, ISLA, dentroDeIsla, alturaMundo } from '../logica/whitholm.js';
+import { SALIDA, ISLA, MUNDO_ENTERO, dentroDeIsla, alturaMundo } from '../logica/whitholm.js';
 import { crearGestor, ANILLOS, LADO as LADO_TROZO, claveTrozo } from '../logica/trozos.js';
 import { crearTerrenoTrozos } from './terreno_trozos.js';
 import { materialSuelo } from '../mapa/suelo.js';
@@ -98,7 +98,7 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
   // paredes de los cortados). Bajar sí se puede (se resbala, como en el mapa). Al agua se entra (y se nada: ver
   // src/logica/nado.js); desde el agua se sale por donde se hace pie.
   function andable(x0, z0, x1, z1) {
-    if (!dentroDeIsla(x1 + O.x, z1 + O.z)) return false;
+    if (!dentroDeIsla(x1 + O.x, z1 + O.z, rect)) return false;
     const d = Math.hypot(x1 - x0, z1 - z0);
     if (d < 1e-6) return true;
     const sube = altura(x1, z1) - altura(x0, z0);
@@ -120,7 +120,17 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
     return ms;
   }
 
-  const dentro = (x, z) => dentroDeIsla(x + O.x, z + O.z);
-  return { altura, sobreMar, seco, andable, dentro, aguaEn, agua, paso, nivelar, terreno, paisaje, grupo, mar, y0, horizonte,
-    get listo() { return listo; }, salida: O, isla: ISLA };
+  // hasta dónde se puede ir: la isla; la cuenta de admin, el continente entero (valravnx, 5 nov: «quiero poder explorar
+  // libre»): libre(true) carga el terreno de fuera de la isla y alarga el mar de lejos a todo el continente
+  let rect = ISLA;
+  function libre(si) {
+    const r = si ? MUNDO_ENTERO : ISLA;
+    if (r === rect) return;
+    rect = r; gestor.ponerLimites(r);
+    mar.scale.set((r.x1 - r.x0 + 6000) / ancho, 1, (r.z1 - r.z0 + 6000) / largo);
+    mar.position.x = (r.x0 + r.x1) / 2 - O.x; mar.position.z = (r.z0 + r.z1) / 2 - O.z;
+  }
+  const dentro = (x, z) => dentroDeIsla(x + O.x, z + O.z, rect);
+  return { altura, sobreMar, seco, andable, dentro, libre, aguaEn, agua, paso, nivelar, terreno, paisaje, grupo, mar, y0, horizonte,
+    get listo() { return listo; }, get esLibre() { return rect !== ISLA; }, salida: O, isla: ISLA };
 }

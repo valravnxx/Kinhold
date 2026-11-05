@@ -49,7 +49,7 @@ import { motivoProtegido, RESULTADO_TIERRAS } from './tierras_rey.js';
 export const PASO = 1 / 60;          // s: el combate se avanza en pasos de como mucho esto
 export const DURA_PROYECTIL = 8;     // s: una flecha que no ha caído en este tiempo se quita
 export const CERCA_REINICIAR = 15;   // m: no se vuelve a empezar sano con alguien en pie más cerca que esto
-const LIMITE = 100000;
+const LIMITE = 300000;   // (m: el continente mide 256 km; la cuenta de admin puede ir por todo él)
 
 const numero = (v) => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) <= LIMITE;
 

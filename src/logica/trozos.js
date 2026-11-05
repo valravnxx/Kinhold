@@ -57,7 +57,8 @@ export function nivelPara(d, anillos = ANILLOS) {
 export function crearGestor({ lado = LADO, anillos = ANILLOS, margen = MARGEN, limites = null } = {}) {
   const trozos = new Map();        // clave → { i, j, nivel }
   const maxD = anillos[anillos.length - 1].hasta;
-  const dentro = (i, j) => !limites || ((i + 1) * lado > limites.x0 && i * lado < limites.x1 && (j + 1) * lado > limites.z0 && j * lado < limites.z1);
+  let lim = limites;   // (se cambian con ponerLimites: la cuenta de admin puede ir por todo el continente)
+  const dentro = (i, j) => !lim || ((i + 1) * lado > lim.x0 && i * lado < lim.x1 && (j + 1) * lado > lim.z0 && j * lado < lim.z1);
 
   // El nivel que se queda un trozo que ya está cargado con `actual`: se sube de detalle en cuanto se cruza el límite;
   // se baja (o se suelta) solo si se ha pasado el límite más el margen.
@@ -91,7 +92,7 @@ export function crearGestor({ lado = LADO, anillos = ANILLOS, margen = MARGEN, l
     return { cargar, cambiar, soltar };
   }
 
-  return { actualizar, trozos, lado, anillos, margen, nivelDe: (i, j) => { const t = trozos.get(claveTrozo(i, j)); return t ? t.nivel : -1; } };
+  return { actualizar, trozos, lado, anillos, margen, ponerLimites(l) { lim = l; }, get limites() { return lim; }, nivelDe: (i, j) => { const t = trozos.get(claveTrozo(i, j)); return t ? t.nivel : -1; } };
 }
 
 // La función de altura (m) para un trozo, sacada del paisaje: con los tramos de río que le tocan y el detalle fino

@@ -8,19 +8,25 @@
 //     el nombre no cuenta (una cuenta «valravnx» con otro correo no es admin); sin la lista, nadie; sin confirmar, no;
 //     al cambiar el correo por otro que no está en la lista, deja de serlo;
 //   - con la de admin: «ver» da los conectados con su posición y el nombre de su cuenta, y nada de los que se han ido;
-//   - «ir» a un punto de la isla responde ese punto; fuera de la isla o con datos raros, no;
+//   - «ir» a un punto de la isla responde ese punto; y a otra región del continente (valravnx, 5 nov: «quiero poder
+//     explorar libre»); fuera del continente o con datos raros, no;
+//   - la cuenta de admin puede estar fuera de la isla (su estado vale y sale en «ver»); otra cuenta, no;
 //   - «ir» junto a otro: a su lado (a 1,6 m) y mirándole; junto a uno que no está o junto a sí mismo, no;
 //   - cada petición queda en admin.jsonl con su autor y su cuenta; la lógica pura comprueba las peticiones.
 // Con MUTAR=1 se prueba un servidor que no mira la cuenta: debe FALLAR.
+// Con MUTAR=continente, uno que no deja a la cuenta de admin fuera de la isla: también debe FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, readFileSync, writeFileSync, rmSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { tmpdir } from 'os';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { validarPeticionAdmin, sitioJunto, JUNTO, correosAdmin, esCorreoAdmin, NO_ADMIN } from '../src/logica/admin.js';
+import { validarEstado } from '../src/logica/presencia.js';
+import { MUNDO_ENTERO } from '../src/logica/whitholm.js';
+import { LADO_MUNDO } from '../src/logica/mapa.js';
 
 // Con MUTAR=correo, uno que da por confirmado el correo: también debe FALLAR.
-const MUTAR = process.env.MUTAR === '1' || process.env.MUTAR === 'correo';
+const MUTAR = process.env.MUTAR === '1' || process.env.MUTAR === 'correo' || process.env.MUTAR === 'continente';
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
@@ -32,7 +38,9 @@ const pausa = (ms) => new Promise(r => setTimeout(r, ms));
 let ruta = join(raiz, 'servidor/servidor.mjs'), copia = null;
 if (MUTAR) {
   const fuente = readFileSync(ruta, 'utf8');
-  const mutada = process.env.MUTAR === 'correo'
+  const mutada = process.env.MUTAR === 'continente'
+    ? fuente.replace('{ aparte: enLiza, admin: esAdmin(autor) }', '{ aparte: enLiza }')
+    : process.env.MUTAR === 'correo'
     ? fuente.replace('esCorreoAdmin(cuentas.correoDe(autor), admins)', 'esCorreoAdmin({ ...cuentas.correoDe(autor), verificado: true }, admins)')
     : fuente.replace('if (!esAdmin(autor)) return responder({ ok: false, motivo: NO_ADMIN });', '');
   if (mutada === fuente) { console.log('No se pudo mutar el servidor'); process.exit(1); }
@@ -95,7 +103,10 @@ try {
   console.log('Lógica pura');
   comprobar('«ver» vale', JSON.stringify(validarPeticionAdmin({ que: 'ver' })) === '{"que":"ver"}');
   comprobar('«ir» a un punto de la isla vale', !!validarPeticionAdmin({ que: 'ir', x: 120, z: -300 }));
-  comprobar('«ir» fuera de la isla no vale', validarPeticionAdmin({ que: 'ir', x: 900000, z: 0 }) === null);
+  comprobar('«ir» a otra región del continente vale (fuera de la isla)', !!validarPeticionAdmin({ que: 'ir', x: -150000, z: 150000 }));
+  comprobar('«ir» fuera del continente no vale', validarPeticionAdmin({ que: 'ir', x: 900000, z: 0 }) === null && validarPeticionAdmin({ que: 'ir', x: -190000, z: 0 }) === null);
+  comprobar('el continente es el mapa entero', MUNDO_ENTERO.x1 === LADO_MUNDO * 1000 && MUNDO_ENTERO.z1 === LADO_MUNDO * 1000 && MUNDO_ENTERO.x0 === 0 && MUNDO_ENTERO.z0 === 0);
+  comprobar('un estado fuera de la isla: solo el de admin vale', validarEstado({ x: -150000, y: 0, z: 150000, giro: 0, anim: 'quieto' }) === null && !!validarEstado({ x: -150000, y: 0, z: 150000, giro: 0, anim: 'quieto' }, { admin: true }) && validarEstado({ x: 900000, y: 0, z: 0, giro: 0, anim: 'quieto' }, { admin: true }) === null);
   comprobar('«ir» con números raros no vale', [NaN, Infinity, '3', null].every(v => validarPeticionAdmin({ que: 'ir', x: v, z: 0 }) === null));
   comprobar('«ir» junto a un autor con forma rara no vale', validarPeticionAdmin({ que: 'ir', junto: 'x'.repeat(80) }) === null && validarPeticionAdmin({ que: 'ir', junto: 3 }) === null);
   comprobar('otra cosa no vale', validarPeticionAdmin({ que: 'borrar' }) === null && validarPeticionAdmin(null) === null && validarPeticionAdmin([]) === null);
@@ -184,13 +195,23 @@ try {
   r = await admin.admin1({ que: 'ir', x: 250.5, z: -1200 });
   comprobar('«ir» a un punto: el servidor responde ese punto (la altura la pone el navegador)', r && r.ok && r.x === 250.5 && r.z === -1200 && r.y === null, JSON.stringify(r));
   r = await admin.admin1({ que: 'ir', x: 1e6, z: 0 });
-  comprobar('«ir» fuera de la isla: no', r && r.ok === false, JSON.stringify(r));
+  comprobar('«ir» fuera del continente: no', r && r.ok === false, JSON.stringify(r));
   r = await admin.admin1({ que: 'ir', junto: otro.yo });
   comprobar('«ir» junto a otro: a su lado y a su altura', r && r.ok && Math.abs(Math.hypot(r.x - 40, r.z + 30) - JUNTO) < 1e-6 && r.y === 5.5 && Number.isFinite(r.giro), JSON.stringify(r));
   r = await admin.admin1({ que: 'ir', junto: tercero.yo });
   comprobar('«ir» junto a uno que no está: no', r && r.ok === false, JSON.stringify(r));
   r = await admin.admin1({ que: 'ir', junto: admin.yo });
   comprobar('«ir» junto a sí mismo: no', r && r.ok === false, JSON.stringify(r));
+
+  // explorar libre (valravnx, 5 nov): a otra región del continente; allí su estado vale; el de otra cuenta, no
+  r = await admin.admin1({ que: 'ir', x: -150000, z: 150000 });
+  comprobar('«ir» a otra región del continente: el servidor responde ese punto', r && r.ok && r.x === -150000 && r.z === 150000, JSON.stringify(r));
+  admin.estado(-150000, 150000); otro.estado(-150000, 150000); await pausa(150);
+  r = await admin.admin1({ que: 'ver' });
+  const ahi = (a) => (r && r.jugadores || []).find(e => e.autor === a);
+  comprobar('la cuenta de admin está allí (fuera de la isla)', ahi(admin.yo) && ahi(admin.yo).x === -150000 && ahi(admin.yo).z === 150000, JSON.stringify(ahi(admin.yo)));
+  comprobar('otra cuenta no puede ir fuera de la isla (sigue donde estaba)', ahi(otro.yo) && ahi(otro.yo).x === 40 && ahi(otro.yo).z === -30, JSON.stringify(ahi(otro.yo)));
+  admin.estado(1, 2, 0); await pausa(100);
 
   // el registro
   const reg = readFileSync(s.archivoAdmin, 'utf8').trim().split('\n').map(l => JSON.parse(l));

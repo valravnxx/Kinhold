@@ -20,6 +20,11 @@ export const SALIDA = { x: 184596, z: 46280 };
 
 // ¿está (x, z) (m del mundo) dentro del cuadro de la isla?
 export const dentroDeIsla = (x, z, isla = ISLA) => x >= isla.x0 && x <= isla.x1 && z >= isla.z0 && z <= isla.z1;
+// el continente entero (m del mundo; el mapa mide LADO_MUNDO = 256 km de lado, src/logica/mapa.js): solo la cuenta de admin
+// puede ir fuera de Whitholm (valravnx, 5 nov: «quiero poder explorar libre»). Los demás, en la isla.
+export const MUNDO_ENTERO = { x0: 0, z0: 0, x1: 256000, z1: 256000 };
+// ¿puede estar ahí? (x, z en m del mundo): la isla, o el continente entero si es admin
+export const dentroDePermitido = (x, z, admin = false) => dentroDeIsla(x, z, admin ? MUNDO_ENTERO : ISLA);
 
 // el cuadro de las celdas de tierra de la región de la isla (m del mundo), con `margen` celdas de más alrededor
 export function limitesIsla(mapa, margen = 1) {

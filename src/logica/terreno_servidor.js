@@ -18,7 +18,7 @@
 //  - El mojón, en tierra firme (más de 0,15 m sobre el mar, como la orilla del juego) y dentro de la isla.
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from './mapa.js';
 import { crearPaisaje } from './paisaje.js';
-import { SALIDA, ISLA, dentroDeIsla, alturaMundo } from './whitholm.js';
+import { SALIDA, ISLA, MUNDO_ENTERO, dentroDeIsla, alturaMundo } from './whitholm.js';
 import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from './vegetacion.js';
 import { recogidaTrozo, LADO_RECOGIDA } from './recogida_mundo.js';
 import { idArbol } from './tala.js';
@@ -92,9 +92,10 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
       if (typeof id !== 'string' || !num(x) || !num(z) || !enIsla(x, z)) return null;
       return buscar(puntosDe, LADO_RECOGIDA, id, x, z);
     },
-    // ¿Puede estar ahí un jugador? { x, y, z } de su presencia. Devuelve el motivo si no.
-    posicion(e) {
-      if (!enIsla(e.x, e.z)) return 'Fuera de la isla.';
+    // ¿Puede estar ahí un jugador? { x, y, z } de su presencia. Devuelve el motivo si no. La cuenta de admin (admin),
+    // también fuera de la isla, en todo el continente (valravnx, 5 nov: «quiero poder explorar libre»).
+    posicion(e, { admin = false } = {}) {
+      if (!(admin ? dentroDeIsla(e.x + O.x, e.z + O.z, MUNDO_ENTERO) : enIsla(e.x, e.z))) return 'Fuera de la isla.';
       const s = suelo(e.x, e.z);
       if (e.y < s - alturas.bajoSuelo || e.y > s + alturas.sobreSuelo) return 'Ahí no se puede estar.';
       return null;
