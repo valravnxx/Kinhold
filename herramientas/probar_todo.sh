@@ -136,6 +136,7 @@ paso "Navegador: niveles de detalle del personaje" python3 pruebas/prueba_detall
 paso "Navegador: terreno por trozos (en un hilo aparte)" python3 pruebas/prueba_trozos_navegador.py dist/kinhold_trozos.html "$C/trozos"
 paso "Navegador: mapa del mundo" python3 pruebas/prueba_mapa_navegador.py dist/kinhold_mapa.html "$C/mapa"
 paso "Navegador: mapa del rey" python3 pruebas/prueba_mapa_rey_navegador.py dist/kinhold_demo.html "$C/mapa_rey"
+paso "Navegador: ríos de verdad" python3 pruebas/prueba_rios_navegador.py dist/kinhold_demo.html "$C/rios"
 paso "Navegador: tierras del rey" python3 pruebas/prueba_tierras_rey_navegador.py dist/kinhold_demo.html "$C/tierras_rey"
 paso "Navegador: panel del admin" python3 pruebas/prueba_admin_navegador.py dist/kinhold_demo.html "$C/admin"
 paso "Navegador: entrar con la cuenta" python3 pruebas/prueba_cuenta_navegador.py dist/kinhold_demo.html "$C/cuenta"
