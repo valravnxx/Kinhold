@@ -4,11 +4,13 @@
 // con el alto de verdad del paisaje; la malla quita lo que es todo mar y deja la tierra (con las montañas); el mar de
 // lejos cubre el cuadro de la isla; y los perfiles: los bajos no lo llevan, los altos sí y cada uno al menos tan fino
 // como el anterior. Con MUTAR=1 la compresión se calcula con la mitad de la diagonal (lo lejano se saldría de la
-// cámara): debe FALLAR.
+// cámara): debe FALLAR. Con MUTAR=2 las especies del dosel miden 40 m (copas que no son de estos árboles): debe FALLAR.
+// El dosel (el bosque de lejos): solo donde hay bosque y en tierra, de la altura de las copas, más fino de cerca.
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearPaisaje } from '../src/logica/paisaje.js';
 import { ISLA } from '../src/logica/whitholm.js';
-import { crearMuestras, mallaDe, mallaMar, compresion, comprimir, descomprimir, NIVELES, HUNDIDO, MAR, BASE } from '../src/logica/horizonte.js';
+import { crearMuestras, mallaDe, mallaMar, mallaDosel, crearDoselCerca, doselDe, compresion, comprimir, descomprimir, NIVELES, HUNDIDO, MAR, BASE, DOSEL_DESDE } from '../src/logica/horizonte.js';
+import { SALIDAS, alturaMundo } from '../src/logica/whitholm.js';
 import { PERFILES, HORIZONTE } from '../src/posprocesado/perfiles.js';
 
 let ok = 0, mal = 0;
@@ -16,7 +18,10 @@ function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
   else { mal++; console.log(`  FALLA ${nombre}${detalle ? ' — ' + detalle : ''}`); }
 }
-const MUTAR = process.env.MUTAR === '1';
+const MUTAR = process.env.MUTAR === '1', MUTAR2 = process.env.MUTAR === '2';
+// las especies como las da el juego (src/mundo/horizonte.js: el alto de TAMANO_ESPECIE y un verde)
+const ALTO = { abeto: 10.5, pino: 9.5, abedul: 9, roble: 7.5, haya: 10.8, fresno: 9.2, encina: 5.5 };
+const ESPECIES = Object.fromEntries(Object.entries(ALTO).map(([e, a]) => [e, { alto: MUTAR2 ? 40 : a, color: [0.2, 0.27, 0.15] }]));
 
 console.log('La compresión');
 const LEJOS = 1600, HASTA = 768;   // el alcance de la cámara del juego y dónde acaba el terreno de cerca (PC)
@@ -31,7 +36,7 @@ comprobar('lo más lejano sigue detrás de lo menos lejano', comprimir(20000, c)
 
 console.log('Las muestras, poco a poco');
 const paisaje = crearPaisaje(generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO }));
-const m = crearMuestras(paisaje, ISLA);
+const m = crearMuestras(paisaje, ISLA, undefined, ESPECIES);
 let reloj = 0; const ahora = () => reloj;
 const n1 = m.avanzar(2, () => ++reloj);   // el reloj sube 1 ms cada vez que se mira (cada 64 puntos)
 comprobar('un fotograma hace poco (con el tope de milisegundos)', n1 > 0 && n1 <= 256, `${n1} puntos`);
@@ -66,6 +71,24 @@ let x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9;
 for (let v = 0; v < mm.cx * mm.cz; v++) { x0 = Math.min(x0, mm.pos[v * 3]); x1 = Math.max(x1, mm.pos[v * 3]); z0 = Math.min(z0, mm.pos[v * 3 + 2]); z1 = Math.max(z1, mm.pos[v * 3 + 2]); }
 comprobar('cubre el cuadro de la isla y no se sale', x0 === ISLA.x0 && x1 === ISLA.x1 && z0 === ISLA.z0 && z1 === ISLA.z1);
 comprobar('en trozos (para que siga la compresión)', mm.cx > 50 && mm.cz > 50, `${mm.cx}×${mm.cz}`);
+
+console.log('El dosel (el bosque de lejos)');
+let conDosel = 0, enMar = 0, hMax = 0;
+for (let i = 0; i < m.dosel.length; i++) if (m.dosel[i] > 0) { conDosel++; if (m.alto[i] <= MAR) enMar++; hMax = Math.max(hMax, m.dosel[i]); }
+comprobar('hay dosel en una parte de la isla (los bosques), no en toda', conDosel > m.dosel.length * 0.05 && conDosel < m.dosel.length * 0.6, `${(100 * conDosel / m.dosel.length).toFixed(0)} % de los puntos`);
+comprobar('nada en el mar', enMar === 0);
+comprobar('las copas, de la altura de estos árboles (hasta unos 14 m)', hMax > 4 && hMax < 14.5, `lo más alto ${hMax.toFixed(1)} m`);
+comprobar('sin bosque, sin dosel', doselDe({ d: DOSEL_DESDE * 0.9, especie: 'haya', tam: 1 }, ESPECIES, 0, 0) === null && doselDe({ d: 0.8, especie: null, tam: 1 }, ESPECIES, 0, 0) === null);
+const d1 = mallaDosel(m, 1), d4 = mallaDosel(m, 4);
+comprobar('la malla del dosel, solo donde hay bosque (menos que la del suelo)', d1.idx.length > 0 && d1.idx.length < g1.idx.length, `${d1.idx.length / 3} triángulos (el suelo, ${g1.idx.length / 3})`);
+comprobar('y más basta de lejos en los perfiles bajos', d4.idx.length * 8 < d1.idx.length, `${d4.idx.length / 3} cada 400 m`);
+const alt = alturaMundo(paisaje);
+const cercaDe = (i) => { const [x, z] = SALIDAS[i], c = crearDoselCerca(paisaje, alt, ESPECIES, Math.round(x / 16) * 16, Math.round(z / 16) * 16, 500); while (!c.listo) c.avanzar(1e9); return { c, g: c.malla({ ox: x, oz: z }) }; };
+const bosque = cercaDe(249), prado = cercaDe(0);
+comprobar('de cerca, en un bosque mixto hay copas', bosque.g.idx.length > 3000, `${bosque.g.idx.length / 3} triángulos`);
+comprobar('y en la pradera abierta (corros sueltos) casi nada', prado.g.idx.length < bosque.g.idx.length / 10, `${prado.g.idx.length / 3} triángulos`);
+let fuera = 0; for (let v = 0; v < bosque.g.pos.length / 3; v++) if (Math.abs(bosque.g.pos[v * 3]) > 520 || Math.abs(bosque.g.pos[v * 3 + 2]) > 520) fuera++;
+comprobar('de cerca, en su cuadro y en metros de la escena', fuera === 0);
 
 console.log('Los perfiles');
 const bajos = PERFILES.filter(p => !p.horizonte).map(p => p.id), altos = PERFILES.filter(p => p.horizonte);

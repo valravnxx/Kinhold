@@ -96,12 +96,15 @@ export function mallaDe(m, k, { ox = 0, oz = 0, y0 = 0 } = {}) {
     const i = a * k, j = b * k, n = j * m.nx + i, v = b * cx + a;
     const y = m.alto[n];
     pos[v * 3] = m.rect.x0 + i * m.base - ox;
-    pos[v * 3 + 1] = (y <= MAR || Number.isNaN(y) ? -60 : y) - y0 - HUNDIDO;
+    // hundida, pero sin bajar de 0,2 m sobre el mar: si no, la tierra baja de la costa quedaba bajo la lámina del mar y
+    // salía como agua
+    pos[v * 3 + 1] = (y <= MAR || Number.isNaN(y) ? -60 - HUNDIDO : Math.max(y - HUNDIDO, Math.min(y, 0.2))) - y0;
     pos[v * 3 + 2] = m.rect.z0 + j * m.base - oz;
     col[v * 3] = lin(m.color[n * 3]); col[v * 3 + 1] = lin(m.color[n * 3 + 1]); col[v * 3 + 2] = lin(m.color[n * 3 + 2]);
   }
   // sin los cuadros que son todo mar (casi la mitad de la isla: los tapa la lámina del mar)
-  const seco = (v) => pos[v * 3 + 1] > -50;
+  // (por el alto de verdad: la y de la malla depende del 0 de la escena y antes quitaba también tierra baja)
+  const seco = (v) => { const a = v % cx, b = (v - a) / cx, y = m.alto[b * k * m.nx + a * k]; return y > MAR; };
   const tmp = new Uint32Array((cx - 1) * (cz - 1) * 6);
   let t = 0;
   for (let b = 0; b < cz - 1; b++) for (let a = 0; a < cx - 1; a++) {
