@@ -4276,5 +4276,22 @@
   "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido): 32 de 33 grupos bien a la primera; «construcción» falló porque su prueba desmontaba a 4 m del muro; corregida, repetida en la nube y bien. Capturas de desmontar (PC) y de una obra (móvil) miradas. Sin las de en línea, como pidió valravnx.",
   "capturas": "capturas/demo-v104",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T05:07:52+01:00",
+  "fin": "2026-11-05T09:09:05+01:00",
+  "titulo": "El posprocesado y los seis perfiles gráficos, en el juego",
+  "hito": "graficos",
+  "hecho": [
+   "valravnx, 5 nov: «se ve bien, mi móvil (el POCO F7) tira hasta el de PC de gama alta a 65 fps en la prueba, mételo sin noticia al juego ya».",
+   "El juego dibuja con la cadena de la prueba (src/juego/graficos.js): oclusión ambiental, mapeo tonal, gradación de color, brillo de las luces y niebla según el perfil; sin desenfoque ni haces de luz. El perfil se elige en el panel de rendimiento, con el que sugiere el aparato marcado; se guarda en el navegador.",
+   "El panel de rendimiento cuenta un fotograma por cada dibujo del mundo (con posprocesado se dibuja varias veces por fotograma) y sus triángulos son los del mundo. Sin tarjeta gráfica (las pruebas), el perfil más barato.",
+   "«Sin noticia»: lo marcado noticia: false (la entrada del diario o la versión) ya no sale en Discord; esta entrada y la versión van así. Prueba nueva «Navegador: el perfil gráfico en el juego» (rota a propósito, falla).",
+   "Sin comprobar aquí: los fps de verdad en el mundo (no hay tarjeta gráfica; en la prueba, el POCO F7 de valravnx iba a 65 fps con el PC alto, pero el mundo tiene más que dibujar). La demo pesa unos 370 KB más."
+  ],
+  "pruebas": "Batería entera en la nube, 34 grupos correctos tras unir main (demo v104 del carril A). Prueba nueva «Navegador: el perfil gráfico en el juego» (PC y móvil; rota a propósito, falla). Comparado con la v102 en el mismo sitio, al horizonte y con la cámara normal: cuadra a 1–3 niveles de 255. «Lo que llevas se ve puesto» falló una vez por poco (la mujer, el tronco a 17,7 cm de la cabeza contra un límite de unos 18 que depende del radio medido) y pasó al repetirla sin cambios: está en el borde, no es de este cambio.",
+  "capturas": "capturas/demo-v105",
+  "estado": "ok",
+  "noticia": false
  }
 ]
