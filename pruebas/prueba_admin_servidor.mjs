@@ -12,21 +12,24 @@
 //     explorar libre»); fuera del continente o con datos raros, no;
 //   - la cuenta de admin puede estar fuera de la isla (su estado vale y sale en «ver»); otra cuenta, no;
 //   - «ir» junto a otro: a su lado (a 1,6 m) y mirándole; junto a uno que no está o junto a sí mismo, no;
+//   - «traer» a otro (valravnx, 5 nov: «poder tpearlos a mi»): se le pone a 1,6 m del admin, mirándole, y a él le llega
+//     dónde; a uno que no está, a sí mismo o sin ser admin, no; con el admin fuera de la isla, tampoco;
 //   - cada petición queda en admin.jsonl con su autor y su cuenta; la lógica pura comprueba las peticiones.
 // Con MUTAR=1 se prueba un servidor que no mira la cuenta: debe FALLAR.
 // Con MUTAR=continente, uno que no deja a la cuenta de admin fuera de la isla: también debe FALLAR.
+// Con MUTAR=traer, uno que no le dice al traído adónde va: también debe FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, readFileSync, writeFileSync, rmSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { tmpdir } from 'os';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { validarPeticionAdmin, sitioJunto, JUNTO, correosAdmin, esCorreoAdmin, NO_ADMIN } from '../src/logica/admin.js';
+import { validarPeticionAdmin, sitioJunto, sitioTraido, TRAER_FUERA, JUNTO, correosAdmin, esCorreoAdmin, NO_ADMIN } from '../src/logica/admin.js';
 import { validarEstado } from '../src/logica/presencia.js';
 import { MUNDO_ENTERO } from '../src/logica/whitholm.js';
 import { LADO_MUNDO } from '../src/logica/mapa.js';
 
 // Con MUTAR=correo, uno que da por confirmado el correo: también debe FALLAR.
-const MUTAR = process.env.MUTAR === '1' || process.env.MUTAR === 'correo' || process.env.MUTAR === 'continente';
+const MUTAR = process.env.MUTAR === '1' || process.env.MUTAR === 'correo' || process.env.MUTAR === 'continente' || process.env.MUTAR === 'traer';
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
@@ -38,7 +41,9 @@ const pausa = (ms) => new Promise(r => setTimeout(r, ms));
 let ruta = join(raiz, 'servidor/servidor.mjs'), copia = null;
 if (MUTAR) {
   const fuente = readFileSync(ruta, 'utf8');
-  const mutada = process.env.MUTAR === 'continente'
+  const mutada = process.env.MUTAR === 'traer'
+    ? fuente.replace("enviar(conexionDe.get(p.quien), { tipo: 'admin', que: 'traido'", "void ({ tipo: 'admin', que: 'traido'")
+    : process.env.MUTAR === 'continente'
     ? fuente.replace('{ aparte: enLiza, admin: esAdmin(autor) }', '{ aparte: enLiza }')
     : process.env.MUTAR === 'correo'
     ? fuente.replace('esCorreoAdmin(cuentas.correoDe(autor), admins)', 'esCorreoAdmin({ ...cuentas.correoDe(autor), verificado: true }, admins)')
@@ -113,6 +118,9 @@ try {
   const j = sitioJunto({ x: 10, y: 3, z: 20, giro: 0.7 });
   comprobar('junto a otro: a 1,6 m, a su altura y mirándole', Math.abs(Math.hypot(j.x - 10, j.z - 20) - JUNTO) < 1e-9 && j.y === 3
     && Math.abs(Math.sin(j.giro) * JUNTO - (10 - j.x)) < 1e-9 && Math.abs(Math.cos(j.giro) * JUNTO - (20 - j.z)) < 1e-9, JSON.stringify(j));
+  comprobar('«traer» a un autor vale; con forma rara o sin él, no', JSON.stringify(validarPeticionAdmin({ que: 'traer', quien: 'jugador:abc' })) === '{"que":"traer","quien":"jugador:abc"}'
+    && [undefined, 3, 'x'.repeat(80), 'JUGADOR:abc'].every(q => validarPeticionAdmin({ que: 'traer', quien: q }) === null));
+  comprobar('traer: junto al admin dentro de la isla; fuera de ella, no', !!sitioTraido({ x: 10, y: 3, z: 20, giro: 0.7 }) && sitioTraido({ x: -150000, y: 0, z: 150000, giro: 0 }) === null);
   const conf = (correo, verificado = true) => ({ usuario: 'x', correo, verificado });
   comprobar('el correo de la lista, confirmado, es admin (sin mayúsculas ni espacios)', esCorreoAdmin(conf('yo@ejemplo.com'), correosAdmin(' Yo@Ejemplo.COM , otra@ejemplo.com')) && esCorreoAdmin(conf('OTRA@ejemplo.com'), correosAdmin('yo@ejemplo.com,otra@ejemplo.com')));
   comprobar('sin confirmar no es admin', !esCorreoAdmin(conf('yo@ejemplo.com', false), correosAdmin('yo@ejemplo.com')));
@@ -213,9 +221,32 @@ try {
   comprobar('otra cuenta no puede ir fuera de la isla (sigue donde estaba)', ahi(otro.yo) && ahi(otro.yo).x === 40 && ahi(otro.yo).z === -30, JSON.stringify(ahi(otro.yo)));
   admin.estado(1, 2, 0); await pausa(100);
 
+  // traer a otro junto a ti (valravnx, 5 nov)
+  admin.estado(1, 2, 0.4, 3); await pausa(150);
+  const antesTraido = otro.admin.length;
+  r = await admin.admin1({ que: 'traer', quien: otro.yo });
+  comprobar('«traer» a otro: a 1,6 m del admin, a su altura', r && r.ok && r.quien === otro.yo && Math.abs(Math.hypot(r.x - 1, r.z - 2) - JUNTO) < 1e-6 && r.y === 3 && Number.isFinite(r.giro), JSON.stringify(r));
+  await pausa(100);
+  const traido = otro.admin.slice(antesTraido).find(m => m.que === 'traido');
+  comprobar('al traído le llega adónde va (sin id: no lo ha pedido él)', traido && traido.id === undefined && r && traido.x === r.x && traido.z === r.z && traido.y === r.y && traido.giro === r.giro, JSON.stringify(traido));
+  otro.estado(r.x, r.z, r.giro, r.y); await pausa(150);
+  const vt = await admin.admin1({ que: 'ver' });
+  const ot = vt && vt.jugadores.find(e => e.autor === otro.yo);
+  comprobar('y ahí sale en la lista', ot && Math.abs(ot.x - r.x) < 1e-6 && Math.abs(ot.z - r.z) < 1e-6, JSON.stringify(ot));
+  r = await admin.admin1({ que: 'traer', quien: tercero.yo });
+  comprobar('«traer» a uno que no está: no', r && r.ok === false, JSON.stringify(r));
+  r = await admin.admin1({ que: 'traer', quien: admin.yo });
+  comprobar('«traer» a sí mismo: no', r && r.ok === false, JSON.stringify(r));
+  r = await otro.admin1({ que: 'traer', quien: admin.yo });
+  comprobar('otra cuenta no trae a nadie', r && r.ok === false && r.motivo === NO_ADMIN, JSON.stringify(r));
+  admin.estado(-150000, 150000); await pausa(150);
+  r = await admin.admin1({ que: 'traer', quien: otro.yo });
+  comprobar('con el admin fuera de la isla, no se trae a nadie', r && r.ok === false && r.motivo === TRAER_FUERA, JSON.stringify(r));
+  admin.estado(1, 2, 0); await pausa(100);
+
   // el registro
   const reg = readFileSync(s.archivoAdmin, 'utf8').trim().split('\n').map(l => JSON.parse(l));
-  comprobar('cada petición queda en admin.jsonl con su autor y su cuenta', reg.length >= 8 && reg.some(e => e.autor === otro.yo && e.cuenta === 'Berta' && !e.ok) && reg.some(e => e.autor === admin.yo && e.cuenta === 'ValRavnX' && e.ok && e.que === 'ir') && reg.some(e => e.cuenta === null && !e.ok), `${reg.length} líneas`);
+  comprobar('cada petición queda en admin.jsonl con su autor y su cuenta', reg.length >= 8 && reg.some(e => e.autor === otro.yo && e.cuenta === 'Berta' && !e.ok) && reg.some(e => e.autor === admin.yo && e.cuenta === 'ValRavnX' && e.ok && e.que === 'ir') && reg.some(e => e.cuenta === null && !e.ok) && reg.some(e => e.que === 'traer' && e.ok && e.quien === otro.yo), `${reg.length} líneas`);
   comprobar('la clave de un mensaje no se apunta nunca', !readFileSync(s.archivoAdmin, 'utf8').includes('cualquier-clave-de-antes'));
 
   // entrar con la cuenta de admin desde otro aparato (y tras reiniciar el servidor): la bienvenida dice admin

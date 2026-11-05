@@ -15,7 +15,11 @@ import { bosqueEn } from './paisaje.js';
 
 export const BASE = 100;                 // m entre puntos de la rejilla más fina
 export const NIVELES = [4, 2, 1];        // de basto a fino: cada 400, 200 y 100 m
-export const HUNDIDO = 6;                // m que se baja la malla: de cerca, el terreno de verdad queda siempre por encima
+// m que se baja la malla. Era 6 (para que de cerca el terreno de verdad quedara siempre por encima), pero así la tierra
+// baja quedaba bajo el mar y, al acabar el terreno de cerca, salía un escalón de 6 m (valravnx, 5 nov: «parecen bajo el
+// agua… como clipeados a más altura o menos, como si tuviera cortes»). Ahora va a su altura y pierde en la hondura
+// contra el terreno de cerca (polygonOffset, src/mundo/horizonte.js)
+export const HUNDIDO = 0;
 export const MAR = 0.3;                  // m: por debajo, mar (la malla baja mucho y la lámina del mar lo tapa)
 const DOSEL = [0.22, 0.29, 0.17];        // el verde de las copas visto desde arriba (sRGB; el de src/mapa/cerca.js)
 
@@ -211,17 +215,21 @@ export function mallaDosel(m, k, { ox = 0, oz = 0, y0 = 0 } = {}) {
 // exacta del suelo (alt, la del juego) y la pendiente como la de los árboles (src/logica/vegetacion.js: vecinos a 3 m),
 // sin nada en el agua. Se calcula poco a poco (avanzar) y luego se pide la malla (en m de la escena).
 export const PASO_DOSEL_CERCA = 16;
-export function crearDoselCerca(paisaje, alt, especies, cx, cz, radio, paso = PASO_DOSEL_CERCA) {
+// hay(x, z) (opcional): ¿está ya el terreno de cerca en (x, z)? Donde aún no ha llegado no se pone dosel (flotaría sobre
+// nada: valravnx, 5 nov, tiras verdes en el cielo); «faltan» dice cuántos puntos se quedaron sin mirar por eso.
+export function crearDoselCerca(paisaje, alt, especies, cx, cz, radio, paso = PASO_DOSEL_CERCA, hay = null) {
   const x0 = Math.floor((cx - radio) / paso) * paso, z0 = Math.floor((cz - radio) / paso) * paso;
   const nx = Math.ceil((cx + radio - x0) / paso) + 1, nz = Math.ceil((cz + radio - z0) / paso) + 1;
   const suelo = new Float32Array(nx * nz), h = new Float32Array(nx * nz), col = new Float32Array(nx * nz * 3);
   const tramos = paisaje.riosEn(x0, z0, x0 + (nx - 1) * paso, z0 + (nz - 1) * paso);
-  let i = 0;
+  let i = 0, faltan = 0;
   function uno() {
     const a = i % nx, b = (i - a) / nx, x = x0 + a * paso, z = z0 + b * paso, y = alt(x, z);
     suelo[i] = y;
     let c = null;
-    if (y >= 0.3 && paisaje.agua(x, z, tramos) === null) {
+    const aqui = !hay || hay(x, z);
+    if (!aqui) faltan++;
+    if (aqui && y >= 0.3 && paisaje.agua(x, z, tramos) === null) {
       const st = paisaje.sitio(x, z, y);
       if (st && st.bioma) {
         const s = Math.hypot(alt(x + 3, z) - alt(x - 3, z), alt(x, z + 3) - alt(x, z - 3)) / 6;
@@ -232,7 +240,7 @@ export function crearDoselCerca(paisaje, alt, especies, cx, cz, radio, paso = PA
     i++;
   }
   return {
-    cx, cz, radio, get listo() { return i >= nx * nz; },
+    cx, cz, radio, get listo() { return i >= nx * nz; }, get faltan() { return faltan; },
     avanzar(ms, ahora = () => performance.now()) {
       const t0 = ahora(); let k = 0;
       while (i < nx * nz) { uno(); k++; if ((k & 15) === 0 && ahora() - t0 >= ms) break; }

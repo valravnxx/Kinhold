@@ -69,22 +69,28 @@ const FINO_A_BASTO = [...NIVELES].reverse();   // 1, 2, 4: el más fino que ya e
 
 // paisaje y rect: los del mundo; origen y y0: el 0 de la escena; hasta: dónde acaba el terreno de cerca (m);
 // camara: la del juego (su alcance manda en la compresión); colorMar: el de la lámina del mar; alt(x, z): la altura
-// exacta del suelo (m del mundo), para el dosel de cerca (sin ella, no hay dosel de cerca)
-export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camara, colorMar = 0x4a6470, alt = null }) {
+// exacta del suelo (m del mundo), para el dosel de cerca (sin ella, no hay dosel de cerca); hay(x, z): ¿ha llegado ya
+// el terreno de cerca a ese sitio? (si no, ahí no hay dosel de cerca, que flotaría)
+export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camara, colorMar = 0x4a6470, alt = null, hay = null }) {
   const muestras = crearMuestras(paisaje, rect, undefined, ESPECIES_DOSEL);
   const diagonal = Math.hypot(rect.x1 - rect.x0, rect.z1 - rect.z0);
   const comp = compresion(hasta, camara.far, diagonal);
   const jug = new THREE.Vector2(), cuadroArb = new THREE.Vector3(0, 0, 1e6);   // (hasta que estén los árboles, nada de cerca)
   const comun = { uR0: { value: comp.r0 }, uS: { value: comp.s }, uJug: { value: jug } };
-  const uniformes = { ...comun, uHueco: { value: Math.max(0, hasta - 48) }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } };
+  // el hueco, casi hasta donde acaba el terreno de cerca (16 m de solape: ahí gana el de cerca, que va delante en la hondura)
+  const uniformes = { ...comun, uHueco: { value: Math.max(0, hasta - 16) }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } };
   const material = materialLejano(uniformes);
+  // lo lejano va comprimido (unos metros de verdad son centímetros de hondura): cada capa con su sitio en la hondura,
+  // para que no se pisen: el suelo, un poco detrás (pierde con el terreno de cerca donde se solapan); el mar, más
+  // detrás que el suelo (la costa no se pisa con él); el dosel, delante
+  Object.assign(material, { polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 4 });
+  const materialMar = materialLejano({ ...uniformes });
+  Object.assign(materialMar, { polygonOffset: true, polygonOffsetFactor: 4, polygonOffsetUnits: 16 });
   // el dosel: de lejos, desde donde acaba el terreno de cerca (algo antes) hasta el borde; de cerca, desde los árboles de
   // verdad (su cuadro) hasta ahí. Las dos con el mismo corte (borde), para que no se pisen.
   const borde = Math.max(0, hasta - 28);
   const matDoselLejos = materialLejano({ ...comun, uHueco: { value: borde }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } }, true);
-  // lo lejano va comprimido: los pocos metros de las copas sobre el suelo se quedan en centímetros de hondura y se
-  // pisaban con la malla del horizonte (cuadritos): el dosel se adelanta un poco en la hondura
-  Object.assign(matDoselLejos, { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -8 });
+  // (el dosel no se adelanta en la hondura: ya va detrás el suelo; adelantado, asomaba por delante de las lomas)
   const matDoselCerca = materialLejano({ ...comun, uHueco: { value: 0 }, uHasta: { value: borde }, uCuadro: { value: cuadroArb } }, true);
   const malla = new THREE.Mesh(new THREE.BufferGeometry(), material);
   malla.name = 'horizonte'; malla.frustumCulled = false; malla.castShadow = false; malla.receiveShadow = false;
@@ -101,7 +107,7 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   gm.setAttribute('color', new THREE.BufferAttribute(cols, 3));
   gm.setIndex(new THREE.BufferAttribute(mm.idx, 1));
   gm.computeVertexNormals();
-  const mar = new THREE.Mesh(gm, material);
+  const mar = new THREE.Mesh(gm, materialMar);
   mar.name = 'horizonte-mar'; mar.frustumCulled = false; mar.castShadow = false; mar.receiveShadow = false;
   mar.renderOrder = -2;
   malla.add(mar);   // se ve y se esconde con la malla
@@ -121,7 +127,7 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   };
   // el de cerca: un cuadro alrededor del jugador, que se rehace (poco a poco) al alejarse de su centro
   const RADIO_CERCA = borde + 160, REHACER = 140;
-  let cerca = null, calculando = null;
+  let cerca = null, calculando = null, hechoEn = 0;
 
   let quiere = null, hecho = null;   // el nivel que pide el perfil (4, 2 o 1; null: sin horizonte) y el de la malla
   function rehacer(k) {
@@ -143,14 +149,16 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
     if (!alt || ms <= 0 || hasta < 500) return 0;
     const t0 = performance.now();
     const xm = x + origen.x, zm = z + origen.z;
-    if (!calculando && (!cerca || Math.hypot(xm - cerca.cx, zm - cerca.cz) > REHACER)) {
+    // otro: al alejarse, o si al hacerlo faltaba terreno de cerca (cada 3 s, hasta que esté todo)
+    const tarde = cerca && cerca.faltan > 0 && performance.now() - hechoEn > 3000;
+    if (!calculando && (!cerca || tarde || Math.hypot(xm - cerca.cx, zm - cerca.cz) > REHACER)) {
       const px = Math.round(xm / PASO_DOSEL_CERCA) * PASO_DOSEL_CERCA, pz = Math.round(zm / PASO_DOSEL_CERCA) * PASO_DOSEL_CERCA;
-      calculando = crearDoselCerca(paisaje, alt, ESPECIES_DOSEL, px, pz, RADIO_CERCA);
+      calculando = crearDoselCerca(paisaje, alt, ESPECIES_DOSEL, px, pz, RADIO_CERCA, undefined, hay);
     }
     if (calculando) {
       calculando.avanzar(ms);
       if (calculando.listo) {
-        cerca = calculando; calculando = null;
+        cerca = calculando; calculando = null; hechoEn = performance.now();
         doselCerca.geometry.dispose(); doselCerca.geometry = geo(cerca.malla({ ox: origen.x, oz: origen.z, y0 }));
       }
     }
