@@ -13,7 +13,8 @@ import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { crearVegetacionMundo } from '../mundo/vegetacion_mundo.js';
-import { vigilar, ofrecerGente } from '../mundo/rendimiento.js';
+import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
+import { crearGraficos } from './graficos.js';
 import { conectarEnLinea } from './en_linea.js';
 import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
@@ -143,6 +144,10 @@ const MUNDO = window.__mundoDemo || null;
 const camara = new THREE.PerspectiveCamera(45, 1, 0.1, MUNDO ? 1600 : 500);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
 const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2048, niebla: MUNDO ? [110, 700] : [70, 200] });
+// el perfil gráfico y el posprocesado (valravnx, 5 nov; src/juego/graficos.js): la oclusión ambiental, el mapeo tonal, la
+// gradación de color, el brillo de las luces y la niebla, según el perfil (de móvil básico a PC alto)
+const graficos = crearGraficos(renderer, escena, camara, ambiente);
+soloEscena(escena); // el rendimiento cuenta un fotograma por dibujo del mundo, no por cada pasada del posprocesado
 // Dónde apareces (valravnx, 30 oct): un jugador nuevo, en un sitio al azar de las comarcas de inicio (src/logica/whitholm.js),
 // que se guarda en el navegador para que vuelvas siempre al mismo. Quien ya jugaba (hay algo guardado de antes) sigue en
 // el sitio común, que es donde está lo que construyó. En línea, todos en el sitio común (decisión provisional del 30 oct:
@@ -2037,7 +2042,7 @@ function paso() {
   if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
   pasoRastras();
   actualizarCamara();
-  renderer.render(escena, camara);
+  graficos.dibujar(dt);
   requestAnimationFrame(paso);
 }
 
@@ -2248,7 +2253,7 @@ $('filaSigue').hidden = !estado.esTactil;
 
 function redimensionar() {
   const w = innerWidth, h = innerHeight;
-  renderer.setSize(w, h, false);
+  graficos.setSize(w, h);
   camara.aspect = w / h; camara.updateProjectionMatrix();
 }
 addEventListener('resize', redimensionar);
@@ -2359,7 +2364,7 @@ function tomarPara(p) {
 
 // acceso para pruebas automáticas
 window.__kinhold = {
-  get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, escena, renderer, jugador, obstaculos, talaV, decorado, combate,
+  get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, camara, escena, renderer, graficos, jugador, obstaculos, talaV, decorado, combate,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
@@ -2460,5 +2465,5 @@ window.__kinhold = {
   rastras, miRastra, engancharRastra, soltarRastra, cargarRastra, descargarRastra, arconAlSuelo, opcionesRastra: () => opcionesRastra().map(o => o.texto), velocidadCarga, sitiosRastra: () => sitiosRastra, // la rastra // lo soltado en el suelo (src/juego/suelo.js)
   get enLinea() { return enLinea; }, objetosRed, // en línea: lo que llevas y el suelo del servidor
   reconstruir() { reconstruir(); },
-  render() { renderer.render(escena, camara); },
+  render() { graficos.dibujar(); },
 };

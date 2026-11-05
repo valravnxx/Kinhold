@@ -18,6 +18,7 @@ const CSS = `
 #demoRend button{font:inherit;color:#f1e8d8;background:rgba(58,48,38,.92);border:1px solid rgba(241,232,216,.15);border-radius:8px;padding:4px 9px;cursor:pointer}
 #demoRend button.sel{background:#d9a441;color:#241b10;border-color:transparent;font-weight:600}
 #demoRend p{margin:6px 0 0;color:#bfb19a}
+#demoRend .perfiles button{margin:2px 0}
 #demoRend[hidden]{display:none!important}
 `;
 const GENTE = [0, 4, 8, 16, 20];
@@ -47,6 +48,7 @@ export function ponerRendimiento(boton) {
     b.classList.toggle('lento', m.fps < 30);
     if (panel.hidden) return;
     const g = genteDePrueba();
+    const G = window.__graficos || null;   // el perfil gráfico del juego (src/juego/graficos.js), si esta parte lo tiene
     const mem = m.memoriaJS === null ? tr('este navegador no la dice') : tr('{n} MB', { n: m.memoriaJS });
     const filas = [
       [tr('Fotogramas'), tr('{f} por segundo', { f: m.fps })],
@@ -57,14 +59,17 @@ export function ponerRendimiento(boton) {
       [tr('Memoria gráfica'), tr('{g} geometrías y {x} texturas', { g: m.geometrias, x: m.texturas })],
       [tr('Memoria de JavaScript'), mem],
       [tr('Personajes en escena'), String(m.personajes)],
+      ...(window.__graficos ? [[tr('Perfil gráfico'), tr('{p}, {n} pasadas', { p: tr(window.__graficos.PERFILES.find(p => p.id === window.__graficos.perfil).nombre), n: window.__graficos.pasadas })]] : []),
     ];
     // niveles de detalle de los personajes (src/logica/detalle.js): cuántos hay en cada uno
     if (g && g.niveles) { const n = g.niveles(); filas.push([tr('Niveles de detalle'), tr('cerca {a}, medio {b}, lejos {c}, sin dibujar {d}', { a: n[0], b: n[1], c: n[2], d: n[3] })]); }
     panel.innerHTML = `<b>${tr('Rendimiento en este aparato')}</b><table>${filas.map(f => `<tr><td>${f[0]}</td><td>${f[1]}</td></tr>`).join('')}</table>` +
       (g ? `<div class="gente">${tr('Personajes de prueba:')} ${GENTE.map(n => `<button data-gente="${n}" class="${g.cuantos() === n ? 'sel' : ''}">${n}</button>`).join('')}</div>` : '') +
       (g && g.detalle ? `<div class="gente">${tr('Niveles de detalle:')} <button data-detalle="1" class="${g.detalle() ? 'sel' : ''}">${tr('sí')}</button><button data-detalle="0" class="${g.detalle() ? '' : 'sel'}">${tr('no (todos enteros)')}</button></div>` : '') +
-      `<p>${tr('valravnx: dime los fps que ves en tu móvil (y qué móvil es), en «Construir» y en «Duelo». Con eso se decide cuánto detalle aguanta.')}</p>`;
+      (G ? `<div class="gente perfiles">${tr('Calidad gráfica:')} ${G.PERFILES.map(p => `<button data-perfil="${p.id}" class="${G.perfil === p.id ? 'sel' : ''}">${tr(p.nombre)}${p.id === G.sugerido ? ' ★' : ''}</button>`).join('')}</div>` +
+        `<p>${tr('★ el que sugiere este aparato. El que elijas se queda guardado en este navegador.')}</p>` : '');
     for (const x of panel.querySelectorAll('[data-gente]')) x.onclick = () => { g.poner(+x.dataset.gente); refrescar(); };
+    for (const x of panel.querySelectorAll('[data-perfil]')) x.onclick = () => { G.poner(x.dataset.perfil); refrescar(); };
     for (const x of panel.querySelectorAll('[data-detalle]')) x.onclick = () => { g.detalle(x.dataset.detalle === '1'); refrescar(); };
   }
   setInterval(refrescar, 1000);

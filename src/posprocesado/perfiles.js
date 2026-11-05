@@ -89,6 +89,8 @@ export function rellenarTabla(datos, n, G = GRADACION) {
 export function sugerirPerfil(info = {}) {
   const g = String(info.grafica || '').toLowerCase();
   const nucleos = info.nucleos || 4, memoria = info.memoria || 4;
+  // sin tarjeta gráfica (el dibujo lo hace el procesador: SwiftShader, llvmpipe), lo más barato que hay
+  if (/swiftshader|llvmpipe|software/.test(g)) return 'movil-1';
   if (info.tactil) {
     // móvil o tableta: las gráficas buenas de móvil se reconocen por su nombre
     const buena = /adreno \(tm\) (7[3-9]\d|8\d\d)|adreno.*\b(7[3-9]\d|8\d\d)\b|apple|mali-g7[1-9]|mali-g[89]\d|immortalis|xclipse/.test(g);
@@ -97,7 +99,7 @@ export function sugerirPerfil(info = {}) {
     return 'movil-2';
   }
   if (/rtx|radeon rx [67]\d\d\d|rx 9\d\d\d|apple m[2-9]/.test(g)) return 'pc-3';
-  if (/intel|uhd|iris|vega|radeon\(tm\) graphics|swiftshader|llvmpipe|software/.test(g)) return 'pc-1';
+  if (/intel|uhd|iris|vega|radeon\(tm\) graphics/.test(g)) return 'pc-1';
   return 'pc-2';
 }
 
