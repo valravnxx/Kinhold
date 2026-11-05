@@ -1,0 +1,44 @@
+Jugador simulado: jugador:05006cce
+Vista pc
+  OK   pc: entra en línea con el mundo listo
+  OK   pc: crea una cuenta que no es de admin
+  OK   pc: sin la cuenta de admin no sale el botón «Admin» (ni con ?admin)
+  OK   pc: y F9 no abre nada
+  OK   pc: la clave que guardaba el navegador antes se borra
+  OK   pc: sin errores en la página (sin admin)
+  OK   pc: crea la cuenta de admin
+  OK   pc: con la cuenta de admin sale el botón «Admin», sin recargar
+  OK   pc: se abre sin pedir ninguna clave
+  OK   pc: el otro jugador sale en la lista — Conectados además de ti: 1
+  OK   pc: el otro jugador, pintado en el mapa donde está — {'x': 588.4666268656717, 'y': 337.7480597014925, 'rgb': [45, 88, 120]}
+  OK   pc: «Ir» te pone junto a él y cierra el panel — a 1.60 m
+  OK   pc: se vuelve a abrir
+  OK   pc: un clic en el mapa te lleva a ese punto — esperado {'x': 434.6122448979877, 'z': -274.897959183676}, está {'x': 434.6122448979877, 'y': 37.71616338983668, 'z': -274.897959183676, 'suelo': 37.71616338983668}
+  OK   pc: y en el suelo — {'x': 434.6122448979877, 'y': 37.71616338983668, 'z': -274.897959183676, 'suelo': 37.71616338983668}
+  OK   pc: Esc lo cierra
+  OK   pc: M lo cierra
+  OK   pc: «Cerrar» lo cierra con el mapa
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: entra en línea con el mundo listo
+  OK   movil: crea una cuenta que no es de admin
+  OK   movil: sin la cuenta de admin no sale el botón «Admin» (ni con ?admin)
+  OK   movil: la clave que guardaba el navegador antes se borra
+  OK   movil: sin errores en la página (sin admin)
+  OK   movil: crea la cuenta de admin
+  OK   movil: con la cuenta de admin sale el botón «Admin», sin recargar
+  OK   movil: se abre sin pedir ninguna clave
+  OK   movil: el otro jugador sale en la lista — Conectados además de ti: 1
+  OK   movil: el otro jugador, pintado en el mapa donde está — {'x': 169.6600615384616, 'y': 391.38953846153845, 'rgb': [45, 88, 120]}
+  OK   movil: «Ir» te pone junto a él y cierra el panel — a 1.60 m
+  OK   movil: se vuelve a abrir
+  OK   movil: un clic en el mapa te lleva a ese punto — esperado {'x': 342.50267379678553, 'z': -384.27807486630627}, está {'x': 342.50267379678553, 'y': 27.468936398707314, 'z': -384.27807486630627, 'suelo': 27.468936398707314}
+  OK   movil: y en el suelo — {'x': 342.50267379678553, 'y': 27.468936398707314, 'z': -384.27807486630627, 'suelo': 27.468936398707314}
+  OK   movil: «Cerrar» lo cierra con el mapa
+  OK   movil: sin errores en la página
+Vista pc_en
+  OK   en inglés: ningún texto sin traducir — []
+  OK   en inglés: el panel en inglés — Debug (admin)Connected besides you: 105006cce1500, 900GoClick on the map to go there.
+        Close
+
+Todo bien
