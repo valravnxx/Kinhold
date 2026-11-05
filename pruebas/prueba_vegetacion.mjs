@@ -56,7 +56,9 @@ comprobar('la hierba, solo dentro de su círculo', a.hierba.every(e => Math.hypo
 let enAgua = 0, malEspecie = 0, total = 0;
 const especies = new Set();
 let hClaro = 0, nClaro = 0, hBosque = 0, nBosque = 0;
-for (const [x, z] of SALIDAS.filter((_, i) => i % 7 === 0)) {
+// (uno de cada siete, elegidos por sus coordenadas y no por su sitio en la lista: si un sitio sale de la lista, como el
+// 5 nov con los ríos más anchos, los demás siguen siendo los mismos)
+for (const [x, z] of SALIDAS.filter(([x, z]) => (x / 1000 * 3 + z / 1000) % 7 === 0)) {
   const v = vegetacionEn(pai, alt, sem, cuadro(x, z, 120), { x, z, r: 30 });
   const tramos = pai.riosEn(x - 120, z - 120, x + 120, z + 120);
   // en tierra es a más de 1 m sobre el mar, como dice el juego (seco en src/mundo/mundo_juego.js); antes se miraba

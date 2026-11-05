@@ -4295,6 +4295,23 @@
   "noticia": false
  },
  {
+  "inicio": "2026-11-05T06:58:57+01:00",
+  "fin": "2026-11-05T12:55:50+01:00",
+  "titulo": "Ríos de verdad: uniones, el doble de anchos y lecho de piedra (chat con valravnx)",
+  "hito": "mundo",
+  "hecho": [
+   "Los afluentes llegan al cauce del río al que entran: antes 8 de las 11 uniones se quedaban cortas (la mitad, a más de 77 m; la peor, a 174 m). Ahora acaban en un punto del otro río (menos de 1 m) y su agua llega a la misma altura: donde el afluente quedaba más bajo, se baja el río que lo recibe.",
+   "El doble de anchos: ancho mediano de 7,8 m (antes 4,0) y el mayor de Whitholm de 22 m (antes 10,7). Arroyos hasta 8 m, que se vadean; los ríos, que se nadan o se cruzan por sus vados. Nacen estrechos y se ensanchan en su primer kilómetro. El mapa del rey los dibuja con su ancho nuevo.",
+   "Lecho de río en vez de hierba: fondo de grava y cantos del color de la roca del sitio, barras de arena en los ríos anchos, orilla de barro húmedo y cantos de río en el cauce y la orilla, más gordos donde la corriente es fuerte. El cauce tiene el fondo llano y la orilla marcada.",
+   "Los saltos de agua dicen su alto de verdad (antes 3 de 24 fallaban en su prueba). Un sitio de salida que quedó junto a un río sale de la lista. Pintar el lecho hace los trozos de suelo de 1 m un 15 % más lentos de hacer (medido aquí: de 76 a 90 ms).",
+   "Pruebas nuevas: pruebas/prueba_rios.mjs (14 comprobaciones; rota a propósito sin uniones, sin lecho y sin cantos, falla cada vez) y pruebas/prueba_rios_navegador.py (un arroyo, un río y una unión en PC y móvil: agua seguida 60 m arriba y abajo; rota con agua a ratos, falla).",
+   "Aún mal: el agua honda es opaca y no deja ver su lecho; en móvil salen menos cantos; junto a la unión hay un peñasco grande; la cámara de la captura de la unión no enseña bien dónde se juntan."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main (horizonte, demo v106): 35 grupos correctos, sin las de en línea. En la ronda anterior «lo que llevas se ve puesto» falló por 3 mm (17,7 cm contra 18, igual que en la sesión del posprocesado) y pasó sobre main con el mismo 17,7: está en el borde, no es de los ríos. Capturas de ríos miradas en PC y móvil.",
+  "capturas": "capturas/demo-v107",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-05T09:18:41+01:00",
   "fin": "2026-11-05T11:26:35+01:00",
   "titulo": "El horizonte en los perfiles altos",
@@ -4343,10 +4360,10 @@
    "El mapa del rey pinta las zonas del rey de oro viejo, con el borde a rayas y, de cerca, «Zona del rey» y por qué.",
    "El recorrido de jugador ya no pone el mojón en la salida: lo intenta, sale «zona del rey», y anda unos 440 m hasta la zona de al lado; el segundo viaje de piedras y el mojón nuevo, con las piedras de allí. La prueba del terreno del servidor, igual.",
    "Prueba nueva: pruebas/prueba_zonas_rey.mjs (13 comprobaciones); rota a propósito (MUTAR=1, sin pasar las zonas del rey) da 3 fallos. En la del mapa del rey, que salen las tres; rota (MUTAR=4) falla en PC y en móvil.",
-   "Publicada la demo v107 (la v106 la publicó antes el chat, con el horizonte)."
+   "Publicada la demo v108 (la v106 y la v107 las publicaron antes los chats: el horizonte y los ríos)."
   ],
-  "pruebas": "Batería entera en la nube (GitHub Actions): 34 grupos correctos (48,2 min). Tras unir main (el horizonte del chat), otra vez entera: 31 bien; construcción (la página se recargó a mitad, «Execution context was destroyed»), lógica (prueba_nube.mjs: la conexión wss a través de Caddy, error de TLS) y web (faltaba la carpeta de capturas de la v107, aún sin publicar) fallaron, y repetidas salen bien las tres. Recorrido de jugador 26/26 y prueba del terreno del servidor 36/36 también aquí. Capturas del mapa del rey miradas en PC y móvil.",
-  "capturas": "capturas/demo-v107",
+  "pruebas": "Batería entera en la nube (GitHub Actions): 34 grupos correctos (48,2 min). Tras unir main (el horizonte del chat), otra vez entera: 31 bien; construcción (la página se recargó a mitad, «Execution context was destroyed»), lógica (prueba_nube.mjs: la conexión wss a través de Caddy, error de TLS) y web (faltaba la carpeta de capturas, aún sin publicar) fallaron, y repetidas salen bien las tres. Recorrido de jugador 26/26 y prueba del terreno del servidor 36/36 también aquí. Capturas del mapa del rey miradas en PC y móvil.",
+  "capturas": "capturas/demo-v108",
   "estado": "ok"
  }
 ]

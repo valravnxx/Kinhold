@@ -38,6 +38,8 @@ export function hacerSueloTrozo(paisaje, i, j, paso, { lado = LADO, recortar = f
   const normales = new Float32Array(total * 3), colores = new Float32Array(total * 3), uvs = new Float32Array(total * 2);
   // vecinos para la pendiente de la forma (unos 3 m), la de aquí mismo (1 m) y la concavidad (2 m), en puntos de rejilla
   const k3 = Math.max(1, Math.min(BORDE, Math.round(3 / paso))), k2 = Math.max(1, Math.min(BORDE, Math.round(2 / paso)));
+  // los ríos del trozo, para pintar su lecho (src/mundo/color_suelo.js)
+  const tramos = paisaje.riosEn ? paisaje.riosEn(x0, z0, x0 + lado, z0 + lado, 80) : [];   // (los que pasan a menos de 80 m: el lecho llega a 3,5 m del cauce)
   for (let b = 0; b < n; b++) for (let a = 0; a < n; a++) {
     const k = b * n + a, y = en(a, b), xm = x0 + a * paso, zm = z0 + b * paso;
     const dx = (en(a + 1, b) - en(a - 1, b)) / (2 * paso), dz = (en(a, b + 1) - en(a, b - 1)) / (2 * paso);
@@ -47,7 +49,7 @@ export function hacerSueloTrozo(paisaje, i, j, paso, { lado = LADO, recortar = f
     const s1 = Math.hypot(dx, dz);
     const lap = (en(a + k2, b) + en(a - k2, b) + en(a, b + k2) + en(a, b - k2) - 4 * y) / (4 * k2 * k2 * paso * paso);
     const st = y > 0.05 ? paisaje.sitio(xm, zm, y) : null;
-    colorJuego(st, y, s, s1, lap, xm, zm, _c);
+    colorJuego(st, y, s, s1, lap, xm, zm, _c, tramos.length ? paisaje.rioCerca(xm, zm, tramos) : null);
     colores[k * 3] = _c[0]; colores[k * 3 + 1] = _c[1]; colores[k * 3 + 2] = _c[2];
     // la textura va por el mundo (no por el trozo), para que siga sin cortes de un trozo a otro
     uvs[k * 2] = xm * 0.5; uvs[k * 2 + 1] = zm * 0.5;
