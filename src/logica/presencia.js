@@ -23,6 +23,17 @@ export const RETRASO = 200;     // ms en el pasado a los que se dibuja a los dem
 export const PREDICCION = 250;  // ms que se sigue la última dirección si no llega nada; luego se queda quieto
 const LIMITE = 100000;          // m: nadie está más lejos que esto del origen (dato roto si lo está)
 
+// Movimiento sin trampas (auditoría del 4 nov): el servidor no se cree un estado que esté más lejos del anterior de lo
+// que se puede andar en ese tiempo. Lo más deprisa que va un jugador es corriendo, 6 m/s (src/juego/main.js); nadando con
+// la corriente a favor, 1,5 + 0,8 × 3 = 3,9 m/s (src/logica/nado.js y paisaje.js). Cada jugador tiene un «crédito» de
+// metros que crece a VEL_MAX por segundo (de reloj del servidor) hasta CREDITO_MAX y que gasta al moverse: así los
+// estados que llegan juntos tras un tirón de la red pasan (el crédito se ha ido llenando mientras), y quien se salta
+// metros que no tiene se queda donde le llega el crédito (se recorta, en la misma dirección) y se anota.
+// Solo cuenta lo horizontal: la altura ya la comprueba el terreno (cerca del suelo, src/logica/terreno_servidor.js).
+export const VEL_MAX = 8;        // m/s: los 6 de correr y holgura
+export const CREDITO_MAX = 16;   // m: lo que se puede juntar (2 s a VEL_MAX)
+export const RADIO_SALIDA = 12;  // m: volver al sitio de salida (al ahogarse) es libre (decisión provisional, 5 nov)
+
 const numero = (v) => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) <= LIMITE;
 
 // Comprueba un estado que manda un cliente. Devuelve el estado limpio (solo lo que se reparte) o null.
@@ -73,14 +84,21 @@ export function mezclarAngulo(a, b, f) {
 
 // Lo que el servidor guarda de cada conexión y reparte en cada tic.
 export class PresenciaServidor {
-  constructor() { this.ultimo = new Map(); this.cambiados = new Set(); this.desfases = new Map(); }
+  // limitar: false solo en las pruebas que ponen a un jugador en un sitio de golpe para preparar otra cosa
+  constructor({ limitar = true } = {}) { this.limitar = limitar; this.ultimo = new Map(); this.cambiados = new Set(); this.desfases = new Map(); this.anclas = new Map(); }
+  // Dónde está de verdad cada uno en el mundo (para el límite de velocidad): { x, z, r (hora del servidor a la que
+  // llegó), credito }. La pone el servidor al conectar (donde lo dejó o la salida) y cuando él mismo lo mueve (el admin
+  // que va junto a alguien); con el crédito lleno, para que el primer paso no se recorte.
+  anclar(autor, p, ahora) { this.anclas.set(autor, { x: p.x, z: p.z, r: ahora, credito: CREDITO_MAX }); }
   // Estado de un cliente: el autor y la hora los pone el servidor, nunca el cliente.
   // La hora: con la del reloj del cliente (tc) pasada al del servidor, se quita el vaivén de la subida
   // (si no, los estados llegan a trompicones y la velocidad que se ve cambia). El desfase entre los dos
   // relojes es el del mensaje que llegó más deprisa. Nunca puede ser una hora futura ni de hace más de 1 s.
-  recibir(autor, m, ahora) {
+  // `aparte`: está en otra escena (la liza del «Duelo»): no cuenta para el mundo ni toca su ancla.
+  // Devuelve null si no vale; si vale, { estado, recortado } (recortado: los metros que se ha querido saltar de más).
+  recibir(autor, m, ahora, { aparte = false } = {}) {
     const e = validarEstado(m);
-    if (!e) return false;
+    if (!e) return null;
     let t = ahora;
     if (e.tc !== undefined) {
       const d = Math.min(this.desfases.get(autor) ?? Infinity, ahora - e.tc);
@@ -88,13 +106,30 @@ export class PresenciaServidor {
       t = Math.min(ahora, Math.max(ahora - 1000, e.tc + d));
       delete e.tc;
     }
+    let recortado = 0;
+    const a = aparte || !this.limitar ? null : this.anclas.get(autor);
+    if (a) {
+      a.credito = Math.min(CREDITO_MAX, a.credito + VEL_MAX * Math.max(0, ahora - a.r) / 1000);
+      a.r = ahora;
+      const dx = e.x - a.x, dz = e.z - a.z, d = Math.hypot(dx, dz);
+      if (Math.hypot(e.x, e.z) <= RADIO_SALIDA) a.credito = CREDITO_MAX;   // vuelta a la salida: libre
+      else if (d > a.credito) {
+        const f = a.credito / d, previo = this.ultimo.get(autor);
+        recortado = d - a.credito;
+        e.x = a.x + dx * f; e.z = a.z + dz * f;
+        if (previo) e.y = previo.y + (e.y - previo.y) * f;
+        a.credito = 0;
+      } else a.credito -= d;
+      a.x = e.x; a.z = e.z;
+    } else if (!aparte && this.limitar) this.anclar(autor, e, ahora);   // sin ancla (el primero de todos): desde aquí
     const previo = this.ultimo.get(autor);
     if (previo) t = Math.max(t, previo.t + 1);   // la hora de cada jugador nunca va hacia atrás
-    this.ultimo.set(autor, { autor, t, ...e });
+    const estado = { autor, t, ...e };
+    this.ultimo.set(autor, estado);
     this.cambiados.add(autor);
-    return true;
+    return { estado, recortado };
   }
-  quitar(autor) { this.ultimo.delete(autor); this.cambiados.delete(autor); this.desfases.delete(autor); }
+  quitar(autor) { this.ultimo.delete(autor); this.cambiados.delete(autor); this.desfases.delete(autor); this.anclas.delete(autor); }
   // los que han cambiado desde el tic anterior (cada uno una vez, el último estado que llegó)
   tic() {
     const lista = [...this.cambiados].map(a => this.ultimo.get(a)).filter(Boolean);

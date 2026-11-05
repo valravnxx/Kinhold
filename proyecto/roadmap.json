@@ -1167,9 +1167,10 @@
     },
     {
      "nombre": "Movimiento sin trampas: el servidor limita la velocidad y el salto entre dos estados seguidos de cada personaje (lo que llega por encima se recorta a lo posible y se anota), para que «sin trampas» valga para andar y no solo para las obras (auditoría del 4 nov)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T08:23:19+00:00",
-     "rama": "trabajo/20261105-0823"
+     "rama": "trabajo/20261105-0823",
+     "fin": "2026-11-05T10:05:26+00:00"
     },
     {
      "nombre": "Zonas del rey (valravnx, 4 nov): las zonas con una veta marcada en el mapa, un sitio de salida o la ciudad no se reclaman, y en ellas cava y recoge cualquiera. Antes, con la lógica de comarcas, contar cuántas zonas de Whitholm tienen veta marcada, vado, collado, salida o ciudad, para que las del rey sean las justas y se vea en el mapa",

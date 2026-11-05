@@ -101,7 +101,7 @@ const dir = mkdtempSync(join(tmpdir(), 'kinhold-obras-'));
 const archivo = join(dir, 'mundo.jsonl');
 const LEJOS = -200;   // m: B tiene alrededor el trozo 0,0 pero no el 1,0
 try {
-  const s = crearServidor({ puerto: 0, archivo });
+  const s = crearServidor({ puerto: 0, archivo, limiteMovimiento: false });
   const puerto = await s.listo;
   const a = await cliente(puerto), b = await cliente(puerto, true);
   comprobar('la bienvenida lleva la foto de las obras (no la lista de entradas) y el número de la última acción',

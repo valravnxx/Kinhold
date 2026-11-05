@@ -4293,5 +4293,24 @@
   "capturas": "capturas/demo-v105",
   "estado": "ok",
   "noticia": false
+ },
+ {
+  "inicio": "2026-11-05T08:23:19+00:00",
+  "fin": "2026-11-05T10:05:26+00:00",
+  "titulo": "Movimiento sin trampas (P2, servidor, carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "El servidor ya no se cree un estado que esté más lejos del anterior de lo que se puede andar (src/logica/presencia.js): cada jugador tiene un crédito de metros que crece a 8 m/s (correr son 6; nadar con la corriente a favor, 3,9) hasta 16 m y que gasta al moverse. Lo que llega más lejos se recorta en la misma dirección, con la altura a juego.",
+   "Los recortes se apuntan en seguridad.jsonl (quién, su cuenta, cuántas veces y cuántos metros), como mucho una línea por jugador cada 10 s.",
+   "El servidor pone el ancla al conectar (donde lo dejaste o la salida, así que volver a conectar no sirve para saltar) y cuando el admin va junto a alguien o a un punto del mapa. La liza del duelo no cuenta para el mundo ni mueve su ancla.",
+   "Decisión provisional (registro de la demo y aquí): volver al sitio de salida al ahogarse es libre, porque el navegador te pone allí de golpe.",
+   "Lo que usa la posición en el servidor (alcance de las obras, lo que se recoge, los trozos que te llegan, la posición guardada al salir) usa ya la recortada.",
+   "Prueba nueva: pruebas/prueba_movimiento.mjs (16 comprobaciones: lógica y servidor de verdad con un cliente tramposo); rota a propósito (MUTAR=1, sin recortar) da 4 fallos.",
+   "El recorrido de jugador anda de verdad: pasos de 0,6 m cada 100 ms (6 m/s; antes iba a 20 m/s) y el segundo jugador llega andando desde la salida. Las pruebas que colocan a alguien de golpe para preparar otra cosa (admin, posiciones, trozos y obras por la red) crean su servidor con limiteMovimiento: false; la del panel del admin arranca el servidor con KINHOLD_PRUEBAS_MOVIMIENTO=libre (su jugador simulado aparece a 1,7 km), y el servidor lo avisa en su línea de arranque.",
+   "Sin versión nueva de la demo: el navegador no cambia. Hace falta actualizar el servidor de Hetzner a main para que valga en el juego (no comprobado desde aquí)."
+  ],
+  "pruebas": "Batería entera en la nube (el PC de valravnx no estaba encendido): todo bien salvo el panel del admin, que falló porque su jugador simulado aparecía de golpe lejos; corregido y repetido en la nube, bien. El mapa del mundo no llegó a terminar en la primera ronda (se acabó el tiempo de espera de esta sesión) y se repitió: bien. Recorrido de jugador 24/24 aquí. Capturas del panel del admin (PC y móvil) miradas.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
