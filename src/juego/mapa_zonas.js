@@ -6,7 +6,8 @@
 // rejilla de PASO m y, donde dos muestras vecinas son de zonas distintas, pasa un linde (cuadrados que marchan: en cada
 // casilla de la rejilla, de la mitad de un lado a la mitad de otro). Salen segmentos en km, que el mapa traza nítidos a
 // cualquier zoom. Una tesela son unas 10.000 muestras; se hacen a pasos (paso(presupuesto)) para no parar el juego.
-// Tu zona: una máscara de muestras (1 = tuya) alrededor de tu mojón, que el mapa pinta de color, y su borde.
+// Tu zona: una máscara de muestras (1 = tuya) alrededor de tu mojón, que el mapa pinta de color, y su borde. Las zonas
+// del rey, igual, cada una alrededor de su sitio.
 // Sin three.js ni DOM: se prueba en Node (pruebas/prueba_mapa_zonas.mjs).
 
 export const TESELA = 4;        // km de lado de cada tesela de lindes
@@ -53,20 +54,37 @@ export function crearZonasMapa(comarcas) {
     teselas.set(`${tx},${ty}`, new Float32Array(lindes(e, n, x0, z0, h, esTierra)));
   }
 
-  // tu zona: la de tu mojón (x, z en m del mundo), en una máscara alrededor de él
-  function hacerTierra(x, z, radio = RADIO_TIERRA) {
-    const zona = et(x, z), clave = `${zona},${radio}`;
-    if (tierra && tierra.clave === clave) return tierra;
-    if (zona < 0) { tierra = null; return null; }
+  // una zona entera: la del sitio (x, z en m del mundo), en una máscara alrededor de él (1 = de esa zona) y su borde
+  function hacerMascara(x, z, radio) {
+    const zona = et(x, z);
+    if (zona < 0) return null;
     const n = Math.round(2 * radio / PASO_TIERRA), h = PASO_TIERRA / 1000;
     const x0 = (x - radio) / 1000, z0 = (z - radio) / 1000;
     const e = new Int32Array((n + 1) * (n + 1));
     for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) e[j * (n + 1) + i] = et((x0 + i * h) * 1000, (z0 + j * h) * 1000) === zona ? 1 : 0;
-    // la máscara (casilla j, i: tuya si lo es su esquina de arriba a la izquierda) y su borde
+    // la máscara (casilla j, i: de la zona si lo es su esquina de arriba a la izquierda) y su borde
     const mascara = new Uint8Array(n * n);
     for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) mascara[j * n + i] = e[j * (n + 1) + i] && (!esTierra || esTierra(x0 + i * h, z0 + j * h)) ? 1 : 0;
-    tierra = { clave, zona, x0, z0, n, h, mascara, segs: new Float32Array(lindes(e, n, x0, z0, h, esTierra)) };
+    return { zona, x0, z0, n, h, mascara, segs: new Float32Array(lindes(e, n, x0, z0, h, esTierra)) };
+  }
+  // tu zona: la de tu mojón (x, z en m del mundo)
+  function hacerTierra(x, z, radio = RADIO_TIERRA) {
+    const zona = et(x, z), clave = `${zona},${radio}`;
+    if (tierra && tierra.clave === clave) return tierra;
+    const m = hacerMascara(x, z, radio);
+    tierra = m ? { clave, ...m } : null;
     return tierra;
+  }
+  // las zonas del rey (src/logica/zonas_rey.js: crearZonasRey(comarcas).lista, con un sitio de cada una en m del
+  // mundo): cada una en su máscara, hechas una vez
+  const reyHechas = new Map();   // id → máscara (o null)
+  function hacerRey(lista, radio = RADIO_TIERRA) {
+    const out = [];
+    for (const r of lista || []) {
+      if (!reyHechas.has(r.id)) reyHechas.set(r.id, hacerMascara(r.x, r.z, radio));
+      const m = reyHechas.get(r.id); if (m) out.push({ ...m, por: r.por, x: r.x, z: r.z });
+    }
+    return out;
   }
 
   return {
@@ -99,8 +117,9 @@ export function crearZonasMapa(comarcas) {
     get pendientes() { return cola.length; },
     get hechas() { return teselas.size; },
     tierra: hacerTierra,
+    rey: hacerRey,
     // lo que es tierra (x, z en km): desde entonces, los lindes y tu zona no se pintan en el agua
-    ponerTierra(f) { esTierra = f; teselas.clear(); tierra = null; },
+    ponerTierra(f) { esTierra = f; teselas.clear(); tierra = null; reyHechas.clear(); },
     etiqueta: et,
   };
 }

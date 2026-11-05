@@ -5,9 +5,9 @@
 # comarcas con su nombre, los ríos, montes, árboles y la ciudad del rey; que tu marca está donde estás (y se mueve si
 # andas) y que «Dónde estoy» la pone en el centro; y que en inglés no falta ningún texto.
 # Y las zonas (valravnx, 4 nov): con tu mojón puesto, tu tierra (la zona entera) sale de color con su mojón, y al
-# acercar el mapa salen los lindes de las zonas de cada comarca, sin tirones.
+# acercar el mapa salen los lindes de las zonas de cada comarca, sin tirones; y las tres zonas del rey, de oro viejo.
 # MUTAR=1: la marca del jugador, 3 km al este de donde está: tiene que fallar. MUTAR=2: sin lindes de zonas. MUTAR=3: los
-# nombres de las comarcas siempre a la vista.
+# nombres de las comarcas siempre a la vista. MUTAR=4: sin las zonas del rey.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
@@ -46,6 +46,7 @@ with sync_playwright() as p:
         if MUTAR == '1': ctx.add_init_script('window.__mutarMapaRey = true')
         if MUTAR == '2': ctx.add_init_script('window.__mutarZonasMapa = true')
         if MUTAR == '3': ctx.add_init_script('window.__mutarNombresMapa = true')
+        if MUTAR == '4': ctx.add_init_script('window.__mutarZonasRey = true')
         pg = ctx.new_page()
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
@@ -135,6 +136,15 @@ with sync_playwright() as p:
           m.zoom(1, 0, 0); }})()""")
         pg.evaluate(f"""(() => {{ const m = {K}.mapaRey, c = m.kmAPant(217.558, 52.73); m.zoom(1.6, c[0], c[1]); }})()""")
         pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_ciudad.png')
+        # las zonas del rey (valravnx, 4 nov): la de la salida, de cerca, de oro viejo con «Zona del rey»
+        pg.evaluate(f"{K}.mapaRey.centrarEn(184.596, 46.28, 6)")
+        try: pg.wait_for_function(f'{K}.mapaRey.zonas.pendientes === 0', timeout=60000)
+        except Exception: pass
+        pg.wait_for_timeout(300)
+        z = pg.evaluate(f'{K}.mapaRey.zonas')
+        rey = z.get('rey') or []
+        comprobar('salen las tres zonas del rey (la gran veta, la ciudad y la salida)', len(rey) == 3 and sorted(r['por'] for r in rey) == ['ciudad', 'salida', 'veta'], str(rey))
+        pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_zona_rey.png')
         # cerrar: M o Esc en el PC, ✕ en el móvil
         if movil: pg.tap('#mapaRey .mr-cerrar')
         else: pg.keyboard.press('Escape')

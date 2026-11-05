@@ -77,6 +77,7 @@ paso "Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, c
 paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
 paso "Las zonas en el mapa del rey y tu tierra" node pruebas/prueba_mapa_zonas.mjs
+paso "Las zonas del rey: veta marcada, ciudad y salida no se reclaman" node pruebas/prueba_zonas_rey.mjs
 paso "Mapa del rey: costa del juego, nombres, ciudad y ríos" node pruebas/prueba_mapa_rey.mjs
 paso "Strandvang, tierras del rey: nadie hiere a otro jugador (el servidor lo rechaza, con su autor)" node pruebas/prueba_tierras_rey.mjs
 paso "Aguante, agua y nado" node pruebas/prueba_nado.mjs
