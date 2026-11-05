@@ -4365,5 +4365,17 @@
   "pruebas": "Batería entera en la nube (GitHub Actions): 34 grupos correctos (48,2 min). Tras unir main (el horizonte del chat), otra vez entera: 31 bien; construcción (la página se recargó a mitad, «Execution context was destroyed»), lógica (prueba_nube.mjs: la conexión wss a través de Caddy, error de TLS) y web (faltaba la carpeta de capturas, aún sin publicar) fallaron, y repetidas salen bien las tres. Recorrido de jugador 26/26 y prueba del terreno del servidor 36/36 también aquí. Capturas del mapa del rey miradas en PC y móvil. Tras unir los ríos del chat, otra vez entera: 34 de 35 bien a la primera y la web, repetida al publicar.",
   "capturas": "capturas/demo-v108",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T13:39:24+00:00",
+  "fin": "2026-11-05T13:47:23+00:00",
+  "titulo": "Decisión: la salida al azar, solo en zonas libres",
+  "hito": "entre-dos",
+  "hecho": [
+   "valravnx respondió a la decisión de las zonas del rey y la salida al azar: «apareces en un punto aleatorio LIBRE, si una zona tiene mojón activo, deja de ser spawn». Las zonas de los sitios de salida se reclaman como las demás; la salida al azar elige solo entre los sitios cuya zona no tiene mojón.",
+   "Añadido a la tarea «Salida al azar de verdad en línea», que vuelve a pendiente. La zona de la salida común sigue siendo del rey."
+  ],
+  "pruebas": "Sin código: solo el roadmap y REVISION.md.",
+  "estado": "ok"
  }
 ]

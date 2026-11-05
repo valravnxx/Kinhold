@@ -1186,12 +1186,14 @@
      "fin": "2026-11-04T20:25:28+01:00"
     },
     {
-     "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio de las tres comarcas de inicio y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
-     "estado": "espera_decision"
+     "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio LIBRE al azar de las tres comarcas de inicio (valravnx, 5 nov: si la zona de un sitio tiene un mojón puesto, deja de ser salida; las zonas de los sitios de salida sí se reclaman) y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
+     "estado": "pendiente"
     },
     {
      "nombre": "Fuera el arcón de materiales infinito del servidor de verdad (solo para las pruebas automáticas, sin botón); el contador de materiales de arriba sale solo dentro de tu tierra, con lo que tienes almacenado en ella",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-05T13:26:47+00:00",
+     "rama": "trabajo/20261105-1326"
     },
     {
      "nombre": "Con algo al hombro, las manos no llevan nada (ni el hacha): lógica del inventario, en la demo y por el servidor",
@@ -3735,11 +3737,6 @@
    "pregunta": "Clanes y guerra (del 30 oct): con el vasallaje de comarca ya no hay un pago que dejar de hacer, así que el impago deja de ser causa de guerra. ¿Qué causas quedan, y asediar el centro de una comarca en su ventana necesita guerra declarada? Para la reunión tras P3, con las dos opciones escritas: solo guerra aceptada por las dos partes más las ventanas de asedio del centro, o causas automáticas tasadas",
    "desde": "2026-10-30",
    "hito": "tierras"
-  },
-  {
-   "pregunta": "Zonas del rey y la salida al azar (5 nov): los 259 sitios de la salida al azar caen en 235 zonas, el 28 % de las tres comarcas de inicio (853 zonas). Hoy son del rey solo la zona de la gran veta, la de la ciudad y la de la salida común. ¿Qué sitios de salida quieres? (a) todos, y sus 235 zonas del rey; (b) pocos sitios de salida, por ejemplo 3 por comarca de inicio (9 zonas del rey), y la salida al azar elige entre ellos; (c) solo la salida común, como ahora",
-   "desde": "2026-11-05",
-   "hito": "entre-dos"
   }
  ]
 }
