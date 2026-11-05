@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v111 (fuera el arcón infinito)";
+export const VERSION_DEMO = "Demo única · v112 (traer jugadores como admin)";
 export const REGISTRO_DEMO = [
+  "v112: traer jugadores como admin (valravnx, 5 nov). En la lista del panel del admin, junto a «Ir», sale «Traer»: pone a ese jugador a tu lado, a 1,6 m y mirándote, y a él le sale el aviso «El admin te ha llevado junto a él». Lo pide el servidor, solo con la cuenta de admin, y queda apuntado en su registro.",
+  "v112, provisional: fuera de Whitholm no se puede traer a nadie (los demás jugadores no pueden estar fuera de la isla); el panel lo dice.",
   "v111: fuera el arcón infinito del servidor de verdad (valravnx, 1 nov). En línea ya no hay arcón de pruebas ni botón «+ Materiales»: lo que llevas se coge del mundo. El servidor rechaza sacar, dejar y rellenar el arcón, y coger o soltar equipo de él («Aquí no hay arcón.»); solo lo tienen las pruebas automáticas (KINHOLD_PRUEBAS_ARCON=si, que lo dice al arrancar).",
   "v111: el contador de materiales de arriba sale solo dentro de tu tierra (la zona de tu mojón), con lo que tienes almacenado en ella; fuera de tu tierra no sale.",
   "v111, provisional: mientras no haya almacenajes de la base, lo almacenado en tu tierra es lo que hay en su suelo (ahí no desaparece), contando lo de dentro de los contenedores; el navegador lo cuenta de lo que le llega del servidor, los trozos de tu alrededor.",

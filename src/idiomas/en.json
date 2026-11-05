@@ -1883,5 +1883,8 @@
  "Traído: {n}": "Brought: {n}",
  "Traer": "Bring",
  "Traerlo junto a ti": "Bring them to you",
- "Fuera de la isla no se puede traer a nadie.": "Outside the island you can't bring anyone."
+ "Fuera de la isla no se puede traer a nadie.": "Outside the island you can't bring anyone.",
+ "v112: traer jugadores como admin (valravnx, 5 nov). En la lista del panel del admin, junto a «Ir», sale «Traer»: pone a ese jugador a tu lado, a 1,6 m y mirándote, y a él le sale el aviso «El admin te ha llevado junto a él». Lo pide el servidor, solo con la cuenta de admin, y queda apuntado en su registro.": "v112: bring players as admin (valravnx, 5 Nov). In the admin panel's list, next to «Go», there is «Bring»: it puts that player at your side, 1.6 m away and facing you, and they get the notice «The admin has brought you to them». The server handles it, only for the admin account, and it is written to its log.",
+ "v112, provisional: fuera de Whitholm no se puede traer a nadie (los demás jugadores no pueden estar fuera de la isla); el panel lo dice.": "v112, provisional: outside Whitholm you can't bring anyone (other players can't be outside the island); the panel says so.",
+ "Demo única · v112 (traer jugadores como admin)": "Single demo · v112 (bring players as admin)"
 }
