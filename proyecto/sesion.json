@@ -11,5 +11,11 @@
   "tarea": "El horizonte sin cortes ni tierra bajo el agua (valravnx, 5 nov: «parecen bajo el agua en algunos puntos… como clipeados a más altura o menos, como si tuviera cortes»)",
   "hito": "graficos",
   "rama": "trabajo/20261105-1645-cortes"
+ },
+ "chat:trabajo/20261105-1636-traer": {
+  "inicio": "2026-11-05T16:37:21+00:00",
+  "tarea": "Traer jugadores con el panel de admin (valravnx, 5 nov: «a parte de lo que ya está que es tpearme a gente, poder tpearlos a mi»): en la lista, junto a «Ir», «Traer» pone a ese jugador a tu lado; lo pide el servidor, solo con la cuenta de admin, y queda apuntado",
+  "hito": "admin",
+  "rama": "trabajo/20261105-1636-traer"
  }
 }

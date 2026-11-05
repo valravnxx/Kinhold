@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 5 nov 2026 (16:36 UTC) — por el chat: traer jugadores con el panel de admin
+valravnx: «mete que en el panel de admin, a parte de lo que ya está que es tpearme a gente, poder tpearlos a mi». → Tarea de chat en el hito P7 (Administración): en la lista del panel, junto a «Ir», un botón «Traer» que pone a ese jugador a tu lado (lo pide el servidor, solo para la cuenta de admin, y lo apunta en admin.jsonl).
+
 ### 5 nov 2026 (13:39–13:45 UTC) — en la sesión del carril A: la salida al azar, solo en zonas libres
 valravnx, a la decisión «Zonas del rey y la salida al azar» (los 259 sitios de la salida al azar caen en 235 zonas, el 28 % de las comarcas de inicio): «podemos hacer que sean zonas sin tomar por nadie siempre» y, aclarado: «apareces en un punto aleatorio LIBRE, si una zona tiene mojón activo, deja de ser spawn». → Las zonas de los sitios de salida NO son del rey: se reclaman como las demás. La salida al azar elige solo entre los sitios cuya zona no tiene mojón puesto. Decisión quitada de las pendientes; añadido a la tarea «Salida al azar de verdad en línea» (vuelve a pendiente). La zona de la salida común sigue siendo del rey (no dicho; sin cambios).
 
