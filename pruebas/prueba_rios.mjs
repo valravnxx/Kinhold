@@ -4,10 +4,12 @@
 // Con MUTAR=1 no se unen los afluentes (como antes) y con MUTAR=2 el cauce es de hierba (sin lecho): tiene que fallar.
 if (process.env.MUTAR === '1') globalThis.__sinUnirRios = true;
 if (process.env.MUTAR === '2') globalThis.__sinLecho = true;
+if (process.env.MUTAR === '3') globalThis.__sinCantos = true;   // (y con MUTAR=3, sin cantos en el cauce)
 const { generarMapa, SEMILLA_MUNDO, LADO_MUNDO, anchoRio, ARROYO_HASTA } = await import('../src/logica/mapa.js');
 const { crearPaisaje } = await import('../src/logica/paisaje.js');
 const { ISLA } = await import('../src/logica/whitholm.js');
 const { colorJuego } = await import('../src/mundo/color_suelo.js');
+const { vegetacionEn } = await import('../src/logica/vegetacion.js');
 
 let bien = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') { if (cond) bien++; else mal++; console.log(`  ${cond ? 'OK  ' : 'FALLA'} ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -108,6 +110,17 @@ console.log('El lecho: grava y piedra, no hierba');
   }
   comprobar('en el centro del cauce el suelo es de grava y piedra (sin el verde de la hierba)', n > 50 && lechoBien >= n * 0.95, `${lechoBien} de ${n}`);
   comprobar('a 6 m de la orilla, el suelo de siempre', fueraBien >= n, `${fueraBien} de ${n}`);
+}
+
+console.log('Cantos de río');
+{
+  // en un arroyo y en un río de Whitholm, cuadros de 64 m: cantos en el cauce y la orilla, ninguno lejos del agua
+  for (const [n, x, z] of [['arroyo', 217109, 46918], ['río', 195888, 65144]]) {
+    const tr = pai.riosEn(x - 3000, z - 3000, x + 3000, z + 3000), alt = (a, b) => pai.altura(a, b, tr, true);
+    const v = vegetacionEn(pai, alt, 1, { x0: x - 32, z0: z - 32, x1: x + 32, z1: z + 32 }), c = v.piedras.filter(p => p.canto);
+    const lejos = c.filter(p => { const r = pai.rioCerca(p.x, p.z, tr); return r.dm > r.ancho / 2 + 1.7; }).length;
+    comprobar(`${n}: hay cantos en el cauce y la orilla (más de 20 en 64 m de río) y ninguno lejos del agua`, c.length > 20 && lejos === 0, `${c.length} cantos, ${lejos} lejos`);
+  }
 }
 
 console.log(`\n${bien} bien, ${mal} mal`);
