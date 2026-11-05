@@ -42,6 +42,7 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar, libre 
 
   const esAdmin = () => !!(enLinea && enLinea.admin);
   let huellaLista = '', jugadores = [], yo = null, ultimo = null, id = 0, reloj = null, estadoTxt = '', estadoMal = false;
+  let avisoHasta = 0;   // hasta cuándo se deja a la vista lo último que ha pasado (ms)
   const pendientes = new Map();   // id → 'ver' | 'ir' | 'traer'
 
   function mandar(m) {
@@ -70,7 +71,7 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar, libre 
     }
     if (m.que === 'ver') {
       yo = m.yo; jugadores = (m.jugadores || []).filter(j => j.autor !== yo); ultimo = Date.now();
-      ponerEstado(tr('Conectados además de ti: {n}', { n: jugadores.length }));
+      if (Date.now() > avisoHasta) ponerEstado(tr('Conectados además de ti: {n}', { n: jugadores.length }));
       // la lista se rehace solo si ha cambiado (así un botón no se cambia por otro mientras se pulsa)
       const h = JSON.stringify(jugadores.map(j => [j.autor, Math.round(j.x), Math.round(j.z)]));
       if (h !== huellaLista || !raiz.querySelector('ul')) { huellaLista = h; pintarPanel(); }
@@ -78,7 +79,7 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar, libre 
     } else if (m.que === 'traer') {
       const j = jugadores.find(e => e.autor === m.quien);
       ponerEstado(tr('Traído: {n}', { n: j ? nombre(j) : corto(m.quien || '') }));
-      ver();
+      avisoHasta = Date.now() + 4000;   // que se lea: la lista de cada segundo no lo pisa enseguida
     } else if (m.que === 'ir') {
       irA(m.x, Number.isFinite(m.y) ? m.y : null, m.z, Number.isFinite(m.giro) ? m.giro : null);
       avisar(tr('Teletransportado (admin).'));
