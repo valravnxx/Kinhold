@@ -16,7 +16,8 @@
 //   ribera — cerca de un río (hasta 16 m de la orilla), en seco.
 // Decisiones provisionales (el documento solo dice «M» y «P»; anotadas en el registro de decisiones y en el diario):
 //  - Una celda de 8 m da como mucho un punto. Lo «medio» (ramas, piedra) sale en una de cada 3 o 4 celdas de su zona;
-//    lo «poco» (sílex, fibra), en una de cada 10 o 20; en los ríos, más (la orilla es estrecha).
+//    lo «poco» (sílex, fibra), en una de cada 10 o 20; en los ríos, más (la orilla es estrecha). En el claro, algo de
+//    piedra y de sílex sueltos (SUELTOS_CLARO), menos que en su sitio.
 //  - Nada a menos de 1,2 m del sitio posible de un árbol (para no caer dentro de un tronco).
 import { azarCelda } from './azar.js';
 import { bosqueEn } from './paisaje.js';
@@ -34,6 +35,11 @@ export const DENSIDAD_RECOGIDA = {
   ortiga:       { ribera: 0.12, claro: 0.03 },
   hierba_larga: { claro: 0.06, ribera: 0.08 },
 };
+// Piedra y sílex sueltos en la pradera abierta (valravnx, 1 nov: «dentro del realismo, accesibilidad»; tarea «Salida
+// al azar de verdad en línea»): en el claro, algo de piedra y de sílex, menos que donde les toca (decisión provisional:
+// la piedra la séptima parte que en la ladera, el sílex la sexta parte que en la caliza). Se miran después de lo
+// demás, solo en las celdas que no han dado nada: así lo que ya salía sigue en el mismo sitio.
+export const SUELTOS_CLARO = { piedra: 0.03, silex: 0.01 };
 const ORDEN = Object.keys(DENSIDAD_RECOGIDA);
 const PASO_PEND = 3;
 
@@ -85,6 +91,7 @@ export function recogidaEn(paisaje, alt, semilla, cuadro) {
       for (const [zona, q] of Object.entries(DENSIDAD_RECOGIDA[t])) if (zr.zonas.includes(zona)) p = Math.max(p, zona === 'bosque' ? q * Math.min(1, zr.d * 1.4) : q);
       acum += p; if (u < acum) { tipo = t; break; }
     }
+    if (!tipo && zr.zonas.includes('claro')) for (const [t, p] of Object.entries(SUELTOS_CLARO)) { acum += p; if (u < acum) { tipo = t; break; } }
     if (!tipo) continue;
     puntos.push({ id: idPunto(tipo, x, z), tipo, x, z, giro, zonas: zr.zonas });
   }

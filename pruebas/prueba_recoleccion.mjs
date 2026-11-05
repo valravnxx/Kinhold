@@ -24,8 +24,8 @@ console.log('Lo que dice el documento de sistemas (apartado 3, N0)');
 {
   const R = RECOLECTABLES;
   comprobar('ramas caídas: en el bosque, con las manos, 1–3 ramas medianas', R.ramas.donde.join() === 'bosque' && R.ramas.con === 'manos' && R.ramas.min === 1 && R.ramas.max === 3 && CATALOGO.rama.tam === 'M', R.ramas.donde.join());
-  comprobar('piedra suelta: ríos y laderas, 1 piedra mediana', R.piedra.donde.join() === 'rio,ladera' && R.piedra.max === 1 && CATALOGO.piedra.tam === 'M');
-  comprobar('sílex: zonas calizas y ríos, 1 nódulo pequeño', R.silex.donde.join() === 'caliza,rio' && R.silex.max === 1 && CATALOGO.silex.tam === 'P');
+  comprobar('piedra suelta: ríos y laderas (y algo en el claro, valravnx 1 nov), 1 piedra mediana', R.piedra.donde.join() === 'rio,ladera,claro' && R.piedra.max === 1 && CATALOGO.piedra.tam === 'M');
+  comprobar('sílex: zonas calizas y ríos (y algo en el claro), 1 nódulo pequeño', R.silex.donde.join() === 'caliza,rio,claro' && R.silex.max === 1 && CATALOGO.silex.tam === 'P');
   comprobar('fibra: ortiga y hierba larga en claros y riberas, se arranca, 2–4 de fibra cruda pequeña',
     ['ortiga', 'hierba_larga'].every(t => R[t].donde.join() === 'claro,ribera' && R[t].accion === 'arrancar' && R[t].da === 'fibra' && R[t].min === 2 && R[t].max === 4) && CATALOGO.fibra.tam === 'P');
   comprobar('vuelven: ramas en días, piedra y sílex en semanas, fibra en una estación (un mes real)',

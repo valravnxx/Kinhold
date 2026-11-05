@@ -154,9 +154,10 @@ const camara = new THREE.PerspectiveCamera(45, 1, 0.1, MUNDO ? 1600 : 500);
 const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2048, niebla: MUNDO ? [110, 700] : [70, 200] });
 // Dónde apareces (valravnx, 30 oct): un jugador nuevo, en un sitio al azar de las comarcas de inicio (src/logica/whitholm.js),
 // que se guarda en el navegador para que vuelvas siempre al mismo. Quien ya jugaba (hay algo guardado de antes) sigue en
-// el sitio común, que es donde está lo que construyó. En línea, todos en el sitio común (decisión provisional del 30 oct:
-// las posiciones y el mundo del servidor van relativos a él; el sitio de cada uno lo repartirá el servidor con las
-// cuentas). ?salida=N en la dirección fuerza el sitio N de la lista (para las pruebas).
+// el sitio común, que es donde está lo que construyó. En línea, la escena va relativa al sitio común (las posiciones y
+// el mundo del servidor), y a cada personaje nuevo el servidor le da un sitio libre al azar de la lista y se lo manda
+// en la bienvenida como su posición (valravnx, 5 nov; servidor/servidor.mjs, darSalida). ?salida=N en la dirección
+// fuerza el sitio N de la lista (para las pruebas, sin servidor).
 const CLAVE_SALIDA = 'kinhold_salida_v1';
 function sitioDeSalida() {
   if (EN_LINEA) return { x: SALIDA.x, z: SALIDA.z };

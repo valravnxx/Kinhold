@@ -1,6 +1,9 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v111 (fuera el arcón infinito)";
+export const VERSION_DEMO = "Demo única · v112 (salida al azar en línea)";
 export const REGISTRO_DEMO = [
+  "v112: salida al azar de verdad en línea (valravnx, 30 oct y 5 nov). Cada personaje nuevo aparece donde le dice el servidor: un sitio al azar de los 259 de la salida al azar, en las tres comarcas de inicio, cuya zona no tiene mojón puesto. Si una zona tiene mojón, sus sitios dejan de ser salida. Lo recuerda: al volver, sales donde lo dejaste; quien ya jugaba sigue donde estaba.",
+  "v112, provisional: si no queda ningún sitio libre, el personaje nuevo sale en la salida común (su zona es del rey y nunca se toma).",
+  "v112: en la pradera abierta (el claro, sin bosque) sale algo de piedra y de sílex sueltos, menos que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»). Provisional: la piedra, la séptima parte que en la ladera; el sílex, la sexta parte que en la caliza. Lo que ya salía sigue en su sitio.",
   "v111: fuera el arcón infinito del servidor de verdad (valravnx, 1 nov). En línea ya no hay arcón de pruebas ni botón «+ Materiales»: lo que llevas se coge del mundo. El servidor rechaza sacar, dejar y rellenar el arcón, y coger o soltar equipo de él («Aquí no hay arcón.»); solo lo tienen las pruebas automáticas (KINHOLD_PRUEBAS_ARCON=si, que lo dice al arrancar).",
   "v111: el contador de materiales de arriba sale solo dentro de tu tierra (la zona de tu mojón), con lo que tienes almacenado en ella; fuera de tu tierra no sale.",
   "v111, provisional: mientras no haya almacenajes de la base, lo almacenado en tu tierra es lo que hay en su suelo (ahí no desaparece), contando lo de dentro de los contenedores; el navegador lo cuenta de lo que le llega del servidor, los trozos de tu alrededor.",

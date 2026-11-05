@@ -158,6 +158,17 @@ export function elegirSalida(azar = Math.random()) {
   return { x: SALIDAS[k][0], z: SALIDAS[k][1] };
 }
 
+// Salida al azar de verdad en línea (valravnx, 5 nov: «apareces en un punto aleatorio LIBRE, si una zona tiene mojón
+// activo, deja de ser spawn»): el servidor elige entre los sitios de SALIDAS cuya zona sigue libre. `libre(x, z)`: ¿la
+// zona de ese sitio del mundo no tiene mojón? Si ninguno lo está, la salida común (su zona es del rey y nunca se toma).
+// Devuelve { x, z, comun } en metros del mundo.
+export function elegirSalidaLibre(libre, azar = Math.random()) {
+  const libres = SALIDAS.filter(([x, z]) => libre(x, z));
+  if (!libres.length) return { x: SALIDA.x, z: SALIDA.z, comun: true };
+  const k = Math.min(libres.length - 1, Math.max(0, Math.floor(azar * libres.length)));
+  return { x: libres[k][0], z: libres[k][1], comun: false };
+}
+
 // ¿Es (x, z) uno de los sitios de salida conocidos (SALIDA o uno de SALIDAS)? Para no fiarse de lo guardado en el navegador.
 export const esSitioDeSalida = (x, z) => (x === SALIDA.x && z === SALIDA.z) || SALIDAS.some(s => s[0] === x && s[1] === z);
 
