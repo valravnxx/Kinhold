@@ -1,0 +1,47 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 3241 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2515 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2083 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2575 KB
+
+== Construir demo única
+      2470 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3552 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2481 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2078 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2568 KB
+dist/kinhold_trozos.html 2085 KB
+hilo de los trozos 19 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: lo que se recoge en el mundo
+  OK   hacer lo de alrededor no pide fotogramas largos (menos de 20 ms) — 3.8 ms
+  OK   al volver, lo recogido sigue recogido — [[true, false], [true, false], [true, false], [true, false], [true, false]]
+  OK   sin errores en la página (movil)
+FALLAN 3: cada punto, en una zona suya del documento, junto al sitio de salida 0 se recogen los 5 tipos que hay cerca, cada punto, en una zona suya del documento
+!! FALLA: python3 pruebas/prueba_recogida_mundo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/recogida_mundo
+
+HAY FALLOS
+tardó 51 s
+en el PC de valravnx, con su tarjeta: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002504) Direct3D11 vs_5_0 ps_5_0, D3D11)
