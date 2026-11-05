@@ -6,8 +6,8 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
-### 5 nov 2026 (13:39 UTC) — en la sesión del carril A: los sitios de salida, siempre sin dueño
-valravnx, a la decisión «Zonas del rey y la salida al azar» (los 259 sitios de la salida al azar caen en 235 zonas, el 28 % de las comarcas de inicio): «podemos hacer que sean zonas sin tomar por nadie siempre». → Opción (a): las zonas de todos los sitios de salida son del rey y no se reclaman. Decisión quitada de las pendientes; tarea nueva en P2 (antes de la salida al azar), y «Salida al azar de verdad en línea» vuelve a pendiente.
+### 5 nov 2026 (13:39–13:45 UTC) — en la sesión del carril A: la salida al azar, solo en zonas libres
+valravnx, a la decisión «Zonas del rey y la salida al azar» (los 259 sitios de la salida al azar caen en 235 zonas, el 28 % de las comarcas de inicio): «podemos hacer que sean zonas sin tomar por nadie siempre» y, aclarado: «apareces en un punto aleatorio LIBRE, si una zona tiene mojón activo, deja de ser spawn». → Las zonas de los sitios de salida NO son del rey: se reclaman como las demás. La salida al azar elige solo entre los sitios cuya zona no tiene mojón puesto. Decisión quitada de las pendientes; añadido a la tarea «Salida al azar de verdad en línea» (vuelve a pendiente). La zona de la salida común sigue siendo del rey (no dicho; sin cambios).
 
 ### 5 nov 2026 (09:12–09:15 UTC+1) — por el chat: en español siempre; el horizonte
 valravnx: «en español SIEMPRE» (un mensaje del chat salió en inglés). Y sobre la v105: «no noto casi ninguna diferencia más que la resolución con estos cambios gráficos, me interesaría que los altos aumentaran muchísimo la distancia de dibujado de mapa aunque sea sin detalle para ver las montañas y las formas». → Tarea nueva en el hito G (lo lleva el chat).

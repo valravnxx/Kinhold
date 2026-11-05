@@ -4368,12 +4368,12 @@
  },
  {
   "inicio": "2026-11-05T13:39:24+00:00",
-  "fin": "2026-11-05T13:39:41+00:00",
-  "titulo": "Decisión: los sitios de salida, siempre sin dueño",
+  "fin": "2026-11-05T13:47:23+00:00",
+  "titulo": "Decisión: la salida al azar, solo en zonas libres",
   "hito": "entre-dos",
   "hecho": [
-   "valravnx respondió a la decisión de las zonas del rey y la salida al azar: «podemos hacer que sean zonas sin tomar por nadie siempre». Las zonas de todos los sitios de salida serán del rey (235 zonas).",
-   "Tarea nueva en P2 para hacerlo (lógica, servidor, mapa y pruebas); «Salida al azar de verdad en línea» vuelve a pendiente."
+   "valravnx respondió a la decisión de las zonas del rey y la salida al azar: «apareces en un punto aleatorio LIBRE, si una zona tiene mojón activo, deja de ser spawn». Las zonas de los sitios de salida se reclaman como las demás; la salida al azar elige solo entre los sitios cuya zona no tiene mojón.",
+   "Añadido a la tarea «Salida al azar de verdad en línea», que vuelve a pendiente. La zona de la salida común sigue siendo del rey."
   ],
   "pruebas": "Sin código: solo el roadmap y REVISION.md.",
   "estado": "ok"

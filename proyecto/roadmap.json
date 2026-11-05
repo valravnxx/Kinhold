@@ -1186,11 +1186,7 @@
      "fin": "2026-11-04T20:25:28+01:00"
     },
     {
-     "nombre": "Las zonas de los sitios de salida, siempre sin dueño (valravnx, 5 nov: «que sean zonas sin tomar por nadie siempre»): las 235 zonas donde caen los sitios de la salida al azar pasan a ser del rey (no se reclaman), en la lógica, el servidor y el mapa; las pruebas que ponen el mojón junto a la salida, a la zona de al lado",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio de las tres comarcas de inicio y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
+     "nombre": "Salida al azar de verdad en línea: el servidor da a cada personaje nuevo un sitio LIBRE al azar de las tres comarcas de inicio (valravnx, 5 nov: si la zona de un sitio tiene un mojón puesto, deja de ser salida; las zonas de los sitios de salida sí se reclaman) y lo recuerda (hoy todos salen en el sitio común); y en la pradera abierta, algo de piedra y sílex sueltos, en menor cantidad que donde les toca (valravnx, 1 nov: «dentro del realismo, accesibilidad»)",
      "estado": "pendiente"
     },
     {
