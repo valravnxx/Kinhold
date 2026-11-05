@@ -4365,5 +4365,17 @@
   "pruebas": "Batería entera en la nube (GitHub Actions): 34 grupos correctos (48,2 min). Tras unir main (el horizonte del chat), otra vez entera: 31 bien; construcción (la página se recargó a mitad, «Execution context was destroyed»), lógica (prueba_nube.mjs: la conexión wss a través de Caddy, error de TLS) y web (faltaba la carpeta de capturas, aún sin publicar) fallaron, y repetidas salen bien las tres. Recorrido de jugador 26/26 y prueba del terreno del servidor 36/36 también aquí. Capturas del mapa del rey miradas en PC y móvil. Tras unir los ríos del chat, otra vez entera: 34 de 35 bien a la primera y la web, repetida al publicar.",
   "capturas": "capturas/demo-v108",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T13:39:24+00:00",
+  "fin": "2026-11-05T13:39:41+00:00",
+  "titulo": "Decisión: los sitios de salida, siempre sin dueño",
+  "hito": "entre-dos",
+  "hecho": [
+   "valravnx respondió a la decisión de las zonas del rey y la salida al azar: «podemos hacer que sean zonas sin tomar por nadie siempre». Las zonas de todos los sitios de salida serán del rey (235 zonas).",
+   "Tarea nueva en P2 para hacerlo (lógica, servidor, mapa y pruebas); «Salida al azar de verdad en línea» vuelve a pendiente."
+  ],
+  "pruebas": "Sin código: solo el roadmap y REVISION.md.",
+  "estado": "ok"
  }
 ]
