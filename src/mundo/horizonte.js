@@ -76,7 +76,7 @@ const FINO_A_BASTO = [...NIVELES].reverse();   // 1, 2, 4: el más fino que ya e
 // camara: la del juego (su alcance manda en la compresión); colorMar: el de la lámina del mar; alt(x, z): la altura
 // exacta del suelo (m del mundo), para el dosel de cerca (sin ella, no hay dosel de cerca); hay(x, z): ¿ha llegado ya
 // el terreno de cerca a ese sitio? (si no, ahí no hay dosel de cerca, que flotaría)
-export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camara, colorMar = 0x4a6470, alt = null, hay = null }) {
+export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camara, colorMar = 0x35525e, alt = null, hay = null }) {
   const muestras = crearMuestras(paisaje, rect, undefined, ESPECIES_DOSEL);
   const diagonal = Math.hypot(rect.x1 - rect.x0, rect.z1 - rect.z0);
   const comp = compresion(hasta, camara.far, diagonal);
