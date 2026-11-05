@@ -105,8 +105,9 @@ def recorrido(pg, nombre, pref):
     pg.screenshot(timeout=180000, path=f'{SALIDA}/{pref}_4_horizonte.png')
     pg.evaluate(f'{G}.horizonte.malla.visible = false'); pg.wait_for_timeout(2500)
     sin = Image.open(io.BytesIO(pg.screenshot(clip=franja, timeout=180000))).convert('L')
-    dif = sum(abs(a - b) for a, b in zip(con.tobytes(), sin.tobytes())) / (con.width * con.height)
-    comprobar(f'{nombre}: con el horizonte se ve lo lejano (cambia la franja del horizonte)', dif > 3, f'diferencia media {dif:.1f} de 255')
+    # la parte de la franja que cambia de verdad (más de 6 de 255); el cielo de arriba no cambia, así que no vale la media
+    cambia = sum(1 for a, b in zip(con.tobytes(), sin.tobytes()) if abs(a - b) > 6) / (con.width * con.height)
+    comprobar(f'{nombre}: con el horizonte se ve lo lejano (cambia la franja del horizonte)', cambia > 0.03, f'cambia el {cambia * 100:.1f} % de la franja')
     pg.evaluate(f"{G}.poner('pc-3', false)")
     pg.evaluate('Object.assign(window.__kinhold.cam, window.__camAntes)'); pg.wait_for_timeout(1000)
     pg.evaluate('localStorage.removeItem("kinhold_graficos")')
