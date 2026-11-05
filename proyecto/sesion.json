@@ -1,10 +1,21 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-05T05:41:35+00:00",
+  "tarea": "El servidor no se fía del navegador en las obras: comprueba que estás cerca de la obra y en su planta antes de entregar, subir, trabajar o desmontar",
+  "hito": "entre-dos",
+  "rama": "trabajo/20261105-0541"
+ },
  "B": null,
  "chat:trabajo/20261105-0510-graficos-juego": {
   "inicio": "2026-11-05T05:07:52+01:00",
   "tarea": "Llevar los perfiles gráficos y el posprocesado a la demo: el perfil en Opciones, el de inicio por el aparato y por la medida, y la cadena de efectos en el mundo de verdad (con la cámara del juego); después de que valravnx mida en su móvil y en su PC con «Medir»",
   "hito": "graficos",
   "rama": "trabajo/20261105-0510-graficos-juego"
+ },
+ "chat:trabajo/20261105-0700-rios": {
+  "inicio": "2026-11-05T06:58:57+01:00",
+  "tarea": "Ríos de verdad (valravnx, 5 nov): los afluentes llegan al cauce del río al que entran, nacen estrechos, el doble de anchos (arroyos hasta 8 m, que se vadean; ríos de más, que se nadan o se cruzan por sus vados) y con lecho de piedra y grava en vez de hierba",
+  "hito": "mundo",
+  "rama": "trabajo/20261105-0700-rios"
  }
 }

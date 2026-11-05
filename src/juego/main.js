@@ -787,7 +787,7 @@ function evaluarDesmontaje(hit) {
     return;
   }
   const { c, key } = obj.userData;
-  const pre = mundo.previsualizarDesmontaje(c, key);
+  const pre = mundo.previsualizarDesmontaje(c, key, yoAutor());   // lo de otro, ni se resalta como para desmontar
   resaltar(obj, 'naranja');
   for (const k2 of pre.caen || []) { const o = objDe(c, k2); if (o) resaltar(o, 'rojo'); }
   if (!pre.ok) {

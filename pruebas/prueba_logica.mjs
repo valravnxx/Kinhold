@@ -450,6 +450,7 @@ console.log('15. Obras en alto: clase de peso y subir el material');
   const c = nuevaConstruccion(m);
   const R = new RegistroAcciones();
   const yo = 'jugador:uno', otro = 'jugador:dos';
+  m.invitar(null, yo); m.invitar(null, otro);   // la tierra es del jugador local: los dos, invitados (para desmontar)
   const A = (autor, a) => ejecutar(m, R, { autor, construccion: c.id, ...a });
   // casilla de 1×1 con cimiento, cuatro muros y suelo de troncos en la planta 1
   m.colocar(enRejilla(m, c, 'cim_tronco', 0, 0, 0));

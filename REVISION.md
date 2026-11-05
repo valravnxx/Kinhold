@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 5 nov 2026 (06:51–06:57 UTC+1) — por el chat: ríos de verdad
+valravnx, con una captura de un arroyo: los ríos son pequeños (un arroyo y un río mediano casi igual de anchos, se vadean «tocando el agua dos segundos»), muchos no están unidos o están cortados de forma extraña, y el cauce es hierba con agua a ratos; quiere lecho rocoso y ríos mucho más grandes («el arroyo de la imagen como el doble de ancho»). Revisado en el chat: 8 de las 11 uniones de Whitholm se quedan cortas (de media a 77 m del otro cauce) y el ancho mediano es 3,7 m (el mayor, 10,7). Aprobado («sí y sí, probemos»): anchos por 2 (el arroyo de unos 5 m, el río mayor de unos 22) y arroyo hasta 8 m. → Tarea de chat en el hito «Mundo».
+
 ### 5 nov 2026 (05:05 UTC+1) — por el chat: el posprocesado, al juego
 valravnx, sobre la prueba de posprocesado v1: «se ve bien, mi móvil como es el POCO F7 tira hasta el de PC de gama alta a 65 fps en la prueba, mételo sin noticia al juego ya». Responde la decisión pendiente del posprocesado (se quedan los efectos). «Sin noticia»: la versión y su entrada del diario no salen en Discord.
 

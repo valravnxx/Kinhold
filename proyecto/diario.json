@@ -4241,5 +4241,22 @@
   "pruebas": "Sin cambios de código.",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T04:24:44+00:00",
+  "fin": "2026-11-05T05:37:16+00:00",
+  "titulo": "P2: lo tuyo es tuyo (demo v103)",
+  "hito": "entre-dos",
+  "hecho": [
+   "En tu tierra solo tú y tus invitados desmontáis, abrís y cerráis puertas y encendéis o apagáis el fuego; a los demás: «Es tierra de otro: solo su dueño y sus invitados.»",
+   "Lo comprueba la lógica pura con el autor de la acción (puedeTocar en el mundo), así que el servidor lo rechaza aunque un navegador se lo mande igual.",
+   "Lo de otro ya no se resalta como para desmontarlo: la vista previa de desmontar también lo mira.",
+   "Provisional (en el registro de la demo): en tierra de nadie, cualquiera; una construcción es de la tierra de su origen. Los almacenajes de la base aún no existen (hito «De nada a una casa»): seguirán la misma regla.",
+   "Prueba nueva «Lo tuyo es tuyo» (lógica, copia en línea y servidor de verdad; con MUTAR=1 falla) y el recorrido de jugador amplía un paso: otro jugador no puede desmontar su cimiento.",
+   "No comprobado en captura: el aviso nuevo (haría falta una prueba de navegador con dos jugadores); sí en la lógica y contra el servidor."
+  ],
+  "pruebas": "Batería entera en la nube: 33 grupos bien (58,9 min); recorrido de jugador 24/24. Capturas de la demo miradas en PC y móvil.",
+  "capturas": "capturas/demo-v103",
+  "estado": "ok"
  }
 ]

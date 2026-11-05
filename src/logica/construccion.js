@@ -203,6 +203,16 @@ export class Mundo {
     const de = this.tierraDe(x, z);
     return !!de && this.invitadosDe(de).includes(yo);
   }
+  // Lo tuyo es tuyo (hito «Jugar entre dos sin trampas»): ¿puede este autor tocar lo que hay en (x, z)? Desmontar,
+  // abrir y cerrar puertas, encender y apagar el fuego y, cuando los haya, sacar de los almacenajes de la base. En
+  // tierra con dueño, solo el dueño y sus invitados (GDD, apartado 11: invitar es dejar «construir y usar lo de su
+  // tierra»); en tierra de nadie (lo que queda sin mojón), cualquiera. Lo de una construcción es de la tierra donde
+  // está su origen, como al quitar el mojón (perderiaSinMojon).
+  puedeTocar(x, z, autor) {
+    const de = this.tierraDe(x, z);
+    if (!de || this.dentroDeTierra(x, z, autor)) return { ok: true };
+    return { ok: false, motivo: 'Es tierra de otro: solo su dueño y sus invitados.' };
+  }
   // --- invitados: el dueño deja construir en su tierra a quien quiera (y se lo quita) ---
   invitadosDe(autor) { return this.invitados[dueno(autor)] || []; }
   esInvitado(autor) { const yo = dueno(autor); return Object.values(this.invitados).some(l => l.includes(yo)); }
@@ -594,8 +604,10 @@ export class Mundo {
 
   // ---------- Desmontar ----------
   // Qué pasaría al desmontar: piezas que caerían en cascada, o bloqueo por sobrecarga.
-  previsualizarDesmontaje(c, key) {
+  // autor (opcional): quien desmonta; con él, solo en su tierra, en la de quien le invita o en tierra de nadie (puedeTocar)
+  previsualizarDesmontaje(c, key, autor) {
     if (!c.piezas.has(key)) return { ok: false, motivo: 'No existe.' };
+    if (autor !== undefined) { const t = this.puedeTocar(c.ox, c.oz, autor); if (!t.ok) return t; }
     const copia = new Map(c.piezas);
     const tmp = { ...c, piezas: copia };
     copia.delete(key);
@@ -612,8 +624,8 @@ export class Mundo {
     return { ok: true, caen };
   }
 
-  desmontar(c, key) {
-    const pre = this.previsualizarDesmontaje(c, key);
+  desmontar(c, key, autor) {
+    const pre = this.previsualizarDesmontaje(c, key, autor);
     if (!pre.ok) return pre;
     const p = c.piezas.get(key);
     c.piezas.delete(key);
