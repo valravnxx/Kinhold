@@ -1442,7 +1442,7 @@
   {
    "id": "graficos",
    "nombre": "Perfiles gráficos y posprocesado",
-   "estado": "hecho",
+   "estado": "en_curso",
    "lleva": "chat",
    "jugable": "Seis perfiles gráficos, de móvil de gama baja a PC de gama alta, y el posprocesado del estilo (oclusión ambiental, gradación de color, brillo de las luces, niebla, desenfoque puntual y haces de luz), sin que ningún perfil esconda lo que importa para jugar.",
    "nota": "Lo lleva el chat con valravnx (4 nov), aparte de los P1–P7: los carriles no lo tocan.",
@@ -1470,6 +1470,12 @@
      "estado": "hecho",
      "inicio": "2026-11-05T12:19:08+01:00",
      "fin": "2026-11-05T15:31:09+01:00"
+    },
+    {
+     "nombre": "El horizonte sin cortes ni tierra bajo el agua (valravnx, 5 nov: «parecen bajo el agua en algunos puntos… como clipeados a más altura o menos, como si tuviera cortes»)",
+     "estado": "en_curso",
+     "inicio": "2026-11-05T16:43:36+01:00",
+     "rama": "trabajo/20261105-1645-cortes"
     }
    ],
    "num": "G"
