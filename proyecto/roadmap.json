@@ -1677,9 +1677,9 @@
     },
     {
      "nombre": "Ríos de verdad (valravnx, 5 nov): los afluentes llegan al cauce del río al que entran, nacen estrechos, el doble de anchos (arroyos hasta 8 m, que se vadean; ríos de más, que se nadan o se cruzan por sus vados) y con lecho de piedra y grava en vez de hierba",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T06:58:57+01:00",
-     "rama": "trabajo/20261105-0700-rios"
+     "fin": "2026-11-05T12:55:50+01:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Lo lleva el chat con valravnx: lo visual y creativo del mundo. Desde el 29 oct, unir el mapa con el juego (terreno por trozos, aparecer y andar por el mundo) está en el hito «El juego en el mundo de verdad», que llevan los carriles."
@@ -2781,6 +2781,13 @@
      "capturas": "capturas/demo-v106",
      "notas": "Horizonte en los perfiles altos (Móvil alto y los tres de PC): detrás del terreno de cerca se ve la isla entera, en basto, con su relieve y su color, y el mar hasta el borde, fundidos con el cielo por la bruma.",
      "noticia": false
+    },
+    {
+     "v": "v107",
+     "fecha": "2026-11-05",
+     "archivo": "jugar/demo/v107.html",
+     "capturas": "capturas/demo-v107",
+     "notas": "Ríos de verdad: los afluentes llegan al cauce del río al que entran, el doble de anchos (arroyos hasta 8 m que se vadean; ríos que se nadan o se cruzan por sus vados), nacen estrechos, y el lecho es de grava y cantos con orilla de barro en vez de hierba. Capturas: antes y después, en un arroyo, un río y una unión."
     }
    ]
   },
