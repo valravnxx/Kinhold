@@ -1437,7 +1437,9 @@
    "tareas": [
     {
      "nombre": "Quitar lo que ya no se juega: el prototipo de combate aparte, la liza y los modos de combate de capas y guardias; la construcción aparte (hito1) y lo suelto (viejo_tmp.mjs); las pruebas que solo probaban eso",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-06T17:24:29+00:00",
+     "rama": "trabajo/20261106-1724"
     },
     {
      "nombre": "Una sola tabla de armadura: el duelo usa la protección de las prendas (src/logica/prendas.js) en vez de la suya, y las mismas zonas del cuerpo",
