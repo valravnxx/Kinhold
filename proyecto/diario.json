@@ -4732,7 +4732,7 @@
  },
  {
   "inicio": "2026-11-06T10:22:20+00:00",
-  "fin": "2026-11-06T13:15:44+00:00",
+  "fin": "2026-11-06T14:55:49+00:00",
   "titulo": "P3: el panel de fabricación",
   "hito": "crafting",
   "hecho": [
@@ -4744,7 +4744,7 @@
    "Lógica: cada receta y cada estación dicen de qué sitio sale cada material y qué falta; prueba nueva del panel en el navegador, con el servidor, en PC y móvil.",
    "Lo que aún está mal: la piedra de tallar y la hoguera no se han comparado lado a lado con la prueba de estilo v5; con el panel abierto se sigue viendo el mundo detrás, sin oscurecer; lo encargado en una estación solo se ve a menos de 10 m de ella; el recorrido de jugador no cambia (ya fabricaba por el servidor; el panel es de la página)."
   ],
-  "pruebas": "Batería entera en la nube (36 grupos, sin las de en línea; el PC de valravnx no las cogió): todo correcto. Por el camino, el perfil gráfico en el móvil falló por este cambio (el botón «Fabricar» alargaba la barra de arriba y el aviso tapaba el cielo: va abajo a la izquierda) y el combate en el mundo también (con el arma tapaba el aliento: ahí no sale); arreglados y repetidos, bien. El mapa del rey (la marca a 9 px) y la demo en el mundo (un fotograma de 63–73 ms contra 60) fallaron una vez y pasaron al repetirlos. Prueba nueva del panel en el navegador, con el servidor, en PC y móvil, bien (con MUTAR=1, que no deja salir las acciones, falla); fabricar 88/88 (MUTAR=1: 14 fallan).",
+  "pruebas": "Batería entera en la nube (36 grupos, sin las de en línea; el PC de valravnx no las cogió): todo correcto. Por el camino, el perfil gráfico en el móvil falló por este cambio (el botón «Fabricar» alargaba la barra de arriba y el aviso tapaba el cielo: va abajo a la izquierda) y el combate en el mundo también (con el arma tapaba el aliento: ahí no sale); arreglados y repetidos, bien. El mapa del rey (la marca a 9 px) y la demo en el mundo (un fotograma de 63–73 ms contra 60) fallaron una vez y pasaron al repetirlos. Prueba nueva del panel en el navegador, con el servidor, en PC y móvil, bien (con MUTAR=1, que no deja salir las acciones, falla); fabricar 88/88 (MUTAR=1: 14 fallan). Tras unir main (sin tierra bajo el agua, que tomó la v124: esto pasa a la v125), otra vez la batería entera: 32 en el PC de valravnx bien; las cuatro que miden el dibujo (la demo única, los niveles de detalle, el perfil gráfico) y la web (aún sin la v125 publicada), repetidas en la nube, bien.",
   "capturas": "capturas/demo-v125",
   "estado": "ok"
  }
