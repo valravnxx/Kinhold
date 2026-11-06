@@ -1246,7 +1246,7 @@
    "num": "P3",
    "nombre": "De nada a una casa (fabricar y la casa humilde)",
    "jugable": "Un jugador nuevo, sin nada, fabrica sus herramientas de piedra con lo que recoge, tala árboles jóvenes, acopia troncos, piedras, varas, juncos y barro en su tierra, levanta una casa humilde de una planta con su hogar dentro y llega al banco de tronco, la entrada al tier 1. Sin arcón.",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
@@ -1274,11 +1274,16 @@
     },
     {
      "nombre": "Pasar al GDD y al documento de sistemas lo que falta de la revisión del 1 nov para este tramo (almacenajes de la base, carga al hombro, la casa humilde, los árboles jóvenes y adultos), con sus traducciones; lo de fabricar sin aprender recetas, estaciones por uso, hoguera y hogar ya está (4 nov). Va la primera de P3 porque el hito se planifica leyendo esos documentos",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-06T04:31:43+00:00",
+     "rama": "trabajo/20261106-0434-p3-documentos",
+     "fin": "2026-11-06T04:35:23+00:00"
     },
     {
      "nombre": "Fabricar sin aprender recetas: fuera el aprendizaje por práctica de la lógica (las recetas de cada sitio, siempre a la vista); recetas por uso (con las manos, hoguera y hogar, piedra de tallar, banco de tronco) en vez de por nivel; y la fabricación con lo que llevas y lo que hay en el suelo a tu lado. Lógica pura con autor y pruebas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-06T04:40:10+00:00",
+     "rama": "trabajo/20261106-0440-p3-recetas"
     },
     {
      "nombre": "Fabricar por el servidor, con su autor: lo gastado sale de tu inventario o del suelo de al lado y lo hecho va a tu inventario (o al suelo si no cabe)",

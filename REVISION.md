@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 6 nov 2026 (04:34 UTC) — en una tarea programada: empezar P3
+valravnx: «haz p3». → El hito P3 «De nada a una casa» pasa a en curso y se empieza por su primera tarea pendiente (pasar al GDD y al documento de sistemas lo que falta de la revisión del 1 nov), anunciada como sesión aparte (rama trabajo/20261106-0434-p3-documentos) porque el carril A sigue con P2. Una tarea por sesión, como siempre.
+
 ### 6 nov 2026 (05:21 UTC+1) — por el chat: el bosque de lejos aún en dientes de sierra
 valravnx, con una captura del móvil (lomas lejanas con una banda oscura de bordes en dientes enormes): «cuando está muy lejos sigue haciendo diente de sierra horrible». Mirado: el color del bosque (verde oscuro) va en los vértices de la rejilla lejana (100–400 m) y entre ellos se interpola por triángulos: el linde oscuro/claro sigue sus diagonales. → Tarea de chat en el hito G: el color del suelo lejano y el del bosque, en texturas leídas en cada píxel.
 
