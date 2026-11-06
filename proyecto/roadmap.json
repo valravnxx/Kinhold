@@ -1779,9 +1779,9 @@
     },
     {
      "nombre": "La desembocadura y el mar de lejos, revisados de nuevo (valravnx, 6 nov, 10:17: «en ninguna de las imágenes se ve el río llegando al mar… a lo lejos sigue hundido el terreno bajo el agua… y los glitches de lo parecido a los árboles»)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T10:18:17+01:00",
-     "rama": "trabajo/20261106-1020-rios-mar3"
+     "fin": "2026-11-06T13:40:00+01:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Lo lleva el chat con valravnx: lo visual y creativo del mundo. Desde el 29 oct, unir el mapa con el juego (terreno por trozos, aparecer y andar por el mundo) está en el hito «El juego en el mundo de verdad», que llevan los carriles."
@@ -3004,6 +3004,13 @@
      "archivo": "jugar/demo/v123.html",
      "capturas": "capturas/demo-v123",
      "notas": "El bosque de lejos sin dientes de sierra: va en el mismo suelo lejano (una sola superficie, que no se pelea consigo misma en la hondura) y su color sale de texturas leídas en cada píxel. Capturas: antes y después, mirando a las montañas altas."
+    },
+    {
+     "v": "v124",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v124.html",
+     "capturas": "capturas/demo-v124",
+     "notas": "Sin tierra bajo el agua a lo lejos: el suelo de lejos solo se quita donde ya ha llegado el de cerca, la cámara distingue cinco veces mejor lo que está casi a la misma altura y lo lejano se acerca poco a poco; el río entra en el mar sin punta seca; la arena de la playa, hasta unos 60 m."
     }
    ]
   },
