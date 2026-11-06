@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-06T18:22:56+00:00",
-  "tarea": "Chat de texto (valravnx, 6 nov: «vamos a poner chat de texto ya, debe verse sobre el jugador, y desaparecer al rato»): escribes una frase (Intro en PC, «Hablar» en el móvil), el servidor la comprueba con su autor (largo, sin mandar a chorro, a quién llega) y la reparte a los que están cerca; sale en un bocadillo sobre la cabeza del que habla y se va al rato; queda en el registro del servidor",
-  "hito": "admin",
-  "rama": "trabajo/20261106-1730-charla"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261106-1813-iconos": {
   "inicio": "2026-11-06T18:13:02+01:00",
