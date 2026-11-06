@@ -195,9 +195,10 @@ export function mallaDosel(m, k, { ox = 0, oz = 0, y0 = 0 } = {}) {
     const p = v(a, b), q = v(a + 1, b), r = v(a, b + 1), t = v(a + 1, b + 1);
     idx.push(p, r, q, q, r, t);
   }
-  const pos = new Float32Array(nv * 3), col = new Float32Array(nv * 3);
+  const pos = new Float32Array(nv * 3), col = new Float32Array(nv * 3), sube = new Float32Array(cx * cz);
   const lin = (c) => Math.pow(c / 255, 2.2);
   for (let q = 0; q < cx * cz; q++) {
+    { const d = dens[q]; sube[q] = alto[q] * d * d * (3 - 2 * d); }
     const w = usar[q]; if (w < 0) continue;
     const a = q % cx, b = (q - a) / cx, i = n(a, b), y = Math.max(m.alto[i], 0), d = dens[q];
     // lo que sube y lo que se tiñe: suave, con lo que hay de bosque alrededor (sin nada, nada; rodeado, entero). Con
@@ -208,7 +209,9 @@ export function mallaDosel(m, k, { ox = 0, oz = 0, y0 = 0 } = {}) {
     pos[w * 3 + 2] = m.rect.z0 + b * k * m.base - oz;
     for (let c = 0; c < 3; c++) col[w * 3 + c] = lin(m.color[i * 3 + c] + (copa[q * 3 + c] - m.color[i * 3 + c]) * u);
   }
-  return { pos, col, idx: Uint32Array.from(idx), dens };
+  // (por punto del nivel: dens y copa, el horizonte las pone en una textura; sube, lo que sube el suelo lejano con sus
+  // copas, src/mundo/horizonte.js)
+  return { pos, col, idx: Uint32Array.from(idx), dens, copa, sube, cx, cz };
 }
 
 // Las copas de cerca: una rejilla fina (cada «paso» m) en un cuadro alrededor de (cx, cz) (m del mundo), con la altura

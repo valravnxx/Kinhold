@@ -4693,5 +4693,21 @@
   "pruebas": "35 de 35 grupos correctos (tres, al repetirlos en la nube; en el PC de valravnx fallan por tener tarjeta gráfica); sin las de en línea, que no se pasan",
   "capturas": "capturas/revision-entre-dos-6nov",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T05:24:47+01:00",
+  "fin": "2026-11-06T12:23:56+01:00",
+  "titulo": "El bosque de lejos sin dientes de sierra (chat con valravnx)",
+  "hito": "graficos",
+  "hecho": [
+   "Causa: el bosque de lejos iba en una malla aparte encima del suelo lejano. Lo lejano va comprimido en la hondura y los 10–14 m de copas sobre el suelo quedaban en 0,06 pasos del búfer de hondura en PC y en 1–2 en el móvil (calculado con la compresión del juego): no se podían ordenar, y en cada triángulo ganaba una capa u otra según el ajuste del suelo, que crece con la pendiente. Por eso se veía sobre todo hacia las montañas altas.",
+   "Ahora es una sola superficie: el suelo lejano sube lo que sus copas (la media de las de alrededor, que en el linde baja a cero) y la malla del dosel de lejos ya no se dibuja. El dosel de cerca llega hasta el hueco del suelo lejano, para que no quede una franja sin copas.",
+   "El color de lo lejano sale de dos texturas del tamaño de la rejilla (el suelo; las copas y cuánto bosque hay), leídas en cada píxel con filtrado lineal, con las manchas de las copas donde hay bosque: el linde sale curvo y no por las diagonales.",
+   "Prueba del perfil gráfico: lo lejano toma el color de sus texturas, y el bosque va en el mismo suelo lejano (sin malla aparte; dentro del bosque el suelo sube al menos la mitad de sus copas). Rota a propósito (MUTAR=2, como antes), falla en las dos.",
+   "No comprobado: que se vea bien en una tarjeta gráfica de verdad. Aquí (sin tarjeta) los dientes no salían ni antes del arreglo, porque el dibujado por programa tiene otra precisión de hondura; las capturas, mirando a las montañas altas, solo comprueban que nada se ha roto."
+  ],
+  "pruebas": "Batería entera en la nube con todo lo de main unido: 35 grupos correctos, sin las de en línea. Por el camino fallaron sin ser de este cambio y pasaron al repetirlos: la web (faltaban en main las traducciones de tareas que anunciaba otra sesión), la presencia (un salto de 3,00× contra 2,5× con el retraso simulado) el tronco al hombro (radio 10 u 11 cm según la vez) y entrar con la cuenta (el servidor aún no había apuntado el sitio). Capturas mirando a las montañas altas, antes y después, en PC y móvil.",
+  "capturas": "capturas/demo-v123",
+  "estado": "ok"
  }
 ]
