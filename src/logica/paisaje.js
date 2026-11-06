@@ -51,6 +51,28 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
   }
   const g = (m) => m / celda - 0.5;
   const rios = riosDelMapa(mapa, 15e6);
+  // Hasta el mar (valravnx, 6 nov: «NO LLEGAN AL MAR… ningún río conecta con el océano»). El río del mapa acaba en el
+  // centro de la primera celda de mar (de 1 km), pero la costa de cerca no coincide con la de las celdas: en 8 de las 27
+  // bocas de Whitholm ese punto queda aún en tierra (hasta 440 m de la orilla) y el río acababa en una charca. Ahora,
+  // si el final del río no está ya mar adentro, sigue cuesta abajo de la forma (hacia el mar más cercano), en pasos de
+  // 120 m, hasta 150 m dentro del mar.
+  if (!globalThis.__sinLlegarMar) for (const r of rios) {
+    if (r.entra || r.length < 2) continue;
+    let q = r[r.length - 1], dx = q.p[0] - r[r.length - 2].p[0], dy = q.p[1] - r[r.length - 2].p[1];
+    let l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+    for (let paso = 0; paso < 40; paso++) {
+      const x = q.p[0] * 1000, y = q.p[1] * 1000, f = grande(x, y).f;
+      if (f < -0.6) {                                       // (ya en el mar: 150 m más y basta)
+        let fin = true;
+        for (let s = 30; s <= 150; s += 30) if (grande(x + dx * s, y + dy * s).f >= 0) fin = false;
+        if (fin) break;
+      }
+      const gx = grande(x + 20, y).f - grande(x - 20, y).f, gy = grande(x, y + 20).f - grande(x, y - 20).f, gl = Math.hypot(gx, gy);
+      if (gl > 1e-6) { dx = 0.4 * dx - 0.6 * gx / gl; dy = 0.4 * dy - 0.6 * gy / gl; l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l; }
+      q = { p: [q.p[0] + dx * 0.12, q.p[1] + dy * 0.12], a: q.a, h: q.h };
+      r.push(q);
+    }
+  }
   // Los ríos se adaptan al terreno (valravnx, 30 oct): la altura de cada punto del río sale del mapa (celdas de 1 km),
   // pero el relieve de detalle puede dejar el suelo de alrededor decenas de metros más bajo; entonces el río iba por
   // encima, en un terraplén, como un puente sobre el valle. Ahora el agua de cada punto queda por debajo del suelo de
@@ -430,7 +452,9 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
     const T = cubica(temp, N, gx, gy) - (z - hm) * 0.0065;
     const P = cubica(lluvia, N, gx, gy) * (0.85 + 0.3 * fbm(xm / 3000, ym / 3000, S + 83, 3));
     const b = clasificarBioma(T, P, mapa.pend[ci], z, mapa.A[ci] / (celda * celda));
-    return { roca: roca[ci] || 'caliza', bioma: bioma[ci] || z > 0.3 ? b : null, T, P, pais: pais[ci] };   // tierra aunque la celda del mapa sea de mar (la costa de cerca no coincide al metro)
+    // costa: m hasta la orilla del mar (solo en lo bajo, donde puede haber playa: valravnx, 6 nov, la arena salía en
+    // todo lo que queda a menos de 2,8 m sobre el mar, también en las vegas de los ríos, kilómetros tierra adentro)
+    return { roca: roca[ci] || 'caliza', bioma: bioma[ci] || z > 0.3 ? b : null, T, P, pais: pais[ci], costa: z < 3 ? distCosta(xm, ym) : Infinity };   // tierra aunque la celda del mapa sea de mar (la costa de cerca no coincide al metro)
   }
 
   // lo hondo del agua en un punto (m: lo que hay de la superficie al suelo), o null si no hay agua de río ni mar
@@ -442,7 +466,12 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
   }
   // lo lejos que está un punto del eje del río más cercano (m) y el ancho de ese río (para las riberas)
   function rioCerca(xm, ym, tramos) { const { dm, ancho, anchoRio, costa } = rioCercano(xm, ym, tramos); return { dm, ancho, anchoRio, costa }; }   // (anchoRio: sin el estuario; costa: m hasta la orilla del mar)
-  return { altura, agua, hondura, corriente, saltosEn, vadosEn, sitio, riosEn, rioCerca, rios, celda, grande };   // grande: la forma de lejos (el mapa del rey)
+  // el centro del cauce de un tramo en u (0–1, de la fuente a la boca), con su meandro (m del mundo)
+  function centroCauce(t, u) {
+    const vx = t.bx - t.ax, vy = t.by - t.ay, d = desvio(t, u) / t.largo;
+    return [t.ax + vx * u - vy * d, t.ay + vy * u + vx * d];
+  }
+  return { altura, agua, hondura, corriente, saltosEn, vadosEn, sitio, riosEn, rioCerca, rios, celda, grande, centroCauce };   // grande: la forma de lejos (el mapa del rey)
 }
 
 // El bosque en un punto del mundo (xm, ym en metros): cuánto de espeso (d, 0–1), qué especie, de qué tamaño (tam,

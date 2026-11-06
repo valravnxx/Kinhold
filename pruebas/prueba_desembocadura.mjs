@@ -7,18 +7,59 @@
 // (como mucho 0,3 m por encima), con el cauce bajo el agua; el cauce sigue en el mar (a 5 y a 30 m de la orilla, el fondo
 // a más de 0,3 m: ninguna barra de arena cerrando la boca); y la boca se ensancha (estuario: en la orilla, más del doble
 // de ancho que a 1,5 km río arriba); y en las bocas de los ríos grandes, un delta (isletas de arena que asoman del agua).
-// Con MUTAR=1 vuelve la boca de antes: debe FALLAR.
+// Y lo primero (valravnx, 6 nov: «NO LLEGAN AL MAR… ningún río conecta con el océano»): en TODOS los ríos que acaban en
+// el mar (no solo en las bocas que se dejan medir por el eje recto), agua seguida por el cauce desde 2,5 km río arriba
+// hasta el mar: antes, en 8 de 27, el río del mapa acababa aún en tierra y el agua, en una charca.
+// Con MUTAR=1 vuelve la boca de antes y con MUTAR=2, el río que acaba donde acaba el del mapa: deben FALLAR.
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearPaisaje } from '../src/logica/paisaje.js';
-import { ISLA } from '../src/logica/whitholm.js';
+import { ISLA, alturaMundo } from '../src/logica/whitholm.js';
 
 if (process.env.MUTAR === '1') globalThis.__bocaVieja = true;
+if (process.env.MUTAR === '2') globalThis.__sinLlegarMar = true;
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
   else { mal++; console.log(`  FALLA ${nombre}${detalle ? ' — ' + detalle : ''}`); }
 }
 const P = crearPaisaje(generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO }));
+
+// el agua seguida hasta el mar, por el cauce (con su meandro: en cada punto del eje del mapa, cada 3 m, se busca a lo
+// ancho el centro del cauce), con la altura del juego (la de los trozos)
+{
+  const alt = alturaMundo(P);
+  let n = 0, llegan = 0, sinHueco = 0; const malos = [];
+  for (const r of P.rios) {
+    if (r.entra || r.une || r.length < 3) continue;
+    const L = r.length - 1, bx = r[L].p[0] * 1000, by = r[L].p[1] * 1000;
+    if (bx < ISLA.x0 - 3000 || bx > ISLA.x1 + 3000 || by < ISLA.z0 - 3000 || by > ISLA.z1 + 3000) continue;
+    const pts = []; let d = 0;
+    for (let k = L; k > 0 && d < 2500; k--) {
+      const a = r[k].p, b = r[k - 1].p, l = Math.hypot(a[0] - b[0], a[1] - b[1]) * 1000;
+      for (let s = 0; s < l; s += 3) pts.push([(a[0] + (b[0] - a[0]) * s / l) * 1000, (a[1] + (b[1] - a[1]) * s / l) * 1000]);
+      d += l;
+    }
+    if (P.grande(...pts[pts.length - 1]).f < 0) continue;            // (todo en el mar)
+    const tr = P.riosEn(bx - 3000, by - 3000, bx + 3000, by + 3000, 600);
+    let hueco = 0, peor = 0, mar = false;
+    for (const [x, y] of pts) {
+      let cx = x, cy = y;
+      for (let it = 0; it < 3; it++) {
+        let m = P.rioCerca(cx, cy, tr).dm, mx = cx, my = cy;
+        for (let a = 0; a < 16; a++) for (const rr of [4, 12, 30]) { const qx = cx + Math.cos(a * Math.PI / 8) * rr, qy = cy + Math.sin(a * Math.PI / 8) * rr, q = P.rioCerca(qx, qy, tr).dm; if (q < m) { m = q; mx = qx; my = qy; } }
+        cx = mx; cy = my;
+      }
+      const z = alt(cx, cy), w = P.agua(cx, cy, tr);
+      if (P.grande(cx, cy).f < 0 && z < -0.3) mar = true;
+      if ((w !== null && w > z + 0.1) || (w === null && z < -0.2)) hueco = 0; else { hueco += 3; peor = Math.max(peor, hueco); }
+    }
+    n++; if (mar) llegan++; if (peor <= 9) sinHueco++;
+    if (!mar || peor > 9) malos.push(`(${bx.toFixed(0)}, ${by.toFixed(0)})${mar ? '' : ' no llega'}${peor > 9 ? ` seco ${peor} m` : ''}`);
+  }
+  console.log(`${n} ríos que acaban en el mar${malos.length ? ': mal ' + malos.join(', ') : ''}`);
+  comprobar('todos los ríos que acaban en el mar llegan al mar por su cauce', n >= 20 && llegan === n, `${llegan} de ${n}`);
+  comprobar('con agua seguida, sin tramos secos (más de 9 m) en los últimos 2,5 km', n >= 20 && sinHueco === n, `${sinHueco} de ${n}`);
+}
 const bocas = [];
 for (const r of P.rios) {
   if (r.entra || r.une || r.length < 3) continue;

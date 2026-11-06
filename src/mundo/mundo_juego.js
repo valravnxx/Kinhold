@@ -127,6 +127,7 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
     agua.paso(x, z);
     { const m = agua.malla; if (m) uLamina.value.set(m.position.x, m.position.z, LADO_AGUA / 2 - 1); else uLamina.value.z = 0; }
     uHastaCam.value = horizonte && horizonte.activo ? horizonte.compresion.r0 - 2 : 1e9;
+    agua.ponerHasta(uHastaCam.value);
     // el horizonte se calcula cuando lo de cerca ya está (2 ms por fotograma como mucho)
     if (horizonte) ms += horizonte.paso(x, z, listo ? 2 : 0);
     // listo cuando los trozos de los 3 × 3 de alrededor tienen su malla
