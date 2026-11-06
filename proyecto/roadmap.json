@@ -1302,9 +1302,9 @@
     },
     {
      "nombre": "Panel de fabricación (tecla y botón, PC y móvil): arriba lo que puedes hacer ya, debajo lo que casi (lo que falta en rojo), y en gris lo que se abre después y con qué; dice de dónde sale cada cosa (tu mano, el cinturón o el suelo)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T10:22:20+00:00",
-     "rama": "trabajo/20261106-1022"
+     "fin": "2026-11-06T13:15:44+00:00"
     },
     {
      "nombre": "Depositar en las estaciones (valravnx, 6 nov): cada estación (piedra de tallar, banco de tronco, hoguera) tiene dónde dejar los materiales, encima o junto a ella, y se ven puestos; sus recetas gastan lo depositado en ella, no lo del suelo, con quien fabrica delante; lo de las manos sigue con lo que llevas y el suelo. Por el servidor, con su autor, en el panel y en el recorrido de jugador",
@@ -3004,6 +3004,13 @@
      "archivo": "jugar/demo/v123.html",
      "capturas": "capturas/demo-v123",
      "notas": "El bosque de lejos sin dientes de sierra: va en el mismo suelo lejano (una sola superficie, que no se pelea consigo misma en la hondura) y su color sale de texturas leídas en cada píxel. Capturas: antes y después, mirando a las montañas altas."
+    },
+    {
+     "v": "v124",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v124.html",
+     "capturas": "capturas/demo-v124",
+     "notas": "El panel de fabricación: con H o el botón «Fabricar», todas las recetas a la vista (lo que puedes ya, lo que casi y lo que pide otra estación), de dónde sale cada material, encargar y recoger por el servidor, y poner la piedra de tallar, la hoguera o el banco de tronco delante de ti."
     }
    ]
   },
