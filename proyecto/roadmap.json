@@ -1222,9 +1222,10 @@
     },
     {
      "nombre": "La tierra vuelve al rey si no se usa (valravnx, 4 nov): si pasan 30 días sin que entre el dueño ni nadie invitado a su tierra, la zona queda libre (15 días si no tiene ninguna obra terminada); lo construido se queda como ruina que otros pueden desmontar; aviso por correo una semana antes y el último día. Por el servidor, con su registro",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T06:23:10+00:00",
-     "rama": "trabajo/20261106-0623"
+     "rama": "trabajo/20261106-0623",
+     "fin": "2026-11-06T07:36:49+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -2952,6 +2953,13 @@
      "archivo": "jugar/demo/v119.html",
      "capturas": "capturas/demo-v119",
      "notas": "Los ríos llegan al mar: en la orilla bajan al nivel del mar, se ensanchan en un estuario de arena, su cauce sigue mar adentro y los medianos y grandes acaban en un delta de isletas."
+    },
+    {
+     "v": "v120",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v120.html",
+     "capturas": null,
+     "notas": "La tierra vuelve al rey si no se usa: 30 días sin que entren el dueño ni sus invitados (15 sin obra terminada), con aviso por correo una semana antes y el último día; lo construido queda como ruina. Lo hace el servidor."
     }
    ]
   },
