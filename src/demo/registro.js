@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v119 (los ríos llegan al mar)";
+export const VERSION_DEMO = "Demo única · v120 (la tierra vuelve al rey si no se usa)";
 export const REGISTRO_DEMO = [
+  "v120: la tierra vuelve al rey si no se usa (valravnx, 4 nov): si pasan 30 días sin que entréis en el juego ni el dueño ni ninguno de sus invitados, la zona queda libre para otros (15 días si en ella no hay ninguna obra terminada). Lo construido se queda como ruina que cualquiera puede desmontar. Una semana antes y el último día llega un aviso al correo de la cuenta del dueño. Lo hace el servidor, y cada aviso y cada tierra devuelta quedan apuntados.",
+  "v120, provisional: «entrar» es estar en el mundo con tu personaje (el servidor lo apunta al conectar y, mientras sigues, cada minuto); una obra terminada es cualquier pieza acabada (los muebles no cuentan). Las tierras de antes empiezan a contar desde ahora.",
   "v119: los ríos llegan al mar (valravnx, 5 nov): en la orilla el río baja al nivel del mar, se ensancha en un estuario (hasta 3,5 veces su ancho en la boca) y su cauce sigue mar adentro; antes, la arena de la playa cerraba la boca por encima del agua.",
   "v119: el delta: en la boca de los ríos medianos y grandes, isletas de arena que asoman del agua y reparten el río en brazos. La vega y las laderas de alrededor no cambian (solo baja el cauce).",
   "v118: lo de niveles posteriores, escondido. El menú de construir solo enseña lo de la casa humilde: quedan guardados para su nivel el tejado y los remates de teja, la chimenea, el adarve, la empalizada y su puerta, la polea, el polipasto, la escalera de tablas y todo lo de tablas (suelo, muros, tejado de tablillas, puerta, contraventana, trampilla), el muro de entramado y los muebles de tablas o hierro (cama de madera, mesa, banco, arcón, barril y estantería).",
