@@ -178,7 +178,6 @@ const POSES = {
   alto:      { p: { m: V(0.08, 1.8, 0.0), d: V(0, 0.85, -0.5) },  f: { m: V(0, 1.0, 0.48), d: V(0, -0.5, 1) } },
   izquierda: { p: { m: V(0.38, 1.5, 0.05), d: V(1, 0.5, -0.4) },  f: { m: V(-0.35, 1.15, 0.42), d: V(-1, -0.1, 0.6) } },
   derecha:   { p: { m: V(-0.38, 1.5, 0.05), d: V(-1, 0.5, -0.4) }, f: { m: V(0.35, 1.15, 0.42), d: V(1, -0.1, 0.6) } },
-  bajo:      { p: { m: V(-0.3, 0.95, 0.05), d: V(-0.6, -0.5, -0.5) }, f: { m: V(0.25, 0.95, 0.45), d: V(0.6, -0.6, 0.8) } },
   estocada:  { p: { m: V(0, 1.22, 0.08), d: V(0, 0.1, 1) },       f: { m: V(0, 1.3, 0.8), d: V(0, 0.03, 1) } },
 };
 // Con escudo, la espada se lleva en la derecha, adelantada; al parar se retira un poco detrás del escudo
@@ -188,14 +187,7 @@ const PARADAS = {
   alto:      { m: V(0, 1.72, 0.36),  d: V(1, 0.15, 0) },
   izquierda: { m: V(0.3, 1.3, 0.36), d: V(0.15, 1, 0.2) },
   derecha:   { m: V(-0.3, 1.3, 0.36), d: V(-0.15, 1, 0.2) },
-  bajo:      { m: V(0, 0.95, 0.42),  d: V(0.3, -1, 0.25) },
   estocada:  { m: V(0, 1.3, 0.42),   d: V(0.25, 0.9, 0.35) },
-};
-const GUARDIAS_POSE = {
-  vom_tag: { m: V(-0.22, 1.62, 0.06), d: V(0, 1, -0.25) },
-  ochs:    { m: V(0.16, 1.62, 0.25),  d: V(-0.15, -0.15, 1) },
-  pflug:   { m: V(-0.15, 1.0, 0.3),   d: V(0, 0.5, 1) },
-  alber:   { m: V(0, 0.85, 0.36),     d: V(0, -0.6, 1) },
 };
 function mezclar(a, b, t) { return { m: a.m.clone().lerp(b.m, t), d: a.d.clone().normalize().lerp(b.d.clone().normalize(), t).normalize() }; }
 const suave = (t) => t * t * (3 - 2 * t);
@@ -301,11 +293,10 @@ export function pintarHeridas(raiz, heridas) {
 export function sacudir(raiz, fuerza = 1) { raiz.userData.retroceso = 0.25 * fuerza; }
 
 // Giro de torso según la línea y la fase del golpe (en radianes, eje vertical)
-const GIRO = { alto: [0.15, -0.1], izquierda: [0.55, -0.5], derecha: [-0.55, 0.5], bajo: [-0.35, 0.3], estocada: [0.25, -0.15] };
+const GIRO = { alto: [0.15, -0.1], izquierda: [0.55, -0.5], derecha: [-0.55, 0.5], estocada: [0.25, -0.15] };
 
 // Pose del combatiente a partir del estado del luchador de la lógica.
-// lineaParada: línea visual de la parada (por dónde viene el golpe, desde el punto de vista del que para)
-export function animarCombatiente(raiz, L, dt, velocidad, cojea, lineaParada) {
+export function animarCombatiente(raiz, L, dt, velocidad, cojea) {
   const u = raiz.userData;
   if (L.fuera) {
     u.cuerpo.rotation.x += (-Math.PI / 2 - u.cuerpo.rotation.x) * Math.min(1, dt * 4);
@@ -345,13 +336,13 @@ export function animarCombatiente(raiz, L, dt, velocidad, cojea, lineaParada) {
   let obj;
   if (tipo === 'espada_larga' || tipo === 'palo' || tipo === 'espada_escudo') {
     const conEscudo = tipo === 'espada_escudo';
-    const base = L.modo === 'guardias' ? GUARDIAS_POSE[L.guardia] : conEscudo ? POSE_ESCUDO : POSES.base;
+    const base = conEscudo ? POSE_ESCUDO : POSES.base;
     if (L.accion === 'preparando') obj = mezclar(base, POSES[L.linea].p, suave(t));
     else if (L.accion === 'golpeando' || L.accion === 'lanzando') obj = mezclar(POSES[L.linea].p, POSES[L.linea].f, tg);
     else if (L.accion === 'recuperando' && L.linea) obj = mezclar(POSES[L.linea].f, base, suave(t));
     else if (L.accion === 'aturdido') obj = { m: V(0.1, 1.55, -0.05), d: V(0.3, 0.9, -0.6) }; // arma desviada hacia atrás
-    // en el modo direccional la hoja va al lado que ha elegido quien para (el de la lógica), no al del golpe que viene
-    else if (L.bloqueando) obj = conEscudo ? POSE_ESCUDO_PARANDO : PARADAS[(L.modo === 'direccional' ? L.lineaBloqueo : lineaParada) || 'estocada'];
+    // la hoja va al lado que ha elegido quien para (el de la lógica), no al del golpe que viene
+    else if (L.bloqueando) obj = conEscudo ? POSE_ESCUDO_PARANDO : PARADAS[L.lineaBloqueo || 'estocada'];
     else obj = base;
     const kk = L.accion === 'golpeando' || L.accion === 'lanzando' ? 1 : Math.min(1, dt * 16);
     u.pose.m.lerp(obj.m, kk); u.pose.d.lerp(obj.d, kk).normalize();

@@ -31,7 +31,7 @@ import { performance } from 'perf_hooks';
 import { Mundo, RADIO_MOJON, MAX_RATO } from '../src/logica/construccion.js';
 import { RegistroAcciones, ejecutar } from '../src/logica/acciones.js';
 import { ponerComun } from '../src/logica/obras_red.js';
-import { LINEAS_DIRECCIONAL, ESPEJO } from '../src/combate/logica.js';
+import { LINEAS, ESPEJO } from '../src/combate/logica.js';
 
 export const FASE = 20;          // s de cada fase (andar, construir, pelear)
 export const CADA = 100;         // ms entre estados
@@ -269,7 +269,7 @@ export class Bot {
     // pelean como en el mundo (valravnx, 31 oct): con el arma sacada, golpes cargados por cuatro lados y paradas por
     // un lado (unas veces el bueno, el espejo del golpe que viene, y otras no)
     if (!this.L || !this.L.sacada) this.intencion({ que: 'arma', sacada: true });
-    const r = this.r(), lado = () => LINEAS_DIRECCIONAL[Math.floor(this.r() * LINEAS_DIRECCIONAL.length)];
+    const r = this.r(), lado = () => LINEAS[Math.floor(this.r() * LINEAS.length)];
     if (r < 0.55) {
       this.intencion({ que: 'cargar', linea: lado() });
       setTimeout(() => this.intencion({ que: 'descargar' }), 150 + this.r() * 500);

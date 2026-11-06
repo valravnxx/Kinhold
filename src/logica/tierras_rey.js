@@ -23,10 +23,10 @@ export function crearTierrasRey(comarcas, origen = { x: 0, z: 0 }) {
   return { nombre, en };
 }
 
-// ¿Se rechaza que A hiera a B? A y B: luchadores (src/combate/logica.js) con x, z de la escena. Los de la liza (escena
-// aparte) y los NPCs (npc: true) no cuentan. Devuelve el motivo o null.
+// ¿Se rechaza que A hiera a B? A y B: luchadores (src/combate/logica.js) con x, z de la escena. Los NPCs (npc: true)
+// no cuentan. Devuelve el motivo o null.
 export function motivoProtegido(en, A, B) {
-  if (!en || !A || !B || A.liza || B.liza || A.npc || B.npc) return null;
+  if (!en || !A || !B || A.npc || B.npc) return null;
   return en(A.x, A.z) || en(B.x, B.z) ? MOTIVO_TIERRAS : null;
 }
 

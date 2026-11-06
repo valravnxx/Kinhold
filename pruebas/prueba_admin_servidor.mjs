@@ -44,7 +44,7 @@ if (MUTAR) {
   const mutada = process.env.MUTAR === 'traer'
     ? fuente.replace("enviar(conexionDe.get(p.quien), { tipo: 'admin', que: 'traido'", "void ({ tipo: 'admin', que: 'traido'")
     : process.env.MUTAR === 'continente'
-    ? fuente.replace('{ aparte: enLiza, admin: esAdmin(autor) }', '{ aparte: enLiza }')
+    ? fuente.replace('{ admin: esAdmin(autor), vel: modosDe(autor).velocidad }', '{ vel: modosDe(autor).velocidad }')
     : process.env.MUTAR === 'correo'
     ? fuente.replace('esCorreoAdmin(cuentas.correoDe(autor), admins)', 'esCorreoAdmin({ ...cuentas.correoDe(autor), verificado: true }, admins)')
     : fuente.replace('if (!esAdmin(autor)) return responder({ ok: false, motivo: NO_ADMIN });', '');

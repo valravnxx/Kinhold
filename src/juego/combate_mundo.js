@@ -1,4 +1,4 @@
-// Kinhold — el combate dentro del mundo (valravnx, 30 oct): sin liza ni duelo aparte. En «Mover», con el arma
+// Kinhold — el combate dentro del mundo (valravnx, 30 oct): sin escena ni duelo aparte. En «Mover», con el arma
 // sacada (tecla C o el botón «Arma»):
 //  - PC: al hacer clic el ratón queda cogido: moverlo gira la cámara (también arriba y abajo) y Esc lo suelta.
 //    Cuatro direcciones (valravnx, 31 oct): arriba, izquierda, derecha y abajo, que es clavar (la estocada). Clic
@@ -23,7 +23,7 @@
 // En Strandvang, tierras del rey (src/logica/tierras_rey.js), el servidor rechaza los golpes entre jugadores: el evento
 // llega con resultado «tierras del rey» y se dice; contra el rival de práctica se pelea igual.
 import * as THREE from 'three';
-import { Luchador, IA, LINEAS_DIRECCIONAL as LINEAS, ESPEJO, NOMBRE_ZONA, angulo, difAngulo, RITMO, azar } from '../combate/logica.js';
+import { Luchador, IA, LINEAS, ESPEJO, NOMBRE_ZONA, angulo, difAngulo, RITMO, azar } from '../combate/logica.js';
 import { crearCombatiente, ponerArma, animarCombatiente, pintarHeridas, sacudir, Rastro } from '../combate/modelos.js';
 import { LectorDireccion, lineaDe } from '../combate/direccion.js';
 import { ejecutarCombate } from '../logica/acciones.js';
@@ -115,7 +115,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (!puedeLuchar()) { decir(tr('Nadando no se puede sacar el arma')); return; }
     c.activo = true;
     const ritmo = RITMO.normal;
-    if (!c.L || c.L.fuera) c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', armadura: armaduraActual(), modo: 'direccional', ritmo, x: pj.x, z: pj.z, rot: pj.rot });
+    if (!c.L || c.L.fuera) c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', armadura: armaduraActual(), ritmo, x: pj.x, z: pj.z, rot: pj.rot });
     else { c.L.armadura = armaduraActual(); }
     if (!c.modelo) {
       c.modelo = crearCombatiente({ armadura: c.L.armadura, colorCinta: 0x46607e, recursos, sexo, capas: capasActuales(), aspecto });
@@ -158,7 +158,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
       if (Math.hypot(p.x - px, p.z - pz) < 0.05) { x = px; z = pz; }
     }
     if (x === null) { decir(tr('Aquí no hay sitio para un rival')); return; }
-    const L = new Luchador({ nombre: tr('Rival'), arma: 'espada_larga', armadura: 'gambeson', modo: 'direccional', ritmo: RITMO.normal, x, z, rot: a + Math.PI });
+    const L = new Luchador({ nombre: tr('Rival'), arma: 'espada_larga', armadura: 'gambeson', ritmo: RITMO.normal, x, z, rot: a + Math.PI });
     const ia = new IA(L, 'normal', azar((Date.now() >> 3) & 0xffff));
     const m = crearCombatiente({ armadura: 'gambeson', colorCinta: 0xb3923f, recursos });
     ponerArma(m, 'espada_larga'); escena.add(m);
@@ -403,7 +403,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
       x.m.position.set(x.L.x, alturaEn(x.L.x, x.L.z), x.L.z);
       x.m.rotation.y = x.L.rot;
       pintarHeridas(x.m, x.L.heridas);
-      animarCombatiente(x.m, x.L, dt, v, x.L.factorPiernas() < 0.9, L.atacando() ? ESPEJO[L.linea] : 'estocada');
+      animarCombatiente(x.m, x.L, dt, v, x.L.factorPiernas() < 0.9);
       x.rastro.actualizar(x.m, enVuelo(x.L));
       if (x.L.fuera && !x.caidoDesde) { x.caidoDesde = c.reloj; decir(tr('El rival cae: {m}', { m: tr(x.L.motivoFuera) })); if (c.fijado === x) c.fijado = null; }
     }
@@ -417,7 +417,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (L.fuera && c.reloj >= c.caidoHasta) {
       c.caidoHasta = 0;
       mandar({ que: 'reiniciar' });
-      c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', armadura: armaduraActual(), modo: 'direccional', ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
+      c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', armadura: armaduraActual(), ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
       c.ctx.luchadores.jugador = c.L;
       decir(tr('Te levantas (prueba: vuelves curado)'));
     }
@@ -425,8 +425,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
       c.modelo.position.set(pj.x, pj.y, pj.z);
       c.modelo.rotation.y = c.L.rot;
       pintarHeridas(c.modelo, c.L.heridas);
-      const amenaza = rivalQueAtaca();
-      animarCombatiente(c.modelo, c.L, dt, velocidad, c.L.factorPiernas() < 0.9, amenaza ? ESPEJO[amenaza.L.linea] : 'estocada');
+      animarCombatiente(c.modelo, c.L, dt, velocidad, c.L.factorPiernas() < 0.9);
       rastro.actualizar(c.modelo, c.activo && enVuelo(c.L));
     }
     // cámara del duelo con un rival fijado: detrás de ti, un poco de lado, mirándole
@@ -466,11 +465,10 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (msg.tipo === 'bienvenida' && c.activo) { if (c.L && ARMADURAS_RED.includes(c.L.armadura)) mandar({ que: 'equipar', arma: 'espada_larga', armadura: c.L.armadura }); mandar({ que: 'arma', sacada: true }); }
     if (msg.tipo === 'luchadores' || msg.tipo === 'bienvenida') {
       const f = (msg.tipo === 'luchadores' ? msg.lista : msg.luchadores || []).find(x => x.autor === yo);
-      if (!f || f.liza) return;
-      if (!c.L) c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', armadura: armaduraActual(), modo: 'direccional', ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
+      if (!f) return;
+      if (!c.L) c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', armadura: armaduraActual(), ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
       const caido = c.L.fuera;
       aplicarFoto(c.L, f, { propio: true, prediciendo: true });
-      c.L.modo = 'direccional';
       // de pie otra vez (tras volver a empezar sano en el servidor)
       if (!c.L.fuera && caido) { c.caidoHasta = 0; c.L.accion = 'libre'; }
       return;

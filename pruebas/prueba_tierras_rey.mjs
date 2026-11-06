@@ -100,11 +100,10 @@ function golpe(c) {
   comprobar('fuera, la flecha hiere', f && f.resultado === 'blanco' && c.luchadores['jugador:b'].heridas.length === 1, f && f.resultado);
 }
 {
-  // los NPCs y la liza no cuentan
+  // los NPCs no cuentan
   const A = { x: 0, z: 0 }, B = { x: 0, z: 1 };
   comprobar('contra un NPC sí se pelea dentro', motivoProtegido(T41.en, A, { ...B, npc: true }) === null && motivoProtegido(T41.en, { ...A, npc: true }, B) === null);
   comprobar('entre dos jugadores dentro, no', motivoProtegido(T41.en, A, B) === MOTIVO_TIERRAS);
-  comprobar('en la liza (escena aparte), sí', motivoProtegido(T41.en, { ...A, liza: true }, { ...B, liza: true }) === null);
   comprobar('sin tierras (otro servidor), sí', motivoProtegido(null, A, B) === null);
 }
 

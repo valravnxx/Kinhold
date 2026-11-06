@@ -18,6 +18,8 @@
 //               cobraría del montón común, así que el mundo de cada navegador dejaría de cuadrar con el suyo.
 //   7 (31 oct): pelear en el mundo: fuera de la liza el combate va en el modo direccional, con 'arma', 'cargar',
 //               'descargar', 'fintar' y 'parar' con su lado; un servidor anterior no los conoce y los golpes no harían nada.
+//   (6 nov, sin subir: fuera la liza y los modos de capas y de guardias; el servidor ya no acepta 'liza', 'mundo',
+//    'guardia' ni 'atacar' de una vez, y el juego ya no los manda.)
 export const PROTOCOLO = 7;
 
 // La versión del servidor por su bienvenida. Los servidores de antes de este número no la mandan: los que ya

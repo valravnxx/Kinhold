@@ -5,7 +5,6 @@
 //   - un jugador nuevo no trae posición; al volver con su ficha, la bienvenida trae la última que mandó;
 //   - otro jugador (sin ficha) no recibe la de nadie;
 //   - tras reiniciar el servidor sigue sabiéndola (posiciones.json), y un archivo roto no tumba el servidor;
-//   - en el «Duelo» (la liza, una escena aparte) no se apunta: vuelve al sitio del mundo de antes;
 //   - con el servidor encendido, el latido la guarda aunque el jugador no haya salido (por si se apaga de golpe).
 // Con MUTAR=1 se prueba un servidor que no manda la posición en la bienvenida: debe FALLAR.
 import { WebSocket } from 'ws';
@@ -71,13 +70,9 @@ try {
   const guardadas = existsSync(s.archivoPosiciones) ? JSON.parse(readFileSync(s.archivoPosiciones, 'utf8')) : {};
   comprobar('en posiciones.json, la de ahora de quien sigue conectado', cerca(guardadas[a.bienvenida.autor], 30, 5), JSON.stringify(guardadas[a.bienvenida.autor]));
 
-  console.log('En el duelo no se apunta');
-  a2.mandar({ tipo: 'combate', que: 'liza' }); await pausa(100);
-  a2.estado(1.75, 0); await pausa(100);
   a2.ws.close(); await a2.cerrado; await pausa(100);
   const a3 = await cliente(puerto, ficha);
-  comprobar('vuelve al sitio del mundo, no al de la liza', cerca(a3.bienvenida.posicion, 30, 5), JSON.stringify(a3.bienvenida.posicion));
-  a3.mandar({ tipo: 'combate', que: 'mundo' }); await pausa(50);
+  comprobar('al volver otra vez, la última que mandó', cerca(a3.bienvenida.posicion, 30, 5), JSON.stringify(a3.bienvenida.posicion));
   a3.estado(-40, 15); await pausa(100);
   a3.ws.close(); await a3.cerrado; await pausa(100);
 
