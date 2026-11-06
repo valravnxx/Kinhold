@@ -66,27 +66,90 @@ body.construyendo #pomo{left:25px;top:25px}
 .panel kbd{background:#4a3e30;border-radius:4px;padding:1px 6px;font-size:12px}
 #version{color:var(--muted);font-size:12px}
 
-/* panel de fabricación (src/juego/panel_fabricar.js) */
-#panelFabricar{background:#251f19;max-width:760px;max-height:84vh;inset:52px 12px auto 12px;z-index:21}
-.fab-sec h3{margin:12px 0 6px;font-size:13px;color:var(--acento);border-bottom:1px solid var(--linea);padding-bottom:3px}
-.fab-fila{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:6px 9px;margin:5px 0}
-.fab-tit{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.fab-tit b{font-size:13.5px}
-.fab-tit small{color:var(--muted);font-size:11.5px}
-.fab-tit button{margin-left:auto;padding:4px 14px}
-.fab-mats{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:3px;font-size:12px}
-.fab-mat b{font-weight:600}
-.fab-mat small{color:var(--muted)}
-.fab-rojo,.fab-mat.fab-falta b{color:#d9805f}
-.fab-gris{color:var(--muted);font-size:11.5px}
-.fab-despues{opacity:.55}
-.fab-marcha{border-color:rgba(214,180,120,.35)}
+/* panel de fabricación (src/juego/panel_fabricar.js; estudio del panel aprobado por valravnx el 6 nov) */
+#panelFabricar{background:#211b15;max-width:1040px;width:calc(100vw - 24px);height:min(700px,calc(100vh - 66px));max-height:none;inset:52px 12px auto 12px;z-index:21;padding:0;overflow:hidden;
+  display:grid;grid-template-columns:150px minmax(0,1fr) 320px;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"cab cab cab" "nav centro ficha" "pie pie pie";border-color:rgba(217,164,65,.28);box-shadow:0 16px 50px rgba(0,0,0,.5)}
+#panelFabricar[hidden]{display:none}
+.fab-img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))}
+.fab-ic{position:relative;display:block;background:radial-gradient(circle at 50% 42%,#4a3e31 0%,#2f271f 62%,#271f19 100%);border-radius:9px;overflow:hidden}
+.fab-pend{position:absolute;left:3px;top:2px;font:normal 9px/1.3 system-ui,sans-serif;color:#d9c9a8;background:rgba(0,0,0,.5);border-radius:5px;padding:0 4px}
+.fab-svg{display:grid;place-items:center;color:#d8c9ad}.fab-svg svg{width:30px;height:30px}
+.fab-cab{grid-area:cab;display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--linea);background:linear-gradient(180deg,rgba(217,164,65,.08),transparent)}
+.fab-cab-ic .fab-ic{width:42px;height:42px}
+.fab-cab-txt{min-width:0}
+.fab-cab h2{margin:0;font:600 21px/1.15 Georgia,"Times New Roman",serif;color:#f0c46a;letter-spacing:.02em}
+.fab-cab small{display:block;color:var(--muted);font-size:12.5px}
+#panelFabricar .fab-cab .cerrar{position:static;margin-left:auto;width:36px;height:36px;padding:0}
+.fab-pestanas{grid-area:nav;border-right:1px solid var(--linea);padding:10px 8px;display:flex;flex-direction:column;gap:6px;overflow:auto}
+.fab-pest{position:relative;display:grid;grid-template-columns:38px 1fr;align-items:center;gap:8px;padding:5px 7px;text-align:left;background:transparent;border-color:transparent;color:var(--muted)}
+.fab-pest .fab-ic,.fab-pest .fab-svg{width:38px;height:38px}
+.fab-pest b{font-weight:500;font-size:13px;line-height:1.15}
+.fab-pest.fab-sel{background:var(--panel2);border-color:rgba(217,164,65,.5);color:var(--ink)}
+.fab-cuenta{position:absolute;right:-4px;top:-6px;font-size:10.5px;background:var(--acento);color:#2a2016;border-radius:9px;padding:0 6px;font-weight:700}
+.fab-centro{grid-area:centro;overflow:auto;padding:10px 14px}
+.fab-sec h3{margin:6px 2px 8px;font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:#8d8270;font-weight:600;display:flex;align-items:center;gap:8px}
+.fab-sec h3::after{content:"";flex:1;height:1px;background:var(--linea)}
+.fab-cartas{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:9px;margin-bottom:10px}
+.fab-carta{position:relative;display:block;width:100%;padding:6px 6px 7px;border-radius:12px;background:#2e261e;border:1px solid var(--linea);text-align:center}
+.fab-carta .fab-ic{height:72px}
+.fab-nom{display:block;font-size:11.5px;line-height:1.15;margin-top:5px;min-height:27px;color:var(--ink)}
+.fab-carta.fab-ya{border-color:rgba(217,164,65,.55)}
+.fab-carta.fab-ya::before{content:"";position:absolute;right:6px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--acento);box-shadow:0 0 6px var(--acento);z-index:2}
+.fab-falta-n{position:absolute;left:50%;transform:translateX(-50%);top:58px;font-size:10px;background:#5a2b20;color:#ffd7c6;border-radius:8px;padding:1px 7px;white-space:nowrap;border:1px solid rgba(224,128,95,.5)}
+.fab-carta.fab-despues .fab-img{filter:grayscale(.85) brightness(.75)}
+.fab-carta.fab-despues .fab-nom{color:#8d8270}
+.fab-necesita{position:absolute;right:5px;top:46px;width:30px;height:30px;border-radius:8px;background:#211b16;border:1px solid var(--linea);padding:2px}
+.fab-carta.fab-sel{outline:2px solid #f0c46a;outline-offset:2px}
+.fab-sec-dep{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.fab-bandeja{background:rgba(0,0,0,.2);border:1px solid var(--linea);border-radius:12px;padding:8px 10px}
+.fab-bt{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);margin-bottom:6px}
+.fab-bt b{color:var(--ink);font-weight:600}
+.fab-huecos{display:flex;flex-wrap:wrap;gap:7px}
+.fab-hueco{position:relative;width:58px;height:58px;padding:0;border-radius:9px;border:1px solid var(--linea);background:transparent;overflow:visible}
+.fab-hueco .fab-ic{width:100%;height:100%}
+.fab-num{position:absolute;right:4px;bottom:1px;font-size:12px;text-shadow:0 1px 2px #000}
+.fab-de{position:absolute;left:4px;top:2px;font:normal 9.5px/1 system-ui,sans-serif;color:var(--muted);text-shadow:0 1px 2px #000}
+.fab-hueco-nom{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.fab-hueco:hover{outline:2px solid #f0c46a}
+.fab-vacio{border-style:dashed;pointer-events:none}
+.fab-velo{display:none}
+.fab-ficha{grid-area:ficha;border-left:1px solid var(--linea);padding:12px 16px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.fab-ficha-cerrar{display:none}
+.fab-grande{height:130px;background:radial-gradient(circle at 50% 42%,#4a3e31 0%,#2f271f 62%,#271f19 100%);border-radius:12px;flex:none}
+.fab-titulo{margin:2px 0 0;font:600 19px/1.2 Georgia,"Times New Roman",serif}
+.fab-pend-t{font:normal 11px system-ui,sans-serif;color:#d9c9a8;background:rgba(0,0,0,.35);border-radius:6px;padding:1px 6px;vertical-align:middle}
+.fab-para{margin:0;color:var(--muted);font-style:italic;font-size:13px}
+.fab-chips{display:flex;flex-wrap:wrap;gap:6px}
+.fab-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:var(--panel2);border:1px solid var(--linea);border-radius:20px;padding:3px 10px;color:var(--muted)}
+.fab-chip .fab-ic,.fab-chip .fab-svg{width:22px;height:22px;margin-left:-6px;border-radius:11px}.fab-chip .fab-svg svg{width:16px;height:16px}
+.fab-ficha h4{margin:4px 0 0;font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:#8d8270;font-weight:600}
+.fab-mats{display:flex;flex-direction:column;gap:6px}
+.fab-mat{display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:10px;padding:5px 6px;border-radius:10px;background:rgba(0,0,0,.16)}
+.fab-mat .fab-ic{width:40px;height:40px;border-radius:8px}
+.fab-mat b{font-weight:600;font-size:13px}
+.fab-mat small{display:block;color:#8d8270;font-size:11.5px}
+.fab-n{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px;color:#9cc27a}
+.fab-mat.fab-falta .fab-n{color:#e0805f}.fab-mat.fab-falta b{color:#f2c7b6}
+.fab-herr{border:1px dashed var(--linea);background:transparent}
+.fab-acciones{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding-top:6px}
+.fab-btn{border:0;border-radius:12px;padding:11px 14px;font-weight:600;font-size:15px;color:#2a2016;background:linear-gradient(180deg,#f0c46a,var(--acento));box-shadow:0 2px 0 #8b6620}
+.fab-btn.fab-no{background:#3b322a;color:#8d8270;box-shadow:none;border:1px solid var(--linea);font-weight:500;font-size:13.5px}
+.fab-btn2{border:1px solid rgba(217,164,65,.55);border-radius:10px;padding:8px 12px;font-weight:600;font-size:13px;color:#f0c46a;background:transparent;text-align:left}
+.fab-gris{color:var(--muted);font-size:12px;margin:2px 0}
+.fab-pie{grid-area:pie;border-top:1px solid var(--linea);background:rgba(0,0,0,.18);padding:6px 14px;display:flex;flex-direction:column;gap:4px}
 .fab-aviso{min-height:1.2em;font-size:12.5px;color:#cbbd9f}
-.fab-aviso.fab-error{color:#d9805f}
-.fab-sec-dep{border:1px solid rgba(214,180,120,.25);border-radius:9px;padding:2px 8px 6px;margin-top:8px}
-.fab-sec-dep h4{margin:8px 0 3px;font-size:12px;color:var(--muted);font-weight:600}
-.fab-dep,.fab-dejable{padding:4px 9px}
-.fab-dejable span{font-size:12.5px}
+.fab-aviso.fab-error{color:#e0805f}
+.fab-sec-marcha{display:flex;align-items:center;gap:10px;overflow-x:auto}
+.fab-sec-marcha:empty{display:none}
+.fab-pie-tit{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:#8d8270;flex:none}
+.fab-enc{display:flex;align-items:center;gap:10px;background:#2e261e;border:1px solid var(--linea);border-radius:12px;padding:5px 10px 5px 5px;min-width:210px;flex:none}
+.fab-enc .fab-ic{width:46px;height:46px;flex:none}
+.fab-enc-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.fab-enc b{font-size:12.5px}
+.fab-enc small{color:#8d8270;font-size:11px}
+.fab-barra{height:6px;border-radius:3px;background:#1c1712;overflow:hidden}.fab-barra i{display:block;height:100%;width:0;background:var(--acento)}
+.fab-enc.fab-listo{border-color:rgba(156,194,122,.6)}
+.fab-recoger{align-self:flex-start;font-size:12px;padding:4px 12px;border-radius:8px;border:0;background:#9cc27a;color:#1d2614;font-weight:700}
 /* panel de inventario (src/juego/panel_inventario.js) */
 #panelInventario{background:#251f19;max-width:1160px;max-height:88vh;inset:52px 12px auto 12px;z-index:20}
 #panelInventario h3{margin:0 0 6px;font-size:14px;color:var(--acento)}
@@ -139,7 +202,22 @@ body.construyendo #pomo{left:25px;top:25px}
   body.combate.tactil #menu #btnFabricar{display:none} /* con el arma en la mano, ahí va el aliento (src/juego/combate_mundo.js) */
   .pieza{min-width:128px}
   /* en el móvil, el inventario va a pantalla completa */
-  #panelFabricar{inset:0;max-width:none;max-height:none;height:100%;border-radius:0;padding:calc(10px + env(safe-area-inset-top,0px)) 10px calc(14px + env(safe-area-inset-bottom,0px))}
+  #panelFabricar{inset:0;width:auto;max-width:none;max-height:none;height:100%;border-radius:0;border:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr) auto;grid-template-areas:"cab" "nav" "centro" "pie";padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+  .fab-pestanas{flex-direction:row;border-right:0;border-bottom:1px solid var(--linea);padding:7px 8px;overflow-x:auto}
+  .fab-pest{grid-template-columns:1fr;justify-items:center;text-align:center;padding:4px 3px;width:68px;flex:none;gap:2px}
+  .fab-pest b{font-size:11px}
+  .fab-centro{padding:10px 12px}
+  .fab-cartas{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .fab-carta .fab-ic{height:80px}.fab-falta-n{top:66px}.fab-necesita{top:54px}
+  .fab-sec-dep{grid-template-columns:1fr;gap:8px}
+  .fab-hueco{width:52px;height:52px}
+  .fab-ficha{position:fixed;left:0;right:0;bottom:0;max-height:78%;z-index:3;border:0;border-top:1px solid rgba(217,164,65,.35);border-radius:20px 20px 0 0;background:#2b231c;box-shadow:0 -12px 40px rgba(0,0,0,.6);padding:22px 16px calc(16px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .18s ease-out}
+  #panelFabricar.fab-ficha-abierta .fab-ficha{transform:none}
+  #panelFabricar.fab-ficha-abierta .fab-velo{display:block;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2}
+  .fab-ficha-cerrar{display:block;position:absolute;left:50%;top:7px;transform:translateX(-50%);width:54px;height:9px;padding:0;border:0;border-radius:5px;background:#5b4e40}
+  .fab-grande{height:96px}
+  .fab-btn{padding:13px 14px}
+  .fab-enc{min-width:0;flex:1}
   #panelInventario{inset:0;max-width:none;max-height:none;height:100%;border-radius:0;padding:calc(10px + env(safe-area-inset-top,0px)) 10px calc(14px + env(safe-area-inset-bottom,0px))}
   .inv-cuerpo{flex-direction:column;align-items:center;gap:6px}
   #llevas{left:calc(152px + env(safe-area-inset-left,0px));right:calc(10px + env(safe-area-inset-right,0px));transform:none;bottom:calc(24px + env(safe-area-inset-bottom,0px));max-width:none;flex-direction:column;align-items:stretch;gap:5px;font-size:12px}

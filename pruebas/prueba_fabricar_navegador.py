@@ -1,13 +1,18 @@
 # Prueba en navegador del panel de fabricación (P3, «De nada a una casa»), en línea con un servidor local.
 # Uso: python3 pruebas/prueba_fabricar_navegador.py <html de la demo> <carpeta_capturas>
-# Comprueba, en PC (1280×800): el botón «Fabricar» y la tecla H abren el panel; con 3 fibras en la mano, el cordel
-# sale en «Puedes hacerlo ya» diciendo que sale de la mano; el leñero, en «Casi», con lo que falta en rojo; la lasca,
-# en gris («después»), con la piedra de tallar que hace falta. «Hacer» lo encarga al servidor (la fibra sale de lo que
-# lleva en el servidor), sale en «En marcha» y, terminado, «Recoger» le da el cordel (en el servidor). Con una piedra,
-# «Poner delante» pone la piedra de tallar (en el servidor, y se dibuja) y la lasca pasa de «después» a «casi».
-# Depositar (valravnx, 6 nov): junto a la piedra de tallar, el panel la enseña con lo que lleva para «Dejar»; lo dejado
-# está en el servidor, se ve puesto encima y «Coger» lo devuelve; con el sílex y la piedra en ella, la lasca, ya.
-# En el móvil (390×844), otro jugador ve la piedra de tallar con lo depositado y su panel va a pantalla completa.
+# Es el panel del estudio que aprobó valravnx el 6 nov (cartas con imagen, pestañas por dónde se hace, ficha, los dos
+# atajos). Comprueba, en PC (1280×800): el botón «Fabricar» y la tecla H abren el panel, en «Con las manos»; en «Todo»
+# están todas las recetas, cada carta con su imagen (de los modelos del juego) y ninguna «sin modelo aún». Con 3
+# fibras en la mano, el cordel sale en «Puedes hacerlo ya» y su ficha dice que la fibra sale de la mano; el leñero, en
+# «Te falta algo», con lo que falta en rojo en su ficha y el atajo «Hacer antes: 1 cordel de fibra», que lo encarga
+# al servidor (la fibra sale de lo que lleva en el servidor): sale en «En marcha» y, terminado, «Recoger» le da el
+# cordel (en el servidor). La lasca, en gris, con la piedra de tallar que hace falta. Con una piedra, «Poner delante»
+# (en la ficha de la piedra de tallar) la pone (en el servidor, y se dibuja) y la lasca pasa a «Te falta algo».
+# Depositar (valravnx, 6 nov): con Usar delante de la piedra de tallar se abre el panel en su pestaña, con lo que
+# tiene encima y lo que lleva para dejar; lo dejado está en el servidor, se ve puesto encima y tocarlo lo devuelve;
+# el atajo «Poner en la piedra de tallar lo que falta» deja el sílex y la piedra de una vez, y la lasca pasa a «ya».
+# En el móvil (390×844), otro jugador ve la piedra de tallar con lo depositado, su panel va a pantalla completa y la
+# ficha sube desde abajo al tocar una carta.
 # El material sale del arcón de pruebas (KINHOLD_PRUEBAS_ARCON): esto prueba el panel; el recorrido de jugador
 # (pruebas/prueba_recorrido.mjs) ya fabrica sin arcón, con lo que se recoge.
 # MUTAR=1 tira los mensajes de objetos que manda la página (como si el panel fabricara solo en el navegador): falla.
@@ -92,6 +97,12 @@ def entrar(nav, nombre, vista, movil):
 TEXTO = "document.getElementById('panelFabricar').innerText"
 def fila(pg, clave):
     return pg.evaluate(f"(() => {{ const f = document.querySelector('#panelFabricar [data-fila=\"{clave}\"]'); return f ? {{ cls: f.className, txt: f.innerText, sec: f.closest('section').className }} : null; }})()")
+def elegir(pg, clave):   # toca la carta y devuelve el texto de su ficha
+    pg.evaluate(f"(() => {{ const f = document.querySelector('#panelFabricar .fab-carta[data-fila=\"{clave}\"]'); if (f) f.click(); }})()")
+    pg.wait_for_timeout(250)
+    return pg.evaluate("document.querySelector('#panelFabricar .fab-ficha').innerText")
+def pestana(pg, k):
+    pg.evaluate(f"document.querySelector('#panelFabricar .fab-pest[data-pestana=\"{k}\"]').click()"); pg.wait_for_timeout(250)
 
 try:
     with sync_playwright() as p:
@@ -103,11 +114,15 @@ try:
         comprobar('sale el botón «Fabricar»', A.evaluate("!!document.getElementById('btnFabricar') && !document.getElementById('btnFabricar').hidden"))
         A.click('#btnFabricar'); A.wait_for_timeout(400)
         comprobar('el botón lo abre', A.evaluate(f"{K}.panelFabricar.abierto && !document.getElementById('panelFabricar').hidden"))
+        comprobar('en la pestaña «Con las manos»', A.evaluate(f"{K}.panelFabricar.pestana") == 'manos')
         A.keyboard.press('h'); A.wait_for_timeout(300)
         comprobar('H lo cierra', not A.evaluate(f"{K}.panelFabricar.abierto"))
         A.keyboard.press('h'); A.wait_for_timeout(300)
         comprobar('y H lo vuelve a abrir', A.evaluate(f"{K}.panelFabricar.abierto"))
-        comprobar('todas las recetas, a la vista (sin aprender ninguna)', A.evaluate("document.querySelectorAll('#panelFabricar [data-fila]').length") >= 25)
+        pestana(A, 'todo')
+        comprobar('en «Todo», todas las recetas, a la vista (sin aprender ninguna)', A.evaluate("[...document.querySelectorAll('#panelFabricar .fab-carta[data-fila]')].filter(c => !c.dataset.fila.startsWith('estacion:')).length") >= 25)
+        comprobar('cada carta con su imagen, que carga', esperar(A, "[...document.querySelectorAll('#panelFabricar .fab-carta img')].length >= 25 && [...document.querySelectorAll('#panelFabricar .fab-carta img')].every(i => i.complete && i.naturalWidth > 0)", 15000))
+        comprobar('y ninguna receta sale «sin modelo aún»', esperar(A, "!document.querySelector('#panelFabricar .fab-carta[data-grupo] .fab-pend') && document.querySelectorAll('#panelFabricar .fab-carta').length > 0", 5000))
 
         print('Con 3 fibras en la mano')
         A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'fibra', cantidad: 3, a: 'mano:der' }})")
@@ -115,18 +130,22 @@ try:
         esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-ya [data-fila=\"cordel\"]')", 5000)
         f = fila(A, 'cordel') or {}
         comprobar('el cordel, en «Puedes hacerlo ya»', 'fab-sec-ya' in f.get('sec', ''), str(f))
-        comprobar('y dice que la fibra sale de la mano', '3 de la mano' in f.get('txt', ''), f.get('txt', ''))
+        t = elegir(A, 'cordel')
+        comprobar('y su ficha dice que la fibra sale de la mano, y para qué sirve', '3 de la mano' in t and 'Para atar' in t, t)
         f = fila(A, 'lenero') or {}
-        comprobar('el leñero, en «Casi», con lo que falta en rojo', 'fab-sec-casi' in f.get('sec', '') and A.evaluate("document.querySelectorAll('#panelFabricar [data-fila=\"lenero\"] .fab-falta').length") == 2, f.get('txt', ''))
-        f = fila(A, 'lasca_silex') or {}
-        comprobar('la lasca, en gris, con la piedra de tallar que hace falta', 'fab-sec-despues' in f.get('sec', '') and 'piedra de tallar' in f.get('txt', ''), f.get('txt', ''))
+        t = elegir(A, 'lenero')
+        comprobar('el leñero, en «Te falta algo», con lo que falta en rojo en su ficha', 'fab-sec-casi' in f.get('sec', '') and A.evaluate("document.querySelectorAll('#panelFabricar .fab-ficha .fab-mat.fab-falta').length") == 2, t)
+        comprobar('y el atajo «Hacer antes: 1 cordel de fibra», que dice con qué y cuánto tarda', A.evaluate("(() => { const b = document.querySelector('#panelFabricar .fab-ficha .fab-antes[data-receta=\"cordel\"]'); return !!b && /Hacer antes: 1 cordel de fibra \\(con 3 fibra cruda · 15 s\\)/.test(b.textContent); })()"), t)
+        t = elegir(A, 'lasca_silex')
+        comprobar('la lasca, en gris, con la piedra de tallar que hace falta', 'fab-sec-despues' in (fila(A, 'lasca_silex') or {}).get('sec', '') and 'piedra de tallar' in t, t)
+        elegir(A, 'lenero')
         A.wait_for_timeout(500)
         captura(A, f'{SALIDA}/PC_panel.png')
 
-        print('Hacer y recoger, por el servidor')
-        A.click('#panelFabricar .fab-hacer[data-receta="cordel"]')
+        print('Hacer (con el atajo) y recoger, por el servidor')
+        A.click('#panelFabricar .fab-antes[data-receta="cordel"]')
         comprobar('el servidor gasta la fibra de lo que lleva', servidorDice(lambda d: cuantos(d, yo, 'fibra') == 0) is not None)
-        comprobar('sale en «En marcha», con lo que le queda', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-marcha .fab-tiempo') && /quedan \\d+ s/.test(document.querySelector('#panelFabricar .fab-sec-marcha').innerText)", 5000))
+        comprobar('sale en «En marcha», con lo que le queda y su barra', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-marcha .fab-tiempo') && /quedan \\d+ s/.test(document.querySelector('#panelFabricar .fab-sec-marcha').innerText) && !!document.querySelector('#panelFabricar .fab-sec-marcha .fab-barra i')", 5000))
         A.wait_for_timeout(400)
         captura(A, f'{SALIDA}/PC_en_marcha.png')
         comprobar('terminado (15 s), sale «Recoger»', esperar(A, "!!document.querySelector('#panelFabricar .fab-recoger')", 30000))
@@ -137,12 +156,14 @@ try:
         print('Poner la piedra de tallar delante')
         A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'piedra', cantidad: 1, a: 'mano:izq' }})")
         servidorDice(lambda d: cuantos(d, yo, 'piedra') == 1)
-        comprobar('con una piedra, la piedra de tallar se puede poner', esperar(A, "!!document.querySelector('#panelFabricar .fab-poner[data-tipo=\"piedra_tallar\"]')", 5000))
+        esperar(A, "!!document.querySelector('#panelFabricar .fab-carta[data-fila=\"estacion:piedra_tallar\"].fab-ya')", 5000)
+        elegir(A, 'estacion:piedra_tallar')
+        comprobar('con una piedra, la piedra de tallar se puede poner (en su ficha)', esperar(A, "!!document.querySelector('#panelFabricar .fab-poner[data-tipo=\"piedra_tallar\"]')", 5000))
         A.click('#panelFabricar .fab-poner[data-tipo="piedra_tallar"]')
         d = servidorDice(lambda d: any(e['tipo'] == 'piedra_tallar' for e in (d.get('fabricacion') or {}).get('estaciones', [])))
         comprobar('el servidor la tiene, de su autor', d is not None and any(e['autor'] == yo for e in d['fabricacion']['estaciones']))
         comprobar('y se dibuja delante', esperar(A, f"!!{K}.escena.getObjectByName('estacion_piedra_tallar')", 8000))
-        comprobar('la lasca pasa de «después» a «casi»', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 5000), str(fila(A, 'lasca_silex')))
+        comprobar('la lasca pasa a «Te falta algo»', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 5000), str(fila(A, 'lasca_silex')))
         A.wait_for_timeout(400)
         captura(A, f'{SALIDA}/PC_panel_con_piedra.png')
         A.keyboard.press('h'); A.wait_for_timeout(300)
@@ -153,34 +174,38 @@ try:
 
         print('Depositar en la piedra de tallar (valravnx, 6 nov): sus recetas gastan lo depositado en ella')
         idPt = pos['id']
-        def pulsar(clase, texto, ms=8000):   # pulsa el botón de esa clase de la fila que dice texto (cuando ya esté)
-            return esperar(A, f"(() => {{ const b = [...document.querySelectorAll('#panelFabricar .{clase}')].find(b => !b.disabled && b.closest('.fab-fila').innerText.includes('{texto}')); if (b) b.click(); return !!b; }})()", ms)
+        def pulsar(clase, texto, ms=8000):   # pulsa el hueco de esa clase que dice texto (cuando ya esté)
+            return esperar(A, f"(() => {{ const b = [...document.querySelectorAll('#panelFabricar .{clase}')].find(b => !b.disabled && (b.title + ' ' + b.innerText).includes('{texto}')); if (b) b.click(); return !!b; }})()", ms)
         print('  lleva:', A.evaluate(f"JSON.stringify(Object.fromEntries(Object.entries({K}.inventario.lugares).filter(([l, c]) => c && l.startsWith('mano')).map(([l, c]) => [l, c.tipo])))"))
         A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'silex', cantidad: 1, a: 'mano:izq' }})")
         servidorDice(lambda d: cuantos(d, yo, 'silex') == 1)
-        A.keyboard.press('h'); A.wait_for_timeout(400)
-        comprobar('el panel enseña la piedra de tallar de al lado, vacía, con lo que lleva para dejar', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-dep .fab-dejar') && /No hay nada/.test(document.querySelector('#panelFabricar .fab-sec-dep').innerText)", 8000))
-        comprobar('con el sílex en la mano, la lasca sigue en «casi» (no está depositado)', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 3000))
-        comprobar('sale el cordel que lleva, con «Dejar»', pulsar('fab-dejar', 'Cordel'))
+        A.keyboard.press('f'); A.wait_for_timeout(500)
+        comprobar('Usar delante de la piedra de tallar abre el panel en su pestaña', A.evaluate(f"{K}.panelFabricar.abierto && {K}.panelFabricar.pestana === 'tallar'"), str(A.evaluate(f"{K}.panelFabricar.pestana")))
+        comprobar('con lo que tiene encima (nada) y lo que lleva para dejar', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-dep .fab-dejar img') && /No hay nada/.test(document.querySelector('#panelFabricar .fab-sec-dep').innerText)", 8000))
+        comprobar('con el sílex en la mano, la lasca sigue en «Te falta algo» (no está depositado)', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 3000))
+        comprobar('sale el cordel que lleva, para dejarlo', pulsar('fab-dejar', 'Cordel'))
         d = servidorDice(lambda d: any(e.get('deposito', {}).get('cordel') == 1 for e in d['fabricacion']['estaciones']))
-        comprobar('«Dejar» lo deposita en el servidor', d is not None and cuantos(d, yo, 'cordel') == 0)
+        comprobar('dejarlo lo deposita en el servidor', d is not None and cuantos(d, yo, 'cordel') == 0)
         esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-dep [data-dep=\"cordel\"]')", 5000)
-        comprobar('y en la piedra de tallar, con «Coger»', pulsar('fab-coger', 'Cordel'))
+        comprobar('y sale encima de la piedra de tallar, para cogerlo', pulsar('fab-coger', 'Cordel'))
         d = servidorDice(lambda d: cuantos(d, yo, 'cordel') == 1)
-        comprobar('«Coger» lo devuelve a lo que lleva', d is not None and not any(e.get('deposito', {}).get('cordel') for e in d['fabricacion']['estaciones']))
+        comprobar('cogerlo lo devuelve a lo que lleva', d is not None and not any(e.get('deposito', {}).get('cordel') for e in d['fabricacion']['estaciones']))
         pulsar('fab-dejar', 'Cordel')
         servidorDice(lambda d: cuantos(d, yo, 'cordel') == 0)   # el cordel se queda en ella: hace falta una mano libre
         libre = A.evaluate(f"['mano:der', 'mano:izq'].find(l => !{K}.inventario.lugares[l])") or 'mano:der'
         A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'piedra', cantidad: 1, a: '{libre}' }})")
         comprobar('coge una piedra con la mano libre', servidorDice(lambda d: cuantos(d, yo, 'piedra') == 1) is not None)
-        for t in ['Sílex', 'Piedra']:
-            comprobar(f'deja {t.lower()}', pulsar('fab-dejar', t))
-            servidorDice(lambda d, t=t: cuantos(d, yo, 'silex' if t == 'Sílex' else 'piedra') == 0, 8000)
+        A.wait_for_timeout(1200)
+        t = elegir(A, 'lasca_silex')
+        comprobar('la ficha de la lasca tiene el atajo «Poner en la piedra de tallar lo que falta: 1 sílex y 1 piedra (los llevas tú)»', esperar(A, "(() => { const b = document.querySelector('#panelFabricar .fab-poner-falta'); return !!b && /Poner en la piedra de tallar lo que falta: 1 sílex y 1 piedra \\(los llevas tú\\)/.test(b.textContent); })()", 5000), t)
+        A.wait_for_timeout(300)
+        captura(A, f'{SALIDA}/PC_panel_estacion.png')
+        A.click('#panelFabricar .fab-poner-falta')
         d = servidorDice(lambda d: any(e.get('deposito') == {'cordel': 1, 'silex': 1, 'piedra': 1} for e in d['fabricacion']['estaciones']))
-        comprobar('deja el sílex y la piedra: el servidor los tiene en la piedra de tallar', d is not None and cuantos(d, yo, 'silex') == 0, str(d and d['fabricacion']['estaciones']))
-        comprobar('la lasca pasa a «Puedes hacerlo ya», diciendo que sale de la estación', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-ya [data-fila=\"lasca_silex\"]') && /de la estación/.test(document.querySelector('#panelFabricar [data-fila=\"lasca_silex\"]').innerText)", 6000), str(fila(A, 'lasca_silex')))
+        comprobar('de un toque: el servidor tiene el sílex y la piedra en la piedra de tallar', d is not None and cuantos(d, yo, 'silex') == 0 and cuantos(d, yo, 'piedra') == 0, str(d and d['fabricacion']['estaciones']))
+        comprobar('la lasca pasa a «Puedes hacerlo ya», y su ficha dice que sale de la estación', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-ya [data-fila=\"lasca_silex\"]') && /de la estación/.test(document.querySelector('#panelFabricar .fab-ficha').innerText)", 6000), str(fila(A, 'lasca_silex')))
         comprobar('y se ven puestos encima de la piedra de tallar', esperar(A, f"(() => {{ const o = {K}.escena.getObjectByName('estacion_piedra_tallar'); return !!o && !!o.getObjectByName('deposito_silex') && !!o.getObjectByName('deposito_piedra'); }})()", 6000))
-        A.evaluate("document.querySelector('#panelFabricar .fab-sec-dep').scrollIntoView()"); A.wait_for_timeout(300)
+        A.wait_for_timeout(400)
         captura(A, f'{SALIDA}/PC_panel_deposito.png')
         A.keyboard.press('h'); A.wait_for_timeout(300)
         A.evaluate(f"(() => {{ const e = Object.values({K}.fabCliente.estaciones)[0]; Object.assign({K}.pj, {{ x: e.x + 1.3, z: e.z + 0.3, rot: -1.2 }}); {K}.cam.yaw = 0.15; {K}.cam.dist = 2.6; {K}.cam.pitch = 0.6; }})()")
@@ -198,10 +223,21 @@ try:
         B.tap('#btnFabricar'); B.wait_for_timeout(600)
         r = B.evaluate("(() => { const r = document.getElementById('panelFabricar').getBoundingClientRect(); return [r.width, r.height]; })()")
         comprobar('su panel va a pantalla completa', r[0] >= 389 and r[1] >= 840, str(r))
-        comprobar('y con lo que A ha dejado en ella, la lasca ya está en «Puedes hacerlo ya» a su lado (la estación es de otro, pero vale)', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-ya [data-fila=\"lasca_silex\"]')", 5000))
-        comprobar('y ve lo depositado en su panel', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-dep [data-dep=\"silex\"]')", 3000))
+        B.tap('#panelFabricar .fab-pest[data-pestana="tallar"]'); B.wait_for_timeout(500)
+        comprobar('en la pestaña de la piedra de tallar, con lo que A ha dejado en ella, la lasca ya está en «Puedes hacerlo ya» a su lado (la estación es de otro, pero vale)', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-ya [data-fila=\"lasca_silex\"]')", 5000))
+        comprobar('y ve lo depositado, con su imagen', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-dep [data-dep=\"silex\"] img')", 3000))
         comprobar('sin salirse de lado', B.evaluate("document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1"))
+        comprobar('la ficha no tapa nada mientras no se toca una carta', B.evaluate("document.querySelector('#panelFabricar .fab-ficha').getBoundingClientRect().top >= innerHeight - 2"))
+        B.wait_for_timeout(500)
         captura(B, f'{SALIDA}/movil_panel.png')
+        B.tap('#panelFabricar .fab-carta[data-fila="lasca_silex"]'); B.wait_for_timeout(700)
+        rf = B.evaluate("(() => { const r = document.querySelector('#panelFabricar .fab-ficha').getBoundingClientRect(); return [r.top, r.bottom, innerHeight]; })()")
+        comprobar('al tocar una carta, su ficha sube desde abajo, dentro de la pantalla', rf[0] > 100 and rf[1] <= rf[2] + 1, str(rf))
+        comprobar('con «Hacer» a mano', B.evaluate("(() => { const b = document.querySelector('#panelFabricar .fab-ficha .fab-hacer'); if (!b) return false; const r = b.getBoundingClientRect(); return r.height >= 40 && r.bottom <= innerHeight; })()"))
+        captura(B, f'{SALIDA}/movil_ficha.png')
+        B.tap('#panelFabricar .fab-velo', position={'x': 195, 'y': 60}); B.wait_for_timeout(500)
+        comprobar('y tocando fuera se vuelve a bajar', B.evaluate("!document.getElementById('panelFabricar').classList.contains('fab-ficha-abierta')"))
+        B.tap('#panelFabricar .fab-pest[data-pestana="todo"]'); B.wait_for_timeout(500)
         B.evaluate("document.querySelector('#panelFabricar .fab-sec-est').scrollIntoView()"); B.wait_for_timeout(300)
         captura(B, f'{SALIDA}/movil_panel_estaciones.png')
 

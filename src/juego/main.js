@@ -21,7 +21,7 @@ import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OB
 import { montarPanelInventario } from './panel_inventario.js';
 import { montarPanelFabricar } from './panel_fabricar.js';
 import { crearEstaciones } from './estaciones.js';
-import { Fabricacion, ejecutarFabricacion } from '../logica/fabricacion.js';
+import { Fabricacion, ejecutarFabricacion, ESTACIONES } from '../logica/fabricacion.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
 import { crearComarcas, zonasDeEscena } from '../logica/comarcas.js';
@@ -1375,6 +1375,12 @@ function pasoObra() {
   if (cuarto !== o.cuarto) { o.cuarto = cuarto; rehacerPieza(o.c.id, o.key); }
   mostrarAviso(`${t('construyendo')} ${Math.round(100 * r.progreso)} %`);
 }
+// la estación de fabricar que tienes delante (a 1,8 m como mucho), la más cercana
+const USAR_ESTACION = 1.8;
+function estacionParaUsar() {
+  return Object.values(fabCliente.estaciones).filter(e => ESTACIONES[e.tipo] && Math.hypot(e.x - pj.x, e.z - pj.z) <= USAR_ESTACION)
+    .sort((a, b) => Math.hypot(a.x - pj.x, a.z - pj.z) - Math.hypot(b.x - pj.x, b.z - pj.z))[0] || null;
+}
 function usar() {
   const ob = obraCercana();
   const it = interactivoCercano();
@@ -1393,6 +1399,9 @@ function usar() {
     if (de) cargarRastra(rastraCercana(), { de }); else engancharRastra(rastraCercana());
     return;
   }
+  // delante de una estación de fabricar, Usar abre el panel en su pestaña, con lo que tiene encima (estudio del panel,
+  // valravnx, 6 nov)
+  if (!it && pj.k === 0 && estacionParaUsar() && panelFabricar) { panelFabricar.abrirEstacion(estacionParaUsar().id); return; }
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
     const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => !esVehiculo(o.cosa.tipo)); // lo que hay en el suelo, antes que lo que se recoge
@@ -1427,6 +1436,8 @@ function opcionesUsar() {
     const cl = centroLocal(p);
     ops.push({ texto, pos: localAMundo(it.c, cl.lx, cl.lz), y: oyDe(it.c) + p.k * ALTURA, hacer: () => usarInteractivo(it) });
   }
+  for (const e of Object.values(fabCliente.estaciones)) if (ESTACIONES[e.tipo] && pj.k === 0 && Math.hypot(e.x - pj.x, e.z - pj.z) <= USAR_ESTACION)
+    ops.push({ texto: tr('Usar: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => panelFabricar && panelFabricar.abrirEstacion(e.id) });
   const a = arbolCercano();
   if (a) ops.push({ texto: tr('Talar el árbol'), pos: a, alto: 3, hacer: () => hachaEnMano(inventario()) ? empezarTala(a) : mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true) });
   if (pj.k === 0) {
