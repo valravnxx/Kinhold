@@ -1329,8 +1329,12 @@
      "estado": "pendiente"
     },
     {
+     "nombre": "Los puestos de trabajo como obra, en su propia pestaña del menú de construcción («Puestos de trabajo», aparte de los muebles): se pone el marco y se le llevan los materiales, como a cualquier obra; cada uno donde le toca (piedra de tallar y banco de tronco, dentro o fuera; hoguera, solo fuera; hogar, solo dentro). Fuera el ponerlos al momento desde el panel de fabricar",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "La hoguera, fuera: piedras en círculo y ramas; se enciende con yesca y el taladro de fuego, arde un rato por cada leña o rama que se le echa y se apaga sola (quedan cenizas); luz y calor. Por el servidor, todos la ven igual",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     },
     {
      "nombre": "Almacenajes de la base (con su modelo, que se ve lleno): acopio de troncos, pila de piedras y leñera. Guardar y sacar con Usar; de quien tiene la tierra; la obra no coge de ellos sola",
@@ -1346,15 +1350,25 @@
     },
     {
      "nombre": "El hogar, dentro de la casa: el mismo fuego que la hoguera pero fijo y más duradero (se puede dejar en brasas); luz y calor; más adelante, cocinar",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     },
     {
      "nombre": "El banco de tronco (2 troncos cortos y el hacha): la entrada al tier 1, con sus recetas de madera (tablas, mangos, cestas, la cuerda buena)",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     },
     {
      "nombre": "Recorrido entero de nada al banco de tronco, sin arcón, en el recorrido de jugador; y prueba de valravnx entre dos",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Estudio del panel de fabricación (valravnx, 6 nov): cómo lo hacen otros juegos y propuesta con imágenes, para PC y móvil; valravnx decide si se hace",
+     "estado": "en_curso",
+     "inicio": "2026-11-06T17:54:33+01:00",
+     "rama": "trabajo/20261106-1755-panel-fabricar"
+    },
+    {
+     "nombre": "El panel de fabricación nuevo, según el estudio que apruebe valravnx (provisional hasta que se rehaga todo el HUD de PC y móvil)",
+     "estado": "espera_decision"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -3981,7 +3995,7 @@
    "hito": "tierras"
   },
   {
-   "pregunta": "Fabricar y estaciones (valravnx, 6 nov): el panel de fabricación, más bonito y claro (estudio de cómo lo hacen otros juegos), y las estaciones como muebles que se construyen desde el menú de construcción (no fabricadas y soltadas en el suelo), con cuáles van fuera, dentro o en los dos sitios. El chat lo estudia y lo propone; hasta que valravnx decida, las tareas de estaciones y almacenajes de P3 esperan",
+   "pregunta": "El panel de fabricación (valravnx, 6 nov): el chat estudia cómo lo hacen otros juegos y propone un panel con imágenes, para PC y móvil (funcional, bonito y viable, no definitivo); valravnx decide si se hace. Los almacenajes esperan con él (son de la misma familia de muebles de la base)",
    "desde": "2026-11-06",
    "hito": "crafting"
   }
