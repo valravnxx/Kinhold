@@ -1471,6 +1471,12 @@
      "estado": "hecho",
      "inicio": "2026-11-05T16:37:21+00:00",
      "fin": "2026-11-05T18:25:20+00:00"
+    },
+    {
+     "nombre": "Herramienta del admin mejorada (valravnx, 6 nov): al abrir el panel, información del servidor y de dónde estás además del mapa; modo autoconstruir (obras y muebles al momento y sin materiales); arcón de admin para invocarse cualquier objeto; multiplicar la velocidad de carrera; y cámara libre volando en tres dimensiones. Todo solo para la cuenta de admin, comprobado por el servidor y apuntado en admin.jsonl",
+     "estado": "en_curso",
+     "inicio": "2026-11-06T08:04:30+00:00",
+     "rama": "trabajo/20261106-0804-admin-herramienta"
     }
    ]
   },
