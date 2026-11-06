@@ -1,0 +1,5 @@
+ERRORES:
+ - faltan 1 traducciones en proyecto/idiomas/en.json (añade la clave en español con su traducción):
+     · La desembocadura que se ensancha y las aguas que se funden (valravnx, 6 nov: «acaba como con dos tonos de río diferentes… que fuera difuminando las aguas y que la desembocadura se ensanche y se vea más real»)
+ - faltan 1 traducciones en proyecto/idiomas/ru.json (añade la clave en español con su traducción):
+     · La desembocadura que se ensancha y las aguas que se funden (valravnx, 6 nov: «acaba como con dos tonos de río diferentes… que fuera difuminando las aguas y que la desembocadura se ensanche y se vea más real»)
