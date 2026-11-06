@@ -23,11 +23,22 @@ const mallas = L => {
   return g;
 };
 
+// una piedra irregular: cada vértice se mueve un poco hacia fuera o hacia dentro (los que coinciden, igual)
+function piedraIrregular(r, detalle, id, fuerza = 0.22) {
+  const g = new THREE.IcosahedronGeometry(r, detalle), p = g.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    const k = 1 + (az(id, `${v.x.toFixed(3)},${v.y.toFixed(3)},${v.z.toFixed(3)}`) - 0.5) * 2 * fuerza;
+    p.setXYZ(i, v.x * k, v.y * k, v.z * k);
+  }
+  return g;
+}
+
 function piedraTallar(id) {
   const L = new Lote({ rangoSuelo: 0.25, variacion: 0.06 });
-  L.add(new THREE.IcosahedronGeometry(0.42, 2), 'piedra', 0, 0.13, 0, { y: az(id, 1) * 6, z: 0.05 }, { escala: new THREE.Vector3(1.25, 0.42, 1), plano: true });
-  L.add(new THREE.IcosahedronGeometry(0.2, 1), 'piedraOsc', 0.42, 0.05, 0.3, { y: 0.7 }, { escala: new THREE.Vector3(1.2, 0.5, 1), plano: true });
-  L.add(new THREE.IcosahedronGeometry(0.075, 1), 'piedra', 0.08, 0.31, -0.05, { y: 1.3 }, { escala: new THREE.Vector3(1.2, 0.85, 1), plano: true, sinSuelo: true }); // la de percutir
+  L.add(piedraIrregular(0.36, 1, id), 'piedra', 0, 0.11, 0, { y: az(id, 1) * 6, z: 0.05 }, { escala: new THREE.Vector3(1.3, 0.5, 1), plano: true });
+  L.add(piedraIrregular(0.18, 1, id + 'b'), 'piedraOsc', 0.44, 0.05, 0.3, { y: 0.7 }, { escala: new THREE.Vector3(1.2, 0.5, 1), plano: true });
+  L.add(piedraIrregular(0.075, 1, id + 'c', 0.15), 'piedra', 0.08, 0.27, -0.05, { y: 1.3 }, { escala: new THREE.Vector3(1.2, 0.85, 1), plano: true, sinSuelo: true }); // la de percutir
   for (let k = 0; k < 5; k++) { // lascas sueltas
     const a = 2.2 + k * 0.5, d = 0.55 + az(id, k + 10) * 0.12;
     L.add(new THREE.TetrahedronGeometry(0.035, 0), 0x6b6762, Math.cos(a) * d, 0.012, Math.sin(a) * d, { y: k, x: 1.2 }, { escala: new THREE.Vector3(1.4, 0.35, 1), plano: true, tex: 'piedra' });
@@ -43,11 +54,11 @@ function hoguera(id) {
     g.add(p);
   }
   const L = new Lote({ rangoSuelo: 0.3, variacion: 0.08 });
-  L.add(new THREE.CircleGeometry(0.4, 12), 0x3a3631, 0, 0.012, 0, { x: -Math.PI / 2 }, { sinSuelo: true }); // tierra quemada
+  L.add(new THREE.CircleGeometry(0.4, 12), 0x4f4840, 0, 0.012, 0, { x: -Math.PI / 2 }, { sinSuelo: true }); // tierra quemada
   for (let i = 0; i < 4; i++) { // las ramas, apoyadas unas en otras
     const a = i * Math.PI / 2 + 0.4, largo = 0.62;
     const m = new THREE.Matrix4().makeRotationY(a).multiply(new THREE.Matrix4().makeRotationZ(0.62));
-    L.add(cil(0.022, 0.03, largo, 6), 'corteza', Math.cos(a) * 0.17, largo * 0.4, -Math.sin(a) * 0.17, m);
+    L.add(cil(0.028, 0.038, largo, 6), 'corteza', Math.cos(a) * 0.17, largo * 0.4, -Math.sin(a) * 0.17, m);
   }
   g.add(mallas(L));
   return g;

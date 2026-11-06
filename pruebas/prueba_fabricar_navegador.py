@@ -143,7 +143,7 @@ try:
         A.wait_for_timeout(400)
         captura(A, f'{SALIDA}/PC_panel_con_piedra.png')
         A.keyboard.press('h'); A.wait_for_timeout(300)
-        A.evaluate(f"(() => {{ const e = Object.values({K}.fabCliente.estaciones)[0]; Object.assign({K}.pj, {{ x: e.x + 1.1, z: e.z + 1.3 }}); {K}.cam.dist = 3.2; {K}.cam.pitch = 0.5; }})()")
+        A.evaluate(f"(() => {{ const e = Object.values({K}.fabCliente.estaciones)[0]; Object.assign({K}.pj, {{ x: e.x + 1.3, z: e.z + 0.3, rot: -1.2 }}); {K}.cam.yaw = 0.15; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.55; }})()")
         A.wait_for_timeout(2500)
         captura(A, f'{SALIDA}/PC_piedra_tallar.png')
         pos = A.evaluate(f"Object.values({K}.fabCliente.estaciones)[0]")
@@ -151,7 +151,7 @@ try:
         print('En el móvil, otro jugador')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
         comprobar('el móvil es otro jugador', B.evaluate(f"{K}.enLinea.red.yo") != yo)
-        B.evaluate(f"(() => {{ Object.assign({K}.pj, {{ x: {pos['x']} - 1.0, z: {pos['z']} + 1.4 }}); {K}.cam.dist = 3.2; {K}.cam.pitch = 0.5; }})()")
+        B.evaluate(f"(() => {{ Object.assign({K}.pj, {{ x: {pos['x']} + 0.9, z: {pos['z']} - 0.2, rot: -1.6 }}); {K}.cam.yaw = 0.1; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.6; }})()")
         comprobar('ve la piedra de tallar del otro', esperar(B, f"!!{K}.escena.getObjectByName('estacion_piedra_tallar')", 20000))
         B.wait_for_timeout(2500)
         captura(B, f'{SALIDA}/movil_piedra_tallar.png')
@@ -163,6 +163,15 @@ try:
         captura(B, f'{SALIDA}/movil_panel.png')
         B.evaluate("document.querySelector('#panelFabricar .fab-sec-est').scrollIntoView()"); B.wait_for_timeout(300)
         captura(B, f'{SALIDA}/movil_panel_estaciones.png')
+
+        print('Las tres estaciones de cerca (solo para mirarlas: la hoguera y el banco se dibujan aquí, no se ponen)')
+        A.evaluate(f"""(() => {{ const f = {K}.fabCliente, e = Object.values(f.estaciones)[0];
+          f.estaciones['hoguera:vista'] = {{ id: 'hoguera:vista', tipo: 'hoguera', x: e.x - 1.6, z: e.z + 0.2, autor: 'vista', cola: [] }};
+          f.estaciones['banco_tronco:vista'] = {{ id: 'banco_tronco:vista', tipo: 'banco_tronco', x: e.x + 1.7, z: e.z - 0.3, autor: 'vista', cola: [] }};
+          {K}.estacionesV.refrescar(); Object.assign({K}.pj, {{ x: e.x + 0.2, z: e.z + 3.2, rot: 0 }}); {K}.cam.yaw = 0; {K}.cam.dist = 3.4; {K}.cam.pitch = 0.62; }})()""")
+        comprobar('la hoguera y el banco de tronco se dibujan', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_hoguera') && !!{K}.escena.getObjectByName('estacion_banco_tronco')"))
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_tres_estaciones.png')
 
         for nombre, err in [('PC', errA), ('móvil', errB)]:
             malos = [e for e in err if 'WebSocket' not in e and 'ERR_CONNECTION_REFUSED' not in e]
