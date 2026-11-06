@@ -1,0 +1,80 @@
+Vista pc
+  OK   pc: entra en línea con el mundo listo
+  OK   pc: sale la pantalla de la cuenta
+  OK   pc: la pantalla tapa el juego entero
+  OK   pc: la caja cabe en la pantalla — [450, 830, 130.515625, 669.46875]
+  OK   pc: usuario corto, dicho al momento — El usuario tiene que tener de 3 a 20 letras.
+  OK   pc: sin correo, dicho al momento — Falta el correo.
+  OK   pc: correo que no vale, dicho al momento — Ese correo no es válido.
+  OK   pc: contraseñas distintas, dicho al momento — Las dos contraseñas no son iguales.
+  OK   pc: lo que no vale no llega al servidor
+  OK   pc: al crear la cuenta sale «Confirma tu correo» — Un momento…
+  OK   pc: dice a qué correo (a medias no: el que ha escrito)
+  OK   pc: y sigue tapando el juego
+  OK   pc: la caja del correo cabe en la pantalla — [450, 830, 246.390625, 553.609375]
+  OK   pc: al recargar sin confirmar, otra vez «Confirma tu correo»
+  OK   pc: (con el correo a medias, que es lo que sabe el servidor)
+  OK   pc: código corto, dicho al momento — El código son 6 cifras.
+  OK   pc: código mal, lo dice — El código no es correcto.
+  OK   pc: otro código enseguida, que espere — Espera 55 s para pedir otro código.
+  OK   pc: el código llega (al registro del servidor de pruebas)
+  OK   pc: con el bueno se quita la pantalla
+  OK   pc: y ya entra en el mundo
+  OK   pc: sigue siendo el mismo personaje
+  OK   pc: el cliente sabe su cuenta — Ana_pc
+  OK   pc: el servidor la guarda con ese personaje — [{'usuario': 'Ana_pc', 'autor': 'jugador:e74c6dc8', 'sal': '75bf410ab3139dda12514a36cb3ad8f3', 'hash': 'f98282265230b04a
+  OK   pc: sin la contraseña en claro
+  OK   pc: personaje nuevo: sale «¿Dónde empiezas?» con las tres salidas
+  OK   pc: la caja de las salidas cabe en la pantalla — [440, 840, 224.171875, 575.828125]
+  OK   pc: elige motdale: se quita el panel y aparece allí — [19404, 10720]
+  OK   pc: el servidor lo apunta como su sitio — {'x': 19404, 'y': -53.47772787957268, 'z': 10720, 'giro': 0}
+  OK   pc: al recargar entra solo
+  OK   pc: y no vuelve a preguntar dónde empieza: sale donde eligió — [19404, 10720]
+  OK   pc: en otro aparato, pantalla y otro personaje
+  OK   pc: «Entrar» no pide repetir la contraseña
+  OK   pc: contraseña mal, lo dice y no entra — Usuario o contraseña incorrectos.
+  OK   pc: con la buena, es el personaje de la cuenta — jugador:e74c6dc8
+  OK   pc: y sin pantalla
+  OK   pc: el menú enseña la cuenta — Cuenta: Ana_pc
+  OK   pc: «Cambiar la contraseña» abre su caja
+  OK   pc: el menú cabe a lo ancho — [410, 870]
+  FALLA pc: con la actual mal, lo dice — La contraseña tiene que tener al menos 10 caracteres.
+  FALLA pc: con la buena, cambia — La contraseña tiene que tener al menos 10 caracteres.
+  FALLA pc: y aquí queda una ficha nueva
+  FALLA pc: «Cambiar el correo» manda el código al nuevo — La contraseña actual no es correcta.
+Traceback (most recent call last):
+  File "D:\KinholdGrafica\runner\_work\Kinhold\Kinhold\pruebas\prueba_cuenta_navegador.py", line 219, in <module>
+    pg.fill('#demoCodigo', codigos.de(USUARIO, antes) or ''); pg.click('#btnDemoCambio')
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\sync_api\_generated.py", line 11332, in fill
+    self._sync(
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_page.py", line 930, in fill
+    return await self._main_frame.fill(**locals_to_params(locals()))
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_frame.py", line 637, in fill
+    await self._fill(**locals_to_params(locals()))
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_frame.py", line 649, in _fill
+    await self._channel.send("fill", self._timeout, locals_to_params(locals()))
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.fill: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#demoCodigo")
+    - locator resolved to <input maxlength="6" id="demoCodigo" inputmode="numeric" autocomplete="one-time-code"/>
+    - fill("")
+  - attempting fill action
+    2 × waiting for element to be visible, enabled and editable
+      - element is not visible
+    - retrying fill action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and editable
+      - element is not visible
+    - retrying fill action
+      - waiting 100ms
+    59 × waiting for element to be visible, enabled and editable
+       - element is not visible
+     - retrying fill action
+       - waiting 500ms
+
