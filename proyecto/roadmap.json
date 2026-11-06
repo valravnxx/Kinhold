@@ -1362,9 +1362,9 @@
     },
     {
      "nombre": "Estudio del panel de fabricación (valravnx, 6 nov): cómo lo hacen otros juegos y propuesta con imágenes, para PC y móvil; valravnx decide si se hace",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T17:54:33+01:00",
-     "rama": "trabajo/20261106-1755-panel-fabricar"
+     "fin": "2026-11-06T18:05:05+01:00"
     },
     {
      "nombre": "El panel de fabricación nuevo, según el estudio que apruebe valravnx (provisional hasta que se rehaga todo el HUD de PC y móvil)",
