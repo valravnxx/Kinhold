@@ -83,8 +83,9 @@ def entrar(nav, nombre, vista, movil):
     pg.on('console', lambda m, err=err: err.append(m.text) if m.type == 'error' else None)
     pg.goto(URL, wait_until='domcontentloaded', timeout=180000)
     esperar(pg, f"{K} && {K}.enLinea && {K}.enLinea.estado === 'conectado' && {K}.mundoListo", 300000)
-    crear_cuenta(pg)
+    crear_cuenta(pg, 60000)   # (en el móvil de la nube la pantalla de la cuenta tarda en salir)
     comprobar(f'{nombre}: entra y le llega lo que lleva en el servidor', esperar(pg, f"{K}.enLinea.red.yo && {K}.objetosRed.deServidor", 120000), str(err[:2]))
+    comprobar(f'{nombre}: sin la pantalla de la cuenta delante', esperar(pg, "!document.getElementById('pantallaCuenta') || document.getElementById('pantallaCuenta').hidden || getComputedStyle(document.getElementById('pantallaCuenta')).display === 'none'", 30000))
     return ctx, pg, err
 TEXTO = "document.getElementById('panelFabricar').innerText"
 def fila(pg, clave):
