@@ -34,25 +34,28 @@ const vuelta = [1000, 5000, 20000, diag].every(d => Math.abs(descomprimir(compri
 comprobar('se deshace (la niebla sabe la distancia de verdad)', vuelta);
 comprobar('lo más lejano sigue detrás de lo menos lejano', comprimir(20000, c) > comprimir(10000, c));
 // Sin franjas levantadas (valravnx, 6 nov: «a lo lejos sigue hundido el terreno bajo el agua… y los glitches de lo
-// parecido a los árboles»): la malla lejana es de triángulos planos entre vértices comprimidos; con la compresión de
-// golpe en r0, un triángulo con un vértice a cada lado se levantaba metros (el mar de lejos, en cuadros de 500 m, tapaba
-// la costa). Con la cámara a 8 m sobre el mar, en tramos del mar (250 m, a -4 m) y del suelo (100 m) que cruzan r0 en
-// cualquier dirección: lo que se aparta la recta entre los dos vértices comprimidos del punto comprimido, en altura.
+// parecido a los árboles»): la malla lejana es de triángulos planos entre vértices comprimidos. Con la compresión de
+// golpe en r0, un cuadro del mar de lejos (a 4 m bajo el nivel) con un vértice antes de r0 y otro lejos (comprimido
+// hasta casi r0, y por eso alto, cerca de la línea de mirada) era una rampa que subía metros entre unos 700 y 850 m y
+// tapaba la tierra de cerca (se veía mar donde hay tierra). Con la cámara a 8, 30 y 80 m de alto, en cuadros del mar
+// (250 m) y del suelo llano a 0,5 m (100 m) en cualquier sitio y dirección: dentro de donde llega el terreno de cerca
+// (HASTA), lo dibujado no sube más de 0,5 m sobre su altura de verdad.
 {
-  const comp3 = (x, y, z) => { const d = Math.hypot(x, y - 8, z), k = comprimir(d, c) / d; return [x * k, 8 + (y - 8) * k, z * k]; };
-  let peorMar = 0, peorSuelo = 0;
-  for (let a = 0; a < 64; a++) for (let d0 = c.r0 - 300; d0 < c.r0 + 400; d0 += 10) for (const [L, y, cual] of [[250, -4, 'mar'], [100, 0.5, 'suelo']]) {
-    const ux = Math.cos(a / 64 * 2 * Math.PI), uz = Math.sin(a / 64 * 2 * Math.PI), A = [d0, y, 0], B = [d0 + ux * L, y, uz * L];
-    const CA = comp3(...A), CB = comp3(...B);
-    for (let t = 0.1; t < 1; t += 0.1) {
-      const P = comp3(A[0] + (B[0] - A[0]) * t, y, A[2] + (B[2] - A[2]) * t), lin = CA[1] + (CB[1] - CA[1]) * t;
-      // (en altura sobre la línea de mirada: lo que sube la recta respecto al punto de verdad, a la misma distancia)
-      const e = lin - P[1];
-      if (cual === 'mar') peorMar = Math.max(peorMar, e); else peorSuelo = Math.max(peorSuelo, Math.abs(e));
+  let peorMar = -1e9, peorSuelo = -1e9;
+  for (const H of [8, 30, 80]) {
+    const comp3 = (x, y, z) => { const d = Math.hypot(x, y - H, z), k = comprimir(d, c) / d; return [x * k, H + (y - H) * k, z * k]; };
+    for (let a = 0; a < 48; a++) for (let d0 = HASTA - 600; d0 < c.r0 + 3000; d0 += 25) for (const [L, y, cual] of [[250, -4, 'mar'], [100, 0.5, 'suelo']]) {
+      const ux = Math.cos(a / 48 * 2 * Math.PI), uz = Math.sin(a / 48 * 2 * Math.PI), A = [d0, y, 0], B = [d0 + ux * L, y, uz * L];
+      const CA = comp3(...A), CB = comp3(...B);
+      for (let t = 0; t <= 1; t += 0.05) {
+        const x = CA[0] + (CB[0] - CA[0]) * t, yy = CA[1] + (CB[1] - CA[1]) * t, z = CA[2] + (CB[2] - CA[2]) * t;
+        if (Math.hypot(x, z) > HASTA) continue;
+        if (cual === 'mar') peorMar = Math.max(peorMar, yy - y); else peorSuelo = Math.max(peorSuelo, yy - y);
+      }
     }
   }
-  comprobar('el mar de lejos no se levanta entre sus vértices (como mucho 0,5 m: la costa baja queda por encima)', peorMar < 0.5, `${peorMar.toFixed(2)} m`);
-  comprobar('el suelo de lejos no se aparta entre sus vértices (como mucho 0,5 m)', peorSuelo < 0.5, `${peorSuelo.toFixed(2)} m`);
+  comprobar('el mar de lejos no sube dentro del terreno de cerca (como mucho 0,5 m sobre sus -4 m)', peorMar < 0.5, `${peorMar.toFixed(2)} m`);
+  comprobar('el suelo de lejos no sube dentro del terreno de cerca (como mucho 0,5 m)', peorSuelo < 0.5, `${peorSuelo.toFixed(2)} m`);
 }
 
 console.log('Las muestras, poco a poco');
