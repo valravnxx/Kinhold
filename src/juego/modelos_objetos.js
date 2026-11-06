@@ -1,0 +1,223 @@
+// Kinhold — los modelos de lo que piden y dan las recetas de P3 y hasta ahora salía con el hatillo de lino (tarea de
+// P3, 6 nov): cómo se ven en el suelo, lo depositado en una estación y su imagen en el panel de fabricar
+// (herramientas/iconos/). Estilo v5: piezas sencillas con su color por vértice, texturas por código y oclusión de
+// contacto al pie. Medidas de las cosas de verdad, en metros; todo apoyado en el suelo (y = 0).
+//
+// Cómo es cada uno (como los de verdad, sin adornos):
+//  - fibra cruda: un manojo de hebras pálidas de ortiga, dobladas por la mitad y con una vuelta atada.
+//  - haz de juncos: tallos verdes y finos, largos (1,3 m), atados en dos sitios.
+//  - haz de mimbre: varas de sauce peladas, finas y rectas (1,5 m), atadas en dos sitios.
+//  - piel: una piel curtida estirada, de contorno irregular con las patas, el pelo hacia arriba.
+//  - resina: unos grumos de color ámbar sobre un trozo de corteza.
+//  - cordel: una madeja de cordel fino enrollada, con una vuelta que la ata.
+//  - cuerda: una adujada de cuerda más gruesa, en espiras.
+//  - cinturón de cuerda: cuerda trenzada en un rollo, con las dos puntas anudadas fuera.
+//  - honda: dos cordeles con la cazoleta de cuero en medio, el lazo del dedo en una punta y el nudo en la otra.
+//  - odre: un pellejo de cabra cosido, panzudo, con el cuello atado y la correa.
+//  - nasa: un cono de mimbre con aros, la boca abierta y la punta atada.
+//  - trampa de lazo: la estaca clavada con el cordel y el lazo abierto delante.
+//  - cubo: duelas de madera con dos aros de mimbre y el asa de cuerda.
+//  - hacha de piedra: la cabeza de piedra pulida en el mango de madera, atada con tiras.
+import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { Lote, materialTex } from '../mundo/estilos.js';
+import { cil } from '../mundo/decorado.js';
+import { cajaR } from '../mundo/modelos.js';
+
+const FIBRA = 0xb3a77f, CORDEL = 0x9c8a60, CUERDA = 0x86714c, JUNCO = 0x7f8a4c, JUNCO_PUNTA = 0xa59a62, MIMBRE = 0xb39a6c;
+const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_PELO = 0x7d6346, AMBAR = 0x8a561d, AMBAR_CLARO = 0xa36d2a;
+const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
+const lote = (rango = 0.05) => new Lote({ rangoSuelo: rango, variacion: 0.06 });
+const mallas = L => {
+  const g = new THREE.Group();
+  for (const [tex, geos] of Object.entries(L.cerrar(null, true))) { const m = new THREE.Mesh(mergeGeometries(geos), materialTex(tex)); m.castShadow = m.receiveShadow = true; g.add(m); }
+  return g;
+};
+// un tubo por una curva (cordeles, lazos, asas)
+const tubo = (puntos, r, lados = 5, cerrado = false) => new THREE.TubeGeometry(new THREE.CatmullRomCurve3(puntos, cerrado), Math.max(8, puntos.length * 6), r, lados, cerrado);
+// una atadura alrededor de un haz tumbado a lo largo de X
+const atadura = (L, x, y, r, color = CORDEL) => L.add(new THREE.TorusGeometry(r, 0.005, 4, 14), color, x, y, 0, { y: Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+
+// Un haz de tallos o varas tumbado a lo largo de X: n tallos de largo y radio dados, apretados en el centro.
+function haz(L, { n, largo, r, color, punta = null, ataduras = [-0.25, 0.25], abre = 0.02, id, tex = 'veta' }) {
+  const R = Math.sqrt(n) * r * 1.15;
+  for (let i = 0; i < n; i++) {
+    const a = i * 2.399, d = R * Math.sqrt((i + 0.5) / n);
+    const y = R + Math.sin(a) * d, z = Math.cos(a) * d, dx = (az(id, i) - 0.5) * largo * 0.08;
+    const g = (az(id, i + 30) - 0.5) * abre;
+    L.add(cil(r * 0.75, r, largo, 5), color, dx, y, z, { z: Math.PI / 2, y: g }, { tex });
+    if (punta) L.add(new THREE.ConeGeometry(r * 0.75, largo * 0.12, 4), punta, dx + largo * 0.56, y, z, { z: -Math.PI / 2, y: g }, { sinSuelo: true });
+  }
+  for (const f of ataduras) atadura(L, f * largo, R, R * 1.05);
+  return R;
+}
+
+function fibra(n, id) {
+  const L = lote(0.04);
+  // un manojo doblado por la mitad: dos ramales que salen del pliegue y se abren un poco, con una vuelta atada
+  for (let i = 0; i < 26; i++) {
+    const a = i * 2.399, d = 0.028 * Math.sqrt((i + 0.5) / 26), lado = i % 2 ? 1 : -1;
+    const y = 0.03 + Math.sin(a) * d, z = Math.cos(a) * d * 1.6;
+    const fin = v3(0.32 + az(id, i) * 0.06, 0.012 + az(id, i + 9) * 0.01, z * 2.4 + lado * 0.03);
+    L.add(tubo([v3(0, y, z), v3(0.12, y * 0.8, z * 1.4), fin], 0.0035 + az(id, i + 5) * 0.002, 3), i % 3 ? FIBRA : 0x9d9468, 0, 0, 0, null, { tex: 'liso' });
+  }
+  L.add(new THREE.TorusGeometry(0.03, 0.008, 5, 12), FIBRA, -0.005, 0.03, 0, { y: Math.PI / 2 }, { tex: 'paja' }); // el pliegue
+  atadura(L, 0.07, 0.028, 0.03, 0x8c8058);
+  return mallas(L);
+}
+const juncos = (n, id) => { const L = lote(0.06); haz(L, { n: 22, largo: 1.3, r: 0.006, color: JUNCO, punta: JUNCO_PUNTA, id, tex: 'paja', abre: 0.05 }); return mallas(L); };
+const mimbre = (n, id) => { const L = lote(0.06); haz(L, { n: 24, largo: 1.5, r: 0.005, color: MIMBRE, id, abre: 0.015 }); return mallas(L); };
+
+function piel(n, id) {
+  const L = lote(0.02);
+  // el contorno de una piel de ciervo o de cabra estirada: cuerpo ovalado, las cuatro patas y el cuello
+  const P = [[0, 0.36], [0.07, 0.3], [0.16, 0.31], [0.27, 0.38], [0.24, 0.24], [0.21, 0.08], [0.22, -0.12], [0.26, -0.3], [0.3, -0.42], [0.15, -0.33], [0.06, -0.38], [0, -0.42]];
+  const pts = [...P, ...P.slice(1, -1).reverse().map(([x, y]) => [-x, y])].map(([x, y], i) => new THREE.Vector2(x * (1 + (az(id, i) - 0.5) * 0.12), y));
+  const g = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 0.012, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.01, bevelSegments: 2, curveSegments: 4 });
+  g.rotateX(-Math.PI / 2);
+  // un poco ondulada, como se queda una piel en el suelo
+  const p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) + 0.02 * Math.sin(p.getX(i) * 9 + 1) * Math.cos(p.getZ(i) * 6));
+  g.computeVertexNormals();
+  L.add(g, PIEL_PELO, 0, 0.01, 0, { y: az(id, 40) }, { tex: 'liso', rayas: (v) => 0.88 + 0.12 * Math.cos(v.x * 7) * Math.cos(v.z * 5) }); // el pelo, más oscuro en el lomo
+  return mallas(L);
+}
+
+function resina(n, id) {
+  const L = lote(0.03);
+  L.add(cajaR(0.2, 0.025, 0.11, 0.01), 'corteza', 0, 0.012, 0, { y: 0.3 }, { tex: 'corteza' });
+  const k = Math.min(6, 3 + (n || 1));
+  for (let i = 0; i < k; i++) {
+    const a = i * 2.2, d = 0.02 + (i % 3) * 0.022;
+    L.add(new THREE.DodecahedronGeometry(0.016 + az(id, i) * 0.012, 0), i % 2 ? AMBAR : AMBAR_CLARO, Math.cos(a) * d * 1.6, 0.034, Math.sin(a) * d * 0.7, { y: i, x: i * 0.7 }, { plano: true, escala: v3(1, 0.7, 1), brillo: 1.05, sinSuelo: true });
+  }
+  return mallas(L);
+}
+
+// una madeja o adujada: espiras que se apilan un poco desplazadas
+function rollo(L, { espiras, radio, grueso, color, id, tex = 'paja' }) {
+  for (let i = 0; i < espiras; i++) {
+    const r = radio * (1 - i * 0.06), dx = (az(id, i) - 0.5) * radio * 0.12, dz = (az(id, i + 7) - 0.5) * radio * 0.12;
+    L.add(new THREE.TorusGeometry(r, grueso, 5, 22), color, dx, grueso * (1 + i * 1.5), dz, { x: Math.PI / 2 + (az(id, i + 3) - 0.5) * 0.15 }, { tex });
+  }
+}
+function cordel(n, id) {
+  const L = lote(0.03);
+  rollo(L, { espiras: 7, radio: 0.06, grueso: 0.004, color: CORDEL, id });
+  // la vuelta que ata la madeja, cruzada
+  L.add(new THREE.TorusGeometry(0.018, 0.004, 4, 10), 0x86774f, 0.055, 0.02, 0, { y: Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+  L.add(tubo([v3(0.06, 0.012, 0.01), v3(0.1, 0.004, 0.03), v3(0.14, 0.002, 0.02)], 0.003, 4), CORDEL, 0, 0, 0, null, { tex: 'liso' }); // la punta suelta
+  return mallas(L);
+}
+function cuerda(n, id) {
+  const L = lote(0.05);
+  rollo(L, { espiras: 5, radio: 0.13, grueso: 0.011, color: CUERDA, id });
+  L.add(tubo([v3(0.13, 0.012, 0.02), v3(0.2, 0.01, 0.06), v3(0.27, 0.01, 0.03)], 0.01, 6), CUERDA, 0, 0, 0, null, { tex: 'paja' });
+  return mallas(L);
+}
+function cinturonCuerda(n, id) {
+  const L = lote(0.03);
+  // la cuerda trenzada: dos cabos que se retuercen uno con otro, en un rollo, con las puntas anudadas
+  const r = 0.09, N = 60;
+  for (const fase of [0, Math.PI]) {
+    const pts = [];
+    for (let i = 0; i <= N; i++) { const a = i / N * Math.PI * 2.2, t = a * 9 + fase; pts.push(v3(Math.cos(a) * (r + Math.cos(t) * 0.006) - (a > Math.PI * 2 ? 0 : 0), 0.012 + Math.sin(t) * 0.006 + a * 0.004, Math.sin(a) * (r + Math.cos(t) * 0.006))); }
+    L.add(tubo(pts, 0.0075, 5), fase ? CUERDA : 0x95805a, 0, 0, 0, null, { tex: 'paja' });
+  }
+  for (const s of [0, 1]) { // las puntas, con su nudo, fuera del rollo
+    const x0 = r * (s ? 0.6 : 1), z0 = s ? 0.06 : 0.0;
+    L.add(tubo([v3(x0, 0.015, z0), v3(x0 + 0.07, 0.01, z0 + 0.03 + s * 0.03), v3(x0 + 0.13, 0.008, z0 + 0.02 + s * 0.05)], 0.008, 5), CUERDA, 0, 0, 0, null, { tex: 'paja' });
+    L.add(new THREE.SphereGeometry(0.014, 7, 5), 0x7d6a46, x0 + 0.13, 0.012, z0 + 0.02 + s * 0.05, null, { tex: 'paja', sinSuelo: true });
+  }
+  return mallas(L);
+}
+
+function honda(n, id) {
+  const L = lote(0.02);
+  // la cazoleta de cuero en el centro, abombada, y los dos cordeles curvados a cada lado
+  const caz = new THREE.SphereGeometry(0.045, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2.4);
+  L.add(caz, CUERO, 0, 0.004, 0, { x: Math.PI }, { escala: v3(1.5, 0.45, 1), tex: 'liso' });
+  L.add(caz, CUERO, 0, 0.004, 0, null, { escala: v3(1.5, 0.25, 1), tex: 'liso' });
+  for (const s of [-1, 1]) {
+    const pts = [v3(s * 0.065, 0.008, 0)];
+    for (let i = 1; i <= 8; i++) pts.push(v3(s * (0.065 + i * 0.05), 0.004, Math.sin(i * 0.55 + (s > 0 ? 0 : 2)) * 0.06));
+    L.add(tubo(pts, 0.003, 4), CORDEL, 0, 0, 0, null, { tex: 'liso' });
+    const fin = pts[pts.length - 1];
+    if (s > 0) L.add(new THREE.TorusGeometry(0.018, 0.003, 4, 12), CORDEL, fin.x + 0.016, 0.004, fin.z, { x: Math.PI / 2 }, { tex: 'liso' }); // el lazo del dedo
+    else L.add(new THREE.SphereGeometry(0.008, 6, 4), 0x86774f, fin.x, 0.006, fin.z, null, { tex: 'liso' }); // el nudo
+  }
+  return mallas(L);
+}
+
+function odre(n, id) {
+  const L = lote(0.06);
+  // el pellejo: un cuerpo panzudo tumbado, el cuello estrecho atado y la correa
+  const perfil = [[0, 0], [0.07, 0.01], [0.11, 0.06], [0.12, 0.13], [0.1, 0.2], [0.06, 0.25], [0.03, 0.28], [0.028, 0.33], [0.032, 0.35], [0, 0.35]].map(([x, y]) => new THREE.Vector2(x, y));
+  const cuerpo = new THREE.LatheGeometry(perfil, 12);
+  L.add(cuerpo, CUERO, 0, 0.09, 0, { z: -Math.PI / 2 + 0.12 }, { escala: v3(1, 1, 0.8), tex: 'liso' });
+  L.add(new THREE.TorusGeometry(0.031, 0.005, 4, 10), CORDEL, 0.32, 0.12, 0, { y: Math.PI / 2, z: 0.12 }, { tex: 'liso', sinSuelo: true }); // la atadura del cuello
+  // la costura a lo largo, más oscura
+  L.add(tubo([v3(0.0, 0.17, 0), v3(0.12, 0.2, 0), v3(0.24, 0.17, 0)], 0.003, 3), CUERO_OSC, 0, 0, 0, null, { tex: 'liso', sinSuelo: true });
+  // la correa, tirada en el suelo en un arco
+  L.add(tubo([v3(0.02, 0.06, 0.08), v3(-0.08, 0.008, 0.2), v3(0.12, 0.004, 0.3), v3(0.3, 0.01, 0.14), v3(0.3, 0.09, 0.04)], 0.007, 4), CUERO_OSC, 0, 0, 0, null, { escala: v3(1, 1, 1), tex: 'liso' });
+  return mallas(L);
+}
+
+function nasa(n, id) {
+  const L = lote(0.08);
+  // un cono de mimbre tumbado: la boca de 30 cm, 70 cm de largo, aros por fuera y la punta atada
+  const largo = 0.7, boca = 0.15;
+  const cono = cil(0.025, boca, largo, 14, true);
+  L.add(cono, MIMBRE, 0, boca, 0, { z: Math.PI / 2 }, { tex: 'paja', rayas: (v) => 0.85 + 0.15 * Math.sin(Math.atan2(v.z, v.y - boca) * 14) });
+  // (la punta, estrecha, queda en -X y la boca en +X)
+  for (const f of [0.25, 0.55, 0.85]) { const r = 0.025 + (boca - 0.025) * f; L.add(new THREE.TorusGeometry(r + 0.004, 0.007, 4, 16), 'madera', -largo / 2 + largo * f, boca, 0, { y: Math.PI / 2 }, { tex: 'veta' }); }
+  // el embudo de la boca, hacia dentro (por donde entra el pez y no sale)
+  L.add(cil(0.04, boca * 0.95, 0.2, 14, true), 0x9c8558, largo / 2 - 0.1, boca, 0, { z: Math.PI / 2 }, { tex: 'paja' });
+  L.add(new THREE.TorusGeometry(0.02, 0.006, 4, 10), CORDEL, -largo / 2 - 0.01, boca, 0, { y: Math.PI / 2 }, { tex: 'liso' });
+  return mallas(L);
+}
+
+function trampaLazo(n, id) {
+  const L = lote(0.05);
+  // la estaca, una ramita doblada sujeta a ella y el lazo de cuerda abierto delante, a ras de suelo
+  L.add(cil(0.012, 0.016, 0.3, 6), 'madera', 0, 0.15, 0, { z: 0.08 }, { tex: 'veta' });
+  L.add(new THREE.ConeGeometry(0.012, 0.05, 6), 'madera', 0.006, 0.0, 0, { x: Math.PI }, { tex: 'veta' });
+  L.add(tubo([v3(0.01, 0.27, 0), v3(0.12, 0.3, 0.01), v3(0.24, 0.25, 0.02), v3(0.3, 0.17, 0.02)], 0.006, 5), 'corteza', 0, 0, 0, null, { tex: 'corteza' }); // la ramita que hace de muelle
+  L.add(tubo([v3(0.3, 0.17, 0.02), v3(0.31, 0.12, 0.02), v3(0.3, 0.09, 0.02)], 0.0025, 4), CORDEL, 0, 0, 0, null, { tex: 'liso' });
+  L.add(new THREE.TorusGeometry(0.06, 0.0025, 4, 18), CORDEL, 0.3, 0.07, 0.02, { y: 0.2 }, { tex: 'liso', sinSuelo: true }); // el lazo
+  return mallas(L);
+}
+
+function cubo(n, id) {
+  const L = lote(0.1);
+  // duelas: un cilindro algo más ancho arriba, con las juntas marcadas; dos aros de mimbre y el asa de cuerda
+  const alto = 0.28, r0 = 0.12, r1 = 0.14, D = 14;
+  L.add(cil(r1, r0, alto, D * 2, true), 'tabla', 0, alto / 2, 0, null, { tex: 'veta', rayas: (v) => { const a = (Math.atan2(v.z, v.x) / (Math.PI * 2) + 1) * D; return (a % 1) < 0.07 ? 0.62 : 0.95 + 0.08 * Math.sin(Math.floor(a) * 2.3); } });
+  L.add(new THREE.CircleGeometry(r0 * 0.97, D * 2), 'corte', 0, 0.025, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'veta' }); // el fondo, visto por dentro
+  L.add(cil(r1 * 0.96, r0 * 0.96, alto - 0.02, D * 2, true), 'maderaOsc', 0, alto / 2 + 0.01, 0, null, { escala: v3(-1, 1, 1), tex: 'veta', sinSuelo: true, brillo: 0.8 }); // por dentro (en espejo: se ven sus caras de dentro)
+  for (const f of [0.22, 0.78]) L.add(new THREE.TorusGeometry(r0 + (r1 - r0) * f + 0.004, 0.007, 4, 28), MIMBRE, 0, alto * f, 0, { x: Math.PI / 2 }, { tex: 'paja', sinSuelo: true });
+  L.add(tubo([v3(-r1, alto * 0.86, 0), v3(-0.1, alto + 0.12, 0.02), v3(0.1, alto + 0.12, 0.02), v3(r1, alto * 0.86, 0)], 0.007, 5), CUERDA, 0, 0, 0, { y: 0.4 }, { tex: 'paja', sinSuelo: true });
+  return mallas(L);
+}
+
+// El hacha de piedra (revisión del 1 nov: la primera herramienta para talar los jóvenes): la cabeza de piedra pulida,
+// en forma de gota con el filo abajo, encajada en el mango y atada con tiras de cuero cruzadas. Tumbada en el suelo.
+export function modeloHachaPiedra() {
+  const L = new Lote({ variacion: 0.04, rangoSuelo: 0.001, suelo: -100 });
+  L.add(cil(0.016, 0.02, 0.62, 8), 'tabla', 0, 0.21, 0, null, { tex: 'veta' });
+  L.add(new THREE.SphereGeometry(0.022, 8, 5), 'tabla', 0, -0.1, 0, null, { escala: v3(1, 0.7, 1.3), tex: 'veta' });
+  const y = 0.47;
+  const cabeza = new THREE.SphereGeometry(0.05, 10, 7);
+  L.add(cabeza, 'piedraOsc', 0, y, 0.055, { x: Math.PI / 2 }, { escala: v3(0.55, 1.7, 0.8), tex: 'piedra' });
+  L.add(cil(0.003, 0.003, 0.07, 4), 0x8a8780, 0, y, 0.135, null, { escala: v3(3, 1, 1), plano: true, sinSuelo: true }); // el filo pulido
+  for (const dy of [-0.025, 0.025]) L.add(new THREE.TorusGeometry(0.022, 0.005, 4, 10), CUERO_OSC, 0, y + dy, 0.005, { x: Math.PI / 2 + dy * 8 }, { tex: 'liso' });
+  return mallas(L);
+}
+function hachaPiedraSuelo(n, id) { const g = new THREE.Group(), h = modeloHachaPiedra(); h.rotation.set(Math.PI / 2, 0, az(id, 3) * 6); h.position.y = 0.03; g.add(h); return g; }
+
+// tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
+export const MODELO_OBJETO = {
+  fibra, junco: juncos, mimbre, piel, resina, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo,
+};

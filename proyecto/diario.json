@@ -4829,5 +4829,23 @@
   "pruebas": "Batería entera en la nube (36 grupos) tras unir main: todo bien salvo «lo que llevas se ve puesto» (la mujer, 17,7 cm, el fallo de borde de siempre), que pasó al repetirla sin cambios. Antes de unir main, la misma batería: 35 bien y la web, que fallaba por la tabla del GDD (arreglada y bien en local). Chat de texto 24/24 en lógica.",
   "capturas": "capturas/demo-v128",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T18:13:02+01:00",
+  "fin": "2026-11-06T23:37:13+01:00",
+  "titulo": "P3: el panel de fabricar nuevo, con las imágenes de cada cosa (demo v129)",
+  "hito": "crafting",
+  "hecho": [
+   "Aprobado por valravnx el estudio del panel (cuadrícula con imágenes, pestañas por dónde se hace, ficha con para qué sirve, el panel de la estación al usarla) y los dos atajos, con textos claros.",
+   "Las imágenes de cada cosa salen de los modelos del juego con una herramienta nueva (herramientas/iconos/sacar.py), a docs/recursos/iconos-v1/: 82, con un índice de las que aún no tienen modelo (30, ninguna de las recetas).",
+   "Modelos nuevos (estilo v5), en el suelo, en lo depositado y en su imagen: fibra cruda, juncos, mimbre, piel, resina, cordel, cuerda, cinturón de cuerda, honda, odre, nasa, trampa de lazo, cubo y hacha de piedra.",
+   "El panel nuevo: cartas con imagen, pestañas (Todo, Con las manos, Piedra de tallar, Fuego, Banco de tronco) con lo que se puede hacer ya, la ficha con para qué sirve (del documento de sistemas) y de dónde sale cada material, lo que está en marcha con su barra, y en el móvil la ficha que sube desde abajo.",
+   "Los dos atajos: «Hacer antes» lo que falta si ya se puede hacer, y «Poner en la estación lo que falta» de lo que llevas. Usar delante de una estación abre su panel, con lo que tiene encima y lo que llevas para dejar.",
+   "Arreglado: el panel ya no se rehace a cada mensaje del servidor (en un PC rápido se perdían clics) y, en Windows, el servidor de pruebas ya no deja una acción sin contestar si no puede cambiar su guardado (fallaba «Recoger» en el PC de valravnx también antes de este cambio).",
+   "Decisión provisional: delante de una estación (a 1,8 m o menos), Usar abre su panel antes que coger lo del suelo de al lado (eso, con el clic derecho)."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main: 36 grupos correctos. Antes, en el PC de valravnx, todo correcto salvo los tres grupos que dan por hecho que no hay tarjeta gráfica (pasan en la nube). Prueba nueva de las imágenes y la del panel ampliada, rotas a propósito",
+  "capturas": "capturas/demo-v129",
+  "estado": "ok"
  }
 ]

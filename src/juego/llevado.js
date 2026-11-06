@@ -295,6 +295,9 @@ function espalda(t, dentro) {
   return { L, alto: 0.4 };
 }
 
+// Para las imágenes del panel de fabricar (herramientas/iconos/): el lote de lo de la espalda y de lo de la mano.
+export { espalda as loteEspalda, enMano as loteEnMano };
+
 // Lo que va en la mano, en el espacio de la mano (como el hacha de src/juego/personaje.js: +Y del meñique al
 // índice, +Z hacia los nudillos, el origen en el puño).
 function enMano(t) {

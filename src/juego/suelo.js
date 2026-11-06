@@ -7,7 +7,9 @@
 //    más alto cuantas más haya.
 //  - troncos y leña: troncos tumbados con su corteza y el corte con anillos, apilados.
 //  - el hacha de mano: el modelo de la mano, tumbada.
-//  - lo demás (fibra, bayas, herramientas, ropa, mochilas…): un hatillo de lino atado, más grande si es grande.
+//  - lo que piden y dan las recetas de P3 (fibra, juncos, mimbre, piel, resina, cordel, cuerda, honda, odre, nasa,
+//    trampa, cubo, hacha de piedra…): su modelo, en src/juego/modelos_objetos.js.
+//  - lo demás (bayas, ropa, mochilas…): un hatillo de lino atado, más grande si es grande.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, materialTex } from '../mundo/estilos.js';
@@ -18,6 +20,7 @@ import { modeloRastra } from './rastra.js';
 import { modeloCarretilla } from './carretilla.js';
 import { Suelo, cargarSuelo, guardarSuelo, ejecutarSuelo } from '../logica/suelo.js';
 import { CATALOGO } from '../logica/inventario.js';
+import { MODELO_OBJETO } from './modelos_objetos.js';
 
 const mallas = L => {
   const grupos = L.cerrar(null, true), g = new THREE.Group();
@@ -85,6 +88,7 @@ export function modeloDe(o) {
   if (t === 'tronco_delgado') return troncosConCortes(n, 2.6, 0.09, o.id);
   if (t === 'tronco_largo') return troncosConCortes(n, 4.5, 0.18, o.id);
   if (t === 'lena') return troncosConCortes(Math.ceil(n / 2), 0.45, 0.06, o.id);
+  if (Object.hasOwn(MODELO_OBJETO, t)) return MODELO_OBJETO[t](n, o.id); // lo de las recetas de P3 (src/juego/modelos_objetos.js)
   if (t === 'hacha_mano' || t === 'hacha_hierro' || t === 'hacha_piedra') { const h = modeloHacha(); h.rotation.set(Math.PI / 2, 0, az(o.id, 3) * 6); h.position.y = 0.03; const g = new THREE.Group(); g.add(h); return g; }
   const d = CATALOGO[t];
   return hatillo(d && (d.tam === 'G' || d.huecos), o.id);
