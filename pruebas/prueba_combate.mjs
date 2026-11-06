@@ -1,6 +1,7 @@
 // Pruebas de la lógica de combate de Kinhold. Con MUTAR=1 se rompen reglas a propósito: deben fallar.
 import * as direccion from '../src/combate/direccion.js';
-import { Luchador, resolverGolpe, crearProyectil, moverProyectil, elevacionPara, IA, azar, T, GUARDIAS, LINEAS, LINEAS_DIRECCIONAL, ARMADURAS, ARMAS, TRATAMIENTOS, SANAR } from '../src/combate/logica.js';
+import * as logica from '../src/combate/logica.js';
+import { Luchador, resolverGolpe, crearProyectil, moverProyectil, elevacionPara, IA, azar, T, LINEAS, ESPEJO, ARMADURAS, ARMAS, TRATAMIENTOS, SANAR } from '../src/combate/logica.js';
 import { RegistroAcciones, ejecutarCombate } from '../src/logica/acciones.js';
 
 if (process.env.MUTAR === '1') {
@@ -9,14 +10,15 @@ if (process.env.MUTAR === '1') {
   Object.defineProperty(Luchador.prototype, 'corriendo', { get() { return false; }, set() {} });
   Luchador.prototype.paraConEscudo = function () { return false; }; T.factorEscudo = 1; // escudo que no sirve
   TRATAMIENTOS.vendar.duracion = 0.1; Luchador.prototype.cortarCura = function () {}; // curar al instante y sin riesgo
-  // modo direccional roto: el botón de parar no cancela el golpe (sin finta), vuelve el tajo bajo, el escudo para
+  // golpe por direcciones roto: el botón de parar no cancela el golpe (sin finta), vuelve el tajo bajo, el escudo para
   // también de lado, cargar no da más fuerza y cualquier lado para
-  Luchador.prototype.fintar = function () { return false; }; LINEAS_DIRECCIONAL.push('bajo'); T.anguloEscudo = Math.PI; T.fuerzaMinima = 1;
+  Luchador.prototype.fintar = function () { return false; }; LINEAS.push('bajo'); T.anguloEscudo = Math.PI; T.fuerzaMinima = 1;
   direccion.LectorDireccion.prototype.cambio = function () { return null; };   // el ratón no cambia de lado sin soltar
   // el ratón como antes del 31 oct: abajo es el tajo bajo y sin moverlo, estocada
   direccion.LectorDireccion.prototype.alPulsar = function (t) { const [x, y] = this.suma(t, direccion.VENTANA); this.mov = []; return Math.hypot(x, y) >= direccion.UMBRAL ? (Math.abs(y) >= Math.abs(x) ? (y < 0 ? 'alto' : 'bajo') : (x < 0 ? 'izquierda' : 'derecha')) : 'estocada'; };
-  const cubre = Luchador.prototype.cubre;
-  Luchador.prototype.cubre = function (l) { return this.modo === 'direccional' ? this.bloqueando && this.accion === 'libre' : cubre.call(this, l); }; // la cámara táctil se trata como antes: cualquier temblor gira y el arco no la mueve
+  Luchador.prototype.cubre = function () { return this.bloqueando && this.accion === 'libre'; };
+  // vuelven los modos de antes: el luchador vuelve a saber cambiar de guardia
+  Luchador.prototype.cambiarGuardia = function () { return false; };
 }
 
 let ok = 0, mal = 0;
@@ -28,13 +30,14 @@ function pareja(dist = 1.5, opA = {}, opB = {}) {
   const b = new Luchador({ nombre: 'B', x: 0, z: dist, rot: Math.PI, ...opB });
   return [a, b];
 }
-// avanza a hasta su impacto y lo resuelve contra b
+// a ataca (carga y suelta enseguida); avanza hasta su impacto y lo resuelve contra b. antesDelImpacto: { margen, fn }
+// llama a fn cuando falten margen segundos para el impacto.
 function golpeCompleto(a, b, linea, r, antesDelImpacto = null) {
   a.atacar(linea);
   let res = null, t = 0;
   while (!res && t < 3) {
     const ev = a.actualizar(0.01); b.actualizar(0.01); t += 0.01;
-    if (antesDelImpacto && a.accion === 'preparando' && a.duracion - a.tAccion <= antesDelImpacto.margen && !antesDelImpacto.hecho) { antesDelImpacto.fn(); antesDelImpacto.hecho = true; }
+    if (antesDelImpacto && a.atacando() && a.hastaImpacto() <= antesDelImpacto.margen && !antesDelImpacto.hecho) { antesDelImpacto.fn(); antesDelImpacto.hecho = true; }
     for (const e of ev) if (e.tipo === 'impacto') res = resolverGolpe(a, b, e.linea, r);
   }
   return res;
@@ -53,35 +56,35 @@ console.log('1. Alcance y orientación');
   comprobar('la estocada llega más lejos que el tajo', golpeCompleto(a, b, 'estocada', r).resultado === 'herida');
 }
 
-console.log('2. Defensa por capas');
+console.log('2. Parada, parada perfecta y golpe maestro');
 {
   const r = azar(2);
-  // 1. parada normal: cualquier línea, cansa
-  for (const linea of ['alto', 'bajo', 'izquierda']) {
+  // 1. parada normal: por el lado por el que viene el golpe, cansa
+  for (const linea of ['alto', 'estocada', 'izquierda']) {
     const [a, b] = pareja(1.5);
-    b.bloquear(true); b.tBloqueo = 1;
+    b.bloquear(true, ESPEJO[linea]); b.tBloqueo = 1;
     const c0 = b.cansancio;
     const res = golpeCompleto(a, b, linea, r);
-    comprobar(`parar sin elegir línea detiene un golpe ${linea}`, res.resultado === 'parada' && b.cansancio > c0, `cansancio +${r2(b.cansancio - c0)}`);
+    comprobar(`parar por su lado detiene un golpe ${linea}`, res.resultado === 'parada' && b.cansancio > c0, `cansancio +${r2(b.cansancio - c0)}`);
   }
   // 2. parada perfecta
   {
     const [a, b] = pareja(1.5);
-    const res = golpeCompleto(a, b, 'derecha', r, { margen: 0.15, fn: () => b.bloquear(true) });
+    const res = golpeCompleto(a, b, 'derecha', r, { margen: 0.15, fn: () => b.bloquear(true, 'izquierda') });
     comprobar('parar justo antes del impacto es parada perfecta', res.resultado === 'parada perfecta' && a.accion === 'aturdido', res.resultado);
     comprobar('y abre un contraataque', b.puedeContraatacar());
     const prepContra = b.duracionPreparacion('alto'), prepNormal = new Luchador().duracionPreparacion('alto');
     comprobar('el contraataque se prepara más rápido', prepContra < prepNormal * 0.7, `${r2(prepContra)} s frente a ${r2(prepNormal)} s`);
     b.bloquear(false); b.atacar('alto');
     comprobar('y es imparable', b.imparable);
-    a.accion = 'libre'; a.bloquear(true); a.tBloqueo = 1;
+    a.accion = 'libre'; a.bloquear(true, 'alto'); a.tBloqueo = 1;
     let res2 = null, t = 0;
     while (!res2 && t < 2) { for (const e of b.actualizar(0.01)) if (e.tipo === 'impacto') res2 = resolverGolpe(b, a, e.linea, r); a.actualizar(0.01); t += 0.01; }
     comprobar('una parada normal no detiene el contraataque', res2.resultado === 'herida' && res2.nota === 'imparable', JSON.stringify({ r: res2.resultado, nota: res2.nota }));
   }
   {
     const [a, b] = pareja(1.5);
-    const res = golpeCompleto(a, b, 'derecha', r, { margen: 0.4, fn: () => b.bloquear(true) });
+    const res = golpeCompleto(a, b, 'derecha', r, { margen: 0.4, fn: () => b.bloquear(true, 'izquierda') });
     comprobar('parar con mucha antelación es parada normal', res.resultado === 'parada', res.resultado);
   }
   // 3. golpe maestro
@@ -98,31 +101,22 @@ console.log('2. Defensa por capas');
     return { res, resB, a, b };
   };
   {
-    const { res, resB } = maestro('izquierda', 'derecha', 0.2);
+    const { res, resB } = maestro('izquierda', 'derecha', 0.42);
     comprobar('atacar por el mismo lado al principio es golpe maestro', res && res.resultado === 'golpe maestro', res && res.resultado);
     comprobar('y el golpe maestro entra', resB && resB.resultado === 'herida', resB && resB.resultado);
   }
   {
-    const { res } = maestro('izquierda', 'izquierda', 0.2);
+    const { res } = maestro('izquierda', 'izquierda', 0.42);
     comprobar('por el lado contrario no es golpe maestro', res && res.resultado !== 'golpe maestro', res && res.resultado);
   }
   {
     const { res } = maestro('alto', 'alto', 0.7);
     comprobar('demasiado tarde no es golpe maestro', res && res.resultado !== 'golpe maestro', res && res.resultado);
   }
-  // finta
-  {
-    const a = new Luchador(); a.atacar('alto');
-    for (let k = 0; k < 10; k++) a.actualizar(0.01);
-    const c0 = a.cansancio;
-    comprobar('cambiar de línea al principio es una finta', a.atacar('bajo') && a.linea === 'bajo' && a.cansancio > c0, `cansancio +${r2(a.cansancio - c0)}`);
-    for (let k = 0; k < 30; k++) a.actualizar(0.01);
-    comprobar('pasado el 60% ya no se puede fintar', !a.atacar('alto') && a.linea === 'bajo');
-  }
   // guardia rota, fallos y parada mantenida
   {
     const [a, b] = pareja(1.5);
-    b.bloquear(true); b.tBloqueo = 1; b.cansancio = 97;
+    b.bloquear(true, 'alto'); b.tBloqueo = 1; b.cansancio = 97;
     const res = golpeCompleto(a, b, 'alto', r);
     comprobar('agotado, la parada cede', res.resultado === 'herida' && res.nota === 'guardia rota', JSON.stringify({ r: res.resultado, nota: res.nota }));
   }
@@ -136,26 +130,13 @@ console.log('2. Defensa por capas');
   }
 }
 
-console.log('3. Guardias y tiempo');
+console.log('3. Un solo modo (fuera la liza, las capas y las guardias: 6 nov)');
 {
-  const r = azar(3);
-  let [a, b] = pareja(1.5, { modo: 'guardias' }, { modo: 'guardias' });
-  b.guardia = 'pflug';
-  comprobar('el arado cubre la estocada', golpeCompleto(a, b, 'estocada', r).resultado === 'parada');
-  comprobar('y abre una ventana de contraataque', b.reloj <= b.contraHasta);
-  const prepNormal = (() => { const x = new Luchador({ modo: 'guardias' }); x.guardia = 'pflug'; return x.duracionPreparacion('estocada'); })();
-  comprobar('el contraataque se prepara en la mitad de tiempo', Math.abs(b.duracionPreparacion('estocada') - prepNormal * T.factorGuardia) < 1e-9, `${r2(b.duracionPreparacion('estocada'))} s frente a ${r2(prepNormal)} s`);
-  [a, b] = pareja(1.5, { modo: 'guardias' }, { modo: 'guardias' });
-  b.guardia = 'pflug';
-  comprobar('el arado deja abierto el alto', golpeCompleto(a, b, 'alto', r).resultado === 'herida');
-  [a, b] = pareja(1.5, { modo: 'guardias' }, { modo: 'guardias' });
-  b.guardia = 'vom_tag'; b.cambiarGuardia('pflug');
-  comprobar('mientras cambia de guardia no cubre nada', !b.cubre('estocada') && !b.cubre('bajo'));
-  const x = new Luchador({ modo: 'guardias' }); x.guardia = 'ochs';
-  comprobar('desde el buey la estocada es rápida y el bajo lento', x.duracionPreparacion('estocada') < x.duracionPreparacion('bajo'),
-    `${r2(x.duracionPreparacion('estocada'))} s / ${r2(x.duracionPreparacion('bajo'))} s`);
-  const todas = new Set(Object.values(GUARDIAS).flatMap(g => g.cubre));
-  comprobar('entre las cuatro guardias se cubren las cinco líneas', LINEAS.every(l => todas.has(l)));
+  comprobar('ya no hay guardias ni modos que elegir', !('GUARDIAS' in logica) && !('LINEAS_DIRECCIONAL' in logica) && !('lineasDe' in logica) && !('cambiarGuardia' in Luchador.prototype));
+  const L = new Luchador({ modo: 'capas' });
+  comprobar('el luchador no tiene modo: aunque se le pida otro, golpea por direcciones', !('modo' in L) && LINEAS.join() === 'alto,izquierda,derecha,estocada' && L.atacar('alto') && L.hastaImpacto() <= ARMAS.espada_larga.prep * T.cargaMinima + T.vuelo + 1e-9);
+  const [a, b] = pareja(1.5); b.bloquear(true); b.tBloqueo = 1;
+  comprobar('sin elegir lado, la parada no cubre todo (el lado de siempre es el alto)', b.cubre('alto') && !b.cubre('izquierda') && !b.cubre('derecha') && !b.cubre('estocada'));
 }
 
 console.log('4. Armaduras');
@@ -290,7 +271,7 @@ console.log('6c. Escudo (provisional)');
   // aliento de una parada normal con espada larga y con escudo
   const costeParada = (arma) => {
     const [a, b] = pareja(1.5, {}, { arma });
-    b.bloquear(true); b.tBloqueo = 1;
+    b.bloquear(true, 'alto'); b.tBloqueo = 1;
     const c0 = b.cansancio;
     const res = golpeCompleto(a, b, 'alto', azar(3));
     return { res: res.resultado, coste: b.cansancio - c0 };
@@ -299,7 +280,7 @@ console.log('6c. Escudo (provisional)');
   comprobar('parar con escudo cuesta menos aliento', escudo.res === 'parada' && larga.res === 'parada' && escudo.coste < larga.coste * 0.75, `escudo +${r2(escudo.coste)}, espada larga +${r2(larga.coste)}`);
   {
     const [a, b] = pareja(1.5, {}, { arma: 'espada_escudo' });
-    const res = golpeCompleto(a, b, 'bajo', azar(4), { margen: 0.15, fn: () => b.bloquear(true) });
+    const res = golpeCompleto(a, b, 'estocada', azar(4), { margen: 0.15, fn: () => b.bloquear(true) });
     comprobar('con escudo la parada perfecta funciona igual', res.resultado === 'parada perfecta' && b.puedeContraatacar(), res.resultado);
   }
   {
@@ -307,7 +288,7 @@ console.log('6c. Escudo (provisional)');
     a.atacar('izquierda');
     let res = null, t = 0, lanzado = false;
     while (t < 2 && !res) {
-      if (!lanzado && a.progreso() >= 0.2) { b.atacar('derecha'); lanzado = true; }
+      if (!lanzado && a.progreso() >= 0.42) { b.atacar('derecha'); lanzado = true; }
       for (const e of a.actualizar(0.01)) if (e.tipo === 'impacto') res = resolverGolpe(a, b, e.linea, azar(5));
       b.actualizar(0.01); t += 0.01;
     }
@@ -363,7 +344,7 @@ console.log('8. El rival lee los ataques según la dificultad');
       const [a, b] = pareja(1.5);
       const ia = new IA(b, dif, azar(s + 1000));
       ia.esperaAtaque = 99;
-      a.atacar(LINEAS[s % 5]);
+      a.atacar(LINEAS[s % 4]);
       let res = null, t = 0;
       while (!res && t < 2) {
         ia.pensar(0.01, a);
@@ -399,10 +380,10 @@ console.log('8b. El rival no se aleja durante su propio golpe');
 }
 
 console.log('9. Combates completos simulados (máquina contra máquina)');
-for (const modo of ['capas', 'guardias']) {
+{
   let fin = 0, tiempos = [];
   for (let s = 0; s < 20; s++) {
-    const [a, b] = pareja(3, { modo }, { modo, arma: modo === 'capas' && s % 2 ? 'espada_escudo' : 'espada_larga' });
+    const [a, b] = pareja(3, {}, { arma: s % 2 ? 'espada_escudo' : 'espada_larga' });
     const ia1 = new IA(a, 'normal', azar(s + 1)), ia2 = new IA(b, 'normal', azar(s + 500));
     const r = azar(s + 77);
     let t = 0;
@@ -418,7 +399,7 @@ for (const modo of ['capas', 'guardias']) {
     if (a.fuera || b.fuera) { fin++; tiempos.push(t); }
   }
   tiempos.sort((x, y) => x - y);
-  comprobar(`modo ${modo}: los combates terminan`, fin >= 18, `${fin}/20 · mediana ${r2(tiempos[Math.floor(tiempos.length / 2)])} s · rango ${r2(tiempos[0])}–${r2(tiempos[tiempos.length - 1])} s`);
+  comprobar('los combates terminan (con espada larga y con escudo)', fin >= 18, `${fin}/20 · mediana ${r2(tiempos[Math.floor(tiempos.length / 2)])} s · rango ${r2(tiempos[0])}–${r2(tiempos[tiempos.length - 1])} s`);
 }
 
 console.log('11. Curación de heridas');
@@ -486,9 +467,9 @@ console.log('11. Curación de heridas');
   comprobar('curarse es una acción con autor y queda en el registro', r1.ok && !r3.ok && reg.entradas.some(e => e.tipo === 'curar' && e.autor === 'yo' && e.ok));
 }
 
-console.log('12. Modo direccional: cuatro direcciones, golpe cargado y comprometido, finta con el botón de parar y paradas por lado');
+console.log('12. Cuatro direcciones, golpe cargado y comprometido, finta con el botón de parar y paradas por lado');
 {
-  const D = { modo: 'direccional' };
+  const D = {};
   const prep = ARMAS.espada_larga.prep;
   // carga a mano: mantener el botón t segundos y soltar; devuelve [resultado, segundos desde que se empezó hasta el impacto]
   function cargarYSoltar(a, b, linea, mantener, r, alSoltar = null) {
@@ -530,7 +511,7 @@ console.log('12. Modo direccional: cuatro direcciones, golpe cargado y compromet
   {
     // cuatro direcciones (valravnx, 31 oct): abajo es clavar; ni tajo bajo ni centro
     const [a] = pareja(1.5, D, D);
-    comprobar('cuatro direcciones: alto, izquierda, derecha y estocada (abajo, clavar)', LINEAS_DIRECCIONAL.join() === 'alto,izquierda,derecha,estocada', LINEAS_DIRECCIONAL.join());
+    comprobar('cuatro direcciones: alto, izquierda, derecha y estocada (abajo, clavar)', LINEAS.join() === 'alto,izquierda,derecha,estocada', LINEAS.join());
     comprobar('el tajo bajo ya no se puede cargar', !a.cargar('bajo') && a.accion === 'libre');
   }
   {
@@ -571,9 +552,9 @@ console.log('12. Modo direccional: cuatro direcciones, golpe cargado y compromet
     [res] = cargarYSoltar(a, b, 'estocada', 0, azar(4));
     comprobar('la estocada (abajo) se para por abajo', res.resultado === 'parada', res.resultado);
     // con escudo no hay lado: para lo que viene de frente, por donde venga; de lado, no
-    const E = { modo: 'direccional', arma: 'espada_escudo' };
+    const E = { arma: 'espada_escudo' };
     let paradas = 0;
-    for (const l of LINEAS_DIRECCIONAL) {
+    for (const l of LINEAS) {
       [a, b] = pareja(1.5, D, E);
       b.bloquear(true, 'alto'); for (let i = 0; i < 60; i++) b.actualizar(0.01);
       [res] = cargarYSoltar(a, b, l, 0, azar(4));
@@ -591,12 +572,12 @@ console.log('12. Modo direccional: cuatro direcciones, golpe cargado y compromet
     comprobar('pasar al lado bueno sin soltar justo antes del golpe es parada perfecta', res.resultado === 'parada perfecta' && b.bloqueando, res.resultado);
   }
   {
-    // la máquina en modo direccional para por el lado bueno según la dificultad, y hay combates que terminan
+    // la máquina para por el lado bueno según la dificultad, y hay combates que terminan
     const leer = (dif) => {
       let bien = 0;
       for (let s = 0; s < 60; s++) {
         const [a, b] = pareja(1.5, D, D); const ia = new IA(b, dif, azar(500 + s));
-        a.cargar(LINEAS_DIRECCIONAL[s % 4]);
+        a.cargar(LINEAS[s % 4]);
         for (let i = 0; i < 40; i++) { ia.pensar(0.01, a); b.actualizar(0.01); a.actualizar(0.01); }
         if (b.bloqueando && b.cubre(a.linea)) bien++;
       }
@@ -615,7 +596,7 @@ console.log('12. Modo direccional: cuatro direcciones, golpe cargado y compromet
       }
       if (a.fuera || b.fuera) acaban++;
     }
-    comprobar('combates máquina contra máquina en modo direccional que terminan', acaban >= 5, `${acaban} de 6`);
+    comprobar('combates máquina contra máquina que terminan (cargando y fintando)', acaban >= 5, `${acaban} de 6`);
   }
 }
 

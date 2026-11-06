@@ -21,7 +21,6 @@ export function aplicarFoto(L, f, { propio = false, prediciendo = false } = {}) 
   L.armadura = f.armadura;
   L.cansancio = f.cansancio;
   L.sangre = f.sangre;
-  L.liza = !!f.liza;
   if (Array.isArray(f.lista)) {
     L.heridas = f.lista.map(([zona, gravedad, tipo, sangrado, marcas = '']) => {
       const h = { zona, gravedad, tipo, sangrado: +sangrado || 0 };
@@ -41,13 +40,12 @@ export function aplicarFoto(L, f, { propio = false, prediciendo = false } = {}) 
     L.duracion = f.duracion / 1000; L.tAccion = f.tAccion / 1000;
     if (f.accion === 'preparando') L.prepTotal = L.duracion;
   }
-  L.bloqueando = !!f.bloqueando; L.guardia = f.guardia;
+  L.bloqueando = !!f.bloqueando;
   L.tension = f.tension;
-  // el combate del mundo (modo direccional): el lado de la parada, y el golpe que se carga se queda cargado hasta que
-  // el servidor diga que ha salido (la copia no sabe cuándo suelta el botón el otro)
-  if (f.modo) L.modo = f.modo;
+  // el lado de la parada, y el golpe que se carga se queda cargado hasta que el servidor diga que ha salido (la copia
+  // no sabe cuándo suelta el botón el otro)
   if (f.lineaBloqueo) L.lineaBloqueo = f.lineaBloqueo;
-  if (L.modo === 'direccional' && f.accion === 'preparando') { L.soltado = false; L.soltarEn = null; }
+  if (f.accion === 'preparando') { L.soltado = false; L.soltarEn = null; }
 }
 
 // Avanza una copia sin dejar que resuelva nada: devuelve sus eventos (que se tiran) y no la deja caer por su
@@ -62,15 +60,4 @@ export function avanzarCopia(L, dt, corriendo = false) {
 export function resultadoDeEvento(e) {
   const resultado = e.resultado === 'al aire' ? 'fallo' : e.resultado;
   return { ok: true, resultado, zona: e.zona, gravedad: e.gravedad, tipo: e.danio, nota: e.nota };
-}
-
-// El rival al que se encara el jugador: el más cercano en pie de los de su liza (lista de { autor, L })
-export function rivalCercano(yo, otros) {
-  let mejor = null, d0 = Infinity;
-  for (const o of otros) {
-    if (!o.L || !o.L.liza) continue;
-    const d = Math.hypot(o.L.x - yo.x, o.L.z - yo.z) + (o.L.fuera ? 1000 : 0);
-    if (d < d0) { d0 = d; mejor = o; }
-  }
-  return mejor;
 }

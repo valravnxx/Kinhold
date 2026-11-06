@@ -151,8 +151,8 @@ with sync_playwright() as p:
     # y un golpe de otro jugador contra ti se dice (valravnx, 31 oct: «los ataques no nos hacían nada»)
     libre(pg)
     pg.evaluate(f"""{C}.recibir({{ tipo: 'luchadores', t: 1, lista: [{{ autor: 'jugador:yo', arma: 'espada_larga', armadura: 'lino', accion: 'libre', linea: 'alto',
-      duracion: 0, tAccion: 0, bloqueando: false, modo: 'direccional', lineaBloqueo: 'alto', sacada: true, cansancio: 10, sangre: 92, heridas: 1,
-      lista: [['brazoD', 'grave', 'corte', 0.4, '']], botiquin: {{}}, liza: false, contra: false, fuera: false }}] }}, 'jugador:yo')""")
+      duracion: 0, tAccion: 0, bloqueando: false, lineaBloqueo: 'alto', sacada: true, cansancio: 10, sangre: 92, heridas: 1,
+      lista: [['brazoD', 'grave', 'corte', 0.4, '']], botiquin: {{}}, contra: false, fuera: false }}] }}, 'jugador:yo')""")
     pg.evaluate(f"""{C}.recibir({{ tipo: 'combate', eventos: [{{ tipo: 'golpe', autor: 'jugador:otro', objetivo: 'jugador:yo', linea: 'derecha', resultado: 'herida', zona: 'brazoD', gravedad: 'grave', danio: 'corte', t: 1 }}] }}, 'jugador:yo')""")
     h = pg.evaluate(f"({{ heridas: {C}.L.heridas.map(h => h.zona + ':' + h.gravedad), sangre: {C}.L.sangre, msg: document.getElementById('cmbMsg').textContent }})")
     comprobar('en línea, la foto del servidor trae tus heridas y el golpe de otro jugador se dice', h['heridas'] == ['brazoD:grave'] and abs(h['sangre'] - 92) < 1 and 'Te hieren' in h['msg'], str(h))

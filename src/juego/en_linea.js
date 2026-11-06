@@ -21,7 +21,6 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   let cli = null;
   const red = new MundoEnLinea((m) => { if (cli) cli.enviar(m); });
   const remotos = new Map();    // autor → { j, clave, x, z, vel }
-  const enLiza = new Set();     // los que están en el «Duelo en línea»: no están en este mundo y no se dibujan
   // Pelear en el mundo (valravnx, 31 oct): la foto de cada luchador que reparte el servidor. Con el arma sacada, el otro
   // se dibuja con su modelo de combate (espada en mano) y se mueve como dice su luchador (cargar, golpear, parar, caer)
   const fotos = new Map();      // autor → foto de su luchador (src/logica/combate_servidor.js)
@@ -33,9 +32,6 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     alAbrir: (enviar) => {
       if (alAbrir) alAbrir(enviar);
       mandarAspecto();
-      // fuera de la liza: quien viene del duelo en línea en la misma pestaña es el mismo jugador para el servidor,
-      // y seguía en la liza, así que los demás no le dibujaban (valravnx, 28 oct)
-      enviar({ tipo: 'combate', que: 'mundo' });
     },
     alMensaje: (msg) => {
       if (msg.tipo === 'admin') { for (const f of escuchas) f(msg); return; }
@@ -44,16 +40,15 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       // (si no vale lo dicho, el motivo, para que lo vea quien habla)
       if (msg.tipo === 'error' && (msg.motivo === MOTIVO_VACIO || msg.motivo === MOTIVO_DESPACIO)) for (const f of escuchasDicho) f({ tipo: 'dicho_error', motivo: msg.motivo });
       for (const l of msg.tipo === 'luchadores' ? msg.lista : msg.tipo === 'bienvenida' ? msg.luchadores || [] : []) {
-        if (l.liza) enLiza.add(l.autor); else enLiza.delete(l.autor);
         fotos.set(l.autor, l);
       }
-      if (msg.tipo === 'sale') { quitar(msg.autor); enLiza.delete(msg.autor); fotos.delete(msg.autor); }
+      if (msg.tipo === 'sale') { quitar(msg.autor); fotos.delete(msg.autor); }
       const info = red.recibir(msg);
       alCambiar(info, msg);
       if (info.rechazo) avisar(tr('El servidor no lo ha aceptado: {m}', { m: tr(info.rechazo) }), true);
     },
     alCortar: () => { red.yo = null; for (const a of [...remotos.keys()]) quitar(a); fotos.clear(); if (alCortarse) alCortarse(); },
-    conectado: () => tr('En línea · {n} más', { n: [...cli.presencia.remotos.keys()].filter(a => !enLiza.has(a)).length }),
+    conectado: () => tr('En línea · {n} más', { n: cli.presencia.remotos.size }),
     bienvenida: (d) => tr('En línea: el mundo es el del servidor ({d}).', { d }),
     avisar: (texto, mal) => { if (mal) avisar(texto, true); else avisar(texto); },
     alEstado,
@@ -81,7 +76,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       const m = crearCombatiente({ armadura: f.armadura, colorCinta: 0xb3923f, recursos, sexo: asp.sexo, capas: asp.capas, aspecto: asp.aspecto });
       ponerArma(m, f.arma); m.userData.autor = e.autor;
       escena.add(m);
-      r.comb = { m, L: new Luchador({ arma: f.arma, armadura: f.armadura, modo: 'direccional' }), foto: null, arma: f.arma, rastro: new Rastro(escena) };
+      r.comb = { m, L: new Luchador({ arma: f.arma, armadura: f.armadura }), foto: null, arma: f.arma, rastro: new Rastro(escena) };
       r.j.raiz.visible = false;
     }
     const c = r.comb, L = c.L;
@@ -90,7 +85,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     avanzarCopia(L, dt);
     c.m.position.set(e.x, e.y, e.z); c.m.rotation.y = L.rot;
     pintarHeridas(c.m, L.heridas);
-    animarCombatiente(c.m, L, dt, r.vel > 0.3 ? r.vel : 0, L.factorPiernas() < 0.9, 'estocada');
+    animarCombatiente(c.m, L, dt, r.vel > 0.3 ? r.vel : 0, L.factorPiernas() < 0.9);
     c.rastro.actualizar(c.m, L.accion === 'golpeando' || L.accion === 'lanzando');
   }
 
@@ -101,7 +96,6 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     const vistos = presencia.ver(ahora);
     const siguen = new Set();
     for (const e of vistos) {
-      if (enLiza.has(e.autor)) continue;
       siguen.add(e.autor);
       const asp = aspectos.get(e.autor) || { sexo: 'hombre', capas: [] };
       // sin personalización, la de por defecto (como la pone el servidor): así no se viste dos veces al llegar
@@ -123,7 +117,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       if (r.j.ponerLlevado && r.llevado !== asp.llevado) { r.llevado = asp.llevado; r.j.ponerLlevado(asp.llevado || null); }
       r.j.animar(r.vel > 0.3 ? r.vel : 0, dt, e.anim === 'talar');
       const f = fotos.get(e.autor);
-      if (f && f.sacada && !f.liza) dibujarCombate(r, e, f, asp, dt); else quitarCombate(r);
+      if (f && f.sacada) dibujarCombate(r, e, f, asp, dt); else quitarCombate(r);
     }
     for (const a of [...remotos.keys()]) if (!siguen.has(a)) quitar(a);
   }

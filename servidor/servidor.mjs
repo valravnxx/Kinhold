@@ -305,10 +305,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     catch (e) { registrar(`posiciones.json no válido, se empieza de cero: ${e && e.message}`); }
   }
   let posicionesCambiadas = false;
-  // (en el «Duelo» se está en la liza, una escena aparte: esa posición no es la del mundo y no se apunta)
   const apuntarPosicion = (a) => {
     const e = presencia && presencia.ultimo.get(a);
-    if (!e || (combate.luchadores[a] && combate.luchadores[a].liza)) return;
+    if (!e) return;
     // con el mundo de verdad, quien aún no ha elegido dónde empieza no tiene posición que apuntar (elegirSalida)
     if (terreno && !posiciones.has(a)) return;
     const p = posiciones.get(a);
@@ -525,8 +524,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         return enviar(ws, { tipo: 'salida', id, ...r });
       }
       if (msg && msg.tipo === 'estado') {
-        // con el terreno, dentro de la isla (la cuenta de admin, en todo el continente) y cerca del suelo (en la liza del «Duelo» no: es una escena aparte)
-        if (terreno && !(combate.luchadores[autor] && combate.luchadores[autor].liza)) {
+        // con el terreno, dentro de la isla (la cuenta de admin, en todo el continente) y cerca del suelo
+        if (terreno) {
           const ad = esAdmin(autor), e = validarEstado(msg, { admin: ad }), mal = e ? terreno.posicion(e, { admin: ad }) : null;
           if (mal) return enviar(ws, { tipo: 'error', motivo: mal });
         }
@@ -538,21 +537,18 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           recienLlegado.delete(autor);
         }
         // movimiento sin trampas: lo que llega más lejos de lo que se puede andar se recorta (src/logica/presencia.js)
-        const enLiza = !!(combate.luchadores[autor] && combate.luchadores[autor].liza);
-        const rec = presencia.recibir(autor, msg, reloj(), { aparte: enLiza, admin: esAdmin(autor), vel: modosDe(autor).velocidad });
+        const rec = presencia.recibir(autor, msg, reloj(), { admin: esAdmin(autor), vel: modosDe(autor).velocidad });
         if (!rec) return enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
         if (rec.recortado) anotarRecorte(autor, rec.recortado);
         ponerAlDia();
         const e = rec.estado;
         combate.colocar(autor, e.x, e.z, e.giro);
-        // si ha cambiado de trozo, lo de los trozos que le entran (en la liza no: es una escena aparte)
-        if (!(combate.luchadores[autor] && combate.luchadores[autor].liza)) {
-          const entran = vista.mover(autor, e.x, e.z);
-          if (entran.length) {
-            const nuevos = new Set(entran);
-            enviar(ws, { tipo: 'trozos', entran, tala: objetos.talaVisible(nuevos), recoleccion: objetos.recoleccionVisible(nuevos), suelo: objetos.sueloVisible(Date.now(), vista.trozosDe(autor)), estaciones: objetos.estacionesVisibles(vista.trozosDe(autor)) });
-            enviar(ws, { tipo: 'obras', obras: obrasEnTrozos(mundo, vista.trozosDe(autor)) });
-          }
+        // si ha cambiado de trozo, lo de los trozos que le entran
+        const entran = vista.mover(autor, e.x, e.z);
+        if (entran.length) {
+          const nuevos = new Set(entran);
+          enviar(ws, { tipo: 'trozos', entran, tala: objetos.talaVisible(nuevos), recoleccion: objetos.recoleccionVisible(nuevos), suelo: objetos.sueloVisible(Date.now(), vista.trozosDe(autor)), estaciones: objetos.estacionesVisibles(vista.trozosDe(autor)) });
+          enviar(ws, { tipo: 'obras', obras: obrasEnTrozos(mundo, vista.trozosDe(autor)) });
         }
         return;
       }
@@ -576,12 +572,12 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         return;
       }
       if (msg && msg.tipo === 'decir') {
-        // el chat de texto: limpio, sin hablar a chorro, y a quien está cerca del que habla (en la liza, solo a él)
+        // el chat de texto: limpio, sin hablar a chorro, y a quien está cerca del que habla
         const texto = limpiarTexto(msg.texto);
         if (!texto) return enviar(ws, { tipo: 'error', motivo: MOTIVO_VACIO });
         if (!charla.admitir(autor, reloj())) return enviar(ws, { tipo: 'error', motivo: MOTIVO_DESPACIO });
         const posiciones = new Map();
-        for (const a of conexionDe.keys()) { const e = presencia.ultimo.get(a); if (e && !(combate.luchadores[a] && combate.luchadores[a].liza)) posiciones.set(a, e); }
+        for (const a of conexionDe.keys()) { const e = presencia.ultimo.get(a); if (e) posiciones.set(a, e); }
         const yo = presencia.ultimo.get(autor) || null;
         const oyen = quienOye(autor, posiciones);
         try { appendFileSync(archivoCharla, JSON.stringify({ t: Date.now(), autor, cuenta: usuarioDe(autor), x: yo ? Math.round(yo.x) : null, z: yo ? Math.round(yo.z) : null, texto, oyen: oyen.length }) + '\n'); }

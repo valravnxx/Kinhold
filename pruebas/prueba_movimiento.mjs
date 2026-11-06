@@ -2,8 +2,7 @@
 // no se cree un estado que esté más lejos del anterior de lo que se puede andar en ese tiempo; lo recorta y lo anota.
 // Ejecutar: node pruebas/prueba_movimiento.mjs
 // Comprueba: correr a 6 m/s (y nadar con corriente) nunca se recorta, ni cuando la red junta los estados; saltarse
-// 100 m se queda en lo que da el crédito y luego a VEL_MAX; volver a la salida (al ahogarse) es libre; la liza no
-// cuenta para el mundo; el servidor (al conectar y el admin) pone el ancla. En el servidor: los demás ven lo recortado,
+// 100 m se queda en lo que da el crédito y luego a VEL_MAX; volver a la salida (al ahogarse) es libre; el servidor (al conectar y el admin) pone el ancla. En el servidor: los demás ven lo recortado,
 // se apunta en seguridad.jsonl y lo que se guarda al salir es lo recortado.
 // Con MUTAR=1 el servidor no recorta nada: debe FALLAR.
 import { WebSocket } from 'ws';
@@ -75,14 +74,6 @@ console.log('Lógica: el crédito de metros');
   const ps = new PresenciaServidor(); ps.anclar('a', { x: 300, z: 300 }, 0);
   const r = ps.recibir('a', est(0, 4), 100);
   comprobar('volver a la salida al ahogarse es libre', r.recortado === 0 && ps.ultimo.get('a').x === 0 && ps.ultimo.get('a').z === 4);
-}
-{
-  // la liza del «Duelo» es otra escena: sus estados no cuentan ni mueven el ancla del mundo
-  const ps = new PresenciaServidor(); ps.anclar('a', { x: 50, z: 50 }, 0);
-  const rl = ps.recibir('a', est(-200, 300), 100, { aparte: true });
-  const rm = ps.recibir('a', est(-200, 300), 200);
-  comprobar('en la liza no se recorta, pero de la liza no se sale al mundo en otro sitio', rl.recortado === 0 && rm.recortado > 0 && Math.hypot(ps.ultimo.get('a').x - 50, ps.ultimo.get('a').z - 50) <= CREDITO_MAX + 0.01,
-    `en el mundo a ${r1(Math.hypot(ps.ultimo.get('a').x - 50, ps.ultimo.get('a').z - 50))} m del ancla`);
 }
 {
   // el admin va junto a alguien: el servidor pone el ancla allí

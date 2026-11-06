@@ -95,11 +95,10 @@ export class PresenciaServidor {
   // La hora: con la del reloj del cliente (tc) pasada al del servidor, se quita el vaivén de la subida
   // (si no, los estados llegan a trompicones y la velocidad que se ve cambia). El desfase entre los dos
   // relojes es el del mensaje que llegó más deprisa. Nunca puede ser una hora futura ni de hace más de 1 s.
-  // `aparte`: está en otra escena (la liza del «Duelo»): no cuenta para el mundo ni toca su ancla. `admin`: puede estar
-  // fuera de la isla (validarEstado).
+  // `admin`: puede estar fuera de la isla (validarEstado).
   // Devuelve null si no vale; si vale, { estado, recortado } (recortado: los metros que se ha querido saltar de más).
   // `vel`: multiplica lo que se puede andar (la cuenta de admin con su velocidad multiplicada, src/logica/admin.js).
-  recibir(autor, m, ahora, { aparte = false, admin = false, vel = 1 } = {}) {
+  recibir(autor, m, ahora, { admin = false, vel = 1 } = {}) {
     const e = validarEstado(m, { admin });
     if (!e) return null;
     let t = ahora;
@@ -110,7 +109,7 @@ export class PresenciaServidor {
       delete e.tc;
     }
     let recortado = 0;
-    const a = aparte || !this.limitar ? null : this.anclas.get(autor);
+    const a = !this.limitar ? null : this.anclas.get(autor);
     if (a) {
       const fv = Number.isFinite(vel) && vel > 1 ? vel : 1;
       a.credito = Math.min(CREDITO_MAX * fv, a.credito + VEL_MAX * fv * Math.max(0, ahora - a.r) / 1000);
@@ -125,7 +124,7 @@ export class PresenciaServidor {
         a.credito = 0;
       } else a.credito -= d;
       a.x = e.x; a.z = e.z;
-    } else if (!aparte && this.limitar) this.anclar(autor, e, ahora);   // sin ancla (el primero de todos): desde aquí
+    } else if (this.limitar) this.anclar(autor, e, ahora);   // sin ancla (el primero de todos): desde aquí
     const previo = this.ultimo.get(autor);
     if (previo) t = Math.max(t, previo.t + 1);   // la hora de cada jugador nunca va hacia atrás
     const estado = { autor, t, ...e };
