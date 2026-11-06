@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="8ec72d382f94f979e7c1542eda793e39b516a956">
+<meta name="kinhold-origen" content="8554ad4870f33831c062036e5a068dd0eb25e31f">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.9</title>
 <style>
@@ -63,7 +63,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Version 0.9 · 26 Oct 2026 (31 Oct: the king's island and its city; 4 Nov: what is paid, the art direction and the warehouse with market; 4 Nov, later, after the audit: your land is the whole zone, the king's zones, the boundary stone can be taken down, crafting without learning recipes, parity of paid items) · Expansion for a finished game: districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
+  <div class="sub">Version 0.9 · 26 Oct 2026 (31 Oct: the king's island and its city; 4 Nov: what is paid, the art direction and the warehouse with market; 4 Nov, later, after the audit: your land is the whole zone, the king's zones, the boundary stone can be taken down, crafting without learning recipes, parity of paid items; 6 Nov: shoulder loads, young and mature trees, the humble house and base storage) · Expansion for a finished game: districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDED</span> you said so
     <span class="tag method">METHOD</span> how to do it technically
@@ -237,6 +237,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h2>7. Equipment, clothing and inventory</h2>
 <p><span class="tag ok">DECIDED</span>Equipment matters and <b>everything is craftable.</b> You start with little more than what you wear: <b>a basic linen shirt and trousers.</b></p>
 <p><span class="tag ok">DECIDED</span>Carrying works by slots. <b>Carrying large things slows you down.</b></p>
+<p><span class="tag ok">DECIDED</span><b>With something on your shoulder, your hands carry nothing</b> (review of 1 Nov): a shoulder load, such as a short log, rests beside the head with one hand on top, and while you carry it you hold nothing in your hands.</p>
 <p><span class="tag ok">DECIDED</span>The <b>belt</b> can be crafted in several ways. <b>Backpacks have unique functions</b>: for example, the firewood one is a frame of sticks shaped like a double L for carrying firewood on your back. At the base you leave some and pick up others, or none if you want to travel light.</p>
 <p><span class="tag ok">DECIDED</span>Clothing and armour matter for combat.</p>
 <p><span class="tag ok">DECIDED</span>The <b>inventory is a panel with the slots of each body location</b>, and the slots depend on the equipment you wear.</p>
@@ -319,6 +320,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span>Trees fall, are transported and are cut; they grow back in real weeks and can be planted.</p>
 <p><span class="tag ok">DECIDED</span>Ore veins <b>do not regenerate</b>, but the world has plenty of material: it is not a scarce resource.</p>
 <p><span class="tag ok">DECIDED</span><b>The ordinary near everyone; the great, few and marked:</b> there are small iron and coal veins all over the world (one of each in every area of about 14 km), so nobody has to travel far for everyday needs. There are also a few great veins, marked on the map, to exploit to the full. Whitholm, the playtest island, has its own great iron vein high in the sierra (valravnx, 30 Oct).</p>
+<p><span class="tag ok">DECIDED</span><b>Young and mature trees, clearly different</b> (review of 1 Nov): <b>young</b> trees are 3 to 5 m tall, slender and with a sparse crown, and grow mostly at forest edges, in clearings and in regrowth; with a stone axe they give a <b>thin log and rods</b>, the timber of the first house. <b>Mature</b> trees are 30% taller and thicker than before; with a stone axe they may still take a long time.</p>
+<p><span class="tag ok">DECIDED</span><b>The tree falls by physics, not by animation</b> (review of 1 Nov): it pivots on the stump towards the notch cut into it (without one, towards where it leans or downhill), creaks before falling as a warning and injures whoever is underneath; the server decides the damage, with its author (milestone “Real felling”).</p>
 <p class="note">Proposed gatherables: section 3 of the analysis document.</p>
 <h3>Digging and mining</h3>
 <p><span class="tag ok">DECIDED</span>You can <b>dig the ground and open mines</b>. Outside: trenches, moats and levelling for foundations with a <b>round brush</b> that lowers or smooths with soft edges. Inside the rock, each pick stroke removes a rounded handful of rock in the direction you face: tunnels go straight, uphill or curving.</p>
@@ -391,6 +394,13 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 </ul></div>
 <p><span class="tag ok">DECIDED</span>End of decay: <b>stone remains as a ruin</b> indefinitely, gradually covered by plants and roots. <b>Wood rots and disappears.</b></p>
 <p><span class="tag ok">DECIDED</span>Ruins belong to nobody. <b>They can be cleared, but they give no stone back</b>: it is no longer dressed stone but rubble. Clearing them takes time.</p>
+<h3>The humble house</h3>
+<p><span class="tag ok">DECIDED</span>The first house is <b>the humble house, of one storey</b> (review of 1 Nov): stone foundation, thin-log posts, walls of <b>thin logs</b> or of <b>wattle and daub</b> (either way is possible), a roof of reeds or straw and a rod door. Inside goes the <b>hearth</b>, fixed and longer-lasting than the campfire outside. It is paid for with what you carry.</p>
+<p><span class="tag ok">DECIDED</span><b>Raising logs up high, when it is needed</b>: the humble house has one storey and does not need it. When it comes, raising them will be something you build, or another method, not carrying the rods, the rope and the log in the inventory at once (that much does not fit).</p>
+<h3>Base storage</h3>
+<p><span class="tag ok">DECIDED</span><b>Several kinds of storage, each for one type of material</b> (review of 1 Nov), each with its model, which looks full: <b>log stack</b> (an outdoor rack for piling many long logs), <b>stone pile</b>, <b>woodshed</b>, <b>rod rack</b>, <b>haystack</b> (straw and reeds), <b>mud pit</b> and <b>basket</b> (small things). They belong to whoever holds the land.</p>
+<p><span class="tag ok">DECIDED</span><b>Building work does not take from them on its own</b>: a stockpile is a stockpile, not a supply line. Materials are taken out and carried to the building work.</p>
+<p><span class="tag ok">DECIDED</span><b>No more chest of infinite items</b> in the real game. The building-materials counter at the top of the screen appears <b>only inside your land</b>, if it is yours, with the building materials you have stored in it.</p>
 </section>
 
 <section id="tierras">

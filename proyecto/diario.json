@@ -4540,5 +4540,20 @@
   "pruebas": "Batería entera (35 grupos, sin las de en línea): 34 en el PC de valravnx y la lógica en la nube. En su PC fallaron cuatro que miden el dibujo sin tarjeta gráfica (niveles de detalle, la demo en el mundo, el perfil gráfico y la demo única); repetidas en la nube con el inglés y la web: todo bien.",
   "capturas": "capturas/demo-v118",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T04:31:43+00:00",
+  "fin": "2026-11-06T04:35:23+00:00",
+  "titulo": "P3 empieza: el GDD y el documento de sistemas, al día con la revisión del 1 nov",
+  "hito": "crafting",
+  "hecho": [
+   "valravnx pidió empezar P3 («haz p3»): el hito «De nada a una casa» pasa a en curso, en una sesión aparte porque el carril A sigue con P2.",
+   "GDD: con algo al hombro, las manos no llevan nada; árboles jóvenes (3–5 m, finos, dan tronco delgado y varas) y adultos (un 30 % más altos y más gruesos); el árbol cae por física y hiere; la casa humilde de una planta (muros de tronco delgado o de zarzo con barro, el hogar dentro) y subir troncos a lo alto para más adelante; los almacenajes de la base, que la obra no coge de ellos sola, fuera el arcón infinito y el contador de arriba solo en tu tierra.",
+   "Documento de sistemas: talar un árbol joven da tronco delgado y varas; la casa humilde con sus piezas; la tabla de almacenajes (qué guarda cada uno; costes y cabida se fijan al hacerlos); el primer día llega a la casa antes del banco de tronco.",
+   "Los dos documentos, traducidos al inglés y al ruso, con su huella nueva."
+  ],
+  "pruebas": "Solo documentos (sin código): la web se genera sin errores y comprueba las huellas y las traducciones; no comprobado en el navegador.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

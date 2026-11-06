@@ -62,7 +62,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Versión 0.9 · 26 oct 2026 (31 oct: la isla del rey y su ciudad; 4 nov: lo de pago, la dirección gráfica y el almacén con mercado; 4 nov, tarde, tras la auditoría: tu tierra es la zona entera, zonas del rey, el mojón se desmonta, fabricar sin aprender recetas, paridad de lo de pago) · Ampliación para un juego acabado: comarcas, transporte, ropa tejida y convivencia online · El catálogo de contenido sigue en el documento de análisis</div>
+  <div class="sub">Versión 0.9 · 26 oct 2026 (31 oct: la isla del rey y su ciudad; 4 nov: lo de pago, la dirección gráfica y el almacén con mercado; 4 nov, tarde, tras la auditoría: tu tierra es la zona entera, zonas del rey, el mojón se desmonta, fabricar sin aprender recetas, paridad de lo de pago; 6 nov: carga al hombro, árboles jóvenes y adultos, la casa humilde y los almacenajes de la base) · Ampliación para un juego acabado: comarcas, transporte, ropa tejida y convivencia online · El catálogo de contenido sigue en el documento de análisis</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDIDO</span> lo has dicho tú
     <span class="tag method">MÉTODO</span> cómo hacerlo técnicamente
@@ -236,6 +236,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <h2>7. Equipo, ropa e inventario</h2>
 <p><span class="tag ok">DECIDIDO</span>El equipo es importante y <b>todo es fabricable.</b> Empiezas casi con lo puesto: <b>camisa y pantalón básicos de lino.</b></p>
 <p><span class="tag ok">DECIDIDO</span>La carga va por huecos. <b>Llevar cosas grandes te ralentiza.</b></p>
+<p><span class="tag ok">DECIDIDO</span><b>Con algo al hombro, las manos no llevan nada</b> (revisión del 1 nov): una carga al hombro, como un tronco corto, va apoyada al lado de la cabeza con una mano encima, y mientras la llevas no tienes nada en las manos.</p>
 <p><span class="tag ok">DECIDIDO</span>El <b>cinturón</b> se fabrica de varias formas. Las <b>mochilas tienen funciones únicas</b>: por ejemplo, la de leña es un bastidor de palos en forma de doble L para cargar leña a la espalda. En la base dejas unas y coges otras, o ninguna si quieres ir ligero.</p>
 <p><span class="tag ok">DECIDIDO</span>La ropa y la armadura importan para el combate.</p>
 <p><span class="tag ok">DECIDIDO</span>El <b>inventario es un panel con los huecos de cada lugar del cuerpo</b>, y los huecos dependen del equipo que llevas.</p>
@@ -318,6 +319,8 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDIDO</span>Los árboles caen, se transportan y se cortan; vuelven a crecer en semanas reales y se pueden plantar.</p>
 <p><span class="tag ok">DECIDIDO</span>Las vetas de mineral <b>no se regeneran</b>, pero el mundo tiene material de sobra: no es un recurso escaso.</p>
 <p><span class="tag ok">DECIDIDO</span><b>Lo normal, cerca de todos; lo grande, poco y marcado:</b> hay vetas pequeñas de hierro y de carbón por todo el mundo (una de cada en cada zona de unos 14 km), así que nadie tiene que irse lejos para lo de diario. Además hay unas pocas grandes vetas, marcadas en el mapa, para explotar a fondo. Whitholm, la isla de los playtests, tiene la suya de hierro en lo alto de la sierra (valravnx, 30 oct).</p>
+<p><span class="tag ok">DECIDIDO</span><b>Árboles jóvenes y adultos, bien distintos</b> (revisión del 1 nov): los <b>jóvenes</b> miden de 3 a 5 m, son finos y de copa rala, y salen sobre todo en los bordes del bosque, en los claros y en lo que rebrota; con un hacha de piedra dan un <b>tronco delgado y varas</b>, la madera de la primera casa. Los <b>adultos</b>, un 30 % más altos y más gruesos que los de antes; con hacha de piedra pueden seguir costando mucho.</p>
+<p><span class="tag ok">DECIDIDO</span><b>El árbol cae por física, no por animación</b> (revisión del 1 nov): gira sobre el tocón hacia la boca que se le corta (si no la tiene, hacia donde se inclina o cuesta abajo), cruje antes de caer como aviso y hiere a quien quede debajo; el daño lo decide el servidor, con su autor (hito «Talar de verdad»).</p>
 <p class="note">Recolectables propuestos: apartado 3 del documento de análisis.</p>
 <h3>Cavar y minar</h3>
 <p><span class="tag ok">DECIDIDO</span>Se puede <b>cavar el terreno y abrir minas</b>. Fuera, zanjas, fosos y nivelar para cimientos con una <b>brocha redonda</b> que rebaja o alisa con bordes suaves. Dentro de la roca, cada golpe de pico quita un puñado redondeado de roca hacia donde miras: los túneles van rectos, en cuesta o en curva.</p>
@@ -390,6 +393,13 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 </ul></div>
 <p><span class="tag ok">DECIDIDO</span>Final del deterioro: <b>la piedra queda como ruina</b> de forma indefinida, cubierta poco a poco de plantas y raíces. <b>La madera se pudre y desaparece.</b></p>
 <p><span class="tag ok">DECIDIDO</span>Las ruinas no son de nadie. <b>Se pueden limpiar, pero no devuelven piedra</b>: ya no es piedra tallada sino escombro. Limpiarlas cuesta tiempo.</p>
+<h3>La casa humilde</h3>
+<p><span class="tag ok">DECIDIDO</span>La primera casa es <b>la casa humilde, de una planta</b> (revisión del 1 nov): cimiento de piedra, postes de tronco delgado, muros de <b>tronco delgado</b> o de <b>zarzo con barro</b> (se puede de las dos maneras), tejado de juncos o de paja y puerta de varas. Dentro va el <b>hogar</b>, fijo y más duradero que la hoguera de fuera. Se paga con lo que llevas.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Subir troncos a lo alto, cuando haga falta</b>: la casa humilde es de una planta y no lo necesita. Cuando llegue, subirlos será algo que se construye u otro método, no llevar a la vez en el inventario las varas, la cuerda y el tronco (no cabe tanto).</p>
+<h3>Almacenajes de la base</h3>
+<p><span class="tag ok">DECIDIDO</span><b>Almacenajes varios, cada uno para un tipo de material</b> (revisión del 1 nov), con su modelo, que se ve lleno: <b>acopio de troncos</b> (un soporte fuera para apilar muchos troncos largos), <b>pila de piedras</b>, <b>leñera</b>, <b>soporte de varas</b>, <b>almiar</b> (paja y juncos), <b>hoyo de barro</b> y <b>cesto</b> (lo pequeño). Son de quien tiene la tierra.</p>
+<p><span class="tag ok">DECIDIDO</span><b>La obra no coge de ellos sola</b>: el acopio es acopio, no abastecimiento. Los materiales se sacan y se llevan a la obra.</p>
+<p><span class="tag ok">DECIDIDO</span><b>Fuera el arcón de objetos infinitos</b> del juego de verdad. El contador de materiales de arriba de la pantalla sale <b>solo dentro de tu tierra</b>, si es tuya, con los materiales de construcción que tienes almacenados en ella.</p>
 </section>
 
 <section id="tierras">
