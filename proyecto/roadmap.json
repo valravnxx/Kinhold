@@ -1474,9 +1474,10 @@
     },
     {
      "nombre": "Herramienta del admin mejorada (valravnx, 6 nov): al abrir el panel, información del servidor y de dónde estás además del mapa; modo autoconstruir (obras y muebles al momento y sin materiales); arcón de admin para invocarse cualquier objeto; multiplicar la velocidad de carrera; y cámara libre volando en tres dimensiones. Todo solo para la cuenta de admin, comprobado por el servidor y apuntado en admin.jsonl",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T08:04:30+00:00",
-     "rama": "trabajo/20261106-0804-admin-herramienta"
+     "rama": "trabajo/20261106-0804-admin-herramienta",
+     "fin": "2026-11-06T10:02:52+00:00"
     }
    ]
   },
@@ -2971,6 +2972,13 @@
      "archivo": "jugar/demo/v120.html",
      "capturas": null,
      "notas": "La tierra vuelve al rey si no se usa: 30 días sin que entren el dueño ni sus invitados (15 sin obra terminada), con aviso por correo una semana antes y el último día; lo construido queda como ruina. Lo hace el servidor."
+    },
+    {
+     "v": "v121",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v121.html",
+     "capturas": "capturas/demo-v121",
+     "notas": "La herramienta del admin (valravnx, 6 nov): el panel se abre en «Info» (lo del servidor y dónde estás); «Mapa» con los jugadores; «Modos»: autoconstruir, velocidad ×1 a ×10 y cámara libre volando en 3D; «Arcón»: invocarse cualquier objeto. Solo para la cuenta de admin, comprobado por el servidor."
     }
    ]
   },

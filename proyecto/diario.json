@@ -4639,5 +4639,21 @@
   "pruebas": "Batería entera en la nube: 34 grupos de navegador bien; la de lógica falló solo por dos mensajes nuevos sin traducir, arreglado y repetida (lógica, demo única y juego en inglés: bien). La tierra vuelve al rey 41/41.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T08:04:30+00:00",
+  "fin": "2026-11-06T10:02:52+00:00",
+  "titulo": "La herramienta del admin: información, autoconstruir, arcón de admin, velocidad y cámara libre (demo v121)",
+  "hito": "admin",
+  "hecho": [
+   "valravnx pidió, como tarea aparte que no para lo demás, mejorar la herramienta del admin. El panel (F9 o «Admin») se abre ahora en «Info»: lo del servidor (conectados, cuentas, construcciones, piezas a medias, muebles, mojones, lo del suelo, estaciones) y dónde estás (posición, altura, zona, de quién es la tierra). El mapa con los jugadores, «Ir» y «Traer» van en su pestaña.",
+   "Modos: autoconstruir (el mojón y los muebles sin cobrar y cada obra que pones, terminada al momento con una acción aparte, admin_terminar, que solo crea el servidor y queda en el registro del mundo) y la velocidad por 1, 2, 3, 5 o 10 (el servidor le deja moverse tanto más deprisa solo a la cuenta de admin).",
+   "Arcón de admin: buscar cualquier objeto del catálogo e invocarlo con su cantidad; lo que no cabe cae a tus pies. Cámara libre: vuela en 3D (W A S D, Espacio, C, Mayúsculas; en el móvil, el joystick y ▲ ▼), el personaje se queda quieto, «Ir aquí» lo lleva bajo la cámara y F10 o «Cámara» la quita.",
+   "Todo, solo para la cuenta de admin, comprobado por el servidor y apuntado en admin.jsonl. Provisional: los modos se apagan al desconectarse; la cámara vuela a 12 m/s (48 con Mayúsculas), no baja del suelo y no se aleja más de 3 km del personaje.",
+   "Hace falta actualizar el servidor de verdad a main para que funcione (no comprobado en él)."
+  ],
+  "pruebas": "Batería entera en la nube (35 grupos, sin las de en línea): todo correcto; luego, con la barra de la cámara movida, el panel del admin, la web y el juego en inglés, otra vez bien. Prueba nueva del servidor, la herramienta del admin, 38/38 (con MUTAR=1, que deja mandar admin_terminar a cualquiera, falla). Capturas de cerca en PC y móvil de cada pestaña y de la cámara libre.",
+  "capturas": "capturas/demo-v121",
+  "estado": "ok"
  }
 ]
