@@ -102,7 +102,7 @@ const cuadro = { x0: O.x + base.x - 120, z0: O.z - 120, x1: O.x + 120, z1: O.z +
 const cerca = (l, p) => l.slice().sort((a, b) => Math.hypot(a.x - p.x, a.z - p.z) - Math.hypot(b.x - p.x, b.z - p.z));
 const puntos = recogidaEn(T.paisaje, T.alt, T.semilla, cuadro).map(p => ({ id: p.id, tipo: p.tipo, x: r2(p.x - O.x), z: r2(p.z - O.z) }));
 const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, cuadro).arboles
-  .map(e => ({ x: e.x - O.x, z: e.z - O.z, edad: e.tam >= TAM_ADULTO ? 'adulto' : 'joven' }))
+  .map(e => ({ x: e.x - O.x, z: e.z - O.z, edad: e.edad }))
   .filter(e => Math.hypot(e.x, e.z - 2) >= CLARO_ARBOLES).map(e => ({ ...e, id: idArbol(e.x, e.z) }));
 
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-recorrido-'));

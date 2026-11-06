@@ -7,7 +7,7 @@
 // (src/juego/tala.js): llevan su especie, su tamaño, su edad, su malla y su número en ella.
 import * as THREE from 'three';
 import { modelosPlantas, despejarMallas } from './decorado.js';
-import { modelosEspecies, ESPECIES, RADIO_TRONCO, TAMANO_ESPECIE } from './especies.js';
+import { modelosEspecies, ESPECIES, radioTronco, tamanoArbol } from './especies.js';
 import { material } from './estilos.js';
 import { ROCAS_COLOR, lin } from './color_suelo.js';
 import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from '../logica/vegetacion.js';
@@ -45,6 +45,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
   const esc = (e) => ({ ...e, x: e.x - O.x, z: e.z - O.z, y: e.y - y0 });
   const lejos = (e, r) => Math.hypot(e.x, e.z - 2) >= r;   // el personaje empieza en (0, 4): el claro, entre la salida y él
   const entero = modelosEspecies(), sencillo = modelosEspecies({ sencillo: true }), pl = modelosPlantas();
+  const jovenE = modelosEspecies({ joven: true }), jovenS = modelosEspecies({ joven: true, sencillo: true });
 
   // Los trozos hechos: clave → { i, j, arboles (obstáculos), piedras, hierba? { hierba, flores, matas } }
   const trozos = new Map(), clave = (i, j) => i + ',' + j;
@@ -54,8 +55,8 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     if (!t) {
       t = { i, j, hierba: null };
       t.arboles = v.arboles.map(esc).filter(e => lejos(e, CLARO_ARBOLES)).map(e => ({ x: e.x, z: e.z, y: e.y - 0.2,
-        r: RADIO_TRONCO[e.especie] * e.tam + 0.1, arbol: true, veg: true, especie: e.especie, modelo: e.especie, escala: e.tam,
-        edad: e.tam >= TAM_ADULTO ? 'adulto' : 'joven', giro: e.giro, tono: e.tono, id: idArbol(e.x, e.z), malla: null, instancia: -1, matriz: null }));
+        r: radioTronco(e) * e.tam + 0.1, arbol: true, veg: true, especie: e.especie, modelo: e.especie, escala: e.tam,
+        edad: e.edad, giro: e.giro, tono: e.tono, id: idArbol(e.x, e.z), malla: null, instancia: -1, matriz: null }));
       t.piedras = v.piedras.map(esc).filter(e => lejos(e, CLARO)).map(e => ({ ...e, y: e.y - (e.canto ? e.tam * 0.35 : 0.2), ob: e.canto && e.tam < 0.45 ? null : { x: e.x, z: e.z, r: e.tam * 1.1, veg: true, canto: !!e.canto } }));   // (los cantos del río, medio hundidos; los pequeños no estorban)
       trozos.set(clave(i, j), t);
       for (const e of [...t.arboles, ...t.piedras]) e.yb = e.y;
@@ -156,11 +157,12 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     for (const a of deArboles) { a.malla = null; a.instancia = -1; }
     // tres bandas por especie: enteros con sombra, enteros sin sombra y sencillos (sin sombra)
     const banda = (e) => { const d = dist(e); return d < medidas.sombra ? 0 : d < medidas.arbolEntero ? 1 : 2; };
-    for (const especie of ESPECIES) {
+    // (y cada especie, en jóvenes y adultos: el joven tiene su propio modelo, src/mundo/especies.js)
+    for (const especie of ESPECIES) for (const joven of [false, true]) {
       for (const b of [0, 1, 2]) {
-        const lista = arboles.filter(e => e.especie === especie && banda(e) === b);
+        const lista = arboles.filter(e => e.especie === especie && (e.edad === 'joven') === joven && banda(e) === b);
         if (!lista.length) continue;
-        const mod = b < 2 ? entero[especie] : sencillo[especie];
+        const mod = joven ? (b < 2 ? jovenE : jovenS)[especie] : (b < 2 ? entero : sencillo)[especie];
         const im = new THREE.InstancedMesh(mod.geo, mod.mats, lista.length);
         lista.forEach((e, k) => {
           o.position.set(e.x, e.y, e.z); o.rotation.set(0, e.giro, 0); o.scale.setScalar(e.escala); o.updateMatrix();
@@ -168,7 +170,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
           e.malla = im; e.instancia = k; e.matriz = o.matrix.clone();
           im.setMatrixAt(k, api.enPie(e) ? o.matrix : cero); im.setColorAt(k, c.setScalar(e.tono));
         });
-        im.castShadow = b === 0; im.receiveShadow = b < 2; im.name = ['arboles_', 'arbolesMedios_', 'arbolesLejos_'][b] + especie;
+        im.castShadow = b === 0; im.receiveShadow = b < 2; im.name = ['arboles_', 'arbolesMedios_', 'arbolesLejos_'][b] + especie + (joven ? '_joven' : '');
         nuevas.push(im);
       }
     }
@@ -200,6 +202,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     obstaculos.push(...otros, ...arboles, ...matas.map(e => e.ob), ...piedras.map(e => e.ob).filter(Boolean));
     if (ocupadoUlt) despejarMallas(mallas, ocupadoUlt);
     cuenta = { ...(cuenta || {}), arboles: arboles.length, especies: Object.fromEntries(ESPECIES.map(e => [e, arboles.filter(a => a.especie === e).length])),
+      jovenes: arboles.filter(a => a.edad === 'joven').length,
       hierba: hierba.length, flores: flores.length, matas: matas.length, piedras: piedras.length, trozos: trozos.size, puestas: (cuenta?.puestas || 0) + 1 };
   }
 
@@ -239,7 +242,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
       // detrás de ella con la copa encima); y la altura de la línea donde empieza la copa, no en el tronco: la copa
       // se abre hacia el personaje, donde la línea va más baja (lo vio la prueba en el móvil: un roble de 5,7 m
       // con la línea a 5,8 m en el tronco, y la copa tapando media pantalla)
-      const uc = Math.min(1, u), [radio, alto] = TAMANO_ESPECIE[o.especie], copa = o.escala * radio;
+      const uc = Math.min(1, u), [radio, alto] = tamanoArbol(o), copa = o.escala * radio;
       const d = Math.hypot(o.x - P.x - vx * uc, o.z - P.z - vz * uc), un = Math.max(0, Math.min(1, u - copa / l));
       if (d < copa + 1 && o.y + o.escala * alto > P.y + (C.y - P.y) * un - 1) ahora.add(o);
     }
