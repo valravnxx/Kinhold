@@ -17,6 +17,8 @@ import { ISLA, alturaMundo } from '../src/logica/whitholm.js';
 
 if (process.env.MUTAR === '1') globalThis.__bocaVieja = true;
 if (process.env.MUTAR === '2') globalThis.__sinLlegarMar = true;
+if (process.env.MUTAR === '3') globalThis.__embudoViejo = true;
+if (process.env.MUTAR === '4') globalThis.__mezclaVieja = true;
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -97,7 +99,7 @@ for (const { en, tr, rio, k } of bocas) {
 let grandes = 0, conIslas = 0;
 for (const { en, tr } of bocas) {
   const [x0, y0] = en(-1), [x1, y1] = en(-301), ux = (x0 - x1) / 300, uy = (y0 - y1) / 300;
-  if (P.rioCerca(x1, y1, tr).ancho < 40) continue;   // (40 m de cauce a 300 m de la orilla, con su estuario: un río de los medianos para arriba)
+  if (P.rioCerca(x1, y1, tr).anchoRio < 14) continue;   // (14 m de cauce sin el estuario: un río de los medianos para arriba, los que llevan delta)
   grandes++;
   let islas = 0;
   for (let a = 0; a <= 300; a += 4) for (let b = -100; b <= 100; b += 4) { const px = x1 + ux * a - uy * b, py = y1 + uy * a + ux * b, w = P.agua(px, py, tr); if (w !== null && P.altura(px, py, tr) > w + 0.1) islas++; }
@@ -105,6 +107,31 @@ for (const { en, tr } of bocas) {
 }
 comprobar('en las bocas de los ríos medianos y grandes, un delta (isletas que asoman del agua)', grandes > 0 && conIslas >= Math.ceil(grandes * 0.6), `${conIslas} de ${grandes} bocas`);
 const casi = (n) => n >= Math.ceil(bocas.length * 0.8);
+// El embudo y las aguas que se funden (valravnx, 6 nov: «acaba como con dos tonos de río diferentes… que fuera
+// difuminando las aguas y que la desembocadura se ensanche y se vea más real»). El embudo: en la orilla, el cauce es al
+// menos el del río más 30 m (y más de dos veces y media el del río, sin pasar de cuatro veces más 40 m: no un lago), y
+// se abre cada vez más deprisa hacia el mar (a 140 m de la orilla, menos de la mitad de lo que se abre en ella). Las aguas: a lo largo de la boca, de 300 m río arriba a 300 m
+// mar adentro, cuánto de mar tiene el agua va de río (menos de 0,35 en el primer punto con agua del eje, que en un
+// meandro puede quedar ya cerca de la orilla) a mar (más de 0,75) sin saltos (menos de 0,08 en 3 m).
+let embudo = 0, funde = 0, peorSalto = 0;
+for (const { en, tr } of bocas) {
+  const o = P.rioCerca(...en(-2), tr), m = P.rioCerca(...en(-142), tr);
+  const abre0 = o.ancho - o.anchoRio, abre230 = m.ancho - m.anchoRio;
+  if (o.ancho >= o.anchoRio + 29 && o.ancho >= o.anchoRio * 2.5 && o.ancho <= o.anchoRio * 4 + 40 && abre230 < abre0 * 0.5) embudo++;
+  let antes = null, salto = 0, ini = null, fin = null;
+  for (let d = -300; d <= 300; d += 3) {
+    // (solo en el agua: donde el eje recto del mapa se sale del cauce por un meandro, la orilla seca no cuenta)
+    const q = en(d), w = P.agua(...q, tr), z = P.altura(...q, tr);
+    if (!((w !== null && w > z + 0.05) || (w === null && z < 0))) { antes = null; continue; }
+    const v = P.mezclaMar(...q, tr);
+    if (antes !== null) salto = Math.max(salto, Math.abs(v - antes));
+    if (ini === null) ini = v; fin = v; antes = v;
+  }
+  peorSalto = Math.max(peorSalto, salto);
+  if (ini < 0.35 && fin > 0.75 && salto < 0.08) funde++;
+}
+comprobar('la boca se abre en embudo (en la orilla, el río más 30 m y más de dos veces y media, sin ser un lago; a 140 m, menos de la mitad)', casi(embudo), `${embudo} de ${bocas.length}`);
+comprobar('el agua del río se funde con la del mar, sin saltos de tono', casi(funde), `${funde} de ${bocas.length} (el peor salto en 3 m: ${peorSalto.toFixed(2)})`);
 comprobar('el agua del río llega a la orilla', casi(llega), `${llega} de ${bocas.length}`);
 comprobar('a la altura del mar (como mucho 0,3 m por encima)', casi(nivel), `${nivel} de ${bocas.length}`);
 comprobar('con el cauce bajo el agua (no la arena)', casi(cauce), `${cauce} de ${bocas.length}`);

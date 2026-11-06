@@ -4749,6 +4749,23 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-11-06T16:15:13+01:00",
+  "fin": "2026-11-06T17:36:56+01:00",
+  "titulo": "La desembocadura en embudo y las aguas que se funden",
+  "hito": "mundo",
+  "hecho": [
+   "valravnx, 6 nov: «acaba como con dos tonos de río diferentes… que fuera difuminando las aguas y que la desembocadura se ensanche y se vea más real».",
+   "El embudo: el río se abre hacia el mar cada vez más deprisa (exponencial, 140 m) hasta su ancho más dos veces él (al menos 30 m) en la orilla; solo el que llega al nivel del mar. Probado antes con tres veces y 230 m: la boca era un lago.",
+   "Cuánto de mar tiene el agua (paisaje.mezclaMar): el río se parece al mar en sus últimos 250 m y, en el mar, su agua sigue en un abanico que se desvanece en unos 150 m. El agua (de cerca y la cinta de lejos) mezcla los colores, la espuma y los rizos con eso, en vez de río o mar a secas; la corriente se apaga mar adentro y las olas que rompen solo salen donde ya es mar.",
+   "La cinta del río de lejos sigue por su mancha en el mar y se desvanece en el mar de debajo (probado antes con su propio color: salía una mancha gris clara con rayas de espuma).",
+   "Pruebas nuevas en la de desembocaduras: el embudo (16 de 19 bocas; con el ensanche de antes, 0) y que el agua pase de río a mar sin saltos de tono (19 de 19, el peor salto 0,07 en 3 m; con las dos aguas de antes, 0).",
+   "Pendiente, visto en la captura desde arriba: unas rayas finas y claras en el mar junto a la mancha del río, muy tenues."
+  ],
+  "pruebas": "Batería entera en la nube: 36 grupos bien salvo la web, que fallaba porque faltaba la traducción de la tarea (no se rehacía la web); con ella, bien. Desembocaduras 11/11 (MUTAR=3 y 4 fallan), mar 7/7, ríos 14/14, isla, mapa 88/88, horizonte 37/37. Capturas de la boca en PC (de cerca, desde el río y desde arriba) y móvil, al lado de la v124.",
+  "capturas": "capturas/demo-v126",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-06T15:24:07+00:00",
   "fin": "2026-11-06T16:35:43+00:00",
   "titulo": "P3: depositar en las estaciones",
