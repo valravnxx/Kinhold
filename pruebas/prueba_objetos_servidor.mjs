@@ -207,18 +207,25 @@ try {
     comprobar('B la ve (sin las colas de nadie)', eb.estaciones.length === 1 && eb.estaciones[0].tipo === 'piedra_tallar' && eb.estaciones[0].autor === yoA && !('cola' in eb.estaciones[0]), JSON.stringify(eb.estaciones));
     r = await a.objeto({ tipo: 'colocar_estacion', estacion: 'hoguera', x: 5, z: 5 });
     comprobar('sin lo que cuesta, no se coloca', !r.ok && /falta/.test(r.motivo), r.motivo);
-    // la lasca, con el sílex que B ha dejado en el suelo al lado de A
+    // la lasca, con lo depositado en la piedra de tallar: el sílex lo deja B y la piedra A (valravnx, 6 nov)
+    const idPt = eb.estaciones[0].id;
     r = await b.objeto({ tipo: 'coger', objeto: 'silex', cantidad: 1, a: 'mano:izq' });
-    const sueloSilex = a.esperar(m => m.tipo === 'suelo' && m.objetos.some(o => o.cosa.tipo === 'silex'));
-    r = await b.objeto({ tipo: 'soltar_suelo', de: 'mano:izq', x: 5, z: 6 });
-    comprobar('B deja un sílex en el suelo al lado de A', r.ok && !!(await sueloSilex), r.motivo);
+    const conSilex = a.esperar(m => m.tipo === 'estaciones' && m.estaciones.some(e => e.id === idPt && e.deposito && e.deposito.silex === 1));
+    r = await b.objeto({ tipo: 'depositar_estacion', estacion: idPt, de: 'mano:izq', x: 5, z: 6 });
+    comprobar('B deja un sílex en la piedra de tallar de A, y A lo ve puesto en ella', r.ok && !tiene(s.objetos.inventarioDe(yoB), 'silex') && !!(await conSilex), r.motivo);
     const libre = ['mano:der', 'mano:izq'].find(l => !lugar(s.objetos.inventarioDe(yoA), l));
     r = await a.objeto({ tipo: 'coger', objeto: 'piedra', cantidad: 1, a: libre });
     comprobar('A coge otra piedra', r.ok, r.motivo);
-    const sinSilex = b.esperar(m => m.tipo === 'suelo' && !m.objetos.some(o => o.cosa.tipo === 'silex'));
-        r = await a.objeto({ tipo: 'fabricar', receta: 'lasca_silex', x: 5, z: 5 });
-    comprobar('A encarga la lasca sin decir la estación: la de al lado, con el sílex del suelo', r.ok && r.datos.estacion === eb.estaciones[0].id && Object.keys(r.datos.usado.suelo).length === 1, r.motivo || JSON.stringify(r.datos));
-    comprobar('y B ve que el sílex ya no está en el suelo', !!(await sinSilex));
+    r = await a.objeto({ tipo: 'fabricar', receta: 'lasca_silex', x: 5, z: 5 });
+    comprobar('sin la piedra depositada, la lasca no se encarga aunque la lleve', !r.ok && /en la estación/.test(r.motivo) && tiene(s.objetos.inventarioDe(yoA), 'piedra'), r.motivo);
+    r = await a.objeto({ tipo: 'depositar_estacion', estacion: idPt, de: libre, x: 30, z: 30 });
+    comprobar('depositar va desde donde el servidor tiene al autor', !r.ok && /No estás ahí/.test(r.motivo), r.motivo);
+    r = await a.objeto({ tipo: 'depositar_estacion', estacion: idPt, de: libre, x: 5, z: 5 });
+    comprobar('A deposita su piedra', r.ok && !tiene(s.objetos.inventarioDe(yoA), 'piedra'), r.motivo);
+    const vacia = b.esperar(m => m.tipo === 'estaciones' && m.estaciones.some(e => e.id === idPt && e.deposito && !Object.keys(e.deposito).length));
+    r = await a.objeto({ tipo: 'fabricar', receta: 'lasca_silex', x: 5, z: 5 });
+    comprobar('A encarga la lasca sin decir la estación: la de al lado, con lo depositado en ella', r.ok && r.datos.estacion === idPt && r.datos.usado.estacion.silex === 1 && r.datos.usado.estacion.piedra === 1, r.motivo || JSON.stringify(r.datos));
+    comprobar('y B ve la piedra de tallar vacía', !!(await vacia));
     // terminado y sin sitio: al suelo, a sus pies
     s.objetos.fab.estaciones[eb.estaciones[0].id].cola[0].fin = Date.now() - 1;
     const libre2 = ['mano:der', 'mano:izq'].find(l => !lugar(s.objetos.inventarioDe(yoA), l));
@@ -233,6 +240,10 @@ try {
     ajena.invs.de(yoA).meterDonde('piedra', 1);
     const rt = ajena.ejecutar({ autor: yoA, tipo: 'colocar_estacion', estacion: 'piedra_tallar', x: 0.5, z: 0 }, Date.now());
     comprobar('en tierra de otro no se coloca una estación (ni se gasta nada)', !rt.ok && /tierra de otro/.test(rt.motivo) && ajena.invs.de(yoA).cuantos('piedra') === 1, rt.motivo);
+    ajena.fab.estaciones['piedra_tallar:9'] = { id: 'piedra_tallar:9', tipo: 'piedra_tallar', x: 0.5, z: 0, autor: 'otro', cola: [], deposito: { rama: 2 } };
+    const rd = ajena.ejecutar({ autor: yoA, tipo: 'depositar_estacion', estacion: 'piedra_tallar:9', de: ajena.invs.de(yoA).rutasCon('piedra')[0], x: 0, z: 0 }, Date.now());
+    const rr = ajena.ejecutar({ autor: yoA, tipo: 'retirar_estacion', estacion: 'piedra_tallar:9', objeto: 'rama', x: 0, z: 0 }, Date.now());
+    comprobar('ni se deja ni se coge nada de una estación en tierra de otro', !rd.ok && !rr.ok && /tierra de otro/.test(rd.motivo + rr.motivo) && ajena.invs.de(yoA).cuantos('piedra') === 1 && ajena.fab.estaciones['piedra_tallar:9'].deposito.rama === 2, rd.motivo);
   }
 
   const fichaB = b.bienvenida.ficha;

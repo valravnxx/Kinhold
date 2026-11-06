@@ -23,6 +23,9 @@
 //   { tipo: 'fabricar', receta, estacion?, x, z }   — encargar una receta: con las manos o en una estación de su uso (la
 //     que se diga o la más cercana); gasta de lo que llevas y del suelo de al lado de donde el servidor te tiene
 //   { tipo: 'recoger_fabricado', estacion?, x, z }  — lo terminado va a lo que llevas; lo que no cabe, al suelo a tus pies
+//   { tipo: 'depositar_estacion', estacion, de, cantidad?, x, z } — dejar en la estación lo que llevas (sus recetas
+//     gastan de ahí); { tipo: 'retirar_estacion', estacion, objeto, cantidad?, x, z } — volver a cogerlo. En tierra de
+//     otro, solo su dueño y sus invitados (como al poner la estación)
 //   { tipo: 'arcon_al_suelo', objeto: 'rastra', x, z } — del arcón de pruebas al suelo (solo con arconPruebas)
 //   { tipo: 'coger', objeto, cantidad, a, … } y { tipo: 'soltar', de } — el arcón de pruebas del panel (solo con
 //     arconPruebas: sacar algo de la nada y hacerlo desaparecer; sin él, se rechazan)
@@ -54,14 +57,14 @@ import { Troceo, ejecutarTroceo } from './troceo.js';
 import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER } from './recoleccion.js';
 import { Rastras, ejecutarRastra, TIPOS_RASTRA, ejecutarArconAlSuelo } from './rastra.js';
 import { agrupar, desagrupar, estadoEnTrozos, trozoDe } from './trozos_red.js';
-import { Fabricacion, ejecutarFabricacion } from './fabricacion.js';
+import { Fabricacion, ejecutarFabricacion, TIPOS_FABRICACION } from './fabricacion.js';
 
 export const TOLERANCIA = 3; // m
 export const ENTRE_GOLPES_RED = 500; // ms
 export const VERSION_OBJETOS = 3;   // 3: lo talado y lo recogido, agrupado por trozo (src/logica/trozos_red.js)
 const DEL_INVENTARIO = new Set(['mover', 'ponerse', 'quitarse']);
 const DEL_ARCON = new Set(['coger', 'soltar']);
-const DE_FABRICAR = new Set(['colocar_estacion', 'fabricar', 'recoger_fabricado']);
+const DE_FABRICAR = new Set(TIPOS_FABRICACION);
 const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'trocear', 'recoger', 'arcon_al_suelo', ...TIPOS_RASTRA]);
 export const TIPOS_OBJETOS = new Set([...DEL_INVENTARIO, ...DEL_ARCON, ...DEL_SUELO]);
 const num = v => typeof v === 'number' && Number.isFinite(v);
@@ -117,12 +120,14 @@ export class ObjetosServidor {
         // fabricar y recoger, desde donde el servidor tiene al autor (no donde dice el navegador); la estación se pone
         // donde dice, que ya está a menos de TOLERANCIA de él
         const fa = a.tipo === 'colocar_estacion' ? a : { ...a, x: p.x, z: p.z };
-        const tocar = a.tipo === 'colocar_estacion' ? this.puedeTocar(a.autor, a.x, a.z) : { ok: true };
+        const est = (a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion') && typeof a.estacion === 'string' && Object.hasOwn(this.fab.estaciones, a.estacion) ? this.fab.estaciones[a.estacion] : null;
+        const tocar = a.tipo === 'colocar_estacion' ? this.puedeTocar(a.autor, a.x, a.z) : est ? this.puedeTocar(a.autor, est.x, est.z) : { ok: true };
         const nSuelo = this.suelo.objetos.length, antes = JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n]));
         r = !tocar.ok ? this.anotar(a, { ok: false, motivo: tocar.motivo }, ahora)
           : ejecutarFabricacion(this.fab, this.invs, this.registro, fa, ahora, this.suelo, (x, z) => this.enTierras(a.autor, x, z));
         suelo = !!r.ok && (this.suelo.objetos.length !== nSuelo || JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n])) !== antes);
-        estaciones = !!r.ok && a.tipo === 'colocar_estacion';
+        // las estaciones se vuelven a mandar si se pone una o cambia lo depositado en alguna (se ve puesto)
+        estaciones = !!r.ok && a.tipo !== 'recoger_fabricado';
       } else if (a.tipo === 'arcon_al_suelo') {
         r = this.arconPruebas ? ejecutarArconAlSuelo(this.suelo, this.registro, a, ahora, this.enTierras) : this.anotar(a, { ok: false, motivo: 'Aquí no hay arcón.' }, ahora);
         suelo = !!r.ok;
@@ -207,11 +212,11 @@ export class ObjetosServidor {
     const l = this.suelo.visibles(ahora);
     return (trozos ? l.filter(o => trozos.has(trozoDe(o.x, o.z))) : l).map(o => JSON.parse(JSON.stringify(o)));
   }
-  // Las estaciones de fabricar que se ven (sin sus colas: lo que encarga cada uno es suyo). Con trozos, solo las de
+  // Las estaciones de fabricar que se ven, con lo depositado en ellas (sin sus colas: lo que encarga cada uno es suyo). Con trozos, solo las de
   // esos trozos.
   estacionesVisibles(trozos = null) {
     return Object.values(this.fab.estaciones).filter(e => !trozos || trozos.has(trozoDe(e.x, e.z)))
-      .map(e => ({ id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor }));
+      .map(e => ({ id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, deposito: { ...e.deposito } }));
   }
   // Lo que un jugador tiene encargado: en sus manos y en cada estación (con cuánto le falta).
   encargosDe(autor, ahora) {

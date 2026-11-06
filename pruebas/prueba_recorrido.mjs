@@ -4,7 +4,8 @@
 // elige dónde empieza (la salida común, en Lindholt; valravnx, 5 nov: hay tres y «lo eligen»), empieza con lo puesto, anda hasta lo que se recoge, lo recoge, anda hasta la zona de al lado (la de la salida es del
 // rey: no se reclama) y pone su mojón pagándolo con tres de las piedras que
 // lleva, levanta un cimiento de piedra con las piedras que ha traído en las manos (en dos viajes), y lo trabaja hasta
-// terminarlo; luego se fabrica un hacha de piedra (fibra, cordel, piedra de tallar) y tala con ella un árbol joven.
+// terminarlo; luego se fabrica un hacha de piedra (fibra, cordel, piedra de tallar, y lo que pide dejado encima de
+// ella) y tala con ella un árbol joven.
 // Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
@@ -266,8 +267,29 @@ try {
     await J.andar(taller.x, taller.z);
     r = await J.objeto({ tipo: 'colocar_estacion', estacion: 'piedra_tallar', x: J.pos.x + 0.8, z: J.pos.z });
     comprobar('pone una piedra de tallar a su lado (1 piedra)', r.ok && J.cuantos('piedra') === 1, r.motivo);
+    // lo que pide el hacha se deja encima de la piedra de tallar (valravnx, 6 nov): lo de las manos y lo del suelo
+    const pt = Object.values(s.objetos.fab.estaciones).find(e => e.autor === yo && e.tipo === 'piedra_tallar');
+    r = await J.objeto({ tipo: 'fabricar', receta: 'hacha_piedra', estacion: pt?.id, x: J.pos.x, z: J.pos.z });
+    comprobar('sin nada depositado en la piedra de tallar, el hacha no se encarga', !r.ok && /en la estación/.test(r.motivo || ''), r.motivo);
+    const dejarDeLaMano = async tipo => { const l = ['mano:der', 'mano:izq'].find(x => J.inv.lugares[x]?.tipo === tipo); return l ? J.objeto({ tipo: 'depositar_estacion', estacion: pt.id, de: l, cantidad: 1, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: `no lleva ${tipo} en la mano` }; };
+    const delSuelo = async tipo => {
+      const o = s.objetos.sueloVisible(Date.now()).find(x => x.cosa.tipo === tipo && Math.hypot(x.x - J.pos.x, x.z - J.pos.z) < 2);
+      const libre = ['mano:der', 'mano:izq'].find(l => !J.inv.lugares[l]);
+      if (!o || !libre) return { ok: false, motivo: !o ? `no hay ${tipo} en el suelo a su lado` : 'sin mano libre' };
+      const rc = await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, a: libre, x: J.pos.x, z: J.pos.z });
+      return rc.ok ? dejarDeLaMano(tipo) : rc;
+    };
+    r = await dejarDeLaMano('piedra');
+    comprobar('deja en la piedra de tallar la piedra que lleva', r.ok && J.cuantos('piedra') === 0, r.motivo);
+    r = await dejarDeLaMano('cordel');
+    comprobar('y el cordel de la mano', r.ok && J.cuantos('cordel') === 0, r.motivo);
+    r = await delSuelo('cordel');
+    comprobar('coge el otro cordel de sus pies y lo deja también', r.ok, r.motivo);
+    r = await delSuelo('rama');
+    comprobar('y una de sus ramas del suelo', r.ok, r.motivo);
+    comprobar('la piedra de tallar tiene encima 1 piedra, 1 rama y 2 cordeles', JSON.stringify(s.objetos.fab.estaciones[pt.id].deposito) === JSON.stringify({ piedra: 1, cordel: 2, rama: 1 }), JSON.stringify(s.objetos.fab.estaciones[pt.id].deposito));
     r = await J.objeto({ tipo: 'fabricar', receta: 'hacha_piedra', x: J.pos.x, z: J.pos.z });
-    comprobar('encarga el hacha de piedra: la piedra que lleva, una rama del suelo y los 2 cordeles', r.ok && J.cuantos('piedra') === 0 && J.cuantos('cordel') === 0 && Object.keys(r.datos?.usado?.suelo || {}).length > 0, r.motivo || JSON.stringify(r.datos?.usado));
+    comprobar('encarga el hacha de piedra con lo depositado en la piedra de tallar', r.ok && r.datos?.estacion === pt.id && JSON.stringify(r.datos?.usado?.estacion) === JSON.stringify({ piedra: 1, rama: 1, cordel: 2 }) && !Object.keys(s.objetos.fab.estaciones[pt.id].deposito).length, r.motivo || JSON.stringify(r.datos?.usado));
     adelantar();
     r = await J.objeto({ tipo: 'recoger_fabricado', estacion: r.datos?.estacion, x: J.pos.x, z: J.pos.z });
     comprobar('y la recoge: lleva un hacha de piedra en la mano', r.ok && J.cuantos('hacha_piedra') === 1 && ['mano:der', 'mano:izq'].some(l => J.inv.lugares[l]?.tipo === 'hacha_piedra'), r.motivo || enMano());
