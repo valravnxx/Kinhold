@@ -2487,9 +2487,10 @@ window.__kinhold = {
     const inv = inventario();
     if (!inv.lugares.espalda) accionInventario({ tipo: 'coger', objeto: 'mochila_bastidor', cantidad: 1, a: 'espalda' });
     if (!inv.lugares.cintura) accionInventario({ tipo: 'coger', objeto: 'cinto_anillas', cantidad: 1, a: 'cintura' });
-    // lo que llevas en las manos y no hace falta aquí, si estorba, vuelve al arcón de pruebas
+    // lo que llevas en las manos (o al hombro, que deja las manos sin nada) y no hace falta aquí, si estorba, vuelve al
+    // arcón de pruebas
     const soltarManos = () => {
-      for (const l of ['mano:der', 'mano:izq']) {
+      for (const l of ['mano:der', 'mano:izq', 'hombro']) {
         const c = inv.lugares[l], mat = c && Object.keys(OBJETO_DE_MATERIAL).find(k => OBJETO_DE_MATERIAL[k] === c.tipo);
         if (mat && !coste[mat]) accion({ tipo: 'dejar_arcon', de: l, cantidad: c.n });
       }
