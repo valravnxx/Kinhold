@@ -1,0 +1,6 @@
+Textos del juego: 1349; sin traducir (en): 2; con variables distintas: 0
+  FALTA (en)  No tiene mojón.
+  FALTA (en)  Eso solo lo hace el rey.
+Textos del juego: 1349; sin traducir (ru): 2; con variables distintas: 0; sin cirílico: 0
+  FALTA (ru)  No tiene mojón.
+  FALTA (ru)  Eso solo lo hace el rey.
