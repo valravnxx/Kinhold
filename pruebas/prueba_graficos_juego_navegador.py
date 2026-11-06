@@ -107,6 +107,18 @@ def recorrido(pg, nombre, pref):
       return {{ usa: t.uTexP.value.w, paso: t.uTexP.value.z, n: [t.uTexN.value.x, t.uTexN.value.y], c: c ? [c.image.width, c.image.height] : null,
         filtro: c ? c.magFilter === 1006 : false, bosque, nx: Math.floor((m.nx - 1) / 1) + 1 }}; }})()""")
     comprobar(f'{nombre}: lo lejano toma el color de sus texturas (suelo y bosque, cada 100 m, con filtrado lineal)', tx['usa'] == 1 and tx['paso'] == 100 and tx['c'] == tx['n'] and tx['n'][0] == tx['nx'] and tx['filtro'] and tx['bosque'] > 1000, str(tx))
+    # y es una sola superficie (en dos, el dosel y el suelo se peleaban en la hondura comprimida de lejos: dientes de
+    # sierra): sin malla de copas aparte, y el suelo lejano sube con sus copas donde hay bosque
+    una = pg.evaluate(f"""(() => {{ const h = {G}.horizonte, m = h.muestras, p = h.malla.geometry.attributes.position.array;
+      const dl = h.doselLejos.geometry.index ? h.doselLejos.geometry.index.count : 0;
+      let y0 = null; for (let v = 0; v < m.nx * m.nz && y0 === null; v++) {{ const i = v % m.nx, j = (v - i) / m.nx;
+        if (m.alto[v] > 30 && i > 2 && j > 2 && i < m.nx - 3 && j < m.nz - 3) {{ let nada = true; for (let b = -2; b <= 2; b++) for (let a = -2; a <= 2; a++) if (m.dosel[v + b * m.nx + a] > 0) nada = false; if (nada) y0 = m.alto[v] - p[v * 3 + 1]; }} }}
+      let bosque = 0, suben = 0; for (let v = 0; v < m.nx * m.nz; v++) {{ const i = v % m.nx, j = (v - i) / m.nx;
+        if (i < 2 || j < 2 || i > m.nx - 3 || j > m.nz - 3 || !(m.alto[v] > 1)) continue;
+        let todo = true; for (let b = -1; b <= 1; b++) for (let a = -1; a <= 1; a++) if (!(m.dosel[v + b * m.nx + a] > 0)) todo = false;
+        if (!todo) continue; bosque++; if (p[v * 3 + 1] + y0 - m.alto[v] > m.dosel[v] * 0.8) suben++; }}
+      return {{ dl, bosque, suben }}; }})()""")
+    comprobar(f'{nombre}: el bosque de lejos va en el mismo suelo lejano (sin malla aparte; dentro del bosque, el suelo sube con sus copas)', una['dl'] == 0 and una['bosque'] > 1000 and una['suben'] >= una['bosque'] * 0.95, str(una))
     # mirando a ras hacia los montes y el mar (desde la salida, de frente solo hay llano): la franja del horizonte con y sin él
     pg.evaluate('(() => { window.__camAntes = { ...window.__kinhold.cam }; window.__kinhold.cam.pitch = 0.05; window.__kinhold.cam.yaw = 3.14; })()'); pg.wait_for_timeout(3000)
     alto, ancho = pg.evaluate('[innerHeight, innerWidth]')

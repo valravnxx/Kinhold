@@ -102,7 +102,8 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   // el color del suelo y del bosque, en texturas (materialLejano): las mismas para el suelo y para el dosel de lejos
   const tex = { uTexC: { value: null }, uTexD: { value: null }, uTexP: { value: new THREE.Vector4(0, 0, 1, 0) }, uTexN: { value: new THREE.Vector2(1, 1) } };
   const uniformes = { ...comun, ...tex, uHueco: { value: Math.max(0, hasta - 16) }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } };
-  const material = materialLejano(uniformes);
+  // (el suelo lejano lleva también el bosque, con sus manchas: ver rehacer)
+  const material = materialLejano(uniformes, true);
   // lo lejano va comprimido (unos metros de verdad son centímetros de hondura): cada capa con su sitio en la hondura,
   // para que no se pisen: el suelo, un poco detrás (pierde con el terreno de cerca donde se solapan); el mar, 4 m bajo
   // el nivel (la costa no se pisa con él)
@@ -112,9 +113,9 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   // el mar, sin hueco: va 4 m bajo el nivel, bajo el mar de cerca (y del fondo, solo tapa lo más hondo, que ya es azul);
   // con hueco, junto al borde de lo comprimido quedaba una franja de cielo entre los dos mares
   const materialMar = materialLejano({ ...comun, uHueco: { value: 0 }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } });
-  // el dosel: de lejos, desde donde acaba el terreno de cerca (algo antes) hasta el borde; de cerca, desde los árboles de
-  // verdad (su cuadro) hasta ahí. Las dos con el mismo corte (borde), para que no se pisen.
-  const borde = Math.max(0, hasta - 28);
+  // el dosel: de lejos, en el mismo suelo lejano (desde su hueco: ver rehacer); de cerca, desde los árboles de verdad
+  // (su cuadro) hasta ahí. Las dos con el mismo corte (borde), para que no se pisen ni quede una franja sin copas.
+  const borde = Math.max(0, hasta - 16);
   const matDoselLejos = materialLejano({ ...comun, ...tex, uHueco: { value: borde }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } }, true);
   // (el dosel no se adelanta en la hondura: ya va detrás el suelo; adelantado, asomaba por delante de las lomas)
   const matDoselCerca = materialLejano({ ...comun, uHueco: { value: 0 }, uHasta: { value: borde }, uCuadro: { value: cuadroArb } }, true);
@@ -156,17 +157,24 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   let cerca = null, calculando = null, hechoEn = 0;
 
   let quiere = null, hecho = null;   // el nivel que pide el perfil (4, 2 o 1; null: sin horizonte) y el de la malla
+  // El bosque de lejos (valravnx, 6 nov: «cuando está muy lejos sigue haciendo diente de sierra horrible»): iba en una
+  // malla aparte, a la altura de las copas, encima del suelo lejano. Lo lejano va comprimido en la hondura (unos km son
+  // unos metros), y los 10–14 m de las copas sobre el suelo quedaban en centímetros, por debajo de lo que distingue la
+  // hondura a esa distancia: en cada triángulo ganaba una u otra, y el linde salía en dientes de sierra por los bordes de
+  // los triángulos (más en el móvil, con menos precisión). Ahora es una sola superficie: el suelo lejano sube lo que sus
+  // copas y toma el color del bosque de su textura. El dosel de cerca (con hondura de sobra) sigue aparte.
   function rehacer(k) {
     const m = mallaDe(muestras, k, { ox: origen.x, oz: origen.z, y0 });
+    const d = mallaDosel(muestras, k, { ox: origen.x, oz: origen.z, y0 });
+    if (!globalThis.__mutarTexturaLejos) for (let v = 0; v < d.sube.length; v++) m.pos[v * 3 + 1] += d.sube[v];
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(m.pos, 3));
     g.setAttribute('color', new THREE.BufferAttribute(m.col, 3));
     g.setIndex(new THREE.BufferAttribute(m.idx, 1));
     g.computeVertexNormals();
     malla.geometry.dispose(); malla.geometry = g;
-    // el dosel de lejos, solo desde cada 200 m: cada 400 salían losas oscuras (el linde, de 400 m de rampa)
-    const d = mallaDosel(muestras, k, { ox: origen.x, oz: origen.z, y0 });
-    doselLejos.geometry.dispose(); doselLejos.geometry = k <= 2 ? geo(d) : new THREE.BufferGeometry();
+    // (el dosel de lejos aparte, solo con la prueba rota a propósito: como antes)
+    doselLejos.geometry.dispose(); doselLejos.geometry = globalThis.__mutarTexturaLejos && k <= 2 ? geo(d) : new THREE.BufferGeometry();
     ponerTexturas(k, d);
     hecho = k; malla.visible = true;
   }
