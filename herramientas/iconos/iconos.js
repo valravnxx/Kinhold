@@ -1,0 +1,79 @@
+// Las imágenes de cada cosa para el panel de fabricar (estudio del panel, aprobado por valravnx el 6 nov): se sacan
+// de los mismos modelos que el juego ya dibuja (lo del suelo, lo de la mano, lo de la espalda y las estaciones), con
+// la misma luz para todas y el fondo transparente, para que vayan siempre con el estilo v5 y con lo que se ve en el
+// mundo. Se empaqueta con esbuild y lo abre herramientas/iconos/sacar.py, que guarda las imágenes.
+// Expone window.__iconos = { lista: [{ nombre, propio }], foto(nombre) → dataURL PNG }.
+//  - nombre: el tipo del catálogo (rama, hacha_piedra…) o «est_» + la estación (est_piedra_tallar…).
+//  - propio: false si aún no tiene su modelo y sale con el hatillo de lino de lo del suelo (el panel lo marca
+//    «sin modelo aún»); también el hacha de piedra y la de hierro, que hoy usan el modelo del hacha de mano.
+import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { prepararRenderer } from '../../src/mundo/ambiente.js';
+import { materialTex } from '../../src/mundo/estilos.js';
+import { modeloDe } from '../../src/juego/suelo.js';
+import { MODELO_ESTACION } from '../../src/juego/estaciones.js';
+import { modeloHacha } from '../../src/juego/personaje.js';
+import { loteEnMano, loteEspalda } from '../../src/juego/llevado.js';
+import { CATALOGO } from '../../src/logica/inventario.js';
+import { PRENDAS } from '../../src/logica/prendas.js';
+
+const TAM = 256;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+prepararRenderer(renderer); renderer.setPixelRatio(1); renderer.setSize(TAM, TAM); renderer.setClearColor(0x000000, 0);
+renderer.shadowMap.enabled = false;
+document.body.style.margin = '0'; document.body.appendChild(renderer.domElement);
+const escena = new THREE.Scene();
+escena.add(new THREE.HemisphereLight(0xdfe6ee, 0x5a4a36, 1.6));
+const sol = new THREE.DirectionalLight(0xfff1dc, 2.6); sol.position.set(3, 5, 4); escena.add(sol);
+const contra = new THREE.DirectionalLight(0xbfd0e0, 0.7); contra.position.set(-4, 2, -3); escena.add(contra);
+const camara = new THREE.PerspectiveCamera(28, 1, 0.01, 100);
+
+const mallas = L => {
+  const g = new THREE.Group();
+  for (const [tex, geos] of Object.entries(L.cerrar(null, true))) g.add(new THREE.Mesh(mergeGeometries(geos), materialTex(tex)));
+  return g;
+};
+// lo de la mano, tumbado en diagonal y de frente; las herramientas largas, encuadradas por la cabeza
+const LARGAS = new Set(['antorcha', 'arpon', 'azada', 'hoz_silex', 'lanza_endurecida', 'pala_madera', 'palo_cavador', 'mayal']);
+const enDiagonal = (o, t) => { const g = new THREE.Group(); o.rotation.z = -Math.PI / 4; g.add(o); g.userData.plano = true; g.userData.larga = LARGAS.has(t); return g; };
+const deMano = t => enDiagonal(mallas(loteEnMano(t)), t);
+// lo de la espalda, con algo dentro para que se vea para qué es
+const DENTRO = { lenero: { lena: 9, tronco_corto: 1 }, cesta_recoleccion: { bayas: 9, setas: 6 }, porta_piedras: { piedra: 9 }, carcaj: { flecha: 12 },
+  correa_escudo: { escudo: 1 }, fardo: { piel: 8 }, caja_herramientas: { cuchillo: 1, azada: 1 } };
+const deEspalda = t => { const g = new THREE.Group(); g.add(mallas(loteEspalda(t, DENTRO[t] || {}).L)); g.rotation.y = 0.5; return g; };
+const delSuelo = (t, n = 3) => modeloDe({ id: 'icono_' + t, cosa: { tipo: t, n } });
+
+// De dónde sale cada imagen. Lo que no está aquí sale con el hatillo del suelo (sin modelo aún).
+const SUELO = { rama: 3, piedra: 4, silex: 3, tronco_corto: 2, tronco_delgado: 2, tronco_largo: 2, lena: 6, rastra: 1, carretilla: 1 };
+const MANO = ['mineral_hierro', 'vara', 'tabla', 'cuchillo', 'lasca_silex', 'espada', 'escudo', 'palo_cavador', 'arpon', 'pala_madera', 'azada', 'hoz_silex', 'mayal', 'lanza_endurecida', 'antorcha'];
+const ESPALDA = ['lenero', 'porta_piedras', 'mochila_bastidor', 'zurron', 'fardo', 'cesta_recoleccion', 'cesto_pescador', 'caja_herramientas', 'carcaj', 'correa_escudo'];
+const HACHAS = ['hacha_mano', 'hacha_piedra', 'hacha_hierro'];
+const PROVISIONAL = new Set(['hacha_piedra', 'hacha_hierro']); // hoy, el modelo del hacha de mano
+
+const fuentes = {};
+for (const t of Object.keys(CATALOGO).filter(t => !Object.hasOwn(PRENDAS, t))) {
+  if (Object.hasOwn(SUELO, t)) fuentes[t] = { propio: true, hacer: () => delSuelo(t, SUELO[t]) };
+  else if (HACHAS.includes(t)) fuentes[t] = { propio: !PROVISIONAL.has(t), hacer: () => enDiagonal(modeloHacha(), t) };
+  else if (MANO.includes(t)) fuentes[t] = { propio: true, hacer: () => deMano(t) };
+  else if (ESPALDA.includes(t)) fuentes[t] = { propio: true, hacer: () => deEspalda(t) };
+  else fuentes[t] = { propio: false, hacer: () => delSuelo(t, 1) };
+}
+for (const [t, hacer] of Object.entries(MODELO_ESTACION)) fuentes['est_' + t] = { propio: true, hacer: () => hacer('icono_' + t), estacion: true };
+
+window.__iconos = {
+  lista: Object.entries(fuentes).map(([nombre, f]) => ({ nombre, propio: f.propio })),
+  foto(nombre) {
+    for (const c of [...escena.children]) if (c.userData.icono) escena.remove(c);
+    const f = fuentes[nombre], o = f.hacer();
+    o.userData.icono = true; escena.add(o); o.updateMatrixWorld(true);
+    const caja = new THREE.Box3().setFromObject(o), c = caja.getCenter(new THREE.Vector3()), s = caja.getSize(new THREE.Vector3());
+    if (o.userData.larga) { c.x += s.x * 0.2; c.y += s.y * 0.2; s.multiplyScalar(0.6); } // la cabeza de la herramienta
+    const plano = o.userData.plano;
+    const radio = plano ? Math.max(s.x, s.y) / 2 * 1.05 : s.length() / 2;
+    const d = radio / Math.tan(THREE.MathUtils.degToRad(camara.fov / 2)) * (plano ? 1 : 0.82);
+    const dir = plano ? new THREE.Vector3(0.12, 0.25, 1) : f.estacion ? new THREE.Vector3(0.75, 0.62, 1) : new THREE.Vector3(0.55, 0.75, 1);
+    camara.position.copy(c).addScaledVector(dir.normalize(), d); camara.lookAt(c); camara.updateProjectionMatrix();
+    renderer.render(escena, camara);
+    return renderer.domElement.toDataURL('image/png');
+  },
+};

@@ -100,6 +100,36 @@ export const RECETAS = {
   cubo:              r('Cubo de madera', 'banco', 'cubo', { tronco_corto: 1 }, 60),
 };
 
+// Para qué sirve lo que da cada receta (el panel lo enseña en su ficha): sale de la columna «para qué» del documento de
+// sistemas (apartados 7 y 8), con lo que dice el GDD donde lo ha precisado (el hacha de piedra, revisión del 1 nov).
+export const PARA = {
+  cordel: 'Para atar; también sirve como cinturón de cordel (1 hueco).',
+  palo_cavador: 'Cava barro y raíces, poco eficiente.',
+  honda: 'Caza menor.',
+  lenero: 'A la espalda: solo leña y troncos cortos.',
+  rastra: 'Se arrastra a mano: 2–3 troncos cortos o un montón de piedras, despacio; se queda donde la dejas, con lo que lleve.',
+  fardo: 'A la espalda: pieles, tela, fibras y paja.',
+  arpon: 'Pesca.',
+  odre: 'Agua; va al hombro.',
+  lasca_silex: 'Corta fibra y juncos, despieza.',
+  hacha_piedra: 'Tala árboles jóvenes (da un tronco delgado y varas); los adultos, muy despacio.',
+  lanza_endurecida: 'Caza y defensa.',
+  antorcha: 'Luz; dura un rato.',
+  antorcha_resina: 'Luz; dura un rato.',
+  cuerda: 'Base de casi todo.',
+  cuerda_trenzada: 'Cinturón de 2 huecos pequeños.',
+  cesta_recoleccion: 'A la espalda: bayas, setas, hierbas, frutos secos y huevos.',
+  cesta_juncos: 'A la espalda: bayas, setas, hierbas, frutos secos y huevos.',
+  cesto_pescador: 'Pescado y aparejos.',
+  nasa: 'Trampa de pesca.',
+  trampa_lazo: 'Caza menor.',
+  pala_madera: 'Barro, arcilla, arena, tierra.',
+  azada: 'Preparar casillas de cultivo.',
+  hoz_silex: 'Cosechar cereal.',
+  mayal: 'Trillar.',
+  cubo: 'Agua, leche.',
+};
+
 const tiene = (o, k) => typeof k === 'string' && Object.hasOwn(o, k);
 const dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 
