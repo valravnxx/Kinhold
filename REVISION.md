@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 6 nov 2026 (17:46 UTC+1) — por el chat: el panel de fabricación y las estaciones como muebles
+valravnx: «el menú de crafteo es horrendo, es una lista, te dice cosas y materiales. Vamos a intentar estilizarlo un poco, vamos a mirar cómo funcionan los crafteos en otros videojuegos, vamos a hacer un estudio… Aparte, tampoco sabes del todo para qué sirve cada cosa. Las estaciones tendrían que ser construidas en el menú de construcción, no crafteadas y que te aparezcan en el suelo… tienen que ser un mueble… ahora mismo tienen que ser mesas de uso, y luego hay que decidir cuáles sirven para el exterior, cuáles para el interior y cuáles son solamente para interior (un telar no lo vas a poner en la calle, a menos que sea históricamente correcto)… Revisa primero el GDD y luego me comentas, y una vez me hayas comentado, haces, porque así yo tengo palabra para decidir. Si tenemos que pausar el A, adelante; si puedes sin pausarlo, también». → El chat revisa el GDD y el documento de sistemas y le propone el panel y las estaciones como muebles; hasta que decida, en P3 esperan (espera_decision) la hoguera, los almacenajes, el hogar y el banco de tronco, con su pregunta en decisiones pendientes. El carril A sigue con lo que no toca esto (árboles, talar, materiales, lo hecho a mano). Lo depositado en las estaciones (v126) se queda.
+
 ### 6 nov 2026 (17:27 UTC+1) — por el chat: chat de texto
 valravnx: «vamos a poner chat de texto ya, debe verse sobre el jugador, y desaparecer al rato, luego discutimos si meter voz es buena o mala idea». → Tarea de chat en P7: frase que pasa por el servidor con su autor, bocadillo sobre la cabeza que se va al rato, en el registro. La voz, para hablarla después.
 
