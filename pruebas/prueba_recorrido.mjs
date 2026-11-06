@@ -43,7 +43,7 @@ function comprobar(nombre, cond, detalle = '') {
 
 // Lo que un jugador nuevo aún no puede hacer sin el arcón, con el porqué y lo que lo trae.
 const TODAVIA_NO = {
-  hombro: 'con algo al hombro, las manos no llevan nada: un jugador nuevo aún no tiene tronco que subirse (llega con talar); lo prueba prueba_inventario.mjs',
+  hombro: 'con algo al hombro, las manos no llevan nada: desde el paso 9 ya tiene un tronco delgado, pero llevarlo al hombro se añade con el acopio de troncos (hito «De nada a una casa»); lo prueba prueba_inventario.mjs',
 };
 
 const T = terrenoWhitholm();
@@ -255,6 +255,7 @@ try {
     comprobar('tiene sus 2 cordeles (en la mano o a sus pies)', J.cuantos('cordel') + sueloCordel === 2 && J.cuantos('fibra') === 0, `${J.cuantos('cordel')} en la mano, ${sueloCordel} en el suelo; ${enMano()}`);
     // el cordel no se apila (también es un cinturón): uno se queda a sus pies, para tener una mano libre
     if (['mano:der', 'mano:izq'].every(l => J.inv.lugares[l]?.tipo === 'cordel')) {
+      await J.andar(taller.x, taller.z);   // junto a las ramas, donde va a trabajar
       r = await J.objeto({ tipo: 'soltar_suelo', de: 'mano:der', x: J.pos.x, z: J.pos.z });
       comprobar('deja un cordel a sus pies para tener una mano libre', r.ok && J.cuantos('cordel') === 1, r.motivo);
     }
