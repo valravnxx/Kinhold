@@ -21,6 +21,9 @@
 //   conectar, { tipo: 'aspecto', sexo, capas, aspecto }; el
 //   servidor lo comprueba (validarAspecto) y lo reparte a los demás, { tipo: 'aspecto', autor, sexo, capas, aspecto }. La bienvenida
 //   lleva los de los que ya están (aspectos).
+//   Charla (chat de texto, src/logica/charla.js): el cliente manda { tipo: 'decir', texto }; el servidor lo limpia, mira
+//   que no hable a chorro y lo reparte, con el autor de la conexión, a quien está a ALCANCE m (y al que habla):
+//   { tipo: 'dicho', autor, texto }. Si no vale: { tipo: 'error', motivo }. Lo dicho queda en charla.jsonl, junto al mundo.
 //   Combate (src/logica/combate_servidor.js): cada conexión tiene un luchador; el cliente manda intenciones
 //   { tipo: 'combate', que, … } y el servidor lleva los tiempos y resuelve golpes y flechas con el autor de la
 //   conexión. A todos: { tipo: 'combate', eventos } en el mismo orden, y cada tic (50 ms) { tipo: 'luchadores',
@@ -133,6 +136,7 @@ import { ponerZonas } from '../src/logica/construccion.js';
 import { salidaInicio } from '../src/logica/whitholm.js';
 import { dejarSobra } from '../src/logica/suelo.js';
 import { Abandono, AUTOR_REY } from '../src/logica/abandono.js';
+import { limpiarTexto, LimitadorCharla, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -164,6 +168,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const archivoObjetosReg = resolve(dirname(archivo), 'objetos.jsonl');
   const archivoPosiciones = resolve(dirname(archivo), 'posiciones.json');
   const archivoAdmin = resolve(dirname(archivo), 'admin.jsonl');
+  // lo que se dice en el chat de texto: quién, qué y dónde (para moderar: la cuenta de admin lo puede revisar)
+  const archivoCharla = resolve(dirname(archivo), 'charla.jsonl');
+  const charla = new LimitadorCharla();
   const archivoCuentas = resolve(dirname(archivo), 'cuentas.jsonl');
   // el registro de seguridad: altas, entradas, fallos y salidas en todos los aparatos (nunca la contraseña ni la ficha)
   const archivoSeguridad = resolve(dirname(archivo), 'seguridad.jsonl');
@@ -490,7 +497,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       if (!msg || typeof msg !== 'object' || Array.isArray(msg) || typeof msg.tipo !== 'string')
         return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
       // sin el correo confirmado no se entra en el mundo (las acciones y los objetos reciben su respuesta)
-      if (['estado', 'obras', 'combate', 'aspecto', 'accion', 'objeto', 'admin', 'salida'].includes(msg.tipo) && cuentas.sinConfirmar(autor)) {
+      if (['estado', 'obras', 'combate', 'aspecto', 'accion', 'objeto', 'admin', 'salida', 'decir'].includes(msg.tipo) && cuentas.sinConfirmar(autor)) {
         const id = Number.isSafeInteger(msg.id) ? msg.id : null;
         if (msg.tipo === 'accion' || msg.tipo === 'objeto') enviar(ws, { tipo: msg.tipo === 'objeto' ? 'resultado_objeto' : 'resultado', id, ok: false, motivo: SIN_CORREO });
         else if (msg.tipo === 'admin') enviar(ws, { tipo: 'admin', id, que: null, ok: false, motivo: SIN_CORREO });
@@ -554,6 +561,20 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         e.llevado = llevadoDe(objetos.invs.de(autor).lugares);
         aspectos.set(autor, e);
         for (const [otro, a] of clientes) if (a !== autor) enviar(otro, { tipo: 'aspecto', autor, ...e });
+        return;
+      }
+      if (msg && msg.tipo === 'decir') {
+        // el chat de texto: limpio, sin hablar a chorro, y a quien está cerca del que habla (en la liza, solo a él)
+        const texto = limpiarTexto(msg.texto);
+        if (!texto) return enviar(ws, { tipo: 'error', motivo: MOTIVO_VACIO });
+        if (!charla.admitir(autor, reloj())) return enviar(ws, { tipo: 'error', motivo: MOTIVO_DESPACIO });
+        const posiciones = new Map();
+        for (const a of conexionDe.keys()) { const e = presencia.ultimo.get(a); if (e && !(combate.luchadores[a] && combate.luchadores[a].liza)) posiciones.set(a, e); }
+        const yo = presencia.ultimo.get(autor) || null;
+        const oyen = quienOye(autor, posiciones);
+        try { appendFileSync(archivoCharla, JSON.stringify({ t: Date.now(), autor, cuenta: usuarioDe(autor), x: yo ? Math.round(yo.x) : null, z: yo ? Math.round(yo.z) : null, texto, oyen: oyen.length }) + '\n'); }
+        catch (e) { registrar(`no se pudo apuntar la charla: ${e && e.message}`); }
+        for (const a of oyen) { const c = conexionDe.get(a); if (c) enviar(c, { tipo: 'dicho', autor, texto }); }
         return;
       }
       if (msg && msg.tipo === 'cuenta') {

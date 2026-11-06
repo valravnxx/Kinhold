@@ -1,6 +1,9 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v127 (la desembocadura en embudo)";
+export const VERSION_DEMO = "Demo única · v128 (chat de texto)";
 export const REGISTRO_DEMO = [
+  "v128: chat de texto (valravnx, 6 nov). Con Intro (en el móvil, el botón «Hablar») escribes una frase; al decirla sale en un bocadillo sobre tu cabeza y la ven los que están a 50 m o menos, sobre la tuya. Se va al rato: 4 s y 70 ms por letra, como mucho 12. Mientras escribes no te mueves; Esc lo deja.",
+  "v128: lo dicho pasa por el servidor con su autor: lo limpia (sin caracteres de control, como mucho 120 letras), no deja hablar a chorro (una frase por segundo, 6 en 20 s) y lo apunta en charla.jsonl (quién, qué y dónde), para poder moderar.",
+  "v128, provisional: el alcance (50 m), lo que dura el bocadillo y el límite de frases los he puesto yo; la voz, para hablarla con valravnx.",
   "v127: la desembocadura en embudo (valravnx, 6 nov: «que la desembocadura se ensanche y se vea más real»): como en los estuarios de verdad, el río se abre cada vez más deprisa hacia el mar en sus últimos 140 m, hasta su ancho más dos veces él (al menos 30 m) en la orilla. El que cae por un acantilado no se abre.",
   "v127: las aguas del río y del mar se funden (valravnx, 6 nov: «acaba como con dos tonos de río diferentes… que fuera difuminando las aguas»): el agua del río va tomando el color del mar en sus últimos 250 m y, en el mar, sigue en un abanico que se desvanece en unos 150 m; su corriente se apaga y las olas que rompen solo salen donde ya es mar.",
   "v126: depositar en las estaciones (valravnx, 6 nov). La piedra de tallar, la hoguera y el banco de tronco tienen dónde dejar los materiales, y se ven puestos: encima de la losa y del tajo, y alrededor de la hoguera. Sus recetas gastan solo lo depositado en ellas; lo de las manos sigue con lo que llevas y el suelo. En el panel de fabricación, cada estación a tu lado sale con lo que tiene («Coger») y lo que llevas que se puede dejar («Dejar»); todo por el servidor, con su autor, y lo ven todos.",

@@ -4812,5 +4812,22 @@
   ],
   "pruebas": "En la nube, 35 grupos: 34 bien. Falla «web» (el selector EN de los documentos de diseño no responde en 30 s), igual en la prueba de otra rama hecha antes de este cambio (nube/42264360570-web): no viene de aquí; no arreglado en esta sesión. En una primera pasada en el PC de valravnx fallaron demo-única y el perfil gráfico en el juego (lo de «sin tarjeta gráfica» no vale en un PC con tarjeta) y en la nube «Jugadores que se ven, con lag» una vez (aquí, 3 de 3 bien); en la segunda pasada, toda en la nube, salen bien. Sin versión nueva: no cambia nada jugable.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T18:22:56+00:00",
+  "fin": "2026-11-06T20:39:07+00:00",
+  "titulo": "Chat de texto (demo v128), retomado de la sesión de chat",
+  "hito": "admin",
+  "hecho": [
+   "Retomado desde su rama (trabajo/20261106-1730-charla), que la sesión de chat había dejado a medias con el chat de texto ya hecho: lo dicho pasa por el servidor con su autor (limpio, como mucho 120 letras, sin hablar a chorro, a los que están a 50 m o menos y apuntado en charla.jsonl) y sale en un bocadillo sobre la cabeza que se va al rato; Intro en PC, «Hablar» en el móvil.",
+   "Comprobado que la prueba de lógica del chat falla si se rompe a propósito (con el alcance a 500 m: 3 mal).",
+   "La prueba de la web fallaba en el móvil: la tabla nueva del GDD (dónde va cada puesto de trabajo) no iba en su caja con desplazamiento, ensanchaba la página y tapaba el selector de idioma. Arreglada aquí y, a la vez, en main por la sesión de chat (el mismo cambio).",
+   "Unido main (fuera el prototipo de combate aparte) y vuelta a pasar la batería entera.",
+   "Publicada la demo v128.",
+   "Aún mal: en el móvil el bocadillo de una frase larga pisa un poco el botón «Arma». No comprobado en captura de PC: en la nube va a 1 fotograma por segundo y los bocadillos ya se habían ido al hacerla; la prueba sí mide en PC que salen sobre cada cabeza y no se pisan."
+  ],
+  "pruebas": "Batería entera en la nube (36 grupos) tras unir main: todo bien salvo «lo que llevas se ve puesto» (la mujer, 17,7 cm, el fallo de borde de siempre), que pasó al repetirla sin cambios. Antes de unir main, la misma batería: 35 bien y la web, que fallaba por la tabla del GDD (arreglada y bien en local). Chat de texto 24/24 en lógica.",
+  "capturas": "capturas/demo-v128",
+  "estado": "ok"
  }
 ]
