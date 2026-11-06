@@ -1,0 +1,36 @@
+PC
+  OK   PC: el juego tiene perfil gráfico
+  FALLA PC: sin tarjeta gráfica arranca con el más barato (Móvil básico) — pc-3
+  OK   PC: el más barato no lleva horizonte
+  FALLA PC: dibuja con posprocesado (2 pasadas en el más barato) — 3
+  OK   PC: el rendimiento cuenta los triángulos del mundo (no los de la última pasada) — 73350
+  OK   PC: los fps del panel son los del mundo (no uno por cada pasada) — panel 180 fps; el mundo se dibujó 453 veces en 2,5 s
+  OK   PC: se sigue viendo el cielo de la página (no sale negro) — [213, 216, 213]
+  OK   PC: el panel de rendimiento dice el perfil — Rendimiento en este aparato · Fotogramas	180 por segundo · Cada fotograma	5.6 ms de media; el más lento, 17 ms · Resolución	1280×800 (1×) · Triángulos	73 mil por fotograma · Llamadas de dibujo	15 · Memoria gráfic
+  OK   PC: y tiene los seis perfiles para elegir
+  OK   PC: al pulsar «Móvil alto y tableta» cambia (4 pasadas: oclusión y suavizado) — movil-3 4
+  OK   PC: al volver a entrar sigue el elegido — movil-3
+  OK   PC: ?graficos=pc-3 pone el PC alto (3 pasadas: oclusión y MSAA) — pc-3 3
+  OK   PC: con el PC alto también se ve el cielo — [213, 216, 213]
+  OK   PC: el PC alto lleva el horizonte, la isla entera cada 100 m — {'activo': True, 'tris': 418002}
+  OK   PC: con el horizonte se ve lo lejano (cambia la franja del horizonte) — cambia el 15.2 % de la franja
+  OK   PC: sin errores de página
+Móvil
+  OK   móvil: el juego tiene perfil gráfico
+  FALLA móvil: sin tarjeta gráfica arranca con el más barato (Móvil básico) — movil-2
+  OK   móvil: el más barato no lleva horizonte
+  FALLA móvil: dibuja con posprocesado (2 pasadas en el más barato) — 4
+  OK   móvil: el rendimiento cuenta los triángulos del mundo (no los de la última pasada) — 36754
+  OK   móvil: los fps del panel son los del mundo (no uno por cada pasada) — panel 180 fps; el mundo se dibujó 450 veces en 2,5 s
+  OK   móvil: se sigue viendo el cielo de la página (no sale negro) — [130, 147, 131]
+  OK   móvil: el panel de rendimiento dice el perfil — Rendimiento en este aparato · Fotogramas	181 por segundo · Cada fotograma	5.5 ms de media; el más lento, 18 ms · Resolución	390×844 (1×) · Triángulos	37 mil por fotograma · Llamadas de dibujo	13 · Memoria gráfica
+  OK   móvil: y tiene los seis perfiles para elegir
+  OK   móvil: al pulsar «Móvil alto y tableta» cambia (4 pasadas: oclusión y suavizado) — movil-3 4
+  OK   móvil: al volver a entrar sigue el elegido — movil-3
+  OK   móvil: ?graficos=pc-3 pone el PC alto (3 pasadas: oclusión y MSAA) — pc-3 3
+  OK   móvil: con el PC alto también se ve el cielo — [142, 153, 132]
+  OK   móvil: el PC alto lleva el horizonte, la isla entera cada 100 m — {'activo': True, 'tris': 418002}
+  OK   móvil: con el horizonte se ve lo lejano (cambia la franja del horizonte) — cambia el 24.0 % de la franja
+  OK   móvil: sin errores de página
+
+HAY FALLOS: PC: sin tarjeta gráfica arranca con el más barato (Móvil básico), PC: dibuja con posprocesado (2 pasadas en el más barato), móvil: sin tarjeta gráfica arranca con el más barato (Móvil básico), móvil: dibuja con posprocesado (2 pasadas en el más barato) · capturas en D:/KinholdGrafica/runner/_work/_temp/kinhold_capturas/graficos_juego
