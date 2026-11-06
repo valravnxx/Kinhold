@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-06T08:24:59+00:00",
-  "tarea": "Revisión completa y publicación",
-  "hito": "entre-dos",
-  "rama": "trabajo/20261106-0824"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261106-0525-linde-textura": {
   "inicio": "2026-11-06T05:24:47+01:00",
