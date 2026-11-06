@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-06T15:24:45+00:00",
-  "tarea": "Depositar en las estaciones (valravnx, 6 nov): cada estación (piedra de tallar, banco de tronco, hoguera) tiene dónde dejar los materiales, encima o junto a ella, y se ven puestos; sus recetas gastan lo depositado en ella, no lo del suelo, con quien fabrica delante; lo de las manos sigue con lo que llevas y el suelo. Por el servidor, con su autor, en el panel y en el recorrido de jugador",
-  "hito": "crafting",
-  "rama": "trabajo/20261106-1524"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261106-1615-boca": {
   "inicio": "2026-11-06T16:15:13+01:00",
