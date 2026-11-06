@@ -3032,11 +3032,14 @@
      "fecha": "2026-11-06",
      "archivo": "jugar/demo/v126.html",
      "capturas": "capturas/demo-v126",
-<<<<<<< HEAD
      "notas": "v126: depositar en las estaciones (valravnx, 6 nov). La piedra de tallar, la hoguera y el banco de tronco tienen dónde dejar los materiales, y se ven puestos encima o al lado. Sus recetas gastan solo lo depositado en ellas; lo de las manos sigue con lo que llevas y el suelo. En el panel de fabricación, cada estación a tu lado sale con lo que tiene («Coger») y lo que llevas que se puede dejar («Dejar»); todo por el servidor y lo ven todos."
-=======
+    },
+    {
+     "v": "v127",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v127.html",
+     "capturas": "capturas/demo-v127",
      "notas": "La desembocadura en embudo: el río se abre hacia el mar en sus últimos 140 m; el agua del río se funde con la del mar (toma su color y sigue en un abanico que se desvanece)."
->>>>>>> trabajo/20261106-1615-boca
     }
    ]
   },
