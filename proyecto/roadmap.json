@@ -1451,9 +1451,9 @@
     },
     {
      "nombre": "Quitar la liza y los modos de combate de capas y guardias: del servidor, de la lógica de combate y de sus pruebas, que queden solo con el modo direccional del mundo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T21:23:14+00:00",
-     "rama": "trabajo/20261106-2123"
+     "fin": "2026-11-06T22:50:51+00:00"
     },
     {
      "nombre": "Quitar la construcción aparte (hito1): sus pruebas de navegador pasan a la demo y deja de construirse",
