@@ -631,6 +631,19 @@ export class Mundo {
     return { ok: true, terminada: false, progreso: p.obra.trabajo / total };
   }
 
+  // El modo autoconstruir del admin (valravnx, 6 nov; src/logica/admin.js): la obra queda terminada al momento y sin
+  // materiales. En sus aportes queda que la terminó el admin (para el registro y por si se desmonta: no devuelve nada
+  // que no se entregó).
+  terminarAdmin(c, key, autor) {
+    const p = c.piezas.get(key);
+    if (!p) return { ok: false, motivo: 'No existe.' };
+    if (!p.obra) return { ok: false, motivo: 'Esa pieza ya está terminada.' };
+    p.obra.aportes.push({ autor, admin: true });
+    this.obrasTerminadas.push({ construccion: c.id, clave: key, tipo: p.tipo, aportes: p.obra.aportes });
+    delete p.obra;
+    return { ok: true, terminada: true, progreso: 1 };
+  }
+
   // ---------- Desmontar ----------
   // Qué pasaría al desmontar: piezas que caerían en cascada, o bloqueo por sobrecarga.
   // autor (opcional): quien desmonta; con él, solo en su tierra, en la de quien le invita o en tierra de nadie (puedeTocar)

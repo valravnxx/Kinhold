@@ -25,7 +25,14 @@ export const ESPECIES_DOSEL = Object.fromEntries(Object.entries(VERDES).map(([e,
 // la distancia (más allá de r0, más cerca por la misma línea de mirada). u: los uniformes de esta malla: uR0, uS, uJug,
 // y lo que se tira: uHueco (m alrededor del jugador), uHasta (m: más allá, nada; 0 = sin límite) y uCuadro (el cuadro de
 // los árboles de verdad: xy su centro, z su medio lado; z = 0, sin cuadro). copas: true, las manchas de las copas.
+// El color (valravnx, 6 nov: «cuando está muy lejos sigue haciendo diente de sierra horrible»): en los vértices de la
+// rejilla (cada 100–400 m), entre ellos se interpolaba por triángulos y el linde del bosque (verde oscuro contra la
+// pradera) seguía sus diagonales en dientes de sierra, más grandes cuanto más lejos. Ahora, con uTexP.w = 1, el color sale
+// de dos texturas del tamaño de la rejilla, leídas en cada píxel con filtrado lineal (como el mapa de color de un
+// terreno): uTexC, el del suelo; uTexD, el de las copas y en alfa cuánto bosque hay. uTexP: xy, el sitio de la escena
+// del primer punto; z, los m entre puntos; uTexN: los puntos de cada lado. Sin textura (w = 0), el de los vértices.
 function materialLejano(u, copas = false) {
+  u = { uTexC: { value: null }, uTexD: { value: null }, uTexP: { value: new THREE.Vector4(0, 0, 1, 0) }, uTexN: { value: new THREE.Vector2(1, 1) }, ...u };
   const material = new THREE.MeshLambertMaterial({ vertexColors: true, fog: false });
   material.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, u);
@@ -39,7 +46,9 @@ function materialLejano(u, copas = false) {
     // (en cada píxel, el punto del mundo se saca deshaciendo la compresión del punto dibujado: si se pasara el del
     // vértice sin comprimir, entre vértices comprimidos no casa con lo que se ve, y el hueco de alrededor del jugador
     // se comía, en el mar de lejos (cuadros de 500 m), una franja de kilómetros: salía cielo entre los dos mares)
-    let f = 'uniform float uHueco;\nuniform float uHasta;\nuniform vec3 uCuadro;\nuniform vec2 uJug;\nuniform float uR0;\nuniform float uS;\nuniform float uW;\nuniform sampler2D uCargado;\nuniform vec4 uCargadoR;\nvarying vec3 vHzComp;\n' + GLSL_COMPRESION;
+    let f = 'uniform float uHueco;\nuniform float uHasta;\nuniform vec3 uCuadro;\nuniform vec2 uJug;\nuniform float uR0;\nuniform float uS;\nuniform float uW;\nuniform sampler2D uCargado;\nuniform vec4 uCargadoR;\nvarying vec3 vHzComp;\n' + GLSL_COMPRESION +
+      'uniform sampler2D uTexC;\nuniform sampler2D uTexD;\nuniform vec4 uTexP;\nuniform vec2 uTexN;\n' +
+      'vec2 hzUv(vec2 p){ return ((p - uTexP.xy) / uTexP.z + 0.5) / uTexN; }\n';
     if (copas) f += `float hzAzar(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
 float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
   return mix(mix(hzAzar(i),hzAzar(i+vec2(1,0)),f.x),mix(hzAzar(i+vec2(0,1)),hzAzar(i+vec2(1,1)),f.x),f.y);}
@@ -50,14 +59,19 @@ float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
   float hzDist = length( vHzMundo.xz - uJug );
   if ( uCargadoR.z > 0.0 ) {
     // el hueco, solo donde ya está el terreno de cerca (cada trozo cargado, uno por texel)
-    vec2 hzUv = ( vHzMundo.xz - uCargadoR.xy ) / uCargadoR.z;
-    if ( hzUv.x > 0.0 && hzUv.y > 0.0 && hzUv.x < 1.0 && hzUv.y < 1.0 && texture2D( uCargado, hzUv ).r > 0.5 ) discard;
+    vec2 hzUvC = ( vHzMundo.xz - uCargadoR.xy ) / uCargadoR.z;
+    if ( hzUvC.x > 0.0 && hzUvC.y > 0.0 && hzUvC.x < 1.0 && hzUvC.y < 1.0 && texture2D( uCargado, hzUvC ).r > 0.5 ) discard;
     if ( uHasta > 0.0 && hzDist > uHasta ) discard;
   } else if ( hzDist < uHueco || ( uHasta > 0.0 && hzDist > uHasta ) ) discard;
-  if ( uCuadro.z > 0.0 && max( abs( vHzMundo.x - uCuadro.x ), abs( vHzMundo.z - uCuadro.y ) ) < uCuadro.z ) discard;`);
+  if ( uCuadro.z > 0.0 && max( abs( vHzMundo.x - uCuadro.x ), abs( vHzMundo.z - uCuadro.y ) ) < uCuadro.z ) discard;
+  vec3 hzSuelo = vec3( 0.0 ); vec4 hzBosque = vec4( 0.0 );
+  if ( uTexP.w > 0.0 ) { vec2 hzUvP = hzUv( vHzMundo.xz ); hzSuelo = texture2D( uTexC, hzUvP ).rgb; hzBosque = texture2D( uTexD, hzUvP ); }`);
+    if (!copas) sh.fragmentShader = sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+  if ( uTexP.w > 0.0 ) diffuseColor.rgb = hzSuelo;`);
     // las copas: manchas de unos 6 m (copas sueltas) y de unos 20 m (grupos), con huecos oscuros entre ellas; se
     // apagan con la distancia (de lejos ya no se distinguen y harían centelleo)
     if (copas) sh.fragmentShader = sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+  if ( uTexP.w > 0.0 ) diffuseColor.rgb = hzBosque.rgb;
   {
     vec2 hzP = vHzMundo.xz;
     float hzC = hzRuido( hzP / 5.5 ) * 0.6 + hzRuido( hzP / 19.0 + 3.7 ) * 0.4;
@@ -69,7 +83,9 @@ float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
     // de cerca, del color de los árboles de verdad (que siguen justo delante); de lejos, más oscuro: la sombra de dentro
     // de la masa del bosque, que es lo que hace que de lejos se distinga de la pradera
     diffuseColor.rgb *= mix( 1.0, 0.62, smoothstep( 800.0, 3500.0, hzD ) );
-  }`);
+  }
+  // hacia el linde, al color del suelo según el bosque que hay (de la textura: curvo, sin seguir los triángulos)
+  if ( uTexP.w > 0.0 ) diffuseColor.rgb = mix( hzSuelo, diffuseColor.rgb, smoothstep( 0.08, 0.7, hzBosque.a ) );`);
   };
   return material;
 }
@@ -96,8 +112,11 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   const sinMascara = new THREE.DataTexture(new Uint8Array(4), 1, 1); sinMascara.needsUpdate = true;
   const uCargado = { value: sinMascara }, uCargadoR = { value: cargado.rect };
   // el hueco, casi hasta donde acaba el terreno de cerca (16 m de solape: ahí gana el de cerca, que va delante en la hondura)
-  const uniformes = { ...comun, uHueco: { value: Math.max(0, hasta - 16) }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() }, uCargado, uCargadoR };
-  const material = materialLejano(uniformes);
+  // el color del suelo y del bosque, en texturas (materialLejano): las mismas para el suelo y para el dosel de lejos
+  const tex = { uTexC: { value: null }, uTexD: { value: null }, uTexP: { value: new THREE.Vector4(0, 0, 1, 0) }, uTexN: { value: new THREE.Vector2(1, 1) } };
+  const uniformes = { ...comun, ...tex, uHueco: { value: Math.max(0, hasta - 16) }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() }, uCargado, uCargadoR };
+  // (el suelo lejano lleva también el bosque, con sus manchas: ver rehacer)
+  const material = materialLejano(uniformes, true);
   // lo lejano va comprimido (unos metros de verdad son centímetros de hondura): cada capa con su sitio en la hondura,
   // para que no se pisen: el suelo, un poco detrás (pierde con el terreno de cerca donde se solapan); el mar, 4 m bajo
   // el nivel (la costa no se pisa con él)
@@ -110,11 +129,11 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   // el mar, sin hueco: va 4 m bajo el nivel, bajo el mar de cerca (y del fondo, solo tapa lo más hondo, que ya es azul);
   // con hueco, junto al borde de lo comprimido quedaba una franja de cielo entre los dos mares
   const sinCargado = { uCargado: { value: sinMascara }, uCargadoR: { value: new THREE.Vector4(0, 0, 0, 0) } };
-  const materialMar = materialLejano({ ...uniformes, ...sinCargado, uHueco: { value: 0 } });
-  // el dosel: de lejos, desde donde acaba el terreno de cerca (algo antes) hasta el borde; de cerca, desde los árboles de
-  // verdad (su cuadro) hasta ahí. Las dos con el mismo corte (borde), para que no se pisen.
-  const borde = Math.max(0, hasta - 28);
-  const matDoselLejos = materialLejano({ ...comun, ...sinCargado, uHueco: { value: borde }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } }, true);
+  const materialMar = materialLejano({ ...comun, ...sinCargado, uHueco: { value: 0 }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } });
+  // el dosel: de lejos, en el mismo suelo lejano (desde su hueco: ver rehacer); de cerca, desde los árboles de verdad
+  // (su cuadro) hasta ahí. Las dos con el mismo corte (borde), para que no se pisen ni quede una franja sin copas.
+  const borde = Math.max(0, hasta - 16);
+  const matDoselLejos = materialLejano({ ...comun, ...tex, ...sinCargado, uHueco: { value: borde }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } }, true);
   // (el dosel no se adelanta en la hondura: ya va detrás el suelo; adelantado, asomaba por delante de las lomas)
   const matDoselCerca = materialLejano({ ...comun, ...sinCargado, uHueco: { value: 0 }, uHasta: { value: borde }, uCuadro: { value: cuadroArb } }, true);
   const malla = new THREE.Mesh(new THREE.BufferGeometry(), material);
@@ -155,17 +174,47 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   let cerca = null, calculando = null, hechoEn = 0;
 
   let quiere = null, hecho = null;   // el nivel que pide el perfil (4, 2 o 1; null: sin horizonte) y el de la malla
+  // El bosque de lejos (valravnx, 6 nov: «cuando está muy lejos sigue haciendo diente de sierra horrible»): iba en una
+  // malla aparte, a la altura de las copas, encima del suelo lejano. Lo lejano va comprimido en la hondura (unos km son
+  // unos metros), y los 10–14 m de las copas sobre el suelo quedaban en centímetros, por debajo de lo que distingue la
+  // hondura a esa distancia: en cada triángulo ganaba una u otra, y el linde salía en dientes de sierra por los bordes de
+  // los triángulos (más en el móvil, con menos precisión). Ahora es una sola superficie: el suelo lejano sube lo que sus
+  // copas y toma el color del bosque de su textura. El dosel de cerca (con hondura de sobra) sigue aparte.
   function rehacer(k) {
     const m = mallaDe(muestras, k, { ox: origen.x, oz: origen.z, y0 });
+    const d = mallaDosel(muestras, k, { ox: origen.x, oz: origen.z, y0 });
+    if (!globalThis.__mutarTexturaLejos) for (let v = 0; v < d.sube.length; v++) m.pos[v * 3 + 1] += d.sube[v];
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(m.pos, 3));
     g.setAttribute('color', new THREE.BufferAttribute(m.col, 3));
     g.setIndex(new THREE.BufferAttribute(m.idx, 1));
     g.computeVertexNormals();
     malla.geometry.dispose(); malla.geometry = g;
-    // el dosel de lejos, solo desde cada 200 m: cada 400 salían losas oscuras (el linde, de 400 m de rampa)
-    doselLejos.geometry.dispose(); doselLejos.geometry = k <= 2 ? geo(mallaDosel(muestras, k, { ox: origen.x, oz: origen.z, y0 })) : new THREE.BufferGeometry();
+    // (el dosel de lejos aparte, solo con la prueba rota a propósito: como antes)
+    doselLejos.geometry.dispose(); doselLejos.geometry = globalThis.__mutarTexturaLejos && k <= 2 ? geo(d) : new THREE.BufferGeometry();
+    ponerTexturas(k, d);
     hecho = k; malla.visible = true;
+  }
+  // las texturas del color (materialLejano), del nivel k: el suelo (sRGB) y las copas con cuánto bosque hay (en alfa).
+  // (con __mutarTexturaLejos, la prueba lo rompe a propósito: sin texturas, el color de los vértices, como antes)
+  function ponerTexturas(k, d) {
+    const cx = d.cx, cz = d.cz, c = new Uint8Array(cx * cz * 4), b = new Uint8Array(cx * cz * 4);
+    for (let j = 0; j < cz; j++) for (let i = 0; i < cx; i++) {
+      const q = j * cx + i, n = (j * k) * muestras.nx + i * k;
+      for (let e = 0; e < 3; e++) { c[q * 4 + e] = muestras.color[n * 3 + e]; b[q * 4 + e] = d.dens[q] > 0 ? Math.round(d.copa[q * 3 + e]) : muestras.color[n * 3 + e]; }
+      c[q * 4 + 3] = 255; b[q * 4 + 3] = Math.round(Math.min(1, d.dens[q]) * 255);
+    }
+    const t = (datos) => {
+      const x = new THREE.DataTexture(datos, cx, cz, THREE.RGBAFormat, THREE.UnsignedByteType);
+      x.colorSpace = THREE.SRGBColorSpace; x.magFilter = THREE.LinearFilter; x.minFilter = THREE.LinearFilter;
+      x.wrapS = x.wrapT = THREE.ClampToEdgeWrapping; x.generateMipmaps = false; x.needsUpdate = true;
+      return x;
+    };
+    if (tex.uTexC.value) tex.uTexC.value.dispose();
+    if (tex.uTexD.value) tex.uTexD.value.dispose();
+    tex.uTexC.value = t(c); tex.uTexD.value = t(b);
+    tex.uTexP.value.set(rect.x0 - origen.x, rect.z0 - origen.z, k * muestras.base, globalThis.__mutarTexturaLejos ? 0 : 1);
+    tex.uTexN.value.set(cx, cz);
   }
   // el dosel de cerca: si el jugador se ha alejado de su centro, se empieza otro (el de antes se queda hasta que esté)
   function pasoCerca(x, z, ms) {
@@ -190,7 +239,7 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
     return performance.now() - t0;
   }
   return {
-    malla, muestras, compresion: comp, doselLejos, doselCerca,
+    malla, muestras, compresion: comp, doselLejos, doselCerca, texturas: tex,   // (texturas: el color de lo lejano, para las pruebas)
     get doselCercaListo() { return !!cerca; },
     // para las pruebas (sin tarjeta gráfica van a 1–3 fotogramas por segundo): el dosel de cerca, entero, ya
     completarDoselCerca(x, z) { pasoCerca(x, z, 1e-3); if (calculando) pasoCerca(x, z, 1e9); },

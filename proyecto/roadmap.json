@@ -1129,7 +1129,7 @@
    "id": "entre-dos",
    "num": "P2",
    "nombre": "Jugar entre dos sin trampas",
-   "estado": "revision",
+   "estado": "hecho",
    "jugable": "Cada uno reclama su tierra con su mojón y construye en ella; nadie toca lo tuyo; se sale en un sitio al azar de verdad; sin arcón de materiales infinito; con algo al hombro no llevas nada en las manos.",
    "nota": "Revisión del 1 nov con valravnx: lo que rompe jugar entre dos, antes de que nadie construya en serio.",
    "tareas": [
@@ -1302,7 +1302,9 @@
     },
     {
      "nombre": "Panel de fabricación (tecla y botón, PC y móvil): arriba lo que puedes hacer ya, debajo lo que casi (lo que falta en rojo), y en gris lo que se abre después y con qué; dice de dónde sale cada cosa (tu mano, el cinturón o el suelo)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-06T10:22:20+00:00",
+     "rama": "trabajo/20261106-1022"
     },
     {
      "nombre": "Depositar en las estaciones (valravnx, 6 nov): cada estación (piedra de tallar, banco de tronco, hoguera) tiene dónde dejar los materiales, encima o junto a ella, y se ven puestos; sus recetas gastan lo depositado en ella, no lo del suelo, con quien fabrica delante; lo de las manos sigue con lo que llevas y el suelo. Por el servidor, con su autor, en el panel y en el recorrido de jugador",
@@ -1477,9 +1479,10 @@
     },
     {
      "nombre": "Herramienta del admin mejorada (valravnx, 6 nov): al abrir el panel, información del servidor y de dónde estás además del mapa; modo autoconstruir (obras y muebles al momento y sin materiales); arcón de admin para invocarse cualquier objeto; multiplicar la velocidad de carrera; y cámara libre volando en tres dimensiones. Todo solo para la cuenta de admin, comprobado por el servidor y apuntado en admin.jsonl",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T08:04:30+00:00",
-     "rama": "trabajo/20261106-0804-admin-herramienta"
+     "rama": "trabajo/20261106-0804-admin-herramienta",
+     "fin": "2026-11-06T10:02:52+00:00"
     }
    ]
   },
@@ -1529,9 +1532,9 @@
     },
     {
      "nombre": "El bosque de lejos sin dientes de sierra (valravnx, 6 nov: «cuando está muy lejos sigue haciendo diente de sierra horrible»): el color del suelo lejano y el del bosque, en texturas que se leen en cada píxel, en vez de en los vértices de la rejilla",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T05:24:47+01:00",
-     "rama": "trabajo/20261106-0525-linde-textura"
+     "fin": "2026-11-06T12:23:56+01:00"
     }
    ],
    "num": "G"
@@ -2980,6 +2983,27 @@
      "archivo": "jugar/demo/v120.html",
      "capturas": null,
      "notas": "La tierra vuelve al rey si no se usa: 30 días sin que entren el dueño ni sus invitados (15 sin obra terminada), con aviso por correo una semana antes y el último día; lo construido queda como ruina. Lo hace el servidor."
+    },
+    {
+     "v": "v121",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v121.html",
+     "capturas": "capturas/demo-v121",
+     "notas": "La herramienta del admin (valravnx, 6 nov): el panel se abre en «Info» (lo del servidor y dónde estás); «Mapa» con los jugadores; «Modos»: autoconstruir, velocidad ×1 a ×10 y cámara libre volando en 3D; «Arcón»: invocarse cualquier objeto. Solo para la cuenta de admin, comprobado por el servidor."
+    },
+    {
+     "v": "v122",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v122.html",
+     "capturas": "capturas/demo-v122",
+     "notas": "La herramienta del admin (valravnx, 6 nov): el panel se abre en «Info» (lo del servidor y dónde estás); «Mapa» con los jugadores; «Modos»: autoconstruir, velocidad ×1 a ×10 y cámara libre volando en 3D; «Arcón»: invocarse cualquier objeto. Solo para la cuenta de admin, comprobado por el servidor."
+    },
+    {
+     "v": "v123",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v123.html",
+     "capturas": "capturas/demo-v123",
+     "notas": "El bosque de lejos sin dientes de sierra: va en el mismo suelo lejano (una sola superficie, que no se pelea consigo misma en la hondura) y su color sale de texturas leídas en cada píxel. Capturas: antes y después, mirando a las montañas altas."
     }
    ]
   },

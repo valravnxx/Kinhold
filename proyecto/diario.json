@@ -4660,6 +4660,22 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-11-06T08:04:30+00:00",
+  "fin": "2026-11-06T10:02:52+00:00",
+  "titulo": "La herramienta del admin: información, autoconstruir, arcón de admin, velocidad y cámara libre (demo v122)",
+  "hito": "admin",
+  "hecho": [
+   "valravnx pidió, como tarea aparte que no para lo demás, mejorar la herramienta del admin. El panel (F9 o «Admin») se abre ahora en «Info»: lo del servidor (conectados, cuentas, construcciones, piezas a medias, muebles, mojones, lo del suelo, estaciones) y dónde estás (posición, altura, zona, de quién es la tierra). El mapa con los jugadores, «Ir» y «Traer» van en su pestaña.",
+   "Modos: autoconstruir (el mojón y los muebles sin cobrar y cada obra que pones, terminada al momento con una acción aparte, admin_terminar, que solo crea el servidor y queda en el registro del mundo) y la velocidad por 1, 2, 3, 5 o 10 (el servidor le deja moverse tanto más deprisa solo a la cuenta de admin).",
+   "Arcón de admin: buscar cualquier objeto del catálogo e invocarlo con su cantidad; lo que no cabe cae a tus pies. Cámara libre: vuela en 3D (W A S D, Espacio, C, Mayúsculas; en el móvil, el joystick y ▲ ▼), el personaje se queda quieto, «Ir aquí» lo lleva bajo la cámara y F10 o «Cámara» la quita.",
+   "Todo, solo para la cuenta de admin, comprobado por el servidor y apuntado en admin.jsonl. Provisional: los modos se apagan al desconectarse; la cámara vuela a 12 m/s (48 con Mayúsculas), no baja del suelo y no se aleja más de 3 km del personaje.",
+   "Hace falta actualizar el servidor de verdad a main para que funcione (no comprobado en él)."
+  ],
+  "pruebas": "Batería entera en la nube (35 grupos, sin las de en línea): todo correcto; luego, con la barra de la cámara movida, el panel del admin, la web y el juego en inglés, otra vez bien. Prueba nueva del servidor, la herramienta del admin, 38/38 (con MUTAR=1, que deja mandar admin_terminar a cualquiera, falla). Capturas de cerca en PC y móvil de cada pestaña y de la cámara libre.",
+  "capturas": "capturas/demo-v122",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-06T08:24:10+00:00",
   "fin": "2026-11-06T09:36:41+00:00",
   "titulo": "P2 Jugar entre dos sin trampas: revisión completa; el hito pasa a revisión de valravnx (carril A)",
@@ -4676,6 +4692,22 @@
   ],
   "pruebas": "35 de 35 grupos correctos (tres, al repetirlos en la nube; en el PC de valravnx fallan por tener tarjeta gráfica); sin las de en línea, que no se pasan",
   "capturas": "capturas/revision-entre-dos-6nov",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T05:24:47+01:00",
+  "fin": "2026-11-06T12:23:56+01:00",
+  "titulo": "El bosque de lejos sin dientes de sierra (chat con valravnx)",
+  "hito": "graficos",
+  "hecho": [
+   "Causa: el bosque de lejos iba en una malla aparte encima del suelo lejano. Lo lejano va comprimido en la hondura y los 10–14 m de copas sobre el suelo quedaban en 0,06 pasos del búfer de hondura en PC y en 1–2 en el móvil (calculado con la compresión del juego): no se podían ordenar, y en cada triángulo ganaba una capa u otra según el ajuste del suelo, que crece con la pendiente. Por eso se veía sobre todo hacia las montañas altas.",
+   "Ahora es una sola superficie: el suelo lejano sube lo que sus copas (la media de las de alrededor, que en el linde baja a cero) y la malla del dosel de lejos ya no se dibuja. El dosel de cerca llega hasta el hueco del suelo lejano, para que no quede una franja sin copas.",
+   "El color de lo lejano sale de dos texturas del tamaño de la rejilla (el suelo; las copas y cuánto bosque hay), leídas en cada píxel con filtrado lineal, con las manchas de las copas donde hay bosque: el linde sale curvo y no por las diagonales.",
+   "Prueba del perfil gráfico: lo lejano toma el color de sus texturas, y el bosque va en el mismo suelo lejano (sin malla aparte; dentro del bosque el suelo sube al menos la mitad de sus copas). Rota a propósito (MUTAR=2, como antes), falla en las dos.",
+   "No comprobado: que se vea bien en una tarjeta gráfica de verdad. Aquí (sin tarjeta) los dientes no salían ni antes del arreglo, porque el dibujado por programa tiene otra precisión de hondura; las capturas, mirando a las montañas altas, solo comprueban que nada se ha roto."
+  ],
+  "pruebas": "Batería entera en la nube con todo lo de main unido: 35 grupos correctos, sin las de en línea. Por el camino fallaron sin ser de este cambio y pasaron al repetirlos: la web (faltaban en main las traducciones de tareas que anunciaba otra sesión), la presencia (un salto de 3,00× contra 2,5× con el retraso simulado) el tronco al hombro (radio 10 u 11 cm según la vez) y entrar con la cuenta (el servidor aún no había apuntado el sitio). Capturas mirando a las montañas altas, antes y después, en PC y móvil.",
+  "capturas": "capturas/demo-v123",
   "estado": "ok"
  }
 ]

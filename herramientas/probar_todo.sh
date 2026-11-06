@@ -66,6 +66,7 @@ paso "Conexiones que se cortan y datos mal formados" node pruebas/prueba_conexio
 paso "Volver donde lo dejaste (posiciones en el servidor)" node pruebas/prueba_posicion_servidor.mjs
 paso "Salidas en línea: cada personaje nuevo elige una de las tres del rey (Lindholt, la ciudad, Motdale) y el servidor lo recuerda" node pruebas/prueba_salidas.mjs
 paso "Panel del admin en el servidor (por la cuenta, ver a todos, teletransportarse)" node pruebas/prueba_admin_servidor.mjs
+paso "Herramienta del admin en el servidor (información, autoconstruir, arcón de admin, velocidad)" node pruebas/prueba_admin_herramienta.mjs
 paso "Cuentas: usuario y contraseña (resumida con sal), crear, entrar, intentos y lo que no debe dejar" node pruebas/prueba_cuentas.mjs
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
 paso "Inventario y suelo en el servidor, con dos clientes" node pruebas/prueba_objetos_servidor.mjs

@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 6 nov 2026 (11:32 UTC) — en la sesión del carril A: aprobado el hito P2
+valravnx, tras la revisión completa de P2: «aprueba». → El hito «Jugar entre dos sin trampas» pasa a hecho.
+
 ### 6 nov 2026 (08:04 UTC) — en la sesión de P3: mejorar la herramienta del admin (aparte, sin parar lo demás)
 valravnx: «tarea especial, que no detendrá otras: mejorar el admin tool: al clicar en admin en vez de salir el mapa solo, saldrá más información, y el poder activar modo autoconstruir (construir de una sin materiales), el poder abrir el arcón de admin para invocarse lo que sea, poder multiplicar la velocidad de carrera y poder ir a freecam volando en 3 dimensiones para tareas de administracion y pruebas». → Tarea de chat en el hito P7 (Administración), rama trabajo/20261106-0804-admin-herramienta.
 
