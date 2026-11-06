@@ -4639,5 +4639,24 @@
   "pruebas": "Batería entera en la nube: 34 grupos de navegador bien; la de lógica falló solo por dos mensajes nuevos sin traducir, arreglado y repetida (lógica, demo única y juego en inglés: bien). La tierra vuelve al rey 41/41.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T07:35:00+01:00",
+  "fin": "2026-11-06T09:49:40+01:00",
+  "titulo": "Los ríos llegan al mar de verdad",
+  "hito": "mundo",
+  "hecho": [
+   "valravnx, 6 nov: «NO LLEGAN AL MAR… solo un estrecho de tierra aleatorio, ningún río conecta con el océano… VERIFÍCALO BIEN».",
+   "Medido: en 8 de las 27 bocas de Whitholm el río del mapa acababa aún en tierra (hasta 440 m de la orilla): la costa de cerca no coincide con las celdas de 1 km. La prueba de la v119 solo medía las bocas que se dejaban medir por el eje recto, y por eso no lo vio.",
+   "Ahora el río que no acaba ya mar adentro sigue cuesta abajo de la forma, en pasos de 120 m, hasta 150 m dentro del mar.",
+   "Prueba nueva en la de desembocaduras: en los 31 ríos que acaban en el mar alrededor de la isla, agua seguida por el cauce (con su meandro) desde 2,5 km río arriba hasta el mar; con el final de antes falla (19 de 27).",
+   "Los ríos de lejos: más allá de la lámina de agua de cerca (120 m; 80 en el móvil) no había agua de río, solo el mar de lejos donde el cauce iba a la altura del mar: el río se cortaba y volvía a salir como mar. Ahora cada río lleva una cinta de agua por el centro de su cauce hasta 1,1 km (700 m en el móvil), con su corriente; no se dibuja dentro de la lámina de cerca ni donde empieza el horizonte.",
+   "La arena: salía en todo lo que queda a menos de 2,8 m sobre el mar, también en las vegas tierra adentro (376 de 402 puntos bajos lejos del mar). Ahora solo hasta unos 120 m de la orilla; prueba nueva en la del mar.",
+   "La prueba del mar medía 4 o 5 playas: ahora filas cada 500 m (18 playas) y pide la franja somera en 6 de cada 10 (en un tercio de las costas bajas el fondo las toma por costa alta; ya pasaba antes de este cambio, 13 de 19).",
+   "No comprobado: dónde estaba valravnx en su captura de la franja azul lejana; en el sitio probado, hasta 8 km en 16 direcciones, no hay tierra por debajo de 0,3 m (la franja era mar de verdad, la otra costa)."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main: 35 grupos bien. Prueba de desembocaduras 9/9 (MUTAR=2 falla), del mar 7/7 (MUTAR=2 falla).",
+  "capturas": "capturas/demo-v121",
+  "estado": "ok"
  }
 ]
