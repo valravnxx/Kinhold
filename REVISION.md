@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 6 nov 2026 (08:04 UTC) — en la sesión de P3: mejorar la herramienta del admin (aparte, sin parar lo demás)
+valravnx: «tarea especial, que no detendrá otras: mejorar el admin tool: al clicar en admin en vez de salir el mapa solo, saldrá más información, y el poder activar modo autoconstruir (construir de una sin materiales), el poder abrir el arcón de admin para invocarse lo que sea, poder multiplicar la velocidad de carrera y poder ir a freecam volando en 3 dimensiones para tareas de administracion y pruebas». → Tarea de chat en el hito P7 (Administración), rama trabajo/20261106-0804-admin-herramienta.
+
 ### 6 nov 2026 (~08:00 UTC) — en la sesión de P3: fabricar con lo depositado en la mesa, y el panel
 valravnx: «pone que en el crafteo tienes que tener las cosas en el suelo. Yo preferiría poderlas poner en una mesa o en un punto de acopio o en alguna cosa, aunque tú tengas que estar delante haciendo el crafteo, sobre todo cuando sean con mesas de crafteo, poderlas depositar encima de esas mesas». Pide una revisión de cómo está en el GDD, en lo hecho y en lo que falta; si el menú de fabricar está previsto ya o pronto («ni siquiera puedo ver qué son… están solamente programados por dentro»), y que le explique cómo está hecho ahora. → Revisión dada en la sesión. Sus respuestas: «para crafteos de mano, mano y suelo, para crafteos de mesa especifica, lo que se deposite en mesa», y el panel primero. → GDD (apartado 9, en los tres idiomas): lo de las manos, con lo que llevas y el suelo; lo de una estación, con lo depositado en ella. Roadmap de P3: tarea nueva «Depositar en las estaciones», justo después del panel de fabricación, que sigue siendo la siguiente.
 

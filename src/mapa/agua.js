@@ -33,9 +33,12 @@ export function crearMaterialAgua() {
   m.userData.hueco = hueco;
   m.ponerHueco = (x0, z0, x1, z1) => hueco.value.set(x0, z0, x1, z1);
   m.quitarHueco = () => hueco.value.copy(LEJOS);
+  // y hasta dónde se dibuja desde la cámara (m; los ríos de lejos del juego: más allá empieza el horizonte, comprimido)
+  const hasta = { value: 1e9 };
+  m.userData.hasta = hasta;
   m.onBeforeCompile = (sh) => {
     sh.uniforms.uTiempo = tiempoAgua;
-    sh.uniforms.uHueco = hueco;
+    sh.uniforms.uHueco = hueco; sh.uniforms.uHasta = hasta;
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>
 attribute vec2 aFlujo; attribute float aHondo; attribute float aTipo; attribute float aOla; attribute float aOrilla; attribute float aEspuma;
@@ -66,7 +69,7 @@ vFlujo = aFlujo; vHondo = aHondo; vTipo = aTipo; vOrilla = aOrilla; vEspuma = aE
 vMundo = (modelMatrix * vec4(transformed, 1.0)).xyz;`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
-uniform float uTiempo; uniform vec4 uHueco;
+uniform float uTiempo; uniform vec4 uHueco; uniform float uHasta;
 varying vec2 vFlujo; varying float vHondo; varying float vTipo; varying float vOrilla; varying vec3 vMundo; varying vec3 vNorM; varying float vEspuma;
 float hashA(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float ruidoA(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
@@ -83,6 +86,7 @@ vec2 rizos(vec2 p, float t) {
 }`)
       .replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
 if (vMundo.x > uHueco.x && vMundo.x < uHueco.z && vMundo.z > uHueco.y && vMundo.z < uHueco.w) discard;
+if (length(vMundo - cameraPosition) > uHasta) discard;
 float hondo = max(vHondo, 0.0);
 // el dibujo de la corriente: dos fases desplazadas media vuelta, mezcladas en triángulo (no se ve el reinicio)
 float ciclo = 2.4, f0 = fract(uTiempo / ciclo), f1 = fract(uTiempo / ciclo + 0.5), w0 = 1.0 - abs(2.0 * f0 - 1.0);

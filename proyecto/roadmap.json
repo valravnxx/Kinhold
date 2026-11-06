@@ -1229,7 +1229,9 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-06T08:24:59+00:00",
+     "rama": "trabajo/20261106-0824"
     },
     {
      "nombre": "Tu tierra es la zona entera de tu mojón (valravnx, 4 nov), un mojón por personaje; el mapa, al acercarlo, enseña las zonas de cada comarca y la tuya resaltada con su mojón",
@@ -1471,6 +1473,12 @@
      "estado": "hecho",
      "inicio": "2026-11-05T16:37:21+00:00",
      "fin": "2026-11-05T18:25:20+00:00"
+    },
+    {
+     "nombre": "Herramienta del admin mejorada (valravnx, 6 nov): al abrir el panel, información del servidor y de dónde estás además del mapa; modo autoconstruir (obras y muebles al momento y sin materiales); arcón de admin para invocarse cualquier objeto; multiplicar la velocidad de carrera; y cámara libre volando en tres dimensiones. Todo solo para la cuenta de admin, comprobado por el servidor y apuntado en admin.jsonl",
+     "estado": "en_curso",
+     "inicio": "2026-11-06T08:04:30+00:00",
+     "rama": "trabajo/20261106-0804-admin-herramienta"
     }
    ]
   },
@@ -1761,9 +1769,15 @@
     },
     {
      "nombre": "Los ríos llegan al mar de verdad (valravnx, 6 nov: «NO LLEGAN AL MAR… solo un estrecho de tierra aleatorio, ningún río conecta con el océano» y la tierra de dentro sale de lejos como bajo el agua)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T07:35:00+01:00",
-     "rama": "trabajo/20261106-0735-rios-mar2"
+     "fin": "2026-11-06T09:49:40+01:00"
+    },
+    {
+     "nombre": "La desembocadura y el mar de lejos, revisados de nuevo (valravnx, 6 nov, 10:17: «en ninguna de las imágenes se ve el río llegando al mar… a lo lejos sigue hundido el terreno bajo el agua… y los glitches de lo parecido a los árboles»)",
+     "estado": "en_curso",
+     "inicio": "2026-11-06T10:18:17+01:00",
+     "rama": "trabajo/20261106-1020-rios-mar3"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Lo lleva el chat con valravnx: lo visual y creativo del mundo. Desde el 29 oct, unir el mapa con el juego (terreno por trozos, aparecer y andar por el mundo) está en el hito «El juego en el mundo de verdad», que llevan los carriles."
