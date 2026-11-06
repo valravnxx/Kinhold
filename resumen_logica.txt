@@ -1,0 +1,278 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 3436 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2632 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2201 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2693 KB
+
+== Construir demo única
+      2579 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3762 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2599 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2195 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2694 KB
+dist/kinhold_trozos.html 2209 KB
+hilo de los trozos 22 KB
+
+== Lógica de construcción
+  OK   el segundo tramo de una pendiente arranca 1 tramo más arriba
+  OK   remate de esquina: limatesa baja hacia los dos aleros, limahoya sube
+
+Resultado: 273 correctas, 0 fallidas
+
+== Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo
+  OK   la pestaña «exterior» tiene algo
+  OK   la pestaña de muebles tiene algo
+
+46 correctas, 0 fallos
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Modelos
+  OK   Cimiento de troncos solo: hacia fuera conserva su margen (control de la prueba de rendijas) — 106 rayos sin madera
+  OK   Cimiento de troncos con vecino a un lado: testas solo hacia fuera
+
+Resultado: 178 correctas, 0 fallidas
+
+== Lógica de combate
+  OK   con el botón pulsado, un movimiento claro hacia arriba cambia a alto
+  OK   y luego a la derecha, sin soltar
+
+Resultado: 138 correctas, 0 fallidas
+
+== Acciones con autor
+  OK   ningún archivo fuera de la lógica pura cambia el mundo directamente (80 revisados)
+  OK   la construcción y el combate usan las acciones
+
+Resultado: 41 correctas, 0 fallidas
+
+== Quitar el mojón: dejar tu tierra y perder lo construido, para reposicionar
+  OK   y construye en su tierra nueva
+  OK   rehecho desde el registro da el mismo mundo
+
+30 bien, 0 mal
+
+== Alcance de las obras: el servidor solo deja entregar, subir, trabajar y desmontar junto a la obra y en su planta
+  OK   lo que devuelve (6 piedras): lo que le cabe a lo que lleva y lo demás al suelo a sus pies, nada al arcón — mano 3, suelo 3, arcón 106 → 106
+  OK   lo que no existe lo dice la acción misma — No existe.
+
+29 bien, 0 mal
+
+== Lo tuyo es tuyo: en tu tierra solo tú y tus invitados desmontáis y usáis puertas y fuego; el servidor lo comprueba
+  OK   el servidor no deja a Bruno desmontar lo de Ana — Es tierra de otro: solo su dueño y sus invitados.
+  OK   a Ana, sí
+
+35 bien, 0 mal
+
+== La tierra vuelve al rey si no se usa: 30 días sin entrar el dueño ni sus invitados (15 sin obra terminada), avisos por correo y ruinas
+  OK   con obra terminada, el día 20 sigue siendo suya
+  OK   el día 30, al rey
+
+41 bien, 0 mal
+
+== Perfiles gráficos: seis perfiles, gradación de color y perfil de inicio
+  OK   un móvil muy rápido no pasa a los de PC
+  OK   si no llega a ninguno, el más bajo
+
+25 bien, 0 mal
+
+== Horizonte de los perfiles altos
+  OK   los pasos son niveles que hay
+  OK   la niebla de cerca no tapa las montañas
+
+37 bien, 0 mal
+
+== El fondo del mar junto a la costa
+  OK   tierra adentro (a más de 400 m del mar, en lo bajo), sin arena de playa — 0 de 402 puntos con arena
+  OK   en las playas, arena junto a la orilla (a 15 m) — 13 de 18
+
+7 bien, 0 mal
+
+== Los ríos llegan al mar
+  OK   el cauce sigue en el mar (sin barra que cierre la boca) — 19 de 19
+  OK   la boca se ensancha (estuario) — 19 de 19
+
+11 bien, 0 mal
+
+== Inventario por huecos
+  OK   el factor queda entre 0,8 y 1 con datos raros
+  OK   lo cargado de un guardado ralentiza igual
+
+137 correctas, 0 fallos
+
+== Recoger del suelo y de las plantas
+  OK   lo guardado de un punto que ya no existe se descarta
+  OK   un guardado roto o sin versión se descarta sin romper
+
+45 correctas, 0 fallidas
+
+== Estaciones y recetas
+  OK   el registro anota lo depositado, en qué estación se hizo y lo que se gastó de ella — {"receta":"lasca_silex","fin":1793426420000,"estacion":"piedra_tallar:1","deLaEstacion":{"silex":1,"piedra":1}}
+  OK   y lo que se vuelve a coger
+
+114 bien, 0 mal
+
+== Objetos en el suelo
+  OK   lo de fuera de tu tierra no cuenta
+  OK   sin tierra, nada
+
+44 bien, 0 mal
+
+== Tala de los árboles
+  OK   un guardado roto o sin versión se descarta
+  OK   un guardado ilegible no rompe nada
+
+46 bien, 0 mal
+
+== Tronzar y partir
+  OK   lo que ya no está en el suelo se olvida
+  OK   un guardado ilegible no rompe nada
+
+44 bien, 0 mal
+
+== La rastra
+  OK   sin arcón de pruebas, no sale ninguna rastra
+  OK   al volver a arrancar el servidor la rastra sigue donde estaba
+
+42 bien, 0 mal
+
+== La carretilla
+  OK   y queda anotado como aparcar
+  OK   al volver a arrancar el servidor siguen donde estaban, y la guarda también
+
+40 bien, 0 mal
+
+== Obras con lo que llevas
+  OK   y lo que no cabe sale para el suelo (3), no al arcón — {"piedra":3} arcón 109 → 109
+  OK   al rehacer, el arcón queda igual (lo desmontado ya cobrado no vuelve a él) — 109/109
+
+Resultado: 45 correctas, 0 fallidas
+
+== Datos de cada prenda (zonas, protección, abrigo y peso)
+  OK   mujer: descalzo, del visor a las prendas y vuelta da lo mismo
+  OK   mujer: del visor a las prendas y vuelta da lo mismo
+
+84 correctas, 0 fallos
+
+== Aspecto del personaje (personalización)
+  OK   los peinados nuevos se pueden elegir y se guardan
+  OK   el aspecto pasa por JSON sin cambiar
+
+Resultado: 28 correctas, 0 fallidas
+
+== Servidor mínimo con dos clientes
+  OK   y puede seguir construyendo (con su mojón)
+  OK   la numeración sigue donde se quedó — n=13
+
+19 correctas, 0 fallos
+
+== Jugadores que se ven, con lag simulado
+  OK   el que llega después ve dónde están los demás — jugador:d6cd8db6, jugador:f584e030
+  OK   cuando A se va, desaparece de B y de C
+
+16 correctas, 0 fallos
+
+== Movimiento sin trampas (el servidor recorta lo que no se puede andar)
+  OK   lo que se guarda al salir es lo recortado — x=22.4, z=-8.7
+  OK   al volver a conectar tampoco se salta: el servidor lo ancla donde lo dejó — x=35.1, z=-18.5
+
+16 correctas, 0 fallos
+
+== Mundo en línea: dos clientes con el servidor
+  OK   el que llega después recibe el aspecto de los que ya están, con su personalización
+  OK   y el mundo tal como está
+
+29 correctas, 0 fallos
+
+== Conexiones que se cortan y datos mal formados
+  OK   la ficha sigue valiendo tras reiniciar el servidor — jugador:ebb4fb39
+  OK   el archivo de fichas no guarda las fichas, solo su resumen
+
+35 correctas, 0 fallos
+
+== Volver donde lo dejaste (posiciones en el servidor)
+Archivo roto
+  OK   con posiciones.json roto, el servidor arranca y no da posición
+
+7 bien, 0 mal
+
+== Salidas en línea: cada personaje nuevo elige una de las tres del rey (Lindholt, la ciudad, Motdale) y el servidor lo recuerda
+Con salidaComun (solo las pruebas de navegador)
+  OK   un nuevo empieza en la común sin elegir — {"x":0,"y":0,"z":0,"giro":0}
+
+17 bien, 0 mal
+
+== Panel del admin en el servidor (por la cuenta, ver a todos, teletransportarse)
+  OK   y el panel le responde — {"ok":true,"n":1}
+  OK   uno nuevo sin cuenta no es admin
+
+57 bien, 0 mal
+
+== Herramienta del admin en el servidor (información, autoconstruir, arcón de admin, velocidad)
+  OK   (otra conexión sin cuenta no es admin)
+  OK   el mundo se rehace igual del registro (mojón y mueble sin cobrar, la obra terminada)
+
+38 bien, 0 mal
+
+== Cuentas: usuario y contraseña (resumida con sal), crear, entrar, intentos y lo que no debe dejar
+  OK   el registro de seguridad apunta recuperar, restablecer y los cambios
+  OK   tras reiniciar: vale la última contraseña, el correo nuevo y las fichas cerradas siguen cerradas
+
+145 bien, 0 mal
+
+== Combate en el servidor, con lag simulado
+  OK   el golpe cargado en el mundo le hiere de verdad, con tu autor — herida
+  OK   al irse un jugador, su luchador sale del combate
+
+80 correctas, 0 fallos
+
+== Inventario y suelo en el servidor, con dos clientes
+  OK   y la piedra de tallar de A, sin perder nada de lo encargado
+  OK   y el tocón y lo recogido
+
+61 correctas, 0 fallos
+
+== El servidor conoce el mundo (árboles, recogida, posiciones y obras contra el terreno)
+  OK   lo que se guarda es solo lo cambiado: el árbol a medias, ni el falso ni ninguno más — 1 árboles, 0 puntos
+  OK   al volver a arrancar, lo guardado que no está en el mundo se descarta y lo de verdad sigue
+
+36 bien, 0 mal
+
+== Lo talado, lo recogido y el suelo, por trozos: a cada uno lo de su alrededor
+  OK   al volver a arrancar se lee igual
+  OK   lo guardado con el formato anterior (2) se lee igual
+
+25 correctas, 0 fallos
+
+== Las obras y lo alisado, por trozos: a cada uno lo de su alrededor, con los mismos ids que el servidor
+  OK   quien llega a la salida recibe en la bienvenida las obras de alrededor, iguales que en el servidor — 2 construcciones
+  OK   si la pide, le llega la foto de sus trozos
+
+25 correctas, 0 fallos
+
+== Obras con lo que llevas en línea, con dos clientes
+  OK   lo que lleva cada uno, también
+  OK   un navegador nuevo rehace el mismo mundo con la bienvenida
+
+22 correctas, 0 fallos
+
+== Recorrido de jugador: uno nuevo, sin arcón y con lo que recoge, de principio a fin
