@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v118 (el menú de construir, solo lo de la casa humilde)";
+export const VERSION_DEMO = "Demo única · v119 (los ríos llegan al mar)";
 export const REGISTRO_DEMO = [
+  "v119: los ríos llegan al mar (valravnx, 5 nov): en la orilla el río baja al nivel del mar, se ensancha en un estuario (hasta 3,5 veces su ancho en la boca) y su cauce sigue mar adentro; antes, la arena de la playa cerraba la boca por encima del agua.",
+  "v119: el delta: en la boca de los ríos medianos y grandes, isletas de arena que asoman del agua y reparten el río en brazos. La vega y las laderas de alrededor no cambian (solo baja el cauce).",
   "v118: lo de niveles posteriores, escondido. El menú de construir solo enseña lo de la casa humilde: quedan guardados para su nivel el tejado y los remates de teja, la chimenea, el adarve, la empalizada y su puerta, la polea, el polipasto, la escalera de tablas y todo lo de tablas (suelo, muros, tejado de tablillas, puerta, contraventana, trampilla), el muro de entramado y los muebles de tablas o hierro (cama de madera, mesa, banco, arcón, barril y estantería).",
   "v118, provisional: «lo de este tramo» es lo de nivel 1 o menos que no pide tablas, clavos, hierro ni tejas. Solo se esconde del menú: lo ya construido sigue en pie y el servidor lo sabe hacer.",
   "v117: con algo al hombro, las manos no llevan nada, ni el hacha (valravnx, 1 nov: «si llevas algo al hombro, olvídate de llevar nada en manos a la vez»). Con el tronco corto o el saco al hombro no se coge nada con las manos (lo que recoges va a la cintura o a la espalda, si llevas dónde), y para subirte algo al hombro tienes que llevar las manos vacías. Lo comprueba el servidor, en la misma lógica del inventario.",

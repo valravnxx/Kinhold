@@ -2029,7 +2029,8 @@ function paso() {
   // nadando, el cuerpo va en el agua con la cabeza fuera (el pecho a ras del agua: las olas del mar suben hasta medio metro) y se mece un poco
   // (en el mar, subiendo y bajando con las olas)
   const yObjetivo = modo === 'nadar' ? ag.superficie - 1.25 + (ag.mar ? alturaOla(pj.x, pj.z) : Math.sin(performance.now() / 600) * 0.04) : alturaSuelo();
-  pj.y += (yObjetivo - pj.y) * Math.min(1, dt * 14);
+  // (window.__mutarSuelo: solo para romper a propósito la prueba del mundo, los pies siguen el suelo muy despacio)
+  pj.y += (yObjetivo - pj.y) * Math.min(1, dt * (window.__mutarSuelo ? 0.5 : 14));
   jugador.raiz.position.set(pj.x, pj.y, pj.z);
   jugador.raiz.rotation.y = pj.rot;
   pasoObra();

@@ -53,7 +53,8 @@ console.log('El tamaño');
   for (const r of rios) for (let k = 1; k < r.length - 1; k++) {
     const q = r[k]; if (!enIsla(q)) continue;
     const x = q.p[0] * 1000, y = q.p[1] * 1000, c = pai.rioCerca(x, y, pai.riosEn(x - 50, y - 50, x + 50, y + 50));
-    if (c.dm < 1) { anchos.push(c.ancho); if (q.d > 900) viejos.push(Math.max(2, anchoRio(q.a))); }
+    if (c.dm < 1) { anchos.push(c.anchoRio);   // (el del río, sin el estuario de la boca)
+      if (q.d > 900) viejos.push(Math.max(2, anchoRio(q.a))); }
   }
   anchos.sort((a, b) => a - b); viejos.sort((a, b) => a - b);
   const med = anchos[anchos.length >> 1], max = anchos[anchos.length - 1], medViejo = viejos[viejos.length >> 1];

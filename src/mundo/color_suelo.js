@@ -74,14 +74,17 @@ function conLecho(c, st, rio, xm, ym) {
   l = l.map((v, q) => v + (roca[q] * 1.05 - v) * canto * 0.8);
   // barras de arena en los ríos anchos, por dentro del cauce
   if (rio.ancho > 6) { const t = suave(0.58, 0.68, fbm(xm / 14, ym / 14, 63, 3)) * suave(-rio.ancho * 0.45, -rio.ancho * 0.2, b); l = l.map((v, q) => v + (ARENA_RIO[q] - v) * t * 0.85); }
+  // en el estuario (los últimos 600 m hasta el mar), arena: el fondo, las isletas del delta y las orillas
+  const estuario = 1 - suave(150, 600, rio.costa ?? Infinity);
+  if (estuario > 0) l = l.map((v, q) => v + (ARENA_RIO[q] * (0.92 + 0.08 * n) - v) * estuario);
   // dentro del cauce, el lecho; de ahí hasta 1,2 m fuera, el lecho se va
   const dentro = 1 - suave(-0.3, 1.2, b);
   let r = c.map((v, q) => v + (l[q] - v) * dentro);
   // la orilla mojada, de barro, justo en el borde
-  const orilla = suave(-0.8, -0.1, b) * (1 - suave(0.5, 1.4, b)) * 0.55;
+  const orilla = suave(-0.8, -0.1, b) * (1 - suave(0.5, 1.4, b)) * 0.55 * (1 - 0.6 * estuario);
   r = r.map((v, q) => v + (BARRO[q] - v) * orilla);
   // algún canto suelto en la hierba de la orilla
-  const suelto = (1 - suave(1.2, 3.5, b)) * suave(0.7, 0.74, fbm(xm / 1.1, ym / 1.1, 64, 2)) * (b > 1.2 ? 1 : 0);
+  const suelto = (1 - suave(1.2, 3.5, b)) * suave(0.7, 0.74, fbm(xm / 1.1, ym / 1.1, 64, 2)) * (b > 1.2 ? 1 : 0) * (1 - estuario);
   return r.map((v, q) => v + (roca[q] - v) * suelto);
 }
 
