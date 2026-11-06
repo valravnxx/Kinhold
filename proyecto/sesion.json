@@ -12,12 +12,6 @@
   "hito": "graficos",
   "rama": "trabajo/20261106-0525-linde-textura"
  },
- "chat:trabajo/20261106-0735-rios-mar2": {
-  "inicio": "2026-11-06T07:35:00+01:00",
-  "tarea": "Los ríos llegan al mar de verdad (valravnx, 6 nov: «NO LLEGAN AL MAR… solo un estrecho de tierra aleatorio, ningún río conecta con el océano» y la tierra de dentro sale de lejos como bajo el agua)",
-  "hito": "mundo",
-  "rama": "trabajo/20261106-0735-rios-mar2"
- },
  "chat:trabajo/20261106-0804-admin-herramienta": {
   "inicio": "2026-11-06T08:04:30+00:00",
   "tarea": "Herramienta del admin mejorada (valravnx, 6 nov): al abrir el panel, información del servidor y de dónde estás además del mapa; modo autoconstruir (obras y muebles al momento y sin materiales); arcón de admin para invocarse cualquier objeto; multiplicar la velocidad de carrera; y cámara libre volando en tres dimensiones. Todo solo para la cuenta de admin, comprobado por el servidor y apuntado en admin.jsonl",
