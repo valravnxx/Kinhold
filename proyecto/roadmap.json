@@ -1129,7 +1129,7 @@
    "id": "entre-dos",
    "num": "P2",
    "nombre": "Jugar entre dos sin trampas",
-   "estado": "en_curso",
+   "estado": "revision",
    "jugable": "Cada uno reclama su tierra con su mojón y construye en ella; nadie toca lo tuyo; se sale en un sitio al azar de verdad; sin arcón de materiales infinito; con algo al hombro no llevas nada en las manos.",
    "nota": "Revisión del 1 nov con valravnx: lo que rompe jugar entre dos, antes de que nadie construya en serio.",
    "tareas": [
@@ -1229,7 +1229,10 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-06T08:24:59+00:00",
+     "rama": "trabajo/20261106-0824",
+     "fin": "2026-11-06T09:35:59+00:00"
     },
     {
      "nombre": "Tu tierra es la zona entera de tu mojón (valravnx, 4 nov), un mojón por personaje; el mapa, al acercarlo, enseña las zonas de cada comarca y la tuya resaltada con su mojón",
@@ -1768,9 +1771,15 @@
     },
     {
      "nombre": "Los ríos llegan al mar de verdad (valravnx, 6 nov: «NO LLEGAN AL MAR… solo un estrecho de tierra aleatorio, ningún río conecta con el océano» y la tierra de dentro sale de lejos como bajo el agua)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T07:35:00+01:00",
-     "rama": "trabajo/20261106-0735-rios-mar2"
+     "fin": "2026-11-06T09:49:40+01:00"
+    },
+    {
+     "nombre": "La desembocadura y el mar de lejos, revisados de nuevo (valravnx, 6 nov, 10:17: «en ninguna de las imágenes se ve el río llegando al mar… a lo lejos sigue hundido el terreno bajo el agua… y los glitches de lo parecido a los árboles»)",
+     "estado": "en_curso",
+     "inicio": "2026-11-06T10:18:17+01:00",
+     "rama": "trabajo/20261106-1020-rios-mar3"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Lo lleva el chat con valravnx: lo visual y creativo del mundo. Desde el 29 oct, unir el mapa con el juego (terreno por trozos, aparecer y andar por el mundo) está en el hito «El juego en el mundo de verdad», que llevan los carriles."
@@ -2978,6 +2987,13 @@
      "fecha": "2026-11-06",
      "archivo": "jugar/demo/v121.html",
      "capturas": "capturas/demo-v121",
+     "notas": "La herramienta del admin (valravnx, 6 nov): el panel se abre en «Info» (lo del servidor y dónde estás); «Mapa» con los jugadores; «Modos»: autoconstruir, velocidad ×1 a ×10 y cámara libre volando en 3D; «Arcón»: invocarse cualquier objeto. Solo para la cuenta de admin, comprobado por el servidor."
+    },
+    {
+     "v": "v122",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v122.html",
+     "capturas": "capturas/demo-v122",
      "notas": "La herramienta del admin (valravnx, 6 nov): el panel se abre en «Info» (lo del servidor y dónde estás); «Mapa» con los jugadores; «Modos»: autoconstruir, velocidad ×1 a ×10 y cámara libre volando en 3D; «Arcón»: invocarse cualquier objeto. Solo para la cuenta de admin, comprobado por el servidor."
     }
    ]
