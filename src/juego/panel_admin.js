@@ -97,7 +97,7 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar, libre 
     if (!m.ok) {
       if (m.motivo === 'Solo la cuenta de admin puede usar el panel.') jugadores = [];
       ponerEstado(tr(m.motivo || 'El servidor no lo ha aceptado.'), true); avisoQueSeLea();
-      pintarPanel(); if (mapaRey && mapaRey.abierto) mapaRey.pintar();
+      pintarCuerpo(); if (mapaRey && mapaRey.abierto) mapaRey.pintar();
       return;
     }
     if (m.que === 'ver') {
@@ -107,8 +107,10 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar, libre 
       if (Date.now() > avisoHasta) ponerEstado(tr('Conectados además de ti: {n}', { n: jugadores.length }));
       // se rehace solo si ha cambiado (así un botón no se cambia por otro mientras se pulsa)
       const h = JSON.stringify(jugadores.map(j => [j.autor, Math.round(j.x), Math.round(j.z)]));
-      const hi = JSON.stringify(info && { ...info, ahora: Math.floor(info.ahora / 1000) });
-      if ((pestana === 'mapa' && h !== huellaLista) || (pestana === 'info' && hi !== huellaInfo) || !raiz.querySelector('.pa-cuerpo')) { huellaLista = h; huellaInfo = hi; pintarPanel(); }
+      // (lo que cambia cada segundo, solo por minutos; y se rehace solo el cuerpo: la cabecera y «Cerrar» se quedan)
+      const hi = JSON.stringify(info && { ...info, ahora: Math.floor((info.ahora - info.arranque) / 60000) });
+      if (!raiz.querySelector('.pa-cuerpo')) { huellaLista = h; huellaInfo = hi; pintarPanel(); }
+      else if ((pestana === 'mapa' && h !== huellaLista) || (pestana === 'info' && hi !== huellaInfo)) { huellaLista = h; huellaInfo = hi; pintarCuerpo(); }
       if (mapaRey && mapaRey.abierto) mapaRey.pintar();
     } else if (m.que === 'traer') {
       const j = jugadores.find(e => e.autor === m.quien);
@@ -120,7 +122,7 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar, libre 
     } else if (m.que === 'modo') {
       ponerModos(m.modos);
       ponerEstado(tr('Modos: autoconstruir {a}, velocidad ×{v}', { a: m.modos.autoconstruir ? tr('sí') : tr('no'), v: m.modos.velocidad })); avisoQueSeLea();
-      pintarPanel();
+      pintarCuerpo();
     } else if (m.que === 'invocar') {
       const n = CATALOGO[m.objeto] ? tr(CATALOGO[m.objeto].nombre) : m.objeto;
       ponerEstado(m.alSuelo ? tr('{c} de {n}: no te cabía, a tus pies.', { c: m.cantidad, n }) : tr('{c} de {n}: en lo que llevas.', { c: m.cantidad, n })); avisoQueSeLea();
@@ -251,11 +253,18 @@ export function montarPanelAdmin({ mapaRey, enLinea, salida, irA, avisar, libre 
     for (const p of PESTANAS) pest.appendChild(boton(nombres[p], 'pa-p-' + p + (p === pestana ? ' activa' : ''), () => irPestana(p)));
     raiz.appendChild(pest);
     raiz.appendChild(el('div', { className: 'pa-estado' }));
-    const c = el('div', { className: 'pa-cuerpo' });
-    ({ info: cuerpoInfo, mapa: cuerpoMapa, modos: cuerpoModos, arcon: cuerpoArcon })[pestana](c);
-    raiz.appendChild(c);
+    raiz.appendChild(el('div', { className: 'pa-cuerpo' }));
+    pintarCuerpo();
     raiz.appendChild(el('div', { className: 'pa-pie' }, [boton(tr('Cerrar'), 'pa-cerrar', cerrar)]));
     ponerEstado(estadoTxt, estadoMal);
+  }
+
+  // solo lo de la pestaña (lo que llega cada segundo no toca la cabecera ni los botones de abajo)
+  function pintarCuerpo() {
+    const c = raiz.querySelector('.pa-cuerpo');
+    if (!c) return;
+    c.textContent = '';
+    ({ info: cuerpoInfo, mapa: cuerpoMapa, modos: cuerpoModos, arcon: cuerpoArcon })[pestana](c);
   }
 
   // el mapa solo en su pestaña: en las demás se ve el mundo

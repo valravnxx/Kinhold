@@ -702,7 +702,7 @@ function evaluarColocacion() {
   if (sel.clase === 'mojon') {
     fantasma.position.set(x, sueloEn(x, z), z); fantasma.rotation.set(0, 0, 0);
     const pm = mundo.puedeMojon(x, z, yoAutor());
-    const v = miMojon() ? { ok: false, motivo: t('yaMojon') } : !pm.ok ? pm : mundo.puedePagar(PIEZAS.mojon.coste, reservaDe(inventario())) ? { ok: true } : { ok: false, motivo: t('llevaMateriales') };
+    const v = miMojon() ? { ok: false, motivo: t('yaMojon') } : !pm.ok ? pm : (autoconstruirAdmin() || mundo.puedePagar(PIEZAS.mojon.coste, reservaDe(inventario()))) ? { ok: true } : { ok: false, motivo: t('llevaMateriales') };
     pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
     estado.candidato = { tipo: 'mojon', x, z, v };
     return;
@@ -725,7 +725,7 @@ function evaluarColocacion() {
     let v = { ok: true };
     if (!miMojon()) v = { ok: false, motivo: t('primeroMojon') };
     else if (!mundo.dentroDeTierra(x, z, yoAutor())) v = { ok: false, motivo: t('fueraTierra') };
-    else if (!mundo.puedePagar(DECORACION[sel.tipo].coste, reservaDe(inventario()))) v = { ok: false, motivo: t('llevaMateriales') };
+    else if (!autoconstruirAdmin() && !mundo.puedePagar(DECORACION[sel.tipo].coste, reservaDe(inventario()))) v = { ok: false, motivo: t('llevaMateriales') };
     pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
     estado.candidato = { tipo: 'deco', x, y, z, v };
     return;
@@ -1990,6 +1990,8 @@ function ahogado() {
 // Decisiones provisionales (anotadas en el diario): vuela a 12 m/s, con Mayúsculas a 48; no atraviesa el suelo (queda
 // al menos a 0,5 m por encima) y no se aleja más de 3 km del personaje (lo de alrededor llega por el personaje).
 const VUELO = 12, VUELO_RAPIDO = 48, VUELO_LEJOS = 3000;
+// con el autoconstruir del admin, el mojón y los muebles no piden llevar sus materiales (el servidor no los cobra)
+function autoconstruirAdmin() { return !!(enLinea && enLinea.admin && enLinea.red && enLinea.red.modosAdmin && enLinea.red.modosAdmin.autoconstruir); }
 const velocidadAdmin = () => (enLinea && enLinea.admin && enLinea.red && enLinea.red.modosAdmin && enLinea.red.modosAdmin.velocidad > 1 ? enLinea.red.modosAdmin.velocidad : 1);
 const barraVuelo = document.createElement('div');
 barraVuelo.id = 'barraVuelo'; barraVuelo.hidden = true;

@@ -21,6 +21,7 @@ import { validarPeticionAdmin, aplicarModo, MODOS_INICIALES, infoServidor, INVOC
 import { PresenciaServidor, CREDITO_MAX } from '../src/logica/presencia.js';
 import { Mundo } from '../src/logica/construccion.js';
 import { RegistroAcciones, ejecutar, reproducir } from '../src/logica/acciones.js';
+import { MundoEnLinea } from '../src/logica/en_linea.js';
 
 const MUTAR = process.env.MUTAR === '1';
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -112,6 +113,26 @@ try {
     const m2 = reproducir(reg.entradas);
     const q2 = m2.construcciones[0] && m2.construcciones[0].piezas.get(r.clave);
     comprobar('y al rehacer el mundo del registro, también', q2 && !q2.obra);
+  }
+
+  {
+    // el navegador (src/logica/en_linea.js): con autoconstruir adelanta el mojón sin cobrar y ve la obra terminada
+    const enviados = [], ml = new MundoEnLinea((m) => enviados.push(m));
+    ml.recibir({ tipo: 'bienvenida', autor: 'jugador:adm', entradas: [] });
+    const sin = ml.accion({ tipo: 'mojon', x: 0, z: 0 });
+    ml.modosAdmin = { autoconstruir: true, velocidad: 1 };
+    const con = ml.accion({ tipo: 'mojon', x: 0, z: 0 });
+    comprobar('navegador: sin autoconstruir, el mojón no se adelanta sin materiales; con él, sí (y no manda «lleva»)', !sin.ok && con.ok && enviados.length === 1 && !('lleva' in enviados[0].accion), JSON.stringify([sin.motivo, enviados]));
+    ml.recibir({ tipo: 'resultado', id: enviados[0].id, ok: true });
+    ml.recibir({ tipo: 'accion', entrada: { autor: 'jugador:adm', tipo: 'mojon', datos: { x: 0, z: 0, lleva: true }, ok: true } });
+    const c1 = ml.accion({ tipo: 'colocar', pieza: 'cim_piedra', x: 3, z: 0, k: 0, rot: 0, dir: 0 });
+    ml.recibir({ tipo: 'resultado', id: enviados[1].id, ok: true });
+    ml.recibir({ tipo: 'accion', entrada: { autor: 'jugador:adm', tipo: 'colocar', datos: { pieza: 'cim_piedra', x: 3, z: 0, k: 0, rot: 0, dir: 0 }, ok: true } });
+    const cc = ml.base.construcciones[0];
+    const r = ml.recibir({ tipo: 'accion', entrada: { autor: 'jugador:adm', tipo: 'admin_terminar', datos: { construccion: cc && cc.id, clave: c1.clave }, ok: true } });
+    comprobar('navegador: al llegar admin_terminar (propia), la obra queda terminada y se vuelve a dibujar', c1.ok && r.cambio === true && cc && !cc.piezas.get(c1.clave).obra, JSON.stringify(r));
+    ml.recibir({ tipo: 'bienvenida', autor: 'jugador:adm', entradas: [] });
+    comprobar('navegador: al volver a conectar, los modos se apagan', ml.modosAdmin.autoconstruir === false && ml.modosAdmin.velocidad === 1);
   }
 
   let s = crearServidor(opciones);
