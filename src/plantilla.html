@@ -129,6 +129,9 @@ body.construyendo #pomo{left:25px;top:25px}
   /* en el móvil, el idioma va en un desplegable (idioma.js) */
   #modos{top:auto;bottom:auto;top:120px;transform:none}
   #modos button,#acciones button{min-width:84px;padding:8px 10px}
+  /* «Fabricar», abajo a la izquierda a la altura de «Usar» (en la barra de arriba la alargaba una fila y tapaba el cielo) */
+  #menu #btnFabricar{position:fixed;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(178px + env(safe-area-inset-bottom,0px));min-width:84px;padding:8px 10px;font-size:14px;z-index:5}
+  body.construyendo #menu #btnFabricar{bottom:calc(290px + env(safe-area-inset-bottom,0px))}
   .pieza{min-width:128px}
   /* en el móvil, el inventario va a pantalla completa */
   #panelFabricar{inset:0;max-width:none;max-height:none;height:100%;border-radius:0;padding:calc(10px + env(safe-area-inset-top,0px)) 10px calc(14px + env(safe-area-inset-bottom,0px))}
