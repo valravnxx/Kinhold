@@ -7,7 +7,7 @@
 //   - Cerca del jugador hay un hueco (donde ya está el terreno de verdad), y la malla va unos metros por debajo, para
 //     que lo basto nunca asome por encima de lo fino.
 import * as THREE from 'three';
-import { crearMuestras, mallaDe, mallaMar, mallaDosel, crearDoselCerca, compresion, NIVELES, PASO_DOSEL_CERCA } from '../logica/horizonte.js';
+import { crearMuestras, mallaDe, mallaMar, mallaDosel, crearDoselCerca, compresion, NIVELES, PASO_DOSEL_CERCA, GLSL_COMPRESION } from '../logica/horizonte.js';
 import { TAMANO_ESPECIE } from './especies.js';
 import { PALETA } from './estilos.js';
 
@@ -29,24 +29,24 @@ function materialLejano(u, copas = false) {
   const material = new THREE.MeshLambertMaterial({ vertexColors: true, fog: false });
   material.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, u);
-    sh.vertexShader = 'uniform float uR0;\nuniform float uS;\nuniform vec2 uJug;\nvarying vec3 vHzComp;\n' + sh.vertexShader.replace('#include <project_vertex>', `
+    sh.vertexShader = 'uniform float uR0;\nuniform float uS;\nuniform float uW;\nuniform vec2 uJug;\nvarying vec3 vHzComp;\n' + GLSL_COMPRESION + sh.vertexShader.replace('#include <project_vertex>', `
       vec4 hzMundo = modelMatrix * vec4( transformed, 1.0 );
       vec3 hzV = hzMundo.xyz - cameraPosition; float hzD = length( hzV );
-      if ( hzD > uR0 ) hzMundo.xyz = cameraPosition + hzV * ( ( uR0 + ( hzD - uR0 ) * uS ) / hzD );
+      if ( hzD > uR0 ) hzMundo.xyz = cameraPosition + hzV * ( hzComp( hzD, uR0, uS, uW ) / hzD );
       vHzComp = hzMundo.xyz;
       vec4 mvPosition = viewMatrix * hzMundo;
       gl_Position = projectionMatrix * mvPosition;`);
     // (en cada píxel, el punto del mundo se saca deshaciendo la compresión del punto dibujado: si se pasara el del
     // vértice sin comprimir, entre vértices comprimidos no casa con lo que se ve, y el hueco de alrededor del jugador
     // se comía, en el mar de lejos (cuadros de 500 m), una franja de kilómetros: salía cielo entre los dos mares)
-    let f = 'uniform float uHueco;\nuniform float uHasta;\nuniform vec3 uCuadro;\nuniform vec2 uJug;\nuniform float uR0;\nuniform float uS;\nvarying vec3 vHzComp;\n';
+    let f = 'uniform float uHueco;\nuniform float uHasta;\nuniform vec3 uCuadro;\nuniform vec2 uJug;\nuniform float uR0;\nuniform float uS;\nuniform float uW;\nvarying vec3 vHzComp;\n' + GLSL_COMPRESION;
     if (copas) f += `float hzAzar(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
 float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
   return mix(mix(hzAzar(i),hzAzar(i+vec2(1,0)),f.x),mix(hzAzar(i+vec2(0,1)),hzAzar(i+vec2(1,1)),f.x),f.y);}
 `;
     sh.fragmentShader = f + sh.fragmentShader.replace('void main() {', `void main() {
   vec3 hzVc = vHzComp - cameraPosition; float hzDc = length( hzVc );
-  vec3 vHzMundo = cameraPosition + hzVc * ( ( hzDc <= uR0 ? hzDc : uR0 + ( hzDc - uR0 ) / uS ) / max( hzDc, 1e-3 ) );
+  vec3 vHzMundo = cameraPosition + hzVc * ( hzDescomp( hzDc, uR0, uS, uW ) / max( hzDc, 1e-3 ) );
   float hzDist = length( vHzMundo.xz - uJug );
   if ( hzDist < uHueco || ( uHasta > 0.0 && hzDist > uHasta ) ) discard;
   if ( uCuadro.z > 0.0 && max( abs( vHzMundo.x - uCuadro.x ), abs( vHzMundo.z - uCuadro.y ) ) < uCuadro.z ) discard;`);
@@ -81,7 +81,7 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   const diagonal = Math.hypot(rect.x1 - rect.x0, rect.z1 - rect.z0);
   const comp = compresion(hasta, camara.far, diagonal);
   const jug = new THREE.Vector2(), cuadroArb = new THREE.Vector3(0, 0, 1e6);   // (hasta que estén los árboles, nada de cerca)
-  const comun = { uR0: { value: comp.r0 }, uS: { value: comp.s }, uJug: { value: jug } };
+  const comun = { uR0: { value: comp.r0 }, uS: { value: comp.s }, uW: { value: comp.w }, uJug: { value: jug } };
   // el hueco, casi hasta donde acaba el terreno de cerca (16 m de solape: ahí gana el de cerca, que va delante en la hondura)
   const uniformes = { ...comun, uHueco: { value: Math.max(0, hasta - 16) }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } };
   const material = materialLejano(uniformes);

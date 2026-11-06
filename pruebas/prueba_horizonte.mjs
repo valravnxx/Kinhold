@@ -18,7 +18,7 @@ function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
   else { mal++; console.log(`  FALLA ${nombre}${detalle ? ' — ' + detalle : ''}`); }
 }
-const MUTAR = process.env.MUTAR === '1', MUTAR2 = process.env.MUTAR === '2';
+const MUTAR = process.env.MUTAR === '1', MUTAR2 = process.env.MUTAR === '2', MUTAR3 = process.env.MUTAR === '3';
 // las especies como las da el juego (src/mundo/horizonte.js: el alto de TAMANO_ESPECIE y un verde)
 const ALTO = { abeto: 10.5, pino: 9.5, abedul: 9, roble: 7.5, haya: 10.8, fresno: 9.2, encina: 5.5 };
 const ESPECIES = Object.fromEntries(Object.entries(ALTO).map(([e, a]) => [e, { alto: MUTAR2 ? 40 : a, color: [0.2, 0.27, 0.15] }]));
@@ -26,13 +26,34 @@ const ESPECIES = Object.fromEntries(Object.entries(ALTO).map(([e, a]) => [e, { a
 console.log('La compresión');
 const LEJOS = 1600, HASTA = 768;   // el alcance de la cámara del juego y dónde acaba el terreno de cerca (PC)
 const diag = Math.hypot(ISLA.x1 - ISLA.x0, ISLA.z1 - ISLA.z0);
-const c = compresion(HASTA, LEJOS, MUTAR ? diag / 2 : diag);
+const c = compresion(HASTA, LEJOS, MUTAR ? diag / 2 : diag, MUTAR3 ? 0 : undefined);
 comprobar('empieza pasado el terreno de cerca', c.r0 > HASTA, `r0 ${c.r0} m`);
 comprobar('lo más lejos de la isla (su diagonal) cabe en la cámara', comprimir(diag, c) < LEJOS, `${Math.round(comprimir(diag, c))} m de ${LEJOS}`);
 comprobar('lo de cerca no cambia', comprimir(300, c) === 300 && comprimir(c.r0, c) === c.r0);
 const vuelta = [1000, 5000, 20000, diag].every(d => Math.abs(descomprimir(comprimir(d, c), c) - d) < 1e-6 * d);
 comprobar('se deshace (la niebla sabe la distancia de verdad)', vuelta);
 comprobar('lo más lejano sigue detrás de lo menos lejano', comprimir(20000, c) > comprimir(10000, c));
+// Sin franjas levantadas (valravnx, 6 nov: «a lo lejos sigue hundido el terreno bajo el agua… y los glitches de lo
+// parecido a los árboles»): la malla lejana es de triángulos planos entre vértices comprimidos; con la compresión de
+// golpe en r0, un triángulo con un vértice a cada lado se levantaba metros (el mar de lejos, en cuadros de 500 m, tapaba
+// la costa). Con la cámara a 8 m sobre el mar, en tramos del mar (250 m, a -4 m) y del suelo (100 m) que cruzan r0 en
+// cualquier dirección: lo que se aparta la recta entre los dos vértices comprimidos del punto comprimido, en altura.
+{
+  const comp3 = (x, y, z) => { const d = Math.hypot(x, y - 8, z), k = comprimir(d, c) / d; return [x * k, 8 + (y - 8) * k, z * k]; };
+  let peorMar = 0, peorSuelo = 0;
+  for (let a = 0; a < 64; a++) for (let d0 = c.r0 - 300; d0 < c.r0 + 400; d0 += 10) for (const [L, y, cual] of [[250, -4, 'mar'], [100, 0.5, 'suelo']]) {
+    const ux = Math.cos(a / 64 * 2 * Math.PI), uz = Math.sin(a / 64 * 2 * Math.PI), A = [d0, y, 0], B = [d0 + ux * L, y, uz * L];
+    const CA = comp3(...A), CB = comp3(...B);
+    for (let t = 0.1; t < 1; t += 0.1) {
+      const P = comp3(A[0] + (B[0] - A[0]) * t, y, A[2] + (B[2] - A[2]) * t), lin = CA[1] + (CB[1] - CA[1]) * t;
+      // (en altura sobre la línea de mirada: lo que sube la recta respecto al punto de verdad, a la misma distancia)
+      const e = lin - P[1];
+      if (cual === 'mar') peorMar = Math.max(peorMar, e); else peorSuelo = Math.max(peorSuelo, Math.abs(e));
+    }
+  }
+  comprobar('el mar de lejos no se levanta entre sus vértices (como mucho 0,5 m: la costa baja queda por encima)', peorMar < 0.5, `${peorMar.toFixed(2)} m`);
+  comprobar('el suelo de lejos no se aparta entre sus vértices (como mucho 0,5 m)', peorSuelo < 0.5, `${peorSuelo.toFixed(2)} m`);
+}
 
 console.log('Las muestras, poco a poco');
 const paisaje = crearPaisaje(generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO }));
