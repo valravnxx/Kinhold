@@ -238,9 +238,9 @@ export class Fabricacion {
     return cola.map(c => ({ ...c, falta: Math.max(0, c.fin - ahora), terminado: ahora >= c.fin }));
   }
 
-  // Recoger lo terminado del autor en una estación (o de sus manos): va a lo que lleva, donde quepa; lo que no cabe
-  // sigue esperando.
-  recoger(autor, estacion, pos, inv, ahora) {
+  // Recoger lo terminado del autor en una estación (o de sus manos): va a lo que lleva, donde quepa. Lo que no cabe:
+  // con suelo, cae a sus pies (enTierras: si ese sitio es de su tierra, src/logica/suelo.js); sin él, sigue esperando.
+  recoger(autor, estacion, pos, inv, ahora, suelo = null, enTierras = false) {
     let cola;
     if (estacion) {
       const e = tiene(this.estaciones, estacion) ? this.estaciones[estacion] : null;
@@ -254,6 +254,12 @@ export class Fabricacion {
     let sinSitio = false;
     for (const c of mios) {
       const rc = RECETAS[c.receta], m = inv.meterDonde(rc.da, rc.n);
+      if (!m.ok && suelo) {
+        const o = suelo.dejar({ tipo: rc.da, n: rc.n }, pos.x, pos.z, ahora, autor, !!enTierras);
+        cola.splice(cola.indexOf(c), 1);
+        dados.push({ objeto: rc.da, cantidad: rc.n, alSuelo: o.id });
+        continue;
+      }
       if (!m.ok) { sinSitio = true; continue; }
       cola.splice(cola.indexOf(c), 1);
       dados.push({ objeto: rc.da, cantidad: rc.n, donde: m.donde });
@@ -309,8 +315,9 @@ export function migrarFabricacion(datos) {
 // { autor, tipo: 'fabricar', receta, estacion: id | null, x, z }   — x, z: dónde está el autor (el servidor usará la suya)
 // { autor, tipo: 'recoger_fabricado', estacion: id | null, x, z }
 // suelo: el Suelo del mundo (lo da quien valida). ahora: la hora del que valida, nunca la del mensaje. Lo gastado sale
-// de lo del autor o del suelo a su lado y lo fabricado va al autor, nunca a otro. Se anota en el registro, salga bien o no.
-export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = null) {
+// de lo del autor o del suelo a su lado y lo fabricado va al autor (o a sus pies si no le cabe y hay suelo), nunca a
+// otro. enTierras(x, z): si ese sitio es de la tierra del autor. Se anota en el registro, salga bien o no.
+export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = null, enTierras = () => false) {
   let res;
   const a = accion;
   const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64 && !(v in Object.prototype);
@@ -324,12 +331,12 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
     const inv = invs.de(a.autor), pos = { x: a.x, z: a.z };
     if (a.tipo === 'colocar_estacion') res = fab.colocar(a.autor, a.estacion, a.x, a.z, inv, suelo, ahora);
     else if (a.tipo === 'fabricar') res = fab.fabricar(a.autor, a.receta, a.estacion || null, pos, inv, suelo, ahora);
-    else res = fab.recoger(a.autor, a.estacion || null, pos, inv, ahora);
+    else res = fab.recoger(a.autor, a.estacion || null, pos, inv, ahora, suelo, suelo ? enTierras(a.x, a.z) : false);
   }
   const e = registro.anotar(accion || {}, res);
   e.ahora = ahora;
   if (res.ok) {
-    e.resultado = res.id ? { estacion: res.id } : res.encargo ? { receta: res.encargo.receta, fin: res.encargo.fin, ...(res.estacion ? { estacion: res.estacion } : {}) } : { dados: res.dados.map(d => [d.objeto, d.cantidad]) };
+    e.resultado = res.id ? { estacion: res.id } : res.encargo ? { receta: res.encargo.receta, fin: res.encargo.fin, ...(res.estacion ? { estacion: res.estacion } : {}) } : { dados: res.dados.map(d => d.alSuelo ? [d.objeto, d.cantidad, d.alSuelo] : [d.objeto, d.cantidad]) };
     if (res.usado && Object.keys(res.usado.suelo).length) e.resultado.delSuelo = JSON.parse(JSON.stringify(res.usado.suelo));
   }
   return res;
