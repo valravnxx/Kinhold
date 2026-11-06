@@ -4587,5 +4587,21 @@
   "pruebas": "Batería entera (35 grupos, sin las de en línea): 34 en el PC de valravnx y la lógica en la nube. En su PC fallaron las tres que miden el dibujo sin tarjeta gráfica (niveles de detalle, el perfil gráfico y la demo única); repetidas en la nube: bien. Rotura a propósito de la prueba del mundo pasada aquí. Capturas del mundo miradas en PC y móvil. Sin versión nueva: no cambia nada que se juegue.",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T05:04:23+01:00",
+  "fin": "2026-11-06T07:14:31+01:00",
+  "titulo": "Los ríos llegan al mar",
+  "hito": "mundo",
+  "hecho": [
+   "valravnx, 5 nov: «los ríos no finalizan en la entrada al mar, ni hay deltas, ni nada parecido. Eso habría que trabajarlo».",
+   "Medido antes: en la orilla, el cauce estrecho quedaba bajo la arena de la playa (el fondo de 0,4 a 0,6 m por encima del agua) y el río no llegaba al mar. Ahora, en los últimos 700 m, el río baja al nivel del mar en la orilla (solo donde ya va cerca de él: el que cae por un acantilado no se toca), se ensancha en un estuario (hasta 3,5 veces en la boca) y su cauce sigue mar adentro hasta que el fondo es más hondo.",
+   "El delta: en la boca de los ríos medianos y grandes (desde 14 m de cauce), isletas de arena que asoman medio metro del agua en los últimos cientos de metros y reparten el río en brazos. Solo baja el cauce: la vega, las laderas y el relieve de alrededor se quedan como estaban (si no, se movía la ciudad del rey y dejaban de valer las salidas).",
+   "Prueba nueva «Los ríos llegan al mar» (13 bocas: el agua llega a la orilla, a la altura del mar, con el cauce bajo el agua, que sigue en el mar, la boca se ensancha y hay delta; con la boca de antes, falla). En «Generador del mapa del mundo», la desembocadura sigue fuera de la de valles (es el estuario, no un valle), y «Los ríos de verdad» mide el ancho del río sin el estuario.",
+   "Cambia el terreno: el servidor se pone al día solo con cada versión nueva de la demo (cada 5 minutos mira main); desde aquí no se puede comprobar (la máquina no llega a juego.playkinhold.com)."
+  ],
+  "pruebas": "Batería entera en la nube: 35 grupos bien. Lógica: los ríos llegan al mar 7/7 (con la boca de antes, falla), fondo del mar 5/5, generador del mapa 88/88, los ríos de verdad 14/14, Whitholm y las salidas bien.",
+  "capturas": "capturas/demo-v119",
+  "estado": "ok"
  }
 ]

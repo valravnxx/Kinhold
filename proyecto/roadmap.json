@@ -1743,9 +1743,9 @@
     },
     {
      "nombre": "Los ríos llegan al mar (valravnx, 5 nov: «los ríos no finalizan en la entrada al mar, ni hay deltas»): el cauce sigue por la playa hasta el agua, se ensancha en la desembocadura y baja al nivel del mar; en los ríos grandes, un estuario o un delta",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T05:04:23+01:00",
-     "rama": "trabajo/20261106-0505-rios-mar"
+     "fin": "2026-11-06T07:14:31+01:00"
     },
     {
      "nombre": "Las rocas de los acantilados y los cortados, de vuelta en el juego (valravnx, 5 nov: «habíamos hecho unas rocas muy bonitas para los acantilados… las habéis quitado»): las piezas de roca 3D del visor del mapa (src/mundo/rocas.js), encajadas en las paredes del mundo del juego alrededor del jugador",
@@ -2937,6 +2937,13 @@
      "archivo": "jugar/demo/v118.html",
      "capturas": "capturas/demo-v118",
      "notas": "Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de la casa humilde (la teja, la chimenea, el adarve, la empalizada, la polea, el polipasto, la escalera de tablas, lo de tablas y los muebles caros quedan guardados para su nivel)."
+    },
+    {
+     "v": "v119",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v119.html",
+     "capturas": "capturas/demo-v119",
+     "notas": "Los ríos llegan al mar: en la orilla bajan al nivel del mar, se ensanchan en un estuario de arena, su cauce sigue mar adentro y los medianos y grandes acaban en un delta de isletas."
     }
    ]
   },
