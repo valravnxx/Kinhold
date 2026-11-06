@@ -211,11 +211,11 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
       const perfil = R.dm < borde ? lerp(cauce, Math.min(0, fondo), forma) : lerp(Math.min(0, fondo), fondo, suave(borde, borde + 30, R.dm));
       return Math.min(fondo, perfil);
     }
-    const { dm, nivel, ancho, anchoRio, salto, lecho, hondo, cabeza, costa } = rioCercano(xm, ym, tramos);
+    const { dm, nivel, ancho, anchoRio, salto, lecho, lechoValle, hondo, cabeza, costa } = rioCercano(xm, ym, tramos);
     const monte = suave(120, 600, r);                      // 0 en el llano, 1 en la montaña
     // junto al río, el detalle se apaga: el fondo del valle lo marca el río (que ya talló el valle grande del mapa),
     // no el ruido; si no, el ruido levanta el fondo decenas de metros y el río queda en una zanja
-    const calma = dm === Infinity ? 1 : 0.12 + 0.88 * suave(ancho / 2, ancho / 2 + (180 + ancho * 12) * (1 - 0.45 * monte), dm);
+    const calma = dm === Infinity ? 1 : 0.12 + 0.88 * suave(anchoRio / 2, anchoRio / 2 + (180 + anchoRio * 12) * (1 - 0.45 * monte), dm);   // (sin el estuario)
     // (solo se apaga lo que sube: lo que baja se queda, y el río, que ya va por debajo de ese suelo, no queda en alto)
     const det = detalle(xm, ym, r, fino) * suave(0, 3, f);
     let z = hm + (det > 0 ? det * calma : det);
@@ -251,8 +251,8 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
       // el río talla su cauce, una vega llana a los lados y laderas con la pendiente limitada (suaves en el llano,
       // más cerradas en la montaña, donde salen gargantas); nunca una zanja de paredes verticales
       // (el escalón del salto de agua va encima: si no, al recortar el cauce a la altura del mapa se perdía)
-      const cauce = lecho, orilla = cauce + 0.8, borde = ancho / 2 + 1.5;
-      const vega = (ancho * 2.5 + 25) * (1 - 0.8 * monte);
+      const cauce = lecho, orilla = Math.max(cauce, lechoValle) + 0.8, borde = ancho / 2 + 1.5;   // (en la boca, el cauce baja al mar pero la orilla y la vega se quedan donde estaban)
+      const vega = (anchoRio * 2.5 + 25) * (1 - 0.8 * monte);   // (con el ancho del río sin el estuario: la vega no crece en la boca)
       // desnivel por metro de distancia; río arriba de donde nace (cabeza: cuánto, en m), poco a poco hasta la mitad: el
       // valle se cierra en una cabecera suave y no en una pared (el río nace ya en lo hondo del valle del mapa)
       const ladera = lerp(0.14, 0.75, monte) * (valleLiso ? 1 : 1 - 0.5 * suave(0, 200, cabeza));
@@ -370,17 +370,18 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
     // de pendiente en los últimos metros), se ensancha en un estuario (hasta 3,5 veces su ancho en la boca, en los
     // últimos 600 m) y su cauce sigue mar adentro hasta que el fondo del mar es más hondo que él.
     let costa = Infinity, anchoRio = ancho;
+    const lechoValle = lechoDe(nivel, salto, suelo);   // (el del río sin bajar al mar: la vega y las laderas no cambian, solo el cauce)
     if (tramo && dm < 2500 && !globalThis.__bocaVieja) {   // (la prueba lo quita a propósito, para ver que falla)
       costa = distCosta(xm, ym);
       if (costa < 2000) {
         // (solo donde el río ya va cerca del nivel del mar: el que llega por encima de un acantilado no se toca, y se
         // apaga del todo a 2 km de la orilla, sin saltos)
-        const alMar = 1 + 0.0025 * costa, w = (1 - suave(1, 4, nivel - alMar)) * (1 - suave(1200, 2000, costa));
+        const alMar = 1 + 0.0025 * costa, w = (1 - suave(1, 4, nivel - alMar)) * (1 - suave(300, 700, costa));
         if (nivel > alMar && w > 0) { nivel = lerp(nivel, alMar, w); if (w > 0.5) salto = 0; }
         anchoRio = ancho; ancho *= 1 + 2.5 * (1 - suave(0, 600, costa));
       }
     }
-    return { dm, nivel, ancho, anchoRio, tramo, u: uu, salto, cabeza, costa, lecho: lechoDe(nivel, salto, suelo), hondo: tramo ? hondoTramo(tramo, uu) : 1.2 };   // salto: lo que el salto de agua sube o baja el cauce aquí
+    return { dm, nivel, ancho, anchoRio, tramo, u: uu, salto, cabeza, costa, lechoValle, lecho: lechoDe(nivel, salto, suelo), hondo: tramo ? hondoTramo(tramo, uu) : 1.2 };   // salto: lo que el salto de agua sube o baja el cauce aquí
   }
   // lo lejos que está un punto de la orilla del mar, tierra adentro (m; 0 en el mar; Infinity si lejos, a más de unos
   // 1,6 km), con la pendiente de la forma (como el cortado de la costa)
@@ -440,7 +441,7 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
     return w === null ? null : Math.max(0, w - z);
   }
   // lo lejos que está un punto del eje del río más cercano (m) y el ancho de ese río (para las riberas)
-  function rioCerca(xm, ym, tramos) { const { dm, ancho } = rioCercano(xm, ym, tramos); return { dm, ancho }; }
+  function rioCerca(xm, ym, tramos) { const { dm, ancho, anchoRio } = rioCercano(xm, ym, tramos); return { dm, ancho, anchoRio }; }   // (anchoRio: sin el estuario)
   return { altura, agua, hondura, corriente, saltosEn, vadosEn, sitio, riosEn, rioCerca, rios, celda, grande };   // grande: la forma de lejos (el mapa del rey)
 }
 
