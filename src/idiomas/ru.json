@@ -2053,5 +2053,9 @@
  "Di algo… (Intro para decirlo, Esc para dejarlo)": "Скажи что-нибудь… (Enter — сказать, Esc — отменить)",
  "Sin conexión con el servidor: no se puede hablar.": "Нет связи с сервером: говорить нельзя.",
  "Ese mensaje está vacío o no vale.": "Это сообщение пустое или недопустимое.",
- "Más despacio: espera un poco antes de volver a hablar.": "Помедленнее: подожди немного, прежде чем говорить снова."
+ "Más despacio: espera un poco antes de volver a hablar.": "Помедленнее: подожди немного, прежде чем говорить снова.",
+ "Demo única · v128 (chat de texto)": "Единое демо · v128 (текстовый чат)",
+ "v128: chat de texto (valravnx, 6 nov). Con Intro (en el móvil, el botón «Hablar») escribes una frase; al decirla sale en un bocadillo sobre tu cabeza y la ven los que están a 50 m o menos, sobre la tuya. Se va al rato: 4 s y 70 ms por letra, como mucho 12. Mientras escribes no te mueves; Esc lo deja.": "v128: текстовый чат (valravnx, 6 нояб.). По Enter (на телефоне — кнопка «Говорить») пишешь фразу; когда её скажешь, она появляется в облачке над твоей головой, и её видят те, кто в пределах 50 м, — над твоей. Через некоторое время она исчезает: 4 с и 70 мс на букву, не больше 12. Пока пишешь, не двигаешься; Esc — отменить.",
+ "v128: lo dicho pasa por el servidor con su autor: lo limpia (sin caracteres de control, como mucho 120 letras), no deja hablar a chorro (una frase por segundo, 6 en 20 s) y lo apunta en charla.jsonl (quién, qué y dónde), para poder moderar.": "v128: сказанное проходит через сервер с автором: он очищает текст (без управляющих символов, не больше 120 букв), не даёт спамить (одна фраза в секунду, 6 за 20 с) и записывает его в charla.jsonl (кто, что и где), чтобы можно было модерировать.",
+ "v128, provisional: el alcance (50 m), lo que dura el bocadillo y el límite de frases los he puesto yo; la voz, para hablarla con valravnx.": "v128, временно: дальность (50 м), длительность облачка и ограничение на фразы выбраны мной; голос — обсудить с valravnx."
 }
