@@ -28,6 +28,9 @@ export const DELANTE = 1.2; // m: dónde se pone una estación, delante de ti
 // las pestañas: todo, con las manos y una por cada uso con estación
 const PESTANAS = ['todo', 'manos', ...Object.keys(USOS).filter(u => u !== 'manos')];
 const NOMBRE_PESTANA = { todo: () => tr('Todo'), manos: () => tr('Con las manos'), tallar: () => tr('Piedra de tallar'), fuego: () => tr('Fuego'), banco: () => tr('Banco de tronco') };
+// cómo se nombra cada estación en una frase («encima de la piedra de tallar»)
+const LA_ESTACION = { piedra_tallar: () => tr('la piedra de tallar'), hoguera: () => tr('la hoguera'), banco_tronco: () => tr('el banco de trabajo de tronco') };
+const laEstacion = t => LA_ESTACION[t] ? LA_ESTACION[t]() : tr(ESTACIONES[t].nombre).toLowerCase();
 const MANO_SVG = '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17V8.5a1.8 1.8 0 0 1 3.6 0V15M13.6 15V6.3a1.8 1.8 0 0 1 3.6 0V15M17.2 15V7.5a1.8 1.8 0 0 1 3.6 0V16M20.8 16v-4a1.8 1.8 0 0 1 3.6 0v7c0 5-3.4 9-8.4 9-3.4 0-5.4-1.6-7-4.2l-3-5a1.9 1.9 0 0 1 3.1-2.1L10 19"/></svg>';
 const TODO_SVG = '<svg viewBox="0 0 32 32" fill="currentColor"><rect x="5" y="5" width="9" height="9" rx="2"/><rect x="18" y="5" width="9" height="9" rx="2"/><rect x="5" y="18" width="9" height="9" rx="2"/><rect x="18" y="18" width="9" height="9" rx="2"/></svg>';
 // «1 rama y 1 cordel de fibra»
@@ -50,7 +53,9 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
   let encargos = { manos: [], estaciones: {} };
   const base = carpetaIconos();
   let indice = {}; // tipo → { propio } (lo que aún no tiene modelo sale «sin modelo aún»)
-  if (typeof fetch === 'function') fetch(base + 'indice.json').then(r => r.ok ? r.json() : null).then(j => { if (j && j.iconos) { indice = j.iconos; firma = ''; pintar(); } }).catch(() => {});
+  // el índice y las imágenes se piden al abrir el panel por primera vez (no antes: quien nunca lo abre no los baja)
+  let pedido = false;
+  const cargarIndice = () => { if (pedido || typeof fetch !== 'function') return; pedido = true; fetch(base + 'indice.json').then(r => r.ok ? r.json() : null).then(j => { if (j && j.iconos) { indice = j.iconos; firma = ''; pintar(); } }).catch(() => {}); };
 
   panel.classList.add('fab-panel');
   panel.innerHTML = `<div class="fab-cab"><span class="fab-cab-ic"></span><div class="fab-cab-txt"><h2></h2><small></small></div><button class="cerrar fab-cerrar" aria-label="✕">✕</button></div>
@@ -128,7 +133,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
       for (const t of Object.keys(x.faltan)) {
         const y = lista.find(r => r.da === t && r.grupo === 'ya');
         if (!y) continue;
-        const con = cosas(y.gasta), donde = y.estacion ? ', ' + tr('en {e}', { e: tr(ESTACIONES[fab.estaciones[y.estacion].tipo].nombre).toLowerCase() }) : '';
+        const con = cosas(y.gasta), donde = y.estacion ? ', ' + tr('en {e}', { e: laEstacion(fab.estaciones[y.estacion].tipo) }) : '';
         botones += `<button class="fab-antes fab-btn2" data-receta="${y.receta}"${y.estacion ? ` data-estacion="${esc(y.estacion)}"` : ''}>${esc(tr('Hacer antes: {d} (con {c}{donde} · {t})', { d: `${y.n} ${nombre(y.da).toLowerCase()}`, c: con, donde, t: segundos(y.s) }))}</button>`;
       }
       // atajo B: en una estación, poner encima lo que falta y llevas
@@ -140,8 +145,8 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
         }
         const cabe = DEPOSITO_MAX - totalDeposito(est.deposito);
         if (puestos.length && puestos.reduce((a, p) => a + p.n, 0) <= cabe) {
-          const lista2 = {}; for (const p of puestos) lista2[p.tipo] = (lista2[p.tipo] || 0) + p.n;
-          botones += `<button class="fab-poner-falta fab-btn2" data-estacion="${esc(est.id)}" data-poner="${esc(JSON.stringify(puestos))}">${esc(tr('Poner en {e} lo que falta: {c} (los llevas tú)', { e: tr(ESTACIONES[est.tipo].nombre).toLowerCase(), c: cosas(lista2) }))}</button>`;
+          const lista2 = {}; for (const t of Object.keys(x.gasta)) for (const p of puestos) if (p.tipo === t) lista2[t] = (lista2[t] || 0) + p.n; // en el orden de la receta
+          botones += `<button class="fab-poner-falta fab-btn2" data-estacion="${esc(est.id)}" data-poner="${esc(JSON.stringify(puestos))}">${esc(tr('Poner en {e} lo que falta: {c} (los llevas tú)', { e: laEstacion(est.tipo), c: cosas(lista2) }))}</button>`;
         }
       }
       botones += `<button class="fab-btn fab-no" disabled>${esc(tr('Te falta: {c}', { c: cosas(x.faltan) }))}</button>`;
@@ -167,7 +172,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     const lleva = hay >= DEPOSITO_MAX ? `<p class="fab-gris">${esc(tr('No cabe nada más.'))}</p>`
       : dejables(inv).map(x => `<button class="fab-hueco fab-dejar" data-estacion="${esc(e.id)}" data-de="${esc(x.ruta)}" title="${esc(tr('Dejar') + ': ' + nombre(x.tipo))}">${icono(x.tipo)}<b class="fab-num">${x.n}</b><i class="fab-de">${esc(SITIO_CORTO(x.ruta))}</i><span class="fab-hueco-nom">${esc(nombre(x.tipo))}</span></button>`).join('')
       || `<p class="fab-gris">${esc(tr('No llevas nada que dejar.'))}</p>`;
-    return `<section class="fab-sec-dep" data-estacion="${esc(e.id)}"><div class="fab-bandeja"><div class="fab-bt"><b>${esc(tr('Encima de {e}', { e: tr(est.nombre).toLowerCase() }))}</b><span>${esc(tr('{n} de {m} · toca para coger', { n: hay, m: DEPOSITO_MAX }))}</span></div>
+    return `<section class="fab-sec-dep" data-estacion="${esc(e.id)}"><div class="fab-bandeja"><div class="fab-bt"><b>${esc(tr('Encima de {e}', { e: laEstacion(e.tipo) }))}</b><span>${esc(tr('{n} de {m} · toca para coger', { n: hay, m: DEPOSITO_MAX }))}</span></div>
       <div class="fab-huecos">${encima || `<p class="fab-gris">${esc(tr('No hay nada: deja aquí lo que piden sus recetas.'))}</p>`}${encima ? '<span class="fab-hueco fab-vacio"></span>'.repeat(vacios) : ''}</div></div>
       <div class="fab-bandeja"><div class="fab-bt"><b>${esc(tr('Lo que llevas'))}</b><span>${esc(tr('toca para dejar'))}</span></div><div class="fab-huecos">${lleva}</div></div></section>`;
   }
@@ -310,7 +315,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
   let reloj = null;
   function abrir(pest = 'manos', estacion = null) {
     abierto = true; panel.hidden = false; aviso = { txt: '', error: false }; firma = ''; fichaMovil = false;
-    pestana = pest; estacionActiva = estacion; sel = null;
+    pestana = pest; estacionActiva = estacion; sel = null; cargarIndice();
     pintar(); alAbrir(); if (!reloj) reloj = setInterval(pintar, 1000);
   }
   function cerrar() { abierto = false; panel.hidden = true; fichaMovil = false; if (reloj) { clearInterval(reloj); reloj = null; } }
