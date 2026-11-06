@@ -1,0 +1,65 @@
+  OK   PC: entra y le llega lo que lleva en el servidor — []
+  OK   PC: sin la pantalla de la cuenta delante
+El panel se abre con el botón y con H
+  OK   sale el botón «Fabricar»
+  OK   el botón lo abre
+  OK   H lo cierra
+  OK   y H lo vuelve a abrir
+  OK   todas las recetas, a la vista (sin aprender ninguna)
+Con 3 fibras en la mano
+  OK   el servidor le da las 3 fibras (arcón de pruebas)
+  OK   el cordel, en «Puedes hacerlo ya» — {'cls': 'fab-fila fab-ya', 'txt': 'Cordel de fibra\nCon las manos · 15 s\nHacer\n3 Fibra cruda (3 de la mano)', 'sec': 'fab-sec fab-sec-ya'}
+  OK   y dice que la fibra sale de la mano — Cordel de fibra
+Con las manos · 15 s
+Hacer
+3 Fibra cruda (3 de la mano)
+  OK   el leñero, en «Casi», con lo que falta en rojo — Leñero
+Con las manos · 30 s
+4 Rama faltan 4
+2 Cordel de fibra faltan 2
+  OK   la lasca, en gris, con la piedra de tallar que hace falta — Lasca de sílex
+En la piedra de tallar · 20 s
+1 Sílex
+1 Piedra
+Hace falta una piedra de tallar a tu lado.
+Hacer y recoger, por el servidor
+  OK   el servidor gasta la fibra de lo que lleva
+  OK   sale en «En marcha», con lo que le queda
+  OK   terminado (15 s), sale «Recoger»
+  OK   y el cordel es suyo en el servidor
+  OK   y el panel dice lo que recoge
+Poner la piedra de tallar delante
+  OK   con una piedra, la piedra de tallar se puede poner
+  OK   el servidor la tiene, de su autor
+  OK   y se dibuja delante
+  OK   la lasca pasa de «después» a «casi» — {'cls': 'fab-fila fab-casi', 'txt': 'Lasca de sílex\nEn la piedra de tallar · 20 s\n1 Sílex faltan 1\n1 Piedra faltan 1\nLo que pide se deja en la estación (abajo).', 'sec': 'fab-sec fab-sec-casi'}
+Depositar en la piedra de tallar (valravnx, 6 nov): sus recetas gastan lo depositado en ella
+  lleva: {"mano:der":"cordel"}
+  OK   el panel enseña la piedra de tallar de al lado, vacía, con lo que lleva para dejar
+  OK   con el sílex en la mano, la lasca sigue en «casi» (no está depositado)
+  OK   sale el cordel que lleva, con «Dejar»
+  OK   «Dejar» lo deposita en el servidor
+  OK   y en la piedra de tallar, con «Coger»
+  FALLA «Coger» lo devuelve a lo que lleva
+  FALLA coge una piedra con la mano libre
+  OK   deja sílex
+  FALLA deja piedra
+  FALLA deja el sílex y la piedra: el servidor los tiene en la piedra de tallar — None
+  FALLA la lasca pasa a «Puedes hacerlo ya», diciendo que sale de la estación — {'cls': 'fab-fila fab-casi', 'txt': 'Lasca de sílex\nEn la piedra de tallar · 20 s\n1 Sílex (1 de la estación)\n1 Piedra faltan 1\nLo que pide se deja en la estación (abajo).', 'sec': 'fab-sec fab-sec-casi'}
+  FALLA y se ven puestos encima de la piedra de tallar
+En el móvil, otro jugador
+  OK   móvil: entra y le llega lo que lleva en el servidor — []
+  OK   móvil: sin la pantalla de la cuenta delante
+  OK   el móvil es otro jugador
+  OK   ve la piedra de tallar del otro
+  OK   y lo depositado en ella, puesto encima
+  OK   su panel va a pantalla completa — [390, 844]
+  FALLA y con lo que A ha dejado en ella, la lasca ya está en «Puedes hacerlo ya» a su lado (la estación es de otro, pero vale)
+  OK   y ve lo depositado en su panel
+  OK   sin salirse de lado
+Las tres estaciones de cerca, con algo depositado (solo para mirarlas: la hoguera y el banco se dibujan aquí, no se ponen)
+  OK   la hoguera y el banco de tronco se dibujan
+  OK   PC: sin errores en la consola — []
+  OK   móvil: sin errores en la consola — []
+
+7 FALLOS
