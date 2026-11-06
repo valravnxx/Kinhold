@@ -1,0 +1,55 @@
+PC
+  OK   PC: el juego tiene perfil gráfico
+  OK   PC: sin tarjeta gráfica arranca con el más barato (Móvil básico) — movil-1
+  OK   PC: el más barato no lleva horizonte
+  OK   PC: dibuja con posprocesado (2 pasadas en el más barato) — 2
+  OK   PC: el rendimiento cuenta los triángulos del mundo (no los de la última pasada) — 319102
+  OK   PC: los fps del panel son los del mundo (no uno por cada pasada) — panel 2 fps; el mundo se dibujó 6 veces en 2,5 s
+  OK   PC: se sigue viendo el cielo de la página (no sale negro) — [192, 207, 212]
+  OK   PC: el panel de rendimiento dice el perfil — Rendimiento en este aparato · Fotogramas	2 por segundo · Cada fotograma	564 ms de media; el más lento, 588 ms · Resolución	960×600 (0.75×) · Triángulos	319 mil por fotograma · Llamadas de dibujo	65 · Memoria gráf
+  OK   PC: y tiene los seis perfiles para elegir
+  OK   PC: al pulsar «Móvil alto y tableta» cambia (4 pasadas: oclusión y suavizado) — movil-3 4
+  OK   PC: al volver a entrar sigue el elegido — movil-3
+  OK   PC: ?graficos=pc-3 pone el PC alto (3 pasadas: oclusión y MSAA) — pc-3 3
+  OK   PC: con el PC alto también se ve el cielo — [213, 216, 213]
+  OK   PC: el PC alto lleva el horizonte, la isla entera cada 100 m — {'activo': True, 'tris': 418002}
+  OK   PC: lo lejano toma el color de sus texturas (suelo y bosque, cada 100 m, con filtrado lineal) — {'usa': 1, 'paso': 100, 'n': [611, 631], 'c': [611, 631], 'filtro': True, 'bosque': 133254, 'nx': 611}
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_graficos_juego_navegador.py", line 141, in <module>
+    print('PC'); recorrido(pg, 'PC', 'pc')
+                 ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_graficos_juego_navegador.py", line 112, in recorrido
+    una = pg.evaluate(f"""(() => {{ const h = {G}.horizonte, m = h.muestras, p = h.malla.geometry.attributes.position.array;
+      const dl = h.doselLejos.geometry.index ? h.doselLejos.geometry.index.count : 0;
+    ...<5 lines>...
+        if (!todo) continue; bosque++; if (p[v * 3 + 1] + y0 - m.alto[v] > m.dosel[v] * 0.5) suben++;   // (sube la media de las copas de alrededor: al menos la mitad de la suya) }}
+      return {{ dl, bosque, suben }}; }})()""")
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 9413, in evaluate
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.evaluate(expression=expression, arg=mapping.to_impl(arg))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 474, in evaluate
+    return await self._main_frame.evaluate(expression, arg)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 346, in evaluate
+    await self._channel.send(
+    ...<6 lines>...
+    )
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Page.evaluate: SyntaxError: Unexpected token ')'
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
