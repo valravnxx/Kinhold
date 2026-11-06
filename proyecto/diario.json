@@ -4510,5 +4510,21 @@
   "pruebas": "Batería entera en la nube: 35 grupos bien (con la desembocadura fuera de la prueba de valles, ver «hecho»). Tras unir main (el linde del bosque de lejos, que toca src/logica/horizonte.js), otra vez entera: 35 bien. Fondo del mar 5/5 (con el fondo de antes, falla); horizonte 35/35; generador del mapa 88/88.",
   "capturas": "capturas/demo-v116",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-05T23:22:23+00:00",
+  "fin": "2026-11-06T01:45:09+00:00",
+  "titulo": "Con algo al hombro, las manos no llevan nada (P2, carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "valravnx, 1 nov: «si llevas algo al hombro, olvídate de llevar nada en manos a la vez». En la lógica del inventario (la misma en el navegador y en el servidor): con el tronco corto o el saco al hombro no se coge nada con las manos, ni el hacha; lo que recoges va a la cintura o a la espalda, si llevas dónde.",
+   "Para subirse algo al hombro hay que llevar las manos vacías; del hombro vuelve a las manos cuando quieras.",
+   "Provisional (registro de la demo): lo que cuelga de una correa (la bandolera y el odre) no cuenta como carga al hombro y deja las manos libres; el tronco corto y el saco, que se sujetan con las manos, sí.",
+   "Pruebas al día: inventario (bloque nuevo, roto a propósito con MUTAR_MANOS_HOMBRO), tronzar, obras con lo que llevas (las varas para rodar el tronco, en la mochila), el panel de inventario en el navegador (el saco no sube con el hacha en la mano; el odre, sí) y el atajo de prueba de los muebles (devuelve también lo del hombro al arcón si estorba). El recorrido de jugador lo apunta en TODAVIA_NO: un jugador nuevo aún no tiene tronco que subirse (llega con talar).",
+   "La sesión empezó con GitHub rechazando los git push («fatal error in commit_refs_rules») unos minutos; luego volvió a funcionar. El chat publicó la demo v116 mientras tanto: esta es la v117."
+  ],
+  "pruebas": "Batería entera en la nube (35 grupos, sin las de en línea): todo bien en el código final, con la construcción, el inglés, el mapa del rey, el nivelado y quitar el mojón repetidos tras el último arreglo del atajo de prueba. El nivelado falló una vez por la ladera que le tocó (cambia en cada pasada) y salió bien al repetirlo.",
+  "capturas": "capturas/demo-v117",
+  "estado": "ok"
  }
 ]

@@ -1201,9 +1201,10 @@
     },
     {
      "nombre": "Con algo al hombro, las manos no llevan nada (ni el hacha): lógica del inventario, en la demo y por el servidor",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-05T23:22:23+00:00",
-     "rama": "trabajo/20261105-2322"
+     "rama": "trabajo/20261105-2322",
+     "fin": "2026-11-06T01:45:09+00:00"
     },
     {
      "nombre": "Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo (teja, chimenea, adarve, empalizada, polea, polipasto, escalera de tablas y los muebles caros quedan guardados para su nivel)",
@@ -2900,6 +2901,13 @@
      "archivo": "jugar/demo/v116.html",
      "capturas": "capturas/demo-v116",
      "notas": "El mar de verdad: el fondo baja enseguida (en las playas, unos metros someros con la arena a la vista y luego hondo; al pie de los acantilados, hondo ya), sin la franja de fondo gris azulado al aire, y el fondo de arena que se ve bajo el agua."
+    },
+    {
+     "v": "v117",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v117.html",
+     "capturas": "capturas/demo-v117",
+     "notas": "Con algo al hombro, las manos no llevan nada, ni el hacha: con el tronco corto o el saco al hombro no se coge nada con las manos, y para subirte algo al hombro hay que llevar las manos vacías (lo que cuelga de una correa, la bandolera y el odre, deja las manos libres). Por el servidor. Capturas: el panel de inventario con el hacha en la mano y el odre colgado, y el tronco en las manos en el móvil, antes de subirlo al hombro."
     }
    ]
   },
