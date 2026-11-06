@@ -70,7 +70,7 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
   const horizonte = camara ? crearHorizonte({ escena, paisaje, rect: ISLA, origen: O, y0, hasta: ANILLOS_MUNDO[ANILLOS_MUNDO.length - 1].hasta, camara, alt: (x, z) => altW(x, z), hay: (x, z) => terreno.alturaEn(x, z) !== null }) : null;
 
   // la máscara de los trozos cargados: un cuadro de N × N trozos alrededor del jugador (lo que alcanza el terreno de cerca)
-  const NC = Math.ceil((ANILLOS_MUNDO[ANILLOS_MUNDO.length - 1].hasta + 2 * terreno.lado) / terreno.lado) * 2, datosC = new Uint8Array(NC * NC);
+  const NC = Math.ceil((ANILLOS_MUNDO[ANILLOS_MUNDO.length - 1].hasta + 2 * terreno.lado) / terreno.lado) * 2, datosC = new Uint8Array(NC * NC), erosion = new Uint8Array(NC * NC);
   let firmaC = '';
   function cargados(xm, zm) {
     const i0 = Math.floor(xm / terreno.lado) - NC / 2, j0 = Math.floor(zm / terreno.lado) - NC / 2;
@@ -83,6 +83,13 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
     const firma = i0 + ',' + j0 + ',' + n + ',' + suma;
     if (firma === firmaC) return;
     firmaC = firma;
+    // (el borde de lo cargado sigue con el suelo de lejos debajo, como antes los 16 m de solape: si no, entre el último
+    // trozo y el suelo de lejos, más basto y algo más bajo, quedaba una raya por la que asomaba el mar)
+    erosion.set(datosC);
+    for (let b = 0; b < NC; b++) for (let a = 0; a < NC; a++) {
+      const k = b * NC + a;
+      if (erosion[k] && !(a > 0 && b > 0 && a < NC - 1 && b < NC - 1 && erosion[k - 1] && erosion[k + 1] && erosion[k - NC] && erosion[k + NC])) datosC[k] = 0;
+    }
     horizonte.ponerCargados(datosC, NC, i0 * terreno.lado - O.x, j0 * terreno.lado - O.z, NC * terreno.lado);
   }
 
