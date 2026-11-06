@@ -200,8 +200,18 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
   // fino: con el detalle de hasta 2 m, para lo que rodea al jugador
   function altura(xm, ym, tramos = null, fino = false) {
     const { f, hm, r } = grande(xm, ym);
-    if (f < 0) return fondoMar(xm, ym, f);                // mar: el fondo, según la costa (fondoMar)
-    const { dm, nivel, ancho, salto, lecho, hondo, cabeza } = rioCercano(xm, ym, tramos);
+    if (f < 0) {                                           // mar: el fondo, según la costa (fondoMar)
+      const fondo = fondoMar(xm, ym, f);
+      if (!tramos || globalThis.__bocaVieja) return fondo;
+      // y el cauce del río que desemboca sigue mar adentro (hasta que el fondo del mar va más hondo que él)
+      const R = rioCercano(xm, ym, tramos), borde = R.ancho / 2 + 1.5;
+      if (R.dm >= borde + 30) return fondo;
+      const fr = R.dm / borde, forma = fr < 0.7 ? 0.25 * Math.pow(fr / 0.7, 3) : 0.25 + 0.75 * suave(0.7, 1, fr);
+      const cauce = Math.min(R.lecho + 0.2 - R.hondo, -R.hondo);
+      const perfil = R.dm < borde ? lerp(cauce, Math.min(0, fondo), forma) : lerp(Math.min(0, fondo), fondo, suave(borde, borde + 30, R.dm));
+      return Math.min(fondo, perfil);
+    }
+    const { dm, nivel, ancho, anchoRio, salto, lecho, hondo, cabeza, costa } = rioCercano(xm, ym, tramos);
     const monte = suave(120, 600, r);                      // 0 en el llano, 1 en la montaña
     // junto al río, el detalle se apaga: el fondo del valle lo marca el río (que ya talló el valle grande del mapa),
     // no el ruido; si no, el ruido levanta el fondo decenas de metros y el río queda en una zanja
@@ -266,6 +276,12 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
       const perfil = dm < borde ? lerp(cauce + 0.2 - hondo, orilla, forma) : valle;
       const tallado = fuera > vega && !valleLiso ? sminimo(z, perfil, Math.max(0.01, Math.min(24, (fuera - vega) * ladera * 0.4))) : Math.min(z, perfil);   // (junto a la vega, sin redondeo: no baja del suelo del valle)
       z = lerp(perfil, tallado, suave(vega * 0.6, vega + 40, fuera));
+      // el delta de los ríos medianos y grandes (desde 14 m de cauce): en los últimos 600 m, dentro del estuario, isletas
+      // de arena que asoman medio metro del agua y reparten el río en brazos (manchas de unos 45 m, ni en el eje ni pegadas a la orilla)
+      if (costa < 600 && anchoRio >= 14 && dm < borde) {
+        const e = dm / borde, t = suave(0.5, 0.72, fbm(xm / 45, ym / 45, S + 171, 3)) * suave(0.12, 0.25, e) * (1 - suave(0.8, 0.95, e)) * (1 - suave(350, 600, costa));
+        if (t > 0) z = Math.max(z, lerp(z, lecho + 0.7, t));
+      }
     }
     return z;
   }
@@ -347,7 +363,34 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
       const dd = u0 > 0 && u0 < 1 && t.meandro ? Math.abs(((ym - t.ay) * vx - (xm - t.ax) * vy) / t.largo - desvio(t, u)) : Math.hypot(xm - t.ax - vx * u, ym - t.ay - vy * u);
       if (dd < dm) { dm = dd; nivel = nivelTramo(t, u); salto = nivel - lerp(t.ha, t.hb, u); ancho = lerp(t.anchoA, t.anchoB, u); tramo = t; uu = u; suelo = lerp(t.ga ?? Infinity, t.gb ?? Infinity, u); cabeza = t.fuente ? Math.max(0, -u0 * t.largo) : 0; }
     }
-    return { dm, nivel, ancho, tramo, u: uu, salto, cabeza, lecho: lechoDe(nivel, salto, suelo), hondo: tramo ? hondoTramo(tramo, uu) : 1.2 };   // salto: lo que el salto de agua sube o baja el cauce aquí
+    // La desembocadura (valravnx, 5 nov: «los ríos no finalizan en la entrada al mar»). El río del mapa acaba en el
+    // centro de la primera celda de mar (a cientos de metros de la orilla) y su nivel bajaba en línea recta hasta allí:
+    // en la orilla el agua iba aún metros por encima del mar y se cortaba en seco, con la arena de la playa cerrando
+    // el cauce. Ahora, cerca de la costa, el río baja hasta el nivel del mar en la misma orilla (como mucho un 0,25 %
+    // de pendiente en los últimos metros), se ensancha en un estuario (hasta 3,5 veces su ancho en la boca, en los
+    // últimos 600 m) y su cauce sigue mar adentro hasta que el fondo del mar es más hondo que él.
+    let costa = Infinity, anchoRio = ancho;
+    if (tramo && dm < 2500 && !globalThis.__bocaVieja) {   // (la prueba lo quita a propósito, para ver que falla)
+      costa = distCosta(xm, ym);
+      if (costa < 2000) {
+        // (solo donde el río ya va cerca del nivel del mar: el que llega por encima de un acantilado no se toca, y se
+        // apaga del todo a 2 km de la orilla, sin saltos)
+        const alMar = 1 + 0.0025 * costa, w = (1 - suave(1, 4, nivel - alMar)) * (1 - suave(1200, 2000, costa));
+        if (nivel > alMar && w > 0) { nivel = lerp(nivel, alMar, w); if (w > 0.5) salto = 0; }
+        anchoRio = ancho; ancho *= 1 + 2.5 * (1 - suave(0, 600, costa));
+      }
+    }
+    return { dm, nivel, ancho, anchoRio, tramo, u: uu, salto, cabeza, costa, lecho: lechoDe(nivel, salto, suelo), hondo: tramo ? hondoTramo(tramo, uu) : 1.2 };   // salto: lo que el salto de agua sube o baja el cauce aquí
+  }
+  // lo lejos que está un punto de la orilla del mar, tierra adentro (m; 0 en el mar; Infinity si lejos, a más de unos
+  // 1,6 km), con la pendiente de la forma (como el cortado de la costa)
+  function distCosta(xm, ym) {
+    const f = grande(xm, ym).f;
+    if (f <= 0) return 0;
+    if (f >= 8) return Infinity;
+    const g1 = grande(xm + 4, ym).f, g2 = grande(xm, ym + 4).f, grad = Math.max(0.002, Math.hypot(g1 - f, g2 - f) / 4);
+    // (cerca del límite de la forma la distancia se estira hasta el infinito: sin salto en f = 8)
+    return f / grad / Math.max(1e-6, 1 - suave(5, 7.9, f));
   }
   // la altura del cauce (m): la del río, 1,2 m por debajo del agua. Por encima del salto de agua el río va más alto que
   // la línea recta del tramo, pero nunca por encima del suelo de alrededor (si no, quedaba en terraplén); por debajo
