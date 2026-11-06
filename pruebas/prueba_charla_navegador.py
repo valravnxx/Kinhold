@@ -141,15 +141,10 @@ try:
             pg.keyboard.type('esto no', delay=20); pg.keyboard.press('Escape')
             pg.wait_for_timeout(1500)
             comprobar(f'{nombre}: Esc lo deja sin decirlo', not pg.evaluate(f'{K}.charla.abierta') and len(OYE) == n1)
-            # a chorro: dos seguidas, la segunda no pasa y se avisa
-            pg.evaluate(f"(() => {{ {K}.charla; }})()")
-            for t in ('una', 'dos'):
-                if movil: pg.tap('#btnHablar')
-                else: pg.keyboard.press('Enter')
-                esperar(pg, f"{K}.charla.abierta", 3000)
-                pg.keyboard.type(t, delay=10)
-                if movil: pg.tap('#charlaDecir')
-                else: pg.keyboard.press('Enter')
+            # a chorro: dos seguidas desde el cuadro, en el mismo instante (escribiéndolas, sin tarjeta gráfica pasaba más de un
+            # segundo entre una y otra y el servidor, con razón, dejaba las dos): la segunda no pasa y se avisa
+            pg.evaluate(f"""(() => {{ const c = {K}.charla, f = document.getElementById('charlaCaja'), t = document.getElementById('charlaTexto');
+              for (const x of ['una', 'dos']) {{ c.abrir(); t.value = x; f.requestSubmit(); }} }})()""")
             aviso = esperar(pg, "!document.getElementById('aviso').hidden && document.getElementById('aviso').textContent.includes('Más despacio')", 5000)
             comprobar(f'{nombre}: hablar a chorro: el servidor no lo deja y se avisa', aviso and pg.evaluate(f"{K}.charla.bocadillos.get({json.dumps(yo)})") == 'una')
             # y el bocadillo se va al rato (el de «una»: 4,2 s)
