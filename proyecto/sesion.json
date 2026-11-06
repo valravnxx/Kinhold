@@ -17,11 +17,5 @@
   "tarea": "El bosque de lejos sin dientes de sierra (valravnx, 6 nov: «cuando está muy lejos sigue haciendo diente de sierra horrible»): el color del suelo lejano y el del bosque, en texturas que se leen en cada píxel, en vez de en los vértices de la rejilla",
   "hito": "graficos",
   "rama": "trabajo/20261106-0525-linde-textura"
- },
- "chat:trabajo/20261106-0547-p3-fabricar-servidor": {
-  "inicio": "2026-11-06T05:47:36+00:00",
-  "tarea": "Fabricar por el servidor, con su autor: lo gastado sale de tu inventario o del suelo de al lado y lo hecho va a tu inventario (o al suelo si no cabe)",
-  "hito": "crafting",
-  "rama": "trabajo/20261106-0547-p3-fabricar-servidor"
  }
 }
