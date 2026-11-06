@@ -43,6 +43,7 @@ paso "Alcance de las obras: el servidor solo deja entregar, subir, trabajar y de
 paso "Lo tuyo es tuyo: en tu tierra solo tú y tus invitados desmontáis y usáis puertas y fuego; el servidor lo comprueba" node pruebas/prueba_lo_tuyo.mjs
 paso "Perfiles gráficos: seis perfiles, gradación de color y perfil de inicio" node pruebas/prueba_perfiles_graficos.mjs
 paso "Horizonte de los perfiles altos" node pruebas/prueba_horizonte.mjs
+paso "El fondo del mar junto a la costa" node pruebas/prueba_mar.mjs
 paso "Inventario por huecos" node pruebas/prueba_inventario.mjs
 paso "Recoger del suelo y de las plantas" node pruebas/prueba_recoleccion.mjs
 paso "Estaciones y recetas" node pruebas/prueba_fabricacion.mjs

@@ -29,19 +29,24 @@ function materialLejano(u, copas = false) {
   const material = new THREE.MeshLambertMaterial({ vertexColors: true, fog: false });
   material.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, u);
-    sh.vertexShader = 'uniform float uR0;\nuniform float uS;\nuniform vec2 uJug;\nvarying vec3 vHzMundo;\n' + sh.vertexShader.replace('#include <project_vertex>', `
+    sh.vertexShader = 'uniform float uR0;\nuniform float uS;\nuniform vec2 uJug;\nvarying vec3 vHzComp;\n' + sh.vertexShader.replace('#include <project_vertex>', `
       vec4 hzMundo = modelMatrix * vec4( transformed, 1.0 );
-      vHzMundo = hzMundo.xyz;
       vec3 hzV = hzMundo.xyz - cameraPosition; float hzD = length( hzV );
       if ( hzD > uR0 ) hzMundo.xyz = cameraPosition + hzV * ( ( uR0 + ( hzD - uR0 ) * uS ) / hzD );
+      vHzComp = hzMundo.xyz;
       vec4 mvPosition = viewMatrix * hzMundo;
       gl_Position = projectionMatrix * mvPosition;`);
-    let f = 'uniform float uHueco;\nuniform float uHasta;\nuniform vec3 uCuadro;\nuniform vec2 uJug;\nvarying vec3 vHzMundo;\n';
+    // (en cada píxel, el punto del mundo se saca deshaciendo la compresión del punto dibujado: si se pasara el del
+    // vértice sin comprimir, entre vértices comprimidos no casa con lo que se ve, y el hueco de alrededor del jugador
+    // se comía, en el mar de lejos (cuadros de 500 m), una franja de kilómetros: salía cielo entre los dos mares)
+    let f = 'uniform float uHueco;\nuniform float uHasta;\nuniform vec3 uCuadro;\nuniform vec2 uJug;\nuniform float uR0;\nuniform float uS;\nvarying vec3 vHzComp;\n';
     if (copas) f += `float hzAzar(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
 float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
   return mix(mix(hzAzar(i),hzAzar(i+vec2(1,0)),f.x),mix(hzAzar(i+vec2(0,1)),hzAzar(i+vec2(1,1)),f.x),f.y);}
 `;
     sh.fragmentShader = f + sh.fragmentShader.replace('void main() {', `void main() {
+  vec3 hzVc = vHzComp - cameraPosition; float hzDc = length( hzVc );
+  vec3 vHzMundo = cameraPosition + hzVc * ( ( hzDc <= uR0 ? hzDc : uR0 + ( hzDc - uR0 ) / uS ) / max( hzDc, 1e-3 ) );
   float hzDist = length( vHzMundo.xz - uJug );
   if ( hzDist < uHueco || ( uHasta > 0.0 && hzDist > uHasta ) ) discard;
   if ( uCuadro.z > 0.0 && max( abs( vHzMundo.x - uCuadro.x ), abs( vHzMundo.z - uCuadro.y ) ) < uCuadro.z ) discard;`);
@@ -71,7 +76,7 @@ const FINO_A_BASTO = [...NIVELES].reverse();   // 1, 2, 4: el más fino que ya e
 // camara: la del juego (su alcance manda en la compresión); colorMar: el de la lámina del mar; alt(x, z): la altura
 // exacta del suelo (m del mundo), para el dosel de cerca (sin ella, no hay dosel de cerca); hay(x, z): ¿ha llegado ya
 // el terreno de cerca a ese sitio? (si no, ahí no hay dosel de cerca, que flotaría)
-export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camara, colorMar = 0x4a6470, alt = null, hay = null }) {
+export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camara, colorMar = 0x35525e, alt = null, hay = null }) {
   const muestras = crearMuestras(paisaje, rect, undefined, ESPECIES_DOSEL);
   const diagonal = Math.hypot(rect.x1 - rect.x0, rect.z1 - rect.z0);
   const comp = compresion(hasta, camara.far, diagonal);
@@ -81,11 +86,14 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   const uniformes = { ...comun, uHueco: { value: Math.max(0, hasta - 16) }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } };
   const material = materialLejano(uniformes);
   // lo lejano va comprimido (unos metros de verdad son centímetros de hondura): cada capa con su sitio en la hondura,
-  // para que no se pisen: el suelo, un poco detrás (pierde con el terreno de cerca donde se solapan); el mar, más
-  // detrás que el suelo (la costa no se pisa con él); el dosel, delante
-  Object.assign(material, { polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 4 });
-  const materialMar = materialLejano({ ...uniformes });
-  Object.assign(materialMar, { polygonOffset: true, polygonOffsetFactor: 4, polygonOffsetUnits: 16 });
+  // para que no se pisen: el suelo, un poco detrás (pierde con el terreno de cerca donde se solapan); el mar, 4 m bajo
+  // el nivel (la costa no se pisa con él)
+  // (poco: mirando muy de lado, el desplazamiento crece con la pendiente de la hondura y lo echaba más allá del alcance
+  // de la cámara: se cortaba el mar de lejos y salía una franja de cielo. El mar va unos metros más bajo y sin él)
+  Object.assign(material, { polygonOffset: true, polygonOffsetFactor: 0.5, polygonOffsetUnits: 2 });
+  // el mar, sin hueco: va 4 m bajo el nivel, bajo el mar de cerca (y del fondo, solo tapa lo más hondo, que ya es azul);
+  // con hueco, junto al borde de lo comprimido quedaba una franja de cielo entre los dos mares
+  const materialMar = materialLejano({ ...uniformes, uHueco: { value: 0 } });
   // el dosel: de lejos, desde donde acaba el terreno de cerca (algo antes) hasta el borde; de cerca, desde los árboles de
   // verdad (su cuadro) hasta ahí. Las dos con el mismo corte (borde), para que no se pisen.
   const borde = Math.max(0, hasta - 28);
@@ -99,7 +107,7 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   escena.add(malla);
   // el mar de lejos (el de cerca, src/mundo/mundo_juego.js, acaba con la cámara): liso, del color de la lámina del
   // mar, un poco por debajo de ella (de cerca, la lámina lo tapa; la costa la hace la malla, que baja mucho en el mar)
-  const mm = mallaMar(rect, { ox: origen.x, oz: origen.z, y: -y0 - 1.5 });
+  const mm = mallaMar(rect, { ox: origen.x, oz: origen.z, y: -y0 - 4 });
   const gm = new THREE.BufferGeometry();
   gm.setAttribute('position', new THREE.BufferAttribute(mm.pos, 3));
   const cm = new THREE.Color(colorMar), cols = new Float32Array(mm.pos.length);

@@ -200,7 +200,7 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
   // fino: con el detalle de hasta 2 m, para lo que rodea al jugador
   function altura(xm, ym, tramos = null, fino = false) {
     const { f, hm, r } = grande(xm, ym);
-    if (f < 0) return Math.max(-60, f * 1.6);              // mar: el fondo baja desde la línea de costa (sin escalón)
+    if (f < 0) return fondoMar(xm, ym, f);                // mar: el fondo, según la costa (fondoMar)
     const { dm, nivel, ancho, salto, lecho, hondo, cabeza } = rioCercano(xm, ym, tramos);
     const monte = suave(120, 600, r);                      // 0 en el llano, 1 en la montaña
     // junto al río, el detalle se apaga: el fondo del valle lo marca el río (que ya talló el valle grande del mapa),
@@ -216,8 +216,15 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
     // resto de la ladera queda continua, con su hierba, su pedregal o su nieve
     const zona = duro > 0.5 && f > 3 && calma > 0.9 ? suave(afloramientos - 0.03 * monte, afloramientos + 0.06 - 0.03 * monte, fbm(xm / 700, ym / 700, S + 125, 3)) : 0;
     if (zona > 0.001) z = escarpe(xm, ym, z, r, fino, duro * zona, calma);
-    if (hm < 8) z = lerp(f * 0.5, z, suave(0, 2.5, f));    // costa baja: la playa baja suave hasta el agua
-    z = Math.max(Math.min(0.4, f * 0.5), z);
+    // La playa (valravnx, 5 nov): antes, junto al mar, la tierra baja quedaba a ras del agua (f · 0,5, con un tope de
+    // 0,4 m) en una franja de cientos de metros, casi al nivel del mar: un llano enorme que se pintaba como fondo. Ahora
+    // sube desde la orilla por la distancia a ella (m): un 3 % la arena (1,2 m a 40 m) y luego un 2 %.
+    if (f < 3) {
+      const rampa = rampaPlaya(xm, ym, f);
+      if (hm < 8) z = lerp(rampa, z, suave(0, 2.5, f));    // costa baja: la playa baja suave hasta el agua
+      z = Math.max(Math.min(rampa, 0.4 + f), z);
+    }
+    z = Math.max(Math.min(0.4, f * 0.5), z);              // (en tierra, nunca por debajo del mar)
     if (f < 10 && z > 2) {
       // junto al mar, la tierra alta baja en un cortado empinado (unos 60°) y no en una pared: la pared, en la rejilla,
       // sale en dientes de sierra. La distancia a la línea de costa sale de lo que cambia la forma alrededor
@@ -261,6 +268,41 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
       z = lerp(perfil, tallado, suave(vega * 0.6, vega + 40, fuera));
     }
     return z;
+  }
+
+  // la subida de la playa desde la orilla (m sobre el mar), con la distancia a la línea de costa
+  function rampaPlaya(xm, ym, f) {
+    const g1 = grande(xm + 4, ym).f, g2 = grande(xm, ym + 4).f, grad = Math.max(0.002, Math.hypot(g1 - f, g2 - f) / 4);
+    const d = f / grad;
+    return d < 40 ? 0.03 * d : 1.2 + 0.02 * (d - 40);
+  }
+
+  // El fondo del mar (valravnx, 5 nov: «tienes una distancia gigantesca en la cual el agua no cubre… El mar tendría que
+  // no cubrir un poquito, pero luego ya hundirse… sobre todo en zonas de acantilado»). Antes era f · 1,6 (la forma del
+  // mapa, que cambia por kilómetros): a 100 m de la orilla, 0,8 m; a 400 m, de 1 a 3 m, también al pie de los
+  // acantilados. Ahora sale de la distancia a la línea de costa (d, en m) y de lo alta que es la tierra de detrás:
+  //   - playa (tierra baja): una franja somera (1,2 m a 25 m de la orilla, la arena a la vista), luego un escalón hasta
+  //     unos 8 m a 70 m (el «se hunde») y de ahí bajando poco a poco;
+  //   - acantilado (tierra alta): unos 3 m a pocos metros del pie y un 30 % de pendiente (18 m a 50 m).
+  // Hasta 60 m.
+  function fondoMar(xm, ym, f) {
+    if (globalThis.__marViejo) return Math.max(-60, f * 1.6);   // (la prueba vuelve al de antes a propósito, para ver que falla)
+    const g1 = grande(xm + 4, ym).f, g2 = grande(xm, ym + 4).f, gx = (g1 - f) / 4, gy = (g2 - f) / 4;
+    const grad = Math.max(0.002, Math.hypot(gx, gy));      // (con un mínimo: donde la forma es casi llana, d no se dispara)
+    // la distancia: de cerca, con la pendiente de la forma aquí (exacta en los primeros cientos de metros); más lejos,
+    // con una pendiente fija (la forma cambia unos 0,005 por metro junto a la costa): así el fondo, mar adentro, baja
+    // siempre y no hace olas al cambiar la pendiente de la forma
+    const dCerca = -f / grad, dLejos = -f / 0.005, d = lerp(dCerca, dLejos, suave(80, 250, Math.min(dCerca, dLejos))), ux = gx / grad, uy = gy / grad;
+    // lo alto de la tierra de detrás de la orilla (la del mapa, 150 m hacia tierra desde aquí: un sitio que se mueve
+    // suave con el punto; si dependiera de la distancia a la orilla, saltaba de playa a acantilado entre vecinos)
+    // (la del mapa más su relieve de detalle: la del mapa sola, por celdas de 1 km, junto a la costa sale baja)
+    const tx = xm + ux * 150, ty = ym + uy * 150, G = grande(tx, ty), tierra = G.hm + detalle(tx, ty, G.r);
+    const alto = suave(5, 14, tierra);
+    const playa = (d < 25 ? 0.05 * d : 1.25 + 6.75 * suave(25, 70, d) + 0.04 * Math.max(0, d - 70)) + (fbm(xm / 40, ym / 40, S + 161, 2) - 0.5) * 1.2 * suave(5, 30, d);
+    const acant = (3 + 0.3 * d) * suave(0, 6, d);   // (sin escalón en la misma orilla)
+    // mar adentro (de 120 a 300 m de la orilla) se olvida el tipo de costa: el mismo fondo para todas, que baja siempre
+    const lejos = 10 + 0.035 * d;
+    return Math.max(-60, -lerp(lerp(playa, acant, alto), lejos, suave(120, 300, d)));
   }
 
   // la roca madre de un punto (con el borde de la celda deformado como en sitio(), para que coincidan)
