@@ -1129,7 +1129,7 @@
    "id": "entre-dos",
    "num": "P2",
    "nombre": "Jugar entre dos sin trampas",
-   "estado": "en_curso",
+   "estado": "revision",
    "jugable": "Cada uno reclama su tierra con su mojón y construye en ella; nadie toca lo tuyo; se sale en un sitio al azar de verdad; sin arcón de materiales infinito; con algo al hombro no llevas nada en las manos.",
    "nota": "Revisión del 1 nov con valravnx: lo que rompe jugar entre dos, antes de que nadie construya en serio.",
    "tareas": [
@@ -1229,9 +1229,10 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T08:24:59+00:00",
-     "rama": "trabajo/20261106-0824"
+     "rama": "trabajo/20261106-0824",
+     "fin": "2026-11-06T09:35:59+00:00"
     },
     {
      "nombre": "Tu tierra es la zona entera de tu mojón (valravnx, 4 nov), un mojón por personaje; el mapa, al acercarlo, enseña las zonas de cada comarca y la tuya resaltada con su mojón",

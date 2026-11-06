@@ -4658,5 +4658,24 @@
   "pruebas": "Batería entera en la nube tras unir main: 35 grupos bien. Prueba de desembocaduras 9/9 (MUTAR=2 falla), del mar 7/7 (MUTAR=2 falla).",
   "capturas": "capturas/demo-v121",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T08:24:10+00:00",
+  "fin": "2026-11-06T09:36:41+00:00",
+  "titulo": "P2 Jugar entre dos sin trampas: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "Batería entera sobre main (40c9b98, con la demo v120): 35 grupos, 34 en el PC de valravnx y la lógica en la nube, 63 min. Todo bien salvo «el perfil gráfico en el juego», «demo única» y «niveles de detalle del personaje», que en su PC fallan por tener tarjeta gráfica (esperan el perfil más barato y que los niveles de detalle bajen los triángulos), como ya pasó otras veces; repetidas solo en la nube, las tres bien.",
+   "El recorrido de jugador, contra el servidor de verdad y sin arcón, sale entero (47 bien): elige salida, recoge piedras, pone su mojón pagado con lo que lleva y no un segundo, levanta y termina un cimiento, otro jugador no puede desmontarlo, quita su mojón y lo vuelve a poner, se fabrica un hacha de piedra y tala un árbol joven.",
+   "Lo que el hito prometía está: un mojón por personaje y tu tierra es la zona entera; lo tuyo es tuyo (solo el dueño y sus invitados desmontan, usan puertas y sacan de sus almacenajes); el servidor comprueba distancia y planta en las obras y limita la velocidad y el salto; zonas del rey que no se reclaman; quitar el mojón; tres salidas a elegir; fuera el arcón infinito del juego de verdad; con algo al hombro, las manos vacías; lo de tramos posteriores, escondido; y la tierra vuelve al rey si no se usa.",
+   "Capturas miradas en PC y móvil: elegir dónde empiezas (sin contador de materiales), tu tierra en el mapa del rey, el aviso al quitar el mojón y seguir construyendo después, y entrar y salir de las tierras del rey. Se leen bien.",
+   "Aún mal (menor): en el móvil, el joystick tapa en parte el botón «Quitar el mojón» de la barra de confirmar.",
+   "Mientras corrían las pruebas, el chat fusionó en main «los ríos llegan al mar de verdad» (demo v121), con sus propias pruebas; no forma parte de este hito.",
+   "El hito «Jugar entre dos sin trampas» pasa a revisión: no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables); las capturas, en capturas/revision-entre-dos-6nov.",
+   "No comprobado: en el servidor de Hetzner (hace falta actualizarlo a main)."
+  ],
+  "pruebas": "35 de 35 grupos correctos (tres, al repetirlos en la nube; en el PC de valravnx fallan por tener tarjeta gráfica); sin las de en línea, que no se pasan",
+  "capturas": "capturas/revision-entre-dos-6nov",
+  "estado": "ok"
  }
 ]
