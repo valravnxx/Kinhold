@@ -1129,7 +1129,7 @@
    "id": "entre-dos",
    "num": "P2",
    "nombre": "Jugar entre dos sin trampas",
-   "estado": "revision",
+   "estado": "hecho",
    "jugable": "Cada uno reclama su tierra con su mojón y construye en ella; nadie toca lo tuyo; se sale en un sitio al azar de verdad; sin arcón de materiales infinito; con algo al hombro no llevas nada en las manos.",
    "nota": "Revisión del 1 nov con valravnx: lo que rompe jugar entre dos, antes de que nadie construya en serio.",
    "tareas": [
