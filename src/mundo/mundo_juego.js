@@ -69,6 +69,23 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
   // el horizonte: la isla entera, basta, detrás del terreno de cerca (solo lo dibuja un perfil gráfico que lo pida)
   const horizonte = camara ? crearHorizonte({ escena, paisaje, rect: ISLA, origen: O, y0, hasta: ANILLOS_MUNDO[ANILLOS_MUNDO.length - 1].hasta, camara, alt: (x, z) => altW(x, z), hay: (x, z) => terreno.alturaEn(x, z) !== null }) : null;
 
+  // la máscara de los trozos cargados: un cuadro de N × N trozos alrededor del jugador (lo que alcanza el terreno de cerca)
+  const NC = Math.ceil((ANILLOS_MUNDO[ANILLOS_MUNDO.length - 1].hasta + 2 * terreno.lado) / terreno.lado) * 2, datosC = new Uint8Array(NC * NC);
+  let firmaC = '';
+  function cargados(xm, zm) {
+    const i0 = Math.floor(xm / terreno.lado) - NC / 2, j0 = Math.floor(zm / terreno.lado) - NC / 2;
+    datosC.fill(0); let n = 0, suma = 0;
+    for (const v of terreno.vivos.values()) {
+      if (!v.malla) continue;
+      const a = v.i - i0, b = v.j - j0;
+      if (a >= 0 && b >= 0 && a < NC && b < NC) { datosC[b * NC + a] = 255; n++; suma += b * NC + a; }
+    }
+    const firma = i0 + ',' + j0 + ',' + n + ',' + suma;
+    if (firma === firmaC) return;
+    firmaC = firma;
+    horizonte.ponerCargados(datosC, NC, i0 * terreno.lado - O.x, j0 * terreno.lado - O.z, NC * terreno.lado);
+  }
+
   // la altura del suelo en la escena: la de la malla del trozo que se ve; si aún no ha llegado, la exacta
   function altura(x, z) {
     const xm = x + O.x, zm = z + O.z;
@@ -128,6 +145,8 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
     { const m = agua.malla; if (m) uLamina.value.set(m.position.x, m.position.z, LADO_AGUA / 2 - 1); else uLamina.value.z = 0; }
     uHastaCam.value = horizonte && horizonte.activo ? horizonte.compresion.r0 - 2 : 1e9;
     agua.ponerHasta(uHastaCam.value);
+    // los trozos de cerca que ya están, para el hueco del suelo de lejos (src/mundo/horizonte.js, ponerCargados)
+    if (horizonte && horizonte.activo) cargados(x + O.x, z + O.z);
     // el horizonte se calcula cuando lo de cerca ya está (2 ms por fotograma como mucho)
     if (horizonte) ms += horizonte.paso(x, z, listo ? 2 : 0);
     // listo cuando los trozos de los 3 × 3 de alrededor tienen su malla

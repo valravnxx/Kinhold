@@ -39,7 +39,7 @@ function materialLejano(u, copas = false) {
     // (en cada píxel, el punto del mundo se saca deshaciendo la compresión del punto dibujado: si se pasara el del
     // vértice sin comprimir, entre vértices comprimidos no casa con lo que se ve, y el hueco de alrededor del jugador
     // se comía, en el mar de lejos (cuadros de 500 m), una franja de kilómetros: salía cielo entre los dos mares)
-    let f = 'uniform float uHueco;\nuniform float uHasta;\nuniform vec3 uCuadro;\nuniform vec2 uJug;\nuniform float uR0;\nuniform float uS;\nuniform float uW;\nvarying vec3 vHzComp;\n' + GLSL_COMPRESION;
+    let f = 'uniform float uHueco;\nuniform float uHasta;\nuniform vec3 uCuadro;\nuniform vec2 uJug;\nuniform float uR0;\nuniform float uS;\nuniform float uW;\nuniform sampler2D uCargado;\nuniform vec4 uCargadoR;\nvarying vec3 vHzComp;\n' + GLSL_COMPRESION;
     if (copas) f += `float hzAzar(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
 float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
   return mix(mix(hzAzar(i),hzAzar(i+vec2(1,0)),f.x),mix(hzAzar(i+vec2(0,1)),hzAzar(i+vec2(1,1)),f.x),f.y);}
@@ -48,7 +48,12 @@ float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
   vec3 hzVc = vHzComp - cameraPosition; float hzDc = length( hzVc );
   vec3 vHzMundo = cameraPosition + hzVc * ( hzDescomp( hzDc, uR0, uS, uW ) / max( hzDc, 1e-3 ) );
   float hzDist = length( vHzMundo.xz - uJug );
-  if ( hzDist < uHueco || ( uHasta > 0.0 && hzDist > uHasta ) ) discard;
+  if ( uCargadoR.z > 0.0 ) {
+    // el hueco, solo donde ya está el terreno de cerca (cada trozo cargado, uno por texel)
+    vec2 hzUv = ( vHzMundo.xz - uCargadoR.xy ) / uCargadoR.z;
+    if ( hzUv.x > 0.0 && hzUv.y > 0.0 && hzUv.x < 1.0 && hzUv.y < 1.0 && texture2D( uCargado, hzUv ).r > 0.5 ) discard;
+    if ( uHasta > 0.0 && hzDist > uHasta ) discard;
+  } else if ( hzDist < uHueco || ( uHasta > 0.0 && hzDist > uHasta ) ) discard;
   if ( uCuadro.z > 0.0 && max( abs( vHzMundo.x - uCuadro.x ), abs( vHzMundo.z - uCuadro.y ) ) < uCuadro.z ) discard;`);
     // las copas: manchas de unos 6 m (copas sueltas) y de unos 20 m (grupos), con huecos oscuros entre ellas; se
     // apagan con la distancia (de lejos ya no se distinguen y harían centelleo)
@@ -82,8 +87,16 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   const comp = compresion(hasta, camara.far, diagonal);
   const jug = new THREE.Vector2(), cuadroArb = new THREE.Vector3(0, 0, 1e6);   // (hasta que estén los árboles, nada de cerca)
   const comun = { uR0: { value: comp.r0 }, uS: { value: comp.s }, uW: { value: comp.w }, uJug: { value: jug } };
+  // Los trozos de cerca que ya están (valravnx, 6 nov: «a lo lejos sigue hundido el terreno bajo el agua»): el hueco del
+  // suelo de lejos era un círculo fijo alrededor del jugador (casi hasta donde acaba el terreno de cerca), pero el
+  // terreno de cerca llega poco a poco (los trozos de fuera, los últimos; y al teletransportarse, todos de nuevo): entre
+  // lo que ya había llegado y el borde del hueco no quedaba nada más que la lámina del mar (a la altura del mar), y la
+  // tierra se veía como agua. Ahora el hueco es solo donde ya hay trozo: un texel por trozo (ponerCargados).
+  const cargado = { tex: null, rect: new THREE.Vector4(0, 0, 0, 0) };
+  const sinMascara = new THREE.DataTexture(new Uint8Array(4), 1, 1); sinMascara.needsUpdate = true;
+  const uCargado = { value: sinMascara }, uCargadoR = { value: cargado.rect };
   // el hueco, casi hasta donde acaba el terreno de cerca (16 m de solape: ahí gana el de cerca, que va delante en la hondura)
-  const uniformes = { ...comun, uHueco: { value: Math.max(0, hasta - 16) }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } };
+  const uniformes = { ...comun, uHueco: { value: Math.max(0, hasta - 16) }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() }, uCargado, uCargadoR };
   const material = materialLejano(uniformes);
   // lo lejano va comprimido (unos metros de verdad son centímetros de hondura): cada capa con su sitio en la hondura,
   // para que no se pisen: el suelo, un poco detrás (pierde con el terreno de cerca donde se solapan); el mar, 4 m bajo
@@ -96,13 +109,14 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   Object.assign(material, { polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: 4 });
   // el mar, sin hueco: va 4 m bajo el nivel, bajo el mar de cerca (y del fondo, solo tapa lo más hondo, que ya es azul);
   // con hueco, junto al borde de lo comprimido quedaba una franja de cielo entre los dos mares
-  const materialMar = materialLejano({ ...uniformes, uHueco: { value: 0 } });
+  const sinCargado = { uCargado: { value: sinMascara }, uCargadoR: { value: new THREE.Vector4(0, 0, 0, 0) } };
+  const materialMar = materialLejano({ ...uniformes, ...sinCargado, uHueco: { value: 0 } });
   // el dosel: de lejos, desde donde acaba el terreno de cerca (algo antes) hasta el borde; de cerca, desde los árboles de
   // verdad (su cuadro) hasta ahí. Las dos con el mismo corte (borde), para que no se pisen.
   const borde = Math.max(0, hasta - 28);
-  const matDoselLejos = materialLejano({ ...comun, uHueco: { value: borde }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } }, true);
+  const matDoselLejos = materialLejano({ ...comun, ...sinCargado, uHueco: { value: borde }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } }, true);
   // (el dosel no se adelanta en la hondura: ya va detrás el suelo; adelantado, asomaba por delante de las lomas)
-  const matDoselCerca = materialLejano({ ...comun, uHueco: { value: 0 }, uHasta: { value: borde }, uCuadro: { value: cuadroArb } }, true);
+  const matDoselCerca = materialLejano({ ...comun, ...sinCargado, uHueco: { value: 0 }, uHasta: { value: borde }, uCuadro: { value: cuadroArb } }, true);
   const malla = new THREE.Mesh(new THREE.BufferGeometry(), material);
   malla.name = 'horizonte'; malla.frustumCulled = false; malla.castShadow = false; malla.receiveShadow = false;
   malla.visible = false;
@@ -182,6 +196,19 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
     completarDoselCerca(x, z) { pasoCerca(x, z, 1e-3); if (calculando) pasoCerca(x, z, 1e9); },
     // el cuadro de los árboles de verdad (m de la escena: su centro y su medio lado), donde no va el dosel de cerca
     cuadroArboles(x, z, medio) { cuadroArb.set(x, z, medio); },
+    // los trozos de cerca que ya tienen malla: datos (Uint8, n × n, 255 = cargado; fila a fila de z), y su cuadro en la
+    // escena: x0, z0 (esquina) y lado (m). null: sin máscara (el hueco redondo de antes)
+    ponerCargados(datos, n, x0, z0, lado) {
+      if (!datos) { uCargadoR.value.set(0, 0, 0, 0); return; }
+      if (!cargado.tex || cargado.tex.image.width !== n) {
+        if (cargado.tex) cargado.tex.dispose();
+        cargado.tex = new THREE.DataTexture(new Uint8Array(n * n), n, n, THREE.RedFormat, THREE.UnsignedByteType);
+        cargado.tex.magFilter = cargado.tex.minFilter = THREE.NearestFilter; cargado.tex.generateMipmaps = false;
+        uCargado.value = cargado.tex;
+      }
+      cargado.tex.image.data.set(datos); cargado.tex.needsUpdate = true;
+      uCargadoR.value.set(x0, z0, lado, 1);
+    },
     // cfg: el «horizonte» del perfil ({ paso: 4 | 2 | 1, … }) o null
     poner(cfg) {
       quiere = cfg ? cfg.paso : null;
