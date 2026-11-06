@@ -1,0 +1,64 @@
+Jugador simulado: jugador:ef937180
+Vista pc
+  OK   pc: entra en línea con el mundo listo
+  OK   pc: crea una cuenta que no es de admin
+  OK   pc: sin la cuenta de admin no sale el botón «Admin» (ni con ?admin)
+  OK   pc: y F9 no abre nada
+  OK   pc: sin la cuenta de admin no se puede ir fuera de la isla — {'libre': False, 'dentro': False}
+  OK   pc: la clave que guardaba el navegador antes se borra
+  OK   pc: al que trae el admin, su navegador le pone junto a él y le avisa — {'tipo': 'admin', 'id': 3, 'que': 'traer', 'ok': True, 'quien': 'jugador:30e585e0', 'x': 1461.6, 'y': 176.68095446081867, 'z': 880, 'giro': -1.5707963267948966} · El admin te ha llevado junto a él. · [1461.6, 880]
+  OK   pc: sin errores en la página (sin admin)
+  OK   pc: crea la cuenta de admin
+  OK   pc: con la cuenta de admin sale el botón «Admin», sin recargar
+  OK   pc: se abre en «Info», sin el mapa: lo del servidor y dónde estás — Depuración (admin)InfoMapaModosArcónConectados además de ti: 1Servidor en marcha3 minConectados2Cuentas3Construcciones0Piezas (a medias)0 (0)Muebles0Mojones0Cosas en el suelo0Estaciones de fabricar0Ac
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_admin_navegador.py", line 180, in <module>
+    pulsar('#panelAdmin .pa-cerrar'); pg.wait_for_timeout(300)
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_admin_navegador.py", line 174, in <lambda>
+    pulsar = (lambda sel: pg.tap(sel, timeout=90000)) if movil else (lambda sel: pg.click(sel, timeout=90000))
+                                                                                 ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 11102, in click
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.click(
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 889, in click
+    return await self._main_frame._click(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 594, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.click: Timeout 90000ms exceeded.
+Call log:
+  - waiting for locator("#panelAdmin .pa-cerrar")
+    7 × locator resolved to <button class="pa-cerrar">Cerrar</button>
+    - attempting click action
+      - waiting for element to be visible, enabled and stable
+    - element was detached from the DOM, retrying
+    - locator resolved to <button class="pa-cerrar">Cerrar</button>
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+    - element is not stable
+  - retrying click action
+    17 × waiting for element to be visible, enabled and stable
+     - element was detached from the DOM, retrying
+       - locator resolved to <button class="pa-cerrar">Cerrar</button>
+     - attempting click action
+    - waiting for element to be visible, enabled and stable
+
