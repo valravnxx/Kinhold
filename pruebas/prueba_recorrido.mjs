@@ -201,6 +201,11 @@ try {
     K.estar(0, 4); await pausa(200); await K.andar(sitio.x + 2, sitio.z + 1);   // aparece en la salida y va andando hasta ella
     const rk = await K.accion({ tipo: 'desmontar', construccion: obra?.id, clave });
     comprobar('otro jugador no puede desmontar su cimiento', !rk.ok && !!obra?.piezas.get(clave), rk.motivo);
+    // y se hablan (el chat de texto, valravnx, 6 nov): lo que dice uno le llega al otro, que está al lado, por el servidor
+    const oye = K.esperar(m => m.tipo === 'dicho' && m.autor === J.bienvenida.autor).catch(() => null);
+    J.ws.send(JSON.stringify({ tipo: 'decir', texto: 'Esa es mi tierra' }));
+    const dicho = await oye;
+    comprobar('se hablan: lo que dice uno le llega al otro, que está al lado', dicho && dicho.texto === 'Esa es mi tierra', JSON.stringify(dicho));
     K.ws.close();
   }
 

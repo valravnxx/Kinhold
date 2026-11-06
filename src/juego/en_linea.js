@@ -5,6 +5,7 @@ import { MundoEnLinea } from '../logica/en_linea.js';
 import { normalizarAspecto } from '../logica/aspecto.js';
 import { crearJugador } from './personaje.js';
 import { tr } from '../idioma.js';
+import { MOTIVO_VACIO, MOTIVO_DESPACIO } from '../logica/charla.js';
 import { abrirCliente } from '../mundo/cliente.js';
 import { Luchador } from '../combate/logica.js';
 import { crearCombatiente, ponerArma, animarCombatiente, pintarHeridas, Rastro } from '../combate/modelos.js';
@@ -26,6 +27,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   const fotos = new Map();      // autor → foto de su luchador (src/logica/combate_servidor.js)
   const escuchas = new Set();   // lo que quiere ver los mensajes del panel del admin (src/juego/panel_admin.js)
   const escuchasSalida = new Set();   // y la respuesta a la salida que elige un personaje nuevo (src/juego/main.js)
+  const escuchasDicho = new Set();    // y lo que dice alguien en el chat de texto (src/juego/charla.js)
 
   cli = abrirCliente({
     alAbrir: (enviar) => {
@@ -38,6 +40,9 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     alMensaje: (msg) => {
       if (msg.tipo === 'admin') { for (const f of escuchas) f(msg); return; }
       if (msg.tipo === 'salida') { for (const f of escuchasSalida) f(msg); return; }
+      if (msg.tipo === 'dicho') { for (const f of escuchasDicho) f(msg); return; }
+      // (si no vale lo dicho, el motivo, para que lo vea quien habla)
+      if (msg.tipo === 'error' && (msg.motivo === MOTIVO_VACIO || msg.motivo === MOTIVO_DESPACIO)) for (const f of escuchasDicho) f({ tipo: 'dicho_error', motivo: msg.motivo });
       for (const l of msg.tipo === 'luchadores' ? msg.lista : msg.tipo === 'bienvenida' ? msg.luchadores || [] : []) {
         if (l.liza) enLiza.add(l.autor); else enLiza.delete(l.autor);
         fotos.set(l.autor, l);
@@ -130,6 +135,10 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     // para el panel del admin: mandar al servidor y escuchar sus respuestas ({ tipo: 'admin' })
     enviar: (m) => cli.enviar(m), escuchar: (f) => { escuchas.add(f); return () => escuchas.delete(f); },
     escucharSalida: (f) => { escuchasSalida.add(f); return () => escuchasSalida.delete(f); },
+    // el chat de texto: decir algo (lo comprueba y lo reparte el servidor) y escuchar lo que se dice cerca
+    decir: (texto) => cli.estado === 'conectado' && cli.enviar({ tipo: 'decir', texto }),
+    escucharDicho: (f) => { escuchasDicho.add(f); return () => escuchasDicho.delete(f); },
+    get yo() { return cli.yo; },
     get estado() { return cli.estado; },
     get antiguo() { return cli.antiguo; },
     get cuenta() { return cli.cuenta; },   // el usuario de tu cuenta (null si aún no tienes)
