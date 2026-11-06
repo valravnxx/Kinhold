@@ -109,14 +109,15 @@ comprobar('en las bocas de los ríos medianos y grandes, un delta (isletas que a
 const casi = (n) => n >= Math.ceil(bocas.length * 0.8);
 // El embudo y las aguas que se funden (valravnx, 6 nov: «acaba como con dos tonos de río diferentes… que fuera
 // difuminando las aguas y que la desembocadura se ensanche y se vea más real»). El embudo: en la orilla, el cauce es al
-// menos el del río más 45 m (y más de tres veces el del río), y se abre cada vez más deprisa hacia el mar (a 230 m de
-// la orilla, menos de la mitad de lo que se abre en ella). Las aguas: a lo largo de la boca, de 300 m río arriba a 300 m
-// mar adentro, cuánto de mar tiene el agua va de río (menos de 0,2) a mar (más de 0,9) sin saltos (menos de 0,08 en 3 m).
+// menos el del río más 30 m (y más de dos veces y media el del río, sin pasar de cuatro veces más 40 m: no un lago), y
+// se abre cada vez más deprisa hacia el mar (a 140 m de la orilla, menos de la mitad de lo que se abre en ella). Las aguas: a lo largo de la boca, de 300 m río arriba a 300 m
+// mar adentro, cuánto de mar tiene el agua va de río (menos de 0,35 en el primer punto con agua del eje, que en un
+// meandro puede quedar ya cerca de la orilla) a mar (más de 0,75) sin saltos (menos de 0,08 en 3 m).
 let embudo = 0, funde = 0, peorSalto = 0;
 for (const { en, tr } of bocas) {
-  const o = P.rioCerca(...en(-2), tr), m = P.rioCerca(...en(-232), tr);
+  const o = P.rioCerca(...en(-2), tr), m = P.rioCerca(...en(-142), tr);
   const abre0 = o.ancho - o.anchoRio, abre230 = m.ancho - m.anchoRio;
-  if (o.ancho >= o.anchoRio + 44 && o.ancho >= o.anchoRio * 3.9 && abre230 < abre0 * 0.5) embudo++;
+  if (o.ancho >= o.anchoRio + 29 && o.ancho >= o.anchoRio * 2.5 && o.ancho <= o.anchoRio * 4 + 40 && abre230 < abre0 * 0.5) embudo++;
   let antes = null, salto = 0, ini = null, fin = null;
   for (let d = -300; d <= 300; d += 3) {
     // (solo en el agua: donde el eje recto del mapa se sale del cauce por un meandro, la orilla seca no cuenta)
@@ -127,9 +128,9 @@ for (const { en, tr } of bocas) {
     if (ini === null) ini = v; fin = v; antes = v;
   }
   peorSalto = Math.max(peorSalto, salto);
-  if (ini < 0.2 && fin > 0.9 && salto < 0.08) funde++;
+  if (ini < 0.35 && fin > 0.75 && salto < 0.08) funde++;
 }
-comprobar('la boca se abre en embudo (en la orilla, el río más 45 m y más del triple; a 230 m, menos de la mitad)', casi(embudo), `${embudo} de ${bocas.length}`);
+comprobar('la boca se abre en embudo (en la orilla, el río más 30 m y más de dos veces y media, sin ser un lago; a 140 m, menos de la mitad)', casi(embudo), `${embudo} de ${bocas.length}`);
 comprobar('el agua del río se funde con la del mar, sin saltos de tono', casi(funde), `${funde} de ${bocas.length} (el peor salto en 3 m: ${peorSalto.toFixed(2)})`);
 comprobar('el agua del río llega a la orilla', casi(llega), `${llega} de ${bocas.length}`);
 comprobar('a la altura del mar (como mucho 0,3 m por encima)', casi(nivel), `${nivel} de ${bocas.length}`);

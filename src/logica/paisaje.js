@@ -404,11 +404,11 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
         if (globalThis.__embudoViejo) ancho *= 1 + 2.5 * (1 - suave(0, 600, costa));
         else {
           // el embudo (valravnx, 6 nov: «que la desembocadura se ensanche y se vea más real»): como en los estuarios de
-          // verdad, el ancho crece hacia el mar cada vez más deprisa (exponencial, unos 230 m de largo de convergencia),
-          // hasta el ancho del río más tres veces él (y al menos 45 m) en la orilla. Solo en el río que llega al nivel
-          // del mar (el que cae por un acantilado no se abre)
-          const boca = Math.max(ancho * 3, 45) * aNivel;
-          ancho += boca * Math.exp(-costa / 230);
+          // verdad, el ancho crece hacia el mar cada vez más deprisa (exponencial, unos 140 m de largo de convergencia),
+          // hasta el ancho del río más dos veces él (y al menos 30 m) en la orilla. Solo en el río que llega al nivel
+          // del mar (el que cae por un acantilado no se abre). (Con tres veces y 230 m, la boca era un lago)
+          const boca = Math.max(ancho * 2, 30) * aNivel;
+          ancho += boca * Math.exp(-costa / 140);
         }
       }
     }

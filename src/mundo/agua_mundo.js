@@ -78,7 +78,7 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
         const k = pos.length / 3, yy = w + 0.03;
         pos.push(x - dy * m - origen.x, yy, y + dx * m - origen.z, x - origen.x, yy, y - origen.z, x + dy * m - origen.x, yy, y - dx * m - origen.z);
         for (let q = 0; q < 3; q++) fl.push(co.dx * co.vel, co.dy * co.vel);
-        { const mz = paisaje.mezclaMar(x, y, uno); ti.push(mz, mz, mz); }
+        ti.push(paisaje.mezclaMar(x - dy * m, y + dx * m, uno), paisaje.mezclaMar(x, y, uno), paisaje.mezclaMar(x + dy * m, y - dx * m, uno));   // (a lo ancho también, como la lámina de cerca)
         ho.push(0, Math.min(2, ancho * 0.15 + 0.4), 0); ori.push(-1.5, ancho / 2 * (1 - enMar / 5), -1.5);   // (mar adentro se va: se funde con el mar)
         if (antes >= 0) idx.push(antes, k, antes + 1, antes + 1, k, k + 1, antes + 1, k + 1, antes + 2, antes + 2, k + 1, k + 2);
         antes = k;
