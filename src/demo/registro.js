@@ -1,6 +1,9 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v121 (los ríos llegan al mar de verdad)";
+export const VERSION_DEMO = "Demo única · v122 (sin tierra bajo el agua a lo lejos)";
 export const REGISTRO_DEMO = [
+  "v122: sin tierra bajo el agua a lo lejos (valravnx, 6 nov: «a lo lejos sigue hundido el terreno bajo el agua»). Eran tres cosas: el suelo de lejos se quitaba en un círculo fijo alrededor del jugador, pero el terreno de cerca llega poco a poco (y tras teletransportarse, todo de nuevo): en medio solo quedaba la lámina del mar y la tierra se veía como agua; ahora el suelo de lejos solo se quita donde el de cerca ya ha llegado. La cámara distinguía mal lo que está casi a la misma altura a lo lejos (la lámina del mar ganaba a la tierra baja); ahora cinco veces mejor. Y lo de más allá de unos 830 m se acercaba de golpe y el mar de lejos subía como una rampa: ahora poco a poco.",
+  "v122: el río entra en el mar: su agua de lejos es una sola cinta por río (sin muescas en las curvas) y sigue unos metros mar adentro, fundiéndose con el mar, sin la punta seca de antes.",
+  "v122: la arena de la playa, solo hasta unos 60 m de la orilla (antes, unos 120).",
   "v121: los ríos llegan al mar de verdad (valravnx, 6 nov: «NO LLEGAN AL MAR»): en 8 de las 27 bocas de Whitholm el río del mapa acababa aún en tierra (hasta 440 m de la orilla) y su agua, en una charca. Ahora sigue cuesta abajo hasta 150 m dentro del mar. Comprobado en todos los ríos que acaban en el mar: agua seguida por el cauce desde 2,5 km río arriba hasta el mar.",
   "v121: el agua de los ríos también de lejos: antes, más allá de unos 120 m (80 en el móvil) el río no tenía agua y solo asomaba el mar de lejos donde el cauce iba a la altura del mar (el río se cortaba y volvía a salir como mar). Ahora, hasta 1,1 km (700 m en el móvil), cada río lleva su agua por el cauce.",
   "v121: la arena, solo en la playa: salía en todo lo que queda a menos de 2,8 m sobre el mar, también en las vegas de los ríos tierra adentro; ahora solo hasta unos 120 m de la orilla.",
