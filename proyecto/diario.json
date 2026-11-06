@@ -4572,5 +4572,20 @@
   "pruebas": "Batería entera en la nube (35 grupos, sin las de en línea; el PC de valravnx no estaba encendido): todo correcto. La prueba de fabricar, 82/82, rota a propósito con MUTAR=1 (16 fallan). Sin capturas: nada de lo que se ve ha cambiado.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T04:24:44+00:00",
+  "fin": "2026-11-06T05:58:43+00:00",
+  "titulo": "Pruebas que no fallan a ratos: salida fija y lo que salía como ruido (P2, carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "Las pruebas de navegador de la demo en el mundo (la demo única, el mundo, construir a la altura del suelo, pelear en cualquier sitio y los niveles de detalle) salen siempre en la misma salida (?salida=0); las demás ya llevaban una fija o van con el servidor. La salida al azar se mira aparte, al final de la prueba del mundo: un jugador nuevo sale en uno de la lista y al recargar vuelve al mismo.",
+   "«Andando, el personaje sigue el suelo» (0,6–1,1 m a ratos, sobre todo en el PC de valravnx) no era del juego: la prueba lo movía 1 m por fotograma, que con tarjeta gráfica son 60 m/s, y la altura del personaje se acerca a la del suelo poco a poco. Ahora anda como un jugador (corriendo, 6 m/s) 30 m por la cuesta más fuerte junto a la salida: 0,05 m en el PC de valravnx (298 fotogramas), con un límite de 0,4 m.",
+   "«Nada en el agua»: mirado en las 259 salidas con la lógica, nada de lo que crece queda en el agua ni a menos de 1 m sobre el mar salvo los cantos del río, que van en el cauce a propósito. Lo que salía era la cuenta de la prueba: usaba la altura de la malla que se ve, que lejos de la salida va cada 2 o 4 m y en la orilla queda unos centímetros por debajo; y contaba los cantos grandes. Ahora cuenta lo que el agua cubre de verdad, sin los cantos.",
+   "Rotas a propósito: MUTAR=4 (los pies siguen el suelo muy despacio) da 0,72 m y falla; MUTAR=5 (tres matas al agua) da 3 y falla."
+  ],
+  "pruebas": "Batería entera (35 grupos, sin las de en línea): 34 en el PC de valravnx y la lógica en la nube. En su PC fallaron las tres que miden el dibujo sin tarjeta gráfica (niveles de detalle, el perfil gráfico y la demo única); repetidas en la nube: bien. Rotura a propósito de la prueba del mundo pasada aquí. Capturas del mundo miradas en PC y móvil. Sin versión nueva: no cambia nada que se juegue.",
+  "capturas": null,
+  "estado": "ok"
  }
 ]
