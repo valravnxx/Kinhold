@@ -98,7 +98,8 @@ export class PresenciaServidor {
   // `aparte`: está en otra escena (la liza del «Duelo»): no cuenta para el mundo ni toca su ancla. `admin`: puede estar
   // fuera de la isla (validarEstado).
   // Devuelve null si no vale; si vale, { estado, recortado } (recortado: los metros que se ha querido saltar de más).
-  recibir(autor, m, ahora, { aparte = false, admin = false } = {}) {
+  // `vel`: multiplica lo que se puede andar (la cuenta de admin con su velocidad multiplicada, src/logica/admin.js).
+  recibir(autor, m, ahora, { aparte = false, admin = false, vel = 1 } = {}) {
     const e = validarEstado(m, { admin });
     if (!e) return null;
     let t = ahora;
@@ -111,7 +112,8 @@ export class PresenciaServidor {
     let recortado = 0;
     const a = aparte || !this.limitar ? null : this.anclas.get(autor);
     if (a) {
-      a.credito = Math.min(CREDITO_MAX, a.credito + VEL_MAX * Math.max(0, ahora - a.r) / 1000);
+      const fv = Number.isFinite(vel) && vel > 1 ? vel : 1;
+      a.credito = Math.min(CREDITO_MAX * fv, a.credito + VEL_MAX * fv * Math.max(0, ahora - a.r) / 1000);
       a.r = ahora;
       const dx = e.x - a.x, dz = e.z - a.z, d = Math.hypot(dx, dz);
       if (Math.hypot(e.x, e.z) <= RADIO_SALIDA) a.credito = CREDITO_MAX;   // vuelta a la salida: libre

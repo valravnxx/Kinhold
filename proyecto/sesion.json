@@ -1,22 +1,11 @@
 {
- "A": {
-  "inicio": "2026-11-06T08:24:59+00:00",
-  "tarea": "Revisión completa y publicación",
-  "hito": "entre-dos",
-  "rama": "trabajo/20261106-0824"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261106-0525-linde-textura": {
   "inicio": "2026-11-06T05:24:47+01:00",
   "tarea": "El bosque de lejos sin dientes de sierra (valravnx, 6 nov: «cuando está muy lejos sigue haciendo diente de sierra horrible»): el color del suelo lejano y el del bosque, en texturas que se leen en cada píxel, en vez de en los vértices de la rejilla",
   "hito": "graficos",
   "rama": "trabajo/20261106-0525-linde-textura"
- },
- "chat:trabajo/20261106-0804-admin-herramienta": {
-  "inicio": "2026-11-06T08:04:30+00:00",
-  "tarea": "Herramienta del admin mejorada (valravnx, 6 nov): al abrir el panel, información del servidor y de dónde estás además del mapa; modo autoconstruir (obras y muebles al momento y sin materiales); arcón de admin para invocarse cualquier objeto; multiplicar la velocidad de carrera; y cámara libre volando en tres dimensiones. Todo solo para la cuenta de admin, comprobado por el servidor y apuntado en admin.jsonl",
-  "hito": "admin",
-  "rama": "trabajo/20261106-0804-admin-herramienta"
  },
  "chat:trabajo/20261106-1020-rios-mar3": {
   "inicio": "2026-11-06T10:18:17+01:00",

@@ -79,7 +79,8 @@
 //   este aparato. Desde el menú: { que: 'cambiar_clave', actual, clave } (lo mismo, pidiendo la actual) y
 //   { que: 'cambiar_correo', actual, correo } (manda el código al correo nuevo; con { que: 'verificar', codigo } se
 //   cambia). Cada cambio avisa por correo (el de la contraseña, al correo de la cuenta; el del correo, al de antes).
-//   Panel de depuración del admin (src/logica/admin.js): { tipo: 'admin', id, que: 'ver' | 'ir' | 'traer', … }. Solo para la
+//   Panel de depuración del admin (src/logica/admin.js): { tipo: 'admin', id, que: 'ver' | 'ir' | 'traer' | 'modo' | 'invocar', … }
+//   (modo: autoconstruir y velocidad, de esta conexión; invocar: el arcón de admin). Solo para la
 //   conexión cuya cuenta tiene confirmado uno de los correos de admin (adminCorreo, o la variable KINHOLD_ADMIN_CORREO;
 //   sin ella, nadie; servidor/nube/LEEME.md). El nombre de usuario no cuenta. Sin clave aparte. La bienvenida dice
 //   { admin: true } a esa conexión, y la respuesta al confirmar el correo también. Cada petición, bien o mal, va a admin.jsonl junto al mundo con su autor.
@@ -118,7 +119,7 @@ import { PROTOCOLO } from '../src/logica/protocolo.js';
 import { CombateServidor } from '../src/logica/combate_servidor.js';
 import { Limitador, LIMITES } from '../src/logica/limites.js';
 import { ObjetosServidor } from '../src/logica/objetos_red.js';
-import { validarPeticionAdmin, sitioJunto, sitioTraido, TRAER_FUERA, listaJugadores, correosAdmin, esCorreoAdmin, NO_ADMIN } from '../src/logica/admin.js';
+import { validarPeticionAdmin, sitioJunto, sitioTraido, TRAER_FUERA, listaJugadores, correosAdmin, esCorreoAdmin, NO_ADMIN, MODOS_INICIALES, GRATIS_AUTOCONSTRUIR, aplicarModo, infoServidor } from '../src/logica/admin.js';
 import { Cuentas, validarPeticionCuenta, claveDeUsuario, claveDeOrigen, Contador, motivoClave } from '../src/logica/cuentas.js';
 import { claveDeCorreo } from '../src/logica/correo.js';
 import { Verificaciones, enmascarar, codigoValido, CODIGO_CIFRAS, RECUPERAR_ORIGEN } from '../src/logica/correo.js';
@@ -235,6 +236,10 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     return s.ok ? { ok: true } : { ok: false, motivo: s.motivo };
   };
   const esAdmin = (autor) => esCorreoAdmin(cuentas.correoDe(autor), admins);
+  // los modos de la herramienta del admin (src/logica/admin.js): de su conexión, en memoria; se apagan al desconectarse
+  const modosAdmin = new Map();
+  const modosDe = (autor) => (esAdmin(autor) && modosAdmin.get(autor)) || MODOS_INICIALES;
+  const arranque = Date.now();
   // recuperar la contraseña: sus códigos aparte de los del correo, y cuántas peticiones por dirección
   const recuperaciones = new Verificaciones({ azar: () => randomInt(0, 10 ** CODIGO_CIFRAS), resumir: (x) => createHash('sha256').update('rec:' + x).digest('hex') });
   const recuperarOrigen = new Contador(RECUPERAR_ORIGEN, 60 * 60 * 1000);
@@ -515,7 +520,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         }
         // movimiento sin trampas: lo que llega más lejos de lo que se puede andar se recorta (src/logica/presencia.js)
         const enLiza = !!(combate.luchadores[autor] && combate.luchadores[autor].liza);
-        const rec = presencia.recibir(autor, msg, reloj(), { aparte: enLiza, admin: esAdmin(autor) });
+        const rec = presencia.recibir(autor, msg, reloj(), { aparte: enLiza, admin: esAdmin(autor), vel: modosDe(autor).velocidad });
         if (!rec) return enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
         if (rec.recortado) anotarRecorte(autor, rec.recortado);
         ponerAlDia();
@@ -731,8 +736,12 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         return;
       }
       if (msg && msg.tipo === 'admin') {
-        const id = Number.isSafeInteger(msg.id) ? msg.id : null, que = msg.que === 'ver' || msg.que === 'ir' || msg.que === 'traer' ? msg.que : null;
-        const apuntar = (r) => appendFileSync(archivoAdmin, JSON.stringify({ t: new Date().toISOString(), autor, cuenta: usuarioDe(autor), que, ...(que === 'ir' ? { x: Number.isFinite(msg.x) ? msg.x : undefined, z: Number.isFinite(msg.z) ? msg.z : undefined, junto: typeof msg.junto === 'string' ? msg.junto.slice(0, 60) : undefined } : que === 'traer' ? { quien: typeof msg.quien === 'string' ? msg.quien.slice(0, 60) : undefined } : {}), ok: r.ok, ...(r.ok ? {} : { motivo: r.motivo }) }) + '\n');
+        const id = Number.isSafeInteger(msg.id) ? msg.id : null, que = ['ver', 'ir', 'traer', 'modo', 'invocar'].includes(msg.que) ? msg.que : null;
+        const detalle = que === 'ir' ? { x: Number.isFinite(msg.x) ? msg.x : undefined, z: Number.isFinite(msg.z) ? msg.z : undefined, junto: typeof msg.junto === 'string' ? msg.junto.slice(0, 60) : undefined }
+          : que === 'traer' ? { quien: typeof msg.quien === 'string' ? msg.quien.slice(0, 60) : undefined }
+          : que === 'modo' ? { autoconstruir: typeof msg.autoconstruir === 'boolean' ? msg.autoconstruir : undefined, velocidad: Number.isFinite(msg.velocidad) ? msg.velocidad : undefined }
+          : que === 'invocar' ? { objeto: typeof msg.objeto === 'string' ? msg.objeto.slice(0, 40) : undefined, cantidad: Number.isFinite(msg.cantidad) ? msg.cantidad : undefined } : {};
+        const apuntar = (r) => appendFileSync(archivoAdmin, JSON.stringify({ t: new Date().toISOString(), autor, cuenta: usuarioDe(autor), que, ...detalle, ok: r.ok, ...(r.ok ? {} : { motivo: r.motivo }) }) + '\n');
         const responder = (r) => { if (que !== 'ver' || !r.ok) apuntar(r); enviar(ws, { tipo: 'admin', id, que, ...r }); };
         // solo la cuenta de admin (la de esta conexión: lo que diga el mensaje no cuenta)
         if (!esAdmin(autor)) return responder({ ok: false, motivo: NO_ADMIN });
@@ -741,7 +750,37 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         if (p.que === 'ver') {
           const estados = new Map();
           for (const a of conexionDe.keys()) { const e = presencia.ultimo.get(a); if (e) estados.set(a, e); }
-          return responder({ ok: true, yo: autor, jugadores: listaJugadores(estados, usuarioDe) });
+          const yo = presencia.ultimo.get(autor) || null;
+          let piezas = 0, obrasAMedias = 0;
+          for (const c of mundo.construcciones) for (const q of c.piezas.values()) { piezas++; if (q.obra) obrasAMedias++; }
+          const zona = yo && terreno && terreno.zona ? terreno.zona(yo.x, yo.z) : null;
+          const info = infoServidor({ arranque, ahora: Date.now(), conectados: conexionDe.size, cuentas: cuentas.total, construcciones: mundo.construcciones.length, piezas, obrasAMedias,
+            muebles: mundo.decoracion.length, mojones: Object.keys(mundo.mojones).length, enElSuelo: objetos.sueloVisible(Date.now()).length, estaciones: objetos.estacionesVisibles().length,
+            entradas: registro.total, sitio: yo, zona, tierraDe: yo ? mundo.tierraDe(yo.x, yo.z) : null, zonaRey: zona !== null && terreno && terreno.esZonaRey ? terreno.esZonaRey(zona) : false });
+          return responder({ ok: true, yo: autor, jugadores: listaJugadores(estados, usuarioDe), info, modos: modosDe(autor) });
+        }
+        if (p.que === 'modo') {
+          const m = aplicarModo(modosDe(autor), p);
+          modosAdmin.set(autor, m);
+          registrar(`admin ${autor} modos: autoconstruir ${m.autoconstruir ? 'sí' : 'no'}, velocidad ×${m.velocidad}`);
+          return responder({ ok: true, modos: m });
+        }
+        if (p.que === 'invocar') {
+          // el arcón de admin: a lo que lleva; lo que no cabe, a sus pies (donde lo tiene el servidor)
+          const inv = objetos.invs.de(autor), m = inv.meterDonde(p.objeto, p.cantidad);
+          let alSuelo = false;
+          if (!m.ok) {
+            const yo = presencia.ultimo.get(autor);
+            if (!yo) return responder({ ok: false, motivo: 'No te cabe y el servidor aún no sabe dónde estás.' });
+            objetos.suelo.dejar({ tipo: p.objeto, n: p.cantidad }, yo.x, yo.z, Date.now(), autor, !!mundo.tierraDe(yo.x, yo.z));
+            alSuelo = true;
+          }
+          registrar(`admin ${autor} invoca ${p.cantidad} de ${p.objeto}${alSuelo ? ' (al suelo)' : ''}`);
+          guardarObjetos();
+          enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
+          repartirLlevado(autor);
+          if (alSuelo) repartirSuelo(Date.now());
+          return responder({ ok: true, objeto: p.objeto, cantidad: p.cantidad, alSuelo });
         }
         if (p.que === 'traer') {
           // traer a otro junto al admin (valravnx, 5 nov): se le pone a su lado y su navegador lo sabe por su conexión
@@ -794,9 +833,16 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
       // el autor lo pone el servidor; el que traiga el cliente se pisa
       const accion = { ...msg.accion, autor };
+      // el modo autoconstruir de la cuenta de admin (src/logica/admin.js): el mojón y los muebles, sin cobrar (quedan
+      // «ya pagados», lleva: true); y cada obra que pone, terminada al momento (más abajo, admin_terminar)
+      const auto = modosDe(autor).autoconstruir === true;
+      const gratis = auto && GRATIS_AUTOCONSTRUIR.has(accion.tipo);
+      if (gratis) accion.lleva = true; else delete accion.lleva;   // «lleva» solo lo pone el servidor
       // las obras cobran de lo que llevas (los inventarios del servidor); el arcón de materiales y rellenarlo, solo si hay arcón de pruebas
-      const usaInventario = USAN_INVENTARIO.has(accion.tipo);
-      const sinArcon = !arconPruebas && (accion.tipo === 'sacar_arcon' || accion.tipo === 'dejar_arcon' || accion.tipo === 'rellenar');
+      const usaInventario = USAN_INVENTARIO.has(accion.tipo) && !gratis;
+      // admin_terminar solo la crea el servidor: nunca se acepta de un navegador
+      const soloServidor = accion.tipo === 'admin_terminar' || accion.tipo === 'tierra_al_rey';
+      const sinArcon = soloServidor || (!arconPruebas && (accion.tipo === 'sacar_arcon' || accion.tipo === 'dejar_arcon' || accion.tipo === 'rellenar'));
       // con el terreno, las obras se miran contra él (la planta baja, solo si empieza una construcción nueva)
       const nueva = accion.tipo !== 'colocar' || !Number.isFinite(accion.x) || !Number.isFinite(accion.z) || !mundo.construccionCercana(accion.x, accion.z);
       const contraTerreno = terreno && nueva ? terreno.obra(accion, mundo.marcasNivelado()) : null;
@@ -804,7 +850,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       const sitioAntes = sitioAccion(mundo, accion), antes = comunDe(mundo);
       // las obras, solo al alcance de donde el servidor tiene al jugador (lo que diga el navegador no cuenta)
       const lejos = sinArcon || contraTerreno ? null : fueraDeAlcance(mundo, accion, presencia.ultimo.get(autor));
-      const r = sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : lejos || ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
+      const r = soloServidor ? { ok: false, motivo: 'Acción desconocida.' } : sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : lejos || ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
       if (sinArcon || contraTerreno || lejos) registro.anotar(accion, r);
       const entrada = registro.entradas[registro.entradas.length - 1];
       registro.entradas.length = 0;   // lo guardado va al archivo; en memoria basta con el mundo
@@ -822,12 +868,22 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         const sitio = accion.tipo === 'colocar' ? (sitioColocada(r) || sitioAntes) : sitioAntes;
         const k = sitio ? trozoDe(sitio.x, sitio.z) : null;
         for (const [otro, a] of clientes) if (!k || a === autor || vista.tiene(a, k)) enviar(otro, { tipo: 'accion', entrada, antes });
+        // autoconstruir: la obra que acaba de poner queda terminada, con otra acción apuntada y repartida como las demás
+        if (auto && accion.tipo === 'colocar' && r.obra && r.construccion) {
+          const fin = { autor, tipo: 'admin_terminar', construccion: r.construccion.id, clave: r.clave }, antes2 = comunDe(mundo);
+          const r2 = ejecutar(mundo, registro, fin, null);
+          const entrada2 = registro.entradas[registro.entradas.length - 1];
+          registro.entradas.length = 0;
+          appendFileSync(archivo, JSON.stringify(entrada2) + '\n');
+          if (r2.ok) for (const [otro, a] of clientes) if (!k || a === autor || vista.tiene(a, k)) enviar(otro, { tipo: 'accion', entrada: entrada2, antes: antes2 });
+        }
       }
     }
     ws.on('close', () => {
       clientes.delete(ws);
       if (conexionDe.get(autor) !== ws) return;   // la sustituyó otra del mismo jugador: él sigue
       conexionDe.delete(autor);
+      modosAdmin.delete(autor);   // los modos del admin se apagan al irse
       apuntarPosicion(autor); guardarPosiciones();
       // la rastra que arrastraba se queda donde estaba (antes de olvidar dónde estaba él)
       if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); repartirSuelo(Date.now()); }

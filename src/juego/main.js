@@ -264,6 +264,7 @@ const jugador = elegido ? crearJugador(RECURSOS_MH, elegido.sexo, elegido.capas,
 escena.add(jugador.raiz);
 const pj = { x: 0, y: 0, z: 4, k: 0, rot: Math.PI, vel: 0 };
 const cam = { yaw: Math.PI * 0.25, pitch: 0.9, dist: 16 };
+const camLibre = { activa: false, x: 0, y: 0, z: 0, sube: 0 };   // la cámara libre del admin (más abajo, «La herramienta del admin»)
 // niveles de detalle de los personajes según lo que miden en pantalla desde esta cámara; ?detalle=0|1|2 lo fija (pruebas)
 { const f = new URLSearchParams(location.search).get('detalle'); camaraDetalle(camara, f === null || f === '' ? null : +f); }
 
@@ -302,6 +303,14 @@ function moverGente(dt) {
 }
 
 function actualizarCamara() {
+  if (camLibre.activa) {
+    // la cámara libre del admin: donde está, mirando hacia donde dicen yaw y pitch (lo contrario de la cámara que sigue)
+    const cp = Math.cos(cam.pitch);
+    camara.position.set(camLibre.x, camLibre.y, camLibre.z);
+    camara.lookAt(camLibre.x - Math.sin(cam.yaw) * cp, camLibre.y - Math.sin(cam.pitch), camLibre.z - Math.cos(cam.yaw) * cp);
+    ambiente.seguir(camLibre.x, camLibre.z);
+    return;
+  }
   const objetivo = new THREE.Vector3(pj.x, pj.y + 1.2, pj.z);
   const cp = Math.cos(cam.pitch);
   let dist = cam.dist;
@@ -693,7 +702,7 @@ function evaluarColocacion() {
   if (sel.clase === 'mojon') {
     fantasma.position.set(x, sueloEn(x, z), z); fantasma.rotation.set(0, 0, 0);
     const pm = mundo.puedeMojon(x, z, yoAutor());
-    const v = miMojon() ? { ok: false, motivo: t('yaMojon') } : !pm.ok ? pm : mundo.puedePagar(PIEZAS.mojon.coste, reservaDe(inventario())) ? { ok: true } : { ok: false, motivo: t('llevaMateriales') };
+    const v = miMojon() ? { ok: false, motivo: t('yaMojon') } : !pm.ok ? pm : (autoconstruirAdmin() || mundo.puedePagar(PIEZAS.mojon.coste, reservaDe(inventario()))) ? { ok: true } : { ok: false, motivo: t('llevaMateriales') };
     pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
     estado.candidato = { tipo: 'mojon', x, z, v };
     return;
@@ -716,7 +725,7 @@ function evaluarColocacion() {
     let v = { ok: true };
     if (!miMojon()) v = { ok: false, motivo: t('primeroMojon') };
     else if (!mundo.dentroDeTierra(x, z, yoAutor())) v = { ok: false, motivo: t('fueraTierra') };
-    else if (!mundo.puedePagar(DECORACION[sel.tipo].coste, reservaDe(inventario()))) v = { ok: false, motivo: t('llevaMateriales') };
+    else if (!autoconstruirAdmin() && !mundo.puedePagar(DECORACION[sel.tipo].coste, reservaDe(inventario()))) v = { ok: false, motivo: t('llevaMateriales') };
     pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
     estado.candidato = { tipo: 'deco', x, y, z, v };
     return;
@@ -909,7 +918,7 @@ function piezaBajo(clientX, clientY) {
 // (o cualquier otra) W escribe «ц» y antes no movía (lo vio valravnx el 27 oct). Lo que no está en la tabla
 // (+, - y demás) sigue por la letra. Al perder el foco se sueltan todas, para que ninguna se quede pulsada.
 const TECLAS_FISICAS = {
-  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f', KeyI: 'i', KeyM: 'm',
+  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f', KeyI: 'i', KeyM: 'm', KeyC: 'c', Space: ' ',
   ArrowUp: 'arrowup', ArrowDown: 'arrowdown', ArrowLeft: 'arrowleft', ArrowRight: 'arrowright',
   ShiftLeft: 'shift', ShiftRight: 'shift', PageUp: 'pageup', PageDown: 'pagedown', Escape: 'escape',
   NumpadAdd: '+', NumpadSubtract: '-',
@@ -932,6 +941,8 @@ addEventListener('keydown', (e) => {
   if (k === 'i') panelInventario.alternar();
   if (k === 'm' && mapaRey) { if (panelAdmin && panelAdmin.abierto) panelAdmin.cerrar(); else mapaRey.alternar(); }
   if (k === 'f9' && panelAdmin) { e.preventDefault(); panelAdmin.alternar(); }
+  if (k === 'f10' && panelAdmin && panelAdmin.admin) { e.preventDefault(); alternarCamaraLibre(); }
+  if (k === ' ' && camLibre.activa) e.preventDefault();   // que Espacio suba la cámara y no mueva la página
   if (k === 'escape') { if (mapaRey && mapaRey.abierto) mapaRey.cerrar(); else cambiarModo('mover'); }
 });
 addEventListener('keyup', (e) => {
@@ -982,7 +993,8 @@ lienzo.addEventListener('pointermove', (e) => {
   const rotarCamara = e.pointerType !== 'mouse' || p.boton === 1 || (p.boton === 0 && estado.modo === 'mover');
   if (arrastrando && rotarCamara) {
     cam.yaw -= dx * 0.006;
-    cam.pitch = THREE.MathUtils.clamp(cam.pitch + dy * 0.004, 0.06, 1.35); // hasta casi a ras de suelo (valravnx, 30 oct)
+    // hasta casi a ras de suelo (valravnx, 30 oct); con la cámara libre, también mirando hacia arriba
+    cam.pitch = THREE.MathUtils.clamp(cam.pitch + dy * 0.004, camLibre.activa ? -1.3 : 0.06, camLibre.activa ? 1.5 : 1.35);
   }
   if (e.pointerType === 'mouse' && p.boton === 0 && estado.modo === 'construir') alPasar(e.clientX, e.clientY);
 });
@@ -1928,7 +1940,9 @@ const msMundo = { max: 0, total: 0, n: 0 };
 let mundoListo = false;
 function pasoMundo() {
   // y lo que crece, que también sigue al jugador (src/mundo/vegetacion_mundo.js): cuenta en el mismo tiempo
-  const ms = mundoJ.paso(pj.x, pj.z, { prisa: !mundoListo }) + (decorado.paso ? decorado.paso(pj) : 0);
+  // (con la cámara libre del admin, el paisaje se prepara alrededor de la cámara)
+  const foco = camLibre.activa ? { ...pj, x: camLibre.x, z: camLibre.z } : pj;
+  const ms = mundoJ.paso(foco.x, foco.z, { prisa: !mundoListo }) + (decorado.paso ? decorado.paso(foco) : 0);
   // el dosel de cerca empieza donde acaban los árboles de verdad (su cuadro, alrededor de donde se pusieron)
   if (mundoJ.horizonte && decorado.centro) mundoJ.horizonte.cuadroArboles(decorado.centro.x, decorado.centro.z, MEDIDAS_VEGETACION.cuadro);
   if (mundoListo) mirarTierras();
@@ -1969,6 +1983,60 @@ function ahogado() {
   mostrarAviso(tr('Te has ahogado. Vuelves a tu sitio de salida.'), true);
 }
 
+// ---------------- La herramienta del admin: velocidad y cámara libre ----------------
+// (valravnx, 6 nov: «poder multiplicar la velocidad de carrera y poder ir a freecam volando en 3 dimensiones»; el panel
+// está en src/juego/panel_admin.js). La velocidad la confirma el servidor (y solo a la cuenta de admin le deja moverse
+// tanto); la cámara libre es solo de este navegador: el personaje se queda donde estaba y no cambia nada del mundo.
+// Decisiones provisionales (anotadas en el diario): vuela a 12 m/s, con Mayúsculas a 48; no atraviesa el suelo (queda
+// al menos a 0,5 m por encima) y no se aleja más de 3 km del personaje (lo de alrededor llega por el personaje).
+const VUELO = 12, VUELO_RAPIDO = 48, VUELO_LEJOS = 3000;
+// con el autoconstruir del admin, el mojón y los muebles no piden llevar sus materiales (el servidor no los cobra)
+function autoconstruirAdmin() { return !!(enLinea && enLinea.admin && enLinea.red && enLinea.red.modosAdmin && enLinea.red.modosAdmin.autoconstruir); }
+const velocidadAdmin = () => (enLinea && enLinea.admin && enLinea.red && enLinea.red.modosAdmin && enLinea.red.modosAdmin.velocidad > 1 ? enLinea.red.modosAdmin.velocidad : 1);
+const barraVuelo = document.createElement('div');
+barraVuelo.id = 'barraVuelo'; barraVuelo.hidden = true;
+// a la izquierda, a media altura: a la derecha están los botones de modo y Usar, y abajo a la izquierda el joystick
+barraVuelo.style.cssText = 'position:fixed;left:calc(12px + env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:8px';
+for (const [idb, texto, sube] of [['vueloSubir', '▲', 1], ['vueloBajar', '▼', -1], ['vueloIrAqui', tr('Ir aquí'), 0], ['vueloSalir', tr('Cámara'), 0]]) {
+  const b = document.createElement('button'); b.id = idb; b.textContent = texto;
+  b.style.cssText = 'min-width:52px;min-height:44px;font:600 14px system-ui,sans-serif;color:#f1e8d8;background:rgba(36,30,24,.85);border:1px solid rgba(241,232,216,.3);border-radius:10px;touch-action:none';
+  if (sube) {
+    b.addEventListener('pointerdown', (e) => { e.preventDefault(); camLibre.sube = sube; });
+    for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(ev, () => { if (camLibre.sube === sube) camLibre.sube = 0; });
+  }
+  else b.onclick = () => (idb === 'vueloSalir' ? alternarCamaraLibre(false) : panelAdmin && panelAdmin.irAqui());
+  barraVuelo.appendChild(b);
+}
+document.body.appendChild(barraVuelo);
+function alternarCamaraLibre(si = !camLibre.activa) {
+  if (si === camLibre.activa) return;
+  if (si && !(panelAdmin && panelAdmin.admin)) return;
+  camLibre.activa = si; camLibre.sube = 0;
+  barraVuelo.hidden = !si;
+  if (si) {
+    // empieza donde estaba la cámara, mirando hacia donde miraba (de cara al personaje)
+    camLibre.x = camara.position.x; camLibre.y = camara.position.y; camLibre.z = camara.position.z;
+    mostrarAviso(tr('Cámara libre: el personaje se queda aquí.'));
+  } else mostrarAviso(tr('Vuelves a tu personaje.'));
+}
+function moverCamaraLibre(ax, az, dt) {
+  const v = (teclas.has('shift') ? VUELO_RAPIDO : VUELO) * dt;
+  const cp = Math.cos(cam.pitch), s = Math.sin(cam.yaw), c = Math.cos(cam.yaw);
+  // adelante: hacia donde mira (también hacia arriba o abajo); los lados, en horizontal
+  const fx = -s * cp, fy = -Math.sin(cam.pitch), fz = -c * cp;
+  const avance = -az, lado = ax;
+  camLibre.x += (fx * avance + c * lado) * v;
+  camLibre.z += (fz * avance - s * lado) * v;
+  camLibre.y += fy * avance * v;
+  const sube = (teclas.has(' ') ? 1 : 0) - (teclas.has('c') ? 1 : 0) + camLibre.sube;
+  camLibre.y += sube * v;
+  // ni bajo el suelo ni demasiado lejos del personaje
+  const dx = camLibre.x - pj.x, dz = camLibre.z - pj.z, d = Math.hypot(dx, dz);
+  if (d > VUELO_LEJOS) { camLibre.x = pj.x + dx / d * VUELO_LEJOS; camLibre.z = pj.z + dz / d * VUELO_LEJOS; }
+  const suelo = mundoJ ? decorado.altura(camLibre.x, camLibre.z) : 0;
+  if (camLibre.y < suelo + 0.5) camLibre.y = suelo + 0.5;
+}
+
 const reloj = new THREE.Clock();
 function paso() {
   const dt = Math.min(reloj.getDelta(), 0.05);
@@ -1984,6 +2052,8 @@ function paso() {
   ax += joy.vx; az += joy.vy;
   if (teclas.has('q')) cam.yaw += dt * 1.6;
   if (teclas.has('e')) cam.yaw -= dt * 1.6;
+  // con la cámara libre, lo que mueve es la cámara (volando en 3D) y el personaje se queda quieto donde estaba
+  if (camLibre.activa) { moverCamaraLibre(ax, az, dt); ax = 0; az = 0; }
   const mag = Math.min(1, Math.hypot(ax, az));
   // el agua donde estás (valravnx, 30 oct; src/logica/nado.js): a pie, vadeando o nadando, con un solo aguante para
   // correr y nadar; nadando baja más deprisa cuanto más pesa lo que llevas, y sin aguante te ahogas
@@ -1996,6 +2066,7 @@ function paso() {
   let vel = (correr ? 6 : 3.6) * mag * velocidadCarga() * combate.factorVelocidad(correr); // cargado al máximo en todo, al 80% (GDD); con el arma sacada, lo que diga el combate
   if (modo === 'vadear') vel *= factorVadeo(ag.hondo);
   if (modo === 'nadar') vel = (rapido && nado.e.aguante > 0 ? NADO.velNadarRapido : NADO.velNadar) * mag;
+  vel *= velocidadAdmin();   // la cuenta de admin con su velocidad multiplicada (src/logica/admin.js; el servidor la deja)
   nado.e = pasoAguante(nado.e, dt, { modo, moviendo: mag > 0.05, rapido, kg: inventario().kilos() });
   if (modo === 'nadar' && ag) { pj.x += ag.dx * NADO.arrastre * dt; pj.z += ag.dz * NADO.arrastre * dt; }   // la corriente te lleva
   if (nado.e.muerto) ahogado();
@@ -2433,6 +2504,7 @@ function elegirSalidaPanel() {
 // servidor contesta que sí. Se pone en el suelo de allí (o en el piso de una obra, si cae encima de una).
 const panelAdmin = mapaRey ? montarPanelAdmin({ mapaRey, enLinea, salida: mundoJ.salida, avisar: mostrarAviso,
   libre: (si) => mundoJ.libre(si),   // la cuenta de admin, por todo el continente
+  camaraLibre: { get activa() { return camLibre.activa; }, alternar: (si) => alternarCamaraLibre(si), donde: () => ({ x: camLibre.x, z: camLibre.z }) },
   irA: (x, y, z, giro) => { Object.assign(pj, { x, z, k: 0, vel: 0 }); if (giro !== null) pj.rot = giro; pj.y = alturaSuelo(); } }) : null;
 
 // Atajo de prueba (obras con lo que llevas): coge del arcón de pruebas, con acciones, lo que le falta a la obra p (lo
@@ -2463,7 +2535,7 @@ window.__kinhold = {
   get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, camara, escena, renderer, graficos, jugador, obstaculos, talaV, decorado, combate,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
-  mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
+  mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado
   nado,
   // un paso de alguien que anda por el suelo del mundo (el rival de práctica)

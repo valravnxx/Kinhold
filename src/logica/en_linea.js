@@ -18,6 +18,7 @@
 import { Mundo } from './construccion.js';
 import { RegistroAcciones, ejecutar, reproducir, USAN_INVENTARIO } from './acciones.js';
 import { ponerComun } from './obras_red.js';
+import { GRATIS_AUTOCONSTRUIR, MODOS_INICIALES } from './admin.js';
 
 const copiar = (m) => Mundo.importar(JSON.parse(JSON.stringify(m.exportar())));
 
@@ -37,6 +38,10 @@ export class MundoEnLinea {
     // llevas cambia ya; el servidor manda luego el suyo, que manda); la acción queda ya pagada («lleva») y al rehacer
     // la copia no vuelve a cobrar. Sin él, no se adelantan: «No llevas ese material».
     this.invs = null;
+    // Los modos de la cuenta de admin (src/logica/admin.js; los pone el panel cuando el servidor los confirma, y se
+    // apagan al volver a conectar, como en el servidor). Con autoconstruir, el mojón y los muebles se adelantan sin
+    // cobrar (como el servidor), y la obra se termina cuando llega su admin_terminar. La velocidad la usa el juego.
+    this.modosAdmin = { ...MODOS_INICIALES };
   }
   get conectado() { return this.yo !== null; }
 
@@ -46,7 +51,9 @@ export class MundoEnLinea {
     const accion = { ...a, autor: this.yo };
     if (this.mundo === this.base) this.mundo = copiar(this.base);
     delete accion.lleva;   // eso solo lo pone la lógica al cobrar
-    const usa = USAN_INVENTARIO.has(accion.tipo);
+    const gratis = this.modosAdmin.autoconstruir === true && GRATIS_AUTOCONSTRUIR.has(accion.tipo);
+    if (gratis) accion.lleva = true;   // sin cobrar, como hará el servidor (y al rehacer la copia, tampoco)
+    const usa = USAN_INVENTARIO.has(accion.tipo) && !gratis;
     if (usa && !this.invs) { if (!this.pendientes.length) this.mundo = this.base; return { ok: false, motivo: 'No llevas ese material.', faltan: [] }; }
     const r = ejecutar(this.mundo, this.registro, accion, usa ? this.invs : null);
     if (!r.ok) { if (!this.pendientes.length) this.mundo = this.base; return r; }
@@ -61,6 +68,7 @@ export class MundoEnLinea {
   recibir(msg) {
     if (msg.tipo === 'bienvenida') {
       this.yo = msg.autor;
+      this.modosAdmin = { ...MODOS_INICIALES };
       this.base = msg.obras ? Mundo.importar(msg.obras) : reproducir(msg.entradas || []);
       this.mundo = this.base; this.pendientes = []; this.caidas.clear();
       return { cambio: true };
@@ -88,7 +96,8 @@ export class MundoEnLinea {
       const r = ejecutar(this.base, new RegistroAcciones(1), { autor: e.autor, tipo: e.tipo, ...e.datos });
       // en el servidor salió bien: si aquí no, falta algo de otro trozo; se pide la foto de los de alrededor
       if (!r.ok && msg.antes) this.enviar({ tipo: 'obras' });
-      const propia = e.autor === this.yo;
+      // lo que termina el servidor por el autoconstruir es del autor, pero aquí no se había adelantado: hay que verlo
+      const propia = e.autor === this.yo && e.tipo !== 'admin_terminar';
       if (!this.pendientes.length) {
         // sin nada propio por confirmar, lo que se ve es la base (una propia ya estaba en la copia: igual)
         this.mundo = this.base;
