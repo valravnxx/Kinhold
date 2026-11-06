@@ -1,5 +1,5 @@
-// El combate visto desde un cliente en línea (hito 1f). Lógica pura (sin three.js ni websocket): la usa el
-// «Duelo en línea» (src/combate/en_linea.js) y la prueba en node.
+// El combate visto desde un cliente en línea (hito 1f). Lógica pura (sin three.js ni websocket): la usan el
+// combate en el mundo (src/juego/combate_mundo.js y src/juego/en_linea.js) y la prueba en node.
 //
 // Lo que vale es lo del servidor (src/logica/combate_servidor.js): él resuelve golpes, heridas y flechas. Aquí
 // cada luchador (el propio y los de los demás) es una copia que se pone al día con lo que reparte el servidor
