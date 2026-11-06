@@ -1208,9 +1208,10 @@
     },
     {
      "nombre": "Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo (teja, chimenea, adarve, empalizada, polea, polipasto, escalera de tablas y los muebles caros quedan guardados para su nivel)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T02:24:03+00:00",
-     "rama": "trabajo/20261106-0224"
+     "rama": "trabajo/20261106-0224",
+     "fin": "2026-11-06T03:55:42+00:00"
     },
     {
      "nombre": "Pruebas que no fallan a ratos: las de navegador con una salida fija (?salida=N), y mirar de verdad lo que salía como «ruido» (el personaje a más de 0,6 m del suelo andando, cosas en el agua)",
@@ -2910,6 +2911,13 @@
      "archivo": "jugar/demo/v117.html",
      "capturas": "capturas/demo-v117",
      "notas": "Con algo al hombro, las manos no llevan nada, ni el hacha: con el tronco corto o el saco al hombro no se coge nada con las manos, y para subirte algo al hombro hay que llevar las manos vacías (lo que cuelga de una correa, la bandolera y el odre, deja las manos libres). Por el servidor. Capturas: el panel de inventario con el hacha en la mano y el odre colgado, y el tronco en las manos en el móvil, antes de subirlo al hombro."
+    },
+    {
+     "v": "v118",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v118.html",
+     "capturas": "capturas/demo-v118",
+     "notas": "Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de la casa humilde (la teja, la chimenea, el adarve, la empalizada, la polea, el polipasto, la escalera de tablas, lo de tablas y los muebles caros quedan guardados para su nivel)."
     }
    ]
   },

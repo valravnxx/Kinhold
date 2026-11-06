@@ -4526,5 +4526,19 @@
   "pruebas": "Batería entera en la nube (35 grupos, sin las de en línea): todo bien en el código final, con la construcción, el inglés, el mapa del rey, el nivelado y quitar el mojón repetidos tras el último arreglo del atajo de prueba. El nivelado falló una vez por la ladera que le tocó (cambia en cada pasada) y salió bien al repetirlo.",
   "capturas": "capturas/demo-v117",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T02:24:03+00:00",
+  "fin": "2026-11-06T03:55:42+00:00",
+  "titulo": "Lo de niveles posteriores, escondido en el menú de construir (P2, carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "El menú de construir solo enseña lo de la casa humilde. Quedan guardados para su nivel el tejado y los remates de teja, la chimenea, el adarve, la empalizada y su puerta, la polea, el polipasto, la escalera de tablas y todo lo de tablas, el muro de entramado y los muebles caros (cama de madera, mesa, banco, arcón, barril y estantería).",
+   "Provisional (registro de la demo): «lo de este tramo» es lo de nivel 1 o menos que no pide tablas, clavos, hierro ni tejas; una sola regla en la lógica pura (enEsteTramo, en piezas.js). Solo se esconde del menú: lo ya construido sigue en pie y el servidor lo sabe hacer.",
+   "Prueba nueva de lógica (rota a propósito con MUTAR=1) y en la de construcción del navegador, que cada pestaña tenga algo y que lo guardado no salga, en PC y en móvil."
+  ],
+  "pruebas": "Batería entera (35 grupos, sin las de en línea): 34 en el PC de valravnx y la lógica en la nube. En su PC fallaron cuatro que miden el dibujo sin tarjeta gráfica (niveles de detalle, la demo en el mundo, el perfil gráfico y la demo única); repetidas en la nube con el inglés y la web: todo bien.",
+  "capturas": "capturas/demo-v118",
+  "estado": "ok"
  }
 ]
