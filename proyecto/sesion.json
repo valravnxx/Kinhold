@@ -1,4 +1,10 @@
 {
  "A": null,
- "B": null
+ "B": null,
+ "chat:trabajo/20261106-0505-rios-mar": {
+  "inicio": "2026-11-06T05:04:23+01:00",
+  "tarea": "Los ríos llegan al mar (valravnx, 5 nov: «los ríos no finalizan en la entrada al mar, ni hay deltas»): el cauce sigue por la playa hasta el agua, se ensancha en la desembocadura y baja al nivel del mar; en los ríos grandes, un estuario o un delta",
+  "hito": "mundo",
+  "rama": "trabajo/20261106-0505-rios-mar"
+ }
 }
