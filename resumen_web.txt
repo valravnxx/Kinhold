@@ -1,0 +1,52 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 3376 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2606 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2175 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2666 KB
+
+== Construir demo única
+      2568 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3700 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2573 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2169 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2666 KB
+dist/kinhold_trozos.html 2182 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Web de progreso
+ERRORES:
+ - falta la versión demo v125: jugar/demo/v125.html
+!! FALLA: node herramientas/construir_web.mjs
+
+== Navegador: web
+  OK   «ahora mismo» en ruso
+  OK   sin errores en consola (movil)
+
+Resultado: 8 fallos: roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», la alpha va arriba y abre la última versión de la demo única, diario: las 12 últimas a la vista y las demás en un desplegable, sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», la alpha va arriba y abre la última versión de la demo única, diario: las 12 últimas a la vista y las demás en un desplegable, sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso
+!! FALLA: python3 pruebas/prueba_web.py /tmp/kinhold_capturas/web
+
+HAY FALLOS
+tardó 148 s
+en el PC de valravnx, con su tarjeta: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002504) Direct3D11 vs_5_0 ps_5_0, D3D11)
