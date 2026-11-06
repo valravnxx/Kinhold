@@ -6,11 +6,5 @@
   "tarea": "Chat de texto (valravnx, 6 nov: «vamos a poner chat de texto ya, debe verse sobre el jugador, y desaparecer al rato»): escribes una frase (Intro en PC, «Hablar» en el móvil), el servidor la comprueba con su autor (largo, sin mandar a chorro, a quién llega) y la reparte a los que están cerca; sale en un bocadillo sobre la cabeza del que habla y se va al rato; queda en el registro del servidor",
   "hito": "admin",
   "rama": "trabajo/20261106-1730-charla"
- },
- "chat:trabajo/20261106-1755-panel-fabricar": {
-  "inicio": "2026-11-06T17:54:33+01:00",
-  "tarea": "Estudio del panel de fabricación (valravnx, 6 nov): cómo lo hacen otros juegos y propuesta con imágenes, para PC y móvil; valravnx decide si se hace",
-  "hito": "crafting",
-  "rama": "trabajo/20261106-1755-panel-fabricar"
  }
 }
