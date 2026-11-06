@@ -1,0 +1,23 @@
+PC: soltar y coger del suelo
+  OK   empieza sin nada en el suelo
+  OK   «Soltar» deja el hacha en el suelo, a tus pies — (0, 8)
+  OK   y ya no la llevas en la mano
+  OK   fuera de tus tierras desaparece en 1 hora
+  OK   se ve en el suelo
+  OK   el aviso dice que desaparece en una hora — Lo dejas en el suelo: fuera de tus tierras desaparece en una hora.
+  OK   queda en el registro con su autor
+  OK   junto a ella, Usar se enciende
+  OK   Usar la coge: vuelve a la mano y deja el suelo
+  OK   y ya no se ve
+  OK   las piedras soltadas en el mismo sitio hacen una pila — [6]
+  OK   la pila de piedras no desaparece
+  OK   pasada la hora, el sílex ya no está ni se ve
+  OK   en tus tierras (junto a tu mojón) no desaparece
+  OK   al recargar la página, lo del suelo sigue ahí (guardado) — 7 → 7
+  OK   de la pila de 6 se coge lo que cabe (3) y el resto se queda en el suelo — 3 cogidas, quedan [3]
+  FALLA sin errores en la página (PC) — Failed to load resource: the server responded with a status of 404 (File not found); Failed to load resource: the server responded with a status of 404 (File not found)
+Móvil: soltar y coger con los botones
+  OK   móvil: «Soltar» deja el hacha en el suelo
+  OK   móvil: el botón Usar la coge
+  FALLA sin errores en la página (móvil) — Failed to load resource: the server responded with a status of 404 (File not found)
+FALLAN 2: sin errores en la página (PC), sin errores en la página (móvil)
