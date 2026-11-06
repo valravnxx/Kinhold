@@ -25,13 +25,48 @@ const DOSEL = [0.22, 0.29, 0.17];        // el verde de las copas visto desde ar
 
 // La compresión de la distancia: r0, a partir de dónde (m), y s, cuánto (1 m de verdad pasa a ser s m). Con la
 // distancia más larga posible dentro de la isla (su diagonal) y el alcance de la cámara (lejos), deja todo dentro.
-export function compresion(hasta, lejos, diagonal) {
+//
+// Sin esquina (valravnx, 6 nov: «a lo lejos sigue hundido el terreno bajo el agua… y los glitches de lo parecido a los
+// árboles»): la compresión iba de golpe en r0 (de 1 a s ≈ 0,008), y la malla lejana, por cuadros de 100 a 500 m, tiene
+// triángulos con un vértice antes de r0 (sin comprimir) y otro después (comprimido): el triángulo, plano entre ellos, no
+// sigue la compresión y se levantaba. El mar de lejos (cuadros de 500 m) subía así varios metros entre unos 300 y 800 m
+// y tapaba la costa y la tierra baja («hundida bajo el agua»), y el dosel y el suelo salían en franjas que flotan. Ahora
+// la compresión entra poco a poco en w m (de 1 a s, la pendiente baja en línea recta): en un triángulo de 100 m el error
+// es de un par de metros de distancia, y el mar va en cuadros de 250 m.
+export const TRANSICION = 500;
+export function compresion(hasta, lejos, diagonal, w = TRANSICION) {
   const r0 = hasta + 60;
-  return { r0, s: Math.max(1e-4, (lejos * 0.95 - r0) / diagonal) };
+  // lo más lejos, comprimido: r0 + w (1 + s) / 2 + (diagonal − r0 − w) s ≤ lejos · 0,95
+  return { r0, w, s: Math.max(1e-4, (lejos * 0.95 - r0 - w / 2) / Math.max(1, diagonal - r0 - w / 2)) };
 }
 // lo que hace la malla con la distancia d (m de la cámara) y lo que deshace la niebla
-export const comprimir = (d, { r0, s }) => (d <= r0 ? d : r0 + (d - r0) * s);
-export const descomprimir = (d, { r0, s }) => (d <= r0 ? d : r0 + (d - r0) / s);
+export function comprimir(d, { r0, s, w = 0 }) {
+  if (d <= r0) return d;
+  const u = d - r0;
+  if (u < w) return r0 + u - (1 - s) * u * u / (2 * w);
+  return r0 + w * (1 + s) / 2 + (u - w) * s;
+}
+export function descomprimir(d, { r0, s, w = 0 }) {
+  if (d <= r0) return d;
+  const c = d - r0, cw = w * (1 + s) / 2;
+  if (c < cw) { const a = (1 - s) / (2 * w); return r0 + (1 - Math.sqrt(Math.max(0, 1 - 4 * a * c))) / (2 * a); }
+  return r0 + w + (c - cw) / s;
+}
+// lo mismo en GLSL (la malla lejana y la niebla): hzComp(d, r0, s, w) y hzDescomp(d, r0, s, w)
+export const GLSL_COMPRESION = `
+float hzComp(float d, float r0, float s, float w) {
+  if (d <= r0) return d;
+  float u = d - r0;
+  if (u < w) return r0 + u - (1.0 - s) * u * u / (2.0 * w);
+  return r0 + w * (1.0 + s) * 0.5 + (u - w) * s;
+}
+float hzDescomp(float d, float r0, float s, float w) {
+  if (d <= r0) return d;
+  float c = d - r0, cw = w * (1.0 + s) * 0.5;
+  if (c < cw) { float a = (1.0 - s) / (2.0 * w); return r0 + (1.0 - sqrt(max(0.0, 1.0 - 4.0 * a * c))) / (2.0 * a); }
+  return r0 + w + (c - cw) / s;
+}
+`;
 
 // Las muestras de la isla: alto (m del mundo; NaN si aún no) y color (sRGB 0–255; listo cuando colorListo[k])
 // rect: { x0, z0, x1, z1 } en m del mundo (el cuadro de la isla)
@@ -122,7 +157,7 @@ export function mallaDe(m, k, { ox = 0, oz = 0, y0 = 0 } = {}) {
 // El mar de lejos: una rejilla lisa del cuadro de la isla (cada «paso» m), a la altura y (m de la escena). Tiene que ir
 // en trozos (no en un solo cuadro) porque la compresión se hace en cada vértice: así la lámina sigue la curva. La
 // lámina del mar de cerca acaba donde acaba la cámara (1,6 km); esta sigue hasta el borde de la isla.
-export const PASO_MAR = 500;
+export const PASO_MAR = 250;   // (con 500, el mar se levantaba entre los vértices: ver la compresión)
 export function mallaMar(rect, { ox = 0, oz = 0, y = 0, paso = PASO_MAR } = {}) {
   const cx = Math.ceil((rect.x1 - rect.x0) / paso) + 1, cz = Math.ceil((rect.z1 - rect.z0) / paso) + 1;
   const pos = new Float32Array(cx * cz * 3), idx = new Uint32Array((cx - 1) * (cz - 1) * 6);

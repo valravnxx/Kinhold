@@ -4709,5 +4709,25 @@
   "pruebas": "Batería entera en la nube con todo lo de main unido: 35 grupos correctos, sin las de en línea. Por el camino fallaron sin ser de este cambio y pasaron al repetirlos: la web (faltaban en main las traducciones de tareas que anunciaba otra sesión), la presencia (un salto de 3,00× contra 2,5× con el retraso simulado) el tronco al hombro (radio 10 u 11 cm según la vez) y entrar con la cuenta (el servidor aún no había apuntado el sitio). Capturas mirando a las montañas altas, antes y después, en PC y móvil.",
   "capturas": "capturas/demo-v123",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T10:20:00+01:00",
+  "fin": "2026-11-06T13:40:00+01:00",
+  "titulo": "Sin tierra bajo el agua a lo lejos y el río entrando en el mar",
+  "hito": "mundo",
+  "hecho": [
+   "valravnx, 6 nov, 10:17: «en ninguna de las imágenes se ve el río llegando al mar… a lo lejos sigue hundido el terreno bajo el agua… y los glitches de lo parecido a los árboles».",
+   "Buscado quitando cada pieza en la misma vista: lo que pintaba mar encima de la tierra era la lámina del mar de cerca en el hueco entre el terreno de cerca que ya había llegado y el círculo fijo donde se quitaba el suelo de lejos (el terreno de cerca llega poco a poco; tras teletransportarse, todo de nuevo).",
+   "Ahora el suelo de lejos solo se quita donde ya hay trozo de cerca (una máscara de los trozos cargados, menos su borde, que sigue con el suelo de lejos debajo).",
+   "La cámara del mundo dibuja desde 0,5 m y no desde 0,1: cinco veces más precisión de hondura (a lo lejos, la lámina del mar ganaba a la tierra baja y la arena del fondo al agua).",
+   "La compresión de lo lejano entra poco a poco en 500 m en vez de golpe en r0, y el mar de lejos va en cuadros de 250 m: el mar de lejos ya no sube como una rampa (prueba nueva: con la compresión de golpe sube 5,75 m dentro del terreno de cerca; ahora 0,37).",
+   "El agua de los ríos de lejos, una sola cinta por río (sin muescas en las curvas) que sigue unos metros mar adentro y se funde con el mar.",
+   "La arena de la playa, hasta unos 60 m de la orilla (antes unos 120).",
+   "Unido con la v123 (el bosque de lejos en texturas, de otra sesión), que tocaba el mismo archivo del horizonte; a mano.",
+   "Pendiente, visto en las capturas: donde el terreno de cerca aún no ha llegado, el color del suelo lejano (texturas de la v123) sale en cuadros grandes; antes quedaba tapado por el hueco redondo."
+  ],
+  "pruebas": "Batería entera en la nube tras unir main: 35 grupos bien («lo que llevas se ve puesto», en el borde de 17,7 cm como otras veces, pasó al repetirla). Horizonte 37/37 (MUTAR=3 falla), desembocaduras 9/9, mar 7/7. Capturas de la boca (cerca, desde el río y desde arriba) y de la loma, en PC y móvil.",
+  "capturas": "capturas/demo-v124",
+  "estado": "ok"
  }
 ]

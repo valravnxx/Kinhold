@@ -13,9 +13,10 @@
 // distancia por el rayo de cada píxel, para saber lo lejos que está de verdad.
 import { Color, Uniform, Vector2 } from 'three';
 import { Effect, EffectAttribute, BlendFunction } from 'postprocessing';
+import { GLSL_COMPRESION } from '../logica/horizonte.js';
 
-const frag = `uniform vec3 colorNiebla;uniform float nieblaCerca;uniform float nieblaLejos;
-uniform float tope;uniform float maxLejos;uniform float lejosH;uniform float r0;uniform float sComp;uniform vec2 tanMedio;uniform vec3 cieloArriba;uniform vec3 cieloAbajo;
+const frag = GLSL_COMPRESION + `uniform vec3 colorNiebla;uniform float nieblaCerca;uniform float nieblaLejos;
+uniform float tope;uniform float maxLejos;uniform float lejosH;uniform float r0;uniform float sComp;uniform float wComp;uniform vec2 tanMedio;uniform vec3 cieloArriba;uniform vec3 cieloAbajo;
 vec3 aSRGB(const in vec3 c){return mix(c*12.92,1.055*pow(c,vec3(1.0/2.4))-0.055,step(vec3(0.0031308),c));}
 vec3 aLineal(const in vec3 c){return mix(c/12.92,pow((c+0.055)/1.055,vec3(2.4)),step(vec3(0.04045),c));}
 void mainImage(const in vec4 inputColor,const in vec2 uv,const in float depth,out vec4 outputColor){
@@ -36,7 +37,7 @@ void mainImage(const in vec4 inputColor,const in vec2 uv,const in float depth,ou
   if(tope<1.0){
     // la distancia por el rayo (no la de frente) y sin la compresión del horizonte
     float rad=d*length(vec3((uv*2.0-1.0)*tanMedio,1.0));
-    float real=rad<=r0?rad:r0+(rad-r0)/sComp;
+    float real=hzDescomp(rad,r0,sComp,wComp);
     // lo lejano se funde con el cielo que tiene detrás (el degradado de la página: arriba, y del 60 % para abajo, el
     // del horizonte, que es el color de la niebla), como las montañas de verdad: así no salen más claras que el
     // cielo ni con una raya clara en la cresta; y se va perdiendo con la distancia (la mitad de lo que falta cada lejosH)
@@ -59,7 +60,7 @@ export class NieblaEffect extends Effect {
       blendFunction: BlendFunction.SRC,
       attributes: EffectAttribute.DEPTH,
       uniforms: new Map([['colorNiebla', new Uniform(new Color())], ['nieblaCerca', new Uniform(45)], ['nieblaLejos', new Uniform(130)],
-        ['tope', new Uniform(1)], ['maxLejos', new Uniform(1)], ['lejosH', new Uniform(30000)], ['r0', new Uniform(1e9)], ['sComp', new Uniform(1)],
+        ['tope', new Uniform(1)], ['maxLejos', new Uniform(1)], ['lejosH', new Uniform(30000)], ['r0', new Uniform(1e9)], ['sComp', new Uniform(1)], ['wComp', new Uniform(0)],
         ['tanMedio', new Uniform(new Vector2(1, 1))], ['cieloArriba', new Uniform(new Color(0xa9bfca))], ['cieloAbajo', new Uniform(new Color(0xd9e1e0))]]),
     });
     this.camara = camara;
@@ -75,8 +76,8 @@ export class NieblaEffect extends Effect {
   }
   ponerHorizonte(h) {
     const u = (k, v) => { this.uniforms.get(k).value = v; };
-    if (!h) { u('tope', 1); u('maxLejos', 1); u('r0', 1e9); u('sComp', 1); return; }
-    u('tope', h.tope); u('maxLejos', h.max); u('lejosH', h.lejos); u('r0', h.r0); u('sComp', h.s);
+    if (!h) { u('tope', 1); u('maxLejos', 1); u('r0', 1e9); u('sComp', 1); u('wComp', 0); return; }
+    u('tope', h.tope); u('maxLejos', h.max); u('lejosH', h.lejos); u('r0', h.r0); u('sComp', h.s); u('wComp', h.w || 0);
     // los colores del cielo, tal como se ven (sRGB; los hex de la luz ya lo son)
     if (h.cielo) { this.uniforms.get('cieloArriba').value.setHex(h.cielo[0]).convertLinearToSRGB(); this.uniforms.get('cieloAbajo').value.setHex(h.cielo[1]).convertLinearToSRGB(); }
   }

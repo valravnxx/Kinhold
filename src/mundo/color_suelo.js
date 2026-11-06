@@ -44,7 +44,7 @@ export function colorDelSuelo(st, y, s, xm, ym) {
     c = c.map(v => v * k);
   }
   // la playa, solo junto al mar (valravnx, 6 nov: salía arena en las vegas de los ríos tierra adentro, que quedan bajas)
-  const junto = 1 - suave(90, 160, st.costa ?? 0);
+  const junto = 1 - suave(45, 90, st.costa ?? 0);
   if (y < 2.8 && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25) c = c.map((v, n) => v + (ARENA[n] - v) * arenaDe(y) * junto); // playa
   else if (y < 1.2 && (st.roca === 'granito' || st.roca === 'pizarra') && s < 0.4) c = c.map((v, n) => v + (roca[n] * 0.85 - v) * (1 - y / 1.2) * junto); // orilla de cantos
   if (st.T < -1.5 && s < 0.9) c = SUELO.nieve;
@@ -96,7 +96,7 @@ export function colorJuego(st, y, s, s1, lap, xm, ym, sal = [0, 0, 0], rio = nul
   let c = colorDelSuelo(st, y, Math.max(s1, s * 0.6), xm, ym);
   // calvas de tierra en el prado y en el bosque, y algo de variación de cerca
   // (en la arena de la playa, ni calvas ni hojarasca: salían manchas pardas)
-  const playa = st && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25 && y < 2.8 ? arenaDe(y) * (1 - suave(90, 160, st.costa ?? 0)) : 0;
+  const playa = st && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25 && y < 2.8 ? arenaDe(y) * (1 - suave(45, 90, st.costa ?? 0)) : 0;
   if (st && st.bioma && st.bioma !== 'nieve' && s < 0.6) { const t = suave(0.62, 0.74, fbm(xm / 16, ym / 16, 41, 3)) * (1 - playa); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.7); }
   // bajo el bosque, el suelo es de hojarasca (más pardo y oscuro)
   if (st && st.bioma && st.bioma !== 'nieve') { const d = bosqueEn(st, s, xm, ym).d * (1 - playa); c = c.map((v, q) => v + (HOJARASCA[q] - v) * Math.min(1, d * 0.75)); }
