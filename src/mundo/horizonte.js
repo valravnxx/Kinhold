@@ -90,7 +90,10 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   // el nivel (la costa no se pisa con él)
   // (poco: mirando muy de lado, el desplazamiento crece con la pendiente de la hondura y lo echaba más allá del alcance
   // de la cámara: se cortaba el mar de lejos y salía una franja de cielo. El mar va unos metros más bajo y sin él)
-  Object.assign(material, { polygonOffset: true, polygonOffsetFactor: 0.5, polygonOffsetUnits: 2 });
+  // (sin el factor de la pendiente, valravnx, 6 nov: «a lo lejos sigue hundido el terreno bajo el agua»: lo comprimido
+  // queda casi de canto a la cámara, con una pendiente de hondura enorme, y el factor lo echaba tan atrás que la tierra
+  // baja de la costa perdía contra el mar de lejos, 4 m más bajo: se veía mar encima de la tierra)
+  Object.assign(material, { polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: 4 });
   // el mar, sin hueco: va 4 m bajo el nivel, bajo el mar de cerca (y del fondo, solo tapa lo más hondo, que ya es azul);
   // con hueco, junto al borde de lo comprimido quedaba una franja de cielo entre los dos mares
   const materialMar = materialLejano({ ...uniformes, uHueco: { value: 0 } });
