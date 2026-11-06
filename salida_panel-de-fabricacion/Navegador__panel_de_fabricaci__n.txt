@@ -1,0 +1,102 @@
+  OK   PC: entra y le llega lo que lleva en el servidor — []
+  OK   PC: sin la pantalla de la cuenta delante
+El panel se abre con el botón y con H
+  OK   sale el botón «Fabricar»
+  OK   el botón lo abre
+  OK   en la pestaña «Con las manos»
+  OK   H lo cierra
+  OK   y H lo vuelve a abrir
+  OK   en «Todo», todas las recetas, a la vista (sin aprender ninguna)
+  OK   cada carta con su imagen, que carga
+  OK   y ninguna receta sale «sin modelo aún»
+Con 3 fibras en la mano
+  OK   el servidor le da las 3 fibras (arcón de pruebas)
+  OK   el cordel, en «Puedes hacerlo ya» — {'cls': 'fab-carta fab-ya fab-sel', 'txt': 'Cordel de fibra', 'sec': 'fab-sec fab-sec-ya'}
+  OK   y su ficha dice que la fibra sale de la mano, y para qué sirve — Cordel de fibra
+
+Para atar; también sirve como cinturón de cordel (1 hueco).
+
+Con las manos
+15 s
+LO QUE PIDE
+Fibra cruda
+3 de la mano
+3/3
+Hacer · 15 s
+  OK   el leñero, en «Te falta algo», con lo que falta en rojo en su ficha — Leñero
+
+A la espalda: solo leña y troncos cortos.
+
+Con las manos
+30 s
+LO QUE PIDE
+Rama
+faltan 4
+0/4
+Cordel de fibra
+faltan 2
+0/2
+Hacer antes: 1 cordel de fibra (con 3 fibra cruda · 15 s)
+Te falta: 4 rama y 2 cordel de fibra
+  OK   y el atajo «Hacer antes: 1 cordel de fibra», que dice con qué y cuánto tarda — Leñero
+
+A la espalda: solo leña y troncos cortos.
+
+Con las manos
+30 s
+LO QUE PIDE
+Rama
+faltan 4
+0/4
+Cordel de fibra
+faltan 2
+0/2
+Hacer antes: 1 cordel de fibra (con 3 fibra cruda · 15 s)
+Te falta: 4 rama y 2 cordel de fibra
+  OK   la lasca, en gris, con la piedra de tallar que hace falta — Lasca de sílex
+
+Corta fibra y juncos, despieza.
+
+En la piedra de tallar
+20 s
+LO QUE PIDE
+Sílex
+1
+Piedra
+1
+
+Hace falta una piedra de tallar a tu lado.
+Hacer (con el atajo) y recoger, por el servidor
+  OK   el servidor gasta la fibra de lo que lleva
+  OK   sale en «En marcha», con lo que le queda y su barra
+  OK   terminado (15 s), sale «Recoger»
+  FALLA y el cordel es suyo en el servidor
+  (lo último que apunta el servidor: {"n":1,"autor":"jugador:b86ee3ca","tipo":"coger","datos":{"objeto":"fibra","cantidad":3,"a":"mano:der"},"ok":true} | {"n":2,"autor":"jugador:b86ee3ca","tipo":"fabricar","datos":{"receta":"cordel","estacion":null,"x":0,"z":0},"ok":true,"ahora":1793996222469,"resultado":{"receta":"cordel","fin":1793996237469}} | {"n":3,"autor":"jugador:b86ee3ca","tipo":"recoger_fabricado","datos":{"estacion":null,"x":0,"z":0},"ok":true,"ahora":1793996237985,"resultado":{"dados":[["cordel",1]]}} )
+  (aviso del panel: Encargado: Cordel de fibra. · botón: sigue, disabled=true )
+  FALLA y el panel dice lo que recoge
+Poner la piedra de tallar delante
+  OK   con una piedra, la piedra de tallar se puede poner (en su ficha)
+  FALLA el servidor la tiene, de su autor
+  FALLA y se dibuja delante
+  FALLA la lasca pasa a «Te falta algo» — {'cls': 'fab-carta fab-despues', 'txt': 'Lasca de sílex', 'sec': 'fab-sec fab-sec-despues'}
+Traceback (most recent call last):
+  File "D:\KinholdGrafica\runner\_work\Kinhold\Kinhold\pruebas\prueba_fabricar_navegador.py", line 175, in <module>
+    A.evaluate(f"(() => {{ const e = Object.values({K}.fabCliente.estaciones)[0]; Object.assign({K}.pj, {{ x: e.x + 1.3, z: e.z + 0.3, rot: -1.2 }}); {K}.cam.yaw = 0.15; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.55; }})()")
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\sync_api\_generated.py", line 9413, in evaluate
+    self._sync(
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_page.py", line 474, in evaluate
+    return await self._main_frame.evaluate(expression, arg)
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_frame.py", line 346, in evaluate
+    await self._channel.send(
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Page.evaluate: TypeError: Cannot read properties of undefined (reading 'x')
+    at eval (eval at evaluate (:311:30), <anonymous>:1:120)
+    at eval (eval at evaluate (:311:30), <anonymous>:1:260)
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
