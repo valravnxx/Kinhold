@@ -242,7 +242,7 @@ try:
             pg.fill('#panelAdmin .pa-buscar', 'hacha de hierro'); pg.wait_for_timeout(300)
             n_obj = pg.evaluate("document.querySelectorAll('#panelAdmin .pa-objetos li').length")
             pulsar('#panelAdmin .pa-objetos li .pa-invocar')
-            comprobar(f'{nombre}: el arcón de admin: buscar «hacha de hierro» e invocarla, a lo que llevas', n_obj >= 1 and esperar(pg, f"{K}.inventario().cuantos('hacha_hierro') >= 1", 8000), f'{n_obj} · {pg.evaluate(ESTADO_PANEL)}')
+            comprobar(f'{nombre}: el arcón de admin: buscar «hacha de hierro» e invocarla, a lo que llevas', n_obj >= 1 and esperar(pg, f"{K}.inventario.cuantos('hacha_hierro') >= 1", 8000), f'{n_obj} · {pg.evaluate(ESTADO_PANEL)}')
             captura(pg, f'{SALIDA}/{nombre}_arcon.png')
             # la cámara libre: el personaje se queda; la cámara vuela, sube y avanza
             pulsar('#panelAdmin .pa-p-modos'); pg.wait_for_timeout(300)
@@ -250,14 +250,16 @@ try:
             pj0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]"); c0 = pg.evaluate(f"({{ ...{K}.camLibre }})")
             activa = pg.evaluate(f"{K}.camLibre.activa && !{PANEL}.abierto && !document.getElementById('barraVuelo').hidden")
             if movil:
-                pg.dispatch_event('#vueloSubir', 'pointerdown'); pg.wait_for_timeout(1000); pg.dispatch_event('#vueloSubir', 'pointerup')
+                pg.dispatch_event('#vueloSubir', 'pointerdown'); pg.wait_for_timeout(2000); pg.dispatch_event('#vueloSubir', 'pointerup')
             else:
-                pg.keyboard.down('Space'); pg.wait_for_timeout(1000); pg.keyboard.up('Space')
-                pg.keyboard.down('w'); pg.wait_for_timeout(1000); pg.keyboard.up('w')
+                pg.keyboard.down('Space'); pg.wait_for_timeout(2000); pg.keyboard.up('Space')
+                pg.keyboard.down('w'); pg.wait_for_timeout(2000); pg.keyboard.up('w')
             pg.wait_for_timeout(200)
             c1 = pg.evaluate(f"({{ ...{K}.camLibre }})"); pj1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
-            subio = c1['y'] - c0['y'] > 5
-            avanzo = movil or ((c1['x'] - c0['x']) ** 2 + (c1['z'] - c0['z']) ** 2) ** 0.5 > 5
+            # (sin tarjeta gráfica el juego va a pocos fotogramas y cada uno avanza como mucho 0,05 s: aquí se mira que
+            # se mueve, no cuánto)
+            subio = c1['y'] - c0['y'] > 0.1
+            avanzo = movil or ((c1['x'] - c0['x']) ** 2 + (c1['z'] - c0['z']) ** 2) ** 0.5 > 0.1
             quieto = ((pj1[0] - pj0[0]) ** 2 + (pj1[1] - pj0[1]) ** 2) ** 0.5 < 0.1
             comprobar(f'{nombre}: cámara libre: sube y avanza volando y el personaje se queda donde estaba', activa and subio and avanzo and quieto, f'{c0} → {c1} · personaje {pj0} → {pj1}')
             pg.wait_for_timeout(600)
