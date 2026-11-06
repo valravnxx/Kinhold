@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-06T18:22:56+00:00",
-  "tarea": "Quitar el prototipo de combate aparte (su página, el duelo en línea, el sonido y el táctil propios) y lo suelto (viejo_tmp.mjs), con las pruebas que solo probaban eso",
-  "hito": "admin",
-  "rama": "trabajo/20261106-1730-charla"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261106-1813-iconos": {
   "inicio": "2026-11-06T18:13:02+01:00",
