@@ -441,7 +441,7 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
     return w === null ? null : Math.max(0, w - z);
   }
   // lo lejos que está un punto del eje del río más cercano (m) y el ancho de ese río (para las riberas)
-  function rioCerca(xm, ym, tramos) { const { dm, ancho, anchoRio } = rioCercano(xm, ym, tramos); return { dm, ancho, anchoRio }; }   // (anchoRio: sin el estuario)
+  function rioCerca(xm, ym, tramos) { const { dm, ancho, anchoRio, costa } = rioCercano(xm, ym, tramos); return { dm, ancho, anchoRio, costa }; }   // (anchoRio: sin el estuario; costa: m hasta la orilla del mar)
   return { altura, agua, hondura, corriente, saltosEn, vadosEn, sitio, riosEn, rioCerca, rios, celda, grande };   // grande: la forma de lejos (el mapa del rey)
 }
 
