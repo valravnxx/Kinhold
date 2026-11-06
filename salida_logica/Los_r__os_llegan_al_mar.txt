@@ -1,0 +1,10 @@
+13 bocas que medir
+  OK   hay bocas que medir
+  OK   en las bocas de los ríos medianos y grandes, un delta (isletas que asoman del agua) — 1 de 1 bocas
+  OK   el agua del río llega a la orilla — 13 de 13
+  OK   a la altura del mar (como mucho 0,3 m por encima) — 13 de 13
+  OK   con el cauce bajo el agua (no la arena) — 13 de 13
+  OK   el cauce sigue en el mar (sin barra que cierre la boca) — 13 de 13
+  OK   la boca se ensancha (estuario) — 13 de 13
+
+7 bien, 0 mal
