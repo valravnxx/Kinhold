@@ -1447,7 +1447,9 @@
     },
     {
      "nombre": "Quitar la liza y los modos de combate de capas y guardias: del servidor, de la lógica de combate y de sus pruebas, que queden solo con el modo direccional del mundo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-06T21:23:14+00:00",
+     "rama": "trabajo/20261106-2123"
     },
     {
      "nombre": "Quitar la construcción aparte (hito1): sus pruebas de navegador pasan a la demo y deja de construirse",
@@ -1522,9 +1524,10 @@
     },
     {
      "nombre": "Chat de texto (valravnx, 6 nov: «vamos a poner chat de texto ya, debe verse sobre el jugador, y desaparecer al rato»): escribes una frase (Intro en PC, «Hablar» en el móvil), el servidor la comprueba con su autor (largo, sin mandar a chorro, a quién llega) y la reparte a los que están cerca; sale en un bocadillo sobre la cabeza del que habla y se va al rato; queda en el registro del servidor",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T17:31:33+01:00",
-     "rama": "trabajo/20261106-1730-charla"
+     "rama": "trabajo/20261106-1730-charla",
+     "fin": "2026-11-06T20:39:07+00:00"
     }
    ]
   },
@@ -3080,6 +3083,13 @@
      "archivo": "jugar/demo/v127.html",
      "capturas": "capturas/demo-v127",
      "notas": "La desembocadura en embudo: el río se abre hacia el mar en sus últimos 140 m; el agua del río se funde con la del mar (toma su color y sigue en un abanico que se desvanece)."
+    },
+    {
+     "v": "v128",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v128.html",
+     "capturas": "capturas/demo-v128",
+     "notas": "Chat de texto: con Intro (en el móvil, «Hablar») dices una frase; sale en un bocadillo sobre tu cabeza, la ven los que están a 50 m o menos y se va al rato. Pasa por el servidor con su autor: limpia, sin hablar a chorro y apuntada para moderar."
     }
    ]
   },

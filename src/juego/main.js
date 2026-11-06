@@ -10,6 +10,7 @@ import { personajeElegido, recursosTaller } from '../mundo/eleccion.js';
 import { REGISTRO, VERSION } from './registro.js';
 import { t } from './textos.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
+import { montarCharla } from './charla.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mundo.js';
@@ -77,6 +78,7 @@ const CLAVE_GUARDADO = 'kinhold_h1_v1';
 // «Jugar en línea» (?enlinea=1): el mundo es el del servidor; nada se guarda en el navegador (src/juego/en_linea.js)
 const EN_LINEA = new URLSearchParams(location.search).get('enlinea') === '1';
 let enLinea = null;
+let charla = null;   // el chat de texto (src/juego/charla.js), con la conexión
 let panelSalida = null;   // el de «¿Dónde empiezas?» (elegirSalidaPanel, más abajo)
 // El arcón de pruebas (valravnx, 1 nov: «fuera el arcón infinito» del juego de verdad): en línea, solo si el servidor lo
 // tiene (lo dice su bienvenida; el de verdad no lo tiene); sin servidor (las pruebas de navegador), sí.
@@ -943,6 +945,8 @@ addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
   if (e.ctrlKey || e.metaKey || e.altKey) return; // atajos del navegador (Ctrl+W, etc.): no mueven
   const k = nombreTecla(e);
+  // Intro: escribir en el chat de texto (las teclas pulsadas se sueltan: mientras se escribe no se mueve)
+  if (k === 'enter' && charla && !charla.abierta) { e.preventDefault(); charla.abrir(); return; }
   teclas.add(k);
   if (k === 'r') girar();
   if (k === 'b') cambiarModo(estado.modo === 'construir' ? 'mover' : 'construir');
@@ -2157,6 +2161,7 @@ function paso() {
 
   moverGente(dt);
   moverFuegos();
+  if (charla) charla.paso();
   if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
   pasoRastras();
   actualizarCamara();
@@ -2485,6 +2490,10 @@ function iniciarEnLinea() {
   // las obras cobran de lo que llevas, que es el del servidor (objetosRed): hasta que llegue, no se adelanta nada
   const deInventario = { de: () => inventario() };
   Object.defineProperty(enLinea.red, 'invs', { get: () => (objetosRed.deServidor ? deInventario : null) });
+  // el chat de texto (valravnx, 6 nov): lo que dices y lo que dicen los de cerca, en un bocadillo sobre la cabeza
+  charla = montarCharla({ enLinea, boton: $('btnHablar'), camara, lienzo: $('lienzo'), avisar: mostrarAviso, alAbrir: () => teclas.clear(),
+    pies: (a) => { if (a === enLinea.yo) return pj; const m = enLinea.modeloDe(a); return m ? m.position : null; } });
+  $('btnHablar').hidden = false;
 }
 
 // Dónde empiezas (valravnx, 5 nov: tres salidas en zonas del rey, «lo eligen»; src/logica/whitholm.js, SALIDAS_INICIO):
@@ -2569,6 +2578,7 @@ window.__kinhold = {
   get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, camara, escena, renderer, graficos, jugador, obstaculos, talaV, decorado, combate,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
+  get charla() { return charla; },   // el chat de texto (src/juego/charla.js)
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado
   nado,
