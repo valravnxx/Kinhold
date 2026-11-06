@@ -5,12 +5,13 @@
 // Expone window.__iconos = { lista: [{ nombre, propio }], foto(nombre) → dataURL PNG }.
 //  - nombre: el tipo del catálogo (rama, hacha_piedra…) o «est_» + la estación (est_piedra_tallar…).
 //  - propio: false si aún no tiene su modelo y sale con el hatillo de lino de lo del suelo (el panel lo marca
-//    «sin modelo aún»); también el hacha de piedra y la de hierro, que hoy usan el modelo del hacha de mano.
+//    «sin modelo aún»); también el hacha de hierro, que hoy usa el modelo del hacha de mano.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { prepararRenderer } from '../../src/mundo/ambiente.js';
 import { materialTex } from '../../src/mundo/estilos.js';
 import { modeloDe } from '../../src/juego/suelo.js';
+import { MODELO_OBJETO, modeloHachaPiedra } from '../../src/juego/modelos_objetos.js';
 import { MODELO_ESTACION } from '../../src/juego/estaciones.js';
 import { modeloHacha } from '../../src/juego/personaje.js';
 import { loteEnMano, loteEspalda } from '../../src/juego/llevado.js';
@@ -41,6 +42,9 @@ const deMano = t => enDiagonal(mallas(loteEnMano(t)), t);
 const DENTRO = { lenero: { lena: 9, tronco_corto: 1 }, cesta_recoleccion: { bayas: 9, setas: 6 }, porta_piedras: { piedra: 9 }, carcaj: { flecha: 12 },
   correa_escudo: { escudo: 1 }, fardo: { piel: 8 }, caja_herramientas: { cuchillo: 1, azada: 1 } };
 const deEspalda = t => { const g = new THREE.Group(); g.add(mallas(loteEspalda(t, DENTRO[t] || {}).L)); g.rotation.y = 0.5; return g; };
+// lo largo y plano tumbado en el suelo (haces, troncos, la piel, la honda): en diagonal y visto casi desde arriba
+const ARRIBA = new Set(['fibra', 'junco', 'mimbre', 'piel', 'honda', 'tronco_delgado', 'tronco_largo', 'rama']);
+const desdeArriba = o => { const g = new THREE.Group(); o.updateMatrixWorld(true); const s = new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3()); o.rotation.y += s.x >= s.z ? Math.PI / 4 : -Math.PI / 4; g.add(o); g.userData.arriba = true; return g; };
 const delSuelo = (t, n = 3) => modeloDe({ id: 'icono_' + t, cosa: { tipo: t, n } });
 
 // De dónde sale cada imagen. Lo que no está aquí sale con el hatillo del suelo (sin modelo aún).
@@ -48,11 +52,13 @@ const SUELO = { rama: 3, piedra: 4, silex: 3, tronco_corto: 2, tronco_delgado: 2
 const MANO = ['mineral_hierro', 'vara', 'tabla', 'cuchillo', 'lasca_silex', 'espada', 'escudo', 'palo_cavador', 'arpon', 'pala_madera', 'azada', 'hoz_silex', 'mayal', 'lanza_endurecida', 'antorcha'];
 const ESPALDA = ['lenero', 'porta_piedras', 'mochila_bastidor', 'zurron', 'fardo', 'cesta_recoleccion', 'cesto_pescador', 'caja_herramientas', 'carcaj', 'correa_escudo'];
 const HACHAS = ['hacha_mano', 'hacha_piedra', 'hacha_hierro'];
-const PROVISIONAL = new Set(['hacha_piedra', 'hacha_hierro']); // hoy, el modelo del hacha de mano
+const PROVISIONAL = new Set(['hacha_hierro']); // hoy, el modelo del hacha de mano
 
 const fuentes = {};
 for (const t of Object.keys(CATALOGO).filter(t => !Object.hasOwn(PRENDAS, t))) {
-  if (Object.hasOwn(SUELO, t)) fuentes[t] = { propio: true, hacer: () => delSuelo(t, SUELO[t]) };
+  if (t === 'hacha_piedra') fuentes[t] = { propio: true, hacer: () => enDiagonal(modeloHachaPiedra(), t) };
+  else if (Object.hasOwn(MODELO_OBJETO, t)) fuentes[t] = { propio: true, hacer: () => ARRIBA.has(t) ? desdeArriba(delSuelo(t, 3)) : delSuelo(t, 3) };
+  else if (Object.hasOwn(SUELO, t)) fuentes[t] = { propio: true, hacer: () => ARRIBA.has(t) ? desdeArriba(delSuelo(t, SUELO[t])) : delSuelo(t, SUELO[t]) };
   else if (HACHAS.includes(t)) fuentes[t] = { propio: !PROVISIONAL.has(t), hacer: () => enDiagonal(modeloHacha(), t) };
   else if (MANO.includes(t)) fuentes[t] = { propio: true, hacer: () => deMano(t) };
   else if (ESPALDA.includes(t)) fuentes[t] = { propio: true, hacer: () => deEspalda(t) };
@@ -68,10 +74,10 @@ window.__iconos = {
     o.userData.icono = true; escena.add(o); o.updateMatrixWorld(true);
     const caja = new THREE.Box3().setFromObject(o), c = caja.getCenter(new THREE.Vector3()), s = caja.getSize(new THREE.Vector3());
     if (o.userData.larga) { c.x += s.x * 0.2; c.y += s.y * 0.2; s.multiplyScalar(0.6); } // la cabeza de la herramienta
-    const plano = o.userData.plano;
-    const radio = plano ? Math.max(s.x, s.y) / 2 * 1.05 : s.length() / 2;
-    const d = radio / Math.tan(THREE.MathUtils.degToRad(camara.fov / 2)) * (plano ? 1 : 0.82);
-    const dir = plano ? new THREE.Vector3(0.12, 0.25, 1) : f.estacion ? new THREE.Vector3(0.75, 0.62, 1) : new THREE.Vector3(0.55, 0.75, 1);
+    const plano = o.userData.plano, arriba = o.userData.arriba;
+    const radio = plano ? Math.max(s.x, s.y) / 2 * 1.05 : arriba ? Math.max(s.x, s.z) / 2 * 1.02 : s.length() / 2;
+    const d = radio / Math.tan(THREE.MathUtils.degToRad(camara.fov / 2)) * (plano || arriba ? 1 : 0.9);
+    const dir = plano ? new THREE.Vector3(0.12, 0.25, 1) : arriba ? new THREE.Vector3(0.05, 1, 0.45) : f.estacion ? new THREE.Vector3(0.75, 0.62, 1) : new THREE.Vector3(0.55, 0.75, 1);
     camara.position.copy(c).addScaledVector(dir.normalize(), d); camara.lookAt(c); camara.updateProjectionMatrix();
     renderer.render(escena, camara);
     return renderer.domElement.toDataURL('image/png');

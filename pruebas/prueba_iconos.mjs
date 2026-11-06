@@ -6,6 +6,7 @@
 //      MUTAR=1 → como si faltara la imagen del hacha de piedra (tiene que fallar)
 //      MUTAR=2 → como si la lasca de sílex no dijera para qué sirve (tiene que fallar)
 //      MUTAR=3 → como si una imagen estuviera vacía (tiene que fallar)
+//      MUTAR=4 → como si el odre saliera aún con el hatillo (tiene que fallar)
 import { readFileSync, existsSync, statSync } from 'fs';
 import { RECETAS, ESTACIONES, PARA } from '../src/logica/fabricacion.js';
 import { CATALOGO } from '../src/logica/inventario.js';
@@ -38,7 +39,10 @@ for (const n of hace) {
 }
 // las que aún salen con el hatillo: tiene que decirlo el índice (el panel pone «sin modelo aún»)
 const sinModelo = Object.entries(indice).filter(([, v]) => !v.propio).map(([k]) => k);
-ok(sinModelo.includes('hacha_piedra'), 'el hacha de piedra sale como provisional (hoy usa el modelo del hacha de mano)');
+ok(sinModelo.includes('hacha_hierro'), 'el hacha de hierro sale como provisional (hoy usa el modelo del hacha de mano)');
+// lo que piden y dan las recetas de P3 ya tiene su modelo (src/juego/modelos_objetos.js): ninguna receta enseña el hatillo
+const deRecetas = new Set(); for (const r of Object.values(RECETAS)) { deRecetas.add(r.da); for (const t of Object.keys(r.gasta)) deRecetas.add(t); }
+for (const t of deRecetas) ok(indice[t] && (MUTAR === '4' && t === 'odre' ? false : indice[t].propio), `«${t}», de las recetas, tiene su modelo`);
 ok(indice.rama && indice.rama.propio && indice.lenero && indice.lenero.propio && indice.est_piedra_tallar && indice.est_piedra_tallar.propio, 'la rama, el leñero y la piedra de tallar tienen su modelo');
 
 // para qué sirve lo que da cada receta

@@ -11,13 +11,13 @@
    "propio": true
   },
   "fibra": {
-   "propio": false
+   "propio": true
   },
   "junco": {
-   "propio": false
+   "propio": true
   },
   "mimbre": {
-   "propio": false
+   "propio": true
   },
   "bayas": {
    "propio": false
@@ -35,7 +35,7 @@
    "propio": false
   },
   "resina": {
-   "propio": false
+   "propio": true
   },
   "barro": {
    "propio": false
@@ -77,7 +77,7 @@
    "propio": true
   },
   "cuerda": {
-   "propio": false
+   "propio": true
   },
   "tabla": {
    "propio": true
@@ -92,7 +92,7 @@
    "propio": false
   },
   "piel": {
-   "propio": false
+   "propio": true
   },
   "tela": {
    "propio": false
@@ -128,7 +128,7 @@
    "propio": true
   },
   "hacha_piedra": {
-   "propio": false
+   "propio": true
   },
   "hacha_hierro": {
    "propio": false
@@ -143,7 +143,7 @@
    "propio": true
   },
   "honda": {
-   "propio": false
+   "propio": true
   },
   "antorcha": {
    "propio": true
@@ -158,10 +158,10 @@
    "propio": true
   },
   "nasa": {
-   "propio": false
+   "propio": true
   },
   "trampa_lazo": {
-   "propio": false
+   "propio": true
   },
   "pala_madera": {
    "propio": true
@@ -176,7 +176,7 @@
    "propio": true
   },
   "cubo": {
-   "propio": false
+   "propio": true
   },
   "espada": {
    "propio": true
@@ -185,10 +185,10 @@
    "propio": true
   },
   "cordel": {
-   "propio": false
+   "propio": true
   },
   "cuerda_trenzada": {
-   "propio": false
+   "propio": true
   },
   "cinto_cuero": {
    "propio": false
@@ -236,7 +236,7 @@
    "propio": false
   },
   "odre": {
-   "propio": false
+   "propio": true
   },
   "est_piedra_tallar": {
    "propio": true
