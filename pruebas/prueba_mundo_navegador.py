@@ -1,7 +1,7 @@
 # Prueba en navegador de la demo en el mundo de verdad (construir en Whitholm, la isla de los playtests).
 # Uso: python3 pruebas/prueba_mundo_navegador.py <html de la demo> <carpeta_capturas>
 # Sirve el html en jugar/demo/ y los recursos de personaje en recursos/personajes/ (como la web).
-# Comprueba, en PC y móvil: que se genera el mundo y aparece el terreno por trozos (sin el llano), que se sale en el sitio
+# Siempre en la salida 0 de la lista (?salida=0; la salida al azar, aparte, al final). Comprueba, en PC y móvil: que se genera el mundo y aparece el terreno por trozos (sin el llano), que se sale en el sitio
 # de salida (en la isla, en tierra y no en un pico), que el personaje pisa el suelo, que andando
 # 200 m el terreno llega a tiempo (el trabajo del terreno en cada fotograma, medido) y el personaje sigue el suelo, y
 # que no se puede salir de la isla. Y el agua y el nado (valravnx, 30 oct): al mar se entra y se nada (el agua se ve,
@@ -17,6 +17,9 @@
 # MUTAR_NADO=1: no se le quita el aguante al nadar (no se ahoga): tiene que fallar.
 # MUTAR=2: lo que crece, con otra semilla en cada carga: tiene que fallar (no sale en el mismo sitio al recargar).
 # MUTAR=3: lo que crece se hace todo en un fotograma al andar (no poco a poco): tiene que fallar.
+# MUTAR=4: los pies siguen el suelo muy despacio (el juego con window.__mutarSuelo): tiene que fallar «andando, el
+# personaje sigue el suelo».
+# MUTAR=5: tres matas de lo que crece puestas en el agua más cercana: tiene que fallar «nada en el agua». (MUTAR=4,5: las dos.)
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
@@ -35,7 +38,12 @@ class Silencioso(http.server.SimpleHTTPRequestHandler):
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 MUTAR = os.environ.get('MUTAR', '')
-URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1' + ('&llano=1' if MUTAR == '1' else '')
+# Siempre en la misma salida (?salida=N, de la lista de src/logica/whitholm.js), para que una pasada y la siguiente miren
+# el mismo terreno: con la salida al azar, unas comprobaciones fallaban a ratos según dónde se cayera (6 nov). La salida
+# al azar se mira aparte, al final (en PC), con URL_AZAR.
+SALIDA_FIJA = 0
+URL_AZAR = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1' + ('&llano=1' if MUTAR == '1' else '')
+URL = URL_AZAR + f'&salida={SALIDA_FIJA}'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'
 fallos = []
@@ -55,6 +63,31 @@ ANDAR = """([metros, rumbo]) => new Promise(bien => {
   requestAnimationFrame(f);
 })"""
 
+# Andar como anda el jugador (corriendo, 6 m/s con el paso de tiempo del juego, que no pasa de 0,05 s por fotograma) y
+# medir lo que separa los pies del suelo donde está. Antes se medía en la vuelta de 200 m, a 1 m por fotograma: a 60
+# fotogramas por segundo (el PC de valravnx, con tarjeta gráfica) eso es ir a 60 m/s, y la altura del personaje, que se
+# acerca a la del suelo poco a poco (main.js), se quedaba atrás en las cuestas: daba 0,6–1,1 m «sin motivo» y en la nube
+# (pocos fotogramas, paso de tiempo largo) pasaba. Lo que sale aquí es lo que vería un jugador.
+SEGUIR = """([metros, rumbo]) => new Promise(bien => {
+  const k = window.__kinhold; let andado = 0, antes = performance.now(), n = 0; const dif = []; let lo = Infinity, hi = -Infinity;
+  const f = (t) => {
+    if (andado >= metros) { bien({ dif: Math.max(...dif), desnivel: hi - lo, fotogramas: n }); return; }
+    const d = Math.min(0.05, Math.max(0.001, (t - antes) / 1000)) * 6; antes = t; n++;
+    k.pj.x += Math.cos(rumbo) * d; k.pj.z += Math.sin(rumbo) * d; andado += d;
+    // (lo que separa los pies del suelo, en el fotograma siguiente: el juego ya ha movido la altura con este paso)
+    requestAnimationFrame((t2) => { const s = k.alturaSuelo(k.pj.x, k.pj.z); lo = Math.min(lo, s); hi = Math.max(hi, s);
+      if (andado > 1) dif.push(Math.abs(k.pj.y - s)); f(t2); });
+  };
+  requestAnimationFrame((t) => { antes = t; f(t); });
+})"""
+# el rumbo con más desnivel en 30 m (para que andar mire una cuesta, no un llano), andable de punta a punta
+RUMBO_CUESTA = """(() => { const k = window.__kinhold, m = k.mundoJ; let mejor = null;
+  for (let a = 0; a < 6.283; a += 0.393) { let ok = true, lo = Infinity, hi = -Infinity;
+    for (let d = 0; d <= 30 && ok; d += 1) { const x = k.pj.x + Math.cos(a) * d, z = k.pj.z + Math.sin(a) * d; const y = m.altura(x, z);
+      lo = Math.min(lo, y); hi = Math.max(hi, y); if (!m.seco(x, z) || (d && !m.andable(k.pj.x + Math.cos(a) * (d - 1), k.pj.z + Math.sin(a) * (d - 1), x, z))) ok = false; }
+    if (ok && (!mejor || hi - lo > mejor.desnivel)) mejor = { rumbo: a, desnivel: hi - lo }; }
+  return mejor; })()"""
+
 with sync_playwright() as p:
     nav = p.chromium.launch(args=ARGS)
     for nombre, vista, movil in [('pc', {'width': 1280, 'height': 800}, False), ('movil', {'width': 390, 'height': 844}, True)]:
@@ -62,6 +95,7 @@ with sync_playwright() as p:
         ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
         if MUTAR == '2': ctx.add_init_script('window.__mutarVegetacion = true')
         if MUTAR == '3': ctx.add_init_script('window.__vegetacionDeGolpe = true')
+        if '4' in MUTAR.split(','): ctx.add_init_script('window.__mutarSuelo = true')
         pg = ctx.new_page()
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
@@ -90,7 +124,7 @@ with sync_playwright() as p:
             trozos: [...m.terreno.vivos.values()].filter(v => v.malla).length, tri: m.terreno.triangulos(), lo, hi, llano, hilos: m.terreno.hilos }}; }})()""")
         print('  ', json.dumps(d))
         s, isla = d['salida'], d['isla']
-        comprobar('un jugador nuevo sale en uno de los sitios de la salida al azar', pg.evaluate(f"{K}.salidas.deLista({s['x']}, {s['z']})"), json.dumps(s))
+        comprobar(f'sale en la salida pedida (?salida={SALIDA_FIJA}, de la lista)', pg.evaluate(f"{K}.salidas.deLista({s['x']}, {s['z']})"), json.dumps(s))
         comprobar('la salida está en la isla', isla['x0'] < s['x'] < isla['x1'] and isla['z0'] < s['z'] < isla['z1'], json.dumps(s))
         comprobar('la salida está en tierra, ni en el mar ni en un pico (entre 6 y 220 m)', 6 <= d['sobreMar'] <= 220, f"{d['sobreMar']:.1f} m")
         comprobar('el personaje pisa el suelo', abs(d['pj'][1] - d['suelo']) < 0.05, f"{d['pj'][1]:.3f} / {d['suelo']:.3f}")
@@ -99,7 +133,17 @@ with sync_playwright() as p:
         # lo que crece
         v = pg.evaluate(f"""(() => {{ const k = {K}, m = k.mundoJ, c = k.decorado.cuenta, arb = k.obstaculos.filter(o => o.arbol);
           const ESP = ['abeto', 'pino', 'abedul', 'roble', 'haya', 'fresno', 'encina'];
-          let agua = 0; for (const o of k.obstaculos) if (!m.seco(o.x, o.z)) agua++;
+          // en el agua: donde el agua (río o mar) cubre el suelo (aguaEn). Los cantos del río van en el cauce a propósito (5 nov).
+          // Antes se miraba seco(), que es más de 1 m sobre el mar con la altura de la malla que se ve: a 100–200 m de la
+          // salida la malla va cada 2 o 4 m y en la orilla se queda unos centímetros por debajo de la de verdad, así que lo
+          // que la lógica pone a 1,0–1,2 m (en tierra) salía «en el agua» según dónde se cayera (6 nov, mirado en las 259
+          // salidas: nada de lo que crece, salvo los cantos, en el agua ni a menos de 1 m sobre el mar con la altura de verdad).
+          const enAgua = (o) => o.veg && !o.canto && m.aguaEn(o.x, o.z) !== null;
+          if ({1 if '5' in MUTAR.split(',') else 0}) {{   // (MUTAR=5: tres matas o piedras al agua más cercana)
+            let w = null; for (let r = 5; r < 3000 && !w; r += 5) for (let a = 0; a < 6.283 && !w; a += 4 / r) {{ const x = Math.cos(a) * r, z = 4 + Math.sin(a) * r; if (m.aguaEn(x, z)) w = [x, z]; }}
+            if (w) k.obstaculos.filter(o => o.veg && !o.arbol && !o.canto).slice(0, 3).forEach((o, i) => {{ o.x = w[0] + i * 0.1; o.z = w[1]; }});
+          }}
+          const agua = k.obstaculos.filter(enAgua).length;
           const firma = arb.map(o => o.id + ':' + o.especie).sort().join('|');
           let h = 0; for (const ch of firma) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
           return {{ cuenta: c, arboles: arb.length, especies: [...new Set(arb.map(o => o.especie))], buenas: arb.every(o => ESP.includes(o.especie)),
@@ -109,7 +153,7 @@ with sync_playwright() as p:
         c = v['cuenta']
         comprobar('hay árboles, de las especies del mundo, cada una con su malla', v['arboles'] > 20 and v['buenas'] and sorted(v['mallas']) == sorted(v['especies']), ', '.join(v['especies']))
         comprobar('hay hierba, matas y piedras', c['hierba'] > 300 and c['matas'] > 5 and c['piedras'] > 10, f"{c['hierba']} hierba, {c['flores']} flores, {c['matas']} matas, {c['piedras']} piedras")
-        comprobar('nada en el agua', v['agua'] == 0, f"{v['agua']}")
+        comprobar('nada de lo que crece en el agua (salvo los cantos del río)', v['agua'] == 0, f"{v['agua']}")
         comprobar('ningún árbol pegado a la salida (a menos de 8 m)', v['cerca'] >= 8, f"{v['cerca']:.1f} m")
         comprobar('todos los árboles se pueden talar', v['talables'] == v['arboles'], f"{v['talables']} de {v['arboles']}")
         comprobar('hacer lo que crece tarda poco al cargar (menos de 3 s)', c['ms'] < 3000, f"{c['ms']} ms")
@@ -129,11 +173,17 @@ with sync_playwright() as p:
         talado = pg.evaluate(f"""(() => {{ const k = {K}, o = k.obstaculos.filter(o => o.arbol && k.talaV.enPie(o)).sort((p, q) => Math.hypot(p.x, p.z) - Math.hypot(q.x, q.z))[3];
           const ahora = Date.now(); k.talaV.tala.estado[o.id] = {{ golpes: 0, parte: 0, veces: 1, caido: ahora, vuelve: ahora + 3600e3, dir: 0.5 }};
           k.talaV.guardar(); k.talaV.refrescar(); return o.id; }})()""")
-        # andar 200 m: el terreno llega a tiempo y el personaje sigue el suelo
+        # andar como un jugador (corriendo) 30 m cuesta arriba o abajo: los pies siguen el suelo
+        cu = pg.evaluate(RUMBO_CUESTA)
+        comprobar('cerca de la salida hay por dónde andar 30 m con algo de cuesta (más de 1 m de desnivel)', bool(cu) and cu['desnivel'] > 1, json.dumps(cu))
+        if cu:
+            sg = pg.evaluate(SEGUIR, [30, cu['rumbo']])
+            print('  andar 30 m corriendo:', json.dumps(sg))
+            comprobar('andando, el personaje sigue el suelo (a menos de 0,4 m, corriendo por una cuesta)', sg['dif'] < 0.4, f"{sg['dif']:.2f} m, {sg['desnivel']:.1f} m de desnivel en {sg['fotogramas']} fotogramas")
+        # andar 200 m de golpe (1 m por fotograma): el terreno llega a tiempo
         r = pg.evaluate(ANDAR, [200, 0.6])
         print('  andar 200 m:', json.dumps(r))
         comprobar('andando 200 m, el terreno trabaja poco en cada fotograma (menos de 60 ms)', r['msMax'] < 60, f"{r['msMax']:.1f} ms")
-        comprobar('andando, el personaje sigue el suelo (a menos de 0,6 m)', r['dif'] < 0.6, f"{r['dif']:.2f} m")
         try: pg.wait_for_function(f'{K}.mundoListo', timeout=120000)
         except Exception: pass
         try: pg.wait_for_function(f'{K}.decorado.pendientes === 0', timeout=60000)
@@ -249,9 +299,11 @@ with sync_playwright() as p:
             ah = pg.evaluate(f"(() => {{ const k = {K}; return {{ muertes: k.nado.muertes, x: k.pj.x, z: k.pj.z, aviso: document.getElementById('aviso').textContent }}; }})()")
             comprobar('sin aguante te ahogas y vuelves a tu sitio de salida', ah['muertes'] >= 1 and abs(ah['x']) < 5 and abs(ah['z'] - 4) < 5, json.dumps(ah))
         if not movil:
-            # al recargar, el mismo sitio; con algo guardado de antes de la salida al azar, el sitio común
-            def salida_tras_recargar():
-                pg.reload()
+            # al recargar, el mismo sitio y lo mismo; sin ?salida, un jugador nuevo sale al azar en uno de la lista y al
+            # recargar vuelve al mismo; con algo guardado de antes de la salida al azar, el sitio común
+            def salida_tras_recargar(url=None):
+                if url: pg.goto(url)
+                else: pg.reload()
                 pg.wait_for_function('window.__demo && (window.__demo.listo || window.__demo.error)', timeout=240000)
                 return pg.evaluate(f'{K}.mundoJ && {K}.mundoJ.salida')
             s2 = salida_tras_recargar()
@@ -259,6 +311,11 @@ with sync_playwright() as p:
             f2 = pg.evaluate(f"""(() => {{ const firma = {K}.obstaculos.filter(o => o.arbol).map(o => o.id + ':' + o.especie).sort().join('|');
               let h = 0; for (const ch of firma) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; }})()""")
             comprobar('al recargar, cada árbol está en el mismo sitio y es de la misma especie', f2 == v['firma'], f"{v['firma']} → {f2}")
+            pg.evaluate('localStorage.clear()')   # un jugador nuevo, sin nada guardado
+            sa = salida_tras_recargar(URL_AZAR)
+            comprobar('sin ?salida, un jugador nuevo sale en uno de los sitios de la salida al azar', bool(sa) and pg.evaluate(f"{K}.salidas.deLista({sa['x']}, {sa['z']})"), json.dumps(sa))
+            sb = salida_tras_recargar()
+            comprobar('y al recargar vuelve al mismo', sb == sa, f'{json.dumps(sa)} → {json.dumps(sb)}')
             pg.evaluate(f"(() => {{ localStorage.removeItem('kinhold_salida_v1'); localStorage.setItem('kinhold_h1_v1', JSON.stringify({K}.mundo.exportar())); }})()")
             s3 = salida_tras_recargar()
             comun = pg.evaluate(f'{K}.salidas.comun')

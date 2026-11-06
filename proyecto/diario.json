@@ -4540,5 +4540,52 @@
   "pruebas": "Batería entera (35 grupos, sin las de en línea): 34 en el PC de valravnx y la lógica en la nube. En su PC fallaron cuatro que miden el dibujo sin tarjeta gráfica (niveles de detalle, la demo en el mundo, el perfil gráfico y la demo única); repetidas en la nube con el inglés y la web: todo bien.",
   "capturas": "capturas/demo-v118",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T04:31:43+00:00",
+  "fin": "2026-11-06T04:35:23+00:00",
+  "titulo": "P3 empieza: el GDD y el documento de sistemas, al día con la revisión del 1 nov",
+  "hito": "crafting",
+  "hecho": [
+   "valravnx pidió empezar P3 («haz p3»): el hito «De nada a una casa» pasa a en curso, en una sesión aparte porque el carril A sigue con P2.",
+   "GDD: con algo al hombro, las manos no llevan nada; árboles jóvenes (3–5 m, finos, dan tronco delgado y varas) y adultos (un 30 % más altos y más gruesos); el árbol cae por física y hiere; la casa humilde de una planta (muros de tronco delgado o de zarzo con barro, el hogar dentro) y subir troncos a lo alto para más adelante; los almacenajes de la base, que la obra no coge de ellos sola, fuera el arcón infinito y el contador de arriba solo en tu tierra.",
+   "Documento de sistemas: talar un árbol joven da tronco delgado y varas; la casa humilde con sus piezas; la tabla de almacenajes (qué guarda cada uno; costes y cabida se fijan al hacerlos); el primer día llega a la casa antes del banco de tronco.",
+   "Los dos documentos, traducidos al inglés y al ruso, con su huella nueva."
+  ],
+  "pruebas": "Solo documentos (sin código): la web se genera sin errores y comprueba las huellas y las traducciones; no comprobado en el navegador.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T04:40:10+00:00",
+  "fin": "2026-11-06T05:39:01+00:00",
+  "titulo": "P3: fabricar sin aprender recetas, por uso y con lo del suelo a tu lado",
+  "hito": "crafting",
+  "hecho": [
+   "Fuera el aprendizaje de recetas de la lógica de fabricar: todas las recetas, siempre a la vista; cualquiera hace cualquier cosa en cualquier estación, también en la de otro.",
+   "Recetas por uso en vez de por nivel: con las manos, al fuego (la hoguera y, cuando llegue con la casa humilde, el hogar), en la piedra de tallar y en el banco de tronco. Sin decir la estación, se usa la más cercana de ese uso.",
+   "Se fabrica con lo que llevas y lo que hay en el suelo a tu lado (2 m, lo que se podría coger); primero lo que llevas. Los arcones y los almacenajes no cuentan: el acopio es acopio.",
+   "Una lista para el panel: cada receta dice si se puede ya, si casi (y qué falta) o si se abre después (y con qué estación), y de dónde sale cada material (encima o del suelo).",
+   "Guardado: versión 3, sin lo que sabía cada uno; los guardados de la v1 y la v2 se cargan con sus estaciones y colas. El registro anota en qué estación se hizo y lo gastado del suelo.",
+   "Provisional (en el código): el suelo a tu lado es el alcance de coger (2 m), y lo de dentro de un contenedor del suelo no se gasta. La lógica aún no la usa el juego: el servidor y el panel son las dos tareas siguientes."
+  ],
+  "pruebas": "Batería entera en la nube (35 grupos, sin las de en línea; el PC de valravnx no estaba encendido): todo correcto. La prueba de fabricar, 82/82, rota a propósito con MUTAR=1 (16 fallan). Sin capturas: nada de lo que se ve ha cambiado.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T04:24:44+00:00",
+  "fin": "2026-11-06T05:58:43+00:00",
+  "titulo": "Pruebas que no fallan a ratos: salida fija y lo que salía como ruido (P2, carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "Las pruebas de navegador de la demo en el mundo (la demo única, el mundo, construir a la altura del suelo, pelear en cualquier sitio y los niveles de detalle) salen siempre en la misma salida (?salida=0); las demás ya llevaban una fija o van con el servidor. La salida al azar se mira aparte, al final de la prueba del mundo: un jugador nuevo sale en uno de la lista y al recargar vuelve al mismo.",
+   "«Andando, el personaje sigue el suelo» (0,6–1,1 m a ratos, sobre todo en el PC de valravnx) no era del juego: la prueba lo movía 1 m por fotograma, que con tarjeta gráfica son 60 m/s, y la altura del personaje se acerca a la del suelo poco a poco. Ahora anda como un jugador (corriendo, 6 m/s) 30 m por la cuesta más fuerte junto a la salida: 0,05 m en el PC de valravnx (298 fotogramas), con un límite de 0,4 m.",
+   "«Nada en el agua»: mirado en las 259 salidas con la lógica, nada de lo que crece queda en el agua ni a menos de 1 m sobre el mar salvo los cantos del río, que van en el cauce a propósito. Lo que salía era la cuenta de la prueba: usaba la altura de la malla que se ve, que lejos de la salida va cada 2 o 4 m y en la orilla queda unos centímetros por debajo; y contaba los cantos grandes. Ahora cuenta lo que el agua cubre de verdad, sin los cantos.",
+   "Rotas a propósito: MUTAR=4 (los pies siguen el suelo muy despacio) da 0,72 m y falla; MUTAR=5 (tres matas al agua) da 3 y falla."
+  ],
+  "pruebas": "Batería entera (35 grupos, sin las de en línea): 34 en el PC de valravnx y la lógica en la nube. En su PC fallaron las tres que miden el dibujo sin tarjeta gráfica (niveles de detalle, el perfil gráfico y la demo única); repetidas en la nube: bien. Rotura a propósito de la prueba del mundo pasada aquí. Capturas del mundo miradas en PC y móvil. Sin versión nueva: no cambia nada que se juegue.",
+  "capturas": null,
+  "estado": "ok"
  }
 ]
