@@ -54,6 +54,7 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
   // la altura de su agua y del ancho de su cauce más la orilla (lo que sobra queda bajo el suelo de la orilla), con su
   // corriente. Dentro de la lámina de cerca no se dibuja (ya está ella) ni más allá de donde empieza el horizonte.
   const materialLejos = crearMaterialAgua();
+  materialLejos.userData.funde.value = 1;   // (su mancha en el mar se desvanece en el mar de debajo)
   let cinta = null, centroCinta = null, trabajoCinta = null, nuevaCinta = null;
   function* hacerCinta(cx, cz) {
     const tramos = paisaje.riosEn(cx - R_LEJOS, cz - R_LEJOS, cx + R_LEJOS, cz + R_LEJOS, 0);
@@ -82,7 +83,7 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
         for (let q = 0; q < 3; q++) fl.push(co.dx * co.vel, co.dy * co.vel);
         ti.push(paisaje.mezclaMar(x - dy * m, y + dx * m, uno), paisaje.mezclaMar(x, y, uno), paisaje.mezclaMar(x + dy * m, y - dx * m, uno));   // (a lo ancho también, como la lámina de cerca)
         // (en el mar, hondo y sin orilla a los lados: del color del mar hondo, el del mar de lejos, sin espuma de orilla)
-        if (enMar) { const h = Math.min(6, 1.5 + enMar * 0.4); ho.push(h, h, h); ori.push(8, 8 + ancho / 2, 8); }
+        if (enMar) { const h = Math.min(6, 1.5 + enMar * 0.4); ho.push(h, h, h); ori.push(60, 60, 60); }
         else { ho.push(0, Math.min(2, ancho * 0.15 + 0.4), 0); ori.push(-1.5, ancho / 2, -1.5); }
         if (antes >= 0) idx.push(antes, k, antes + 1, antes + 1, k, k + 1, antes + 1, k + 1, antes + 2, antes + 2, k + 1, k + 2);
         antes = k;

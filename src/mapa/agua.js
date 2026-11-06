@@ -36,9 +36,12 @@ export function crearMaterialAgua() {
   // y hasta dónde se dibuja desde la cámara (m; los ríos de lejos del juego: más allá empieza el horizonte, comprimido)
   const hasta = { value: 1e9 };
   m.userData.hasta = hasta;
+  // y si el agua se desvanece donde ya es mar (los ríos de lejos: su mancha en el mar se funde con el mar de debajo)
+  const funde = { value: 0 };
+  m.userData.funde = funde;
   m.onBeforeCompile = (sh) => {
     sh.uniforms.uTiempo = tiempoAgua;
-    sh.uniforms.uHueco = hueco; sh.uniforms.uHasta = hasta;
+    sh.uniforms.uHueco = hueco; sh.uniforms.uHasta = hasta; sh.uniforms.uFunde = funde;
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>
 attribute vec2 aFlujo; attribute float aHondo; attribute float aTipo; attribute float aOla; attribute float aOrilla; attribute float aEspuma;
@@ -69,7 +72,7 @@ vFlujo = aFlujo; vHondo = aHondo; vTipo = aTipo; vOrilla = aOrilla; vEspuma = aE
 vMundo = (modelMatrix * vec4(transformed, 1.0)).xyz;`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
-uniform float uTiempo; uniform vec4 uHueco; uniform float uHasta;
+uniform float uTiempo; uniform vec4 uHueco; uniform float uHasta; uniform float uFunde;
 varying vec2 vFlujo; varying float vHondo; varying float vTipo; varying float vOrilla; varying vec3 vMundo; varying vec3 vNorM; varying float vEspuma;
 float hashA(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float ruidoA(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
@@ -136,7 +139,8 @@ diffuseColor.rgb = pow(diffuseColor.rgb, vec3(2.2));   // los colores de arriba 
 diffuseColor.a = mix(mix(0.45, 0.93, smoothstep(0.0, 1.2, hondo)), 0.97, espuma);
 // en el último metro y medio antes de la orilla el agua se desvanece: así el corte con el terreno (que en una rejilla
 // de 1 m sale escalonado si la orilla es empinada) no se ve
-diffuseColor.a *= smoothstep(0.15, 1.6, vOrilla);`)
+diffuseColor.a *= smoothstep(0.15, 1.6, vOrilla);
+diffuseColor.a *= 1.0 - uFunde * smoothstep(0.6, 0.97, vTipo);`)
       .replace('#include <normal_fragment_begin>', `#include <normal_fragment_begin>
 normal = normalize(normal + (viewMatrix * vec4(-pend.x, 0.0, -pend.y, 0.0)).xyz);`)
       .replace('#include <envmap_fragment>', `#include <envmap_fragment>
