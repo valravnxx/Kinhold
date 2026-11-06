@@ -100,7 +100,8 @@ try:
             pg.evaluate(f"""(() => {{ const k = {K}, dx = {OTRO[0]} - k.pj.x, dz = {OTRO[1]} - k.pj.z; k.cam.yaw = Math.atan2(-dx, -dz); k.cam.pitch = 0.25; k.cam.dist = 9; }})()""")
             pg.wait_for_timeout(1500)
             antes = pg.evaluate(f'[{K}.pj.x, {K}.pj.z]')
-            frase = 'Buenas, ¿subimos el muro hoy?' if nombre == 'pc' else 'Voy a por varas'
+            # (largas, para que tu bocadillo, de 10 a 11 s, siga cuando hable el otro: sin tarjeta gráfica todo va despacio)
+            frase = 'Buenas, ¿subimos hoy el muro de zarzo de la casa? Traigo varas y barro del río, tú pon el cimiento' if nombre == 'pc' else 'Voy a por varas al bosque de allí y vuelvo enseguida con barro del río para el muro'
             if movil:
                 pg.tap('#btnHablar')
             else:
