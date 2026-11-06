@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v117 (con algo al hombro, las manos vacías)";
+export const VERSION_DEMO = "Demo única · v118 (el menú de construir, solo lo de la casa humilde)";
 export const REGISTRO_DEMO = [
+  "v118: lo de niveles posteriores, escondido. El menú de construir solo enseña lo de la casa humilde: quedan guardados para su nivel el tejado y los remates de teja, la chimenea, el adarve, la empalizada y su puerta, la polea, el polipasto, la escalera de tablas y todo lo de tablas (suelo, muros, tejado de tablillas, puerta, contraventana, trampilla), el muro de entramado y los muebles de tablas o hierro (cama de madera, mesa, banco, arcón, barril y estantería).",
+  "v118, provisional: «lo de este tramo» es lo de nivel 1 o menos que no pide tablas, clavos, hierro ni tejas. Solo se esconde del menú: lo ya construido sigue en pie y el servidor lo sabe hacer.",
   "v117: con algo al hombro, las manos no llevan nada, ni el hacha (valravnx, 1 nov: «si llevas algo al hombro, olvídate de llevar nada en manos a la vez»). Con el tronco corto o el saco al hombro no se coge nada con las manos (lo que recoges va a la cintura o a la espalda, si llevas dónde), y para subirte algo al hombro tienes que llevar las manos vacías. Lo comprueba el servidor, en la misma lógica del inventario.",
   "v117, provisional: lo que cuelga de una correa (la bandolera y el odre) no cuenta como carga al hombro y deja las manos libres; el tronco corto y el saco, que se sujetan con las manos, sí.",
   "v116: el mar de verdad (valravnx, 5 nov): el fondo baja enseguida: en las playas, unos 20 m de agua somera con la arena a la vista y luego un escalón hasta unos 8 m; al pie de los acantilados, hondo ya (unos 18 m a 50 m). Antes, a 100 m de la orilla cubría 0,8 m.",
