@@ -65,7 +65,8 @@ function hatillo(grande, id) { // un paño de lino con las cuatro puntas atadas 
   return mallas(L);
 }
 
-function modeloDe(o) {
+// El modelo de un objeto del suelo ({ id, cosa: { tipo, n } }); también lo depositado en una estación (estaciones.js).
+export function modeloDe(o) {
   const t = o.cosa.tipo, n = o.cosa.n, mods = modelosRecoleccion();
   if (t === 'rastra') return modeloRastra(o.cosa.carga || null, o.id);
   if (t === 'carretilla') return modeloCarretilla(o.cosa.carga || null, o.id);

@@ -7,12 +7,16 @@
 //  - piedra de tallar: una losa ancha y baja, con una piedra de percutir y unas lascas al lado.
 //  - hoguera: un círculo de piedras con las ramas apoyadas en el centro, sin encender (el fuego es su tarea).
 //  - banco de tronco: dos troncos cortos, uno de pie (el tajo) y otro tumbado al lado.
+// Lo depositado en cada una (valravnx, 6 nov) se ve puesto, con los mismos modelos que lo del suelo: encima de la losa
+// de la piedra de tallar y del tajo del banco (lo que no cabe encima, al pie); junto a la hoguera, alrededor del
+// círculo de piedras. Cada tipo, su montón.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { modelosRecoleccion } from './recoleccion.js';
-import { troncosConCortes, deLista } from './suelo.js';
+import { limpiarDeposito } from '../logica/fabricacion.js';
+import { troncosConCortes, deLista, modeloDe } from './suelo.js';
 
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
 const mallas = L => {
@@ -78,6 +82,35 @@ function bancoTronco(id) {
 
 export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, banco_tronco: bancoTronco };
 
+// Dónde se pone lo depositado en cada estación (en su sistema, sin girar): los sitios de encima (y su altura) y, para
+// lo que no cabe, un anillo al pie. Lo grande (troncos) siempre al pie.
+const DEPOSITO_SITIOS = {
+  piedra_tallar: { encima: [[-0.18, 0.2, 0.08], [0.16, 0.2, -0.1], [-0.05, 0.2, -0.18]], radio: 0.75, empieza: -0.6 },
+  banco_tronco:  { encima: [[0, 0.5, 0]], radio: 0.7, empieza: 2.6 },
+  hoguera:       { encima: [], radio: 0.92, empieza: 0.3 },
+};
+const GRANDE = new Set(['tronco_corto', 'tronco_delgado', 'tronco_largo', 'lena']);
+// El grupo con lo depositado: un montón por tipo, más pequeño encima que al pie.
+export function modeloDeposito(tipo, deposito, id) {
+  const g = new THREE.Group(), sit = DEPOSITO_SITIOS[tipo] || { encima: [], radio: 0.8, empieza: 0 };
+  let arriba = 0, pie = 0;
+  for (const [t, n] of Object.entries(deposito || {})) {
+    if (!(n > 0)) continue;
+    const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n } });
+    if (!GRANDE.has(t) && arriba < sit.encima.length) {
+      const [x, y, z] = sit.encima[arriba++];
+      m.position.set(x, y, z); m.scale.setScalar(0.6);
+    } else {
+      const a = sit.empieza + pie++ * 0.9;
+      m.position.set(Math.cos(a) * sit.radio, 0, Math.sin(a) * sit.radio); m.scale.setScalar(GRANDE.has(t) ? 0.8 : 0.85);
+    }
+    m.rotation.y = az(id + t, 3) * Math.PI * 2;
+    m.name = 'deposito_' + t; g.add(m);
+  }
+  g.name = 'deposito';
+  return g;
+}
+
 // Dibuja las estaciones de fab (una Fabricacion, la del servidor en línea) sobre el terreno. refrescar() al cambiar.
 export function crearEstaciones({ raiz, altura, fab }) {
   const grupo = new THREE.Group(); grupo.name = 'estaciones'; raiz.add(grupo);
@@ -86,18 +119,27 @@ export function crearEstaciones({ raiz, altura, fab }) {
     const hay = fab.estaciones;
     for (const [id, o] of vistas) if (!Object.hasOwn(hay, id)) { grupo.remove(o); vistas.delete(id); }
     for (const e of Object.values(hay)) {
-      if (vistas.has(e.id) || !MODELO_ESTACION[e.tipo]) continue;
-      const o = MODELO_ESTACION[e.tipo](e.id);
-      o.position.set(e.x, altura(e.x, e.z) - 0.01, e.z); o.rotation.y = az(e.id, 7) * Math.PI * 2;
-      o.name = 'estacion_' + e.tipo; o.userData.id = e.id;
-      grupo.add(o); vistas.set(e.id, o);
+      if (!MODELO_ESTACION[e.tipo]) continue;
+      let o = vistas.get(e.id);
+      if (!o) {
+        o = MODELO_ESTACION[e.tipo](e.id);
+        o.position.set(e.x, altura(e.x, e.z) - 0.01, e.z); o.rotation.y = az(e.id, 7) * Math.PI * 2;
+        o.name = 'estacion_' + e.tipo; o.userData.id = e.id;
+        grupo.add(o); vistas.set(e.id, o);
+      }
+      // lo depositado: se rehace solo si ha cambiado
+      const firma = JSON.stringify(e.deposito || {});
+      if (o.userData.firma !== firma) {
+        const viejo = o.getObjectByName('deposito'); if (viejo) o.remove(viejo);
+        o.add(modeloDeposito(e.tipo, e.deposito, e.id)); o.userData.firma = firma;
+      }
     }
   }
-  // las que manda el servidor (sin colas: lo encargado es de cada uno)
+  // las que manda el servidor, con lo depositado (sin colas: lo encargado es de cada uno)
   function poner(lista) {
     if (!Array.isArray(lista)) return;
     const nuevas = {};
-    for (const e of lista) if (e && typeof e.id === 'string' && Number.isFinite(e.x) && Number.isFinite(e.z)) nuevas[e.id] = { id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, cola: [] };
+    for (const e of lista) if (e && typeof e.id === 'string' && Number.isFinite(e.x) && Number.isFinite(e.z)) nuevas[e.id] = { id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, cola: [], deposito: limpiarDeposito(e.deposito) };
     fab.estaciones = nuevas;
     refrescar();
   }

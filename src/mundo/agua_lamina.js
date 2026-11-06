@@ -31,9 +31,13 @@ export function* hacerLaminaAgua({ pai, tramos, cx, cz, x0, z0, n, paso, H, mate
         if (isNaN(yv)) { let sm = 0, c = 0; for (let b = -1; b <= 1; b++) for (let a = -1; a <= 1; a++) { const ii = i + a, jj = j + b; if (ii >= 0 && jj >= 0 && ii < n && jj < n && !isNaN(W[jj * n + ii])) { sm += W[jj * n + ii]; c++; } } yv = c ? sm / c - 0.05 : H[k] - 0.5; }
         pa.set([x, yv, z], k * 3);
         if (isNaN(W[k])) continue;
-        ho[k] = Math.max(0, W[k] - H[k]); ti[k] = T[k];
-        if (T[k]) { const borde = Math.min(i, j, n - 1 - i, n - 1 - j) * paso; ol[k] = suave(0.4, 4, ho[k]) * suave(4, 30, borde); }
-        else { const co = pai.corriente(cx + x, cz + z, tramos); fl[k * 2] = co.dx * co.vel; fl[k * 2 + 1] = co.dy * co.vel; }
+        ho[k] = Math.max(0, W[k] - H[k]);
+        // cuánto de mar (0: río; 1: mar): en la boca, el agua del río se funde con la del mar, y su corriente sigue un poco
+        // mar adentro y se apaga (src/logica/paisaje.js, mezclaMar)
+        const mz = pai.mezclaMar ? pai.mezclaMar(cx + x, cz + z, tramos) : T[k];
+        ti[k] = mz;
+        if (T[k]) { const borde = Math.min(i, j, n - 1 - i, n - 1 - j) * paso; ol[k] = suave(0.4, 4, ho[k]) * suave(4, 30, borde) * suave(0.6, 1, mz); }
+        if (!T[k] || mz < 0.95) { const co = pai.corriente(cx + x, cz + z, tramos), v = co.vel * (T[k] ? (1 - mz) / 0.4 * 0.6 : 1); fl[k * 2] = co.dx * v; fl[k * 2 + 1] = co.dy * v; }
         if (i === n - 1 && j % 4 === 3) yield;
       }
       let ni = 0;

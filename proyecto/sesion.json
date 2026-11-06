@@ -1,17 +1,6 @@
 {
- "A": {
-  "inicio": "2026-11-06T15:24:45+00:00",
-  "tarea": "Depositar en las estaciones (valravnx, 6 nov): cada estación (piedra de tallar, banco de tronco, hoguera) tiene dónde dejar los materiales, encima o junto a ella, y se ven puestos; sus recetas gastan lo depositado en ella, no lo del suelo, con quien fabrica delante; lo de las manos sigue con lo que llevas y el suelo. Por el servidor, con su autor, en el panel y en el recorrido de jugador",
-  "hito": "crafting",
-  "rama": "trabajo/20261106-1524"
- },
+ "A": null,
  "B": null,
- "chat:trabajo/20261106-1615-boca": {
-  "inicio": "2026-11-06T16:15:13+01:00",
-  "tarea": "La desembocadura que se ensancha y las aguas que se funden (valravnx, 6 nov: «acaba como con dos tonos de río diferentes… que fuera difuminando las aguas y que la desembocadura se ensanche y se vea más real»)",
-  "hito": "mundo",
-  "rama": "trabajo/20261106-1615-boca"
- },
  "chat:trabajo/20261106-1730-charla": {
   "inicio": "2026-11-06T17:31:33+01:00",
   "tarea": "Chat de texto (valravnx, 6 nov: «vamos a poner chat de texto ya, debe verse sobre el jugador, y desaparecer al rato»): escribes una frase (Intro en PC, «Hablar» en el móvil), el servidor la comprueba con su autor (largo, sin mandar a chorro, a quién llega) y la reparte a los que están cerca; sale en un bocadillo sobre la cabeza del que habla y se va al rato; queda en el registro del servidor",

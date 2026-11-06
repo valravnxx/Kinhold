@@ -4747,5 +4747,40 @@
   "pruebas": "Batería entera en la nube (36 grupos, sin las de en línea; el PC de valravnx no las cogió): todo correcto. Por el camino, el perfil gráfico en el móvil falló por este cambio (el botón «Fabricar» alargaba la barra de arriba y el aviso tapaba el cielo: va abajo a la izquierda) y el combate en el mundo también (con el arma tapaba el aliento: ahí no sale); arreglados y repetidos, bien. El mapa del rey (la marca a 9 px) y la demo en el mundo (un fotograma de 63–73 ms contra 60) fallaron una vez y pasaron al repetirlos. Prueba nueva del panel en el navegador, con el servidor, en PC y móvil, bien (con MUTAR=1, que no deja salir las acciones, falla); fabricar 88/88 (MUTAR=1: 14 fallan). Tras unir main (sin tierra bajo el agua, que tomó la v124: esto pasa a la v125), otra vez la batería entera: 32 en el PC de valravnx bien; las cuatro que miden el dibujo (la demo única, los niveles de detalle, el perfil gráfico) y la web (aún sin la v125 publicada), repetidas en la nube, bien.",
   "capturas": "capturas/demo-v125",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T16:15:13+01:00",
+  "fin": "2026-11-06T17:36:56+01:00",
+  "titulo": "La desembocadura en embudo y las aguas que se funden",
+  "hito": "mundo",
+  "hecho": [
+   "valravnx, 6 nov: «acaba como con dos tonos de río diferentes… que fuera difuminando las aguas y que la desembocadura se ensanche y se vea más real».",
+   "El embudo: el río se abre hacia el mar cada vez más deprisa (exponencial, 140 m) hasta su ancho más dos veces él (al menos 30 m) en la orilla; solo el que llega al nivel del mar. Probado antes con tres veces y 230 m: la boca era un lago.",
+   "Cuánto de mar tiene el agua (paisaje.mezclaMar): el río se parece al mar en sus últimos 250 m y, en el mar, su agua sigue en un abanico que se desvanece en unos 150 m. El agua (de cerca y la cinta de lejos) mezcla los colores, la espuma y los rizos con eso, en vez de río o mar a secas; la corriente se apaga mar adentro y las olas que rompen solo salen donde ya es mar.",
+   "La cinta del río de lejos sigue por su mancha en el mar y se desvanece en el mar de debajo (probado antes con su propio color: salía una mancha gris clara con rayas de espuma).",
+   "Pruebas nuevas en la de desembocaduras: el embudo (16 de 19 bocas; con el ensanche de antes, 0) y que el agua pase de río a mar sin saltos de tono (19 de 19, el peor salto 0,07 en 3 m; con las dos aguas de antes, 0).",
+   "Pendiente, visto en la captura desde arriba: unas rayas finas y claras en el mar junto a la mancha del río, muy tenues."
+  ],
+  "pruebas": "Batería entera en la nube: 36 grupos bien salvo la web, que fallaba porque faltaba la traducción de la tarea (no se rehacía la web); con ella, bien. Desembocaduras 11/11 (MUTAR=3 y 4 fallan), mar 7/7, ríos 14/14, isla, mapa 88/88, horizonte 37/37. Capturas de la boca en PC (de cerca, desde el río y desde arriba) y móvil, al lado de la v124.",
+  "capturas": "capturas/demo-v126",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T15:24:07+00:00",
+  "fin": "2026-11-06T16:35:43+00:00",
+  "titulo": "P3: depositar en las estaciones",
+  "hito": "crafting",
+  "hecho": [
+   "Cada estación (piedra de tallar, hoguera, banco de tronco) tiene dónde dejar los materiales: se dejan desde lo que llevas y se vuelven a coger; caben 20 unidades en total.",
+   "Sus recetas gastan solo lo depositado en ellas, con quien fabrica delante; las de las manos siguen con lo que llevas y el suelo de al lado.",
+   "Todo por el servidor, con su autor y en el registro; en tierra de otro, solo su dueño y sus invitados dejan o cogen. Lo depositado se guarda (formato de fabricación v4, los guardados viejos se cargan con las estaciones vacías).",
+   "Lo depositado se ve puesto, con los modelos de lo del suelo: encima de la losa y del tajo, y alrededor de la hoguera; lo ven todos.",
+   "En el panel de fabricación, cada estación a tu lado sale con lo que tiene («Coger») y lo que llevas que se puede dejar («Dejar»); cada material dice si sale de la estación.",
+   "El recorrido de jugador deja la piedra, la rama y los dos cordeles en la piedra de tallar antes de encargar el hacha.",
+   "Publicada la demo v126."
+  ],
+  "pruebas": "Todas en la nube y en el PC de valravnx: 36 grupos. En el PC fallaron seis que no tocan esto o por su máquina (el perfil gráfico con tarjeta, objetos en el suelo, demo única, web, niveles de detalle) y el panel de fabricación (una espera de la prueba); repetidos en la nube, bien (la prueba del panel, con espera al pulsar). Lógica (con el recorrido de jugador) bien.",
+  "capturas": "capturas/demo-v126",
+  "estado": "ok"
  }
 ]

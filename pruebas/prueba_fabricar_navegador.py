@@ -5,7 +5,9 @@
 # en gris («después»), con la piedra de tallar que hace falta. «Hacer» lo encarga al servidor (la fibra sale de lo que
 # lleva en el servidor), sale en «En marcha» y, terminado, «Recoger» le da el cordel (en el servidor). Con una piedra,
 # «Poner delante» pone la piedra de tallar (en el servidor, y se dibuja) y la lasca pasa de «después» a «casi».
-# En el móvil (390×844), otro jugador ve la piedra de tallar y su panel va a pantalla completa.
+# Depositar (valravnx, 6 nov): junto a la piedra de tallar, el panel la enseña con lo que lleva para «Dejar»; lo dejado
+# está en el servidor, se ve puesto encima y «Coger» lo devuelve; con el sílex y la piedra en ella, la lasca, ya.
+# En el móvil (390×844), otro jugador ve la piedra de tallar con lo depositado y su panel va a pantalla completa.
 # El material sale del arcón de pruebas (KINHOLD_PRUEBAS_ARCON): esto prueba el panel; el recorrido de jugador
 # (pruebas/prueba_recorrido.mjs) ya fabrica sin arcón, con lo que se recoge.
 # MUTAR=1 tira los mensajes de objetos que manda la página (como si el panel fabricara solo en el navegador): falla.
@@ -149,26 +151,64 @@ try:
         captura(A, f'{SALIDA}/PC_piedra_tallar.png')
         pos = A.evaluate(f"Object.values({K}.fabCliente.estaciones)[0]")
 
+        print('Depositar en la piedra de tallar (valravnx, 6 nov): sus recetas gastan lo depositado en ella')
+        idPt = pos['id']
+        def pulsar(clase, texto, ms=8000):   # pulsa el botón de esa clase de la fila que dice texto (cuando ya esté)
+            return esperar(A, f"(() => {{ const b = [...document.querySelectorAll('#panelFabricar .{clase}')].find(b => !b.disabled && b.closest('.fab-fila').innerText.includes('{texto}')); if (b) b.click(); return !!b; }})()", ms)
+        print('  lleva:', A.evaluate(f"JSON.stringify(Object.fromEntries(Object.entries({K}.inventario.lugares).filter(([l, c]) => c && l.startsWith('mano')).map(([l, c]) => [l, c.tipo])))"))
+        A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'silex', cantidad: 1, a: 'mano:izq' }})")
+        servidorDice(lambda d: cuantos(d, yo, 'silex') == 1)
+        A.keyboard.press('h'); A.wait_for_timeout(400)
+        comprobar('el panel enseña la piedra de tallar de al lado, vacía, con lo que lleva para dejar', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-dep .fab-dejar') && /No hay nada/.test(document.querySelector('#panelFabricar .fab-sec-dep').innerText)", 8000))
+        comprobar('con el sílex en la mano, la lasca sigue en «casi» (no está depositado)', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 3000))
+        comprobar('sale el cordel que lleva, con «Dejar»', pulsar('fab-dejar', 'Cordel'))
+        d = servidorDice(lambda d: any(e.get('deposito', {}).get('cordel') == 1 for e in d['fabricacion']['estaciones']))
+        comprobar('«Dejar» lo deposita en el servidor', d is not None and cuantos(d, yo, 'cordel') == 0)
+        esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-dep [data-dep=\"cordel\"]')", 5000)
+        comprobar('y en la piedra de tallar, con «Coger»', pulsar('fab-coger', 'Cordel'))
+        d = servidorDice(lambda d: cuantos(d, yo, 'cordel') == 1)
+        comprobar('«Coger» lo devuelve a lo que lleva', d is not None and not any(e.get('deposito', {}).get('cordel') for e in d['fabricacion']['estaciones']))
+        pulsar('fab-dejar', 'Cordel')
+        servidorDice(lambda d: cuantos(d, yo, 'cordel') == 0)   # el cordel se queda en ella: hace falta una mano libre
+        libre = A.evaluate(f"['mano:der', 'mano:izq'].find(l => !{K}.inventario.lugares[l])") or 'mano:der'
+        A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'piedra', cantidad: 1, a: '{libre}' }})")
+        comprobar('coge una piedra con la mano libre', servidorDice(lambda d: cuantos(d, yo, 'piedra') == 1) is not None)
+        for t in ['Sílex', 'Piedra']:
+            comprobar(f'deja {t.lower()}', pulsar('fab-dejar', t))
+            servidorDice(lambda d, t=t: cuantos(d, yo, 'silex' if t == 'Sílex' else 'piedra') == 0, 8000)
+        d = servidorDice(lambda d: any(e.get('deposito') == {'cordel': 1, 'silex': 1, 'piedra': 1} for e in d['fabricacion']['estaciones']))
+        comprobar('deja el sílex y la piedra: el servidor los tiene en la piedra de tallar', d is not None and cuantos(d, yo, 'silex') == 0, str(d and d['fabricacion']['estaciones']))
+        comprobar('la lasca pasa a «Puedes hacerlo ya», diciendo que sale de la estación', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-ya [data-fila=\"lasca_silex\"]') && /de la estación/.test(document.querySelector('#panelFabricar [data-fila=\"lasca_silex\"]').innerText)", 6000), str(fila(A, 'lasca_silex')))
+        comprobar('y se ven puestos encima de la piedra de tallar', esperar(A, f"(() => {{ const o = {K}.escena.getObjectByName('estacion_piedra_tallar'); return !!o && !!o.getObjectByName('deposito_silex') && !!o.getObjectByName('deposito_piedra'); }})()", 6000))
+        A.evaluate("document.querySelector('#panelFabricar .fab-sec-dep').scrollIntoView()"); A.wait_for_timeout(300)
+        captura(A, f'{SALIDA}/PC_panel_deposito.png')
+        A.keyboard.press('h'); A.wait_for_timeout(300)
+        A.evaluate(f"(() => {{ const e = Object.values({K}.fabCliente.estaciones)[0]; Object.assign({K}.pj, {{ x: e.x + 1.3, z: e.z + 0.3, rot: -1.2 }}); {K}.cam.yaw = 0.15; {K}.cam.dist = 2.6; {K}.cam.pitch = 0.6; }})()")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_piedra_tallar_con_deposito.png')
+
         print('En el móvil, otro jugador')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
         comprobar('el móvil es otro jugador', B.evaluate(f"{K}.enLinea.red.yo") != yo)
         B.evaluate(f"(() => {{ Object.assign({K}.pj, {{ x: {pos['x']} - 0.6, z: {pos['z']} + 1.7, rot: 2.8 }}); {K}.cam.yaw = 0.35; {K}.cam.dist = 3.4; {K}.cam.pitch = 0.75; }})()")
         comprobar('ve la piedra de tallar del otro', esperar(B, f"!!{K}.escena.getObjectByName('estacion_piedra_tallar')", 20000))
+        comprobar('y lo depositado en ella, puesto encima', esperar(B, f"(() => {{ const o = {K}.escena.getObjectByName('estacion_piedra_tallar'); return !!o && !!o.getObjectByName('deposito_silex'); }})()", 10000))
         B.wait_for_timeout(2500)
         captura(B, f'{SALIDA}/movil_piedra_tallar.png')
         B.tap('#btnFabricar'); B.wait_for_timeout(600)
         r = B.evaluate("(() => { const r = document.getElementById('panelFabricar').getBoundingClientRect(); return [r.width, r.height]; })()")
         comprobar('su panel va a pantalla completa', r[0] >= 389 and r[1] >= 840, str(r))
-        comprobar('y sin piedra, la lasca está en «casi» a su lado (la estación es de otro, pero vale)', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 5000))
+        comprobar('y con lo que A ha dejado en ella, la lasca ya está en «Puedes hacerlo ya» a su lado (la estación es de otro, pero vale)', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-ya [data-fila=\"lasca_silex\"]')", 5000))
+        comprobar('y ve lo depositado en su panel', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-dep [data-dep=\"silex\"]')", 3000))
         comprobar('sin salirse de lado', B.evaluate("document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1"))
         captura(B, f'{SALIDA}/movil_panel.png')
         B.evaluate("document.querySelector('#panelFabricar .fab-sec-est').scrollIntoView()"); B.wait_for_timeout(300)
         captura(B, f'{SALIDA}/movil_panel_estaciones.png')
 
-        print('Las tres estaciones de cerca (solo para mirarlas: la hoguera y el banco se dibujan aquí, no se ponen)')
+        print('Las tres estaciones de cerca, con algo depositado (solo para mirarlas: la hoguera y el banco se dibujan aquí, no se ponen)')
         A.evaluate(f"""(() => {{ const f = {K}.fabCliente, e = Object.values(f.estaciones)[0];
-          f.estaciones['hoguera:vista'] = {{ id: 'hoguera:vista', tipo: 'hoguera', x: e.x - 1.6, z: e.z + 0.2, autor: 'vista', cola: [] }};
-          f.estaciones['banco_tronco:vista'] = {{ id: 'banco_tronco:vista', tipo: 'banco_tronco', x: e.x + 1.7, z: e.z - 0.3, autor: 'vista', cola: [] }};
+          f.estaciones['hoguera:vista'] = {{ id: 'hoguera:vista', tipo: 'hoguera', x: e.x - 1.6, z: e.z + 0.2, autor: 'vista', cola: [], deposito: {{ rama: 3, fibra: 2 }} }};
+          f.estaciones['banco_tronco:vista'] = {{ id: 'banco_tronco:vista', tipo: 'banco_tronco', x: e.x + 1.7, z: e.z - 0.3, autor: 'vista', cola: [], deposito: {{ mimbre: 2, tronco_corto: 1 }} }};
           {K}.estacionesV.refrescar(); Object.assign({K}.pj, {{ x: e.x + 0.2, z: e.z + 3.2, rot: 0 }}); {K}.cam.yaw = 0; {K}.cam.dist = 3.4; {K}.cam.pitch = 0.62; }})()""")
         comprobar('la hoguera y el banco de tronco se dibujan', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_hoguera') && !!{K}.escena.getObjectByName('estacion_banco_tronco')"))
         A.wait_for_timeout(2500)

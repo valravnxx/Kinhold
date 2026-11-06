@@ -54,10 +54,11 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
   // la altura de su agua y del ancho de su cauce más la orilla (lo que sobra queda bajo el suelo de la orilla), con su
   // corriente. Dentro de la lámina de cerca no se dibuja (ya está ella) ni más allá de donde empieza el horizonte.
   const materialLejos = crearMaterialAgua();
+  materialLejos.userData.funde.value = 1;   // (su mancha en el mar se desvanece en el mar de debajo)
   let cinta = null, centroCinta = null, trabajoCinta = null, nuevaCinta = null;
   function* hacerCinta(cx, cz) {
     const tramos = paisaje.riosEn(cx - R_LEJOS, cz - R_LEJOS, cx + R_LEJOS, cz + R_LEJOS, 0);
-    const pos = [], idx = [], fl = [], ho = [], ori = [];
+    const pos = [], idx = [], fl = [], ho = [], ori = [], ti = [];
     // (una cinta seguida por río: el tramo que empieza donde acabó el anterior sigue la misma cinta, sin juntas; si no,
     // en las curvas los dos tramos se solapaban o se abrían y salían muescas)
     let antes = -1, finX = NaN, finY = NaN;
@@ -70,15 +71,20 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
         const u = s / filas, [x, y] = paisaje.centroCauce(t, u);
         let w = Math.hypot(x - cx, y - cz) < R_LEJOS + 100 ? paisaje.agua(x, y, uno) : null;
         // en la boca, unos metros mar adentro a la altura del mar: el río entra en el agua del mar, sin una punta seca
-        if (w === null && antes >= 0 && enMar < 5 && paisaje.grande(x, y).f < 0) { w = 0; enMar++; }
+        // (y sigue, en abanico, por la mancha del río en el mar, hasta que su agua ya es la del mar: así no queda raya entre
+        // el agua del río y la del mar de lejos)
+        if (w === null && antes >= 0 && enMar < 40 && paisaje.grande(x, y).f < 0 && paisaje.mezclaMar(x, y, uno) < 0.97) { w = 0; enMar++; }
         if (w === null) { antes = -1; continue; }   // (lejos, o ya en el mar: ahí está el mar)
         const [x1, y1] = paisaje.centroCauce(t, Math.max(0, u - 0.002)), [x2, y2] = paisaje.centroCauce(t, Math.min(1, u + 0.002));
         let dx = x2 - x1, dy = y2 - y1; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
-        const { ancho } = paisaje.rioCerca(x, y, uno), m = ancho / 2 + 1.5, co = paisaje.corriente(x, y, uno);
+        const { ancho } = paisaje.rioCerca(x, y, uno), m = ancho / 2 + 1.5 + enMar * PASO_CINTA * 0.6, co = paisaje.corriente(x, y, uno);
         const k = pos.length / 3, yy = w + 0.03;
         pos.push(x - dy * m - origen.x, yy, y + dx * m - origen.z, x - origen.x, yy, y - origen.z, x + dy * m - origen.x, yy, y - dx * m - origen.z);
         for (let q = 0; q < 3; q++) fl.push(co.dx * co.vel, co.dy * co.vel);
-        ho.push(0, Math.min(2, ancho * 0.15 + 0.4), 0); ori.push(-1.5, ancho / 2 * (1 - enMar / 5), -1.5);   // (mar adentro se va: se funde con el mar)
+        ti.push(paisaje.mezclaMar(x - dy * m, y + dx * m, uno), paisaje.mezclaMar(x, y, uno), paisaje.mezclaMar(x + dy * m, y - dx * m, uno));   // (a lo ancho también, como la lámina de cerca)
+        // (en el mar, hondo y sin orilla a los lados: del color del mar hondo, el del mar de lejos, sin espuma de orilla)
+        if (enMar) { const h = Math.min(6, 1.5 + enMar * 0.4); ho.push(h, h, h); ori.push(60, 60, 60); }
+        else { ho.push(0, Math.min(2, ancho * 0.15 + 0.4), 0); ori.push(-1.5, ancho / 2, -1.5); }
         if (antes >= 0) idx.push(antes, k, antes + 1, antes + 1, k, k + 1, antes + 1, k + 1, antes + 2, antes + 2, k + 1, k + 2);
         antes = k;
       }
@@ -89,7 +95,7 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
     if (idx.length) {
       const g = new THREE.BufferGeometry();
       g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
-      atributosAgua(g, { flujo: new Float32Array(fl), hondo: new Float32Array(ho), orilla: new Float32Array(ori) });
+      atributosAgua(g, { flujo: new Float32Array(fl), hondo: new Float32Array(ho), orilla: new Float32Array(ori), tipo: new Float32Array(ti) });
       m = new THREE.Mesh(g, materialLejos); m.name = 'riosLejos'; m.frustumCulled = false;
     }
     nuevaCinta = { malla: m, cx, cz };
