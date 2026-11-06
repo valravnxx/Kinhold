@@ -477,7 +477,7 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
   // Cuánto de mar tiene el agua en un punto (0: agua de río; 1: mar), para que el agua del río se funda con la del mar
   // (valravnx, 6 nov: «acaba como con dos tonos de río diferentes… que fuera difuminando las aguas»): el río se va
   // pareciendo al mar en sus últimos 250 m (hasta 0,6 en la orilla) y, en el mar, su agua sigue mar adentro en un
-  // abanico que se abre y se apaga en unos 300 m (la mancha del río en el mar)
+  // abanico que se abre y se apaga en unos 150 m (la mancha del río en el mar)
   function mezclaMar(xm, ym, tramos) {
     const G = grande(xm, ym), f = G.f;
     const { dm, ancho, costa } = rioCercano(xm, ym, tramos);
@@ -487,7 +487,7 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
     let lejos = 0;
     if (f < 0) { const g1 = grande(xm + 4, ym).f, g2 = grande(xm, ym + 4).f, grad = Math.max(0.002, Math.hypot(g1 - f, g2 - f) / 4); lejos = -f / grad; }
     const lado = 1 - suave(ancho / 2, ancho / 2 + 15 + lejos * 0.6, dm);
-    const rio = f > 0 ? 0.6 * (1 - suave(0, 250, costa)) : 1 - 0.4 * (1 - suave(0, 300, lejos));
+    const rio = f > 0 ? 0.6 * (1 - suave(0, 250, costa)) : 1 - 0.4 * (1 - suave(0, 150, lejos));
     return lerp(1, rio, lado);
   }
   function rioCerca(xm, ym, tramos) { const { dm, ancho, anchoRio, costa } = rioCercano(xm, ym, tramos); return { dm, ancho, anchoRio, costa }; }   // (anchoRio: sin el estuario; costa: m hasta la orilla del mar)
