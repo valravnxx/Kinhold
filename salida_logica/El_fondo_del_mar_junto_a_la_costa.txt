@@ -1,0 +1,8 @@
+40 costas que miran al oeste
+  OK   hay costas que medir
+  OK   a 80 m de la orilla ya cubre de sobra (más de 4 m) en casi todas — 38 de 40
+  OK   en las playas, una franja somera (a 20 m, entre 0,2 y 3 m) — 5 de 6 playas
+  OK   al pie de los acantilados, hondo ya (a 20 m, más de 4 m) — 16 de 18 acantilados
+  OK   mar adentro (de 100 a 1500 m) el fondo no sale a flote — 0 de 40 con un bajo de menos de 0,5 m
+
+5 bien, 0 mal
