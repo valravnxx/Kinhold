@@ -1028,11 +1028,12 @@ with sync_playwright() as p:
     print('PC: todos los muebles en fila, de cerca (estilo v5)')
     nd = ev(f"{K}.mundo.decoracion.length")
     muebles = ev(f"Object.keys({K}.DECORACION || {{}})") or ['cama_paja', 'cama_madera', 'mesa', 'banco', 'taburete', 'arcon', 'barril', 'estanteria', 'candil', 'alfombra', 'estandarte']
-    sin_llevar = []
+    sin_llevar, diag = [], []
     for i, t in enumerate(muebles):
-        if not ev(f"{K}.llevarPara('deco','{t}')"): sin_llevar.append(t)
+        antes = ev(f"JSON.stringify({K}.inventario.exportarJugador().lugares)")
+        if not ev(f"{K}.llevarPara('deco','{t}')"): sin_llevar.append(t); diag.append(antes + ' → ' + ev(f"JSON.stringify({K}.inventario.exportarJugador().lugares)"))
         poner('deco', t, -11 + i * 1.6, -12)
-    comprobar('los 11 muebles colocados en fila', ev(f"{K}.mundo.decoracion.length") == nd + len(muebles), f'{len(muebles)} muebles; no se pudo llevar lo de: {sin_llevar}; lleva: ' + ev(f"Object.entries({K}.inventario.lugares).filter(([, c]) => c).map(([l, c]) => l + '=' + c.tipo + '×' + c.n).join(' ')"))
+    comprobar('los 11 muebles colocados en fila', ev(f"{K}.mundo.decoracion.length") == nd + len(muebles), f'{len(muebles)} muebles; no se pudo llevar lo de: {sin_llevar}; lleva: ' + ev(f"Object.entries({K}.inventario.lugares).filter(([, c]) => c).map(([l, c]) => l + '=' + c.tipo + '×' + c.n).join(' ')") + ' · ' + str(diag))
     ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-3; {K}.pj.z=-9.5; {K}.pj.y=0; {K}.pj.k=0; {K}.cam.yaw=0.35; {K}.cam.pitch=0.5; {K}.cam.dist=10")
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/24_muebles_en_fila.png')
