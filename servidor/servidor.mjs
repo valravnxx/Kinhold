@@ -151,6 +151,18 @@ export function leerArchivo(archivo) {
   return entradas;
 }
 
+// Cambia el guardado por el nuevo (escrito en .tmp). En Windows, si alguien tiene el archivo abierto en ese momento
+// (las pruebas lo leen a menudo), cambiarlo falla con EPERM o EBUSY: se reintenta un poco y, si no, se dice y se sigue
+// (se guardará la vez siguiente). Antes, el fallo cortaba la acción antes de contestar al jugador.
+const ESPERA = new Int32Array(new SharedArrayBuffer(4));
+function reemplazar(tmp, dest, registrar = console.error) {
+  for (let i = 0; ; i++) {
+    try { renameSync(tmp, dest); return true; } catch (e) {
+      if (i >= 25 || !['EPERM', 'EBUSY', 'EACCES'].includes(e.code)) { registrar(`no se ha podido guardar ${dest} (${e.code}); se guardará la próxima vez`); return false; }
+      Atomics.wait(ESPERA, 0, 0, 8);
+    }
+  }
+}
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true,
@@ -210,7 +222,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const guardarAbandono = () => {
     if (!abandonoCambiado) return;
     abandonoCambiado = false;
-    writeFileSync(archivoAbandono + '.tmp', JSON.stringify(abandono.exportar())); renameSync(archivoAbandono + '.tmp', archivoAbandono);
+    writeFileSync(archivoAbandono + '.tmp', JSON.stringify(abandono.exportar())); reemplazar(archivoAbandono + '.tmp', archivoAbandono);
   };
   // está en el mundo (si su cuenta puede entrar: con el correo confirmado); se apunta con un minuto de precisión
   const apuntarVisto = (a, t = Date.now()) => {
@@ -274,7 +286,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     try { objetos.importar(JSON.parse(readFileSync(archivoObjetos, 'utf8'))); } catch (e) { registrar(`objetos.json no válido, se empieza de cero: ${e && e.message}`); }
   }
   // se escribe en uno aparte y se cambia de nombre: si el servidor se apaga a mitad, queda el anterior entero
-  const guardarObjetos = () => { writeFileSync(archivoObjetos + '.tmp', JSON.stringify(objetos.exportar())); renameSync(archivoObjetos + '.tmp', archivoObjetos); };
+  const guardarObjetos = () => { writeFileSync(archivoObjetos + '.tmp', JSON.stringify(objetos.exportar())); reemplazar(archivoObjetos + '.tmp', archivoObjetos); };
 
   // Volver donde lo dejaste (valravnx, 31 oct): dónde estaba cada jugador al salir (autor → { x, y, z, giro }, relativo
   // al sitio de salida, como su presencia). Se apunta al salir y, por si el servidor se apaga de golpe, en cada latido
@@ -299,7 +311,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const guardarPosiciones = () => {
     if (!posicionesCambiadas) return;
     posicionesCambiadas = false;
-    writeFileSync(archivoPosiciones + '.tmp', JSON.stringify(Object.fromEntries(posiciones))); renameSync(archivoPosiciones + '.tmp', archivoPosiciones);
+    writeFileSync(archivoPosiciones + '.tmp', JSON.stringify(Object.fromEntries(posiciones))); reemplazar(archivoPosiciones + '.tmp', archivoPosiciones);
   };
   // Dónde empieza cada uno (valravnx, 5 nov: tres salidas en zonas del rey, «lo eligen»; src/logica/whitholm.js,
   // SALIDAS_INICIO): un personaje nuevo (sin posición apuntada) llega sin posición y elige una con { tipo: 'salida',
