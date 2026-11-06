@@ -1368,17 +1368,21 @@
     },
     {
      "nombre": "Las imágenes de cada cosa para el panel de fabricación (estudio aprobado por valravnx, 6 nov): una herramienta que las saca de los modelos del juego (estilo v5), en una carpeta de recursos nueva, con una prueba de que no falta ninguna, y el «para qué sirve» de cada receta sacado del documento de sistemas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T18:13:02+01:00",
-     "rama": "trabajo/20261106-1813-iconos"
+     "fin": "2026-11-06T23:37:13+01:00"
     },
     {
      "nombre": "Modelos (estilo v5) de lo que piden y dan las recetas de P3 y salía con el hatillo de lino, en el suelo, en lo depositado y en su imagen del panel: fibra cruda, haz de juncos, haz de mimbre, piel, resina, cordel, cuerda, cinturón de cuerda, honda, odre, nasa, trampa de lazo, cubo y hacha de piedra (en la mano y en el cinturón siguen con la tarea de lo que se fabrica con las manos)",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-06T18:35:00+01:00",
+     "fin": "2026-11-06T23:37:13+01:00"
     },
     {
      "nombre": "El panel de fabricación nuevo, como en el estudio que aprobó valravnx (6 nov): cartas con imagen en cuadrícula, pestañas por dónde se hace (con las manos y cada puesto), ficha con para qué sirve y de dónde sale cada material, lo que está en marcha abajo, y al usar un puesto se abre en su pestaña con lo que tiene encima y lo que llevas; en PC y móvil (provisional hasta que se rehaga todo el HUD). Con los dos atajos (valravnx, 6 nov: «me gustan esas dos opciones, pero dilo más claro»): «Hacer antes» lo que falta si se puede hacer ya, y «Poner en el puesto lo que falta» de lo que llevas, cada botón diciendo claro qué hace, qué gasta y qué falta.",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-06T18:55:00+01:00",
+     "fin": "2026-11-06T23:37:13+01:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -3090,6 +3094,13 @@
      "archivo": "jugar/demo/v128.html",
      "capturas": "capturas/demo-v128",
      "notas": "Chat de texto: con Intro (en el móvil, «Hablar») dices una frase; sale en un bocadillo sobre tu cabeza, la ven los que están a 50 m o menos y se va al rato. Pasa por el servidor con su autor: limpia, sin hablar a chorro y apuntada para moderar."
+    },
+    {
+     "v": "v129",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v129.html",
+     "capturas": "capturas/demo-v129",
+     "notas": "El panel de fabricar nuevo: cartas con la imagen de cada cosa, pestañas por dónde se hace y la ficha con para qué sirve y de dónde sale cada material; los dos atajos («Hacer antes» y «Poner en la estación lo que falta»); Usar delante de una estación abre su panel; y los modelos de lo que piden y dan las recetas (fibra, juncos, mimbre, piel, resina, cordel, cuerda, honda, odre, nasa, trampa, cubo, hacha de piedra…)."
     }
    ]
   },
