@@ -1,17 +1,11 @@
 {
  "A": {
-  "inicio": "2026-11-06T17:24:29+00:00",
-  "tarea": "Quitar lo que ya no se juega: el prototipo de combate aparte, la liza y los modos de combate de capas y guardias; la construcción aparte (hito1) y lo suelto (viejo_tmp.mjs); las pruebas que solo probaban eso",
-  "hito": "orden",
-  "rama": "trabajo/20261106-1724"
- },
- "B": null,
- "chat:trabajo/20261106-1730-charla": {
-  "inicio": "2026-11-06T17:31:33+01:00",
+  "inicio": "2026-11-06T18:22:56+00:00",
   "tarea": "Chat de texto (valravnx, 6 nov: «vamos a poner chat de texto ya, debe verse sobre el jugador, y desaparecer al rato»): escribes una frase (Intro en PC, «Hablar» en el móvil), el servidor la comprueba con su autor (largo, sin mandar a chorro, a quién llega) y la reparte a los que están cerca; sale en un bocadillo sobre la cabeza del que habla y se va al rato; queda en el registro del servidor",
   "hito": "admin",
   "rama": "trabajo/20261106-1730-charla"
  },
+ "B": null,
  "chat:trabajo/20261106-1813-iconos": {
   "inicio": "2026-11-06T18:13:02+01:00",
   "tarea": "Las imágenes de cada cosa para el panel de fabricación (estudio aprobado por valravnx, 6 nov): una herramienta que las saca de los modelos del juego (estilo v5), en una carpeta de recursos nueva, con una prueba de que no falta ninguna, y el «para qué sirve» de cada receta sacado del documento de sistemas",
