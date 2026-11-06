@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 6 nov 2026 (05:21 UTC+1) — por el chat: el bosque de lejos aún en dientes de sierra
+valravnx, con una captura del móvil (lomas lejanas con una banda oscura de bordes en dientes enormes): «cuando está muy lejos sigue haciendo diente de sierra horrible». Mirado: el color del bosque (verde oscuro) va en los vértices de la rejilla lejana (100–400 m) y entre ellos se interpola por triángulos: el linde oscuro/claro sigue sus diagonales. → Tarea de chat en el hito G: el color del suelo lejano y el del bosque, en texturas leídas en cada píxel.
+
 ### 5 nov 2026 (20:43 UTC+1) — por el chat: el mar, las costas, los ríos al mar y las rocas de los acantilados
 valravnx: «los ríos no finalizan en la entrada al mar, ni hay deltas… Luego, el mar. Tienes como una franja del suelo pintada de azul y el mar verdadero se encuentra muy lejos de esa franja… la playa debería verse la arena debajo del agua a bastante distancia… tienes una distancia gigantesca en la cual el agua no cubre… El mar tendría que no cubrir un poquito, pero luego ya hundirse… sobre todo en zonas de acantilado. Hay que hacer un rework entero a todo el tema del mar… ¿Te acuerdas que habíamos hecho unas rocas muy bonitas para los acantilados? Pues las habéis quitado… tendríamos que recuperarlas». Medido: a 100 m de la orilla el fondo está a 0,8 m y a 400 m a 1,3–3 m, también al pie de los acantilados; la lámina del mar de lejos va a 0,8 m bajo el nivel y deja al aire el fondo somero (gris azulado). Las rocas de las paredes (src/mundo/rocas.js) solo las pone el visor del mapa: el mundo del juego nunca las llevó. → Tres tareas de chat en el hito «mundo»: el mar de verdad (en curso), los ríos llegan al mar, las rocas de los acantilados de vuelta.
 
