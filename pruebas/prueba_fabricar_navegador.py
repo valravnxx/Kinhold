@@ -151,7 +151,7 @@ try:
         print('En el móvil, otro jugador')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
         comprobar('el móvil es otro jugador', B.evaluate(f"{K}.enLinea.red.yo") != yo)
-        B.evaluate(f"(() => {{ Object.assign({K}.pj, {{ x: {pos['x']} + 0.9, z: {pos['z']} - 0.2, rot: -1.6 }}); {K}.cam.yaw = 0.1; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.6; }})()")
+        B.evaluate(f"(() => {{ Object.assign({K}.pj, {{ x: {pos['x']} - 0.6, z: {pos['z']} + 1.7, rot: 2.8 }}); {K}.cam.yaw = 0.35; {K}.cam.dist = 3.4; {K}.cam.pitch = 0.75; }})()")
         comprobar('ve la piedra de tallar del otro', esperar(B, f"!!{K}.escena.getObjectByName('estacion_piedra_tallar')", 20000))
         B.wait_for_timeout(2500)
         captura(B, f'{SALIDA}/movil_piedra_tallar.png')
