@@ -1,0 +1,27 @@
+Jugador simulado: jugador:c5e47e76
+Vista pc
+  OK   pc: en línea, con el chat de texto y el botón «Hablar»
+  OK   pc: Intro abre el cuadro para escribir
+  OK   pc: mientras se escribe, las teclas no mueven — [0, 0] → [0, 0]
+  OK   pc: al decirlo sale el bocadillo con lo que has dicho
+  OK   pc: y se ve sobre tu cabeza — bocadillo {'texto': 'Buenas, ¿subimos el muro hoy?', 'x': 640, 'abajo': 301.5, 'w': 220, 'h': 50.375} · cabeza {'x': 640, 'y': 336.5762743645925}
+  OK   pc: le llega al otro, contigo de autor (por el servidor) — [{"tipo": "dicho", "autor": "jugador:89b92ab9", "texto": "Buenas, ¿subimos el muro hoy?"}]
+  OK   pc: lo que dice el otro sale sobre su cabeza — bocadillo {'texto': 'Aquí te espero', 'x': 640, 'abajo': 260.3999938964844, 'w': 118.109375, 'h': 32.1875} · cabeza {'x': 640, 'y': 284.088836426484}
+  OK   pc: Esc lo deja sin decirlo
+  OK   pc: hablar a chorro: el servidor no lo deja y se avisa
+  OK   pc: el bocadillo se va al rato
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: en línea, con el chat de texto y el botón «Hablar»
+  OK   movil: «Hablar» abre el cuadro para escribir
+  OK   movil: mientras se escribe, las teclas no mueven — [0, 0] → [0, 0]
+  OK   movil: al decirlo sale el bocadillo con lo que has dicho
+  OK   movil: y se ve sobre tu cabeza — bocadillo {'texto': 'Voy a por varas', 'x': 195, 'abajo': 318.5, 'w': 125.03125, 'h': 32.1875} · cabeza {'x': 195, 'y': 355.0879694546451}
+  OK   movil: le llega al otro, contigo de autor (por el servidor) — [{"tipo": "dicho", "autor": "jugador:305d81a8", "texto": "Voy a por varas"}]
+  OK   movil: lo que dice el otro sale sobre su cabeza — bocadillo {'texto': 'Trae también barro', 'x': 195, 'abajo': 275.20001220703125, 'w': 148.078125, 'h': 32.1875} · cabeza {'x': 195, 'y': 299.7137224299406}
+  OK   movil: Esc lo deja sin decirlo
+  OK   movil: hablar a chorro: el servidor no lo deja y se avisa
+  OK   movil: el bocadillo se va al rato
+  OK   movil: sin errores en la página
+
+Todo bien
