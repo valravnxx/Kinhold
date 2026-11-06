@@ -26,13 +26,13 @@ const mallas = L => {
   }
   return g;
 };
-const deLista = lista => { const g = new THREE.Group(); for (const { geo, mat } of lista) { const m = new THREE.Mesh(geo, mat); m.castShadow = m.receiveShadow = true; g.add(m); } return g; };
+export const deLista = lista => { const g = new THREE.Group(); for (const { geo, mat } of lista) { const m = new THREE.Mesh(geo, mat); m.castShadow = m.receiveShadow = true; g.add(m); } return g; };
 
 // azar fijo por objeto (para que el montón no cambie al redibujar)
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
 
 // Troncos tumbados en pirámide (la fila de abajo con más), con un disco de anillos en cada punta.
-function troncosConCortes(n, largo, radio, id) {
+export function troncosConCortes(n, largo, radio, id) {
   const L = new Lote({ rangoSuelo: radio * 3, variacion: 0.07 });
   const vis = Math.min(n, 10), base = Math.ceil((Math.sqrt(8 * vis + 1) - 1) / 2);
   let puestos = 0;

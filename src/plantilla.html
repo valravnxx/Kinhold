@@ -66,6 +66,23 @@ body.construyendo #pomo{left:25px;top:25px}
 .panel kbd{background:#4a3e30;border-radius:4px;padding:1px 6px;font-size:12px}
 #version{color:var(--muted);font-size:12px}
 
+/* panel de fabricación (src/juego/panel_fabricar.js) */
+#panelFabricar{background:#251f19;max-width:760px;max-height:84vh;inset:52px 12px auto 12px;z-index:21}
+.fab-sec h3{margin:12px 0 6px;font-size:13px;color:var(--acento);border-bottom:1px solid var(--linea);padding-bottom:3px}
+.fab-fila{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:6px 9px;margin:5px 0}
+.fab-tit{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fab-tit b{font-size:13.5px}
+.fab-tit small{color:var(--muted);font-size:11.5px}
+.fab-tit button{margin-left:auto;padding:4px 14px}
+.fab-mats{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:3px;font-size:12px}
+.fab-mat b{font-weight:600}
+.fab-mat small{color:var(--muted)}
+.fab-rojo,.fab-mat.fab-falta b{color:#d9805f}
+.fab-gris{color:var(--muted);font-size:11.5px}
+.fab-despues{opacity:.55}
+.fab-marcha{border-color:rgba(214,180,120,.35)}
+.fab-aviso{min-height:1.2em;font-size:12.5px;color:#cbbd9f}
+.fab-aviso.fab-error{color:#d9805f}
 /* panel de inventario (src/juego/panel_inventario.js) */
 #panelInventario{background:#251f19;max-width:1160px;max-height:88vh;inset:52px 12px auto 12px;z-index:20}
 #panelInventario h3{margin:0 0 6px;font-size:14px;color:var(--acento)}
@@ -112,8 +129,13 @@ body.construyendo #pomo{left:25px;top:25px}
   /* en el móvil, el idioma va en un desplegable (idioma.js) */
   #modos{top:auto;bottom:auto;top:120px;transform:none}
   #modos button,#acciones button{min-width:84px;padding:8px 10px}
+  /* «Fabricar», abajo a la izquierda a la altura de «Usar» (en la barra de arriba la alargaba una fila y tapaba el cielo) */
+  #menu #btnFabricar{position:fixed;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(178px + env(safe-area-inset-bottom,0px));min-width:84px;padding:8px 10px;font-size:14px;z-index:5}
+  body.construyendo #menu #btnFabricar{bottom:calc(290px + env(safe-area-inset-bottom,0px))}
+  body.combate.tactil #menu #btnFabricar{display:none} /* con el arma en la mano, ahí va el aliento (src/juego/combate_mundo.js) */
   .pieza{min-width:128px}
   /* en el móvil, el inventario va a pantalla completa */
+  #panelFabricar{inset:0;max-width:none;max-height:none;height:100%;border-radius:0;padding:calc(10px + env(safe-area-inset-top,0px)) 10px calc(14px + env(safe-area-inset-bottom,0px))}
   #panelInventario{inset:0;max-width:none;max-height:none;height:100%;border-radius:0;padding:calc(10px + env(safe-area-inset-top,0px)) 10px calc(14px + env(safe-area-inset-bottom,0px))}
   .inv-cuerpo{flex-direction:column;align-items:center;gap:6px}
   #llevas{left:calc(152px + env(safe-area-inset-left,0px));right:calc(10px + env(safe-area-inset-right,0px));transform:none;bottom:calc(24px + env(safe-area-inset-bottom,0px));max-width:none;flex-direction:column;align-items:stretch;gap:5px;font-size:12px}
@@ -140,6 +162,7 @@ body.construyendo #pomo{left:25px;top:25px}
   <div id="materiales"></div>
   <div id="menu">
     <button id="btnInventario">Inventario</button>
+    <button id="btnFabricar">Fabricar</button>
     <button id="btnMapa" hidden>Mapa</button>
     <button id="btnRellenar">+ Materiales</button>
     <button id="btnRegistro">Decisiones</button>
@@ -176,6 +199,7 @@ body.construyendo #pomo{left:25px;top:25px}
 <div id="joystick" hidden><div id="pomo"></div></div>
 
 <div id="panelInventario" class="panel" hidden></div>
+<div id="panelFabricar" class="panel" hidden></div>
 <div id="panelRegistro" class="panel" hidden>
   <button class="cerrar">✕</button>
   <h2>Decisiones tomadas en este hito</h2>
@@ -196,7 +220,7 @@ body.construyendo #pomo{left:25px;top:25px}
   <div id="ayudaPC">
     <p data-tr><kbd>W A S D</kbd> moverse · <kbd>Mayús</kbd> correr · <kbd>Q</kbd>/<kbd>E</kbd> o rueda pulsada: girar cámara · rueda: zoom · clic derecho en algo: elegir qué usar</p>
     <p data-tr><kbd>B</kbd> construir · <kbd>X</kbd> desmontar · <kbd>R</kbd> girar pieza · <kbd>RePág</kbd>/<kbd>AvPág</kbd> planta · <kbd>F</kbd> usar · <kbd>Esc</kbd> salir</p>
-    <p data-tr><kbd>M</kbd> mapa del rey</p>
+    <p data-tr><kbd>M</kbd> mapa del rey · <kbd>I</kbd> inventario · <kbd>H</kbd> fabricar</p>
   </div>
   <div id="ayudaTactil">
     <p>Joystick abajo a la izquierda para moverte. Arrastra con un dedo para girar la cámara y pellizca para el zoom.</p>

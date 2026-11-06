@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-06T10:22:20+00:00",
-  "tarea": "Panel de fabricación (tecla y botón, PC y móvil): arriba lo que puedes hacer ya, debajo lo que casi (lo que falta en rojo), y en gris lo que se abre después y con qué; dice de dónde sale cada cosa (tu mano, el cinturón o el suelo)",
-  "hito": "crafting",
-  "rama": "trabajo/20261106-1022"
- },
+ "A": null,
  "B": null
 }
