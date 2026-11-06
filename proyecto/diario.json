@@ -4555,5 +4555,22 @@
   "pruebas": "Solo documentos (sin código): la web se genera sin errores y comprueba las huellas y las traducciones; no comprobado en el navegador.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T04:40:10+00:00",
+  "fin": "2026-11-06T05:39:01+00:00",
+  "titulo": "P3: fabricar sin aprender recetas, por uso y con lo del suelo a tu lado",
+  "hito": "crafting",
+  "hecho": [
+   "Fuera el aprendizaje de recetas de la lógica de fabricar: todas las recetas, siempre a la vista; cualquiera hace cualquier cosa en cualquier estación, también en la de otro.",
+   "Recetas por uso en vez de por nivel: con las manos, al fuego (la hoguera y, cuando llegue con la casa humilde, el hogar), en la piedra de tallar y en el banco de tronco. Sin decir la estación, se usa la más cercana de ese uso.",
+   "Se fabrica con lo que llevas y lo que hay en el suelo a tu lado (2 m, lo que se podría coger); primero lo que llevas. Los arcones y los almacenajes no cuentan: el acopio es acopio.",
+   "Una lista para el panel: cada receta dice si se puede ya, si casi (y qué falta) o si se abre después (y con qué estación), y de dónde sale cada material (encima o del suelo).",
+   "Guardado: versión 3, sin lo que sabía cada uno; los guardados de la v1 y la v2 se cargan con sus estaciones y colas. El registro anota en qué estación se hizo y lo gastado del suelo.",
+   "Provisional (en el código): el suelo a tu lado es el alcance de coger (2 m), y lo de dentro de un contenedor del suelo no se gasta. La lógica aún no la usa el juego: el servidor y el panel son las dos tareas siguientes."
+  ],
+  "pruebas": "Batería entera en la nube (35 grupos, sin las de en línea; el PC de valravnx no estaba encendido): todo correcto. La prueba de fabricar, 82/82, rota a propósito con MUTAR=1 (16 fallan). Sin capturas: nada de lo que se ve ha cambiado.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

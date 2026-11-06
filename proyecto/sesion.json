@@ -17,11 +17,5 @@
   "tarea": "El bosque de lejos sin dientes de sierra (valravnx, 6 nov: «cuando está muy lejos sigue haciendo diente de sierra horrible»): el color del suelo lejano y el del bosque, en texturas que se leen en cada píxel, en vez de en los vértices de la rejilla",
   "hito": "graficos",
   "rama": "trabajo/20261106-0525-linde-textura"
- },
- "chat:trabajo/20261106-0440-p3-recetas": {
-  "inicio": "2026-11-06T04:40:10+00:00",
-  "tarea": "Fabricar sin aprender recetas: fuera el aprendizaje por práctica de la lógica (las recetas de cada sitio, siempre a la vista); recetas por uso (con las manos, hoguera y hogar, piedra de tallar, banco de tronco) en vez de por nivel; y la fabricación con lo que llevas y lo que hay en el suelo a tu lado. Lógica pura con autor y pruebas",
-  "hito": "crafting",
-  "rama": "trabajo/20261106-0440-p3-recetas"
  }
 }
