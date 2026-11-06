@@ -10,7 +10,7 @@ import * as THREE from 'three';
 import { LARGO_MAX, ALCANCE, duracionBocadillo, validarDicho } from '../logica/charla.js';
 import { tr } from '../idioma.js';
 
-const ALTO_CABEZA = 2.05;   // m sobre los pies: el bocadillo, justo encima de la cabeza
+const ALTO_CABEZA = 1.92;   // m sobre los pies: el bocadillo, justo encima de la cabeza (más alto parecía del de detrás)
 const APAGAR = 900;         // ms del final en que se va apagando
 
 // enLinea: la conexión (decir, escucharDicho, yo); boton: el de «Hablar»; camara y lienzo: para poner los bocadillos;
@@ -80,9 +80,11 @@ export function montarCharla({ enLinea, boton, camara, lienzo, pies, alAbrir = (
   });
 
   const v = new THREE.Vector3();
-  // cada fotograma: cada bocadillo sobre su cabeza (o fuera si no se ve), y se van al acabar su tiempo
+  // cada fotograma: cada bocadillo sobre su cabeza (o fuera si no se ve), y se van al acabar su tiempo. Si dos se pisan
+  // (uno delante del otro, en la línea de la cámara), el del más cercano se queda sobre su cabeza y el otro sube
   function paso() {
     const ahora = performance.now(), W = lienzo.clientWidth || innerWidth, H = lienzo.clientHeight || innerHeight;
+    const vistos = [];
     for (const [autor, b] of bocadillos) {
       if (ahora >= b.hasta) { b.el.remove(); bocadillos.delete(autor); continue; }
       const p = pies(autor);
@@ -92,13 +94,23 @@ export function montarCharla({ enLinea, boton, camara, lienzo, pies, alAbrir = (
         const lejos = v.distanceTo(camara.position);
         v.project(camara);
         ver = v.z < 1 && v.z > -1 && Math.abs(v.x) < 1.2 && Math.abs(v.y) < 1.2 && lejos < ALCANCE + 30;
-        if (ver) {
-          const x = (v.x + 1) / 2 * W, y = (1 - v.y) / 2 * H;
-          b.el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, calc(-100% - 8px))`;
-        }
+        if (ver) vistos.push({ b, x: (v.x + 1) / 2 * W, y: (1 - v.y) / 2 * H, lejos });
       }
       b.el.style.display = ver ? '' : 'none';
       b.el.style.opacity = String(Math.min(1, (b.hasta - ahora) / APAGAR));
+    }
+    vistos.sort((a, c) => a.lejos - c.lejos);
+    const puestos = [];   // { x0, x1, y0, y1 } en pantalla
+    for (const e of vistos) {
+      const w = e.b.el.offsetWidth, h = e.b.el.offsetHeight + 8;
+      let abajo = e.y;
+      for (let n = 0; n < vistos.length; n++) {
+        const pisa = puestos.find(r => e.x - w / 2 < r.x1 && e.x + w / 2 > r.x0 && abajo - h < r.y1 && abajo > r.y0);
+        if (!pisa) break;
+        abajo = pisa.y0 - 2;
+      }
+      puestos.push({ x0: e.x - w / 2, x1: e.x + w / 2, y0: abajo - h, y1: abajo });
+      e.b.el.style.transform = `translate(${e.x.toFixed(1)}px, ${abajo.toFixed(1)}px) translate(-50%, calc(-100% - 8px))`;
     }
   }
 

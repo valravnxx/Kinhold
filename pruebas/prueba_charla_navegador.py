@@ -131,6 +131,10 @@ try:
             pg.wait_for_timeout(600)
             b2 = pg.evaluate(BOCADILLO, AUTOR_BOT); c2 = pg.evaluate(CABEZA, AUTOR_BOT)
             comprobar(f'{nombre}: lo que dice el otro sale sobre su cabeza', sale and bool(b2 and c2) and abs(b2['x'] - c2['x']) < 40 and b2['abajo'] < c2['y'] + 4 and b2['abajo'] > c2['y'] - 120, f'bocadillo {b2} · cabeza {c2}')
+            # los dos a la vez (el tuyo aún se ve): no se pisan
+            r = pg.evaluate("""() => [...document.querySelectorAll('#charlaBocadillos .charlaBocadillo')].filter(e => e.style.display !== 'none').map(e => { const b = e.getBoundingClientRect(); return [b.left, b.top, b.right, b.bottom]; })""")
+            pisan = len(r) == 2 and r[0][0] < r[1][2] and r[0][2] > r[1][0] and r[0][1] < r[1][3] and r[0][3] > r[1][1]
+            comprobar(f'{nombre}: los dos bocadillos a la vez, sin pisarse', len(r) == 2 and not pisan, str(r))
             captura(pg, f'{SALIDA}/{nombre}_charla.png')
             # Esc: lo escrito no se dice
             pg.wait_for_timeout(1200)
