@@ -126,6 +126,7 @@ paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py 
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_hito1.html "$C/troceo"
 paso "Navegador: la rastra" python3 pruebas/prueba_rastra_navegador.py dist/kinhold_hito1.html "$C/rastra"
 paso "Navegador: la carretilla" python3 pruebas/prueba_carretilla_navegador.py dist/kinhold_hito1.html "$C/carretilla"
+paso "Navegador: panel de fabricación" python3 pruebas/prueba_fabricar_navegador.py dist/kinhold_demo.html "$C/fabricar"
 paso "Navegador: panel de inventario" python3 pruebas/prueba_inventario_navegador.py dist/kinhold_hito1.html "$C/inventario"
 paso "Navegador: lo que llevas se ve puesto" python3 pruebas/prueba_llevado_navegador.py dist/kinhold_hito1.html "$C/llevado"
 paso "Navegador: objetos en el suelo" python3 pruebas/prueba_suelo_navegador.py dist/kinhold_hito1.html "$C/suelo"

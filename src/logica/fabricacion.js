@@ -113,12 +113,24 @@ export function sueloCerca(suelo, sitio, ahora) {
 }
 const enSuelo = (cerca, tipo) => cerca.reduce((t, o) => t + (o.cosa.tipo === tipo ? o.cosa.n : 0), 0);
 
-// De dónde sale cada material de «gasta» (lo que llevas y el suelo a tu lado) y qué falta.
+// Dónde va lo que llevas, para decir de dónde sale (el panel): la mano, el cinturón, la mochila o el hombro.
+export const SITIO_DE_RUTA = ruta => ruta.startsWith('mano:') ? 'mano' : ruta.split('/')[0] === 'cintura' ? 'cinturon' : ruta.split('/')[0] === 'espalda' ? 'mochila' : 'hombro';
+
+// De dónde sale cada material de «gasta» (lo que llevas y el suelo a tu lado) y qué falta. de[tipo]: { encima, suelo,
+// sitios: { mano, cinturon, mochila, hombro, suelo } } — lo que se gastaría de cada sitio, en el orden en que se gasta.
 export function cuentas(gasta, inv, cerca) {
   const de = {}, falta = {};
   for (const [tipo, n] of Object.entries(gasta)) {
     const encima = Math.min(n, enInventario(inv, tipo)), suelo = Math.min(n - encima, enSuelo(cerca, tipo));
-    de[tipo] = { encima, suelo };
+    const sitios = {};
+    let queda = encima;
+    for (const ruta of rutasGastables(inv, tipo)) {
+      if (!queda) break;
+      const m = Math.min(queda, inv.buscar(ruta).cosa.n), s = SITIO_DE_RUTA(ruta);
+      sitios[s] = (sitios[s] || 0) + m; queda -= m;
+    }
+    if (suelo) sitios.suelo = suelo;
+    de[tipo] = { encima, suelo, sitios };
     if (encima + suelo < n) falta[tipo] = n - encima - suelo;
   }
   return { de, faltan: falta };
@@ -175,7 +187,19 @@ export class Fabricacion {
       const e = rc.uso === 'manos' ? null : this.estacionCerca(rc.uso, pos);
       const { de, faltan: f } = cuentas(rc.gasta, inv, cerca);
       const grupo = rc.uso !== 'manos' && !e ? 'despues' : Object.keys(f).length ? 'casi' : 'ya';
-      return { receta, nombre: rc.nombre, uso: rc.uso, grupo, estacion: e ? e.id : null, conQue: rc.uso === 'manos' ? '' : conQue(rc.uso), de, faltan: f };
+      return { receta, nombre: rc.nombre, uso: rc.uso, grupo, estacion: e ? e.id : null, conQue: rc.uso === 'manos' ? '' : conQue(rc.uso), gasta: { ...rc.gasta }, da: rc.da, n: rc.n, s: rc.s, de, faltan: f };
+    });
+  }
+
+  // Las estaciones que se pueden poner, para el panel: lo que cuesta (de dónde sale, qué falta) y lo que hay que
+  // llevar (requiere, que no se gasta). sitio: dónde se pondría (su suelo es el que se gasta).
+  listaEstaciones(sitio, inv, suelo, ahora) {
+    const cerca = sueloCerca(suelo, sitio, ahora);
+    return Object.entries(ESTACIONES).map(([tipo, e]) => {
+      const { de, faltan: f } = cuentas(e.coste, inv, cerca);
+      const sinHerramienta = !!e.requiere && !e.requiere.some(t => inv.cuantos(t) > 0);
+      return { tipo, nombre: e.nombre, uso: e.uso, hace: e.hace, coste: { ...e.coste }, requiere: e.requiere ? [...e.requiere] : [], sinHerramienta, de, faltan: f,
+        puede: !sinHerramienta && !Object.keys(f).length };
     });
   }
 

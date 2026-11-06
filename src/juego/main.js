@@ -19,6 +19,9 @@ import { conectarEnLinea } from './en_linea.js';
 import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
+import { montarPanelFabricar } from './panel_fabricar.js';
+import { crearEstaciones } from './estaciones.js';
+import { Fabricacion, ejecutarFabricacion } from '../logica/fabricacion.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
 import { crearComarcas, zonasDeEscena } from '../logica/comarcas.js';
@@ -252,8 +255,13 @@ if (almacen) cargarTroceo(almacen, troceo, Date.now());
 // la rastra: un objeto del suelo que se arrastra con las dos manos, con su carga (src/logica/rastra.js)
 const rastras = new Rastras(sueloObjetos.suelo);
 // en línea, todo eso es lo del servidor (src/juego/objetos_en_linea.js); se pinta de nuevo cuando llega
-const objetosRed = EN_LINEA ? crearObjetosEnLinea({ inventarios, autor: AUTOR_LOCAL, sueloObjetos, talaV, recoleccion,
-  alCambiar: (que) => { if (que === 'inventario' && typeof pintarTodoInventario === 'function') pintarTodoInventario(); if (que === 'suelo' && typeof pintarLlevas === 'function') pintarLlevas(); } }) : null;
+// las estaciones de fabricar (src/juego/estaciones.js): en línea, las del servidor; sin él, las de este navegador
+const fabCliente = new Fabricacion();
+const estacionesV = crearEstaciones({ raiz: escena, altura: decorado.altura, fab: fabCliente });
+let panelFabricar = null; // se monta más abajo, con el de inventario
+const objetosRed = EN_LINEA ? crearObjetosEnLinea({ inventarios, autor: AUTOR_LOCAL, sueloObjetos, talaV, recoleccion, estacionesV,
+  alEncargos: (d) => { if (panelFabricar) panelFabricar.ponerEncargos(d); },
+  alCambiar: (que) => { if (que === 'inventario' && typeof pintarTodoInventario === 'function') pintarTodoInventario(); if (que === 'suelo' && typeof pintarLlevas === 'function') pintarLlevas(); if ((que === 'suelo' || que === 'estaciones') && panelFabricar) panelFabricar.pintar(); } }) : null;
 
 // ---------------- Personaje y cámara ----------------
 // personaje del taller propio (la carpeta, en src/mundo/eleccion.js)
@@ -918,7 +926,7 @@ function piezaBajo(clientX, clientY) {
 // (o cualquier otra) W escribe «ц» y antes no movía (lo vio valravnx el 27 oct). Lo que no está en la tabla
 // (+, - y demás) sigue por la letra. Al perder el foco se sueltan todas, para que ninguna se quede pulsada.
 const TECLAS_FISICAS = {
-  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f', KeyI: 'i', KeyM: 'm', KeyC: 'c', Space: ' ',
+  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f', KeyI: 'i', KeyM: 'm', KeyC: 'c', KeyH: 'h', Space: ' ',
   ArrowUp: 'arrowup', ArrowDown: 'arrowdown', ArrowLeft: 'arrowleft', ArrowRight: 'arrowright',
   ShiftLeft: 'shift', ShiftRight: 'shift', PageUp: 'pageup', PageDown: 'pagedown', Escape: 'escape',
   NumpadAdd: '+', NumpadSubtract: '-',
@@ -939,6 +947,7 @@ addEventListener('keydown', (e) => {
   if (k === 'pagedown' || k === '-') cambiarPlanta(-1);
   if (k === 'f') usar();
   if (k === 'i') panelInventario.alternar();
+  if (k === 'h' && panelFabricar) panelFabricar.alternar();
   if (k === 'm' && mapaRey) { if (panelAdmin && panelAdmin.abierto) panelAdmin.cerrar(); else mapaRey.alternar(); }
   if (k === 'f9' && panelAdmin) { e.preventDefault(); panelAdmin.alternar(); }
   if (k === 'f10' && panelAdmin && panelAdmin.admin) { e.preventDefault(); alternarCamaraLibre(); }
@@ -2339,7 +2348,17 @@ function cambiarHombro(de) {
 }
 pintarLlevas();
 // en línea, cuando llega lo que llevas en el servidor: el panel, la línea de abajo y lo que se ve puesto
-function pintarTodoInventario() { pintarLlevas(); vestir(); panelInventario.pintar(); }
+function pintarTodoInventario() { pintarLlevas(); vestir(); panelInventario.pintar(); if (panelFabricar) panelFabricar.pintar(); }
+// El panel de fabricación (P3): con H o el botón «Fabricar». En línea manda la acción al servidor (que pone el autor);
+// sin él, la hace la lógica aquí mismo.
+function hacerFabricacion(a, fin) {
+  if (objetosRed) { objetosRed.mandar(a, fin); return; }
+  const r = ejecutarFabricacion(fabCliente, inventarios, registroAcciones, { ...a, autor: AUTOR_LOCAL }, Date.now(), sueloObjetos.suelo, (x, z) => !!mundo.tierraDe(x, z));
+  if (r.ok) { if (almacen) guardarInventarios(almacen, inventarios); sueloObjetos.refrescar(); estacionesV.refrescar(); pintarLlevas(); vestir(); panelInventario.pintar(); }
+  fin(r.ok ? { ...r, estacion: r.estacion || r.id || null } : r);
+}
+panelFabricar = montarPanelFabricar({ panel: $('panelFabricar'), boton: $('btnFabricar'), fab: fabCliente, inventario, suelo: () => sueloObjetos.suelo,
+  posicion: () => ({ x: pj.x, z: pj.z, rot: pj.rot }), hacer: hacerFabricacion, alAbrir: () => { if (panelInventario.abierto) panelInventario.cerrar(); teclas.clear(); } });
 // lo que no cupo al cargar el inventario (por ejemplo, si un contenedor tiene ahora menos huecos) cae a tus pies
 // (en línea, lo que lleva el servidor ya viene como cabe)
 if (!EN_LINEA && sueloObjetos.dejarApartado(inventario(), AUTOR_LOCAL, pj.x, pj.z)) { if (almacen) guardarInventarios(almacen, inventarios); }
@@ -2633,7 +2652,7 @@ window.__kinhold = {
   opcionesUsar: () => opcionesUsar().map(o => o.texto), abrirMenuUsar, cerrarMenuUsar, opcionesEn: (cx, cy) => opcionesEn(cx, cy).map(o => o.texto), menuUsar: () => menuUsar.hidden ? null : [...menuUsar.children].map(b => b.textContent),
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; sueloObjetos.suelo.objetos = []; sueloObjetos.refrescar(); talaV.tala.estado = {}; talaV.refrescar(); troceo.estado = {}; reconstruir(); ropaDelVisor(); vestir(); pintarLlevas(); panelInventario.pintar(); },
   get registroAcciones() { return registroAcciones; },
-  accionInventario, get inventario() { return inventario(); }, panelInventario,
+  accionInventario, get inventario() { return inventario(); }, panelInventario, panelFabricar, fabCliente, estacionesV,
   inventarios, golpeTala, arbolCercano, vestir, troceo, troncoCercano, golpeTroceo, usar, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas,

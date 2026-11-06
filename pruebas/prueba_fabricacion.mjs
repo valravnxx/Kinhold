@@ -2,7 +2,7 @@
 // suelo a tu lado (revisión del 1 nov). Ejecutar: node pruebas/prueba_fabricacion.mjs
 // Con MUTAR=1 el hacha de piedra no gasta cordel y se hace al momento, y la hoguera deja de dar el fuego:
 // las pruebas deben FALLAR.
-import { ESTACIONES, RECETAS, USOS, Fabricacion, ejecutarFabricacion, sueloCerca, estacionesDeUso, ALCANCE_ESTACION, ALCANCE_SUELO,
+import { ESTACIONES, RECETAS, USOS, Fabricacion, ejecutarFabricacion, sueloCerca, cuentas, SITIO_DE_RUTA, estacionesDeUso, ALCANCE_ESTACION, ALCANCE_SUELO,
   COLA_ESTACION, VERSION_FABRICACION, migrarFabricacion } from '../src/logica/fabricacion.js';
 import { Inventarios, Inventario, CATALOGO } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
@@ -165,15 +165,32 @@ console.log('Todas las recetas a la vista: lo que puedes ya, lo que casi y lo qu
   let l = fab.lista({ x: 0, z: 0 }, inv, suelo, T0);
   const de = k => l.find(x => x.receta === k);
   comprobar('salen todas las recetas, sin conocer ninguna', l.length === Object.keys(RECETAS).length && igual(l.map(x => x.receta), Object.keys(RECETAS)));
-  comprobar('el cordel, ya (3 fibra encima)', de('cordel').grupo === 'ya' && igual(de('cordel').de, { fibra: { encima: 3, suelo: 0 } }));
+  comprobar('el cordel, ya (3 fibra encima)', de('cordel').grupo === 'ya' && de('cordel').de.fibra.encima === 3 && de('cordel').de.fibra.suelo === 0, JSON.stringify(de('cordel').de));
+  comprobar('y dice de qué sitio sale (lo que llevas, por sitios)', Object.values(de('cordel').de.fibra.sitios).reduce((a, b) => a + b, 0) === 3 && !de('cordel').de.fibra.sitios.suelo, JSON.stringify(de('cordel').de));
+  comprobar('cada receta lleva lo que gasta, lo que da y su tiempo', igual(de('cordel').gasta, { fibra: 3 }) && de('cordel').da === 'cordel' && de('cordel').s === 15);
   comprobar('el leñero, casi: falta en rojo lo que no hay', de('lenero').grupo === 'casi' && igual(de('lenero').faltan, { rama: 4, cordel: 2 }), JSON.stringify(de('lenero')));
   comprobar('la lasca, después, con la piedra de tallar', de('lasca_silex').grupo === 'despues' && de('lasca_silex').conQue === 'una piedra de tallar');
   comprobar('la lanza, después, con la hoguera', de('lanza_endurecida').grupo === 'despues' && /hoguera/.test(de('lanza_endurecida').conQue));
   inv.meterDonde('piedra', 1);
   fab.colocar('ana', 'piedra_tallar', 1, 0, inv, null, T0);
   l = fab.lista({ x: 0, z: 0 }, inv, suelo, T0);
-  comprobar('con la piedra de tallar al lado, la lasca ya, con el sílex del suelo', de('lasca_silex').grupo === 'ya' && igual(de('lasca_silex').de, { silex: { encima: 0, suelo: 1 }, piedra: { encima: 1, suelo: 0 } }) && de('lasca_silex').estacion, JSON.stringify(de('lasca_silex')));
+  comprobar('con la piedra de tallar al lado, la lasca ya, con el sílex del suelo', de('lasca_silex').grupo === 'ya' && de('lasca_silex').de.silex.suelo === 1 && de('lasca_silex').de.silex.sitios.suelo === 1 && de('lasca_silex').de.piedra.encima === 1 && de('lasca_silex').estacion, JSON.stringify(de('lasca_silex')));
   comprobar('y el hacha, casi', de('hacha_piedra').grupo === 'casi');
+}
+
+console.log('De qué sitio sale cada cosa: la mano, el cinturón o el suelo');
+{
+  const fab = new Fabricacion(), inv = jugador(), suelo = new Suelo();
+  inv.lugares['mano:der'] = { tipo: 'fibra', n: 1 };
+  inv.lugares.cintura.dentro[0] = { tipo: 'fibra', n: 1 };
+  suelo.dejar({ tipo: 'fibra', n: 4 }, 0.3, 0, T0, 'ana', false);
+  const c = cuentas({ fibra: 3 }, inv, sueloCerca(suelo, { x: 0, z: 0 }, T0)).de.fibra;
+  comprobar('1 de la mano, 1 del cinturón y 1 del suelo', c.sitios.mano === 1 && c.sitios.cinturon === 1 && c.sitios.suelo === 1 && c.encima === 2, JSON.stringify(c));
+  comprobar('SITIO_DE_RUTA nombra cada sitio', SITIO_DE_RUTA('mano:izq') === 'mano' && SITIO_DE_RUTA('cintura/1') === 'cinturon' && SITIO_DE_RUTA('espalda/0') === 'mochila' && SITIO_DE_RUTA('hombro') === 'hombro');
+  const le = fab.listaEstaciones({ x: 0, z: 0 }, inv, suelo, T0), pt = le.find(e => e.tipo === 'piedra_tallar'), bt = le.find(e => e.tipo === 'banco_tronco');
+  comprobar('las estaciones que se pueden poner, con su coste y qué falta', le.length === Object.keys(ESTACIONES).length && !pt.puede && igual(pt.faltan, { piedra: 1 }) && !bt.puede && bt.sinHerramienta, JSON.stringify(pt));
+  inv.meterDonde('piedra', 1);
+  comprobar('con una piedra, la piedra de tallar se puede poner', fab.listaEstaciones({ x: 0, z: 0 }, inv, suelo, T0).find(e => e.tipo === 'piedra_tallar').puede);
 }
 
 console.log('Si no te cabe');

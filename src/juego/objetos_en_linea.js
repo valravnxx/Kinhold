@@ -11,13 +11,16 @@
 //   (lo que deja sale cuando llega al suelo, como al talarlo uno mismo).
 // - Por trozos (src/logica/trozos_red.js): el servidor manda lo talado y lo recogido solo de los trozos que tienes
 //   alrededor, y al cambiar de trozo, lo de los que te entran ({ tipo: 'trozos' }). Aquí se junta con lo que ya había
-//   (la bienvenida empieza de cero); el suelo llega siempre entero, el de todos tus trozos.
+//   (la bienvenida empieza de cero); el suelo llega siempre entero, el de todos tus trozos, y las estaciones de
+//   fabricar también (las de tus trozos, sin las colas de nadie).
 import { Inventario } from '../logica/inventario.js';
 
 // inventarios: los de main.js; autor: la clave del propio en ellos. sueloObjetos, talaV, recoleccion: lo que los
 // dibuja (src/juego/suelo.js, tala.js y recoleccion.js). alCambiar(que): ha cambiado 'inventario', 'suelo', 'tala' o
 // 'recoleccion' (para volver a pintar).
-export function crearObjetosEnLinea({ inventarios, autor, sueloObjetos, talaV, recoleccion, alCambiar = () => {} }) {
+// estacionesV: las estaciones de fabricar que se dibujan (src/juego/estaciones.js); alEncargos(d): lo que tienes
+// encargado, que trae la bienvenida (para el panel de fabricación).
+export function crearObjetosEnLinea({ inventarios, autor, sueloObjetos, talaV, recoleccion, estacionesV = null, alEncargos = () => {}, alCambiar = () => {} }) {
   let enviar = null, id = 0;
   const esperan = new Map();   // id → alResultado
   let deServidor = false;      // si ya ha llegado lo que llevas en el servidor
@@ -52,6 +55,10 @@ export function crearObjetosEnLinea({ inventarios, autor, sueloObjetos, talaV, r
     recoleccion.importar({ ...datos, estado: estadoRec });
     alCambiar('recoleccion');
   }
+  function ponerEstaciones(lista) {
+    if (!estacionesV || !Array.isArray(lista)) return;
+    estacionesV.poner(lista); alCambiar('estaciones');
+  }
   function talaDeRed(msg) {
     const c = msg.cae || {};
     const o = c.arbol && talaV.porId.get(c.arbol);
@@ -81,12 +88,14 @@ export function crearObjetosEnLinea({ inventarios, autor, sueloObjetos, talaV, r
           for (const f of esperan.values()) f({ ok: false, motivo: 'Sin conexión con el servidor.' });
           esperan.clear();
           ponerInventario(msg.inventario); ponerSuelo(msg.suelo); ponerTala(msg.tala, false); ponerRecoleccion(msg.recoleccion, false);
+          ponerEstaciones(msg.estaciones); if (msg.encargos) alEncargos(msg.encargos);
           return true;
         case 'trozos':
-          ponerTala(msg.tala); ponerRecoleccion(msg.recoleccion); ponerSuelo(msg.suelo);
+          ponerTala(msg.tala); ponerRecoleccion(msg.recoleccion); ponerSuelo(msg.suelo); ponerEstaciones(msg.estaciones);
           return true;
         case 'inventario': ponerInventario(msg.inventario); return true;
         case 'suelo': ponerSuelo(msg.objetos); return true;
+        case 'estaciones': ponerEstaciones(msg.estaciones); return true;
         case 'tala': talaDeRed(msg); return true;
         case 'recoleccion': ponerRecoleccion(msg.estado); return true;
         case 'resultado_objeto': {
