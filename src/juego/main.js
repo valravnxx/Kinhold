@@ -153,7 +153,11 @@ const escena = new THREE.Scene();
 // En la demo, el mundo de verdad: Whitholm, la isla de los playtests (src/mundo/mundo_juego.js). El mapa lo genera antes el
 // menú de la demo (window.__mundoDemo). Sin él (el prototipo de construcción suelto, o la demo con ?llano=1), el llano.
 const MUNDO = window.__mundoDemo || null;
-const camara = new THREE.PerspectiveCamera(45, 1, 0.1, MUNDO ? 1600 : 500);
+// (en el mundo, lo más cerca que se dibuja a 0,5 m y no a 0,1 (valravnx, 6 nov: «a lo lejos sigue hundido el terreno bajo
+// el agua»): la hondura tiene la misma precisión repartida entre lo cerca y lo lejos según el cociente lejos/cerca, y
+// con 0,1 a 500 m ya no distinguía 15 cm: la lámina del mar, a ras de la orilla, salía por encima de la tierra baja y la
+// arena de la orilla por encima del agua. Con 0,5, cinco veces mejor; la cámara nunca está a menos de 1,5 m del personaje)
+const camara = new THREE.PerspectiveCamera(45, 1, MUNDO ? 0.5 : 0.1, MUNDO ? 1600 : 500);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
 const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2048, niebla: MUNDO ? [110, 700] : [70, 200] });
 // Dónde apareces (valravnx, 30 oct): un jugador nuevo, en un sitio al azar de las comarcas de inicio (src/logica/whitholm.js),
