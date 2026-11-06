@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 6 nov 2026 (18:21 UTC+1) — por el chat: los dos atajos del panel, sí
+valravnx, tras explicarle los dos atajos con un ejemplo: «me gustan esas dos opciones, pero dilo mas claro».
+→ Los dos entran en el panel nuevo de fabricar (tarea de P3), con textos claros que digan qué hace el botón, qué gasta y qué falta: «Hacer antes: 1 cordel de fibra (con 3 fibra que llevas · 15 s)» y «Poner en la piedra lo que falta: 1 rama y 1 cordel (los llevas tú)».
+
 ### 6 nov 2026 (18:12 UTC+1) — por el chat: aprobado el estudio del panel de fabricación
 valravnx, sobre las cuatro preguntas del estudio (diseno/estudios/panel_fabricar.html): «1 si, 2 no entiendo que dices, 3 donde, 4 me gusta».
 → Aprobada la idea general (cartas con imagen en cuadrícula, ficha con para qué sirve, abrirse en la pestaña del puesto al usarlo), con pestañas por dónde se hace y el aspecto de las maquetas. Fuera de decisiones pendientes; en P3, la tarea de las imágenes de cada cosa (la empieza el chat) y la del panel nuevo pasan a pendiente; los almacenajes, que esperaban con el panel, también. Los dos atajos (fabricar antes lo que falta; dejar encima lo que falta) se le han vuelto a explicar con un ejemplo: hasta que diga sí o no, no se hacen.
