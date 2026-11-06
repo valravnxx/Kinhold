@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 6 nov 2026 (17:27 UTC+1) — por el chat: chat de texto
+valravnx: «vamos a poner chat de texto ya, debe verse sobre el jugador, y desaparecer al rato, luego discutimos si meter voz es buena o mala idea». → Tarea de chat en P7: frase que pasa por el servidor con su autor, bocadillo sobre la cabeza que se va al rato, en el registro. La voz, para hablarla después.
+
 ### 6 nov 2026 (11:32 UTC) — en la sesión del carril A: aprobado el hito P2
 valravnx, tras la revisión completa de P2: «aprueba». → El hito «Jugar entre dos sin trampas» pasa a hecho.
 
