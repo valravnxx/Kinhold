@@ -29,7 +29,8 @@
 //   resuelve el combate (golpes, disparos, impactos) se guarda aparte, en combate.jsonl junto al mundo.
 //
 //   Lo que lleva cada uno y lo del suelo (src/logica/objetos_red.js): el cliente manda { tipo: 'objeto', id, accion:
-//   { tipo: 'mover'|'ponerse'|'quitarse'|'soltar_suelo'|'coger_suelo'|'talar'|'trocear'|'recoger'|'coger'|'soltar', … } };
+//   { tipo: 'mover'|'ponerse'|'quitarse'|'soltar_suelo'|'coger_suelo'|'talar'|'trocear'|'recoger'|'coger'|'soltar'|
+//   'colocar_estacion'|'fabricar'|'recoger_fabricado', … } };
 //   el servidor la hace con el autor de la conexión, su hora y el sitio donde lo tiene (su presencia), y contesta
 //   { tipo: 'resultado_objeto', id, ok, motivo?, datos? } (datos: lo que ha pasado, p. ej. si el árbol cae y hacia dónde).
 //   Al autor le manda lo que lleva tal como queda, { tipo: 'inventario', inventario } (también si sale mal: así el
@@ -38,7 +39,12 @@
 //   estado }. La bienvenida lleva todo eso (inventario, suelo, tala, recoleccion).
 //   Por trozos (src/logica/trozos_red.js): lo del suelo, lo talado y lo recogido llega solo de los trozos que cada uno
 //   tiene alrededor (la bienvenida, los de donde aparece). Al cambiar de trozo le llega { tipo: 'trozos', entran,
-//   tala, recoleccion, suelo } (lo talado y lo recogido de los trozos que le entran, y el suelo de todos los suyos).
+//   tala, recoleccion, suelo, estaciones } (lo talado y lo recogido de los trozos que le entran, y el suelo y las
+//   estaciones de fabricar de todos los suyos).
+//   Fabricar (src/logica/fabricacion.js, por la misma vía de 'objeto'): colocar_estacion, fabricar y recoger_fabricado.
+//   Lo gastado sale de lo que lleva el autor y del suelo de al lado de donde el servidor lo tiene; lo hecho va a lo que
+//   lleva, o al suelo a sus pies si no cabe. Si se coloca una estación, a todos { tipo: 'estaciones', estaciones } (las
+//   de sus trozos; sin las colas: lo encargado es de cada uno). La bienvenida lleva estaciones y encargos (lo suyo).
 //   Las obras, la decoración y lo alisado (src/logica/obras_red.js): la bienvenida lleva obras (la foto del mundo de
 //   construcción con solo lo de sus trozos) en vez de todas las entradas, y al cambiar de trozo le llega { tipo: 'obras',
 //   obras } con la de sus trozos nuevos (también si la pide, { tipo: 'obras' }: el navegador lo hace si una acción que le
@@ -257,6 +263,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     posicion: (a) => { const e = presencia && presencia.ultimo.get(a); return e ? { x: e.x, z: e.z, giro: e.giro } : null; },
     enTierras: (a, x, z) => !!mundo.tierraDe(x, z),   // en la tierra de alguien, lo soltado no se pierde
     arconPruebas, terreno,
+    puedeTocar: (a, x, z) => mundo.puedeTocar(x, z, a),   // las estaciones de fabricar, en tierra de otro solo si te ha invitado
   });
   if (existsSync(archivoObjetos)) {
     try { objetos.importar(JSON.parse(readFileSync(archivoObjetos, 'utf8'))); } catch (e) { registrar(`objetos.json no válido, se empieza de cero: ${e && e.message}`); }
@@ -317,6 +324,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const vista = new VistaTrozos(); // autor → los trozos que tiene alrededor (lo que se le ha mandado)
   // el suelo de los trozos de cada uno, a todos
   const repartirSuelo = (ahora) => { for (const [ws, a] of clientes) enviar(ws, { tipo: 'suelo', objetos: objetos.sueloVisible(ahora, vista.trozosDe(a)) }); };
+  const repartirEstaciones = () => { for (const [ws, a] of clientes) enviar(ws, { tipo: 'estaciones', estaciones: objetos.estacionesVisibles(vista.trozosDe(a)) }); };
 
   const enviar = (ws, msg) => { if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(msg)); };
   // Si ha cambiado lo que se ve que lleva (al coger, soltar, ponerse algo…), se vuelve a repartir su aspecto.
@@ -450,6 +458,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, obras: obrasEnTrozos(mundo, suyos), n: registro.total, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
       aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true),
       inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now(), suyos), tala: objetos.talaVisible(suyos), recoleccion: objetos.recoleccionVisible(suyos),
+      estaciones: objetos.estacionesVisibles(suyos), encargos: objetos.encargosDe(autor, Date.now()),
       trozos: { lado: LADO_RED, radio: RADIO_RED }, posicion: posiciones.get(autor) || null, cuenta: usuarioDe(autor), admin: esAdmin(autor), correo: estadoCorreo(autor), arcon: !!arconPruebas });
 
     ws.on('message', (datos, binario) => {
@@ -517,7 +526,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           const entran = vista.mover(autor, e.x, e.z);
           if (entran.length) {
             const nuevos = new Set(entran);
-            enviar(ws, { tipo: 'trozos', entran, tala: objetos.talaVisible(nuevos), recoleccion: objetos.recoleccionVisible(nuevos), suelo: objetos.sueloVisible(Date.now(), vista.trozosDe(autor)) });
+            enviar(ws, { tipo: 'trozos', entran, tala: objetos.talaVisible(nuevos), recoleccion: objetos.recoleccionVisible(nuevos), suelo: objetos.sueloVisible(Date.now(), vista.trozosDe(autor)), estaciones: objetos.estacionesVisibles(vista.trozosDe(autor)) });
             enviar(ws, { tipo: 'obras', obras: obrasEnTrozos(mundo, vista.trozosDe(autor)) });
           }
         }
@@ -765,7 +774,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         const r = objetos.ejecutar(Object.assign({}, msg.accion, { autor }), ahora);
         if (r.entrada) appendFileSync(archivoObjetosReg, JSON.stringify(r.entrada) + '\n');
         if (r.ok) guardarObjetos();
-        const { ok: _o, motivo: _m, entrada: _e, suelo: _s, ...datos } = r;
+        const { ok: _o, motivo: _m, entrada: _e, suelo: _s, estaciones: _es, ...datos } = r;
         enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? { datos } : { motivo: r.motivo }) });
         enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
         if (r.ok) repartirLlevado(autor);
@@ -777,6 +786,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         };
         if (r.ok && r.cae) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, objetos: r.objetos } }));
         if (r.suelo) repartirSuelo(ahora);
+        if (r.estaciones) repartirEstaciones();
         if (r.ok && msg.accion.tipo === 'recoger') aSuTrozo(objetos.sitioPunto(msg.accion.punto), (otro, solo) => enviar(otro, { tipo: 'recoleccion', estado: objetos.recoleccionVisible(solo) }));
         return;
       }

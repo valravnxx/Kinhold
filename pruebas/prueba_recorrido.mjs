@@ -4,7 +4,8 @@
 // elige dónde empieza (la salida común, en Lindholt; valravnx, 5 nov: hay tres y «lo eligen»), empieza con lo puesto, anda hasta lo que se recoge, lo recoge, anda hasta la zona de al lado (la de la salida es del
 // rey: no se reclama) y pone su mojón pagándolo con tres de las piedras que
 // lleva, levanta un cimiento de piedra con las piedras que ha traído en las manos (en dos viajes), y lo trabaja hasta
-// terminarlo. Falla si algo no se puede hacer así.
+// terminarlo; luego se fabrica un hacha de piedra (fibra, cordel, piedra de tallar) y tala con ella un árbol joven.
+// Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
 // Cómo se amplía (CLAUDE.md, «Recorrido de jugador»): cada tarea de juego añade aquí su parte, como un paso más del
@@ -16,6 +17,8 @@
 //  - Anda a 20 m/s (un paso de 1 m cada 50 ms) para que la prueba tarde poco: hoy el servidor no mira la velocidad.
 //  - Sin cuenta: crear la cuenta y confirmar el correo ya lo juegan «Navegador: entrar con la cuenta» y las pruebas
 //    de cuentas; aquí empieza en el mundo.
+//  - Lo que se fabrica tarda de verdad (el cordel 15 s, el hacha 60 s): la prueba adelanta la hora a la que termina lo
+//    que ha encargado este jugador, en vez de esperarla. No le da nada: solo ahorra la espera.
 //
 // Con MUTAR=1 el mundo del servidor no tiene piedras sueltas (como si se rompiera la recogida): debe FALLAR.
 import { WebSocket } from 'ws';
@@ -40,8 +43,7 @@ function comprobar(nombre, cond, detalle = '') {
 
 // Lo que un jugador nuevo aún no puede hacer sin el arcón, con el porqué y lo que lo trae.
 const TODAVIA_NO = {
-  hombro: 'con algo al hombro, las manos no llevan nada: un jugador nuevo aún no tiene tronco que subirse (llega con talar); lo prueba prueba_inventario.mjs',
-  talar: 'un jugador nuevo no tiene hacha y aún no se fabrica nada: llega con «Fabricar por el servidor» (hito «De nada a una casa»)',
+  hombro: 'con algo al hombro, las manos no llevan nada: desde el paso 9 ya tiene un tronco delgado, pero llevarlo al hombro se añade con el acopio de troncos (hito «De nada a una casa»); lo prueba prueba_inventario.mjs',
 };
 
 const T = terrenoWhitholm();
@@ -148,12 +150,13 @@ try {
   comprobar('y una piedra ya recogida no vuelve a darse', !r.ok && /recogido/.test(r.motivo || ''), r.motivo);
 
   console.log('3. Lo que aún no se puede hacer como jugador nuevo');
+  let joven;
   {
     // talar: el árbol joven más cercano, a su lado y con las manos como las tiene
-    const a = cerca(arboles.filter(e => e.edad === 'joven'), J.pos)[0];
+    const a = joven = cerca(arboles.filter(e => e.edad === 'joven'), J.pos)[0];
     await J.andar(a.x + 1, a.z);
     r = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad });
-    comprobar(`talar: aún no se puede (${TODAVIA_NO.talar}); cuando se pueda, pasarlo a los pasos de verdad`, !r.ok, r.motivo);
+    comprobar('talar: sin hacha, no (se la fabrica en el paso 8)', !r.ok, r.motivo);
   }
 
   console.log('4. Anda hasta la zona de al lado (la de la salida es del rey) y pone su mojón: la zona es su tierra');
@@ -223,6 +226,62 @@ try {
     await J.andar(base.x - 30, base.z);
     r = await J.accion({ tipo: 'mojon', x: base.x - 30, z: base.z });
     comprobar('vuelve a poner su mojón 30 m más allá, sin espera, pagado con ellas', r.ok && !!s.mundo.mojonDe(J.bienvenida.autor) && J.cuantos('piedra') === 0, r.motivo);
+  }
+
+  console.log('8. Se fabrica un hacha de piedra con lo que recoge: fibra, cordel, piedra de tallar y el hacha');
+  {
+    const yo = J.bienvenida.autor;
+    // lo encargado termina ya (ver arriba: solo se ahorra la espera)
+    const adelantar = () => { const f = s.objetos.fab; for (const c of [...(f.manos[yo] || []), ...Object.values(f.estaciones).flatMap(e => e.cola)]) if (c.autor === yo) c.fin = Math.min(c.fin, Date.now() - 1); };
+    const enMano = () => ['mano:der', 'mano:izq'].map(l => J.inv && J.inv.lugares[l] ? `${J.inv.lugares[l].tipo}×${J.inv.lugares[l].n}` : '–').join(' ');
+    // deja las ramas a sus pies: le hacen falta las dos manos y del suelo de al lado también se fabrica
+    const taller = { ...J.pos };
+    const ruta = ['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'rama');
+    r = ruta ? await J.objeto({ tipo: 'soltar_suelo', de: ruta, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no lleva ramas' };
+    comprobar('deja las ramas en el suelo, a sus pies', r.ok && J.cuantos('rama') === 0, r.motivo);
+    const fibras = cerca(puntos.filter(p => p.tipo === 'ortiga' || p.tipo === 'hierba_larga'), J.pos);
+    let i = 0;
+    while (J.cuantos('fibra') < 6 && i < Math.min(8, fibras.length)) await recoger(fibras[i++]);
+    comprobar('arranca fibra de ortigas y hierba larga hasta tener 6', J.cuantos('fibra') >= 6, `${J.cuantos('fibra')} de fibra de ${i} plantas; ${enMano()}`);
+    if (J.cuantos('fibra') > 6) { const rf = ['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'fibra'); await J.objeto({ tipo: 'soltar_suelo', de: rf, cantidad: J.cuantos('fibra') - 6, x: J.pos.x, z: J.pos.z }); }
+    for (let k = 1; k <= 2; k++) {
+      r = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
+      comprobar(`con las manos, en cualquier sitio, se hace su cordel ${k} (3 de fibra)`, r.ok, r.motivo);
+      adelantar();
+      r = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+      comprobar(`y lo recoge (va a lo que lleva, o a sus pies si no le cabe)`, r.ok, r.motivo || JSON.stringify(r.datos));
+    }
+    const sueloCordel = s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'cordel' && Math.hypot(o.x - J.pos.x, o.z - J.pos.z) < 2).reduce((t, o) => t + o.cosa.n, 0);
+    comprobar('tiene sus 2 cordeles (en la mano o a sus pies)', J.cuantos('cordel') + sueloCordel === 2 && J.cuantos('fibra') === 0, `${J.cuantos('cordel')} en la mano, ${sueloCordel} en el suelo; ${enMano()}`);
+    // el cordel no se apila (también es un cinturón): uno se queda a sus pies, para tener una mano libre
+    if (['mano:der', 'mano:izq'].every(l => J.inv.lugares[l]?.tipo === 'cordel')) {
+      await J.andar(taller.x, taller.z);   // junto a las ramas, donde va a trabajar
+      r = await J.objeto({ tipo: 'soltar_suelo', de: 'mano:der', x: J.pos.x, z: J.pos.z });
+      comprobar('deja un cordel a sus pies para tener una mano libre', r.ok && J.cuantos('cordel') === 1, r.motivo);
+    }
+    // vuelve con dos piedras: una para la piedra de tallar y otra para el hacha
+    let pied = 0;
+    for (const p of piedrasBase) { if (pied >= 2) break; r = await recoger(p); if (r.ok) pied++; }
+    comprobar('recoge 2 piedras', J.cuantos('piedra') === 2, `${J.cuantos('piedra')} · ${enMano()}`);
+    await J.andar(taller.x, taller.z);
+    r = await J.objeto({ tipo: 'colocar_estacion', estacion: 'piedra_tallar', x: J.pos.x + 0.8, z: J.pos.z });
+    comprobar('pone una piedra de tallar a su lado (1 piedra)', r.ok && J.cuantos('piedra') === 1, r.motivo);
+    r = await J.objeto({ tipo: 'fabricar', receta: 'hacha_piedra', x: J.pos.x, z: J.pos.z });
+    comprobar('encarga el hacha de piedra: la piedra que lleva, una rama del suelo y los 2 cordeles', r.ok && J.cuantos('piedra') === 0 && J.cuantos('cordel') === 0 && Object.keys(r.datos?.usado?.suelo || {}).length > 0, r.motivo || JSON.stringify(r.datos?.usado));
+    adelantar();
+    r = await J.objeto({ tipo: 'recoger_fabricado', estacion: r.datos?.estacion, x: J.pos.x, z: J.pos.z });
+    comprobar('y la recoge: lleva un hacha de piedra en la mano', r.ok && J.cuantos('hacha_piedra') === 1 && ['mano:der', 'mano:izq'].some(l => J.inv.lugares[l]?.tipo === 'hacha_piedra'), r.motivo || enMano());
+  }
+
+  console.log('9. Con su hacha de piedra tala un árbol joven');
+  {
+    const a = cerca(arboles.filter(e => e.edad === 'joven'), J.pos)[0] || joven;
+    await J.andar(a.x + 1, a.z);
+    let golpes = 0;
+    do { r = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); golpes++; if (r.ok && !r.datos.cae) await pausa(550); } while (r.ok && !r.datos.cae && golpes < 30);
+    comprobar('lo tala a golpes (joven con piedra: 8) y cae', r.ok && r.datos.cae && golpes === 8, `${golpes} golpes · ${r.motivo || ''}`);
+    const deja = s.objetos.sueloVisible(Date.now()).filter(o => Math.hypot(o.x - a.x, o.z - a.z) < 5).map(o => o.cosa.tipo);
+    comprobar('y deja en el suelo un tronco delgado', deja.includes('tronco_delgado'), deja.join(', '));
   }
 
   // lo que sale de aquí, en la salida (para quien lo lea en la nube)

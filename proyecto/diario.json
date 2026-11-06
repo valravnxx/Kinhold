@@ -4605,6 +4605,23 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-11-06T05:47:36+00:00",
+  "fin": "2026-11-06T07:45:04+00:00",
+  "titulo": "P3: fabricar por el servidor, con su autor",
+  "hito": "crafting",
+  "hecho": [
+   "El servidor acepta colocar una estación, fabricar y recoger lo fabricado, con el autor de la conexión y su hora; lo que pide un sitio va desde donde el servidor tiene al jugador, no donde dice el navegador.",
+   "Lo gastado sale de lo que lleva el autor y del suelo de al lado; lo hecho va a lo que lleva y, si no le cabe, cae al suelo a sus pies (lo ven todos).",
+   "Las estaciones las ven todos (las de sus trozos, sin las colas de nadie), van en la bienvenida con lo que cada uno tiene encargado, y se guardan con los objetos: siguen al volver a arrancar el servidor.",
+   "En tierra de otro no se pone una estación sin que te haya invitado (lo tuyo es tuyo). Provisional: fabricar en la estación de otro sí se puede.",
+   "Recorrido de jugador: el jugador nuevo arranca fibra, se hace dos cordeles con las manos, pone una piedra de tallar, se fabrica un hacha de piedra (con una rama y un cordel del suelo de al lado) y tala con ella un árbol joven, que deja un tronco delgado. Talar sale de «todavía no».",
+   "Aún sin panel: el juego todavía no manda estas acciones (lo trae la tarea siguiente, el panel de fabricación). No comprobado en el servidor de verdad."
+  ],
+  "pruebas": "Batería entera (35 grupos, sin las de en línea): 31 en el PC de valravnx y la lógica en la nube, bien; las cuatro que miden el dibujo sin tarjeta gráfica (niveles de detalle, la demo en el mundo, el perfil gráfico y la demo única) fallaron en su PC y, repetidas en la nube, bien. Servidor de objetos 57/57 (con MUTAR=1 falla) y recorrido de jugador 47/47. Sin capturas: nada de lo que se ve ha cambiado.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-06T06:23:10+00:00",
   "fin": "2026-11-06T07:36:49+00:00",
   "titulo": "La tierra vuelve al rey si no se usa (P2, carril A)",
