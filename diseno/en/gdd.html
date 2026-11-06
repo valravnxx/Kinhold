@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="5190a8f901399a2a3e2ca13c410abb14d2861a6d">
+<meta name="kinhold-origen" content="31f300c9eb7b3c141645d7e2d73b07a98bea69eb">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.9</title>
 <style>
@@ -63,7 +63,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Version 0.9 · 26 Oct 2026 (31 Oct: the king's island and its city; 4 Nov: what is paid, the art direction and the warehouse with market; 4 Nov, later, after the audit: your land is the whole zone, the king's zones, the boundary stone can be taken down, crafting without learning recipes, parity of paid items; 6 Nov: shoulder loads, young and mature trees, the humble house and base storage; crafting at a station with what is placed on it) · Expansion for a finished game: districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
+  <div class="sub">Version 0.9 · 26 Oct 2026 (31 Oct: the king's island and its city; 4 Nov: what is paid, the art direction and the warehouse with market; 4 Nov, later, after the audit: your land is the whole zone, the king's zones, the boundary stone can be taken down, crafting without learning recipes, parity of paid items; 6 Nov: shoulder loads, young and mature trees, the humble house and base storage; crafting at a station with what is placed on it; workstations as a build in their own tab, and where each one goes) · Expansion for a finished game: districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDED</span> you said so
     <span class="tag method">METHOD</span> how to do it technically
@@ -349,6 +349,13 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag old">SUPERSEDED · 1 Nov</span><s>Character technologies, unlocked through stations: Building the station gives its basic recipes. Practising at it opens the next ones. Some recipes let you build new stations (that is how you advance from the Early to the Late Middle Ages). Whoever knows a recipe can write it into a <b>tome</b> to teach it to others.</s></p>
 <p><span class="tag ok">DECIDED</span><b>No learning recipes</b> (review of 1 Nov): every recipe is always visible in the crafting panel (what you can make now at the top, what you almost can below it with what is missing in red, and greyed out what opens later). What is made by hand is crafted <b>anywhere</b>, with what you carry and what lies on the ground next to you. Stations are not levels but <b>tools by use</b> (the campfire cooks, the log bench works wood, the anvil works iron): a recipe asks for the station it really needs, and you advance from the Early to the Late Middle Ages by building the stations that earlier recipes allow. Recipe tomes are dropped.</p>
 <p><span class="tag ok">DECIDED</span><b>A station’s recipes use what is placed on it</b> (valravnx, 6 Nov): each station (the knapping stone, the log bench, the campfire…) has somewhere to leave materials, on top of the table or beside it, and they show there. Its recipes use what has been placed on it, not what is on the ground, and whoever crafts has to stand in front of it.</p>
+<p><span class="tag ok">DECIDED</span><b>Workstations are built as a building project</b> (valravnx, 6 Nov): from their own tab of the build menu, «Workstations», apart from furniture. You place the frame and bring it the materials, like any other build; they are not crafted and dropped on the ground. Each one goes where it belongs:</p>
+<table><tr><th>Workstation</th><th>Where it goes</th></tr>
+<tr><td>Knapping stone</td><td>indoors or outdoors</td></tr>
+<tr><td>Log bench</td><td>indoors or outdoors</td></tr>
+<tr><td>Campfire</td><td>outdoors only</td></tr>
+<tr><td>Hearth</td><td>only inside the house</td></tr></table>
+<p>Those that come later are decided the same way, by what was historically correct (a loom, for example, is not set up in the street).</p>
 <p><span class="tag ok">DECIDED</span>No forced specialisations; the limit is play time.</p>
 <p><span class="tag ok">DECIDED</span>Durability on tools, weapons and armour. They are <b>repaired where they are made</b> (at the same station, if the recipe needs one), <b>with material of the same kind.</b> No item qualities.</p>
 </section>
@@ -613,7 +620,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 </ul>
 <div class="box o"><span class="tag open">OPEN</span> About recipes with limited uses: how many crafts each one gives (50 was mentioned only as an example), what counts as a use, whether they can be recharged and how, and which categories have a limit.</div>
 <h3>Crafting, eating and fishing</h3>
-<p><span class="tag ok">DECIDED</span><b>Crafting:</b> at the station, taking a time set by the recipe, with a small queue per station; it uses what you carry and what is in chests a few steps away. (Milestone 3)</p>
+<p><span class="tag ok">DECIDED</span><b>Crafting:</b> what is made by hand, anywhere, with what you carry and what lies on the ground next to you; what is made at a workstation, standing in front of it and with what has been placed on it (crafting section). Taking a time set by the recipe, with a small queue per workstation. (Milestone 3)</p>
 <p><span class="tag ok">DECIDED</span><b>Cooking:</b> recipes with utensils (spit, clay pot, cauldron, pan); cooked food fills you more and lasts longer. River water can be drunk safely. (Milestone 4)</p>
 <p><span class="tag ok">DECIDED</span><b>Fish</b> by water, climate band, time of day and season, in varying sizes. Rivers: trout, salmon (north, runs upriver in autumn), grayling, barbel, eel, tench, nase. Lakes: pike, perch, carp. Sea: herring and cod (north), sea bass, mackerel, sardine, gilt-head bream, red sea bream. Shore: mussel, oyster, crab, limpet. Rod fishing is skill-based (reeling in without snapping the line). Butchering: cleaned fish, bones and scales; preserved dried, smoked or salted. (Milestone 7)</p>
 <h3>Living together online and dominion</h3>
@@ -631,6 +638,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span><b>Options menu:</b> graphics profile (six, section 3), volume, controls and language. (Milestone 11)</p>
 <p><span class="tag method">METHOD</span><b>Ships:</b> on board, the character's position is stored relative to the ship, so you can walk on deck while it moves; when you get off it is counted relative to the world again. A ship is a construction anchored to something that moves. The camera is smoothed on mobile to avoid seasickness. (Milestone 16)</p>
 <h3>Later on (cosmetic and expansion)</h3>
+<p><span class="tag ok">DECIDED</span><b>HUD:</b> it will be redone from scratch, for PC and for mobile, once the game is further along (valravnx, 6 Nov: the current one is not a video-game HUD). Until then, whatever part of the HUD is touched (such as the crafting panel) has to be functional, good-looking and feasible, but it is provisional.</p>
 <p><span class="tag ok">DECIDED</span><b>Home:</b> tableware and pottery on the table, woven tapestries with designs (with the same editor as the coat of arms), curtains, cushions and furs, candles, oil lamps and candelabras, hunting and fishing trophies, flowerpots, strings of garlic and onions, weapon racks and a mannequin for armour.</p>
 <p><span class="tag ok">DECIDED</span><b>Social life:</b> board games playable between players (tables, alquerque, dice), simple instruments (flute, drum, hurdy-gurdy), emotes (sit, wave, bow, toast) and a cat as a pet.</p>
 <p><span class="tag ok">DECIDED</span><b>Gatherings:</b> fencing tournaments and seasonal fairs with merchants from other regions, in the king's city (Strandvang).</p>
