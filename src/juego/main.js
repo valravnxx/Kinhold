@@ -1995,7 +1995,8 @@ function autoconstruirAdmin() { return !!(enLinea && enLinea.admin && enLinea.re
 const velocidadAdmin = () => (enLinea && enLinea.admin && enLinea.red && enLinea.red.modosAdmin && enLinea.red.modosAdmin.velocidad > 1 ? enLinea.red.modosAdmin.velocidad : 1);
 const barraVuelo = document.createElement('div');
 barraVuelo.id = 'barraVuelo'; barraVuelo.hidden = true;
-barraVuelo.style.cssText = 'position:fixed;right:calc(12px + env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:8px';
+// a la izquierda, a media altura: a la derecha están los botones de modo y Usar, y abajo a la izquierda el joystick
+barraVuelo.style.cssText = 'position:fixed;left:calc(12px + env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:8px';
 for (const [idb, texto, sube] of [['vueloSubir', '▲', 1], ['vueloBajar', '▼', -1], ['vueloIrAqui', tr('Ir aquí'), 0], ['vueloSalir', tr('Cámara'), 0]]) {
   const b = document.createElement('button'); b.id = idb; b.textContent = texto;
   b.style.cssText = 'min-width:52px;min-height:44px;font:600 14px system-ui,sans-serif;color:#f1e8d8;background:rgba(36,30,24,.85);border:1px solid rgba(241,232,216,.3);border-radius:10px;touch-action:none';
