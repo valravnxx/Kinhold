@@ -1,4 +1,4 @@
-// Comprueba que todos los textos del juego (construcción, combate, prueba de estilo y visor de personaje)
+// Comprueba que todos los textos del juego (el juego, el combate, la prueba de estilo y el visor de personaje)
 // tienen traducción al inglés y al ruso.
 // Uso: node pruebas/prueba_idiomas.mjs            → falla y lista los que faltan
 //      node pruebas/prueba_idiomas.mjs --faltan   → escribe solo la lista de los que faltan (JSON)
@@ -8,7 +8,6 @@ import { readFileSync } from 'fs';
 import { PIEZAS, DECORACION, MATERIALES } from '../src/logica/piezas.js';
 import { ARMAS, ARMADURAS, NOMBRE_LINEA, NOMBRE_ZONA } from '../src/combate/logica.js';
 import { REGISTRO, VERSION } from '../src/juego/registro.js';
-import { REGISTRO_COMBATE, VERSION_COMBATE } from '../src/combate/registro.js';
 import { REGISTRO_ESTILO, VERSION_ESTILO } from '../src/estilo/registro.js';
 import { REGISTRO_MINA, VERSION_MINA } from '../src/mina/registro.js';
 import { REGISTRO_MAPA, VERSION_MAPA } from '../src/mapa/registro.js';
@@ -33,7 +32,7 @@ const meter = (s) => { if (s && /[A-Za-zÁÉÍÓÚáéíóúñÑ]/.test(s)) text
 for (const d of [...Object.values(PIEZAS), ...Object.values(DECORACION), ...Object.values(ARMAS), ...Object.values(ARMADURAS)]) meter(d.nombre);
 for (const t of [...Object.values(MATERIALES), ...Object.values(NOMBRE_LINEA), ...Object.values(NOMBRE_ZONA)]) meter(t);
 for (const t of ['leve', 'grave', 'muy grave', 'corte', 'perforante', 'contundente']) meter(t); // gravedad y tipo de herida
-for (const t of [...REGISTRO, ...REGISTRO_COMBATE, VERSION, VERSION_COMBATE, ...REGISTRO_ESTILO, VERSION_ESTILO, ...REGISTRO_PERSONAJE, VERSION_PERSONAJE, ...REGISTRO_DEMO, VERSION_DEMO, ...REGISTRO_MINA, VERSION_MINA, ...REGISTRO_MAPA, VERSION_MAPA]) meter(t);
+for (const t of [...REGISTRO, VERSION, ...REGISTRO_ESTILO, VERSION_ESTILO, ...REGISTRO_PERSONAJE, VERSION_PERSONAJE, ...REGISTRO_DEMO, VERSION_DEMO, ...REGISTRO_MINA, VERSION_MINA, ...REGISTRO_MAPA, VERSION_MAPA]) meter(t);
 // nombres del mapa del mundo y fases de su generación
 for (const d of [...Object.values(BIOMAS), ...Object.values(ROCAS), ...Object.values(VETAS)]) meter(d.nombre);
 for (const m of readFileSync('src/logica/mapa.js', 'utf8').matchAll(/fase: '([^']+)'/g)) meter(m[1]);
@@ -100,7 +99,7 @@ function literalesEnTr(src) {
     i = j;
   }
 }
-for (const f of ['src/posprocesado/main.js', 'src/posprocesado/perfiles.js', 'src/juego/main.js', 'src/combate/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js', 'src/mina/main.js', 'src/mapa/main.js', 'src/mapa/cerca.js', 'src/juego/en_linea.js', 'src/combate/en_linea.js', 'src/mundo/cliente.js', 'src/mundo/pantalla_cuenta.js', 'src/juego/panel_inventario.js', 'src/juego/combate_mundo.js', 'src/juego/panel_fabricar.js']) {
+for (const f of ['src/posprocesado/main.js', 'src/posprocesado/perfiles.js', 'src/juego/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js', 'src/mina/main.js', 'src/mapa/main.js', 'src/mapa/cerca.js', 'src/juego/en_linea.js', 'src/mundo/cliente.js', 'src/mundo/pantalla_cuenta.js', 'src/juego/panel_inventario.js', 'src/juego/combate_mundo.js', 'src/juego/panel_fabricar.js']) {
   const src = leer(f);
   literalesEnTr(src);
   // títulos y opciones de los grupos del panel del personaje: grupo('clave', valores, 'Título')

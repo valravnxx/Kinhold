@@ -1,5 +1,5 @@
-// Kinhold — el cliente en línea común: lo que hacen igual la construcción (src/juego/en_linea.js) y el duelo
-// (src/combate/en_linea.js) al hablar con el servidor. Abre la conexión (src/mundo/conexion.js, que vuelve a conectar
+// Kinhold — el cliente en línea común: lo que hace el juego (src/juego/en_linea.js) al hablar con el servidor
+// (antes también el duelo aparte, que ya no está). Abre la conexión (src/mundo/conexion.js, que vuelve a conectar
 // sola), lleva el estado (conectando, conectado, volviendo, cortado), la presencia de los demás, sus aspectos, si el
 // servidor es antiguo, la línea de estado y los avisos de bienvenida y de corte. Cada parte añade solo lo suyo.
 import { normalizarLlevado } from '../logica/llevado.js';

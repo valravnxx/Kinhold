@@ -4797,5 +4797,20 @@
   ],
   "pruebas": "Sin cambios de código: no se pasan pruebas. Maquetas y estudio mirados en PC (1280×800) y móvil (390×844)",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T17:24:29+00:00",
+  "fin": "2026-11-06T18:52:36+00:00",
+  "titulo": "P6: fuera el prototipo de combate aparte y lo suelto",
+  "hito": "orden",
+  "hecho": [
+   "Quitado el prototipo de combate aparte: su página, su plantilla, su registro, su sonido, su control táctil y el duelo en línea (src/combate/main.js y compañía), y lo que lo construía (construir_combate.mjs). Se quedan la lógica, los modelos, la dirección con el ratón y el vestido del taller, que usan el combate en el mundo y el servidor.",
+   "Quitado lo suelto: viejo_tmp.mjs.",
+   "Pruebas: fuera la de navegador del combate aparte y la parte de la cámara táctil de la de lógica; la del juego en inglés y en ruso ya no pasa por el combate aparte (comprueba que la prueba de estilo recuerda el ruso); la de acciones con autor mira ahora el combate del mundo y el del servidor.",
+   "Las versiones publicadas del combate en docs/jugar/combate/ se quedan, como siempre.",
+   "La tarea era demasiado grande para una sesión: se parte en tres. Lo que queda va en dos tareas nuevas del hito: la liza y los modos de capas y guardias (tocan el servidor y la lógica de combate), y la construcción aparte (hito1), cuyas pruebas de navegador hay que pasar antes a la demo."
+  ],
+  "pruebas": "En la nube, 35 grupos: 34 bien. Falla «web» (el selector EN de los documentos de diseño no responde en 30 s), igual en la prueba de otra rama hecha antes de este cambio (nube/42264360570-web): no viene de aquí; no arreglado en esta sesión. En una primera pasada en el PC de valravnx fallaron demo-única y el perfil gráfico en el juego (lo de «sin tarjeta gráfica» no vale en un PC con tarjeta) y en la nube «Jugadores que se ven, con lag» una vez (aquí, 3 de 3 bien); en la segunda pasada, toda en la nube, salen bien. Sin versión nueva: no cambia nada jugable.",
+  "estado": "ok"
  }
 ]

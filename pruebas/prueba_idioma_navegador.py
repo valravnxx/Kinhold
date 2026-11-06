@@ -1,5 +1,5 @@
-# Prueba en navegador del juego en inglés y en ruso (construcción, combate, prueba de estilo y visor de personaje), en PC y móvil.
-# Uso: python3 pruebas/prueba_idioma_navegador.py <html_construccion> <html_combate> <html_estilo> <html_personaje> <carpeta_capturas>
+# Prueba en navegador del juego en inglés y en ruso (construcción, prueba de estilo y visor de personaje), en PC y móvil.
+# Uso: python3 pruebas/prueba_idioma_navegador.py <html_construccion> <html_estilo> <html_personaje> <carpeta_capturas>
 # Todo se sirve por HTTP desde un mismo sitio con los recursos (docs/recursos/personajes/), como en la web.
 # Comprueba: que no queda ningún texto sin traducir (window.__idioma.faltan), que no quedan palabras
 # en español a la vista, que el botón ES/EN cambia el idioma, lo recuerda y no borra la partida.
@@ -10,16 +10,15 @@ from playwright.sync_api import sync_playwright
 
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 CONSTR = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_hito1.html')
-COMB = os.path.abspath(sys.argv[2] if len(sys.argv) > 2 else 'dist/kinhold_combate.html')
-ESTILO = os.path.abspath(sys.argv[3] if len(sys.argv) > 3 else 'dist/kinhold_estilo.html')
-PERSONAJE = os.path.abspath(sys.argv[4] if len(sys.argv) > 4 else 'dist/kinhold_personaje.html')
-SALIDA = sys.argv[5] if len(sys.argv) > 5 else 'capturas/idioma'
+ESTILO = os.path.abspath(sys.argv[2] if len(sys.argv) > 2 else 'dist/kinhold_estilo.html')
+PERSONAJE = os.path.abspath(sys.argv[3] if len(sys.argv) > 3 else 'dist/kinhold_personaje.html')
+SALIDA = sys.argv[4] if len(sys.argv) > 4 else 'capturas/idioma'
 
 # el visor de personaje y la construcción (su jugador es el personaje del taller) cargan sus modelos de
 # ../../recursos/personajes/: se sirven como en la web
 sitio = tempfile.mkdtemp()
-# (los cuatro desde el mismo sitio: el idioma elegido se guarda en el navegador y tiene que valer en todos)
-for carpeta, html in (('personaje', PERSONAJE), ('construccion', CONSTR), ('combate', COMB), ('estilo', ESTILO)):
+# (los tres desde el mismo sitio: el idioma elegido se guarda en el navegador y tiene que valer en todos)
+for carpeta, html in (('personaje', PERSONAJE), ('construccion', CONSTR), ('estilo', ESTILO)):
     os.makedirs(f'{sitio}/jugar/{carpeta}'); shutil.copy(html, f'{sitio}/jugar/{carpeta}/prueba.html')
 os.makedirs(f'{sitio}/recursos/personajes')
 for c in ('v1', 'taller-v12', 'taller-v13', 'taller-v14', 'taller-v15', 'taller-v16', 'taller-v19', 'taller-v24', 'taller-anim-v1', 'taller-carga-v3'):
@@ -30,7 +29,6 @@ srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, dir
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 URL_PERSONAJE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/personaje/prueba.html'
 URL_CONSTR = f'http://127.0.0.1:{srv.server_address[1]}/jugar/construccion/prueba.html'
-URL_COMB = f'http://127.0.0.1:{srv.server_address[1]}/jugar/combate/prueba.html'
 URL_ESTILO = f'http://127.0.0.1:{srv.server_address[1]}/jugar/estilo/prueba.html'
 os.makedirs(SALIDA, exist_ok=True)
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
@@ -136,35 +134,6 @@ with sync_playwright() as p:
         elegir_idioma(pg, 'en')
         pg.wait_for_function('window.__kinhold !== undefined && document.documentElement.lang === "en"', timeout=20000)
 
-        # ---------- combate ---------- (el inglés ya está guardado por el botón: vale para los dos)
-        pg.goto(URL_COMB)
-        pg.wait_for_function('window.__duelo !== undefined', timeout=20000)
-        D = 'window.__duelo'
-        comprobar('combate: recuerda el inglés elegido en la construcción', pg.evaluate('document.documentElement.lang') == 'en')
-        pg.evaluate(f"{D}.configurar({{modo:'duelo', arma:'espada_larga', dificultad:'aprendiz'}}); {D}.ia.pensar = () => ({{mx:0,mz:0,correr:false}}); {D}.jugador.z={D}.rival.z-1.7")
-        pg.wait_for_timeout(600)
-        pg.evaluate(f"{D}.atacar('bajo')")
-        pg.wait_for_timeout(1500)
-        pg.screenshot(path=f'{SALIDA}/combate_{sufijo}_01_duelo.png')
-        revisar(pg, f'combate {etiqueta}, duelo')
-        pg.click('#btnOpciones'); pg.wait_for_timeout(200)
-        pg.screenshot(path=f'{SALIDA}/combate_{sufijo}_02_opciones.png')
-        revisar(pg, f'combate {etiqueta}, opciones')
-        comprobar('combate: armas en inglés en el menú', 'Longsword' in pg.inner_text('#selArma'))
-        pg.click('#btnOpciones'); pg.click('#btnAyuda'); pg.wait_for_timeout(200)
-        pg.screenshot(path=f'{SALIDA}/combate_{sufijo}_03_ayuda.png')
-        revisar(pg, f'combate {etiqueta}, ayuda')
-        pg.click('#panelAyuda .cerrar'); pg.click('#btnDecisiones'); pg.wait_for_timeout(200)
-        pg.screenshot(path=f'{SALIDA}/combate_{sufijo}_04_decisiones.png')
-        revisar(pg, f'combate {etiqueta}, decisiones')
-        pg.click('#panelRegistro .cerrar')
-        # que el rival caiga: pantalla final en inglés
-        pg.evaluate(f"{D}.rival.caer('Desangrado')")
-        pg.wait_for_timeout(500)
-        pg.screenshot(path=f'{SALIDA}/combate_{sufijo}_05_final.png')
-        comprobar('combate: pantalla final en inglés', 'won' in pg.inner_text('#tituloFinal') and 'bled out' in pg.inner_text('#motivoFinal').lower(), pg.inner_text('#final'))
-        revisar(pg, f'combate {etiqueta}, final')
-
         # ---------- prueba de estilo ---------- (el inglés sigue guardado)
         pg.goto(URL_ESTILO)
         pg.wait_for_function('window.__estilo !== undefined', timeout=90000)
@@ -245,7 +214,7 @@ with sync_playwright() as p:
         pg = ctx.new_page(); err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
         pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
-        K, D, S, P = 'window.__kinhold', 'window.__duelo', 'window.__estilo', 'window.__personaje'
+        K, S, P = 'window.__kinhold', 'window.__estilo', 'window.__personaje'
         pg.goto(URL_CONSTR + '?lang=ru')
         pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
         pg.evaluate('localStorage.clear(); window.__kinhold.reiniciar()'); pg.wait_for_timeout(400)
@@ -270,20 +239,8 @@ with sync_playwright() as p:
         elegir_idioma(pg, 'ru')
         pg.wait_for_function('window.__kinhold !== undefined && document.documentElement.lang === "ru"', timeout=20000)
         comprobar('ruso: el botón RU cambia a ruso y la partida sigue', pg.evaluate(f"!!{K}.miMojon"))
-        pg.goto(URL_COMB); pg.wait_for_function('window.__duelo !== undefined', timeout=20000)
-        comprobar('ruso: el combate recuerda el ruso', pg.evaluate('document.documentElement.lang') == 'ru')
-        pg.evaluate(f"{D}.configurar({{modo:'duelo', arma:'espada_larga', dificultad:'aprendiz'}}); {D}.ia.pensar = () => ({{mx:0,mz:0,correr:false}}); {D}.jugador.z={D}.rival.z-1.7")
-        pg.wait_for_timeout(600); pg.evaluate(f"{D}.atacar('bajo')"); pg.wait_for_timeout(1500)
-        pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_01_duelo.png'); revisar_ru(pg, f'ru combate {etiqueta}, duelo')
-        pg.click('#btnOpciones'); pg.wait_for_timeout(200)
-        pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_02_opciones.png'); revisar_ru(pg, f'ru combate {etiqueta}, opciones')
-        pg.click('#btnOpciones'); pg.click('#btnAyuda'); pg.wait_for_timeout(200)
-        pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_03_ayuda.png'); revisar_ru(pg, f'ru combate {etiqueta}, ayuda')
-        pg.click('#panelAyuda .cerrar'); pg.click('#btnDecisiones'); pg.wait_for_timeout(200)
-        pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_04_decisiones.png'); revisar_ru(pg, f'ru combate {etiqueta}, decisiones')
-        pg.click('#panelRegistro .cerrar'); pg.evaluate(f"{D}.rival.caer('Desangrado')"); pg.wait_for_timeout(500)
-        pg.screenshot(path=f'{SALIDA}/ru_combate_{sufijo}_05_final.png'); revisar_ru(pg, f'ru combate {etiqueta}, final')
         pg.goto(URL_ESTILO); pg.wait_for_function('window.__estilo !== undefined', timeout=90000)
+        comprobar('ruso: la prueba de estilo recuerda el ruso', pg.evaluate('document.documentElement.lang') == 'ru')
         pg.evaluate(f"{S}.pausar(true)")
         for i, v in enumerate(['maqueta', 'cabana', 'lado']):
             pg.click(f'[data-vista="{v}"]'); pg.evaluate(f"{S}.dibujar()")

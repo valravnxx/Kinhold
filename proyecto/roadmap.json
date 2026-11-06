@@ -1440,7 +1440,17 @@
    "nota": "Revisión del 1 nov con valravnx: en tareas pequeñas, entre bloque y bloque.",
    "tareas": [
     {
-     "nombre": "Quitar lo que ya no se juega: el prototipo de combate aparte, la liza y los modos de combate de capas y guardias; la construcción aparte (hito1) y lo suelto (viejo_tmp.mjs); las pruebas que solo probaban eso",
+     "nombre": "Quitar el prototipo de combate aparte (su página, el duelo en línea, el sonido y el táctil propios) y lo suelto (viejo_tmp.mjs), con las pruebas que solo probaban eso",
+     "estado": "hecho",
+     "inicio": "2026-11-06T17:24:29+00:00",
+     "fin": "2026-11-06T18:52:36+00:00"
+    },
+    {
+     "nombre": "Quitar la liza y los modos de combate de capas y guardias: del servidor, de la lógica de combate y de sus pruebas, que queden solo con el modo direccional del mundo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Quitar la construcción aparte (hito1): sus pruebas de navegador pasan a la demo y deja de construirse",
      "estado": "pendiente"
     },
     {
