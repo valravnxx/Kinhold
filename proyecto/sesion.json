@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-05T23:22:23+00:00",
-  "tarea": "Con algo al hombro, las manos no llevan nada (ni el hacha): lógica del inventario, en la demo y por el servidor",
-  "hito": "entre-dos",
-  "rama": "trabajo/20261105-2322"
- },
+ "A": null,
  "B": null
 }
