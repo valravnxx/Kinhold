@@ -1,6 +1,9 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v119 (los ríos llegan al mar)";
+export const VERSION_DEMO = "Demo única · v120 (los ríos llegan al mar de verdad)";
 export const REGISTRO_DEMO = [
+  "v120: los ríos llegan al mar de verdad (valravnx, 6 nov: «NO LLEGAN AL MAR»): en 8 de las 27 bocas de Whitholm el río del mapa acababa aún en tierra (hasta 440 m de la orilla) y su agua, en una charca. Ahora sigue cuesta abajo hasta 150 m dentro del mar. Comprobado en todos los ríos que acaban en el mar: agua seguida por el cauce desde 2,5 km río arriba hasta el mar.",
+  "v120: el agua de los ríos también de lejos: antes, más allá de unos 120 m (80 en el móvil) el río no tenía agua y solo asomaba el mar de lejos donde el cauce iba a la altura del mar (el río se cortaba y volvía a salir como mar). Ahora, hasta 1,1 km (700 m en el móvil), cada río lleva su agua por el cauce.",
+  "v120: la arena, solo en la playa: salía en todo lo que queda a menos de 2,8 m sobre el mar, también en las vegas de los ríos tierra adentro; ahora solo hasta unos 120 m de la orilla.",
   "v119: los ríos llegan al mar (valravnx, 5 nov): en la orilla el río baja al nivel del mar, se ensancha en un estuario (hasta 3,5 veces su ancho en la boca) y su cauce sigue mar adentro; antes, la arena de la playa cerraba la boca por encima del agua.",
   "v119: el delta: en la boca de los ríos medianos y grandes, isletas de arena que asoman del agua y reparten el río en brazos. La vega y las laderas de alrededor no cambian (solo baja el cauce).",
   "v118: lo de niveles posteriores, escondido. El menú de construir solo enseña lo de la casa humilde: quedan guardados para su nivel el tejado y los remates de teja, la chimenea, el adarve, la empalizada y su puerta, la polea, el polipasto, la escalera de tablas y todo lo de tablas (suelo, muros, tejado de tablillas, puerta, contraventana, trampilla), el muro de entramado y los muebles de tablas o hierro (cama de madera, mesa, banco, arcón, barril y estantería).",
