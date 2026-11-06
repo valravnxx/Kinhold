@@ -81,7 +81,8 @@ console.log('Subir lo pesado a una obra en alto: la unidad y las varas, de lo qu
     inv.coger('tronco_corto', 1, 'hombro');
     const s1 = A(yo, { tipo: 'subir', construccion: id, clave: k, material: 'tronco', segundos: 5, metodo: 'varas' });
     comprobar('con el tronco pero sin dos varas y una cuerda, tampoco', !s1.ok && inv.cuantos('tronco_corto') === 1, s1.motivo);
-    inv.coger('vara', VARAS_PARA_RODAR.vara, 'mano:der'); inv.coger('cuerda', VARAS_PARA_RODAR.cuerda, 'mano:izq');
+    // con el tronco al hombro, las manos no llevan nada (valravnx, 1 nov): las varas y la cuerda, en la mochila
+    inv.coger('mochila_bastidor', 1, 'espalda'); inv.coger('vara', VARAS_PARA_RODAR.vara, 'espalda/0'); inv.coger('cuerda', VARAS_PARA_RODAR.cuerda, 'espalda/1');
     const s2 = A(yo, { tipo: 'subir', construccion: id, clave: k, material: 'tronco', segundos: 5, metodo: 'varas' });
     comprobar('con el tronco al hombro, dos varas y una cuerda: el tronco sale de lo que llevas; las varas no se gastan', s2.ok && inv.cuantos('tronco_corto') === 0 && inv.cuantos('vara') === 2 && inv.cuantos('cuerda') === 1, JSON.stringify(s2));
   }

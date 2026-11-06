@@ -113,10 +113,12 @@ console.log('Llevar el tronco corto: con las dos manos o al hombro');
 {
   const inv = new Inventario();
   comprobar('se coge con las dos manos', inv.coger('tronco_corto', 1, 'mano:der').ok && !inv.coger('piedra', 1, 'mano:izq').ok);
-  comprobar('«Ponérselo» lo pasa al hombro y deja las manos libres', inv.ponerse('mano:der').ok && inv.lugares.hombro?.tipo === 'tronco_corto' && !inv.lugares['mano:der'] && inv.coger('hacha_hierro', 1, 'mano:der').ok);
+  comprobar('«Ponérselo» lo pasa al hombro y quita el tronco de las manos', inv.ponerse('mano:der').ok && inv.lugares.hombro?.tipo === 'tronco_corto' && !inv.lugares['mano:der']);
+  comprobar('con él al hombro, las manos no llevan nada, ni el hacha (valravnx, 1 nov)', !inv.coger('hacha_hierro', 1, 'mano:der').ok && !inv.lugares['mano:der']);
   comprobar('al hombro cuenta como el hombro lleno', inv.lleno().lugares.hombro === 1);
   comprobar('no caben dos al hombro', !inv.coger('tronco_corto', 1, 'hombro').ok);
-  comprobar('del hombro vuelve a las manos si están libres', !inv.quitarse('hombro', 'mano:izq').ok && inv.soltar('mano:der').ok && inv.quitarse('hombro', 'mano:der').ok && inv.lugares['mano:der'].tipo === 'tronco_corto');
+  comprobar('del hombro vuelve a las manos', inv.quitarse('hombro', 'mano:der').ok && inv.lugares['mano:der'].tipo === 'tronco_corto' && !inv.lugares.hombro);
+  comprobar('con algo en la mano, no se sube al hombro', inv.soltar('mano:der').ok && inv.coger('hacha_hierro', 1, 'mano:izq').ok && !inv.coger('tronco_corto', 1, 'hombro').ok);
   const sl = new Suelo(), pila = sl.dejar({ tipo: 'tronco_corto', n: 3 }, 0, 0, T0, 'ana', false), manos = new Inventario();
   const rc = sl.coger(manos, pila.id, 1, 0, T0);
   comprobar('de una pila de troncos cortos se coge uno, con las dos manos', rc.ok && rc.cantidad === 1 && manos.lugares['mano:der']?.tipo === 'tronco_corto' && sl.porId(pila.id, T0).cosa.n === 2, rc.motivo);
