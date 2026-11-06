@@ -1338,11 +1338,11 @@
     },
     {
      "nombre": "Almacenajes de la base (con su modelo, que se ve lleno): acopio de troncos, pila de piedras y leñera. Guardar y sacar con Usar; de quien tiene la tierra; la obra no coge de ellos sola",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     },
     {
      "nombre": "Más almacenajes: soporte de varas, almiar (paja y juncos), hoyo de barro y cesto (lo pequeño)",
-     "estado": "espera_decision"
+     "estado": "pendiente"
     },
     {
      "nombre": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos o de paja y puerta de varas, con el estilo v5 y pagada con lo que llevas",
@@ -1367,8 +1367,14 @@
      "fin": "2026-11-06T18:05:05+01:00"
     },
     {
-     "nombre": "El panel de fabricación nuevo, según el estudio que apruebe valravnx (provisional hasta que se rehaga todo el HUD de PC y móvil)",
-     "estado": "espera_decision"
+     "nombre": "Las imágenes de cada cosa para el panel de fabricación (estudio aprobado por valravnx, 6 nov): una herramienta que las saca de los modelos del juego (estilo v5), en una carpeta de recursos nueva, con una prueba de que no falta ninguna, y el «para qué sirve» de cada receta sacado del documento de sistemas",
+     "estado": "en_curso",
+     "inicio": "2026-11-06T18:13:02+01:00",
+     "rama": "trabajo/20261106-1813-iconos"
+    },
+    {
+     "nombre": "El panel de fabricación nuevo, como en el estudio que aprobó valravnx (6 nov): cartas con imagen en cuadrícula, pestañas por dónde se hace (con las manos y cada puesto), ficha con para qué sirve y de dónde sale cada material, lo que está en marcha abajo, y al usar un puesto se abre en su pestaña con lo que tiene encima y lo que llevas; en PC y móvil (provisional hasta que se rehaga todo el HUD)",
+     "estado": "pendiente"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -1431,7 +1437,9 @@
    "tareas": [
     {
      "nombre": "Quitar lo que ya no se juega: el prototipo de combate aparte, la liza y los modos de combate de capas y guardias; la construcción aparte (hito1) y lo suelto (viejo_tmp.mjs); las pruebas que solo probaban eso",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-06T17:24:29+00:00",
+     "rama": "trabajo/20261106-1724"
     },
     {
      "nombre": "Una sola tabla de armadura: el duelo usa la protección de las prendas (src/logica/prendas.js) en vez de la suya, y las mismas zonas del cuerpo",
@@ -3993,11 +4001,6 @@
    "pregunta": "Clanes y guerra (del 30 oct): con el vasallaje de comarca ya no hay un pago que dejar de hacer, así que el impago deja de ser causa de guerra. ¿Qué causas quedan, y asediar el centro de una comarca en su ventana necesita guerra declarada? Para la reunión tras P3, con las dos opciones escritas: solo guerra aceptada por las dos partes más las ventanas de asedio del centro, o causas automáticas tasadas",
    "desde": "2026-10-30",
    "hito": "tierras"
-  },
-  {
-   "pregunta": "El panel de fabricación (valravnx, 6 nov): el chat estudia cómo lo hacen otros juegos y propone un panel con imágenes, para PC y móvil (funcional, bonito y viable, no definitivo); valravnx decide si se hace. Los almacenajes esperan con él (son de la misma familia de muebles de la base)",
-   "desde": "2026-11-06",
-   "hito": "crafting"
   }
  ]
 }
