@@ -8,6 +8,7 @@
 # cada 100 m) y cambia de verdad lo que se ve en la franja del horizonte (las montañas, en vez del cielo).
 # Uso: python3 pruebas/prueba_graficos_juego_navegador.py <html> <carpeta_capturas>
 # MUTAR=1: el juego dibuja sin posprocesado y sin horizonte (como antes): la prueba tiene que fallar.
+# MUTAR=2: lo lejano con el color en los vértices (sin sus texturas, como antes): tiene que fallar.
 import sys, os, io, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 from PIL import Image, ImageStat
@@ -28,7 +29,8 @@ srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, dir
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&salida=0'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
-MUTAR = bool(os.environ.get('MUTAR'))
+MUTAR = os.environ.get('MUTAR') == '1'
+MUTAR2 = os.environ.get('MUTAR') == '2'
 K = 'window.__kinhold'
 fallos = []
 def comprobar(n, c, d=''):
@@ -41,6 +43,7 @@ def entrar(pg, extra=''):
     pg.wait_for_function(f'{K} && {K}.mundoListo', timeout=300000)
     try: pg.wait_for_function(f'{K}.decorado.pendientes === 0', timeout=120000)
     except Exception: pass
+    if MUTAR2: pg.evaluate('globalThis.__mutarTexturaLejos = true')
     if MUTAR: pg.evaluate("(() => { window.__graficos.dibujar = () => window.__kinhold.renderer.render(window.__kinhold.escena, window.__kinhold.camara); if (window.__graficos.horizonte) window.__graficos.horizonte.malla.visible = false, window.__graficos.horizonte.poner = () => {}; })()")
     pg.wait_for_timeout(1500)
 
@@ -97,6 +100,13 @@ def recorrido(pg, nombre, pref):
     # el horizonte del PC alto: se termina de calcular de golpe (en el juego va poco a poco, 2 ms por fotograma)
     hz = pg.evaluate(f"(() => {{ const h = {G}.horizonte, m = h.muestras; while (!m.tiene(1)) m.avanzar(1000); {G}.poner('pc-3', false); return {{ activo: h.activo, tris: h.malla.geometry.index ? h.malla.geometry.index.count / 3 : 0 }}; }})()")
     comprobar(f'{nombre}: el PC alto lleva el horizonte, la isla entera cada 100 m', hz['activo'] and hz['tris'] > 200000, str(hz))
+    # el color de lo lejano, de las texturas del nivel (valravnx, 6 nov: en los vértices salían dientes de sierra en el
+    # linde del bosque): el suelo y el bosque, del tamaño de la rejilla de cada 100 m, y el sombreador las lee
+    tx = pg.evaluate(f"""(() => {{ const h = {G}.horizonte, t = h.texturas, m = h.muestras, c = t.uTexC.value, d = t.uTexD.value;
+      let bosque = 0; if (d) for (let i = 3; i < d.image.data.length; i += 4) if (d.image.data[i] > 0) bosque++;
+      return {{ usa: t.uTexP.value.w, paso: t.uTexP.value.z, n: [t.uTexN.value.x, t.uTexN.value.y], c: c ? [c.image.width, c.image.height] : null,
+        filtro: c ? c.magFilter === 1006 : false, bosque, nx: Math.floor((m.nx - 1) / 1) + 1 }}; }})()""")
+    comprobar(f'{nombre}: lo lejano toma el color de sus texturas (suelo y bosque, cada 100 m, con filtrado lineal)', tx['usa'] == 1 and tx['paso'] == 100 and tx['c'] == tx['n'] and tx['n'][0] == tx['nx'] and tx['filtro'] and tx['bosque'] > 1000, str(tx))
     # mirando a ras hacia los montes y el mar (desde la salida, de frente solo hay llano): la franja del horizonte con y sin él
     pg.evaluate('(() => { window.__camAntes = { ...window.__kinhold.cam }; window.__kinhold.cam.pitch = 0.05; window.__kinhold.cam.yaw = 3.14; })()'); pg.wait_for_timeout(3000)
     alto, ancho = pg.evaluate('[innerHeight, innerWidth]')

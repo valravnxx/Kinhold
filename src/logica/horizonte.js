@@ -208,7 +208,8 @@ export function mallaDosel(m, k, { ox = 0, oz = 0, y0 = 0 } = {}) {
     pos[w * 3 + 2] = m.rect.z0 + b * k * m.base - oz;
     for (let c = 0; c < 3; c++) col[w * 3 + c] = lin(m.color[i * 3 + c] + (copa[q * 3 + c] - m.color[i * 3 + c]) * u);
   }
-  return { pos, col, idx: Uint32Array.from(idx), dens };
+  // (dens y copa, por punto del nivel: el horizonte las pone en una textura, src/mundo/horizonte.js)
+  return { pos, col, idx: Uint32Array.from(idx), dens, copa, cx, cz };
 }
 
 // Las copas de cerca: una rejilla fina (cada «paso» m) en un cuadro alrededor de (cx, cz) (m del mundo), con la altura
