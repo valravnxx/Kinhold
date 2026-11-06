@@ -135,6 +135,17 @@ export const DECORACION = {
   estandarte:  { nombre: 'Estandarte', coste: { vara: 2, cuerda: 1 } },
 };
 
+// Lo de este tramo (roadmap, hito «Jugar entre dos sin trampas»: «Lo de niveles posteriores, escondido»). El menú de
+// construir solo enseña lo de la casa humilde: las piezas de nivel 1 o menos que no piden ninguno de los materiales
+// de después (tablas, clavos, hierro, tejas), y los muebles igual. Así quedan guardados la teja, la chimenea, el
+// adarve, la empalizada, la polea, el polipasto, la escalera de tablas y los muebles de tablas o hierro. Solo se
+// esconden: la lógica y el servidor las siguen sabiendo construir (las pruebas y lo ya construido). Provisional.
+export const MATERIALES_POSTERIORES = ['tabla', 'clavo', 'hierro', 'teja'];
+export const NIVEL_TRAMO = 1;
+export function enEsteTramo(def) {
+  return (def.nivel ?? 0) <= NIVEL_TRAMO && !Object.keys(def.coste || {}).some(m => MATERIALES_POSTERIORES.includes(m));
+}
+
 export const MATERIALES_INICIALES = {
   piedra: 120, tronco: 120, vara: 120, barro: 80, paja: 80, cuerda: 40, tabla: 80, clavo: 120, hierro: 20, teja: 100,
 };

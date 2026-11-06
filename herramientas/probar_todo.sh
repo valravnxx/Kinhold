@@ -34,6 +34,7 @@ paso "Construir posprocesado y perfiles gráficos" node construir_posprocesado.m
 paso "Construir prueba de cavar" node construir_mina.mjs
 paso "Construir visor del mapa" node construir_mapa.mjs
 paso "Lógica de construcción" node pruebas/prueba_logica.mjs
+paso "Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo" node pruebas/prueba_tramo.mjs
 paso "Construir a la altura del suelo y nivelar" node pruebas/prueba_nivelado.mjs
 paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs

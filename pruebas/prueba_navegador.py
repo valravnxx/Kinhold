@@ -53,6 +53,23 @@ with sync_playwright() as p:
         ev(f"{K}.terminarObras()")  # se construye por obras: aquí se terminan al momento (con acciones)
         return v
 
+    print('PC: el menú de construir solo enseña lo de este tramo')
+    ev(f"{K}.cambiarModo('construir')")
+    guardadas = ['Tejado de teja', 'Chimenea', 'Adarve', 'Empalizada', 'Polea', 'Polipasto con torno', 'Escalera de tablas',
+                 'Cama de madera', 'Mesa', 'Banco', 'Arcón', 'Barril', 'Estantería', 'Muro de tablas']
+    vistas = []
+    for cat in ['tierra', 'base', 'estructura', 'muro', 'tejado', 'acceso', 'exterior', 'deco']:
+        pg.click(f'#pestanas button[data-cat="{cat}"]')
+        nombres = ev("[...document.querySelectorAll('#piezas button.pieza b')].map(b => b.textContent)")
+        comprobar(f'pestaña «{cat}» con algo', len(nombres) > 0, ', '.join(nombres))
+        vistas += nombres
+        if cat == 'acceso': pg.screenshot(path=f'{SALIDA}/00_menu_construir_acceso.png')
+        if cat == 'deco': pg.screenshot(path=f'{SALIDA}/00b_menu_construir_muebles.png')
+    fuera = [n for n in guardadas if n in vistas]
+    comprobar('lo de niveles posteriores no sale en el menú', not fuera, ', '.join(fuera))
+    comprobar('lo de la casa humilde sí sale', all(n in vistas for n in ['Muro de troncos', 'Tejado de paja', 'Escalera de mano', 'Andamio', 'Cama de paja']))
+    pg.click('#pestanas button[data-cat="base"]')
+
     print('PC: cabaña completa')
     v = poner('mojon', 'mojon', -3, -6)
     comprobar('mojón colocado', ev(f"!!{K}.miMojon"))
@@ -1137,6 +1154,12 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=1; {K}.pj.z=-4; {K}.cam.yaw=Math.PI+0.5; {K}.cam.pitch=0.85; {K}.cam.dist=20")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06_movil_mover.png')
+    modo0 = mv.evaluate(f"{K}.estado.modo")
+    mv.evaluate(f"{K}.cambiarModo('construir')"); mv.click('#pestanas button[data-cat="acceso"]'); mv.wait_for_timeout(500)
+    mvis = mv.evaluate("[...document.querySelectorAll('#piezas button.pieza b')].map(b => b.textContent)")
+    comprobar('móvil: el menú de construir no enseña la polea ni el polipasto', mvis and 'Polea' not in mvis and 'Polipasto con torno' not in mvis, ', '.join(mvis))
+    mv.screenshot(path=f'{SALIDA}/06a_movil_menu_construir.png')
+    mv.evaluate(f"{K}.cambiarModo('{modo0}')"); mv.wait_for_timeout(300)
     mv.evaluate(f"{K}.pj.x=10.2; {K}.pj.z=-15; {K}.pj.k=0; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.5; {K}.cam.dist=11")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06b_movil_escalera.png')
