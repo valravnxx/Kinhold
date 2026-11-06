@@ -1532,9 +1532,9 @@
     },
     {
      "nombre": "El bosque de lejos sin dientes de sierra (valravnx, 6 nov: «cuando está muy lejos sigue haciendo diente de sierra horrible»): el color del suelo lejano y el del bosque, en texturas que se leen en cada píxel, en vez de en los vértices de la rejilla",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T05:24:47+01:00",
-     "rama": "trabajo/20261106-0525-linde-textura"
+     "fin": "2026-11-06T12:23:56+01:00"
     }
    ],
    "num": "G"
@@ -2997,6 +2997,13 @@
      "archivo": "jugar/demo/v122.html",
      "capturas": "capturas/demo-v122",
      "notas": "La herramienta del admin (valravnx, 6 nov): el panel se abre en «Info» (lo del servidor y dónde estás); «Mapa» con los jugadores; «Modos»: autoconstruir, velocidad ×1 a ×10 y cámara libre volando en 3D; «Arcón»: invocarse cualquier objeto. Solo para la cuenta de admin, comprobado por el servidor."
+    },
+    {
+     "v": "v123",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v123.html",
+     "capturas": "capturas/demo-v123",
+     "notas": "El bosque de lejos sin dientes de sierra: va en el mismo suelo lejano (una sola superficie, que no se pelea consigo misma en la hondura) y su color sale de texturas leídas en cada píxel. Capturas: antes y después, mirando a las montañas altas."
     }
    ]
   },
