@@ -17,5 +17,11 @@
   "tarea": "Herramienta del admin mejorada (valravnx, 6 nov): al abrir el panel, información del servidor y de dónde estás además del mapa; modo autoconstruir (obras y muebles al momento y sin materiales); arcón de admin para invocarse cualquier objeto; multiplicar la velocidad de carrera; y cámara libre volando en tres dimensiones. Todo solo para la cuenta de admin, comprobado por el servidor y apuntado en admin.jsonl",
   "hito": "admin",
   "rama": "trabajo/20261106-0804-admin-herramienta"
+ },
+ "chat:trabajo/20261106-1020-rios-mar3": {
+  "inicio": "2026-11-06T10:18:17+01:00",
+  "tarea": "La desembocadura y el mar de lejos, revisados de nuevo (valravnx, 6 nov, 10:17: «en ninguna de las imágenes se ve el río llegando al mar… a lo lejos sigue hundido el terreno bajo el agua… y los glitches de lo parecido a los árboles»)",
+  "hito": "mundo",
+  "rama": "trabajo/20261106-1020-rios-mar3"
  }
 }
