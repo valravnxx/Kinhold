@@ -1,0 +1,25 @@
+  en la muestra de la isla: {"piedra":352,"hierba_larga":104,"ramas":517,"silex":215,"ortiga":58}
+  OK   en la isla salen los cinco tipos — {"piedra":352,"hierba_larga":104,"ramas":517,"silex":215,"ortiga":58}
+  OK   cada punto sale en una zona suya del documento (1246 puntos)
+  OK   nada en el mar, en el agua ni en la nieve
+  OK   nada encima del sitio de un árbol
+  OK   el nombre de cada punto sale de su tipo y su sitio
+  OK   las densidades solo usan zonas del documento
+  OK   las ramas, todas en el bosque — 517
+  OK   el sílex, en la caliza o junto al río (o algo en el claro) — 215
+  OK   en el claro sale algo de piedra y de sílex sueltos — piedra 40, sílex 3
+  OK   menos que donde les toca (la densidad del claro, por debajo de la de cada zona suya) — {"piedra":0.03,"silex":0.01}
+  OK   alrededor de casi todos los sitios de la salida al azar hay piedra a menos de 120 m — 253 de 259
+  junto a un río: {"ramas":102,"silex":38,"hierba_larga":28,"ortiga":53,"piedra":32}
+  OK   junto a los ríos sale piedra, sílex y fibra — {"ramas":102,"silex":38,"hierba_larga":28,"ortiga":53,"piedra":32}
+  OK   alrededor de la salida común hay ramas, piedra, sílex y fibra — {"ramas":1177,"piedra":540,"hierba_larga":11,"silex":241,"ortiga":11}
+  de 12 sitios de la salida al azar, sin cada cosa a menos de 500 m: {"ramas":0,"piedra":0,"silex":0,"fibra":0}
+  OK   en todos los sitios de salida hay fibra cerca
+  OK   repetir el mismo cuadro da lo mismo — 16
+  OK   cuatro trozos juntos dan lo mismo que su cuadro — 16 y 16
+  OK   ningún nombre repetido
+  OK   recoger un punto del mundo va bien
+  OK   al irse su trozo se guarda lo recogido, y al volver sigue recogido
+  un trozo de 32 m: 0.3 ms (en node, 105 puntos en 20 trozos)
+
+Todo bien
