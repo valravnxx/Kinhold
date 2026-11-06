@@ -1373,6 +1373,10 @@
      "rama": "trabajo/20261106-1813-iconos"
     },
     {
+     "nombre": "Modelos (estilo v5) de lo que piden y dan las recetas de P3 y aún sale con el hatillo de lino, en el suelo, en la mano y en su imagen del panel: fibra cruda, haz de mimbre, piel, resina, cinturón de cuerda, honda, odre, nasa, trampa de lazo y cubo (el cordel, la cuerda, el hacha de piedra y los juncos llegan con sus tareas); y las imágenes otra vez, en iconos-v2",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "El panel de fabricación nuevo, como en el estudio que aprobó valravnx (6 nov): cartas con imagen en cuadrícula, pestañas por dónde se hace (con las manos y cada puesto), ficha con para qué sirve y de dónde sale cada material, lo que está en marcha abajo, y al usar un puesto se abre en su pestaña con lo que tiene encima y lo que llevas; en PC y móvil (provisional hasta que se rehaga todo el HUD)",
      "estado": "pendiente"
     },
