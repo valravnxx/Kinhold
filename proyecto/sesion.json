@@ -17,5 +17,11 @@
   "tarea": "Fabricar por el servidor, con su autor: lo gastado sale de tu inventario o del suelo de al lado y lo hecho va a tu inventario (o al suelo si no cabe)",
   "hito": "crafting",
   "rama": "trabajo/20261106-0547-p3-fabricar-servidor"
+ },
+ "chat:trabajo/20261106-0735-rios-mar2": {
+  "inicio": "2026-11-06T07:35:00+01:00",
+  "tarea": "Los ríos llegan al mar de verdad (valravnx, 6 nov: «NO LLEGAN AL MAR… solo un estrecho de tierra aleatorio, ningún río conecta con el océano» y la tierra de dentro sale de lejos como bajo el agua)",
+  "hito": "mundo",
+  "rama": "trabajo/20261106-0735-rios-mar2"
  }
 }
