@@ -1,0 +1,17 @@
+  OK   azar: los mismos números que antes — 847454008 (antes 847454008)
+  OK   azarCombate: los mismos números que antes — 10719496 (antes 10719496)
+  OK   lineal: los mismos números que antes — 63869155 (antes 63869155)
+  OK   celda: los mismos números que antes — 793587416 (antes 793587416)
+  OK   ruido: los mismos números que antes — 122642932 (antes 122642932)
+  OK   fbm: los mismos números que antes — 28648969 (antes 28648969)
+  OK   ruido3: los mismos números que antes — 892316433 (antes 892316433)
+  OK   pseudo: los mismos números que antes — 179709936 (antes 179709936)
+  OK   pseudo3: los mismos números que antes — 524151805 (antes 524151805)
+  OK   mapa: los mismos números que antes — 564191350 (antes 564191350)
+  OK   paisaje: los mismos números que antes — -726957235 (antes -726957235)
+  OK   mapa.js ofrece el mismo azar, ruido y fbm
+  OK   paisaje.js ofrece el mismo azarCelda
+  OK   combate/logica.js ofrece el mismo azar
+  OK   mina/malla.js ofrece el mismo ruido3
+
+Todo correcto
