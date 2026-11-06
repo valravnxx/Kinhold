@@ -24,7 +24,8 @@ class Silencioso(http.server.SimpleHTTPRequestHandler):
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 # ?sinservidor=1: el juego sin servidor, solo para las pruebas (el de verdad es siempre en línea, valravnx, 30 oct)
-URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?sinservidor=1'
+# (siempre en la misma salida, ?salida=0: con la salida al azar fallaba a ratos según dónde se cayera; 6 nov)
+URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?sinservidor=1&salida=0'
 MUTAR = bool(os.environ.get('MUTAR'))
 MUTAR_REND = bool(os.environ.get('MUTAR_REND'))
 MUTAR_CARGA = bool(os.environ.get('MUTAR_CARGA'))  # la carga no ralentiza: la parte de la carga tiene que fallar
