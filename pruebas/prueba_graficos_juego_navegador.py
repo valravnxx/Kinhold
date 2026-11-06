@@ -116,7 +116,7 @@ def recorrido(pg, nombre, pref):
       let bosque = 0, suben = 0; for (let v = 0; v < m.nx * m.nz; v++) {{ const i = v % m.nx, j = (v - i) / m.nx;
         if (i < 2 || j < 2 || i > m.nx - 3 || j > m.nz - 3 || !(m.alto[v] > 1)) continue;
         let todo = true; for (let b = -1; b <= 1; b++) for (let a = -1; a <= 1; a++) if (!(m.dosel[v + b * m.nx + a] > 0)) todo = false;
-        if (!todo) continue; bosque++; if (p[v * 3 + 1] + y0 - m.alto[v] > m.dosel[v] * 0.8) suben++; }}
+        if (!todo) continue; bosque++; if (p[v * 3 + 1] + y0 - m.alto[v] > m.dosel[v] * 0.5) suben++;   // (sube la media de las copas de alrededor: al menos la mitad de la suya) }}
       return {{ dl, bosque, suben }}; }})()""")
     comprobar(f'{nombre}: el bosque de lejos va en el mismo suelo lejano (sin malla aparte; dentro del bosque, el suelo sube con sus copas)', una['dl'] == 0 and una['bosque'] > 1000 and una['suben'] >= una['bosque'] * 0.95, str(una))
     # mirando a ras hacia los montes y el mar (desde la salida, de frente solo hay llano): la franja del horizonte con y sin él
