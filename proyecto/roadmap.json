@@ -1281,7 +1281,9 @@
     },
     {
      "nombre": "Fabricar sin aprender recetas: fuera el aprendizaje por práctica de la lógica (las recetas de cada sitio, siempre a la vista); recetas por uso (con las manos, hoguera y hogar, piedra de tallar, banco de tronco) en vez de por nivel; y la fabricación con lo que llevas y lo que hay en el suelo a tu lado. Lógica pura con autor y pruebas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-06T04:40:10+00:00",
+     "rama": "trabajo/20261106-0440-p3-recetas"
     },
     {
      "nombre": "Fabricar por el servidor, con su autor: lo gastado sale de tu inventario o del suelo de al lado y lo hecho va a tu inventario (o al suelo si no cabe)",
