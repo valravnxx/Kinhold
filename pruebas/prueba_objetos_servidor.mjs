@@ -8,7 +8,9 @@
 // al inventario del autor; talar (el árbol que dice el navegador vale si su nombre cuadra con su sitio y estás al lado),
 // lo que deja en el suelo y el tocón lo ven los dos; trocear lo del suelo; recoger va a lo que llevas y el punto se
 // agota para los dos; y al volver a arrancar el servidor, los inventarios, el suelo, lo talado y lo recogido siguen
-// igual (y el jugador que vuelve con su ficha, con lo suyo).
+// igual (y el jugador que vuelve con su ficha, con lo suyo). Fabricar: con las manos y en una estación, gastando de lo
+// que lleva el autor y del suelo de al lado, lo hecho a lo que lleva (o al suelo si no cabe), la estación la ven los
+// dos, en tierra de otro no se pone, y sigue igual al volver a arrancar.
 // Con MUTAR=1 se prueba un servidor que se fía del autor que manda el cliente: debe FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, readFileSync, writeFileSync, rmSync } from 'fs';
@@ -178,6 +180,61 @@ try {
   r = await a.objeto({ tipo: 'recoger', punto: 'piedra:4', x: 5, z: 5, px: 5.5, pz: 5, clase: 'silex' });
   comprobar('un punto cuyo nombre no cuadra con su clase no vale', !r.ok, r.motivo);
 
+  console.log('Fabricar por el servidor');
+  {
+    a.estar(5, 5); b.estar(5, 6); await pausa(150);
+    await a.objeto({ tipo: 'soltar_suelo', de: 'mano:der', x: 5, z: 5 }); // deja el hacha para tener una mano libre
+    r = await a.objeto({ tipo: 'coger', objeto: 'fibra', cantidad: 3, a: 'mano:der' });
+    comprobar('A coge 3 de fibra (del arcón de pruebas)', r.ok, r.motivo);
+    const invF = a.esperar(m => m.tipo === 'inventario');
+    r = await a.objeto({ tipo: 'fabricar', receta: 'cordel', x: 5, z: 5 });
+    comprobar('A encarga un cordel con las manos: gasta la fibra que lleva', r.ok && r.datos.encargo.receta === 'cordel' && !tiene(s.objetos.inventarioDe(yoA), 'fibra'), r.motivo);
+    comprobar('y le llega lo que lleva, ya sin la fibra', !tiene((await invF).inventario, 'fibra'));
+    r = await a.objeto({ tipo: 'recoger_fabricado', x: 5, z: 5 });
+    comprobar('antes de su tiempo no se recoge', !r.ok, r.motivo);
+    r = await b.objeto({ tipo: 'recoger_fabricado', x: 5, z: 6 });
+    comprobar('B no recoge el cordel de A', !r.ok && !tiene(s.objetos.inventarioDe(yoB), 'cordel'), r.motivo);
+    s.objetos.fab.manos[yoA][0].fin = Date.now() - 1; // como si hubieran pasado los 15 s
+    r = await a.objeto({ tipo: 'recoger_fabricado', x: 5, z: 5 });
+    comprobar('terminado, el cordel va a lo que lleva A', r.ok && tiene(s.objetos.inventarioDe(yoA), 'cordel'), r.motivo || JSON.stringify(r.datos));
+    r = await a.objeto({ tipo: 'fabricar', receta: 'cordel', x: 30, z: 30 });
+    comprobar('lo que pide un sitio va desde donde el servidor tiene al autor', !r.ok && /No estás ahí/.test(r.motivo), r.motivo);
+    // la piedra de tallar: la ven los dos
+    const estB = b.esperar(m => m.tipo === 'estaciones');
+    r = await a.objeto({ tipo: 'colocar_estacion', estacion: 'piedra_tallar', x: 5.5, z: 5 });
+    comprobar('A coloca una piedra de tallar con la piedra que recogió', r.ok && !tiene(s.objetos.inventarioDe(yoA), 'piedra'), r.motivo);
+    const eb = await estB;
+    comprobar('B la ve (sin las colas de nadie)', eb.estaciones.length === 1 && eb.estaciones[0].tipo === 'piedra_tallar' && eb.estaciones[0].autor === yoA && !('cola' in eb.estaciones[0]), JSON.stringify(eb.estaciones));
+    r = await a.objeto({ tipo: 'colocar_estacion', estacion: 'hoguera', x: 5, z: 5 });
+    comprobar('sin lo que cuesta, no se coloca', !r.ok && /falta/.test(r.motivo), r.motivo);
+    // la lasca, con el sílex que B ha dejado en el suelo al lado de A
+    r = await b.objeto({ tipo: 'coger', objeto: 'silex', cantidad: 1, a: 'mano:izq' });
+    const sueloSilex = a.esperar(m => m.tipo === 'suelo' && m.objetos.some(o => o.cosa.tipo === 'silex'));
+    r = await b.objeto({ tipo: 'soltar_suelo', de: 'mano:izq', x: 5, z: 6 });
+    comprobar('B deja un sílex en el suelo al lado de A', r.ok && !!(await sueloSilex), r.motivo);
+    const libre = ['mano:der', 'mano:izq'].find(l => !lugar(s.objetos.inventarioDe(yoA), l));
+    r = await a.objeto({ tipo: 'coger', objeto: 'piedra', cantidad: 1, a: libre });
+    comprobar('A coge otra piedra', r.ok, r.motivo);
+    const sinSilex = b.esperar(m => m.tipo === 'suelo' && !m.objetos.some(o => o.cosa.tipo === 'silex'));
+        r = await a.objeto({ tipo: 'fabricar', receta: 'lasca_silex', x: 5, z: 5 });
+    comprobar('A encarga la lasca sin decir la estación: la de al lado, con el sílex del suelo', r.ok && r.datos.estacion === eb.estaciones[0].id && Object.keys(r.datos.usado.suelo).length === 1, r.motivo || JSON.stringify(r.datos));
+    comprobar('y B ve que el sílex ya no está en el suelo', !!(await sinSilex));
+    // terminado y sin sitio: al suelo, a sus pies
+    s.objetos.fab.estaciones[eb.estaciones[0].id].cola[0].fin = Date.now() - 1;
+    const libre2 = ['mano:der', 'mano:izq'].find(l => !lugar(s.objetos.inventarioDe(yoA), l));
+    if (libre2) await a.objeto({ tipo: 'coger', objeto: 'rama', cantidad: 1, a: libre2 });
+    const inv0 = s.objetos.inventarioDe(yoA);
+    const lleno = ['mano:der', 'mano:izq'].every(l => lugar(inv0, l));
+    const alSuelo = b.esperar(m => m.tipo === 'suelo' && m.objetos.some(o => o.cosa.tipo === 'lasca_silex'));
+    r = await a.objeto({ tipo: 'recoger_fabricado', estacion: eb.estaciones[0].id, x: 5, z: 5 });
+    comprobar('con las manos llenas, la lasca cae al suelo a sus pies y la ven los dos', lleno && r.ok && r.datos.dados[0].alSuelo && !!(await alSuelo), r.motivo || JSON.stringify(r.datos));
+    // en tierra de otro, no
+    const ajena = new ObjetosServidor({ posicion: () => ({ x: 0, z: 0 }), puedeTocar: () => ({ ok: false, motivo: 'Es tierra de otro: solo su dueño y sus invitados.' }) });
+    ajena.invs.de(yoA).meterDonde('piedra', 1);
+    const rt = ajena.ejecutar({ autor: yoA, tipo: 'colocar_estacion', estacion: 'piedra_tallar', x: 0.5, z: 0 }, Date.now());
+    comprobar('en tierra de otro no se coloca una estación (ni se gasta nada)', !rt.ok && /tierra de otro/.test(rt.motivo) && ajena.invs.de(yoA).cuantos('piedra') === 1, rt.motivo);
+  }
+
   const fichaB = b.bienvenida.ficha;
   const foto = JSON.stringify(s.objetos.exportar());
   a.ws.close(); b.ws.close(); await pausa(100);
@@ -192,6 +249,7 @@ try {
   const b2 = await cliente(puerto, fichaB);
   comprobar('B vuelve con su ficha y lleva lo suyo', b2.bienvenida.autor === yoB && lugar(b2.bienvenida.inventario, 'mano:der')?.tipo === 'camisa_lino' && lugar(b2.bienvenida.inventario, 'ropa:interior')?.tipo === 'camisa_lino');
   comprobar('y ve en el suelo los pantalones que soltó', b2.bienvenida.suelo.some(o => o.cosa.tipo === 'pantalon_lino' && o.autor === yoB));
+  comprobar('y la piedra de tallar de A, sin perder nada de lo encargado', b2.bienvenida.estaciones.some(e => e.tipo === 'piedra_tallar' && e.autor === yoA) && JSON.stringify(s.objetos.fab.exportar()) === JSON.stringify(JSON.parse(foto).fabricacion));
   comprobar('y el tocón y lo recogido', b2.bienvenida.tala.estado[arbol]?.vuelve > Date.now() && b2.bienvenida.recoleccion.estado['piedra:3']?.vuelve > Date.now());
   b2.ws.close(); await pausa(50);
   await s.cerrar();

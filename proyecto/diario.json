@@ -4603,5 +4603,41 @@
   "pruebas": "Batería entera en la nube: 35 grupos bien. Lógica: los ríos llegan al mar 7/7 (con la boca de antes, falla), fondo del mar 5/5, generador del mapa 88/88, los ríos de verdad 14/14, Whitholm y las salidas bien.",
   "capturas": "capturas/demo-v119",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T05:47:36+00:00",
+  "fin": "2026-11-06T07:45:04+00:00",
+  "titulo": "P3: fabricar por el servidor, con su autor",
+  "hito": "crafting",
+  "hecho": [
+   "El servidor acepta colocar una estación, fabricar y recoger lo fabricado, con el autor de la conexión y su hora; lo que pide un sitio va desde donde el servidor tiene al jugador, no donde dice el navegador.",
+   "Lo gastado sale de lo que lleva el autor y del suelo de al lado; lo hecho va a lo que lleva y, si no le cabe, cae al suelo a sus pies (lo ven todos).",
+   "Las estaciones las ven todos (las de sus trozos, sin las colas de nadie), van en la bienvenida con lo que cada uno tiene encargado, y se guardan con los objetos: siguen al volver a arrancar el servidor.",
+   "En tierra de otro no se pone una estación sin que te haya invitado (lo tuyo es tuyo). Provisional: fabricar en la estación de otro sí se puede.",
+   "Recorrido de jugador: el jugador nuevo arranca fibra, se hace dos cordeles con las manos, pone una piedra de tallar, se fabrica un hacha de piedra (con una rama y un cordel del suelo de al lado) y tala con ella un árbol joven, que deja un tronco delgado. Talar sale de «todavía no».",
+   "Aún sin panel: el juego todavía no manda estas acciones (lo trae la tarea siguiente, el panel de fabricación). No comprobado en el servidor de verdad."
+  ],
+  "pruebas": "Batería entera (35 grupos, sin las de en línea): 31 en el PC de valravnx y la lógica en la nube, bien; las cuatro que miden el dibujo sin tarjeta gráfica (niveles de detalle, la demo en el mundo, el perfil gráfico y la demo única) fallaron en su PC y, repetidas en la nube, bien. Servidor de objetos 57/57 (con MUTAR=1 falla) y recorrido de jugador 47/47. Sin capturas: nada de lo que se ve ha cambiado.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T06:23:10+00:00",
+  "fin": "2026-11-06T07:36:49+00:00",
+  "titulo": "La tierra vuelve al rey si no se usa (P2, carril A)",
+  "hito": "entre-dos",
+  "hecho": [
+   "valravnx, 4 nov: la tierra vuelve al rey a los 30 días sin entrar el dueño ni sus invitados, a los 15 si no tiene ninguna obra terminada, con aviso por correo una semana antes y el último día.",
+   "Lógica pura nueva (src/logica/abandono.js): el plazo cuenta desde la última vez que estuvo en el mundo el dueño o cualquiera de sus invitados; un aviso de cada (a 7 días y con un día o menos), que vuelven a valer si entra alguien; pasado el plazo, la acción del rey «tierra_al_rey».",
+   "La acción del rey (con autor «rey», que ningún jugador puede tener): quita el mojón y los invitados, y deja lo construido y los muebles como ruina en tierra de nadie, que cualquiera puede desmontar; la zona se puede volver a reclamar. Va al mundo (mundo.jsonl) y a todos los conectados, como el mojón.",
+   "El servidor apunta cuándo está cada uno en el mundo (al conectar y cada minuto mientras sigue, solo con la cuenta confirmada) en abandono.json, repasa las tierras cada 10 minutos y apunta cada aviso y cada tierra devuelta en tierras.jsonl. Los avisos van al correo confirmado de la cuenta del dueño, en el idioma de su último mensaje de cuenta (correos nuevos en español, inglés y ruso).",
+   "Decisiones provisionales (en el registro de la demo): «entrar» es estar en el mundo con tu personaje; una obra terminada es cualquier pieza acabada (los muebles no cuentan); las tierras de antes empiezan a contar desde la primera revisión, para que no se libere ninguna de golpe.",
+   "Prueba nueva «La tierra vuelve al rey si no se usa» (41 comprobaciones, con la lógica y con el servidor de verdad por websocket y su hora adelantada): con MUTAR=1 (sin mirar a los invitados) y con MUTAR=ruina (la tierra se lleva lo construido), falla.",
+   "Demo v120 para que el servidor se ponga al día solo (lo hace con cada versión nueva de la demo) y el navegador entienda la acción del rey. No se ve nada nuevo: sin capturas propias. No comprobado: el correo de verdad por Resend (las pruebas usan un cartero de prueba) ni el servidor de Hetzner (desde aquí no se llega).",
+   "El recorrido de jugador no lo cubre (son 30 días sin jugar; no es algo que haga el jugador)."
+  ],
+  "pruebas": "Batería entera en la nube: 34 grupos de navegador bien; la de lógica falló solo por dos mensajes nuevos sin traducir, arreglado y repetida (lógica, demo única y juego en inglés: bien). La tierra vuelve al rey 41/41.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

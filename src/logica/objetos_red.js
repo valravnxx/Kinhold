@@ -18,6 +18,11 @@
 //   { tipo: 'enganchar_rastra' | 'soltar_rastra' | 'cargar_rastra' | 'descargar_rastra', … } — la rastra (src/logica/rastra.js),
 //   y las mismas de la carretilla (empujar_carretilla, aparcar_carretilla, cargar_carretilla, descargar_carretilla);
 //     al soltarla, si el sitio que dice el navegador no vale, se deja detrás de donde el servidor tiene al autor
+//   { tipo: 'colocar_estacion', estacion, x, z }   — una estación de fabricar (src/logica/fabricacion.js) en (x, z), a
+//     tu lado; gasta su coste de lo que llevas y del suelo de al lado
+//   { tipo: 'fabricar', receta, estacion?, x, z }   — encargar una receta: con las manos o en una estación de su uso (la
+//     que se diga o la más cercana); gasta de lo que llevas y del suelo de al lado de donde el servidor te tiene
+//   { tipo: 'recoger_fabricado', estacion?, x, z }  — lo terminado va a lo que llevas; lo que no cabe, al suelo a tus pies
 //   { tipo: 'arcon_al_suelo', objeto: 'rastra', x, z } — del arcón de pruebas al suelo (solo con arconPruebas)
 //   { tipo: 'coger', objeto, cantidad, a, … } y { tipo: 'soltar', de } — el arcón de pruebas del panel (solo con
 //     arconPruebas: sacar algo de la nada y hacerlo desaparecer; sin él, se rechazan)
@@ -49,13 +54,15 @@ import { Troceo, ejecutarTroceo } from './troceo.js';
 import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER } from './recoleccion.js';
 import { Rastras, ejecutarRastra, TIPOS_RASTRA, ejecutarArconAlSuelo } from './rastra.js';
 import { agrupar, desagrupar, estadoEnTrozos, trozoDe } from './trozos_red.js';
+import { Fabricacion, ejecutarFabricacion } from './fabricacion.js';
 
 export const TOLERANCIA = 3; // m
 export const ENTRE_GOLPES_RED = 500; // ms
 export const VERSION_OBJETOS = 3;   // 3: lo talado y lo recogido, agrupado por trozo (src/logica/trozos_red.js)
 const DEL_INVENTARIO = new Set(['mover', 'ponerse', 'quitarse']);
 const DEL_ARCON = new Set(['coger', 'soltar']);
-const DEL_SUELO = new Set(['soltar_suelo', 'coger_suelo', 'talar', 'trocear', 'recoger', 'arcon_al_suelo', ...TIPOS_RASTRA]);
+const DE_FABRICAR = new Set(['colocar_estacion', 'fabricar', 'recoger_fabricado']);
+const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'trocear', 'recoger', 'arcon_al_suelo', ...TIPOS_RASTRA]);
 export const TIPOS_OBJETOS = new Set([...DEL_INVENTARIO, ...DEL_ARCON, ...DEL_SUELO]);
 const num = v => typeof v === 'number' && Number.isFinite(v);
 const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
@@ -63,8 +70,10 @@ const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
 export class ObjetosServidor {
   // posicion(autor) → { x, z } o null: dónde lo tiene el servidor. enTierras(autor, x, z): si ese sitio es de sus tierras.
   // arconPruebas: si se acepta el arcón de pruebas ('coger' y 'soltar').
-  // terreno: el mundo que conoce el servidor (crearTerreno), o null.
-  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null } = {}) {
+  // terreno: el mundo que conoce el servidor (crearTerreno), o null. puedeTocar(autor, x, z) → { ok, motivo? }: si puede
+  // poner algo ahí (en tierra de otro, solo su dueño y sus invitados; Construccion.puedeTocar).
+  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null, puedeTocar = () => ({ ok: true }) } = {}) {
+    this.puedeTocar = puedeTocar;
     this.terreno = terreno;
     this.invs = new Inventarios();
     this.ponerSuelo(new Suelo());
@@ -73,15 +82,17 @@ export class ObjetosServidor {
     this.posicion = posicion;
     this.enTierras = enTierras;
     this.arconPruebas = arconPruebas;
+    this.fab = new Fabricacion();
     this.registro = new RegistroAcciones(1);   // la última; lo que se audita va al archivo
   }
   ponerSuelo(suelo) { this.suelo = suelo; this.troceo = new Troceo(suelo); this.troceo.entre = ENTRE_GOLPES_RED; this.rastras = new Rastras(suelo); }
 
   // accion: { tipo, ...datos } con el autor ya puesto por el servidor. ahora: la hora del servidor (ms).
-  // Devuelve { ok, motivo?, entrada, suelo: bool (si ha cambiado el suelo) }.
+  // Devuelve { ok, motivo?, entrada, suelo: bool (si ha cambiado el suelo), estaciones: bool (si ha cambiado alguna
+  // estación: colocada nueva) }.
   ejecutar(accion, ahora) {
     const a = accion && typeof accion === 'object' && !Array.isArray(accion) ? accion : {};
-    let r, suelo = false;
+    let r, suelo = false, estaciones = false;
     if (!TIPOS_OBJETOS.has(a.tipo)) r = this.anotar(a, { ok: false, motivo: 'Acción desconocida.' }, ahora);
     else if (DEL_INVENTARIO.has(a.tipo) || (DEL_ARCON.has(a.tipo) && this.arconPruebas)) {
       r = ejecutarInventario(this.invs, this.registro, a);
@@ -102,6 +113,16 @@ export class ObjetosServidor {
       } else if (a.tipo === 'recoger') {
         const fallo = this.conocerPunto(a, p);
         r = fallo ? this.anotar(a, { ok: false, motivo: fallo }, ahora) : ejecutarRecoleccion(this.recoleccion, this.invs, this.registro, a, ahora);
+      } else if (DE_FABRICAR.has(a.tipo)) {
+        // fabricar y recoger, desde donde el servidor tiene al autor (no donde dice el navegador); la estación se pone
+        // donde dice, que ya está a menos de TOLERANCIA de él
+        const fa = a.tipo === 'colocar_estacion' ? a : { ...a, x: p.x, z: p.z };
+        const tocar = a.tipo === 'colocar_estacion' ? this.puedeTocar(a.autor, a.x, a.z) : { ok: true };
+        const nSuelo = this.suelo.objetos.length, antes = JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n]));
+        r = !tocar.ok ? this.anotar(a, { ok: false, motivo: tocar.motivo }, ahora)
+          : ejecutarFabricacion(this.fab, this.invs, this.registro, fa, ahora, this.suelo, (x, z) => this.enTierras(a.autor, x, z));
+        suelo = !!r.ok && (this.suelo.objetos.length !== nSuelo || JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n])) !== antes);
+        estaciones = !!r.ok && a.tipo === 'colocar_estacion';
       } else if (a.tipo === 'arcon_al_suelo') {
         r = this.arconPruebas ? ejecutarArconAlSuelo(this.suelo, this.registro, a, ahora, this.enTierras) : this.anotar(a, { ok: false, motivo: 'Aquí no hay arcón.' }, ahora);
         suelo = !!r.ok;
@@ -114,7 +135,7 @@ export class ObjetosServidor {
       }
     }
     const entrada = this.registro.entradas[this.registro.entradas.length - 1];
-    return { ...r, entrada, suelo };
+    return { ...r, entrada, suelo, estaciones };
   }
   // El árbol que dice el navegador (decisión provisional, arriba): su nombre sale de su sitio, y tiene que estar al
   // alcance de donde el servidor tiene al autor. Devuelve el motivo si no vale.
@@ -186,6 +207,19 @@ export class ObjetosServidor {
     const l = this.suelo.visibles(ahora);
     return (trozos ? l.filter(o => trozos.has(trozoDe(o.x, o.z))) : l).map(o => JSON.parse(JSON.stringify(o)));
   }
+  // Las estaciones de fabricar que se ven (sin sus colas: lo que encarga cada uno es suyo). Con trozos, solo las de
+  // esos trozos.
+  estacionesVisibles(trozos = null) {
+    return Object.values(this.fab.estaciones).filter(e => !trozos || trozos.has(trozoDe(e.x, e.z)))
+      .map(e => ({ id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor }));
+  }
+  // Lo que un jugador tiene encargado: en sus manos y en cada estación (con cuánto le falta).
+  encargosDe(autor, ahora) {
+    const mios = l => l.filter(c => c.autor === autor).map(c => ({ receta: c.receta, fin: c.fin, falta: Math.max(0, c.fin - ahora) }));
+    const res = { manos: mios(this.fab.manos[autor] || []), estaciones: {} };
+    for (const e of Object.values(this.fab.estaciones)) { const m = mios(e.cola); if (m.length) res.estaciones[e.id] = m; }
+    return res;
+  }
   // Quita lo que ya ha desaparecido; true si ha cambiado algo.
   limpiar(ahora) { return this.suelo.limpiar(ahora) > 0; }
 
@@ -198,7 +232,7 @@ export class ObjetosServidor {
     // por trozo (versión 3): { "i,j": { cosas: [árboles o puntos], estado } }
     return { version: VERSION_OBJETOS, inventarios: this.invs.exportar(), suelo: this.suelo.exportar(),
       tala: { version: tala.version, trozos: agrupar(arboles, tala.estado) }, troceo: this.troceo.exportar(),
-      recoleccion: { version: rec.version, trozos: agrupar(puntos, rec.estado) } };
+      recoleccion: { version: rec.version, trozos: agrupar(puntos, rec.estado) }, fabricacion: this.fab.exportar() };
   }
   // Lo guardado se comprueba con el catálogo de ahora (Inventarios.importar y Suelo.importar); si no se entiende,
   // se empieza de cero. La versión 1 (sin tala, troceo ni recogida) y la 2 (sin trozos) se leen igual.
@@ -212,6 +246,7 @@ export class ObjetosServidor {
     }
     this.invs = Inventarios.importar(datos.inventarios);
     this.ponerSuelo(new Suelo().importar(datos.suelo));
+    this.fab = new Fabricacion().importar(datos.fabricacion); // lo guardado antes de fabricar por el servidor no lo trae: sin estaciones
     if (datos.version === 1) return this;
     const lista = (v, bien) => (Array.isArray(v) ? v.filter(bien) : []);
     let arboles = lista(datos.arboles, a => a && txt(a.id) && num(a.x) && num(a.z) && Object.hasOwn(DA, a.edad));
