@@ -1787,9 +1787,9 @@
     },
     {
      "nombre": "La desembocadura que se ensancha y las aguas que se funden (valravnx, 6 nov: «acaba como con dos tonos de río diferentes… que fuera difuminando las aguas y que la desembocadura se ensanche y se vea más real»)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-06T16:15:13+01:00",
-     "rama": "trabajo/20261106-1615-boca"
+     "fin": "2026-11-06T17:36:56+01:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Lo lleva el chat con valravnx: lo visual y creativo del mundo. Desde el 29 oct, unir el mapa con el juego (terreno por trozos, aparecer y andar por el mundo) está en el hito «El juego en el mundo de verdad», que llevan los carriles."
@@ -3026,6 +3026,13 @@
      "archivo": "jugar/demo/v125.html",
      "capturas": "capturas/demo-v125",
      "notas": "El panel de fabricación: con H o el botón «Fabricar», todas las recetas a la vista (lo que puedes ya, lo que casi y lo que pide otra estación), de dónde sale cada material, encargar y recoger por el servidor, y poner la piedra de tallar, la hoguera o el banco de tronco delante de ti."
+    },
+    {
+     "v": "v126",
+     "fecha": "2026-11-06",
+     "archivo": "jugar/demo/v126.html",
+     "capturas": "capturas/demo-v126",
+     "notas": "La desembocadura en embudo: el río se abre hacia el mar en sus últimos 140 m; el agua del río se funde con la del mar (toma su color y sigue en un abanico que se desvanece)."
     }
    ]
   },
