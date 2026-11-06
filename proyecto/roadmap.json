@@ -1208,7 +1208,9 @@
     },
     {
      "nombre": "Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo (teja, chimenea, adarve, empalizada, polea, polipasto, escalera de tablas y los muebles caros quedan guardados para su nivel)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-06T02:24:03+00:00",
+     "rama": "trabajo/20261106-0224"
     },
     {
      "nombre": "Pruebas que no fallan a ratos: las de navegador con una salida fija (?salida=N), y mirar de verdad lo que salía como «ruido» (el personaje a más de 0,6 m del suelo andando, cosas en el agua)",
