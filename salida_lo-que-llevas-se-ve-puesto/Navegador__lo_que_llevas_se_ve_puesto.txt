@@ -1,0 +1,49 @@
+== pc
+  OK   lenero: el cinturón rodea la cintura — centro [0.004, 0.906, -0.004], ancho 0.33, pelvis [0.005, 0.881, -0.033]
+  OK   lenero: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.012, 1.102, -0.15], fondo 0.526
+  OK   lenero: lo del hombro va por encima de la cintura — centro [-0.108, 1.312, -0.115]
+  OK   lenero: lo de la mano r está en la mano — [-0.346, 0.889, 0.228] · mano [-0.293, 0.884, 0.085]
+  OK   lenero: se ve todo lo que lleva — piezas ['cinturon', 'colgado_1', 'colgado_2', 'espalda', 'hacha_colgada', 'hombro', 'mano_r'], faltan []
+  OK   mochila: el cinturón rodea la cintura — centro [0.004, 0.901, -0.004], ancho 0.33, pelvis [-0.0, 0.876, -0.034]
+  OK   mochila: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.008, 1.1, -0.15], fondo 0.544
+  OK   mochila: lo del hombro va por encima de la cintura — centro [0.079, 1.087, 0.002]
+  OK   mochila: lo de la mano l está en la mano — [0.32, 0.838, 0.266] · mano [0.317, 0.884, 0.21]
+  OK   mochila: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'colgado_1', 'espalda', 'hombro', 'mano_l'], faltan []
+  OK   cesta: el cinturón rodea la cintura — centro [0.001, 0.877, -0.006], ancho 0.347, pelvis [-0.0, 0.877, -0.035]
+  OK   cesta: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.01, 1.163, -0.181], fondo 0.608
+  OK   cesta: lo del hombro va por encima de la cintura — centro [0.086, 1.093, -0.001]
+  OK   cesta: lo de la mano r está en la mano — [-0.297, 0.777, 0.221] · mano [-0.288, 0.866, 0.106]
+  OK   cesta: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'espalda', 'hombro', 'mano_r'], faltan []
+  OK   armas: el cinturón rodea la cintura — centro [0.001, 0.902, -0.002], ancho 0.33, pelvis [0.003, 0.875, -0.035]
+  OK   armas: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.036, 1.065, -0.056], fondo 0.42
+  OK   armas: lo del hombro va por encima de la cintura — centro [-0.173, 1.494, -0.034]
+  OK   armas: con el tronco al hombro, la postura de llevarlo — hombroQuieto
+  OK   armas: la mano derecha sujeta el tronco (sobre el hombro, cerca del tronco) — mano [-0.214, 1.606, 0.212] · tronco [-0.173, 1.494, -0.034] · cuello [0.039, 1.417, 0.033]
+  OK   armas: el tronco va al lado de la cabeza, sin taparla — 21.7 cm de lado entre la cabeza y el centro del tronco (radio 10 cm)
+  OK   armas: el tronco apoyado sobre el hombro (de 2 a 9 cm por encima de la articulación) — 4.8 cm
+  OK   armas: la mano encima del tronco y por delante del hombro — mano [-0.214, 1.606, 0.212] · tronco [-0.173, 1.494, -0.034] · hombro [-0.153, 1.343, 0.003]
+  OK   armas: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'colgado_1', 'espalda', 'hombro'], faltan []
+  OK   zurron: el cinturón rodea la cintura — centro [0.002, 0.882, 0.01], ancho 0.348, pelvis [-0.006, 0.838, 0.004]
+  OK   zurron: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.013, 1.143, -0.107], fondo 0.422
+  OK   zurron: lo grande, delante, entre las dos manos — [0.073, 1.222, 0.391] · entre las manos [0.047, 1.199, 0.33]
+  OK   zurron: y el personaje lo sujeta (postura de llevar en brazos) — cargar
+  OK   zurron: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'espalda', 'manos'], faltan []
+Al andar, cada pieza sigue a su hueso
+  OK   el personaje anda — correr
+  OK   andando, la rama sigue en la mano — 0.095 m de la mano
+  OK   andando, el leñero sigue detrás — [0.062, 1.116, -0.276]
+  OK   la mano se ha movido con la animación (si no, la prueba no prueba nada) — 0.315 m
+  OK   sin nada encima, no se dibuja nada
+  OK   pc: sin errores en la página
+  OK   pc: la mujer, elegida (se cargan su cuerpo y sus animaciones de cargar)
+  OK   mujer: con el tronco al hombro, la postura de llevarlo — hombroQuieto
+  FALLA mujer: el tronco va al lado de la cabeza, sin taparla — 17.7 cm de lado entre la cabeza y el centro del tronco (radio 11 cm)
+  OK   mujer: el tronco apoyado sobre el hombro (de 2 a 9 cm por encima de la articulación) — 4.4 cm
+  OK   mujer: la mano encima del tronco y por delante del hombro — mano [-0.177, 1.397, 0.23] · tronco [-0.137, 1.285, -0.012] · hombro [-0.115, 1.134, 0.018]
+  OK   pc (mujer): sin errores en la página
+== movil
+  OK   movil: sin errores en la página
+  OK   movil: la mujer, elegida (se cargan su cuerpo y sus animaciones de cargar)
+  OK   movil (mujer): sin errores en la página
+
+FALLAN: mujer: el tronco va al lado de la cabeza, sin taparla
