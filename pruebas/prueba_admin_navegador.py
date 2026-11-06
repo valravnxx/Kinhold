@@ -13,6 +13,10 @@
 #   - al jugador traído (una cuenta que no es de admin), su navegador le pone donde dice el servidor y le avisa (le trae
 #     un admin simulado: otro cliente de node con una cuenta de admin; así sigue siendo una sola página);
 #   - M, Esc y «Cerrar» lo cierran.
+#   - la herramienta del admin (valravnx, 6 nov): se abre en «Info» (lo del servidor y dónde estás) sin el mapa, que va
+#     en su pestaña; en «Modos», la velocidad ×10 (la confirma el servidor y el juego la usa) y autoconstruir; en «Arcón»,
+#     buscar un objeto e invocarlo a lo que llevas; la cámara libre vuela (sube y avanza) con el personaje quieto, «Ir
+#     aquí» le pone bajo ella y F10 (PC) o el botón «Cámara» (móvil) la quita.
 #   - explorar libre (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente… que quiero poder
 #     explorar libre»): el mapa del panel es el del continente entero; un clic en otra región te lleva allí, en el suelo,
 #     con el terreno cargado; andas, y el servidor te tiene allí. A una cuenta que no es de admin no le pasa (sigue en la isla).
@@ -166,8 +170,17 @@ try:
             comprobar(f'{nombre}: crea la cuenta de admin', crear_cuenta(pg, ADMINS[0] if not movil else ADMINS[1]))
             esperar(pg, f"{K}.mapaRey.listo", 300000)
             comprobar(f'{nombre}: con la cuenta de admin sale el botón «Admin», sin recargar', esperar(pg, "!!document.getElementById('btnAdmin')", 5000))
-            abrir = (lambda: pg.tap('#btnAdmin')) if movil else (lambda: pg.keyboard.press('F9'))
+            abrir_panel = (lambda: pg.tap('#btnAdmin')) if movil else (lambda: pg.keyboard.press('F9'))
             pulsar = (lambda sel: pg.tap(sel, timeout=90000)) if movil else (lambda sel: pg.click(sel, timeout=90000))
+            # (desde el 6 nov el panel se abre en «Info», sin el mapa; el mapa y la lista están en su pestaña)
+            abrir_panel(); pg.wait_for_timeout(600)
+            comprobar(f'{nombre}: se abre en «Info», sin el mapa: lo del servidor y dónde estás', esperar(pg, f"{PANEL}.info && document.querySelectorAll('#panelAdmin dl dt').length >= 10", 8000) and not pg.evaluate(f"{K}.mapaRey.abierto") and 'Conectados' in pg.evaluate("document.getElementById('panelAdmin').textContent") and 'Donde estás' in pg.evaluate("document.getElementById('panelAdmin').textContent"), pg.evaluate("document.getElementById('panelAdmin').textContent")[:200])
+            pg.wait_for_timeout(800)
+            captura(pg, f'{SALIDA}/{nombre}_info.png')
+            pulsar('#panelAdmin .pa-cerrar'); pg.wait_for_timeout(300)
+            def abrir():
+                abrir_panel(); pg.wait_for_timeout(300)
+                if pg.evaluate(f"{PANEL}.abierto"): pulsar('#panelAdmin .pa-p-mapa')
             abrir(); pg.wait_for_timeout(400)
             comprobar(f'{nombre}: se abre sin pedir ninguna clave', pg.evaluate(f"{PANEL}.abierto && {K}.mapaRey.abierto && !document.querySelector('#panelAdmin input')"))
             vio = esperar(pg, f"{PANEL}.jugadores.some(j => j.autor === '{AUTOR_BOT}')", 8000)
@@ -215,6 +228,53 @@ try:
             comprobar(f'{nombre}: «Traer» le pone junto a ti y a él le llega adónde', dicho and cerca and pg.evaluate(f"{PANEL}.abierto"), f'{pg.evaluate(ESTADO_PANEL)} · {t} · {yo}')
             captura(pg, f'{SALIDA}/{nombre}_traer.png')
             pulsar('#panelAdmin .pa-cerrar'); pg.wait_for_timeout(300)
+            # la herramienta del admin (valravnx, 6 nov): modos, arcón de admin y cámara libre
+            abrir_panel(); pg.wait_for_timeout(400); pulsar('#panelAdmin .pa-p-modos'); pg.wait_for_timeout(300)
+            pulsar('#panelAdmin .pa-v10')
+            comprobar(f'{nombre}: velocidad ×10: la confirma el servidor y el juego la usa', esperar(pg, f"{PANEL}.modos.velocidad === 10 && {K}.velocidadAdmin() === 10", 8000), pg.evaluate(ESTADO_PANEL))
+            pulsar('#panelAdmin .pa-auto')
+            comprobar(f'{nombre}: autoconstruir se activa', esperar(pg, f"{PANEL}.modos.autoconstruir === true && !!document.querySelector('#panelAdmin .pa-auto.pa-on')", 8000), pg.evaluate(ESTADO_PANEL))
+            captura(pg, f'{SALIDA}/{nombre}_modos.png')
+            pulsar('#panelAdmin .pa-auto'); esperar(pg, f"{PANEL}.modos.autoconstruir === false", 8000)
+            pulsar('#panelAdmin .pa-v1')
+            comprobar(f'{nombre}: y se vuelven a apagar', esperar(pg, f"{PANEL}.modos.velocidad === 1 && {K}.velocidadAdmin() === 1", 8000))
+            pulsar('#panelAdmin .pa-p-arcon'); pg.wait_for_timeout(300)
+            pg.fill('#panelAdmin .pa-buscar', 'hacha de hierro'); pg.wait_for_timeout(300)
+            n_obj = pg.evaluate("document.querySelectorAll('#panelAdmin .pa-objetos li').length")
+            pulsar('#panelAdmin .pa-objetos li .pa-invocar')
+            comprobar(f'{nombre}: el arcón de admin: buscar «hacha de hierro» e invocarla, a lo que llevas', n_obj >= 1 and esperar(pg, f"{K}.inventario().cuantos('hacha_hierro') >= 1", 8000), f'{n_obj} · {pg.evaluate(ESTADO_PANEL)}')
+            captura(pg, f'{SALIDA}/{nombre}_arcon.png')
+            # la cámara libre: el personaje se queda; la cámara vuela, sube y avanza
+            pulsar('#panelAdmin .pa-p-modos'); pg.wait_for_timeout(300)
+            pulsar('#panelAdmin .pa-camara'); pg.wait_for_timeout(300)
+            pj0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]"); c0 = pg.evaluate(f"({{ ...{K}.camLibre }})")
+            activa = pg.evaluate(f"{K}.camLibre.activa && !{PANEL}.abierto && !document.getElementById('barraVuelo').hidden")
+            if movil:
+                pg.dispatch_event('#vueloSubir', 'pointerdown'); pg.wait_for_timeout(1000); pg.dispatch_event('#vueloSubir', 'pointerup')
+            else:
+                pg.keyboard.down('Space'); pg.wait_for_timeout(1000); pg.keyboard.up('Space')
+                pg.keyboard.down('w'); pg.wait_for_timeout(1000); pg.keyboard.up('w')
+            pg.wait_for_timeout(200)
+            c1 = pg.evaluate(f"({{ ...{K}.camLibre }})"); pj1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+            subio = c1['y'] - c0['y'] > 5
+            avanzo = movil or ((c1['x'] - c0['x']) ** 2 + (c1['z'] - c0['z']) ** 2) ** 0.5 > 5
+            quieto = ((pj1[0] - pj0[0]) ** 2 + (pj1[1] - pj0[1]) ** 2) ** 0.5 < 0.1
+            comprobar(f'{nombre}: cámara libre: sube y avanza volando y el personaje se queda donde estaba', activa and subio and avanzo and quieto, f'{c0} → {c1} · personaje {pj0} → {pj1}')
+            pg.wait_for_timeout(600)
+            captura(pg, f'{SALIDA}/{nombre}_camara.png')
+            pulsar('#vueloIrAqui')
+            aqui = esperar(pg, f"!{K}.camLibre.activa && Math.hypot({K}.pj.x - {c1['x']}, {K}.pj.z - {c1['z']}) < 0.5", 8000)
+            comprobar(f'{nombre}: «Ir aquí» pone al personaje bajo la cámara y la quita', aqui, str(pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")))
+            if not movil:
+                pg.keyboard.press('F10'); pg.wait_for_timeout(300)
+                on = pg.evaluate(f"{K}.camLibre.activa")
+                pg.keyboard.press('F10'); pg.wait_for_timeout(300)
+                comprobar(f'{nombre}: F10 la pone y la quita', on and not pg.evaluate(f"{K}.camLibre.activa"))
+            else:
+                pulsar('#btnAdmin'); pg.wait_for_timeout(300); pulsar('#panelAdmin .pa-p-modos'); pulsar('#panelAdmin .pa-camara'); pg.wait_for_timeout(300)
+                on = pg.evaluate(f"{K}.camLibre.activa")
+                pulsar('#vueloSalir'); pg.wait_for_timeout(300)
+                comprobar(f'{nombre}: el botón «Cámara» la quita', on and not pg.evaluate(f"{K}.camLibre.activa"))
             # explorar libre: el mapa del continente entero y un clic en otra región
             abrir(); pg.wait_for_timeout(500)
             esperar(pg, f"{K}.mapaRey.continente", 120000)
@@ -274,6 +334,8 @@ try:
         esperar(pg, "!!document.getElementById('btnAdmin')", 5000)
         pg.keyboard.press('F9'); pg.wait_for_timeout(300)
         esperar(pg, f"{PANEL}.jugadores.length > 0", 8000)
+        for pest in ['modos', 'arcon', 'info', 'mapa']:   # todas las pestañas, para ver sus textos
+            pg.click(f'#panelAdmin .pa-p-{pest}'); pg.wait_for_timeout(500)
         faltan = [f for f in pg.evaluate('[...window.__idioma.faltan]')]
         comprobar('en inglés: ningún texto sin traducir', not faltan, str(faltan))
         texto = pg.evaluate("document.getElementById('panelAdmin').textContent")

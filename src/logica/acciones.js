@@ -60,6 +60,7 @@ const CAMPOS_CONSTRUCCION = {
   invitar: { a: 't' },       // dejar construir en tu tierra a otro jugador (a: su autor)
   desinvitar: { a: 't' },    // y quitárselo
   tierra_al_rey: { dueno: 't' }, // la tierra de un dueño vuelve al rey (src/logica/abandono.js): solo la hace el servidor
+  admin_terminar: { construccion: 'n', clave: 't' }, // el modo autoconstruir del admin termina la obra que acaba de poner: solo la hace el servidor (src/logica/admin.js)
   colocar: { pieza: 't', x: 'n', z: 'n', k: 'n', rot: 'n', dir: 'n' },
   decorar: { pieza: 't', x: 'n', y: 'n', z: 'n', rot: 'n' },
   nivelar: { x: 'n', z: 'n', y: 'n', radio: 'n' },   // una pasada de la brocha redonda (y: la altura a la que deja el suelo)
@@ -155,6 +156,12 @@ function aplicarConstruccion(m, a, invs) {
     case 'invitar': return m.invitar(a.autor, a.a);
     case 'desinvitar': return m.desinvitar(a.autor, a.a);
     case 'tierra_al_rey': return a.autor === AUTOR_REY ? m.tierraAlRey(a.dueno) : { ok: false, motivo: 'Eso solo lo hace el rey.' };
+    // el servidor nunca la acepta de un navegador (servidor.mjs): solo la crea él, tras el «colocar» de la cuenta de
+    // admin con el modo autoconstruir; aquí se aplica al rehacer y en los navegadores que la reciben
+    case 'admin_terminar': {
+      const c = m.construcciones.find(x => x.id === a.construccion);
+      return c ? m.terminarAdmin(c, a.clave, a.autor) : { ok: false, motivo: 'No existe.' };
+    }
     // se construye por obras (GDD): colocar pone el marco; luego se entregan los materiales y se trabaja
     // y (opcional): la altura del suelo donde se pone; la planta baja de una construcción nueva queda ahí
     case 'colocar': {
