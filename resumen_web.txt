@@ -1,0 +1,53 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 3301 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2564 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2132 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2624 KB
+
+== Construir demo única
+      2473 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3620 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2530 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2127 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2624 KB
+dist/kinhold_trozos.html 2140 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Web de progreso
+ - faltan 1 traducciones en proyecto/idiomas/en.json (añade la clave en español con su traducción):
+     · La desembocadura y el mar de lejos, revisados de nuevo (valravnx, 6 nov, 10:17: «en ninguna de las imágenes se ve el río llegando al mar… a lo lejos sigue hundido el terreno bajo el agua… y los glitches de lo parecido a los árboles»)
+ - faltan 1 traducciones en proyecto/idiomas/ru.json (añade la clave en español con su traducción):
+     · La desembocadura y el mar de lejos, revisados de nuevo (valravnx, 6 nov, 10:17: «en ninguna de las imágenes se ve el río llegando al mar… a lo lejos sigue hundido el terreno bajo el agua… y los glitches de lo parecido a los árboles»)
+!! FALLA: node herramientas/construir_web.mjs
+
+== Navegador: web
+  OK   «ahora mismo» en ruso
+  OK   sin errores en consola (movil)
+
+Resultado: 4 fallos: roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso
+!! FALLA: python3 pruebas/prueba_web.py /tmp/kinhold_capturas/web
+
+HAY FALLOS
+tardó 174 s
