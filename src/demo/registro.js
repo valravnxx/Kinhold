@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v119 (los ríos llegan al mar)";
+export const VERSION_DEMO = "Demo única · v120 (el bosque de lejos, sin dientes de sierra)";
 export const REGISTRO_DEMO = [
+  "v120: el bosque de lejos sin dientes de sierra (valravnx, 6 nov: «cuando está muy lejos sigue haciendo diente de sierra horrible», sobre todo mirando a las montañas altas). Iba en una malla aparte encima del suelo lejano; con la distancia comprimida, sus 10–14 m sobre el suelo quedaban por debajo de lo que distingue la hondura (0,06 pasos en PC) y en cada triángulo ganaba una capa u otra según su pendiente. Ahora es el mismo suelo lejano el que sube con sus copas: una sola superficie.",
+  "v120: el color de lo lejano (el suelo y el bosque) sale de dos texturas leídas en cada píxel con filtrado lineal, no de los vértices de la rejilla (100–400 m): el linde del bosque sale curvo, no por las diagonales de los triángulos.",
   "v119: los ríos llegan al mar (valravnx, 5 nov): en la orilla el río baja al nivel del mar, se ensancha en un estuario (hasta 3,5 veces su ancho en la boca) y su cauce sigue mar adentro; antes, la arena de la playa cerraba la boca por encima del agua.",
   "v119: el delta: en la boca de los ríos medianos y grandes, isletas de arena que asoman del agua y reparten el río en brazos. La vega y las laderas de alrededor no cambian (solo baja el cauce).",
   "v118: lo de niveles posteriores, escondido. El menú de construir solo enseña lo de la casa humilde: quedan guardados para su nivel el tejado y los remates de teja, la chimenea, el adarve, la empalizada y su puerta, la polea, el polipasto, la escalera de tablas y todo lo de tablas (suelo, muros, tejado de tablillas, puerta, contraventana, trampilla), el muro de entramado y los muebles de tablas o hierro (cama de madera, mesa, banco, arcón, barril y estantería).",
