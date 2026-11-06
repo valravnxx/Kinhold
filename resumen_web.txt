@@ -1,0 +1,53 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 3285 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2551 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2119 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2611 KB
+
+== Construir demo única
+      2473 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3602 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2517 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2114 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2609 KB
+dist/kinhold_trozos.html 2125 KB
+hilo de los trozos 21 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Web de progreso
+ - faltan 1 traducciones en proyecto/idiomas/en.json (añade la clave en español con su traducción):
+     · Los ríos llegan al mar de verdad (valravnx, 6 nov: «NO LLEGAN AL MAR… solo un estrecho de tierra aleatorio, ningún río conecta con el océano» y la tierra de dentro sale de lejos como bajo el agua)
+ - faltan 1 traducciones en proyecto/idiomas/ru.json (añade la clave en español con su traducción):
+     · Los ríos llegan al mar de verdad (valravnx, 6 nov: «NO LLEGAN AL MAR… solo un estrecho de tierra aleatorio, ningún río conecta con el océano» y la tierra de dentro sale de lejos como bajo el agua)
+!! FALLA: node herramientas/construir_web.mjs
+
+== Navegador: web
+  OK   «ahora mismo» en ruso
+  OK   sin errores en consola (movil)
+
+Resultado: 6 fallos: roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso, roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso
+!! FALLA: python3 pruebas/prueba_web.py /tmp/kinhold_capturas/web
+
+HAY FALLOS
+tardó 183 s
