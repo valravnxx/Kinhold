@@ -1,7 +1,7 @@
 {
  "A": {
   "inicio": "2026-11-06T17:24:29+00:00",
-  "tarea": "Quitar lo que ya no se juega: el prototipo de combate aparte, la liza y los modos de combate de capas y guardias; la construcción aparte (hito1) y lo suelto (viejo_tmp.mjs); las pruebas que solo probaban eso",
+  "tarea": "Quitar el prototipo de combate aparte (su página, el duelo en línea, el sonido y el táctil propios) y lo suelto (viejo_tmp.mjs), con las pruebas que solo probaban eso",
   "hito": "orden",
   "rama": "trabajo/20261106-1724"
  },
