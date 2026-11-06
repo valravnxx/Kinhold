@@ -58,12 +58,19 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
   function* hacerCinta(cx, cz) {
     const tramos = paisaje.riosEn(cx - R_LEJOS, cz - R_LEJOS, cx + R_LEJOS, cz + R_LEJOS, 0);
     const pos = [], idx = [], fl = [], ho = [], ori = [];
+    // (una cinta seguida por río: el tramo que empieza donde acabó el anterior sigue la misma cinta, sin juntas; si no,
+    // en las curvas los dos tramos se solapaban o se abrían y salían muescas)
+    let antes = -1, finX = NaN, finY = NaN;
     for (const t of tramos) {
       const uno = [t], filas = Math.max(2, Math.ceil(t.largo / PASO_CINTA));
-      let antes = -1;
-      for (let s = 0; s <= filas; s++) {
+      const sigue = antes >= 0 && Math.abs(t.ax - finX) < 0.01 && Math.abs(t.ay - finY) < 0.01;
+      if (!sigue) antes = -1;
+      let enMar = 0;
+      for (let s = sigue ? 1 : 0; s <= filas; s++) {
         const u = s / filas, [x, y] = paisaje.centroCauce(t, u);
-        const w = Math.hypot(x - cx, y - cz) < R_LEJOS + 100 ? paisaje.agua(x, y, uno) : null;
+        let w = Math.hypot(x - cx, y - cz) < R_LEJOS + 100 ? paisaje.agua(x, y, uno) : null;
+        // en la boca, unos metros mar adentro a la altura del mar: el río entra en el agua del mar, sin una punta seca
+        if (w === null && antes >= 0 && enMar < 5 && paisaje.grande(x, y).f < 0) { w = 0; enMar++; }
         if (w === null) { antes = -1; continue; }   // (lejos, o ya en el mar: ahí está el mar)
         const [x1, y1] = paisaje.centroCauce(t, Math.max(0, u - 0.002)), [x2, y2] = paisaje.centroCauce(t, Math.min(1, u + 0.002));
         let dx = x2 - x1, dy = y2 - y1; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
@@ -75,6 +82,7 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
         if (antes >= 0) idx.push(antes, k, antes + 1, antes + 1, k, k + 1, antes + 1, k + 1, antes + 2, antes + 2, k + 1, k + 2);
         antes = k;
       }
+      finX = t.bx; finY = t.by;
       yield;
     }
     let m = null;
