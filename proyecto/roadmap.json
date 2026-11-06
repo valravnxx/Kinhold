@@ -1215,7 +1215,9 @@
     },
     {
      "nombre": "Pruebas que no fallan a ratos: las de navegador con una salida fija (?salida=N), y mirar de verdad lo que salía como «ruido» (el personaje a más de 0,6 m del suelo andando, cosas en el agua)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-06T04:24:44+00:00",
+     "rama": "trabajo/20261106-0424"
     },
     {
      "nombre": "La tierra vuelve al rey si no se usa (valravnx, 4 nov): si pasan 30 días sin que entre el dueño ni nadie invitado a su tierra, la zona queda libre (15 días si no tiene ninguna obra terminada); lo construido se queda como ruina que otros pueden desmontar; aviso por correo una semana antes y el último día. Por el servidor, con su registro",
