@@ -1,0 +1,46 @@
+
+== Construir construcción
+           ╵                                          ~~~~
+
+dist/kinhold_hito1.html 3406 KB
+dist/publicar/kinhold.html listo
+
+== Construir combate
+dist/kinhold_combate.html 2624 KB
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2193 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2684 KB
+
+== Construir demo única
+      2578 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3732 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2591 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2187 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2685 KB
+dist/kinhold_trozos.html 2201 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: el chat de texto
+  OK   movil: el bocadillo se va al rato
+  OK   movil: sin errores en la página
+
+2 fallos: pc: hablar a chorro: el servidor no lo deja y se avisa; movil: hablar a chorro: el servidor no lo deja y se avisa
+!! FALLA: python3 pruebas/prueba_charla_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/charla
+
+HAY FALLOS
+tardó 249 s
