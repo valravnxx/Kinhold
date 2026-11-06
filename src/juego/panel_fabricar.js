@@ -236,7 +236,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     for (const b of marcha.querySelectorAll('.fab-barra i')) b.style.width = Math.max(0, Math.min(100, 100 - (Number(b.dataset.fin) - t) / Number(b.dataset.dura) * 100)).toFixed(1) + '%';
     divAviso.textContent = aviso.txt; divAviso.classList.toggle('fab-error', aviso.error);
   }
-  const decir = (txt, error = false) => { aviso = { txt, error }; pintar(); };
+  const decir = (txt, error = false) => { aviso = { txt, error }; if (error) firma = ''; pintar(); }; // tras un error, el botón vuelve a estar activo
 
   function anotarEncargo(receta, estacion) {
     const l = estacion ? (encargos.estaciones[estacion] ||= []) : encargos.manos;
@@ -327,7 +327,8 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     abrir: () => abrir(), cerrar, alternar() { if (abierto) cerrar(); else abrir(); },
     // con Usar delante de una estación: el panel, en su pestaña y con ella
     abrirEstacion(id) { const e = fab.estaciones[id]; if (!e || !ESTACIONES[e.tipo]) return false; abrir(ESTACIONES[e.tipo].uso, id); return true; },
-    pintar() { firma = ''; pintar(); },
+    // (solo se rehace si ha cambiado lo que enseña: rehacerlo a cada mensaje del servidor perdía el clic que caía en medio)
+    pintar() { pintar(); },
     // lo encargado que manda el servidor en la bienvenida ({ manos: [{ receta, falta }], estaciones: { id: [...] } })
     ponerEncargos(datos) {
       const t = ahora(), de = l => (Array.isArray(l) ? l : []).filter(c => c && Object.hasOwn(RECETAS, c.receta)).map(c => ({ receta: c.receta, fin: t + Math.max(0, Number(c.falta) || 0) }));
