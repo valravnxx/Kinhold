@@ -77,7 +77,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     const lleva = hay >= DEPOSITO_MAX ? `<p class="fab-gris">${esc(tr('No cabe nada más.'))}</p>`
       : dejables(inv).map(x => `<div class="fab-fila fab-dejable"><div class="fab-tit"><span>${x.n} ${esc(nombre(x.tipo))} <small>(${esc(tr(SITIO_RUTA(x.ruta)))})</small></span><button class="fab-dejar" data-estacion="${esc(e.id)}" data-de="${esc(x.ruta)}">${tr('Dejar')}</button></div></div>`).join('')
       || `<p class="fab-gris">${esc(tr('No llevas nada que dejar.'))}</p>`;
-    return `<section class="fab-sec fab-sec-dep" data-estacion="${esc(e.id)}"><h3>${esc(tr('En {e}: lo depositado ({n} de {m})', { e: tr(est.un), n: hay, m: DEPOSITO_MAX }))}</h3>${puesto}<h4>${esc(tr('Dejar en ella lo que llevas'))}</h4>${lleva}</section>`;
+    return `<section class="fab-sec fab-sec-dep" data-estacion="${esc(e.id)}"><h3>${esc(tr('{e}: lo depositado ({n} de {m})', { e: tr(est.nombre), n: hay, m: DEPOSITO_MAX }))}</h3>${puesto}<h4>${esc(tr('Dejar en ella lo que llevas'))}</h4>${lleva}</section>`;
   }
 
   function filaEncargo(c, estacion, i) {
