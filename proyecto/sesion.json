@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-06T21:23:14+00:00",
+  "tarea": "Quitar la liza y los modos de combate de capas y guardias: del servidor, de la lógica de combate y de sus pruebas, que queden solo con el modo direccional del mundo",
+  "hito": "orden",
+  "rama": "trabajo/20261106-2123"
+ },
  "B": null,
  "chat:trabajo/20261106-1813-iconos": {
   "inicio": "2026-11-06T18:13:02+01:00",
