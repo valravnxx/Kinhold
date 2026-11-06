@@ -4782,5 +4782,20 @@
   "pruebas": "Todas en la nube y en el PC de valravnx: 36 grupos. En el PC fallaron seis que no tocan esto o por su máquina (el perfil gráfico con tarjeta, objetos en el suelo, demo única, web, niveles de detalle) y el panel de fabricación (una espera de la prueba); repetidos en la nube, bien (la prueba del panel, con espera al pulsar). Lógica (con el recorrido de jugador) bien.",
   "capturas": "capturas/demo-v126",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T17:54:16+01:00",
+  "fin": "2026-11-06T18:05:05+01:00",
+  "titulo": "P3: estudio del panel de fabricación y los puestos de trabajo como obra",
+  "hito": "crafting",
+  "hecho": [
+   "Apuntado lo que decide valravnx: los puestos de trabajo se construyen como obra, en su propia pestaña del menú de construir, y dónde va cada uno (piedra de tallar y banco de tronco, dentro o fuera; hoguera, solo fuera; hogar, solo dentro). Al GDD, en inglés y en ruso.",
+   "GDD: fabricar ya no usa lo de los arcones a pocos pasos (lo de las manos, con lo que llevas y el suelo; lo de un puesto, con lo depositado), y el HUD de ahora es provisional: se rehará de cero para PC y móvil.",
+   "Nueva tarea en P3 para los puestos como obra; la hoguera, el hogar y el banco de tronco vuelven a pendiente; el panel nuevo y los almacenajes esperan la decisión de valravnx.",
+   "Estudio del panel (diseno/estudios/panel_fabricar.html): cómo lo hacen seis juegos y una propuesta con imágenes en cuadrícula, pestañas por dónde se hace, ficha con para qué sirve y el panel del puesto al usarlo, con maquetas de PC y móvil.",
+   "Probado que las imágenes de cada cosa se pueden sacar de los modelos que ya tiene el juego (una hoja de 25); lo que aún no tiene modelo sale con el hatillo y «sin modelo aún»."
+  ],
+  "pruebas": "Sin cambios de código: no se pasan pruebas. Maquetas y estudio mirados en PC (1280×800) y móvil (390×844)",
+  "estado": "ok"
  }
 ]
