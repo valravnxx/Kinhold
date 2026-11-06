@@ -398,9 +398,18 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
       if (costa < 2000) {
         // (solo donde el río ya va cerca del nivel del mar: el que llega por encima de un acantilado no se toca, y se
         // apaga del todo a 2 km de la orilla, sin saltos)
-        const alMar = 1 + 0.0025 * costa, w = (1 - suave(1, 4, nivel - alMar)) * (1 - suave(300, 700, costa));
+        const alMar = 1 + 0.0025 * costa, aNivel = 1 - suave(1, 4, nivel - alMar), w = aNivel * (1 - suave(300, 700, costa));
         if (nivel > alMar && w > 0) { nivel = lerp(nivel, alMar, w); if (w > 0.5) salto = 0; }
-        anchoRio = ancho; ancho *= 1 + 2.5 * (1 - suave(0, 600, costa));
+        anchoRio = ancho;
+        if (globalThis.__embudoViejo) ancho *= 1 + 2.5 * (1 - suave(0, 600, costa));
+        else {
+          // el embudo (valravnx, 6 nov: «que la desembocadura se ensanche y se vea más real»): como en los estuarios de
+          // verdad, el ancho crece hacia el mar cada vez más deprisa (exponencial, unos 230 m de largo de convergencia),
+          // hasta el ancho del río más tres veces él (y al menos 45 m) en la orilla. Solo en el río que llega al nivel
+          // del mar (el que cae por un acantilado no se abre)
+          const boca = Math.max(ancho * 3, 45) * aNivel;
+          ancho += boca * Math.exp(-costa / 230);
+        }
       }
     }
     return { dm, nivel, ancho, anchoRio, tramo, u: uu, salto, cabeza, costa, lechoValle, lecho: lechoDe(nivel, salto, suelo), hondo: tramo ? hondoTramo(tramo, uu) : 1.2 };   // salto: lo que el salto de agua sube o baja el cauce aquí
@@ -465,13 +474,29 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
     return w === null ? null : Math.max(0, w - z);
   }
   // lo lejos que está un punto del eje del río más cercano (m) y el ancho de ese río (para las riberas)
+  // Cuánto de mar tiene el agua en un punto (0: agua de río; 1: mar), para que el agua del río se funda con la del mar
+  // (valravnx, 6 nov: «acaba como con dos tonos de río diferentes… que fuera difuminando las aguas»): el río se va
+  // pareciendo al mar en sus últimos 250 m (hasta 0,6 en la orilla) y, en el mar, su agua sigue mar adentro en un
+  // abanico que se abre y se apaga en unos 300 m (la mancha del río en el mar)
+  function mezclaMar(xm, ym, tramos) {
+    const G = grande(xm, ym), f = G.f;
+    const { dm, ancho, costa } = rioCercano(xm, ym, tramos);
+    if (globalThis.__mezclaVieja) return f > 0 && dm <= ancho / 2 + 3 ? 0 : 1;   // (la prueba vuelve a las dos aguas de antes, para ver que falla)
+    if (dm === Infinity) return f > 0 ? 0 : 1;
+    // a lo ancho: el agua del río (en su cauce) y, fuera, la del mar; mar adentro el abanico se abre (y se apaga)
+    let lejos = 0;
+    if (f < 0) { const g1 = grande(xm + 4, ym).f, g2 = grande(xm, ym + 4).f, grad = Math.max(0.002, Math.hypot(g1 - f, g2 - f) / 4); lejos = -f / grad; }
+    const lado = 1 - suave(ancho / 2, ancho / 2 + 15 + lejos * 0.6, dm);
+    const rio = f > 0 ? 0.6 * (1 - suave(0, 250, costa)) : 1 - 0.4 * (1 - suave(0, 300, lejos));
+    return lerp(1, rio, lado);
+  }
   function rioCerca(xm, ym, tramos) { const { dm, ancho, anchoRio, costa } = rioCercano(xm, ym, tramos); return { dm, ancho, anchoRio, costa }; }   // (anchoRio: sin el estuario; costa: m hasta la orilla del mar)
   // el centro del cauce de un tramo en u (0–1, de la fuente a la boca), con su meandro (m del mundo)
   function centroCauce(t, u) {
     const vx = t.bx - t.ax, vy = t.by - t.ay, d = desvio(t, u) / t.largo;
     return [t.ax + vx * u - vy * d, t.ay + vy * u + vx * d];
   }
-  return { altura, agua, hondura, corriente, saltosEn, vadosEn, sitio, riosEn, rioCerca, rios, celda, grande, centroCauce };   // grande: la forma de lejos (el mapa del rey)
+  return { altura, agua, hondura, corriente, saltosEn, vadosEn, sitio, riosEn, rioCerca, rios, celda, grande, centroCauce, mezclaMar };   // grande: la forma de lejos (el mapa del rey)
 }
 
 // El bosque en un punto del mundo (xm, ym en metros): cuánto de espeso (d, 0–1), qué especie, de qué tamaño (tam,

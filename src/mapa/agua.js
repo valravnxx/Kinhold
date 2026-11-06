@@ -96,18 +96,20 @@ float vel = length(vFlujo);
 // espuma: en la orilla, en las rompientes del mar y en los regueros de los rápidos
 float espuma = 0.0;
 float roto = ruidoA(vMundo.xz * 0.35 + uTiempo * 0.05) * 0.6 + ruidoA(vMundo.xz * 1.7) * 0.4;
-if (vTipo > 0.5) {
+// (el agua del río y la del mar se funden en la boca: vTipo va de 0, río, a 1, mar; lo de cada una se mezcla)
+float tMar = clamp(vTipo, 0.0, 1.0);
+{
   // olas que rompen: franjas que avanzan hacia la orilla (unos 12 m entre una y otra) y se deshacen al llegar,
   // y la línea de espuma donde muere el agua, que sube y baja
   float banda = sin(vOrilla * 0.52 + uTiempo * 1.4 + roto * 2.0);
-  espuma += smoothstep(0.78, 0.98, banda) * (1.0 - smoothstep(8.0, 40.0, vOrilla)) * smoothstep(0.5, 3.0, vOrilla) * (0.45 + 0.55 * roto);
-  espuma += (1.0 - smoothstep(1.4 + 0.8 * sin(uTiempo * 0.9 + roto * 3.0), 3.4, vOrilla)) * 0.85;
-  pend *= 1.6;
-} else {
-  espuma += (1.0 - smoothstep(1.0, 2.4, vOrilla)) * 0.5 * roto;
+  float eMar = smoothstep(0.78, 0.98, banda) * (1.0 - smoothstep(8.0, 40.0, vOrilla)) * smoothstep(0.5, 3.0, vOrilla) * (0.45 + 0.55 * roto);
+  eMar += (1.0 - smoothstep(1.4 + 0.8 * sin(uTiempo * 0.9 + roto * 3.0), 3.4, vOrilla)) * 0.85;
+  float eRio = (1.0 - smoothstep(1.0, 2.4, vOrilla)) * 0.5 * roto;
   float reguero = mix(ruidoA(q1 * 0.9), ruidoA(q0 * 0.9), w0);
-  espuma += smoothstep(0.66, 0.92, reguero) * smoothstep(1.8, 2.8, vel) * 0.6;
-  pend *= 0.7 + 0.5 * smoothstep(0.4, 2.5, vel);
+  eRio += smoothstep(0.66, 0.92, reguero) * smoothstep(1.8, 2.8, vel) * 0.6;
+  // (las olas que rompen, solo donde ya es casi mar: en la boca, el río entra liso)
+  espuma += mix(eRio, eMar, smoothstep(0.7, 1.0, tMar));
+  pend *= mix(0.7 + 0.5 * smoothstep(0.4, 2.5, vel), 1.6, tMar);
 }
 // saltos de agua: donde la lámina cae casi en vertical, el agua baja en chorros blancos que corren hacia abajo; al pie,
 // la poza de espuma (aEspuma, que se apaga aguas abajo)
@@ -125,9 +127,10 @@ espuma = clamp(espuma, 0.0, 1.0);
 float lejos = length(vMundo - cameraPosition);
 pend *= 1.0 - smoothstep(35.0, 220.0, lejos);`)
       .replace('#include <color_fragment>', `#include <color_fragment>
-vec3 somero = vTipo > 0.5 ? vec3(0.30, 0.42, 0.40) : vec3(0.33, 0.40, 0.33);
-vec3 hondoC = vTipo > 0.5 ? vec3(0.19, 0.3, 0.35) : vec3(0.10, 0.17, 0.18);   // (el mar hondo, del azul del mar de lejos: antes casi negro, y se veía el cuadro del agua de cerca)
-diffuseColor.rgb = mix(somero, hondoC, smoothstep(0.0, vTipo > 0.5 ? 6.0 : 2.0, hondo));
+float tMarC = clamp(vTipo, 0.0, 1.0);
+vec3 somero = mix(vec3(0.33, 0.40, 0.33), vec3(0.30, 0.42, 0.40), tMarC);
+vec3 hondoC = mix(vec3(0.10, 0.17, 0.18), vec3(0.19, 0.3, 0.35), tMarC);   // (el mar hondo, del azul del mar de lejos: antes casi negro, y se veía el cuadro del agua de cerca)
+diffuseColor.rgb = mix(somero, hondoC, smoothstep(0.0, mix(2.0, 6.0, tMarC), hondo));
 diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.86, 0.88, 0.86), espuma);
 diffuseColor.rgb = pow(diffuseColor.rgb, vec3(2.2));   // los colores de arriba van en sRGB, como los de la paleta; aquí se trabaja en lineal
 diffuseColor.a = mix(mix(0.45, 0.93, smoothstep(0.0, 1.2, hondo)), 0.97, espuma);
@@ -141,7 +144,7 @@ normal = normalize(normal + (viewMatrix * vec4(-pend.x, 0.0, -pend.y, 0.0)).xyz)
 float fres = pow(1.0 - clamp(dot(normal, normalize(vViewPosition)), 0.0, 1.0), 4.0);
 outgoingLight = mix(outgoingLight, vec3(0.55, 0.63, 0.69), fres * 0.3 * (1.0 - espuma));`);
   };
-  m.customProgramCacheKey = () => 'aguaKinhold2';
+  m.customProgramCacheKey = () => 'aguaKinhold3';
   return m;
 }
 

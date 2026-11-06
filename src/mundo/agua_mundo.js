@@ -57,7 +57,7 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
   let cinta = null, centroCinta = null, trabajoCinta = null, nuevaCinta = null;
   function* hacerCinta(cx, cz) {
     const tramos = paisaje.riosEn(cx - R_LEJOS, cz - R_LEJOS, cx + R_LEJOS, cz + R_LEJOS, 0);
-    const pos = [], idx = [], fl = [], ho = [], ori = [];
+    const pos = [], idx = [], fl = [], ho = [], ori = [], ti = [];
     // (una cinta seguida por río: el tramo que empieza donde acabó el anterior sigue la misma cinta, sin juntas; si no,
     // en las curvas los dos tramos se solapaban o se abrían y salían muescas)
     let antes = -1, finX = NaN, finY = NaN;
@@ -78,6 +78,7 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
         const k = pos.length / 3, yy = w + 0.03;
         pos.push(x - dy * m - origen.x, yy, y + dx * m - origen.z, x - origen.x, yy, y - origen.z, x + dy * m - origen.x, yy, y - dx * m - origen.z);
         for (let q = 0; q < 3; q++) fl.push(co.dx * co.vel, co.dy * co.vel);
+        { const mz = paisaje.mezclaMar(x, y, uno); ti.push(mz, mz, mz); }
         ho.push(0, Math.min(2, ancho * 0.15 + 0.4), 0); ori.push(-1.5, ancho / 2 * (1 - enMar / 5), -1.5);   // (mar adentro se va: se funde con el mar)
         if (antes >= 0) idx.push(antes, k, antes + 1, antes + 1, k, k + 1, antes + 1, k + 1, antes + 2, antes + 2, k + 1, k + 2);
         antes = k;
@@ -89,7 +90,7 @@ export function crearAguaMundo({ grupo, paisaje, origen, altW }) {
     if (idx.length) {
       const g = new THREE.BufferGeometry();
       g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
-      atributosAgua(g, { flujo: new Float32Array(fl), hondo: new Float32Array(ho), orilla: new Float32Array(ori) });
+      atributosAgua(g, { flujo: new Float32Array(fl), hondo: new Float32Array(ho), orilla: new Float32Array(ori), tipo: new Float32Array(ti) });
       m = new THREE.Mesh(g, materialLejos); m.name = 'riosLejos'; m.frustumCulled = false;
     }
     nuevaCinta = { malla: m, cx, cz };
