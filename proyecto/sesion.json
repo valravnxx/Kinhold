@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-06T23:23:18+00:00",
+  "tarea": "Árboles jóvenes y adultos bien distintos: los jóvenes de 3–5 m, finos y de copa rala, sobre todo en bordes, claros y lo que rebrota; los adultos un 30 % más altos y más gruesos. Medir los fotogramas en el móvil",
+  "hito": "crafting",
+  "rama": "trabajo/20261106-2323"
+ },
  "B": null
 }
