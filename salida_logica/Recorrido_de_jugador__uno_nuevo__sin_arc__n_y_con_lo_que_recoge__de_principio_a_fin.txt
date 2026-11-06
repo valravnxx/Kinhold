@@ -1,0 +1,46 @@
+0. Elige dónde empieza: la salida común (Lindholt), de las tres del rey
+  OK   llega sin posición: aún no ha elegido — null
+  OK   una salida que no existe no vale — Esa salida no existe.
+  OK   elige Lindholt: aparece en la salida común, en el suelo — {"x":0,"y":0,"z":0,"giro":0}
+  OK   y no puede volver a elegir — Ya has empezado.
+1. Empieza con lo puesto, y sin arcón
+  OK   le llega lo que lleva: solo la camisa y el pantalón de lino — ropa:interior=camisa_lino ropa:piernas=pantalon_lino
+  OK   no puede sacar nada del arcón de pruebas (no hay) — Aquí no hay arcón.
+  OK   ni del arcón de materiales de las obras — Aquí no hay arcón.
+  OK   ni rellenarlo (el botón de pruebas) — Aquí no hay arcón.
+  OK   la bienvenida le dice que no hay arcón (el navegador no lo enseña) — false
+  OK   en la salida no puede poner su mojón: es zona del rey — Es zona del rey: no se reclama (aquí cava y recoge cualquiera).
+2. Recoge piedras: anda hasta ellas y las coge con las manos
+  OK   hay piedras sueltas cerca de la salida (a menos de 120 m) — 56; la primera a 54 m
+  OK   recoge 6 piedras, 3 en cada mano — 6 piedras 
+  OK   la séptima ya no le cabe en las manos — No te cabe: no tienes sitio libre.
+  OK   y una piedra ya recogida no vuelve a darse — Ya lo han recogido: aún no ha vuelto a salir.
+3. Lo que aún no se puede hacer como jugador nuevo
+  OK   talar: aún no se puede (un jugador nuevo no tiene hacha y aún no se fabrica nada: llega con «Fabricar por el servidor» (hito «De nada a una casa»)); cuando se pueda, pasarlo a los pasos de verdad — Necesitas un hacha en la mano para talar.
+4. Anda hasta la zona de al lado (la de la salida es del rey) y pone su mojón: la zona es su tierra
+  OK   la zona de al lado de la salida no es del rey — a 440 m al oeste
+  OK   pone su mojón en ella y lo paga con 3 de las piedras que lleva (no del montón común) —  lleva 3
+  OK   y no un segundo (uno por personaje) — Ya tienes un mojón.
+5. Levanta un cimiento de piedra con las piedras que ha traído
+  OK   pone el marco del cimiento en su tierra
+  OK   entrega las 3 que le quedan (pide 8) y se queda con las manos vacías —  faltan 5
+  OK   sin todo el material aún no se puede trabajar — Primero hay que llevarle todo el material.
+  OK   vuelve a por las 5 que faltan (le caben en las manos) — 5 piedras
+  OK   las entrega: el cimiento tiene todo lo que pide
+  OK   lo trabaja hasta terminarlo — 5 ratos de 5 s 
+5b. Llega otro jugador: lo de su tierra no lo toca (lo tuyo es tuyo)
+  OK   otro jugador nuevo elige también Lindholt
+  OK   otro jugador no puede desmontar su cimiento — Es tierra de otro: solo su dueño y sus invitados.
+6. Con las manos libres otra vez, recoge ramas del bosque
+  OK   recoge ramas caídas —  1 ramas
+7. Se arrepiente del sitio: quita su mojón (pierde el cimiento) y lo vuelve a poner más allá
+  OK   sabe que perdería su cimiento (1 construcción, 1 pieza) — {"c":1,"p":1}
+  OK   quita su mojón: dice lo perdido
+  OK   ya no tiene mojón y el cimiento ha desaparecido — 0 construcciones
+  OK   sin nada encima no puede volver a ponerlo (se paga con 3 piedras de lo que lleva) — No llevas los materiales.
+  OK   recoge otras 3 piedras para el mojón nuevo — 3 piedras
+  OK   vuelve a poner su mojón 30 m más allá, sin espera, pagado con ellas
+
+Todavía no se puede (sin el arcón): hombro — con algo al hombro, las manos no llevan nada: un jugador nuevo aún no tiene tronco que subirse (llega con talar); lo prueba prueba_inventario.mjs; talar — un jugador nuevo no tiene hacha y aún no se fabrica nada: llega con «Fabricar por el servidor» (hito «De nada a una casa»)
+
+33 bien, 0 mal
