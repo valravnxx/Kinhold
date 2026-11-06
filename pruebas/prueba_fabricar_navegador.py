@@ -185,6 +185,7 @@ try:
         comprobar('con el sílex en la mano, la lasca sigue en «Te falta algo» (no está depositado)', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 3000))
         comprobar('sale el cordel que lleva, para dejarlo', pulsar('fab-dejar', 'Cordel'))
         d = servidorDice(lambda d: any(e.get('deposito', {}).get('cordel') == 1 for e in d['fabricacion']['estaciones']))
+        if d is None: print('  (aviso del panel:', A.evaluate("document.querySelector('#panelFabricar .fab-aviso').textContent"), '· abierto:', A.evaluate(f"{K}.panelFabricar.abierto + ' ' + {K}.panelFabricar.pestana"), '· pj:', A.evaluate(f"[{K}.pj.x, {K}.pj.z]"), '· estación:', A.evaluate(f"JSON.stringify(Object.values({K}.fabCliente.estaciones).map(e => [e.id, e.x, e.z]))"), ')')
         comprobar('dejarlo lo deposita en el servidor', d is not None and cuantos(d, yo, 'cordel') == 0)
         esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-dep [data-dep=\"cordel\"]')", 5000)
         comprobar('y sale encima de la piedra de tallar, para cogerlo', pulsar('fab-coger', 'Cordel'))
