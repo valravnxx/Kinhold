@@ -191,8 +191,8 @@ console.log('Código del juego: nada cambia el mundo saltándose las acciones');
     for (const [re, que] of PROHIBIDO) if (re.test(l)) fallos.push(`${f}:${i + 1} ${que}`);
   });
   comprobar(`ningún archivo fuera de la lógica pura cambia el mundo directamente (${revisar.length} revisados)`, fallos.length === 0, fallos.join(' · '));
-  const main = readFileSync('src/juego/main.js', 'utf8'), duelo = readFileSync('src/combate/main.js', 'utf8');
-  comprobar('la construcción y el combate usan las acciones', /ejecutar\(mundo, registroAcciones/.test(main) && /ejecutarCombate\(/.test(duelo) && /avanzarProyectil\(/.test(duelo));
+  const main = readFileSync('src/juego/main.js', 'utf8'), mundo = readFileSync('src/juego/combate_mundo.js', 'utf8'), serv = readFileSync('src/logica/combate_servidor.js', 'utf8');
+  comprobar('la construcción y el combate usan las acciones', /ejecutar\(mundo, registroAcciones/.test(main) && /ejecutarCombate\(/.test(mundo) && /ejecutarCombate\(/.test(serv) && /avanzarProyectil\(/.test(serv));
 }
 
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);

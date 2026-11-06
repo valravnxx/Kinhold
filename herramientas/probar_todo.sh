@@ -26,7 +26,6 @@ paso() {
   [ $r -eq 0 ] || { echo "!! FALLA: $*"; fallo=1; }
 }
 paso "Construir construcción" node construir.mjs
-paso "Construir combate" node construir_combate.mjs
 paso "Construir pruebas de estilo" node construir_estilo.mjs
 paso "Construir personaje" node construir_personaje.mjs
 paso "Construir demo única" node construir_demo.mjs
@@ -131,7 +130,6 @@ paso "Navegador: panel de fabricación" python3 pruebas/prueba_fabricar_navegado
 paso "Navegador: panel de inventario" python3 pruebas/prueba_inventario_navegador.py dist/kinhold_hito1.html "$C/inventario"
 paso "Navegador: lo que llevas se ve puesto" python3 pruebas/prueba_llevado_navegador.py dist/kinhold_hito1.html "$C/llevado"
 paso "Navegador: objetos en el suelo" python3 pruebas/prueba_suelo_navegador.py dist/kinhold_hito1.html "$C/suelo"
-paso "Navegador: combate" python3 pruebas/prueba_combate_navegador.py dist/kinhold_combate.html "$C/combate"
 paso "Navegador: combate en el mundo" python3 pruebas/prueba_combate_mundo_navegador.py dist/kinhold_hito1.html "$C/combate_mundo"
 paso "Navegador: pelear en cualquier sitio del mundo" python3 pruebas/prueba_pelear_mundo_navegador.py dist/kinhold_demo.html "$C/pelear_mundo"
 paso "Navegador: pruebas de estilo" python3 pruebas/prueba_estilo_navegador.py dist/kinhold_estilo.html "$C/estilo"
@@ -144,7 +142,7 @@ paso "Navegador: construir a la altura del suelo (ladera de Whitholm)" python3 p
 paso "Navegador: volver donde lo dejaste" python3 pruebas/prueba_volver_navegador.py dist/kinhold_demo.html "$C/volver"
 paso "Navegador: lo que llevas en línea (inventario, suelo, tala y recogida por el servidor)" python3 pruebas/prueba_objetos_en_linea_navegador.py dist/kinhold_demo.html "$C/objetos_en_linea"
 paso "Navegador: recursos de personaje v2" python3 pruebas/prueba_recursos_personaje.py "$C/recursos"
-paso "Navegador: juego en inglés (también estilo y personaje)" python3 pruebas/prueba_idioma_navegador.py dist/kinhold_hito1.html dist/kinhold_combate.html dist/kinhold_estilo.html dist/kinhold_personaje.html "$C/idioma"
+paso "Navegador: juego en inglés (también estilo y personaje)" python3 pruebas/prueba_idioma_navegador.py dist/kinhold_hito1.html dist/kinhold_estilo.html dist/kinhold_personaje.html "$C/idioma"
 paso "Navegador: cavar" python3 pruebas/prueba_mina_navegador.py dist/kinhold_mina.html "$C/mina"
 paso "Navegador: niveles de detalle del personaje" python3 pruebas/prueba_detalle_navegador.py dist/kinhold_personaje.html dist/kinhold_demo.html "$C/detalle"
 paso "Navegador: terreno por trozos (en un hilo aparte)" python3 pruebas/prueba_trozos_navegador.py dist/kinhold_trozos.html "$C/trozos"
