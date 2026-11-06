@@ -17,5 +17,11 @@
   "tarea": "El bosque de lejos sin dientes de sierra (valravnx, 6 nov: «cuando está muy lejos sigue haciendo diente de sierra horrible»): el color del suelo lejano y el del bosque, en texturas que se leen en cada píxel, en vez de en los vértices de la rejilla",
   "hito": "graficos",
   "rama": "trabajo/20261106-0525-linde-textura"
+ },
+ "chat:trabajo/20261106-0434-p3-documentos": {
+  "inicio": "2026-11-06T04:31:43+00:00",
+  "tarea": "Pasar al GDD y al documento de sistemas lo que falta de la revisión del 1 nov para este tramo (almacenajes de la base, carga al hombro, la casa humilde, los árboles jóvenes y adultos), con sus traducciones; lo de fabricar sin aprender recetas, estaciones por uso, hoguera y hogar ya está (4 nov). Va la primera de P3 porque el hito se planifica leyendo esos documentos",
+  "hito": "crafting",
+  "rama": "trabajo/20261106-0434-p3-documentos"
  }
 }
