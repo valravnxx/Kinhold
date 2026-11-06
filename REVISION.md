@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 6 nov 2026 (~08:00 UTC) — en la sesión de P3: fabricar con lo depositado en la mesa, y el panel
+valravnx: «pone que en el crafteo tienes que tener las cosas en el suelo. Yo preferiría poderlas poner en una mesa o en un punto de acopio o en alguna cosa, aunque tú tengas que estar delante haciendo el crafteo, sobre todo cuando sean con mesas de crafteo, poderlas depositar encima de esas mesas». Pide una revisión de cómo está en el GDD, en lo hecho y en lo que falta; si el menú de fabricar está previsto ya o pronto («ni siquiera puedo ver qué son… están solamente programados por dentro»), y que le explique cómo está hecho ahora. → Revisión dada en la sesión; pendiente de su respuesta a cómo quedan el suelo y los almacenajes antes de cambiar el GDD y el roadmap.
+
 ### 6 nov 2026 (04:34 UTC) — en una tarea programada: empezar P3
 valravnx: «haz p3». → El hito P3 «De nada a una casa» pasa a en curso y se empieza por su primera tarea pendiente (pasar al GDD y al documento de sistemas lo que falta de la revisión del 1 nov), anunciada como sesión aparte (rama trabajo/20261106-0434-p3-documentos) porque el carril A sigue con P2. Una tarea por sesión, como siempre.
 

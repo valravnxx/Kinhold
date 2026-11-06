@@ -8,6 +8,7 @@ import { Mundo, MAX_RATO, plantaObra, clasePeso, poleaPara, polipastoPara, alAlc
 import { PIEZAS } from './piezas.js';
 import { OBJETO_DE_MATERIAL, MATERIAL_DE_OBJETO } from './inventario.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
+import { AUTOR_REY } from './abandono.js';
 
 // Autor provisional mientras no haya cuentas (hito de servidor): el jugador de este navegador.
 export const AUTOR_LOCAL = 'jugador:local';
@@ -58,6 +59,7 @@ const CAMPOS_CONSTRUCCION = {
   quitar_mojon: {},          // destruir tu mojón: dejas tu tierra y se pierde lo construido en ella (para reposicionar)
   invitar: { a: 't' },       // dejar construir en tu tierra a otro jugador (a: su autor)
   desinvitar: { a: 't' },    // y quitárselo
+  tierra_al_rey: { dueno: 't' }, // la tierra de un dueño vuelve al rey (src/logica/abandono.js): solo la hace el servidor
   colocar: { pieza: 't', x: 'n', z: 'n', k: 'n', rot: 'n', dir: 'n' },
   decorar: { pieza: 't', x: 'n', y: 'n', z: 'n', rot: 'n' },
   nivelar: { x: 'n', z: 'n', y: 'n', radio: 'n' },   // una pasada de la brocha redonda (y: la altura a la que deja el suelo)
@@ -152,6 +154,7 @@ function aplicarConstruccion(m, a, invs) {
     case 'quitar_mojon': return m.quitarMojon(a.autor);
     case 'invitar': return m.invitar(a.autor, a.a);
     case 'desinvitar': return m.desinvitar(a.autor, a.a);
+    case 'tierra_al_rey': return a.autor === AUTOR_REY ? m.tierraAlRey(a.dueno) : { ok: false, motivo: 'Eso solo lo hace el rey.' };
     // se construye por obras (GDD): colocar pone el marco; luego se entregan los materiales y se trabaja
     // y (opcional): la altura del suelo donde se pone; la planta baja de una construcción nueva queda ahí
     case 'colocar': {

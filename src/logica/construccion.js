@@ -207,6 +207,16 @@ export class Mundo {
     delete this.invitados[yo];
     return { ok: true, perdidas: { construcciones: p.construcciones.length, piezas: p.piezas, muebles: p.muebles.length } };
   }
+  // La tierra vuelve al rey si no se usa (src/logica/abandono.js): el mojón se va y los invitados dejan de serlo, pero
+  // lo construido y los muebles se quedan, como ruina en tierra de nadie (cualquiera puede desmontarlo: puedeTocar).
+  tierraAlRey(dueno_) {
+    const yo = dueno(dueno_);
+    if (!this.mojonDe(yo)) return { ok: false, motivo: 'No tiene mojón.' };
+    const p = this.perderiaSinMojon(yo);
+    delete this.mojones[yo];
+    delete this.invitados[yo];
+    return { ok: true, ruinas: { construcciones: p.construcciones.length, piezas: p.piezas, muebles: p.muebles.length } };
+  }
   // de quién es la tierra en (x, z): el autor, o null si no es de nadie
   tierraDe(x, z) {
     if (zonaDeSitio) return this.duenoDeZona(zonaDeSitio(x, z));

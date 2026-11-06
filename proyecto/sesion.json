@@ -1,22 +1,11 @@
 {
- "A": {
-  "inicio": "2026-11-06T06:23:10+00:00",
-  "tarea": "La tierra vuelve al rey si no se usa (valravnx, 4 nov): si pasan 30 días sin que entre el dueño ni nadie invitado a su tierra, la zona queda libre (15 días si no tiene ninguna obra terminada); lo construido se queda como ruina que otros pueden desmontar; aviso por correo una semana antes y el último día. Por el servidor, con su registro",
-  "hito": "entre-dos",
-  "rama": "trabajo/20261106-0623"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261106-0525-linde-textura": {
   "inicio": "2026-11-06T05:24:47+01:00",
   "tarea": "El bosque de lejos sin dientes de sierra (valravnx, 6 nov: «cuando está muy lejos sigue haciendo diente de sierra horrible»): el color del suelo lejano y el del bosque, en texturas que se leen en cada píxel, en vez de en los vértices de la rejilla",
   "hito": "graficos",
   "rama": "trabajo/20261106-0525-linde-textura"
- },
- "chat:trabajo/20261106-0547-p3-fabricar-servidor": {
-  "inicio": "2026-11-06T05:47:36+00:00",
-  "tarea": "Fabricar por el servidor, con su autor: lo gastado sale de tu inventario o del suelo de al lado y lo hecho va a tu inventario (o al suelo si no cabe)",
-  "hito": "crafting",
-  "rama": "trabajo/20261106-0547-p3-fabricar-servidor"
  },
  "chat:trabajo/20261106-0735-rios-mar2": {
   "inicio": "2026-11-06T07:35:00+01:00",
