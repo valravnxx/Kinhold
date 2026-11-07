@@ -107,9 +107,9 @@ def coger(pg, objeto, n, a):
       if (!a) return 'manos llenas: ' + JSON.stringify([l['mano:der'], l['mano:izq']]);
       const r = {K}.accionInventario({{ tipo: 'coger', objeto: '{objeto}', cantidad: {n}, a }}); return r && r.ok === false ? r.motivo : ''; }})()""")
     if r: print(f'  (coger {n} {objeto}: {r})')
-def mirar_hoguera(pg, dist=3.0, pitch=0.5, yaw=0.3):
+def mirar_hoguera(pg, dist=3.0, pitch=0.5, yaw=0):
     pg.evaluate(f"""(() => {{ const e = Object.values({K}.fabCliente.estaciones).find(x => x.tipo === 'hoguera'); if (!e) return;
-      Object.assign({K}.pj, {{ x: e.x + 1.2, z: e.z + 0.9, rot: Math.atan2(-1.2, -0.9) }}); {K}.cam.yaw = {yaw}; {K}.cam.dist = {dist}; {K}.cam.pitch = {pitch}; }})()""")
+      Object.assign({K}.pj, {{ x: e.x + 0.55, z: e.z + 1.3, rot: Math.atan2(-0.55, -1.3) }}); {K}.cam.yaw = {yaw}; {K}.cam.dist = {dist}; {K}.cam.pitch = {pitch}; }})()""")
 LLAMAS = "(() => { const o = window.__kinhold.escena.getObjectByName('estacion_hoguera'); const f = o && o.getObjectByName('fuego'); return f ? f.children.filter(m => m.name === 'llama').length : -1; })()"
 CENIZAS = "(() => { const o = window.__kinhold.escena.getObjectByName('estacion_hoguera'); const f = o && o.getObjectByName('fuego'); return !!f && !!f.getObjectByName('ceniza') && !f.children.some(m => m.name === 'humo'); })()"
 

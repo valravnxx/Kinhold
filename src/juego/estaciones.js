@@ -102,7 +102,7 @@ export function modeloFuego(cual, id) {
       m.geometry.translate(0, h / 2, 0); m.position.set(x, 0.08, z); m.name = 'llama'; m.userData.fase = i * 1.7; g.add(m);
     });
     for (let i = 0; i < 10; i++) { // el humo, tenue: bocanadas pequeñas que suben, se abren y se deshacen
-      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.07, 1), new THREE.MeshLambertMaterial({ color: 0x9a958e, transparent: true, opacity: 0, depthWrite: false }));
+      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.07, 1), new THREE.MeshBasicMaterial({ color: 0x8f8a84, transparent: true, opacity: 0, depthWrite: false, fog: true }));
       m.name = 'humo'; m.userData.fase = i / 10; g.add(m);
     }
     moverFuego(g, 0);
@@ -111,14 +111,14 @@ export function modeloFuego(cual, id) {
   return g;
 }
 // Mueve las llamas (como las de las chimeneas) y el humo de la hoguera: más tenue y más fino que el de una chimenea,
-// porque sale a la altura de los ojos (t: segundos).
+// porque sale a la altura de los ojos, y sin luz propia (si no, la del fuego lo pinta en discos naranjas) (t: segundos).
 function moverFuego(g, t) {
   for (const m of g.children) {
     if (m.name !== 'humo') continue;
     const u = (m.userData.fase + t * 0.12) % 1, f = m.userData.fase;
     m.position.set(Math.sin(u * 4 + f * 9) * 0.08 + u * 0.25, 0.45 + u * 2.2, Math.cos(u * 3 + f * 7) * 0.07);
     m.scale.setScalar(0.6 + u * 3.2);
-    m.material.opacity = 0.16 * Math.min(1, u * 5) * (1 - u);
+    m.material.opacity = 0.12 * Math.min(1, u * 5) * (1 - u);
   }
   moverHumo({ userData: g.userData, children: g.children.filter(m => m.name === 'llama') }, t); // las llamas, como las de las chimeneas
 }
