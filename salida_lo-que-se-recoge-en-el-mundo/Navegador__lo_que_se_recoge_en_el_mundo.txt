@@ -1,0 +1,76 @@
+  sitio de salida con más tipos cerca: [5, 11] · el del móvil: 39
+Vista pc
+  alrededor de la salida: {"silex": 6, "piedra": 9, "hierba_larga": 14, "ortiga": 9, "ramas": 2, "yesquero": 2} 42 puntos en 25 trozos
+  OK   alrededor de la salida hay cosas que recoger — 42
+  OK   cada punto, en una zona suya del documento
+  OK   son los mismos puntos que da la lógica para ese sitio del mundo — 17 en la página, 17 en la lógica, 0 distintos
+  OK   ramas (bosque, claro): Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Rama.»
+  OK   ramas: el punto ya no está
+  OK   ramas: queda en el registro con autor
+  OK   piedra (bosque, claro): Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Piedra.»
+  OK   piedra: el punto ya no está
+  OK   piedra: queda en el registro con autor
+  OK   silex (bosque, claro): Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Sílex.»
+  OK   silex: el punto ya no está
+  OK   silex: queda en el registro con autor
+  OK   ortiga (bosque, claro): Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Fibra cruda.»
+  OK   ortiga: el punto ya no está
+  OK   ortiga: queda en el registro con autor
+  OK   hierba_larga (claro): Usar lo recoge y va al inventario — 0 → 4 · «Recoges: 4 × Fibra cruda.»
+  OK   hierba_larga: el punto ya no está
+  OK   hierba_larga: queda en el registro con autor
+  OK   junto al sitio de salida 11 se recogen los 5 tipos que hay cerca — ramas:2179836,359922, piedra:2179971,359898, silex:2179924,359868, ortiga:2179780,359873, hierba_larga:2179655,359701
+  OK   en la orilla del río hay juncos (a menos de 90 m)
+  OK   juncos: sin cuchillo no se puede, y lo dice — «Necesitas un cuchillo o una lasca de sílex para cortarlos.»
+  OK   juncos (bosque, caliza, ribera): Usar lo corta y va al inventario — 0 → 1 · «Recoges: 1 × Haz de juncos.»
+  OK   juncos: el punto ya no está
+  OK   en la orilla del río hay barro (a menos de 90 m)
+  OK   barro: sin palo cavador no se puede, y lo dice — «Necesitas un palo cavador o una pala para cavar el barro.»
+  OK   barro (bosque, caliza, rio, ribera): Usar lo cava y va al inventario — 0 → 1 · «Recoges: 1 × Cesta de barro.»
+  OK   barro: no se agota (el sitio sigue ahí)
+  OK   en la orilla del río hay yesquero (a menos de 90 m)
+  OK   yesquero (bosque, caliza): Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Yesca.»
+  OK   yesquero: el punto ya no está
+  a 400 m: {"n": 42, "lejos": 94.82999999999998, "cerca": 18, "ms": 5, "siguen": 0}
+  OK   lejos, los puntos están alrededor de donde estás y los de la salida se sueltan — {"n": 42, "lejos": 94.82999999999998, "cerca": 18, "ms": 5, "siguen": 0}
+  OK   hacer lo de alrededor no pide fotogramas largos (menos de 20 ms) — 5.0 ms
+  OK   al volver, lo recogido sigue recogido — [[true, false], [true, false], [true, false], [true, false], [true, false]]
+  OK   sin errores en la página (pc)
+Vista movil
+  alrededor de la salida: {"silex": 20, "hierba_larga": 14, "ortiga": 4, "piedra": 6, "ramas": 4} 48 puntos en 16 trozos
+  OK   alrededor de la salida hay cosas que recoger — 48
+  OK   cada punto, en una zona suya del documento
+  OK   son los mismos puntos que da la lógica para ese sitio del mundo — 20 en la página, 20 en la lógica, 0 distintos
+  OK   ramas (bosque, caliza): Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Rama.»
+  OK   ramas: el punto ya no está
+  OK   ramas: queda en el registro con autor
+  OK   piedra (claro, caliza): Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Piedra.»
+  OK   piedra: el punto ya no está
+  OK   piedra: queda en el registro con autor
+  OK   silex (claro, caliza): Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Sílex.»
+  OK   silex: el punto ya no está
+  OK   silex: queda en el registro con autor
+  OK   ortiga (claro, caliza): Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Fibra cruda.»
+  OK   ortiga: el punto ya no está
+  OK   ortiga: queda en el registro con autor
+  OK   hierba_larga (claro, caliza): Usar lo recoge y va al inventario — 0 → 3 · «Recoges: 3 × Fibra cruda.»
+  OK   hierba_larga: el punto ya no está
+  OK   hierba_larga: queda en el registro con autor
+  OK   cerca de la salida 39 se ha podido recoger algo — ramas:2029844,510476, piedra:2030155,510383, silex:2030304,510297, ortiga:2030350,510074, hierba_larga:2030315,510221
+  OK   en la orilla del río hay juncos (a menos de 90 m)
+  OK   juncos: sin cuchillo no se puede, y lo dice — «Necesitas un cuchillo o una lasca de sílex para cortarlos.»
+  OK   juncos (bosque, caliza, ribera): Usar lo corta y va al inventario — 0 → 1 · «Recoges: 1 × Haz de juncos.»
+  OK   juncos: el punto ya no está
+  OK   en la orilla del río hay barro (a menos de 90 m)
+  OK   barro: sin palo cavador no se puede, y lo dice — «Necesitas un palo cavador o una pala para cavar el barro.»
+  OK   barro (bosque, caliza, rio, ribera): Usar lo cava y va al inventario — 0 → 1 · «Recoges: 1 × Cesta de barro.»
+  OK   barro: no se agota (el sitio sigue ahí)
+  OK   en la orilla del río hay yesquero (a menos de 90 m)
+  OK   yesquero (bosque, caliza): Usar lo recoge y va al inventario — 0 → 1 · «Recoges: 1 × Yesca.»
+  OK   yesquero: el punto ya no está
+  a 400 m: {"n": 48, "lejos": 71.56, "cerca": 32, "ms": 4.700000000069849, "siguen": 0}
+  OK   lejos, los puntos están alrededor de donde estás y los de la salida se sueltan — {"n": 48, "lejos": 71.56, "cerca": 32, "ms": 4.700000000069849, "siguen": 0}
+  OK   hacer lo de alrededor no pide fotogramas largos (menos de 20 ms) — 4.7 ms
+  OK   al volver, lo recogido sigue recogido — [[true, false], [true, false], [true, false], [true, false], [true, false]]
+  OK   sin errores en la página (movil)
+TODO CORRECTO
