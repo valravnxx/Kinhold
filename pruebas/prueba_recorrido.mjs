@@ -34,6 +34,7 @@ import { idArbol } from '../src/logica/tala.js';
 import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS } from '../src/logica/piezas.js';
 import { USAN_INVENTARIO } from '../src/logica/acciones.js';
+import { avisos, AVISO } from '../src/logica/necesidades.js';
 import { crearServidor } from '../servidor/servidor.mjs';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -432,6 +433,10 @@ try {
   // P4, las necesidades: a estas alturas del día, con todo lo que ha andado y trabajado, ya tiene algo de sed y de
   // hambre (la sed, más), sin que nadie se las haya puesto: le llegan solas del servidor
   comprobar('le han subido solas la sed y el hambre (la sed, más) y le llegan del servidor', J.nec && J.nec.sed > 0 && J.nec.hambre > 0 && J.nec.sed > J.nec.hambre, JSON.stringify(J.nec));
+  // sus avisos (los círculos de la derecha, src/juego/avisos_necesidades.js) salen de esos números: desde 40; a esta
+  // hora del día (la sed sube a 40 en 24 minutos), aún ninguno; la prueba de navegador de los avisos mira cómo se ven
+  const susAvisos = avisos(J.nec).map(a => a.que).filter(q => q !== 'cansancio');
+  comprobar('sus avisos salen de lo que manda el servidor: con la sed y el hambre por debajo de 40, aún ninguno de los dos', J.nec.sed < AVISO ? susAvisos.length === 0 : susAvisos.includes('sed'), `${JSON.stringify(J.nec)} → ${susAvisos.join(',') || 'ninguno'}`);
 
   // lo que sale de aquí, en la salida (para quien lo lea en la nube)
   console.log(`\nTodavía no se puede (sin el arcón): ${Object.entries(TODAVIA_NO).map(([k, v]) => `${k} — ${v}`).join('; ')}`);

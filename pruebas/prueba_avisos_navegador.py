@@ -38,7 +38,7 @@ def comprobar(n, c, d=''):
     print(('  OK   ' if c else '  FALLA ') + n + (f' — {d}' if d else ''))
     if not c: fallos.append(n)
 
-def entrar(pg, extra=''):
+def entrar(pg, extra='&lang=es'):
     pg.goto(BASE + extra)
     pg.wait_for_function('window.__demo && (window.__demo.listo || window.__demo.error)', timeout=300000)
     pg.wait_for_function(f'{K} && {K}.mundoListo', timeout=300000)
@@ -51,7 +51,7 @@ def poner(pg, n):
     pg.evaluate(f'{K}.ponerNecesidades({json.dumps(base)})'); pg.wait_for_timeout(300)
 
 def rect(pg, sel):
-    return pg.evaluate(f"""(() => {{ const e = document.querySelector({json.dumps(sel)}); if (!e || e.hidden || e.offsetParent === null) return null; const r = e.getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom]; }})()""")
+    return pg.evaluate(f"""(() => {{ const e = document.querySelector({json.dumps(sel)}); if (!e || e.hidden) return null; const r = e.getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom]; }})()""")
 
 def pisan(a, b):
     return a[0] < b[2] and a[2] > b[0] and a[1] < b[3] and a[3] > b[1]

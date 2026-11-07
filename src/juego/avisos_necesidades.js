@@ -4,7 +4,8 @@
 //     10: hambre naranja, sed azul, frío celeste, cansancio gris), su dibujo y un anillo de lo lleno que está; en
 //     fuerte (desde FUERTE) late;
 //   - al pulsarlo, su ficha: cómo estás, qué te pasa y cómo se quita. Se cierra al pulsar fuera o el mismo círculo.
-// Van en una columna a la derecha, a la izquierda de los botones de modo (Mover, Construir…), que no se tapan.
+// Van en una columna a la derecha, a la izquierda de los botones de modo (Mover, Construir…); en el móvil, en fila
+// justo debajo de ellos (arriba están los botones del menú). No tapan ningún botón.
 import { NECESIDADES, AVISO, FUERTE, MAXIMO, avisos, efectos } from '../logica/necesidades.js';
 import { tr } from '../idioma.js';
 
@@ -52,10 +53,10 @@ export function montarAvisos() {
 #fichaNec p{margin:0 0 5px}
 #fichaNec .como{color:#d9a441}
 @media (max-width:640px){
-  #avisosNec{right:calc(104px + env(safe-area-inset-right,0px));top:120px;transform:none;gap:6px}
+  #avisosNec{flex-direction:row;transform:none;gap:6px}
   #avisosNec .aviso-nec{width:36px;height:36px}
   #avisosNec .aviso-nec svg{width:20px;height:20px}
-  #fichaNec{right:calc(146px + env(safe-area-inset-right,0px));width:min(240px,calc(100vw - 160px))}
+  #fichaNec{right:calc(10px + env(safe-area-inset-right,0px));width:min(260px,calc(100vw - 20px))}
 }`;
   document.head.appendChild(estilo);
   const col = document.createElement('div'); col.id = 'avisosNec';
@@ -78,15 +79,27 @@ export function montarAvisos() {
     ficha.innerHTML = `<b>${tr(NOMBRE[k])} · ${v}%</b><div class="nivel"><i style="width:${v}%;background:${COLOR[k]}"></i></div>` +
       `<p>${queTePasa(k, actual)}</p><p class="como">${tr(COMO[k])}</p>`;
     const r = botones[k].getBoundingClientRect();
-    ficha.style.top = `${Math.max(8, Math.min(innerHeight - ficha.offsetHeight - 8, r.top - 6))}px`;
+    // en el PC, a la izquierda del círculo; en el móvil, debajo de la fila
+    const top = movil() ? r.bottom + 8 : r.top - 6;
+    ficha.style.top = `${Math.max(8, Math.min(innerHeight - ficha.offsetHeight - 8, top))}px`;
   }
   function abrir(k) { abierta = k; ficha.hidden = false; ficha.dataset.que = k; pintarFicha(); pintarFicha(); }
   function cerrar() { abierta = null; ficha.hidden = true; }
   document.addEventListener('pointerdown', (e) => { if (abierta && !ficha.contains(e.target) && !col.contains(e.target)) cerrar(); });
 
+  const movil = () => matchMedia('(max-width:640px)').matches;
+  // en el móvil, la fila va justo debajo de los botones de modo, alineada con ellos por la derecha
+  function colocar() {
+    const m = document.getElementById('modos');
+    if (!movil() || !m) { col.style.top = ''; col.style.right = ''; return; }
+    const r = m.getBoundingClientRect();
+    col.style.top = `${Math.round(r.bottom + 10)}px`; col.style.right = `${Math.round(innerWidth - r.right)}px`;
+  }
+  addEventListener('resize', colocar);
   // n: las necesidades como llegan del servidor (o null: sin ellas, nada)
   function pintar(n) {
     actual = n;
+    colocar();
     const salen = new Map((n ? avisos(n) : []).map(a => [a.que, a]));
     for (const k of NECESIDADES) {
       const b = botones[k], a = salen.get(k);
