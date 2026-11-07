@@ -4255,7 +4255,7 @@
    "hito": "admin"
   },
   {
-   "pregunta": "La interfaz del juego (estudio del 7 nov, segunda versión, diseno/estudios/interfaz.html): ¿un botón de menú con todo en una cuadrícula de iconos grandes (en vez de la rueda), tres atajos fijos (Equipo, Fabricar, Construir), la acción única según lo que tienes delante con una lista cuando hay varias cosas, las manos siempre abajo con su imagen y la barra de construir solo al construir? ¿La rueda fuera, o como extra del PC?",
+   "pregunta": "La interfaz del juego (estudio del 7 nov, sexta versión, con trece juegos del género, diseno/estudios/interfaz.html): ¿el arma en un hueco «al cinto» junto a las manos (y si la llevas en la mano, la acción golpea)? ¿Hablar con ocho frases rápidas que llegan traducidas, más escribir, y cuáles? ¿En el móvil, los tres atajos a la vista o solo en el menú? ¿«Poner | Quitar» dentro de construir, con deshacer? ¿Lo demás como en la quinta versión (medallones sin números, ficha en dos líneas, menú de cuatro, cuero y roble)?",
    "desde": "2026-11-07",
    "hito": "supervivencia"
   }

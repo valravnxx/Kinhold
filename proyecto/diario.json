@@ -5189,5 +5189,60 @@
   "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas nuevas, miradas una a una.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:28:32+01:00",
+  "fin": "2026-11-07T17:28:32+01:00",
+  "titulo": "P4: el estudio de la interfaz, tercera versión (las necesidades y más información)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Tercera versión del estudio de la interfaz (valravnx: «cuenta las bolitas de estado de hambre, sed, calor/frio… y sigue probando como optimizar a la vez que das el maximo de informacion»): las necesidades del GDD en círculos a la derecha, con su aro lleno según cómo vas.",
+   "Cuando algo va mal, los círculos se ordenan solos (lo peor primero, más grande, en rojo y con su nombre); las heridas y el sangrado salen solo mientras los hay; al tocar uno, su ficha (qué te hace, qué hacer y lo que lo cambia).",
+   "Más información en el mismo sitio: un solo círculo de temperatura de frío a calor (a decidir), la carga en una raya bajo las manos, el día y la hora en el estado, el aguante en su aro de siempre y una «interfaz mínima» en Ajustes. Tres preguntas nuevas para valravnx."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas nuevas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:32:45+01:00",
+  "fin": "2026-11-07T17:32:45+01:00",
+  "titulo": "P4: el estudio de la interfaz, cuarta versión (subtexto medieval)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Cuarta versión del estudio de la interfaz (valravnx: «añadele un subtexto medieval al tema»): la misma propuesta vestida con lo de la época: cuero oscuro con borde de latón y tachuelas para lo que se toca, pergamino y tinta para lo que se lee, rúbricas en rojo de minio y una sola capitular en el menú.",
+   "Las necesidades como medallones de latón con el aro del color de un pigmento (cardenillo, ocre, minio; el frío en glasto); iconos propios como grabados en madera; el día por las horas canónicas y las pistas en pasos y rumbos («a unos ciento cuarenta pasos hacia levante»).",
+   "Reglas para que siga siendo claro: nada de letra gótica (títulos en IM Fell English y texto en EB Garamond, las dos de licencia libre), pergamino solo para leer y cuero para tocar. Maquetas en PC y móvil de andar, las necesidades, el menú, la lista y construir; dos preguntas nuevas."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas nuevas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:34:09+01:00",
+  "fin": "2026-11-07T17:34:09+01:00",
+  "titulo": "P4: el estudio de la interfaz, quinta versión (sin papeles)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Quinta versión del estudio de la interfaz (valravnx: «no en plan papeles, no me gusta el estilo papiro ya dentro del juego»): fuera el pergamino; lo que se lee va en tableros de roble oscuro con su veta y letra clara, los títulos en ocre como el latón y la capitular del menú tallada como una placa.",
+   "Se queda lo demás: cuero con tachuelas y latón para lo que se toca, hierro para las teclas, medallones de latón para las necesidades, iconos de grabado y horas canónicas. Maquetas rehechas en PC y móvil; la regla «nada de papel dentro del juego», en el estudio."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas rehechas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:38:33+01:00",
+  "fin": "2026-11-07T17:47:30+01:00",
+  "titulo": "P4: el estudio de la interfaz, sexta versión (los juegos del género)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Estudio de los juegos del género (valravnx: «estas creando muy rapido y no te veo hacer estudio de otros juegos del genero para nada»): trece juegos de supervivencia, construcción y MMO de PC y de móvil, con fuentes, en cinco temas: sacar el arma, hablar, construir y quitar, las necesidades, y la acción y lo que se ve siempre. Salen siete reglas.",
+   "Sexta versión de la propuesta con esas reglas: el arma, en un hueco «al cinto» junto a las manos (C), solo si llevas una; hablar, un botón arriba (Intro) con ocho frases rápidas que llegan a cada uno en su lengua; quitar, dentro de construir («Poner | Quitar», X) y con deshacer; el menú, solo Equipo, Fabricar, Construir y Mapa; el día y quién está en línea, en el menú.",
+   "Las teclas de las maquetas, las que el juego ya usa (F, C, H, I, B, X, R, M, Intro). El estudio, más corto: fuera las versiones viejas (siguen en el historial)."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin desbordarse; las maquetas de los ocho estados, miradas una a una en PC y móvil.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
