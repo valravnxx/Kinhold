@@ -2323,7 +2323,8 @@ jugador.listo.then(vestir);
 const combate = crearCombateMundo({
   escena, camara, lienzo, pj, cam, jugador, recursos: RECURSOS_MH, sexo: SEXO, aspecto: elegido ? elegido.aspecto : undefined,
   capasActuales: () => vestidoAhora().capas,
-  // provisional, hasta la tabla única de armadura: la cota cuenta como malla y el gambesón como gambesón
+  // lo que frena un golpe sale de las prendas de cada armadura (src/combate/logica.js, ARMADURAS); hasta que el duelo
+  // use lo puesto de verdad (tarea siguiente de P6), con la cota cuentas como «malla» y con el gambesón como «gambesón»
   armaduraActual: () => { const p = puestasDe(inventario().lugares); return p.includes('cota_malla') ? 'malla' : p.includes('gambeson') ? 'gambeson' : 'lino'; },
   modo: () => estado.modo, alturaEn: (x, z) => decorado.altura(x, z),
   registro: { anotar: (a, r) => registroAcciones.anotar(a, r) }, esTactil: estado.esTactil,

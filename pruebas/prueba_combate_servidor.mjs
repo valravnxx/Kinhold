@@ -321,9 +321,10 @@ try {
   await pausa(400);
   comprobar('la posición del luchador sale de la presencia', s.combate.luchadores[b].z === 1.5 && s.combate.luchadores[b].rot === Math.PI);
 
-  // A ataca; un rato después llega a los dos el mismo golpe
+  // A ataca; un rato después llega a los dos el mismo golpe (por la izquierda: desde el 7 nov la cabeza no la protege
+  // el gambesón, y un tajo alto podía dejar a B fuera de combate antes de lo que se prueba después)
   const sale = Date.now();
-  A.mandar({ tipo: 'combate', que: 'cargar', linea: 'alto' }); A.mandar({ tipo: 'combate', que: 'descargar' });
+  A.mandar({ tipo: 'combate', que: 'cargar', linea: 'izquierda' }); A.mandar({ tipo: 'combate', que: 'descargar' });
   const gA = await A.esperar(m => m.tipo === 'combate' && m.eventos.some(e => e.tipo === 'golpe'));
   const gB = await B.esperar(m => m.tipo === 'combate' && m.eventos.some(e => e.tipo === 'golpe'));
   const g = gA.eventos.find(e => e.tipo === 'golpe');
