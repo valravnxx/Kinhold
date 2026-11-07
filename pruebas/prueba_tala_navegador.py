@@ -1,6 +1,7 @@
 # Prueba en navegador (Chromium sin pantalla): la tala en la construcción (hito de equipo).
 # Sin hacha no se tala; con el hacha de piedra en la mano, Usar junto a un árbol joven da golpes hasta que cae hacia el
-# lado contrario, queda el tocón, y en el suelo el tronco delgado y las ramas, que se cogen con Usar. Se guarda al
+# lado contrario, queda el tocón, y en el suelo el tronco delgado y las varas, que se cogen con Usar (el tronco, también al
+# hombro). Se guarda al
 # recargar y, pasado su tiempo, el árbol vuelve a crecer. El adulto con hacha de piedra pide muchos golpes.
 # Capturas de cerca en PC (1280×800) y móvil (390×844).
 # Uso: python3 pruebas/prueba_tala_navegador.py dist/kinhold_hito1.html <carpeta>
@@ -107,11 +108,14 @@ with sync_playwright() as p:
     comprobar('el árbol del bosque ya no se dibuja', pg.evaluate(f"(() => {{ const o = {K}.obstaculos.find(x => x.id === '{j['id']}'), m = new {K}.escena.matrixWorld.constructor(); o.malla.getMatrixAt(o.instancia, m); return Math.abs(m.determinant()) < 1e-9; }})()"))
     suelo = pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.map(o => ({{ tipo: o.cosa.tipo, n: o.cosa.n, x: o.x, z: o.z }}))")
     tronco = next((o for o in suelo if o['tipo'] == 'tronco_delgado'), None)
-    ramas = next((o for o in suelo if o['tipo'] == 'rama'), None)
-    comprobar('en el suelo, un tronco delgado y de 2 a 4 ramas', tronco is not None and ramas is not None and 2 <= ramas['n'] <= 4, str(suelo))
+    varas = next((o for o in suelo if o['tipo'] == 'vara'), None)
+    comprobar('en el suelo, un tronco delgado y de 2 a 4 varas (no ramas)', tronco is not None and varas is not None and 2 <= varas['n'] <= 4 and not any(o['tipo'] == 'rama' for o in suelo), str(suelo))
     giro = pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.find(o => o.cosa.tipo === 'tronco_delgado').giro")
     comprobar('el tronco queda tumbado a lo largo de donde cayó', giro is not None and abs(giro - (r['dir'] - 1.5708)) < 0.02, f'{giro} y {r["dir"]}')
-    comprobar('se ven, donde cayó el árbol', pg.evaluate(f"!!{K}.escena.getObjectByName('suelo_tronco_delgado') && !!{K}.escena.getObjectByName('suelo_rama')"))
+    comprobar('se ven, donde cayó el árbol', pg.evaluate(f"!!{K}.escena.getObjectByName('suelo_tronco_delgado') && !!{K}.escena.getObjectByName('suelo_vara')"))
+    # las varas tienen su modelo (palos rectos), no el hatillo de lino de lo que aún no lo tiene
+    largo = pg.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('suelo_vara'); const b = new ({K}.escena.position.constructor)(); const c = {{ min: 1e9, max: -1e9 }}; o.updateMatrixWorld(true); o.traverse(m => {{ if (!m.isMesh) return; const a = m.geometry.attributes.position; for (let i = 0; i < a.count; i++) {{ b.fromBufferAttribute(a, i); c.min = Math.min(c.min, b.x); c.max = Math.max(c.max, b.x); }} }}); return c.max - c.min; }})()")
+    comprobar('las varas se ven como palos de 1,6 m tumbados', 1.5 < largo < 2.0, f'{largo:.2f} m')
     foto(pg, 'tala_03_tocon_y_tronco')
     junto(pg, j, dist=3.2, pitch=0.5, giro=0.4)
     foto(pg, 'tala_04_tocon_de_cerca')
@@ -120,6 +124,20 @@ with sync_playwright() as p:
     pg.evaluate(f"(() => {{ const k = {K}; k.pj.x = {tronco['x']}; k.pj.z = {tronco['z']} - 0.6; }})()")
     pg.evaluate(f"{K}.usar()")
     comprobar('el tronco delgado se coge con Usar (en las dos manos)', pg.evaluate(f"{K}.inventario.lugares['mano:der']?.tipo") == 'tronco_delgado', pg.evaluate(f"JSON.stringify({K}.inventario.lugares['mano:der'])"))
+    # y se lo echa al hombro (7 nov: es la madera de la casa humilde y se lleva así a la obra)
+    r = pg.evaluate(f"(() => {{ const r = {K}.accionInventario({{ tipo: 'ponerse', de: 'mano:der' }}); {K}.pintarLlevas(); {K}.vestir(); return r; }})()")
+    comprobar('el tronco delgado se echa al hombro y deja las manos libres', r['ok'] and pg.evaluate(f"{K}.inventario.lugares.hombro?.tipo") == 'tronco_delgado' and not pg.evaluate(f"{K}.inventario.lugares['mano:der']"), str(r))
+    try: pg.wait_for_function(f"{K}.jugador.modo === 'hombroQuieto'", timeout=8000)
+    except Exception: pass
+    pg.wait_for_timeout(1200)
+    comprobar('con la postura de llevarlo al hombro', pg.evaluate(f"{K}.jugador.modo") == 'hombroQuieto', pg.evaluate(f"{K}.jugador.modo"))
+    pg.evaluate(f"(() => {{ const K = {K}; K.cam.dist = 2.2; K.cam.pitch = 0.3; K.cam.yaw = K.jugador.raiz.rotation.y + 0.6; }})()")
+    pg.wait_for_timeout(600)
+    foto(pg, 'tala_04c_tronco_delgado_al_hombro')
+    # las varas, de cerca
+    pg.evaluate(f"(() => {{ const k = {K}; k.pj.x = {varas['x']} + 1.3; k.pj.z = {varas['z']} + 0.4; k.cam.dist = 3.4; k.cam.pitch = 0.75; k.cam.yaw = 0.9; }})()")
+    pg.wait_for_timeout(900)
+    foto(pg, 'tala_04b_varas_de_cerca')
     print('PC: se guarda y vuelve a crecer')
     pg = abrir(nav, 1280, 800, limpiar=False, pg=pg)
     comprobar('al recargar sigue el tocón', not en_pie(pg, j) and pg.evaluate(f"{K}.talaV.grupo.children.filter(c => c.name === 'tocon').length") == 1)

@@ -56,6 +56,25 @@ export function troncosConCortes(n, largo, radio, id) {
   return mallas(L);
 }
 
+// Varas (las del árbol joven al talarlo, 7 nov): palos rectos de 1,6 m (como la vara de la mano), algo más finos en la
+// punta, tumbados a lo largo de X casi en paralelo y un poco abiertos; de 4 en adelante, alguna cruzada encima.
+export function varasEnSuelo(n, id) {
+  const L = new Lote({ rangoSuelo: 0.06, variacion: 0.07 });
+  const vis = Math.min(n, 8), largo = 1.6;
+  for (let i = 0; i < vis; i++) {
+    const encima = i >= 3 && i % 2 === 1, r = 0.017 + az(id, i + 70) * 0.006;
+    const z = encima ? (az(id, i + 80) - 0.5) * 0.12 : (i - Math.min(vis, 3) / 2) * 0.055 + (az(id, i) - 0.5) * 0.02;
+    const y = r + (encima ? 0.038 : 0), dx = (az(id, i + 20) - 0.5) * 0.25, g = (az(id, i + 50) - 0.5) * (encima ? 0.5 : 0.12);
+    const m = new THREE.Matrix4().makeRotationY(g).multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2));
+    L.add(cil(r * 0.75, r, largo, 7), 'madera', dx, y, z, m, { tex: 'veta' });
+    for (const sg of [-1, 1]) {
+      const rr = sg > 0 ? r * 0.75 : r, mc = new THREE.Matrix4().makeRotationY(g + sg * Math.PI / 2);
+      L.add(new THREE.CircleGeometry(rr * 0.95, 7), 'corte', dx + Math.cos(g) * sg * (largo / 2 + 0.002), y, z - Math.sin(g) * sg * (largo / 2 + 0.002), mc, { sinSuelo: true });
+    }
+  }
+  return mallas(L);
+}
+
 function hatillo(grande, id) { // un paño de lino con las cuatro puntas atadas arriba: bulto con pliegues y el nudo
   const L = new Lote({ rangoSuelo: 0.2, variacion: 0.06 });
   const s = grande ? 1.6 : 1;
@@ -74,6 +93,7 @@ export function modeloDe(o) {
   if (t === 'rastra') return modeloRastra(o.cosa.carga || null, o.id);
   if (t === 'carretilla') return modeloCarretilla(o.cosa.carga || null, o.id);
   if (t === 'rama') return deLista(mods.ramas);
+  if (t === 'vara') return varasEnSuelo(n, o.id);
   if (t === 'silex') return deLista(mods.silex);
   if (t === 'piedra') { // montón: más ancho y más alto cuantas más
     const g = new THREE.Group(), vis = Math.min(n, 14);

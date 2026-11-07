@@ -23,7 +23,7 @@ export const MAX_PLANTA = 3;  // plantas 0..3
 //  h = hogar (chimenea) en una casilla de la planta baja  clave i,j,k  (sobre el cimiento de piedra f:i,j,0)
 
 export const MATERIALES = {
-  piedra: 'Piedra', tronco: 'Tronco', vara: 'Vara', barro: 'Barro', paja: 'Paja',
+  piedra: 'Piedra', tronco: 'Tronco delgado', vara: 'Vara', barro: 'Barro', paja: 'Paja',
   cuerda: 'Cuerda', tabla: 'Tabla', clavo: 'Clavo', hierro: 'Hierro', teja: 'Teja',
 };
 

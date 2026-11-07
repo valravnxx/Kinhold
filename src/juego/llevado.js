@@ -487,16 +487,19 @@ export function crearLlevado(j) {
     if (l.hombro && cH && cE) {
       const L = nuevoLote(), h = hombroDe(-1), t = l.hombro;
       let hueso = pecho;
-      if (t === 'tronco_corto') {
+      if (t === 'tronco_corto' || t === 'tronco_delgado') {
+        // el delgado (7 nov: la madera de la casa humilde), igual pero más fino y más largo: con el mismo centro, así la
+        // mano de la animación del taller lo sujeta igual por encima (queda 1 cm más alto sobre el hombro)
+        const largo = t === 'tronco_delgado' ? 1.6 : 0.9, r = t === 'tronco_delgado' ? 0.09 : TRONCO_HOMBRO.r;
         // apoyado en lo alto del hombro derecho, encima de la articulación (no junto al cuello: ahí tapaba la cabeza,
         // revisión del 1 nov), y atado a la clavícula para que suba con el hombro en la postura de llevarlo.
         // La mano derecha lo sujeta por encima (la animación del taller, taller-carga-v3, con las mismas medidas).
         const s = H.upperarm_r && H.clavicle_r && !globalThis.__troncoComoAntes /* solo para comprobar que la prueba falla */ ? H.upperarm_r.getWorldPosition(v3(0, 0, 0)).applyMatrix4(invRaiz) : null;
         if (s) {
           const x = s.x + TRONCO_HOMBRO.x, z = s.z + TRONCO_HOMBRO.z;
-          troncoCorto(L, x, s.y + TRONCO_HOMBRO.y, z, 0.9, TRONCO_HOMBRO.r, 'z');
+          troncoCorto(L, x, s.y + TRONCO_HOMBRO.y, z, largo, r, 'z');
           hueso = H.clavicle_r;
-        } else troncoCorto(L, h.x - 0.045, h.y + 0.085, h.z - 0.1, 0.9, 0.1, 'z');
+        } else troncoCorto(L, h.x - 0.045, h.y + 0.085, h.z - 0.1, largo, r, 'z');
       } else if (t === 'saco') {
         // el saco lleno, echado sobre el hombro derecho y colgando a la espalda; la boca atada por delante
         L.add(new THREE.IcosahedronGeometry(0.2, 2), 'lino', h.x - 0.02, h.y - 0.12, h.z - 0.2, { x: 0.35 }, { escala: v3(0.85, 1.25, 0.65), plano: true });
