@@ -1527,6 +1527,10 @@
      "rama": "trabajo/20261107-0625"
     },
     {
+     "nombre": "Poner el sitio de fuera de la copia de seguridad (una Storage Box de Hetzner u otro al que se llegue por SSH: lo crea valravnx, pasos en servidor/nube/LEEME.md) y probar una restauración en la máquina de verdad",
+     "estado": "espera_decision"
+    },
+    {
      "nombre": "Explorar libre como admin (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente, no solo de la isla del rey, que quiero poder explorar libre»): el mapa del panel enseña el continente entero, un clic lleva a cualquier sitio y la cuenta de admin puede andar fuera de Whitholm",
      "estado": "hecho",
      "inicio": "2026-11-05T13:13:17+01:00",
@@ -4074,6 +4078,11 @@
    "pregunta": "Clanes y guerra (del 30 oct): con el vasallaje de comarca ya no hay un pago que dejar de hacer, así que el impago deja de ser causa de guerra. ¿Qué causas quedan, y asediar el centro de una comarca en su ventana necesita guerra declarada? Para la reunión tras P3, con las dos opciones escritas: solo guerra aceptada por las dos partes más las ventanas de asedio del centro, o causas automáticas tasadas",
    "desde": "2026-10-30",
    "hito": "tierras"
+  },
+  {
+   "pregunta": "Copia de seguridad del servidor: ya se hace cada día en la máquina (las 14 últimas), pero falta el sitio de fuera, que solo puede crear valravnx. Propuesta: una Storage Box de Hetzner (la más pequeña), con los pasos de servidor/nube/LEEME.md («Copia de seguridad»). ¿Vale, o prefieres otro sitio (un repositorio privado, otra máquina, un NAS)? Mientras no esté, la copia sale con error en el servidor",
+   "desde": "2026-11-07",
+   "hito": "admin"
   }
  ]
 }
