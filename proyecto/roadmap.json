@@ -1504,6 +1504,12 @@
     {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Estudio de la interfaz del juego para PC y móvil (valravnx, 7 nov: «que sea comoda y no ocupe tanto, debemos evitar que se llene todo de botones… enseñandomelas primero, sin meter al juego»): cómo lo hacen otros, lo que falla hoy y la propuesta en maquetas; valravnx decide",
+     "estado": "en_curso",
+     "inicio": "2026-11-07T17:12:22+01:00",
+     "rama": "trabajo/20261107-1715-ui"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: después de la casa; se planifica al llegar, con lo que ya hay (la hoguera y el hogar calientan y cocinarán). Planificado el 7 nov (chat con valravnx): el día y la noche ya están (demo v137, hito de gráficos); el calor y los cinco estados de más (mojado, herida infectada, comida en mal estado, dolor y borracho) quedan para después de este hito, como dice el GDD."
