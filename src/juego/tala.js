@@ -4,8 +4,8 @@
 //
 // Cómo se ve (provisional):
 //  - el árbol que cae es el mismo modelo del bosque, que gira sobre su base hacia donde cae (la boca, la cuesta o su
-//    inclinación: src/logica/tala.js), cada vez más deprisa (como al caer), y se queda un momento en el suelo; después quedan el tronco y las ramas
-//    como objetos del suelo (src/juego/suelo.js), donde cayó.
+//    inclinación: src/logica/tala.js), cada vez más deprisa (como al caer), y se queda un momento en el suelo;
+//    después quedan el tronco y las ramas como objetos del suelo (src/juego/suelo.js), donde cayó.
 //  - el tocón: el pie del tronco con su corteza y el corte claro con anillos arriba.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
