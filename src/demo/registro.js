@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v138 (el tejado de juncos)";
+export const VERSION_DEMO = "Demo única · v139 (sin llanos pelados)";
 export const REGISTRO_DEMO = [
+  "v139: sin llanos pelados en la estepa (valravnx, 7 nov: «hay tramos que no aparece vegetacion ni nada… a momentos aparece un manto azul»): tierra adentro, lo que quedaba por debajo del mar se ponía a 0,4 m justos, en llanos de kilómetros sin nada (la hierba pide 1 m sobre el mar) que de lejos perdían contra el mar de lejos. Ahora, pasada la costa, el suelo no baja de unos 2 m y lo que iba a quedar más hondo sube como un relieve suave; crece lo que toca y la playa no cambia. Entran 17 sitios de salida de pradera más.",
+  "v139, provisional: cada metro que el suelo iba a quedar por debajo del mar sube un cuarto de metro (el documento no lo dice: es lo justo para que se note el relieve sin levantar lomas).",
   "v138: el tejado de la casa humilde (valravnx, 7 nov: «no se ha tenido en cuenta el maldito techo»): tejado de juncos y su remate de esquina (2 varas y 4 juncos; los juncos, de la orilla, con una lasca), con el junco como material de obra y el estilo del de paja. Lo que pide paja (tejado y remate de paja, cama de paja, antorcha de pie y alfombra) se esconde del menú: la paja sale del cereal, que aún no hay.",
   "v138, provisional: el tejado de juncos pesa, carga y cuesta como el de paja (el documento de sistemas no lo trae).",
   "v137: el ciclo de día y noche (valravnx, 7 nov). La hora es la del servidor: todos ven el mismo cielo. El día dura 2 horas reales y la noche 1 (GDD). El sol sale por el este, a mediodía está al sur y se pone por el oeste, y la luz lo sigue con sus sombras y sus colores: blanca a mediodía, dorada al caer la tarde; el cielo va del azul al naranja y al morado del crepúsculo.",
