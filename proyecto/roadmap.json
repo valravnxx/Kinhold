@@ -1680,9 +1680,9 @@
     },
     {
      "nombre": "Arreglo (valravnx, 7 nov): los puestos de trabajo y los almacenajes guardan el giro con que se ponen, y se desmontan terminados desde Construir (el 75 % del material y lo que guardan, al suelo a su lado)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T20:42:58+00:00",
-     "rama": "trabajo/20261107-2042-puestos"
+     "fin": "2026-11-07T23:15:38+00:00"
     }
    ]
   },
@@ -3421,6 +3421,13 @@
      "archivo": "jugar/demo/v144.html",
      "capturas": "capturas/demo-v144",
      "notas": "Llevar más de una vez: la rastra lleva también troncos delgados (hasta 5) y varas (hasta 12); los juncos y el mimbre van en el fardo atado, con la paja y la fibra, y se ven como haces atados a la espalda."
+    },
+    {
+     "v": "v145",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v145.html",
+     "capturas": "capturas/demo-v145",
+     "notas": "Los puestos de trabajo y los almacenajes se ponen con el giro que les das y se desmontan terminados (el 75 % del material y lo que guardan, al suelo)"
     }
    ]
   },
