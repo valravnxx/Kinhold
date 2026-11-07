@@ -37,6 +37,7 @@ export const ESPECIES_DOSEL = Object.fromEntries(Object.entries(VERDES).map(([e,
 function materialLejano(u, copas = false, subir = false) {
   u = { uTexC: { value: null }, uTexD: { value: null }, uTexP: { value: new THREE.Vector4(0, 0, 1, 0) }, uTexN: { value: new THREE.Vector2(1, 1) }, uIni: { value: 0 }, uRampa: { value: 1 }, ...u };
   const material = new THREE.MeshLambertMaterial({ vertexColors: true, fog: false });
+  material.userData.u = u;   // (los uniformes, para las pruebas)
   material.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, u);
     const sube = subir ? `
