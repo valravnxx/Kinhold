@@ -43,7 +43,7 @@ function comprobar(nombre, cond, detalle = '') {
 }
 
 // Lo que un jugador nuevo aún no puede hacer sin el arcón, con el porqué y lo que lo trae.
-const TODAVIA_NO = {};   // hoy, nada (hasta el 7 nov: llevar el tronco delgado al hombro; ya es el paso 10)
+const TODAVIA_NO = {};   // hoy, nada (hasta el 7 nov: llevar el tronco delgado al hombro; ya es el paso 10; los juncos, el barro y la yesca, desde el 7 nov en el paso 11)
 
 const T = terrenoWhitholm();
 if (MUTAR) { const punto = T.punto.bind(T); T.punto = (id, x, z) => (id.startsWith('piedra:') ? null : punto(id, x, z)); }
@@ -329,6 +329,70 @@ try {
     let t2 = { ok: true }, n2 = 0;
     for (; n2 < 400 && t2.ok && c2?.piezas.get(k2)?.obra; n2++) t2 = await J.accion({ tipo: 'trabajar', construccion: c2.id, clave: k2, segundos: 5 });
     comprobar('lo trabaja hasta terminarlo: su primer poste', !!c2?.piezas.get(k2) && !c2.piezas.get(k2).obra, `${n2} ratos de 5 s ${t2.motivo || ''}`);
+  }
+
+  console.log('11. Va al río a por lo que pide la casa humilde y la hoguera: barro con su palo cavador, juncos con una lasca y yesca');
+  {
+    const yo = J.bienvenida.autor;
+    const adelantar = () => { const f = s.objetos.fab; for (const c of [...(f.manos[yo] || []), ...Object.values(f.estaciones).flatMap(e => e.cola)]) if (c.autor === yo) c.fin = Math.min(c.fin, Date.now() - 1); };
+    const enMano = () => ['mano:der', 'mano:izq'].map(l => J.inv && J.inv.lugares[l] ? `${J.inv.lugares[l].tipo}×${J.inv.lugares[l].n}` : '–').join(' ');
+    const aSusPies = async (tipo) => { const l = ['mano:der', 'mano:izq'].find(x => J.inv.lugares[x]?.tipo === tipo); return l ? J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z }) : { ok: true }; };
+    const sueloMio = (tipo) => s.objetos.sueloVisible(Date.now()).find(o => o.cosa.tipo === tipo && Math.hypot(o.x - J.pos.x, o.z - J.pos.z) < 2);
+    // el río más cercano a la salida (en anillos de 25 m), y lo que se recoge en su orilla
+    let rio = null;
+    for (let r = 0; r < 3000 && !rio; r += 25) for (let k = 0; k < 96; k++) {
+      const x = Math.cos(k / 96 * 2 * Math.PI) * r, z = Math.sin(k / 96 * 2 * Math.PI) * r, X = x + O.x, Z = z + O.z;
+      const { dm, ancho } = T.paisaje.rioCerca(X, Z, T.paisaje.riosEn(X - 20, Z - 20, X + 20, Z + 20));
+      if (dm - ancho / 2 < 4 && T.alt(X, Z) > 0.5) { rio = { x, z, r }; break; }
+    }
+    comprobar('hay un río al que ir andando desde la salida', !!rio, rio ? `a ${rio.r} m` : 'ninguno a menos de 3 km');
+    const orilla = recogidaEn(T.paisaje, T.alt, T.semilla, { x0: O.x + rio.x - 100, z0: O.z + rio.z - 100, x1: O.x + rio.x + 100, z1: O.z + rio.z + 100 }).map(p => ({ id: p.id, tipo: p.tipo, x: r2(p.x - O.x), z: r2(p.z - O.z) }));
+    const de = (tipo) => cerca(orilla.filter(p => p.tipo === tipo), rio);
+    comprobar('en su orilla hay juncos, barro, hongos yesqueros, sílex, piedra y ramas', ['juncos', 'barro', 'yesquero', 'silex', 'piedra', 'ramas'].every(t => de(t).length), ['juncos', 'barro', 'yesquero', 'silex', 'piedra', 'ramas'].map(t => `${t} ${de(t).length}`).join(', '));
+    // las manos libres para el camino: lo que lleve, a sus pies (en su tierra)
+    for (const l of ['mano:der', 'mano:izq']) if (J.inv.lugares[l]) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z });
+    await J.andar(rio.x, rio.z);
+    r = await recoger(de('ramas')[0]);
+    comprobar('recoge ramas junto al río', r.ok && J.cuantos('rama') > 0, r.motivo);
+    r = await recoger(de('barro')[0]);
+    comprobar('sin palo cavador no puede cavar el barro', !r.ok && /palo cavador/.test(r.motivo || ''), r.motivo);
+    r = await J.objeto({ tipo: 'fabricar', receta: 'palo_cavador', x: J.pos.x, z: J.pos.z });
+    comprobar('se hace un palo cavador con las manos (1 rama)', r.ok, r.motivo);
+    adelantar();
+    r = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+    comprobar('y lo coge', r.ok && J.cuantos('palo_cavador') + (sueloMio('palo_cavador') ? 1 : 0) === 1, r.motivo || enMano());
+    await aSusPies('rama');
+    if (!J.cuantos('palo_cavador')) { const o = sueloMio('palo_cavador'); if (o) await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, a: 'mano:izq', x: J.pos.x, z: J.pos.z }); }
+    r = await recoger(de('barro')[0]);
+    comprobar('con el palo cavador, cava una cesta de barro en la orilla', r.ok && J.cuantos('barro') === 1, r.motivo || enMano());
+    comprobar('y el barro no se agota: el sitio sigue ahí', s.objetos.recoleccion.disponible(de('barro')[0].id, Date.now()));
+    r = await recoger(de('juncos')[0]);
+    comprobar('sin cuchillo no puede cortar los juncos', !r.ok && /cuchillo/.test(r.motivo || ''), r.motivo);
+    // una lasca: una piedra de tallar en la orilla, con su sílex y su piedra
+    await aSusPies('barro'); await aSusPies('palo_cavador');
+    const taller = { ...J.pos };
+    let pied = 0;
+    for (const p of de('piedra')) { if (pied >= 2) break; r = await recoger(p); if (r.ok) pied++; }
+    await J.andar(taller.x, taller.z);
+    r = await J.objeto({ tipo: 'colocar_estacion', estacion: 'piedra_tallar', x: J.pos.x + 0.8, z: J.pos.z });
+    comprobar('pone una piedra de tallar en la orilla', r.ok, `${r.motivo || ''} ${enMano()}`);
+    const pt = Object.values(s.objetos.fab.estaciones).filter(e => e.autor === yo && e.tipo === 'piedra_tallar').sort((a, b) => Math.hypot(a.x - J.pos.x, a.z - J.pos.z) - Math.hypot(b.x - J.pos.x, b.z - J.pos.z))[0];
+    const dejar = async tipo => { const l = ['mano:der', 'mano:izq'].find(x => J.inv.lugares[x]?.tipo === tipo); return l ? J.objeto({ tipo: 'depositar_estacion', estacion: pt.id, de: l, cantidad: 1, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: `no lleva ${tipo}` }; };
+    r = await dejar('piedra');
+    for (const p of de('silex')) { const q = await recoger(p); if (q.ok) break; }
+    await J.andar(taller.x, taller.z);
+    const r2s = await dejar('silex');
+    comprobar('deja encima una piedra y un sílex', r.ok && r2s.ok, `${r.motivo || ''} ${r2s.motivo || ''}`);
+    r = await J.objeto({ tipo: 'fabricar', receta: 'lasca_silex', estacion: pt.id, x: J.pos.x, z: J.pos.z });
+    comprobar('encarga una lasca de sílex', r.ok, r.motivo);
+    adelantar();
+    r = await J.objeto({ tipo: 'recoger_fabricado', estacion: pt.id, x: J.pos.x, z: J.pos.z });
+    comprobar('y la coge: lleva un cuchillo de sílex', r.ok && J.cuantos('lasca_silex') === 1, r.motivo || enMano());
+    r = await recoger(de('juncos')[0]);
+    comprobar('con la lasca, corta un haz de juncos', r.ok && J.cuantos('junco') === 1, r.motivo || enMano());
+    await aSusPies('junco');
+    r = await recoger(de('yesquero')[0]);
+    comprobar('y coge yesca de los hongos yesqueros de un tocón, con las manos', r.ok && J.cuantos('yesca') >= 1, r.motivo || enMano());
   }
 
   // lo que sale de aquí, en la salida (para quien lo lea en la nube)

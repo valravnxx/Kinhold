@@ -69,7 +69,12 @@ console.log(JSON.stringify([...mejor, km]));"""
 TODO = sitio_con_todo()
 print('  sitio de salida con más tipos cerca:', TODO[:2], '· el del móvil:', TODO[2])
 
-DONDE = {'ramas': ['bosque'], 'piedra': ['rio', 'ladera', 'claro'], 'silex': ['caliza', 'rio', 'claro'], 'ortiga': ['claro', 'ribera'], 'hierba_larga': ['claro', 'ribera']}
+DONDE = {'ramas': ['bosque'], 'piedra': ['rio', 'ladera', 'claro'], 'silex': ['caliza', 'rio', 'claro'], 'ortiga': ['claro', 'ribera'], 'hierba_larga': ['claro', 'ribera'],
+         'juncos': ['rio', 'ribera'], 'barro': ['rio', 'ribera'], 'yesquero': ['bosque']}
+# la orilla del río más cercano a la salida común (unos 850 m al norte; en metros del mundo): juncos, barro y yesqueros
+ORILLA = (184590, 45420)
+CON = {'juncos': ('lasca_silex', 'cuchillo'), 'barro': ('palo_cavador', 'palo cavador'), 'yesquero': (None, None)}
+DA_ORILLA = {'juncos': 'junco', 'barro': 'barro', 'yesquero': 'yesca'}
 LISTO = f"{K}.mundoListo && {K}.recoleccion.listo && {K}.decorado.pendientes === 0"
 
 with sync_playwright() as p:
@@ -127,6 +132,40 @@ with sync_playwright() as p:
             pg.evaluate(f"(() => {{ const i = {K}.inventario; i.lugares['mano:der'] = null; i.lugares['mano:izq'] = null; }})()")
         if movil: comprobar(f'cerca de la salida {TODO[2]} se ha podido recoger algo', len(cogidos) >= 1, ', '.join(cogidos))
         else: comprobar(f'junto al sitio de salida {TODO[1]} se recogen los {TODO[0]} tipos que hay cerca', len(cogidos) >= TODO[0] >= 4, ', '.join(cogidos))
+        # 2b) en la orilla del río: juncos (con cuchillo), barro (con palo cavador, no se agota) y hongos yesqueros
+        pg.evaluate(f"([x, z]) => {{ const k = {K}, O = k.mundoJ.salida; k.pj.x = x - O.x; k.pj.z = z - O.z; }}", list(ORILLA))
+        pg.wait_for_timeout(500)
+        try: pg.wait_for_function(LISTO, timeout=240000)
+        except Exception: print('  (la orilla no llegó a tiempo)')
+        for tipo, (herr, dice) in CON.items():
+            pt = pg.evaluate(f"""(() => {{ const k = {K}, P = k.pj;
+              const q = k.recoleccion.cercanos(P.x, P.z, 90).filter(q => q.tipo === '{tipo}')[0]; if (!q) return null;
+              k.pj.x = q.x + 0.2; k.pj.z = q.z + 0.9; k.pj.rot = Math.PI; k.cam.dist = 3.2; k.cam.pitch = 0.42; k.cam.yaw = -Math.PI / 2 + 0.3;
+              return q; }})()""")
+            comprobar(f'en la orilla del río hay {tipo} (a menos de 90 m)', bool(pt))
+            if not pt: continue
+            pg.wait_for_timeout(600); pg.evaluate(f"{K}.render()")
+            pg.screenshot(path=f'{SALIDA}/{nombre}_orilla_{tipo}.png')
+            usar = (lambda: pg.locator('#btnUsar').tap()) if movil else (lambda: pg.evaluate(f"{K}.usar()"))
+            cuantos = lambda: pg.evaluate(f"{K}.inventario.cuantos('{DA_ORILLA[tipo]}')")
+            if herr:
+                antes = cuantos(); usar(); pg.wait_for_timeout(400)
+                aviso = pg.evaluate("document.getElementById('aviso').textContent")
+                comprobar(f'{tipo}: sin {dice} no se puede, y lo dice', cuantos() == antes and dice in aviso, f'«{aviso}»')
+                pg.evaluate(f"{K}.inventario.meter('mano:izq', {{ tipo: '{herr}', n: 1 }})")
+            antes = cuantos(); usar(); pg.wait_for_timeout(400)
+            aviso = pg.evaluate("document.getElementById('aviso').textContent")
+            comprobar(f'{tipo} ({", ".join(pt["zonas"])}): Usar lo {"cava" if tipo == "barro" else "corta" if tipo == "juncos" else "recoge"} y va al inventario', cuantos() > antes, f'{antes} → {cuantos()} · «{aviso}»')
+            sigue = pg.evaluate(f"{K}.recoleccion.rec.disponible('{pt['id']}', Date.now())")
+            if tipo == 'barro': comprobar('barro: no se agota (el sitio sigue ahí)', sigue)
+            else: comprobar(f'{tipo}: el punto ya no está', not sigue)
+            pg.evaluate(f"(() => {{ const i = {K}.inventario; i.lugares['mano:der'] = null; i.lugares['mano:izq'] = null; }})()")
+        pg.evaluate(f"(() => {{ const k = {K}; k.cam.dist = 7; k.cam.pitch = 0.45; }})()"); pg.wait_for_timeout(600); pg.evaluate(f"{K}.render()")
+        pg.screenshot(path=f'{SALIDA}/{nombre}_orilla.png')
+        pg.evaluate(f"([x, z]) => {{ const k = {K}; k.pj.x = x; k.pj.z = z; }}", [O['x'] + P[0] - O['x'], P[1]])
+        pg.wait_for_timeout(500)
+        try: pg.wait_for_function(LISTO, timeout=240000)
+        except Exception: print('  (no volvió a tiempo)')
         # 3) lejos y de vuelta
         x0, z0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
         pg.evaluate(f"{K}.recoleccion.cuenta.msMax = 0")

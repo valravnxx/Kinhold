@@ -1328,9 +1328,10 @@
     },
     {
      "nombre": "Materiales del tramo que no tenían origen: juncos o hierba larga (orillas y prados), barro (cavado en la orilla con el palo cavador) y yesca (fibra seca, corteza, hongo de los árboles)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T03:21:48+00:00",
-     "rama": "trabajo/20261107-0322"
+     "rama": "trabajo/20261107-0322",
+     "fin": "2026-11-07T05:15:40+00:00"
     },
     {
      "nombre": "Lo que se fabrica con las manos, con su modelo (estilo v5) en la mano, el cinturón o la espalda: cordel, cuerda, lasca, hacha de piedra, palo cavador, taladro de fuego, leñero y rastra",
@@ -3129,6 +3130,13 @@
      "archivo": "jugar/demo/v131.html",
      "capturas": "capturas/demo-v131",
      "notas": "Talar un árbol joven con el hacha de piedra da un tronco delgado y de 2 a 4 varas. El tronco delgado es la madera de la casa humilde: es el tronco que piden las piezas, y se echa al hombro para llevarlo a la obra. Las varas, con su modelo en el suelo."
+    },
+    {
+     "v": "v132",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v132.html",
+     "capturas": "capturas/demo-v132",
+     "notas": "Juncos, barro y yesca ya tienen de dónde salir: los juncos se cortan en la orilla de los ríos con una lasca de sílex, el barro se cava en la orilla con el palo cavador (no se agota) y la yesca se coge de los hongos yesqueros de los tocones del bosque, o se hace con las manos de fibra seca o de corteza. Con sus modelos y sus imágenes en el panel."
     }
    ]
   },

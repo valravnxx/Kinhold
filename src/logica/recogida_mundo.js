@@ -1,6 +1,6 @@
 // Kinhold — dónde sale lo que se recoge en el mundo de verdad (Whitholm): ramas caídas en el bosque, sílex en la
-// caliza y en los ríos, piedra suelta en las laderas y en los ríos, y fibra (ortigas y hierba larga) en los claros y
-// las riberas (documento de sistemas, apartado 3, nivel N0). Lógica pura, sin three.js: el servidor podrá saber dónde
+// caliza y en los ríos, piedra suelta en las laderas y en los ríos, fibra (ortigas y hierba larga) en los claros y
+// las riberas, juncos y barro en la orilla y hongos yesqueros en el bosque (documento de sistemas, apartado 3, nivel N0). Lógica pura, sin three.js: el servidor podrá saber dónde
 // está cada punto con la misma semilla, sin dibujar nada.
 //
 // Como lo que crece (src/logica/vegetacion.js): cada punto sale de su celda del MUNDO (azarCelda) y de la semilla del
@@ -34,13 +34,20 @@ export const DENSIDAD_RECOGIDA = {
   silex:        { caliza: 0.06, rio: 0.12 },
   ortiga:       { ribera: 0.12, claro: 0.03 },
   hierba_larga: { claro: 0.06, ribera: 0.08 },
+  // (7 nov) lo que pide la casa humilde y la hoguera: juncos en la orilla y la ribera, barro en la orilla y hongos
+  // yesqueros en los tocones viejos del bosque. Se miran después de los sueltos del claro (DESPUES), solo en las celdas
+  // que no han dado nada: así lo de antes sigue en el mismo sitio.
+  juncos:       { rio: 0.12, ribera: 0.05 },
+  barro:        { rio: 0.16, ribera: 0.04 },
+  yesquero:     { bosque: 0.05 },
 };
+const DESPUES = ['juncos', 'barro', 'yesquero'];
 // Piedra y sílex sueltos en la pradera abierta (valravnx, 1 nov: «dentro del realismo, accesibilidad»; tarea «Salida
 // al azar de verdad en línea»): en el claro, algo de piedra y de sílex, menos que donde les toca (decisión provisional:
 // la piedra la séptima parte que en la ladera, el sílex la sexta parte que en la caliza). Se miran después de lo
 // demás, solo en las celdas que no han dado nada: así lo que ya salía sigue en el mismo sitio.
 export const SUELTOS_CLARO = { piedra: 0.03, silex: 0.01 };
-const ORDEN = Object.keys(DENSIDAD_RECOGIDA);
+const ORDEN = Object.keys(DENSIDAD_RECOGIDA).filter(t => !DESPUES.includes(t));
 const PASO_PEND = 3;
 
 export const idPunto = (tipo, xm, zm) => `${tipo}:${Math.round(xm * 10)},${Math.round(zm * 10)}`;
@@ -86,12 +93,14 @@ export function recogidaEn(paisaje, alt, semilla, cuadro) {
     const zr = zonasRecogida(paisaje, alt, semilla, x, z, tramos); if (!zr) continue;
     // un solo tipo por celda: las probabilidades, una detrás de otra
     let acum = 0, tipo = null;
-    for (const t of ORDEN) {
+    const prob = t => {
       let p = 0;
       for (const [zona, q] of Object.entries(DENSIDAD_RECOGIDA[t])) if (zr.zonas.includes(zona)) p = Math.max(p, zona === 'bosque' ? q * Math.min(1, zr.d * 1.4) : q);
-      acum += p; if (u < acum) { tipo = t; break; }
-    }
+      return p;
+    };
+    for (const t of ORDEN) { acum += prob(t); if (u < acum) { tipo = t; break; } }
     if (!tipo && zr.zonas.includes('claro')) for (const [t, p] of Object.entries(SUELTOS_CLARO)) { acum += p; if (u < acum) { tipo = t; break; } }
+    if (!tipo) for (const t of DESPUES) { acum += prob(t); if (u < acum) { tipo = t; break; } }
     if (!tipo) continue;
     puntos.push({ id: idPunto(tipo, x, z), tipo, x, z, giro, zonas: zr.zonas });
   }
