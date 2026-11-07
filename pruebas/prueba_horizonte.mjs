@@ -4,11 +4,13 @@
 // con el alto de verdad del paisaje; la malla quita lo que es todo mar y deja la tierra (con las montañas); el mar de
 // lejos cubre el cuadro de la isla; y los perfiles: los bajos no lo llevan, los altos sí y cada uno al menos tan fino
 // como el anterior. Con MUTAR=1 la compresión se calcula con la mitad de la diagonal (lo lejano se saldría de la
-// cámara): debe FALLAR. Con MUTAR=2 las especies del dosel miden 40 m (copas que no son de estos árboles): debe FALLAR.
+// cámara): debe FALLAR. Con MUTAR=monticulos, el dosel de cerca sin suavizar y desde el jugador (como antes): debe
+// FALLAR. Con MUTAR=2 las especies del dosel miden 40 m (copas que no son de estos árboles): debe FALLAR.
 // El dosel (el bosque de lejos): solo donde hay bosque y en tierra, de la altura de las copas, más fino de cerca.
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearPaisaje } from '../src/logica/paisaje.js';
 import { ISLA } from '../src/logica/whitholm.js';
+import { readFileSync } from 'fs';
 import { crearMuestras, mallaDe, mallaMar, mallaDosel, crearDoselCerca, doselDe, compresion, comprimir, descomprimir, NIVELES, HUNDIDO, MAR, BASE, DOSEL_DESDE } from '../src/logica/horizonte.js';
 import { SALIDAS, alturaMundo } from '../src/logica/whitholm.js';
 import { PERFILES, HORIZONTE } from '../src/posprocesado/perfiles.js';
@@ -140,6 +142,7 @@ for (const k of [1, 2]) {
   comprobar(`el linde del bosque de lejos sin pared (cada ${k * 100} m): las copas no saltan más de 10 m entre vecinos`, l.salto < 10, `salto máximo ${l.salto.toFixed(1)} m`);
   comprobar(`y donde acaba, del color del suelo (cada ${k * 100} m)`, l.bordes > 0 && l.malColor === 0, `${l.malColor} de ${l.bordes}`);
 }
+if (process.env.MUTAR === 'monticulos') globalThis.__mutarMonticulos = true;
 const alt = alturaMundo(paisaje);
 const cercaDe = (i) => { const [x, z] = SALIDAS[i], c = crearDoselCerca(paisaje, alt, ESPECIES, Math.round(x / 16) * 16, Math.round(z / 16) * 16, 500); while (!c.listo) c.avanzar(1e9); return { c, g: c.malla({ ox: x, oz: z }) }; };
 const bosque = cercaDe(249), prado = cercaDe(0);
@@ -147,6 +150,24 @@ comprobar('de cerca, en un bosque mixto hay copas', bosque.g.idx.length > 3000, 
 comprobar('y en la pradera abierta (corros sueltos) casi nada', prado.g.idx.length < bosque.g.idx.length / 10, `${prado.g.idx.length / 3} triángulos`);
 let fuera = 0; for (let v = 0; v < bosque.g.pos.length / 3; v++) if (Math.abs(bosque.g.pos[v * 3]) > 520 || Math.abs(bosque.g.pos[v * 3 + 2]) > 520) fuera++;
 comprobar('de cerca, en su cuadro y en metros de la escena', fuera === 0);
+// sin montículos (valravnx, 7 nov: «crea este glitch grafico de monticulos que equivaldrian rollo a 50 metros cada uno»):
+// dentro del bosque, las copas de cerca no saltan de un punto al de al lado (cada 16 m) más de 1 m de media (sin suavizar, unos 2,2), y cada
+// punto lleva lo que sube sobre el suelo (el sombreador lo mete bajo el suelo cerca del jugador)
+{
+  const g = bosque.g, P = 16, nx = Math.round(1000 / P) + 2;   // (la rejilla: en el cuadro de 500 m de radio)
+  const pos = new Map(); for (let v = 0; v < g.pos.length / 3; v++) if (g.alto[v] > 0) pos.set(Math.round(g.pos[v * 3] / P) + ',' + Math.round(g.pos[v * 3 + 2] / P), g.alto[v]);
+  let suma = 0, n = 0;
+  for (const [k, h] of pos) { const [a, b] = k.split(',').map(Number); const d = pos.get((a + 1) + ',' + b); if (d !== undefined) { suma += Math.abs(d - h); n++; } }
+  const media = suma / n;
+  comprobar('de cerca, las copas sin montículos: entre vecinos, menos de 1 m de media', n > 500 && media < 1, `${media.toFixed(2)} m en ${n} pares`);
+  comprobar('y cada punto dice lo que sube sobre el suelo', g.alto && g.alto.length === g.pos.length / 3 && g.alto.some(v => v > 5) && g.alto.some(v => v === -3));
+}
+{
+  const fuente = readFileSync(new URL('../src/mundo/horizonte.js', import.meta.url), 'utf8');
+  const ini = Number((/DOSEL_INICIO = (\d+)/.exec(fuente) || [])[1]), rampa = Number((/DOSEL_RAMPA = (\d+)/.exec(fuente) || [])[1]);
+  const usa = /uIni: \{ value: globalThis.__mutarMonticulos \? 0 : DOSEL_INICIO \}/.test(fuente) && !globalThis.__mutarMonticulos;
+  comprobar('las copas de cerca empiezan más allá de los árboles de verdad (200 m) y suben poco a poco', usa && ini >= 240 && rampa >= 100, `desde ${ini} m, enteras ${rampa} m más allá`);
+}
 // donde aún no ha llegado el terreno de cerca, nada (flotaría): aquí, sin terreno al este de la salida
 {
   const [x, z] = SALIDAS[249], c = crearDoselCerca(paisaje, alt, ESPECIES, Math.round(x / 16) * 16, Math.round(z / 16) * 16, 500, undefined, (px) => MUTAR2 || px < x);

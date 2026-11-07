@@ -5008,5 +5008,22 @@
   ],
   "pruebas": "En la nube, 36 grupos: todos bien (el PC de valravnx no estaba para pruebas). Tras unir main (lo hecho a mano de P3, que no toca el combate), combate 125/125, ropa 83/83 y combate en el servidor 74/74 aquí. Miradas las capturas del combate en el mundo (PC y móvil): igual que antes.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T09:43:56+01:00",
+  "fin": "2026-11-07T12:30:16+01:00",
+  "titulo": "Gráficos: el bosque de lejos, de cerca, sin montículos",
+  "hito": "graficos",
+  "hecho": [
+   "Las manchas que pintan las copas del bosque de lejos usaban un azar con el seno de números grandes, que en muchas tarjetas gráficas pierde precisión y sale en anillos y rayas: ahora, un azar sin seno.",
+   "Cada mancha se apaga cuando ya no cabe en el píxel (lo que mide un píxel en el suelo): las finas, de 6 m, dejan de hacer moiré a lo lejos, y las de 60 m, que parecían lomas, son mucho más suaves.",
+   "Las copas de cerca (un punto cada 16 m), suavizadas con sus vecinos: de unos 2,2 m de salto entre vecinos a 0,3.",
+   "Las copas de cerca empiezan a 250 m del jugador y suben poco a poco desde el suelo hasta su alto a 400 m (antes, desde el borde de los árboles de verdad, a veces a cien metros).",
+   "Prueba nueva de navegador (el bosque de lejos visto de cerca) con capturas en PC y móvil; con MUTAR=1 falla, y la de lógica del horizonte con MUTAR=monticulos también.",
+   "No comprobado: en una tarjeta gráfica de verdad (su PC no estaba libre; sin gráfica, los anillos de su captura no salen igual)."
+  ],
+  "pruebas": "Todas en la nube (su PC no estaba libre): 36 de 37 grupos a la primera; la del panel del admin (la cámara libre, que no se toca aquí) falló una vez y pasó al repetirla. Capturas de PC y móvil, antes y después, miradas.",
+  "capturas": "capturas/demo-v135",
+  "estado": "ok"
  }
 ]

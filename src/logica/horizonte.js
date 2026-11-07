@@ -249,12 +249,29 @@ export function mallaDosel(m, k, { ox = 0, oz = 0, y0 = 0 } = {}) {
   return { pos, col, idx: Uint32Array.from(idx), dens, copa, sube, cx, cz };
 }
 
+// la media de cada punto con bosque y sus vecinos con bosque (el centro pesa el doble); lo que no tiene bosque, igual
+export function suavizar(h, nx, nz) {
+  const r = new Float32Array(h.length);
+  for (let b = 0; b < nz; b++) for (let a = 0; a < nx; a++) {
+    const q = b * nx + a;
+    if (!(h[q] > 0)) { r[q] = h[q]; continue; }
+    let s = h[q] * 2, n = 2;
+    for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) {
+      if (!i && !j) continue;
+      const x = a + i, z = b + j; if (x < 0 || z < 0 || x >= nx || z >= nz) continue;
+      const v = h[z * nx + x]; if (v > 0) { s += v; n++; }
+    }
+    r[q] = s / n;
+  }
+  return r;
+}
+
+// hay(x, z) (opcional): ¿está ya el terreno de cerca en (x, z)? Donde aún no ha llegado no se pone dosel (flotaría sobre
+// nada: valravnx, 5 nov, tiras verdes en el cielo); «faltan» dice cuántos puntos se quedaron sin mirar por eso.
 // Las copas de cerca: una rejilla fina (cada «paso» m) en un cuadro alrededor de (cx, cz) (m del mundo), con la altura
 // exacta del suelo (alt, la del juego) y la pendiente como la de los árboles (src/logica/vegetacion.js: vecinos a 3 m),
 // sin nada en el agua. Se calcula poco a poco (avanzar) y luego se pide la malla (en m de la escena).
 export const PASO_DOSEL_CERCA = 16;
-// hay(x, z) (opcional): ¿está ya el terreno de cerca en (x, z)? Donde aún no ha llegado no se pone dosel (flotaría sobre
-// nada: valravnx, 5 nov, tiras verdes en el cielo); «faltan» dice cuántos puntos se quedaron sin mirar por eso.
 export function crearDoselCerca(paisaje, alt, especies, cx, cz, radio, paso = PASO_DOSEL_CERCA, hay = null) {
   const x0 = Math.floor((cx - radio) / paso) * paso, z0 = Math.floor((cz - radio) / paso) * paso;
   const nx = Math.ceil((cx + radio - x0) / paso) + 1, nz = Math.ceil((cz + radio - z0) / paso) + 1;
@@ -284,8 +301,14 @@ export function crearDoselCerca(paisaje, alt, especies, cx, cz, radio, paso = PA
       while (i < nx * nz) { uno(); k++; if ((k & 15) === 0 && ahora() - t0 >= ms) break; }
       return k;
     },
-    // la malla (m de la escena): solo los cuadros con bosque; las esquinas sin él, 3 m bajo el suelo
+    // la malla (m de la escena): solo los cuadros con bosque; las esquinas sin él, 3 m bajo el suelo. Con alto, el
+    // atributo de lo que sube cada punto sobre el suelo (lo que el sombreador le quita al empezar, cerca del jugador).
+    // El alto, suavizado (valravnx, 7 nov: «crea este glitch grafico de monticulos que equivaldrian rollo a 50 metros
+    // cada uno»): cada punto lleva su bulto (±45 %, el perfil dentado que de lejos hace de copas) y, a pocos cientos de
+    // metros, cada 16 m, salían lomas de copas una al lado de otra; aquí, la media con sus vecinos (dos veces), y el
+    // perfil de las copas lo dan las manchas del sombreador.
     malla({ ox = 0, oz = 0, y0 = 0 } = {}) {
+      const hs = globalThis.__mutarMonticulos ? h : suavizar(suavizar(h, nx, nz), nx, nz);
       const usar = new Int32Array(nx * nz).fill(-1), idx = [];
       let nv = 0;
       const v = (q) => { if (usar[q] < 0) usar[q] = nv++; return usar[q]; };
@@ -294,15 +317,16 @@ export function crearDoselCerca(paisaje, alt, especies, cx, cz, radio, paso = PA
         if (!(h[p] > 0 || h[q] > 0 || h[r] > 0 || h[t] > 0)) continue;
         idx.push(v(p), v(r), v(q), v(q), v(r), v(t));
       }
-      const pos = new Float32Array(nv * 3), cc = new Float32Array(nv * 3);
+      const pos = new Float32Array(nv * 3), cc = new Float32Array(nv * 3), alto = new Float32Array(nv);
       for (let q = 0; q < nx * nz; q++) {
         const w = usar[q]; if (w < 0) continue;
         const a = q % nx, b = (q - a) / nx;
-        pos[w * 3] = x0 + a * paso - ox; pos[w * 3 + 1] = (h[q] > 0 ? suelo[q] + h[q] : suelo[q] - 3) - y0; pos[w * 3 + 2] = z0 + b * paso - oz;
+        alto[w] = h[q] > 0 ? hs[q] : -3;
+        pos[w * 3] = x0 + a * paso - ox; pos[w * 3 + 1] = suelo[q] + alto[w] - y0; pos[w * 3 + 2] = z0 + b * paso - oz;
         if (h[q] > 0) { cc[w * 3] = col[q * 3]; cc[w * 3 + 1] = col[q * 3 + 1]; cc[w * 3 + 2] = col[q * 3 + 2]; }
         else { cc[w * 3] = 0.05; cc[w * 3 + 1] = 0.07; cc[w * 3 + 2] = 0.035; }   // el linde: la sombra bajo las copas
       }
-      return { pos, col: cc, idx: Uint32Array.from(idx) };
+      return { pos, col: cc, idx: Uint32Array.from(idx), alto };
     },
   };
 }
