@@ -1,0 +1,16 @@
+1. El mundo sano
+  OK   rehace el mundo entero: ninguna acción caída — 10 de 10
+  OK   la tierra de Ana, con sus construcciones y piezas — 2 construcciones, 2 piezas
+  OK   y su hoguera — 1
+  OK   nada enterrado ni raro
+2. El terreno de hoy, 2 m por encima de lo construido
+  OK   dice que las construcciones están enterradas, y cuánto — [{"id":1,"x":503,"z":499,"oy":0,"metros":2},{"id":3,"x":519,"z":499,"oy":0,"metros":2}]
+  OK   y el puesto — [{"id":"e1","tipo":"hoguera","x":510,"z":506,"metros":2}]
+  OK   y lo da por raro (y el texto lo dice)
+3. Una acción que salió bien y hoy ya no sale (el mojón, con datos que hoy no valen)
+  OK   cuenta el mojón caído y lo que cae detrás (las obras de su tierra) — ["mojon","colocar","entregar","trabajar","trabajar","trabajar","trabajar","trabajar","colocar"]
+  OK   lo da por raro y el texto lo avisa
+  OK   el servidor lo avisa al arrancar — AVISO: 9 acciones que salieron bien ya no salen al rehacer el mundo (la primera, n.º 2, mojon de jugador:ana: Datos no válidos.). Lo que dependía de ellas no está; el archivo lo guarda. Mirar con: node servidor/revisar_mundo.mjs
+  OK   y el archivo sigue igual (lo construido no se pierde de él)
+
+11 bien, 0 mal
