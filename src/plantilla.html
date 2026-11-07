@@ -105,6 +105,9 @@ body.construyendo #pomo{left:25px;top:25px}
 .fab-pest.fab-sel{background:var(--panel2);border-color:rgba(217,164,65,.5);color:var(--ink)}
 .fab-cuenta{position:absolute;right:-4px;top:-6px;font-size:10.5px;background:var(--acento);color:#2a2016;border-radius:9px;padding:0 6px;font-weight:700}
 .fab-centro{grid-area:centro;overflow:auto;padding:10px 14px}
+@media (min-width:641px){#panelFabricar.fab-almacen{grid-template-areas:"cab cab cab" "nav centro centro" "pie pie pie"}}
+#panelFabricar.fab-almacen .fab-ficha{display:none}
+.fab-nota{margin:8px 2px;color:var(--muted);font-size:12.5px}
 .fab-sec h3{margin:6px 2px 8px;font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:#8d8270;font-weight:600;display:flex;align-items:center;gap:8px}
 .fab-sec h3::after{content:"";flex:1;height:1px;background:var(--linea)}
 .fab-cartas{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:9px;margin-bottom:10px}

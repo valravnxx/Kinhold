@@ -267,6 +267,17 @@ try {
     const rd = ajena.ejecutar({ autor: yoA, tipo: 'depositar_estacion', estacion: 'piedra_tallar:9', de: ajena.invs.de(yoA).rutasCon('piedra')[0], x: 0, z: 0 }, Date.now());
     const rr = ajena.ejecutar({ autor: yoA, tipo: 'retirar_estacion', estacion: 'piedra_tallar:9', objeto: 'rama', x: 0, z: 0 }, Date.now());
     comprobar('ni se deja ni se coge nada de una estación en tierra de otro', !rd.ok && !rr.ok && /tierra de otro/.test(rd.motivo + rr.motivo) && ajena.invs.de(yoA).cuantos('piedra') === 1 && ajena.fab.estaciones['piedra_tallar:9'].deposito.rama === 2, rd.motivo);
+    // los almacenajes de la base (7 nov): lo guardado es de la tierra; en la de otro, ni se guarda ni se saca
+    ajena.fab.estaciones['pila_piedras:10'] = { id: 'pila_piedras:10', tipo: 'pila_piedras', x: 0.5, z: 0, autor: 'otro', cola: [], deposito: { piedra: 30 } };
+    const rg = ajena.ejecutar({ autor: yoA, tipo: 'depositar_estacion', estacion: 'pila_piedras:10', de: ajena.invs.de(yoA).rutasCon('piedra')[0], x: 0, z: 0 }, Date.now());
+    const rs = ajena.ejecutar({ autor: yoA, tipo: 'retirar_estacion', estacion: 'pila_piedras:10', objeto: 'piedra', cantidad: 1, x: 0, z: 0 }, Date.now());
+    comprobar('la pila de piedras de otro: ni se guarda ni se saca nada', !rg.ok && !rs.ok && /tierra de otro/.test(rg.motivo + rs.motivo) && ajena.fab.estaciones['pila_piedras:10'].deposito.piedra === 30, rs.motivo);
+    // y un almacenaje solo se pone en una tierra con dueño (la tuya o la de quien te invita): en tierra de nadie, no
+    const nadie = new ObjetosServidor({ posicion: () => ({ x: 0, z: 0 }), enTierras: () => false });
+    const rn = nadie.ejecutar({ autor: yoA, tipo: 'colocar_estacion', estacion: 'pila_piedras', x: 0.5, z: 0 }, Date.now());
+    const suya = new ObjetosServidor({ posicion: () => ({ x: 0, z: 0 }), enTierras: () => true });
+    const rsu = suya.ejecutar({ autor: yoA, tipo: 'colocar_estacion', estacion: 'pila_piedras', x: 0.5, z: 0 }, Date.now());
+    comprobar('un almacenaje, en tierra de nadie no; en la suya, sí', !rn.ok && /tu tierra/.test(rn.motivo) && rsu.ok, `${rn.motivo} / ${rsu.motivo || 'ok'}`);
   }
 
   const fichaB = b.bienvenida.ficha;

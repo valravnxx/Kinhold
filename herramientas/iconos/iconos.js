@@ -12,7 +12,8 @@ import { prepararRenderer } from '../../src/mundo/ambiente.js';
 import { materialTex } from '../../src/mundo/estilos.js';
 import { modeloDe } from '../../src/juego/suelo.js';
 import { MODELO_OBJETO, modeloHachaPiedra } from '../../src/juego/modelos_objetos.js';
-import { MODELO_ESTACION } from '../../src/juego/estaciones.js';
+import { MODELO_ESTACION, modeloDeposito } from '../../src/juego/estaciones.js';
+import { ESTACIONES } from '../../src/logica/fabricacion.js';
 import { modeloHacha } from '../../src/juego/personaje.js';
 import { loteEnMano, loteEspalda } from '../../src/juego/llevado.js';
 import { CATALOGO } from '../../src/logica/inventario.js';
@@ -68,7 +69,10 @@ for (const t of Object.keys(CATALOGO).filter(t => !Object.hasOwn(PRENDAS, t))) {
   else if (ESPALDA.includes(t)) fuentes[t] = { propio: true, hacer: () => deEspalda(t) };
   else fuentes[t] = { propio: false, hacer: () => delSuelo(t, 1) };
 }
-for (const [t, hacer] of Object.entries(MODELO_ESTACION)) fuentes['est_' + t] = { propio: true, hacer: () => hacer('icono_' + t), estacion: true };
+// los almacenajes, llenos a medias (que se vea para qué es cada uno)
+const LLENOS = { acopio_troncos: { tronco_delgado: 7 }, pila_piedras: { piedra: 22 }, lenera: { lena: 14, rama: 6 } };
+const conLleno = (t, o) => { if (LLENOS[t]) o.add(modeloDeposito(t, LLENOS[t], 'icono_' + t)); return o; };
+for (const [t, hacer] of Object.entries(MODELO_ESTACION)) if (ESTACIONES[t]) fuentes['est_' + t] = { propio: true, hacer: () => conLleno(t, hacer('icono_' + t)), estacion: true };
 
 window.__iconos = {
   lista: Object.entries(fuentes).map(([nombre, f]) => ({ nombre, propio: f.propio })),

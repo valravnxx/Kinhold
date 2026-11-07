@@ -9,6 +9,9 @@
 //    brasas, llamas que se mueven, humo que sube y luz (la pone main.js, con las de las chimeneas); apagada después de
 //    arder, las cenizas (y las ramas, solo si tiene algo puesto sin arder).
 //  - banco de tronco: dos troncos cortos, uno de pie (el tajo) y otro tumbado al lado.
+//  - los almacenajes (7 nov): el acopio de troncos (durmientes y dos pares de estacas de vara), la pila de piedras (un
+//    lecho de losas) y la leñera (tejadillo de ramas sobre cuatro postes); lo guardado se ve puesto como se guarda de
+//    verdad y llena el almacenaje hasta lo que le cabe (los troncos en filas, las piedras en montón, la leña apilada).
 // Lo depositado en cada una (valravnx, 6 nov) se ve puesto, con los mismos modelos que lo del suelo: encima de la losa
 // de la piedra de tallar y del tajo del banco (lo que no cabe encima, al pie); junto a la hoguera, alrededor del
 // círculo de piedras. Cada tipo, su montón.
@@ -140,7 +143,109 @@ function bancoTronco(id) {
   return g;
 }
 
-export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, banco_tronco: bancoTronco };
+// ---------- los almacenajes de la base (revisión del 1 nov): el soporte, y lo guardado se ve puesto, lleno ----------
+// una vara de pie o tumbada, de a a b (como las del árbol joven: madera con veta y un corte en cada punta)
+function varaEntre(L, a, b, r) {
+  const d = new THREE.Vector3().subVectors(b, a), largo = d.length(), q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize());
+  const m = new THREE.Matrix4().compose(new THREE.Vector3(), q, new THREE.Vector3(1, 1, 1));
+  const c = a.clone().addScaledVector(d, 0.5);
+  L.add(cil(r * 0.8, r, largo, 7), 'madera', c.x, c.y, c.z, m, { tex: 'veta', sinSuelo: true });
+}
+// El acopio de troncos: dos durmientes de vara en el suelo (los troncos no tocan la tierra) y dos pares de estacas que
+// sujetan la pila por los lados. Los troncos van a lo largo de X, entre las estacas.
+const ACOPIO = { x: 1.05, z: 0.46, alto: 1.05 };
+function acopioTroncos(id) {
+  const L = new Lote({ rangoSuelo: 0.12, variacion: 0.07 });
+  for (const sx of [-1, 1]) {
+    const x = sx * ACOPIO.x * 0.72;
+    varaEntre(L, new THREE.Vector3(x, 0.035, -ACOPIO.z - 0.12), new THREE.Vector3(x + (az(id, sx) - 0.5) * 0.04, 0.035, ACOPIO.z + 0.12), 0.035); // durmiente
+    for (const sz of [-1, 1]) { // estacas, un poco abiertas hacia fuera
+      const x0 = sx * ACOPIO.x * 0.72 + (az(id, sx * 3 + sz) - 0.5) * 0.05, z0 = sz * ACOPIO.z;
+      varaEntre(L, new THREE.Vector3(x0, -0.1, z0), new THREE.Vector3(x0, ACOPIO.alto, z0 * 1.06), 0.026);
+    }
+  }
+  return mallas(L);
+}
+// La pila de piedras: un lecho de cuatro losas planas donde se amontonan.
+function pilaPiedras(id) {
+  const L = new Lote({ rangoSuelo: 0.2, variacion: 0.06 });
+  for (let i = 0; i < 4; i++) {
+    const a = i * Math.PI / 2 + 0.6 + (az(id, i) - 0.5) * 0.3;
+    L.add(piedraIrregular(0.26, 1, id + 'l' + i, 0.18), i % 2 ? 'piedraOsc' : 'piedra', Math.cos(a) * 0.3, 0.035, Math.sin(a) * 0.3, { y: az(id, i + 5) * 6 }, { escala: new THREE.Vector3(1.25, 0.28, 1), plano: true });
+  }
+  return mallas(L);
+}
+// La leñera: un tejadillo de ramas a un agua sobre cuatro postes de vara (más altos delante), con dos durmientes.
+const LENERA = { x: 0.75, z: 0.42, delante: 1.15, detras: 0.85 };
+function lenera(id) {
+  const L = new Lote({ rangoSuelo: 0.12, variacion: 0.07 }), { x: X, z: Z, delante, detras } = LENERA;
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) varaEntre(L, new THREE.Vector3(sx * X, -0.1, sz * Z), new THREE.Vector3(sx * X, sz > 0 ? delante : detras, sz * Z), 0.028);
+  for (const sz of [-1, 1]) { const y = sz > 0 ? delante : detras; varaEntre(L, new THREE.Vector3(-X - 0.1, y, sz * Z), new THREE.Vector3(X + 0.1, y + 0.01, sz * Z), 0.022); } // travesaños
+  for (const sx of [-0.5, 0.5]) varaEntre(L, new THREE.Vector3(sx * X, 0.03, -Z), new THREE.Vector3(sx * X, 0.03, Z), 0.03); // durmientes
+  for (let i = 0; i < 34; i++) { // el tejadillo: ramas de delante atrás, apretadas, en dos capas
+    const capa = i % 2, x = -X - 0.08 + (i >> 1) * (2 * X + 0.16) / 16 + capa * 0.04, dz = (az(id, i + 30) - 0.5) * 0.14, r = 0.02 + az(id, i + 60) * 0.01;
+    varaEntre(L, new THREE.Vector3(x, delante + 0.03 + capa * 0.03, Z + 0.2 + dz), new THREE.Vector3(x + (az(id, i) - 0.5) * 0.1, detras + 0.03 + capa * 0.03, -Z - 0.2 + dz), r);
+  }
+  return mallas(L);
+}
+
+export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, banco_tronco: bancoTronco, acopio_troncos: acopioTroncos, pila_piedras: pilaPiedras, lenera };
+
+// Lo guardado en un almacenaje, puesto como se guarda de verdad (cada uno lleno hasta lo que le cabe; nada flota):
+const TRONCO = { tronco_delgado: [2.6, 0.09], tronco_corto: [0.9, 0.14], tronco_largo: [4.5, 0.18] };
+//  - el acopio: los troncos tumbados entre las estacas, en filas de 4 sobre los durmientes.
+function llenoAcopio(dep, id) {
+  const L = new Lote({ rangoSuelo: 0.6, variacion: 0.07 }), lista = [];
+  for (const t of ['tronco_largo', 'tronco_delgado', 'tronco_corto']) for (let i = 0; i < (dep[t] || 0); i++) lista.push(t);
+  let y = 0.07, i = 0;
+  while (i < lista.length) {
+    const fila = lista.slice(i, i + 4), rMax = Math.max(...fila.map(t => TRONCO[t][1]));
+    fila.forEach((t, k) => {
+      const [largo, r] = TRONCO[t], z = (k - (fila.length - 1) / 2) * (2 * ACOPIO.z - 0.06) / 4, dx = (az(id, i + k) - 0.5) * 0.12, g = (az(id, i + k + 50) - 0.5) * 0.04;
+      const m = new THREE.Matrix4().makeRotationY(g).multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2));
+      L.add(cil(r, r * 1.04, largo, 9), 'corteza', dx, y + r, z, m, { sinSuelo: true });
+      for (const s of [-1, 1]) L.add(new THREE.CircleGeometry(r * 0.97, 9), 'corte', dx + Math.cos(g) * s * (largo / 2 + 0.002), y + r, z - Math.sin(g) * s * (largo / 2 + 0.002), new THREE.Matrix4().makeRotationY(g + s * Math.PI / 2), { sinSuelo: true });
+    });
+    y += rMax * 1.9; i += 4;
+  }
+  return mallas(L);
+}
+//  - la pila: las piedras en montón sobre su lecho, capa a capa (cada capa, anillos alrededor de una del centro, más
+//    estrecha que la de debajo): 40 caben en cuatro capas.
+const CAPAS_PILA = [[[1, 0], [6, 0.21], [11, 0.43]], [[1, 0], [6, 0.19], [6, 0.35]], [[1, 0], [6, 0.18]], [[2, 0.06]]];
+function llenoPila(dep, id) {
+  const g = new THREE.Group(), mods = modelosRecoleccion();
+  let n = dep.piedra || 0, i = 0;
+  CAPAS_PILA.forEach((anillos, capa) => {
+    for (const [cuantas, r] of anillos) for (let k = 0; k < cuantas && n > 0; k++, n--, i++) {
+      const p = deLista(mods.piedra), a = k / cuantas * Math.PI * 2 + capa * 0.7 + az(id, i) * 0.4;
+      p.position.set(Math.cos(a) * r, 0.05 + capa * 0.11, Math.sin(a) * r); p.rotation.y = az(id, i + 20) * 6; p.scale.setScalar(0.95 + az(id, i + 40) * 0.3);
+      g.add(p);
+    }
+  });
+  return g;
+}
+//  - la leñera: la leña apilada bajo el tejadillo, en filas de 6 a lo largo de Z (cortes al frente), y las ramas en
+//    haces atados encima de los durmientes, a un lado.
+function llenoLenera(dep, id) {
+  const g = new THREE.Group(), L = new Lote({ rangoSuelo: 0.6, variacion: 0.07 }), mods = modelosRecoleccion();
+  const lena = dep.lena || 0, r = 0.055, largo = 0.48;
+  for (let i = 0; i < lena; i++) {
+    const fila = Math.floor(i / 6), k = i % 6, x = -LENERA.x * 0.85 + k * r * 2.05 + (fila % 2 ? r : 0), y = 0.06 + r + fila * r * 1.8;
+    const m = new THREE.Matrix4().makeRotationY((az(id, i) - 0.5) * 0.08).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+    L.add(cil(r, r * 1.05, largo, 6), 'corteza', x, y, (az(id, i + 9) - 0.5) * 0.05, m, { sinSuelo: true });
+    for (const s of [-1, 1]) L.add(new THREE.CircleGeometry(r * 0.96, 6), 'corte', x, y, s * (largo / 2 + 0.002), new THREE.Matrix4().makeRotationY(s > 0 ? 0 : Math.PI), { sinSuelo: true });
+  }
+  g.add(mallas(L));
+  const haces = Math.ceil((dep.rama || 0) / 3);
+  for (let h = 0; h < haces; h++) {
+    const m = deLista(mods.ramas), col = h % 3, capa = Math.floor(h / 3);
+    m.position.set(LENERA.x * 0.5 + (col - 1) * 0.1, 0.05 + capa * 0.08, (col - 1) * 0.12); m.rotation.y = Math.PI / 2 + (az(id, h) - 0.5) * 0.3; m.scale.setScalar(0.85);
+    g.add(m);
+  }
+  return g;
+}
+const LLENO = { acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera };
 
 // Dónde se pone lo depositado en cada estación (en su sistema, sin girar): los sitios de encima (y su altura) y, para
 // lo que no cabe, un anillo al pie. Lo grande (troncos) siempre al pie.
@@ -153,6 +258,7 @@ const DEPOSITO_SITIOS = {
 const GRANDE = new Set(['tronco_corto', 'tronco_delgado', 'tronco_largo', 'lena']);
 // El grupo con lo depositado: un montón por tipo, más pequeño encima que al pie.
 export function modeloDeposito(tipo, deposito, id) {
+  if (LLENO[tipo]) { const g = LLENO[tipo](deposito || {}, id); g.name = 'deposito'; return g; }
   const g = new THREE.Group(), sit = DEPOSITO_SITIOS[tipo] || { encima: [], radio: 0.8, empieza: 0 };
   let arriba = 0, pie = 0;
   for (const [t, n] of Object.entries(deposito || {})) {
@@ -189,7 +295,7 @@ const vara = (a, b, r, mat) => {
 };
 // El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
 function armazon(tipo, id) {
-  const g = new THREE.Group(), r = { hoguera: 0.78, banco_tronco: 0.72, piedra_tallar: 0.62 }[tipo] || 0.7, alto = 0.75;
+  const g = new THREE.Group(), r = { hoguera: 0.78, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0 }[tipo] || 0.7, alto = 0.75;
   const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
   pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
   for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {
@@ -273,7 +379,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
     if (!Array.isArray(lista)) return;
     const nuevas = {};
     for (const e of lista) if (e && typeof e.id === 'string' && Number.isFinite(e.x) && Number.isFinite(e.z)) {
-      const n = nuevas[e.id] = { id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, cola: [], deposito: limpiarDeposito(e.deposito) };
+      const n = nuevas[e.id] = { id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, cola: [], deposito: limpiarDeposito(e.deposito, e.tipo) };
       if (Number.isFinite(e.y)) n.y = e.y;
       const ob = e.obra && limpiarObra(e.obra, e.tipo); if (ob) n.obra = ob;
       // el fuego: con lo que le queda, contado desde que llega (la hora de este navegador)

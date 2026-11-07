@@ -6,6 +6,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (19:52 UTC+1) — por el chat: MUY IMPORTANTE, se ha borrado la base al morir en el río
+valravnx (con una captura: junto a su mojón, sin nada más; «En tu tierra: aún no tienes nada almacenado»; «Teletransportado (admin)»): «muy gran e importante problema, he muerto en el rio y se me ha borrado TODO lo que habia en mi base, la casa, lo del suelo, estaciones de trabajo, TODO».
+→ Tarea nueva, la primera del hito «Orden» (la coge el carril A el 7 nov a las 19:23 UTC): averiguar si se ha perdido en el servidor (el mundo de verdad) o solo no le llega al navegador (los trozos al volver de la salida tras ahogarse y teletransportarse), y arreglarlo con su prueba. Va antes que cualquier otra cosa.
+
+### 7 nov 2026 (19:58 UTC+1) — en la sesión del carril A: llevar troncos delgados y juncos
+valravnx: «haz un estudio de lo siguiente: la rastra lleva solo troncos cortos y tal, pero, solo se pueden llevar los finos a mano? igual que los juncos, tenemos para llevar plantas, porque no juncos ahi? como ves meter en rastra troncos finos o troncos cortos, y en la mochila para plantas los juncos?».
+→ Estudio hecho en la sesión (respuesta a valravnx): propuesta de que la rastra lleve también troncos delgados (hasta 5) y varas, y de que los juncos (y el mimbre) vayan en el fardo atado, con la paja y la fibra, no en la cesta de recolección. Nada entra en el juego hasta que valravnx lo diga.
+
 ### 7 nov 2026 (18:42 UTC+1) — por el chat: la interfaz, aplicarla
 valravnx: «aplica por ahora, pero le haremos reviews».
 → La octava versión del estudio de la interfaz queda aprobada de forma provisional (fuera de las decisiones pendientes). Hito nuevo P4b «La interfaz nueva», después de P4, con una tarea por sesión (el kit y la barra de abajo, la acción, el menú con pestañas, el equipo, fabricar, construir, tu tierra, las necesidades, hablar, y la revisión). Cada tarea sale con capturas de PC y móvil para que valravnx la revise.
