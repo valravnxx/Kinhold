@@ -1,0 +1,36 @@
+  OK   pc, hilo=1: sin errores al cargar — []
+  OK   pc: los trozos se hacen en un hilo aparte (Web Worker) — 3 hilo(s)
+  OK   pc, hilo=1: carga todos los trozos alrededor del jugador — 501 trozos en 36211 ms · 287872 triángulos · 112 llamadas de dibujo
+  OK   pc, hilo=1: al andar se cruzan bordes de trozo — 5 fotogramas junto a un borde
+  OK   pc, hilo=1: al acabar, ningún trozo sin malla ni con el detalle viejo — 508 trozos · 0 llegados de más y tirados
+  OK   pc, hilo=1: la altura que se ve bajo el jugador es la del paisaje — 250.81307657420834 y 250.81231074757312 m
+  OK   pc, hilo=1: sin errores al andar — []
+     pc, hilo=1: fotograma más largo 1444.6 ms (al cruzar un borde 1375.2 ms, media 1264.33 ms); trabajo de los trozos en el hilo de dibujo: máx. 3.7 ms, media 0.67 ms; un trozo tarda hasta 144.1 ms (media 10.3); memoria 37 MB
+  OK   pc: con el hilo, el trabajo de los trozos en el hilo de dibujo no pasa de 8 ms en ningún fotograma — 3.7 ms
+  OK   pc, hilo=0: sin errores al cargar — []
+  OK   pc, hilo=0: carga todos los trozos alrededor del jugador — 501 trozos en 41064 ms · 287872 triángulos · 112 llamadas de dibujo
+  OK   pc, hilo=0: al andar se cruzan bordes de trozo — 5 fotogramas junto a un borde
+  OK   pc, hilo=0: al acabar, ningún trozo sin malla ni con el detalle viejo — 508 trozos · 0 llegados de más y tirados
+  OK   pc, hilo=0: la altura que se ve bajo el jugador es la del paisaje — 250.81307657420834 y 250.81231074757312 m
+  OK   pc, hilo=0: sin errores al andar — []
+     pc, hilo=0: fotograma más largo 1315.9 ms (al cruzar un borde 1275.2 ms, media 1160.74 ms); trabajo de los trozos en el hilo de dibujo: máx. 24.8 ms, media 6.86 ms; un trozo tarda hasta 42.1 ms (media 3.8); memoria 41 MB
+  OK   pc: sin el hilo, el trabajo en el hilo de dibujo es mucho mayor (el hilo aparte sirve) — 24.8 ms sin hilo, 3.7 ms con él
+  OK   movil, hilo=1: sin errores al cargar — []
+  OK   movil: los trozos se hacen en un hilo aparte (Web Worker) — 3 hilo(s)
+  OK   movil, hilo=1: carga todos los trozos alrededor del jugador — 501 trozos en 21543 ms · 287872 triángulos · 58 llamadas de dibujo
+  OK   movil, hilo=1: al andar se cruzan bordes de trozo — 5 fotogramas junto a un borde
+  OK   movil, hilo=1: al acabar, ningún trozo sin malla ni con el detalle viejo — 508 trozos · 0 llegados de más y tirados
+  OK   movil, hilo=1: la altura que se ve bajo el jugador es la del paisaje — 250.81307657420834 y 250.81231074757312 m
+  OK   movil, hilo=1: sin errores al andar — []
+     movil, hilo=1: fotograma más largo 870.3 ms (al cruzar un borde 837.3 ms, media 789.31 ms); trabajo de los trozos en el hilo de dibujo: máx. 3.4 ms, media 0.62 ms; un trozo tarda hasta 172.7 ms (media 9.3); memoria 37 MB
+  OK   movil: con el hilo, el trabajo de los trozos en el hilo de dibujo no pasa de 8 ms en ningún fotograma — 3.4 ms
+  OK   movil, hilo=0: sin errores al cargar — []
+  OK   movil, hilo=0: carga todos los trozos alrededor del jugador — 501 trozos en 24184 ms · 287872 triángulos · 58 llamadas de dibujo
+  OK   movil, hilo=0: al andar se cruzan bordes de trozo — 5 fotogramas junto a un borde
+  OK   movil, hilo=0: al acabar, ningún trozo sin malla ni con el detalle viejo — 508 trozos · 0 llegados de más y tirados
+  OK   movil, hilo=0: la altura que se ve bajo el jugador es la del paisaje — 250.81307657420834 y 250.81231074757312 m
+  OK   movil, hilo=0: sin errores al andar — []
+     movil, hilo=0: fotograma más largo 889.4 ms (al cruzar un borde 798.4 ms, media 771.51 ms); trabajo de los trozos en el hilo de dibujo: máx. 23.9 ms, media 6.37 ms; un trozo tarda hasta 39.6 ms (media 3.6); memoria 46 MB
+  OK   movil: sin el hilo, el trabajo en el hilo de dibujo es mucho mayor (el hilo aparte sirve) — 23.9 ms sin hilo, 3.4 ms con él
+
+TODO CORRECTO · medidas en /tmp/kinhold_capturas/trozos/medidas.json
