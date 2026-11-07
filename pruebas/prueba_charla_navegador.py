@@ -127,6 +127,12 @@ try:
             nuevo = OYE[n0:] if len(OYE) > n0 else []
             comprobar(f'{nombre}: le llega al otro, contigo de autor (por el servidor)', any(d['autor'] == yo and d['texto'] == frase for d in nuevo), json.dumps(nuevo, ensure_ascii=False))
             dice = 'Aquí te espero' if nombre == 'pc' else 'Trae también barro'
+            # (lo tuyo se dice otra vez justo antes, largo: en la nube, sin tarjeta gráfica, lo de antes puede haberse
+            # ido ya cuando llega lo del otro, y entonces no habría dos bocadillos que mirar)
+            otra = 'Y luego, con las varas que sobren, hacemos la puerta de la casa y el soporte de varas junto al muro'
+            pg.wait_for_timeout(1100)
+            pg.evaluate(f"(t) => {{ const c = {K}.charla; c.abrir(); const e = document.getElementById('charlaTexto'); e.value = t; document.getElementById('charlaCaja').requestSubmit(); }}", otra)
+            esperar(pg, f"{K}.charla.bocadillos.get({json.dumps(yo)}) === {json.dumps(otra)}", 5000)
             bot_dice(dice)
             sale = esperar(pg, f"{K}.charla.bocadillos.get({json.dumps(AUTOR_BOT)}) === {json.dumps(dice)}", 5000)
             pg.wait_for_timeout(600)

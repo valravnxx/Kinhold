@@ -1439,9 +1439,9 @@
     },
     {
      "nombre": "Las necesidades en la lógica pura y en el servidor: hambre, sed, frío y cansancio de cada personaje (GDD, apartado 6; valores del documento de sistemas, apartado 10: comer 2–3 veces por día de juego, la sed más rápida). Las lleva el servidor, se guardan con el personaje y suben con el tiempo y con lo que hace (con su autor). Al máximo: cansancio acelerado y luego heridas lentas. Recorrido: la sed y el hambre suben solas desde que entra el jugador nuevo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T14:37:33+01:00",
-     "rama": "trabajo/20261107-1437-necesidades"
+     "fin": "2026-11-07T16:19:06+01:00"
     },
     {
      "nombre": "Los avisos en círculos a la derecha (PC y móvil), uno por necesidad con su color (naranja, azul, celeste y gris), que solo salen cuando hace falta; al pulsarlos, qué efecto tiene y cómo se quita. Y los efectos en el juego: sin correr, más lento y golpes flojos según lo que toque. Recorrido: sale el aviso de sed y se lee qué hacer",
@@ -1464,7 +1464,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "La cama ligada: el refugio de ramas (12 ramas y 4 cordel, en el suelo; cuenta como cama) y la cama de paja, como obras con su modelo (estilo v5); ligarla (una por personaje, por el servidor) y dormir en ella. Recorrido: el jugador hace un refugio de ramas en su tierra, lo liga y duerme",
+     "nombre": "La cama ligada: el refugio de ramas (12 ramas caídas del bosque y 4 cordel de fibra, en el suelo; cuenta como cama), como obra con su modelo (estilo v5); ligarla (una por personaje, por el servidor) y dormir en ella. La cama de paja no: la paja sale del cereal, que no hay en este tramo. Recorrido: el jugador hace un refugio de ramas en su tierra, lo liga y duerme",
      "estado": "pendiente"
     },
     {
@@ -1484,7 +1484,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Despiezar y asar (documento de sistemas, apartado 4): la liebre se despieza con la lasca (carne cruda y piel pequeña); la carne se asa en la hoguera o en el hogar y lo asado sacia más que lo crudo (GDD, cocina); la carne cruda se estropea con el tiempo. Modelos (estilo v5) y por el servidor. Recorrido: el jugador despieza la liebre, la asa y se la come",
+     "nombre": "Despiezar y asar (documento de sistemas, apartado 4): la liebre se despieza con la lasca de sílex (carne cruda y piel pequeña: el origen de la piel, que hoy no tiene, en pruebas/prueba_origenes.mjs); la carne se asa en la hoguera o en el hogar y lo asado sacia más que lo crudo (GDD, cocina); la carne cruda se estropea con el tiempo. Modelos (estilo v5) y por el servidor. Recorrido: el jugador despieza la liebre, la asa y se la come",
      "estado": "pendiente"
     },
     {
@@ -1705,6 +1705,12 @@
      "estado": "hecho",
      "inicio": "2026-11-07T09:48:41+01:00",
      "fin": "2026-11-07T13:45:38+01:00"
+    },
+    {
+     "nombre": "Los llanos sin nada a 0,4 m (valravnx, 7 nov: «hay tramos que no aparece vegetacion ni nada en la estepa… a momentos aparece un manto azul»): tierra adentro, lo que quedaba por debajo del mar sube a una altura de tierra de verdad, con relieve, y crece lo que toca",
+     "estado": "hecho",
+     "inicio": "2026-11-07T15:30:52+01:00",
+     "fin": "2026-11-07T16:49:14+01:00"
     }
    ],
    "num": "G"
@@ -3285,6 +3291,13 @@
      "archivo": "jugar/demo/v138.html",
      "capturas": "capturas/demo-v138",
      "notas": "El tejado de la casa humilde (valravnx, 7 nov): tejado de juncos y su remate de esquina (2 varas y 4 juncos, cortados en la orilla con una lasca), con el junco como material de obra. Lo que pide paja se esconde del menú: la paja sale del cereal, que aún no hay. Prueba nueva que sigue cada material hasta el mundo y no deja pasar ninguna parte de la casa sin origen."
+    },
+    {
+     "v": "v139",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v139.html",
+     "capturas": "capturas/demo-v139",
+     "notas": "Sin llanos pelados en la estepa (valravnx, 7 nov): tierra adentro, lo que quedaba por debajo del mar se ponía a 0,4 m justos, en llanos de kilómetros sin nada que de lejos perdían contra el mar de lejos (el manto azul). Ahora, pasada la costa, el suelo no baja de unos 2 m y lo que iba a quedar más hondo sube como un relieve suave: crece lo que toca y la playa no cambia. 17 sitios de salida de pradera más."
     }
    ]
   },

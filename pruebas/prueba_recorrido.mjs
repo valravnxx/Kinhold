@@ -7,6 +7,7 @@
 // terminarlo; luego se fabrica un hacha de piedra (fibra, cordel, piedra de tallar, y lo que pide dejado encima de
 // ella), tala con ella un árbol joven (tronco delgado y varas), se echa el tronco al hombro y levanta con él un poste;
 // va al río a por barro, juncos y yesca, se hace un taladro de fuego, y levanta y enciende una hoguera en la orilla.
+// Desde P4, sus necesidades: llega a 0 y la sed y el hambre le suben solas.
 // Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
@@ -77,6 +78,7 @@ function cliente(puerto) {
     ws.on('message', (d) => {
       const m = JSON.parse(d.toString());
       if ((m.tipo === 'bienvenida' || m.tipo === 'inventario' || m.tipo === 'resultado_objeto') && m.inventario) c.inv = Inventario.importarJugador(m.inventario);
+      if (m.necesidades && (m.tipo === 'bienvenida' || m.tipo === 'necesidades')) c.nec = m.necesidades;   // (P4) las suyas, como se las manda el servidor
       c.esperas = c.esperas.filter(e => { if (e.cond(m)) { e.r(m); return false; } return true; });
     });
     const b = c.esperar(m => m.tipo === 'bienvenida', 20000);
@@ -111,6 +113,7 @@ try {
   const puerto = await s.listo, J = await cliente(puerto);
   console.log('0. Elige dónde empieza: la salida común (Lindholt), de las tres del rey');
   comprobar('llega sin posición: aún no ha elegido', J.bienvenida.posicion === null, JSON.stringify(J.bienvenida.posicion));
+  comprobar('llega sin hambre, sin sed, sin frío y descansado (P4: sus necesidades, del servidor)', J.bienvenida.necesidades && Object.values(J.bienvenida.necesidades).every(v => v === 0), JSON.stringify(J.bienvenida.necesidades));
   let rs = await J.salida('motdale_no');
   comprobar('una salida que no existe no vale', !rs.ok, rs.motivo);
   rs = await J.salida('lindholt');
@@ -481,6 +484,10 @@ try {
     r = await J.objeto({ tipo: 'fabricar', receta: 'lanza_endurecida', estacion: hog, x: J.pos.x, z: J.pos.z });
     comprobar('y apagada ya no se hace nada al fuego', !r.ok && /apagado/.test(r.motivo || ''), r.motivo);
   }
+
+  // P4, las necesidades: a estas alturas del día, con todo lo que ha andado y trabajado, ya tiene algo de sed y de
+  // hambre (la sed, más), sin que nadie se las haya puesto: le llegan solas del servidor
+  comprobar('le han subido solas la sed y el hambre (la sed, más) y le llegan del servidor', J.nec && J.nec.sed > 0 && J.nec.hambre > 0 && J.nec.sed > J.nec.hambre, JSON.stringify(J.nec));
 
   // lo que sale de aquí, en la salida (para quien lo lea en la nube)
   console.log(`\nTodavía no se puede (sin el arcón): ${Object.entries(TODAVIA_NO).map(([k, v]) => `${k} — ${v}`).join('; ')}`);
