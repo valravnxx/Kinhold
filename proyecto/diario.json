@@ -4904,7 +4904,7 @@
  },
  {
   "inicio": "2026-11-07T03:21:48+00:00",
-  "fin": "PENDIENTE",
+  "fin": "2026-11-07T05:15:40+00:00",
   "titulo": "P3: juncos, barro y yesca, de dónde salen",
   "hito": "crafting",
   "hecho": [
@@ -4916,9 +4916,10 @@
    "Modelos nuevos (estilo v5): la mata de juncos con su panoja, el charco de barro con la tierra removida, el tocón con los yesqueros, la yesca y la corteza. Las imágenes del panel se han vuelto a sacar en docs/recursos/iconos-v2 (la v1 no se toca).",
    "Recorrido de jugador, paso 11: va andando al río más cercano a la salida (825 m), recoge ramas, no puede cavar sin palo, se hace el palo cavador, cava barro, no puede cortar juncos sin cuchillo, pone una piedra de tallar en la orilla, se hace una lasca, corta juncos y coge yesca de un tocón.",
    "Decisiones provisionales (registro de la demo): la herramienta basta con llevarla encima; sin palo no se cava (el «con las manos, poco» del documento no se hace); juncos y barro solo junto a los ríos, porque el mapa no tiene pantanos ni lodazales.",
-   "No hecho: la corteza aún no se puede sacar (descortezar, con su tarea); la yesca no está en el documento de sistemas como recurso (va en el registro)."
+   "No hecho: la corteza aún no se puede sacar (descortezar, con su tarea); la yesca no está en el documento de sistemas como recurso (va en el registro).",
+   "Aún mal (revisión visual): el tocón de los yesqueros sale oscuro y las repisas se ven poco; el charco de barro tiene el borde muy anguloso; en el móvil la cámara de las capturas de cerca deja el junco y el yesquero fuera del cuadro (el personaje tapa)."
   ],
-  "pruebas": "PENDIENTE",
+  "pruebas": "Todas en la nube y en el PC de valravnx: 33 de 36 grupos bien a la primera; niveles de detalle, perfil gráfico y demo única fallaron en el PC (cuentan triángulos y perfil sin tarjeta gráfica, y su PC la tiene) y pasaron en la nube. Recorrido de jugador 74/74 (aquí). Recolección 56/56, y con MUTAR=2 (sin mirar la herramienta) falla como debe. Capturas de cerca de la orilla en PC y móvil.",
   "capturas": "capturas/demo-v132",
   "estado": "ok"
  }
