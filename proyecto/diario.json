@@ -4940,5 +4940,19 @@
   "pruebas": "Todas en el PC de valravnx y en la nube: 33 de 36 grupos bien a la primera; construcción, rastra y carretilla fallaban porque sus páginas de prueba no servían las imágenes (404 en la consola): ahora las sirven y pasaron en su PC, con la del panel. Capturas de PC y móvil, miradas.",
   "capturas": "capturas/demo-v133",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T05:23:59+00:00",
+  "fin": "2026-11-07T07:47:30+00:00",
+  "titulo": "P6: fuera la construcción aparte (hito1)",
+  "hito": "orden",
+  "hecho": [
+   "Las once pruebas de navegador de la construcción (construir, quitar el mojón, recoger, talar, tronzar, rastra, carretilla, equipo, lo que llevas puesto, objetos en el suelo y combate en el mundo) y la del juego en inglés y ruso abren ahora la demo («Jugar», sin servidor y en el llano: ?modo=construir&sinservidor=1&llano=1), que lleva el mismo código del juego, en vez de la página de construcción aparte.",
+   "Fuera construir.mjs: la construcción aparte ya no se construye ni se prueba. Su plantilla sigue, porque la usa la demo. Las versiones ya publicadas de la construcción siguen en la web.",
+   "Unido main (demo v133, el panel de equipo) y vuelta a pasar la batería entera.",
+   "Sin versión nueva: no cambia nada de lo que se juega."
+  ],
+  "pruebas": "En la nube, 36 grupos: todo bien tras unir main (demo v133). Antes de unir main, la misma batería: todo bien salvo la de lógica, por una del combate en el servidor con lag simulado («lo que no se puede se rechaza al que lo manda»), que aquí pasó 3 de 3 y repetida en la nube pasó sin cambios; y el mapa del mundo, que no llegó a acabar y repetido pasó. Sin capturas nuevas: no cambia nada que se vea (las de la batería, mirada la de equipo en PC y la de construir en inglés en el móvil, ya dentro de la demo).",
+  "estado": "ok"
  }
 ]
