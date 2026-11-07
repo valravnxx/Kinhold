@@ -33,8 +33,8 @@ export function zonasDemo(x, z) {
 
 // ---------- Modelos (estilo v5: texturas por código, color por vértice, sombra de contacto) ----------
 const PIEL_SILEX = 0xcfc6b0, NUCLEO_SILEX = 0x3e3b3c, CALIZA_COLOR = 0xbcb4a0, ORTIGA = 0x4a6436, ORTIGA_OSC = 0x3d5530;
-const JUNCO = 0x55673a, JUNCO_OSC = 0x45562f, JUNCO_FLOR = 0x6b5434, BARRO_SECO = 0x6e5a44, BARRO_HUMEDO = 0x4e3f31, BARRO_AGUA = 0x3a3329;
-const TOCON_PODRIDO = 0x8b7d68, YESQUERO = 0x6e6152, YESQUERO_BORDE = 0xa69a85;
+const JUNCO = 0x7a8c4e, JUNCO_OSC = 0x687a43, JUNCO_FLOR = 0x7a6040, BARRO_SECO = 0x6e5a44, BARRO_HUMEDO = 0x4e3f31, BARRO_AGUA = 0x51473a;
+const TOCON = 0x8a7660, TOCON_PODRIDO = 0x9c8c74, YESQUERO = 0x8c7b63, YESQUERO_BORDE = 0xc9bca3;
 
 function geoLote(fn, opc = {}) { // un modelo por tipo de textura: [{ geo, mat }]
   const L = new Lote({ rangoSuelo: opc.rangoSuelo ?? 0.25, variacion: 0.08 }); fn(L);
@@ -110,8 +110,8 @@ export function modelosRecoleccion() {
   // la panoja parda que sale de lado cerca de la punta, como el junco de las orillas
   const juncos = geoLote(L => {
     for (let k = 0; k < 34; k++) {
-      const a = k * 2.399, d = 0.015 + (k % 7) * 0.022, h = 1.2 + ((k * 5) % 9) * 0.05, dobla = k % 6 === 0 ? 0.35 : 0.06;
-      const g = new THREE.CylinderGeometry(0.0035, 0.007, h, 4, 4); g.translate(0, h / 2, 0);
+      const a = k * 2.399, d = 0.015 + (k % 7) * 0.022, h = 1.2 + ((k * 5) % 9) * 0.05, dobla = k % 6 === 0 ? 0.16 : 0.04;
+      const g = new THREE.CylinderGeometry(0.0055, 0.01, h, 5, 4); g.translate(0, h / 2, 0);
       const p = g.attributes.position;
       for (let i = 0; i < p.count; i++) { const y = p.getY(i), f = (y / h) ** 2 * dobla * h; p.setX(i, p.getX(i) + f); }
       L.add(g, k % 3 ? JUNCO : JUNCO_OSC, Math.cos(a) * d, 0, Math.sin(a) * d, { y: -a }, { brillo: 0.95 });
@@ -138,16 +138,16 @@ export function modelosRecoleccion() {
   // hongos yesqueros (7 nov): un tocón viejo y podrido (40 cm), con la corteza rota y la madera gris a la vista, y en
   // él tres o cuatro yesqueros en repisa: semicírculos gruesos, gris pardo con bandas, el borde claro
   const yesquero = geoLote(L => {
-    L.add(cil(0.15, 0.19, 0.42, 9), 'cortezaGris', 0, 0.21, 0, { y: 0.4 }, { tex: 'corteza' });
+    L.add(cil(0.15, 0.19, 0.42, 9), TOCON, 0, 0.21, 0, { y: 0.4 }, { tex: 'corteza' });
     L.add(new THREE.CylinderGeometry(0.135, 0.15, 0.05, 9), TOCON_PODRIDO, 0, 0.43, 0, { x: 0.12, y: 0.4 }, { tex: 'veta', sinSuelo: true });
-    for (let k = 0; k < 3; k++) { const a = k * 2.1 + 0.6; L.add(cil(0.03, 0.05, 0.3, 5), 'cortezaGris', Math.cos(a) * 0.2, 0.04, Math.sin(a) * 0.2, { y: -a, z: Math.PI / 2 - 0.25 }, { tex: 'corteza' }); } // las raíces
+    for (let k = 0; k < 3; k++) { const a = k * 2.1 + 0.6; L.add(new THREE.ConeGeometry(0.06, 0.22, 5), TOCON, Math.cos(a) * 0.17, 0.05, Math.sin(a) * 0.17, new THREE.Matrix4().makeRotationY(-a).multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2 + 0.35)), { tex: 'corteza' }); } // el arranque de las raíces
     const repisa = (y, a, r, gr) => {
       const g = new THREE.SphereGeometry(r, 10, 5, -Math.PI / 2, Math.PI, 0, Math.PI / 2); g.scale(1, gr, 1);
       const x = Math.cos(a) * 0.16, z = Math.sin(a) * 0.16;
       L.add(g, YESQUERO, x, y, z, { y: -a + Math.PI / 2 }, { tex: 'corteza', sinSuelo: true });
       L.add(new THREE.TorusGeometry(r * 0.98, r * 0.12, 4, 12, Math.PI), YESQUERO_BORDE, x, y, z, new THREE.Matrix4().makeRotationY(-a + Math.PI / 2).multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2)).multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2)), { sinSuelo: true });
     };
-    repisa(0.3, 0.3, 0.085, 0.7); repisa(0.2, 0.6, 0.065, 0.75); repisa(0.36, 2.6, 0.07, 0.7); repisa(0.12, 4.2, 0.075, 0.65);
+    repisa(0.3, 0.3, 0.11, 0.6); repisa(0.18, 0.75, 0.085, 0.65); repisa(0.36, 2.6, 0.095, 0.6); repisa(0.14, 4.2, 0.1, 0.6);
   }, { rangoSuelo: 0.15 });
   // peña de caliza del afloramiento (decorado, no se recoge)
   const pena = geoLote(L => L.add(new THREE.IcosahedronGeometry(1, 1), CALIZA_COLOR, 0, 0.35, 0, null, { escala: new THREE.Vector3(1.4, 0.8, 1.05), plano: true, tex: 'piedra' }), { rangoSuelo: 0.8 });
