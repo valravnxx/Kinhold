@@ -5,5 +5,11 @@
   "hito": "crafting",
   "rama": "trabajo/20261107-0824"
  },
- "B": null
+ "B": null,
+ "chat:trabajo/20261107-0945-dosel": {
+  "inicio": "2026-11-07T09:43:56+01:00",
+  "tarea": "El bosque de lejos, de cerca, sin montículos (valravnx, 7 nov: «crea este glitch grafico de monticulos… habria que hacerlo mas suave, y tambien que comiencen a aparecer algo mas lejos»): el dosel de cerca más suave y empezando más lejos, sin tapar la vista",
+  "hito": "graficos",
+  "rama": "trabajo/20261107-0945-dosel"
+ }
 }
