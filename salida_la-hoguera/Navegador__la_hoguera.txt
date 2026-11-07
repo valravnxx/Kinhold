@@ -1,0 +1,50 @@
+  OK   PC: entra y le llega lo que lleva en el servidor — []
+  OK   PC: sin la pantalla de la cuenta delante
+Levanta una hoguera desde «Puestos de trabajo»
+  OK   el servidor le da 6 piedras (arcón de pruebas)
+  OK   el servidor tiene el marco de la hoguera
+  OK   Usar le lleva las piedras
+  OK   y lo que lleva le llega del servidor: las manos, vacías — [null,null]
+  OK   el servidor le da 3 rama(s) (arcón de pruebas)
+  OK   Usar le lleva las ramas
+  OK   el servidor le da 1 rama(s) (arcón de pruebas)
+  OK   y con sus ramas y el trabajo queda levantada (en el servidor) — Construyendo: 96 %
+  OK   levantada, apagada y con sus 4 ramas puestas (12 min) — {'hasta': 0, 'combustible': 720, 'cenizas': False}
+  OK   se dibuja con sus ramas, sin fuego
+La enciende con la yesca y el taladro de fuego, desde el panel
+  OK   Usar abre el panel en la pestaña del fuego
+  OK   arriba, el fuego: apagada, con lo que tiene puesto — Apagada
+Tiene puesto para arder 12 min.
+Encender (gasta 1 yesca; con el taladro de fuego)
+Te falta el taladro de fuego y la yesca.
+Echar 1 rama (+3 min · llevas 0)
+Echar 1 leña (+10 min · llevas 0)
+  OK   sin yesca ni taladro, «Encender» no se puede y dice lo que falta
+  OK   la lanza endurecida, en «Te falta algo» (el fuego apagado) — {'cls': 'fab-carta fab-casi fab-sel', 'txt': 'faltan 1\nLanza endurecida', 'sec': 'fab-sec fab-sec-casi'}
+  OK   con ellos en las manos, «Encender» se puede
+  OK   el servidor la enciende: gasta la yesca y el taladro sigue
+  OK   el panel la da encendida, con lo que le queda — Encendida: le quedan 12 min
+Da luz y calor. Échale más para que dure.
+Echar 1 rama (+3 min · llevas 0)
+Echar 1 leña (+10 min · llevas 0)
+  OK   se ve arder: llamas — 6
+  OK   alumbra (una luz de fuego encendida) — {'chimeneas': 0, 'hogueras': 1, 'luces': 2, 'encendidas': 1}
+  OK   y da calor a su lado — 0.6471101446626724
+  OK   lejos, no
+  OK   «Echar 1 rama» le da 3 min más en el servidor, con la rama que lleva
+  OK   y el panel lo dice
+En el móvil, el otro jugador la ve igual
+  OK   móvil: entra y le llega lo que lleva en el servidor — []
+  OK   móvil: sin la pantalla de la cuenta delante
+  OK   le llega la hoguera, encendida
+  OK   y la ve arder — 6
+  OK   en el menú del clic derecho: usarla, y no encenderla (ya arde) — ['Usar: Hoguera']
+  OK   su panel, con el fuego arriba y sin salirse de lado
+Apagada sola: las cenizas (solo para mirarla: se adelanta su hora en este navegador)
+  OK   pasada su hora se apaga sola y quedan las cenizas, sin humo
+  OK   sin ramas (ya ardieron) y sin luz
+  OK   y el menú ofrece encenderla (aunque no tiene nada que arder)
+  OK   PC: sin errores en la consola — []
+  OK   móvil: sin errores en la consola — []
+
+TODO CORRECTO
