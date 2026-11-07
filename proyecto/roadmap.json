@@ -1445,7 +1445,9 @@
     },
     {
      "nombre": "Los avisos en círculos a la derecha (PC y móvil), uno por necesidad con su color (naranja, azul, celeste y gris), que solo salen cuando hace falta; al pulsarlos, qué efecto tiene y cómo se quita. Y los efectos en el juego: sin correr, más lento y golpes flojos según lo que toque. Recorrido: sale el aviso de sed y se lee qué hacer",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T17:01:29+01:00",
+     "rama": "trabajo/20261107-1701-avisos"
     },
     {
      "nombre": "Beber del río con las manos (el agua de río se bebe sin problema, GDD): Usar en la orilla o en el agua que se vadea; el servidor comprueba que hay agua a tu lado y baja la sed. Recorrido: el jugador nuevo busca un río y bebe",
@@ -1472,7 +1474,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Morir y que te saqueen (GDD, apartado 6; documento de sistemas, apartado 10): mueras como mueras (combate, ahogado, heridas), reapareces en tu cama ligada o, sin ella, en tu sitio de salida; tu cuerpo queda en el suelo 1 hora real con la mitad de lo que llevabas, que cualquiera puede coger, y la otra mitad se rompe, elegida al azar por el servidor. Recorrido: el jugador muere, vuelve a su cama y recupera lo suyo del cuerpo",
+     "nombre": "Morir y que te saqueen (GDD, apartado 6; documento de sistemas, apartado 10): se muere también de sed y de hambre (valravnx, 7 nov: «no es survival si no hay que sobrevivir»): a tope se pierde sangre poco a poco y, sin beber ni comer, se muere (unos 20 minutos de sed y 40 de hambre). Mueras como mueras (sed, hambre, combate, ahogado), reapareces en tu cama ligada o, sin ella, en tu sitio de salida; tu cuerpo queda en el suelo 1 hora real con la mitad de lo que llevabas, que cualquiera puede coger, y la otra mitad se rompe, elegida al azar por el servidor. Recorrido: el jugador muere, vuelve a su cama y recupera lo suyo del cuerpo",
      "estado": "pendiente"
     },
     {
@@ -1502,6 +1504,12 @@
     {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "Estudio de la interfaz del juego para PC y móvil (valravnx, 7 nov: «que sea comoda y no ocupe tanto, debemos evitar que se llene todo de botones… enseñandomelas primero, sin meter al juego»): cómo lo hacen otros, lo que falla hoy y la propuesta en maquetas; valravnx decide",
+     "estado": "en_curso",
+     "inicio": "2026-11-07T17:12:22+01:00",
+     "rama": "trabajo/20261107-1715-ui"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: después de la casa; se planifica al llegar, con lo que ya hay (la hoguera y el hogar calientan y cocinarán). Planificado el 7 nov (chat con valravnx): el día y la noche ya están (demo v137, hito de gráficos); el calor y los cinco estados de más (mojado, herida infectada, comida en mal estado, dolor y borracho) quedan para después de este hito, como dice el GDD."

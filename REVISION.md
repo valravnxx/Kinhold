@@ -6,6 +6,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (17:11 UTC+1) — por el chat: estudio de la interfaz del juego (PC y móvil)
+valravnx: «haz un estudio de como hacer una UI del juego que sirva para movil y pc que sea comoda y no ocupe tanto, debemos evitar que se llene todo de botones, haz el estudio y propon cosas enseñandomelas primero, sin meter al juego».
+→ Tarea del chat en P4: el estudio (cómo lo resuelven otros juegos, lo que falla hoy y la propuesta en maquetas para PC y móvil), en diseno/estudios/. Nada entra en el juego hasta que valravnx decida.
+
+### 7 nov 2026 (16:54 UTC+1) — por el chat: se muere de hambre y de sed
+valravnx: «puedes morir de hambre y sed, no?» … «si, claro, no es survival si no hay que sobrevivir no?».
+→ Al GDD (apartado 6) y al documento de sistemas (apartado 10): a tope se pierde sangre poco a poco y se muere (unos 20 min de sed y 40 de hambre, para ajustar). Va en la tarea de morir de P4.
+
 ### 7 nov 2026 (15:22 UTC+1) — por el chat: llanos sin nada en la estepa, y un manto azul encima
 valravnx, con dos capturas del mismo sitio desde la cámara libre: «hay tramos que no aparece vegetacion ni nada en la estepa, y con freecam coincide con que a momentos aparece un manto azul sobre ese mismo sitio… y es como zona 100% sin nada, pero es una pradera que deberia tener todo como el resto».
 → Visto en la lógica: tierra adentro, donde el terreno quedaría por debajo del mar, se pone a 0,4 m justos («nunca por debajo del mar»), y salen llanos de kilómetros completamente planos a 0,4 m. Ahí no crece nada (la hierba pide 1 m sobre el mar; los árboles, 1,5) y, de lejos, el mar de lejos (4 m más bajo) le gana en la hondura comprimida y se ve el manto azul. Tarea del chat: esos llanos, a una altura de tierra de verdad y con su relieve, y una prueba que no deje llanos así.

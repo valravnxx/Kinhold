@@ -17,7 +17,8 @@
 //     unos 10 minutos en llegar; quién lo pide lo trae la tarea del frío (hasta entonces, el servidor pide 0);
 //   - el cansancio: correr (más de 4 m/s) 0,5 por segundo, con carga suelta en las manos o al hombro más; cada golpe de
 //     hacha 1,5, cada rato de obra 2, fabricar 0,5, recoger 0,3; quieto baja 0,4 por segundo y andando 0,1;
-//   - «heridas lentas» se lee como que las heridas se curan despacio (no que salgan solas): efectos.curacionLenta;
+//   - al máximo, las heridas se curan despacio (efectos.curacionLenta); y se muere de sed y de hambre (valravnx, 7 nov:
+//     «no es survival si no hay que sobrevivir»; GDD, apartado 6): eso llega con la tarea de morir de P4;
 //   - el calor (también en el GDD) queda para después del hito, como los cinco estados de más.
 
 export const NECESIDADES = ['hambre', 'sed', 'frio', 'cansancio'];
