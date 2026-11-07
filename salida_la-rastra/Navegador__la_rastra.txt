@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "D:\KinholdGrafica\runner\_work\Kinhold\Kinhold\pruebas\prueba_rastra_navegador.py", line 17, in <module>
+    shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1')
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\shutil.py", line 417, in copy
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+  File "C:\Users\Usuario\AppData\Local\Programs\Python\Python310\lib\shutil.py", line 256, in copyfile
+    with open(dst, 'wb') as fdst:
+OSError: [Errno 22] Invalid argument: 'D:\\KinholdGrafica\\runner\\_work\\_temp\\tmprbm7ryg3/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1'
