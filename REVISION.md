@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (18:42 UTC+1) — por el chat: la interfaz, aplicarla
+valravnx: «aplica por ahora, pero le haremos reviews».
+→ La octava versión del estudio de la interfaz queda aprobada de forma provisional (fuera de las decisiones pendientes). Hito nuevo P4b «La interfaz nueva», después de P4, con una tarea por sesión (el kit y la barra de abajo, la acción, el menú con pestañas, el equipo, fabricar, construir, tu tierra, las necesidades, hablar, y la revisión). Cada tarea sale con capturas de PC y móvil para que valravnx la revise.
+
 ### 7 nov 2026 (18:09 UTC+1) — por el chat: la interfaz, cada sistema y acabado de juego terminado
 valravnx: «cuando me pasas algo así, revisa cada una de las funcionalidades y si deben o no estar donde están y como se puede usar cada cosa, me has enseñado un equipo, si, pero funciona? es la mejor manera? debes revisar cada uno de los sistemas del juego mas que un estilo solo, y que todo cuadre en el estilo visual perfecto que buscamos, por ahora se ve como de alpha playtest sin refinar aun en tus ultimas versiones, quiero que se vea como un VIDEOJUEGO ACABADO, busca de nuevo esos detalles y al tener un diseño, no simplemente hagas algo simple y rapido, busca medios, metodos, texturas, modelos, lo que haga falta, no escatimes en gastos».
 → Regla nueva en CLAUDE.md («Propuestas de interfaz: cada sistema, no solo un estilo»). El chat hace la octava versión: repasa en el código cada sistema (equipo, fabricar, construir, mapa, hablar, necesidades, arma, coger y usar, llevar al hombro, tu tierra y lo almacenado, ajustes) y dice para cada uno si funciona, dónde va y cómo se usa en PC y en el móvil, comparado con juegos publicados; y el acabado, con materiales de verdad (renders de cuero, roble, latón y hierro, iconos hechos con método), no cajas de CSS.
