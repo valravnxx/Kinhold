@@ -11,11 +11,5 @@
   "tarea": "Los avisos en círculos a la derecha (PC y móvil), uno por necesidad con su color (naranja, azul, celeste y gris), que solo salen cuando hace falta; al pulsarlos, qué efecto tiene y cómo se quita. Y los efectos en el juego: sin correr, más lento y golpes flojos según lo que toque. Recorrido: sale el aviso de sed y se lee qué hacer",
   "hito": "supervivencia",
   "rama": "trabajo/20261107-1701-avisos"
- },
- "chat:trabajo/20261107-1715-ui": {
-  "inicio": "2026-11-07T17:12:22+01:00",
-  "tarea": "Estudio de la interfaz del juego para PC y móvil (valravnx, 7 nov: «que sea comoda y no ocupe tanto, debemos evitar que se llene todo de botones… enseñandomelas primero, sin meter al juego»): cómo lo hacen otros, lo que falla hoy y la propuesta en maquetas; valravnx decide",
-  "hito": "supervivencia",
-  "rama": "trabajo/20261107-1715-ui"
  }
 }

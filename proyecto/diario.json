@@ -5141,5 +5141,19 @@
   "pruebas": "Todas en la nube (su PC no estaba libre): 37 de 38 grupos a la primera; la de Whitholm falló porque la lista de sitios de salida ganaba 17, puesta al día. Capturas del mismo llano antes y después, en PC y móvil, miradas.",
   "capturas": "capturas/demo-v139",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:12:22+01:00",
+  "fin": "2026-11-07T17:19:57+01:00",
+  "titulo": "P4: estudio de la interfaz del juego (PC y móvil)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Estudio de la interfaz del juego para PC y móvil (diseno/estudios/interfaz.html): lo que falla hoy (unos 19 botones fijos mientras andas, en tres sitios), cómo lo resuelven otros juegos y la propuesta en maquetas encima de capturas del juego, en PC y en móvil.",
+   "La propuesta: una sola acción según lo que tienes delante (E con bocadillo en PC, botón grande en el móvil; mantener para ver las demás), una rueda para todo lo demás (Tab en PC, abanico en el móvil), las manos siempre abajo con su imagen, los ajustes en el engranaje y la barra de construir solo al construir.",
+   "Tabla de dónde va cada botón de hoy, y cinco preguntas para valravnx, en decisiones pendientes. Nada entra en el juego hasta que decida."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
