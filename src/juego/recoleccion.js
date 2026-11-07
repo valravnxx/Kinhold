@@ -37,7 +37,7 @@ const JUNCO = 0x7a8c4e, JUNCO_OSC = 0x687a43, JUNCO_FLOR = 0x7a6040, BARRO_SECO 
 const TOCON = 0x8a7660, TOCON_PODRIDO = 0x9c8c74, YESQUERO = 0x8c7b63, YESQUERO_BORDE = 0xc9bca3;
 // (P4) las bayas: maduras rojas y negro morado, alguna aún verde rojiza; las cañas, pardo rojizo. Las setas: sombrero
 // pardo y pie crema.
-const BAYA_ROJA = 0xb0222e, BAYA_NEGRA = 0x3b1630, BAYA_VERDE = 0xb46a3c, CANA = 0x6e3a2c, SETA = 0x8c5a32, SETA_OSC = 0x6e4426, SETA_PIE = 0xe2d6bc, SETA_LAMINAS = 0xcbb894;
+const BAYA_ROJA = 0xb0222e, BAYA_NEGRA = 0x3b1630, BAYA_VERDE = 0xb46a3c, CANA = 0x6e3a2c, SETA = 0xa2643a, SETA_OSC = 0x7e4c2a, SETA_PIE = 0xe2d6bc, SETA_LAMINAS = 0xcbb894;
 
 function geoLote(fn, opc = {}) { // un modelo por tipo de textura: [{ geo, mat }]
   const L = new Lote({ rangoSuelo: opc.rangoSuelo ?? 0.25, variacion: 0.08 }); fn(L);
@@ -69,7 +69,7 @@ function rama(L, largo, grosor, x, z, giro, semilla) {
 let cache = null;
 export function modelosRecoleccion() {
   if (cache) return cache;
-  const ramas = geoLote(L => { rama(L, 1.15, 0.035, 0, 0, 0.2, 1); rama(L, 0.9, 0.028, 0.05, 0.12, -0.5, 2); rama(L, 0.7, 0.022, -0.1, -0.1, 1.2, 3); }, { rangoSuelo: 0.12 });
+  const ramas = geoLote(L => { rama(L, 1.15, 0.035, 0, 0, 0.2, 1); rama(L, 0.9, 0.028, 0.05, 0.12, -0.5, 2); rama(L, 0.7, 0.022, -0.1, -0.1, 1.2, 3); }, { rangoSuelo: 0.2 });
   const piedra = geoLote(L => {
     L.add(new THREE.IcosahedronGeometry(0.14, 1), 'piedra', 0, 0.07, 0, { y: 0.4 }, { escala: new THREE.Vector3(1.25, 0.72, 1), plano: true });
   }, { rangoSuelo: 0.12 });
@@ -179,17 +179,20 @@ export function modelosRecoleccion() {
       }
     }
   }, { rangoSuelo: 0.6 });
-  // (P4) setas del bosque: un corro de cuatro o cinco, de sombrero pardo redondeado y pie crema, de 6 a 14 cm
+  // (P4) setas del bosque: un corro de seis o siete, de sombrero pardo redondeado y pie crema, de 9 a 22 cm (grandes,
+  // como las de pie gordo de otoño: si no, entre la hierba no se ven; valravnx, 7 nov: que lo que se recoge se vea)
   const setas = geoLote(L => {
-    const seta = (x, z, h, r, inclina, sem) => {
+    const E = 1.75, D = 1.7;   // tamaño y separación
+    const seta = (x0, z0, h0, r0, inclina, sem) => {
+      const x = x0 * D, z = z0 * D, h = h0 * E, r = r0 * E;
       L.add(cil(r * 0.32, r * 0.42, h, 7), SETA_PIE, x, h / 2, z, { x: inclina, y: sem }, { tex: 'liso' });
       const somb = new THREE.SphereGeometry(r, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2); somb.scale(1, 0.62, 1);
       L.add(somb, sem % 2 ? SETA : SETA_OSC, x + Math.sin(inclina) * h * 0.5, h, z, { x: inclina, y: sem }, { tex: 'liso', sinSuelo: true, brillo: 1.05 });
       const laminas = new THREE.CircleGeometry(r * 0.97, 12); laminas.rotateX(Math.PI / 2);
       L.add(laminas, SETA_LAMINAS, x + Math.sin(inclina) * h * 0.5, h + 0.002, z, { x: inclina, y: sem }, { tex: 'liso', sinSuelo: true });
     };
-    seta(0, 0, 0.12, 0.075, 0.05, 1); seta(0.12, 0.05, 0.09, 0.06, 0.25, 2); seta(-0.09, 0.08, 0.07, 0.05, -0.3, 3); seta(0.03, -0.11, 0.1, 0.065, 0.15, 4); seta(-0.13, -0.07, 0.05, 0.035, -0.2, 5);
-    for (let k = 0; k < 6; k++) L.add(new THREE.IcosahedronGeometry(0.03, 0), 0x6b5a3e, Math.cos(k) * 0.16, 0.005, Math.sin(k) * 0.16, { y: k }, { escala: new THREE.Vector3(1.4, 0.3, 1), plano: true, tex: 'piedra' }); // hojarasca
+    seta(0, 0, 0.12, 0.075, 0.05, 1); seta(0.12, 0.05, 0.09, 0.06, 0.25, 2); seta(-0.09, 0.08, 0.07, 0.05, -0.3, 3); seta(0.03, -0.11, 0.1, 0.065, 0.15, 4); seta(-0.13, -0.07, 0.05, 0.035, -0.2, 5); seta(0.15, -0.1, 0.06, 0.045, 0.3, 6); seta(-0.02, 0.16, 0.08, 0.055, -0.1, 7);
+    for (let k = 0; k < 9; k++) L.add(new THREE.IcosahedronGeometry(0.045, 0), 0x6b5a3e, Math.cos(k * 0.7) * 0.28, 0.005, Math.sin(k * 0.7) * 0.28, { y: k }, { escala: new THREE.Vector3(1.4, 0.3, 1), plano: true, tex: 'piedra' }); // hojarasca
   }, { rangoSuelo: 0.12 });
 
   // peña de caliza del afloramiento (decorado, no se recoge)
