@@ -78,6 +78,10 @@ export const RECETAS = {
   fardo:             r('Fardo atado', 'manos', 'fardo', { cordel: 2 }, 15),
   arpon:             r('Arpón', 'manos', 'arpon', { rama: 1, lasca_silex: 1, cordel: 1 }, 30),
   odre:              r('Odre', 'manos', 'odre', { piel: 1, cordel: 1 }, 30),
+  // la yesca, para encender el fuego (7 nov): de la fibra seca (frotada y deshecha) o de la corteza (raspada); la de
+  // los hongos yesqueros se recoge tal cual (src/logica/recoleccion.js)
+  yesca:             r('Yesca de fibra seca', 'manos', 'yesca', { fibra: 2 }, 15),
+  yesca_corteza:     r('Yesca de corteza', 'manos', 'yesca', { corteza: 1 }, 20, 2),
   // en la piedra de tallar
   lasca_silex:       r('Lasca de sílex', 'tallar', 'lasca_silex', { silex: 1, piedra: 1 }, 20),
   hacha_piedra:      r('Hacha de piedra', 'tallar', 'hacha_piedra', { piedra: 1, rama: 1, cordel: 2 }, 60),
@@ -111,6 +115,8 @@ export const PARA = {
   fardo: 'A la espalda: pieles, tela, fibras y paja.',
   arpon: 'Pesca.',
   odre: 'Agua; va al hombro.',
+  yesca: 'Prende la chispa para encender la hoguera o el hogar.',
+  yesca_corteza: 'Prende la chispa para encender la hoguera o el hogar.',
   lasca_silex: 'Corta fibra y juncos, despieza.',
   hacha_piedra: 'Tala árboles jóvenes (da un tronco delgado y varas); los adultos, muy despacio.',
   lanza_endurecida: 'Caza y defensa.',

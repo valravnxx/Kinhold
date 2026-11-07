@@ -6,6 +6,8 @@ import { Inventarios, Inventario, CATALOGO } from '../src/logica/inventario.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
 
 if (process.env.MUTAR === '1') { RECOLECTABLES.ramas.donde.push('claro'); RECOLECTABLES.ramas.vuelve = 0; }
+// MUTAR=2: los juncos y el barro, sin herramienta (como si no se mirara): las pruebas deben FALLAR
+if (process.env.MUTAR === '2') { RECOLECTABLES.juncos.con = 'manos'; RECOLECTABLES.barro.con = 'manos'; }
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -73,6 +75,36 @@ console.log('Recoger con autor: va al inventario por huecos');
   const invF = new Inventarios(); let total = 0;
   for (const f of fibras.slice(0, 2)) { const rr = rec.recoger(invF.de('c'), f.id, f.x, f.z, t0); if (rr.ok) total += rr.cantidad; }
   comprobar('la fibra de dos plantas se junta en el mismo hueco', invF.de('c').lugares['mano:der'] && invF.de('c').lugares['mano:der'].n === total && total >= 4, `${total}`);
+}
+
+console.log('Juncos, barro y yesca (lo que pide la casa humilde y la hoguera, 7 nov)');
+{
+  const R = RECOLECTABLES;
+  comprobar('juncos: riberas y orilla, con cuchillo, se cortan, 1 haz mediano, una estación', R.juncos.donde.join() === 'rio,ribera' && R.juncos.con === 'cuchillo' && R.juncos.accion === 'cortar' && R.juncos.da === 'junco' && R.juncos.max === 1 && CATALOGO.junco.tam === 'M' && R.juncos.vuelve === 30 * DIA);
+  comprobar('barro: la orilla, se cava con palo o pala, 1 cesta mediana, inagotable', R.barro.donde.includes('rio') && R.barro.con === 'cavar' && R.barro.da === 'barro' && CATALOGO.barro.tam === 'M' && R.barro.vuelve === 0);
+  comprobar('hongos yesqueros: en el bosque, con las manos, 1–2 de yesca pequeña', R.yesquero.donde.join() === 'bosque' && R.yesquero.con === 'manos' && R.yesquero.da === 'yesca' && R.yesquero.min === 1 && R.yesquero.max === 2 && CATALOGO.yesca.tam === 'P');
+  const pts = [{ id: 'juncos:0', tipo: 'juncos', x: 0, z: 0 }, { id: 'barro:0', tipo: 'barro', x: 3, z: 0 }, { id: 'yesquero:0', tipo: 'yesquero', x: 6, z: 0 }];
+  const rec = new Recoleccion(pts), invs = new Inventarios(), reg = new RegistroAcciones(), t0 = 1_700_000_000_000, yo = 'jugador:a';
+  const rc = (punto, x, t = t0) => ejecutarRecoleccion(rec, invs, reg, { autor: yo, tipo: 'recoger', punto, x, z: 0 }, t);
+  let r = rc('juncos:0', 0.5);
+  comprobar('sin cuchillo no se cortan los juncos (y lo dice)', !r.ok && /cuchillo/.test(r.motivo) && invs.de(yo).cuantos('junco') === 0, r.motivo);
+  r = rc('barro:0', 3.5);
+  comprobar('sin palo cavador no se cava el barro (y lo dice)', !r.ok && /palo cavador/.test(r.motivo) && invs.de(yo).cuantos('barro') === 0, r.motivo);
+  r = rc('yesquero:0', 6.5);
+  comprobar('los yesqueros se cogen con las manos: dan yesca', r.ok && r.objeto === 'yesca' && invs.de(yo).cuantos('yesca') >= 1, JSON.stringify(r.donde));
+  invs.de(yo).sacar(r.donde[0][0], r.cantidad);
+  invs.de(yo).meter('mano:izq', { tipo: 'lasca_silex', n: 1 });
+  r = rc('juncos:0', 0.5);
+  comprobar('con una lasca de sílex encima, se corta un haz de juncos', r.ok && invs.de(yo).cuantos('junco') === 1, r.motivo || JSON.stringify(r.donde));
+  comprobar('y la mata no vuelve hasta dentro de una estación', !rec.disponible('juncos:0', t0 + 29 * DIA) && rec.disponible('juncos:0', t0 + 30 * DIA));
+  invs.de(yo).sacar(r.donde[0][0], 1); invs.de(yo).sacar('mano:izq', 1);
+  invs.de(yo).meter('mano:izq', { tipo: 'palo_cavador', n: 1 });
+  r = rc('barro:0', 3.5);
+  comprobar('con el palo cavador, una cesta de barro', r.ok && invs.de(yo).cuantos('barro') === 1, r.motivo);
+  r = rc('barro:0', 3.5, t0 + 1000);
+  comprobar('el barro no se agota: se vuelve a cavar enseguida', r.ok && invs.de(yo).cuantos('barro') === 2 && rec.disponible('barro:0', t0 + 1000), r.motivo);
+  const e = reg.entradas.at(-1), f = reg.entradas.find(x => !x.ok);
+  comprobar('queda anotado con su autor, también lo que no se pudo', e.autor === yo && e.ok && e.resultado.objeto === 'barro' && f && /cuchillo/.test(f.motivo), JSON.stringify(e.resultado));
 }
 
 console.log('Si no cabe, no se recoge');

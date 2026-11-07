@@ -36,7 +36,7 @@ import { crearSuelo } from './suelo.js';
 import { almacenadoEnTierra } from '../logica/suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS, SALIDAS_INICIO } from '../logica/whitholm.js';
-import { nombreDe } from '../logica/recoleccion.js';
+import { nombreDe, RECOLECTABLES } from '../logica/recoleccion.js';
 import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
@@ -1449,7 +1449,9 @@ function opcionesUsar() {
     if (tronco && hachaEnMano(inventario())) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
     for (const op of opcionesRastra()) ops.push(op);
     for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (!esVehiculo(so.cosa.tipo)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
-    for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) }), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
+    // los juncos se cortan y el barro se cava (con su herramienta: src/logica/recoleccion.js); lo demás, se recoge
+    const verbo = rc => ({ cortar: tr('Cortar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cavar: tr('Cavar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }) })[RECOLECTABLES[rc.tipo].accion] || tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) });
+    for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: verbo(rc), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
   }
   // quien tienes al lado (a menos de 3 m): dejarle construir en tu tierra, o quitárselo (valravnx, 4 nov: la pareja)
   if (enLinea && miMojon()) for (const [autor, r] of enLinea.remotos) {

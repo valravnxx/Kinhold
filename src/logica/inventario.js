@@ -77,7 +77,7 @@ export const CATALOGO = {
   junco: R('Haz de juncos', 'M'), mimbre: R('Haz de mimbre', 'M'), bayas: R('Bayas', 'P'), setas: R('Setas', 'P'),
   frutos_secos: R('Frutos secos', 'P'), hierbas: R('Manojo de hierbas', 'P'), corteza: R('Corteza', 'M'),
   resina: R('Resina', 'P'), barro: R('Cesta de barro', 'M'), arcilla: R('Cesta de arcilla', 'M'), arena: R('Saco de arena', 'M'),
-  turba: R('Bloque de turba', 'M'), panal: R('Panal', 'P'), huevo: R('Huevo', 'P'),
+  turba: R('Bloque de turba', 'M'), panal: R('Panal', 'P'), huevo: R('Huevo', 'P'), yesca: R('Yesca', 'P'),
   // de los árboles
   tronco_delgado: { ...R('Tronco delgado', 'G'), hombro: true }, tronco_largo: R('Tronco largo', 'E'), tronco_corto: { ...R('Tronco corto', 'G'), hombro: true },
   lena: R('Leña', 'M'),

@@ -18,6 +18,9 @@
 //  - trampa de lazo: la estaca clavada con el cordel y el lazo abierto delante.
 //  - cubo: duelas de madera con dos aros de mimbre y el asa de cuerda.
 //  - hacha de piedra: la cabeza de piedra pulida en el mango de madera, atada con tiras.
+//  - corteza (7 nov): dos tiras de corteza arrancadas, curvadas en canal, la cara de fuera rugosa y la de dentro clara.
+//  - yesca (7 nov): un trozo de hongo yesquero cortado (pardo, con su corte claro y aterciopelado) junto a un nido de
+//    fibra seca deshilachada, pálida.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, materialTex } from '../mundo/estilos.js';
@@ -25,6 +28,7 @@ import { cil } from '../mundo/decorado.js';
 import { cajaR } from '../mundo/modelos.js';
 
 const FIBRA = 0xb3a77f, CORDEL = 0x9c8a60, CUERDA = 0x86714c, JUNCO = 0x7f8a4c, JUNCO_PUNTA = 0xa59a62, MIMBRE = 0xb39a6c;
+const LIBER = 0xb49a74, YESQUERO = 0x6e6152, YESCA_CORTE = 0xa58a62, YESCA_FIBRA = 0xc2b48a;
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_PELO = 0x7d6346, AMBAR = 0x8a561d, AMBAR_CLARO = 0xa36d2a;
 const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
@@ -81,6 +85,39 @@ function piel(n, id) {
   for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) + 0.02 * Math.sin(p.getX(i) * 9 + 1) * Math.cos(p.getZ(i) * 6));
   g.computeVertexNormals();
   L.add(g, PIEL_PELO, 0, 0.01, 0, { y: az(id, 40) }, { tex: 'liso', rayas: (v) => 0.88 + 0.12 * Math.cos(v.x * 7) * Math.cos(v.z * 5) }); // el pelo, más oscuro en el lomo
+  return mallas(L);
+}
+
+// una tira de corteza curvada en canal (medio tubo), tumbada a lo largo de X: fuera la corteza, dentro el líber claro
+function tiraCorteza(L, largo, ancho, x, z, giro, id, k) {
+  const r = ancho / 2, ab = Math.PI * (0.9 + az(id, k) * 0.3);
+  // en canal: el arco abajo (rotateX), y la cara de dentro con las caras y las normales vueltas hacia el eje
+  const fuera = new THREE.CylinderGeometry(r, r * 0.92, largo, 8, 3, true, -ab / 2, ab); fuera.rotateX(Math.PI / 2); fuera.rotateY(Math.PI / 2);
+  const dentro = new THREE.CylinderGeometry(r * 0.94, r * 0.86, largo * 0.98, 8, 3, true, -ab / 2, ab); dentro.scale(-1, 1, 1);
+  const nd = dentro.attributes.normal; for (let i = 0; i < nd.count; i++) nd.setXYZ(i, -nd.getX(i), -nd.getY(i), -nd.getZ(i));
+  dentro.rotateX(Math.PI / 2); dentro.rotateY(Math.PI / 2);
+  const g = new THREE.Matrix4().makeRotationY(giro);
+  L.add(fuera, 'corteza', x, r, z, g, { tex: 'corteza' });
+  L.add(dentro, LIBER, x, r, z, g, { tex: 'veta', sinSuelo: true });
+}
+function corteza(n, id) {
+  const L = lote(0.03);
+  tiraCorteza(L, 0.42, 0.1, 0, 0, az(id, 1) * 0.4, id, 1);
+  tiraCorteza(L, 0.34, 0.08, 0.02, 0.1, -0.3 + az(id, 2) * 0.4, id, 2);
+  return mallas(L);
+}
+function yesca(n, id) {
+  const L = lote(0.03);
+  // el trozo de yesquero: una cuña gruesa y redondeada, parda por fuera, con el corte de dentro claro
+  const cuna = new THREE.SphereGeometry(0.06, 10, 6, 0, Math.PI, 0, Math.PI / 2); cuna.scale(1.2, 0.75, 0.9);
+  L.add(cuna, YESQUERO, -0.05, 0.004, 0, { y: az(id, 1) * 0.6 }, { tex: 'corteza' });
+  L.add(new THREE.CircleGeometry(0.06, 10, 0, Math.PI), YESCA_CORTE, -0.05, 0.005, 0, new THREE.Matrix4().makeRotationY(az(id, 1) * 0.6).multiply(new THREE.Matrix4().makeScale(1.2, 0.75, 1)), { tex: 'liso', sinSuelo: true });
+  // el nido de fibra seca: hebras finas enredadas en un montoncito
+  for (let i = 0; i < 30; i++) {
+    const a = i * 2.399, d = 0.012 + (i % 5) * 0.008, y = 0.008 + (i % 4) * 0.007;
+    const c = v3(0.07 + Math.cos(a) * d, y, Math.sin(a) * d);
+    L.add(tubo([c.clone().add(v3(-0.03, 0, -0.01)), c.clone().add(v3(0, 0.01, 0.02 * Math.sin(a))), c.clone().add(v3(0.03, -0.004, 0.01))], 0.002, 3), i % 3 ? YESCA_FIBRA : FIBRA, 0, 0, 0, { y: a }, { tex: 'liso', sinSuelo: i > 8 });
+  }
   return mallas(L);
 }
 
@@ -218,6 +255,6 @@ function hachaPiedraSuelo(n, id) { const g = new THREE.Group(), h = modeloHachaP
 
 // tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
 export const MODELO_OBJETO = {
-  fibra, junco: juncos, mimbre, piel, resina, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
+  fibra, junco: juncos, mimbre, piel, resina, corteza, yesca, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
   honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo,
 };
