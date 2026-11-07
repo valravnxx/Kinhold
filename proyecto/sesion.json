@@ -18,5 +18,11 @@
   "tarea": "Comer: bayas y setas del bosque (documento de sistemas, apartado 3: se recogen con las manos, según la estación) para el primer hambre, con su modelo (estilo v5) en la mata y en el suelo; comer desde el equipo, por el servidor. Recorrido: con hambre, el jugador recoge bayas y se las come",
   "hito": "supervivencia",
   "rama": "trabajo/20261107-2126-bayas"
+ },
+ "chat:trabajo/20261107-2042-puestos": {
+  "inicio": "2026-11-07T20:42:58+00:00",
+  "tarea": "Arreglo (valravnx, 7 nov): los puestos de trabajo y los almacenajes guardan el giro con que se ponen, y se desmontan terminados desde Construir (el 75 % del material y lo que guardan, al suelo a su lado)",
+  "hito": "orden",
+  "rama": "trabajo/20261107-2042-puestos"
  }
 }
