@@ -69,7 +69,7 @@ body.construyendo #llevas{display:none}
 .pieza small{color:var(--muted);font-size:11.5px;margin-top:2px}
 .pieza.sel small{color:#3a2c18}
 
-#confirmar{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--panel);padding:10px;border-radius:12px;display:flex;gap:8px}
+#confirmar{position:fixed;left:50%;bottom:calc(112px + env(safe-area-inset-bottom,0px));z-index:8;transform:translateX(-50%);background:var(--panel);padding:10px;border-radius:12px;display:flex;gap:8px}
 #btnConfirmar{background:var(--rojo);color:#fff;border-color:transparent}
 
 #joystick{position:fixed;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(30px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;background:rgba(36,30,24,.35);border:2px solid rgba(241,232,216,.3);touch-action:none}
