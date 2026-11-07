@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (17:29 UTC+1) — por el chat: la interfaz, con subtexto medieval
+valravnx, sobre la tercera versión del estudio de la interfaz: «añadele un subtexto medieval al tema, vamos en buen camino pero soy exigente».
+→ Va en buen camino. El chat viste la misma propuesta con lo de la época (cuero y latón para tocar, pergamino y tinta para leer, rúbricas en minio, medallones de latón, iconos de grabado, horas canónicas, pasos y rumbos), sin perder claridad: cuarta versión del estudio, con dos preguntas nuevas.
+
 ### 7 nov 2026 (17:25 UTC+1) — por el chat: la interfaz, con las necesidades
 valravnx, sobre la segunda versión del estudio de la interfaz: «me gusta, pero cuenta las bolitas de estado de hambre, sed, calor/frio, etcetera en el diseño y sigue probando como optimizar a la vez que das el maximo de informacion».
 → Le gusta el menú de iconos con atajos y la acción según lo que tienes delante. El chat sigue el estudio: los círculos de las necesidades del GDD (hambre, sed, frío, calor y cansancio; al pulsarlos, efecto e información) y más maneras de dar el máximo de información ocupando lo mínimo.

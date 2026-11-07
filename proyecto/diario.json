@@ -5203,5 +5203,19 @@
   "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas nuevas, miradas una a una.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:32:45+01:00",
+  "fin": "2026-11-07T17:32:45+01:00",
+  "titulo": "P4: el estudio de la interfaz, cuarta versión (subtexto medieval)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Cuarta versión del estudio de la interfaz (valravnx: «añadele un subtexto medieval al tema»): la misma propuesta vestida con lo de la época: cuero oscuro con borde de latón y tachuelas para lo que se toca, pergamino y tinta para lo que se lee, rúbricas en rojo de minio y una sola capitular en el menú.",
+   "Las necesidades como medallones de latón con el aro del color de un pigmento (cardenillo, ocre, minio; el frío en glasto); iconos propios como grabados en madera; el día por las horas canónicas y las pistas en pasos y rumbos («a unos ciento cuarenta pasos hacia levante»).",
+   "Reglas para que siga siendo claro: nada de letra gótica (títulos en IM Fell English y texto en EB Garamond, las dos de licencia libre), pergamino solo para leer y cuero para tocar. Maquetas en PC y móvil de andar, las necesidades, el menú, la lista y construir; dos preguntas nuevas."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas nuevas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

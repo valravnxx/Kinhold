@@ -4255,7 +4255,7 @@
    "hito": "admin"
   },
   {
-   "pregunta": "La interfaz del juego (estudio del 7 nov, tercera versión, diseno/estudios/interfaz.html): ¿menú con cuadrícula de iconos, tres atajos, la acción según lo que tienes delante con su lista, las manos con la carga debajo y las necesidades en círculos a la derecha (lo peor primero, y al tocarlos su ficha)? ¿La rueda fuera o como extra del PC? ¿Un círculo de temperatura o dos (frío y calor)? ¿Los círculos siempre a la vista o solo cuando algo va mal? ¿En el móvil, los atajos arriba a la izquierda?",
+   "pregunta": "La interfaz del juego (estudio del 7 nov, cuarta versión, diseno/estudios/interfaz.html): ¿menú con cuadrícula de iconos, tres atajos, la acción según lo que tienes delante con su lista, las manos con la carga debajo y las necesidades en círculos a la derecha (lo peor primero, y al tocarlos su ficha), vestido de medieval (cuero y latón para tocar, pergamino y tinta para leer, rúbricas en minio, iconos de grabado)? ¿La rueda fuera o como extra del PC? ¿Un círculo de temperatura o dos? ¿Los círculos siempre a la vista? ¿En el móvil, los atajos arriba a la izquierda? ¿Horas canónicas y pasos y rumbos en los textos?",
    "desde": "2026-11-07",
    "hito": "supervivencia"
   }
