@@ -27,18 +27,23 @@ vec3 cieloBase(vec3 d){
   float vis=smoothstep(-0.2,0.02,uSol.y);
   vec3 h=mix(cieloAbajo,uColSol,0.32*bajo*vis*pow(c,3.0)*(1.0-smoothstep(0.0,0.5,e)));
   vec3 col=mix(h,cieloArriba,pow(clamp(e/0.6,0.0,1.0),0.75));
-  col+=uColSol*vis*(0.45*pow(c,90.0)+0.24*pow(c,16.0)*(0.5+0.5*bajo)+0.12*pow(c,4.0)*bajo);
+  col+=uColSol*vis*(0.22*pow(c,3000.0)+0.1*pow(c,300.0)+0.12*pow(c,16.0)*(0.5+0.5*bajo)+0.07*pow(c,4.0)*bajo);
   return col;
 }
 vec3 hashC(vec3 p){p=fract(p*vec3(0.1031,0.1030,0.0973));p+=dot(p,p.yxz+33.33);return fract((p.xxy+p.yxx)*p.zyx);}
-// una capa de estrellas: celdas de 1/R rad, una estrella en algunas, lejos de los bordes de su celda (no salen cortadas)
-float capaEstrellas(vec3 s,float R,float cuantas,float radio,float brillo){
-  vec3 p=s*R,cel=floor(p),h=hashC(cel);
+// una capa de estrellas: el cielo como las seis caras de un cubo, cada una en N × N celdas, y en algunas celdas una
+// estrella, lejos de su borde (no sale cortada); sale más gorda si un píxel es más grande que ella, y menos clara
+float capaEstrellas(vec3 s,float N,float cuantas,float radio,float brillo){
+  vec3 a=abs(s);vec2 uv;float cara;
+  if(a.x>=a.y&&a.x>=a.z){uv=s.yz/a.x;cara=s.x>0.0?0.0:1.0;}
+  else if(a.y>=a.z){uv=s.xz/a.y;cara=s.y>0.0?2.0:3.0;}
+  else{uv=s.xy/a.z;cara=s.z>0.0?4.0:5.0;}
+  vec2 p=(uv*0.5+0.5)*N,cel=floor(p);
+  vec3 h=hashC(vec3(cel,cara*31.0+N));
   if(h.x>cuantas)return 0.0;
-  vec3 q=hashC(cel+17.0),pos=normalize(cel+0.3+0.4*q)*R;
-  if(any(lessThan(pos-cel,vec3(0.3)))||any(greaterThan(pos-cel,vec3(0.7))))return 0.0;
-  float px=uPx*R,r=max(radio,px*0.7),d=length(p-pos);
-  float b=brillo*pow(h.y,3.0)*min(1.0,radio*radio/(px*px*0.49)+0.35);
+  vec2 pos=cel+0.25+0.5*hashC(vec3(cel,cara*31.0+N+7.0)).xy;
+  float px=uPx*N*0.5,r=max(radio,px*0.7),d=length(p-pos);
+  float b=brillo*(0.15+0.85*pow(h.y,3.0))*min(1.0,radio*radio/(px*px*0.49)+0.35);
   return b*exp(-d*d/(r*r))*(0.85+0.15*sin(uTiempo*(1.5+3.0*h.z)+h.y*40.0));
 }
 vec3 cieloVivo(vec3 d){
@@ -47,9 +52,9 @@ vec3 cieloVivo(vec3 d){
   // las estrellas (más débiles cerca del horizonte, donde hay más aire), dos capas: muchas débiles y pocas brillantes
   if(uEstrellas>0.001){
     vec3 s=uGiro*d;
-    float st=capaEstrellas(s,300.0,0.34,0.16,1.1)+capaEstrellas(s,120.0,0.12,0.1,1.8)+capaEstrellas(s,45.0,0.07,0.04,3.0);
-    vec3 tinte=mix(vec3(1.0,0.86,0.72),vec3(0.78,0.86,1.0),hashC(floor(s*120.0)).z);
-    float aire=smoothstep(0.0,0.3,d.y);
+    float st=capaEstrellas(s,420.0,0.3,0.12,0.9)+capaEstrellas(s,160.0,0.16,0.1,1.6)+capaEstrellas(s,55.0,0.12,0.06,2.6);
+    vec3 tinte=mix(vec3(1.0,0.86,0.72),vec3(0.78,0.86,1.0),hashC(floor(s*160.0)).z);
+    float aire=mix(0.35,1.0,smoothstep(0.0,0.25,d.y))*smoothstep(-0.01,0.02,d.y);
     // la Vía Láctea: una franja tenue y desigual que cruza el cielo
     float v=dot(s,normalize(vec3(0.35,0.2,0.92)));
     float nube=0.55+0.25*sin(s.x*7.0+sin(s.y*5.0)*1.7)*sin(s.y*6.0-s.z*4.0)+0.2*sin(s.z*13.0+s.x*9.0);
@@ -58,7 +63,7 @@ vec3 cieloVivo(vec3 d){
   }
   // el sol: un disco de 0,7° con el borde suave
   float cs=dot(d,uSol),bajoS=1.0-smoothstep(2.0,25.0,degrees(asin(clamp(uSol.y,-1.0,1.0))));
-  col=mix(col,mix(vec3(1.0,0.98,0.92)*1.5,mix(vec3(1.0,0.9,0.7),uColSol,0.6)*1.25,bajoS),smoothstep(cos(radians(0.7)+uPx*1.5),cos(radians(0.7)),cs)*sobre);
+  col=mix(col,mix(vec3(1.0,0.98,0.92)*1.5,vec3(1.0,0.9,0.72)*1.35,bajoS),smoothstep(cos(radians(0.7)+uPx*1.5),cos(radians(0.7)),cs)*sobre);
   // la luna: un disco de 1° con la cara que mira al sol iluminada (de ahí sale la fase) y sus mares
   float cl=dot(d,uLuna),rl=radians(1.0);
   if(cl>cos(rl+uPx*2.0)){

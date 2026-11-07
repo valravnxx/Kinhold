@@ -60,8 +60,8 @@ export const MOMENTOS = [
   { alto: -18, arriba: 0x060a14, horizonte: 0x111a2a, sol: [0xff8a4a, 0], hemi: [0x7c92d4, 0x40465c, 2.3] },
   { alto: -8, arriba: 0x141d36, horizonte: 0x3c3a52, sol: [0xff8a4a, 0], hemi: [0x8896cc, 0x484656, 2.3] },
   { alto: -2, arriba: 0x34476a, horizonte: 0xb97a62, sol: [0xff7a3c, 0], hemi: [0xaaa8c2, 0x54494a, 2.3] },
-  { alto: 3, arriba: 0x5f7896, horizonte: 0xe0a070, sol: [0xff9a5a, 1.5], hemi: [0xc8bec0, 0x604e3e, 2.1] },
-  { alto: 10, arriba: 0x8ea6ba, horizonte: 0xe6c8a2, sol: [0xffc890, 2.1], hemi: [0xd8d2cc, 0x64523f, 1.8] },
+  { alto: 3, arriba: 0x6a82a0, horizonte: 0xe8955a, sol: [0xff9a5a, 1.5], hemi: [0xc8bec0, 0x604e3e, 2.1] },
+  { alto: 10, arriba: 0x8ea6ba, horizonte: 0xe6b88a, sol: [0xffc890, 2.1], hemi: [0xd8d2cc, 0x64523f, 1.8] },
   { alto: 22, arriba: 0xa3b8c6, horizonte: 0xe0d8c8, sol: [0xffe2bc, 2.2], hemi: [0xe2e4e2, 0x665641, 1.65] },
   { alto: 40, arriba: 0xa9bfca, horizonte: 0xd9e1e0, sol: [0xfff1dc, 2.2], hemi: [0xe6eef2, 0x6a5b47, 1.6] },
 ];

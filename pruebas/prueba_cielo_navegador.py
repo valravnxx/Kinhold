@@ -45,6 +45,8 @@ def entrar(pg, extra=''):
     try: pg.wait_for_function(f'{K}.decorado.pendientes === 0', timeout=120000)
     except Exception: pass
     if MUTAR: pg.evaluate(f'{K}.cielo.estado.activo = false')
+    # sin los botones ni los avisos (taparían el cielo que se mide; en el móvil, casi toda la franja de arriba)
+    pg.add_style_tag(content='body > :not(canvas) { visibility: hidden !important; }')
     pg.wait_for_timeout(1500)
 
 def poner(pg, hora, fase=None, mirar=None, pitch=0.1):
@@ -64,10 +66,10 @@ def media(im, caja):
     return [round(x) for x in ImageStat.Stat(im.crop(caja)).mean]
 
 def donde(pg, cosa):
-    """dónde sale en la pantalla (px de la captura) algo del cielo: el sol o la luna"""
+    """dónde sale en la pantalla (de 0 a 1, de izquierda a derecha y de arriba abajo) algo del cielo: el sol o la luna"""
     return pg.evaluate(f"""(() => {{ const k = {K}, d = k.cielo.actual.{cosa}, c = k.camara;
       const v = c.position.clone().addScaledVector(new c.position.constructor(d[0], d[1], d[2]), 1000).project(c);
-      return {{ x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight, z: v.z }}; }})()""")
+      return {{ x: (v.x + 1) / 2, y: (1 - v.y) / 2, z: v.z }}; }})()""")
 
 def estrellas(im, caja):
     """puntos claros sueltos en el cielo: píxeles mucho más claros que la media de alrededor"""
@@ -82,10 +84,10 @@ def estrellas(im, caja):
 def recorrido(pg, nombre, pref, movil):
     errores = []
     pg.on('pageerror', lambda e: errores.append(str(e)))
-    W, H = pg.evaluate('[innerWidth, innerHeight]')
-    arriba = (0, round(H * 0.2), W, round(H * 0.32))   # una franja de cielo bajo los botones
-    suelo = (round(W * 0.1), round(H * 0.62), round(W * 0.9), round(H * 0.95))
     entrar(pg)
+    W, H = foto(pg).size   # (los px de la captura: en el móvil no son los de innerWidth)
+    arriba = (0, round(H * 0.06), W, round(H * 0.22))   # una franja de cielo
+    suelo = (round(W * 0.1), round(H * 0.62), round(W * 0.9), round(H * 0.95))
     comprobar(f'{nombre}: sin ?hora, las pruebas ven la luz «mañana» del estilo v5, quieta', pg.evaluate(f'{K}.cielo.fijo') == 'v5' and abs(pg.evaluate(f'{K}.ambiente.sol.intensity') - 2.2) < 1e-6)
     # mediodía
     c = poner(pg, 12)
@@ -98,18 +100,18 @@ def recorrido(pg, nombre, pref, movil):
     # el ocaso, mirando al sol
     poner(pg, 17.55, mirar='sol', pitch=0.05)
     im = foto(pg, f'{SALIDA}/{pref}_2_ocaso.png')
-    p = donde(pg, 'sol')
+    p = donde(pg, 'sol'); p['x'] *= W; p['y'] *= H
     dentro = 6 < p['x'] < W - 6 and 6 < p['y'] < H - 6 and p['z'] < 1
     if dentro:
         dis = media(im, (round(p['x']) - 2, round(p['y']) - 2, round(p['x']) + 3, round(p['y']) + 3))
         lado = media(im, (round(p['x']) + 30, round(p['y']) - 4, round(p['x']) + 50, round(p['y']) + 4))
     else: dis = lado = [0, 0, 0]
-    comprobar(f'{nombre}: al ponerse, el disco del sol se ve donde está, más claro que el cielo de al lado', dentro and sum(dis) > sum(lado) + 25 and min(dis) > 200, f'en {round(p["x"])},{round(p["y"])}: {dis} contra {lado}')
+    comprobar(f'{nombre}: al ponerse, el disco del sol se ve donde está, más claro que el cielo de al lado', dentro and sum(dis) > sum(lado) + 25 and dis[0] > 235, f'en {round(p["x"])},{round(p["y"])}: {dis} contra {lado}')
     comprobar(f'{nombre}: y el cielo de al lado es cálido (rojo sobre azul)', lado[0] > lado[2] + 15, str(lado))
     # noche de luna llena, mirando a la luna
-    poner(pg, 19.4, 0.5, mirar='luna', pitch=0.05)
+    poner(pg, 19.0, 0.5, mirar='luna', pitch=0.05)
     im = foto(pg, f'{SALIDA}/{pref}_3_luna_llena.png')
-    p = donde(pg, 'luna')
+    p = donde(pg, 'luna'); p['x'] *= W; p['y'] *= H
     dentro = 6 < p['x'] < W - 6 and 6 < p['y'] < H - 6 and p['z'] < 1
     lu = media(im, (round(p['x']) - 2, round(p['y']) - 2, round(p['x']) + 3, round(p['y']) + 3)) if dentro else [0, 0, 0]
     comprobar(f'{nombre}: de noche, la luna llena se ve donde está (un disco claro)', dentro and min(lu) > 170, f'en {round(p["x"])},{round(p["y"])}: {lu}')
@@ -137,13 +139,15 @@ def horizonte(pg, nombre, pref):
     errores = []
     pg.on('pageerror', lambda e: errores.append(str(e)))
     entrar(pg, '&graficos=pc-3')
-    W, H = pg.evaluate('[innerWidth, innerHeight]')
-    comprobar(f'{nombre}: el PC alto lleva el horizonte', pg.evaluate('!!window.__graficos.horizonte && window.__graficos.horizonte.activo'))
+    W, H = foto(pg).size
+    # (las muestras de la isla se hacen poco a poco: aquí, de una vez, como en la prueba del perfil gráfico)
+    pg.evaluate("(() => { const G = window.__graficos, m = G.horizonte.muestras; while (!m.tiene(1)) m.avanzar(1000); G.poner('pc-3', false); })()")
+    comprobar(f'{nombre}: el PC alto lleva el horizonte', pg.evaluate('!!window.__graficos.horizonte && window.__graficos.horizonte.activo'), pg.evaluate('window.__graficos.perfil'))
     poner(pg, 0, 0.5, pitch=0.05)
     im = foto(pg, f'{SALIDA}/{pref}_6_noche_horizonte.png')
-    franja = media(im, (0, round(H * 0.3), W, round(H * 0.42)))
+    franja = media(im, (0, round(H * 0.25), W, round(H * 0.42)))
     comprobar(f'{nombre}: de noche, lo lejano y el cielo, oscuros (la bruma va al cielo de noche)', sum(franja) / 3 < 60, str(franja))
-    n, base = estrellas(im, (0, round(H * 0.12), W, round(H * 0.25)))
+    n, base = estrellas(im, (0, round(H * 0.06), W, round(H * 0.22)))
     comprobar(f'{nombre}: y con estrellas', n >= 8, f'{n} (fondo {base})')
     poner(pg, 17.55, mirar='sol', pitch=0.05)
     foto(pg, f'{SALIDA}/{pref}_7_ocaso_horizonte.png')

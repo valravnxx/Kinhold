@@ -123,6 +123,7 @@ paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold
 paso "Navegador: quitar el mojón" python3 pruebas/prueba_quitar_mojon_navegador.py dist/kinhold_demo.html "$C/quitar_mojon"
 paso "Navegador: posprocesado y perfiles gráficos" python3 pruebas/prueba_posprocesado_navegador.py dist/kinhold_posprocesado.html "$C/posprocesado"
 paso "Navegador: el perfil gráfico en el juego" python3 pruebas/prueba_graficos_juego_navegador.py dist/kinhold_demo.html "$C/graficos_juego"
+paso "Navegador: el día y la noche" python3 pruebas/prueba_cielo_navegador.py dist/kinhold_demo.html "$C/cielo"
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_demo.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html "$C/tala"
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_demo.html "$C/troceo"
