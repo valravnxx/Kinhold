@@ -1703,6 +1703,12 @@
      "estado": "hecho",
      "inicio": "2026-11-07T09:48:41+01:00",
      "fin": "2026-11-07T13:45:38+01:00"
+    },
+    {
+     "nombre": "Los llanos sin nada a 0,4 m (valravnx, 7 nov: «hay tramos que no aparece vegetacion ni nada en la estepa… a momentos aparece un manto azul»): tierra adentro, lo que quedaba por debajo del mar sube a una altura de tierra de verdad, con relieve, y crece lo que toca",
+     "estado": "en_curso",
+     "inicio": "2026-11-07T15:30:52+01:00",
+     "rama": "trabajo/20261107-1530-llanos"
     }
    ],
    "num": "G"
