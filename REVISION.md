@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (10:32 UTC+1) — en la sesión del carril A: «sigue con otro carril»
+El carril A estaba ocupado (la sesión anterior, con lo hecho a mano de P3, seguía viva), así que esta sesión no hizo nada; valravnx: «sigue con otro carril».
+→ Esta sesión trabaja como carril B (pausado desde el 1 nov) con la siguiente tarea libre: «Una sola tabla de armadura» (P6). Solo para esta vez; el carril B sigue pausado para las tareas programadas.
+
 ### 7 nov 2026 (09:42 UTC+1) — por el chat: el bosque de lejos de cerca hace montículos
 valravnx, con una captura de una ladera a pocos cientos de metros: «el tema de los arboles de lejos que hiciste crea este glitch grafico de monticulos que equivaldrian rollo a 50 metros cada uno, queda muy irreal a estas cortas distancias, habria que hacerlo mas suave, y tambien que comiencen a aparecer algo mas lejos creo que seria beneficioso porque a veces los tienes justo tapandote la cara».
 → Tarea nueva en «Gráficos» (la lleva el chat): el dosel de cerca, más suave (sin los bultos ni las manchas en anillos) y empezando más lejos del jugador, sin tapar la vista.
