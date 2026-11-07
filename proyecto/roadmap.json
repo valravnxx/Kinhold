@@ -1423,7 +1423,7 @@
    "num": "P4",
    "nombre": "Un primer día con sentido",
    "jugable": "Día y noche; sed, hambre, frío y cansancio con sus avisos; la cama; morir y que te saqueen; liebres para cazar y asar; herramientas que se gastan y se reparan.",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "tareas": [
     {
      "nombre": "Planificar el hito con el GDD y el documento de sistemas: día y noche, sed (beber del río), hambre, frío y cansancio, cama ligada, morir y saqueo, liebres (despiece y asar en la hoguera o el hogar), durabilidad y reparar. Cada tarea de una sesión y con su parte en el recorrido de jugador",
@@ -1433,7 +1433,9 @@
     },
     {
      "nombre": "Las necesidades en la lógica pura y en el servidor: hambre, sed, frío y cansancio de cada personaje (GDD, apartado 6; valores del documento de sistemas, apartado 10: comer 2–3 veces por día de juego, la sed más rápida). Las lleva el servidor, se guardan con el personaje y suben con el tiempo y con lo que hace (con su autor). Al máximo: cansancio acelerado y luego heridas lentas. Recorrido: la sed y el hambre suben solas desde que entra el jugador nuevo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T14:37:33+01:00",
+     "rama": "trabajo/20261107-1437-necesidades"
     },
     {
      "nombre": "Los avisos en círculos a la derecha (PC y móvil), uno por necesidad con su color (naranja, azul, celeste y gris), que solo salen cuando hace falta; al pulsarlos, qué efecto tiene y cómo se quita. Y los efectos en el juego: sin correr, más lento y golpes flojos según lo que toque. Recorrido: sale el aviso de sed y se lee qué hacer",
