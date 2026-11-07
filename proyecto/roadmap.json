@@ -4253,7 +4253,7 @@
    "hito": "admin"
   },
   {
-   "pregunta": "La interfaz del juego (estudio del 7 nov, diseno/estudios/interfaz.html): ¿la acción única según lo que tienes delante (E con bocadillo en PC, botón grande en el móvil), la rueda para todo lo demás (Tab en PC, abanico en el móvil), las manos siempre abajo con su imagen, los ajustes en el engranaje y la barra de construir solo al construir?",
+   "pregunta": "La interfaz del juego (estudio del 7 nov, segunda versión, diseno/estudios/interfaz.html): ¿un botón de menú con todo en una cuadrícula de iconos grandes (en vez de la rueda), tres atajos fijos (Equipo, Fabricar, Construir), la acción única según lo que tienes delante con una lista cuando hay varias cosas, las manos siempre abajo con su imagen y la barra de construir solo al construir? ¿La rueda fuera, o como extra del PC?",
    "desde": "2026-11-07",
    "hito": "supervivencia"
   }

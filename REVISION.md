@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (17:21 UTC+1) — por el chat: la interfaz, mejor estudiada (la rueda es muy «hardcore»)
+valravnx, sobre el estudio de la interfaz: «estudia mejor como mmos o survivals de android trabajan, me parece que el desplegable es muy hardcore, quiza algo tras menus? o como? estudia mas».
+→ El chat amplía el estudio (diseno/estudios/interfaz.html, segunda versión): cómo lo hacen los juegos grandes de móvil y una propuesta nueva con un botón de menú que abre una cuadrícula de iconos grandes, tres atajos fijos, la acción según lo que tienes delante y una lista cuando hay varias cosas. La rueda queda, si acaso, como extra del PC. Sigue en decisiones pendientes.
+
 ### 7 nov 2026 (17:11 UTC+1) — por el chat: estudio de la interfaz del juego (PC y móvil)
 valravnx: «haz un estudio de como hacer una UI del juego que sirva para movil y pc que sea comoda y no ocupe tanto, debemos evitar que se llene todo de botones, haz el estudio y propon cosas enseñandomelas primero, sin meter al juego».
 → Tarea del chat en P4: el estudio (cómo lo resuelven otros juegos, lo que falla hoy y la propuesta en maquetas para PC y móvil), en diseno/estudios/. Nada entra en el juego hasta que valravnx decida.

@@ -5175,5 +5175,19 @@
   "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas, miradas una a una.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:24:18+01:00",
+  "fin": "2026-11-07T17:24:18+01:00",
+  "titulo": "P4: el estudio de la interfaz, segunda versión (menú en vez de rueda)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Segunda versión del estudio de la interfaz (valravnx: «estudia mejor como mmos o survivals de android trabajan, me parece que el desplegable es muy hardcore»): cómo lo hacen Genshin Impact, Last Day on Earth y Albion Online en el móvil, y lo que dicen las guías de diseño para móvil.",
+   "Lo que sale: los juegos grandes de móvil tienen un botón de menú que abre una pantalla clara, muy pocos accesos directos y el botón de acción grande abajo a la derecha; la rueda es un atajo de PC y mando, no la forma principal.",
+   "Propuesta nueva en maquetas (PC y móvil): botón de menú con una cuadrícula de iconos grandes, tres atajos fijos (Equipo, Fabricar, Construir), la acción según lo que tienes delante y una lista con imagen cuando hay varias cosas. La rueda queda como extra del PC, si valravnx quiere."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas nuevas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
