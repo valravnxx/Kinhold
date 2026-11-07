@@ -5244,5 +5244,19 @@
   "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin desbordarse; las maquetas de los ocho estados, miradas una a una en PC y móvil.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:52:00+01:00",
+  "fin": "2026-11-07T18:01:30+01:00",
+  "titulo": "P4: el estudio de la interfaz, séptima versión (acabado de juego publicado)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Estudio de cómo se ve y cómo responde la interfaz de juegos publicados (valravnx: «imagina que este es el interfaz que tenemos y te pido hacerlo mejor y mas de videojuego publicado final»): siete juegos del género, las cuatro clases de interfaz (dentro y fuera del mundo), las cifras de movimiento y respuesta, y las guías de contraste, tamaño de letra y accesibilidad, con fuentes.",
+   "Séptima versión de la propuesta: botones redondos con bisel de latón, huecos de placa translúcida, iconos macizos con filo oscuro y el texto suelto con sombra; la temperatura con llama o copo (el termómetro no es de la Edad Media); lo que va bien, medio transparente, y al andar se apaga; un aro en el suelo bajo lo que vas a coger; escarcha en los bordes con el frío; lo cogido entra por la izquierda; mantener para talar llena un aro.",
+   "En el móvil, arriba solo menú y hablar; Fabricar y Construir, en arco junto al botón de acción. El menú, un centro con pestañas (Q/E) encima del mundo desenfocado. Maquetas de nueve estados en PC y móvil."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas de los nueve estados, miradas una a una en PC y móvil (corregidos el botón de acción vacío al andar y la barra de construir que se salía en el móvil).",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
