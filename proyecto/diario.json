@@ -5337,5 +5337,20 @@
   "pruebas": "Sin cambios en el juego: no hace falta la batería. Lo de la rama: su prueba, 11/11",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T19:00:43+00:00",
+  "fin": "2026-11-07T21:36:30+00:00",
+  "titulo": "P3: troncos delgados y varas en la rastra, y juncos en el fardo",
+  "hito": "crafting",
+  "hecho": [
+   "Estudio pedido por valravnx en la sesión: hoy el tronco delgado solo iba al hombro, de uno en uno, y los juncos solo en las manos; propuesta de llevarlos en la rastra y en el fardo. valravnx: «metelo ya».",
+   "La rastra lleva también troncos delgados (hasta 5, 75 kg: va igual de despacio que con 3 cortos) y varas (hasta 12), con su modelo: los troncos a lo largo sobre los travesaños y las varas en un haz. El tronco largo sigue fuera (es cosa de carro).",
+   "El fardo atado admite juncos y mimbre, con la paja y la fibra; con plantas se ve como haces de tallos atados a la espalda.",
+   "Recorrido de jugador, paso 14: hace dos cordeles, se ata un fardo, se lo echa a la espalda y mete en él el haz de juncos que cortó en la orilla, con las manos libres."
+  ],
+  "pruebas": "Batería entera en la nube dos veces (antes y después de unir main, que traía beber del río como v143): todo correcto, con el recorrido de jugador (paso 14) y la rastra en el navegador (troncos delgados, varas y el fardo con juncos). La primera vez, la web falló por la traducción de la tarea nueva, añadida y repetida: bien. Rastra 47/47 (con MUTAR=1 falla), inventario 137/137. No comprobado: el fardo con juncos visto en el móvil (la prueba de la rastra lo mira solo en PC).",
+  "capturas": "capturas/demo-v144",
+  "estado": "ok"
  }
 ]

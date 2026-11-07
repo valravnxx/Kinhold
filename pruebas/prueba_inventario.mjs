@@ -247,7 +247,7 @@ console.log('Equipo de carga (GDD: cinturones, mochilas y bastidores, hombro)');
   // lo que admite cada uno
   const adm = (k, si, no) => { const c = capacidad(k); return si.every(t => c.porTipo[t] > 0) && no.every(t => !c.porTipo[t]); };
   comprobar('cesta de recolección: bayas, setas, hierbas, frutos y huevos; no piedras', adm('cesta_recoleccion', ['bayas', 'setas', 'hierbas', 'frutos_secos', 'huevo'], ['piedra', 'lena']));
-  comprobar('fardo atado: pieles, telas, fibras y paja', adm('fardo', ['piel', 'tela', 'fibra', 'paja'], ['bayas', 'piedra']));
+  comprobar('fardo atado: pieles, telas, fibras y paja; y juncos y mimbre (valravnx, 7 nov)', adm('fardo', ['piel', 'tela', 'fibra', 'paja', 'junco', 'mimbre'], ['bayas', 'piedra']));
   comprobar('porta-piedras: piedras', adm('porta_piedras', ['piedra'], ['lena']) && capacidad('porta_piedras').porTipo.piedra === 12);
   comprobar('caja de herramientas: herramientas de oficio', adm('caja_herramientas', ['cuchillo', 'hacha_mano'], ['piedra', 'espada']));
   comprobar('carcaj: flechas o virotes', adm('carcaj', ['flecha', 'virote'], ['cuchillo']));

@@ -1426,9 +1426,10 @@
     },
     {
      "nombre": "Llevar más de una vez (valravnx, 7 nov): la rastra lleva también troncos delgados (5) y varas (12); los juncos y el mimbre van en el fardo atado, con la paja y la fibra",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T19:00:43+00:00",
-     "rama": "trabajo/20261107-1900-rastra"
+     "rama": "trabajo/20261107-1900-rastra",
+     "fin": "2026-11-07T21:36:30+00:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
@@ -3413,6 +3414,13 @@
      "archivo": "jugar/demo/v143.html",
      "capturas": "capturas/demo-v143",
      "notas": "Beber del río con las manos"
+    },
+    {
+     "v": "v144",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v144.html",
+     "capturas": "capturas/demo-v144",
+     "notas": "Llevar más de una vez: la rastra lleva también troncos delgados (hasta 5) y varas (hasta 12); los juncos y el mimbre van en el fardo atado, con la paja y la fibra, y se ven como haces atados a la espalda."
     }
    ]
   },
