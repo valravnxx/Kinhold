@@ -12,6 +12,7 @@ import { t } from './textos.js';
 import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { montarCharla } from './charla.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
+import { crearCielo } from '../mundo/cielo.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mundo.js';
 import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
@@ -162,6 +163,11 @@ const MUNDO = window.__mundoDemo || null;
 const camara = new THREE.PerspectiveCamera(45, 1, MUNDO ? 0.5 : 0.1, MUNDO ? 1600 : 500);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
 const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2048, niebla: MUNDO ? [110, 700] : [70, 200] });
+// el ciclo de día y noche (valravnx, 7 nov; src/mundo/cielo.js y src/logica/cielo.js): la hora es la del servidor (su
+// reloj llega en la bienvenida: todos ven el mismo cielo); mueve el sol, la luna y las estrellas, y con ellos la luz
+let desfaseReloj = 0;
+const cielo = crearCielo({ ambiente, reloj: () => Date.now() + desfaseReloj });
+cielo.paso();
 // Dónde apareces (valravnx, 30 oct): un jugador nuevo, en un sitio al azar de las comarcas de inicio (src/logica/whitholm.js),
 // que se guarda en el navegador para que vuelvas siempre al mismo. Quien ya jugaba (hay algo guardado de antes) sigue en
 // el sitio común, que es donde está lo que construyó. En línea, la escena va relativa al sitio común (las posiciones y
@@ -188,7 +194,7 @@ const mundoJ = MUNDO ? crearMundoJuego({ escena, mapa: MUNDO.mapa, origen: sitio
 // el perfil gráfico y el posprocesado (valravnx, 5 nov; src/juego/graficos.js): la oclusión ambiental, el mapeo tonal, la
 // gradación de color, el brillo de las luces y la niebla, según el perfil (de móvil básico a PC alto); en los altos, el
 // horizonte: la isla entera, basta, detrás del terreno de cerca (src/mundo/horizonte.js)
-const graficos = crearGraficos(renderer, escena, camara, ambiente, mundoJ ? mundoJ.horizonte : null);
+const graficos = crearGraficos(renderer, escena, camara, ambiente, mundoJ ? mundoJ.horizonte : null, cielo.estado);
 soloEscena(escena); // el rendimiento cuenta un fotograma por dibujo del mundo, no por cada pasada del posprocesado
 // las comarcas de Whitholm (src/logica/comarcas.js): para el mapa del rey y para saber si estás en Strandvang, tierras
 // del rey (src/logica/tierras_rey.js), donde nadie puede herir a otro jugador: al entrar y al salir, un cartel
@@ -2235,6 +2241,7 @@ function paso() {
   if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
   pasoRastras();
   actualizarCamara();
+  cielo.paso();
   graficos.dibujar(dt);
   requestAnimationFrame(paso);
 }
@@ -2522,6 +2529,7 @@ function iniciarEnLinea() {
       if (msg.tipo === 'luchadores' || msg.tipo === 'combate' || msg.tipo === 'bienvenida') combate.recibir(msg, enLinea.red.yo || msg.autor, (a) => enLinea.modeloDe(a));
       if (msg.tipo === 'luchadores' || msg.tipo === 'combate' || msg.tipo === 'combate_rechazo') return;
       // lo que llevas, el suelo, lo talado y lo recogido (src/juego/objetos_en_linea.js)
+      if (msg.tipo === 'bienvenida' && Number.isFinite(msg.ahora)) desfaseReloj = msg.ahora - Date.now();   // (el reloj del servidor: la hora del cielo)
       if (msg.tipo === 'bienvenida') { arconServidor = msg.arcon === true; $('btnRellenar').hidden = !arconServidor; panelInventario.pintar(); }
       if (objetosRed.recibir(msg)) {
         if (msg.tipo === 'bienvenida') ropaDelVisor();
@@ -2650,7 +2658,7 @@ function tomarPara(p) {
 
 // acceso para pruebas automáticas
 window.__kinhold = {
-  get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, camara, escena, renderer, graficos, jugador, obstaculos, talaV, decorado, combate,
+  get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, camara, escena, renderer, graficos, jugador, obstaculos, talaV, decorado, combate, cielo, ambiente,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   get charla() { return charla; },   // el chat de texto (src/juego/charla.js)

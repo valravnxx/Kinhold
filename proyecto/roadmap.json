@@ -1423,10 +1423,74 @@
    "num": "P4",
    "nombre": "Un primer día con sentido",
    "jugable": "Día y noche; sed, hambre, frío y cansancio con sus avisos; la cama; morir y que te saqueen; liebres para cazar y asar; herramientas que se gastan y se reparan.",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "tareas": [
     {
      "nombre": "Planificar el hito con el GDD y el documento de sistemas: día y noche, sed (beber del río), hambre, frío y cansancio, cama ligada, morir y saqueo, liebres (despiece y asar en la hoguera o el hogar), durabilidad y reparar. Cada tarea de una sesión y con su parte en el recorrido de jugador",
+     "estado": "hecho",
+     "inicio": "2026-11-07T14:17:52+01:00",
+     "fin": "2026-11-07T14:24:37+01:00"
+    },
+    {
+     "nombre": "Las necesidades en la lógica pura y en el servidor: hambre, sed, frío y cansancio de cada personaje (GDD, apartado 6; valores del documento de sistemas, apartado 10: comer 2–3 veces por día de juego, la sed más rápida). Las lleva el servidor, se guardan con el personaje y suben con el tiempo y con lo que hace (con su autor). Al máximo: cansancio acelerado y luego heridas lentas. Recorrido: la sed y el hambre suben solas desde que entra el jugador nuevo",
+     "estado": "en_curso",
+     "inicio": "2026-11-07T14:37:33+01:00",
+     "rama": "trabajo/20261107-1437-necesidades"
+    },
+    {
+     "nombre": "Los avisos en círculos a la derecha (PC y móvil), uno por necesidad con su color (naranja, azul, celeste y gris), que solo salen cuando hace falta; al pulsarlos, qué efecto tiene y cómo se quita. Y los efectos en el juego: sin correr, más lento y golpes flojos según lo que toque. Recorrido: sale el aviso de sed y se lee qué hacer",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Beber del río con las manos (el agua de río se bebe sin problema, GDD): Usar en la orilla o en el agua que se vadea; el servidor comprueba que hay agua a tu lado y baja la sed. Recorrido: el jugador nuevo busca un río y bebe",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Comer: bayas y setas del bosque (documento de sistemas, apartado 3: se recogen con las manos, según la estación) para el primer hambre, con su modelo (estilo v5) en la mata y en el suelo; comer desde el equipo, por el servidor. Recorrido: con hambre, el jugador recoge bayas y se las come",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El frío: sube de noche (el ciclo de día y noche de la v137), según el bioma y la ropa que llevas puesta (cada prenda abriga), y baja bajo techo y junto al fuego (la hoguera y el hogar de P3 calientan en un radio). Recorrido: de noche y sin fuego sube el frío; junto a la hoguera baja",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El cansancio y descansar: sube al trabajar, correr, cargar y combatir (el mismo cansancio que ya lleva el combate, no otro), y se descansa sentado (una acción nueva, con su animación) y durmiendo del todo. Recorrido: después de talar y cargar troncos, el jugador se sienta a descansar",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La cama ligada: el refugio de ramas (12 ramas y 4 cordel, en el suelo; cuenta como cama) y la cama de paja, como obras con su modelo (estilo v5); ligarla (una por personaje, por el servidor) y dormir en ella. Recorrido: el jugador hace un refugio de ramas en su tierra, lo liga y duerme",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Desconectarse (GDD, apartado 6): el personaje se queda dormido en el mundo con su símbolo encima; fuera de tu tierra, atacable unos minutos (5, o 15 si peleaste en el último minuto) y luego a salvo; en tu tierra, protegido. Si tiene cama, pasa a ella. Por el servidor",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Morir y que te saqueen (GDD, apartado 6; documento de sistemas, apartado 10): mueras como mueras (combate, ahogado, heridas), reapareces en tu cama ligada o, sin ella, en tu sitio de salida; tu cuerpo queda en el suelo 1 hora real con la mitad de lo que llevabas, que cualquiera puede coger, y la otra mitad se rompe, elegida al azar por el servidor. Recorrido: el jugador muere, vuelve a su cama y recupera lo suyo del cuerpo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Liebres en el mundo: salen en prados y bordes del bosque, pastan y huyen de quien se acerca (fauna realista, GDD apartado 14), con su modelo y su animación (antes, buscar uno libre CC0 o el mejor método; estilo v5 y capturas de cerca). Las mueve el servidor, para que los dos vean la misma. Recorrido: el jugador ve liebres y huyen al acercarse",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Cazar la liebre con la lanza endurecida: se lanza hacia donde miras (PC y móvil), vuela y cae; el servidor decide si acierta, con su autor; la liebre cae y la lanza queda en el suelo para recogerla. Recorrido: el jugador hace la lanza en la hoguera y caza una liebre",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Despiezar y asar (documento de sistemas, apartado 4): la liebre se despieza con la lasca (carne cruda y piel pequeña); la carne se asa en la hoguera o en el hogar y lo asado sacia más que lo crudo (GDD, cocina); la carne cruda se estropea con el tiempo. Modelos (estilo v5) y por el servidor. Recorrido: el jugador despieza la liebre, la asa y se la come",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Herramientas y armas que se gastan (documento de sistemas, apartado 10: el hacha de piedra, unos 3 árboles adultos; un arma de madera o piedra, unos 50 golpes): cada uso lo cuenta el servidor, se ve en la ficha del equipo y, al acabarse, se rompe. Recorrido: el hacha de piedra se gasta talando",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Reparar en su puesto con su material (documento de sistemas, apartado 10): lo de piedra en la piedra de tallar, lo de madera en el banco de tronco, la ropa con lo suyo; lo que el documento no fija (cuánto material y cuánto recupera), provisional y en el registro. Recorrido: el jugador repara el hacha antes de que se rompa",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recorrido entero de un primer día, sin arcón, en el recorrido de jugador: entrar, beber, comer bayas, hacer la lanza, cazar, despiezar y asar, calentarse de noche junto a la hoguera, dormir en la cama ligada, morir y recuperar lo suyo; y prueba de valravnx entre dos",
      "estado": "pendiente"
     },
     {
@@ -1434,7 +1498,7 @@
      "estado": "pendiente"
     }
    ],
-   "nota": "Revisión del 1 nov con valravnx: después de la casa; se planifica al llegar, con lo que ya hay (la hoguera y el hogar calientan y cocinarán)."
+   "nota": "Revisión del 1 nov con valravnx: después de la casa; se planifica al llegar, con lo que ya hay (la hoguera y el hogar calientan y cocinarán). Planificado el 7 nov (chat con valravnx): el día y la noche ya están (demo v137, hito de gráficos); el calor y los cinco estados de más (mojado, herida infectada, comida en mal estado, dolor y borracho) quedan para después de este hito, como dice el GDD."
   },
   {
    "id": "talar",
@@ -1632,9 +1696,9 @@
     },
     {
      "nombre": "El ciclo de día y noche: cielo con estrellas, sol y luna, y la luz del sol que cambia (valravnx, 7 nov)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T09:48:41+01:00",
-     "rama": "trabajo/20261107-0948-cielo"
+     "fin": "2026-11-07T13:45:38+01:00"
     }
    ],
    "num": "G"
@@ -3201,6 +3265,13 @@
      "archivo": "jugar/demo/v136.html",
      "capturas": "capturas/demo-v136",
      "notas": "Los puestos de trabajo son obra: la piedra de tallar, la hoguera y el banco de tronco se levantan desde Construir, en su pestaña «Puestos de trabajo»: se pone el marco, se le lleva lo que pide y se trabaja en él; la hoguera, solo fuera"
+    },
+    {
+     "v": "v137",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v137.html",
+     "capturas": "capturas/demo-v137",
+     "notas": "El día y la noche: el sol, la luna con su fase y las estrellas, y la luz que los sigue"
     }
    ]
   },
