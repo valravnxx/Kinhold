@@ -5027,6 +5027,24 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-11-07T10:24:20+00:00",
+  "fin": "2026-11-07T12:13:09+00:00",
+  "titulo": "P3: los puestos de trabajo, como obra, en su pestaña del menú de construcción",
+  "hito": "crafting",
+  "hecho": [
+   "La piedra de tallar, la hoguera y el banco de tronco ya no se ponen al momento desde el panel de fabricar: se levantan desde Construir, en su propia pestaña «Puestos de trabajo» (aparte de la decoración), que dice lo que pide cada uno y dónde va.",
+   "Son obra: se pone el marco a tu lado sin gastar nada, se le lleva su coste (de lo que llevas y del suelo a tu lado) y se trabaja en él hasta levantarlo; el trabajo de todos se suma. En obra no se fabrica ni se deposita nada en él. Un marco a medio hacer se quita (lo entregado cae al suelo).",
+   "Dónde va cada uno: la piedra de tallar y el banco, dentro o fuera; la hoguera, solo fuera (bajo un suelo o un tejado terminado no se pone). El hogar, solo dentro, llega con su tarea. El servidor lo mira con el mundo de las construcciones.",
+   "Todo por el servidor, con su autor (acciones nuevas: entregar_estacion, trabajar_estacion y quitar_estacion), en el registro, y lo ven los demás. En tierra de otro, solo su dueño y sus invitados.",
+   "En obra se ve como las obras de construcción: el puesto tenue dentro de cuatro estacas con dos vueltas de cordel, y lo entregado al pie. Con Usar (F) se le lleva lo que falta y se trabaja; el clic derecho ofrece la obra y quitar el marco.",
+   "Decisiones provisionales (registro de la demo): el trabajo de cada puesto, 5 s la piedra de tallar, 10 s la hoguera y 20 s el banco; la herramienta del banco se lleva al trabajarlo y no se gasta; el marco, a 2,5 m de ti como mucho. Lo guardado antes (formato 4 de la fabricación) se carga con sus estaciones ya levantadas.",
+   "El recorrido de jugador levanta sus dos piedras de tallar como obra (marco, piedra y trabajo), sin arcón."
+  ],
+  "pruebas": "En la nube, los 36 grupos bien (el PC de valravnx no estaba para pruebas); la primera vez fallaron lógica y demo única por cuatro textos de la versión sin traducir, y el panel de fabricación por un toque en el móvil tapado por el propio panel: arreglados y repetidos esos tres, bien. Fabricación 125/125 (rota a propósito con MUTAR=1, falla), objetos en el servidor 69/69 y el recorrido 78/78 aquí. Miradas las capturas del menú de los puestos (PC y móvil), del marco y de la piedra de tallar levantada.",
+  "capturas": "capturas/demo-v136",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-07T09:48:41+01:00",
   "fin": "2026-11-07T13:45:38+01:00",
   "titulo": "El ciclo de día y noche: cielo con estrellas, sol y luna, y la luz que sigue al sol (chat con valravnx)",
@@ -5044,21 +5062,21 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-11-07T10:24:20+00:00",
-  "fin": "2026-11-07T12:13:09+00:00",
-  "titulo": "P3: los puestos de trabajo, como obra, en su pestaña del menú de construcción",
+  "inicio": "2026-11-07T12:48:08+01:00",
+  "fin": "2026-11-07T15:18:19+01:00",
+  "titulo": "P3: el tejado de juncos, y que nada esencial se escurra",
   "hito": "crafting",
   "hecho": [
-   "La piedra de tallar, la hoguera y el banco de tronco ya no se ponen al momento desde el panel de fabricar: se levantan desde Construir, en su propia pestaña «Puestos de trabajo» (aparte de la decoración), que dice lo que pide cada uno y dónde va.",
-   "Son obra: se pone el marco a tu lado sin gastar nada, se le lleva su coste (de lo que llevas y del suelo a tu lado) y se trabaja en él hasta levantarlo; el trabajo de todos se suma. En obra no se fabrica ni se deposita nada en él. Un marco a medio hacer se quita (lo entregado cae al suelo).",
-   "Dónde va cada uno: la piedra de tallar y el banco, dentro o fuera; la hoguera, solo fuera (bajo un suelo o un tejado terminado no se pone). El hogar, solo dentro, llega con su tarea. El servidor lo mira con el mundo de las construcciones.",
-   "Todo por el servidor, con su autor (acciones nuevas: entregar_estacion, trabajar_estacion y quitar_estacion), en el registro, y lo ven los demás. En tierra de otro, solo su dueño y sus invitados.",
-   "En obra se ve como las obras de construcción: el puesto tenue dentro de cuatro estacas con dos vueltas de cordel, y lo entregado al pie. Con Usar (F) se le lleva lo que falta y se trabaja; el clic derecho ofrece la obra y quitar el marco.",
-   "Decisiones provisionales (registro de la demo): el trabajo de cada puesto, 5 s la piedra de tallar, 10 s la hoguera y 20 s el banco; la herramienta del banco se lleva al trabajarlo y no se gasta; el marco, a 2,5 m de ti como mucho. Lo guardado antes (formato 4 de la fabricación) se carga con sus estaciones ya levantadas.",
-   "El recorrido de jugador levanta sus dos piedras de tallar como obra (marco, piedra y trabajo), sin arcón."
+   "Fallo del plan, reconocido: la casa humilde no se podía techar. El único tejado era el de paja, la paja no sale de ningún sitio, el junco no era material de obra y el recorrido de jugador paraba en coger juncos, sin llegar a la casa.",
+   "Tejado de juncos y su remate de esquina (2 varas y 4 juncos; 1 vara y 2 juncos el remate), con el junco como material de obra y el estilo del de paja en su color.",
+   "Lo que pide paja (tejado y remate de paja, cama de paja, antorcha de pie y alfombra) se esconde del menú de este tramo, como lo de después: la paja sale del cereal (GDD), que aún no hay.",
+   "Prueba nueva, de dónde sale cada cosa (pruebas/prueba_origenes.mjs): sigue la cadena desde el mundo sin arcón y falla si a la casa humilde le falta alguna parte hecha solo con lo que se consigue, o si el juego enseña algo sin origen y sin tarea viva. Con MUTAR=1 (sin juncos) y MUTAR=2 falla.",
+   "La prueba ha sacado otros huecos: la piel, el mimbre, la resina y la corteza no salen de ningún sitio (honda, odre, cestas, nasa, yesca de corteza, antorcha con resina): tarea nueva en P3.",
+   "Reglas nuevas en CLAUDE.md: al planificar un hito, la cadena de cada material hasta el mundo y las tareas con nombre concreto; antes de pasar un hito a revisión, el repaso de lo esencial contra el recorrido de jugador.",
+   "Las tareas de la casa humilde y del recorrido dicen ya su tejado (de juncos) y que el recorrido la levanta entera, cerrada y techada, sin arcón."
   ],
-  "pruebas": "En la nube, los 36 grupos bien (el PC de valravnx no estaba para pruebas); la primera vez fallaron lógica y demo única por cuatro textos de la versión sin traducir, y el panel de fabricación por un toque en el móvil tapado por el propio panel: arreglados y repetidos esos tres, bien. Fabricación 125/125 (rota a propósito con MUTAR=1, falla), objetos en el servidor 69/69 y el recorrido 78/78 aquí. Miradas las capturas del menú de los puestos (PC y móvil), del marco y de la piedra de tallar levantada.",
-  "capturas": "capturas/demo-v136",
+  "pruebas": "Todas en la nube (su PC no estaba libre): las del tramo y de la construcción, puestas al día (el tejado de juncos a la vista, lo de paja escondido); la de lo que llevas puesto falló una vez sin relación con esto y pasó al repetirla. Capturas de los tejados de cerca, al lado del de paja, miradas.",
+  "capturas": "capturas/demo-v138",
   "estado": "ok"
  },
  {
@@ -5092,21 +5110,19 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-11-07T12:48:08+01:00",
-  "fin": "2026-11-07T15:18:19+01:00",
-  "titulo": "P3: el tejado de juncos, y que nada esencial se escurra",
-  "hito": "crafting",
+  "inicio": "2026-11-07T14:37:33+01:00",
+  "fin": "2026-11-07T16:19:06+01:00",
+  "titulo": "P4: las necesidades en la lógica y en el servidor (chat con valravnx)",
+  "hito": "supervivencia",
   "hecho": [
-   "Fallo del plan, reconocido: la casa humilde no se podía techar. El único tejado era el de paja, la paja no sale de ningún sitio, el junco no era material de obra y el recorrido de jugador paraba en coger juncos, sin llegar a la casa.",
-   "Tejado de juncos y su remate de esquina (2 varas y 4 juncos; 1 vara y 2 juncos el remate), con el junco como material de obra y el estilo del de paja en su color.",
-   "Lo que pide paja (tejado y remate de paja, cama de paja, antorcha de pie y alfombra) se esconde del menú de este tramo, como lo de después: la paja sale del cereal (GDD), que aún no hay.",
-   "Prueba nueva, de dónde sale cada cosa (pruebas/prueba_origenes.mjs): sigue la cadena desde el mundo sin arcón y falla si a la casa humilde le falta alguna parte hecha solo con lo que se consigue, o si el juego enseña algo sin origen y sin tarea viva. Con MUTAR=1 (sin juncos) y MUTAR=2 falla.",
-   "La prueba ha sacado otros huecos: la piel, el mimbre, la resina y la corteza no salen de ningún sitio (honda, odre, cestas, nasa, yesca de corteza, antorcha con resina): tarea nueva en P3.",
-   "Reglas nuevas en CLAUDE.md: al planificar un hito, la cadena de cada material hasta el mundo y las tareas con nombre concreto; antes de pasar un hito a revisión, el repaso de lo esencial contra el recorrido de jugador.",
-   "Las tareas de la casa humilde y del recorrido dicen ya su tejado (de juncos) y que el recorrido la levanta entera, cerrada y techada, sin arcón."
+   "Hambre, sed, frío y cansancio de cada personaje, de 0 a 100, en src/logica/necesidades.js (lógica pura). Las lleva el servidor: cada segundo las avanza y se las manda a su jugador; van en la bienvenida y se guardan en necesidades.json en cada latido y al salir.",
+   "El cansancio sale de lo que el servidor ve correr y cargar (no de lo que diga el navegador) y de lo que se hace: cada golpe de hacha, cada rato de obra, fabricar y recoger. Al máximo de hambre, sed o frío, el cansancio sube el doble y las heridas se curan despacio; con el cansancio al máximo, ni correr ni golpear fuerte (los efectos, en la tarea de los avisos).",
+   "Provisional (para ajustar probando): el hambre llega al máximo en 90 minutos reales y la sed en 60; correr cansa 0,5 por segundo y quieto se descansa 0,4; sin conectar no cambian (hasta la tarea de desconectarse); el frío tiene su mecanismo pero el servidor aún no lo pide (llega con la tarea del frío); «heridas lentas» se lee como curación lenta.",
+   "Prueba nueva: pruebas/prueba_necesidades.mjs (26 comprobaciones, lógica y servidor de verdad; rota con el servidor sin avanzarlas y con el cansancio sacado de lo que dice el navegador, falla). En el recorrido de jugador: llega a 0 y al final del día le han subido solas la sed (17) y el hambre (11).",
+   "La prueba del chat en el navegador dice lo suyo otra vez justo antes de que hable el otro: en la nube, sin tarjeta gráfica, el primer bocadillo ya se había ido (falló dos veces seguidas así; con el cambio, bien).",
+   "Sin versión nueva de la demo: aún no se ve nada (los avisos son la tarea siguiente). Las decisiones provisionales van al registro de la demo con ella."
   ],
-  "pruebas": "Todas en la nube (su PC no estaba libre): las del tramo y de la construcción, puestas al día (el tejado de juncos a la vista, lo de paja escondido); la de lo que llevas puesto falló una vez sin relación con esto y pasó al repetirla. Capturas de los tejados de cerca, al lado del de paja, miradas.",
-  "capturas": "capturas/demo-v138",
+  "pruebas": "Batería entera en la nube correcta (lógica, con el recorrido de jugador, y todos los grupos de navegador, PC y móvil), sin las de en línea; el chat, otra vez tras arreglar su prueba",
   "estado": "ok"
  }
 ]
