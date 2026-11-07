@@ -5073,5 +5073,21 @@
   ],
   "pruebas": "Sin pruebas: solo planificación (roadmap y diario)",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T14:37:33+01:00",
+  "fin": "2026-11-07T16:19:06+01:00",
+  "titulo": "P4: las necesidades en la lógica y en el servidor (chat con valravnx)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Hambre, sed, frío y cansancio de cada personaje, de 0 a 100, en src/logica/necesidades.js (lógica pura). Las lleva el servidor: cada segundo las avanza y se las manda a su jugador; van en la bienvenida y se guardan en necesidades.json en cada latido y al salir.",
+   "El cansancio sale de lo que el servidor ve correr y cargar (no de lo que diga el navegador) y de lo que se hace: cada golpe de hacha, cada rato de obra, fabricar y recoger. Al máximo de hambre, sed o frío, el cansancio sube el doble y las heridas se curan despacio; con el cansancio al máximo, ni correr ni golpear fuerte (los efectos, en la tarea de los avisos).",
+   "Provisional (para ajustar probando): el hambre llega al máximo en 90 minutos reales y la sed en 60; correr cansa 0,5 por segundo y quieto se descansa 0,4; sin conectar no cambian (hasta la tarea de desconectarse); el frío tiene su mecanismo pero el servidor aún no lo pide (llega con la tarea del frío); «heridas lentas» se lee como curación lenta.",
+   "Prueba nueva: pruebas/prueba_necesidades.mjs (26 comprobaciones, lógica y servidor de verdad; rota con el servidor sin avanzarlas y con el cansancio sacado de lo que dice el navegador, falla). En el recorrido de jugador: llega a 0 y al final del día le han subido solas la sed (17) y el hambre (11).",
+   "La prueba del chat en el navegador dice lo suyo otra vez justo antes de que hable el otro: en la nube, sin tarjeta gráfica, el primer bocadillo ya se había ido (falló dos veces seguidas así; con el cambio, bien).",
+   "Sin versión nueva de la demo: aún no se ve nada (los avisos son la tarea siguiente). Las decisiones provisionales van al registro de la demo con ella."
+  ],
+  "pruebas": "Batería entera en la nube correcta (lógica, con el recorrido de jugador, y todos los grupos de navegador, PC y móvil), sin las de en línea; el chat, otra vez tras arreglar su prueba",
+  "estado": "ok"
  }
 ]
