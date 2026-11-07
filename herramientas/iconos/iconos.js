@@ -81,7 +81,7 @@ window.__iconos = {
     const f = fuentes[nombre], o = f.hacer();
     o.userData.icono = true; escena.add(o); o.updateMatrixWorld(true);
     const caja = new THREE.Box3().setFromObject(o), c = caja.getCenter(new THREE.Vector3()), s = caja.getSize(new THREE.Vector3());
-    if (o.userData.larga) { c.x += s.x * 0.17; c.y += s.y * 0.17; s.multiplyScalar(0.68); } // la cabeza de la herramienta
+    if (o.userData.larga) { const k = HACHAS.includes(nombre) ? [0.24, 0.5] : [0.17, 0.68]; c.x += s.x * k[0]; c.y += s.y * k[0]; s.multiplyScalar(k[1]); } // las hachas, más por la cabeza // la cabeza de la herramienta
     const plano = o.userData.plano, arriba = o.userData.arriba;
     const radio = plano ? Math.max(s.x, s.y) / 2 * 1.05 : arriba ? Math.max(s.x, s.z) / 2 * 1.02 : s.length() / 2;
     const d = radio / Math.tan(THREE.MathUtils.degToRad(camara.fov / 2)) * (plano || arriba ? 1 : 0.9);
