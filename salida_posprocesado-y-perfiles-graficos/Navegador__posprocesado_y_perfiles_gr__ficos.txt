@@ -1,0 +1,30 @@
+PC: el aparato {"tactil":false,"memoria":16,"nucleos":4,"grafica":"ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)","dpr":1} → sugiere movil-1
+  OK   PC: sin posprocesado dibuja directo (1 pasada)
+  OK   PC: cada perfil monta la cadena que le toca — {'movil-1': 2, 'movil-2': 4, 'movil-3': 4, 'pc-1': 4, 'pc-2': 3, 'pc-3': 3} (esperado {'movil-1': 2, 'movil-2': 4, 'movil-3': 4, 'pc-1': 4, 'pc-2': 3, 'pc-3': 3})
+  OK   PC: ao cambia la imagen (rincon, manana) — 6.98 (umbral 0.25)
+  OK   PC: tono cambia la imagen (cabana, manana) — 10.06 (umbral 1.0)
+  OK   PC: color cambia la imagen (cabana, manana) — 2.68 (umbral 0.5)
+  OK   PC: brillo cambia la imagen (cabana, ocaso) — 0.47 (umbral 0.08)
+  OK   PC: niebla cambia la imagen (maqueta, manana) — 4.04 (umbral 0.3)
+  OK   PC: desenfoque cambia la imagen (cabana, manana) — 2.23 (umbral 0.8)
+  OK   PC: rayos cambia la imagen (contraluz, ocaso) — 4.52 (umbral 0.3)
+  OK   PC: en el móvil básico no se pueden poner la oclusión, el brillo, los haces ni el desenfoque — ['ao', 'brillo', 'desenfoque', 'rayos']
+  OK   PC: el PC alto se parece a la v5 en lo general (no se ha roto el dibujo) — 3.88
+  OK   PC: «Medir» mide los seis perfiles y elige uno — {'movil-1': 465.6, 'movil-2': 1525.6, 'movil-3': 1560.8, 'pc-1': 1812, 'pc-2': 2979.7, 'pc-3': 3315.3} → movil-1
+  OK   PC: sin errores de página
+móvil: el aparato {"tactil":true,"memoria":16,"nucleos":4,"grafica":"ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)","dpr":2} → sugiere movil-1
+  OK   móvil: sin posprocesado dibuja directo (1 pasada)
+  OK   móvil: cada perfil monta la cadena que le toca — {'movil-1': 2, 'movil-2': 4, 'movil-3': 4, 'pc-1': 4, 'pc-2': 3, 'pc-3': 3} (esperado {'movil-1': 2, 'movil-2': 4, 'movil-3': 4, 'pc-1': 4, 'pc-2': 3, 'pc-3': 3})
+  OK   móvil: ao cambia la imagen (rincon, manana) — 4.72 (umbral 0.25)
+  OK   móvil: tono cambia la imagen (cabana, manana) — 9.26 (umbral 1.0)
+  OK   móvil: color cambia la imagen (cabana, manana) — 2.95 (umbral 0.5)
+  OK   móvil: brillo cambia la imagen (cabana, ocaso) — 0.38 (umbral 0.08)
+  OK   móvil: niebla cambia la imagen (maqueta, manana) — 33.96 (umbral 0.3)
+  OK   móvil: desenfoque cambia la imagen (cabana, manana) — 2.62 (umbral 0.8)
+  OK   móvil: rayos cambia la imagen (contraluz, ocaso) — 7.36 (umbral 0.3)
+  OK   móvil: en el móvil básico no se pueden poner la oclusión, el brillo, los haces ni el desenfoque — ['ao', 'brillo', 'desenfoque', 'rayos']
+  OK   móvil: el PC alto se parece a la v5 en lo general (no se ha roto el dibujo) — 7.14
+  OK   móvil: «Medir» mide los seis perfiles y elige uno — {'movil-1': 168.1, 'movil-2': 516.8, 'movil-3': 1112.0, 'pc-1': 615.5, 'pc-2': 2144.6, 'pc-3': 4079.8} → movil-1
+  OK   móvil: sin errores de página
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas/posprocesado
