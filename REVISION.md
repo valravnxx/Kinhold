@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (17:25 UTC+1) — por el chat: la interfaz, con las necesidades
+valravnx, sobre la segunda versión del estudio de la interfaz: «me gusta, pero cuenta las bolitas de estado de hambre, sed, calor/frio, etcetera en el diseño y sigue probando como optimizar a la vez que das el maximo de informacion».
+→ Le gusta el menú de iconos con atajos y la acción según lo que tienes delante. El chat sigue el estudio: los círculos de las necesidades del GDD (hambre, sed, frío, calor y cansancio; al pulsarlos, efecto e información) y más maneras de dar el máximo de información ocupando lo mínimo.
+
 ### 7 nov 2026 (17:21 UTC+1) — por el chat: la interfaz, mejor estudiada (la rueda es muy «hardcore»)
 valravnx, sobre el estudio de la interfaz: «estudia mejor como mmos o survivals de android trabajan, me parece que el desplegable es muy hardcore, quiza algo tras menus? o como? estudia mas».
 → El chat amplía el estudio (diseno/estudios/interfaz.html, segunda versión): cómo lo hacen los juegos grandes de móvil y una propuesta nueva con un botón de menú que abre una cuadrícula de iconos grandes, tres atajos fijos, la acción según lo que tienes delante y una lista cuando hay varias cosas. La rueda queda, si acaso, como extra del PC. Sigue en decisiones pendientes.
