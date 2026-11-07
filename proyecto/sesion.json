@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-07T19:25:06+00:00",
+  "tarea": "Arreglo (valravnx, 7 nov, muy importante): al morir en el río se le borró todo lo de su base (la casa, lo del suelo y las estaciones). Averiguar si se pierde en el servidor o solo no le llega al navegador al volver, arreglarlo y dejar su prueba",
+  "hito": "orden",
+  "rama": "trabajo/20261107-1925"
+ },
  "B": null,
  "chat:trabajo/20261107-1845-interfaz": {
   "inicio": "2026-11-07T18:43:47+01:00",

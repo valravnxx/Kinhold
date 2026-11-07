@@ -1642,6 +1642,12 @@
      "fin": "2026-11-07T14:09:48+00:00"
     },
     {
+     "nombre": "Arreglo (valravnx, 7 nov, muy importante): al morir en el río se le borró todo lo de su base (la casa, lo del suelo y las estaciones). Averiguar si se pierde en el servidor o solo no le llega al navegador al volver, arreglarlo y dejar su prueba",
+     "estado": "en_curso",
+     "inicio": "2026-11-07T19:25:06+00:00",
+     "rama": "trabajo/20261107-1925"
+    },
+    {
      "nombre": "El arma de la mano en el combate sale del inventario (hoy siempre es la espada larga) y el servidor lo comprueba",
      "estado": "pendiente"
     },
