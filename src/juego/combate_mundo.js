@@ -35,7 +35,7 @@ const FLECHA = { alto: '▲', izquierda: '◀', derecha: '▶', estocada: '▼' 
 // dónde va cada marca alrededor del centro (en múltiplos del radio)
 const SITIO = { alto: [0, -1], izquierda: [-1, 0], derecha: [1, 0], estocada: [0, 1] };
 
-export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, recursos, sexo, aspecto, capasActuales, armaduraActual,
+export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, recursos, sexo, aspecto, capasActuales, prendasActuales,
   modo, alturaEn, registro, esTactil, aviso, red = () => null,
   // pelear en cualquier sitio del mundo (hito «El juego en el mundo de verdad»): el rival de práctica anda por donde
   // andarías tú (sin atravesar obras ni árboles, sin subir cortados ni meterse donde cubre), y nadando no se lucha
@@ -104,7 +104,6 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   // en línea: lo mismo se manda al servidor (si no hay conexión, no pasa nada: se juega con el rival de práctica)
   const enRed = () => { const e = red(); return e && e.estado === 'conectado' && e.red.yo ? e : null; };
   const mandar = (m) => { const e = enRed(); if (e) e.enviar({ tipo: 'combate', ...m }); };
-  const ARMADURAS_RED = ['lino', 'gambeson', 'malla'];
 
   let tMsg = 0;
   function decir(texto) { msg.textContent = texto; msg.hidden = false; tMsg = 2.6; }
@@ -115,15 +114,15 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (!puedeLuchar()) { decir(tr('Nadando no se puede sacar el arma')); return; }
     c.activo = true;
     const ritmo = RITMO.normal;
-    if (!c.L || c.L.fuera) c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', armadura: armaduraActual(), ritmo, x: pj.x, z: pj.z, rot: pj.rot });
-    else { c.L.armadura = armaduraActual(); }
+    if (!c.L || c.L.fuera) c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', prendas: prendasActuales(), ritmo, x: pj.x, z: pj.z, rot: pj.rot });
+    else c.L.vestir(prendasActuales());
     if (!c.modelo) {
       c.modelo = crearCombatiente({ armadura: c.L.armadura, colorCinta: 0x46607e, recursos, sexo, capas: capasActuales(), aspecto });
       ponerArma(c.modelo, 'espada_larga');
       escena.add(c.modelo);
     }
     c.modelo.visible = true; jugador.raiz.visible = false;
-    if (ARMADURAS_RED.includes(c.L.armadura)) mandar({ que: 'equipar', arma: 'espada_larga', armadura: c.L.armadura });
+    mandar({ que: 'equipar', arma: 'espada_larga' });   // la armadura no se manda: es lo que llevas puesto (servidor)
     mandar({ que: 'arma', sacada: true });
     c.ctx = { luchadores: { jugador: c.L }, r };
     // la cámara se acerca y baja para luchar (por detrás del hombro); al guardar el arma vuelve a como estaba
@@ -417,7 +416,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (L.fuera && c.reloj >= c.caidoHasta) {
       c.caidoHasta = 0;
       mandar({ que: 'reiniciar' });
-      c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', armadura: armaduraActual(), ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
+      c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', prendas: prendasActuales(), ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
       c.ctx.luchadores.jugador = c.L;
       decir(tr('Te levantas (prueba: vuelves curado)'));
     }
@@ -462,11 +461,11 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   function recibir(msg, yo, modeloDe = () => null) {
     if (!yo) return;
     // al conectar (o volver a conectar), el servidor sabe si llevas el arma sacada
-    if (msg.tipo === 'bienvenida' && c.activo) { if (c.L && ARMADURAS_RED.includes(c.L.armadura)) mandar({ que: 'equipar', arma: 'espada_larga', armadura: c.L.armadura }); mandar({ que: 'arma', sacada: true }); }
+    if (msg.tipo === 'bienvenida' && c.activo) { if (c.L) mandar({ que: 'equipar', arma: 'espada_larga' }); mandar({ que: 'arma', sacada: true }); }
     if (msg.tipo === 'luchadores' || msg.tipo === 'bienvenida') {
       const f = (msg.tipo === 'luchadores' ? msg.lista : msg.luchadores || []).find(x => x.autor === yo);
       if (!f) return;
-      if (!c.L) c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', armadura: armaduraActual(), ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
+      if (!c.L) c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', prendas: prendasActuales(), ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
       const caido = c.L.fuera;
       aplicarFoto(c.L, f, { propio: true, prediciendo: true });
       // de pie otra vez (tras volver a empezar sano en el servidor)

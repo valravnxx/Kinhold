@@ -47,6 +47,13 @@ export const ARMADURAS = {
   gambeson: { nombre: 'Gambesón',      prendas: [...LINO, 'gambeson'] },
   malla:    { nombre: 'Cota de malla', prendas: [...LINO, 'gambeson', 'cota_malla'] },
 };
+// El duelo con lo que llevas (7 nov): en línea, el luchador lleva las prendas que tiene puestas en el inventario
+// (Luchador.prendas, lo pone el servidor) y lo que le frena un golpe sale de ellas. El nombre de la armadura queda
+// solo para dibujar el modelo sencillo: el de lo más fuerte que lleva puesto.
+export function armaduraDe(prendas) {
+  const p = prendas || [];
+  return p.includes('cota_malla') ? 'malla' : p.includes('gambeson') ? 'gambeson' : 'lino';
+}
 
 // ---------- Curación (GDD 13: tabla del análisis, apartado 15) ----------
 // Cada herida se trata con lo suyo. En pleno combate se puede, pero lento y quedando vendido: mientras curas no
@@ -132,8 +139,9 @@ export function gravedadDe(sev) { return sev < 0.35 ? 'leve' : sev < 0.75 ? 'gra
 
 // ---------- Luchador ----------
 export class Luchador {
-  constructor({ nombre = 'Luchador', arma = 'espada_larga', armadura = 'lino', ritmo = 1, x = 0, z = 0, rot = 0 } = {}) {
+  constructor({ nombre = 'Luchador', arma = 'espada_larga', armadura = 'lino', prendas = null, ritmo = 1, x = 0, z = 0, rot = 0 } = {}) {
     Object.assign(this, { nombre, arma, armadura, ritmo, x, z, rot });
+    this.prendas = null; if (prendas) this.vestir(prendas);
     this.accion = 'libre'; this.tAccion = 0; this.duracion = 0;
     this.linea = null; this.calidad = 1;
     this.inicioAtaque = -1; this.prepTotal = 0; this.imparable = false; this.finta = false;
@@ -147,8 +155,12 @@ export class Luchador {
     this.botiquin = { ...BOTIQUIN }; this.cercaFuego = false; this.cura = null;
   }
   get def() { return ARMAS[this.arma]; }
-  // La parte de un golpe de ese tipo que le pasa a esa zona, con las prendas de su armadura (1 = nada lo frena).
-  proteccion(zona, tipo) { return proteccion((ARMADURAS[this.armadura] || ARMADURAS.lino).prendas, zona, tipo); }
+  // Lo que lleva puesto (tipos de src/logica/prendas.js): desde ahí, lo que le protege; la armadura, la que se dibuja.
+  vestir(prendas) { this.prendas = [...(prendas || [])]; this.armadura = armaduraDe(this.prendas); }
+  // Las prendas que le protegen: las que lleva puestas o, si nadie se las ha dado (el rival de práctica), las de su armadura.
+  get puestas() { return this.prendas || (ARMADURAS[this.armadura] || ARMADURAS.lino).prendas; }
+  // La parte de un golpe de ese tipo que le pasa a esa zona, con lo que lleva puesto (1 = nada lo frena).
+  proteccion(zona, tipo) { return proteccion(this.puestas, zona, tipo); }
 
   // efectos de las heridas
   peorHerida(zonas) {
