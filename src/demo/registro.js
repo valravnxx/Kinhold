@@ -1,6 +1,9 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v144 (troncos delgados en la rastra y juncos en el fardo)";
+export const VERSION_DEMO = "Demo única · v145 (los puestos y los almacenajes, con su giro y desmontables)";
 export const REGISTRO_DEMO = [
+  "v145: arreglo (valravnx, 7 nov): los puestos de trabajo y los almacenajes se ponen con el giro que les das (Girar o R), lo guarda el servidor y los demás los ven igual; antes salían girados al azar. Los de antes se quedan como estaban.",
+  "v145: se desmontan terminados, en Desmontar (X), apuntándolos: como las piezas, se recupera el 75 % de su material, y lo que guardaban cae entero al suelo a su lado. Un marco a medio hacer se quita igual (lo entregado, entero). Solo en tu tierra o en la de quien te invita.",
+  "v145, provisional: no se desmonta una hoguera mientras arde, ni un puesto con encargos a medias (hay que esperar a que terminen y recogerlos).",
   "v144: llevar más de una vez (valravnx, 7 nov: «metelo ya»): la rastra lleva también troncos delgados (hasta 5, apoyados en los travesaños con la punta de atrás arrastrando) y varas (hasta 12, en un haz); los juncos y el mimbre van en el fardo atado, con la paja y la fibra, y se ven como haces atados a la espalda.",
   "v144, provisional: 5 troncos delgados pesan 75 kg, como 3 cortos: la rastra va igual de despacio; 12 varas, 24 kg. El tronco largo sigue sin ir en la rastra (es cosa de carro), ni el delgado en la carretilla (no cabe).",
   "v143: beber del río con las manos (P4). Con agua a tu lado (río, lago o mar, a menos de 2,5 m), «Usar» bebe un trago, que baja la sed 30; con sed (su aviso), «Usar» bebe antes que nada, y en el menú del clic derecho sale «Beber agua». Lo da el servidor: mira dónde te tiene y si hay agua ahí. Un trago cada segundo y medio.",
