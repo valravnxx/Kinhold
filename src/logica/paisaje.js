@@ -256,7 +256,16 @@ export function crearPaisaje(mapa, { afloramientos = 0.66, valleLiso = false } =
       if (hm < 8) z = lerp(rampa, z, suave(0, 2.5, f));    // costa baja: la playa baja suave hasta el agua
       z = Math.max(Math.min(rampa, 0.4 + f), z);
     }
-    z = Math.max(Math.min(0.4, f * 0.5), z);              // (en tierra, nunca por debajo del mar)
+    // (en tierra, nunca por debajo del mar). Tierra adentro (valravnx, 7 nov: «hay tramos que no aparece vegetacion ni
+    // nada en la estepa… a momentos aparece un manto azul»): lo que quedaba por debajo del mar se ponía a 0,4 m justos,
+    // y salían llanos de kilómetros del todo planos a ras del mar, donde no crece nada (la hierba pide 1 m; los árboles,
+    // 1,5) y que de lejos perdían contra el mar de lejos. Ahora, pasada la costa, el suelo no baja de unos 2 m y lo que
+    // iba a quedar más hondo sube como un relieve suave (cada metro de hoyo, un cuarto de metro de loma), sin pliegue.
+    if (f >= 3 && !globalThis.__llanosViejos) {
+      const piso = 0.4 + 1.6 * suave(3, 12, f), d = z - piso;
+      if (d < 6) { const g = 0.375 * d + 0.625 * Math.sqrt(d * d + 1); z = piso + lerp(g, d, suave(3, 6, d)); }
+    }
+    z = Math.max(Math.min(0.4, f * 0.5), z);
     if (f < 10 && z > 2) {
       // junto al mar, la tierra alta baja en un cortado empinado (unos 60°) y no en una pared: la pared, en la rejilla,
       // sale en dientes de sierra. La distancia a la línea de costa sale de lo que cambia la forma alrededor

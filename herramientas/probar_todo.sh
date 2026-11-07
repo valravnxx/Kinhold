@@ -45,6 +45,7 @@ paso "Perfiles gráficos: seis perfiles, gradación de color y perfil de inicio"
 paso "El ciclo de día y noche: la hora, el sol, la luna, las estrellas y la luz de cada momento" node pruebas/prueba_cielo.mjs
 paso "Horizonte de los perfiles altos" node pruebas/prueba_horizonte.mjs
 paso "De dónde sale cada cosa (la casa humilde entera, sin arcón)" node pruebas/prueba_origenes.mjs
+paso "Sin llanos pelados a ras del mar tierra adentro" node pruebas/prueba_llanos.mjs
 paso "El fondo del mar junto a la costa" node pruebas/prueba_mar.mjs
 paso "Los ríos llegan al mar" node pruebas/prueba_desembocadura.mjs
 paso "Inventario por huecos" node pruebas/prueba_inventario.mjs
