@@ -4922,5 +4922,24 @@
   "pruebas": "Todas en la nube y en el PC de valravnx: 33 de 36 grupos bien a la primera; niveles de detalle, perfil gráfico y demo única fallaron en el PC (cuentan triángulos y perfil sin tarjeta gráfica, y su PC la tiene) y pasaron en la nube. Recorrido de jugador 74/74 (aquí). Recolección 56/56, y con MUTAR=2 (sin mirar la herramienta) falla como debe. Capturas de cerca de la orilla en PC y móvil.",
   "capturas": "capturas/demo-v132",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T06:21:53+00:00",
+  "fin": "FIN",
+  "titulo": "P7: copia de seguridad diaria del servidor",
+  "hito": "admin",
+  "hecho": [
+   "servidor/nube/copia.sh: una vez al día, todo lo que el servidor guarda junto al mundo (el mundo, los objetos, las posiciones, las fichas, las cuentas, las tierras y los registros) en un .tar.gz con la fecha, en /var/backups/kinhold, solo de root; quedan las 14 últimas.",
+   "Esa carpeta, igual (las mismas 14), fuera de la máquina con rsync por SSH: una Storage Box de Hetzner u otro sitio, con el destino y la clave en /etc/kinhold. Sin destino de fuera, la copia se hace en la máquina pero sale con error, para que se vea.",
+   "Se copia con el servidor en marcha: los .json se cambian de golpe, los .jsonl solo crecen y el servidor descarta una última línea a medias.",
+   "servidor/nube/restaurar.sh: para el servidor, deja lo de antes al lado sin borrarlo, pone la copia (la última o la que se le diga) y lo vuelve a arrancar; una copia rota no toca nada.",
+   "Temporizador diario (03:41 UTC; si la máquina estaba apagada, al encenderse). Lo ponen instalar.sh y actualizar.sh, así que entra solo en el servidor con la próxima versión de la demo.",
+   "Prueba nueva (pruebas/prueba_copia_servidor.mjs): el servidor de verdad en una carpeta aparte, una cuenta, 16 días de copias (quedan 14 aquí y fuera), se pierde todo, se trae de fuera, se restaura y la cuenta vuelve a entrar con su contraseña. Rota a propósito (un copia.sh que no quita las viejas), falla.",
+   "Falta lo que solo puede hacer valravnx: crear el sitio de fuera (pasos en servidor/nube/LEEME.md). Queda como tarea en espera y como pregunta en decisiones pendientes.",
+   "No comprobado: la copia y la restauración en la máquina de verdad (desde aquí no se llega a ella) ni con una Storage Box de verdad (se ha probado con otra carpeta como destino)."
+  ],
+  "pruebas": "Todas: 33 de 36 grupos bien a la primera en el PC de valravnx y la lógica en la nube (con la prueba nueva, 15/15); niveles de detalle, perfil gráfico y demo única fallaron en el PC (cuentan triángulos y perfil sin tarjeta gráfica, y su PC la tiene) y se repitieron en la nube: RESULTADO_NUBE.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
