@@ -1,0 +1,141 @@
+{
+ "pc": {
+  "ms_generar": 2916,
+  "tierraKm2": 25117,
+  "fraccionTierra": 0.3832550048828125,
+  "separacionIsla": 45,
+  "cumbre": 3256,
+  "areaPais": [
+   2071,
+   5717,
+   5680,
+   5920,
+   5729
+  ],
+  "bocas": {
+   "arroyo": 102,
+   "rio": 58,
+   "grande": 1
+  },
+  "vetas": {
+   "hierroPantano": 4,
+   "granHierro": 5,
+   "granCarbon": 3,
+   "hierroVeta": 160,
+   "carbon": 160
+  },
+  "ms_comarcas": {
+   "12": 145,
+   "40": 1301
+  }
+ },
+ "pc_juego_andar": {
+  "ms": 342407,
+  "rejilla": 241,
+  "pasoM": 1,
+  "arboles": 773,
+  "especies": {
+   "abeto": 0,
+   "pino": 378,
+   "abedul": 0,
+   "roble": 24,
+   "haya": 0,
+   "fresno": 0,
+   "encina": 371
+  },
+  "hierba": 6300,
+  "flores": 259,
+  "matas": 594,
+  "rocas": 61,
+  "paredes": 0,
+  "triangulosDecorado": 420348,
+  "triangulosSuelo": 264576,
+  "trozos": 289,
+  "triangulos": 684924,
+  "ladoTrozosM": 1088,
+  "msFotogramaMax": 18,
+  "rehechos": 2
+ },
+ "pc_188": {
+  "tierraKm2": 13367,
+  "fraccionTierra": 0.3781890869140625,
+  "separacionIsla": 39,
+  "cumbre": 2700,
+  "areaPais": [
+   980,
+   3116,
+   3102,
+   3073,
+   3096
+  ],
+  "bocas": {
+   "arroyo": 65,
+   "rio": 21,
+   "grande": 0
+  },
+  "vetas": {
+   "hierroPantano": 1,
+   "granHierro": 3,
+   "granCarbon": 2,
+   "hierroVeta": 92,
+   "carbon": 92
+  }
+ },
+ "movil": {
+  "ms_generar": 2748,
+  "tierraKm2": 25117,
+  "fraccionTierra": 0.3832550048828125,
+  "separacionIsla": 45,
+  "cumbre": 3256,
+  "areaPais": [
+   2071,
+   5717,
+   5680,
+   5920,
+   5729
+  ],
+  "bocas": {
+   "arroyo": 102,
+   "rio": 58,
+   "grande": 1
+  },
+  "vetas": {
+   "hierroPantano": 4,
+   "granHierro": 5,
+   "granCarbon": 3,
+   "hierroVeta": 160,
+   "carbon": 160
+  },
+  "ms_comarcas": {
+   "12": 147,
+   "24": 478
+  }
+ },
+ "movil_juego_andar": {
+  "ms": 48113,
+  "rejilla": 151,
+  "pasoM": 1,
+  "arboles": 287,
+  "especies": {
+   "abeto": 0,
+   "pino": 59,
+   "abedul": 0,
+   "roble": 19,
+   "haya": 0,
+   "fresno": 0,
+   "encina": 209
+  },
+  "hierba": 2370,
+  "flores": 83,
+  "matas": 225,
+  "rocas": 26,
+  "paredes": 0,
+  "triangulosDecorado": 173568,
+  "triangulosSuelo": 95232,
+  "trozos": 49,
+  "triangulos": 268800,
+  "ladoTrozosM": 448,
+  "msFotogramaMax": 9.9,
+  "rehechos": 5
+ }
+}
