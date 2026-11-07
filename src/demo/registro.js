@@ -1,6 +1,9 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v143 (beber del río)";
+export const VERSION_DEMO = "Demo única · v144 (bayas y setas)";
 export const REGISTRO_DEMO = [
+  "v144: bayas y setas para comer (P4). En el bosque y en los claros hay arbustos de bayas, más grandes que los de adorno y cargados de racimos rojos y negro morados que se ven bien de lejos; en el bosque, corros de setas. Con las manos, «Usar» coge de 3 a 6: las bayas desaparecen del arbusto y el arbusto se queda; las setas se van enteras. Vuelven con la estación.",
+  "v144: comer: en el panel de lo que llevas, «Comer uno» (o «Comértelo»); con hambre (su aviso), «Usar» come si no hay otra cosa al lado; en el menú del clic derecho, «Comer: bayas». Lo da el servidor. Cada baya quita 5 de hambre y cada seta 7 (un arbusto, entre 15 y 30).",
+  "v144, provisional: lo que quita cada cosa; las setas son todas buenas (aún no hay venenosas); sin animación de comer.",
   "v143: beber del río con las manos (P4). Con agua a tu lado (río, lago o mar, a menos de 2,5 m), «Usar» bebe un trago, que baja la sed 30; con sed (su aviso), «Usar» bebe antes que nada, y en el menú del clic derecho sale «Beber agua». Lo da el servidor: mira dónde te tiene y si hay agua ahí. Un trago cada segundo y medio.",
   "v143, provisional: tres o cuatro tragos quitan la sed; aún sin animación de beber (el personaje se queda de pie).",
   "v142: los almacenajes de la base (revisión del 1 nov): el acopio de troncos, la pila de piedras y la leñera, en su propia pestaña de Construir («Almacenajes»). Se levantan como obra (el marco, su material y su trabajo) y solo en tu tierra o en la de quien te invita. Cada uno guarda lo suyo: el acopio, los troncos; la pila, la piedra suelta; la leñera, la leña y las ramas.",
