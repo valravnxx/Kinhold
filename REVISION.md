@@ -6,7 +6,7 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
-### 7 nov 2026 (20:5x UTC) — en la sesión del carril A: la base no estaba borrada
+### 7 nov 2026 (20:27 UTC) — en la sesión del carril A: la base no estaba borrada
 valravnx: «reinicié el juego y apareció de nuevo, sería un bug o algo, no está borrada, pero aparecía como tal y como en linea arriba, habria que ver las causas solo».
 → No se perdió nada: el mundo del servidor estaba entero. Causa encontrada (comprobada con la lógica de presencia, src/logica/presencia.js): al ahogarte vuelves a la salida (0, 4); al teletransportarte con el admin, el servidor te pone en la base, pero el navegador aún le manda algún estado desde la salida (los que iban de camino). La regla «volver a la salida es libre» (RADIO_SALIDA) le cree y te devuelve allí; los siguientes, ya desde la base, se recortan por el límite de velocidad (8 m/s), y el servidor te deja en la salida acercándote a 8 m/s. Como lo que te manda (la casa, los puestos, lo del suelo) es lo de los trozos de donde él cree que estás, no te llega nada de tu base; el mojón sí, porque se manda a todos. Al recargar se arregla. Pendiente que valravnx diga si se arregla ya (solo pidió ver las causas).
 
