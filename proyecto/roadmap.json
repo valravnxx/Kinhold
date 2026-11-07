@@ -1507,9 +1507,9 @@
     },
     {
      "nombre": "Estudio de la interfaz del juego para PC y móvil (valravnx, 7 nov: «que sea comoda y no ocupe tanto, debemos evitar que se llene todo de botones… enseñandomelas primero, sin meter al juego»): cómo lo hacen otros, lo que falla hoy y la propuesta en maquetas; valravnx decide",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T17:12:22+01:00",
-     "rama": "trabajo/20261107-1715-ui"
+     "fin": "2026-11-07T17:19:57+01:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: después de la casa; se planifica al llegar, con lo que ya hay (la hoguera y el hogar calientan y cocinarán). Planificado el 7 nov (chat con valravnx): el día y la noche ya están (demo v137, hito de gráficos); el calor y los cinco estados de más (mojado, herida infectada, comida en mal estado, dolor y borracho) quedan para después de este hito, como dice el GDD."
@@ -4251,6 +4251,11 @@
    "pregunta": "Copia de seguridad del servidor: ya se hace cada día en la máquina (las 14 últimas), pero falta el sitio de fuera, que solo puede crear valravnx. Propuesta: una Storage Box de Hetzner (la más pequeña), con los pasos de servidor/nube/LEEME.md («Copia de seguridad»). ¿Vale, o prefieres otro sitio (un repositorio privado, otra máquina, un NAS)? Mientras no esté, la copia sale con error en el servidor",
    "desde": "2026-11-07",
    "hito": "admin"
+  },
+  {
+   "pregunta": "La interfaz del juego (estudio del 7 nov, diseno/estudios/interfaz.html): ¿la acción única según lo que tienes delante (E con bocadillo en PC, botón grande en el móvil), la rueda para todo lo demás (Tab en PC, abanico en el móvil), las manos siempre abajo con su imagen, los ajustes en el engranaje y la barra de construir solo al construir?",
+   "desde": "2026-11-07",
+   "hito": "supervivencia"
   }
  ]
 }
