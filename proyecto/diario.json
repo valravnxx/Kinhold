@@ -5307,5 +5307,20 @@
   "pruebas": "Batería entera en la nube (el PC de valravnx no estaba para pruebas), sin las de en línea: antes de unir main, todo bien salvo cuatro que no tocan esto y salieron bien al repetirlas (la hoguera y entrar con la cuenta, por la pantalla de la cuenta; la demo en el mundo, un fotograma de 74–82 ms en el móvil al llegar de golpe, de lo que crece; la lógica, por un fallo mío en el paso 13 del recorrido, arreglado). Tras unir main (las necesidades, v141): los 41 grupos, todo correcto, con el recorrido de jugador 101/101 y la prueba nueva de los almacenajes en el navegador (PC y móvil). Fabricar 144/144 (con MUTAR=2 falla), servidor de objetos 71/71. Capturas de cerca, miradas en PC y móvil.",
   "capturas": "capturas/demo-v142",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T19:39:26+01:00",
+  "fin": "2026-11-07T21:10:07+01:00",
+  "titulo": "P4: beber del río (chat con valravnx)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Con agua a tu lado (río, lago o mar, en tu sitio o a 1,5 y 2,5 m en ocho direcciones), «Usar» bebe un trago con las manos: la sed baja 30. Con sed (desde su aviso), «Usar» bebe antes que nada; sin sed, solo si no hay otra cosa que usar; y en el menú del clic derecho, «Beber agua».",
+   "Lo da el servidor, con su autor: mira dónde te tiene y si hay agua ahí con el mismo terreno que el navegador (el agua de los ríos y el mar, src/logica/terreno_servidor.js, aguaEn); un trago cada segundo y medio.",
+   "Pruebas: pruebas/prueba_necesidades.mjs con el servidor y el terreno de Whitholm (en seco no, en la orilla sí, trago a trago; rota bebiendo en cualquier sitio, falla); el recorrido de jugador, lejos del agua no puede beber y en la orilla del río bebe; la prueba de navegador de los avisos, en una orilla «Usar» bebe.",
+   "Aún sin animación de beber (el personaje se queda de pie) ni sonido. No comprobado en una tarjeta gráfica de verdad."
+  ],
+  "pruebas": "Batería entera en la nube correcta (lógica, con el recorrido de jugador, y todos los grupos de navegador, PC y móvil), sin las de en línea",
+  "capturas": "capturas/demo-v143",
+  "estado": "ok"
  }
 ]
