@@ -74,6 +74,8 @@ export function crearCielo({ ambiente, reloj = () => Date.now() }) {
     // para las pruebas y el admin: una hora del mundo quieta ({ hora, fase }), 'v5', o null (la del servidor)
     poner(f) { fijo = f && f !== 'v5' ? { dias: 0, ...f } : f; actual = null; return paso(); },
     get fijo() { return fijo; },
+    // para las pruebas: lo claro que es lo que refleja el agua (luz lineal, 0–1)
+    get agua() { const c = cieloAgua.value; return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b; },
     // cuándo (hora real) es la próxima vez que el mundo tiene esa hora
     cuando: (hora) => msDeHora(hora, reloj()),
   };
