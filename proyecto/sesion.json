@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-07T03:21:48+00:00",
-  "tarea": "Materiales del tramo que no tenían origen: juncos o hierba larga (orillas y prados), barro (cavado en la orilla con el palo cavador) y yesca (fibra seca, corteza, hongo de los árboles)",
-  "hito": "crafting",
-  "rama": "trabajo/20261107-0322"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261107-0558-equipo": {
   "inicio": "2026-11-07T05:57:54+01:00",
