@@ -56,7 +56,8 @@ def ir(pg, s):
     pg.wait_for_timeout(3000)
     pg.evaluate(f"{K}.pj.y = {K}.alturaSuelo({K}.pj.x, {K}.pj.z)")
     # el terreno y los árboles de allí, y luego las copas de cerca (del todo: en el juego van poco a poco)
-    pg.wait_for_function(f"(() => {{ const t = {K}.mundoJ.terreno; return {K}.decorado.pendientes === 0 && t.faltan() === 0; }})()", timeout=600000)
+    # (hasta que el terreno de cerca llega al bosque: las copas de cerca solo se ponen donde ya hay terreno)
+    pg.wait_for_function(f"(s => {{ const t = {K}.mundoJ.terreno, O = {K}.mundoJ.salida; return t.alturaEn(s.p[0] + O.x, s.p[1] + O.z) !== null && t.alturaEn(s.q[0] + O.x, s.q[1] + O.z) !== null && t.faltan() === 0 && {K}.decorado.pendientes === 0; }})", arg=s, timeout=900000)
     pg.wait_for_timeout(4000)
     return pg.evaluate(f"""(() => {{ const h = window.__graficos.horizonte; h.completarDoselCerca({K}.pj.x, {K}.pj.z);
       const g = h.doselCerca.geometry, u = h.doselCerca.material.userData.u, a = g.attributes.aAlto;
