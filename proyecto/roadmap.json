@@ -1349,9 +1349,9 @@
     },
     {
      "nombre": "La hoguera, fuera: piedras en círculo y ramas; se enciende con yesca y el taladro de fuego, arde un rato por cada leña o rama que se le echa y se apaga sola (quedan cenizas); luz y calor. Por el servidor, todos la ven igual",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T14:29:49+00:00",
-     "rama": "trabajo/20261107-1429"
+     "fin": "2026-11-07T16:19:26+00:00"
     },
     {
      "nombre": "Almacenajes de la base (con su modelo, que se ve lleno): acopio de troncos, pila de piedras y leñera. Guardar y sacar con Usar; de quien tiene la tierra; la obra no coge de ellos sola",
@@ -3306,6 +3306,13 @@
      "archivo": "jugar/demo/v139.html",
      "capturas": "capturas/demo-v139",
      "notas": "Sin llanos pelados en la estepa (valravnx, 7 nov): tierra adentro, lo que quedaba por debajo del mar se ponía a 0,4 m justos, en llanos de kilómetros sin nada que de lejos perdían contra el mar de lejos (el manto azul). Ahora, pasada la costa, el suelo no baja de unos 2 m y lo que iba a quedar más hondo sube como un relieve suave: crece lo que toca y la playa no cambia. 17 sitios de salida de pradera más."
+    },
+    {
+     "v": "v140",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v140.html",
+     "capturas": "capturas/demo-v140",
+     "notas": "La hoguera, fuera: se levanta apagada con sus ramas, se enciende con la yesca y el taladro de fuego, arde un rato por cada rama o leña que se le echa y se apaga sola (quedan las cenizas); da luz y calor. Por el servidor: todos la ven igual."
     }
    ]
   },

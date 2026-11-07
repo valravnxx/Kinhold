@@ -5141,5 +5141,25 @@
   "pruebas": "Todas en la nube (su PC no estaba libre): 37 de 38 grupos a la primera; la de Whitholm falló porque la lista de sitios de salida ganaba 17, puesta al día. Capturas del mismo llano antes y después, en PC y móvil, miradas.",
   "capturas": "capturas/demo-v139",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T14:29:49+00:00",
+  "fin": "2026-11-07T16:19:26+00:00",
+  "titulo": "P3: la hoguera, fuera",
+  "hito": "crafting",
+  "hecho": [
+   "La hoguera tiene fuego (src/logica/fuego.js, lógica pura): levantada queda apagada con sus 4 ramas puestas; se enciende con la yesca y el taladro de fuego en las manos (gasta 1 yesca, el taladro sigue); arde un rato por cada rama o leña que se le echa y se apaga sola, y quedan las cenizas. Se guarda cuándo se apaga, no un contador: arde aunque nadie juegue.",
+   "Por el servidor, con su autor: encender y echar al fuego son acciones nuevas, en el registro; en tierra de otro solo su dueño y sus invitados. A todos les llega cómo está y cuánto le queda (no la hora del servidor).",
+   "Lo que se hace al fuego (la lanza endurecida, las antorchas) pide la hoguera encendida; el panel lo dice.",
+   "En el juego: brasas, llamas que se mueven, humo tenue y luz (con las de las chimeneas), y calor a 4 m (ya se mide; lo usará el frío). En el panel, la pestaña del fuego dice arriba cómo está, con «Encender» y «Echar 1 rama» o «Echar 1 leña»; y lo mismo en el menú del clic derecho.",
+   "Provisional (registro de la demo): rama 3 min, leña 10 min, la hoguera nueva 12 min, 60 min como mucho por delante; calor a 4 m y luz a unos 9 m.",
+   "El guardado de fabricar pasa a la v6 (las hogueras de antes, apagadas y con sus ramas puestas).",
+   "Recorrido de jugador, paso 12: sin arcón, levanta una hoguera en la orilla con piedras y ramas que recoge, la enciende con su yesca y su taladro, le echa una rama, endurece una lanza al fuego, y apagada ya no.",
+   "Pruebas nuevas: «El fuego de la hoguera» (39; con MUTAR=1 falla) y «Navegador: la hoguera» (PC y móvil, dos jugadores).",
+   "Aún mal o por mirar: el humo se ve en bocanadas sueltas más que en una columna; las cenizas salen claras, casi blancas, con la luz de día; las capturas del móvil enfocan la hoguera de lado. No comprobado: la prueba de navegador con MUTAR=1 (no se ha lanzado)."
+  ],
+  "pruebas": "Batería entera en la nube antes de unir main (todo bien salvo la hoguera y el recorrido, arreglados y repetidos: bien; «Combate en el servidor» se pasó de tiempo una vez y luego bien). Tras unir main: logica, la hoguera, panel de fabricación y demo única en la nube, bien. Capturas miradas en PC y móvil.",
+  "capturas": "capturas/demo-v140",
+  "estado": "ok"
  }
 ]
