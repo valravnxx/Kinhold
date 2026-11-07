@@ -4,11 +4,11 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ---
 
+## Procesado
+
 ### 7 nov 2026 (19:52 UTC+1) — por el chat: MUY IMPORTANTE, se ha borrado la base al morir en el río
 valravnx (con una captura: junto a su mojón, sin nada más; «En tu tierra: aún no tienes nada almacenado»; «Teletransportado (admin)»): «muy gran e importante problema, he muerto en el rio y se me ha borrado TODO lo que habia en mi base, la casa, lo del suelo, estaciones de trabajo, TODO».
-→ Pendiente: averiguar si se ha perdido en el servidor (el mundo de verdad) o solo no le llega al navegador (los trozos al volver de la salida tras ahogarse y teletransportarse), y arreglarlo con su prueba. Va antes que cualquier otra cosa.
-
-## Procesado
+→ Tarea nueva, la primera del hito «Orden» (la coge el carril A el 7 nov a las 19:23 UTC): averiguar si se ha perdido en el servidor (el mundo de verdad) o solo no le llega al navegador (los trozos al volver de la salida tras ahogarse y teletransportarse), y arreglarlo con su prueba. Va antes que cualquier otra cosa.
 
 ### 7 nov 2026 (19:58 UTC+1) — en la sesión del carril A: llevar troncos delgados y juncos
 valravnx: «haz un estudio de lo siguiente: la rastra lleva solo troncos cortos y tal, pero, solo se pueden llevar los finos a mano? igual que los juncos, tenemos para llevar plantas, porque no juncos ahi? como ves meter en rastra troncos finos o troncos cortos, y en la mochila para plantas los juncos?».

@@ -1423,6 +1423,12 @@
      "estado": "hecho",
      "inicio": "2026-11-07T12:48:08+01:00",
      "fin": "2026-11-07T15:18:19+01:00"
+    },
+    {
+     "nombre": "Llevar más de una vez (valravnx, 7 nov): la rastra lleva también troncos delgados (5) y varas (12); los juncos y el mimbre van en el fardo atado, con la paja y la fibra",
+     "estado": "en_curso",
+     "inicio": "2026-11-07T19:00:43+00:00",
+     "rama": "trabajo/20261107-1900-rastra"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
@@ -1634,6 +1640,12 @@
      "estado": "hecho",
      "inicio": "2026-11-07T12:24:06+00:00",
      "fin": "2026-11-07T14:09:48+00:00"
+    },
+    {
+     "nombre": "Arreglo (valravnx, 7 nov, muy importante): al morir en el río se le borró todo lo de su base (la casa, lo del suelo y las estaciones). Averiguar si se pierde en el servidor o solo no le llega al navegador al volver, arreglarlo y dejar su prueba",
+     "estado": "en_curso",
+     "inicio": "2026-11-07T19:25:06+00:00",
+     "rama": "trabajo/20261107-1925"
     },
     {
      "nombre": "El arma de la mano en el combate sale del inventario (hoy siempre es la espada larga) y el servidor lo comprueba",
