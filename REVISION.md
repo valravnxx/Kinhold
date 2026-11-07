@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (18:09 UTC+1) — por el chat: la interfaz, cada sistema y acabado de juego terminado
+valravnx: «cuando me pasas algo así, revisa cada una de las funcionalidades y si deben o no estar donde están y como se puede usar cada cosa, me has enseñado un equipo, si, pero funciona? es la mejor manera? debes revisar cada uno de los sistemas del juego mas que un estilo solo, y que todo cuadre en el estilo visual perfecto que buscamos, por ahora se ve como de alpha playtest sin refinar aun en tus ultimas versiones, quiero que se vea como un VIDEOJUEGO ACABADO, busca de nuevo esos detalles y al tener un diseño, no simplemente hagas algo simple y rapido, busca medios, metodos, texturas, modelos, lo que haga falta, no escatimes en gastos».
+→ Regla nueva en CLAUDE.md («Propuestas de interfaz: cada sistema, no solo un estilo»). El chat hace la octava versión: repasa en el código cada sistema (equipo, fabricar, construir, mapa, hablar, necesidades, arma, coger y usar, llevar al hombro, tu tierra y lo almacenado, ajustes) y dice para cada uno si funciona, dónde va y cómo se usa en PC y en el móvil, comparado con juegos publicados; y el acabado, con materiales de verdad (renders de cuero, roble, latón y hierro, iconos hechos con método), no cajas de CSS.
+
 ### 7 nov 2026 (17:52 UTC+1) — por el chat: la interfaz, que parezca de juego publicado
 valravnx: «imagina que este es el interfaz que tenemos y te pido hacerlo mejor y mas de videojuego publicado final, hazle el estudio, estudio de otros del genero y planteame una mejora visual y de comodidad de uso».
 → Partiendo de la sexta versión del estudio (como si fuera la interfaz de hoy), el chat estudia cómo se ve y cómo se usa la interfaz de juegos publicados del género (acabado visual, animación y respuesta, lectura, comodidad en PC y móvil), con fuentes, y propone una séptima versión con mejoras visuales y de comodidad, enseñada en maquetas antes de meter nada en el juego.
