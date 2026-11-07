@@ -1349,13 +1349,15 @@
     },
     {
      "nombre": "La hoguera, fuera: piedras en círculo y ramas; se enciende con yesca y el taladro de fuego, arde un rato por cada leña o rama que se le echa y se apaga sola (quedan cenizas); luz y calor. Por el servidor, todos la ven igual",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T14:29:49+00:00",
-     "rama": "trabajo/20261107-1429"
+     "fin": "2026-11-07T16:19:26+00:00"
     },
     {
      "nombre": "Almacenajes de la base (con su modelo, que se ve lleno): acopio de troncos, pila de piedras y leñera. Guardar y sacar con Usar; de quien tiene la tierra; la obra no coge de ellos sola",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T16:25:58+00:00",
+     "rama": "trabajo/20261107-1625"
     },
     {
      "nombre": "Más almacenajes: soporte de varas, almiar (paja y juncos), hoyo de barro y cesto (lo pequeño)",
@@ -1507,9 +1509,9 @@
     },
     {
      "nombre": "Estudio de la interfaz del juego para PC y móvil (valravnx, 7 nov: «que sea comoda y no ocupe tanto, debemos evitar que se llene todo de botones… enseñandomelas primero, sin meter al juego»): cómo lo hacen otros, lo que falla hoy y la propuesta en maquetas; valravnx decide",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T17:12:22+01:00",
-     "rama": "trabajo/20261107-1715-ui"
+     "fin": "2026-11-07T17:19:57+01:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: después de la casa; se planifica al llegar, con lo que ya hay (la hoguera y el hogar calientan y cocinarán). Planificado el 7 nov (chat con valravnx): el día y la noche ya están (demo v137, hito de gráficos); el calor y los cinco estados de más (mojado, herida infectada, comida en mal estado, dolor y borracho) quedan para después de este hito, como dice el GDD."
@@ -3306,6 +3308,13 @@
      "archivo": "jugar/demo/v139.html",
      "capturas": "capturas/demo-v139",
      "notas": "Sin llanos pelados en la estepa (valravnx, 7 nov): tierra adentro, lo que quedaba por debajo del mar se ponía a 0,4 m justos, en llanos de kilómetros sin nada que de lejos perdían contra el mar de lejos (el manto azul). Ahora, pasada la costa, el suelo no baja de unos 2 m y lo que iba a quedar más hondo sube como un relieve suave: crece lo que toca y la playa no cambia. 17 sitios de salida de pradera más."
+    },
+    {
+     "v": "v140",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v140.html",
+     "capturas": "capturas/demo-v140",
+     "notas": "La hoguera, fuera: se levanta apagada con sus ramas, se enciende con la yesca y el taladro de fuego, arde un rato por cada rama o leña que se le echa y se apaga sola (quedan las cenizas); da luz y calor. Por el servidor: todos la ven igual."
     }
    ]
   },
@@ -4244,6 +4253,11 @@
    "pregunta": "Copia de seguridad del servidor: ya se hace cada día en la máquina (las 14 últimas), pero falta el sitio de fuera, que solo puede crear valravnx. Propuesta: una Storage Box de Hetzner (la más pequeña), con los pasos de servidor/nube/LEEME.md («Copia de seguridad»). ¿Vale, o prefieres otro sitio (un repositorio privado, otra máquina, un NAS)? Mientras no esté, la copia sale con error en el servidor",
    "desde": "2026-11-07",
    "hito": "admin"
+  },
+  {
+   "pregunta": "La interfaz del juego (estudio del 7 nov, séptima versión, acabado de juego publicado, diseno/estudios/interfaz.html): ¿botones redondos de latón, placas translúcidas, iconos macizos y texto suelto con sombra? ¿Que al andar se apague lo que va bien? ¿En el móvil, Fabricar y Construir en arco junto al pulgar y arriba solo menú y hablar? ¿El menú como un centro con pestañas encima del mundo? ¿Efectos en pantalla como la escarcha con el frío? (Sigue abierto lo de la sexta: el arma al cinto, las ocho frases de hablar, y Poner | Quitar con deshacer.)",
+   "desde": "2026-11-07",
+   "hito": "supervivencia"
   }
  ]
 }

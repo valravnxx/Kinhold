@@ -5141,5 +5141,122 @@
   "pruebas": "Todas en la nube (su PC no estaba libre): 37 de 38 grupos a la primera; la de Whitholm falló porque la lista de sitios de salida ganaba 17, puesta al día. Capturas del mismo llano antes y después, en PC y móvil, miradas.",
   "capturas": "capturas/demo-v139",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T14:29:49+00:00",
+  "fin": "2026-11-07T16:19:26+00:00",
+  "titulo": "P3: la hoguera, fuera",
+  "hito": "crafting",
+  "hecho": [
+   "La hoguera tiene fuego (src/logica/fuego.js, lógica pura): levantada queda apagada con sus 4 ramas puestas; se enciende con la yesca y el taladro de fuego en las manos (gasta 1 yesca, el taladro sigue); arde un rato por cada rama o leña que se le echa y se apaga sola, y quedan las cenizas. Se guarda cuándo se apaga, no un contador: arde aunque nadie juegue.",
+   "Por el servidor, con su autor: encender y echar al fuego son acciones nuevas, en el registro; en tierra de otro solo su dueño y sus invitados. A todos les llega cómo está y cuánto le queda (no la hora del servidor).",
+   "Lo que se hace al fuego (la lanza endurecida, las antorchas) pide la hoguera encendida; el panel lo dice.",
+   "En el juego: brasas, llamas que se mueven, humo tenue y luz (con las de las chimeneas), y calor a 4 m (ya se mide; lo usará el frío). En el panel, la pestaña del fuego dice arriba cómo está, con «Encender» y «Echar 1 rama» o «Echar 1 leña»; y lo mismo en el menú del clic derecho.",
+   "Provisional (registro de la demo): rama 3 min, leña 10 min, la hoguera nueva 12 min, 60 min como mucho por delante; calor a 4 m y luz a unos 9 m.",
+   "El guardado de fabricar pasa a la v6 (las hogueras de antes, apagadas y con sus ramas puestas).",
+   "Recorrido de jugador, paso 12: sin arcón, levanta una hoguera en la orilla con piedras y ramas que recoge, la enciende con su yesca y su taladro, le echa una rama, endurece una lanza al fuego, y apagada ya no.",
+   "Pruebas nuevas: «El fuego de la hoguera» (39; con MUTAR=1 falla) y «Navegador: la hoguera» (PC y móvil, dos jugadores).",
+   "Aún mal o por mirar: el humo se ve en bocanadas sueltas más que en una columna; las cenizas salen claras, casi blancas, con la luz de día; las capturas del móvil enfocan la hoguera de lado. No comprobado: la prueba de navegador con MUTAR=1 (no se ha lanzado)."
+  ],
+  "pruebas": "Batería entera en la nube antes de unir main (todo bien salvo la hoguera y el recorrido, arreglados y repetidos: bien; «Combate en el servidor» se pasó de tiempo una vez y luego bien). Tras unir main: logica, la hoguera, panel de fabricación y demo única en la nube, bien. Capturas miradas en PC y móvil.",
+  "capturas": "capturas/demo-v140",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:12:22+01:00",
+  "fin": "2026-11-07T17:19:57+01:00",
+  "titulo": "P4: estudio de la interfaz del juego (PC y móvil)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Estudio de la interfaz del juego para PC y móvil (diseno/estudios/interfaz.html): lo que falla hoy (unos 19 botones fijos mientras andas, en tres sitios), cómo lo resuelven otros juegos y la propuesta en maquetas encima de capturas del juego, en PC y en móvil.",
+   "La propuesta: una sola acción según lo que tienes delante (E con bocadillo en PC, botón grande en el móvil; mantener para ver las demás), una rueda para todo lo demás (Tab en PC, abanico en el móvil), las manos siempre abajo con su imagen, los ajustes en el engranaje y la barra de construir solo al construir.",
+   "Tabla de dónde va cada botón de hoy, y cinco preguntas para valravnx, en decisiones pendientes. Nada entra en el juego hasta que decida."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:24:18+01:00",
+  "fin": "2026-11-07T17:24:18+01:00",
+  "titulo": "P4: el estudio de la interfaz, segunda versión (menú en vez de rueda)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Segunda versión del estudio de la interfaz (valravnx: «estudia mejor como mmos o survivals de android trabajan, me parece que el desplegable es muy hardcore»): cómo lo hacen Genshin Impact, Last Day on Earth y Albion Online en el móvil, y lo que dicen las guías de diseño para móvil.",
+   "Lo que sale: los juegos grandes de móvil tienen un botón de menú que abre una pantalla clara, muy pocos accesos directos y el botón de acción grande abajo a la derecha; la rueda es un atajo de PC y mando, no la forma principal.",
+   "Propuesta nueva en maquetas (PC y móvil): botón de menú con una cuadrícula de iconos grandes, tres atajos fijos (Equipo, Fabricar, Construir), la acción según lo que tienes delante y una lista con imagen cuando hay varias cosas. La rueda queda como extra del PC, si valravnx quiere."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas nuevas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:28:32+01:00",
+  "fin": "2026-11-07T17:28:32+01:00",
+  "titulo": "P4: el estudio de la interfaz, tercera versión (las necesidades y más información)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Tercera versión del estudio de la interfaz (valravnx: «cuenta las bolitas de estado de hambre, sed, calor/frio… y sigue probando como optimizar a la vez que das el maximo de informacion»): las necesidades del GDD en círculos a la derecha, con su aro lleno según cómo vas.",
+   "Cuando algo va mal, los círculos se ordenan solos (lo peor primero, más grande, en rojo y con su nombre); las heridas y el sangrado salen solo mientras los hay; al tocar uno, su ficha (qué te hace, qué hacer y lo que lo cambia).",
+   "Más información en el mismo sitio: un solo círculo de temperatura de frío a calor (a decidir), la carga en una raya bajo las manos, el día y la hora en el estado, el aguante en su aro de siempre y una «interfaz mínima» en Ajustes. Tres preguntas nuevas para valravnx."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas nuevas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:32:45+01:00",
+  "fin": "2026-11-07T17:32:45+01:00",
+  "titulo": "P4: el estudio de la interfaz, cuarta versión (subtexto medieval)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Cuarta versión del estudio de la interfaz (valravnx: «añadele un subtexto medieval al tema»): la misma propuesta vestida con lo de la época: cuero oscuro con borde de latón y tachuelas para lo que se toca, pergamino y tinta para lo que se lee, rúbricas en rojo de minio y una sola capitular en el menú.",
+   "Las necesidades como medallones de latón con el aro del color de un pigmento (cardenillo, ocre, minio; el frío en glasto); iconos propios como grabados en madera; el día por las horas canónicas y las pistas en pasos y rumbos («a unos ciento cuarenta pasos hacia levante»).",
+   "Reglas para que siga siendo claro: nada de letra gótica (títulos en IM Fell English y texto en EB Garamond, las dos de licencia libre), pergamino solo para leer y cuero para tocar. Maquetas en PC y móvil de andar, las necesidades, el menú, la lista y construir; dos preguntas nuevas."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas nuevas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:34:09+01:00",
+  "fin": "2026-11-07T17:34:09+01:00",
+  "titulo": "P4: el estudio de la interfaz, quinta versión (sin papeles)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Quinta versión del estudio de la interfaz (valravnx: «no en plan papeles, no me gusta el estilo papiro ya dentro del juego»): fuera el pergamino; lo que se lee va en tableros de roble oscuro con su veta y letra clara, los títulos en ocre como el latón y la capitular del menú tallada como una placa.",
+   "Se queda lo demás: cuero con tachuelas y latón para lo que se toca, hierro para las teclas, medallones de latón para las necesidades, iconos de grabado y horas canónicas. Maquetas rehechas en PC y móvil; la regla «nada de papel dentro del juego», en el estudio."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas rehechas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:38:33+01:00",
+  "fin": "2026-11-07T17:47:30+01:00",
+  "titulo": "P4: el estudio de la interfaz, sexta versión (los juegos del género)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Estudio de los juegos del género (valravnx: «estas creando muy rapido y no te veo hacer estudio de otros juegos del genero para nada»): trece juegos de supervivencia, construcción y MMO de PC y de móvil, con fuentes, en cinco temas: sacar el arma, hablar, construir y quitar, las necesidades, y la acción y lo que se ve siempre. Salen siete reglas.",
+   "Sexta versión de la propuesta con esas reglas: el arma, en un hueco «al cinto» junto a las manos (C), solo si llevas una; hablar, un botón arriba (Intro) con ocho frases rápidas que llegan a cada uno en su lengua; quitar, dentro de construir («Poner | Quitar», X) y con deshacer; el menú, solo Equipo, Fabricar, Construir y Mapa; el día y quién está en línea, en el menú.",
+   "Las teclas de las maquetas, las que el juego ya usa (F, C, H, I, B, X, R, M, Intro). El estudio, más corto: fuera las versiones viejas (siguen en el historial)."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin desbordarse; las maquetas de los ocho estados, miradas una a una en PC y móvil.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:52:00+01:00",
+  "fin": "2026-11-07T18:01:30+01:00",
+  "titulo": "P4: el estudio de la interfaz, séptima versión (acabado de juego publicado)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Estudio de cómo se ve y cómo responde la interfaz de juegos publicados (valravnx: «imagina que este es el interfaz que tenemos y te pido hacerlo mejor y mas de videojuego publicado final»): siete juegos del género, las cuatro clases de interfaz (dentro y fuera del mundo), las cifras de movimiento y respuesta, y las guías de contraste, tamaño de letra y accesibilidad, con fuentes.",
+   "Séptima versión de la propuesta: botones redondos con bisel de latón, huecos de placa translúcida, iconos macizos con filo oscuro y el texto suelto con sombra; la temperatura con llama o copo (el termómetro no es de la Edad Media); lo que va bien, medio transparente, y al andar se apaga; un aro en el suelo bajo lo que vas a coger; escarcha en los bordes con el frío; lo cogido entra por la izquierda; mantener para talar llena un aro.",
+   "En el móvil, arriba solo menú y hablar; Fabricar y Construir, en arco junto al botón de acción. El menú, un centro con pestañas (Q/E) encima del mundo desenfocado. Maquetas de nueve estados en PC y móvil."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas de los nueve estados, miradas una a una en PC y móvil (corregidos el botón de acción vacío al andar y la barra de construir que se salía en el móvil).",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

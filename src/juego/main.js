@@ -26,6 +26,7 @@ import { montarPanelInventario } from './panel_inventario.js';
 import { montarPanelFabricar } from './panel_fabricar.js';
 import { crearEstaciones, MODELO_ESTACION } from './estaciones.js';
 import { Fabricacion, ejecutarFabricacion, ESTACIONES, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION } from '../logica/fabricacion.js';
+import { estadoFuego, calorEn } from '../logica/fuego.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
 import { crearComarcas, zonasDeEscena } from '../logica/comarcas.js';
@@ -1452,6 +1453,11 @@ function pasoPuesto() {
     mostrarAviso(`${t('construyendo')} ${Math.round(100 * r.progreso)} %`);
   });
 }
+function usarFuego(e, a) {
+  hacerFabricacion({ ...a, estacion: e.id, x: pj.x, z: pj.z }, (r) => {
+    mostrarAviso(!r.ok ? tr(r.motivo) : a.tipo === 'encender_fuego' ? tr('La hoguera prende.') : tr('Echas al fuego: 1 {c}.', { c: tr(CATALOGO[a.objeto].nombre).toLowerCase() }), !r.ok);
+  });
+}
 function quitarPuesto(e) {
   hacerFabricacion({ tipo: 'quitar_estacion', estacion: e.id, x: pj.x, z: pj.z }, (r) => {
     mostrarAviso(r.ok ? tr('Marco quitado: lo que tenía, en el suelo.') : tr(r.motivo), !r.ok);
@@ -1517,7 +1523,15 @@ function opcionesUsar() {
     if (e.obra) {
       ops.push({ texto: tr('Obra: {p}', { p: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => usarPuesto(e) });
       ops.push({ texto: tr('Quitar el marco: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => quitarPuesto(e) });
-    } else ops.push({ texto: tr('Usar: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => panelFabricar && panelFabricar.abrirEstacion(e.id) });
+    } else {
+      ops.push({ texto: tr('Usar: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => panelFabricar && panelFabricar.abrirEstacion(e.id) });
+      // la hoguera: encenderla (con yesca y el taladro de fuego) y echarle una rama o una leña de lo que llevas
+      if (ESTACIONES[e.tipo].fuego && e.fuego) {
+        const st = estadoFuego(e.fuego, Date.now()), inv = inventario();
+        if (!st.encendida) ops.push({ texto: tr('Encender: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => usarFuego(e, { tipo: 'encender_fuego' }) });
+        for (const t of ['rama', 'lena']) if (inv.cuantos(t)) ops.push({ texto: tr('Echar al fuego: 1 {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: e, alto: 0.6, hacer: () => usarFuego(e, { tipo: 'echar_fuego', objeto: t }) });
+      }
+    }
   }
   const a = arbolCercano();
   if (a) ops.push({ texto: tr('Talar el árbol'), pos: a, alto: 3, hacer: () => hachaEnMano(inventario()) ? empezarTala(a) : mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true) });
@@ -1954,7 +1968,8 @@ const plantaDeco = (d) => Math.max(0, Math.floor((d.y - sueloEn(d.x, d.z) + 0.3)
 const lucesFuego = [], vFuego = new THREE.Vector3();
 function moverFuegos() {
   if (chimeneasSucias) { chimeneas = registroMallas.filter(r => r.obj.userData.humo && r.obj.getObjectByName('humo')).map(r => r.obj); chimeneasSucias = false; }
-  if (chimeneas.length && !lucesFuego.length) for (let i = 0; i < 2; i++) {
+  const hogueras = estacionesV.paso(); // las hogueras que arden (src/juego/estaciones.js): también alumbran
+  if ((chimeneas.length || hogueras.length) && !lucesFuego.length) for (let i = 0; i < 2; i++) {
     const l = new THREE.PointLight(0xff9a50, 0, 9, 2); l.castShadow = false; escena.add(l); lucesFuego.push(l);
   }
   const t = performance.now() / 1000;
@@ -1965,6 +1980,7 @@ function moverFuegos() {
     const f = g.userData.fuego; vFuego.set(f.x, f.y, f.z); g.localToWorld(vFuego);
     cerca.push({ d: Math.hypot(vFuego.x - pj.x, vFuego.z - pj.z), p: vFuego.clone() });
   }
+  for (const p of hogueras) cerca.push({ d: Math.hypot(p.x - pj.x, p.z - pj.z), p });
   cerca.sort((a, b) => a.d - b.d);
   lucesFuego.forEach((l, i) => {
     const c = cerca[i];
@@ -1973,7 +1989,7 @@ function moverFuegos() {
     l.intensity = 7 * (0.86 + 0.08 * Math.sin(t * 9.1 + i) + 0.06 * Math.sin(t * 23.7 + i * 2));
   });
 }
-window.__fuegos = () => ({ chimeneas: chimeneas.length, luces: lucesFuego.length, encendidas: lucesFuego.filter(l => l.intensity > 0).length });
+window.__fuegos = () => ({ chimeneas: chimeneas.length, hogueras: estacionesV.paso().length, luces: lucesFuego.length, encendidas: lucesFuego.filter(l => l.intensity > 0).length });
 
 // Un golpe de hacha al árbol que talas (con autor, en src/logica/tala.js). Al caer, deja el tronco y las ramas en
 // el suelo, donde cae, y el tocón.
@@ -2776,6 +2792,7 @@ window.__kinhold = {
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; sueloObjetos.suelo.objetos = []; sueloObjetos.refrescar(); talaV.tala.estado = {}; talaV.refrescar(); troceo.estado = {}; reconstruir(); ropaDelVisor(); vestir(); pintarLlevas(); panelInventario.pintar(); },
   get registroAcciones() { return registroAcciones; },
   accionInventario, get inventario() { return inventario(); }, panelInventario, panelFabricar, fabCliente, estacionesV,
+  calor() { return calorEn(Object.values(fabCliente.estaciones), pj.x, pj.z, Date.now()); }, // el calor de las hogueras donde estás (para el frío)
   inventarios, golpeTala, arbolCercano, vestir, troceo, troncoCercano, golpeTroceo, usar, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas,

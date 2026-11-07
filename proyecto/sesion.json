@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-11-07T14:29:49+00:00",
-  "tarea": "La hoguera, fuera: piedras en círculo y ramas; se enciende con yesca y el taladro de fuego, arde un rato por cada leña o rama que se le echa y se apaga sola (quedan cenizas); luz y calor. Por el servidor, todos la ven igual",
+  "inicio": "2026-11-07T16:25:58+00:00",
+  "tarea": "Almacenajes de la base (con su modelo, que se ve lleno): acopio de troncos, pila de piedras y leñera. Guardar y sacar con Usar; de quien tiene la tierra; la obra no coge de ellos sola",
   "hito": "crafting",
-  "rama": "trabajo/20261107-1429"
+  "rama": "trabajo/20261107-1625"
  },
  "B": null,
  "chat:trabajo/20261107-1701-avisos": {
@@ -11,11 +11,5 @@
   "tarea": "Los avisos en círculos a la derecha (PC y móvil), uno por necesidad con su color (naranja, azul, celeste y gris), que solo salen cuando hace falta; al pulsarlos, qué efecto tiene y cómo se quita. Y los efectos en el juego: sin correr, más lento y golpes flojos según lo que toque. Recorrido: sale el aviso de sed y se lee qué hacer",
   "hito": "supervivencia",
   "rama": "trabajo/20261107-1701-avisos"
- },
- "chat:trabajo/20261107-1715-ui": {
-  "inicio": "2026-11-07T17:12:22+01:00",
-  "tarea": "Estudio de la interfaz del juego para PC y móvil (valravnx, 7 nov: «que sea comoda y no ocupe tanto, debemos evitar que se llene todo de botones… enseñandomelas primero, sin meter al juego»): cómo lo hacen otros, lo que falla hoy y la propuesta en maquetas; valravnx decide",
-  "hito": "supervivencia",
-  "rama": "trabajo/20261107-1715-ui"
  }
 }

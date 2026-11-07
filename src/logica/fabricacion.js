@@ -50,6 +50,7 @@
 //    Levantar la estación (entregarle su coste) gasta de lo que llevas y del suelo (no es fabricar en ella).
 import { CATALOGO } from './inventario.js';
 import { ALCANCE_COGER } from './suelo.js';
+import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, YESCAS, HERRAMIENTA_FUEGO } from './fuego.js';
 
 export const ALCANCE_ESTACION = 2.5;        // m, del jugador a la estación
 export const ALCANCE_SUELO = ALCANCE_COGER; // m, del jugador a lo del suelo que se gasta
@@ -66,10 +67,11 @@ export const USOS = {
   banco:  { nombre: 'En el banco de tronco', estaciones: ['banco_tronco'] },
 };
 
+// fuego: tiene fuego que se enciende, arde y se apaga (src/logica/fuego.js); sus recetas lo piden encendido.
 // un: cómo se nombra en una frase. coste: lo que hay que llevarle a su obra. requiere: lleva al menos uno de estos al
 // trabajarla (no se gasta). uso: el que da. donde: 'fuera', 'dentro' o 'ambos'. trabajo: s de trabajo para levantarla.
 export const ESTACIONES = {
-  hoguera:       { nombre: 'Hoguera', un: 'una hoguera', uso: 'fuego', coste: { piedra: 6, rama: 4 }, donde: 'fuera', trabajo: 10, hace: 'Cocinar, calentarse, endurecer al fuego, antorchas' },
+  hoguera:       { nombre: 'Hoguera', un: 'una hoguera', uso: 'fuego', coste: { piedra: 6, rama: 4 }, donde: 'fuera', trabajo: 10, fuego: true, hace: 'Cocinar, calentarse, endurecer al fuego, antorchas' },
   piedra_tallar: { nombre: 'Piedra de tallar', un: 'una piedra de tallar', uso: 'tallar', coste: { piedra: 1 }, donde: 'ambos', trabajo: 5, hace: 'Herramientas de piedra y sílex' },
   banco_tronco:  { nombre: 'Banco de trabajo de tronco', un: 'un banco de trabajo de tronco', uso: 'banco', coste: { tronco_corto: 2 }, requiere: ['hacha_piedra', 'lasca_silex'], donde: 'ambos', trabajo: 20, hace: 'Trabajos de madera, mangos, cestería, primeras piezas de construcción' },
 };
@@ -236,7 +238,7 @@ function gastarTodo(gasta, inv, cerca, suelo) {
 const textoFaltan = f => 'Te falta: ' + Object.entries(f).map(([t, n]) => `${n} de ${(CATALOGO[t] || {}).nombre || t}`).join(', ') + '.';
 
 // ---------------- Estaciones y colas ----------------
-export const VERSION_FABRICACION = 5; // 3: sin lo que sabía cada uno (fuera aprender recetas, revisión del 1 nov); 4: lo depositado; 5: la obra de cada puesto
+export const VERSION_FABRICACION = 6; // 3: sin lo que sabía cada uno (fuera aprender recetas, revisión del 1 nov); 4: lo depositado; 5: la obra de cada puesto; 6: el fuego de la hoguera
 // lo depositado que vale: solo tipos del catálogo, cantidades enteras positivas, hasta DEPOSITO_MAX en total
 export function limpiarDeposito(dep) {
   const o = {};
@@ -266,11 +268,13 @@ export class Fabricacion {
 
   // La estación de un uso más cercana a pos, a su alcance (o null). Con gasta, primero la más cercana que tiene
   // depositado todo lo que pide; si ninguna, la más cercana.
-  estacionCerca(uso, pos, gasta = null) {
+  estacionCerca(uso, pos, gasta = null, ahora = 0) {
     const tipos = estacionesDeUso(uso);
     const l = Object.values(this.estaciones).filter(e => !e.obra && tipos.includes(e.tipo) && dist(e, pos) <= ALCANCE_ESTACION)
       .sort((a, b) => dist(a, pos) - dist(b, pos));
-    return (gasta && l.find(e => !Object.keys(cuentasEstacion(gasta, e.deposito).faltan).length)) || l[0] || null;
+    const vale = e => !Object.keys(cuentasEstacion(gasta, e.deposito).faltan).length;
+    const arde = e => !ESTACIONES[e.tipo].fuego || encendida(e.fuego, ahora);
+    return (gasta && (l.find(e => vale(e) && arde(e)) || l.find(vale))) || l[0] || null;
   }
 
   // Todas las recetas, siempre a la vista, para quien está en pos con inv y el suelo a su lado:
@@ -281,10 +285,11 @@ export class Fabricacion {
   lista(pos, inv, suelo, ahora) {
     const cerca = sueloCerca(suelo, pos, ahora);
     return Object.entries(RECETAS).map(([receta, rc]) => {
-      const e = rc.uso === 'manos' ? null : this.estacionCerca(rc.uso, pos, rc.gasta);
+      const e = rc.uso === 'manos' ? null : this.estacionCerca(rc.uso, pos, rc.gasta, ahora);
       const { de, faltan: f } = e ? cuentasEstacion(rc.gasta, e.deposito) : cuentas(rc.gasta, inv, cerca);
-      const grupo = rc.uso !== 'manos' && !e ? 'despues' : Object.keys(f).length ? 'casi' : 'ya';
-      return { receta, nombre: rc.nombre, uso: rc.uso, grupo, estacion: e ? e.id : null, conQue: rc.uso === 'manos' ? '' : conQue(rc.uso), gasta: { ...rc.gasta }, da: rc.da, n: rc.n, s: rc.s, de, faltan: f };
+      const apagada = !!(e && ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora));
+      const grupo = rc.uso !== 'manos' && !e ? 'despues' : Object.keys(f).length || apagada ? 'casi' : 'ya';
+      return { receta, nombre: rc.nombre, uso: rc.uso, grupo, estacion: e ? e.id : null, conQue: rc.uso === 'manos' ? '' : conQue(rc.uso), gasta: { ...rc.gasta }, da: rc.da, n: rc.n, s: rc.s, de, faltan: f, ...(apagada ? { apagada: true } : {}) };
     });
   }
 
@@ -357,7 +362,7 @@ export class Fabricacion {
     e.obra.trabajo = Math.min(def.trabajo, e.obra.trabajo + segundos);
     const suyo = e.obra.aportes.find(x => x.autor === autor && x.trabajo !== undefined);
     if (suyo) suyo.trabajo = +(suyo.trabajo + segundos).toFixed(3); else e.obra.aportes.push({ autor, trabajo: +segundos.toFixed(3) });
-    if (e.obra.trabajo >= def.trabajo - 1e-9) { const aportes = e.obra.aportes; delete e.obra; return { ok: true, estacion: e.id, terminada: true, progreso: 1, aportes }; }
+    if (e.obra.trabajo >= def.trabajo - 1e-9) { const aportes = e.obra.aportes; delete e.obra; if (def.fuego) e.fuego = fuegoNuevo(); return { ok: true, estacion: e.id, terminada: true, progreso: 1, aportes }; }
     return { ok: true, estacion: e.id, terminada: false, progreso: e.obra.trabajo / def.trabajo };
   }
   // Quitar el marco de un puesto a medio hacer: lo entregado cae al suelo donde estaba (con suelo; sin él, se pierde).
@@ -415,6 +420,42 @@ export class Fabricacion {
     return { ok: true, estacion: e.id, cogido: { [tipo]: n }, donde: m.donde };
   }
 
+  // ---------- el fuego (src/logica/fuego.js) ----------
+  fuegoAlLado(estacion, pos) {
+    const { e, motivo } = this.estacionAlLado(estacion, pos);
+    if (!e) return { motivo };
+    if (!ESTACIONES[e.tipo].fuego) return { motivo: 'Eso no tiene fuego.' };
+    if (e.obra) return { motivo: 'Aún está en obra: llévale su material y trabaja en ella.' };
+    if (!e.fuego) e.fuego = fuegoNuevo();
+    return { e };
+  }
+  // Encender el fuego de una estación: gasta 1 yesca de lo que llevas y pide llevar el taladro de fuego.
+  encenderFuego(autor, estacion, pos, inv, ahora) {
+    const { e, motivo } = this.fuegoAlLado(estacion, pos);
+    if (!e) return { ok: false, motivo };
+    const st = estadoFuego(e.fuego, ahora);
+    if (st.encendida) return { ok: false, motivo: 'Ya está encendida.' };
+    if (!(st.combustible > 0)) return { ok: false, motivo: 'No tiene nada que arder: échale ramas o leña.' };
+    if (!(inv.cuantos(HERRAMIENTA_FUEGO) > 0)) return { ok: false, motivo: 'Para encenderla hace falta llevar el taladro de fuego y yesca.' };
+    const ruta = YESCAS.flatMap(t => rutasGastables(inv, t))[0];
+    if (!ruta) return { ok: false, motivo: 'Para encenderla hace falta llevar yesca.' };
+    const tipo = inv.buscar(ruta).cosa.tipo, r = encender(e.fuego, ahora);
+    if (!r.ok) return r;
+    inv.sacar(ruta, 1);
+    return { ok: true, estacion: e.id, encendida: true, hasta: r.hasta, gastado: { [tipo]: 1 } };
+  }
+  // Echarle al fuego una rama o una leña de lo que llevas (objeto: 'rama' o 'lena').
+  echarFuego(autor, estacion, objeto, pos, inv, ahora) {
+    const { e, motivo } = this.fuegoAlLado(estacion, pos);
+    if (!e) return { ok: false, motivo };
+    const ruta = rutasGastables(inv, objeto)[0];
+    if (!ruta) return { ok: false, motivo: objeto === 'lena' ? 'No llevas leña.' : objeto === 'rama' ? 'No llevas ramas.' : 'Al fuego solo se echan ramas o leña.' };
+    const r = echar(e.fuego, objeto, ahora);
+    if (!r.ok) return r;
+    inv.sacar(ruta, 1);
+    return { ok: true, estacion: e.id, echado: { [objeto]: 1 }, encendida: r.encendida, segundos: r.segundos };
+  }
+
   // La cola de una estación (o de las manos de un autor).
   colaDe(estacion, autor) { return estacion ? (this.estaciones[estacion] || {}).cola : (this.manos[autor] ||= []); }
 
@@ -436,9 +477,10 @@ export class Fabricacion {
         if (ESTACIONES[e.tipo].uso !== rc.uso) return { ok: false, motivo: `Eso se hace en ${conQue(rc.uso)}.` };
         if (dist(e, pos) > ALCANCE_ESTACION) return { ok: false, motivo: 'Estás demasiado lejos de la estación.' };
       } else {
-        e = this.estacionCerca(rc.uso, pos, rc.gasta);
+        e = this.estacionCerca(rc.uso, pos, rc.gasta, ahora);
         if (!e) return { ok: false, motivo: `Hace falta ${conQue(rc.uso)} a tu lado.` };
       }
+      if (ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora)) return { ok: false, motivo: 'El fuego está apagado: enciéndelo con yesca y el taladro de fuego.' };
       cola = e.cola; max = COLA_ESTACION; enEst = e;
     }
     const sinTerminar = cola.filter(c => c.fin > ahora);
@@ -502,7 +544,7 @@ export class Fabricacion {
     const copia = l => l.map(c => ({ ...c }));
     return {
       version: VERSION_FABRICACION, siguiente: this.siguiente,
-      estaciones: Object.values(this.estaciones).map(e => ({ ...e, cola: copia(e.cola), deposito: { ...e.deposito }, ...(e.obra ? { obra: copiaObra(e.obra) } : {}) })),
+      estaciones: Object.values(this.estaciones).map(e => ({ ...e, cola: copia(e.cola), deposito: { ...e.deposito }, ...(e.obra ? { obra: copiaObra(e.obra) } : {}), ...(e.fuego ? { fuego: { ...e.fuego } } : {}) })),
       manos: Object.fromEntries(Object.entries(this.manos).filter(([, l]) => l.length).map(([k, l]) => [k, copia(l)])),
     };
   }
@@ -519,6 +561,7 @@ export class Fabricacion {
       this.estaciones[e.id] = { id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, cola: limpia(e.cola).filter(c => RECETAS[c.receta].uso === uso), deposito: limpiarDeposito(e.deposito) };
       if (Number.isFinite(e.y)) this.estaciones[e.id].y = e.y;
       const ob = limpiarObra(e.obra, e.tipo); if (ob) this.estaciones[e.id].obra = ob;
+      else if (ESTACIONES[e.tipo].fuego) this.estaciones[e.id].fuego = e.fuego ? limpiarFuego(e.fuego) : fuegoNuevo(); // las de antes del fuego: con sus ramas puestas
     }
     for (const [k, l] of Object.entries(d.manos || {})) {
       if (k in Object.prototype) continue;
@@ -536,6 +579,7 @@ export const MIGRACIONES_FABRICACION = {
   2: d => { const { saber, ...resto } = d; return { ...resto, version: 3 }; }, // y la v3 lo quita: nadie aprende recetas
   3: d => ({ ...d, version: 4, estaciones: (Array.isArray(d.estaciones) ? d.estaciones : []).map(e => e && typeof e === 'object' ? { ...e, deposito: {} } : e) }), // la v4: lo depositado, vacío
   4: d => ({ ...d, version: 5 }), // la v5: las estaciones de antes ya están levantadas (sin obra)
+  5: d => ({ ...d, version: 6, estaciones: (Array.isArray(d.estaciones) ? d.estaciones : []).map(e => e && typeof e === 'object' && e.tipo === 'hoguera' && !e.obra && !e.fuego ? { ...e, fuego: fuegoNuevo() } : e) }), // la v6: las hogueras levantadas, apagadas y con sus ramas puestas
 };
 export function migrarFabricacion(datos) {
   if (!datos || typeof datos !== 'object' || !Number.isInteger(datos.version)) return null;
@@ -553,12 +597,15 @@ export function migrarFabricacion(datos) {
 // { autor, tipo: 'recoger_fabricado', estacion: id | null, x, z }
 // { autor, tipo: 'depositar_estacion', estacion: id, de: ruta, cantidad?, x, z } — de lo que llevas a la estación
 // { autor, tipo: 'retirar_estacion', estacion: id, objeto: tipo, cantidad?, x, z } — de la estación a lo que llevas
+// { autor, tipo: 'encender_fuego', estacion: id, x, z }      — encender su fuego (1 yesca; llevar el taladro de fuego)
+// { autor, tipo: 'echar_fuego', estacion: id, objeto: 'rama' | 'lena', x, z } — echarle al fuego una de lo que llevas
 // suelo: el Suelo del mundo (lo da quien valida). ahora: la hora del que valida, nunca la del mensaje. Lo gastado sale
 // de lo del autor o del suelo a su lado y lo fabricado va al autor (o a sus pies si no le cabe y hay suelo), nunca a
 // otro. enTierras(x, z): si ese sitio es de la tierra del autor. bajoTecho(x, z): si ese sitio está bajo techo (dentro
 // de una casa). Se anota en el registro, salga bien o no.
 export const OBRA_ESTACION = ['colocar_estacion', 'entregar_estacion', 'trabajar_estacion', 'quitar_estacion'];
-export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion'];
+export const DEL_FUEGO = ['encender_fuego', 'echar_fuego'];
+export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion', ...DEL_FUEGO];
 export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = null, enTierras = () => false, bajoTecho = () => false) {
   let res;
   const a = accion;
@@ -570,7 +617,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
   else if (!Number.isFinite(a.x) || !Number.isFinite(a.z) || !est(a.estacion) || (a.tipo === 'fabricar' && !txt(a.receta))
     || ((a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion') && (!txt(a.estacion) || (a.cantidad !== undefined && a.cantidad !== null && !Number.isInteger(a.cantidad))))
     || (a.tipo === 'depositar_estacion' && !txt(a.de)) || (a.tipo === 'retirar_estacion' && !txt(a.objeto))
-    || (OBRA_ESTACION.includes(a.tipo) && !txt(a.estacion)) || (a.tipo === 'trabajar_estacion' && !Number.isFinite(a.segundos))
+    || ((OBRA_ESTACION.includes(a.tipo) || DEL_FUEGO.includes(a.tipo)) && !txt(a.estacion)) || (a.tipo === 'echar_fuego' && !txt(a.objeto)) || (a.tipo === 'trabajar_estacion' && !Number.isFinite(a.segundos))
     || (a.tipo === 'colocar_estacion' && a.y !== undefined && a.y !== null && !Number.isFinite(a.y))) res = { ok: false, motivo: 'Datos no válidos.' };
   else if (!Number.isFinite(ahora)) res = { ok: false, motivo: 'Sin hora.' };
   else {
@@ -581,13 +628,17 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
     else if (a.tipo === 'quitar_estacion') { const e = fab.estaciones[a.estacion]; res = fab.quitarEstacion(a.autor, a.estacion, pos, suelo, ahora, suelo && e ? enTierras(e.x, e.z) : false); }
     else if (a.tipo === 'depositar_estacion') res = fab.depositar(a.autor, a.estacion, a.de, a.cantidad, pos, inv);
     else if (a.tipo === 'retirar_estacion') res = fab.retirar(a.autor, a.estacion, a.objeto, a.cantidad, pos, inv);
+    else if (a.tipo === 'encender_fuego') res = fab.encenderFuego(a.autor, a.estacion, pos, inv, ahora);
+    else if (a.tipo === 'echar_fuego') res = fab.echarFuego(a.autor, a.estacion, a.objeto, pos, inv, ahora);
     else if (a.tipo === 'fabricar') res = fab.fabricar(a.autor, a.receta, a.estacion || null, pos, inv, suelo, ahora);
     else res = fab.recoger(a.autor, a.estacion || null, pos, inv, ahora, suelo, suelo ? enTierras(a.x, a.z) : false);
   }
   const e = registro.anotar(accion || {}, res);
   e.ahora = ahora;
   if (res.ok) {
-    e.resultado = res.quitada ? { estacion: res.estacion, quitada: true, devuelto: { ...res.devuelto } } : res.entregado ? { estacion: res.estacion, entregado: { ...res.entregado } }
+    e.resultado = res.echado ? { estacion: res.estacion, echado: { ...res.echado }, ...(res.encendida ? { ardiendo: true } : {}) }
+      : res.gastado ? { estacion: res.estacion, encendida: true, hasta: res.hasta, gastado: { ...res.gastado } }
+      : res.quitada ? { estacion: res.estacion, quitada: true, devuelto: { ...res.devuelto } } : res.entregado ? { estacion: res.estacion, entregado: { ...res.entregado } }
       : res.progreso !== undefined ? { estacion: res.estacion, progreso: +res.progreso.toFixed(3), ...(res.terminada ? { terminada: true } : {}) }
       : res.dejado ? { estacion: res.estacion, dejado: { ...res.dejado } } : res.cogido ? { estacion: res.estacion, cogido: { ...res.cogido } } : res.id ? { estacion: res.id, ...(res.obra ? { obra: true } : {}) } : res.encargo ? { receta: res.encargo.receta, fin: res.encargo.fin, ...(res.estacion ? { estacion: res.estacion } : {}) } : { dados: res.dados.map(d => d.alSuelo ? [d.objeto, d.cantidad, d.alSuelo] : [d.objeto, d.cantidad]) };
     if (res.usado && res.usado.estacion) e.resultado.deLaEstacion = { ...res.usado.estacion };
