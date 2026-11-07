@@ -27,7 +27,7 @@ import { modeloHachaDe } from './personaje.js'; // (se usa al montar: el ciclo e
 import { loteHachaPiedra, piezasArcoTaladro, piezasHuso } from './modelos_objetos.js';
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
-const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
+const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
 const HACHAS = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro']);
 const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
 const nuevoLote = () => new Lote({ variacion: 0.05, rangoSuelo: 0.001, suelo: -100 });
@@ -211,12 +211,10 @@ function bastidor(L, alto = 0.64, ancho = 0.3, repisa = 0.22) {
 // La lasca de sílex: una esquirla de piedra oscura, fina y con filo, con un trozo de su costra clara (sin mango: se
 // coge entre los dedos). A lo largo de +Y.
 function lasca(L, x, y, z) {
-  const perfil = new THREE.Shape([[0, -0.04], [0.02, -0.025], [0.024, 0.01], [0.012, 0.04], [-0.006, 0.045], [-0.02, 0.012], [-0.018, -0.026]].map(([a, b]) => new THREE.Vector2(a, b)));
-  const g = new THREE.ExtrudeGeometry(perfil, { depth: 0.004, bevelEnabled: true, bevelThickness: 0.003, bevelSize: 0.002, bevelSegments: 1 });
-  g.translate(0, 0, -0.002);
-  L.add(g, SILEX, x, y, z, null, { plano: true, tex: 'piedra' });
-  L.add(new THREE.IcosahedronGeometry(0.012, 0), CORTEZA_SILEX, x - 0.012, y - 0.026, z, null, { escala: v3(1, 0.8, 0.5), plano: true, tex: 'piedra' });
-  L.add(cil(0.0015, 0.0015, 0.05, 3), 0x8f8a82, x + 0.021, y + 0.005, z, { z: -0.12 }, { plano: true, brillo: 1.1 }); // el filo, más claro
+  // facetada como sale al golpearla: un icosaedro aplastado y estirado, de sombreado plano, con el bulbo del golpe
+  L.add(new THREE.IcosahedronGeometry(0.03, 0), SILEX, x, y, z, { z: 0.25, y: 0.4 }, { escala: v3(0.8, 1.55, 0.28), plano: true, tex: 'piedra', brillo: 1.08 });
+  L.add(new THREE.IcosahedronGeometry(0.014, 0), SILEX_CLARO, x + 0.004, y + 0.02, z + 0.004, { y: 1.1 }, { escala: v3(0.9, 1.2, 0.35), plano: true, tex: 'piedra' });
+  L.add(new THREE.IcosahedronGeometry(0.012, 0), CORTEZA_SILEX, x - 0.01, y - 0.032, z, null, { escala: v3(1, 0.8, 0.45), plano: true, tex: 'piedra' });
 }
 // El palo cavador: una rama recta pelada (1,1 m), más gruesa por arriba, con la punta en bisel endurecida al fuego.
 // `abajo` es lo que sobresale del puño por debajo; la punta va hacia +Y.
