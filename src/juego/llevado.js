@@ -278,6 +278,18 @@ function espalda(t, dentro) {
   }
   if (t === 'fardo') {
     const n = Object.values(dentro).reduce((a, b) => a + b, 0), rollos = n > 6 ? 2 : 1;
+    // con plantas (juncos, mimbre, paja, fibra) y sin pieles ni tela: haces de tallos atados, a lo ancho de la espalda
+    const PLANTA = { junco: 'junco', mimbre: 'madera', paja: 'paja', fibra: 'paja' };
+    const tipos = Object.keys(dentro).filter(k => dentro[k] > 0);
+    if (tipos.length && tipos.every(k => PLANTA[k])) {
+      const haces = Math.min(3, Math.max(1, Math.ceil(n / 4)));
+      for (let i = 0; i < haces; i++) {
+        const k = tipos[i % tipos.length], y = -0.12 + i * 0.13, z = 0.1 + (i % 2) * 0.03;
+        L.add(cil(0.07, 0.075, 0.95, 9), PLANTA[k], 0, y, z, { z: Math.PI / 2 + (i - 1) * 0.04 }, { tex: k === 'mimbre' ? 'veta' : 'paja' });
+        for (const s of [-1, 1]) L.add(new THREE.TorusGeometry(0.073, 0.007, 4, 12), FIBRA, s * 0.22, y, z, { y: Math.PI / 2 }, { tex: 'liso' });
+      }
+      return { L, alto: 0.4 };
+    }
     for (let i = 0; i < rollos; i++) {
       L.add(cil(0.1, 0.1, 0.48, 10), i ? 'lana' : 'piel', 0, -0.1 + i * 0.19, 0.1, { z: Math.PI / 2 }, { tex: 'tejido' });
       for (const s of [-1, 1]) L.add(new THREE.TorusGeometry(0.102, 0.007, 4, 12), FIBRA, s * 0.15, -0.1 + i * 0.19, 0.1, { y: Math.PI / 2 }, { tex: 'liso' });

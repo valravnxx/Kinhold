@@ -17,7 +17,10 @@
 //
 // Decisiones provisionales (el GDD no las fija; anotadas en el registro de decisiones y en el diario):
 //  - Lleva una sola clase de cosa a la vez: hasta 3 troncos cortos, hasta 24 piedras (dos porta-piedras: «un montón»)
-//    o un bloque de piedra en bruto (el inventario ya decía «el bloque es enorme: rastra o carro»).
+//    o un bloque de piedra en bruto (el inventario ya decía «el bloque es enorme: rastra o carro»). Y (valravnx, 7 nov:
+//    «metelo ya») hasta 5 troncos delgados (75 kg, lo mismo que los 3 cortos: va igual de despacio), apoyados en los
+//    travesaños con la punta de atrás arrastrando, o 12 varas: lo que da la tala del árbol joven, en un viaje. El
+//    tronco largo no (60 kg y 4,5 m: es cosa de carro), ni el delgado en la carretilla (2,6 m no caben en ella).
 //  - Se arrastra con las dos manos: para engancharla hay que tenerlas libres, y mientras la arrastras no se coge nada
 //    con ellas. Uno solo la arrastra a la vez; cada uno, una.
 //  - «Despacio»: arrastrándola, la velocidad baja con lo que pesa lo que lleva, en línea recta del 70 % (vacía) al
@@ -43,9 +46,9 @@
 //  - «Protegida en tus tierras»: si se aparca dentro de las tierras del que la aparca, queda a su guarda (guarda: autor)
 //    y nadie más puede empujarla, cargarla ni descargarla. Aparcada fuera, no tiene guarda: cualquiera la descarga o se
 //    la lleva. Mientras no haya tierras de cada uno (hito «Tierras y familias»), vale lo que diga enTierras.
-import { CATALOGO, KILOS } from './inventario.js';
+import { CATALOGO, KILOS, KILOS_TAMANO } from './inventario.js';
 
-export const CABE_RASTRA = { tronco_corto: 3, piedra: 24, bloque_piedra: 1 };
+export const CABE_RASTRA = { tronco_corto: 3, tronco_delgado: 5, vara: 12, piedra: 24, bloque_piedra: 1 };
 export const ALCANCE_RASTRA = 2;      // m, desde su centro
 export const DETRAS = 1.6;            // m: el centro de la rastra, por detrás del que la arrastra
 export const MARGEN_SOLTAR = 0.8;     // m
@@ -64,7 +67,8 @@ export const VEHICULOS = {
 export const esVehiculo = tipo => Object.hasOwn(VEHICULOS, tipo);
 
 const redondo = v => Math.round(v * 100) / 100;
-export const kilosCarga = carga => (carga ? (KILOS[carga.tipo] ?? 0) * carga.n : 0);
+// (lo que no tiene sus kilos, los de su tamaño: una vara, 2 kg)
+export const kilosCarga = carga => (carga ? (KILOS[carga.tipo] ?? KILOS_TAMANO[(CATALOGO[carga.tipo] || {}).tam] ?? 0) * carga.n : 0);
 // Lo que se multiplica la velocidad llevando un vehículo (la rastra si no se dice) con esa carga.
 export function factorRastra(carga, veh = 'rastra') {
   const v = VEHICULOS[veh] || VEHICULOS.rastra;
@@ -166,7 +170,7 @@ export class Rastras {
       if (Math.hypot(s.x - x, s.z - z) > ALCANCE_RASTRA) return { ok: false, motivo: 'Está demasiado lejos.' };
       tipo = s.cosa.tipo; hay = s.cosa.n;
     }
-    if (!Object.hasOwn(VEHICULOS[veh].cabe, tipo)) return { ok: false, motivo: carr ? 'En la carretilla solo van troncos cortos, leña, piedras o un bloque de piedra.' : 'En la rastra solo van troncos cortos, piedras o un bloque de piedra.' };
+    if (!Object.hasOwn(VEHICULOS[veh].cabe, tipo)) return { ok: false, motivo: carr ? 'En la carretilla solo van troncos cortos, leña, piedras o un bloque de piedra.' : 'En la rastra solo van troncos (cortos o delgados), varas, piedras o un bloque de piedra.' };
     if (carga && carga.tipo !== tipo) return { ok: false, motivo: carr ? 'La carretilla ya lleva otra cosa: descárgala antes.' : 'La rastra ya lleva otra cosa: descárgala antes.' };
     const sitio = sitioRastra(carga, tipo, veh);
     if (sitio < 1) return { ok: false, motivo: carr ? 'La carretilla va llena.' : 'La rastra va llena.' };

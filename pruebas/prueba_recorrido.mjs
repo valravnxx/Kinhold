@@ -519,6 +519,45 @@ try {
     r = await J.objeto({ tipo: 'entregar_estacion', estacion: rc.datos.id, x: J.pos.x, z: J.pos.z });
     comprobar('y esa sí se la lleva a la obra', r.ok && P(rc.datos.id).obra.entregado.piedra === 1, r.motivo);
   }
+
+  console.log('14. Se ata un fardo y se lleva los juncos a la espalda (valravnx, 7 nov: los juncos, con la paja, en el fardo)');
+  {
+    const yo = J.bienvenida.autor;
+    for (const l of ['mano:der', 'mano:izq']) if (J.inv.lugares[l]) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z });
+    // el haz de juncos que cortó en la orilla (paso 11) sigue en el suelo, junto al río
+    const junco = s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'junco').sort((a, b) => Math.hypot(a.x - rio.x, a.z - rio.z) - Math.hypot(b.x - rio.x, b.z - rio.z))[0];
+    comprobar('su haz de juncos sigue en la orilla', !!junco, '');
+    await J.andar(rio.x, rio.z);
+    // dos cordeles para el fardo: 6 de fibra de las plantas de la orilla
+    const plantas = cerca(orilla.filter(p => p.tipo === 'ortiga' || p.tipo === 'hierba_larga'), rio);
+    let hechos = 0;
+    for (let v = 0; v < 2; v++) {
+      let k = 0;
+      while (J.cuantos('fibra') < 3 && k < plantas.length) await recoger(plantas[k++]);
+      if (J.cuantos('fibra') > 3) { const rf = ['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'fibra'); await J.objeto({ tipo: 'soltar_suelo', de: rf, cantidad: J.cuantos('fibra') - 3, x: J.pos.x, z: J.pos.z }); }
+      r = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
+      adelantar();
+      const rr = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+      if (r.ok && rr.ok) hechos++;
+    }
+    comprobar('arranca fibra y hace dos cordeles', hechos === 2 && J.cuantos('cordel') >= 2, `${hechos} ${enMano()}`);
+    r = await J.objeto({ tipo: 'fabricar', receta: 'fardo', x: J.pos.x, z: J.pos.z });
+    adelantar();
+    const rf = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+    comprobar('se ata un fardo con ellos (con las manos)', r.ok && rf.ok && J.cuantos('fardo') === 1, `${r.motivo || ''} ${rf.motivo || ''} ${enMano()}`);
+    const lf = ['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'fardo');
+    r = lf ? await J.objeto({ tipo: 'ponerse', de: lf }) : { ok: false, motivo: 'no lleva el fardo' };
+    comprobar('y se lo echa a la espalda', r.ok && J.inv.lugares.espalda?.tipo === 'fardo', r.motivo);
+    await J.andar(junco.x + 0.4, junco.z);
+    r = await J.objeto({ tipo: 'coger_suelo', objeto: junco.id, cantidad: 1, a: 'espalda/0', x: J.pos.x, z: J.pos.z });
+    comprobar('coge del suelo su haz de juncos y va al fardo, a la espalda, con las manos libres', r.ok && J.inv.lugares.espalda?.dentro?.[0]?.tipo === 'junco' && !J.inv.lugares['mano:der'] && !J.inv.lugares['mano:izq'], r.motivo);
+    const piedra = s.objetos.sueloVisible(Date.now()).find(o => o.cosa.tipo === 'piedra' && Math.hypot(o.x - J.pos.x, o.z - J.pos.z) < 30);
+    if (piedra) {
+      await J.andar(piedra.x + 0.4, piedra.z);
+      r = await J.objeto({ tipo: 'coger_suelo', objeto: piedra.id, cantidad: 1, a: 'espalda/1', x: J.pos.x, z: J.pos.z });
+      comprobar('una piedra, en el fardo no', !r.ok, r.motivo);
+    }
+  }
   }
 
   // P4, las necesidades: a estas alturas del día, con todo lo que ha andado y trabajado, ya tiene algo de sed y de
