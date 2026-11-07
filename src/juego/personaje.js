@@ -9,6 +9,7 @@ import { cil } from '../mundo/decorado.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
 import { NIVELES, OCULTO, RADIO_VISTA, nivelDetalle, pixelesEnPantalla } from '../logica/detalle.js';
 import { crearLlevado } from './llevado.js';
+import { loteHachaPiedra } from './modelos_objetos.js';
 
 // Niveles de detalle (src/logica/detalle.js): cada personaje mira lo alto que sale en pantalla desde la cámara que se
 // le da aquí y pone el suyo. Sin cámara, todos enteros. `forzar`: un nivel fijo para todos (pruebas y capturas).
@@ -164,10 +165,18 @@ export function empunar(mh, modelo) {
 // La herramienta que pide cada trabajo (la animación): sin ella, el gesto se ve con la mano vacía
 export const HERRAMIENTA_DE = { talar: 'hacha', minar: 'pico' };
 export const MODELOS_HERRAMIENTA = { hacha: modeloHacha, pico: modeloPico };
+// El hacha de cada tipo (7 nov): la de piedra, con su cabeza de piedra atada (src/juego/modelos_objetos.js); las demás,
+// la de hierro (el hacha de hierro aún no tiene modelo propio). Mismo sistema: mango en +Y, mano en el origen, filo a +Z.
+export function modeloHachaDe(tipo) {
+  if (tipo !== 'hacha_piedra' || globalThis.__sinModelosManos /* solo para comprobar que la prueba falla */) return modeloHacha();
+  const g = deMano(loteHachaPiedra()); g.name = 'hacha_piedra';
+  return g;
+}
 
 // Devuelve { raiz, animar(velocidad, dt, talando), cargado(), modo(), mh }. `recursos`: carpeta de los .glb del taller.
 // `sexo`, `capas` y `aspecto`: los del personaje elegido en el visor (por defecto, hombre con camisa y calzas, descalzo).
 // `ropa`: { tintes, hechuras } de lo que lleva puesto (src/logica/hechura.js: vestidoDe); sin ella, los de siempre.
+const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro']);
 export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], aspecto = undefined, ropa = {}) {
   const raiz = new THREE.Group();
   const muneco = crearMuneco();
@@ -178,7 +187,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     raiz.remove(muneco);
     raiz.add(mh.raiz);
     j.mh = mh;
-    j.hacha = empunar(mh, modeloHacha());
+    j.hacha = empunar(mh, modeloHachaDe(j.tipoHacha)); j.hachaPuesta = j.tipoHacha;
     cuenta.add(j);
   }).catch(e => { j.error = e.message || String(e); console.warn('Personaje del taller no cargado, sigue el muñeco:', e); });
   j.animar = (velocidad, dt, talando = false) => {
@@ -222,8 +231,22 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
   // lo que llevas se ve puesto (src/juego/llevado.js): ponerLlevado(lo de src/logica/llevado.js); va con los huesos
   const llevado = crearLlevado(j), animarCuerpo = j.animar;
   j.llevado = llevado;
-  j.ponerLlevado = (l) => { j.llevadoPedido = l; j.cargaDos = !!(l && l.dos); j.alHombro = !!(l && (l.hombro === 'tronco_corto' || l.hombro === 'tronco_delgado')); if (j.mh) llevado.poner(l); };
-  j.listo.then(() => { if (j.mh && j.llevadoPedido) llevado.poner(j.llevadoPedido); });
+  // el hacha que se ve en la mano (y al talar) es la que lleva en las manos: la de piedra o la de hierro
+  const ponerHacha = () => {
+    if (!j.mh || j.hachaPuesta === j.tipoHacha) return;
+    const visible = j.hacha ? j.hacha.visible : false;
+    if (j.hacha) { j.hacha.parent?.remove(j.hacha); j.hacha.traverse(o => { if (o.isMesh) o.geometry.dispose(); }); }
+    j.hacha = empunar(j.mh, modeloHachaDe(j.tipoHacha)); j.hachaPuesta = j.tipoHacha;
+    if (j.hacha) j.hacha.visible = visible;
+  };
+  j.ponerLlevado = (l) => {
+    j.llevadoPedido = l; j.cargaDos = !!(l && l.dos); j.alHombro = !!(l && (l.hombro === 'tronco_corto' || l.hombro === 'tronco_delgado'));
+    const h = l && [l.der, l.izq].find(t => HACHAS_MANO.has(t));
+    j.hachaEnMano = !!h;                                   // también la de los demás jugadores (en línea)
+    if (h) { j.tipoHacha = h; ponerHacha(); }
+    if (j.mh) llevado.poner(l);
+  };
+  j.listo.then(() => { ponerHacha(); if (j.mh && j.llevadoPedido) llevado.poner(j.llevadoPedido); });
   j.animar = (...a) => { animarCuerpo(...a); llevado.paso(); };
   return j;
 }

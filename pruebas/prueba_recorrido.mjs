@@ -393,6 +393,23 @@ try {
     await aSusPies('junco');
     r = await recoger(de('yesquero')[0]);
     comprobar('y coge yesca de los hongos yesqueros de un tocón, con las manos', r.ok && J.cuantos('yesca') >= 1, r.motivo || enMano());
+    // el taladro de fuego (7 nov), para encender la hoguera con la yesca: un cordel y dos ramas, con las manos
+    await aSusPies('yesca'); await aSusPies('lasca_silex');
+    const fibrasRio = cerca(orilla.filter(p => p.tipo === 'ortiga' || p.tipo === 'hierba_larga'), rio);
+    let f = 0;
+    while (J.cuantos('fibra') < 3 && f < Math.min(8, fibrasRio.length)) await recoger(fibrasRio[f++]);
+    if (J.cuantos('fibra') > 3) { const rf = ['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'fibra'); await J.objeto({ tipo: 'soltar_suelo', de: rf, cantidad: J.cuantos('fibra') - 3, x: J.pos.x, z: J.pos.z }); }
+    r = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
+    comprobar('cerca del río, arranca fibra y hace otro cordel', r.ok, `${r.motivo || ''} ${J.cuantos('fibra')} de fibra de ${f} plantas`);
+    adelantar();
+    r = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+    for (const p of de('ramas')) { if (J.cuantos('rama') >= 2) break; await recoger(p); }
+    comprobar('lleva un cordel y dos ramas', J.cuantos('cordel') >= 1 && J.cuantos('rama') >= 2, enMano());
+    r = await J.objeto({ tipo: 'fabricar', receta: 'taladro_fuego', x: J.pos.x, z: J.pos.z });
+    comprobar('se hace un taladro de fuego con las manos (2 ramas y 1 cordel)', r.ok, r.motivo || enMano());
+    adelantar();
+    r = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+    comprobar('y lo coge: con la yesca, ya puede encender fuego', r.ok && J.cuantos('taladro_fuego') + (sueloMio('taladro_fuego') ? 1 : 0) === 1, r.motivo || enMano());
   }
 
   // lo que sale de aquí, en la salida (para quien lo lea en la nube)

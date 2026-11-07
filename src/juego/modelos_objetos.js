@@ -23,6 +23,8 @@
 //    de fuera; el de anillas, con sus dos anillas de hierro; el de armas, más ancho y oscuro, con el tahalí de la espada.
 //  - saco (7 nov): un saco de lino lleno, tumbado, con la boca atada con cordel.
 //  - bandolera (7 nov): la bolsa de cuero con su tapa y la correa larga tirada en un arco.
+//  - taladro de fuego (7 nov): el arco con su cordel, el huso de punta tostada, la tabla con muescas quemadas y la
+//    piedra de apoyo.
 //  - yesca (7 nov): un trozo de hongo yesquero cortado (pardo, con su corte claro y aterciopelado) junto a un nido de
 //    fibra seca deshilachada, pálida.
 import * as THREE from 'three';
@@ -32,7 +34,7 @@ import { cil } from '../mundo/decorado.js';
 import { cajaR } from '../mundo/modelos.js';
 
 const FIBRA = 0xb3a77f, CORDEL = 0x9c8a60, CUERDA = 0x86714c, JUNCO = 0x7f8a4c, JUNCO_PUNTA = 0xa59a62, MIMBRE = 0xb39a6c;
-const LIBER = 0xb49a74, YESQUERO = 0x6e6152, YESCA_CORTE = 0xa58a62, YESCA_FIBRA = 0xc2b48a;
+const TOSTADO = 0x2f2620, LIBER = 0xb49a74, YESQUERO = 0x6e6152, YESCA_CORTE = 0xa58a62, YESCA_FIBRA = 0xc2b48a;
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_PELO = 0x7d6346, AMBAR = 0x8a561d, AMBAR_CLARO = 0xa36d2a;
 const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
@@ -244,7 +246,10 @@ function cubo(n, id) {
 
 // El hacha de piedra (revisión del 1 nov: la primera herramienta para talar los jóvenes): la cabeza de piedra pulida,
 // en forma de gota con el filo abajo, encajada en el mango y atada con tiras de cuero cruzadas. Tumbada en el suelo.
-export function modeloHachaPiedra() {
+// loteHachaPiedra() da sus piezas (el mango a lo largo de +Y con la mano en el origen y el filo hacia +Z, como el hacha
+// de hierro de src/juego/personaje.js): así la misma sirve para la mano, el cinturón y el suelo.
+export function modeloHachaPiedra() { return mallas(loteHachaPiedra()); }
+export function loteHachaPiedra() {
   const L = new Lote({ variacion: 0.04, rangoSuelo: 0.001, suelo: -100 });
   L.add(cil(0.016, 0.02, 0.62, 8), 'tabla', 0, 0.21, 0, null, { tex: 'veta' });
   L.add(new THREE.SphereGeometry(0.022, 8, 5), 'tabla', 0, -0.1, 0, null, { escala: v3(1, 0.7, 1.3), tex: 'veta' });
@@ -253,6 +258,36 @@ export function modeloHachaPiedra() {
   L.add(cabeza, 'piedraOsc', 0, y, 0.055, { x: Math.PI / 2 }, { escala: v3(0.55, 1.7, 0.8), tex: 'piedra' });
   L.add(cil(0.003, 0.003, 0.07, 4), 0x8a8780, 0, y, 0.135, null, { escala: v3(3, 1, 1), plano: true, sinSuelo: true }); // el filo pulido
   for (const dy of [-0.025, 0.025]) L.add(new THREE.TorusGeometry(0.022, 0.005, 4, 10), CUERO_OSC, 0, y + dy, 0.005, { x: Math.PI / 2 + dy * 8 }, { tex: 'liso' });
+  return L;
+}
+// El taladro de fuego de arco (7 nov; el documento de sistemas lo nombra para encender la hoguera): el arco (una rama
+// curvada con el cordel tenso de punta a punta), el huso (un palo recto con la punta tostada), la tabla con las
+// muescas negras de otras veces y la piedra de apoyo con su hoyuelo. Todo tumbado en el suelo.
+export function piezasArcoTaladro(L, { y0 = 0, enSuelo = true } = {}) {
+  // el arco a lo largo de +Y (de 0 a 0,6), combado hacia +Z, y el cordel recto de punta a punta
+  const pts = []; for (let i = 0; i <= 8; i++) { const t = i / 8; pts.push(v3(0, y0 + t * 0.6, Math.sin(t * Math.PI) * 0.07)); }
+  L.add(tubo(pts, 0.011, 6), 'corteza', 0, 0, 0, null, { tex: 'corteza', sinSuelo: !enSuelo });
+  for (const t of [0, 1]) L.add(new THREE.TorusGeometry(0.014, 0.003, 4, 8), CORDEL, 0, y0 + 0.02 + t * 0.56, 0.006, { x: Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+  L.add(tubo([v3(0, y0 + 0.02, 0.004), v3(0, y0 + 0.3, -0.004), v3(0, y0 + 0.58, 0.004)], 0.0025, 4), CORDEL, 0, 0, 0, null, { tex: 'liso', sinSuelo: true });
+}
+export function piezasHuso(L, x, y, z, giro) {
+  const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(giro.x || 0, giro.y || 0, giro.z || 0, 'YXZ'));
+  L.add(cil(0.011, 0.011, 0.26, 7), 'madera', x, y, z, m.clone(), { tex: 'veta', sinSuelo: true });
+  const d = v3(0, -0.14, 0).applyMatrix4(m);   // la punta de abajo, tostada de girar en la tabla
+  L.add(new THREE.ConeGeometry(0.011, 0.025, 7), TOSTADO, x + d.x, y + d.y, z + d.z, m.clone().multiply(new THREE.Matrix4().makeRotationX(Math.PI)), { plano: true, sinSuelo: true });
+}
+function taladroFuego(n, id) {
+  const L = lote(0.05);
+  // la tabla, plana, con tres muescas quemadas en el canto
+  L.add(cajaR(0.34, 0.022, 0.075, 0.004), 'tabla', 0, 0.011, 0, null, { tex: 'veta' });
+  for (const x of [-0.09, 0, 0.09]) L.add(cil(0.012, 0.01, 0.006, 8), TOSTADO, x, 0.023, 0.026, null, { plano: true, sinSuelo: true });
+  // el arco tumbado delante y el huso cruzado encima de la tabla
+  const A = lote(0.05); piezasArcoTaladro(A, { y0: -0.3 });
+  const g = new THREE.Matrix4().makeRotationX(-Math.PI / 2).premultiply(new THREE.Matrix4().makeRotationY(Math.PI / 2 + 0.15)).setPosition(0.02, 0.012, 0.13);
+  for (const p of A.piezas) { p.m.premultiply(g); L.piezas.push(p); }
+  piezasHuso(L, 0.05, 0.034, -0.005, { z: Math.PI / 2, y: 0.5 });
+  // la piedra de apoyo, con su hoyuelo
+  L.add(new THREE.IcosahedronGeometry(0.035, 1), 'piedra', -0.2, 0.02, -0.09, { y: az(id, 1) * 3 }, { escala: v3(1.1, 0.6, 1), plano: true });
   return mallas(L);
 }
 function hachaPiedraSuelo(n, id) { const g = new THREE.Group(), h = modeloHachaPiedra(); h.rotation.set(Math.PI / 2, 0, az(id, 3) * 6); h.position.y = 0.03; g.add(h); return g; }
@@ -311,6 +346,6 @@ function bandolera(n, id) {
 // tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
 export const MODELO_OBJETO = {
   fibra, junco: juncos, mimbre, piel, resina, corteza, yesca, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, taladro_fuego: taladroFuego,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };
