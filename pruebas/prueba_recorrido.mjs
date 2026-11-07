@@ -485,6 +485,35 @@ try {
     comprobar('y apagada ya no se hace nada al fuego', !r.ok && /apagado/.test(r.motivo || ''), r.motivo);
   }
 
+  console.log('13. Vuelve a su tierra con piedras de la orilla y levanta una pila de piedras: guarda en ella, saca, y la obra no coge de ella sola');
+  {
+    const yo = J.bienvenida.autor, P = id => s.objetos.fab.estaciones[id];
+    for (const l of ['mano:der', 'mano:izq']) if (J.inv.lugares[l]) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z });
+    for (const p of de('piedra')) { if (J.cuantos('piedra') >= 6) break; await recoger(p); }
+    comprobar('recoge 6 piedras en la orilla, 3 en cada mano', J.cuantos('piedra') === 6, `${J.cuantos('piedra')}`);
+    if (!s.mundo.dentroDeTierra(J.pos.x, J.pos.z, yo)) {
+      r = await J.objeto({ tipo: 'colocar_estacion', estacion: 'pila_piedras', x: J.pos.x + 0.8, z: J.pos.z });
+      comprobar('fuera de su tierra no puede poner un almacenaje', !r.ok, r.motivo);
+    }
+    const mj = s.mundo.mojonDe(yo), sitio = { x: mj.x - 5, z: mj.z + 4 };
+    await J.andar(sitio.x, sitio.z);
+    r = await ponerPuesto('pila_piedras', sitio.x + 0.8, sitio.z);
+    comprobar('en su tierra levanta una pila de piedras: su marco, sus 4 piedras y su trabajo', r.ok && r.datos.terminada && J.cuantos('piedra') === 2, `${r.motivo || ''} lleva ${J.cuantos('piedra')}`);
+    const pila = r.id, lp = ['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'piedra');
+    r = lp ? await J.objeto({ tipo: 'depositar_estacion', estacion: pila, de: lp, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no lleva piedras' };
+    if (r.ok && J.cuantos('piedra')) { const l2 = ['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'piedra'); r = await J.objeto({ tipo: 'depositar_estacion', estacion: pila, de: l2, x: J.pos.x, z: J.pos.z }); }
+    comprobar('guarda en ella las 2 piedras que le sobran (Usar: guardar)', r.ok && P(pila).deposito.piedra === 2 && J.cuantos('piedra') === 0, r.motivo);
+    const vista = s.objetos.estacionesVisibles().find(e => e.id === pila);
+    comprobar('y todos la ven con sus piedras (lo que manda el servidor)', vista && vista.deposito.piedra === 2, JSON.stringify(vista && vista.deposito));
+    const rc = await J.objeto({ tipo: 'colocar_estacion', estacion: 'hoguera', x: sitio.x - 0.8, z: sitio.z });
+    r = rc.ok ? await J.objeto({ tipo: 'entregar_estacion', estacion: rc.datos.id, x: J.pos.x, z: J.pos.z }) : rc;
+    comprobar('la obra no coge de la pila sola: con las manos vacías, la hoguera de al lado no recibe ninguna piedra', rc.ok && !r.ok && P(pila).deposito.piedra === 2 && !Object.keys(P(rc.datos.id).obra.entregado).length, r.motivo);
+    r = await J.objeto({ tipo: 'retirar_estacion', estacion: pila, objeto: 'piedra', cantidad: 1, x: J.pos.x, z: J.pos.z });
+    comprobar('saca una piedra de la pila (Usar: sacar)', r.ok && J.cuantos('piedra') === 1 && P(pila).deposito.piedra === 1, r.motivo);
+    r = await J.objeto({ tipo: 'entregar_estacion', estacion: rc.datos.id, x: J.pos.x, z: J.pos.z });
+    comprobar('y esa sí se la lleva a la obra', r.ok && P(rc.datos.id).obra.entregado.piedra === 1, r.motivo);
+  }
+
   // P4, las necesidades: a estas alturas del día, con todo lo que ha andado y trabajado, ya tiene algo de sed y de
   // hambre (la sed, más), sin que nadie se las haya puesto: le llegan solas del servidor
   comprobar('le han subido solas la sed y el hambre (la sed, más) y le llegan del servidor', J.nec && J.nec.sed > 0 && J.nec.hambre > 0 && J.nec.sed > J.nec.hambre, JSON.stringify(J.nec));
