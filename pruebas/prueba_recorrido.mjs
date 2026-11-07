@@ -1,7 +1,7 @@
 // Recorrido de jugador (revisión del 1 nov: las cosas llegaban rotas porque nadie las jugaba como jugador).
 // Un jugador nuevo, contra el servidor de verdad (servidor/servidor.mjs con el terreno de Whitholm y SIN el arcón de
 // pruebas), juega de principio a fin lo que haya, con los mismos mensajes que manda la demo y solo con lo que recoge:
-// elige dónde empieza (la salida común, en Lindholt; valravnx, 5 nov: hay tres y «lo eligen»), empieza con lo puesto, anda hasta lo que se recoge, lo recoge, anda hasta la zona de al lado (la de la salida es del
+// elige dónde empieza (la salida común, en Lindholt; valravnx, 5 nov: hay tres y «lo eligen»), empieza con lo puesto (y lucha con eso), anda hasta lo que se recoge, lo recoge, anda hasta la zona de al lado (la de la salida es del
 // rey: no se reclama) y pone su mojón pagándolo con tres de las piedras que
 // lleva, levanta un cimiento de piedra con las piedras que ha traído en las manos (en dos viajes), y lo trabaja hasta
 // terminarlo; luego se fabrica un hacha de piedra (fibra, cordel, piedra de tallar, y lo que pide dejado encima de
@@ -121,6 +121,9 @@ try {
   console.log('1. Empieza con lo puesto, y sin arcón');
   const lugares = J.inv ? Object.entries(J.inv.lugares).filter(([, c]) => c).map(([l, c]) => `${l}=${c.tipo}`) : [];
   comprobar('le llega lo que lleva: solo la camisa y el pantalón de lino', lugares.length === 2 && lugares.join(' ').includes('camisa_lino') && lugares.join(' ').includes('pantalon_lino'), lugares.join(' '));
+  // el duelo con lo que llevas (7 nov): si le atacan, le protege eso y nada más (sin el gambesón que antes ponía el servidor)
+  const yoL = J.bienvenida.luchadores.find(l => l.autor === J.bienvenida.autor);
+  comprobar('en el combate lleva eso mismo: la camisa y el pantalón, sin armadura', yoL && JSON.stringify([...yoL.prendas].sort()) === JSON.stringify(['camisa_lino', 'pantalon_lino']) && yoL.armadura === 'lino', yoL ? yoL.prendas.join(', ') : 'no está en el combate');
   let r = await J.objeto({ tipo: 'coger', objeto: 'hacha_hierro', cantidad: 1, a: 'mano:der' });
   comprobar('no puede sacar nada del arcón de pruebas (no hay)', !r.ok && J.cuantos('hacha_hierro') === 0, r.motivo);
   r = await J.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });

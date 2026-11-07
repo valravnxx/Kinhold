@@ -22,7 +22,8 @@
 //                        { tipo: 'combate', que: 'parar', activo, linea }   activo: true / false; linea: el lado
 //                        { tipo: 'combate', que: 'tensar' }
 //                        { tipo: 'combate', que: 'soltar', x, y, z }         punto al que apunta
-//                        { tipo: 'combate', que: 'equipar', arma, armadura } solo estando libre
+//                        { tipo: 'combate', que: 'equipar', arma }          solo estando libre (la armadura es lo
+//                                                                             que lleva puesto en el inventario: vestir)
 //                        { tipo: 'combate', que: 'curar', herida, metodo }   herida: índice en sus heridas
 //                        { tipo: 'combate', que: 'dejarCura' }               deja la cura a medias (echa a correr)
 //                        { tipo: 'combate', que: 'reiniciar' }               vuelve a empezar sano: solo si está fuera
@@ -33,7 +34,7 @@
 //   su autor y el motivo, y el evento sale con resultado «tierras del rey».
 //   servidor → clientes  { tipo: 'combate', eventos: [...] }               golpes, flechas e impactos, en orden
 //                        { tipo: 'luchadores', t, lista: [...] }             cada tic, los que han cambiado
-import { Luchador, LINEAS, ARMAS, ARMADURAS, RITMO, TRATAMIENTOS, azar, angulo, difAngulo } from '../combate/logica.js';
+import { Luchador, LINEAS, ARMAS, RITMO, TRATAMIENTOS, azar, angulo, difAngulo } from '../combate/logica.js';
 import { RegistroAcciones, ejecutarCombate, avanzarProyectil } from './acciones.js';
 import { motivoProtegido, RESULTADO_TIERRAS } from './tierras_rey.js';
 
@@ -62,9 +63,10 @@ export function validarIntencion(m) {
     case 'reiniciar': return { que: 'reiniciar' };
     case 'soltar': return [m.x, m.y, m.z].every(numero) ? { que: 'soltar', x: m.x, y: m.y, z: m.z } : null;
     case 'equipar':
+      // la armadura ya no la dice el cliente: es la ropa que lleva puesta en el inventario (CombateServidor.vestir);
+      // si la manda (las versiones de antes), no cuenta
       if (!Object.hasOwn(ARMAS, m.arma)) return null;
-      if (m.armadura !== undefined && !Object.hasOwn(ARMADURAS, m.armadura)) return null;
-      return { que: 'equipar', arma: m.arma, ...(m.armadura ? { armadura: m.armadura } : {}) };
+      return { que: 'equipar', arma: m.arma };
     default: return null;
   }
 }
@@ -72,7 +74,7 @@ export function validarIntencion(m) {
 // Lo que se reparte de cada luchador (lo que hace falta para dibujarlo y para leer sus golpes)
 function foto(autor, L) {
   return {
-    autor, arma: L.arma, armadura: L.armadura, accion: L.accion, linea: L.linea,
+    autor, arma: L.arma, armadura: L.armadura, prendas: [...L.puestas], accion: L.accion, linea: L.linea,
     duracion: Math.round(L.duracion * 1000), tAccion: Math.round(L.tAccion * 1000),
     bloqueando: L.bloqueando, lineaBloqueo: L.lineaBloqueo, sacada: !!L.sacada, tension: Math.round(L.tension * 100) / 100,
     cansancio: Math.round(L.cansancio), sangre: Math.round(L.sangre), heridas: L.heridas.length,
@@ -86,7 +88,7 @@ function foto(autor, L) {
 export const MARCAS_CURA = { v: 'vendada', c: 'cosida', q: 'cauterizada', e: 'entablillada', h: 'hierbas' };
 const marcasCura = (h) => Object.entries(MARCAS_CURA).filter(([, k]) => h[k]).map(([m]) => m).join('');
 // lo que cambia sin parar (el avance de la acción) no cuenta para decidir si hay que mandarlo otra vez
-const clave = (f) => [f.arma, f.armadura, f.accion, f.linea, f.bloqueando, f.lineaBloqueo, f.sacada, f.cansancio, f.sangre, f.lista.map(h => h[1] + h[4]).join(','), Object.values(f.botiquin).join(','), f.fuera, f.contra, Math.round(f.tension * 10)].join('|');
+const clave = (f) => [f.arma, f.armadura, f.prendas.join(','), f.accion, f.linea, f.bloqueando, f.lineaBloqueo, f.sacada, f.cansancio, f.sangre, f.lista.map(h => h[1] + h[4]).join(','), Object.values(f.botiquin).join(','), f.fuera, f.contra, Math.round(f.tension * 10)].join('|');
 
 export class CombateServidor {
   // ritmo: el de RITMO (decisión provisional: «normal» para todos en línea). semilla: azar de las heridas.
@@ -104,8 +106,9 @@ export class CombateServidor {
   }
   get luchadores() { return this.ctx.luchadores; }
 
-  entrar(autor, { arma = 'espada_larga', armadura = 'gambeson', x = 0, z = 0, rot = 0 } = {}) {
-    this.ctx.luchadores[autor] = new Luchador({ nombre: autor, arma, armadura, ritmo: this.ritmo, x, z, rot });
+  // prendas: lo que lleva puesto en el inventario (lo que le protege); sin ellas, la armadura (el rival de las pruebas).
+  entrar(autor, { arma = 'espada_larga', armadura = 'gambeson', prendas = null, x = 0, z = 0, rot = 0 } = {}) {
+    this.ctx.luchadores[autor] = new Luchador({ nombre: autor, arma, armadura, prendas, ritmo: this.ritmo, x, z, rot });
     this.ctx.luchadores[autor].reloj = this.reloj;
     return this.ctx.luchadores[autor];
   }
@@ -126,6 +129,12 @@ export class CombateServidor {
     this.ctx.luchadores[autor] = L;
     this.mandado.delete(autor);   // se reparte otra vez a todos en el próximo tic
     return L;
+  }
+  // Lo que lleva puesto (tipos de prendas): lo pone el servidor, de su inventario, al entrar y cada vez que cambia.
+  // Se lo puede quitar o poner en mitad de una pelea: el inventario ya lo deja o no (no hay tiempo de ponerse nada).
+  vestir(autor, prendas) {
+    const L = this.ctx.luchadores[autor];
+    if (L) L.vestir(prendas);
   }
   // posición y giro (de la presencia)
   colocar(autor, x, z, giro) {
@@ -171,7 +180,7 @@ export class CombateServidor {
       }
       case 'equipar':
         if (!L.puedeActuar() || L.bloqueando) break;
-        L.arma = i.arma; if (i.armadura) L.armadura = i.armadura; ok = true; break;
+        L.arma = i.arma; ok = true; break;
       case 'dejarCura': ok = L.accion === 'curando'; L.cortarCura('dejaCura'); break;
       case 'curar': {
         const r = ejecutarCombate(this.ctx, this.registro, { autor, tipo: 'curar', herida: i.herida, metodo: i.metodo });
@@ -188,7 +197,7 @@ export class CombateServidor {
     const L = this.ctx.luchadores[autor];
     const cerca = this.rivales(autor).some(o => !o.fuera && Math.hypot(o.x - L.x, o.z - L.z) < CERCA_REINICIAR);
     if (!L.fuera && cerca) return { ok: false, motivo: 'Hay alguien cerca: no se puede volver a empezar en mitad de una pelea.' };
-    const N = this.entrar(autor, { arma: L.arma, armadura: L.armadura, x: L.x, z: L.z, rot: L.rot });
+    const N = this.entrar(autor, { arma: L.arma, armadura: L.armadura, prendas: L.prendas, x: L.x, z: L.z, rot: L.rot });
     N.sacada = L.sacada;
     this.pendientes.push({ tipo: 'reinicio', autor, t: this.ms() });
     return { ok: true };

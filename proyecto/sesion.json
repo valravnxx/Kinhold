@@ -1,15 +1,16 @@
 {
- "A": {
-  "inicio": "2026-11-07T12:24:06+00:00",
-  "tarea": "El duelo con lo que llevas: la ropa y la armadura puestas y el arma de la mano salen del inventario",
-  "hito": "orden",
-  "rama": "trabajo/20261107-1224"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261107-1250-tejado": {
   "inicio": "2026-11-07T12:48:08+01:00",
   "tarea": "El tejado de la casa humilde y que nada esencial se escurra (valravnx, 7 nov: «no puede ser que os paseis cosas tan esenciales por alto»): tejado de juncos y su remate, con el junco como material de obra; prueba de que cada material de este tramo sale de algún sitio del mundo y de que la casa humilde se puede hacer entera; la regla en CLAUDE.md",
   "hito": "crafting",
   "rama": "trabajo/20261107-1250-tejado"
+ },
+ "chat:trabajo/20261107-1437-necesidades": {
+  "inicio": "2026-11-07T14:37:33+01:00",
+  "tarea": "Las necesidades en la lógica pura y en el servidor: hambre, sed, frío y cansancio de cada personaje (GDD, apartado 6; valores del documento de sistemas, apartado 10: comer 2–3 veces por día de juego, la sed más rápida). Las lleva el servidor, se guardan con el personaje y suben con el tiempo y con lo que hace (con su autor). Al máximo: cansancio acelerado y luego heridas lentas. Recorrido: la sed y el hambre suben solas desde que entra el jugador nuevo",
+  "hito": "supervivencia",
+  "rama": "trabajo/20261107-1437-necesidades"
  }
 }

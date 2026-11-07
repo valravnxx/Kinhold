@@ -2401,9 +2401,9 @@ jugador.listo.then(vestir);
 const combate = crearCombateMundo({
   escena, camara, lienzo, pj, cam, jugador, recursos: RECURSOS_MH, sexo: SEXO, aspecto: elegido ? elegido.aspecto : undefined,
   capasActuales: () => vestidoAhora().capas,
-  // lo que frena un golpe sale de las prendas de cada armadura (src/combate/logica.js, ARMADURAS); hasta que el duelo
-  // use lo puesto de verdad (tarea siguiente de P6), con la cota cuentas como «malla» y con el gambesón como «gambesón»
-  armaduraActual: () => { const p = puestasDe(inventario().lugares); return p.includes('cota_malla') ? 'malla' : p.includes('gambeson') ? 'gambeson' : 'lino'; },
+  // el duelo con lo que llevas (7 nov): lo que frena un golpe sale de las prendas que llevas puestas; en línea las pone
+  // el servidor, de su inventario (esto es solo la copia del navegador hasta que llega su foto)
+  prendasActuales: () => puestasDe(inventario().lugares),
   modo: () => estado.modo, alturaEn: (x, z) => decorado.altura(x, z),
   registro: { anotar: (a, r) => registroAcciones.anotar(a, r) }, esTactil: estado.esTactil,
   red: () => enLinea,   // en línea, lo que haces con el arma va también al servidor (pelear con los demás)

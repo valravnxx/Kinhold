@@ -5,6 +5,7 @@
 // Ejecutar: node pruebas/prueba_combate_servidor.mjs
 // Con MUTAR=1 se prueba un servidor que se fía del autor que manda el cliente en sus intenciones: debe FALLAR.
 // Con MUTAR_MODOS=1, un combate que vuelve a aceptar las intenciones de la liza y de las guardias: debe FALLAR.
+// Con MUTAR_ROPA=1, un servidor que no viste al luchador con lo que lleva puesto en el inventario: debe FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, readFileSync, writeFileSync, rmSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
@@ -12,6 +13,7 @@ import { tmpdir } from 'os';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { T, RITMO, ARMAS, Luchador } from '../src/combate/logica.js';
 import { aplicarFoto, avanzarCopia, resultadoDeEvento } from '../src/logica/combate_cliente.js';
+import { proteccion, puestasDe } from '../src/logica/prendas.js';
 
 const MUTAR = process.env.MUTAR === '1';
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -104,7 +106,7 @@ function pareja(opc = {}) {
   const malas = [
     { tipo: 'combate', que: 'volar' }, { tipo: 'combate', que: 'cargar', linea: 'arriba' },
     { tipo: 'combate', que: 'parar', activo: 'si' }, { tipo: 'combate', que: 'soltar', x: 'a', y: 0, z: 0 },
-    { tipo: 'combate', que: 'equipar', arma: 'lanza_laser' }, { tipo: 'combate', que: 'equipar', arma: 'arco', armadura: 'papel' },
+    { tipo: 'combate', que: 'equipar', arma: 'lanza_laser' }, { tipo: 'combate', que: 'equipar', armadura: 'malla' },
     null, 'cargar',
   ];
   comprobar('las intenciones mal formadas se rechazan', malas.every(m => !validarIntencion(m) && !c.intencion('jugador:a', m).ok));
@@ -117,6 +119,27 @@ function pareja(opc = {}) {
   comprobar('no se cambia de arma a mitad de un golpe', !ic(c, 'jugador:a', { que: 'equipar', arma: 'arco' }).ok);
   c.luchadores['jugador:b'].caer('prueba');
   comprobar('fuera de combate no se puede atacar', !ic(c, 'jugador:b', { que: 'cargar', linea: 'alto' }).ok);
+}
+{
+  // el duelo con lo que llevas (7 nov): la armadura es la ropa puesta, no la que diga el cliente
+  const c = pareja();
+  const A = c.luchadores['jugador:a'];
+  const LINO = ['camisa_lino', 'pantalon_lino'], COTA = [...LINO, 'gambeson', 'cota_malla'];
+  c.vestir('jugador:a', LINO);
+  const conLino = A.proteccion('torso', 'corte');
+  comprobar('el cliente ya no elige su armadura: equipar con «malla» no cambia lo que le protege',
+    ic(c, 'jugador:a', { que: 'equipar', arma: 'espada_larga', armadura: 'malla' }).ok && A.proteccion('torso', 'corte') === conLino && A.armadura === 'lino');
+  c.vestir('jugador:a', COTA);
+  comprobar('con la cota puesta le protege lo de sus prendas, zona a zona',
+    ['torso', 'brazoI', 'piernaD', 'cabeza'].every(z => A.proteccion(z, 'corte') === proteccion(COTA, z, 'corte')) && A.proteccion('torso', 'corte') < conLino && A.armadura === 'malla',
+    `torso ${conLino} → ${Math.round(A.proteccion('torso', 'corte') * 1000) / 1000}`);
+  const f = c.cambiados(true).find(l => l.autor === 'jugador:a');
+  comprobar('los demás ven lo que lleva puesto', f && JSON.stringify(f.prendas) === JSON.stringify(COTA) && f.armadura === 'malla');
+  const copia = new Luchador({ armadura: 'lino' }); aplicarFoto(copia, f);
+  comprobar('la copia del cliente se viste con la foto', copia.proteccion('torso', 'corte') === A.proteccion('torso', 'corte'));
+  c.luchadores['jugador:b'].x = 50;   // lejos, para poder volver a empezar
+  ic(c, 'jugador:a', { que: 'reiniciar' });
+  comprobar('al volver a empezar sigue con lo que lleva puesto', JSON.stringify(c.luchadores['jugador:a'].prendas) === JSON.stringify(COTA));
 }
 {
   // arco: A se aparta 12 m, tensa del todo y suelta al pecho de B
@@ -269,6 +292,14 @@ if (MUTAR) {
   writeFileSync(copia, mutada);
   ruta = copia;
 }
+if (process.env.MUTAR_ROPA === '1') {
+  const fuente = readFileSync(ruta, 'utf8');
+  const mutada = fuente.replace('const vestirLuchador = (autor) => combate.vestir(', 'const vestirLuchador = (autor) => (() => {})(');
+  if (mutada === fuente) { console.log('No se pudo mutar el servidor'); process.exit(1); }
+  copia = join(raiz, 'servidor/.servidor_mutado_combate.mjs');
+  writeFileSync(copia, mutada);
+  ruta = copia;
+}
 const { crearServidor } = await import(pathToFileURL(ruta).href);
 
 // Cliente con lag: lo que manda y lo que recibe se retrasa lag ± vaivén ms, sin cambiar el orden (como TCP).
@@ -395,6 +426,17 @@ try {
   const gm = await B.esperar(m => m.tipo === 'combate' && m.eventos.some(e => e.tipo === 'golpe' && e.autor === a && e.linea === 'alto' && e.t > (visto.t || 0)), 6000);
   const em = gm.eventos.find(e => e.tipo === 'golpe' && e.autor === a && e.linea === 'alto');
   comprobar('el golpe cargado en el mundo le hiere de verdad, con tu autor', em.objetivo === b && em.resultado === 'herida' && s.combate.luchadores[b].heridas.length === heridasAntes + 1, `${em.resultado}`);
+
+  // el duelo con lo que llevas: le protege lo que tiene puesto en el inventario del servidor, y al quitárselo deja de
+  const mismas = (autor) => JSON.stringify(s.combate.luchadores[autor].puestas) === JSON.stringify(puestasDe(s.objetos.invs.de(autor).lugares));
+  comprobar('el luchador lleva lo que tiene puesto en el inventario del servidor', mismas(a) && mismas(b), s.combate.luchadores[b].puestas.join(', '));
+  const antes = s.combate.luchadores[b].puestas.length;
+  B.mandar({ tipo: 'objeto', id: 77, accion: { tipo: 'quitarse', lugar: 'ropa:interior', a: 'mano:der' } });
+  await B.esperar(m => m.tipo === 'resultado_objeto' && m.id === 77 && m.ok);
+  await pausa(300);
+  const fb = lb(A);
+  comprobar('al quitarse la camisa, el combate lo sabe y el otro lo ve', mismas(b) && s.combate.luchadores[b].puestas.length === antes - 1
+    && !s.combate.luchadores[b].puestas.includes('camisa_lino') && fb && Array.isArray(fb.prendas) && !fb.prendas.includes('camisa_lino'), (fb?.prendas || []).join(', '));
 
   // al irse, su luchador se quita
   B.ws.close();

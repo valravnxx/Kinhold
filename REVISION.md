@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (14:15 UTC+1) — por el chat: planificar P4
+valravnx: «haz la planificación ya de p4».
+→ Hecho: 15 tareas en el roadmap (hito «Un primer día con sentido»), que sigue pendiente detrás de P3.
+
 ### 7 nov 2026 (09:48 UTC+1) — por el chat: el ciclo de día y noche
 valravnx: «tu y yo vamos a hacer lo que hará que los shaders graficos llamen la atención de verdad, el ciclo dia y noche, cielo estrellado limpio, sol y luna, y toda la iluminación dinámica que dará el sol».
 → Hecho en la demo v137 (hito de gráficos): la hora del servidor, el sol que sale y se pone con su luz y sus sombras, el cielo con su degradado y el ocaso, las estrellas con la Vía Láctea, la luna con su fase y su luz de noche. Pendiente de que valravnx lo mire en una tarjeta de verdad (el ocaso aún algo pálido).

@@ -18,7 +18,7 @@ export const PREDICCION = 0.5;   // s: lo que se respeta la acción propia antes
 export function aplicarFoto(L, f, { propio = false, prediciendo = false } = {}) {
   if (!L || !f) return;
   if (L.arma !== f.arma && !(propio && prediciendo)) L.arma = f.arma;
-  L.armadura = f.armadura;
+  if (Array.isArray(f.prendas)) L.vestir(f.prendas); else L.armadura = f.armadura;
   L.cansancio = f.cansancio;
   L.sangre = f.sangre;
   if (Array.isArray(f.lista)) {
