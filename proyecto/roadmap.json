@@ -1395,6 +1395,12 @@
     {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "El inventario pasa a ser «Equipo» (valravnx, 7 nov): con las imágenes de cada cosa y el estilo del panel de fabricar, y sobre todo, lo que llevas puesto se puede quitar, a las manos o al suelo",
+     "estado": "en_curso",
+     "inicio": "2026-11-07T05:57:54+01:00",
+     "rama": "trabajo/20261107-0558-equipo"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
