@@ -24,7 +24,8 @@ function nuevo() {
 
 console.log('Cada material de las obras es un objeto que se lleva');
 for (const k of Object.keys(MATERIALES_INICIALES)) comprobar(`«${k}» tiene su objeto en el catálogo`, !!CATALOGO[OBJETO_DE_MATERIAL[k]], OBJETO_DE_MATERIAL[k]);
-comprobar('el tronco de las obras es el tronco corto (sale de tronzar)', OBJETO_DE_MATERIAL.tronco === 'tronco_corto');
+comprobar('el tronco de las obras es el tronco delgado del árbol joven (la madera de la casa humilde)', OBJETO_DE_MATERIAL.tronco === 'tronco_delgado');
+comprobar('y el tronco corto (sale de tronzar, que no es de este tramo) no paga las obras', !Object.values(OBJETO_DE_MATERIAL).includes('tronco_corto'));
 
 console.log('Entregar a una obra sale de lo que llevas');
 {
@@ -55,14 +56,16 @@ console.log('Lo de los contenedores y el hombro también cuenta');
   const { m, invs, A } = nuevo();
   const inv = invs.de(yo);
   inv.coger('lenero', 1, 'espalda');
-  inv.coger('tronco_corto', 1, 'espalda/0');
-  inv.coger('tronco_corto', 1, 'hombro');
+  inv.coger('tronco_corto', 1, 'espalda/0');   // el corto del leñero no vale para la obra
+  inv.coger('tronco_delgado', 1, 'hombro');
   const r = A(yo, { tipo: 'colocar', pieza: 'cim_piedra', x: 0, z: 0, k: 0, rot: 0, dir: 0 });
   acabarObra(m, new RegistroAcciones(), yo, r.construccion.id, r.clave);
   const mu = A(yo, { tipo: 'colocar', pieza: 'muro_tronco', x: 1, z: -0.95, k: 0, rot: 0, dir: 0 });
   const p = mu.construccion.piezas.get(mu.clave);
   const e = A(yo, { tipo: 'entregar', construccion: mu.construccion.id, clave: mu.clave, material: 'tronco', cantidad: 4 });
-  comprobar('los troncos cortos del leñero y del hombro se entregan como «tronco»', e.ok && e.entregado === 2 && p.obra.entregado.tronco === 2 && inv.cuantos('tronco_corto') === 0 && !inv.lugares.hombro, JSON.stringify(e));
+  comprobar('el tronco delgado del hombro se entrega como «tronco»; el corto del leñero, no', e.ok && e.entregado === 1 && p.obra.entregado.tronco === 1 && inv.cuantos('tronco_corto') === 1 && !inv.lugares.hombro, JSON.stringify(e));
+  const d = A(yo, { tipo: 'desmontar', construccion: mu.construccion.id, clave: mu.clave });
+  comprobar('al desmontar la obra a medias vuelve el tronco delgado, no uno corto', d.ok && inv.cuantos('tronco_delgado') === 1 && inv.cuantos('tronco_corto') === 1, JSON.stringify(d.devuelto || d.motivo));
 }
 
 console.log('Subir lo pesado a una obra en alto: la unidad y las varas, de lo que llevas');
@@ -78,13 +81,13 @@ console.log('Subir lo pesado a una obra en alto: la unidad y las varas, de lo qu
     const id = obra.construccion.id, k = obra.clave, inv = invs.de(yo);
     const s0 = A(yo, { tipo: 'subir', construccion: id, clave: k, material: 'tronco', segundos: 5, metodo: 'varas' });
     comprobar('sin llevar el tronco ni las varas no se sube', !s0.ok, s0.motivo);
-    inv.coger('tronco_corto', 1, 'hombro');
+    inv.coger('tronco_delgado', 1, 'hombro');
     const s1 = A(yo, { tipo: 'subir', construccion: id, clave: k, material: 'tronco', segundos: 5, metodo: 'varas' });
-    comprobar('con el tronco pero sin dos varas y una cuerda, tampoco', !s1.ok && inv.cuantos('tronco_corto') === 1, s1.motivo);
+    comprobar('con el tronco pero sin dos varas y una cuerda, tampoco', !s1.ok && inv.cuantos('tronco_delgado') === 1, s1.motivo);
     // con el tronco al hombro, las manos no llevan nada (valravnx, 1 nov): las varas y la cuerda, en la mochila
     inv.coger('mochila_bastidor', 1, 'espalda'); inv.coger('vara', VARAS_PARA_RODAR.vara, 'espalda/0'); inv.coger('cuerda', VARAS_PARA_RODAR.cuerda, 'espalda/1');
     const s2 = A(yo, { tipo: 'subir', construccion: id, clave: k, material: 'tronco', segundos: 5, metodo: 'varas' });
-    comprobar('con el tronco al hombro, dos varas y una cuerda: el tronco sale de lo que llevas; las varas no se gastan', s2.ok && inv.cuantos('tronco_corto') === 0 && inv.cuantos('vara') === 2 && inv.cuantos('cuerda') === 1, JSON.stringify(s2));
+    comprobar('con el tronco al hombro, dos varas y una cuerda: el tronco sale de lo que llevas; las varas no se gastan', s2.ok && inv.cuantos('tronco_delgado') === 0 && inv.cuantos('vara') === 2 && inv.cuantos('cuerda') === 1, JSON.stringify(s2));
   }
 }
 

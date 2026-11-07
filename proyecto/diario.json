@@ -4880,5 +4880,26 @@
   "pruebas": "Lógica de lo que crece, tala y terreno del servidor aquí, bien. En el PC de valravnx y en la nube, 36 grupos: en el PC fallaron seis (las traducciones al ruso de las notas, que faltaban; y, como en la sesión anterior, el perfil gráfico en el juego, los niveles de detalle del personaje, la demo única, objetos en el suelo, y en «la demo en el mundo» un fotograma de 114 ms al llegar de golpe a otro sitio). Con las traducciones puestas, los seis repetidos en la nube: todos bien.",
   "capturas": "capturas/demo-v130",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T01:22:33+00:00",
+  "fin": "2026-11-07T03:06:47+00:00",
+  "titulo": "P3: talar el joven, tronco delgado y varas",
+  "hito": "crafting",
+  "hecho": [
+   "Talar un árbol joven con el hacha de piedra (8 golpes) da un tronco delgado y de 2 a 4 varas, como dice el documento de sistemas; antes daba ramas. Caen tumbados a lo largo de donde cayó el árbol. El adulto sigue dando un tronco largo y ramas.",
+   "El tronco delgado es la madera de la casa humilde: el «tronco» que piden las piezas de este tramo (poste, viga, muro de troncos, medio muro, cimiento y suelo de troncos…) es ahora el tronco delgado, y al desmontarlas vuelve un tronco delgado. El tronco corto ya no paga las obras (no se puede tener en este tramo).",
+   "El tronco delgado se echa al hombro como el corto, con la postura de llevarlo (las manos, libres de todo); se dibuja más largo (1,6 m) y más fino que el corto.",
+   "Las varas tienen su modelo en el suelo (antes salían con el hatillo de lino): palos rectos de 1,6 m, casi en paralelo.",
+   "Recorrido de jugador: tras talar, ve el tronco delgado y las varas, se echa el tronco al hombro, no puede coger las varas con las manos, pone un poste en su tierra, le lleva el tronco y lo trabaja hasta terminarlo. Ya no queda nada en TODAVIA_NO.",
+   "Decisiones provisionales (registro de la demo): el joven da de 2 a 4 varas; el cimiento y el suelo de troncos piden también el tronco delgado (el documento dice troncos cortos y medios troncos).",
+   "No hecho: lo que rebrota tras talar aún vuelve como era (no como árbol joven); queda para el hito «Talar de verdad».",
+   "Aún mal en las capturas: el tronco delgado al hombro se ve casi tan grueso como el corto (18 cm), y la captura de cerca de las varas las enseña de canto, poco claras.",
+   "Pruebas nuevas, rotas a propósito una vez: la de la tala (con el joven dando ramas, falla) y la de las obras con lo que llevas (con el tronco corto como material, falla).",
+   "Demo v131."
+  ],
+  "pruebas": "Recorrido de jugador aquí, 59 bien. En el PC de valravnx, 36 grupos: fallaron cuatro (la lógica, por una prueba de tronzar que aún decía que el delgado no va al hombro, ya cambiada; y, como en sesiones anteriores, el perfil gráfico en el juego, los niveles de detalle del personaje y la demo única, que en su tarjeta gráfica no salen). Repetidos los cuatro en la nube: todos bien.",
+  "capturas": "capturas/demo-v131",
+  "estado": "ok"
  }
 ]

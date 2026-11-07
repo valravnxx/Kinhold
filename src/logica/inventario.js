@@ -36,6 +36,7 @@
 //  - Los añadidos al cinturón (bolsas, vainas, ganchos) llegan con la fabricación.
 //  - El tronco corto (grande) se lleva con las dos manos o al hombro (roadmap, «Tronzar y partir»): al hombro va solo,
 //    como el saco, y deja las manos libres. «Ponérselo» lo pasa de las manos al hombro.
+//    El tronco delgado, igual (7 nov: es la madera de la casa humilde y se lleva de uno en uno a la obra).
 //
 // Ralentización por carga (GDD, apartado 7: «solo si vas cargado al máximo en todo, la velocidad al caminar baja
 // hasta el 80%; con poca carga no se nota»). Decisiones provisionales (anotadas en el diario y en el registro):
@@ -78,7 +79,7 @@ export const CATALOGO = {
   resina: R('Resina', 'P'), barro: R('Cesta de barro', 'M'), arcilla: R('Cesta de arcilla', 'M'), arena: R('Saco de arena', 'M'),
   turba: R('Bloque de turba', 'M'), panal: R('Panal', 'P'), huevo: R('Huevo', 'P'),
   // de los árboles
-  tronco_delgado: R('Tronco delgado', 'G'), tronco_largo: R('Tronco largo', 'E'), tronco_corto: { ...R('Tronco corto', 'G'), hombro: true },
+  tronco_delgado: { ...R('Tronco delgado', 'G'), hombro: true }, tronco_largo: R('Tronco largo', 'E'), tronco_corto: { ...R('Tronco corto', 'G'), hombro: true },
   lena: R('Leña', 'M'),
   // de la tierra
   bloque_piedra: R('Bloque de piedra en bruto', 'E'), mineral_hierro: R('Mineral de hierro', 'M'),
@@ -140,9 +141,11 @@ export const CATALOGO = {
 };
 
 // Obras con lo que llevas (roadmap, hito «Equipo y carga»): cada material de construcción (src/logica/piezas.js) es
-// un objeto del catálogo que se lleva encima. El tronco de las obras es el tronco corto (sale de tronzar).
+// un objeto del catálogo que se lleva encima. El tronco de las obras es el tronco delgado del árbol joven (revisión del
+// 1 nov: «su tronco delgado es la madera de la casa humilde»; las piezas de este tramo lo piden a él). Hasta el 7 nov
+// era el tronco corto, que sale de tronzar el largo de un adulto con hacha de hierro: no se puede tener en este tramo.
 export const OBJETO_DE_MATERIAL = {
-  piedra: 'piedra', tronco: 'tronco_corto', vara: 'vara', barro: 'barro', paja: 'paja', cuerda: 'cuerda',
+  piedra: 'piedra', tronco: 'tronco_delgado', vara: 'vara', barro: 'barro', paja: 'paja', cuerda: 'cuerda',
   tabla: 'tabla', clavo: 'clavo', hierro: 'barra_hierro', teja: 'teja',
 };
 export const MATERIAL_DE_OBJETO = Object.fromEntries(Object.entries(OBJETO_DE_MATERIAL).map(([m, o]) => [o, m]));

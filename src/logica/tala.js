@@ -2,21 +2,23 @@
 // navegador): el servidor podrá usarla tal cual.
 //
 // Lo que dice el documento:
-//   Talar un árbol joven  — hacha de piedra o hierro                  — 1 tronco delgado + ramas (G)
+//   Talar un árbol joven  — hacha de piedra o hierro                  — 1 tronco delgado + varas (G)
 //   Talar un árbol adulto — hacha de hierro (con piedra tarda mucho)  — 1 tronco largo + muchas ramas; queda tocón (E)
 // Y la tarea del roadmap: el árbol cae, queda el tocón y vuelve a crecer en semanas reales, contado por tiempo
 // transcurrido (se guarda la hora a la que vuelve, no un contador que corra solo mientras se juega).
 //
 // Cada golpe de hacha es una acción con autor. Cuando el árbol lleva los golpes que pide, cae hacia el lado contrario
-// al del que tala y deja en el suelo, a lo largo de donde cae, el tronco y las ramas (src/logica/suelo.js: los troncos
-// se quedan como pila; las ramas, como lo demás que hay en el suelo).
+// al del que tala y deja en el suelo, a lo largo de donde cae, el tronco y lo menudo: varas el joven (revisión del 1 nov:
+// «el joven, con hacha de piedra, da tronco delgado y varas»; el tronco delgado es la madera de la casa humilde) y
+// ramas el adulto (src/logica/suelo.js: los troncos se quedan como pila; lo menudo, como lo demás que hay en el suelo).
 //
 // Decisiones provisionales (el documento no las fija; anotadas en el registro de decisiones y en el diario):
 //  - Joven o adulto sale del tamaño del árbol en el mundo: menos de 1,1 veces el tamaño de modelo, joven.
 //  - Golpes: joven, 8 con piedra y 5 con hierro; adulto, 14 con hierro y 56 con piedra (cuatro veces más: «tarda
 //    mucho»). Entre golpe y golpe del mismo autor, 0,8 s como poco (lo que dura el gesto).
 //  - El hacha de mano (cabeza de hierro) tala como el hacha de hierro.
-//  - Ramas: el joven da 2–4 y el adulto 6–9, de un azar fijo por árbol y por vez.
+//  - Lo menudo: el joven da 2–4 varas (antes, 2–4 ramas: 7 nov, las varas que pide el documento) y el adulto 6–9
+//    ramas, de un azar fijo por árbol y por vez.
 //  - Los dos dejan tocón. Vuelve a crecer: el joven en 3 semanas reales y el adulto en 6.
 //  - Se tala a 1,8 m del centro del tronco como mucho, con el hacha en una mano (en cualquiera de las dos).
 //  - Lo que llevan dado los golpes se queda en el árbol (la muesca no se cierra) hasta que cae.
@@ -30,8 +32,8 @@ export const ESCALA_ADULTO = 1.1;       // desde este tamaño del modelo, el ár
 export const HACHAS = { hacha_piedra: 'piedra', hacha_hierro: 'hierro', hacha_mano: 'hierro' };
 export const GOLPES = { joven: { piedra: 8, hierro: 5 }, adulto: { piedra: 56, hierro: 14 } };
 export const DA = {
-  joven: { tronco: 'tronco_delgado', ramas: [2, 4], largo: 2.6, vuelve: 3 * SEMANA },
-  adulto: { tronco: 'tronco_largo', ramas: [6, 9], largo: 4.5, vuelve: 6 * SEMANA },
+  joven: { tronco: 'tronco_delgado', menudo: 'vara', ramas: [2, 4], largo: 2.6, vuelve: 3 * SEMANA },
+  adulto: { tronco: 'tronco_largo', menudo: 'rama', ramas: [6, 9], largo: 4.5, vuelve: 6 * SEMANA },
 };
 export const edadDeEscala = s => (s >= ESCALA_ADULTO ? 'adulto' : 'joven');
 // El nombre fijo de un árbol: su sitio en el mundo (el mismo en el navegador y en el servidor con la misma semilla).
@@ -45,7 +47,7 @@ function hash(...ns) {
 const numTexto = t => { let h = 0; for (const ch of t) h = (Math.imul(h, 31) + ch.codePointAt(0)) >>> 0; return h; };
 const redondo = v => Math.round(v * 100) / 100;
 
-// Cuántas ramas da el árbol la vez «vez» (0, 1, 2…).
+// Cuánto menudo (varas el joven, ramas el adulto) da el árbol la vez «vez» (0, 1, 2…).
 export function ramasDe(arbol, vez) {
   const [a, b] = DA[arbol.edad].ramas;
   return a + Math.floor(hash(numTexto(arbol.id), vez, 3) * (b - a + 1));
@@ -111,7 +113,7 @@ export class Tala {
     // cae hacia el lado contrario al del que tala
     const dir = Math.atan2(a.x - x, a.z - z), d = DA[a.edad], ramas = ramasDe(a, e.veces || 0);
     const sx = Math.sin(dir), sz = Math.cos(dir), en = t => ({ x: redondo(a.x + sx * t), z: redondo(a.z + sz * t) });
-    const deja = [{ tipo: d.tronco, n: 1, ...en(d.largo * 0.5 + 0.7) }, { tipo: 'rama', n: ramas, ...en(d.largo + 1.1) }];
+    const deja = [{ tipo: d.tronco, n: 1, ...en(d.largo * 0.5 + 0.7) }, { tipo: d.menudo, n: ramas, ...en(d.largo + 1.1) }];
     this.estado[id] = { golpes: 0, parte: 0, veces: (e.veces || 0) + 1, caido: ahora, vuelve: ahora + d.vuelve, dir: redondo(dir) };
     return { ok: true, cae: true, golpes: e.golpes, faltan: 0, hacha: h.tipo, dir: redondo(dir), deja, vuelve: ahora + d.vuelve };
   }
@@ -170,7 +172,7 @@ export function ejecutarTala(tala, invs, suelo, registro, accion, ahora) {
   else if (!Number.isFinite(ahora)) r = { ok: false, motivo: 'Sin hora.' };
   else {
     r = tala.golpe(invs.de(a.autor), a.arbol, a.x, a.z, ahora, a.autor);
-    // el tronco, tumbado a lo largo de donde cayó (los troncos del suelo se dibujan a lo largo de x)
+    // el tronco y las varas, tumbados a lo largo de donde cayó (se dibujan a lo largo de x); las ramas, como caen
     if (r.ok && r.cae) r.objetos = r.deja.map(o => suelo.dejar({ tipo: o.tipo, n: o.n }, o.x, o.z, ahora, a.autor, false, o.tipo === 'rama' ? r.dir : r.dir - Math.PI / 2).id);
   }
   const e = registro.anotar(accion || {}, r);

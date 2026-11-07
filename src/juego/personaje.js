@@ -222,7 +222,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
   // lo que llevas se ve puesto (src/juego/llevado.js): ponerLlevado(lo de src/logica/llevado.js); va con los huesos
   const llevado = crearLlevado(j), animarCuerpo = j.animar;
   j.llevado = llevado;
-  j.ponerLlevado = (l) => { j.llevadoPedido = l; j.cargaDos = !!(l && l.dos); j.alHombro = !!(l && l.hombro === 'tronco_corto'); if (j.mh) llevado.poner(l); };
+  j.ponerLlevado = (l) => { j.llevadoPedido = l; j.cargaDos = !!(l && l.dos); j.alHombro = !!(l && (l.hombro === 'tronco_corto' || l.hombro === 'tronco_delgado')); if (j.mh) llevado.poner(l); };
   j.listo.then(() => { if (j.mh && j.llevadoPedido) llevado.poner(j.llevadoPedido); });
   j.animar = (...a) => { animarCuerpo(...a); llevado.paso(); };
   return j;

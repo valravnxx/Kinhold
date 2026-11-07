@@ -1919,8 +1919,9 @@ function golpeTala() {
 function avisoTala(a, r) {
   if (!r.cae) { mostrarAviso(r.faltan === 1 ? tr('Talas el árbol: falta 1 golpe.') : tr('Talas el árbol: faltan {n} golpes.', { n: r.faltan })); return; }
   estado.talando = null;
-  const ramas = r.deja.find(d => d.tipo === 'rama'), tronco = r.deja.find(d => d.tipo !== 'rama');
-  mostrarAviso(tr('¡El árbol cae! Deja {tronco} y {n} ramas.', { tronco: tr(CATALOGO[tronco.tipo].nombre).toLowerCase(), n: ramas ? ramas.n : 0 }));
+  const menudo = r.deja.find(d => d.tipo === 'rama' || d.tipo === 'vara'), tronco = r.deja.find(d => d !== menudo);
+  const txt = menudo && menudo.tipo === 'vara' ? '¡El árbol cae! Deja {tronco} y {n} varas.' : '¡El árbol cae! Deja {tronco} y {n} ramas.';
+  mostrarAviso(tr(txt, { tronco: tr(CATALOGO[tronco.tipo].nombre).toLowerCase(), n: menudo ? menudo.n : 0 }));
 }
 
 // Tronzar y partir (src/logica/troceo.js): el tronco del suelo más cercano que se trocea, en la planta baja.

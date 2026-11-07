@@ -5,7 +5,7 @@
 // rey: no se reclama) y pone su mojón pagándolo con tres de las piedras que
 // lleva, levanta un cimiento de piedra con las piedras que ha traído en las manos (en dos viajes), y lo trabaja hasta
 // terminarlo; luego se fabrica un hacha de piedra (fibra, cordel, piedra de tallar, y lo que pide dejado encima de
-// ella) y tala con ella un árbol joven.
+// ella), tala con ella un árbol joven (tronco delgado y varas), se echa el tronco al hombro y levanta con él un poste.
 // Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
@@ -43,9 +43,7 @@ function comprobar(nombre, cond, detalle = '') {
 }
 
 // Lo que un jugador nuevo aún no puede hacer sin el arcón, con el porqué y lo que lo trae.
-const TODAVIA_NO = {
-  hombro: 'con algo al hombro, las manos no llevan nada: desde el paso 9 ya tiene un tronco delgado, pero llevarlo al hombro se añade con el acopio de troncos (hito «De nada a una casa»); lo prueba prueba_inventario.mjs',
-};
+const TODAVIA_NO = {};   // hoy, nada (hasta el 7 nov: llevar el tronco delgado al hombro; ya es el paso 10)
 
 const T = terrenoWhitholm();
 if (MUTAR) { const punto = T.punto.bind(T); T.punto = (id, x, z) => (id.startsWith('piedra:') ? null : punto(id, x, z)); }
@@ -307,8 +305,30 @@ try {
     let golpes = 0;
     do { r = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); golpes++; if (r.ok && !r.datos.cae) await pausa(550); } while (r.ok && !r.datos.cae && golpes < 30);
     comprobar('lo tala a golpes (joven con piedra: 8) y cae', r.ok && r.datos.cae && golpes === 8, `${golpes} golpes · ${r.motivo || ''}`);
-    const deja = s.objetos.sueloVisible(Date.now()).filter(o => Math.hypot(o.x - a.x, o.z - a.z) < 5).map(o => o.cosa.tipo);
-    comprobar('y deja en el suelo un tronco delgado', deja.includes('tronco_delgado'), deja.join(', '));
+    const deja = s.objetos.sueloVisible(Date.now()).filter(o => Math.hypot(o.x - a.x, o.z - a.z) < 5);
+    const tronco = deja.find(o => o.cosa.tipo === 'tronco_delgado'), varas = deja.find(o => o.cosa.tipo === 'vara');
+    comprobar('y deja en el suelo un tronco delgado y de 2 a 4 varas (revisión del 1 nov)', !!tronco && !!varas && varas.cosa.n >= 2 && varas.cosa.n <= 4, deja.map(o => `${o.cosa.tipo}×${o.cosa.n}`).join(', '));
+
+    console.log('10. Se echa el tronco delgado al hombro y levanta con él un poste en su tierra (la madera de la casa humilde)');
+    // el hacha, al suelo: con algo al hombro las manos no llevan nada (valravnx, 1 nov)
+    const lh = ['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'hacha_piedra');
+    if (lh) await J.objeto({ tipo: 'soltar_suelo', de: lh, x: J.pos.x, z: J.pos.z });
+    await J.andar(tronco.x + 0.6, tronco.z);
+    r = await J.objeto({ tipo: 'coger_suelo', objeto: tronco.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
+    comprobar('coge el tronco delgado del suelo y se lo echa al hombro', r.ok && J.inv.lugares.hombro?.tipo === 'tronco_delgado', r.motivo);
+    await J.andar(varas.x + 0.6, varas.z);
+    r = await J.objeto({ tipo: 'coger_suelo', objeto: varas.id, cantidad: 1, a: 'mano:der', x: J.pos.x, z: J.pos.z });
+    comprobar('con el tronco al hombro no coge las varas con las manos (vendrá a por ellas)', !r.ok && J.cuantos('vara') === 0, r.motivo);
+    const mj = s.mundo.mojonDe(J.bienvenida.autor), sitio2 = { x: mj.x + 4, z: mj.z + 3 };
+    await J.andar(sitio2.x, sitio2.z);
+    r = await J.accion({ tipo: 'colocar', pieza: 'poste', x: sitio2.x, z: sitio2.z, k: 0, rot: 0, dir: 0, y: T.suelo(sitio2.x, sitio2.z) });
+    comprobar('pone en su tierra el marco de un poste (pide 1 tronco delgado)', r.ok && PIEZAS.poste.coste.tronco === 1, r.motivo);
+    const c2 = s.mundo.construcciones.at(-1), k2 = c2 && [...c2.piezas.keys()].find(k => c2.piezas.get(k).tipo === 'poste');
+    r = await J.accion({ tipo: 'entregar', construccion: c2?.id, clave: k2, material: 'tronco', cantidad: 1 });
+    comprobar('le lleva el tronco delgado del hombro: el poste tiene lo que pide', r.ok && !J.inv.lugares.hombro && J.cuantos('tronco_delgado') === 0 && (c2?.piezas.get(k2)?.obra?.entregado?.tronco) === 1, r.motivo);
+    let t2 = { ok: true }, n2 = 0;
+    for (; n2 < 400 && t2.ok && c2?.piezas.get(k2)?.obra; n2++) t2 = await J.accion({ tipo: 'trabajar', construccion: c2.id, clave: k2, segundos: 5 });
+    comprobar('lo trabaja hasta terminarlo: su primer poste', !!c2?.piezas.get(k2) && !c2.piezas.get(k2).obra, `${n2} ratos de 5 s ${t2.motivo || ''}`);
   }
 
   // lo que sale de aquí, en la salida (para quien lo lea en la nube)

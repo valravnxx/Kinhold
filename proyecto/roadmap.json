@@ -1321,9 +1321,10 @@
     },
     {
      "nombre": "Talar un árbol joven con hacha de piedra da un tronco delgado y varas; el tronco delgado es la madera de la casa humilde (las piezas de este tramo lo piden a él)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T01:22:33+00:00",
-     "rama": "trabajo/20261107-0122"
+     "rama": "trabajo/20261107-0122",
+     "fin": "2026-11-07T03:06:47+00:00"
     },
     {
      "nombre": "Materiales del tramo que no tenían origen: juncos o hierba larga (orillas y prados), barro (cavado en la orilla con el palo cavador) y yesca (fibra seca, corteza, hongo de los árboles)",
@@ -3113,6 +3114,13 @@
      "archivo": "jugar/demo/v130.html",
      "capturas": "capturas/demo-v130",
      "notas": "Árboles jóvenes y adultos bien distintos: los jóvenes, con su propio modelo en cada especie, de 3 a 5 m, finos y de copa rala, más en los bordes del bosque y en los claros; los adultos, un 30 % más altos y más gruesos. Cada árbol lleva su edad, la misma en el juego y en el servidor."
+    },
+    {
+     "v": "v131",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v131.html",
+     "capturas": "capturas/demo-v131",
+     "notas": "Talar un árbol joven con el hacha de piedra da un tronco delgado y de 2 a 4 varas. El tronco delgado es la madera de la casa humilde: es el tronco que piden las piezas, y se echa al hombro para llevarlo a la obra. Las varas, con su modelo en el suelo."
     }
    ]
   },

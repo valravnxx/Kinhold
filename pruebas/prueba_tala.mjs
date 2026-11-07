@@ -37,7 +37,8 @@ console.log('Lo que dice el documento de sistemas (apartado 3, «De los árboles
   comprobar('el joven se tala con piedra o con hierro', GOLPES.joven.piedra > 0 && GOLPES.joven.hierro > 0 && GOLPES.joven.hierro <= GOLPES.joven.piedra);
   comprobar('el adulto con hierro; con piedra tarda mucho (cuatro veces más o más)', GOLPES.adulto.piedra >= 4 * GOLPES.adulto.hierro, `${GOLPES.adulto.piedra} y ${GOLPES.adulto.hierro}`);
   comprobar('el joven da un tronco delgado (grande) y el adulto uno largo (enorme)', DA.joven.tronco === 'tronco_delgado' && CATALOGO.tronco_delgado.tam === 'G' && DA.adulto.tronco === 'tronco_largo' && CATALOGO.tronco_largo.tam === 'E');
-  comprobar('el adulto da muchas más ramas que el joven', DA.adulto.ramas[0] > DA.joven.ramas[1]);
+  comprobar('el adulto da muchas más ramas que varas el joven', DA.adulto.ramas[0] > DA.joven.ramas[1]);
+  comprobar('el joven da varas y el adulto ramas (revisión del 1 nov: «tronco delgado y varas»)', DA.joven.menudo === 'vara' && DA.adulto.menudo === 'rama' && !!CATALOGO.vara);
   comprobar('vuelven a crecer en semanas reales', DA.joven.vuelve >= SEMANA && DA.adulto.vuelve >= DA.joven.vuelve, `${DA.joven.vuelve / SEMANA} y ${DA.adulto.vuelve / SEMANA} semanas`);
   comprobar('las hachas: de piedra, de hierro y la de mano (cabeza de hierro), en el catálogo', HACHAS.hacha_piedra === 'piedra' && HACHAS.hacha_hierro === 'hierro' && ['hacha_piedra', 'hacha_hierro', 'hacha_mano'].every(k => CATALOGO[k] && CATALOGO[k].herramienta));
 }
@@ -48,8 +49,10 @@ console.log('Talar un árbol joven con hacha de piedra');
   const [n, r, t] = talarHasta(m, 'ana', JOVEN, 0, -1, T0);
   comprobar('cae al dar los golpes que pide', r.ok && r.cae && n === GOLPES.joven.piedra, `${n} golpes`);
   comprobar('cae hacia el lado contrario al del que tala', Math.abs(r.dir - 0) < 0.01 && r.deja.every(o => o.z > 0), `dir ${r.dir}`);
-  const tronco = m.suelo.objetos.find(o => o.cosa.tipo === 'tronco_delgado'), ramas = m.suelo.objetos.find(o => o.cosa.tipo === 'rama');
-  comprobar('deja en el suelo un tronco delgado y sus ramas, a nombre del que tala', tronco && tronco.cosa.n === 1 && ramas && ramas.cosa.n >= DA.joven.ramas[0] && ramas.cosa.n <= DA.joven.ramas[1] && tronco.autor === 'ana');
+  const tronco = m.suelo.objetos.find(o => o.cosa.tipo === 'tronco_delgado'), varas = m.suelo.objetos.find(o => o.cosa.tipo === 'vara');
+  comprobar('deja en el suelo un tronco delgado y de 2 a 4 varas, a nombre del que tala', tronco && tronco.cosa.n === 1 && varas && varas.cosa.n >= DA.joven.ramas[0] && varas.cosa.n <= DA.joven.ramas[1] && tronco.autor === 'ana' && varas.autor === 'ana', varas && String(varas.cosa.n));
+  comprobar('y ninguna rama (eso, el adulto)', !m.suelo.objetos.some(o => o.cosa.tipo === 'rama'));
+  comprobar('las varas, tumbadas a lo largo de donde cayó, como el tronco', varas && Math.abs(varas.giro - tronco.giro) < 1e-9, varas && `${varas.giro} y ${tronco.giro}`);
   comprobar('el tronco se queda (no desaparece)', tronco && tronco.desaparece === null);
   comprobar('queda el tocón: ya no está en pie', !m.tala.enPie(JOVEN, t) && m.tala.tocones(t).length === 1);
   const otro = ejecutarTala(m.tala, m.invs, m.suelo, m.reg, { autor: 'ana', tipo: 'talar', arbol: JOVEN, x: 0, z: -1 }, t + 5000);
