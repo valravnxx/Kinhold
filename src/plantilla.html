@@ -295,9 +295,9 @@ body.construyendo #pomo{left:25px;top:25px}
   .inv-sel .eq-sel-cerrar{display:block;position:absolute;left:50%;top:5px;transform:translateX(-50%);width:54px;height:7px;padding:0;border:0;border-radius:5px;background:#5b4e40}
   .inv-figura{grid-template-columns:70px minmax(0,1fr) 70px}
   .inv-c{width:62px;height:62px}
-  /* móvil: a la derecha del joystick, sin pisarlo */
-  #llevas{left:calc(152px + env(safe-area-inset-left,0px));transform:none;bottom:calc(26px + env(safe-area-inset-bottom,0px));gap:5px;flex-wrap:wrap;max-width:calc(100vw - 156px)}
-  #llevas .hu{width:52px;height:52px} #llevas .hu.cinto{width:44px;height:44px} #llevas .hu.hombro{width:56px;height:56px} #llevas .sep{margin:10px 0}
+  /* móvil: a la derecha del joystick, sin pisarlo (ni con el botón de soltar, que sobresale 9 px) */
+  #llevas{left:calc(162px + env(safe-area-inset-left,0px));transform:none;bottom:calc(26px + env(safe-area-inset-bottom,0px));gap:5px;flex-wrap:wrap;max-width:calc(100vw - 166px)}
+  #llevas .hu{width:50px;height:50px} #llevas .hu.cinto{width:42px;height:42px} #llevas .hu.hombro{width:54px;height:54px} #llevas .sep{margin:10px 0}
   #llevas .hu button{width:30px;height:30px;top:-12px}
   #llevas .llevo{flex-wrap:wrap;white-space:normal;font-size:12px}
   .inv-retrato{height:380px}
