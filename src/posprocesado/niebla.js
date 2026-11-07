@@ -27,7 +27,7 @@ vec3 cieloBase(vec3 d){
   float vis=smoothstep(-0.2,0.02,uSol.y);
   vec3 h=mix(cieloAbajo,uColSol,0.32*bajo*vis*pow(c,3.0)*(1.0-smoothstep(0.0,0.5,e)));
   vec3 col=mix(h,cieloArriba,pow(clamp(e/0.6,0.0,1.0),0.75));
-  col+=uColSol*vis*(0.22*pow(c,16.0)*(0.4+0.6*bajo)+0.10*pow(c,4.0)*bajo);
+  col+=uColSol*vis*(0.45*pow(c,90.0)+0.24*pow(c,16.0)*(0.5+0.5*bajo)+0.12*pow(c,4.0)*bajo);
   return col;
 }
 vec3 hashC(vec3 p){p=fract(p*vec3(0.1031,0.1030,0.0973));p+=dot(p,p.yxz+33.33);return fract((p.xxy+p.yxx)*p.zyx);}
@@ -47,13 +47,18 @@ vec3 cieloVivo(vec3 d){
   // las estrellas (más débiles cerca del horizonte, donde hay más aire), dos capas: muchas débiles y pocas brillantes
   if(uEstrellas>0.001){
     vec3 s=uGiro*d;
-    float st=capaEstrellas(s,260.0,0.16,0.18,0.9)+capaEstrellas(s,70.0,0.05,0.06,2.2);
-    vec3 tinte=mix(vec3(1.0,0.86,0.72),vec3(0.78,0.86,1.0),hashC(floor(s*70.0)).z);
-    col+=tinte*st*uEstrellas*smoothstep(0.0,0.3,d.y);
+    float st=capaEstrellas(s,300.0,0.34,0.16,1.1)+capaEstrellas(s,120.0,0.12,0.1,1.8)+capaEstrellas(s,45.0,0.07,0.04,3.0);
+    vec3 tinte=mix(vec3(1.0,0.86,0.72),vec3(0.78,0.86,1.0),hashC(floor(s*120.0)).z);
+    float aire=smoothstep(0.0,0.3,d.y);
+    // la Vía Láctea: una franja tenue y desigual que cruza el cielo
+    float v=dot(s,normalize(vec3(0.35,0.2,0.92)));
+    float nube=0.55+0.25*sin(s.x*7.0+sin(s.y*5.0)*1.7)*sin(s.y*6.0-s.z*4.0)+0.2*sin(s.z*13.0+s.x*9.0);
+    float franja=exp(-v*v/0.03)*nube;
+    col+=(tinte*st*(0.6+0.8*franja)+vec3(0.55,0.6,0.75)*0.05*franja)*uEstrellas*aire;
   }
   // el sol: un disco de 0,7° con el borde suave
-  float cs=dot(d,uSol);
-  col=mix(col,mix(vec3(1.0,0.97,0.9),uColSol,0.55)*1.6,smoothstep(cos(radians(0.7)+uPx*1.5),cos(radians(0.7)),cs)*sobre);
+  float cs=dot(d,uSol),bajoS=1.0-smoothstep(2.0,25.0,degrees(asin(clamp(uSol.y,-1.0,1.0))));
+  col=mix(col,mix(vec3(1.0,0.98,0.92)*1.5,mix(vec3(1.0,0.9,0.7),uColSol,0.6)*1.25,bajoS),smoothstep(cos(radians(0.7)+uPx*1.5),cos(radians(0.7)),cs)*sobre);
   // la luna: un disco de 1° con la cara que mira al sol iluminada (de ahí sale la fase) y sus mares
   float cl=dot(d,uLuna),rl=radians(1.0);
   if(cl>cos(rl+uPx*2.0)){

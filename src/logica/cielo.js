@@ -27,7 +27,8 @@ const mod = (a, b) => ((a % b) + b) % b;
 // la hora del mundo (0–24) y cuántos días han pasado, a partir de la hora real (ms, la del servidor)
 export function horaDe(ms) {
   const t = ms - ORIGEN_MS, dias = Math.floor(t / CICLO_MS), f = mod(t, CICLO_MS);
-  const hora = f < DIA_MS ? 6 + 12 * f / DIA_MS : mod(18 + 12 * (f - DIA_MS) / (CICLO_MS - DIA_MS), 24);
+  const DIA = globalThis.__mutarCielo === 1 ? CICLO_MS / 2 : DIA_MS;   // (la prueba lo rompe a propósito: día y noche iguales)
+  const hora = f < DIA ? 6 + 12 * f / DIA : mod(18 + 12 * (f - DIA) / (CICLO_MS - DIA), 24);
   return { hora, dias: dias + (hora < 6 ? 1 : 0) };   // (el día cambia a medianoche)
 }
 // y al revés: qué hora real (la siguiente desde «desde») tiene esa hora del mundo
@@ -56,8 +57,8 @@ export function faseLuna(hora, dias) {
 // intensidad); hemi: la luz del cielo (de arriba, del suelo, intensidad). El día es la luz «mañana» del estilo v5
 // (src/mundo/estilos.js) y la tarde, la «tarde».
 export const MOMENTOS = [
-  { alto: -18, arriba: 0x060a14, horizonte: 0x111a2a, sol: [0xff8a4a, 0], hemi: [0x8a9cd0, 0x464a5a, 2.3] },
-  { alto: -8, arriba: 0x141d36, horizonte: 0x3c3a52, sol: [0xff8a4a, 0], hemi: [0x929cc8, 0x4c4854, 2.3] },
+  { alto: -18, arriba: 0x060a14, horizonte: 0x111a2a, sol: [0xff8a4a, 0], hemi: [0x7c92d4, 0x40465c, 2.3] },
+  { alto: -8, arriba: 0x141d36, horizonte: 0x3c3a52, sol: [0xff8a4a, 0], hemi: [0x8896cc, 0x484656, 2.3] },
   { alto: -2, arriba: 0x34476a, horizonte: 0xb97a62, sol: [0xff7a3c, 0], hemi: [0xaaa8c2, 0x54494a, 2.3] },
   { alto: 3, arriba: 0x5f7896, horizonte: 0xe0a070, sol: [0xff9a5a, 1.5], hemi: [0xc8bec0, 0x604e3e, 2.1] },
   { alto: 10, arriba: 0x8ea6ba, horizonte: 0xe6c8a2, sol: [0xffc890, 2.1], hemi: [0xd8d2cc, 0x64523f, 1.8] },
@@ -65,7 +66,7 @@ export const MOMENTOS = [
   { alto: 40, arriba: 0xa9bfca, horizonte: 0xd9e1e0, sol: [0xfff1dc, 2.2], hemi: [0xe6eef2, 0x6a5b47, 1.6] },
 ];
 // la luz de la luna (llena y alta; se multiplica por su fase y lo alto que está) y lo que añade a la luz del cielo
-export const LUNA = { color: 0xb4c6e8, intensidad: 1.2, hemi: 0.4 };
+export const LUNA = { color: 0xa8bce8, intensidad: 0.85, hemi: 0.3 };
 
 const canal = (c, k) => (c >> (16 - 8 * k)) & 255;
 const lin = (v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
@@ -111,7 +112,7 @@ export function cieloDe(ms, fijo = null) {
   const fuerzaLuna = LUNA.intensidad * luz * suave(0, 12, altoLuna) * deNoche;
   // la luz con sombras: la del sol mientras alumbra (hasta un poco por debajo del horizonte), luego la de la luna
   const usaLuna = altoSol < -1.5;
-  let luzDir = usaLuna ? luna : sol, luzColor = usaLuna ? LUNA.color : m.sol[0], luzI = usaLuna ? fuerzaLuna : m.sol[1] * suave(-1.5, 2, altoSol);
+  let luzDir = usaLuna ? luna : sol, luzColor = usaLuna ? LUNA.color : m.sol[0], luzI = usaLuna ? fuerzaLuna : m.sol[1] * (globalThis.__mutarCielo === 2 ? 1 : suave(-1.5, 2, altoSol));   // (2: sin fundido)
   // la sombra no se calcula con la luz rasante (sale a tiras): la dirección, como mucho a 8° del horizonte
   const d = [...luzDir];
   if (d[1] < Math.sin(8 * Math.PI / 180)) {
