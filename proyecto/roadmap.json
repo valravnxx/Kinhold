@@ -1472,7 +1472,9 @@
     },
     {
      "nombre": "Quitar la construcción aparte (hito1): sus pruebas de navegador pasan a la demo y deja de construirse",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T05:23:59+00:00",
+     "rama": "trabajo/20261107-0523"
     },
     {
      "nombre": "Una sola tabla de armadura: el duelo usa la protección de las prendas (src/logica/prendas.js) en vez de la suya, y las mismas zonas del cuerpo",
