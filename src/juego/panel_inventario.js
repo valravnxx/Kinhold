@@ -229,7 +229,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
 
   // dónde está lo elegido, en palabras
   function dondeEsta(ruta) {
-    if (NOMBRE_SITIO[ruta]) return ruta.startsWith('mano:') ? tr('En la {m}.', { m: tr(NOMBRE_SITIO[ruta]).toLowerCase() }) : ruta === 'hombro' ? tr('Lo llevas al hombro.') : tr('Lo llevas puesto ({l}).', { l: tr(NOMBRE_SITIO[ruta]).toLowerCase() });
+    if (NOMBRE_SITIO[ruta]) return ruta.startsWith('mano:') ? tr(ruta === 'mano:der' ? 'En la mano derecha.' : 'En la mano izquierda.') : ruta === 'hombro' ? tr('Lo llevas al hombro.') : tr('Lo llevas puesto ({l}).', { l: tr(NOMBRE_SITIO[ruta]).toLowerCase() });
     const p = ruta.split('/'), cont = inv().buscar(p.slice(0, -1).join('/')).cosa;
     return tr('Guardado en {c}.', { c: cont ? nombreDe(cont).toLowerCase() : '' });
   }

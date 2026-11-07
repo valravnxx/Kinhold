@@ -2138,5 +2138,22 @@
  "Demo única · v132 (juncos, barro y yesca)": "Единое демо · v132 (камыш, грязь и трут)",
  "v132: lo que pide la casa humilde y la hoguera ya tiene de dónde salir (documento de sistemas, apartado 3). Juncos en la orilla y la ribera de los ríos: se cortan con un cuchillo o una lasca de sílex (1 haz) y la mata vuelve en una estación. Barro en la orilla: se cava con el palo cavador o la pala (1 cesta) y no se agota. Yesca de los hongos yesqueros de los tocones viejos del bosque, con las manos (1 o 2).": "v132: у того, что нужно для скромного дома и костра, теперь есть откуда взяться (документ систем, раздел 3). Камыш у самой воды и на берегах рек: срезается ножом или кремнёвым отщепом (1 пучок), заросль отрастает за сезон. Грязь у воды: копается копалкой или лопатой (1 корзина) и не кончается. Трут с трутовиков на старых пнях в лесу, руками (1 или 2).",
  "v132: dos recetas con las manos para la yesca: de 2 de fibra cruda (fibra seca) y de 1 corteza (2 de yesca). Modelos nuevos (estilo v5): la mata de juncos con su panoja, el charco de barro con la tierra removida, el tocón con los yesqueros, la yesca y la corteza; las imágenes del panel salen ahora de recursos/iconos-v2.": "v132: два ручных рецепта трута: из 2 сырого волокна (сухое волокно) и из 1 коры (2 трута). Новые модели (стиль v5): заросль камыша с метёлкой, лужа грязи с разрытой землёй, пень с трутовиками, трут и кора; картинки панели теперь берутся из recursos/iconos-v2.",
- "v132, provisional: la herramienta basta con llevarla encima (en la mano o guardada). «Con las manos, poco» del barro no se hace: sin palo no se cava. Los juncos y el barro salen solo junto a los ríos (no hay pantanos ni lodazales en el mapa): el río más cercano a la salida común está a unos 850 m al norte. La corteza aún no se puede sacar (descortezar llegará con su tarea).": "v132, временно: инструмент достаточно иметь при себе (в руке или в сумке). «Руками, немного» для грязи не сделано: без палки копать нельзя. Камыш и грязь бывают только у рек (болот и топей на карте нет): ближайшая к общему месту появления река — примерно в 850 м к северу. Кору пока добыть нельзя (снятие коры появится со своей задачей)."
+ "v132, provisional: la herramienta basta con llevarla encima (en la mano o guardada). «Con las manos, poco» del barro no se hace: sin palo no se cava. Los juncos y el barro salen solo junto a los ríos (no hay pantanos ni lodazales en el mapa): el río más cercano a la salida común está a unos 850 m al norte. La corteza aún no se puede sacar (descortezar llegará con su tarea).": "v132, временно: инструмент достаточно иметь при себе (в руке или в сумке). «Руками, немного» для грязи не сделано: без палки копать нельзя. Камыш и грязь бывают только у рек (болот и топей на карте нет): ближайшая к общему месту появления река — примерно в 850 м к северу. Кору пока добыть нельзя (снятие коры появится со своей задачей).",
+ "Equipo": "Снаряжение",
+ "Lo que llevas puesto, en las manos y guardado. Toca algo para ver qué puedes hacer con ello.": "Что на тебе, в руках и в поклаже. Нажми на вещь, чтобы увидеть, что с ней можно сделать.",
+ "Te lo pones.": "Ты надеваешь это.",
+ "Lo dejas en el suelo.": "Ты оставляешь это на земле.",
+ "Manos y hombro": "Руки и плечо",
+ "Huecos de {c}": "Места: {c}",
+ "En la mano derecha.": "В правой руке.",
+ "En la mano izquierda.": "В левой руке.",
+ "Lo llevas puesto ({l}).": "Надето на тебе ({l}).",
+ "Guardado en {c}.": "Лежит здесь: {c}.",
+ "Toca algo de tu equipo o del arcón para ver qué es y qué puedes hacer con ello.": "Нажми на вещь в снаряжении или в сундуке, чтобы увидеть, что это и что с ней можно сделать.",
+ "{p} kg": "{p} кг",
+ "Lleva cosas dentro: van con él.": "Внутри есть вещи: они идут вместе с ним.",
+ "Quitártelo a las manos": "Снять в руки",
+ "Ponértelo": "Надеть",
+ "O toca otro sitio de tu equipo para llevarlo allí.": "Или нажми на другое место в снаряжении, чтобы переложить туда.",
+ "En el arcón de pruebas.": "В пробном сундуке."
 }

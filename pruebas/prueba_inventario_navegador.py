@@ -46,7 +46,6 @@ def abrir_pagina(nav, **ctx):
     pg.wait_for_function('window.__kinhold !== undefined', timeout=60000)
     pg.evaluate(f'localStorage.clear(); {K}.reiniciar()')
     if os.environ.get('MUTAR'): pg.evaluate(f'{K}.inventario.huecosCintura = () => []')
-    if os.environ.get('MUTAR_QUITAR'): pg.evaluate(f"{K}.inventario.quitarse = () => ({{ ok: false, motivo: 'No.' }})")
     if os.environ.get('MUTAR_RETRATO'): pg.evaluate(f'{K}.renderer.getPixelRatio = () => 100')
     pg.wait_for_timeout(500)
     return pg, errores
@@ -159,6 +158,7 @@ with sync_playwright() as p:
     c2 = pg.evaluate(f"{K}.inventario.lugares['ropa:abrigo']")
     comprobar('otra túnica cosida, con lo suyo (cuadros y verde)', bool(c2) and c2.get('tinte') == 'verde' and (c2.get('hechura') or {}).get('tejido') == 'cuadros' and pg.evaluate(f"{K}.jugador.mh.tintes.prendas.tunica") == 'verde', str(c2))
     # lo que llevas puesto se quita: a las manos o al suelo (valravnx, 7 nov)
+    if os.environ.get('MUTAR_QUITAR'): pg.evaluate(f"{K}.inventario.quitarse = () => ({{ ok: false, motivo: 'No.' }})")
     pg.click(R('ropa:abrigo'))
     ficha = pg.inner_text('#panelInventario .inv-sel')
     comprobar('la ficha de lo puesto dice qué es, dónde lo llevas y qué se puede hacer', 'Túnica' in ficha and 'Lo llevas puesto' in ficha and 'Quitártelo a las manos' in ficha and 'Dejarlo en el suelo' in ficha, ficha.replace('\n', ' · '))
