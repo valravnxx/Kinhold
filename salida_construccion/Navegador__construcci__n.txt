@@ -1,0 +1,97 @@
+PC: el menú de construir solo enseña lo de este tramo
+  OK   pestaña «tierra» con algo — Mojón, Brocha de nivelar
+  OK   pestaña «base» con algo — Cimiento de piedra, Cimiento de troncos, Suelo de troncos
+  OK   pestaña «estructura» con algo — Poste, Viga
+  OK   pestaña «muro» con algo — Muro de zarzo y barro, Muro de troncos, Muro de troncos con puerta, Muro de troncos con ventana, Medio muro
+  OK   pestaña «tejado» con algo — Tejado de juncos, Remate de juncos (esquina)
+  OK   pestaña «acceso» con algo — Escalera de mano, Andamio, Puerta de varas
+  OK   pestaña «exterior» con algo — Cerca de varas, Portillo de varas
+  OK   pestaña «deco» con algo — Taburete, Estandarte
+  OK   lo de niveles posteriores no sale en el menú
+  OK   lo de la casa humilde sí sale
+PC: cabaña completa
+  OK   mojón colocado
+  OK   6 cimientos en una sola construcción
+  OK   muros y puerta colocados — piezas=17
+  OK   altillo y tejado — piezas=25
+  OK   el hastial manual ya no aparece en el menú
+  OK   decoración colocada
+  OK   girar tejados no tuerce construcciones nuevas — giros=[0, 0]
+  OK   cobertizo de tablas con dos tramos de tejado — piezas=10
+  OK   hierba densa y ninguna planta asomando por los cimientos — {"total": 4145, "visibles": 4111, "dentro": 0, "celdas": 8, "mallas": 3}
+PC: interior (tejado oculto)
+PC: decoración bajo el altillo (va al suelo de tu planta, no al de arriba)
+  OK   en la planta baja, bajo el altillo, la decoración apunta al suelo de abajo — {"x": 3.086727140028426, "z": 4.6757760349235395, "ySuperficie": 0.11028487235307693}
+  OK   y estando arriba, al suelo del altillo — {"x": 3.0851789804052485, "z": 4.674423362650077, "ySuperficie": 2.613215844107545}
+PC: puerta y escalera
+  OK   la puerta se abre con Usar
+  OK   al abrir la puerta solo se rehace esa pieza (nada entero) — {"todo": 0, "pieza": 1}
+  OK   la escalera sube a la planta 1 — planta=1
+  OK   y vuelve a bajar
+PC: rechazo por carga
+  OK   muro de troncos sobre zarzo rechazado con punto débil — {"ok": false, "motivo": "La estructura no soporta ese peso.", "debil": "e:0,0,0,0", "carga": 380, "cap": 250}
+PC: desmontar con cascada
+  OK   de lejos (a 6 m) no se elige para desmontar
+  OK   al desmontar el muro de zarzo cae el tejado de encima — {"caen": 1, "key": "e:0,0,0,0"}
+  OK   recupera 3 varas (75% de 4) — 91 → 94
+  OK   lo construido, abierto y desmontado queda en el registro de acciones con su autor — 284 acciones: coger, colocar, decorar, desmontar, entregar, mojon, sacar_arcon, subir, trabajar, usar
+PC: quitar un mueble con el ratón (clic, mover el ratón hasta «Confirmar» y confirmar)
+  OK   el clic elige el barril y pide confirmar
+  OK   al mover el ratón hacia «Confirmar» el barril sigue elegido
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_navegador.py", line 254, in <module>
+    pg.click('#btnConfirmar')
+    ~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 11102, in click
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.click(
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 889, in click
+    return await self._main_frame._click(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 594, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#btnConfirmar")
+    - locator resolved to <button id="btnConfirmar">Desmontar</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - <div class="hu " title="En la mano derecha"></div> from <div id="llevas">…</div> subtree intercepts pointer events
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - <div class="hu " title="En la mano derecha"></div> from <div id="llevas">…</div> subtree intercepts pointer events
+    - retrying click action
+      - waiting 100ms
+    7 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - <div class="hu " title="En la mano derecha"></div> from <div id="llevas">…</div> subtree intercepts pointer events
+    - retrying click action
+      - waiting 500ms
+
