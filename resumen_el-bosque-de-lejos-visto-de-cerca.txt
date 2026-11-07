@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2257 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2749 KB
+
+== Construir demo única
+      2592 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3849 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2656 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2252 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2753 KB
+dist/kinhold_trozos.html 2266 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: el bosque de lejos visto de cerca
+  OK   móvil: hay un prado a 400 m de un bosque espeso — {'p': [-3300, -100], 'q': [-2900, -100]}
+  OK   móvil: sin errores en la página
+
+2 FALLOS: PC: delante, las copas de cerca; PC: cada punto lleva lo que sube sobre el suelo (para meterlo bajo el suelo cerca)
+!! FALLA: python3 pruebas/prueba_dosel_cerca_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/dosel_cerca
+
+HAY FALLOS
+tardó 777 s
