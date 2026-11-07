@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (17:52 UTC+1) — por el chat: la interfaz, que parezca de juego publicado
+valravnx: «imagina que este es el interfaz que tenemos y te pido hacerlo mejor y mas de videojuego publicado final, hazle el estudio, estudio de otros del genero y planteame una mejora visual y de comodidad de uso».
+→ Partiendo de la sexta versión del estudio (como si fuera la interfaz de hoy), el chat estudia cómo se ve y cómo se usa la interfaz de juegos publicados del género (acabado visual, animación y respuesta, lectura, comodidad en PC y móvil), con fuentes, y propone una séptima versión con mejoras visuales y de comodidad, enseñada en maquetas antes de meter nada en el juego.
+
 ### 7 nov 2026 (17:36 y 17:38 UTC+1) — por el chat: la interfaz, estudio completo antes de seguir
 valravnx: «me sobra lo de las super largas explicaciones en lo de la sed, hambre y todo eso, se conciso en poco, pero el tema me gusta mas ahora, sigue refinando, compara con otros juegos y refina mas, el numero de gente en linea y numero del dia dan igual, no lo veo como para tenerlo en cara todo el rato» y «sacar el arma y hablar no deberian estar en un menú a parte, cuenta que sacar el arma es algo que será dependiendo de lo que lleves, no lo veo como para un menú. y hablar menos, deben ser mas de acceso rapido, y desmontar debe ser dentro del menu de contruir siempre, no? por eso te pido hacer un estudio completo, estas creando muy rapido y no te veo hacer estudio de otros juegos del genero para nada».
 → Decidido: las fichas de las necesidades, en dos líneas; fuera de la pantalla el número de gente en línea y el día (al menú); sacar el arma depende de lo que lleves y va de acceso rápido, no en el menú; hablar, de acceso rápido; desmontar, siempre dentro de construir. El chat hace primero un estudio completo de los juegos del género (juego por juego, con fuentes: cómo sacan el arma, hablan, construyen y desmontan, enseñan el inventario, fabrican y avisan de las necesidades) y solo después vuelve a las maquetas.
