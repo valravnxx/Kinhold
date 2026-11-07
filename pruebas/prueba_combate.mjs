@@ -3,9 +3,10 @@ import * as direccion from '../src/combate/direccion.js';
 import * as logica from '../src/combate/logica.js';
 import { Luchador, resolverGolpe, crearProyectil, moverProyectil, elevacionPara, IA, azar, T, LINEAS, ESPEJO, ARMADURAS, ARMAS, TRATAMIENTOS, SANAR } from '../src/combate/logica.js';
 import { RegistroAcciones, ejecutarCombate } from '../src/logica/acciones.js';
+import { proteccion as proteccionPrendas, ZONAS_CUERPO } from '../src/logica/prendas.js';
 
 if (process.env.MUTAR === '1') {
-  T.ventanaPerfecta = 99; T.ventanaMaestro = 0; ARMADURAS.malla.corte = 1.0;
+  T.ventanaPerfecta = 99; T.ventanaMaestro = 0; ARMADURAS.malla.prendas = ARMADURAS.lino.prendas; logica.ZONAS.push('pies');
   T.tensionMinima = 0; ARMAS.arco.recarga = 0.1; Luchador.prototype.cancelarTensado = function () {}; // arco roto como antes
   Object.defineProperty(Luchador.prototype, 'corriendo', { get() { return false; }, set() {} });
   Luchador.prototype.paraConEscudo = function () { return false; }; T.factorEscudo = 1; // escudo que no sirve
@@ -150,6 +151,17 @@ console.log('4. Armaduras');
   comprobar('contra el tajo: malla < gambesón < lino', malla < gamb && gamb < lino, `lino ${r2(lino)} · gambesón ${r2(gamb)} · malla ${r2(malla)}`);
   const mallaEst = media('malla', 'estocada');
   comprobar('la malla para peor la estocada que el tajo', mallaEst > malla, `estocada ${r2(mallaEst)} vs tajo ${r2(malla)}`);
+  // una sola tabla (7 nov): lo que frena sale de las prendas de src/logica/prendas.js, zona a zona
+  const L = new Luchador({ armadura: 'malla' });
+  comprobar('la protección del duelo es la de sus prendas, zona a zona',
+    ['torso', 'brazoD', 'cabeza'].every(z => ['corte', 'perforante', 'contundente'].every(g => L.proteccion(z, g) === proteccionPrendas(ARMADURAS.malla.prendas, z, g))),
+    `torso ${r2(L.proteccion('torso', 'corte'))} · cabeza ${r2(L.proteccion('cabeza', 'corte'))}`);
+  comprobar('sin yelmo, la cabeza va al aire aunque lleves cota', L.proteccion('cabeza', 'corte') === 1 && L.proteccion('torso', 'corte') < 0.25);
+  comprobar('las zonas del duelo son las del cuerpo de la ropa (sin los pies)', logica.ZONAS.join() === ZONAS_CUERPO.filter(z => z !== 'pies').join());
+  comprobar('ya no hay números de armadura propios del duelo', Object.values(ARMADURAS).every(a => Array.isArray(a.prendas) && !('corte' in a)));
+  let enCabeza = null;
+  for (let n = 0; n < 200 && !enCabeza; n++) { const [x, y] = pareja(1.5, {}, { armadura: 'malla' }); const g = golpeCompleto(x, y, 'alto', azar(300 + n)); if (g.zona === 'cabeza') enCabeza = g; }
+  comprobar('un tajo alto a la cabeza con cota entra como sin armadura', enCabeza && enCabeza.sev > 0.6, enCabeza ? `sev ${r2(enCabeza.sev)}` : 'ninguno a la cabeza');
 }
 
 console.log('5. Heridas y sus efectos');
