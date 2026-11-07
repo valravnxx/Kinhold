@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-07T16:25:58+00:00",
-  "tarea": "Almacenajes de la base (con su modelo, que se ve lleno): acopio de troncos, pila de piedras y leñera. Guardar y sacar con Usar; de quien tiene la tierra; la obra no coge de ellos sola",
-  "hito": "crafting",
-  "rama": "trabajo/20261107-1625"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261107-1845-interfaz": {
   "inicio": "2026-11-07T18:43:47+01:00",

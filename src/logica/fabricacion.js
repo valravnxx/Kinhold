@@ -48,6 +48,14 @@
 //    tierra de otro, solo su dueño y sus invitados (lo mira el servidor, como al poner la estación). Lo depositado es
 //    de la estación, no de quien lo dejó: cualquiera que pueda tocarla lo gasta o lo coge. Se gasta al encargar.
 //    Levantar la estación (entregarle su coste) gasta de lo que llevas y del suelo (no es fabricar en ella).
+//  - Los almacenajes de la base (revisión del 1 nov; GDD, «Almacenajes de la base»; 7 nov): el acopio de troncos, la
+//    pila de piedras y la leñera son puestos sin recetas (uso «almacen»): se levantan como obra desde el menú de
+//    construcción (su pestaña «Almacenajes»), solo en tu tierra o en la de quien te invita (tierra: true), y guardan
+//    solo lo suyo (guarda) y hasta lo que les cabe (cabe), con el mismo dejar y coger que lo depositado en una estación
+//    (Usar). Lo guardado es de la tierra: solo su dueño y sus invitados lo tocan (lo mira el servidor). La obra no coge
+//    de ellos sola, ni las recetas: hay que sacar lo que se vaya a usar. Provisional (el documento deja sus costes y lo
+//    que cabe para cuando se hagan): el acopio, 4 varas y 15 s, 12 troncos; la pila, 4 piedras y 10 s, 40 piedras; la
+//    leñera, 4 varas y 6 ramas y 15 s, 30 de leña y ramas. El acopio guarda también el tronco corto (es tronco).
 import { CATALOGO } from './inventario.js';
 import { ALCANCE_COGER } from './suelo.js';
 import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, YESCAS, HERRAMIENTA_FUEGO } from './fuego.js';
@@ -74,7 +82,17 @@ export const ESTACIONES = {
   hoguera:       { nombre: 'Hoguera', un: 'una hoguera', uso: 'fuego', coste: { piedra: 6, rama: 4 }, donde: 'fuera', trabajo: 10, fuego: true, hace: 'Cocinar, calentarse, endurecer al fuego, antorchas' },
   piedra_tallar: { nombre: 'Piedra de tallar', un: 'una piedra de tallar', uso: 'tallar', coste: { piedra: 1 }, donde: 'ambos', trabajo: 5, hace: 'Herramientas de piedra y sílex' },
   banco_tronco:  { nombre: 'Banco de trabajo de tronco', un: 'un banco de trabajo de tronco', uso: 'banco', coste: { tronco_corto: 2 }, requiere: ['hacha_piedra', 'lasca_silex'], donde: 'ambos', trabajo: 20, hace: 'Trabajos de madera, mangos, cestería, primeras piezas de construcción' },
+  // los almacenajes de la base (uso «almacen»: sin recetas): guarda, lo único que se deja en ellos; cabe, cuánto
+  acopio_troncos: { nombre: 'Acopio de troncos', un: 'un acopio de troncos', uso: 'almacen', coste: { vara: 4 }, donde: 'fuera', trabajo: 15, tierra: true, guarda: ['tronco_delgado', 'tronco_largo', 'tronco_corto'], cabe: 12, hace: 'Guarda los troncos, apilados fuera' },
+  pila_piedras:   { nombre: 'Pila de piedras', un: 'una pila de piedras', uso: 'almacen', coste: { piedra: 4 }, donde: 'fuera', trabajo: 10, tierra: true, guarda: ['piedra'], cabe: 40, hace: 'Guarda la piedra suelta' },
+  lenera:         { nombre: 'Leñera', un: 'una leñera', uso: 'almacen', coste: { vara: 4, rama: 6 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['lena', 'rama'], cabe: 30, hace: 'Guarda la leña y las ramas, a cubierto' },
 };
+// Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
+export const esAlmacen = tipo => Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].uso === 'almacen';
+export const ALMACENAJES = Object.keys(ESTACIONES).filter(esAlmacen);
+export const cabeEn = tipo => (Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].cabe) || DEPOSITO_MAX;
+// Si en una estación se puede dejar ese tipo (los almacenajes, solo lo suyo).
+export const guardaTipo = (tipo, t) => !Object.hasOwn(ESTACIONES, tipo) || !ESTACIONES[tipo].guarda || ESTACIONES[tipo].guarda.includes(t);
 export const DONDE = { fuera: 'Solo fuera', dentro: 'Solo dentro de la casa', ambos: 'Dentro o fuera' };
 // Las estaciones que existen de un uso (el hogar aún no), y cómo se nombran juntas («una hoguera o un hogar»).
 export const estacionesDeUso = uso => (USOS[uso] ? USOS[uso].estaciones : []).filter(t => Object.hasOwn(ESTACIONES, t));
@@ -239,12 +257,14 @@ const textoFaltan = f => 'Te falta: ' + Object.entries(f).map(([t, n]) => `${n} 
 
 // ---------------- Estaciones y colas ----------------
 export const VERSION_FABRICACION = 6; // 3: sin lo que sabía cada uno (fuera aprender recetas, revisión del 1 nov); 4: lo depositado; 5: la obra de cada puesto; 6: el fuego de la hoguera
-// lo depositado que vale: solo tipos del catálogo, cantidades enteras positivas, hasta DEPOSITO_MAX en total
-export function limpiarDeposito(dep) {
+// lo depositado que vale: solo tipos del catálogo (en un almacenaje, solo lo suyo), cantidades enteras positivas,
+// hasta lo que cabe en ella (DEPOSITO_MAX en las estaciones de fabricar) en total
+export function limpiarDeposito(dep, tipo = null) {
+  const max = cabeEn(tipo);
   const o = {};
   let t = 0;
   for (const [k, n] of Object.entries(dep && typeof dep === 'object' && !Array.isArray(dep) ? dep : {})) {
-    if (!Object.hasOwn(CATALOGO, k) || !Number.isInteger(n) || n < 1 || t + n > DEPOSITO_MAX) continue;
+    if (!Object.hasOwn(CATALOGO, k) || !guardaTipo(tipo, k) || !Number.isInteger(n) || n < 1 || t + n > max) continue;
     o[k] = n; t += n;
   }
   return o;
@@ -300,19 +320,21 @@ export class Fabricacion {
       requiere: e.requiere ? [...e.requiere] : [], donde: e.donde, trabajo: e.trabajo }));
   }
 
-  // ¿Se puede poner el marco de tipo en (x, z)? dentro: si ese sitio está bajo techo.
-  puedeColocar(tipo, x, z, dentro = false) {
+  // ¿Se puede poner el marco de tipo en (x, z)? dentro: si ese sitio está bajo techo. enTierra: si es tu tierra (o la
+  // de quien te invita); null si no se sabe (lo mira quien llama).
+  puedeColocar(tipo, x, z, dentro = false, enTierra = null) {
     if (!tiene(ESTACIONES, tipo)) return { ok: false, motivo: 'Esa estación no existe.' };
     if (!Number.isFinite(x) || !Number.isFinite(z)) return { ok: false, motivo: 'Sitio no válido.' };
     const e = ESTACIONES[tipo];
     if (e.donde === 'fuera' && dentro) return { ok: false, motivo: `${e.nombre}: solo fuera, no bajo techo.` };
     if (e.donde === 'dentro' && !dentro) return { ok: false, motivo: `${e.nombre}: solo dentro de la casa.` };
+    if (e.tierra && enTierra === false) return { ok: false, motivo: 'Los almacenajes van en tu tierra (o en la de quien te invita).' };
     return { ok: true };
   }
   // Poner el marco de un puesto en (x, z) (y: la altura del suelo en el que se apoya, si se da): no gasta nada; su
   // coste se le lleva luego (entregarEstacion) y se levanta trabajando en él (trabajarEstacion).
-  colocar(autor, tipo, x, z, dentro = false, y = null) {
-    const v = this.puedeColocar(tipo, x, z, dentro);
+  colocar(autor, tipo, x, z, dentro = false, y = null, enTierra = null) {
+    const v = this.puedeColocar(tipo, x, z, dentro, enTierra);
     if (!v.ok) return v;
     const id = `${tipo}:${this.siguiente++}`;
     this.estaciones[id] = { id, tipo, x, z, autor, cola: [], deposito: {}, obra: { entregado: {}, trabajo: 0, aportes: [] } };
@@ -396,10 +418,12 @@ export class Fabricacion {
     if (!de.includes('/') && !de.startsWith('mano:') && d.lugar) return { ok: false, motivo: 'Eso lo llevas puesto.' };
     if (c.dentro && c.dentro.some(Boolean)) return { ok: false, motivo: 'Vacíalo antes.' };
     if (c.hechura || c.tinte || c.carga) return { ok: false, motivo: 'Eso no se deja en una estación.' };
+    const def = ESTACIONES[e.tipo];
+    if (!guardaTipo(e.tipo, c.tipo)) return { ok: false, motivo: `${def.nombre}: solo guarda ${def.guarda.map(t => CATALOGO[t].nombre.toLowerCase()).join(', ')}.` };
     const n = cantidad === undefined || cantidad === null ? c.n : cantidad;
     if (!Number.isInteger(n) || n < 1 || n > c.n) return { ok: false, motivo: 'Cantidad no válida.' };
-    const hay = totalDeposito(e.deposito);
-    if (hay + n > DEPOSITO_MAX) return { ok: false, motivo: hay >= DEPOSITO_MAX ? 'En la estación no cabe nada más.' : `En la estación solo caben ${DEPOSITO_MAX - hay} más.` };
+    const hay = totalDeposito(e.deposito), max = cabeEn(e.tipo), donde = def.guarda ? def.nombre : 'En la estación';
+    if (hay + n > max) return { ok: false, motivo: hay >= max ? `${donde}: no cabe nada más.` : `${donde}: solo caben ${max - hay} más.` };
     const tipo = c.tipo, s = inv.sacar(de, n);
     if (!s.ok) return s;
     e.deposito[tipo] = (e.deposito[tipo] || 0) + n;
@@ -558,7 +582,7 @@ export class Fabricacion {
     for (const e of d.estaciones || []) {
       if (!e || typeof e.id !== 'string' || !tiene(ESTACIONES, e.tipo) || !Number.isFinite(e.x) || !Number.isFinite(e.z)) continue;
       const uso = ESTACIONES[e.tipo].uso;
-      this.estaciones[e.id] = { id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, cola: limpia(e.cola).filter(c => RECETAS[c.receta].uso === uso), deposito: limpiarDeposito(e.deposito) };
+      this.estaciones[e.id] = { id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, cola: limpia(e.cola).filter(c => RECETAS[c.receta].uso === uso), deposito: limpiarDeposito(e.deposito, e.tipo) };
       if (Number.isFinite(e.y)) this.estaciones[e.id].y = e.y;
       const ob = limpiarObra(e.obra, e.tipo); if (ob) this.estaciones[e.id].obra = ob;
       else if (ESTACIONES[e.tipo].fuego) this.estaciones[e.id].fuego = e.fuego ? limpiarFuego(e.fuego) : fuegoNuevo(); // las de antes del fuego: con sus ramas puestas
@@ -622,7 +646,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
   else if (!Number.isFinite(ahora)) res = { ok: false, motivo: 'Sin hora.' };
   else {
     const inv = invs.de(a.autor), pos = { x: a.x, z: a.z };
-    if (a.tipo === 'colocar_estacion') res = fab.colocar(a.autor, a.estacion, a.x, a.z, !!bajoTecho(a.x, a.z), Number.isFinite(a.y) ? a.y : null);
+    if (a.tipo === 'colocar_estacion') res = fab.colocar(a.autor, a.estacion, a.x, a.z, !!bajoTecho(a.x, a.z), Number.isFinite(a.y) ? a.y : null, !!enTierras(a.x, a.z));
     else if (a.tipo === 'entregar_estacion') res = fab.entregarEstacion(a.autor, a.estacion, pos, inv, suelo, ahora);
     else if (a.tipo === 'trabajar_estacion') res = fab.trabajarEstacion(a.autor, a.estacion, a.segundos, pos, inv);
     else if (a.tipo === 'quitar_estacion') { const e = fab.estaciones[a.estacion]; res = fab.quitarEstacion(a.autor, a.estacion, pos, suelo, ahora, suelo && e ? enTierras(e.x, e.z) : false); }
