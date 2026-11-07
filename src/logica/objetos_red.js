@@ -18,8 +18,11 @@
 //   { tipo: 'enganchar_rastra' | 'soltar_rastra' | 'cargar_rastra' | 'descargar_rastra', … } — la rastra (src/logica/rastra.js),
 //   y las mismas de la carretilla (empujar_carretilla, aparcar_carretilla, cargar_carretilla, descargar_carretilla);
 //     al soltarla, si el sitio que dice el navegador no vale, se deja detrás de donde el servidor tiene al autor
-//   { tipo: 'colocar_estacion', estacion, x, z }   — una estación de fabricar (src/logica/fabricacion.js) en (x, z), a
-//     tu lado; gasta su coste de lo que llevas y del suelo de al lado
+//   { tipo: 'colocar_estacion', estacion, x, z, y? } — el marco de un puesto de trabajo (src/logica/fabricacion.js) en
+//     (x, z), a tu lado, sin gastar nada (la hoguera, no bajo techo); { tipo: 'entregar_estacion', estacion, x, z } — le
+//     llevas lo que le falta, de lo que llevas y del suelo de al lado; { tipo: 'trabajar_estacion', estacion, segundos,
+//     x, z } — un rato de trabajo hasta levantarlo; { tipo: 'quitar_estacion', estacion, x, z } — quitar un marco a medio
+//     hacer (lo entregado cae al suelo). En tierra de otro, solo su dueño y sus invitados
 //   { tipo: 'fabricar', receta, estacion?, x, z }   — encargar una receta: con las manos o en una estación de su uso (la
 //     que se diga o la más cercana); gasta de lo que llevas y del suelo de al lado de donde el servidor te tiene
 //   { tipo: 'recoger_fabricado', estacion?, x, z }  — lo terminado va a lo que llevas; lo que no cabe, al suelo a tus pies
@@ -57,7 +60,7 @@ import { Troceo, ejecutarTroceo } from './troceo.js';
 import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER } from './recoleccion.js';
 import { Rastras, ejecutarRastra, TIPOS_RASTRA, ejecutarArconAlSuelo } from './rastra.js';
 import { agrupar, desagrupar, estadoEnTrozos, trozoDe } from './trozos_red.js';
-import { Fabricacion, ejecutarFabricacion, TIPOS_FABRICACION } from './fabricacion.js';
+import { Fabricacion, ejecutarFabricacion, TIPOS_FABRICACION, OBRA_ESTACION, ESTACIONES } from './fabricacion.js';
 
 export const TOLERANCIA = 3; // m
 export const ENTRE_GOLPES_RED = 500; // ms
@@ -75,8 +78,10 @@ export class ObjetosServidor {
   // arconPruebas: si se acepta el arcón de pruebas ('coger' y 'soltar').
   // terreno: el mundo que conoce el servidor (crearTerreno), o null. puedeTocar(autor, x, z) → { ok, motivo? }: si puede
   // poner algo ahí (en tierra de otro, solo su dueño y sus invitados; Construccion.puedeTocar).
-  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null, puedeTocar = () => ({ ok: true }) } = {}) {
+  // bajoTecho(x, z): si ese sitio está bajo techo (Construccion.bajoTecho; los puestos de trabajo: la hoguera, solo fuera).
+  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null, puedeTocar = () => ({ ok: true }), bajoTecho = () => false } = {}) {
     this.puedeTocar = puedeTocar;
+    this.bajoTecho = bajoTecho;
     this.terreno = terreno;
     this.invs = new Inventarios();
     this.ponerSuelo(new Suelo());
@@ -120,14 +125,15 @@ export class ObjetosServidor {
         // fabricar y recoger, desde donde el servidor tiene al autor (no donde dice el navegador); la estación se pone
         // donde dice, que ya está a menos de TOLERANCIA de él
         const fa = a.tipo === 'colocar_estacion' ? a : { ...a, x: p.x, z: p.z };
-        const est = (a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion') && typeof a.estacion === 'string' && Object.hasOwn(this.fab.estaciones, a.estacion) ? this.fab.estaciones[a.estacion] : null;
+        const est = (a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion' || (OBRA_ESTACION.includes(a.tipo) && a.tipo !== 'colocar_estacion')) && typeof a.estacion === 'string' && Object.hasOwn(this.fab.estaciones, a.estacion) ? this.fab.estaciones[a.estacion] : null;
         const tocar = a.tipo === 'colocar_estacion' ? this.puedeTocar(a.autor, a.x, a.z) : est ? this.puedeTocar(a.autor, est.x, est.z) : { ok: true };
         const nSuelo = this.suelo.objetos.length, antes = JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n]));
         r = !tocar.ok ? this.anotar(a, { ok: false, motivo: tocar.motivo }, ahora)
-          : ejecutarFabricacion(this.fab, this.invs, this.registro, fa, ahora, this.suelo, (x, z) => this.enTierras(a.autor, x, z));
+          : ejecutarFabricacion(this.fab, this.invs, this.registro, fa, ahora, this.suelo, (x, z) => this.enTierras(a.autor, x, z), (x, z) => this.bajoTecho(x, z));
         suelo = !!r.ok && (this.suelo.objetos.length !== nSuelo || JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n])) !== antes);
-        // las estaciones se vuelven a mandar si se pone una o cambia lo depositado en alguna (se ve puesto)
-        estaciones = !!r.ok && a.tipo !== 'recoger_fabricado';
+        // las estaciones se vuelven a mandar si se pone una, cambia su obra o lo depositado en alguna (se ve puesto); el
+        // trabajo, cada cuarto (y al terminar), para no mandarlas a todos cada medio segundo
+        estaciones = !!r.ok && a.tipo !== 'recoger_fabricado' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
       } else if (a.tipo === 'arcon_al_suelo') {
         r = this.arconPruebas ? ejecutarArconAlSuelo(this.suelo, this.registro, a, ahora, this.enTierras) : this.anotar(a, { ok: false, motivo: 'Aquí no hay arcón.' }, ahora);
         suelo = !!r.ok;
@@ -216,7 +222,8 @@ export class ObjetosServidor {
   // esos trozos.
   estacionesVisibles(trozos = null) {
     return Object.values(this.fab.estaciones).filter(e => !trozos || trozos.has(trozoDe(e.x, e.z)))
-      .map(e => ({ id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, deposito: { ...e.deposito } }));
+      .map(e => ({ id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, deposito: { ...e.deposito },
+        ...(Number.isFinite(e.y) ? { y: e.y } : {}), ...(e.obra ? { obra: { entregado: { ...e.obra.entregado }, trabajo: e.obra.trabajo } } : {}) }));
   }
   // Lo que un jugador tiene encargado: en sus manos y en cada estación (con cuánto le falta).
   encargosDe(autor, ahora) {

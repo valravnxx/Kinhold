@@ -2164,5 +2164,22 @@
  "Demo única · v134 (lo hecho a mano, con su modelo)": "Единое демо · v134 (сделанное руками, со своей моделью)",
  "v134: lo que se fabrica con las manos se ve con su modelo (estilo v5) en la mano y colgado del cinturón: la lasca de sílex (una esquirla de piedra oscura con su costra, en una bolsita en el cinto), el palo cavador (una rama recta pelada con la punta endurecida al fuego), el cordel y la cuerda (una madeja cogida por la atadura) y el hacha de piedra (antes, en la mano y en el cinto, salía la de hierro). Los demás jugadores ven también el hacha que llevas en la mano. El leñero cogido con las manos se ve entero, delante, en vez del hatillo.": "v134: то, что делается руками, теперь видно со своей моделью (стиль v5) в руке и на поясе: кремнёвый отщеп (осколок тёмного камня с коркой, в мешочке на поясе), копалка (прямая очищенная ветка с обожжённым остриём), бечёвка и верёвка (моток, который держат за перевязку) и каменный топор (раньше в руке и на поясе был железный). Другие игроки теперь тоже видят топор у тебя в руке. Заплечная рама для дров в руках видна целиком, спереди, а не узелком.",
  "v134: el taladro de fuego de arco, con las manos: 2 ramas y 1 cordel, 20 s. Con la yesca, servirá para encender la hoguera (llega con su tarea). Su modelo: el arco con el cordel, el huso de punta tostada, la tabla con muescas quemadas y la piedra de apoyo; en la mano y en el cinto, el arco con el huso metido en el cordel.": "v134: лучковое сверло для огня, руками: 2 ветки и 1 бечёвка, 20 с. С трутом им можно будет разжечь костёр (придёт со своей задачей). Модель: лук с бечёвкой, веретено с обожжённым концом, дощечка с прожжёнными выемками и опорный камень; в руке и на поясе — лук с веретеном в тетиве.",
- "v134, provisional: el documento de sistemas nombra el taladro de fuego pero no dice de qué se hace: se ha tomado el de arco (2 ramas y 1 cordel), mediano y herramienta. La rastra no cambia: es enorme y se arrastra, con el modelo que ya tenía. Las imágenes del panel salen ahora de recursos/iconos-v4.": "v134, временно: в документе систем сверло для огня названо, но не сказано, из чего оно: выбрано лучковое (2 ветки и 1 бечёвка), среднего размера и инструмент. Волокуша не меняется: она огромная, её тащат, модель та же. Картинки панели теперь берутся из recursos/iconos-v4."
+ "v134, provisional: el documento de sistemas nombra el taladro de fuego pero no dice de qué se hace: se ha tomado el de arco (2 ramas y 1 cordel), mediano y herramienta. La rastra no cambia: es enorme y se arrastra, con el modelo que ya tenía. Las imágenes del panel salen ahora de recursos/iconos-v4.": "v134, временно: в документе систем сверло для огня названо, но не сказано, из чего оно: выбрано лучковое (2 ветки и 1 бечёвка), среднего размера и инструмент. Волокуша не меняется: она огромная, её тащат, модель та же. Картинки панели теперь берутся из recursos/iconos-v4.",
+ "{e}: pon el marco y llévale {c}.": "{e}: поставь каркас и принеси {c}.",
+ "Marco puesto: llévale {c} y trabaja en él (Usar).": "Каркас поставлен: принеси {c} и работай над ним (Использовать).",
+ "Puesto terminado ({e}): ya se puede usar.": "Рабочее место готово ({e}): им уже можно пользоваться.",
+ "Marco quitado: lo que tenía, en el suelo.": "Каркас убран: то, что в нём было, лежит на земле.",
+ "Quitar el marco: {e}": "Убрать каркас: {e}",
+ "Puestos de trabajo": "Рабочие места",
+ "Los puestos de trabajo se levantan desde Construir, en «Puestos de trabajo».": "Рабочие места строятся в меню «Строить», во вкладке «Рабочие места».",
+ "Solo fuera": "Только снаружи",
+ "Solo dentro de la casa": "Только внутри дома",
+ "Dentro o fuera": "Внутри или снаружи",
+ "Acércate: el marco se pone a tu lado.": "Подойди ближе: каркас ставится рядом с тобой.",
+ "Los puestos de trabajo van en la planta baja.": "Рабочие места ставятся на первом этаже.",
+ "Esa estación aún está en obra.": "Это место ещё строится.",
+ "Aún está en obra: llévale su material y trabaja en ella.": "Оно ещё строится: принеси материалы и поработай над ним.",
+ "Ya tiene todo el material: ahora hay que trabajar en ella.": "Все материалы уже есть: теперь над ним нужно поработать.",
+ "Solo se quita un marco a medio hacer.": "Убрать можно только недостроенный каркас.",
+ "Esa estación ya está terminada.": "Это место уже готово."
 }

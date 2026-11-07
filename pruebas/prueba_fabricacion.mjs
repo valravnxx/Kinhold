@@ -1,14 +1,17 @@
 // Pruebas de fabricar (src/logica/fabricacion.js): recetas siempre a la vista, por uso, con lo que llevas y lo del
 // suelo a tu lado (revisión del 1 nov); las de una estación, con lo depositado en ella (valravnx, 6 nov). Ejecutar: node pruebas/prueba_fabricacion.mjs
-// Con MUTAR=1 el hacha de piedra no gasta cordel y se hace al momento, y la hoguera deja de dar el fuego:
+// Con MUTAR=1 el hacha de piedra no gasta cordel y se hace al momento, la hoguera deja de dar el fuego y se puede poner
+// bajo techo, y el banco se levanta sin trabajo:
 // las pruebas deben FALLAR.
 import { ESTACIONES, RECETAS, USOS, Fabricacion, ejecutarFabricacion, sueloCerca, cuentas, SITIO_DE_RUTA, estacionesDeUso, ALCANCE_ESTACION, ALCANCE_SUELO,
-  COLA_ESTACION, VERSION_FABRICACION, migrarFabricacion, DEPOSITO_MAX, cuentasEstacion } from '../src/logica/fabricacion.js';
+  COLA_ESTACION, VERSION_FABRICACION, migrarFabricacion, DEPOSITO_MAX, cuentasEstacion, MAX_RATO_ESTACION } from '../src/logica/fabricacion.js';
 import { Inventarios, Inventario, CATALOGO } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
+import { Mundo, clave } from '../src/logica/construccion.js';
+import { MODULO } from '../src/logica/piezas.js';
 
-if (process.env.MUTAR === '1') { delete RECETAS.hacha_piedra.gasta.cordel; RECETAS.hacha_piedra.s = 0; ESTACIONES.hoguera.uso = 'tallar'; }
+if (process.env.MUTAR === '1') { delete RECETAS.hacha_piedra.gasta.cordel; RECETAS.hacha_piedra.s = 0; ESTACIONES.hoguera.uso = 'tallar'; ESTACIONES.hoguera.donde = 'ambos'; ESTACIONES.banco_tronco.trabajo = 0; }
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -30,6 +33,18 @@ function depositar(fab, id, cosas) {
     const m = inv.meterDonde(t, n); if (!m.ok) throw new Error('no cabe ' + t);
     for (const [ruta, k] of m.donde) { const r = fab.depositar('paso', id, ruta, k, { x: e.x, z: e.z }, inv); if (!r.ok) throw new Error(r.motivo); }
   }
+}
+
+// pone el marco de un puesto y lo levanta: le lleva su coste de inv (y del suelo de al lado) y trabaja en él hasta
+// terminarlo, con una lasca en la mano (la herramienta del banco). Devuelve su id.
+function levantar(fab, autor, tipo, x, z, inv = jugador(), suelo = null) {
+  const r = fab.colocar(autor, tipo, x, z); if (!r.ok) throw new Error(r.motivo);
+  const pos = { x, z };
+  const e = fab.entregarEstacion(autor, r.id, pos, inv, suelo, T0); if (!e.ok) throw new Error(e.motivo);
+  if (Object.keys(fab.faltaEstacion(fab.estaciones[r.id])).length) throw new Error('le falta material: ' + JSON.stringify(e.falta));
+  const herr = jugador(); herr.meterDonde('lasca_silex', 1);
+  for (let i = 0; i < 20 && fab.estaciones[r.id].obra; i++) { const t = fab.trabajarEstacion(autor, r.id, MAX_RATO_ESTACION, pos, herr); if (!t.ok) throw new Error(t.motivo); }
+  return r.id;
 }
 
 console.log('Lo que dice el documento de sistemas (apartados 7 y 8)');
@@ -56,70 +71,89 @@ console.log('Lo que dice el documento de sistemas (apartados 7 y 8)');
   comprobar('todas las estaciones cuestan cosas del catálogo', Object.values(ESTACIONES).every(e => Object.keys(e.coste).every(t => CATALOGO[t])));
 }
 
-console.log('Colocar estaciones, con lo que llevas y lo del suelo');
+console.log('Los puestos son obra: el marco, su material (de lo que llevas y del suelo) y el trabajo');
 {
   const fab = new Fabricacion(), inv = jugador(), suelo = new Suelo();
-  let r = fab.colocar('ana', 'hoguera', 0, 0, inv, suelo, T0);
-  comprobar('sin materiales no se coloca, y dice qué falta', !r.ok && r.faltan.piedra === 6 && r.faltan.rama === 4, r.motivo);
+  let r = fab.colocar('ana', 'hoguera', 0, 0);
+  const id = r.id, e = fab.estaciones[id];
+  comprobar('se pone el marco sin gastar nada', r.ok && r.obra && e.obra && igual(e.obra.entregado, {}) && e.obra.trabajo === 0, r.motivo || id);
+  comprobar('le falta todo su coste', igual(fab.faltaEstacion(e), { piedra: 6, rama: 4 }));
+  r = fab.trabajarEstacion('ana', id, 2, { x: 0, z: 0 }, inv);
+  comprobar('sin su material no se trabaja', !r.ok && /material/.test(r.motivo), r.motivo);
+  r = fab.entregarEstacion('ana', id, { x: 0, z: 0 }, inv, suelo, T0);
+  comprobar('sin llevar nada no se entrega, y dice qué le falta', !r.ok && r.faltan.piedra === 6, r.motivo);
   inv.meterDonde('piedra', 3); inv.meterDonde('rama', 3);
   suelo.dejar({ tipo: 'piedra', n: 5 }, 1, 0, T0, 'ana', false);
   const ramas = suelo.dejar({ tipo: 'rama', n: 2 }, 0, 1, T0, 'ana', false);
   const lejos = suelo.dejar({ tipo: 'rama', n: 50 }, 20, 0, T0, 'ana', false);
-  r = fab.colocar('ana', 'hoguera', 0, 0, inv, suelo, T0);
-  comprobar('con lo que llevas y lo del suelo al lado, se coloca', r.ok, r.motivo || r.id);
+  r = fab.entregarEstacion('ana', id, { x: 9, z: 0 }, inv, suelo, T0);
+  comprobar('lejos del marco no se entrega', !r.ok && /lejos/.test(r.motivo), r.motivo);
+  r = fab.entregarEstacion('ana', id, { x: 0, z: 0 }, inv, suelo, T0);
   const pila = suelo.objetos.find(o => o.cosa.tipo === 'piedra');
-  comprobar('gasta primero lo que llevas y luego lo del suelo', inv.cuantos('piedra') === 0 && inv.cuantos('rama') === 0 && pila.cosa.n === 2 && ramas.cosa.n === 1, JSON.stringify(r.usado));
-  comprobar('lo del suelo lejos no se toca ni cuenta', lejos.cosa.n === 50 && sueloCerca(suelo, { x: 0, z: 0 }, T0).every(o => o !== lejos) && ALCANCE_SUELO < 20);
+  comprobar('se le lleva de lo que llevas y del suelo a tu lado: primero lo que llevas', r.ok && igual(r.entregado, { piedra: 6, rama: 4 }) && inv.cuantos('piedra') === 0 && inv.cuantos('rama') === 0 && pila.cosa.n === 2 && ramas.cosa.n === 1, JSON.stringify(r));
+  comprobar('lo del suelo lejos no se toca', lejos.cosa.n === 50 && ALCANCE_SUELO < 20);
+  comprobar('en obra no se fabrica ni se deposita', !fab.fabricar('ana', 'lanza_endurecida', id, { x: 0, z: 0 }, inv, suelo, T0).ok
+    && fab.estacionCerca('fuego', { x: 0, z: 0 }) === null && !fab.depositar('ana', id, 'mano:der', 1, { x: 0, z: 0 }, inv).ok);
+  r = fab.trabajarEstacion('ana', id, MAX_RATO_ESTACION + 1, { x: 0, z: 0 }, inv);
+  comprobar('un rato de trabajo de más de lo que vale no cuela', !r.ok);
+  r = fab.trabajarEstacion('ana', id, 4, { x: 0, z: 0 }, inv);
+  const r2 = fab.trabajarEstacion('blas', id, 4, { x: 0.5, z: 0 }, inv);
+  comprobar('el trabajo de todos se suma', r.ok && !r.terminada && r2.ok && Math.abs(r2.progreso - 8 / ESTACIONES.hoguera.trabajo) < 1e-9, JSON.stringify(r2));
+  r = fab.trabajarEstacion('ana', id, 5, { x: 0, z: 0 }, inv);
+  comprobar('al llegar a su trabajo queda levantada (sin obra) y ya da el fuego', r.ok && r.terminada && !fab.estaciones[id].obra && fab.estacionCerca('fuego', { x: 0, z: 0 }).id === id, JSON.stringify(r));
+  comprobar('y en sus aportes, quién llevó qué y quién trabajó', r.aportes.some(a => a.autor === 'ana' && a.entrega) && r.aportes.some(a => a.autor === 'blas' && a.trabajo === 4));
+  comprobar('levantada, ya no se le entrega ni se quita como marco', !fab.entregarEstacion('ana', id, { x: 0, z: 0 }, inv, suelo, T0).ok && !fab.quitarEstacion('ana', id, { x: 0, z: 0 }, suelo, T0).ok);
+  // el banco: la herramienta se lleva al trabajarlo, y no se gasta
+  const b = fab.colocar('ana', 'banco_tronco', 5, 5).id;
   const inv2 = jugador(); inv2.lugares.hombro = { tipo: 'tronco_corto', n: 1 }; inv2.lugares['mano:der'] = { tipo: 'tronco_corto', n: 1 };
-  r = fab.colocar('ana', 'banco_tronco', 5, 5, inv2, null, T0);
-  comprobar('el banco de tronco pide llevar una herramienta de piedra', !r.ok && /hacha de piedra/.test(r.motivo), r.motivo);
+  r = fab.entregarEstacion('ana', b, { x: 5, z: 5 }, inv2, null, T0);
+  comprobar('2 troncos cortos (uno al hombro) se le llevan', r.ok && inv2.cuantos('tronco_corto') === 0 && !Object.keys(fab.faltaEstacion(fab.estaciones[b])).length, r.motivo);
+  r = fab.trabajarEstacion('ana', b, 5, { x: 5, z: 5 }, inv2);
+  comprobar('el banco pide llevar una herramienta de piedra para levantarlo', !r.ok && /hacha de piedra/.test(r.motivo), r.motivo);
   inv2.meterDonde('lasca_silex', 1);
-  r = fab.colocar('ana', 'banco_tronco', 5, 5, inv2, null, T0);
-  comprobar('con una lasca y 2 troncos cortos (uno al hombro), se coloca y la lasca no se gasta', r.ok && inv2.cuantos('tronco_corto') === 0 && inv2.cuantos('lasca_silex') === 1, r.motivo || r.id);
-  comprobar('una estación desconocida no se coloca', !fab.colocar('ana', 'constructor', 0, 0, inv, suelo, T0).ok && !fab.colocar('ana', '__proto__', 0, 0, inv, suelo, T0).ok);
+  for (let k = 0; k < 4; k++) r = fab.trabajarEstacion('ana', b, 5, { x: 5, z: 5 }, inv2);
+  comprobar('con una lasca, se levanta en su trabajo (20 s) y la lasca no se gasta', r.ok && r.terminada && inv2.cuantos('lasca_silex') === 1, r.motivo);
+  comprobar('una estación desconocida no se coloca', !fab.colocar('ana', 'constructor', 0, 0).ok && !fab.colocar('ana', '__proto__', 0, 0).ok);
   comprobar('colocar no enseña nada (nadie aprende recetas)', !('aprendidas' in r));
 }
 
-console.log('Fabricar con las manos, en cualquier sitio: el cordel');
+console.log('Dónde va cada puesto: la hoguera, solo fuera');
 {
-  const fab = new Fabricacion(), inv = jugador();
-  inv.meterDonde('fibra', 7);
-  let r = fab.fabricar('ana', 'cordel', null, { x: 123, z: -456 }, inv, null, T0);
-  comprobar('cordel con 3 fibra, en medio de ninguna parte: se encarga', r.ok && inv.cuantos('fibra') === 4, r.motivo);
-  comprobar('termina pasado su tiempo', r.ok && r.encargo.fin === T0 + RECETAS.cordel.s * 1000);
-  r = fab.fabricar('ana', 'cordel', null, { x: 0, z: 0 }, inv, null, T0 + 1000);
-  comprobar('con las manos, una cosa a la vez', !r.ok && inv.cuantos('fibra') === 4, r.motivo);
-  r = fab.recoger('ana', null, { x: 0, z: 0 }, inv, T0 + 5000);
-  comprobar('antes de tiempo no se recoge', !r.ok, r.motivo);
-  const antes = inv.cuantos('cordel');
-  r = fab.recoger('ana', null, { x: 0, z: 0 }, inv, T0 + RECETAS.cordel.s * 1000);
-  comprobar('pasado el tiempo se recoge y va a lo que llevas', r.ok && inv.cuantos('cordel') === antes + 1, r.motivo || JSON.stringify(r.dados));
-  comprobar('el cinturón de cordel puesto no se gasta nunca', inv.lugares.cintura && inv.lugares.cintura.tipo === 'cordel');
-  r = fab.fabricar('ana', 'hacha_piedra', null, { x: 0, z: 0 }, inv, null, T0);
-  comprobar('el hacha de piedra no se hace con las manos: pide la piedra de tallar', !r.ok && /piedra de tallar/.test(r.motivo), r.motivo);
-  r = fab.fabricar('ana', 'cordel', 'hoguera:1', { x: 0, z: 0 }, inv, null, T0 + 100000);
-  comprobar('el cordel no se hace en una estación', !r.ok, r.motivo);
-  // con la fibra en el suelo, a tus pies
-  const f2 = new Fabricacion(), i2 = jugador(), suelo = new Suelo();
-  const fibra = suelo.dejar({ tipo: 'fibra', n: 3 }, 0.5, 0, T0, 'blas', false);
-  r = f2.fabricar('ana', 'cordel', null, { x: 0, z: 0 }, i2, suelo, T0);
-  comprobar('con la fibra en el suelo a tu lado, sin llevar nada, se hace el cordel', r.ok && !suelo.objetos.includes(fibra) && igual(r.usado.suelo, { [fibra.id]: { fibra: 3 } }), r.motivo);
-  const f3 = new Fabricacion(), s3 = new Suelo(); s3.dejar({ tipo: 'fibra', n: 3 }, ALCANCE_SUELO + 0.5, 0, T0, 'blas', false);
-  r = f3.fabricar('ana', 'cordel', null, { x: 0, z: 0 }, jugador(), s3, T0);
-  comprobar('si la fibra está a más de un paso, no', !r.ok && r.faltan.fibra === 3, r.motivo);
-  const s4 = new Suelo(); s4.dejar({ tipo: 'fibra', n: 3 }, 0, 0, T0, 'blas', false);
-  r = new Fabricacion().fabricar('ana', 'cordel', null, { x: 0, z: 0 }, jugador(), s4, T0 + 2 * 3600e3);
-  comprobar('lo que ya ha desaparecido del suelo no cuenta', !r.ok, r.motivo);
-  const s5 = new Suelo(); s5.dejar({ tipo: 'lenero', n: 1, dentro: [{ tipo: 'rama', n: 4 }] }, 0, 0, T0, 'blas', false);
-  r = new Fabricacion().fabricar('ana', 'palo_cavador', null, { x: 0, z: 0 }, jugador(), s5, T0);
-  comprobar('lo que hay dentro de un contenedor del suelo no se gasta', !r.ok && r.faltan.rama === 1, r.motivo);
+  const fab = new Fabricacion();
+  comprobar('la hoguera, solo fuera; la piedra de tallar y el banco, dentro o fuera', ESTACIONES.hoguera.donde === 'fuera' && ESTACIONES.piedra_tallar.donde === 'ambos' && ESTACIONES.banco_tronco.donde === 'ambos');
+  let r = fab.colocar('ana', 'hoguera', 0, 0, true);
+  comprobar('bajo techo no se pone una hoguera', !r.ok && /fuera/.test(r.motivo), r.motivo);
+  comprobar('la piedra de tallar y el banco, bajo techo sí', fab.colocar('ana', 'piedra_tallar', 0, 0, true, 0.3).ok && fab.colocar('ana', 'banco_tronco', 2, 0, true).ok);
+  comprobar('y se guarda la altura del suelo en que se apoya, si se da', Object.values(fab.estaciones).find(e => e.tipo === 'piedra_tallar').y === 0.3);
+  ESTACIONES.prueba_hogar = { ...ESTACIONES.piedra_tallar, nombre: 'Hogar', donde: 'dentro' };
+  comprobar('lo que va solo dentro (el hogar, con su tarea), fuera no', !fab.colocar('ana', 'prueba_hogar', 0, 0, false).ok && fab.colocar('ana', 'prueba_hogar', 0, 0, true).ok);
+  delete ESTACIONES.prueba_hogar;
+  // «bajo techo» lo dice el mundo de las construcciones: un tejado o un suelo terminado encima, en su casilla
+  const m = new Mundo(), c = { id: 1, ox: 0, oz: 0, rot: 0, piezas: new Map() }; m.construcciones.push(c);
+  const dentro = { x: MODULO * 0.5, z: MODULO * 0.5 }, al_lado = { x: MODULO * 1.5, z: MODULO * 0.5 };
+  comprobar('sin tejado, fuera', !m.bajoTecho(dentro.x, dentro.z));
+  c.piezas.set(clave('r', 0, 0, 1), { tipo: 'tejado_paja', hueco: 'r', i: 0, j: 0, k: 1, obra: { entregado: {}, trabajo: 0, aportes: [] } });
+  comprobar('con el tejado aún en obra, fuera', !m.bajoTecho(dentro.x, dentro.z));
+  delete c.piezas.get(clave('r', 0, 0, 1)).obra;
+  comprobar('con el tejado terminado, dentro; en la casilla de al lado, fuera', m.bajoTecho(dentro.x, dentro.z) && !m.bajoTecho(al_lado.x, al_lado.z));
+}
+
+console.log('Quitar un marco a medio hacer');
+{
+  const fab = new Fabricacion(), suelo = new Suelo(), inv = jugador();
+  const id = fab.colocar('ana', 'hoguera', 3, 3).id;
+  inv.meterDonde('piedra', 2); inv.meterDonde('rama', 1);
+  fab.entregarEstacion('ana', id, { x: 3, z: 3 }, inv, null, T0);
+  const r = fab.quitarEstacion('ana', id, { x: 3, z: 3 }, suelo, T0, true);
+  const en = t => suelo.objetos.filter(o => o.cosa.tipo === t).reduce((n, o) => n + o.cosa.n, 0);
+  comprobar('se quita y lo entregado cae al suelo donde estaba', r.ok && !fab.estaciones[id] && en('piedra') === 2 && en('rama') === 1 && suelo.objetos.every(o => Math.hypot(o.x - 3, o.z - 3) < 1.5), JSON.stringify(r));
 }
 
 console.log('Fabricar por uso: piedra de tallar y fuego');
 {
   const fab = new Fabricacion(), inv = jugador();
   inv.meterDonde('piedra', 3); inv.meterDonde('silex', 1); inv.meterDonde('rama', 3);
-  const tallar = fab.colocar('ana', 'piedra_tallar', 10, 0, inv, null, T0).id;
+  const tallar = levantar(fab, 'ana', 'piedra_tallar', 10, 0, inv);
   comprobar('la piedra de tallar gasta 1 piedra', inv.cuantos('piedra') === 2);
   let r = fab.fabricar('ana', 'lasca_silex', tallar, { x: 20, z: 0 }, inv, null, T0);
   comprobar('lejos de la estación no se fabrica', !r.ok && inv.cuantos('silex') === 1, r.motivo);
@@ -159,7 +193,7 @@ console.log('Fabricar por uso: piedra de tallar y fuego');
   comprobar('Blas usa la piedra de tallar de Ana sin haber construido una, con lo que deposita él', r.ok && r.estacion === tallar && invB.cuantos('silex') === 0, r.motivo);
   // el fuego: la cola de la hoguera, con ramas depositadas; las del suelo de al lado no cuentan
   const inv3 = jugador(), suelo = new Suelo(); inv3.meterDonde('piedra', 6); inv3.meterDonde('rama', 3); inv3.meterDonde('rama', 1);
-  const hog = fab.colocar('blas', 'hoguera', 0, 0, inv3, suelo, T0).id;
+  const hog = levantar(fab, 'blas', 'hoguera', 0, 0, inv3, suelo);
   suelo.dejar({ tipo: 'rama', n: 10 }, 1, 0, T0, 'blas', true);
   comprobar('las ramas del suelo de al lado no valen para la hoguera', !fab.fabricar('blas', 'lanza_endurecida', null, { x: 1, z: 0 }, inv3, suelo, T0).ok);
   depositar(fab, hog, { rama: COLA_ESTACION + 1 });
@@ -192,7 +226,7 @@ console.log('Todas las recetas a la vista: lo que puedes ya, lo que casi y lo qu
   comprobar('la lasca, después, con la piedra de tallar', de('lasca_silex').grupo === 'despues' && de('lasca_silex').conQue === 'una piedra de tallar');
   comprobar('la lanza, después, con la hoguera', de('lanza_endurecida').grupo === 'despues' && /hoguera/.test(de('lanza_endurecida').conQue));
   inv.meterDonde('piedra', 1);
-  const pt = fab.colocar('ana', 'piedra_tallar', 1, 0, inv, null, T0).id;
+  const pt = levantar(fab, 'ana', 'piedra_tallar', 1, 0, inv);
   l = fab.lista({ x: 0, z: 0 }, inv, suelo, T0);
   comprobar('con la piedra de tallar al lado y nada en ella, la lasca casi: falta depositar sílex y piedra', de('lasca_silex').grupo === 'casi' && igual(de('lasca_silex').faltan, { silex: 1, piedra: 1 }) && de('lasca_silex').estacion === pt, JSON.stringify(de('lasca_silex')));
   depositar(fab, pt, { silex: 1, piedra: 1 });
@@ -206,7 +240,7 @@ console.log('Depositar en las estaciones y volver a coger');
 {
   const fab = new Fabricacion(), inv = jugador();
   inv.meterDonde('piedra', 1);
-  const pt = fab.colocar('ana', 'piedra_tallar', 0, 0, inv, null, T0).id;
+  const pt = levantar(fab, 'ana', 'piedra_tallar', 0, 0, inv);
   inv.lugares.cintura = { tipo: 'cordel', n: 1, dentro: [null] };
   let r = fab.depositar('ana', pt, 'cintura', undefined, { x: 0, z: 0 }, inv);
   comprobar('lo que llevas puesto no se deja', !r.ok && inv.lugares.cintura, r.motivo);
@@ -239,7 +273,7 @@ console.log('Depositar en las estaciones y volver a coger');
   comprobar('cuentasEstacion dice lo que falta', igual(cuentasEstacion({ piedra: 1, silex: 2 }, { piedra: 4 }).faltan, { silex: 2 }));
   // con dos piedras de tallar al lado, sin decir cuál, la que tiene lo que pide
   const inv2 = jugador(); inv2.meterDonde('piedra', 2);
-  const a1 = fab.colocar('ana', 'piedra_tallar', 3, 0, inv2, null, T0).id, a2 = fab.colocar('ana', 'piedra_tallar', 4, 0, inv2, null, T0).id;
+  const a1 = levantar(fab, 'ana', 'piedra_tallar', 3, 0, inv2), a2 = levantar(fab, 'ana', 'piedra_tallar', 4, 0, inv2);
   depositar(fab, a2, { silex: 1, piedra: 1 });
   r = fab.fabricar('ana', 'lasca_silex', null, { x: 3.2, z: 0 }, inv2, null, T0);
   comprobar('con dos al lado, sin decir cuál, usa la que tiene lo depositado aunque esté más lejos', r.ok && r.estacion === a2 && a1 !== a2, r.motivo || r.estacion);
@@ -254,10 +288,8 @@ console.log('De qué sitio sale cada cosa: la mano, el cinturón o el suelo');
   const c = cuentas({ fibra: 3 }, inv, sueloCerca(suelo, { x: 0, z: 0 }, T0)).de.fibra;
   comprobar('1 de la mano, 1 del cinturón y 1 del suelo', c.sitios.mano === 1 && c.sitios.cinturon === 1 && c.sitios.suelo === 1 && c.encima === 2, JSON.stringify(c));
   comprobar('SITIO_DE_RUTA nombra cada sitio', SITIO_DE_RUTA('mano:izq') === 'mano' && SITIO_DE_RUTA('cintura/1') === 'cinturon' && SITIO_DE_RUTA('espalda/0') === 'mochila' && SITIO_DE_RUTA('hombro') === 'hombro');
-  const le = fab.listaEstaciones({ x: 0, z: 0 }, inv, suelo, T0), pt = le.find(e => e.tipo === 'piedra_tallar'), bt = le.find(e => e.tipo === 'banco_tronco');
-  comprobar('las estaciones que se pueden poner, con su coste y qué falta', le.length === Object.keys(ESTACIONES).length && !pt.puede && igual(pt.faltan, { piedra: 1 }) && !bt.puede && bt.sinHerramienta, JSON.stringify(pt));
-  inv.meterDonde('piedra', 1);
-  comprobar('con una piedra, la piedra de tallar se puede poner', fab.listaEstaciones({ x: 0, z: 0 }, inv, suelo, T0).find(e => e.tipo === 'piedra_tallar').puede);
+  const le = fab.listaEstaciones(), pt = le.find(e => e.tipo === 'piedra_tallar'), bt = le.find(e => e.tipo === 'banco_tronco');
+  comprobar('los puestos que se pueden poner (el menú de construcción), con su coste, su herramienta y dónde van', le.length === Object.keys(ESTACIONES).length && igual(pt.coste, { piedra: 1 }) && bt.requiere.includes('lasca_silex') && pt.donde === 'ambos', JSON.stringify(pt));
 }
 
 console.log('Si no te cabe');
@@ -276,13 +308,13 @@ console.log('Guardar y cargar');
 {
   const fab = new Fabricacion(), inv = jugador();
   inv.meterDonde('piedra', 2); inv.meterDonde('silex', 1); inv.meterDonde('fibra', 3);
-  const id = fab.colocar('ana', 'piedra_tallar', 4, 4, inv, null, T0).id;
+  const id = levantar(fab, 'ana', 'piedra_tallar', 4, 4, inv);
   depositar(fab, id, { silex: 1, piedra: 1, rama: 2 });
   fab.fabricar('ana', 'lasca_silex', id, { x: 4, z: 4 }, inv, null, T0);
   fab.fabricar('ana', 'cordel', null, { x: 4, z: 4 }, inv, null, T0);
   const datos = JSON.parse(JSON.stringify(fab.exportar()));
   const otra = new Fabricacion().importar(datos);
-  comprobar('se guarda la versión', datos.version === VERSION_FABRICACION && VERSION_FABRICACION === 4);
+  comprobar('se guarda la versión', datos.version === VERSION_FABRICACION && VERSION_FABRICACION === 5);
   comprobar('al cargar, las estaciones, sus colas, lo depositado y lo de las manos son lo mismo', igual(otra.exportar(), fab.exportar()) && igual(otra.estaciones[id].deposito, { rama: 2 }));
   const malo = JSON.parse(JSON.stringify(datos)); malo.estaciones[0].deposito = { rama: 2, nada: 3, piedra: -1, silex: 1.5, toString: 1, fibra: DEPOSITO_MAX };
   comprobar('lo depositado que no vale se descarta (tipos que no existen, cantidades raras, más del máximo)', igual(new Fabricacion().importar(malo).estaciones[id].deposito, { rama: 2 }));
@@ -299,10 +331,18 @@ console.log('Guardar y cargar');
   comprobar('un guardado de la v1 se carga: estaciones y colas siguen', m.estaciones['piedra_tallar:1'] && m.estaciones['piedra_tallar:1'].cola.length === 1 && m.estaciones['hoguera:2'].cola.length === 1 && m.siguiente === 3);
   const v2 = { ...JSON.parse(JSON.stringify(v1)), version: 2, saber: { ana: { conoce: ['lasca_silex'], practica: { piedra_tallar: 1 } } } };
   const m2 = new Fabricacion().importar(v2);
-  comprobar('un guardado de la v2 se carga sin lo que sabía cada uno', igual(m2.exportar().estaciones, m.exportar().estaciones) && !('saber' in m2.exportar()) && m2.exportar().version === 4);
+  comprobar('un guardado de la v2 se carga sin lo que sabía cada uno', igual(m2.exportar().estaciones, m.exportar().estaciones) && !('saber' in m2.exportar()) && m2.exportar().version === 5);
   comprobar('un guardado de la v3 se carga con las estaciones vacías (nada depositado)', Object.values(m.estaciones).every(e => igual(e.deposito, {})));
   const blas = jugador(); depositar(m2, 'piedra_tallar:1', { silex: 1, piedra: 1 });
   comprobar('y con él, cualquiera hace cualquier receta (Blas, la lasca en la piedra de tallar de Ana)', m2.fabricar('blas', 'lasca_silex', null, { x: 0, z: 0 }, blas, null, T0).ok);
+  const fo = new Fabricacion(), ob = fo.colocar('ana', 'hoguera', 1, 1).id, invO = jugador(); invO.meterDonde('piedra', 2);
+  fo.entregarEstacion('ana', ob, { x: 1, z: 1 }, invO, null, T0);
+  const dObra = JSON.parse(JSON.stringify(fo.exportar())), cargada = new Fabricacion().importar(dObra).estaciones[ob];
+  comprobar('un marco a medio hacer se guarda y se carga con lo entregado', cargada.obra && igual(cargada.obra.entregado, { piedra: 2 }) && igual(cargada.obra, fo.estaciones[ob].obra));
+  dObra.estaciones[0].obra.entregado = { piedra: 99, nada: 1, rama: 1.5 };
+  comprobar('lo entregado que no vale se descarta, y no pasa de su coste', igual(new Fabricacion().importar(dObra).estaciones[ob].obra.entregado, { piedra: 6 }));
+  const v4 = { version: 4, siguiente: 3, estaciones: [{ id: 'hoguera:1', tipo: 'hoguera', x: 0, z: 0, autor: 'ana', cola: [], deposito: {} }], manos: {} };
+  comprobar('lo guardado en la v4 se carga con sus estaciones ya levantadas', (() => { const e = new Fabricacion().importar(v4).estaciones['hoguera:1']; return e && !e.obra; })());
   comprobar('un guardado sin versión no se carga', migrarFabricacion({ estaciones: [] }) === null && Object.keys(new Fabricacion().importar(null).estaciones).length === 0);
 }
 
@@ -317,7 +357,11 @@ console.log('Acciones con autor');
   comprobar('sin autor no vale', !r.ok && /autor/.test(r.motivo));
   r = ejecutarFabricacion(fab, invs, reg, { autor: 'ana', tipo: 'colocar_estacion', estacion: 'piedra_tallar', x: 0, z: 0 }, T0, suelo);
   const id = r.id;
-  comprobar('colocar con autor gasta de lo de Ana', r.ok && ana.cuantos('piedra') === 1);
+  comprobar('el marco, con autor, no gasta nada', r.ok && r.obra && ana.cuantos('piedra') === 2);
+  r = ejecutarFabricacion(fab, invs, reg, { autor: 'ana', tipo: 'entregar_estacion', estacion: id, x: 0, z: 0 }, T0, suelo);
+  comprobar('entregarle con autor gasta de lo de Ana', r.ok && ana.cuantos('piedra') === 1, r.motivo);
+  r = ejecutarFabricacion(fab, invs, reg, { autor: 'ana', tipo: 'trabajar_estacion', estacion: id, segundos: 5, x: 0, z: 0 }, T0, suelo);
+  comprobar('y trabajar en él lo levanta', r.ok && r.terminada && !fab.estaciones[id].obra, r.motivo);
   r = ejecutarFabricacion(fab, invs, reg, { autor: 'blas', tipo: 'fabricar', receta: 'lasca_silex', estacion: id, x: 0, z: 0 }, T0, suelo);
   comprobar('Blas no fabrica con lo que lleva Ana', !r.ok && ana.cuantos('piedra') === 1, r.motivo);
   ana.meterDonde('silex', 1);
@@ -335,8 +379,8 @@ console.log('Acciones con autor');
   comprobar('nombres raros de receta no cuelan', !r.ok);
   r = ejecutarFabricacion(fab, invs, reg, { autor: 'ana', tipo: 'fabricar', receta: 'lasca_silex', estacion: id, x: 'a', z: 0 }, T0, suelo);
   comprobar('datos no válidos', !r.ok && /no válidos/.test(r.motivo));
-  comprobar('todo queda en el registro, salga bien o no', reg.entradas.length === 10 && reg.entradas.filter(e => e.ok).length === 5 && reg.entradas[1].resultado.estacion === id);
-  comprobar('el registro anota lo depositado, en qué estación se hizo y lo que se gastó de ella', igual(reg.entradas[3].resultado, { estacion: id, dejado: { silex: 1 } }) && reg.entradas[6].resultado.estacion === id && igual(reg.entradas[6].resultado.deLaEstacion, { silex: 1, piedra: 1 }), JSON.stringify(reg.entradas[6].resultado));
+  comprobar('todo queda en el registro, salga bien o no', reg.entradas.length === 12 && reg.entradas.filter(e => e.ok).length === 7 && reg.entradas[1].resultado.estacion === id && reg.entradas[1].resultado.obra && igual(reg.entradas[2].resultado, { estacion: id, entregado: { piedra: 1 } }) && reg.entradas[3].resultado.terminada);
+  comprobar('el registro anota lo depositado, en qué estación se hizo y lo que se gastó de ella', igual(reg.entradas[5].resultado, { estacion: id, dejado: { silex: 1 } }) && reg.entradas[8].resultado.estacion === id && igual(reg.entradas[8].resultado.deLaEstacion, { silex: 1, piedra: 1 }), JSON.stringify(reg.entradas[8].resultado));
   ana.meterDonde('rama', 1);
   r = ejecutarFabricacion(fab, invs, reg, { autor: 'ana', tipo: 'depositar_estacion', estacion: id, de: ana.rutasCon('rama')[0], x: 0, z: 0 }, T0, suelo);
   r = ejecutarFabricacion(fab, invs, reg, { autor: 'ana', tipo: 'retirar_estacion', estacion: id, objeto: 'rama', x: 0, z: 0 }, T0, suelo);

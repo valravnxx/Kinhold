@@ -15,7 +15,16 @@
 //
 // Decisiones provisionales (el documento no las fija; anotadas en el diario):
 //  - Tiempos: con las manos y lo sencillo, de 10 a 30 s; las herramientas, 45 a 60 s; endurecer la lanza al fuego,
-//    60 s. Las estaciones se colocan al momento (su obra, con su marco y su tiempo, es otra tarea del hito).
+//    60 s.
+//  - Los puestos de trabajo son obra (valravnx, 6 nov: «las estaciones como obra, sí, siempre»): se pone el marco desde
+//    el menú de construcción (su pestaña «Puestos de trabajo»), sin gastar nada; luego se le lleva su coste (de lo que
+//    llevas y del suelo a tu lado, como al fabricar con las manos) y se trabaja en él hasta levantarlo (trabajo, en s
+//    de trabajo, sumando los de todos: 5 s la piedra de tallar, 10 s la hoguera, 20 s el banco; provisional). La
+//    herramienta que pide (el banco: hacha de piedra o lasca) se lleva al trabajarlo, y no se gasta. Hasta que se
+//    termina no se fabrica en él ni se deposita nada. Un marco a medio hacer se puede quitar: lo entregado cae al
+//    suelo, donde estaba. Dónde va cada uno (donde): la piedra de tallar y el banco, dentro o fuera; la hoguera, solo
+//    fuera (bajo techo no); el hogar, solo dentro (con su tarea). «Dentro» es bajo el techo de una construcción
+//    (lo dice quien valida: bajoTecho(x, z)).
 //  - Cola: 3 encargos sin terminar por estación; con las manos, uno solo (las tuyas, solo tú).
 //  - Junto a la estación: a 2,5 m como mucho. «El suelo a tu lado»: lo que se podría coger (2 m, src/logica/suelo.js),
 //    medido desde donde estás (al colocar una estación, desde donde se pone).
@@ -38,7 +47,7 @@
 //    llevas puesto, ni un contenedor con algo dentro, ni una prenda cosida). Dejar y coger, a ALCANCE_ESTACION; en
 //    tierra de otro, solo su dueño y sus invitados (lo mira el servidor, como al poner la estación). Lo depositado es
 //    de la estación, no de quien lo dejó: cualquiera que pueda tocarla lo gasta o lo coge. Se gasta al encargar.
-//    Colocar la estación sigue gastando de lo que llevas y del suelo (es levantarla, no fabricar en ella).
+//    Levantar la estación (entregarle su coste) gasta de lo que llevas y del suelo (no es fabricar en ella).
 import { CATALOGO } from './inventario.js';
 import { ALCANCE_COGER } from './suelo.js';
 
@@ -47,6 +56,7 @@ export const ALCANCE_SUELO = ALCANCE_COGER; // m, del jugador a lo del suelo que
 export const COLA_ESTACION = 3;             // encargos sin terminar por estación
 export const COLA_MANOS = 1;
 export const DEPOSITO_MAX = 20;             // unidades depositadas por estación, en total
+export const MAX_RATO_ESTACION = 5;         // s de trabajo como mucho en una sola acción (como en las obras)
 
 // Los usos: qué estaciones dan cada uno. Una receta pide un uso, no una estación concreta.
 export const USOS = {
@@ -56,12 +66,14 @@ export const USOS = {
   banco:  { nombre: 'En el banco de tronco', estaciones: ['banco_tronco'] },
 };
 
-// un: cómo se nombra en una frase. coste: lo que se gasta al colocarla. requiere: lleva al menos uno de estos (no se gasta). uso: el que da.
+// un: cómo se nombra en una frase. coste: lo que hay que llevarle a su obra. requiere: lleva al menos uno de estos al
+// trabajarla (no se gasta). uso: el que da. donde: 'fuera', 'dentro' o 'ambos'. trabajo: s de trabajo para levantarla.
 export const ESTACIONES = {
-  hoguera:       { nombre: 'Hoguera', un: 'una hoguera', uso: 'fuego', coste: { piedra: 6, rama: 4 }, hace: 'Cocinar, calentarse, endurecer al fuego, antorchas' },
-  piedra_tallar: { nombre: 'Piedra de tallar', un: 'una piedra de tallar', uso: 'tallar', coste: { piedra: 1 }, hace: 'Herramientas de piedra y sílex' },
-  banco_tronco:  { nombre: 'Banco de trabajo de tronco', un: 'un banco de trabajo de tronco', uso: 'banco', coste: { tronco_corto: 2 }, requiere: ['hacha_piedra', 'lasca_silex'], hace: 'Trabajos de madera, mangos, cestería, primeras piezas de construcción' },
+  hoguera:       { nombre: 'Hoguera', un: 'una hoguera', uso: 'fuego', coste: { piedra: 6, rama: 4 }, donde: 'fuera', trabajo: 10, hace: 'Cocinar, calentarse, endurecer al fuego, antorchas' },
+  piedra_tallar: { nombre: 'Piedra de tallar', un: 'una piedra de tallar', uso: 'tallar', coste: { piedra: 1 }, donde: 'ambos', trabajo: 5, hace: 'Herramientas de piedra y sílex' },
+  banco_tronco:  { nombre: 'Banco de trabajo de tronco', un: 'un banco de trabajo de tronco', uso: 'banco', coste: { tronco_corto: 2 }, requiere: ['hacha_piedra', 'lasca_silex'], donde: 'ambos', trabajo: 20, hace: 'Trabajos de madera, mangos, cestería, primeras piezas de construcción' },
 };
+export const DONDE = { fuera: 'Solo fuera', dentro: 'Solo dentro de la casa', ambos: 'Dentro o fuera' };
 // Las estaciones que existen de un uso (el hogar aún no), y cómo se nombran juntas («una hoguera o un hogar»).
 export const estacionesDeUso = uso => (USOS[uso] ? USOS[uso].estaciones : []).filter(t => Object.hasOwn(ESTACIONES, t));
 export const conQue = uso => estacionesDeUso(uso).map(t => ESTACIONES[t].un).join(' o ');
@@ -224,7 +236,7 @@ function gastarTodo(gasta, inv, cerca, suelo) {
 const textoFaltan = f => 'Te falta: ' + Object.entries(f).map(([t, n]) => `${n} de ${(CATALOGO[t] || {}).nombre || t}`).join(', ') + '.';
 
 // ---------------- Estaciones y colas ----------------
-export const VERSION_FABRICACION = 4; // 3: sin lo que sabía cada uno (fuera aprender recetas, revisión del 1 nov); 4: lo depositado
+export const VERSION_FABRICACION = 5; // 3: sin lo que sabía cada uno (fuera aprender recetas, revisión del 1 nov); 4: lo depositado; 5: la obra de cada puesto
 // lo depositado que vale: solo tipos del catálogo, cantidades enteras positivas, hasta DEPOSITO_MAX en total
 export function limpiarDeposito(dep) {
   const o = {};
@@ -234,6 +246,16 @@ export function limpiarDeposito(dep) {
     o[k] = n; t += n;
   }
   return o;
+}
+// La obra de un puesto, guardada: lo entregado (solo lo de su coste, sin pasarse), el trabajo y quién aportó.
+const copiaObra = o => ({ entregado: { ...o.entregado }, trabajo: o.trabajo, aportes: o.aportes.map(a => JSON.parse(JSON.stringify(a))) });
+export function limpiarObra(o, tipo) {
+  if (!o || typeof o !== 'object' || !tiene(ESTACIONES, tipo)) return null;
+  const coste = ESTACIONES[tipo].coste, entregado = {};
+  for (const [t, n] of Object.entries(o.entregado && typeof o.entregado === 'object' ? o.entregado : {}))
+    if (Object.hasOwn(coste, t) && Number.isInteger(n) && n > 0) entregado[t] = Math.min(n, coste[t]);
+  const trabajo = Number.isFinite(o.trabajo) ? Math.max(0, Math.min(ESTACIONES[tipo].trabajo, o.trabajo)) : 0;
+  return { entregado, trabajo, aportes: Array.isArray(o.aportes) ? o.aportes.filter(a => a && typeof a === 'object' && typeof a.autor === 'string') : [] };
 }
 export class Fabricacion {
   constructor() {
@@ -246,7 +268,7 @@ export class Fabricacion {
   // depositado todo lo que pide; si ninguna, la más cercana.
   estacionCerca(uso, pos, gasta = null) {
     const tipos = estacionesDeUso(uso);
-    const l = Object.values(this.estaciones).filter(e => tipos.includes(e.tipo) && dist(e, pos) <= ALCANCE_ESTACION)
+    const l = Object.values(this.estaciones).filter(e => !e.obra && tipos.includes(e.tipo) && dist(e, pos) <= ALCANCE_ESTACION)
       .sort((a, b) => dist(a, pos) - dist(b, pos));
     return (gasta && l.find(e => !Object.keys(cuentasEstacion(gasta, e.deposito).faltan).length)) || l[0] || null;
   }
@@ -266,31 +288,87 @@ export class Fabricacion {
     });
   }
 
-  // Las estaciones que se pueden poner, para el panel: lo que cuesta (de dónde sale, qué falta) y lo que hay que
-  // llevar (requiere, que no se gasta). sitio: dónde se pondría (su suelo es el que se gasta).
-  listaEstaciones(sitio, inv, suelo, ahora) {
-    const cerca = sueloCerca(suelo, sitio, ahora);
-    return Object.entries(ESTACIONES).map(([tipo, e]) => {
-      const { de, faltan: f } = cuentas(e.coste, inv, cerca);
-      const sinHerramienta = !!e.requiere && !e.requiere.some(t => inv.cuantos(t) > 0);
-      return { tipo, nombre: e.nombre, uso: e.uso, hace: e.hace, coste: { ...e.coste }, requiere: e.requiere ? [...e.requiere] : [], sinHerramienta, de, faltan: f,
-        puede: !sinHerramienta && !Object.keys(f).length };
-    });
+  // Los puestos que se pueden poner (el menú de construcción): lo que cuesta su obra, lo que hay que llevar al
+  // trabajarla (requiere, que no se gasta) y dónde va.
+  listaEstaciones() {
+    return Object.entries(ESTACIONES).map(([tipo, e]) => ({ tipo, nombre: e.nombre, uso: e.uso, hace: e.hace, coste: { ...e.coste },
+      requiere: e.requiere ? [...e.requiere] : [], donde: e.donde, trabajo: e.trabajo }));
   }
 
-  // Colocar una estación en (x, z): gasta su coste de lo que llevas y de lo del suelo al lado de ese sitio.
-  colocar(autor, tipo, x, z, inv, suelo = null, ahora = 0) {
+  // ¿Se puede poner el marco de tipo en (x, z)? dentro: si ese sitio está bajo techo.
+  puedeColocar(tipo, x, z, dentro = false) {
     if (!tiene(ESTACIONES, tipo)) return { ok: false, motivo: 'Esa estación no existe.' };
     if (!Number.isFinite(x) || !Number.isFinite(z)) return { ok: false, motivo: 'Sitio no válido.' };
-    const e = ESTACIONES[tipo], sitio = { x, z };
-    if (e.requiere && !e.requiere.some(t => inv.cuantos(t) > 0))
-      return { ok: false, motivo: `Hace falta llevar ${e.requiere.map(t => CATALOGO[t].nombre.toLowerCase()).join(' o ')}.` };
-    const cerca = sueloCerca(suelo, sitio, ahora), f = faltan(e.coste, inv, cerca);
-    if (Object.keys(f).length) return { ok: false, motivo: textoFaltan(f), faltan: f };
-    const usado = gastarTodo(e.coste, inv, cerca, suelo);
+    const e = ESTACIONES[tipo];
+    if (e.donde === 'fuera' && dentro) return { ok: false, motivo: `${e.nombre}: solo fuera, no bajo techo.` };
+    if (e.donde === 'dentro' && !dentro) return { ok: false, motivo: `${e.nombre}: solo dentro de la casa.` };
+    return { ok: true };
+  }
+  // Poner el marco de un puesto en (x, z) (y: la altura del suelo en el que se apoya, si se da): no gasta nada; su
+  // coste se le lleva luego (entregarEstacion) y se levanta trabajando en él (trabajarEstacion).
+  colocar(autor, tipo, x, z, dentro = false, y = null) {
+    const v = this.puedeColocar(tipo, x, z, dentro);
+    if (!v.ok) return v;
     const id = `${tipo}:${this.siguiente++}`;
-    this.estaciones[id] = { id, tipo, x, z, autor, cola: [], deposito: {} };
-    return { ok: true, id, usado };
+    this.estaciones[id] = { id, tipo, x, z, autor, cola: [], deposito: {}, obra: { entregado: {}, trabajo: 0, aportes: [] } };
+    if (Number.isFinite(y)) this.estaciones[id].y = y;
+    return { ok: true, id, obra: true };
+  }
+
+  // Lo que le falta a la obra de un puesto: { tipo: n }.
+  faltaEstacion(e) {
+    if (!e || !e.obra) return {};
+    const f = {};
+    for (const [t, n] of Object.entries(ESTACIONES[e.tipo].coste)) { const q = n - (e.obra.entregado[t] || 0); if (q > 0) f[t] = q; }
+    return f;
+  }
+  obraAlLado(estacion, pos) {
+    const { e, motivo } = this.estacionAlLado(estacion, pos);
+    if (!e) return { motivo };
+    if (!e.obra) return { motivo: 'Esa estación ya está terminada.' };
+    return { e };
+  }
+  // Llevarle a la obra de un puesto lo que le falta: lo que haya de ello en lo que llevas y en el suelo a tu lado
+  // (primero lo que llevas). Entrega lo que haya, aunque no sea todo.
+  entregarEstacion(autor, estacion, pos, inv, suelo = null, ahora = 0) {
+    const { e, motivo } = this.obraAlLado(estacion, pos);
+    if (!e) return { ok: false, motivo };
+    const falta = this.faltaEstacion(e);
+    if (!Object.keys(falta).length) return { ok: false, motivo: 'Ya tiene todo el material: ahora hay que trabajar en ella.' };
+    const cerca = sueloCerca(suelo, pos, ahora), { de } = cuentas(falta, inv, cerca), lleva = {};
+    for (const [t, d] of Object.entries(de)) if (d.encima + d.suelo > 0) lleva[t] = d.encima + d.suelo;
+    if (!Object.keys(lleva).length) return { ok: false, motivo: textoFaltan(falta).replace('Te falta', 'Le falta') + ' No lo llevas ni lo tienes a tu lado.', faltan: falta };
+    const usado = gastarTodo(lleva, inv, cerca, suelo);
+    for (const [t, n] of Object.entries(lleva)) e.obra.entregado[t] = (e.obra.entregado[t] || 0) + n;
+    e.obra.aportes.push({ autor, entrega: { ...lleva } });
+    return { ok: true, estacion: e.id, entregado: lleva, falta: this.faltaEstacion(e), usado };
+  }
+  // Un rato de trabajo en la obra de un puesto con todo su material (los segundos de todos se suman). Al llegar a su
+  // trabajo, queda levantado y ya se puede usar.
+  trabajarEstacion(autor, estacion, segundos, pos, inv) {
+    const { e, motivo } = this.obraAlLado(estacion, pos);
+    if (!e) return { ok: false, motivo };
+    if (!(segundos > 0 && segundos <= MAX_RATO_ESTACION)) return { ok: false, motivo: 'Rato de trabajo no válido.' };
+    const f = this.faltaEstacion(e);
+    if (Object.keys(f).length) return { ok: false, motivo: 'Primero hay que llevarle todo el material. ' + textoFaltan(f).replace('Te falta', 'Le falta'), faltan: f };
+    const def = ESTACIONES[e.tipo];
+    if (def.requiere && !def.requiere.some(t => inv.cuantos(t) > 0))
+      return { ok: false, motivo: `Para levantarla hace falta llevar ${def.requiere.map(t => CATALOGO[t].nombre.toLowerCase()).join(' o ')}.` };
+    e.obra.trabajo = Math.min(def.trabajo, e.obra.trabajo + segundos);
+    const suyo = e.obra.aportes.find(x => x.autor === autor && x.trabajo !== undefined);
+    if (suyo) suyo.trabajo = +(suyo.trabajo + segundos).toFixed(3); else e.obra.aportes.push({ autor, trabajo: +segundos.toFixed(3) });
+    if (e.obra.trabajo >= def.trabajo - 1e-9) { const aportes = e.obra.aportes; delete e.obra; return { ok: true, estacion: e.id, terminada: true, progreso: 1, aportes }; }
+    return { ok: true, estacion: e.id, terminada: false, progreso: e.obra.trabajo / def.trabajo };
+  }
+  // Quitar el marco de un puesto a medio hacer: lo entregado cae al suelo donde estaba (con suelo; sin él, se pierde).
+  // enTierras: si ese sitio es de la tierra de quien lo quita (src/logica/suelo.js).
+  quitarEstacion(autor, estacion, pos, suelo = null, ahora = 0, enTierras = false) {
+    const { e, motivo } = this.obraAlLado(estacion, pos);
+    if (!e) return { ok: false, motivo: motivo === 'Esa estación ya está terminada.' ? 'Solo se quita un marco a medio hacer.' : motivo };
+    const devuelto = { ...e.obra.entregado }, alSuelo = [];
+    if (suelo) for (const [t, n] of Object.entries(devuelto)) if (n > 0) alSuelo.push(suelo.dejar({ tipo: t, n }, e.x, e.z, ahora, autor, !!enTierras).id);
+    delete this.estaciones[e.id];
+    return { ok: true, estacion: e.id, quitada: true, devuelto, alSuelo };
   }
 
   // La estación de id, a tu alcance desde pos (o el motivo).
@@ -305,6 +383,7 @@ export class Fabricacion {
   depositar(autor, estacion, de, cantidad, pos, inv) {
     const { e, motivo } = this.estacionAlLado(estacion, pos);
     if (!e) return { ok: false, motivo };
+    if (e.obra) return { ok: false, motivo: 'Aún está en obra: llévale su material y trabaja en ella.' };
     const b = typeof de === 'string' ? inv.buscar(de) : { motivo: 'Ahí no hay nada.' };
     if (b.motivo || !b.cosa) return { ok: false, motivo: b.motivo || 'Ahí no hay nada.' };
     const c = b.cosa, d = inv.def(c);
@@ -353,6 +432,7 @@ export class Fabricacion {
       if (estacion) {
         e = tiene(this.estaciones, estacion) ? this.estaciones[estacion] : null;
         if (!e) return { ok: false, motivo: 'Ahí no hay estación.' };
+        if (e.obra) return { ok: false, motivo: 'Esa estación aún está en obra.' };
         if (ESTACIONES[e.tipo].uso !== rc.uso) return { ok: false, motivo: `Eso se hace en ${conQue(rc.uso)}.` };
         if (dist(e, pos) > ALCANCE_ESTACION) return { ok: false, motivo: 'Estás demasiado lejos de la estación.' };
       } else {
@@ -422,7 +502,7 @@ export class Fabricacion {
     const copia = l => l.map(c => ({ ...c }));
     return {
       version: VERSION_FABRICACION, siguiente: this.siguiente,
-      estaciones: Object.values(this.estaciones).map(e => ({ ...e, cola: copia(e.cola), deposito: { ...e.deposito } })),
+      estaciones: Object.values(this.estaciones).map(e => ({ ...e, cola: copia(e.cola), deposito: { ...e.deposito }, ...(e.obra ? { obra: copiaObra(e.obra) } : {}) })),
       manos: Object.fromEntries(Object.entries(this.manos).filter(([, l]) => l.length).map(([k, l]) => [k, copia(l)])),
     };
   }
@@ -437,6 +517,8 @@ export class Fabricacion {
       if (!e || typeof e.id !== 'string' || !tiene(ESTACIONES, e.tipo) || !Number.isFinite(e.x) || !Number.isFinite(e.z)) continue;
       const uso = ESTACIONES[e.tipo].uso;
       this.estaciones[e.id] = { id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, cola: limpia(e.cola).filter(c => RECETAS[c.receta].uso === uso), deposito: limpiarDeposito(e.deposito) };
+      if (Number.isFinite(e.y)) this.estaciones[e.id].y = e.y;
+      const ob = limpiarObra(e.obra, e.tipo); if (ob) this.estaciones[e.id].obra = ob;
     }
     for (const [k, l] of Object.entries(d.manos || {})) {
       if (k in Object.prototype) continue;
@@ -453,6 +535,7 @@ export const MIGRACIONES_FABRICACION = {
   1: d => ({ ...d, version: 2 }), // la v2 añadió lo que sabía cada uno
   2: d => { const { saber, ...resto } = d; return { ...resto, version: 3 }; }, // y la v3 lo quita: nadie aprende recetas
   3: d => ({ ...d, version: 4, estaciones: (Array.isArray(d.estaciones) ? d.estaciones : []).map(e => e && typeof e === 'object' ? { ...e, deposito: {} } : e) }), // la v4: lo depositado, vacío
+  4: d => ({ ...d, version: 5 }), // la v5: las estaciones de antes ya están levantadas (sin obra)
 };
 export function migrarFabricacion(datos) {
   if (!datos || typeof datos !== 'object' || !Number.isInteger(datos.version)) return null;
@@ -462,16 +545,21 @@ export function migrarFabricacion(datos) {
 }
 
 // ---------------- Acciones con autor ----------------
-// { autor, tipo: 'colocar_estacion', estacion: tipo, x, z }
+// { autor, tipo: 'colocar_estacion', estacion: tipo, x, z, y? } — el marco de un puesto (su obra), sin gastar nada
+// { autor, tipo: 'entregar_estacion', estacion: id, x, z }   — llevarle a su obra lo que le falta (lo que llevas y el suelo)
+// { autor, tipo: 'trabajar_estacion', estacion: id, segundos, x, z } — un rato de trabajo en su obra
+// { autor, tipo: 'quitar_estacion', estacion: id, x, z }     — quitar un marco a medio hacer (lo entregado, al suelo)
 // { autor, tipo: 'fabricar', receta, estacion: id | null, x, z }   — x, z: dónde está el autor (el servidor usará la suya)
 // { autor, tipo: 'recoger_fabricado', estacion: id | null, x, z }
 // { autor, tipo: 'depositar_estacion', estacion: id, de: ruta, cantidad?, x, z } — de lo que llevas a la estación
 // { autor, tipo: 'retirar_estacion', estacion: id, objeto: tipo, cantidad?, x, z } — de la estación a lo que llevas
 // suelo: el Suelo del mundo (lo da quien valida). ahora: la hora del que valida, nunca la del mensaje. Lo gastado sale
 // de lo del autor o del suelo a su lado y lo fabricado va al autor (o a sus pies si no le cabe y hay suelo), nunca a
-// otro. enTierras(x, z): si ese sitio es de la tierra del autor. Se anota en el registro, salga bien o no.
-export const TIPOS_FABRICACION = ['colocar_estacion', 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion'];
-export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = null, enTierras = () => false) {
+// otro. enTierras(x, z): si ese sitio es de la tierra del autor. bajoTecho(x, z): si ese sitio está bajo techo (dentro
+// de una casa). Se anota en el registro, salga bien o no.
+export const OBRA_ESTACION = ['colocar_estacion', 'entregar_estacion', 'trabajar_estacion', 'quitar_estacion'];
+export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion'];
+export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = null, enTierras = () => false, bajoTecho = () => false) {
   let res;
   const a = accion;
   const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64 && !(v in Object.prototype);
@@ -481,11 +569,16 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
   else if (!TIPOS_FABRICACION.includes(a.tipo)) res = { ok: false, motivo: 'Acción desconocida.' };
   else if (!Number.isFinite(a.x) || !Number.isFinite(a.z) || !est(a.estacion) || (a.tipo === 'fabricar' && !txt(a.receta))
     || ((a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion') && (!txt(a.estacion) || (a.cantidad !== undefined && a.cantidad !== null && !Number.isInteger(a.cantidad))))
-    || (a.tipo === 'depositar_estacion' && !txt(a.de)) || (a.tipo === 'retirar_estacion' && !txt(a.objeto))) res = { ok: false, motivo: 'Datos no válidos.' };
+    || (a.tipo === 'depositar_estacion' && !txt(a.de)) || (a.tipo === 'retirar_estacion' && !txt(a.objeto))
+    || (OBRA_ESTACION.includes(a.tipo) && !txt(a.estacion)) || (a.tipo === 'trabajar_estacion' && !Number.isFinite(a.segundos))
+    || (a.tipo === 'colocar_estacion' && a.y !== undefined && a.y !== null && !Number.isFinite(a.y))) res = { ok: false, motivo: 'Datos no válidos.' };
   else if (!Number.isFinite(ahora)) res = { ok: false, motivo: 'Sin hora.' };
   else {
     const inv = invs.de(a.autor), pos = { x: a.x, z: a.z };
-    if (a.tipo === 'colocar_estacion') res = fab.colocar(a.autor, a.estacion, a.x, a.z, inv, suelo, ahora);
+    if (a.tipo === 'colocar_estacion') res = fab.colocar(a.autor, a.estacion, a.x, a.z, !!bajoTecho(a.x, a.z), Number.isFinite(a.y) ? a.y : null);
+    else if (a.tipo === 'entregar_estacion') res = fab.entregarEstacion(a.autor, a.estacion, pos, inv, suelo, ahora);
+    else if (a.tipo === 'trabajar_estacion') res = fab.trabajarEstacion(a.autor, a.estacion, a.segundos, pos, inv);
+    else if (a.tipo === 'quitar_estacion') { const e = fab.estaciones[a.estacion]; res = fab.quitarEstacion(a.autor, a.estacion, pos, suelo, ahora, suelo && e ? enTierras(e.x, e.z) : false); }
     else if (a.tipo === 'depositar_estacion') res = fab.depositar(a.autor, a.estacion, a.de, a.cantidad, pos, inv);
     else if (a.tipo === 'retirar_estacion') res = fab.retirar(a.autor, a.estacion, a.objeto, a.cantidad, pos, inv);
     else if (a.tipo === 'fabricar') res = fab.fabricar(a.autor, a.receta, a.estacion || null, pos, inv, suelo, ahora);
@@ -494,7 +587,9 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
   const e = registro.anotar(accion || {}, res);
   e.ahora = ahora;
   if (res.ok) {
-    e.resultado = res.dejado ? { estacion: res.estacion, dejado: { ...res.dejado } } : res.cogido ? { estacion: res.estacion, cogido: { ...res.cogido } } : res.id ? { estacion: res.id } : res.encargo ? { receta: res.encargo.receta, fin: res.encargo.fin, ...(res.estacion ? { estacion: res.estacion } : {}) } : { dados: res.dados.map(d => d.alSuelo ? [d.objeto, d.cantidad, d.alSuelo] : [d.objeto, d.cantidad]) };
+    e.resultado = res.quitada ? { estacion: res.estacion, quitada: true, devuelto: { ...res.devuelto } } : res.entregado ? { estacion: res.estacion, entregado: { ...res.entregado } }
+      : res.progreso !== undefined ? { estacion: res.estacion, progreso: +res.progreso.toFixed(3), ...(res.terminada ? { terminada: true } : {}) }
+      : res.dejado ? { estacion: res.estacion, dejado: { ...res.dejado } } : res.cogido ? { estacion: res.estacion, cogido: { ...res.cogido } } : res.id ? { estacion: res.id, ...(res.obra ? { obra: true } : {}) } : res.encargo ? { receta: res.encargo.receta, fin: res.encargo.fin, ...(res.estacion ? { estacion: res.estacion } : {}) } : { dados: res.dados.map(d => d.alSuelo ? [d.objeto, d.cantidad, d.alSuelo] : [d.objeto, d.cantidad]) };
     if (res.usado && res.usado.estacion) e.resultado.deLaEstacion = { ...res.usado.estacion };
     if (res.usado && Object.keys(res.usado.suelo).length) e.resultado.delSuelo = JSON.parse(JSON.stringify(res.usado.suelo));
   }

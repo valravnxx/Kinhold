@@ -2164,5 +2164,22 @@
  "Demo única · v134 (lo hecho a mano, con su modelo)": "Single demo · v134 (handmade things, with their model)",
  "v134: lo que se fabrica con las manos se ve con su modelo (estilo v5) en la mano y colgado del cinturón: la lasca de sílex (una esquirla de piedra oscura con su costra, en una bolsita en el cinto), el palo cavador (una rama recta pelada con la punta endurecida al fuego), el cordel y la cuerda (una madeja cogida por la atadura) y el hacha de piedra (antes, en la mano y en el cinto, salía la de hierro). Los demás jugadores ven también el hacha que llevas en la mano. El leñero cogido con las manos se ve entero, delante, en vez del hatillo.": "v134: what is made by hand now shows with its model (v5 style) in the hand and hanging from the belt: the flint flake (a sliver of dark stone with its cortex, in a small pouch on the belt), the digging stick (a straight peeled branch with a fire-hardened point), the cord and the rope (a skein held by its tie) and the stone axe (before, the iron one showed in the hand and on the belt). Other players now also see the axe in your hand. The log carrier held in the hands shows whole, in front, instead of the bundle.",
  "v134: el taladro de fuego de arco, con las manos: 2 ramas y 1 cordel, 20 s. Con la yesca, servirá para encender la hoguera (llega con su tarea). Su modelo: el arco con el cordel, el huso de punta tostada, la tabla con muescas quemadas y la piedra de apoyo; en la mano y en el cinto, el arco con el huso metido en el cordel.": "v134: the bow fire drill, made by hand: 2 branches and 1 cord, 20 s. With tinder it will light the campfire (coming with its own task). Its model: the bow with its cord, the spindle with a scorched tip, the board with burnt notches and the bearing stone; in the hand and on the belt, the bow with the spindle caught in its cord.",
- "v134, provisional: el documento de sistemas nombra el taladro de fuego pero no dice de qué se hace: se ha tomado el de arco (2 ramas y 1 cordel), mediano y herramienta. La rastra no cambia: es enorme y se arrastra, con el modelo que ya tenía. Las imágenes del panel salen ahora de recursos/iconos-v4.": "v134, provisional: the systems document names the fire drill but not what it is made of: the bow drill was chosen (2 branches and 1 cord), medium-sized and a tool. The drag sled does not change: it is huge and dragged, with the model it already had. The panel pictures now come from recursos/iconos-v4."
+ "v134, provisional: el documento de sistemas nombra el taladro de fuego pero no dice de qué se hace: se ha tomado el de arco (2 ramas y 1 cordel), mediano y herramienta. La rastra no cambia: es enorme y se arrastra, con el modelo que ya tenía. Las imágenes del panel salen ahora de recursos/iconos-v4.": "v134, provisional: the systems document names the fire drill but not what it is made of: the bow drill was chosen (2 branches and 1 cord), medium-sized and a tool. The drag sled does not change: it is huge and dragged, with the model it already had. The panel pictures now come from recursos/iconos-v4.",
+ "{e}: pon el marco y llévale {c}.": "{e}: place the frame and bring it {c}.",
+ "Marco puesto: llévale {c} y trabaja en él (Usar).": "Frame placed: bring it {c} and work on it (Use).",
+ "Puesto terminado ({e}): ya se puede usar.": "Workstation finished ({e}): it can be used now.",
+ "Marco quitado: lo que tenía, en el suelo.": "Frame removed: what it had is on the ground.",
+ "Quitar el marco: {e}": "Remove the frame: {e}",
+ "Puestos de trabajo": "Workstations",
+ "Los puestos de trabajo se levantan desde Construir, en «Puestos de trabajo».": "Workstations are built from Build, under “Workstations”.",
+ "Solo fuera": "Outdoors only",
+ "Solo dentro de la casa": "Only inside the house",
+ "Dentro o fuera": "Indoors or outdoors",
+ "Acércate: el marco se pone a tu lado.": "Come closer: the frame is placed beside you.",
+ "Los puestos de trabajo van en la planta baja.": "Workstations go on the ground floor.",
+ "Esa estación aún está en obra.": "That station is still being built.",
+ "Aún está en obra: llévale su material y trabaja en ella.": "It is still being built: bring its materials and work on it.",
+ "Ya tiene todo el material: ahora hay que trabajar en ella.": "It already has all its materials: now it needs work.",
+ "Solo se quita un marco a medio hacer.": "Only an unfinished frame can be removed.",
+ "Esa estación ya está terminada.": "That station is already finished."
 }

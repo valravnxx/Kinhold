@@ -704,6 +704,18 @@ export class Mundo {
   // las marcas de nivelado, por orden (las de src/logica/nivelado.js)
   marcasNivelado() { return this.nivelados; }
 
+  // ¿Está (x, z) bajo techo, en la planta baja de alguna construcción? Hay encima, en su casilla, un suelo o un tejado
+  // terminado (lo mismo que mira el navegador para ocultar las plantas de arriba). Los puestos de trabajo lo usan: la
+  // hoguera, solo fuera; el hogar, solo dentro (src/logica/fabricacion.js).
+  bajoTecho(x, z) {
+    if (!Number.isFinite(x) || !Number.isFinite(z)) return false;
+    for (const c of this.construcciones.values()) {
+      const l = mundoALocal(c, x, z), i = Math.floor(l.lx / MODULO), j = Math.floor(l.lz / MODULO);
+      for (let k = 1; k <= MAX_PLANTA + 1; k++) for (const h of ['f', 'r']) { const p = c.piezas.get(clave(h, i, j, k)); if (p && !p.obra) return true; }
+    }
+    return false;
+  }
+
   // ---------- Decoración libre ----------
   colocarDecoracion(tipo, x, y, z, rot, autor = null, reserva = this.reservaComun()) {
     const def = Object.hasOwn(DECORACION, tipo) ? DECORACION[tipo] : null;

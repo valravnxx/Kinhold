@@ -13,7 +13,8 @@
 //  - En la pestaña de una estación que tienes al lado: lo que tiene encima (tocar: coger) y lo que llevas que se puede
 //    dejar (tocar: dejar), cada cosa con su imagen. Sus recetas gastan solo lo depositado (valravnx, 6 nov).
 //  - Abajo, lo que está en marcha, con su barra; lo terminado, para recoger.
-//  - Las estaciones que se pueden poner delante de ti, en «Todo» (hasta que se construyan como obra, tarea de P3).
+//  - Los puestos de trabajo ya no se ponen desde aquí: son obra y se levantan desde el menú de construcción, en su
+//    pestaña «Puestos de trabajo» (valravnx, 6 nov). El panel solo usa los que están levantados.
 // El panel no cambia nada por su cuenta: manda la acción con hacer(accion, alResultado) (en línea, al servidor, que
 // pone el autor) y espera la respuesta. Es provisional hasta que se rehaga todo el HUD (GDD).
 import { CATALOGO } from '../logica/inventario.js';
@@ -66,7 +67,6 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
 
   const ahora = () => Date.now();
   const lugar = () => { const p = posicion(); return { x: p.x, z: p.z }; };
-  const delante = () => { const p = posicion(); return { x: p.x + Math.sin(p.rot || 0) * DELANTE, z: p.z + Math.cos(p.rot || 0) * DELANTE }; };
   const img = (t, cls = '') => `<img class="fab-img ${cls}" src="${esc(base + t + '.webp')}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`;
   const sinModelo = t => indice[t] && indice[t].propio === false;
   const icono = t => `<span class="fab-ic">${img(t)}${sinModelo(t) ? `<em class="fab-pend">${esc(tr('sin modelo aún'))}</em>` : ''}</span>`;
@@ -80,8 +80,8 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
   function estacionDePestana(p) {
     if (pestana === 'todo' || pestana === 'manos') return null;
     const a = estacionActiva && fab.estaciones[estacionActiva];
-    if (a && ESTACIONES[a.tipo] && ESTACIONES[a.tipo].uso === pestana && cerca(a, p)) return a;
-    return Object.values(fab.estaciones).filter(e => ESTACIONES[e.tipo] && ESTACIONES[e.tipo].uso === pestana && cerca(e, p))
+    if (a && !a.obra && ESTACIONES[a.tipo] && ESTACIONES[a.tipo].uso === pestana && cerca(a, p)) return a;
+    return Object.values(fab.estaciones).filter(e => !e.obra && ESTACIONES[e.tipo] && ESTACIONES[e.tipo].uso === pestana && cerca(e, p))
       .sort((a, b) => Math.hypot(a.x - p.x, a.z - p.z) - Math.hypot(b.x - p.x, b.z - p.z))[0] || null;
   }
 
@@ -104,10 +104,6 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     const extra = x.grupo === 'casi' ? `<span class="fab-falta-n">${esc(tr('faltan {n}', { n: Object.values(x.faltan).reduce((a, b) => a + b, 0) }))}</span>`
       : x.grupo === 'despues' ? `<span class="fab-necesita">${img('est_' + estacionDeUso(x.uso))}</span>` : '';
     return `<button class="fab-carta fab-${x.grupo}${sel === x.receta ? ' fab-sel' : ''}" data-fila="${x.receta}" data-grupo="${x.grupo}">${icono(x.da)}${extra}<span class="fab-nom">${esc(tr(x.nombre))}</span></button>`;
-  }
-  function cartaEstacion(e) {
-    const k = 'estacion:' + e.tipo;
-    return `<button class="fab-carta ${e.puede ? 'fab-ya' : 'fab-casi'}${sel === k ? ' fab-sel' : ''}" data-fila="${k}" data-grupo="${e.puede ? 'ya' : 'casi'}">${icono('est_' + e.tipo)}<span class="fab-nom">${esc(tr(e.nombre))}</span></button>`;
   }
   const grupo = (tit, cls, cartas) => cartas.length ? `<section class="fab-sec ${cls}"><h3>${esc(tit)}</h3><div class="fab-cartas">${cartas.join('')}</div></section>` : '';
 
@@ -156,14 +152,6 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
       <p class="fab-para">${esc(tr(PARA[x.receta] || ''))}</p><div class="fab-chips">${chips.join('')}</div>
       <h4>${esc(titMats)}</h4><div class="fab-mats">${mats}</div><div class="fab-acciones">${botones}</div>`;
   }
-  function fichaEstacion(e) {
-    const mats = Object.entries(e.coste).map(([t, n]) => filaMaterial(t, n, e.de[t], e.faltan[t] || 0, false)).join('');
-    const req = e.requiere.length ? `<div class="fab-mat fab-herr${e.sinHerramienta ? ' fab-falta' : ''}">${icono(e.requiere[0])}<div><b>${esc(tr('Hay que llevar {h} (no se gasta).', { h: e.requiere.map(nombre).map(s => s.toLowerCase()).join(tr(' o ')) }))}</b></div><span class="fab-n">${e.sinHerramienta ? '✗' : '✓'}</span></div>` : '';
-    const btn = e.puede ? `<button class="fab-poner fab-btn" data-tipo="${e.tipo}">${esc(tr('Poner delante'))}</button>` : `<button class="fab-btn fab-no" disabled>${esc(Object.keys(e.faltan).length ? tr('Te falta: {c}', { c: cosas(e.faltan) }) : tr('Hay que llevar {h} (no se gasta).', { h: e.requiere.map(nombre).map(s => s.toLowerCase()).join(tr(' o ')) }))}</button>`;
-    return `<div class="fab-grande">${img('est_' + e.tipo)}</div><h3 class="fab-titulo">${esc(tr(e.nombre))}</h3><p class="fab-para">${esc(tr(e.hace))}</p>
-      <div class="fab-chips"><span class="fab-chip">${esc(tr('Se pone delante de ti'))}</span></div><h4>${esc(tr('Lo que cuesta'))}</h4><div class="fab-mats">${mats}${req}</div><div class="fab-acciones">${btn}</div>`;
-  }
-
   // ---------- la estación de al lado: lo que tiene encima y lo que llevas ----------
   function pintarMesa(e, inv) {
     const est = ESTACIONES[e.tipo], dep = e.deposito || {}, hay = totalDeposito(dep);
@@ -192,24 +180,23 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     const lista = fab.lista(p, inv, suelo(), t), est = estacionDePestana(p);
     const deEsta = pestana === 'todo' ? lista : lista.filter(x => x.uso === pestana);
     const cuenta = k => lista.filter(x => x.grupo === 'ya' && (k === 'todo' || x.uso === k)).length;
-    const estaciones = pestana === 'todo' ? fab.listaEstaciones(delante(), inv, suelo(), t) : [];
     // la carta elegida: la que había, si sigue en la pestaña; si no, la primera
-    const claves = [...deEsta.map(x => x.receta), ...estaciones.map(e => 'estacion:' + e.tipo)];
+    const claves = deEsta.map(x => x.receta);
     const orden = ['ya', 'casi', 'despues'];
     if (!claves.includes(sel)) sel = [...deEsta].sort((a, b) => orden.indexOf(a.grupo) - orden.indexOf(b.grupo)).map(x => x.receta)[0] || claves[0] || null;
 
     const cab = est ? { ic: `<span class="fab-ic">${img('est_' + est.tipo)}</span>`, h: tr(ESTACIONES[est.tipo].nombre), s: tr(ESTACIONES[est.tipo].hace) + ' · ' + tr('sus recetas gastan lo que está en ella') }
       : pestana === 'manos' ? { ic: '', h: tr('Fabricar'), s: tr('Con las manos, en cualquier sitio: lo que llevas y lo que hay en el suelo a tu lado') }
       : pestana === 'todo' ? { ic: '', h: tr('Fabricar'), s: tr('Todo lo que se puede hacer') }
-      : { ic: '', h: tr('Fabricar'), s: tr('Hace falta {e} a tu lado.', { e: tr(conQue(pestana)) }) };
+      : { ic: '', h: tr('Fabricar'), s: tr('Hace falta {e} a tu lado.', { e: tr(conQue(pestana)) }) + ' ' + tr('Los puestos de trabajo se levantan desde Construir, en «Puestos de trabajo».') };
     const htmlNav = PESTANAS.map(k => `<button class="fab-pest${k === pestana ? ' fab-sel' : ''}" data-pestana="${k}">${iconoPestana(k)}<b>${esc(NOMBRE_PESTANA[k] ? NOMBRE_PESTANA[k]() : k)}</b>${cuenta(k) ? `<span class="fab-cuenta">${cuenta(k)}</span>` : ''}</button>`).join('');
     const htmlMesa = est ? pintarMesa(est, inv) : '';
     const g = k => deEsta.filter(x => x.grupo === k).map(carta);
     const htmlCuerpo = grupo(tr('Puedes hacerlo ya'), 'fab-sec-ya', g('ya')) + grupo(tr('Te falta algo'), 'fab-sec-casi', g('casi'))
-      + grupo(tr('Hace falta una estación'), 'fab-sec-despues', g('despues')) + grupo(tr('Estaciones: se ponen delante de ti'), 'fab-sec-est', estaciones.map(cartaEstacion))
+      + grupo(tr('Hace falta una estación'), 'fab-sec-despues', g('despues'))
       || `<p class="fab-gris">${esc(tr('Nada todavía: mira lo que te falta debajo.'))}</p>`;
-    const x = deEsta.find(r => r.receta === sel), xe = estaciones.find(e => 'estacion:' + e.tipo === sel);
-    const htmlFicha = `<button class="fab-ficha-cerrar" aria-label="✕"></button>` + (x ? fichaReceta(x, lista, inv, est) : xe ? fichaEstacion(xe) : '');
+    const x = deEsta.find(r => r.receta === sel);
+    const htmlFicha = `<button class="fab-ficha-cerrar" aria-label="✕"></button>` + (x ? fichaReceta(x, lista, inv, est) : '');
     const htmlMarcha = (() => {
       const l = [];
       encargos.manos.forEach((c, i) => l.push(encargo(c, null, 'm' + i)));
@@ -301,14 +288,6 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
       };
       siguiente(0);
       return;
-    }
-    if (b.classList.contains('fab-poner')) {
-      const d = delante(), tipo = b.dataset.tipo;
-      b.disabled = true;
-      hacer({ tipo: 'colocar_estacion', estacion: tipo, x: d.x, z: d.z }, (r) => {
-        if (!r.ok) { decir(tr(r.motivo), true); return; }
-        firma = ''; decir(tr('Pones {e} delante de ti.', { e: tr(ESTACIONES[tipo].nombre).toLowerCase() }));
-      });
     }
   });
 
