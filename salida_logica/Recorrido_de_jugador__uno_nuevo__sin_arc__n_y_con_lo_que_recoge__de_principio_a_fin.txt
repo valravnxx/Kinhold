@@ -1,0 +1,60 @@
+0. Elige dónde empieza: la salida común (Lindholt), de las tres del rey
+  OK   llega sin posición: aún no ha elegido — null
+  OK   llega sin hambre, sin sed, sin frío y descansado (P4: sus necesidades, del servidor) — {"hambre":0,"sed":0,"frio":0,"cansancio":0}
+  OK   una salida que no existe no vale — Esa salida no existe.
+  OK   elige Lindholt: aparece en la salida común, en el suelo — {"x":0,"y":0,"z":0,"giro":0}
+  OK   y no puede volver a elegir — Ya has empezado.
+1. Empieza con lo puesto, y sin arcón
+  OK   le llega lo que lleva: solo la camisa y el pantalón de lino — ropa:interior=camisa_lino ropa:piernas=pantalon_lino
+  OK   en el combate lleva eso mismo: la camisa y el pantalón, sin armadura — camisa_lino, pantalon_lino
+  OK   no puede sacar nada del arcón de pruebas (no hay) — Aquí no hay arcón.
+  OK   ni del arcón de materiales de las obras — Aquí no hay arcón.
+  OK   ni rellenarlo (el botón de pruebas) — Aquí no hay arcón.
+  OK   la bienvenida le dice que no hay arcón (el navegador no lo enseña) — false
+  OK   en la salida no puede poner su mojón: es zona del rey — Es zona del rey: no se reclama (aquí cava y recoge cualquiera).
+2. Recoge piedras: anda hasta ellas y las coge con las manos
+  OK   hay piedras sueltas cerca de la salida (a menos de 120 m) — 56; la primera a 54 m
+  OK   recoge 6 piedras, 3 en cada mano — 6 piedras 
+  OK   la séptima ya no le cabe en las manos — No te cabe: no tienes sitio libre.
+  OK   y una piedra ya recogida no vuelve a darse — Ya lo han recogido: aún no ha vuelto a salir.
+3. Lo que aún no se puede hacer como jugador nuevo
+  OK   talar: sin hacha, no (se la fabrica en el paso 8) — Necesitas un hacha en la mano para talar.
+4. Anda hasta la zona de al lado (la de la salida es del rey) y pone su mojón: la zona es su tierra
+  OK   la zona de al lado de la salida no es del rey — a 440 m al oeste
+  OK   pone su mojón en ella y lo paga con 3 de las piedras que lleva (no del montón común) —  lleva 3
+  OK   y no un segundo (uno por personaje) — Ya tienes un mojón.
+5. Levanta un cimiento de piedra con las piedras que ha traído
+  OK   pone el marco del cimiento en su tierra
+  FALLA entrega las 3 que le quedan (pide 8) y se queda con las manos vacías — Estás demasiado lejos: acércate. faltan 8
+  OK   sin todo el material aún no se puede trabajar — Estás demasiado lejos: acércate.
+  FALLA vuelve a por las 8 que faltan (le caben en las manos) — 3 piedras
+  FALLA las entrega: el cimiento tiene todo lo que pide
+  FALLA lo trabaja hasta terminarlo — 1 ratos de 5 s Primero hay que llevarle todo el material.
+5b. Llega otro jugador: lo de su tierra no lo toca (lo tuyo es tuyo)
+  OK   otro jugador nuevo elige también Lindholt
+  OK   otro jugador no puede desmontar su cimiento — Es tierra de otro: solo su dueño y sus invitados.
+  OK   se hablan: lo que dice uno le llega al otro, que está al lado — {"tipo":"dicho","autor":"jugador:0b8df0c2","texto":"Esa es mi tierra"}
+6. Con las manos libres otra vez, recoge ramas del bosque
+  OK   recoge ramas caídas —  1 ramas
+7. Se arrepiente del sitio: quita su mojón (pierde el cimiento) y lo vuelve a poner más allá
+  OK   sabe que perdería su cimiento (1 construcción, 1 pieza) — {"c":1,"p":1}
+  OK   quita su mojón: dice lo perdido
+  OK   ya no tiene mojón y el cimiento ha desaparecido — 0 construcciones
+  OK   sin nada encima no puede volver a ponerlo (se paga con 3 piedras de lo que lleva) — No llevas los materiales.
+  OK   recoge otras 3 piedras para el mojón nuevo — 3 piedras
+  OK   vuelve a poner su mojón 30 m más allá, sin espera, pagado con ellas
+8. Se fabrica un hacha de piedra con lo que recoge: fibra, cordel, piedra de tallar y el hacha
+  OK   deja las ramas en el suelo, a sus pies
+  OK   arranca fibra de ortigas y hierba larga hasta tener 6 — 6 de fibra de 2 plantas; fibra×6 –
+  OK   con las manos, en cualquier sitio, se hace su cordel 1 (3 de fibra)
+  OK   y lo recoge (va a lo que lleva, o a sus pies si no le cabe) — {"dados":[{"objeto":"cordel","cantidad":1,"donde":[["mano:izq",1]]}],"quedan":false}
+  OK   con las manos, en cualquier sitio, se hace su cordel 2 (3 de fibra)
+  OK   y lo recoge (va a lo que lleva, o a sus pies si no le cabe) — {"dados":[{"objeto":"cordel","cantidad":1,"donde":[["mano:der",1]]}],"quedan":false}
+  OK   tiene sus 2 cordeles (en la mano o a sus pies) — 2 en la mano, 0 en el suelo; cordel×1 cordel×1
+  OK   deja un cordel a sus pies para tener una mano libre
+  OK   recoge 2 piedras — 2 · piedra×2 cordel×1
+  FALLA levanta una piedra de tallar a su lado: el marco, sin gastar nada; le lleva 1 piedra y trabaja en ella — No estás ahí.
+  FALLA sin nada depositado en la piedra de tallar, el hacha no se encarga — No estás ahí.
+  FALLA el recorrido llega al final — Cannot read properties of undefined (reading 'id')
+
+41 bien, 7 mal
