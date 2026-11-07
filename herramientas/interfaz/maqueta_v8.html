@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+@font-face{font-family:Garamond;src:url(garamond.woff2) format('woff2');font-weight:400}
+@font-face{font-family:Garamond;src:url(garamond6.woff2) format('woff2');font-weight:600}
+@font-face{font-family:Fell;src:url(fell.woff2) format('woff2')}
+:root{--claro:#f1e6cf;--oro:#f0cf8a;--gris:#bba98a;--mal:#e8836a;--aviso:#e9c27a;--bien:#9cc79f;--frio:#9cc3ec}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;font:16px/1.3 Garamond,Georgia,serif;color:var(--claro)}
+body{background:#777 center/cover no-repeat}
+body.pc{background-image:url(fondo_pc.png)} body.movil{background-image:url(fondo_movil.png)}
+.fix{position:fixed}
+.sombra{text-shadow:0 1px 1px #000,0 0 3px #000,0 0 10px rgba(0,0,0,.75)}
+.fell{font-family:Fell,Georgia,serif}
+/* ---- piezas renderizadas (kit/) ---- */
+.br{position:fixed;display:grid;place-items:center;background:url(kit/boton.png) center/contain no-repeat;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6))}
+.br>img{width:52%;height:52%}
+.br .k{position:absolute;right:-6px;bottom:-6px}
+.accion{position:fixed;display:grid;place-items:center;background:url(kit/accion.png) center/contain no-repeat;filter:drop-shadow(0 5px 6px rgba(0,0,0,.6))}
+.accion>img{width:58%;height:58%;object-fit:contain}
+.accion>img.g{width:46%;height:46%}
+.accion .verbo{position:absolute;top:100%;margin-top:4px;left:50%;transform:translateX(-50%);font:18px Fell,serif;white-space:nowrap}
+.accion svg.prog{position:absolute;inset:-7px;width:calc(100% + 14px);height:calc(100% + 14px);transform:rotate(-90deg)}
+.hueco{position:relative;display:grid;place-items:center;background:url(kit/hueco.png) center/contain no-repeat;filter:drop-shadow(0 3px 4px rgba(0,0,0,.55))}
+.hueco>img{width:84%;height:84%;object-fit:contain}
+.hueco.vacio>img{opacity:.22;filter:grayscale(1) brightness(1.6)}
+.hueco .n{position:absolute;right:9%;bottom:4%;font:600 16px Garamond,serif;text-shadow:0 1px 2px #000,0 0 4px #000}
+.hueco .k{position:absolute;left:-6px;bottom:-6px}
+.hueco.sel:after{content:"";position:absolute;inset:-3px;border-radius:9px;box-shadow:0 0 0 2px #f0cf8a,0 0 14px 2px rgba(240,190,100,.7)}
+.hueco.bloq{opacity:.45}
+.hueco.bloq:before{content:"";position:absolute;inset:18%;background:url(kit/g_cerrar.png) center/contain no-repeat;opacity:.0}
+.hueco .et{position:absolute;top:100%;margin-top:2px;left:50%;transform:translateX(-50%);font-size:13px;color:var(--gris);white-space:nowrap}
+.med{position:relative;display:grid;place-items:center;background:url(kit/medallon.png) center/contain no-repeat;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+.med svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.med>img{width:44%;height:44%;position:relative}
+.med.quieto{opacity:.55}
+.med .fl{position:absolute;right:-3px;top:-5px;font:700 14px Garamond,serif;text-shadow:0 1px 2px #000}
+.med .nom{position:absolute;top:100%;margin-top:1px;left:50%;transform:translateX(-50%);font:16px Fell,serif;white-space:nowrap}
+.k{display:inline-grid;place-items:center;min-width:21px;height:21px;padding:0 5px;border-radius:4px;background:linear-gradient(#625a50,#2b2520);color:var(--claro);font:600 12.5px Garamond,serif;border:1px solid #8a7550;box-shadow:0 2px 0 #120d09}
+/* tablero de roble con marco de hierro (9 trozos) */
+.tablero{position:fixed;border:38px solid transparent;border-image:url(kit/marco.png) 104 / 38px stretch;background:radial-gradient(ellipse at 50% 40%,rgba(30,18,9,.25),rgba(14,8,4,.62)),url(kit/tablero.jpg) center/600px;background-clip:padding-box;box-shadow:0 18px 40px rgba(0,0,0,.6)}
+.tablero.fino{border-width:26px;border-image-width:26px}
+.tablero .dentro{margin:-14px}
+.placa{background:url(kit/cuero.jpg) center/cover;box-shadow:inset 0 0 0 1px rgba(193,154,85,.55),inset 0 0 18px rgba(0,0,0,.6),0 4px 12px rgba(0,0,0,.55);border-radius:6px}
+.etq{position:fixed;transform:translate(-50%,-100%);display:flex;gap:8px;align-items:center;font-size:17px;padding:6px 13px;white-space:nowrap}
+.etq small{color:var(--gris);font-size:14.5px}
+.etq:after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-top-color:#2a1a0e;border-bottom:0}
+.aro-suelo{position:fixed;transform:translate(-50%,-50%);border:2px solid rgba(240,205,140,.9);border-radius:50%;box-shadow:0 0 10px rgba(240,190,100,.65),inset 0 0 10px rgba(240,190,100,.45)}
+/* correa (pestañas, pastillas) */
+.correa{border:14px solid transparent;border-image:url(kit/correa.png) 30 46 / 14px 22px stretch;background:url(kit/cuero.jpg) center/cover;background-clip:padding-box}
+.tab{font:17px Fell,serif;color:#cdbb9a;padding:2px 6px;white-space:nowrap}
+.tab.sel{color:var(--oro);text-shadow:0 0 8px rgba(240,190,100,.5)}
+.tabs{display:flex;align-items:center;gap:4px}
+.tabs .sep{width:1px;height:18px;background:linear-gradient(transparent,rgba(193,154,85,.6),transparent)}
+.titulo{font:24px Fell,serif;color:var(--oro);display:flex;align-items:center;gap:10px}
+.titulo img{width:30px;height:30px}
+.sub{color:var(--gris);font-style:italic;font-size:15px}
+.seccion{font:15px Fell,serif;color:#d8bf8e;letter-spacing:.06em;display:flex;align-items:center;gap:8px;margin:2px 0 6px}
+.seccion:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(193,154,85,.6),transparent)}
+.rej{display:grid;gap:8px}
+.ficha h3{margin:0;font:22px Fell,serif;color:var(--oro)}
+.ficha p{margin:3px 0}
+.boton-t{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 16px;font:17px Fell,serif;color:var(--claro);border-radius:5px;background:linear-gradient(#5a4128,#2e2013);box-shadow:inset 0 0 0 1px rgba(240,207,138,.55),inset 0 1px 0 rgba(255,230,180,.25),0 3px 6px rgba(0,0,0,.5)}
+.boton-t.prim{background:linear-gradient(#b48a45,#6e4f22);color:#fff5df;box-shadow:inset 0 0 0 1px rgba(255,230,170,.8),inset 0 1px 0 rgba(255,240,200,.5),0 3px 8px rgba(0,0,0,.5)}
+.boton-t.sec{background:transparent;box-shadow:inset 0 0 0 1px rgba(193,154,85,.55)}
+.barra{height:6px;border-radius:3px;background:rgba(0,0,0,.55);box-shadow:inset 0 0 0 1px rgba(193,154,85,.4)}
+.barra i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#a8792f,#efc777)}
+.fondo-menu{position:fixed;inset:-20px;background:inherit;background-size:cover;filter:blur(7px) brightness(.38) saturate(.75)}
+.feed{position:fixed;display:flex;flex-direction:column;gap:4px}
+.feed div{display:flex;align-items:center;gap:8px;font-size:16.5px;padding:2px 14px 2px 4px;border-radius:4px;background:linear-gradient(90deg,rgba(14,9,6,.72),transparent)}
+.feed img{width:32px;height:32px}
+.feed b{color:var(--aviso);font-weight:600}
+.joy{position:fixed;border-radius:50%;border:2px solid rgba(193,154,85,.35);background:radial-gradient(circle,rgba(20,14,9,.28),rgba(20,14,9,.06));display:grid;place-items:center}
+.joy i{width:40%;height:40%;border-radius:50%;background:url(kit/boton.png) center/contain;display:block;opacity:.75}
+.manos{position:fixed;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:flex-end}
+.manos .sep{width:1px;align-self:stretch;margin:8px 4px;background:linear-gradient(transparent,rgba(193,154,85,.7),transparent)}
+.carga{position:absolute;left:6px;right:6px;bottom:-12px;height:4px}
+.escarcha{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 50% 50%,transparent 60%,rgba(190,215,240,.2) 76%,rgba(225,238,252,.6) 100%)}
+.coste{display:flex;gap:6px;flex-wrap:wrap}
+.coste span{display:inline-flex;align-items:center;gap:3px;font-size:14.5px}
+.coste img{width:24px;height:24px}
+.coste .falta{color:var(--mal)}
+.pieza{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px 7px;border-radius:7px;text-align:center;font:16px Fell,serif;background:rgba(10,6,3,.35);box-shadow:inset 0 0 0 1px rgba(193,154,85,.3)}
+.pieza.sel{box-shadow:inset 0 0 0 1px rgba(255,225,160,.95),0 0 0 2px #c19a55,0 0 14px rgba(240,190,100,.5)}
+.pieza.no{opacity:.6}
+.pieza .im{width:100%;height:58px;display:grid;place-items:center}
+.pieza .im img{max-height:58px;max-width:90%}
+.fantasma{position:fixed;transform:translate(-50%,-50%) skewX(-28deg);border:2px solid rgba(140,210,150,.95);background:rgba(110,180,120,.22);box-shadow:0 0 14px rgba(120,200,130,.5)}
+.lista{display:flex;flex-direction:column;gap:5px}
+.fila{display:flex;align-items:center;gap:10px;padding:5px 14px 5px 6px;font-size:17px}
+.fila img{width:38px;height:38px}
+.fila.sel{box-shadow:inset 0 0 0 1px rgba(255,225,160,.95),0 0 0 2px #c19a55,0 0 12px rgba(240,190,100,.45)}
+.fila .k{margin-left:auto}
+.frases{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.frase{padding:7px 10px;font:17px Fell,serif;display:flex;gap:8px;align-items:center}
+.frase b{font:600 12px Garamond,serif;color:#b89a68}
+</style></head><body>
+<script>
+const q = new URLSearchParams(location.search), E = q.get('e') || 'normal', D = q.get('d') || 'pc', pc = D === 'pc';
+document.body.className = D;
+const h = (s) => document.body.insertAdjacentHTML('beforeend', s);
+const G = (n) => `<img src="kit/g_${n}.png" alt="">`;
+const I = (n) => `kit/${n}.png`;
+const COL = { bien: '#7fb383', aviso: '#e2aa4c', mal: '#d9583a', frio: '#86b4e6', calor: '#d39a55' };
+function med(k, v, est, { t = 44, nom = '', fl = '', quieto = false } = {}) {
+  const c = COL[est], R = 36.5, L = 2 * Math.PI * R;
+  return `<div class="med${quieto ? ' quieto' : ''}" style="width:${t}px;height:${t}px"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="${R}" fill="none" stroke="${c}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${L * v} ${L}" style="filter:drop-shadow(0 0 2.5px ${c})" opacity=".92"/></svg>${G(k)}
+    ${fl ? `<span class="fl" style="color:${c}">${fl}</span>` : ''}${nom ? `<span class="nom sombra" style="color:${c}">${nom}</span>` : ''}</div>`;
+}
+const BIEN = (t) => [med('hambre', .82, 'bien', { t, quieto: 1 }), med('sed', .7, 'bien', { t, quieto: 1 }), med('calor', .5, 'calor', { t, quieto: 1 }), med('cansancio', .9, 'bien', { t, quieto: 1 })];
+function necesidades(l) {
+  h(`<div class="fix" style="display:flex;gap:${pc ? 10 : 7}px;right:${pc ? 18 : 12}px;top:${pc ? 16 : 16}px;align-items:flex-start">${l.join('')}</div>`);
+}
+function arriba({ chat = true, tierra = false } = {}) {
+  const t = pc ? 50 : 50;
+  h(`<div class="br" style="left:14px;top:12px;width:${t}px;height:${t}px">${G('menu')}${pc ? '<span class="k">Tab</span>' : ''}</div>`);
+  h(`<div class="br" style="left:${14 + t + 12}px;top:12px;width:${t}px;height:${t}px">${G('hablar')}${pc ? '<span class="k">↵</span>' : ''}</div>`);
+  if (tierra && pc) h(`<div class="br" style="left:${14 + 2 * (t + 12)}px;top:12px;width:${t}px;height:${t}px">${G('mojon')}</div>`);
+  if (chat) h(`<div class="fix sombra" style="left:18px;top:${t + 22}px;font-size:16.5px"><b style="color:var(--aviso);font-weight:600">Ingrid:</b> ven a la orilla, hay juncos</div>`);
+}
+function manos({ der = 'hacha_piedra', izq = 'piedra', n = 3, cin = 'cuchillo', hombro = null, sel = 'izq' } = {}) {
+  const s = pc ? 64 : 64, sc = pc ? 50 : 52, b = pc ? 22 : 30;
+  const bloq = !!hombro;
+  const hu = (it, k, extra = '', size = s, num = '') => `<div class="hueco${it ? '' : ' vacio'}${extra}" style="width:${size}px;height:${size}px">${it ? `<img src="${I(it)}">` : ''}${num ? `<span class="n">${num}</span>` : ''}${pc && k ? `<span class="k">${k}</span>` : ''}</div>`;
+  h(`<div class="manos" style="bottom:${b}px">
+    ${hu(bloq ? null : der, '1', `${!bloq && sel === 'der' ? ' sel' : ''}${bloq ? ' bloq' : ''}`)}
+    ${hu(bloq ? null : izq, '2', `${!bloq && sel === 'izq' ? ' sel' : ''}${bloq ? ' bloq' : ''}`, s, bloq ? '' : n)}
+    ${hombro ? `<div class="sep"></div>${hu(hombro, '', ' sel', s + 6)}` : ''}
+    <div class="sep"></div>${hu(cin, 'C', '', sc)}
+    <div class="carga barra"><i style="width:${hombro ? 78 : 42}%"></i></div></div>`);
+}
+function feed() {
+  h(`<div class="feed sombra" style="left:${pc ? 16 : 12}px;bottom:${pc ? 120 : 330}px"><div><img src="${I('rama')}"><b>+2</b> Ramas</div><div style="opacity:.55"><img src="${I('piedra')}"><b>+1</b> Piedra</div></div>`);
+}
+function movil({ accion = `<img src="${I('piedra')}">`, verbo = 'Coger', atajos = true, prog = 0 } = {}) {
+  h(`<div class="joy" style="left:22px;bottom:150px;width:124px;height:124px"><i></i></div>`);
+  const L = 2 * Math.PI * 47;
+  h(`<div class="accion" style="right:22px;bottom:146px;width:96px;height:96px">${accion}<span class="verbo sombra">${verbo}</span>${prog ? `<svg class="prog" viewBox="0 0 110 110"><circle cx="55" cy="55" r="51" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="5"/><circle cx="55" cy="55" r="51" fill="none" stroke="#f0c46e" stroke-width="5" stroke-linecap="round" stroke-dasharray="${L * prog} ${L}" style="filter:drop-shadow(0 0 4px #f0c46e)"/></svg>` : ''}</div>`);
+  if (atajos) {
+    h(`<div class="br" style="right:128px;bottom:150px;width:54px;height:54px">${G('fabricar')}</div>`);
+    h(`<div class="br" style="right:40px;bottom:270px;width:54px;height:54px">${G('construir')}</div>`);
+  }
+}
+const pPC = { x: 398, y: 323 }, pMV = { x: 214, y: 262 };
+function etq(x, y, html, extra = '') { h(`<div class="etq placa ${extra}" style="left:${x}px;top:${y}px">${html}</div>`); }
+
+// ============ estados ============
+if (E === 'normal') {
+  arriba({ tierra: true }); necesidades(BIEN(pc ? 44 : 40)); manos(); feed();
+  const p = pc ? pPC : pMV;
+  h(`<div class="aro-suelo" style="left:${p.x}px;top:${p.y}px;width:${pc ? 56 : 40}px;height:${pc ? 20 : 15}px"></div>`);
+  etq(p.x, p.y - 18, `${pc ? '<span class="k">F</span>' : ''}Coger la piedra`);
+  if (pc) h(`<div class="fix sombra" style="right:18px;bottom:20px;display:flex;gap:14px;font-size:15px;opacity:.8">${[['I', 'Equipo'], ['H', 'Fabricar'], ['B', 'Construir'], ['M', 'Mapa']].map(([k, t]) => `<span style="display:flex;gap:5px;align-items:center"><span class="k">${k}</span>${t}</span>`).join('')}</div>`);
+  else movil();
+} else if (E === 'hombro') {
+  // con un tronco al hombro: las manos no llevan nada (se ven cerradas), y la obra de cerca dice lo que le falta
+  arriba({ chat: false, tierra: true }); necesidades(BIEN(pc ? 44 : 40)); manos({ hombro: 'tronco_delgado' });
+  const x = pc ? 560 : 205, y = pc ? 360 : 400;
+  h(`<div class="fantasma" style="left:${x}px;top:${y + 40}px;width:${pc ? 150 : 110}px;height:${pc ? 90 : 70}px;border-color:rgba(240,205,140,.9);background:rgba(240,205,140,.12);box-shadow:0 0 14px rgba(240,190,100,.4)"></div>`);
+  etq(x, y - 6, `<div style="display:flex;flex-direction:column;gap:4px;min-width:${pc ? 220 : 200}px"><div style="display:flex;gap:8px;align-items:center">${pc ? '<span class="k">F</span>' : ''}<span>Dejar el tronco en la obra</span></div><small style="display:flex;gap:6px;align-items:center"><img src="${I('tronco_delgado')}" style="width:24px;height:24px">Muro de troncos: 2 de 4 troncos</small><div class="barra" style="height:5px"><i style="width:50%"></i></div></div>`);
+  if (!pc) movil({ accion: `<img src="${I('tronco_delgado')}">`, verbo: 'Dejar', atajos: false });
+  else h(`<div class="fix sombra" style="right:18px;bottom:20px;display:flex;gap:14px;font-size:15px;opacity:.8"><span style="display:flex;gap:5px;align-items:center"><span class="k">G</span>Soltarlo al suelo</span></div>`);
+} else if (E === 'estado') {
+  h(`<div class="escarcha"></div>`);
+  arriba({ chat: false });
+  const t = pc ? 44 : 40;
+  necesidades([med('sed', .2, 'mal', { t: pc ? 58 : 52, nom: 'Sed', fl: '▼' }), med('frio', .7, 'frio', { t: t + 4, nom: pc ? 'Frío' : '', fl: '▼' }), med('hambre', .55, 'aviso', { t }), med('herida', 1, 'mal', { t })]);
+  manos();
+  const pos = pc ? 'right:14px;top:104px;width:300px' : 'left:10px;right:10px;top:100px';
+  h(`<div class="tablero fino" style="${pos}"><div class="dentro ficha" style="padding:4px 6px"><h3 style="color:var(--mal);display:flex;gap:8px;align-items:center"><img src="kit/g_sed.png" style="width:24px">Sed</h3>
+     <p>Te cansas antes.</p><p><b style="color:var(--aviso)">Bebe:</b> el río, 140 pasos a levante.</p></div></div>`);
+  if (!pc) movil();
+} else if (E === 'equipo' || E === 'ropa') {
+  h(`<div class="fondo-menu"></div>`);
+  const tabs = ['Equipo', 'Fabricar', 'Construir', 'Mapa', 'Tu tierra'];
+  const cab = `<div class="tabs correa" style="padding:0 6px">${tabs.map((t, i) => `${i ? '<span class="sep"></span>' : ''}<span class="tab${i === 0 ? ' sel' : ''}">${t}</span>`).join('')}</div>`;
+  const hu = (it, et, { sel = false, n = '', s = 64, vacio = '' } = {}) => `<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="hueco${it ? '' : ' vacio'}${sel ? ' sel' : ''}" style="width:${s}px;height:${s}px">${it ? `<img src="${I(it)}">` : vacio ? `<img src="kit/g_${vacio}.png" style="width:46%;height:46%">` : ''}${n ? `<span class="n">${n}</span>` : ''}</div>${et ? `<small style="color:var(--gris);font-size:13.5px;white-space:nowrap">${et}</small>` : ''}</div>`;
+  // lo que llevas: las manos y el hombro, y cada cosa con huecos abierta debajo, a la vez (sin abrir una a una)
+  const llevas = (s) => `<div class="seccion">Manos y hombro</div>
+     <div style="display:flex;gap:10px">${hu('hacha_piedra', 'Derecha', { s })}${hu('piedra', 'Izquierda', { s, n: 3 })}${hu(null, 'Al hombro', { s })}</div>
+     <div class="seccion" style="margin-top:12px">Cinto de cuero <small style="color:var(--gris);font-family:Garamond">· 2 huecos</small></div>
+     <div style="display:flex;gap:10px">${hu('cuchillo', '', { s, sel: true })}${hu('bayas', '', { s, n: 7 })}</div>
+     <div class="seccion" style="margin-top:12px">Zurrón <small style="color:var(--gris);font-family:Garamond">· 4 huecos</small></div>
+     <div style="display:flex;gap:10px">${hu('cordel', '', { s, n: 2 })}${hu('lasca_silex', '', { s, n: 4 })}${hu('fibra', '', { s, n: 9 })}${hu(null, '', { s })}</div>`;
+  const pies = (s) => `<div class="seccion">A tus pies</div><div class="rej" style="grid-template-columns:repeat(3,${s}px)">${hu('rama', '', { s, n: 6 })}${hu('piedra', '', { s, n: 2 })}${hu('junco', '', { s, n: 4 })}${hu('odre', '', { s })}</div>
+     <p class="sub" style="margin:8px 0 0;font-size:14px">Lo que hay en el suelo a dos pasos. Tócalo para cogerlo; suelta aquí lo que quieras dejar.</p>`;
+  const ficha = (ancho) => `<div class="ficha" style="display:flex;gap:12px;align-items:flex-start;${ancho}"><img src="${I('cuchillo')}" style="width:76px;height:76px;flex:none">
+     <div style="flex:1"><h3>Cuchillo de sílex</h3><p class="sub" style="font-size:14.5px">Al cinto · pequeño · 0,2 kg · corta cuerdas y pieles</p>
+     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><span class="boton-t prim">A la mano</span><span class="boton-t">Al suelo</span><span class="boton-t sec">Mover…</span></div></div></div>`;
+  const ropa = (s) => {
+    const R = [['Cabeza', null, 'cabeza'], ['Camisa', 'camisa', ''], ['Exterior', 'tunica', ''], ['Abrigo', null, 'abrigo'], ['Sobre todo', null, 'sobre'], ['Guantes', null, 'guantes'], ['Piernas', 'calzas', ''], ['Pies', null, 'pies']];
+    return R.map(([et, it]) => `<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div class="hueco${it ? '' : ' vacio'}" style="width:${s}px;height:${s}px">${it ? `<img src="ropa_${it}.png" style="width:70%;height:70%">` : ''}</div><small style="color:var(--gris);font-size:13px">${et}</small></div>`).join('');
+  };
+  if (pc) {
+    h(`<div class="fix" style="left:50%;top:22px;transform:translateX(-50%);display:flex;align-items:center;gap:14px">${cab}</div>`);
+    h(`<div class="fix sombra" style="right:24px;top:30px;color:var(--gris);font-style:italic">Día 3, vísperas · 2 en línea</div>`);
+    h(`<div class="tablero" style="left:30px;right:30px;top:84px"><div class="dentro" style="display:grid;grid-template-columns:300px 1fr 270px;gap:22px">
+      <div><div class="seccion">Ropa</div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;justify-items:center;position:relative">
+        <img src="retrato.png" style="position:absolute;left:50%;top:0;height:340px;transform:translateX(-50%);opacity:.9;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))">
+        <div style="display:flex;flex-direction:column;gap:14px;justify-self:start">${ropa(54).split('</small></div>').slice(0, 4).join('</small></div>')}</small></div></div>
+        <div style="display:flex;flex-direction:column;gap:14px;justify-self:end">${ropa(54).split('</small></div>').slice(4, 8).join('</small></div>')}</small></div></div></div></div>
+      <div style="border-left:1px solid rgba(193,154,85,.3);border-right:1px solid rgba(193,154,85,.3);padding:0 22px;display:flex;flex-direction:column">${llevas(72)}
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(193,154,85,.3)">${ficha('')}</div></div>
+      <div>${pies(72)}<div style="margin-top:18px" class="seccion">Carga</div><div class="barra"><i style="width:42%"></i></div><p class="sub" style="font-size:14px;margin:4px 0">Ligero: andas como siempre.</p></div>
+    </div></div>`);
+    h(`<div class="fix sombra" style="left:40px;bottom:18px;display:flex;gap:16px;font-size:15px;opacity:.85">${[['Clic', 'Elegir'], ['Arrastrar', 'Llevarlo a otro sitio'], ['Clic dcho.', 'A la mano o al suelo']].map(([k, t]) => `<span style="display:flex;gap:5px;align-items:center"><span class="k">${k}</span>${t}</span>`).join('')}<span style="flex:1"></span></div>`);
+    h(`<div class="fix sombra" style="right:40px;bottom:18px;display:flex;gap:16px;font-size:15px;opacity:.85"><span>Ajustes</span><span>Ayuda</span><span>Decisiones</span><span>ES · EN · RU</span><span style="display:flex;gap:5px;align-items:center"><span class="k">Esc</span>Volver</span></div>`);
+  } else {
+    const ropaTab = E === 'ropa';
+    h(`<div class="fix" style="left:8px;right:62px;top:10px;overflow:hidden">${cab.replace('padding:0 6px', 'padding:0 4px;width:max-content')}</div>`);
+    h(`<div class="br" style="right:8px;top:6px;width:48px;height:48px">${G('cerrar')}</div>`);
+    h(`<div class="fix" style="left:10px;right:10px;top:66px;display:flex;gap:6px">${['Lo que llevas', 'Ropa'].map((t, i) => `<span class="boton-t ${(i === 1) === ropaTab ? 'prim' : 'sec'}" style="flex:1;padding:6px">${t}</span>`).join('')}</div>`);
+    if (!ropaTab) {
+      h(`<div class="tablero fino" style="left:6px;right:6px;top:110px;bottom:200px"><div class="dentro" style="padding:2px 4px">${llevas(66)}<div style="margin-top:12px">${pies(66).replace('repeat(3,66px)', 'repeat(4,66px)')}</div></div></div>`);
+      h(`<div class="tablero fino" style="left:6px;right:6px;bottom:6px;height:188px"><div class="dentro" style="padding:2px">${ficha('')}<p class="sub" style="font-size:14px;margin:8px 0 0">O toca otro hueco para llevarlo allí.</p></div></div>`);
+    } else {
+      h(`<div class="tablero fino" style="left:6px;right:6px;top:110px;bottom:6px"><div class="dentro" style="display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:12px">${ropa(58).split('</small></div>').slice(0, 4).join('</small></div>')}</small></div></div>
+        <img src="retrato.png" style="width:100%;margin-top:30px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))">
+        <div style="display:flex;flex-direction:column;gap:12px">${ropa(58).split('</small></div>').slice(4, 8).join('</small></div>')}</small></div></div></div></div>`);
+    }
+  }
+} else if (E === 'fabricar') {
+  h(`<div class="fondo-menu"></div>`);
+  const tabs = ['Equipo', 'Fabricar', 'Construir', 'Mapa', 'Tu tierra'];
+  const cab = `<div class="tabs correa" style="padding:0 6px">${tabs.map((t, i) => `${i ? '<span class="sep"></span>' : ''}<span class="tab${i === 1 ? ' sel' : ''}">${t}</span>`).join('')}</div>`;
+  const sitios = [['Con las manos', 'colocar', 3], ['Piedra de tallar', 'quitar', 1, 'cerca'], ['Fuego', 'calor', 0, 'lejos']];
+  const cartas = [['cordel', 'Cordel', 'ya', 'ya'], ['hacha_piedra', 'Hacha de piedra', 'ya', 'ya'], ['lanza_endurecida', 'Lanza endurecida', 'falta 1 rama', 'casi'], ['est_piedra_tallar', 'Piedra de tallar', 'obra', 'ya'], ['lasca_silex', 'Lasca de sílex', 'en la piedra', 'lejos'], ['saco', 'Saco', 'falta fibra', 'casi']];
+  const carta = ([i, t, e, k], s) => `<div class="pieza${k === 'lejos' ? ' no' : ''}${i === 'hacha_piedra' ? ' sel' : ''}"><div class="im"><img src="${I(i)}"></div>${t}<small style="font:13.5px Garamond;color:${k === 'ya' ? 'var(--bien)' : k === 'casi' ? 'var(--aviso)' : 'var(--gris)'}">${e}</small></div>`;
+  const ficha = `<div class="ficha"><div style="display:flex;gap:12px;align-items:center"><img src="${I('hacha_piedra')}" style="width:84px;height:84px"><div><h3>Hacha de piedra</h3><p class="sub" style="font-size:14.5px">Tala los árboles jóvenes · con las manos · 45 s</p></div></div>
+    <div class="seccion" style="margin-top:10px">Lo que pide</div>
+    ${[['rama', 'Rama', '1 de 6', 'en las manos'], ['piedra', 'Piedra', '1 de 3', 'en las manos'], ['cordel', 'Cordel', '1 de 2', 'en el zurrón']].map(([i, t, c, d]) => `<div style="display:flex;gap:10px;align-items:center;padding:3px 0"><img src="${I(i)}" style="width:34px;height:34px"><span style="flex:1">${t} <small style="color:var(--gris)">· ${d}</small></span><b style="color:var(--bien);font-weight:600">${c}</b></div>`).join('')}
+    <div style="display:flex;gap:8px;margin-top:12px"><span class="boton-t prim" style="flex:1">Hacer</span><span class="boton-t" style="width:56px">×3</span></div></div>`;
+  if (pc) {
+    h(`<div class="fix" style="left:50%;top:22px;transform:translateX(-50%)">${cab}</div>`);
+    h(`<div class="tablero" style="left:30px;right:30px;top:84px"><div class="dentro" style="display:grid;grid-template-columns:200px 1fr 320px;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:8px">${sitios.map(([t, g, n, d], i) => `<div class="fila placa${i === 0 ? ' sel' : ''}" style="${d === 'lejos' ? 'opacity:.6' : ''}"><img src="kit/g_${g}.png" style="width:28px;height:28px">${t}${n ? `<b style="margin-left:auto;color:var(--bien)">${n}</b>` : ''}</div>`).join('')}
+        <p class="sub" style="font-size:14px">La piedra de tallar, a tu lado. El fuego más cerca, a 40 pasos.</p></div>
+      <div style="border-left:1px solid rgba(193,154,85,.3);border-right:1px solid rgba(193,154,85,.3);padding:0 20px"><div class="seccion">Puedes hacerlo ya</div><div class="rej" style="grid-template-columns:repeat(4,1fr)">${cartas.filter(c => c[3] === 'ya').map(c => carta(c)).join('')}</div>
+        <div class="seccion" style="margin-top:14px">Te falta poco</div><div class="rej" style="grid-template-columns:repeat(4,1fr)">${cartas.filter(c => c[3] !== 'ya').map(c => carta(c)).join('')}</div>
+        <div class="seccion" style="margin-top:14px">En marcha</div><div style="display:flex;gap:10px;align-items:center"><img src="${I('cordel')}" style="width:40px"><span style="flex:1">Cordel <small style="color:var(--gris)">· te quedan 12 s</small><div class="barra" style="margin-top:4px"><i style="width:60%"></i></div></span></div></div>
+      <div>${ficha}</div></div></div>`);
+  } else {
+    h(`<div class="fix" style="left:8px;right:62px;top:10px;overflow:hidden">${cab.replace('padding:0 6px', 'padding:0 4px;width:max-content')}</div>`);
+    h(`<div class="br" style="right:8px;top:6px;width:48px;height:48px">${G('cerrar')}</div>`);
+    h(`<div class="fix" style="left:10px;right:10px;top:66px;display:flex;gap:6px">${sitios.map(([t, g, n, d], i) => `<span class="boton-t ${i === 0 ? 'prim' : 'sec'}" style="flex:1;padding:6px 4px;font-size:15px;${d === 'lejos' ? 'opacity:.55' : ''}">${t.replace('Piedra de tallar', 'Piedra')}${n ? ` · ${n}` : ''}</span>`).join('')}</div>`);
+    h(`<div class="tablero fino" style="left:6px;right:6px;top:110px;bottom:330px"><div class="dentro"><div class="seccion">Puedes hacerlo ya</div><div class="rej" style="grid-template-columns:repeat(3,1fr)">${cartas.filter(c => c[3] === 'ya').map(c => carta(c)).join('')}</div>
+      <div class="seccion" style="margin-top:12px">Te falta poco</div><div class="rej" style="grid-template-columns:repeat(3,1fr)">${cartas.filter(c => c[3] !== 'ya').map(c => carta(c)).join('')}</div></div></div>`);
+    h(`<div class="tablero fino" style="left:6px;right:6px;bottom:6px;height:318px"><div class="dentro">${ficha}</div></div>`);
+  }
+} else if (E === 'construir') {
+  h(`<div class="br" style="left:14px;top:12px;width:50px;height:50px">${G('menu')}</div>`);
+  h(`<div class="fix correa" style="${pc ? 'left:50%;transform:translateX(-50%)' : 'left:72px'};top:14px;display:flex;align-items:center;gap:10px;padding:0 4px"><span class="fell" style="color:var(--oro);font-size:18px">Construir</span><span class="sep" style="width:1px;height:18px;background:rgba(193,154,85,.6)"></span><span class="tab sel">Poner</span><span class="tab">Quitar</span>${pc ? '<span class="k">X</span><span class="sep" style="width:1px;height:18px;background:rgba(193,154,85,.6)"></span><span class="tab">Planta baja</span><span class="k">⇞</span>' : ''}</div>`);
+  if (!pc) h(`<div class="br" style="right:8px;top:64px;width:46px;height:46px">${G('cerrar')}</div>`);
+  const fx = pc ? 520 : 196, fy = pc ? 428 : 450;
+  h(`<div class="fantasma" style="left:${fx}px;top:${fy}px;width:${pc ? 150 : 120}px;height:${pc ? 96 : 76}px"></div>`);
+  etq(fx, fy - 54, `Muro de troncos <small>· se pone el marco; luego le llevas 4 troncos</small>`);
+  const tabs = ['Tierra', 'Base', 'Estructura', 'Muros', 'Tejados', 'Acceso', 'Puestos'];
+  const PZ = [['tronco_delgado', 'Muro de troncos', [['tronco_delgado', 4, 0]]], ['vara', 'Muro de zarzo', [['vara', 4, 0], ['barro', 4, 1]]], ['tronco_delgado', 'Con puerta', [['tronco_delgado', 3, 0]]], ['junco', 'Tejado de juncos', [['vara', 2, 0], ['junco', 4, 0]]]];
+  const pieza = ([i, t, c], k) => `<div class="pieza${k === 0 ? ' sel' : ''}" style="width:${pc ? 124 : 'auto'}"><div class="im"><img src="${I(i)}"></div>${t}<div class="coste" style="justify-content:center">${c.map(([m, n, f]) => `<span class="${f ? 'falta' : ''}"><img src="${I(m)}">${n}</span>`).join('')}</div></div>`;
+  h(`<div class="tablero fino" style="left:50%;transform:translateX(-50%);bottom:${pc ? 14 : 14}px;${pc ? 'width:640px' : 'width:calc(100% - 12px)'}"><div class="dentro">
+     <div class="tabs" style="${pc ? '' : 'overflow:hidden;-webkit-mask:linear-gradient(90deg,#000 80%,transparent)'}">${tabs.map((t, i) => `${i ? '<span class="sep"></span>' : ''}<span class="tab${i === 3 ? ' sel' : ''}">${t}</span>`).join('')}</div>
+     <div style="display:grid;grid-template-columns:repeat(${pc ? 4 : 3},1fr);gap:8px;margin-top:8px">${PZ.slice(0, pc ? 4 : 3).map(pieza).join('')}</div>
+     ${pc ? '<p class="sub" style="margin:8px 0 0;font-size:14px">En tu tierra tienes: 12 troncos delgados · 8 varas · 0 de barro</p>' : ''}</div></div>`);
+  if (pc) h(`<div class="fix sombra" style="right:18px;bottom:228px;display:flex;flex-direction:column;gap:8px;align-items:flex-end;font-size:15px;opacity:.85">${[['Clic', 'Poner el marco'], ['R', 'Girar'], ['Ctrl Z', 'Deshacer'], ['Esc', 'Dejarlo']].map(([t, x]) => `<span style="display:flex;gap:6px;align-items:center">${x}<span class="k">${t}</span></span>`).join('')}</div>`);
+  else {
+    h(`<div class="accion" style="right:22px;bottom:276px;width:92px;height:92px">${G('construir').replace('<img', '<img class="g"')}<span class="verbo sombra">Poner</span></div>`);
+    h(`<div class="br" style="right:126px;bottom:282px;width:54px;height:54px">${G('girar')}</div>`);
+    h(`<div class="br" style="right:40px;bottom:392px;width:50px;height:50px">${G('deshacer')}</div>`);
+    h(`<div class="joy" style="left:22px;bottom:276px;width:120px;height:120px"><i></i></div>`);
+  }
+} else if (E === 'tierra') {
+  h(`<div class="fondo-menu"></div>`);
+  const tabs = ['Equipo', 'Fabricar', 'Construir', 'Mapa', 'Tu tierra'];
+  const cab = `<div class="tabs correa" style="padding:0 6px">${tabs.map((t, i) => `${i ? '<span class="sep"></span>' : ''}<span class="tab${i === 4 ? ' sel' : ''}">${t}</span>`).join('')}</div>`;
+  const alm = [['tronco_delgado', 'Acopio de troncos', 12, 20], ['piedra', 'Pila de piedras', 18, 40], ['vara', 'Soporte de varas', 8, 30], ['junco', 'Almiar (juncos)', 0, 30]];
+  const filaAlm = ([i, t, n, m]) => `<div style="display:flex;gap:10px;align-items:center;padding:4px 0"><img src="${I(i)}" style="width:44px;height:44px"><div style="flex:1">${t}<div class="barra" style="margin-top:4px"><i style="width:${100 * n / m}%"></i></div></div><b style="color:${n ? 'var(--claro)' : 'var(--gris)'};font-weight:600;min-width:52px;text-align:right">${n} <small style="color:var(--gris);font-weight:400">/ ${m}</small></b></div>`;
+  const cuerpo = `<div class="titulo"><img src="kit/g_mojon.png">Tierra de Hrafnsholt <span class="sub" style="font-size:15px">· comarca de Vestdal · 1,2 km²</span></div>
+     <div class="seccion" style="margin-top:12px">Lo almacenado</div>${alm.map(filaAlm).join('')}
+     <p class="sub" style="font-size:14px">La obra no coge de aquí sola: lo llevas tú.</p>
+     <div class="seccion" style="margin-top:10px">Pueden construir aquí</div>
+     <div style="display:flex;gap:10px;align-items:center"><span style="flex:1">Ingrid</span><span class="boton-t sec" style="padding:4px 12px;font-size:15px">Quitarle</span></div>
+     <p class="sub" style="font-size:14px;margin-top:6px">Para invitar a alguien, acércate a él y pulsa F.</p>
+     <div class="seccion" style="margin-top:10px">Mientras la uses</div><p style="margin:0;font-size:15.5px">Última vez: hoy. Si nadie entra en 30 días, vuelve al rey (te avisamos por correo antes).</p>`;
+  if (pc) {
+    h(`<div class="fix" style="left:50%;top:22px;transform:translateX(-50%)">${cab}</div>`);
+    h(`<div class="tablero" style="left:50%;transform:translateX(-50%);top:84px;width:560px"><div class="dentro">${cuerpo}</div></div>`);
+  } else {
+    h(`<div class="fix" style="left:8px;right:62px;top:10px;overflow:hidden">${cab.replace('padding:0 6px', 'padding:0 4px;width:max-content')}</div>`);
+    h(`<div class="br" style="right:8px;top:6px;width:48px;height:48px">${G('cerrar')}</div>`);
+    h(`<div class="tablero fino" style="left:6px;right:6px;top:66px;bottom:6px"><div class="dentro">${cuerpo}</div></div>`);
+  }
+} else if (E === 'hablar') {
+  arriba({ chat: false }); necesidades(BIEN(pc ? 44 : 40)); manos();
+  const F = ['Hola', 'Ven aquí', 'Espera', 'Mira esto', 'Gracias', 'Sí', 'No', '¡Ayuda!'];
+  h(`<div class="tablero fino" style="left:8px;top:70px;${pc ? 'width:340px' : 'right:8px'}"><div class="dentro">
+     <div class="sombra" style="margin-bottom:8px;font-size:16.5px"><b style="color:var(--aviso);font-weight:600">Ingrid:</b> ven a la orilla, hay juncos</div>
+     <div class="frases">${F.map((f, i) => `<span class="frase placa">${pc ? `<b>${i + 1}</b>` : ''}${f}</span>`).join('')}</div>
+     <div class="placa" style="margin-top:8px;padding:8px 10px;color:var(--gris);font-style:italic;display:flex;justify-content:space-between">Escribir…${pc ? '<span class="k">↵</span>' : ''}</div>
+     <p class="sub" style="font-size:14px;margin:6px 0 0">A cada uno le llega en su lengua.</p></div></div>`);
+  if (!pc) movil();
+} else if (E === 'varias') {
+  arriba({ chat: false }); necesidades(BIEN(pc ? 44 : 40)); manos();
+  const p = pc ? pPC : pMV;
+  h(`<div class="aro-suelo" style="left:${p.x}px;top:${p.y}px;width:${pc ? 56 : 40}px;height:${pc ? 20 : 15}px"></div>`);
+  const rows = [['piedra', 'Coger la piedra'], ['hacha_piedra', 'Talar el árbol joven'], ['est_piedra_tallar', 'Usar la piedra de tallar'], ['rama', 'Coger las ramas']];
+  const lista = rows.map(([i, t], k) => `<div class="fila placa${k === 0 ? ' sel' : ''}"><img src="${I(i)}">${t}${pc && k === 0 ? '<span class="k">F</span>' : ''}</div>`).join('');
+  if (pc) h(`<div class="lista fix" style="left:${p.x + 40}px;top:${p.y - 30}px;min-width:250px">${lista}</div>`);
+  else { h(`<div class="lista fix" style="right:12px;bottom:272px;min-width:240px">${lista}</div>`); movil({ atajos: false }); }
+} else if (E === 'talar') {
+  arriba({ chat: false }); necesidades(BIEN(pc ? 44 : 40)); manos({ sel: 'der' });
+  if (pc) etq(745, 330, `<span class="k">F</span>Talar el árbol joven <small>· mantén</small> <svg viewBox="0 0 20 20" style="width:20px;height:20px;transform:rotate(-90deg)"><circle cx="10" cy="10" r="8" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="3"/><circle cx="10" cy="10" r="8" fill="none" stroke="#f0c46e" stroke-width="3" stroke-dasharray="${50.3 * .6} 60"/></svg>`);
+  else movil({ accion: `<img src="${I('hacha_piedra')}">`, verbo: 'Talar', atajos: false, prog: .6 });
+}
+// (móvil) que la pestaña elegida quede a la vista, como al deslizar la fila
+for (const t of document.querySelectorAll('.tabs.correa')) { const sel = t.querySelector('.tab.sel'), cont = t.parentElement;
+  if (sel && cont && getComputedStyle(cont).overflow === 'hidden') { const d = sel.offsetLeft + sel.offsetWidth - cont.clientWidth + 30; if (d > 0) t.style.transform = `translateX(${-d}px)`; } }
+</script></body></html>
