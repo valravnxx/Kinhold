@@ -5060,5 +5060,18 @@
   "pruebas": "Batería entera en la nube correcta (lógica y todos los grupos de navegador, PC y móvil), sin las de en línea; tras unir main, otra vez la lógica y los grupos de gráficos, del día y la noche y de la demo en el mundo",
   "capturas": "capturas/demo-v137",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T14:17:52+01:00",
+  "fin": "2026-11-07T14:24:53+01:00",
+  "titulo": "P4, un primer día con sentido: planificado (chat con valravnx)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Leídos el GDD (apartados 6, 8, 13, 14 y 20) y el documento de sistemas (apartados 3, 4, 8, 10 y 11): 15 tareas de una sesión, cada una con su parte en el recorrido de jugador, y la revisión al final.",
+   "El orden: las necesidades (lógica y servidor), sus avisos, beber del río, comer bayas, el frío con la noche y el fuego, el cansancio y sentarse, la cama ligada (refugio de ramas), desconectarse dormido, morir y el saqueo, las liebres, cazar con la lanza, despiezar y asar, el desgaste, reparar y el recorrido de un primer día entero.",
+   "El día y la noche ya estaban (demo v137). El calor y los cinco estados de más se dejan para después, como dice el GDD. El hito sigue pendiente: va detrás de la casa humilde (P3)."
+  ],
+  "pruebas": "Sin pruebas: solo planificación (roadmap y diario)",
+  "estado": "ok"
  }
 ]
