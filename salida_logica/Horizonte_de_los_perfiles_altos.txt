@@ -1,0 +1,48 @@
+La compresión
+  OK   empieza pasado el terreno de cerca — r0 828 m
+  OK   lo más lejos de la isla (su diagonal) cabe en la cámara — 1520 m de 1600
+  OK   lo de cerca no cambia
+  OK   se deshace (la niebla sabe la distancia de verdad)
+  OK   lo más lejano sigue detrás de lo menos lejano
+  OK   el mar de lejos no sube dentro del terreno de cerca (como mucho 0,5 m sobre sus -4 m) — 0.37 m
+  OK   el suelo de lejos no sube dentro del terreno de cerca (como mucho 0,5 m) — 0.01 m
+Las muestras, poco a poco
+  OK   un fotograma hace poco (con el tope de milisegundos) — 128 puntos
+  OK   aún no hay ningún nivel
+  OK   llega primero lo basto y luego lo fino (cada 400, 200 y 100 m) — 4,2,1
+  OK   el alto es el del paisaje — 200/200
+  OK   hay montañas (lo que se quiere ver) — lo más alto 2131 m
+La malla
+  OK   lo fino tiene más triángulos que lo basto — 26680 y 418002
+  OK   quita los cuadros que son todo mar — 418002 de 768600
+  OK   va hundida y en metros de la escena — 2080.9 m
+  OK   el mar baja mucho (la costa la hace el mar de lejos)
+  OK   los colores son lineales y entre 0 y 1
+El mar de lejos
+  OK   cubre el cuadro de la isla y no se sale
+  OK   en trozos (para que siga la compresión) — 245×253
+El dosel (el bosque de lejos)
+  OK   hay dosel en una parte de la isla (los bosques), no en toda — 25 % de los puntos
+  OK   nada en el mar
+  OK   las copas, de la altura de estos árboles (hasta unos 14 m) — lo más alto 14.1 m
+  OK   sin bosque, sin dosel
+  OK   la malla del dosel, solo donde hay bosque (menos que la del suelo) — 274000 triángulos (el suelo, 418002)
+  OK   y más basta de lejos en los perfiles bajos — 19552 cada 400 m
+  OK   el linde del bosque de lejos sin pared (cada 100 m): las copas no saltan más de 10 m entre vecinos — salto máximo 7.7 m
+  OK   y donde acaba, del color del suelo (cada 100 m) — 0 de 6733
+  OK   el linde del bosque de lejos sin pared (cada 200 m): las copas no saltan más de 10 m entre vecinos — salto máximo 7.7 m
+  OK   y donde acaba, del color del suelo (cada 200 m) — 0 de 2626
+  OK   de cerca, en un bosque mixto hay copas — 6246 triángulos
+  OK   y en la pradera abierta (corros sueltos) casi nada — 0 triángulos
+  OK   de cerca, en su cuadro y en metros de la escena
+  OK   de cerca, las copas sin montículos: entre vecinos, menos de 1 m de media — 0.32 m en 2219 pares
+  OK   y cada punto dice lo que sube sobre el suelo
+  OK   las copas de cerca empiezan más allá de los árboles de verdad (200 m) y suben poco a poco — desde 250 m, enteras 150 m más allá
+  OK   sin terreno de cerca debajo, sin dosel (y dice que faltan puntos) — 0 copas al este; faltan 2145
+Los perfiles
+  OK   los dos móviles más baratos no lo llevan — movil-1,movil-2
+  OK   cada perfil de PC al menos tan fino como el anterior
+  OK   los pasos son niveles que hay
+  OK   la niebla de cerca no tapa las montañas
+
+40 bien, 0 mal
