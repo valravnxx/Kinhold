@@ -7,6 +7,11 @@
 //   (y algo de piedra y de sílex sueltos en el claro, menos que en su sitio: valravnx, 1 nov)
 //   Sílex              — zonas calizas, ríos — recoger — 1 nódulo        (P) — lento
 //   Fibra (ortiga, hierba larga) — claros, riberas — arrancar — 2–4 fibra cruda (P) — una estación
+// Y lo que pide la casa humilde y la hoguera (tarea «Materiales del tramo que no tenían origen», 7 nov):
+//   Juncos             — riberas (y la orilla) — cuchillo — cortar — 1 haz de juncos (M) — una estación
+//   Barro              — la orilla de los ríos — palo cavador o pala — cavar — 1 cesta de barro (M) — inagotable
+//   Yesca              — hongos yesqueros en los tocones viejos del bosque — manos — 1–2 yesca (P) — una estación
+//   (y con las manos, de la fibra seca o de la corteza: recetas en src/logica/fabricacion.js)
 //
 // Cada sitio de recogida es un punto del mundo que sale de una semilla y de las zonas del terreno (las mismas para
 // todos). Al recogerlo se agota y vuelve a salir pasado su tiempo, contado por tiempo transcurrido: se guarda la hora
@@ -18,6 +23,10 @@
 //  - Lo que da cada vez (1–3 ramas, 2–4 de fibra) sale de un azar fijo por punto y por vez, para que el servidor y
 //    las pruebas den lo mismo.
 //  - Se recoge a 2 m como mucho y con las manos: si llevas algo grande (las dos manos ocupadas), no se puede.
+//  - Lo que pide herramienta (los juncos, un cuchillo: la lasca de sílex vale; el barro, el palo cavador o la pala)
+//    basta con llevarla encima, en la mano o guardada (decisión provisional, 7 nov). «Manos (poco)» del barro no se
+//    hace: sin palo no se cava.
+//  - El barro es «inagotable»: el sitio no se agota (se cava una cesta cada vez, sin espera).
 //  - Lo recogido va a la mano o a los huecos donde quepa (junto a lo mismo primero); si no cabe entero, no se
 //    recoge y el punto sigue ahí.
 import { CATALOGO } from './inventario.js';
@@ -25,6 +34,12 @@ import { CATALOGO } from './inventario.js';
 const DIA = 24 * 3600 * 1000;
 export const TIEMPOS = { dias: 3 * DIA, semanas: 21 * DIA, estacion: 30 * DIA };
 export const ALCANCE_RECOGER = 2; // m
+// Lo que vale para cada «con» (lo que pide el documento): basta con llevar una de ellas encima.
+export const HERRAMIENTAS_RECOGER = {
+  cuchillo: ['lasca_silex', 'cuchillo'],
+  cavar: ['palo_cavador', 'pala_madera'],
+};
+export const QUE_PIDE = { cuchillo: 'Necesitas un cuchillo o una lasca de sílex para cortarlos.', cavar: 'Necesitas un palo cavador o una pala para cavar el barro.' };
 
 // Qué se recoge en cada tipo de punto. donde: zonas del terreno en las que sale. da: tipo del catálogo y cuánto.
 export const RECOLECTABLES = {
@@ -33,7 +48,15 @@ export const RECOLECTABLES = {
   silex:        { nombre: 'Sílex', donde: ['caliza', 'rio', 'claro'], con: 'manos', accion: 'recoger', da: 'silex', min: 1, max: 1, vuelve: TIEMPOS.semanas },
   ortiga:       { nombre: 'Ortigas', donde: ['claro', 'ribera'], con: 'manos', accion: 'arrancar', da: 'fibra', min: 2, max: 4, vuelve: TIEMPOS.estacion },
   hierba_larga: { nombre: 'Hierba larga', donde: ['claro', 'ribera'], con: 'manos', accion: 'arrancar', da: 'fibra', min: 2, max: 4, vuelve: TIEMPOS.estacion },
+  juncos:       { nombre: 'Juncos', donde: ['rio', 'ribera'], con: 'cuchillo', accion: 'cortar', da: 'junco', min: 1, max: 1, vuelve: TIEMPOS.estacion },
+  barro:        { nombre: 'Barro de la orilla', donde: ['rio', 'ribera'], con: 'cavar', accion: 'cavar', da: 'barro', min: 1, max: 1, vuelve: 0 },
+  yesquero:     { nombre: 'Hongos yesqueros', donde: ['bosque'], con: 'manos', accion: 'recoger', da: 'yesca', min: 1, max: 2, vuelve: TIEMPOS.estacion },
 };
+// Si inv lleva encima lo que pide un punto de tipo «tipo» (true si no pide nada).
+export function tieneCon(inv, tipo) {
+  const l = HERRAMIENTAS_RECOGER[RECOLECTABLES[tipo].con];
+  return !l || l.some(t => inv.cuantos(t) > 0);
+}
 
 // azar fijo a partir de números (el mismo en el navegador y en el servidor)
 function hash(...ns) {
@@ -109,6 +132,7 @@ export class Recoleccion {
     if (Math.hypot(p.x - x, p.z - z) > ALCANCE_RECOGER) return { ok: false, motivo: 'Está demasiado lejos.' };
     if (inv.manoBloqueada('mano:der') || inv.manoBloqueada('mano:izq')) return { ok: false, motivo: 'Tienes las dos manos ocupadas.' };
     const d = RECOLECTABLES[p.tipo], veces = (this.estado[id] && this.estado[id].veces) || 0;
+    if (!tieneCon(inv, p.tipo)) return { ok: false, motivo: QUE_PIDE[d.con] };
     const n = cantidadDe(p, veces);
     const r = inv.meterDonde(d.da, n, a);
     if (!r.ok) return r;

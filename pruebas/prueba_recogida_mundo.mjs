@@ -36,7 +36,9 @@ const todos = [];
 for (const [x, z] of muestras) todos.push(...puntosDe({ x0: x, z0: z, x1: x + 64, z1: z + 64 }));
 const cuenta = {}; for (const p of todos) cuenta[p.tipo] = (cuenta[p.tipo] || 0) + 1;
 console.log('  en la muestra de la isla:', JSON.stringify(cuenta));
-comprobar('en la isla salen los cinco tipos', Object.keys(RECOLECTABLES).every(t => cuenta[t] > 0), JSON.stringify(cuenta));
+// (los juncos y el barro solo salen en la orilla: se miran junto a un río, en el 4)
+const DE_ORILLA = ['juncos', 'barro'];
+comprobar('en la isla salen todos los tipos (menos los de la orilla)', Object.keys(RECOLECTABLES).every(t => DE_ORILLA.includes(t) || cuenta[t] > 0), JSON.stringify(cuenta));
 
 // 2) cada punto, en su sitio (se vuelve a mirar el terreno, sin fiarse de las zonas que trae)
 const malos = { zona: [], agua: [], arbol: [], nombre: [] };
@@ -90,6 +92,7 @@ comprobar('las densidades solo usan zonas del documento', Object.entries(DENSIDA
   }
   console.log('  junto a un río:', JSON.stringify(cr));
   comprobar('junto a los ríos sale piedra, sílex y fibra', cr.piedra > 0 && cr.silex > 0 && (cr.ortiga || 0) + (cr.hierba_larga || 0) > 0, JSON.stringify(cr));
+  comprobar('y juncos y barro (lo que pide la casa humilde)', cr.juncos > 0 && cr.barro > 0, JSON.stringify(cr));
 }
 
 // 5) alrededor del sitio de salida común (a menos de 300 m): ramas, piedra, sílex y fibra para empezar. De los sitios de

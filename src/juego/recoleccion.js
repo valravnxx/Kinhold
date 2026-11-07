@@ -1,5 +1,5 @@
-// Kinhold — lo que se recoge del suelo y de las plantas en la demo (nivel N0): ramas caídas, piedra suelta, sílex y
-// fibra de ortigas y hierba larga. La lógica (dónde sale, qué da, cuándo vuelve) está en src/logica/recoleccion.js;
+// Kinhold — lo que se recoge del suelo y de las plantas en la demo (nivel N0): ramas caídas, piedra suelta, sílex,
+// fibra de ortigas y hierba larga, juncos y barro de la orilla y hongos yesqueros. La lógica (dónde sale, qué da, cuándo vuelve) está en src/logica/recoleccion.js;
 // aquí se dibuja con el estilo v5 y se decide qué zonas tiene el terreno de la demo.
 //
 // En el mundo de verdad (crearRecoleccionMundo, abajo), lo que se recoge sale del sitio (src/logica/recogida_mundo.js):
@@ -33,6 +33,8 @@ export function zonasDemo(x, z) {
 
 // ---------- Modelos (estilo v5: texturas por código, color por vértice, sombra de contacto) ----------
 const PIEL_SILEX = 0xcfc6b0, NUCLEO_SILEX = 0x3e3b3c, CALIZA_COLOR = 0xbcb4a0, ORTIGA = 0x4a6436, ORTIGA_OSC = 0x3d5530;
+const JUNCO = 0x55673a, JUNCO_OSC = 0x45562f, JUNCO_FLOR = 0x6b5434, BARRO_SECO = 0x6e5a44, BARRO_HUMEDO = 0x4e3f31, BARRO_AGUA = 0x3a3329;
+const TOCON_PODRIDO = 0x8b7d68, YESQUERO = 0x6e6152, YESQUERO_BORDE = 0xa69a85;
 
 function geoLote(fn, opc = {}) { // un modelo por tipo de textura: [{ geo, mat }]
   const L = new Lote({ rangoSuelo: opc.rangoSuelo ?? 0.25, variacion: 0.08 }); fn(L);
@@ -104,9 +106,52 @@ export function modelosRecoleccion() {
       if (k % 4 === 0) L.add(new THREE.CylinderGeometry(0.012, 0.005, 0.14, 4), 0xb7a676, Math.cos(a) * d, h * 1.02, Math.sin(a) * d, { y: -a, z: -0.25 }, { sinSuelo: true });
     }
   }, { doble: true, rangoSuelo: 0.3 });
+  // juncos (7 nov): una mata de tallos redondos, rectos y lisos de verde oscuro (1,2–1,6 m), unos pocos doblados, con
+  // la panoja parda que sale de lado cerca de la punta, como el junco de las orillas
+  const juncos = geoLote(L => {
+    for (let k = 0; k < 34; k++) {
+      const a = k * 2.399, d = 0.015 + (k % 7) * 0.022, h = 1.2 + ((k * 5) % 9) * 0.05, dobla = k % 6 === 0 ? 0.35 : 0.06;
+      const g = new THREE.CylinderGeometry(0.0035, 0.007, h, 4, 4); g.translate(0, h / 2, 0);
+      const p = g.attributes.position;
+      for (let i = 0; i < p.count; i++) { const y = p.getY(i), f = (y / h) ** 2 * dobla * h; p.setX(i, p.getX(i) + f); }
+      L.add(g, k % 3 ? JUNCO : JUNCO_OSC, Math.cos(a) * d, 0, Math.sin(a) * d, { y: -a }, { brillo: 0.95 });
+      if (k % 3 === 0) L.add(new THREE.IcosahedronGeometry(0.018, 0), JUNCO_FLOR, Math.cos(a) * d + 0.012 + dobla * 0.55 * h, h * 0.86, Math.sin(a) * d, { y: -a }, { escala: new THREE.Vector3(0.7, 1.6, 0.7), plano: true, sinSuelo: true });
+    }
+  }, { doble: true, rangoSuelo: 0.25 });
+  // barro de la orilla (7 nov): un charco de lodo oscuro, de borde irregular y algo hundido en medio, con la tierra
+  // removida alrededor; se ve húmedo (más oscuro donde hay agua)
+  const barro = geoLote(L => {
+    const borde = (r, y, n, sem) => {
+      const s = new THREE.Shape();
+      for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2, q = r * (0.82 + 0.18 * Math.sin(a * 3 + sem) + 0.08 * Math.sin(a * 7 + sem * 2)); i ? s.lineTo(Math.cos(a) * q * 1.3, Math.sin(a) * q) : s.moveTo(Math.cos(a) * q * 1.3, Math.sin(a) * q); }
+      const g = new THREE.ShapeGeometry(s, 2); g.rotateX(-Math.PI / 2); g.translate(0, y, 0); return g;
+    };
+    L.add(borde(0.62, 0.012, 28, 1), BARRO_SECO, 0, 0, 0, null, { tex: 'piedra', sinSuelo: true });
+    L.add(borde(0.48, 0.02, 24, 2), BARRO_HUMEDO, 0, 0, 0, null, { tex: 'piedra', sinSuelo: true });
+    L.add(borde(0.26, 0.024, 18, 4), BARRO_AGUA, 0.05, 0, -0.03, null, { tex: 'liso', sinSuelo: true, brillo: 0.9 });
+    // terrones removidos en el borde (de cavar)
+    for (let k = 0; k < 7; k++) {
+      const a = k * 0.9 + 0.3, r = 0.5 + (k % 3) * 0.06;
+      L.add(new THREE.IcosahedronGeometry(0.05 + (k % 2) * 0.02, 0), k % 2 ? BARRO_SECO : BARRO_HUMEDO, Math.cos(a) * r * 1.3, 0.02, Math.sin(a) * r, { y: k }, { escala: new THREE.Vector3(1.3, 0.55, 1), plano: true, tex: 'piedra' });
+    }
+  }, { rangoSuelo: 0.05 });
+  // hongos yesqueros (7 nov): un tocón viejo y podrido (40 cm), con la corteza rota y la madera gris a la vista, y en
+  // él tres o cuatro yesqueros en repisa: semicírculos gruesos, gris pardo con bandas, el borde claro
+  const yesquero = geoLote(L => {
+    L.add(cil(0.15, 0.19, 0.42, 9), 'cortezaGris', 0, 0.21, 0, { y: 0.4 }, { tex: 'corteza' });
+    L.add(new THREE.CylinderGeometry(0.135, 0.15, 0.05, 9), TOCON_PODRIDO, 0, 0.43, 0, { x: 0.12, y: 0.4 }, { tex: 'veta', sinSuelo: true });
+    for (let k = 0; k < 3; k++) { const a = k * 2.1 + 0.6; L.add(cil(0.03, 0.05, 0.3, 5), 'cortezaGris', Math.cos(a) * 0.2, 0.04, Math.sin(a) * 0.2, { y: -a, z: Math.PI / 2 - 0.25 }, { tex: 'corteza' }); } // las raíces
+    const repisa = (y, a, r, gr) => {
+      const g = new THREE.SphereGeometry(r, 10, 5, -Math.PI / 2, Math.PI, 0, Math.PI / 2); g.scale(1, gr, 1);
+      const x = Math.cos(a) * 0.16, z = Math.sin(a) * 0.16;
+      L.add(g, YESQUERO, x, y, z, { y: -a + Math.PI / 2 }, { tex: 'corteza', sinSuelo: true });
+      L.add(new THREE.TorusGeometry(r * 0.98, r * 0.12, 4, 12, Math.PI), YESQUERO_BORDE, x, y, z, new THREE.Matrix4().makeRotationY(-a + Math.PI / 2).multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2)).multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2)), { sinSuelo: true });
+    };
+    repisa(0.3, 0.3, 0.085, 0.7); repisa(0.2, 0.6, 0.065, 0.75); repisa(0.36, 2.6, 0.07, 0.7); repisa(0.12, 4.2, 0.075, 0.65);
+  }, { rangoSuelo: 0.15 });
   // peña de caliza del afloramiento (decorado, no se recoge)
   const pena = geoLote(L => L.add(new THREE.IcosahedronGeometry(1, 1), CALIZA_COLOR, 0, 0.35, 0, null, { escala: new THREE.Vector3(1.4, 0.8, 1.05), plano: true, tex: 'piedra' }), { rangoSuelo: 0.8 });
-  return (cache = { ramas, piedra, silex, ortiga, hierba_larga: hierbaLarga, pena });
+  return (cache = { ramas, piedra, silex, ortiga, hierba_larga: hierbaLarga, juncos, barro, yesquero, pena });
 }
 
 const CERO = new THREE.Matrix4().makeScale(0, 0, 0);
@@ -142,7 +187,7 @@ export function crearRecoleccion({ raiz, altura, obstaculos, almacen, semilla = 
     for (const { geo, mat } of mods[tipo]) {
       const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
       lista.forEach((p, i) => { o.position.set(p.x, altura(p.x, p.z) - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(0.9 + (i % 4) * 0.08); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
-      im.castShadow = tipo !== 'hierba_larga'; im.receiveShadow = true; im.name = 'recoger_' + tipo; grupo.add(im);
+      im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo; grupo.add(im);
       mallas.push({ im, lista, matrices });
     }
   }
@@ -229,7 +274,7 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
       for (const { geo, mat } of mods[tipo]) {
         const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
         lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(0.9 + (i % 4) * 0.08); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
-        im.castShadow = tipo !== 'hierba_larga'; im.receiveShadow = true; im.name = 'recoger_' + tipo; im.frustumCulled = false; grupo.add(im);
+        im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo; im.frustumCulled = false; grupo.add(im);
         mallas.push({ im, lista, matrices });
       }
     }
