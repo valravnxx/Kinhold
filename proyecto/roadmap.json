@@ -1522,9 +1522,9 @@
    "tareas": [
     {
      "nombre": "Copia de seguridad diaria del servidor de verdad (el mundo, los objetos, las fichas y las cuentas), guardada fuera de la máquina (en el almacenamiento de Hetzner o en un repositorio privado), con las últimas 14 y una restauración probada una vez; antes de abrir el juego a nadie de fuera (auditoría del 4 nov)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T06:25:08+00:00",
-     "rama": "trabajo/20261107-0625"
+     "fin": "2026-11-07T08:07:18+00:00"
     },
     {
      "nombre": "Poner el sitio de fuera de la copia de seguridad (una Storage Box de Hetzner u otro al que se llegue por SSH: lo crea valravnx, pasos en servidor/nube/LEEME.md) y probar una restauración en la máquina de verdad",

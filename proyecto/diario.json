@@ -4925,7 +4925,7 @@
  },
  {
   "inicio": "2026-11-07T06:21:53+00:00",
-  "fin": "FIN",
+  "fin": "2026-11-07T08:07:18+00:00",
   "titulo": "P7: copia de seguridad diaria del servidor",
   "hito": "admin",
   "hecho": [
@@ -4938,7 +4938,7 @@
    "Falta lo que solo puede hacer valravnx: crear el sitio de fuera (pasos en servidor/nube/LEEME.md). Queda como tarea en espera y como pregunta en decisiones pendientes.",
    "No comprobado: la copia y la restauración en la máquina de verdad (desde aquí no se llega a ella) ni con una Storage Box de verdad (se ha probado con otra carpeta como destino)."
   ],
-  "pruebas": "Todas: 33 de 36 grupos bien a la primera en el PC de valravnx y la lógica en la nube (con la prueba nueva, 15/15); niveles de detalle, perfil gráfico y demo única fallaron en el PC (cuentan triángulos y perfil sin tarjeta gráfica, y su PC la tiene) y se repitieron en la nube: RESULTADO_NUBE.",
+  "pruebas": "Todas: 33 de 36 grupos bien a la primera en el PC de valravnx y la lógica en la nube (con la prueba nueva, 15/15); niveles de detalle, perfil gráfico y demo única fallaron en el PC (cuentan triángulos y perfil sin tarjeta gráfica, y su PC la tiene) y se repitieron en la nube: los tres, bien.",
   "capturas": "",
   "estado": "ok"
  }
