@@ -6,8 +6,6 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
-## Procesado
-
 ### 7 nov 2026 (21:32 UTC+1) — por el chat: la interfaz, nada a medio acabar y sin noticias de las pruebas
 valravnx, sobre la ficha de la sed del estudio: «no eres capaz de ver el problema en esto? la textura de fondo no llega a los marcos, corta letras, todo, y me lo has enviado COMO DEFINITIVO, como un producto final acabado. quiero crear un juego profesional y publico, no pongas noticias de esto que llevas 8 noticias de tus cagadas una tras otras, REVISA MIL VECES SI HACE FALTA pero pasame cosas bien acabadas».
 → Regla nueva en CLAUDE.md («Lo que se enseña, acabado, y sin noticias de las pruebas»). El tablero de la interfaz se rehace para que la madera llegue al marco y nada se meta en él; antes de enseñar nada, cada captura se mira de cerca, panel por panel, buscando cortes, huecos y textos que toquen bordes. Los estudios y las pruebas de la interfaz no van como noticia: solo lo terminado y revisado.
