@@ -229,10 +229,11 @@ def p_marco():
     render(sc, 'marco')
 
 def p_tablero():
-    sc = limpiar(); camara(sc, 4, (768, 768)); luces(sc, .9)
+    # tablas de roble a lo ancho, que se pueden repetir hacia abajo sin que se note (el borde cae en una junta)
+    sc = limpiar(); camara(sc, 8, (1536, 768)); luces(sc, .9)
     rob = mat_roble(1.5, 1.2)
-    for i in range(8):   # ocho tablas a lo ancho, con su junta fina
-        caja(4.2, .485, .1, (0, -1.75 + i * .5, 0), rob, .012)
+    for i in range(8):
+        caja(8.6, .485, .1, (0, -1.75 + i * .5, 0), rob, .012)
     render(sc, 'tablero')
 
 def p_cuero():
