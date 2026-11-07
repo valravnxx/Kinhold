@@ -8,13 +8,13 @@
 // guardan al salir y al volver (con su ficha) siguen como estaban.
 // MUTAR=1: el servidor no las avanza (sed y hambre quietas); MUTAR=2: el cansancio sale de lo que dice el navegador
 // (su «anim»), no de lo que corre de verdad; MUTAR=3: rendido sin llegar al máximo (el servidor no recorta). Las tres
-// deben FALLAR. MUTAR=4: se bebe en cualquier sitio (sin mirar si hay agua): tiene que FALLAR.
+// deben FALLAR. MUTAR=4: se bebe en cualquier sitio (sin mirar si hay agua); MUTAR=5: se come sin gastar lo que llevas. Tienen que FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO } from '../src/logica/necesidades.js';
+import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO, NUTRE, comestible } from '../src/logica/necesidades.js';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { PresenciaServidor } from '../src/logica/presencia.js';
 
@@ -85,11 +85,12 @@ console.log('Beber del río (la lógica)');
 
 console.log('Con el servidor de verdad');
 let ruta = join(raiz, 'servidor/servidor.mjs'), copia = null;
-if (MUTAR === '1' || MUTAR === '2' || MUTAR === '4') {
+if (['1', '2', '4', '5'].includes(MUTAR)) {
   const fuente = readFileSync(ruta, 'utf8');
   const mutada = MUTAR === '1' ? fuente.replace('necesidades.set(a, avanzarNecesidades(', 'necesidades.set(a, ((n) => n)(')
     : MUTAR === '2' ? fuente.replace("const velocidad = e && p && dt > 0 ? Math.hypot(e.x - p.x, e.z - p.z) / dt : 0;", "const velocidad = e && e.anim === 'correr' ? 6 : 0;")
-    : fuente.replace('if (!terreno || !p || !hayAguaCerca(terreno.aguaEn, p.x, p.z))', 'if (!terreno || !p)');
+    : MUTAR === '4' ? fuente.replace('if (!terreno || !p || !hayAguaCerca(terreno.aguaEn, p.x, p.z))', 'if (!terreno || !p)')
+    : fuente.replace('else r = inv.gastar(tipo, 1);', 'else r = { ok: true };');
   if (mutada === fuente) { console.log('No se pudo mutar el servidor'); process.exit(1); }
   copia = join(raiz, 'servidor/.servidor_mutado_necesidades.mjs');
   writeFileSync(copia, mutada.replaceAll("from '../src/", "from '../src/"));
@@ -146,6 +147,23 @@ try {
   await pausa(400);
   comprobar('lo que hace cansa (fabricar un cordel)', rf.ok && a.ultima().cansancio > antesAcc - 0.5 + ESFUERZOS.fabricar - 0.5, `${rf.ok ? '' : rf.motivo} ${antesAcc} → ${a.ultima().cansancio}`);
   comprobar('a otro jugador no le llegan las tuyas: las suyas, sin correr', b.recibidas.length > 0 && b.ultima().cansancio === 0, JSON.stringify(b.ultima()));
+  // comer (P4): bayas del arcón de pruebas; una unidad cada vez, de lo que llevas, por el servidor
+  {
+    const pide = (id, accion) => new Promise(r => { a.ws.on('message', (d) => { const m = JSON.parse(d.toString()); if (m.tipo === 'resultado_objeto' && m.id === id) r(m); }); a.mandar({ tipo: 'objeto', id, accion }); });
+    const yo = a.bienvenida.autor;
+    await pide(80, { tipo: 'soltar', de: 'mano:der' }); await pide(81, { tipo: 'soltar', de: 'mano:izq' });
+    let r = await pide(82, { tipo: 'comer', objeto: 'bayas' });
+    comprobar('sin bayas encima, no se come', !r.ok && /No llevas/.test(r.motivo || ''), r.motivo);
+    await pide(83, { tipo: 'coger', objeto: 'bayas', cantidad: 4, a: 'mano:der' });
+    srv.necesidades.set(yo, { ...srv.necesidades.get(yo), hambre: 50 });
+    r = await pide(84, { tipo: 'comer', objeto: 'bayas' });
+    const inv = srv.objetos.invs.de(yo);
+    comprobar(`comer una baya quita ${NUTRE.bayas} de hambre y gasta una`, r.ok && Math.abs(r.datos.hambre - (50 - NUTRE.bayas)) < 0.2 && inv.cuantos('bayas') === 3, `${JSON.stringify(r.datos || r.motivo)}, quedan ${inv.cuantos('bayas')}`);
+    r = await pide(85, { tipo: 'comer', objeto: 'piedra' });
+    comprobar('una piedra no se come', !r.ok && /no se come/.test(r.motivo || ''), r.motivo);
+    comprobar('se comen las bayas y las setas', comestible('bayas') && comestible('setas') && !comestible('rama') && !comestible('toString'));
+  }
+
   // salir y volver con la ficha
   const guardada = a.ultima(), ficha = a.bienvenida.ficha;
   a.ws.close(); await pausa(600);
