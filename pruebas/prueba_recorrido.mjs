@@ -483,7 +483,6 @@ try {
     comprobar('pasada su hora se apaga sola y quedan las cenizas', apagada.fuego && !apagada.fuego.encendida && apagada.fuego.cenizas, JSON.stringify(apagada.fuego));
     r = await J.objeto({ tipo: 'fabricar', receta: 'lanza_endurecida', estacion: hog, x: J.pos.x, z: J.pos.z });
     comprobar('y apagada ya no se hace nada al fuego', !r.ok && /apagado/.test(r.motivo || ''), r.motivo);
-  }
 
   console.log('13. Vuelve a su tierra con piedras de la orilla y levanta una pila de piedras: guarda en ella, saca, y la obra no coge de ella sola');
   {
@@ -512,6 +511,7 @@ try {
     comprobar('saca una piedra de la pila (Usar: sacar)', r.ok && J.cuantos('piedra') === 1 && P(pila).deposito.piedra === 1, r.motivo);
     r = await J.objeto({ tipo: 'entregar_estacion', estacion: rc.datos.id, x: J.pos.x, z: J.pos.z });
     comprobar('y esa sí se la lleva a la obra', r.ok && P(rc.datos.id).obra.entregado.piedra === 1, r.motivo);
+  }
   }
 
   // P4, las necesidades: a estas alturas del día, con todo lo que ha andado y trabajado, ya tiene algo de sed y de
