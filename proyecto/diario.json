@@ -5289,5 +5289,23 @@
   "pruebas": "Batería entera en la nube correcta, sin las de en línea; el recorrido de jugador falló al no dejar correr al rendido (corría siempre) y ahora anda cuando está rendido; tras unir main (la hoguera), otra vez la lógica, los avisos, la hoguera, la demo y el chat",
   "capturas": "capturas/demo-v141",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T16:24:56+00:00",
+  "fin": "2026-11-07T18:55:05+00:00",
+  "titulo": "P3: los almacenajes de la base (acopio de troncos, pila de piedras y leñera)",
+  "hito": "crafting",
+  "hecho": [
+   "El acopio de troncos, la pila de piedras y la leñera, en la lógica pura y por el servidor: puestos sin recetas que se levantan como obra (marco, material y trabajo) desde su propia pestaña de Construir, «Almacenajes», y solo en tu tierra o en la de quien te invita.",
+   "Cada uno guarda solo lo suyo y hasta lo que le cabe: el acopio, los troncos (12); la pila, la piedra suelta (40); la leñera, la leña y las ramas (30). Lo guardado es de la tierra: en la de otro, ni se guarda ni se saca. La obra y las recetas no cogen de ellos: hay que sacarlo y llevarlo.",
+   "Con Usar, «Guardar y sacar»: el panel se abre con el almacenaje, con lo guardado (tocar: sacar) y lo que llevas que se guarda ahí (tocar: guardar).",
+   "Sus modelos con el estilo v5 (varas con veta, losas, tejadillo de ramas) y lo guardado puesto como se guarda de verdad: los troncos en filas entre las estacas, las piedras en montón por capas y la leña apilada bajo el tejadillo. Imágenes del panel nuevas en recursos/iconos-v5, con cada almacenaje lleno a medias.",
+   "El contador de arriba («En tu tierra») cuenta ya lo guardado en los almacenajes de tu tierra (antes, lo del suelo).",
+   "Recorrido de jugador, paso 13: vuelve del río con piedras, levanta una pila en su tierra (fuera de ella, no), guarda, saca, y la hoguera de al lado no coge de la pila sola.",
+   "Decisiones provisionales (registro de la demo y aquí): el acopio, 4 varas, 15 s de trabajo y 12 troncos (también los cortos), solo fuera; la pila, 4 piedras, 10 s y 40; la leñera, 4 varas y 6 ramas, 15 s y 30, dentro o fuera."
+  ],
+  "pruebas": "Batería entera en la nube (el PC de valravnx no estaba para pruebas), sin las de en línea: antes de unir main, todo bien salvo cuatro que no tocan esto y salieron bien al repetirlas (la hoguera y entrar con la cuenta, por la pantalla de la cuenta; la demo en el mundo, un fotograma de 74–82 ms en el móvil al llegar de golpe, de lo que crece; la lógica, por un fallo mío en el paso 13 del recorrido, arreglado). Tras unir main (las necesidades, v141): los 41 grupos, todo correcto, con el recorrido de jugador 101/101 y la prueba nueva de los almacenajes en el navegador (PC y móvil). Fabricar 144/144 (con MUTAR=2 falla), servidor de objetos 71/71. Capturas de cerca, miradas en PC y móvil.",
+  "capturas": "capturas/demo-v142",
+  "estado": "ok"
  }
 ]

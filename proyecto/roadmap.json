@@ -1355,9 +1355,10 @@
     },
     {
      "nombre": "Almacenajes de la base (con su modelo, que se ve lleno): acopio de troncos, pila de piedras y leñera. Guardar y sacar con Usar; de quien tiene la tierra; la obra no coge de ellos sola",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T16:25:58+00:00",
-     "rama": "trabajo/20261107-1625"
+     "rama": "trabajo/20261107-1625",
+     "fin": "2026-11-07T18:55:05+00:00"
     },
     {
      "nombre": "Más almacenajes: soporte de varas, almiar (paja y juncos), hoyo de barro y cesto (lo pequeño)",
@@ -3376,6 +3377,13 @@
      "archivo": "jugar/demo/v141.html",
      "capturas": "capturas/demo-v141",
      "notas": "Las necesidades: hambre, sed, frío y cansancio, con sus avisos"
+    },
+    {
+     "v": "v142",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v142.html",
+     "capturas": "capturas/demo-v142",
+     "notas": "Los almacenajes de la base: acopio de troncos, pila de piedras y leñera, en su pestaña «Almacenajes» de Construir. Se levantan como obra y solo en tu tierra; cada uno guarda lo suyo (troncos; piedra suelta; leña y ramas) y se ve lleno. Con Usar, «Guardar y sacar». La obra no coge de ellos sola. El contador «En tu tierra» cuenta lo guardado en ellos."
     }
    ]
   },
