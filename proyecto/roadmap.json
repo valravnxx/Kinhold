@@ -1617,9 +1617,9 @@
     },
     {
      "nombre": "El bosque de lejos, de cerca, sin montículos (valravnx, 7 nov: «crea este glitch grafico de monticulos… habria que hacerlo mas suave, y tambien que comiencen a aparecer algo mas lejos»): el dosel de cerca más suave y empezando más lejos, sin tapar la vista",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T09:43:56+01:00",
-     "rama": "trabajo/20261107-0945-dosel"
+     "fin": "2026-11-07T12:30:16+01:00"
     },
     {
      "nombre": "El ciclo de día y noche: cielo con estrellas, sol y luna, y la luz del sol que cambia (valravnx, 7 nov)",
@@ -3178,6 +3178,13 @@
      "archivo": "jugar/demo/v134.html",
      "capturas": "capturas/demo-v134",
      "notas": "Lo que se fabrica con las manos se ve con su modelo en la mano y en el cinturón: lasca de sílex, palo cavador, cordel, cuerda y el hacha de piedra (antes salía la de hierro); el leñero cogido con las manos, entero. Nuevo: el taladro de fuego de arco (2 ramas y 1 cordel)."
+    },
+    {
+     "v": "v135",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v135.html",
+     "capturas": "capturas/demo-v135",
+     "notas": "El bosque de lejos visto de cerca, sin montículos (valravnx, 7 nov): las manchas de las copas ya no salen en anillos ni en rayas y se apagan cuando ya no caben en el píxel; las de 60 m, mucho más suaves. Las copas de cerca, suavizadas, empiezan a 250 m del jugador y suben poco a poco hasta su alto a 400 m, sin tapar la vista."
     }
    ]
   },
