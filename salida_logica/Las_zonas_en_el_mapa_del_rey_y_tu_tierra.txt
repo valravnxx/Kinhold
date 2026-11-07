@@ -1,0 +1,19 @@
+Los lindes de una rejilla de etiquetas (cuadrados que marchan)
+  OK   entre la zona 1 y la 2, una línea recta a medio camino (x = 0,5) de arriba abajo — [0.5,0,0.5,1,0.5,1,0.5,2,0.5,2,0.5,3]
+  OK   y con el mar sin zona no se traza nada
+  OK   donde no cambia, nada
+Con el mundo de verdad
+  (mapa y comarcas en 4598 ms)
+  OK   una tesela que aún no está se pide
+  OK   y a pasos se hace — 18 ms
+  OK   una tesela de 4 km lleva lindes (las zonas miden aproximadamente 1 km) — 981 segmentos
+  OK   casi todos los lindes separan dos zonas (a un paso a cada lado) — 141 de 141
+  OK   con lo que es tierra puesto, los lindes no van por el agua — 507 de 981, 0 en el agua
+  OK   lo que se ve: las que ya hay y las que faltan, en cola — 1 hay, 23 faltan
+  OK   tu tierra sale entera (no toca el borde de lo que se mira) — 12 de 12
+  OK   y en ella está tu mojón (la misma zona que la del juego) — 12 de 12
+  OK   una zona mide aproximadamente 1,2 km² (entre 0,5 y 2,5) — 1.04 1.49 1.35 1.23 1.11 1.40 1.64 1.18 1.60 1.23 0.98 1.10
+  OK   mientras no cambies de zona, se hace una vez
+  OK   en alta mar no hay tierra
+
+14 bien, 0 mal
