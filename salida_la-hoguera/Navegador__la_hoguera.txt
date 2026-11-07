@@ -1,0 +1,84 @@
+  OK   PC: entra y le llega lo que lleva en el servidor — []
+  OK   PC: sin la pantalla de la cuenta delante
+Levanta una hoguera desde «Puestos de trabajo»
+  OK   el servidor le da 6 piedras (arcón de pruebas)
+  OK   el servidor tiene el marco de la hoguera
+  OK   Usar le lleva las piedras
+  OK   y lo que lleva le llega del servidor: las manos, vacías — [null,null]
+  OK   el servidor le da 3 rama(s) (arcón de pruebas)
+  OK   Usar le lleva las ramas
+  OK   el servidor le da 1 rama(s) (arcón de pruebas)
+  OK   y con sus ramas y el trabajo queda levantada (en el servidor) — Construyendo: 87 %
+  OK   levantada, apagada y con sus 4 ramas puestas (12 min) — {'hasta': 0, 'combustible': 720, 'cenizas': False}
+  OK   se dibuja con sus ramas, sin fuego
+La enciende con la yesca y el taladro de fuego, desde el panel
+  OK   Usar abre el panel en la pestaña del fuego
+  OK   arriba, el fuego: apagada, con lo que tiene puesto — Apagada
+Tiene puesto para arder 12 min.
+Encender (gasta 1 yesca; con el taladro de fuego)
+Te falta el taladro de fuego y la yesca.
+Echar 1 rama (+3 min · llevas 0)
+Echar 1 leña (+10 min · llevas 0)
+  OK   sin yesca ni taladro, «Encender» no se puede y dice lo que falta
+  OK   la lanza endurecida, en «Te falta algo» (el fuego apagado) — {'cls': 'fab-carta fab-casi fab-sel', 'txt': 'faltan 1\nLanza endurecida', 'sec': 'fab-sec fab-sec-casi'}
+  OK   con ellos en las manos, «Encender» se puede
+  OK   el servidor la enciende: gasta la yesca y el taladro sigue
+  OK   el panel la da encendida, con lo que le queda — Encendida: le quedan 12 min
+Da luz y calor. Échale más para que dure.
+Echar 1 rama (+3 min · llevas 0)
+Echar 1 leña (+10 min · llevas 0)
+  OK   se ve arder: llamas — 6
+  OK   alumbra (una luz de fuego encendida) — {'chimeneas': 0, 'hogueras': 1, 'luces': 2, 'encendidas': 1}
+  OK   y da calor a su lado — 0.6471101446626724
+  OK   lejos, no
+  OK   «Echar 1 rama» le da 3 min más en el servidor, con la rama que lleva
+  OK   y el panel lo dice
+En el móvil, el otro jugador la ve igual
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_hoguera_navegador.py", line 189, in <module>
+    ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
+                    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_hoguera_navegador.py", line 86, in entrar
+    crear_cuenta(pg, 60000)   # (en el móvil de la nube la pantalla de la cuenta tarda en salir)
+    ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_hoguera_navegador.py", line 75, in crear_cuenta
+    return crear_y_confirmar(pg, codigos, f'fogonero{_n[0]}', 'clave-de-prueba-123')
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/correo_prueba.py", line 30, in crear_y_confirmar
+    pg.fill('#pcUsuario', usuario); pg.fill('#pcCorreo', usuario.lower() + '@ejemplo.com')
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 11332, in fill
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.fill(
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 930, in fill
+    return await self._main_frame.fill(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 637, in fill
+    await self._fill(**locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 649, in _fill
+    await self._channel.send("fill", self._timeout, locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.fill: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#pcUsuario")
+    - locator resolved to <input id="pcUsuario" maxlength="20" name="username" spellcheck="false" autocapitalize="none" autocomplete="username"/>
+    - fill("fogonero2")
+  - attempting fill action
+    - waiting for element to be visible, enabled and editable
+
