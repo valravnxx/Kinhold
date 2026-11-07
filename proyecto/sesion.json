@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-07T12:24:06+00:00",
+  "tarea": "El duelo con lo que llevas: la ropa y la armadura puestas y el arma de la mano salen del inventario",
+  "hito": "orden",
+  "rama": "trabajo/20261107-1224"
+ },
  "B": null,
  "chat:trabajo/20261107-0948-cielo": {
   "inicio": "2026-11-07T09:48:41+01:00",
