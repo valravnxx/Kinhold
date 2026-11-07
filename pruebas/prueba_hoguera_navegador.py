@@ -102,7 +102,11 @@ def fuego_servidor(d, yo):
     l = [e for e in (d.get('fabricacion') or {}).get('estaciones', []) if e['tipo'] == 'hoguera' and e['autor'] == yo and not e.get('obra')]
     return l[0].get('fuego') if l else None
 def coger(pg, objeto, n, a):
-    pg.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: '{objeto}', cantidad: {n}, a: '{a}' }})")
+    # en la mano que se dice si está libre; si no, en la otra (y si ninguna, lo dice)
+    r = pg.evaluate(f"""(() => {{ const l = {K}.inventario.lugares, a = !l['{a}'] ? '{a}' : ['mano:der', 'mano:izq'].find(m => !l[m]);
+      if (!a) return 'manos llenas: ' + JSON.stringify([l['mano:der'], l['mano:izq']]);
+      const r = {K}.accionInventario({{ tipo: 'coger', objeto: '{objeto}', cantidad: {n}, a }}); return r && r.ok === false ? r.motivo : ''; }})()""")
+    if r: print(f'  (coger {n} {objeto}: {r})')
 def mirar_hoguera(pg, dist=3.0, pitch=0.5, yaw=0.3):
     pg.evaluate(f"""(() => {{ const e = Object.values({K}.fabCliente.estaciones).find(x => x.tipo === 'hoguera'); if (!e) return;
       Object.assign({K}.pj, {{ x: e.x + 1.2, z: e.z + 0.9, rot: Math.atan2(-1.2, -0.9) }}); {K}.cam.yaw = {yaw}; {K}.cam.dist = {dist}; {K}.cam.pitch = {pitch}; }})()""")
