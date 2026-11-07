@@ -31,12 +31,19 @@ export const ESPECIES_DOSEL = Object.fromEntries(Object.entries(VERDES).map(([e,
 // de dos texturas del tamaño de la rejilla, leídas en cada píxel con filtrado lineal (como el mapa de color de un
 // terreno): uTexC, el del suelo; uTexD, el de las copas y en alfa cuánto bosque hay. uTexP: xy, el sitio de la escena
 // del primer punto; z, los m entre puntos; uTexN: los puntos de cada lado. Sin textura (w = 0), el de los vértices.
-function materialLejano(u, copas = false) {
-  u = { uTexC: { value: null }, uTexD: { value: null }, uTexP: { value: new THREE.Vector4(0, 0, 1, 0) }, uTexN: { value: new THREE.Vector2(1, 1) }, ...u };
+// subir (el dosel de cerca): sus puntos llevan aAlto (lo que suben sobre el suelo) y, cerca del jugador, se meten bajo
+// el suelo: no hay copas antes de uIni m y suben poco a poco hasta su alto en uRampa m más (valravnx, 7 nov: «que
+// comiencen a aparecer algo mas lejos… porque a veces los tienes justo tapandote la cara»)
+function materialLejano(u, copas = false, subir = false) {
+  u = { uTexC: { value: null }, uTexD: { value: null }, uTexP: { value: new THREE.Vector4(0, 0, 1, 0) }, uTexN: { value: new THREE.Vector2(1, 1) }, uIni: { value: 0 }, uRampa: { value: 1 }, ...u };
   const material = new THREE.MeshLambertMaterial({ vertexColors: true, fog: false });
+  material.userData.u = u;   // (los uniformes, para las pruebas)
   material.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, u);
-    sh.vertexShader = 'uniform float uR0;\nuniform float uS;\nuniform float uW;\nuniform vec2 uJug;\nvarying vec3 vHzComp;\n' + GLSL_COMPRESION + sh.vertexShader.replace('#include <project_vertex>', `
+    const sube = subir ? `
+      { vec4 hzM0 = modelMatrix * vec4( transformed, 1.0 );
+        transformed.y -= ( aAlto + 3.0 ) * ( 1.0 - smoothstep( uIni, uIni + uRampa, length( hzM0.xz - uJug ) ) ); }` : '';
+    sh.vertexShader = 'uniform float uR0;\nuniform float uS;\nuniform float uW;\nuniform vec2 uJug;\nvarying vec3 vHzComp;\n' + (subir ? 'attribute float aAlto;\nuniform float uIni;\nuniform float uRampa;\n' : '') + GLSL_COMPRESION + sh.vertexShader.replace('#include <project_vertex>', `${sube}
       vec4 hzMundo = modelMatrix * vec4( transformed, 1.0 );
       vec3 hzV = hzMundo.xyz - cameraPosition; float hzD = length( hzV );
       if ( hzD > uR0 ) hzMundo.xyz = cameraPosition + hzV * ( hzComp( hzD, uR0, uS, uW ) / hzD );
@@ -46,10 +53,11 @@ function materialLejano(u, copas = false) {
     // (en cada píxel, el punto del mundo se saca deshaciendo la compresión del punto dibujado: si se pasara el del
     // vértice sin comprimir, entre vértices comprimidos no casa con lo que se ve, y el hueco de alrededor del jugador
     // se comía, en el mar de lejos (cuadros de 500 m), una franja de kilómetros: salía cielo entre los dos mares)
-    let f = 'uniform float uHueco;\nuniform float uHasta;\nuniform vec3 uCuadro;\nuniform vec2 uJug;\nuniform float uR0;\nuniform float uS;\nuniform float uW;\nuniform sampler2D uCargado;\nuniform vec4 uCargadoR;\nvarying vec3 vHzComp;\n' + GLSL_COMPRESION +
+    let f = 'uniform float uIni;\nuniform float uHueco;\nuniform float uHasta;\nuniform vec3 uCuadro;\nuniform vec2 uJug;\nuniform float uR0;\nuniform float uS;\nuniform float uW;\nuniform sampler2D uCargado;\nuniform vec4 uCargadoR;\nvarying vec3 vHzComp;\n' + GLSL_COMPRESION +
       'uniform sampler2D uTexC;\nuniform sampler2D uTexD;\nuniform vec4 uTexP;\nuniform vec2 uTexN;\n' +
       'vec2 hzUv(vec2 p){ return ((p - uTexP.xy) / uTexP.z + 0.5) / uTexN; }\n';
-    if (copas) f += `float hzAzar(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
+    // (el azar sin seno: con un seno de números grandes, en coma flotante, salía en anillos y en rayas)
+    if (copas) f += `float hzAzar(vec2 p){vec3 q=fract(vec3(p.xyx)*0.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}
 float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
   return mix(mix(hzAzar(i),hzAzar(i+vec2(1,0)),f.x),mix(hzAzar(i+vec2(0,1)),hzAzar(i+vec2(1,1)),f.x),f.y);}
 `;
@@ -64,6 +72,7 @@ float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
     if ( uHasta > 0.0 && hzDist > uHasta ) discard;
   } else if ( hzDist < uHueco || ( uHasta > 0.0 && hzDist > uHasta ) ) discard;
   if ( uCuadro.z > 0.0 && max( abs( vHzMundo.x - uCuadro.x ), abs( vHzMundo.z - uCuadro.y ) ) < uCuadro.z ) discard;
+  if ( hzDist < uIni ) discard;
   vec3 hzSuelo = vec3( 0.0 ); vec4 hzBosque = vec4( 0.0 );
   if ( uTexP.w > 0.0 ) { vec2 hzUvP = hzUv( vHzMundo.xz ); hzSuelo = texture2D( uTexC, hzUvP ).rgb; hzBosque = texture2D( uTexD, hzUvP ); }`);
     if (!copas) sh.fragmentShader = sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
@@ -74,12 +83,16 @@ float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
   if ( uTexP.w > 0.0 ) diffuseColor.rgb = hzBosque.rgb;
   {
     vec2 hzP = vHzMundo.xz;
+    // lo que mide un píxel en el suelo: cada mancha se apaga cuando ya no cabe en unos cuantos píxeles (valravnx, 7 nov:
+    // «este glitch grafico de monticulos»: las manchas finas, más pequeñas que el píxel, salían en anillos y rayas, y las
+    // de 60 m, muy marcadas, parecían lomas a pocos cientos de metros)
+    float hzPx = max( length( dFdx( hzP ) ), length( dFdy( hzP ) ) );
     float hzC = hzRuido( hzP / 5.5 ) * 0.6 + hzRuido( hzP / 19.0 + 3.7 ) * 0.4;
-    float hzK = mix( 0.5, 1.22, smoothstep( 0.25, 0.75, hzC ) );
-    // más lejos, manchas de grupos (unos 60 m) y luego la masa, algo más oscura (la sombra de dentro del bosque)
-    float hzG = mix( 0.6, 1.12, smoothstep( 0.2, 0.8, hzRuido( hzP / 60.0 + 9.1 ) * 0.7 + hzRuido( hzP / 170.0 - 4.3 ) * 0.3 ) );
+    float hzK = mix( 1.0, mix( 0.55, 1.18, smoothstep( 0.25, 0.75, hzC ) ), 1.0 - smoothstep( 0.8, 2.2, hzPx ) );
+    // y las de los grupos (unos 60 m), suaves, y luego la masa, algo más oscura (la sombra de dentro del bosque)
+    float hzG = mix( 1.0, mix( 0.82, 1.06, smoothstep( 0.2, 0.8, hzRuido( hzP / 60.0 + 9.1 ) * 0.7 + hzRuido( hzP / 170.0 - 4.3 ) * 0.3 ) ), 1.0 - smoothstep( 8.0, 24.0, hzPx ) );
     float hzD = length( vHzMundo - cameraPosition );
-    diffuseColor.rgb *= mix( mix( hzK, hzG, smoothstep( 700.0, 2500.0, hzD ) ), 0.85, smoothstep( 6000.0, 14000.0, hzD ) );
+    diffuseColor.rgb *= mix( hzK * hzG, 0.85, smoothstep( 6000.0, 14000.0, hzD ) );
     // de cerca, del color de los árboles de verdad (que siguen justo delante); de lejos, más oscuro: la sombra de dentro
     // de la masa del bosque, que es lo que hace que de lejos se distinga de la pradera
     diffuseColor.rgb *= mix( 1.0, 0.62, smoothstep( 800.0, 3500.0, hzD ) );
@@ -90,6 +103,10 @@ float hzRuido(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
   return material;
 }
 
+
+// dónde empiezan las copas de cerca (m del jugador) y cuánto tardan en subir a su alto: más allá de los árboles de verdad
+// (200 m), que a veces el cuadro de los árboles va algo atrasado y las copas quedaban a un centenar de metros
+export const DOSEL_INICIO = 250, DOSEL_RAMPA = 150;
 
 const FINO_A_BASTO = [...NIVELES].reverse();   // 1, 2, 4: el más fino que ya esté
 
@@ -135,7 +152,8 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
   const borde = Math.max(0, hasta - 16);
   const matDoselLejos = materialLejano({ ...comun, ...tex, ...sinCargado, uHueco: { value: borde }, uHasta: { value: 0 }, uCuadro: { value: new THREE.Vector3() } }, true);
   // (el dosel no se adelanta en la hondura: ya va detrás el suelo; adelantado, asomaba por delante de las lomas)
-  const matDoselCerca = materialLejano({ ...comun, ...sinCargado, uHueco: { value: 0 }, uHasta: { value: borde }, uCuadro: { value: cuadroArb } }, true);
+  // (desde DOSEL_INICIO m del jugador, y entero DOSEL_RAMPA m más allá: hasta ahí, los árboles de verdad y el suelo)
+  const matDoselCerca = materialLejano({ ...comun, ...sinCargado, uHueco: { value: 0 }, uHasta: { value: borde }, uCuadro: { value: cuadroArb }, uIni: { value: globalThis.__mutarMonticulos ? 0 : DOSEL_INICIO }, uRampa: { value: DOSEL_RAMPA } }, true, true);
   const malla = new THREE.Mesh(new THREE.BufferGeometry(), material);
   malla.name = 'horizonte'; malla.frustumCulled = false; malla.castShadow = false; malla.receiveShadow = false;
   malla.visible = false;
@@ -165,6 +183,7 @@ export function crearHorizonte({ escena, paisaje, rect, origen, y0, hasta, camar
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(m.pos, 3));
     g.setAttribute('color', new THREE.BufferAttribute(m.col, 3));
+    if (m.alto) g.setAttribute('aAlto', new THREE.BufferAttribute(m.alto, 1));
     g.setIndex(new THREE.BufferAttribute(m.idx, 1));
     g.computeVertexNormals();
     return g;
