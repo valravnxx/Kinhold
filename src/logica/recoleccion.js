@@ -11,6 +11,7 @@
 //   Juncos             — riberas (y la orilla) — cuchillo — cortar — 1 haz de juncos (M) — una estación
 //   Barro              — la orilla de los ríos — palo cavador o pala — cavar — 1 cesta de barro (M) — inagotable
 //   Yesca              — hongos yesqueros en los tocones viejos del bosque — manos — 1–2 yesca (P) — una estación
+// Y para comer (P4): bayas (los arbustos del bosque y los claros) y setas (el suelo del bosque), 3–6 cada vez.
 //   (y con las manos, de la fibra seca o de la corteza: recetas en src/logica/fabricacion.js)
 //
 // Cada sitio de recogida es un punto del mundo que sale de una semilla y de las zonas del terreno (las mismas para
@@ -51,6 +52,12 @@ export const RECOLECTABLES = {
   juncos:       { nombre: 'Juncos', donde: ['rio', 'ribera'], con: 'cuchillo', accion: 'cortar', da: 'junco', min: 1, max: 1, vuelve: TIEMPOS.estacion },
   barro:        { nombre: 'Barro de la orilla', donde: ['rio', 'ribera'], con: 'cavar', accion: 'cavar', da: 'barro', min: 1, max: 1, vuelve: 0 },
   yesquero:     { nombre: 'Hongos yesqueros', donde: ['bosque'], con: 'manos', accion: 'recoger', da: 'yesca', min: 1, max: 2, vuelve: TIEMPOS.estacion },
+  // (P4) lo que se come sin cazar (documento de sistemas, apartado 3: «Bayas, setas, frutos secos — bosque (según
+  // estación) — manos — recoger — 3–6 unidades — la siguiente temporada»). El arbusto de las bayas se queda: lo que se
+  // va son las bayas (src/juego/recoleccion.js). Decisión provisional: salen todo el año (aún no hay estaciones) y
+  // vuelven en una estación.
+  bayas:        { nombre: 'Arbusto de bayas', donde: ['bosque', 'claro'], con: 'manos', accion: 'recoger', da: 'bayas', min: 3, max: 6, vuelve: TIEMPOS.estacion },
+  setas:        { nombre: 'Setas', donde: ['bosque'], con: 'manos', accion: 'recoger', da: 'setas', min: 3, max: 6, vuelve: TIEMPOS.estacion },
 };
 // Si inv lleva encima lo que pide un punto de tipo «tipo» (true si no pide nada).
 export function tieneCon(inv, tipo) {

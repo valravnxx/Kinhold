@@ -1,5 +1,5 @@
 // Kinhold — lo que se recoge del suelo y de las plantas en la demo (nivel N0): ramas caídas, piedra suelta, sílex,
-// fibra de ortigas y hierba larga, juncos y barro de la orilla y hongos yesqueros. La lógica (dónde sale, qué da, cuándo vuelve) está en src/logica/recoleccion.js;
+// fibra de ortigas y hierba larga, juncos y barro de la orilla, hongos yesqueros y (P4) bayas y setas. La lógica (dónde sale, qué da, cuándo vuelve) está en src/logica/recoleccion.js;
 // aquí se dibuja con el estilo v5 y se decide qué zonas tiene el terreno de la demo.
 //
 // En el mundo de verdad (crearRecoleccionMundo, abajo), lo que se recoge sale del sitio (src/logica/recogida_mundo.js):
@@ -15,7 +15,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, materialTex, material } from '../mundo/estilos.js';
-import { cil } from '../mundo/decorado.js';
+import { cil, copa } from '../mundo/decorado.js';
 import { Recoleccion, repartirPuntos, RECOLECTABLES, cargarRecoleccion, guardarRecoleccion, ejecutarRecoleccion } from '../logica/recoleccion.js';
 import { recogidaTrozo, LADO_RECOGIDA } from '../logica/recogida_mundo.js';
 import { alturaMundo } from '../logica/whitholm.js';
@@ -35,6 +35,9 @@ export function zonasDemo(x, z) {
 const PIEL_SILEX = 0xcfc6b0, NUCLEO_SILEX = 0x3e3b3c, CALIZA_COLOR = 0xbcb4a0, ORTIGA = 0x4a6436, ORTIGA_OSC = 0x3d5530;
 const JUNCO = 0x7a8c4e, JUNCO_OSC = 0x687a43, JUNCO_FLOR = 0x7a6040, BARRO_SECO = 0x6e5a44, BARRO_HUMEDO = 0x4e3f31, BARRO_AGUA = 0x51473a;
 const TOCON = 0x8a7660, TOCON_PODRIDO = 0x9c8c74, YESQUERO = 0x8c7b63, YESQUERO_BORDE = 0xc9bca3;
+// (P4) las bayas: maduras rojas y negro morado, alguna aún verde rojiza; las cañas, pardo rojizo. Las setas: sombrero
+// pardo y pie crema.
+const BAYA_ROJA = 0xb0222e, BAYA_NEGRA = 0x3b1630, BAYA_VERDE = 0xb46a3c, CANA = 0x6e3a2c, SETA = 0x8c5a32, SETA_OSC = 0x6e4426, SETA_PIE = 0xe2d6bc, SETA_LAMINAS = 0xcbb894;
 
 function geoLote(fn, opc = {}) { // un modelo por tipo de textura: [{ geo, mat }]
   const L = new Lote({ rangoSuelo: opc.rangoSuelo ?? 0.25, variacion: 0.08 }); fn(L);
@@ -149,9 +152,51 @@ export function modelosRecoleccion() {
     };
     repisa(0.3, 0.3, 0.11, 0.6); repisa(0.18, 0.75, 0.085, 0.65); repisa(0.36, 2.6, 0.095, 0.6); repisa(0.14, 4.2, 0.1, 0.6);
   }, { rangoSuelo: 0.15 });
+  // (P4) el arbusto de bayas (valravnx, 7 nov: «que los arbustos que tengan bayas se vean claramente, y al recolectarlas
+  // estas desaparezcan del mismo»): una mata baja y redonda (unos 0,8 m) de hoja oscura, con cañas pardo rojizo que
+  // asoman, y muchas bayas en racimos por toda la cara de fuera, rojas y negro morado. El arbusto queda siempre; las
+  // bayas son otra malla (fruto), que se va al cogerlas y vuelve cuando vuelve el punto.
+  // bultos de hoja: [x, y, z, radio, semilla]; la mata entera, de 1,1 m de ancho y 0,9 de alto
+  const bultos = [[0, 0.5, 0, 0.46, 1.0], [0.36, 0.38, 0.16, 0.34, 2.0], [-0.34, 0.36, -0.18, 0.33, 3.0], [-0.1, 0.4, 0.38, 0.31, 4.0], [0.16, 0.36, -0.38, 0.3, 5.0], [0.12, 0.72, 0.1, 0.26, 6.0], [-0.22, 0.66, -0.04, 0.24, 7.0]];
+  const ESC = new THREE.Vector3(1.1, 0.88, 1.1);
+  const arbusto = geoLote(L => {
+    for (const [x, y, z, r, sem] of bultos) L.add(copa(r, 2, sem), sem % 3 === 0 ? 'hoja' : 'hojaOsc', x, y, z, null, { escala: ESC, copa: 0, brillo: sem % 2 ? 0.8 : 0.9 });
+    for (let k = 0; k < 9; k++) { // las cañas que salen arqueadas de la mata
+      const a = k * 0.8 + 0.4, h = 0.6 + (k % 3) * 0.15;
+      L.add(cil(0.008, 0.015, h, 4), CANA, Math.cos(a) * 0.42, h * 0.45, Math.sin(a) * 0.42, new THREE.Matrix4().makeRotationY(-a).multiply(new THREE.Matrix4().makeRotationZ(-0.8)), { tex: 'corteza', sinSuelo: true });
+    }
+  }, { rangoSuelo: 0.6 });
+  const bayas = geoLote(L => {
+    let n = 0;
+    for (const [x, y, z, r, sem] of bultos) for (let k = 0; k < 12; k++, n++) {
+      // un racimo en la cara de fuera del bulto, de lado y por arriba (no por debajo, que no se ve)
+      const a = k * 2.399 + sem, e = -0.05 + (k % 5) * 0.28, d = new THREE.Vector3(Math.cos(a) * Math.cos(e), Math.sin(e), Math.sin(a) * Math.cos(e));
+      const c = new THREE.Vector3(x, y, z).add(d.multiplyScalar(r * 1.03).multiply(ESC));
+      const color = n % 6 === 5 ? BAYA_VERDE : n % 2 ? BAYA_ROJA : BAYA_NEGRA;
+      for (let b = 0; b < 4; b++) {
+        const ab = b * 1.9 + k, db = b ? 0.034 : 0;
+        L.add(new THREE.IcosahedronGeometry(0.028, 1), color, c.x + Math.cos(ab) * db, c.y - b * 0.014, c.z + Math.sin(ab) * db, null, { escala: new THREE.Vector3(1, 1.1, 1), sinSuelo: true, tex: 'liso', brillo: 1.2 });
+      }
+    }
+  }, { rangoSuelo: 0.6 });
+  // (P4) setas del bosque: un corro de cuatro o cinco, de sombrero pardo redondeado y pie crema, de 6 a 14 cm
+  const setas = geoLote(L => {
+    const seta = (x, z, h, r, inclina, sem) => {
+      L.add(cil(r * 0.32, r * 0.42, h, 7), SETA_PIE, x, h / 2, z, { x: inclina, y: sem }, { tex: 'liso' });
+      const somb = new THREE.SphereGeometry(r, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2); somb.scale(1, 0.62, 1);
+      L.add(somb, sem % 2 ? SETA : SETA_OSC, x + Math.sin(inclina) * h * 0.5, h, z, { x: inclina, y: sem }, { tex: 'liso', sinSuelo: true, brillo: 1.05 });
+      const laminas = new THREE.CircleGeometry(r * 0.97, 12); laminas.rotateX(Math.PI / 2);
+      L.add(laminas, SETA_LAMINAS, x + Math.sin(inclina) * h * 0.5, h + 0.002, z, { x: inclina, y: sem }, { tex: 'liso', sinSuelo: true });
+    };
+    seta(0, 0, 0.12, 0.075, 0.05, 1); seta(0.12, 0.05, 0.09, 0.06, 0.25, 2); seta(-0.09, 0.08, 0.07, 0.05, -0.3, 3); seta(0.03, -0.11, 0.1, 0.065, 0.15, 4); seta(-0.13, -0.07, 0.05, 0.035, -0.2, 5);
+    for (let k = 0; k < 6; k++) L.add(new THREE.IcosahedronGeometry(0.03, 0), 0x6b5a3e, Math.cos(k) * 0.16, 0.005, Math.sin(k) * 0.16, { y: k }, { escala: new THREE.Vector3(1.4, 0.3, 1), plano: true, tex: 'piedra' }); // hojarasca
+  }, { rangoSuelo: 0.12 });
+
   // peña de caliza del afloramiento (decorado, no se recoge)
   const pena = geoLote(L => L.add(new THREE.IcosahedronGeometry(1, 1), CALIZA_COLOR, 0, 0.35, 0, null, { escala: new THREE.Vector3(1.4, 0.8, 1.05), plano: true, tex: 'piedra' }), { rangoSuelo: 0.8 });
-  return (cache = { ramas, piedra, silex, ortiga, hierba_larga: hierbaLarga, juncos, barro, yesquero, pena });
+  // el arbusto queda siempre (siempre: true); lo demás se va al recogerlo
+  return (cache = { ramas, piedra, silex, ortiga, hierba_larga: hierbaLarga, juncos, barro, yesquero, pena,
+    bayas: [...arbusto.map(m => ({ ...m, siempre: true })), ...bayas], setas });
 }
 
 const CERO = new THREE.Matrix4().makeScale(0, 0, 0);
@@ -184,18 +229,18 @@ export function crearRecoleccion({ raiz, altura, obstaculos, almacen, semilla = 
   const mallas = [];
   for (const tipo of Object.keys(RECOLECTABLES)) {
     const lista = puntos.filter(p => p.tipo === tipo); if (!lista.length) continue;
-    for (const { geo, mat } of mods[tipo]) {
+    for (const { geo, mat, siempre } of mods[tipo]) {
       const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
       lista.forEach((p, i) => { o.position.set(p.x, altura(p.x, p.z) - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(0.9 + (i % 4) * 0.08); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
-      im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo; grupo.add(im);
-      mallas.push({ im, lista, matrices });
+      im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : ''); grupo.add(im);
+      mallas.push({ im, lista, matrices, siempre });
     }
   }
   let ocupado = () => false;
-  const visible = (p, ahora) => rec.disponible(p.id, ahora) && !ocupado(p.x, p.z);
+  const visible = (p, ahora, siempre) => (siempre || rec.disponible(p.id, ahora)) && !ocupado(p.x, p.z);
   function refrescar(ahora = Date.now()) {
-    for (const { im, lista, matrices } of mallas) {
-      lista.forEach((p, i) => im.setMatrixAt(i, visible(p, ahora) ? matrices[i] : CERO));
+    for (const { im, lista, matrices, siempre } of mallas) {
+      lista.forEach((p, i) => im.setMatrixAt(i, visible(p, ahora, siempre) ? matrices[i] : CERO));
       im.instanceMatrix.needsUpdate = true;
     }
   }
@@ -244,7 +289,8 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
   let mallas = [], ocupado = () => false, centro = null, cambio = false, ultimo = 0;
   const cuenta = { trozos: 0, puntos: 0, pendientes: 0, msMax: 0 };
   const tapado = (p) => obstaculos.some(q => !q.arbol && (q.x - p.x) ** 2 + (q.z - p.z) ** 2 < (q.r + 0.3) ** 2);
-  const visible = (p, ahora) => rec.disponible(p.id, ahora) && !ocupado(p.x, p.z) && !p.tapado;
+  // (siempre: lo que queda aunque se haya recogido, como el arbusto de las bayas)
+  const visible = (p, ahora, siempre) => (siempre || rec.disponible(p.id, ahora)) && !ocupado(p.x, p.z) && !p.tapado;
 
   function hacer(i, j) {
     const lista = recogidaTrozo(pai, altW, semilla, i, j).map(p => ({ id: p.id, tipo: p.tipo, x: Math.round((p.x - O.x) * 100) / 100, z: Math.round((p.z - O.z) * 100) / 100, giro: p.giro, zonas: p.zonas }));
@@ -271,19 +317,19 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
     for (const p of rec.puntos) { p.tapado = tapado(p); p.y = altura(p.x, p.z); }
     for (const tipo of Object.keys(RECOLECTABLES)) {
       const lista = rec.puntos.filter(p => p.tipo === tipo); if (!lista.length) continue;
-      for (const { geo, mat } of mods[tipo]) {
+      for (const { geo, mat, siempre } of mods[tipo]) {
         const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
         lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(0.9 + (i % 4) * 0.08); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
-        im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo; im.frustumCulled = false; grupo.add(im);
-        mallas.push({ im, lista, matrices });
+        im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : ''); im.frustumCulled = false; grupo.add(im);
+        mallas.push({ im, lista, matrices, siempre });
       }
     }
     cuenta.trozos = trozos.size; cuenta.puntos = rec.puntos.length;
     refrescar();
   }
   function refrescar(ahora = Date.now()) {
-    for (const { im, lista, matrices } of mallas) {
-      lista.forEach((p, i) => im.setMatrixAt(i, visible(p, ahora) ? matrices[i] : CERO));
+    for (const { im, lista, matrices, siempre } of mallas) {
+      lista.forEach((p, i) => im.setMatrixAt(i, visible(p, ahora, siempre) ? matrices[i] : CERO));
       im.instanceMatrix.needsUpdate = true;
     }
   }

@@ -40,8 +40,12 @@ export const DENSIDAD_RECOGIDA = {
   juncos:       { rio: 0.12, ribera: 0.05 },
   barro:        { rio: 0.16, ribera: 0.04 },
   yesquero:     { bosque: 0.05 },
+  // (P4) para comer: arbustos de bayas en el bosque (sobre todo en sus bordes, donde es claro: el del bosque se
+  // multiplica por su densidad) y en los claros, y setas en el suelo del bosque. También después, en las celdas vacías.
+  bayas:        { bosque: 0.03, claro: 0.012 },
+  setas:        { bosque: 0.04 },
 };
-const DESPUES = ['juncos', 'barro', 'yesquero'];
+const DESPUES = ['juncos', 'barro', 'yesquero', 'bayas', 'setas'];
 // Piedra y sílex sueltos en la pradera abierta (valravnx, 1 nov: «dentro del realismo, accesibilidad»; tarea «Salida
 // al azar de verdad en línea»): en el claro, algo de piedra y de sílex, menos que donde les toca (decisión provisional:
 // la piedra la séptima parte que en la ladera, el sílex la sexta parte que en la caliza). Se miran después de lo
