@@ -1355,7 +1355,9 @@
     },
     {
      "nombre": "Almacenajes de la base (con su modelo, que se ve lleno): acopio de troncos, pila de piedras y leñera. Guardar y sacar con Usar; de quien tiene la tierra; la obra no coge de ellos sola",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T16:25:58+00:00",
+     "rama": "trabajo/20261107-1625"
     },
     {
      "nombre": "Más almacenajes: soporte de varas, almiar (paja y juncos), hoyo de barro y cesto (lo pequeño)",
