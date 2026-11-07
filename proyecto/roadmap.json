@@ -1583,13 +1583,15 @@
    "id": "talar",
    "num": "P5",
    "nombre": "Talar de verdad",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "jugable": "El árbol cae por física hacia la boca que le cortas, con un crujido de aviso, y hiere a quien esté debajo.",
    "nota": "Revisión del 1 nov con valravnx: aprobado: caída sobre el tocón con la física de un tronco que gira; el daño lo decide el servidor con su autor.",
    "tareas": [
     {
      "nombre": "Hacia dónde cae: la boca que se corta (el lado desde el que talas); sin boca, hacia donde se inclina o cuesta abajo. Lógica pura, con pruebas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T21:24:48+00:00",
+     "rama": "trabajo/20261107-2124"
     },
     {
      "nombre": "La caída: gira sobre el tocón con la aceleración de la gravedad, choca con el suelo, rebota un poco y se asienta según el terreno; si da con otro árbol o una obra, se queda apoyado o se desvía. Todos la ven igual (sale de la dirección y el momento)",
@@ -1674,6 +1676,12 @@
      "estado": "hecho",
      "inicio": "2026-11-04T12:43:17+01:00",
      "fin": "2026-11-04T12:45:39+01:00"
+    },
+    {
+     "nombre": "Arreglo (valravnx, 7 nov): los puestos de trabajo y los almacenajes guardan el giro con que se ponen, y se desmontan terminados desde Construir (el 75 % del material y lo que guardan, al suelo a su lado)",
+     "estado": "en_curso",
+     "inicio": "2026-11-07T20:42:58+00:00",
+     "rama": "trabajo/20261107-2042-puestos"
     }
    ]
   },
