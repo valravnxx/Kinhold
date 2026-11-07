@@ -1447,9 +1447,9 @@
     },
     {
      "nombre": "Los avisos en círculos a la derecha (PC y móvil), uno por necesidad con su color (naranja, azul, celeste y gris), que solo salen cuando hace falta; al pulsarlos, qué efecto tiene y cómo se quita. Y los efectos en el juego: sin correr, más lento y golpes flojos según lo que toque. Recorrido: sale el aviso de sed y se lee qué hacer",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T17:01:29+01:00",
-     "rama": "trabajo/20261107-1701-avisos"
+     "fin": "2026-11-07T18:52:34+01:00"
     },
     {
      "nombre": "Beber del río con las manos (el agua de río se bebe sin problema, GDD): Usar en la orilla o en el agua que se vadea; el servidor comprueba que hay agua a tu lado y baja la sed. Recorrido: el jugador nuevo busca un río y bebe",
@@ -3367,6 +3367,13 @@
      "archivo": "jugar/demo/v140.html",
      "capturas": "capturas/demo-v140",
      "notas": "La hoguera, fuera: se levanta apagada con sus ramas, se enciende con la yesca y el taladro de fuego, arde un rato por cada rama o leña que se le echa y se apaga sola (quedan las cenizas); da luz y calor. Por el servidor: todos la ven igual."
+    },
+    {
+     "v": "v141",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v141.html",
+     "capturas": "capturas/demo-v141",
+     "notas": "Las necesidades: hambre, sed, frío y cansancio, con sus avisos"
     }
    ]
   },

@@ -7,13 +7,15 @@
 // que diga el navegador) cansa y quieto descansa; las acciones cansan; a otro jugador no le llegan las tuyas; se
 // guardan al salir y al volver (con su ficha) siguen como estaban.
 // MUTAR=1: el servidor no las avanza (sed y hambre quietas); MUTAR=2: el cansancio sale de lo que dice el navegador
-// (su «anim»), no de lo que corre de verdad. Las dos deben FALLAR.
+// (su «anim»), no de lo que corre de verdad; MUTAR=3: rendido sin llegar al máximo (el servidor no recorta). Las tres
+// deben FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, RITMOS, ESFUERZOS, AVISO, FUERTE } from '../src/logica/necesidades.js';
+import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, RITMOS, ESFUERZOS, AVISO, FUERTE } from '../src/logica/necesidades.js';
+import { PresenciaServidor } from '../src/logica/presencia.js';
 
 const MUTAR = process.env.MUTAR;
 let ok = 0, mal = 0;
@@ -54,6 +56,22 @@ console.log('La lógica');
   comprobar(`avisos desde ${AVISO} y en fuerte desde ${FUERTE}`, av.length === 2 && av[0].que === 'sed' && !av[0].fuerte && av[1].que === 'cansancio' && av[1].fuerte, JSON.stringify(av));
   comprobar('comer y beber bajan lo suyo, sin pasar de 0', saciar({ ...nuevas(), hambre: 30 }, 'hambre', 50).hambre === 0 && saciar({ ...nuevas(), sed: 80 }, 'sed', 30).sed === 50);
   comprobar('lo guardado se limpia (números raros, fuera)', JSON.stringify(validarNecesidades({ hambre: 150, sed: -3, frio: 'x', cansancio: 12, otra: 5 })) === JSON.stringify({ hambre: 100, sed: 0, frio: 0, cansancio: 12 }));
+}
+
+console.log('Lo que se puede mover (el servidor no deja correr al rendido)');
+{
+  comprobar('rendido, 0,6 (andar sí, correr no); helado, 0,8; descansado, 1', factorVelocidad({ ...nuevas(), cansancio: 100 }) === 0.6 && factorVelocidad({ ...nuevas(), frio: 100 }) === 0.8 && factorVelocidad(nuevas()) === 1);
+  // 20 s corriendo a 6 m/s (un paso cada 100 ms) lejos de la salida: cuánto recorta el servidor
+  const recorta = (vel) => {
+    const P = new PresenciaServidor();
+    P.anclar('a', { x: 100, z: 100 }, 0);
+    let r = 0;
+    for (let i = 1; i <= 200; i++) { const x = P.recibir('a', { x: 100 + i * 0.6, y: 0, z: 100, giro: 0, anim: 'correr' }, i * 100, { vel }); r += x ? x.recortado : 0; }
+    return r;
+  };
+  const rDesc = recorta(factorVelocidad(nuevas())), rRend = recorta(factorVelocidad({ ...nuevas(), cansancio: MUTAR === '3' ? 99 : 100 }));
+  comprobar('descansado, corre sin que el servidor le recorte', rDesc === 0, `${rDesc.toFixed(2)} m`);
+  comprobar('rendido, el servidor le recorta lo que corre de más', rRend > 3, `${rRend.toFixed(2)} m`);
 }
 
 console.log('Con el servidor de verdad');
