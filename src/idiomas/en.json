@@ -2255,5 +2255,7 @@
  "Guarda los troncos, apilados fuera": "Keeps logs, stacked outdoors",
  "Guarda la piedra suelta": "Keeps loose stone",
  "Guarda la leña y las ramas, a cubierto": "Keeps firewood and branches, under cover",
- "Los almacenajes van en tu tierra (o en la de quien te invita).": "Storage goes on your land (or on the land of whoever invites you)."
+ "Los almacenajes van en tu tierra (o en la de quien te invita).": "Storage goes on your land (or on the land of whoever invites you).",
+ "Guardar aquí": "Store here",
+ "v141: el contador de arriba («En tu tierra») cuenta ya lo guardado en los almacenajes de tu tierra (hasta ahora, lo que había en su suelo).": "v141: the counter at the top («On your land») now counts what is stored in the storage on your land (until now, what lay on its ground)."
 }

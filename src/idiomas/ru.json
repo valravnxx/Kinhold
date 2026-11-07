@@ -2255,5 +2255,7 @@
  "Guarda los troncos, apilados fuera": "Хранит брёвна, сложенные снаружи",
  "Guarda la piedra suelta": "Хранит камни",
  "Guarda la leña y las ramas, a cubierto": "Хранит дрова и ветки под навесом",
- "Los almacenajes van en tu tierra (o en la de quien te invita).": "Хранилища ставят на своей земле (или на земле того, кто пригласил)."
+ "Los almacenajes van en tu tierra (o en la de quien te invita).": "Хранилища ставят на своей земле (или на земле того, кто пригласил).",
+ "Guardar aquí": "Положить сюда",
+ "v141: el contador de arriba («En tu tierra») cuenta ya lo guardado en los almacenajes de tu tierra (hasta ahora, lo que había en su suelo).": "v141: счётчик вверху («На твоей земле») теперь считает то, что лежит в хранилищах на твоей земле (до сих пор — то, что лежало на её земле)."
 }

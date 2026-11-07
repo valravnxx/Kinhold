@@ -36,7 +36,6 @@ import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
 import { vestidoDe, rasgosPrenda } from '../logica/hechura.js';
 import { crearRecoleccion, crearRecoleccionMundo } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
-import { almacenadoEnTierra } from '../logica/suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS, SALIDAS_INICIO } from '../logica/whitholm.js';
 import { nombreDe, RECOLECTABLES } from '../logica/recoleccion.js';
@@ -2309,9 +2308,10 @@ function construirBarra() {
 function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : estado.sel.clase === 'puesto' ? 'puestos' : (estado.sel.clase === 'mojon' || estado.sel.clase === 'nivelar' ? 'tierra' : PIEZAS[estado.sel.tipo].cat); construirBarra(); }
 
 // El contador de arriba (valravnx, 1 nov): en línea, solo dentro de tu tierra (la zona de tu mojón) y con lo que tienes
-// almacenado en ella; fuera, no sale. Provisional, mientras no haya almacenajes de la base: lo almacenado es lo que hay
-// en el suelo de tu tierra (ahí no desaparece), de lo que te llega del servidor (los trozos de tu alrededor). Sin
-// servidor (las pruebas de navegador), lo que hay en el arcón de pruebas, como antes.
+// almacenado en ella; fuera, no sale. Lo almacenado es lo guardado en los almacenajes de la base de tu tierra (7 nov:
+// el acopio de troncos, la pila de piedras, la leñera), de los que te llegan del servidor (los trozos de tu alrededor);
+// hasta que los hubo, era lo que había en el suelo de tu tierra. Sin servidor (las pruebas de navegador), lo que hay en
+// el arcón de pruebas, como antes.
 let htmlMateriales = null;
 function pintarMateriales() {
   const m = $('materiales');
@@ -2321,7 +2321,9 @@ function pintarMateriales() {
     const mojon = miMojon(), zona = mojon ? mundo.tierraDe(mojon.x, mojon.z) : null;
     const esMio = (x, z) => zona !== null && mundo.tierraDe(x, z) === zona;
     if (esMio(pj.x, pj.z)) {
-      const hay = almacenadoEnTierra(sueloObjetos.suelo.visibles(Date.now()), esMio);
+      const hay = {};
+      for (const e of Object.values(fabCliente.estaciones)) if (esAlmacen(e.tipo) && !e.obra && esMio(e.x, e.z))
+        for (const [k, n] of Object.entries(e.deposito || {})) hay[k] = (hay[k] || 0) + n;
       const ks = Object.keys(hay).filter(k => CATALOGO[k]).sort((a, b) => hay[b] - hay[a]);
       html = `<span>${tr('En tu tierra:')}</span>` + (ks.length ? ks.map(k => `<span><b>${hay[k]}</b> ${tr(CATALOGO[k].nombre).toLowerCase()}</span>`).join('')
         : `<span>${tr('aún no tienes nada almacenado')}</span>`);
