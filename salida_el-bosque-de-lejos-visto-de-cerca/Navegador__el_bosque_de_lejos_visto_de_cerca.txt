@@ -1,0 +1,11 @@
+PC
+  OK   PC: hay un bosque espeso a 300–700 m de la salida — {'p': [-300, -100], 'q': [0, 4], 'd': 317.5153539594582}
+  OK   PC: delante, las copas de cerca — {'tris': 8246, 'alto': 3460, 'ini': 250, 'rampa': 150}
+  OK   PC: cada punto lleva lo que sube sobre el suelo (para meterlo bajo el suelo cerca) — {'tris': 8246, 'alto': 3460, 'ini': 250, 'rampa': 150}
+  OK   PC: no empiezan hasta 240 m del jugador, y suben poco a poco — {'tris': 8246, 'alto': 3460, 'ini': 250, 'rampa': 150}
+  OK   PC: sin errores en la página
+móvil
+  OK   móvil: hay un bosque espeso a 300–700 m de la salida — {'p': [-300, -100], 'q': [0, 4], 'd': 317.5153539594582}
+  OK   móvil: sin errores en la página
+
+TODO CORRECTO
