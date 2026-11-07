@@ -1,0 +1,17 @@
+  OK   repetir el mismo cuadro da lo mismo
+  OK   los árboles de la parte en común, iguales en los dos cuadros — 815 y 815
+  OK   las piedras de la parte en común, iguales — 44
+  OK   la hierba de donde se solapan, igual — 796
+  OK   la hierba, solo dentro de su círculo
+  OK   cuatro trozos juntos dan lo mismo que su cuadro (árboles, piedras, hierba, flores y matas), sin repetir nada — arboles 82/82, piedras 1/1, hierba 938/938, flores 23/23, matas 149/149
+  OK   nada en el mar, en la orilla ni en los ríos — 0 cosas en el agua
+  OK   cada árbol es de una especie de su bioma (o una conífera en el límite del bosque) — 3320 árboles, 0 fuera de su bioma
+  OK   en la isla salen varias especies — roble, fresno, abeto, abedul, haya
+  OK   más hierba en los claros que bajo el bosque cerrado — 67.9 frente a 22.6 matas por 100 m²
+  OK   cada árbol lleva su edad (joven o adulto) — 1789 jóvenes, 1531 adultos, 0 sin edad
+  OK   los jóvenes miden de 3 a 5 m — de 3.00 a 5.00 m
+  OK   los adultos, bien distintos: el doble de altos que los jóvenes o más, de media — 10.6 m frente a 4.0 m
+  OK   los adultos, 1.3 veces los de antes — 10.6 m de media
+  OK   más jóvenes en lindes y claros que dentro del bosque cerrado — 60 % de 2112 frente a 26 % de 231
+
+Todo bien
