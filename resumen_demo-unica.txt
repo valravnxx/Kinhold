@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2272 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2775 KB
+
+== Construir demo única
+      2664 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3876 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2670 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2266 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2784 KB
+dist/kinhold_trozos.html 2280 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v135 (los puestos de trabajo, como obra); v135: los puestos de trabajo son obra (valravnx, 6 nov): la piedra de tallar, la hoguera y el banco de tronco ya no se ponen al momento desde el panel de fabricar, sino desde Construir, en su propia pestaña «Puestos de trabajo» (aparte de la decoración), que dice lo que pide cada uno y dónde va. Se pone el marco a tu lado sin gastar nada; con Usar (F) delante se le lleva lo que le falta (de lo que llevas y del suelo a tu lado) y, con todo, se trabaja en él hasta levantarlo; entre dos, el trabajo se suma. Mientras está en obra se ve tenue, dentro de cuatro estacas atadas con cordel, con lo entregado al pie, y no se fabrica en él. Un marco a medio hacer se quita con el clic derecho (lo entregado cae al suelo). Todo pasa por el servidor, con su autor, y lo ven los demás.; v135: dónde va cada puesto: la piedra de tallar y el banco, dentro o fuera; la hoguera, solo fuera: bajo techo (bajo un suelo o un tejado terminado de una construcción) no se pone. El hogar, solo dentro, llega con su tarea.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 204 s
