@@ -2,9 +2,10 @@
 // suelo a tu lado (revisión del 1 nov); las de una estación, con lo depositado en ella (valravnx, 6 nov). Ejecutar: node pruebas/prueba_fabricacion.mjs
 // Con MUTAR=1 el hacha de piedra no gasta cordel y se hace al momento, la hoguera deja de dar el fuego y se puede poner
 // bajo techo, y el banco se levanta sin trabajo:
+// Con MUTAR=2 la pila de piedras guarda de todo y se pone fuera de tu tierra: las de los almacenajes deben FALLAR.
 // las pruebas deben FALLAR.
 import { ESTACIONES, RECETAS, USOS, Fabricacion, ejecutarFabricacion, sueloCerca, cuentas, SITIO_DE_RUTA, estacionesDeUso, ALCANCE_ESTACION, ALCANCE_SUELO,
-  COLA_ESTACION, VERSION_FABRICACION, migrarFabricacion, DEPOSITO_MAX, cuentasEstacion, MAX_RATO_ESTACION } from '../src/logica/fabricacion.js';
+  COLA_ESTACION, VERSION_FABRICACION, migrarFabricacion, DEPOSITO_MAX, cuentasEstacion, MAX_RATO_ESTACION, ALMACENAJES, cabeEn, limpiarDeposito } from '../src/logica/fabricacion.js';
 import { Inventarios, Inventario, CATALOGO } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
@@ -12,6 +13,7 @@ import { Mundo, clave } from '../src/logica/construccion.js';
 import { MODULO } from '../src/logica/piezas.js';
 
 if (process.env.MUTAR === '1') { delete RECETAS.hacha_piedra.gasta.cordel; RECETAS.hacha_piedra.s = 0; ESTACIONES.hoguera.uso = 'tallar'; ESTACIONES.hoguera.donde = 'ambos'; ESTACIONES.banco_tronco.trabajo = 0; }
+if (process.env.MUTAR === '2') { delete ESTACIONES.pila_piedras.guarda; delete ESTACIONES.pila_piedras.tierra; }
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -55,7 +57,7 @@ console.log('Lo que dice el documento de sistemas (apartados 7 y 8)');
   comprobar('banco de tronco: 2 troncos cortos y herramienta de piedra; da el banco', E.banco_tronco.uso === 'banco' && igual(E.banco_tronco.coste, { tronco_corto: 2 }) && E.banco_tronco.requiere.includes('hacha_piedra'));
   comprobar('por uso, no por nivel: ni las estaciones ni las recetas llevan nivel', Object.values(E).every(e => !('nivel' in e)) && Object.values(RECETAS).every(r => !('nivel' in r) && !('donde' in r)));
   comprobar('los usos: con las manos, al fuego (hoguera y hogar), piedra de tallar y banco de tronco', igual(Object.keys(USOS), ['manos', 'fuego', 'tallar', 'banco']) && igual(USOS.fuego.estaciones, ['hoguera', 'hogar']));
-  comprobar('cada estación da un uso que la nombra, y dice cómo se nombra en una frase', Object.entries(E).every(([t, e]) => USOS[e.uso] && USOS[e.uso].estaciones.includes(t) && /^una? /.test(e.un)));
+  comprobar('cada estación da un uso que la nombra (o es un almacenaje, sin recetas), y dice cómo se nombra en una frase', Object.entries(E).every(([t, e]) => (e.uso === 'almacen' ? !Object.values(RECETAS).some(r => r.uso === 'almacen') : USOS[e.uso] && USOS[e.uso].estaciones.includes(t)) && /^una? /.test(e.un)));
   comprobar('de los usos, solo falta el hogar como estación (llega con la casa humilde)', igual(Object.values(USOS).flatMap(u => u.estaciones).filter(t => !E[t]), ['hogar']) && igual(estacionesDeUso('fuego'), ['hoguera']));
   const R = RECETAS;
   comprobar('cordel: 3 fibra cruda, con las manos', R.cordel.uso === 'manos' && igual(R.cordel.gasta, { fibra: 3 }));
@@ -283,6 +285,53 @@ console.log('Depositar en las estaciones y volver a coger');
   depositar(fab, a2, { silex: 1, piedra: 1 });
   r = fab.fabricar('ana', 'lasca_silex', null, { x: 3.2, z: 0 }, inv2, null, T0);
   comprobar('con dos al lado, sin decir cuál, usa la que tiene lo depositado aunque esté más lejos', r.ok && r.estacion === a2 && a1 !== a2, r.motivo || r.estacion);
+}
+
+console.log('Los almacenajes de la base: acopio de troncos, pila de piedras y leñera (revisión del 1 nov)');
+{
+  const E = ESTACIONES;
+  comprobar('los tres, sin recetas: guardan lo suyo (troncos; piedra suelta; leña y ramas)', igual(ALMACENAJES, ['acopio_troncos', 'pila_piedras', 'lenera'])
+    && E.acopio_troncos.guarda.includes('tronco_delgado') && igual(E.pila_piedras.guarda, ['piedra']) && igual(E.lenera.guarda, ['lena', 'rama']) && !Object.values(RECETAS).some(r => r.uso === 'almacen'));
+  comprobar('su coste sale del mundo (varas, piedras y ramas)', ALMACENAJES.every(t => Object.keys(E[t].coste).every(m => ['vara', 'piedra', 'rama'].includes(m))));
+  const fab = new Fabricacion();
+  let r = fab.colocar('ana', 'pila_piedras', 0, 0, false, null, false);
+  comprobar('fuera de tu tierra no se pone', !r.ok && /tierra/.test(r.motivo || ''), r.motivo);
+  r = fab.colocar('ana', 'acopio_troncos', 0, 0, true, null, true);
+  comprobar('el acopio de troncos, solo fuera', !r.ok, r.motivo);
+  const inv = jugador(); inv.meterDonde('piedra', 4);
+  const pila = (() => { const c = fab.colocar('ana', 'pila_piedras', 0, 0, false, null, true); if (!c.ok) throw new Error(c.motivo); return c.id; })();
+  r = fab.depositar('ana', pila, inv.rutasCon('piedra')[0], 1, { x: 0, z: 0 }, inv);
+  comprobar('en obra no guarda nada', !r.ok, r.motivo);
+  fab.entregarEstacion('ana', pila, { x: 0, z: 0 }, inv, null, T0);
+  for (let i = 0; i < 4 && fab.estaciones[pila].obra; i++) fab.trabajarEstacion('ana', pila, MAX_RATO_ESTACION, { x: 0, z: 0 }, inv);
+  comprobar('se levanta como obra: sus 4 piedras y su trabajo', !fab.estaciones[pila].obra && inv.cuantos('piedra') === 0);
+  inv.lugares['mano:der'] = { tipo: 'rama', n: 2 };
+  r = fab.depositar('ana', pila, 'mano:der', 1, { x: 0, z: 0 }, inv);
+  comprobar('la pila de piedras no guarda ramas', !r.ok && /solo guarda/.test(r.motivo || '') && inv.cuantos('rama') === 2, r.motivo);
+  inv.lugares['mano:izq'] = { tipo: 'piedra', n: 5 };
+  r = fab.depositar('ana', pila, 'mano:izq', undefined, { x: 0, z: 0 }, inv);
+  comprobar('guarda piedras (Usar: dejar)', r.ok && fab.estaciones[pila].deposito.piedra === 5 && !inv.lugares['mano:izq'], r.motivo);
+  for (let q = cabeEn('pila_piedras') - 5; q > 0; q -= 5) depositar(fab, pila, { piedra: Math.min(5, q) });
+  comprobar(`le caben ${cabeEn('pila_piedras')}, más que a una estación (${DEPOSITO_MAX})`, fab.estaciones[pila].deposito.piedra === cabeEn('pila_piedras') && cabeEn('pila_piedras') > DEPOSITO_MAX);
+  const otra = jugador(); otra.lugares['mano:der'] = { tipo: 'piedra', n: 1 };
+  r = fab.depositar('ana', pila, 'mano:der', 1, { x: 0, z: 0 }, otra);
+  comprobar('llena, no cabe ni una más', !r.ok && /no cabe/.test(r.motivo || ''), r.motivo);
+  r = fab.retirar('ana', pila, 'piedra', 2, { x: 0, z: 0 }, inv);
+  comprobar('y se sacan (Usar: coger)', r.ok && inv.cuantos('piedra') === 2 && fab.estaciones[pila].deposito.piedra === cabeEn('pila_piedras') - 2, r.motivo);
+  // la obra no coge de ellos sola: un marco de hoguera al lado de la pila llena, sin nada encima, no recibe nada
+  const hg = fab.colocar('ana', 'hoguera', 0.5, 0).id, vacio = jugador();
+  r = fab.entregarEstacion('ana', hg, { x: 0.3, z: 0 }, vacio, null, T0);
+  comprobar('la obra no coge de los almacenajes: sin llevar piedras, la hoguera de al lado no recibe ninguna', !r.ok && !Object.keys(fab.estaciones[hg].obra.entregado).length && fab.estaciones[pila].deposito.piedra === cabeEn('pila_piedras') - 2, r.motivo);
+  comprobar('ni las recetas: nada se hace con lo de la pila', fab.lista({ x: 0, z: 0 }, vacio, null, T0).every(x => x.estacion !== pila));
+  comprobar('lo guardado se guarda y se carga (más de 20, solo lo suyo)', new Fabricacion().importar(fab.exportar()).estaciones[pila].deposito.piedra === cabeEn('pila_piedras') - 2
+    && igual(limpiarDeposito({ piedra: 30, rama: 3 }, 'pila_piedras'), { piedra: 30 }) && igual(limpiarDeposito({ lena: 25, piedra: 2 }, 'lenera'), { lena: 25 }));
+  // el tronco delgado, del hombro al acopio y de vuelta al hombro
+  const ac = levantar(fab, 'ana', 'acopio_troncos', 5, 0, (() => { const i = jugador(); i.meterDonde('vara', 4); return i; })());
+  const hom = Inventario.inicial(); hom.lugares.hombro = { tipo: 'tronco_delgado', n: 1 };
+  r = fab.depositar('ana', ac, 'hombro', undefined, { x: 5, z: 0 }, hom);
+  comprobar('el tronco delgado, del hombro al acopio de troncos', r.ok && !hom.lugares.hombro && fab.estaciones[ac].deposito.tronco_delgado === 1, r.motivo);
+  r = fab.retirar('ana', ac, 'tronco_delgado', 1, { x: 5, z: 0 }, hom);
+  comprobar('y se vuelve a sacar', r.ok && hom.cuantos('tronco_delgado') === 1, r.motivo);
 }
 
 console.log('De qué sitio sale cada cosa: la mano, el cinturón o el suelo');
