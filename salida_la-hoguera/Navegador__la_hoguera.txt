@@ -1,0 +1,54 @@
+  OK   PC: entra y le llega lo que lleva en el servidor — []
+  OK   PC: sin la pantalla de la cuenta delante
+Levanta una hoguera desde «Puestos de trabajo»
+  OK   el servidor le da 6 piedras (arcón de pruebas)
+  OK   el servidor tiene el marco de la hoguera
+  OK   Usar le lleva las piedras
+  (coger 3 rama: manos llenas: [{"tipo":"piedra","n":3},{"tipo":"piedra","n":3}])
+  FALLA el servidor le da 3 rama(s) (arcón de pruebas)
+  OK   Usar le lleva las ramas
+  OK   el servidor le da 1 rama(s) (arcón de pruebas)
+  FALLA y con sus ramas y el trabajo queda levantada (en el servidor) — Material entregado. Le falta: 3 rama. Llévalo encima: cógelo del arcón de pruebas (Inventario).
+  FALLA levantada, apagada y con sus 4 ramas puestas (12 min) — None
+  FALLA se dibuja con sus ramas, sin fuego
+La enciende con la yesca y el taladro de fuego, desde el panel
+  FALLA Usar abre el panel en la pestaña del fuego
+  FALLA arriba, el fuego: apagada, con lo que tiene puesto
+  FALLA sin yesca ni taladro, «Encender» no se puede y dice lo que falta
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_hoguera_navegador.py", line 152, in <module>
+    pestana(A, 'fuego')
+    ~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_hoguera_navegador.py", line 98, in pestana
+    pg.evaluate(f"document.querySelector('#panelFabricar .fab-pest[data-pestana=\"{k}\"]').click()"); pg.wait_for_timeout(250)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 9413, in evaluate
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.evaluate(expression=expression, arg=mapping.to_impl(arg))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 474, in evaluate
+    return await self._main_frame.evaluate(expression, arg)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 346, in evaluate
+    await self._channel.send(
+    ...<6 lines>...
+    )
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Page.evaluate: TypeError: Cannot read properties of null (reading 'click')
+    at eval (eval at evaluate (:311:30), <anonymous>:1:73)
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
