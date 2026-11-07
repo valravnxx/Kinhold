@@ -13,7 +13,7 @@ import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { montarCharla } from './charla.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearCielo } from '../mundo/cielo.js';
-import { validarNecesidades, efectos as efectosNecesidades } from '../logica/necesidades.js';
+import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC } from '../logica/necesidades.js';
 import { montarAvisos } from './avisos_necesidades.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mundo.js';
@@ -1472,6 +1472,8 @@ function usar() {
   // al pie de un andamio, con la obra más arriba que tú, Usar sube al andamio (desde allí se le lleva el material)
   const subirAndamio = it && PIEZAS[it.p.tipo].andamio && it.p.k === pj.k && ob && ob.p.k > pj.k;
   if (ob && !subirAndamio) { usarObra(ob); return; }
+  // con sed (desde su aviso) y agua al lado, Usar bebe antes que nada (lo demás, desde el menú del clic derecho)
+  if (!it && necesidades && necesidades.sed >= AVISO_NEC && aguaAlLado()) { beber(); return; }
   // con un hacha en la mano, junto a un árbol, se tala antes que recoger lo que haya al lado
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { empezarTala(arbolCercano()); return; }
   // con un hacha en la mano, junto a un tronco tumbado, se tronza (el largo) o se parte (el corto)
@@ -1502,6 +1504,7 @@ function usar() {
       if (!hachaEnMano(inventario())) { mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true); return; }
       empezarTala(a); return;
     }
+    if (aguaAlLado()) { beber(); return; }   // junto al agua, sin otra cosa que usar, se bebe
     mostrarAviso(t('nadaQueUsar')); return;
   }
   usarInteractivo(it);
@@ -1547,6 +1550,8 @@ function opcionesUsar() {
     const verbo = rc => ({ cortar: tr('Cortar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cavar: tr('Cavar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }) })[RECOLECTABLES[rc.tipo].accion] || tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) });
     for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: verbo(rc), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
   }
+  // el agua de al lado: beber con las manos (P4)
+  if (aguaAlLado()) ops.push({ texto: tr('Beber agua'), pos: { x: pj.x, z: pj.z }, alto: 0.2, hacer: beber });
   // quien tienes al lado (a menos de 3 m): dejarle construir en tu tierra, o quitárselo (valravnx, 4 nov: la pareja)
   if (enLinea && miMojon()) for (const [autor, r] of enLinea.remotos) {
     if (Math.hypot(r.x - pj.x, r.z - pj.z) > 3) continue;
@@ -1647,6 +1652,21 @@ function usarInteractivo(it) {
   }
 }
 
+// Beber del río con las manos (P4; src/logica/necesidades.js): con agua a tu lado (río, lago o mar) y en el suelo. En
+// línea, el trago lo da el servidor (mira dónde te tiene y si hay agua ahí); sin servidor (las pruebas), aquí.
+const aguaAlLado = () => !!mundoJ && pj.k === 0 && hayAguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z);
+function beber() {
+  if (objetosRed) {
+    objetosRed.mandar({ tipo: 'beber', x: pj.x, z: pj.z }, (r) => {
+      if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      mostrarAviso(r.datos && r.datos.sed > 0 ? tr('Bebes agua con las manos. Aún tienes sed.') : tr('Bebes agua con las manos. Ya no tienes sed.'));
+    });
+    return;
+  }
+  if (!aguaAlLado()) { mostrarAviso(tr('Aquí no hay agua: busca un río, un lago o el mar.'), true); return; }
+  if (necesidades) { necesidades = saciarNecesidad(necesidades, 'sed', TRAGO); avisosNec.pintar(necesidades); }
+  mostrarAviso(tr('Bebes agua con las manos.'));
+}
 function recoger(punto) {
   if (objetosRed) { // en línea lo recoge el servidor (el punto, como lo ve este navegador: decisión provisional)
     pj.rot = Math.atan2(punto.x - pj.x, punto.z - pj.z);
@@ -2724,6 +2744,7 @@ window.__kinhold = {
   get necesidades() { return necesidades; },   // las del servidor (P4)
   avisosNec,
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
+  beber, aguaAlLado,
   ponerNecesidades(n) { necesidades = validarNecesidades(n); avisosNec.pintar(necesidades); },   // el chat de texto (src/juego/charla.js)
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado

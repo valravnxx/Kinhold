@@ -6,6 +6,21 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (20:42 UTC) — en la sesión de chat con valravnx: los puestos y los almacenajes, sin girar y sin desmontar
+valravnx (con una captura junto a su casa: el tocón de trabajo y los acopios de troncos): «error encontrado: tanto crafting tables y acopios nuevos no se ponen en la dirección de rotación que los has puesto, y no se pueden desmontar de ninguna manera».
+→ Tarea del chat en el hito «Orden»: los puestos de trabajo y los almacenajes guardan el giro con que se ponen (el servidor lo apunta; hoy salen girados al azar por su nombre), y se desmontan terminados desde Construir → Quitar, como las piezas (el 75 % del material y lo que guardan, al suelo a su lado; en tu tierra o en la de quien te invita).
+
+### 7 nov 2026 (21:32 UTC+1) — por el chat: la interfaz, nada a medio acabar y sin noticias de las pruebas
+valravnx, sobre la ficha de la sed del estudio: «no eres capaz de ver el problema en esto? la textura de fondo no llega a los marcos, corta letras, todo, y me lo has enviado COMO DEFINITIVO, como un producto final acabado. quiero crear un juego profesional y publico, no pongas noticias de esto que llevas 8 noticias de tus cagadas una tras otras, REVISA MIL VECES SI HACE FALTA pero pasame cosas bien acabadas».
+→ Regla nueva en CLAUDE.md («Lo que se enseña, acabado, y sin noticias de las pruebas»). El tablero de la interfaz se rehace para que la madera llegue al marco y nada se meta en él; antes de enseñar nada, cada captura se mira de cerca, panel por panel, buscando cortes, huecos y textos que toquen bordes. Los estudios y las pruebas de la interfaz no van como noticia: solo lo terminado y revisado.
+
+### 7 nov 2026 (21:24 UTC+1) — por el chat: los arbustos de bayas
+valravnx: «debes hacer que los arbustos que tengan bayas se vean claramente, y al recolectarlas estas desaparezcan del mismo, y en buen nivel».
+→ Va en la tarea de comer bayas y setas de P4: el arbusto se queda y lo que desaparece al cogerlas son las bayas.
+### 7 nov 2026 (20:27 UTC) — en la sesión del carril A: la base no estaba borrada
+valravnx: «reinicié el juego y apareció de nuevo, sería un bug o algo, no está borrada, pero aparecía como tal y como en linea arriba, habria que ver las causas solo».
+→ No se perdió nada: el mundo del servidor estaba entero. Causa encontrada (comprobada con la lógica de presencia, src/logica/presencia.js): al ahogarte vuelves a la salida (0, 4); al teletransportarte con el admin, el servidor te pone en la base, pero el navegador aún le manda algún estado desde la salida (los que iban de camino). La regla «volver a la salida es libre» (RADIO_SALIDA) le cree y te devuelve allí; los siguientes, ya desde la base, se recortan por el límite de velocidad (8 m/s), y el servidor te deja en la salida acercándote a 8 m/s. Como lo que te manda (la casa, los puestos, lo del suelo) es lo de los trozos de donde él cree que estás, no te llega nada de tu base; el mojón sí, porque se manda a todos. Al recargar se arregla. valravnx: «zanjamos pues, es tema mio de tpearme y no algo que un jugador vea nunca». → Tarea cerrada sin cambiar el juego.
+
 ### 7 nov 2026 (19:52 UTC+1) — por el chat: MUY IMPORTANTE, se ha borrado la base al morir en el río
 valravnx (con una captura: junto a su mojón, sin nada más; «En tu tierra: aún no tienes nada almacenado»; «Teletransportado (admin)»): «muy gran e importante problema, he muerto en el rio y se me ha borrado TODO lo que habia en mi base, la casa, lo del suelo, estaciones de trabajo, TODO».
 → Tarea nueva, la primera del hito «Orden» (la coge el carril A el 7 nov a las 19:23 UTC): averiguar si se ha perdido en el servidor (el mundo de verdad) o solo no le llega al navegador (los trozos al volver de la salida tras ahogarse y teletransportarse), y arreglarlo con su prueba. Va antes que cualquier otra cosa.

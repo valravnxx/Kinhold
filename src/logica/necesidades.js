@@ -99,6 +99,20 @@ export function factorVelocidad(n) {
   return (e.sinCorrer ? 0.6 : 1) * (e.torpe ? 0.8 : 1);
 }
 
+// Beber del río con las manos (P4; GDD: «El agua de río se bebe sin problema»): hay agua si en tu sitio o a tu alrededor
+// (a 1,5 y a 2,5 m, en ocho direcciones) hay río o mar. aguaEn(x, z): lo hondo del agua ahí (null en seco), como el
+// del navegador (src/mundo/mundo_juego.js) y el del servidor (src/logica/terreno_servidor.js). Cada trago baja la
+// sed TRAGO puntos; entre trago y trago, ESPERA_TRAGO ms (decisión provisional: tres o cuatro tragos quitan la sed).
+export const TRAGO = 30, ESPERA_TRAGO = 1500;
+export function hayAguaCerca(aguaEn, x, z) {
+  if (aguaEn(x, z)) return true;
+  for (const r of [1.5, 2.5]) for (let i = 0; i < 8; i++) {
+    const a = i * Math.PI / 4;
+    if (aguaEn(x + Math.cos(a) * r, z + Math.sin(a) * r)) return true;
+  }
+  return false;
+}
+
 // los círculos que salen ahora: [{ que, fuerte }]
 export function avisos(n) {
   return NECESIDADES.filter(k => n[k] >= AVISO).map(k => ({ que: k, fuerte: n[k] >= FUERTE }));
