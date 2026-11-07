@@ -133,6 +133,7 @@ paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py di
 paso "Navegador: la rastra" python3 pruebas/prueba_rastra_navegador.py dist/kinhold_demo.html "$C/rastra"
 paso "Navegador: la carretilla" python3 pruebas/prueba_carretilla_navegador.py dist/kinhold_demo.html "$C/carretilla"
 paso "Navegador: panel de fabricación" python3 pruebas/prueba_fabricar_navegador.py dist/kinhold_demo.html "$C/fabricar"
+paso "Navegador: la hoguera" python3 pruebas/prueba_hoguera_navegador.py dist/kinhold_demo.html "$C/hoguera"
 paso "Navegador: panel de inventario" python3 pruebas/prueba_inventario_navegador.py dist/kinhold_demo.html "$C/inventario"
 paso "Navegador: lo que llevas se ve puesto" python3 pruebas/prueba_llevado_navegador.py dist/kinhold_demo.html "$C/llevado"
 paso "Navegador: objetos en el suelo" python3 pruebas/prueba_suelo_navegador.py dist/kinhold_demo.html "$C/suelo"

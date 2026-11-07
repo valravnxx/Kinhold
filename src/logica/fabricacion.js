@@ -436,7 +436,7 @@ export class Fabricacion {
     const st = estadoFuego(e.fuego, ahora);
     if (st.encendida) return { ok: false, motivo: 'Ya está encendida.' };
     if (!(st.combustible > 0)) return { ok: false, motivo: 'No tiene nada que arder: échale ramas o leña.' };
-    if (!(inv.cuantos(HERRAMIENTA_FUEGO) > 0)) return { ok: false, motivo: `Para encenderla hace falta llevar ${CATALOGO[HERRAMIENTA_FUEGO].nombre.toLowerCase()} y yesca.` };
+    if (!(inv.cuantos(HERRAMIENTA_FUEGO) > 0)) return { ok: false, motivo: 'Para encenderla hace falta llevar el taladro de fuego y yesca.' };
     const ruta = YESCAS.flatMap(t => rutasGastables(inv, t))[0];
     if (!ruta) return { ok: false, motivo: 'Para encenderla hace falta llevar yesca.' };
     const tipo = inv.buscar(ruta).cosa.tipo, r = encender(e.fuego, ahora);
@@ -449,7 +449,7 @@ export class Fabricacion {
     const { e, motivo } = this.fuegoAlLado(estacion, pos);
     if (!e) return { ok: false, motivo };
     const ruta = rutasGastables(inv, objeto)[0];
-    if (!ruta) return { ok: false, motivo: `No llevas ${((CATALOGO[objeto] || {}).nombre || 'eso').toLowerCase()}.` };
+    if (!ruta) return { ok: false, motivo: objeto === 'lena' ? 'No llevas leña.' : objeto === 'rama' ? 'No llevas ramas.' : 'Al fuego solo se echan ramas o leña.' };
     const r = echar(e.fuego, objeto, ahora);
     if (!r.ok) return r;
     inv.sacar(ruta, 1);
@@ -480,7 +480,7 @@ export class Fabricacion {
         e = this.estacionCerca(rc.uso, pos, rc.gasta, ahora);
         if (!e) return { ok: false, motivo: `Hace falta ${conQue(rc.uso)} a tu lado.` };
       }
-      if (ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora)) return { ok: false, motivo: `${ESTACIONES[e.tipo].nombre}: el fuego está apagado. Enciéndelo con yesca y el taladro de fuego.` };
+      if (ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora)) return { ok: false, motivo: 'El fuego está apagado: enciéndelo con yesca y el taladro de fuego.' };
       cola = e.cola; max = COLA_ESTACION; enEst = e;
     }
     const sinTerminar = cola.filter(c => c.fin > ahora);

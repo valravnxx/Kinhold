@@ -12,6 +12,8 @@
 //    se puede hacer, y «Poner en la estación lo que falta» de lo que llevas. Ninguno coge nada que no harías a mano.
 //  - En la pestaña de una estación que tienes al lado: lo que tiene encima (tocar: coger) y lo que llevas que se puede
 //    dejar (tocar: dejar), cada cosa con su imagen. Sus recetas gastan solo lo depositado (valravnx, 6 nov).
+//  - En la de la hoguera, encima, su fuego (src/logica/fuego.js): cómo está y cuánto le queda, encenderla (con yesca y
+//    el taladro de fuego) y echarle una rama o una leña de lo que llevas. Sus recetas lo piden encendido.
 //  - Abajo, lo que está en marcha, con su barra; lo terminado, para recoger.
 //  - Los puestos de trabajo ya no se ponen desde aquí: son obra y se levantan desde el menú de construcción, en su
 //    pestaña «Puestos de trabajo» (valravnx, 6 nov). El panel solo usa los que están levantados.
@@ -20,6 +22,7 @@
 import { CATALOGO } from '../logica/inventario.js';
 import { RECETAS, USOS, ESTACIONES, PARA, ALCANCE_ESTACION, DEPOSITO_MAX, totalDeposito, estacionesDeUso, conQue } from '../logica/fabricacion.js';
 import { CARPETA_ICONOS } from '../logica/iconos.js';
+import { estadoFuego, ARDE, YESCAS, HERRAMIENTA_FUEGO } from '../logica/fuego.js';
 import { tr } from '../idioma.js';
 
 const SITIOS = [['mano', 'de la mano'], ['cinturon', 'del cinturón'], ['mochila', 'de la mochila'], ['hombro', 'del hombro'], ['suelo', 'del suelo'], ['estacion', 'de la estación']];
@@ -101,7 +104,8 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
 
   // ---------- cartas ----------
   function carta(x) {
-    const extra = x.grupo === 'casi' ? `<span class="fab-falta-n">${esc(tr('faltan {n}', { n: Object.values(x.faltan).reduce((a, b) => a + b, 0) }))}</span>`
+    const nf = Object.values(x.faltan).reduce((a, b) => a + b, 0);
+    const extra = x.grupo === 'casi' ? `<span class="fab-falta-n">${esc(nf ? tr('faltan {n}', { n: nf }) : tr('apagada'))}</span>`
       : x.grupo === 'despues' ? `<span class="fab-necesita">${img('est_' + estacionDeUso(x.uso))}</span>` : '';
     return `<button class="fab-carta fab-${x.grupo}${sel === x.receta ? ' fab-sel' : ''}" data-fila="${x.receta}" data-grupo="${x.grupo}">${icono(x.da)}${extra}<span class="fab-nom">${esc(tr(x.nombre))}</span></button>`;
   }
@@ -124,6 +128,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     let botones = '';
     if (x.grupo === 'ya') botones = `<button class="fab-hacer fab-btn" data-receta="${x.receta}"${x.estacion ? ` data-estacion="${esc(x.estacion)}"` : ''}>${esc(tr('Hacer'))} · ${esc(segundos(x.s))}</button>`;
     else if (despues) botones = `<p class="fab-gris">${esc(tr('Hace falta {e} a tu lado.', { e: tr(x.conQue) }))}</p>`;
+    else if (x.apagada && !Object.keys(x.faltan).length) botones = `<button class="fab-btn fab-no" disabled>${esc(tr('El fuego está apagado: enciéndelo arriba.'))}</button>`;
     else {
       // atajo A: lo que falta y ya se puede hacer (con las manos o en una estación de al lado)
       for (const t of Object.keys(x.faltan)) {
@@ -145,12 +150,25 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
           botones += `<button class="fab-poner-falta fab-btn2" data-estacion="${esc(est.id)}" data-poner="${esc(JSON.stringify(puestos))}">${esc(tr('Poner en {e} lo que falta: {c} (los llevas tú)', { e: laEstacion(est.tipo), c: cosas(lista2) }))}</button>`;
         }
       }
-      botones += `<button class="fab-btn fab-no" disabled>${esc(tr('Te falta: {c}', { c: cosas(x.faltan) }))}</button>`;
+      if (Object.keys(x.faltan).length) botones += `<button class="fab-btn fab-no" disabled>${esc(tr('Te falta: {c}', { c: cosas(x.faltan) }))}</button>`;
+      if (x.apagada) botones += `<p class="fab-gris">${esc(tr('El fuego está apagado: enciéndelo arriba.'))}</p>`;
     }
     const titMats = x.estacion ? tr('Lo que pide (de lo que está en la estación)') : tr('Lo que pide');
     return `<div class="fab-grande">${img(x.da)}</div><h3 class="fab-titulo">${esc(tr(x.nombre))}${pend}</h3>
       <p class="fab-para">${esc(tr(PARA[x.receta] || ''))}</p><div class="fab-chips">${chips.join('')}</div>
       <h4>${esc(titMats)}</h4><div class="fab-mats">${mats}</div><div class="fab-acciones">${botones}</div>`;
+  }
+  // ---------- el fuego de la hoguera ----------
+  const minutos = s => Math.max(1, Math.ceil(s / 60));
+  function pintarFuego(e, inv) {
+    const st = estadoFuego(e.fuego, ahora()), yesca = YESCAS.reduce((t, y) => t + inv.cuantos(y), 0), taladro = inv.cuantos(HERRAMIENTA_FUEGO) > 0;
+    const estado = st.encendida ? tr('Encendida: le quedan {m} min', { m: minutos(st.queda) }) : st.cenizas ? tr('Apagada: solo quedan las cenizas') : tr('Apagada');
+    const puesto = !st.encendida && st.combustible > 0 ? tr('Tiene puesto para arder {m} min.', { m: minutos(st.combustible) }) : !st.encendida ? tr('No tiene nada que arder: échale ramas o leña.') : tr('Da luz y calor. Échale más para que dure.');
+    const falta = !taladro && !yesca ? tr('Te falta el taladro de fuego y la yesca.') : !taladro ? tr('Te falta el taladro de fuego.') : !yesca ? tr('Te falta la yesca.') : '';
+    const puede = !st.encendida && st.combustible > 0 && taladro && yesca;
+    const echar = ['rama', 'lena'].map(t => `<button class="fab-btn2 fab-echar" data-estacion="${esc(e.id)}" data-objeto="${t}"${inv.cuantos(t) ? '' : ' disabled'}>${icono(t)}${esc(tr('Echar 1 {c} (+{m} min · llevas {n})', { c: nombre(t).toLowerCase(), m: ARDE[t] / 60, n: inv.cuantos(t) }))}</button>`).join('');
+    return `<section class="fab-fuego${st.encendida ? ' fab-ardiendo' : ''}"><div class="fab-bt"><b>${esc(estado)}</b><span>${esc(puesto)}</span></div>
+      <div class="fab-fuego-acc">${st.encendida ? '' : `<button class="fab-btn fab-encender" data-estacion="${esc(e.id)}"${puede ? '' : ' disabled'}>${esc(tr('Encender (gasta 1 yesca; con el taladro de fuego)'))}</button>${falta ? `<small class="fab-gris">${esc(falta)}</small>` : ''}`}${echar}</div></section>`;
   }
   // ---------- la estación de al lado: lo que tiene encima y lo que llevas ----------
   function pintarMesa(e, inv) {
@@ -190,7 +208,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
       : pestana === 'todo' ? { ic: '', h: tr('Fabricar'), s: tr('Todo lo que se puede hacer') }
       : { ic: '', h: tr('Fabricar'), s: tr('Hace falta {e} a tu lado.', { e: tr(conQue(pestana)) }) + ' ' + tr('Los puestos de trabajo se levantan desde Construir, en «Puestos de trabajo».') };
     const htmlNav = PESTANAS.map(k => `<button class="fab-pest${k === pestana ? ' fab-sel' : ''}" data-pestana="${k}">${iconoPestana(k)}<b>${esc(NOMBRE_PESTANA[k] ? NOMBRE_PESTANA[k]() : k)}</b>${cuenta(k) ? `<span class="fab-cuenta">${cuenta(k)}</span>` : ''}</button>`).join('');
-    const htmlMesa = est ? pintarMesa(est, inv) : '';
+    const htmlMesa = est ? (ESTACIONES[est.tipo].fuego ? pintarFuego(est, inv) : '') + pintarMesa(est, inv) : '';
     const g = k => deEsta.filter(x => x.grupo === k).map(carta);
     const htmlCuerpo = grupo(tr('Puedes hacerlo ya'), 'fab-sec-ya', g('ya')) + grupo(tr('Te falta algo'), 'fab-sec-casi', g('casi'))
       + grupo(tr('Hace falta una estación'), 'fab-sec-despues', g('despues'))
@@ -259,6 +277,15 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
         if (estacion) { if (quedan.length) encargos.estaciones[estacion] = quedan; else delete encargos.estaciones[estacion]; } else encargos.manos = quedan;
         const dados = (r.dados || []).map(d => `${d.cantidad} × ${nombre(d.objeto)}${d.alSuelo ? ' ' + tr('(al suelo: no te cabía)') : ''}`).join(', ');
         firma = ''; decir(tr('Recoges: {d}.', { d: dados }));
+      });
+      return;
+    }
+    if (b.classList.contains('fab-encender') || b.classList.contains('fab-echar')) {
+      const enc = b.classList.contains('fab-encender'), estacion = b.dataset.estacion;
+      b.disabled = true;
+      hacer(enc ? { tipo: 'encender_fuego', estacion, x: p.x, z: p.z } : { tipo: 'echar_fuego', estacion, objeto: b.dataset.objeto, x: p.x, z: p.z }, (r) => {
+        if (!r.ok) { decir(tr(r.motivo), true); return; }
+        firma = ''; decir(enc ? tr('La hoguera prende.') : tr('Echas al fuego: 1 {c}.', { c: nombre(b.dataset.objeto).toLowerCase() }));
       });
       return;
     }

@@ -5,7 +5,8 @@
 // rey: no se reclama) y pone su mojón pagándolo con tres de las piedras que
 // lleva, levanta un cimiento de piedra con las piedras que ha traído en las manos (en dos viajes), y lo trabaja hasta
 // terminarlo; luego se fabrica un hacha de piedra (fibra, cordel, piedra de tallar, y lo que pide dejado encima de
-// ella), tala con ella un árbol joven (tronco delgado y varas), se echa el tronco al hombro y levanta con él un poste.
+// ella), tala con ella un árbol joven (tronco delgado y varas), se echa el tronco al hombro y levanta con él un poste;
+// va al río a por barro, juncos y yesca, se hace un taladro de fuego, y levanta y enciende una hoguera en la orilla.
 // Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
@@ -424,6 +425,59 @@ try {
     adelantar();
     r = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
     comprobar('y lo coge: con la yesca, ya puede encender fuego', r.ok && J.cuantos('taladro_fuego') + (sueloMio('taladro_fuego') ? 1 : 0) === 1, r.motivo || enMano());
+
+    console.log('12. Levanta una hoguera en la orilla, la enciende con su yesca y su taladro, le echa una rama y se apaga sola');
+    // las manos libres: lo que lleve, a sus pies (el taladro y la yesca se quedan junto al sitio de la hoguera)
+    const fogon = { ...J.pos };
+    for (const l of ['mano:der', 'mano:izq']) if (J.inv.lugares[l]) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z });
+    const rc = await J.objeto({ tipo: 'colocar_estacion', estacion: 'hoguera', x: fogon.x + 0.8, z: fogon.z });
+    comprobar('pone el marco de una hoguera en la orilla (fuera, sin techo)', rc.ok, rc.motivo);
+    const hog = rc.datos && rc.datos.id;
+    let pi = 0;
+    for (const p of de('piedra')) { if (J.cuantos('piedra') >= 6) break; const q = await recoger(p); if (q.ok) pi++; }
+    await J.andar(fogon.x, fogon.z);
+    r = await J.objeto({ tipo: 'entregar_estacion', estacion: hog, x: J.pos.x, z: J.pos.z });
+    comprobar('le lleva sus 6 piedras, recogidas de la orilla con las manos', r.ok && r.datos.entregado && r.datos.entregado.piedra === 6, `${r.motivo || ''} ${JSON.stringify(r.datos && r.datos.entregado)} (${pi} recogidas)`);
+    for (const p of de('ramas')) { if (J.cuantos('rama') >= 5) break; await recoger(p); }
+    await J.andar(fogon.x, fogon.z);
+    if (J.cuantos('rama') > 4) { const lr = ['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'rama'); await J.objeto({ tipo: 'soltar_suelo', de: lr, cantidad: J.cuantos('rama') - 4, x: J.pos.x, z: J.pos.z }); }
+    r = await J.objeto({ tipo: 'entregar_estacion', estacion: hog, x: J.pos.x, z: J.pos.z });
+    comprobar('y sus 4 ramas', r.ok && Object.keys(r.datos.falta || {}).length === 0, r.motivo || JSON.stringify(r.datos && r.datos.falta));
+    let rt = { ok: true, datos: {} };
+    for (let i = 0; i < 6 && rt.ok && !rt.datos.terminada; i++) rt = await J.objeto({ tipo: 'trabajar_estacion', estacion: hog, segundos: 5, x: J.pos.x, z: J.pos.z });
+    const H = () => s.objetos.fab.estaciones[hog];
+    comprobar('la levanta trabajando en ella: apagada, con sus ramas puestas', rt.ok && rt.datos.terminada && H().fuego && H().fuego.hasta === 0 && H().fuego.combustible > 0, rt.motivo || JSON.stringify(H() && H().fuego));
+    r = await J.objeto({ tipo: 'encender_fuego', estacion: hog, x: J.pos.x, z: J.pos.z });
+    comprobar('sin la yesca y el taladro en las manos no la enciende', !r.ok, r.motivo);
+    for (const t of ['taladro_fuego', 'yesca']) { const o = sueloMio(t) || s.objetos.sueloVisible(Date.now()).filter(x => x.cosa.tipo === t).sort((a, b) => Math.hypot(a.x - J.pos.x, a.z - J.pos.z) - Math.hypot(b.x - J.pos.x, b.z - J.pos.z))[0];
+      if (o && Math.hypot(o.x - J.pos.x, o.z - J.pos.z) > 1.5) await J.andar(o.x + 0.3, o.z);
+      if (o) await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, a: t === 'yesca' ? 'mano:izq' : 'mano:der', x: J.pos.x, z: J.pos.z }); }
+    await J.andar(fogon.x, fogon.z);
+    comprobar('coge del suelo su taladro y su yesca', J.cuantos('taladro_fuego') === 1 && J.cuantos('yesca') >= 1, enMano());
+    const yescas = J.cuantos('yesca');
+    r = await J.objeto({ tipo: 'encender_fuego', estacion: hog, x: J.pos.x, z: J.pos.z });
+    comprobar('enciende la hoguera: gasta una yesca y el taladro le sigue sirviendo', r.ok && J.cuantos('yesca') === yescas - 1 && J.cuantos('taladro_fuego') === 1 && H().fuego.hasta > Date.now(), r.motivo || enMano());
+    const vista = s.objetos.estacionesVisibles().find(e => e.id === hog);
+    comprobar('y todos la ven encendida (lo que manda el servidor)', vista && vista.fuego && vista.fuego.encendida && vista.fuego.queda > 0, JSON.stringify(vista && vista.fuego));
+    await aSusPies('yesca'); await aSusPies('taladro_fuego');
+    if (!J.cuantos('rama')) { const o = sueloMio('rama'); if (o) await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, a: 'mano:der', x: J.pos.x, z: J.pos.z }); else for (const p of de('ramas')) { const q = await recoger(p); if (q.ok) break; } }
+    await J.andar(fogon.x, fogon.z);
+    const hasta = H().fuego.hasta;
+    r = await J.objeto({ tipo: 'echar_fuego', estacion: hog, objeto: 'rama', x: J.pos.x, z: J.pos.z });
+    comprobar('le echa una rama: arde 3 min más', r.ok && H().fuego.hasta === hasta + 180000, r.motivo || enMano());
+    // la lanza endurecida al fuego, con una rama dejada en la hoguera
+    if (!J.cuantos('rama')) for (const p of de('ramas')) { const q = await recoger(p); if (q.ok) break; }
+    await J.andar(fogon.x, fogon.z);
+    const lr = ['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'rama');
+    r = lr ? await J.objeto({ tipo: 'depositar_estacion', estacion: hog, de: lr, cantidad: 1, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no lleva ramas' };
+    const rl = await J.objeto({ tipo: 'fabricar', receta: 'lanza_endurecida', estacion: hog, x: J.pos.x, z: J.pos.z });
+    comprobar('deja una rama en la hoguera y la endurece al fuego (la lanza)', r.ok && rl.ok, `${r.motivo || ''} ${rl.motivo || ''}`);
+    // se apaga sola: la prueba adelanta la hora a la que se apaga (como lo que se fabrica), en vez de esperarla
+    H().fuego.hasta = Date.now() - 1;
+    const apagada = s.objetos.estacionesVisibles().find(e => e.id === hog);
+    comprobar('pasada su hora se apaga sola y quedan las cenizas', apagada.fuego && !apagada.fuego.encendida && apagada.fuego.cenizas, JSON.stringify(apagada.fuego));
+    r = await J.objeto({ tipo: 'fabricar', receta: 'lanza_endurecida', estacion: hog, x: J.pos.x, z: J.pos.z });
+    comprobar('y apagada ya no se hace nada al fuego', !r.ok && /apagado/.test(r.motivo || ''), r.motivo);
   }
 
   // lo que sale de aquí, en la salida (para quien lo lea en la nube)
