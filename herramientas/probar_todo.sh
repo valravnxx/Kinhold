@@ -50,6 +50,7 @@ paso "Los ríos llegan al mar" node pruebas/prueba_desembocadura.mjs
 paso "Inventario por huecos" node pruebas/prueba_inventario.mjs
 paso "Recoger del suelo y de las plantas" node pruebas/prueba_recoleccion.mjs
 paso "Estaciones y recetas" node pruebas/prueba_fabricacion.mjs
+paso "El fuego de la hoguera" node pruebas/prueba_fuego.mjs
 paso "Objetos en el suelo" node pruebas/prueba_suelo.mjs
 paso "Tala de los árboles" node pruebas/prueba_tala.mjs
 paso "Tronzar y partir" node pruebas/prueba_troceo.mjs

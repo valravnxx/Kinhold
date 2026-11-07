@@ -29,6 +29,9 @@
 //   { tipo: 'depositar_estacion', estacion, de, cantidad?, x, z } — dejar en la estación lo que llevas (sus recetas
 //     gastan de ahí); { tipo: 'retirar_estacion', estacion, objeto, cantidad?, x, z } — volver a cogerlo. En tierra de
 //     otro, solo su dueño y sus invitados (como al poner la estación)
+//   { tipo: 'encender_fuego', estacion, x, z } — encender la hoguera (1 yesca de lo que llevas; llevar el taladro de
+//     fuego); { tipo: 'echar_fuego', estacion, objeto: 'rama' | 'lena', x, z } — echarle una (src/logica/fuego.js). En
+//     tierra de otro, solo su dueño y sus invitados
 //   { tipo: 'arcon_al_suelo', objeto: 'rastra', x, z } — del arcón de pruebas al suelo (solo con arconPruebas)
 //   { tipo: 'coger', objeto, cantidad, a, … } y { tipo: 'soltar', de } — el arcón de pruebas del panel (solo con
 //     arconPruebas: sacar algo de la nada y hacerlo desaparecer; sin él, se rechazan)
@@ -60,7 +63,8 @@ import { Troceo, ejecutarTroceo } from './troceo.js';
 import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER } from './recoleccion.js';
 import { Rastras, ejecutarRastra, TIPOS_RASTRA, ejecutarArconAlSuelo } from './rastra.js';
 import { agrupar, desagrupar, estadoEnTrozos, trozoDe } from './trozos_red.js';
-import { Fabricacion, ejecutarFabricacion, TIPOS_FABRICACION, OBRA_ESTACION, ESTACIONES } from './fabricacion.js';
+import { Fabricacion, ejecutarFabricacion, TIPOS_FABRICACION, OBRA_ESTACION, DEL_FUEGO, ESTACIONES } from './fabricacion.js';
+import { estadoFuego } from './fuego.js';
 
 export const TOLERANCIA = 3; // m
 export const ENTRE_GOLPES_RED = 500; // ms
@@ -125,7 +129,7 @@ export class ObjetosServidor {
         // fabricar y recoger, desde donde el servidor tiene al autor (no donde dice el navegador); la estación se pone
         // donde dice, que ya está a menos de TOLERANCIA de él
         const fa = a.tipo === 'colocar_estacion' ? a : { ...a, x: p.x, z: p.z };
-        const est = (a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion' || (OBRA_ESTACION.includes(a.tipo) && a.tipo !== 'colocar_estacion')) && typeof a.estacion === 'string' && Object.hasOwn(this.fab.estaciones, a.estacion) ? this.fab.estaciones[a.estacion] : null;
+        const est = (a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion' || DEL_FUEGO.includes(a.tipo) || (OBRA_ESTACION.includes(a.tipo) && a.tipo !== 'colocar_estacion')) && typeof a.estacion === 'string' && Object.hasOwn(this.fab.estaciones, a.estacion) ? this.fab.estaciones[a.estacion] : null;
         const tocar = a.tipo === 'colocar_estacion' ? this.puedeTocar(a.autor, a.x, a.z) : est ? this.puedeTocar(a.autor, est.x, est.z) : { ok: true };
         const nSuelo = this.suelo.objetos.length, antes = JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n]));
         r = !tocar.ok ? this.anotar(a, { ok: false, motivo: tocar.motivo }, ahora)
@@ -220,9 +224,12 @@ export class ObjetosServidor {
   }
   // Las estaciones de fabricar que se ven, con lo depositado en ellas (sin sus colas: lo que encarga cada uno es suyo). Con trozos, solo las de
   // esos trozos.
-  estacionesVisibles(trozos = null) {
+  // El fuego, como lo ve cada uno: encendido o no, los s que le quedan, lo puesto sin arder y si hay cenizas (no la
+  // hora del servidor: cada navegador lo cuenta desde que le llega).
+  estacionesVisibles(trozos = null, ahora = Date.now()) {
+    const fuego = f => { const st = estadoFuego(f, ahora); return { encendida: st.encendida, queda: +st.queda.toFixed(1), combustible: st.combustible, cenizas: st.cenizas }; };
     return Object.values(this.fab.estaciones).filter(e => !trozos || trozos.has(trozoDe(e.x, e.z)))
-      .map(e => ({ id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, deposito: { ...e.deposito },
+      .map(e => ({ id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, deposito: { ...e.deposito }, ...(e.fuego ? { fuego: fuego(e.fuego) } : {}),
         ...(Number.isFinite(e.y) ? { y: e.y } : {}), ...(e.obra ? { obra: { entregado: { ...e.obra.entregado }, trabajo: e.obra.trabajo } } : {}) }));
   }
   // Lo que un jugador tiene encargado: en sus manos y en cada estación (con cuánto le falta).
