@@ -168,14 +168,14 @@ export function modelosRecoleccion() {
   }, { rangoSuelo: 0.6 });
   const bayas = geoLote(L => {
     let n = 0;
-    for (const [x, y, z, r, sem] of bultos) for (let k = 0; k < 12; k++, n++) {
+    for (const [x, y, z, r, sem] of bultos) for (let k = 0; k < 11; k++, n++) {
       // un racimo en la cara de fuera del bulto, de lado y por arriba (no por debajo, que no se ve)
       const a = k * 2.399 + sem, e = -0.05 + (k % 5) * 0.28, d = new THREE.Vector3(Math.cos(a) * Math.cos(e), Math.sin(e), Math.sin(a) * Math.cos(e));
       const c = new THREE.Vector3(x, y, z).add(d.multiplyScalar(r * 1.03).multiply(ESC));
       const color = n % 6 === 5 ? BAYA_VERDE : n % 2 ? BAYA_ROJA : BAYA_NEGRA;
-      for (let b = 0; b < 4; b++) {
-        const ab = b * 1.9 + k, db = b ? 0.034 : 0;
-        L.add(new THREE.IcosahedronGeometry(0.028, 1), color, c.x + Math.cos(ab) * db, c.y - b * 0.014, c.z + Math.sin(ab) * db, null, { escala: new THREE.Vector3(1, 1.1, 1), sinSuelo: true, tex: 'liso', brillo: 1.2 });
+      for (let b = 0; b < 3; b++) {   // (icosaedros sin subdividir: 20 triángulos cada baya; unos 4600 por mata)
+        const ab = b * 2.1 + k, db = b ? 0.036 : 0;
+        L.add(new THREE.IcosahedronGeometry(0.032, 0), color, c.x + Math.cos(ab) * db, c.y - b * 0.014, c.z + Math.sin(ab) * db, null, { escala: new THREE.Vector3(1, 1.1, 1), sinSuelo: true, tex: 'liso', brillo: 1.2 });
       }
     }
   }, { rangoSuelo: 0.6 });

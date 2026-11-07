@@ -261,7 +261,7 @@ try:
         comprobar('su panel va a pantalla completa', r[0] >= 389 and r[1] >= 840, str(r))
         B.tap('#panelFabricar .fab-pest[data-pestana="tallar"]'); B.wait_for_timeout(500)
         comprobar('en la pestaña de la piedra de tallar, con lo que A ha dejado en ella, la lasca ya está en «Puedes hacerlo ya» a su lado (la estación es de otro, pero vale)', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-ya [data-fila=\"lasca_silex\"]')", 5000))
-        comprobar('y ve lo depositado, con su imagen', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-dep [data-dep=\"silex\"] img')", 3000))
+        comprobar('y ve lo depositado, con su imagen', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-dep [data-dep=\"silex\"] img')", 10000))   # (el móvil, con swiftshader, tarda en dar un fotograma)
         comprobar('sin salirse de lado', B.evaluate("document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1"))
         comprobar('la ficha no tapa nada mientras no se toca una carta', B.evaluate("document.querySelector('#panelFabricar .fab-ficha').getBoundingClientRect().top >= innerHeight - 2"))
         B.wait_for_timeout(500)
