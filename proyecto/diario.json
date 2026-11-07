@@ -5217,5 +5217,18 @@
   "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas nuevas, miradas una a una.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:34:09+01:00",
+  "fin": "2026-11-07T17:34:09+01:00",
+  "titulo": "P4: el estudio de la interfaz, quinta versión (sin papeles)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Quinta versión del estudio de la interfaz (valravnx: «no en plan papeles, no me gusta el estilo papiro ya dentro del juego»): fuera el pergamino; lo que se lee va en tableros de roble oscuro con su veta y letra clara, los títulos en ocre como el latón y la capitular del menú tallada como una placa.",
+   "Se queda lo demás: cuero con tachuelas y latón para lo que se toca, hierro para las teclas, medallones de latón para las necesidades, iconos de grabado y horas canónicas. Maquetas rehechas en PC y móvil; la regla «nada de papel dentro del juego», en el estudio."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas rehechas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

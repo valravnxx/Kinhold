@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (17:32 UTC+1) — por el chat: sin papeles
+valravnx, sobre el vestido medieval del estudio de la interfaz: «no en plan papeles, no me gusta el estilo papiro ya dentro del juego».
+→ Nada de papel ni pergamino dentro del juego: lo que se lee pasa a tableros de roble oscuro con letra clara; lo demás (cuero y latón, hierro, medallones, iconos de grabado, horas canónicas) se queda. Quinta versión del estudio; al GDD cuando valravnx apruebe la interfaz.
+
 ### 7 nov 2026 (17:29 UTC+1) — por el chat: la interfaz, con subtexto medieval
 valravnx, sobre la tercera versión del estudio de la interfaz: «añadele un subtexto medieval al tema, vamos en buen camino pero soy exigente».
 → Va en buen camino. El chat viste la misma propuesta con lo de la época (cuero y latón para tocar, pergamino y tinta para leer, rúbricas en minio, medallones de latón, iconos de grabado, horas canónicas, pasos y rumbos), sin perder claridad: cuarta versión del estudio, con dos preguntas nuevas.
