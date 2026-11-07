@@ -1328,7 +1328,9 @@
     },
     {
      "nombre": "Materiales del tramo que no tenían origen: juncos o hierba larga (orillas y prados), barro (cavado en la orilla con el palo cavador) y yesca (fibra seca, corteza, hongo de los árboles)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T03:21:48+00:00",
+     "rama": "trabajo/20261107-0322"
     },
     {
      "nombre": "Lo que se fabrica con las manos, con su modelo (estilo v5) en la mano, el cinturón o la espalda: cordel, cuerda, lasca, hacha de piedra, palo cavador, taladro de fuego, leñero y rastra",
