@@ -1,0 +1,43 @@
+  OK   hombre: el archivo es el del manifiesto
+  OK   hombre: lleva las 39 de antes y las 2 nuevas — 41 clips
+  OK   hombre: solo esqueleto, sin mallas
+  OK   hombre: Push_Loop mueve brazos o piernas (más de 20°) y dura de verdad — giro 86°, 2.67 s
+  OK   hombre: PickUp_Table mueve brazos o piernas (más de 20°) y dura de verdad — giro 76°, 0.83 s
+  OK   hombre: las 39 de antes no cambian
+  OK   mujer: el archivo es el del manifiesto
+  OK   mujer: lleva las 39 de antes y las 2 nuevas — 41 clips
+  OK   mujer: solo esqueleto, sin mallas
+  OK   mujer: Push_Loop mueve brazos o piernas (más de 20°) y dura de verdad — giro 86°, 2.67 s
+  OK   mujer: PickUp_Table mueve brazos o piernas (más de 20°) y dura de verdad — giro 76°, 0.83 s
+  OK   mujer: las 39 de antes no cambian
+  OK   el juego conoce los nombres nuevos (CLIPS_EXTRA)
+  OK   y tienen su texto en el visor
+  OK   cargas hombre: el archivo es el del manifiesto
+  OK   cargas hombre: solo las 5 de cargar, sin mallas — Hombro_Walk_Loop, Hombro_Idle_Loop, Drag_Walk_Loop, Empujar_Walk_Loop, Empujar_Idle_Loop
+  OK   cargas hombre: pequeñas (menos de 150 KB) — 106 KB
+  OK   cargas hombre: al hombro, arrastrar y empujar, andan (las piernas giran más de 20°) — 69°, 69°, 69°
+  OK   hombro hombre (Hombro_Walk_Loop): el tronco va al lado de la cabeza, sin taparla — 22.9 cm de lado entre la cabeza y el centro del tronco
+  OK   hombro hombre (Hombro_Walk_Loop): apoyado sobre el hombro (de 2 a 9 cm por encima de la articulación) — 5.1–5.1 cm
+  OK   hombro hombre (Hombro_Walk_Loop): la mano derecha encima, sujetándolo (a menos de 4 cm de su sitio) — 0.1 cm
+  OK   hombro hombre (Hombro_Idle_Loop): el tronco va al lado de la cabeza, sin taparla — 21.5 cm de lado entre la cabeza y el centro del tronco
+  OK   hombro hombre (Hombro_Idle_Loop): apoyado sobre el hombro (de 2 a 9 cm por encima de la articulación) — 4.8–4.9 cm
+  OK   hombro hombre (Hombro_Idle_Loop): la mano derecha encima, sujetándolo (a menos de 4 cm de su sitio) — 0.4 cm
+  OK   empujar hombre (Empujar_Walk_Loop): los puños en las varas en todos los fotogramas (a menos de 7 cm) — 6.0 cm
+  OK   empujar hombre (Empujar_Idle_Loop): los puños en las varas en todos los fotogramas (a menos de 7 cm) — 6.0 cm
+  OK   cargas mujer: el archivo es el del manifiesto
+  OK   cargas mujer: solo las 5 de cargar, sin mallas — Hombro_Walk_Loop, Hombro_Idle_Loop, Drag_Walk_Loop, Empujar_Walk_Loop, Empujar_Idle_Loop
+  OK   cargas mujer: pequeñas (menos de 150 KB) — 106 KB
+  OK   cargas mujer: al hombro, arrastrar y empujar, andan (las piernas giran más de 20°) — 69°, 69°, 69°
+  OK   hombro mujer (Hombro_Walk_Loop): el tronco va al lado de la cabeza, sin taparla — 18.3 cm de lado entre la cabeza y el centro del tronco
+  OK   hombro mujer (Hombro_Walk_Loop): apoyado sobre el hombro (de 2 a 9 cm por encima de la articulación) — 5.1–5.1 cm
+  OK   hombro mujer (Hombro_Walk_Loop): la mano derecha encima, sujetándolo (a menos de 4 cm de su sitio) — 0.1 cm
+  OK   hombro mujer (Hombro_Idle_Loop): el tronco va al lado de la cabeza, sin taparla — 17.3 cm de lado entre la cabeza y el centro del tronco
+  OK   hombro mujer (Hombro_Idle_Loop): apoyado sobre el hombro (de 2 a 9 cm por encima de la articulación) — 4.8–4.9 cm
+  OK   hombro mujer (Hombro_Idle_Loop): la mano derecha encima, sujetándolo (a menos de 4 cm de su sitio) — 0.4 cm
+  OK   empujar mujer (Empujar_Walk_Loop): los puños en las varas en todos los fotogramas (a menos de 7 cm) — 4.2 cm
+  OK   empujar mujer (Empujar_Idle_Loop): los puños en las varas en todos los fotogramas (a menos de 7 cm) — 4.2 cm
+  OK   la carretilla va poco levantada empujándola (menos de 25°) — 21.8°
+  OK   el juego conoce las de empujar (CLIPS_EXTRA) y su texto en el visor
+  OK   el juego conoce las de cargar (CLIPS_EXTRA)
+  OK   y su texto en el visor
+Todo correcto
