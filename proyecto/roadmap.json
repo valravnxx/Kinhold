@@ -1335,9 +1335,10 @@
     },
     {
      "nombre": "Lo que se fabrica con las manos, con su modelo (estilo v5) en la mano, el cinturón o la espalda: cordel, cuerda, lasca, hacha de piedra, palo cavador, taladro de fuego, leñero y rastra",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T08:24:13+00:00",
-     "rama": "trabajo/20261107-0824"
+     "rama": "trabajo/20261107-0824",
+     "fin": "2026-11-07T09:48:00+00:00"
     },
     {
      "nombre": "Los puestos de trabajo como obra, en su propia pestaña del menú de construcción («Puestos de trabajo», aparte de los muebles): se pone el marco y se le llevan los materiales, como a cualquier obra; cada uno donde le toca (piedra de tallar y banco de tronco, dentro o fuera; hoguera, solo fuera; hogar, solo dentro). Fuera el ponerlos al momento desde el panel de fabricar",
@@ -3168,6 +3169,13 @@
      "archivo": "jugar/demo/v133.html",
      "capturas": "capturas/demo-v133",
      "notas": "El inventario pasa a ser «Equipo» (valravnx, 7 nov), con el estilo del panel de fabricar: cada cosa con su imagen, las manos y el hombro también en el panel y una ficha al tocar algo. Lo que llevas puesto se quita a las manos o se deja en el suelo, a tus pies, con lo que lleve dentro; de las manos se vuelve a poner. Modelos nuevos de los tres cintos, el saco y la bandolera (imágenes en iconos-v3). En el móvil, la ficha sale abajo sin tapar el equipo."
+    },
+    {
+     "v": "v134",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v134.html",
+     "capturas": "capturas/demo-v134",
+     "notas": "Lo que se fabrica con las manos se ve con su modelo en la mano y en el cinturón: lasca de sílex, palo cavador, cordel, cuerda y el hacha de piedra (antes salía la de hierro); el leñero cogido con las manos, entero. Nuevo: el taladro de fuego de arco (2 ramas y 1 cordel)."
     }
    ]
   },
