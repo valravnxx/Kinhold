@@ -5063,7 +5063,7 @@
  },
  {
   "inicio": "2026-11-07T12:23:10+00:00",
-  "fin": "2026-11-07T13:37:28+00:00",
+  "fin": "2026-11-07T14:09:48+00:00",
   "titulo": "P6: el duelo con lo que llevas puesto",
   "hito": "orden",
   "hecho": [
@@ -5075,7 +5075,7 @@
    "Pruebas: la del combate en el servidor comprueba que equipar con «malla» no cambia nada, que con la cota protege lo de sus prendas zona a zona, que los demás y la copia lo ven, y que en el servidor de verdad el luchador lleva lo de su inventario y, al quitarse la camisa, deja de llevarla (rota a propósito con MUTAR_ROPA=1, falla). El recorrido de jugador comprueba que uno nuevo lucha con la camisa y el pantalón, sin armadura.",
    "Sin versión nueva: no cambia nada que se vea; el servidor lo coge al actualizarse a main."
   ],
-  "pruebas": "En la nube, 37 grupos: todos bien (el PC de valravnx no estaba para pruebas). Aquí, combate en el servidor 81/81 y recorrido 79/79. Miradas las capturas del combate en el mundo (PC y móvil): igual que antes.",
+  "pruebas": "En la nube, 37 grupos: todos bien (el PC de valravnx no estaba para pruebas). Aquí, combate en el servidor 81/81 y recorrido 79/79. Miradas las capturas del combate en el mundo (PC y móvil): igual que antes. Tras unir main (el día y la noche, v137, que no toca el combate), el grupo de lógica otra vez en la nube: bien.",
   "estado": "ok"
  },
  {
