@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2358 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2863 KB
+
+== Construir demo única
+      2748 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4009 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2761 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2352 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2872 KB
+dist/kinhold_trozos.html 2366 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: la demo en el mundo (Whitholm)
+  OK   sin aguante te ahogas y vuelves a tu sitio de salida — {"muertes": 1, "x": 0, "z": 4, "aviso": "Te has ahogado. Vuelves a tu sitio de salida."}
+  OK   sin errores en la página
+
+1 fallos
+!! FALLA: python3 pruebas/prueba_mundo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/mundo
+
+HAY FALLOS
+tardó 950 s
