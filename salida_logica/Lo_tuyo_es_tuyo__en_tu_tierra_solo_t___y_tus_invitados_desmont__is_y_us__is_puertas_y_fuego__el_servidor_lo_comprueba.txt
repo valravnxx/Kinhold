@@ -1,0 +1,41 @@
+Sin zonas (el círculo del mojón)
+  OK   Bruno no abre la puerta de Ana — Es tierra de otro: solo su dueño y sus invitados.
+  OK   Bruno no desmonta lo de Ana — Es tierra de otro: solo su dueño y sus invitados.
+  OK   lo rechazado no cambia nada (ni la puerta ni las piezas)
+  OK   queda anotado con su autor y su motivo
+  OK   la vista previa de desmontar ya se lo dice a Bruno
+  OK   sin autor, la vista previa no mira la tierra (las pruebas sueltas)
+  OK   Ana abre su puerta
+  OK   Ana tiene la vista previa de desmontar
+  OK   Ana invita a Bruno
+  OK   invitado, Bruno cierra la puerta
+  OK   Ana le quita la invitación
+  OK   sin invitación, Bruno otra vez no
+  OK   invitado, Bruno desmonta
+  OK   rehecho desde el registro da el mismo mundo
+  OK   en tierra de nadie, cualquiera abre
+Con zonas (tu tierra es la zona entera)
+  OK   Bruno no abre la puerta de Ana — Es tierra de otro: solo su dueño y sus invitados.
+  OK   Bruno no desmonta lo de Ana — Es tierra de otro: solo su dueño y sus invitados.
+  OK   lo rechazado no cambia nada (ni la puerta ni las piezas)
+  OK   queda anotado con su autor y su motivo
+  OK   la vista previa de desmontar ya se lo dice a Bruno
+  OK   sin autor, la vista previa no mira la tierra (las pruebas sueltas)
+  OK   Ana abre su puerta
+  OK   Ana tiene la vista previa de desmontar
+  OK   Ana invita a Bruno
+  OK   invitado, Bruno cierra la puerta
+  OK   Ana le quita la invitación
+  OK   sin invitación, Bruno otra vez no
+  OK   invitado, Bruno desmonta
+  OK   rehecho desde el registro da el mismo mundo
+  OK   en tierra de nadie, cualquiera abre
+En línea: la copia del navegador lo rechaza sin mandarlo
+  OK   Bruno, en línea: ni abre ni desmonta lo de Ana
+  OK   y no se manda nada al servidor
+El servidor de verdad: un navegador tramposo lo manda igual
+  OK   Ana pone su mojón y un cimiento en el servidor — ok, ok
+  OK   el servidor no deja a Bruno desmontar lo de Ana — Es tierra de otro: solo su dueño y sus invitados.
+  OK   a Ana, sí
+
+35 bien, 0 mal
