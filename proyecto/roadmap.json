@@ -1445,7 +1445,9 @@
     },
     {
      "nombre": "Los avisos en círculos a la derecha (PC y móvil), uno por necesidad con su color (naranja, azul, celeste y gris), que solo salen cuando hace falta; al pulsarlos, qué efecto tiene y cómo se quita. Y los efectos en el juego: sin correr, más lento y golpes flojos según lo que toque. Recorrido: sale el aviso de sed y se lee qué hacer",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T17:01:29+01:00",
+     "rama": "trabajo/20261107-1701-avisos"
     },
     {
      "nombre": "Beber del río con las manos (el agua de río se bebe sin problema, GDD): Usar en la orilla o en el agua que se vadea; el servidor comprueba que hay agua a tu lado y baja la sed. Recorrido: el jugador nuevo busca un río y bebe",
