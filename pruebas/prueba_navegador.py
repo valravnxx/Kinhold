@@ -14,6 +14,9 @@ os.makedirs(f'{sitio}/jugar/construccion'); os.makedirs(f'{sitio}/recursos/perso
 shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v24'), f'{sitio}/recursos/personajes/taller-v24')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v3'), f'{sitio}/recursos/personajes/taller-carga-v3')  # las de cargar del taller
+import re as _re
+_ICONOS = _re.search(r"CARPETA_ICONOS = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()).group(1)
+shutil.copytree(os.path.join(RAIZ, 'docs', _ICONOS), f'{sitio}/{_ICONOS}')  # las imágenes del panel de equipo
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
