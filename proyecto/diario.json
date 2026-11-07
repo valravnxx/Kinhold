@@ -5352,5 +5352,21 @@
   "pruebas": "Batería entera en la nube dos veces (antes y después de unir main, que traía beber del río como v143): todo correcto, con el recorrido de jugador (paso 14) y la rastra en el navegador (troncos delgados, varas y el fardo con juncos). La primera vez, la web falló por la traducción de la tarea nueva, añadida y repetida: bien. Rastra 47/47 (con MUTAR=1 falla), inventario 137/137. No comprobado: el fardo con juncos visto en el móvil (la prueba de la rastra lo mira solo en PC).",
   "capturas": "capturas/demo-v144",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T20:42:58+00:00",
+  "fin": "2026-11-07T23:15:38+00:00",
+  "titulo": "Los puestos y los almacenajes, con el giro que les das y desmontables (demo v145; chat con valravnx)",
+  "hito": "orden",
+  "hecho": [
+   "Arreglo de lo que vio valravnx: los puestos de trabajo y los almacenajes salían girados al azar (por su nombre) y, terminados, no había manera de quitarlos.",
+   "Ahora se ponen con el giro que les das (Girar o R): el servidor lo guarda y los demás los ven igual. Los de antes se quedan como estaban.",
+   "Se desmontan en Desmontar (X), apuntándolos: el 75 % de su material, como las piezas (GDD), y lo que guardaban, entero, al suelo a su lado; un marco a medio hacer, lo entregado entero. Solo el dueño de la tierra y sus invitados.",
+   "Provisional: no se desmonta una hoguera mientras arde, ni un puesto con encargos a medias.",
+   "Capturas de cerca de la pila de piedras girada y elegida para desmontar (PC) y vista desde el móvil."
+  ],
+  "pruebas": "Batería entera en la nube, 41 de 41 (94 min); después de unir main, otra vez fabricación, hoguera, almacenajes y rastra en la nube, y lógica y recorrido de jugador aquí (111/111). La prueba de fabricación, 153/153 (con MUTAR=3, 4 fallan)",
+  "capturas": "capturas/demo-v145",
+  "estado": "ok"
  }
 ]

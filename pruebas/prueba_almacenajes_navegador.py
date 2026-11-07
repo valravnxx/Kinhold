@@ -10,6 +10,9 @@
 # lógica y el servidor, en pruebas/prueba_fabricacion.mjs y pruebas/prueba_objetos_servidor.mjs).
 # El material sale del arcón de pruebas (KINHOLD_PRUEBAS_ARCON): esto prueba los almacenajes en el juego; el recorrido
 # de jugador (pruebas/prueba_recorrido.mjs) levanta la pila y guarda en ella sin arcón, con lo que se recoge.
+# Con el giro que se le da al ponerla (Girar seis veces: 90°), el servidor la guarda y se dibuja así; y al final se
+# desmonta desde Desmontar (valravnx, 7 nov: «no se ponen en la dirección de rotación… y no se pueden desmontar»): el
+# 75 % de su material y lo que guardaba, al suelo.
 # MUTAR=1 tira los mensajes de objetos que manda la página (como si se guardara solo en el navegador): falla.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
 from playwright.sync_api import sync_playwright
@@ -147,7 +150,11 @@ try:
         A.evaluate(f"{K}.seleccionar('puesto', 'pila_piedras')")
         coger(A, 'piedra', 3, 'mano:der'); coger(A, 'piedra', 1, 'mano:izq')
         comprobar('el servidor le da 4 piedras (arcón de pruebas)', servidorDice(lambda d: cuantos(d, yo, 'piedra') == 4) is not None)
+        for _ in range(6): A.evaluate(f"{K}.girar()")
         A.evaluate(f"(() => {{ const x = {K}.pj.x + 1, z = {K}.pj.z + 0.2; {K}.apuntar(x, z, {K}.alturaSuelo(x, z)); {K}.colocar(); }})()")
+        d = servidorDice(lambda d: abs(((pila_servidor(d, yo) or {}).get('giro') or 0) - 1.571) < 0.002)
+        comprobar('el servidor guarda el giro con que se pone (Girar ×6: 90°)', d is not None, str(pila_servidor(json.load(open(OBJETOS)), yo)))
+        comprobar('y se dibuja con ese giro', esperar(A, f"(() => {{ const o = {K}.escena.getObjectByName('estacion_pila_piedras'); return !!o && Math.abs(o.rotation.y - 1.571) < 0.002; }})()", 8000))
         comprobar('el servidor tiene el marco de la pila', servidorDice(lambda d: (pila_servidor(d, yo) or {}).get('obra') is not None) is not None, A.evaluate("document.getElementById('aviso').textContent"))
         A.evaluate(f"{K}.cambiarModo('mover')")
         esperar(A, f"Object.values({K}.fabCliente.estaciones).some(e => e.tipo === 'pila_piedras')", 8000)
@@ -235,6 +242,25 @@ try:
         comprobar('pero no saca nada: es tierra de otro', esperar(B, "/tierra de otro/.test(document.querySelector('#panelFabricar .fab-aviso').textContent)", 6000) and ((pila_servidor(json.load(open(OBJETOS)), yo) or {}).get('deposito') or {}).get('piedra') == 40,
                   B.evaluate("document.querySelector('#panelFabricar .fab-aviso').textContent"))
         B.evaluate(f"{K}.panelFabricar.cerrar()")
+
+        print('Desmontarla, desde Desmontar (el dueño, en PC)')
+        pl = pila_servidor(json.load(open(OBJETOS)), yo)
+        A.evaluate(f"{K}.estacionesV.poner({K}.objetosRed ? Object.values({K}.fabCliente.estaciones).filter(e => !e.id.endsWith(':mirar')) : [])")
+        mirar(A, 'pila_piedras', 4.0, 0.6)
+        A.evaluate(f"{K}.cambiarModo('desmontar')"); A.wait_for_timeout(1500)
+        pt = A.evaluate(f"{K}.proyectar({pl['x']}, {K}.alturaSuelo({pl['x']}, {pl['z']}) + 0.25, {pl['z']})")
+        A.evaluate(f"{K}.elegirPieza({pt['x']}, {pt['y']})"); A.wait_for_timeout(300)
+        aviso = A.evaluate("document.getElementById('aviso').textContent")
+        comprobar('al apuntarla, la elige y dice que se recupera el 75 %', '75' in aviso and not A.evaluate("document.getElementById('confirmar').hidden"), aviso)
+        captura(A, f'{SALIDA}/PC_desmontar_pila.png')
+        A.evaluate(f"{K}.confirmarDesmontaje()")
+        def piedras_suelo(d):
+            return sum(o['cosa']['n'] for o in (d.get('suelo') or {}).get('objetos', []) if o.get('cosa', {}).get('tipo') == 'piedra')
+        d = servidorDice(lambda d: pila_servidor(d, yo) is None)
+        comprobar('desmontada en el servidor', d is not None, A.evaluate("document.getElementById('aviso').textContent"))
+        comprobar('y sus 40 piedras y 3 de su material (el 75 % de 4), en el suelo', d is not None and piedras_suelo(d) >= 43, str(piedras_suelo(d) if d else None))
+        comprobar('ya no se dibuja', esperar(A, f"!{K}.escena.getObjectByName('estacion_pila_piedras')", 8000))
+        A.evaluate(f"{K}.cambiarModo('mover')")
 
         for nombre, err in [('PC', errA), ('móvil', errB)]:
             malos = [e for e in err if 'WebSocket' not in e and 'ERR_CONNECTION_REFUSED' not in e]
