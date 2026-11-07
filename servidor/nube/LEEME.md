@@ -113,6 +113,45 @@ que abra la demo entra en este mundo y puede construir.
 - `KINHOLD_PRUEBAS_ALTAS=libres` quita los límites de altas: **solo para las pruebas**; nunca en este servidor (si
   estuviera, lo dice la línea de arranque en `journalctl -u kinhold`).
 
+## Copia de seguridad (auditoría del 4 nov)
+
+Una vez al día (03:41 UTC, más o menos 10 minutos; si la máquina estaba apagada, al encenderla) `kinhold-copia.timer`
+lanza `copia.sh`: todo `/var/lib/kinhold` (el mundo, los objetos, las posiciones, las fichas, las cuentas, las
+tierras y los registros) en un `kinhold-<fecha>.tar.gz` en `/var/backups/kinhold`, donde quedan **las últimas 14**,
+y esa carpeta, igual (también las 14), **fuera de la máquina**. Se hace con el servidor en marcha. Lo ponen
+`instalar.sh` y `actualizar.sh` (o sea, entra solo con la próxima versión de la demo).
+
+**Falta una cosa que solo puede hacer valravnx: el sitio de fuera.** Mientras no esté, la copia se hace en la
+máquina pero sale con error (`systemctl --failed`), porque si se pierde la máquina se pierde con ella. Propuesta
+sencilla: una **Storage Box** de Hetzner (en la consola de Hetzner, *Storage Boxes*, la más pequeña sobra; mira el
+precio allí). Los nombres de los botones pueden cambiar un poco.
+
+1. Crea la Storage Box y, en su configuración, activa el **acceso por SSH**. Apunta su usuario (`u123456`).
+2. En la máquina del juego (consola de Hetzner o `ssh root@…`), una clave solo para la copia:
+   ```
+   mkdir -p /etc/kinhold && ssh-keygen -t ed25519 -N "" -C kinhold-copia -f /etc/kinhold/copia_clave
+   ssh-copy-id -p 23 -s -i /etc/kinhold/copia_clave.pub u123456@u123456.your-storagebox.de
+   ```
+   (la segunda pide una vez la contraseña de la Storage Box; también se puede pegar `copia_clave.pub` en la consola).
+3. Dile dónde:
+   ```
+   printf 'KINHOLD_COPIA_DESTINO=u123456@u123456.your-storagebox.de:kinhold\nKINHOLD_COPIA_PUERTO=23\n' > /etc/kinhold/copia.env
+   chmod 600 /etc/kinhold/copia.env /etc/kinhold/copia_clave
+   ```
+4. Pruébalo a mano: `bash /opt/kinhold/servidor/nube/copia.sh` tiene que acabar en «Copia fuera de la máquina al día».
+
+Vale cualquier otro sitio al que se llegue por SSH con rsync (otra máquina, un NAS), o una carpeta montada de otro
+disco (`KINHOLD_COPIA_DESTINO=/mnt/otro/kinhold`).
+
+- **Ver las copias**: `ls -lh /var/backups/kinhold` y `journalctl -u kinhold-copia -n 20`.
+- **Restaurar** (para el servidor, deja lo de antes en `/var/lib/kinhold.antes-<fecha>` sin borrarlo, pone la copia
+  y lo vuelve a arrancar): `bash /opt/kinhold/servidor/nube/restaurar.sh --ultima`, o con el archivo de una copia.
+  Si la máquina se ha perdido: en una nueva (pasos de arriba), pon otra vez la clave y `copia.env` y trae las copias
+  con `rsync -e "ssh -p 23 -i /etc/kinhold/copia_clave" u123456@u123456.your-storagebox.de:kinhold/ /var/backups/kinhold/`.
+- Dentro van las cuentas (las contraseñas, solo resumidas) y los correos: la carpeta y cada copia son solo de root.
+- La prueba: `node pruebas/prueba_copia_servidor.mjs` (el servidor de verdad: una cuenta, 16 días de copias, se
+  pierde todo, se trae de «fuera», se restaura y la cuenta vuelve a entrar).
+
 ## Qué hay en esta carpeta
 
 - `cloud-config.yaml` — lo que se pega al crear la máquina: clona el juego y lanza `instalar.sh`.
@@ -123,6 +162,8 @@ que abra la demo entra en este mundo y puede construir.
 - `auto_actualizar.sh`, `kinhold-actualizar.service.plantilla` y `kinhold-actualizar.timer` — el servidor al día solo
   con cada versión nueva de la demo. Su prueba: `node pruebas/prueba_auto_actualizar.mjs` (un repositorio de mentira
   y una copia corta como la del servidor).
+- `copia.sh`, `restaurar.sh`, `kinhold-copia.service.plantilla` y `kinhold-copia.timer` — la copia de seguridad
+  diaria y cómo volver a ella (arriba, «Copia de seguridad»).
 - `Caddyfile.plantilla` y `kinhold.service.plantilla` — lo que rellena `instalar.sh`. Caddy pone el HTTPS (la web
   pública va por HTTPS y solo puede conectar con `wss://`), pasa el WebSocket al juego y manda a quien abre la
   dirección a la demo con `?servidor=wss://…`.

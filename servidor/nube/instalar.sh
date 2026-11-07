@@ -61,6 +61,7 @@ if [ "${1:-}" = "--solo-archivos" ]; then
   rellenar "$NUBE/Caddyfile.plantilla" > "$2/Caddyfile"
   rellenar "$NUBE/kinhold.service.plantilla" > "$2/kinhold.service"
   rellenar "$NUBE/kinhold-actualizar.service.plantilla" > "$2/kinhold-actualizar.service"
+  rellenar "$NUBE/kinhold-copia.service.plantilla" > "$2/kinhold-copia.service"
   echo "$DOMINIO"
   exit 0
 fi
@@ -70,7 +71,7 @@ export DEBIAN_FRONTEND=noninteractive
 echo "== $(date -Iseconds) Instalando el servidor de Kinhold"
 
 apt-get update -q
-apt-get install -y -q git curl ca-certificates gnupg ufw debian-keyring debian-archive-keyring apt-transport-https
+apt-get install -y -q git curl rsync ca-certificates gnupg ufw debian-keyring debian-archive-keyring apt-transport-https
 
 # Node.js 22 (el de Ubuntu es más viejo)
 if ! command -v node >/dev/null || [ "$(node -p 'process.versions.node.split(".")[0]')" -lt 22 ]; then
@@ -101,6 +102,9 @@ rellenar "$DIR/servidor/nube/kinhold.service.plantilla" > /etc/systemd/system/ki
 # al día solo con cada versión nueva de la demo (auto_actualizar.sh, cada 5 minutos)
 rellenar "$DIR/servidor/nube/kinhold-actualizar.service.plantilla" > /etc/systemd/system/kinhold-actualizar.service
 cp "$DIR/servidor/nube/kinhold-actualizar.timer" /etc/systemd/system/kinhold-actualizar.timer
+# la copia de seguridad diaria (copia.sh; el destino fuera de la máquina, en /etc/kinhold/copia.env: LEEME.md)
+rellenar "$DIR/servidor/nube/kinhold-copia.service.plantilla" > /etc/systemd/system/kinhold-copia.service
+cp "$DIR/servidor/nube/kinhold-copia.timer" /etc/systemd/system/kinhold-copia.timer
 rellenar "$DIR/servidor/nube/Caddyfile.plantilla" > /etc/caddy/Caddyfile
 caddy validate --adapter caddyfile --config /etc/caddy/Caddyfile
 
@@ -113,6 +117,7 @@ systemctl restart kinhold
 systemctl enable caddy
 systemctl restart caddy
 systemctl enable --now kinhold-actualizar.timer
+systemctl enable --now kinhold-copia.timer
 echo "$DOMINIO" > /etc/kinhold-dominio
 
 echo

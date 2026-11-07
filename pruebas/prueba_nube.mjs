@@ -41,7 +41,7 @@ const archivos = (env, dest) => execFileSync('bash', [join(carpeta, 'instalar.sh
   { env: { ...process.env, KINHOLD_IP: '', KINHOLD_DOMINIO: '', KINHOLD_PUERTO: '', ...env } }).toString().trim();
 
 console.log('Guiones');
-for (const g of ['instalar.sh', 'actualizar.sh']) {
+for (const g of ['instalar.sh', 'actualizar.sh', 'copia.sh', 'restaurar.sh']) {
   const r = spawnSync('bash', ['-n', join(nube, g)]);
   comprobar(`${g} sin errores de sintaxis`, r.status === 0, r.stderr.toString().trim());
 }
@@ -78,6 +78,16 @@ const conNode = join(tmp, 'node'); archivos({ KINHOLD_IP: '1.2.3.4', KINHOLD_NOD
 const sa = spawnSync('systemd-analyze', ['verify', join(conNode, 'kinhold.service')]);
 const avisos = (sa.stderr || '').toString().split('\n').filter(l => l.trim() && !/not found|unknown user|Failed to resolve user|getpwnam|User=kinhold/i.test(l));
 comprobar('systemd-analyze verify', !sa.error && avisos.length === 0, sa.error ? 'no está systemd-analyze' : avisos.join(' | '));
+// la copia de seguridad diaria (copia.sh; su prueba de verdad es prueba_copia_servidor.mjs)
+const copiaServ = readFileSync(join(conNode, 'kinhold-copia.service'), 'utf8');
+comprobar('el servicio de la copia lanza copia.sh y no queda nada sin rellenar', !copiaServ.includes('@@') && /^ExecStart=\/bin\/bash \S+\/servidor\/nube\/copia\.sh$/m.test(copiaServ));
+const copiaTimer = readFileSync(join(nube, 'kinhold-copia.timer'), 'utf8');
+comprobar('el temporizador de la copia es diario y se pone al día si estaba apagada', /^OnCalendar=\*-\*-\* \d\d:\d\d:\d\d UTC$/m.test(copiaTimer) && /^Persistent=true$/m.test(copiaTimer));
+const instalarSh = readFileSync(join(nube, 'instalar.sh'), 'utf8'), actualizarSh = readFileSync(join(nube, 'actualizar.sh'), 'utf8');
+comprobar('instalar.sh y actualizar.sh ponen la copia diaria (y rsync)', [instalarSh, actualizarSh].every(t => t.includes('kinhold-copia.service') && t.includes('kinhold-copia.timer') && t.includes('enable --now kinhold-copia.timer') && t.includes('rsync')));
+const saC = spawnSync('systemd-analyze', ['verify', join(conNode, 'kinhold-copia.service'), join(nube, 'kinhold-copia.timer')]);
+const avisosC = (saC.stderr || '').toString().split('\n').filter(l => l.trim() && !/not found|kinhold-copia\.timer: Unit|is not executable|No such file/i.test(l));
+comprobar('systemd-analyze verify de la copia', !saC.error && avisosC.length === 0, saC.error ? 'no está systemd-analyze' : avisosC.join(' | '));
 
 console.log('De verdad: Caddy (HTTPS local) delante del servidor del juego');
 const pJuego = await libre(), pHttps = await libre(), pHttp = await libre();
