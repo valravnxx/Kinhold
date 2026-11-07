@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (09:48 UTC+1) — por el chat: el ciclo de día y noche
+valravnx: «tu y yo vamos a hacer lo que hará que los shaders graficos llamen la atención de verdad, el ciclo dia y noche, cielo estrellado limpio, sol y luna, y toda la iluminación dinámica que dará el sol».
+→ Hecho en la demo v137 (hito de gráficos): la hora del servidor, el sol que sale y se pone con su luz y sus sombras, el cielo con su degradado y el ocaso, las estrellas con la Vía Láctea, la luna con su fase y su luz de noche. Pendiente de que valravnx lo mire en una tarjeta de verdad (el ocaso aún algo pálido).
+
 ### 7 nov 2026 (12:47 UTC+1) — por el chat: el tejado de la casa humilde no se podía hacer
 valravnx, al saber que la paja no sale de ningún sitio y que no hay tejado de juncos: «entonces como tenemos el hito de de 0 a casa humilde si no se puede terminar la casa humilde? porque si se ha hecho el paso a paso a ello no se ha tenido en cuenta el maldito techo?» y «haz YA. no puede ser que os paseis cosas tan esenciales por alto, añade pasos de revisiones o lo que sea para que jamas se escurran estas cosas con temas tan esenciales».
 → El chat, ya: el tejado de juncos (y su remate), con el junco como material de obra; una prueba que no deja pasar ninguna pieza de este tramo sin un origen de verdad para cada material, y que la casa humilde tenga de todo (cimiento, postes, muros, tejado y puerta) hecho solo con lo que se consigue; la regla en CLAUDE.md (al planificar un hito y antes de pasarlo a revisión, la cadena de cada material hasta el mundo); la tarea de la casa humilde dice ya qué tejado y que el recorrido de jugador acaba con la casa cerrada y techada. La paja sigue como dice el GDD (del cereal): lo que la pide queda anotado como pendiente de origen.

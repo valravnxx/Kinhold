@@ -28,7 +28,7 @@
 //   { tipo: 'combate', que, … } y el servidor lleva los tiempos y resuelve golpes y flechas con el autor de la
 //   conexión. A todos: { tipo: 'combate', eventos } en el mismo orden, y cada tic (50 ms) { tipo: 'luchadores',
 //   t, lista } con los que han cambiado (también el propio). Una intención que no se puede: { tipo:
-//   'combate_rechazo', que, motivo }. La bienvenida lleva tc (reloj del combate, ms) y luchadores. Lo que
+//   'combate_rechazo', que, motivo }. La bienvenida lleva tc (reloj del combate, ms), luchadores y ahora (su reloj, ms: la hora del cielo, src/logica/cielo.js). Lo que
 //   resuelve el combate (golpes, disparos, impactos) se guarda aparte, en combate.jsonl junto al mundo.
 //
 //   Lo que lleva cada uno y lo del suelo (src/logica/objetos_red.js): el cliente manda { tipo: 'objeto', id, accion:
@@ -44,7 +44,8 @@
 //   tiene alrededor (la bienvenida, los de donde aparece). Al cambiar de trozo le llega { tipo: 'trozos', entran,
 //   tala, recoleccion, suelo, estaciones } (lo talado y lo recogido de los trozos que le entran, y el suelo y las
 //   estaciones de fabricar de todos los suyos).
-//   Fabricar (src/logica/fabricacion.js, por la misma vía de 'objeto'): colocar_estacion, fabricar y recoger_fabricado.
+//   Fabricar (src/logica/fabricacion.js, por la misma vía de 'objeto'): la obra de los puestos (colocar_estacion,
+//   entregar_estacion, trabajar_estacion, quitar_estacion), fabricar y recoger_fabricado.
 //   Lo gastado sale de lo que lleva el autor y del suelo de al lado de donde el servidor lo tiene; lo hecho va a lo que
 //   lleva, o al suelo a sus pies si no cabe. Si se coloca una estación, a todos { tipo: 'estaciones', estaciones } (las
 //   de sus trozos; sin las colas: lo encargado es de cada uno). La bienvenida lleva estaciones y encargos (lo suyo).
@@ -288,6 +289,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     enTierras: (a, x, z) => !!mundo.tierraDe(x, z),   // en la tierra de alguien, lo soltado no se pierde
     arconPruebas, terreno,
     puedeTocar: (a, x, z) => mundo.puedeTocar(x, z, a),   // las estaciones de fabricar, en tierra de otro solo si te ha invitado
+    bajoTecho: (x, z) => mundo.bajoTecho(x, z),           // los puestos de trabajo: la hoguera, solo fuera
   });
   if (existsSync(archivoObjetos)) {
     try { objetos.importar(JSON.parse(readFileSync(archivoObjetos, 'utf8'))); } catch (e) { registrar(`objetos.json no válido, se empieza de cero: ${e && e.message}`); }
@@ -479,7 +481,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     { const p = posiciones.get(autor); vista.mover(autor, p ? p.x : 0, p ? p.z : 0); presencia.anclar(autor, p || { x: 0, z: 0 }, reloj()); }
     const suyos = vista.trozosDe(autor);
     enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, obras: obrasEnTrozos(mundo, suyos), n: registro.total, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
-      aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), luchadores: combate.cambiados(true),
+      aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), ahora: Date.now(), luchadores: combate.cambiados(true),
       inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now(), suyos), tala: objetos.talaVisible(suyos), recoleccion: objetos.recoleccionVisible(suyos),
       estaciones: objetos.estacionesVisibles(suyos), encargos: objetos.encargosDe(autor, Date.now()),
       trozos: { lado: LADO_RED, radio: RADIO_RED }, posicion: posiciones.get(autor) || null, cuenta: usuarioDe(autor), admin: esAdmin(autor), correo: estadoCorreo(autor), arcon: !!arconPruebas });

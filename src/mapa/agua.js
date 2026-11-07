@@ -16,6 +16,8 @@
 import * as THREE from 'three';
 
 export const tiempoAgua = { value: 0 };
+// lo que el agua refleja del cielo al mirarla de lado (luz lineal): lo cambia el ciclo de día y noche (src/mundo/cielo.js)
+export const cieloAgua = { value: new THREE.Color(0.55, 0.63, 0.69) };
 // La altura del oleaje del mar (m) en un punto de la escena (x, z) y en el tiempo t (s): las mismas tres olas de
 // Gerstner del sombreador (solo lo que suben y bajan), para que lo que flota o nada vaya con ellas
 const OLAS = [[1, 0.25, 22, 0.32], [0.7, -0.7, 11, 0.14], [0.2, 1, 6.5, 0.06]].map(([x, z, largo, alto]) => { const l = Math.hypot(x, z); return { dx: x / l, dz: z / l, k: 2 * Math.PI / largo, alto }; });
@@ -40,7 +42,7 @@ export function crearMaterialAgua() {
   const funde = { value: 0 };
   m.userData.funde = funde;
   m.onBeforeCompile = (sh) => {
-    sh.uniforms.uTiempo = tiempoAgua;
+    sh.uniforms.uTiempo = tiempoAgua; sh.uniforms.uCieloAgua = cieloAgua;
     sh.uniforms.uHueco = hueco; sh.uniforms.uHasta = hasta; sh.uniforms.uFunde = funde;
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>
@@ -72,7 +74,7 @@ vFlujo = aFlujo; vHondo = aHondo; vTipo = aTipo; vOrilla = aOrilla; vEspuma = aE
 vMundo = (modelMatrix * vec4(transformed, 1.0)).xyz;`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
-uniform float uTiempo; uniform vec4 uHueco; uniform float uHasta; uniform float uFunde;
+uniform float uTiempo; uniform vec3 uCieloAgua; uniform vec4 uHueco; uniform float uHasta; uniform float uFunde;
 varying vec2 vFlujo; varying float vHondo; varying float vTipo; varying float vOrilla; varying vec3 vMundo; varying vec3 vNorM; varying float vEspuma;
 float hashA(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float ruidoA(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
@@ -146,7 +148,7 @@ normal = normalize(normal + (viewMatrix * vec4(-pend.x, 0.0, -pend.y, 0.0)).xyz)
       .replace('#include <envmap_fragment>', `#include <envmap_fragment>
 // algo del cielo reflejado al mirar el agua de lado
 float fres = pow(1.0 - clamp(dot(normal, normalize(vViewPosition)), 0.0, 1.0), 4.0);
-outgoingLight = mix(outgoingLight, vec3(0.55, 0.63, 0.69), fres * 0.3 * (1.0 - espuma));`);
+outgoingLight = mix(outgoingLight, uCieloAgua, fres * 0.3 * (1.0 - espuma));`);
   };
   m.customProgramCacheKey = () => 'aguaKinhold3';
   return m;

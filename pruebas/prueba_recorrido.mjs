@@ -140,6 +140,17 @@ try {
     await J.andar(p.x + 0.4, p.z);
     return J.objeto({ tipo: 'recoger', punto: p.id, x: J.pos.x, z: J.pos.z, px: p.x, pz: p.z, clase: p.tipo });
   };
+  // un puesto de trabajo es obra (valravnx, 6 nov): se pone el marco, se le lleva lo que pide (de lo que lleva y del
+  // suelo de al lado) y se trabaja en él hasta levantarlo, a ratos de 5 s, como en el juego
+  const ponerPuesto = async (estacion, x, z) => {
+    const rc = await J.objeto({ tipo: 'colocar_estacion', estacion, x, z });
+    if (!rc.ok) return rc;
+    const id = rc.datos.id, re = await J.objeto({ tipo: 'entregar_estacion', estacion: id, x: J.pos.x, z: J.pos.z });
+    if (!re.ok) return { ...re, id };
+    let rt = { ok: true, datos: {} };
+    for (let i = 0; i < 20 && rt.ok && !rt.datos.terminada; i++) rt = await J.objeto({ tipo: 'trabajar_estacion', estacion: id, segundos: 5, x: J.pos.x, z: J.pos.z });
+    return { ...rt, id, marco: rc, entrega: re };
+  };
   let cogidas = 0, motivos = [];
   for (const p of piedras.slice(0, 6)) { r = await recoger(p); if (r.ok) cogidas++; else motivos.push(r.motivo); }
   comprobar('recoge 6 piedras, 3 en cada mano', cogidas === 6 && J.cuantos('piedra') === 6, `${J.cuantos('piedra')} piedras ${motivos.slice(0, 2).join(' · ')}`);
@@ -268,8 +279,8 @@ try {
     for (const p of piedrasBase) { if (pied >= 2) break; r = await recoger(p); if (r.ok) pied++; }
     comprobar('recoge 2 piedras', J.cuantos('piedra') === 2, `${J.cuantos('piedra')} · ${enMano()}`);
     await J.andar(taller.x, taller.z);
-    r = await J.objeto({ tipo: 'colocar_estacion', estacion: 'piedra_tallar', x: J.pos.x + 0.8, z: J.pos.z });
-    comprobar('pone una piedra de tallar a su lado (1 piedra)', r.ok && J.cuantos('piedra') === 1, r.motivo);
+    r = await ponerPuesto('piedra_tallar', J.pos.x + 0.8, J.pos.z);
+    comprobar('levanta una piedra de tallar a su lado: el marco, sin gastar nada; le lleva 1 piedra y trabaja en ella', r.ok && r.datos.terminada && r.marco.datos.obra && r.entrega.datos.entregado.piedra === 1 && J.cuantos('piedra') === 1, r.motivo);
     // lo que pide el hacha se deja encima de la piedra de tallar (valravnx, 6 nov): lo de las manos y lo del suelo
     const pt = Object.values(s.objetos.fab.estaciones).find(e => e.autor === yo && e.tipo === 'piedra_tallar');
     r = await J.objeto({ tipo: 'fabricar', receta: 'hacha_piedra', estacion: pt?.id, x: J.pos.x, z: J.pos.z });
@@ -374,8 +385,8 @@ try {
     let pied = 0;
     for (const p of de('piedra')) { if (pied >= 2) break; r = await recoger(p); if (r.ok) pied++; }
     await J.andar(taller.x, taller.z);
-    r = await J.objeto({ tipo: 'colocar_estacion', estacion: 'piedra_tallar', x: J.pos.x + 0.8, z: J.pos.z });
-    comprobar('pone una piedra de tallar en la orilla', r.ok, `${r.motivo || ''} ${enMano()}`);
+    r = await ponerPuesto('piedra_tallar', J.pos.x + 0.8, J.pos.z);
+    comprobar('levanta una piedra de tallar en la orilla (su marco, su piedra y su trabajo)', r.ok && r.datos.terminada, `${r.motivo || ''} ${enMano()}`);
     const pt = Object.values(s.objetos.fab.estaciones).filter(e => e.autor === yo && e.tipo === 'piedra_tallar').sort((a, b) => Math.hypot(a.x - J.pos.x, a.z - J.pos.z) - Math.hypot(b.x - J.pos.x, b.z - J.pos.z))[0];
     const dejar = async tipo => { const l = ['mano:der', 'mano:izq'].find(x => J.inv.lugares[x]?.tipo === tipo); return l ? J.objeto({ tipo: 'depositar_estacion', estacion: pt.id, de: l, cantidad: 1, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: `no lleva ${tipo}` }; };
     r = await dejar('piedra');

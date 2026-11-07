@@ -6,8 +6,10 @@
 # fibras en la mano, el cordel sale en «Puedes hacerlo ya» y su ficha dice que la fibra sale de la mano; el leñero, en
 # «Te falta algo», con lo que falta en rojo en su ficha y el atajo «Hacer antes: 1 cordel de fibra», que lo encarga
 # al servidor (la fibra sale de lo que lleva en el servidor): sale en «En marcha» y, terminado, «Recoger» le da el
-# cordel (en el servidor). La lasca, en gris, con la piedra de tallar que hace falta. Con una piedra, «Poner delante»
-# (en la ficha de la piedra de tallar) la pone (en el servidor, y se dibuja) y la lasca pasa a «Te falta algo».
+# cordel (en el servidor). La lasca, en gris, con la piedra de tallar que hace falta. Los puestos de trabajo son obra
+# (valravnx, 6 nov): ya no se ponen desde el panel, sino desde el menú de construcción, en su pestaña «Puestos de
+# trabajo»; se pone el marco a su lado (en el servidor, sin gastar nada, y se dibuja tenue con su armazón), Usar le
+# lleva la piedra y trabaja en él hasta levantarlo, y la lasca pasa a «Te falta algo».
 # Depositar (valravnx, 6 nov): con Usar delante de la piedra de tallar se abre el panel en su pestaña, con lo que
 # tiene encima y lo que lleva para dejar; lo dejado está en el servidor, se ve puesto encima y tocarlo lo devuelve;
 # el atajo «Poner en la piedra de tallar lo que falta» deja el sílex y la piedra de una vez, y la lasca pasa a «ya».
@@ -158,16 +160,39 @@ try:
             print('  (aviso del panel:', A.evaluate("document.querySelector('#panelFabricar .fab-aviso').textContent"), '· botón:', A.evaluate("(() => { const b = document.querySelector('#panelFabricar .fab-recoger'); return b ? 'sigue, disabled=' + b.disabled : 'no está'; })()"), ')')
         comprobar('y el panel dice lo que recoge', esperar(A, "/Recoges: 1 × Cordel/.test(document.querySelector('#panelFabricar .fab-aviso').textContent)", 5000))
 
-        print('Poner la piedra de tallar delante')
+        print('Los puestos de trabajo, como obra, desde el menú de construcción (valravnx, 6 nov)')
+        comprobar('en el panel ya no se ponen estaciones', not A.evaluate("!!document.querySelector('#panelFabricar .fab-sec-est, #panelFabricar .fab-poner')"))
         A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'piedra', cantidad: 1, a: 'mano:izq' }})")
         servidorDice(lambda d: cuantos(d, yo, 'piedra') == 1)
-        esperar(A, "!!document.querySelector('#panelFabricar .fab-carta[data-fila=\"estacion:piedra_tallar\"].fab-ya')", 5000)
-        elegir(A, 'estacion:piedra_tallar')
-        comprobar('con una piedra, la piedra de tallar se puede poner (en su ficha)', esperar(A, "!!document.querySelector('#panelFabricar .fab-poner[data-tipo=\"piedra_tallar\"]')", 5000))
-        A.click('#panelFabricar .fab-poner[data-tipo="piedra_tallar"]')
-        d = servidorDice(lambda d: any(e['tipo'] == 'piedra_tallar' for e in (d.get('fabricacion') or {}).get('estaciones', [])))
-        comprobar('el servidor la tiene, de su autor', d is not None and any(e['autor'] == yo for e in d['fabricacion']['estaciones']))
-        comprobar('y se dibuja delante', esperar(A, f"!!{K}.escena.getObjectByName('estacion_piedra_tallar')", 8000))
+        A.keyboard.press('h'); A.wait_for_timeout(300)
+        A.evaluate(f"{K}.cambiarModo('construir')"); A.wait_for_timeout(200)
+        A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); A.wait_for_timeout(300)
+        menu = A.evaluate("[...document.querySelectorAll('#piezas button.pieza')].map(b => b.innerText)")
+        comprobar('la pestaña «Puestos de trabajo», con los tres puestos, lo que piden y dónde van', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
+                  and len(menu) == 3 and any('Piedra de tallar' in m and '1 piedra' in m for m in menu) and any('Hoguera' in m and 'solo fuera' in m for m in menu), str(menu))
+        A.wait_for_timeout(300)
+        captura(A, f'{SALIDA}/PC_menu_puestos.png')
+        A.evaluate(f"{K}.seleccionar('puesto', 'piedra_tallar')")
+        A.evaluate(f"(() => {{ const x = {K}.pj.x + 1, z = {K}.pj.z + 0.2; {K}.apuntar(x, z, {K}.alturaSuelo(x, z)); }})()")
+        comprobar('el marco se puede poner a su lado', A.evaluate(f"{K}.estado.candidato && {K}.estado.candidato.tipo === 'puesto' && {K}.estado.candidato.v.ok"), str(A.evaluate(f"{K}.estado.candidato && {K}.estado.candidato.v")))
+        A.evaluate(f"(() => {{ const x = {K}.pj.x + 9, z = {K}.pj.z; {K}.apuntar(x, z, {K}.alturaSuelo(x, z)); }})()")
+        comprobar('lejos, no (el marco se pone a tu lado)', A.evaluate(f"!{K}.estado.candidato.v.ok && /lado/.test({K}.estado.candidato.v.motivo)"))
+        A.evaluate(f"(() => {{ const x = {K}.pj.x + 1, z = {K}.pj.z + 0.2; {K}.apuntar(x, z, {K}.alturaSuelo(x, z)); {K}.colocar(); }})()")
+        d = servidorDice(lambda d: any(e['tipo'] == 'piedra_tallar' and e.get('obra') for e in (d.get('fabricacion') or {}).get('estaciones', [])))
+        comprobar('el servidor tiene el marco, de su autor, y no ha gastado nada', d is not None and any(e['autor'] == yo for e in d['fabricacion']['estaciones']) and cuantos(d, yo, 'piedra') == 1)
+        comprobar('y se dibuja como obra: tenue, con su armazón de estacas', esperar(A, f"(() => {{ const o = {K}.escena.getObjectByName('estacion_piedra_tallar'); return !!o && !!o.getObjectByName('armazon'); }})()", 8000))
+        A.evaluate(f"{K}.cambiarModo('mover')")
+        A.evaluate(f"(() => {{ const e = Object.values({K}.fabCliente.estaciones)[0]; Object.assign({K}.pj, {{ x: e.x + 1.3, z: e.z + 0.3, rot: -1.2 }}); {K}.cam.yaw = 0.15; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.55; }})()")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_marco_piedra_tallar.png')
+        comprobar('en el menú del clic derecho: la obra y quitar el marco', esperar(A, f"(() => {{ const o = {K}.opcionesUsar(); return o.includes('Obra: Piedra de tallar') && o.includes('Quitar el marco: Piedra de tallar'); }})()", 3000), str(A.evaluate(f"{K}.opcionesUsar()")))
+        A.keyboard.press('f')
+        d = servidorDice(lambda d: any(e['tipo'] == 'piedra_tallar' and not e.get('obra') for e in d['fabricacion']['estaciones']), 30000)
+        comprobar('Usar le lleva la piedra y trabaja en él hasta levantarlo (en el servidor)', d is not None and cuantos(d, yo, 'piedra') == 0, A.evaluate("document.getElementById('aviso').textContent"))
+        comprobar('y se dibuja levantada, sin armazón', esperar(A, f"(() => {{ const o = {K}.escena.getObjectByName('estacion_piedra_tallar'); return !!o && !o.getObjectByName('armazon'); }})()", 8000))
+        comprobar('y el aviso lo dice', esperar(A, "/Puesto terminado/.test(document.getElementById('aviso').textContent)", 5000), A.evaluate("document.getElementById('aviso').textContent"))
+        A.keyboard.press('h'); A.wait_for_timeout(300)
+        pestana(A, 'todo')
         comprobar('la lasca pasa a «Te falta algo»', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 5000), str(fila(A, 'lasca_silex')))
         A.wait_for_timeout(400)
         captura(A, f'{SALIDA}/PC_panel_con_piedra.png')
@@ -249,9 +274,12 @@ try:
         captura(B, f'{SALIDA}/movil_ficha.png')
         B.tap('#panelFabricar .fab-velo', position={'x': 195, 'y': 60}); B.wait_for_timeout(500)
         comprobar('y tocando fuera se vuelve a bajar', B.evaluate("!document.getElementById('panelFabricar').classList.contains('fab-ficha-abierta')"))
-        B.tap('#panelFabricar .fab-pest[data-pestana="todo"]'); B.wait_for_timeout(500)
-        B.evaluate("document.querySelector('#panelFabricar .fab-sec-est').scrollIntoView()"); B.wait_for_timeout(300)
-        captura(B, f'{SALIDA}/movil_panel_estaciones.png')
+        B.evaluate(f"{K}.panelFabricar.cerrar()"); B.wait_for_timeout(500)
+        B.evaluate(f"{K}.cambiarModo('construir')"); B.wait_for_timeout(200)
+        B.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); B.wait_for_timeout(500)
+        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 3 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        captura(B, f'{SALIDA}/movil_menu_puestos.png')
+        B.evaluate(f"{K}.cambiarModo('mover')")
 
         print('Las tres estaciones de cerca, con algo depositado (solo para mirarlas: la hoguera y el banco se dibujan aquí, no se ponen)')
         A.evaluate(f"""(() => {{ const f = {K}.fabCliente, e = Object.values(f.estaciones)[0];
