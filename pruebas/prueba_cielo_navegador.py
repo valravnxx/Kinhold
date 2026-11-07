@@ -44,7 +44,6 @@ def entrar(pg, extra=''):
     pg.wait_for_function(f'{K} && {K}.mundoListo', timeout=300000)
     try: pg.wait_for_function(f'{K}.decorado.pendientes === 0', timeout=120000)
     except Exception: pass
-    if MUTAR: pg.evaluate(f'{K}.cielo.estado.activo = false')
     # sin los botones ni los avisos (taparían el cielo que se mide; en el móvil, casi toda la franja de arriba)
     pg.add_style_tag(content='body > :not(canvas) { visibility: hidden !important; }')
     pg.wait_for_timeout(1500)
@@ -52,6 +51,7 @@ def entrar(pg, extra=''):
 def poner(pg, hora, fase=None, mirar=None, pitch=0.1):
     f = {'hora': hora} if fase is None else {'hora': hora, 'fase': fase}
     c = pg.evaluate(f'{K}.cielo.poner({json.dumps(f)})')
+    if MUTAR: pg.evaluate(f'{K}.cielo.estado.activo = false; {K}.cielo.paso = () => {K}.cielo.actual')
     pg.evaluate(f'{K}.cam.pitch = {pitch}')
     if mirar: pg.evaluate(f'(() => {{ const d = {K}.cielo.actual.{mirar}; {K}.cam.yaw = Math.atan2(-d[0], -d[2]); }})()')
     pg.wait_for_timeout(2500)

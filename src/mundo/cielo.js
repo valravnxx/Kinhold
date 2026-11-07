@@ -6,7 +6,8 @@
 //   - el color de la niebla y lo que refleja el agua.
 // La hora es la del servidor (todos ven el mismo cielo). Para las pruebas y las capturas: ?hora=H (hora del mundo,
 // 0–24) y ?luna=F (fase, 0 nueva, 0,5 llena) la dejan quieta; las pruebas automáticas (navigator.webdriver) sin ?hora
-// ven la luz «mañana» del estilo v5, quieta, como hasta ahora (así ninguna otra prueba depende de la hora a la que se pase).
+// ven la luz «mañana» del estilo v5, quieta, y el cielo de antes (así ninguna otra prueba depende de la hora a la que se
+// pase ni del cielo nuevo, que tiene su prueba).
 import * as THREE from 'three';
 import { cieloDe, msDeHora, horaTexto } from '../logica/cielo.js';
 import { LUCES } from './estilos.js';
@@ -62,7 +63,9 @@ export function crearCielo({ ambiente, reloj = () => Date.now() }) {
 
   function paso() {
     estado.tiempo = performance.now() / 1000;
-    if (fijo === 'v5') { if (!actual) aplicar(cieloV5()); return actual; }
+    // (las pruebas: la luz «mañana» quieta y el cielo de antes, el degradado de la página: así dibujan igual que antes)
+    if (fijo === 'v5') { if (!actual) { aplicar(cieloV5()); estado.activo = false; } return actual; }
+    estado.activo = true;
     aplicar(cieloDe(reloj(), fijo));
     return actual;
   }
