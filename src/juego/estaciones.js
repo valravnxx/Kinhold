@@ -10,12 +10,15 @@
 // Lo depositado en cada una (valravnx, 6 nov) se ve puesto, con los mismos modelos que lo del suelo: encima de la losa
 // de la piedra de tallar y del tajo del banco (lo que no cabe encima, al pie); junto a la hoguera, alrededor del
 // círculo de piedras. Cada tipo, su montón.
+// Los puestos son obra (valravnx, 6 nov): mientras no se levantan, se ven como las obras de construcción (src/juego/
+// main.js, «Obras»): el puesto muy tenue, como un trazado, dentro de un armazón de varas atadas (cuatro estacas con
+// dos vueltas de cordel), y lo que ya se le ha llevado, al pie, en su montón. Cuanto más trabajo lleva, menos tenue.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { modelosRecoleccion } from './recoleccion.js';
-import { limpiarDeposito } from '../logica/fabricacion.js';
+import { limpiarDeposito, limpiarObra, ESTACIONES } from '../logica/fabricacion.js';
 import { troncosConCortes, deLista, modeloDe } from './suelo.js';
 
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
@@ -88,6 +91,7 @@ const DEPOSITO_SITIOS = {
   piedra_tallar: { encima: [[-0.18, 0.2, 0.08], [0.16, 0.2, -0.1], [-0.05, 0.2, -0.18]], radio: 0.75, empieza: -0.6 },
   banco_tronco:  { encima: [[0, 0.5, 0]], radio: 0.7, empieza: 2.6 },
   hoguera:       { encima: [], radio: 0.92, empieza: 0.3 },
+  obra:          { encima: [], radio: 0.95, empieza: 1.9 },   // lo entregado a un marco, fuera del armazón
 };
 const GRANDE = new Set(['tronco_corto', 'tronco_delgado', 'tronco_largo', 'lena']);
 // El grupo con lo depositado: un montón por tipo, más pequeño encima que al pie.
@@ -111,6 +115,47 @@ export function modeloDeposito(tipo, deposito, id) {
   return g;
 }
 
+// ---------- el marco de un puesto a medio hacer ----------
+const MAT_ARMAZON = new THREE.MeshLambertMaterial({ color: 0x8a6a48 });
+const MAT_ATADURA = new THREE.MeshLambertMaterial({ color: 0xb8a27a });
+const matsObra = new Map();
+function matObra(base, nivel) {
+  const b = Array.isArray(base) ? base[0] : base, k = nivel + ':' + (b?.map?.uuid || 'liso') + (b?.vertexColors ? 'v' : '');
+  if (!matsObra.has(k)) matsObra.set(k, new THREE.MeshLambertMaterial({ color: 0xd8ccb4, emissive: 0x1a140c, vertexColors: !!b?.vertexColors,
+    map: b?.map || null, transparent: true, opacity: 0.42 + 0.12 * nivel, depthWrite: false }));
+  return matsObra.get(k);
+}
+const vara = (a, b, r, mat) => {
+  const d = new THREE.Vector3().subVectors(b, a), m = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.1, d.length(), 6), mat);
+  m.position.copy(a).addScaledVector(d, 0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); m.castShadow = true;
+  return m;
+};
+// El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
+function armazon(tipo, id) {
+  const g = new THREE.Group(), r = { hoguera: 0.78, banco_tronco: 0.72, piedra_tallar: 0.62 }[tipo] || 0.7, alto = 0.75;
+  const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
+  pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
+  for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {
+    const [x1, z1] = pies[i], [x2, z2] = pies[(i + 1) % 4], k = 1 - 0.08 * h / alto;
+    g.add(vara(new THREE.Vector3(x1 * k, h, z1 * k), new THREE.Vector3(x2 * k, h - 0.02, z2 * k), 0.006, MAT_ATADURA));
+  }
+  g.name = 'armazon';
+  return g;
+}
+// Viste de obra el modelo de un puesto (nivel 0..4: cuánto trabajo lleva) o le devuelve sus materiales.
+function vestirObra(o, nivel) {
+  const modelo = o.getObjectByName('modelo');
+  modelo.traverse(m => {
+    if (!m.isMesh) return;
+    if (!m.userData.matBase) m.userData.matBase = m.material;
+    m.material = nivel === null ? m.userData.matBase : matObra(m.userData.matBase, nivel);
+    m.castShadow = nivel === null;
+  });
+  const a = o.getObjectByName('armazon');
+  if (nivel === null) { if (a) o.remove(a); }
+  else if (!a) o.add(armazon(o.userData.tipo, o.userData.id));
+}
+
 // Dibuja las estaciones de fab (una Fabricacion, la del servidor en línea) sobre el terreno. refrescar() al cambiar.
 export function crearEstaciones({ raiz, altura, fab }) {
   const grupo = new THREE.Group(); grupo.name = 'estaciones'; raiz.add(grupo);
@@ -122,16 +167,20 @@ export function crearEstaciones({ raiz, altura, fab }) {
       if (!MODELO_ESTACION[e.tipo]) continue;
       let o = vistas.get(e.id);
       if (!o) {
-        o = MODELO_ESTACION[e.tipo](e.id);
-        o.position.set(e.x, altura(e.x, e.z) - 0.01, e.z); o.rotation.y = az(e.id, 7) * Math.PI * 2;
-        o.name = 'estacion_' + e.tipo; o.userData.id = e.id;
+        o = new THREE.Group();
+        const modelo = MODELO_ESTACION[e.tipo](e.id); modelo.name = 'modelo'; o.add(modelo);
+        o.position.set(e.x, (Number.isFinite(e.y) ? e.y : altura(e.x, e.z)) - 0.01, e.z); o.rotation.y = az(e.id, 7) * Math.PI * 2;
+        o.name = 'estacion_' + e.tipo; o.userData.id = e.id; o.userData.tipo = e.tipo;
         grupo.add(o); vistas.set(e.id, o);
       }
-      // lo depositado: se rehace solo si ha cambiado
-      const firma = JSON.stringify(e.deposito || {});
+      // en obra: tenue, con su armazón, y lo entregado al pie; levantada: con sus materiales y lo depositado
+      const nivel = e.obra ? Math.min(4, Math.floor(4 * (e.obra.trabajo || 0) / ESTACIONES[e.tipo].trabajo)) : null;
+      if (o.userData.nivel !== nivel) { vestirObra(o, nivel); o.userData.nivel = nivel; }
+      // lo depositado (o, en obra, lo entregado): se rehace solo si ha cambiado
+      const montones = e.obra ? e.obra.entregado : e.deposito, firma = (e.obra ? 'o' : 'd') + JSON.stringify(montones || {});
       if (o.userData.firma !== firma) {
         const viejo = o.getObjectByName('deposito'); if (viejo) o.remove(viejo);
-        o.add(modeloDeposito(e.tipo, e.deposito, e.id)); o.userData.firma = firma;
+        o.add(modeloDeposito(e.obra ? 'obra' : e.tipo, montones, e.id)); o.userData.firma = firma;
       }
     }
   }
@@ -139,7 +188,11 @@ export function crearEstaciones({ raiz, altura, fab }) {
   function poner(lista) {
     if (!Array.isArray(lista)) return;
     const nuevas = {};
-    for (const e of lista) if (e && typeof e.id === 'string' && Number.isFinite(e.x) && Number.isFinite(e.z)) nuevas[e.id] = { id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, cola: [], deposito: limpiarDeposito(e.deposito) };
+    for (const e of lista) if (e && typeof e.id === 'string' && Number.isFinite(e.x) && Number.isFinite(e.z)) {
+      const n = nuevas[e.id] = { id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, cola: [], deposito: limpiarDeposito(e.deposito) };
+      if (Number.isFinite(e.y)) n.y = e.y;
+      const ob = e.obra && limpiarObra(e.obra, e.tipo); if (ob) n.obra = ob;
+    }
     fab.estaciones = nuevas;
     refrescar();
   }

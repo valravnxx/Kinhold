@@ -200,13 +200,30 @@ try {
     r = await a.objeto({ tipo: 'fabricar', receta: 'cordel', x: 30, z: 30 });
     comprobar('lo que pide un sitio va desde donde el servidor tiene al autor', !r.ok && /No estás ahí/.test(r.motivo), r.motivo);
     // la piedra de tallar: la ven los dos
-    const estB = b.esperar(m => m.tipo === 'estaciones');
+    // la piedra de tallar, como obra: el marco, su piedra y el trabajo; la ven los dos
+    const marcoB = b.esperar(m => m.tipo === 'estaciones' && m.estaciones.some(e => e.tipo === 'piedra_tallar' && e.obra));
+    const estB = b.esperar(m => m.tipo === 'estaciones' && m.estaciones.some(e => e.tipo === 'piedra_tallar' && !e.obra));
     r = await a.objeto({ tipo: 'colocar_estacion', estacion: 'piedra_tallar', x: 5.5, z: 5 });
-    comprobar('A coloca una piedra de tallar con la piedra que recogió', r.ok && !tiene(s.objetos.inventarioDe(yoA), 'piedra'), r.motivo);
+    const idMarco = r.datos && r.datos.id;
+    comprobar('A pone el marco de una piedra de tallar, sin gastar nada', r.ok && r.datos.obra && tiene(s.objetos.inventarioDe(yoA), 'piedra'), r.motivo);
+    comprobar('B ve el marco, con lo que lleva entregado', !!(await marcoB));
+    r = await b.objeto({ tipo: 'trabajar_estacion', estacion: idMarco, segundos: 2, x: 5, z: 6 });
+    comprobar('sin su material no se trabaja en él', !r.ok && /material/.test(r.motivo), r.motivo);
+    r = await a.objeto({ tipo: 'entregar_estacion', estacion: idMarco, x: 5, z: 5 });
+    comprobar('A le lleva la piedra que recogió', r.ok && !tiene(s.objetos.inventarioDe(yoA), 'piedra') && r.datos.entregado.piedra === 1, r.motivo);
+    r = await a.objeto({ tipo: 'trabajar_estacion', estacion: idMarco, segundos: 60, x: 5, z: 5 });
+    comprobar('un rato de trabajo de más no cuela', !r.ok, r.motivo);
+    r = await b.objeto({ tipo: 'trabajar_estacion', estacion: idMarco, segundos: 2, x: 5, z: 6 });
+    const r2 = await a.objeto({ tipo: 'trabajar_estacion', estacion: idMarco, segundos: 3, x: 5, z: 5 });
+    comprobar('entre los dos la levantan (el trabajo de los dos se suma)', r.ok && !r.datos.terminada && r2.ok && r2.datos.terminada, r2.motivo || JSON.stringify(r2.datos));
     const eb = await estB;
-    comprobar('B la ve (sin las colas de nadie)', eb.estaciones.length === 1 && eb.estaciones[0].tipo === 'piedra_tallar' && eb.estaciones[0].autor === yoA && !('cola' in eb.estaciones[0]), JSON.stringify(eb.estaciones));
+    comprobar('B la ve levantada (sin las colas de nadie)', eb.estaciones.length === 1 && eb.estaciones[0].tipo === 'piedra_tallar' && eb.estaciones[0].autor === yoA && !('cola' in eb.estaciones[0]) && !eb.estaciones[0].obra, JSON.stringify(eb.estaciones));
     r = await a.objeto({ tipo: 'colocar_estacion', estacion: 'hoguera', x: 5, z: 5 });
-    comprobar('sin lo que cuesta, no se coloca', !r.ok && /falta/.test(r.motivo), r.motivo);
+    const idHog = r.datos && r.datos.id;
+    const re = await a.objeto({ tipo: 'entregar_estacion', estacion: idHog, x: 5, z: 5 });
+    comprobar('a la hoguera, sin lo que cuesta, no se le entrega nada', r.ok && !re.ok && /falta/.test(re.motivo), re.motivo);
+    r = await a.objeto({ tipo: 'quitar_estacion', estacion: idHog, x: 5, z: 5 });
+    comprobar('y su marco se quita', r.ok && !s.objetos.fab.estaciones[idHog], r.motivo);
     // la lasca, con lo depositado en la piedra de tallar: el sílex lo deja B y la piedra A (valravnx, 6 nov)
     const idPt = eb.estaciones[0].id;
     r = await b.objeto({ tipo: 'coger', objeto: 'silex', cantidad: 1, a: 'mano:izq' });
@@ -239,6 +256,12 @@ try {
     const ajena = new ObjetosServidor({ posicion: () => ({ x: 0, z: 0 }), puedeTocar: () => ({ ok: false, motivo: 'Es tierra de otro: solo su dueño y sus invitados.' }) });
     ajena.invs.de(yoA).meterDonde('piedra', 1);
     const rt = ajena.ejecutar({ autor: yoA, tipo: 'colocar_estacion', estacion: 'piedra_tallar', x: 0.5, z: 0 }, Date.now());
+    ajena.fab.estaciones['hoguera:8'] = { id: 'hoguera:8', tipo: 'hoguera', x: 0.5, z: 0, autor: 'otro', cola: [], deposito: {}, obra: { entregado: {}, trabajo: 0, aportes: [] } };
+    const rq = ajena.ejecutar({ autor: yoA, tipo: 'quitar_estacion', estacion: 'hoguera:8', x: 0, z: 0 }, Date.now());
+    comprobar('ni se quita el marco de un puesto en tierra de otro', !rq.ok && !!ajena.fab.estaciones['hoguera:8'], rq.motivo);
+    const techo = new ObjetosServidor({ posicion: () => ({ x: 0, z: 0 }), bajoTecho: () => true });
+    const rh = techo.ejecutar({ autor: yoA, tipo: 'colocar_estacion', estacion: 'hoguera', x: 0.5, z: 0 }, Date.now());
+    comprobar('bajo techo el servidor no deja poner una hoguera', !rh.ok && /fuera/.test(rh.motivo), rh.motivo);
     comprobar('en tierra de otro no se coloca una estación (ni se gasta nada)', !rt.ok && /tierra de otro/.test(rt.motivo) && ajena.invs.de(yoA).cuantos('piedra') === 1, rt.motivo);
     ajena.fab.estaciones['piedra_tallar:9'] = { id: 'piedra_tallar:9', tipo: 'piedra_tallar', x: 0.5, z: 0, autor: 'otro', cola: [], deposito: { rama: 2 } };
     const rd = ajena.ejecutar({ autor: yoA, tipo: 'depositar_estacion', estacion: 'piedra_tallar:9', de: ajena.invs.de(yoA).rutasCon('piedra')[0], x: 0, z: 0 }, Date.now());

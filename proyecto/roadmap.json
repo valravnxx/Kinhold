@@ -1342,9 +1342,10 @@
     },
     {
      "nombre": "Los puestos de trabajo como obra, en su propia pestaña del menú de construcción («Puestos de trabajo», aparte de los muebles): se pone el marco y se le llevan los materiales, como a cualquier obra; cada uno donde le toca (piedra de tallar y banco de tronco, dentro o fuera; hoguera, solo fuera; hogar, solo dentro). Fuera el ponerlos al momento desde el panel de fabricar",
-     "estado": "en_curso",
-     "inicio": "2026-11-07T10:25:06+00:00",
-     "rama": "trabajo/20261107-1024"
+     "estado": "hecho",
+     "inicio": "2026-11-07T10:24:20+00:00",
+     "rama": "trabajo/20261107-1024",
+     "fin": "2026-11-07T12:13:09+00:00"
     },
     {
      "nombre": "La hoguera, fuera: piedras en círculo y ramas; se enciende con yesca y el taladro de fuego, arde un rato por cada leña o rama que se le echa y se apaga sola (quedan cenizas); luz y calor. Por el servidor, todos la ven igual",
@@ -1495,7 +1496,9 @@
     },
     {
      "nombre": "El duelo con lo que llevas: la ropa y la armadura puestas y el arma de la mano salen del inventario",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T12:24:06+00:00",
+     "rama": "trabajo/20261107-1224"
     },
     {
      "nombre": "El arma de la mano en el combate sale del inventario (hoy siempre es la espada larga) y el servidor lo comprueba",
@@ -3191,6 +3194,13 @@
      "archivo": "jugar/demo/v135.html",
      "capturas": "capturas/demo-v135",
      "notas": "El bosque de lejos visto de cerca, sin montículos (valravnx, 7 nov): las manchas de las copas ya no salen en anillos ni en rayas y se apagan cuando ya no caben en el píxel; las de 60 m, mucho más suaves. Las copas de cerca, suavizadas, empiezan a 250 m del jugador y suben poco a poco hasta su alto a 400 m, sin tapar la vista."
+    },
+    {
+     "v": "v136",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v136.html",
+     "capturas": "capturas/demo-v136",
+     "notas": "Los puestos de trabajo son obra: la piedra de tallar, la hoguera y el banco de tronco se levantan desde Construir, en su pestaña «Puestos de trabajo»: se pone el marco, se le lleva lo que pide y se trabaja en él; la hoguera, solo fuera"
     }
    ]
   },

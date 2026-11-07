@@ -22,8 +22,8 @@ import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
 import { montarPanelFabricar } from './panel_fabricar.js';
-import { crearEstaciones } from './estaciones.js';
-import { Fabricacion, ejecutarFabricacion, ESTACIONES } from '../logica/fabricacion.js';
+import { crearEstaciones, MODELO_ESTACION } from './estaciones.js';
+import { Fabricacion, ejecutarFabricacion, ESTACIONES, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION } from '../logica/fabricacion.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
 import { crearComarcas, zonasDeEscena } from '../logica/comarcas.js';
@@ -660,6 +660,7 @@ function prepararFantasma() {
   if (!tipo) return;
   if (estado.sel.clase === 'pieza') fantasma = modeloPieza(estado.sel.tipo);
   else if (estado.sel.clase === 'deco') fantasma = modeloDeco(estado.sel.tipo);
+  else if (estado.sel.clase === 'puesto') fantasma = MODELO_ESTACION[estado.sel.tipo]('fantasma');
   else if (estado.sel.clase === 'nivelar') fantasma = modeloBrocha();
   else fantasma = modeloMojon();
   if (estado.sel.clase === 'pieza' && PIEZAS[estado.sel.tipo].esquina) fantasmaForma = 'tesa';
@@ -739,6 +740,20 @@ function evaluarColocacion() {
     estado.candidato = { tipo: 'nivelar', x, y, z, v };
     return;
   }
+  if (sel.clase === 'puesto') {
+    // un puesto de trabajo (P3): se pone el marco a tu lado; la hoguera, solo fuera (no bajo techo)
+    const y = estado.puntero.ySuperficie || 0;
+    fantasma.position.set(x, y, z); fantasma.rotation.set(0, 0, 0);
+    let v = fabCliente.puedeColocar(sel.tipo, x, z, mundo.bajoTecho(x, z));
+    if (v.ok && Math.hypot(x - pj.x, z - pj.z) > PONER_PUESTO) v = { ok: false, motivo: 'Acércate: el marco se pone a tu lado.' };
+    if (v.ok && pj.k > 0) v = { ok: false, motivo: 'Los puestos de trabajo van en la planta baja.' };
+    if (v.ok) v = mundo.puedeTocar(x, z, yoAutor());
+    pintarFantasma(v.ok);
+    const e = ESTACIONES[sel.tipo];
+    mostrarAviso(v.ok ? tr('{e}: pon el marco y llévale {c}.', { e: tr(e.nombre), c: Object.entries(e.coste).map(([m, n]) => `${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(', ') }) : tr(v.motivo), !v.ok);
+    estado.candidato = { tipo: 'puesto', x, y, z, v };
+    return;
+  }
   if (sel.clase === 'deco') {
     const y = estado.puntero.ySuperficie || 0;
     fantasma.position.set(x, y, z); fantasma.rotation.set(0, estado.rotDeco || 0, 0);
@@ -789,6 +804,14 @@ function colocar() {
   const ca = estado.candidato;
   if (!ca) return;
   if (!ca.v.ok) { mostrarAviso(tr(ca.v.motivo), true); return; }
+  if (ca.tipo === 'puesto') { // por la fabricación (en línea, el servidor): el marco, sin gastar nada
+    const tipo = estado.sel.tipo;
+    hacerFabricacion({ tipo: 'colocar_estacion', estacion: tipo, x: redondoMm(ca.x), z: redondoMm(ca.z), y: redondoMm(ca.y) }, (r) => {
+      if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      mostrarAviso(tr('Marco puesto: llévale {c} y trabaja en él (Usar).', { c: Object.entries(ESTACIONES[tipo].coste).map(([m, n]) => `${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(', ') }));
+    });
+    return;
+  }
   let r;
   if (ca.tipo === 'mojon') r = accion({ tipo: 'mojon', x: ca.x, z: ca.z });
   else if (ca.tipo === 'nivelar') r = accion({ tipo: 'nivelar', x: redondoMm(ca.x), z: redondoMm(ca.z), y: ca.y, radio: estado.radioBrocha });
@@ -881,8 +904,8 @@ function rayoDesde(clientX, clientY) {
 }
 function punteroDesde(clientX, clientY) {
   const rr = rayoDesde(clientX, clientY);
-  if (estado.modo === 'construir' && estado.sel.clase === 'deco') {
-    // la decoración se apoya en los suelos o cimientos de la planta en la que estás, o en el terreno. Solo cuentan
+  if (estado.modo === 'construir' && (estado.sel.clase === 'deco' || estado.sel.clase === 'puesto')) {
+    // la decoración (y los puestos de trabajo) se apoya en los suelos o cimientos de la planta en la que estás, o en el terreno. Solo cuentan
     // los de tu planta: el suelo de arriba (oculto o no) nunca recibe el clic (lo vio valravnx: la cama se iba al
     // altillo estando debajo). Las obras a medias tampoco.
     const objetivos = registroMallas.filter(m => {
@@ -1391,6 +1414,45 @@ function estacionParaUsar() {
   return Object.values(fabCliente.estaciones).filter(e => ESTACIONES[e.tipo] && Math.hypot(e.x - pj.x, e.z - pj.z) <= USAR_ESTACION)
     .sort((a, b) => Math.hypot(a.x - pj.x, a.z - pj.z) - Math.hypot(b.x - pj.x, b.z - pj.z))[0] || null;
 }
+// Los puestos de trabajo como obra (valravnx, 6 nov): con Usar delante del marco se le lleva lo que le falta (de lo que
+// llevas y del suelo a tu lado) y, con todo, se trabaja en él a ratos (como en las obras) hasta levantarlo. En línea
+// cada rato espera la respuesta del servidor antes de mandar el siguiente.
+const PONER_PUESTO = 2.5; // m: el marco se pone a tu lado (el servidor da 3)
+const costeTxt = f => Object.entries(f).map(([m, n]) => `${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(', ');
+function usarPuesto(e) {
+  const def = ESTACIONES[e.tipo], falta = {};
+  for (const [m, n] of Object.entries(def.coste)) { const q = n - ((e.obra && e.obra.entregado[m]) || 0); if (q > 0) falta[m] = q; }
+  pj.rot = Math.atan2(e.x - pj.x, e.z - pj.z);
+  const trabajar = (dicho = '') => { estado.talando = null; estado.obrandoPuesto = { id: e.id, desde: performance.now(), esperando: false }; mostrarAviso(`${dicho}${t('construyendo')} ${Math.round(100 * ((e.obra && e.obra.trabajo) || 0) / def.trabajo)} %`); };
+  if (!Object.keys(falta).length) { trabajar(); return; }
+  hacerFabricacion({ tipo: 'entregar_estacion', estacion: e.id, x: pj.x, z: pj.z }, (r) => {
+    if (!r.ok) { mostrarAviso(`${tr(def.nombre)}: ${t('leFalta')}: ${costeTxt(falta)}. ${t('llevaloEncima')}`, true); return; }
+    const queda = r.falta || {};
+    if (Object.keys(queda).length) { mostrarAviso(`${t('materialEntregado')} ${t('leFalta')}: ${costeTxt(queda)}. ${t('llevaloEncima')}`, true); return; }
+    trabajar(t('materialEntregado') + ' ');
+  });
+}
+function pasoPuesto() {
+  const o = estado.obrandoPuesto;
+  if (!o || o.esperando) return;
+  const ahora = performance.now(), seg = (ahora - o.desde) / 1000;
+  if (seg < 0.5) return;
+  const e = fabCliente.estaciones[o.id];
+  if (!e || !e.obra) { estado.obrandoPuesto = null; return; }
+  o.esperando = true; o.desde = ahora;
+  hacerFabricacion({ tipo: 'trabajar_estacion', estacion: o.id, segundos: +Math.min(seg, MAX_RATO_ESTACION).toFixed(3), x: pj.x, z: pj.z }, (r) => {
+    if (estado.obrandoPuesto !== o) return;
+    o.esperando = false;
+    if (!r.ok) { estado.obrandoPuesto = null; mostrarAviso(tr(r.motivo), true); return; }
+    if (r.terminada) { estado.obrandoPuesto = null; mostrarAviso(tr('Puesto terminado ({e}): ya se puede usar.', { e: tr(ESTACIONES[e.tipo].nombre) })); return; }
+    mostrarAviso(`${t('construyendo')} ${Math.round(100 * r.progreso)} %`);
+  });
+}
+function quitarPuesto(e) {
+  hacerFabricacion({ tipo: 'quitar_estacion', estacion: e.id, x: pj.x, z: pj.z }, (r) => {
+    mostrarAviso(r.ok ? tr('Marco quitado: lo que tenía, en el suelo.') : tr(r.motivo), !r.ok);
+  });
+}
 function usar() {
   const ob = obraCercana();
   const it = interactivoCercano();
@@ -1411,6 +1473,7 @@ function usar() {
   }
   // delante de una estación de fabricar, Usar abre el panel en su pestaña, con lo que tiene encima (estudio del panel,
   // valravnx, 6 nov)
+  if (!it && pj.k === 0 && estacionParaUsar() && estacionParaUsar().obra) { usarPuesto(estacionParaUsar()); return; }
   if (!it && pj.k === 0 && estacionParaUsar() && panelFabricar) { panelFabricar.abrirEstacion(estacionParaUsar().id); return; }
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
@@ -1446,8 +1509,12 @@ function opcionesUsar() {
     const cl = centroLocal(p);
     ops.push({ texto, pos: localAMundo(it.c, cl.lx, cl.lz), y: oyDe(it.c) + p.k * ALTURA, hacer: () => usarInteractivo(it) });
   }
-  for (const e of Object.values(fabCliente.estaciones)) if (ESTACIONES[e.tipo] && pj.k === 0 && Math.hypot(e.x - pj.x, e.z - pj.z) <= USAR_ESTACION)
-    ops.push({ texto: tr('Usar: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => panelFabricar && panelFabricar.abrirEstacion(e.id) });
+  for (const e of Object.values(fabCliente.estaciones)) if (ESTACIONES[e.tipo] && pj.k === 0 && Math.hypot(e.x - pj.x, e.z - pj.z) <= USAR_ESTACION) {
+    if (e.obra) {
+      ops.push({ texto: tr('Obra: {p}', { p: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => usarPuesto(e) });
+      ops.push({ texto: tr('Quitar el marco: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => quitarPuesto(e) });
+    } else ops.push({ texto: tr('Usar: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => panelFabricar && panelFabricar.abrirEstacion(e.id) });
+  }
   const a = arbolCercano();
   if (a) ops.push({ texto: tr('Talar el árbol'), pos: a, alto: 3, hacer: () => hachaEnMano(inventario()) ? empezarTala(a) : mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true) });
   if (pj.k === 0) {
@@ -2110,7 +2177,7 @@ function paso() {
   pintarAguante();
   if (mag > 0.05) {
     estado.talando = null; // moverse deja de talar
-    if (estado.obrando) { estado.obrando = null; mostrarAviso(t('dejasObra')); } // y de construir
+    if (estado.obrando || estado.obrandoPuesto) { estado.obrando = null; estado.obrandoPuesto = null; mostrarAviso(t('dejasObra')); } // y de construir
     const s = Math.sin(cam.yaw), co = Math.cos(cam.yaw);
     const dx = (ax * co + az * s) / Math.hypot(ax, az);
     const dz = (-ax * s + az * co) / Math.hypot(ax, az);
@@ -2141,10 +2208,10 @@ function paso() {
   pj.y += (yObjetivo - pj.y) * Math.min(1, dt * (window.__mutarSuelo ? 0.5 : 14));
   jugador.raiz.position.set(pj.x, pj.y, pj.z);
   jugador.raiz.rotation.y = pj.rot;
-  pasoObra();
+  pasoObra(); pasoPuesto();
   if (rampa && !(estado.obrando && estado.obrando.subir)) quitarRampa(); // se dejó de subir (moverse, reiniciar…)
   moverRampa(dt);
-  jugador.animar(mag > 0.05 ? vel : 0, dt, !!estado.talando || !!estado.obrando);
+  jugador.animar(mag > 0.05 ? vel : 0, dt, !!estado.talando || !!estado.obrando || !!estado.obrandoPuesto);
   combate.paso(dt, { corriendo: correr && mag > 0.05, velocidad: mag > 0.05 ? vel : 0 });
 
   // interiores: ocultar plantas superiores y tejados si estás bajo techo, y también los muebles de esas plantas
@@ -2182,7 +2249,7 @@ function paso() {
 // ---------------- Interfaz ----------------
 const CATEGORIAS = [
   ['tierra', t('catTierra')], ['base', t('catBase')], ['estructura', t('catEstructura')], ['muro', t('catMuros')],
-  ['tejado', t('catTejados')], ['acceso', t('catAcceso')], ['exterior', t('catExterior')], ['deco', t('catDeco')],
+  ['tejado', t('catTejados')], ['acceso', t('catAcceso')], ['exterior', t('catExterior')], ['puestos', tr('Puestos de trabajo')], ['deco', t('catDeco')],
 ];
 let categoria = 'base';
 function construirBarra() {
@@ -2195,14 +2262,18 @@ function construirBarra() {
     tabs.appendChild(b);
   }
   const lista = $('piezas'); lista.innerHTML = '';
-  const entradas = categoria === 'deco'
+  const entradas = categoria === 'puestos'
+    ? Object.entries(ESTACIONES).map(([k, d]) => ({ clase: 'puesto', tipo: k, def: d }))
+    : categoria === 'deco'
     ? Object.entries(DECORACION).filter(([, d]) => enEsteTramo(d)).map(([k, d]) => ({ clase: 'deco', tipo: k, def: d }))
     : Object.entries(PIEZAS).filter(([, d]) => d.cat === categoria && enEsteTramo(d)).map(([k, d]) => ({ clase: k === 'mojon' ? 'mojon' : 'pieza', tipo: k, def: d }));
   if (categoria === 'tierra') entradas.push({ clase: 'nivelar', tipo: 'brocha', def: { nombre: 'Brocha de nivelar', coste: {} }, nota: tr('alisa el suelo') });
   for (const e of entradas) {
     const b = document.createElement('button');
     b.className = 'pieza' + (estado.sel.tipo === e.tipo ? ' sel' : '');
-    const coste = e.nota || Object.entries(e.def.coste).map(([m, n]) => `${n} ${tr(MATERIALES[m]).toLowerCase()}`).join(' · ');
+    const coste = e.nota || (e.clase === 'puesto'
+      ? Object.entries(e.def.coste).map(([m, n]) => `${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(' · ') + ' · ' + tr(DONDE[e.def.donde]).toLowerCase()
+      : Object.entries(e.def.coste).map(([m, n]) => `${n} ${tr(MATERIALES[m]).toLowerCase()}`).join(' · '));
     b.innerHTML = `<b>${tr(e.def.nombre)}</b><small>${coste}</small>`;
     if (e.clase === 'nivelar') b.id = 'btnBrocha';
     b.onclick = () => {
@@ -2215,7 +2286,7 @@ function construirBarra() {
     lista.appendChild(b);
   }
 }
-function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : (estado.sel.clase === 'mojon' || estado.sel.clase === 'nivelar' ? 'tierra' : PIEZAS[estado.sel.tipo].cat); construirBarra(); }
+function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : estado.sel.clase === 'puesto' ? 'puestos' : (estado.sel.clase === 'mojon' || estado.sel.clase === 'nivelar' ? 'tierra' : PIEZAS[estado.sel.tipo].cat); construirBarra(); }
 
 // El contador de arriba (valravnx, 1 nov): en línea, solo dentro de tu tierra (la zona de tu mojón) y con lo que tienes
 // almacenado en ella; fuera, no sale. Provisional, mientras no haya almacenajes de la base: lo almacenado es lo que hay
@@ -2384,7 +2455,7 @@ function pintarTodoInventario() { pintarLlevas(); vestir(); panelInventario.pint
 // sin él, la hace la lógica aquí mismo.
 function hacerFabricacion(a, fin) {
   if (objetosRed) { objetosRed.mandar(a, fin); return; }
-  const r = ejecutarFabricacion(fabCliente, inventarios, registroAcciones, { ...a, autor: AUTOR_LOCAL }, Date.now(), sueloObjetos.suelo, (x, z) => !!mundo.tierraDe(x, z));
+  const r = ejecutarFabricacion(fabCliente, inventarios, registroAcciones, { ...a, autor: AUTOR_LOCAL }, Date.now(), sueloObjetos.suelo, (x, z) => !!mundo.tierraDe(x, z), (x, z) => mundo.bajoTecho(x, z));
   if (r.ok) { if (almacen) guardarInventarios(almacen, inventarios); sueloObjetos.refrescar(); estacionesV.refrescar(); pintarLlevas(); vestir(); panelInventario.pintar(); }
   fin(r.ok ? { ...r, estacion: r.estacion || r.id || null } : r);
 }
