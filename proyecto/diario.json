@@ -5124,5 +5124,22 @@
   ],
   "pruebas": "Batería entera en la nube correcta (lógica, con el recorrido de jugador, y todos los grupos de navegador, PC y móvil), sin las de en línea; el chat, otra vez tras arreglar su prueba",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T15:30:52+01:00",
+  "fin": "2026-11-07T16:49:14+01:00",
+  "titulo": "Gráficos: sin llanos pelados en la estepa",
+  "hito": "graficos",
+  "hecho": [
+   "La causa, en el terreno: tierra adentro, donde el suelo quedaba por debajo del mar, se ponía a 0,4 m justos («nunca bajo el mar»): llanos de kilómetros del todo planos (unos 57 km² en la isla, medidos cada 50 m), sin hierba ni árboles (piden 1 y 1,5 m sobre el mar).",
+   "El manto azul: de lejos, el mar de lejos va 4 m bajo el nivel y, en la hondura comprimida, le ganaba a ese suelo a 0,4 m; al cargarse el terreno de cerca, desaparecía.",
+   "Ahora, pasada la costa, el suelo no baja de unos 2 m y lo que iba a quedar más hondo sube como un relieve suave (un cuarto de metro por cada metro de hoyo, sin pliegue): en tres de aquellos llanos, de 5,7 a 7,7 m, con hierba y matas. La playa no cambia (comprobado punto por punto).",
+   "Entran 17 sitios de salida de pradera que antes quedaban a ras del mar (ninguno se pierde; la prueba del horizonte busca su bosque mixto por su sitio, no por su número).",
+   "Prueba nueva (sin llanos pelados): tierra adentro, nada a menos de 1 m y ningún punto a 0,4 m justos; con el terreno de antes (MUTAR=1) falla.",
+   "Aviso: el suelo de esos llanos sube varios metros; lo construido en ellos en el servidor quedaría enterrado al actualizarlo (mejor con un wipe)."
+  ],
+  "pruebas": "Todas en la nube (su PC no estaba libre): 37 de 38 grupos a la primera; la de Whitholm falló porque la lista de sitios de salida ganaba 17, puesta al día. Capturas del mismo llano antes y después, en PC y móvil, miradas.",
+  "capturas": "capturas/demo-v139",
+  "estado": "ok"
  }
 ]

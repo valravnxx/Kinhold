@@ -1708,9 +1708,9 @@
     },
     {
      "nombre": "Los llanos sin nada a 0,4 m (valravnx, 7 nov: «hay tramos que no aparece vegetacion ni nada en la estepa… a momentos aparece un manto azul»): tierra adentro, lo que quedaba por debajo del mar sube a una altura de tierra de verdad, con relieve, y crece lo que toca",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T15:30:52+01:00",
-     "rama": "trabajo/20261107-1530-llanos"
+     "fin": "2026-11-07T16:49:14+01:00"
     }
    ],
    "num": "G"
@@ -3291,6 +3291,13 @@
      "archivo": "jugar/demo/v138.html",
      "capturas": "capturas/demo-v138",
      "notas": "El tejado de la casa humilde (valravnx, 7 nov): tejado de juncos y su remate de esquina (2 varas y 4 juncos, cortados en la orilla con una lasca), con el junco como material de obra. Lo que pide paja se esconde del menú: la paja sale del cereal, que aún no hay. Prueba nueva que sigue cada material hasta el mundo y no deja pasar ninguna parte de la casa sin origen."
+    },
+    {
+     "v": "v139",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v139.html",
+     "capturas": "capturas/demo-v139",
+     "notas": "Sin llanos pelados en la estepa (valravnx, 7 nov): tierra adentro, lo que quedaba por debajo del mar se ponía a 0,4 m justos, en llanos de kilómetros sin nada que de lejos perdían contra el mar de lejos (el manto azul). Ahora, pasada la costa, el suelo no baja de unos 2 m y lo que iba a quedar más hondo sube como un relieve suave: crece lo que toca y la playa no cambia. 17 sitios de salida de pradera más."
     }
    ]
   },
