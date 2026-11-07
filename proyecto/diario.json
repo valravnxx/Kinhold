@@ -5043,5 +5043,22 @@
   "pruebas": "En la nube, los 36 grupos bien (el PC de valravnx no estaba para pruebas); la primera vez fallaron lógica y demo única por cuatro textos de la versión sin traducir, y el panel de fabricación por un toque en el móvil tapado por el propio panel: arreglados y repetidos esos tres, bien. Fabricación 125/125 (rota a propósito con MUTAR=1, falla), objetos en el servidor 69/69 y el recorrido 78/78 aquí. Miradas las capturas del menú de los puestos (PC y móvil), del marco y de la piedra de tallar levantada.",
   "capturas": "capturas/demo-v136",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T12:23:10+00:00",
+  "fin": "2026-11-07T13:37:28+00:00",
+  "titulo": "P6: el duelo con lo que llevas puesto",
+  "hito": "orden",
+  "hecho": [
+   "En línea, lo que te protege en el duelo es la ropa que llevas puesta en tu inventario del servidor: al entrar y cada vez que cambia lo que llevas, el servidor viste a tu luchador con esas prendas. Antes todos peleaban con el gambesón que ponía el servidor.",
+   "El cliente ya no dice su armadura: «equipar» solo cambia el arma, y si una versión de antes manda la armadura, no cuenta.",
+   "Los demás ven lo que llevas puesto (la foto de cada luchador lleva sus prendas) y la copia del navegador se viste con ella. Al volver a empezar sigues con lo puesto.",
+   "Decisión provisional: ponerse o quitarse algo cambia lo que te protege enseguida, también en mitad de una pelea; lo que se tarda en ponerse cada prenda no existe todavía.",
+   "El arma de la mano sigue siendo la espada larga: que salga del inventario y lo compruebe el servidor es la tarea siguiente del hito.",
+   "Pruebas: la del combate en el servidor comprueba que equipar con «malla» no cambia nada, que con la cota protege lo de sus prendas zona a zona, que los demás y la copia lo ven, y que en el servidor de verdad el luchador lleva lo de su inventario y, al quitarse la camisa, deja de llevarla (rota a propósito con MUTAR_ROPA=1, falla). El recorrido de jugador comprueba que uno nuevo lucha con la camisa y el pantalón, sin armadura.",
+   "Sin versión nueva: no cambia nada que se vea; el servidor lo coge al actualizarse a main."
+  ],
+  "pruebas": "En la nube, 37 grupos: todos bien (el PC de valravnx no estaba para pruebas). Aquí, combate en el servidor 81/81 y recorrido 79/79. Miradas las capturas del combate en el mundo (PC y móvil): igual que antes.",
+  "estado": "ok"
  }
 ]

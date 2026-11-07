@@ -1496,9 +1496,9 @@
     },
     {
      "nombre": "El duelo con lo que llevas: la ropa y la armadura puestas y el arma de la mano salen del inventario",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T12:24:06+00:00",
-     "rama": "trabajo/20261107-1224"
+     "fin": "2026-11-07T13:37:28+00:00"
     },
     {
      "nombre": "El arma de la mano en el combate sale del inventario (hoy siempre es la espada larga) y el servidor lo comprueba",
