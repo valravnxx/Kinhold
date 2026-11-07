@@ -1,11 +1,22 @@
 {
  "A": {
-  "inicio": "2026-11-07T08:24:13+00:00",
-  "tarea": "Lo que se fabrica con las manos, con su modelo (estilo v5) en la mano, el cinturón o la espalda: cordel, cuerda, lasca, hacha de piedra, palo cavador, taladro de fuego, leñero y rastra",
+  "inicio": "2026-11-07T10:25:06+00:00",
+  "tarea": "Los puestos de trabajo como obra, en su propia pestaña del menú de construcción («Puestos de trabajo», aparte de los muebles): se pone el marco y se le llevan los materiales, como a cualquier obra; cada uno donde le toca (piedra de tallar y banco de tronco, dentro o fuera; hoguera, solo fuera; hogar, solo dentro). Fuera el ponerlos al momento desde el panel de fabricar",
   "hito": "crafting",
-  "rama": "trabajo/20261107-0824"
+  "rama": "trabajo/20261107-1024"
  },
- "B": null,
+ "B": {
+  "inicio": "2026-11-07T09:32:27+00:00",
+  "tarea": "Una sola tabla de armadura: el duelo usa la protección de las prendas (src/logica/prendas.js) en vez de la suya, y las mismas zonas del cuerpo",
+  "hito": "orden",
+  "rama": "trabajo/20261107-0933"
+ },
+ "chat:trabajo/20261107-0948-cielo": {
+  "inicio": "2026-11-07T09:48:41+01:00",
+  "tarea": "El ciclo de día y noche: cielo con estrellas, sol y luna, y la luz del sol que cambia (valravnx, 7 nov)",
+  "hito": "graficos",
+  "rama": "trabajo/20261107-0948-cielo"
+ },
  "chat:trabajo/20261107-0945-dosel": {
   "inicio": "2026-11-07T09:43:56+01:00",
   "tarea": "El bosque de lejos, de cerca, sin montículos (valravnx, 7 nov: «crea este glitch grafico de monticulos… habria que hacerlo mas suave, y tambien que comiencen a aparecer algo mas lejos»): el dosel de cerca más suave y empezando más lejos, sin tapar la vista",

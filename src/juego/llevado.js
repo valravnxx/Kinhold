@@ -23,9 +23,11 @@ import { OCULTO } from '../logica/detalle.js';
 import { CATALOGO } from '../logica/inventario.js';
 import { huellaLlevado } from '../logica/llevado.js';
 import { TRONCO_HOMBRO } from '../personajes/medidas_carga.js';
-import { modeloHacha } from './personaje.js'; // (se usa al montar: el ciclo entre los dos módulos no molesta)
+import { modeloHachaDe } from './personaje.js'; // (se usa al montar: el ciclo entre los dos módulos no molesta)
+import { loteHachaPiedra, piezasArcoTaladro, piezasHuso } from './modelos_objetos.js';
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
+const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
 const HACHAS = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro']);
 const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
 const nuevoLote = () => new Lote({ variacion: 0.05, rangoSuelo: 0.001, suelo: -100 });
@@ -205,6 +207,41 @@ function bastidor(L, alto = 0.64, ancho = 0.3, repisa = 0.22) {
   L.add(cil(0.012, 0.012, ancho + 0.03, 6), 'maderaOsc', 0, -alto / 2 + 0.03, 0.03 + repisa, { z: Math.PI / 2 }, { tex: 'veta' });
 }
 
+// Lo que se fabrica con las manos (tarea de P3, 7 nov), cada uno con su modelo en la mano y colgado del cinturón.
+// La lasca de sílex: una esquirla de piedra oscura, fina y con filo, con un trozo de su costra clara (sin mango: se
+// coge entre los dedos). A lo largo de +Y.
+function lasca(L, x, y, z) {
+  // facetada como sale al golpearla: un icosaedro aplastado y estirado, de sombreado plano, con el bulbo del golpe
+  L.add(new THREE.IcosahedronGeometry(0.03, 0), SILEX, x, y, z, { z: 0.25, y: 0.4 }, { escala: v3(0.8, 1.55, 0.28), plano: true, tex: 'piedra', brillo: 1.08 });
+  L.add(new THREE.IcosahedronGeometry(0.014, 0), SILEX_CLARO, x + 0.004, y + 0.02, z + 0.004, { y: 1.1 }, { escala: v3(0.9, 1.2, 0.35), plano: true, tex: 'piedra' });
+  L.add(new THREE.IcosahedronGeometry(0.012, 0), CORTEZA_SILEX, x - 0.01, y - 0.032, z, null, { escala: v3(1, 0.8, 0.45), plano: true, tex: 'piedra' });
+}
+// El palo cavador: una rama recta pelada (1,1 m), más gruesa por arriba, con la punta en bisel endurecida al fuego.
+// `abajo` es lo que sobresale del puño por debajo; la punta va hacia +Y.
+function paloCavador(L, abajo) {
+  L.add(cil(0.017, 0.021, 1.0, 7), 'madera', 0, 0.5 - abajo, 0, null, { tex: 'veta' });
+  L.add(new THREE.ConeGeometry(0.017, 0.12, 7), 0x5a4532, 0, 1.06 - abajo, 0.004, null, { escala: v3(1, 1, 0.55), plano: true, tex: 'veta' });
+  L.add(new THREE.ConeGeometry(0.008, 0.04, 6), TOSTADO, 0, 1.1 - abajo, 0.003, null, { escala: v3(1, 1, 0.55), plano: true });
+  L.add(new THREE.CircleGeometry(0.021, 7), 'corte', 0, -abajo - 0.001, 0, { x: Math.PI / 2 });
+}
+// Una madeja (cordel) o una adujada (cuerda) cogida por un lado: espiras apretadas en el plano YZ, con la mano en el
+// borde, y la vuelta que la ata.
+function madeja(L, r, g, espiras, color) {
+  // las espiras se abren en abanico desde la mano (giradas sobre el eje por el que cuelgan), no apiladas: así no
+  // parece un tambor macizo
+  for (let i = 0; i < espiras; i++) {
+    const a = Math.PI / 2 + (i - (espiras - 1) / 2) * 0.32 + (azar(i) - 0.5) * 0.1, ri = r * (0.92 + azar(i + 5) * 0.12);
+    L.add(new THREE.TorusGeometry(ri, g, 5, 22), color, 0, ri, 0, { y: a, x: (azar(i + 2) - 0.5) * 0.1 }, { tex: 'paja' });
+  }
+  L.add(new THREE.TorusGeometry(g * 2.2, g * 0.8, 4, 10), color, 0, 0.004, 0, { x: Math.PI / 2 }, { tex: 'liso' });   // la vuelta que las ata, en la mano
+  L.add(cordon([v3(0, 0.004, 0), v3(0.02, 0.6 * r, 0.03), v3(0.01, 1.3 * r, 0.05)], g * 0.9), color, 0, 0, 0, null, { tex: 'paja' }); // el cabo suelto
+}
+// El taladro de fuego llevado: el arco cogido por una punta (a lo largo de +Y) con el huso metido en el cordel.
+function arcoTaladro(L, y0) {
+  piezasArcoTaladro(L, { y0, enSuelo: false });
+  piezasHuso(L, 0, y0 + 0.3, 0.012, { z: Math.PI / 2, y: 0.3 });
+}
+
 // Lo de la espalda, en su espacio: el origen sobre la espalda a media altura, +Z hacia fuera y +Y arriba.
 // Devuelve { L, alto } (alto: lo que mide, para las correas).
 function espalda(t, dentro) {
@@ -300,16 +337,26 @@ export { espalda as loteEspalda, enMano as loteEnMano };
 
 // Lo que va en la mano, en el espacio de la mano (como el hacha de src/juego/personaje.js: +Y del meñique al
 // índice, +Z hacia los nudillos, el origen en el puño).
+// lo que se fabrica con las manos y tiene ya su modelo en la mano y en el cinturón (7 nov). __sinModelosManos (solo
+// para comprobar que la prueba falla) los vuelve a dibujar con la bolsa o el hatillo de antes.
+const HECHOS_A_MANO = new Set(['lasca_silex', 'palo_cavador', 'cordel', 'cuerda', 'taladro_fuego', 'lenero']);
+const sinModelo = t => globalThis.__sinModelosManos && HECHOS_A_MANO.has(t);
 function enMano(t) {
   const L = nuevoLote();
-  if (t === 'piedra' || t === 'mineral_hierro') piedra(L, 0, 0, 0.01, 0.06, 3);
+  if (sinModelo(t)) { hatillo(L, 0, 0.04, 0.03, 1); L.generico = true; }
+  else if (t === 'piedra' || t === 'mineral_hierro') piedra(L, 0, 0, 0.01, 0.06, 3);
   else if (t === 'silex') L.add(new THREE.IcosahedronGeometry(0.045, 1), 0xd8d2c4, 0, 0, 0.01, null, { plano: true, escala: v3(1.3, 0.8, 1), tex: 'piedra' });
   else if (t === 'rama' || t === 'vara') {
     L.add(cil(0.016, 0.022, t === 'vara' ? 1.6 : 1.0, 6), t === 'vara' ? 'madera' : 'corteza', 0, 0.1, 0, { x: 0.05 }, { tex: t === 'vara' ? 'veta' : 'corteza' });
     if (t === 'rama') L.add(cil(0.006, 0.01, 0.3, 5), 'corteza', 0.05, 0.35, 0, { z: -0.5 }, { tex: 'corteza' });
   } else if (t === 'lena') astilla(L, 0, 0, 0.02, 0.42, 0.045, {}, 2);
   else if (t === 'tabla') L.add(cajaR(0.18, 1.0, 0.025, 0.006), 'tabla', 0, 0.1, 0.03, null, { tex: 'veta' });
-  else if (t === 'cuchillo' || t === 'lasca_silex') {
+  else if (t === 'lasca_silex') lasca(L, 0, 0.045, 0.012);
+  else if (t === 'palo_cavador') paloCavador(L, 0.4);
+  else if (t === 'cordel') madeja(L, 0.045, 0.004, 7, CORDEL);
+  else if (t === 'cuerda') madeja(L, 0.075, 0.009, 5, CUERDA);
+  else if (t === 'taladro_fuego') arcoTaladro(L, -0.04);
+  else if (t === 'cuchillo') {
     L.add(cil(0.011, 0.013, 0.1, 6), 'tabla', 0, 0, 0, null, { tex: 'veta' });
     L.add(cajaR(0.026, 0.13, 0.004, 0.0015), 0x8e8f8e, 0, 0.11, 0.004, null, { plano: true, brillo: 1.1 });
   } else if (CATALOGO[t] && (CATALOGO[t].herramienta || ['lanza_endurecida', 'antorcha'].includes(t))) {
@@ -323,8 +370,8 @@ function enMano(t) {
   } else if (t === 'escudo') {
     L.add(cil(0.3, 0.3, 0.02, 18), 'tabla', 0.02, 0, 0.04, { z: Math.PI / 2 }, { tex: 'veta' });
     L.add(new THREE.SphereGeometry(0.07, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), 'hierro', 0.035, 0, 0.04, { z: -Math.PI / 2 });
-  } else if (CATALOGO[t] && CATALOGO[t].tam === 'P') bolsa(L, 0, 0.04, 0.02, 0.9, 'lino');
-  else hatillo(L, 0, 0.04, 0.03, 1);
+  } else if (CATALOGO[t] && CATALOGO[t].tam === 'P') { bolsa(L, 0, 0.04, 0.02, 0.9, 'lino'); L.generico = true; }
+  else { hatillo(L, 0, 0.04, 0.03, 1); L.generico = true; }
   return L;
 }
 
@@ -360,7 +407,7 @@ function seguir(grupo, raiz) {
 }
 // Un modelo del lote en su sitio del cuerpo (matriz `m`) atado al hueso.
 function pieza(L, nombre, m, hueso, invRaiz) {
-  const g = deMano(L); g.name = 'llevado_' + nombre;
+  const g = deMano(L); g.name = 'llevado_' + nombre; g.userData.generico = !!L.generico; // con la bolsa o el hatillo de lo que aún no tiene modelo
   g.matrix.copy(m); g.matrix.decompose(g.position, g.quaternion, g.scale);
   g.traverse(o => { if (o.isMesh) o.userData.herramienta = true; });
   return atar(g, hueso, invRaiz);
@@ -438,16 +485,23 @@ export function crearLlevado(j) {
           if (!t) return;
           const a = t === 'espada' ? 1.15 : SITIOS[i], p = puntoEn(c, a, 0.018, -0.01);
           const C = nuevoLote();
-          if (HACHAS.has(t)) { grupo.add(atar(colgarHacha(p, a), pelvis, invRaiz)); return; } // la cabeza arriba, el mango colgando
-          if (t === 'espada') espadaEnVaina(C);
-          else if (t === 'cuchillo' || t === 'lasca_silex') cuchilloEnFunda(C);
+          if (HACHAS.has(t)) { grupo.add(atar(colgarHacha(p, a, t), pelvis, invRaiz)); return; } // la cabeza arriba, el mango colgando
+          if (sinModelo(t)) { hatillo(C, 0, 0, 0, 0.9); C.generico = true; }
+          else if (t === 'espada') espadaEnVaina(C);
+          else if (t === 'cuchillo') cuchilloEnFunda(C);
+          else if (t === 'lasca_silex') { bolsa(C, 0, 0, 0, 0.8); lasca(C, 0.012, -0.025, 0.03); } // en su bolsita, asomando
+          else if (t === 'palo_cavador') paloCavador(C, 0.82);       // metido en el cinto: cuelga por la pierna, la punta asoma arriba
+          else if (t === 'cordel') madeja(C, 0.04, 0.004, 6, CORDEL);
+          else if (t === 'cuerda') madeja(C, 0.07, 0.009, 5, CUERDA);
+          else if (t === 'taladro_fuego') arcoTaladro(C, -0.3);
           else if (CATALOGO[t].herramienta) herramienta(C, t, 0.55);
-          else if (CATALOGO[t].tam === 'P') bolsa(C, 0, 0, 0, 1);
-          else hatillo(C, 0, 0, 0, 0.9);
+          else if (CATALOGO[t].tam === 'P') { bolsa(C, 0, 0, 0, 1); C.generico = true; }
+          else { hatillo(C, 0, 0, 0, 0.9); C.generico = true; }
           // de lado sobre la cadera, mirando hacia fuera; la espada inclinada hacia atrás
           const m = new THREE.Matrix4().makeRotationY(a);
           if (t === 'espada') m.multiply(new THREE.Matrix4().makeRotationZ(0.5)).multiply(new THREE.Matrix4().makeTranslation(0, 0.05, 0)); // la punta hacia atrás
-          else if (CATALOGO[t].herramienta && t !== 'cuchillo') m.multiply(new THREE.Matrix4().makeRotationZ(Math.PI)).multiply(new THREE.Matrix4().makeTranslation(0, -0.05, 0));
+          else if (['cordel', 'cuerda'].includes(t)) m.multiply(new THREE.Matrix4().makeRotationZ(Math.PI)).multiply(new THREE.Matrix4().makeTranslation(0, -0.01, 0)); // cuelga de su atadura
+          else if (CATALOGO[t].herramienta && !['cuchillo', 'lasca_silex', 'palo_cavador', 'taladro_fuego'].includes(t)) m.multiply(new THREE.Matrix4().makeRotationZ(Math.PI)).multiply(new THREE.Matrix4().makeTranslation(0, -0.05, 0));
           m.setPosition(p);
           grupo.add(pieza(C, 'colgado_' + i, m, pelvis, invRaiz));
         });
@@ -528,24 +582,25 @@ export function crearLlevado(j) {
     if (l.dos && l.der) {
       const L = nuevoLote();
       if (l.der === 'tronco_corto' || l.der === 'tronco_delgado') troncoCorto(L, 0, 0, 0, l.der === 'tronco_corto' ? 0.9 : 1.2, l.der === 'tronco_corto' ? 0.13 : 0.09, 'x');
-      else hatillo(L, 0, 0.12, 0, 2.2);
+      else if (CATALOGO[l.der] && CATALOGO[l.der].lugar === 'espalda' && !sinModelo(l.der)) { const E = espalda(l.der, {}).L; for (const p of E.piezas) { p.m.premultiply(new THREE.Matrix4().makeRotationY(Math.PI)).premultiply(new THREE.Matrix4().makeTranslation(0, -0.12, 0.1)); L.piezas.push(p); } } // la mochila o el bastidor, cogido delante por los largueros, la repisa hacia el pecho
+      else { hatillo(L, 0, 0.12, 0, 2.2); L.generico = true; }
       // va entre las dos manos (con la animación de llevar en brazos, delante del pecho): lo pone seguir()
-      const g = deMano(L); g.name = 'llevado_manos'; g.matrixAutoUpdate = false;
+      const g = deMano(L); g.name = 'llevado_manos'; g.matrixAutoUpdate = false; g.userData.generico = !!L.generico;
       g.traverse(o => { if (o.isMesh) o.userData.herramienta = true; });
       if (H.hand_r && H.hand_l) { g.userData.entreManos = [H.hand_r, H.hand_l]; grupo.add(g); }
     } else for (const [lado, t] of [['r', l.der], ['l', l.izq]]) {
       if (!t || HACHAS.has(t)) continue;
       // lo largo (herramientas, ramas, varas) por el puño, como el hacha; lo redondo (una piedra), en la palma
-      const largo = ['rama', 'vara', 'tabla', 'lena', 'espada', 'cuchillo', 'lasca_silex'].includes(t) || (CATALOGO[t] && CATALOGO[t].herramienta);
+      const largo = ['rama', 'vara', 'tabla', 'lena', 'espada', 'cuchillo'].includes(t) || (CATALOGO[t] && CATALOGO[t].herramienta && t !== 'lasca_silex');
       const b = baseMano(mh, lado, invRaiz, largo ? 1.1 : 0.6); if (!b) continue;
       grupo.add(pieza(enMano(t), 'mano_' + lado, b.m, b.mano, invRaiz));
     }
     seguir(grupo, j.raiz);
   }
   // el hacha por el cinto: el modelo de la mano, la cabeza arriba y el mango por dentro del cinturón
-  function colgarHacha(p, a) {
+  function colgarHacha(p, a, t) {
     const g = new THREE.Group(); g.name = 'llevado_hacha_colgada';
-    const h = modeloHacha(); h.scale.setScalar(0.8); h.position.set(0, -0.42, 0.0); h.rotation.set(0, Math.PI / 2, -0.12); g.add(h);
+    const h = modeloHachaDe(t); h.scale.setScalar(0.8); h.position.set(0, -0.42, 0.0); h.rotation.set(0, Math.PI / 2, -0.12); g.add(h);
     g.traverse(o => { if (o.isMesh) o.userData.herramienta = true; });
     g.matrix.makeRotationY(a).setPosition(p);
     return g;
