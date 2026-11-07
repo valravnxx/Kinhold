@@ -5230,5 +5230,19 @@
   "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas rehechas, miradas una a una.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:38:33+01:00",
+  "fin": "2026-11-07T17:47:30+01:00",
+  "titulo": "P4: el estudio de la interfaz, sexta versión (los juegos del género)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Estudio de los juegos del género (valravnx: «estas creando muy rapido y no te veo hacer estudio de otros juegos del genero para nada»): trece juegos de supervivencia, construcción y MMO de PC y de móvil, con fuentes, en cinco temas: sacar el arma, hablar, construir y quitar, las necesidades, y la acción y lo que se ve siempre. Salen siete reglas.",
+   "Sexta versión de la propuesta con esas reglas: el arma, en un hueco «al cinto» junto a las manos (C), solo si llevas una; hablar, un botón arriba (Intro) con ocho frases rápidas que llegan a cada uno en su lengua; quitar, dentro de construir («Poner | Quitar», X) y con deshacer; el menú, solo Equipo, Fabricar, Construir y Mapa; el día y quién está en línea, en el menú.",
+   "Las teclas de las maquetas, las que el juego ya usa (F, C, H, I, B, X, R, M, Intro). El estudio, más corto: fuera las versiones viejas (siguen en el historial)."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin desbordarse; las maquetas de los ocho estados, miradas una a una en PC y móvil.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
