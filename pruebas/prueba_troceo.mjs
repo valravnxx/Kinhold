@@ -123,7 +123,8 @@ console.log('Llevar el tronco corto: con las dos manos o al hombro');
   const rc = sl.coger(manos, pila.id, 1, 0, T0);
   comprobar('de una pila de troncos cortos se coge uno, con las dos manos', rc.ok && rc.cantidad === 1 && manos.lugares['mano:der']?.tipo === 'tronco_corto' && sl.porId(pila.id, T0).cosa.n === 2, rc.motivo);
   const otro = new Inventario();
-  comprobar('el largo y el delgado no van al hombro', !otro.coger('tronco_delgado', 1, 'hombro').ok && !otro.coger('tronco_largo', 1, 'hombro').ok && !otro.coger('piedra', 1, 'hombro').ok);
+  comprobar('el largo (enorme) y una piedra no van al hombro', !otro.coger('tronco_largo', 1, 'hombro').ok && !otro.coger('piedra', 1, 'hombro').ok);
+  comprobar('el delgado sí (7 nov: la madera de la casa humilde se lleva así a la obra)', new Inventario().coger('tronco_delgado', 1, 'hombro').ok);
   comprobar('va en el leñero (2 troncos cortos)', capacidad('lenero').porTipo.tronco_corto === 2);
   // al cargar un guardado con el tronco al hombro, sigue ahí
   const g = new Inventario(); g.coger('tronco_corto', 1, 'hombro');
