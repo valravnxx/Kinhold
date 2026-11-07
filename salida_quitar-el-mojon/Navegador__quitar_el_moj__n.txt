@@ -1,0 +1,31 @@
+PC
+  OK   PC: mojón colocado
+  OK   PC: 3 piezas y 1 mueble construidos — 4
+  OK   PC: al apuntar al mojón avisa de que se pierde lo construido, con la cuenta — Quitar tu mojón: dejas tu tierra y PIERDES lo construido en ella (4 piezas y muebles, sin recuperar nada). Desmonta antes lo que quieras recuperar.
+  OK   PC: el aviso es de los rojos (error)
+  OK   PC: sale el botón de confirmar
+  OK   PC: lo que se perdería queda resaltado (y el mojón) — 8 mallas
+  OK   PC: al confirmar, el mojón desaparece y la tierra queda libre — Mojón quitado: tu tierra queda libre y se han perdido 4 piezas y muebles. Pon el mojón donde quieras.
+  OK   PC: y lo construido se ha perdido — 0
+  OK   PC: el aviso dice lo perdido y que se puede volver a poner — Mojón quitado: tu tierra queda libre y se han perdido 4 piezas y muebles. Pon el mojón donde quieras.
+  OK   PC: vuelve al modo mover
+  OK   PC: se vuelve a poner el mojón en otro sitio — {'x': 8, 'z': 8}
+  OK   PC: y se construye en la tierra nueva
+  OK   PC: al recargar sigue el mojón nuevo y solo lo nuevo — {'x': 8, 'z': 8}
+Móvil
+  OK   móvil: mojón colocado
+  OK   móvil: 3 piezas y 1 mueble construidos — 4
+  OK   móvil: al apuntar al mojón avisa de que se pierde lo construido, con la cuenta — Quitar tu mojón: dejas tu tierra y PIERDES lo construido en ella (4 piezas y muebles, sin recuperar nada). Desmonta antes lo que quieras recuperar.
+  OK   móvil: el aviso es de los rojos (error)
+  OK   móvil: sale el botón de confirmar
+  OK   móvil: lo que se perdería queda resaltado (y el mojón) — 8 mallas
+  OK   móvil: al confirmar, el mojón desaparece y la tierra queda libre — Mojón quitado: tu tierra queda libre y se han perdido 4 piezas y muebles. Pon el mojón donde quieras.
+  OK   móvil: y lo construido se ha perdido — 0
+  OK   móvil: el aviso dice lo perdido y que se puede volver a poner — Mojón quitado: tu tierra queda libre y se han perdido 4 piezas y muebles. Pon el mojón donde quieras.
+  OK   móvil: vuelve al modo mover
+  OK   móvil: se vuelve a poner el mojón en otro sitio — {'x': 8, 'z': 8}
+  OK   móvil: y se construye en la tierra nueva
+  OK   móvil: al recargar sigue el mojón nuevo y solo lo nuevo — {'x': 8, 'z': 8}
+  OK   sin errores de página
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas/quitar_mojon
