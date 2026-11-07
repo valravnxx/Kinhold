@@ -78,9 +78,24 @@ export function crearAmbiente(escena, { luz = 'manana', alcance = 12.5, mapa = 1
     const [a, b] = L.fondo.map(c => '#' + new THREE.Color(c).getHexString());
     if (fondoPagina) document.body.style.background = `linear-gradient(${b} 0%, ${a} 60%, ${a} 100%)`;
     else { if (escena.background?.isTexture) escena.background.dispose(); escena.background = texturaCielo(b, a); }
-    escena.fog = new THREE.Fog(L.fondo[0], niebla[0], niebla[1]);
+    escena.fog = amb.niebla = new THREE.Fog(L.fondo[0], niebla[0], niebla[1]);
     amb.seguir(centro.x, centro.z);
     return id;
+  };
+  // el ciclo de día y noche (src/mundo/cielo.js; c: lo de src/logica/cielo.js cieloDe): la luz del sol o de la luna,
+  // la del cielo, la niebla y los colores del cielo de este momento. Sin rehacer nada (se llama en cada fotograma).
+  amb.ponerDia = (c) => {
+    amb.cielo = [c.arriba, c.horizonte];
+    sol.color.setHex(c.luz.color); sol.intensity = c.luz.intensidad;
+    dir.fromArray(c.luz.direccion).normalize();
+    hemi.color.setHex(c.hemi.arriba); hemi.groundColor.setHex(c.hemi.suelo); hemi.intensity = c.hemi.intensidad;
+    amb.niebla.color.setHex(c.horizonte);   // (la misma niebla que lee el posprocesado)
+    if (fondoPagina && amb.__fondo !== c.horizonte) {   // (lo que se ve antes del primer dibujo)
+      amb.__fondo = c.horizonte;
+      const [a, b] = [c.horizonte, c.arriba].map(x => '#' + x.toString(16).padStart(6, '0'));
+      document.body.style.background = `linear-gradient(${b} 0%, ${a} 60%, ${a} 100%)`;
+    }
+    amb.seguir(centro.x, centro.z, centro.y);
   };
   amb.ponerLuz(luz);
   return amb;

@@ -19,7 +19,9 @@ const SMAA = { 'smaa-bajo': SMAAPreset.LOW, 'smaa-medio': SMAAPreset.MEDIUM, 'sm
 // opciones: { sol: la malla del disco del sol (para los haces), foco: Vector3 al que mira el desenfoque, niebla: la de la escena }
 // compresion (opcional): () => { r0, s } del horizonte del mundo (src/mundo/horizonte.js), o null si no hay;
 // cielo (opcional): () => [arriba, horizonte] (hex sRGB), el degradado del cielo, para que lo lejano se funda con él
-export function crearPosprocesado(renderer, escena, camara, { sol = null, foco = new THREE.Vector3(), niebla = null, luzSol = null, compresion = null, cielo = null } = {}) {
+// cieloVivo (opcional): el estado del ciclo de día y noche (src/mundo/cielo.js): el cielo lo pinta la niebla, con su sol,
+// su luna y sus estrellas
+export function crearPosprocesado(renderer, escena, camara, { sol = null, foco = new THREE.Vector3(), niebla = null, luzSol = null, compresion = null, cielo = null, cieloVivo = null } = {}) {
   const tabla = LookupTexture.createNeutral(32);
   rellenarTabla(tabla.image.data, 32);
   tabla.needsUpdate = true;
@@ -70,7 +72,7 @@ export function crearPosprocesado(renderer, escena, camara, { sol = null, foco =
     lista.push(new ToneMappingEffect({ mode: on.tono ? ToneMappingMode.ACES_FILMIC : ToneMappingMode.LINEAR }));
     // con horizonte (los perfiles altos, si el mundo lo tiene), la niebla deja ver lo lejano con su bruma
     const comp = perfil.horizonte && compresion ? compresion() : null;
-    if (on.niebla && n) lista.push(new NieblaEffect(n, camara, comp ? { ...HORIZONTE, ...comp, cielo: cielo ? cielo() : null } : null));
+    if (on.niebla && n) lista.push(new NieblaEffect(n, camara, comp ? { ...HORIZONTE, ...comp, cielo: cielo ? cielo() : null } : null, cieloVivo));
     if (on.color) lista.push(new LUT3DEffect(tabla));
     composer.addPass(new EffectPass(camara, ...lista));
     if (SMAA[perfil.suavizado] !== undefined) composer.addPass(new EffectPass(camara, new SMAAEffect({ preset: SMAA[perfil.suavizado] })));

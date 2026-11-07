@@ -24,9 +24,10 @@ export function aparatoDe(renderer) {
 
 // escena, camara y ambiente: los del juego; la niebla de la escena se toma ahora (con posprocesado la pone el efecto)
 // horizonte (opcional): el del mundo (src/mundo/horizonte.js): los perfiles altos lo encienden, con su niebla
-export function crearGraficos(renderer, escena, camara, ambiente, horizonte = null) {
+// cieloVivo (opcional): el del ciclo de día y noche (src/mundo/cielo.js), que pinta la niebla
+export function crearGraficos(renderer, escena, camara, ambiente, horizonte = null, cieloVivo = null) {
   const niebla = escena.fog;
-  const post = crearPosprocesado(renderer, escena, camara, { niebla: () => niebla, luzSol: ambiente.sol, compresion: horizonte ? () => horizonte.compresion : null, cielo: () => ambiente.cielo || null });
+  const post = crearPosprocesado(renderer, escena, camara, { niebla: () => niebla, luzSol: ambiente.sol, compresion: horizonte ? () => horizonte.compresion : null, cielo: () => ambiente.cielo || null, cieloVivo });
   const aparato = aparatoDe(renderer);
   const sugerido = sugerirPerfil(aparato);
   const enDireccion = new URLSearchParams(location.search).get('graficos');
