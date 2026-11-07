@@ -358,7 +358,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
       if (!o) {
         o = new THREE.Group();
         const modelo = MODELO_ESTACION[e.tipo](e.id); modelo.name = 'modelo'; o.add(modelo);
-        o.position.set(e.x, (Number.isFinite(e.y) ? e.y : altura(e.x, e.z)) - 0.01, e.z); o.rotation.y = az(e.id, 7) * Math.PI * 2;
+        o.position.set(e.x, (Number.isFinite(e.y) ? e.y : altura(e.x, e.z)) - 0.01, e.z); o.rotation.y = Number.isFinite(e.giro) ? e.giro : az(e.id, 7) * Math.PI * 2;   // el giro con que se puso (7 nov); las de antes, al azar
         o.name = 'estacion_' + e.tipo; o.userData.id = e.id; o.userData.tipo = e.tipo;
         grupo.add(o); vistas.set(e.id, o);
       }
@@ -381,6 +381,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
     for (const e of lista) if (e && typeof e.id === 'string' && Number.isFinite(e.x) && Number.isFinite(e.z)) {
       const n = nuevas[e.id] = { id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, cola: [], deposito: limpiarDeposito(e.deposito, e.tipo) };
       if (Number.isFinite(e.y)) n.y = e.y;
+      if (Number.isFinite(e.giro)) n.giro = e.giro;
       const ob = e.obra && limpiarObra(e.obra, e.tipo); if (ob) n.obra = ob;
       // el fuego: con lo que le queda, contado desde que llega (la hora de este navegador)
       if (e.fuego && typeof e.fuego === 'object') n.fuego = { hasta: e.fuego.encendida && Number(e.fuego.queda) > 0 ? Date.now() + Number(e.fuego.queda) * 1000 : 0,
