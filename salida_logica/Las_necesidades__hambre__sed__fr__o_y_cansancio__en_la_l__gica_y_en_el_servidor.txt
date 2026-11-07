@@ -1,0 +1,30 @@
+La lógica
+  OK   empiezan a 0
+  OK   el hambre llega al máximo en 90 minutos sin comer (dos comidas por día de juego como poco) — 90 min
+  OK   y la sed en 60, más rápida — 60 min
+  OK   no pasan de 100
+  OK   el frío va hacia lo que pide el sitio (en 10 minutos, casi entero) — 78.6
+  OK   y baja cuando el sitio no lo pide — 0.0
+  OK   correr cansa (10 s, 5 puntos) — 5.00
+  OK   quieto se descansa más que andando — 46.0 y 49.0
+  OK   andar con un tronco (12 kg) al hombro cansa — 3.60
+  OK   cada acción cansa lo suyo (talar 1,5; obra 2)
+  OK   con hambre al máximo, el cansancio sube el doble
+  OK   y las heridas se curan despacio
+  OK   con el cansancio al máximo, ni correr ni golpear fuerte
+  OK   con el frío al máximo, torpe
+  OK   avisos desde 40 y en fuerte desde 75 — [{"que":"sed","fuerte":false},{"que":"cansancio","fuerte":true}]
+  OK   comer y beber bajan lo suyo, sin pasar de 0
+  OK   lo guardado se limpia (números raros, fuera)
+Con el servidor de verdad
+  OK   la bienvenida trae sus necesidades: un jugador nuevo, a 0 — {"hambre":0,"sed":0,"frio":0,"cansancio":0}
+  OK   le llegan solas, varias veces por segundo en la prueba (cada segundo en el de verdad) — 11 en 3 s
+  OK   suben solas con el tiempo: la sed más que el hambre — {"hambre":0.05,"sed":0.08,"frio":0,"cansancio":0}
+  OK   correr de verdad cansa (aunque el navegador diga que anda) — 1.4
+  OK   decir que corre sin moverse no cansa: descansa — 1.4 → 0.47
+  OK   lo que hace cansa (fabricar un cordel) —  0.47 → 0.74
+  OK   a otro jugador no le llegan las tuyas: las suyas, sin correr — {"hambre":0.16,"sed":0.25,"frio":0,"cansancio":0}
+  OK   al salir se guardan (necesidades.json) — {"hambre":0.16,"sed":0.25,"frio":0,"cansancio":0.74}
+  OK   al volver, el mismo personaje sigue como estaba — {"hambre":0.16,"sed":0.25,"frio":0,"cansancio":0.74}
+
+26 correctas, 0 fallan

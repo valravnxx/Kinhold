@@ -1,0 +1,86 @@
+Combate en el servidor, sin red
+  OK   cargar y soltar son intenciones válidas
+  OK   el golpe no llega antes de su carga mínima y su vuelo — 465 ms
+  OK   al llegar el servidor resuelve el golpe, con su autor y su objetivo — herida en brazoI (grave) a los 468 ms
+  OK   la herida queda en el registro con autor
+  OK   el herido lo está en el servidor
+  OK   el golpe dice el tipo de herida (para el sonido y la sangre) — corte
+  OK   la foto lleva cada herida (zona, gravedad, tipo), sin modo, ni guardia, ni liza — autor,arma,armadura,prendas,accion,linea,duracion,tAccion,bloqueando,lineaBloqueo,sacada,tension,cansancio,sangre,heridas,lista,botiquin,contra,fuera
+  OK   parar con tiempo por el lado bueno es parada normal — parada
+  OK   parar justo antes del impacto (en el reloj del servidor) es parada perfecta — parada perfecta
+  OK   sin nadie a su alcance el golpe va al aire y no hiere
+  OK   de espaldas al rival tampoco le da
+  OK   las intenciones mal formadas se rechazan
+  OK   las intenciones de la liza y de las guardias ya no valen
+  OK   quien no está en el combate no puede nada
+  OK   no se cambia de arma a mitad de un golpe
+  OK   fuera de combate no se puede atacar
+  OK   el cliente ya no elige su armadura: equipar con «malla» no cambia lo que le protege
+  OK   con la cota puesta le protege lo de sus prendas, zona a zona — torso 1 → 0.198
+  OK   los demás ven lo que lleva puesto
+  OK   la copia del cliente se viste con la foto
+  OK   al volver a empezar sigue con lo que lleva puesto
+  OK   coger el arco estando libre
+  OK   tensar
+  OK   soltar apuntando al rival
+  OK   el disparo y su impacto salen con el autor del tirador — blanco a jugador:b en torso
+  OK   la flecha hiere a B y queda en el registro
+  OK   las flechas acabadas se quitan
+  OK   soltar sin tensar no dispara
+  OK   la primera vez van todos los luchadores
+  OK   sin cambios no se manda nada
+  OK   al cargar se manda solo el que ataca, preparando y por qué línea
+  OK   el golpe da a quien está delante, haga lo que haga — herida
+  OK   no se vuelve a empezar sano con el rival en pie al lado
+  OK   caído, sí: sale sano y con la misma arma
+  OK   y se avisa a todos
+  OK   sin nadie cerca también se puede
+  OK   la copia de otro hace lo que dice el servidor (preparando, por la derecha, a su punto)
+  OK   la copia avanza sola entre fotos, pero sus golpes no cuentan — libre
+  OK   lo propio no se pisa mientras se predice
+  OK   salvo lo que solo sabe el servidor (quedar descolocado)
+  OK   las heridas, la sangre y el cansancio, siempre los del servidor
+  OK   la copia no cae por su cuenta (desangrarse lo decide el servidor)
+  OK   cae cuando lo dice el servidor
+  OK   un golpe al aire del servidor se cuenta como fallo
+  OK   intención de curar mal formada: no vale
+  OK   no se cura una herida que no existe
+  OK   el jugador empieza a vendarse
+  OK   el servidor reparte la cura terminada
+  OK   la foto lleva la herida vendada y el botiquín — [["torso","grave","corte",0.7,"v"]]
+  OK   la copia del cliente ve la venda
+  OK   dejar la cura a medias
+Pelear en el mundo
+  OK   sin el arma sacada no se carga un golpe
+  OK   sacar el arma es una intención válida, y la foto lo dice
+  OK   las intenciones nuevas mal formadas no valen
+  OK   cargar un golpe por arriba
+  OK   la finta lo cancela
+  OK   al soltar sale y hiere al otro, con su autor — herida
+  OK   parar por un lado
+  OK   la parada por el lado bueno para el golpe — parada
+  OK   por el lado malo, no — herida
+  OK   la foto lleva el lado de la parada
+  OK   guardar el arma deja de cargar y la foto lo dice
+  OK   la copia de otro sigue cargando hasta que el servidor diga que sale — preparando
+Servidor con dos clientes y lag simulado (A: 80 ± 30 ms, B: 140 ± 50 ms, cada sentido)
+  OK   la bienvenida trae los luchadores (cada jugador tiene el suyo)
+  OK   la posición del luchador sale de la presencia
+  OK   el golpe lo resuelve el servidor con el autor de la conexión — herida en brazoD (muy grave)
+  OK   los tiempos los lleva el servidor: no llega antes de la carga mínima y el vuelo más el lag — 625 ms desde que se mandó (hasta el impacto 465 ms)
+  OK   los dos ven el mismo golpe
+  OK   los dos ven al herido con su herida
+  OK   el autor que diga el cliente no cuenta: el golpe es de quien lo manda — autor B
+  OK   una parada a tiempo para el golpe aunque haya lag
+  OK   la flecha sale y da con el autor del tirador — blanco en torso
+  OK   lo que no se puede se rechaza al que lo manda — Intención no válida.
+  OK   con lag distinto, los dos reciben exactamente los mismos eventos y en el mismo orden — 5 eventos
+  OK   el combate se guarda aparte del mundo, con autor y numerado — 5 líneas: golpe, golpe, golpe, disparo, impacto
+  OK   el archivo del mundo no se mezcla con el combate
+  OK   el otro ve que has sacado el arma
+  OK   el golpe cargado en el mundo le hiere de verdad, con tu autor — herida
+  OK   el luchador lleva lo que tiene puesto en el inventario del servidor — camisa_lino, pantalon_lino
+  OK   al quitarse la camisa, el combate lo sabe y el otro lo ve — pantalon_lino
+  OK   al irse un jugador, su luchador sale del combate
+
+81 correctas, 0 fallos

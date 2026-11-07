@@ -1,0 +1,141 @@
+Lo que dice el documento de sistemas (apartados 7 y 8)
+  OK   hoguera: 6 piedras sueltas y 4 ramas; da el fuego
+  OK   piedra de tallar: 1 piedra; da el tallar
+  OK   banco de tronco: 2 troncos cortos y herramienta de piedra; da el banco
+  OK   por uso, no por nivel: ni las estaciones ni las recetas llevan nivel
+  OK   los usos: con las manos, al fuego (hoguera y hogar), piedra de tallar y banco de tronco
+  OK   cada estación da un uso que la nombra, y dice cómo se nombra en una frase
+  OK   de los usos, solo falta el hogar como estación (llega con la casa humilde)
+  OK   cordel: 3 fibra cruda, con las manos
+  OK   lasca de sílex: 1 sílex y 1 piedra, en la piedra de tallar
+  OK   hacha de piedra: 1 piedra, 1 rama y 2 cordel, en la piedra de tallar — {"piedra":1,"rama":1,"cordel":2}
+  OK   lanza endurecida: 1 rama, en la hoguera
+  OK   leñero: 4 ramas y 2 cordel, con las manos
+  OK   cuerda: 3 cordel, en el banco
+  OK   pala de madera y cubo: 1 tronco corto, en el banco
+  OK   todas las recetas dan y gastan cosas del catálogo, con un uso que tiene estación (o con las manos)
+  OK   todas tienen un tiempo de más de 0 s
+  OK   todas las estaciones cuestan cosas del catálogo
+Los puestos son obra: el marco, su material (de lo que llevas y del suelo) y el trabajo
+  OK   se pone el marco sin gastar nada — hoguera:1
+  OK   le falta todo su coste
+  OK   sin su material no se trabaja — Primero hay que llevarle todo el material. Le falta: 6 de Piedra, 4 de Rama.
+  OK   sin llevar nada no se entrega, y dice qué le falta — Le falta: 6 de Piedra, 4 de Rama. No lo llevas ni lo tienes a tu lado.
+  OK   lejos del marco no se entrega — Estás demasiado lejos de la estación.
+  OK   se le lleva de lo que llevas y del suelo a tu lado: primero lo que llevas — {"ok":true,"estacion":"hoguera:1","entregado":{"piedra":6,"rama":4},"falta":{},"usado":{"encima":{"piedra":3,"rama":3},"suelo":{"s1":{"piedra":3},"s2":{"rama":1}}}}
+  OK   lo del suelo lejos no se toca
+  OK   en obra no se fabrica ni se deposita
+  OK   un rato de trabajo de más de lo que vale no cuela
+  OK   el trabajo de todos se suma — {"ok":true,"estacion":"hoguera:1","terminada":false,"progreso":0.8}
+  OK   al llegar a su trabajo queda levantada (sin obra) y ya da el fuego — {"ok":true,"estacion":"hoguera:1","terminada":true,"progreso":1,"aportes":[{"autor":"ana","entrega":{"piedra":6,"rama":4}},{"autor":"ana","trabajo":9},{"autor":"blas","trabajo":4}]}
+  OK   y en sus aportes, quién llevó qué y quién trabajó
+  OK   levantada, ya no se le entrega ni se quita como marco
+  OK   2 troncos cortos (uno al hombro) se le llevan
+  OK   el banco pide llevar una herramienta de piedra para levantarlo — Para levantarla hace falta llevar hacha de piedra o lasca de sílex.
+  OK   con una lasca, se levanta en su trabajo (20 s) y la lasca no se gasta
+  OK   una estación desconocida no se coloca
+  OK   colocar no enseña nada (nadie aprende recetas)
+Dónde va cada puesto: la hoguera, solo fuera
+  OK   la hoguera, solo fuera; la piedra de tallar y el banco, dentro o fuera
+  OK   bajo techo no se pone una hoguera — Hoguera: solo fuera, no bajo techo.
+  OK   la piedra de tallar y el banco, bajo techo sí
+  OK   y se guarda la altura del suelo en que se apoya, si se da
+  OK   lo que va solo dentro (el hogar, con su tarea), fuera no
+  OK   sin tejado, fuera
+  OK   con el tejado aún en obra, fuera
+  OK   con el tejado terminado, dentro; en la casilla de al lado, fuera
+Quitar un marco a medio hacer
+  OK   se quita y lo entregado cae al suelo donde estaba — {"ok":true,"estacion":"hoguera:1","quitada":true,"devuelto":{"piedra":2,"rama":1},"alSuelo":["s1","s2"]}
+Fabricar por uso: piedra de tallar y fuego
+  OK   la piedra de tallar gasta 1 piedra
+  OK   lejos de la estación no se fabrica — Estás demasiado lejos de la estación.
+  OK   sin decir la estación y sin ninguna al lado, dice cuál hace falta — Hace falta una piedra de tallar a tu lado.
+  OK   junto a ella, con el sílex y la piedra encima pero sin depositar, no: dice que faltan en la estación — Falta en la estación: 1 de Sílex, 1 de Piedra.
+  OK   lejos de la estación no se deposita — Estás demasiado lejos de la estación.
+  OK   deposita en ella el sílex y una piedra: salen de lo que lleva
+  OK   y ahora sí: sin decir cuál, la más cercana, y gasta lo depositado (no lo que lleva)
+  OK   el hacha, siempre a la vista: sin cordel en la estación no se encarga y no gasta nada (aunque lo lleve) — Falta en la estación: 2 de Cordel de fibra.
+  OK   con 2 cordel depositados sí, sin haber hecho nada antes en ella, y gasta piedra, rama y los dos cordeles de la estación — {"encima":{},"suelo":{},"estacion":{"piedra":1,"rama":1,"cordel":2}}
+  OK   en la cola, empieza cuando acaba la lasca
+  OK   el estado dice qué está terminado y cuánto falta
+  OK   otro jugador no recoge lo de Ana — Aquí no tienes nada.
+  OK   Ana recoge la lasca; el hacha sigue en la cola
+  OK   pasada una hora, aunque nadie juegue, el hacha está hecha
+  OK   Blas usa la piedra de tallar de Ana sin haber construido una, con lo que deposita él
+  OK   las ramas del suelo de al lado no valen para la hoguera
+  OK   con la hoguera apagada no se hace nada al fuego — El fuego está apagado: enciéndelo con yesca y el taladro de fuego.
+  OK   y el panel lo dice: casi, con el fuego apagado
+  OK   la enciende con la yesca y el taladro
+  OK   la lanza se hace al fuego de la hoguera
+  OK   la cola de una estación admite 3 encargos sin terminar — 3
+  OK   las ramas salieron de la hoguera: queda una y el suelo sigue igual — {"tipo":"rama","n":10}
+  OK   cuando termina el primero, hay sitio en la cola (también para otro jugador)
+  OK   la lasca no se hace en la hoguera — Eso se hace en una piedra de tallar.
+  OK   sin fuego al lado, la antorcha dice que hace falta una hoguera — Hace falta una hoguera a tu lado.
+Todas las recetas a la vista: lo que puedes ya, lo que casi y lo que se abre después
+  OK   salen todas las recetas, sin conocer ninguna
+  OK   el cordel, ya (3 fibra encima) — {"fibra":{"encima":3,"suelo":0,"sitios":{"mano":3}}}
+  OK   y dice de qué sitio sale (lo que llevas, por sitios) — {"fibra":{"encima":3,"suelo":0,"sitios":{"mano":3}}}
+  OK   cada receta lleva lo que gasta, lo que da y su tiempo
+  OK   el leñero, casi: falta en rojo lo que no hay — {"receta":"lenero","nombre":"Leñero","uso":"manos","grupo":"casi","estacion":null,"conQue":"","gasta":{"rama":4,"cordel":2},"da":"lenero","n":1,"s":30,"de":{"rama":{"encima":0,"suelo":0,"sitios":{}},"cordel":{"encima":0,"suelo":0,"sitios":{}}},"faltan":{"rama":4,"cordel":2}}
+  OK   la lasca, después, con la piedra de tallar
+  OK   la lanza, después, con la hoguera
+  OK   con la piedra de tallar al lado y nada en ella, la lasca casi: falta depositar sílex y piedra — {"receta":"lasca_silex","nombre":"Lasca de sílex","uso":"tallar","grupo":"casi","estacion":"piedra_tallar:1","conQue":"una piedra de tallar","gasta":{"silex":1,"piedra":1},"da":"lasca_silex","n":1,"s":20,"de":{"silex":{"encima":0,"suelo":0,"estacion":0,"sitios":{}},"piedra":{"encima":0,"suelo":0,"estacion":0,"sitios":{}}},"faltan":{"silex":1,"piedra":1}}
+  OK   con ellos depositados, ya, y dice que salen de la estación — {"receta":"lasca_silex","nombre":"Lasca de sílex","uso":"tallar","grupo":"ya","estacion":"piedra_tallar:1","conQue":"una piedra de tallar","gasta":{"silex":1,"piedra":1},"da":"lasca_silex","n":1,"s":20,"de":{"silex":{"encima":0,"suelo":0,"estacion":1,"sitios":{"estacion":1}},"piedra":{"encima":0,"suelo":0,"estacion":1,"sitios":{"estacion":1}}},"faltan":{}}
+  OK   y el hacha, casi
+  OK   lo de las manos sigue con lo que llevas y el suelo (el cordel, ya)
+Depositar en las estaciones y volver a coger
+  OK   lo que llevas puesto no se deja — Eso lo llevas puesto.
+  OK   ni la mochila — Eso lo llevas puesto.
+  OK   ni una prenda cosida — Eso no se deja en una estación.
+  OK   ni más de lo que hay — Cantidad no válida.
+  OK   una parte, sí
+  OK   caben 20 en total, no más — En la estación no cabe nada más.
+  OK   lejos no se coge — Estás demasiado lejos de la estación.
+  OK   se vuelve a coger lo depositado: a lo que llevas
+  OK   lo que no está no se coge — Eso no está en la estación.
+  OK   nombres raros no cuelan — Eso no está en la estación.
+  OK   si no te cabe, no se coge y sigue en la estación — No te cabe: no tienes sitio libre.
+  OK   sin cantidad, todo lo de ese tipo; y el tipo sale de la lista
+  OK   cuentasEstacion dice lo que falta
+  OK   con dos al lado, sin decir cuál, usa la que tiene lo depositado aunque esté más lejos — piedra_tallar:3
+De qué sitio sale cada cosa: la mano, el cinturón o el suelo
+  OK   1 de la mano, 1 del cinturón y 1 del suelo — {"encima":2,"suelo":1,"sitios":{"mano":1,"cinturon":1,"suelo":1}}
+  OK   SITIO_DE_RUTA nombra cada sitio
+  OK   los puestos que se pueden poner (el menú de construcción), con su coste, su herramienta y dónde van — {"tipo":"piedra_tallar","nombre":"Piedra de tallar","uso":"tallar","hace":"Herramientas de piedra y sílex","coste":{"piedra":1},"requiere":[],"donde":"ambos","trabajo":5}
+Si no te cabe
+  OK   con las manos llenas no se recoge y lo hecho sigue esperando — No te cabe: no tienes sitio libre.
+  OK   al hacer sitio, se recoge
+Guardar y cargar
+  OK   se guarda la versión
+  OK   al cargar, las estaciones, sus colas, lo depositado y lo de las manos son lo mismo
+  OK   lo depositado que no vale se descarta (tipos que no existen, cantidades raras, más del máximo)
+  OK   ya no se guarda lo que sabe cada uno
+  OK   y se sigue contando por la hora: lo que acabó mientras tanto se recoge
+  OK   lo que no se entiende se descarta (estación o receta que no existe, receta de otro uso)
+  OK   un guardado de la v1 se carga: estaciones y colas siguen
+  OK   un guardado de la v2 se carga sin lo que sabía cada uno
+  OK   un guardado de la v3 se carga con las estaciones vacías (nada depositado)
+  OK   y con él, cualquiera hace cualquier receta (Blas, la lasca en la piedra de tallar de Ana)
+  OK   un marco a medio hacer se guarda y se carga con lo entregado
+  OK   lo entregado que no vale se descarta, y no pasa de su coste
+  OK   lo guardado en la v4 se carga con sus estaciones ya levantadas
+  OK   un guardado sin versión no se carga
+Acciones con autor
+  OK   sin autor no vale
+  OK   el marco, con autor, no gasta nada
+  OK   entregarle con autor gasta de lo de Ana
+  OK   y trabajar en él lo levanta
+  OK   Blas no fabrica con lo que lleva Ana — Falta en la estación: 1 de Sílex, 1 de Piedra.
+  OK   Ana deposita su sílex con autor
+  OK   cantidades raras no cuelan — Datos no válidos.
+  OK   y su piedra
+  OK   fabrica con lo depositado (el sílex del suelo no se toca), y el tiempo lo pone quien valida, no el mensaje
+  OK   recoger con autor
+  OK   nombres raros de receta no cuelan
+  OK   datos no válidos
+  OK   todo queda en el registro, salga bien o no
+  OK   el registro anota lo depositado, en qué estación se hizo y lo que se gastó de ella — {"receta":"lasca_silex","fin":1793426420000,"estacion":"piedra_tallar:1","deLaEstacion":{"silex":1,"piedra":1}}
+  OK   y lo que se vuelve a coger
+
+128 bien, 0 mal

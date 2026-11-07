@@ -1,0 +1,48 @@
+Lógica pura
+  OK   «modo» con autoconstruir o una velocidad de la lista vale
+  OK   «modo» vacío, con una velocidad que no está o con autoconstruir que no es sí o no, no vale
+  OK   «invocar» un objeto del catálogo vale; uno que no existe, «__proto__» o cantidades raras, no
+  OK   los modos empiezan apagados y «modo» cambia solo lo que dice
+  OK   la información sale limpia (números enteros, el sitio redondeado, sin lo que no toca)
+  OK   presencia: con vel 10, 104 m en 3 s pasan; sin ella, se recorta a lo que da el crédito — 0 · 16.0
+  OK   admin_terminar deja la obra terminada (en la lógica; quién la manda lo mira el servidor) — {"ok":true,"terminada":true,"progreso":1}
+  OK   y al rehacer el mundo del registro, también
+  OK   navegador: sin autoconstruir, el mojón no se adelanta sin materiales; con él, sí (y no manda «lleva») — ["No llevas ese material.",[{"tipo":"accion","id":1,"accion":{"tipo":"mojon","x":0,"z":0}}]]
+  OK   navegador: al llegar admin_terminar (propia), la obra queda terminada y se vuelve a dibujar — {"cambio":true,"entrada":{"autor":"jugador:adm","tipo":"admin_terminar","datos":{"construccion":1,"clave":"f:0,0,0"},"ok":true}}
+  OK   navegador: al volver a conectar, los modos se apagan
+Más información al abrir el panel
+  OK   «ver» trae la información del servidor — {"arranque":1794066988659,"ahora":1794066988956,"conectados":2,"cuentas":2,"construcciones":0,"piezas":0,"obrasAMedias":0,"muebles":0,"mojones":0,"enElSuelo":0,"estaciones":0,"entradas":0,"sitio":{"x":5,"y":2,"z":5},"zona":null,"tierraDe":null,"zonaRey":false}
+  OK   y la de donde estás, y los modos (apagados) — [{"x":5,"y":2,"z":5},{"autoconstruir":false,"velocidad":1}]
+Solo la cuenta de admin
+  OK   otra cuenta no cambia modos
+  OK   ni invoca nada
+El arcón de admin
+  OK   invocar un hacha de hierro: va a lo que lleva el admin — {"tipo":"admin","id":4,"que":"invocar","ok":true,"objeto":"hacha_hierro","cantidad":1,"alSuelo":false}
+  OK   y le llega lo que lleva
+  OK   200 piedras no le caben: van a sus pies y las ven los dos — {"tipo":"admin","id":5,"que":"invocar","ok":true,"objeto":"piedra","cantidad":200,"alSuelo":true}
+  OK   un objeto que no existe, no
+Autoconstruir
+  OK   sin autoconstruir, el mojón cuesta piedras que no lleva — {"tipo":"resultado","id":7,"ok":false,"motivo":"No llevas los materiales."}
+  OK   se activa — {"tipo":"admin","id":8,"que":"modo","ok":true,"modos":{"autoconstruir":true,"velocidad":1}}
+  OK   con él, el mojón se pone sin cobrar nada — {"tipo":"resultado","id":9,"ok":true}
+  OK   el cimiento queda terminado al momento — {"tipo":"resultado","id":10,"ok":true}
+  OK   al admin le llega la acción que lo termina, detrás del colocar
+  OK   y al otro jugador también
+  OK   un banco (2 tablas y 2 clavos) se pone sin llevarlos — {"tipo":"resultado","id":11,"ok":true}
+  OK   apagado: la obra nueva queda a medias, como siempre — {"tipo":"resultado","id":13,"ok":true}
+  OK   y un mueble sin materiales, no
+  OK   nadie puede mandar admin_terminar — {"tipo":"resultado","id":5,"ok":false,"motivo":"Acción desconocida."}
+  OK   …ni el admin (solo la crea el servidor, tras su «colocar» con autoconstruir)
+  OK   la información cuenta lo construido — {"arranque":1794066988659,"ahora":1794066989735,"conectados":2,"cuentas":2,"construcciones":1,"piezas":2,"obrasAMedias":1,"muebles":1,"mojones":1,"enElSuelo":1,"estaciones":0,"entradas":9,"sitio":{"x":5,"y":2,"z":5},"zona":null,"tierraDe":"jugador:ce6b0536","zonaRey":false}
+Velocidad multiplicada
+  OK   sin multiplicar, el servidor recorta un salto de 115 m — 21 · 25
+  OK   ×10 se activa — {"autoconstruir":false,"velocidad":10}
+  OK   con ×10, el admin sí llega (115 m tras 2 s quieto) — 136
+  OK   otra cuenta sigue recortada — 41
+El registro
+  OK   modos e invocaciones quedan en admin.jsonl, con su autor y lo pedido — 8 líneas
+Al desconectarse y al volver a arrancar
+  OK   (otra conexión sin cuenta no es admin)
+  OK   el mundo se rehace igual del registro (mojón y mueble sin cobrar, la obra terminada)
+
+38 bien, 0 mal
