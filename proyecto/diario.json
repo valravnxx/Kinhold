@@ -5189,5 +5189,19 @@
   "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas nuevas, miradas una a una.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:28:32+01:00",
+  "fin": "2026-11-07T17:28:32+01:00",
+  "titulo": "P4: el estudio de la interfaz, tercera versión (las necesidades y más información)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Tercera versión del estudio de la interfaz (valravnx: «cuenta las bolitas de estado de hambre, sed, calor/frio… y sigue probando como optimizar a la vez que das el maximo de informacion»): las necesidades del GDD en círculos a la derecha, con su aro lleno según cómo vas.",
+   "Cuando algo va mal, los círculos se ordenan solos (lo peor primero, más grande, en rojo y con su nombre); las heridas y el sangrado salen solo mientras los hay; al tocar uno, su ficha (qué te hace, qué hacer y lo que lo cambia).",
+   "Más información en el mismo sitio: un solo círculo de temperatura de frío a calor (a decidir), la carga en una raya bajo las manos, el día y la hora en el estado, el aguante en su aro de siempre y una «interfaz mínima» en Ajustes. Tres preguntas nuevas para valravnx."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas nuevas, miradas una a una.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

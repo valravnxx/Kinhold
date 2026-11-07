@@ -4255,7 +4255,7 @@
    "hito": "admin"
   },
   {
-   "pregunta": "La interfaz del juego (estudio del 7 nov, segunda versión, diseno/estudios/interfaz.html): ¿un botón de menú con todo en una cuadrícula de iconos grandes (en vez de la rueda), tres atajos fijos (Equipo, Fabricar, Construir), la acción única según lo que tienes delante con una lista cuando hay varias cosas, las manos siempre abajo con su imagen y la barra de construir solo al construir? ¿La rueda fuera, o como extra del PC?",
+   "pregunta": "La interfaz del juego (estudio del 7 nov, tercera versión, diseno/estudios/interfaz.html): ¿menú con cuadrícula de iconos, tres atajos, la acción según lo que tienes delante con su lista, las manos con la carga debajo y las necesidades en círculos a la derecha (lo peor primero, y al tocarlos su ficha)? ¿La rueda fuera o como extra del PC? ¿Un círculo de temperatura o dos (frío y calor)? ¿Los círculos siempre a la vista o solo cuando algo va mal? ¿En el móvil, los atajos arriba a la izquierda?",
    "desde": "2026-11-07",
    "hito": "supervivencia"
   }
