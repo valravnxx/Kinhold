@@ -5090,5 +5090,23 @@
   ],
   "pruebas": "Sin pruebas: solo planificación (roadmap y diario)",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T12:48:08+01:00",
+  "fin": "2026-11-07T15:18:19+01:00",
+  "titulo": "P3: el tejado de juncos, y que nada esencial se escurra",
+  "hito": "crafting",
+  "hecho": [
+   "Fallo del plan, reconocido: la casa humilde no se podía techar. El único tejado era el de paja, la paja no sale de ningún sitio, el junco no era material de obra y el recorrido de jugador paraba en coger juncos, sin llegar a la casa.",
+   "Tejado de juncos y su remate de esquina (2 varas y 4 juncos; 1 vara y 2 juncos el remate), con el junco como material de obra y el estilo del de paja en su color.",
+   "Lo que pide paja (tejado y remate de paja, cama de paja, antorcha de pie y alfombra) se esconde del menú de este tramo, como lo de después: la paja sale del cereal (GDD), que aún no hay.",
+   "Prueba nueva, de dónde sale cada cosa (pruebas/prueba_origenes.mjs): sigue la cadena desde el mundo sin arcón y falla si a la casa humilde le falta alguna parte hecha solo con lo que se consigue, o si el juego enseña algo sin origen y sin tarea viva. Con MUTAR=1 (sin juncos) y MUTAR=2 falla.",
+   "La prueba ha sacado otros huecos: la piel, el mimbre, la resina y la corteza no salen de ningún sitio (honda, odre, cestas, nasa, yesca de corteza, antorcha con resina): tarea nueva en P3.",
+   "Reglas nuevas en CLAUDE.md: al planificar un hito, la cadena de cada material hasta el mundo y las tareas con nombre concreto; antes de pasar un hito a revisión, el repaso de lo esencial contra el recorrido de jugador.",
+   "Las tareas de la casa humilde y del recorrido dicen ya su tejado (de juncos) y que el recorrido la levanta entera, cerrada y techada, sin arcón."
+  ],
+  "pruebas": "Todas en la nube (su PC no estaba libre): las del tramo y de la construcción, puestas al día (el tejado de juncos a la vista, lo de paja escondido); la de lo que llevas puesto falló una vez sin relación con esto y pasó al repetirla. Capturas de los tejados de cerca, al lado del de paja, miradas.",
+  "capturas": "capturas/demo-v138",
+  "estado": "ok"
  }
 ]
