@@ -1,0 +1,44 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2346 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2850 KB
+
+== Construir demo única
+      2735 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3995 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2750 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2341 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2859 KB
+dist/kinhold_trozos.html 2355 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Web de progreso
+     · Arreglo (valravnx, 7 nov, muy importante): al morir en el río se le borró todo lo de su base (la casa, lo del suelo y las estaciones). Averiguar si se pierde en el servidor o solo no le llega al navegador al volver, arreglarlo y dejar su prueba
+ - faltan 2 traducciones en proyecto/idiomas/ru.json (añade la clave en español con su traducción):
+     · Llevar más de una vez (valravnx, 7 nov): la rastra lleva también troncos delgados (5) y varas (12); los juncos y el mimbre van en el fardo atado, con la paja y la fibra
+     · Arreglo (valravnx, 7 nov, muy importante): al morir en el río se le borró todo lo de su base (la casa, lo del suelo y las estaciones). Averiguar si se pierde en el servidor o solo no le llega al navegador al volver, arreglarlo y dejar su prueba
+!! FALLA: node herramientas/construir_web.mjs
+
+== Navegador: web
+  OK   «ahora mismo» en ruso
+  OK   sin errores en consola (movil)
+
+Resultado: 6 fallos: roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso, roadmap: «en proceso» solo las tareas que lleva un agente vivo, con quién la lleva, roadmap: las empezadas que no lleva nadie (también la del agente cortado) salen «a medias», sin agentes: «ahora mismo» dice que no trabaja nadie y nada sale en proceso
+!! FALLA: python3 pruebas/prueba_web.py /tmp/kinhold_capturas/web
+
+HAY FALLOS
+tardó 154 s
