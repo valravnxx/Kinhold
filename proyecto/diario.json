@@ -5322,5 +5322,20 @@
   "pruebas": "Batería entera en la nube correcta (lógica, con el recorrido de jugador, y todos los grupos de navegador, PC y móvil), sin las de en línea",
   "capturas": "capturas/demo-v143",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T19:23:34+00:00",
+  "fin": "2026-11-07T20:28:41+00:00",
+  "titulo": "La base que parecía borrada al morir en el río: no se perdió nada; causa encontrada y tema cerrado (carril A)",
+  "hito": "orden",
+  "hecho": [
+   "No se perdió nada: al recargar, la base de valravnx volvió entera. El mundo del servidor estaba bien.",
+   "Causa: al ahogarte vuelves a la salida; al teletransportarte con el admin, el servidor aún recibe algún estado desde la salida, la regla de que volver a la salida es libre le cree, y los siguientes desde la base se recortan a 8 m/s. Como lo de alrededor se manda según dónde cree el servidor que estás, no llegaba nada de la base; el mojón sí, porque va a todos. Comprobado con la lógica de presencia.",
+   "valravnx lo cierra: solo pasa al teletransportarse con el admin, un jugador nunca lo ve. No se cambia nada del juego.",
+   "Lo que se hizo antes de saberlo (una herramienta que revisa el mundo guardado del servidor y un aviso al arrancar) queda en la rama trabajo/20261107-1925, sin unir a main."
+  ],
+  "pruebas": "Sin cambios en el juego: no hace falta la batería. Lo de la rama: su prueba, 11/11",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
