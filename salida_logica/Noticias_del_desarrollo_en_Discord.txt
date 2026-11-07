@@ -1,0 +1,19 @@
+  OK   solo las entradas nuevas del diario — Tarea 3, ⚠️ Tarea 4
+  OK   la entrada lleva lo hecho, el hito, el tiempo y las pruebas — [{"name":"Hito","value":"Cuentas","inline":true},{"name":"Tiempo","value":"20 min","inline":true},{"name":"Pruebas","value":"Todo bien"}]
+  OK   y su captura
+  OK   las que fallaron salen marcadas
+  OK   la versión nueva lleva su nota, el enlace para jugarla y su captura — {"title":"Demo única · v91","url":"https://playkinhold.com/jugar/demo/v91.html?lang=es","color":9185822,"description":"El tronco al hombro.\n\n🎮 **[Jugar](https://playkinhold.com/jugar/demo/?lang=es)
+  OK   como mucho 8 de golpe (las últimas)
+  OK   los textos largos se cortan a lo que admite Discord
+  OK   lo marcado «noticia: false» no sale en Discord (ni la entrada ni la versión); lo demás, sí — Tarea 3, ⚠️ Tarea 4 · Demo única · v91
+  OK   en inglés: el diario y la versión traducidos, con sus etiquetas y el enlace en inglés — ["Task 3",[{"name":"Milestone","value":"Accounts","inline":true},{"name":"Time","value":"20 min","inline":true},{"name":"Tests","value":"All good"}],"Single demo · v91"]
+  OK   lo que no está traducido sale en español
+  OK   en ruso, con sus etiquetas
+  OK   manda la versión nueva a #versions y la entrada nueva a #dev-diary, en inglés — en: 1 versiones y 1 entradas del diario nuevas. | es: 1 versiones y 1 entradas del diario nuevas. | ru: 1 versiones y 1 entradas del diario nuevas.
+  OK   y las dos, en español y en ruso, al canal de noticias de cada idioma — es 2, ru 2
+  OK   la versión vieja no se repite
+  OK   con el nombre y el icono de Kinhold, sin mencionar a nadie
+  OK   la captura es la de PC de esa versión, en el commit exacto — https://raw.githubusercontent.com/valravnxx/Kinhold/56e060ea965f3c0258bdf81f0c01b6644192a949/docs/capturas/demo-v91/pc_a.jpg
+  OK   sin webhooks no manda nada (y no falla) — Sin webhooks de Discord (secretos DISCORD_WEBHOOK_*): no se publica nada.
+
+Todo bien
