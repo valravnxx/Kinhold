@@ -6,12 +6,6 @@
   "rama": "trabajo/20261107-1625"
  },
  "B": null,
- "chat:trabajo/20261107-1701-avisos": {
-  "inicio": "2026-11-07T17:01:29+01:00",
-  "tarea": "Los avisos en círculos a la derecha (PC y móvil), uno por necesidad con su color (naranja, azul, celeste y gris), que solo salen cuando hace falta; al pulsarlos, qué efecto tiene y cómo se quita. Y los efectos en el juego: sin correr, más lento y golpes flojos según lo que toque. Recorrido: sale el aviso de sed y se lee qué hacer",
-  "hito": "supervivencia",
-  "rama": "trabajo/20261107-1701-avisos"
- },
  "chat:trabajo/20261107-1845-interfaz": {
   "inicio": "2026-11-07T18:43:47+01:00",
   "tarea": "El kit de la interfaz publicado y la barra de abajo (estudio de la interfaz, octava versión, aprobado de forma provisional el 7 nov): el cuero, el roble, el latón y el hierro renderizados en Blender y los iconos repujados en docs/recursos/interfaz-v1, y las imágenes de las cosas con luz de contra y contorno; abajo, tus dos manos con su imagen (1 y 2), el hombro solo si llevas algo (y entonces las manos apagadas), el hueco del cinto con su arma (C) y la carga en una raya; fuera la línea «En la mano»",
