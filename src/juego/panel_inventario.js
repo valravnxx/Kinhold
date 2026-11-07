@@ -60,7 +60,8 @@ for (const [k, r] of Object.entries(RECETAS)) if (PARA[k] && !PARA_TIPO[r.da]) P
 // accionArcon y materialesArcon (opcionales): la acción de construcción con autor (sacar_arcon, dejar_arcon) y lo que
 // hay en el arcón de materiales. alSuelo(tipo) (opcional): lo enorme del arcón (la rastra) va al suelo, delante de ti.
 // soltarSuelo(ruta) (opcional): deja en el suelo, a tus pies, lo que hay en esa ruta (con lo que lleve dentro).
-export function montarPanelInventario({ panel, boton, inventario, accion, alCambiar = () => {}, retrato = null, accionArcon = null, materialesArcon = null, alSuelo = null, soltarSuelo = null, hayArcon = () => true }) {
+// comer(tipo) (opcional, P4): come una unidad de eso (bayas, setas…: los que dice comestible)
+export function montarPanelInventario({ panel, boton, inventario, accion, alCambiar = () => {}, retrato = null, accionArcon = null, materialesArcon = null, alSuelo = null, soltarSuelo = null, hayArcon = () => true, comer = null, comestible = () => false }) {
   let sel = null;          // { de: 'arcon', tipo } o { de: 'inv', ruta }
   let vista = null;        // ruta del contenedor cuyos huecos se ven
   let aviso = { txt: '', error: false };
@@ -252,6 +253,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     const btn = (cls, txt, prim = false) => `<button class="${cls} ${prim ? 'fab-btn' : 'fab-btn2'}">${esc(txt)}</button>`;
     const botones = [
       aManos ? btn('inv-manos', puesto ? tr('Quitártelo a las manos') : tr('Cogerlo con las manos'), puesto) : '',
+      enInv && comer && comestible(c.tipo) ? btn('inv-comer', c.n > 1 ? tr('Comer uno') : tr('Comértelo'), true) : '',
       ponible ? btn('inv-ponerse', alHombro ? tr('Al hombro') : tr('Ponértelo'), !puesto) : '',
       enInv && soltarSuelo ? btn('inv-suelo', tr('Dejarlo en el suelo')) : '',
       aSuelo ? btn('inv-alsuelo', tr('Dejarlo en el suelo')) : '',
@@ -318,7 +320,8 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
       else sel = sel && sel.de === 'arcon' && sel.tipo === t.dataset.tipo && String(sel.muestra ?? '') === (t.dataset.muestra ?? '') ? null : delArcon(t);
       avisar(''); pintar(); return;
     }
-    if (t.classList.contains('inv-ponerse')) ponerse();
+    if (t.classList.contains('inv-comer')) { comer(inv().buscar(sel.ruta).cosa.tipo); if (!inv().buscar(sel.ruta).cosa) sel = null; }
+    else if (t.classList.contains('inv-ponerse')) ponerse();
     else if (t.classList.contains('inv-manos')) aLasManos();
     else if (t.classList.contains('inv-suelo')) alSueloDe();
     else if (t.classList.contains('inv-alsuelo')) { const r = alSuelo(sel.tipo); if (r && r.ok) sel = null; }
