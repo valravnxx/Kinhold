@@ -274,7 +274,7 @@ try:
         captura(B, f'{SALIDA}/movil_ficha.png')
         B.tap('#panelFabricar .fab-velo', position={'x': 195, 'y': 60}); B.wait_for_timeout(500)
         comprobar('y tocando fuera se vuelve a bajar', B.evaluate("!document.getElementById('panelFabricar').classList.contains('fab-ficha-abierta')"))
-        B.tap('#btnFabricar'); B.wait_for_timeout(500)
+        B.evaluate(f"{K}.panelFabricar.cerrar()"); B.wait_for_timeout(500)
         B.evaluate(f"{K}.cambiarModo('construir')"); B.wait_for_timeout(200)
         B.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); B.wait_for_timeout(500)
         comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 3 && document.documentElement.scrollWidth <= innerWidth + 1"))
