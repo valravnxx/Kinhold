@@ -21,6 +21,10 @@ os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 for c in ['v1', 'taller-v19', 'taller-v24', 'taller-anim-v1', 'taller-carga-v3']:
     shutil.copytree(os.path.join(RAIZ, f'docs/recursos/personajes/{c}'), f'{sitio}/recursos/personajes/{c}')
+# las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
+import re as _rk
+for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
+    if not os.path.exists(f'{sitio}/{_c}'): shutil.copytree(os.path.join(RAIZ, 'docs', _c), f'{sitio}/{_c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 web = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))

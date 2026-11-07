@@ -274,6 +274,9 @@ GLIFOS = {
   'mojon': '<path d="M8 22V8.5L12 3l4 5.5V22z"/><path d="M5 22h14v-1.5H5z"/>',
   'quitar': '<path d="M3.5 18.5l9-9 2 2-9 9z"/><path d="M12 3l9 9-3 1-7-7z"/>',
   'colocar': '<path d="M4 12.5l2.4-2.4 3.6 3.6 7.6-7.6 2.4 2.4L10 18.5z"/>',
+  'soltar': '<path d="M10.3 2.5h3.4v8.2h4.1L12 17 6.2 10.7h4.1z"/><rect x="3.5" y="18.6" width="17" height="2.9" rx="1.4"/>',
+  'amanos': '<path d="M10.3 2.5h3.4v6.2h3.6L12 14 6.7 8.7h3.6z"/><path d="M3 13.5h3a6 6 0 0012 0h3a9 9 0 01-18 0z"/>',
+  'alhombro': '<path d="M10.3 21.5h3.4v-8.2h4.1L12 7l-5.8 6.3h4.1z"/><rect x="3.5" y="2.5" width="17" height="2.9" rx="1.4"/>',
 }
 
 def p_glifo(n, tono='laton'):
