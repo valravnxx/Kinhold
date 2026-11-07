@@ -13,7 +13,8 @@ import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { montarCharla } from './charla.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearCielo } from '../mundo/cielo.js';
-import { validarNecesidades } from '../logica/necesidades.js';
+import { validarNecesidades, efectos as efectosNecesidades } from '../logica/necesidades.js';
+import { montarAvisos } from './avisos_necesidades.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mundo.js';
 import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
@@ -167,7 +168,8 @@ const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2
 // el ciclo de día y noche (valravnx, 7 nov; src/mundo/cielo.js y src/logica/cielo.js): la hora es la del servidor (su
 // reloj llega en la bienvenida: todos ven el mismo cielo); mueve el sol, la luna y las estrellas, y con ellos la luz
 let desfaseReloj = 0;
-let necesidades = null;   // hambre, sed, frío y cansancio, como las manda el servidor (P4; src/logica/necesidades.js)
+let necesidades = null;
+const avisosNec = montarAvisos();   // sus círculos a la derecha (src/juego/avisos_necesidades.js)   // hambre, sed, frío y cansancio, como las manda el servidor (P4; src/logica/necesidades.js)
 const cielo = crearCielo({ ambiente, reloj: () => Date.now() + desfaseReloj });
 cielo.paso();
 // Dónde apareces (valravnx, 30 oct): un jugador nuevo, en un sitio al azar de las comarcas de inicio (src/logica/whitholm.js),
@@ -2168,9 +2170,13 @@ function paso() {
   nado.modo = modo; nado.agua = ag;
   if (modo === 'nadar' && combate.activo && !window.__mutarPelea) { combate.guardar(); mostrarAviso(t('armaNadando')); }   // nadando no se lucha
   const rapido = teclas.has('shift');
-  const correr = rapido && modo !== 'nadar' && puedeCorrer(nado.e);
+  // rendido (el cansancio al máximo), no se corre; helado, más lento (P4; src/logica/necesidades.js; el servidor tampoco
+  // deja ir más deprisa, src/logica/presencia.js)
+  const efNec = necesidades ? efectosNecesidades(necesidades) : null;
+  const correr = rapido && modo !== 'nadar' && puedeCorrer(nado.e) && !(efNec && efNec.sinCorrer);
   let vel = (correr ? 6 : 3.6) * mag * velocidadCarga() * combate.factorVelocidad(correr); // cargado al máximo en todo, al 80% (GDD); con el arma sacada, lo que diga el combate
   if (modo === 'vadear') vel *= factorVadeo(ag.hondo);
+  if (efNec && efNec.torpe) vel *= 0.8;
   if (modo === 'nadar') vel = (rapido && nado.e.aguante > 0 ? NADO.velNadarRapido : NADO.velNadar) * mag;
   vel *= velocidadAdmin();   // la cuenta de admin con su velocidad multiplicada (src/logica/admin.js; el servidor la deja)
   nado.e = pasoAguante(nado.e, dt, { modo, moviendo: mag > 0.05, rapido, kg: inventario().kilos() });
@@ -2532,7 +2538,7 @@ function iniciarEnLinea() {
       if (msg.tipo === 'luchadores' || msg.tipo === 'combate' || msg.tipo === 'combate_rechazo') return;
       // lo que llevas, el suelo, lo talado y lo recogido (src/juego/objetos_en_linea.js)
       // tus necesidades (src/logica/necesidades.js): las lleva el servidor; aquí solo se guardan para enseñarlas
-      if (msg.necesidades && (msg.tipo === 'necesidades' || msg.tipo === 'bienvenida')) necesidades = validarNecesidades(msg.necesidades);
+      if (msg.necesidades && (msg.tipo === 'necesidades' || msg.tipo === 'bienvenida')) { necesidades = validarNecesidades(msg.necesidades); avisosNec.pintar(necesidades); }
       if (msg.tipo === 'necesidades') return;
       if (msg.tipo === 'bienvenida' && Number.isFinite(msg.ahora)) desfaseReloj = msg.ahora - Date.now();   // (el reloj del servidor: la hora del cielo)
       if (msg.tipo === 'bienvenida') { arconServidor = msg.arcon === true; $('btnRellenar').hidden = !arconServidor; panelInventario.pintar(); }
@@ -2667,7 +2673,10 @@ window.__kinhold = {
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   get charla() { return charla; },
-  get necesidades() { return necesidades; },   // las del servidor (P4)   // el chat de texto (src/juego/charla.js)
+  get necesidades() { return necesidades; },   // las del servidor (P4)
+  avisosNec,
+  // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
+  ponerNecesidades(n) { necesidades = validarNecesidades(n); avisosNec.pintar(necesidades); },   // el chat de texto (src/juego/charla.js)
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado
   nado,

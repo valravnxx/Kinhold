@@ -2199,5 +2199,21 @@
  "v138, provisional: el tejado de juncos pesa, carga y cuesta como el de paja (el documento de sistemas no lo trae).": "v138, временно: камышовая крыша весит, держит и стоит столько же, сколько соломенная (в документе систем её нет).",
  "Demo única · v139 (sin llanos pelados)": "Единое демо · v139 (без голых равнин)",
  "v139: sin llanos pelados en la estepa (valravnx, 7 nov: «hay tramos que no aparece vegetacion ni nada… a momentos aparece un manto azul»): tierra adentro, lo que quedaba por debajo del mar se ponía a 0,4 m justos, en llanos de kilómetros sin nada (la hierba pide 1 m sobre el mar) que de lejos perdían contra el mar de lejos. Ahora, pasada la costa, el suelo no baja de unos 2 m y lo que iba a quedar más hondo sube como un relieve suave; crece lo que toca y la playa no cambia. Entran 17 sitios de salida de pradera más.": "v139: в степи больше нет голых равнин (valravnx, 7 нояб.: «есть участки без растительности и вообще без ничего… временами появляется синяя пелена»): вглубь суши то, что оказывалось ниже моря, ставилось ровно на 0,4 м — равнины в километры шириной, где ничего не росло (траве нужен 1 м над морем) и которые издалека проигрывали дальнему морю. Теперь за побережьем земля не опускается ниже примерно 2 м, а то, что было бы глубже, поднимается мягким рельефом; растёт что положено, пляж не меняется. Добавлено ещё 17 мест появления на лугах.",
- "v139, provisional: cada metro que el suelo iba a quedar por debajo del mar sube un cuarto de metro (el documento no lo dice: es lo justo para que se note el relieve sin levantar lomas).": "v139, временно: на каждый метр, на который земля оказалась бы ниже моря, она поднимается на четверть метра (в документе этого нет: ровно столько, чтобы рельеф был заметен, но без холмов)."
+ "v139, provisional: cada metro que el suelo iba a quedar por debajo del mar sube un cuarto de metro (el documento no lo dice: es lo justo para que se note el relieve sin levantar lomas).": "v139, временно: на каждый метр, на который земля оказалась бы ниже моря, она поднимается на четверть метра (в документе этого нет: ровно столько, чтобы рельеф был заметен, но без холмов).",
+ "Hambre": "Голод",
+ "Sed": "Жажда",
+ "Frío": "Холод",
+ "Come: bayas y setas del bosque, o carne de caza (asada sacia más).": "Ешь: лесные ягоды и грибы или мясо дичи (жареное сытнее).",
+ "Bebe agua de un río o de un lago: «Usar» en la orilla.": "Пей воду из реки или озера: «Использовать» на берегу.",
+ "Acércate al fuego, ponte bajo techo o abrígate.": "Подойди к огню, укройся под крышей или оденься теплее.",
+ "Descansa: quédate quieto, siéntate o duerme.": "Отдохни: постой, сядь или поспи.",
+ "Rendido: no puedes correr ni golpear fuerte.": "Без сил: нельзя бежать и сильно бить.",
+ "Te cansas: si llega al máximo, no podrás correr ni golpear fuerte.": "Ты устаёшь: если дойдёт до предела, не сможешь бежать и сильно бить.",
+ "Helado: te mueves torpe, te cansas el doble y las heridas se curan despacio.": "Замёрз: движешься неуклюже, устаёшь вдвое быстрее, раны заживают медленно.",
+ "Tienes frío: si llega al máximo, te moverás torpe.": "Тебе холодно: если дойдёт до предела, будешь двигаться неуклюже.",
+ "si sigues sin beber, al rato mueres": "если так и не попьёшь, через некоторое время умрёшь",
+ "si sigues sin comer, al rato mueres": "если так и не поешь, через некоторое время умрёшь",
+ "Al máximo: te cansas el doble, las heridas se curan despacio y {m}.": "На пределе: устаёшь вдвое быстрее, раны заживают медленно, и {m}.",
+ "Te cansas el doble (otra necesidad está al máximo).": "Устаёшь вдвое быстрее (другая потребность на пределе).",
+ "Aún aguantas; al máximo te cansarás el doble y {m}.": "Пока держишься; на пределе будешь уставать вдвое быстрее, и {m}."
 }
